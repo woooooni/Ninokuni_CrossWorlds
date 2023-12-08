@@ -1,0 +1,552 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{ADC57135-FCF2-4A95-84A4-A59536099786}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>Client</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <EnableUnitySupport>true</EnableUnitySupport>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\Bin\</OutDir>
+    <IncludePath>$(SolutionDir)Client\Default\;$(IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\Bin\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_CLIENT;_DEBUG;_WINDOWS;_HAS_STD_BYTE=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>../Public/;../../Reference/Headers/;../../Reference/Headers/Network/;../../Reference/Protobuf/;../../ThirdParty/;../../Reference/Headers/PhysX/;../../Reference/Headers/Fmod/;</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>Default</LanguageStandard_C>
+      <CombineFilesOnlyFromTheSameFolder>false</CombineFilesOnlyFromTheSameFolder>
+      <MaxFilesInUnityFile>0</MaxFilesInUnityFile>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d11.lib;DirectXTKd.lib;libprotobufd.lib;Engine.lib;LowLevel_static_64.lib;LowLevelAABB_static_64.lib;LowLevelDynamics_static_64.lib;PhysX_64.lib;PhysXCharacterKinematic_static_64.lib;PhysXCommon_64.lib;PhysXCooking_64.lib;PhysXExtensions_static_64.lib;PhysXFoundation_64.lib;PhysXPvdSDK_static_64.lib;PhysXTask_static_64.lib;PhysXVehicle_static_64.lib;PhysXVehicle2_static_64.lib;PVDRuntime_64.lib;SceneQuery_static_64.lib;SimulationController_static_64.lib;SnippetRender_static_64.lib;SnippetUtils_static_64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../Reference/Librarys/;../../ThirdParty/;</AdditionalLibraryDirectories>
+      <StackReserveSize>
+      </StackReserveSize>
+    </Link>
+    <FxCompile>
+      <ShaderType>Effect</ShaderType>
+    </FxCompile>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+    </FxCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>../../Reference/Headers/;../Public/</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>Engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../Reference/Librarys/</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\ThirdParty\imconfig.h" />
+    <ClInclude Include="..\..\ThirdParty\imgui.h" />
+    <ClInclude Include="..\..\ThirdParty\imgui_impl_dx11.h" />
+    <ClInclude Include="..\..\ThirdParty\imgui_impl_win32.h" />
+    <ClInclude Include="..\..\ThirdParty\imgui_internal.h" />
+    <ClInclude Include="..\..\ThirdParty\imgui_stdlib.h" />
+    <ClInclude Include="..\..\ThirdParty\imstb_rectpack.h" />
+    <ClInclude Include="..\..\ThirdParty\imstb_textedit.h" />
+    <ClInclude Include="..\..\ThirdParty\imstb_truetype.h" />
+    <ClInclude Include="..\Public\Akaza_Projectile.h" />
+    <ClInclude Include="..\Public\Akaza_Skill_Boundary.h" />
+    <ClInclude Include="..\Public\Akaza_Stone_0.h" />
+    <ClInclude Include="..\Public\Akaza_Stone_1.h" />
+    <ClInclude Include="..\public\BackGround.h" />
+    <ClInclude Include="..\Public\Boss_Akaza.h" />
+    <ClInclude Include="..\Public\Boss_Enmu.h" />
+    <ClInclude Include="..\Public\Building.h" />
+    <ClInclude Include="..\Public\Camera_Main.h" />
+    <ClInclude Include="..\Public\Camera_Manager.h" />
+    <ClInclude Include="..\Public\Enmu_Projectile.h" />
+    <ClInclude Include="..\Public\Effect_Manager.h" />
+    <ClInclude Include="..\Public\Kyojuro.h" />
+    <ClInclude Include="..\Public\Kyojuro_Projectile.h" />
+    <ClInclude Include="..\Public\Level_Train.h" />
+    <ClInclude Include="..\Public\Monster_Normal_0.h" />
+    <ClInclude Include="..\Public\Grass.h" />
+    <ClInclude Include="..\Public\Camera_Free.h" />
+    <ClInclude Include="..\Public\Character.h" />
+    <ClInclude Include="..\Public\ClientPacketHandler.h" />
+    <ClInclude Include="..\Public\Client_Defines.h" />
+    <ClInclude Include="..\Public\Dummy.h" />
+    <ClInclude Include="..\Public\Effect.h" />
+    <ClInclude Include="..\Public\Enum.pb.h" />
+    <ClInclude Include="..\Public\Ground.h" />
+    <ClInclude Include="..\Public\ImGui_Manager.h" />
+    <ClInclude Include="..\Public\Level_Train_Station.h" />
+    <ClInclude Include="..\Public\Level_Loading.h" />
+    <ClInclude Include="..\public\Level_Logo.h" />
+    <ClInclude Include="..\Public\Level_Tool.h" />
+    <ClInclude Include="..\public\Loader.h" />
+    <ClInclude Include="..\public\MainApp.h" />
+    <ClInclude Include="..\Public\Monster.h" />
+    <ClInclude Include="..\Public\Monster_Normal_1.h" />
+    <ClInclude Include="..\Public\Monster_Normal_2.h" />
+    <ClInclude Include="..\Public\Npc.h" />
+    <ClInclude Include="..\Public\Npc_Cat.h" />
+    <ClInclude Include="..\Public\Npc_Defence_Zenitsu.h" />
+    <ClInclude Include="..\Public\Npc_Boy_0.h" />
+    <ClInclude Include="..\Public\Npc_Girl_0.h" />
+    <ClInclude Include="..\Public\Npc_Girl_1.h" />
+    <ClInclude Include="..\Public\Npc_Man_0.h" />
+    <ClInclude Include="..\Public\Npc_OldWoman_0.h" />
+    <ClInclude Include="..\Public\Npc_PoliceMan_0.h" />
+    <ClInclude Include="..\Public\Npc_Talk_PoliceMan_0.h" />
+    <ClInclude Include="..\Public\Npc_Woman_0.h" />
+    <ClInclude Include="..\Public\Part.h" />
+    <ClInclude Include="..\Public\Particle.h" />
+    <ClInclude Include="..\Public\Particle_Manager.h" />
+    <ClInclude Include="..\Public\Picking_Manager.h" />
+    <ClInclude Include="..\Public\Player.h" />
+    <ClInclude Include="..\Public\Pool.h" />
+    <ClInclude Include="..\Public\Prop.h" />
+    <ClInclude Include="..\Public\Protocol.pb.h" />
+    <ClInclude Include="..\Public\ServerSession.h" />
+    <ClInclude Include="..\Public\Network_Manager.h" />
+    <ClInclude Include="..\Public\Skill.h" />
+    <ClInclude Include="..\Public\Skill_Manager.h" />
+    <ClInclude Include="..\Public\Sky.h" />
+    <ClInclude Include="..\Public\State_Akaza_Attack_0.h" />
+    <ClInclude Include="..\Public\State_Akaza_Attack_1.h" />
+    <ClInclude Include="..\Public\State_Akaza_Attack_2.h" />
+    <ClInclude Include="..\Public\State_Akaza_Idle.h" />
+    <ClInclude Include="..\Public\State_Akaza_Skill_0.h" />
+    <ClInclude Include="..\Public\State_Boss_Battle_Dash.h" />
+    <ClInclude Include="..\Public\State_Boss_Idle.h" />
+    <ClInclude Include="..\Public\State_Character_Battle_AirDash.h" />
+    <ClInclude Include="..\Public\State_Character_Battle_Dash.h" />
+    <ClInclude Include="..\Public\State_Character_Down.h" />
+    <ClInclude Include="..\Public\State_Enmu_Attack.h" />
+    <ClInclude Include="..\Public\State_Character_Damaged_Bound.h" />
+    <ClInclude Include="..\Public\State_Enmu_Skill_0.h" />
+    <ClInclude Include="..\Public\State_Enmu_Skill_1.h" />
+    <ClInclude Include="..\Public\State_Kyojuro_Air_Attack.h" />
+    <ClInclude Include="..\Public\State_Kyojuro_Attack.h" />
+    <ClInclude Include="..\Public\State_Kyojuro_Skill_0.h" />
+    <ClInclude Include="..\Public\State_Kyojuro_Skill_1.h" />
+    <ClInclude Include="..\Public\State_Kyojuro_Skill_2.h" />
+    <ClInclude Include="..\Public\State_NormalMonster0_Attack.h" />
+    <ClInclude Include="..\Public\State_Monster_Damaged_AirBorn.h" />
+    <ClInclude Include="..\Public\State_Monster_Damaged_Basic.h" />
+    <ClInclude Include="..\Public\State_Monster_Damaged_Blow.h" />
+    <ClInclude Include="..\Public\State_Monster_Damaged_Bound.h" />
+    <ClInclude Include="..\Public\State_Monster_Defence_Trace.h" />
+    <ClInclude Include="..\Public\State_Monster_Idle.h" />
+    <ClInclude Include="..\Public\State_Monster_Jump.h" />
+    <ClInclude Include="..\Public\State_Monster_Trace.h" />
+    <ClInclude Include="..\Public\State_Monter_Dead.h" />
+    <ClInclude Include="..\Public\State_Monster_Regen.h" />
+    <ClInclude Include="..\Public\State_NormalMonster1_Attack.h" />
+    <ClInclude Include="..\Public\State_NormalMonster2_Attack.h" />
+    <ClInclude Include="..\Public\State_Npc_Idle.h" />
+    <ClInclude Include="..\Public\State_Npc_Walk.h" />
+    <ClInclude Include="..\Public\State_Tanjiro_Air_Attack.h" />
+    <ClInclude Include="..\Public\State_Tanjiro_Attack.h" />
+    <ClInclude Include="..\Public\State_Tanjiro_Basic_Idle.h" />
+    <ClInclude Include="..\Public\State_Tanjiro_Basic_Jump.h" />
+    <ClInclude Include="..\Public\State_Tanjiro_Basic_Move.h" />
+    <ClInclude Include="..\Public\State_Character_Battle_Jump.h" />
+    <ClInclude Include="..\Public\State_Character_Damaged_AirBorn.h" />
+    <ClInclude Include="..\Public\State_Character_Damaged_Basic.h" />
+    <ClInclude Include="..\Public\State_Character_Damaged_Blow.h" />
+    <ClInclude Include="..\Public\State_Character_Dead.h" />
+    <ClInclude Include="..\Public\State_Character_Battle_Idle.h" />
+    <ClInclude Include="..\Public\State_Character_Battle_Move.h" />
+    <ClInclude Include="..\Public\State_Tanjiro_Skill_0.h" />
+    <ClInclude Include="..\Public\State_Tanjiro_Skill_1.h" />
+    <ClInclude Include="..\Public\State_Tanjiro_Skill_2.h" />
+    <ClInclude Include="..\Public\State_Zenitsu_Air_Attack.h" />
+    <ClInclude Include="..\Public\State_Zenitsu_Attack.h" />
+    <ClInclude Include="..\Public\State_Zenitsu_Skill_0.h" />
+    <ClInclude Include="..\Public\State_Zenitsu_Special.h" />
+    <ClInclude Include="..\Public\Struct.pb.h" />
+    <ClInclude Include="..\Public\Sweath.h" />
+    <ClInclude Include="..\Public\Tanjiro.h" />
+    <ClInclude Include="..\Public\Terrain.h" />
+    <ClInclude Include="..\Public\tinyxml2.h" />
+    <ClInclude Include="..\Public\Trail.h" />
+    <ClInclude Include="..\Public\Level_Train_Boss.h" />
+    <ClInclude Include="..\Public\Level_FinalBoss.h" />
+    <ClInclude Include="..\Public\UI_BattleEnd.h" />
+    <ClInclude Include="..\Public\UI_BattleStart.h" />
+    <ClInclude Include="..\Public\UI_Cursor.h" />
+    <ClInclude Include="..\Public\UI_Enmu_Break.h" />
+    <ClInclude Include="..\Public\UI_Enmu_ToolTip.h" />
+    <ClInclude Include="..\Public\UI_GaugeBar.h" />
+    <ClInclude Include="..\Public\UI_Manager.h" />
+    <ClInclude Include="..\Public\UI_WorldHp.h" />
+    <ClInclude Include="..\Public\UI_WorldQuest.h" />
+    <ClInclude Include="..\Public\VIBuffer_Trail.h" />
+    <ClInclude Include="..\Public\Tree.h" />
+    <ClInclude Include="..\Public\UI.h" />
+    <ClInclude Include="..\Public\UI_Loading_Anim.h" />
+    <ClInclude Include="..\Public\UI_Loading_Background.h" />
+    <ClInclude Include="..\Public\UI_Loading_Icon.h" />
+    <ClInclude Include="..\Public\UI_Logo_BackGround.h" />
+    <ClInclude Include="..\Public\UI_Logo_SelectBase.h" />
+    <ClInclude Include="..\Public\UI_Logo_Title.h" />
+    <ClInclude Include="..\Public\Sword.h" />
+    <ClInclude Include="..\Public\UI_NextFog.h" />
+    <ClInclude Include="..\Public\Zenitsu.h" />
+    <ClInclude Include="Client.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\ThirdParty\imgui.cpp">
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\imgui_demo.cpp">
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\imgui_draw.cpp" />
+    <ClCompile Include="..\..\ThirdParty\imgui_impl_dx11.cpp">
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\imgui_impl_win32.cpp">
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\imgui_stdlib.cpp">
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\imgui_tables.cpp">
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\imgui_widgets.cpp">
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="..\Private\Akaza_Projectile.cpp" />
+    <ClCompile Include="..\Private\Akaza_Skill_Boundary.cpp" />
+    <ClCompile Include="..\Private\Akaza_Stone_0.cpp" />
+    <ClCompile Include="..\Private\Akaza_Stone_1.cpp" />
+    <ClCompile Include="..\private\BackGround.cpp" />
+    <ClCompile Include="..\Private\Boss_Akaza.cpp" />
+    <ClCompile Include="..\Private\Boss_Enmu.cpp" />
+    <ClCompile Include="..\Private\Building.cpp" />
+    <ClCompile Include="..\Private\Camera_Main.cpp" />
+    <ClCompile Include="..\Private\Camera_Manager.cpp" />
+    <ClCompile Include="..\Private\Enmu_Projectile.cpp" />
+    <ClCompile Include="..\Private\Effect_Manager.cpp" />
+    <ClCompile Include="..\Private\Kyojuro.cpp" />
+    <ClCompile Include="..\Private\Kyojuro_Projectile.cpp" />
+    <ClCompile Include="..\Private\Level_Train.cpp" />
+    <ClCompile Include="..\Private\Level_Train_Boss.cpp" />
+    <ClCompile Include="..\Private\Level_FinalBoss.cpp" />
+    <ClCompile Include="..\Private\Monster_Normal_0.cpp" />
+    <ClCompile Include="..\Private\Grass.cpp" />
+    <ClCompile Include="..\Private\Camera_Free.cpp" />
+    <ClCompile Include="..\Private\Character.cpp" />
+    <ClCompile Include="..\Private\ClientPacketHandler.cpp">
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="..\Private\Dummy.cpp" />
+    <ClCompile Include="..\Private\Effect.cpp" />
+    <ClCompile Include="..\Private\Enum.pb.cc">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="..\Private\Ground.cpp" />
+    <ClCompile Include="..\Private\ImGui_Manager.cpp" />
+    <ClCompile Include="..\Private\Level_Train_Station.cpp" />
+    <ClCompile Include="..\Private\Level_Loading.cpp" />
+    <ClCompile Include="..\private\Level_Logo.cpp" />
+    <ClCompile Include="..\Private\Level_Tool.cpp" />
+    <ClCompile Include="..\private\Loader.cpp" />
+    <ClCompile Include="..\private\MainApp.cpp">
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="..\Private\Monster.cpp" />
+    <ClCompile Include="..\Private\Monster_Normal_1.cpp" />
+    <ClCompile Include="..\Private\Monster_Normal_2.cpp" />
+    <ClCompile Include="..\Private\Network_Manager.cpp" />
+    <ClCompile Include="..\Private\Npc.cpp" />
+    <ClCompile Include="..\Private\Npc_Cat.cpp" />
+    <ClCompile Include="..\Private\Npc_Defence_Zenitsu.cpp" />
+    <ClCompile Include="..\Private\Npc_Boy_0.cpp" />
+    <ClCompile Include="..\Private\Npc_Girl_0.cpp" />
+    <ClCompile Include="..\Private\Npc_Girl_1.cpp" />
+    <ClCompile Include="..\Private\Npc_Man_0.cpp" />
+    <ClCompile Include="..\Private\Npc_OldWoman_0.cpp" />
+    <ClCompile Include="..\Private\Npc_PoliceMan_0.cpp" />
+    <ClCompile Include="..\Private\Npc_Talk_PoliceMan_0.cpp" />
+    <ClCompile Include="..\Private\Npc_Woman_0.cpp" />
+    <ClCompile Include="..\Private\Part.cpp" />
+    <ClCompile Include="..\Private\Particle.cpp" />
+    <ClCompile Include="..\Private\Particle_Manager.cpp" />
+    <ClCompile Include="..\Private\Picking_Manager.cpp" />
+    <ClCompile Include="..\Private\Player.cpp" />
+    <ClCompile Include="..\Private\Pool.cpp" />
+    <ClCompile Include="..\Private\Prop.cpp" />
+    <ClCompile Include="..\Private\Protocol.pb.cc">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="..\Private\ServerSession.cpp">
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="..\Private\Skill.cpp" />
+    <ClCompile Include="..\Private\Skill_Manager.cpp" />
+    <ClCompile Include="..\Private\Sky.cpp" />
+    <ClCompile Include="..\Private\State_Akaza_Attack_0.cpp" />
+    <ClCompile Include="..\Private\State_Akaza_Attack_1.cpp" />
+    <ClCompile Include="..\Private\State_Akaza_Attack_2.cpp" />
+    <ClCompile Include="..\Private\State_Akaza_Idle.cpp" />
+    <ClCompile Include="..\Private\State_Akaza_Skill_0.cpp" />
+    <ClCompile Include="..\Private\State_Boss_Battle_Dash.cpp" />
+    <ClCompile Include="..\Private\State_Boss_Idle.cpp" />
+    <ClCompile Include="..\Private\State_Character_Battle_AirDash.cpp" />
+    <ClCompile Include="..\Private\State_Character_Battle_Dash.cpp" />
+    <ClCompile Include="..\Private\State_Character_Down.cpp" />
+    <ClCompile Include="..\Private\State_Enmu_Attack.cpp" />
+    <ClCompile Include="..\Private\State_Enmu_Skill_0.cpp" />
+    <ClCompile Include="..\Private\State_Enmu_Skill_1.cpp" />
+    <ClCompile Include="..\Private\State_Kyojuro_Air_Attack.cpp" />
+    <ClCompile Include="..\Private\State_Kyojuro_Attack.cpp" />
+    <ClCompile Include="..\Private\State_Kyojuro_Skill_0.cpp" />
+    <ClCompile Include="..\Private\State_Kyojuro_Skill_1.cpp" />
+    <ClCompile Include="..\Private\State_Kyojuro_Skill_2.cpp" />
+    <ClCompile Include="..\Private\State_NormalMonster0_Attack.cpp" />
+    <ClCompile Include="..\Private\State_Monster_Damaged_AirBorn.cpp" />
+    <ClCompile Include="..\Private\State_Monster_Damaged_Blow.cpp" />
+    <ClCompile Include="..\Private\State_Monster_Damaged_Bound.cpp" />
+    <ClCompile Include="..\Private\State_Monster_Defence_Trace.cpp" />
+    <ClCompile Include="..\Private\State_Monster_Regen.cpp" />
+    <ClCompile Include="..\Private\State_NormalMonster1_Attack.cpp" />
+    <ClCompile Include="..\Private\State_NormalMonster2_Attack.cpp" />
+    <ClCompile Include="..\Private\State_Npc_Idle.cpp" />
+    <ClCompile Include="..\Private\State_Npc_Walk.cpp" />
+    <ClCompile Include="..\Private\State_Tanjiro_Air_Attack.cpp" />
+    <ClCompile Include="..\Private\State_Tanjiro_Attack.cpp" />
+    <ClCompile Include="..\Private\State_Tanjiro_Basic_Idle.cpp" />
+    <ClCompile Include="..\Private\State_Tanjiro_Basic_Jump.cpp" />
+    <ClCompile Include="..\Private\State_Tanjiro_Basic_Move.cpp" />
+    <ClCompile Include="..\Private\State_Monster_Idle.cpp" />
+    <ClCompile Include="..\Private\State_Monster_Jump.cpp" />
+    <ClCompile Include="..\Private\State_Monster_Trace.cpp" />
+    <ClCompile Include="..\Private\State_Monster_Damaged_Basic.cpp" />
+    <ClCompile Include="..\Private\State_Character_Damaged_AirBorn.cpp" />
+    <ClCompile Include="..\Private\State_Character_Damaged_Basic.cpp" />
+    <ClCompile Include="..\Private\State_Monter_Dead.cpp" />
+    <ClCompile Include="..\Private\State_Character_Damaged_Blow.cpp" />
+    <ClCompile Include="..\Private\State_Character_Damaged_Bound.cpp" />
+    <ClCompile Include="..\Private\State_Character_Dead.cpp" />
+    <ClCompile Include="..\Private\State_Character_Battle_Idle.cpp" />
+    <ClCompile Include="..\Private\State_Character_Battle_Jump.cpp" />
+    <ClCompile Include="..\Private\State_Character_Battle_Move.cpp" />
+    <ClCompile Include="..\Private\State_Tanjiro_Skill_0.cpp" />
+    <ClCompile Include="..\Private\State_Tanjiro_Skill_1.cpp" />
+    <ClCompile Include="..\Private\State_Tanjiro_Skill_2.cpp" />
+    <ClCompile Include="..\Private\State_Zenitsu_Air_Attack.cpp" />
+    <ClCompile Include="..\Private\State_Zenitsu_Attack.cpp" />
+    <ClCompile Include="..\Private\State_Zenitsu_Skill_0.cpp" />
+    <ClCompile Include="..\Private\State_Zenitsu_Special.cpp" />
+    <ClCompile Include="..\Private\Struct.pb.cc">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sweath.cpp" />
+    <ClCompile Include="..\Private\Tanjiro.cpp" />
+    <ClCompile Include="..\Private\Terrain.cpp">
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</IncludeInUnityFile>
+    </ClCompile>
+    <ClCompile Include="..\Private\tinyxml2.cpp">
+      <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</IncludeInUnityFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Private\Trail.cpp" />
+    <ClCompile Include="..\Private\Tree.cpp" />
+    <ClCompile Include="..\Private\UI.cpp" />
+    <ClCompile Include="..\Private\UI_BattleEnd.cpp" />
+    <ClCompile Include="..\Private\UI_BattleStart.cpp" />
+    <ClCompile Include="..\Private\UI_Cursor.cpp" />
+    <ClCompile Include="..\Private\UI_Enmu_Break.cpp" />
+    <ClCompile Include="..\Private\UI_Enmu_ToolTip.cpp" />
+    <ClCompile Include="..\Private\UI_GaugeBar.cpp" />
+    <ClCompile Include="..\Private\UI_Loading_Anim.cpp" />
+    <ClCompile Include="..\Private\UI_Loading_BackGround.cpp" />
+    <ClCompile Include="..\Private\UI_Loading_Icon.cpp" />
+    <ClCompile Include="..\Private\UI_Logo_BackGround.cpp" />
+    <ClCompile Include="..\Private\UI_Logo_SelectBase.cpp" />
+    <ClCompile Include="..\Private\UI_Logo_Title.cpp" />
+    <ClCompile Include="..\Private\Sword.cpp" />
+    <ClCompile Include="..\Private\UI_Manager.cpp" />
+    <ClCompile Include="..\Private\UI_NextFog.cpp" />
+    <ClCompile Include="..\Private\UI_WorldHp.cpp" />
+    <ClCompile Include="..\Private\UI_WorldQuest.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_Trail.cpp" />
+    <ClCompile Include="..\Private\Zenitsu.cpp" />
+    <ClCompile Include="Client.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Client.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Client.ico" />
+    <Image Include="small.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_MeshEffect_Instance.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_TextureEffect_Instance.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Trail.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_UI.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_AnimModel.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxCubeTex.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Model.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Model_Instance.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Rect_Instance.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxTex.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Protocol\GenPackets.bat" />
+    <None Include="..\..\Protocol\protoc.exe" />
+    <None Include="..\..\Protocol\Protocol.proto" />
+    <None Include="..\..\Protocol\Struct.proto" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
