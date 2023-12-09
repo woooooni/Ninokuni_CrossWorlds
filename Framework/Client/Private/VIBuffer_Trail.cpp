@@ -309,4 +309,6 @@ CComponent * CVIBuffer_Trail::Clone(void * pArg)
 void CVIBuffer_Trail::Free()
 {
 	__super::Free();
+	Safe_Release(m_pDevice);
+	Safe_Release(m_pContext);
 }

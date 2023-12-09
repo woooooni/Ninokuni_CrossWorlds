@@ -4,7 +4,7 @@
 
 
 CDummy::CDummy(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
-	:CGameObject(pDevice, pContext, strObjectTag, OBJ_TYPE::OBJ_DUMMY)
+	: CGameObject(pDevice, pContext, strObjectTag, OBJ_TYPE::OBJ_DUMMY)
 {
 }
 
@@ -44,9 +44,6 @@ HRESULT CDummy::Ready_Components()
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Model"), TEXT("Com_NonAnim_Shader"), (CComponent**)&m_pNonAnimShaderCom)))
 		return E_FAIL;
-
-
-	;
 	return S_OK;
 }
 
@@ -189,6 +186,12 @@ CGameObject* CDummy::Clone(void* pArg)
 void CDummy::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pNonAnimShaderCom);
+	Safe_Release(m_pAnimShaderCom);
+	Safe_Release(m_pRendererCom);
+	Safe_Release(m_pTransformCom);
+	Safe_Release(m_pModelCom);
 }
 
 

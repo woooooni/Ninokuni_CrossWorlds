@@ -2,7 +2,6 @@
 
 #include "Engine_Defines.h"
 #include "Component.h"
-#include "Lock.h"
 
 BEGIN(Engine)
 

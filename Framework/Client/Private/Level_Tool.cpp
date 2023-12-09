@@ -8,8 +8,6 @@
 #include "Terrain.h"
 #include "Camera_Manager.h"
 
-#include "Network_Manager.h"
-
 
 CLevel_Tool::CLevel_Tool(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -207,6 +205,4 @@ void CLevel_Tool::Free()
 {
 	__super::Free();
 	Safe_Release(m_pImGuiManager);
-
-
 }

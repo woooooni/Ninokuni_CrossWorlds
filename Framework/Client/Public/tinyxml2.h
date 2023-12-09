@@ -391,7 +391,7 @@ namespace tinyxml2
 			}
 			--_currentAllocs;
 			Item* item = static_cast<Item*>(mem);
-#ifdef DEBUG
+#ifdef _DEBUG
 			memset(item, 0xfe, sizeof(*item));
 #endif
 			item->next = _root;

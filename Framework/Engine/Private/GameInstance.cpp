@@ -538,6 +538,11 @@ void CGameInstance::Set_ChannelVolume(CHANNELID eID, float fVolume)
 	m_pSound_Manager->Set_ChannelVolume(eID, fVolume);
 }
 
+FMOD_CHANNEL* CGameInstance::Get_Channel(CHANNELID eID)
+{
+	return m_pSound_Manager->Get_Channel(eID);
+}
+
 //void CGameInstance::Set_ServerSession(ServerSessionRef session)
 //{
 //	m_pNetwork_Manager->Set_ServerSession(session);
@@ -558,34 +563,6 @@ void CGameInstance::Set_ChannelVolume(CHANNELID eID, float fVolume)
 //	// TODO: 여기에 return 문을 삽입합니다.
 //	return m_pNetwork_Manager->Get_ServerSession();
 //}
-
-
-#pragma region No Use(Camera_Manager)
-//HRESULT CGameInstance::Add_Camera(const wstring& strCameraName, CCamera* pCamera)
-//{
-//	if (nullptr == m_pCamera_Manager)
-//		return E_FAIL;
-//
-//	return m_pCamera_Manager->Add_Camera(strCameraName, pCamera);
-//}
-//
-//HRESULT CGameInstance::Set_MainCamera(const wstring& strCameraName)
-//{
-//	if (nullptr == m_pCamera_Manager)
-//		return E_FAIL;
-//
-//	
-//	return m_pCamera_Manager->Set_MainCamera(strCameraName);
-//}
-//
-//HRESULT CGameInstance::Camera_Clear()
-//{
-//	if (nullptr == m_pCamera_Manager)
-//		return E_FAIL;
-//
-//	return m_pCamera_Manager->Clear();
-//}
-#pragma endregion
 
 
 

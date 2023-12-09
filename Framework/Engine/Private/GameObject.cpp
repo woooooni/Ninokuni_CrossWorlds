@@ -93,7 +93,6 @@ HRESULT CGameObject::Add_Component(_uint iLevelIndex, const wstring& pPrototypeT
 	m_Components.emplace(pComponentTag, pComponent);
 
 	*ppOut = pComponent;
-
 	Safe_AddRef(pComponent);
 
 	return S_OK;
@@ -200,6 +199,7 @@ void CGameObject::LateUpdate_Collider(_float fTimedelta)
 			pCollider->LateTick_Collider(fTimedelta);
 	}
 }
+#ifdef _DEBUG
 
 void CGameObject::Render_Collider()
 {
@@ -209,7 +209,7 @@ void CGameObject::Render_Collider()
 			pCollider->Render();
 	}
 }
-
+#endif // DEBUG
 
 void CGameObject::Free()
 {

@@ -14,7 +14,6 @@ CRenderer::CRenderer(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
 	Safe_AddRef(m_pLight_Manager);
 	Safe_AddRef(m_pTarget_Manager);
-
 }
 
 HRESULT CRenderer::Initialize_Prototype()
@@ -212,6 +211,9 @@ HRESULT CRenderer::Initialize_Prototype()
 
 
 	// Debug_Ready
+#ifdef _DEBUG
+
+
 
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Diffuse"), 100.f, 100.f, 200.f, 200.f)))
 		return E_FAIL;
@@ -248,7 +250,7 @@ HRESULT CRenderer::Initialize_Prototype()
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_UI"), 700.f, 500.f, 200.f, 200.f)))
 		return E_FAIL;
 
-	
+#endif // DEBUG
 
 
 
@@ -453,9 +455,12 @@ HRESULT CRenderer::Draw()
 	if (FAILED(Render_Text()))
 		return E_FAIL;
 
-
+#ifdef _DEBUG
 	if (FAILED(Render_Debug()))
 		return E_FAIL;
+#endif // DEBUG
+
+	
 
 	return S_OK;
 }
@@ -1055,9 +1060,10 @@ HRESULT CRenderer::Render_Text()
 	return S_OK;
 }
 
+#ifdef _DEBUG
 HRESULT CRenderer::Render_Debug()
 {
-	
+
 
 	for (auto& pDebugCom : m_RenderDebug)
 	{
@@ -1092,6 +1098,8 @@ HRESULT CRenderer::Render_Debug()
 	if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
 		return E_FAIL;
 
+
+
 	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_GameObjects"), m_pShader, m_pVIBuffer)))
 		return E_FAIL;
 
@@ -1112,15 +1120,9 @@ HRESULT CRenderer::Render_Debug()
 
 	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_UI"), m_pShader, m_pVIBuffer)))
 		return E_FAIL;
-	
-
-
-	
-
-	
-
 	return S_OK;
 }
+#endif // DEBUG
 
 CRenderer * CRenderer::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
@@ -1152,4 +1154,27 @@ void CRenderer::Free()
 	Safe_Release(m_pLight_Manager);
 	Safe_Release(m_pTarget_Manager);
 
+	for (_uint i = 0; i < RENDER_END; ++i)
+	{
+		for (auto& pObj : m_RenderObjects[i])
+			Safe_Release(pObj);
+
+		m_RenderObjects[i].clear();
+	}
+
+	for (auto& pComponent : m_RenderDebug)
+	{
+		Safe_Release(pComponent);
+	}
+	m_RenderDebug.clear();
+
+
+	Safe_Release(m_pVIBuffer_Instancing);
+
+
+	for (_uint i = 0; i < SHADER_TYPE::TYPE_END; ++i)
+		Safe_Release(m_pIntancingShaders[i]);
+
+
+	
 }

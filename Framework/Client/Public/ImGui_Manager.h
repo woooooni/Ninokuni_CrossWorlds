@@ -51,8 +51,6 @@ private:
 	class CTool_Navigation* m_pNavigation_Tool = nullptr;
 	class CTool_Camera* m_pCamera_Tool = nullptr;
 	class CTool_Terrain* m_pTerrain_Tool = nullptr;
-	
-
 
 
 public:

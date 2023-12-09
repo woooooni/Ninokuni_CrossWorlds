@@ -73,6 +73,7 @@ using namespace DirectX;
 #include <typeinfo>
 #include <array>
 #include <process.h>
+#include <stdlib.h>
 
 
 
@@ -83,20 +84,19 @@ using namespace DirectX;
 #include "Engine_Enum.h"
 
 
-
+//
 //#ifdef _DEBUG
 //
 //#define _CRTDBG_MAP_ALLOC
-//#include <stdlib.h>
 //#include <crtdbg.h>
 ////#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console") // 디버그 모드에서 콘솔창 출력.
 //
-//#ifndef DBG_NEW 
-//
-//#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ ) 
-//#define new DBG_NEW 
-//
-//#endif
+////#ifndef DBG_NEW 
+////#ifndef ENGINE_EXPORTS
+////#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ ) 
+////#define new DBG_NEW 
+////#endif
+////#endif
 //
 //#endif // _DEBUG
 

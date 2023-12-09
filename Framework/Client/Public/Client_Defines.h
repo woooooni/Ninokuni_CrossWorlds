@@ -69,4 +69,19 @@ extern HINSTANCE g_hInstance;
 #define IMGUI_NEW_LINE ImGui::NewLine()
 #define IMGUI_SAME_LINE ImGui::SameLine()
 
+//#ifdef _DEBUG
+//
+//#define _CRTDBG_MAP_ALLOC
+//#include <crtdbg.h>
+////#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console") // 디버그 모드에서 콘솔창 출력.
+//
+//#ifndef DBG_NEW 
+//#ifndef ENGINE_EXPORTS
+//#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ ) 
+//#define new DBG_NEW 
+//#endif
+//#endif
+//
+//#endif // _DEBUG
+
 using namespace Client;

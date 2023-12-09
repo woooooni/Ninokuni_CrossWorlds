@@ -70,9 +70,12 @@ HRESULT CCell::Initialize(const CELL_DESC& tDesc, vector<_float3>& Points)
 		XMStoreFloat3(&m_vNormals[i], XMVector3Normalize(XMLoadFloat3(&m_vNormals[i])));
 	}
 
+#ifdef _DEBUG
 	m_pVIBuffer = CVIBuffer_Cell::Create(m_pDevice, m_pContext, m_vPoints_InWorld);
 	if (nullptr == m_pVIBuffer)
 		return E_FAIL;
+
+#endif // DEBUG
 
 	return S_OK;
 }

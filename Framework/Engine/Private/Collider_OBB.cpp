@@ -71,6 +71,10 @@ void CCollider_OBB::LateTick_Collider(_float fTimeDelta)
 	m_tOriginOBB.Transform(m_tBoundingBox, XMLoadFloat4x4(&m_FinalMatrix));
 }
 
+#ifdef _DEBUG
+
+
+
 HRESULT CCollider_OBB::Render()
 {
 	//if (m_bActive/* && m_eDetectionType != CCollider::BOUNDARY*/)
@@ -106,6 +110,7 @@ HRESULT CCollider_OBB::Render()
 
 	return S_OK;
 }
+#endif // DEBUG
 
 void CCollider_OBB::Collision_Enter(CCollider* pCollider)
 {
@@ -149,11 +154,5 @@ CComponent* CCollider_OBB::Clone(void* pArg)
 
 void CCollider_OBB::Free()
 {
-		
-	Safe_Delete(m_pBatch);
-	Safe_Delete(m_pEffect);
-	Safe_Release(m_pNode);
-	Safe_Release(m_pOwnerTransformCom);
-
 	__super::Free();
 }

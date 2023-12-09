@@ -19,6 +19,13 @@ CTerrain::CTerrain(const CGameObject & rhs)
 HRESULT CTerrain::Initialize_Prototype()
 {
 
+
+
+	return S_OK;
+}
+
+HRESULT CTerrain::Initialize(void* pArg)
+{
 #ifdef _DEBUG
 
 	m_pBatch = new PrimitiveBatch<VertexPositionColor>(m_pContext);
@@ -35,16 +42,9 @@ HRESULT CTerrain::Initialize_Prototype()
 		return E_FAIL;
 #endif
 
-	return S_OK;
-}
-
-HRESULT CTerrain::Initialize(void* pArg)
-{
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	
-	// m_pTransformCom->Set_Scale(XMVectorSet(1.f, 30.f, 30.f, 1.f));
 	return S_OK;
 }
 
@@ -56,11 +56,12 @@ void CTerrain::Priority_Tick(_float fTimeDelta)
 
 void CTerrain::Tick(_float fTimeDelta)
 {
-	
+	__super::Tick(fTimeDelta);
 }
 
 void CTerrain::LateTick(_float fTimeDelta)
 {
+	__super::LateTick(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDERGROUP::RENDER_NONBLEND, this);	
 }
 
@@ -198,9 +199,17 @@ void CTerrain::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pTransformCom);
-	Safe_Release(m_pTextureCom);
-	Safe_Release(m_pShaderCom);
-	Safe_Release(m_pVIBufferCom);
 	Safe_Release(m_pRendererCom);
+	Safe_Release(m_pTransformCom);
+	Safe_Release(m_pShaderCom);
+	Safe_Release(m_pTextureCom);
+	Safe_Release(m_pNavigationCom);
+	Safe_Release(m_pVIBufferCom);
+
+
+#ifdef _DEBUG
+	Safe_Delete(m_pBatch);
+	Safe_Delete(m_pEffect);
+	Safe_Release(m_pInputLayout);
+#endif
 }

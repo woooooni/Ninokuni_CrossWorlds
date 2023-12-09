@@ -464,6 +464,7 @@ void CNavigation::Free()
 
 	for (auto& pCell : m_Cells)
 		Safe_Release(pCell);
+
 }
 
 

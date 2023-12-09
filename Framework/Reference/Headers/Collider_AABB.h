@@ -36,7 +36,10 @@ public:
 
 public:
     void LateTick_Collider(_float fTimeDelta) override;
+
+#ifdef _DEBUG
     HRESULT Render() override;
+#endif
 
 public:
     void Set_AABB_Box(BoundingBox& tBoundingBox) { m_tBoundingBox = tBoundingBox; }

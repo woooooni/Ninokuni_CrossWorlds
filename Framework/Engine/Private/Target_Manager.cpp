@@ -240,9 +240,8 @@ void CTarget_Manager::Free()
 	for (auto& Pair : m_MRTs)
 	{
 		for (auto& pRenderTarget : Pair.second)
-		{
 			Safe_Release(pRenderTarget);
-		}
+
 		Pair.second.clear();
 	}
 	m_MRTs.clear();
@@ -252,4 +251,10 @@ void CTarget_Manager::Free()
 		Safe_Release(Pair.second);
 
 	m_RenderTargets.clear();
+
+	
+
+	//Safe_Release(m_pDSV);
+	Safe_Release(m_pShadowDSV);
+
 }

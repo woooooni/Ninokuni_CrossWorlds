@@ -14,7 +14,6 @@ HRESULT CTimer::Ready_Timer()
 	QueryPerformanceCounter(&m_FrameTime);
 	QueryPerformanceCounter(&m_FixTime);
 	QueryPerformanceCounter(&m_LastTime);
-
 	QueryPerformanceFrequency(&m_CpuTick);
 	
 	return S_OK;
@@ -68,4 +67,5 @@ CTimer * CTimer::Create(void)
 
 void CTimer::Free()
 {
+	__super::Free();
 }

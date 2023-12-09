@@ -71,11 +71,15 @@ HRESULT CPart::Initialize(void* pArg)
 void CPart::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
+
+#ifdef _DEBUG
 	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
 	{
 		for (auto& pCollider : m_Colliders[i])
 			m_pRendererCom->Add_Debug(pCollider);
 	}
+#endif // DEBUG
+	
 }
 
 HRESULT CPart::Render()
@@ -101,5 +105,5 @@ void CPart::Free()
 	Safe_Release(m_pSocketBone);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pModelCom);
-	Safe_AddRef(m_pOwner);
+	Safe_Release(m_pOwner);
 }

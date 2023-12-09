@@ -110,7 +110,7 @@ void CCharacter::LateTick(_float fTimeDelta)
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
 	
 
-	m_pRendererCom->Set_PlayerPosition(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+	
 
 	for (_uint i = 0; i < SOCKET_END; ++i)
 	{
@@ -121,13 +121,15 @@ void CCharacter::LateTick(_float fTimeDelta)
 	}
 
 
-
+#ifdef _DEBUG
+	m_pRendererCom->Set_PlayerPosition(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
 	{
 		for (auto& pCollider : m_Colliders[i])
 			m_pRendererCom->Add_Debug(pCollider);
 	}
 	m_pRendererCom->Add_Debug(m_pNavigationCom);
+#endif
 }
 
 HRESULT CCharacter::Render()

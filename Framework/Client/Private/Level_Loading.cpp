@@ -7,7 +7,6 @@
 
 #include "Level_Tool.h"
 #include "ImGui_Manager.h"
-#include "Network_Manager.h"
 
 
 CLevel_Loading::CLevel_Loading(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
@@ -100,6 +99,5 @@ CLevel_Loading * CLevel_Loading::Create(ID3D11Device * pDevice, ID3D11DeviceCont
 void CLevel_Loading::Free()
 {
 	__super::Free();
-
 	Safe_Release(m_pLoader);
 }

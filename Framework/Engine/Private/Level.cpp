@@ -26,6 +26,8 @@ HRESULT CLevel::LateTick(_float fTimeDelta)
 
 void CLevel::Free()
 {
+	__super::Free();
+	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
 }
