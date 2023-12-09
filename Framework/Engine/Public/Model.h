@@ -55,7 +55,6 @@ public:
 	HRESULT Swap_Animation(_uint iSrcIndex, _uint iDestIndex);
 	HRESULT Delete_Animation(_uint iIndex);
 	_bool Is_InterpolatingAnimation() { return m_bInterpolationAnimation; }
-
 	_bool Is_Animation_Finished(_uint iAnimationIndex);
 
 	
@@ -63,8 +62,8 @@ public:
 public:
 	vector<class CAnimation*>& Get_Animations() { return m_Animations; }
 	_int Find_AnimationIndex(const wstring& strAnimationTag);
-	_uint Get_CurrAnimationIndex() { return m_iCurrentAnimIndex; }
 
+	_uint Get_CurrAnimationIndex() { return m_iCurrentAnimIndex; }
 	class CAnimation* Get_CurrAnimation() { return m_Animations[m_iCurrentAnimIndex]; }
 
 

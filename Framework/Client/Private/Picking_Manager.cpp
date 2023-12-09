@@ -45,8 +45,8 @@ _bool CPicking_Manager::Is_Picking(CTransform* pTransform, CVIBuffer* pBuffer, _
 
 
 
-	_matrix ViewMatrixInv = GAME_INSTANCE->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
-	_matrix ProjMatrixInv = GAME_INSTANCE->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ);
+	_matrix ViewMatrixInv = GI->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
+	_matrix ProjMatrixInv = GI->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ);
 
 	vMousePos = XMVector3TransformCoord(vMousePos, ProjMatrixInv);
 
@@ -122,8 +122,8 @@ _bool CPicking_Manager::Is_NaviPicking(CTransform* pTransform, CVIBuffer* pBuffe
 
 
 
-	_matrix ViewMatrixInv = GAME_INSTANCE->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
-	_matrix ProjMatrixInv = GAME_INSTANCE->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ);
+	_matrix ViewMatrixInv = GI->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
+	_matrix ProjMatrixInv = GI->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ);
 
 	vMousePos = XMVector3TransformCoord(vMousePos, ProjMatrixInv);
 
@@ -215,8 +215,8 @@ _bool CPicking_Manager::Is_JustNaviPicking(CNavigation* pNavigation, _float3* pW
 		_float(pt.y / (g_iWinSizeY * -.5f) + 1.f),
 		1.f, 1.f);
 
-	_matrix ViewMatrixInv = GAME_INSTANCE->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
-	_matrix ProjMatrixInv = GAME_INSTANCE->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ);
+	_matrix ViewMatrixInv = GI->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
+	_matrix ProjMatrixInv = GI->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ);
 
 	vMousePos = XMVector3TransformCoord(vMousePos, ProjMatrixInv);
 

@@ -5,8 +5,6 @@
 #include "Key_Manager.h"
 #include "Part.h"
 #include "Sword.h"
-#include "Sweath.h"
-#include <future>
 #include "Trail.h"
 #include "Monster.h"
 #include "Effect_Manager.h"
@@ -14,6 +12,7 @@
 #include "Camera_Manager.h"
 #include "Camera.h"
 #include "Utils.h"
+#include <future>
 
 USING(Client)
 CCharacter::CCharacter(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eCharacterType)
@@ -75,10 +74,12 @@ void CCharacter::Tick(_float fTimeDelta)
 	{
 		if (nullptr == m_pTrails[i])
 			continue;
-		_matrix		WorldMatrix = m_Sockets[i]->Get_CombinedTransformation() * m_pModelCom->Get_PivotMatrix();
-		WorldMatrix.r[0] = XMVector3Normalize(WorldMatrix.r[0]);
-		WorldMatrix.r[1] = XMVector3Normalize(WorldMatrix.r[1]);
-		WorldMatrix.r[2] = XMVector3Normalize(WorldMatrix.r[2]);
+
+		Matrix		WorldMatrix = m_Sockets[i]->Get_CombinedTransformation() * m_pModelCom->Get_PivotMatrix();
+
+		WorldMatrix.Right(XMVector3Normalize(WorldMatrix.Right()));
+		WorldMatrix.Up(XMVector3Normalize(WorldMatrix.Up()));
+		WorldMatrix.Forward(XMVector3Normalize(WorldMatrix.Forward()));
 
 		m_pTrails[i]->Set_TransformMatrix(WorldMatrix * m_pTransformCom->Get_WorldMatrix());
 		m_pTrails[i]->Tick(fTimeDelta);
@@ -140,9 +141,9 @@ HRESULT CCharacter::Render()
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_ViewMatrix", &GAME_INSTANCE->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GAME_INSTANCE->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
 
 	_float4 vRimColor = { 0.f, 0.f, 0.f, 0.f };
@@ -249,7 +250,7 @@ void CCharacter::Collision_Continue(const COLLISION_INFO& tInfo)
 
 			if (fForce / 2.f > 0.f)
 			{
-				_float fTimeDelta = GI->Get_TimeDelta(L"Timer_GamePlay");
+				_float fTimeDelta = GI->Get_TimeDelta(TIMER_TYPE::GAME_PLAY);
 				m_pRigidBodyCom->Set_PushVelocity(vTargetDir * (fForce / 2.f), fTimeDelta);
 			}
 		}
@@ -394,104 +395,9 @@ void CCharacter::Set_Infinite(_float fInfiniteTime, _bool bInfinite)
 }
 
 
-void CCharacter::LookAt_DamagedObject(CGameObject* pAttacker)
-{
-	CTransform* pOtherTransform = pAttacker->Get_Component<CTransform>(L"Com_Transform");
-	if (nullptr == pOtherTransform)
-		return;
-
-	m_pTransformCom->LookAt_ForLandObject(pOtherTransform->Get_State(CTransform::STATE_POSITION));
-}
-
 void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 {
-	if (m_bInfinite || m_bReserveDead || m_pStateCom->Get_CurrState() == CCharacter::STATE::DIE)
-		return;
 
-	m_tStat.fHp -= tInfo.pOtherCollider->Get_Damage();
-	if (m_tStat.fHp <= 0.f)
-	{
-		m_pStateCom->Change_State(STATE::DIE);
-		return;
-	}
-
-	_matrix WorldMatrix = m_pTransformCom->Get_WorldMatrix();
-	WorldMatrix.r[CTransform::STATE_POSITION] += XMVectorSet(0.f, 0.5f, 0.f, 0.f) + XMVector3Normalize(XMVectorSetW(tInfo.pOtherCollider->Get_Position(), 1.f) - WorldMatrix.r[CTransform::STATE_POSITION]) * 0.5f;
-
-	_int iRandomEffect = CUtils::Random_Int(0, 1);
-
-	wstring strHitEffect = L"Basic_Damaged_" + to_wstring(iRandomEffect);
-	CEffect_Manager::GetInstance()->Generate_Effect(strHitEffect, XMMatrixIdentity(), WorldMatrix, .5f);
-	CParticle_Manager::GetInstance()->Generate_Particle(L"Particle_Hit_0", WorldMatrix);
-	
-	
-
-	if (true == tInfo.pOtherCollider->Is_HitLag())
-	{
-		if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER)
-		{
-			GI->Set_Slow(L"Timer_GamePlay", .3f, .01f, false);
-		}
-	}
-
-	LookAt_DamagedObject(tInfo.pOther);
-
-	if (tInfo.pOtherCollider->Get_AirBorn_Power() > 0.f)
-	{
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, m_pTransformCom->Get_Position() + XMVectorSet(0.f, .1f, 0.f, 0.f));
-	}
-
-	CCamera* pCamera = CCamera_Manager::GetInstance()->Get_MainCamera();
-	if (nullptr != pCamera)
-	{
-		pCamera->Cam_Shake(1.f, 3.f);
-		GI->Play_Sound(L"Shake.wav", CHANNELID::SOUND_SHAKE, 1.f, true);
-	}
-		
-	
-	Play_Sound(tInfo.pOtherCollider->Get_AttackType());
-	GI->Play_Sound(L"Normal_Hit.wav", CHANNELID::SOUND_NORMAL_HIT, 1.f, true);
-	
-
-	switch (tInfo.pOtherCollider->Get_AttackType())
-	{
-	case CCollider::ATTACK_TYPE::BASIC:
-		m_pRigidBodyCom->Add_Velocity(
-			-1.f * XMVector3Normalize(XMVectorSetY(m_pTransformCom->Get_State(CTransform::STATE_LOOK), 0.f)),
-			tInfo.pOtherCollider->Get_PushPower());
-		if(m_pStateCom->Get_CurrState() != CCharacter::STATE::KNOCKDOWN)
-			m_pStateCom->Change_State(STATE::DAMAGED_BASIC);
-		break;
-
-	case CCollider::ATTACK_TYPE::AIR_BORN:
-		m_pRigidBodyCom->Add_Velocity(XMVectorSet(0.f, 1.f, 0.f, 0.f), tInfo.pOtherCollider->Get_AirBorn_Power());
-		m_pRigidBodyCom->Add_Velocity_Acc(
-			-1.f * XMVector3Normalize(XMVectorSetY(m_pTransformCom->Get_State(CTransform::STATE_LOOK), 0.f)),
-			tInfo.pOtherCollider->Get_PushPower());
-
-		if (m_pStateCom->Get_CurrState() != CCharacter::STATE::KNOCKDOWN)
-			m_pStateCom->Change_State(STATE::DAMAGED_AIRBORN);
-
-		break;
-
-	case CCollider::ATTACK_TYPE::BLOW:
-		m_pRigidBodyCom->Add_Velocity_Acc(
-			-1.f * XMVector3Normalize(XMVectorSetY(m_pTransformCom->Get_State(CTransform::STATE_LOOK), 0.f)),
-
-			tInfo.pOtherCollider->Get_PushPower());
-		if (m_pStateCom->Get_CurrState() != CCharacter::STATE::KNOCKDOWN)
-			m_pStateCom->Change_State(STATE::DAMAGED_BLOW);
-		break;
-
-	case CCollider::ATTACK_TYPE::BOUND:
-		m_pRigidBodyCom->Add_Velocity(XMVectorSet(0.f, 1.f, 0.f, 0.f), tInfo.pOtherCollider->Get_AirBorn_Power());
-		m_pRigidBodyCom->Add_Velocity_Acc(
-			-1.f * XMVector3Normalize(XMVectorSetY(m_pTransformCom->Get_State(CTransform::STATE_LOOK), 0.f)),
-			tInfo.pOtherCollider->Get_PushPower());
-		if (m_pStateCom->Get_CurrState() != CCharacter::STATE::KNOCKDOWN)
-			m_pStateCom->Change_State(STATE::DAMAGED_BOUND);
-		break;
-	}
 }
 
 

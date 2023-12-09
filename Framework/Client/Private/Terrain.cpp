@@ -72,8 +72,8 @@ HRESULT CTerrain::Render()
 	if (m_bDraw)
 	{
 		m_pEffect->SetWorld(m_pTransformCom->Get_WorldMatrix());
-		m_pEffect->SetView(GAME_INSTANCE->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
-		m_pEffect->SetProjection(GAME_INSTANCE->Get_TransformMatrix(CPipeLine::D3DTS_PROJ));
+		m_pEffect->SetView(GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
+		m_pEffect->SetProjection(GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ));
 
 
 		m_pEffect->Apply(m_pContext);
@@ -157,9 +157,9 @@ HRESULT CTerrain::Bind_ShaderResources()
 	if (FAILED(m_pTransformCom->Bind_ShaderResources(m_pShaderCom, "g_WorldMatrix")))
 		return E_FAIL;
 
-	if (FAILED(GAME_INSTANCE->Bind_TransformToShader(m_pShaderCom, "g_ViewMatrix", CPipeLine::D3DTS_VIEW)))
+	if (FAILED(GI->Bind_TransformToShader(m_pShaderCom, "g_ViewMatrix", CPipeLine::D3DTS_VIEW)))
 		return E_FAIL;
-	if (FAILED(GAME_INSTANCE->Bind_TransformToShader(m_pShaderCom, "g_ProjMatrix", CPipeLine::D3DTS_PROJ)))
+	if (FAILED(GI->Bind_TransformToShader(m_pShaderCom, "g_ProjMatrix", CPipeLine::D3DTS_PROJ)))
 		return E_FAIL;
 
 

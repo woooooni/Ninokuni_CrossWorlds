@@ -6,13 +6,13 @@
 
 BEGIN(Engine)
 
-class CPhysicsX_Manager final : public CBase, public PxSimulationEventCallback
+class CPhysX_Manager final : public CBase, public PxSimulationEventCallback
 {
 public:
-	DECLARE_SINGLETON(CPhysicsX_Manager)
+	DECLARE_SINGLETON(CPhysX_Manager)
 public:
-	CPhysicsX_Manager();
-	virtual ~CPhysicsX_Manager() = default;
+	CPhysX_Manager();
+	virtual ~CPhysX_Manager() = default;
 
 public:
 	HRESULT Reserve_Manager();

@@ -17,8 +17,6 @@ public:
 	{
 		_float4		vEye, vAt;
 		_float		fFovy, fAspect, fNear, fFar;
-
-		CTransform::TRANSFORMDESC		TransformDesc;
 	} CAMERADESC;
 
 	typedef struct tagCamShake
@@ -40,7 +38,7 @@ public:
 
 protected:
 	CCamera(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag, _uint iObjectID);
-	CCamera(const CCamera& rhs, CTransform::TRANSFORMDESC* pArg);
+	CCamera(const CCamera& rhs);
 	virtual ~CCamera() = default;
 
 public:

@@ -7,9 +7,9 @@ CTimer_Manager::CTimer_Manager()
 {
 }
 
-_float CTimer_Manager::Compute_TimeDelta(const wstring & strTimerTag)
+_float CTimer_Manager::Compute_TimeDelta(TIMER_TYPE eTimerType)
 {
-	CTimer*		pTimer = Find_Timer(strTimerTag);
+	CTimer*		pTimer = Find_Timer(eTimerType);
 
 	if (nullptr == pTimer)
 		return 0.f;
@@ -18,9 +18,9 @@ _float CTimer_Manager::Compute_TimeDelta(const wstring & strTimerTag)
 	return pTimer->Compute_TimeDelta();	
 }
 
-HRESULT CTimer_Manager::Set_TimeScale(const wstring& strTimerTag, _float fTimeScale)
+HRESULT CTimer_Manager::Set_TimeScale(TIMER_TYPE eTimerType, _float fTimeScale)
 {
-	CTimer* pTimer = Find_Timer(strTimerTag);
+	CTimer* pTimer = Find_Timer(eTimerType);
 
 	if (nullptr == pTimer)
 		return E_FAIL;
@@ -29,9 +29,9 @@ HRESULT CTimer_Manager::Set_TimeScale(const wstring& strTimerTag, _float fTimeSc
 	return S_OK;
 }
 
-_float CTimer_Manager::Get_TimeScale(const wstring& strTimerTag)
+_float CTimer_Manager::Get_TimeScale(TIMER_TYPE eTimerType)
 {
-	CTimer* pTimer = Find_Timer(strTimerTag);
+	CTimer* pTimer = Find_Timer(eTimerType);
 
 	if (nullptr == pTimer)
 		return 0;
@@ -39,18 +39,18 @@ _float CTimer_Manager::Get_TimeScale(const wstring& strTimerTag)
 	return pTimer->Get_TimeScale();
 }
 
-_float CTimer_Manager::Get_TimeDelta(const wstring& strTimerTag)
+_float CTimer_Manager::Get_TimeDelta(TIMER_TYPE eTimerType)
 {
-	CTimer* pTimer = Find_Timer(strTimerTag);
+	CTimer* pTimer = Find_Timer(eTimerType);
 
 	if (nullptr == pTimer)
 		return 0.f;
 
 	return pTimer->Get_TimeDelta();
 }
-HRESULT CTimer_Manager::Set_Slow(const wstring& strTimerTag, _float fSlowTime, _float fTimeScale, _bool bForce)
+HRESULT CTimer_Manager::Set_Slow(TIMER_TYPE eTimerType, _float fSlowTime, _float fTimeScale, _bool bForce)
 {
-	CTimer* pTimer = Find_Timer(strTimerTag);
+	CTimer* pTimer = Find_Timer(eTimerType);
 
 	if (nullptr == pTimer)
 		return E_FAIL;
@@ -60,16 +60,16 @@ HRESULT CTimer_Manager::Set_Slow(const wstring& strTimerTag, _float fSlowTime, _
 }
 
 
-HRESULT CTimer_Manager::Add_Timer(const wstring& strTimerTag)
+HRESULT CTimer_Manager::Add_Timer(TIMER_TYPE eTimerType)
 {
 	/* map은 중복된 키를 허용하지 않느다.*/
-	CTimer*		pTimer = Find_Timer(strTimerTag);
+	CTimer*		pTimer = Find_Timer(eTimerType);
 
 	/* 추가하고자하는 strTimerTag에 해당하는 Pair데이터가 이미 추가되어있었다. */
 	if (nullptr != pTimer)
 		return E_FAIL;
 
-	m_Timers.insert({ strTimerTag, CTimer::Create() });
+	m_Timers.insert({ eTimerType, CTimer::Create() });
 
 	return S_OK;
 }
@@ -77,10 +77,10 @@ HRESULT CTimer_Manager::Add_Timer(const wstring& strTimerTag)
 
 
 
-CTimer * CTimer_Manager::Find_Timer(const wstring& strTimerTag)
+CTimer * CTimer_Manager::Find_Timer(TIMER_TYPE eTimerType)
 {
 	/* 맵에서 제공해주는 Find함수는 이진탐색을 수행한다. */
-	auto	iter = m_Timers.find(strTimerTag);
+	auto	iter = m_Timers.find(eTimerType);
 
 	if (iter == m_Timers.end())
 		return nullptr;

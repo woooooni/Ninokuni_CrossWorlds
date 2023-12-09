@@ -72,11 +72,10 @@ protected: /* 해당 객체가 사용해야할 컴포넌트들을 저장하낟. */
 	CGameObject* m_pOwner = { nullptr };
 
 protected:
-	HRESULT Compute_RenderMatrix(_fmatrix ChildMatrix);
+	HRESULT Compute_RenderMatrix(Matrix ChildMatrix);
 
 
 public:
-	virtual CGameObject* Clone(void* pArg) override; /* 사본객체를 생성할때 원본데이터로부터 복제해올 데이터외에 더 추가해 줘야할 데이터가 있다라면 받아오겠다. */
 	virtual void Free() override;
 };
 

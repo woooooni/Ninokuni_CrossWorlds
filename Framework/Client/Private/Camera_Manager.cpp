@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include "Camera_Manager.h"
 #include "GameInstance.h"
-#include "Camera_Free.h"
+#include "Camera_Manager.h"
+#include "Camera_Tool.h"
 #include "Camera_Main.h"
 
 IMPLEMENT_SINGLETON(CCamera_Manager)
@@ -48,10 +48,7 @@ HRESULT CCamera_Manager::Ready_Cameras()
 	CameraDesc.fNear = 0.2f;
 	CameraDesc.fFar = 1000.f;
 
-	CameraDesc.TransformDesc.fSpeedPerSec = 3.f;
-	CameraDesc.TransformDesc.fRotationPerSec = XMConvertToRadians(90.0f);
-
-	m_pCameras[CAMERA_TYPE::TOOL] = CCamera_Free::Create(m_pDevice, m_pContext, L"Free_Camera");
+	m_pCameras[CAMERA_TYPE::TOOL] = CCamera_Tool::Create(m_pDevice, m_pContext, L"Free_Camera");
 	if (nullptr == m_pCameras[CAMERA_TYPE::TOOL])
 		return E_FAIL;
 	if (FAILED(m_pCameras[CAMERA_TYPE::TOOL]->Initialize(&CameraDesc)))
@@ -82,6 +79,13 @@ void CCamera_Manager::Free()
 	__super::Free();
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
+	
+	for (_uint i = 0; i < CAMERA_TYPE::TYPE_END; ++i)
+	{
+		Safe_Release(m_pCameras[i]);
+		m_pCameras[i] = nullptr;
+	}
 }
+
 
 

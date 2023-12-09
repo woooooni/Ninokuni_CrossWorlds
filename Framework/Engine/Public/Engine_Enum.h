@@ -4,6 +4,14 @@
 
 enum COLLISION_GROUP { CHARACTER, MONSTER, PROP, NPC, PORTAL, GROUP_END };
 
+enum class TIMER_TYPE
+{
+	DEFAULT,
+	GAME_PLAY,
+	UI,
+	TIMER_END
+};
+
 enum class KEY_STATE
 {
 	NONE,

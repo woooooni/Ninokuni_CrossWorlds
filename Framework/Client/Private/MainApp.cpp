@@ -14,12 +14,7 @@
 #include "Particle_Manager.h"
 #include "UI_Manager.h"
 #include "Camera_Manager.h"
-
 #include "Light.h"
-
-#include "UI_Loading_Anim.h"
-#include "UI_Loading_Background.h"
-#include "UI_Loading_Icon.h"
 
 
 CMainApp::CMainApp()	
@@ -56,7 +51,7 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 	/* 1-4. 게임내에서 사용할 레벨(씬)을 생성한다.   */
-	if (FAILED(Open_Level(LEVEL_FINAL_BOSS, L"Final_Boss")))
+	if (FAILED(Open_Level(LEVEL_TOOL, L"Final_Boss")))
 		return E_FAIL;
 
 	return S_OK;
@@ -120,48 +115,16 @@ HRESULT CMainApp::Open_Level(LEVELID eLevelID, const wstring& strFolderName)
 
 HRESULT CMainApp::Initialize_Client()
 {
-	if(FAILED(GI->Add_Fonts(m_pDevice, m_pContext, L"Basic", L"../Bin/Resources/Font/JejuGhothic.spritefont")))
-		return E_FAIL;
-	if(FAILED(GI->Add_Fonts(m_pDevice, m_pContext, L"Maple", L"../Bin/Resources/Font/Maplestory.spritefont")))
-		return E_FAIL;
+	//if(FAILED(GI->Add_Fonts(m_pDevice, m_pContext, L"Basic", L"../Bin/Resources/Font/JejuGhothic.spritefont")))
+	//	return E_FAIL;
+	//if(FAILED(GI->Add_Fonts(m_pDevice, m_pContext, L"Maple", L"../Bin/Resources/Font/Maplestory.spritefont")))
+	//	return E_FAIL;
 
+	//if (FAILED(CEffect_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext, L"../Bin/Export/Effect/")))
+	//	return E_FAIL;
 
-	CUI::UI_INFO tInfo = {};
-
-	tInfo.fX = g_iWinSizeX / 2.f;
-	tInfo.fY = g_iWinSizeY / 2.f;
-	tInfo.fCX = g_iWinSizeX;
-	tInfo.fCY = g_iWinSizeY;
-
-	///* For.Prototype_GameObject_UI_Loading_BackGround */
-	if (FAILED(GAME_INSTANCE->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_BackGround"), CUI_Loading_BackGround::Create(m_pDevice, m_pContext, tInfo), LAYER_TYPE::LAYER_UI)))
-		return E_FAIL;
-
-	tInfo.fX = g_iWinSizeX - 300.f;
-	tInfo.fY = g_iWinSizeY - 150.f;
-	tInfo.fCX = 244.f;
-	tInfo.fCY = 256.f;
-
-	///* For.Prototype_GameObject_UI_Loading_Anim */
-	if (FAILED(GAME_INSTANCE->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_Anim"), CUI_Loading_Anim::Create(m_pDevice, m_pContext, tInfo), LAYER_TYPE::LAYER_UI)))
-		return E_FAIL;
-
-	tInfo.fX = g_iWinSizeX - 300.f;
-	tInfo.fY = g_iWinSizeY - 50.f;
-	tInfo.fCX = 120.f;
-	tInfo.fCY = 120.f;
-
-	///* For.Prototype_GameObject_UI_Loading_Icon */
-	if (FAILED(GAME_INSTANCE->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_Icon"), CUI_Loading_Icon::Create(m_pDevice, m_pContext, tInfo), LAYER_TYPE::LAYER_UI)))
-		return E_FAIL;
-
-
-
-	if (FAILED(CEffect_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext, L"../Bin/Export/Effect/")))
-		return E_FAIL;
-
-	if(FAILED(CParticle_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext, L"../Bin/Export/Particle/")))
-		return E_FAIL;
+	//if(FAILED(CParticle_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext, L"../Bin/Export/Particle/")))
+	//	return E_FAIL;
 
 	
 	if (FAILED(CUI_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
@@ -187,37 +150,37 @@ HRESULT CMainApp::Initialize_Client()
 	
 	
 
-	_vector vEye = XMVectorSet(-135.f, 100.f, -135.f, 1.f);
-	_vector vAt = XMVectorSet(0.f, -2.f, 52.f, 1.f);
-	_vector vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
-	if (FAILED(GI->Add_ShadowLight(LEVEL_TOOL, vEye, vAt, vUp)))
-		return E_FAIL;
+	//_vector vEye = XMVectorSet(-135.f, 100.f, -135.f, 1.f);
+	//_vector vAt = XMVectorSet(0.f, -2.f, 52.f, 1.f);
+	//_vector vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+	//if (FAILED(GI->Add_ShadowLight(LEVEL_TOOL, vEye, vAt, vUp)))
+	//	return E_FAIL;
 
-	vEye = XMVectorSet(-135.f, 100.f, -135.f, 1.f);
-	vAt = XMVectorSet(0.f, -2.f, 52.f, 1.f);
-	vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
-	if (FAILED(GI->Add_ShadowLight(LEVEL_TRAIN_STATION, vEye, vAt, vUp)))
-		return E_FAIL;
+	//vEye = XMVectorSet(-135.f, 100.f, -135.f, 1.f);
+	//vAt = XMVectorSet(0.f, -2.f, 52.f, 1.f);
+	//vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+	//if (FAILED(GI->Add_ShadowLight(LEVEL_TRAIN_STATION, vEye, vAt, vUp)))
+	//	return E_FAIL;
 
 
-	vEye = XMVectorSet(-100.f, 50.f, 400.f, 1.f);
-	vAt = XMVectorSet(100.f, -10.f, 0.f, 1.f);
-	vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+	//vEye = XMVectorSet(-100.f, 50.f, 400.f, 1.f);
+	//vAt = XMVectorSet(100.f, -10.f, 0.f, 1.f);
+	//vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
 
-	if (FAILED(GI->Add_ShadowLight(LEVEL_TRAIN, vEye, vAt, vUp)))
-		return E_FAIL;
+	//if (FAILED(GI->Add_ShadowLight(LEVEL_TRAIN, vEye, vAt, vUp)))
+	//	return E_FAIL;
 
-	vEye = XMVectorSet(-100.f, 50.f, 400.f, 1.f);
-	vAt = XMVectorSet(100.f, -10.f, 0.f, 1.f);
-	vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
-	if (FAILED(GI->Add_ShadowLight(LEVEL_TRAIN_BOSS, vEye, vAt, vUp)))
-		return E_FAIL;
+	//vEye = XMVectorSet(-100.f, 50.f, 400.f, 1.f);
+	//vAt = XMVectorSet(100.f, -10.f, 0.f, 1.f);
+	//vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+	//if (FAILED(GI->Add_ShadowLight(LEVEL_TRAIN_BOSS, vEye, vAt, vUp)))
+	//	return E_FAIL;
 
-	vEye = XMVectorSet(0.f, 100.f, -100.f, 1.f);
-	vAt = XMVectorSet(60.f, -10.f, 115.f, 1.f);
-	vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
-	if (FAILED(GI->Add_ShadowLight(LEVEL_FINAL_BOSS, vEye, vAt, vUp)))
-		return E_FAIL;
+	//vEye = XMVectorSet(0.f, 100.f, -100.f, 1.f);
+	//vAt = XMVectorSet(60.f, -10.f, 115.f, 1.f);
+	//vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+	//if (FAILED(GI->Add_ShadowLight(LEVEL_FINAL_BOSS, vEye, vAt, vUp)))
+	//	return E_FAIL;
 
 	return S_OK;
 }
@@ -237,8 +200,9 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	//if (FAILED(m_pGame_Instance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Particle"),
 	//	CVIBuffer_Particle::Create(m_pDevice, m_pContext))))
 	//	return E_FAIL;
+	
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Navigation"),
-		CNavigation::Create(m_pDevice, m_pContext, L"../Bin/DataFiles/Map/Temp/Temp.nav"))))
+		CNavigation::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 	/* For.Prototype_Component_VIBuffer_Rect */
@@ -298,102 +262,102 @@ HRESULT CMainApp::Ready_Prototype_Component()
 		return E_FAIL;
 
 	/* For.Prototype_Component_Shader_Model*/
-	if (FAILED(GAME_INSTANCE->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Model"),
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Model"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Model.hlsl"), VTXMODEL_DECLARATION::Elements, VTXMODEL_DECLARATION::iNumElements))))
 		return E_FAIL;
 
 	/* For.Prototype_Component_Shader_AnimModel */
-	if (FAILED(GAME_INSTANCE->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_AnimModel"),
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_AnimModel"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_AnimModel.hlsl"), VTXANIMMODEL_DECLARATION::Elements, VTXANIMMODEL_DECLARATION::iNumElements))))
 		return E_FAIL;
 
 
-	// Texture
-	/* For.Prototype_Component_Texture_Effect*/
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Texture/"), 0, true))))
-		return E_FAIL;
+	//// Texture
+	///* For.Prototype_Component_Texture_Effect*/
+	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Texture/"), 0, true))))
+	//	return E_FAIL;
 
-	/* For.Prototype_Component_Texture_Trail*/
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Trail"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Trail/"), 0, true))))
-		return E_FAIL;
+	///* For.Prototype_Component_Texture_Trail*/
+	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Trail"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Trail/"), 0, true))))
+	//	return E_FAIL;
 
-	/* For.Prototype_Component_Texture_Dissolve*/
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Dissolve"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Dissolve/"), 0, true))))
-		return E_FAIL;
+	///* For.Prototype_Component_Texture_Dissolve*/
+	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Dissolve"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Dissolve/"), 0, true))))
+	//	return E_FAIL;
 
-	/* For.Prototype_Component_Texture_NextFog*/
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_NextFog"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/NextFog/"), 0, true))))
-		return E_FAIL;
+	///* For.Prototype_Component_Texture_NextFog*/
+	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_NextFog"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/NextFog/"), 0, true))))
+	//	return E_FAIL;
 
-	/* For.Prototype_Component_Texture_Loading_BackGround*/
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Loading_BackGround"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/Loading_Background/"), 0, true))))
-		return E_FAIL;
+	///* For.Prototype_Component_Texture_Loading_BackGround*/
+	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Loading_BackGround"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/Loading_Background/"), 0, true))))
+	//	return E_FAIL;
 
-	/* For.Prototype_Component_Texture_Loading_Anim*/
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Loading_Anim"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/Loading_Anim/"), 0, true))))
-		return E_FAIL;
+	///* For.Prototype_Component_Texture_Loading_Anim*/
+	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Loading_Anim"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/Loading_Anim/"), 0, true))))
+	//	return E_FAIL;
 
-	/* For.Prototype_Component_Texture_Loading_Icon*/
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Loading_Icon"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/Loading_Icon/"), 0, true))))
-		return E_FAIL;
+	///* For.Prototype_Component_Texture_Loading_Icon*/
+	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Loading_Icon"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/Loading_Icon/"), 0, true))))
+	//	return E_FAIL;
 
-	/* For.Prototype_Component_Texture_Cursor */
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Cursor"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Cursor/"), 0, true))))
-		return E_FAIL;
+	///* For.Prototype_Component_Texture_Cursor */
+	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Cursor"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Cursor/"), 0, true))))
+	//	return E_FAIL;
 
-	/* For.Prototype_Component_Texture_GaugeBar */
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_GaugeBar"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Gauge_Bar/Gauge/"), 0, true))))
-		return E_FAIL;
+	///* For.Prototype_Component_Texture_GaugeBar */
+	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_GaugeBar"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Gauge_Bar/Gauge/"), 0, true))))
+	//	return E_FAIL;
 
-	/* For.Prototype_Component_Texture_Gauge_BackGround */
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Gauge_BackGround"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Gauge_Bar/BackGround/"), 0, true))))
-		return E_FAIL;
+	///* For.Prototype_Component_Texture_Gauge_BackGround */
+	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Gauge_BackGround"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Gauge_Bar/BackGround/"), 0, true))))
+	//	return E_FAIL;
 
-	/* For.Prototype_Component_Texture_Character_Icon */
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Character_Icon"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Character_Icon/"), 0, true))))
-		return E_FAIL;
+	///* For.Prototype_Component_Texture_Character_Icon */
+	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Character_Icon"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Character_Icon/"), 0, true))))
+	//	return E_FAIL;
 
-	/* For.Prototype_Component_Texture_BattleStart */
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_BattleStart"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Battle_Start/"), 0, true))))
-		return E_FAIL;
+	///* For.Prototype_Component_Texture_BattleStart */
+	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_BattleStart"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Battle_Start/"), 0, true))))
+	//	return E_FAIL;
 
-	/* For.Prototype_Component_Texture_BattleEnd */
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_BattleEnd"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Battle_End/"), 0, true))))
-		return E_FAIL;
+	///* For.Prototype_Component_Texture_BattleEnd */
+	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_BattleEnd"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Battle_End/"), 0, true))))
+	//	return E_FAIL;
 
-	/* For.Prototype_Component_Texture_Sky */
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Sky"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Sky/"), 0, true))))
-		return E_FAIL;
+	///* For.Prototype_Component_Texture_Sky */
+	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Sky"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Sky/"), 0, true))))
+	//	return E_FAIL;
 
-	/* For.Prototype_Component_Texture_WorldQuest */
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_WorldQuest"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Quest/"), 0, true))))
-		return E_FAIL;
+	///* For.Prototype_Component_Texture_WorldQuest */
+	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_WorldQuest"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Quest/"), 0, true))))
+	//	return E_FAIL;
 
 
-	/* For.Prototype_Component_Enmu_Sleep_Break */
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Enmu_Sleep_Break"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Enmu_Sleep_Break/"), 0, true))))
-		return E_FAIL;
+	///* For.Prototype_Component_Enmu_Sleep_Break */
+	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Enmu_Sleep_Break"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Enmu_Sleep_Break/"), 0, true))))
+	//	return E_FAIL;
 
-	/* For.Prototype_Component_Enmu_Sleep_ToolTip */
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Enmu_Sleep_ToolTip"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Enmu_Sleep_ToolTip/"), 0, true))))
-		return E_FAIL;
+	///* For.Prototype_Component_Enmu_Sleep_ToolTip */
+	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Enmu_Sleep_ToolTip"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Enmu_Sleep_ToolTip/"), 0, true))))
+	//	return E_FAIL;
 
 
 
@@ -460,9 +424,13 @@ void Client::CMainApp::Free()
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
 
+	CParticle_Manager::GetInstance()->DestroyInstance();
+	CEffect_Manager::GetInstance()->DestroyInstance();
 	CPicking_Manager::GetInstance()->DestroyInstance();
 	CImGui_Manager::GetInstance()->DestroyInstance();
+	CCamera_Manager::GetInstance()->DestroyInstance();
 	CNetwork_Manager::GetInstance()->DestroyInstance();
+	
 
 	Safe_Release(m_pGame_Instance);
 	CGameInstance::Release_Engine();

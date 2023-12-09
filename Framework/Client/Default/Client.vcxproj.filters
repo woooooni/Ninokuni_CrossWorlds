@@ -10,9 +10,6 @@
     <Filter Include="01.Levels">
       <UniqueIdentifier>{9927bfef-90a5-4e11-8212-cacd67d008c7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Levels\00.Logo">
-      <UniqueIdentifier>{f7bf0f5d-9c1a-409d-ba96-8f25a183dad7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Levels\99.Loading">
       <UniqueIdentifier>{d3df9124-96f6-4c1d-a02e-1d2d51e29c9b}</UniqueIdentifier>
     </Filter>
@@ -46,35 +43,8 @@
     <Filter Include="02.GameObjects\00. BackGround">
       <UniqueIdentifier>{327a42a0-45f0-4b4d-b8cd-bb209baedc94}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\01. Building">
-      <UniqueIdentifier>{2bf28741-0203-4091-a578-b154ab47f12f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\02. Camera">
-      <UniqueIdentifier>{91ff704d-cfae-4d8f-8be1-b64393bcf977}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03. Character">
-      <UniqueIdentifier>{68cce55d-7f2c-4b33-a387-09d20e080365}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03. Character\00. Tanjiro">
-      <UniqueIdentifier>{507885f5-cfcd-484d-a4f5-ff0c17446477}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03. Character\99. Dummy">
-      <UniqueIdentifier>{3b5162f8-31c0-4401-b6d0-d22ac970a862}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\04. Player">
-      <UniqueIdentifier>{d26bf6ee-8989-439a-89bb-3c4c11da2bdc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster">
-      <UniqueIdentifier>{978c82ce-6d25-428d-8f75-f1b25ce61559}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02.GameObjects\99. Terrain">
       <UniqueIdentifier>{dec9bd71-23ed-45a4-8928-d0f72663a888}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\07. Effect">
-      <UniqueIdentifier>{26cf5b1a-34c4-4aeb-bd80-ee795d3c6f23}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\06. Prop">
-      <UniqueIdentifier>{1656f416-c6e8-4a9c-bb21-5ebb8a320adc}</UniqueIdentifier>
     </Filter>
     <Filter Include="96. Manager\Network">
       <UniqueIdentifier>{8261542a-0c27-4586-b1bf-5c2f9af465aa}</UniqueIdentifier>
@@ -97,98 +67,14 @@
     <Filter Include="02.GameObjects\98. UI">
       <UniqueIdentifier>{906b0f1e-6358-4af4-a69c-333e75dfe3c1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\08. Tree">
-      <UniqueIdentifier>{927451e5-89b1-49c5-911b-6968ed211588}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\09. Bush">
-      <UniqueIdentifier>{320893f2-a22a-459e-bb04-9461610b9d7f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="95. Loader">
       <UniqueIdentifier>{04c05968-cb34-4cec-89e2-639b898c25fc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\10. Ground">
-      <UniqueIdentifier>{ffba9ea1-f7fd-46c7-960e-8ca4fdb9d88d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03. Character\98.Parts">
-      <UniqueIdentifier>{52f54d3c-6963-4c9f-9c46-c47469ad2a56}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03. Character\98.Parts\Sword">
-      <UniqueIdentifier>{0b3cccce-536b-4b1e-b9fd-9467addac644}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03. Character\98.Parts\Sweath">
-      <UniqueIdentifier>{c72bdae7-92fa-47ba-9f17-80093c43d6fa}</UniqueIdentifier>
     </Filter>
     <Filter Include="96. Manager\ImGui\Libs\tinyxml">
       <UniqueIdentifier>{084b0b4f-c18d-4efb-a33a-45b35f9b1a0c}</UniqueIdentifier>
     </Filter>
     <Filter Include="02.GameObjects\98. UI\Manager">
       <UniqueIdentifier>{1fb7ef61-258f-42e2-914a-b7fdabf11cb4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03. Character\00. Tanjiro\State">
-      <UniqueIdentifier>{5097757d-7b4e-4f9a-9127-3a36faf202b7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\98. UI\01. Loading">
-      <UniqueIdentifier>{f71f4672-e277-4fd6-af61-bf2ad0348021}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\98. UI\01. Loading\BackGround">
-      <UniqueIdentifier>{f1f218ba-d3f9-44ad-817d-3486bba25b74}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\98. UI\02. Logo">
-      <UniqueIdentifier>{15129fc4-724b-462f-bf8b-3bbe5060b78e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\98. UI\02. Logo\BackGround">
-      <UniqueIdentifier>{576c95cf-4897-414e-aee1-74bf486b7843}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\98. UI\02. Logo\Title">
-      <UniqueIdentifier>{3b1875ff-3e42-4a88-87d2-7415603e9d11}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\98. UI\02. Logo\Select_Menu">
-      <UniqueIdentifier>{ac00662f-cbc7-47fa-ad82-04773ac1efe0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\98. UI\00. Common">
-      <UniqueIdentifier>{12be77f1-90e3-4579-840e-d392ec1ada24}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\98. UI\00. Common\NextFog">
-      <UniqueIdentifier>{2cb7fd65-80fb-401d-9554-bf76f02ee57b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\98. UI\01. Loading\Loading_Animation">
-      <UniqueIdentifier>{160b9423-3162-4acf-b494-8d802e26247a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\98. UI\01. Loading\Loading_Icon">
-      <UniqueIdentifier>{a069e8ad-7410-4c40-ac72-9351e4a4ade8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03. Character\01. Zenitsu">
-      <UniqueIdentifier>{07bef7e3-df50-4b6a-a898-5325e137510e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03. Character\01. Zenitsu\State">
-      <UniqueIdentifier>{3a839662-c994-4617-bb01-d8fb92f03cac}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03. Character\00. Tanjiro\State\Basic">
-      <UniqueIdentifier>{39dab9f5-a0de-4aca-904e-356e47e8a562}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03. Character\00. Tanjiro\State\Battle">
-      <UniqueIdentifier>{00bd1f86-b35d-4c7b-a4fa-eeda785e4f19}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\State">
-      <UniqueIdentifier>{b8386616-1c9e-47da-8786-88995eefec71}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\State\Idle">
-      <UniqueIdentifier>{10e485c5-0833-4f7b-96d9-dd8b7465138f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\State\Trace">
-      <UniqueIdentifier>{7f8342c5-4369-41c2-b56c-efcdda7dd845}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\State\Jump">
-      <UniqueIdentifier>{7f16f360-ec8a-4c6b-be0f-dde57c86b89a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\State\Damaged">
-      <UniqueIdentifier>{47103a82-df60-46c6-81cc-6b6516c23676}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\State\Dead">
-      <UniqueIdentifier>{eb1d777f-6d63-49e0-9da8-4b2ec19a5824}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\State\Regen">
-      <UniqueIdentifier>{165c6d69-dcd3-4457-998d-d3fd8e0a8996}</UniqueIdentifier>
     </Filter>
     <Filter Include="96. Manager\Effect">
       <UniqueIdentifier>{d6edcf70-b279-4d66-8479-906959b69f23}</UniqueIdentifier>
@@ -199,257 +85,71 @@
     <Filter Include="96. Manager\Particle">
       <UniqueIdentifier>{218f463e-f375-46ef-81f8-a94bc6ff85bd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\07. Effect\Particle">
-      <UniqueIdentifier>{7e1eb069-0790-46be-8583-534eb05eb945}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\07. Effect\Trail">
-      <UniqueIdentifier>{081e52ac-0074-45fb-a979-d4251146e633}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\07. Effect\Trail\Buffer">
-      <UniqueIdentifier>{97a13059-374e-4d72-9bea-d45d78b032fa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Levels\06. Final_Boss">
-      <UniqueIdentifier>{cd667fdf-24ad-46bd-8ec8-b9ce988a917f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Levels\03. Train">
-      <UniqueIdentifier>{328c0fb7-28c6-4633-86ff-20cf4ffff868}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03. Character\02. Kyojuro">
-      <UniqueIdentifier>{6a899f65-3bf0-42c8-8fd1-3860e3be496d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Levels\04. Train_Boss">
-      <UniqueIdentifier>{fa86199c-349f-4dfa-b634-2ba0e3ca8d4e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03. Character\00. Tanjiro\State\Battle\Attack">
-      <UniqueIdentifier>{739b56af-14e6-4181-9c99-c11f4535a471}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03. Character\00. State">
-      <UniqueIdentifier>{6cd8844c-d462-4360-8d37-b209ad006488}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03. Character\00. State\Damaged">
-      <UniqueIdentifier>{e78011f5-bfbc-4200-86b0-24396aa0328f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03. Character\00. State\Move">
-      <UniqueIdentifier>{53552ffa-863e-46a0-b037-d5fdf8d4708f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03. Character\00. State\Dead">
-      <UniqueIdentifier>{8b4a8443-c1b5-4735-bfcb-7a095029bbce}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03. Character\00. State\Idle">
-      <UniqueIdentifier>{829747dc-8459-48ea-a3bc-902c15f3f8dc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03. Character\00. State\Jump">
-      <UniqueIdentifier>{bccafb2c-4998-405c-b1e5-a7bb8fcb0203}</UniqueIdentifier>
-    </Filter>
     <Filter Include="97. ShaderFiles\Instancing">
       <UniqueIdentifier>{9dc92367-cff9-46a1-9a4d-f72d7df5ad80}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03. Skill">
-      <UniqueIdentifier>{64ee1a0c-5d3e-4e30-956e-4bfdd855c9e2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="96. Manager\Skill">
-      <UniqueIdentifier>{8f644f2f-b503-4fff-9b21-d9eb127921af}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Levels\01. Train_Station">
-      <UniqueIdentifier>{001c8170-e0a0-429b-96c3-38ac67fa7a9c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\11. NPC">
-      <UniqueIdentifier>{081ebe78-8a89-466a-a2d0-920724fd4e65}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03. Character\00. State\Dash">
-      <UniqueIdentifier>{0b91a5c1-0d3c-4381-bca9-e9e37961add9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\State\Defence">
-      <UniqueIdentifier>{7e532af3-b451-4742-b2b7-f57d12a45754}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\98. UI\03. Cursor">
-      <UniqueIdentifier>{dac29e7b-48dc-42ca-8f43-d60788322eed}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\98. UI\04. Gauge_Bar">
-      <UniqueIdentifier>{5ad32abc-5135-4aed-8b59-57c44ec84021}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\98. UI\05. Combo">
-      <UniqueIdentifier>{615008f1-99a6-448d-87b7-bee9f7d265f0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\98. UI\00. Common\Battle">
-      <UniqueIdentifier>{bd089743-ee31-4439-a20b-696489d67146}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\98. UI\00. Common\Battle\Start">
-      <UniqueIdentifier>{4d8fb955-ca27-4f51-a7a0-be72bf463455}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\98. UI\00. Common\Battle\End">
-      <UniqueIdentifier>{bc059024-a99c-4104-9d05-642991f30c1d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Normal">
-      <UniqueIdentifier>{09db14e7-75ac-417e-873f-d6fd20bd8552}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Normal\Normal_Monster0">
-      <UniqueIdentifier>{6765949d-a3e9-43c9-86e4-fb04aec55a40}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Normal\Normal_Monster0\State">
-      <UniqueIdentifier>{a0589821-2884-4d1d-a44d-629da37cc91d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Normal\Normal_Monster1">
-      <UniqueIdentifier>{f51eafe0-5276-43f0-ac73-552f8ff0a0cb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Normal\Normal_Monster1\State">
-      <UniqueIdentifier>{83f51572-b99b-4b4e-af43-c04affc166e5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Normal\Normal_Monster2">
-      <UniqueIdentifier>{aaabf629-7779-43d6-8a96-cae73f4f0bc4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Normal\Normal_Monster2\State">
-      <UniqueIdentifier>{5eb3fb3b-faf9-4c86-a6e0-5915e7ca555a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Boss">
-      <UniqueIdentifier>{a363d43d-f0dc-4729-b248-bd15c0557a59}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Boss\Enmu">
-      <UniqueIdentifier>{489d3b7c-1012-40b9-8fc6-39af0717ad14}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Boss\Enmu\State">
-      <UniqueIdentifier>{7a406051-7ccc-4429-843c-0236ccf2ee75}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Boss\State">
-      <UniqueIdentifier>{9fcc9936-f737-43cc-acef-3a900772a6e4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Boss\Enmu\State\Attack">
-      <UniqueIdentifier>{2ad6d4eb-54e9-4932-9ff2-3805803ac05a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Boss\State\Dash">
-      <UniqueIdentifier>{d73d5e9d-7c98-4da8-9a2b-bc050fb54ba1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Boss\State\Idle">
-      <UniqueIdentifier>{a0b24cd3-9832-47bd-8945-52041717f81a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03. Character\01. Zenitsu\State\Attack">
-      <UniqueIdentifier>{d482932c-5fa3-42df-b622-9a1709cae7b3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Boss\Enmu\Projectile">
-      <UniqueIdentifier>{220f176e-d73c-42ae-90ef-34583deb4fdb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\12. Sky">
-      <UniqueIdentifier>{72a20cbd-dee1-4a37-b1c4-5558815ef731}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03. Skill\Zenitsu">
-      <UniqueIdentifier>{45ed9211-051f-423a-9a41-93e40d41bc5e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03. Skill\Tanjiro">
-      <UniqueIdentifier>{d7137545-b8e4-4eb5-9f29-9871473bd333}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="03. Skill\Kyojuro">
-      <UniqueIdentifier>{a171ca6a-95dc-4656-ba5f-c391f3afa2cb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03. Character\01. Zenitsu\State\Skill">
-      <UniqueIdentifier>{f48f7c52-bcf3-460a-a920-1da54d5d5cdd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03. Character\01. Zenitsu\State\Special">
-      <UniqueIdentifier>{694174e6-070e-450d-b811-8da931efbfe3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03. Character\00. Tanjiro\Skill">
-      <UniqueIdentifier>{75115f1c-3dad-4407-9f15-dd8315ef4b5c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Boss\Akaza">
-      <UniqueIdentifier>{07525885-20b4-4f87-ba79-35240c2de5da}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\11. NPC\00. Stand_Person">
-      <UniqueIdentifier>{2f79fcca-670d-424e-a261-c98dfef3175e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\11. NPC\99. State">
-      <UniqueIdentifier>{0e0123e2-e061-44f3-b357-554b10c897d7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\11. NPC\98. Defence_Zenitsu">
-      <UniqueIdentifier>{742de20c-0212-46d9-a3ac-a81a00d98dd0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\11. NPC\99. State\Idle">
-      <UniqueIdentifier>{a7e05cd4-5b88-4182-a131-2fd9a6a11390}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\11. NPC\99. State\Walk">
-      <UniqueIdentifier>{9936b665-6a04-489f-91a8-241ea7671b50}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\98. UI\06. WorldHP">
-      <UniqueIdentifier>{2bc1e263-2705-4dc2-9cbc-8cca8b1fd589}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Boss\Enmu\State\Skill">
-      <UniqueIdentifier>{a0b3b891-7713-4db6-89c1-5a5cdb80150b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Boss\Akaza\State">
-      <UniqueIdentifier>{0464ba3a-66e8-400e-8404-56879ad1286d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Boss\Akaza\State\Attack">
-      <UniqueIdentifier>{dfb34a3e-1e1e-4c4e-8f60-0427ea743336}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Boss\Akaza\State\Idle">
-      <UniqueIdentifier>{9a30683b-938f-4862-96de-5c5567e08d68}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Boss\Akaza\Projectile">
-      <UniqueIdentifier>{41effe82-2372-4cbd-a9bc-504a3109a506}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03. Character\02. Kyojuro\State">
-      <UniqueIdentifier>{02d2d041-a4a7-41cd-ad79-f87fb084395b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03. Character\02. Kyojuro\Skill">
-      <UniqueIdentifier>{979b4115-cfec-4d43-a883-e7986348e714}</UniqueIdentifier>
     </Filter>
     <Filter Include="96. Manager\Camera">
       <UniqueIdentifier>{436a0687-4f5c-4650-8078-1041fe615530}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\03. Character\00. State\Sleep">
-      <UniqueIdentifier>{f62dc022-5225-4b74-be85-6cea6db52041}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\97. Camera">
+      <UniqueIdentifier>{91ff704d-cfae-4d8f-8be1-b64393bcf977}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\03. Character\02. Kyojuro\Projectile">
-      <UniqueIdentifier>{0a5c6bd4-660e-4d94-8a4a-2e368d82c033}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\01. Character">
+      <UniqueIdentifier>{68cce55d-7f2c-4b33-a387-09d20e080365}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\11. NPC\00. Stand_Person\Boy_0">
-      <UniqueIdentifier>{2d481f1a-199e-459f-b002-43255ece3ed0}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\01. Character\99. Dummy">
+      <UniqueIdentifier>{3b5162f8-31c0-4401-b6d0-d22ac970a862}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\11. NPC\00. Stand_Person\Girl_0">
-      <UniqueIdentifier>{cf3ef552-5332-4580-aaa0-b95207949d00}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\01. Character\98.Parts">
+      <UniqueIdentifier>{52f54d3c-6963-4c9f-9c46-c47469ad2a56}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\11. NPC\00. Stand_Person\Girl_1">
-      <UniqueIdentifier>{6c949536-7cf6-49a7-a54d-061b6d56cf94}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\01. Character\98.Parts\Sword">
+      <UniqueIdentifier>{0b3cccce-536b-4b1e-b9fd-9467addac644}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\11. NPC\00. Stand_Person\PoliceMan_0">
-      <UniqueIdentifier>{42bc9ee2-1f7c-4fd0-bf41-189f5f00e860}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\02. Monster">
+      <UniqueIdentifier>{978c82ce-6d25-428d-8f75-f1b25ce61559}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\11. NPC\00. Stand_Person\OldWoman">
-      <UniqueIdentifier>{e9cbca8e-f6e0-4ca9-994e-39b5d2267637}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\03. Effect">
+      <UniqueIdentifier>{26cf5b1a-34c4-4aeb-bd80-ee795d3c6f23}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\11. NPC\00. Stand_Person\Woman">
-      <UniqueIdentifier>{18fb794a-7503-49ad-a1f4-56fc17591494}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\03. Effect\Particle">
+      <UniqueIdentifier>{7e1eb069-0790-46be-8583-534eb05eb945}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\11. NPC\00. Stand_Person\Man">
-      <UniqueIdentifier>{50cf0921-b1d3-46d5-96ba-2cd083294474}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\03. Effect\Trail">
+      <UniqueIdentifier>{081e52ac-0074-45fb-a979-d4251146e633}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\11. NPC\00. Stand_Person\Talk_PoliceMan">
-      <UniqueIdentifier>{f781ff77-1397-4a9e-a7ce-4c3f2ec27b47}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\03. Effect\Trail\Buffer">
+      <UniqueIdentifier>{97a13059-374e-4d72-9bea-d45d78b032fa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\11. NPC\99. State\Talk">
-      <UniqueIdentifier>{33633a3a-6177-4b12-9a76-5dcf515221d8}</UniqueIdentifier>
+    <Filter Include="96. Manager\ImGui\Tool">
+      <UniqueIdentifier>{ce8e3bb3-2df0-478c-8e14-f35cff17fff6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\11. NPC\00. Stand_Person\Cat">
-      <UniqueIdentifier>{944298e0-d942-4d51-942e-63bbc625c953}</UniqueIdentifier>
+    <Filter Include="96. Manager\ImGui\Tool\Model_Tool">
+      <UniqueIdentifier>{ea1c1e75-aad9-4c8d-80f7-da133f42f00d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\98. UI\07. WorldQuest">
-      <UniqueIdentifier>{e3af9d72-d4bd-4306-8c27-ad7b370c150c}</UniqueIdentifier>
+    <Filter Include="96. Manager\ImGui\Tool\Effect_Tool">
+      <UniqueIdentifier>{9f946df1-3c96-44f9-a5c0-e8a2804b8c41}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\98. UI\08. Enmu_Break">
-      <UniqueIdentifier>{0d847820-5132-4301-91ee-ac06994b4aec}</UniqueIdentifier>
+    <Filter Include="96. Manager\ImGui\Tool\Particle_Tool">
+      <UniqueIdentifier>{7dfe63a8-1c69-4271-afea-571bb5790c7e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\98. UI\09. Enmu_ToolTip">
-      <UniqueIdentifier>{02d40cf7-8a69-47c2-8bef-8cec646ec1cd}</UniqueIdentifier>
+    <Filter Include="96. Manager\ImGui\Tool\Map_Tool">
+      <UniqueIdentifier>{1394af95-509f-4504-bc7d-4ec5ac602fca}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Boss\Akaza\SkillObj">
-      <UniqueIdentifier>{34c7fd5b-4d28-4301-82a5-87f1af2b8dc6}</UniqueIdentifier>
+    <Filter Include="96. Manager\ImGui\Tool\Navigation_Tool">
+      <UniqueIdentifier>{624f5d3e-0d42-427a-8823-1e1724859f25}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Boss\Akaza\Skill">
-      <UniqueIdentifier>{eabb8614-a723-4265-862c-df685824875d}</UniqueIdentifier>
+    <Filter Include="96. Manager\ImGui\Tool\Camera_Tool">
+      <UniqueIdentifier>{b5b65120-830b-403b-9fd4-80e682dd9a22}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Boss\Akaza\SkillObj\Boundary">
-      <UniqueIdentifier>{a7eeadd2-49ff-45df-84e4-126309b848ee}</UniqueIdentifier>
+    <Filter Include="96. Manager\ImGui\Tool\Terrain_Tool">
+      <UniqueIdentifier>{b51dac9f-edae-4968-a279-f9c48c3fa22e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\05. Monster\Boss\Akaza\SkillObj\Stone">
-      <UniqueIdentifier>{91c26106-b097-4f48-b5cd-cf9f917ecca5}</UniqueIdentifier>
+    <Filter Include="02.GameObjects\97. Camera\Tool">
+      <UniqueIdentifier>{f5b6c010-1702-4ab3-9e08-da4fc10ab7e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\97. Camera\Main">
+      <UniqueIdentifier>{3cfafdf7-1f2f-410b-bbdd-71f4e9cd8969}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -474,12 +174,6 @@
     <ClInclude Include="..\Public\Client_Defines.h">
       <Filter>99.Defines</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\Level_Logo.h">
-      <Filter>01.Levels\00.Logo</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Level_Train_Station.h">
-      <Filter>01.Levels\01. Train_Station</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Level_Loading.h">
       <Filter>01.Levels\99.Loading</Filter>
     </ClInclude>
@@ -489,12 +183,6 @@
     <ClInclude Include="..\public\BackGround.h">
       <Filter>02.GameObjects\00. BackGround</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Player.h">
-      <Filter>02.GameObjects\04. Player</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Camera_Free.h">
-      <Filter>02.GameObjects\02. Camera</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\ImGui_Manager.h">
       <Filter>96. Manager\ImGui</Filter>
     </ClInclude>
@@ -502,16 +190,10 @@
       <Filter>01.Levels\98. Tool</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Character.h">
-      <Filter>02.GameObjects\03. Character</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Tanjiro.h">
-      <Filter>02.GameObjects\03. Character\00. Tanjiro</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Zenitsu.h">
-      <Filter>02.GameObjects\03. Character\01. Zenitsu</Filter>
+      <Filter>02.GameObjects\01. Character</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Dummy.h">
-      <Filter>02.GameObjects\03. Character\99. Dummy</Filter>
+      <Filter>02.GameObjects\01. Character\99. Dummy</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Terrain.h">
       <Filter>02.GameObjects\99. Terrain</Filter>
@@ -543,14 +225,8 @@
     <ClInclude Include="..\..\ThirdParty\imstb_truetype.h">
       <Filter>96. Manager\ImGui\Libs\Docking</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Building.h">
-      <Filter>02.GameObjects\01. Building</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Prop.h">
-      <Filter>02.GameObjects\06. Prop</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Effect.h">
-      <Filter>02.GameObjects\07. Effect</Filter>
+      <Filter>02.GameObjects\03. Effect</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Picking_Manager.h">
       <Filter>96. Manager\Picking</Filter>
@@ -576,89 +252,14 @@
     <ClInclude Include="..\Public\UI.h">
       <Filter>02.GameObjects\98. UI</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Tree.h">
-      <Filter>02.GameObjects\08. Tree</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Grass.h">
-      <Filter>02.GameObjects\09. Bush</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Ground.h">
-      <Filter>02.GameObjects\10. Ground</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Part.h">
-      <Filter>02.GameObjects\03. Character\98.Parts</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Sweath.h">
-      <Filter>02.GameObjects\03. Character\98.Parts\Sweath</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\UI_Logo_BackGround.h">
-      <Filter>02.GameObjects\98. UI\02. Logo\BackGround</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\UI_Logo_Title.h">
-      <Filter>02.GameObjects\98. UI\02. Logo\Title</Filter>
+      <Filter>02.GameObjects\01. Character\98.Parts</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\tinyxml2.h">
       <Filter>96. Manager\ImGui\Libs\tinyxml</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\UI_Logo_SelectBase.h">
-      <Filter>02.GameObjects\98. UI\02. Logo\Select_Menu</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\UI_NextFog.h">
-      <Filter>02.GameObjects\98. UI\00. Common\NextFog</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\UI_Loading_Background.h">
-      <Filter>02.GameObjects\98. UI\01. Loading\BackGround</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\UI_Loading_Icon.h">
-      <Filter>02.GameObjects\98. UI\01. Loading\Loading_Icon</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\UI_Loading_Anim.h">
-      <Filter>02.GameObjects\98. UI\01. Loading\Loading_Animation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Camera_Main.h">
-      <Filter>02.GameObjects\02. Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Tanjiro_Basic_Idle.h">
-      <Filter>02.GameObjects\03. Character\00. Tanjiro\State\Basic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Tanjiro_Basic_Jump.h">
-      <Filter>02.GameObjects\03. Character\00. Tanjiro\State\Basic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Tanjiro_Basic_Move.h">
-      <Filter>02.GameObjects\03. Character\00. Tanjiro\State\Basic</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Monster.h">
-      <Filter>02.GameObjects\05. Monster</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Monster_Normal_0.h">
-      <Filter>02.GameObjects\05. Monster\Normal\Normal_Monster0</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Monster_Idle.h">
-      <Filter>02.GameObjects\05. Monster\State\Idle</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Monster_Trace.h">
-      <Filter>02.GameObjects\05. Monster\State\Trace</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Monster_Jump.h">
-      <Filter>02.GameObjects\05. Monster\State\Jump</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Monster_Damaged_Basic.h">
-      <Filter>02.GameObjects\05. Monster\State\Damaged</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_NormalMonster0_Attack.h">
-      <Filter>02.GameObjects\05. Monster\Normal\Normal_Monster0\State</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Monter_Dead.h">
-      <Filter>02.GameObjects\05. Monster\State\Dead</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Monster_Regen.h">
-      <Filter>02.GameObjects\05. Monster\State\Regen</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Monster_Damaged_AirBorn.h">
-      <Filter>02.GameObjects\05. Monster\State\Damaged</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Monster_Damaged_Blow.h">
-      <Filter>02.GameObjects\05. Monster\State\Damaged</Filter>
+      <Filter>02.GameObjects\02. Monster</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Effect_Manager.h">
       <Filter>96. Manager\Effect</Filter>
@@ -667,256 +268,58 @@
       <Filter>96. Manager\Pool</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Sword.h">
-      <Filter>02.GameObjects\03. Character\98.Parts\Sword</Filter>
+      <Filter>02.GameObjects\01. Character\98.Parts\Sword</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Particle_Manager.h">
       <Filter>96. Manager\Particle</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Particle.h">
-      <Filter>02.GameObjects\07. Effect\Particle</Filter>
+      <Filter>02.GameObjects\03. Effect\Particle</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_Trail.h">
-      <Filter>02.GameObjects\07. Effect\Trail\Buffer</Filter>
+      <Filter>02.GameObjects\03. Effect\Trail\Buffer</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Trail.h">
-      <Filter>02.GameObjects\07. Effect\Trail</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Level_Train.h">
-      <Filter>01.Levels\03. Train</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Level_Train_Boss.h">
-      <Filter>01.Levels\04. Train_Boss</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Level_FinalBoss.h">
-      <Filter>01.Levels\06. Final_Boss</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Tanjiro_Attack.h">
-      <Filter>02.GameObjects\03. Character\00. Tanjiro\State\Battle\Attack</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Character_Battle_Jump.h">
-      <Filter>02.GameObjects\03. Character\00. State\Jump</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Character_Battle_Move.h">
-      <Filter>02.GameObjects\03. Character\00. State\Move</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Character_Damaged_AirBorn.h">
-      <Filter>02.GameObjects\03. Character\00. State\Damaged</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Character_Damaged_Basic.h">
-      <Filter>02.GameObjects\03. Character\00. State\Damaged</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Character_Damaged_Blow.h">
-      <Filter>02.GameObjects\03. Character\00. State\Damaged</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Character_Damaged_Bound.h">
-      <Filter>02.GameObjects\03. Character\00. State\Damaged</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Character_Dead.h">
-      <Filter>02.GameObjects\03. Character\00. State\Dead</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Character_Battle_Idle.h">
-      <Filter>02.GameObjects\03. Character\00. State\Idle</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Skill_Manager.h">
-      <Filter>96. Manager\Skill</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Tanjiro_Air_Attack.h">
-      <Filter>02.GameObjects\03. Character\00. Tanjiro\State\Battle\Attack</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Skill.h">
-      <Filter>03. Skill</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Monster_Damaged_Bound.h">
-      <Filter>02.GameObjects\05. Monster\State\Damaged</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Npc.h">
-      <Filter>02.GameObjects\11. NPC</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Character_Battle_AirDash.h">
-      <Filter>02.GameObjects\03. Character\00. State\Dash</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Character_Battle_Dash.h">
-      <Filter>02.GameObjects\03. Character\00. State\Dash</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Monster_Defence_Trace.h">
-      <Filter>02.GameObjects\05. Monster\State\Defence</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\UI_Cursor.h">
-      <Filter>02.GameObjects\98. UI\03. Cursor</Filter>
+      <Filter>02.GameObjects\03. Effect\Trail</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\UI_Manager.h">
       <Filter>02.GameObjects\98. UI\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\UI_GaugeBar.h">
-      <Filter>02.GameObjects\98. UI\04. Gauge_Bar</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Npc_Boy_0.h">
-      <Filter>02.GameObjects\11. NPC\00. Stand_Person\Boy_0</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Monster_Normal_1.h">
-      <Filter>02.GameObjects\05. Monster\Normal\Normal_Monster1</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Monster_Normal_2.h">
-      <Filter>02.GameObjects\05. Monster\Normal\Normal_Monster2</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Npc_Defence_Zenitsu.h">
-      <Filter>02.GameObjects\11. NPC\98. Defence_Zenitsu</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\UI_BattleStart.h">
-      <Filter>02.GameObjects\98. UI\00. Common\Battle\Start</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\UI_BattleEnd.h">
-      <Filter>02.GameObjects\98. UI\00. Common\Battle\End</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_NormalMonster1_Attack.h">
-      <Filter>02.GameObjects\05. Monster\Normal\Normal_Monster1\State</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_NormalMonster2_Attack.h">
-      <Filter>02.GameObjects\05. Monster\Normal\Normal_Monster2\State</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Boss_Enmu.h">
-      <Filter>02.GameObjects\05. Monster\Boss\Enmu</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Enmu_Attack.h">
-      <Filter>02.GameObjects\05. Monster\Boss\Enmu\State\Attack</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Boss_Idle.h">
-      <Filter>02.GameObjects\05. Monster\Boss\State\Idle</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Boss_Battle_Dash.h">
-      <Filter>02.GameObjects\05. Monster\Boss\State\Dash</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Zenitsu_Air_Attack.h">
-      <Filter>02.GameObjects\03. Character\01. Zenitsu\State\Attack</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Zenitsu_Attack.h">
-      <Filter>02.GameObjects\03. Character\01. Zenitsu\State\Attack</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Sky.h">
-      <Filter>02.GameObjects\12. Sky</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Enmu_Projectile.h">
-      <Filter>02.GameObjects\05. Monster\Boss\Enmu\Projectile</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Zenitsu_Skill_0.h">
-      <Filter>02.GameObjects\03. Character\01. Zenitsu\State\Skill</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Zenitsu_Special.h">
-      <Filter>02.GameObjects\03. Character\01. Zenitsu\State\Special</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Tanjiro_Skill_0.h">
-      <Filter>02.GameObjects\03. Character\00. Tanjiro\Skill</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Tanjiro_Skill_1.h">
-      <Filter>02.GameObjects\03. Character\00. Tanjiro\Skill</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Tanjiro_Skill_2.h">
-      <Filter>02.GameObjects\03. Character\00. Tanjiro\Skill</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Kyojuro.h">
-      <Filter>02.GameObjects\03. Character\02. Kyojuro</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Boss_Akaza.h">
-      <Filter>02.GameObjects\05. Monster\Boss\Akaza</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Npc_Idle.h">
-      <Filter>02.GameObjects\11. NPC\99. State\Idle</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Npc_Walk.h">
-      <Filter>02.GameObjects\11. NPC\99. State\Walk</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Npc_Girl_0.h">
-      <Filter>02.GameObjects\11. NPC\00. Stand_Person\Girl_0</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Npc_Girl_1.h">
-      <Filter>02.GameObjects\11. NPC\00. Stand_Person\Girl_1</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Npc_PoliceMan_0.h">
-      <Filter>02.GameObjects\11. NPC\00. Stand_Person\PoliceMan_0</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\UI_WorldHp.h">
-      <Filter>02.GameObjects\98. UI\06. WorldHP</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Enmu_Skill_0.h">
-      <Filter>02.GameObjects\05. Monster\Boss\Enmu\State\Skill</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Akaza_Attack_0.h">
-      <Filter>02.GameObjects\05. Monster\Boss\Akaza\State\Attack</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Akaza_Attack_1.h">
-      <Filter>02.GameObjects\05. Monster\Boss\Akaza\State\Attack</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Akaza_Attack_2.h">
-      <Filter>02.GameObjects\05. Monster\Boss\Akaza\State\Attack</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Akaza_Idle.h">
-      <Filter>02.GameObjects\05. Monster\Boss\Akaza\State\Idle</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Akaza_Projectile.h">
-      <Filter>02.GameObjects\05. Monster\Boss\Akaza\Projectile</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Kyojuro_Skill_0.h">
-      <Filter>02.GameObjects\03. Character\02. Kyojuro\Skill</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Kyojuro_Skill_1.h">
-      <Filter>02.GameObjects\03. Character\02. Kyojuro\Skill</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Kyojuro_Skill_2.h">
-      <Filter>02.GameObjects\03. Character\02. Kyojuro\Skill</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Kyojuro_Attack.h">
-      <Filter>02.GameObjects\03. Character\02. Kyojuro\State</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Kyojuro_Air_Attack.h">
-      <Filter>02.GameObjects\03. Character\02. Kyojuro\State</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Camera_Manager.h">
       <Filter>96. Manager\Camera</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\State_Character_Down.h">
-      <Filter>02.GameObjects\03. Character\00. State\Sleep</Filter>
+    <ClInclude Include="..\Public\Tool.h">
+      <Filter>96. Manager\ImGui\Tool</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Kyojuro_Projectile.h">
-      <Filter>02.GameObjects\03. Character\02. Kyojuro\Projectile</Filter>
+    <ClInclude Include="..\Public\Tool_Model.h">
+      <Filter>96. Manager\ImGui\Tool\Model_Tool</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Npc_OldWoman_0.h">
-      <Filter>02.GameObjects\11. NPC\00. Stand_Person\OldWoman</Filter>
+    <ClInclude Include="..\Public\Tool_Effect.h">
+      <Filter>96. Manager\ImGui\Tool\Effect_Tool</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Npc_Woman_0.h">
-      <Filter>02.GameObjects\11. NPC\00. Stand_Person\Woman</Filter>
+    <ClInclude Include="..\Public\Camera_Tool.h">
+      <Filter>96. Manager\ImGui\Tool\Camera_Tool</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Npc_Man_0.h">
-      <Filter>02.GameObjects\11. NPC\00. Stand_Person\Man</Filter>
+    <ClInclude Include="..\Public\Tool_Map.h">
+      <Filter>96. Manager\ImGui\Tool\Map_Tool</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Npc_Talk_PoliceMan_0.h">
-      <Filter>02.GameObjects\11. NPC\00. Stand_Person\Talk_PoliceMan</Filter>
+    <ClInclude Include="..\Public\Tool_Navigation.h">
+      <Filter>96. Manager\ImGui\Tool\Navigation_Tool</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Npc_Cat.h">
-      <Filter>02.GameObjects\11. NPC\00. Stand_Person\Cat</Filter>
+    <ClInclude Include="..\Public\Tool_Particle.h">
+      <Filter>96. Manager\ImGui\Tool\Particle_Tool</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\UI_WorldQuest.h">
-      <Filter>02.GameObjects\98. UI\07. WorldQuest</Filter>
+    <ClInclude Include="..\Public\Tool_Terrain.h">
+      <Filter>96. Manager\ImGui\Tool\Terrain_Tool</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\UI_Enmu_Break.h">
-      <Filter>02.GameObjects\98. UI\08. Enmu_Break</Filter>
+    <ClInclude Include="..\Public\Camera_Tool.h">
+      <Filter>02.GameObjects\97. Camera\Tool</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\UI_Enmu_ToolTip.h">
-      <Filter>02.GameObjects\98. UI\09. Enmu_ToolTip</Filter>
+    <ClInclude Include="..\Public\Camera_Main.h">
+      <Filter>02.GameObjects\97. Camera\Main</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\State_Akaza_Skill_0.h">
-      <Filter>02.GameObjects\05. Monster\Boss\Akaza\Skill</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Akaza_Skill_Boundary.h">
-      <Filter>02.GameObjects\05. Monster\Boss\Akaza\SkillObj\Boundary</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Akaza_Stone_0.h">
-      <Filter>02.GameObjects\05. Monster\Boss\Akaza\SkillObj\Stone</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Akaza_Stone_1.h">
-      <Filter>02.GameObjects\05. Monster\Boss\Akaza\SkillObj\Stone</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\State_Enmu_Skill_1.h">
-      <Filter>02.GameObjects\05. Monster\Boss\Enmu\State\Skill</Filter>
+    <ClInclude Include="..\Public\Tool_Camera.h">
+      <Filter>96. Manager\ImGui\Tool\Camera_Tool</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -929,12 +332,6 @@
     <ClCompile Include="..\private\MainApp.cpp">
       <Filter>00.MainApp</Filter>
     </ClCompile>
-    <ClCompile Include="..\private\Level_Logo.cpp">
-      <Filter>01.Levels\00.Logo</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Level_Train_Station.cpp">
-      <Filter>01.Levels\01. Train_Station</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Level_Loading.cpp">
       <Filter>01.Levels\99.Loading</Filter>
     </ClCompile>
@@ -944,12 +341,6 @@
     <ClCompile Include="..\private\BackGround.cpp">
       <Filter>02.GameObjects\00. BackGround</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Player.cpp">
-      <Filter>02.GameObjects\04. Player</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Camera_Free.cpp">
-      <Filter>02.GameObjects\02. Camera</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\ImGui_Manager.cpp">
       <Filter>96. Manager\ImGui</Filter>
     </ClCompile>
@@ -957,16 +348,10 @@
       <Filter>01.Levels\98. Tool</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Character.cpp">
-      <Filter>02.GameObjects\03. Character</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Tanjiro.cpp">
-      <Filter>02.GameObjects\03. Character\00. Tanjiro</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Zenitsu.cpp">
-      <Filter>02.GameObjects\03. Character\01. Zenitsu</Filter>
+      <Filter>02.GameObjects\01. Character</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Dummy.cpp">
-      <Filter>02.GameObjects\03. Character\99. Dummy</Filter>
+      <Filter>02.GameObjects\01. Character\99. Dummy</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Terrain.cpp">
       <Filter>02.GameObjects\99. Terrain</Filter>
@@ -995,14 +380,8 @@
     <ClCompile Include="..\..\ThirdParty\imgui_widgets.cpp">
       <Filter>96. Manager\ImGui\Libs\Docking</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Building.cpp">
-      <Filter>02.GameObjects\01. Building</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Prop.cpp">
-      <Filter>02.GameObjects\06. Prop</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Effect.cpp">
-      <Filter>02.GameObjects\07. Effect</Filter>
+      <Filter>02.GameObjects\03. Effect</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Picking_Manager.cpp">
       <Filter>96. Manager\Picking</Filter>
@@ -1025,95 +404,20 @@
     <ClCompile Include="..\Private\ServerSession.cpp">
       <Filter>96. Manager\Network\01. Session</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Tree.cpp">
-      <Filter>02.GameObjects\08. Tree</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Grass.cpp">
-      <Filter>02.GameObjects\09. Bush</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Ground.cpp">
-      <Filter>02.GameObjects\10. Ground</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Part.cpp">
-      <Filter>02.GameObjects\03. Character\98.Parts</Filter>
+      <Filter>02.GameObjects\01. Character\98.Parts</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Sword.cpp">
-      <Filter>02.GameObjects\03. Character\98.Parts\Sword</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Sweath.cpp">
-      <Filter>02.GameObjects\03. Character\98.Parts\Sweath</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\UI_Logo_BackGround.cpp">
-      <Filter>02.GameObjects\98. UI\02. Logo\BackGround</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\UI_Logo_Title.cpp">
-      <Filter>02.GameObjects\98. UI\02. Logo\Title</Filter>
+      <Filter>02.GameObjects\01. Character\98.Parts\Sword</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\tinyxml2.cpp">
       <Filter>96. Manager\ImGui\Libs\tinyxml</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\UI_Logo_SelectBase.cpp">
-      <Filter>02.GameObjects\98. UI\02. Logo\Select_Menu</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\UI.cpp">
       <Filter>02.GameObjects\98. UI</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\UI_NextFog.cpp">
-      <Filter>02.GameObjects\98. UI\00. Common\NextFog</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\UI_Loading_BackGround.cpp">
-      <Filter>02.GameObjects\98. UI\01. Loading\BackGround</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\UI_Loading_Anim.cpp">
-      <Filter>02.GameObjects\98. UI\01. Loading\Loading_Animation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\UI_Loading_Icon.cpp">
-      <Filter>02.GameObjects\98. UI\01. Loading\Loading_Icon</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Camera_Main.cpp">
-      <Filter>02.GameObjects\02. Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Tanjiro_Basic_Idle.cpp">
-      <Filter>02.GameObjects\03. Character\00. Tanjiro\State\Basic</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Tanjiro_Basic_Jump.cpp">
-      <Filter>02.GameObjects\03. Character\00. Tanjiro\State\Basic</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Tanjiro_Basic_Move.cpp">
-      <Filter>02.GameObjects\03. Character\00. Tanjiro\State\Basic</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Monster.cpp">
-      <Filter>02.GameObjects\05. Monster</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Monster_Normal_0.cpp">
-      <Filter>02.GameObjects\05. Monster\Normal\Normal_Monster0</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Monster_Idle.cpp">
-      <Filter>02.GameObjects\05. Monster\State\Idle</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Monster_Trace.cpp">
-      <Filter>02.GameObjects\05. Monster\State\Trace</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Monster_Jump.cpp">
-      <Filter>02.GameObjects\05. Monster\State\Jump</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Monster_Damaged_Basic.cpp">
-      <Filter>02.GameObjects\05. Monster\State\Damaged</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_NormalMonster0_Attack.cpp">
-      <Filter>02.GameObjects\05. Monster\Normal\Normal_Monster0\State</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Monter_Dead.cpp">
-      <Filter>02.GameObjects\05. Monster\State\Dead</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Monster_Regen.cpp">
-      <Filter>02.GameObjects\05. Monster\State\Regen</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Monster_Damaged_AirBorn.cpp">
-      <Filter>02.GameObjects\05. Monster\State\Damaged</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Monster_Damaged_Blow.cpp">
-      <Filter>02.GameObjects\05. Monster\State\Damaged</Filter>
+      <Filter>02.GameObjects\02. Monster</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Effect_Manager.cpp">
       <Filter>96. Manager\Effect</Filter>
@@ -1125,250 +429,52 @@
       <Filter>96. Manager\Particle</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Particle.cpp">
-      <Filter>02.GameObjects\07. Effect\Particle</Filter>
+      <Filter>02.GameObjects\03. Effect\Particle</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Trail.cpp">
-      <Filter>02.GameObjects\07. Effect\Trail\Buffer</Filter>
+      <Filter>02.GameObjects\03. Effect\Trail\Buffer</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Trail.cpp">
-      <Filter>02.GameObjects\07. Effect\Trail</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Level_Train.cpp">
-      <Filter>01.Levels\03. Train</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Level_Train_Boss.cpp">
-      <Filter>01.Levels\04. Train_Boss</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Level_FinalBoss.cpp">
-      <Filter>01.Levels\06. Final_Boss</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Tanjiro_Attack.cpp">
-      <Filter>02.GameObjects\03. Character\00. Tanjiro\State\Battle\Attack</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Character_Battle_Jump.cpp">
-      <Filter>02.GameObjects\03. Character\00. State\Jump</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Character_Battle_Move.cpp">
-      <Filter>02.GameObjects\03. Character\00. State\Move</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Character_Damaged_AirBorn.cpp">
-      <Filter>02.GameObjects\03. Character\00. State\Damaged</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Character_Damaged_Basic.cpp">
-      <Filter>02.GameObjects\03. Character\00. State\Damaged</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Character_Damaged_Blow.cpp">
-      <Filter>02.GameObjects\03. Character\00. State\Damaged</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Character_Damaged_Bound.cpp">
-      <Filter>02.GameObjects\03. Character\00. State\Damaged</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Character_Dead.cpp">
-      <Filter>02.GameObjects\03. Character\00. State\Dead</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Character_Battle_Idle.cpp">
-      <Filter>02.GameObjects\03. Character\00. State\Idle</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Skill_Manager.cpp">
-      <Filter>96. Manager\Skill</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Tanjiro_Air_Attack.cpp">
-      <Filter>02.GameObjects\03. Character\00. Tanjiro\State\Battle\Attack</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Skill.cpp">
-      <Filter>03. Skill</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Monster_Damaged_Bound.cpp">
-      <Filter>02.GameObjects\05. Monster\State\Damaged</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Npc.cpp">
-      <Filter>02.GameObjects\11. NPC</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Character_Battle_AirDash.cpp">
-      <Filter>02.GameObjects\03. Character\00. State\Dash</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Character_Battle_Dash.cpp">
-      <Filter>02.GameObjects\03. Character\00. State\Dash</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Monster_Defence_Trace.cpp">
-      <Filter>02.GameObjects\05. Monster\State\Defence</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\UI_Cursor.cpp">
-      <Filter>02.GameObjects\98. UI\03. Cursor</Filter>
+      <Filter>02.GameObjects\03. Effect\Trail</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\UI_Manager.cpp">
       <Filter>02.GameObjects\98. UI\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\UI_GaugeBar.cpp">
-      <Filter>02.GameObjects\98. UI\04. Gauge_Bar</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Npc_Boy_0.cpp">
-      <Filter>02.GameObjects\11. NPC\00. Stand_Person\Boy_0</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Monster_Normal_1.cpp">
-      <Filter>02.GameObjects\05. Monster\Normal\Normal_Monster1</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Monster_Normal_2.cpp">
-      <Filter>02.GameObjects\05. Monster\Normal\Normal_Monster2</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Npc_Defence_Zenitsu.cpp">
-      <Filter>02.GameObjects\11. NPC\98. Defence_Zenitsu</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\UI_BattleEnd.cpp">
-      <Filter>02.GameObjects\98. UI\00. Common\Battle\End</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\UI_BattleStart.cpp">
-      <Filter>02.GameObjects\98. UI\00. Common\Battle\Start</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_NormalMonster1_Attack.cpp">
-      <Filter>02.GameObjects\05. Monster\Normal\Normal_Monster1\State</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_NormalMonster2_Attack.cpp">
-      <Filter>02.GameObjects\05. Monster\Normal\Normal_Monster2\State</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Boss_Enmu.cpp">
-      <Filter>02.GameObjects\05. Monster\Boss\Enmu</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Enmu_Attack.cpp">
-      <Filter>02.GameObjects\05. Monster\Boss\Enmu\State\Attack</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Boss_Idle.cpp">
-      <Filter>02.GameObjects\05. Monster\Boss\State\Idle</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Boss_Battle_Dash.cpp">
-      <Filter>02.GameObjects\05. Monster\Boss\State\Dash</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Zenitsu_Air_Attack.cpp">
-      <Filter>02.GameObjects\03. Character\01. Zenitsu\State\Attack</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Zenitsu_Attack.cpp">
-      <Filter>02.GameObjects\03. Character\01. Zenitsu\State\Attack</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Enmu_Projectile.cpp">
-      <Filter>02.GameObjects\05. Monster\Boss\Enmu\Projectile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Sky.cpp">
-      <Filter>02.GameObjects\12. Sky</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Zenitsu_Skill_0.cpp">
-      <Filter>02.GameObjects\03. Character\01. Zenitsu\State\Skill</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Zenitsu_Special.cpp">
-      <Filter>02.GameObjects\03. Character\01. Zenitsu\State\Special</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Tanjiro_Skill_0.cpp">
-      <Filter>02.GameObjects\03. Character\00. Tanjiro\Skill</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Tanjiro_Skill_1.cpp">
-      <Filter>02.GameObjects\03. Character\00. Tanjiro\Skill</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Tanjiro_Skill_2.cpp">
-      <Filter>02.GameObjects\03. Character\00. Tanjiro\Skill</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Kyojuro.cpp">
-      <Filter>02.GameObjects\03. Character\02. Kyojuro</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Boss_Akaza.cpp">
-      <Filter>02.GameObjects\05. Monster\Boss\Akaza</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Npc_Idle.cpp">
-      <Filter>02.GameObjects\11. NPC\99. State\Idle</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Npc_Walk.cpp">
-      <Filter>02.GameObjects\11. NPC\99. State\Walk</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Npc_Girl_0.cpp">
-      <Filter>02.GameObjects\11. NPC\00. Stand_Person\Girl_0</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Npc_Girl_1.cpp">
-      <Filter>02.GameObjects\11. NPC\00. Stand_Person\Girl_1</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Npc_PoliceMan_0.cpp">
-      <Filter>02.GameObjects\11. NPC\00. Stand_Person\PoliceMan_0</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\UI_WorldHp.cpp">
-      <Filter>02.GameObjects\98. UI\06. WorldHP</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Enmu_Skill_0.cpp">
-      <Filter>02.GameObjects\05. Monster\Boss\Enmu\State\Skill</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Akaza_Attack_0.cpp">
-      <Filter>02.GameObjects\05. Monster\Boss\Akaza\State\Attack</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Akaza_Attack_1.cpp">
-      <Filter>02.GameObjects\05. Monster\Boss\Akaza\State\Attack</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Akaza_Attack_2.cpp">
-      <Filter>02.GameObjects\05. Monster\Boss\Akaza\State\Attack</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Akaza_Idle.cpp">
-      <Filter>02.GameObjects\05. Monster\Boss\Akaza\State\Idle</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Akaza_Projectile.cpp">
-      <Filter>02.GameObjects\05. Monster\Boss\Akaza\Projectile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Kyojuro_Skill_0.cpp">
-      <Filter>02.GameObjects\03. Character\02. Kyojuro\Skill</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Kyojuro_Skill_1.cpp">
-      <Filter>02.GameObjects\03. Character\02. Kyojuro\Skill</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Kyojuro_Skill_2.cpp">
-      <Filter>02.GameObjects\03. Character\02. Kyojuro\Skill</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Kyojuro_Attack.cpp">
-      <Filter>02.GameObjects\03. Character\02. Kyojuro\State</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Kyojuro_Air_Attack.cpp">
-      <Filter>02.GameObjects\03. Character\02. Kyojuro\State</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Camera_Manager.cpp">
       <Filter>96. Manager\Camera</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\State_Character_Down.cpp">
-      <Filter>02.GameObjects\03. Character\00. State\Sleep</Filter>
+    <ClCompile Include="..\Private\Tool.cpp">
+      <Filter>96. Manager\ImGui\Tool</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Kyojuro_Projectile.cpp">
-      <Filter>02.GameObjects\03. Character\02. Kyojuro\Projectile</Filter>
+    <ClCompile Include="..\Private\Tool_Model.cpp">
+      <Filter>96. Manager\ImGui\Tool\Model_Tool</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Npc_OldWoman_0.cpp">
-      <Filter>02.GameObjects\11. NPC\00. Stand_Person\OldWoman</Filter>
+    <ClCompile Include="..\Private\Tool_Effect.cpp">
+      <Filter>96. Manager\ImGui\Tool\Effect_Tool</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Npc_Woman_0.cpp">
-      <Filter>02.GameObjects\11. NPC\00. Stand_Person\Woman</Filter>
+    <ClCompile Include="..\Private\Camera_Tool.cpp">
+      <Filter>96. Manager\ImGui\Tool\Camera_Tool</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Npc_Man_0.cpp">
-      <Filter>02.GameObjects\11. NPC\00. Stand_Person\Man</Filter>
+    <ClCompile Include="..\Private\Tool_Map.cpp">
+      <Filter>96. Manager\ImGui\Tool\Map_Tool</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Npc_Talk_PoliceMan_0.cpp">
-      <Filter>02.GameObjects\11. NPC\00. Stand_Person\Talk_PoliceMan</Filter>
+    <ClCompile Include="..\Private\Tool_Navigation.cpp">
+      <Filter>96. Manager\ImGui\Tool\Navigation_Tool</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Npc_Cat.cpp">
-      <Filter>02.GameObjects\11. NPC\00. Stand_Person\Cat</Filter>
+    <ClCompile Include="..\Private\Tool_Particle.cpp">
+      <Filter>96. Manager\ImGui\Tool\Particle_Tool</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\UI_WorldQuest.cpp">
-      <Filter>02.GameObjects\98. UI\07. WorldQuest</Filter>
+    <ClCompile Include="..\Private\Tool_Terrain.cpp">
+      <Filter>96. Manager\ImGui\Tool\Terrain_Tool</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\UI_Enmu_Break.cpp">
-      <Filter>02.GameObjects\98. UI\08. Enmu_Break</Filter>
+    <ClCompile Include="..\Private\Camera_Tool.cpp">
+      <Filter>02.GameObjects\97. Camera\Tool</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\UI_Enmu_ToolTip.cpp">
-      <Filter>02.GameObjects\98. UI\09. Enmu_ToolTip</Filter>
+    <ClCompile Include="..\Private\Camera_Main.cpp">
+      <Filter>02.GameObjects\97. Camera\Main</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\State_Akaza_Skill_0.cpp">
-      <Filter>02.GameObjects\05. Monster\Boss\Akaza\Skill</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Akaza_Skill_Boundary.cpp">
-      <Filter>02.GameObjects\05. Monster\Boss\Akaza\SkillObj\Boundary</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Akaza_Stone_0.cpp">
-      <Filter>02.GameObjects\05. Monster\Boss\Akaza\SkillObj\Stone</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Akaza_Stone_1.cpp">
-      <Filter>02.GameObjects\05. Monster\Boss\Akaza\SkillObj\Stone</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\State_Enmu_Skill_1.cpp">
-      <Filter>02.GameObjects\05. Monster\Boss\Enmu\State\Skill</Filter>
+    <ClCompile Include="..\Private\Tool_Camera.cpp">
+      <Filter>96. Manager\ImGui\Tool\Camera_Tool</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

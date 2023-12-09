@@ -84,7 +84,7 @@ HRESULT CGameObject::Add_Component(_uint iLevelIndex, const wstring& pPrototypeT
 		return E_FAIL;
 
 
-	CComponent* pComponent = GAME_INSTANCE->Clone_Component(iLevelIndex, pPrototypeTag, this, pArg);
+	CComponent* pComponent = GI->Clone_Component(iLevelIndex, pPrototypeTag, this, pArg);
 	if (nullptr == pComponent)
 		return E_FAIL;
 
@@ -125,11 +125,11 @@ HRESULT CGameObject::Add_Collider(_uint iLevelIndex, _uint eColliderType, _uint 
 {
 	CComponent* pComponent = nullptr;
 	if (eColliderType == CCollider::COLLIDER_TYPE::SPHERE)
-		pComponent = GAME_INSTANCE->Clone_Component(iLevelIndex, L"Prototype_Component_Sphere_Collider", this, pArg);
+		pComponent = GI->Clone_Component(iLevelIndex, L"Prototype_Component_Sphere_Collider", this, pArg);
 	else if (eColliderType == CCollider::COLLIDER_TYPE::AABB)
-		pComponent = GAME_INSTANCE->Clone_Component(iLevelIndex, L"Prototype_Component_AABB_Collider", this, pArg);
+		pComponent = GI->Clone_Component(iLevelIndex, L"Prototype_Component_AABB_Collider", this, pArg);
 	else if (eColliderType == CCollider::COLLIDER_TYPE::OBB)
-		pComponent = GAME_INSTANCE->Clone_Component(iLevelIndex, L"Prototype_Component_OBB_Collider", this, pArg);
+		pComponent = GI->Clone_Component(iLevelIndex, L"Prototype_Component_OBB_Collider", this, pArg);
 	else
 		return E_FAIL;
 

@@ -286,9 +286,18 @@ void CModel::Set_AnimIndex(_uint iAnimIndex)
 		iAnimIndex = 0;
 
 	m_Animations[m_iCurrentAnimIndex]->Reset_Animation();
-	m_iNextAnimIndex = iAnimIndex;
-	m_bInterpolationAnimation = true;
-	m_bFirstRootConvert = true;
+
+	if (true == m_Animations[iAnimIndex]->Is_TweenAnimation())
+	{
+		m_iNextAnimIndex = iAnimIndex;
+		m_bInterpolationAnimation = true;
+		m_bFirstRootConvert = true;
+	}
+	else
+	{
+		m_iCurrentAnimIndex = iAnimIndex;
+	}
+	
 }
 
 void CModel::Complete_Interpolation()
@@ -684,6 +693,5 @@ void CModel::Free()
 		Safe_Release(pAnimation);
 
 	m_Animations.clear();
-
 	m_Importer.FreeScene();
 }

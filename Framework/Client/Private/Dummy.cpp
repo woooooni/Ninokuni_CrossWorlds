@@ -31,13 +31,7 @@ HRESULT CDummy::Initialize(void* pArg)
 HRESULT CDummy::Ready_Components()
 {
 	/* For.Com_Transform */
-	CTransform::TRANSFORMDESC		TransformDesc;
-	ZeroMemory(&TransformDesc, sizeof(CTransform::TRANSFORMDESC));
-
-	TransformDesc.fSpeedPerSec = 5.f;
-	TransformDesc.fRotationPerSec = XMConvertToRadians(90.0f);
-
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom, &TransformDesc)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 		return E_FAIL;
 
 	/* For.Com_Renderer */
@@ -87,9 +81,9 @@ HRESULT CDummy::Render()
 
 	if (FAILED(pShader->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
 		return E_FAIL;
-	if (FAILED(pShader->Bind_RawValue("g_ViewMatrix", &GAME_INSTANCE->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
+	if (FAILED(pShader->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
 		return E_FAIL;
-	if (FAILED(pShader->Bind_RawValue("g_ProjMatrix", &GAME_INSTANCE->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+	if (FAILED(pShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
 
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
@@ -116,7 +110,7 @@ HRESULT CDummy::Ready_ModelCom(_uint eType, const wstring& strFilePath, const ws
 	_tchar szExt[MAX_PATH];
 	_wsplitpath_s(strFileName.c_str(), nullptr, 0, nullptr, 0, szFileName, MAX_PATH, szExt, MAX_PATH);
 
-	if (FAILED(GAME_INSTANCE->Check_Prototype(LEVEL_DUMMY, wstring(L"Prototype_Componenet_Model_") + szFileName)))
+	if (FAILED(GI->Check_Prototype(LEVEL_DUMMY, wstring(L"Prototype_Componenet_Model_") + szFileName)))
 	{
 		auto& iter = m_Components.find(wstring(L"Com_Model_") + szFileName);
 		if (iter != m_Components.end())
@@ -130,7 +124,7 @@ HRESULT CDummy::Ready_ModelCom(_uint eType, const wstring& strFilePath, const ws
 	}
 	else
 	{
-		if (FAILED(GAME_INSTANCE->Import_Model_Data(LEVEL_DUMMY, wstring(L"Prototype_Componenet_Model_") + szFileName, eType, strFilePath, strFileName, &m_pModelCom)))
+		if (FAILED(GI->Import_Model_Data(LEVEL_DUMMY, wstring(L"Prototype_Componenet_Model_") + szFileName, eType, strFilePath, strFileName, &m_pModelCom)))
 			return E_FAIL;
 	}
 	m_pModelCom->Set_Owner(this);
@@ -145,7 +139,7 @@ HRESULT CDummy::Export_Model_Bin(const wstring& strFilePath, const wstring& strF
 		return E_FAIL;
 
 	
-	if (FAILED(GAME_INSTANCE->Export_Model_Data(m_pModelCom, strFilePath, strFileName)))
+	if (FAILED(GI->Export_Model_Data(m_pModelCom, strFilePath, strFileName)))
 		return E_FAIL;
 
 	return S_OK;

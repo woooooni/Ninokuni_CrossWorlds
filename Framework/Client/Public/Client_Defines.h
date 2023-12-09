@@ -2,6 +2,7 @@
 
 /* 클라이언트에 존재하는 모든 클래스가 인클루드해야할 내용을 담는다. */
 #include <process.h>
+#include "Engine_Defines.h"
 namespace Client
 {
 	enum LAYER_TYPE
@@ -25,9 +26,10 @@ namespace Client
 		LAYER_GROUND,
 		LAYER_TRAIL,
 		LAYER_UI,
+		LAYER_ETC,
 		LAYER_END
 	};
-	static const char* STR_LAYER_NAME[] = { "TERRAIN", "SKYBOX", "CAMERA", "BACKGROUND", "TREE", "PROP", "GRASS", "ROAD", "BUILDING", "MOUNTAIN", "PLAYER", "CHARACTER", "MONSTER", "NPC", "PROJECTILE", "EFFECT", "GROUND", "UI"};
+
 
 	enum OBJ_TYPE
 	{
@@ -52,16 +54,11 @@ namespace Client
 		OBJ_END
 	};
 
-	enum LEVELID { LEVEL_STATIC, LEVEL_LOGO, LEVEL_TRAIN_STATION, LEVEL_TRAIN, LEVEL_TRAIN_BOSS, LEVEL_FINAL_BOSS, LEVEL_TOOL, LEVEL_LOADING, LEVEL_DUMMY, LEVEL_END };
+	enum LEVELID { LEVEL_STATIC, LEVEL_LOGO, LEVEL_TOOL, LEVEL_LOADING, LEVEL_DUMMY, LEVEL_END };
 
 	const unsigned int		g_iWinSizeX = 1600;
 	const unsigned int		g_iWinSizeY = 900;
 
-	typedef struct tagAttackStateInfo
-	{
-		_uint iAnimIndex;
-		_uint iAttackMode;
-	}ATTACK_INFO;
 }
 
 extern HWND g_hWnd;
@@ -69,5 +66,7 @@ extern HINSTANCE g_hInstance;
 
 #define SERVER_IP		L"192.168.1.33"
 #define SERVER_PORT		7777
+#define IMGUI_NEW_LINE ImGui::NewLine()
+#define IMGUI_SAME_LINE ImGui::SameLine()
 
 using namespace Client;

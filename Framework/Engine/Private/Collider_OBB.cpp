@@ -76,8 +76,8 @@ HRESULT CCollider_OBB::Render()
 	//if (m_bActive/* && m_eDetectionType != CCollider::BOUNDARY*/)
 	//{
 	//	m_pEffect->SetWorld(XMMatrixIdentity());
-	//	m_pEffect->SetView(GAME_INSTANCE->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
-	//	m_pEffect->SetProjection(GAME_INSTANCE->Get_TransformMatrix(CPipeLine::D3DTS_PROJ));
+	//	m_pEffect->SetView(GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
+	//	m_pEffect->SetProjection(GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ));
 
 	//	m_pEffect->Apply(m_pContext);
 
@@ -91,8 +91,8 @@ HRESULT CCollider_OBB::Render()
 	//}
 
 	m_pEffect->SetWorld(XMMatrixIdentity());
-	m_pEffect->SetView(GAME_INSTANCE->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
-	m_pEffect->SetProjection(GAME_INSTANCE->Get_TransformMatrix(CPipeLine::D3DTS_PROJ));
+	m_pEffect->SetView(GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
+	m_pEffect->SetProjection(GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ));
 
 	m_pEffect->Apply(m_pContext);
 

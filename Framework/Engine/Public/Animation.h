@@ -58,6 +58,10 @@ public:
 	
 	void Set_Finished(_bool bFinished) { m_bFinished = bFinished; }
 	_bool Is_Finished() { return m_bFinished; }
+
+	void Set_TweenAnimation(_bool bTween) { m_bTweeningAnim = bTween; }
+	_bool Is_TweenAnimation() { return m_bTweeningAnim; }
+
 private:
 	wstring						m_strName;
 
@@ -80,6 +84,7 @@ private: /* 복제된 애니메이션 마다 따로 가진다. */
 	vector<_uint>					m_ChannelKeyFrames;
 	vector<_uint>					m_ChannelOldKeyFrames;
 
+	_bool m_bTweeningAnim = true;
 	_bool m_bPause = false;
 	_bool m_bRootAnimation = false;
 	_bool m_bLoop = false;

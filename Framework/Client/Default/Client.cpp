@@ -3,8 +3,8 @@
 
 #include "stdafx.h"
 #include "Client.h"
-#include "../Public/Client_Defines.h"
 
+#include "Client_Defines.h"
 #include "MainApp.h"
 #include "GameInstance.h"
 #include "ImGui_Manager.h"
@@ -60,10 +60,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     MSG msg;
 
-	if (FAILED(GAME_INSTANCE->Add_Timer(TEXT("Timer_Default"))))
+	if (FAILED(GI->Add_Timer(TIMER_TYPE::DEFAULT)))
 		return FALSE;
 
-	if (FAILED(GAME_INSTANCE->Add_Timer(TEXT("Timer_GamePlay"))))
+	if (FAILED(GI->Add_Timer(TIMER_TYPE::GAME_PLAY)))
 		return FALSE;
 
 	_float		fTimeAcc = 0.f;
@@ -84,11 +84,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			}
 		}
 
-		fTimeAcc += GAME_INSTANCE->Compute_TimeDelta(TEXT("Timer_Default"));
+		fTimeAcc += GI->Compute_TimeDelta(TIMER_TYPE::DEFAULT);
 
 		if (fTimeAcc >= 1.f / 144.f)
 		{
-			pMainApp->Tick(GAME_INSTANCE->Compute_TimeDelta(TEXT("Timer_GamePlay")));
+			pMainApp->Tick(GI->Compute_TimeDelta(TIMER_TYPE::GAME_PLAY));
 			pMainApp->Render();
 
 			fTimeAcc = 0.f;

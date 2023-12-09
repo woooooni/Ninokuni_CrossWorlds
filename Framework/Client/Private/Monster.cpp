@@ -8,8 +8,8 @@
 #include "Camera.h"
 #include "Particle_Manager.h"
 #include "Camera_Manager.h"
-#include "UI_NextFog.h"
 #include "UI_Manager.h"
+
 USING(Client)
 CMonster::CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
 	: CGameObject(pDevice, pContext, strObjectTag, OBJ_TYPE::OBJ_MONSTER)
@@ -74,18 +74,6 @@ void CMonster::Tick(_float fTimeDelta)
 		m_fDissolveWeight += 0.2f * fTimeDelta;
 		if (m_fDissolveWeight >= 1.f)
 		{
-			if (m_eMonsterType == CMonster::ENMU || m_eMonsterType == CMonster::AKAZA)
-			{
-				CUI_NextFog::NEXT_INFO NextInfo;
-				NextInfo.eNextLevel = LEVELID::LEVEL_FINAL_BOSS;
-				NextInfo.strFolderName = "Final_Boss";
-				GI->Stop_All();
-				CUI_Manager::GetInstance()->Reset_HpBar(CUI_Manager::GAUGE_BARTYPE::LEFT_HP);
-				if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_UI, L"Prototype_GameObject_UI_Logo_NextFog", &NextInfo)))
-					assert(nullptr);
-				
-			}
-
 			Set_ActiveColliders(CCollider::DETECTION_TYPE::BOUNDARY, false);
 			Set_ActiveColliders(CCollider::DETECTION_TYPE::HEAD, false);
 			Set_ActiveColliders(CCollider::DETECTION_TYPE::BODY, false);
@@ -136,9 +124,9 @@ HRESULT CMonster::Render()
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_ViewMatrix", &GAME_INSTANCE->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GAME_INSTANCE->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
 
 
@@ -227,28 +215,6 @@ void CMonster::Collision_Enter(const COLLISION_INFO& tInfo)
 void CMonster::Collision_Continue(const COLLISION_INFO& tInfo)
 {
 
-	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER)
-	{
-		CTransform* pOtherTransform = tInfo.pOther->Get_Component<CTransform>(L"Com_Transform");
-		_vector vTargetDir = pOtherTransform->Get_State(CTransform::STATE::STATE_POSITION) - m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION);
-
-		_float fTargetLen = XMVectorGetX(XMVector3Length(vTargetDir));
-		if (tInfo.pOtherCollider->Get_DetectionType() == CCollider::BODY
-			&& tInfo.pMyCollider->Get_DetectionType() == CCollider::BODY)
-		{
-			vTargetDir = XMVectorSetY(vTargetDir, 0.f);
-			vTargetDir = XMVector3Normalize(vTargetDir);
-			vTargetDir *= -1.f;
-
-			_float fForce = tInfo.pMyCollider->Get_Radius() + tInfo.pOtherCollider->Get_Radius() - (fTargetLen);
-
-			if (fForce > 0.f)
-			{
-				_float fTimeDelta = GI->Get_TimeDelta(L"Timer_GamePlay");
-				m_pRigidBodyCom->Set_PushVelocity(vTargetDir * (fForce / 2.f), fTimeDelta);
-			}
-		}
-	}
 }
 
 void CMonster::Collision_Exit(const COLLISION_INFO& tInfo)
@@ -269,119 +235,7 @@ CHierarchyNode* CMonster::Get_Socket(const wstring& strSocketName)
 
 void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 {
-	if (true == m_bInfinite)
-		return;
 
-	if (MONSTER_STATE::DIE == m_pStateCom->Get_CurrState())
-		return;
-
-	m_tStat.fHp -= tInfo.pOtherCollider->Get_Damage();
-	if (m_tStat.fHp <= 0.f)
-	{
-		m_bReserveDead = true;
-		m_fDissolveWeight = 0.f;
-		m_pStateCom->Change_State(MONSTER_STATE::DIE);
-
-		if (m_eMonsterType == MONSTER_TYPE::ENMU || m_eMonsterType == MONSTER_TYPE::AKAZA)
-		{
-			GI->Set_Slow(L"Timer_GamePlay", 1.f, 0.1f, true);
-			GI->Play_Sound(L"Battle_Finish.wav", CHANNELID::SOUND_UI, 1.f, true);
-		}
-		return;
-	}
-
-	if (tInfo.pOtherCollider->Get_AirBorn_Power() > 0.f)
-	{
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, m_pTransformCom->Get_Position() + XMVectorSet(0.f, .1f, 0.f, 0.f));
-	}
-
-	
-
-	Play_DamagedSound();
-
-	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_WEAPON)
-	{
-		GI->Play_Sound(L"Slash_Hit.wav", CHANNELID::SOUND_SLASH_HIT, 1.f, true);
-		_float fRadianX = XMConvertToRadians(CUtils::Random_Float(-30.f, 30.f));
-		_float fRadianY = XMConvertToRadians(CUtils::Random_Float(-30.f, 30.f));
-		_float fRadianZ = XMConvertToRadians(CUtils::Random_Float(-30.f, 30.f));
-
-		_vector vQuaternion = XMQuaternionRotationRollPitchYaw(fRadianX, fRadianY, fRadianZ);
-
-		
-		_matrix WorldMatrix = m_pTransformCom->Get_WorldMatrix();
-		WorldMatrix.r[CTransform::STATE_POSITION] += XMVectorSet(0.f, 0.5f, 0.f, 0.f) + XMVector3Normalize(XMVectorSetW(tInfo.pOtherCollider->Get_Position(), 1.f) - WorldMatrix.r[CTransform::STATE_POSITION]) * 0.5f;
-		XMVectorSetW(WorldMatrix.r[CTransform::STATE_POSITION], 1.f);
-
-		_int iRandom = CUtils::Random_Int(0, 2);
-		CEffect_Manager::GetInstance()->Generate_Effect(L"Basic_Slash_Damaged_" + to_wstring(iRandom), XMMatrixIdentity(), XMMatrixRotationQuaternion(vQuaternion) * WorldMatrix, .2f);
-		CParticle_Manager::GetInstance()->Generate_Particle(L"Particle_Sword_Hit_0", WorldMatrix);
-	}
-	else
-	{
-		GI->Play_Sound(L"Normal_Hit.wav", CHANNELID::SOUND_NORMAL_HIT, 1.f, true);
-		_matrix WorldMatrix = m_pTransformCom->Get_WorldMatrix();
-		WorldMatrix.r[CTransform::STATE_POSITION] += XMVectorSet(0.f, 0.5f, 0.f, 0.f) + XMVector3Normalize(XMVectorSetW(tInfo.pOtherCollider->Get_Position(), 1.f) - WorldMatrix.r[CTransform::STATE_POSITION]) * 0.5f;
-		XMVectorSetW(WorldMatrix.r[CTransform::STATE_POSITION], 1.f);
-		CParticle_Manager::GetInstance()->Generate_Particle(L"Particle_Hit_0", WorldMatrix);
-
-		_int iRandomEffect = CUtils::Random_Int(0, 1);
-		wstring strHitEffect = L"Basic_Damaged_" + to_wstring(iRandomEffect);
-
-		CEffect_Manager::GetInstance()->Generate_Effect(strHitEffect, XMMatrixIdentity(), WorldMatrix, .5f);
-		
-	}
-
-
-	if (true == tInfo.pOtherCollider->Is_HitLag())
-	{
-		GI->Set_Slow(L"Timer_GamePlay", .3f, .01f, false);
-	}
-
-
-	LookAt_DamagedObject(tInfo.pOther);
-
-
-	CCamera* pCamera = CCamera_Manager::GetInstance()->Get_MainCamera();
-	
-	switch (tInfo.pOtherCollider->Get_AttackType())
-	{
-	case CCollider::ATTACK_TYPE::BASIC:
-		m_pRigidBodyCom->Add_Velocity_Acc(
-			-1.f * XMVector3Normalize(XMVectorSetY(m_pTransformCom->Get_State(CTransform::STATE_LOOK), 0.f)),
-			tInfo.pOtherCollider->Get_PushPower());
-		m_pStateCom->Change_State(MONSTER_STATE::DAMAGED_BASIC);
-		break;
-
-	case CCollider::ATTACK_TYPE::AIR_BORN:
-		m_pRigidBodyCom->Add_Velocity(XMVectorSet(0.f, 1.f, 0.f, 0.f), tInfo.pOtherCollider->Get_AirBorn_Power());
-		m_pRigidBodyCom->Add_Velocity_Acc(
-			-1.f * XMVector3Normalize(XMVectorSetY(m_pTransformCom->Get_State(CTransform::STATE_LOOK), 0.f)),
-			tInfo.pOtherCollider->Get_PushPower());
-		m_pStateCom->Change_State(MONSTER_STATE::DAMAGED_AIRBORN);
-		if (nullptr != pCamera)
-		{
-			pCamera->Cam_Shake(1.f, 3.f);
-		}
-		break;
-
-	case CCollider::ATTACK_TYPE::BLOW:
-		m_pRigidBodyCom->Add_Velocity_Acc(
-			-1.f * XMVector3Normalize(XMVectorSetY(m_pTransformCom->Get_State(CTransform::STATE_LOOK), 0.f)),
-			tInfo.pOtherCollider->Get_PushPower());;
-
-		m_pStateCom->Change_State(MONSTER_STATE::DAMAGED_BLOW);
-		break;
-
-	case CCollider::ATTACK_TYPE::BOUND:
-		m_pRigidBodyCom->Add_Velocity(XMVectorSet(0.f, 1.f, 0.f, 0.f), tInfo.pOtherCollider->Get_AirBorn_Power());
-		m_pRigidBodyCom->Add_Velocity_Acc(
-			-1.f * XMVector3Normalize(XMVectorSetY(m_pTransformCom->Get_State(CTransform::STATE_LOOK), 0.f)),
-			tInfo.pOtherCollider->Get_PushPower());
-
-		m_pStateCom->Change_State(MONSTER_STATE::DAMAGED_BOUND);
-		break;
-	}
 }
 
 

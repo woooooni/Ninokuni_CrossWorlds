@@ -613,7 +613,7 @@ HRESULT CRenderer::Render_Lights()
 	if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrixInv", &ProjMatrixInv)))
 		return E_FAIL;
 	
-	_float4 vCamPosition = GAME_INSTANCE->Get_CamPosition();
+	_float4 vCamPosition = GI->Get_CamPosition();
 	if (FAILED(m_pShader->Bind_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4))))
 		return E_FAIL;
 

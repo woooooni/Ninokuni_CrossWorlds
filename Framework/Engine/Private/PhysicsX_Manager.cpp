@@ -43,25 +43,28 @@ PxFilterFlags FilterShader(
 }
 
 
-IMPLEMENT_SINGLETON(CPhysicsX_Manager)
+IMPLEMENT_SINGLETON(CPhysX_Manager)
 
 
-CPhysicsX_Manager::CPhysicsX_Manager()
+CPhysX_Manager::CPhysX_Manager()
 {
 
 }
 
-HRESULT CPhysicsX_Manager::Reserve_Manager()
+HRESULT CPhysX_Manager::Reserve_Manager()
 {
 	m_Foundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_Allocator, m_ErrorCallback);
 
 	m_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_Foundation, PxTolerancesScale());
 
 	PxSceneDesc SceneDesc(m_Physics->getTolerancesScale());
+
 	SceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
+
 	m_Dispatcher = PxDefaultCpuDispatcherCreate(4);
 	if (!m_Dispatcher)
 		return E_FAIL;
+
 	SceneDesc.cpuDispatcher = m_Dispatcher;
 	SceneDesc.filterShader = FilterShader;
 	SceneDesc.simulationEventCallback = this;
@@ -75,7 +78,7 @@ HRESULT CPhysicsX_Manager::Reserve_Manager()
 	return S_OK;
 }
 
-void CPhysicsX_Manager::Tick(_float fTimeDelta)
+void CPhysX_Manager::Tick(_float fTimeDelta)
 {
 	if (1.f / 144.f < fTimeDelta)
 		fTimeDelta = 1.f / 144.f;
@@ -85,7 +88,7 @@ void CPhysicsX_Manager::Tick(_float fTimeDelta)
 	
 }
 
-PxRigidDynamic* CPhysicsX_Manager::Create_Box(_float3 vPos, _float3 vExtent, _uint iFlag)
+PxRigidDynamic* CPhysX_Manager::Create_Box(_float3 vPos, _float3 vExtent, _uint iFlag)
 {
 	// 박스를 만든다.
 	PxShape* shape = m_Physics->createShape(PxBoxGeometry(vExtent.x * 0.5f, vExtent.y * 0.5f, vExtent.z * 0.5f), *m_Material);
@@ -105,7 +108,7 @@ PxRigidDynamic* CPhysicsX_Manager::Create_Box(_float3 vPos, _float3 vExtent, _ui
 	return body;
 }
 
-PxRigidDynamic* CPhysicsX_Manager::Create_Sphere(_float3 vPos, _float fRad, _uint iFlag)
+PxRigidDynamic* CPhysX_Manager::Create_Sphere(_float3 vPos, _float fRad, _uint iFlag)
 {
 	// 박스를 만든다.
 	PxShape* Shape = m_Physics->createShape(PxSphereGeometry(PxReal(fRad)), *m_Material);
@@ -125,7 +128,7 @@ PxRigidDynamic* CPhysicsX_Manager::Create_Sphere(_float3 vPos, _float fRad, _uin
 	return body;
 }
 
-PxRigidDynamic * CPhysicsX_Manager::Create_PxBox(_float3 vExtent, _float fWeight, _float fAngleDump, PxMaterial* pMaterial, _float fMaxVel)
+PxRigidDynamic * CPhysX_Manager::Create_PxBox(_float3 vExtent, _float fWeight, _float fAngleDump, PxMaterial* pMaterial, _float fMaxVel)
 {
 
 	// 박스를 만든다.
@@ -153,7 +156,7 @@ PxRigidDynamic * CPhysicsX_Manager::Create_PxBox(_float3 vExtent, _float fWeight
 	return body;
 }
 
-PxRigidDynamic * CPhysicsX_Manager::Create_PxSphere(_float3 vExtent, _float fWeight, _float fAngleDump, PxMaterial * pMaterial, _float fMaxVel)
+PxRigidDynamic * CPhysX_Manager::Create_PxSphere(_float3 vExtent, _float fWeight, _float fAngleDump, PxMaterial* pMaterial, _float fMaxVel)
 {
 
 	PxShape* shape = m_Physics->createShape(PxSphereGeometry(PxReal(vExtent.x)), *m_Material);
@@ -182,43 +185,43 @@ PxRigidDynamic * CPhysicsX_Manager::Create_PxSphere(_float3 vExtent, _float fWei
 
 
 
-void CPhysicsX_Manager::Add_Actor(PxActor * pAxtor)
+void CPhysX_Manager::Add_Actor(PxActor * pAxtor)
 {
 	m_Scene->addActor(*pAxtor);
 }
 
-void CPhysicsX_Manager::Remove_Actor(PxActor* pAxtor)
+void CPhysX_Manager::Remove_Actor(PxActor* pAxtor)
 {
 	if (pAxtor)
 		m_Scene->removeActor(*pAxtor);
 }
 
-void CPhysicsX_Manager::onConstraintBreak(PxConstraintInfo* Constrains, PxU32 Count)
+void CPhysX_Manager::onConstraintBreak(PxConstraintInfo* Constrains, PxU32 Count)
 {
 }
 
-void CPhysicsX_Manager::onWake(PxActor** Actors, PxU32 Count)
+void CPhysX_Manager::onWake(PxActor** Actors, PxU32 Count)
 {
 }
 
-void CPhysicsX_Manager::onSleep(PxActor** Actors, PxU32 Count)
+void CPhysX_Manager::onSleep(PxActor** Actors, PxU32 Count)
 {
 }
 
-void CPhysicsX_Manager::onContact(const PxContactPairHeader& PairHeader, const PxContactPair* Pairs, PxU32 bPairs)
+void CPhysX_Manager::onContact(const PxContactPairHeader& PairHeader, const PxContactPair* Pairs, PxU32 bPairs)
 {
 }
 
-void CPhysicsX_Manager::onTrigger(PxTriggerPair* Pairs, PxU32 Count)
+void CPhysX_Manager::onTrigger(PxTriggerPair* Pairs, PxU32 Count)
 {
 }
 
-void CPhysicsX_Manager::onAdvance(const PxRigidBody* const* BodyBuffer, const PxTransform* TransformBuffer, const PxU32 Count)
+void CPhysX_Manager::onAdvance(const PxRigidBody* const* BodyBuffer, const PxTransform* TransformBuffer, const PxU32 Count)
 {
 }
 
 
-void CPhysicsX_Manager::Free()
+void CPhysX_Manager::Free()
 {
 
 	if (m_Material)

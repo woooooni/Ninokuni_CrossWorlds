@@ -9,7 +9,7 @@ class CCamera_Main final : public CCamera
 {
 private:
 	CCamera_Main(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
-	CCamera_Main(const CCamera_Main& rhs, CTransform::TRANSFORMDESC* pArg);
+	CCamera_Main(const CCamera_Main& rhs);
 	virtual ~CCamera_Main() = default;
 
 public:

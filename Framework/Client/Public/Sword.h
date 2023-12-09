@@ -16,15 +16,13 @@ public:
 public:
 	typedef struct tagWeaponDesc : public CPart::PART_DESC
 	{		
-		_float3			vRotationDegree;
-		SWORD_TYPE eType;
+		_float3			vRotationRadian;
+		SWORD_TYPE		eType;
 	} SWORD_DESC;
 
 protected:
-	/* 원형을 생성할 때 */
 	CSword(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
-	/* 사본을 생성할 때 */
-	CSword(const CSword& rhs); /* 복사 생성자. */
+	CSword(const CSword& rhs);
 
 	virtual ~CSword() = default;
 

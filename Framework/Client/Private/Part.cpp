@@ -84,17 +84,13 @@ HRESULT CPart::Render()
 }
 
 
-HRESULT CPart::Compute_RenderMatrix(_fmatrix ChildMatrix)
+HRESULT CPart::Compute_RenderMatrix(Matrix ChildMatrix)
 {
-	m_pTransformCom->Set_WorldMatrix(XMLoadFloat4x4(&m_OriginRotationTransform) * ChildMatrix * m_pParentTransform->Get_WorldMatrix());
+	Matrix OriginRotation = XMLoadFloat4x4(&m_OriginRotationTransform);
+	m_pTransformCom->Set_WorldMatrix(OriginRotation * ChildMatrix * m_pParentTransform->Get_WorldMatrix());
 	return S_OK;
 }
 
-
-CGameObject* CPart::Clone(void* pArg)
-{
-	return nullptr;
-}
 
 void CPart::Free()
 {

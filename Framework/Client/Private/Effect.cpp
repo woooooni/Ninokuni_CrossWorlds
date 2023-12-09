@@ -95,7 +95,7 @@ void CEffect::Tick(_float fTimeDelta)
 	_vector vMoveDir = XMVector3Normalize(XMLoadFloat3(&m_tEffectDesc.vMoveDir));
 	_vector vTurnDir = XMVector3Normalize(XMLoadFloat3(&m_tEffectDesc.vTurnDir));
 
-	m_pTransformCom->Go_Dir(vMoveDir, m_tEffectDesc.fMoveSpeed, fTimeDelta);
+	m_pTransformCom->Move(vMoveDir, m_tEffectDesc.fMoveSpeed, fTimeDelta);
 	m_pTransformCom->Turn(vTurnDir, m_tEffectDesc.fTurnSpeed, fTimeDelta);
 
 	if (nullptr != m_pOwnerObject)
@@ -116,12 +116,13 @@ void CEffect::LateTick(_float fTimeDelta)
 	if (m_bDead && GI->Get_CurrentLevel() != LEVEL_TOOL)
 		return;
 
-	_float4x4 WolrdMatrix;
-	XMStoreFloat4x4(&WolrdMatrix, XMLoadFloat4x4(&m_tEffectDesc.OffsetMatrix) * m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&m_ParentMatrix));
+	_float4x4 WorldMatrix;
+	Matrix OffetMatrix = XMLoadFloat4x4(&m_tEffectDesc.OffsetMatrix);
+	XMStoreFloat4x4(&WorldMatrix, OffetMatrix * m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&m_ParentMatrix));
 
 	if (m_tEffectDesc.bBillboard)
 	{
-		_matrix Temp = XMLoadFloat4x4(&WolrdMatrix);
+		_matrix Temp = XMLoadFloat4x4(&WorldMatrix);
 		_vector vPosition = Temp.r[CTransform::STATE_POSITION];
 		_vector vCamPosition = XMLoadFloat4(&GI->Get_CamPosition());
 
@@ -138,7 +139,7 @@ void CEffect::LateTick(_float fTimeDelta)
 		Temp.r[CTransform::STATE_UP] = vUp;
 		Temp.r[CTransform::STATE_LOOK] = vLook;
 
-		XMStoreFloat4x4(&WolrdMatrix, Temp);
+		XMStoreFloat4x4(&WorldMatrix, Temp);
 	}
 	
 
@@ -160,12 +161,12 @@ void CEffect::LateTick(_float fTimeDelta)
 
 
 
-	if (true == GI->Intersect_Frustum_World(XMLoadFloat4x4(&WolrdMatrix).r[CTransform::STATE_POSITION], 3.f))
+	if (true == GI->Intersect_Frustum_World(XMLoadFloat4x4(&WorldMatrix).r[CTransform::STATE_POSITION], 3.f))
 	{
 		if (m_eType == EFFECT_TYPE::EFFECT_MESH)
-			m_pRendererCom->Add_RenderGroup_Instancing_Effect(CRenderer::RENDER_EFFECT, CRenderer::SHADER_TYPE::EFFECT_MODEL, this, WolrdMatrix, EffectInstanceDesc);
+			m_pRendererCom->Add_RenderGroup_Instancing_Effect(CRenderer::RENDER_EFFECT, CRenderer::SHADER_TYPE::EFFECT_MODEL, this, WorldMatrix, EffectInstanceDesc);
 		else
-			m_pRendererCom->Add_RenderGroup_Instancing_Effect(CRenderer::RENDER_EFFECT, CRenderer::SHADER_TYPE::EFFECT_TEXTURE, this, WolrdMatrix, EffectInstanceDesc);
+			m_pRendererCom->Add_RenderGroup_Instancing_Effect(CRenderer::RENDER_EFFECT, CRenderer::SHADER_TYPE::EFFECT_TEXTURE, this, WorldMatrix, EffectInstanceDesc);
 	}
 	
 }
@@ -357,10 +358,10 @@ HRESULT CEffect::Bind_ShaderResource_Instance(CShader* pShader)
 	}
 
 
-	if (FAILED(pShader->Bind_RawValue("g_ViewMatrix", &GAME_INSTANCE->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
+	if (FAILED(pShader->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
 		return E_FAIL;
 
-	if (FAILED(pShader->Bind_RawValue("g_ProjMatrix", &GAME_INSTANCE->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+	if (FAILED(pShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
 
 	return S_OK;
@@ -370,11 +371,9 @@ HRESULT CEffect::Bind_ShaderResource_Instance(CShader* pShader)
 
 HRESULT CEffect::Ready_Components()
 {
-	CTransform::TRANSFORMDESC		TransformDesc;
-	ZeroMemory(&TransformDesc, sizeof(CTransform::TRANSFORMDESC));
 
 	/* For.Com_Transform */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom, &TransformDesc)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 		return E_FAIL;
 
 	/* For.Com_Renderer */

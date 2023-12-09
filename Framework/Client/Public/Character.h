@@ -111,7 +111,6 @@ public:
 public:
 	const CHARACTER_STAT& Get_Stat() { return m_tStat; }
 	void Set_Stat(const CHARACTER_STAT& StatDesc) { m_tStat = StatDesc; }
-	void LookAt_DamagedObject(CGameObject* pAttacker);
 
 public:
 	CHARACTER_TYPE Get_CharacterType() { return m_eCharacterType; }

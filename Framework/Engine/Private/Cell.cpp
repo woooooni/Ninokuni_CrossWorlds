@@ -77,7 +77,7 @@ HRESULT CCell::Initialize(const CELL_DESC& tDesc, vector<_float3>& Points)
 	return S_OK;
 }
 
-void CCell::Update(_fmatrix WorldMatrix)
+void CCell::Update(Matrix WorldMatrix)
 {
 	//for (size_t i = 0; i < POINT_END; i++)
 	//{
@@ -122,12 +122,13 @@ _bool CCell::Compare_Points(const _float3 * pSourPoint, const _float3 * pDestPoi
 	return false;
 }
 
-_bool CCell::isOut(_fvector vWorldPosition, _fmatrix WorldMatrix, _int* pNeighborIndex, _vector vLook, __out _vector* pSliding)
+_bool CCell::isOut(Vec4 vWorldPosition, Matrix WorldMatrix, _int* pNeighborIndex, Vec3 vLook, __out Vec3* pSliding)
 {
 	for (size_t i = 0; i < LINE_END; i++)
 	{
-		_vector		vSour = XMVector3Normalize(XMVectorSetW(vWorldPosition - XMLoadFloat3(&m_vPoints_InWorld[i]), 0.f));
-		_vector		vDest = XMVector3Normalize(XMLoadFloat3(&m_vNormals[i]));
+		Vec3		vWorldPoint = XMLoadFloat3(&m_vPoints_InWorld[i]);
+		Vec3		vSour = XMVector3Normalize(vWorldPosition.xyz() - vWorldPoint);
+		Vec3		vDest = XMVector3Normalize(XMLoadFloat3(&m_vNormals[i]));
 
 		_float fRadian = XMVectorGetX(XMVector3Dot(vSour, vDest));
 		if (0.f <= fRadian)
@@ -193,8 +194,6 @@ _bool CCell::Is_Equal(CCell* pOtherCell)
 
 HRESULT CCell::Render(CShader* pShader)
 {
-
-
 	_bool bNeighbor = false;
 	bNeighbor |= m_iNeighborIndices[0] == -1;
 	bNeighbor |= m_iNeighborIndices[1] == -1; 

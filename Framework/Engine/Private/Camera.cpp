@@ -6,7 +6,7 @@ CCamera::CCamera(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring s
 {
 }
 
-CCamera::CCamera(const CCamera & rhs, CTransform::TRANSFORMDESC* pArg)
+CCamera::CCamera(const CCamera & rhs)
 	: CGameObject(rhs)
 {
 
@@ -32,7 +32,7 @@ HRESULT CCamera::Initialize(void * pArg)
 	ZeroMemory(&m_tShakeDesc, sizeof(CAM_SHAKE));
 	m_tShakeDesc.bEnd = true;
 
-	m_pTransformCom->Initialize(&m_CameraDesc.TransformDesc);
+	m_pTransformCom->Initialize(pArg);
 
 	return S_OK;
 }

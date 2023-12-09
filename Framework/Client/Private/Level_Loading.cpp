@@ -4,11 +4,6 @@
 #include "GameInstance.h"
 #include "Loader.h"
 
-#include "Level_Logo.h"
-#include "Level_Train.h"
-#include "Level_Train_Station.h"
-#include "Level_Train_Boss.h"
-#include "Level_FinalBoss.h"
 
 #include "Level_Tool.h"
 #include "ImGui_Manager.h"
@@ -30,8 +25,6 @@ HRESULT CLevel_Loading::Initialize(LEVELID eNextLevel, const wstring& strFolderN
 		CImGui_Manager::GetInstance()->Reserve_Manager(g_hWnd, m_pDevice, m_pContext);
 	}
 
-	if(FAILED(Ready_LoadingUI()))
-		return E_FAIL;
 
 	/* m_eNextLevel 에 대한 로딩작업을 수행한다. */
 	/* 로딩을 겁나 하고있다. */
@@ -61,25 +54,6 @@ HRESULT CLevel_Loading::LateTick(_float fTimeDelta)
 
 			switch (m_eNextLevel)
 			{
-			case LEVEL_LOGO:
-				pNewLevel = CLevel_Logo::Create(m_pDevice, m_pContext);
-				break;
-
-			case LEVEL_TRAIN_STATION:
-				pNewLevel = CLevel_Train_Station::Create(m_pDevice, m_pContext);
-				break;
-
-			case LEVEL_TRAIN:
-				pNewLevel = CLevel_Train::Create(m_pDevice, m_pContext);
-				break;
-
-			case LEVEL_TRAIN_BOSS:
-				pNewLevel = CLevel_Train_Boss::Create(m_pDevice, m_pContext);
-				break;
-
-			case LEVEL_FINAL_BOSS:
-				pNewLevel = CLevel_FinalBoss::Create(m_pDevice, m_pContext);
-				break;
 
 			case LEVEL_TOOL:
 				pNewLevel = CLevel_Tool::Create(m_pDevice, m_pContext);
@@ -89,7 +63,7 @@ HRESULT CLevel_Loading::LateTick(_float fTimeDelta)
 			if (nullptr == pNewLevel)
 				return E_FAIL;
 
-			if (FAILED(GAME_INSTANCE->Open_Level(m_eNextLevel, pNewLevel)))
+			if (FAILED(GI->Open_Level(m_eNextLevel, pNewLevel)))
 				return E_FAIL;
 		}
 
@@ -109,20 +83,6 @@ HRESULT CLevel_Loading::Exit_Level()
 	return S_OK;
 }
 
-HRESULT CLevel_Loading::Ready_LoadingUI()
-{
-	
-	if (FAILED(GI->Add_GameObject(LEVEL_LOADING, LAYER_TYPE::LAYER_UI, L"Prototype_GameObject_UI_Loading_BackGround")))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_GameObject(LEVEL_LOADING, LAYER_TYPE::LAYER_UI, L"Prototype_GameObject_UI_Loading_Anim")))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_GameObject(LEVEL_LOADING, LAYER_TYPE::LAYER_UI, L"Prototype_GameObject_UI_Loading_Icon")))
-		return E_FAIL;
-
-	return S_OK;
-}
 
 CLevel_Loading * CLevel_Loading::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, LEVELID eNextLevel, const wstring& strFolderName)
 {

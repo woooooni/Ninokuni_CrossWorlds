@@ -393,6 +393,8 @@ namespace DirectX
             void Clamp(const Vector4& vmin, const Vector4& vmax) noexcept;
             void Clamp(const Vector4& vmin, const Vector4& vmax, Vector4& result) const noexcept;
 
+            Vector3 xyz() { return Vector3(this->x, this->y, this->z); }
+
             // Static functions
             static float Distance(const Vector4& v1, const Vector4& v2) noexcept;
             static float DistanceSquared(const Vector4& v1, const Vector4& v2) noexcept;
@@ -437,11 +439,13 @@ namespace DirectX
             static Vector4 Transform(const Vector4& v, const Matrix& m) noexcept;
             static void Transform(_In_reads_(count) const Vector4* varray, size_t count, const Matrix& m, _Out_writes_(count) Vector4* resultArray) noexcept;
 
+
             // Constants
             static const Vector4 Zero;
             static const Vector4 One;
             static const Vector4 UnitX;
             static const Vector4 UnitY;
+
             static const Vector4 UnitZ;
             static const Vector4 UnitW;
         };
@@ -454,7 +458,6 @@ namespace DirectX
         Vector4 operator/ (const Vector4& V1, const Vector4& V2) noexcept;
         Vector4 operator/ (const Vector4& V, float S) noexcept;
         Vector4 operator* (float S, const Vector4& V) noexcept;
-
         //------------------------------------------------------------------------------
         // 4x4 Matrix (assumes right-handed cooordinates)
         struct Matrix : public XMFLOAT4X4

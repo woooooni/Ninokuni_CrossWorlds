@@ -2,70 +2,18 @@
 #include "..\Public\Loader.h"
 #include "GameInstance.h"
 #include "BackGround.h"
-#include "Player.h"
-#include "Camera_Free.h"
+#include "Camera_Tool.h"
 #include "Camera_Main.h"
 #include "FileUtils.h"
-
-#include "Sky.h"
-
-#include "Tanjiro.h"
-#include "Zenitsu.h"
-#include "Kyojuro.h"
-#include "Sweath.h"
 #include "Sword.h"
-
-#include "Npc_Man_0.h"
-#include "Npc_Woman_0.h"
-#include "Npc_OldWoman_0.h"
-#include "Npc_Cat.h"
-#include "Npc_Boy_0.h"
-#include "Npc_Girl_0.h"
-#include "Npc_Girl_1.h"
-#include "Npc_PoliceMan_0.h"
-#include "Npc_Talk_PoliceMan_0.h"
-
-#include "Monster_Normal_0.h"
-#include "Monster_Normal_1.h"
-#include "Monster_Normal_2.h"
-#include "Enmu_Projectile.h"
-#include "Akaza_Projectile.h"
-#include "Kyojuro_Projectile.h"
-#include "Akaza_Skill_Boundary.h"
-
-#include "Akaza_Stone_0.h"
-#include "Akaza_Stone_1.h"
-
-#include "Boss_Enmu.h"
-#include "Boss_Akaza.h"
-
-
-#include "Npc_Defence_Zenitsu.h"
 
 #include "Dummy.h"
 #include "Terrain.h"
 #include <filesystem>
-#include "Building.h"
-#include "Prop.h"
-#include "Grass.h"
-#include "Tree.h"
 #include "Utils.h"
-#include "Ground.h"
 #include "ImGui_Manager.h"
 #include "Effect_Manager.h"
 #include "Particle_Manager.h"
-
-
-#include "UI.h"
-#include "UI_Logo_Title.h"
-#include "UI_Logo_BackGround.h"
-#include "UI_Logo_SelectBase.h"
-#include "UI_NextFog.h"
-#include "UI_Loading_Background.h"
-#include "UI_Loading_Anim.h"
-#include "UI_Loading_Icon.h"
-#include "UI_Enmu_Break.h"
-#include "UI_Enmu_ToolTip.h"
 
 
 
@@ -121,21 +69,6 @@ _int CLoader::Loading()
 	case LEVEL_LOGO:
 		hr = Loading_For_Level_Logo();
 		break;
-	case LEVEL_TRAIN_STATION:
-		hr = Loading_For_Level_Train_Station();
-		break;
-
-	case LEVEL_TRAIN:
-		hr = Loading_For_Level_Train();
-		break;
-
-	case LEVEL_TRAIN_BOSS:
-		hr = Loading_For_Level_Train_Boss();
-		break;
-
-	case LEVEL_FINAL_BOSS:
-		hr = Loading_For_Level_Final_Boss();
-		break;
 
 	case LEVEL_TOOL:
 		hr = Loading_For_Level_Tool();
@@ -184,27 +117,6 @@ HRESULT CLoader::Loading_For_Level_Logo()
 	m_strLoading = TEXT("객체원형을 로딩 중 입니다.");
 
 
-	
-	///* For.Prototype_GameObject_UI_Logo_Title */
-	if (FAILED(GAME_INSTANCE->Add_Prototype(TEXT("Prototype_GameObject_UI_Logo_Title"), CUI_Logo_Title::Create(m_pDevice, m_pContext,
-		{ g_iWinSizeX - 350.f, 190.f, 350.f, 350.f }), LAYER_TYPE::LAYER_UI)))
-		return E_FAIL;
-
-	///* For.Prototype_GameObject_UI_Logo_BackGround */
-	if (FAILED(GAME_INSTANCE->Add_Prototype(TEXT("Prototype_GameObject_UI_Logo_BackGround"), CUI_Logo_BackGround::Create(m_pDevice, m_pContext,
-		{ 1232.f * 0.5f, g_iWinSizeY / 2.f, 1232.f, g_iWinSizeY }), LAYER_TYPE::LAYER_UI)))
-		return E_FAIL;
-
-	///* For.Prototype_GameObject_UI_Logo_SelectBase */
-	if (FAILED(GAME_INSTANCE->Add_Prototype(TEXT("Prototype_GameObject_UI_Logo_SelectBase"), CUI_Logo_SelectBase::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_UI)))
-		return E_FAIL;
-
-	///* For.Prototype_GameObject_UI_Logo_NextFog */
-	if (FAILED(GAME_INSTANCE->Add_Prototype(TEXT("Prototype_GameObject_UI_Logo_NextFog"), CUI_NextFog::Create(m_pDevice, m_pContext,
-		{ g_iWinSizeX / 2.f, g_iWinSizeY / 2.f, g_iWinSizeX, g_iWinSizeY }), LAYER_TYPE::LAYER_UI)))
-		return E_FAIL;
-
-
 
 
 	m_strLoading = TEXT("로딩 끝.");
@@ -232,120 +144,7 @@ HRESULT CLoader::Loading_For_Level_Train_Station()
 
 
 	m_strLoading = TEXT("객체 원형을 로딩 중 입니다.");
-	if (FAILED(GAME_INSTANCE->Add_Prototype(TEXT("Prototype_GameObject_UI_Logo_NextFog"), CUI_NextFog::Create(m_pDevice, m_pContext,
-		{ g_iWinSizeX / 2.f, g_iWinSizeY / 2.f, g_iWinSizeX, g_iWinSizeY }), LAYER_TYPE::LAYER_UI)))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Sky_Sunset"),
-		CSky::Create(m_pDevice, m_pContext, CSky::SKY_TYPE::SUNSET), LAYER_TYPE::LAYER_BACKGROUND)))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Sky_Night"),
-		CSky::Create(m_pDevice, m_pContext, CSky::SKY_TYPE::NIGHT), LAYER_TYPE::LAYER_BACKGROUND)))
-		return E_FAIL;
-
-
-	CMonster::MONSTER_STAT tMonsterStat = {};
-	tMonsterStat.fHp = 10.f;
-	tMonsterStat.fMp = 10.f;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_NormalMonster_0"),
-		CMonster_Normal_0::Create(m_pDevice, m_pContext, TEXT("NormalMonster0"), tMonsterStat), LAYER_TYPE::LAYER_MONSTER)))
-		return E_FAIL;
-
-
-	tMonsterStat.fHp = 15.f;
-	tMonsterStat.fMp = 10.f;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_NormalMonster_1"),
-		CMonster_Normal_1::Create(m_pDevice, m_pContext, TEXT("NormalMonster1"), tMonsterStat), LAYER_TYPE::LAYER_MONSTER)))
-		return E_FAIL;
-
-	tMonsterStat.fHp = 20.f;
-	tMonsterStat.fMp = 0.f;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_NormalMonster_2"),
-		CMonster_Normal_2::Create(m_pDevice, m_pContext, TEXT("NormalMonster2"), tMonsterStat), LAYER_TYPE::LAYER_MONSTER)))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Tanjiro"),
-		CTanjiro::Create(m_pDevice, m_pContext, TEXT("Tanjiro"), CCharacter::CHARACTER_TYPE::TANJIRO), LAYER_TYPE::LAYER_CHARACTER)))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Npc_Defence_Zenitsu"),
-		CNpc_Defence_Zenitsu::Create(m_pDevice, m_pContext, TEXT("Npc_Defence_Zenitsu")), LAYER_TYPE::LAYER_NPC)))
-		return E_FAIL;
-
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Npc_OldWoman_0"),
-		CNpc_OldWoman_0::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_NPC)))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Npc_Woman_0"),
-		CNpc_Woman_0::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_NPC)))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Npc_Man_0"),
-		CNpc_Man_0::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_NPC)))
-		return E_FAIL;
-
-
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Npc_Boy_0"),
-		CNpc_Boy_0::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_NPC)))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Npc_Cat_0"),
-		CNpc_Cat::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_NPC)))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Npc_Girl_0"),
-		CNpc_Girl_0::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_NPC)))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Npc_Girl_1"),
-		CNpc_Girl_1::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_NPC)))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Npc_PoliceMan_0"),
-		CNpc_PoliceMan_0::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_NPC)))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Npc_Talk_PoliceMan_0"),
-		CNpc_Talk_PoliceMan_0::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_NPC)))
-		return E_FAIL;
-
 	
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Sword_Tanjiro"),
-		CSword::Create(m_pDevice, m_pContext, TEXT("Tanjiro_Sword"), TEXT("Prototype_Component_Model_Sword_Tanjiro")), LAYER_TYPE::LAYER_CHARACTER)))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Sweath_Tanjiro"),
-		CSweath::Create(m_pDevice, m_pContext, TEXT("Tanjiro_Sweath"), TEXT("Prototype_Component_Model_Sweath_Tanjiro")), LAYER_TYPE::LAYER_CHARACTER)))
-		return E_FAIL;
-
-
-	m_strLoading = TEXT("모델을 로딩 중 입니다.");
-	if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_NONANIM, L"../Bin/Export/Weapon/")))
-		return E_FAIL;
-
-	if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_NONANIM, L"../Bin/Resources/Sky/")))
-		return E_FAIL;
-
-	if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_ANIM, L"../Bin/Export/Character/Tanjiro/")))
-		return E_FAIL;
-
-	if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_ANIM, L"../Bin/Export/Character/Zenitsu/")))
-		return E_FAIL;
-
-	if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_ANIM, L"../Bin/Export/Enemy/Monster/")))
-		return E_FAIL;
-
-	if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_ANIM, L"../Bin/Export/Npc/")))
-		return E_FAIL;
-
-
-
-	//if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_NONANIM, L"../Bin/Export/Map/")))
-	//	return E_FAIL;
 
 	if (FAILED(Loading_Proto_AllObjects(L"../Bin/Export/Map/")))
 		return E_FAIL;
@@ -396,80 +195,7 @@ HRESULT CLoader::Loading_For_Level_Train()
 
 
 	m_strLoading = TEXT("객체 원형을 로딩 중 입니다.");
-	if (FAILED(GAME_INSTANCE->Add_Prototype(TEXT("Prototype_GameObject_UI_Logo_NextFog"), CUI_NextFog::Create(m_pDevice, m_pContext,
-		{ g_iWinSizeX / 2.f, g_iWinSizeY / 2.f, g_iWinSizeX, g_iWinSizeY }), LAYER_TYPE::LAYER_UI)))
-		return E_FAIL;
 
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Sky_SunSet"),
-		CSky::Create(m_pDevice, m_pContext, CSky::SKY_TYPE::SUNSET), LAYER_TYPE::LAYER_BACKGROUND)))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Sky_Night"),
-		CSky::Create(m_pDevice, m_pContext, CSky::SKY_TYPE::NIGHT), LAYER_TYPE::LAYER_BACKGROUND)))
-		return E_FAIL;
-
-
-	CMonster::MONSTER_STAT tMonsterStat = {};
-	tMonsterStat.fHp = 10.f;
-	tMonsterStat.fMp = 10.f;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_NormalMonster_0"),
-		CMonster_Normal_0::Create(m_pDevice, m_pContext, TEXT("NormalMonster0"), tMonsterStat), LAYER_TYPE::LAYER_MONSTER)))
-		return E_FAIL;
-
-
-	tMonsterStat.fHp = 15.f;
-	tMonsterStat.fMp = 10.f;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_NormalMonster_1"),
-		CMonster_Normal_1::Create(m_pDevice, m_pContext, TEXT("NormalMonster1"), tMonsterStat), LAYER_TYPE::LAYER_MONSTER)))
-		return E_FAIL;
-
-	tMonsterStat.fHp = 20.f;
-	tMonsterStat.fMp = 0.f;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_NormalMonster_2"),
-		CMonster_Normal_2::Create(m_pDevice, m_pContext, TEXT("NormalMonster2"), tMonsterStat), LAYER_TYPE::LAYER_MONSTER)))
-		return E_FAIL;
-
-
-
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Tanjiro"),
-		CTanjiro::Create(m_pDevice, m_pContext, TEXT("Tanjiro"), CCharacter::CHARACTER_TYPE::TANJIRO), LAYER_TYPE::LAYER_CHARACTER)))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Npc_Defence_Zenitsu"),
-		CNpc_Defence_Zenitsu::Create(m_pDevice, m_pContext, TEXT("Npc_Defence_Zenitsu")), LAYER_TYPE::LAYER_NPC)))
-		return E_FAIL;
-
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Sword_Tanjiro"),
-		CSword::Create(m_pDevice, m_pContext, TEXT("Tanjiro_Sword"), TEXT("Prototype_Component_Model_Sword_Tanjiro")), LAYER_TYPE::LAYER_CHARACTER)))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Sweath_Tanjiro"),
-		CSweath::Create(m_pDevice, m_pContext, TEXT("Tanjiro_Sweath"), TEXT("Prototype_Component_Model_Sweath_Tanjiro")), LAYER_TYPE::LAYER_CHARACTER)))
-		return E_FAIL;
-
-
-	m_strLoading = TEXT("모델을 로딩 중 입니다.");
-	if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_NONANIM, L"../Bin/Export/Weapon/")))
-		return E_FAIL;
-
-	if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_NONANIM, L"../Bin/Resources/Sky/")))
-		return E_FAIL;
-
-	if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_ANIM, L"../Bin/Export/Character/Tanjiro/")))
-		return E_FAIL;
-
-	if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_ANIM, L"../Bin/Export/Character/Zenitsu/")))
-		return E_FAIL;
-
-	if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_ANIM, L"../Bin/Export/Enemy/Monster/")))
-		return E_FAIL;
-
-
-
-	//if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_NONANIM, L"../Bin/Export/Map/")))
-	//	return E_FAIL;
 
 	if (FAILED(Loading_Proto_AllObjects(L"../Bin/Export/Map/")))
 		return E_FAIL;
@@ -479,10 +205,6 @@ HRESULT CLoader::Loading_For_Level_Train()
 
 	if (FAILED(Load_Navi_Data(m_strFolderName)))
 		return E_FAIL;
-
-	CPool<CMonster_Normal_0>::Ready_Pool(m_pDevice, m_pContext, L"Prototype_GameObject_NormalMonster_0", LAYER_TYPE::LAYER_MONSTER, nullptr, 20);
-	CPool<CMonster_Normal_1>::Ready_Pool(m_pDevice, m_pContext, L"Prototype_GameObject_NormalMonster_1", LAYER_TYPE::LAYER_MONSTER, nullptr, 20);
-	CPool<CMonster_Normal_2>::Ready_Pool(m_pDevice, m_pContext, L"Prototype_GameObject_NormalMonster_2", LAYER_TYPE::LAYER_MONSTER, nullptr, 20);
 
 	m_strLoading = TEXT("로딩 끝.");
 	m_isFinished = true;
@@ -509,155 +231,12 @@ HRESULT CLoader::Loading_For_Level_Train_Boss()
 
 
 	m_strLoading = TEXT("객체 원형을 로딩 중 입니다.");
-	if (FAILED(GAME_INSTANCE->Add_Prototype(TEXT("Prototype_GameObject_UI_Logo_NextFog"), CUI_NextFog::Create(m_pDevice, m_pContext,
-		{ g_iWinSizeX / 2.f, g_iWinSizeY / 2.f, g_iWinSizeX, g_iWinSizeY }), LAYER_TYPE::LAYER_UI)))
-		return E_FAIL;
-
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Sky_Sunset"),
-		CSky::Create(m_pDevice, m_pContext, CSky::SUNSET), LAYER_TYPE::LAYER_BACKGROUND)))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Sky_Night"),
-		CSky::Create(m_pDevice, m_pContext, CSky::NIGHT), LAYER_TYPE::LAYER_BACKGROUND)))
-		return E_FAIL;
-
-
-	CMonster::MONSTER_STAT tMonsterStat = {};
-	tMonsterStat.fHp = 100.f;
-	tMonsterStat.fMp = 100.f;
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Enmu"),
-		CBoss_Enmu::Create(m_pDevice, m_pContext, TEXT("Enmu"), tMonsterStat), LAYER_TYPE::LAYER_MONSTER)))
-		return E_FAIL;
-
-
-
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Enmu_Projectile"),
-		CEnmu_Projectile::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_EFFECT)))
-		return E_FAIL;
-
-
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Kyojuro_Projectile"),
-		CKyojuro_Projectile::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_EFFECT)))
-		return E_FAIL;
-
-
-	//if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Akaza"),
-	//	CBoss_Akaza::Create(m_pDevice, m_pContext, TEXT("Akaza"), tMonsterStat), LAYER_TYPE::LAYER_MONSTER)))
-	//	return E_FAIL;
-
-	//if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Akaza_Projectile"),
-	//	CAkaza_Projectile::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_EFFECT)))
-	//	return E_FAIL;
-
-	//if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Akaza_Skill_Boundary"),
-	//	CAkaza_Skill_Boundary::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_EFFECT)))
-	//	return E_FAIL;
-
-
-	//if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Akaza_Stone_0"),
-	//	CAkaza_Stone_0::Create(m_pDevice, m_pContext, L"Akaza_Stone_0"), LAYER_TYPE::LAYER_EFFECT)))
-	//	return E_FAIL;
-
-	//if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Akaza_Stone_1"),
-	//	CAkaza_Stone_1::Create(m_pDevice, m_pContext, L"Akaza_Stone_1"), LAYER_TYPE::LAYER_EFFECT)))
-	//	return E_FAIL;
-	
-	
-
-
-	//if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Tanjiro"),
-	//	CTanjiro::Create(m_pDevice, m_pContext, TEXT("Tanjiro"), CCharacter::CHARACTER_TYPE::TANJIRO), LAYER_TYPE::LAYER_CHARACTER)))
-	//	return E_FAIL;
-
-
-	//if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Sword_Tanjiro"),
-	//	CSword::Create(m_pDevice, m_pContext, TEXT("Tanjiro_Sword"), TEXT("Prototype_Component_Model_Sword_Tanjiro")), LAYER_TYPE::LAYER_CHARACTER)))
-	//	return E_FAIL;
-
-	//if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Sweath_Tanjiro"),
-	//	CSweath::Create(m_pDevice, m_pContext, TEXT("Tanjiro_Sweath"), TEXT("Prototype_Component_Model_Sweath_Tanjiro")), LAYER_TYPE::LAYER_CHARACTER)))
-	//	return E_FAIL;
-
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Zenitsu"),
-		CZenitsu::Create(m_pDevice, m_pContext, TEXT("Zenitsu"), CCharacter::CHARACTER_TYPE::ZENITSU), LAYER_TYPE::LAYER_CHARACTER)))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Sword_Zenitsu"),
-		CSword::Create(m_pDevice, m_pContext, TEXT("Zenitsu_Sword"), TEXT("Prototype_Component_Model_Sword_Zenitsu")), LAYER_TYPE::LAYER_CHARACTER)))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Sweath_Zenitsu"),
-		CSweath::Create(m_pDevice, m_pContext, TEXT("Zenitsu_Sweath"), TEXT("Prototype_Component_Model_Sweath_Zenitsu")), LAYER_TYPE::LAYER_CHARACTER)))
-		return E_FAIL;
-
-	//if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Kyojuro"),
-	//	CKyojuro::Create(m_pDevice, m_pContext, TEXT("Kyojuro"), CCharacter::CHARACTER_TYPE::KYOJURO), LAYER_TYPE::LAYER_CHARACTER)))
-	//	return E_FAIL;
-
-	//if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Sword_Kyojuro"),
-	//	CSword::Create(m_pDevice, m_pContext, TEXT("Kyojuro_Sword"), TEXT("Prototype_Component_Model_Sword_Kyojuro")), LAYER_TYPE::LAYER_CHARACTER)))
-	//	return E_FAIL;
-
-	//if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Sweath_Kyojuro"),
-	//	CSweath::Create(m_pDevice, m_pContext, TEXT("Kyojuro_Sweath"), TEXT("Prototype_Component_Model_Sweath_Kyojuro")), LAYER_TYPE::LAYER_CHARACTER)))
-	//	return E_FAIL;
-
-
-	CUI::UI_INFO UIInfo;
-	UIInfo.fX = g_iWinSizeX / 2;
-	UIInfo.fY = g_iWinSizeY / 2;
-	UIInfo.fCX = g_iWinSizeX;
-	UIInfo.fCY = g_iWinSizeY;
-
-	if(FAILED(GI->Add_Prototype(L"Prototype_GameObject_UI_Enmu_Sleep_Break", CUI_Enmu_Break::Create(m_pDevice, m_pContext, UIInfo), LAYER_TYPE::LAYER_UI)))
-		return E_FAIL;
-
-
-	UIInfo.fX = g_iWinSizeX / 2;
-	UIInfo.fY = g_iWinSizeY - 200.f;
-	UIInfo.fCX = 92.f;
-	UIInfo.fCY = 92.f;
-	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_UI_Enmu_Sleep_ToolTip", CUI_Enmu_ToolTip::Create(m_pDevice, m_pContext, UIInfo), LAYER_TYPE::LAYER_UI)))
-		return E_FAIL;
-		
 		
 
 
 
 
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
-	if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_NONANIM, L"../Bin/Export/Weapon/")))
-		return E_FAIL;
-
-	if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_NONANIM, L"../Bin/Export/Skill/")))
-		return E_FAIL;
-
-	if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_NONANIM, L"../Bin/Export/Sky/")))
-		return E_FAIL;
-
-	if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_ANIM, L"../Bin/Export/Npc/")))
-		return E_FAIL;
-
-	/*if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_ANIM, L"../Bin/Export/Character/Tanjiro/")))
-		return E_FAIL;*/
-
-	if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_ANIM, L"../Bin/Export/Character/Zenitsu/")))
-		return E_FAIL;
-
-	/*if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_ANIM, L"../Bin/Export/Character/Kyojuro/")))
-		return E_FAIL;*/
-
-	if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_ANIM, L"../Bin/Export/Enemy/Boss/Enmu/")))
-		return E_FAIL;
-
-	/*if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_ANIM, L"../Bin/Export/Enemy/Boss/Akaza/")))
-		return E_FAIL;*/
-
 	
 
 
@@ -697,91 +276,6 @@ HRESULT CLoader::Loading_For_Level_Final_Boss()
 
 
 	m_strLoading = TEXT("객체 원형을 로딩 중 입니다.");
-	if (FAILED(GAME_INSTANCE->Add_Prototype(TEXT("Prototype_GameObject_UI_Logo_NextFog"), CUI_NextFog::Create(m_pDevice, m_pContext,
-		{ g_iWinSizeX / 2.f, g_iWinSizeY / 2.f, g_iWinSizeX, g_iWinSizeY }), LAYER_TYPE::LAYER_UI)))
-		return E_FAIL;
-
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Sky_Sunset"),
-		CSky::Create(m_pDevice, m_pContext, CSky::SUNSET), LAYER_TYPE::LAYER_BACKGROUND)))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Sky_Night"),
-		CSky::Create(m_pDevice, m_pContext, CSky::NIGHT), LAYER_TYPE::LAYER_BACKGROUND)))
-		return E_FAIL;
-
-
-	CMonster::MONSTER_STAT tMonsterStat = {};
-	tMonsterStat.fHp = 200.f;
-	tMonsterStat.fMp = 100.f;
-
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Akaza"),
-		CBoss_Akaza::Create(m_pDevice, m_pContext, TEXT("Akaza"), tMonsterStat), LAYER_TYPE::LAYER_MONSTER)))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Akaza_Projectile"),
-		CAkaza_Projectile::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_EFFECT)))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Akaza_Skill_Boundary"),
-		CAkaza_Skill_Boundary::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_EFFECT)))
-		return E_FAIL;
-
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Akaza_Stone_0"),
-		CAkaza_Stone_0::Create(m_pDevice, m_pContext, L"Akaza_Stone_0"), LAYER_TYPE::LAYER_EFFECT)))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Akaza_Stone_1"),
-		CAkaza_Stone_1::Create(m_pDevice, m_pContext, L"Akaza_Stone_1"), LAYER_TYPE::LAYER_EFFECT)))
-		return E_FAIL;
-
-
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Kyojuro"),
-		CKyojuro::Create(m_pDevice, m_pContext, TEXT("Kyojuro"), CCharacter::CHARACTER_TYPE::KYOJURO), LAYER_TYPE::LAYER_CHARACTER)))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Sword_Kyojuro"),
-		CSword::Create(m_pDevice, m_pContext, TEXT("Kyojuro_Sword"), TEXT("Prototype_Component_Model_Sword_Kyojuro")), LAYER_TYPE::LAYER_CHARACTER)))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Sweath_Kyojuro"),
-		CSweath::Create(m_pDevice, m_pContext, TEXT("Kyojuro_Sweath"), TEXT("Prototype_Component_Model_Sweath_Kyojuro")), LAYER_TYPE::LAYER_CHARACTER)))
-		return E_FAIL;
-
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Kyojuro_Projectile"),
-		CKyojuro_Projectile::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_EFFECT)))
-		return E_FAIL;
-
-
-
-
-
-
-
-	m_strLoading = TEXT("모델을 로딩 중 입니다.");
-	if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_NONANIM, L"../Bin/Export/Weapon/")))
-		return E_FAIL;
-
-	if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_NONANIM, L"../Bin/Export/Skill/")))
-		return E_FAIL;
-
-	if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_NONANIM, L"../Bin/Export/Sky/")))
-		return E_FAIL;
-
-
-	if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_ANIM, L"../Bin/Export/Character/Kyojuro/")))
-		return E_FAIL;
-
-
-	if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_ANIM, L"../Bin/Export/Enemy/Boss/Akaza/")))
-		return E_FAIL;
-
-
-
 
 	if (FAILED(Loading_Proto_AllObjects(L"../Bin/Export/Map/")))
 		return E_FAIL;
@@ -791,10 +285,6 @@ HRESULT CLoader::Loading_For_Level_Final_Boss()
 
 	if (FAILED(Load_Navi_Data(m_strFolderName)))
 		return E_FAIL;
-
-	//CPool<CMonster_Normal_0>::Ready_Pool(m_pDevice, m_pContext, L"Prototype_GameObject_NormalMonster_0", LAYER_TYPE::LAYER_MONSTER, nullptr, 20);
-	//CPool<CMonster_Normal_1>::Ready_Pool(m_pDevice, m_pContext, L"Prototype_GameObject_NormalMonster_1", LAYER_TYPE::LAYER_MONSTER, nullptr, 20);
-	//CPool<CMonster_Normal_2>::Ready_Pool(m_pDevice, m_pContext, L"Prototype_GameObject_NormalMonster_2", LAYER_TYPE::LAYER_MONSTER, nullptr, 20);
 
 	m_strLoading = TEXT("로딩 끝.");
 	m_isFinished = true;
@@ -828,8 +318,8 @@ HRESULT CLoader::Loading_For_Level_Tool()
 
 
 
-	if (FAILED(Loading_Proto_AllObjects(L"../Bin/Export/Map/")))
-		return E_FAIL;
+	//if (FAILED(Loading_Proto_AllObjects(L"../Bin/Export/Map/")))
+	//	return E_FAIL;
 		
 	
 
@@ -998,7 +488,7 @@ HRESULT CLoader::Loading_Proto_AllObjects(const wstring& strPath)
 
 		if (0 == lstrcmp(TEXT(".fbx"), strExt) || 0 == lstrcmp(TEXT(".mesh"), strExt))
 		{
-			if (strFilePath.find(L"Buildings") != wstring::npos)
+			/*if (strFilePath.find(L"Buildings") != wstring::npos)
 			{
 				if (FAILED(GI->Add_Prototype(wstring(strFileName),
 					CBuilding::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt), LAYER_TYPE::LAYER_BUILDING)))
@@ -1050,7 +540,7 @@ HRESULT CLoader::Loading_Proto_AllObjects(const wstring& strPath)
 				if (FAILED(GI->Add_Prototype(wstring(strFileName),
 					CProp::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt), LAYER_TYPE::LAYER_MOUNTAIN)))
 					return E_FAIL;
-			}
+			}*/
 		}
 
 	}

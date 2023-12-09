@@ -128,61 +128,39 @@ void CGameInstance::Clear(_uint iLevelIndex)
 	m_pObject_Manager->Clear(iLevelIndex);
 }
 
-CTimer* CGameInstance::Find_Timer(const wstring& strTimerTag)
+_float CGameInstance::Compute_TimeDelta(TIMER_TYPE eTimerType)
 {
-	if (nullptr == m_pTimer_Manager)
-		return nullptr;
-
-	return m_pTimer_Manager->Find_Timer(strTimerTag);
+	return m_pTimer_Manager->Compute_TimeDelta(eTimerType);
 }
 
-_float CGameInstance::Compute_TimeDelta(const wstring & strTimerTag)
+HRESULT CGameInstance::Set_TimeScale(TIMER_TYPE eTimerType, _float fTimeScale)
 {
-	if (nullptr == m_pTimer_Manager)
-		return 0.f;
-
-	return m_pTimer_Manager->Compute_TimeDelta(strTimerTag);	
+	return m_pTimer_Manager->Set_TimeScale(eTimerType, fTimeScale);
 }
 
-HRESULT CGameInstance::Add_Timer(const wstring & strTimerTag)
+_float CGameInstance::Get_TimeScale(TIMER_TYPE eTimerType)
 {
-	if (nullptr == m_pTimer_Manager)
-		return E_FAIL;
-
-	return m_pTimer_Manager->Add_Timer(strTimerTag);
+	return m_pTimer_Manager->Get_TimeScale(eTimerType);
 }
 
-_float CGameInstance::Get_TimeDelta(const wstring& strTimerTag)
+_float CGameInstance::Get_TimeDelta(TIMER_TYPE eTimerType)
 {
-
-	if (nullptr == m_pTimer_Manager)
-		return E_FAIL;
-
-	return m_pTimer_Manager->Get_TimeDelta(strTimerTag);
+	return m_pTimer_Manager->Get_TimeDelta(eTimerType);
 }
 
-HRESULT CGameInstance::Set_TimeScale(const wstring& strTimerTag, _float fTimeScale)
+HRESULT CGameInstance::Set_Slow(TIMER_TYPE eTimerType, _float fSlowTime, _float fTimeScale, _bool bForce)
 {
-	if (nullptr == m_pTimer_Manager)
-		return E_FAIL;
-
-	return m_pTimer_Manager->Set_TimeScale(strTimerTag, fTimeScale);
+	return m_pTimer_Manager->Set_Slow(eTimerType, fSlowTime, fTimeScale, bForce);
 }
 
-_float CGameInstance::Get_TimeScale(const wstring& strTimerTag)
+HRESULT CGameInstance::Add_Timer(TIMER_TYPE eTimerType)
 {
-	if (nullptr == m_pTimer_Manager)
-		return 0.f;
-
-	return m_pTimer_Manager->Get_TimeScale(strTimerTag);
+	return m_pTimer_Manager->Add_Timer(eTimerType);
 }
 
-HRESULT CGameInstance::Set_Slow(const wstring& strTimerTag, _float fSlowTime, _float fTimeScale, _bool bForce)
+CTimer* CGameInstance::Find_Timer(TIMER_TYPE eTimerType)
 {
-	if (nullptr == m_pTimer_Manager)
-		return E_FAIL;
-
-	return m_pTimer_Manager->Set_Slow(strTimerTag, fSlowTime, fTimeScale, bForce);
+	return m_pTimer_Manager->Find_Timer(eTimerType);
 }
 
 ID3D11Device* CGameInstance::Get_Device()
@@ -239,6 +217,21 @@ _long CGameInstance::Get_DIMMoveState(DIMM eMouseMoveID)
 		return 0;
 
 	return m_pInput_Device->Get_DIMMoveState(eMouseMoveID);
+}
+
+_bool CGameInstance::Mouse_Down(DIMK eMouseKeyID)
+{
+	return m_pInput_Device->Mouse_Down(eMouseKeyID);
+}
+
+_bool CGameInstance::Mouse_Up(DIMK eMouseKeyID)
+{
+	return m_pInput_Device->Mouse_Up(eMouseKeyID);
+}
+
+_bool CGameInstance::Mouse_Pressing(DIMK eMouseKeyID)
+{
+	return m_pInput_Device->Mouse_Pressing(eMouseKeyID);
 }
 
 HRESULT CGameInstance::Open_Level(_uint iLevelIndex, CLevel * pNewLevel)
@@ -618,7 +611,6 @@ void CGameInstance::Release_Engine()
 	CCollision_Manager::GetInstance()->DestroyInstance();
 	CGraphic_Device::GetInstance()->DestroyInstance();
 	CGameInstance::GetInstance()->DestroyInstance();
-	
 }
 
 void CGameInstance::Free()

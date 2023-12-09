@@ -3,7 +3,6 @@
 #include "GameInstance.h"
 #include "Camera.h"
 #include "ImGui_Manager.h"
-#include "Player.h"
 #include "Character.h"
 #include "Dummy.h"
 #include "Terrain.h"
@@ -51,28 +50,6 @@ HRESULT CLevel_Tool::Initialize()
 		return E_FAIL;
 
 
-	CGameObject* pObject = GAME_INSTANCE->Find_GameObject(LEVEL_TOOL, _uint(LAYER_TYPE::LAYER_PLAYER), L"Dummy");
-	if (nullptr == pObject)
-		return S_OK;
-
-	CDummy* pDummy = dynamic_cast<CDummy*>(pObject);
-	if (nullptr == pDummy)
-		return S_OK;
-
-	m_pImGuiManager->Set_Dummy(pDummy);
-
-
-	CGameObject* pTempObject = GAME_INSTANCE->Find_GameObject(LEVEL_TOOL, _uint(LAYER_TYPE::LAYER_TERRAIN), L"Terrain");
-	if (nullptr == pTempObject)
-		return E_FAIL;
-
-	CTerrain* pTerrain = dynamic_cast<CTerrain*>(pTempObject);
-	if (nullptr == pTerrain)
-		return E_FAIL;
-
-
-	m_pImGuiManager->Set_Terrain(pTerrain);
-	m_pImGuiManager->Set_Camera(dynamic_cast<CCamera_Free*>(CCamera_Manager::GetInstance()->Get_MainCamera()));
 
 
 
@@ -117,7 +94,7 @@ HRESULT CLevel_Tool::Ready_Lights()
 	
 
 
-	//GAME_INSTANCE->Reset_Lights();
+	//GI->Reset_Lights();
 
 	//LIGHTDESC			LightDesc;
 
@@ -129,7 +106,7 @@ HRESULT CLevel_Tool::Ready_Lights()
 	//LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
 	//LightDesc.vSpecular = LightDesc.vDiffuse;
 
-	//if (FAILED(GAME_INSTANCE->Add_Light(m_pDevice, m_pContext, LightDesc)))
+	//if (FAILED(GI->Add_Light(m_pDevice, m_pContext, LightDesc)))
 	//	return E_FAIL;
 
 	//ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
@@ -140,7 +117,7 @@ HRESULT CLevel_Tool::Ready_Lights()
 	//LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
 	//LightDesc.vSpecular = LightDesc.vDiffuse;
 
-	//if (FAILED(GAME_INSTANCE->Add_Light(m_pDevice, m_pContext, LightDesc)))
+	//if (FAILED(GI->Add_Light(m_pDevice, m_pContext, LightDesc)))
 	//	return E_FAIL;
 
 	//ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
@@ -150,7 +127,7 @@ HRESULT CLevel_Tool::Ready_Lights()
 	//LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 1.f);
 	//LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
-	//if (FAILED(GAME_INSTANCE->Add_Light(m_pDevice, m_pContext, LightDesc)))
+	//if (FAILED(GI->Add_Light(m_pDevice, m_pContext, LightDesc)))
 	//	return E_FAIL;
 
 
@@ -162,13 +139,12 @@ HRESULT CLevel_Tool::Ready_Layer_Camera(const LAYER_TYPE eLayerType)
 {
 	CCamera_Manager::GetInstance()->Set_MainCamera(CCamera_Manager::CAMERA_TYPE::TOOL);
 
-
 	return S_OK;
 }
 
 HRESULT CLevel_Tool::Ready_Layer_Player(const LAYER_TYPE eLayerType)
 {
-	if (FAILED(GAME_INSTANCE->Add_GameObject(LEVEL_TOOL, _uint(eLayerType), TEXT("Prototype_GameObject_Dummy"))))
+	if (FAILED(GI->Add_GameObject(LEVEL_TOOL, _uint(eLayerType), TEXT("Prototype_GameObject_Dummy"))))
 		return E_FAIL;
 
 
@@ -192,7 +168,7 @@ HRESULT CLevel_Tool::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Tool::Ready_Layer_Terrain(const LAYER_TYPE eLayerType)
 {
-	if (FAILED(GAME_INSTANCE->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_TERRAIN, TEXT("Prototype_GameObject_Terrain"))))
+	if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_TERRAIN, TEXT("Prototype_GameObject_Terrain"))))
 		return E_FAIL;
 
 	return S_OK;

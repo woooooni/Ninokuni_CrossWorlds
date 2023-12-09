@@ -38,7 +38,7 @@ bool Handle_C_EXIT_LEVEL(PacketSessionRef& session, Protocol::C_EXIT_LEVEL& pkt)
 bool Handle_C_CREATE_OBJECT(PacketSessionRef& session, Protocol::C_CREATE_OBJECT& pkt)
 {
 	CGameObject* pObj = nullptr;
-	if(FAILED(GAME_INSTANCE->Add_GameObject(pkt.ilevelindex(), pkt.ilayerindex(), CUtils::ToWString(pkt.strprototypename()), nullptr, &pObj)))
+	if(FAILED(GI->Add_GameObject(pkt.ilevelindex(), pkt.ilayerindex(), CUtils::ToWString(pkt.strprototypename()), nullptr, &pObj)))
 		return false;
 
 	if (nullptr == pObj)

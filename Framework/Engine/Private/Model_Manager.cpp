@@ -128,7 +128,7 @@ HRESULT CModel_Manager::Import_Model_Data(_uint iLevelIndex,
 			return E_FAIL;
 		}
 
-		if (FAILED(GAME_INSTANCE->Add_Prototype(iLevelIndex, strProtoTypeTag, pModel)))
+		if (FAILED(GI->Add_Prototype(iLevelIndex, strProtoTypeTag, pModel)))
 		{
 			MSG_BOX("Model Add Prototype Failed : Model Manager");
 			Safe_Release(pModel);
@@ -166,7 +166,7 @@ HRESULT CModel_Manager::Import_Model_Data(_uint iLevelIndex,
 
 		if (CModel::TYPE::TYPE_NONANIM == pModel->Get_ModelType())
 		{
-			if (FAILED(GAME_INSTANCE->Add_Prototype(iLevelIndex, strProtoTypeTag, pModel)))
+			if (FAILED(GI->Add_Prototype(iLevelIndex, strProtoTypeTag, pModel)))
 			{
 				MSG_BOX("Model Add Prototype Failed : Model Manager");
 				Safe_Release(pModel);
@@ -189,7 +189,7 @@ HRESULT CModel_Manager::Import_Model_Data(_uint iLevelIndex,
 				return E_FAIL;
 			}
 
-			if (FAILED(GAME_INSTANCE->Add_Prototype(iLevelIndex, strProtoTypeTag, pModel)))
+			if (FAILED(GI->Add_Prototype(iLevelIndex, strProtoTypeTag, pModel)))
 			{
 				MSG_BOX("Model Add Prototype Failed : Model Manager");
 				Safe_Release(pModel);

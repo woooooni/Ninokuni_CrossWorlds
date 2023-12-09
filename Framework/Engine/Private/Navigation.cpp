@@ -32,7 +32,7 @@ CNavigation::CNavigation(const CNavigation & rhs)
 		Safe_AddRef(pCell);
 }
 
-HRESULT CNavigation::Initialize_Prototype(const wstring & strNavigationDataFiles)
+HRESULT CNavigation::Initialize_Prototype()
 {
 	
 
@@ -43,9 +43,6 @@ HRESULT CNavigation::Initialize_Prototype(const wstring & strNavigationDataFiles
 #endif
 
 	XMStoreFloat4x4(&m_WorldIdentity, XMMatrixIdentity());
-
-	if (FAILED(Load_NaviData(strNavigationDataFiles)))
-		return S_OK;
 
 	return S_OK;
 }
@@ -101,7 +98,7 @@ void CNavigation::Update(_fmatrix WorldMatrix)
 	}
 }
 
-_bool CNavigation::Is_Movable(_fvector vPoint, _vector vLook, __out _vector* vOutSlidingDir)
+_bool CNavigation::Is_Movable(_fvector vPoint, _vector vLook, __out Vec3* vOutSlidingDir)
 {
 	_int		iNeighborIndex = 0;
 	if (true == m_Cells[m_iCurrentIndex]->isOut(vPoint, XMLoadFloat4x4(&m_WorldIdentity), &iNeighborIndex, vLook, vOutSlidingDir))
@@ -431,11 +428,11 @@ HRESULT CNavigation::Delete_Duplicate_Cell()
 	return S_OK;
 }
 
-CNavigation * CNavigation::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const wstring & strNavigationDataFiles)
+CNavigation * CNavigation::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
 	CNavigation*	pInstance = new CNavigation(pDevice, pContext);
 
-	if (FAILED(pInstance->Initialize_Prototype(strNavigationDataFiles)))
+	if (FAILED(pInstance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CNavigation");
 		Safe_Release(pInstance);

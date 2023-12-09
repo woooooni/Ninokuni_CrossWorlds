@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include "Sound_Manager.h"
 #include "Component_Manager.h"
 
@@ -28,17 +29,14 @@ public: /* For.GameInstance */
 	void LateTick(_float fTimeDelta);
 	void Clear(_uint iLevelIndex);
 
-public: /* For.Timer_Manager */
-	class CTimer* Find_Timer(const wstring & strTimerTag);
-	_float Compute_TimeDelta(const wstring& strTimerTag);
-	HRESULT	Add_Timer(const wstring& strTimerTag);
-
-	_float Get_TimeDelta(const wstring & strTimerTag);
-
-	HRESULT Set_TimeScale(const wstring & strTimerTag, _float fTimeScale);
-	_float Get_TimeScale(const wstring & strTimerTag);
-
-	HRESULT Set_Slow(const wstring & strTimerTag, _float fSlowTime, _float fTimeScale, _bool bForce = false);
+public:
+	_float Compute_TimeDelta(TIMER_TYPE eTimerType);
+	HRESULT Set_TimeScale(TIMER_TYPE eTimerType, _float fTimeScale);
+	_float Get_TimeScale(TIMER_TYPE eTimerType);
+	_float Get_TimeDelta(TIMER_TYPE eTimerType);
+	HRESULT Set_Slow(TIMER_TYPE eTimerType, _float fSlowTime, _float fTimeScale, _bool bForce);
+	HRESULT	Add_Timer(TIMER_TYPE eTimerType);
+	class CTimer* Find_Timer(TIMER_TYPE eTimerType);
 
 
 public: /* For.Graphic_Device */
@@ -52,6 +50,10 @@ public: /* For.Input_Device */
 	_char Get_DIKState(_uchar eKeyID);
 	_char Get_DIMKeyState(DIMK eMouseKeyID);
 	_long Get_DIMMoveState(DIMM eMouseMoveID);
+
+	_bool Mouse_Down(DIMK eMouseKeyID);
+	_bool Mouse_Up(DIMK eMouseKeyID);
+	_bool Mouse_Pressing(DIMK eMouseKeyID);
 
 
 public: /* For.Level_Manager */
@@ -110,20 +112,16 @@ public:
 	HRESULT Import_Model_Data(_uint iLevelIndex, const wstring & strProtoTypeTag, _uint eType, wstring strFolderPath, wstring strFileName, __out class CModel** ppOut = nullptr);
 	HRESULT Export_Model_Data_FromPath(_uint eType, wstring strFolderPath);
 
-/* For. CameraManager*/
-//public:
-//	HRESULT Add_Camera(const wstring & strCameraName, class CCamera * pCamera);
-//	HRESULT Set_MainCamera(const wstring & strCameraName);
-//	HRESULT Camera_Clear();
 
-/* For. Font_Manager */
 public:
+	/* For. Font_Manager */
 	HRESULT Add_Fonts(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const wstring & strFontTag, const wstring & strFontFilePath);
 	HRESULT Render_Fonts(const wstring & strFontTag, const wstring & strText, _float2 vPosition, _fvector vColor = XMVectorSet(1.f, 1.f, 1.f, 1.f),
 		_float fAngle = 0.f, _float2 vOrigin = _float2(0.f, 0.f), _float2 vScale = _float2(1.f, 1.f));
 
-	/* For. Collision_Manager */
+	
 public:
+	/* For. Collision_Manager */
 	HRESULT Add_CollisionGroup(COLLISION_GROUP eCollisionGroup, class CGameObject* pGameObject);
 	void Reset_CollisionGroup();
 
@@ -131,8 +129,9 @@ public:
 	_bool Intersect_Frustum_World(_fvector vWorldPos, _float fRadius = 0.f);
 
 
-/* For. Network_Manager */
+
 //public:
+	/* For. Network_Manager */
 //	void Set_ServerSession(ServerSessionRef session);
 //	void Send(SendBufferRef sendBuffer);
 //	bool Is_Connected();
@@ -164,6 +163,7 @@ private:
 	class CFrustum*					m_pFrustum = { nullptr };
 	// class CNetwork_Manager*			m_pNetwork_Manager = { nullptr };
 	class CSound_Manager* m_pSound_Manager = { nullptr };
+
 
 public:
 	static void Release_Engine();

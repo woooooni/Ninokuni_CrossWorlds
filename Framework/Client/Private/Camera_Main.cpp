@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "..\Public\Camera_Main.h"
+#include "Camera_Main.h"
 #include "GameInstance.h"
 #include "Key_Manager.h"
 #include "Utils.h"
@@ -9,7 +9,7 @@ CCamera_Main::CCamera_Main(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 {
 }
 
-CCamera_Main::CCamera_Main(const CCamera_Main & rhs, CTransform::TRANSFORMDESC* pArg)
+CCamera_Main::CCamera_Main(const CCamera_Main & rhs)
 	: CCamera(rhs)
 {
 
@@ -127,8 +127,9 @@ HRESULT CCamera_Main::Ready_Components()
 
 void CCamera_Main::Follow(_float fTimeDelta)
 {
-	_vector vTargetPosition = m_pTargetTransform->Get_State(CTransform::STATE_POSITION) + XMLoadFloat3(&m_vOffsetPosition);;
-	_vector vCamPostion = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	Vec3 vOffsetPosition = XMLoadFloat3(&m_vOffsetPosition);
+	Vec4 vTargetPosition = m_pTargetTransform->Get_State(CTransform::STATE_POSITION) + vOffsetPosition;
+	Vec4 vCamPostion = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorLerp(vTargetPosition, vCamPostion, fTimeDelta));
@@ -152,7 +153,7 @@ CGameObject * CCamera_Main::Clone(void* pArg)
 {
 	CCamera::CAMERADESC*		pCameraDesc = (CCamera::CAMERADESC*)pArg;
 
-	CCamera_Main*		pInstance = new CCamera_Main(*this, &pCameraDesc->TransformDesc);
+	CCamera_Main*		pInstance = new CCamera_Main(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{

@@ -19,11 +19,11 @@ private:
 	virtual ~CNavigation() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(const wstring & strNavigationDataFiles);
+	virtual HRESULT Initialize_Prototype();
 	virtual HRESULT Initialize(void* pArg) override;	
 	void Update(_fmatrix WorldMatrix);
 
-	_bool Is_Movable(_fvector vPoint, _vector vLook, __out _vector* vOutSlidingDir = nullptr);
+	_bool Is_Movable(_fvector vPoint, _vector vLook, __out Vec3* vOutSlidingDir = nullptr);
 	_float Compute_Height(_vector vPosition);
 
 public:
@@ -68,7 +68,7 @@ private:
 	NAVIGATION_DESC m_NavigationDesc;
 
 public:
-	static CNavigation* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strNavigationDataFiles);
+	static CNavigation* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 
