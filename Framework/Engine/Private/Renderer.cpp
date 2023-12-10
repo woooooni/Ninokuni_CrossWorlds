@@ -250,19 +250,9 @@ HRESULT CRenderer::Initialize_Prototype()
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_UI"), 700.f, 500.f, 200.f, 200.f)))
 		return E_FAIL;
 
+
+
 #endif // DEBUG
-
-
-
-	
-
-
-	
-	
-
-	
-
-
 
 
 	m_pVIBuffer = CVIBuffer_Rect::Create(m_pDevice, m_pContext);
@@ -272,8 +262,6 @@ HRESULT CRenderer::Initialize_Prototype()
 	m_pShader = CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Deferred.hlsl"), VTXTEX_DECLARATION::Elements, VTXTEX_DECLARATION::iNumElements);
 	if (nullptr == m_pShader)
 		return E_FAIL;
-
-
 
 
 	m_pIntancingShaders[SHADER_TYPE::RECT] = CShader::Create(m_pDevice, m_pContext, 

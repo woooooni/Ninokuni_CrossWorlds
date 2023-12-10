@@ -3,6 +3,9 @@
 
 #pragma warning (disable : 4005)
 #pragma warning (disable : 4251)
+#pragma warning (disable : 4244)
+#pragma warning (disable : 4267)
+
 
 #ifndef WinSock_Include_h__
 #define WinSock_Include_h__
@@ -84,21 +87,19 @@ using namespace DirectX;
 #include "Engine_Enum.h"
 
 
-//
-//#ifdef _DEBUG
-//
-//#define _CRTDBG_MAP_ALLOC
-//#include <crtdbg.h>
-////#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console") // 디버그 모드에서 콘솔창 출력.
-//
-////#ifndef DBG_NEW 
-////#ifndef ENGINE_EXPORTS
-////#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ ) 
-////#define new DBG_NEW 
-////#endif
-////#endif
-//
-//#endif // _DEBUG
+
+#ifdef _DEBUG
+
+#define _CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
+//#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console") // 디버그 모드에서 콘솔창 출력.
+
+#ifndef DBG_NEW 
+#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ ) 
+#define new DBG_NEW 
+#endif
+
+#endif // _DEBUG
 
 using namespace std;
 using namespace Engine;

@@ -35,7 +35,6 @@ private:
 	HRESULT Import_Mesh(const wstring strFinalPath, class CModel* pModel);
 	HRESULT Import_Material(const wstring strFinalPath, const wstring strFolderPath, class CModel* pModel);
 	HRESULT Import_Animation(const wstring strFinalPath, class CModel* pModel);
-	HRESULT Import_Texture(const wstring strFinalPath, class CModel* pModel);
 
 private:
 	wstring m_strExportFolderPath = L"../Bin/Export/";

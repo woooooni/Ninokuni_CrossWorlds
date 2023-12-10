@@ -22,8 +22,6 @@ HRESULT CObject_Manager::Reserve_Manager(_uint iNumLevels, _uint iNumLayerTypes)
 	
 	
 	m_pPrototypes = new map<const wstring, class CGameObject*>[iNumLayerTypes];
-
-
 	m_pLayers = new vector<CLayer*>[iNumLevels];
 
 	for (_uint i = 0; i < m_iNumLevels; ++i)
@@ -234,6 +232,7 @@ void CObject_Manager::Free()
 {
 	__super::Free();
 
+
 	for (size_t i = 0; i < m_iNumLevels; i++)
 	{
 		for (size_t j = 0; j < m_pLayers[i].size(); ++j)
@@ -249,7 +248,9 @@ void CObject_Manager::Free()
 	{
 		for (auto& pObj : m_pPrototypes[i])
 			Safe_Release(pObj.second);
+
 		m_pPrototypes[i].clear();
 	}
+	Safe_Delete_Array(m_pPrototypes);
 
 }

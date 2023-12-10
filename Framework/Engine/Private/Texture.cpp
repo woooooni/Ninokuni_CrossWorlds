@@ -51,6 +51,7 @@ HRESULT CTexture::Bind_ShaderResources(const CShader* pShader, const char* pCons
 
 HRESULT CTexture::Load_Texture(const wstring& strTextureFilePath, _uint iNumTextures)
 {
+	m_iNumTextures = iNumTextures;
 	for (_uint i = 0; i < iNumTextures; ++i)
 	{
 		_tchar			szFullPath[MAX_PATH] = TEXT("");

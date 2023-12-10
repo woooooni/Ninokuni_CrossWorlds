@@ -44,6 +44,7 @@ HRESULT CDummy::Ready_Components()
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Model"), TEXT("Com_NonAnim_Shader"), (CComponent**)&m_pNonAnimShaderCom)))
 		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -55,13 +56,10 @@ void CDummy::Tick(_float fTimeDelta)
 
 void CDummy::LateTick(_float fTimeDelta)
 {
-	if (nullptr == m_pRendererCom)
+	if (nullptr == m_pRendererCom || nullptr == m_pModelCom)
 		return;
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
-
-	if (nullptr == m_pModelCom)
-		return;
 
 	if(m_pModelCom->Get_ModelType() == CModel::TYPE::TYPE_ANIM)
 		m_pModelCom->Play_Animation(m_pTransformCom, fTimeDelta);
@@ -107,23 +105,10 @@ HRESULT CDummy::Ready_ModelCom(_uint eType, const wstring& strFilePath, const ws
 	_tchar szExt[MAX_PATH];
 	_wsplitpath_s(strFileName.c_str(), nullptr, 0, nullptr, 0, szFileName, MAX_PATH, szExt, MAX_PATH);
 
-	if (FAILED(GI->Check_Prototype(LEVEL_DUMMY, wstring(L"Prototype_Componenet_Model_") + szFileName)))
-	{
-		auto& iter = m_Components.find(wstring(L"Com_Model_") + szFileName);
-		if (iter != m_Components.end())
-		{
-			Safe_Release(iter->second);
-			m_Components.erase(iter);
-		}
+	if (FAILED(GI->Import_Model_Data(LEVEL_DUMMY, wstring(L"Prototype_Componenet_Model_") + szFileName, eType, strFilePath, strFileName, &m_pModelCom)))
+		return E_FAIL;
 
-		if (FAILED(__super::Add_Component(LEVEL_DUMMY, wstring(L"Prototype_Componenet_Model_") + szFileName, wstring(L"Com_Model_") + szFileName, (CComponent**)&m_pModelCom)))
-			return E_FAIL;
-	}
-	else
-	{
-		if (FAILED(GI->Import_Model_Data(LEVEL_DUMMY, wstring(L"Prototype_Componenet_Model_") + szFileName, eType, strFilePath, strFileName, &m_pModelCom)))
-			return E_FAIL;
-	}
+
 	m_pModelCom->Set_Owner(this);
 
 	return S_OK;

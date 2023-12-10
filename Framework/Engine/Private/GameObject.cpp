@@ -216,7 +216,9 @@ void CGameObject::Free()
 	__super::Free();
 
 	Safe_Release(m_pDevice);
+	m_pDevice = nullptr;
 	Safe_Release(m_pContext);
+	m_pContext = nullptr;
 
 	for (auto& Pair : m_Components)	
 		Safe_Release(Pair.second);

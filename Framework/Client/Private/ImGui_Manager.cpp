@@ -223,7 +223,6 @@ void CImGui_Manager::Free()
     Safe_Release(m_pNavigation_Tool);
     Safe_Release(m_pCamera_Tool);
     Safe_Release(m_pTerrain_Tool);
-
 }
 
 #pragma region Sample Codes

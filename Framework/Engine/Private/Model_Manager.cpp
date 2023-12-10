@@ -182,13 +182,6 @@ HRESULT CModel_Manager::Import_Model_Data(_uint iLevelIndex,
 				return E_FAIL;
 			}
 
-			if (FAILED(pModel->Ready_Animation_Texture()))
-			{
-				MSG_BOX("Ready_Animation_Texture Failed.");
-				Safe_Release(pModel);
-				return E_FAIL;
-			}
-
 			if (FAILED(GI->Add_Prototype(iLevelIndex, strProtoTypeTag, pModel)))
 			{
 				MSG_BOX("Model Add Prototype Failed : Model Manager");
@@ -200,15 +193,12 @@ HRESULT CModel_Manager::Import_Model_Data(_uint iLevelIndex,
 
 	if (ppOut != nullptr)
 	{
-		*ppOut = dynamic_cast<CModel*>(pModel->Clone());
+		*ppOut = pModel;
 		if (*ppOut == nullptr)
 		{
 			MSG_BOX("ppOut Initialize Failed. : Model Manager");
 			return E_FAIL;
 		}
-			
-			
-		Safe_AddRef(pModel);
 	}
 	return S_OK;
 	
@@ -660,7 +650,7 @@ HRESULT CModel_Manager::Import_Animation(const wstring strFinalPath, CModel* pMo
 		CAnimation* pAnimation = CAnimation::Create_Bin();
 
 		
-		pAnimation->m_strName =CUtils::ToWString(File->Read<string>()) ;
+		pAnimation->m_strName = CUtils::ToWString(File->Read<string>());
 		File->Read<_float>(pAnimation->m_fDuration);
 		File->Read<_float>(pAnimation->m_fTickPerSecond);
 		File->Read<_float>(pAnimation->m_fSpeed);
@@ -672,7 +662,7 @@ HRESULT CModel_Manager::Import_Animation(const wstring strFinalPath, CModel* pMo
 		{
 			CChannel* pChannel = CChannel::Create_Bin();
 
-			pChannel->m_strName =CUtils::ToWString(File->Read<string>());
+			pChannel->m_strName = CUtils::ToWString(File->Read<string>());
 			File->Read<_uint>(pChannel->m_iNumKeyFrames);
 
 			for (_uint k = 0; k < pChannel->m_iNumKeyFrames; ++k)
@@ -694,12 +684,6 @@ HRESULT CModel_Manager::Import_Animation(const wstring strFinalPath, CModel* pMo
 
 	if (FAILED(pModel->Ready_Animation_Texture()))
 		return E_FAIL;
-
-	return S_OK;
-}
-
-HRESULT CModel_Manager::Import_Texture(const wstring strFinalPath, CModel* pModel)
-{
 
 	return S_OK;
 }
