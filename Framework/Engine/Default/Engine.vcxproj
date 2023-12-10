@@ -181,6 +181,7 @@
       <AdditionalLibraryDirectories>../ThirdPartyLib/;</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <FxCompile>
       <AdditionalIncludeDirectories>../Bin/ShaderFiles/;</AdditionalIncludeDirectories>
