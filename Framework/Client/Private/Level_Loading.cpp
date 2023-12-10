@@ -6,6 +6,7 @@
 
 
 #include "Level_Tool.h"
+#include "Level_Test.h"
 #include "ImGui_Manager.h"
 
 
@@ -57,6 +58,12 @@ HRESULT CLevel_Loading::LateTick(_float fTimeDelta)
 			case LEVEL_TOOL:
 				pNewLevel = CLevel_Tool::Create(m_pDevice, m_pContext);
 				break;
+
+			case LEVEL_TEST:
+				pNewLevel = CLevel_Test::Create(m_pDevice, m_pContext);
+				break;
+
+
 			}
 
 			if (nullptr == pNewLevel)

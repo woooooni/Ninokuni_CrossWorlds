@@ -393,8 +393,9 @@ HRESULT CModel_Manager::Export_Animation(const wstring& strFinalFolderPath, CMod
 		File->Write<_float>(Animation->m_fSpeed);
 		File->Write<_bool>(Animation->m_bRootAnimation);
 		File->Write<_bool>(Animation->m_bLoop);
-
+		File->Write<_bool>(Animation->m_bTweeningAnim);
 		File->Write<_uint>(Animation->m_iNumChannels);
+
 		for (auto& Channel : Animation->m_Channels)
 		{
 			File->Write<string>(CUtils::ToString(Channel->m_strName));
@@ -622,11 +623,12 @@ HRESULT CModel_Manager::Import_Material(const wstring strFinalPath, const wstrin
 			}
 		}
 		
-
 		pModel->m_Materials.push_back(MaterialDesc);
 		MaterialNode = MaterialNode->NextSiblingElement();
 	}
+
 	pModel->m_iNumMaterials = pModel->m_Materials.size();
+	Safe_Delete(Document);
 	return S_OK;
 }
 #pragma endregion
@@ -656,6 +658,7 @@ HRESULT CModel_Manager::Import_Animation(const wstring strFinalPath, CModel* pMo
 		File->Read<_float>(pAnimation->m_fSpeed);
 		File->Read<_bool>(pAnimation->m_bRootAnimation);
 		File->Read<_bool>(pAnimation->m_bLoop);
+		File->Read<_bool>(pAnimation->m_bTweeningAnim);
 
 		File->Read<_uint>(pAnimation->m_iNumChannels);
 		for (_uint j = 0; j < pAnimation->m_iNumChannels; ++j)

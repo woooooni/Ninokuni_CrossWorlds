@@ -54,7 +54,7 @@ namespace Client
 		OBJ_END
 	};
 
-	enum LEVELID { LEVEL_STATIC, LEVEL_LOGO, LEVEL_TOOL, LEVEL_LOADING, LEVEL_DUMMY, LEVEL_END };
+	enum LEVELID { LEVEL_STATIC, LEVEL_LOGO, LEVEL_TEST, LEVEL_TOOL, LEVEL_LOADING, LEVEL_DUMMY, LEVEL_END };
 
 	const unsigned int		g_iWinSizeX = 1600;
 	const unsigned int		g_iWinSizeY = 900;

@@ -9,6 +9,8 @@
 
 #include "Dummy.h"
 #include "Terrain.h"
+#include "BackGround.h"
+
 #include <filesystem>
 #include "Utils.h"
 #include "ImGui_Manager.h"
@@ -70,6 +72,10 @@ _int CLoader::Loading()
 		hr = Loading_For_Level_Logo();
 		break;
 
+	case LEVEL_TEST:
+		hr = Loading_For_Level_Test();
+		break;
+
 	case LEVEL_TOOL:
 		hr = Loading_For_Level_Tool();
 		break;
@@ -95,6 +101,28 @@ HRESULT CLoader::Loading_For_Level_Logo()
 	/* For.GameObject */
 	m_strLoading = TEXT("객체원형을 로딩 중 입니다.");
 
+
+
+
+	m_strLoading = TEXT("로딩 끝.");
+	m_isFinished = true;
+
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Level_Test()
+{
+	/* For.Texture */
+	m_strLoading = TEXT("텍스쳐를 로딩 중 입니다.");
+
+
+	/* For.Shader */
+	m_strLoading = TEXT("셰이더를 로딩 중 입니다.");
+
+	/* For.GameObject */
+	m_strLoading = TEXT("객체원형을 로딩 중 입니다.");
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Background", CBackGround::Create(m_pDevice, m_pContext), LAYER_BACKGROUND)))
+		return E_FAIL;
 
 
 

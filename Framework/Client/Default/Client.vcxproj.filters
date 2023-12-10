@@ -28,9 +28,6 @@
     <Filter Include="96. Manager\ImGui\Libs">
       <UniqueIdentifier>{13a1723b-7fbe-4476-8b56-eb612d652727}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Levels\98. Tool">
-      <UniqueIdentifier>{68e03805-ac5d-4811-8d75-d88895ad5614}</UniqueIdentifier>
-    </Filter>
     <Filter Include="96. Manager\ImGui\Libs\Docking">
       <UniqueIdentifier>{9f636762-d842-4778-89d0-4c71d473c2af}</UniqueIdentifier>
     </Filter>
@@ -132,6 +129,12 @@
     </Filter>
     <Filter Include="96. Manager\UI">
       <UniqueIdentifier>{7d299768-5685-4b72-87a0-b43f94011bcb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\98. Tool">
+      <UniqueIdentifier>{68e03805-ac5d-4811-8d75-d88895ad5614}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\97. Test">
+      <UniqueIdentifier>{34038f28-6bb9-4c09-b66c-db8e65add9cf}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -285,6 +288,9 @@
     <ClInclude Include="..\Public\UI_Manager.h">
       <Filter>96. Manager\UI</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Level_Test.h">
+      <Filter>01.Levels\97. Test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -421,6 +427,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\UI_Manager.cpp">
       <Filter>96. Manager\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Test.cpp">
+      <Filter>01.Levels\97. Test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

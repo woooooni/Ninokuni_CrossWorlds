@@ -155,7 +155,7 @@ _bool CCell::isOut(Vec4 vWorldPosition, Matrix WorldMatrix, _int* pNeighborIndex
 	return false;
 }
 
-#ifdef _DEBUG
+
 
 _bool CCell::Is_InCell(_vector vWorldPosition)
 {
@@ -194,6 +194,8 @@ _bool CCell::Is_Equal(CCell* pOtherCell)
 		&& (bCompares[1] == true) 
 		&& (bCompares[2] == true));
 }
+
+#ifdef _DEBUG
 
 HRESULT CCell::Render(CShader* pShader)
 {
