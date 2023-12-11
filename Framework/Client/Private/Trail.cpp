@@ -190,7 +190,7 @@ CGameObject* CTrail::Clone(void* pArg)
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Failed to Cloned : CNezko");
+		MSG_BOX("Failed to Cloned : CTrail");
 		Safe_Release(pInstance);
 	}
 
@@ -200,5 +200,11 @@ CGameObject* CTrail::Clone(void* pArg)
 void CTrail::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pRendererCom);
+	Safe_Release(m_pShaderCom);
+	Safe_Release(m_pDiffuseTextureCom);
+	Safe_Release(m_pAlphaTextureCom);
+	Safe_Release(m_pVIBufferCom);
 
 }

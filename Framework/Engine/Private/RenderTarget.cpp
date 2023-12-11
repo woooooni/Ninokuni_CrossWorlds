@@ -2,7 +2,7 @@
 #include "VIBuffer_Rect.h"
 #include "Shader.h"
 
-CRenderTarget::CRenderTarget(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+CRenderTarget::CRenderTarget(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice(pDevice)
 	, m_pContext(pContext)
 {
@@ -114,7 +114,7 @@ CRenderTarget * CRenderTarget::Create(ID3D11Device * pDevice, ID3D11DeviceContex
 
 void CRenderTarget::Free()
 {
-	// SaveDDSTextureToFile(m_pContext, m_pTexture2D, TEXT("../Bin/Diffuse.dds"));
+	__super::Free();
 
 	Safe_Release(m_pSRV);
 	Safe_Release(m_pRTV);

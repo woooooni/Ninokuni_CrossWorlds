@@ -77,7 +77,10 @@ public:
 
 public:
     virtual void LateTick_Collider(_float fTimeDelta);
-    HRESULT Render() PURE;
+
+#ifdef _DEBUG
+    HRESULT Render() override;
+#endif
     
 protected:
     static _uint g_iNextID;
@@ -107,6 +110,7 @@ protected:
 
 
 
+#ifdef _DEBUG
 protected:
     class PrimitiveBatch<VertexPositionColor>* m_pBatch = nullptr;
     class BasicEffect* m_pEffect = nullptr;
@@ -114,6 +118,8 @@ protected:
 
     _float4	m_vColor = _float4(0.f, 1.f, 0.f, 1.f);
     _bool m_bDraw = true;
+
+#endif
 
 public:
     virtual CComponent* Clone(void* pArg);

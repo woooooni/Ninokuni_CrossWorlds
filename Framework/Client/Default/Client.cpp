@@ -30,11 +30,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_ int       nCmdShow)
 {
 #ifdef _DEBUG
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+    _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
+    // _CrtSetBreakAlloc(336813);
 #endif
-
-
+    
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
@@ -98,7 +98,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	/* 전체적인 삭제 작업을 처리한다. */
 	Safe_Release(pMainApp);
-
     return (int) msg.wParam;
 }
 

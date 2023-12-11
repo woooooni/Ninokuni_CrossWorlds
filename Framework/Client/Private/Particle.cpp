@@ -206,6 +206,7 @@ CGameObject* CParticle::Clone(void* pArg)
 	{
 		MSG_BOX("Failed to Cloned : CParticle");
 		Safe_Release(pInstance);
+		return nullptr;
 	}
 
 	return pInstance;

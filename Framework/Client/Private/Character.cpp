@@ -75,11 +75,11 @@ void CCharacter::Tick(_float fTimeDelta)
 		if (nullptr == m_pTrails[i])
 			continue;
 
-		Matrix		WorldMatrix = m_Sockets[i]->Get_CombinedTransformation() * m_pModelCom->Get_PivotMatrix();
+		_matrix		WorldMatrix = m_Sockets[i]->Get_CombinedTransformation() * m_pModelCom->Get_PivotMatrix();
 
-		WorldMatrix.Right(XMVector3Normalize(WorldMatrix.Right()));
-		WorldMatrix.Up(XMVector3Normalize(WorldMatrix.Up()));
-		WorldMatrix.Forward(XMVector3Normalize(WorldMatrix.Forward()));
+		WorldMatrix.r[CTransform::STATE_RIGHT] = XMVector3Normalize(WorldMatrix.r[CTransform::STATE_RIGHT]);
+		WorldMatrix.r[CTransform::STATE_UP] = XMVector3Normalize(WorldMatrix.r[CTransform::STATE_UP]);
+		WorldMatrix.r[CTransform::STATE_LOOK] = XMVector3Normalize(WorldMatrix.r[CTransform::STATE_LOOK]);
 
 		m_pTrails[i]->Set_TransformMatrix(WorldMatrix * m_pTransformCom->Get_WorldMatrix());
 		m_pTrails[i]->Tick(fTimeDelta);
@@ -110,7 +110,7 @@ void CCharacter::LateTick(_float fTimeDelta)
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
 	
 
-	m_pRendererCom->Set_PlayerPosition(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+	
 
 	for (_uint i = 0; i < SOCKET_END; ++i)
 	{
@@ -121,13 +121,15 @@ void CCharacter::LateTick(_float fTimeDelta)
 	}
 
 
-
+#ifdef _DEBUG
+	m_pRendererCom->Set_PlayerPosition(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
 	{
 		for (auto& pCollider : m_Colliders[i])
 			m_pRendererCom->Add_Debug(pCollider);
 	}
 	m_pRendererCom->Add_Debug(m_pNavigationCom);
+#endif
 }
 
 HRESULT CCharacter::Render()

@@ -214,6 +214,6 @@ CChannel* CChannel::Create_Bin()
 
 void CChannel::Free()
 {
-
+	__super::Free();
 }
 

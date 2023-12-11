@@ -2038,7 +2038,7 @@ namespace tinyxml2
 			DeleteNode(_unlinked[0]);	// Will remove from _unlinked as part of delete.
 		}
 
-#ifdef DEBUG
+#ifdef _DEBUG
 		const bool hadError = Error();
 #endif
 		ClearError();
@@ -2053,7 +2053,7 @@ namespace tinyxml2
 		_attributePool.Trace("attribute");
 #endif
 
-#ifdef DEBUG
+#ifdef _DEBUG
 		if (!hadError) {
 			TIXMLASSERT(_elementPool.CurrentAllocs() == _elementPool.Untracked());
 			TIXMLASSERT(_attributePool.CurrentAllocs() == _attributePool.Untracked());

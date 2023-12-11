@@ -538,6 +538,11 @@ void CGameInstance::Set_ChannelVolume(CHANNELID eID, float fVolume)
 	m_pSound_Manager->Set_ChannelVolume(eID, fVolume);
 }
 
+FMOD_CHANNEL* CGameInstance::Get_Channel(CHANNELID eID)
+{
+	return m_pSound_Manager->Get_Channel(eID);
+}
+
 //void CGameInstance::Set_ServerSession(ServerSessionRef session)
 //{
 //	m_pNetwork_Manager->Set_ServerSession(session);
@@ -560,34 +565,6 @@ void CGameInstance::Set_ChannelVolume(CHANNELID eID, float fVolume)
 //}
 
 
-#pragma region No Use(Camera_Manager)
-//HRESULT CGameInstance::Add_Camera(const wstring& strCameraName, CCamera* pCamera)
-//{
-//	if (nullptr == m_pCamera_Manager)
-//		return E_FAIL;
-//
-//	return m_pCamera_Manager->Add_Camera(strCameraName, pCamera);
-//}
-//
-//HRESULT CGameInstance::Set_MainCamera(const wstring& strCameraName)
-//{
-//	if (nullptr == m_pCamera_Manager)
-//		return E_FAIL;
-//
-//	
-//	return m_pCamera_Manager->Set_MainCamera(strCameraName);
-//}
-//
-//HRESULT CGameInstance::Camera_Clear()
-//{
-//	if (nullptr == m_pCamera_Manager)
-//		return E_FAIL;
-//
-//	return m_pCamera_Manager->Clear();
-//}
-#pragma endregion
-
-
 
 
 
@@ -595,22 +572,22 @@ void CGameInstance::Set_ChannelVolume(CHANNELID eID, float fVolume)
 
 void CGameInstance::Release_Engine()
 {
+	CGameInstance::GetInstance()->DestroyInstance();
+	CKey_Manager::GetInstance()->DestroyInstance();
+	CInput_Device::GetInstance()->DestroyInstance();
 	CSound_Manager::GetInstance()->DestroyInstance();
 	CLevel_Manager::GetInstance()->DestroyInstance();
-	CTarget_Manager::GetInstance()->DestroyInstance();
-	CObject_Manager::GetInstance()->DestroyInstance();
-	CComponent_Manager::GetInstance()->DestroyInstance();
 	CTimer_Manager::GetInstance()->DestroyInstance();
 	CFrustum::GetInstance()->DestroyInstance();
 	CPipeLine::GetInstance()->DestroyInstance();
-	CInput_Device::GetInstance()->DestroyInstance();
 	CLight_Manager::GetInstance()->DestroyInstance();
-	CKey_Manager::GetInstance()->DestroyInstance();
 	CFont_Manager::GetInstance()->DestroyInstance();
 	CModel_Manager::GetInstance()->DestroyInstance();
 	CCollision_Manager::GetInstance()->DestroyInstance();
+	CObject_Manager::GetInstance()->DestroyInstance();
+	CComponent_Manager::GetInstance()->DestroyInstance();
+	CTarget_Manager::GetInstance()->DestroyInstance();
 	CGraphic_Device::GetInstance()->DestroyInstance();
-	CGameInstance::GetInstance()->DestroyInstance();
 }
 
 void CGameInstance::Free()

@@ -201,9 +201,10 @@ float PCF_ShadowCaculation(float4 vLightPos, float3 vLightDir)
 	float2 texelSize = float2(1.f / 1600.f, 1.f / 900.f);
 	texelSize /= 10.f;
 
-
+	[unroll]
 	for (int x = -1; x <= 1; ++x)
 	{
+		[unroll]
 		for (int y = -1; y <= 1; ++y)
 		{
 			float fPCFDepth = g_ShadowTarget.Sample(PointSampler, projCoords.xy + (float2(x, y) * texelSize)).r;
@@ -325,7 +326,7 @@ PS_OUT PS_BLUR_DOWNSCALE(PS_IN In)
 float2 g_PixleSize = float2(1.f / (1600.f / 2.f), 1.f / (900.f / 2.f));
 
 
-PS_OUT PS_BLUR_Horizontal(PS_IN In) : SV_TARGET0
+PS_OUT PS_BLUR_Horizontal(PS_IN In)
 {
 	PS_OUT Out = (PS_OUT)0;
 	float fWeights[5] = { 1.f, 0.9f, 0.55f, 0.18f, 0.1f };
@@ -352,7 +353,7 @@ PS_OUT PS_BLUR_Horizontal(PS_IN In) : SV_TARGET0
 	return Out;
 }
 
-PS_OUT PS_BLUR_Vertical(PS_IN In) : SV_TARGET0
+PS_OUT PS_BLUR_Vertical(PS_IN In)
 {
 	PS_OUT Out = (PS_OUT)0;
 	float fWeights[5] = { 1.f, 0.9f, 0.55f, 0.18f, 0.1f };

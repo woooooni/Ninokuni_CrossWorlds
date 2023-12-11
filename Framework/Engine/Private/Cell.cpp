@@ -70,14 +70,17 @@ HRESULT CCell::Initialize(const CELL_DESC& tDesc, vector<_float3>& Points)
 		XMStoreFloat3(&m_vNormals[i], XMVector3Normalize(XMLoadFloat3(&m_vNormals[i])));
 	}
 
+#ifdef _DEBUG
 	m_pVIBuffer = CVIBuffer_Cell::Create(m_pDevice, m_pContext, m_vPoints_InWorld);
 	if (nullptr == m_pVIBuffer)
 		return E_FAIL;
 
+#endif // DEBUG
+
 	return S_OK;
 }
 
-void CCell::Update(Matrix WorldMatrix)
+void CCell::Update(_matrix WorldMatrix)
 {
 	//for (size_t i = 0; i < POINT_END; i++)
 	//{
@@ -122,16 +125,16 @@ _bool CCell::Compare_Points(const _float3 * pSourPoint, const _float3 * pDestPoi
 	return false;
 }
 
-_bool CCell::isOut(Vec4 vWorldPosition, Matrix WorldMatrix, _int* pNeighborIndex, Vec3 vLook, __out Vec3* pSliding)
+_bool CCell::isOut(_vector vWorldPosition, _matrix WorldMatrix, _int* pNeighborIndex, _vector vLook, __out _vector* pSliding)
 {
 	for (size_t i = 0; i < LINE_END; i++)
 	{
-		Vec3		vWorldPoint = XMLoadFloat3(&m_vPoints_InWorld[i]);
-		Vec3		vSour = XMVector3Normalize(vWorldPosition.xyz() - vWorldPoint);
-		Vec3		vDest = XMVector3Normalize(XMLoadFloat3(&m_vNormals[i]));
+		_vector		vWorldPoint = XMVectorSetW(XMLoadFloat3(&m_vPoints_InWorld[i]), 0);
+		_vector		vSour = XMVector3Normalize(vWorldPosition - vWorldPoint);
+		_vector		vDest = XMVector3Normalize(XMLoadFloat3(&m_vNormals[i]));
 
 		_float fRadian = XMVectorGetX(XMVector3Dot(vSour, vDest));
-		if (0.f <= fRadian)
+		if (0.f < fRadian)
 		{
 			*pNeighborIndex = m_iNeighborIndices[i];
 
@@ -152,7 +155,7 @@ _bool CCell::isOut(Vec4 vWorldPosition, Matrix WorldMatrix, _int* pNeighborIndex
 	return false;
 }
 
-#ifdef _DEBUG
+
 
 _bool CCell::Is_InCell(_vector vWorldPosition)
 {
@@ -191,6 +194,8 @@ _bool CCell::Is_Equal(CCell* pOtherCell)
 		&& (bCompares[1] == true) 
 		&& (bCompares[2] == true));
 }
+
+#ifdef _DEBUG
 
 HRESULT CCell::Render(CShader* pShader)
 {

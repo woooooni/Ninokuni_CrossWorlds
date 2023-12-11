@@ -115,6 +115,7 @@ HRESULT CMesh::Initialize_Bin(CModel* pModel, const vector<wstring>& BoneNames)
 		m_iNumBones = 1;
 		m_BoneNames.push_back(pNode->Get_Name());
 		m_Bones.push_back(pNode);
+		Safe_AddRef(pNode);
 
 	}
 
@@ -157,6 +158,8 @@ HRESULT CMesh::SetUp_HierarchyNodes(CModel* pModel, aiMesh* pAIMesh)
 		m_BoneNames.push_back(pNode->Get_Name());
 		m_Bones.push_back(pNode);
 
+		Safe_AddRef(pNode);
+
 	}
 
 	return S_OK;
@@ -180,9 +183,8 @@ HRESULT CMesh::SetUp_HierarchyNodes(CModel* pModel)
 			return S_OK;
 
 		m_iNumBones = 1;
-
 		m_Bones.push_back(pNode);
-
+		Safe_AddRef(pNode);
 	}
 
 	return S_OK;
@@ -499,8 +501,6 @@ void CMesh::Free()
 
 	for (auto& pHierarchyNode : m_Bones)
 		Safe_Release(pHierarchyNode);
-
-
 
 	m_Bones.clear();
 

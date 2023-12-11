@@ -182,13 +182,6 @@ HRESULT CModel_Manager::Import_Model_Data(_uint iLevelIndex,
 				return E_FAIL;
 			}
 
-			if (FAILED(pModel->Ready_Animation_Texture()))
-			{
-				MSG_BOX("Ready_Animation_Texture Failed.");
-				Safe_Release(pModel);
-				return E_FAIL;
-			}
-
 			if (FAILED(GI->Add_Prototype(iLevelIndex, strProtoTypeTag, pModel)))
 			{
 				MSG_BOX("Model Add Prototype Failed : Model Manager");
@@ -200,15 +193,12 @@ HRESULT CModel_Manager::Import_Model_Data(_uint iLevelIndex,
 
 	if (ppOut != nullptr)
 	{
-		*ppOut = dynamic_cast<CModel*>(pModel->Clone());
+		*ppOut = pModel;
 		if (*ppOut == nullptr)
 		{
 			MSG_BOX("ppOut Initialize Failed. : Model Manager");
 			return E_FAIL;
 		}
-			
-			
-		Safe_AddRef(pModel);
 	}
 	return S_OK;
 	
@@ -403,8 +393,9 @@ HRESULT CModel_Manager::Export_Animation(const wstring& strFinalFolderPath, CMod
 		File->Write<_float>(Animation->m_fSpeed);
 		File->Write<_bool>(Animation->m_bRootAnimation);
 		File->Write<_bool>(Animation->m_bLoop);
-
+		File->Write<_bool>(Animation->m_bTweeningAnim);
 		File->Write<_uint>(Animation->m_iNumChannels);
+
 		for (auto& Channel : Animation->m_Channels)
 		{
 			File->Write<string>(CUtils::ToString(Channel->m_strName));
@@ -632,11 +623,12 @@ HRESULT CModel_Manager::Import_Material(const wstring strFinalPath, const wstrin
 			}
 		}
 		
-
 		pModel->m_Materials.push_back(MaterialDesc);
 		MaterialNode = MaterialNode->NextSiblingElement();
 	}
+
 	pModel->m_iNumMaterials = pModel->m_Materials.size();
+	Safe_Delete(Document);
 	return S_OK;
 }
 #pragma endregion
@@ -660,19 +652,20 @@ HRESULT CModel_Manager::Import_Animation(const wstring strFinalPath, CModel* pMo
 		CAnimation* pAnimation = CAnimation::Create_Bin();
 
 		
-		pAnimation->m_strName =CUtils::ToWString(File->Read<string>()) ;
+		pAnimation->m_strName = CUtils::ToWString(File->Read<string>());
 		File->Read<_float>(pAnimation->m_fDuration);
 		File->Read<_float>(pAnimation->m_fTickPerSecond);
 		File->Read<_float>(pAnimation->m_fSpeed);
 		File->Read<_bool>(pAnimation->m_bRootAnimation);
 		File->Read<_bool>(pAnimation->m_bLoop);
+		File->Read<_bool>(pAnimation->m_bTweeningAnim);
 
 		File->Read<_uint>(pAnimation->m_iNumChannels);
 		for (_uint j = 0; j < pAnimation->m_iNumChannels; ++j)
 		{
 			CChannel* pChannel = CChannel::Create_Bin();
 
-			pChannel->m_strName =CUtils::ToWString(File->Read<string>());
+			pChannel->m_strName = CUtils::ToWString(File->Read<string>());
 			File->Read<_uint>(pChannel->m_iNumKeyFrames);
 
 			for (_uint k = 0; k < pChannel->m_iNumKeyFrames; ++k)
@@ -694,12 +687,6 @@ HRESULT CModel_Manager::Import_Animation(const wstring strFinalPath, CModel* pMo
 
 	if (FAILED(pModel->Ready_Animation_Texture()))
 		return E_FAIL;
-
-	return S_OK;
-}
-
-HRESULT CModel_Manager::Import_Texture(const wstring strFinalPath, CModel* pModel)
-{
 
 	return S_OK;
 }

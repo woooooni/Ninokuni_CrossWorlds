@@ -391,7 +391,7 @@ namespace tinyxml2
 			}
 			--_currentAllocs;
 			Item* item = static_cast<Item*>(mem);
-#ifdef DEBUG
+#ifdef _DEBUG
 			memset(item, 0xfe, sizeof(*item));
 #endif
 			item->next = _root;
@@ -1882,11 +1882,17 @@ namespace tinyxml2
 		NodeType* CreateUnlinkedNode(MemPoolT<PoolElementSize>& pool);
 	};
 
+#ifdef DBG_NEW
+#define new new
+#endif
+
 	template<class NodeType, int PoolElementSize>
 	inline NodeType* XMLDocument::CreateUnlinkedNode(MemPoolT<PoolElementSize>& pool)
 	{
 		TIXMLASSERT(sizeof(NodeType) == PoolElementSize);
 		TIXMLASSERT(sizeof(NodeType) == pool.ItemSize());
+
+
 		NodeType* returnNode = new (pool.Alloc()) NodeType(this);
 		TIXMLASSERT(returnNode);
 		returnNode->_memPool = &pool;

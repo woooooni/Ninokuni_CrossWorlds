@@ -58,6 +58,8 @@ HRESULT CImGui_Manager::Reserve_Manager(HWND hWnd, ID3D11Device* pDevice, ID3D11
     ImGui_ImplWin32_Init(g_hWnd);
     ImGui_ImplDX11_Init(pDevice, pContext);
 
+    m_bInitialize = true;
+
 #pragma region Terrain Batch Example
 
   /*  m_pBatch = new PrimitiveBatch<VertexPositionColor>(m_pContext);
@@ -212,9 +214,13 @@ void CImGui_Manager::Free()
     Safe_Release(m_pDevice);
     Safe_Release(m_pContext);
 
-    ImGui_ImplDX11_Shutdown();
-    ImGui_ImplWin32_Shutdown();
-    ImGui::DestroyContext();
+    if (true == m_bInitialize)
+    {
+        ImGui_ImplDX11_Shutdown();
+        ImGui_ImplWin32_Shutdown();
+        ImGui::DestroyContext();
+    }
+    
 
     Safe_Release(m_pModel_Tool);
     Safe_Release(m_pEffect_Tool);
@@ -223,7 +229,6 @@ void CImGui_Manager::Free()
     Safe_Release(m_pNavigation_Tool);
     Safe_Release(m_pCamera_Tool);
     Safe_Release(m_pTerrain_Tool);
-
 }
 
 #pragma region Sample Codes

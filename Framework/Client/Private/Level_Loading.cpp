@@ -6,8 +6,8 @@
 
 
 #include "Level_Tool.h"
+#include "Level_Test.h"
 #include "ImGui_Manager.h"
-#include "Network_Manager.h"
 
 
 CLevel_Loading::CLevel_Loading(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
@@ -58,6 +58,12 @@ HRESULT CLevel_Loading::LateTick(_float fTimeDelta)
 			case LEVEL_TOOL:
 				pNewLevel = CLevel_Tool::Create(m_pDevice, m_pContext);
 				break;
+
+			case LEVEL_TEST:
+				pNewLevel = CLevel_Test::Create(m_pDevice, m_pContext);
+				break;
+
+
 			}
 
 			if (nullptr == pNewLevel)
@@ -100,6 +106,5 @@ CLevel_Loading * CLevel_Loading::Create(ID3D11Device * pDevice, ID3D11DeviceCont
 void CLevel_Loading::Free()
 {
 	__super::Free();
-
 	Safe_Release(m_pLoader);
 }

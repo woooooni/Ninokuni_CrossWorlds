@@ -70,6 +70,7 @@ void CCollider_Sphere::LateTick_Collider(_float fTimeDelta)
 	XMStoreFloat3(&m_tBoundingSphere.Center, XMLoadFloat4x4(&m_FinalMatrix).r[CTransform::STATE_POSITION]);
 }
 
+#ifdef _DEBUG
 HRESULT CCollider_Sphere::Render()
 {
 	/*if (m_bActive && m_eDetectionType != CCollider::BOUNDARY)
@@ -114,6 +115,7 @@ HRESULT CCollider_Sphere::Render()
 	return S_OK;
 }
 
+#endif // DEBUG
 
 void CCollider_Sphere::Collision_Enter(CCollider* pCollider)
 {
@@ -156,11 +158,5 @@ CComponent* CCollider_Sphere::Clone(void* pArg)
 
 void CCollider_Sphere::Free()
 {
-		
-	Safe_Delete(m_pBatch);
-	Safe_Delete(m_pEffect);
-	Safe_Release(m_pNode);
-	Safe_Release(m_pOwnerTransformCom);
-
 	__super::Free();
 }
