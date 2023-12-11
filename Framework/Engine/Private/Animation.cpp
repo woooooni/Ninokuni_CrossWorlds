@@ -184,6 +184,28 @@ void CAnimation::Set_AnimationPlayTime(CTransform* pTransform, _float fPlayTime,
 	}
 }
 
+HRESULT CAnimation::Calculate_Animation(const _uint& iFrame)
+{
+	/* 모든 채널의 키프레임을 iFrame으로 세팅한다. */
+	for (auto& pChannel : m_Channels)
+	{
+		for (auto& iCurrentKeyFrame : m_ChannelKeyFrames)
+			iCurrentKeyFrame = iFrame;
+	}
+
+	/* 위에서 지전항 키프레임대로, 모든 채널의 키프레임을 보간한다. (아직 부모 기준) */
+	_uint iChannelIndex = 0;
+	for (auto& pChannel : m_Channels)
+	{
+		m_ChannelKeyFrames[iChannelIndex]
+			= pChannel->Update_Transformation_NoneLerp(m_ChannelKeyFrames[iChannelIndex], m_HierarchyNodes[iChannelIndex]);
+
+		++iChannelIndex;
+	}
+
+	return S_OK;
+}
+
 CAnimation* CAnimation::Create(aiAnimation* pAIAnimation)
 {
 	CAnimation* pInstance = new CAnimation();

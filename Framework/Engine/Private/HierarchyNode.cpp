@@ -67,7 +67,7 @@ HRESULT CHierarchyNode::Initialize_Bin(CModel* pModel)
 }
 
 
-void CHierarchyNode::Set_CombinedTransformation(const wstring& strRootBoneName)
+void CHierarchyNode::Set_CombinedTransformation()
 {
 		
 	if (nullptr != m_pParent)

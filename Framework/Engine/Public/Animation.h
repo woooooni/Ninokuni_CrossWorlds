@@ -35,6 +35,7 @@ public:
 
 	void Set_AnimationPlayTime(class CTransform* pTransform, _float fPlayTime, _float fTimeDelta);
 	_float Get_PlayTime() { return m_fPlayTime; }
+	void Add_PlayTime(const _float fTime) { m_fPlayTime += fTime; }
 
 	void Set_TickPerSecond(_float fTickPerSecond) { m_fTickPerSecond = fTickPerSecond; }
 	_float Get_TickPerSecond() { return m_fTickPerSecond; }
@@ -61,6 +62,9 @@ public:
 
 	void Set_TweenAnimation(_bool bTween) { m_bTweeningAnim = bTween; }
 	_bool Is_TweenAnimation() { return m_bTweeningAnim; }
+
+public:
+	HRESULT Calculate_Animation(const _uint& iFrame);
 
 private:
 	wstring						m_strName;

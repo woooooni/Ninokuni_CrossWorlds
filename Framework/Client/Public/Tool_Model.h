@@ -13,10 +13,23 @@ public:
 	virtual HRESULT Initialize() override;
 	virtual void Tick(_float fTimeDelta) override;
 
+
+private:
+	/* Animation Model */
+	HRESULT Read_Fbx();
+	HRESULT Export_Binary();
+	HRESULT Create_Vtf();
+
 private:
 	wstring m_strFilePath = L"";
 	wstring m_strFileName = L"";
 	class CDummy* m_pDummy = nullptr;
+
+private:
+	/* Animation Model */
+
+
+
 
 private:
 	void Tick_Animation(_float fTimeDelta);

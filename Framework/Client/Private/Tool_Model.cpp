@@ -70,10 +70,12 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 
 
 		{
+			ImGui::Text("Type");
+			IMGUI_SAME_LINE;
+
 			static const char* szImportModelTypes[] = { "NON_ANIM", "ANIM" };
 			static const char* szImportModelType = NULL;
 			static _int iSelectedImportModelType = -1;
-
 			if (ImGui::BeginCombo("##ImportModelType", szImportModelType))
 			{
 				for (int n = 0; n < IM_ARRAYSIZE(szImportModelTypes); n++)
@@ -175,7 +177,7 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 		ImGui::End();
 		return;
 	}
-		
+	
 	static char szAnimationName[255];
 	if (nullptr != m_pDummy->Get_ModelCom())
 	{
@@ -221,7 +223,6 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 	                sprintf_s(szAnimationName, CUtils::ToString(Animations[pModelCom->Get_CurrAnimationIndex()]->Get_AnimationName()).c_str());
 	            }
 	        }
-	
 	        ImGui::EndListBox();
 	    }
 	    IMGUI_SAME_LINE;

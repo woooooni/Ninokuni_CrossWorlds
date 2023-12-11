@@ -53,7 +53,7 @@ public:
 	HRESULT Initialize_Bin(class CModel* pModel);
 
 public:
-	void Set_CombinedTransformation(const wstring& strRootBoneName);
+	void Set_CombinedTransformation();
 	void Set_OffsetMatrix(_fmatrix OffsetMatrix);
 
 private:

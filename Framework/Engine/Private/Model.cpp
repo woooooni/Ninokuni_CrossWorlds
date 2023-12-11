@@ -234,6 +234,26 @@ HRESULT CModel::Initialize_Bin(void* pArg)
 	return S_OK;
 }
 
+HRESULT CModel::LateTick(_float fTimeDelta)
+{
+	if (TYPE::TYPE_ANIM != m_eModelType)
+		return S_OK;
+
+	CAnimation* pCurAnim = m_Animations[m_TweenDesc.cur.iAnimIndex];
+	if (nullptr != pCurAnim)
+	{
+		
+		// 루키스 비교해서 타임값 가져오면 될듯! 
+
+		const _float fTickPerFrame = pCurAnim->Get_AnimationSpeed() * pCurAnim->Get_TickPerSecond() * fTimeDelta;
+
+		pCurAnim->Add_PlayTime(fTickPerFrame);
+
+
+	}
+	return S_OK;
+}
+
 CHierarchyNode* CModel::Get_HierarchyNode(const wstring& strNodeName)
 {
 	auto	iter = find_if(m_HierarchyNodes.begin(), m_HierarchyNodes.end(), [&](CHierarchyNode* pNode)
@@ -329,7 +349,7 @@ HRESULT CModel::Play_Animation(CTransform* pTransform, _float fTimeDelta)
 		
 
 	for (auto& pHierarchyNode : m_HierarchyNodes)
-		pHierarchyNode->Set_CombinedTransformation(m_HierarchyNodes[0]->Get_Name());
+		pHierarchyNode->Set_CombinedTransformation();
 
 	if (m_bInterpolationAnimation)	
 		return S_OK;
