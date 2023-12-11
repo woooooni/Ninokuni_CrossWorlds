@@ -82,12 +82,12 @@ void CCamera_Tool::Tick(_float fTimeDelta)
 
 		if (MouseMove = GI->Get_DIMMoveState(DIMM_X))
 		{
-			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), MouseMove * 0.05f, fTimeDelta);
+			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), MouseMove * 0.1f, fTimeDelta);
 		}
 
 		if (MouseMove = GI->Get_DIMMoveState(DIMM_Y))
 		{
-			m_pTransformCom->Turn(m_pTransformCom->Get_State(CTransform::STATE_RIGHT), MouseMove * 0.05f, fTimeDelta);
+			m_pTransformCom->Turn(m_pTransformCom->Get_State(CTransform::STATE_RIGHT), MouseMove * 0.1f, fTimeDelta);
 		}
 	}
 

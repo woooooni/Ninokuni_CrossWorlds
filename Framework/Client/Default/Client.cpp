@@ -32,7 +32,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #ifdef _DEBUG
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
     _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
-    // _CrtSetBreakAlloc(336813);
+    // _CrtSetBreakAlloc(765);
 #endif
     
     UNREFERENCED_PARAMETER(hPrevInstance);

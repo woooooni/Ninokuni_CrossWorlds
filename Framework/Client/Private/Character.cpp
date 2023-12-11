@@ -235,51 +235,12 @@ void CCharacter::Collision_Enter(const COLLISION_INFO& tInfo)
 
 void CCharacter::Collision_Continue(const COLLISION_INFO& tInfo)
 {
-	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER)
-	{
-		CTransform* pOtherTransform = tInfo.pOther->Get_Component<CTransform>(L"Com_Transform");
-		_vector vTargetDir = pOtherTransform->Get_State(CTransform::STATE::STATE_POSITION) - m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION);
-
-		_float fTargetLen = XMVectorGetX(XMVector3Length(vTargetDir));
-		if (tInfo.pOtherCollider->Get_DetectionType() == CCollider::BODY
-			&& tInfo.pMyCollider->Get_DetectionType() == CCollider::BODY)
-		{
-			vTargetDir = XMVectorSetY(vTargetDir, 0.f);
-			vTargetDir = XMVector3Normalize(vTargetDir);
-			vTargetDir *= -1.f;
-
-			_float fForce = tInfo.pMyCollider->Get_Radius() + tInfo.pOtherCollider->Get_Radius() - (fTargetLen);
-
-			if (fForce / 2.f > 0.f)
-			{
-				_float fTimeDelta = GI->Get_TimeDelta(TIMER_TYPE::GAME_PLAY);
-				m_pRigidBodyCom->Set_PushVelocity(vTargetDir * (fForce / 2.f), fTimeDelta);
-			}
-		}
-	}
-
 
 }
 
 void CCharacter::Collision_Exit(const COLLISION_INFO& tInfo)
 {
-	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER
-		|| tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER)
-	{
-		if (tInfo.pOtherCollider->Get_DetectionType() == CCollider::BODY
-			&& tInfo.pMyCollider->Get_DetectionType() == CCollider::BODY)
-		{
-			if (m_pStateCom->Get_CurrState() == CCharacter::STATE::DAMAGED_BLOW)
-				return;
-
-			_float3 vVelocity = m_pRigidBodyCom->Get_Velocity();
-
-			vVelocity.x = 0.f;
-			vVelocity.z = 0.f;
-
-			m_pRigidBodyCom->Set_Velocity(vVelocity);
-		}
-	}
+	
 }
 
 

@@ -12,6 +12,8 @@
 #include "Collision_Manager.h"
 #include "Target_Manager.h"
 #include "Frustum.h"
+#include "PhysX_Manager.h"
+#include "Utils.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -31,6 +33,7 @@ CGameInstance::CGameInstance()
 	, m_pTarget_Manager(CTarget_Manager::GetInstance())
 	, m_pFrustum(CFrustum::GetInstance())
 	, m_pSound_Manager(CSound_Manager::GetInstance())
+	, m_pPhysXManager(CPhysX_Manager::GetInstance())
 	// , m_pNetwork_Manager(CNetwork_Manager::GetInstance())
 	
 {
@@ -42,13 +45,14 @@ CGameInstance::CGameInstance()
 	Safe_AddRef(m_pTimer_Manager);
 	Safe_AddRef(m_pComponent_Manager);
 	Safe_AddRef(m_pPipeLine);
-	Safe_AddRef(m_pLight_Manager);
+	Safe_AddRef(m_pLight_Manager); 
 	Safe_AddRef(m_pKey_Manager);
 	Safe_AddRef(m_pFont_Manager);
 	Safe_AddRef(m_pModel_Manager);
 	Safe_AddRef(m_pCollision_Manager);
 	Safe_AddRef(m_pFrustum);
 	Safe_AddRef(m_pSound_Manager);
+	Safe_AddRef(m_pPhysXManager);
 	// Safe_AddRef(m_pNetwork_Manager);
 }
 
@@ -86,6 +90,9 @@ HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, _uint iNumLayerType,
 	if (FAILED(m_pCollision_Manager->Reserve_Manager()))
 		return E_FAIL;
 
+	if (FAILED(m_pPhysXManager->Reserve_Manager()))
+		return E_FAIL;
+
 	if (FAILED(m_pTarget_Manager->Ready_Shadow_DSV(*ppDevice, GraphicDesc.iWinSizeX, GraphicDesc.iWinSizeY)))
 		return E_FAIL;
 
@@ -95,6 +102,7 @@ HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, _uint iNumLayerType,
 	if (FAILED(m_pSound_Manager->Reserve_Manager()))
 		return E_FAIL;
 	
+	
 
 	return S_OK;
 }
@@ -103,9 +111,11 @@ void CGameInstance::Tick(_float fTimeDelta)
 {
 	m_pInput_Device->Update();
 	m_pKey_Manager->Tick(fTimeDelta);
-	m_pLevel_Manager->Tick(fTimeDelta);
 	m_pObject_Manager->Priority_Tick(fTimeDelta);
 	m_pObject_Manager->Tick(fTimeDelta);
+	m_pPhysXManager->Tick(fTimeDelta);
+	m_pLevel_Manager->Tick(fTimeDelta);
+	
   	m_pPipeLine->Tick();
 	m_pFrustum->Tick();
 
@@ -113,7 +123,9 @@ void CGameInstance::Tick(_float fTimeDelta)
 
 void CGameInstance::LateTick(_float fTimeDelta)
 {
+	
 	m_pCollision_Manager->LateTick(fTimeDelta);
+	
 	m_pObject_Manager->LateTick(fTimeDelta);
 	m_pLevel_Manager->LateTick(fTimeDelta);
 }
@@ -513,6 +525,61 @@ _bool CGameInstance::Intersect_Frustum_World(_fvector vWorldPos, _float fRadius)
 	return m_pFrustum->Intersect_Frustum_World(vWorldPos, fRadius);
 }
 
+PxRigidDynamic* CGameInstance::Create_Box(_float3 vPos, _float3 vExtent, _uint iFlag)
+{
+	return m_pPhysXManager->Create_Box(vPos, vExtent, iFlag);
+}
+
+PxRigidDynamic* CGameInstance::Create_Sphere(_float3 vPos, _float fRad, _uint iFlag)
+{
+	return m_pPhysXManager->Create_Sphere(vPos, fRad, iFlag);
+}
+
+PxRigidDynamic* CGameInstance::Create_PxBox(_float3 vExtent, _float fWeight, _float fAngleDump, PxMaterial* pMaterial, _float fMaxVel)
+{
+	return m_pPhysXManager->Create_PxBox(vExtent, fWeight, fAngleDump, pMaterial, fMaxVel);
+}
+
+PxRigidDynamic* CGameInstance::Create_PxSphere(_float3 vExtent, _float fWeight, _float fAngleDump, PxMaterial* pMaterial, _float fMaxVel)
+{
+	return m_pPhysXManager->Create_PxSphere(vExtent, fWeight, fAngleDump, pMaterial, fMaxVel);
+}
+
+void CGameInstance::Add_Actor(PxActor* pAxtor)
+{
+	m_pPhysXManager->Add_Actor(pAxtor);
+}
+
+void CGameInstance::Remove_Actor(PxActor* pAxtor)
+{
+	m_pPhysXManager->Remove_Actor(pAxtor);
+}
+
+PxMaterial* CGameInstance::Create_PxMaterial(_float fA, _float fB, _float fC)
+{
+	return m_pPhysXManager->Create_Material(fA, fB, fC);
+}
+
+wstring CGameInstance::To_Wstring(const string& str)
+{
+	return	CUtils::ToWString(str);
+}
+
+string CGameInstance::To_String(const wstring& str)
+{
+	return	CUtils::ToString(str);
+}
+
+_float CGameInstance::RandomFloat(_float fMin, _float fMax)
+{
+	return	CUtils::Random_Float(fMin, fMax);
+}
+
+_int CGameInstance::RandomInt(_int iMin, _int iMax)
+{
+	return	CUtils::Random_Int(iMin, iMax);
+}
+
 void CGameInstance::Play_Sound(TCHAR* pSoundKey, CHANNELID eID, _float fVolume, _bool bStop)
 {
 	m_pSound_Manager->Play_Sound(pSoundKey, eID, fVolume, bStop);
@@ -584,6 +651,7 @@ void CGameInstance::Release_Engine()
 	CFont_Manager::GetInstance()->DestroyInstance();
 	CModel_Manager::GetInstance()->DestroyInstance();
 	CCollision_Manager::GetInstance()->DestroyInstance();
+	CPhysX_Manager::GetInstance()->DestroyInstance();
 	CObject_Manager::GetInstance()->DestroyInstance();
 	CComponent_Manager::GetInstance()->DestroyInstance();
 	CTarget_Manager::GetInstance()->DestroyInstance();
@@ -607,5 +675,6 @@ void CGameInstance::Free()
 	Safe_Release(m_pTarget_Manager);
 	Safe_Release(m_pFrustum);
 	Safe_Release(m_pSound_Manager);
+	Safe_Release(m_pPhysXManager);
 	// Safe_Release(m_pNetwork_Manager);
 }

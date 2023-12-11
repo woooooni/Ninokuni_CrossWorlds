@@ -9,11 +9,35 @@ CRigidBody::CRigidBody(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 
 CRigidBody::CRigidBody(CRigidBody& rhs)
 	: CComponent(rhs)
+#ifdef _DEBUG
+	, m_pBatch(rhs.m_pBatch)
+	, m_pEffect(rhs.m_pEffect)
+	, m_pInputLayout(rhs.m_pInputLayout)
+#endif // _DEBUG
 {
+#ifdef _DEBUG
+	Safe_AddRef(m_pInputLayout);
+#endif // _DEBUG
 }
 
 HRESULT CRigidBody::Initialize_Prototype()
 {
+
+#ifdef _DEBUG
+
+	m_pBatch = new PrimitiveBatch<VertexPositionColor>(m_pContext);
+	m_pEffect = new BasicEffect(m_pDevice);
+
+	m_pEffect->SetVertexColorEnabled(true);
+
+	const void* pShaderByteCodes = nullptr;
+	size_t			iLength = 0;
+
+	m_pEffect->GetVertexShaderBytecode(&pShaderByteCodes, &iLength);
+
+	if (FAILED(m_pDevice->CreateInputLayout(VertexPositionColor::InputElements, VertexPositionColor::InputElementCount, pShaderByteCodes, iLength, &m_pInputLayout)))
+		return E_FAIL;
+#endif
 	return S_OK;
 }
 
@@ -26,140 +50,96 @@ HRESULT CRigidBody::Initialize(void* pArg)
 	m_pNavigationCom = pDesc->pNavigation;
 	m_pTransformCom = pDesc->pTransform;
 
-
 	if (nullptr == m_pTransformCom)
 		return E_FAIL;
 
 	Safe_AddRef(m_pNavigationCom);
 	Safe_AddRef(m_pTransformCom);
 
+	
+
+	PxMaterial* pMaterial = GI->Create_PxMaterial(pDesc->fStaticFriction, pDesc->fDynamicFriction, pDesc->fRestitution);
+
+	m_vExtents.x = abs(pDesc->vExtents.x);
+	m_vExtents.y = abs(pDesc->vExtents.y);
+	m_vExtents.z = abs(pDesc->vExtents.z);
+
+
+	m_pXBody = GI->Create_PxBox(m_vExtents, pDesc->fWeight, pDesc->fAngleDump, pMaterial, pDesc->fMaxVelocity);
+	pMaterial->release();
+
+	_float4 vQuat;
+	XMStoreFloat4(&vQuat, XMQuaternionRotationRollPitchYawFromVector(XMLoadFloat3(&pDesc->vRotation)));
+	m_pXBody->setGlobalPose(PxTransform(pDesc->vStartPos.x, pDesc->vStartPos.y, pDesc->vStartPos.z, PxQuat(vQuat.x, vQuat.y, vQuat.z, vQuat.w)));
+
+	m_pOriginal_OBB = new BoundingOrientedBox(_float3(0.f, 0.f, 0.f), 
+		_float3(pDesc->vExtents.x * 0.5f, 
+			pDesc->vExtents.y * 0.5f, 
+			pDesc->vExtents.z * 0.5f), _float4(0.f, 0.f, 0.f, 1.f));
+
+	m_vOffsetPos = pDesc->vOffsetPos;
+
+	m_pOBB = new BoundingOrientedBox(*m_pOriginal_OBB);
+	m_bFirst = true;
+
+	return S_OK;
+}
+#ifdef _DEBUG
+HRESULT CRigidBody::Render()
+{
+	m_pEffect->SetWorld(XMMatrixIdentity());
+
+	CPipeLine* pPipeLine = GET_INSTANCE(CPipeLine);
+
+	m_pEffect->SetView(pPipeLine->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
+	m_pEffect->SetProjection(pPipeLine->Get_TransformMatrix(CPipeLine::D3DTS_PROJ));
+
+	RELEASE_INSTANCE(CPipeLine);
+
+	m_pEffect->Apply(m_pContext);
+
+	m_pContext->IASetInputLayout(m_pInputLayout);
+
+	m_pBatch->Begin();
+	_float4 vColor = _float4(1.f, 0.f, 0.f, 1.f);
+	DX::Draw(m_pBatch, *m_pOBB, XMLoadFloat4(&vColor));
+
+
+	m_pBatch->End();
+
 	return S_OK;
 }
 
-void CRigidBody::LateTick_RigidBody(_float fTimeDelta)
+#endif
+
+void CRigidBody::Update_RigidBody(_float fTimeDelta)
 {
-	if (nullptr != m_pNavigationCom)
-		m_fRefHeight = m_pNavigationCom->Compute_Height(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-
-	if (m_fRefHeight <= XMVectorGetY(m_pTransformCom->Get_State(CTransform::STATE_POSITION)))	
-		m_bIsGround = false;
-
-
-	Update_Gravity(fTimeDelta);
-	Update_Velocity(fTimeDelta);
-}
-void CRigidBody::Set_PushVelocity(_fvector vPushVelocity, _float fTimeDelta)
-{
-	_vector vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
-
-	_float fPushPower = XMVectorGetX(XMVector3Length(vPushVelocity));
-
-	vPosition += XMVector3Normalize(vPushVelocity) * fPushPower;
-
-	m_pTransformCom->Set_Position(vPosition, fTimeDelta, m_pNavigationCom);
-}
-
-void CRigidBody::Add_Velocity(_fvector vVelocity)
-{
-	XMStoreFloat3(&m_vVelocity, XMVectorSet(0.f, 0.f, 0.f, 0.f));
-	XMStoreFloat3(&m_vVelocity, XMLoadFloat3(&m_vVelocity) + vVelocity);
-}
-
-void CRigidBody::Add_Velocity(_fvector vDir, _float fForce)
-{
-	XMStoreFloat3(&m_vVelocity, XMVectorSet(0.f, 0.f, 0.f, 0.f));
-	XMStoreFloat3(&m_vVelocity, XMVector3Normalize(vDir) * fForce);
-}
-
-void CRigidBody::Add_Velocity_Acc(_fvector vVelocity)
-{
-	XMStoreFloat3(&m_vVelocity, XMLoadFloat3(&m_vVelocity) + vVelocity);
-}
-
-void CRigidBody::Add_Velocity_Acc(_fvector vDir, _float fForce)
-{
-	XMStoreFloat3(&m_vVelocity, XMLoadFloat3(&m_vVelocity) + (XMVector3Normalize(vDir) * fForce));
-}
-
-
-void CRigidBody::Update_Gravity(_float fTimeDelta)
-{
-	if (!m_bIsGravity)
+#ifdef _DEBUG
+	m_bCollision = false;
+#endif // DEBUG
+	if (false == m_bFirst && m_pXBody->isSleeping())
 		return;
 
-	_float4 vPosition;
-	XMStoreFloat4(&vPosition, m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+	// Transform에 vPos만큼 더한 값이 BodyX의 값.
+	// BodyX에 vPos만큼 뺀 값이 Transform 값.
 
-	if (fabs(m_fRefHeight - vPosition.y) <= 0.01f)
-	{
-		m_bIsGround = true;
+	PxTransform PxTransform = m_pXBody->getGlobalPose();
+	_matrix WorldMatrix;
 
-		if (m_vVelocity.y > 0.f)
-			m_vVelocity.y = 0.f;
-	}
-	else
-	{
-		m_bIsGround = false;
-		m_vVelocity.y -= m_fGravity * fTimeDelta;
-	}
+	_float3 vScale = m_pTransformCom->Get_Scale();
+
+	WorldMatrix.r[CTransform::STATE_RIGHT] = XMVector3Normalize(XMVectorSet(PxTransform.q.getBasisVector0().x, PxTransform.q.getBasisVector0().y, PxTransform.q.getBasisVector0().z, 0.f)) * vScale.x;
+	WorldMatrix.r[CTransform::STATE_UP] = XMVector3Normalize(XMVectorSet(PxTransform.q.getBasisVector1().x, PxTransform.q.getBasisVector1().y, PxTransform.q.getBasisVector1().z, 0.f)) * vScale.x;
+	WorldMatrix.r[CTransform::STATE_LOOK] = XMVector3Normalize(XMVectorSet(PxTransform.q.getBasisVector2().x, PxTransform.q.getBasisVector2().y, PxTransform.q.getBasisVector2().z, 0.f)) * vScale.x;
+	WorldMatrix.r[CTransform::STATE_POSITION] = XMVectorSet(PxTransform.q.x, PxTransform.q.y, PxTransform.q.z, 1.f);
+
+	m_pOriginal_OBB->Transform(*m_pOBB, WorldMatrix);
+
+	WorldMatrix.r[CTransform::STATE_POSITION] = XMVector3TransformCoord(XMLoadFloat3(&m_vOffsetPos), WorldMatrix);
+	m_pTransformCom->Set_WorldMatrix(WorldMatrix);
+	m_bFirst = false;
 }
 
-void CRigidBody::Update_Velocity(_float fTimeDelta)
-{
-
-
-	_float fVelocityScale = XMVectorGetX(XMVector3Length(XMLoadFloat3(&m_vVelocity)));
-	if (fVelocityScale > 0.0001f)
-	{
-		_vector vFrictionDir = XMVector3Normalize(XMLoadFloat3(&m_vVelocity) * -1.f);
-		_vector vFriction = XMVectorSet(0.f, 0.f, 0.f, 0.f);
-
-		if (Is_Ground())
-			vFriction = vFrictionDir * m_fFrictionScale * fTimeDelta;
-		else
-			vFriction = vFrictionDir * 5.f * fTimeDelta;
-
-		if (fVelocityScale <= XMVectorGetX(XMVector3Length(vFriction)))		
-			XMStoreFloat3(&m_vVelocity, XMVectorSet(0.f, 0.f, 0.f, 0.f));
-		else		
-			XMStoreFloat3(&m_vVelocity, XMLoadFloat3(&m_vVelocity) + vFriction);
-
-		if (m_vVelocity.x >= m_vMaxVelocity.x)
-			m_vVelocity.x = m_vMaxVelocity.x;
-
-		if (m_vVelocity.y >= m_vMaxVelocity.y)
-			m_vVelocity.y = m_vMaxVelocity.y;
-
-		if (m_vVelocity.z >= m_vMaxVelocity.z)
-			m_vVelocity.z = m_vMaxVelocity.z;
-	}
-
-
-	fVelocityScale = XMVectorGetX(XMVector3Length(XMLoadFloat3(&m_vVelocity)));
-	if (fVelocityScale > 0.0001f)
-	{
-		_vector vDir = XMVector3Normalize(XMLoadFloat3(&m_vVelocity));
-
-		_vector vPosition = m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION);
-		vPosition += XMLoadFloat3(&m_vVelocity) * fTimeDelta;
-
-		if (XMVectorGetY(vPosition) <= m_fRefHeight)
-		{
-			vPosition = XMVectorSetY(vPosition, m_fRefHeight);
-			vPosition = XMVectorSetW(vPosition, 1.f);
-		}
-
-		_bool bMovable = false;
-		m_pTransformCom->Set_Position(vPosition, fTimeDelta, m_pNavigationCom, &bMovable);
-		if (nullptr != m_pNavigationCom && false == bMovable)
-		{
-			m_vVelocity.x = 0.f;
-			m_vVelocity.z = 0.f;
-		}
-	}
-
-
-}
 
 CRigidBody* CRigidBody::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
@@ -189,6 +169,24 @@ CComponent* CRigidBody::Clone(void* pArg)
 void CRigidBody::Free()
 {
 	__super::Free();
+
+	if (nullptr != m_pXBody)
+		m_pXBody->release();
+	
+#ifdef _DEBUG
+	if (false == m_isCloned)
+	{
+		Safe_Delete(m_pBatch);
+		Safe_Delete(m_pEffect);
+	}
+
+	Safe_Release(m_pInputLayout);
+#endif
+
+	Safe_Delete(m_pOriginal_OBB);
+	Safe_Delete(m_pOBB);
+
 	Safe_Release(m_pTransformCom);
 	Safe_Release(m_pNavigationCom);
 }
+
