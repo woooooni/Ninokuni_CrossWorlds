@@ -254,7 +254,7 @@ void CTarget_Manager::Free()
 
 	
 
-	//Safe_Release(m_pDSV);
+	m_pDSV = nullptr;
 	Safe_Release(m_pShadowDSV);
 
 }

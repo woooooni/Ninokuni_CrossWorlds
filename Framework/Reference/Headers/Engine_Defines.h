@@ -17,9 +17,9 @@
 
 #endif
 
-#include "PxPhysics.h"
-#include "PxPhysicsAPI.h"
-using namespace physx;
+//#include "PxPhysics.h"
+//#include "PxPhysicsAPI.h"
+//using namespace physx;
 
 #include <d3d11.h>
 #include <d3dcompiler.h>

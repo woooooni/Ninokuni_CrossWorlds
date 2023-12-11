@@ -23,7 +23,7 @@ public:
 	virtual HRESULT Initialize(void* pArg) override;	
 	void Update(_fmatrix WorldMatrix);
 
-	_bool Is_Movable(_fvector vPoint, _vector vLook, __out Vec3* vOutSlidingDir = nullptr);
+	_bool Is_Movable(_fvector vPoint, _vector vLook, __out _vector* vOutSlidingDir = nullptr);
 	_float Compute_Height(_vector vPosition);
 
 public:

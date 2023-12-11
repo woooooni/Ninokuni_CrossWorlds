@@ -1,4 +1,5 @@
 #include "..\Public\Level.h"
+#include "GameInstance.h"
 
 CLevel::CLevel(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: m_pDevice(pDevice)

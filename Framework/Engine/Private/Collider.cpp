@@ -63,10 +63,10 @@ HRESULT CCollider::Initialize(void* pArg)
 
 void CCollider::LateTick_Collider(_float fTimeDelta)
 {
-	Matrix FinalMatrix;
-	Matrix OffsetMatrix = XMMatrixIdentity();
+	_matrix FinalMatrix;
+	_matrix OffsetMatrix = XMMatrixIdentity();
 
-	OffsetMatrix.Translation() = XMVectorSetW(XMLoadFloat3(&m_vOffsetPosition), 1.f);
+	OffsetMatrix.r[CTransform::STATE_POSITION] = XMVectorSetW(XMLoadFloat3(&m_vOffsetPosition), 1.f);
 	
 
 	if (nullptr == m_pNode)

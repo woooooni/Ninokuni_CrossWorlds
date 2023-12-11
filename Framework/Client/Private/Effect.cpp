@@ -117,7 +117,7 @@ void CEffect::LateTick(_float fTimeDelta)
 		return;
 
 	_float4x4 WorldMatrix;
-	Matrix OffetMatrix = XMLoadFloat4x4(&m_tEffectDesc.OffsetMatrix);
+	_matrix OffetMatrix = XMLoadFloat4x4(&m_tEffectDesc.OffsetMatrix);
 	XMStoreFloat4x4(&WorldMatrix, OffetMatrix * m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&m_ParentMatrix));
 
 	if (m_tEffectDesc.bBillboard)

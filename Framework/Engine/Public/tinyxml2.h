@@ -1882,15 +1882,17 @@ namespace tinyxml2
 		NodeType* CreateUnlinkedNode(MemPoolT<PoolElementSize>& pool);
 	};
 
+#ifdef DBG_NEW
+#define new new
+#endif
+
 	template<class NodeType, int PoolElementSize>
 	inline NodeType* XMLDocument::CreateUnlinkedNode(MemPoolT<PoolElementSize>& pool)
 	{
 		TIXMLASSERT(sizeof(NodeType) == PoolElementSize);
 		TIXMLASSERT(sizeof(NodeType) == pool.ItemSize());
 
-#ifdef DBG_NEW
-	#define new new
-#endif
+
 		NodeType* returnNode = new (pool.Alloc()) NodeType(this);
 		TIXMLASSERT(returnNode);
 		returnNode->_memPool = &pool;

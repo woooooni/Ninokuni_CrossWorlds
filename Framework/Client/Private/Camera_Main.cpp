@@ -127,9 +127,9 @@ HRESULT CCamera_Main::Ready_Components()
 
 void CCamera_Main::Follow(_float fTimeDelta)
 {
-	Vec3 vOffsetPosition = XMLoadFloat3(&m_vOffsetPosition);
-	Vec4 vTargetPosition = m_pTargetTransform->Get_State(CTransform::STATE_POSITION) + vOffsetPosition;
-	Vec4 vCamPostion = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	_vector vOffsetPosition = XMLoadFloat3(&m_vOffsetPosition);
+	_vector vTargetPosition = m_pTargetTransform->Get_State(CTransform::STATE_POSITION) + vOffsetPosition;
+	_vector vCamPostion = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorLerp(vTargetPosition, vCamPostion, fTimeDelta));

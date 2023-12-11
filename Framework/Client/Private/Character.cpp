@@ -75,11 +75,11 @@ void CCharacter::Tick(_float fTimeDelta)
 		if (nullptr == m_pTrails[i])
 			continue;
 
-		Matrix		WorldMatrix = m_Sockets[i]->Get_CombinedTransformation() * m_pModelCom->Get_PivotMatrix();
+		_matrix		WorldMatrix = m_Sockets[i]->Get_CombinedTransformation() * m_pModelCom->Get_PivotMatrix();
 
-		WorldMatrix.Right(XMVector3Normalize(WorldMatrix.Right()));
-		WorldMatrix.Up(XMVector3Normalize(WorldMatrix.Up()));
-		WorldMatrix.Forward(XMVector3Normalize(WorldMatrix.Forward()));
+		WorldMatrix.r[CTransform::STATE_RIGHT] = XMVector3Normalize(WorldMatrix.r[CTransform::STATE_RIGHT]);
+		WorldMatrix.r[CTransform::STATE_UP] = XMVector3Normalize(WorldMatrix.r[CTransform::STATE_UP]);
+		WorldMatrix.r[CTransform::STATE_LOOK] = XMVector3Normalize(WorldMatrix.r[CTransform::STATE_LOOK]);
 
 		m_pTrails[i]->Set_TransformMatrix(WorldMatrix * m_pTransformCom->Get_WorldMatrix());
 		m_pTrails[i]->Tick(fTimeDelta);

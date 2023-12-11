@@ -1,7 +1,7 @@
 //--------------------------------------------------------------------------------------
 // File: GamePad.h
 //
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 //
 // http://go.microsoft.com/fwlink/?LinkId=248929
@@ -10,24 +10,46 @@
 
 #pragma once
 
-#if (_WIN32_WINNT < 0x0A00 /*_WIN32_WINNT_WIN10*/)
-#ifndef _XBOX_ONE
-#if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY != WINAPI_FAMILY_PHONE_APP)
+#if !defined(USING_XINPUT) && !defined(USING_GAMEINPUT) && !defined(USING_WINDOWS_GAMING_INPUT)
+
+#ifdef _GAMING_DESKTOP
+#include <grdk.h>
+#endif
+
+#if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_GAMES)) || (defined(_GAMING_DESKTOP) && (_GRDK_EDITION >= 220600))
+#define USING_GAMEINPUT
+#elif (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/) && !defined(_GAMING_DESKTOP) && !defined(__MINGW32__)
+#define USING_WINDOWS_GAMING_INPUT
+#elif !defined(_XBOX_ONE)
+#define USING_XINPUT
+#endif
+
+#endif // !USING_XINPUT && !USING_GAMEINPUT && !USING_WINDOWS_GAMING_INPUT
+
+#ifdef USING_GAMEINPUT
+#include <GameInput.h>
+#ifndef _GAMING_XBOX
+#pragma comment(lib,"gameinput.lib")
+#endif
+
+#elif defined(USING_WINDOWS_GAMING_INPUT)
+#pragma comment(lib,"runtimeobject.lib")
+#include <string>
+
+#elif defined(_XBOX_ONE)
+// Legacy Xbox One XDK uses Windows::Xbox::Input
+
+#elif defined(USING_XINPUT)
 #if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/ )
 #pragma comment(lib,"xinput.lib")
 #else
 #pragma comment(lib,"xinput9_1_0.lib")
 #endif
-#endif
-#endif
+
 #endif
 
+#include <cstdint>
 #include <memory>
-#include <stdint.h>
-
-#if (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/)
-#include <string>
-#endif
 
 #ifdef __clang__
 #pragma clang diagnostic push
@@ -41,18 +63,25 @@ namespace DirectX
     {
     public:
         GamePad() noexcept(false);
-        GamePad(GamePad&& moveFrom) noexcept;
-        GamePad& operator= (GamePad&& moveFrom) noexcept;
+
+        GamePad(GamePad&&) noexcept;
+        GamePad& operator= (GamePad&&) noexcept;
 
         GamePad(GamePad const&) = delete;
         GamePad& operator=(GamePad const&) = delete;
 
         virtual ~GamePad();
 
-    #if (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/) || defined(_XBOX_ONE)
-        static const int MAX_PLAYER_COUNT = 8;
+    #if defined(USING_GAMEINPUT) || defined(USING_WINDOWS_GAMING_INPUT) || defined(_XBOX_ONE)
+        static constexpr int MAX_PLAYER_COUNT = 8;
     #else
-        static const int MAX_PLAYER_COUNT = 4;
+        static constexpr int MAX_PLAYER_COUNT = 4;
+    #endif
+
+        static constexpr int c_MostRecent = -1;
+
+    #ifdef USING_GAMEINPUT
+        static constexpr int c_MergedInput = -2;
     #endif
 
         enum DeadZone
@@ -172,7 +201,9 @@ namespace DirectX
 
             bool                connected;
             Type                gamepadType;
-        #if (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/)
+        #ifdef USING_GAMEINPUT
+            APP_LOCAL_DEVICE_ID id;
+        #elif defined(USING_WINDOWS_GAMING_INPUT)
             std::wstring        id;
         #else
             uint64_t            id;
@@ -237,7 +268,7 @@ namespace DirectX
             ButtonState leftTrigger;
             ButtonState rightTrigger;
 
-            #pragma prefast(suppress: 26495, "Reset() performs the initialization")
+        #pragma prefast(suppress: 26495, "Reset() performs the initialization")
             ButtonStateTracker() noexcept { Reset(); }
 
             void __cdecl Update(const State& state) noexcept;
@@ -263,7 +294,13 @@ namespace DirectX
         void __cdecl Suspend() noexcept;
         void __cdecl Resume() noexcept;
 
-    #if (_WIN32_WINNT >= 0x0A00 /*_WIN32_WINNT_WIN10*/ ) || defined(_XBOX_ONE)
+    #ifdef USING_GAMEINPUT
+        void __cdecl RegisterEvents(void* ctrlChanged) noexcept;
+
+        // Underlying device access
+        _Success_(return)
+            bool __cdecl GetDevice(int player, _Outptr_ IGameInputDevice * *device) noexcept;
+    #elif defined(USING_WINDOWS_GAMING_INPUT) || defined(_XBOX_ONE)
         void __cdecl RegisterEvents(void* ctrlChanged, void* userChanged) noexcept;
     #endif
 

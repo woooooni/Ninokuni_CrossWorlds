@@ -16,31 +16,31 @@ private:
 	virtual ~CTransform() = default;
 
 public:
-	Vec4 Get_State(STATE eState) {
+	_vector Get_State(STATE eState) {
 		return XMLoadFloat4((_float4*)&m_WorldMatrix.m[eState][0]);
 	}
 
-	Vec3 Get_Look() {
+	_vector Get_Look() {
 		return XMLoadFloat4((_float4*)&m_WorldMatrix.m[STATE_LOOK][0]);
 	}
 
-	Vec3 Get_Right() {
+	_vector Get_Right() {
 		return XMLoadFloat4((_float4*)&m_WorldMatrix.m[STATE_RIGHT][0]);
 	}
 
-	Vec3 Get_Up() {
+	_vector Get_Up() {
 		return XMLoadFloat4((_float4*)&m_WorldMatrix.m[STATE_UP][0]);
 	}
 
-	Vec4 Get_Position() {
+	_vector Get_Position() {
 		return XMLoadFloat4((_float4*)&m_WorldMatrix.m[STATE_POSITION][0]);
 	}
 
-	Matrix Get_WorldMatrix() const {
+	_matrix Get_WorldMatrix() const {
 		return XMLoadFloat4x4(&m_WorldMatrix);
 	}
 
-	void Set_WorldMatrix(Matrix WorldMatrix) {
+	void Set_WorldMatrix(_matrix WorldMatrix) {
 		XMStoreFloat4x4(&m_WorldMatrix, WorldMatrix);
 	}
 
@@ -54,13 +54,13 @@ public:
 		return WorldMatrix;
 	}
 
-	Matrix Get_WorldMatrixInverse() const {
+	_matrix Get_WorldMatrixInverse() const {
 		return XMMatrixInverse(nullptr, Get_WorldMatrix());
 	}
 
 public:
-	void Set_State(STATE eState, Vec4 vState);
-	void Set_Position(Vec4 vPosition, _float fTimeDelta, class CNavigation* pNavigation = nullptr, _bool* bMovable = nullptr);
+	void Set_State(STATE eState, _vector vState);
+	void Set_Position(_vector vPosition, _float fTimeDelta, class CNavigation* pNavigation = nullptr, _bool* bMovable = nullptr);
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -70,8 +70,8 @@ public:
 	HRESULT Bind_ShaderResources(class CShader* pShader, const char* pConstantName);
 
 public:
-	void Move(Vec3 vDir, _float fSpeed, _float fTimeDelta, class CNavigation* pNavigation = nullptr);	
-	void Set_Scale(Vec3 vScale);
+	void Move(_vector vDir, _float fSpeed, _float fTimeDelta, class CNavigation* pNavigation = nullptr);	
+	void Set_Scale(_vector vScale);
 	void Set_Scale(_float3 vScale);
 
 	_float3 Get_Scale();
@@ -81,8 +81,8 @@ public:
 	void Rotation(_fvector vAxis, _float fRadian);
 	void Rotation_Acc(_fvector vAxis, _float fRadian);
 
-	void LookAt(Vec4 vPosition);
-	void LookAt_ForLandObject(Vec4 vPosition);
+	void LookAt(_vector vPosition);
+	void LookAt_ForLandObject(_vector vPosition);
 
 private:
 	_float4x4				m_WorldMatrix;

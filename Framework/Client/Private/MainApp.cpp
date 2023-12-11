@@ -181,6 +181,8 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), m_pRenderer_Com = CRenderer::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	Safe_AddRef(m_pRenderer_Com);
+
 	///* For.Prototype_Component_VIBuffer_Particle */
 	//if (FAILED(m_pGame_Instance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Particle"),
 	//	CVIBuffer_Particle::Create(m_pDevice, m_pContext))))
@@ -404,7 +406,6 @@ CMainApp * CMainApp::Create()
 void Client::CMainApp::Free()
 {	
 	__super::Free();
-
 	Safe_Release(m_pRenderer_Com);
 
 	CCamera_Manager::GetInstance()->DestroyInstance();

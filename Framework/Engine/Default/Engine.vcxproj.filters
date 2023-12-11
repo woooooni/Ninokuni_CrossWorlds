@@ -187,6 +187,15 @@
     <Filter Include="01.Utiltiy\03.Component\10. Collider\OBB">
       <UniqueIdentifier>{f2ca6f38-bba7-4d03-8e64-1823311d1d7a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utiltiy\98. Utils\FileUtil">
+      <UniqueIdentifier>{a883701f-31c7-42cd-ba6d-3c47f9dbac83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utiltiy\98. Utils\tinyxml">
+      <UniqueIdentifier>{91fa594a-c7f3-4f70-8d69-6f977abb7a25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utiltiy\98. Utils\Util">
+      <UniqueIdentifier>{0a5f0a6e-8c59-4292-b60e-664d7b94107e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\public\Base.h">
@@ -249,9 +258,6 @@
     <ClInclude Include="..\Public\Texture.h">
       <Filter>01.Utiltiy\03.Component\04. Texture</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Utils.h">
-      <Filter>01.Utiltiy\98. Utils</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Component_Manager.h">
       <Filter>01.Utiltiy\03.Component\00. Manager</Filter>
     </ClInclude>
@@ -303,9 +309,6 @@
     <ClInclude Include="..\Public\StateMachine.h">
       <Filter>01.Utiltiy\03.Component\07. StateMachine</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\tinyxml2.h">
-      <Filter>01.Utiltiy\98. Utils</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_Terrain.h">
       <Filter>01.Utiltiy\03.Component\02. VIBuffer\Terrain</Filter>
     </ClInclude>
@@ -317,9 +320,6 @@
     </ClInclude>
     <ClInclude Include="..\Public\DebugDraw.h">
       <Filter>01.Utiltiy\98. Utils\Debug_Draw</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\FileUtils.h">
-      <Filter>01.Utiltiy\98. Utils</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Model_Manager.h">
       <Filter>01.Utiltiy\05. Model_Manager</Filter>
@@ -354,9 +354,6 @@
     <ClInclude Include="..\Public\VIBuffer_Cube.h">
       <Filter>01.Utiltiy\03.Component\02. VIBuffer\Cube</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\PhysicsX_Manager.h">
-      <Filter>01.Utiltiy\06. PhysicsManager</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Target_Manager.h">
       <Filter>01.Utiltiy\04. RenderTarget\Manager</Filter>
     </ClInclude>
@@ -374,6 +371,15 @@
     </ClInclude>
     <ClInclude Include="..\Public\Sound_Manager.h">
       <Filter>01.Utiltiy\08. SoundManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FileUtils.h">
+      <Filter>01.Utiltiy\98. Utils\FileUtil</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\tinyxml2.h">
+      <Filter>01.Utiltiy\98. Utils\tinyxml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Utils.h">
+      <Filter>01.Utiltiy\98. Utils\Util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -421,9 +427,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\Texture.cpp">
       <Filter>01.Utiltiy\03.Component\04. Texture</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Utils.cpp">
-      <Filter>01.Utiltiy\98. Utils</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Component_Manager.cpp">
       <Filter>01.Utiltiy\03.Component\00. Manager</Filter>
@@ -476,9 +479,6 @@
     <ClCompile Include="..\Private\StateMachine.cpp">
       <Filter>01.Utiltiy\03.Component\07. StateMachine</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\tinyxml2.cpp">
-      <Filter>01.Utiltiy\98. Utils</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Terrain.cpp">
       <Filter>01.Utiltiy\03.Component\02. VIBuffer\Terrain</Filter>
     </ClCompile>
@@ -490,9 +490,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\DebugDraw.cpp">
       <Filter>01.Utiltiy\98. Utils\Debug_Draw</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\FileUtils.cpp">
-      <Filter>01.Utiltiy\98. Utils</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Model_Manager.cpp">
       <Filter>01.Utiltiy\05. Model_Manager</Filter>
@@ -527,9 +524,6 @@
     <ClCompile Include="..\Private\VIBuffer_Cube.cpp">
       <Filter>01.Utiltiy\03.Component\02. VIBuffer\Cube</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\PhysicsX_Manager.cpp">
-      <Filter>01.Utiltiy\06. PhysicsManager</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Target_Manager.cpp">
       <Filter>01.Utiltiy\04. RenderTarget\Manager</Filter>
     </ClCompile>
@@ -547,6 +541,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\Sound_Manager.cpp">
       <Filter>01.Utiltiy\08. SoundManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FileUtils.cpp">
+      <Filter>01.Utiltiy\98. Utils\FileUtil</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\tinyxml2.cpp">
+      <Filter>01.Utiltiy\98. Utils\tinyxml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Utils.cpp">
+      <Filter>01.Utiltiy\98. Utils\Util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

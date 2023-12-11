@@ -88,9 +88,9 @@ HRESULT CPart::Render()
 }
 
 
-HRESULT CPart::Compute_RenderMatrix(Matrix ChildMatrix)
+HRESULT CPart::Compute_RenderMatrix(_matrix ChildMatrix)
 {
-	Matrix OriginRotation = XMLoadFloat4x4(&m_OriginRotationTransform);
+	_matrix OriginRotation = XMLoadFloat4x4(&m_OriginRotationTransform);
 	m_pTransformCom->Set_WorldMatrix(OriginRotation * ChildMatrix * m_pParentTransform->Get_WorldMatrix());
 	return S_OK;
 }

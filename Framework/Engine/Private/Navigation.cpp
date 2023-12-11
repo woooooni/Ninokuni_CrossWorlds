@@ -98,7 +98,7 @@ void CNavigation::Update(_fmatrix WorldMatrix)
 	}
 }
 
-_bool CNavigation::Is_Movable(_fvector vPoint, _vector vLook, __out Vec3* vOutSlidingDir)
+_bool CNavigation::Is_Movable(_fvector vPoint, _vector vLook, __out _vector* vOutSlidingDir)
 {
 	_int		iNeighborIndex = 0;
 	if (true == m_Cells[m_iCurrentIndex]->isOut(vPoint, XMLoadFloat4x4(&m_WorldIdentity), &iNeighborIndex, vLook, vOutSlidingDir))

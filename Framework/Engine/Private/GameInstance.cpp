@@ -572,22 +572,22 @@ FMOD_CHANNEL* CGameInstance::Get_Channel(CHANNELID eID)
 
 void CGameInstance::Release_Engine()
 {
+	CGameInstance::GetInstance()->DestroyInstance();
+	CKey_Manager::GetInstance()->DestroyInstance();
+	CInput_Device::GetInstance()->DestroyInstance();
 	CSound_Manager::GetInstance()->DestroyInstance();
 	CLevel_Manager::GetInstance()->DestroyInstance();
-	CTarget_Manager::GetInstance()->DestroyInstance();
-	CObject_Manager::GetInstance()->DestroyInstance();
-	CComponent_Manager::GetInstance()->DestroyInstance();
 	CTimer_Manager::GetInstance()->DestroyInstance();
 	CFrustum::GetInstance()->DestroyInstance();
 	CPipeLine::GetInstance()->DestroyInstance();
-	CInput_Device::GetInstance()->DestroyInstance();
 	CLight_Manager::GetInstance()->DestroyInstance();
-	CKey_Manager::GetInstance()->DestroyInstance();
 	CFont_Manager::GetInstance()->DestroyInstance();
 	CModel_Manager::GetInstance()->DestroyInstance();
 	CCollision_Manager::GetInstance()->DestroyInstance();
+	CObject_Manager::GetInstance()->DestroyInstance();
+	CComponent_Manager::GetInstance()->DestroyInstance();
+	CTarget_Manager::GetInstance()->DestroyInstance();
 	CGraphic_Device::GetInstance()->DestroyInstance();
-	CGameInstance::GetInstance()->DestroyInstance();
 }
 
 void CGameInstance::Free()
