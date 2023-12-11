@@ -236,6 +236,213 @@ namespace Engine
 
 	} GRAPHIC_DESC;
 
+
+#pragma region Lerp Desc
+
+	enum class LERP_MODE { DEFAULT, EASE_OUT, EASE_IN, EXPONENTIAL, SMOOTH_STEP, SMOOTHER_STEP, TYPEEND };
+
+	typedef struct tagLerpDesc
+	{
+		const _float Calculate_Time(const _float& fCurTime, const _float& fEndTime, const LERP_MODE& eLerpMode)
+		{
+			_float fLerpTime = fCurTime / fEndTime;
+
+			switch (eLerpMode)
+			{
+			case LERP_MODE::EASE_OUT:
+			{
+				fLerpTime = sinf(fLerpTime * XM_PI * 0.5f);
+			}
+			break;
+			case LERP_MODE::EASE_IN:
+			{
+				fLerpTime = 1.f - cosf(fLerpTime * XM_PI * 0.5f);
+			}
+			break;
+			case LERP_MODE::EXPONENTIAL:
+			{
+				fLerpTime = fLerpTime * fLerpTime;
+			}
+			break;
+			case LERP_MODE::SMOOTH_STEP:
+			{
+				fLerpTime = fLerpTime * fLerpTime * (3.f - 2.f * fLerpTime);
+
+			}
+			break;
+			case LERP_MODE::SMOOTHER_STEP:
+			{
+				fLerpTime = fLerpTime * fLerpTime * fLerpTime * (fLerpTime * (6.f * fLerpTime - 15.f) + 10.f);
+			}
+			break;
+			default:
+				break;
+			}
+
+			return fLerpTime;
+		}
+	}LERP_DESC;
+
+	typedef struct tagLerpFloatDesc : public LERP_DESC
+	{
+		/* Time */
+		_float		fStartTime = 0.f;
+		_float		fEndTime = 0.f;
+		_float		fCurTime = 0.f;
+
+		/* Value */
+		_float		fStartValue = 0.f;
+		_float		fTargetValue = 0.f;
+		_float		fCurValue = 0.f;
+
+		/* Prop */
+		_bool		bActive = FALSE;
+		LERP_MODE	eMode = LERP_MODE::DEFAULT;
+
+		void Start(const _float _fStartValue, const _float _fTargetValue, const _float _fTime, const LERP_MODE _eMode = LERP_MODE::DEFAULT)
+		{
+			bActive = TRUE;
+
+			fCurTime = 0.f;
+			fEndTime = _fTime;
+
+			fStartValue = fCurValue = _fStartValue;
+			fTargetValue = _fTargetValue;
+
+			eMode = _eMode;
+		}
+
+		void Clear()
+		{
+			bActive = FALSE;
+
+			fStartTime = fCurTime = fEndTime = 0.f;
+
+			fStartValue = fCurValue = fTargetValue = 0.f;
+
+			eMode = LERP_MODE::DEFAULT;
+		}
+
+		_float Update(const _float& fTimeDelta)
+		{
+			if (!bActive) 
+				return fCurValue;
+
+			fCurTime += fTimeDelta;
+
+			if (fCurTime >= fEndTime)
+			{
+				fCurValue = fTargetValue;
+				bActive = FALSE;
+				return fCurValue;
+			}
+
+			const _float fTime = LERP_DESC::Calculate_Time(fCurTime, fEndTime, eMode);
+
+			fCurValue = Lerp_Float(fStartValue, fTargetValue, fTime);
+
+			return fCurValue;
+		}
+
+		_float Lerp_Float(const _float& _f1, const _float& _f2, const _float _fTime) { return (1 - _fTime) * _f1 + (_fTime * _f2); }
+
+	}LERP_FLOAT_DESC;
+
+	typedef struct tagLerpTimeDesc : public LERP_DESC
+	{
+		/* Time */
+		_float		fStartTime = 0.f;
+		_float		fEndTime = 0.f;
+		_float		fCurTime = 0.f;
+
+		/* Value */
+		_float		fLerpTime = 0.f;
+
+		/* Prop */
+		_bool		bActive = FALSE;
+		LERP_MODE	eMode = LERP_MODE::DEFAULT;
+
+		void Start(const _float _fTime, const LERP_MODE _eMode = LERP_MODE::DEFAULT)
+		{
+			bActive = TRUE;
+
+			fCurTime = 0.f;
+			fEndTime = _fTime;
+
+			eMode = _eMode;
+		}
+
+		_float Update(const _float& fTimeDelta)
+		{
+			if (!bActive) 
+				return fLerpTime;
+
+			fCurTime += fTimeDelta;
+
+			if (fCurTime >= fEndTime)
+			{
+				fLerpTime = fCurTime = fEndTime;
+				bActive = FALSE;
+
+				return fLerpTime;
+			}
+
+			fLerpTime = LERP_DESC::Calculate_Time(fCurTime, fEndTime, eMode);
+
+			return fLerpTime;
+		}
+	}LERP_TIME_DESC;
+
+	typedef struct tagLerpVec3Desc : public LERP_DESC
+	{
+		/* Time */
+		_float		fStartTime = 0.f;
+		_float		fEndTime = 0.f;
+		_float		fCurTime = 0.f;
+
+		/* Value */
+		Vec3		vStartVec;
+		Vec3		vTargetVec;
+		Vec3		vCurVec;
+
+		/* Prop */
+		_bool		bActive = FALSE;
+		LERP_MODE	eMode = LERP_MODE::DEFAULT;
+
+		void Start(const Vec3 _fStartValue, const Vec3& _fTargetValue, const _float& _fTime, const LERP_MODE& _eMode = LERP_MODE::DEFAULT)
+		{
+			bActive = TRUE;
+
+			fCurTime = 0.f;
+			fEndTime = _fTime;
+
+			vStartVec = vCurVec = _fStartValue;
+			vTargetVec = _fTargetValue;
+
+			eMode = _eMode;
+		}
+
+		Vec3 Update_Lerp(const _float& fTimeDelta)
+		{
+			if (!bActive) 
+				return vCurVec;
+
+			fCurTime += fTimeDelta;
+
+			if (fCurTime >= fEndTime)
+			{
+				vCurVec = vTargetVec;
+				return vCurVec;
+			}
+
+			const _float fTime = LERP_DESC::Calculate_Time(fCurTime, fEndTime, eMode);
+
+			vCurVec = Vec3::Lerp(vStartVec, vTargetVec, fTime);
+
+			return vCurVec;
+		}
+	}LERP_VEC3_DESC;
+#pragma endregion
 }
 
 

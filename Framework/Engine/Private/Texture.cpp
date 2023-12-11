@@ -59,10 +59,11 @@ HRESULT CTexture::Load_Texture(const wstring& strTextureFilePath, _uint iNumText
 		wsprintf(szFullPath, strTextureFilePath.c_str(), i);
 
 		_tchar			szDrive[MAX_PATH] = TEXT("");
+		_tchar			szFolderPath[MAX_PATH] = TEXT("");
 		_tchar			szName[MAX_PATH] = TEXT("");
 		_tchar			szExt[MAX_PATH] = TEXT("");
 
-		_wsplitpath_s(szFullPath, szDrive, MAX_PATH, nullptr, 0, szName, MAX_PATH, szExt, MAX_PATH);
+		_wsplitpath_s(szFullPath, szDrive, MAX_PATH, szFolderPath, MAX_PATH, szName, MAX_PATH, szExt, MAX_PATH);
 
 		HRESULT hr = 0;
 
@@ -75,7 +76,18 @@ HRESULT CTexture::Load_Texture(const wstring& strTextureFilePath, _uint iNumText
 			hr = E_FAIL;
 
 		else
+		{
 			hr = DirectX::CreateWICTextureFromFile(m_pDevice, szFullPath, nullptr, &pSRV);
+			if (FAILED(hr))
+			{
+				wstring strNewPath = L"";
+				strNewPath += szFolderPath;
+				strNewPath += szName;
+				strNewPath += L".dds";
+				hr = DirectX::CreateDDSTextureFromFile(m_pDevice, strNewPath.c_str(), nullptr, &pSRV);
+			}
+		}
+			
 
 		if (FAILED(hr))
 			return E_FAIL;
@@ -121,7 +133,7 @@ HRESULT CTexture::Load_Texture_In_Path(const wstring& strTextureFilePath)
 		if (FAILED(hr))
 			return E_FAIL;
 
-		m_FileNames.push_back(wstring(szName) + szExt);
+		m_FileNames.push_back(wstring(szName));
 		m_SRVs.push_back(pSRV);
 		++iTextureCount;
 	}
