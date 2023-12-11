@@ -135,9 +135,7 @@ void CVIBuffer_Instancing::Free()
 	__super::Free();
 
 	if (false == m_isCloned)
-	{
 		Safe_Delete_Array(m_pVertices);
-	}
 
 	Safe_Release(m_pVBInstance);
 }

@@ -72,7 +72,7 @@ protected: /* 해당 객체가 사용해야할 컴포넌트들을 저장하낟. */
 	CGameObject* m_pOwner = { nullptr };
 
 protected:
-	HRESULT Compute_RenderMatrix(Matrix ChildMatrix);
+	HRESULT Compute_RenderMatrix(_matrix ChildMatrix);
 
 
 public:

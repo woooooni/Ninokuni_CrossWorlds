@@ -7,6 +7,7 @@
 
 BEGIN(Engine)
 class CVIBuffer_Instancing;
+
 class ENGINE_DLL CRenderer final : public CComponent
 {
 public:
@@ -117,8 +118,11 @@ private:
 	HRESULT Render_UI();
 	HRESULT Render_Text();
 
+#ifdef _DEBUG
 private:
 	HRESULT Render_Debug();
+
+#endif // DEBUG
 
 private:
 	class CVIBuffer_Rect* m_pVIBuffer = { nullptr };
@@ -139,8 +143,10 @@ private:
 	list<class CComponent*>				m_RenderDebug;
 
 	list<TEXT_DESC>						m_RenderTexts;
+
 	// Instancing
 	class CVIBuffer_Instancing*			m_pVIBuffer_Instancing = nullptr;
+
 	class CShader*						m_pIntancingShaders[SHADER_TYPE::TYPE_END];
 	map<wstring, INSTANCING_DESC>		m_Render_Instancing_Objects[RENDER_END];
 

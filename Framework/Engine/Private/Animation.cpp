@@ -20,11 +20,9 @@ CAnimation::CAnimation(const CAnimation& rhs)
 	, m_fSpeed(rhs.m_fSpeed)
 	, m_bRootAnimation(rhs.m_bRootAnimation)
 	, m_bLoop(rhs.m_bLoop)
-	/*, m_pSRV(rhs.m_pSRV)*/
 {
 	for (auto& pChannel : m_Channels)
 		Safe_AddRef(pChannel);
-
 }
 
 HRESULT CAnimation::Initialize_Prototype(aiAnimation* pAIAnimation)
@@ -66,7 +64,6 @@ HRESULT CAnimation::Initialize(CModel* pModel)
 			return E_FAIL;
 
 		m_HierarchyNodes.push_back(pNode);
-
 		Safe_AddRef(pNode);
 	}
 

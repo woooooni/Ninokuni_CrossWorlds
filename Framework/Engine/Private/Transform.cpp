@@ -42,16 +42,16 @@ HRESULT CTransform::Bind_ShaderResources(CShader* pShader, const char* pConstant
 }
 
 
-void CTransform::Move(Vec3 vDir, _float fSpeed, _float fTimeDelta, CNavigation* pNavigation)
+void CTransform::Move(_vector vDir, _float fSpeed, _float fTimeDelta, CNavigation* pNavigation)
 {
 	if (XMVectorGetX(XMVector3Length(vDir)) < .99f)
 		return;
 
 
-	Vec4	vPosition = Get_State(CTransform::STATE_POSITION);
+	_vector	vPosition = Get_State(CTransform::STATE_POSITION);
 	vPosition += XMVector3Normalize(vDir) * fSpeed * fTimeDelta;
 
-	Vec3 vSlidingDir = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+	_vector vSlidingDir = XMVectorSet(0.f, 0.f, 0.f, 0.f);
 	if (pNavigation == nullptr)
 		Set_State(CTransform::STATE_POSITION, vPosition);
 	else
@@ -63,7 +63,7 @@ void CTransform::Move(Vec3 vDir, _float fSpeed, _float fTimeDelta, CNavigation* 
 			if (XMVectorGetX(XMVector3Length(vSlidingDir)) > 0.f)
 			{
 				vSlidingDir = XMVector3Normalize(vSlidingDir);
-				Vec4 vNewPosition = Get_State(CTransform::STATE_POSITION) + vSlidingDir * fSpeed * fTimeDelta;
+				_vector vNewPosition = Get_State(CTransform::STATE_POSITION) + vSlidingDir * fSpeed * fTimeDelta;
 
 				if (true == pNavigation->Is_Movable(vNewPosition, XMVector3Normalize(vNewPosition - Get_State(CTransform::STATE_POSITION)), nullptr))
 				{
@@ -74,20 +74,20 @@ void CTransform::Move(Vec3 vDir, _float fSpeed, _float fTimeDelta, CNavigation* 
 	}
 }
 
-void CTransform::Set_State(STATE eState, Vec4 vState)
+void CTransform::Set_State(STATE eState, _vector vState)
 {
 	_matrix	WorldMatrix = XMLoadFloat4x4(&m_WorldMatrix);
 	WorldMatrix.r[eState] = vState;
 	XMStoreFloat4x4(&m_WorldMatrix, WorldMatrix);
 }
 
-void CTransform::Set_Position(Vec4 vPosition, _float fTimeDelta, CNavigation* pNavigation, _bool* bMovable)
+void CTransform::Set_Position(_vector vPosition, _float fTimeDelta, CNavigation* pNavigation, _bool* bMovable)
 {
 	if (nullptr != bMovable)
 		*bMovable = false;
 
 	vPosition = XMVectorSetW(vPosition, 1.f);
-	Vec3 vSlidingDir = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+	_vector vSlidingDir = XMVectorSet(0.f, 0.f, 0.f, 0.f);
 
 	if (pNavigation == nullptr)
 	{
@@ -111,7 +111,7 @@ void CTransform::Set_Position(Vec4 vPosition, _float fTimeDelta, CNavigation* pN
 				_float3 vVelocity = pOwnerRigidBody->Get_Velocity();
 				vSlidingDir = XMVector3Normalize(XMVectorSetY(vSlidingDir, vVelocity.y));
 
-				Vec4 vNewPosition = Get_State(CTransform::STATE_POSITION) + vSlidingDir * XMVectorGetX(XMVector3Length(XMVectorSetY(XMLoadFloat3(&vVelocity), 0.f))) * fTimeDelta;
+				_vector vNewPosition = Get_State(CTransform::STATE_POSITION) + vSlidingDir * XMVectorGetX(XMVector3Length(XMVectorSetY(XMLoadFloat3(&vVelocity), 0.f))) * fTimeDelta;
 				if (XMVectorGetY(vNewPosition) <= pOwnerRigidBody->Get_RefHeight())
 				{
 					vNewPosition = XMVectorSetY(vNewPosition, pOwnerRigidBody->Get_RefHeight());
@@ -128,7 +128,7 @@ void CTransform::Set_Position(Vec4 vPosition, _float fTimeDelta, CNavigation* pN
 			{
 				_float3 vVelocity = pOwnerRigidBody->Get_Velocity();
 				vSlidingDir = XMVector3Normalize(vSlidingDir);
-				Vec4 vNewPosition = Get_State(CTransform::STATE_POSITION) + vSlidingDir * vVelocity.y * fTimeDelta;
+				_vector vNewPosition = Get_State(CTransform::STATE_POSITION) + vSlidingDir * vVelocity.y * fTimeDelta;
 
 				if (XMVectorGetY(vNewPosition) <= pOwnerRigidBody->Get_RefHeight())
 				{
@@ -148,7 +148,7 @@ void CTransform::Set_Position(Vec4 vPosition, _float fTimeDelta, CNavigation* pN
 }
 
 
-void CTransform::Set_Scale(Vec3 vScale)
+void CTransform::Set_Scale(_vector vScale)
 {
 	Set_State(CTransform::STATE_RIGHT,
 		XMVector3Normalize(Get_State(CTransform::STATE_RIGHT)) * XMVectorGetX(vScale));
@@ -213,7 +213,7 @@ void CTransform::Rotation_Acc(_fvector vAxis, _float fRadian)
 }
 
 
-void CTransform::LookAt(Vec4 vAt)
+void CTransform::LookAt(_vector vAt)
 {
 	_vector		vLook = vAt - Get_State(CTransform::STATE_POSITION);
 
@@ -228,7 +228,7 @@ void CTransform::LookAt(Vec4 vAt)
 	Set_State(CTransform::STATE_LOOK, XMVector3Normalize(vLook) * vScale.z);
 }
 
-void CTransform::LookAt_ForLandObject(Vec4 vAt)
+void CTransform::LookAt_ForLandObject(_vector vAt)
 {
 	_vector		vLook = vAt - Get_State(CTransform::STATE_POSITION);
 	if (XMVectorGetX(XMVector3Length(vLook)) < 0.01f)

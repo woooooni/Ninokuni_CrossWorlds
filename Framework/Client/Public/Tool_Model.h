@@ -13,6 +13,14 @@ public:
 	virtual HRESULT Initialize() override;
 	virtual void Tick(_float fTimeDelta) override;
 
+private:
+	wstring m_strFilePath = L"";
+	wstring m_strFileName = L"";
+	class CDummy* m_pDummy = nullptr;
+
+private:
+	void Tick_Animation(_float fTimeDelta);
+	void Tick_Model(_float fTimeDelta);
 
 public:
 	static CTool_Model* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

@@ -26,8 +26,6 @@ public:
 public:
 	HRESULT Ready_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY);
 	HRESULT Render(class CShader* pShader, class CVIBuffer_Rect* pBuffer);
-
-
 #endif
 
 private:

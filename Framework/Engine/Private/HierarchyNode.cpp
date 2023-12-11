@@ -41,7 +41,6 @@ HRESULT CHierarchyNode::Initialize(aiNode* pAINode, CHierarchyNode* pParent, _ui
 	m_pParent = pParent;
 
 	XMStoreFloat4x4(&m_CombinedTransformation, XMMatrixIdentity());
-
 	Safe_AddRef(m_pParent);
 
 	return S_OK;
@@ -70,13 +69,9 @@ HRESULT CHierarchyNode::Initialize_Bin(CModel* pModel)
 
 void CHierarchyNode::Set_CombinedTransformation(const wstring& strRootBoneName)
 {
+		
 	if (nullptr != m_pParent)
 	{
-		if (m_strName == strRootBoneName)
-		{
-			XMStoreFloat4x4(&m_RootAnim_CombinedTransformation, XMLoadFloat4x4(&m_Transformation) * XMLoadFloat4x4(&m_pParent->m_CombinedTransformation));
-			*((_float4*)m_Transformation.m[3]) = _float4{ 0.f, 0.f, 0.f, 1.f };
-		}
 		XMStoreFloat4x4(&m_CombinedTransformation, XMLoadFloat4x4(&m_Transformation) * XMLoadFloat4x4(&m_pParent->m_CombinedTransformation));
 	}
 	else
@@ -113,12 +108,12 @@ CHierarchyNode* CHierarchyNode::Create_Bin()
 CHierarchyNode* CHierarchyNode::Clone()
 {
 	CHierarchyNode* pInstance = new CHierarchyNode(*this);
-
 	return pInstance;
 }
 
 
 void CHierarchyNode::Free()
 {
+	__super::Free();
 	Safe_Release(m_pParent);
 }

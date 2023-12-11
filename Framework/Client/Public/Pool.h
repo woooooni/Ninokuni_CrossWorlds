@@ -3,6 +3,7 @@
 #include "Client_Defines.h"
 #include "Base.h"
 #include "GameInstance.h"
+#include <queue>
 
 BEGIN(Client)
 

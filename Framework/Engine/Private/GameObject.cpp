@@ -58,7 +58,9 @@ void CGameObject::LateTick(_float fTimeDelta)
 
 HRESULT CGameObject::Render()
 {
+#ifdef _DEBUG
 	Render_Collider();
+#endif // _DEBUG
 	return S_OK;
 }
 
@@ -93,7 +95,6 @@ HRESULT CGameObject::Add_Component(_uint iLevelIndex, const wstring& pPrototypeT
 	m_Components.emplace(pComponentTag, pComponent);
 
 	*ppOut = pComponent;
-
 	Safe_AddRef(pComponent);
 
 	return S_OK;
@@ -200,6 +201,7 @@ void CGameObject::LateUpdate_Collider(_float fTimedelta)
 			pCollider->LateTick_Collider(fTimedelta);
 	}
 }
+#ifdef _DEBUG
 
 void CGameObject::Render_Collider()
 {
@@ -209,14 +211,16 @@ void CGameObject::Render_Collider()
 			pCollider->Render();
 	}
 }
-
+#endif // DEBUG
 
 void CGameObject::Free()
 {
 	__super::Free();
 
 	Safe_Release(m_pDevice);
+	m_pDevice = nullptr;
 	Safe_Release(m_pContext);
+	m_pContext = nullptr;
 
 	for (auto& Pair : m_Components)	
 		Safe_Release(Pair.second);

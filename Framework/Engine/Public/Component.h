@@ -2,8 +2,9 @@
 
 #include "Base.h"
 
-BEGIN(Engine)
 
+BEGIN(Engine)
+class CGameObject;
 class ENGINE_DLL CComponent abstract : public CBase
 {
 protected:
@@ -18,7 +19,9 @@ public:
 
 public:
 	class CGameObject* Get_Owner() { return m_pOwner; }
-	void Set_Owner(class CGameObject* pOwner) { m_pOwner = pOwner; }
+	void Set_Owner(class CGameObject* pOwner);
+
+
 #ifdef _DEBUG
 public:
 	virtual HRESULT Render() { return S_OK; }
@@ -28,8 +31,9 @@ public:
 protected:
 	ID3D11Device*			m_pDevice = { nullptr };
 	ID3D11DeviceContext*	m_pContext = { nullptr };
+	class	CGameObject*	m_pOwner = { nullptr };
 	_bool					m_isCloned = { false };
-	class CGameObject*		m_pOwner = { nullptr };
+	
 
 public:
 	virtual CComponent* Clone(void* pArg) = 0;

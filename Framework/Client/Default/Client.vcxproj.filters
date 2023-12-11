@@ -28,12 +28,6 @@
     <Filter Include="96. Manager\ImGui\Libs">
       <UniqueIdentifier>{13a1723b-7fbe-4476-8b56-eb612d652727}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Levels\98. Tool">
-      <UniqueIdentifier>{68e03805-ac5d-4811-8d75-d88895ad5614}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\Logo">
-      <UniqueIdentifier>{93a319e0-2584-42f0-a95b-75033f74c5ae}</UniqueIdentifier>
-    </Filter>
     <Filter Include="96. Manager\ImGui\Libs\Docking">
       <UniqueIdentifier>{9f636762-d842-4778-89d0-4c71d473c2af}</UniqueIdentifier>
     </Filter>
@@ -46,21 +40,6 @@
     <Filter Include="02.GameObjects\99. Terrain">
       <UniqueIdentifier>{dec9bd71-23ed-45a4-8928-d0f72663a888}</UniqueIdentifier>
     </Filter>
-    <Filter Include="96. Manager\Network">
-      <UniqueIdentifier>{8261542a-0c27-4586-b1bf-5c2f9af465aa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="96. Manager\Network\Protocol">
-      <UniqueIdentifier>{ffce5b73-6bda-48ff-b77c-d649d8d16272}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="96. Manager\Network\00. Manager">
-      <UniqueIdentifier>{5b89282d-8857-4cd2-b88c-b5b0c953abd8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="96. Manager\Network\01. Session">
-      <UniqueIdentifier>{fe617d47-7421-4098-9b31-a0d4f0364c6e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="96. Manager\Network\02. PacketHandler">
-      <UniqueIdentifier>{a9be5bbe-63dd-4dec-a9ef-e1dc814c78df}</UniqueIdentifier>
-    </Filter>
     <Filter Include="98.Default">
       <UniqueIdentifier>{068ac4ae-308f-439b-8a7d-d5b077bfb9ee}</UniqueIdentifier>
     </Filter>
@@ -72,9 +51,6 @@
     </Filter>
     <Filter Include="96. Manager\ImGui\Libs\tinyxml">
       <UniqueIdentifier>{084b0b4f-c18d-4efb-a33a-45b35f9b1a0c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\98. UI\Manager">
-      <UniqueIdentifier>{1fb7ef61-258f-42e2-914a-b7fdabf11cb4}</UniqueIdentifier>
     </Filter>
     <Filter Include="96. Manager\Effect">
       <UniqueIdentifier>{d6edcf70-b279-4d66-8479-906959b69f23}</UniqueIdentifier>
@@ -150,6 +126,15 @@
     </Filter>
     <Filter Include="02.GameObjects\97. Camera\Main">
       <UniqueIdentifier>{3cfafdf7-1f2f-410b-bbdd-71f4e9cd8969}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="96. Manager\UI">
+      <UniqueIdentifier>{7d299768-5685-4b72-87a0-b43f94011bcb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\98. Tool">
+      <UniqueIdentifier>{68e03805-ac5d-4811-8d75-d88895ad5614}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Levels\97. Test">
+      <UniqueIdentifier>{34038f28-6bb9-4c09-b66c-db8e65add9cf}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -231,24 +216,6 @@
     <ClInclude Include="..\Public\Picking_Manager.h">
       <Filter>96. Manager\Picking</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Enum.pb.h">
-      <Filter>96. Manager\Network\Protocol</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Protocol.pb.h">
-      <Filter>96. Manager\Network\Protocol</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Struct.pb.h">
-      <Filter>96. Manager\Network\Protocol</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\ClientPacketHandler.h">
-      <Filter>96. Manager\Network\02. PacketHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Network_Manager.h">
-      <Filter>96. Manager\Network\00. Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\ServerSession.h">
-      <Filter>96. Manager\Network\01. Session</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\UI.h">
       <Filter>02.GameObjects\98. UI</Filter>
     </ClInclude>
@@ -281,9 +248,6 @@
     </ClInclude>
     <ClInclude Include="..\Public\Trail.h">
       <Filter>02.GameObjects\03. Effect\Trail</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\UI_Manager.h">
-      <Filter>02.GameObjects\98. UI\Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Camera_Manager.h">
       <Filter>96. Manager\Camera</Filter>
@@ -320,6 +284,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\Tool_Camera.h">
       <Filter>96. Manager\ImGui\Tool\Camera_Tool</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_Manager.h">
+      <Filter>96. Manager\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_Test.h">
+      <Filter>01.Levels\97. Test</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -386,24 +356,6 @@
     <ClCompile Include="..\Private\Picking_Manager.cpp">
       <Filter>96. Manager\Picking</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Enum.pb.cc">
-      <Filter>96. Manager\Network\Protocol</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Protocol.pb.cc">
-      <Filter>96. Manager\Network\Protocol</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Struct.pb.cc">
-      <Filter>96. Manager\Network\Protocol</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Network_Manager.cpp">
-      <Filter>96. Manager\Network\00. Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\ClientPacketHandler.cpp">
-      <Filter>96. Manager\Network\02. PacketHandler</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\ServerSession.cpp">
-      <Filter>96. Manager\Network\01. Session</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Part.cpp">
       <Filter>02.GameObjects\01. Character\98.Parts</Filter>
     </ClCompile>
@@ -436,9 +388,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\Trail.cpp">
       <Filter>02.GameObjects\03. Effect\Trail</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\UI_Manager.cpp">
-      <Filter>02.GameObjects\98. UI\Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Camera_Manager.cpp">
       <Filter>96. Manager\Camera</Filter>
@@ -475,6 +424,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Tool_Camera.cpp">
       <Filter>96. Manager\ImGui\Tool\Camera_Tool</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Manager.cpp">
+      <Filter>96. Manager\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Test.cpp">
+      <Filter>01.Levels\97. Test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -524,19 +479,5 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_TextureEffect_Instance.hlsl">
       <Filter>97. ShaderFiles\Instancing</Filter>
     </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\Protocol\GenPackets.bat">
-      <Filter>96. Manager\Network\Protocol</Filter>
-    </None>
-    <None Include="..\..\Protocol\protoc.exe">
-      <Filter>96. Manager\Network\Protocol</Filter>
-    </None>
-    <None Include="..\..\Protocol\Protocol.proto">
-      <Filter>96. Manager\Network\Protocol</Filter>
-    </None>
-    <None Include="..\..\Protocol\Struct.proto">
-      <Filter>96. Manager\Network\Protocol</Filter>
-    </None>
   </ItemGroup>
 </Project>

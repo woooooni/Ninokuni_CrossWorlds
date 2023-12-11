@@ -28,7 +28,6 @@ CModel::CModel(const CModel& rhs)
 	, m_Meshes(rhs.m_Meshes)
 	, m_Materials(rhs.m_Materials)
 	, m_eModelType(rhs.m_eModelType)
-	/*, m_HierarchyNodes(rhs.m_HierarchyNodes)*/
 	, m_Animations(rhs.m_Animations)
 	, m_iCurrentAnimIndex(rhs.m_iCurrentAnimIndex)
 	, m_PivotMatrix(rhs.m_PivotMatrix)
@@ -59,12 +58,6 @@ CModel::CModel(const CModel& rhs)
 	{
 		CHierarchyNode* pNewNode = pNode->Clone();
 		m_HierarchyNodes.push_back(pNewNode);
-
-		if (pNode->Get_Name() == L"Root")
-			m_pRootNode = pNewNode;
-		
-
-		Safe_AddRef(pNode);
 	}
 
 	for (auto& pNode : m_HierarchyNodes)	
@@ -193,28 +186,27 @@ HRESULT CModel::Initialize(void* pArg)
 
 HRESULT CModel::Initialize_Bin(void* pArg)
 {
+	_uint		iNumMeshes = 0;
+
+	vector<CMesh*>		MeshContainers;
+	MeshContainers.reserve(m_Meshes.size());
+
+	for (auto& pPrototype : m_Meshes)
+	{
+		CMesh* pMeshContainer = (CMesh*)pPrototype->Clone();
+		if (nullptr == pMeshContainer)
+			return E_FAIL;
+
+		MeshContainers.push_back(pMeshContainer);
+		Safe_Release(pPrototype);
+	}
+
+	m_Meshes.clear();
+
+	m_Meshes = MeshContainers;
+
 	if (TYPE_ANIM == m_eModelType)
 	{
-		_uint		iNumMeshes = 0;
-
-		vector<CMesh*>		MeshContainers;
-		MeshContainers.reserve(m_Meshes.size());
-
-		for (auto& pPrototype : m_Meshes)
-		{
-			CMesh* pMeshContainer = (CMesh*)pPrototype->Clone();
-			if (nullptr == pMeshContainer)
-				return E_FAIL;
-
-			MeshContainers.push_back(pMeshContainer);
-
-			Safe_Release(pPrototype);
-		}
-
-		m_Meshes.clear();
-
-		m_Meshes = MeshContainers;
-
 		for (auto& pMeshContainer : m_Meshes)
 		{
 			if (nullptr != pMeshContainer)
@@ -232,13 +224,11 @@ HRESULT CModel::Initialize_Bin(void* pArg)
 			return E_FAIL;
 
 		Animations.push_back(pAnimation);
-
 		Safe_Release(pPrototype);
 	}
-
 	m_Animations.clear();
-
 	m_Animations = Animations;
+
 
 	m_Matrices.reserve(m_HierarchyNodes.size());
 	return S_OK;
@@ -328,9 +318,6 @@ HRESULT CModel::Play_Animation(CTransform* pTransform, _float fTimeDelta)
 	if (m_iCurrentAnimIndex >= m_iNumAnimations)
 		return E_FAIL;
 
-	_vector vPrevAnimPos, vNextAnimPos;
-	vPrevAnimPos = m_pRootNode->Get_RootCombinedTransformation().r[CTransform::STATE_POSITION];
-
 	if (m_bInterpolationAnimation) 
 	{
 		m_Animations[m_iCurrentAnimIndex]->Play_Animation(this, pTransform, m_Animations[m_iNextAnimIndex], fTimeDelta);
@@ -342,33 +329,10 @@ HRESULT CModel::Play_Animation(CTransform* pTransform, _float fTimeDelta)
 		
 
 	for (auto& pHierarchyNode : m_HierarchyNodes)
-		pHierarchyNode->Set_CombinedTransformation(m_pRootNode->Get_Name());
+		pHierarchyNode->Set_CombinedTransformation(m_HierarchyNodes[0]->Get_Name());
 
 	if (m_bInterpolationAnimation)	
 		return S_OK;
-	
-
-	if (m_Animations[m_iCurrentAnimIndex]->Is_RootAnimation())
-	{
-		vNextAnimPos = m_pRootNode->Get_RootCombinedTransformation().r[CTransform::STATE_POSITION];
-		if (m_bFirstRootConvert)
-		{
-			vNextAnimPos = XMVectorSet(0.f, 0.f, 0.f, 1.f);
-			vPrevAnimPos = XMVectorSet(0.f, 0.f, 0.f, 1.f);
-			m_bFirstRootConvert = 0.f;
-		}
-
-
-		_vector vPos = pTransform->Get_State(CTransform::STATE_POSITION);
-		_vector vDir = vPrevAnimPos - vNextAnimPos;
-		_vector vWorldDir = XMVector3Normalize(XMVector3TransformNormal(vDir, pTransform->Get_WorldMatrix()));
-		XMVectorSetY(vWorldDir, XMVectorGetY(vWorldDir) * -1.f);
-
-		_float fDist = XMVectorGetX(XMVector3Length(vDir));
-
-		vPos += vWorldDir * fDist * fTimeDelta;
-		pTransform->Set_Position(vPos, fTimeDelta, m_pOwner->Get_Component<CNavigation>(L"Com_Navigation"));
-	}
 	
 
 	return S_OK;
@@ -613,6 +577,9 @@ HRESULT CModel::Ready_Animation_Texture()
 	TextureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	TextureDesc.MiscFlags = 0;
 
+	Safe_Release(m_pMatrixTexture);
+	Safe_Release(m_pSRV);
+
 	if (FAILED(m_pDevice->CreateTexture2D(&TextureDesc, nullptr, &m_pMatrixTexture)))
 		return E_FAIL;
 
@@ -648,7 +615,7 @@ CModel* CModel::Create_Bin(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 CComponent* CModel::Clone(void* pArg)
 {
 	CModel* pInstance = new CModel(*this);
-	if (!m_bFromBinary)
+	if (false == m_bFromBinary)
 	{
 		if (FAILED(pInstance->Initialize(pArg)))
 		{
@@ -672,10 +639,7 @@ void CModel::Free()
 {
 	__super::Free();
 
-	for (auto& pHierarchyNode : m_HierarchyNodes)
-		Safe_Release(pHierarchyNode);
-
-	m_HierarchyNodes.clear();
+	
 
 	for (auto& Material : m_Materials)
 	{
@@ -686,12 +650,20 @@ void CModel::Free()
 
 	for (auto& pMeshContainer : m_Meshes)
 		Safe_Release(pMeshContainer);
-
 	m_Meshes.clear();
+
 
 	for (auto& pAnimation : m_Animations)
 		Safe_Release(pAnimation);
-
 	m_Animations.clear();
+
+
+	for (auto& pHierarchyNode : m_HierarchyNodes)
+		Safe_Release(pHierarchyNode);
+	m_HierarchyNodes.clear();
+
 	m_Importer.FreeScene();
+
+	Safe_Release(m_pSRV);
+	Safe_Release(m_pMatrixTexture);
 }

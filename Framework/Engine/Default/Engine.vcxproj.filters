@@ -142,51 +142,6 @@
     <Filter Include="01.Utiltiy\05. Model_Manager">
       <UniqueIdentifier>{855daea8-1daf-4a71-bee6-d2dcb3b418a7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. Network">
-      <UniqueIdentifier>{ce4bd7f5-408b-46ea-bb4d-0af3b386288d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. Network\00. Memory">
-      <UniqueIdentifier>{b9b08e97-7c3b-437a-bd03-aef6a02c8f9c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. Network\01. Network">
-      <UniqueIdentifier>{d7976ee9-8821-4347-82f1-34f217dd4667}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. Network\02. Thread">
-      <UniqueIdentifier>{1ad1f034-47b9-4c98-9dba-51b88bfc137b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. Network\01. Network\Buffer">
-      <UniqueIdentifier>{d0d31dfe-eb83-4228-aebc-4650f13dd8a2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. Network\01. Network\Buffer\Read">
-      <UniqueIdentifier>{efa6efa8-62b5-4832-be61-2aa6f2532da3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. Network\01. Network\Buffer\Write">
-      <UniqueIdentifier>{d0b5e1f3-60f1-4463-9b66-f1275ef65ae5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. Network\01. Network\Iocp">
-      <UniqueIdentifier>{bc347c11-12b6-4e7b-a27c-79faf3fe8a66}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. Network\01. Network\Listener">
-      <UniqueIdentifier>{943c691c-2bfe-41f9-9fa5-fcd18f18ba7f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. Network\01. Network\NetAddress">
-      <UniqueIdentifier>{72251328-b76c-414f-992c-69ae225ffddb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. Network\01. Network\Buffer\Recv">
-      <UniqueIdentifier>{8d6e8ef6-0586-4458-8d20-5943ee4ebb0e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. Network\01. Network\Buffer\Send">
-      <UniqueIdentifier>{ea671a5c-468b-40c1-90e4-fd57e0697d68}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. Network\01. Network\Service">
-      <UniqueIdentifier>{ddfa6069-ca0b-4acb-b94b-bdaaf731d541}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. Network\01. Network\Session">
-      <UniqueIdentifier>{8936eed7-bcbf-457e-9a88-e2f87f74fe8d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02. Network\01. Network\SocketUtils">
-      <UniqueIdentifier>{7198fa5b-0b50-4b6d-b8b2-a54a3813466f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utiltiy\03.Component\09. Navigation">
       <UniqueIdentifier>{63fa899c-a352-4c9e-ae44-cae563367671}</UniqueIdentifier>
     </Filter>
@@ -195,9 +150,6 @@
     </Filter>
     <Filter Include="01.Utiltiy\03.Component\02. VIBuffer\Cell">
       <UniqueIdentifier>{fba7d853-b41b-4c06-b300-2d6c58e531a4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utiltiy\03.Component\09. Navigation\Cell\Shader">
-      <UniqueIdentifier>{10d80c0e-a39b-4547-bc29-ebf8c262ed23}</UniqueIdentifier>
     </Filter>
     <Filter Include="01.Utiltiy\03.Component\10. Collider">
       <UniqueIdentifier>{b944c4e3-103e-465d-8a44-69f47ceb223e}</UniqueIdentifier>
@@ -226,15 +178,6 @@
     <Filter Include="01.Utiltiy\97. ShaderFiles">
       <UniqueIdentifier>{8fa7b1dc-e34f-4049-afc5-bb12e296a974}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utiltiy\03.Component\02. VIBuffer\Instancing\Rect">
-      <UniqueIdentifier>{b298ffe8-d81c-4b40-9ff5-6207c654c66a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utiltiy\03.Component\02. VIBuffer\Instancing\Point">
-      <UniqueIdentifier>{ef38afe6-1cfd-4244-a6d4-9f3dad6a537a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="01.Utiltiy\03.Component\02. VIBuffer\Instancing\Model">
-      <UniqueIdentifier>{8348d9e7-d8aa-4594-8cc2-4055ed74034e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="01.Utiltiy\07. Frustum">
       <UniqueIdentifier>{2d646b6c-06a6-41d9-a9c3-4a18d9779c86}</UniqueIdentifier>
     </Filter>
@@ -243,6 +186,15 @@
     </Filter>
     <Filter Include="01.Utiltiy\03.Component\10. Collider\OBB">
       <UniqueIdentifier>{f2ca6f38-bba7-4d03-8e64-1823311d1d7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utiltiy\98. Utils\FileUtil">
+      <UniqueIdentifier>{a883701f-31c7-42cd-ba6d-3c47f9dbac83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utiltiy\98. Utils\tinyxml">
+      <UniqueIdentifier>{91fa594a-c7f3-4f70-8d69-6f977abb7a25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utiltiy\98. Utils\Util">
+      <UniqueIdentifier>{0a5f0a6e-8c59-4292-b60e-664d7b94107e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -306,9 +258,6 @@
     <ClInclude Include="..\Public\Texture.h">
       <Filter>01.Utiltiy\03.Component\04. Texture</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Utils.h">
-      <Filter>01.Utiltiy\98. Utils</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Component_Manager.h">
       <Filter>01.Utiltiy\03.Component\00. Manager</Filter>
     </ClInclude>
@@ -360,9 +309,6 @@
     <ClInclude Include="..\Public\StateMachine.h">
       <Filter>01.Utiltiy\03.Component\07. StateMachine</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\tinyxml2.h">
-      <Filter>01.Utiltiy\98. Utils</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_Terrain.h">
       <Filter>01.Utiltiy\03.Component\02. VIBuffer\Terrain</Filter>
     </ClInclude>
@@ -375,71 +321,11 @@
     <ClInclude Include="..\Public\DebugDraw.h">
       <Filter>01.Utiltiy\98. Utils\Debug_Draw</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\FileUtils.h">
-      <Filter>01.Utiltiy\98. Utils</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Model_Manager.h">
       <Filter>01.Utiltiy\05. Model_Manager</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_Particle.h">
       <Filter>01.Utiltiy\03.Component\02. VIBuffer\Particle</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Network\Allocator.h">
-      <Filter>02. Network\00. Memory</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Network\MemoryPool.h">
-      <Filter>02. Network\00. Memory</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Network\CoreTLS.h">
-      <Filter>99.Defines</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Network\ServerMemory.h">
-      <Filter>02. Network\00. Memory</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Network\ObjectPool.h">
-      <Filter>02. Network\00. Memory</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Network\DeadLockProfiler.h">
-      <Filter>02. Network\02. Thread</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Network\Lock.h">
-      <Filter>02. Network\02. Thread</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Network\ThreadManager.h">
-      <Filter>02. Network\02. Thread</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Network\BufferReader.h">
-      <Filter>02. Network\01. Network\Buffer\Read</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Network\BufferWriter.h">
-      <Filter>02. Network\01. Network\Buffer\Write</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Network\IocpCore.h">
-      <Filter>02. Network\01. Network\Iocp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Network\IocpEvent.h">
-      <Filter>02. Network\01. Network\Iocp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Network\Listener.h">
-      <Filter>02. Network\01. Network\Listener</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Network\NetAddress.h">
-      <Filter>02. Network\01. Network\NetAddress</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Network\SendBuffer.h">
-      <Filter>02. Network\01. Network\Buffer\Send</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Network\RecvBuffer.h">
-      <Filter>02. Network\01. Network\Buffer\Recv</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Network\Service.h">
-      <Filter>02. Network\01. Network\Service</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Network\Session.h">
-      <Filter>02. Network\01. Network\Session</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Network\SocketUtils.h">
-      <Filter>02. Network\01. Network\SocketUtils</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\RigidBody.h">
       <Filter>01.Utiltiy\03.Component\08. RigidBody</Filter>
@@ -468,9 +354,6 @@
     <ClInclude Include="..\Public\VIBuffer_Cube.h">
       <Filter>01.Utiltiy\03.Component\02. VIBuffer\Cube</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\PhysicsX_Manager.h">
-      <Filter>01.Utiltiy\06. PhysicsManager</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Target_Manager.h">
       <Filter>01.Utiltiy\04. RenderTarget\Manager</Filter>
     </ClInclude>
@@ -488,6 +371,15 @@
     </ClInclude>
     <ClInclude Include="..\Public\Sound_Manager.h">
       <Filter>01.Utiltiy\08. SoundManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FileUtils.h">
+      <Filter>01.Utiltiy\98. Utils\FileUtil</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\tinyxml2.h">
+      <Filter>01.Utiltiy\98. Utils\tinyxml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Utils.h">
+      <Filter>01.Utiltiy\98. Utils\Util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -535,9 +427,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\Texture.cpp">
       <Filter>01.Utiltiy\03.Component\04. Texture</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Utils.cpp">
-      <Filter>01.Utiltiy\98. Utils</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Component_Manager.cpp">
       <Filter>01.Utiltiy\03.Component\00. Manager</Filter>
@@ -590,9 +479,6 @@
     <ClCompile Include="..\Private\StateMachine.cpp">
       <Filter>01.Utiltiy\03.Component\07. StateMachine</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\tinyxml2.cpp">
-      <Filter>01.Utiltiy\98. Utils</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Terrain.cpp">
       <Filter>01.Utiltiy\03.Component\02. VIBuffer\Terrain</Filter>
     </ClCompile>
@@ -605,68 +491,11 @@
     <ClCompile Include="..\Private\DebugDraw.cpp">
       <Filter>01.Utiltiy\98. Utils\Debug_Draw</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\FileUtils.cpp">
-      <Filter>01.Utiltiy\98. Utils</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Model_Manager.cpp">
       <Filter>01.Utiltiy\05. Model_Manager</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Particle.cpp">
       <Filter>01.Utiltiy\03.Component\02. VIBuffer\Particle</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Allocator.cpp">
-      <Filter>02. Network\00. Memory</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\MemoryPool.cpp">
-      <Filter>02. Network\00. Memory</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\ServerMemory.cpp">
-      <Filter>02. Network\00. Memory</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\DeadLockProfiler.cpp">
-      <Filter>02. Network\02. Thread</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Lock.cpp">
-      <Filter>02. Network\02. Thread</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\ThreadManager.cpp">
-      <Filter>02. Network\02. Thread</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\CoreTLS.cpp">
-      <Filter>99.Defines</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\BufferReader.cpp">
-      <Filter>02. Network\01. Network\Buffer\Read</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\BufferWriter.cpp">
-      <Filter>02. Network\01. Network\Buffer\Write</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\IocpCore.cpp">
-      <Filter>02. Network\01. Network\Iocp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\IocpEvent.cpp">
-      <Filter>02. Network\01. Network\Iocp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Listener.cpp">
-      <Filter>02. Network\01. Network\Listener</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\NetAddress.cpp">
-      <Filter>02. Network\01. Network\NetAddress</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\SendBuffer.cpp">
-      <Filter>02. Network\01. Network\Buffer\Send</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\RecvBuffer.cpp">
-      <Filter>02. Network\01. Network\Buffer\Recv</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Service.cpp">
-      <Filter>02. Network\01. Network\Service</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Session.cpp">
-      <Filter>02. Network\01. Network\Session</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\SocketUtils.cpp">
-      <Filter>02. Network\01. Network\SocketUtils</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Navigation.cpp">
       <Filter>01.Utiltiy\03.Component\09. Navigation</Filter>
@@ -695,9 +524,6 @@
     <ClCompile Include="..\Private\VIBuffer_Cube.cpp">
       <Filter>01.Utiltiy\03.Component\02. VIBuffer\Cube</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\PhysicsX_Manager.cpp">
-      <Filter>01.Utiltiy\06. PhysicsManager</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Target_Manager.cpp">
       <Filter>01.Utiltiy\04. RenderTarget\Manager</Filter>
     </ClCompile>
@@ -715,6 +541,15 @@
     </ClCompile>
     <ClCompile Include="..\Private\Sound_Manager.cpp">
       <Filter>01.Utiltiy\08. SoundManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FileUtils.cpp">
+      <Filter>01.Utiltiy\98. Utils\FileUtil</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\tinyxml2.cpp">
+      <Filter>01.Utiltiy\98. Utils\tinyxml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Utils.cpp">
+      <Filter>01.Utiltiy\98. Utils\Util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -4,8 +4,6 @@
 #include "GameInstance.h"
 #include "VIBuffer_Trail.h"
 #include "Level_Loading.h"
-#include "Network_Manager.h"
-#include "SocketUtils.h"
 
 
 #include "ImGui_Manager.h"
@@ -18,10 +16,7 @@
 
 
 CMainApp::CMainApp()	
-	: m_pGame_Instance(CGameInstance::GetInstance())
-	, m_pNetwork_Manager(CNetwork_Manager::GetInstance())
 {
-	Safe_AddRef(m_pGame_Instance);
 }
 
 
@@ -39,9 +34,7 @@ HRESULT CMainApp::Initialize()
 	GraphicDesc.iWinSizeX = g_iWinSizeX;
 	GraphicDesc.iWinSizeY = g_iWinSizeY;
 
-	SocketUtils::Init();
-
-	if (FAILED(m_pGame_Instance->Initialize_Engine(LEVEL_END, _uint(LAYER_TYPE::LAYER_END), GraphicDesc, &m_pDevice, &m_pContext, g_hWnd, g_hInstance)))
+	if (FAILED(GI->Initialize_Engine(LEVEL_END, _uint(LAYER_TYPE::LAYER_END), GraphicDesc, &m_pDevice, &m_pContext, g_hWnd, g_hInstance)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Prototype_Component()))
@@ -51,7 +44,7 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 	/* 1-4. 게임내에서 사용할 레벨(씬)을 생성한다.   */
-	if (FAILED(Open_Level(LEVEL_TOOL, L"Final_Boss")))
+	if (FAILED(Open_Level(LEVEL_TEST, L"Final_Boss")))
 		return E_FAIL;
 
 	return S_OK;
@@ -60,11 +53,11 @@ HRESULT CMainApp::Initialize()
 void CMainApp::Tick(_float fTimeDelta)
 {
 	CCamera_Manager::GetInstance()->Tick(fTimeDelta);
-	m_pGame_Instance->Tick(fTimeDelta);
+	GI->Tick(fTimeDelta);
 	CUI_Manager::GetInstance()->Tick(fTimeDelta);
 	
 	CCamera_Manager::GetInstance()->LateTick(fTimeDelta);
-	m_pGame_Instance->LateTick(fTimeDelta);
+	GI->LateTick(fTimeDelta);
 	CUI_Manager::GetInstance()->LateTick(fTimeDelta);
 	
 	
@@ -75,12 +68,12 @@ void CMainApp::Tick(_float fTimeDelta)
 HRESULT CMainApp::Render()
 {
 	/* 게임내에 존재하는 여러 객체들의 렌더링. */
-	m_pGame_Instance->Clear_BackBuffer_View(_float4(0.f, 0.f, 1.f, 1.f));
-	m_pGame_Instance->Clear_DepthStencil_View();
+	GI->Clear_BackBuffer_View(_float4(0.f, 0.f, 1.f, 1.f));
+	GI->Clear_DepthStencil_View();
 
 	m_pRenderer_Com->Draw();
-	m_pGame_Instance->Render_Debug();
-	m_pGame_Instance->Present();
+	GI->Render_Debug();
+	GI->Present();
 
 	++m_iNumDraw;
 
@@ -102,12 +95,9 @@ HRESULT CMainApp::Render()
 
 HRESULT CMainApp::Open_Level(LEVELID eLevelID, const wstring& strFolderName)
 {
-	if (nullptr == m_pGame_Instance)
-		return E_FAIL;
-
 	/* 로고레베릉ㄹ 할당하고 싶었지만. 로고레벨을 위한 로딩레벨을 먼저 생성하여 로딩작업을 수행할꺼야. */
 	/* 로딩객체에게 eLevelID라는 내가 실제 할당ㅎ아고 싶었던 레벨열거체를 준거지?! 실제할당하고싶었던 레벨에 자원을 준비라하라고 */
-	if (FAILED(m_pGame_Instance->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, eLevelID, strFolderName))))
+	if (FAILED(GI->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, eLevelID, strFolderName))))
 		return E_FAIL;
 
 	return S_OK;
@@ -187,14 +177,11 @@ HRESULT CMainApp::Initialize_Client()
 
 HRESULT CMainApp::Ready_Prototype_Component()
 {
-	if (nullptr == m_pGame_Instance)
-		return E_FAIL;
-
 	/* For.Prototype_Component_Renderer */
-	if (FAILED(m_pGame_Instance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), m_pRenderer_Com = CRenderer::Create(m_pDevice, m_pContext))))
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), m_pRenderer_Com = CRenderer::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
-	Safe_AddRef(m_pRenderer_Com);
 
+	Safe_AddRef(m_pRenderer_Com);
 
 	///* For.Prototype_Component_VIBuffer_Particle */
 	//if (FAILED(m_pGame_Instance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Particle"),
@@ -206,58 +193,58 @@ HRESULT CMainApp::Ready_Prototype_Component()
 		return E_FAIL;
 
 	/* For.Prototype_Component_VIBuffer_Rect */
-	if (FAILED(m_pGame_Instance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect"),
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect"),
 		CVIBuffer_Rect::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 	/* For.Prototype_Component_VIBuffer_Terrain*/
-	if (FAILED(m_pGame_Instance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Terrain"),
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Terrain"),
 		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 256, 256))))
 		return E_FAIL;
 
 	/* For.Prototype_Component_VIBuffer_Trail*/
-	if (FAILED(m_pGame_Instance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Trail"),
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Trail"),
 		CVIBuffer_Trail::Create(m_pDevice, m_pContext, 220))))
 		return E_FAIL;
 
 	/* For.Prototype_Component_VIBuffer_Cube*/
-	if (FAILED(m_pGame_Instance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Cube"),
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Cube"),
 		CVIBuffer_Cube::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 	/* For.Prototype_Component_Shader_UI*/
-	if (FAILED(m_pGame_Instance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_UI"),
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_UI"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_UI.hlsl"), VTXTEX_DECLARATION::Elements, VTXTEX_DECLARATION::iNumElements))))
 		return E_FAIL;
 
 	/* For.Prototype_Component_Shader_VtxCube */
-	if (FAILED(m_pGame_Instance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxCube"),
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxCube"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxCubeTex.hlsl"), VTXCUBETEX_DECLARATION::Elements, VTXCUBETEX_DECLARATION::iNumElements))))
 		return E_FAIL;
 
 
 	/* For.Prototype_Component_Shader_VtxTex */
-	if (FAILED(m_pGame_Instance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex"),
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxTex.hlsl"), VTXTEX_DECLARATION::Elements, VTXTEX_DECLARATION::iNumElements))))
 		return E_FAIL;
 
 	/* For.Prototype_Component_Shader_VtxNorTex*/
-	if (FAILED(m_pGame_Instance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxNorTex"),
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxNorTex"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxNorTex.hlsl"), VTXNORTEX_DECLARATION::Elements, VTXNORTEX_DECLARATION::iNumElements))))
 		return E_FAIL;
 
 	/* For.Prototype_Component_Shader_Mesh_Effect */
-	if (FAILED(m_pGame_Instance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Mesh_Effect"),
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Mesh_Effect"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_MeshEffect.hlsl"), VTXMODEL_DECLARATION::Elements, VTXMODEL_DECLARATION::iNumElements))))
 		return E_FAIL;
 
 	/* For.Prototype_Component_Shader_Texture_Effect */
-	if (FAILED(m_pGame_Instance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Texture_Effect"),
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Texture_Effect"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_TextureEffect.hlsl"), VTXTEX_DECLARATION::Elements, VTXTEX_DECLARATION::iNumElements))))
 		return E_FAIL;
 
 	/* For.Prototype_Component_Shader_Trail */
-	if (FAILED(m_pGame_Instance->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Trail"),
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Trail"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Trail.hlsl"), VTXTEX_DECLARATION::Elements, VTXTEX_DECLARATION::iNumElements))))
 		return E_FAIL;
 
@@ -419,21 +406,14 @@ CMainApp * CMainApp::Create()
 void Client::CMainApp::Free()
 {	
 	__super::Free();
-
 	Safe_Release(m_pRenderer_Com);
-	Safe_Release(m_pDevice);
-	Safe_Release(m_pContext);
 
-	CParticle_Manager::GetInstance()->DestroyInstance();
-	CEffect_Manager::GetInstance()->DestroyInstance();
-	CPicking_Manager::GetInstance()->DestroyInstance();
-	CImGui_Manager::GetInstance()->DestroyInstance();
 	CCamera_Manager::GetInstance()->DestroyInstance();
-	CNetwork_Manager::GetInstance()->DestroyInstance();
-	
+	CEffect_Manager::GetInstance()->DestroyInstance();
+	CParticle_Manager::GetInstance()->DestroyInstance();
+	CImGui_Manager::GetInstance()->DestroyInstance();
+	CPicking_Manager::GetInstance()->DestroyInstance();
+	CUI_Manager::GetInstance()->DestroyInstance();
 
-	Safe_Release(m_pGame_Instance);
 	CGameInstance::Release_Engine();
-
-	SocketUtils::Clear();
 }

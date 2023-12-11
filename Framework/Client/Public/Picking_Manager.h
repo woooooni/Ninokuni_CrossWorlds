@@ -30,8 +30,8 @@ public:
 	_bool Is_JustNaviPicking(class CNavigation* pNavigation, __out _float3* pWorldOut);
 
 private:
-	ID3D11Device* m_pDevice;
-	ID3D11DeviceContext* m_pContext;
+	ID3D11Device* m_pDevice = nullptr;
+	ID3D11DeviceContext* m_pContext = nullptr;
 
 
 public:

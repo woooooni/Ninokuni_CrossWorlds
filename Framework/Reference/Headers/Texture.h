@@ -26,9 +26,11 @@ public:
 public:
 	const wstring& Get_Name() { return m_FileNames[0]; }
 	const wstring& Get_Name(_uint iIdx) { 
+		wstring strTemp = L"";
 		if (iIdx >= m_FileNames.size())
-			return wstring();
-		return m_FileNames[iIdx];
+			return strTemp;
+
+		return m_FileNames[iIdx]; 
 	}
 
 	_int Find_Index(const wstring& strTextureName)

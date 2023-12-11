@@ -33,12 +33,6 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 
-public:
-	CShader* Get_ShaderCom() { return m_pShaderCom; }
-	CTransform* Get_TransformCom() { return m_pTransformCom; }
-	CVIBuffer_Terrain* Get_TerrainBufferCom() { return m_pVIBufferCom; }
-	CNavigation* Get_NavigationCom() { return m_pNavigationCom; }
-
 
 #ifdef _DEBUG
 public:

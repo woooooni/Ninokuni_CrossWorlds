@@ -138,7 +138,7 @@
 /*---------------
 	  Crash
 ---------------*/
-
+#ifdef _DEBUG
 #define CRASH(cause)						\
 {											\
 	uint32* crash = nullptr;				\
@@ -154,7 +154,7 @@
 		__analysis_assume(expr);	\
 	}								\
 }
-
+#endif
 
 #endif // Engine_Macro_h__
 

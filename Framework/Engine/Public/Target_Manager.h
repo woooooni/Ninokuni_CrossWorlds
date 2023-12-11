@@ -47,8 +47,6 @@ private:
 
 private:
 	// ID3D11RenderTargetView*					m_pBackBufferRTV = { nullptr };
-
-
 	ID3D11RenderTargetView*					m_pPrevRTVs[8];
 	ID3D11DepthStencilView*					m_pDSV = { nullptr };
 	ID3D11DepthStencilView*					m_pShadowDSV = { nullptr };

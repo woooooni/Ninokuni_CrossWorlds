@@ -24,11 +24,11 @@ HRESULT CEffect_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceCont
 	Safe_AddRef(m_pDevice);
 	Safe_AddRef(m_pContext);
 
-	if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_NONANIM, L"../Bin/Resources/Effect/Model/")))
-		return E_FAIL;
+	//if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_NONANIM, L"../Bin/Resources/Effect/Model/")))
+	//	return E_FAIL;
 
-	if (FAILED(Ready_Proto_Effects(strEffectPath)))
-		return E_FAIL;
+	//if (FAILED(Ready_Proto_Effects(strEffectPath)))
+	//	return E_FAIL;
 	
 	return S_OK;
 }

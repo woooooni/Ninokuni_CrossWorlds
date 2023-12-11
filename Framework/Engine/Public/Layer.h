@@ -2,7 +2,6 @@
 
 #include "Engine_Defines.h"
 #include "Base.h"
-#include "Lock.h"
 
 /* 사본 객체들을 리스트에 보관한다. */
 
@@ -32,7 +31,6 @@ public:
 
 private:
 	list<class CGameObject*>	m_GameObjects;
-	USE_LOCK
 
 public:
 	static CLayer* Create();

@@ -1,8 +1,7 @@
 #include "State.h"
-#include "Model.h"
 #include "GameObject.h"
 #include "StateMachine.h"
-#include "Animation.h"
+#include "GameInstance.h"
 
 
 

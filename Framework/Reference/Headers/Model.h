@@ -95,7 +95,6 @@ private:
 	vector<MATERIALDESC>					m_Materials;
 
 private:
-	CHierarchyNode* m_pRootNode;
 	vector<class CHierarchyNode*>			m_HierarchyNodes;
 
 private:
@@ -111,7 +110,7 @@ private:
 
 private:
 	ID3D11Texture2D* m_pMatrixTexture = nullptr;
-	ID3D11ShaderResourceView* m_pSRV;
+	ID3D11ShaderResourceView* m_pSRV = nullptr;
 	vector<_float4x4> m_Matrices;
 
 
