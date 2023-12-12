@@ -131,7 +131,7 @@ Client::CEffect* CParticle::Generate_Effect()
 
 	//pEffect->Set_DeletionTime(m_tParticleDesc.fLifeTime);
 	
-	// return pEffect;
+	return nullptr;
 }
 
 HRESULT CParticle::Ready_Components()

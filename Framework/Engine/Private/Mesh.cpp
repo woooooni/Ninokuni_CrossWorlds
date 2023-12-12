@@ -291,49 +291,67 @@ HRESULT CMesh::Ready_AnimVertices(const aiMesh* pAIMesh, CModel* pModel)
 	ZeroMemory(pVertices, sizeof(VTXANIMMODEL) * m_iNumVertices);
 
 	for (_uint i = 0; i < m_iNumVertices; ++i)
-	{
-		/* 사전변환( x) : 뼈의 행렬과 곱해져서 그려진다.
-		사전변환에 대한 정보를 뼈에게 담아놓을 것이다. */
+	{	
 		memcpy(&pVertices[i].vPosition, &pAIMesh->mVertices[i], sizeof(_float3));
 		memcpy(&pVertices[i].vNormal, &pAIMesh->mNormals[i], sizeof(_float3));
 		memcpy(&pVertices[i].vTexture, &pAIMesh->mTextureCoords[0][i], sizeof(_float2));
 		memcpy(&pVertices[i].vTangent, &pAIMesh->mTangents[i], sizeof(_float3));
 	}
 
-	/* 현재 메시에 영향ㅇ르 ㅈ2ㅜ는 뼈들을 순회한다ㅏ. */
-	/* 뼈(aiBone)안에 표현되어있는, 이뼈는 어떤 정점에게 영향을 주는지(mVertexId)를 받아와서.
-	해당 정점에게 이뼈에 영향을 받는다(vBlendIndex), 얼마나(vBlendWeight)를 담아둔다. */
-
+	/* Static과 달리 해당 메시에 영향을 주는 뼈의 정보를 저장한다. */
 	for (_uint i = 0; i < pAIMesh->mNumBones; ++i)
 	{
 		aiBone* pAIBone = pAIMesh->mBones[i];
 
-		/* i번째 뼈가 어떤 정점들에게 영향ㅇ르 주는지 순회한다. */
 		for (_uint j = 0; j < pAIBone->mNumWeights; ++j)
 		{
 			_uint		iVertexIndex = pAIBone->mWeights[j].mVertexId;
 
 			if (0.0f == pVertices[iVertexIndex].vBlendWeight.x)
 			{
-				pVertices[iVertexIndex].vBlendIndex.x = i;
+				_int iIndex = pModel->Get_HierarchyNodeIndex(pAIBone->mName.C_Str());
+
+				if (iIndex < 0)
+					MSG_BOX("Failed : CMesh::Ready_AnimVertices()");
+
+				pVertices[iVertexIndex].vBlendIndex.x = iIndex;
+
 				pVertices[iVertexIndex].vBlendWeight.x = pAIBone->mWeights[j].mWeight;
 			}
 
 			else if (0.0f == pVertices[iVertexIndex].vBlendWeight.y)
 			{
-				pVertices[iVertexIndex].vBlendIndex.y = i;
+				_int iIndex = pModel->Get_HierarchyNodeIndex(pAIBone->mName.C_Str());
+
+				if (iIndex < 0)
+					MSG_BOX("Failed : CMesh::Ready_AnimVertices()");
+
+				pVertices[iVertexIndex].vBlendIndex.y = iIndex;
+
 				pVertices[iVertexIndex].vBlendWeight.y = pAIBone->mWeights[j].mWeight;
 			}
 
 			else if (0.0f == pVertices[iVertexIndex].vBlendWeight.z)
 			{
-				pVertices[iVertexIndex].vBlendIndex.z = i;
+				_int iIndex = pModel->Get_HierarchyNodeIndex(pAIBone->mName.C_Str());
+
+				if (iIndex < 0)
+					MSG_BOX("Failed : CMesh::Ready_AnimVertices()");
+
+				pVertices[iVertexIndex].vBlendIndex.z = iIndex;
+
 				pVertices[iVertexIndex].vBlendWeight.z = pAIBone->mWeights[j].mWeight;
 			}
 
 			else if (0.0f == pVertices[iVertexIndex].vBlendWeight.w)
 			{
-				pVertices[iVertexIndex].vBlendIndex.w = i;
+				_int iIndex = pModel->Get_HierarchyNodeIndex(pAIBone->mName.C_Str());
+
+				if (iIndex < 0)
+					MSG_BOX("Failed : CMesh::Ready_AnimVertices()");
+
+				pVertices[iVertexIndex].vBlendIndex.w = iIndex;
+
 				pVertices[iVertexIndex].vBlendWeight.w = pAIBone->mWeights[j].mWeight;
 			}
 		}
@@ -347,10 +365,6 @@ HRESULT CMesh::Ready_AnimVertices(const aiMesh* pAIMesh, CModel* pModel)
 		m_VertexLocalPositions.push_back(pVertices[i].vPosition);
 	}
 		
-
-
-
-
 	ZeroMemory(&m_SubResourceData, sizeof(D3D11_SUBRESOURCE_DATA));
 	m_SubResourceData.pSysMem = pVertices;
 

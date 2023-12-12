@@ -30,20 +30,22 @@ HRESULT CDummy::Initialize(void* pArg)
 
 HRESULT CDummy::Ready_Components()
 {
-	/* For.Com_Transform */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
-		return E_FAIL;
-
 	/* For.Com_Renderer */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
 		return E_FAIL;
 
-	/* For.Com_Shader */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_AnimModel"), TEXT("Com_AnimShader"), (CComponent**)&m_pAnimShaderCom)))
+	/* For.Com_Transform */
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Model"), TEXT("Com_NonAnim_Shader"), (CComponent**)&m_pNonAnimShaderCom)))
-		return E_FAIL;
+	/* For.Com_Shader */
+	{
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_AnimModel_Vtf"), TEXT("Com_AnimShader"), (CComponent**)&m_pAnimShaderCom)))
+			return E_FAIL;
+
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Model"), TEXT("Com_NonAnim_Shader"), (CComponent**)&m_pNonAnimShaderCom)))
+			return E_FAIL;
+	}
 
 	return S_OK;
 }
@@ -61,12 +63,12 @@ void CDummy::LateTick(_float fTimeDelta)
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 
-	if(m_pModelCom->Get_ModelType() == CModel::TYPE::TYPE_ANIM)
-		m_pModelCom->Play_Animation(m_pTransformCom, fTimeDelta);
+	/*if(m_pModelCom->Get_ModelType() == CModel::TYPE::TYPE_ANIM)
+		m_pModelCom->Play_Animation(m_pTransformCom, fTimeDelta);*/
 
 	// << : VTF
-	//if (CModel::TYPE::TYPE_ANIM == m_pModelCom->Get_ModelType())
-	//	m_pModelCom->LateTick(fTimeDelta);
+	if (CModel::TYPE::TYPE_ANIM == m_pModelCom->Get_ModelType())
+		m_pModelCom->LateTick(fTimeDelta);
 }
 
 HRESULT CDummy::Render()
@@ -76,6 +78,8 @@ HRESULT CDummy::Render()
 
 	CShader* pShader = m_pModelCom->Get_ModelType() == CModel::TYPE::TYPE_NONANIM ? m_pNonAnimShaderCom : m_pAnimShaderCom;
 	
+	if (nullptr == pShader)
+		return S_OK;
 
 	if (FAILED(pShader->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
 		return E_FAIL;

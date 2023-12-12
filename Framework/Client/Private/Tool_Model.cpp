@@ -5,6 +5,7 @@
 #include "Animation.h"
 #include "Utils.h"
 #include "Dummy.h"
+#include "Model.h"
 #include <fstream>
 
 CTool_Model::CTool_Model(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -102,7 +103,10 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 		if (ImGui::Button("Import"))
 		{
 			if (iSelectedImportModelType != -1)
+			{
 				m_pDummy->Ready_ModelCom(iSelectedImportModelType, m_strFilePath, m_strFileName);
+				MSG_BOX("Success Import.");
+			}
 			else
 				MSG_BOX("모델 타입을 선택해주세요");
 
@@ -121,15 +125,18 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 		if (strlen(szExportFolderName) > 0)
 		{
 			if (FAILED(m_pDummy->Export_Model_Bin(CUtils::ToWString(szExportFolderName), m_strFileName)))
+			{
 				MSG_BOX("Failed Save.");
+
+			}
 			else
+			{
 				MSG_BOX("Save Success");
+			}
 		}
 	}
 
 	IMGUI_NEW_LINE;
-	IMGUI_NEW_LINE;
-
 	{
 		static char szAllObjectExportFolderName[MAX_PATH] = "";
 		ImGui::Text("Export_All_Object_To_SubFolder");
@@ -174,7 +181,6 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 }
 
 
-
 void CTool_Model::Tick_Animation(_float fTimeDelta)
 {
 	ImGui::Begin("Animation");
@@ -185,6 +191,15 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 		return;
 	}
 	
+	if (ImGui::Button("Test Animation Play"))
+	{
+
+		_uint iCurIndex = m_pDummy->Get_ModelCom()->Get_TweenDesc().cur.iAnimIndex;
+
+		m_pDummy->Get_ModelCom()->Set_Animation(++iCurIndex);
+	}
+
+
 	static char szAnimationName[255];
 	if (nullptr != m_pDummy->Get_ModelCom())
 	{
@@ -287,6 +302,7 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 	        pCurrAnimation->Set_Pause(false);
 	    }
 	            
+
 	
 	    IMGUI_SAME_LINE;
 	
@@ -321,7 +337,7 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 	    _bool bLoop = pCurrAnimation->Is_Loop();
 	    ImGui::Text("Loop");
 	    IMGUI_SAME_LINE;
-	    ImGui::Checkbox("##IsLoop", &bLoop);
+	    if(ImGui::Checkbox("##IsLoop", &bLoop))
 	    pCurrAnimation->Set_Loop(bLoop);
 	}
 	ImGui::End();

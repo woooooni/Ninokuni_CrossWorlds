@@ -140,14 +140,12 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //        주 프로그램 창을 만든 다음 표시합니다.
 //
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
-{
-    
+{    
     hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
     RECT	rc{ 0, 0, g_iWinSizeX, g_iWinSizeY };
 
-
-    AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, TRUE);
+    AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 
     HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME,
         CW_USEDEFAULT, 0,

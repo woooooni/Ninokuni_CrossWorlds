@@ -64,6 +64,7 @@ private:
 	virtual ~CModel() = default;
 
 public:
+	const _int Get_HierarchyNodeIndex(const char* szBonename);
 	class CHierarchyNode* Get_HierarchyNode(const wstring & strNodeName);
 
 	_uint Get_NumMeshes() const { return m_iNumMeshes; }
@@ -74,6 +75,8 @@ public:
 
 
 	// << : 추가
+	const TweenDesc& Get_TweenDesc() const { return m_TweenDesc; }
+
 	HRESULT Set_Animation(const _uint& iAnimationIndex, const _float& fTweenDuration = DEFAULT_TWEEN_DURATION);
 	HRESULT Set_Animation(const wstring& strAnimationName, const _float& fTweenDuration = DEFAULT_TWEEN_DURATION);
 	// >> 
@@ -90,6 +93,7 @@ public:
 	vector<class CHierarchyNode*>& Get_HierarchyNodes() { return m_HierarchyNodes; }
 
 public:
+	// << : Fbx 로드 
 	virtual HRESULT Initialize_Prototype(TYPE eType, const wstring & strModelFilePath, const wstring & strModelFileName, _fmatrix PivotMatrix); // << : Assimp 
 	virtual HRESULT Initialize(void* pArg);
 	virtual HRESULT Initialize_Bin(void* pArg);
@@ -117,7 +121,7 @@ public:
 	class CAnimation* Get_CurrAnimation() { return m_Animations[m_iCurrentAnimIndex]; }
 
 	// << : 추가
-	HRESULT Set_VtfTexture(ID3D11ShaderResourceView* pTexture) { if (nullptr == pTexture) return E_FAIL; m_pSRV = pTexture; }
+	HRESULT Set_VtfTexture(ID3D11ShaderResourceView* pTexture);
 
 public:
 	const aiScene* Get_Scene() { return m_pAIScene; }

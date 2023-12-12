@@ -31,8 +31,6 @@ HRESULT CAnimation::Initialize_Prototype(aiAnimation* pAIAnimation)
 	m_fDuration = pAIAnimation->mDuration;
 	m_fTickPerSecond = pAIAnimation->mTicksPerSecond;
 
-	m_iMaxFrameCount = m_fDuration + 1;
-
 	/* 현재 애니메이션에서 제어해야할 뼈들의 갯수를 저장한다. */
 	m_iNumChannels = pAIAnimation->mNumChannels;
 
@@ -195,7 +193,7 @@ HRESULT CAnimation::Calculate_Animation(const _uint& iFrame)
 			iCurrentKeyFrame = iFrame;
 	}
 
-	/* 위에서 지전항 키프레임대로, 모든 채널의 키프레임을 보간한다. (아직 부모 기준) */
+	/* 위에서 지정한 키프레임대로, 모든 채널의 키프레임을 보간한다. (아직 부모 기준) */
 	_uint iChannelIndex = 0;
 	for (auto& pChannel : m_Channels)
 	{

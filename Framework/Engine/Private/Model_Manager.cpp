@@ -55,9 +55,11 @@ HRESULT CModel_Manager::Export_Model_Data(CModel* pModel, const wstring& strSubF
 		return E_FAIL;
 
 	// << : VTF
-	/*if (FAILED(Create_Model_Vtf(pModel)))
-		return E_FAIL;*/
-
+	if (CModel::TYPE::TYPE_ANIM == pModel->Get_ModelType())
+	{
+		if (FAILED(Create_Model_Vtf(pModel)))
+			return E_FAIL;
+	}
 	return S_OK;
 }
 
@@ -105,8 +107,8 @@ HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel)
 
 	/* 01. For m_AnimTransforms */
 	/* 해당 모델이 사용하는 모든 애니메이션과 Bone의 정보를 m_AnimTransforms에 세팅한다. */
-	m_AnimationsCache = pModel->Get_Animations();
-	m_HierarchyNodes = pModel->Get_HierarchyNodes();
+	m_HierarchyNodes	= pModel->Get_HierarchyNodes();
+	m_AnimationsCache	= pModel->Get_Animations();
 
 	const _uint iAnimCount = (_uint)m_AnimationsCache.size();
 	const _uint iHiearachynodeCount = (_uint)m_HierarchyNodes.size();
@@ -201,6 +203,8 @@ HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel)
 	if (FAILED(pModel->Set_VtfTexture(pSrv)))
 		return E_FAIL;
 
+	Safe_Release(pTexture);
+
 	return S_OK;
 }
 
@@ -275,7 +279,6 @@ HRESULT CModel_Manager::Import_Model_Data(_uint iLevelIndex,
 			return E_FAIL;
 		}
 			
-
 		if (FAILED(Import_Material(strFinalFolderPath, strFolderPath, pModel)))
 		{
 			MSG_BOX("Import_Material Failed.");
@@ -308,6 +311,13 @@ HRESULT CModel_Manager::Import_Model_Data(_uint iLevelIndex,
 				return E_FAIL;
 			}
 		}
+
+		// << : VTF
+		if (CModel::TYPE::TYPE_ANIM == pModel->Get_ModelType())
+		{
+			if (FAILED(Create_Model_Vtf(pModel)))
+				return E_FAIL;
+		}
 	}
 
 	if (ppOut != nullptr)
@@ -319,6 +329,8 @@ HRESULT CModel_Manager::Import_Model_Data(_uint iLevelIndex,
 			return E_FAIL;
 		}
 	}
+
+
 
 	return S_OK;
 	
@@ -332,9 +344,7 @@ HRESULT CModel_Manager::Ready_Model_Data_FromPath(_uint iLevelIndex, _uint eType
 			Ready_Model_Data_FromPath(iLevelIndex, eType, p.path().wstring());
 			continue;
 		}
-			
-
-
+		
 		wstring strFilePath = CUtils::PathToWString(p.path().wstring());
 
 		_tchar strFileName[MAX_PATH];
