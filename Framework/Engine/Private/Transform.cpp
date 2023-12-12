@@ -243,6 +243,33 @@ void CTransform::LookAt_ForLandObject(_vector vAt)
 
 }
 
+void CTransform::FixRotation(_float x, _float y, _float z)
+{
+	Vec3 vScaled = Get_Scale();
+
+	XMVECTOR vRight = ::XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f) * vScaled.x;
+	XMVECTOR vUp = ::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) * vScaled.y;
+	XMVECTOR vLook = ::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f) * vScaled.z;
+
+	Matrix mRotationMatrix = Matrix::Identity;
+
+	m_vRotation.m128_f32[0] = x;
+	m_vRotation.m128_f32[1] = y;
+	m_vRotation.m128_f32[2] = z;
+
+	mRotationMatrix *= ::XMMatrixRotationX(::XMConvertToRadians(m_vRotation.m128_f32[0]));
+	mRotationMatrix *= ::XMMatrixRotationY(::XMConvertToRadians(m_vRotation.m128_f32[1]));
+	mRotationMatrix *= ::XMMatrixRotationZ(::XMConvertToRadians(m_vRotation.m128_f32[2]));
+
+	vRight = ::XMVector4Transform(vRight, mRotationMatrix);
+	vUp = ::XMVector4Transform(vUp, mRotationMatrix);
+	vLook = ::XMVector4Transform(vLook, mRotationMatrix);
+
+	Set_State(STATE::STATE_RIGHT, vRight);
+	Set_State(STATE::STATE_UP, vUp);
+	Set_State(STATE::STATE_LOOK, vLook);
+}
+
 
 CTransform * CTransform::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
