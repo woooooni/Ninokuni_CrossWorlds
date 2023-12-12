@@ -21,6 +21,10 @@
 #include "UI_Logo_Background.h"
 #include "UI_Flare.h"
 
+#pragma region Kang
+#include "Stellia.h"
+#pragma endregion
+
 
 
 _bool CLoader::g_bFirstLoading = false;
@@ -139,11 +143,19 @@ HRESULT CLoader::Loading_For_Level_Test()
 	m_strLoading = TEXT("객체원형을 로딩 중 입니다.");
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Background", CBackGround::Create(m_pDevice, m_pContext), LAYER_BACKGROUND)))
 		return E_FAIL;
-
 	
 	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Witch", CCharacter_Witch::Create(m_pDevice, m_pContext, L"Witch_Character", CCharacter::CHARACTER_TYPE::WITCH), LAYER_CHARACTER)))
 		return E_FAIL;
 
+	CMonster::MONSTER_STAT statDesc;
+	statDesc.fHp = 100;
+	statDesc.fMaxHp = 100;
+	statDesc.fMp= 100;
+	statDesc.fMaxMp = 100;
+
+
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Stellia", CStellia::Create(m_pDevice, m_pContext, TEXT("Stellia"), statDesc), LAYER_MONSTER)))
+		return E_FAIL;
 
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Witch", CModel::TYPE_ANIM, L"../Bin/Export/Temp/", L"Witch")))
