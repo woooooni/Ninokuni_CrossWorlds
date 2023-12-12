@@ -40,6 +40,10 @@ public:
 public:
 	_uint Get_BoneCount() { return m_iNumBones; }
 
+public:
+	const vector<VTXANIMMODEL>& Get_AnimVertices() { return m_AnimVertices; }
+	const vector<VTXMODEL>& Get_NoneAnimVertice() { return m_NonAnimVertices; }
+
 private:
 	wstring				m_strName;
 	_uint				m_iMaterialIndex = 0;

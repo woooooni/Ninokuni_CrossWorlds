@@ -21,9 +21,7 @@ HRESULT CLevel_Loading::Initialize(LEVELID eNextLevel, const wstring& strFolderN
 	m_eNextLevel = eNextLevel;
 
 	if (m_eNextLevel == LEVEL_TOOL)
-	{
 		CImGui_Manager::GetInstance()->Reserve_Manager(g_hWnd, m_pDevice, m_pContext);
-	}
 
 
 	/* m_eNextLevel 에 대한 로딩작업을 수행한다. */

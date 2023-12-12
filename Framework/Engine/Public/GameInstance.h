@@ -128,19 +128,15 @@ public:
 public:
 	_bool Intersect_Frustum_World(_fvector vWorldPos, _float fRadius = 0.f);
 
+
 public:
-	/* For. PhysX_Manager */
-	PxRigidDynamic* Create_Box(_float3 vPos, _float3 vExtent, _uint iFlag = 0);
-	PxRigidDynamic* Create_Sphere(_float3 vPos, _float fRad, _uint iFlag = 0);
-
-	PxRigidDynamic* Create_PxBox(_float3 vExtent, _float fWeight, _float fAngleDump, PxMaterial* pMaterial, _float fMaxVel = 0.f);
-	PxRigidDynamic* Create_PxSphere(_float3 vExtent, _float fWeight, _float fAngleDump, PxMaterial* pMaterial, _float fMaxVel = 0.f);
-
-
-	void Add_Actor(PxActor* pAxtor);
-	void Remove_Actor(PxActor* pAxtor);
-
+	HRESULT Add_Static_Actor(const PHYSX_INIT_DESC& Desc);
+	HRESULT Add_Dynamic_Actor(const PHYSX_INIT_DESC& Desc);
+	HRESULT Add_Ground(class CGameObject* pGroundObj);
+	HRESULT Remove_Actor(_uint iObjectID, PhysXRigidType eRigidType);
+	HRESULT Convert_Transform(class CGameObject* pObj, PxTransform& OutRef);
 	PxMaterial* Create_PxMaterial(_float fA, _float fB, _float fC);
+
 
 
 public:

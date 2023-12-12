@@ -59,19 +59,21 @@ void CCharacter_Witch::Tick(_float fTimeDelta)
 	{
 		_vector vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
 		m_pTransformCom->Move(vLook, 10.f, fTimeDelta);
+		m_pRigidBodyCom->Set_Sleep(false);
 	}
 
 	if (KEY_HOLD(KEY::DOWN_ARROW))
 	{
 		_vector vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
 		m_pTransformCom->Move(-1.f * vLook, 10.f, fTimeDelta);
+		m_pRigidBodyCom->Set_Sleep(false);
 	}
 }
 
 void CCharacter_Witch::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
-	// m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
+	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 }
 
 HRESULT CCharacter_Witch::Render()
@@ -135,11 +137,11 @@ HRESULT CCharacter_Witch::Ready_Components()
 	ZeroMemory(&RigidDesc, sizeof RigidDesc);
 
 	XMStoreFloat3(&RigidDesc.vStartPos, m_pTransformCom->Get_Position());
-	RigidDesc.vExtents = { 1.f, 1.f, 1.f };
-	RigidDesc.vOffsetPos = { 0.f, -0.5f, 1.f };
+	RigidDesc.vExtentss = { 1.f, 1.f, 1.f };
+	RigidDesc.vOffsetPos = { 0.f, 0.f, 0.f };
 	RigidDesc.vRotation = { 0.f, 0.f, 0.f };
 	RigidDesc.fWeight = 1.f;
-	RigidDesc.fAngleDump = 1.f;
+	RigidDesc.fAngleDamp = 1.f;
 	RigidDesc.fRestitution = 1.f;
 	RigidDesc.pNavigation = m_pNavigationCom;
 	RigidDesc.pTransform = m_pTransformCom;

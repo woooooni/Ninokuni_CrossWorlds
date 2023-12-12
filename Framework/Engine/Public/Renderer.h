@@ -74,8 +74,11 @@ public:
 #ifdef _DEBUG
 public:
 	HRESULT Add_Debug(class CComponent* pDebug) {
-		/*m_RenderDebug.push_back(pDebug);
-		Safe_AddRef(pDebug);*/
+		if (nullptr == pDebug)
+			return E_FAIL;
+
+		m_RenderDebug.push_back(pDebug);
+		Safe_AddRef(pDebug);
 		return S_OK;
 	}
 

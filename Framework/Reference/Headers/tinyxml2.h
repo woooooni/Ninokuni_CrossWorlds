@@ -23,6 +23,11 @@ distribution.
 
 #ifndef TINYXML2_INCLUDED
 #define TINYXML2_INCLUDED
+#ifdef TINYXML2_INCLUDED
+#define new new
+#endif // TINYXML2_INCLUDED
+
+
 
 #if defined(ANDROID_NDK) || defined(__BORLANDC__) || defined(__QNXNTO__)
 #   include <ctype.h>
@@ -101,6 +106,7 @@ http://semver.org/
 static const int TIXML2_MAJOR_VERSION = 5;
 static const int TIXML2_MINOR_VERSION = 0;
 static const int TIXML2_PATCH_VERSION = 1;
+
 
 namespace tinyxml2
 {
@@ -230,7 +236,7 @@ namespace tinyxml2
 			--_size;
 			return _mem[_size];
 		}
-
+		
 		void PopArr(int count) {
 			TIXMLASSERT(_size >= count);
 			_size -= count;
@@ -1882,9 +1888,6 @@ namespace tinyxml2
 		NodeType* CreateUnlinkedNode(MemPoolT<PoolElementSize>& pool);
 	};
 
-#ifdef DBG_NEW
-#define new new
-#endif
 
 	template<class NodeType, int PoolElementSize>
 	inline NodeType* XMLDocument::CreateUnlinkedNode(MemPoolT<PoolElementSize>& pool)
@@ -1892,13 +1895,14 @@ namespace tinyxml2
 		TIXMLASSERT(sizeof(NodeType) == PoolElementSize);
 		TIXMLASSERT(sizeof(NodeType) == pool.ItemSize());
 
-
+#define new new
 		NodeType* returnNode = new (pool.Alloc()) NodeType(this);
 		TIXMLASSERT(returnNode);
 		returnNode->_memPool = &pool;
 
 		_unlinked.Push(returnNode);
 		return returnNode;
+#define new DBG_NEW
 	}
 
 	/**

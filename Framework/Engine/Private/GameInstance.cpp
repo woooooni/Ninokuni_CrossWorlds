@@ -123,10 +123,9 @@ void CGameInstance::Tick(_float fTimeDelta)
 
 void CGameInstance::LateTick(_float fTimeDelta)
 {
-	
-	m_pCollision_Manager->LateTick(fTimeDelta);
-	
+	m_pPhysXManager->LateTick(fTimeDelta);
 	m_pObject_Manager->LateTick(fTimeDelta);
+	m_pCollision_Manager->LateTick(fTimeDelta);
 	m_pLevel_Manager->LateTick(fTimeDelta);
 }
 
@@ -525,35 +524,32 @@ _bool CGameInstance::Intersect_Frustum_World(_fvector vWorldPos, _float fRadius)
 	return m_pFrustum->Intersect_Frustum_World(vWorldPos, fRadius);
 }
 
-PxRigidDynamic* CGameInstance::Create_Box(_float3 vPos, _float3 vExtent, _uint iFlag)
+HRESULT CGameInstance::Add_Static_Actor(const PHYSX_INIT_DESC& Desc)
 {
-	return m_pPhysXManager->Create_Box(vPos, vExtent, iFlag);
+	return m_pPhysXManager->Add_Static_Actor(Desc);
 }
 
-PxRigidDynamic* CGameInstance::Create_Sphere(_float3 vPos, _float fRad, _uint iFlag)
+HRESULT CGameInstance::Add_Dynamic_Actor(const PHYSX_INIT_DESC& Desc)
 {
-	return m_pPhysXManager->Create_Sphere(vPos, fRad, iFlag);
+	return m_pPhysXManager->Add_Dynamic_Actor(Desc);
 }
 
-PxRigidDynamic* CGameInstance::Create_PxBox(_float3 vExtent, _float fWeight, _float fAngleDump, PxMaterial* pMaterial, _float fMaxVel)
+HRESULT CGameInstance::Add_Ground(CGameObject* pGroundObj)
 {
-	return m_pPhysXManager->Create_PxBox(vExtent, fWeight, fAngleDump, pMaterial, fMaxVel);
+	return m_pPhysXManager->Add_Ground(pGroundObj);
 }
 
-PxRigidDynamic* CGameInstance::Create_PxSphere(_float3 vExtent, _float fWeight, _float fAngleDump, PxMaterial* pMaterial, _float fMaxVel)
+HRESULT CGameInstance::Remove_Actor(_uint iObjectID, PhysXRigidType eRigidType)
 {
-	return m_pPhysXManager->Create_PxSphere(vExtent, fWeight, fAngleDump, pMaterial, fMaxVel);
+	return m_pPhysXManager->Remove_Actor(iObjectID, eRigidType);
 }
 
-void CGameInstance::Add_Actor(PxActor* pAxtor)
+HRESULT CGameInstance::Convert_Transform(CGameObject* pObj, PxTransform& PxTransform)
 {
-	m_pPhysXManager->Add_Actor(pAxtor);
+	return m_pPhysXManager->Convert_Transform(pObj, PxTransform);
 }
 
-void CGameInstance::Remove_Actor(PxActor* pAxtor)
-{
-	m_pPhysXManager->Remove_Actor(pAxtor);
-}
+
 
 PxMaterial* CGameInstance::Create_PxMaterial(_float fStaticFriction, _float fDynamicFriction, _float fRestitution)
 {
@@ -640,6 +636,7 @@ FMOD_CHANNEL* CGameInstance::Get_Channel(CHANNELID eID)
 void CGameInstance::Release_Engine()
 {
 	CGameInstance::GetInstance()->DestroyInstance();
+	CTarget_Manager::GetInstance()->DestroyInstance();
 	CKey_Manager::GetInstance()->DestroyInstance();
 	CInput_Device::GetInstance()->DestroyInstance();
 	CSound_Manager::GetInstance()->DestroyInstance();
@@ -651,10 +648,9 @@ void CGameInstance::Release_Engine()
 	CFont_Manager::GetInstance()->DestroyInstance();
 	CModel_Manager::GetInstance()->DestroyInstance();
 	CCollision_Manager::GetInstance()->DestroyInstance();
-	CPhysX_Manager::GetInstance()->DestroyInstance();
 	CObject_Manager::GetInstance()->DestroyInstance();
 	CComponent_Manager::GetInstance()->DestroyInstance();
-	CTarget_Manager::GetInstance()->DestroyInstance();
+	CPhysX_Manager::GetInstance()->DestroyInstance();
 	CGraphic_Device::GetInstance()->DestroyInstance();
 }
 
@@ -676,5 +672,4 @@ void CGameInstance::Free()
 	Safe_Release(m_pFrustum);
 	Safe_Release(m_pSound_Manager);
 	Safe_Release(m_pPhysXManager);
-	// Safe_Release(m_pNetwork_Manager);
 }

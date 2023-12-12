@@ -12,6 +12,24 @@ enum class TIMER_TYPE
 	TIMER_END
 };
 
+enum PhysXRigidType
+{
+	STATIC,
+	DYNAMIC,
+	GROUND,
+	RIGID_TYPE_END,
+};
+
+enum PhysXColliderType
+{
+	BOX,
+	SPHERE,
+	MESH,
+	COLLIDER_TYPE_END,
+};
+
+
+
 enum class KEY_STATE
 {
 	NONE,

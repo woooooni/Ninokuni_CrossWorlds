@@ -1,6 +1,6 @@
 #include "RigidBody.h"
 #include "GameInstance.h"
-
+#include "GameObject.h"
 CRigidBody::CRigidBody(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:CComponent(pDevice, pContext)
 {
@@ -60,22 +60,18 @@ HRESULT CRigidBody::Initialize(void* pArg)
 
 	PxMaterial* pMaterial = GI->Create_PxMaterial(pDesc->fStaticFriction, pDesc->fDynamicFriction, pDesc->fRestitution);
 
-	m_vExtents.x = abs(pDesc->vExtents.x);
-	m_vExtents.y = abs(pDesc->vExtents.y);
-	m_vExtents.z = abs(pDesc->vExtents.z);
+	m_vExtentss.x = abs(pDesc->vExtentss.x);
+	m_vExtentss.y = abs(pDesc->vExtentss.y);
+	m_vExtentss.z = abs(pDesc->vExtentss.z);
 
-
-	m_pXBody = GI->Create_PxBox(m_vExtents, pDesc->fWeight, pDesc->fAngleDump, pMaterial, pDesc->fMaxVelocity);
-	pMaterial->release();
 
 	_float4 vQuat;
 	XMStoreFloat4(&vQuat, XMQuaternionRotationRollPitchYawFromVector(XMLoadFloat3(&pDesc->vRotation)));
-	m_pXBody->setGlobalPose(PxTransform(pDesc->vStartPos.x, pDesc->vStartPos.y, pDesc->vStartPos.z, PxQuat(vQuat.x, vQuat.y, vQuat.z, vQuat.w)));
 
 	m_pOriginal_OBB = new BoundingOrientedBox(_float3(0.f, 0.f, 0.f), 
-		_float3(pDesc->vExtents.x * 0.5f, 
-			pDesc->vExtents.y * 0.5f, 
-			pDesc->vExtents.z * 0.5f), _float4(0.f, 0.f, 0.f, 1.f));
+		_float3(pDesc->vExtentss.x * 0.5f, 
+			pDesc->vExtentss.y * 0.5f, 
+			pDesc->vExtentss.z * 0.5f), _float4(0.f, 0.f, 0.f, 1.f));
 
 	m_vOffsetPos = pDesc->vOffsetPos;
 
@@ -84,17 +80,48 @@ HRESULT CRigidBody::Initialize(void* pArg)
 
 	return S_OK;
 }
+
+
+void CRigidBody::Update_RigidBody(_float fTimeDelta)
+{
+#ifdef _DEBUG
+	m_bCollision = false;
+#endif // DEBUG
+	if (m_pOwner->Is_Dead())
+		return;
+
+	if (false == m_bFirst && m_pXBody->isSleeping())
+		return;
+
+
+
+	PxTransform PxTransform = m_pXBody->getGlobalPose();
+	_matrix WorldMatrix;
+
+	_float3 vScale = m_pTransformCom->Get_Scale();
+
+	WorldMatrix.r[CTransform::STATE_RIGHT] = XMVector3Normalize(XMVectorSet(PxTransform.q.getBasisVector0().x, PxTransform.q.getBasisVector0().y, PxTransform.q.getBasisVector0().z, 0.f)) * vScale.x;
+	WorldMatrix.r[CTransform::STATE_UP] = XMVector3Normalize(XMVectorSet(PxTransform.q.getBasisVector1().x, PxTransform.q.getBasisVector1().y, PxTransform.q.getBasisVector1().z, 0.f)) * vScale.x;
+	WorldMatrix.r[CTransform::STATE_LOOK] = XMVector3Normalize(XMVectorSet(PxTransform.q.getBasisVector2().x, PxTransform.q.getBasisVector2().y, PxTransform.q.getBasisVector2().z, 0.f)) * vScale.x;
+	WorldMatrix.r[CTransform::STATE_POSITION] = XMVectorSet(PxTransform.p.x, PxTransform.p.y, PxTransform.p.z, 1.f);
+
+	m_pOriginal_OBB->Transform(*m_pOBB, WorldMatrix);
+
+	WorldMatrix.r[CTransform::STATE_POSITION] = XMVector3TransformCoord(WorldMatrix.r[CTransform::STATE_POSITION] + XMLoadFloat3(&m_vOffsetPos), WorldMatrix);
+	m_pTransformCom->Set_WorldMatrix(WorldMatrix);
+	m_bFirst = false;
+}
+
+
+
 #ifdef _DEBUG
 HRESULT CRigidBody::Render()
 {
 	m_pEffect->SetWorld(XMMatrixIdentity());
 
-	CPipeLine* pPipeLine = GET_INSTANCE(CPipeLine);
 
-	m_pEffect->SetView(pPipeLine->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
-	m_pEffect->SetProjection(pPipeLine->Get_TransformMatrix(CPipeLine::D3DTS_PROJ));
-
-	RELEASE_INSTANCE(CPipeLine);
+	m_pEffect->SetView(GI->Get_TransformMatrix(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW));
+	m_pEffect->SetProjection(GI->Get_TransformMatrix(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ));
 
 	m_pEffect->Apply(m_pContext);
 
@@ -112,32 +139,15 @@ HRESULT CRigidBody::Render()
 
 #endif
 
-void CRigidBody::Update_RigidBody(_float fTimeDelta)
+
+void CRigidBody::Set_Sleep(_bool bSleep)
 {
-#ifdef _DEBUG
-	m_bCollision = false;
-#endif // DEBUG
-	if (false == m_bFirst && m_pXBody->isSleeping())
-		return;
+	m_pXBody->setSleepThreshold(bSleep);
+}
 
-	// Transform에 vPos만큼 더한 값이 BodyX의 값.
-	// BodyX에 vPos만큼 뺀 값이 Transform 값.
-
-	PxTransform PxTransform = m_pXBody->getGlobalPose();
-	_matrix WorldMatrix;
-
-	_float3 vScale = m_pTransformCom->Get_Scale();
-
-	WorldMatrix.r[CTransform::STATE_RIGHT] = XMVector3Normalize(XMVectorSet(PxTransform.q.getBasisVector0().x, PxTransform.q.getBasisVector0().y, PxTransform.q.getBasisVector0().z, 0.f)) * vScale.x;
-	WorldMatrix.r[CTransform::STATE_UP] = XMVector3Normalize(XMVectorSet(PxTransform.q.getBasisVector1().x, PxTransform.q.getBasisVector1().y, PxTransform.q.getBasisVector1().z, 0.f)) * vScale.x;
-	WorldMatrix.r[CTransform::STATE_LOOK] = XMVector3Normalize(XMVectorSet(PxTransform.q.getBasisVector2().x, PxTransform.q.getBasisVector2().y, PxTransform.q.getBasisVector2().z, 0.f)) * vScale.x;
-	WorldMatrix.r[CTransform::STATE_POSITION] = XMVectorSet(PxTransform.q.x, PxTransform.q.y, PxTransform.q.z, 1.f);
-
-	m_pOriginal_OBB->Transform(*m_pOBB, WorldMatrix);
-
-	WorldMatrix.r[CTransform::STATE_POSITION] = XMVector3TransformCoord(XMLoadFloat3(&m_vOffsetPos), WorldMatrix);
-	m_pTransformCom->Set_WorldMatrix(WorldMatrix);
-	m_bFirst = false;
+_bool CRigidBody::Is_Sleep()
+{
+	return m_pXBody->isSleeping();
 }
 
 
@@ -169,10 +179,7 @@ CComponent* CRigidBody::Clone(void* pArg)
 void CRigidBody::Free()
 {
 	__super::Free();
-
-	if (nullptr != m_pXBody)
-		m_pXBody->release();
-	
+	// m_pXBody는 PhysXManager에서 자동으로 삭제되낟.
 #ifdef _DEBUG
 	if (false == m_isCloned)
 	{
