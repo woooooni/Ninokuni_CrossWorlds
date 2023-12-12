@@ -86,14 +86,10 @@ HRESULT CModel::Initialize_Prototype(TYPE eType, const wstring& strModelFolderPa
 
 	m_eModelType = eType;
 
-	// aiProcess_PreTransformVertices : 모델을 구성하는 메시 중, 이 메시의 이름과 뼈의 이름이 같은 상황이라면 이 뼈의 행렬을 메시의 정점에 다 곱해서 로드한다. 
-	// 모든 애니메이션 정보는 폐기된다. 
 	if (TYPE_NONANIM == eType)
 		iFlag |= aiProcess_PreTransformVertices | aiProcess_ConvertToLeftHanded | aiProcess_CalcTangentSpace;
 	else
 		iFlag |= aiProcess_ConvertToLeftHanded | aiProcess_CalcTangentSpace;
-
-	/* 파일의 정보를 읽어서 aiScene안에 보관한다.  */
 
 	m_pAIScene = m_Importer.ReadFile(CUtils::ToString(szFullPath).c_str(), iFlag);
 
@@ -103,30 +99,17 @@ HRESULT CModel::Initialize_Prototype(TYPE eType, const wstring& strModelFolderPa
 	if (FAILED(Ready_HierarchyNodes(m_pAIScene->mRootNode, nullptr, 0)))
 		return E_FAIL;
 
-	/* 모델을 구성하는 메시들을 만든다. */
-	/* 모델은 여러개의 메시로 구성되어있다. */
-	/* 각 메시의 정점들과 인덱스들을 구성한다. */
 	if (FAILED(Ready_MeshContainers(PivotMatrix)))
 		return E_FAIL;
 
-	/* 머테리얼정보다.(빛을 받았을때 리턴해야할 색상정보.) */
-	/* 모델마다정의?, 정점마다정의? 픽셀마다 정의(o) 텍스쳐로 표현된다. */
 	if (FAILED(Ready_Materials(m_strFolderPath)))
 		return E_FAIL;
 
-
-	/* 애니메이션의 정보를 읽어서 저장한다.  */
-	/* 애니메이션 정보 : 애니메이션이 재생되는데 걸리는 총 시간(Duration),  애니메이션의 재생속도( mTickPerSecond), 몇개의 채널(mNumChannels) 에 영향르 주는가. 각채널의 정보(aiNodeAnim)(mChannels) */
-	/* mChannel(aiNodeAnim, 애니메이션이 움직이는 뼈) 에 대한 정보를 구성하여 객체화한다.(CChannel) */
-	/* 채널 : 뼈. 이 뼈는 한 애니메이션 안에서 사용된다. 그 애니메이션 안에서 어떤 시간, 시간, 시간, 시간대에 어떤 상태를 표현하면 되는지에 대한 정보(keyframe)들을 다므낟. */
-	/* keyframe : 어떤시간?, 상태(vScale, vRotation, vPosition) */
 	if (FAILED(Ready_Animations()))
 		return E_FAIL;
 
 	if (FAILED(Ready_Animation_Texture()))
 		return E_FAIL;
-
-
 
 	return S_OK;
 }
@@ -234,6 +217,71 @@ HRESULT CModel::Initialize_Bin(void* pArg)
 	return S_OK;
 }
 
+HRESULT CModel::LateTick(_float fTimeDelta)
+{
+	if (TYPE::TYPE_ANIM != m_eModelType || m_TweenDesc.cur.iAnimIndex < 0 ||  nullptr == m_pSRV)
+		return E_FAIL;
+
+	/* 현재 애니메이션 */
+	CAnimation* pCurAnim = m_Animations[m_TweenDesc.cur.iAnimIndex];
+	if (nullptr != pCurAnim)
+	{
+		m_TweenDesc.cur.fFrameAcc += fTimeDelta;
+
+		const _float fTimePerFrame = 1 / (pCurAnim->Get_TickPerSecond() * pCurAnim->Get_AnimationSpeed());
+
+		// 루프 체크 필요
+		if (fTimePerFrame <= m_TweenDesc.cur.fFrameAcc)
+		{
+			m_TweenDesc.cur.fFrameAcc = 0.f;
+			m_TweenDesc.cur.iCurFrame = (m_TweenDesc.cur.iCurFrame + 1) % pCurAnim->Get_MaxFrameCount();
+			m_TweenDesc.cur.iNextFrame = (m_TweenDesc.cur.iCurFrame + 1) % pCurAnim->Get_MaxFrameCount();
+		}
+
+		m_TweenDesc.cur.fRatio = m_TweenDesc.cur.fFrameAcc / fTimePerFrame;
+		std::clamp(m_TweenDesc.cur.fRatio, 0.f, 1.f);
+	}
+
+	/* 다음 애니메이션이 예약되어 있다면 */
+	if (0 <= m_TweenDesc.next.iAnimIndex)
+	{
+		/* 트위닝 보간 비율 설정 */
+		m_TweenDesc.fTweenAcc += fTimeDelta;
+		m_TweenDesc.fTweenRatio = m_TweenDesc.fTweenAcc / m_TweenDesc.fTweenDuration;
+		std::clamp(m_TweenDesc.fTweenRatio, 0.f, 1.f);
+
+		/* 트위닝 종료*/
+		if (1.f <= m_TweenDesc.fTweenRatio)
+		{
+			m_TweenDesc.cur = m_TweenDesc.next;
+			m_TweenDesc.ClearNextAnim();
+		}
+		else
+		{
+			CAnimation* pNextAnim = m_Animations[m_TweenDesc.next.iAnimIndex];
+			if (nullptr != pNextAnim)
+			{
+				m_TweenDesc.next.fFrameAcc += fTimeDelta;
+
+				const _float fTimePerFrame = 1 / (pNextAnim->Get_TickPerSecond() * pNextAnim->Get_AnimationSpeed());
+
+				// 루프 체크 필요
+				if (fTimePerFrame <= m_TweenDesc.next.fFrameAcc)
+				{
+					m_TweenDesc.next.fFrameAcc = 0.f;
+					m_TweenDesc.next.iCurFrame = (m_TweenDesc.next.iCurFrame + 1) % pNextAnim->Get_MaxFrameCount();
+					m_TweenDesc.next.iNextFrame = (m_TweenDesc.next.iCurFrame + 1) % pNextAnim->Get_MaxFrameCount();
+				}
+
+				m_TweenDesc.next.fRatio = m_TweenDesc.next.fFrameAcc / fTimePerFrame;
+				std::clamp(m_TweenDesc.next.fRatio, 0.f, 1.f);
+			}
+		}
+	}
+
+	return S_OK;
+}
+
 CHierarchyNode* CModel::Get_HierarchyNode(const wstring& strNodeName)
 {
 	auto	iter = find_if(m_HierarchyNodes.begin(), m_HierarchyNodes.end(), [&](CHierarchyNode* pNode)
@@ -255,6 +303,34 @@ _uint CModel::Get_MaterialIndex(_uint iMeshIndex)
 CTexture* CModel::Get_MaterialTexture(_uint iMeshIndex, _uint iTextureType)
 {
 	return m_Materials[iMeshIndex].pTexture[iTextureType];
+}
+
+HRESULT CModel::Set_Animation(const _uint& iAnimationIndex, const _float& fTweenDuration)
+{
+	if (m_TweenDesc.cur.iAnimIndex < 0) // 최초 1회 실행 
+	{
+		m_TweenDesc.cur.iAnimIndex = iAnimationIndex % m_Animations.size();
+		return S_OK;
+	}
+
+	m_TweenDesc.ClearNextAnim();
+	m_TweenDesc.next.iAnimIndex = iAnimationIndex % m_Animations.size();
+	m_TweenDesc.fTweenDuration = fTweenDuration;
+
+	return S_OK;
+}
+
+HRESULT CModel::Set_Animation(const wstring& strAnimationName, const _float& fTweenDuration)
+{
+	for (size_t i = 0; i < m_Animations.size(); ++i)
+	{
+		if (strAnimationName == m_Animations[i]->Get_AnimationName())
+		{
+			Set_Animation(i, fTweenDuration);
+			return S_OK;
+		}
+	}
+	return E_FAIL;
 }
 
 HRESULT CModel::Set_Animation(const wstring& strAnimationName)
@@ -329,7 +405,7 @@ HRESULT CModel::Play_Animation(CTransform* pTransform, _float fTimeDelta)
 		
 
 	for (auto& pHierarchyNode : m_HierarchyNodes)
-		pHierarchyNode->Set_CombinedTransformation(m_HierarchyNodes[0]->Get_Name());
+		pHierarchyNode->Set_CombinedTransformation();
 
 	if (m_bInterpolationAnimation)	
 		return S_OK;
@@ -345,6 +421,13 @@ HRESULT CModel::Render(CShader* pShader, _uint iMeshIndex, _uint iPassIndex)
 		m_Meshes[iMeshIndex]->SetUp_BoneMatrices(m_pMatrixTexture, m_Matrices, XMLoadFloat4x4(&m_PivotMatrix));
 		if (FAILED(pShader->Bind_Texture("g_MatrixPallete", m_pSRV)))
 			return E_FAIL;
+
+		// << : VTF
+		/*if (FAILED(pShader->Bind_Texture("g_TransformMap", m_pSRV)))
+			return E_FAIL;
+
+		if (FAILED(pShader->Bind_RawValue("g_TweenFrames", &m_TweenDesc, sizeof(TWEEN_DESC))))
+			return E_FAIL;*/
 	}
 
 	pShader->Begin(iPassIndex);

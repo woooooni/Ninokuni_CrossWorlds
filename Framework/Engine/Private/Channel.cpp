@@ -133,6 +133,34 @@ _uint CChannel::Update_Transformation(_float fPlayTime, _float fTimeDelta, _uint
 	return iCurrentKeyFrame;
 }
 
+_uint CChannel::Update_Transformation_NoneLerp(_uint iCurrentKeyFrame, CHierarchyNode* pNode)
+{
+	_float3			vScale;
+	_float4			vRotation;
+	_float3			vPosition;
+
+	/* 마지막 키프레임이상으로 넘어갔을때 : 마지막 키프레임 자세로 고정할 수 있도록 한다. */
+	if (iCurrentKeyFrame < m_KeyFrames.size())
+	{
+		vScale = m_KeyFrames[iCurrentKeyFrame].vScale;
+		vRotation = m_KeyFrames[iCurrentKeyFrame].vRotation;
+		vPosition = m_KeyFrames[iCurrentKeyFrame].vPosition;
+	}
+	else
+	{
+		vScale = m_KeyFrames.back().vScale;
+		vRotation = m_KeyFrames.back().vRotation;
+		vPosition = m_KeyFrames.back().vPosition;
+	}
+
+	_matrix TransformationMatrix = XMMatrixAffineTransformation(XMLoadFloat3(&vScale), XMVectorSet(0.f, 0.f, 0.f, 1.f), XMLoadFloat4(&vRotation), XMVectorSetW(XMLoadFloat3(&vPosition), 1.f));
+
+	if (nullptr != pNode)
+		pNode->Set_Transformation(TransformationMatrix);
+
+	return iCurrentKeyFrame;
+}
+
 _uint CChannel::Interpolation(_float fPlayTime, _float fTimeDelta, CAnimation* pCurrAnimation, CAnimation* pNextAnimation, CTransform* pTransform, _uint iCurrentKeyFrame, CHierarchyNode* pNode, CModel* pModel, __out _float* pRatio)
 {
 	_float3			vScale;

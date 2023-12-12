@@ -39,7 +39,6 @@ HRESULT CModel_Manager::Export_Model_Data(CModel* pModel, const wstring& strSubF
 	_tchar szOriginFileName[MAX_PATH];
 	_wsplitpath_s(strFileName.c_str(), nullptr, 0, nullptr, 0, szOriginFileName, MAX_PATH, nullptr, 0);
 
-
 	wstring strFinalFolderPath = m_strExportFolderPath + strSubFolderName + szOriginFileName;
 
 
@@ -54,6 +53,10 @@ HRESULT CModel_Manager::Export_Model_Data(CModel* pModel, const wstring& strSubF
 
 	if (FAILED(Export_Animation(strFinalFolderPath, pModel)))
 		return E_FAIL;
+
+	// << : VTF
+	/*if (FAILED(Create_Model_Vtf(pModel)))
+		return E_FAIL;*/
 
 	return S_OK;
 }
@@ -95,6 +98,122 @@ HRESULT CModel_Manager::Export_Model_Data_FromPath(_uint eType, wstring strFolde
 	return S_OK;
 }
 
+HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel)
+{
+	if (nullptr == pModel || CModel::TYPE::TYPE_ANIM != pModel->Get_ModelType())
+		return E_FAIL;
+
+	/* 01. For m_AnimTransforms */
+	/* 해당 모델이 사용하는 모든 애니메이션과 Bone의 정보를 m_AnimTransforms에 세팅한다. */
+	m_AnimationsCache = pModel->Get_Animations();
+	m_HierarchyNodes = pModel->Get_HierarchyNodes();
+
+	const _uint iAnimCount = (_uint)m_AnimationsCache.size();
+	const _uint iHiearachynodeCount = (_uint)m_HierarchyNodes.size();
+
+	_uint iAnimMaxFrameCount = 0;
+
+	for (uint32 i = 0; i < iAnimCount; i++)
+	{
+		_uint iCurAnimFrameCnt = (_uint)m_AnimationsCache[i]->Get_MaxFrameCount();
+
+		iAnimMaxFrameCount = iAnimMaxFrameCount < iCurAnimFrameCnt ? iCurAnimFrameCnt : iAnimMaxFrameCount;
+	}
+
+	if (0 == iAnimMaxFrameCount) 
+		return E_FAIL;
+
+	m_AnimTransformsCache.resize(iAnimCount);
+
+	for (_uint i = 0; i < iAnimCount; i++)
+	{
+		if (FAILED(Create_AnimationTransform(i)))
+			return E_FAIL;
+	}
+
+	/* 02. For. m_pTexture */
+	ID3D11Texture2D* pTexture = nullptr;
+	{
+		D3D11_TEXTURE2D_DESC desc;
+		{
+			ZeroMemory(&desc, sizeof(D3D11_TEXTURE2D_DESC));
+			desc.Width = iHiearachynodeCount * 4;
+			desc.Height = iAnimMaxFrameCount;
+			desc.ArraySize = iAnimCount;
+			desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;	
+			desc.Usage = D3D11_USAGE_IMMUTABLE;				
+			desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+			desc.MipLevels = 1;
+			desc.SampleDesc.Count = 1;
+		}
+
+		const uint32 dataSize = iHiearachynodeCount * sizeof(Matrix);	/* 가로 */
+		const uint32 pageSize = dataSize * iAnimMaxFrameCount;			/* 한 장 (가로 * 세로) */
+		void* mallocPtr = ::malloc(pageSize * iAnimCount);				/* 텍스처 총 데이터 = n 장 */
+
+		for (uint32 c = 0; c < iAnimCount; c++) /* 애니메이션 갯수만큼 반복 (장 수) */
+		{
+			uint32 startOffset = c * pageSize; /* 애님 카운트 * 한 장 */
+
+			BYTE* pageStartPtr = reinterpret_cast<BYTE*>(mallocPtr) + startOffset;
+
+			for (uint32 f = 0; f < iAnimMaxFrameCount; f++) /* 키프레임 갯수만큼 반복 (세로 크기만큼) */
+			{
+				void* ptr = pageStartPtr + dataSize * f;
+
+				::memcpy(ptr, m_AnimTransformsCache[c].transforms[f].data(), dataSize); /* 텍스처에 가로 1줄만큼 데이터 저장 */
+
+			}
+		}
+
+		/* 텍스처를 만들기 위한 D3D11_SUBRESOURCE_DATA 생성 */
+		vector<D3D11_SUBRESOURCE_DATA> subResources(iAnimCount);
+		for (uint32 c = 0; c < iAnimCount; c++)
+		{
+			void* ptr = (BYTE*)mallocPtr + c * pageSize;
+			subResources[c].pSysMem = ptr;
+			subResources[c].SysMemPitch = dataSize;
+			subResources[c].SysMemSlicePitch = pageSize;
+		}
+
+		/* 텍스처 생성 */
+		if (FAILED(GI->Get_Device()->CreateTexture2D(&desc, subResources.data(), &pTexture)))
+			return E_FAIL;
+
+		::free(mallocPtr);
+	}
+
+	/* 03. For. m_pSrv */
+	ID3D11ShaderResourceView* pSrv = { nullptr };
+	{
+		D3D11_SHADER_RESOURCE_VIEW_DESC desc;
+		ZeroMemory(&desc, sizeof(desc));
+		desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
+		desc.Texture2DArray.MipLevels = 1;
+		desc.Texture2DArray.ArraySize = iAnimCount;
+
+		if (FAILED(GI->Get_Device()->CreateShaderResourceView(pTexture, &desc, &pSrv)))
+			return E_FAIL;
+	}
+
+	/* 04 For. Set Texture To Model */
+	if (FAILED(pModel->Set_VtfTexture(pSrv)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CModel_Manager::Import_Model_Vtf()
+{
+	return S_OK;
+}
+
+ID3D11ShaderResourceView* CModel_Manager::Get_Model_Vtf(const wstring strKey)
+{
+	return nullptr;
+}
+
 #pragma region Import_ModelData
 
 /* 모델 컴포넌트를 생성해 컴포넌트 매니저에 프로토타입 등록시킨다. */
@@ -109,8 +228,8 @@ HRESULT CModel_Manager::Import_Model_Data(_uint iLevelIndex,
 	_tchar szExt[MAX_PATH];
 	_wsplitpath_s(strFileName.c_str(), nullptr, 0, nullptr, 0, szFileName, MAX_PATH, szExt, MAX_PATH);
 
-
 	CModel* pModel = nullptr;
+
 	if (0 == lstrcmp(szExt, L".fbx"))
 	{
  		pModel = CModel::Create(
@@ -135,7 +254,7 @@ HRESULT CModel_Manager::Import_Model_Data(_uint iLevelIndex,
 			return E_FAIL;
 		}
 	}
-	else
+	else 
 	{
 		pModel = CModel::Create_Bin(
 			m_pDevice,
@@ -200,6 +319,7 @@ HRESULT CModel_Manager::Import_Model_Data(_uint iLevelIndex,
 			return E_FAIL;
 		}
 	}
+
 	return S_OK;
 	
 }
@@ -301,8 +421,6 @@ HRESULT CModel_Manager::Export_Mesh(const wstring& strFinalFolderPath, CModel* p
 			for (auto& Vertex : Mesh->m_NonAnimVertices)
 				File->Write(&Vertex, sizeof(VTXMODEL));
 		}
-			
-
 	}
 
 	return S_OK;
@@ -429,6 +547,37 @@ string CModel_Manager::Export_Texture(const wstring& strOriginFolder, const stri
 	CopyFileA(OriginTextureFilePath.c_str(), SaveTextureFilePath.c_str(), false);
 
 	return TextureName;
+}
+
+HRESULT CModel_Manager::Create_AnimationTransform(const _uint& iAnimIndex)
+{
+	/* 현재 애니메이션에 대한 텍스처 한 장(프레임 행, 본 열)정보를 세팅한다. */
+	CAnimation* pAnimation = m_AnimationsCache[iAnimIndex];
+
+	const _uint iMaxFrame = (_uint)pAnimation->Get_MaxFrameCount();
+
+	/* 모든 프레임 순회 (텍스처 가로) */
+	for (uint32 iFrameIndex = 0; iFrameIndex < iMaxFrame; iFrameIndex++)
+	{
+		/* 모든 채널의 현재 프레임 갱신 */
+		pAnimation->Calculate_Animation(iFrameIndex);
+
+		/* 모든 본 글로벌 변환 -> 애니메이션 변환 */
+
+		for (uint32 iBoneIndex = 0; iBoneIndex < m_HierarchyNodes.size(); iBoneIndex++)
+		{
+			m_HierarchyNodes[iBoneIndex]->Set_CombinedTransformation();
+
+			m_AnimTransformsCache[iAnimIndex].transforms[iFrameIndex][iBoneIndex]
+				= Matrix(m_HierarchyNodes[iBoneIndex]->Get_OffSetMatrix())
+					* Matrix(m_HierarchyNodes[iBoneIndex]->Get_CombinedTransformation()) 
+					* Matrix(m_PivotMatrix);
+
+			/* 여기서 원래 개별 보관 뼈 저장 (ex 루트, 무기 뼈) */
+		}
+	}
+
+	return S_OK;
 }
 
 #pragma endregion
