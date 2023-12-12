@@ -18,6 +18,11 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 
 private:
+	void AddBuildings();
+	void DeleteObject(LEVELID iLevelID, LAYER_TYPE iLayerType);
+	void BatchObject(LEVELID iLevelID, LAYER_TYPE iLayerType);
+	void Picking();
+private:
 	// 오브젝트 상태제어 
 	_bool m_bAddObject = false;
 

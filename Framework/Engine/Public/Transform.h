@@ -83,8 +83,14 @@ public:
 	void LookAt(_vector vPosition);
 	void LookAt_ForLandObject(_vector vPosition);
 
+	void FixRotation(_float x, _float y, _float z);
+	XMVECTOR Get_WorldRotation() { return m_vRotation; }
+
+
 private:
 	_float4x4				m_WorldMatrix;
+	XMVECTOR m_vRotation = ::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+
 
 public:
 	static CTransform* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
