@@ -4,7 +4,7 @@
 #include "GameInstance.h"
 #include "Loader.h"
 
-
+#include "Level_Logo.h"
 #include "Level_Tool.h"
 #include "Level_Test.h"
 #include "ImGui_Manager.h"
@@ -48,12 +48,17 @@ HRESULT CLevel_Loading::LateTick(_float fTimeDelta)
 
 	if (true == m_pLoader->Get_Finished())
 	{
+
 		if (KEY_TAP(KEY::SPACE))
 		{
+
 			CLevel* pNewLevel = nullptr;
 
 			switch (m_eNextLevel)
 			{
+			case LEVEL_LOGO:
+				pNewLevel = CLevel_Logo::Create(m_pDevice, m_pContext);
+				break;
 
 			case LEVEL_TOOL:
 				pNewLevel = CLevel_Tool::Create(m_pDevice, m_pContext);
@@ -96,7 +101,7 @@ CLevel_Loading * CLevel_Loading::Create(ID3D11Device * pDevice, ID3D11DeviceCont
 
 	if (FAILED(pInstance->Initialize(eNextLevel, strFolderName)))
 	{
-		MSG_BOX("Failed to Created : CLevel_Loading");
+		MSG_BOX("Failed to Create : CLevel_Loading");
 		Safe_Release(pInstance);
 	}
 

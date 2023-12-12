@@ -8,6 +8,7 @@
 #include "Tool_Particle.h"
 #include "Tool_Navigation.h"
 #include "Tool_Terrain.h"
+#include "Tool_UI.h"
 
 
 IMPLEMENT_SINGLETON(CImGui_Manager)
@@ -109,6 +110,9 @@ HRESULT CImGui_Manager::Reserve_Manager(HWND hWnd, ID3D11Device* pDevice, ID3D11
     if (nullptr == m_pTerrain_Tool)
         return E_FAIL;
 
+    m_pUI_Tool = CTool_UI::Create(m_pDevice, m_pContext);
+    if (nullptr == m_pUI_Tool)
+        return E_FAIL;
 
 
     return S_OK;
@@ -154,6 +158,7 @@ void CImGui_Manager::Tick(_float fTimeDelta)
     ImGui::Checkbox("Map_Tool", &m_bShowMap_Tool);
     ImGui::Checkbox("Terrain_Tool", &m_bShowTerrain_Tool);
     ImGui::Checkbox("Navigation_Tool", &m_bShowNavigation_Tool);
+    ImGui::Checkbox("UI_Tool", &m_bShowUI_Tool);
     ImGui::End();
 
 
@@ -190,6 +195,11 @@ void CImGui_Manager::Tick(_float fTimeDelta)
     if (true == m_bShowNavigation_Tool)
     {
         m_pNavigation_Tool->Tick(fTimeDelta);
+    }
+
+    if (true == m_bShowUI_Tool)
+    {
+        m_pUI_Tool->Tick(fTimeDelta);
     }
 
     ImGui::EndFrame();
@@ -229,6 +239,7 @@ void CImGui_Manager::Free()
     Safe_Release(m_pNavigation_Tool);
     Safe_Release(m_pCamera_Tool);
     Safe_Release(m_pTerrain_Tool);
+    Safe_Release(m_pUI_Tool);
 }
 
 #pragma region Sample Codes

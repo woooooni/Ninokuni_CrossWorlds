@@ -54,7 +54,7 @@ HRESULT CLevel_Test::Initialize()
 
 HRESULT CLevel_Test::Tick(_float fTimeDelta)
 {
-	
+
 	return S_OK;
 }
 

@@ -23,6 +23,7 @@ public:
 		_float fY	= 0.f;
 		_float fCX	= 0.f;
 		_float fCY	= 0.f;
+
 	} UI_INFO;
 	
 protected:
@@ -33,7 +34,7 @@ protected:
 
 public:
 	virtual HRESULT Initialize_Prototype() override { return S_OK; }
-	virtual HRESULT Initialize(void* pArg) override { return S_OK; }
+	virtual HRESULT Initialize(void* pArg) override;
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void LateTick(_float fTimeDelta) override {}
 	virtual HRESULT Render() override { return S_OK; }
@@ -50,9 +51,10 @@ protected:
 	virtual void On_Mouse(_float fTimeDelta) {}
 	virtual void On_MouseExit(_float fTimeDelta) {}
 
+	virtual void Debug_Input(_float fTimeDelta);
 
 protected:
-	virtual void Debug_Input(_float fTimeDelta);
+	virtual HRESULT Ready_Components();
 
 protected:
 	CShader* m_pShaderCom = nullptr;
@@ -62,6 +64,8 @@ protected:
 	CVIBuffer_Rect* m_pVIBufferCom = nullptr;
 
 protected:
+	list<CUI*> m_pChild;
+
 	UI_INFO m_tInfo = { 0 };
 	UI_MOUSESTATE m_eMouseState = UI_MOUSESTATE::MOUSE_END;
 
@@ -69,6 +73,8 @@ protected:
 	_float4x4 m_ProjMatrix;
 
 	wstring m_strText = L"";
+
+	_float m_fAlpha = { 1.f };
 
 public:
 	virtual void Free() override;

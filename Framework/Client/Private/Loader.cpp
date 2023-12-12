@@ -17,6 +17,9 @@
 #include "Effect_Manager.h"
 #include "Particle_Manager.h"
 
+#include "UI_Logo_Background.h"
+#include "UI_Flare.h"
+
 
 
 _bool CLoader::g_bFirstLoading = false;
@@ -93,14 +96,26 @@ HRESULT CLoader::Loading_For_Level_Logo()
 {
 	/* For.Texture */
 	m_strLoading = TEXT("텍스쳐를 로딩 중 입니다.");
+	if (FAILED(GI->Add_Prototype(LEVEL_LOGO, TEXT("Prototype_Component_Texture_Logo_Background_Frames"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Logo/LogoFrames/Logo_Texture_%d.jpg"), 274))))
+		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(LEVEL_LOGO, TEXT("Prototype_Component_Texture_Logo_Flare"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/UI_Effect_Flare_Yellow.png"), 1))))
+		return E_FAIL;
 
 	/* For.Shader */
 	m_strLoading = TEXT("셰이더를 로딩 중 입니다.");
 
 	/* For.GameObject */
 	m_strLoading = TEXT("객체원형을 로딩 중 입니다.");
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Logo_Background"),
+		CUI_Logo_Background::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Logo_Flare"),
+		CUI_Flare::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
 
 
 

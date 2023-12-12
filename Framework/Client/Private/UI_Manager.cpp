@@ -42,6 +42,11 @@ void CUI_Manager::LateTick(_float fTimeDelta)
 	
 }
 
+HRESULT CUI_Manager::Ready_Veils()
+{
+	return E_NOTIMPL;
+}
+
 
 
 
