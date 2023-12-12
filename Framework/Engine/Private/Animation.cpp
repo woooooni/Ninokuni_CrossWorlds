@@ -31,6 +31,8 @@ HRESULT CAnimation::Initialize_Prototype(aiAnimation* pAIAnimation)
 	m_fDuration = pAIAnimation->mDuration;
 	m_fTickPerSecond = pAIAnimation->mTicksPerSecond;
 
+	m_iMaxFrameCount = m_fDuration + 1;
+
 	/* 현재 애니메이션에서 제어해야할 뼈들의 갯수를 저장한다. */
 	m_iNumChannels = pAIAnimation->mNumChannels;
 

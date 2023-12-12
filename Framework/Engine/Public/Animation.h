@@ -12,8 +12,8 @@ private:
 	virtual ~CAnimation() = default;
 
 public:
-	HRESULT Initialize_Prototype(aiAnimation* pAIAnimation);
-	HRESULT Initialize(class CModel* pModel);
+	HRESULT Initialize_Prototype(aiAnimation* pAIAnimation); // << : Assimp 
+	HRESULT Initialize(class CModel* pModel); 
 
 	HRESULT Play_Animation(class CTransform* pTransform, _float fTimeDelta);
 	HRESULT Play_Animation(class CModel* pModel, class CTransform* pTransform, CAnimation* pNextAnimation, _float fTimeDelta);
@@ -63,6 +63,8 @@ public:
 	void Set_TweenAnimation(_bool bTween) { m_bTweeningAnim = bTween; }
 	_bool Is_TweenAnimation() { return m_bTweeningAnim; }
 
+	const _uint& Get_MaxFrameCount() const { return m_iMaxFrameCount; }
+
 public:
 	HRESULT Calculate_Animation(const _uint& iFrame);
 
@@ -74,14 +76,17 @@ private:
 	vector<class CChannel*>		m_Channels;
 
 	/* 애니메이션 재생하는데 걸리는 전체시간. */
-	_float						m_fDuration = 0.f;
+	_float						m_fDuration = 0.f; 
 
 	/* 애니메이션의 초당 재생 속도. */
-	_float						m_fTickPerSecond = 0.f;
+	_float						m_fTickPerSecond = 0.f; // 루키스 frameRate
 	_float						m_fPlayTime = 0.f;
 	_float						m_fSpeed = 1.f;
 	_float						m_fRatio = 0.f;
 	_float						m_fTweeningRatio = 0.f;
+
+	_uint						m_iMaxFrameCount; // 최대 프레임 사이즈
+
 
 private: /* 복제된 애니메이션 마다 따로 가진다. */
 	vector<class CHierarchyNode*>	m_HierarchyNodes;

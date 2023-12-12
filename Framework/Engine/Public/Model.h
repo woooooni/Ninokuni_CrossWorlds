@@ -4,8 +4,7 @@
 
 BEGIN(Engine)
 
-#define DEFAULT_PLAY_SPEED	1.f
-#define DEFAULT_TWEEN_TIME	0.1f
+#define DEFAULT_TWEEN_DURATION	0.2f
 
 class ENGINE_DLL CModel final : public CComponent
 {
@@ -18,12 +17,14 @@ public:
 		_uint	iCurFrame	= 0;
 		_uint	iNextFrame	= 1;
 		_float	fRatio		= 0.f;
+		_float	fFrameAcc	= 0.f;
 
 		void ClearAnim()
 		{
 			iCurFrame		= 0;
 			iNextFrame		= 1;
 			fRatio			= 0.f;
+			fFrameAcc		= 0.f;
 		}
 
 	}KEYFRAME_DESC;
@@ -33,7 +34,7 @@ public:
 		KEYFRAME_DESC cur	= {};
 		KEYFRAME_DESC next	= {};
 
-		_float fTweenDuration	= DEFAULT_TWEEN_TIME;
+		_float fTweenDuration	= DEFAULT_TWEEN_DURATION;
 		_float fTweenRatio		= 0.f;
 		_float fTweenAcc		= 0.f;
 		_float fPadding			= 0.f;
@@ -52,7 +53,7 @@ public:
 
 			fTweenAcc		= 0.f;
 			fTweenRatio		= 0.f;
-			fTweenDuration	= DEFAULT_TWEEN_TIME;
+			fTweenDuration	= DEFAULT_TWEEN_DURATION;
 		}
 
 	}TWEEN_DESC;
@@ -71,6 +72,12 @@ public:
 	_uint Get_MaterialIndex(_uint iMeshIndex);
 	class CTexture* Get_MaterialTexture(_uint iMeshIndex, _uint iTextureType);
 
+
+	// << : 추가
+	HRESULT Set_Animation(const _uint& iAnimationIndex, const _float& fTweenDuration = DEFAULT_TWEEN_DURATION);
+	HRESULT Set_Animation(const wstring& strAnimationName, const _float& fTweenDuration = DEFAULT_TWEEN_DURATION);
+	// >> 
+
 	HRESULT Set_Animation(const wstring & strAnimationName);
 	void Set_AnimIndex(_uint iAnimIndex);
 
@@ -83,10 +90,11 @@ public:
 	vector<class CHierarchyNode*>& Get_HierarchyNodes() { return m_HierarchyNodes; }
 
 public:
-	virtual HRESULT Initialize_Prototype(TYPE eType, const wstring & strModelFilePath, const wstring & strModelFileName, _fmatrix PivotMatrix);
+	virtual HRESULT Initialize_Prototype(TYPE eType, const wstring & strModelFilePath, const wstring & strModelFileName, _fmatrix PivotMatrix); // << : Assimp 
 	virtual HRESULT Initialize(void* pArg);
 	virtual HRESULT Initialize_Bin(void* pArg);
 
+	// << : 추가
 	HRESULT LateTick(_float fTimeDelta);
 
 public:
@@ -108,6 +116,7 @@ public:
 	_uint Get_CurrAnimationIndex() { return m_iCurrentAnimIndex; }
 	class CAnimation* Get_CurrAnimation() { return m_Animations[m_iCurrentAnimIndex]; }
 
+	// << : 추가
 	HRESULT Set_VtfTexture(ID3D11ShaderResourceView* pTexture) { if (nullptr == pTexture) return E_FAIL; m_pSRV = pTexture; }
 
 public:
@@ -160,6 +169,7 @@ private:
 
 
 private:
+	// << : Assimp 
 	HRESULT Ready_MeshContainers(_fmatrix PivotMatrix);
 	HRESULT Ready_Materials(const wstring & pModelFilePath);
 	HRESULT Ready_HierarchyNodes(aiNode * pNode, class CHierarchyNode* pParent, _uint iDepth);

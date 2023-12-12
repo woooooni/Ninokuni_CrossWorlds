@@ -39,36 +39,39 @@ void CCamera_Tool::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
+	const _float fMoveSpeed		= 20.f;
+	const _float fRotateSpeed	= 0.5f;
+
 	if (GI->Mouse_Pressing(DIMK_WHEEL))
 	{
 		if (KEY_HOLD(KEY::W))
 		{
-			m_pTransformCom->Move(m_pTransformCom->Get_Look(), 10.f, fTimeDelta);
+			m_pTransformCom->Move(m_pTransformCom->Get_Look(), fMoveSpeed, fTimeDelta);
 		}
 
 		if (KEY_HOLD(KEY::S))
 		{
-			m_pTransformCom->Move(m_pTransformCom->Get_Look(), -10.f, fTimeDelta);
+			m_pTransformCom->Move(m_pTransformCom->Get_Look(), -fMoveSpeed, fTimeDelta);
 		}
 
 		if (KEY_HOLD(KEY::A))
 		{
-			m_pTransformCom->Move(m_pTransformCom->Get_Right(), -10.f, fTimeDelta);
+			m_pTransformCom->Move(m_pTransformCom->Get_Right(), -fMoveSpeed, fTimeDelta);
 		}
 
 		if (KEY_HOLD(KEY::D))
 		{
-			m_pTransformCom->Move(m_pTransformCom->Get_Right(), 10.f, fTimeDelta);
+			m_pTransformCom->Move(m_pTransformCom->Get_Right(), fMoveSpeed, fTimeDelta);
 		}
 
 		if (KEY_HOLD(KEY::Q))
 		{
-			m_pTransformCom->Move(XMVectorSet(0.f, 1.f, 0.f, 0.f), 10.f, fTimeDelta);
+			m_pTransformCom->Move(XMVectorSet(0.f, 1.f, 0.f, 0.f), fMoveSpeed, fTimeDelta);
 		}
 
 		if (KEY_HOLD(KEY::E))
 		{
-			m_pTransformCom->Move(XMVectorSet(0.f, 1.f, 0.f, 0.f), -10.f, fTimeDelta);
+			m_pTransformCom->Move(XMVectorSet(0.f, 1.f, 0.f, 0.f), -fMoveSpeed, fTimeDelta);
 		}
 
 		if (KEY_TAP(KEY::R))
@@ -82,12 +85,12 @@ void CCamera_Tool::Tick(_float fTimeDelta)
 
 		if (MouseMove = GI->Get_DIMMoveState(DIMM_X))
 		{
-			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), MouseMove * 0.05f, fTimeDelta);
+			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), MouseMove * fRotateSpeed, fTimeDelta);
 		}
 
 		if (MouseMove = GI->Get_DIMMoveState(DIMM_Y))
 		{
-			m_pTransformCom->Turn(m_pTransformCom->Get_State(CTransform::STATE_RIGHT), MouseMove * 0.05f, fTimeDelta);
+			m_pTransformCom->Turn(m_pTransformCom->Get_State(CTransform::STATE_RIGHT), MouseMove * fRotateSpeed, fTimeDelta);
 		}
 	}
 

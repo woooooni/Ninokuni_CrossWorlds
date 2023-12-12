@@ -55,8 +55,8 @@ HRESULT CModel_Manager::Export_Model_Data(CModel* pModel, const wstring& strSubF
 		return E_FAIL;
 
 	// << : VTF
-	//if (FAILED(Create_Model_Vtf(pModel)))
-	//	return E_FAIL;
+	/*if (FAILED(Create_Model_Vtf(pModel)))
+		return E_FAIL;*/
 
 	return S_OK;
 }
@@ -115,7 +115,7 @@ HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel)
 
 	for (uint32 i = 0; i < iAnimCount; i++)
 	{
-		_uint iCurAnimFrameCnt = (_uint)m_AnimationsCache[i]->Get_Duration();
+		_uint iCurAnimFrameCnt = (_uint)m_AnimationsCache[i]->Get_MaxFrameCount();
 
 		iAnimMaxFrameCount = iAnimMaxFrameCount < iCurAnimFrameCnt ? iCurAnimFrameCnt : iAnimMaxFrameCount;
 	}
@@ -198,8 +198,8 @@ HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel)
 	}
 
 	/* 04 For. Set Texture To Model */
-	/*if (FAILED(pModel->Set_VtfTexture(pSrv)))
-		return E_FAIL;*/
+	if (FAILED(pModel->Set_VtfTexture(pSrv)))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -554,7 +554,7 @@ HRESULT CModel_Manager::Create_AnimationTransform(const _uint& iAnimIndex)
 	/* 현재 애니메이션에 대한 텍스처 한 장(프레임 행, 본 열)정보를 세팅한다. */
 	CAnimation* pAnimation = m_AnimationsCache[iAnimIndex];
 
-	const _uint iMaxFrame = (_uint)pAnimation->Get_Duration();
+	const _uint iMaxFrame = (_uint)pAnimation->Get_MaxFrameCount();
 
 	/* 모든 프레임 순회 (텍스처 가로) */
 	for (uint32 iFrameIndex = 0; iFrameIndex < iMaxFrame; iFrameIndex++)
