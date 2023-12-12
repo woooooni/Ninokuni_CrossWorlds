@@ -54,7 +54,6 @@ HRESULT CModel_Manager::Export_Model_Data(CModel* pModel, const wstring& strSubF
 	if (FAILED(Export_Animation(strFinalFolderPath, pModel)))
 		return E_FAIL;
 
-	// << : VTF
 	if (CModel::TYPE::TYPE_ANIM == pModel->Get_ModelType())
 	{
 		if (FAILED(Create_Model_Vtf(pModel, strFinalFolderPath)))
@@ -67,7 +66,6 @@ HRESULT CModel_Manager::Export_Model_Data_FromPath(_uint eType, wstring strFolde
 {
 	for (auto& p : std::filesystem::directory_iterator(strFolderPath))
 	{
-
 		if (p.is_directory())
 		{
 			Export_Model_Data_FromPath(eType, p.path());
@@ -372,7 +370,6 @@ HRESULT CModel_Manager::Import_Model_Data(_uint iLevelIndex, const wstring& strP
 
 		pModel->Set_Name(strFileName);
 
-		// << : VTF
 		if (CModel::TYPE::TYPE_ANIM == pModel->Get_ModelType())
 		{
 			if (99 == GI->Get_CurrentLevel()) // 툴레벨이라면 VTF 생성
@@ -383,6 +380,10 @@ HRESULT CModel_Manager::Import_Model_Data(_uint iLevelIndex, const wstring& strP
 			else // 아니라면 VTF 로드 
 			{
 				if (FAILED(Load_Model_Vtf(pModel, strFinalFolderPath)))
+					return E_FAIL;
+
+				// VTF 사용에 필요없는 모든 데이터 클리어 
+				if (FAILED(pModel->Clear_NotUsedData()))
 					return E_FAIL;
 			}
 		}

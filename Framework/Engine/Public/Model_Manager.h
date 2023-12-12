@@ -11,7 +11,7 @@ class CModel_Manager final : public CBase
 {
 	DECLARE_SINGLETON(CModel_Manager);
 
-	typedef struct	AnimTransformCache /* Vtf 텍스처를 만들기 위한 캐시 데이터 (툴에서만 사용) */
+	typedef struct	AnimTransformCache 
 	{
 		using TransformArrayType = array<Matrix, MAX_MODEL_CHANNELS>;
 		array<TransformArrayType, MAX_MODEL_KEYFRAMES> transforms;
@@ -31,7 +31,7 @@ public:
 public:
 	HRESULT Import_Model_Data(_uint iLevelIndex, const wstring& strProtoTypeTag, _uint eType, wstring strFolderPath, wstring strFileName, __out class CModel** ppOut = nullptr);
 	HRESULT Export_Model_Data(class CModel* pModel, const wstring& strSubFolderName, const wstring& strFileName);
-	HRESULT Export_Model_Data_FromPath(_uint eType, wstring strFolderPath); /* 폴더 내의 모든 모델 바이너리화 */
+	HRESULT Export_Model_Data_FromPath(_uint eType, wstring strFolderPath); 
 	
 private:
 	HRESULT Import_Mesh(const wstring strFinalPath, class CModel* pModel);
@@ -54,16 +54,12 @@ private:
 	HRESULT Create_AnimationTransform(const _uint& iAnimIndex);
 
 private:
-	wstring m_strExportFolderPath = L"../Bin/Export/";
-
-private:
-	_float4x4 m_PivotMatrix;
-
-private:
 	ID3D11Device* m_pDevice = nullptr;
 	ID3D11DeviceContext* m_pContext = nullptr;
 
-private: 
+	wstring m_strExportFolderPath = L"../Bin/Export/";
+	_float4x4 m_PivotMatrix;
+
 	map<wstring, ID3D11ShaderResourceView*> m_VtfTextures;
 
 	vector<ANIM_TRANSFORM_CACHE> m_AnimTransformsCache;

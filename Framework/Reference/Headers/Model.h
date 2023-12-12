@@ -125,6 +125,8 @@ public:
 	// << : Ãß°¡
 	HRESULT Set_VtfSrv(ID3D11ShaderResourceView* pSrv);
 
+	HRESULT Clear_NotUsedData();
+
 public:
 	const aiScene* Get_Scene() { return m_pAIScene; }
 

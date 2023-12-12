@@ -68,6 +68,8 @@ public:
 public:
 	HRESULT Calculate_Animation(const _uint& iFrame);
 
+	HRESULT Clear_Channels();
+
 private:
 	wstring						m_strName;
 

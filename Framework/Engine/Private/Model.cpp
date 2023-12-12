@@ -330,6 +330,31 @@ HRESULT CModel::Set_VtfSrv(ID3D11ShaderResourceView* pSrv)
 	return S_OK;
 }
 
+HRESULT CModel::Clear_NotUsedData()
+{
+	/* HierarchyNodes */
+	{
+		/*for (auto& pHierarchyNode : m_HierarchyNodes)
+		{
+			Safe_Release(pHierarchyNode);
+
+			if(nullptr != pHierarchyNode)
+				Safe_Release(pHierarchyNode);
+		}
+
+		m_HierarchyNodes.clear();*/
+	}
+
+
+	/* Animations */
+	{
+		for (auto& pAnimation : m_Animations)
+			pAnimation->Clear_Channels();
+	}
+	return S_OK;
+}
+
+
 HRESULT CModel::Set_Animation(const _uint& iAnimationIndex, const _float& fTweenDuration)
 {
 	if (m_TweenDesc.cur.iAnimIndex < 0) // 최초 1회 실행 

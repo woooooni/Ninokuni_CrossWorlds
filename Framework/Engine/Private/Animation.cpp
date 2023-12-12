@@ -53,6 +53,8 @@ HRESULT CAnimation::Initialize_Prototype(aiAnimation* pAIAnimation)
 
 HRESULT CAnimation::Initialize(CModel* pModel)
 {
+	if (99 != GI->Get_CurrentLevel()) return S_OK;
+
 	for (_uint i = 0; i < m_iNumChannels; ++i)
 	{
 		m_ChannelKeyFrames.push_back(0);
@@ -202,6 +204,23 @@ HRESULT CAnimation::Calculate_Animation(const _uint& iFrame)
 
 		++iChannelIndex;
 	}
+
+	return S_OK;
+}
+
+HRESULT CAnimation::Clear_Channels()
+{
+	for (auto& pChannel : m_Channels)
+		Safe_Release(pChannel);
+
+	m_Channels.clear();
+
+	// 툴레벨이 아니라면 어차피 하이어러키 내부 데이터는 없음 
+	
+	//for (auto& pHierarchyNode : m_HierarchyNodes)
+	//	Safe_Release(pHierarchyNode);
+
+	//m_HierarchyNodes.clear();
 
 	return S_OK;
 }
