@@ -128,6 +128,27 @@ public:
 public:
 	_bool Intersect_Frustum_World(_fvector vWorldPos, _float fRadius = 0.f);
 
+public:
+	/* For. PhysX_Manager */
+	PxRigidDynamic* Create_Box(_float3 vPos, _float3 vExtent, _uint iFlag = 0);
+	PxRigidDynamic* Create_Sphere(_float3 vPos, _float fRad, _uint iFlag = 0);
+
+	PxRigidDynamic* Create_PxBox(_float3 vExtent, _float fWeight, _float fAngleDump, PxMaterial* pMaterial, _float fMaxVel = 0.f);
+	PxRigidDynamic* Create_PxSphere(_float3 vExtent, _float fWeight, _float fAngleDump, PxMaterial* pMaterial, _float fMaxVel = 0.f);
+
+
+	void Add_Actor(PxActor* pAxtor);
+	void Remove_Actor(PxActor* pAxtor);
+
+	PxMaterial* Create_PxMaterial(_float fA, _float fB, _float fC);
+
+
+public:
+	wstring To_Wstring(const string& str);
+	string To_String(const wstring& str);
+	_float RandomFloat(_float fMin, _float fMax);
+	_int RandomInt(_int iMin, _int iMax);
+
 
 
 //public:
@@ -163,7 +184,7 @@ private:
 	class CFrustum*					m_pFrustum = { nullptr };
 	// class CNetwork_Manager*			m_pNetwork_Manager = { nullptr };
 	class CSound_Manager* m_pSound_Manager = { nullptr };
-
+	class CPhysX_Manager* m_pPhysXManager = { nullptr };
 
 public:
 	static void Release_Engine();

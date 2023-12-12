@@ -20,8 +20,8 @@ HRESULT CTarget_Manager::Ready_Shadow_DSV(ID3D11Device* pDevice, _uint iWinSizeX
 	D3D11_TEXTURE2D_DESC	TextureDesc;
 	ZeroMemory(&TextureDesc, sizeof(D3D11_TEXTURE2D_DESC));
 
-	TextureDesc.Width = iWinSizeX * 10.f;
-	TextureDesc.Height = iWinSizeY * 10.f;
+	TextureDesc.Width = iWinSizeX * 3.f;
+	TextureDesc.Height = iWinSizeY * 3.f;
 	TextureDesc.MipLevels = 1;
 	TextureDesc.ArraySize = 1;
 	TextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -143,8 +143,8 @@ HRESULT CTarget_Manager::Begin_Shadow_MRT(ID3D11DeviceContext* pContext, const w
 	ZeroMemory(&ViewPortDesc, sizeof(D3D11_VIEWPORT));
 	ViewPortDesc.TopLeftX = 0;
 	ViewPortDesc.TopLeftY = 0;
-	ViewPortDesc.Width = 1600.f * 10.f;
-	ViewPortDesc.Height = 900.f * 10.f;
+	ViewPortDesc.Width = 1600.f * 3.f;
+	ViewPortDesc.Height = 900.f * 3.f;
 	ViewPortDesc.MinDepth = 0.f;
 	ViewPortDesc.MaxDepth = 1.f;
 

@@ -158,7 +158,6 @@ public:
 
 public:
 	void Set_Gravity(_bool bGravity);
-	_bool Is_Gravity();
 
 	void Set_MoveDir(_vector vDir);
 	void Set_MoveSpeed(_float fSpeed) { m_tEffectDesc.fMoveSpeed = fSpeed; }

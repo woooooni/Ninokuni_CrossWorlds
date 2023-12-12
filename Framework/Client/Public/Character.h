@@ -53,7 +53,7 @@ public:
 
 	enum PARTTYPE { PART_SWEATH, PART_SWORD, PART_END };
 	enum SOCKET_TYPE { SOCKET_SWORD, SOCKET_SWEATH, SOCKET_RIGHT_HAND, SOCKET_LEFT_FOOT, SOCKET_RIGHT_FOOT, SOCKET_END };
-	enum CHARACTER_TYPE { TANJIRO, ZENITSU, KYOJURO, ENMU, AKAZA, CHARACTER_END };
+	enum CHARACTER_TYPE { SWORD_MAN, DESTROYER, ENGINEER, WITCH, CHARACTER_END };
 public:
 	typedef struct tagCharacterStat
 	{
@@ -97,13 +97,9 @@ public:
 	};
 
 public:
-	void DrawSword();
-	void SweathSword();
-
 	void Generate_Trail(SOCKET_TYPE eSocketType);
 	void Stop_Trail(SOCKET_TYPE eSocketType);
 
-	void Play_Sound(CCollider::ATTACK_TYPE eAttackType);
 public:
 	virtual void Set_Infinite(_float fInfiniteTime, _bool bInfinite);
 	_bool Is_Infinite() { return m_bInfinite; }

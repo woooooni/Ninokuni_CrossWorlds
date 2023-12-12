@@ -80,7 +80,7 @@ HRESULT CRenderer::Initialize_Prototype()
 
 	/* For.Target_ShadowDepth */
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_ShadowDepth"),
-		ViewportDesc.Width * 10.f, ViewportDesc.Height * 10.f, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 1.f))))
+		ViewportDesc.Width * 3.f, ViewportDesc.Height * 3.f, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 1.f))))
 		return E_FAIL;
 
 
@@ -1051,8 +1051,6 @@ HRESULT CRenderer::Render_Text()
 #ifdef _DEBUG
 HRESULT CRenderer::Render_Debug()
 {
-
-
 	for (auto& pDebugCom : m_RenderDebug)
 	{
 		if (true == m_bDebugDraw)
@@ -1163,6 +1161,13 @@ void CRenderer::Free()
 	for (_uint i = 0; i < SHADER_TYPE::TYPE_END; ++i)
 		Safe_Release(m_pIntancingShaders[i]);
 
-
+	for (_uint i = 0; i < RENDERGROUP::RENDER_END; ++i)
+	{
+		for (auto iter : m_Render_Instancing_Objects[i])
+		{
+			Safe_Release(iter.second.pGameObject);
+		}
+		m_Render_Instancing_Objects[i].clear();
+	}
 	
 }

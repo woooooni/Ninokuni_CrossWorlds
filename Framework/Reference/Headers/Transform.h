@@ -60,7 +60,6 @@ public:
 
 public:
 	void Set_State(STATE eState, _vector vState);
-	void Set_Position(_vector vPosition, _float fTimeDelta, class CNavigation* pNavigation = nullptr, _bool* bMovable = nullptr);
 
 public:
 	virtual HRESULT Initialize_Prototype();

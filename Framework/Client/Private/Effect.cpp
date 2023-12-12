@@ -144,7 +144,7 @@ void CEffect::LateTick(_float fTimeDelta)
 	
 
 
-	m_pRigidBodyCom->LateTick_RigidBody(fTimeDelta);
+	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 
 	CRenderer::EFFECT_INSTANCE_DESC EffectInstanceDesc;
 	ZeroMemory(&EffectInstanceDesc, sizeof CRenderer::EFFECT_INSTANCE_DESC);
@@ -211,12 +211,7 @@ void CEffect::Set_EffectDesc(const EFFECT_DESC& tDesc)
 
 void CEffect::Set_Gravity(_bool bGravity)
 {
-	m_pRigidBodyCom->Set_Gravity(bGravity);
-}
 
-_bool CEffect::Is_Gravity()
-{
-	return m_pRigidBodyCom->Is_Gravity();
 }
 
 void CEffect::Set_MoveDir(_vector vDir)
@@ -226,17 +221,7 @@ void CEffect::Set_MoveDir(_vector vDir)
 
 void CEffect::Reset_Effect()
 {
-	m_tEffectDesc = m_tOriginEffectDesc;
-	m_pTransformCom->Set_WorldMatrix(XMMatrixIdentity());
-	m_pRigidBodyCom->Set_Velocity({ 0.f, 0.f, 0.f });
 
-	m_iDiffuseTextureIdx = m_pDiffuseTextureCom->Find_Index(m_tEffectDesc.strDiffuseTetextureName);
-	m_iAlphaTextureIdx = m_pAlphaTextureCom->Find_Index(m_tEffectDesc.strAlphaTexturName);
-	XMStoreFloat4x4(&m_ParentMatrix, XMMatrixIdentity());
-
-	m_tEffectDesc.vUVFlow = { 0.f, 0.f };
-	m_fAccUVFlow = { 0.f, 0.f };
-	m_vUVIndex = { 0.f, 0.f };
 
 }
 
@@ -403,8 +388,8 @@ HRESULT CEffect::Ready_Components()
 		return E_FAIL;
 
 
-	m_pRigidBodyCom->Set_RefHeight(-999.f);
-	m_pRigidBodyCom->Set_Gravity(m_bGravity);
+	/*m_pRigidBodyCom->Set_RefHeight(-999.f);
+	m_pRigidBodyCom->Set_Gravity(m_bGravity);*/
 
 
 

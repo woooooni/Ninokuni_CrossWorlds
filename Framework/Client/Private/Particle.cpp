@@ -155,8 +155,8 @@ Client::CEffect* CParticle::Generate_Effect()
 	{
 		fFrictionScale = CUtils::Random_Float(0.f, fFrictionScale);
 	}
-	pEffect->Get_RigidBodyCom()->Set_Friction_Scale(fFrictionScale);
-	pEffect->Get_RigidBodyCom()->Add_Velocity(XMVector3Normalize(XMLoadFloat3(&vForceDir)), m_tParticleDesc.fForce);
+	/*pEffect->Get_RigidBodyCom()->Set_Friction_Scale(fFrictionScale);
+	pEffect->Get_RigidBodyCom()->Add_Velocity(XMVector3Normalize(XMLoadFloat3(&vForceDir)), m_tParticleDesc.fForce);*/
 
 	EffectDesc.fBlurPower = m_tParticleDesc.fBlurPower;
 	EffectDesc.fDestAlphaSpeed = m_tParticleDesc.fDestAlphaSpeed;
