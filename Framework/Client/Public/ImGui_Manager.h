@@ -41,6 +41,7 @@ private:
 	_bool m_bShowMap_Tool = false;
 	_bool m_bShowTerrain_Tool = false;
 	_bool m_bShowNavigation_Tool = false;
+	_bool m_bShowUI_Tool = false;
 
 
 private:
@@ -51,6 +52,7 @@ private:
 	class CTool_Navigation* m_pNavigation_Tool = nullptr;
 	class CTool_Camera* m_pCamera_Tool = nullptr;
 	class CTool_Terrain* m_pTerrain_Tool = nullptr;
+	class CTool_UI* m_pUI_Tool = nullptr;
 
 private:
 	_bool m_bInitialize = false;

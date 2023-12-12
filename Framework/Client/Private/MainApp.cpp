@@ -105,16 +105,19 @@ HRESULT CMainApp::Open_Level(LEVELID eLevelID, const wstring& strFolderName)
 
 HRESULT CMainApp::Initialize_Client()
 {
-	//if(FAILED(GI->Add_Fonts(m_pDevice, m_pContext, L"Basic", L"../Bin/Resources/Font/JejuGhothic.spritefont")))
-	//	return E_FAIL;
-	//if(FAILED(GI->Add_Fonts(m_pDevice, m_pContext, L"Maple", L"../Bin/Resources/Font/Maplestory.spritefont")))
-	//	return E_FAIL;
-
 	//if (FAILED(CEffect_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext, L"../Bin/Export/Effect/")))
 	//	return E_FAIL;
 
 	//if(FAILED(CParticle_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext, L"../Bin/Export/Particle/")))
 	//	return E_FAIL;
+
+	// Add Fonts
+	if (FAILED(GI->Add_Fonts(m_pDevice, m_pContext, L"Default_Bold", L"../Bin/Resources/Font/NiNoKuni_Bold.spritefont")))
+		return E_FAIL;
+	if (FAILED(GI->Add_Fonts(m_pDevice, m_pContext, L"Default_Medium", L"../Bin/Resources/Font/NiNoKuni_Medium.spritefont")))
+		return E_FAIL;
+	if (FAILED(GI->Add_Fonts(m_pDevice, m_pContext, L"Default_Light", L"../Bin/Resources/Font/NiNoKuni_Light.spritefont")))
+		return E_FAIL;
 
 	
 	if (FAILED(CUI_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
@@ -262,7 +265,16 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_AnimModel_Vtf"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_AnimModel_Vtf.hlsl"), VTXANIMMODEL_DECLARATION::Elements, VTXANIMMODEL_DECLARATION::iNumElements))))
 		return E_FAIL;
+	/////////////
+	// Texture //
+	///////////// For UI
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Veil_Black"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Default/Veil/Veil_Black.png")))))
+		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Veil_White"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Default/Veil/Veil_White.png")))))
+		return E_FAIL;
 
 	//// Texture
 	///* For.Prototype_Component_Texture_Effect*/

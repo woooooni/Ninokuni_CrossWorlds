@@ -17,6 +17,8 @@ public:
 	void	Tick(_float fTimeDelta);
 	void	LateTick(_float fTImeDelta);
 
+public:
+	HRESULT Ready_Veils();
 
 private:
 	ID3D11Device* m_pDevice = nullptr;

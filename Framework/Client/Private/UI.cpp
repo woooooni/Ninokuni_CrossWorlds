@@ -7,6 +7,7 @@
 CUI::CUI(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameObject(pDevice, pContext, strObjectTag, OBJ_TYPE::OBJ_UI)
 {
+	ZeroMemory(&m_tInfo, sizeof(UI_INFO));
 }
 
 CUI::CUI(const CUI& rhs)
@@ -14,6 +15,28 @@ CUI::CUI(const CUI& rhs)
 	, m_tInfo(rhs.m_tInfo)
 	, m_strText(rhs.m_strText)
 {
+}
+
+HRESULT CUI::Initialize(void* pArg)
+{
+	if (nullptr != pArg)
+	{
+		m_tInfo = *((UI_INFO*)pArg);
+	}
+	else
+	{
+		//Arg를 넣어주지 않은 상황이라면 기본 세팅으로 생성한다.
+		m_tInfo.fX = g_iWinSizeX * 0.5f;
+		m_tInfo.fY = g_iWinSizeY * 0.5f;
+		m_tInfo.fCX = _float(g_iWinSizeX);
+		m_tInfo.fCY = _float(g_iWinSizeY);
+	}
+
+	// View행렬과 Proj행렬을 채워준다.
+	XMStoreFloat4x4(&m_ViewMatrix, XMMatrixIdentity());
+	XMStoreFloat4x4(&m_ProjMatrix, XMMatrixOrthographicLH(g_iWinSizeX, g_iWinSizeY, 0.f, 1.f));
+
+	return S_OK;
 }
 
 void CUI::Tick(_float fTimeDelta)
@@ -109,13 +132,41 @@ void CUI::Debug_Input(_float fTimeDelta)
 	m_pTransformCom->Set_Scale(XMLoadFloat3(&_float3(m_tInfo.fCX, m_tInfo.fCY, 1.f)));
 }
 
+HRESULT CUI::Ready_Components()
+{
+	// Transform Component
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"),
+		TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
+		return E_FAIL;
+
+	// Renderer Component
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"),
+		TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
+		return E_FAIL;
+
+	// Shader Coomponent
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_VtxTex"),
+		TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
+		return E_FAIL;
+
+	// VIBuffer Component
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect"),
+		TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
 void CUI::Free()
 {
 	__super::Free();
+
+	for (auto& pUI : m_pChild)
+		Safe_Release(pUI);
+
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pTransformCom);
-	Safe_Release(m_pTextureCom);
 	Safe_Release(m_pVIBufferCom);
 
 }
