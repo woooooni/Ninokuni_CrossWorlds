@@ -400,3 +400,9 @@ FodyWeavers.xsd
 Framework/Reference/Librarys/libprotobufd.lib
 Framework/Engine/ThirdPartyLib/libprotobufd.lib
 *.filters
+*.png
+*.jpg
+*.dds
+*.mesh
+*.xml
+*.anim
