@@ -1,4 +1,5 @@
 #include "..\Public\VIBuffer_Particle.h"
+#include "Utils.h"
 
 CVIBuffer_Particle::CVIBuffer_Particle(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CVIBuffer(pDevice, pContext)
@@ -7,17 +8,16 @@ CVIBuffer_Particle::CVIBuffer_Particle(ID3D11Device* pDevice, ID3D11DeviceContex
 
 CVIBuffer_Particle::CVIBuffer_Particle(const CVIBuffer_Particle& rhs)
 	: CVIBuffer(rhs)
-
 {
-
 }
 
 HRESULT CVIBuffer_Particle::Initialize_Prototype()
 {
 #pragma region VERTEXBUFFER
-	m_iNumVertexBuffers = 1;
-	m_iNumVertices = 1;
+	m_iNumVertexBuffers = 2;
+
 	m_iStride = sizeof(VTXPOINT);
+	m_iNumVertices = 1;
 
 	ZeroMemory(&m_BufferDesc, sizeof(D3D11_BUFFER_DESC));
 	m_BufferDesc.ByteWidth = m_iNumVertices * m_iStride;
@@ -40,11 +40,11 @@ HRESULT CVIBuffer_Particle::Initialize_Prototype()
 		return E_FAIL;
 
 	Safe_Delete_Array(pVertices);
-
 #pragma endregion
 
 #pragma region INDEXBUFFER
 	m_iNumPrimitives = 1;
+
 	m_iIndexSizeofPrimitive = sizeof(_ushort);
 	m_iNumIndicesofPrimitive = 1;
 	m_eIndexFormat = DXGI_FORMAT_R16_UINT;
@@ -68,13 +68,163 @@ HRESULT CVIBuffer_Particle::Initialize_Prototype()
 		return E_FAIL;
 
 	Safe_Delete_Array(pIndices);
-
 #pragma endregion
+
 	return S_OK;
 }
 
 HRESULT CVIBuffer_Particle::Initialize(void* pArg)
 {
+	if (pArg == nullptr)
+		return E_FAIL;
+
+	m_tParticleDesc = *static_cast<PARTICLE_BUFFER_DESC*>(pArg);
+	//_int iMaxCount = pInfo->iNumCount;
+	_int iMaxCount = 2000;
+
+	m_pTimeAccs = new _float[iMaxCount];
+	m_pLifeTimes = new _float[iMaxCount];
+	m_vVelocity = new _float4[iMaxCount];
+	m_pSpeeds = new _float[iMaxCount];
+
+#pragma region INSTANCEVERTEXBUFFER
+	m_iStrideInstance = sizeof(VTXINSTANCE);
+	ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc);
+	m_BufferDesc.ByteWidth = m_iStrideInstance * iMaxCount;
+	m_BufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	m_BufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	m_BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	m_BufferDesc.MiscFlags = 0;
+	m_BufferDesc.StructureByteStride = m_iStrideInstance;
+
+	m_pVertices = new VTXINSTANCE[iMaxCount];
+	ZeroMemory(m_pVertices, sizeof(VTXINSTANCE) * iMaxCount);
+
+	for (size_t i = 0; i < iMaxCount; i++)
+	{
+		if (m_tParticleDesc.bSameRate) // 정비율
+		{
+			_float fScale = CUtils::Random_Float(m_tParticleDesc.fScale.x, m_tParticleDesc.fScale.y);
+			m_pVertices[i].vRight = _float4(fScale, 0.f, 0.f, 0.f);
+			m_pVertices[i].vUp    = _float4(0.f, fScale, 0.f, 0.f);
+			m_pVertices[i].vLook  = _float4(0.f, 0.f, fScale, 0.f);
+		}
+		else
+		{
+			m_pVertices[i].vRight = _float4(CUtils::Random_Float(m_tParticleDesc.fScale.x, m_tParticleDesc.fScale.y), 0.f, 0.f, 0.f);
+			m_pVertices[i].vUp    = _float4(0.f, CUtils::Random_Float(m_tParticleDesc.fScale.x, m_tParticleDesc.fScale.y), 0.f, 0.f);
+			m_pVertices[i].vLook  = _float4(0.f, 0.f, CUtils::Random_Float(m_tParticleDesc.fScale.x, m_tParticleDesc.fScale.y), 0.f);
+		}
+
+		m_pVertices[i].vPosition = _float4(
+			CUtils::Random_Float(-m_tParticleDesc.fRange.x, m_tParticleDesc.fRange.x),
+			CUtils::Random_Float(-m_tParticleDesc.fRange.y, m_tParticleDesc.fRange.y),
+			CUtils::Random_Float(-m_tParticleDesc.fRange.z, m_tParticleDesc.fRange.z), 1.f);
+
+		m_pTimeAccs[i] = 0;
+		m_pLifeTimes[i] = CUtils::Random_Float(m_tParticleDesc.fLifeTime.x, m_tParticleDesc.fLifeTime.y);
+
+		_vector vVelocity = XMVector3Normalize(
+			XMVectorSet(
+				CUtils::Random_Float(m_tParticleDesc.vVelocityMin.x, m_tParticleDesc.vVelocityMax.x), 
+				CUtils::Random_Float(m_tParticleDesc.vVelocityMin.y, m_tParticleDesc.vVelocityMax.y), 
+				CUtils::Random_Float(m_tParticleDesc.vVelocityMin.z, m_tParticleDesc.vVelocityMax.z), 
+				0.f));
+		m_vVelocity[i] = _float4(XMVectorGetX(vVelocity), XMVectorGetY(vVelocity), XMVectorGetZ(vVelocity), XMVectorGetW(vVelocity));
+		
+		m_pSpeeds[i] = CUtils::Random_Float(m_tParticleDesc.fSpeed.x, m_tParticleDesc.fSpeed.y);
+	}
+
+	ZeroMemory(&m_SubResourceData, sizeof m_SubResourceData);
+	m_SubResourceData.pSysMem = m_pVertices;
+
+	if (FAILED(__super::Create_Buffer(&m_pVBInstance)))
+		return E_FAIL;
+#pragma endregion
+
+	return S_OK;
+}
+
+void CVIBuffer_Particle::Tick(_float fTimeDelta)
+{
+	D3D11_MAPPED_SUBRESOURCE SubResource;
+	m_pContext->Map(m_pVBInstance, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource);
+
+	for (size_t i = 0; i < m_iNumInstance; i++)
+	{
+		if (m_pTimeAccs[i] < m_pLifeTimes[i])
+		{
+			m_pTimeAccs[i] += fTimeDelta;
+
+			((VTXINSTANCE*)SubResource.pData)[i].vPosition.x += m_vVelocity[i].x * m_pSpeeds[i] * fTimeDelta;
+			((VTXINSTANCE*)SubResource.pData)[i].vPosition.y += m_vVelocity[i].y * m_pSpeeds[i] * fTimeDelta;
+			((VTXINSTANCE*)SubResource.pData)[i].vPosition.z += m_vVelocity[i].z * m_pSpeeds[i] * fTimeDelta;
+		}
+		else
+		{
+			// 반복X
+			if (!m_tParticleDesc.bLoop)
+			{
+				((VTXINSTANCE*)SubResource.pData)[i].vRight = _float4(0.f, 0.f, 0.f, 0.f);
+				((VTXINSTANCE*)SubResource.pData)[i].vUp    = _float4(0.f, 0.f, 0.f, 0.f);
+				((VTXINSTANCE*)SubResource.pData)[i].vLook  = _float4(0.f, 0.f, 0.f, 0.f);
+			}
+			// 반복O
+			else
+			{
+				((VTXINSTANCE*)SubResource.pData)[i].vPosition = _float4(
+					CUtils::Random_Float(-m_tParticleDesc.fRange.x, m_tParticleDesc.fRange.x),
+					CUtils::Random_Float(-m_tParticleDesc.fRange.y, m_tParticleDesc.fRange.y),
+					CUtils::Random_Float(-m_tParticleDesc.fRange.z, m_tParticleDesc.fRange.z), 1.f);
+			}
+			// 초기화 및 소멸
+			//((VTXINSTANCE*)SubResource->pData)[i].vTranslation = m_pVertices[i].vTranslation;
+		}
+
+		// 경계 범위 벗어났는가?
+		//if ()
+		//{
+			// 초기화 및 소멸
+		//}
+	}
+
+	m_pContext->Unmap(m_pVBInstance, 0);
+}
+
+HRESULT CVIBuffer_Particle::Render(_uint iCount)
+{
+	m_iNumInstance = iCount;
+
+	ID3D11Buffer* pVertexBuffers[] = {
+	m_pVB,
+	m_pVBInstance
+	};
+
+	_uint			iStrides[] = {
+		m_iStride,
+		m_iStrideInstance,
+
+	};
+
+	_uint			iOffsets[] = {
+		0,
+		0,
+	};
+
+	/* 버텍스 버퍼들을 할당한다. */
+	/* 그리기용 정점버퍼 + 상태변환용 정점버퍼 */
+	m_pContext->IASetVertexBuffers(0, m_iNumVertexBuffers, pVertexBuffers, iStrides, iOffsets);
+
+	/* 인덱스 버퍼를 할당한다. */
+	/* 그리고자 하는 인스턴스의 갯수만큼 확대되어있는 인덱스 버퍼. */
+	m_pContext->IASetIndexBuffer(m_pIB, m_eIndexFormat, 0);
+
+	/* 해당 정점들을 어떤 방식으로 그릴꺼야. */
+	m_pContext->IASetPrimitiveTopology(m_eTopology);
+
+	/* 인덱스가 가르키는 정점을 활용하여 그린다. */
+	m_pContext->DrawIndexedInstanced(m_iNumPrimitives * m_iNumIndicesofPrimitive, m_iNumInstance, 0, 0, 0);
+
 	return S_OK;
 }
 
@@ -107,4 +257,12 @@ CComponent* CVIBuffer_Particle::Clone(void* pArg)
 void CVIBuffer_Particle::Free()
 {
 	__super::Free();
+
+	Safe_Delete_Array(m_pTimeAccs);
+	Safe_Delete_Array(m_pLifeTimes);
+	Safe_Delete_Array(m_vVelocity);
+	Safe_Delete_Array(m_pSpeeds);
+
+	Safe_Delete_Array(m_pVertices);
+	Safe_Release(m_pVBInstance);
 }
