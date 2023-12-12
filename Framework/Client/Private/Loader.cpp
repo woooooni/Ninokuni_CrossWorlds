@@ -17,7 +17,7 @@
 #include "Effect_Manager.h"
 #include "Particle_Manager.h"
 
-
+#include "Particle.h"
 
 _bool CLoader::g_bFirstLoading = false;
 CLoader::CLoader(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
@@ -166,7 +166,28 @@ HRESULT CLoader::Loading_For_Level_Tool()
 	//if (FAILED(Loading_Proto_AllObjects(L"../Bin/Export/Map/")))
 	//	return E_FAIL;
 		
-	
+	// 테스트
+	 CParticle::PARTICLE_DESC ParticleInfo = {}; // 파일로 정보 로드?
+
+	 ParticleInfo.iNumEffectCount = 50; // 개수
+
+	 ParticleInfo.bLoop = false;
+
+	 ParticleInfo.bSameRate = true; // 정비율
+	 ParticleInfo.fScale = _float2(1.f, 2.f); // 스케일
+
+	 ParticleInfo.fRange = _float3(0.f, 0.f, 0.f); // 분포범위
+
+	 ParticleInfo.vVelocityMin = _float3(-1.0f, -1.0f, -1.0f);
+	 ParticleInfo.vVelocityMax = _float3(1.0f, 1.0f, 1.0f);
+
+	 ParticleInfo.fSpeed = _float2(3.f, 6.f);
+	 ParticleInfo.fLifeTime = _float2(5.f, 10.f);
+	 ParticleInfo.fBoxMin;
+	 ParticleInfo.fBoxMax;
+	 if(FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Particle"),
+		 CParticle::Create(m_pDevice, m_pContext, TEXT("Particle"), TEXT("Particle_Test"), ParticleInfo), LAYER_TYPE::LAYER_EFFECT)))
+		return E_FAIL;
 
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
 	_matrix		PivotMatrix = XMMatrixIdentity();

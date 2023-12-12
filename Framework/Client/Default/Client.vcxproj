@@ -315,6 +315,7 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_MeshEffect_Instance.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Point_Instance.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_TextureEffect_Instance.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Trail.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_UI.hlsl" />
