@@ -555,9 +555,9 @@ void CGameInstance::Remove_Actor(PxActor* pAxtor)
 	m_pPhysXManager->Remove_Actor(pAxtor);
 }
 
-PxMaterial* CGameInstance::Create_PxMaterial(_float fA, _float fB, _float fC)
+PxMaterial* CGameInstance::Create_PxMaterial(_float fStaticFriction, _float fDynamicFriction, _float fRestitution)
 {
-	return m_pPhysXManager->Create_Material(fA, fB, fC);
+	return m_pPhysXManager->Create_Material(fStaticFriction, fDynamicFriction, fRestitution);
 }
 
 wstring CGameInstance::To_Wstring(const string& str)

@@ -33,6 +33,9 @@ HRESULT CCharacter::Initialize_Prototype()
 	if(FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
 
+	for (_uint i = 0; i < SOCKET_END; ++i)
+		m_pTrails[i] = nullptr;
+
 	return S_OK;
 }
 
@@ -42,9 +45,13 @@ HRESULT CCharacter::Initialize(void* pArg)
 		return E_FAIL;
 
 	if (nullptr != pArg)
-	{
 		m_tStat = *((CHARACTER_STAT*)pArg);
-	}
+
+
+	for (_uint i = 0; i < SOCKET_END; ++i)
+		m_pTrails[i] = nullptr;
+
+
 
 	return S_OK;
 }
@@ -129,12 +136,13 @@ void CCharacter::LateTick(_float fTimeDelta)
 			m_pRendererCom->Add_Debug(pCollider);
 	}
 	m_pRendererCom->Add_Debug(m_pNavigationCom);
+	m_pRendererCom->Add_Debug(m_pRigidBodyCom);
 #endif
 }
 
 HRESULT CCharacter::Render()
 {
-	// __super::Render();
+	__super::Render();
 
 	if (nullptr == m_pModelCom || nullptr == m_pShaderCom)
 		return E_FAIL;
@@ -151,15 +159,7 @@ HRESULT CCharacter::Render()
 	_float4 vRimColor = { 0.f, 0.f, 0.f, 0.f };
 	if (m_bInfinite)
 	{
-		switch (m_eCharacterType)
-		{
-		case CHARACTER_TYPE::TANJIRO:
-			vRimColor = { 0.f, 0.5f, 1.f, 1.f };
-			break;
-		case CHARACTER_TYPE::ZENITSU:
-			vRimColor = { 0.f, 0.5f, 1.f, 1.f };
-			break;
-		}
+		vRimColor = { 0.f, 0.5f, 1.f, 1.f };
 	}
 		
 
@@ -263,42 +263,6 @@ CHierarchyNode* CCharacter::Get_Socket(const wstring& strSocketName)
 	return nullptr;
 }
 
-void CCharacter::DrawSword()
-{
-	if (nullptr == m_Parts[PARTTYPE::PART_SWORD])
-		return;
-
-	CSword* pSword = dynamic_cast<CSword*>(m_Parts[PARTTYPE::PART_SWORD]);
-	if (nullptr == pSword)
-		return;
-	
-	if (pSword->Get_Current_SocketBone() == m_Sockets[SOCKET_SWORD])
-		return;
-
-	pSword->Set_OriginRotation_Transform(XMMatrixRotationQuaternion(
-		XMQuaternionRotationRollPitchYaw(XMConvertToRadians(180.f), XMConvertToRadians(0.f), XMConvertToRadians(-90.f))));
-
-	pSword->Set_SocketBone(m_Sockets[SOCKET_SWORD]);
-	pSword->Set_Sweath(false);
-}
-
-void CCharacter::SweathSword()
-{
-	if (nullptr == m_Parts[PARTTYPE::PART_SWORD])
-		return;
-
-	CSword* pSword = dynamic_cast<CSword*>(m_Parts[PARTTYPE::PART_SWORD]);
-	if (nullptr == pSword)
-		return;
-
-	if (pSword->Get_Current_SocketBone() == m_Sockets[SOCKET_SWEATH])
-		return;
-
-	pSword->Set_OriginRotation_Transform(XMMatrixRotationQuaternion(XMQuaternionRotationRollPitchYaw(pSword->Get_PrevRotation().x, pSword->Get_PrevRotation().y, pSword->Get_PrevRotation().z)));
-	pSword->Set_SocketBone(m_Sockets[SOCKET_SWEATH]);
-
-	pSword->Set_Sweath(true);
-}
 
 
 
@@ -321,33 +285,6 @@ void CCharacter::Stop_Trail(SOCKET_TYPE eSocketType)
 
 }
 
-void CCharacter::Play_Sound(CCollider::ATTACK_TYPE eAttackType)
-{
-	
-	if (m_eCharacterType == CCharacter::CHARACTER_TYPE::TANJIRO)
-	{
-		TCHAR strSoundFileName[MAX_PATH] = L"Voice_Tanjiro_Damaged_Basic_";
-		lstrcatW(strSoundFileName, to_wstring(CUtils::Random_Int(0, 2)).c_str());
-		lstrcatW(strSoundFileName, L".wav");
-		GI->Play_Sound(strSoundFileName, CHANNELID::SOUND_VOICE_CHARACTER, 1.f);
-	}
-
-	else if (m_eCharacterType == CCharacter::CHARACTER_TYPE::ZENITSU)
-	{
-		TCHAR strSoundFileName[MAX_PATH] = L"Voice_Zenitsu_Damaged_Basic_";
-		lstrcatW(strSoundFileName, to_wstring(CUtils::Random_Int(0, 2)).c_str());
-		lstrcatW(strSoundFileName, L".wav");
-		GI->Play_Sound(strSoundFileName, CHANNELID::SOUND_VOICE_CHARACTER, 1.f);
-	}
-
-	else if (m_eCharacterType == CCharacter::CHARACTER_TYPE::KYOJURO)
-	{
-		TCHAR strSoundFileName[MAX_PATH] = L"Voice_Kyojuro_Damaged_Basic_";
-		lstrcatW(strSoundFileName, to_wstring(CUtils::Random_Int(0, 2)).c_str());
-		lstrcatW(strSoundFileName, L".wav");
-		GI->Play_Sound(strSoundFileName, CHANNELID::SOUND_VOICE_CHARACTER, 1.f);
-	}
-}
 
 void CCharacter::Set_Infinite(_float fInfiniteTime, _bool bInfinite)
 {

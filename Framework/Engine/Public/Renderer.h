@@ -66,16 +66,16 @@ public:
 	HRESULT Draw();
 
 
+	HRESULT Add_Text(const TEXT_DESC& TextDesc) {
+		m_RenderTexts.push_back(TextDesc);
+		return S_OK;
+	}
+
 #ifdef _DEBUG
 public:
 	HRESULT Add_Debug(class CComponent* pDebug) {
 		/*m_RenderDebug.push_back(pDebug);
 		Safe_AddRef(pDebug);*/
-		return S_OK;
-	}
-
-	HRESULT Add_Text(const TEXT_DESC & TextDesc) {
-		m_RenderTexts.push_back(TextDesc);
 		return S_OK;
 	}
 
