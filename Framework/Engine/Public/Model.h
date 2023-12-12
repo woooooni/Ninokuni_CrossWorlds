@@ -75,6 +75,8 @@ public:
 
 
 	// << : 추가
+	const wstring& Get_Name() const { return m_strName; }
+	void Set_Name(const wstring& strName) { m_strName = strName; }
 	const TweenDesc& Get_TweenDesc() const { return m_TweenDesc; }
 
 	HRESULT Set_Animation(const _uint& iAnimationIndex, const _float& fTweenDuration = DEFAULT_TWEEN_DURATION);
@@ -121,7 +123,7 @@ public:
 	class CAnimation* Get_CurrAnimation() { return m_Animations[m_iCurrentAnimIndex]; }
 
 	// << : 추가
-	HRESULT Set_VtfTexture(ID3D11ShaderResourceView* pTexture);
+	HRESULT Set_VtfSrv(ID3D11ShaderResourceView* pSrv);
 
 public:
 	const aiScene* Get_Scene() { return m_pAIScene; }

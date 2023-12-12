@@ -57,7 +57,7 @@ HRESULT CModel_Manager::Export_Model_Data(CModel* pModel, const wstring& strSubF
 	// << : VTF
 	if (CModel::TYPE::TYPE_ANIM == pModel->Get_ModelType())
 	{
-		if (FAILED(Create_Model_Vtf(pModel)))
+		if (FAILED(Create_Model_Vtf(pModel, strFinalFolderPath)))
 			return E_FAIL;
 	}
 	return S_OK;
@@ -100,7 +100,7 @@ HRESULT CModel_Manager::Export_Model_Data_FromPath(_uint eType, wstring strFolde
 	return S_OK;
 }
 
-HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel)
+HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel, const wstring strFilePath)
 {
 	if (nullptr == pModel || CModel::TYPE::TYPE_ANIM != pModel->Get_ModelType())
 		return E_FAIL;
@@ -200,33 +200,95 @@ HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel)
 	}
 
 	/* 04 For. Set Texture To Model */
-	if (FAILED(pModel->Set_VtfTexture(pSrv)))
+	if (FAILED(pModel->Set_VtfSrv(pSrv)))
 		return E_FAIL;
+
+	/* 05 For. Save Vtf Texture */
+	if (FAILED(Save_Model_Vtf(strFilePath, pTexture)))
+		return E_FAIL;
+
+	/* 06 For. map */
+	m_VtfTextures.emplace(pModel->Get_Name(), pSrv);
 
 	Safe_Release(pTexture);
 
 	return S_OK;
 }
 
-HRESULT CModel_Manager::Import_Model_Vtf()
+HRESULT CModel_Manager::Save_Model_Vtf(const wstring strSaveFilePath, ID3D11Texture2D* pTexture)
 {
+	if (nullptr == pTexture)
+		return E_FAIL;
+
+	const wstring strFinalSaveFilePath = strSaveFilePath + L"_vtf.dds";
+
+	if (FAILED(SaveDDSTextureToFile(m_pContext, pTexture, strFinalSaveFilePath.c_str())))
+	{
+		MSG_BOX("VTF 텍스처 저장을 실패했습니다.");
+		return E_FAIL;
+	}
+	
 	return S_OK;
 }
 
-ID3D11ShaderResourceView* CModel_Manager::Get_Model_Vtf(const wstring strKey)
+HRESULT CModel_Manager::Load_Model_Vtf(CModel* pModel, const wstring strLoadFilePath)
 {
-	return nullptr;
+	if (nullptr == pModel)
+		return E_FAIL;
+
+	ID3D11ShaderResourceView* pSrv = Find_Model_Vtf(pModel->Get_Name());
+
+	if(nullptr == pSrv)
+	{
+		/* Set File Path */
+		const wstring	strFinalLoadFilePath = strLoadFilePath + L"_vtf.dds";
+
+		if (!filesystem::exists(strFinalLoadFilePath) || !filesystem::is_regular_file(strFinalLoadFilePath))
+			return E_FAIL;
+
+		_tchar			szTextureFilePath[MAX_PATH] = TEXT("");
+		wsprintf(szTextureFilePath, strFinalLoadFilePath.c_str());
+
+		_tchar			szExt[MAX_PATH] = TEXT("");
+		_wsplitpath_s(szTextureFilePath, nullptr, 0, nullptr, 0, nullptr, 0, szExt, MAX_PATH);
+
+		/* Load Texture And Create Srv */
+		if (FALSE == lstrcmp(szExt, TEXT(".dds")))
+		{
+			if (FAILED(CreateDDSTextureFromFile(m_pDevice, szTextureFilePath, nullptr, &pSrv)))
+				return E_FAIL;
+		}
+		else
+			return E_FAIL;
+	}
+
+	if (nullptr == pSrv)
+		return E_FAIL;
+
+	/* Set To Model*/
+	if (FAILED(pModel->Set_VtfSrv(pSrv)))
+		return E_FAIL;
+
+	/* Push Map */
+	m_VtfTextures.emplace(pModel->Get_Name(), pSrv);
+
+	return S_OK;
+}
+
+ID3D11ShaderResourceView* CModel_Manager::Find_Model_Vtf(const wstring strModelName)
+{
+	auto	iter = m_VtfTextures.find(strModelName);
+
+	if (iter == m_VtfTextures.end())
+		return nullptr;
+
+	return iter->second;
 }
 
 #pragma region Import_ModelData
 
 /* 모델 컴포넌트를 생성해 컴포넌트 매니저에 프로토타입 등록시킨다. */
-HRESULT CModel_Manager::Import_Model_Data(_uint iLevelIndex, 
-	const wstring& strProtoTypeTag, 
-	_uint eType, 
-	wstring strFolderPath, 
-	wstring strFileName,
-	__out class CModel** ppOut)
+HRESULT CModel_Manager::Import_Model_Data(_uint iLevelIndex, const wstring& strProtoTypeTag, _uint eType, wstring strFolderPath, wstring strFileName, __out class CModel** ppOut)
 {
 	_tchar szFileName[MAX_PATH];
 	_tchar szExt[MAX_PATH];
@@ -234,12 +296,9 @@ HRESULT CModel_Manager::Import_Model_Data(_uint iLevelIndex,
 
 	CModel* pModel = nullptr;
 
-	if (0 == lstrcmp(szExt, L".fbx"))
+	if (0 == lstrcmp(szExt, L".fbx")) // fbx 임포트 
 	{
- 		pModel = CModel::Create(
-			m_pDevice, 
-			m_pContext, CModel::TYPE(eType), 
-			strFolderPath, strFileName, XMLoadFloat4x4(&m_PivotMatrix));
+ 		pModel = CModel::Create(m_pDevice, m_pContext, CModel::TYPE(eType), strFolderPath, strFileName, XMLoadFloat4x4(&m_PivotMatrix));
 
 		if (nullptr == pModel)
 			return E_FAIL;
@@ -257,13 +316,12 @@ HRESULT CModel_Manager::Import_Model_Data(_uint iLevelIndex,
 			Safe_Release(pModel);
 			return E_FAIL;
 		}
+
+		pModel->Set_Name(strFileName);
 	}
-	else 
+	else // 바이너리 된 파일 임포트
 	{
-		pModel = CModel::Create_Bin(
-			m_pDevice,
-			m_pContext, CModel::TYPE(eType),
-			strFolderPath, strFileName, XMLoadFloat4x4(&m_PivotMatrix));
+		pModel = CModel::Create_Bin(m_pDevice, m_pContext, CModel::TYPE(eType), strFolderPath, strFileName, XMLoadFloat4x4(&m_PivotMatrix));
 
 		if (nullptr == pModel)
 			return E_FAIL;
@@ -312,11 +370,21 @@ HRESULT CModel_Manager::Import_Model_Data(_uint iLevelIndex,
 			}
 		}
 
+		pModel->Set_Name(strFileName);
+
 		// << : VTF
 		if (CModel::TYPE::TYPE_ANIM == pModel->Get_ModelType())
 		{
-			if (FAILED(Create_Model_Vtf(pModel)))
-				return E_FAIL;
+			if (99 == GI->Get_CurrentLevel()) // 툴레벨이라면 VTF 생성
+			{
+				if (FAILED(Create_Model_Vtf(pModel, strFinalFolderPath)))
+					return E_FAIL;
+			}
+			else // 아니라면 VTF 로드 
+			{
+				if (FAILED(Load_Model_Vtf(pModel, strFinalFolderPath)))
+					return E_FAIL;
+			}
 		}
 	}
 
@@ -855,6 +923,11 @@ HRESULT CModel_Manager::Import_Animation(const wstring strFinalPath, CModel* pMo
 void CModel_Manager::Free()
 {
 	__super::Free();
+
+	for (auto& Pair : m_VtfTextures)
+		Safe_Release(Pair.second);
+
+	m_VtfTextures.clear();
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

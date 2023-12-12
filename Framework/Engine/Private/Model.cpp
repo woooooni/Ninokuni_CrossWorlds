@@ -316,16 +316,16 @@ CTexture* CModel::Get_MaterialTexture(_uint iMeshIndex, _uint iTextureType)
 	return m_Materials[iMeshIndex].pTexture[iTextureType];
 }
 
-HRESULT CModel::Set_VtfTexture(ID3D11ShaderResourceView* pTexture)
+HRESULT CModel::Set_VtfSrv(ID3D11ShaderResourceView* pSrv)
 {
-	if (nullptr == pTexture)
+	if (nullptr == pSrv)
 		return E_FAIL;
 
 	if (nullptr != m_pSRV)
 		Safe_Release(m_pSRV);
 
-	m_pSRV = pTexture;
-	//Safe_AddRef(m_pSRV);
+	m_pSRV = pSrv;
+	Safe_AddRef(m_pSRV);
 
 	return S_OK;
 }
@@ -679,6 +679,7 @@ CModel* CModel::Create_Bin(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 {
 	CModel* pInstance = new CModel(pDevice, pContext);
 	pInstance->m_bFromBinary = true;
+
 	return pInstance;
 }
 

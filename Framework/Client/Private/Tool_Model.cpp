@@ -104,8 +104,10 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 		{
 			if (iSelectedImportModelType != -1)
 			{
-				m_pDummy->Ready_ModelCom(iSelectedImportModelType, m_strFilePath, m_strFileName);
-				MSG_BOX("Success Import.");
+				if(FAILED(m_pDummy->Ready_ModelCom(iSelectedImportModelType, m_strFilePath, m_strFileName)))
+					MSG_BOX("Failed Import.");
+				else
+					MSG_BOX("Success Import.");
 			}
 			else
 				MSG_BOX("모델 타입을 선택해주세요");
@@ -165,7 +167,9 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 		{
 			if (0 != strcmp(szAllObjectExportFolderName, "") && iSelectedExportModelType != -1)
 			{
-				GI->Export_Model_Data_FromPath(iSelectedExportModelType, CUtils::ToWString(szAllObjectExportFolderName));
+				if(FAILED(GI->Export_Model_Data_FromPath(iSelectedExportModelType, CUtils::ToWString(szAllObjectExportFolderName))))
+					MSG_BOX("Failed Export.");
+				
 			}
 			else
 			{

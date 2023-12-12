@@ -29,6 +29,10 @@ HRESULT CStellia::Initialize(void* pArg)
 	if (FAILED(Ready_States()))
 		return E_FAIL;
 
+	// << : Test
+	if (nullptr != m_pModelCom)
+		m_pModelCom->Set_Animation(0);
+
 	return S_OK;
 }
 
@@ -77,22 +81,12 @@ HRESULT CStellia::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Shader */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_AnimModel"), TEXT("Com_AnimShader"), (CComponent**)&m_pShaderCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_AnimModel_Vtf"), TEXT("Com_AnimShader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
 
 	/* For. ModelCom */
-	if (nullptr != m_pModelCom)
-		Safe_Release(m_pModelCom);
-
-	_tchar szFileName[MAX_PATH];
-	_tchar szExt[MAX_PATH];
-	_wsplitpath_s(L"Stellia.fbx", nullptr, 0, nullptr, 0, szFileName, MAX_PATH, szExt, MAX_PATH);
-	
-	if (FAILED(GI->Import_Model_Data(LEVEL_TEST, wstring(L"Prototype_Componenet_Model_") + szFileName, CModel::TYPE_ANIM,
-		L"../Bin/Resources/AnimModel/Boss/Stellia/", L"Stellia.fbx", &m_pModelCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Stellia"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
-	
-	m_pModelCom->Set_Owner(this);
 
 	return S_OK;
 }

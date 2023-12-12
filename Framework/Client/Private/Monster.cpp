@@ -84,11 +84,11 @@ void CMonster::Tick(_float fTimeDelta)
 
 void CMonster::LateTick(_float fTimeDelta)
 {
-	std::async(&CModel::Play_Animation, m_pModelCom, m_pTransformCom, fTimeDelta);
+	if(nullptr != m_pModelCom)
+		m_pModelCom->LateTick(fTimeDelta);
 
 	for (auto& pPart : m_Parts)
 		pPart->LateTick(fTimeDelta);
-
 
 	for (auto& pPart : m_Parts)
 	{
@@ -96,7 +96,6 @@ void CMonster::LateTick(_float fTimeDelta)
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, pPart);
 	}
 		
-	
 	__super::LateTick(fTimeDelta);
 	if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 5.f))
 	{
