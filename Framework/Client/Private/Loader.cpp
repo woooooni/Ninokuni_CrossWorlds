@@ -17,6 +17,10 @@
 #include "Effect_Manager.h"
 #include "Particle_Manager.h"
 
+#pragma region Kang
+#include "Stellia.h"
+#pragma endregion
+
 
 
 _bool CLoader::g_bFirstLoading = false;
@@ -124,7 +128,14 @@ HRESULT CLoader::Loading_For_Level_Test()
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Background", CBackGround::Create(m_pDevice, m_pContext), LAYER_BACKGROUND)))
 		return E_FAIL;
 
+	CMonster::MONSTER_STAT statDesc;
+	statDesc.fHp = 100;
+	statDesc.fMaxHp = 100;
+	statDesc.fMp= 100;
+	statDesc.fMaxMp = 100;
 
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Stellia", CStellia::Create(m_pDevice, m_pContext, TEXT("Stellia"), statDesc), LAYER_MONSTER)))
+		return E_FAIL;
 
 	m_strLoading = TEXT("·Îµù ³¡.");
 	m_isFinished = true;

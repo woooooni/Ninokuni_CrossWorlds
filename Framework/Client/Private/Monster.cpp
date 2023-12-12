@@ -255,43 +255,40 @@ void CMonster::Play_DamagedSound()
 {
 	TCHAR strSoundFileName[MAX_PATH] = L"";
 
-	
-	
-
-	switch (m_eMonsterType)
-	{
-	case Client::CMonster::NORMAL_0:
-		lstrcatW(strSoundFileName, L"Voice_Normal_Monster_0_Damanged_Basic_");
-		lstrcatW(strSoundFileName, to_wstring(CUtils::Random_Int(0, 4)).c_str());
-		lstrcatW(strSoundFileName, L".wav");
-		GI->Play_Sound(strSoundFileName, CHANNELID::SOUND_VOICE_MONSTER1, 1.f);
-		break;
-	case Client::CMonster::NORMAL_1:
-		lstrcatW(strSoundFileName, L"Voice_Normal_Monster_1_Damanged_Basic_");
-		lstrcatW(strSoundFileName, to_wstring(CUtils::Random_Int(0, 5)).c_str());
-		lstrcatW(strSoundFileName, L".wav");
-		GI->Play_Sound(strSoundFileName, CHANNELID::SOUND_VOICE_MONSTER2, 1.f);
-		break;
-	case Client::CMonster::NORMAL_2:
-		lstrcatW(strSoundFileName, L"Voice_Normal_Monster_2_Damaged");
-		lstrcatW(strSoundFileName, L".wav");
-		GI->Play_Sound(strSoundFileName, CHANNELID::SOUND_VOICE_MONSTER3, 1.f);
-		break;
-	case Client::CMonster::ENMU:
-		lstrcatW(strSoundFileName, L"Voice_Enmu_Damaged_Basic_");
-		lstrcatW(strSoundFileName, to_wstring(CUtils::Random_Int(0, 1)).c_str());
-		lstrcatW(strSoundFileName, L".wav");
-		GI->Play_Sound(strSoundFileName, CHANNELID::SOUND_VOICE_MONSTER1, 1.f, true);
-		break;
-	case Client::CMonster::AKAZA:
-		lstrcatW(strSoundFileName, L"Voice_Akakza_Damaged_Basic_");
-		lstrcatW(strSoundFileName, to_wstring(CUtils::Random_Int(0, 3)).c_str());
-		lstrcatW(strSoundFileName, L".wav");
-		GI->Play_Sound(strSoundFileName, CHANNELID::SOUND_VOICE_MONSTER1, 1.f, true);
-		break;
-	default:
-		break;
-	}
+	//switch (m_eMonsterType)
+	//{
+	//case Client::CMonster::NORMAL_0:
+	//	lstrcatW(strSoundFileName, L"Voice_Normal_Monster_0_Damanged_Basic_");
+	//	lstrcatW(strSoundFileName, to_wstring(CUtils::Random_Int(0, 4)).c_str());
+	//	lstrcatW(strSoundFileName, L".wav");
+	//	GI->Play_Sound(strSoundFileName, CHANNELID::SOUND_VOICE_MONSTER1, 1.f);
+	//	break;
+	//case Client::CMonster::NORMAL_1:
+	//	lstrcatW(strSoundFileName, L"Voice_Normal_Monster_1_Damanged_Basic_");
+	//	lstrcatW(strSoundFileName, to_wstring(CUtils::Random_Int(0, 5)).c_str());
+	//	lstrcatW(strSoundFileName, L".wav");
+	//	GI->Play_Sound(strSoundFileName, CHANNELID::SOUND_VOICE_MONSTER2, 1.f);
+	//	break;
+	//case Client::CMonster::NORMAL_2:
+	//	lstrcatW(strSoundFileName, L"Voice_Normal_Monster_2_Damaged");
+	//	lstrcatW(strSoundFileName, L".wav");
+	//	GI->Play_Sound(strSoundFileName, CHANNELID::SOUND_VOICE_MONSTER3, 1.f);
+	//	break;
+	//case Client::CMonster::ENMU:
+	//	lstrcatW(strSoundFileName, L"Voice_Enmu_Damaged_Basic_");
+	//	lstrcatW(strSoundFileName, to_wstring(CUtils::Random_Int(0, 1)).c_str());
+	//	lstrcatW(strSoundFileName, L".wav");
+	//	GI->Play_Sound(strSoundFileName, CHANNELID::SOUND_VOICE_MONSTER1, 1.f, true);
+	//	break;
+	//case Client::CMonster::AKAZA:
+	//	lstrcatW(strSoundFileName, L"Voice_Akakza_Damaged_Basic_");
+	//	lstrcatW(strSoundFileName, to_wstring(CUtils::Random_Int(0, 3)).c_str());
+	//	lstrcatW(strSoundFileName, L".wav");
+	//	GI->Play_Sound(strSoundFileName, CHANNELID::SOUND_VOICE_MONSTER1, 1.f, true);
+	//	break;
+	//default:
+	//	break;
+	//}
 
 	
 }
@@ -302,8 +299,6 @@ void CMonster::Free()
 
 	for (auto& pPart : m_Parts)
 		Safe_Release(pPart);
-
-
 
 	m_Parts.clear();
 

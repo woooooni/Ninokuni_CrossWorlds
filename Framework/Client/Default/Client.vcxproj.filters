@@ -85,18 +85,6 @@
     <Filter Include="02.GameObjects\02. Monster">
       <UniqueIdentifier>{978c82ce-6d25-428d-8f75-f1b25ce61559}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02.GameObjects\03. Effect">
-      <UniqueIdentifier>{26cf5b1a-34c4-4aeb-bd80-ee795d3c6f23}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03. Effect\Particle">
-      <UniqueIdentifier>{7e1eb069-0790-46be-8583-534eb05eb945}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03. Effect\Trail">
-      <UniqueIdentifier>{081e52ac-0074-45fb-a979-d4251146e633}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="02.GameObjects\03. Effect\Trail\Buffer">
-      <UniqueIdentifier>{97a13059-374e-4d72-9bea-d45d78b032fa}</UniqueIdentifier>
-    </Filter>
     <Filter Include="96. Manager\ImGui\Tool">
       <UniqueIdentifier>{ce8e3bb3-2df0-478c-8e14-f35cff17fff6}</UniqueIdentifier>
     </Filter>
@@ -135,6 +123,27 @@
     </Filter>
     <Filter Include="01.Levels\97. Test">
       <UniqueIdentifier>{34038f28-6bb9-4c09-b66c-db8e65add9cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04. Effect">
+      <UniqueIdentifier>{26cf5b1a-34c4-4aeb-bd80-ee795d3c6f23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04. Effect\Particle">
+      <UniqueIdentifier>{7e1eb069-0790-46be-8583-534eb05eb945}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04. Effect\Trail">
+      <UniqueIdentifier>{081e52ac-0074-45fb-a979-d4251146e633}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\04. Effect\Trail\Buffer">
+      <UniqueIdentifier>{97a13059-374e-4d72-9bea-d45d78b032fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\02. Monster\00. Boss">
+      <UniqueIdentifier>{1bc5fcb8-28de-43f8-b179-8c96f064274c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\02. Monster\01. Normal">
+      <UniqueIdentifier>{2bab7449-5638-4468-8ce5-4c231adba0ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02.GameObjects\02. Monster\00. Boss\00. Stellia">
+      <UniqueIdentifier>{2618e9cc-6847-4ba9-9ae7-ff5ba81cb617}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -211,7 +220,7 @@
       <Filter>96. Manager\ImGui\Libs\Docking</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Effect.h">
-      <Filter>02.GameObjects\03. Effect</Filter>
+      <Filter>02.GameObjects\04. Effect</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Picking_Manager.h">
       <Filter>96. Manager\Picking</Filter>
@@ -241,13 +250,13 @@
       <Filter>96. Manager\Particle</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Particle.h">
-      <Filter>02.GameObjects\03. Effect\Particle</Filter>
+      <Filter>02.GameObjects\04. Effect\Particle</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_Trail.h">
-      <Filter>02.GameObjects\03. Effect\Trail\Buffer</Filter>
+      <Filter>02.GameObjects\04. Effect\Trail\Buffer</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Trail.h">
-      <Filter>02.GameObjects\03. Effect\Trail</Filter>
+      <Filter>02.GameObjects\04. Effect\Trail</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Camera_Manager.h">
       <Filter>96. Manager\Camera</Filter>
@@ -290,6 +299,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Level_Test.h">
       <Filter>01.Levels\97. Test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Stellia.h">
+      <Filter>02.GameObjects\02. Monster\00. Boss\00. Stellia</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -351,7 +363,7 @@
       <Filter>96. Manager\ImGui\Libs\Docking</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Effect.cpp">
-      <Filter>02.GameObjects\03. Effect</Filter>
+      <Filter>02.GameObjects\04. Effect</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Picking_Manager.cpp">
       <Filter>96. Manager\Picking</Filter>
@@ -381,13 +393,13 @@
       <Filter>96. Manager\Particle</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Particle.cpp">
-      <Filter>02.GameObjects\03. Effect\Particle</Filter>
+      <Filter>02.GameObjects\04. Effect\Particle</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Trail.cpp">
-      <Filter>02.GameObjects\03. Effect\Trail\Buffer</Filter>
+      <Filter>02.GameObjects\04. Effect\Trail\Buffer</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Trail.cpp">
-      <Filter>02.GameObjects\03. Effect\Trail</Filter>
+      <Filter>02.GameObjects\04. Effect\Trail</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Camera_Manager.cpp">
       <Filter>96. Manager\Camera</Filter>
@@ -430,6 +442,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Level_Test.cpp">
       <Filter>01.Levels\97. Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Stellia.cpp">
+      <Filter>02.GameObjects\02. Monster\00. Boss\00. Stellia</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -47,7 +47,7 @@ public:
 
 #pragma endregion
 	enum SOCKET_TYPE { SOCKET_LEFT_FIST, SOCKET_RIGHT_FIST, SOCKET_LEFT_FOOT, SOCKET_RIGHT_FOOT, SOCKET_END };
-	enum MONSTER_TYPE { NORMAL_0, NORMAL_1, NORMAL_2, ENMU, AKAZA, TYPE_END };
+	enum MONSTER_TYPE { NORMAL, BOSS, TYPE_END };
 public:
 	typedef struct tagMonsterStat
 	{

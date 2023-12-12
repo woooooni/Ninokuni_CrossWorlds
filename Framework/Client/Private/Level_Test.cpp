@@ -7,6 +7,7 @@
 #include "Terrain.h"
 #include "Camera_Manager.h"
 
+#include "Stellia.h"
 
 CLevel_Test::CLevel_Test(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -167,6 +168,9 @@ HRESULT CLevel_Test::Ready_Layer_Terrain(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Test::Ready_Layer_Monster(const LAYER_TYPE eLayerType)
 {
+	if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prorotype_GameObject_Stellia"))))
+		return E_FAIL;
+
 	return S_OK;
 }
 
