@@ -2,13 +2,6 @@
 #include "Engine_Shader_Defines.hpp"
 
 matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
-//
-//struct tagBoneMatrices
-//{
-//	matrix		BoneMatrix[256];
-//};
-//
-//tagBoneMatrices		g_BoneMatrices;
 
 Texture2D		g_DiffuseTexture;
 Texture2D		g_NormalTexture;
@@ -17,71 +10,126 @@ Texture2D		g_MatrixPallete;
 Texture2D		g_DissolveTexture;
 float			g_fDissolveWeight;
 
-
 float4			g_vDissolveColor = { 0.6f, 0.039f, 0.039f, 1.f };
 float4			g_vRimColor = { 0.f, 0.f, 0.f, 0.f };
 float4			g_vCamPosition;
 
 
+struct KeyframeDesc
+{
+	int iAnimIndex;
+	uint iCurFrame;
+	uint iNextFrame;
+	float fRatio;
+	float fFrameAcc;
+};
+
+struct TweenFrameDesc
+{
+	KeyframeDesc cur;
+	KeyframeDesc next;
+
+	float fTweenDuration;
+	float fTweenRatio;
+	float fTweenAcc;
+	float fPadding;
+};
+
+TweenFrameDesc  g_TweenFrames;
+Texture2DArray  g_TransformMap;
+
 
 struct VS_IN
 {
-	float3		vPosition : POSITION;
-	float3		vNormal : NORMAL;
-	float2		vTexUV : TEXCOORD0;
-	float3		vTangent : TANGENT;
-	uint4		vBlendIndex : BLENDINDEX;
-	float4		vBlendWeight : BLENDWEIGHT;
+	float3		vPosition		: POSITION;
+	float3		vNormal			: NORMAL;
+	float2		vTexUV			: TEXCOORD0;
+	float3		vTangent		: TANGENT;
+	uint4		vBlendIndex		: BLENDINDEX;
+	float4		vBlendWeight	: BLENDWEIGHT;
 };
-
-matrix Get_BoneMatrix(VS_IN In)
-{
-	float		fWeightW = 1.f - (In.vBlendWeight.x + In.vBlendWeight.y + In.vBlendWeight.z);
-
-	matrix	BoneMatrix =
-		matrix(
-			g_MatrixPallete.Load(int4((In.vBlendIndex.x - (int(In.vBlendIndex.x / 1000) * 1000)) * 4 + 0, int(In.vBlendIndex.x / 1000), 0, 0)),
-			g_MatrixPallete.Load(int4((In.vBlendIndex.x - (int(In.vBlendIndex.x / 1000) * 1000)) * 4 + 1, int(In.vBlendIndex.x / 1000), 0, 0)),
-			g_MatrixPallete.Load(int4((In.vBlendIndex.x - (int(In.vBlendIndex.x / 1000) * 1000)) * 4 + 2, int(In.vBlendIndex.x / 1000), 0, 0)),
-			g_MatrixPallete.Load(int4((In.vBlendIndex.x - (int(In.vBlendIndex.x / 1000) * 1000)) * 4 + 3, int(In.vBlendIndex.x / 1000), 0, 0))) * In.vBlendWeight.x
-		+
-		matrix(
-			g_MatrixPallete.Load(int4((In.vBlendIndex.y - (int(In.vBlendIndex.y / 1000) * 1000)) * 4 + 0, int(In.vBlendIndex.y / 1000), 0, 0)),
-			g_MatrixPallete.Load(int4((In.vBlendIndex.y - (int(In.vBlendIndex.y / 1000) * 1000)) * 4 + 1, int(In.vBlendIndex.y / 1000), 0, 0)),
-			g_MatrixPallete.Load(int4((In.vBlendIndex.y - (int(In.vBlendIndex.y / 1000) * 1000)) * 4 + 2, int(In.vBlendIndex.y / 1000), 0, 0)),
-			g_MatrixPallete.Load(int4((In.vBlendIndex.y - (int(In.vBlendIndex.y / 1000) * 1000)) * 4 + 3, int(In.vBlendIndex.y / 1000), 0, 0))) * In.vBlendWeight.y
-
-		+
-		matrix(
-			g_MatrixPallete.Load(int4((In.vBlendIndex.z - (int(In.vBlendIndex.z / 1000) * 1000)) * 4 + 0, int(In.vBlendIndex.z / 1000), 0, 0)),
-			g_MatrixPallete.Load(int4((In.vBlendIndex.z - (int(In.vBlendIndex.z / 1000) * 1000)) * 4 + 1, int(In.vBlendIndex.z / 1000), 0, 0)),
-			g_MatrixPallete.Load(int4((In.vBlendIndex.z - (int(In.vBlendIndex.z / 1000) * 1000)) * 4 + 2, int(In.vBlendIndex.z / 1000), 0, 0)),
-			g_MatrixPallete.Load(int4((In.vBlendIndex.z - (int(In.vBlendIndex.z / 1000) * 1000)) * 4 + 3, int(In.vBlendIndex.z / 1000), 0, 0))) * In.vBlendWeight.z
-
-		+
-		matrix(
-			g_MatrixPallete.Load(int4((In.vBlendIndex.w - (int(In.vBlendIndex.w / 1000) * 1000)) * 4 + 0, int(In.vBlendIndex.w / 1000), 0, 0)),
-			g_MatrixPallete.Load(int4((In.vBlendIndex.w - (int(In.vBlendIndex.w / 1000) * 1000)) * 4 + 1, int(In.vBlendIndex.w / 1000), 0, 0)),
-			g_MatrixPallete.Load(int4((In.vBlendIndex.w - (int(In.vBlendIndex.w / 1000) * 1000)) * 4 + 2, int(In.vBlendIndex.w / 1000), 0, 0)),
-			g_MatrixPallete.Load(int4((In.vBlendIndex.w - (int(In.vBlendIndex.w / 1000) * 1000)) * 4 + 3, int(In.vBlendIndex.w / 1000), 0, 0))) * In.vBlendWeight.w;
-
-	return transpose(BoneMatrix);
-}
-
-
 
 struct VS_OUT
 {
-	float4		vPosition : SV_POSITION0;
-	float4		vNormal : NORMAL;
-	float2		vTexUV : TEXCOORD0;
-	float3		vTangent : TANGENT;
-	float3		vBinormal : BINORMAL;
-	float4		vProjPos : TEXCOORD1;
-	float4		vWorldPosition : TEXCOORD2;
-	
+	float4		vPosition		: SV_POSITION0;
+	float4		vNormal			: NORMAL;
+	float2		vTexUV			: TEXCOORD0;
+	float3		vTangent		: TANGENT;
+	float3		vBinormal		: BINORMAL;
+	float4		vProjPos		: TEXCOORD1;
+	float4		vWorldPosition	: TEXCOORD2;
 };
 
+matrix GetAnimationMatrix(VS_IN input)
+{
+	float indices[4] = { input.vBlendIndex.x, input.vBlendIndex.y, input.vBlendIndex.z, input.vBlendIndex.w };
+	float weights[4] = { input.vBlendWeight.x, input.vBlendWeight.y, input.vBlendWeight.z, input.vBlendWeight.w };
+
+	int animIndex[2];
+	int currFrame[2];
+	int nextFrame[2];
+	float ratio[2];
+
+	/* cur */
+	animIndex[0] = g_TweenFrames.cur.iAnimIndex;
+	currFrame[0] = g_TweenFrames.cur.iCurFrame;
+	nextFrame[0] = g_TweenFrames.cur.iNextFrame;
+	ratio[0] = g_TweenFrames.cur.fRatio;
+
+	/* next */
+	animIndex[1] = g_TweenFrames.next.iAnimIndex;
+	currFrame[1] = g_TweenFrames.next.iCurFrame;
+	nextFrame[1] = g_TweenFrames.next.iNextFrame;
+	ratio[1] = g_TweenFrames.next.fRatio;
+
+	float4 c0, c1, c2, c3;
+	float4 n0, n1, n2, n3;
+	matrix curr = 0;
+	matrix next = 0;
+	matrix transform = 0;
+
+	for (int i = 0; i < 4; i++)
+	{
+		/* cur */
+		c0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, currFrame[0], animIndex[0], 0));
+		c1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, currFrame[0], animIndex[0], 0));
+		c2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, currFrame[0], animIndex[0], 0));
+		c3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, currFrame[0], animIndex[0], 0));
+		curr = matrix(c0, c1, c2, c3);
+
+		n0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, nextFrame[0], animIndex[0], 0));
+		n1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, nextFrame[0], animIndex[0], 0));
+		n2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, nextFrame[0], animIndex[0], 0));
+		n3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, nextFrame[0], animIndex[0], 0));
+		next = matrix(n0, n1, n2, n3);
+
+		matrix result = lerp(curr, next, ratio[0]);
+
+		/* if next */
+		if (animIndex[1] >= 0)
+		{
+			c0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, currFrame[1], animIndex[1], 0));
+			c1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, currFrame[1], animIndex[1], 0));
+			c2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, currFrame[1], animIndex[1], 0));
+			c3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, currFrame[1], animIndex[1], 0));
+			curr = matrix(c0, c1, c2, c3);
+
+			n0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, nextFrame[1], animIndex[1], 0));
+			n1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, nextFrame[1], animIndex[1], 0));
+			n2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, nextFrame[1], animIndex[1], 0));
+			n3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, nextFrame[1], animIndex[1], 0));
+			next = matrix(n0, n1, n2, n3);
+
+			matrix nextResult = lerp(curr, next, ratio[1]);
+
+			result = lerp(result, nextResult, g_TweenFrames.fTweenRatio);
+		}
+
+		transform += mul(weights[i], result);
+	}
+
+	return transform;
+}
 
 
 VS_OUT VS_MAIN(VS_IN In)
@@ -94,7 +142,7 @@ VS_OUT VS_MAIN(VS_IN In)
 	matWV = mul(g_WorldMatrix, g_ViewMatrix);
 	matWVP = mul(matWV, g_ProjMatrix);
 
-	float4x4	BoneMatrix = Get_BoneMatrix(In);
+	float4x4	BoneMatrix = GetAnimationMatrix(In);
 
 	vector		vPosition = mul(vector(In.vPosition, 1.f), BoneMatrix);
 	vector		vNormal = mul(vector(In.vNormal, 0.f), BoneMatrix);
@@ -153,9 +201,6 @@ PS_OUT PS_MAIN(PS_IN In)
 	return Out;
 }
 
-
-
-
 PS_OUT PS_MAIN_NORMAL(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
@@ -189,38 +234,7 @@ PS_OUT PS_MAIN_NORMAL(PS_IN In)
 	return Out;
 }
 
-PS_OUT PS_MAIN_AKAZA(PS_IN In)
-{
-	PS_OUT		Out = (PS_OUT)0;
 
-
-	Out.vDiffuse = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
-
-
-	vector		vTextureNormal = g_NormalTexture.Sample(LinearSampler, In.vTexUV);
-
-	float3		vNormal = vTextureNormal.xyz * 2.f - 1.f;
-	float3x3	WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
-
-
-	vNormal = normalize(mul(vNormal, WorldMatrix));
-
-	Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
-	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
-
-
-
-	float fRimPower = 1.f - saturate(dot(vNormal.xyz, normalize((-1.f * (In.vWorldPosition - g_vCamPosition)))));
-	fRimPower = pow(fRimPower, 2.f);
-
-	vector vRimColor = g_vRimColor * fRimPower;
-	Out.vDiffuse += vRimColor;
-
-	if (0 == Out.vDiffuse.a)
-		discard;
-
-	return Out;
-}
 
 PS_OUT PS_DISSOLVE_DEAD(PS_IN In)
 {
@@ -314,7 +328,7 @@ technique11 DefaultTechnique
 		PixelShader = compile ps_5_0 PS_DISSOLVE_DEAD();
 	}
 
-	pass Akaza
+	pass Temp0
 	{
 		// 3
 		SetRasterizerState(RS_Default);
@@ -323,7 +337,7 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
-		PixelShader = compile ps_5_0 PS_MAIN_AKAZA();
+		PixelShader = compile ps_5_0 PS_MAIN();
 	}
 
 	pass Temp1

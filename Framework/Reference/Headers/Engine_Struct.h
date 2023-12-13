@@ -239,20 +239,46 @@ namespace Engine
 #pragma region PhysXDesc
 	typedef struct tagPhysXDesc
 	{
-		_float3 vExtents = { 1.f, 1.f, 1.f };
-		_float fRadius = 1.f;
+		// 콜라이더 관련.
+		_float3 vOffsetPos = { 0.f, 0.f, 0.f };	// 포지션에 대한 상대적인 오프셋 포지션
+		_float3 vExtents = { 1.f, 1.f, 1.f };	// 상자의 너비
+		_float fRadius = 1.f;					// 구의 너비
 
-		PhysXRigidType eRigidType = PhysXRigidType::RIGID_TYPE_END;
-		PhysXColliderType eColliderType = PhysXColliderType::COLLIDER_TYPE_END;
-		class CGameObject* pGameObject = nullptr;
+
+		// 물리 관련.
+		_float fStaticFriction = 0.f;			// 스태틱 오브젝트의 마찰.
+		_float fDynamicFriction = 0.f;			// 다이나믹 오브젝트의 마찰.
+		_float fRestitution = 0.f;				// 반발력 혹은 탄성.		
+		_float fDensity = 10.f;					// 질량(무게) & 밀도입니다.
+		_float fMaxVelocity = 10.f;				// 최대 속도입니다.
+		_float fAngularDamping = 10.f;			// 회전을 방해하는 힘입니다.
+
+		_bool bKinematic = false;				// 키네마틱이 꺼진 오브젝트는 켜져있는 오브젝트에게 밀려납니다. 키네마틱이 켜져있다면, 밀리지않으며 중력에도 영향받지 않습니다.
+
+
+		// 회전 관성 관련.
+		_bool bLockAngle_X = true;				// x축 회전을 제한할지 선택합니다.
+		_bool bLockAngle_Y = false;				// y축 회전을 제한할지 선택합니다.
+		_bool bLockAngle_Z = true;				// z축 회전을 제한할지 선택합니다.
+
+		
+
+
+		PHYSX_RIGID_TYPE eRigidType = PHYSX_RIGID_TYPE::RIGID_TYPE_END;					// 오브젝트의 (스태틱, 다이나믹, 그라운드 등)타입을 결정합니다.
+		PHYSX_COLLIDER_TYPE eColliderType = PHYSX_COLLIDER_TYPE::COLLIDER_TYPE_END;		// 오브젝트의 콜라이더 모양(박스, 구, 메시)을 결정합니다.
+		class CGameObject* pGameObject = nullptr;										// 콜라이더와 리지드 바디의 주인 입니다.
 	} PHYSX_INIT_DESC;
 
+
+
+	// 피직스 매니저에 저장되는 스태틱 액터 구조체.
 	typedef struct tagPhysXStaticObjectDesc
 	{
 		class CGameObject* pObject = nullptr;
 		class PxRigidStatic* pActor = nullptr;
 	} PHYSX_STATIC_OBJECT_DESC;
 
+	// 피직스 매니저에 저장되는 다이나믹 액터 구조체.
 	typedef struct tagPhysXDynamicObjectDesc
 	{
 		class CGameObject* pObject = nullptr;

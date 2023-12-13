@@ -5,6 +5,7 @@
 #include "Utils.h"
 #include "GameInstance.h"
 #include "Shader.h"
+#include "PhysX_Manager.h"
 #include "..\..\Client\Public\Effect.h"
 
 CRenderer::CRenderer(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
@@ -1084,7 +1085,8 @@ HRESULT CRenderer::Render_Debug()
 	if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
 		return E_FAIL;
 
-
+	if (FAILED(CPhysX_Manager::GetInstance()->Render()))
+		return E_FAIL;
 
 	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_GameObjects"), m_pShader, m_pVIBuffer)))
 		return E_FAIL;

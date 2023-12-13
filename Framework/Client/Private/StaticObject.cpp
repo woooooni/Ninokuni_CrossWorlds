@@ -157,6 +157,7 @@ HRESULT CStaticObject::Ready_ModelCom(_uint eType, const wstring& strFilePath, c
 
 	m_strMapObjName = szFileName;
 
+	
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, wstring(L"Prototype_Component_Model_") + szFileName,
 		eType, strFilePath, strFileName, &m_pModelCom)))
 		return E_FAIL;

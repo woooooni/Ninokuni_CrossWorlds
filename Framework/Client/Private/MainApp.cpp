@@ -439,11 +439,12 @@ HRESULT CMainApp::Ready_Prototype_Component()
 		CCollider_Sphere::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	/* For.Prototype_Component_Sphere_Collider */
+	/* For.Prototype_Component_AABB_Collider */
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_AABB_Collider"),
 		CCollider_AABB::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	/* Prototype_Component_OBB_Collider */
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_OBB_Collider"),
 		CCollider_OBB::Create(m_pDevice, m_pContext))))
 		return E_FAIL;

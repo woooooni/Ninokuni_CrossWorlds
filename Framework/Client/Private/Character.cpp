@@ -100,8 +100,7 @@ void CCharacter::LateTick(_float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return;
 
-	
-	std::async(&CModel::Play_Animation, m_pModelCom, m_pTransformCom, fTimeDelta);
+	m_pModelCom->LateTick(fTimeDelta);
 	
 
 	for (auto& pPart : m_Parts)

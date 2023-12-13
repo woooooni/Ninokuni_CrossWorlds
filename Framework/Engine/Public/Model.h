@@ -41,7 +41,7 @@ public:
 
 		TweenDesc()
 		{
-			cur.iAnimIndex	= -1;
+			cur.iAnimIndex	= 0;
 			next.iAnimIndex = -1;
 		}
 

@@ -108,6 +108,7 @@ void CMonster::LateTick(_float fTimeDelta)
 		for (auto& pCollider : m_Colliders[i])
 			m_pRendererCom->Add_Debug(pCollider);
 	}
+	m_pRendererCom->Add_Debug(m_pRigidBodyCom);
 #endif // DEBUG
 
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);

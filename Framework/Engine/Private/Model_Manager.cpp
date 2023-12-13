@@ -505,6 +505,8 @@ HRESULT CModel_Manager::Import_Model_Data_From_Bin_In_Game(_uint iLevelIndex, co
 	return S_OK;
 }
 
+
+// ¿øÇü Prorotype_Component_Model_ ¸ðµ¨À» Ãß°¡ÇÏ³®.
 HRESULT CModel_Manager::Import_Model_Data(_uint iLevelIndex, const wstring& strProtoTypeTag, _uint eType, wstring strFolderPath, wstring strFileName, __out class CModel** ppOut)
 {
 	_tchar szFileName[MAX_PATH];

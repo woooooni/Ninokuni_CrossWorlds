@@ -29,9 +29,6 @@ HRESULT CStellia::Initialize(void* pArg)
 	if (FAILED(Ready_States()))
 		return E_FAIL;
 
-	// << : Test
-	if (nullptr != m_pModelCom)
-		m_pModelCom->Set_Animation(0);
 
 	return S_OK;
 }
@@ -81,7 +78,7 @@ HRESULT CStellia::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Shader */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_AnimModel_Vtf"), TEXT("Com_AnimShader"), (CComponent**)&m_pShaderCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_AnimModel"), TEXT("Com_AnimShader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
 
 	/* For. Com_Model */
@@ -89,10 +86,33 @@ HRESULT CStellia::Ready_Components()
 		return E_FAIL;
 
 	CRigidBody::RIGID_BODY_DESC RigidDesc;
-	ZeroMemory(&RigidDesc, sizeof RigidDesc);
-
 	RigidDesc.pNavigation = m_pNavigationCom;
 	RigidDesc.pTransform = m_pTransformCom;
+
+
+	RigidDesc.PhysXDesc.vOffsetPos = { 0.f, 2.5f, 0.f };
+	RigidDesc.PhysXDesc.vExtents = { 5.f, 5.f, 10.f };
+	
+	RigidDesc.PhysXDesc.eColliderType = PHYSX_COLLIDER_TYPE::BOX;
+	RigidDesc.PhysXDesc.eRigidType = PHYSX_RIGID_TYPE::DYNAMIC;
+
+	RigidDesc.PhysXDesc.bLockAngle_X = true;
+	RigidDesc.PhysXDesc.bLockAngle_Y = false;
+	RigidDesc.PhysXDesc.bLockAngle_Z = true;
+
+	RigidDesc.PhysXDesc.bKinematic = false;
+	RigidDesc.PhysXDesc.fAngularDamping = 30.f;
+	RigidDesc.PhysXDesc.fDensity = 1.f;
+
+
+	RigidDesc.PhysXDesc.fStaticFriction = 0.f;
+	RigidDesc.PhysXDesc.fDynamicFriction = 1.f;
+	RigidDesc.PhysXDesc.fRestitution = 0.f;
+
+	RigidDesc.PhysXDesc.fMaxVelocity = 10.f;
+	RigidDesc.PhysXDesc.pGameObject = this;
+
+	RigidDesc.PhysXDesc.bKinematic = false;
 
 	/* For. Com_RigidBody*/
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_RigidBody"), TEXT("Com_RigidBody"), (CComponent**)&m_pRigidBodyCom, &RigidDesc)))
