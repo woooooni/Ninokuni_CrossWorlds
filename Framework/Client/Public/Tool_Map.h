@@ -18,10 +18,14 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 
 private:
-	void AddBuildings();
+	void AddMapObject(LEVELID iLevelID, LAYER_TYPE iLayerType);
 	void DeleteObject(LEVELID iLevelID, LAYER_TYPE iLayerType);
 	void BatchObject(LEVELID iLevelID, LAYER_TYPE iLayerType);
 	void Picking();
+
+private:
+	HRESULT Save_Map_Data(const wstring& strMapFileName);
+	HRESULT Load_Map_Data(const wstring& strMapFileName);
 private:
 	// 오브젝트 상태제어 
 	_bool m_bAddObject = false;
