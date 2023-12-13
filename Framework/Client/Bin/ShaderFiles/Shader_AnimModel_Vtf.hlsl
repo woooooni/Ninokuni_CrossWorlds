@@ -20,6 +20,7 @@ struct KeyframeDesc
 	uint iNextFrame;
 	float fRatio;
 	float fFrameAcc;
+	float3 vPadding;
 };
 
 struct TweenFrameDesc
@@ -30,10 +31,7 @@ struct TweenFrameDesc
 	float fTweenDuration;
 	float fTweenRatio;
 	float fTweenAcc;
-
-	float fPadding1;
-	float fPadding2;
-	float fPadding3;
+	float fPadding;
 };
 
 TweenFrameDesc  g_TweenFrames;

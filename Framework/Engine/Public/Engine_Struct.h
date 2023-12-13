@@ -473,6 +473,7 @@ namespace Engine
 		_uint	iNextFrame = 1;		/* 애니메이션의 다음 프레임 */
 		_float	fRatio = 0.f;		/* 애니메이션의 현재 프레임과 다음 프레임 사이 진행률*/
 		_float	fFrameAcc = 0.f;	/* 현재 프레임 누적 시간 */
+		Vec3	vPadding;				
 
 		void ClearAnim()
 		{
@@ -492,10 +493,7 @@ namespace Engine
 		_float fTweenDuration = DEFAULT_TWEEN_DURATION;
 		_float fTweenRatio = 0.f;
 		_float fTweenAcc = 0.f;
-
-		_float fPadding1 = 0.f;
-		_float fPadding2 = 0.f;
-		_float fPadding3 = 0.f;
+		_float fPadding = 0.f;
 
 		TweenDesc()
 		{
