@@ -4,6 +4,8 @@ matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 Texture2D	g_DiffuseTexture;
 Texture2D	g_DepthTexture;
 
+float		g_Alpha = 1.f;
+
 struct VS_IN
 {
 	float3		vPosition : POSITION;
@@ -58,11 +60,46 @@ PS_OUT PS_MAIN(PS_IN In)
 	return Out;	
 }
 
+PS_OUT PS_MAIN_ALPHA(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+	Out.vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
+
+	Out.vColor.a *= g_Alpha;
+
+	if (0.0001f >= Out.vColor.a)
+		discard;
+
+	return Out;
+}
+
+PS_OUT PS_MAIN_FADE(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+	Out.vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
+
+	Out.vColor.a *= g_Alpha;
+
+	return Out;
+}
 
 
 technique11 DefaultTechnique
 {
-	pass DefaultPass
+	pass DefaultPass // 0
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_Default, 0);
+		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN();
+	}
+
+	pass AlphaBlendPass // 1
 	{
 		SetRasterizerState(RS_Default);
 		SetDepthStencilState(DSS_Default, 0);
@@ -70,6 +107,17 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
-		PixelShader = compile ps_5_0 PS_MAIN();
+		PixelShader = compile ps_5_0 PS_MAIN_ALPHA();
+	}
+
+	pass NoDiscardPass // 2
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_Default, 0);
+		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN_FADE();
 	}
 }

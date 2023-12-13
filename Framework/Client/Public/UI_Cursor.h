@@ -3,16 +3,12 @@
 #include "UI.h"
 
 BEGIN(Client)
-class CUI_Flare final : public CUI
+class CUI_Cursor final : public CUI
 {
 protected:
-	CUI_Flare(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CUI_Flare(const CUI_Flare& rhs);
-	virtual ~CUI_Flare() = default;
-
-public:
-	_bool Get_Active() { return m_bActive; }
-	void Set_Active(_bool bActive) { m_bActive = bActive; }
+	CUI_Cursor(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CUI_Cursor(const CUI_Cursor& rhs);
+	virtual ~CUI_Cursor() = default;
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -22,8 +18,8 @@ public:
 	virtual HRESULT	Render();
 
 private:
-	_bool m_bActive = { false };
-	_bool m_bReverse = { true };
+	POINT m_ptMouse = {};
+	POINT m_ptOffset = {};
 
 private:
 	virtual HRESULT	Ready_Components() override;
@@ -32,8 +28,10 @@ private:
 	HRESULT	Ready_State();
 	HRESULT	Bind_ShaderResources();
 
+	void Key_Input(_float fTimeDelta);
+
 public:
-	static CUI_Flare* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);
+	static CUI_Cursor* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

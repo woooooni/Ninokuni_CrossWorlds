@@ -8,7 +8,7 @@ CUI_Fade::CUI_Fade(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_VEIL
 }
 
 CUI_Fade::CUI_Fade(const CUI_Fade& rhs)
-	: CUI(rhs)
+	: CUI(rhs), m_eVeilType(rhs.m_eVeilType)
 {
 }
 
@@ -78,7 +78,7 @@ HRESULT CUI_Fade::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	m_pShaderCom->Begin(0);
+	m_pShaderCom->Begin(2);
 
 	m_pVIBufferCom->Render();
 
@@ -91,20 +91,20 @@ HRESULT CUI_Fade::Ready_Components()
 	if (FAILED(__super::Ready_Components()))
 		return E_FAIL;
 
-	switch (m_eVeilType)
-	{
-	case UI_VEIL::VEIL_BLACK:
+//	switch (m_eVeilType)
+//	{
+//	case UI_VEIL::VEIL_BLACK:
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Veil_Black"),
 			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 			return E_FAIL;
-		break;
+//		break;
 
-	case UI_VEIL::VEIL_WHITE:
-		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Veil_Black"),
-			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
-			return E_FAIL;
-		break;
-	}
+//	case UI_VEIL::VEIL_WHITE:
+//		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Veil_Black"),
+//			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+//			return E_FAIL;
+//		break;
+//	}
 	
 
 	return S_OK;
@@ -114,7 +114,7 @@ HRESULT CUI_Fade::Ready_State()
 {
 	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 
 	return S_OK;
 }

@@ -3,12 +3,12 @@
 #include "UI.h"
 
 BEGIN(Client)
-class CUI_Flare final : public CUI
+class CUI_Loading_Character final : public CUI
 {
 protected:
-	CUI_Flare(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CUI_Flare(const CUI_Flare& rhs);
-	virtual ~CUI_Flare() = default;
+	CUI_Loading_Character(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CUI_Loading_Character(const CUI_Loading_Character& rhs);
+	virtual ~CUI_Loading_Character() = default;
 
 public:
 	_bool Get_Active() { return m_bActive; }
@@ -24,6 +24,7 @@ public:
 private:
 	_bool m_bActive = { false };
 	_bool m_bReverse = { true };
+	_uint m_iTextureIndex = { 0 };
 
 private:
 	virtual HRESULT	Ready_Components() override;
@@ -33,7 +34,7 @@ private:
 	HRESULT	Bind_ShaderResources();
 
 public:
-	static CUI_Flare* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);
+	static CUI_Loading_Character* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

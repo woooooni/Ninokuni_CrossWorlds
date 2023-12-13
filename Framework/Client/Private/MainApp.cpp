@@ -11,9 +11,12 @@
 #include "Effect_Manager.h"
 #include "Particle_Manager.h"
 #include "UI_Manager.h"
+#include "UI_Loading_Background.h"
+#include "UI_Loading_Character.h"
 #include "Camera_Manager.h"
 #include "Light.h"
 
+#include <vld.h>
 
 CMainApp::CMainApp()	
 {
@@ -46,6 +49,10 @@ HRESULT CMainApp::Initialize()
 	/* 1-4. 게임내에서 사용할 레벨(씬)을 생성한다.   */
 	if (FAILED(Open_Level(LEVEL_TEST, L"Final_Boss")))
 		return E_FAIL;
+
+	// UI Cursor
+//	CUI_Manager::GetInstance()->Ready_Cursor();
+//	ShowCursor(false);
 
 	return S_OK;
 }
@@ -272,6 +279,8 @@ HRESULT CMainApp::Ready_Prototype_Component()
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_AnimModel_Vtf.hlsl"), VTXANIMMODEL_DECLARATION::Elements, VTXANIMMODEL_DECLARATION::iNumElements))))
 		return E_FAIL;
 
+#pragma region LoadingForUI
+
 	/////////////
 	// Texture //
 	///////////// For UI
@@ -281,6 +290,32 @@ HRESULT CMainApp::Ready_Prototype_Component()
 
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Veil_White"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Default/Veil/Veil_White.png")))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Loading"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/UI_LoadingWindow.png")))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Loading_Characters"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/UI_Loading_Character_%d.png"), 5))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Cursor"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Default/UI_Cursor.png")))))
+		return E_FAIL;
+
+	if(FAILED(CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_STATIC))) // Veil 원형
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_Background"),
+		CUI_Loading_Background::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_CharacterUI"),
+		CUI_Loading_Character::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+#pragma endregion
 
 	/* For.Prototype_Component_Shader_Point_Instance */
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Point_Instance"),

@@ -89,7 +89,7 @@ HRESULT CStellia::Ready_Components()
 	_wsplitpath_s(L"Stellia.fbx", nullptr, 0, nullptr, 0, szFileName, MAX_PATH, szExt, MAX_PATH);
 	
 	if (FAILED(GI->Import_Model_Data(LEVEL_TEST, wstring(L"Prototype_Componenet_Model_") + szFileName, CModel::TYPE_ANIM,
-		L"../Bin/Resources/Kang/Boss/Stellia/", L"Stellia.fbx", &m_pModelCom)))
+		L"../Bin/Resources/AnimModel/Boss/Stellia/", L"Stellia.fbx", &m_pModelCom)))
 		return E_FAIL;
 	
 	m_pModelCom->Set_Owner(this);
