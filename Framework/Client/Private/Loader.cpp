@@ -171,9 +171,9 @@ HRESULT CLoader::Loading_For_Level_Test()
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Stellia", CStellia::Create(m_pDevice, m_pContext, TEXT("Stellia"), statDesc), LAYER_MONSTER)))
 		return E_FAIL;
 
-
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
-
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Witch", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Test/", L"Witch")))
+		return E_FAIL;
 
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Witch", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Test/", L"Witch")))
 		return E_FAIL;
@@ -422,26 +422,26 @@ HRESULT CLoader::Loading_Proto_AllObjects(const wstring& strPath)
 					return E_FAIL;
 				}
 			}
-			//else if ((strFilePath.find(L"Objects") != wstring::npos) || (strFilePath.find(L"Prop") != wstring::npos))
-			//{
-			//	if (FAILED(GI->Add_Prototype(wstring(strFileName),
-			//		CProp::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt), LAYER_TYPE::LAYER_PROP)))
-			//	{
-			//		return E_FAIL;
-			//	}
-			//}
+			else if ((strFilePath.find(L"Probs") != wstring::npos) || (strFilePath.find(L"Prop") != wstring::npos))
+			{
+				if (FAILED(GI->Add_Prototype(wstring(strFileName),
+					CProbs::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt, OBJ_TYPE::OBJ_PROP, CModel::TYPE_NONANIM), LAYER_TYPE::LAYER_PROP)))
+				{
+					return E_FAIL;
+				}
+			}
 			//else if (strFilePath.find(L"Grass") != wstring::npos)
 			//{
 			//	if (FAILED(GI->Add_Prototype(wstring(strFileName),
 			//		CGrass::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt), LAYER_TYPE::LAYER_GRASS)))
 			//		return E_FAIL;
 			//}
-			//else if (strFilePath.find(L"Grounds") != wstring::npos)
-			//{
-			//	if (FAILED(GI->Add_Prototype(wstring(strFileName),
-			//		CGround::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt), LAYER_TYPE::LAYER_GROUND)))
-			//		return E_FAIL;
-			//}
+			else if (strFilePath.find(L"Grounds") != wstring::npos)
+			{
+				if (FAILED(GI->Add_Prototype(wstring(strFileName),
+					CGrounds::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt, OBJ_TYPE::OBJ_GROUND, CModel::TYPE_NONANIM), LAYER_TYPE::LAYER_GROUND)))
+					return E_FAIL;
+			}
 			//else if (strFilePath.find(L"Rocks") != wstring::npos)
 			//{
 			//	if (FAILED(GI->Add_Prototype(wstring(strFileName),

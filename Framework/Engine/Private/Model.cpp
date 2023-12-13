@@ -429,7 +429,7 @@ HRESULT CModel::SetUp_OnShader(CShader* pShader, _uint iMaterialIndex, aiTexture
 
 	if (m_Materials[iMaterialIndex].pTexture[eTextureType] == nullptr)
 		return E_FAIL;
-
+		
 	return m_Materials[iMaterialIndex].pTexture[eTextureType]->Bind_ShaderResource(pShader, pConstantName);
 }
 

@@ -1,18 +1,18 @@
 #include "stdafx.h"
-#include "..\Public\Building.h"
+#include "..\Public\Plants.h"
 #include "GameInstance.h"
 
-CBuilding::CBuilding(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType)
+CPlants::CPlants(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType)
 	: CStaticObject(pDevice, pContext, strObjectTag, eType)
 {
 }
 
-CBuilding::CBuilding(const CBuilding& rhs)
+CPlants::CPlants(const CPlants& rhs)
 	: CStaticObject(rhs)
 {
 }
 
-HRESULT CBuilding::Initialize_Prototype(_uint eType, const wstring& strFilePath, const wstring& strFileName)
+HRESULT CPlants::Initialize_Prototype(_uint eType, const wstring& strFilePath, const wstring& strFileName)
 {
 	if (FAILED(__super::Initialize_Prototype(eType, strFilePath, strFileName)))
 		return E_FAIL;
@@ -21,7 +21,7 @@ HRESULT CBuilding::Initialize_Prototype(_uint eType, const wstring& strFilePath,
 	return S_OK;
 }
 
-HRESULT CBuilding::Initialize(void* pArg)
+HRESULT CPlants::Initialize(void* pArg)
 {
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -32,27 +32,27 @@ HRESULT CBuilding::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CBuilding::Tick(_float fTimeDelta)
+void CPlants::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 }
 
-void CBuilding::LateTick(_float fTimeDelta)
+void CPlants::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
 
 	//if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 30.f))
 	//{
 		// Shadow 필요하면 ShadowRender 추가?
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
-		//m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDERGROUP::RENDER_SHADOW, CRenderer::SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
-		//m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
-	//}
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
+	//m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDERGROUP::RENDER_SHADOW, CRenderer::SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
+	//m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
+//}
 
 
 }
 
-HRESULT CBuilding::Render()
+HRESULT CPlants::Render()
 {
 	if (FAILED(__super::Render()))
 		return E_FAIL;
@@ -60,7 +60,7 @@ HRESULT CBuilding::Render()
 	return S_OK;
 }
 
-HRESULT CBuilding::Render_ShadowDepth()
+HRESULT CPlants::Render_ShadowDepth()
 {
 	if (FAILED(__super::Render_ShadowDepth()))
 		return E_FAIL;
@@ -68,7 +68,7 @@ HRESULT CBuilding::Render_ShadowDepth()
 	return S_OK;
 }
 
-HRESULT CBuilding::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
+HRESULT CPlants::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
 {
 	if (nullptr == m_pModelCom || nullptr == pInstancingShader)
 		return E_FAIL;
@@ -96,7 +96,7 @@ HRESULT CBuilding::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instanc
 	return S_OK;
 }
 
-HRESULT CBuilding::Render_Instance_Shadow(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
+HRESULT CPlants::Render_Instance_Shadow(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
 {
 	if (nullptr == m_pModelCom || nullptr == pInstancingShader)
 		return E_FAIL;
@@ -122,7 +122,7 @@ HRESULT CBuilding::Render_Instance_Shadow(CShader* pInstancingShader, CVIBuffer_
 	return S_OK;
 }
 
-HRESULT CBuilding::Ready_Components()
+HRESULT CPlants::Ready_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"),
 		TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
@@ -147,28 +147,28 @@ HRESULT CBuilding::Ready_Components()
 	return S_OK;
 }
 
-CBuilding* CBuilding::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag,
+CPlants* CPlants::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag,
 	const wstring& strFilePath, const wstring& strFileName, _int eObjType, _uint eModelType)
 {
-	CBuilding* pInstance = new CBuilding(pDevice, pContext, strObjectTag, eObjType);
+	CPlants* pInstance = new CPlants(pDevice, pContext, strObjectTag, eObjType);
 
 	if (FAILED(pInstance->Initialize_Prototype(eModelType, strFilePath, strFileName)))
 	{
-		MSG_BOX("Create Failed to ProtoType : CBuilding");
-		Safe_Release<CBuilding*>(pInstance);
+		MSG_BOX("Create Failed to ProtoType : CPlants");
+		Safe_Release<CPlants*>(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CBuilding::Clone(void* pArg)
+CGameObject* CPlants::Clone(void* pArg)
 {
-	CBuilding* pInstance = new CBuilding(*this);
+	CPlants* pInstance = new CPlants(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Create Failed to Cloned : CBuilding");
-		Safe_Release<CBuilding*>(pInstance);
+		MSG_BOX("Create Failed to Cloned : CPlants");
+		Safe_Release<CPlants*>(pInstance);
 	}
 
 	return pInstance;
