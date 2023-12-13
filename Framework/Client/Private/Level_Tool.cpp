@@ -184,10 +184,6 @@ HRESULT CLevel_Tool::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Tool::Ready_Layer_Effect(const LAYER_TYPE eLayerType)
 {
-	// 테스트용
-	//if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_EFFECT, TEXT("Prototype_GameObject_Particle"))))
-	//	return E_FAIL;
-
 	return S_OK;
 }
 

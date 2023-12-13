@@ -16,53 +16,60 @@ END
 
 BEGIN(Client)
 
-
-class CEffect;
 class CParticle final : public CGameObject
 {
 public:
 	typedef struct tagParticleDesc
 	{	
+		// 반복 여부
+		_bool bLoop = false;
+
 		// 파티클 개수
 		_uint iNumEffectCount = 1; 
 
-		_bool bLoop = false;
+		// 분포 범위
+		_float3 fRange;
 
 		// 크기
 		_bool bSameRate = true; // 정비율
 		_float2 fScale;
 
-		// 분포 범위
-		_float3 fRange;
-
-		// 힘(이동)
-		_float3 vVelocityMin;
-		_float3 vVelocityMax;
+		// 지속시간
+		_float2	fLifeTime;
 
 		// 속도
 		_float2 fSpeed;
 
-		// 시간
-		_float2	fLifeTime;
+		// 움직임
+		_float3 vVelocityMin;
+		_float3 vVelocityMax;
 
 		// 박스 범위
+		_bool bUseBox = false;
 		_float3 fBoxMin;
 		_float3 fBoxMax;
 
-
-		// 텍스처
-		wstring strDiffuseTetextureName = L"";
-		wstring strAlphaTexturName = L"";
-
 		// 색상
+		_bool bRandomColor = false;
 		_float4	vDiffuseColor = _float4(0.f, 0.f, 0.f, 0.f);
 
+		// 텍스처
+		_bool bAnimation = false;
+		_bool bAnimationLoop = false;
+		_bool bRandomStartIndex = true;
+		_float fDiffuseTextureIndex;
+		_float2 fAnimationSpeed;
 
-		// 기타 
-		//_float fDestAlphaSpeed = 0.f;
-		//_float fBlurPower = 0.01f;
+		wstring strDiffuseTetextureName = L"";
+		wstring strAlphaTexturName      = L"";
 
+		// 기타
 		/*
+		// Start Delay / 방출 시작 지연 시간
+
+		_float fDestAlphaSpeed = 0.f;
+		_float fBlurPower = 0.01f;
+
 		// RigidBody.
 		_bool		bRigidActive    = false;
 		_bool		bRandomForceDir = false;
@@ -88,18 +95,16 @@ public:
 
 public:
 	const PARTICLE_DESC& Get_ParticleDesc() { return m_tParticleDesc; }
-	void Set_ParticleDesc(const PARTICLE_DESC& tDesc) { m_tParticleDesc = tDesc; }
+	void Set_ParticleDesc(const PARTICLE_DESC& tDesc);
 
 	const wstring& Get_EffectPrototypeName() { return m_strPrototypeEffectTag; }
 	void Set_EffectPrototypeName(const wstring& strPrototypeEffectTag) { m_strPrototypeEffectTag = strPrototypeEffectTag; }
  
 	class CTransform* Get_TransformCom() { return m_pTransformCom; }
 
-public:
-	class Client::CEffect* Generate_Effect();
-
 private:
 	wstring m_strPrototypeEffectTag; // 이펙트 원형 이름 태그
+
 	PARTICLE_DESC m_tParticleDesc;
 
 private:
@@ -111,6 +116,8 @@ private:
 
 	class CTexture* m_pDiffuseTextureCom = nullptr;
 	class CTexture* m_pAlphaTextureCom = nullptr;
+
+	LERP_FLOAT_DESC m_Lerp;
 
 private:
 	HRESULT Bind_ShaderResource();

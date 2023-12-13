@@ -2,9 +2,28 @@
 #include "Engine_Shader_Defines.hpp"
 
 matrix			g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
-texture2D		g_DiffuseTexture;
+texture2D		g_DiffuseTexture[100];
+Texture2D	    g_AlphaTexture;
 
 vector			g_vCamPosition;
+
+struct EffectDesc //16 ¹è¼ö·Î ³ª´²¶³¾îÁ®¾ßÇÔ
+{
+	float  g_fTimeAccs;
+	float  g_fLifeTime;
+
+	float  g_fSpeed;
+	float  g_fAnimationSpeed;
+
+	float  g_fTextureIndex;
+	float  g_fTemp1;
+	float  g_fTemp2;
+	float  g_fTemp3;
+
+	float4 g_fVelocity;
+	float4 g_fColor;
+};
+EffectDesc g_EffectDesc[1000];
 
 struct VS_IN
 {
@@ -15,12 +34,16 @@ struct VS_IN
 	float4		vUp    : WORLD1;
 	float4		vLook  : WORLD2;
 	float4		vTranslation : WORLD3;
+
+	uint	    iInstanceID : SV_INSTANCEID;
 };
 
 struct VS_OUT
 {
 	float4		vPosition : POSITION;
 	float2		vPSize : PSIZE;
+
+	uint	    iInstanceID : SV_INSTANCEID;
 };
 
 VS_OUT VS_MAIN(VS_IN In)
@@ -34,6 +57,8 @@ VS_OUT VS_MAIN(VS_IN In)
 	Out.vPosition = mul(vPosition, g_WorldMatrix);
 	Out.vPSize    = float2(In.vPSize.x * length(In.vRight), In.vPSize.y * length(In.vUp));
 
+	Out.iInstanceID = In.iInstanceID;
+
 	return Out;	
 }
 
@@ -41,6 +66,8 @@ struct GS_IN
 {	
 	float4		vPosition : POSITION;
 	float2		vPSize : PSIZE;
+
+	uint	iInstanceID : SV_INSTANCEID;
 };
 
 struct GS_OUT
@@ -48,6 +75,8 @@ struct GS_OUT
 	float4		vPosition : SV_POSITION;
 	float2		vTexcoord : TEXCOORD0;
 	float4		vProjPos  : TEXCOORD1;
+
+	uint	iInstanceID : SV_INSTANCEID;
 };
 
 [maxvertexcount(20)]
@@ -69,7 +98,7 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> OutStream)
 	Out[0].vPosition = vector(In[0].vPosition.xyz + vRight + vUp, 1.f);
 	Out[0].vPosition = mul(Out[0].vPosition, matVP);
 	Out[0].vTexcoord = float2(0.0f, 0.f);
-	Out[0].vProjPos = Out[0].vPosition;
+	Out[0].vProjPos  = Out[0].vPosition;
 
 	Out[1].vPosition = vector(In[0].vPosition.xyz - vRight + vUp, 1.f);
 	Out[1].vPosition = mul(Out[1].vPosition, matVP);
@@ -85,6 +114,11 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> OutStream)
 	Out[3].vPosition = mul(Out[3].vPosition, matVP);
 	Out[3].vTexcoord = float2(0.0f, 1.0f);
 	Out[3].vProjPos = Out[3].vPosition;
+
+	Out[0].iInstanceID = In[0].iInstanceID;
+	Out[1].iInstanceID = In[0].iInstanceID;
+	Out[2].iInstanceID = In[0].iInstanceID;
+	Out[3].iInstanceID = In[0].iInstanceID;
 
 	OutStream.Append(Out[0]);
 	OutStream.Append(Out[1]);
@@ -102,25 +136,64 @@ struct PS_IN
 	float4		vPosition : SV_POSITION;
 	float2		vTexcoord : TEXCOORD0;
 	float4		vProjPos  : TEXCOORD1;
+
+	uint	iInstanceID : SV_INSTANCEID;
 };
 
 struct PS_OUT
 {
 	float4	vDiffuse : SV_TARGET0;
-	float4	vBlur    : SV_TARGET1;
-	float4	vBloom   : SV_TARGET2;
+	float4	vBlurPower : SV_TARGET1;
+	float4	vBrightness : SV_TARGET2;
 };
 
 PS_OUT PS_MAIN(PS_IN In)
 {
 	PS_OUT			Out = (PS_OUT)0;
 
-	Out.vDiffuse = g_DiffuseTexture.Sample(PointSampler, In.vTexcoord);
+	int iTextureIndex = (int)g_EffectDesc[In.iInstanceID].g_fTextureIndex;
+	switch (iTextureIndex)
+	{
+	case 0:
+		Out.vDiffuse = g_DiffuseTexture[0].Sample(PointSampler, In.vTexcoord);
+		break;
+	case 1:
+		Out.vDiffuse = g_DiffuseTexture[1].Sample(PointSampler, In.vTexcoord);
+		break;
+	case 2:
+		Out.vDiffuse = g_DiffuseTexture[2].Sample(PointSampler, In.vTexcoord);
+		break;
+	case 3:
+		Out.vDiffuse = g_DiffuseTexture[3].Sample(PointSampler, In.vTexcoord);
+		break;
+	case 4:
+		Out.vDiffuse = g_DiffuseTexture[4].Sample(PointSampler, In.vTexcoord);
+		break;
+	case 5:
+		Out.vDiffuse = g_DiffuseTexture[5].Sample(PointSampler, In.vTexcoord);
+		break;
+	case 6:
+		Out.vDiffuse = g_DiffuseTexture[6].Sample(PointSampler, In.vTexcoord);
+		break;
+	case 7:
+		Out.vDiffuse = g_DiffuseTexture[7].Sample(PointSampler, In.vTexcoord);
+		break;
+	case 8:
+		Out.vDiffuse = g_DiffuseTexture[8].Sample(PointSampler, In.vTexcoord);
+		break;
+	case 9:
+		Out.vDiffuse = g_DiffuseTexture[9].Sample(PointSampler, In.vTexcoord);
+		break;
+	default:
+		Out.vDiffuse = g_DiffuseTexture[10].Sample(PointSampler, In.vTexcoord);
+		break;
+	}
 	if (Out.vDiffuse.a < 0.5f)
 		discard;
 
-	Out.vBlur = float4(1.f, 1.f, 1.f, 0.f);
-	Out.vBloom = Out.vDiffuse;
+	Out.vDiffuse    = (Out.vDiffuse + g_EffectDesc[In.iInstanceID].g_fColor) / 2.f;
+	Out.vBlurPower  = float4(1.f, 1.f, 1.f, 0.f);
+	Out.vBrightness = Out.vDiffuse;
 
 	return Out;
 }

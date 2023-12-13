@@ -204,22 +204,21 @@ HRESULT CLoader::Loading_For_Level_Tool()
 	// 테스트
 	 CParticle::PARTICLE_DESC ParticleInfo = {}; // 파일로 정보 로드?
 
+	 ParticleInfo.bLoop = true;
 	 ParticleInfo.iNumEffectCount = 50; // 개수
-
-	 ParticleInfo.bLoop = false;
-
+	 ParticleInfo.fRange = _float3(0.f, 0.f, 0.f); // 분포범위
 	 ParticleInfo.bSameRate = true; // 정비율
 	 ParticleInfo.fScale = _float2(1.f, 2.f); // 스케일
-
-	 ParticleInfo.fRange = _float3(0.f, 0.f, 0.f); // 분포범위
-
+	 ParticleInfo.fLifeTime = _float2(3.f, 5.f);
+	 ParticleInfo.fSpeed = _float2(3.f, 6.f);
 	 ParticleInfo.vVelocityMin = _float3(-1.0f, -1.0f, -1.0f);
 	 ParticleInfo.vVelocityMax = _float3(1.0f, 1.0f, 1.0f);
 
-	 ParticleInfo.fSpeed = _float2(3.f, 6.f);
-	 ParticleInfo.fLifeTime = _float2(5.f, 10.f);
-	 ParticleInfo.fBoxMin;
-	 ParticleInfo.fBoxMax;
+	 ParticleInfo.bAnimation = true;
+	 ParticleInfo.bAnimationLoop = true;
+	 ParticleInfo.fAnimationSpeed = _float2(2.f, 6.f);
+	 ParticleInfo.bRandomStartIndex = true;
+	 ParticleInfo.fDiffuseTextureIndex = 1.f;
 	 if(FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Particle"),
 		 CParticle::Create(m_pDevice, m_pContext, TEXT("Particle"), TEXT("Particle_Test"), ParticleInfo), LAYER_TYPE::LAYER_EFFECT)))
 		return E_FAIL;
