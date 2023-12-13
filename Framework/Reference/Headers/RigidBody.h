@@ -15,7 +15,7 @@ public:
         _float fDynamicFriction = 0.f;
 
         _float fRestitution = 0.f;
-        _float fAngleDump = 0.f;
+        _float fAngleDamp = 0.f;
 
         _float fMaxVelocity = 100.f;
         
@@ -25,7 +25,7 @@ public:
         
 
         _float3 vRotation;
-        _float3 vExtents = _float3(0.f, 0.f, 0.f);
+        _float3 vExtentss = _float3(0.f, 0.f, 0.f);
         
 
         class CTransform* pTransform = nullptr;
@@ -49,8 +49,19 @@ public:
 public:
     void Update_RigidBody(_float fTimeDelta);
 
+public:
+    void Set_PhysXBody(PxRigidDynamic* pDynamicBody) { m_pXBody = pDynamicBody; }
 
+    void Set_Sleep(_bool bSleep);
+    _bool Is_Sleep();
 
+public:
+    void Add_Force(_vector vDir, _float fForce, _bool bClear);
+
+    void Set_Velocity(_float3 vVelocity);
+    _float3 Get_Velocity();
+
+    
 
 #ifdef _DEBUG
 protected:
@@ -62,7 +73,7 @@ protected:
 
 private:
     _bool m_bFirst = false;
-    _float3 m_vExtents = _float3(0.f, 0.f, 0.f);
+    _float3 m_vExtentss = _float3(0.f, 0.f, 0.f);
     _float3 m_vOffsetPos = _float3(0.f, 0.f, 0.f);
  
 

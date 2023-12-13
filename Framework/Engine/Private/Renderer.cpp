@@ -1148,6 +1148,7 @@ void CRenderer::Free()
 		m_RenderObjects[i].clear();
 	}
 
+
 	for (auto& pComponent : m_RenderDebug)
 	{
 		Safe_Release(pComponent);
@@ -1164,9 +1165,8 @@ void CRenderer::Free()
 	for (_uint i = 0; i < RENDERGROUP::RENDER_END; ++i)
 	{
 		for (auto iter : m_Render_Instancing_Objects[i])
-		{
 			Safe_Release(iter.second.pGameObject);
-		}
+
 		m_Render_Instancing_Objects[i].clear();
 	}
 	

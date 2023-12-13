@@ -117,7 +117,12 @@ public:
 	class CAnimation* Get_CurrAnimation() { return m_Animations[m_iCurrentAnimIndex]; }
 
 	// << : Ãß°¡
-	HRESULT Set_VtfTexture(ID3D11ShaderResourceView* pTexture) { if (nullptr == pTexture) return E_FAIL; m_pSRV = pTexture; }
+	HRESULT Set_VtfTexture(ID3D11ShaderResourceView* pTexture) { 
+		if (nullptr == pTexture) 
+			return E_FAIL; 
+		m_pSRV = pTexture;
+		return S_OK;
+	}
 
 public:
 	const aiScene* Get_Scene() { return m_pAIScene; }

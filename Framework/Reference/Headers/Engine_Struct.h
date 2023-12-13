@@ -236,6 +236,29 @@ namespace Engine
 
 	} GRAPHIC_DESC;
 
+#pragma region PhysXDesc
+	typedef struct tagPhysXDesc
+	{
+		_float3 vExtents = { 1.f, 1.f, 1.f };
+		_float fRadius = 1.f;
+
+		PhysXRigidType eRigidType = PhysXRigidType::RIGID_TYPE_END;
+		PhysXColliderType eColliderType = PhysXColliderType::COLLIDER_TYPE_END;
+		class CGameObject* pGameObject = nullptr;
+	} PHYSX_INIT_DESC;
+
+	typedef struct tagPhysXStaticObjectDesc
+	{
+		class CGameObject* pObject = nullptr;
+		class PxRigidStatic* pActor = nullptr;
+	} PHYSX_STATIC_OBJECT_DESC;
+
+	typedef struct tagPhysXDynamicObjectDesc
+	{
+		class CGameObject* pObject = nullptr;
+		class PxRigidDynamic* pActor = nullptr;
+	} PHYSX_DYNAMIC_OBJECT_DESC;
+#pragma endregion
 
 #pragma region Lerp Desc
 

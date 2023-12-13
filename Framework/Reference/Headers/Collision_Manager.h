@@ -2,9 +2,6 @@
 
 #include "Base.h"
 
-BEGIN(Engine)
-
-
 union COLLIDER_ID
 {
 	struct
@@ -14,6 +11,8 @@ union COLLIDER_ID
 	};
 	ULONGLONG ID;
 };
+
+BEGIN(Engine)
 
 class CCollider;
 class CCollision_Manager final : public CBase

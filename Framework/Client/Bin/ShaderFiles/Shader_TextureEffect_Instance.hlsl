@@ -34,7 +34,7 @@ struct VS_IN
 	float4		vLook : TEXCOORD3;
 	float4		vTranslation : TEXCOORD4;
 
-	uint	iInstanceID : SV_INSTANCEID;
+	uint		iInstanceID : SV_INSTANCEID;
 
 };
 

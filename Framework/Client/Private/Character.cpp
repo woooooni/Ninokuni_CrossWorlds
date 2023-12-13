@@ -291,7 +291,6 @@ void CCharacter::Set_Infinite(_float fInfiniteTime, _bool bInfinite)
 	m_bInfinite = bInfinite;
 	m_fInfiniteTime = fInfiniteTime;
 	m_fAccInfinite = 0.f;
-
 }
 
 
@@ -314,6 +313,10 @@ void CCharacter::Free()
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pTransformCom);
+	Safe_Release(m_pRigidBodyCom);
+	Safe_Release(m_pStateCom);
+	Safe_Release(m_pNavigationCom);
+
 
 	for (_uint i = 0; i < SOCKET_END; ++i)
 	{
@@ -322,5 +325,4 @@ void CCharacter::Free()
 
 		Safe_Release(m_pTrails[i]);
 	}
-
 }

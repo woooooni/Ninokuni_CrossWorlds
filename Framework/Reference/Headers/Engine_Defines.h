@@ -7,6 +7,9 @@
 #pragma warning (disable : 4267)
 
 
+
+
+
 #ifndef WinSock_Include_h__
 #define WinSock_Include_h__
 
@@ -42,21 +45,6 @@ using namespace physx;
 #include <Assimp/postprocess.h>
 
 #define DIRECTINPUT_VERSION 0x0800
-
-//#ifdef _DEBUG
-//#pragma comment(lib, "ServerCore.lib")
-//#pragma comment(lib, "libprotobufd.lib")
-//#else
-//#pragma comment(lib, "ServerCore.lib")
-//#pragma comment(lib, "libprotobuf.lib")
-//#endif
-//
-//
-//#include "CoreExports.h"
-//#include "Enum.pb.h"
-//
-//using GameSessionRef = shared_ptr<class GameSession>;
-//using PlayerRef = shared_ptr<class Player>;
 #include <mutex>
 #include <future>
 
@@ -89,6 +77,10 @@ using namespace DirectX;
 
 
 
+
+using namespace std;
+using namespace Engine;
+
 #ifdef _DEBUG
 
 #define _CRTDBG_MAP_ALLOC
@@ -101,8 +93,5 @@ using namespace DirectX;
 #endif
 
 #endif // _DEBUG
-
-using namespace std;
-using namespace Engine;
 
 

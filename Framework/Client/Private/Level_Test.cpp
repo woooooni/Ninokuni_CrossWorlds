@@ -145,7 +145,18 @@ HRESULT CLevel_Test::Ready_Layer_Player(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Test::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 {
-	if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prototype_GameObject_Witch"))))
+	CGameObject* pTest = nullptr;
+	
+	if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prototype_GameObject_Witch"), nullptr, &pTest)))
+		return E_FAIL;
+
+	PHYSX_INIT_DESC InitDesc;
+	InitDesc.eColliderType = PhysXColliderType::BOX;
+	InitDesc.eRigidType = PhysXRigidType::DYNAMIC;
+	InitDesc.vExtents = { 1.f, 1.f, 1.f };
+	InitDesc.pGameObject = pTest;
+
+	if (FAILED(GI->Add_Dynamic_Actor(InitDesc, false)))
 		return E_FAIL;
 
 	return S_OK;
@@ -168,7 +179,17 @@ HRESULT CLevel_Test::Ready_Layer_Terrain(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Test::Ready_Layer_Monster(const LAYER_TYPE eLayerType)
 {
-	if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prorotype_GameObject_Stellia"))))
+	CGameObject* pStellia = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prorotype_GameObject_Stellia"), nullptr, &pStellia)))
+		return E_FAIL;
+
+	PHYSX_INIT_DESC InitDesc;
+	InitDesc.eColliderType = PhysXColliderType::BOX;
+	InitDesc.eRigidType = PhysXRigidType::DYNAMIC;
+	InitDesc.vExtents = { 5.f, 10.f, 10.f };
+	InitDesc.pGameObject = pStellia;
+
+	if (FAILED(GI->Add_Dynamic_Actor(InitDesc, true)))
 		return E_FAIL;
 
 	return S_OK;
