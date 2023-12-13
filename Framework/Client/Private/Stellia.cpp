@@ -38,6 +38,20 @@ HRESULT CStellia::Initialize(void* pArg)
 
 void CStellia::Tick(_float fTimeDelta)
 {
+	// << : Test 
+	if (KEY_TAP(KEY::INSERT))
+	{
+		_uint iCurAnimIndex = m_pModelCom->Get_CurrAnimationIndex();
+		m_pModelCom->Set_Animation(iCurAnimIndex + 1);
+	}
+	else if (KEY_TAP(KEY::DEL))
+	{
+		_int iCurAnimIndex = m_pModelCom->Get_CurrAnimationIndex() - 1;
+		if (iCurAnimIndex < 0)
+			iCurAnimIndex = 0;
+		m_pModelCom->Set_Animation(iCurAnimIndex);
+	}
+	
 	__super::Tick(fTimeDelta);
 }
 

@@ -239,6 +239,20 @@ HRESULT CModel_Manager::Load_Model_Vtf(CModel* pModel, const wstring strLoadFile
 
 	if(nullptr == pSrv)
 	{
+		/*ID3D11ShaderResourceView* pSrv = { nullptr };
+		{
+			D3D11_SHADER_RESOURCE_VIEW_DESC desc;
+			ZeroMemory(&desc, sizeof(desc));
+			desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+			desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
+			desc.Texture2DArray.MipLevels = 1;
+			desc.Texture2DArray.ArraySize = pModel->Get_Animations().size();
+
+			if (FAILED(GI->Get_Device()->CreateShaderResourceView(pTexture, &desc, &pSrv)))
+				return E_FAIL;
+		}*/
+		
+
 		/* Set File Path */
 		const wstring	strFinalLoadFilePath = strLoadFilePath + L"_vtf.dds";
 
@@ -485,6 +499,9 @@ HRESULT CModel_Manager::Import_Model_Data_From_Bin_In_Game(_uint iLevelIndex, co
 
 	if (CModel::TYPE::TYPE_ANIM == pModel->Get_ModelType())
 	{
+		/*if (FAILED(Create_Model_Vtf(pModel, strFinalFolderPath)))
+			return E_FAIL;*/
+
 		if (FAILED(Load_Model_Vtf(pModel, strFinalFolderPath)))
 			return E_FAIL;
 

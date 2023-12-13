@@ -30,8 +30,8 @@ HRESULT CLevel_Test::Initialize()
 	if (FAILED(Ready_Layer_Terrain(LAYER_TYPE::LAYER_TERRAIN)))
 		return E_FAIL;
 
-	if (FAILED(Ready_Layer_Player(LAYER_TYPE::LAYER_PLAYER)))
-		return E_FAIL;
+	/*if (FAILED(Ready_Layer_Player(LAYER_TYPE::LAYER_PLAYER)))
+		return E_FAIL;*/
 
 	if (FAILED(Ready_Layer_Character(LAYER_TYPE::LAYER_CHARACTER)))
 		return E_FAIL;

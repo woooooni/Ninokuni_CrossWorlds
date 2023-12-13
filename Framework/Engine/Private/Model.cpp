@@ -29,7 +29,6 @@ CModel::CModel(const CModel& rhs)
 	, m_Materials(rhs.m_Materials)
 	, m_eModelType(rhs.m_eModelType)
 	, m_Animations(rhs.m_Animations)
-	, m_iCurrentAnimIndex(rhs.m_iCurrentAnimIndex)
 	, m_PivotMatrix(rhs.m_PivotMatrix)
 	, m_iNumAnimations(rhs.m_iNumAnimations)
 	, m_pMatrixTexture(rhs.m_pMatrixTexture)
@@ -357,6 +356,9 @@ HRESULT CModel::Clear_NotUsedData()
 
 HRESULT CModel::Set_Animation(const _uint& iAnimationIndex, const _float& fTweenDuration)
 {
+	if (m_Animations.size() <= iAnimationIndex)
+		return E_FAIL;
+
 	if (m_TweenDesc.cur.iAnimIndex < 0) // 최초 1회 실행 
 	{
 		m_TweenDesc.cur.iAnimIndex = iAnimationIndex % m_Animations.size();
@@ -383,45 +385,6 @@ HRESULT CModel::Set_Animation(const wstring& strAnimationName, const _float& fTw
 	return E_FAIL;
 }
 
-HRESULT CModel::Set_Animation(const wstring& strAnimationName)
-{
-	for (size_t i = 0; i < m_Animations.size(); ++i)
-	{
-		if (strAnimationName == m_Animations[i]->Get_AnimationName())
-		{
-			Set_AnimIndex(i);
-			return S_OK;
-		}
-	}
-	return E_FAIL;
-}
-
-void CModel::Set_AnimIndex(_uint iAnimIndex)
-{
-	if (iAnimIndex >= m_Animations.size())
-		iAnimIndex = 0;
-
-	m_Animations[m_iCurrentAnimIndex]->Reset_Animation();
-
-	if (true == m_Animations[iAnimIndex]->Is_TweenAnimation())
-	{
-		m_iNextAnimIndex = iAnimIndex;
-		m_bInterpolationAnimation = true;
-		m_bFirstRootConvert = true;
-	}
-	else
-	{
-		m_iCurrentAnimIndex = iAnimIndex;
-	}
-}
-
-void CModel::Complete_Interpolation()
-{
-	m_iCurrentAnimIndex = m_iNextAnimIndex;
-	m_iNextAnimIndex = -1;
-	m_bInterpolationAnimation = false;
-}
-
 HRESULT CModel::SetUp_OnShader(CShader* pShader, _uint iMaterialIndex, aiTextureType eTextureType, const char* pConstantName)
 {
 	if (iMaterialIndex >= m_iNumMaterials)
@@ -433,38 +396,13 @@ HRESULT CModel::SetUp_OnShader(CShader* pShader, _uint iMaterialIndex, aiTexture
 	return m_Materials[iMaterialIndex].pTexture[eTextureType]->Bind_ShaderResource(pShader, pConstantName);
 }
 
-HRESULT CModel::Play_Animation(CTransform* pTransform, _float fTimeDelta)
-{
-	if (m_iCurrentAnimIndex >= m_iNumAnimations)
-		return E_FAIL;
-
-	if (m_bInterpolationAnimation) 
-	{
-		m_Animations[m_iCurrentAnimIndex]->Play_Animation(this, pTransform, m_Animations[m_iNextAnimIndex], fTimeDelta);
-	}
-	else
-	{
-		m_Animations[m_iCurrentAnimIndex]->Play_Animation(pTransform, fTimeDelta);
-	}
-	
-	for (auto& pHierarchyNode : m_HierarchyNodes)
-		pHierarchyNode->Set_CombinedTransformation();
-
-	if (m_bInterpolationAnimation)	
-		return S_OK;
-	
-	return S_OK;
-}
-
 HRESULT CModel::Render(CShader* pShader, _uint iMeshIndex, _uint iPassIndex)
 {
 	if (TYPE_ANIM == m_eModelType)
 	{
-		/*m_Meshes[iMeshIndex]->SetUp_BoneMatrices(m_pMatrixTexture, m_Matrices, XMLoadFloat4x4(&m_PivotMatrix));
-		if (FAILED(pShader->Bind_Texture("g_MatrixPallete", m_pSRV)))
-			return E_FAIL;*/
+		if (nullptr == m_pSRV || 0 > m_TweenDesc.cur.iAnimIndex)
+			return E_FAIL;
 
-		// << : VTF
 		if (FAILED(pShader->Bind_Texture("g_TransformMap", m_pSRV)))
 			return E_FAIL;
 
@@ -505,7 +443,7 @@ HRESULT CModel::Swap_Animation(_uint iSrcIndex, _uint iDestIndex)
 	m_Animations[iDestIndex] = m_Animations[iSrcIndex];
 	m_Animations[iSrcIndex] = Temp;
 
-	m_iCurrentAnimIndex = iDestIndex;
+	//m_iCurrentAnimIndex = iDestIndex;
 
 	return S_OK;
 }
@@ -524,21 +462,10 @@ HRESULT CModel::Delete_Animation(_uint iIndex)
 
 	m_Animations.erase(iter);
 
-	m_iCurrentAnimIndex = 0 > m_iCurrentAnimIndex - 1 ? 0 : m_iCurrentAnimIndex;
-	m_iCurrentAnimIndex = m_Animations.size() >= m_iCurrentAnimIndex ? m_Animations.size() - 1 : m_iCurrentAnimIndex;
+	//m_iCurrentAnimIndex = 0 > m_iCurrentAnimIndex - 1 ? 0 : m_iCurrentAnimIndex;
+	//m_iCurrentAnimIndex = m_Animations.size() >= m_iCurrentAnimIndex ? m_Animations.size() - 1 : m_iCurrentAnimIndex;
 
 	return S_OK;
-}
-
-_bool CModel::Is_Animation_Finished(_uint iAnimationIndex)
-{
-	if (iAnimationIndex >= m_Animations.size())
-	{
-		MSG_BOX("Animation Index Over.");
-		return false;
-	}
-
-	return m_Animations[iAnimationIndex]->Is_Finished();
 }
 
 _int CModel::Find_AnimationIndex(const wstring& strAnimationTag)

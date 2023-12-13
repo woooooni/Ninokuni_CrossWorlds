@@ -127,7 +127,7 @@ HRESULT CAnimation::Play_Animation(CTransform* pTransform, _float fTimeDelta)
 
 HRESULT CAnimation::Play_Animation(CModel* pModel, CTransform* pTransform, CAnimation* pNextAnimation, _float fTimeDelta)
 {
-	if (pModel->Is_InterpolatingAnimation())
+	/*if (pModel->Is_InterpolatingAnimation())
 	{
 		m_fPlayTime += m_fSpeed * m_fTickPerSecond * fTimeDelta;
 
@@ -137,7 +137,7 @@ HRESULT CAnimation::Play_Animation(CModel* pModel, CTransform* pTransform, CAnim
 			pChannel->Interpolation(m_fPlayTime, fTimeDelta, this, pNextAnimation, pTransform, m_ChannelOldKeyFrames[iChannelIndex], m_HierarchyNodes[iChannelIndex], pModel, &m_fRatio);
 			++iChannelIndex;
 		}
-	}
+	}*/
 
 	return S_OK;
 }

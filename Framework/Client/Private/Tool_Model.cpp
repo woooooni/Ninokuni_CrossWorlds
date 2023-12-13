@@ -275,7 +275,7 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 	            string AnimationName = CUtils::ToString(Animations[i]->Get_AnimationName());
 	            if (ImGui::Selectable(AnimationName.c_str(), i == pModelCom->Get_CurrAnimationIndex()))
 	            {
-	                pModelCom->Set_AnimIndex(i);
+					pModelCom->Set_Animation(i);
 	                sprintf_s(szAnimationName, CUtils::ToString(Animations[pModelCom->Get_CurrAnimationIndex()]->Get_AnimationName()).c_str());
 	            }
 	        }
@@ -331,7 +331,7 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 	    if (ImGui::ArrowButton("##Play_AnimationButton", ImGuiDir_Right))
 	    {
 	        if(fAnimationProgress >= 1.f)
-	            pModelCom->Set_AnimIndex(pModelCom->Get_CurrAnimationIndex());
+	            pModelCom->Set_Animation(pModelCom->Get_CurrAnimationIndex());
 	
 	        pCurrAnimation->Set_Pause(false);
 	    }

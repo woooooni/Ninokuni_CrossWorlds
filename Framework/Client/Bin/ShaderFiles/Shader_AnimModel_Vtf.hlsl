@@ -30,7 +30,10 @@ struct TweenFrameDesc
 	float fTweenDuration;
 	float fTweenRatio;
 	float fTweenAcc;
-	float fPadding;
+
+	float fPadding1;
+	float fPadding2;
+	float fPadding3;
 };
 
 TweenFrameDesc  g_TweenFrames;

@@ -96,8 +96,11 @@
 
 
 // VTF
-#define MAX_MODEL_TRANSFORMS 1000
-#define MAX_MODEL_KEYFRAMES 300
+#define MAX_MODEL_CHANNELS	400 /* 애니메이션의 뼈 최대 갯수 (열) */
+#define MAX_MODEL_KEYFRAMES	400 /* 애니메이션의 최대 프레임 카운트 수 (행) */
+
+#define DEFAULT_TWEEN_DURATION	0.2f /* 애니메이션 기본 트위닝 시간*/
+
 
 //
 ///*---------------

@@ -14,18 +14,11 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 
 private:
-	/* Animation Model */
-
-
-	void Reset_Transform();
-
-
-private:
-	/* Animation Model */
-
-private:
 	void Tick_Model(_float fTimeDelta);
 	void Tick_Animation(_float fTimeDelta);
+
+private:
+	void Reset_Transform();
 
 private:
 	wstring m_strFilePath = L"";
