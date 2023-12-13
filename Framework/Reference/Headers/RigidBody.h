@@ -51,9 +51,17 @@ public:
 
 public:
     void Set_PhysXBody(PxRigidDynamic* pDynamicBody) { m_pXBody = pDynamicBody; }
-    void Set_Sleep(_bool bSleep);
 
+    void Set_Sleep(_bool bSleep);
     _bool Is_Sleep();
+
+public:
+    void Add_Force(_vector vDir, _float fForce, _bool bClear);
+
+    void Set_Velocity(_float3 vVelocity);
+    _float3 Get_Velocity();
+
+    
 
 #ifdef _DEBUG
 protected:

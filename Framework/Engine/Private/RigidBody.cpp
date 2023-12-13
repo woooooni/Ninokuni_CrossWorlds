@@ -90,10 +90,8 @@ void CRigidBody::Update_RigidBody(_float fTimeDelta)
 	if (m_pOwner->Is_Dead())
 		return;
 
-	if (false == m_bFirst && m_pXBody->isSleeping())
-		return;
-
-
+	/*if (false == m_bFirst && m_pXBody->isSleeping())
+		return;*/
 
 	PxTransform PxTransform = m_pXBody->getGlobalPose();
 	_matrix WorldMatrix;
@@ -101,13 +99,11 @@ void CRigidBody::Update_RigidBody(_float fTimeDelta)
 	_float3 vScale = m_pTransformCom->Get_Scale();
 
 	WorldMatrix.r[CTransform::STATE_RIGHT] = XMVector3Normalize(XMVectorSet(PxTransform.q.getBasisVector0().x, PxTransform.q.getBasisVector0().y, PxTransform.q.getBasisVector0().z, 0.f)) * vScale.x;
-	WorldMatrix.r[CTransform::STATE_UP] = XMVector3Normalize(XMVectorSet(PxTransform.q.getBasisVector1().x, PxTransform.q.getBasisVector1().y, PxTransform.q.getBasisVector1().z, 0.f)) * vScale.x;
-	WorldMatrix.r[CTransform::STATE_LOOK] = XMVector3Normalize(XMVectorSet(PxTransform.q.getBasisVector2().x, PxTransform.q.getBasisVector2().y, PxTransform.q.getBasisVector2().z, 0.f)) * vScale.x;
+	WorldMatrix.r[CTransform::STATE_UP] = XMVector3Normalize(XMVectorSet(PxTransform.q.getBasisVector1().x, PxTransform.q.getBasisVector1().y, PxTransform.q.getBasisVector1().z, 0.f)) * vScale.y;
+	WorldMatrix.r[CTransform::STATE_LOOK] = XMVector3Normalize(XMVectorSet(PxTransform.q.getBasisVector2().x, PxTransform.q.getBasisVector2().y, PxTransform.q.getBasisVector2().z, 0.f)) * vScale.z;
 	WorldMatrix.r[CTransform::STATE_POSITION] = XMVectorSet(PxTransform.p.x, PxTransform.p.y, PxTransform.p.z, 1.f);
 
 	m_pOriginal_OBB->Transform(*m_pOBB, WorldMatrix);
-
-	WorldMatrix.r[CTransform::STATE_POSITION] = XMVector3TransformCoord(WorldMatrix.r[CTransform::STATE_POSITION] + XMLoadFloat3(&m_vOffsetPos), WorldMatrix);
 	m_pTransformCom->Set_WorldMatrix(WorldMatrix);
 	m_bFirst = false;
 }
@@ -142,13 +138,36 @@ HRESULT CRigidBody::Render()
 
 void CRigidBody::Set_Sleep(_bool bSleep)
 {
-	m_pXBody->setSleepThreshold(bSleep);
+	m_pXBody->setActorFlag(PxActorFlag::eDISABLE_SIMULATION, bSleep);
 }
 
 _bool CRigidBody::Is_Sleep()
 {
 	return m_pXBody->isSleeping();
 }
+
+void CRigidBody::Add_Force(_vector vDir, _float fForce, _bool bClear)
+{
+	if (true == bClear)
+		m_pXBody->clearForce();
+
+	_float3 vForce = {};
+ 	XMStoreFloat3(&vForce, vDir * fForce);
+	m_pXBody->addForce(PxVec3(vForce.x, vForce.y, vForce.z), PxForceMode::eFORCE);
+}
+
+void CRigidBody::Set_Velocity(_float3 vVelocity)
+{
+	m_pXBody->setLinearVelocity(PxVec3(vVelocity.x, vVelocity.y, vVelocity.z));
+}
+
+_float3 CRigidBody::Get_Velocity()
+{
+	PxVec3 vPhysXVel = m_pXBody->getLinearVelocity();
+	_float3 vVelocity = { vPhysXVel.x, vPhysXVel.y, vPhysXVel.z };
+	return vVelocity;
+}
+
 
 
 CRigidBody* CRigidBody::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

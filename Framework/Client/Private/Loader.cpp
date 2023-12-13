@@ -148,6 +148,7 @@ HRESULT CLoader::Loading_For_Level_Test()
 	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Witch", CCharacter_Witch::Create(m_pDevice, m_pContext, L"Witch_Character", CCharacter::CHARACTER_TYPE::WITCH), LAYER_CHARACTER)))
 		return E_FAIL;
 
+
 	CMonster::MONSTER_STAT statDesc;
 	statDesc.fHp = 100;
 	statDesc.fMaxHp = 100;
@@ -158,8 +159,14 @@ HRESULT CLoader::Loading_For_Level_Test()
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Stellia", CStellia::Create(m_pDevice, m_pContext, TEXT("Stellia"), statDesc), LAYER_MONSTER)))
 		return E_FAIL;
 
+
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Witch", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Test/", L"Witch")))
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Stellia", CModel::TYPE_ANIM,
+		L"../Bin/Resources/AnimModel/Boss/Stellia/", L"Stellia.fbx")))
+		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Witch", CModel::TYPE_ANIM, 
+		L"../Bin/Export/AnimModel/Character/Test/", L"Witch")))
 		return E_FAIL;
 	
 

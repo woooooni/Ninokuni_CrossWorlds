@@ -22,9 +22,12 @@ public:
 	void LateTick(_float fTimeDelta);
 
 public:
-	HRESULT Add_Static_Actor(const PHYSX_INIT_DESC& Desc);
-	HRESULT Add_Dynamic_Actor(const PHYSX_INIT_DESC& Desc);
+	HRESULT Add_Static_Actor(const PHYSX_INIT_DESC& Desc, _bool isKinematic = false);
+	HRESULT Add_Dynamic_Actor(const PHYSX_INIT_DESC& Desc, _bool isKinematic = false);
 	HRESULT Add_Ground(class CGameObject* pGroundObj);
+
+public:
+	HRESULT Reset_PhysX();
 
 public:
 	HRESULT Remove_Actor(_uint iObjectID, PhysXRigidType eRigidType);
@@ -47,9 +50,9 @@ public:
 
 
 private:
-	HRESULT Create_Box(const PHYSX_INIT_DESC& Desc);
-	HRESULT Create_Sphere(const PHYSX_INIT_DESC& Desc);
-	HRESULT Create_Mesh(const PHYSX_INIT_DESC& Desc);
+	HRESULT Create_Box(const PHYSX_INIT_DESC& Desc, _bool isKinematic);
+	HRESULT Create_Sphere(const PHYSX_INIT_DESC& Desc, _bool isKinematic);
+	HRESULT Create_Mesh(const PHYSX_INIT_DESC& Desc, _bool isKinematic);
 
 private:
 	
@@ -78,7 +81,7 @@ private:
 private:
 	map<_uint, PHYSX_STATIC_OBJECT_DESC> m_StaticObjects;
 	map<_uint, PHYSX_DYNAMIC_OBJECT_DESC> m_DynamicObjects;
-
+	map<_uint, PHYSX_STATIC_OBJECT_DESC> m_GroundObjects;
 
 		
 public:

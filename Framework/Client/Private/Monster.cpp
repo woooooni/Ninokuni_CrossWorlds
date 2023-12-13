@@ -111,6 +111,7 @@ void CMonster::LateTick(_float fTimeDelta)
 	}
 #endif // DEBUG
 
+	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 }
 
 HRESULT CMonster::Render()

@@ -80,19 +80,26 @@ HRESULT CStellia::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_AnimModel"), TEXT("Com_AnimShader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
 
-	/* For. ModelCom */
-	if (nullptr != m_pModelCom)
-		Safe_Release(m_pModelCom);
-
-	_tchar szFileName[MAX_PATH];
-	_tchar szExt[MAX_PATH];
-	_wsplitpath_s(L"Stellia.fbx", nullptr, 0, nullptr, 0, szFileName, MAX_PATH, szExt, MAX_PATH);
-	
-	if (FAILED(GI->Import_Model_Data(LEVEL_TEST, wstring(L"Prototype_Componenet_Model_") + szFileName, CModel::TYPE_ANIM,
-		L"../Bin/Resources/Kang/Boss/Stellia/", L"Stellia.fbx", &m_pModelCom)))
+	/* For. Com_Model */
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Stellia"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
+
+	CRigidBody::RIGID_BODY_DESC RigidDesc;
+	ZeroMemory(&RigidDesc, sizeof RigidDesc);
+
+	RigidDesc.pNavigation = m_pNavigationCom;
+	RigidDesc.pTransform = m_pTransformCom;
+
+	/* For. Com_RigidBody*/
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_RigidBody"), TEXT("Com_RigidBody"), (CComponent**)&m_pRigidBodyCom, &RigidDesc)))
+		return E_FAIL;
+
+
 	
-	m_pModelCom->Set_Owner(this);
+	
+	
+	
+	
 
 	return S_OK;
 }
@@ -141,4 +148,5 @@ void CStellia::Free()
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pModelCom);
+	Safe_Release(m_pRigidBodyCom);
 }

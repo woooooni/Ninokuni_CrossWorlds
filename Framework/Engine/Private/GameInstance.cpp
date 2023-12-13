@@ -524,14 +524,14 @@ _bool CGameInstance::Intersect_Frustum_World(_fvector vWorldPos, _float fRadius)
 	return m_pFrustum->Intersect_Frustum_World(vWorldPos, fRadius);
 }
 
-HRESULT CGameInstance::Add_Static_Actor(const PHYSX_INIT_DESC& Desc)
+HRESULT CGameInstance::Add_Static_Actor(const PHYSX_INIT_DESC& Desc, _bool isKinematic)
 {
-	return m_pPhysXManager->Add_Static_Actor(Desc);
+	return m_pPhysXManager->Add_Static_Actor(Desc, isKinematic);
 }
 
-HRESULT CGameInstance::Add_Dynamic_Actor(const PHYSX_INIT_DESC& Desc)
+HRESULT CGameInstance::Add_Dynamic_Actor(const PHYSX_INIT_DESC& Desc, _bool isKinematic)
 {
-	return m_pPhysXManager->Add_Dynamic_Actor(Desc);
+	return m_pPhysXManager->Add_Dynamic_Actor(Desc, isKinematic);
 }
 
 HRESULT CGameInstance::Add_Ground(CGameObject* pGroundObj)

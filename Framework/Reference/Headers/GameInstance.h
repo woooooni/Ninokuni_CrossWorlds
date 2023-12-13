@@ -130,8 +130,8 @@ public:
 
 
 public:
-	HRESULT Add_Static_Actor(const PHYSX_INIT_DESC& Desc);
-	HRESULT Add_Dynamic_Actor(const PHYSX_INIT_DESC& Desc);
+	HRESULT Add_Static_Actor(const PHYSX_INIT_DESC& Desc, _bool isKinematic = false);
+	HRESULT Add_Dynamic_Actor(const PHYSX_INIT_DESC& Desc, _bool isKinematic = false);
 	HRESULT Add_Ground(class CGameObject* pGroundObj);
 	HRESULT Remove_Actor(_uint iObjectID, PhysXRigidType eRigidType);
 	HRESULT Convert_Transform(class CGameObject* pObj, PxTransform& OutRef);

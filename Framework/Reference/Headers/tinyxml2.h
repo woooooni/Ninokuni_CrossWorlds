@@ -1895,14 +1895,12 @@ namespace tinyxml2
 		TIXMLASSERT(sizeof(NodeType) == PoolElementSize);
 		TIXMLASSERT(sizeof(NodeType) == pool.ItemSize());
 
-#define new new
 		NodeType* returnNode = new (pool.Alloc()) NodeType(this);
 		TIXMLASSERT(returnNode);
 		returnNode->_memPool = &pool;
 
 		_unlinked.Push(returnNode);
 		return returnNode;
-#define new DBG_NEW
 	}
 
 	/**

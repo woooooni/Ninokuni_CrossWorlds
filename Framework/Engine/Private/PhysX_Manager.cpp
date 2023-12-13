@@ -67,7 +67,7 @@ HRESULT CPhysX_Manager::Reserve_Manager()
 
 
 	PxSceneDesc SceneDesc(m_Physics->getTolerancesScale());
-	SceneDesc.gravity = PxVec3(0.0f, 0.0f, 0.0f);
+	SceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
 
 	m_Dispatcher = PxDefaultCpuDispatcherCreate(4);
 	if (!m_Dispatcher)
@@ -92,12 +92,19 @@ HRESULT CPhysX_Manager::Reserve_Manager()
 		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
 	}
 
-	m_WorldMaterial = m_Physics->createMaterial(0.f, 0.f, 0.f);
+	m_WorldMaterial = m_Physics->createMaterial(0.5f, 0.5f, 0.5f);
 
 	return S_OK;
 }
 
 void CPhysX_Manager::Tick(_float fTimeDelta)
+{
+	
+
+
+}
+
+void CPhysX_Manager::LateTick(_float fTimeDelta)
 {
 	auto iter = m_DynamicObjects.begin();
 	while (iter != m_DynamicObjects.end())
@@ -122,16 +129,11 @@ void CPhysX_Manager::Tick(_float fTimeDelta)
 		iter++;
 	}
 
-
-}
-
-void CPhysX_Manager::LateTick(_float fTimeDelta)
-{
 	m_pScene->simulate(fTimeDelta);
 	m_pScene->fetchResults(true);
 }
 
-HRESULT CPhysX_Manager::Add_Static_Actor(const PHYSX_INIT_DESC& Desc)
+HRESULT CPhysX_Manager::Add_Static_Actor(const PHYSX_INIT_DESC& Desc, _bool isKinematic)
 {
 	if (nullptr == Desc.pGameObject)
 		return E_FAIL;
@@ -156,17 +158,17 @@ HRESULT CPhysX_Manager::Add_Static_Actor(const PHYSX_INIT_DESC& Desc)
 
 	if (Desc.eColliderType == PhysXColliderType::BOX)
 	{
-		if (FAILED(Create_Box(Desc)))
+		if (FAILED(Create_Box(Desc, isKinematic)))
 			return E_FAIL;
 	}
 	else if (Desc.eColliderType == PhysXColliderType::SPHERE)
 	{
-		if (FAILED(Create_Sphere(Desc)))
+		if (FAILED(Create_Sphere(Desc, isKinematic)))
 			return E_FAIL;
 	}
 	else if (Desc.eColliderType == PhysXColliderType::MESH)
 	{
-		if (FAILED(Create_Mesh(Desc)))
+		if (FAILED(Create_Mesh(Desc, isKinematic)))
 			return E_FAIL;
 	}
 
@@ -175,7 +177,7 @@ HRESULT CPhysX_Manager::Add_Static_Actor(const PHYSX_INIT_DESC& Desc)
 	return S_OK;
 }
 
-HRESULT CPhysX_Manager::Add_Dynamic_Actor(const PHYSX_INIT_DESC& Desc)
+HRESULT CPhysX_Manager::Add_Dynamic_Actor(const PHYSX_INIT_DESC& Desc, _bool isKinematic)
 {
 	if (nullptr == Desc.pGameObject)
 		return E_FAIL;
@@ -185,17 +187,17 @@ HRESULT CPhysX_Manager::Add_Dynamic_Actor(const PHYSX_INIT_DESC& Desc)
 
 	if (Desc.eColliderType == PhysXColliderType::BOX)
 	{
-		if (FAILED(Create_Box(Desc)))
+		if (FAILED(Create_Box(Desc, isKinematic)))
 			return E_FAIL;
 	}
 	else if (Desc.eColliderType == PhysXColliderType::SPHERE)
 	{
-		if (FAILED(Create_Sphere(Desc)))
+		if (FAILED(Create_Sphere(Desc, isKinematic)))
 			return E_FAIL;
 	}
 	else if (Desc.eColliderType == PhysXColliderType::MESH)
 	{
-		if (FAILED(Create_Mesh(Desc)))
+		if (FAILED(Create_Mesh(Desc, isKinematic)))
 			return E_FAIL;
 	}
 
@@ -205,8 +207,8 @@ HRESULT CPhysX_Manager::Add_Dynamic_Actor(const PHYSX_INIT_DESC& Desc)
 HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGroundObj)
 {
 
-	auto iter = m_StaticObjects.find(pGroundObj->Get_ObjectID());
-	if (iter != m_StaticObjects.end())
+	auto iter = m_GroundObjects.find(pGroundObj->Get_ObjectID());
+	if (iter != m_GroundObjects.end())
 		return E_FAIL;
 
 	CTransform* pTransform = pGroundObj->Get_Component<CTransform>(L"Com_Transform");
@@ -296,12 +298,14 @@ HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGroundObj)
 		ObjectDesc.pActor = pActor;
 		ObjectDesc.pObject = pGroundObj;
 
-		m_StaticObjects.emplace(pGroundObj->Get_ObjectID(), ObjectDesc);
+		m_GroundObjects.emplace(pGroundObj->Get_ObjectID(), ObjectDesc);
 
 		Safe_AddRef(pGroundObj);
 	}
 	return S_OK;
 }
+
+
 
 HRESULT CPhysX_Manager::Remove_Actor(_uint iObjectID, PhysXRigidType eRigidType)
 {
@@ -335,9 +339,9 @@ HRESULT CPhysX_Manager::Remove_Actor(_uint iObjectID, PhysXRigidType eRigidType)
 }
 
 
-HRESULT CPhysX_Manager::Create_Box(const PHYSX_INIT_DESC& Desc)
+HRESULT CPhysX_Manager::Create_Box(const PHYSX_INIT_DESC& Desc, _bool isKinematic)
 {
-	PxShape* shape = m_Physics->createShape(PxBoxGeometry(Desc.vExtents.x, Desc.vExtents.y, Desc.vExtents.z), *m_WorldMaterial);
+	PxShape* shape = m_Physics->createShape(PxBoxGeometry(Desc.vExtents.x * 0.5f, Desc.vExtents.y * 0.5f, Desc.vExtents.z * 0.5f), *m_WorldMaterial);
 	shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
 
 
@@ -350,11 +354,14 @@ HRESULT CPhysX_Manager::Create_Box(const PHYSX_INIT_DESC& Desc)
 	if (Desc.eRigidType == PhysXRigidType::DYNAMIC)
 	{
 		PxRigidDynamic* pActor = m_Physics->createRigidDynamic(pxTransform);
-		pActor->setAngularDamping(10.f);
+		pActor->setAngularDamping(90.f);
 		pActor->setMaxLinearVelocity(10.f);
 
 		pActor->attachShape(*shape);
-		pActor->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
+		pActor->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, isKinematic);
+		pActor->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, true);
+		pActor->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, true);
+
 		PxRigidBodyExt::updateMassAndInertia(*pActor, 10.f); // 公霸, 包己
 		m_pScene->addActor(*pActor);
 
@@ -391,7 +398,7 @@ HRESULT CPhysX_Manager::Create_Box(const PHYSX_INIT_DESC& Desc)
 	return S_OK;
 }
 
-HRESULT CPhysX_Manager::Create_Sphere(const PHYSX_INIT_DESC& Desc)
+HRESULT CPhysX_Manager::Create_Sphere(const PHYSX_INIT_DESC& Desc, _bool isKinematic)
 {
 	PxShape* shape = m_Physics->createShape(PxSphereGeometry(Desc.fRadius), *m_WorldMaterial);
 	shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
@@ -407,7 +414,7 @@ HRESULT CPhysX_Manager::Create_Sphere(const PHYSX_INIT_DESC& Desc)
 	{
 		PxRigidDynamic* pActor = m_Physics->createRigidDynamic(pxTransform);
 		pActor->attachShape(*shape);
-		pActor->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);
+		pActor->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, isKinematic);
 		PxRigidBodyExt::updateMassAndInertia(*pActor, 10.f); // 公霸, 包己
 		m_pScene->addActor(*pActor);
 
@@ -448,7 +455,7 @@ HRESULT CPhysX_Manager::Create_Sphere(const PHYSX_INIT_DESC& Desc)
 	return S_OK;
 }
 
-HRESULT CPhysX_Manager::Create_Mesh(const PHYSX_INIT_DESC& Desc)
+HRESULT CPhysX_Manager::Create_Mesh(const PHYSX_INIT_DESC& Desc, _bool isKinematic)
 {
 	CTransform* pTransform = Desc.pGameObject->Get_Component<CTransform>(L"Com_Transform");
 	CModel* pModel = Desc.pGameObject->Get_Component<CModel>(L"Com_Model");
@@ -536,7 +543,7 @@ HRESULT CPhysX_Manager::Create_Mesh(const PHYSX_INIT_DESC& Desc)
 			if (nullptr != pRigidBody)
 				pRigidBody->Set_PhysXBody(pActor);
 
-			
+			pActor->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, isKinematic);
 			pActor->attachShape(*pShape);
 			m_pScene->addActor(*pActor);
 
@@ -688,6 +695,13 @@ HRESULT CPhysX_Manager::Convert_Transform(CGameObject* pObj, PxTransform& pxTran
 //}
 
 
+
+HRESULT CPhysX_Manager::Reset_PhysX()
+{
+
+	return S_OK;
+}
+
 void CPhysX_Manager::Free()
 {
 	for (auto& iter : m_StaticObjects)
@@ -707,6 +721,14 @@ void CPhysX_Manager::Free()
 	m_DynamicObjects.clear();
 
 
+	for (auto& iter : m_GroundObjects)
+	{
+		m_pScene->removeActor(*iter.second.pActor);
+		Safe_Release(iter.second.pObject);
+		iter.second.pActor->release();
+	}
+	m_GroundObjects.clear();
+	
 	
 
 
