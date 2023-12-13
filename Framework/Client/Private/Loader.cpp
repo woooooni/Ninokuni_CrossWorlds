@@ -14,6 +14,7 @@
 
 #include <filesystem>
 #include "Utils.h"
+#include "UI_Manager.h"
 #include "ImGui_Manager.h"
 #include "Effect_Manager.h"
 #include "Particle_Manager.h"
@@ -107,8 +108,16 @@ HRESULT CLoader::Loading_For_Level_Logo()
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(LEVEL_LOGO, TEXT("Prototype_Component_Texture_Logo_Flare"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/UI_Effect_Flare_Yellow.png"), 1))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Logo/UI_Effect_Flare_Yellow.png")))))
 		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_LOGO, TEXT("Prototype_Component_Texture_Lobby_NicknameFrame"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Lobby/UI_Lobby_NickName_Frame.png")))))
+		return E_FAIL;
+
+//	if (FAILED(GI->Add_Prototype(LEVEL_LOGO, TEXT("Prototype_Component_Texture_Lobby_Btn_GameStart"),
+//		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Lobby/UI_Btn_HighGreen.png")))))
+//		return E_FAIL;
 
 	/* For.Shader */
 	m_strLoading = TEXT("셰이더를 로딩 중 입니다.");
@@ -136,6 +145,9 @@ HRESULT CLoader::Loading_For_Level_Test()
 	/* For.Texture */
 	m_strLoading = TEXT("텍스쳐를 로딩 중 입니다.");
 
+	if (FAILED(GI->Add_Prototype(LEVEL_TEST, TEXT("Prototype_Component_Texture_GamePlay_MapName"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/MapName/MapName_%d.png"), 7))))
+		return E_FAIL;
 
 	/* For.Shader */
 	m_strLoading = TEXT("셰이더를 로딩 중 입니다.");
@@ -168,6 +180,10 @@ HRESULT CLoader::Loading_For_Level_Test()
 
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Stellia", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Boss/Stellia/", L"Stellia")))
 		return E_FAIL;
+
+
+	CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_TEST);
+
 	
 	m_strLoading = TEXT("로딩 끝.");
 	m_isFinished = true;

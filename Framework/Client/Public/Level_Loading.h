@@ -32,8 +32,9 @@ private:
 	LEVELID			m_eNextLevel = { LEVEL_END };
 	class CLoader*	m_pLoader = { nullptr };
 
+private:
+	HRESULT Ready_Layer_UI(const LAYER_TYPE eLayerType);
 	
-
 public:
 	static class CLevel_Loading* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVELID eNextLevel, const wstring& strFolderName);
 	virtual void Free() override;

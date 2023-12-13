@@ -64,7 +64,7 @@ protected:
 	CVIBuffer_Rect* m_pVIBufferCom = nullptr;
 
 protected:
-	list<CUI*> m_pChild;
+//	list<CUI*> m_pChild;
 
 	UI_INFO m_tInfo = { 0 };
 	UI_MOUSESTATE m_eMouseState = UI_MOUSESTATE::MOUSE_END;

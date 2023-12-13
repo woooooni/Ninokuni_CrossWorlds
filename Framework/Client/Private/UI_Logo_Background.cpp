@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UI_Logo_Background.h"
 #include "GameInstance.h"
+#include "UI_Flare.h"
 
 CUI_Logo_Background::CUI_Logo_Background(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_Logo_Background")
@@ -32,6 +33,14 @@ HRESULT CUI_Logo_Background::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
+	// Flare UI를 준비한다.
+	CGameObject* pFlare = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Logo_Flare"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pFlare)
+		return E_FAIL;
+
+	m_pFlare = dynamic_cast<CUI_Flare*>(pFlare);
+	m_pFlare->Set_Active(false);
+
 	return S_OK;
 }
 
@@ -45,11 +54,24 @@ void CUI_Logo_Background::Tick(_float fTimeDelta)
 		m_bTextActive = true;
 	}
 
+	if (m_bTextActive)
+	{
+		if (m_pFlare->Get_Active())
+			m_pFlare->Tick(fTimeDelta);
+		else
+			m_pFlare->Set_Active(true);
+	}
+
 	__super::Tick(fTimeDelta);
 }
 
 void CUI_Logo_Background::LateTick(_float fTimeDelta)
 {
+	if (m_bTextActive)
+	{
+		if (m_pFlare->Get_Active())
+			m_pFlare->LateTick(fTimeDelta);
+	}
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 }
@@ -65,20 +87,23 @@ HRESULT CUI_Logo_Background::Render()
 
 	if (m_bTextActive)
 	{
+		if (m_pFlare->Get_Active())
+			m_pFlare->Render();
+
 		 // Temp
 
-		CRenderer::TEXT_DESC TextDesc = {};
-		ZeroMemory(&TextDesc, sizeof(CRenderer::TEXT_DESC));
-
-		TextDesc.strText = L"Press Any Key";
-		TextDesc.strFontTag = L"Default_Bold";
-		TextDesc.vPosition = _float2(g_iWinSizeX * 0.5f - 100.f, g_iWinSizeY * 0.5f + 200.f);
-		TextDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
-		TextDesc.fAngle = 0.f;
-		TextDesc.vOrigin = { 0.f, 0.f };
-		TextDesc.vScale = { 0.8f, 0.8f };
-
-		m_pRendererCom->Add_Text(TextDesc);
+//		CRenderer::TEXT_DESC TextDesc = {};
+//		ZeroMemory(&TextDesc, sizeof(CRenderer::TEXT_DESC));
+//
+//		TextDesc.strText = L"Press Any Key";
+//		TextDesc.strFontTag = L"Default_Bold";
+//		TextDesc.vPosition = _float2(g_iWinSizeX * 0.5f - 100.f, g_iWinSizeY * 0.5f + 200.f);
+//		TextDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+//		TextDesc.fAngle = 0.f;
+//		TextDesc.vOrigin = { 0.f, 0.f };
+//		TextDesc.vScale = { 0.8f, 0.8f };
+//
+//		m_pRendererCom->Add_Text(TextDesc);
 	}
 
 	return S_OK;
@@ -93,9 +118,6 @@ HRESULT CUI_Logo_Background::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_LOGO, TEXT("Prototype_Component_Texture_Logo_Background_Frames"),
 		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 		return E_FAIL;
-//	if (FAILED(__super::Add_Component(LEVEL_LOGO, TEXT("Prototype_Component_Texture_Logo_Background"),
-//		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
-//		return E_FAIL;
 
 	return S_OK;
 }
@@ -113,7 +135,7 @@ HRESULT CUI_Logo_Background::Ready_State()
 
 	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
+		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.1f, 1.f));
 
 	return S_OK;
 }
@@ -131,8 +153,6 @@ HRESULT CUI_Logo_Background::Bind_ShaderResources()
 
 	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", (_uint)m_fFrame)))
 		return E_FAIL;
-//	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", 0)))
-//		return E_FAIL;
 
 	return S_OK;
 }
@@ -167,5 +187,6 @@ void CUI_Logo_Background::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pFlare);
 	Safe_Release(m_pTextureCom);
 }

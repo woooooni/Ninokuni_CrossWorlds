@@ -30,6 +30,9 @@ HRESULT CLevel_Loading::Initialize(LEVELID eNextLevel, const wstring& strFolderN
 	if (nullptr == m_pLoader)
 		return E_FAIL;
 
+	if (FAILED(Ready_Layer_UI(LAYER_TYPE::LAYER_UI)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -92,6 +95,17 @@ HRESULT CLevel_Loading::Exit_Level()
 	return S_OK;
 }
 
+
+HRESULT CLevel_Loading::Ready_Layer_UI(const LAYER_TYPE eLayerType)
+{
+	if (FAILED(GI->Add_GameObject(LEVEL_LOADING, _uint(eLayerType), TEXT("Prototype_GameObject_UI_Loading_Background"))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_GameObject(LEVEL_LOADING, _uint(eLayerType), TEXT("Prototype_GameObject_UI_Loading_CharacterUI"))))
+		return E_FAIL;
+
+	return S_OK;
+}
 
 CLevel_Loading * CLevel_Loading::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, LEVELID eNextLevel, const wstring& strFolderName)
 {

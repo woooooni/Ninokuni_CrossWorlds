@@ -161,8 +161,8 @@ void CUI::Free()
 {
 	__super::Free();
 
-	for (auto& pUI : m_pChild)
-		Safe_Release(pUI);
+//	for (auto& pUI : m_pChild)
+//		Safe_Release(pUI);
 
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pRendererCom);
