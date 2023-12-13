@@ -164,9 +164,9 @@ void CEffect::LateTick(_float fTimeDelta)
 	if (true == GI->Intersect_Frustum_World(XMLoadFloat4x4(&WorldMatrix).r[CTransform::STATE_POSITION], 3.f))
 	{
 		if (m_eType == EFFECT_TYPE::EFFECT_MESH)
-			m_pRendererCom->Add_RenderGroup_Instancing_Effect(CRenderer::RENDER_EFFECT, CRenderer::SHADER_TYPE::EFFECT_MODEL, this, WorldMatrix, EffectInstanceDesc);
+			m_pRendererCom->Add_RenderGroup_Instancing_Effect(CRenderer::RENDER_EFFECT, CRenderer::INSTANCING_SHADER_TYPE::EFFECT_MODEL, this, WorldMatrix, EffectInstanceDesc);
 		else
-			m_pRendererCom->Add_RenderGroup_Instancing_Effect(CRenderer::RENDER_EFFECT, CRenderer::SHADER_TYPE::EFFECT_TEXTURE, this, WorldMatrix, EffectInstanceDesc);
+			m_pRendererCom->Add_RenderGroup_Instancing_Effect(CRenderer::RENDER_EFFECT, CRenderer::INSTANCING_SHADER_TYPE::EFFECT_TEXTURE, this, WorldMatrix, EffectInstanceDesc);
 	}
 	
 }

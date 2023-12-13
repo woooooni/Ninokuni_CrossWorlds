@@ -63,7 +63,8 @@ HRESULT CRigidBody::Initialize(void* pArg)
 
 	
 	m_pXBody = GI->Add_Dynamic_Actor(pDesc->PhysXDesc);
-	
+	if (nullptr == m_pXBody)
+		return E_FAIL;
 #ifdef _DEBUG
 	_float3 vStartPosition = pDesc->PhysXDesc.vOffsetPos;
 
@@ -104,12 +105,15 @@ void CRigidBody::Update_RigidBody(_float fTimeDelta)
 	WorldMatrix.r[CTransform::STATE_POSITION] = XMVectorSet(PxTransform.p.x, PxTransform.p.y, PxTransform.p.z, 1.f);
 	m_pTransformCom->Set_WorldMatrix(WorldMatrix);
 
+#ifdef _DEBUG
+
 	WorldMatrix.r[CTransform::STATE_POSITION] = XMVector3TransformCoord(XMLoadFloat3(&m_pOriginal_OBB->Center), WorldMatrix);
 	m_pOriginal_OBB->Transform(*m_pOBB, WorldMatrix);
 
 	WorldMatrix.r[CTransform::STATE_POSITION] = XMVector3TransformCoord(XMLoadFloat3(&m_pOriginal_Sphere->Center), WorldMatrix);
 	m_pOriginal_Sphere->Transform(*m_pSphere, WorldMatrix);
-	
+#endif
+
 	m_bFirst = false;
 }
 
@@ -207,14 +211,16 @@ void CRigidBody::Free()
 {
 	__super::Free();
 	// m_pXBody는 PhysXManager에서 자동으로 삭제되낟.
+	
 #ifdef _DEBUG
 	if (false == m_isCloned)
 	{
 		Safe_Delete(m_pBatch);
 		Safe_Delete(m_pEffect);
+		Safe_Release(m_pInputLayout);
 	}
 
-	Safe_Release(m_pInputLayout);
+	
 
 	Safe_Delete(m_pOriginal_OBB);
 	Safe_Delete(m_pOBB);

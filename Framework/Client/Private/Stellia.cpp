@@ -29,6 +29,7 @@ HRESULT CStellia::Initialize(void* pArg)
 	if (FAILED(Ready_States()))
 		return E_FAIL;
 
+	// m_pModelCom->Set_Animation(GI->RandomInt(0, 2));
 
 	return S_OK;
 }
@@ -52,6 +53,8 @@ HRESULT CStellia::Render()
 
 HRESULT CStellia::Render_ShadowDepth()
 {
+	__super::Render_ShadowDepth();
+
 	return S_OK;
 }
 
@@ -72,13 +75,15 @@ HRESULT CStellia::Ready_Components()
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 		return E_FAIL;
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(GI->RandomFloat(-100.f, 100.f), GI->RandomFloat(-5.f, 5.f), GI->RandomFloat(-100.f, 100.f), 1.f));
 	
 	/* For.Com_Renderer */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
 		return E_FAIL;
 
 	/* For.Com_Shader */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_AnimModel"), TEXT("Com_AnimShader"), (CComponent**)&m_pShaderCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_AnimModel"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
 
 	/* For. Com_Model */
@@ -90,7 +95,7 @@ HRESULT CStellia::Ready_Components()
 	RigidDesc.pTransform = m_pTransformCom;
 
 
-	RigidDesc.PhysXDesc.vOffsetPos = { 0.f, 2.5f, 0.f };
+	RigidDesc.PhysXDesc.vOffsetPos = { 0.f, 0.f, 0.f };
 	RigidDesc.PhysXDesc.vExtents = { 5.f, 5.f, 10.f };
 	
 	RigidDesc.PhysXDesc.eColliderType = PHYSX_COLLIDER_TYPE::BOX;
@@ -111,13 +116,11 @@ HRESULT CStellia::Ready_Components()
 
 	RigidDesc.PhysXDesc.fMaxVelocity = 10.f;
 	RigidDesc.PhysXDesc.pGameObject = this;
-
-	RigidDesc.PhysXDesc.bKinematic = false;
+	RigidDesc.PhysXDesc.bKinematic = true;
 
 	/* For. Com_RigidBody*/
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_RigidBody"), TEXT("Com_RigidBody"), (CComponent**)&m_pRigidBodyCom, &RigidDesc)))
 		return E_FAIL;
-
 
 	return S_OK;
 }
@@ -145,7 +148,7 @@ CStellia* CStellia::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 	return pInstance;
 }
 
-CMonster* CStellia::Clone(void* pArg)
+CStellia* CStellia::Clone(void* pArg)
 {
 	CStellia* pInstance = new CStellia(*this);
 
@@ -162,9 +165,4 @@ void CStellia::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pTransformCom);
-	Safe_Release(m_pRendererCom);
-	Safe_Release(m_pShaderCom);
-	Safe_Release(m_pModelCom);
-	Safe_Release(m_pRigidBodyCom);
 }

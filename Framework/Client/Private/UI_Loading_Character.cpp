@@ -166,6 +166,5 @@ CGameObject* CUI_Loading_Character::Clone(void* pArg)
 void CUI_Loading_Character::Free()
 {
 	__super::Free();
-
 	Safe_Release(m_pTextureCom);
 }

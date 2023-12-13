@@ -1,4 +1,3 @@
-
 #include "Engine_Shader_Defines.hpp"
 
 matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
@@ -12,7 +11,6 @@ float			g_fDissolveWeight;
 float4			g_vDissolveColor = { 0.6f, 0.039f, 0.039f, 1.f };
 float4			g_vRimColor = { 0.f, 0.f, 0.f, 0.f };
 float4			g_vCamPosition;
-
 
 struct KeyframeDesc
 {
@@ -35,9 +33,8 @@ struct TweenFrameDesc
 	float fPadding;
 };
 
-TweenFrameDesc  g_TweenFrames;
+TweenFrameDesc  g_TweenFrames_Array[300];
 Texture2DArray  g_TransformMap;
-
 
 struct VS_IN
 {
@@ -47,6 +44,13 @@ struct VS_IN
 	float3		vTangent		: TANGENT;
 	uint4		vBlendIndex		: BLENDINDEX;
 	float4		vBlendWeight	: BLENDWEIGHT;
+
+	float4		vRight			: TEXCOORD1;
+	float4		vUp				: TEXCOORD2;
+	float4		vLook			: TEXCOORD3;
+	float4		vTranslation	: TEXCOORD4;
+
+	uint		iInstanceID		: SV_INSTANCEID;
 };
 
 struct VS_OUT
@@ -58,6 +62,8 @@ struct VS_OUT
 	float3		vBinormal		: BINORMAL;
 	float4		vProjPos		: TEXCOORD1;
 	float4		vWorldPosition	: TEXCOORD2;
+
+	uint		iInstanceID		: SV_INSTANCEID;
 };
 
 matrix GetAnimationMatrix(VS_IN input)
@@ -71,16 +77,16 @@ matrix GetAnimationMatrix(VS_IN input)
 	float ratio[2];
 
 	/* cur */
-	animIndex[0] = g_TweenFrames.cur.iAnimIndex;
-	currFrame[0] = g_TweenFrames.cur.iCurFrame;
-	nextFrame[0] = g_TweenFrames.cur.iNextFrame;
-	ratio[0] = g_TweenFrames.cur.fRatio;
+	animIndex[0]	= g_TweenFrames_Array[input.iInstanceID].cur.iAnimIndex;
+	currFrame[0]	= g_TweenFrames_Array[input.iInstanceID].cur.iCurFrame;
+	nextFrame[0]	= g_TweenFrames_Array[input.iInstanceID].cur.iNextFrame;
+	ratio[0]		= g_TweenFrames_Array[input.iInstanceID].cur.fRatio;
 
 	/* next */
-	animIndex[1] = g_TweenFrames.next.iAnimIndex;
-	currFrame[1] = g_TweenFrames.next.iCurFrame;
-	nextFrame[1] = g_TweenFrames.next.iNextFrame;
-	ratio[1] = g_TweenFrames.next.fRatio;
+	animIndex[1]	= g_TweenFrames_Array[input.iInstanceID].next.iAnimIndex;
+	currFrame[1]	= g_TweenFrames_Array[input.iInstanceID].next.iCurFrame;
+	nextFrame[1]	= g_TweenFrames_Array[input.iInstanceID].next.iNextFrame;
+	ratio[1]		= g_TweenFrames_Array[input.iInstanceID].next.fRatio;
 
 	float4 c0, c1, c2, c3;
 	float4 n0, n1, n2, n3;
@@ -122,7 +128,7 @@ matrix GetAnimationMatrix(VS_IN input)
 
 			matrix nextResult = lerp(curr, next, ratio[1]);
 
-			result = lerp(result, nextResult, g_TweenFrames.fTweenRatio);
+			result = lerp(result, nextResult, g_TweenFrames_Array[input.iInstanceID].fTweenRatio);
 		}
 
 		transform += mul(weights[i], result);
@@ -131,31 +137,29 @@ matrix GetAnimationMatrix(VS_IN input)
 	return transform;
 }
 
-
 VS_OUT VS_MAIN(VS_IN In)
 {
 	VS_OUT		Out = (VS_OUT)0;
 
-	matrix		matWV, matWVP;
+	matrix BoneMatrix	= GetAnimationMatrix(In);
+	vector vPosition	= mul(vector(In.vPosition, 1.f), BoneMatrix);
+	vector vNormal = mul(vector(In.vNormal, 0.f), BoneMatrix);
+	vector vTangent = mul(vector(In.vTangent, 0.f), BoneMatrix);
 
+	float4x4 InstanceWorld = float4x4(In.vRight, In.vUp, In.vLook, In.vTranslation);
+	matrix matWV	= mul(InstanceWorld, g_ViewMatrix);
+	matrix matWVP	= mul(matWV, g_ProjMatrix);
 
-	matWV = mul(g_WorldMatrix, g_ViewMatrix);
-	matWVP = mul(matWV, g_ProjMatrix);
+	
 
-	float4x4	BoneMatrix = GetAnimationMatrix(In);
-
-	vector		vPosition = mul(vector(In.vPosition, 1.f), BoneMatrix);
-	vector		vNormal = mul(vector(In.vNormal, 0.f), BoneMatrix);
-	vector		vTangent = mul(vector(In.vTangent, 0.f), BoneMatrix);
-
-	Out.vPosition = mul(vPosition, matWVP);
-	Out.vWorldPosition = mul(vPosition, g_WorldMatrix);
-	Out.vWorldPosition = mul(vPosition, g_WorldMatrix);
-	Out.vNormal = normalize(mul(vNormal, g_WorldMatrix));
-	Out.vTangent = normalize(mul(vTangent, g_WorldMatrix)).xyz;
-	Out.vBinormal = normalize(cross(Out.vNormal, Out.vTangent));
-	Out.vTexUV = In.vTexUV;
-	Out.vProjPos = Out.vPosition;
+	Out.vPosition		= mul(vPosition, matWVP);
+	Out.vWorldPosition	= mul(vPosition, InstanceWorld);
+	Out.vNormal			= normalize(mul(vNormal, InstanceWorld));
+	Out.vTangent		= normalize(mul(vTangent, InstanceWorld)).xyz;
+	Out.vBinormal		= normalize(cross(Out.vNormal, Out.vTangent));
+	Out.vTexUV			= In.vTexUV;
+	Out.vProjPos		= Out.vPosition;
+	Out.iInstanceID		= In.iInstanceID;
 
 	return Out;
 }
@@ -177,8 +181,6 @@ struct PS_OUT
 	float4		vNormal : SV_TARGET1;
 	float4		vDepth : SV_TARGET2;
 };
-
-
 
 PS_OUT PS_MAIN(PS_IN In)
 {
@@ -205,7 +207,7 @@ PS_OUT PS_MAIN_NORMAL(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
-	
+
 	Out.vDiffuse = g_DiffuseTexture.Sample(ModelSampler, In.vTexUV);
 
 
@@ -214,13 +216,13 @@ PS_OUT PS_MAIN_NORMAL(PS_IN In)
 	float3		vNormal = vTextureNormal.xyz * 2.f - 1.f;
 	float3x3	WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
 
-	
+
 	vNormal = normalize(mul(vNormal, WorldMatrix));
 
 	Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
 
-	
+
 
 	float fRimPower = 1.f - saturate(dot(vNormal.xyz, normalize((-1.f * (In.vWorldPosition - g_vCamPosition)))));
 	fRimPower = pow(fRimPower, 2.f);
@@ -234,8 +236,6 @@ PS_OUT PS_MAIN_NORMAL(PS_IN In)
 	return Out;
 }
 
-
-
 PS_OUT PS_DISSOLVE_DEAD(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
@@ -247,14 +247,14 @@ PS_OUT PS_DISSOLVE_DEAD(PS_IN In)
 
 	if ((vDissolve.r - g_fDissolveWeight) < 0.1f)
 		Out.vDiffuse = g_vDissolveColor;
-	else if((vDissolve.r - g_fDissolveWeight) < 0.115f)
+	else if ((vDissolve.r - g_fDissolveWeight) < 0.115f)
 		Out.vDiffuse = g_vDissolveColor - 0.1f;
 	else if ((vDissolve.r - g_fDissolveWeight) < 0.125f)
 		Out.vDiffuse = g_vDissolveColor - 0.1f;
 	else
 		Out.vDiffuse = g_DiffuseTexture.Sample(ModelSampler, In.vTexUV);
 
-	
+
 
 	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
@@ -264,7 +264,6 @@ PS_OUT PS_DISSOLVE_DEAD(PS_IN In)
 
 	return Out;
 }
-
 
 // ±×¸²ÀÚ ÇÈ¼¿ ½¦ÀÌ´õ.
 struct PS_OUT_SHADOW_DEPTH
@@ -278,7 +277,7 @@ PS_OUT_SHADOW_DEPTH PS_SHADOW_DEPTH(PS_IN In)
 	PS_OUT_SHADOW_DEPTH Out = (PS_OUT_SHADOW_DEPTH)0;
 
 	vector vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
-	if(vColor.a <= 0.01f)
+	if (vColor.a <= 0.01f)
 		discard;
 
 
@@ -286,8 +285,6 @@ PS_OUT_SHADOW_DEPTH PS_SHADOW_DEPTH(PS_IN In)
 
 	return Out;
 }
-
-
 
 
 technique11 DefaultTechnique

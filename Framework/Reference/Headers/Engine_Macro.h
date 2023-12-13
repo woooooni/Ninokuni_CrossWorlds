@@ -96,8 +96,9 @@
 
 
 // VTF
-#define MAX_MODEL_TRANSFORMS 1000
-#define MAX_MODEL_KEYFRAMES 300
+#define MAX_MODEL_TRANSFORMS 400
+#define MAX_MODEL_KEYFRAMES 400
+#define DEFAULT_TWEEN_DURATION	0.2f
 
 //
 ///*---------------

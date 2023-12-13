@@ -363,7 +363,7 @@ HRESULT CModel::Set_Animation(const _uint& iAnimationIndex, const _float& fTween
 		return S_OK;
 	}
 
-	m_TweenDesc.ClearNextAnim();
+ 	m_TweenDesc.ClearNextAnim();
 	m_TweenDesc.next.iAnimIndex = iAnimationIndex % m_Animations.size();
 	m_TweenDesc.fTweenDuration = fTweenDuration;
 
@@ -482,8 +482,7 @@ HRESULT CModel::Render_Instancing(CShader* pShader, _uint iMeshIndex, CVIBuffer_
 {
 	if (TYPE_ANIM == m_eModelType)
 	{
-		m_Meshes[iMeshIndex]->SetUp_BoneMatrices(m_pMatrixTexture, m_Matrices, XMLoadFloat4x4(&m_PivotMatrix));
-		if (FAILED(pShader->Bind_Texture("g_MatrixPallete", m_pSRV)))
+		if (FAILED(pShader->Bind_Texture("g_TransformMap", m_pSRV)))
 			return E_FAIL;
 	}
 

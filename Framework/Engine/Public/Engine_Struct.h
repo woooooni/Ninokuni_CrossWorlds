@@ -217,6 +217,14 @@ namespace Engine
 		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
 	} VTXMODELINSTANCE_DECLARATION;
 
+	typedef struct ENGINE_DLL tagVertexAnimModelInstance_Declaration
+	{
+		/* 내가 그릴려고 했던 정점(VTXTEX)과 해당 모델의 로컬 상탤르 ㄹ표현하는
+		VTXINSTANCE의 정보가 함께 셰이더로 전달되어야한다. */
+		static const unsigned int iNumElements = 10;
+		static const D3D11_INPUT_ELEMENT_DESC Elements[iNumElements];
+	} VTXANIMMODELINSTANCE_DECLARATION;
+
 	typedef struct ENGINE_DLL tagVertexPointInstance_Declaration
 	{
 		/* 내가 그릴려고 했던 정점(VTXTEX)과 해당 모델의 로컬 상탤르 ㄹ표현하는
@@ -235,6 +243,56 @@ namespace Engine
 		unsigned int	iWinSizeX, iWinSizeY;
 
 	} GRAPHIC_DESC;
+
+#pragma region TweenDesc
+	typedef struct	KeyframeDesc
+	{
+		_int	iAnimIndex = -1;
+		_uint	iCurFrame = 0;
+		_uint	iNextFrame = 1;
+		_float	fRatio = 0.f;
+		_float	fFrameAcc = 0.f;
+		_float3 vPadding = {};
+
+		void ClearAnim()
+		{
+			iCurFrame = 0;
+			iNextFrame = 1;
+			fRatio = 0.f;
+			fFrameAcc = 0.f;
+		}
+
+	}KEYFRAME_DESC;
+
+	typedef struct	TweenDesc
+	{
+		KEYFRAME_DESC cur = {};
+		KEYFRAME_DESC next = {};
+
+		_float fTweenDuration = DEFAULT_TWEEN_DURATION;
+		_float fTweenRatio = 0.f;
+		_float fTweenAcc = 0.f;
+		_float fPadding = 0.f;
+
+		TweenDesc()
+		{
+			cur.iAnimIndex = 0;
+			next.iAnimIndex = -1;
+		}
+
+		void ClearNextAnim()
+		{
+			next.iAnimIndex = -1;
+			next.iCurFrame = 0;
+			next.iNextFrame = 1;
+
+			fTweenAcc = 0.f;
+			fTweenRatio = 0.f;
+			fTweenDuration = DEFAULT_TWEEN_DURATION;
+		}
+
+	}TWEEN_DESC;
+#pragma endregion
 
 #pragma region PhysXDesc
 	typedef struct tagPhysXDesc

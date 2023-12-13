@@ -156,13 +156,10 @@ HRESULT CStaticObject::Ready_ModelCom(_uint eType, const wstring& strFilePath, c
 	_wsplitpath_s(strFileName.c_str(), nullptr, 0, nullptr, 0, szFileName, MAX_PATH, szExt, MAX_PATH);
 
 	m_strMapObjName = szFileName;
-
-	
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, wstring(L"Prototype_Component_Model_") + szFileName,
-		eType, strFilePath, strFileName, &m_pModelCom)))
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, wstring(L"Prototype_Component_Model_") + szFileName, eType, strFilePath, strFileName)))
 		return E_FAIL;
 
-	m_pModelCom->Set_Owner(this);
+
 
 	return S_OK;
 }

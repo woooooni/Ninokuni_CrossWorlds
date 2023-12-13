@@ -33,7 +33,7 @@ public: /* 이 셰이더의 특정 패스로 그린다. */
 	HRESULT Begin(_uint iPassIndex);
 
 private:
-	ID3DX11Effect* m_pEffect = nullptr;
+	ID3DX11Effect*				m_pEffect = nullptr;
 	vector<PASSDESC>			m_Passes;
 
 public:

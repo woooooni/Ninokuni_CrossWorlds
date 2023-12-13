@@ -184,10 +184,10 @@ void CShader::Free()
 
 	for (auto& PassDesc : m_Passes)
 	{
+		Safe_Release(PassDesc.pPass);
 		Safe_Release(PassDesc.pInputLayout);
 	}
 
 	m_Passes.clear();
-
 	Safe_Release(m_pEffect);
 }

@@ -216,8 +216,6 @@ HRESULT CLoader::Loading_For_Level_Tool()
 		CTerrain::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_TERRAIN)))
 		return E_FAIL;
 
-
-
 	if (FAILED(Loading_Proto_AllObjects(L"../Bin/Export/NonAnimModel/Map/")))
 		return E_FAIL;
 		

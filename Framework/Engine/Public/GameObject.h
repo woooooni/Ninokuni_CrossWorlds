@@ -27,7 +27,15 @@ public:
 	virtual HRESULT Render();
 	virtual HRESULT Render_ShadowDepth();
 
-	virtual HRESULT Render_Instance(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)		{ return S_OK; }
+	virtual HRESULT Render_Instance(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices) { return S_OK; }
+	virtual HRESULT Render_Instance_AnimModel(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer, 
+		const vector<_float4x4>& WorldMatrices,
+		const vector<TWEEN_DESC>& TweenDesc) { return S_OK; }
+
+	virtual HRESULT Render_Instance_AnimModel_Shadow(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer,
+		const vector<_float4x4>& WorldMatrices,
+		const vector<TWEEN_DESC>& TweenDesc) { return S_OK; }
+
 	virtual HRESULT Render_Instance_Shadow(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices) { return S_OK; }
 
 public:

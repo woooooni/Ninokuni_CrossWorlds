@@ -4,59 +4,10 @@
 
 BEGIN(Engine)
 
-#define DEFAULT_TWEEN_DURATION	0.2f
-
 class ENGINE_DLL CModel final : public CComponent
 {
 public:
 	enum TYPE { TYPE_NONANIM, TYPE_ANIM, TYPE_END };
-
-	typedef struct	KeyframeDesc
-	{
-		_int	iAnimIndex	= -1;
-		_uint	iCurFrame	= 0;
-		_uint	iNextFrame	= 1;
-		_float	fRatio		= 0.f;
-		_float	fFrameAcc	= 0.f;
-
-		void ClearAnim()
-		{
-			iCurFrame		= 0;
-			iNextFrame		= 1;
-			fRatio			= 0.f;
-			fFrameAcc		= 0.f;
-		}
-
-	}KEYFRAME_DESC;
-
-	typedef struct	TweenDesc
-	{
-		KEYFRAME_DESC cur	= {};
-		KEYFRAME_DESC next	= {};
-
-		_float fTweenDuration	= DEFAULT_TWEEN_DURATION;
-		_float fTweenRatio		= 0.f;
-		_float fTweenAcc		= 0.f;
-		_float fPadding			= 0.f;
-
-		TweenDesc()
-		{
-			cur.iAnimIndex	= 0;
-			next.iAnimIndex = -1;
-		}
-
-		void ClearNextAnim()
-		{
-			next.iAnimIndex = -1;
-			next.iCurFrame	= 0;
-			next.iNextFrame = 1;
-
-			fTweenAcc		= 0.f;
-			fTweenRatio		= 0.f;
-			fTweenDuration	= DEFAULT_TWEEN_DURATION;
-		}
-
-	}TWEEN_DESC;
 
 private:
 	CModel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

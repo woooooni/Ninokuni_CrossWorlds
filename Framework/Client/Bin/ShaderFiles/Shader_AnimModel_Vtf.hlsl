@@ -5,7 +5,6 @@ matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 Texture2D		g_DiffuseTexture;
 Texture2D		g_NormalTexture;
 
-Texture2D		g_MatrixPallete;
 Texture2D		g_DissolveTexture;
 float			g_fDissolveWeight;
 
@@ -20,6 +19,7 @@ struct KeyframeDesc
 	uint iNextFrame;
 	float fRatio;
 	float fFrameAcc;
+	float3 vPadding;
 };
 
 struct TweenFrameDesc
