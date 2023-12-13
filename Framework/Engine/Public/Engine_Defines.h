@@ -65,7 +65,7 @@ using namespace DirectX;
 #include <array>
 #include <process.h>
 #include <stdlib.h>
-
+#include <iostream>
 
 
 #include "Engine_Macro.h"

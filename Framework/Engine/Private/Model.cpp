@@ -276,6 +276,8 @@ HRESULT CModel::LateTick(_float fTimeDelta)
 				std::clamp(m_TweenDesc.next.fRatio, 0.f, 1.f);
 			}
 		}
+
+		//cout << "ACC : " << m_TweenDesc.fTweenAcc << "\t RATIO : " << m_TweenDesc.fTweenRatio << endl;
 	}
 
 	return S_OK;

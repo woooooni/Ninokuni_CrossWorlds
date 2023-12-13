@@ -53,7 +53,7 @@ HRESULT CAnimation::Initialize_Prototype(aiAnimation* pAIAnimation)
 
 HRESULT CAnimation::Initialize(CModel* pModel)
 {
-	if (99 != GI->Get_CurrentLevel()) return S_OK;
+	//if (99 != GI->Get_CurrentLevel()) return S_OK;
 
 	for (_uint i = 0; i < m_iNumChannels; ++i)
 	{

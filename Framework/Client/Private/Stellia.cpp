@@ -32,6 +32,7 @@ HRESULT CStellia::Initialize(void* pArg)
 	// << : Test
 	if (nullptr != m_pModelCom)
 		m_pModelCom->Set_Animation(0);
+	// >> 
 
 	return S_OK;
 }
@@ -51,7 +52,8 @@ void CStellia::Tick(_float fTimeDelta)
 			iCurAnimIndex = 0;
 		m_pModelCom->Set_Animation(iCurAnimIndex);
 	}
-	
+	// >> 
+
 	__super::Tick(fTimeDelta);
 }
 
