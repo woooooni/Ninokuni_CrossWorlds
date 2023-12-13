@@ -17,7 +17,7 @@
 #include "Light.h"
 
 #ifdef _DEBUG
-#include <vld.h>
+// #include <vld.h>
 #endif
 
 CMainApp::CMainApp()	
@@ -49,7 +49,7 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 	/* 1-4. 게임내에서 사용할 레벨(씬)을 생성한다.   */
-	if (FAILED(Open_Level(LEVEL_TOOL, L"Final_Boss")))
+	if (FAILED(Open_Level(LEVEL_TEST, L"Final_Boss")))
 		return E_FAIL;
 
 	// UI Cursor
@@ -324,10 +324,6 @@ HRESULT CMainApp::Ready_Prototype_Component()
 
 #pragma endregion
 
-	/* For.Prototype_Component_Shader_Point_Instance */
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Point_Instance"),
-		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Point_Instance.hlsl"), VTXPOINTINSTANCE_DECLARATION::Elements, VTXPOINTINSTANCE_DECLARATION::iNumElements))))
-		return E_FAIL;
 
 	//// Texture
 	///* For.Prototype_Component_Texture_Effect*/

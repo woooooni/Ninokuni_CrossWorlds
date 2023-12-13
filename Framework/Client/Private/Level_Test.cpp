@@ -145,21 +145,21 @@ HRESULT CLevel_Test::Ready_Layer_Player(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Test::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 {
-	CGameObject* pTest = nullptr;
-	
-	if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prototype_GameObject_Witch"), nullptr, &pTest)))
-		return E_FAIL;
+	//CGameObject* pTest = nullptr;
+	//
+	//if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prototype_GameObject_Witch"), nullptr, &pTest)))
+	//	return E_FAIL;
 
-	PHYSX_INIT_DESC InitDesc;
-	InitDesc.eColliderType = PhysXColliderType::BOX;
-	InitDesc.eRigidType = PhysXRigidType::DYNAMIC;
-	InitDesc.vExtents = { 1.f, 1.f, 1.f };
-	InitDesc.pGameObject = pTest;
+	//PHYSX_INIT_DESC InitDesc;
+	//InitDesc.eColliderType = PhysXColliderType::BOX;
+	//InitDesc.eRigidType = PhysXRigidType::DYNAMIC;
+	//InitDesc.vExtents = { 1.f, 1.f, 1.f };
+	//InitDesc.pGameObject = pTest;
 
-	if (FAILED(GI->Add_Dynamic_Actor(InitDesc, false)))
-		return E_FAIL;
-	/*if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prototype_GameObject_Witch"))))
-		return E_FAIL;*/
+	//if (FAILED(GI->Add_Dynamic_Actor(InitDesc, false)))
+	//	return E_FAIL;
+	///*if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prototype_GameObject_Witch"))))
+	//	return E_FAIL;*/
 
 
 	return S_OK;
