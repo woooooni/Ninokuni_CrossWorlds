@@ -63,10 +63,12 @@ public:
 	void Set_TweenAnimation(_bool bTween) { m_bTweeningAnim = bTween; }
 	_bool Is_TweenAnimation() { return m_bTweeningAnim; }
 
-	const _uint& Get_MaxFrameCount() const { return m_iMaxFrameCount; }
+	const _uint Get_MaxFrameCount() const { return _uint(m_fDuration) + 1; }
 
 public:
 	HRESULT Calculate_Animation(const _uint& iFrame);
+
+	HRESULT Clear_Channels();
 
 private:
 	wstring						m_strName;
@@ -84,9 +86,6 @@ private:
 	_float						m_fSpeed = 1.f;
 	_float						m_fRatio = 0.f;
 	_float						m_fTweeningRatio = 0.f;
-
-	_uint						m_iMaxFrameCount; // 최대 프레임 사이즈
-
 
 private: /* 복제된 애니메이션 마다 따로 가진다. */
 	vector<class CHierarchyNode*>	m_HierarchyNodes;

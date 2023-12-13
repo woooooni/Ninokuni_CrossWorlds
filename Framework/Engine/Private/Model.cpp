@@ -108,8 +108,8 @@ HRESULT CModel::Initialize_Prototype(TYPE eType, const wstring& strModelFolderPa
 	if (FAILED(Ready_Animations()))
 		return E_FAIL;
 
-	if (FAILED(Ready_Animation_Texture()))
-		return E_FAIL;
+	/*if (FAILED(Ready_Animation_Texture()))
+		return E_FAIL;*/
 
 	return S_OK;
 }
@@ -282,6 +282,17 @@ HRESULT CModel::LateTick(_float fTimeDelta)
 	return S_OK;
 }
 
+const _int CModel::Get_HierarchyNodeIndex(const char* szBonename)
+{
+	for (int32 i = 0; i < m_HierarchyNodes.size(); ++i)
+	{
+		if (!strcmp(CUtils::ToString(m_HierarchyNodes[i]->Get_Name()).c_str(), szBonename))
+			return i;
+	}
+
+	return -1;
+}
+
 CHierarchyNode* CModel::Get_HierarchyNode(const wstring& strNodeName)
 {
 	auto	iter = find_if(m_HierarchyNodes.begin(), m_HierarchyNodes.end(), [&](CHierarchyNode* pNode)
@@ -304,6 +315,45 @@ CTexture* CModel::Get_MaterialTexture(_uint iMeshIndex, _uint iTextureType)
 {
 	return m_Materials[iMeshIndex].pTexture[iTextureType];
 }
+
+HRESULT CModel::Set_VtfSrv(ID3D11ShaderResourceView* pSrv)
+{
+	if (nullptr == pSrv)
+		return E_FAIL;
+
+	if (nullptr != m_pSRV)
+		Safe_Release(m_pSRV);
+
+	m_pSRV = pSrv;
+	Safe_AddRef(m_pSRV);
+
+	return S_OK;
+}
+
+HRESULT CModel::Clear_NotUsedData()
+{
+	/* HierarchyNodes */
+	{
+		/*for (auto& pHierarchyNode : m_HierarchyNodes)
+		{
+			Safe_Release(pHierarchyNode);
+
+			if(nullptr != pHierarchyNode)
+				Safe_Release(pHierarchyNode);
+		}
+
+		m_HierarchyNodes.clear();*/
+	}
+
+
+	/* Animations */
+	{
+		for (auto& pAnimation : m_Animations)
+			pAnimation->Clear_Channels();
+	}
+	return S_OK;
+}
+
 
 HRESULT CModel::Set_Animation(const _uint& iAnimationIndex, const _float& fTweenDuration)
 {
@@ -363,7 +413,6 @@ void CModel::Set_AnimIndex(_uint iAnimIndex)
 	{
 		m_iCurrentAnimIndex = iAnimIndex;
 	}
-	
 }
 
 void CModel::Complete_Interpolation()
@@ -372,10 +421,6 @@ void CModel::Complete_Interpolation()
 	m_iNextAnimIndex = -1;
 	m_bInterpolationAnimation = false;
 }
-
-
-
-
 
 HRESULT CModel::SetUp_OnShader(CShader* pShader, _uint iMaterialIndex, aiTextureType eTextureType, const char* pConstantName)
 {
@@ -390,7 +435,6 @@ HRESULT CModel::SetUp_OnShader(CShader* pShader, _uint iMaterialIndex, aiTexture
 
 HRESULT CModel::Play_Animation(CTransform* pTransform, _float fTimeDelta)
 {
-	
 	if (m_iCurrentAnimIndex >= m_iNumAnimations)
 		return E_FAIL;
 
@@ -402,15 +446,13 @@ HRESULT CModel::Play_Animation(CTransform* pTransform, _float fTimeDelta)
 	{
 		m_Animations[m_iCurrentAnimIndex]->Play_Animation(pTransform, fTimeDelta);
 	}
-		
-
+	
 	for (auto& pHierarchyNode : m_HierarchyNodes)
 		pHierarchyNode->Set_CombinedTransformation();
 
 	if (m_bInterpolationAnimation)	
 		return S_OK;
 	
-
 	return S_OK;
 }
 
@@ -418,16 +460,16 @@ HRESULT CModel::Render(CShader* pShader, _uint iMeshIndex, _uint iPassIndex)
 {
 	if (TYPE_ANIM == m_eModelType)
 	{
-		m_Meshes[iMeshIndex]->SetUp_BoneMatrices(m_pMatrixTexture, m_Matrices, XMLoadFloat4x4(&m_PivotMatrix));
+		/*m_Meshes[iMeshIndex]->SetUp_BoneMatrices(m_pMatrixTexture, m_Matrices, XMLoadFloat4x4(&m_PivotMatrix));
 		if (FAILED(pShader->Bind_Texture("g_MatrixPallete", m_pSRV)))
-			return E_FAIL;
+			return E_FAIL;*/
 
 		// << : VTF
-		/*if (FAILED(pShader->Bind_Texture("g_TransformMap", m_pSRV)))
+		if (FAILED(pShader->Bind_Texture("g_TransformMap", m_pSRV)))
 			return E_FAIL;
 
 		if (FAILED(pShader->Bind_RawValue("g_TweenFrames", &m_TweenDesc, sizeof(TWEEN_DESC))))
-			return E_FAIL;*/
+			return E_FAIL;
 	}
 
 	pShader->Begin(iPassIndex);
@@ -453,7 +495,6 @@ HRESULT CModel::Render_Instancing(CShader* pShader, _uint iMeshIndex, CVIBuffer_
 
 HRESULT CModel::Swap_Animation(_uint iSrcIndex, _uint iDestIndex)
 {
-
 	if (TYPE_ANIM != m_eModelType)
 		return E_FAIL;
 
@@ -471,14 +512,11 @@ HRESULT CModel::Swap_Animation(_uint iSrcIndex, _uint iDestIndex)
 
 HRESULT CModel::Delete_Animation(_uint iIndex)
 {
-
 	if (TYPE_ANIM != m_eModelType)
 		return E_FAIL;
 
 	if (0 > iIndex || m_Animations.size() <= iIndex)
 		return E_FAIL;
-
-
 
 	vector<CAnimation*>::iterator iter = m_Animations.begin();
 	iter += iIndex;
@@ -503,7 +541,6 @@ _bool CModel::Is_Animation_Finished(_uint iAnimationIndex)
 	return m_Animations[iAnimationIndex]->Is_Finished();
 }
 
-
 _int CModel::Find_AnimationIndex(const wstring& strAnimationTag)
 {
 	_int iIndex = 0;
@@ -516,15 +553,11 @@ _int CModel::Find_AnimationIndex(const wstring& strAnimationTag)
 		++iIndex;
 	}
 
-	
-
 	return -1;
 }
 
-
 HRESULT CModel::Ready_MeshContainers(_fmatrix PivotMatrix)
 {
-	/* 메시의 갯수를 얻어온다. */
 	m_iNumMeshes = m_pAIScene->mNumMeshes;
 
 	for (_uint i = 0; i < m_iNumMeshes; ++i)
@@ -544,8 +577,6 @@ HRESULT CModel::Ready_Materials(const wstring& ModelFilePath)
 	if (nullptr == m_pAIScene)
 		return E_FAIL;
 
-	/* 이 모델은 몇개의 머테리얼 정보를 이용하는가. */
-	/* 머테리얼(MATERIALDESC) : 텍스쳐[디퓨즈or앰비언트or노말or이미시브 등등등 ] */
 	m_iNumMaterials = m_pAIScene->mNumMaterials;
 
 	for (_uint i = 0; i < m_iNumMaterials; ++i)
@@ -555,12 +586,10 @@ HRESULT CModel::Ready_Materials(const wstring& ModelFilePath)
 
 		aiMaterial* pAIMaterial = m_pAIScene->mMaterials[i];
 
-		/* AI_TEXTURE_TYPE_MAX:디퓨즈or앰비언트or노말or이미시브 등등등 */
 		for (_uint j = 0; j < AI_TEXTURE_TYPE_MAX; ++j)
 		{
 			aiString		strPath;
 
-			/* 해당 재질을 표현하기위한 텍스쳐의 경로를 strPath에 받아온다. */
 			if (FAILED(pAIMaterial->GetTexture(aiTextureType(j), 0, &strPath)))
 				continue;
 
@@ -590,20 +619,10 @@ HRESULT CModel::Ready_Materials(const wstring& ModelFilePath)
 
 HRESULT CModel::Ready_HierarchyNodes(aiNode* pNode, CHierarchyNode* pParent, _uint iDepth)
 {
-	/* pParent? : 부모 노드 주소. CombinedTransformation으로 그린다.
-	CombinedTransformation놈을 만들려면 나의 Transformation * 부모의CombinedTranfsormation로 만든다. */
-	/* 그래서 부모가 필요해. */
-	/* iDepth? : Ready_HierarchyNodes함수를 재귀형태로 부르고ㅓ있기ㄸ매ㅜㄴ에 한쪽(깊이)으로 생성해나가기 때문에. */
-	/* 이후 애님에ㅣ션 재생할때 뼈의 CombinedTransformation를 만든다. */
-	/* CombinedTransformation만들려면 부모의 상태가 모두 갱신되어있어야돼. 왜 부모의 컴바인드 이용하니까.ㄴ ==
-	 부모부터 자식으로 순차적으로 CombinedTransformation를 만들어야한다라는 걸 의미.  */
-	 /* m_HierarchyNodes컨테이너는 최상위 부모가 가장 앞에 있어야한다. 이놈의 1차 자식들이 두번째에 쫙. 삼차짜식들이 그다음쫘악. */
-	 /* 각 노드마다 깊이값(몇차자식이냐? ) 을 저장해두고 나중에 정렬한다. */
 	CHierarchyNode* pHierarchyNode = CHierarchyNode::Create(pNode, pParent, iDepth++);
 
 	if (nullptr == pHierarchyNode)
 		return E_FAIL;
-
 
 	m_HierarchyNodes.push_back(pHierarchyNode);
 
@@ -623,8 +642,6 @@ HRESULT CModel::Ready_Animations()
 	{
 		aiAnimation* pAIAnimation = m_pAIScene->mAnimations[i];
 
-		/*I 애니메이션 마다 객체화 하는 이유 : 현재 재생 시간에 맞는 채널들의 뼈 상태를 셋팅한다. (조난 빡세다)
-		함수로 만들어야지뭐. */
 		CAnimation* pAnimation = CAnimation::Create(pAIAnimation);
 		if (nullptr == pAnimation)
 			return E_FAIL;
@@ -636,8 +653,7 @@ HRESULT CModel::Ready_Animations()
 
 HRESULT CModel::Ready_Animation_Texture()
 {
-
-	if (TYPE::TYPE_NONANIM == m_eModelType)
+	/*if (TYPE::TYPE_NONANIM == m_eModelType)
 		return S_OK;
 
 	m_Matrices.resize(m_HierarchyNodes.size());
@@ -648,7 +664,6 @@ HRESULT CModel::Ready_Animation_Texture()
 	TextureDesc.Width = 4096;
 	TextureDesc.Height = 2;
 
-	
 	TextureDesc.SampleDesc.Quality = 0;
 	TextureDesc.SampleDesc.Count = 1;
 	TextureDesc.MipLevels = 1;
@@ -667,13 +682,10 @@ HRESULT CModel::Ready_Animation_Texture()
 		return E_FAIL;
 
 	if (FAILED(m_pDevice->CreateShaderResourceView(m_pMatrixTexture, nullptr, &m_pSRV)))
-		return E_FAIL;
+		return E_FAIL;*/
 
 	return S_OK;
 }
-
-
-
 
 CModel* CModel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TYPE eType, const wstring& strModelFilePath, const wstring& strModelFileName, _fmatrix PivotMatrix)
 {
@@ -692,6 +704,7 @@ CModel* CModel::Create_Bin(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 {
 	CModel* pInstance = new CModel(pDevice, pContext);
 	pInstance->m_bFromBinary = true;
+
 	return pInstance;
 }
 
@@ -721,8 +734,6 @@ CComponent* CModel::Clone(void* pArg)
 void CModel::Free()
 {
 	__super::Free();
-
-	
 
 	for (auto& Material : m_Materials)
 	{

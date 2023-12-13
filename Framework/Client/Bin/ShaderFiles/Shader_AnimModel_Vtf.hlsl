@@ -38,23 +38,23 @@ Texture2DArray  g_TransformMap;
 
 struct VS_IN
 {
-	float3		vPosition : POSITION;
-	float3		vNormal : NORMAL;
-	float2		vTexUV : TEXCOORD0;
-	float3		vTangent : TANGENT;
-	uint4		vBlendIndex : BLENDINDEX;
-	float4		vBlendWeight : BLENDWEIGHT;
+	float3		vPosition		: POSITION;
+	float3		vNormal			: NORMAL;
+	float2		vTexUV			: TEXCOORD0;
+	float3		vTangent		: TANGENT;
+	uint4		vBlendIndex		: BLENDINDEX;
+	float4		vBlendWeight	: BLENDWEIGHT;
 };
 
 struct VS_OUT
 {
-	float4		vPosition : SV_POSITION0;
-	float4		vNormal : NORMAL;
-	float2		vTexUV : TEXCOORD0;
-	float3		vTangent : TANGENT;
-	float3		vBinormal : BINORMAL;
-	float4		vProjPos : TEXCOORD1;
-	float4		vWorldPosition : TEXCOORD2;
+	float4		vPosition		: SV_POSITION0;
+	float4		vNormal			: NORMAL;
+	float2		vTexUV			: TEXCOORD0;
+	float3		vTangent		: TANGENT;
+	float3		vBinormal		: BINORMAL;
+	float4		vProjPos		: TEXCOORD1;
+	float4		vWorldPosition	: TEXCOORD2;
 };
 
 matrix GetAnimationMatrix(VS_IN input)
@@ -68,16 +68,16 @@ matrix GetAnimationMatrix(VS_IN input)
 	float ratio[2];
 
 	/* cur */
-	animIndex[0] = g_TweenFrames.cur.iAnimIndex;
-	currFrame[0] = g_TweenFrames.cur.iCurFrame;
-	nextFrame[0] = g_TweenFrames.cur.iNextFrame;
-	ratio[0] = g_TweenFrames.cur.fRatio;
+	animIndex[0]	= g_TweenFrames.cur.iAnimIndex;
+	currFrame[0]	= g_TweenFrames.cur.iCurFrame;
+	nextFrame[0]	= g_TweenFrames.cur.iNextFrame;
+	ratio[0]		= g_TweenFrames.cur.fRatio;
 
 	/* next */
-	animIndex[1] = g_TweenFrames.next.iAnimIndex;
-	currFrame[1] = g_TweenFrames.next.iCurFrame;
-	nextFrame[1] = g_TweenFrames.next.iNextFrame;
-	ratio[1] = g_TweenFrames.next.fRatio;
+	animIndex[1]	= g_TweenFrames.next.iAnimIndex;
+	currFrame[1]	= g_TweenFrames.next.iCurFrame;
+	nextFrame[1]	= g_TweenFrames.next.iNextFrame;
+	ratio[1]		= g_TweenFrames.next.fRatio;
 
 	float4 c0, c1, c2, c3;
 	float4 n0, n1, n2, n3;

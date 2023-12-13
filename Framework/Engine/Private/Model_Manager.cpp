@@ -11,10 +11,8 @@
 #include "Channel.h"
 #include "GameInstance.h"
 
-
 USING(Engine)
 IMPLEMENT_SINGLETON(CModel_Manager);
-
 
 CModel_Manager::CModel_Manager()
 {
@@ -41,7 +39,6 @@ HRESULT CModel_Manager::Export_Model_Data(CModel* pModel, const wstring& strSubF
 
 	wstring strFinalFolderPath = m_strExportFolderPath + strSubFolderName + szOriginFileName;
 
-
 	if (FAILED(Export_Mesh(strFinalFolderPath, pModel)))
 		return E_FAIL;
 
@@ -54,10 +51,11 @@ HRESULT CModel_Manager::Export_Model_Data(CModel* pModel, const wstring& strSubF
 	if (FAILED(Export_Animation(strFinalFolderPath, pModel)))
 		return E_FAIL;
 
-	// << : VTF
-	/*if (FAILED(Create_Model_Vtf(pModel)))
-		return E_FAIL;*/
-
+	if (CModel::TYPE::TYPE_ANIM == pModel->Get_ModelType())
+	{
+		if (FAILED(Create_Model_Vtf(pModel, strFinalFolderPath)))
+			return E_FAIL;
+	}
 	return S_OK;
 }
 
@@ -65,7 +63,6 @@ HRESULT CModel_Manager::Export_Model_Data_FromPath(_uint eType, wstring strFolde
 {
 	for (auto& p : std::filesystem::directory_iterator(strFolderPath))
 	{
-
 		if (p.is_directory())
 		{
 			Export_Model_Data_FromPath(eType, p.path());
@@ -98,15 +95,15 @@ HRESULT CModel_Manager::Export_Model_Data_FromPath(_uint eType, wstring strFolde
 	return S_OK;
 }
 
-HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel)
+HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel, const wstring strFilePath)
 {
 	if (nullptr == pModel || CModel::TYPE::TYPE_ANIM != pModel->Get_ModelType())
 		return E_FAIL;
 
 	/* 01. For m_AnimTransforms */
 	/* 해당 모델이 사용하는 모든 애니메이션과 Bone의 정보를 m_AnimTransforms에 세팅한다. */
-	m_AnimationsCache = pModel->Get_Animations();
-	m_HierarchyNodes = pModel->Get_HierarchyNodes();
+	m_HierarchyNodes	= pModel->Get_HierarchyNodes();
+	m_AnimationsCache	= pModel->Get_Animations();
 
 	const _uint iAnimCount = (_uint)m_AnimationsCache.size();
 	const _uint iHiearachynodeCount = (_uint)m_HierarchyNodes.size();
@@ -198,45 +195,103 @@ HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel)
 	}
 
 	/* 04 For. Set Texture To Model */
-	if (FAILED(pModel->Set_VtfTexture(pSrv)))
+	if (FAILED(pModel->Set_VtfSrv(pSrv)))
 		return E_FAIL;
 
+	/* 05 For. Save Vtf Texture */
+	if (FAILED(Save_Model_Vtf(strFilePath, pTexture)))
+		return E_FAIL;
+
+	/* 06 For. map */
+	if (nullptr != Find_Model_Vtf(pModel->Get_Name()))
+		m_VtfTextures.emplace(pModel->Get_Name(), pSrv);
+	else
+		Safe_Release(pSrv);
+
+
+	Safe_Release(pTexture);
+
 	return S_OK;
 }
 
-HRESULT CModel_Manager::Import_Model_Vtf()
+HRESULT CModel_Manager::Save_Model_Vtf(const wstring strSaveFilePath, ID3D11Texture2D* pTexture)
 {
-	return S_OK;
-}
+	if (nullptr == pTexture)
+		return E_FAIL;
 
-ID3D11ShaderResourceView* CModel_Manager::Get_Model_Vtf(const wstring strKey)
-{
-	return nullptr;
-}
+	const wstring strFinalSaveFilePath = strSaveFilePath + L"_vtf.dds";
 
-#pragma region Import_ModelData
-
-/* 모델 컴포넌트를 생성해 컴포넌트 매니저에 프로토타입 등록시킨다. */
-HRESULT CModel_Manager::Import_Model_Data(_uint iLevelIndex, 
-	const wstring& strProtoTypeTag, 
-	_uint eType, 
-	wstring strFolderPath, 
-	wstring strFileName,
-	__out class CModel** ppOut)
-{
-	_tchar szFileName[MAX_PATH];
-	_tchar szExt[MAX_PATH];
-	_wsplitpath_s(strFileName.c_str(), nullptr, 0, nullptr, 0, szFileName, MAX_PATH, szExt, MAX_PATH);
-
-	CModel* pModel = nullptr;
-
-	if (0 == lstrcmp(szExt, L".fbx"))
+	if (FAILED(SaveDDSTextureToFile(m_pContext, pTexture, strFinalSaveFilePath.c_str())))
 	{
- 		pModel = CModel::Create(
-			m_pDevice, 
-			m_pContext, CModel::TYPE(eType), 
-			strFolderPath, strFileName, XMLoadFloat4x4(&m_PivotMatrix));
+		MSG_BOX("VTF 텍스처 저장을 실패했습니다.");
+		return E_FAIL;
+	}
+	
+	return S_OK;
+}
 
+HRESULT CModel_Manager::Load_Model_Vtf(CModel* pModel, const wstring strLoadFilePath)
+{
+	if (nullptr == pModel)
+		return E_FAIL;
+
+	ID3D11ShaderResourceView* pSrv = Find_Model_Vtf(pModel->Get_Name());
+
+	if(nullptr == pSrv)
+	{
+		/* Set File Path */
+		const wstring	strFinalLoadFilePath = strLoadFilePath + L"_vtf.dds";
+
+		if (!filesystem::exists(strFinalLoadFilePath) || !filesystem::is_regular_file(strFinalLoadFilePath))
+			return E_FAIL;
+
+		_tchar			szTextureFilePath[MAX_PATH] = TEXT("");
+		wsprintf(szTextureFilePath, strFinalLoadFilePath.c_str());
+
+		_tchar			szExt[MAX_PATH] = TEXT("");
+		_wsplitpath_s(szTextureFilePath, nullptr, 0, nullptr, 0, nullptr, 0, szExt, MAX_PATH);
+
+		/* Load Texture And Create Srv */
+		if (FALSE == lstrcmp(szExt, TEXT(".dds")))
+		{
+			if (FAILED(CreateDDSTextureFromFile(m_pDevice, szTextureFilePath, nullptr, &pSrv)))
+				return E_FAIL;
+		}
+		else
+			return E_FAIL;
+	}
+
+	if (nullptr == pSrv)
+		return E_FAIL;
+
+	/* Set To Model*/
+	if (FAILED(pModel->Set_VtfSrv(pSrv)))
+		return E_FAIL;
+
+	/* Push Map */
+	m_VtfTextures.emplace(pModel->Get_Name(), pSrv);
+
+	return S_OK;
+}
+
+ID3D11ShaderResourceView* CModel_Manager::Find_Model_Vtf(const wstring strModelName)
+{
+	auto	iter = m_VtfTextures.find(strModelName);
+
+	if (iter == m_VtfTextures.end())
+		return nullptr;
+
+	return iter->second;
+}
+
+HRESULT CModel_Manager::Import_Model_Data_From_Fbx(_uint iLevelIndex, const wstring& strProtoTypeTag, _uint eType, wstring strFolderPath, wstring strFileName, CModel** ppOut)
+{
+	CModel* pModel = nullptr; 
+	
+	/* 00. 기존 fbx 파일 임포트 루틴 */
+	{
+		pModel = CModel::Create(m_pDevice, m_pContext, CModel::TYPE(eType), strFolderPath, strFileName, XMLoadFloat4x4(&m_PivotMatrix));
+	
 		if (nullptr == pModel)
 			return E_FAIL;
 
@@ -253,61 +308,109 @@ HRESULT CModel_Manager::Import_Model_Data(_uint iLevelIndex,
 			Safe_Release(pModel);
 			return E_FAIL;
 		}
+
+		pModel->Set_Name(strFileName);
+
+		if (ppOut != nullptr)
+		{
+			*ppOut = pModel;
+			if (*ppOut == nullptr)
+			{
+				MSG_BOX("ppOut Initialize Failed. : Model Manager");
+				return E_FAIL;
+			}
+		}
 	}
-	else 
+
+	/* 01. 더미 바이너리와 vtf를 추출하기 위한 임시 익스포트 과정 (스태시 폴더에 저장되므로 기존 파일에 대한 수정은 이루어지지 않는다) */
 	{
-		pModel = CModel::Create_Bin(
-			m_pDevice,
-			m_pContext, CModel::TYPE(eType),
-			strFolderPath, strFileName, XMLoadFloat4x4(&m_PivotMatrix));
-
-		if (nullptr == pModel)
-			return E_FAIL;
-
-		wstring strFinalFolderPath = strFolderPath + szFileName;
-
-		XMStoreFloat4x4(&pModel->m_PivotMatrix, XMLoadFloat4x4(&m_PivotMatrix));
-
-		if (FAILED(Import_Mesh(strFinalFolderPath, pModel)))
+		if (CModel::TYPE::TYPE_ANIM == pModel->Get_ModelType())
 		{
-			MSG_BOX("Import_Mesh Failed.");
+			const wstring strStashExportPath = L"../Bin/stash/stash";
+
+			if (FAILED(Export_Mesh(strStashExportPath, pModel)))
+				return E_FAIL;
+
+			if (FAILED(Export_Material(strStashExportPath, pModel)))
+				return E_FAIL;
+
+			if (CModel::TYPE::TYPE_NONANIM == pModel->Get_ModelType())
+				return S_OK;
+
+			if (FAILED(Export_Animation(strStashExportPath, pModel)))
+				return E_FAIL;
+
+			if (FAILED(Create_Model_Vtf(pModel, strStashExportPath)))
+				return E_FAIL;
+
+			/*if (FALSE == filesystem::remove_all(strStashExportPath))
+				return E_FAIL;*/
+		}
+	}
+	return S_OK;
+}
+
+HRESULT CModel_Manager::Import_Model_Data_From_Bin_In_Tool(_uint iLevelIndex, const wstring& strProtoTypeTag, _uint eType, wstring strFolderPath, wstring strFileName, CModel** ppOut)
+{
+	_tchar szFileName[MAX_PATH];
+	_tchar szExt[MAX_PATH];
+	_wsplitpath_s(strFileName.c_str(), nullptr, 0, nullptr, 0, szFileName, MAX_PATH, szExt, MAX_PATH);
+
+	CModel* pModel = CModel::Create_Bin(m_pDevice, m_pContext, CModel::TYPE(eType), strFolderPath, strFileName, XMLoadFloat4x4(&m_PivotMatrix));
+
+	if (nullptr == pModel)
+		return E_FAIL;
+
+	wstring strFinalFolderPath = strFolderPath + szFileName;
+
+	XMStoreFloat4x4(&pModel->m_PivotMatrix, XMLoadFloat4x4(&m_PivotMatrix));
+
+	if (FAILED(Import_Mesh(strFinalFolderPath, pModel)))
+	{
+		MSG_BOX("Import_Mesh Failed.");
+		Safe_Release(pModel);
+		return E_FAIL;
+	}
+
+	if (FAILED(Import_Material(strFinalFolderPath, strFolderPath, pModel)))
+	{
+		MSG_BOX("Import_Material Failed.");
+		Safe_Release(pModel);
+		return E_FAIL;
+	}
+
+	if (CModel::TYPE::TYPE_NONANIM == pModel->Get_ModelType())
+	{
+		if (FAILED(GI->Add_Prototype(iLevelIndex, strProtoTypeTag, pModel)))
+		{
+			MSG_BOX("Model Add Prototype Failed : Model Manager");
 			Safe_Release(pModel);
 			return E_FAIL;
 		}
-			
-
-		if (FAILED(Import_Material(strFinalFolderPath, strFolderPath, pModel)))
+	}
+	else
+	{
+		if (FAILED(Import_Animation(strFinalFolderPath, pModel)))
 		{
-			MSG_BOX("Import_Material Failed.");
+			MSG_BOX("Import_Animation Failed.");
 			Safe_Release(pModel);
 			return E_FAIL;
 		}
 
-		if (CModel::TYPE::TYPE_NONANIM == pModel->Get_ModelType())
+		if (FAILED(GI->Add_Prototype(iLevelIndex, strProtoTypeTag, pModel)))
 		{
-			if (FAILED(GI->Add_Prototype(iLevelIndex, strProtoTypeTag, pModel)))
-			{
-				MSG_BOX("Model Add Prototype Failed : Model Manager");
-				Safe_Release(pModel);
-				return E_FAIL;
-			}
+			MSG_BOX("Model Add Prototype Failed : Model Manager");
+			Safe_Release(pModel);
+			return E_FAIL;
 		}
-		else
-		{
-			if (FAILED(Import_Animation(strFinalFolderPath, pModel)))
-			{
-				MSG_BOX("Import_Animation Failed.");
-				Safe_Release(pModel);
-				return E_FAIL;
-			}
+	}
 
-			if (FAILED(GI->Add_Prototype(iLevelIndex, strProtoTypeTag, pModel)))
-			{
-				MSG_BOX("Model Add Prototype Failed : Model Manager");
-				Safe_Release(pModel);
-				return E_FAIL;
-			}
-		}
+	pModel->Set_Name(strFileName);
+
+	if (CModel::TYPE::TYPE_ANIM == pModel->Get_ModelType())
+	{
+		if (FAILED(Create_Model_Vtf(pModel, strFinalFolderPath)))
+			return E_FAIL;
 	}
 
 	if (ppOut != nullptr)
@@ -321,8 +424,118 @@ HRESULT CModel_Manager::Import_Model_Data(_uint iLevelIndex,
 	}
 
 	return S_OK;
-	
 }
+
+HRESULT CModel_Manager::Import_Model_Data_From_Bin_In_Game(_uint iLevelIndex, const wstring& strProtoTypeTag, _uint eType, wstring strFolderPath, wstring strFileName, CModel** ppOut)
+{
+	_tchar szFileName[MAX_PATH];
+	_tchar szExt[MAX_PATH];
+	_wsplitpath_s(strFileName.c_str(), nullptr, 0, nullptr, 0, szFileName, MAX_PATH, szExt, MAX_PATH);
+
+	CModel* pModel = CModel::Create_Bin(m_pDevice, m_pContext, CModel::TYPE(eType), strFolderPath, strFileName, XMLoadFloat4x4(&m_PivotMatrix));
+
+	if (nullptr == pModel)
+		return E_FAIL;
+
+	wstring strFinalFolderPath = strFolderPath + szFileName;
+
+	XMStoreFloat4x4(&pModel->m_PivotMatrix, XMLoadFloat4x4(&m_PivotMatrix));
+
+	if (FAILED(Import_Mesh(strFinalFolderPath, pModel)))
+	{
+		MSG_BOX("Import_Mesh Failed.");
+		Safe_Release(pModel);
+		return E_FAIL;
+	}
+
+	if (FAILED(Import_Material(strFinalFolderPath, strFolderPath, pModel)))
+	{
+		MSG_BOX("Import_Material Failed.");
+		Safe_Release(pModel);
+		return E_FAIL;
+	}
+
+	if (CModel::TYPE::TYPE_NONANIM == pModel->Get_ModelType())
+	{
+		if (FAILED(GI->Add_Prototype(iLevelIndex, strProtoTypeTag, pModel)))
+		{
+			MSG_BOX("Model Add Prototype Failed : Model Manager");
+			Safe_Release(pModel);
+			return E_FAIL;
+		}
+	}
+	else
+	{
+		if (FAILED(Import_Animation(strFinalFolderPath, pModel)))
+		{
+			MSG_BOX("Import_Animation Failed.");
+			Safe_Release(pModel);
+			return E_FAIL;
+		}
+
+		if (FAILED(GI->Add_Prototype(iLevelIndex, strProtoTypeTag, pModel)))
+		{
+			MSG_BOX("Model Add Prototype Failed : Model Manager");
+			Safe_Release(pModel);
+			return E_FAIL;
+		}
+	}
+
+	pModel->Set_Name(strFileName);
+
+	if (CModel::TYPE::TYPE_ANIM == pModel->Get_ModelType())
+	{
+		if (FAILED(Load_Model_Vtf(pModel, strFinalFolderPath)))
+			return E_FAIL;
+
+		if (FAILED(pModel->Clear_NotUsedData()))
+			return E_FAIL;
+	}
+
+	if (ppOut != nullptr)
+	{
+		*ppOut = pModel;
+		if (*ppOut == nullptr)
+		{
+			MSG_BOX("ppOut Initialize Failed. : Model Manager");
+			return E_FAIL;
+		}
+	}
+
+	return S_OK;
+}
+
+HRESULT CModel_Manager::Import_Model_Data(_uint iLevelIndex, const wstring& strProtoTypeTag, _uint eType, wstring strFolderPath, wstring strFileName, __out class CModel** ppOut)
+{
+	_tchar szFileName[MAX_PATH];
+	_tchar szExt[MAX_PATH];
+	_wsplitpath_s(strFileName.c_str(), nullptr, 0, nullptr, 0, szFileName, MAX_PATH, szExt, MAX_PATH);
+
+	const _bool bFbx = (0 == lstrcmp(szExt, L".fbx")) ? TRUE : FALSE;
+	const _bool bToolLevel = (99 == GI->Get_CurrentLevel()) ? TRUE : FALSE;
+
+	if (bFbx)
+	{
+		if (FAILED(Import_Model_Data_From_Fbx(iLevelIndex, strProtoTypeTag, eType, strFolderPath, strFileName, ppOut)))
+			return E_FAIL;
+	}
+	else
+	{
+		if (bToolLevel)
+		{
+			if (FAILED(Import_Model_Data_From_Bin_In_Tool(iLevelIndex, strProtoTypeTag, eType, strFolderPath, strFileName, ppOut)))
+				return E_FAIL;
+		}
+		else
+		{
+			if (FAILED(Import_Model_Data_From_Bin_In_Game(iLevelIndex, strProtoTypeTag, eType, strFolderPath, strFileName, ppOut)))
+				return E_FAIL;
+		}
+	}
+
+	return S_OK;
+}
+
 HRESULT CModel_Manager::Ready_Model_Data_FromPath(_uint iLevelIndex, _uint eType, const wstring& strFolderPath)
 {
 	for (auto& p : std::filesystem::directory_iterator(strFolderPath))
@@ -332,9 +545,7 @@ HRESULT CModel_Manager::Ready_Model_Data_FromPath(_uint iLevelIndex, _uint eType
 			Ready_Model_Data_FromPath(iLevelIndex, eType, p.path().wstring());
 			continue;
 		}
-			
-
-
+		
 		wstring strFilePath = CUtils::PathToWString(p.path().wstring());
 
 		_tchar strFileName[MAX_PATH];
@@ -352,9 +563,7 @@ HRESULT CModel_Manager::Ready_Model_Data_FromPath(_uint iLevelIndex, _uint eType
 	}
 	return S_OK;
 }
-#pragma endregion
 
-#pragma region Export_Mesh
 HRESULT CModel_Manager::Export_Mesh(const wstring& strFinalFolderPath, CModel* pModel)
 {
 	if (pModel == nullptr)
@@ -425,9 +634,6 @@ HRESULT CModel_Manager::Export_Mesh(const wstring& strFinalFolderPath, CModel* p
 
 	return S_OK;
 }
-#pragma endregion
-
-#pragma region Export_Material
 
 HRESULT CModel_Manager::Export_Material(const wstring& strFinalFolderPath, CModel* pModel)
 {
@@ -487,9 +693,7 @@ HRESULT CModel_Manager::Export_Material(const wstring& strFinalFolderPath, CMode
 
 	return S_OK;
 }
-#pragma endregion
 
-#pragma region Export_Animation
 HRESULT CModel_Manager::Export_Animation(const wstring& strFinalFolderPath, CModel* pModel)
 {
 	if (pModel == nullptr)
@@ -529,10 +733,6 @@ HRESULT CModel_Manager::Export_Animation(const wstring& strFinalFolderPath, CMod
 	return S_OK;
 }
 
-#pragma endregion
-
-
-#pragma region Export_Texture
 string CModel_Manager::Export_Texture(const wstring& strOriginFolder, const string& strSaveFolder, CTexture* pTexture, _uint iIdx)
 {
 	if (pTexture == nullptr)
@@ -580,9 +780,6 @@ HRESULT CModel_Manager::Create_AnimationTransform(const _uint& iAnimIndex)
 	return S_OK;
 }
 
-#pragma endregion
-
-#pragma region Import_Mesh
 HRESULT CModel_Manager::Import_Mesh(const wstring strFinalPath, CModel* pModel)
 {
 	wstring strMeshFilePath = strFinalPath + L".mesh";
@@ -688,10 +885,7 @@ HRESULT CModel_Manager::Import_Mesh(const wstring strFinalPath, CModel* pModel)
 
 	return S_OK;
 }
-#pragma endregion
 
-
-#pragma region Import_Material
 HRESULT CModel_Manager::Import_Material(const wstring strFinalPath, const wstring strFolderPath, CModel* pModel)
 {
 	if (pModel == nullptr)
@@ -780,7 +974,6 @@ HRESULT CModel_Manager::Import_Material(const wstring strFinalPath, const wstrin
 	Safe_Delete(Document);
 	return S_OK;
 }
-#pragma endregion
 
 HRESULT CModel_Manager::Import_Animation(const wstring strFinalPath, CModel* pModel)
 {
@@ -840,11 +1033,14 @@ HRESULT CModel_Manager::Import_Animation(const wstring strFinalPath, CModel* pMo
 	return S_OK;
 }
 
-
-
 void CModel_Manager::Free()
 {
 	__super::Free();
+
+	for (auto& Pair : m_VtfTextures)
+		Safe_Release(Pair.second);
+
+	m_VtfTextures.clear();
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

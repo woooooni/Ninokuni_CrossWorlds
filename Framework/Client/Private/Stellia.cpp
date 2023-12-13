@@ -29,6 +29,10 @@ HRESULT CStellia::Initialize(void* pArg)
 	if (FAILED(Ready_States()))
 		return E_FAIL;
 
+	// << : Test
+	if (nullptr != m_pModelCom)
+		m_pModelCom->Set_Animation(0);
+
 	return S_OK;
 }
 
@@ -77,7 +81,7 @@ HRESULT CStellia::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Shader */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_AnimModel"), TEXT("Com_AnimShader"), (CComponent**)&m_pShaderCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_AnimModel_Vtf"), TEXT("Com_AnimShader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
 
 	/* For. Com_Model */
@@ -94,12 +98,6 @@ HRESULT CStellia::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_RigidBody"), TEXT("Com_RigidBody"), (CComponent**)&m_pRigidBodyCom, &RigidDesc)))
 		return E_FAIL;
 
-
-	
-	
-	
-	
-	
 
 	return S_OK;
 }

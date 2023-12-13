@@ -5,6 +5,7 @@
 #include "Animation.h"
 #include "Utils.h"
 #include "Dummy.h"
+#include "Model.h"
 #include <fstream>
 
 CTool_Model::CTool_Model(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -44,135 +45,174 @@ void CTool_Model::Reset_Transform()
 void CTool_Model::Tick_Model(_float fTimeDelta)
 {
 	ImGui::Begin("Model_Tool");
-
-	if (nullptr == m_pDummy) 
 	{
-		ImGui::End();
-		return;
-	}
-
-
-	if (ImGui::Button("Reset Transform"))
-		Reset_Transform();
-
-
-	char szFilePath[MAX_PATH];
-	char szFileName[MAX_PATH];
-
-	sprintf_s(szFilePath, CUtils::ToString(m_strFilePath).c_str());
-	sprintf_s(szFileName, CUtils::ToString(m_strFileName).c_str());
-
-
-	ImGui::Text("Path");
-	IMGUI_SAME_LINE;
-	if (ImGui::InputText("##ModelPathText", szFilePath, MAX_PATH))
-	{
-		m_strFilePath = CUtils::ToWString(string(szFilePath));
-	}
-
-	ImGui::Text("File");
-	IMGUI_SAME_LINE;
-	if (ImGui::InputText("##ModelFileText", szFileName, MAX_PATH))
-	{
-		m_strFileName = CUtils::ToWString(string(szFileName));
-	}
-
-	ImGui::Text("Type");
-	IMGUI_SAME_LINE;
-	{
-		static const char* szImportModelTypes[] = { "NON_ANIM", "ANIM" };
-		static const char* szImportModelType = NULL;
-		static _int iSelectedImportModelType = -1;
-		if (ImGui::BeginCombo("##ImportModelType", szImportModelType))
+		/* Exception */
+		if (nullptr == m_pDummy) 
 		{
-			for (int n = 0; n < IM_ARRAYSIZE(szImportModelTypes); n++)
+			ImGui::End();
+			return;
+		}
+
+		/* Import */
+		{
+			ImGui::Text("Import File (Fbx)");
+			char szFilePath[MAX_PATH];
+			char szFileName[MAX_PATH];
+
+			sprintf_s(szFilePath, CUtils::ToString(m_strFilePath).c_str());
+			sprintf_s(szFileName, CUtils::ToString(m_strFileName).c_str());
+
+			/* Path */
+			if (ImGui::InputText("##ModelPathText", szFilePath, MAX_PATH))
+				m_strFilePath = CUtils::ToWString(string(szFilePath));
+			IMGUI_SAME_LINE;
+			ImGui::Text("Path");
+
+			/* File Name */
+			if (ImGui::InputText("##ModelFileText", szFileName, MAX_PATH))
+				m_strFileName = CUtils::ToWString(string(szFileName));
+			IMGUI_SAME_LINE;
+			ImGui::Text("File Name");
+
+			/* Model Type */
+			static const char* szImportModelTypes[] = { "STATIC", "ANIM" };
+			static const char* szImportModelType = NULL;
+			static _int iSelectedImportModelType = -1;
+
+			if (ImGui::BeginCombo("##ImportModelType", szImportModelType))
 			{
-				bool is_selected = (szImportModelType == szImportModelTypes[n]); // You can store your selection however you want, outside or inside your objects
-				if (ImGui::Selectable(szImportModelTypes[n], is_selected))
+				for (int n = 0; n < IM_ARRAYSIZE(szImportModelTypes); n++)
 				{
-					szImportModelType = szImportModelTypes[n];
-					iSelectedImportModelType = n;
+					bool is_selected = (szImportModelType == szImportModelTypes[n]); // You can store your selection however you want, outside or inside your objects
+					if (ImGui::Selectable(szImportModelTypes[n], is_selected))
+					{
+						szImportModelType = szImportModelTypes[n];
+						iSelectedImportModelType = n;
+					}
+
 				}
 
+				ImGui::EndCombo();
 			}
+			IMGUI_SAME_LINE;
+			ImGui::Text("Type");
 
-			ImGui::EndCombo();
-		}
-
-		if (ImGui::Button("Import"))
-		{
-			if (iSelectedImportModelType != -1)
-				m_pDummy->Ready_ModelCom(iSelectedImportModelType, m_strFilePath, m_strFileName);
-			else
-				MSG_BOX("모델 타입을 선택해주세요");
-
-		}
-
-	}
-
-	IMGUI_NEW_LINE;
-
-	static char szExportFolderName[MAX_PATH];
-	ImGui::Text("Export_Folder_Name");
-	ImGui::InputText("##ModelExportFolder", szExportFolderName, MAX_PATH);
-
-	if (ImGui::Button("Export"))
-	{
-		if (strlen(szExportFolderName) > 0)
-		{
-			if (FAILED(m_pDummy->Export_Model_Bin(CUtils::ToWString(szExportFolderName), m_strFileName)))
-				MSG_BOX("Failed Save.");
-			else
-				MSG_BOX("Save Success");
-		}
-	}
-
-	IMGUI_NEW_LINE;
-	IMGUI_NEW_LINE;
-
-	{
-		static char szAllObjectExportFolderName[MAX_PATH] = "";
-		ImGui::Text("Export_All_Object_To_SubFolder");
-		ImGui::InputText("##All_ModelExportFolder", szAllObjectExportFolderName, MAX_PATH);
-
-
-		const char* szExportModelTypes[] = { "NON_ANIM", "ANIM" };
-		static const char* szExportObjectModelType;
-		static _int iSelectedExportModelType = -1;
-		if (ImGui::BeginCombo("##ExportAllObject_ModelType", szExportObjectModelType))
-		{
-			for (int n = 0; n < IM_ARRAYSIZE(szExportModelTypes); n++)
+			/* Ibport Btn */
+			if (ImGui::Button("Import"))
 			{
-				bool is_selected = (szExportObjectModelType == szExportModelTypes[n]); // You can store your selection however you want, outside or inside your objects
-				if (ImGui::Selectable(szExportModelTypes[n], is_selected))
+				if (iSelectedImportModelType != -1)
 				{
-					szExportObjectModelType = szExportModelTypes[n];
-					iSelectedExportModelType = n;
+					if (FAILED(m_pDummy->Ready_ModelCom(iSelectedImportModelType, m_strFilePath, m_strFileName)))
+						MSG_BOX("Failed Import.");
+					else
+					{
+						MSG_BOX("Success Import.");
+						m_pDummy->Get_ModelCom()->Set_Animation(0);
+					}
 				}
+				else
+					MSG_BOX("모델 타입을 선택해주세요");
 
 			}
-			ImGui::EndCombo();
 		}
 
-		if (ImGui::Button("Export_All"))
+	
+		/* Export (One File) */
 		{
-			if (0 != strcmp(szAllObjectExportFolderName, "") && iSelectedExportModelType != -1)
+			IMGUI_NEW_LINE;
+			ImGui::Separator();
+			ImGui::Text("Export File (Binary and Vtf)");
+			char szFilePath[MAX_PATH];
+			char szFileName[MAX_PATH];
+
+			static char szExportFolderName[MAX_PATH];
+			ImGui::InputText("##ModelExportFolder", szExportFolderName, MAX_PATH);
+			IMGUI_SAME_LINE;
+			ImGui::Text("Path");
+
+			/* Export Btn*/
+			if (ImGui::Button("Export"))
 			{
-				GI->Export_Model_Data_FromPath(iSelectedExportModelType, CUtils::ToWString(szAllObjectExportFolderName));
+				if (strlen(szExportFolderName) > 0)
+				{
+					if (FAILED(m_pDummy->Export_Model_Bin(CUtils::ToWString(szExportFolderName), m_strFileName)))
+					{
+						MSG_BOX("Failed Save.");
+
+					}
+					else
+					{
+						MSG_BOX("Save Success");
+					}
+				}
 			}
-			else
+		}
+
+		/* Export (All File) */
+		{
+			IMGUI_NEW_LINE;
+			ImGui::Separator();
+			ImGui::Text("Export Files (Binary and Vtf)");
+
+			/* Path */
+			static char szAllObjectExportFolderName[MAX_PATH] = "";
+			ImGui::InputText("##All_ModelExportFolder", szAllObjectExportFolderName, MAX_PATH);
+			IMGUI_SAME_LINE;
+			ImGui::Text("Path");
+
+			/* Type */
+			const char* szExportModelTypes[] = { "STATIC", "ANIM" };
+			static const char* szExportObjectModelType = NULL;
+			static _int iSelectedExportModelType = -1;
+			if (ImGui::BeginCombo("##ExportAllObject_ModelType", szExportObjectModelType))
 			{
-				MSG_BOX("폴더 경로 혹은 모델 타입 지정을 확인하세요.");
+				for (int n = 0; n < IM_ARRAYSIZE(szExportModelTypes); n++)
+				{
+					bool is_selected = (szExportObjectModelType == szExportModelTypes[n]); 
+					if (ImGui::Selectable(szExportModelTypes[n], is_selected))
+					{
+						szExportObjectModelType = szExportModelTypes[n];
+						iSelectedExportModelType = n;
+					}
+
+				}
+				ImGui::EndCombo();
 			}
+			IMGUI_SAME_LINE;
+			ImGui::Text("Type");
+
+			/* Btn */
+			if (ImGui::Button("Export All"))
+			{
+				if (0 != strcmp(szAllObjectExportFolderName, "") && iSelectedExportModelType != -1)
+				{
+					if(FAILED(GI->Export_Model_Data_FromPath(iSelectedExportModelType, CUtils::ToWString(szAllObjectExportFolderName))))
+						MSG_BOX("Failed Export.");
+				
+				}
+				else
+				{
+					MSG_BOX("폴더 경로 혹은 모델 타입 지정을 확인하세요.");
+				}
+			}
+		}
+	
+		/* Etc */
+		{
+			IMGUI_NEW_LINE;
+			ImGui::Separator();
+			ImGui::Text("Etc");
+
+			/* Reset Transform*/
+			if (ImGui::Button("Reset Transform"))
+				Reset_Transform();
 		}
 	}
+	ImGui::End();
 
 	m_pDummy->Tick(fTimeDelta);
 	m_pDummy->LateTick(fTimeDelta);
-
-	ImGui::End();
 }
-
 
 
 void CTool_Model::Tick_Animation(_float fTimeDelta)
@@ -185,6 +225,15 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 		return;
 	}
 	
+	if (ImGui::Button("Test Animation Play"))
+	{
+
+		_uint iCurIndex = m_pDummy->Get_ModelCom()->Get_TweenDesc().cur.iAnimIndex;
+
+		m_pDummy->Get_ModelCom()->Set_Animation(++iCurIndex);
+	}
+
+
 	static char szAnimationName[255];
 	if (nullptr != m_pDummy->Get_ModelCom())
 	{
@@ -287,6 +336,7 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 	        pCurrAnimation->Set_Pause(false);
 	    }
 	            
+
 	
 	    IMGUI_SAME_LINE;
 	
@@ -321,7 +371,7 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 	    _bool bLoop = pCurrAnimation->Is_Loop();
 	    ImGui::Text("Loop");
 	    IMGUI_SAME_LINE;
-	    ImGui::Checkbox("##IsLoop", &bLoop);
+	    if(ImGui::Checkbox("##IsLoop", &bLoop))
 	    pCurrAnimation->Set_Loop(bLoop);
 	}
 	ImGui::End();
