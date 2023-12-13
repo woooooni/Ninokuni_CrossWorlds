@@ -84,14 +84,10 @@ HRESULT CStellia::Ready_Components()
 	if (nullptr != m_pModelCom)
 		Safe_Release(m_pModelCom);
 
-	_tchar szFileName[MAX_PATH];
-	_tchar szExt[MAX_PATH];
-	_wsplitpath_s(L"Stellia.fbx", nullptr, 0, nullptr, 0, szFileName, MAX_PATH, szExt, MAX_PATH);
-	
-	if (FAILED(GI->Import_Model_Data(LEVEL_TEST, wstring(L"Prototype_Componenet_Model_") + szFileName, CModel::TYPE_ANIM,
-		L"../Bin/Resources/Kang/Boss/Stellia/", L"Stellia.fbx", &m_pModelCom)))
+	/* For.Com_Model */
+	if (FAILED(__super::Add_Component(LEVEL_TEST, TEXT("Prototype_Component_Model_Stellia"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
-	
+
 	m_pModelCom->Set_Owner(this);
 
 	return S_OK;
