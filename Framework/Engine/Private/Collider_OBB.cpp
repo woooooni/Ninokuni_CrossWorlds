@@ -20,7 +20,8 @@ CCollider_OBB::CCollider_OBB(CCollider_OBB& rhs)
 
 HRESULT CCollider_OBB::Initialize_Prototype()
 {
-
+	if (FAILED(__super::Initialize_Prototype()))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -35,6 +36,26 @@ HRESULT CCollider_OBB::Initialize(void* pArg)
 
 	OBB_COLLIDER_DESC* pDesc = static_cast<OBB_COLLIDER_DESC*>(pArg);
 	m_tOriginOBB = pDesc->tBox;
+	m_tOriginOBB.Extents.x *= 0.5f;
+	m_tOriginOBB.Extents.y *= 0.5f;
+	m_tOriginOBB.Extents.z *= 0.5f;
+
+	m_vOffsetPosition = pDesc->vOffsetPosition;
+
+	PHYSX_INIT_DESC InitDesc;
+	InitDesc.eColliderType = PHYSX_COLLIDER_TYPE::BOX;
+	InitDesc.eRigidType = PHYSX_RIGID_TYPE::DYNAMIC;
+	InitDesc.vOffsetPosition = pDesc->vOffsetPosition;
+	InitDesc.vExtents = pDesc->tBox.Extents;
+	InitDesc.bKinematic = true;
+	InitDesc.pGameObject = pDesc->pOwner;
+
+	m_pPhysXActor = GI->Add_Dynamic_Actor(InitDesc);
+
+	if (nullptr == m_pPhysXActor)
+		return E_FAIL;
+
+	m_pPhysXActor->userData = this;
 
 	return S_OK;
 }
@@ -47,17 +68,17 @@ _bool CCollider_OBB::Is_Collision(CCollider* pCollider)
 	if (pCollider->Get_ColliderType() == CCollider::OBB)
 	{
 		CCollider_OBB* pOtherCollider = static_cast<CCollider_OBB*>(pCollider);
-		return m_tBoundingBox.Intersects(pOtherCollider->Get_OBB_Box());
+		return m_tOBB.Intersects(pOtherCollider->Get_OBB_Box());
 	}
 	else if (pCollider->Get_ColliderType() == CCollider::SPHERE)
 	{
 		CCollider_Sphere* pOtherCollider = static_cast<CCollider_Sphere*>(pCollider);
-		return m_tBoundingBox.Intersects(pOtherCollider->Get_Sphere());
+		return m_tOBB.Intersects(pOtherCollider->Get_Sphere());
 	}
 	else if (pCollider->Get_ColliderType() == CCollider::AABB)
 	{
 		CCollider_AABB* pOtherCollider = static_cast<CCollider_AABB*>(pCollider);
-		return m_tBoundingBox.Intersects(pOtherCollider->Get_AABB_Box());
+		return m_tOBB.Intersects(pOtherCollider->Get_AABB_Box());
 	}
 
 	return false;
@@ -68,7 +89,10 @@ _bool CCollider_OBB::Is_Collision(CCollider* pCollider)
 void CCollider_OBB::LateTick_Collider(_float fTimeDelta)
 {
 	__super::LateTick_Collider(fTimeDelta);
-	m_tOriginOBB.Transform(m_tBoundingBox, XMLoadFloat4x4(&m_FinalMatrix));
+	m_tOriginOBB.Transform(m_tOBB, XMLoadFloat4x4(&m_FinalMatrix));
+
+	PxTransform XPos(PxVec3(m_tOBB.Center.x, m_tOBB.Center.y, m_tOBB.Center.z), PxQuat(m_tOBB.Orientation.x, m_tOBB.Orientation.y, m_tOBB.Orientation.z, m_tOBB.Orientation.w));
+	m_pPhysXActor->setKinematicTarget(XPos);
 }
 
 #ifdef _DEBUG
@@ -105,7 +129,7 @@ HRESULT CCollider_OBB::Render()
 
 	m_pBatch->Begin();
 
-	DX::Draw(m_pBatch, m_tBoundingBox, XMLoadFloat4(&m_vColor));
+	DX::Draw(m_pBatch, m_tOBB, XMLoadFloat4(&m_vColor));
 	m_pBatch->End();
 
 	return S_OK;

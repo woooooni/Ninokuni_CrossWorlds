@@ -6,7 +6,7 @@
 
 BEGIN(Engine)
 
-class CPhysX_Manager final : public CBase, PxSimulationEventCallback
+class CPhysX_Manager final : public CBase, public PxSimulationEventCallback
 {
 
 public:
@@ -40,6 +40,7 @@ public:
 
 public:
 	HRESULT Remove_Actor(_uint iObjectID, PHYSX_RIGID_TYPE eRigidType);
+	HRESULT Remove_Actor(PxActor* pPhysXActor);
 
 public:
 	HRESULT Convert_Transform(class CGameObject* pObj, PxTransform& PxTransform);
@@ -111,10 +112,6 @@ private:
 		
 public:
 	virtual void Free() override;
-
-
-
-
 
 };
 

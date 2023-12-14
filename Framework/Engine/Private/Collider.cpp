@@ -17,19 +17,15 @@ CCollider::CCollider(CCollider& rhs)
 #ifdef _DEBUG
 	, m_pEffect(rhs.m_pEffect)
 	, m_pBatch(rhs.m_pBatch)
+	, m_pInputLayout(rhs.m_pInputLayout)
 #endif
 	, m_eColliderType(rhs.m_eColliderType)
 	, m_iColliderID(g_iNextID++)
 {
-
+	Safe_AddRef(m_pInputLayout);
 }
 
 HRESULT CCollider::Initialize_Prototype()
-{
-	return S_OK;
-}
-
-HRESULT CCollider::Initialize(void* pArg)
 {
 #ifdef _DEBUG
 	m_pBatch = new PrimitiveBatch<VertexPositionColor>(m_pContext);
@@ -44,9 +40,13 @@ HRESULT CCollider::Initialize(void* pArg)
 
 	if (FAILED(m_pDevice->CreateInputLayout(VertexPositionColor::InputElements, VertexPositionColor::InputElementCount, pShaderByteCodes, iLength, &m_pInputLayout)))
 		return E_FAIL;
-
 #endif
 
+	return S_OK;
+}
+
+HRESULT CCollider::Initialize(void* pArg)
+{
 	COLLIDER_DESC* pDesc = (COLLIDER_DESC*)pArg;
 
 	m_pNode = pDesc->pNode;
@@ -144,13 +144,17 @@ void CCollider::Free()
 {
 	
 #ifdef _DEBUG
-	Safe_Delete(m_pBatch);
-	Safe_Delete(m_pEffect);
+	if (false == m_isCloned)
+	{
+		Safe_Delete(m_pBatch);
+		Safe_Delete(m_pEffect);
+	}
 	Safe_Release(m_pInputLayout);
 #endif
 
 	Safe_Release(m_pNode);
 	Safe_Release(m_pOwnerTransformCom);
+	
 	
 
 	__super::Free();

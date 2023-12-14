@@ -61,7 +61,6 @@ void CGianix::Tick(_float fTimeDelta)
 		bKeyInput = true;
 		_vector vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
 		m_pTransformCom->Move(vLook, 10.f, fTimeDelta);
-		m_pRigidBodyCom->Set_Sleep(false);
 	}
 
 	if (KEY_HOLD(KEY::DOWN_ARROW))
@@ -69,7 +68,6 @@ void CGianix::Tick(_float fTimeDelta)
 		bKeyInput = true;
 		_vector vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
 		m_pTransformCom->Move(-1.f * vLook, 10.f, fTimeDelta);
-		m_pRigidBodyCom->Set_Sleep(false);
 	}
 
 	if (KEY_HOLD(KEY::LEFT_ARROW))
@@ -79,7 +77,6 @@ void CGianix::Tick(_float fTimeDelta)
 		{
 			_vector vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
 			m_pTransformCom->Move(vLook, 10.f, fTimeDelta);
-			m_pRigidBodyCom->Set_Sleep(false);
 		}
 
 
@@ -92,14 +89,13 @@ void CGianix::Tick(_float fTimeDelta)
 		{
 			_vector vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
 			m_pTransformCom->Move(vLook, 10.f, fTimeDelta);
-			m_pRigidBodyCom->Set_Sleep(false);
 		}
 
 	}
 
 	if (KEY_TAP(KEY::SPACE))
 	{
-		m_pRigidBodyCom->Add_Force(XMVectorSet(0.f, 1.f, 0.f, 0.f), 5000.f, false);
+		m_pRigidBodyCom->Add_Velocity(XMVectorSet(0.f, 1.f, 0.f, 0.f), 10.f, false);
 	}
 }
 

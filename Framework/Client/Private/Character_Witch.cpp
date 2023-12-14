@@ -61,7 +61,6 @@ void CCharacter_Witch::Tick(_float fTimeDelta)
 		bKeyInput = true;
 		_vector vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
 		m_pTransformCom->Move(vLook, 10.f, fTimeDelta);
-		m_pRigidBodyCom->Set_Sleep(false);
 	}
 
 	if (KEY_HOLD(KEY::DOWN_ARROW))
@@ -69,7 +68,6 @@ void CCharacter_Witch::Tick(_float fTimeDelta)
 		bKeyInput = true;
 		_vector vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
 		m_pTransformCom->Move(-1.f * vLook, 10.f, fTimeDelta);
-		m_pRigidBodyCom->Set_Sleep(false);
 	}
 
 	if (KEY_HOLD(KEY::LEFT_ARROW))
@@ -79,7 +77,6 @@ void CCharacter_Witch::Tick(_float fTimeDelta)
 		{
 			_vector vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
 			m_pTransformCom->Move(vLook, 10.f, fTimeDelta);
-			m_pRigidBodyCom->Set_Sleep(false);
 		}
 				
 			
@@ -92,14 +89,13 @@ void CCharacter_Witch::Tick(_float fTimeDelta)
 		{
 			_vector vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
 			m_pTransformCom->Move(vLook, 10.f, fTimeDelta);
-			m_pRigidBodyCom->Set_Sleep(false);
 		}
 		
 	}
 
 	if (KEY_TAP(KEY::SPACE))
 	{
-		m_pRigidBodyCom->Add_Force(XMVectorSet(0.f, 1.f, 0.f, 0.f), 5000.f, false);
+		m_pRigidBodyCom->Add_Velocity(XMVectorSet(0.f, 1.f, 0.f, 0.f), 10.f, false);
 	}
 }
 
@@ -167,33 +163,34 @@ HRESULT CCharacter_Witch::Ready_Components()
 
 
 	CRigidBody::RIGID_BODY_DESC RigidDesc;
-	RigidDesc.pNavigation = m_pNavigationCom;
 	RigidDesc.pTransform = m_pTransformCom;
+	//RigidDesc.pNavigation = m_pNavigationCom;
+	//
 
 
-	RigidDesc.PhysXDesc.vOffsetPos = { 0.f, 2.5f, 0.f };
-	RigidDesc.PhysXDesc.vExtents = { 5.f, 5.f, 10.f };
+	//RigidDesc.PhysXDesc.vOffsetPos = { 0.f, 2.5f, 0.f };
+	//RigidDesc.PhysXDesc.vExtents = { 5.f, 5.f, 10.f };
 
-	RigidDesc.PhysXDesc.eColliderType = PHYSX_COLLIDER_TYPE::BOX;
-	RigidDesc.PhysXDesc.eRigidType = PHYSX_RIGID_TYPE::DYNAMIC;
+	//RigidDesc.PhysXDesc.eColliderType = PHYSX_COLLIDER_TYPE::BOX;
+	//RigidDesc.PhysXDesc.eRigidType = PHYSX_RIGID_TYPE::DYNAMIC;
 
-	RigidDesc.PhysXDesc.bLockAngle_X = true;
-	RigidDesc.PhysXDesc.bLockAngle_Y = false;
-	RigidDesc.PhysXDesc.bLockAngle_Z = true;
+	//RigidDesc.PhysXDesc.bLockAngle_X = true;
+	//RigidDesc.PhysXDesc.bLockAngle_Y = false;
+	//RigidDesc.PhysXDesc.bLockAngle_Z = true;
 
-	RigidDesc.PhysXDesc.bKinematic = false;
-	RigidDesc.PhysXDesc.fAngularDamping = 30.f;
-	RigidDesc.PhysXDesc.fDensity = 1.f;
+	//RigidDesc.PhysXDesc.bKinematic = false;
+	//RigidDesc.PhysXDesc.fAngularDamping = 30.f;
+	//RigidDesc.PhysXDesc.fDensity = 1.f;
 
 
-	RigidDesc.PhysXDesc.fStaticFriction = 0.f;
-	RigidDesc.PhysXDesc.fDynamicFriction = 1.f;
-	RigidDesc.PhysXDesc.fRestitution = 0.f;
+	//RigidDesc.PhysXDesc.fStaticFriction = 0.f;
+	//RigidDesc.PhysXDesc.fDynamicFriction = 1.f;
+	//RigidDesc.PhysXDesc.fRestitution = 0.f;
 
-	RigidDesc.PhysXDesc.fMaxVelocity = 10.f;
-	RigidDesc.PhysXDesc.pGameObject = this;
+	//RigidDesc.PhysXDesc.fMaxVelocity = 10.f;
+	//RigidDesc.PhysXDesc.pGameObject = this;
 
-	RigidDesc.PhysXDesc.bKinematic = false;
+	//RigidDesc.PhysXDesc.bKinematic = false;
 
 	/* For.Com_RigidBody */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_RigidBody"), TEXT("Com_RigidBody"), (CComponent**)&m_pRigidBodyCom, &RigidDesc)))
