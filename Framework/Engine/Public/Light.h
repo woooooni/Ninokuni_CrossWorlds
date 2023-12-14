@@ -15,7 +15,7 @@ public:
 	const LIGHTDESC* Get_LightDesc() const {
 		return &m_LightDesc;
 	}
-
+	LIGHTDESC* Get_ModifyLightDesc() { return &m_LightDesc; }
 public:
 	HRESULT Initialize(const LIGHTDESC& LightDesc);
 	HRESULT Render(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);

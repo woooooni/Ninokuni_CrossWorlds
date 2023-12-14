@@ -427,24 +427,24 @@ HRESULT CLoader::Loading_Proto_AllObjects(const wstring& strPath)
 					return E_FAIL;
 				}
 			}
-			//else if (strFilePath.find(L"Grass") != wstring::npos)
-			//{
-			//	if (FAILED(GI->Add_Prototype(wstring(strFileName),
-			//		CGrass::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt), LAYER_TYPE::LAYER_GRASS)))
-			//		return E_FAIL;
-			//}
+			else if (strFilePath.find(L"Plants") != wstring::npos)
+			{
+				if (FAILED(GI->Add_Prototype(wstring(strFileName),
+					CPlants::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt, OBJ_TYPE::OBJ_GRASS, CModel::TYPE_NONANIM), LAYER_TYPE::LAYER_GRASS)))
+					return E_FAIL;
+			}
 			else if (strFilePath.find(L"Grounds") != wstring::npos)
 			{
 				if (FAILED(GI->Add_Prototype(wstring(strFileName),
 					CGrounds::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt, OBJ_TYPE::OBJ_GROUND, CModel::TYPE_NONANIM), LAYER_TYPE::LAYER_GROUND)))
 					return E_FAIL;
 			}
-			//else if (strFilePath.find(L"Rocks") != wstring::npos)
-			//{
-			//	if (FAILED(GI->Add_Prototype(wstring(strFileName),
-			//		CProp::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt), LAYER_TYPE::LAYER_GROUND)))
-			//		return E_FAIL;
-			//}
+			else if (strFilePath.find(L"Rocks And Trees") != wstring::npos)
+			{
+				if (FAILED(GI->Add_Prototype(wstring(strFileName),
+					CTreeRock::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt, OBJ_TYPE::OBJ_TREEROCK, CModel::TYPE_NONANIM), LAYER_TYPE::LAYER_TREEROCK)))
+					return E_FAIL;
+			}
 			//else if (strFilePath.find(L"Tree") != wstring::npos)
 			//{
 			//	if (FAILED(GI->Add_Prototype(wstring(strFileName),
