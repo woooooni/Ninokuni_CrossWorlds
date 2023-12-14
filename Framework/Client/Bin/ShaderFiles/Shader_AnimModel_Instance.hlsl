@@ -33,7 +33,7 @@ struct TweenFrameDesc
 	float fPadding;
 };
 
-TweenFrameDesc  g_TweenFrames_Array[300];
+TweenFrameDesc  g_TweenFrames_Array[200];
 Texture2DArray  g_TransformMap;
 
 struct VS_IN

@@ -65,6 +65,7 @@ HRESULT CRigidBody::Initialize(void* pArg)
 	m_pXBody = GI->Add_Dynamic_Actor(pDesc->PhysXDesc);
 	if (nullptr == m_pXBody)
 		return E_FAIL;
+
 #ifdef _DEBUG
 	_float3 vStartPosition = pDesc->PhysXDesc.vOffsetPos;
 
@@ -76,7 +77,6 @@ HRESULT CRigidBody::Initialize(void* pArg)
 
 	m_pOriginal_Sphere = new BoundingSphere(vStartPosition, pDesc->PhysXDesc.fRadius);
 	m_pSphere = new BoundingSphere(*m_pOriginal_Sphere);
-
 #endif
 
 	return S_OK;
@@ -164,9 +164,25 @@ void CRigidBody::Add_Force(_vector vDir, _float fForce, _bool bClear)
 		m_pXBody->clearForce();
 
 	_float3 vForce = {};
- 	XMStoreFloat3(&vForce, vDir * fForce);
+ 	XMStoreFloat3(&vForce, XMVector3Normalize(vDir) * fForce);
 	m_pXBody->addForce(PxVec3(vForce.x, vForce.y, vForce.z), PxForceMode::eFORCE);
 }
+
+void CRigidBody::Add_Velocity(_vector vDir, _float fForce, _bool bClear)
+{
+	PxVec3 vVelocity = { 0.f, 0.f, 0.f };
+
+	if (false == bClear)
+		vVelocity += m_pXBody->getLinearVelocity();
+
+	_float3 vInputVelocity = {};
+	XMStoreFloat3(&vInputVelocity, vDir * fForce);
+	vVelocity += PxVec3(vInputVelocity.x, vInputVelocity.y, vInputVelocity.z);
+
+	m_pXBody->setLinearVelocity(vVelocity);
+}
+
+
 
 void CRigidBody::Set_Velocity(_float3 vVelocity)
 {
@@ -217,9 +233,8 @@ void CRigidBody::Free()
 	{
 		Safe_Delete(m_pBatch);
 		Safe_Delete(m_pEffect);
-		Safe_Release(m_pInputLayout);
 	}
-
+	Safe_Release(m_pInputLayout);
 	
 
 	Safe_Delete(m_pOriginal_OBB);

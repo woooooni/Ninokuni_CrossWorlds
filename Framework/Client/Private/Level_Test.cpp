@@ -146,9 +146,12 @@ HRESULT CLevel_Test::Ready_Layer_Player(const LAYER_TYPE eLayerType)
 HRESULT CLevel_Test::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 {
 	CGameObject* pTest = nullptr;
-	
-	if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prototype_GameObject_Witch"), nullptr, &pTest)))
+
+	if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prototype_GameObject_CharacterDummy"), nullptr, &pTest)))
 		return E_FAIL;
+
+	
+	
 
 
 	return S_OK;

@@ -40,6 +40,7 @@ public:
 
 public:
     void Add_Force(_vector vDir, _float fForce, _bool bClear);
+    void Add_Velocity(_vector vDir, _float fForce, _bool bClear);
 
     void Set_Velocity(_float3 vVelocity);
     _float3 Get_Velocity();

@@ -195,7 +195,11 @@ float PCF_ShadowCaculation(float4 vLightPos, float3 vLightDir)
 	
 	float fCurrentDepth = projCoords.z;
 	if (fCurrentDepth >= 1.f)
-		return 1.f;
+	{
+		fCurrentDepth = 1.f;
+		return fCurrentDepth;
+	}
+		
 
 	float fShadow = 0.0f;
 	float2 texelSize = float2(1.f / 1600.f, 1.f / 900.f);
