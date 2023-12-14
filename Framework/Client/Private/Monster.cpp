@@ -391,6 +391,7 @@ void CMonster::Free()
 
 	m_Parts.clear();
 
+	Safe_Release(m_pBTCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pTransformCom);

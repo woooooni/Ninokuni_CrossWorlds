@@ -40,7 +40,7 @@ HRESULT CDummy::Ready_Components()
 
 	/* For.Com_Shader */
 	{
-		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_AnimModel_Vtf"), TEXT("Com_AnimShader"), (CComponent**)&m_pAnimShaderCom)))
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_AnimModel"), TEXT("Com_AnimShader"), (CComponent**)&m_pAnimShaderCom)))
 			return E_FAIL;
 
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Model"), TEXT("Com_NonAnim_Shader"), (CComponent**)&m_pNonAnimShaderCom)))
@@ -182,9 +182,8 @@ void CDummy::Free()
 	Safe_Release(m_pAnimShaderCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pTransformCom);
-	
-	if(CModel::TYPE::TYPE_ANIM !=m_pModelCom->Get_ModelType())
-		Safe_Release(m_pModelCom);
+	Safe_Release(m_pModelCom);
+		
 }
 
 
