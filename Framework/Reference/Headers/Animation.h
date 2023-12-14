@@ -15,9 +15,9 @@ public:
 	HRESULT Initialize_Prototype(aiAnimation* pAIAnimation); // << : Assimp 
 	HRESULT Initialize(class CModel* pModel); 
 
-	HRESULT Play_Animation(class CTransform* pTransform, _float fTimeDelta);
-	HRESULT Play_Animation(class CModel* pModel, class CTransform* pTransform, CAnimation* pNextAnimation, _float fTimeDelta);
-	void Reset_Animation();
+	//HRESULT Play_Animation(class CTransform* pTransform, _float fTimeDelta);
+	//HRESULT Play_Animation(class CModel* pModel, class CTransform* pTransform, CAnimation* pNextAnimation, _float fTimeDelta);
+	//void Reset_Animation();
 
 
 public:
@@ -31,11 +31,14 @@ public:
 	_float Get_Ratio() { return m_fRatio; }
 	_float Get_Duration() { return m_fDuration; }
 
-	_float Get_AnimationProgress() { return min(m_fPlayTime / m_fDuration, 1.f); }
+	//_float Get_AnimationProgress() { return min(m_fPlayTime / m_fDuration, 1.f); }
 
-	void Set_AnimationPlayTime(class CTransform* pTransform, _float fPlayTime, _float fTimeDelta);
-	_float Get_PlayTime() { return m_fPlayTime; }
-	void Add_PlayTime(const _float fTime) { m_fPlayTime += fTime; }
+	//void Set_AnimationPlayTime(class CTransform* pTransform, _float fPlayTime, _float fTimeDelta);
+	_float	Get_PlayTime() { return m_fPlayTime; }
+	void	Add_PlayTime(const _float fTime) { m_fPlayTime += fTime; }
+	void	Set_PlayTime(const _float fTime) { m_fPlayTime = fTime; }
+	void	Clear_PlayTime() { m_fPlayTime = 0.f; }
+	const _float Get_Progess();
 
 	void Set_TickPerSecond(_float fTickPerSecond) { m_fTickPerSecond = fTickPerSecond; }
 	_float Get_TickPerSecond() { return m_fTickPerSecond; }
@@ -44,24 +47,16 @@ public:
 	_float Get_AnimationSpeed() { return m_fSpeed; }
 	void Set_AnimationSpeed(_float fSpeed) { m_fSpeed = fSpeed; }
 
-	void Set_Pause(_bool bPause) { m_bPause = bPause; }
-	_bool Is_Pause() { return m_bPause; }
-
+	
 	const wstring& Get_AnimationName() { return m_strName; }
 	void Set_AnimationName(const wstring& strName) { m_strName = strName; }
 
-	void Set_RootAnimation(_bool bRootAnimation) { m_bRootAnimation = bRootAnimation; }
-	_bool Is_RootAnimation() { return m_bRootAnimation; }
+	//void Set_RootAnimation(_bool bRootAnimation) { m_bRootAnimation = bRootAnimation; }
+	//_bool Is_RootAnimation() { return m_bRootAnimation; }
 	
 	void Set_Loop(_bool bLoop) { m_bLoop = bLoop; }
 	_bool Is_Loop() { return m_bLoop; }
 
-	
-	void Set_Finished(_bool bFinished) { m_bFinished = bFinished; }
-	_bool Is_Finished() { return m_bFinished; }
-
-	void Set_TweenAnimation(_bool bTween) { m_bTweeningAnim = bTween; }
-	_bool Is_TweenAnimation() { return m_bTweeningAnim; }
 
 	const _uint Get_MaxFrameCount() const { return _uint(m_fDuration) + 1; }
 
@@ -91,9 +86,7 @@ private: /* 복제된 애니메이션 마다 따로 가진다. */
 	vector<class CHierarchyNode*>	m_HierarchyNodes;
 	vector<_uint>					m_ChannelKeyFrames;
 	vector<_uint>					m_ChannelOldKeyFrames;
-
-	_bool m_bTweeningAnim = true;
-	_bool m_bPause = false;
+	_bool m_bTweeningAnim = false;
 	_bool m_bRootAnimation = false;
 	_bool m_bLoop = false;
 	_bool m_bFinished = false;

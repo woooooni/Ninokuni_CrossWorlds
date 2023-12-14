@@ -75,72 +75,72 @@ HRESULT CAnimation::Initialize(CModel* pModel)
 	return S_OK;
 }
 
-void CAnimation::Reset_Animation()
-{
-	m_fPlayTime = 0.f; 
-	m_bPause = false;
-	m_bFinished = false;
-
-	for (auto& pChannel : m_Channels)
-	{
-		for (auto& iCurrentKeyFrame : m_ChannelKeyFrames)
-			iCurrentKeyFrame = 0;
-	}
-}
-
-HRESULT CAnimation::Play_Animation(CTransform* pTransform, _float fTimeDelta)
-{
-	m_fPlayTime += m_fSpeed * m_fTickPerSecond * fTimeDelta;
-
-	if (m_fPlayTime >= m_fDuration)
-	{
-		
-		if (m_bLoop)
-		{
-			m_fPlayTime = 0.f;
-			for (auto& pChannel : m_Channels)
-			{
-				for (auto& iCurrentKeyFrame : m_ChannelKeyFrames)
-					iCurrentKeyFrame = 0;
-			}
-		}
-		else
-			m_fPlayTime = m_fDuration;
-
-		m_bFinished = true;
-	}
-
-	_uint		iChannelIndex = 0;
-
-	/* 이 애니메이션 구동을 위한 모든 뼈들을 순회하며 뼈들의 행렬을 갱신해준다. */
-	/* Transformation : 전달된 시간에 따른 키프레임(시간, 스케일, 회전, 이동)정보를 이용하여 Transformation을 만든다. */
-	/* 하이어라키 노드에 저장해준다. */
-	for (auto& pChannel : m_Channels)
-	{
-		m_ChannelKeyFrames[iChannelIndex] = pChannel->Update_Transformation(m_fPlayTime, fTimeDelta, m_ChannelKeyFrames[iChannelIndex], pTransform, m_HierarchyNodes[iChannelIndex],&m_fRatio);
-		m_ChannelOldKeyFrames[iChannelIndex] = m_ChannelKeyFrames[iChannelIndex];
-		++iChannelIndex;
-	}
-
-	return S_OK;
-}
-
-HRESULT CAnimation::Play_Animation(CModel* pModel, CTransform* pTransform, CAnimation* pNextAnimation, _float fTimeDelta)
-{
-	/*if (pModel->Is_InterpolatingAnimation())
-	{
-		m_fPlayTime += m_fSpeed * m_fTickPerSecond * fTimeDelta;
-
-		_uint		iChannelIndex = 0;
-		for (auto& pChannel : m_Channels)
-		{
-			pChannel->Interpolation(m_fPlayTime, fTimeDelta, this, pNextAnimation, pTransform, m_ChannelOldKeyFrames[iChannelIndex], m_HierarchyNodes[iChannelIndex], pModel, &m_fRatio);
-			++iChannelIndex;
-		}
-	}*/
-
-	return S_OK;
-}
+//void CAnimation::Reset_Animation()
+//{
+//	m_fPlayTime = 0.f; 
+//	//m_bPause = false;
+//	m_bFinished = false;
+//
+//	for (auto& pChannel : m_Channels)
+//	{
+//		for (auto& iCurrentKeyFrame : m_ChannelKeyFrames)
+//			iCurrentKeyFrame = 0;
+//	}
+//}
+//
+//HRESULT CAnimation::Play_Animation(CTransform* pTransform, _float fTimeDelta)
+//{
+//	m_fPlayTime += m_fSpeed * m_fTickPerSecond * fTimeDelta;
+//
+//	if (m_fPlayTime >= m_fDuration)
+//	{
+//		
+//		if (m_bLoop)
+//		{
+//			m_fPlayTime = 0.f;
+//			for (auto& pChannel : m_Channels)
+//			{
+//				for (auto& iCurrentKeyFrame : m_ChannelKeyFrames)
+//					iCurrentKeyFrame = 0;
+//			}
+//		}
+//		else
+//			m_fPlayTime = m_fDuration;
+//
+//		m_bFinished = true;
+//	}
+//
+//	_uint		iChannelIndex = 0;
+//
+//	/* 이 애니메이션 구동을 위한 모든 뼈들을 순회하며 뼈들의 행렬을 갱신해준다. */
+//	/* Transformation : 전달된 시간에 따른 키프레임(시간, 스케일, 회전, 이동)정보를 이용하여 Transformation을 만든다. */
+//	/* 하이어라키 노드에 저장해준다. */
+//	for (auto& pChannel : m_Channels)
+//	{
+//		m_ChannelKeyFrames[iChannelIndex] = pChannel->Update_Transformation(m_fPlayTime, fTimeDelta, m_ChannelKeyFrames[iChannelIndex], pTransform, m_HierarchyNodes[iChannelIndex],&m_fRatio);
+//		m_ChannelOldKeyFrames[iChannelIndex] = m_ChannelKeyFrames[iChannelIndex];
+//		++iChannelIndex;
+//	}
+//
+//	return S_OK;
+//}
+//
+//HRESULT CAnimation::Play_Animation(CModel* pModel, CTransform* pTransform, CAnimation* pNextAnimation, _float fTimeDelta)
+//{
+//	/*if (pModel->Is_InterpolatingAnimation())
+//	{
+//		m_fPlayTime += m_fSpeed * m_fTickPerSecond * fTimeDelta;
+//
+//		_uint		iChannelIndex = 0;
+//		for (auto& pChannel : m_Channels)
+//		{
+//			pChannel->Interpolation(m_fPlayTime, fTimeDelta, this, pNextAnimation, pTransform, m_ChannelOldKeyFrames[iChannelIndex], m_HierarchyNodes[iChannelIndex], pModel, &m_fRatio);
+//			++iChannelIndex;
+//		}
+//	}*/
+//
+//	return S_OK;
+//}
 
 const list<KEYFRAME> CAnimation::Get_Curr_KeyFrames()
 {
@@ -173,18 +173,28 @@ CChannel* CAnimation::Get_Channel(const wstring& strChannelName)
 	return nullptr;
 }
 
-void CAnimation::Set_AnimationPlayTime(CTransform* pTransform, _float fPlayTime, _float fTimeDelta)
+const _float CAnimation::Get_Progess()
 {
-	m_fPlayTime = fPlayTime;
+	const _float fProgress = m_fPlayTime / m_fDuration;  
+	
+	if (1.f <= fProgress)
+		return 1.f;
 
-	_uint		iChannelIndex = 0;
-	for (auto& pChannel : m_Channels)
-	{
-		m_ChannelKeyFrames[iChannelIndex] = pChannel->Update_Transformation(m_fPlayTime, fTimeDelta, m_ChannelKeyFrames[iChannelIndex], pTransform, m_HierarchyNodes[iChannelIndex], nullptr);
-		m_ChannelOldKeyFrames[iChannelIndex] = m_ChannelKeyFrames[iChannelIndex];
-		++iChannelIndex;
-	}
+	return fProgress;
 }
+
+//void CAnimation::Set_AnimationPlayTime(CTransform* pTransform, _float fPlayTime, _float fTimeDelta)
+//{
+//	m_fPlayTime = fPlayTime;
+//
+//	_uint		iChannelIndex = 0;
+//	for (auto& pChannel : m_Channels)
+//	{
+//		m_ChannelKeyFrames[iChannelIndex] = pChannel->Update_Transformation(m_fPlayTime, fTimeDelta, m_ChannelKeyFrames[iChannelIndex], pTransform, m_HierarchyNodes[iChannelIndex], nullptr);
+//		m_ChannelOldKeyFrames[iChannelIndex] = m_ChannelKeyFrames[iChannelIndex];
+//		++iChannelIndex;
+//	}
+//}
 
 HRESULT CAnimation::Calculate_Animation(const _uint& iFrame)
 {

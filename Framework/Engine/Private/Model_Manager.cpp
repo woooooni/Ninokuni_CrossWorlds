@@ -1025,7 +1025,6 @@ HRESULT CModel_Manager::Import_Animation(const wstring strFinalPath, CModel* pMo
 	{
 		CAnimation* pAnimation = CAnimation::Create_Bin();
 
-		
 		pAnimation->m_strName = CUtils::ToWString(File->Read<string>());
 		File->Read<_float>(pAnimation->m_fDuration);
 		File->Read<_float>(pAnimation->m_fTickPerSecond);

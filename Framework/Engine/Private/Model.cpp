@@ -43,7 +43,6 @@ CModel::CModel(const CModel& rhs)
 	for (auto& pMeshContainer : m_Meshes)
 		Safe_AddRef(pMeshContainer);
 
-
 	for (auto& Material : m_Materials)
 	{
 		for (_uint i = 0; i < AI_TEXTURE_TYPE_MAX; ++i)
@@ -61,8 +60,6 @@ CModel::CModel(const CModel& rhs)
 
 	for (auto& pNode : m_HierarchyNodes)	
 		pNode->Initialize_Bin(this);
-
-		
 
 	Safe_AddRef(m_pSRV);
 	Safe_AddRef(m_pMatrixTexture);
@@ -218,7 +215,7 @@ HRESULT CModel::Initialize_Bin(void* pArg)
 
 HRESULT CModel::LateTick(_float fTimeDelta)
 {
-	if (TYPE::TYPE_ANIM != m_eModelType || m_TweenDesc.cur.iAnimIndex < 0 ||  nullptr == m_pSRV)
+	if (TYPE::TYPE_ANIM != m_eModelType || m_TweenDesc.cur.iAnimIndex < 0 ||  nullptr == m_pSRV || m_TweenDesc.cur.iStop)
 		return E_FAIL;
 
 	/* 현재 애니메이션 */
@@ -228,22 +225,43 @@ HRESULT CModel::LateTick(_float fTimeDelta)
 		m_TweenDesc.cur.fFrameAcc += fTimeDelta;
 
 		const _float fTimePerFrame = 1 / (pCurAnim->Get_TickPerSecond() * pCurAnim->Get_AnimationSpeed());
+		
+		pCurAnim->Add_PlayTime(fTimePerFrame);
 
-		// 루프 체크 필요
 		if (fTimePerFrame <= m_TweenDesc.cur.fFrameAcc)
 		{
-			m_TweenDesc.cur.fFrameAcc = 0.f;
-			m_TweenDesc.cur.iCurFrame = (m_TweenDesc.cur.iCurFrame + 1) % pCurAnim->Get_MaxFrameCount();
-			m_TweenDesc.cur.iNextFrame = (m_TweenDesc.cur.iCurFrame + 1) % pCurAnim->Get_MaxFrameCount();
+			if (0 == m_TweenDesc.cur.iNextFrame) // 애니메이션 종료 여부 체크
+			{
+				m_TweenDesc.cur.iFinish = true;
+
+				if (!pCurAnim->Is_Loop()) // 픽스 여부 체크
+					m_TweenDesc.cur.iFix = true;
+
+				pCurAnim->Clear_PlayTime();
+			}
+
+			if (!m_TweenDesc.cur.iFix) // 픽스가 아닐때만 프레임 갱신 (픽스라면 현재 프레임은 마지막 프레임으로 고정)
+			{
+				m_TweenDesc.cur.fFrameAcc = 0.f;
+				m_TweenDesc.cur.iCurFrame = (m_TweenDesc.cur.iCurFrame + 1) % pCurAnim->Get_MaxFrameCount();
+				m_TweenDesc.cur.iNextFrame = (m_TweenDesc.cur.iCurFrame + 1) % pCurAnim->Get_MaxFrameCount();
+			}
 		}
 
 		m_TweenDesc.cur.fRatio = m_TweenDesc.cur.fFrameAcc / fTimePerFrame;
 		std::clamp(m_TweenDesc.cur.fRatio, 0.f, 1.f);
+
+		/* 픽스 혹은, 다음 프레임이 0인데 루프가 아니라면 마지막 프레임의 0비율로 고정한다. 즉 마지막 프레임을 0번째 프레임과 보간을 하지 않는다. */
+		if (m_TweenDesc.cur.iFix || (!pCurAnim->Is_Loop() && 0 == m_TweenDesc.cur.iNextFrame)) 
+			m_TweenDesc.cur.fRatio = 0.f;
 	}
 
 	/* 다음 애니메이션이 예약되어 있다면 */
 	if (0 <= m_TweenDesc.next.iAnimIndex)
 	{
+		CAnimation* pNextAnim = m_Animations[m_TweenDesc.next.iAnimIndex];
+		if (nullptr == pNextAnim) return E_FAIL;
+
 		/* 트위닝 보간 비율 설정 */
 		m_TweenDesc.fTweenAcc += fTimeDelta;
 		m_TweenDesc.fTweenRatio = m_TweenDesc.fTweenAcc / m_TweenDesc.fTweenDuration;
@@ -254,30 +272,27 @@ HRESULT CModel::LateTick(_float fTimeDelta)
 		{
 			m_TweenDesc.cur = m_TweenDesc.next;
 			m_TweenDesc.ClearNextAnim();
+			pCurAnim->Set_PlayTime(pNextAnim->Get_PlayTime());
+			pNextAnim->Clear_PlayTime();
 		}
 		else
 		{
-			CAnimation* pNextAnim = m_Animations[m_TweenDesc.next.iAnimIndex];
-			if (nullptr != pNextAnim)
+			m_TweenDesc.next.fFrameAcc += fTimeDelta;
+
+			const _float fTimePerFrame = 1 / (pNextAnim->Get_TickPerSecond() * pNextAnim->Get_AnimationSpeed());
+
+			pCurAnim->Add_PlayTime(fTimePerFrame);
+
+			if (fTimePerFrame <= m_TweenDesc.next.fFrameAcc)
 			{
-				m_TweenDesc.next.fFrameAcc += fTimeDelta;
-
-				const _float fTimePerFrame = 1 / (pNextAnim->Get_TickPerSecond() * pNextAnim->Get_AnimationSpeed());
-
-				// 루프 체크 필요
-				if (fTimePerFrame <= m_TweenDesc.next.fFrameAcc)
-				{
-					m_TweenDesc.next.fFrameAcc = 0.f;
-					m_TweenDesc.next.iCurFrame = (m_TweenDesc.next.iCurFrame + 1) % pNextAnim->Get_MaxFrameCount();
-					m_TweenDesc.next.iNextFrame = (m_TweenDesc.next.iCurFrame + 1) % pNextAnim->Get_MaxFrameCount();
-				}
-
-				m_TweenDesc.next.fRatio = m_TweenDesc.next.fFrameAcc / fTimePerFrame;
-				std::clamp(m_TweenDesc.next.fRatio, 0.f, 1.f);
+				m_TweenDesc.next.fFrameAcc = 0.f;
+				m_TweenDesc.next.iCurFrame = (m_TweenDesc.next.iCurFrame + 1) % pNextAnim->Get_MaxFrameCount();
+				m_TweenDesc.next.iNextFrame = (m_TweenDesc.next.iCurFrame + 1) % pNextAnim->Get_MaxFrameCount();
 			}
-		}
 
-		//cout << "ACC : " << m_TweenDesc.fTweenAcc << "\t RATIO : " << m_TweenDesc.fTweenRatio << endl;
+			m_TweenDesc.next.fRatio = m_TweenDesc.next.fFrameAcc / fTimePerFrame;
+			std::clamp(m_TweenDesc.next.fRatio, 0.f, 1.f);
+		}
 	}
 
 	return S_OK;
@@ -367,6 +382,14 @@ HRESULT CModel::Set_Animation(const _uint& iAnimationIndex, const _float& fTween
 		return S_OK;
 	}
 
+	/* 일부러 보간 시간을 음수로 주는 경우, 그 즉시 보간 없이 바로 다음 애니메이션을 세팅한다. */
+	if (fTweenDuration <= 0.f)
+	{
+		m_TweenDesc.cur.iAnimIndex = iAnimationIndex % m_Animations.size();
+		m_TweenDesc.ClearNextAnim();
+		return S_OK;
+	}
+
 	m_TweenDesc.ClearNextAnim();
 	m_TweenDesc.next.iAnimIndex = iAnimationIndex % m_Animations.size();
 	m_TweenDesc.fTweenDuration = fTweenDuration;
@@ -431,6 +454,26 @@ HRESULT CModel::Render_Instancing(CShader* pShader, _uint iMeshIndex, CVIBuffer_
 	pInstancingBuffer->Render(WorldMatrices, m_Meshes[iMeshIndex]);
 
 	return S_OK;
+}
+
+const _float CModel::Get_Progress() const
+{
+	return m_Animations[m_TweenDesc.cur.iAnimIndex]->Get_Progess();
+}
+
+const _float CModel::Get_Duration()
+{
+	CAnimation* pAnim = Get_CurrAnimation();
+
+	if(nullptr != pAnim)
+		return pAnim->Get_Duration();
+
+	return 0.f;
+}
+
+const _float CModel::Get_PlayTime() 
+{
+	return _float();
 }
 
 HRESULT CModel::Swap_Animation(_uint iSrcIndex, _uint iDestIndex)

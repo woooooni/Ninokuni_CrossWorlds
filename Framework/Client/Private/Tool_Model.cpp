@@ -30,6 +30,10 @@ void CTool_Model::Tick(_float fTimeDelta)
 	Tick_Model(fTimeDelta);
 
 	Tick_Animation(fTimeDelta);
+
+	_bool bDemo = FALSE;
+	if(bDemo)
+		ImGui::ShowDemoWindow(&bDemo);
 }
 
 void CTool_Model::Reset_Transform()
@@ -56,6 +60,7 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 		/* Import */
 		{
 			ImGui::Text("Import File (Fbx)");
+			
 			char szFilePath[MAX_PATH];
 			char szFileName[MAX_PATH];
 
@@ -65,12 +70,26 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 			/* Path */
 			if (ImGui::InputText("##ModelPathText", szFilePath, MAX_PATH))
 				m_strFilePath = CUtils::ToWString(string(szFilePath));
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::BeginTooltip();
+				ImGui::Text(u8"Fbx 파일의 경우 : ../Bin/Resources/AnimModel/Boss/Stellia/");
+				ImGui::Text(u8"Binary 파일의 경우 : ../Bin/Export/AnimModel/Boss/Stellia/");
+				ImGui::EndTooltip();
+			}
 			IMGUI_SAME_LINE;
 			ImGui::Text("Path");
 
 			/* File Name */
 			if (ImGui::InputText("##ModelFileText", szFileName, MAX_PATH))
 				m_strFileName = CUtils::ToWString(string(szFileName));
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::BeginTooltip();
+				ImGui::Text(u8"Fbx 파일의 경우 : Stellia.fbx");
+				ImGui::Text(u8"Binary 파일의 경우 : Stellia");
+				ImGui::EndTooltip();
+			}
 			IMGUI_SAME_LINE;
 			ImGui::Text("File Name");
 
@@ -94,10 +113,17 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 
 				ImGui::EndCombo();
 			}
+			m_strFileName = CUtils::ToWString(string(szFileName));
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::BeginTooltip();
+				ImGui::Text(u8"Static vs Animation");
+				ImGui::EndTooltip();
+			}
 			IMGUI_SAME_LINE;
-			ImGui::Text("Type");
+			ImGui::Text("Model Type");
 
-			/* Ibport Btn */
+			/* Import Btn */
 			if (ImGui::Button("Import"))
 			{
 				if (iSelectedImportModelType != -1)
@@ -127,6 +153,12 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 
 			static char szExportFolderName[MAX_PATH];
 			ImGui::InputText("##ModelExportFolder", szExportFolderName, MAX_PATH);
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::BeginTooltip();
+				ImGui::Text(u8"Fbx, Binary 파일 공통 : AnimModel/Boss/Stellia/");
+				ImGui::EndTooltip();
+			}
 			IMGUI_SAME_LINE;
 			ImGui::Text("Path");
 
@@ -157,6 +189,12 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 			/* Path */
 			static char szAllObjectExportFolderName[MAX_PATH] = "";
 			ImGui::InputText("##All_ModelExportFolder", szAllObjectExportFolderName, MAX_PATH);
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::BeginTooltip();
+				ImGui::Text(u8"익스포트할 폴더들이 포함된 상위폴더 ex : AnimModel/Boss/");
+				ImGui::EndTooltip();
+			}
 			IMGUI_SAME_LINE;
 			ImGui::Text("Path");
 
@@ -179,7 +217,7 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 				ImGui::EndCombo();
 			}
 			IMGUI_SAME_LINE;
-			ImGui::Text("Type");
+			ImGui::Text("Model Type");
 
 			/* Btn */
 			if (ImGui::Button("Export All"))
@@ -224,50 +262,49 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 		ImGui::End();
 		return;
 	}
-	
-	if (ImGui::Button("Test Animation Play"))
-	{
-
-		_uint iCurIndex = m_pDummy->Get_ModelCom()->Get_TweenDesc().cur.iAnimIndex;
-
-		m_pDummy->Get_ModelCom()->Set_Animation(++iCurIndex);
-	}
-
 
 	static char szAnimationName[255];
 	if (nullptr != m_pDummy->Get_ModelCom())
 	{
 	    CModel* pModelCom = m_pDummy->Get_ModelCom();
-	    const vector<CAnimation*>& Animations = pModelCom->Get_Animations();
-	
 	    if (CModel::TYPE::TYPE_NONANIM == pModelCom->Get_ModelType())
 	    {
 	        ImGui::End();
 	        return;
 	    }
-	        
-	    if(ImGui::Button("Export_Animation_Names"))
-	    {
-	        //쓰기 전용으로 파일을 오픈(파일이 없으면 생성)
-	        ofstream fout;
-	        fout.open("../Bin/Export/ModelAnimations.txt");
-	
-	        for (auto& iter : Animations)
-	        {
-	            wstring strAnimationName = iter->Get_AnimationName();
-	            if (fout.is_open())
-	            {
-	                fout.write(CUtils::ToString(strAnimationName).c_str(), strAnimationName.size());
-	                fout.write("\n", sizeof(1));
-	            }
-	                    
-	        }
-	        fout.close();
-	        MSG_BOX("Export OK.");
-	    }
-	        
-	
-	    // AnimationList
+
+	    vector<CAnimation*>& Animations = pModelCom->Get_Animations();
+    
+		ImGui::Text("Animation List");
+		IMGUI_SAME_LINE;
+		/* Export Anim Names */
+		if (ImGui::Button("Export Anim Names"))
+		{
+			//쓰기 전용으로 파일을 오픈(파일이 없으면 생성)
+			ofstream fout;
+			fout.open("../Bin/Export/ModelAnimations.txt");
+
+			for (auto& iter : Animations)
+			{
+				wstring strAnimationName = iter->Get_AnimationName();
+				if (fout.is_open())
+				{
+					fout.write(CUtils::ToString(strAnimationName).c_str(), strAnimationName.size());
+					fout.write("\n", sizeof(1));
+				}
+
+			}
+			fout.close();
+			MSG_BOX("Export OK.");
+		}
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::Text(u8"../Bin/Export/ModelAnimations.txt 경로로 애니메이션 목록이 파일로 저장됩니다.");
+			ImGui::EndTooltip();
+		}
+
+		/* Animation List */
 	    if (ImGui::BeginListBox("##Animation_List"))
 	    {
 	        for(size_t i = 0; i< Animations.size(); ++i)
@@ -276,108 +313,160 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 	            if (ImGui::Selectable(AnimationName.c_str(), i == pModelCom->Get_CurrAnimationIndex()))
 	            {
 					pModelCom->Set_Animation(i);
-	                sprintf_s(szAnimationName, CUtils::ToString(Animations[pModelCom->Get_CurrAnimationIndex()]->Get_AnimationName()).c_str());
+	                sprintf_s(szAnimationName, CUtils::ToString(pModelCom->Get_CurrAnimation()->Get_AnimationName()).c_str());
 	            }
 	        }
 	        ImGui::EndListBox();
 	    }
-	    IMGUI_SAME_LINE;
 	
-	    ImGui::BeginGroup();
-	    if (ImGui::ArrowButton("##Swap_Animation_Up", ImGuiDir_Up))
-	    {
-	        pModelCom->Swap_Animation(pModelCom->Get_CurrAnimationIndex(), pModelCom->Get_CurrAnimationIndex() - 1);
-	    }
-	    IMGUI_SAME_LINE;
-	    if (ImGui::ArrowButton("##Swap_Animation_Down", ImGuiDir_Down))
-	    {
-	        pModelCom->Swap_Animation(pModelCom->Get_CurrAnimationIndex(), pModelCom->Get_CurrAnimationIndex() + 1);
-	    }
-	
-	        
-	
-	        
-	        
-	    ImGui::InputText("##Animation_Input_Name", szAnimationName, 255);
-	    if(ImGui::Button("Rename"))
-	    {
-	        wstring NewAnimationName = CUtils::ToWString(string(szAnimationName));
-	        if (NewAnimationName.size() > 0)
-	            Animations[pModelCom->Get_CurrAnimationIndex()]->Set_AnimationName(NewAnimationName);
-	    }
+		/* 변경시 다시 익스포트 해야하는 유형 */
+		IMGUI_NEW_LINE;
+		ImGui::Separator();
+		ImGui::Text("Edit 1");
+		IMGUI_SAME_LINE;
+		ImGui::TextColored(ImVec4(0.7f, 0.5f, 0.7f, 1.f), u8"삭제, 정렬, 순서 변경, 이름 변경은 다시 익스포트 해야 반영됩니다. ");
+		{
+			/* Swap */
+			{
+				if (ImGui::ArrowButton("##Swap_Animation_Up", ImGuiDir_Up))
+				{
+					pModelCom->Swap_Animation(pModelCom->Get_CurrAnimationIndex(), pModelCom->Get_CurrAnimationIndex() - 1);
+				}
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::BeginTooltip();
+					ImGui::Text(u8"위 애니메이션과 순서를 스왑");
+					ImGui::EndTooltip();
+				}
+				IMGUI_SAME_LINE;
+				if (ImGui::ArrowButton("##Swap_Animation_Down", ImGuiDir_Down))
+				{
+					pModelCom->Swap_Animation(pModelCom->Get_CurrAnimationIndex(), pModelCom->Get_CurrAnimationIndex() + 1);
+				}
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::BeginTooltip();
+					ImGui::Text(u8"아래 애니메이션과 순서를 스왑");
+					ImGui::EndTooltip();
+				}
+			}
+			IMGUI_SAME_LINE;
 
-	
-	    if (ImGui::Button("Delete") || (KEY_TAP(KEY::DEL) && ImGui::IsWindowFocused()))
-	        pModelCom->Delete_Animation(pModelCom->Get_CurrAnimationIndex());
-	
-	    ImGui::EndGroup();
-	
-	    // Animation Slider
-	    CAnimation* pCurrAnimation = Animations[pModelCom->Get_CurrAnimationIndex()];
-	
-	    _float fPlayTime = pCurrAnimation->Get_PlayTime();
-	    if (ImGui::SliderFloat("##Animation_PlayTime", &fPlayTime, 0.f, pCurrAnimation->Get_Duration()))
-	    {
-	        pCurrAnimation->Set_AnimationPlayTime(m_pDummy->Get_TransformCom(), fPlayTime, fTimeDelta);
-	    }
-	
-	    _float fAnimationProgress = pCurrAnimation->Get_AnimationProgress();
-	
-	    ImGui::Text("Progress : ");
-	    IMGUI_SAME_LINE;
-	        
-	    ImGui::Text(to_string(fAnimationProgress).c_str());
-	
+			/* Delete */
+			if (ImGui::Button("Delete") || (KEY_TAP(KEY::DEL) && ImGui::IsWindowFocused()))
+			{
+				_int iCurIndex = pModelCom->Get_CurrAnimationIndex();
+
+				pModelCom->Delete_Animation(iCurIndex);
+
+				iCurIndex = (0 < iCurIndex - 1) ? 0 : iCurIndex - 1;
+
+				pModelCom->Set_Animation(iCurIndex, -1.f);
+
+				Animations = pModelCom->Get_Animations();
+
+				sprintf_s(szAnimationName, CUtils::ToString(pModelCom->Get_CurrAnimation()->Get_AnimationName()).c_str());
+			}
+			IMGUI_SAME_LINE;
+
+			/* Sort */
+			if (ImGui::Button("Sort"))
+			{
+				vector<class CAnimation*>& Animations = pModelCom->Get_Animations();
+				sort(Animations.begin(), Animations.end(), [&](CAnimation* pSrcAnimation, CAnimation* pDestAnimation) {
+					return pSrcAnimation->Get_AnimationName() < pDestAnimation->Get_AnimationName();
+					});
+			}
+
+			/* Rename */
+			{
+				sprintf_s(szAnimationName, CUtils::ToString(pModelCom->Get_CurrAnimation()->Get_AnimationName()).c_str());
+				ImGui::InputText("##Animation_Input_Name", szAnimationName, 255);
+				IMGUI_SAME_LINE;
+				if(ImGui::Button("Rename"))
+				{
+					wstring NewAnimationName = CUtils::ToWString(string(szAnimationName));
+					if (NewAnimationName.size() > 0)
+						pModelCom->Get_CurrAnimation()->Set_AnimationName(NewAnimationName);
+				}
+			}
+			IMGUI_NEW_LINE;
+		}
+
+		ImGui::Separator();
+		ImGui::Text("Edit 2");
+
+	    /* Animation Time Slider */
+	    CAnimation* pCurrAnimation = pModelCom->Get_CurrAnimation();
+		{
+			_float fPlayTime = 0.f; // pCurrAnimation->Get_PlayTime();
+			if (ImGui::SliderFloat("##Animation_PlayTime", &fPlayTime, 0.f, 0.f))//pCurrAnimation->Get_Duration()))
+			{
+				//pCurrAnimation->Set_AnimationPlayTime(m_pDummy->Get_TransformCom(), fPlayTime, fTimeDelta);
+			}
+			IMGUI_SAME_LINE;
+			ImGui::Text("Play Time");
+		}
+		
+		/* Set Speed */
+		{
+			_float fSpeed = pCurrAnimation->Get_AnimationSpeed();
+			if (ImGui::DragFloat("##AnimationSpeed", &fSpeed, 0.01f, 0.f, 100.f))
+			{
+				pCurrAnimation->Set_AnimationSpeed(fSpeed);
+			}
+			IMGUI_SAME_LINE;
+			ImGui::Text("Set Speed");
+		}
+
+		/* Play Btn*/
 	    if (ImGui::ArrowButton("##Play_AnimationButton", ImGuiDir_Right))
 	    {
+			_float fAnimationProgress = pModelCom->Get_Progress();
+
 	        if(fAnimationProgress >= 1.f)
 	            pModelCom->Set_Animation(pModelCom->Get_CurrAnimationIndex());
 	
-	        pCurrAnimation->Set_Pause(false);
+			pModelCom->Set_Stop_Animation(false);
 	    }
-	            
+	    IMGUI_SAME_LINE;
 
-	
-	    IMGUI_SAME_LINE;
-	
-	    if (ImGui::Button("||"))
-	        pCurrAnimation->Set_Pause(true);
-	
-	    IMGUI_SAME_LINE;
-	    if (ImGui::Button("Sort"))
-	    {
-	        vector<class CAnimation*>& Animations = pModelCom->Get_Animations();
-	        sort(Animations.begin(), Animations.end(), [&](CAnimation* pSrcAnimation, CAnimation* pDestAnimation) {
-	            return pSrcAnimation->Get_AnimationName() < pDestAnimation->Get_AnimationName();
-	        });
-	    }
-	
-	    _float fSpeed = pCurrAnimation->Get_AnimationSpeed();
-	    ImGui::Text("Speed");
-	    IMGUI_SAME_LINE;
-	    if (ImGui::DragFloat("##AnimationSpeed", &fSpeed, 0.01f, 0.f, 100.f))
-	    {
-	        pCurrAnimation->Set_AnimationSpeed(fSpeed);
-	    }
-	
-	    IMGUI_NEW_LINE;
-	
-	    _bool bRootAnimation = pCurrAnimation->Is_RootAnimation();
-	    ImGui::Text("Root_Animation");
-	    IMGUI_SAME_LINE;
-	    ImGui::Checkbox("##IsRootAnimation", &bRootAnimation);
-	    pCurrAnimation->Set_RootAnimation(bRootAnimation);
-	
-	    _bool bLoop = pCurrAnimation->Is_Loop();
-	    ImGui::Text("Loop");
-	    IMGUI_SAME_LINE;
-	    if(ImGui::Checkbox("##IsLoop", &bLoop))
-	    pCurrAnimation->Set_Loop(bLoop);
+		/* Stop Btn*/
+		{
+			if (ImGui::Button("||"))
+				pModelCom->Set_Stop_Animation(true);
+		}
+		IMGUI_SAME_LINE;
+
+		/* Loop Btn */
+		{
+			_bool bLoop = pCurrAnimation->Is_Loop();
+			if (ImGui::Checkbox("##IsLoop", &bLoop))
+				pCurrAnimation->Set_Loop(bLoop);
+			IMGUI_SAME_LINE;
+			ImGui::Text("Loop              ");
+		}
+		IMGUI_SAME_LINE;
+
+		/* Progress */
+		_float fAnimationProgress = 0.f; // pModelCom->Get_Progress();
+		{
+			ImGui::Text("Progress : ");
+			IMGUI_SAME_LINE;
+			ImGui::Text(to_string(fAnimationProgress).c_str());
+		}	
+
+
+		IMGUI_NEW_LINE;
+		ImGui::Separator();
+		ImGui::Text("Event");
+		{
+			IMGUI_NEW_LINE;
+			IMGUI_NEW_LINE;
+		}
 	}
 	ImGui::End();
 }
-
-
 
 CTool_Model* CTool_Model::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {

@@ -468,12 +468,16 @@ namespace Engine
 
 	typedef struct	KeyframeDesc
 	{
-		_int	iAnimIndex = -1;	/* 현재 애니메이션 인덱스*/
+		/* 16 byte Alignment */
+		_int	iAnimIndex = 0;		/* 현재 애니메이션 인덱스*/
 		_uint	iCurFrame = 0;		/* 애니메이션의 현재 프레임 */
 		_uint	iNextFrame = 1;		/* 애니메이션의 다음 프레임 */
 		_float	fRatio = 0.f;		/* 애니메이션의 현재 프레임과 다음 프레임 사이 진행률*/
 		_float	fFrameAcc = 0.f;	/* 현재 프레임 누적 시간 */
-		Vec3	vPadding;				
+
+		_uint	iFinish = 0;
+		_uint	iFix = 0;
+		_uint	iStop = 0;
 
 		void ClearAnim()
 		{
@@ -481,12 +485,16 @@ namespace Engine
 			iNextFrame = 1;
 			fRatio = 0.f;
 			fFrameAcc = 0.f;
+			iFinish = 0;
+			iStop = 0;
 		}
 
 	}KEYFRAME_DESC;
 
 	typedef struct	TweenDesc
 	{
+		/* 16 byte Alignment */
+
 		KEYFRAME_DESC cur = {};		/* 현재 애니메이션 정보*/
 		KEYFRAME_DESC next = {};	/* 다음 애니메이션 정보*/
 
@@ -497,7 +505,7 @@ namespace Engine
 
 		TweenDesc()
 		{
-			cur.iAnimIndex = -1;
+			cur.iAnimIndex = 0;
 			next.iAnimIndex = -1;
 		}
 
@@ -506,6 +514,9 @@ namespace Engine
 			next.iAnimIndex = -1;
 			next.iCurFrame = 0;
 			next.iNextFrame = 1;
+			next.iFinish = 0;
+			next.iFix = 0;
+			next.iStop = 0;
 
 			fTweenAcc = 0.f;
 			fTweenRatio = 0.f;

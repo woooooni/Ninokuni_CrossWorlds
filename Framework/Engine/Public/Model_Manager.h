@@ -43,8 +43,6 @@ private:
 
 public: 
 	HRESULT Create_Model_Vtf(class CModel* pModel, const wstring strFilePath);
-
-	/* Ver.0 Texture */
 	HRESULT Save_Model_Vtf(const wstring strSaveFilePath, ID3D11Texture2D* pTexture);
 	HRESULT Load_Model_Vtf(class CModel* pModel, const wstring strLoadFilePath);
 	ID3D11ShaderResourceView* Find_Model_Vtf(const wstring strModelName);
