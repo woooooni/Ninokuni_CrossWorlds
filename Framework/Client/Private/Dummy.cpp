@@ -182,7 +182,9 @@ void CDummy::Free()
 	Safe_Release(m_pAnimShaderCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pTransformCom);
-	//Safe_Release(m_pModelCom);
+	
+	if(CModel::TYPE::TYPE_ANIM !=m_pModelCom->Get_ModelType())
+		Safe_Release(m_pModelCom);
 }
 
 
