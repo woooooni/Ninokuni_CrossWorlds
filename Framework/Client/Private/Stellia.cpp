@@ -3,6 +3,8 @@
 
 #include "GameInstance.h"
 
+#include "StelliaBT.h"
+
 CStellia::CStellia(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
 	: CMonster(pDevice, pContext, strObjectTag, tStat)
 {
@@ -39,6 +41,11 @@ HRESULT CStellia::Initialize(void* pArg)
 void CStellia::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+
+	if (GetAsyncKeyState('G'))
+	{
+		m_tStat.fHp = 0;
+	}
 }
 
 void CStellia::LateTick(_float fTimeDelta)
@@ -75,7 +82,7 @@ HRESULT CStellia::Ready_Components()
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 		return E_FAIL;
-	
+
 	/* For.Com_Renderer */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
 		return E_FAIL;
@@ -104,6 +111,11 @@ HRESULT CStellia::Ready_Components()
 
 HRESULT CStellia::Ready_States()
 {
+	m_pBTCom = CStelliaBT::Create(m_pDevice, m_pContext, this);
+
+	m_tStat.fMaxHp = 199;
+	m_tStat.fHp = 199;
+
 	return S_OK;
 }
 
@@ -141,6 +153,8 @@ CMonster* CStellia::Clone(void* pArg)
 void CStellia::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pBTCom);
 
 	Safe_Release(m_pTransformCom);
 	Safe_Release(m_pRendererCom);

@@ -9,6 +9,7 @@
 #include "Particle_Manager.h"
 #include "Camera_Manager.h"
 #include "UI_Manager.h"
+#include "BehaviorTree.h"
 
 USING(Client)
 CMonster::CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
@@ -24,13 +25,13 @@ CMonster::CMonster(const CMonster& rhs)
 	, m_tStat(rhs.m_tStat)
 	, m_fDissolveWeight(1.f)
 
-{	
-	
+{
+
 }
 
 HRESULT CMonster::Initialize_Prototype()
 {
-	if(FAILED(__super::Initialize_Prototype()))
+	if (FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
 
 	m_fDissolveWeight = 1.f;
@@ -80,11 +81,13 @@ void CMonster::Tick(_float fTimeDelta)
 			Set_Dead(true);
 		}
 	}
+
+	m_pBTCom->Tick(fTimeDelta);
 }
 
 void CMonster::LateTick(_float fTimeDelta)
 {
-	if(nullptr != m_pModelCom)
+	if (nullptr != m_pModelCom)
 		m_pModelCom->LateTick(fTimeDelta);
 
 	for (auto& pPart : m_Parts)
@@ -95,7 +98,7 @@ void CMonster::LateTick(_float fTimeDelta)
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, pPart);
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, pPart);
 	}
-		
+
 	__super::LateTick(fTimeDelta);
 	if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 5.f))
 	{
@@ -111,12 +114,14 @@ void CMonster::LateTick(_float fTimeDelta)
 #endif // DEBUG
 
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
+
+	m_pBTCom->LateTick(fTimeDelta);
 }
 
 HRESULT CMonster::Render()
 {
 	// __super::Render();
-	 
+
 	if (nullptr == m_pModelCom || nullptr == m_pShaderCom)
 		return E_FAIL;
 
@@ -139,7 +144,7 @@ HRESULT CMonster::Render()
 		return E_FAIL;
 
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
-	
+
 
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{
@@ -290,7 +295,7 @@ void CMonster::Play_DamagedSound()
 	//	break;
 	//}
 
-	
+
 }
 
 void CMonster::Free()
