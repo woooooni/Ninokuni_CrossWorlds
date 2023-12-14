@@ -20,8 +20,9 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 
 private:
-	void Save_Particle();
-	void Load_Particle();
+	void Create_Particle();
+	void Save_Particle(const char* pFileName);
+	void Load_Particle(const char* pFileName);
 
 private:
 	class CGameObject* m_pParticle = nullptr;
@@ -44,8 +45,16 @@ private:
 
 	_float m_fParticleAnimationSpeed[2];
 
+	_float m_fParticleUVIndex[2];
+	_float m_fParticleUVMaxCount[2];
+
 	char   m_cDiffuseTextureName[MAX_PATH] = { "" };
 	char   m_cAlphaTextureName[MAX_PATH]   = { "" };
+
+	char   m_cDiffuseTexturePath[MAX_PATH] = { "" };
+	char   m_cAlphaTexturePath[MAX_PATH] = { "" };
+
+	char   m_cSaveAndLoadName[MAX_PATH] = { "" };
 
 public:
 	static CTool_Particle* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

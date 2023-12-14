@@ -447,14 +447,6 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_OBB_Collider"),
 		CCollider_OBB::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
-	
-
-
-	// 테스트 텍스처
-	/* For.Prototype_Component_Texture_Test */
-	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Test"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Test/"), 0, true))))
-	//	return E_FAIL;
 
 	return S_OK;
 }

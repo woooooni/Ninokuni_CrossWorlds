@@ -84,9 +84,9 @@ HRESULT CParticle_Manager::Ready_Proto_Particles(const wstring& strParticlePath)
 			wstring strEffectPrototypeEffectName = CUtils::ToWString(File->Read<string>());
 			CParticle::PARTICLE_DESC ParticleDesc = File->Read<CParticle::PARTICLE_DESC>();
 			
-			if (FAILED(GI->Add_Prototype(L"Prototype_Particle_" + strParticleName,
-				CParticle::Create(m_pDevice, m_pContext, strParticleName, strEffectPrototypeEffectName, ParticleDesc), LAYER_TYPE::LAYER_EFFECT)))
-				return E_FAIL;
+			//if (FAILED(GI->Add_Prototype(L"Prototype_Particle_" + strParticleName,
+			//	CParticle::Create(m_pDevice, m_pContext, strParticleName, strEffectPrototypeEffectName, ParticleDesc), LAYER_TYPE::LAYER_EFFECT)))
+			//	return E_FAIL;
 		}
 	}
 
