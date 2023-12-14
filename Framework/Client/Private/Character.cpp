@@ -100,8 +100,7 @@ void CCharacter::LateTick(_float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return;
 
-	
-	//std::async(&CModel::Play_Animation, m_pModelCom, m_pTransformCom, fTimeDelta);
+	m_pModelCom->LateTick(fTimeDelta);
 	
 
 	for (auto& pPart : m_Parts)
@@ -309,15 +308,6 @@ void CCharacter::Free()
 
 	m_Parts.clear();
 
-	Safe_Release(m_pModelCom);
-	Safe_Release(m_pShaderCom);
-	Safe_Release(m_pRendererCom);
-	Safe_Release(m_pTransformCom);
-	Safe_Release(m_pRigidBodyCom);
-	Safe_Release(m_pStateCom);
-	Safe_Release(m_pNavigationCom);
-
-
 	for (_uint i = 0; i < SOCKET_END; ++i)
 	{
 		if (nullptr == m_pTrails[i])
@@ -325,4 +315,12 @@ void CCharacter::Free()
 
 		Safe_Release(m_pTrails[i]);
 	}
+
+	Safe_Release(m_pModelCom);
+	Safe_Release(m_pShaderCom);
+	Safe_Release(m_pRendererCom);
+	Safe_Release(m_pTransformCom);
+	Safe_Release(m_pRigidBodyCom);
+	Safe_Release(m_pStateCom);
+	Safe_Release(m_pNavigationCom);
 }

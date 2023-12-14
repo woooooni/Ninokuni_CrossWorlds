@@ -29,6 +29,7 @@ CModel::CModel(const CModel& rhs)
 	, m_Materials(rhs.m_Materials)
 	, m_eModelType(rhs.m_eModelType)
 	, m_Animations(rhs.m_Animations)
+	, m_iCurrentAnimIndex(rhs.m_iCurrentAnimIndex)
 	, m_PivotMatrix(rhs.m_PivotMatrix)
 	, m_iNumAnimations(rhs.m_iNumAnimations)
 	, m_pMatrixTexture(rhs.m_pMatrixTexture)
@@ -42,6 +43,7 @@ CModel::CModel(const CModel& rhs)
 {
 	for (auto& pMeshContainer : m_Meshes)
 		Safe_AddRef(pMeshContainer);
+
 
 	for (auto& Material : m_Materials)
 	{
@@ -60,6 +62,8 @@ CModel::CModel(const CModel& rhs)
 
 	for (auto& pNode : m_HierarchyNodes)	
 		pNode->Initialize_Bin(this);
+
+		
 
 	Safe_AddRef(m_pSRV);
 	Safe_AddRef(m_pMatrixTexture);
@@ -215,7 +219,7 @@ HRESULT CModel::Initialize_Bin(void* pArg)
 
 HRESULT CModel::LateTick(_float fTimeDelta)
 {
-	if (TYPE::TYPE_ANIM != m_eModelType || m_TweenDesc.cur.iAnimIndex < 0 ||  nullptr == m_pSRV || m_TweenDesc.cur.iStop)
+	if (TYPE::TYPE_ANIM != m_eModelType || m_TweenDesc.cur.iAnimIndex < 0 ||  nullptr == m_pSRV)
 		return E_FAIL;
 
 	/* 현재 애니메이션 */
@@ -225,43 +229,22 @@ HRESULT CModel::LateTick(_float fTimeDelta)
 		m_TweenDesc.cur.fFrameAcc += fTimeDelta;
 
 		const _float fTimePerFrame = 1 / (pCurAnim->Get_TickPerSecond() * pCurAnim->Get_AnimationSpeed());
-		
-		pCurAnim->Add_PlayTime(fTimePerFrame);
 
+		// 루프 체크 필요
 		if (fTimePerFrame <= m_TweenDesc.cur.fFrameAcc)
 		{
-			if (0 == m_TweenDesc.cur.iNextFrame) // 애니메이션 종료 여부 체크
-			{
-				m_TweenDesc.cur.iFinish = true;
-
-				if (!pCurAnim->Is_Loop()) // 픽스 여부 체크
-					m_TweenDesc.cur.iFix = true;
-
-				pCurAnim->Clear_PlayTime();
-			}
-
-			if (!m_TweenDesc.cur.iFix) // 픽스가 아닐때만 프레임 갱신 (픽스라면 현재 프레임은 마지막 프레임으로 고정)
-			{
-				m_TweenDesc.cur.fFrameAcc = 0.f;
-				m_TweenDesc.cur.iCurFrame = (m_TweenDesc.cur.iCurFrame + 1) % pCurAnim->Get_MaxFrameCount();
-				m_TweenDesc.cur.iNextFrame = (m_TweenDesc.cur.iCurFrame + 1) % pCurAnim->Get_MaxFrameCount();
-			}
+			m_TweenDesc.cur.fFrameAcc = 0.f;
+			m_TweenDesc.cur.iCurFrame = (m_TweenDesc.cur.iCurFrame + 1) % pCurAnim->Get_MaxFrameCount();
+			m_TweenDesc.cur.iNextFrame = (m_TweenDesc.cur.iCurFrame + 1) % pCurAnim->Get_MaxFrameCount();
 		}
 
 		m_TweenDesc.cur.fRatio = m_TweenDesc.cur.fFrameAcc / fTimePerFrame;
 		std::clamp(m_TweenDesc.cur.fRatio, 0.f, 1.f);
-
-		/* 픽스 혹은, 다음 프레임이 0인데 루프가 아니라면 마지막 프레임의 0비율로 고정한다. 즉 마지막 프레임을 0번째 프레임과 보간을 하지 않는다. */
-		if (m_TweenDesc.cur.iFix || (!pCurAnim->Is_Loop() && 0 == m_TweenDesc.cur.iNextFrame)) 
-			m_TweenDesc.cur.fRatio = 0.f;
 	}
 
 	/* 다음 애니메이션이 예약되어 있다면 */
 	if (0 <= m_TweenDesc.next.iAnimIndex)
 	{
-		CAnimation* pNextAnim = m_Animations[m_TweenDesc.next.iAnimIndex];
-		if (nullptr == pNextAnim) return E_FAIL;
-
 		/* 트위닝 보간 비율 설정 */
 		m_TweenDesc.fTweenAcc += fTimeDelta;
 		m_TweenDesc.fTweenRatio = m_TweenDesc.fTweenAcc / m_TweenDesc.fTweenDuration;
@@ -272,26 +255,27 @@ HRESULT CModel::LateTick(_float fTimeDelta)
 		{
 			m_TweenDesc.cur = m_TweenDesc.next;
 			m_TweenDesc.ClearNextAnim();
-			pCurAnim->Set_PlayTime(pNextAnim->Get_PlayTime());
-			pNextAnim->Clear_PlayTime();
 		}
 		else
 		{
-			m_TweenDesc.next.fFrameAcc += fTimeDelta;
-
-			const _float fTimePerFrame = 1 / (pNextAnim->Get_TickPerSecond() * pNextAnim->Get_AnimationSpeed());
-
-			pCurAnim->Add_PlayTime(fTimePerFrame);
-
-			if (fTimePerFrame <= m_TweenDesc.next.fFrameAcc)
+			CAnimation* pNextAnim = m_Animations[m_TweenDesc.next.iAnimIndex];
+			if (nullptr != pNextAnim)
 			{
-				m_TweenDesc.next.fFrameAcc = 0.f;
-				m_TweenDesc.next.iCurFrame = (m_TweenDesc.next.iCurFrame + 1) % pNextAnim->Get_MaxFrameCount();
-				m_TweenDesc.next.iNextFrame = (m_TweenDesc.next.iCurFrame + 1) % pNextAnim->Get_MaxFrameCount();
-			}
+				m_TweenDesc.next.fFrameAcc += fTimeDelta;
 
-			m_TweenDesc.next.fRatio = m_TweenDesc.next.fFrameAcc / fTimePerFrame;
-			std::clamp(m_TweenDesc.next.fRatio, 0.f, 1.f);
+				const _float fTimePerFrame = 1 / (pNextAnim->Get_TickPerSecond() * pNextAnim->Get_AnimationSpeed());
+
+				// 루프 체크 필요
+				if (fTimePerFrame <= m_TweenDesc.next.fFrameAcc)
+				{
+					m_TweenDesc.next.fFrameAcc = 0.f;
+					m_TweenDesc.next.iCurFrame = (m_TweenDesc.next.iCurFrame + 1) % pNextAnim->Get_MaxFrameCount();
+					m_TweenDesc.next.iNextFrame = (m_TweenDesc.next.iCurFrame + 1) % pNextAnim->Get_MaxFrameCount();
+				}
+
+				m_TweenDesc.next.fRatio = m_TweenDesc.next.fFrameAcc / fTimePerFrame;
+				std::clamp(m_TweenDesc.next.fRatio, 0.f, 1.f);
+			}
 		}
 	}
 
@@ -373,24 +357,13 @@ HRESULT CModel::Clear_NotUsedData()
 
 HRESULT CModel::Set_Animation(const _uint& iAnimationIndex, const _float& fTweenDuration)
 {
-	if (m_Animations.size() <= iAnimationIndex)
-		return E_FAIL;
-
 	if (m_TweenDesc.cur.iAnimIndex < 0) // 최초 1회 실행 
 	{
 		m_TweenDesc.cur.iAnimIndex = iAnimationIndex % m_Animations.size();
 		return S_OK;
 	}
 
-	/* 일부러 보간 시간을 음수로 주는 경우, 그 즉시 보간 없이 바로 다음 애니메이션을 세팅한다. */
-	if (fTweenDuration <= 0.f)
-	{
-		m_TweenDesc.cur.iAnimIndex = iAnimationIndex % m_Animations.size();
-		m_TweenDesc.ClearNextAnim();
-		return S_OK;
-	}
-
-	m_TweenDesc.ClearNextAnim();
+ 	m_TweenDesc.ClearNextAnim();
 	m_TweenDesc.next.iAnimIndex = iAnimationIndex % m_Animations.size();
 	m_TweenDesc.fTweenDuration = fTweenDuration;
 
@@ -410,6 +383,45 @@ HRESULT CModel::Set_Animation(const wstring& strAnimationName, const _float& fTw
 	return E_FAIL;
 }
 
+HRESULT CModel::Set_Animation(const wstring& strAnimationName)
+{
+	for (size_t i = 0; i < m_Animations.size(); ++i)
+	{
+		if (strAnimationName == m_Animations[i]->Get_AnimationName())
+		{
+			Set_AnimIndex(i);
+			return S_OK;
+		}
+	}
+	return E_FAIL;
+}
+
+void CModel::Set_AnimIndex(_uint iAnimIndex)
+{
+	if (iAnimIndex >= m_Animations.size())
+		iAnimIndex = 0;
+
+	m_Animations[m_iCurrentAnimIndex]->Reset_Animation();
+
+	if (true == m_Animations[iAnimIndex]->Is_TweenAnimation())
+	{
+		m_iNextAnimIndex = iAnimIndex;
+		m_bInterpolationAnimation = true;
+		m_bFirstRootConvert = true;
+	}
+	else
+	{
+		m_iCurrentAnimIndex = iAnimIndex;
+	}
+}
+
+void CModel::Complete_Interpolation()
+{
+	m_iCurrentAnimIndex = m_iNextAnimIndex;
+	m_iNextAnimIndex = -1;
+	m_bInterpolationAnimation = false;
+}
+
 HRESULT CModel::SetUp_OnShader(CShader* pShader, _uint iMaterialIndex, aiTextureType eTextureType, const char* pConstantName)
 {
 	if (iMaterialIndex >= m_iNumMaterials)
@@ -421,13 +433,38 @@ HRESULT CModel::SetUp_OnShader(CShader* pShader, _uint iMaterialIndex, aiTexture
 	return m_Materials[iMaterialIndex].pTexture[eTextureType]->Bind_ShaderResource(pShader, pConstantName);
 }
 
+HRESULT CModel::Play_Animation(CTransform* pTransform, _float fTimeDelta)
+{
+	if (m_iCurrentAnimIndex >= m_iNumAnimations)
+		return E_FAIL;
+
+	if (m_bInterpolationAnimation) 
+	{
+		m_Animations[m_iCurrentAnimIndex]->Play_Animation(this, pTransform, m_Animations[m_iNextAnimIndex], fTimeDelta);
+	}
+	else
+	{
+		m_Animations[m_iCurrentAnimIndex]->Play_Animation(pTransform, fTimeDelta);
+	}
+	
+	for (auto& pHierarchyNode : m_HierarchyNodes)
+		pHierarchyNode->Set_CombinedTransformation();
+
+	if (m_bInterpolationAnimation)	
+		return S_OK;
+	
+	return S_OK;
+}
+
 HRESULT CModel::Render(CShader* pShader, _uint iMeshIndex, _uint iPassIndex)
 {
 	if (TYPE_ANIM == m_eModelType)
 	{
-		if (nullptr == m_pSRV || 0 > m_TweenDesc.cur.iAnimIndex)
-			return E_FAIL;
+		/*m_Meshes[iMeshIndex]->SetUp_BoneMatrices(m_pMatrixTexture, m_Matrices, XMLoadFloat4x4(&m_PivotMatrix));
+		if (FAILED(pShader->Bind_Texture("g_MatrixPallete", m_pSRV)))
+			return E_FAIL;*/
 
+		// << : VTF
 		if (FAILED(pShader->Bind_Texture("g_TransformMap", m_pSRV)))
 			return E_FAIL;
 
@@ -445,8 +482,7 @@ HRESULT CModel::Render_Instancing(CShader* pShader, _uint iMeshIndex, CVIBuffer_
 {
 	if (TYPE_ANIM == m_eModelType)
 	{
-		m_Meshes[iMeshIndex]->SetUp_BoneMatrices(m_pMatrixTexture, m_Matrices, XMLoadFloat4x4(&m_PivotMatrix));
-		if (FAILED(pShader->Bind_Texture("g_MatrixPallete", m_pSRV)))
+		if (FAILED(pShader->Bind_Texture("g_TransformMap", m_pSRV)))
 			return E_FAIL;
 	}
 
@@ -454,26 +490,6 @@ HRESULT CModel::Render_Instancing(CShader* pShader, _uint iMeshIndex, CVIBuffer_
 	pInstancingBuffer->Render(WorldMatrices, m_Meshes[iMeshIndex]);
 
 	return S_OK;
-}
-
-const _float CModel::Get_Progress() const
-{
-	return m_Animations[m_TweenDesc.cur.iAnimIndex]->Get_Progess();
-}
-
-const _float CModel::Get_Duration()
-{
-	CAnimation* pAnim = Get_CurrAnimation();
-
-	if(nullptr != pAnim)
-		return pAnim->Get_Duration();
-
-	return 0.f;
-}
-
-const _float CModel::Get_PlayTime() 
-{
-	return _float();
 }
 
 HRESULT CModel::Swap_Animation(_uint iSrcIndex, _uint iDestIndex)
@@ -488,7 +504,7 @@ HRESULT CModel::Swap_Animation(_uint iSrcIndex, _uint iDestIndex)
 	m_Animations[iDestIndex] = m_Animations[iSrcIndex];
 	m_Animations[iSrcIndex] = Temp;
 
-	//m_iCurrentAnimIndex = iDestIndex;
+	m_iCurrentAnimIndex = iDestIndex;
 
 	return S_OK;
 }
@@ -507,10 +523,21 @@ HRESULT CModel::Delete_Animation(_uint iIndex)
 
 	m_Animations.erase(iter);
 
-	//m_iCurrentAnimIndex = 0 > m_iCurrentAnimIndex - 1 ? 0 : m_iCurrentAnimIndex;
-	//m_iCurrentAnimIndex = m_Animations.size() >= m_iCurrentAnimIndex ? m_Animations.size() - 1 : m_iCurrentAnimIndex;
+	m_iCurrentAnimIndex = 0 > m_iCurrentAnimIndex - 1 ? 0 : m_iCurrentAnimIndex;
+	m_iCurrentAnimIndex = m_Animations.size() >= m_iCurrentAnimIndex ? m_Animations.size() - 1 : m_iCurrentAnimIndex;
 
 	return S_OK;
+}
+
+_bool CModel::Is_Animation_Finished(_uint iAnimationIndex)
+{
+	if (iAnimationIndex >= m_Animations.size())
+	{
+		MSG_BOX("Animation Index Over.");
+		return false;
+	}
+
+	return m_Animations[iAnimationIndex]->Is_Finished();
 }
 
 _int CModel::Find_AnimationIndex(const wstring& strAnimationTag)

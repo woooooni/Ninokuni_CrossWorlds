@@ -75,6 +75,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	if (FAILED(GI->Add_Timer(TIMER_TYPE::GAME_PLAY)))
 		return FALSE;
 
+    if (FAILED(GI->Add_Timer(TIMER_TYPE::UI)))
+        return FALSE;
+
 	_float		fTimeAcc = 0.f;
 
     // 기본 메시지 루프입니다.
@@ -97,6 +100,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		if (fTimeAcc >= 1.f / 144.f)
 		{
+            GI->Compute_TimeDelta(TIMER_TYPE::UI);
 			pMainApp->Tick(GI->Compute_TimeDelta(TIMER_TYPE::GAME_PLAY));
 			pMainApp->Render();
 

@@ -6,6 +6,7 @@
 /* 2. 보관하고 있는 객체들의 렌더콜(드로우콜)을 수행한다. */
 
 BEGIN(Engine)
+class CModel;
 class CVIBuffer_Instancing;
 
 class ENGINE_DLL CRenderer final : public CComponent
@@ -27,7 +28,7 @@ public:
 
 public:
 	enum RENDERGROUP { RENDER_PRIORITY, RENDER_SHADOW, RENDER_NONLIGHT, RENDER_LIGHT, RENDER_NONBLEND, RENDER_ALPHABLEND, RENDER_EFFECT, RENDER_UI, RENDER_END };
-	enum SHADER_TYPE { MODEL, RECT, EFFECT_TEXTURE, EFFECT_MODEL, TYPE_END };
+	enum INSTANCING_SHADER_TYPE { ANIM_MODEL, MODEL, RECT, EFFECT_TEXTURE, EFFECT_MODEL, TYPE_END };
 	
 public:
 	typedef struct tagTextDesc
@@ -45,9 +46,11 @@ private:
 	typedef struct tagInstancingDesc
 	{
 		class CGameObject* pGameObject = { nullptr };
+
 		vector<XMFLOAT4X4> WorldMatrices;
 		vector<EFFECT_INSTANCE_DESC> EffectInstancingDesc;
-		SHADER_TYPE eShaderType = SHADER_TYPE::TYPE_END;
+		vector<TweenDesc> TweenDesc;
+		INSTANCING_SHADER_TYPE eShaderType = INSTANCING_SHADER_TYPE::TYPE_END;
 	}INSTANCING_DESC;
 
 private:
@@ -61,8 +64,9 @@ public:
 
 public:
 	HRESULT Add_RenderGroup(RENDERGROUP eRenderGroup, class CGameObject* pGameObject);
-	HRESULT Add_RenderGroup_Instancing(RENDERGROUP eRenderGroup, SHADER_TYPE eShaderType, class CGameObject* pGameObject, _float4x4 WorldMatrix);
-	HRESULT Add_RenderGroup_Instancing_Effect(RENDERGROUP eRenderGroup, SHADER_TYPE eShaderType, class CGameObject* pGameObject, _float4x4 WorldMatrix, const EFFECT_INSTANCE_DESC& EffectInstanceDesc);
+	HRESULT Add_RenderGroup_Instancing(RENDERGROUP eRenderGroup, INSTANCING_SHADER_TYPE eShaderType, class CGameObject* pGameObject, _float4x4 WorldMatrix);
+	HRESULT Add_RenderGroup_AnimInstancing(RENDERGROUP eRenderGroup, class CGameObject* pGameObject, _float4x4 WorldMatrix, const TweenDesc& TweenInstanceDesc);
+	HRESULT Add_RenderGroup_Instancing_Effect(RENDERGROUP eRenderGroup, INSTANCING_SHADER_TYPE eShaderType, class CGameObject* pGameObject, _float4x4 WorldMatrix, const EFFECT_INSTANCE_DESC& EffectInstanceDesc);
 	HRESULT Draw();
 
 
@@ -150,12 +154,12 @@ private:
 	// Instancing
 	class CVIBuffer_Instancing*			m_pVIBuffer_Instancing = nullptr;
 
-	class CShader*						m_pIntancingShaders[SHADER_TYPE::TYPE_END];
+	class CShader*						m_pIntancingShaders[INSTANCING_SHADER_TYPE::TYPE_END];
 	map<wstring, INSTANCING_DESC>		m_Render_Instancing_Objects[RENDER_END];
 
 	_float								m_fBias = 0.2f;
 	_float4								m_vPlayerPosition = {0.f, 0.f, 0.f, 1.f};
-	_bool m_bDebugDraw = false;
+	_bool								m_bDebugDraw = false;
 
 
 	

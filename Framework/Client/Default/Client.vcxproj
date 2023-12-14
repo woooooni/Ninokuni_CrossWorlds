@@ -192,10 +192,12 @@
     <ClInclude Include="..\..\ThirdParty\imstb_rectpack.h" />
     <ClInclude Include="..\..\ThirdParty\imstb_textedit.h" />
     <ClInclude Include="..\..\ThirdParty\imstb_truetype.h" />
+    <ClInclude Include="..\Private\Character_Dummy.h" />
     <ClInclude Include="..\public\BackGround.h" />
     <ClInclude Include="..\Public\Building.h" />
     <ClInclude Include="..\Public\Camera_Main.h" />
     <ClInclude Include="..\Public\Camera_Manager.h" />
+    <ClInclude Include="..\Public\Character.h" />
     <ClInclude Include="..\Public\Character_Witch.h" />
     <ClInclude Include="..\Public\Gianix.h" />
     <ClInclude Include="..\Public\Grounds.h" />
@@ -207,7 +209,6 @@
     <ClInclude Include="..\Public\StaticObject.h" />
     <ClInclude Include="..\Public\Effect_Manager.h" />
     <ClInclude Include="..\Public\Camera_Tool.h" />
-    <ClInclude Include="..\Public\Character.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
     <ClInclude Include="..\Public\Dummy.h" />
     <ClInclude Include="..\Public\Effect.h" />
@@ -303,6 +304,8 @@
     <ClCompile Include="..\Private\Camera_Main.cpp" />
     <ClCompile Include="..\Private\Camera_Manager.cpp" />
     <ClCompile Include="..\Private\Camera_Tool.cpp" />
+    <ClCompile Include="..\Private\Character.cpp" />
+    <ClCompile Include="..\Private\Character_Dummy.cpp" />
     <ClCompile Include="..\Private\Character_Witch.cpp" />
     <ClCompile Include="..\Private\Gianix.cpp" />
     <ClCompile Include="..\Private\Grounds.cpp" />
@@ -312,7 +315,6 @@
     <ClCompile Include="..\Private\Probs.cpp" />
     <ClCompile Include="..\Private\StaticObject.cpp" />
     <ClCompile Include="..\Private\Effect_Manager.cpp" />
-    <ClCompile Include="..\Private\Character.cpp" />
     <ClCompile Include="..\Private\Dummy.cpp" />
     <ClCompile Include="..\Private\Effect.cpp" />
     <ClCompile Include="..\Private\Level_Logo.cpp" />
@@ -397,6 +399,7 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_AnimModel_Instance.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_AnimModel_Vtf.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_MeshEffect_Instance.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Point_Instance.hlsl" />

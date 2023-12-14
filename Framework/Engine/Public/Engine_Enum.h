@@ -12,7 +12,7 @@ enum class TIMER_TYPE
 	TIMER_END
 };
 
-enum PhysXRigidType
+enum PHYSX_RIGID_TYPE
 {
 	STATIC,
 	DYNAMIC,
@@ -20,7 +20,7 @@ enum PhysXRigidType
 	RIGID_TYPE_END,
 };
 
-enum PhysXColliderType
+enum PHYSX_COLLIDER_TYPE
 {
 	BOX,
 	SPHERE,

@@ -90,7 +90,7 @@ HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, _uint iNumLayerType,
 	if (FAILED(m_pCollision_Manager->Reserve_Manager()))
 		return E_FAIL;
 
-	if (FAILED(m_pPhysXManager->Reserve_Manager()))
+	if (FAILED(m_pPhysXManager->Reserve_Manager(*ppDevice, *ppContext)))
 		return E_FAIL;
 
 	if (FAILED(m_pTarget_Manager->Ready_Shadow_DSV(*ppDevice, GraphicDesc.iWinSizeX, GraphicDesc.iWinSizeY)))
@@ -532,14 +532,24 @@ _bool CGameInstance::Intersect_Frustum_World(_fvector vWorldPos, _float fRadius)
 	return m_pFrustum->Intersect_Frustum_World(vWorldPos, fRadius);
 }
 
-HRESULT CGameInstance::Add_Static_Actor(const PHYSX_INIT_DESC& Desc, _bool isKinematic)
+PxRigidStatic* CGameInstance::Add_Static_Actor(const PHYSX_INIT_DESC& Desc)
 {
-	return m_pPhysXManager->Add_Static_Actor(Desc, isKinematic);
+	return m_pPhysXManager->Add_Static_Actor(Desc);
 }
 
-HRESULT CGameInstance::Add_Dynamic_Actor(const PHYSX_INIT_DESC& Desc, _bool isKinematic)
+PxRigidDynamic* CGameInstance::Add_Dynamic_Actor(const PHYSX_INIT_DESC& Desc)
 {
-	return m_pPhysXManager->Add_Dynamic_Actor(Desc, isKinematic);
+	return m_pPhysXManager->Add_Dynamic_Actor(Desc);
+}
+
+vector<PxRigidStatic*> CGameInstance::Add_Static_Mesh_Actor(const PHYSX_INIT_DESC& Desc)
+{
+	return m_pPhysXManager->Add_Static_Mesh_Actor(Desc);
+}
+
+vector<PxRigidDynamic*> CGameInstance::Add_Dynamic_Mesh_Actor(const PHYSX_INIT_DESC& Desc)
+{
+	return m_pPhysXManager->Add_Dynamic_Mesh_Actor(Desc);
 }
 
 HRESULT CGameInstance::Add_Ground(CGameObject* pGroundObj)
@@ -547,7 +557,7 @@ HRESULT CGameInstance::Add_Ground(CGameObject* pGroundObj)
 	return m_pPhysXManager->Add_Ground(pGroundObj);
 }
 
-HRESULT CGameInstance::Remove_Actor(_uint iObjectID, PhysXRigidType eRigidType)
+HRESULT CGameInstance::Remove_Actor(_uint iObjectID, PHYSX_RIGID_TYPE eRigidType)
 {
 	return m_pPhysXManager->Remove_Actor(iObjectID, eRigidType);
 }
@@ -655,10 +665,10 @@ void CGameInstance::Release_Engine()
 	CLight_Manager::GetInstance()->DestroyInstance();
 	CFont_Manager::GetInstance()->DestroyInstance();
 	CModel_Manager::GetInstance()->DestroyInstance();
+	CPhysX_Manager::GetInstance()->DestroyInstance();
 	CCollision_Manager::GetInstance()->DestroyInstance();
 	CObject_Manager::GetInstance()->DestroyInstance();
 	CComponent_Manager::GetInstance()->DestroyInstance();
-	CPhysX_Manager::GetInstance()->DestroyInstance();
 	CGraphic_Device::GetInstance()->DestroyInstance();
 }
 

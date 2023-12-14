@@ -131,10 +131,15 @@ public:
 
 
 public:
-	HRESULT Add_Static_Actor(const PHYSX_INIT_DESC& Desc, _bool isKinematic = false);
-	HRESULT Add_Dynamic_Actor(const PHYSX_INIT_DESC& Desc, _bool isKinematic = false);
+	PxRigidStatic* Add_Static_Actor(const PHYSX_INIT_DESC& Desc);
+	PxRigidDynamic* Add_Dynamic_Actor(const PHYSX_INIT_DESC& Desc);
+
+	vector<PxRigidStatic*> Add_Static_Mesh_Actor(const PHYSX_INIT_DESC& Desc);
+	vector<PxRigidDynamic*> Add_Dynamic_Mesh_Actor(const PHYSX_INIT_DESC& Desc);
 	HRESULT Add_Ground(class CGameObject* pGroundObj);
-	HRESULT Remove_Actor(_uint iObjectID, PhysXRigidType eRigidType);
+
+
+	HRESULT Remove_Actor(_uint iObjectID, PHYSX_RIGID_TYPE eRigidType);
 	HRESULT Convert_Transform(class CGameObject* pObj, PxTransform& OutRef);
 	PxMaterial* Create_PxMaterial(_float fA, _float fB, _float fC);
 

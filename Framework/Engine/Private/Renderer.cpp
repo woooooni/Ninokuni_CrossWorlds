@@ -5,6 +5,7 @@
 #include "Utils.h"
 #include "GameInstance.h"
 #include "Shader.h"
+#include "PhysX_Manager.h"
 #include "..\..\Client\Public\Effect.h"
 
 CRenderer::CRenderer(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
@@ -263,36 +264,41 @@ HRESULT CRenderer::Initialize_Prototype()
 	if (nullptr == m_pShader)
 		return E_FAIL;
 
+	m_pIntancingShaders[INSTANCING_SHADER_TYPE::ANIM_MODEL] = CShader::Create(m_pDevice, m_pContext,
+		TEXT("../Bin/ShaderFiles/Shader_AnimModel_Instance.hlsl"),
+		VTXANIMMODELINSTANCE_DECLARATION::Elements,
+		VTXANIMMODELINSTANCE_DECLARATION::iNumElements);
 
-	m_pIntancingShaders[SHADER_TYPE::RECT] = CShader::Create(m_pDevice, m_pContext, 
+	if (nullptr == m_pIntancingShaders[INSTANCING_SHADER_TYPE::ANIM_MODEL])
+		return E_FAIL;
+
+	m_pIntancingShaders[INSTANCING_SHADER_TYPE::MODEL] = CShader::Create(m_pDevice, m_pContext,
+		TEXT("../Bin/ShaderFiles/Shader_Model_Instance.hlsl"),
+		VTXMODELINSTANCE_DECLARATION::Elements,
+		VTXMODELINSTANCE_DECLARATION::iNumElements);
+
+	if (nullptr == m_pIntancingShaders[INSTANCING_SHADER_TYPE::MODEL])
+		return E_FAIL;
+
+	m_pIntancingShaders[INSTANCING_SHADER_TYPE::RECT] = CShader::Create(m_pDevice, m_pContext,
 		TEXT("../Bin/ShaderFiles/Shader_Rect_Instance.hlsl"), 
 		VTXRECTINSTANCE_DECLARATION::Elements, VTXRECTINSTANCE_DECLARATION::iNumElements);
 
-	if (nullptr == m_pIntancingShaders[SHADER_TYPE::RECT])
+	if (nullptr == m_pIntancingShaders[INSTANCING_SHADER_TYPE::RECT])
 		return E_FAIL;
 
-
-
-	m_pIntancingShaders[SHADER_TYPE::MODEL] = CShader::Create(m_pDevice, m_pContext, 
-		TEXT("../Bin/ShaderFiles/Shader_Model_Instance.hlsl"),
-		VTXMODELINSTANCE_DECLARATION::Elements, 
-		VTXMODELINSTANCE_DECLARATION::iNumElements);
-
-	if (nullptr == m_pIntancingShaders[SHADER_TYPE::MODEL])
-		return E_FAIL;
-
-	m_pIntancingShaders[SHADER_TYPE::EFFECT_TEXTURE] = CShader::Create(m_pDevice, m_pContext, 
+	m_pIntancingShaders[INSTANCING_SHADER_TYPE::EFFECT_TEXTURE] = CShader::Create(m_pDevice, m_pContext,
 		TEXT("../Bin/ShaderFiles/Shader_TextureEffect_Instance.hlsl"), 
 		VTXRECTINSTANCE_DECLARATION::Elements, 
 		VTXRECTINSTANCE_DECLARATION::iNumElements);
 
-	if (nullptr == m_pIntancingShaders[SHADER_TYPE::EFFECT_TEXTURE])
+	if (nullptr == m_pIntancingShaders[INSTANCING_SHADER_TYPE::EFFECT_TEXTURE])
 		return E_FAIL;
 
-	m_pIntancingShaders[SHADER_TYPE::EFFECT_MODEL] = CShader::Create(m_pDevice, m_pContext, 
+	m_pIntancingShaders[INSTANCING_SHADER_TYPE::EFFECT_MODEL] = CShader::Create(m_pDevice, m_pContext,
 		TEXT("../Bin/ShaderFiles/Shader_MeshEffect_Instance.hlsl"), VTXMODELINSTANCE_DECLARATION::Elements, VTXMODELINSTANCE_DECLARATION::iNumElements);
 
-	if (nullptr == m_pIntancingShaders[SHADER_TYPE::EFFECT_MODEL])
+	if (nullptr == m_pIntancingShaders[INSTANCING_SHADER_TYPE::EFFECT_MODEL])
 		return E_FAIL;
 
 
@@ -327,7 +333,7 @@ HRESULT CRenderer::Add_RenderGroup(RENDERGROUP eRenderGroup, CGameObject * pGame
 	return S_OK;
 }
 
-HRESULT CRenderer::Add_RenderGroup_Instancing(RENDERGROUP eRenderGroup, SHADER_TYPE eShaderType, CGameObject* pGameObject, _float4x4 WorldMatrix)
+HRESULT CRenderer::Add_RenderGroup_Instancing(RENDERGROUP eRenderGroup, INSTANCING_SHADER_TYPE eShaderType, CGameObject* pGameObject, _float4x4 WorldMatrix)
 {
 	if (eRenderGroup >= RENDER_END)
 		return E_FAIL;
@@ -358,7 +364,7 @@ HRESULT CRenderer::Add_RenderGroup_Instancing(RENDERGROUP eRenderGroup, SHADER_T
 	return S_OK;
 }
 
-HRESULT CRenderer::Add_RenderGroup_Instancing_Effect(RENDERGROUP eRenderGroup, SHADER_TYPE eShaderType, CGameObject* pGameObject, _float4x4 WorldMatrix, const EFFECT_INSTANCE_DESC& EffectInstanceDesc)
+HRESULT CRenderer::Add_RenderGroup_Instancing_Effect(RENDERGROUP eRenderGroup, INSTANCING_SHADER_TYPE eShaderType, CGameObject* pGameObject, _float4x4 WorldMatrix, const EFFECT_INSTANCE_DESC& EffectInstanceDesc)
 {
 
 	if (eRenderGroup >= RENDER_END)
@@ -395,6 +401,47 @@ HRESULT CRenderer::Add_RenderGroup_Instancing_Effect(RENDERGROUP eRenderGroup, S
 		}
 		
 	}
+	return S_OK;
+}
+
+
+HRESULT CRenderer::Add_RenderGroup_AnimInstancing(RENDERGROUP eRenderGroup, CGameObject* pGameObject, _float4x4 WorldMatrix, const TweenDesc& TweenInstanceDesc)
+{
+	if (eRenderGroup >= RENDER_END)
+		return E_FAIL;
+
+	auto iter = m_Render_Instancing_Objects[eRenderGroup].find(pGameObject->Get_PrototypeTag());
+	if (iter == m_Render_Instancing_Objects[eRenderGroup].end())
+	{
+		INSTANCING_DESC InstancingDesc;
+		InstancingDesc.pGameObject = pGameObject;
+		Safe_AddRef(pGameObject);
+
+		InstancingDesc.eShaderType = INSTANCING_SHADER_TYPE::ANIM_MODEL;
+		InstancingDesc.WorldMatrices.reserve(500);
+		InstancingDesc.WorldMatrices.push_back(WorldMatrix);
+
+		InstancingDesc.TweenDesc.reserve(500);
+		InstancingDesc.TweenDesc.push_back(TweenInstanceDesc);
+
+		m_Render_Instancing_Objects[eRenderGroup].emplace(pGameObject->Get_PrototypeTag(), InstancingDesc);
+	}
+
+	else
+	{
+		if (nullptr == iter->second.pGameObject)
+		{
+			iter->second.pGameObject = pGameObject;
+			Safe_AddRef(pGameObject);
+		}
+
+		if (iter->second.WorldMatrices.size() <= 500)
+		{
+			iter->second.WorldMatrices.push_back(WorldMatrix);
+			iter->second.TweenDesc.push_back(TweenInstanceDesc);
+		}
+	}
+
 	return S_OK;
 }
 
@@ -453,6 +500,7 @@ HRESULT CRenderer::Draw()
 	return S_OK;
 }
 
+
 HRESULT CRenderer::Render_Priority()
 {
 	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Blend"))))
@@ -474,11 +522,16 @@ HRESULT CRenderer::Render_Priority()
 		if (FAILED(Pair.second.pGameObject->Render_Instance(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices)))
 			return E_FAIL;
 
+		if (FAILED(Pair.second.pGameObject->Render_Instance_AnimModel(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices, Pair.second.TweenDesc)))
+			return E_FAIL;
+		
+
+		Pair.second.EffectInstancingDesc.clear();
 		Pair.second.WorldMatrices.clear();
+		Pair.second.TweenDesc.clear();
 
 		Safe_Release(Pair.second.pGameObject);
 		Pair.second.pGameObject = nullptr;
-		Pair.second.WorldMatrices.clear();
 	}
 
 	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
@@ -508,9 +561,15 @@ HRESULT CRenderer::Render_Shadow()
 		/*if (FAILED(Pair.second.pGameObject->Render_Instance_Shadow(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices)))
 			return E_FAIL;*/
 
+		if (FAILED(Pair.second.pGameObject->Render_Instance_AnimModel_Shadow(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices, Pair.second.TweenDesc)))
+			return E_FAIL;
+
+		Pair.second.EffectInstancingDesc.clear();
+		Pair.second.WorldMatrices.clear();
+		Pair.second.TweenDesc.clear();
+
 		Safe_Release(Pair.second.pGameObject);
 		Pair.second.pGameObject = nullptr;
-		Pair.second.WorldMatrices.clear();
 	}
 
 	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
@@ -538,9 +597,15 @@ HRESULT CRenderer::Render_NonLight()
 		if (FAILED(Pair.second.pGameObject->Render_Instance(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices)))
 			return E_FAIL;
 
+		if (FAILED(Pair.second.pGameObject->Render_Instance_AnimModel(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices, Pair.second.TweenDesc)))
+			return E_FAIL;
+
+		Pair.second.EffectInstancingDesc.clear();
+		Pair.second.WorldMatrices.clear();
+		Pair.second.TweenDesc.clear();
+
 		Safe_Release(Pair.second.pGameObject);
 		Pair.second.pGameObject = nullptr;
-		Pair.second.WorldMatrices.clear();
 	}
 
 	return S_OK;
@@ -569,11 +634,16 @@ HRESULT CRenderer::Render_NonAlphaBlend()
 		if (FAILED(Pair.second.pGameObject->Render_Instance(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices)))
 			return E_FAIL;
 
+		if (FAILED(Pair.second.pGameObject->Render_Instance_AnimModel(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices, Pair.second.TweenDesc)))
+			return E_FAIL;
+
+
+		Pair.second.EffectInstancingDesc.clear();
+		Pair.second.WorldMatrices.clear();
+		Pair.second.TweenDesc.clear();
 
 		Safe_Release(Pair.second.pGameObject);
 		Pair.second.pGameObject = nullptr;
-		Pair.second.WorldMatrices.clear();
-
 	}
 
 	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
@@ -762,9 +832,15 @@ HRESULT CRenderer::Render_AlphaBlend()
 		if (FAILED(Pair.second.pGameObject->Render_Instance(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices)))
 			return E_FAIL;
 
+		if (FAILED(Pair.second.pGameObject->Render_Instance_AnimModel(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices, Pair.second.TweenDesc)))
+			return E_FAIL;
+
+		Pair.second.EffectInstancingDesc.clear();
+		Pair.second.WorldMatrices.clear();
+		Pair.second.TweenDesc.clear();
+
 		Safe_Release(Pair.second.pGameObject);
 		Pair.second.pGameObject = nullptr;
-		Pair.second.WorldMatrices.clear();
 	}
 
 	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
@@ -799,8 +875,12 @@ HRESULT CRenderer::Render_Effect()
 			return E_FAIL;
 
 		
+		if (FAILED(Pair.second.pGameObject->Render_Instance_AnimModel(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices, Pair.second.TweenDesc)))
+			return E_FAIL;
+
 		Pair.second.EffectInstancingDesc.clear();
 		Pair.second.WorldMatrices.clear();
+		Pair.second.TweenDesc.clear();
 
 		Safe_Release(Pair.second.pGameObject);
 		Pair.second.pGameObject = nullptr;
@@ -1084,7 +1164,8 @@ HRESULT CRenderer::Render_Debug()
 	if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
 		return E_FAIL;
 
-
+	if (FAILED(CPhysX_Manager::GetInstance()->Render()))
+		return E_FAIL;
 
 	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_GameObjects"), m_pShader, m_pVIBuffer)))
 		return E_FAIL;
@@ -1150,22 +1231,27 @@ void CRenderer::Free()
 
 
 	for (auto& pComponent : m_RenderDebug)
-	{
 		Safe_Release(pComponent);
-	}
+
 	m_RenderDebug.clear();
 
 
 	Safe_Release(m_pVIBuffer_Instancing);
 
 
-	for (_uint i = 0; i < SHADER_TYPE::TYPE_END; ++i)
+	for (_uint i = 0; i < INSTANCING_SHADER_TYPE::TYPE_END; ++i)
 		Safe_Release(m_pIntancingShaders[i]);
+
 
 	for (_uint i = 0; i < RENDERGROUP::RENDER_END; ++i)
 	{
 		for (auto iter : m_Render_Instancing_Objects[i])
+		{
+			iter.second.EffectInstancingDesc.clear();
+			iter.second.TweenDesc.clear();
+			iter.second.WorldMatrices.clear();
 			Safe_Release(iter.second.pGameObject);
+		}
 
 		m_Render_Instancing_Objects[i].clear();
 	}

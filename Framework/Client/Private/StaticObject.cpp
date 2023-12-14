@@ -161,7 +161,6 @@ HRESULT CStaticObject::Ready_ModelCom(_uint eType, const wstring& strFilePath, c
 		eType, strFilePath, strFileName)))
 		return E_FAIL;
 
-	//m_pModelCom->Set_Owner(this);
 
 	return S_OK;
 }

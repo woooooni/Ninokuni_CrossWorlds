@@ -10,24 +10,7 @@ class ENGINE_DLL CRigidBody : public CComponent
 public:
     typedef struct tagRigidBodyDesc
     {
-        _float fWeight = 1.f;
-        _float fStaticFriction = 0.f;
-        _float fDynamicFriction = 0.f;
-
-        _float fRestitution = 0.f;
-        _float fAngleDamp = 0.f;
-
-        _float fMaxVelocity = 100.f;
-        
-
-        _float3 vStartPos = { 0.f, 0.f, 0.f };
-        _float3 vOffsetPos = { 0.f, 0.f, 0.f };
-        
-
-        _float3 vRotation;
-        _float3 vExtentss = _float3(0.f, 0.f, 0.f);
-        
-
+        PHYSX_INIT_DESC PhysXDesc = {};
         class CTransform* pTransform = nullptr;
         class CNavigation* pNavigation = nullptr;
     } RIGID_BODY_DESC;
@@ -57,6 +40,7 @@ public:
 
 public:
     void Add_Force(_vector vDir, _float fForce, _bool bClear);
+    void Add_Velocity(_vector vDir, _float fForce, _bool bClear);
 
     void Set_Velocity(_float3 vVelocity);
     _float3 Get_Velocity();
@@ -69,13 +53,21 @@ protected:
     BasicEffect* m_pEffect = nullptr;
     ID3D11InputLayout* m_pInputLayout = nullptr;
     _bool m_bCollision = false;
+
+
+private:
+    BoundingOrientedBox* m_pOBB = nullptr;
+    BoundingOrientedBox* m_pOriginal_OBB = nullptr;
+    BoundingSphere* m_pSphere = nullptr;
+    BoundingSphere* m_pOriginal_Sphere = nullptr;
+
+
 #endif
 
 private:
     _bool m_bFirst = false;
-    _float3 m_vExtentss = _float3(0.f, 0.f, 0.f);
-    _float3 m_vOffsetPos = _float3(0.f, 0.f, 0.f);
- 
+    PHYSX_COLLIDER_TYPE m_eColliderType = PHYSX_COLLIDER_TYPE::COLLIDER_TYPE_END;
+    PHYSX_RIGID_TYPE m_eRigidType = PHYSX_RIGID_TYPE::RIGID_TYPE_END;
 
 private:
     class CTransform* m_pTransformCom = nullptr;
@@ -83,9 +75,7 @@ private:
     class PxRigidDynamic* m_pXBody = nullptr;
 
 
-private:
-    BoundingOrientedBox* m_pOBB = nullptr;
-    BoundingOrientedBox* m_pOriginal_OBB = nullptr;
+
 
 public:
     static CRigidBody* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

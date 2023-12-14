@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "Character_Witch.h"
+#include "Character_Dummy.h"
 #include "GameInstance.h"
 #include "HierarchyNode.h"
 #include "Trail.h"
@@ -7,18 +7,18 @@
 
 
 
-CCharacter_Witch::CCharacter_Witch(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CCharacter::CHARACTER_TYPE eCharacterType)
+CCharacter_Dummy::CCharacter_Dummy(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CCharacter::CHARACTER_TYPE eCharacterType)
 	: CCharacter(pDevice, pContext, strObjectTag, eCharacterType)
 {
 }
 
-CCharacter_Witch::CCharacter_Witch(const CCharacter_Witch& rhs)
+CCharacter_Dummy::CCharacter_Dummy(const CCharacter_Dummy& rhs)
 	: CCharacter(rhs)
 {
 
 }
 
-HRESULT CCharacter_Witch::Initialize_Prototype()
+HRESULT CCharacter_Dummy::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
@@ -27,7 +27,7 @@ HRESULT CCharacter_Witch::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CCharacter_Witch::Initialize(void* pArg)
+HRESULT CCharacter_Dummy::Initialize(void* pArg)
 {
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -50,7 +50,7 @@ HRESULT CCharacter_Witch::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CCharacter_Witch::Tick(_float fTimeDelta)
+void CCharacter_Dummy::Tick(_float fTimeDelta)
 {
 	m_pStateCom->Tick_State(fTimeDelta);
 	__super::Tick(fTimeDelta);
@@ -99,17 +99,17 @@ void CCharacter_Witch::Tick(_float fTimeDelta)
 
 	if (KEY_TAP(KEY::SPACE))
 	{
-		m_pRigidBodyCom->Add_Force(XMVectorSet(0.f, 1.f, 0.f, 0.f), 5000.f, false);
+		m_pRigidBodyCom->Add_Velocity(XMVectorSet(0.f, 1.f, 0.f, 0.f), 10.f, false);
 	}
 }
 
-void CCharacter_Witch::LateTick(_float fTimeDelta)
+void CCharacter_Dummy::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 }
 
-HRESULT CCharacter_Witch::Render()
+HRESULT CCharacter_Dummy::Render()
 {
 	if (FAILED(__super::Render()))
 		return E_FAIL;
@@ -117,22 +117,22 @@ HRESULT CCharacter_Witch::Render()
 	return S_OK;
 }
 
-void CCharacter_Witch::Collision_Enter(const COLLISION_INFO& tInfo)
+void CCharacter_Dummy::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
 }
 
-void CCharacter_Witch::Collision_Continue(const COLLISION_INFO& tInfo)
+void CCharacter_Dummy::Collision_Continue(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Continue(tInfo);
 }
 
-void CCharacter_Witch::Collision_Exit(const COLLISION_INFO& tInfo)
+void CCharacter_Dummy::Collision_Exit(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Exit(tInfo);
 }
 
-void CCharacter_Witch::On_Damaged(const COLLISION_INFO& tInfo)
+void CCharacter_Dummy::On_Damaged(const COLLISION_INFO& tInfo)
 {
 	__super::On_Damaged(tInfo);
 }
@@ -141,7 +141,7 @@ void CCharacter_Witch::On_Damaged(const COLLISION_INFO& tInfo)
 
 
 
-HRESULT CCharacter_Witch::Ready_Components()
+HRESULT CCharacter_Dummy::Ready_Components()
 {
 
 	/* For.Com_Transform */
@@ -157,7 +157,7 @@ HRESULT CCharacter_Witch::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Model */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Witch"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Test_Witch"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 
 	/* For.Com_StateMachine */
@@ -171,10 +171,10 @@ HRESULT CCharacter_Witch::Ready_Components()
 	RigidDesc.pTransform = m_pTransformCom;
 
 
-	RigidDesc.PhysXDesc.vOffsetPos = { 0.f, 2.5f, 0.f };
+	RigidDesc.PhysXDesc.vOffsetPos = { 0.f, 0.5f, 0.f };
 	RigidDesc.PhysXDesc.vExtents = { 5.f, 5.f, 10.f };
 
-	RigidDesc.PhysXDesc.eColliderType = PHYSX_COLLIDER_TYPE::BOX;
+	RigidDesc.PhysXDesc.eColliderType = PHYSX_COLLIDER_TYPE::SPHERE;
 	RigidDesc.PhysXDesc.eRigidType = PHYSX_RIGID_TYPE::DYNAMIC;
 
 	RigidDesc.PhysXDesc.bLockAngle_X = true;
@@ -204,7 +204,7 @@ HRESULT CCharacter_Witch::Ready_Components()
 }
 
 #pragma region Ready_States
-HRESULT CCharacter_Witch::Ready_States()
+HRESULT CCharacter_Dummy::Ready_States()
 {
 	//list<wstring> strAnimationName;
 
@@ -410,7 +410,7 @@ HRESULT CCharacter_Witch::Ready_States()
 
 
 #pragma region Ready_Colliders
-HRESULT CCharacter_Witch::Ready_Colliders()
+HRESULT CCharacter_Dummy::Ready_Colliders()
 {
 
 	//CCollider_Sphere::SPHERE_COLLIDER_DESC ColliderDesc;
@@ -468,7 +468,7 @@ HRESULT CCharacter_Witch::Ready_Colliders()
 #pragma endregion
 
 #pragma region Ready_Sockets
-HRESULT CCharacter_Witch::Ready_Sockets()
+HRESULT CCharacter_Dummy::Ready_Sockets()
 {
 	//if (nullptr == m_pModelCom)
 	//	return E_FAIL;
@@ -522,7 +522,7 @@ HRESULT CCharacter_Witch::Ready_Sockets()
 #pragma endregion
 
 #pragma region Ready_Parts
-HRESULT CCharacter_Witch::Ready_Parts()
+HRESULT CCharacter_Dummy::Ready_Parts()
 {
 	//m_Parts.resize(PARTTYPE::PART_END);
 
@@ -575,33 +575,32 @@ HRESULT CCharacter_Witch::Ready_Parts()
 }
 #pragma endregion
 
-CCharacter_Witch* CCharacter_Witch::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CCharacter::CHARACTER_TYPE eCharacterType)
+CCharacter_Dummy* CCharacter_Dummy::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CCharacter::CHARACTER_TYPE eCharacterType)
 {
-	CCharacter_Witch* pInstance = new CCharacter_Witch(pDevice, pContext, strObjectTag, eCharacterType);
+	CCharacter_Dummy* pInstance = new CCharacter_Dummy(pDevice, pContext, strObjectTag, eCharacterType);
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX("Create Failed : CCharacter_Witch");
+		MSG_BOX("Create Failed : CCharacter_Dummy");
 		Safe_Release(pInstance);
 		return nullptr;
 	}
 	return pInstance;
 }
 
-CGameObject* CCharacter_Witch::Clone(void* pArg)
+CGameObject* CCharacter_Dummy::Clone(void* pArg)
 {
-	CCharacter_Witch* pInstance = new CCharacter_Witch(*this);
+	CCharacter_Dummy* pInstance = new CCharacter_Dummy(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Failed to Cloned : CCharacter_Witch");
+		MSG_BOX("Failed to Cloned : CCharacter_Dummy");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CCharacter_Witch::Free()
+void CCharacter_Dummy::Free()
 {
 	__super::Free();
 }
-

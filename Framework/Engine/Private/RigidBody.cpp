@@ -55,28 +55,29 @@ HRESULT CRigidBody::Initialize(void* pArg)
 
 	Safe_AddRef(m_pNavigationCom);
 	Safe_AddRef(m_pTransformCom);
+	m_eColliderType = pDesc->PhysXDesc.eColliderType;
+	m_eRigidType = pDesc->PhysXDesc.eRigidType;
+
+	if (m_eRigidType != PHYSX_RIGID_TYPE::DYNAMIC)
+		return E_FAIL;
 
 	
+	m_pXBody = GI->Add_Dynamic_Actor(pDesc->PhysXDesc);
+	if (nullptr == m_pXBody)
+		return E_FAIL;
 
-	PxMaterial* pMaterial = GI->Create_PxMaterial(pDesc->fStaticFriction, pDesc->fDynamicFriction, pDesc->fRestitution);
+#ifdef _DEBUG
+	_float3 vStartPosition = pDesc->PhysXDesc.vOffsetPos;
 
-	m_vExtentss.x = abs(pDesc->vExtentss.x);
-	m_vExtentss.y = abs(pDesc->vExtentss.y);
-	m_vExtentss.z = abs(pDesc->vExtentss.z);
-
-
-	_float4 vQuat;
-	XMStoreFloat4(&vQuat, XMQuaternionRotationRollPitchYawFromVector(XMLoadFloat3(&pDesc->vRotation)));
-
-	m_pOriginal_OBB = new BoundingOrientedBox(_float3(0.f, 0.f, 0.f), 
-		_float3(pDesc->vExtentss.x * 0.5f, 
-			pDesc->vExtentss.y * 0.5f, 
-			pDesc->vExtentss.z * 0.5f), _float4(0.f, 0.f, 0.f, 1.f));
-
-	m_vOffsetPos = pDesc->vOffsetPos;
-
+	m_pOriginal_OBB = new BoundingOrientedBox(vStartPosition, _float3(pDesc->PhysXDesc.vExtents.x * 0.5f,
+		pDesc->PhysXDesc.vExtents.y * 0.5f,
+		pDesc->PhysXDesc.vExtents.z * 0.5f), _float4(0.f, 0.f, 0.f, 1.f));
 	m_pOBB = new BoundingOrientedBox(*m_pOriginal_OBB);
-	m_bFirst = true;
+
+
+	m_pOriginal_Sphere = new BoundingSphere(vStartPosition, pDesc->PhysXDesc.fRadius);
+	m_pSphere = new BoundingSphere(*m_pOriginal_Sphere);
+#endif
 
 	return S_OK;
 }
@@ -102,9 +103,17 @@ void CRigidBody::Update_RigidBody(_float fTimeDelta)
 	WorldMatrix.r[CTransform::STATE_UP] = XMVector3Normalize(XMVectorSet(PxTransform.q.getBasisVector1().x, PxTransform.q.getBasisVector1().y, PxTransform.q.getBasisVector1().z, 0.f)) * vScale.y;
 	WorldMatrix.r[CTransform::STATE_LOOK] = XMVector3Normalize(XMVectorSet(PxTransform.q.getBasisVector2().x, PxTransform.q.getBasisVector2().y, PxTransform.q.getBasisVector2().z, 0.f)) * vScale.z;
 	WorldMatrix.r[CTransform::STATE_POSITION] = XMVectorSet(PxTransform.p.x, PxTransform.p.y, PxTransform.p.z, 1.f);
-
-	m_pOriginal_OBB->Transform(*m_pOBB, WorldMatrix);
 	m_pTransformCom->Set_WorldMatrix(WorldMatrix);
+
+#ifdef _DEBUG
+
+	WorldMatrix.r[CTransform::STATE_POSITION] = XMVector3TransformCoord(XMLoadFloat3(&m_pOriginal_OBB->Center), WorldMatrix);
+	m_pOriginal_OBB->Transform(*m_pOBB, WorldMatrix);
+
+	WorldMatrix.r[CTransform::STATE_POSITION] = XMVector3TransformCoord(XMLoadFloat3(&m_pOriginal_Sphere->Center), WorldMatrix);
+	m_pOriginal_Sphere->Transform(*m_pSphere, WorldMatrix);
+#endif
+
 	m_bFirst = false;
 }
 
@@ -125,8 +134,11 @@ HRESULT CRigidBody::Render()
 
 	m_pBatch->Begin();
 	_float4 vColor = _float4(1.f, 0.f, 0.f, 1.f);
-	DX::Draw(m_pBatch, *m_pOBB, XMLoadFloat4(&vColor));
 
+	if (m_eColliderType == PHYSX_COLLIDER_TYPE::BOX)
+		DX::Draw(m_pBatch, *m_pOBB, XMLoadFloat4(&vColor));
+	else if (m_eColliderType == PHYSX_COLLIDER_TYPE::SPHERE)
+		DX::Draw(m_pBatch, *m_pSphere, XMLoadFloat4(&vColor));
 
 	m_pBatch->End();
 
@@ -152,9 +164,25 @@ void CRigidBody::Add_Force(_vector vDir, _float fForce, _bool bClear)
 		m_pXBody->clearForce();
 
 	_float3 vForce = {};
- 	XMStoreFloat3(&vForce, vDir * fForce);
+ 	XMStoreFloat3(&vForce, XMVector3Normalize(vDir) * fForce);
 	m_pXBody->addForce(PxVec3(vForce.x, vForce.y, vForce.z), PxForceMode::eFORCE);
 }
+
+void CRigidBody::Add_Velocity(_vector vDir, _float fForce, _bool bClear)
+{
+	PxVec3 vVelocity = { 0.f, 0.f, 0.f };
+
+	if (false == bClear)
+		vVelocity += m_pXBody->getLinearVelocity();
+
+	_float3 vInputVelocity = {};
+	XMStoreFloat3(&vInputVelocity, vDir * fForce);
+	vVelocity += PxVec3(vInputVelocity.x, vInputVelocity.y, vInputVelocity.z);
+
+	m_pXBody->setLinearVelocity(vVelocity);
+}
+
+
 
 void CRigidBody::Set_Velocity(_float3 vVelocity)
 {
@@ -199,18 +227,24 @@ void CRigidBody::Free()
 {
 	__super::Free();
 	// m_pXBody는 PhysXManager에서 자동으로 삭제되낟.
+	
 #ifdef _DEBUG
 	if (false == m_isCloned)
 	{
 		Safe_Delete(m_pBatch);
 		Safe_Delete(m_pEffect);
 	}
-
 	Safe_Release(m_pInputLayout);
-#endif
+	
 
 	Safe_Delete(m_pOriginal_OBB);
 	Safe_Delete(m_pOBB);
+
+	Safe_Delete(m_pOriginal_Sphere);
+	Safe_Delete(m_pSphere);
+#endif
+
+	
 
 	Safe_Release(m_pTransformCom);
 	Safe_Release(m_pNavigationCom);
