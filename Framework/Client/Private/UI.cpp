@@ -99,6 +99,67 @@ void CUI::Tick(_float fTimeDelta)
 		}
 	}
 
+	for (auto& pChildUI : m_pChild)
+	{
+		if (nullptr != pChildUI)
+			pChildUI->Tick(fTimeDelta);
+	}
+
+}
+
+void CUI::LateTick(_float fTimeDelta)
+{
+	for (auto& pChildUI : m_pChild)
+	{
+		if (nullptr != pChildUI)
+			pChildUI->LateTick(fTimeDelta);
+	}
+}
+
+HRESULT CUI::Render()
+{
+	for (auto& pChildUI : m_pChild)
+	{
+		if (nullptr != pChildUI)
+			pChildUI->Render();
+	}
+
+	return S_OK;
+}
+
+HRESULT CUI::Make_Child(_float fX, _float fY, _float fCX, _float fCY, const wstring& strObjectTag, void* pChildArg)
+{
+	UI_INFO	UIDesc;
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = fCX;
+	UIDesc.fCY= fCY;
+	UIDesc.fX = fX;
+	UIDesc.fY = fY;
+
+	UIDesc.pParent = this;
+	if (nullptr != pChildArg)
+		UIDesc.pDesc = pChildArg;
+
+	CGameObject* pChild = nullptr;
+	pChild = GI->Clone_GameObject(strObjectTag, LAYER_TYPE::LAYER_UI, &UIDesc);
+
+	m_pChild.push_back(dynamic_cast<CUI*>(pChild));
+
+	return S_OK;
+}
+
+void CUI::Delete_AllChild()
+{
+	for (auto& pChildUI : m_pChild)
+	{
+		if (pChildUI != nullptr)
+		{
+			pChildUI->Set_Dead(true);
+			Safe_Release(pChildUI);
+		}
+	}
+	m_pChild.clear();
 }
 
 void CUI::Debug_Input(_float fTimeDelta)
@@ -161,8 +222,8 @@ void CUI::Free()
 {
 	__super::Free();
 
-//	for (auto& pUI : m_pChild)
-//		Safe_Release(pUI);
+	for (auto& pUI : m_pChild)
+		Safe_Release(pUI);
 
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pRendererCom);

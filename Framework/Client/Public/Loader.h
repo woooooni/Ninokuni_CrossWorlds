@@ -47,6 +47,8 @@ private:
 
 private:
 	HRESULT Loading_For_Level_Logo();
+	HRESULT Loading_For_Level_Lobby();
+	HRESULT Loading_For_Level_Evermore();
 	HRESULT Loading_For_Level_Test();
 	HRESULT Loading_For_Level_Tool();
 	HRESULT Load_Navi_Data(const wstring& strNaviFileName);
