@@ -27,6 +27,9 @@ public:
 	_float4x4 Get_ShadowLightViewMatrix_Inverse(_uint iLevelIndex);
 
 public:
+	const list<class CLight*>* Get_LightList() { return &m_Lights; }
+
+public:
 	HRESULT Reset_Lights();
 
 private:

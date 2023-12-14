@@ -7,6 +7,7 @@
 #include "Utils.h"
 #include "Picking_Manager.h"
 #include "Mesh.h"
+#include "Light.h"
 #include <filesystem>
 
 CTool_Map::CTool_Map(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -25,156 +26,28 @@ HRESULT CTool_Map::Initialize()
 
 void CTool_Map::Tick(_float fTimeDelta)
 {
-	if (ImGui::Begin("Inspector"))
+	ImGuiWindowFlags WindowFlags = 0;
+	if (!m_bWindowResizeFlag)
+		WindowFlags |= ImGuiWindowFlags_NoResize;
+	if (!m_bWindowMoveFlag)
+		WindowFlags |= ImGuiWindowFlags_NoMove;
+
+
+	if (ImGui::Begin("Inspector", NULL, WindowFlags))
 	{
-		if (ImGui::CollapsingHeader("[ MapTool ]"))
-		{
-			if (ImGui::BeginChild("Child_List", ImVec2(0, 300.f), true))
-			{
-				if (ImGui::RadioButton("Buildings", (0 == m_iControlState)))
-				{
-					m_pSelectObj = nullptr;
-					m_bAddObject = false;
-					m_iControlState = 0;
-				} ImGui::SameLine();
-				if (ImGui::RadioButton("Props", (1 == m_iControlState)))
-				{
-					m_pSelectObj = nullptr;
-					m_bAddObject = false;
-					m_iControlState = 1;
-				} ImGui::SameLine();
-				if (ImGui::RadioButton("Grounds", (2 == m_iControlState)))
-				{
-					m_pSelectObj = nullptr;
-					m_bAddObject = false;
-					m_iControlState = 2;
-				} ImGui::SameLine();
-				/*if(ImGui::RadioButton(""))*/
+		ImGui::SetWindowSize(ImVec2(450.f, 900.f));
 
-		
-				ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.f), u8"오브젝트");
-				if (nullptr != m_pSelectObj)
-				{
-					_bool iChange = 0;
-					ImGui::PushItemWidth(50);
+#pragma region MapObject
+		MapObjectSpace();
+#pragma endregion MapObject
 
-					string SelectObjectID = std::to_string(m_pSelectObj->Get_ObjectID());
-					string SelectObjectTag = CUtils::ToString(m_pSelectObj->Get_ObjectTag());
-					string SlectstrName = SelectObjectTag + "_" + SelectObjectID;
-
-					ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), u8"선택된 오브젝트 : "); ImGui::SameLine();
-					ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), SlectstrName.c_str());
-
-					if (ImGui::CollapsingHeader("Movement"))
-					{
-						CTransform* pTransform = m_pSelectObj->Get_Component<CTransform>(L"Com_Transform");
-						if (nullptr == pTransform)
-						{
-							ImGui::End();
-							return;
-						}
-
-						Vec3 vScaled = pTransform->Get_Scale();
-						XMVECTOR vRotation = pTransform->Get_WorldRotation();
-						XMMATRIX vPos = pTransform->Get_WorldMatrix();
-						XMVECTOR vWorldPosition = vPos.r[3];
-						
-
-						ImGui::PushItemWidth(150.f);
-						ImGui::DragFloat3("Position", &vWorldPosition.m128_f32[0], 0.1f, -1000.f, 1000.f);
-						ImGui::DragFloat3("Rotation", &vRotation.m128_f32[0], 1.f);
-						ImGui::DragFloat3("Scale", &vScaled.x, 0.01f, 0.01f, 100.f);
-						ImGui::PopItemWidth();
-
-						pTransform->Set_Scale(vScaled);
-						pTransform->FixRotation(vRotation.m128_f32[0], vRotation.m128_f32[1], vRotation.m128_f32[2]);
-						pTransform->Set_State(CTransform::STATE::STATE_POSITION, vWorldPosition);
-					}
-
-					if (ImGui::Button(u8"선택된 오브젝트 삭제"))
-					{
-						// TODO
-						OBJ_TYPE eType = static_cast<OBJ_TYPE>(m_pSelectObj->Get_ObjectType());
-
-						switch (eType)
-						{
-							case OBJ_TYPE::OBJ_BUILDING:
-								DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_BUILDING);
-								break;
-							case OBJ_TYPE::OBJ_PROP:
-								DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_PROP);
-								break;
-							case OBJ_TYPE::OBJ_GROUND:
-								DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_GROUND);
-								break;
-						}
-						
-					}
-					ImGui::PopItemWidth();
-				}
-				else
-					ImGui::TextColored(ImVec4(1.0f, 0.0f, 1.0f, 1.0f), u8"[ 현재 선택된 오브젝트가 없습니다.]");
-
-				ImGui::Dummy(ImVec2(0.0f, 5.0f));
-
-				if (ImGui::Button(u8"오브젝트 추가"))
-				{
-					m_pSelectObj = nullptr;
-					m_bAddObject = true;
-
-				}ImGui::SameLine();
-
-				if (ImGui::Button(u8"배치된 오브젝트"))
-					m_bAddObject = false;
-
-				if (true == m_bAddObject)
-				{
-					ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), u8"추가할 오브젝트 선택");
-
-					if (ImGui::ListBoxHeader("##ASSETLIST", ImVec2(300.0f, 0.0f)))
-					{
-						if (0 == m_iControlState)
-							AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_BUILDING);
-						else if (1 == m_iControlState)
-							AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_PROP);
-						else if (2 == m_iControlState)
-							AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_GROUND);
-					}
-
-					ImGui::ListBoxFooter();
-				}
-				else
-				{
-					ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), u8"맵에 배치된 오브젝트 리스트");
-					if (ImGui::ListBoxHeader("##OBJECTLIST", ImVec2(300.0f, 0.0f)))
-					{
-						if (0 == m_iControlState)
-							BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_BUILDING);
-						else if (1 == m_iControlState)
-							BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_PROP);
-						else if (2 == m_iControlState)
-							BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_GROUND);
-					}
-
-					ImGui::ListBoxFooter();
-				}
-
-				ImGui::Spacing();
-
-				if (ImGui::Button(u8"Save"))
-					Save_Map_Data(TEXT("Evermore"));
-
-				ImGui::SameLine();
-
-				if (ImGui::Button(u8"Load"))
-					Load_Map_Data(TEXT("Evermore"));
-
-			}
-			ImGui::EndChild();
-		}
+#pragma region MapLight
+		MapLightSpace();
+#pragma endregion MapLight
 
 		Picking();
 	}
+	
 	ImGui::End();
 }
 
@@ -188,6 +61,8 @@ void CTool_Map::AddMapObject(LEVELID iLevelID, LAYER_TYPE iLayerType)
 		{
 			if (true == m_bAddObject)
 				GI->Add_GameObject(iLevelID, iLayerType, Pair.first);
+
+			
 		}
 	}
 }
@@ -272,7 +147,6 @@ void CTool_Map::Picking()
 
 	if (KEY_HOLD(KEY::CTRL) && KEY_TAP(KEY::RBTN))
 	{
-
 		if (nullptr == m_pSelectObj)
 			return;
 
@@ -283,8 +157,7 @@ void CTool_Map::Picking()
 				|| i == LAYER_TYPE::LAYER_BACKGROUND
 				|| i == LAYER_TYPE::LAYER_SKYBOX
 				|| i == LAYER_TYPE::LAYER_UI
-				|| i == LAYER_TYPE::LAYER_EFFECT
-				|| i == LAYER_TYPE::LAYER_GRASS)
+				|| i == LAYER_TYPE::LAYER_EFFECT)
 				continue;
 
 			list<CGameObject*>& GameObjects = GI->Find_GameObjects(LEVEL_TOOL, i);
@@ -302,17 +175,405 @@ void CTool_Map::Picking()
 				for (auto& pMesh : pModel->Get_Meshes())
 				{
 					_float4 vPosition;
-					if (CPicking_Manager::GetInstance()->Is_Picking(pTransform, pMesh, false, &vPosition))
+
+					if (true == m_bPlantMode)
 					{
-						CTransform* pTargetTransform = m_pSelectObj->Get_Component<CTransform>(L"Com_Transform");
-						pTargetTransform->Set_State(CTransform::STATE::STATE_POSITION, ::XMLoadFloat4(&vPosition));
-						break;
+						if (CPicking_Manager::GetInstance()->Is_Picking(pTransform, pMesh, false, &vPosition))
+						{
+							CGameObject* pPlant = GI->Clone_GameObject(m_pSelectObj->Get_PrototypeTag(), LAYER_TYPE::LAYER_GRASS);
+							CTransform* pPlantTransform = pPlant->Get_Component<CTransform>(L"Com_Transform");
+							pPlantTransform->Set_State(CTransform::STATE::STATE_POSITION, ::XMLoadFloat4(&vPosition));
+							GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_GRASS, pPlant);
+
+							return;
+						}
+					}
+					else
+					{
+						if (CPicking_Manager::GetInstance()->Is_Picking(pTransform, pMesh, false, &vPosition))
+						{
+							CTransform* pTargetTransform = m_pSelectObj->Get_Component<CTransform>(L"Com_Transform");
+							pTargetTransform->Set_State(CTransform::STATE::STATE_POSITION, ::XMLoadFloat4(&vPosition));
+							break;
+						}
 					}
 				}
 			}
 		}
 	}
+
 }
+
+void CTool_Map::MapObjectSpace()
+{
+	if (ImGui::CollapsingHeader("[ MapTool ]"))
+	{
+		if (ImGui::BeginChild("Child_List", ImVec2(0, 300.f), true))
+		{
+			if (ImGui::RadioButton("Buildings", (0 == m_iControlState)))
+			{
+				ChangeState();
+				m_iControlState = 0;
+			} ImGui::SameLine();
+			if (ImGui::RadioButton("Props", (1 == m_iControlState)))
+			{
+				ChangeState();
+				m_iControlState = 1;
+			} ImGui::SameLine();
+			if (ImGui::RadioButton("Grounds", (2 == m_iControlState)))
+			{
+				ChangeState();
+				m_iControlState = 2;
+			} ImGui::SameLine();
+			if (ImGui::RadioButton("Plants", (3 == m_iControlState)))
+			{
+				ChangeState();
+				m_iControlState = 3;
+			} ImGui::SameLine();
+			if (ImGui::RadioButton("TreeRock", (4 == m_iControlState)))
+			{
+				ChangeState();
+				m_iControlState = 4;
+			}
+			/*if(ImGui::RadioButton(""))*/
+
+
+			ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.f), u8"오브젝트");
+			if (nullptr != m_pSelectObj)
+			{
+				_bool iChange = 0;
+				ImGui::PushItemWidth(50);
+
+				string SelectObjectID = std::to_string(m_pSelectObj->Get_ObjectID());
+				string SelectObjectTag = CUtils::ToString(m_pSelectObj->Get_ObjectTag());
+				string SlectstrName = SelectObjectTag + "_" + SelectObjectID;
+
+				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), u8"선택된 오브젝트 : "); ImGui::SameLine();
+				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), SlectstrName.c_str());
+
+				if (ImGui::CollapsingHeader("Movement"))
+				{
+					CTransform* pTransform = m_pSelectObj->Get_Component<CTransform>(L"Com_Transform");
+					if (nullptr == pTransform)
+					{
+						ImGui::End();
+						return;
+					}
+
+					Vec3 vScaled = pTransform->Get_Scale();
+					XMVECTOR vRotation = pTransform->Get_WorldRotation();
+					XMMATRIX vPos = pTransform->Get_WorldMatrix();
+					XMVECTOR vWorldPosition = vPos.r[3];
+
+
+					ImGui::PushItemWidth(150.f);
+					ImGui::DragFloat3("Position", &vWorldPosition.m128_f32[0], 0.1f, -1000.f, 1000.f);
+					ImGui::DragFloat3("Rotation", &vRotation.m128_f32[0], 1.f);
+					ImGui::DragFloat3("Scale", &vScaled.x, 0.01f, 0.01f, 100.f);
+					ImGui::PopItemWidth();
+
+					pTransform->Set_Scale(vScaled);
+					pTransform->FixRotation(vRotation.m128_f32[0], vRotation.m128_f32[1], vRotation.m128_f32[2]);
+					pTransform->Set_State(CTransform::STATE::STATE_POSITION, vWorldPosition);
+				}
+
+				if (ImGui::Button(u8"선택된 오브젝트 삭제"))
+				{
+					// TODO
+					OBJ_TYPE eType = static_cast<OBJ_TYPE>(m_pSelectObj->Get_ObjectType());
+
+					switch (eType)
+					{
+					case OBJ_TYPE::OBJ_BUILDING:
+						DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_BUILDING);
+						break;
+					case OBJ_TYPE::OBJ_PROP:
+						DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_PROP);
+						break;
+					case OBJ_TYPE::OBJ_GROUND:
+						DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_GROUND);
+						break;
+					case OBJ_TYPE::OBJ_GRASS:
+						DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_GRASS);
+						break;
+					case OBJ_TYPE::OBJ_TREEROCK:
+						DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_TREEROCK);
+						break;
+					}
+
+				}
+				ImGui::PopItemWidth();
+			}
+			else
+				ImGui::TextColored(ImVec4(1.0f, 0.0f, 1.0f, 1.0f), u8"[ 현재 선택된 오브젝트가 없습니다.]");
+
+			ImGui::Dummy(ImVec2(0.0f, 5.0f));
+
+			if (ImGui::Button(u8"오브젝트 추가"))
+			{
+				m_pSelectObj = nullptr;
+				m_bAddObject = true;
+
+			}ImGui::SameLine();
+
+			if (ImGui::Button(u8"배치된 오브젝트"))
+				m_bAddObject = false;
+
+			ImGui::SameLine();
+
+			if (3 == m_iControlState)
+			{
+				if (ImGui::Checkbox(u8"다중 심기 모드", &m_bPlantMode))
+				{
+				}
+			}
+
+			if (true == m_bAddObject)
+			{
+				ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), u8"추가할 오브젝트 선택");
+
+				if (ImGui::ListBoxHeader("##ASSETLIST", ImVec2(300.0f, 0.0f)))
+				{
+					if (0 == m_iControlState)
+						AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_BUILDING);
+					else if (1 == m_iControlState)
+						AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_PROP);
+					else if (2 == m_iControlState)
+						AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_GROUND);
+					else if (3 == m_iControlState)
+						AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_GRASS);
+					else if (4 == m_iControlState)
+						AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_TREEROCK);
+				}
+
+				ImGui::ListBoxFooter();
+			}
+			else
+			{
+				ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), u8"맵에 배치된 오브젝트 리스트");
+				if (ImGui::ListBoxHeader("##OBJECTLIST", ImVec2(300.0f, 0.0f)))
+				{
+					if (0 == m_iControlState)
+						BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_BUILDING);
+					else if (1 == m_iControlState)
+						BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_PROP);
+					else if (2 == m_iControlState)
+						BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_GROUND);
+					else if (3 == m_iControlState)
+						BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_GRASS);
+					else if (4 == m_iControlState)
+						BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_TREEROCK);
+				}
+
+				ImGui::ListBoxFooter();
+			}
+
+			ImGui::Spacing();
+
+			if (ImGui::Button(u8"Save"))
+				Save_Map_Data(TEXT("Evermore"));
+
+			ImGui::SameLine();
+
+			if (ImGui::Button(u8"Load"))
+				Load_Map_Data(TEXT("Evermore"));
+
+		}
+		ImGui::EndChild();
+	}
+}
+
+void CTool_Map::MapLightSpace()
+{
+	if (ImGui::CollapsingHeader("[ Light Tool ]"))
+	{
+		if (ImGui::BeginChild("Light_Child_List", ImVec2(0, 300.f), true))
+		{
+			if (ImGui::RadioButton("DIRECTION", (0 == m_iLightControlState)))
+			{
+				ChangeState();
+				m_iLightControlState = 0;
+			} ImGui::SameLine();
+			if (ImGui::RadioButton("POINT", (1 == m_iLightControlState)))
+			{
+				ChangeState();
+				m_iLightControlState = 1;
+			} ImGui::SameLine();
+			if (ImGui::RadioButton("SPOT", (2 == m_iLightControlState)))
+			{
+				ChangeState();
+				m_iLightControlState = 2;
+			} ImGui::SameLine();
+
+			ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.f), u8"조명");
+			if (nullptr != m_pSelectLight)
+			{
+				_bool iChange = 0;
+				ImGui::PushItemWidth(250);
+
+				string strSelectLightType = "";
+				
+				if (0 == m_pSelectLight->Get_LightDesc()->eType)
+					strSelectLightType = "Point";
+				else if (1 == m_pSelectLight->Get_LightDesc()->eType)
+					strSelectLightType = "Directional";
+
+				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), u8"선택된 라이트 : "); ImGui::SameLine();
+				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), strSelectLightType.c_str());
+
+				if (ImGui::CollapsingHeader("LightInfo"))
+				{
+					LIGHTDESC* rLightDesc = m_pSelectLight->Get_ModifyLightDesc();
+
+					if (ImGui::ColorEdit3("Diffuse", &rLightDesc->vDiffuse.x, ImGuiColorEditFlags_Float)) {} ImGui::NextColumn();
+					if (ImGui::ColorEdit3("Ambient", &rLightDesc->vAmbient.x, ImGuiColorEditFlags_Float)) {} ImGui::NextColumn();
+					if (ImGui::DragFloat3("Direction", &m_LightHelper.vRotationDeg.x, 1.f, -180.f, 180.f, "%.fdeg"))
+					{
+						XMVECTOR vRotQuat = ::XMQuaternionRotationRollPitchYaw(
+							::XMConvertToRadians(m_LightHelper.vRotationDeg.x),
+							::XMConvertToRadians(m_LightHelper.vRotationDeg.y),
+							::XMConvertToRadians(m_LightHelper.vRotationDeg.z));
+
+						XMVECTOR vRotQuatInverse = ::XMQuaternionInverse(vRotQuat);
+						XMVECTOR vLightDir = ::XMQuaternionMultiply(vRotQuat, ::XMVectorSet(0.f, 0.f, 1.f, 0.f));
+						::XMStoreFloat4(&rLightDesc->vDirection, ::XMQuaternionMultiply(vLightDir, vRotQuatInverse));
+					}
+
+					if (0 == rLightDesc->eType)
+					{
+
+					}
+					else if (1 == rLightDesc->eType)
+					{
+
+					}
+				}
+
+				if (ImGui::Button(u8"선택된 오브젝트 삭제"))
+				{
+					// TODO
+					OBJ_TYPE eType = static_cast<OBJ_TYPE>(m_pSelectObj->Get_ObjectType());
+
+					switch (eType)
+					{
+					case OBJ_TYPE::OBJ_BUILDING:
+						DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_BUILDING);
+						break;
+					case OBJ_TYPE::OBJ_PROP:
+						DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_PROP);
+						break;
+					case OBJ_TYPE::OBJ_GROUND:
+						DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_GROUND);
+						break;
+					case OBJ_TYPE::OBJ_GRASS:
+						DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_GRASS);
+						break;
+					case OBJ_TYPE::OBJ_TREEROCK:
+						DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_TREEROCK);
+						break;
+					}
+
+				}
+				ImGui::PopItemWidth();
+			}
+			else
+				ImGui::TextColored(ImVec4(1.0f, 0.0f, 1.0f, 1.0f), u8"[ 현재 선택된 조명이 없습니다.]");
+
+			ImGui::Dummy(ImVec2(0.0f, 5.0f));
+
+			if (ImGui::Button(u8"조명 추가"))
+			{
+				m_pSelectLight = nullptr;
+				m_bAddLight = true;
+
+			}ImGui::SameLine();
+
+			if (ImGui::Button(u8"배치된 조명"))
+				m_bAddObject = false;
+
+			if (true == m_bAddObject)
+			{
+				ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), u8"추가할 조명 선택");
+
+				if (ImGui::ListBoxHeader("##ASSETLIST", ImVec2(300.0f, 0.0f)))
+				{
+					if (0 == m_iControlState)
+						AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_BUILDING);
+					else if (1 == m_iControlState)
+						AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_PROP);
+					else if (2 == m_iControlState)
+						AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_GROUND);
+					else if (3 == m_iControlState)
+						AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_GRASS);
+					else if (4 == m_iControlState)
+						AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_TREEROCK);
+				}
+
+				ImGui::ListBoxFooter();
+			}
+			else
+			{
+				ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), u8"맵에 배치된 조명 리스트");
+				if (ImGui::ListBoxHeader("##LIGHTLIST", ImVec2(300.0f, 0.0f)))
+				{
+					const list<class CLight*>* lightList = GI->Get_LightList();
+
+					_uint iLightCount = lightList->size();
+
+					for (auto& pLight : *lightList)
+					{
+						string strSelectLightType = "";
+
+						if (0 == pLight->Get_LightDesc()->eType)
+							strSelectLightType = "Point";
+						else if (1 == pLight->Get_LightDesc()->eType)
+							strSelectLightType = "Directional";
+
+						if (ImGui::Selectable(strSelectLightType.c_str()))
+							m_pSelectLight = pLight;
+					}
+
+
+					//if (0 == m_iControlState)
+					//	BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_BUILDING);
+					//else if (1 == m_iControlState)
+					//	BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_PROP);
+					//else if (2 == m_iControlState)
+					//	BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_GROUND);
+					//else if (3 == m_iControlState)
+					//	BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_GRASS);
+					//else if (4 == m_iControlState)
+					//	BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_TREEROCK);
+				}
+
+				ImGui::ListBoxFooter();
+			}
+
+			ImGui::Spacing();
+
+			if (ImGui::Button(u8"Save"))
+				Save_Map_Data(TEXT("Evermore"));
+
+			ImGui::SameLine();
+
+			if (ImGui::Button(u8"Load"))
+				Load_Map_Data(TEXT("Evermore"));
+
+		}
+		ImGui::EndChild();
+	}
+}
+
+void CTool_Map::ChangeState()
+{
+	m_bAddObject = false;
+	m_bPlantMode = false;
+	m_pSelectObj = nullptr;
+
+	m_pSelectLight = nullptr;
+	m_bAddLight = false;
+}
+
 
 HRESULT CTool_Map::Save_Map_Data(const wstring& strMapFileName)
 {

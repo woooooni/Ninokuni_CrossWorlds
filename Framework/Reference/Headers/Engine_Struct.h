@@ -27,7 +27,7 @@ namespace Engine
 	/* 빛의 정보를 담아놓기 위한 구조체. */
 	typedef struct tagLightDesc
 	{
-		enum TYPE { TYPE_POINT, TYPE_DIRECTIONAL, TYPE_END };
+		enum TYPE { TYPE_POINT, TYPE_DIRECTIONAL, TYPE_SPOT, TYPE_END };
 
 		TYPE			eType;
 

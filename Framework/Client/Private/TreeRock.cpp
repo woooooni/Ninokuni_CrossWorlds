@@ -1,18 +1,18 @@
 #include "stdafx.h"
-#include "..\Public\Plants.h"
+#include "..\Public\TreeRock.h"
 #include "GameInstance.h"
 
-CPlants::CPlants(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType)
+CTreeRock::CTreeRock(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType)
 	: CStaticObject(pDevice, pContext, strObjectTag, eType)
 {
 }
 
-CPlants::CPlants(const CPlants& rhs)
+CTreeRock::CTreeRock(const CTreeRock& rhs)
 	: CStaticObject(rhs)
 {
 }
 
-HRESULT CPlants::Initialize_Prototype(_uint eType, const wstring& strFilePath, const wstring& strFileName)
+HRESULT CTreeRock::Initialize_Prototype(_uint eType, const wstring& strFilePath, const wstring& strFileName)
 {
 	if (FAILED(__super::Initialize_Prototype(eType, strFilePath, strFileName)))
 		return E_FAIL;
@@ -21,7 +21,7 @@ HRESULT CPlants::Initialize_Prototype(_uint eType, const wstring& strFilePath, c
 	return S_OK;
 }
 
-HRESULT CPlants::Initialize(void* pArg)
+HRESULT CTreeRock::Initialize(void* pArg)
 {
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -32,27 +32,27 @@ HRESULT CPlants::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CPlants::Tick(_float fTimeDelta)
+void CTreeRock::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 }
 
-void CPlants::LateTick(_float fTimeDelta)
+void CTreeRock::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
 
 	//if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 30.f))
 	//{
 		// Shadow 필요하면 ShadowRender 추가?
-	//m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 	//m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDERGROUP::RENDER_SHADOW, CRenderer::SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
-	m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
+	//m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
 //}
 
-	
+
 }
 
-HRESULT CPlants::Render()
+HRESULT CTreeRock::Render()
 {
 	if (FAILED(__super::Render()))
 		return E_FAIL;
@@ -60,7 +60,7 @@ HRESULT CPlants::Render()
 	return S_OK;
 }
 
-HRESULT CPlants::Render_ShadowDepth()
+HRESULT CTreeRock::Render_ShadowDepth()
 {
 	if (FAILED(__super::Render_ShadowDepth()))
 		return E_FAIL;
@@ -68,7 +68,7 @@ HRESULT CPlants::Render_ShadowDepth()
 	return S_OK;
 }
 
-HRESULT CPlants::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
+HRESULT CTreeRock::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
 {
 	if (nullptr == m_pModelCom || nullptr == pInstancingShader)
 		return E_FAIL;
@@ -96,7 +96,7 @@ HRESULT CPlants::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancin
 	return S_OK;
 }
 
-HRESULT CPlants::Render_Instance_Shadow(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
+HRESULT CTreeRock::Render_Instance_Shadow(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
 {
 	if (nullptr == m_pModelCom || nullptr == pInstancingShader)
 		return E_FAIL;
@@ -122,7 +122,7 @@ HRESULT CPlants::Render_Instance_Shadow(CShader* pInstancingShader, CVIBuffer_In
 	return S_OK;
 }
 
-HRESULT CPlants::Ready_Components()
+HRESULT CTreeRock::Ready_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"),
 		TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
@@ -147,28 +147,28 @@ HRESULT CPlants::Ready_Components()
 	return S_OK;
 }
 
-CPlants* CPlants::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag,
+CTreeRock* CTreeRock::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag,
 	const wstring& strFilePath, const wstring& strFileName, _int eObjType, _uint eModelType)
 {
-	CPlants* pInstance = new CPlants(pDevice, pContext, strObjectTag, eObjType);
+	CTreeRock* pInstance = new CTreeRock(pDevice, pContext, strObjectTag, eObjType);
 
 	if (FAILED(pInstance->Initialize_Prototype(eModelType, strFilePath, strFileName)))
 	{
-		MSG_BOX("Create Failed to ProtoType : CPlants");
-		Safe_Release<CPlants*>(pInstance);
+		MSG_BOX("Create Failed to ProtoType : CTreeRock");
+		Safe_Release<CTreeRock*>(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CPlants::Clone(void* pArg)
+CGameObject* CTreeRock::Clone(void* pArg)
 {
-	CPlants* pInstance = new CPlants(*this);
+	CTreeRock* pInstance = new CTreeRock(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Create Failed to Cloned : CPlants");
-		Safe_Release<CPlants*>(pInstance);
+		MSG_BOX("Create Failed to Cloned : CTreeRock");
+		Safe_Release<CTreeRock*>(pInstance);
 	}
 
 	return pInstance;

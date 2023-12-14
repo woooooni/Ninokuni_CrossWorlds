@@ -364,6 +364,14 @@ const LIGHTDESC* CGameInstance::Get_LightDesc(_uint iIndex)
 	return m_pLight_Manager->Get_LightDesc(iIndex);
 }
 
+const list<class CLight*>* CGameInstance::Get_LightList()
+{
+	if (nullptr == m_pLight_Manager)
+		return nullptr;
+
+	return m_pLight_Manager->Get_LightList();
+}
+
 HRESULT CGameInstance::Add_Light(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const LIGHTDESC& LightDesc)
 {
 	if (nullptr == m_pLight_Manager)

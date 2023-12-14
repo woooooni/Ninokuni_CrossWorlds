@@ -234,6 +234,7 @@
     <ClInclude Include="..\Public\Tool_Camera.h" />
     <ClInclude Include="..\Public\Tool_UI.h" />
     <ClInclude Include="..\Public\Trail.h" />
+    <ClInclude Include="..\Public\TreeRock.h" />
     <ClInclude Include="..\Public\UI_Basic.h" />
     <ClInclude Include="..\Public\UI_BasicButton.h" />
     <ClInclude Include="..\Public\UI_Cursor.h" />
@@ -323,6 +324,7 @@
     <ClCompile Include="..\Private\Tool_Camera.cpp" />
     <ClCompile Include="..\Private\Tool_UI.cpp" />
     <ClCompile Include="..\Private\Trail.cpp" />
+    <ClCompile Include="..\Private\TreeRock.cpp" />
     <ClCompile Include="..\Private\UI.cpp" />
     <ClCompile Include="..\Private\Sword.cpp" />
     <ClCompile Include="..\Private\UI_Basic.cpp" />
