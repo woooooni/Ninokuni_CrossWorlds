@@ -47,7 +47,7 @@ HRESULT CLevel_Logo::Tick(_float fTimeDelta)
 
 	if (bSceneChange)
 	{
-		if (FAILED(GI->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_TOOL, L""))))
+		if (FAILED(GI->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_LOBBY, L""))))
 			return E_FAIL;
 	}
 

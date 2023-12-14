@@ -19,10 +19,8 @@ public:
 public:
 	typedef struct tagUI_Info
 	{
-		_float fX	= 0.f;
-		_float fY	= 0.f;
-		_float fCX	= 0.f;
-		_float fCY	= 0.f;
+		_float fX	= 0.f; _float fY	= 0.f; _float fCX	= 0.f; _float fCY	= 0.f;
+		CUI* pParent = nullptr; void* pDesc = nullptr;
 
 	} UI_INFO;
 	
@@ -36,12 +34,15 @@ public:
 	virtual HRESULT Initialize_Prototype() override { return S_OK; }
 	virtual HRESULT Initialize(void* pArg) override;
 	virtual void Tick(_float fTimeDelta) override;
-	virtual void LateTick(_float fTimeDelta) override {}
-	virtual HRESULT Render() override { return S_OK; }
+	virtual void LateTick(_float fTimeDelta) override;
+	virtual HRESULT Render() override;
 
 public:
 	const UI_INFO& Get_UI_Info() { return m_tInfo; }
 	void Set_UI_Info(const UI_INFO& tInfo) { m_tInfo = tInfo; }
+
+	HRESULT Make_Child(_float fX, _float fY, _float fCX, _float fCY, const wstring& strObjectTag, void* pChildArg = nullptr);
+	void Delete_AllChild();
 
 public:
 	void Set_Text(const wstring& strText) { m_strText = strText; }
@@ -64,7 +65,7 @@ protected:
 	CVIBuffer_Rect* m_pVIBufferCom = nullptr;
 
 protected:
-//	list<CUI*> m_pChild;
+	list<CUI*> m_pChild;
 
 	UI_INFO m_tInfo = { 0 };
 	UI_MOUSESTATE m_eMouseState = UI_MOUSESTATE::MOUSE_END;

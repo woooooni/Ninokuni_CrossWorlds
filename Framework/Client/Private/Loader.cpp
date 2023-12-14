@@ -86,6 +86,14 @@ _int CLoader::Loading()
 		hr = Loading_For_Level_Test();
 		break;
 
+	case LEVEL_LOBBY:
+		hr = Loading_For_Level_Lobby();
+		break;
+
+	case LEVEL_EVERMORE:
+		hr = Loading_For_Level_Evermore();
+		break;
+
 	case LEVEL_TOOL:
 		hr = Loading_For_Level_Tool();
 		break;
@@ -111,14 +119,6 @@ HRESULT CLoader::Loading_For_Level_Logo()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Logo/UI_Effect_Flare_Yellow.png")))))
 		return E_FAIL;
 
-	if (FAILED(GI->Add_Prototype(LEVEL_LOGO, TEXT("Prototype_Component_Texture_Lobby_NicknameFrame"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Lobby/UI_Lobby_NickName_Frame.png")))))
-		return E_FAIL;
-
-//	if (FAILED(GI->Add_Prototype(LEVEL_LOGO, TEXT("Prototype_Component_Texture_Lobby_Btn_GameStart"),
-//		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Lobby/UI_Btn_HighGreen.png")))))
-//		return E_FAIL;
-
 	/* For.Shader */
 	m_strLoading = TEXT("셰이더를 로딩 중 입니다.");
 
@@ -140,14 +140,58 @@ HRESULT CLoader::Loading_For_Level_Logo()
 	return S_OK;
 }
 
-HRESULT CLoader::Loading_For_Level_Test()
+HRESULT CLoader::Loading_For_Level_Lobby()
 {
 	/* For.Texture */
 	m_strLoading = TEXT("텍스쳐를 로딩 중 입니다.");
 
-	if (FAILED(GI->Add_Prototype(LEVEL_TEST, TEXT("Prototype_Component_Texture_GamePlay_MapName"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/MapName/MapName_%d.png"), 7))))
+	/* For.Shader */
+	m_strLoading = TEXT("셰이더를 로딩 중 입니다.");
+
+	/* For.GameObject */
+	m_strLoading = TEXT("객체원형을 로딩 중 입니다.");
+
+	if (FAILED(CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_LOBBY)))
 		return E_FAIL;
+
+	/* For.Model */
+	m_strLoading = TEXT("모델을 로딩 중 입니다.");
+
+
+	m_strLoading = TEXT("로딩 끝.");
+	m_isFinished = true;
+
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Level_Evermore()
+{
+	/* For.Texture */
+	m_strLoading = TEXT("텍스쳐를 로딩 중 입니다.");
+
+	/* For.Shader */
+	m_strLoading = TEXT("셰이더를 로딩 중 입니다.");
+
+	/* For.GameObject */
+	m_strLoading = TEXT("객체원형을 로딩 중 입니다.");
+
+//	if (FAILED(CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_EVERMORE)))
+//		return E_FAIL;
+
+	/* For.Model */
+	m_strLoading = TEXT("모델을 로딩 중 입니다.");
+
+
+	m_strLoading = TEXT("로딩 끝.");
+	m_isFinished = true;
+
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Level_Test()
+{
+	/* For.Texture */
+	m_strLoading = TEXT("텍스쳐를 로딩 중 입니다.");
 
 	/* For.Shader */
 	m_strLoading = TEXT("셰이더를 로딩 중 입니다.");

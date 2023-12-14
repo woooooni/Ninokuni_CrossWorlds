@@ -27,13 +27,13 @@ public: // For Clone Objects
 	HRESULT Ready_Cursor();
 	HRESULT Ready_Veils();
 	HRESULT Ready_LobbyUIs();
-	HRESULT Ready_GamePlayUIs();
+	HRESULT Ready_CommonUIs(LEVELID eID); // 항상 쓰이는 UI들 (Cursor랑 Veil 옮길것)
 
 public:
 	HRESULT Tick_UIs(LEVELID eID, _float fTimeDelta);
 
-	HRESULT Tick_LogoLevel(_float fTimeDelta);
 	HRESULT Tick_LobbyLevel(_float fTimeDelta);
+	HRESULT Tick_EvermoreLevel(_float fTimeDelta);
 
 public: // For UI Tool
 	HRESULT Save_UIData();
@@ -43,8 +43,21 @@ private:
 	class CUI_Cursor* m_pUICursor = { nullptr };
 	class CUI_Fade* m_pUIFade = { nullptr };
 	class CUI_MapName* m_pUIMapName = { nullptr };
+	class CUI_Basic* m_pMapText = { nullptr };
+
+	class CUI_PlayerInfo* m_pPlayerStatus = { nullptr };
+	class CUI_BtnShowMenu* m_pBtnShowMenu = { nullptr };
+	class CUI_BtnChangeCamera* m_pBtnCamera = { nullptr };
+	class CUI_BtnInventory* m_pBtnInven = { nullptr };
+	class CUI_BtnQuickQuest* m_pBtnQuest = { nullptr };
 
 	vector<class CUI_Basic*> m_Basic;
+	vector<class CUI_BasicButton*> m_Buttons;
+
+	vector<class CUI_LevelUp*> m_LevelUp;
+
+	vector<class CUI_BtnCharacterSelect*> m_UnclickedPlayer;
+	vector<class CUI_BtnCharacterSelect*> m_ClickedPlayer;
 
 private:
 	ID3D11Device* m_pDevice = { nullptr };
@@ -52,7 +65,7 @@ private:
 
 private:
 	HRESULT Ready_UIStaticPrototypes();
-	HRESULT Ready_UIGamePlayPrototypes();
+	HRESULT Ready_UILobbyPrototypes();
 
 public:
 	virtual void Free() override;

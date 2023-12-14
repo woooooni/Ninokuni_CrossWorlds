@@ -23,8 +23,20 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT	Render();
 
+public:
+	virtual void On_MouseEnter(_float fTimeDelta) override;
+	virtual void On_Mouse(_float fTimeDelta) override;
+	virtual void On_MouseExit(_float fTimeDelta) override;
+
 private:
 	UIBUTTON_TYPE m_eType = { UIBUTTON_TYPE::UIBUTTONTYPE_END };
+
+	_bool m_bFinish = { false };
+	_bool m_bResizeStart = { false };
+
+	_float2 m_vOriginSize = _float2(0.f, 0.f);
+	_float2 m_vMinSize = _float2(0.f, 0.f);
+	_float m_fTimeAcc = { 0.f };
 
 private:
 	virtual HRESULT	Ready_Components() override;

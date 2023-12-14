@@ -7,6 +7,8 @@
 #include "Level_Logo.h"
 #include "Level_Tool.h"
 #include "Level_Test.h"
+#include "Level_Lobby.h"
+#include "Level_Evermore.h"
 #include "ImGui_Manager.h"
 
 
@@ -69,7 +71,13 @@ HRESULT CLevel_Loading::LateTick(_float fTimeDelta)
 				pNewLevel = CLevel_Test::Create(m_pDevice, m_pContext);
 				break;
 
+			case LEVEL_LOBBY:
+				pNewLevel = CLevel_Lobby::Create(m_pDevice, m_pContext);
+				break;
 
+			case LEVEL_EVERMORE:
+				pNewLevel = CLevel_Evermore::Create(m_pDevice, m_pContext);
+				break;
 			}
 
 			if (nullptr == pNewLevel)
