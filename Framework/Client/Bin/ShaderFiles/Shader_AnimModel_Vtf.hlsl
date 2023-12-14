@@ -20,6 +20,10 @@ struct KeyframeDesc
 	uint iNextFrame;
 	float fRatio;
 	float fFrameAcc;
+
+	uint	iFinish;
+	uint	iFix;
+	uint	iStop;
 };
 
 struct TweenFrameDesc

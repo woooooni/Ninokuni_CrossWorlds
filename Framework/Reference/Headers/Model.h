@@ -4,130 +4,85 @@
 
 BEGIN(Engine)
 
-#define DEFAULT_TWEEN_DURATION	0.2f
-
 class ENGINE_DLL CModel final : public CComponent
 {
 public:
 	enum TYPE { TYPE_NONANIM, TYPE_ANIM, TYPE_END };
-
-	typedef struct	KeyframeDesc
-	{
-		_int	iAnimIndex	= -1;
-		_uint	iCurFrame	= 0;
-		_uint	iNextFrame	= 1;
-		_float	fRatio		= 0.f;
-		_float	fFrameAcc	= 0.f;
-
-		void ClearAnim()
-		{
-			iCurFrame		= 0;
-			iNextFrame		= 1;
-			fRatio			= 0.f;
-			fFrameAcc		= 0.f;
-		}
-
-	}KEYFRAME_DESC;
-
-	typedef struct	TweenDesc
-	{
-		KEYFRAME_DESC cur	= {};
-		KEYFRAME_DESC next	= {};
-
-		_float fTweenDuration	= DEFAULT_TWEEN_DURATION;
-		_float fTweenRatio		= 0.f;
-		_float fTweenAcc		= 0.f;
-		_float fPadding			= 0.f;
-
-		TweenDesc()
-		{
-			cur.iAnimIndex	= -1;
-			next.iAnimIndex = -1;
-		}
-
-		void ClearNextAnim()
-		{
-			next.iAnimIndex = -1;
-			next.iCurFrame	= 0;
-			next.iNextFrame = 1;
-
-			fTweenAcc		= 0.f;
-			fTweenRatio		= 0.f;
-			fTweenDuration	= DEFAULT_TWEEN_DURATION;
-		}
-
-	}TWEEN_DESC;
 
 private:
 	CModel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CModel(const CModel& rhs);
 	virtual ~CModel() = default;
 
-public:
+#pragma region Access Methods 
+public: 
+	/* Model Prop */
+	void Set_Name(const wstring& strName) { m_strName = strName; }
+
+	const wstring& Get_Name() const { return m_strName; }
+	TYPE Get_ModelType() { return m_eModelType; }
+	_matrix Get_PivotMatrix() { return XMLoadFloat4x4(&m_PivotMatrix); }
+
+	/* HierarchyNode */
 	const _int Get_HierarchyNodeIndex(const char* szBonename);
 	class CHierarchyNode* Get_HierarchyNode(const wstring & strNodeName);
+	vector<class CHierarchyNode*>& Get_HierarchyNodes() { return m_HierarchyNodes; }
 
+	/* Meshes */
 	_uint Get_NumMeshes() const { return m_iNumMeshes; }
 	const vector<class CMesh*>& Get_Meshes() { return m_Meshes; }
 
+	/* Matertial */
 	_uint Get_MaterialIndex(_uint iMeshIndex);
 	class CTexture* Get_MaterialTexture(_uint iMeshIndex, _uint iTextureType);
 
+	/* Animation */
+	HRESULT Set_Animation(const _uint& iAnimationIndex, const _float& fTweenDuration = DEFAULT_TWEEN_DURATION); /* 인덱스로 애니메이션 플레이 */
+	HRESULT Set_Animation(const wstring& strAnimationName, const _float& fTweenDuration = DEFAULT_TWEEN_DURATION); /* 이름으로 애니메이션 플레이 */
+	void Set_Stop_Animation(const _bool& bStop) { m_TweenDesc.cur.iStop = bStop; }
 
-	// << : 추가
-	const wstring& Get_Name() const { return m_strName; }
-	void Set_Name(const wstring& strName) { m_strName = strName; }
-	const TweenDesc& Get_TweenDesc() const { return m_TweenDesc; }
+	vector<class CAnimation*>& Get_Animations() { return m_Animations; } /* 전체 애니메이션 컨테이너 리턴*/
+	_uint Get_CurrAnimationIndex() { return m_TweenDesc.cur.iAnimIndex; } /* 현재 애니메이션의 인덱스 리턴*/
+	const _uint& Get_CurrAnimationFrame() const { return m_TweenDesc.cur.iCurFrame; } /* 현재 애니메이션의 프레임 리턴 */
+	class CAnimation* Get_CurrAnimation() { return m_Animations[m_TweenDesc.cur.iAnimIndex]; } /* 현재 애니메이션 객체 리턴 */
+	const TweenDesc& Get_TweenDesc() const { return m_TweenDesc; } /* 현재, 다음 애니메이션 정보 구조체 리턴 */
+	const _float Get_Progress() const;  /* 현재 애니메이션의 진행률(0~1) 리턴*/
+	const _float Get_Duration(); /* (미완성 아직 사용 X) 현재 애니메이션 전체 재생 시간 */
+	const _float Get_PlayTime(); /* (미완성 아직 사용 X) 현재 애니메이션 현재 재생 시간 */
 
-	HRESULT Set_Animation(const _uint& iAnimationIndex, const _float& fTweenDuration = DEFAULT_TWEEN_DURATION);
-	HRESULT Set_Animation(const wstring& strAnimationName, const _float& fTweenDuration = DEFAULT_TWEEN_DURATION);
-	// >> 
+	const _bool Is_Half() const { return (0.5f <= m_TweenDesc.cur.fRatio) ? true : false; } /* 현재 애니메이션이 반이상 진행됐는지 여부 리턴 */
+	const _bool Is_Finish() const { return m_TweenDesc.cur.iFinish; } /* 현재 애니메이션이 종료됐는지 리턴 (종료되었는데 만약 다음 애니메이션이 세팅 안되어 있다면 종료 상태 유지) */
+	const _bool Is_Tween() const { return (0 <= m_TweenDesc.next.iAnimIndex) ? true : false; } /* 애니메이션 트위닝 (다음 애니메이션 보간) 여부 리턴 */
+	const _bool Is_Fix() const { return m_TweenDesc.cur.iFix; } /* 현재 애니메이션이 마지막 프레임에서 고정 상태인지 여부 리턴*/
+	const _bool Is_Stop() const { return m_TweenDesc.cur.iStop; } /* 현재 애니메이션 정지 여부 */
+	_int Find_AnimationIndex(const wstring& strAnimationTag); /* 이름을 키로 사용해서 애니메이션의 인덱스 리턴 */
+#pragma endregion
 
-	HRESULT Set_Animation(const wstring & strAnimationName);
-	void Set_AnimIndex(_uint iAnimIndex);
-
-	void Complete_Interpolation();
-
-	_matrix Get_PivotMatrix() { return XMLoadFloat4x4(&m_PivotMatrix); }
-
-	TYPE Get_ModelType() { return m_eModelType; }
-
-	vector<class CHierarchyNode*>& Get_HierarchyNodes() { return m_HierarchyNodes; }
-
+#pragma region Life Cycle
 public:
-	// << : Fbx 로드 
 	virtual HRESULT Initialize_Prototype(TYPE eType, const wstring & strModelFilePath, const wstring & strModelFileName, _fmatrix PivotMatrix); // << : Assimp 
 	virtual HRESULT Initialize(void* pArg);
 	virtual HRESULT Initialize_Bin(void* pArg);
 
-	// << : 추가
-	HRESULT LateTick(_float fTimeDelta);
+	HRESULT LateTick(_float fTimeDelta); /* 모델의 애니메이션 키프레임 업데이트 (수업 코드에서의 PlayAnimation() 함수?) */
 
-public:
 	HRESULT SetUp_OnShader(class CShader* pShader, _uint iMaterialIndex, aiTextureType eTextureType, const char* pConstantName);
-	HRESULT Play_Animation(class CTransform* pTransform, _float fTimeDelta);
 	HRESULT Render(class CShader* pShader, _uint iMeshIndex, _uint iPassIndex = 0);
 	HRESULT Render_Instancing(class CShader* pShader, _uint iMeshIndex, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, _uint iPassIndex = 0);
+#pragma endregion
 
-
-	HRESULT Swap_Animation(_uint iSrcIndex, _uint iDestIndex);
-	HRESULT Delete_Animation(_uint iIndex);
-	_bool Is_InterpolatingAnimation() { return m_bInterpolationAnimation; }
-	_bool Is_Animation_Finished(_uint iAnimationIndex);
-
+#pragma region ImGui Tool
 public:
-	vector<class CAnimation*>& Get_Animations() { return m_Animations; }
-	_int Find_AnimationIndex(const wstring& strAnimationTag);
+	HRESULT Delete_Animation(_uint iIndex);
+	const aiScene* Get_Scene() { return m_pAIScene; }
+	HRESULT Swap_Animation(_uint iSrcIndex, _uint iDestIndex);
+#pragma endregion
 
-	_uint Get_CurrAnimationIndex() { return m_iCurrentAnimIndex; }
-	class CAnimation* Get_CurrAnimation() { return m_Animations[m_iCurrentAnimIndex]; }
-
+#pragma region Vtf
+public:
 	HRESULT Set_VtfSrv(ID3D11ShaderResourceView* pSrv);
 	HRESULT Clear_NotUsedData();
-
-
-public:
-	const aiScene* Get_Scene() { return m_pAIScene; }
+#pragma endregion
 
 private:
 	wstring m_strName;
@@ -136,52 +91,40 @@ private:
 
 private:
 	const aiScene* m_pAIScene = nullptr;
+	Assimp::Importer m_Importer;
 
-	Assimp::Importer			m_Importer;
-
-	_float4x4					m_PivotMatrix;
-	TYPE						m_eModelType = TYPE_END;
-	_bool						m_bFromBinary = false;
-
-private:
-	_uint							m_iNumMeshes = 0;
-	vector<class CMesh*>			m_Meshes;
-	typedef vector<class CMesh*>	MESHES;
+	TYPE m_eModelType = TYPE_END;
+	_bool m_bFromBinary = false;
+	_float4x4 m_PivotMatrix;
 
 private:
-	_uint							m_iNumMaterials = 0;
-	vector<MATERIALDESC>			m_Materials;
+	vector<class CHierarchyNode*> m_HierarchyNodes;
 
-private:
-	vector<class CHierarchyNode*>	m_HierarchyNodes;
+	_uint m_iNumMeshes = 0;
+	vector<class CMesh*> m_Meshes;
+	typedef vector<class CMesh*> MESHES;
 
-private:
-	_uint								m_iCurrentAnimIndex = 0;
-	_int								m_iNextAnimIndex = -1;
-	_bool								m_bInterpolationAnimation = false;
-	_bool								m_bFirstRootConvert = false;
-	_float4								m_vPreAnimPos = {0.f, 0.f, 0.f, 1.f };
+	_uint m_iNumMaterials = 0;
+	vector<MATERIALDESC> m_Materials;
 
-	_uint								m_iNumAnimations = 0;
-	vector<class CAnimation*>			m_Animations;
-
+	_uint m_iNumAnimations = 0;
+	vector<class CAnimation*> m_Animations;
 
 private:
 	ID3D11Texture2D* m_pMatrixTexture = nullptr;
-	ID3D11ShaderResourceView* m_pSRV = nullptr;
 	vector<_float4x4> m_Matrices;
 
+	TWEEN_DESC m_TweenDesc = {};
+	ID3D11ShaderResourceView* m_pSRV = nullptr;
 
-	TWEEN_DESC					m_TweenDesc = {};
-
-
+#pragma region Assimp
 private:
-	// << : Assimp 
 	HRESULT Ready_MeshContainers(_fmatrix PivotMatrix);
 	HRESULT Ready_Materials(const wstring & pModelFilePath);
 	HRESULT Ready_HierarchyNodes(aiNode * pNode, class CHierarchyNode* pParent, _uint iDepth);
 	HRESULT Ready_Animations();
 	HRESULT Ready_Animation_Texture();
+#pragma endregion
 
 private:
 	static CModel* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, TYPE eType, const wstring & strModelFilePath, const wstring & strModelFileName, _fmatrix PivotMatrix = XMMatrixIdentity());
@@ -191,6 +134,7 @@ public:
 	virtual CComponent* Clone(void* pArg = nullptr);
 	virtual void Free() override;
 
+public:
 	friend class CModel_Manager;
 };
 

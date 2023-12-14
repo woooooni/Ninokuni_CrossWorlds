@@ -172,8 +172,8 @@ _uint CChannel::Interpolation(_float fPlayTime, _float fTimeDelta, CAnimation* p
 	if (m_fInterpolationTime >= 0.2f)
 	{
 		// TODO : No Interpolation & Set Next Animation
-		if(pModel->Is_InterpolatingAnimation())
-			pModel->Complete_Interpolation();
+		//if(pModel->Is_InterpolatingAnimation())
+			//pModel->Complete_Interpolation();
 
 		m_fInterpolationTime = 0.f;
 		return iCurrentKeyFrame;

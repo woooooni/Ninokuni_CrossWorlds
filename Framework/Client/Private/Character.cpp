@@ -101,7 +101,7 @@ void CCharacter::LateTick(_float fTimeDelta)
 		return;
 
 	
-	std::async(&CModel::Play_Animation, m_pModelCom, m_pTransformCom, fTimeDelta);
+	//std::async(&CModel::Play_Animation, m_pModelCom, m_pTransformCom, fTimeDelta);
 	
 
 	for (auto& pPart : m_Parts)

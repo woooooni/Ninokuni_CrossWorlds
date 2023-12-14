@@ -100,6 +100,15 @@ HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel, const wstring str
 	if (nullptr == pModel || CModel::TYPE::TYPE_ANIM != pModel->Get_ModelType())
 		return E_FAIL;
 
+	ID3D11ShaderResourceView* pSrvCopy = Find_Model_Vtf(pModel->Get_Name());
+	if(nullptr != pSrvCopy)
+	{
+		if (FAILED(pModel->Set_VtfSrv(pSrvCopy)))
+			return E_FAIL;
+
+		return S_OK;
+	}
+
 	/* 01. For m_AnimTransforms */
 	/* 해당 모델이 사용하는 모든 애니메이션과 Bone의 정보를 m_AnimTransforms에 세팅한다. */
 	m_HierarchyNodes	= pModel->Get_HierarchyNodes();
@@ -148,6 +157,7 @@ HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel, const wstring str
 		const uint32 pageSize = dataSize * iAnimMaxFrameCount;			/* 한 장 (가로 * 세로) */
 		void* mallocPtr = ::malloc(pageSize * iAnimCount);				/* 텍스처 총 데이터 = n 장 */
 
+		
 		for (uint32 c = 0; c < iAnimCount; c++) /* 애니메이션 갯수만큼 반복 (장 수) */
 		{
 			uint32 startOffset = c * pageSize; /* 애님 카운트 * 한 장 */
@@ -198,7 +208,7 @@ HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel, const wstring str
 	if (FAILED(pModel->Set_VtfSrv(pSrv)))
 		return E_FAIL;
 
-	/* 05 For. Save Vtf Texture */
+	//* 05 For. Save Vtf Texture */
 	if (FAILED(Save_Model_Vtf(strFilePath, pTexture)))
 		return E_FAIL;
 
@@ -208,7 +218,6 @@ HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel, const wstring str
 	else
 		Safe_Release(pSrv);
 
-
 	Safe_Release(pTexture);
 
 	return S_OK;
@@ -216,6 +225,9 @@ HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel, const wstring str
 
 HRESULT CModel_Manager::Save_Model_Vtf(const wstring strSaveFilePath, ID3D11Texture2D* pTexture)
 {
+	if ((99 != GI->Get_CurrentLevel()))
+		return S_OK;
+
 	if (nullptr == pTexture)
 		return E_FAIL;
 
@@ -239,6 +251,20 @@ HRESULT CModel_Manager::Load_Model_Vtf(CModel* pModel, const wstring strLoadFile
 
 	if(nullptr == pSrv)
 	{
+		/*ID3D11ShaderResourceView* pSrv = { nullptr };
+		{
+			D3D11_SHADER_RESOURCE_VIEW_DESC desc;
+			ZeroMemory(&desc, sizeof(desc));
+			desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+			desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
+			desc.Texture2DArray.MipLevels = 1;
+			desc.Texture2DArray.ArraySize = pModel->Get_Animations().size();
+
+			if (FAILED(GI->Get_Device()->CreateShaderResourceView(pTexture, &desc, &pSrv)))
+				return E_FAIL;
+		}*/
+		
+
 		/* Set File Path */
 		const wstring	strFinalLoadFilePath = strLoadFilePath + L"_vtf.dds";
 
@@ -485,11 +511,17 @@ HRESULT CModel_Manager::Import_Model_Data_From_Bin_In_Game(_uint iLevelIndex, co
 
 	if (CModel::TYPE::TYPE_ANIM == pModel->Get_ModelType())
 	{
-		if (FAILED(Load_Model_Vtf(pModel, strFinalFolderPath)))
+		if (FAILED(Create_Model_Vtf(pModel, strFinalFolderPath)))
 			return E_FAIL;
 
-		if (FAILED(pModel->Clear_NotUsedData()))
-			return E_FAIL;
+		/*if (FAILED(Load_Model_Vtf(pModel, strFinalFolderPath)))
+			return E_FAIL;*/
+
+		/*if (FAILED(pModel->Clear_NotUsedData()))
+			return E_FAIL;*/ 
+			
+			// 이거 살리면 CAnimation::Initialize(CModel* pModel)의 첫 주석도 풀어야함 리턴 하게끔
+			// 이 클래스에 Save_Model_Vtf도 내부 필터 제거
 	}
 
 	if (ppOut != nullptr)
@@ -993,7 +1025,6 @@ HRESULT CModel_Manager::Import_Animation(const wstring strFinalPath, CModel* pMo
 	{
 		CAnimation* pAnimation = CAnimation::Create_Bin();
 
-		
 		pAnimation->m_strName = CUtils::ToWString(File->Read<string>());
 		File->Read<_float>(pAnimation->m_fDuration);
 		File->Read<_float>(pAnimation->m_fTickPerSecond);
