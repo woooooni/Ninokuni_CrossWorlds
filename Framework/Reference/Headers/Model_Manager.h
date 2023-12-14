@@ -4,7 +4,7 @@
 
 BEGIN(Engine)
 
-#define MAX_MODEL_CHANNELS	300 /* 애니메이션의 채널 최대 갯수 (열) */
+#define MAX_MODEL_CHANNELS	400 /* 애니메이션의 채널 최대 갯수 (열) */
 #define MAX_MODEL_KEYFRAMES	300 /* 애니메이션의 최대 프레임 카운트 수 (행) */
 
 class CModel_Manager final : public CBase

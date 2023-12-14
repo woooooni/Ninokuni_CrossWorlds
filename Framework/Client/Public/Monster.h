@@ -14,6 +14,7 @@ class CPipeLine;
 class CStateMachine;
 class CNavigation;
 class CHierarchyNode;
+class CBehaviorTree;
 END
 
 
@@ -23,9 +24,9 @@ class CMonster abstract : public CGameObject
 
 public:
 #pragma region MONSTER_STATES
-	enum MONSTER_STATE { 
+	enum MONSTER_STATE {
 		REGEN,
-		IDLE, 
+		IDLE,
 		JUMP,
 		ATTACK,
 		BOSS_ATTACK_0,
@@ -34,7 +35,7 @@ public:
 		SKILL_0,
 		SKILL_1,
 		DASH,
-		DAMAGED_BASIC, 
+		DAMAGED_BASIC,
 		DAMAGED_BLOW,
 		DAMAGED_AIRBORN,
 		DAMAGED_BOUND,
@@ -54,7 +55,7 @@ public:
 		_float fHp = 100.f;
 		_float fMp = 0.f;
 
-		
+
 		_float fMaxHp = 100.f;
 		_float fMaxMp = 10.f;
 	} MONSTER_STAT;
@@ -87,7 +88,7 @@ public:
 	}
 	_bool Is_Infinite() { return m_bInfinite; }
 
-	
+
 
 
 public:
@@ -97,7 +98,7 @@ public:
 
 public:
 	virtual void On_Damaged(const COLLISION_INFO& tInfo);
-	
+
 public:
 	MONSTER_TYPE Get_Monster_Type() { return m_eMonsterType; }
 
@@ -114,6 +115,8 @@ protected: /* 해당 객체가 사용해야할 컴포넌트들을 저장하낟. */
 	CRigidBody* m_pRigidBodyCom = nullptr;
 	CStateMachine* m_pStateCom = nullptr;
 	CNavigation* m_pNavigationCom = nullptr;
+	CBehaviorTree* m_pBTCom = nullptr;
+
 
 	CTexture* m_pDissoveTexture = nullptr;
 
