@@ -730,5 +730,6 @@ void CModel::Free()
 	m_Importer.FreeScene();
 
 	Safe_Release(m_pSRV);
+	Safe_Release(m_pTexture);
 	Safe_Release(m_pMatrixTexture);
 }

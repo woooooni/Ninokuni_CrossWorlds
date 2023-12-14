@@ -49,12 +49,13 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 	/* 1-4. 게임내에서 사용할 레벨(씬)을 생성한다.   */
-	if (FAILED(Open_Level(LEVEL_TEST, L"Final_Boss")))
+	if (FAILED(Open_Level(LEVEL_TOOL, L"Final_Boss")))
 		return E_FAIL;
 
 	// UI Cursor
 //	CUI_Manager::GetInstance()->Ready_Cursor();
 //	ShowCursor(false);
+
 
 	return S_OK;
 }

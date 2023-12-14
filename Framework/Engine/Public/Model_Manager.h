@@ -4,19 +4,9 @@
 
 BEGIN(Engine)
 
-#define MAX_MODEL_CHANNELS	400 /* 애니메이션의 채널 최대 갯수 (열) */
-#define MAX_MODEL_KEYFRAMES	300 /* 애니메이션의 최대 프레임 카운트 수 (행) */
-
 class CModel_Manager final : public CBase
 {
 	DECLARE_SINGLETON(CModel_Manager);
-
-	typedef struct	AnimTransformCache 
-	{
-		using TransformArrayType = array<Matrix, MAX_MODEL_CHANNELS>;
-		array<TransformArrayType, MAX_MODEL_KEYFRAMES> transforms;
-
-	}ANIM_TRANSFORM_CACHE;
 
 public:
 	CModel_Manager();
@@ -46,15 +36,18 @@ private:
 
 public: 
 	HRESULT Create_Model_Vtf(class CModel* pModel, const wstring strFilePath);
-	HRESULT Save_Model_Vtf(const wstring strSaveFilePath, ID3D11Texture2D* pTexture);
+	HRESULT Save_Model_Vtf(const wstring strSaveFilePath, ID3D11Texture2D* pTexture); 
 	HRESULT Load_Model_Vtf(class CModel* pModel, const wstring strLoadFilePath);
 	ID3D11ShaderResourceView* Find_Model_Vtf(const wstring strModelName);
+
+public:
+	vector<ANIM_TRANSFORM_CACHE> Calculate_AnimationTransform_Cache(class CModel* pModel, const _uint& iSocketBoneIndex); /* 소켓 본을 계산하기 위한 캐시 (다수 채널) */
 
 private:
 	HRESULT Import_Model_Data_From_Fbx(_uint iLevelIndex, const wstring& strProtoTypeTag, _uint eType, wstring strFolderPath, wstring strFileName, __out class CModel** ppOut = nullptr);
 	HRESULT Import_Model_Data_From_Bin_In_Tool(_uint iLevelIndex, const wstring& strProtoTypeTag, _uint eType, wstring strFolderPath, wstring strFileName, __out class CModel** ppOut = nullptr);
 	HRESULT Import_Model_Data_From_Bin_In_Game(_uint iLevelIndex, const wstring& strProtoTypeTag, _uint eType, wstring strFolderPath, wstring strFileName, __out class CModel** ppOut = nullptr);
-	HRESULT Create_AnimationTransform(const _uint& iAnimIndex);
+	HRESULT Create_AnimationTransform_Caches(const _uint& iAnimIndex); /* VTF 텍스처를 만들기 위한 캐시 (다수 채널) */
 
 private:
 	ID3D11Device* m_pDevice = nullptr;
@@ -65,7 +58,7 @@ private:
 
 	map<wstring, ID3D11ShaderResourceView*> m_VtfTextures;
 
-	vector<ANIM_TRANSFORM_CACHE> m_AnimTransformsCache;
+	vector<ANIM_TRANSFORM_CACHES> m_AnimTransformsCaches; 
 	vector<class CHierarchyNode*> m_HierarchyNodes;
 	vector<class CAnimation*> m_AnimationsCache;
 

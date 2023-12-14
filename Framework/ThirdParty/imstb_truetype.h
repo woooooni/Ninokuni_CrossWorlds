@@ -32,7 +32,7 @@
 //        optimize: rasterize directly from curves?
 //
 // ADDITIONAL CONTRIBUTORS
-//
+//basic
 //   Mikko Mononen: compound shape support, more cmap formats
 //   Tor Andersson: kerning, subpixel rendering
 //   Dougall Johnson: OpenType / Type 2 font handling

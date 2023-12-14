@@ -16,9 +16,13 @@ public:
 private:
 	void Tick_Model(_float fTimeDelta);
 	void Tick_Animation(_float fTimeDelta);
+	void Tick_Socket(_float fTimeDelta);
+	void Tick_Event(_float fTimeDelta);
+	void Tick_Costume(_float fTimeDelta);
 
 private:
 	void Reset_Transform();
+	const _bool Is_Exception();
 
 private:
 	wstring m_strFilePath = L"";

@@ -76,6 +76,9 @@ public:
 	HRESULT Delete_Animation(_uint iIndex);
 	const aiScene* Get_Scene() { return m_pAIScene; }
 	HRESULT Swap_Animation(_uint iSrcIndex, _uint iDestIndex);
+
+
+
 #pragma endregion
 
 #pragma region Vtf
@@ -116,6 +119,7 @@ private:
 
 	TWEEN_DESC m_TweenDesc = {};
 	ID3D11ShaderResourceView* m_pSRV = nullptr;
+	ID3D11Texture2D* m_pTexture = nullptr;
 
 #pragma region Assimp
 private:
