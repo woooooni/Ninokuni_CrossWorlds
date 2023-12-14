@@ -42,32 +42,34 @@ public:
 		_bool bAnimation;
 		_bool bAnimationLoop;
 		_bool bRandomStartIndex;
-		_float fDiffuseTextureIndex;
-		_float fDiffuseTextureIndexMax;
+		_float2 fUVIndex;
+		_float2 fUVMaxCount;
 		_float2 fAnimationSpeed;
-
-		
-
 
 	} PARTICLE_BUFFER_DESC;
 
 public:
 	typedef struct tagParticleDesc
 	{
-		_float fTimeAccs;       //4
-		_float fLifeTimes;      //4
-		_float fSpeeds;         //4
-		_float fAnimationSpeed; //4
+		_float fTimeAccs;       
+		_float fLifeTimes;      
 
-		_float fTextureIndex;   //4
-		_float fTemp1;          //4
-		_float fTemp2;          //4
-		_float fTemp3;          //4
+		_float4 vVelocity;
+		_float fSpeeds;         
 
-		_float4 vVelocity;     //16
-		_float4 vColor;        //16
+		_float fAccIndex;
+		_float fAnimationSpeed; 
 
 	} PARTICLE_INFO_DESC;
+
+	typedef struct tagParticleShaderDesc
+	{
+		_float2 fUVIndex;  //8
+		_float2 fMaxCount; //8
+
+		_float4 vColor; //16
+
+	} PARTICLE_SHADER_DESC;
 
 private:
 	CVIBuffer_Particle(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -82,7 +84,7 @@ public:
 
 public:
 	void Set_ParticleBufferDesc(const PARTICLE_BUFFER_DESC& tDesc);
-	vector<PARTICLE_INFO_DESC>& Get_ParticleInfo() { return m_vecParticleInfoDesc; }
+	vector<PARTICLE_SHADER_DESC>& Get_ParticleShaderInfo() { return m_vecParticleShaderDesc; }
 
 	_bool Get_Finished() { return m_bFinished; }
 
@@ -97,7 +99,8 @@ protected:
 	PARTICLE_BUFFER_DESC m_tParticleDesc;
 
 	_uint m_iMaxCount = 1000;
-	vector<PARTICLE_INFO_DESC> m_vecParticleInfoDesc;
+	vector<PARTICLE_INFO_DESC>   m_vecParticleInfoDesc;
+	vector<PARTICLE_SHADER_DESC> m_vecParticleShaderDesc;
 
 	_bool m_bFinished = { false };
 

@@ -58,17 +58,23 @@ void CVIBuffer_Particle::Set_ParticleBufferDesc(const PARTICLE_BUFFER_DESC& tDes
 		m_vecParticleInfoDesc[i].fSpeeds = CUtils::Random_Float(m_tParticleDesc.fSpeed.x, m_tParticleDesc.fSpeed.y);
 		m_vecParticleInfoDesc[i].fAnimationSpeed = CUtils::Random_Float(m_tParticleDesc.fAnimationSpeed.x, m_tParticleDesc.fAnimationSpeed.y);
 
+
+		/* 쉐이더 바인딩 정보 */
 		// 텍스처 인덱스
 		if (m_tParticleDesc.bRandomStartIndex)
-			m_vecParticleInfoDesc[i].fTextureIndex = (_int)CUtils::Random_Float(0.f, m_tParticleDesc.fDiffuseTextureIndexMax);
+			m_vecParticleShaderDesc[i].fUVIndex = _float2(
+				(_int)CUtils::Random_Float(0.f, m_tParticleDesc.fUVMaxCount.x),
+				(_int)CUtils::Random_Float(0.f, m_tParticleDesc.fUVMaxCount.y));
 		else
-			m_vecParticleInfoDesc[i].fTextureIndex = m_tParticleDesc.fDiffuseTextureIndex;
+			m_vecParticleShaderDesc[i].fUVIndex = m_tParticleDesc.fUVIndex;
+
+		m_vecParticleShaderDesc[i].fMaxCount = m_tParticleDesc.fUVMaxCount;
 
 		// 색상
 		if (m_tParticleDesc.bRandomColor)
-			m_vecParticleInfoDesc[i].vColor = _float4(CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.5f, 1.f));
+			m_vecParticleShaderDesc[i].vColor = _float4(CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.5f, 1.f));
 		else
-			m_vecParticleInfoDesc[i].vColor = m_tParticleDesc.vDiffuseColor;
+			m_vecParticleShaderDesc[i].vColor = m_tParticleDesc.vDiffuseColor;
 	}
 
 	m_pContext->Unmap(m_pVBInstance, 0);
@@ -144,6 +150,7 @@ HRESULT CVIBuffer_Particle::Initialize(void* pArg)
 	m_tParticleDesc = *static_cast<PARTICLE_BUFFER_DESC*>(pArg);
 
 	m_vecParticleInfoDesc.reserve(m_iMaxCount);
+	m_vecParticleShaderDesc.reserve(m_iMaxCount);
 
 #pragma region INSTANCEVERTEXBUFFER
 	m_iStrideInstance = sizeof(VTXINSTANCE);
@@ -158,7 +165,8 @@ HRESULT CVIBuffer_Particle::Initialize(void* pArg)
 	m_pVertices = new VTXINSTANCE[m_iMaxCount];
 	ZeroMemory(m_pVertices, sizeof(VTXINSTANCE) * m_iMaxCount);
 
-	PARTICLE_INFO_DESC ParticleInfo = {};
+	PARTICLE_INFO_DESC   ParticleInfo = {};
+	PARTICLE_SHADER_DESC ParticleShaderInfo = {};
 	for (size_t i = 0; i < m_iMaxCount; i++)
 	{
 		// 스케일
@@ -199,19 +207,27 @@ HRESULT CVIBuffer_Particle::Initialize(void* pArg)
 		ParticleInfo.fSpeeds = CUtils::Random_Float(m_tParticleDesc.fSpeed.x, m_tParticleDesc.fSpeed.y);
 		ParticleInfo.fAnimationSpeed = CUtils::Random_Float(m_tParticleDesc.fAnimationSpeed.x, m_tParticleDesc.fAnimationSpeed.y);
 
+		m_vecParticleInfoDesc.push_back(ParticleInfo);
+
+
+		/* 쉐이더 바인딩 정보 */
 		// 텍스처 인덱스
 		if (m_tParticleDesc.bRandomStartIndex)
-			ParticleInfo.fTextureIndex = (_int)CUtils::Random_Float(0.f, m_tParticleDesc.fDiffuseTextureIndexMax);
+			ParticleShaderInfo.fUVIndex = _float2(
+				(_int)CUtils::Random_Float(0.f, m_tParticleDesc.fUVMaxCount.x),
+				(_int)CUtils::Random_Float(0.f, m_tParticleDesc.fUVMaxCount.y));
 		else
-			ParticleInfo.fTextureIndex = m_tParticleDesc.fDiffuseTextureIndex;
+			ParticleShaderInfo.fUVIndex = m_tParticleDesc.fUVIndex;
+
+		ParticleShaderInfo.fMaxCount = m_tParticleDesc.fUVMaxCount;
 
 		// 색상
 		if (m_tParticleDesc.bRandomColor)
-			ParticleInfo.vColor = _float4(CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.5f, 1.f));
+			ParticleShaderInfo.vColor = _float4(CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.5f, 1.f));
 		else
-			ParticleInfo.vColor = m_tParticleDesc.vDiffuseColor;
+			ParticleShaderInfo.vColor = m_tParticleDesc.vDiffuseColor;
 
-		m_vecParticleInfoDesc.push_back(ParticleInfo);
+		m_vecParticleShaderDesc.push_back(ParticleShaderInfo);
 	}
 
 	ZeroMemory(&m_SubResourceData, sizeof m_SubResourceData);
@@ -287,13 +303,23 @@ void CVIBuffer_Particle::Tick(_float fTimeDelta)
 			// 텍스처 애니메이션
 			if (m_tParticleDesc.bAnimation)
 			{
-				m_vecParticleInfoDesc[i].fTextureIndex += m_tParticleDesc.fDiffuseTextureIndexMax * fTimeDelta * 0.5f;// m_vecParticleInfoDesc[i].fAnimationSpeed;
-				if (m_tParticleDesc.fDiffuseTextureIndexMax < m_vecParticleInfoDesc[i].fTextureIndex)
+				m_vecParticleInfoDesc[i].fAccIndex += m_vecParticleInfoDesc[i].fAnimationSpeed * fTimeDelta;
+				if (m_vecParticleInfoDesc[i].fAccIndex >= 1.f)
 				{
-					if (m_tParticleDesc.bAnimationLoop)
-						m_vecParticleInfoDesc[i].fTextureIndex = 0.f;
-					else
-						m_vecParticleInfoDesc[i].fTextureIndex = m_tParticleDesc.fDiffuseTextureIndexMax;
+					m_vecParticleInfoDesc[i].fAccIndex = 0.f;
+					m_vecParticleShaderDesc[i].fUVIndex.x++;
+					if (m_vecParticleShaderDesc[i].fMaxCount.x <= m_vecParticleShaderDesc[i].fUVIndex.x)
+					{
+						m_vecParticleShaderDesc[i].fUVIndex.x = 0.f;
+						m_vecParticleShaderDesc[i].fUVIndex.y++;
+						if (m_vecParticleShaderDesc[i].fMaxCount.y <= m_vecParticleShaderDesc[i].fUVIndex.y)
+						{
+							if (m_tParticleDesc.bAnimationLoop)
+								m_vecParticleShaderDesc[i].fUVIndex = _float2(0.f, 0.f);
+							else
+								m_vecParticleShaderDesc[i].fUVIndex.y = m_vecParticleShaderDesc[i].fMaxCount.y - 1;
+						}
+					}
 				}
 			}
 		}

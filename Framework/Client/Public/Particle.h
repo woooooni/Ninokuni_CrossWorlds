@@ -22,48 +22,54 @@ public:
 	typedef struct tagParticleDesc
 	{	
 		// 반복 여부
-		_bool bLoop = false;
+		_bool bLoop = true;
 
 		// 파티클 개수
-		_uint iNumEffectCount = 1; 
+		_uint iNumEffectCount = 50; 
 
 		// 분포 범위
-		_float3 fRange;
+		_float3 fRange = _float3(0.f, 0.f, 0.f);
 
 		// 크기
-		_bool bSameRate = true; // 정비율
-		_float2 fScale;
+		_bool   bSameRate = true; // 정비율
+		_float2 fScale    = _float2(1.f, 1.f);
 
 		// 지속시간
-		_float2	fLifeTime;
+		_float2	fLifeTime = _float2(1.f, 5.f);
 
 		// 속도
-		_float2 fSpeed;
+		_float2 fSpeed = _float2(5.f, 5.f);
 
 		// 움직임
-		_float3 vVelocityMin;
-		_float3 vVelocityMax;
+		_float3 vVelocityMin = _float3(-1.0f, -1.0f, -1.0f);
+		_float3 vVelocityMax = _float3(1.0f, 1.0f, 1.0f);
 
 		// 박스 범위
-		_bool bUseBox = false;
+		_bool   bUseBox = false;
 		_float3 fBoxMin;
 		_float3 fBoxMax;
 
 		// 색상
-		_bool bRandomColor = false;
+		_bool   bRandomColor  = false;
 		_float4	vDiffuseColor = _float4(0.f, 0.f, 0.f, 0.f);
 
 		// 텍스처
-		_bool bAnimation = false;
-		_bool bAnimationLoop = false;
+		_bool bAnimation        = true;
+		_bool bAnimationLoop    = true;
 		_bool bRandomStartIndex = true;
-		_float fDiffuseTextureIndex;
-		_float2 fAnimationSpeed;
+		_float2 fUVIndex        = _float2(0.f, 0.f);
+		_float2 fUVMaxCount     = _float2(1.f, 1.f);
+		_float2 fAnimationSpeed = _float2(1.f, 1.f);
 
+		// 텍스처 이름
 		wstring strDiffuseTetextureName = L"";
 		wstring strAlphaTexturName      = L"";
+		wstring strDiffuseTetexturePath = L"";
+		wstring strAlphaTexturPath      = L"";
+
 
 		// 기타
+
 		/*
 		// Start Delay / 방출 시작 지연 시간
 
@@ -82,12 +88,12 @@ public:
 	} PARTICLE_DESC;
 
 protected:
-	CParticle(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const wstring& strEffectName);
+	CParticle(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	CParticle(const CParticle& rhs);
 	virtual ~CParticle() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(const PARTICLE_DESC& tEffectDesc);
+	virtual HRESULT Initialize_Prototype(const PARTICLE_DESC* pParticleDesc, const wstring& strParticleFilePath);
 	virtual HRESULT Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void LateTick(_float fTimeDelta) override;
@@ -96,15 +102,10 @@ public:
 public:
 	const PARTICLE_DESC& Get_ParticleDesc() { return m_tParticleDesc; }
 	void Set_ParticleDesc(const PARTICLE_DESC& tDesc);
-
-	const wstring& Get_EffectPrototypeName() { return m_strPrototypeEffectTag; }
-	void Set_EffectPrototypeName(const wstring& strPrototypeEffectTag) { m_strPrototypeEffectTag = strPrototypeEffectTag; }
  
 	class CTransform* Get_TransformCom() { return m_pTransformCom; }
 
 private:
-	wstring m_strPrototypeEffectTag; // 이펙트 원형 이름 태그
-
 	PARTICLE_DESC m_tParticleDesc;
 
 private:
@@ -117,18 +118,20 @@ private:
 	class CTexture* m_pDiffuseTextureCom = nullptr;
 	class CTexture* m_pAlphaTextureCom = nullptr;
 
-	LERP_FLOAT_DESC m_Lerp;
-
 private:
 	HRESULT Bind_ShaderResource();
 
 protected:
 	// CGameObject을(를) 통해 상속됨
 	virtual HRESULT Ready_Components() override;
+	void Load_ParticleData(const wstring& strFileName);
+	void* Get_ParticleBufferInfo();
+	void Set_Texture_Diffuse();
+	void Set_Texture_Alpha();
 
 public:
 	static CParticle* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, 
-		const wstring& strObjectTag, const wstring& strPrototypeEffectTag, const PARTICLE_DESC& ParticleDesc);
+		const wstring& strObjectTag, const PARTICLE_DESC* pParticleDesc = nullptr, const wstring& strParticleFilePath = {});
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 
