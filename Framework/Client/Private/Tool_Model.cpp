@@ -1,11 +1,18 @@
 #include "stdafx.h"
 #include "Tool_Model.h"
+
 #include "imgui.h"
+
 #include "GameInstance.h"
-#include "Animation.h"
 #include "Utils.h"
-#include "Dummy.h"
+
 #include "Model.h"
+#include "Animation.h"
+#include "HierarchyNode.h"
+
+#include "Part.h"
+#include "Dummy.h"
+
 #include <fstream>
 
 CTool_Model::CTool_Model(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -18,10 +25,15 @@ HRESULT CTool_Model::Initialize()
 	if (FAILED(__super::Initialize()))
 		return E_FAIL;
 
-	m_pDummy = CDummy::Create(m_pDevice, m_pContext, L"Dummy");
 
+	if (FAILED(Ready_WeaponPrototypes()))
+		return E_FAIL;
+
+	/* Dummy */
+	m_pDummy = CDummy::Create(m_pDevice, m_pContext, L"Dummy");
 	if (FAILED(m_pDummy->Initialize(nullptr)))
 		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -75,6 +87,11 @@ const _bool CTool_Model::Is_Exception()
 	}
 
 	return false;
+}
+
+HRESULT CTool_Model::Ready_WeaponPrototypes()
+{
+	return S_OK;
 }
 
 void CTool_Model::Tick_Model(_float fTimeDelta)
@@ -276,6 +293,7 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 		//	if (ImGui::Button("Reset Transform"))
 		//		Reset_Transform();
 		//}
+		IMGUI_NEW_LINE;
 	}
 
 	m_pDummy->Tick(fTimeDelta);
@@ -474,7 +492,8 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 			ImGui::Text("Progress : ");
 			IMGUI_SAME_LINE;
 			ImGui::Text(to_string(fAnimationProgress).c_str());
-		}	
+		}
+		IMGUI_NEW_LINE;
 	}
 }
 
@@ -482,25 +501,105 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 {
 	if (ImGui::CollapsingHeader("Socket Bone"))
 	{
-		if (Is_Exception())
-			return;
+		if (Is_Exception()) return;
 
-		/* Bone List */
-		//			/* Animation List */
-		//if (ImGui::BeginListBox("##Animation_List"))
-		//{
-		//	for (size_t i = 0; i < Animations.size(); ++i)
-		//	{
-		//		string AnimationName = CUtils::ToString(Animations[i]->Get_AnimationName());
-		//		if (ImGui::Selectable(AnimationName.c_str(), i == pModelCom->Get_CurrAnimationIndex()))
-		//		{
-		//			pModelCom->Set_Animation(i);
-		//			sprintf_s(szAnimationName, CUtils::ToString(pModelCom->Get_CurrAnimation()->Get_AnimationName()).c_str());
-		//		}
-		//	}
-		//	ImGui::EndListBox();
-		//}
+		ImGui::TextColored(ImVec4(0.7f, 0.5f, 0.7f, 1.f), u8"애니메이션이 편집된 경우 소켓 또한 다시 갱신이 필요합니다.");
 
+		/* HierarchyNode List */
+		{
+			ImGui::Text("HierarchyNode List");
+
+			if (ImGui::TreeNode(u8"Weapon Socket Names"))
+			{
+				ImGui::Text(u8"왼손 무기 소켓 : CAT_l_wph1");
+				ImGui::Text(u8"오른손 무기 소켓 : CAT_r_wph1");
+
+				ImGui::TreePop();
+			}
+
+			if (ImGui::BeginListBox("##Bone_List"))
+			{
+				vector<class CHierarchyNode*>& HiearachyNodes = m_pDummy->Get_ModelCom()->Get_HierarchyNodes();
+			
+				for (size_t i = 0; i < HiearachyNodes.size(); ++i)
+				{
+					string strBoneName = CUtils::ToString(HiearachyNodes[i]->Get_Name());
+					if (ImGui::Selectable(strBoneName.c_str(), i == m_iCurBoneIndex))
+					{
+						m_iCurBoneIndex = i;
+				
+					}
+				}
+				ImGui::EndListBox();
+			}
+		}		
+		IMGUI_NEW_LINE;
+
+
+		/* Prototype Weapon List */
+		{
+			ImGui::Text("Weapon Prototypes List");
+
+			if (ImGui::BeginListBox("##Weapon Prototypes List", ImVec2(0, 40)))
+			{
+				for (size_t i = 0; i < m_WeaponPrototypes.size(); ++i)
+				{
+					string strBoneName = CUtils::ToString(m_WeaponPrototypes[i]->Get_ObjectTag());
+					if (ImGui::Selectable(strBoneName.c_str(), i == m_iCurWeaponIndex))
+					{
+						m_iCurWeaponIndex = i;
+					}
+				}
+				ImGui::EndListBox();
+			}
+		}
+
+		/* Calculated Socket List */
+		{
+			ImGui::Text("Calculated Socket List");
+
+			if (ImGui::BeginListBox("##Calculated Socket List", ImVec2(0, 40)))
+			{
+				for (auto Pair : m_CalculatedSockets)
+				{
+					if (ImGui::Selectable(CUtils::ToString(m_pDummy->Get_ModelCom()->Get_HiearachyNodeName(Pair.first)).c_str(), false))
+					{
+
+					}
+
+				}
+			
+				ImGui::EndListBox();
+			}
+		}
+
+
+		/* Apply */
+		if (ImGui::Button("Apply"))
+		{
+			if (0 < m_iCurBoneIndex)
+			{
+				m_CalculatedSockets.emplace(m_iCurBoneIndex, GI->Create_AnimationSocketTransform(m_pDummy->Get_ModelCom(), m_iCurBoneIndex));
+			}
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		IMGUI_NEW_LINE;
 	}
 }
 
@@ -538,6 +637,7 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 
 			ImGui::TreePop();
 		}
+		IMGUI_NEW_LINE;
 	}
 }
 
@@ -552,6 +652,7 @@ void CTool_Model::Tick_Costume(_float fTimeDelta)
 		{
 
 		}
+		IMGUI_NEW_LINE;
 	}
 }
 

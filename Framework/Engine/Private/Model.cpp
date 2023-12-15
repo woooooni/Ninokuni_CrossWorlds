@@ -31,8 +31,6 @@ CModel::CModel(const CModel& rhs)
 	, m_Animations(rhs.m_Animations)
 	, m_PivotMatrix(rhs.m_PivotMatrix)
 	, m_iNumAnimations(rhs.m_iNumAnimations)
-	, m_pMatrixTexture(rhs.m_pMatrixTexture)
-	, m_Matrices(rhs.m_Matrices)
 	, m_pSRV(rhs.m_pSRV)
 	, m_strName(rhs.m_strName)
 	, m_strFileName(rhs.m_strFileName)
@@ -62,7 +60,6 @@ CModel::CModel(const CModel& rhs)
 		pNode->Initialize_Bin(this);
 
 	Safe_AddRef(m_pSRV);
-	Safe_AddRef(m_pMatrixTexture);
 }
 
 
@@ -158,8 +155,6 @@ HRESULT CModel::Initialize(void* pArg)
 
 	m_Animations = Animations;
 
-
-	m_Matrices.reserve(m_HierarchyNodes.size());
 	return S_OK;
 }
 
@@ -208,8 +203,6 @@ HRESULT CModel::Initialize_Bin(void* pArg)
 	m_Animations.clear();
 	m_Animations = Animations;
 
-
-	m_Matrices.reserve(m_HierarchyNodes.size());
 	return S_OK;
 }
 
@@ -307,6 +300,42 @@ const _int CModel::Get_HierarchyNodeIndex(const char* szBonename)
 	}
 
 	return -1;
+}
+
+Matrix CModel::Get_SocketLocalMatrix(const _uint iSocketEnumIndex)
+{
+	Matrix matSocketLocal;
+
+	if (m_SocketTransforms.size() <= iSocketEnumIndex)
+		return matSocketLocal;
+
+	/* 현재 프레임 계산 */
+	matSocketLocal = Matrix::Lerp(m_SocketTransforms[iSocketEnumIndex][m_TweenDesc.cur.iAnimIndex].transforms[m_TweenDesc.cur.iCurFrame][0],
+									m_SocketTransforms[iSocketEnumIndex][m_TweenDesc.cur.iAnimIndex].transforms[m_TweenDesc.cur.iNextFrame][0],
+									m_TweenDesc.cur.fRatio);
+
+	/* 다음 프레임이 예약되어 있다면 추가 계산 */
+	if (0 <= m_TweenDesc.next.iAnimIndex) 
+	{
+		Matrix matRootNextLerp = Matrix::Lerp(m_SocketTransforms[iSocketEnumIndex][m_TweenDesc.next.iAnimIndex].transforms[m_TweenDesc.next.iCurFrame][0],
+												m_SocketTransforms[iSocketEnumIndex][m_TweenDesc.next.iAnimIndex].transforms[m_TweenDesc.next.iNextFrame][0],
+												m_TweenDesc.next.fRatio);
+
+		return Matrix::Lerp(matSocketLocal, matRootNextLerp, m_TweenDesc.fTweenRatio);
+	}
+
+	return matSocketLocal;
+}
+
+wstring CModel::Get_HiearachyNodeName(const _uint iIndex)
+{
+	for (int32 i = 0; i < m_HierarchyNodes.size(); ++i)
+	{
+		if (i == iIndex)
+			return m_HierarchyNodes[i]->Get_Name();
+	}
+
+	return L"None";
 }
 
 CHierarchyNode* CModel::Get_HierarchyNode(const wstring& strNodeName)
@@ -622,42 +651,6 @@ HRESULT CModel::Ready_Animations()
 	return S_OK;
 }
 
-HRESULT CModel::Ready_Animation_Texture()
-{
-	/*if (TYPE::TYPE_NONANIM == m_eModelType)
-		return S_OK;
-
-	m_Matrices.resize(m_HierarchyNodes.size());
-
-	D3D11_TEXTURE2D_DESC TextureDesc;
-	ZeroMemory(&TextureDesc, sizeof(D3D11_TEXTURE2D_DESC));
-
-	TextureDesc.Width = 4096;
-	TextureDesc.Height = 2;
-
-	TextureDesc.SampleDesc.Quality = 0;
-	TextureDesc.SampleDesc.Count = 1;
-	TextureDesc.MipLevels = 1;
-	TextureDesc.ArraySize = 1;
-	TextureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-
-	TextureDesc.Usage = D3D11_USAGE_DYNAMIC;
-	TextureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	TextureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	TextureDesc.MiscFlags = 0;
-
-	Safe_Release(m_pMatrixTexture);
-	Safe_Release(m_pSRV);
-
-	if (FAILED(m_pDevice->CreateTexture2D(&TextureDesc, nullptr, &m_pMatrixTexture)))
-		return E_FAIL;
-
-	if (FAILED(m_pDevice->CreateShaderResourceView(m_pMatrixTexture, nullptr, &m_pSRV)))
-		return E_FAIL;*/
-
-	return S_OK;
-}
-
 CModel* CModel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TYPE eType, const wstring& strModelFilePath, const wstring& strModelFileName, _fmatrix PivotMatrix)
 {
 	CModel* pInstance = new CModel(pDevice, pContext);
@@ -730,6 +723,4 @@ void CModel::Free()
 	m_Importer.FreeScene();
 
 	Safe_Release(m_pSRV);
-	Safe_Release(m_pTexture);
-	Safe_Release(m_pMatrixTexture);
 }

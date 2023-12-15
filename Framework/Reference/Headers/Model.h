@@ -19,14 +19,20 @@ public:
 	/* Model Prop */
 	void Set_Name(const wstring& strName) { m_strName = strName; }
 
-	const wstring& Get_Name() const { return m_strName; }
 	TYPE Get_ModelType() { return m_eModelType; }
 	_matrix Get_PivotMatrix() { return XMLoadFloat4x4(&m_PivotMatrix); }
+	const wstring& Get_Name() const { return m_strName; }
 
 	/* HierarchyNode */
+	void Add_SocketTransforms(vector<ANIM_TRANSFORM_CACHE> SocketTransforms) { m_SocketTransforms.push_back(SocketTransforms); }
+
+	Matrix Get_SocketLocalMatrix(const _uint iSocketEnumIndex); /* (모델의 Latetick 이후 호출)캐릭터가 갖고 있는 파츠의 소켓 매트릭스를 리턴한다. (캐릭터에 정의된 enum 인덱스 사용, 뼈 번호 아님) */
+	wstring Get_HiearachyNodeName(const _uint iIndex);
 	const _int Get_HierarchyNodeIndex(const char* szBonename);
 	class CHierarchyNode* Get_HierarchyNode(const wstring & strNodeName);
 	vector<class CHierarchyNode*>& Get_HierarchyNodes() { return m_HierarchyNodes; }
+	vector<vector<ANIM_TRANSFORM_CACHE>> Get_All_SocketLoacalMatrix() { return m_SocketTransforms; }
+
 
 	/* Meshes */
 	_uint Get_NumMeshes() const { return m_iNumMeshes; }
@@ -37,25 +43,26 @@ public:
 	class CTexture* Get_MaterialTexture(_uint iMeshIndex, _uint iTextureType);
 
 	/* Animation */
+	void Set_Stop_Animation(const _bool& bStop) { m_TweenDesc.cur.iStop = bStop; } /* bStop이 트루라면 모델 레이트틱이 호출되더라도 애니메이션이 갱신되지 않는다. */
 	HRESULT Set_Animation(const _uint& iAnimationIndex, const _float& fTweenDuration = DEFAULT_TWEEN_DURATION); /* 인덱스로 애니메이션 플레이 */
 	HRESULT Set_Animation(const wstring& strAnimationName, const _float& fTweenDuration = DEFAULT_TWEEN_DURATION); /* 이름으로 애니메이션 플레이 */
-	void Set_Stop_Animation(const _bool& bStop) { m_TweenDesc.cur.iStop = bStop; }
 
-	vector<class CAnimation*>& Get_Animations() { return m_Animations; } /* 전체 애니메이션 컨테이너 리턴*/
 	_uint Get_CurrAnimationIndex() { return m_TweenDesc.cur.iAnimIndex; } /* 현재 애니메이션의 인덱스 리턴*/
 	const _uint& Get_CurrAnimationFrame() const { return m_TweenDesc.cur.iCurFrame; } /* 현재 애니메이션의 프레임 리턴 */
-	class CAnimation* Get_CurrAnimation() { return m_Animations[m_TweenDesc.cur.iAnimIndex]; } /* 현재 애니메이션 객체 리턴 */
-	const TweenDesc& Get_TweenDesc() const { return m_TweenDesc; } /* 현재, 다음 애니메이션 정보 구조체 리턴 */
 	const _float Get_Progress() const;  /* 현재 애니메이션의 진행률(0~1) 리턴*/
 	const _float Get_Duration(); /* (미완성 아직 사용 X) 현재 애니메이션 전체 재생 시간 */
 	const _float Get_PlayTime(); /* (미완성 아직 사용 X) 현재 애니메이션 현재 재생 시간 */
+	const TweenDesc& Get_TweenDesc() const { return m_TweenDesc; } /* 현재, 다음 애니메이션 정보 구조체 리턴 */
+	class CAnimation* Get_CurrAnimation() { return m_Animations[m_TweenDesc.cur.iAnimIndex]; } /* 현재 애니메이션 객체 리턴 */
+	vector<class CAnimation*>& Get_Animations() { return m_Animations; } /* 전체 애니메이션 컨테이너 리턴*/
+
+	_int Find_AnimationIndex(const wstring& strAnimationTag); /* 이름을 키로 사용해서 애니메이션의 인덱스 리턴 */
 
 	const _bool Is_Half() const { return (0.5f <= m_TweenDesc.cur.fRatio) ? true : false; } /* 현재 애니메이션이 반이상 진행됐는지 여부 리턴 */
 	const _bool Is_Finish() const { return m_TweenDesc.cur.iFinish; } /* 현재 애니메이션이 종료됐는지 리턴 (종료되었는데 만약 다음 애니메이션이 세팅 안되어 있다면 종료 상태 유지) */
 	const _bool Is_Tween() const { return (0 <= m_TweenDesc.next.iAnimIndex) ? true : false; } /* 애니메이션 트위닝 (다음 애니메이션 보간) 여부 리턴 */
 	const _bool Is_Fix() const { return m_TweenDesc.cur.iFix; } /* 현재 애니메이션이 마지막 프레임에서 고정 상태인지 여부 리턴*/
 	const _bool Is_Stop() const { return m_TweenDesc.cur.iStop; } /* 현재 애니메이션 정지 여부 */
-	_int Find_AnimationIndex(const wstring& strAnimationTag); /* 이름을 키로 사용해서 애니메이션의 인덱스 리턴 */
 #pragma endregion
 
 #pragma region Life Cycle
@@ -74,11 +81,8 @@ public:
 #pragma region ImGui Tool
 public:
 	HRESULT Delete_Animation(_uint iIndex);
-	const aiScene* Get_Scene() { return m_pAIScene; }
 	HRESULT Swap_Animation(_uint iSrcIndex, _uint iDestIndex);
-
-
-
+	const aiScene* Get_Scene() { return m_pAIScene; }
 #pragma endregion
 
 #pragma region Vtf
@@ -114,12 +118,10 @@ private:
 	vector<class CAnimation*> m_Animations;
 
 private:
-	ID3D11Texture2D* m_pMatrixTexture = nullptr;
-	vector<_float4x4> m_Matrices;
-
 	TWEEN_DESC m_TweenDesc = {};
 	ID3D11ShaderResourceView* m_pSRV = nullptr;
-	ID3D11Texture2D* m_pTexture = nullptr;
+
+	vector<vector<ANIM_TRANSFORM_CACHE>> m_SocketTransforms; /* 소켓별로 vector<ANIM_TRANSOFRM_CACHE>를 갖는다.*/
 
 #pragma region Assimp
 private:
@@ -127,7 +129,6 @@ private:
 	HRESULT Ready_Materials(const wstring & pModelFilePath);
 	HRESULT Ready_HierarchyNodes(aiNode * pNode, class CHierarchyNode* pParent, _uint iDepth);
 	HRESULT Ready_Animations();
-	HRESULT Ready_Animation_Texture();
 #pragma endregion
 
 private:

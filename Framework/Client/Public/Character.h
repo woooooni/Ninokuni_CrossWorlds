@@ -148,12 +148,8 @@ protected:
 	CHARACTER_STAT m_tStat = {};
 	CHARACTER_TYPE m_eCharacterType = CHARACTER_TYPE::CHARACTER_END;
 
-	
-
 public:
 	virtual void Free() override;
-
-
 };
 
 END

@@ -41,13 +41,16 @@ public:
 	ID3D11ShaderResourceView* Find_Model_Vtf(const wstring strModelName);
 
 public:
-	vector<ANIM_TRANSFORM_CACHE> Calculate_AnimationTransform_Cache(class CModel* pModel, const _uint& iSocketBoneIndex); /* 소켓 본을 계산하기 위한 캐시 (다수 채널) */
+	vector<ANIM_TRANSFORM_CACHE> Create_AnimationSocketTransform(class CModel* pModel, const _uint& iSocketBoneIndex); /* 소켓 본 하나 계산하기 위한 캐시 */
 
 private:
 	HRESULT Import_Model_Data_From_Fbx(_uint iLevelIndex, const wstring& strProtoTypeTag, _uint eType, wstring strFolderPath, wstring strFileName, __out class CModel** ppOut = nullptr);
 	HRESULT Import_Model_Data_From_Bin_In_Tool(_uint iLevelIndex, const wstring& strProtoTypeTag, _uint eType, wstring strFolderPath, wstring strFileName, __out class CModel** ppOut = nullptr);
 	HRESULT Import_Model_Data_From_Bin_In_Game(_uint iLevelIndex, const wstring& strProtoTypeTag, _uint eType, wstring strFolderPath, wstring strFileName, __out class CModel** ppOut = nullptr);
 	HRESULT Create_AnimationTransform_Caches(const _uint& iAnimIndex); /* VTF 텍스처를 만들기 위한 캐시 (다수 채널) */
+
+	const _bool	Find_AnimationSocketTransform(const wstring strModelName, const _uint& iSocketBoneIndex); /* 소켓 본 트랜스폼 기존에 만들어진거 있는지 확인*/
+	vector<ANIM_TRANSFORM_CACHE> Get_AnimationSocketTransform(const wstring strModelName, const _uint& iSocketBoneIndex); /* 소켓 본 트랜스폼 찾기 */
 
 private:
 	ID3D11Device* m_pDevice = nullptr;
@@ -56,11 +59,14 @@ private:
 	wstring m_strExportFolderPath = L"../Bin/Export/";
 	_float4x4 m_PivotMatrix;
 
-	map<wstring, ID3D11ShaderResourceView*> m_VtfTextures;
 
-	vector<ANIM_TRANSFORM_CACHES> m_AnimTransformsCaches; 
-	vector<class CHierarchyNode*> m_HierarchyNodes;
-	vector<class CAnimation*> m_AnimationsCache;
+	vector<ANIM_TRANSFORM_CACHES>	m_AnimTransformsCaches; 
+	vector<class CHierarchyNode*>	m_HierarchyNodes;
+	vector<class CAnimation*>		m_AnimationsCache;
+
+	/* 클라이언트에서 공용으로 사용 */
+	map<wstring, ID3D11ShaderResourceView*> m_VtfTextures; /* 모델 이름, srv */
+	map<wstring, map<_uint, vector<ANIM_TRANSFORM_CACHE>>> m_SocketTransforms; /* 모델 이름, 뼈 인덱스, 트랜스폼 정보 */
 
 public:
 	virtual void Free() override;

@@ -101,7 +101,7 @@ HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel, const wstring str
 		return E_FAIL;
 
 	ID3D11ShaderResourceView* pSrvCopy = Find_Model_Vtf(pModel->Get_Name());
-	if(nullptr != pSrvCopy)
+	if(nullptr != pSrvCopy && 99 != GI->Get_CurrentLevel())
 	{
 		if (FAILED(pModel->Set_VtfSrv(pSrvCopy)))
 			return E_FAIL;
@@ -817,14 +817,24 @@ HRESULT CModel_Manager::Create_AnimationTransform_Caches(const _uint& iAnimIndex
 	return S_OK;
 }
 
-vector<ANIM_TRANSFORM_CACHE> CModel_Manager::Calculate_AnimationTransform_Cache(class CModel* pModel, const _uint& iSocketBoneIndex)
+vector<ANIM_TRANSFORM_CACHE> CModel_Manager::Create_AnimationSocketTransform(class CModel* pModel, const _uint& iSocketBoneIndex)
 {
+	/* 툴레벨이 아닌데 이전에 저장된 데이터가 있는 경우 찾아서 리턴 */
+	if (99 != GI->Get_CurrentLevel() && Find_AnimationSocketTransform(pModel->Get_Name(), iSocketBoneIndex))
+	{
+		return Get_AnimationSocketTransform(pModel->Get_Name(), iSocketBoneIndex);
+	}
+
+	/* 툴레벨이거나 혹은, 툴레벨이 아닌데 이전에 저장된 데이터가 없는 경우 새로 만든다. */
+
 	vector<ANIM_TRANSFORM_CACHE> AnimTransformsCache;
 
 	if (nullptr == pModel)
 		return AnimTransformsCache;
 
 	const _uint iAnimCount = pModel->Get_Animations().size();
+	
+	AnimTransformsCache.resize(iAnimCount);
 
 	for (size_t iAnimIndex = 0; iAnimIndex < iAnimCount; iAnimIndex++)
 	{
@@ -842,20 +852,54 @@ vector<ANIM_TRANSFORM_CACHE> CModel_Manager::Calculate_AnimationTransform_Cache(
 
 				if (iSocketBoneIndex == iBoneIndex)
 				{
-					AnimTransformsCache[iAnimIndex].transforms[iFrameIndex][iBoneIndex]
+					AnimTransformsCache[iAnimIndex].transforms[iFrameIndex][0]
 						= Matrix(m_HierarchyNodes[iBoneIndex]->Get_OffSetMatrix())
 						* Matrix(m_HierarchyNodes[iBoneIndex]->Get_CombinedTransformation())
 						* Matrix(m_PivotMatrix);
 				}
-
-				/*if (L"CAT_r_wph1" == m_HierarchyNodes[iBoneIndex]->Get_Name())
-					int k = 0;*/
 			}
 		}
 	}
 
-
 	return AnimTransformsCache;
+}
+
+vector<ANIM_TRANSFORM_CACHE> CModel_Manager::Get_AnimationSocketTransform(const wstring strModelName, const _uint& iSocketBoneIndex)
+{
+	vector<ANIM_TRANSFORM_CACHE> SocketTransforms;
+
+	auto	iterModel = m_SocketTransforms.find(strModelName);
+
+	if (iterModel == m_SocketTransforms.end())
+		return SocketTransforms;
+
+	auto iterSocket = iterModel->second.find(iSocketBoneIndex);
+
+	if (iterSocket == iterModel->second.end())
+		return SocketTransforms;
+
+	SocketTransforms.resize(iterModel->second.size());
+
+	memcpy(&SocketTransforms, &(iterSocket->second), sizeof(iterSocket->second));
+
+	return SocketTransforms;
+}
+
+const _bool	CModel_Manager::Find_AnimationSocketTransform(const wstring strModelName, const _uint& iSocketBoneIndex)
+{
+	/* 해당 모델이 저장되어 있는지 확인. */
+	auto	iterModel = m_SocketTransforms.find(strModelName);
+
+	if (iterModel == m_SocketTransforms.end())
+		return false;
+
+	/* 해당 소켓이 저장되어 있는지 확인. */
+	auto iterSocket = iterModel->second.find(iSocketBoneIndex);
+
+	if (iterSocket == iterModel->second.end())
+		return false;
+
+	return true;
 }
 
 HRESULT CModel_Manager::Import_Mesh(const wstring strFinalPath, CModel* pModel)
@@ -1104,8 +1148,8 @@ HRESULT CModel_Manager::Import_Animation(const wstring strFinalPath, CModel* pMo
 		pModel->m_Animations.push_back(pAnimation);
 	}
 
-	if (FAILED(pModel->Ready_Animation_Texture()))
-		return E_FAIL;
+	//if (FAILED(pModel->Ready_Animation_Texture()))
+	//	return E_FAIL;
 
 	return S_OK;
 }
