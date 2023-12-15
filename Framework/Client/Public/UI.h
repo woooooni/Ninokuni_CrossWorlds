@@ -29,6 +29,12 @@ protected:
 	CUI(const CUI& rhs);
 	virtual ~CUI() = default;
 
+public:
+	const UI_INFO& Get_UI_Info() { return m_tInfo; }
+	void Set_UI_Info(const UI_INFO& tInfo) { m_tInfo = tInfo; }
+
+	_bool Get_Active() { return m_bActive; }
+	virtual void Set_Active(_bool bActive) { m_bActive = bActive; }
 
 public:
 	virtual HRESULT Initialize_Prototype() override { return S_OK; }
@@ -38,9 +44,6 @@ public:
 	virtual HRESULT Render() override;
 
 public:
-	const UI_INFO& Get_UI_Info() { return m_tInfo; }
-	void Set_UI_Info(const UI_INFO& tInfo) { m_tInfo = tInfo; }
-
 	HRESULT Make_Child(_float fX, _float fY, _float fCX, _float fCY, const wstring& strObjectTag, void* pChildArg = nullptr);
 	void Delete_AllChild();
 
@@ -76,6 +79,7 @@ protected:
 	wstring m_strText = L"";
 
 	_float m_fAlpha = { 1.f };
+	_bool m_bActive = { true };
 
 public:
 	virtual void Free() override;

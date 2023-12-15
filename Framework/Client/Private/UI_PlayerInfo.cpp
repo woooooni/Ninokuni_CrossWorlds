@@ -36,14 +36,18 @@ HRESULT CUI_PlayerInfo::Initialize(void* pArg)
 
 void CUI_PlayerInfo::Tick(_float fTimeDelta)
 {
-
-	__super::Tick(fTimeDelta);
+	if (m_bActive)
+	{
+		__super::Tick(fTimeDelta);
+	}
 }
 
 void CUI_PlayerInfo::LateTick(_float fTimeDelta)
 {
-
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+	if (m_bActive)
+	{
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+	}
 }
 
 HRESULT CUI_PlayerInfo::Render()

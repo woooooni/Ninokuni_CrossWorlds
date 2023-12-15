@@ -10,6 +10,7 @@ class CUI_Basic final : public CUI
 public:
 	enum UI_BASIC { UILOBBY_NICKFRAME, UILOBBY_TITLE, UILOBBY_BTNTEXT,
 		UIMAPNAME_EVERMORE, UIMAPNAME_KINGDOM, UIMAPNAME_ICELAND, UIMAPNAME_FOREST,
+		UIQUEST_ACCEPT, UIQUEST_FINISH,
 		UISTATIC_MENUDECO_L, UISTATIC_MENUDECO_R,
 		UIBASIC_END };
 
@@ -21,7 +22,7 @@ protected:
 public:
 	void Set_Alpha(_float fAlpha) { m_fAlpha = fAlpha; }
 	_bool Get_Active() { return m_bActive; }
-	void Set_Active(_bool bActive) { m_bActive = bActive; }
+	virtual void Set_Active(_bool bActive) override;
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -32,7 +33,7 @@ public:
 
 private:
 	UI_BASIC m_eType = { UI_BASIC::UIBASIC_END };
-	_float m_bActive = { true };
+
 	_float m_bFade = { false }; // Alpha값으로 FadeIn, Out을 하는 것들을 구분함.
 
 private:

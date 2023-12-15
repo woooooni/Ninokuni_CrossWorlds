@@ -49,10 +49,20 @@ void CUI::Tick(_float fTimeDelta)
 	MouseRect.bottom = pt.y + 1.f;
 
 	RECT UIRect;
-	UIRect.left = m_tInfo.fX - m_tInfo.fCX / 2.f;
-	UIRect.right = m_tInfo.fX + m_tInfo.fCX / 2.f;
-	UIRect.top = m_tInfo.fY - m_tInfo.fCY / 2.f;
-	UIRect.bottom = m_tInfo.fY + m_tInfo.fCY / 2.f;
+	if (nullptr == m_tInfo.pParent) // 부모가 없는 경우
+	{
+		UIRect.left = m_tInfo.fX - m_tInfo.fCX / 2.f;
+		UIRect.right = m_tInfo.fX + m_tInfo.fCX / 2.f;
+		UIRect.top = m_tInfo.fY - m_tInfo.fCY / 2.f;
+		UIRect.bottom = m_tInfo.fY + m_tInfo.fCY / 2.f;
+	}
+	else // 부모가 있는 경우
+	{
+		UIRect.left = m_tInfo.pParent->Get_UI_Info().fX + m_tInfo.fX - m_tInfo.fCX / 2.f;
+		UIRect.right = m_tInfo.pParent->Get_UI_Info().fX + m_tInfo.fX + m_tInfo.fCX / 2.f;
+		UIRect.top = m_tInfo.pParent->Get_UI_Info().fY + m_tInfo.fY - m_tInfo.fCY / 2.f;
+		UIRect.bottom = m_tInfo.pParent->Get_UI_Info().fY + m_tInfo.fY + m_tInfo.fCY / 2.f;
+	}
 
 	RECT Result;
 	if (IntersectRect(&Result, &MouseRect, &UIRect))
@@ -97,6 +107,19 @@ void CUI::Tick(_float fTimeDelta)
 		default:
 			break;
 		}
+	}
+
+
+	// UI 자식 Tick
+
+	if (nullptr != m_tInfo.pParent) // 부모가 있는 UI라면
+	{
+		//m_tInfo.fX = m_tInfo.pParent->Get_UI_Info().fX + m_tInfo.fX;
+		//m_tInfo.fY = m_tInfo.pParent->Get_UI_Info().fY + m_tInfo.fY;
+
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			XMVectorSet((m_tInfo.pParent->Get_UI_Info().fX + m_tInfo.fX) - (g_iWinSizeX * 0.5f),
+				-(m_tInfo.pParent->Get_UI_Info().fY + m_tInfo.fY) + (g_iWinSizeY * 0.5f), 0.0f, 1.f));
 	}
 
 	for (auto& pChildUI : m_pChild)

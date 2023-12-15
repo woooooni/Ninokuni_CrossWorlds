@@ -94,6 +94,11 @@ HRESULT CUI_BasicButton::Render()
 void CUI_BasicButton::On_MouseEnter(_float fTimeDelta)
 {
 	// 사이즈 조절
+
+	m_tInfo.fCX = m_vMinSize.x;
+	m_tInfo.fCY = m_vMinSize.y;
+
+	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 }
 
 void CUI_BasicButton::On_Mouse(_float fTimeDelta)
@@ -110,6 +115,10 @@ void CUI_BasicButton::On_Mouse(_float fTimeDelta)
 
 void CUI_BasicButton::On_MouseExit(_float fTimeDelta)
 {
+	m_tInfo.fCX = m_vOriginSize.x;
+	m_tInfo.fCY = m_vOriginSize.y;
+
+	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 }
 
 HRESULT CUI_BasicButton::Ready_Components()

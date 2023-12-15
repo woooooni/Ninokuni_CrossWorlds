@@ -23,7 +23,6 @@ public:
 	virtual void On_MouseExit(_float fTimeDelta) override;
 
 private:
-	_bool m_bActive = { true };
 	_bool m_bHide = { false };
 
 private:

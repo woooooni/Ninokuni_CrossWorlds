@@ -1,19 +1,20 @@
 #include "stdafx.h"
-#include "UI_BtnQuickQuest.h"
+#include "UI_BtnClose.h"
 #include "GameInstance.h"
 #include "Level_Loading.h"
+#include "UI_Manager.h"
 
-CUI_BtnQuickQuest::CUI_BtnQuickQuest(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	: CUI(pDevice, pContext, L"UI_BtnQuickQuest")
+CUI_BtnClose::CUI_BtnClose(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+	: CUI(pDevice, pContext, L"UI_BtnClose")
 {
 }
 
-CUI_BtnQuickQuest::CUI_BtnQuickQuest(const CUI_BtnQuickQuest& rhs)
+CUI_BtnClose::CUI_BtnClose(const CUI_BtnClose& rhs)
 	: CUI(rhs)
 {
 }
 
-HRESULT CUI_BtnQuickQuest::Initialize_Prototype()
+HRESULT CUI_BtnClose::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
@@ -21,7 +22,7 @@ HRESULT CUI_BtnQuickQuest::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CUI_BtnQuickQuest::Initialize(void* pArg)
+HRESULT CUI_BtnClose::Initialize(void* pArg)
 {
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
@@ -32,23 +33,20 @@ HRESULT CUI_BtnQuickQuest::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	// 자식 UI로 MiniQuestWindow를 생성한다.
-	// MiniQuestWindow -> QuestManager에서 현재 진행중인 퀘스트를 받아와서 Quest가 있을 경우에만 Active한다.
+	m_bActive = false;
 	
-
 	return S_OK;
 }
 
-void CUI_BtnQuickQuest::Tick(_float fTimeDelta)
+void CUI_BtnClose::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-
 		__super::Tick(fTimeDelta);
 	}
 }
 
-void CUI_BtnQuickQuest::LateTick(_float fTimeDelta)
+void CUI_BtnClose::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
@@ -56,7 +54,7 @@ void CUI_BtnQuickQuest::LateTick(_float fTimeDelta)
 	}
 }
 
-HRESULT CUI_BtnQuickQuest::Render()
+HRESULT CUI_BtnClose::Render()
 {
 	if (m_bActive)
 	{
@@ -71,33 +69,36 @@ HRESULT CUI_BtnQuickQuest::Render()
 	return S_OK;
 }
 
-void CUI_BtnQuickQuest::On_MouseEnter(_float fTimeDelta)
+void CUI_BtnClose::On_MouseEnter(_float fTimeDelta)
 {
 }
 
-void CUI_BtnQuickQuest::On_Mouse(_float fTimeDelta)
+void CUI_BtnClose::On_Mouse(_float fTimeDelta)
 {
-	Key_Input(fTimeDelta);
+	if (m_bActive)
+	{
+		Key_Input(fTimeDelta);
+	}
 }
 
-void CUI_BtnQuickQuest::On_MouseExit(_float fTimeDelta)
+void CUI_BtnClose::On_MouseExit(_float fTimeDelta)
 {
 }
 
-HRESULT CUI_BtnQuickQuest::Ready_Components()
+HRESULT CUI_BtnClose::Ready_Components()
 {
 	
 	if (FAILED(__super::Ready_Components()))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_ShowQuest"),
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Common_Close"),
 		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 		return E_FAIL;
 	
 	return S_OK;
 }
 
-HRESULT CUI_BtnQuickQuest::Ready_State()
+HRESULT CUI_BtnClose::Ready_State()
 {
 	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
@@ -106,7 +107,7 @@ HRESULT CUI_BtnQuickQuest::Ready_State()
 	return S_OK;
 }
 
-HRESULT CUI_BtnQuickQuest::Bind_ShaderResources()
+HRESULT CUI_BtnClose::Bind_ShaderResources()
 {
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
 		return E_FAIL;
@@ -120,54 +121,54 @@ HRESULT CUI_BtnQuickQuest::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_fAlpha, sizeof(_float))))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextureIndex)))
+	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture")))
 		return E_FAIL;
 
 	return S_OK;
 }
 
-void CUI_BtnQuickQuest::Key_Input(_float fTimeDelta)
+void CUI_BtnClose::Key_Input(_float fTimeDelta)
 {
 	if (KEY_TAP(KEY::LBTN))
 	{
-		if (0 == m_iTextureIndex)
-			m_iTextureIndex = 1;
-		else if (1 == m_iTextureIndex)
-			m_iTextureIndex = 0;
-		else
+		if (CUI_Manager::GetInstance()->Get_MainMenuActive()) // MainMenu가 켜져있는 상태면
 		{
-			return;
+			CUI_Manager::GetInstance()->OnOff_MainMenu(false);// MainMenu창을 닫고
+			CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true); // 기본 세팅을 켠다
+
+			CUI_Manager::GetInstance()->OnOff_CloseButton(false); // CloseBtn도 없앤다.
 		}
+
 	}
 }
 
-CUI_BtnQuickQuest* CUI_BtnQuickQuest::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CUI_BtnClose* CUI_BtnClose::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-	CUI_BtnQuickQuest* pInstance = new CUI_BtnQuickQuest(pDevice, pContext);
+	CUI_BtnClose* pInstance = new CUI_BtnClose(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX("Failed To Create : CUI_BtnQuickQuest");
+		MSG_BOX("Failed To Create : CUI_BtnClose");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CUI_BtnQuickQuest::Clone(void* pArg)
+CGameObject* CUI_BtnClose::Clone(void* pArg)
 {
-	CUI_BtnQuickQuest* pInstance = new CUI_BtnQuickQuest(*this);
+	CUI_BtnClose* pInstance = new CUI_BtnClose(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Failed To Clone : CUI_BtnQuickQuest");
+		MSG_BOX("Failed To Clone : CUI_BtnClose");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CUI_BtnQuickQuest::Free()
+void CUI_BtnClose::Free()
 {
 	__super::Free();
 

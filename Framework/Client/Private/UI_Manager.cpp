@@ -12,12 +12,19 @@
 #include "UI_Basic.h"
 #include "UI_LevelUp.h"
 #include "UI_MapName.h"
+#include "UI_BtnClose.h"
+#include "UI_MainMenu.h"
+#include "UI_BtnAccept.h"
 #include "UI_PlayerInfo.h"
+#include "UI_PopupQuest.h"
 #include "UI_BasicButton.h"
+#include "UI_WindowQuest.h"
 #include "UI_BtnShowMenu.h"
 #include "UI_BtnInventory.h"
 #include "UI_BtnQuickQuest.h"
 #include "UI_BtnChangeCamera.h"
+#include "UI_Loading_Character.h"
+#include "UI_SubMenu_Character.h"
 #include "UI_BtnCharacterSelect.h"
 #include "UI_Loading_Background.h"
 
@@ -34,6 +41,11 @@ CUI_Fade* CUI_Manager::Get_Fade()
 		return m_pUIFade;
 	else
 		return nullptr;
+}
+
+_bool CUI_Manager::Get_MainMenuActive()
+{
+	return m_pMainBG->Get_Active();
 }
 
 HRESULT CUI_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -402,6 +414,8 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 
 
 	// LevelUp 생성
+	m_LevelUp.reserve(2);
+
 	CGameObject* pLevelUp = nullptr;
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
@@ -410,7 +424,7 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	UIDesc.fX = g_iWinSizeX * 0.5f;
 	UIDesc.fY = g_iWinSizeY * 0.25f;
 
-	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_LevelUp_Frame"), &UIDesc, &pLevelUp)))
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_LevelUp_Background"), &UIDesc, &pLevelUp)))
 		return E_FAIL;
 
 	m_LevelUp.push_back(dynamic_cast<CUI_LevelUp*>(pLevelUp));
@@ -421,14 +435,7 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 
 
 	pLevelUp = nullptr;
-//	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
-//
-//	UIDesc.fCX = 1000.f * 0.5f;
-//	UIDesc.fCY = 481.f * 0.5f;
-//	UIDesc.fX = g_iWinSizeX * 0.5f;
-//	UIDesc.fY = g_iWinSizeY * 0.25f;
-
-	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_LevelUp_Background"), &UIDesc, &pLevelUp)))
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_LevelUp_Frame"), &UIDesc, &pLevelUp)))
 		return E_FAIL;
 
 	m_LevelUp.push_back(dynamic_cast<CUI_LevelUp*>(pLevelUp));
@@ -533,6 +540,259 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 		return E_FAIL;
 
 	Safe_AddRef(m_pBtnQuest);
+
+
+	// Quest Window 생성
+	CGameObject* pWindow = nullptr;
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 440.f;
+	UIDesc.fCY = g_iWinSizeY;
+	UIDesc.fX = g_iWinSizeX - (UIDesc.fCX * 0.5f);
+	UIDesc.fY = g_iWinSizeY * 0.5f;
+
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Window_Quest"), &UIDesc, &pWindow)))
+		return E_FAIL;
+
+	m_pWindowQuest = dynamic_cast<CUI_WindowQuest*>(pWindow);
+	if (nullptr == m_pWindowQuest)
+		return E_FAIL;
+
+	Safe_AddRef(m_pWindowQuest);
+
+
+	//////////////////////
+	// MainMenu UI 생성 //
+	//////////////////////
+	CGameObject* pMainBG = nullptr;
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = g_iWinSizeX;
+	UIDesc.fCY = g_iWinSizeY;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY * 0.5f;
+
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MainMenu_Background"), &UIDesc, &pMainBG)))
+		return E_FAIL;
+
+	m_pMainBG = dynamic_cast<CUI_MainMenu*>(pMainBG);
+	if (nullptr == m_pMainBG)
+		return E_FAIL;
+
+	Safe_AddRef(m_pMainBG);
+
+	////////////////
+	// LeftButton //
+	////////////////
+	m_MainMenuBtn.reserve(10);
+
+	CGameObject* pMainBtn = nullptr;
+	_float fBtnOffset = 85.f;
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 128.f * 0.6f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = 80.f;
+	UIDesc.fY = 285.f;
+
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MainMenu_Btn_Character"), &UIDesc, &pMainBtn)))
+		return E_FAIL;
+	m_MainMenuBtn.push_back(dynamic_cast<CUI_MainMenu*>(pMainBtn));
+	if (nullptr == pMainBtn)
+		return E_FAIL;
+	Safe_AddRef(pMainBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pMainBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MainMenu_Btn_Equipment"), &UIDesc, &pMainBtn)))
+		return E_FAIL;
+	m_MainMenuBtn.push_back(dynamic_cast<CUI_MainMenu*>(pMainBtn));
+	if (nullptr == pMainBtn)
+		return E_FAIL;
+	Safe_AddRef(pMainBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pMainBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MainMenu_Btn_Imajinn"), &UIDesc, &pMainBtn)))
+		return E_FAIL;
+	m_MainMenuBtn.push_back(dynamic_cast<CUI_MainMenu*>(pMainBtn));
+	if (nullptr == pMainBtn)
+		return E_FAIL;
+	Safe_AddRef(pMainBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pMainBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MainMenu_Btn_Record"), &UIDesc, &pMainBtn)))
+		return E_FAIL;
+	m_MainMenuBtn.push_back(dynamic_cast<CUI_MainMenu*>(pMainBtn));
+	if (nullptr == pMainBtn)
+		return E_FAIL;
+	Safe_AddRef(pMainBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pMainBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MainMenu_Btn_Growth"), &UIDesc, &pMainBtn)))
+		return E_FAIL;
+	m_MainMenuBtn.push_back(dynamic_cast<CUI_MainMenu*>(pMainBtn));
+	if (nullptr == pMainBtn)
+		return E_FAIL;
+	Safe_AddRef(pMainBtn);
+
+	/////////////////
+	// RightButton //
+	/////////////////
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 128.f * 0.6f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = g_iWinSizeX - 80.f;
+	UIDesc.fY = 285.f;
+
+	pMainBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MainMenu_Btn_Community"), &UIDesc, &pMainBtn)))
+		return E_FAIL;
+	m_MainMenuBtn.push_back(dynamic_cast<CUI_MainMenu*>(pMainBtn));
+	if (nullptr == pMainBtn)
+		return E_FAIL;
+	Safe_AddRef(pMainBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pMainBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MainMenu_Btn_Dungeon"), &UIDesc, &pMainBtn)))
+		return E_FAIL;
+	m_MainMenuBtn.push_back(dynamic_cast<CUI_MainMenu*>(pMainBtn));
+	if (nullptr == pMainBtn)
+		return E_FAIL;
+	Safe_AddRef(pMainBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pMainBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MainMenu_Btn_Challenge"), &UIDesc, &pMainBtn)))
+		return E_FAIL;
+	m_MainMenuBtn.push_back(dynamic_cast<CUI_MainMenu*>(pMainBtn));
+	if (nullptr == pMainBtn)
+		return E_FAIL;
+	Safe_AddRef(pMainBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pMainBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MainMenu_Btn_Battle"), &UIDesc, &pMainBtn)))
+		return E_FAIL;
+	m_MainMenuBtn.push_back(dynamic_cast<CUI_MainMenu*>(pMainBtn));
+	if (nullptr == pMainBtn)
+		return E_FAIL;
+	Safe_AddRef(pMainBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pMainBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MainMenu_Btn_Shop"), &UIDesc, &pMainBtn)))
+		return E_FAIL;
+	m_MainMenuBtn.push_back(dynamic_cast<CUI_MainMenu*>(pMainBtn));
+	if (nullptr == pMainBtn)
+		return E_FAIL;
+	Safe_AddRef(pMainBtn);
+
+	// 닫기 버튼
+	pButton = nullptr;
+	fOffset = 10.f;
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 64.f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = g_iWinSizeX - (UIDesc.fCX * 0.5f) - fOffset;
+	UIDesc.fY = UIDesc.fCY * 0.5f + fOffset;
+
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Common_Btn_Close"), &UIDesc, &pButton)))
+		return E_FAIL;
+
+	m_pBtnClose = dynamic_cast<CUI_BtnClose*>(pButton);
+	if (nullptr == m_pBtnClose)
+		return E_FAIL;
+	Safe_AddRef(m_pBtnClose);
+
+	// SubMenu Character Tab Buttons 생성
+	m_SubMenuChar.reserve(8);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 128.f * 0.68f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = 230.f;
+	UIDesc.fY = 245.f;
+
+	CGameObject* pSubBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SubMenu_Btn_Character_Rank"), &UIDesc, &pSubBtn)))
+		return E_FAIL;
+	m_SubMenuChar.push_back(dynamic_cast<CUI_SubMenu_Character*>(pSubBtn));
+	if (nullptr == pSubBtn)
+		return E_FAIL;
+	Safe_AddRef(pSubBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pSubBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SubMenu_Btn_Character_Skill"), &UIDesc, &pSubBtn)))
+		return E_FAIL;
+	m_SubMenuChar.push_back(dynamic_cast<CUI_SubMenu_Character*>(pSubBtn));
+	if (nullptr == pSubBtn)
+		return E_FAIL;
+	Safe_AddRef(pSubBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pSubBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SubMenu_Btn_Character_Vehicle"), &UIDesc, &pSubBtn)))
+		return E_FAIL;
+	m_SubMenuChar.push_back(dynamic_cast<CUI_SubMenu_Character*>(pSubBtn));
+	if (nullptr == pSubBtn)
+		return E_FAIL;
+	Safe_AddRef(pSubBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pSubBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SubMenu_Btn_Character_Costume"), &UIDesc, &pSubBtn)))
+		return E_FAIL;
+	m_SubMenuChar.push_back(dynamic_cast<CUI_SubMenu_Character*>(pSubBtn));
+	if (nullptr == pSubBtn)
+		return E_FAIL;
+	Safe_AddRef(pSubBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pSubBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SubMenu_Btn_Character_Deck"), &UIDesc, &pSubBtn)))
+		return E_FAIL;
+	m_SubMenuChar.push_back(dynamic_cast<CUI_SubMenu_Character*>(pSubBtn));
+	if (nullptr == pSubBtn)
+		return E_FAIL;
+	Safe_AddRef(pSubBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pSubBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SubMenu_Btn_Character_Title"), &UIDesc, &pSubBtn)))
+		return E_FAIL;
+	m_SubMenuChar.push_back(dynamic_cast<CUI_SubMenu_Character*>(pSubBtn));
+	if (nullptr == pSubBtn)
+		return E_FAIL;
+	Safe_AddRef(pSubBtn);
+
+	// 두번째 열
+	UIDesc.fX = 320.f;
+	UIDesc.fY = 245.f + (fBtnOffset * 2.f);
+	pSubBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SubMenu_Btn_Character_Style"), &UIDesc, &pSubBtn)))
+		return E_FAIL;
+	m_SubMenuChar.push_back(dynamic_cast<CUI_SubMenu_Character*>(pSubBtn));
+	if (nullptr == pSubBtn)
+		return E_FAIL;
+	Safe_AddRef(pSubBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pSubBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SubMenu_Btn_Character_Battle"), &UIDesc, &pSubBtn)))
+		return E_FAIL;
+	m_SubMenuChar.push_back(dynamic_cast<CUI_SubMenu_Character*>(pSubBtn));
+	if (nullptr == pSubBtn)
+		return E_FAIL;
+	Safe_AddRef(pSubBtn);
 
 
 	// MapText 생성
@@ -731,6 +991,142 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 		}
 	}
 
+	// MainGame Btn과 BG가 활성화가 되면, 기본 세팅 UI들은 비활성화 되어야한다.
+//	if (m_pMainBG->Get_Active())
+//	{
+//		OnOff_GamePlaySetting(false);
+//	}
+	// else로 조건을 주지 않는다. -> 꼬일 확률 높음
+	// X버튼을 통해서 true로 전환하도록 한다.
+
+	// TestCiode
+	if (KEY_TAP(KEY::Q))
+	{
+		if (m_pWindowQuest->Get_Active())
+			m_pWindowQuest->Set_Active(false);
+		else
+			m_pWindowQuest->Set_Active(true);
+	}
+
+	if (KEY_TAP(KEY::L))
+	{
+		if (m_LevelUp[CUI_LevelUp::UILEVELUP_FRAME]->Get_Active())
+		{
+			for (auto& pUI : m_LevelUp)
+				pUI->Set_Active(false);
+		}
+		else
+		{
+			for (auto& pUI : m_LevelUp)
+				pUI->Set_Active(true);
+		}
+	}
+
+	return S_OK;
+}
+
+HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
+{
+	if (bOnOff) // On
+	{
+		m_pPlayerStatus->Set_Active(true);
+		m_pBtnShowMenu->Set_Active(true);
+		m_pBtnCamera->Set_Active(true);
+		m_pBtnInven->Set_Active(true);
+		m_pBtnQuest->Set_Active(true);
+	}
+	else // Off
+	{
+		m_pPlayerStatus->Set_Active(false);
+		m_pBtnShowMenu->Set_Active(false);
+		m_pBtnCamera->Set_Active(false);
+		m_pBtnInven->Set_Active(false);
+		m_pBtnQuest->Set_Active(false);
+	}
+
+	return S_OK;
+}
+
+HRESULT CUI_Manager::OnOff_MainMenu(_bool bOnOff)
+{
+	if (nullptr == m_pMainBG)
+		return E_FAIL;
+
+	if (bOnOff) // On
+	{
+		m_pMainBG->Set_Active(true);
+		for (auto& pUI : m_MainMenuBtn)
+		{
+			if (nullptr != pUI)
+				pUI->Set_Active(true);
+		}
+	}
+	else // Off
+	{
+		m_pMainBG->Set_Active(false);
+		for (auto& pUI : m_MainMenuBtn)
+		{
+			if (nullptr != pUI)
+				pUI->Set_Active(false);
+		}
+	}
+
+	return S_OK;
+}
+
+HRESULT CUI_Manager::OnOff_QuestWindow(_bool bOnOff)
+{
+	if (nullptr == m_pWindowQuest)
+		return E_FAIL;
+
+	if (bOnOff) // On
+	{
+		m_pWindowQuest->Set_Active(true);
+	}
+	else // Off
+	{
+		m_pWindowQuest->Set_Active(false);
+	}
+
+	return S_OK;
+}
+
+HRESULT CUI_Manager::OnOff_CloseButton(_bool bOnOff)
+{
+	if (nullptr == m_pBtnClose)
+		return E_FAIL;
+
+	if (bOnOff)
+	{
+		m_pBtnClose->Set_Active(true);
+	}
+	else
+	{
+		m_pBtnClose->Set_Active(false);
+	}
+
+	return S_OK;
+}
+
+HRESULT CUI_Manager::OnOff_SubMenu(_bool bOnOff, _uint iMagicNum)
+{
+	if (0 > iMagicNum || 9 < iMagicNum)
+		return E_FAIL;
+
+	if (bOnOff) // true -> On
+	{
+		switch (iMagicNum)
+		{
+		case 0: // 캐릭터창을 선택했다.
+			for (auto& iter : m_SubMenuChar)
+			{
+				if (nullptr != iter)
+					iter->Set_Active(true);
+			}
+			break;
+		}
+	}
+
 	return S_OK;
 }
 
@@ -749,6 +1145,14 @@ void CUI_Manager::Load_UIData()
 HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 {
 	// Static Prototypes
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_Background"),
+		CUI_Loading_Background::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_CharacterUI"),
+		CUI_Loading_Character::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Fade_Black"),
 		CUI_Fade::Create(m_pDevice, m_pContext, CUI_Fade::UI_VEIL::VEIL_BLACK), LAYER_UI)))
 		return E_FAIL;
@@ -803,6 +1207,113 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Button_ShowQuest"),
 		CUI_BtnQuickQuest::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Window_Quest"),
+		CUI_WindowQuest::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Btn_AcceptQuest"),
+		CUI_BtnAccept::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Quest_Text_Accept"),
+		CUI_Basic::Create(m_pDevice, m_pContext, L"UI_Quest_Text_Accept", CUI_Basic::UI_BASIC::UIQUEST_ACCEPT), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Quest_Text_Finish"),
+		CUI_Basic::Create(m_pDevice, m_pContext, L"UI_Quest_Text_Finish", CUI_Basic::UI_BASIC::UIQUEST_FINISH), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_MainMenu_Background"),
+		CUI_MainMenu::Create(m_pDevice, m_pContext, L"UI_MainMenu_Background", CUI_MainMenu::UI_MAINMENU_TYPE::MAINMENU_BG), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_MainMenu_Btn_Character"),
+		CUI_MainMenu::Create(m_pDevice, m_pContext, L"UI_MainMenu_Btn_Character",
+			CUI_MainMenu::UI_MAINMENU_TYPE::MAINBTN_CHARACTER), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_MainMenu_Btn_Equipment"),
+		CUI_MainMenu::Create(m_pDevice, m_pContext, L"UI_MainMenu_Btn_Equipment",
+			CUI_MainMenu::UI_MAINMENU_TYPE::MAINBTN_EQUIPMENT), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_MainMenu_Btn_Imajinn"),
+		CUI_MainMenu::Create(m_pDevice, m_pContext, L"UI_MainMenu_Btn_Imajinn",
+			CUI_MainMenu::UI_MAINMENU_TYPE::MAINBTN_IMAJINN), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_MainMenu_Btn_Record"),
+		CUI_MainMenu::Create(m_pDevice, m_pContext, L"UI_MainMenu_Btn_Record",
+			CUI_MainMenu::UI_MAINMENU_TYPE::MAINBTN_RECORD), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_MainMenu_Btn_Growth"),
+		CUI_MainMenu::Create(m_pDevice, m_pContext, L"UI_MainMenu_Btn_Growth",
+			CUI_MainMenu::UI_MAINMENU_TYPE::MAINBTN_GROWTH), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_MainMenu_Btn_Community"),
+		CUI_MainMenu::Create(m_pDevice, m_pContext, L"UI_MainMenu_Btn_Community",
+			CUI_MainMenu::UI_MAINMENU_TYPE::MAINBTN_COMMUNITY), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_MainMenu_Btn_Dungeon"),
+		CUI_MainMenu::Create(m_pDevice, m_pContext, L"UI_MainMenu_Btn_Dungeon",
+			CUI_MainMenu::UI_MAINMENU_TYPE::MAINBTN_DUNGEON), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_MainMenu_Btn_Challenge"),
+		CUI_MainMenu::Create(m_pDevice, m_pContext, L"UI_MainMenu_Btn_Challenge",
+			CUI_MainMenu::UI_MAINMENU_TYPE::MAINBTN_CHALLENGE), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_MainMenu_Btn_Battle"),
+		CUI_MainMenu::Create(m_pDevice, m_pContext, L"UI_MainMenu_Btn_Battle",
+			CUI_MainMenu::UI_MAINMENU_TYPE::MAINBTN_BATTLE), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_MainMenu_Btn_Shop"),
+		CUI_MainMenu::Create(m_pDevice, m_pContext, L"UI_MainMenu_Btn_Shop",
+			CUI_MainMenu::UI_MAINMENU_TYPE::MAINBTN_SHOP), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Common_Btn_Close"),
+		CUI_BtnClose::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SubMenu_Btn_Character_Rank"),
+		CUI_SubMenu_Character::Create(m_pDevice, m_pContext, L"UI_SubMenu_Btn_Character_Rank",
+			CUI_SubMenu_Character::UI_SUBCHARACTER_TYPE::CHARBTN_RANK), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SubMenu_Btn_Character_Skill"),
+		CUI_SubMenu_Character::Create(m_pDevice, m_pContext, L"UI_SubMenu_Btn_Character_Skill",
+			CUI_SubMenu_Character::UI_SUBCHARACTER_TYPE::CHARBTN_SKILL), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SubMenu_Btn_Character_Vehicle"),
+		CUI_SubMenu_Character::Create(m_pDevice, m_pContext, L"UI_SubMenu_Btn_Character_Vehicle",
+			CUI_SubMenu_Character::UI_SUBCHARACTER_TYPE::CHARBTN_VEHICLE), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SubMenu_Btn_Character_Costume"),
+		CUI_SubMenu_Character::Create(m_pDevice, m_pContext, L"UI_SubMenu_Btn_Character_Costume",
+			CUI_SubMenu_Character::UI_SUBCHARACTER_TYPE::CHARBTN_COSTUME), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SubMenu_Btn_Character_Deck"),
+		CUI_SubMenu_Character::Create(m_pDevice, m_pContext, L"UI_SubMenu_Btn_Character_Deck",
+			CUI_SubMenu_Character::UI_SUBCHARACTER_TYPE::CHARBTN_DECK), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SubMenu_Btn_Character_Title"),
+		CUI_SubMenu_Character::Create(m_pDevice, m_pContext, L"UI_SubMenu_Btn_Character_Title",
+			CUI_SubMenu_Character::UI_SUBCHARACTER_TYPE::CHARBTN_TITLE), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SubMenu_Btn_Character_Style"),
+		CUI_SubMenu_Character::Create(m_pDevice, m_pContext, L"UI_SubMenu_Btn_Character_Style",
+			CUI_SubMenu_Character::UI_SUBCHARACTER_TYPE::CHARBTN_STYLE), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SubMenu_Btn_Character_Battle"),
+		CUI_SubMenu_Character::Create(m_pDevice, m_pContext, L"UI_SubMenu_Btn_Character_Battle",
+			CUI_SubMenu_Character::UI_SUBCHARACTER_TYPE::CHARBTN_BATTLE), LAYER_UI)))
 		return E_FAIL;
 
 	return S_OK;
@@ -956,31 +1467,37 @@ void CUI_Manager::Free()
 	Safe_Release(m_pBtnCamera);
 	Safe_Release(m_pBtnInven);
 	Safe_Release(m_pBtnQuest);
+	Safe_Release(m_pWindowQuest);
+	Safe_Release(m_pMainBG);
+	Safe_Release(m_pBtnClose);
 
 	for (auto& pBasic : m_Basic)
-		if (nullptr != pBasic)
-			Safe_Release(pBasic);
+		Safe_Release(pBasic);
 	m_Basic.clear();
 
 	for (auto& pButton : m_Buttons)
-		if (nullptr != pButton)
-			Safe_Release(pButton);
+		Safe_Release(pButton);
 	m_Buttons.clear();
 
 	for (auto& pUnclickedBtn : m_UnclickedPlayer)
-		if (nullptr != pUnclickedBtn)
-			Safe_Release(pUnclickedBtn);
+		Safe_Release(pUnclickedBtn);
 	m_UnclickedPlayer.clear();
 
 	for (auto& pClickedBtn : m_ClickedPlayer)
-		if(nullptr != pClickedBtn)
-			Safe_Release(pClickedBtn);
+		Safe_Release(pClickedBtn);
 	m_ClickedPlayer.clear();
 
 	for (auto& pLevelUp : m_LevelUp)
-		if (nullptr != pLevelUp)
-			Safe_Release(pLevelUp);
+		Safe_Release(pLevelUp);
 	m_LevelUp.clear();
+
+	for (auto& pMainBtn : m_MainMenuBtn)
+		Safe_Release(pMainBtn);
+	m_MainMenuBtn.clear();
+
+	for (auto& pCharBtn : m_SubMenuChar)
+		Safe_Release(pCharBtn);
+	m_SubMenuChar.clear();
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

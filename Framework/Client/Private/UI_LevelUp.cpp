@@ -19,11 +19,16 @@ void CUI_LevelUp::Set_Active(_bool bActive)
 	if (bActive)
 	{
 		m_bSetAlpha = false;
-		m_fTimeAcc = 0.f;
 		m_fAlpha = 0.1f;
-	}
 
-	m_bActive = bActive;
+		m_bActive = bActive;
+	}
+	else
+	{
+		m_bSetAlpha = true;
+
+		// 알파값이 줄어들다가 Active false로 전환된다.
+	}
 }
 
 HRESULT CUI_LevelUp::Initialize_Prototype()
@@ -54,20 +59,18 @@ void CUI_LevelUp::Tick(_float fTimeDelta)
 	{
 		if (m_bSetAlpha)
 		{
-			if (m_fTimeAcc > 1.f)
+		
+			if (m_fAlpha < 0.1f)
 			{
-				if (m_fAlpha < 0.1f)
-				{
-					m_bActive = false;
-					m_fAlpha = 0.f;
-				}
-				else
-					m_fAlpha -= fTimeDelta * 0.3f;
+				m_bActive = false;
+				m_fAlpha = 0.f;
 			}
+			else
+				m_fAlpha -= fTimeDelta * 2.f;
+		
 		}
 		else
 		{
-			// MapName이 활성화 되면
 			if (m_fTimeAcc > 0.1f) // 프레임을 돌린다.
 			{
 //				if (m_iTextureIndex < 6)

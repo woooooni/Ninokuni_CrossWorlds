@@ -2,6 +2,7 @@
 #include "UI_BtnShowMenu.h"
 #include "GameInstance.h"
 #include "Level_Loading.h"
+#include "UI_Manager.h"
 
 CUI_BtnShowMenu::CUI_BtnShowMenu(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_BtnShowMenu")
@@ -75,9 +76,15 @@ void CUI_BtnShowMenu::On_MouseEnter(_float fTimeDelta)
 
 void CUI_BtnShowMenu::On_Mouse(_float fTimeDelta)
 {
-	if (KEY_TAP(KEY::LBTN))
+	if (m_bActive)
 	{
-		// UIManager에 기본으로 Scene에 생성되는 UI들이 자연스럽게 사라지고 등장할 수 있는 함수를 생성한다.
+		if (KEY_TAP(KEY::LBTN))
+		{
+			// UIManager에 기본으로 Scene에 생성되는 UI들이 자연스럽게 사라지고 등장할 수 있는 함수를 생성한다.
+			CUI_Manager::GetInstance()->OnOff_MainMenu(true);
+			CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
+			CUI_Manager::GetInstance()->OnOff_CloseButton(true);
+		}
 	}
 }
 
