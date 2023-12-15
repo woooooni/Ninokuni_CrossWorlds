@@ -141,8 +141,6 @@ void CCharacter::LateTick(_float fTimeDelta)
 
 HRESULT CCharacter::Render()
 {
-	__super::Render();
-
 	if (nullptr == m_pModelCom || nullptr == m_pShaderCom)
 		return E_FAIL;
 

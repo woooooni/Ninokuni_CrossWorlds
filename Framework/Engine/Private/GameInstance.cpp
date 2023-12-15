@@ -123,8 +123,8 @@ void CGameInstance::Tick(_float fTimeDelta)
 
 void CGameInstance::LateTick(_float fTimeDelta)
 {
-	m_pPhysXManager->LateTick(fTimeDelta);
 	m_pObject_Manager->LateTick(fTimeDelta);
+	m_pPhysXManager->LateTick(fTimeDelta);
 	m_pCollision_Manager->LateTick(fTimeDelta);
 	m_pLevel_Manager->LateTick(fTimeDelta);
 }

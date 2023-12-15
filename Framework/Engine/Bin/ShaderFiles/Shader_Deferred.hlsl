@@ -241,7 +241,7 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 		discard;
 
 	// Å÷ ½¦ÀÌµù
-	vector		vToonShade = g_ShadeTarget.Sample(LinearSampler, In.vTexcoord);
+	// vector		vToonShade = g_ShadeTarget.Sample(LinearSampler, In.vTexcoord);
 	//vToonShade = saturate(vToonShade);
 	//vToonShade = ceil(vToonShade * 2.f) / 2.f;
 	
@@ -249,7 +249,7 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 	// ºû ¿¬»ê ¸ÔÀÌ±â
 	/*vector		vSpecular = g_SpecularTarget.Sample(LinearSampler, In.vTexcoord);*/
 
-	vDiffuse = vDiffuse * vToonShade;
+	// vDiffuse = vDiffuse * vToonShade;
 	Out.vColor = vDiffuse;
 
 
@@ -302,15 +302,11 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 	vector vShadowColor = vector(fShadowColor, fShadowColor, fShadowColor, 1.f);
 	Out.vColor *= vShadowColor;
 
-
-	
-
-
-
+	if (0.f >= Out.vColor.a)
+		discard;
 	// ¾È°³
-	float fFogFactor = saturate(((g_vFogStartEnd.y - (fViewZ)) / (g_vFogStartEnd.y - g_vFogStartEnd.x)));
-	Out.vColor = fFogFactor * Out.vColor + (1.f - fFogFactor) * g_vFogColor;
-	
+	/*float fFogFactor = saturate(((g_vFogStartEnd.y - (fViewZ)) / (g_vFogStartEnd.y - g_vFogStartEnd.x)));
+	Out.vColor = fFogFactor * Out.vColor + (1.f - fFogFactor) * g_vFogColor;*/
 
 	return Out;
 }
@@ -399,18 +395,20 @@ PS_OUT PS_MAIN_FINAL(PS_IN In)
 {
 	PS_OUT Out = (PS_OUT)0;
 
-	vector vOriginEffectColor = g_OriginEffectTarget.Sample(PointSampler, In.vTexcoord);
+	/*vector vOriginEffectColor = g_OriginEffectTarget.Sample(PointSampler, In.vTexcoord);
 	vector vOriginBloomColor = g_OriginBloomTarget.Sample(PointSampler, In.vTexcoord);
 	vector vBlurBloomColor = g_BlurBloomTarget.Sample(PointSampler, In.vTexcoord);
-	vector vBlurEffectColor = g_BlurEffectTarget.Sample(PointSampler, In.vTexcoord);
+	vector vBlurEffectColor = g_BlurEffectTarget.Sample(PointSampler, In.vTexcoord);*/
 
 
 	Out.vColor = g_DiffuseTarget.Sample(LinearSampler, In.vTexcoord);
-	Out.vColor += vOriginEffectColor;
+	/*Out.vColor += vOriginEffectColor;
 	Out.vColor += vOriginBloomColor;
 	Out.vColor += vBlurBloomColor;
-	Out.vColor += vBlurEffectColor;
+	Out.vColor += vBlurEffectColor;*/
 	// Out.vColor += g_UITarget.Sample(LinearSampler, In.vTexcoord);
+	if (Out.vColor.a <= 0.f)
+		discard;
 
 	return Out;
 }

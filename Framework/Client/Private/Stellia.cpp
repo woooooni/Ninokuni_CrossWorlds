@@ -22,6 +22,9 @@ HRESULT CStellia::Initialize_Prototype()
 
 HRESULT CStellia::Initialize(void* pArg)
 {
+	if (FAILED(__super::Initialize(pArg)))
+		return E_FAIL;
+
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
@@ -32,8 +35,8 @@ HRESULT CStellia::Initialize(void* pArg)
 		return E_FAIL;
 
 
-	m_pModelCom->Set_Animation(GI->RandomInt(0, 10));
-
+	m_pModelCom->Set_Animation(GI->RandomInt(0, 100));
+	m_pRigidBodyCom->Set_Use_Gravity(false);
 
 
 	return S_OK;
@@ -44,8 +47,7 @@ void CStellia::Tick(_float fTimeDelta)
 	// << : Test 
 	if (KEY_TAP(KEY::INSERT))
 	{
-		_uint iCurAnimIndex = m_pModelCom->Get_CurrAnimationIndex();
-		m_pModelCom->Set_Animation(iCurAnimIndex + 1);
+		m_pModelCom->Set_Animation(GI->RandomInt(0, 100));
 	}
 	else if (KEY_TAP(KEY::DEL))
 	{
@@ -116,34 +118,9 @@ HRESULT CStellia::Ready_Components()
 		return E_FAIL;
 
 	CRigidBody::RIGID_BODY_DESC RigidDesc;
-	RigidDesc.pNavigation = m_pNavigationCom;
 	RigidDesc.pTransform = m_pTransformCom;
 
 
-	RigidDesc.PhysXDesc.vOffsetPos = { 0.f, 0.f, 0.f };
-	RigidDesc.PhysXDesc.vExtents = { 5.f, 5.f, 10.f };
-	
-	RigidDesc.PhysXDesc.eColliderType = PHYSX_COLLIDER_TYPE::BOX;
-	RigidDesc.PhysXDesc.eRigidType = PHYSX_RIGID_TYPE::DYNAMIC;
-
-	RigidDesc.PhysXDesc.bLockAngle_X = true;
-	RigidDesc.PhysXDesc.bLockAngle_Y = false;
-	RigidDesc.PhysXDesc.bLockAngle_Z = true;
-
-	RigidDesc.PhysXDesc.bKinematic = false;
-	RigidDesc.PhysXDesc.fAngularDamping = 30.f;
-	RigidDesc.PhysXDesc.fDensity = 1.f;
-
-
-	RigidDesc.PhysXDesc.fStaticFriction = 0.f;
-	RigidDesc.PhysXDesc.fDynamicFriction = 1.f;
-	RigidDesc.PhysXDesc.fRestitution = 0.f;
-
-	RigidDesc.PhysXDesc.fMaxVelocity = 10.f;
-	RigidDesc.PhysXDesc.pGameObject = this;
-	RigidDesc.PhysXDesc.bKinematic = true;
-
-	/* For. Com_RigidBody*/
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_RigidBody"), TEXT("Com_RigidBody"), (CComponent**)&m_pRigidBodyCom, &RigidDesc)))
 		return E_FAIL;
 
@@ -162,6 +139,59 @@ HRESULT CStellia::Ready_States()
 
 HRESULT CStellia::Ready_Colliders()
 {
+	//CCollider_Sphere::SPHERE_COLLIDER_DESC ColliderDesc;
+	//ZeroMemory(&ColliderDesc, sizeof ColliderDesc);
+
+	//BoundingSphere tSphere;
+	//ZeroMemory(&tSphere, sizeof(BoundingSphere));
+	//tSphere.Radius = 1.f;
+	//ColliderDesc.tSphere = tSphere;
+
+	//ColliderDesc.pOwner = this;
+	//ColliderDesc.pNode = nullptr;
+	//ColliderDesc.pOwnerTransform = m_pTransformCom;
+	//ColliderDesc.ModePivotMatrix = m_pModelCom->Get_PivotMatrix();
+	//ColliderDesc.vOffsetPosition = Vec3(0.f, 1.f, 0.f);
+	//ColliderDesc.bLockAngle_X = false;
+	//ColliderDesc.bLockAngle_Y = false;
+	//ColliderDesc.bLockAngle_Z = false;
+
+	//ColliderDesc.fAngularDamping = 0.f;
+	//ColliderDesc.fDensity = 1.f;
+
+	//if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BODY, &ColliderDesc)))
+	//	return E_FAIL;
+
+
+	CCollider_OBB::OBB_COLLIDER_DESC OBBDesc;
+	ZeroMemory(&OBBDesc, sizeof OBBDesc);
+
+	BoundingOrientedBox OBBBox;
+	ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
+
+	XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYawFromVector(XMVectorSet(0.f, 0.f, 0.f, 1.f)));
+	OBBBox.Extents = { 500.f, 200.f, 500.f };
+	
+	OBBDesc.tBox = OBBBox;  
+
+	OBBDesc.pOwner = this;
+	OBBDesc.pNode = nullptr;
+	OBBDesc.pOwnerTransform = m_pTransformCom;
+	OBBDesc.ModePivotMatrix = m_pModelCom->Get_PivotMatrix();
+	OBBDesc.vOffsetPosition = Vec3(0.f, 250.f, 0.f);
+	OBBDesc.bLockAngle_X = true;
+	OBBDesc.bLockAngle_Y = true;
+	OBBDesc.bLockAngle_Z = true;
+
+	OBBDesc.fAngularDamping = 0.f;
+	OBBDesc.fDensity = 1.f;
+
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::BODY, &OBBDesc)))
+		return E_FAIL;
+
+	
+
+
 	return S_OK;
 }
 

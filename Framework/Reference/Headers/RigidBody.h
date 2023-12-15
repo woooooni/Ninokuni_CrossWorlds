@@ -10,9 +10,7 @@ class ENGINE_DLL CRigidBody : public CComponent
 public:
     typedef struct tagRigidBodyDesc
     {
-        PHYSX_INIT_DESC PhysXDesc = {};
         class CTransform* pTransform = nullptr;
-        class CNavigation* pNavigation = nullptr;
     } RIGID_BODY_DESC;
 
 private:
@@ -25,57 +23,39 @@ public:
     virtual HRESULT Initialize_Prototype();
     virtual HRESULT Initialize(void* pArg);
 
-#ifdef _DEBUG
-    virtual HRESULT Render() override;
-#endif
-
 public:
     void Update_RigidBody(_float fTimeDelta);
 
 public:
-    void Set_PhysXBody(PxRigidDynamic* pDynamicBody) { m_pXBody = pDynamicBody; }
-
-    void Set_Sleep(_bool bSleep);
-    _bool Is_Sleep();
-
-public:
-    void Add_Force(_vector vDir, _float fForce, _bool bClear);
     void Add_Velocity(_vector vDir, _float fForce, _bool bClear);
 
-    void Set_Velocity(_float3 vVelocity);
-    _float3 Get_Velocity();
+    void Set_Velocity(_float3 vVelocity) { m_vVelocity = vVelocity; }
+    _float3 Get_Velocity() { return m_vVelocity; }
 
+public:
+    _bool Is_Use_Gravity() { return m_bUseGravity; }
+    void Set_Use_Gravity(_bool bGravity) { m_bUseGravity = bGravity; }
+
+    _bool Is_Ground() { return m_bGround; }
+    void Set_Ground(_bool bGround) { m_bGround = bGround; }
+
+public:
+    _float Get_FrictionScale() { return m_fFrictionScale; }
+    void Set_FrictionScale(_float fFrictionScale) { m_fFrictionScale = fFrictionScale; }
+
+private:
+    void Update_Gravity(_float fTimeDelta);
+    void Update_Velocity(_float fTimeDelta);
     
-
-#ifdef _DEBUG
-protected:
-    PrimitiveBatch<VertexPositionColor>* m_pBatch = nullptr;
-    BasicEffect* m_pEffect = nullptr;
-    ID3D11InputLayout* m_pInputLayout = nullptr;
-    _bool m_bCollision = false;
-
-
-private:
-    BoundingOrientedBox* m_pOBB = nullptr;
-    BoundingOrientedBox* m_pOriginal_OBB = nullptr;
-    BoundingSphere* m_pSphere = nullptr;
-    BoundingSphere* m_pOriginal_Sphere = nullptr;
-
-
-#endif
-
-private:
-    _bool m_bFirst = false;
-    PHYSX_COLLIDER_TYPE m_eColliderType = PHYSX_COLLIDER_TYPE::COLLIDER_TYPE_END;
-    PHYSX_RIGID_TYPE m_eRigidType = PHYSX_RIGID_TYPE::RIGID_TYPE_END;
 
 private:
     class CTransform* m_pTransformCom = nullptr;
-    class CNavigation* m_pNavigationCom = nullptr;
-    class PxRigidDynamic* m_pXBody = nullptr;
 
-
-
+private:
+    _bool m_bUseGravity = true;
+    _bool m_bGround = true;
+    Vec3 m_vVelocity = {};
+    _float m_fFrictionScale = 1.f;
 
 public:
     static CRigidBody* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

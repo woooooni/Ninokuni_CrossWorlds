@@ -94,6 +94,9 @@ PS_OUT PS_SKY(PS_IN In)
 	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
 	Out.vDepth = vector(1.f, 1.f, 0.f, 0.f);
 
+	if (0.f == Out.vDiffuse.a)
+		discard;
+
 	return Out;
 
 }
@@ -127,7 +130,7 @@ PS_OUT_SHADOW_DEPTH PS_SHADOW_DEPTH(PS_IN In)
 
 
 	vector vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);;
-	if (vColor.a <= 0.3f)
+	if (vColor.a <= 0.f)
 		discard;
 
 

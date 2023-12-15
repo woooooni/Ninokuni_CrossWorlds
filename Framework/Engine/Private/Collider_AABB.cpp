@@ -20,7 +20,8 @@ CCollider_AABB::CCollider_AABB(CCollider_AABB& rhs)
 
 HRESULT CCollider_AABB::Initialize_Prototype()
 {
-
+	if(FAILED(__super::Initialize_Prototype()))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -35,7 +36,22 @@ HRESULT CCollider_AABB::Initialize(void* pArg)
 
 
 	AABB_COLLIDER_DESC* pDesc = static_cast<AABB_COLLIDER_DESC*>(pArg);
+	m_vOffsetPosition = pDesc->vOffsetPosition;
 	m_tBoundingBox = pDesc->tBox;
+
+	PHYSX_INIT_DESC InitDesc;
+	InitDesc.eColliderType = PHYSX_COLLIDER_TYPE::BOX;
+	InitDesc.eRigidType = PHYSX_RIGID_TYPE::DYNAMIC;
+	InitDesc.vOffsetPosition = pDesc->vOffsetPosition;
+	InitDesc.vExtents = pDesc->tBox.Extents;
+	InitDesc.bKinematic = true;
+	InitDesc.pGameObject = pDesc->pOwner;
+
+	m_pPhysXActor = GI->Add_Dynamic_Actor(InitDesc);
+	if (nullptr == m_pPhysXActor)
+		return E_FAIL;
+
+	m_pPhysXActor->userData = this;
 
 	return S_OK;
 }

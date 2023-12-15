@@ -56,7 +56,7 @@ PS_OUT PS_MAIN(PS_IN In)
 
 	Out.vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
 
-	if (0.2f >= Out.vColor.a)
+	if (0.f >= Out.vColor.a)
 		discard;
 
 	return Out;	
@@ -67,7 +67,7 @@ PS_OUT PS_OPACTITY(PS_IN In)
 	PS_OUT		Out = (PS_OUT)0;
 
 	Out.vColor = g_AlphaTexture.Sample(LinearSampler, In.vTexUV);
-	if (Out.vColor.a == 0.f)
+	if (0.f >= Out.vColor.a)
 		discard;
 
 	return Out;
@@ -84,6 +84,9 @@ PS_OUT PS_REVERSE_OPACTITY(PS_IN In)
 
 	Out.vColor = vector(vAlphaColor.rgb, 1.f - vAlphaColor.r);
 
+	if (0.f >= Out.vColor.a)
+		discard;
+
 	return Out;
 }
 
@@ -97,6 +100,9 @@ PS_OUT PS_USING_ALPHA_VALUE(PS_IN In)
 
 	vTextureColor.a = g_fAlpha;
 	Out.vColor = vTextureColor;
+
+	if (0.f >= Out.vColor.a)
+		discard;
 
 	return Out;
 	

@@ -132,6 +132,8 @@ HRESULT CUI_Basic::Render()
 			return S_OK;
 		}
 	}
+
+	return S_OK;
 }
 
 HRESULT CUI_Basic::Ready_Components()

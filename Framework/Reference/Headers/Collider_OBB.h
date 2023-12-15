@@ -30,7 +30,7 @@ public:
     virtual void Collision_Continue(CCollider* pCollider) override;
     virtual void Collision_Exit(CCollider* pCollider) override;
 
-    virtual _vector Get_Position() override { return XMLoadFloat3(&m_tBoundingBox.Center); }
+    virtual _vector Get_Position() override { return XMLoadFloat3(&m_tOBB.Center); }
 
 
 
@@ -43,12 +43,12 @@ public:
 
 public:
     void Set_OBB_Box(BoundingOrientedBox& tBoundingBox) { m_tOriginOBB = tBoundingBox; }
-    const BoundingOrientedBox& Get_OBB_Box() { return m_tBoundingBox; }
+    const BoundingOrientedBox& Get_OBB_Box() { return m_tOBB; }
 
 
 private:
     BoundingOrientedBox m_tOriginOBB = {};
-    BoundingOrientedBox m_tBoundingBox = {};
+    BoundingOrientedBox m_tOBB = {};
 
 public:
     static CCollider_OBB* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

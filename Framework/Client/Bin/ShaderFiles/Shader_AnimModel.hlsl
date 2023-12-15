@@ -198,7 +198,7 @@ PS_OUT PS_MAIN(PS_IN In)
 	vector vRimColor = g_vRimColor * fRimPower;
 	Out.vDiffuse += vRimColor;
 
-	if (0 == Out.vDiffuse.a)
+	if (0.f == Out.vDiffuse.a)
 		discard;
 
 	return Out;
@@ -231,7 +231,7 @@ PS_OUT PS_MAIN_NORMAL(PS_IN In)
 	vector vRimColor = g_vRimColor * fRimPower;
 	Out.vDiffuse += vRimColor;
 
-	if (0 == Out.vDiffuse.a)
+	if (0.f == Out.vDiffuse.a)
 		discard;
 
 	return Out;
