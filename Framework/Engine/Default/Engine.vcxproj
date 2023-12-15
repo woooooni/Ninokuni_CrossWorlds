@@ -196,6 +196,7 @@ call Copy.bat</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Bin\ShaderFiles\Engine_Shader_Defines.hpp" />
     <ClInclude Include="..\Public\Animation.h" />
     <ClInclude Include="..\Public\BehaviorTree.h" />
     <ClInclude Include="..\Public\BTNode.h" />

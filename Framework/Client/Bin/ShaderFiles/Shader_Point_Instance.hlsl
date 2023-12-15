@@ -9,12 +9,19 @@ vector			g_vCamPosition;
 
 struct EffectDesc //16 배수로 나눠떨어져야함.
 {
-	float2  g_fUVIndex;
-	float2  g_fMaxCount;
+	float2   g_fUVIndex;
+	float2   g_fMaxCount;
 
-	float4 g_fColor;
+	float4   g_fColor;
+
+	vector   g_vAxis;
+
+	bool     g_bBillboard; //4
+	float    g_fAngle;
+	float    g_fTemp0;
+	float    g_fTemp1;
 };
-EffectDesc g_EffectDesc[1000];
+EffectDesc g_EffectDesc[1000]; // 8096
 
 struct VS_IN
 {
@@ -75,16 +82,32 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> OutStream)
 {
 	GS_OUT		Out[4];
 
+	// 회전 행렬 생성
+	float3 vRight;
+	float3 vUp;
+	if (g_EffectDesc[In[0].iInstanceID].g_bBillboard)
+	{
+		vector		vLook = g_vCamPosition - In[0].vPosition;
 
-	/* 받아온 정점을 기준으로하여 사각형을 구성하기위한 정점 여섯개를 만들거야. */
-	vector		vLook = g_vCamPosition - In[0].vPosition;
+		vRight = normalize(cross(float3(0.f, 1.f, 0.f), vLook.xyz)) * In[0].vPSize.x * 0.5f;
+		vUp    = normalize(cross(vLook.xyz, vRight.xyz)) * In[0].vPSize.y * 0.5f;
+	}
+	else
+	{
+		float4 fAxis = g_EffectDesc[In[0].iInstanceID].g_vAxis;
+		float fAngle = radians(g_EffectDesc[In[0].iInstanceID].g_fAngle);
 
-	float3		vRight = normalize(cross(float3(0.f, 1.f, 0.f), vLook.xyz)) * In[0].vPSize.x * 0.5f;
-	float3		vUp = normalize(cross(vLook.xyz, vRight.xyz)) * In[0].vPSize.y * 0.5f;
+		float3x3 RotationMatrix = float3x3(
+			fAxis.x * fAxis.x * (1.0 - cos(fAngle)) + cos(fAngle), fAxis.x * fAxis.y * (1.0 - cos(fAngle)) + fAxis.z * sin(fAngle), fAxis.x * fAxis.z * (1.0 - cos(fAngle)) - fAxis.y * sin(fAngle),
+			fAxis.x * fAxis.y * (1.0 - cos(fAngle)) - fAxis.z * sin(fAngle), fAxis.y * fAxis.y * (1.0 - cos(fAngle)) + cos(fAngle), fAxis.y * fAxis.z * (1.0 - cos(fAngle)) + fAxis.x * sin(fAngle),
+			fAxis.x * fAxis.z * (1.0 - cos(fAngle)) + fAxis.y * sin(fAngle), fAxis.y * fAxis.z * (1.0 - cos(fAngle)) - fAxis.x * sin(fAngle), fAxis.z * fAxis.z * (1.0 - cos(fAngle)) + cos(fAngle));
 
-	matrix		matVP;
+		vRight = mul(float4(float3(1.0f, 0.0f, 0.0f), 0), RotationMatrix).xyz;
+		vUp    = mul(float4(float3(0.0f, 1.0f, 0.0f), 0), RotationMatrix).xyz;
+	}
 
-	matVP = mul(g_ViewMatrix, g_ProjMatrix);
+
+	matrix matVP = mul(g_ViewMatrix, g_ProjMatrix);
 
 	Out[0].vPosition = vector(In[0].vPosition.xyz + vRight + vUp, 1.f);
 	Out[0].vPosition = mul(Out[0].vPosition, matVP);
@@ -220,7 +243,7 @@ technique11 DefaultTechnique
 {
 	pass Particle
 	{
-		SetRasterizerState(RS_Default);
+		SetRasterizerState(RS_NoneCull);
 		SetDepthStencilState(DSS_Default, 0);
 		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
 
