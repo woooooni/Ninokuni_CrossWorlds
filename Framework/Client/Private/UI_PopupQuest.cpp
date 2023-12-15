@@ -1,19 +1,19 @@
 #include "stdafx.h"
-#include "UI_BtnQuickQuest.h"
+#include "UI_PopupQuest.h"
 #include "GameInstance.h"
 #include "Level_Loading.h"
 
-CUI_BtnQuickQuest::CUI_BtnQuickQuest(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	: CUI(pDevice, pContext, L"UI_BtnQuickQuest")
+CUI_PopupQuest::CUI_PopupQuest(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+	: CUI(pDevice, pContext, L"UI_PopupQuest")
 {
 }
 
-CUI_BtnQuickQuest::CUI_BtnQuickQuest(const CUI_BtnQuickQuest& rhs)
+CUI_PopupQuest::CUI_PopupQuest(const CUI_PopupQuest& rhs)
 	: CUI(rhs)
 {
 }
 
-HRESULT CUI_BtnQuickQuest::Initialize_Prototype()
+HRESULT CUI_PopupQuest::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
@@ -21,7 +21,7 @@ HRESULT CUI_BtnQuickQuest::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CUI_BtnQuickQuest::Initialize(void* pArg)
+HRESULT CUI_PopupQuest::Initialize(void* pArg)
 {
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
@@ -39,7 +39,7 @@ HRESULT CUI_BtnQuickQuest::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CUI_BtnQuickQuest::Tick(_float fTimeDelta)
+void CUI_PopupQuest::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
@@ -48,7 +48,7 @@ void CUI_BtnQuickQuest::Tick(_float fTimeDelta)
 	}
 }
 
-void CUI_BtnQuickQuest::LateTick(_float fTimeDelta)
+void CUI_PopupQuest::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
@@ -56,7 +56,7 @@ void CUI_BtnQuickQuest::LateTick(_float fTimeDelta)
 	}
 }
 
-HRESULT CUI_BtnQuickQuest::Render()
+HRESULT CUI_PopupQuest::Render()
 {
 	if (m_bActive)
 	{
@@ -71,33 +71,33 @@ HRESULT CUI_BtnQuickQuest::Render()
 	return S_OK;
 }
 
-void CUI_BtnQuickQuest::On_MouseEnter(_float fTimeDelta)
+void CUI_PopupQuest::On_MouseEnter(_float fTimeDelta)
 {
 }
 
-void CUI_BtnQuickQuest::On_Mouse(_float fTimeDelta)
+void CUI_PopupQuest::On_Mouse(_float fTimeDelta)
 {
 	Key_Input(fTimeDelta);
 }
 
-void CUI_BtnQuickQuest::On_MouseExit(_float fTimeDelta)
+void CUI_PopupQuest::On_MouseExit(_float fTimeDelta)
 {
 }
 
-HRESULT CUI_BtnQuickQuest::Ready_Components()
+HRESULT CUI_PopupQuest::Ready_Components()
 {
 	
 	if (FAILED(__super::Ready_Components()))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_ShowQuest"),
-		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
-		return E_FAIL;
+//	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_ShowQuest"),
+//		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+//		return E_FAIL;
 	
 	return S_OK;
 }
 
-HRESULT CUI_BtnQuickQuest::Ready_State()
+HRESULT CUI_PopupQuest::Ready_State()
 {
 	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
@@ -106,7 +106,7 @@ HRESULT CUI_BtnQuickQuest::Ready_State()
 	return S_OK;
 }
 
-HRESULT CUI_BtnQuickQuest::Bind_ShaderResources()
+HRESULT CUI_PopupQuest::Bind_ShaderResources()
 {
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
 		return E_FAIL;
@@ -126,7 +126,7 @@ HRESULT CUI_BtnQuickQuest::Bind_ShaderResources()
 	return S_OK;
 }
 
-void CUI_BtnQuickQuest::Key_Input(_float fTimeDelta)
+void CUI_PopupQuest::Key_Input(_float fTimeDelta)
 {
 	if (KEY_TAP(KEY::LBTN))
 	{
@@ -141,33 +141,33 @@ void CUI_BtnQuickQuest::Key_Input(_float fTimeDelta)
 	}
 }
 
-CUI_BtnQuickQuest* CUI_BtnQuickQuest::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CUI_PopupQuest* CUI_PopupQuest::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-	CUI_BtnQuickQuest* pInstance = new CUI_BtnQuickQuest(pDevice, pContext);
+	CUI_PopupQuest* pInstance = new CUI_PopupQuest(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX("Failed To Create : CUI_BtnQuickQuest");
+		MSG_BOX("Failed To Create : CUI_PopupQuest");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CUI_BtnQuickQuest::Clone(void* pArg)
+CGameObject* CUI_PopupQuest::Clone(void* pArg)
 {
-	CUI_BtnQuickQuest* pInstance = new CUI_BtnQuickQuest(*this);
+	CUI_PopupQuest* pInstance = new CUI_PopupQuest(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Failed To Clone : CUI_BtnQuickQuest");
+		MSG_BOX("Failed To Clone : CUI_PopupQuest");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CUI_BtnQuickQuest::Free()
+void CUI_PopupQuest::Free()
 {
 	__super::Free();
 

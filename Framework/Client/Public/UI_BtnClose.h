@@ -3,12 +3,12 @@
 #include "UI.h"
 
 BEGIN(Client)
-class CUI_BtnShowMenu final : public CUI
+class CUI_BtnClose final : public CUI
 {
 protected:
-	CUI_BtnShowMenu(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CUI_BtnShowMenu(const CUI_BtnShowMenu& rhs);
-	virtual ~CUI_BtnShowMenu() = default;
+	CUI_BtnClose(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CUI_BtnClose(const CUI_BtnClose& rhs);
+	virtual ~CUI_BtnClose() = default;
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -23,9 +23,7 @@ public:
 	virtual void On_MouseExit(_float fTimeDelta) override;
 
 private:
-	_bool m_bHide = { false }; // 숨겨졌는가? -> 다른 창이 활성화 되었을때 사용할 예정
-
-	// 움직일 포지션 필요함.
+	_bool m_bHide = { false };
 
 private:
 	virtual HRESULT	Ready_Components() override;
@@ -33,9 +31,10 @@ private:
 private:
 	HRESULT	Ready_State();
 	HRESULT	Bind_ShaderResources();
+	void Key_Input(_float fTimeDelta);
 
 public:
-	static CUI_BtnShowMenu* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);
+	static CUI_BtnClose* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

@@ -267,10 +267,10 @@ HRESULT CLoader::Loading_For_Level_Tool()
 		return E_FAIL;
 		
 #pragma region Particle
-	 // 기본 파티클
-	 //if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Particle"),
-		// CParticle::Create(m_pDevice, m_pContext, TEXT("Particle_Basic"), nullptr, TEXT("../Bin/DataFiles/Particle/Snow.Particle")), LAYER_TYPE::LAYER_EFFECT)))
-		// return E_FAIL;
+	  //기본 파티클
+	 if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Particle"),
+		 CParticle::Create(m_pDevice, m_pContext, TEXT("Particle_Basic"), nullptr, TEXT("../Bin/DataFiles/Particle/Snow.Particle")), LAYER_TYPE::LAYER_EFFECT)))
+		 return E_FAIL;
 #pragma endregion
 
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");

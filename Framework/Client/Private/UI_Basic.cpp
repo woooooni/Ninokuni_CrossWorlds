@@ -13,6 +13,18 @@ CUI_Basic::CUI_Basic(const CUI_Basic& rhs)
 {
 }
 
+void CUI_Basic::Set_Active(_bool bActive)
+{
+	if (UIQUEST_ACCEPT == m_eType || UIQUEST_FINISH == m_eType)
+	{
+		m_bActive = bActive;
+	}
+	else
+	{
+		m_bActive = bActive;
+	}
+}
+
 HRESULT CUI_Basic::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
@@ -40,6 +52,11 @@ HRESULT CUI_Basic::Initialize(void* pArg)
 		m_bFade = true;
 	}
 
+	else if (UIQUEST_ACCEPT == m_eType || UIQUEST_FINISH == m_eType)
+	{
+		m_bActive = false;
+	}
+
 	return S_OK;
 }
 
@@ -48,47 +65,51 @@ void CUI_Basic::Tick(_float fTimeDelta)
 	if (UIBASIC_END == m_eType)
 		return;
 
-	if (m_bFade)
+	if (m_bActive)
 	{
-		if (m_bActive)
+		if (m_bFade)
 		{
 			Tick_FadeObject(fTimeDelta);
 		}
+		else
+		{
+			//if (CUI_Basic::UILOBBY_BTNTEXT == m_eType)
+			//{
+				//		m_tInfo.fCX = 188.f * 0.7f;
+				//		m_tInfo.fCY = 53.f * 0.7f;
+				//		m_tInfo.fX = g_iWinSizeX - m_tInfo.fCX * 0.5f - 115.f;
+				//		m_tInfo.fY = g_iWinSizeY - 70.f;
+				//
+				//		m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+				//		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+				//			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
+			//}
+		}
 	}
-	else
-	{
-		//if (CUI_Basic::UILOBBY_BTNTEXT == m_eType)
-		//{
-			//		m_tInfo.fCX = 188.f * 0.7f;
-			//		m_tInfo.fCY = 53.f * 0.7f;
-			//		m_tInfo.fX = g_iWinSizeX - m_tInfo.fCX * 0.5f - 115.f;
-			//		m_tInfo.fY = g_iWinSizeY - 70.f;
-			//
-			//		m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
-			//		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-			//			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
-		//}
 
-		__super::Tick(fTimeDelta);
-	}
+	__super::Tick(fTimeDelta);
 }
 
 void CUI_Basic::LateTick(_float fTimeDelta)
 {
-	if (m_bFade)
+	if (m_bActive)
 	{
-		if (m_bActive)
+		if (m_bFade)
+		{
 			LateTick_FadeObject(fTimeDelta);
+		}
+		else
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
-	else
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+
+	__super::LateTick(fTimeDelta);
 }
 
 HRESULT CUI_Basic::Render()
 {
-	if (m_bFade)
+	if (m_bActive)
 	{
-		if (m_bActive)
+		if (m_bFade)
 		{
 			if (FAILED(Bind_ShaderResources()))
 				return E_FAIL;
@@ -99,17 +120,17 @@ HRESULT CUI_Basic::Render()
 
 			return S_OK;
 		}
-	}
-	else
-	{
-		if (FAILED(Bind_ShaderResources()))
-			return E_FAIL;
+		else
+		{
+			if (FAILED(Bind_ShaderResources()))
+				return E_FAIL;
 
-		m_pShaderCom->Begin(1);
+			m_pShaderCom->Begin(1);
 
-		m_pVIBufferCom->Render();
+			m_pVIBufferCom->Render();
 
-		return S_OK;
+			return S_OK;
+		}
 	}
 }
 
@@ -165,6 +186,20 @@ HRESULT CUI_Basic::Ready_Components()
 
 	case UIMAPNAME_FOREST:
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MapName_WitchForest"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		m_fAlpha = 0.9f;
+		break;
+
+	case UIQUEST_ACCEPT:
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Text_QuestAccept"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		m_fAlpha = 0.9f;
+		break;
+
+	case UIQUEST_FINISH:
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Text_QuestFinish"),
 			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 			return E_FAIL;
 		m_fAlpha = 0.9f;
