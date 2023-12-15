@@ -47,17 +47,13 @@ HRESULT CLevel_Tool::Initialize()
 	if (FAILED(Ready_Layer_UI(LAYER_TYPE::LAYER_UI)))
 		return E_FAIL;
 
-
-
-
-
-
 	return S_OK;
 }
 
 HRESULT CLevel_Tool::Tick(_float fTimeDelta)
 {
 	m_pImGuiManager->Tick(fTimeDelta);
+
 	return S_OK;
 }
 

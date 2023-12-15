@@ -74,12 +74,12 @@ using namespace DirectX;
 #include "Engine_Struct.h"
 #include "Engine_Function.h"
 
-
-
-
-
 using namespace std;
 using namespace Engine;
+
+
+
+
 
 #ifdef _DEBUG
 

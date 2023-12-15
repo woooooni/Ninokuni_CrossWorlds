@@ -54,6 +54,12 @@ HRESULT CDummy::Ready_Components()
 void CDummy::Tick(_float fTimeDelta)
 {
 	Input(fTimeDelta);
+
+	// << : Test 
+
+	const _uint iSocketIndex = 64;
+
+	// >> 
 }
 
 void CDummy::LateTick(_float fTimeDelta)
@@ -63,10 +69,6 @@ void CDummy::LateTick(_float fTimeDelta)
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 
-	/*if(m_pModelCom->Get_ModelType() == CModel::TYPE::TYPE_ANIM)
-		m_pModelCom->Play_Animation(m_pTransformCom, fTimeDelta);*/
-
-	// << : VTF
 	if (CModel::TYPE::TYPE_ANIM == m_pModelCom->Get_ModelType())
 		m_pModelCom->LateTick(fTimeDelta);
 }
@@ -182,8 +184,7 @@ void CDummy::Free()
 	Safe_Release(m_pAnimShaderCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pTransformCom);
-	Safe_Release(m_pModelCom);
-		
+	// Safe_Release(m_pModelCom);
 }
 
 

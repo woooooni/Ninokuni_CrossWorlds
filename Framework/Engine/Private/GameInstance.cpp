@@ -507,6 +507,11 @@ HRESULT CGameInstance::Export_Model_Data_FromPath(_uint eType, wstring strFolder
 	return m_pModel_Manager->Export_Model_Data_FromPath(eType, strFolderPath);
 }
 
+vector<ANIM_TRANSFORM_CACHE> CGameInstance::Create_AnimationSocketTransform(CModel* pModel, const _uint& iSocketBoneIndex)
+{
+	return m_pModel_Manager->Create_AnimationSocketTransform(pModel, iSocketBoneIndex);
+}
+
 HRESULT CGameInstance::Add_Fonts(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strFontTag, const wstring& strFontFilePath)
 {
 	return m_pFont_Manager->Add_Fonts(pDevice, pContext, strFontTag, strFontFilePath);

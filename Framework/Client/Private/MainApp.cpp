@@ -54,6 +54,7 @@ HRESULT CMainApp::Initialize()
 	CUI_Manager::GetInstance()->Ready_Cursor();
 	ShowCursor(false);
 
+
 	return S_OK;
 }
 
