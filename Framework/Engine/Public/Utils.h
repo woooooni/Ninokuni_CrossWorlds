@@ -15,15 +15,13 @@ public:
 	static _int Random_Int(_int fMin, _int fMax);
 	static _float Random_Float(_float fMin, _float fMax);
 
-
-
 	static bool StartsWith(string str, string comp);
 	static bool StartsWith(wstring str, wstring comp);
 
 	static void Replace(OUT string& str, string comp, string rep);
 	static void Replace(OUT wstring& str, wstring comp, wstring rep);
 
-
+	
 
 };
 

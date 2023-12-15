@@ -68,7 +68,7 @@ HRESULT CPhysX_Body::Initialize(void* pArg)
 		return E_FAIL;
 
 #ifdef _DEBUG
-	XMStoreFloat3(&m_vStartPosition, XMLoadFloat3(&pDesc->PhysXDesc.vOffsetPosition) + m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+	XMStoreFloat3(&m_vStartPosition, XMLoadFloat3(&pDesc->PhysXDesc.vStartPosition) + m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 
 	m_pOriginal_OBB = new BoundingOrientedBox(m_vStartPosition, _float3(pDesc->PhysXDesc.vExtents.x * 0.5f,
 		pDesc->PhysXDesc.vExtents.y * 0.5f,

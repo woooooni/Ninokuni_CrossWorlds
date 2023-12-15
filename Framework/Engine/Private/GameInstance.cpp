@@ -14,6 +14,7 @@
 #include "Frustum.h"
 #include "PhysX_Manager.h"
 #include "Utils.h"
+#include "JsonUtils.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -562,15 +563,15 @@ HRESULT CGameInstance::Add_Ground(CGameObject* pGroundObj)
 	return m_pPhysXManager->Add_Ground(pGroundObj);
 }
 
-HRESULT CGameInstance::Remove_Actor(_uint iObjectID, PHYSX_RIGID_TYPE eRigidType)
+HRESULT CGameInstance::Remove_Actor(class CGameObject* pGameObject, PxActor* pPhysXActor)
 {
-	return m_pPhysXManager->Remove_Actor(iObjectID, eRigidType);
+	return m_pPhysXManager->Remove_Actor(pGameObject, pPhysXActor);
 }
 
-HRESULT CGameInstance::Convert_Transform(CGameObject* pObj, PxTransform& PxTransform)
-{
-	return m_pPhysXManager->Convert_Transform(pObj, PxTransform);
-}
+//HRESULT CGameInstance::Convert_Transform(CGameObject* pObj, PxTransform& PxTransform)
+//{
+//	return m_pPhysXManager->Convert_Transform(pObj, PxTransform);
+//}
 
 
 
@@ -578,6 +579,7 @@ PxMaterial* CGameInstance::Create_PxMaterial(_float fStaticFriction, _float fDyn
 {
 	return m_pPhysXManager->Create_Material(fStaticFriction, fDynamicFriction, fRestitution);
 }
+
 
 wstring CGameInstance::To_Wstring(const string& str)
 {
@@ -597,6 +599,16 @@ _float CGameInstance::RandomFloat(_float fMin, _float fMax)
 _int CGameInstance::RandomInt(_int iMin, _int iMax)
 {
 	return	CUtils::Random_Int(iMin, iMax);
+}
+
+Json CGameInstance::Json_Load(const wstring& strFilePath)
+{
+	return CJsonUtils::Json_Load(strFilePath);
+}
+
+HRESULT CGameInstance::Json_Save(const wstring& strFilePath, const Json& refJsonFile)
+{
+	return CJsonUtils::Json_Save(strFilePath, refJsonFile);
 }
 
 void CGameInstance::Play_Sound(TCHAR* pSoundKey, CHANNELID eID, _float fVolume, _bool bStop)

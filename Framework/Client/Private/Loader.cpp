@@ -9,6 +9,7 @@
 
 #include "Dummy.h"
 #include "Terrain.h"
+#include "Cloth_Terrain.h"
 #include "BackGround.h"
 #include "MapHeaderGroup.h"
 
@@ -205,6 +206,9 @@ HRESULT CLoader::Loading_For_Level_Test()
 		return E_FAIL;
 	
 	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_CharacterDummy", CCharacter_Dummy::Create(m_pDevice, m_pContext, L"Dummy_Character", CCharacter::CHARACTER_TYPE::WITCH), LAYER_CHARACTER)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Cloth_Terrain", CCloth_Terrain::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_TERRAIN)))
 		return E_FAIL;
 
 

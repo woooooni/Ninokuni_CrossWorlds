@@ -22,7 +22,11 @@
 
 #include "PxPhysics.h"
 #include "PxPhysicsAPI.h"
+#include "PxParticleExt.h"
+#include "PxParticleClothCooker.h"
+#include "cudamanager\PxCudaContext.h"
 using namespace physx;
+using namespace physx::ExtGpu;
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
@@ -43,6 +47,10 @@ using namespace physx;
 #include <Assimp/scene.h>
 #include <Assimp/Importer.hpp>
 #include <Assimp/postprocess.h>
+
+
+#include <nlohmann/json.hpp>
+using Json = nlohmann::json;
 
 #define DIRECTINPUT_VERSION 0x0800
 #include <mutex>
