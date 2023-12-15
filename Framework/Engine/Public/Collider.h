@@ -97,6 +97,9 @@ public:
 #ifdef _DEBUG
     HRESULT Render() override;
 #endif
+
+protected:
+    void Compute_Final_Matrix();
     
 protected:
     static _uint g_iNextID;

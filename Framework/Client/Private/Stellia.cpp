@@ -170,7 +170,7 @@ HRESULT CStellia::Ready_Colliders()
 	ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
 
 	XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYawFromVector(XMVectorSet(0.f, 0.f, 0.f, 1.f)));
-	OBBBox.Extents = { 10000.f, 200.f, 10000.f };
+	OBBBox.Extents = { 500.f, 200.f, 500.f };
 	
 	OBBDesc.tBox = OBBBox;  
 

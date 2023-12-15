@@ -22,7 +22,9 @@ CCollider::CCollider(CCollider& rhs)
 	, m_eColliderType(rhs.m_eColliderType)
 	, m_iColliderID(g_iNextID++)
 {
+#ifdef _DEBUG
 	Safe_AddRef(m_pInputLayout);
+#endif
 }
 
 HRESULT CCollider::Initialize_Prototype()
@@ -63,21 +65,7 @@ HRESULT CCollider::Initialize(void* pArg)
 
 void CCollider::LateTick_Collider(_float fTimeDelta)
 {
-	_matrix FinalMatrix;
-	_matrix OffsetMatrix = XMMatrixIdentity();
-
-	OffsetMatrix.r[CTransform::STATE_POSITION] = XMVectorSetW(XMLoadFloat3(&m_vOffsetPosition), 1.f);
-	
-
-	if (nullptr == m_pNode)
-		FinalMatrix = OffsetMatrix * XMLoadFloat4x4(&m_ModelPivotMatrix) * m_pOwnerTransformCom->Get_WorldMatrix();
-	else
-	{
-		FinalMatrix = OffsetMatrix * m_pNode->Get_CombinedTransformation() * XMLoadFloat4x4(&m_ModelPivotMatrix) * m_pOwnerTransformCom->Get_WorldMatrix();
-	}
-		
-
-	XMStoreFloat4x4(&m_FinalMatrix, FinalMatrix);
+	Compute_Final_Matrix();
 }
 
 #ifdef _DEBUG
@@ -85,7 +73,25 @@ HRESULT CCollider::Render()
 {
 	return S_OK;
 }
+
 #endif
+
+void CCollider::Compute_Final_Matrix()
+{
+	_matrix FinalMatrix;
+	_matrix OffsetMatrix = XMMatrixIdentity();
+
+	OffsetMatrix.r[CTransform::STATE_POSITION] = XMVectorSetW(XMLoadFloat3(&m_vOffsetPosition), 1.f);
+
+
+	if (nullptr == m_pNode)
+		FinalMatrix = OffsetMatrix * XMLoadFloat4x4(&m_ModelPivotMatrix) * m_pOwnerTransformCom->Get_WorldMatrix();
+	else
+		FinalMatrix = OffsetMatrix * m_pNode->Get_CombinedTransformation() * XMLoadFloat4x4(&m_ModelPivotMatrix) * m_pOwnerTransformCom->Get_WorldMatrix();
+
+
+	XMStoreFloat4x4(&m_FinalMatrix, FinalMatrix);
+}
 
 
 void CCollider::Collision_Enter(CCollider* pCollider)

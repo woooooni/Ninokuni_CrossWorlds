@@ -7,44 +7,22 @@
 #include "Collision_Manager.h"
 
 
-//PxFilterFlags FilterShader(
-//	PxFilterObjectAttributes attributes0, PxFilterData filterData0,
-//	PxFilterObjectAttributes attributes1, PxFilterData filterData1,
-//	PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize)
-//{
-//	// 1: 피직스
-//	// 2: 플레이어 OBB
-//	// 9: 머리카락
-//	// 10: 머리카락 컷 박스 
-//	
-//	if (
-//		// 플레이어 OBB와 피직스 물체 충돌 X
-//		(1 == filterData0.word0 && 2 == filterData1.word0)
-//		|| (2 == filterData0.word0 && 1 == filterData1.word0)
-//		|| (2 == filterData0.word0 && 10 == filterData1.word0)
-//		|| (10 == filterData0.word0 && 2 == filterData1.word0))
-//	{
-//		// 플레이어 박스 && 상자 박스
-//		// 피직스 호출 X
-//		// pairFlags = PxPairFlag::eCONTACT_DEFAULT;
-//		return PxFilterFlag::eDEFAULT;
-//	}
-//
-//	// 9 머리, 10 머리 컷 박스
-//	if (9 == filterData0.word0 || 10 == filterData1.word0 || 10 == filterData0.word0 || 9 == filterData1.word0)
-//	{
-//		if ((9 == filterData0.word0 && 10 == filterData1.word0) || (10 == filterData0.word0 && 9 == filterData1.word0)
-//			|| (9 == filterData0.word0 && 9 == filterData1.word0))
-//			pairFlags = PxPairFlag::eCONTACT_DEFAULT | PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
-//	}
-//	else
-//	{
-//		pairFlags = PxPairFlag::eCONTACT_DEFAULT | PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
-//	}
-//
-//
-//	return PxFilterFlag::eDEFAULT;
-//}
+physx::PxFilterFlags FilterShader(
+	physx::PxFilterObjectAttributes attributes0, physx::PxFilterData /*filterData0*/,
+	physx::PxFilterObjectAttributes attributes1, physx::PxFilterData /*filterData1*/,
+	physx::PxPairFlags& retPairFlags, const void* /*constantBlock*/, PxU32 /*constantBlockSize*/)
+{
+	
+	
+	retPairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
+	retPairFlags |= PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+	retPairFlags |= PxPairFlag::eNOTIFY_TOUCH_LOST;
+	if (PxFilterObjectIsKinematic(attributes0) && PxFilterObjectIsKinematic(attributes1))
+	{
+		retPairFlags |= PxPairFlag::eTRIGGER_DEFAULT;
+	}
+	return PxFilterFlag::eNOTIFY;
+}
 
 
 IMPLEMENT_SINGLETON(CPhysX_Manager)
@@ -76,8 +54,11 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 
 	
 	SceneDesc.cpuDispatcher = m_Dispatcher;
-	SceneDesc.filterShader = PxDefaultSimulationFilterShader;
+	SceneDesc.kineKineFilteringMode = PxPairFilteringMode::eKEEP;
+	SceneDesc.staticKineFilteringMode = PxPairFilteringMode::eKEEP;
+	SceneDesc.filterShader = FilterShader;
 	SceneDesc.simulationEventCallback = this;
+
 	m_pScene = m_Physics->createScene(SceneDesc);
 
 	
@@ -420,6 +401,7 @@ PxRigidDynamic* CPhysX_Manager::Create_Dynamic_Box(const PHYSX_INIT_DESC& Desc)
 	shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
 	//shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
 	//shape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
+	shape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
 
 	PxTransform pxTransform;
 	
@@ -1007,12 +989,11 @@ void CPhysX_Manager::onSleep(PxActor** actors, PxU32 count)
 
 void CPhysX_Manager::onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs)
 {
-	_uint i = 0;
 	if (nullptr == pairHeader.actors[0]->userData || nullptr == pairHeader.actors[1]->userData)
 		return;
 
 
-	CCollider* pLeftCollider = (CCollider*)pairHeader.actors[0]->userData;
+  	CCollider* pLeftCollider = (CCollider*)pairHeader.actors[0]->userData;
 	CCollider* pRightCollider = (CCollider*)pairHeader.actors[1]->userData;
 
 	if (pLeftCollider->Get_ColliderID() == pRightCollider->Get_ColliderID())
