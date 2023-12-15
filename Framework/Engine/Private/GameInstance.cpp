@@ -364,7 +364,7 @@ const LIGHTDESC* CGameInstance::Get_LightDesc(_uint iIndex)
 	return m_pLight_Manager->Get_LightDesc(iIndex);
 }
 
-const list<class CLight*>* CGameInstance::Get_LightList()
+list<class CLight*>* CGameInstance::Get_LightList()
 {
 	if (nullptr == m_pLight_Manager)
 		return nullptr;
