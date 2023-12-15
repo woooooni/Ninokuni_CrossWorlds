@@ -11,12 +11,14 @@
 
 CParticle::CParticle(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameObject(pDevice, pContext, strObjectTag, OBJ_TYPE::OBJ_PARTICLE)
+	, m_isCloned(false)
 {
 }
 
 CParticle::CParticle(const CParticle& rhs)
 	: CGameObject(rhs)
 	, m_tParticleDesc(rhs.m_tParticleDesc)
+	, m_isCloned(true)
 {
 }
 
@@ -28,9 +30,9 @@ void CParticle::Set_ParticleDesc(const PARTICLE_DESC& tDesc)
 	Set_Texture_Diffuse();
 	Set_Texture_Alpha();
 
-	// 버퍼 정보 셋팅
+	// 버퍼 재시작
 	if (m_pVIBufferCom != nullptr)
-		m_pVIBufferCom->Set_ParticleBufferDesc(*static_cast<CVIBuffer_Particle::PARTICLE_BUFFER_DESC*>(Get_ParticleBufferInfo()));
+		m_pVIBufferCom->Restart_ParticleBufferDesc();
 }
 
 HRESULT CParticle::Initialize_Prototype(const PARTICLE_DESC* pParticleDesc, const wstring& strParticleFilePath)
@@ -40,7 +42,7 @@ HRESULT CParticle::Initialize_Prototype(const PARTICLE_DESC* pParticleDesc, cons
 	else
 		Load_ParticleData(strParticleFilePath);
 
-	return S_OK;
+ 	return S_OK;
 }
 
 HRESULT CParticle::Initialize(void* pArg)
@@ -139,7 +141,7 @@ void CParticle::Load_ParticleData(const wstring& strFileName)
 	File->Open(strFileName, FileMode::Read);
 
 	// 반복 여부
-	File->Read<_bool>(m_tParticleDesc.bLoop);
+	File->Read<_bool>(m_tParticleDesc.bParticleLoop);
 
 	// 파티클 개수
 	File->Read<_uint>(m_tParticleDesc.iNumEffectCount);
@@ -148,18 +150,18 @@ void CParticle::Load_ParticleData(const wstring& strFileName)
 	File->Read<_float3>(m_tParticleDesc.fRange);
 
 	// 크기
-	File->Read<_bool>(m_tParticleDesc.bSameRate);
-	File->Read<_float2>(m_tParticleDesc.fScale);
+	File->Read<_bool>(m_tParticleDesc.bScaleSameRate);
+	File->Read<_float2>(m_tParticleDesc.fScaleStart);
 
 	// 지속 시간
 	File->Read<_float2>(m_tParticleDesc.fLifeTime);
 
 	// 속도
-	File->Read<_float2>(m_tParticleDesc.fSpeed);
+	File->Read<_float2>(m_tParticleDesc.fVelocitySpeed);
 
 	// 움직임
-	File->Read<_float3>(m_tParticleDesc.vVelocityMin);
-	File->Read<_float3>(m_tParticleDesc.vVelocityMax);
+	File->Read<_float3>(m_tParticleDesc.vVelocityMinStart);
+	File->Read<_float3>(m_tParticleDesc.vVelocityMaxStart);
 
 	// 박스 범위
 	File->Read<_bool>(m_tParticleDesc.bUseBox);
@@ -167,8 +169,8 @@ void CParticle::Load_ParticleData(const wstring& strFileName)
 	File->Read<_float3>(m_tParticleDesc.fBoxMax);
 
 	// 색상
-	File->Read<_bool>(m_tParticleDesc.bRandomColor);
-	File->Read<_float4>(m_tParticleDesc.vDiffuseColor);
+	File->Read<_bool>(m_tParticleDesc.bColorRandom);
+	File->Read<_float4>(m_tParticleDesc.vColor);
 
 	// 텍스처
 	File->Read<_bool>(m_tParticleDesc.bAnimation);
@@ -179,37 +181,90 @@ void CParticle::Load_ParticleData(const wstring& strFileName)
 	File->Read<_float2>(m_tParticleDesc.fAnimationSpeed);
 
 	m_tParticleDesc.strDiffuseTetextureName = CUtils::ToWString(File->Read<string>());
-	m_tParticleDesc.strAlphaTexturName = CUtils::ToWString(File->Read<string>());
+	m_tParticleDesc.strAlphaTexturName      = CUtils::ToWString(File->Read<string>());
 	m_tParticleDesc.strDiffuseTetexturePath = CUtils::ToWString(File->Read<string>());
-	m_tParticleDesc.strAlphaTexturPath = CUtils::ToWString(File->Read<string>());
+	m_tParticleDesc.strAlphaTexturPath      = CUtils::ToWString(File->Read<string>());
+
+	// 불값에 따른 동적할당
+	if (m_tParticleDesc.bVelocityChange)
+	{
+		m_tParticleDesc.pVelocityMin  = new _float3[m_tParticleDesc.iVelocityUse];
+		m_tParticleDesc.pVelocityMax  = new _float3[m_tParticleDesc.iVelocityUse];
+		m_tParticleDesc.pVelocityTime = new _float2[m_tParticleDesc.iVelocityUse];
+	}
 }
 
 void* CParticle::Get_ParticleBufferInfo()
 {
 	CVIBuffer_Particle::PARTICLE_BUFFER_DESC tBufferInfo = {};
 
-	tBufferInfo.bLoop     = m_tParticleDesc.bLoop;
-	tBufferInfo.bSameRate = m_tParticleDesc.bSameRate;
-	tBufferInfo.fScale = m_tParticleDesc.fScale;
-	tBufferInfo.fRange = m_tParticleDesc.fRange;
-	tBufferInfo.vVelocityMin = m_tParticleDesc.vVelocityMin;
-	tBufferInfo.vVelocityMax = m_tParticleDesc.vVelocityMax;
-	tBufferInfo.fSpeed    = m_tParticleDesc.fSpeed;
-	tBufferInfo.fLifeTime = m_tParticleDesc.fLifeTime;
-	tBufferInfo.bUseBox = m_tParticleDesc.bUseBox;
-	tBufferInfo.fBoxMin = m_tParticleDesc.fBoxMin;
-	tBufferInfo.fBoxMax = m_tParticleDesc.fBoxMax;
-	tBufferInfo.bRandomColor  = m_tParticleDesc.bRandomColor;
-	tBufferInfo.vDiffuseColor = m_tParticleDesc.vDiffuseColor;
-	tBufferInfo.bAnimation      = m_tParticleDesc.bAnimation;
-	tBufferInfo.bAnimationLoop  = m_tParticleDesc.bAnimationLoop;
-	tBufferInfo.fAnimationSpeed = m_tParticleDesc.fAnimationSpeed;
-	tBufferInfo.bRandomStartIndex    = m_tParticleDesc.bRandomStartIndex;
-	tBufferInfo.fUVIndex    = m_tParticleDesc.fUVIndex;
-	tBufferInfo.fUVMaxCount = m_tParticleDesc.fUVMaxCount;
+	tBufferInfo.pParticleLoop = &m_tParticleDesc.bParticleLoop;
 
-	//if (m_pDiffuseTextureCom != nullptr)
-	//	tBufferInfo.fDiffuseTextureIndexMax = (_float)m_pDiffuseTextureCom->Get_TextureCount();
+	tBufferInfo.pRange        = &m_tParticleDesc.fRange;
+
+	tBufferInfo.pScaleSameRate = &m_tParticleDesc.bScaleSameRate;
+	tBufferInfo.pScaleStart    = &m_tParticleDesc.fScaleStart;
+
+	tBufferInfo.pScaleChange       = &m_tParticleDesc.bScaleChange;
+	tBufferInfo.pScaleChangeRandom = &m_tParticleDesc.bScaleChangeRandom;
+	tBufferInfo.pScaleChangeTime   = &m_tParticleDesc.fScaleChangeTime;
+
+	tBufferInfo.pScaleAdd       = &m_tParticleDesc.bScaleAdd;
+	tBufferInfo.pScaleLoop      = &m_tParticleDesc.bScaleLoop;
+	tBufferInfo.pScaleLoopStart = &m_tParticleDesc.bScaleLoopStart;
+
+	tBufferInfo.pScaleMin       = &m_tParticleDesc.fScaleMin;
+	tBufferInfo.pScaleMax       = &m_tParticleDesc.fScaleMax;
+	tBufferInfo.pScaleSpeed     = &m_tParticleDesc.fScaleSpeed;
+
+
+	tBufferInfo.pVelocitySpeed = &m_tParticleDesc.fVelocitySpeed;
+
+	tBufferInfo.pVelocityMinStart = &m_tParticleDesc.vVelocityMinStart;
+	tBufferInfo.pVelocityMaxStart = &m_tParticleDesc.vVelocityMaxStart;
+
+	tBufferInfo.pVelocityChange       = &m_tParticleDesc.bVelocityChange;
+	tBufferInfo.pVelocityChangeRandom = &m_tParticleDesc.bVelocityChangeRandom;
+	tBufferInfo.pVelocityChangeTime   = &m_tParticleDesc.fVelocityChangeTime;
+
+	tBufferInfo.pVelocityLoop   = &m_tParticleDesc.bVelocityLoop;
+	tBufferInfo.pVelocityCountCur = &m_tParticleDesc.iVelocityCountCur;
+	tBufferInfo.pVelocityCountMax = &m_tParticleDesc.iVelocityCountMax;
+
+	tBufferInfo.pVelocityUse = &m_tParticleDesc.iVelocityUse;
+	tBufferInfo.pVelocityMin  = m_tParticleDesc.pVelocityMin;
+	tBufferInfo.pVelocityMax  = m_tParticleDesc.pVelocityMax;
+	tBufferInfo.pVelocityTime = m_tParticleDesc.pVelocityTime;
+
+
+	tBufferInfo.pBillboard   = &m_tParticleDesc.bBillboard;
+	tBufferInfo.pRandomAxis  = &m_tParticleDesc.bRandomAxis;
+	tBufferInfo.pAxis        = &m_tParticleDesc.vAxis;
+	tBufferInfo.pRandomAngle = &m_tParticleDesc.bRandomAngle;
+	tBufferInfo.pAngle       = &m_tParticleDesc.fAngle;
+	tBufferInfo.pRotationChange       = &m_tParticleDesc.bRotationChange;
+	tBufferInfo.pRotationChangeRandom = &m_tParticleDesc.bRotationChangeRandom;
+	tBufferInfo.pRotationChangeTime   = &m_tParticleDesc.fRotationChangeTime;
+	tBufferInfo.pRotationAdd   = &m_tParticleDesc.bRotationAdd;
+	tBufferInfo.pRotationSpeed = &m_tParticleDesc.fRotationSpeed;
+
+
+	tBufferInfo.pLifeTime = &m_tParticleDesc.fLifeTime;
+
+	tBufferInfo.pUseBox = &m_tParticleDesc.bUseBox;
+	tBufferInfo.pBoxMin = &m_tParticleDesc.fBoxMin;
+	tBufferInfo.pBoxMax = &m_tParticleDesc.fBoxMax;
+
+	tBufferInfo.pRandomStartIndex = &m_tParticleDesc.bRandomStartIndex;
+	tBufferInfo.pUVIndex    = &m_tParticleDesc.fUVIndex;
+	tBufferInfo.pUVMaxCount = &m_tParticleDesc.fUVMaxCount;
+
+	tBufferInfo.pAnimation      = &m_tParticleDesc.bAnimation;
+	tBufferInfo.pAnimationLoop  = &m_tParticleDesc.bAnimationLoop;
+	tBufferInfo.pAnimationSpeed = &m_tParticleDesc.fAnimationSpeed;
+
+	tBufferInfo.pRandomColor  = &m_tParticleDesc.bColorRandom;
+	tBufferInfo.pColor        = &m_tParticleDesc.vColor;
 
 	return &tBufferInfo;
 }
@@ -310,6 +365,18 @@ CGameObject* CParticle::Clone(void* pArg)
 void CParticle::Free()
 {
 	__super::Free();
+
+	if (!m_isCloned)
+	{
+		if(m_tParticleDesc.pVelocityMin != nullptr)
+			Safe_Delete_Array(m_tParticleDesc.pVelocityMin);
+
+		if (m_tParticleDesc.pVelocityMax != nullptr)
+			Safe_Delete_Array(m_tParticleDesc.pVelocityMax);
+
+		if (m_tParticleDesc.pVelocityTime != nullptr)
+			Safe_Delete_Array(m_tParticleDesc.pVelocityTime);
+	}
 
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);

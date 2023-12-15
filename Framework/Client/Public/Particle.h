@@ -22,69 +22,108 @@ public:
 	typedef struct tagParticleDesc
 	{	
 		// 반복 여부
-		_bool bLoop = true;
+		_bool bParticleLoop = true;
 
 		// 파티클 개수
-		_uint iNumEffectCount = 50; 
+		_uint iNumEffectCount = 5; 
 
-		// 분포 범위
+		// 위치 (분포 범위)
 		_float3 fRange = _float3(0.f, 0.f, 0.f);
 
-		// 크기
-		_bool   bSameRate = true; // 정비율
-		_float2 fScale    = _float2(1.f, 1.f);
+#pragma region 크기
+		_bool bScaleSameRate = true; // 정비율
+		_float2 fScaleStart  = _float2(5.f, 10.f);
 
-		// 지속시간
-		_float2	fLifeTime = _float2(1.f, 5.f);
+		_bool bScaleChange       = false;
+		_bool bScaleChangeRandom = false;
+		_float2 fScaleChangeTime = _float2(1.f, 5.f);
 
-		// 속도
-		_float2 fSpeed = _float2(5.f, 5.f);
+		_bool bScaleAdd       = false;
+		_bool bScaleLoop      = false;
+		_bool bScaleLoopStart = false;
 
-		// 움직임
-		_float3 vVelocityMin = _float3(-1.0f, -1.0f, -1.0f);
-		_float3 vVelocityMax = _float3(1.0f, 1.0f, 1.0f);
+		_float2 fScaleMin   = _float2(1.f, 1.f);
+		_float2 fScaleMax   = _float2(10.f, 10.f);
+		_float2 fScaleSpeed = _float2(1.f, 5.f);
+#pragma endregion
+
+#pragma region 이동
+		_float2 fVelocitySpeed = _float2(1.f, 1.f);
+
+		_float3 vVelocityMinStart = _float3(-1.0f, -1.0f, -1.0f);
+		_float3 vVelocityMaxStart = _float3(1.0f, 1.0f, 1.0f);
+
+		_bool bVelocityChange = false;
+		_bool bVelocityChangeRandom = false;
+		_float2 fVelocityChangeTime = _float2(1.f, 5.f);
+
+		_bool bVelocityLoop   = false;
+		_uint iVelocityCountCur = 0;
+		_uint iVelocityCountMax = 2;
+
+		_uint iVelocityUse     = 10;
+		_float3* pVelocityMin  = nullptr;
+		_float3* pVelocityMax  = nullptr;
+		_float2* pVelocityTime = nullptr;
+#pragma endregion
+
+#pragma region 회전
+		_bool bBillboard = false;
+
+		_bool bRandomAxis = false;
+		_vector vAxis = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+
+		_bool bRandomAngle = false;
+		_float fAngle = 0.f;
+
+
+		_bool bRotationChange  = false;
+
+		_bool bRotationChangeRandom = false;
+		_float2 fRotationChangeTime = _float2(1.f, 5.f);
+
+		_bool bRotationAdd = false;
+
+		_float2 fRotationSpeed = _float2(1.f, 5.f);
+#pragma endregion
+
+		// 지속 시간
+		_float2	fLifeTime = _float2(5.f, 10.f);
 
 		// 박스 범위
 		_bool   bUseBox = false;
 		_float3 fBoxMin;
 		_float3 fBoxMax;
 
-		// 색상
-		_bool   bRandomColor  = false;
-		_float4	vDiffuseColor = _float4(0.f, 0.f, 0.f, 0.f);
-
-		// 텍스처
-		_bool bAnimation        = true;
-		_bool bAnimationLoop    = true;
-		_bool bRandomStartIndex = true;
-		_float2 fUVIndex        = _float2(0.f, 0.f);
-		_float2 fUVMaxCount     = _float2(1.f, 1.f);
-		_float2 fAnimationSpeed = _float2(1.f, 1.f);
-
-		// 텍스처 이름
+#pragma region 텍스처
 		wstring strDiffuseTetextureName = L"";
-		wstring strAlphaTexturName      = L"";
 		wstring strDiffuseTetexturePath = L"";
+		wstring strAlphaTexturName      = L"";
 		wstring strAlphaTexturPath      = L"";
+		_bool bRandomStartIndex = true;
+		_float2 fUVIndex    = _float2(0.f, 0.f);
+		_float2 fUVMaxCount = _float2(1.f, 1.f);
+#pragma endregion
+
+#pragma region 애니메이션
+		_bool bAnimation        = false;
+		_bool bAnimationLoop    = false;
+		_float2 fAnimationSpeed = _float2(1.f, 1.f);
+#pragma endregion
 
 
-		// 기타
+#pragma region 색상
+		_float4	vColor     = _float4(0.f, 0.f, 0.f, 0.f);
+		_bool bColorRandom = false;
 
-		/*
-		// Start Delay / 방출 시작 지연 시간
+		_bool bColorChange = false;
+		_bool bColorLoop = false;
+		_uint iColorCountCur = 0;
+		_uint iColorCountMax = 1;
+		_float4* pColor     = nullptr;
+		_float2* pColorTime = nullptr;
+#pragma endregion
 
-		_float fDestAlphaSpeed = 0.f;
-		_float fBlurPower = 0.01f;
-
-		// RigidBody.
-		_bool		bRigidActive    = false;
-		_bool		bRandomForceDir = false;
-		
-		_bool		bRandomFriction = false;
-		_float		fFrictionScale = 20.f;
-		_float3		vForceDir = { 0.f, 1.f, 0.f };
-		_float		fForce = 1.f;
-		*/
 	} PARTICLE_DESC;
 
 protected:
@@ -106,6 +145,7 @@ public:
 	class CTransform* Get_TransformCom() { return m_pTransformCom; }
 
 private:
+	_bool m_isCloned = { false };
 	PARTICLE_DESC m_tParticleDesc;
 
 private:

@@ -81,7 +81,7 @@ void CTool_Particle::Tick(_float fTimeDelta)
 	if (ImGui::CollapsingHeader("ParticleSystem"))
 	{
 		// 반복 여부
-		ImGui::Checkbox("LoopParticles", &m_tParticleInfo.bLoop);
+		ImGui::Checkbox("LoopParticles", &m_tParticleInfo.bParticleLoop);
 		ImGui::NewLine();
 
 		// 파티클 개수
@@ -89,38 +89,234 @@ void CTool_Particle::Tick(_float fTimeDelta)
 		ImGui::InputInt("##MaxParticles", &(_int)m_tParticleInfo.iNumEffectCount);
 		ImGui::NewLine();
 
-		// 분포 범위
+		// 위치 (분포 범위)
 		ImGui::Text("RangeParticles");
 		ImGui::InputFloat3("##RangeParticles", m_fParticleRange);
 		ImGui::NewLine();
 
-		// 시작 크기
-		ImGui::Checkbox("SameRate", &m_tParticleInfo.bSameRate);
-		ImGui::Text("SizeParticles");
-		ImGui::InputFloat2("##SizeParticles", m_fParticleScale);
-		ImGui::NewLine();
-
-		// 지속 시간
-		if (ImGui::CollapsingHeader("ParticleTime"))
+		// 크기
+		if (ImGui::CollapsingHeader("ParticleScale"))
 		{
-			ImGui::Text("LifetimeParticles");
-			ImGui::InputFloat2("##LifetimeParticles", m_fParticleLifeTime);
+			ImGui::Checkbox("ScaleSameRate", &m_tParticleInfo.bScaleSameRate);
 			ImGui::NewLine();
+
+			ImGui::Text("ScaleStartParticles");
+			ImGui::InputFloat2("##ScaleStartParticles", m_fParticleScaleStart);
+			ImGui::NewLine();
+
+			ImGui::Checkbox("ScaleChange", &m_tParticleInfo.bScaleChange);
+			ImGui::NewLine();
+
+			if (m_tParticleInfo.bScaleChange)
+			{
+				ImGui::Checkbox("ScaleChangeRandom", &m_tParticleInfo.bScaleChangeRandom);
+				ImGui::NewLine();
+
+				if (m_tParticleInfo.bScaleChangeRandom)
+				{
+					ImGui::Text("ScaleChangeTimeParticles");
+					ImGui::InputFloat2("##ScaleChangeTimeParticles", m_fParticleScaleChangeTime);
+					ImGui::NewLine();
+				}
+				else
+				{
+					ImGui::Checkbox("ScaleAdd", &m_tParticleInfo.bScaleAdd);
+					ImGui::NewLine();
+
+					ImGui::Checkbox("ScaleLoop", &m_tParticleInfo.bScaleLoop);
+					ImGui::NewLine();
+
+					ImGui::Checkbox("ScaleLoopStart", &m_tParticleInfo.bScaleLoopStart);
+					ImGui::NewLine();
+
+					ImGui::Text("ScaleMinParticles");
+					ImGui::InputFloat2("##ScaleMinParticles", m_fParticleScaleMin);
+					ImGui::NewLine();
+
+					ImGui::Text("ScaleMaxParticles");
+					ImGui::InputFloat2("##ScaleMaxParticles", m_fParticleScaleMax);
+					ImGui::NewLine();
+				}
+
+				ImGui::Text("ScaleSpeedParticles");
+				ImGui::InputFloat2("##ScaleSpeedParticles", m_fParticleScaleSpeed);
+				ImGui::NewLine();
+			}
 		}
 
 		// 이동(힘)
 		if (ImGui::CollapsingHeader("ParticleVelocity"))
 		{
-			// 이동 속도
-			ImGui::Text("SpeedParticles");
-			ImGui::InputFloat2("##SpeedParticles", m_fParticleSpeed);
+			ImGui::Text("VelocitySpeed");
+			ImGui::InputFloat2("##VelocitySpeed", m_fParticleSpeed);
 			ImGui::NewLine();
 
-			// 움직임
 			ImGui::Text("VelocityMinParticles");
 			ImGui::InputFloat3("##VelocityMinParticles", m_fParticleVelocityMin);
 			ImGui::Text("VelocityMaxParticles");
 			ImGui::InputFloat3("##VelocityMaxParticles", m_fParticleVelocityMax);
+			ImGui::NewLine();
+
+			ImGui::Checkbox("VelocityChange", &m_tParticleInfo.bVelocityChange);
+			ImGui::NewLine();
+
+			if (m_tParticleInfo.bVelocityChange)
+			{
+				ImGui::Checkbox("VelocityChangeRandom", &m_tParticleInfo.bVelocityChangeRandom);
+				ImGui::NewLine();
+
+				if (m_tParticleInfo.bVelocityChangeRandom)
+				{
+					ImGui::Text("VelocityChangeTimeParticles");
+					ImGui::InputFloat2("##VelocityChangeTimeParticles", m_fParticleVelocityChangeTime);
+					ImGui::NewLine();
+				}
+				else
+				{
+					ImGui::Checkbox("VelocityLoop", &m_tParticleInfo.bVelocityLoop);
+					ImGui::NewLine();
+
+					ImGui::Text("VelocityCountCur");
+					ImGui::InputInt("##VelocityCountCur", &(_int)m_tParticleInfo.iVelocityCountCur);
+					ImGui::NewLine();
+
+					ImGui::Text("iVelocityCountMax");
+					if (ImGui::InputInt("##iVelocityCountMax", &(_int)m_tParticleInfo.iVelocityCountMax))
+					{
+						if (m_tParticleInfo.iVelocityCountMax == 1)
+							m_tParticleInfo.bVelocityChange = false;
+						else if (m_tParticleInfo.iVelocityCountMax > 10)
+							m_tParticleInfo.bVelocityChange = false;
+					}
+					ImGui::NewLine();
+
+					if (m_tParticleInfo.iVelocityCountMax > 1)
+					{
+						ImGui::Text("VelocityMinParticles_01");
+						ImGui::InputFloat3("##VelocityMinParticles_01", m_fParticleVelocityMin);
+
+						ImGui::Text("VelocityMaxParticles_01");
+						ImGui::InputFloat3("##VelocityMaxParticles_01", m_fParticleVelocityMax);
+
+						ImGui::Text("VelocityChangeTimeParticles_01");
+						ImGui::InputFloat2("##VelocityChangeTimeParticles_01", m_fParticleVelocityTime_01);
+
+
+						ImGui::Text("VelocityMinParticles_02");
+						ImGui::InputFloat3("##VelocityMinParticles_02", m_fParticleVelocityMin_02);
+
+						ImGui::Text("VelocityMaxParticles_02");
+						ImGui::InputFloat3("##VelocityMaxParticles_02", m_fParticleVelocityMax_02);
+
+						ImGui::Text("VelocityChangeTimeParticles_02");
+						ImGui::InputFloat2("##VelocityChangeTimeParticles_02", m_fParticleVelocityTime_02);
+					}
+
+					if (m_tParticleInfo.iVelocityCountMax > 2)
+					{
+						ImGui::Text("VelocityMinParticles_03");
+						ImGui::InputFloat3("##VelocityMinParticles_03", m_fParticleVelocityMin_03);
+
+						ImGui::Text("VelocityMaxParticles_03");
+						ImGui::InputFloat3("##VelocityMaxParticles_03", m_fParticleVelocityMax_03);
+
+						ImGui::Text("VelocityChangeTimeParticles_03");
+						ImGui::InputFloat2("##VelocityChangeTimeParticles_03", m_fParticleVelocityTime_03);
+					}
+
+					if (m_tParticleInfo.iVelocityCountMax > 3)
+					{
+						ImGui::Text("VelocityMinParticles_04");
+						ImGui::InputFloat3("##VelocityMinParticles_04", m_fParticleVelocityMin_04);
+
+						ImGui::Text("VelocityMaxParticles_04");
+						ImGui::InputFloat3("##VelocityMaxParticles_04", m_fParticleVelocityMax_04);
+
+						ImGui::Text("VelocityChangeTimeParticles_04");
+						ImGui::InputFloat2("##VelocityChangeTimeParticles_04", m_fParticleVelocityTime_04);
+					}
+
+					if (m_tParticleInfo.iVelocityCountMax > 4)
+					{
+						ImGui::Text("VelocityMinParticles_05");
+						ImGui::InputFloat3("##VelocityMinParticles_05", m_fParticleVelocityMin_05);
+
+						ImGui::Text("VelocityMaxParticles_05");
+						ImGui::InputFloat3("##VelocityMaxParticles_05", m_fParticleVelocityMax_05);
+
+						ImGui::Text("VelocityChangeTimeParticles_05");
+						ImGui::InputFloat2("##VelocityChangeTimeParticles_05", m_fParticleVelocityTime_05);
+					}
+
+					if (m_tParticleInfo.iVelocityCountMax > 5)
+					{
+						ImGui::Text("VelocityMinParticles_06");
+						ImGui::InputFloat3("##VelocityMinParticles_06", m_fParticleVelocityMin_06);
+
+						ImGui::Text("VelocityMaxParticles_06");
+						ImGui::InputFloat3("##VelocityMaxParticles_06", m_fParticleVelocityMax_06);
+
+						ImGui::Text("VelocityChangeTimeParticles_06");
+						ImGui::InputFloat2("##VelocityChangeTimeParticles_06", m_fParticleVelocityTime_06);
+					}
+
+					if (m_tParticleInfo.iVelocityCountMax > 6)
+					{
+						ImGui::Text("VelocityMinParticles_07");
+						ImGui::InputFloat3("##VelocityMinParticles_07", m_fParticleVelocityMin_07);
+
+						ImGui::Text("VelocityMaxParticles_07");
+						ImGui::InputFloat3("##VelocityMaxParticles_07", m_fParticleVelocityMax_07);
+
+						ImGui::Text("VelocityChangeTimeParticles_07");
+						ImGui::InputFloat2("##VelocityChangeTimeParticles_07", m_fParticleVelocityTime_07);
+					}
+
+					if (m_tParticleInfo.iVelocityCountMax > 7)
+					{
+						ImGui::Text("VelocityMinParticles_08");
+						ImGui::InputFloat3("##VelocityMinParticles_08", m_fParticleVelocityMin_08);
+
+						ImGui::Text("VelocityMaxParticles_08");
+						ImGui::InputFloat3("##VelocityMaxParticles_08", m_fParticleVelocityMax_08);
+
+						ImGui::Text("VelocityChangeTimeParticles_08");
+						ImGui::InputFloat2("##VelocityChangeTimeParticles_08", m_fParticleVelocityTime_08);
+					}
+
+					if (m_tParticleInfo.iVelocityCountMax > 8)
+					{
+						ImGui::Text("VelocityMinParticles_09");
+						ImGui::InputFloat3("##VelocityMinParticles_09", m_fParticleVelocityMin_09);
+
+						ImGui::Text("VelocityMaxParticles_09");
+						ImGui::InputFloat3("##VelocityMaxParticles_09", m_fParticleVelocityMax_09);
+
+						ImGui::Text("VelocityChangeTimeParticles_09");
+						ImGui::InputFloat2("##VelocityChangeTimeParticles_09", m_fParticleVelocityTime_09);
+					}
+
+					if (m_tParticleInfo.iVelocityCountMax > 9)
+					{
+						ImGui::Text("VelocityMinParticles_10");
+						ImGui::InputFloat3("##VelocityMinParticles_10", m_fParticleVelocityMin_10);
+
+						ImGui::Text("VelocityMaxParticles_10");
+						ImGui::InputFloat3("##VelocityMaxParticles_10", m_fParticleVelocityMax_10);
+
+						ImGui::Text("VelocityChangeTimeParticles_10");
+						ImGui::InputFloat2("##VelocityChangeTimeParticles_10", m_fParticleVelocityTime_10);
+					}
+				}
+
+			}
+		}
+
+		// 지속 시간
+		if (ImGui::CollapsingHeader("ParticleLifeTime"))
+		{
+			ImGui::Text("LifetimeParticles");
+			ImGui::InputFloat2("##LifetimeParticles", m_fParticleLifeTime);
 			ImGui::NewLine();
 		}
 
@@ -135,17 +331,6 @@ void CTool_Particle::Tick(_float fTimeDelta)
 				ImGui::Text("BoxMaxParticles");
 				ImGui::InputFloat3("##BoxMaxParticles", m_fParticleBoxMax);
 				ImGui::NewLine();
-			}
-		}
-
-		// 파티클 색상
-		if (ImGui::CollapsingHeader("ParticleColor"))
-		{
-			ImGui::Checkbox("RandomColor", &m_tParticleInfo.bRandomColor);
-			if (!m_tParticleInfo.bRandomColor)
-			{
-				ImGui::Text("Diffuse Color");
-				ImGui::ColorEdit4("##DiffuseColor", (float*)&m_tParticleInfo.vDiffuseColor, ImGuiColorEditFlags_Float);
 			}
 		}
 
@@ -195,37 +380,24 @@ void CTool_Particle::Tick(_float fTimeDelta)
 			}
 		}
 
-	    // Gravity Modifier 중력 효과
 
-		if (ImGui::Button("Select_ParticleSystem"))
+
+		// 파티클 색상
+		if (ImGui::CollapsingHeader("ParticleColor"))
 		{
-			if (m_pParticle != nullptr)
+			ImGui::Checkbox("RandomColor", &m_tParticleInfo.bColorRandom);
+			if (!m_tParticleInfo.bColorRandom)
 			{
-				m_tParticleInfo.fScale = _float2(m_fParticleScale[0], m_fParticleScale[1]);
-				m_tParticleInfo.fRange = _float3(m_fParticleRange[0], m_fParticleRange[1], m_fParticleRange[2]);
-				m_tParticleInfo.fLifeTime = _float2(m_fParticleLifeTime[0], m_fParticleLifeTime[1]);
-				m_tParticleInfo.fSpeed = _float2(m_fParticleSpeed[0], m_fParticleSpeed[1]);
-				m_tParticleInfo.fBoxMin = _float3(m_fParticleBoxMin[0], m_fParticleBoxMin[1], m_fParticleBoxMin[2]);
-				m_tParticleInfo.fBoxMax = _float3(m_fParticleBoxMax[0], m_fParticleBoxMax[1], m_fParticleBoxMax[2]);
-				m_tParticleInfo.vVelocityMin = _float3(m_fParticleVelocityMin[0], m_fParticleVelocityMin[1], m_fParticleVelocityMin[2]);
-				m_tParticleInfo.vVelocityMax = _float3(m_fParticleVelocityMax[0], m_fParticleVelocityMax[1], m_fParticleVelocityMax[2]);
-				m_tParticleInfo.fAnimationSpeed = _float2(m_fParticleAnimationSpeed[0], m_fParticleAnimationSpeed[1]);
-
-				m_tParticleInfo.fUVIndex = _float2(m_fParticleUVIndex[0], m_fParticleUVIndex[1]);
-				m_tParticleInfo.fUVMaxCount = _float2(m_fParticleUVMaxCount[0], m_fParticleUVMaxCount[1]);
-
-				wstring strDiffuseTextureName(m_cDiffuseTextureName, m_cDiffuseTextureName + strlen(m_cDiffuseTextureName));
-				m_tParticleInfo.strDiffuseTetextureName = strDiffuseTextureName;
-				wstring strDiffuseTexturePath(m_cDiffuseTexturePath, m_cDiffuseTexturePath + strlen(m_cDiffuseTexturePath));
-				m_tParticleInfo.strDiffuseTetexturePath = strDiffuseTexturePath;
-				wstring strAlphaTextureName(m_cAlphaTextureName, m_cAlphaTextureName + strlen(m_cAlphaTextureName));
-				m_tParticleInfo.strAlphaTexturName = strAlphaTextureName;
-				wstring strAlphaTexturePath(m_cAlphaTexturePath, m_cAlphaTexturePath + strlen(m_cAlphaTexturePath));
-				m_tParticleInfo.strAlphaTexturPath = strAlphaTexturePath;
-
-				static_cast<CParticle*>(m_pParticle)->Set_ParticleDesc(m_tParticleInfo);
+				ImGui::Text("Diffuse Color");
+				ImGui::ColorEdit4("##DiffuseColor", (float*)&m_tParticleInfo.vColor, ImGuiColorEditFlags_Float);
 			}
 		}
+
+	    // Gravity Modifier 중력 효과
+
+		ImGui::NewLine();
+		if (ImGui::Button("Select_ParticleSystem"))
+			Store_InfoParticle();
 	}
 
 	if (ImGui::CollapsingHeader("ParticleSaveAndLoad"))
@@ -253,62 +425,337 @@ void CTool_Particle::Create_Particle()
 		m_pParticle = GI->Clone_GameObject(TEXT("Prototype_GameObject_Particle"), LAYER_TYPE::LAYER_EFFECT);
 		GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_EFFECT, m_pParticle);
 
-		// 기본 값 초기화
-		CTransform* pTransform = m_pParticle->Get_Component<CTransform>(L"Com_Transform");
-		_vector vPosition = pTransform->Get_State(CTransform::STATE_POSITION);
-		m_fPosition[0] = XMVectorGetX(vPosition);
-		m_fPosition[1] = XMVectorGetY(vPosition);
-		m_fPosition[2] = XMVectorGetZ(vPosition);
+		Load_InfoParticle();
+	}
+}
 
-		_vector vRotation = pTransform->Get_WorldRotation();
-		m_fRotation[0] = XMVectorGetX(vRotation);
-		m_fRotation[1] = XMVectorGetY(vRotation);
-		m_fRotation[2] = XMVectorGetZ(vRotation);
+void CTool_Particle::Load_InfoParticle()
+{
+	// 기본 값 초기화
+	CTransform* pTransform = m_pParticle->Get_Component<CTransform>(L"Com_Transform");
+	_vector vPosition = pTransform->Get_State(CTransform::STATE_POSITION);
+	m_fPosition[0] = XMVectorGetX(vPosition);
+	m_fPosition[1] = XMVectorGetY(vPosition);
+	m_fPosition[2] = XMVectorGetZ(vPosition);
 
-		_float3 fScale = pTransform->Get_Scale();
-		m_fScale[0] = fScale.x;
-		m_fScale[1] = fScale.y;
-		m_fScale[2] = fScale.z;
+	_vector vRotation = pTransform->Get_WorldRotation();
+	m_fRotation[0] = XMVectorGetX(vRotation);
+	m_fRotation[1] = XMVectorGetY(vRotation);
+	m_fRotation[2] = XMVectorGetZ(vRotation);
 
-		m_tParticleInfo = static_cast<CParticle*>(m_pParticle)->Get_ParticleDesc();
+	_float3 fScale = pTransform->Get_Scale();
+	m_fScale[0] = fScale.x;
+	m_fScale[1] = fScale.y;
+	m_fScale[2] = fScale.z;
 
-		m_fParticleScale[0] = m_tParticleInfo.fScale.x;
-		m_fParticleScale[1] = m_tParticleInfo.fScale.y;
+	m_tParticleInfo = static_cast<CParticle*>(m_pParticle)->Get_ParticleDesc();
 
-		m_fParticleRange[0] = m_tParticleInfo.fRange.x;
-		m_fParticleRange[1] = m_tParticleInfo.fRange.y;
-		m_fParticleRange[2] = m_tParticleInfo.fRange.z;
+	m_fParticleRange[0] = m_tParticleInfo.fRange.x;
+	m_fParticleRange[1] = m_tParticleInfo.fRange.y;
+	m_fParticleRange[2] = m_tParticleInfo.fRange.z;
 
-		m_fParticleLifeTime[0] = m_tParticleInfo.fLifeTime.x;
-		m_fParticleLifeTime[1] = m_tParticleInfo.fLifeTime.y;
+	m_fParticleScaleStart[0] = m_tParticleInfo.fScaleStart.x;
+	m_fParticleScaleStart[1] = m_tParticleInfo.fScaleStart.y;
 
-		m_fParticleSpeed[0] = m_tParticleInfo.fSpeed.x;
-		m_fParticleSpeed[1] = m_tParticleInfo.fSpeed.y;
+	m_fParticleScaleChangeTime[0] = m_tParticleInfo.fScaleChangeTime.x;
+	m_fParticleScaleChangeTime[1] = m_tParticleInfo.fScaleChangeTime.y;
 
-		m_fParticleBoxMin[0] = m_tParticleInfo.fBoxMin.x;
-		m_fParticleBoxMin[1] = m_tParticleInfo.fBoxMin.y;
-		m_fParticleBoxMin[2] = m_tParticleInfo.fBoxMin.z;
+	m_fParticleScaleMin[0] = m_tParticleInfo.fScaleMin .x;
+	m_fParticleScaleMin[1] = m_tParticleInfo.fScaleMin.y;
 
-		m_fParticleBoxMax[0] = m_tParticleInfo.fBoxMax.x;
-		m_fParticleBoxMax[1] = m_tParticleInfo.fBoxMax.y;
-		m_fParticleBoxMax[2] = m_tParticleInfo.fBoxMax.z;
+	m_fParticleScaleMax[0] = m_tParticleInfo.fScaleMax.x;
+	m_fParticleScaleMax[1] = m_tParticleInfo.fScaleMax.y;
 
-		m_fParticleVelocityMin[0] = m_tParticleInfo.vVelocityMin.x;
-		m_fParticleVelocityMin[1] = m_tParticleInfo.vVelocityMin.y;
-		m_fParticleVelocityMin[2] = m_tParticleInfo.vVelocityMin.z;
+	m_fParticleScaleSpeed[0] = m_tParticleInfo.fScaleSpeed.x;
+	m_fParticleScaleSpeed[1] = m_tParticleInfo.fScaleSpeed.y;
 
-		m_fParticleVelocityMax[0] = m_tParticleInfo.vVelocityMax.x;
-		m_fParticleVelocityMax[1] = m_tParticleInfo.vVelocityMax.y;
-		m_fParticleVelocityMax[2] = m_tParticleInfo.vVelocityMax.z;
 
-		m_fParticleAnimationSpeed[0] = m_tParticleInfo.fAnimationSpeed.x;
-		m_fParticleAnimationSpeed[1] = m_tParticleInfo.fAnimationSpeed.y;
+	m_fParticleVelocityMin[0] = m_tParticleInfo.vVelocityMinStart.x;
+	m_fParticleVelocityMin[1] = m_tParticleInfo.vVelocityMinStart.y;
+	m_fParticleVelocityMin[2] = m_tParticleInfo.vVelocityMinStart.z;
 
-		m_fParticleUVIndex[0] = m_tParticleInfo.fUVIndex.x;
-		m_fParticleUVIndex[1] = m_tParticleInfo.fUVIndex.y;
+	m_fParticleVelocityMax[0] = m_tParticleInfo.vVelocityMaxStart.x;
+	m_fParticleVelocityMax[1] = m_tParticleInfo.vVelocityMaxStart.y;
+	m_fParticleVelocityMax[2] = m_tParticleInfo.vVelocityMaxStart.z;
 
-		m_fParticleUVMaxCount[0] = m_tParticleInfo.fUVMaxCount.x;
-		m_fParticleUVMaxCount[1] = m_tParticleInfo.fUVMaxCount.y;
+	m_fParticleVelocityChangeTime[0] = m_tParticleInfo.fVelocityChangeTime.x;
+	m_fParticleVelocityChangeTime[1] = m_tParticleInfo.fVelocityChangeTime.y;
+
+	if (m_tParticleInfo.bVelocityChange && m_tParticleInfo.pVelocityMin != nullptr && m_tParticleInfo.pVelocityMax != nullptr && m_tParticleInfo.pVelocityTime != nullptr)
+	{
+		if(m_tParticleInfo.iVelocityCountMax > 1) //2
+		{
+			m_fParticleVelocityMin[0] = m_tParticleInfo.pVelocityMin[0].x;
+			m_fParticleVelocityMin[1] = m_tParticleInfo.pVelocityMin[0].y;
+			m_fParticleVelocityMin[2] = m_tParticleInfo.pVelocityMin[0].z;
+
+			m_fParticleVelocityMax[0] = m_tParticleInfo.pVelocityMax[0].x;
+			m_fParticleVelocityMax[1] = m_tParticleInfo.pVelocityMax[0].y;
+			m_fParticleVelocityMax[2] = m_tParticleInfo.pVelocityMax[0].z;
+
+			m_fParticleVelocityTime_01[0] = m_tParticleInfo.pVelocityTime[0].x;
+			m_fParticleVelocityTime_01[1] = m_tParticleInfo.pVelocityTime[0].y;
+
+
+			m_fParticleVelocityMin_02[0] = m_tParticleInfo.pVelocityMin[1].x;
+			m_fParticleVelocityMin_02[1] = m_tParticleInfo.pVelocityMin[1].y;
+			m_fParticleVelocityMin_02[2] = m_tParticleInfo.pVelocityMin[1].z;
+
+			m_fParticleVelocityMax_02[0] = m_tParticleInfo.pVelocityMax[1].x;
+			m_fParticleVelocityMax_02[1] = m_tParticleInfo.pVelocityMax[1].y;
+			m_fParticleVelocityMax_02[2] = m_tParticleInfo.pVelocityMax[1].z;
+
+			m_fParticleVelocityTime_02[0] = m_tParticleInfo.pVelocityTime[1].x;
+			m_fParticleVelocityTime_02[1] = m_tParticleInfo.pVelocityTime[1].y;
+		}
+
+		if (m_tParticleInfo.iVelocityCountMax > 2) //3
+		{
+			m_fParticleVelocityMin_03[0] = m_tParticleInfo.pVelocityMin[2].x;
+			m_fParticleVelocityMin_03[1] = m_tParticleInfo.pVelocityMin[2].y;
+			m_fParticleVelocityMin_03[2] = m_tParticleInfo.pVelocityMin[2].z;
+
+			m_fParticleVelocityMax_03[0] = m_tParticleInfo.pVelocityMax[2].x;
+			m_fParticleVelocityMax_03[1] = m_tParticleInfo.pVelocityMax[2].y;
+			m_fParticleVelocityMax_03[2] = m_tParticleInfo.pVelocityMax[2].z;
+
+			m_fParticleVelocityTime_03[0] = m_tParticleInfo.pVelocityTime[2].x;
+			m_fParticleVelocityTime_03[1] = m_tParticleInfo.pVelocityTime[2].y;
+		}
+
+		if (m_tParticleInfo.iVelocityCountMax > 3) //4
+		{
+			m_fParticleVelocityMin_04[0] = m_tParticleInfo.pVelocityMin[3].x;
+			m_fParticleVelocityMin_04[1] = m_tParticleInfo.pVelocityMin[3].y;
+			m_fParticleVelocityMin_04[2] = m_tParticleInfo.pVelocityMin[3].z;
+
+			m_fParticleVelocityMax_04[0] = m_tParticleInfo.pVelocityMax[3].x;
+			m_fParticleVelocityMax_04[1] = m_tParticleInfo.pVelocityMax[3].y;
+			m_fParticleVelocityMax_04[2] = m_tParticleInfo.pVelocityMax[3].z;
+
+			m_fParticleVelocityTime_04[0] = m_tParticleInfo.pVelocityTime[3].x;
+			m_fParticleVelocityTime_04[1] = m_tParticleInfo.pVelocityTime[3].y;
+		}
+
+		if (m_tParticleInfo.iVelocityCountMax > 4) //5
+		{
+			m_fParticleVelocityMin_05[0] = m_tParticleInfo.pVelocityMin[4].x;
+			m_fParticleVelocityMin_05[1] = m_tParticleInfo.pVelocityMin[4].y;
+			m_fParticleVelocityMin_05[2] = m_tParticleInfo.pVelocityMin[4].z;
+
+			m_fParticleVelocityMax_05[0] = m_tParticleInfo.pVelocityMax[4].x;
+			m_fParticleVelocityMax_05[1] = m_tParticleInfo.pVelocityMax[4].y;
+			m_fParticleVelocityMax_05[2] = m_tParticleInfo.pVelocityMax[4].z;
+
+			m_fParticleVelocityTime_05[0] = m_tParticleInfo.pVelocityTime[4].x;
+			m_fParticleVelocityTime_05[1] = m_tParticleInfo.pVelocityTime[4].y;
+		}
+
+		if (m_tParticleInfo.iVelocityCountMax > 5) //6
+		{
+			m_fParticleVelocityMin_06[0] = m_tParticleInfo.pVelocityMin[5].x;
+			m_fParticleVelocityMin_06[1] = m_tParticleInfo.pVelocityMin[5].y;
+			m_fParticleVelocityMin_06[2] = m_tParticleInfo.pVelocityMin[5].z;
+
+			m_fParticleVelocityMax_06[0] = m_tParticleInfo.pVelocityMax[5].x;
+			m_fParticleVelocityMax_06[1] = m_tParticleInfo.pVelocityMax[5].y;
+			m_fParticleVelocityMax_06[2] = m_tParticleInfo.pVelocityMax[5].z;
+
+			m_fParticleVelocityTime_06[0] = m_tParticleInfo.pVelocityTime[5].x;
+			m_fParticleVelocityTime_06[1] = m_tParticleInfo.pVelocityTime[5].y;
+		}
+
+		if (m_tParticleInfo.iVelocityCountMax > 6) //7
+		{
+			m_fParticleVelocityMin_07[0] = m_tParticleInfo.pVelocityMin[6].x;
+			m_fParticleVelocityMin_07[1] = m_tParticleInfo.pVelocityMin[6].y;
+			m_fParticleVelocityMin_07[2] = m_tParticleInfo.pVelocityMin[6].z;
+
+			m_fParticleVelocityMax_07[0] = m_tParticleInfo.pVelocityMax[6].x;
+			m_fParticleVelocityMax_07[1] = m_tParticleInfo.pVelocityMax[6].y;
+			m_fParticleVelocityMax_07[2] = m_tParticleInfo.pVelocityMax[6].z;
+
+			m_fParticleVelocityTime_07[0] = m_tParticleInfo.pVelocityTime[6].x;
+			m_fParticleVelocityTime_07[1] = m_tParticleInfo.pVelocityTime[6].y;
+		}
+
+		if (m_tParticleInfo.iVelocityCountMax > 7) //8
+		{
+			m_fParticleVelocityMin_08[0] = m_tParticleInfo.pVelocityMin[7].x;
+			m_fParticleVelocityMin_08[1] = m_tParticleInfo.pVelocityMin[7].y;
+			m_fParticleVelocityMin_08[2] = m_tParticleInfo.pVelocityMin[7].z;
+
+			m_fParticleVelocityMax_08[0] = m_tParticleInfo.pVelocityMax[7].x;
+			m_fParticleVelocityMax_08[1] = m_tParticleInfo.pVelocityMax[7].y;
+			m_fParticleVelocityMax_08[2] = m_tParticleInfo.pVelocityMax[7].z;
+
+			m_fParticleVelocityTime_08[0] = m_tParticleInfo.pVelocityTime[7].x;
+			m_fParticleVelocityTime_08[1] = m_tParticleInfo.pVelocityTime[7].y;
+		}
+
+		if (m_tParticleInfo.iVelocityCountMax > 8) //9
+		{
+			m_fParticleVelocityMin_09[0] = m_tParticleInfo.pVelocityMin[8].x;
+			m_fParticleVelocityMin_09[1] = m_tParticleInfo.pVelocityMin[8].y;
+			m_fParticleVelocityMin_09[2] = m_tParticleInfo.pVelocityMin[8].z;
+
+			m_fParticleVelocityMax_09[0] = m_tParticleInfo.pVelocityMax[8].x;
+			m_fParticleVelocityMax_09[1] = m_tParticleInfo.pVelocityMax[8].y;
+			m_fParticleVelocityMax_09[2] = m_tParticleInfo.pVelocityMax[8].z;
+
+			m_fParticleVelocityTime_09[0] = m_tParticleInfo.pVelocityTime[8].x;
+			m_fParticleVelocityTime_09[1] = m_tParticleInfo.pVelocityTime[8].y;
+		}
+
+		if (m_tParticleInfo.iVelocityCountMax > 9) //10
+		{
+			m_fParticleVelocityMin_10[0] = m_tParticleInfo.pVelocityMin[9].x;
+			m_fParticleVelocityMin_10[1] = m_tParticleInfo.pVelocityMin[9].y;
+			m_fParticleVelocityMin_10[2] = m_tParticleInfo.pVelocityMin[9].z;
+																		
+			m_fParticleVelocityMax_10[0] = m_tParticleInfo.pVelocityMax[9].x;
+			m_fParticleVelocityMax_10[1] = m_tParticleInfo.pVelocityMax[9].y;
+			m_fParticleVelocityMax_10[2] = m_tParticleInfo.pVelocityMax[9].z;
+
+			m_fParticleVelocityTime_10[0] = m_tParticleInfo.pVelocityTime[9].x;
+			m_fParticleVelocityTime_10[1] = m_tParticleInfo.pVelocityTime[9].y;
+		}
+	}
+
+
+
+	m_fParticleLifeTime[0] = m_tParticleInfo.fLifeTime.x;
+	m_fParticleLifeTime[1] = m_tParticleInfo.fLifeTime.y;
+
+	m_fParticleSpeed[0] = m_tParticleInfo.fVelocitySpeed.x;
+	m_fParticleSpeed[1] = m_tParticleInfo.fVelocitySpeed.y;
+
+	m_fParticleBoxMin[0] = m_tParticleInfo.fBoxMin.x;
+	m_fParticleBoxMin[1] = m_tParticleInfo.fBoxMin.y;
+	m_fParticleBoxMin[2] = m_tParticleInfo.fBoxMin.z;
+
+	m_fParticleBoxMax[0] = m_tParticleInfo.fBoxMax.x;
+	m_fParticleBoxMax[1] = m_tParticleInfo.fBoxMax.y;
+	m_fParticleBoxMax[2] = m_tParticleInfo.fBoxMax.z;
+
+	m_fParticleAnimationSpeed[0] = m_tParticleInfo.fAnimationSpeed.x;
+	m_fParticleAnimationSpeed[1] = m_tParticleInfo.fAnimationSpeed.y;
+
+	m_fParticleUVIndex[0] = m_tParticleInfo.fUVIndex.x;
+	m_fParticleUVIndex[1] = m_tParticleInfo.fUVIndex.y;
+
+	m_fParticleUVMaxCount[0] = m_tParticleInfo.fUVMaxCount.x;
+	m_fParticleUVMaxCount[1] = m_tParticleInfo.fUVMaxCount.y;
+}
+
+void CTool_Particle::Store_InfoParticle()
+{
+	if (m_pParticle != nullptr)
+	{
+		m_tParticleInfo.fRange = _float3(m_fParticleRange[0], m_fParticleRange[1], m_fParticleRange[2]);
+
+		m_tParticleInfo.fScaleStart      = _float2(m_fParticleScaleStart[0], m_fParticleScaleStart[1]);
+		m_tParticleInfo.fScaleChangeTime = _float2(m_fParticleScaleChangeTime[0], m_fParticleScaleChangeTime[1]);
+		m_tParticleInfo.fScaleMin   = _float2(m_fParticleScaleMin[0], m_fParticleScaleMin[1]);
+		m_tParticleInfo.fScaleMax   = _float2(m_fParticleScaleMax[0], m_fParticleScaleMax[1]);
+		m_tParticleInfo.fScaleSpeed = _float2(m_fParticleScaleSpeed[0], m_fParticleScaleSpeed[1]);
+
+		m_tParticleInfo.vVelocityMinStart = _float3(m_fParticleVelocityMin[0], m_fParticleVelocityMin[1], m_fParticleVelocityMin[2]);
+		m_tParticleInfo.vVelocityMaxStart = _float3(m_fParticleVelocityMax[0], m_fParticleVelocityMax[1], m_fParticleVelocityMax[2]);
+
+		m_tParticleInfo.fVelocityChangeTime = _float2(m_fParticleVelocityChangeTime[0], m_fParticleVelocityChangeTime[1]);
+
+		if (m_tParticleInfo.bVelocityChange && m_tParticleInfo.pVelocityMin != nullptr && m_tParticleInfo.pVelocityMax != nullptr && m_tParticleInfo.pVelocityTime != nullptr)
+		{
+			if (m_tParticleInfo.iVelocityCountMax > 1) //2
+			{
+				m_tParticleInfo.pVelocityMin[0] = _float3(m_fParticleVelocityMin[0], m_fParticleVelocityMin[1], m_fParticleVelocityMin[2]);
+				m_tParticleInfo.pVelocityMax[0] = _float3(m_fParticleVelocityMax[0], m_fParticleVelocityMax[1], m_fParticleVelocityMax[2]);
+				m_tParticleInfo.pVelocityTime[0] = _float2(m_fParticleVelocityTime_01[0], m_fParticleVelocityTime_01[1]);
+
+				m_tParticleInfo.pVelocityMin[1] = _float3(m_fParticleVelocityMin_02[0], m_fParticleVelocityMin_02[1], m_fParticleVelocityMin_02[2]);
+				m_tParticleInfo.pVelocityMax[1] = _float3(m_fParticleVelocityMax_02[0], m_fParticleVelocityMax_02[1], m_fParticleVelocityMax_02[2]);
+				m_tParticleInfo.pVelocityTime[1] = _float2(m_fParticleVelocityTime_02[0], m_fParticleVelocityTime_02[1]);
+			}
+
+			if (m_tParticleInfo.iVelocityCountMax > 2) //3
+			{
+				m_tParticleInfo.pVelocityMin[2] = _float3(m_fParticleVelocityMin_03[0], m_fParticleVelocityMin_03[1], m_fParticleVelocityMin_03[2]);
+				m_tParticleInfo.pVelocityMax[2] = _float3(m_fParticleVelocityMax_03[0], m_fParticleVelocityMax_03[1], m_fParticleVelocityMax_03[2]);
+				m_tParticleInfo.pVelocityTime[2] = _float2(m_fParticleVelocityTime_03[0], m_fParticleVelocityTime_03[1]);
+			}
+
+			if (m_tParticleInfo.iVelocityCountMax > 3) //4
+			{
+				m_tParticleInfo.pVelocityMin[3] = _float3(m_fParticleVelocityMin_04[0], m_fParticleVelocityMin_04[1], m_fParticleVelocityMin_04[2]);
+				m_tParticleInfo.pVelocityMax[3] = _float3(m_fParticleVelocityMax_04[0], m_fParticleVelocityMax_04[1], m_fParticleVelocityMax_04[2]);
+				m_tParticleInfo.pVelocityTime[3] = _float2(m_fParticleVelocityTime_04[0], m_fParticleVelocityTime_04[1]);
+			}
+
+			if (m_tParticleInfo.iVelocityCountMax > 4) //5
+			{
+				m_tParticleInfo.pVelocityMin[4] = _float3(m_fParticleVelocityMin_05[0], m_fParticleVelocityMin_05[1], m_fParticleVelocityMin_05[2]);
+				m_tParticleInfo.pVelocityMax[4] = _float3(m_fParticleVelocityMax_05[0], m_fParticleVelocityMax_05[1], m_fParticleVelocityMax_05[2]);
+				m_tParticleInfo.pVelocityTime[4] = _float2(m_fParticleVelocityTime_05[0], m_fParticleVelocityTime_05[1]);
+			}
+
+			if (m_tParticleInfo.iVelocityCountMax > 5) //6
+			{
+				m_tParticleInfo.pVelocityMin[5] = _float3(m_fParticleVelocityMin_06[0], m_fParticleVelocityMin_06[1], m_fParticleVelocityMin_06[2]);
+				m_tParticleInfo.pVelocityMax[5] = _float3(m_fParticleVelocityMax_06[0], m_fParticleVelocityMax_06[1], m_fParticleVelocityMax_06[2]);
+				m_tParticleInfo.pVelocityTime[5] = _float2(m_fParticleVelocityTime_06[0], m_fParticleVelocityTime_06[1]);
+			}
+
+			if (m_tParticleInfo.iVelocityCountMax > 6) //7
+			{
+				m_tParticleInfo.pVelocityMin[6] = _float3(m_fParticleVelocityMin_07[0], m_fParticleVelocityMin_07[1], m_fParticleVelocityMin_07[2]);
+				m_tParticleInfo.pVelocityMax[6] = _float3(m_fParticleVelocityMax_07[0], m_fParticleVelocityMax_07[1], m_fParticleVelocityMax_07[2]);
+				m_tParticleInfo.pVelocityTime[6] = _float2(m_fParticleVelocityTime_07[0], m_fParticleVelocityTime_07[1]);
+			}
+
+			if (m_tParticleInfo.iVelocityCountMax > 7) //8
+			{
+				m_tParticleInfo.pVelocityMin[7] = _float3(m_fParticleVelocityMin_08[0], m_fParticleVelocityMin_08[1], m_fParticleVelocityMin_08[2]);
+				m_tParticleInfo.pVelocityMax[7] = _float3(m_fParticleVelocityMax_08[0], m_fParticleVelocityMax_08[1], m_fParticleVelocityMax_08[2]);
+				m_tParticleInfo.pVelocityTime[7] = _float2(m_fParticleVelocityTime_08[0], m_fParticleVelocityTime_08[1]);
+			}
+
+			if (m_tParticleInfo.iVelocityCountMax > 8) //9
+			{
+				m_tParticleInfo.pVelocityMin[8] = _float3(m_fParticleVelocityMin_09[0], m_fParticleVelocityMin_09[1], m_fParticleVelocityMin_09[2]);
+				m_tParticleInfo.pVelocityMax[8] = _float3(m_fParticleVelocityMax_09[0], m_fParticleVelocityMax_09[1], m_fParticleVelocityMax_09[2]);
+				m_tParticleInfo.pVelocityTime[8] = _float2(m_fParticleVelocityTime_09[0], m_fParticleVelocityTime_09[1]);
+			}
+
+			if (m_tParticleInfo.iVelocityCountMax > 9) //10
+			{
+				m_tParticleInfo.pVelocityMin[9] = _float3(m_fParticleVelocityMin_10[0], m_fParticleVelocityMin_10[1], m_fParticleVelocityMin_10[2]);
+				m_tParticleInfo.pVelocityMax[9] = _float3(m_fParticleVelocityMax_10[0], m_fParticleVelocityMax_10[1], m_fParticleVelocityMax_10[2]);
+				m_tParticleInfo.pVelocityTime[9] = _float2(m_fParticleVelocityTime_10[0], m_fParticleVelocityTime_10[1]);
+			}
+		}
+
+
+		m_tParticleInfo.fLifeTime = _float2(m_fParticleLifeTime[0], m_fParticleLifeTime[1]);
+		m_tParticleInfo.fVelocitySpeed = _float2(m_fParticleSpeed[0], m_fParticleSpeed[1]);
+		m_tParticleInfo.fBoxMin = _float3(m_fParticleBoxMin[0], m_fParticleBoxMin[1], m_fParticleBoxMin[2]);
+		m_tParticleInfo.fBoxMax = _float3(m_fParticleBoxMax[0], m_fParticleBoxMax[1], m_fParticleBoxMax[2]);
+		m_tParticleInfo.fAnimationSpeed = _float2(m_fParticleAnimationSpeed[0], m_fParticleAnimationSpeed[1]);
+
+		m_tParticleInfo.fUVIndex    = _float2(m_fParticleUVIndex[0], m_fParticleUVIndex[1]);
+		m_tParticleInfo.fUVMaxCount = _float2(m_fParticleUVMaxCount[0], m_fParticleUVMaxCount[1]);
+
+		wstring strDiffuseTextureName(m_cDiffuseTextureName, m_cDiffuseTextureName + strlen(m_cDiffuseTextureName));
+		m_tParticleInfo.strDiffuseTetextureName = strDiffuseTextureName;
+		wstring strDiffuseTexturePath(m_cDiffuseTexturePath, m_cDiffuseTexturePath + strlen(m_cDiffuseTexturePath));
+		m_tParticleInfo.strDiffuseTetexturePath = strDiffuseTexturePath;
+		wstring strAlphaTextureName(m_cAlphaTextureName, m_cAlphaTextureName + strlen(m_cAlphaTextureName));
+		m_tParticleInfo.strAlphaTexturName = strAlphaTextureName;
+		wstring strAlphaTexturePath(m_cAlphaTexturePath, m_cAlphaTexturePath + strlen(m_cAlphaTexturePath));
+		m_tParticleInfo.strAlphaTexturPath = strAlphaTexturePath;
+
+
+		static_cast<CParticle*>(m_pParticle)->Set_ParticleDesc(m_tParticleInfo);
 	}
 }
 
@@ -332,7 +779,7 @@ void CTool_Particle::Save_Particle(const char* pFileName)
 	m_tParticleInfo = static_cast<CParticle*>(m_pParticle)->Get_ParticleDesc();
 
 	// 반복 여부
-	File->Write<_bool>(m_tParticleInfo.bLoop);
+	File->Write<_bool>(m_tParticleInfo.bParticleLoop);
 
 	// 파티클 개수
 	File->Write<_uint>(m_tParticleInfo.iNumEffectCount);
@@ -341,18 +788,18 @@ void CTool_Particle::Save_Particle(const char* pFileName)
 	File->Write<_float3>(m_tParticleInfo.fRange);
 
 	// 크기
-	File->Write<_bool>(m_tParticleInfo.bSameRate);
-	File->Write<_float2>(m_tParticleInfo.fScale);
+	File->Write<_bool>(m_tParticleInfo.bScaleSameRate);
+	File->Write<_float2>(m_tParticleInfo.fScaleStart);
 
 	// 지속 시간
 	File->Write<_float2>(m_tParticleInfo.fLifeTime);
 
 	// 속도
-	File->Write<_float2>(m_tParticleInfo.fSpeed);
+	File->Write<_float2>(m_tParticleInfo.fVelocitySpeed);
 
 	// 움직임
-	File->Write<_float3>(m_tParticleInfo.vVelocityMin);
-	File->Write<_float3>(m_tParticleInfo.vVelocityMax);
+	File->Write<_float3>(m_tParticleInfo.vVelocityMinStart);
+	File->Write<_float3>(m_tParticleInfo.vVelocityMaxStart);
 
 	// 박스 범위
 	File->Write<_bool>(m_tParticleInfo.bUseBox);
@@ -360,8 +807,8 @@ void CTool_Particle::Save_Particle(const char* pFileName)
 	File->Write<_float3>(m_tParticleInfo.fBoxMax);
 
 	// 색상
-	File->Write<_bool>(m_tParticleInfo.bRandomColor);
-	File->Write<_float4>(m_tParticleInfo.vDiffuseColor);
+	File->Write<_bool>(m_tParticleInfo.bColorRandom);
+	File->Write<_float4>(m_tParticleInfo.vColor);
 
 	// 텍스처
 	File->Write<_bool>(m_tParticleInfo.bAnimation);
@@ -393,7 +840,7 @@ void CTool_Particle::Load_Particle(const char* pFileName)
 	CParticle::PARTICLE_DESC ParticleInfo = {};
 
 	// 반복 여부
-	File->Read<_bool>(ParticleInfo.bLoop);
+	File->Read<_bool>(ParticleInfo.bParticleLoop);
 
 	// 파티클 개수
 	File->Read<_uint>(ParticleInfo.iNumEffectCount);
@@ -402,18 +849,18 @@ void CTool_Particle::Load_Particle(const char* pFileName)
 	File->Read<_float3>(ParticleInfo.fRange);
 
 	// 크기
-	File->Read<_bool>(ParticleInfo.bSameRate);
-	File->Read<_float2>(ParticleInfo.fScale);
+	File->Read<_bool>(ParticleInfo.bScaleSameRate);
+	File->Read<_float2>(ParticleInfo.fScaleStart);
 
 	// 지속 시간
 	File->Read<_float2>(ParticleInfo.fLifeTime);
 
 	// 속도
-	File->Read<_float2>(ParticleInfo.fSpeed);
+	File->Read<_float2>(ParticleInfo.fVelocitySpeed);
 
 	// 움직임
-	File->Read<_float3>(ParticleInfo.vVelocityMin);
-	File->Read<_float3>(ParticleInfo.vVelocityMax);
+	File->Read<_float3>(ParticleInfo.vVelocityMinStart);
+	File->Read<_float3>(ParticleInfo.vVelocityMaxStart);
 
 	// 박스 범위
 	File->Read<_bool>(ParticleInfo.bUseBox);
@@ -421,8 +868,8 @@ void CTool_Particle::Load_Particle(const char* pFileName)
 	File->Read<_float3>(ParticleInfo.fBoxMax);
 
 	// 색상
-	File->Read<_bool>(ParticleInfo.bRandomColor);
-	File->Read<_float4>(ParticleInfo.vDiffuseColor);
+	File->Read<_bool>(ParticleInfo.bColorRandom);
+	File->Read<_float4>(ParticleInfo.vColor);
 
 	// 텍스처
 	File->Read<_bool>(ParticleInfo.bAnimation);
@@ -439,6 +886,8 @@ void CTool_Particle::Load_Particle(const char* pFileName)
 
 	// 적용
 	static_cast<CParticle*>(m_pParticle)->Set_ParticleDesc(ParticleInfo);
+
+	Load_InfoParticle();
 
 	MSG_BOX("Particle_Load_Success!");
 }

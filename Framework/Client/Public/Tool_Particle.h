@@ -21,6 +21,8 @@ public:
 
 private:
 	void Create_Particle();
+	void Load_InfoParticle();
+	void Store_InfoParticle();
 	void Save_Particle(const char* pFileName);
 	void Load_Particle(const char* pFileName);
 
@@ -32,16 +34,55 @@ private:
 	_float m_fRotation[3];
 	_float m_fScale[3];
 
-	_float m_fParticleScale[2];
 	_float m_fParticleRange[3];
+
+	_float m_fParticleScaleStart[2];
+	_float m_fParticleScaleChangeTime[2];
+	_float m_fParticleScaleMin[2];
+	_float m_fParticleScaleMax[2];
+	_float m_fParticleScaleSpeed[2];
+
+	_float m_fParticleVelocityMin[3];
+	_float m_fParticleVelocityMax[3];
+	_float m_fParticleVelocityChangeTime[2];
+
+	_float m_fParticleVelocityMin_02[3];
+	_float m_fParticleVelocityMax_02[3];
+	_float m_fParticleVelocityMin_03[3];
+	_float m_fParticleVelocityMax_03[3];
+	_float m_fParticleVelocityMin_04[3];
+	_float m_fParticleVelocityMax_04[3];
+	_float m_fParticleVelocityMin_05[3];
+	_float m_fParticleVelocityMax_05[3];
+	_float m_fParticleVelocityMin_06[3];
+	_float m_fParticleVelocityMax_06[3];
+	_float m_fParticleVelocityMin_07[3];
+	_float m_fParticleVelocityMax_07[3];
+	_float m_fParticleVelocityMin_08[3];
+	_float m_fParticleVelocityMax_08[3];
+	_float m_fParticleVelocityMin_09[3];
+	_float m_fParticleVelocityMax_09[3];
+	_float m_fParticleVelocityMin_10[3];
+	_float m_fParticleVelocityMax_10[3];
+
+	_float m_fParticleVelocityTime_01[2];
+	_float m_fParticleVelocityTime_02[2];
+	_float m_fParticleVelocityTime_03[2];
+	_float m_fParticleVelocityTime_04[2];
+	_float m_fParticleVelocityTime_05[2];
+	_float m_fParticleVelocityTime_06[2];
+	_float m_fParticleVelocityTime_07[2];
+	_float m_fParticleVelocityTime_08[2];
+	_float m_fParticleVelocityTime_09[2];
+	_float m_fParticleVelocityTime_10[2];
+
+
+
 	_float m_fParticleLifeTime[2];
 	_float m_fParticleSpeed[2];
 
 	_float m_fParticleBoxMin[3];
 	_float m_fParticleBoxMax[3];
-
-	_float m_fParticleVelocityMin[3];
-	_float m_fParticleVelocityMax[3];
 
 	_float m_fParticleAnimationSpeed[2];
 
