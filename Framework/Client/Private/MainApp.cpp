@@ -47,7 +47,7 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 	/* 1-4. 게임내에서 사용할 레벨(씬)을 생성한다.   */
-	if (FAILED(Open_Level(LEVEL_TEST, L"Final_Boss")))
+	if (FAILED(Open_Level(LEVEL_TOOL, L"Final_Boss")))
 		return E_FAIL;
 
 	// UI Cursor
@@ -76,7 +76,7 @@ void CMainApp::Tick(_float fTimeDelta)
 HRESULT CMainApp::Render()
 {
 	/* 게임내에 존재하는 여러 객체들의 렌더링. */
-	GI->Clear_BackBuffer_View(_float4(0.f, 0.f, 1.f, 1.f));
+	GI->Clear_BackBuffer_View(_float4(0.3f, 0.3f, 0.3f, 1.f));
 	GI->Clear_DepthStencil_View();
 
 	m_pRenderer_Com->Draw();

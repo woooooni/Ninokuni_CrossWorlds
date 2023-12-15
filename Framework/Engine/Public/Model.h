@@ -24,14 +24,12 @@ public:
 	const wstring& Get_Name() const { return m_strName; }
 
 	/* HierarchyNode */
-	void Add_SocketTransforms(vector<ANIM_TRANSFORM_CACHE> SocketTransforms) { m_SocketTransforms.push_back(SocketTransforms); }
-
 	Matrix Get_SocketLocalMatrix(const _uint iSocketEnumIndex); /* (모델의 Latetick 이후 호출)캐릭터가 갖고 있는 파츠의 소켓 매트릭스를 리턴한다. (캐릭터에 정의된 enum 인덱스 사용, 뼈 번호 아님) */
 	wstring Get_HiearachyNodeName(const _uint iIndex);
 	const _int Get_HierarchyNodeIndex(const char* szBonename);
+	const _int Get_HierarchyNodeIndex(wstring strBoneName);
 	class CHierarchyNode* Get_HierarchyNode(const wstring & strNodeName);
 	vector<class CHierarchyNode*>& Get_HierarchyNodes() { return m_HierarchyNodes; }
-	vector<vector<ANIM_TRANSFORM_CACHE>> Get_All_SocketLoacalMatrix() { return m_SocketTransforms; }
 
 
 	/* Meshes */
@@ -80,9 +78,17 @@ public:
 
 #pragma region ImGui Tool
 public:
+	const aiScene* Get_Scene() { return m_pAIScene; }
+	
+	void Add_SocketTransforms(vector<ANIM_TRANSFORM_CACHE> SocketTransforms) { m_SocketTransforms.push_back(SocketTransforms); }
+	vector<vector<ANIM_TRANSFORM_CACHE>> Get_All_SocketLoacalMatrix() { return m_SocketTransforms; }
+	void Clear_SocketTransforms(const _uint iSocketEnumIndex);
+	void Clear_All_SocketTransforms() { m_SocketTransforms.clear(); m_SocketTransforms.shrink_to_fit(); }
+
 	HRESULT Delete_Animation(_uint iIndex);
 	HRESULT Swap_Animation(_uint iSrcIndex, _uint iDestIndex);
-	const aiScene* Get_Scene() { return m_pAIScene; }
+
+
 #pragma endregion
 
 #pragma region Vtf

@@ -302,6 +302,17 @@ const _int CModel::Get_HierarchyNodeIndex(const char* szBonename)
 	return -1;
 }
 
+const _int CModel::Get_HierarchyNodeIndex(wstring strBoneName)
+{
+	for (int32 i = 0; i < m_HierarchyNodes.size(); ++i)
+	{
+		if (m_HierarchyNodes[i]->Get_Name() == strBoneName)
+			return i;
+	}
+
+	return -1;
+}
+
 Matrix CModel::Get_SocketLocalMatrix(const _uint iSocketEnumIndex)
 {
 	Matrix matSocketLocal;
@@ -519,6 +530,20 @@ HRESULT CModel::Swap_Animation(_uint iSrcIndex, _uint iDestIndex)
 	//m_iCurrentAnimIndex = iDestIndex;
 
 	return S_OK;
+}
+
+void CModel::Clear_SocketTransforms(const _uint iSocketEnumIndex)
+{
+	if (m_SocketTransforms.size() <= iSocketEnumIndex)
+		return;
+
+	vector<vector<ANIM_TRANSFORM_CACHE>>::iterator iter = m_SocketTransforms.begin();
+	iter += iSocketEnumIndex;
+	
+	iter->clear();
+	iter->shrink_to_fit();
+
+	m_SocketTransforms.erase(iter);
 }
 
 HRESULT CModel::Delete_Animation(_uint iIndex)
