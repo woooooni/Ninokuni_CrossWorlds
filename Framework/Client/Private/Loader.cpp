@@ -19,18 +19,17 @@
 #include "Effect_Manager.h"
 #include "Particle_Manager.h"
 
-
 #include "Character_Dummy.h"
 #include "Character_Witch.h"
 
 #include "UI_Logo_Background.h"
 #include "UI_Flare.h"
 
-#pragma region Kang
 #include "Stellia.h"
-#pragma endregion
 
 #include "Particle.h"
+
+#include "Part_SwordTemp.h"
 
 _bool CLoader::g_bFirstLoading = false;
 CLoader::CLoader(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
@@ -273,9 +272,20 @@ HRESULT CLoader::Loading_For_Level_Tool()
 	ParticleInfo.pVelocityTime = new _float2[10];
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Particle"),
-		 CParticle::Create(m_pDevice, m_pContext, TEXT("Particle_Basic"), &ParticleInfo), LAYER_TYPE::LAYER_EFFECT)))
+		CParticle::Create(m_pDevice, m_pContext, TEXT("Particle_Basic"), &ParticleInfo), LAYER_TYPE::LAYER_EFFECT)))
+		return E_FAIL;
 
 #pragma endregion
+
+	/* Prototype_GameObject_TempSword */
+	{
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_TempSword"),
+			CPart_SwordTemp::Create(m_pDevice, m_pContext, TEXT("TempSword")), LAYER_WEAPON)))
+			return E_FAIL;
+
+		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_TempSword", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Weapon/", L"TempSword")))
+			return E_FAIL;
+	}
 
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
 	_matrix		PivotMatrix = XMMatrixIdentity();

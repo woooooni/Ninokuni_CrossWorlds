@@ -204,6 +204,7 @@
     <ClInclude Include="..\Public\Level_Evermore.h" />
     <ClInclude Include="..\Public\Level_Lobby.h" />
     <ClInclude Include="..\Public\MapHeaderGroup.h" />
+    <ClInclude Include="..\Public\Part_SwordTemp.h" />
     <ClInclude Include="..\Public\Plants.h" />
     <ClInclude Include="..\Public\Probs.h" />
     <ClInclude Include="..\Public\StaticObject.h" />
@@ -317,6 +318,7 @@
     <ClCompile Include="..\Private\Grounds.cpp" />
     <ClCompile Include="..\Private\Level_Evermore.cpp" />
     <ClCompile Include="..\Private\Level_Lobby.cpp" />
+    <ClCompile Include="..\Private\Part_SwordTemp.cpp" />
     <ClCompile Include="..\Private\Plants.cpp" />
     <ClCompile Include="..\Private\Probs.cpp" />
     <ClCompile Include="..\Private\StaticObject.cpp" />

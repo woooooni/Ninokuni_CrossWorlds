@@ -332,8 +332,22 @@ Matrix CModel::Get_SocketLocalMatrix(const _uint iSocketEnumIndex)
 												m_SocketTransforms[iSocketEnumIndex][m_TweenDesc.next.iAnimIndex].transforms[m_TweenDesc.next.iNextFrame][0],
 												m_TweenDesc.next.fRatio);
 
-		return Matrix::Lerp(matSocketLocal, matRootNextLerp, m_TweenDesc.fTweenRatio);
+		matSocketLocal =  Matrix::Lerp(matSocketLocal, matRootNextLerp, m_TweenDesc.fTweenRatio);
 	}
+
+	/* 크기를 1로 세팅 */
+	Vec3 vRight, vUp, vLook;
+	memcpy(&vRight, matSocketLocal.m[0], sizeof(Vec3));
+	memcpy(&vUp, matSocketLocal.m[1], sizeof(Vec3));
+	memcpy(&vLook, matSocketLocal.m[2], sizeof(Vec3));
+
+	vRight.Normalize();
+	vUp.Normalize();
+	vLook.Normalize();
+
+	matSocketLocal.Right(vRight);
+	matSocketLocal.Up(vUp);
+	matSocketLocal.Backward(vLook);
 
 	return matSocketLocal;
 }

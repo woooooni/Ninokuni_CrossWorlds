@@ -58,6 +58,8 @@ void CTool_Model::Tick(_float fTimeDelta)
 	}
 	ImGui::End();
 
+	Tick_Dummys(fTimeDelta);
+
 	_bool bDemo = FALSE;
 	if(bDemo) ImGui::ShowDemoWindow(&bDemo);
 }
@@ -82,7 +84,12 @@ void CTool_Model::Reset_Transform()
 
 HRESULT CTool_Model::Clear_ToolAnimationData()
 {
-	m_bAllAnimLoop = FALSE;
+	m_bAllAnimLoop = TRUE;
+	vector<class CAnimation*>& Animations = m_pDummy->Get_ModelCom()->Get_Animations();
+
+	for (auto& pAnim : Animations)
+		pAnim->Set_Loop(m_bAllAnimLoop);
+	
 
 	m_iCurBoneIndex = 0;
 
@@ -100,30 +107,65 @@ HRESULT CTool_Model::Clear_ToolAnimationData()
 
 Vec3 CTool_Model::Calculate_SocketPosition()
 {
-	TweenDesc TweenDesc = m_pDummy->Get_ModelCom()->Get_TweenDesc();
+	Matrix matSocketWorld = Calculate_SocketWorldMatrix();
 
-	Matrix matSocketLocal;
-
-	/* 현재 프레임 계산 */
-	matSocketLocal = Matrix::Lerp(m_AnimTransformsCaches[TweenDesc.cur.iAnimIndex].transforms[TweenDesc.cur.iCurFrame][m_iRenderSocketIndex],
-		m_AnimTransformsCaches[TweenDesc.cur.iAnimIndex].transforms[TweenDesc.cur.iNextFrame][m_iRenderSocketIndex],
-		TweenDesc.cur.fRatio);
-
-	/* 다음 프레임이 예약되어 있다면 추가 계산 */
-	if (0 <= TweenDesc.next.iAnimIndex)
-	{
-		Matrix matRootNextLerp = Matrix::Lerp(m_AnimTransformsCaches[TweenDesc.next.iAnimIndex].transforms[TweenDesc.next.iCurFrame][m_iRenderSocketIndex],
-			m_AnimTransformsCaches[TweenDesc.next.iAnimIndex].transforms[TweenDesc.next.iNextFrame][m_iRenderSocketIndex],
-			TweenDesc.next.fRatio);
-
-		matSocketLocal = Matrix::Lerp(matSocketLocal, matRootNextLerp, TweenDesc.fTweenRatio);
-	}
-
-	Matrix matWorld = matSocketLocal * m_pDummy->Get_TransformCom()->Get_WorldMatrix();
-
-	Vec3 vWorldPos = { matWorld._41, matWorld._42, matWorld._43 };
+	Vec3 vWorldPos = { matSocketWorld._41, matSocketWorld._42, matSocketWorld._43 };
 
 	return vWorldPos;
+}
+
+Matrix CTool_Model::Calculate_SocketWorldMatrix()
+{
+	TweenDesc TweenDesc = m_pDummy->Get_ModelCom()->Get_TweenDesc();
+
+	/* Current Frame */
+	Matrix matSocket = Matrix::Lerp(m_AnimTransformsCaches[TweenDesc.cur.iAnimIndex].transforms[TweenDesc.cur.iCurFrame][m_iRenderSocketIndex],
+								m_AnimTransformsCaches[TweenDesc.cur.iAnimIndex].transforms[TweenDesc.cur.iNextFrame][m_iRenderSocketIndex],
+								TweenDesc.cur.fRatio);
+	/* if Next Frame */
+	if (0 <= TweenDesc.next.iAnimIndex)
+	{
+		Matrix matSocketNext = Matrix::Lerp(m_AnimTransformsCaches[TweenDesc.next.iAnimIndex].transforms[TweenDesc.next.iCurFrame][m_iRenderSocketIndex],
+								m_AnimTransformsCaches[TweenDesc.next.iAnimIndex].transforms[TweenDesc.next.iNextFrame][m_iRenderSocketIndex],
+								TweenDesc.next.fRatio);
+
+		matSocket = Matrix::Lerp(matSocket, matSocketNext, TweenDesc.fTweenRatio);
+	}
+
+	/* 정규화 */
+	/*Vec3 vRight, vUp, vLook;
+	memcpy(&vRight, matSocket.m[0], sizeof(Vec3));
+	memcpy(&vUp, matSocket.m[1], sizeof(Vec3));
+	memcpy(&vLook, matSocket.m[2], sizeof(Vec3));
+
+	vRight.Normalize();
+	vUp.Normalize();
+	vLook.Normalize();
+
+	matSocket.Right(vRight);
+	matSocket.Up(vUp);
+	matSocket.Backward(vLook);*/
+	 
+	/* 포지션 */
+	Vec4 vPos;
+	memcpy(&vPos, matSocket.m[3], sizeof(Vec4));		
+
+	/* 회전 */
+	Matrix matRotation;
+	XMStoreFloat4x4(&matRotation, XMMatrixRotationQuaternion(XMQuaternionRotationRollPitchYaw(
+		XMConvertToRadians(180.f),
+		XMConvertToRadians(0.f),
+		XMConvertToRadians(0.f))));
+
+	/* 스케일 */
+
+
+	matSocket *= matRotation * Matrix::CreateScale(80.f);
+
+	memcpy(&matSocket.m[3], &vPos, sizeof(Vec4));
+
+
+	return matSocket * m_pDummy->Get_TransformCom()->Get_WorldMatrix();
 }
 
 const _bool CTool_Model::Is_Exception()
@@ -189,7 +231,23 @@ HRESULT CTool_Model::Ready_DebugDraw()
 
 HRESULT CTool_Model::Ready_WeaponPrototypes()
 {
-	//m_WeaponPrototypes.push_back()
+	CPart*			pWeapon = nullptr;
+	CGameObject*	pGameObject = nullptr;
+
+	/* Prototype_GameObject_TempSword */
+	if (FAILED(GI->Add_GameObject(LEVEL_TOOL, _uint(LAYER_WEAPON), TEXT("Prototype_GameObject_TempSword"), nullptr, &pGameObject)))
+		return E_FAIL;
+	{
+		pWeapon = dynamic_cast<CPart*>(pGameObject);
+		if (nullptr == pWeapon)
+			return E_FAIL;
+
+		m_Weapons.push_back(pWeapon);
+
+		pWeapon = nullptr;
+		pGameObject = nullptr;
+	}
+
 	return S_OK;
 }
 
@@ -204,14 +262,6 @@ HRESULT CTool_Model::Render_DebugDraw()
 {
 	if (m_iRenderSocketIndex < 0 || m_AnimTransformsCaches.empty())
 		return S_OK;
-
-	cout <<
-		"뼈 인덱스 : " << m_iCurBoneIndex 
-		<< "\t 소켓 인덱스 : " << m_iSocketIndex 
-		<< "\t 렌더 인덱스 : " << m_iRenderSocketIndex << endl;
-
-		
-	
 
 	m_pEffect->SetWorld(XMMatrixIdentity());
 	m_pEffect->SetView(GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
@@ -439,9 +489,6 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 		//}
 		IMGUI_NEW_LINE;
 	}
-
-	m_pDummy->Tick(fTimeDelta);
-	m_pDummy->LateTick(fTimeDelta);
 }
 
 
@@ -704,9 +751,9 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 
 			if (ImGui::BeginListBox("##Weapon Prototypes List", ImVec2(0, 50)))
 			{
-				for (size_t i = 0; i < m_WeaponPrototypes.size(); ++i)
+				for (size_t i = 0; i < m_Weapons.size(); ++i)
 				{
-					string strBoneName = CUtils::ToString(m_WeaponPrototypes[i]->Get_ObjectTag());
+					string strBoneName = CUtils::ToString(m_Weapons[i]->Get_ObjectTag());
 					if (ImGui::Selectable(strBoneName.c_str(), i == m_iCurWeaponIndex))
 					{
 						m_iCurWeaponIndex = i;
@@ -852,6 +899,17 @@ void CTool_Model::Tick_Costume(_float fTimeDelta)
 	}
 }
 
+void CTool_Model::Tick_Dummys(_float fTimeDelta)
+{
+	m_pDummy->Tick(fTimeDelta);
+	m_pDummy->LateTick(fTimeDelta);
+
+	if (0 <= m_iCurWeaponIndex && !m_Weapons.empty() && m_iCurWeaponIndex < m_Weapons.size() && nullptr != m_Weapons[m_iCurWeaponIndex])
+	{
+		m_Weapons[m_iCurWeaponIndex]->Set_SocketWorld(Calculate_SocketWorldMatrix());
+	}
+}
+
 CTool_Model* CTool_Model::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	CTool_Model* pInstance = new CTool_Model(pDevice, pContext);
@@ -868,10 +926,16 @@ void CTool_Model::Free()
 {
 	__super::Free();
 
+	for (auto& pWeapon : m_Weapons)
+		Safe_Release(pWeapon);
+
+	m_Weapons.clear();
+
 	Safe_Release(m_pDummy);
 
 	Safe_Delete(m_pBatch);
 	Safe_Delete(m_pEffect);
 	Safe_Delete(m_pSphere);
 	Safe_Release(m_pInputLayout);
+
 }

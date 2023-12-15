@@ -21,6 +21,8 @@ private:
 	void Tick_Event(_float fTimeDelta);
 	void Tick_Costume(_float fTimeDelta);
 
+	void Tick_Dummys(_float fTimeDelta);
+
 private:
 	HRESULT Render_DebugDraw();
 
@@ -40,6 +42,7 @@ private:
 	HRESULT Clear_ToolAnimationData();
 
 	Vec3 Calculate_SocketPosition();
+	Matrix Calculate_SocketWorldMatrix();
 
 private:
 	wstring m_strFilePath = L"";
@@ -49,7 +52,7 @@ private:
 
 #pragma region Animation
 
-	_bool m_bAllAnimLoop = FALSE;
+	_bool m_bAllAnimLoop = TRUE;
 
 #pragma endregion
 
@@ -60,8 +63,8 @@ private:
 	_int m_iCurBoneIndex = 0;
 
 	/* 프로토타입 무기*/
-	vector<class CPart*> m_WeaponPrototypes;
-	_uint m_iCurWeaponIndex = 0;
+	vector<class CPart*> m_Weapons;
+	_int m_iCurWeaponIndex = -1;
 
 	/* 소켓 */
 	vector<ANIM_TRANSFORM_CACHES>	m_AnimTransformsCaches;/* 모든 뼈 계산 됨 */

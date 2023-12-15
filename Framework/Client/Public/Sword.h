@@ -14,11 +14,11 @@ class CSword final : public CPart
 public:
 	enum SWORD_TYPE { TANJIRO, ZENITSU, KYOJURO, SWORD_END };
 public:
-	typedef struct tagWeaponDesc : public CPart::PART_DESC
+	/*typedef struct tagWeaponDesc : public CPart::PART_DESC
 	{		
 		_float3			vRotationRadian;
 		SWORD_TYPE		eType;
-	} SWORD_DESC;
+	} SWORD_DESC;*/
 
 protected:
 	CSword(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
