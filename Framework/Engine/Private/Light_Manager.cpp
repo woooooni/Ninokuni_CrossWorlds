@@ -23,6 +23,7 @@ HRESULT CLight_Manager::Add_Light(ID3D11Device * pDevice, ID3D11DeviceContext * 
 	if (nullptr == pLight)
 		return E_FAIL;
 
+	pLight->Set_LightID(m_Lights.size());
 	m_Lights.push_back(pLight);
 
 	return S_OK;

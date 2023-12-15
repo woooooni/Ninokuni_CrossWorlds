@@ -29,8 +29,9 @@ private:
 	void DeleteObject(LEVELID iLevelID, LAYER_TYPE iLayerType);
 	void BatchObject(LEVELID iLevelID, LAYER_TYPE iLayerType);
 
-	void Picking();
+	void DeleteLight(_uint iLightID);
 
+	void Picking();
 private:
 	void MapObjectSpace();
 	void MapLightSpace();
@@ -41,6 +42,10 @@ private:
 private:
 	HRESULT Save_Map_Data(const wstring& strMapFileName);
 	HRESULT Load_Map_Data(const wstring& strMapFileName);
+
+	HRESULT Save_Light_Data(const wstring& strLightFilePath);
+	HRESULT Load_Light_Data(const wstring& strLightFilePath);
+
 private:
 	// 오브젝트 상태제어 
 	_bool m_bAddObject = false;

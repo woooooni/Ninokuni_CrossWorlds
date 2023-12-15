@@ -255,24 +255,24 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 
 
 	//// 외곽선
-	float Lx = 0;
-	float Ly = 0;
+	//float Lx = 0;
+	//float Ly = 0;
 
-	for (int y = -1; y <= 1; ++y)
-	{
-		for (int x = -1; x <= 1; ++x)
-		{
-			float2 offset = float2(x, y) * g_PixelOffset;
-			float3 tex = g_ShadeTarget.Sample(PointSampler, In.vTexcoord + offset).rgb;
-			float luminance = dot(tex, g_PixelDot);
+	//for (int y = -1; y <= 1; ++y)
+	//{
+	//	for (int x = -1; x <= 1; ++x)
+	//	{
+	//		float2 offset = float2(x, y) * g_PixelOffset;
+	//		float3 tex = g_ShadeTarget.Sample(PointSampler, In.vTexcoord + offset).rgb;
+	//		float luminance = dot(tex, g_PixelDot);
 
-			Lx += luminance * Kx[y + 1][x + 1];
-			Ly += luminance * Ky[y + 1][x + 1];
-		}
-	}
-	float L = sqrt((Lx * Lx) + (Ly * Ly));
-	vector vOutline = vector(1.f - L.xxx, 1.f);
-	Out.vColor *= vOutline;
+	//		Lx += luminance * Kx[y + 1][x + 1];
+	//		Ly += luminance * Ky[y + 1][x + 1];
+	//	}
+	//}
+	//float L = sqrt((Lx * Lx) + (Ly * Ly));
+	//vector vOutline = vector(1.f - L.xxx, 1.f);
+	//Out.vColor *= vOutline;
 
 
 	// 그림자
