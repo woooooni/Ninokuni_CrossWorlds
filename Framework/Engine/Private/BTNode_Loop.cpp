@@ -24,6 +24,8 @@ CBTNode::NODE_STATE CBTNode_Loop::Tick(const _float& fTimeDelta)
 			return iter->Tick(fTimeDelta);
 		}
 	}
+
+	return CBTNode::NODE_STATE::NODE_END;
 }
 
 CBTNode_Loop* CBTNode_Loop::Create(function<_bool()> conditionFunc)
