@@ -70,7 +70,11 @@ void CTool_Particle::Tick(_float fTimeDelta)
 			{
 				CTransform* pTransform = m_pParticle->Get_Component<CTransform>(L"Com_Transform");
 
-				pTransform->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_fPosition[0], m_fPosition[1], m_fPosition[2], 1.f));
+				if (m_bParticleType_Pers)
+					static_cast<CParticle*>(m_pParticle)->Set_Position_Perspective(_float3(m_fPosition[0], m_fPosition[1], m_fPosition[2]));
+				else if(m_bParticleType_Orth)
+					static_cast<CParticle*>(m_pParticle)->Set_Position_Orthographic(_float2(m_fPosition[0], m_fPosition[1]));
+
 				pTransform->FixRotation(m_fRotation[0], m_fRotation[1], m_fRotation[2]);
 				pTransform->Set_Scale(_float3(m_fScale[0], m_fScale[1], m_fScale[2]));
 			}
@@ -80,6 +84,17 @@ void CTool_Particle::Tick(_float fTimeDelta)
 	// 파티클 정보
 	if (ImGui::CollapsingHeader("ParticleSystem"))
 	{
+		// 투영 타입
+		ImGui::Checkbox("PersParticles", &m_bParticleType_Pers);
+		ImGui::NewLine();
+		if (m_bParticleType_Pers == true)
+			m_bParticleType_Orth = false;
+
+		ImGui::Checkbox("OrthParticles", &m_bParticleType_Orth);
+		ImGui::NewLine();
+		if (m_bParticleType_Orth == true)
+			m_bParticleType_Pers = false;
+
 		// 반복 여부
 		ImGui::Checkbox("LoopParticles", &m_tParticleInfo.bParticleLoop);
 		ImGui::NewLine();
@@ -109,6 +124,10 @@ void CTool_Particle::Tick(_float fTimeDelta)
 
 			if (m_tParticleInfo.bScaleChange)
 			{
+				ImGui::Text("ScaleChangeStartDelayParticles");
+				ImGui::InputFloat2("##ScaleChangeStartDelayParticles", m_fParticleScaleChangeStartDelay);
+				ImGui::NewLine();
+
 				ImGui::Checkbox("ScaleChangeRandom", &m_tParticleInfo.bScaleChangeRandom);
 				ImGui::NewLine();
 
@@ -162,6 +181,10 @@ void CTool_Particle::Tick(_float fTimeDelta)
 
 			if (m_tParticleInfo.bVelocityChange)
 			{
+				ImGui::Text("VelocityChangeStartDelayParticles");
+				ImGui::InputFloat2("##VelocityChangeStartDelayParticles", m_fParticleVelocityChangeStartDelay);
+				ImGui::NewLine();
+
 				ImGui::Checkbox("VelocityChangeRandom", &m_tParticleInfo.bVelocityChangeRandom);
 				ImGui::NewLine();
 
@@ -312,6 +335,60 @@ void CTool_Particle::Tick(_float fTimeDelta)
 			}
 		}
 
+		// 회전
+		if (ImGui::CollapsingHeader("ParticleRotation"))
+		{
+			ImGui::Checkbox("RotationBillboard", &m_tParticleInfo.bBillboard);
+			ImGui::NewLine();
+
+			ImGui::Checkbox("RotationRandomAxis", &m_tParticleInfo.bRandomAxis);
+			if (!m_tParticleInfo.bRandomAxis)
+			{
+				ImGui::Text("RotationAxis");
+				ImGui::InputFloat3("##RotationAxis", m_fParticleAxis);
+				ImGui::NewLine();
+			}
+			ImGui::NewLine();
+
+			ImGui::Checkbox("RotationRandomAngle", &m_tParticleInfo.bRandomAngle);
+			if (!m_tParticleInfo.bRandomAngle)
+			{
+				ImGui::Text("RotationAngle");
+				ImGui::InputFloat("##RangeParticles", &m_tParticleInfo.fAngle);
+				ImGui::NewLine();
+			}
+			ImGui::NewLine();
+
+			ImGui::Checkbox("RotationChange", &m_tParticleInfo.bRotationChange);
+			ImGui::NewLine();
+
+			if (m_tParticleInfo.bRotationChange)
+			{
+				ImGui::Text("RotationChangeStartDelayParticles");
+				ImGui::InputFloat2("##RotationChangeStartDelayParticles", m_fParticleRotationChangeStartDelay);
+				ImGui::NewLine();
+
+				ImGui::Text("RotationSpeed");
+				ImGui::InputFloat2("##RotationSpeed", m_fParticleRotationSpeed);
+				ImGui::NewLine();
+
+				ImGui::Checkbox("RotationChangeRandom", &m_tParticleInfo.bRotationChangeRandom);
+				ImGui::NewLine();
+
+				if (m_tParticleInfo.bRotationChangeRandom)
+				{
+					ImGui::Text("RotationChangeTime");
+					ImGui::InputFloat2("##RotationChangeTime", m_fParticleRotationChangeTime);
+					ImGui::NewLine();
+				}
+				else
+				{
+					ImGui::Checkbox("RotationAddRandom", &m_tParticleInfo.bRotationAdd);
+					ImGui::NewLine();
+				}
+			}
+		}
+
 		// 지속 시간
 		if (ImGui::CollapsingHeader("ParticleLifeTime"))
 		{
@@ -380,7 +457,38 @@ void CTool_Particle::Tick(_float fTimeDelta)
 			}
 		}
 
+		// 텍스처 알파
+		if (ImGui::CollapsingHeader("ParticleAlpha"))
+		{
+			// fStartAlpha
+			ImGui::Text("StartAlpha");
+			ImGui::InputFloat2("##StartAlpha", m_fStartAlpha);
 
+			ImGui::Checkbox("FadeCreate", &m_tParticleInfo.bFadeCreate);
+			ImGui::NewLine();
+
+			ImGui::Checkbox("FadeDelete", &m_tParticleInfo.bFadeDelete);
+			ImGui::NewLine();
+
+			// fFadeSpeed
+			ImGui::Text("FadeSpeed");
+			ImGui::InputFloat2("##FadeSpeed", m_fFadeSpeed);
+			ImGui::NewLine();
+			
+			ImGui::Checkbox("FadeChange", &m_tParticleInfo.bFadeChange);
+			ImGui::NewLine();
+
+			// StartDelay
+			if (m_tParticleInfo.bFadeChange)
+			{
+				ImGui::Text("FadeChangeStartDelay");
+				ImGui::InputFloat2("##FadeChangeStartDelay", m_fFadeChangeStartDelay);
+				ImGui::NewLine();
+
+				ImGui::Checkbox("FadeIn", &m_tParticleInfo.bFadeIn);
+				ImGui::NewLine();
+			}
+		}
 
 		// 파티클 색상
 		if (ImGui::CollapsingHeader("ParticleColor"))
@@ -389,7 +497,7 @@ void CTool_Particle::Tick(_float fTimeDelta)
 			if (!m_tParticleInfo.bColorRandom)
 			{
 				ImGui::Text("Diffuse Color");
-				ImGui::ColorEdit4("##DiffuseColor", (float*)&m_tParticleInfo.vColor, ImGuiColorEditFlags_Float);
+				ImGui::ColorEdit4("##DiffuseColor", (float*)&m_tParticleInfo.vColorS, ImGuiColorEditFlags_Float);
 			}
 		}
 
@@ -450,12 +558,20 @@ void CTool_Particle::Load_InfoParticle()
 
 	m_tParticleInfo = static_cast<CParticle*>(m_pParticle)->Get_ParticleDesc();
 
+	if (m_tParticleInfo.eParticleType == CParticle::TYPE_PERSPECTIVE)
+		m_bParticleType_Pers = true;
+	if (m_tParticleInfo.eParticleType == CParticle::TYPE_ORTHOGRAPHIC)
+		m_bParticleType_Orth = false;
+
 	m_fParticleRange[0] = m_tParticleInfo.fRange.x;
 	m_fParticleRange[1] = m_tParticleInfo.fRange.y;
 	m_fParticleRange[2] = m_tParticleInfo.fRange.z;
 
 	m_fParticleScaleStart[0] = m_tParticleInfo.fScaleStart.x;
 	m_fParticleScaleStart[1] = m_tParticleInfo.fScaleStart.y;
+
+	m_fParticleScaleChangeStartDelay[0] = m_tParticleInfo.fScaleChangeStartDelay.x;
+	m_fParticleScaleChangeStartDelay[1] = m_tParticleInfo.fScaleChangeStartDelay.y;
 
 	m_fParticleScaleChangeTime[0] = m_tParticleInfo.fScaleChangeTime.x;
 	m_fParticleScaleChangeTime[1] = m_tParticleInfo.fScaleChangeTime.y;
@@ -477,6 +593,9 @@ void CTool_Particle::Load_InfoParticle()
 	m_fParticleVelocityMax[0] = m_tParticleInfo.vVelocityMaxStart.x;
 	m_fParticleVelocityMax[1] = m_tParticleInfo.vVelocityMaxStart.y;
 	m_fParticleVelocityMax[2] = m_tParticleInfo.vVelocityMaxStart.z;
+
+	m_fParticleVelocityChangeStartDelay[0] = m_tParticleInfo.fVelocityChangeStartDelay.x;
+	m_fParticleVelocityChangeStartDelay[1] = m_tParticleInfo.fVelocityChangeStartDelay.y;
 
 	m_fParticleVelocityChangeTime[0] = m_tParticleInfo.fVelocityChangeTime.x;
 	m_fParticleVelocityChangeTime[1] = m_tParticleInfo.fVelocityChangeTime.y;
@@ -623,6 +742,19 @@ void CTool_Particle::Load_InfoParticle()
 	}
 
 
+	m_fParticleAxis[0] = XMVectorGetX(m_tParticleInfo.vAxis);
+	m_fParticleAxis[1] = XMVectorGetY(m_tParticleInfo.vAxis);
+	m_fParticleAxis[2] = XMVectorGetZ(m_tParticleInfo.vAxis);
+
+	m_fParticleRotationSpeed[0] = m_tParticleInfo.fRotationSpeed.x;
+	m_fParticleRotationSpeed[1] = m_tParticleInfo.fRotationSpeed.y;
+
+	m_fParticleRotationChangeStartDelay[0] = m_tParticleInfo.fRotationChangeStartDelay.x;
+	m_fParticleRotationChangeStartDelay[1] = m_tParticleInfo.fRotationChangeStartDelay.y;
+
+	m_fParticleRotationChangeTime[0] = m_tParticleInfo.fRotationChangeTime.x;
+	m_fParticleRotationChangeTime[1] = m_tParticleInfo.fRotationChangeTime.y;
+
 
 	m_fParticleLifeTime[0] = m_tParticleInfo.fLifeTime.x;
 	m_fParticleLifeTime[1] = m_tParticleInfo.fLifeTime.y;
@@ -646,16 +778,33 @@ void CTool_Particle::Load_InfoParticle()
 
 	m_fParticleUVMaxCount[0] = m_tParticleInfo.fUVMaxCount.x;
 	m_fParticleUVMaxCount[1] = m_tParticleInfo.fUVMaxCount.y;
+
+
+	m_fFadeChangeStartDelay[0] = m_tParticleInfo.fFadeChangeStartDelay.x;
+	m_fFadeChangeStartDelay[1] = m_tParticleInfo.fFadeChangeStartDelay.y;
+
+	m_fStartAlpha[0] = m_tParticleInfo.fStartAlpha.x;
+	m_fStartAlpha[1] = m_tParticleInfo.fStartAlpha.y;
+
+	m_fFadeSpeed[0] = m_tParticleInfo.fFadeSpeed.x;
+	m_fFadeSpeed[1] = m_tParticleInfo.fFadeSpeed.y;
 }
 
 void CTool_Particle::Store_InfoParticle()
 {
 	if (m_pParticle != nullptr)
 	{
+		if (m_bParticleType_Pers == true)
+			m_tParticleInfo.eParticleType = CParticle::TYPE_PERSPECTIVE;
+		else if (m_bParticleType_Orth == true)
+			m_tParticleInfo.eParticleType = CParticle::TYPE_ORTHOGRAPHIC;
+
 		m_tParticleInfo.fRange = _float3(m_fParticleRange[0], m_fParticleRange[1], m_fParticleRange[2]);
 
-		m_tParticleInfo.fScaleStart      = _float2(m_fParticleScaleStart[0], m_fParticleScaleStart[1]);
+		m_tParticleInfo.fScaleStart = _float2(m_fParticleScaleStart[0], m_fParticleScaleStart[1]);
+		m_tParticleInfo.fScaleChangeStartDelay = _float2(m_fParticleScaleChangeStartDelay[0], m_fParticleScaleChangeStartDelay[1]);
 		m_tParticleInfo.fScaleChangeTime = _float2(m_fParticleScaleChangeTime[0], m_fParticleScaleChangeTime[1]);
+
 		m_tParticleInfo.fScaleMin   = _float2(m_fParticleScaleMin[0], m_fParticleScaleMin[1]);
 		m_tParticleInfo.fScaleMax   = _float2(m_fParticleScaleMax[0], m_fParticleScaleMax[1]);
 		m_tParticleInfo.fScaleSpeed = _float2(m_fParticleScaleSpeed[0], m_fParticleScaleSpeed[1]);
@@ -663,6 +812,7 @@ void CTool_Particle::Store_InfoParticle()
 		m_tParticleInfo.vVelocityMinStart = _float3(m_fParticleVelocityMin[0], m_fParticleVelocityMin[1], m_fParticleVelocityMin[2]);
 		m_tParticleInfo.vVelocityMaxStart = _float3(m_fParticleVelocityMax[0], m_fParticleVelocityMax[1], m_fParticleVelocityMax[2]);
 
+		m_tParticleInfo.fVelocityChangeStartDelay = _float2(m_fParticleVelocityChangeStartDelay[0], m_fParticleVelocityChangeStartDelay[1]);
 		m_tParticleInfo.fVelocityChangeTime = _float2(m_fParticleVelocityChangeTime[0], m_fParticleVelocityChangeTime[1]);
 
 		if (m_tParticleInfo.bVelocityChange && m_tParticleInfo.pVelocityMin != nullptr && m_tParticleInfo.pVelocityMax != nullptr && m_tParticleInfo.pVelocityTime != nullptr)
@@ -736,6 +886,12 @@ void CTool_Particle::Store_InfoParticle()
 		}
 
 
+		m_tParticleInfo.vAxis               = XMVectorSet(m_fParticleAxis[0], m_fParticleAxis[1], m_fParticleAxis[2], 0.f);
+		m_tParticleInfo.fRotationSpeed      = _float2(m_fParticleRotationSpeed[0], m_fParticleRotationSpeed[1]);
+		m_tParticleInfo.fRotationChangeStartDelay = _float2(m_fParticleRotationChangeStartDelay[0], m_fParticleRotationChangeStartDelay[1]);
+		m_tParticleInfo.fRotationChangeTime = _float2(m_fParticleRotationChangeTime[0], m_fParticleRotationChangeTime[1]);
+
+
 		m_tParticleInfo.fLifeTime = _float2(m_fParticleLifeTime[0], m_fParticleLifeTime[1]);
 		m_tParticleInfo.fVelocitySpeed = _float2(m_fParticleSpeed[0], m_fParticleSpeed[1]);
 		m_tParticleInfo.fBoxMin = _float3(m_fParticleBoxMin[0], m_fParticleBoxMin[1], m_fParticleBoxMin[2]);
@@ -753,6 +909,11 @@ void CTool_Particle::Store_InfoParticle()
 		m_tParticleInfo.strAlphaTexturName = strAlphaTextureName;
 		wstring strAlphaTexturePath(m_cAlphaTexturePath, m_cAlphaTexturePath + strlen(m_cAlphaTexturePath));
 		m_tParticleInfo.strAlphaTexturPath = strAlphaTexturePath;
+
+
+		m_tParticleInfo.fFadeChangeStartDelay = _float2(m_fFadeChangeStartDelay[0], m_fFadeChangeStartDelay[1]);
+		m_tParticleInfo.fStartAlpha = _float2(m_fStartAlpha[0], m_fStartAlpha[1]);
+		m_tParticleInfo.fFadeSpeed  = _float2(m_fFadeSpeed[0],  m_fFadeSpeed[1]);
 
 
 		static_cast<CParticle*>(m_pParticle)->Set_ParticleDesc(m_tParticleInfo);
@@ -808,7 +969,7 @@ void CTool_Particle::Save_Particle(const char* pFileName)
 
 	// 색상
 	File->Write<_bool>(m_tParticleInfo.bColorRandom);
-	File->Write<_float4>(m_tParticleInfo.vColor);
+	File->Write<_float4>(m_tParticleInfo.vColorS);
 
 	// 텍스처
 	File->Write<_bool>(m_tParticleInfo.bAnimation);
@@ -869,7 +1030,7 @@ void CTool_Particle::Load_Particle(const char* pFileName)
 
 	// 색상
 	File->Read<_bool>(ParticleInfo.bColorRandom);
-	File->Read<_float4>(ParticleInfo.vColor);
+	File->Read<_float4>(ParticleInfo.vColorS);
 
 	// 텍스처
 	File->Read<_bool>(ParticleInfo.bAnimation);

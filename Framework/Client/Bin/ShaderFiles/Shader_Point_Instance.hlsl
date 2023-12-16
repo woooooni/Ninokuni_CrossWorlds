@@ -18,8 +18,8 @@ struct EffectDesc //16 배수로 나눠떨어져야함.
 
 	bool     g_bBillboard; //4
 	float    g_fAngle;
+	float    g_fAlpha;
 	float    g_fTemp0;
-	float    g_fTemp1;
 };
 EffectDesc g_EffectDesc[1000]; // 8096
 
@@ -102,8 +102,8 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> OutStream)
 			fAxis.x * fAxis.y * (1.0 - cos(fAngle)) - fAxis.z * sin(fAngle), fAxis.y * fAxis.y * (1.0 - cos(fAngle)) + cos(fAngle), fAxis.y * fAxis.z * (1.0 - cos(fAngle)) + fAxis.x * sin(fAngle),
 			fAxis.x * fAxis.z * (1.0 - cos(fAngle)) + fAxis.y * sin(fAngle), fAxis.y * fAxis.z * (1.0 - cos(fAngle)) - fAxis.x * sin(fAngle), fAxis.z * fAxis.z * (1.0 - cos(fAngle)) + cos(fAngle));
 
-		vRight = mul(float4(float3(1.0f, 0.0f, 0.0f), 0), RotationMatrix).xyz;
-		vUp    = mul(float4(float3(0.0f, 1.0f, 0.0f), 0), RotationMatrix).xyz;
+		vRight = mul(float4(float3(1.0f, 0.0f, 0.0f), 0), RotationMatrix).xyz * In[0].vPSize.x;
+		vUp    = mul(float4(float3(0.0f, 1.0f, 0.0f), 0), RotationMatrix).xyz * In[0].vPSize.y;
 	}
 
 
@@ -177,61 +177,19 @@ PS_OUT PS_MAIN(PS_IN In)
 {
 	PS_OUT			Out = (PS_OUT)0;
 
-	//int iTextureIndex = (int)g_EffectDesc[In.iInstanceID].g_fTextureIndex;
-	//switch (iTextureIndex)
-	//{
-	//case 0:
-	//	Out.vDiffuse = g_DiffuseTexture[0].Sample(PointSampler, In.vTexcoord);
-	//	break;
-	//case 1:
-	//	Out.vDiffuse = g_DiffuseTexture[1].Sample(PointSampler, In.vTexcoord);
-	//	break;
-	//case 2:
-	//	Out.vDiffuse = g_DiffuseTexture[2].Sample(PointSampler, In.vTexcoord);
-	//	break;
-	//case 3:
-	//	Out.vDiffuse = g_DiffuseTexture[3].Sample(PointSampler, In.vTexcoord);
-	//	break;
-	//case 4:
-	//	Out.vDiffuse = g_DiffuseTexture[4].Sample(PointSampler, In.vTexcoord);
-	//	break;
-	//case 5:
-	//	Out.vDiffuse = g_DiffuseTexture[5].Sample(PointSampler, In.vTexcoord);
-	//	break;
-	//case 6:
-	//	Out.vDiffuse = g_DiffuseTexture[6].Sample(PointSampler, In.vTexcoord);
-	//	break;
-	//case 7:
-	//	Out.vDiffuse = g_DiffuseTexture[7].Sample(PointSampler, In.vTexcoord);
-	//	break;
-	//case 8:
-	//	Out.vDiffuse = g_DiffuseTexture[8].Sample(PointSampler, In.vTexcoord);
-	//	break;
-	//case 9:
-	//	Out.vDiffuse = g_DiffuseTexture[9].Sample(PointSampler, In.vTexcoord);
-	//	break;
-	//default:
-	//	Out.vDiffuse = g_DiffuseTexture[10].Sample(PointSampler, In.vTexcoord);
-	//	break;
-	//}
-	Out.vDiffuse = g_DiffuseTexture[0].Sample(PointSampler, In.vTexcoord);
+	Out.vDiffuse   = g_DiffuseTexture[0].Sample(PointSampler, In.vTexcoord);
+	Out.vDiffuse.r = saturate((Out.vDiffuse.r + g_EffectDesc[In.iInstanceID].g_fColor.r));
+	Out.vDiffuse.g = saturate((Out.vDiffuse.g + g_EffectDesc[In.iInstanceID].g_fColor.g));
+	Out.vDiffuse.b = saturate((Out.vDiffuse.b + g_EffectDesc[In.iInstanceID].g_fColor.b));
+	//Out.vDiffuse.a = saturate(Out.vDiffuse.a - g_EffectDesc[In.iInstanceID].g_fAlpha);
+
 	if (Out.vDiffuse.a < 0.5f)
 		discard;
 
-	//Out.vDiffuse    = (Out.vDiffuse + g_EffectDesc[In.iInstanceID].g_fColor) / 2.f;
-
 	// 알파 채널 반전
 	//Out.vDiffuse.a = 1.f - Out.vDiffuse.a;
-	//if (Out.vDiffuse.a < 0.5f)
-	//	discard;
-
 	if (Out.vDiffuse.r < 0.5f && Out.vDiffuse.g < 0.5f && Out.vDiffuse.b < 0.5f)
 		discard;
-
-	//Out.vDiffuse.a = saturate(1.f - Out.vDiffuse.a);
-	//if (Out.vDiffuse.a > 0.5f)
-	//	discard;
-	//로 변경하여 사용할 수 있습니다.saturate 함수는 주어진 값을 0과 1 사이로 클램핑합니다.
 
 	Out.vBlurPower  = float4(1.f, 1.f, 1.f, 0.f);
 	Out.vBrightness = Out.vDiffuse;
@@ -245,7 +203,7 @@ technique11 DefaultTechnique
 	{
 		SetRasterizerState(RS_NoneCull);
 		SetDepthStencilState(DSS_Default, 0);
-		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
+		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = compile gs_5_0 GS_MAIN();

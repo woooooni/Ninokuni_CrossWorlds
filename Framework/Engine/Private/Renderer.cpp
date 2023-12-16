@@ -431,6 +431,12 @@ HRESULT CRenderer::Draw()
 	if (FAILED(Render_UI()))
 		return E_FAIL;
 
+	if (FAILED(Render_EffectUI()))
+		return E_FAIL;
+
+	if (FAILED(Render_Cursor()))
+		return E_FAIL;
+
 	if (FAILED(Render_Final()))
 		return E_FAIL;
 
@@ -441,8 +447,6 @@ HRESULT CRenderer::Draw()
 	if (FAILED(Render_Debug()))
 		return E_FAIL;
 #endif // DEBUG
-
-	
 
 	return S_OK;
 }
@@ -1043,6 +1047,31 @@ HRESULT CRenderer::Render_UI()
 	}
 	m_RenderObjects[RENDER_UI].clear();
 
+	return S_OK;
+}
+
+HRESULT CRenderer::Render_EffectUI()
+{
+	for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_UIEFFECT])
+	{
+		if (FAILED(iter->Render()))
+			return E_FAIL;
+		Safe_Release(iter);
+	}
+	m_RenderObjects[RENDER_UIEFFECT].clear();
+
+	return S_OK;
+}
+
+HRESULT CRenderer::Render_Cursor()
+{
+	for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_CURSOR])
+	{
+		if (FAILED(iter->Render()))
+			return E_FAIL;
+		Safe_Release(iter);
+	}
+	m_RenderObjects[RENDER_CURSOR].clear();
 
 	return S_OK;
 }

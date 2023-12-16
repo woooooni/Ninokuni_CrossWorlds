@@ -34,16 +34,24 @@ private:
 	_float m_fRotation[3];
 	_float m_fScale[3];
 
+	_bool m_bParticleType_Pers = false;
+	_bool m_bParticleType_Orth = false;
+
 	_float m_fParticleRange[3];
 
 	_float m_fParticleScaleStart[2];
+
+	_float m_fParticleScaleChangeStartDelay[2];
 	_float m_fParticleScaleChangeTime[2];
+
 	_float m_fParticleScaleMin[2];
 	_float m_fParticleScaleMax[2];
 	_float m_fParticleScaleSpeed[2];
 
 	_float m_fParticleVelocityMin[3];
 	_float m_fParticleVelocityMax[3];
+
+	_float m_fParticleVelocityChangeStartDelay[2];
 	_float m_fParticleVelocityChangeTime[2];
 
 	_float m_fParticleVelocityMin_02[3];
@@ -77,6 +85,12 @@ private:
 	_float m_fParticleVelocityTime_10[2];
 
 
+	_float m_fParticleAxis[3];
+	_float m_fParticleRotationSpeed[2];
+
+	_float m_fParticleRotationChangeStartDelay[2];
+	_float m_fParticleRotationChangeTime[2];
+
 
 	_float m_fParticleLifeTime[2];
 	_float m_fParticleSpeed[2];
@@ -88,6 +102,12 @@ private:
 
 	_float m_fParticleUVIndex[2];
 	_float m_fParticleUVMaxCount[2];
+
+
+	_float m_fFadeChangeStartDelay[2];
+	_float m_fStartAlpha[2];
+	_float m_fFadeSpeed[2];
+
 
 	char   m_cDiffuseTextureName[MAX_PATH] = { "" };
 	char   m_cAlphaTextureName[MAX_PATH]   = { "" };
