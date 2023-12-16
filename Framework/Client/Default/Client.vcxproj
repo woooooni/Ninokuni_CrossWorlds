@@ -162,7 +162,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>_CLIENT;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../Public/;../../Reference/Headers/;../../Reference/Headers/Network/;../../Reference/Protobuf/;../../ThirdParty/;../../Reference/Headers/PhysX/;../../Reference/Headers/Fmod/;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Public/;../../Reference/Headers/;../../Reference/Headers/Network/;../../Reference/Protobuf/;../../ThirdParty/;../../Reference/Headers/PhysX/;../../Reference/Headers/PhysX/extensions/;../../Reference/Headers/Fmod/</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalOptions>/execution-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
