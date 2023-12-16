@@ -31,8 +31,9 @@ private:
 	HRESULT Ready_DebugDraw();
 	HRESULT Ready_Dummy();
 	HRESULT Ready_WeaponPrototypes();
+	HRESULT Ready_AutoAnimData();
 
-	/* In Impoty Animation */
+	/* In Impory Animation */
 	HRESULT Ready_SocketTransforms();
 
 private:
@@ -74,6 +75,13 @@ private:
 
 	/* Render Index */
 	_int m_iRenderSocketIndex = 0;
+
+	/* Rotation Value */
+	Vec3 m_vRotation;
+
+	vector<Vec3> m_vAutoSocket;
+	_bool		m_bAuto = FALSE;
+	_int		m_iAutoAnimIndex = 0;
 
 #pragma endregion
 

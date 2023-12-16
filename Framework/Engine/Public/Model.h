@@ -88,7 +88,6 @@ public:
 	HRESULT Delete_Animation(_uint iIndex);
 	HRESULT Swap_Animation(_uint iSrcIndex, _uint iDestIndex);
 
-
 #pragma endregion
 
 #pragma region Vtf

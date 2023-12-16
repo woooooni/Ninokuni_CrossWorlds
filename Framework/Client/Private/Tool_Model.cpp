@@ -43,6 +43,9 @@ HRESULT CTool_Model::Initialize()
 	if (FAILED(Ready_WeaponPrototypes()))
 		return E_FAIL;
 
+	if (FAILED(Ready_AutoAnimData()))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -102,6 +105,12 @@ HRESULT CTool_Model::Clear_ToolAnimationData()
 	m_AddedTransformNames.clear();
 	m_AddedTransformNames.shrink_to_fit();
 
+	m_vRotation = Vec3::Zero;
+
+	m_bAuto = FALSE;
+
+	m_iAutoAnimIndex = 0;
+
 	return S_OK;
 }
 
@@ -125,7 +134,7 @@ Matrix CTool_Model::Calculate_SocketWorldMatrix()
 	/* if Next Frame */
 	if (0 <= TweenDesc.next.iAnimIndex)
 	{
-		Matrix matSocketNext = Matrix::Lerp(m_AnimTransformsCaches[TweenDesc.next.iAnimIndex].transforms[TweenDesc.next.iCurFrame][m_iRenderSocketIndex],
+		Matrix matSocketNext = Matrix::Lerp(m_AnimTransformsCaches[TweenDesc.next. iAnimIndex].transforms[TweenDesc.next.iCurFrame][m_iRenderSocketIndex],
 								m_AnimTransformsCaches[TweenDesc.next.iAnimIndex].transforms[TweenDesc.next.iNextFrame][m_iRenderSocketIndex],
 								TweenDesc.next.fRatio);
 
@@ -133,37 +142,48 @@ Matrix CTool_Model::Calculate_SocketWorldMatrix()
 	}
 
 	/* 정규화 */
-	/*Vec3 vRight, vUp, vLook;
-	memcpy(&vRight, matSocket.m[0], sizeof(Vec3));
-	memcpy(&vUp, matSocket.m[1], sizeof(Vec3));
-	memcpy(&vLook, matSocket.m[2], sizeof(Vec3));
+	{
+		Vec3 vRight, vUp, vLook;
+		memcpy(&vRight, matSocket.m[0], sizeof(Vec3));
+		memcpy(&vUp, matSocket.m[1], sizeof(Vec3));
+		memcpy(&vLook, matSocket.m[2], sizeof(Vec3));
 
-	vRight.Normalize();
-	vUp.Normalize();
-	vLook.Normalize();
+		vRight.Normalize();
+		vUp.Normalize();
+		vLook.Normalize();
 
-	matSocket.Right(vRight);
-	matSocket.Up(vUp);
-	matSocket.Backward(vLook);*/
+		matSocket.Right(vRight);
+		matSocket.Up(vUp);
+		matSocket.Backward(vLook);
+
+	}
 	 
 	/* 포지션 */
 	Vec4 vPos;
-	memcpy(&vPos, matSocket.m[3], sizeof(Vec4));		
+	{
+		memcpy(&vPos, matSocket.m[3], sizeof(Vec4));		
+	}
 
 	/* 회전 */
 	Matrix matRotation;
-	XMStoreFloat4x4(&matRotation, XMMatrixRotationQuaternion(XMQuaternionRotationRollPitchYaw(
-		XMConvertToRadians(180.f),
-		XMConvertToRadians(0.f),
-		XMConvertToRadians(0.f))));
+	{
+		XMStoreFloat4x4(&matRotation, XMMatrixRotationQuaternion(XMQuaternionRotationRollPitchYaw(
+			XMConvertToRadians(m_vRotation.x),
+			XMConvertToRadians(m_vRotation.y),
+			XMConvertToRadians(m_vRotation.z))));
 
+		/*Matrix matRotation =
+			Matrix::CreateRotationY(XMConvertToRadians(m_vRotation.x)) *
+			Matrix::CreateRotationZ(XMConvertToRadians(m_vRotation.y)) *
+			Matrix::CreateRotationX(XMConvertToRadians(m_vRotation.z));*/
+	}
+
+	
 	/* 스케일 */
 
 
-	matSocket *= matRotation * Matrix::CreateScale(80.f);
-
+	matSocket *= matRotation;
 	memcpy(&matSocket.m[3], &vPos, sizeof(Vec4));
-
 
 	return matSocket * m_pDummy->Get_TransformCom()->Get_WorldMatrix();
 }
@@ -231,22 +251,34 @@ HRESULT CTool_Model::Ready_DebugDraw()
 
 HRESULT CTool_Model::Ready_WeaponPrototypes()
 {
-	CPart*			pWeapon = nullptr;
-	CGameObject*	pGameObject = nullptr;
+	//CPart*			pWeapon = nullptr;
+	//CGameObject*	pGameObject = nullptr;
 
-	/* Prototype_GameObject_TempSword */
-	if (FAILED(GI->Add_GameObject(LEVEL_TOOL, _uint(LAYER_WEAPON), TEXT("Prototype_GameObject_TempSword"), nullptr, &pGameObject)))
-		return E_FAIL;
-	{
-		pWeapon = dynamic_cast<CPart*>(pGameObject);
-		if (nullptr == pWeapon)
-			return E_FAIL;
+	///* Prototype_GameObject_TempSword */
+	//if (FAILED(GI->Add_GameObject(LEVEL_TOOL, _uint(LAYER_WEAPON), TEXT("Prototype_GameObject_TempSword"), nullptr, &pGameObject)))
+	//	return E_FAIL;
+	//{
+	//	pWeapon = dynamic_cast<CPart*>(pGameObject);
+	//	if (nullptr == pWeapon)
+	//		return E_FAIL;
 
-		m_Weapons.push_back(pWeapon);
+	//	m_Weapons.push_back(pWeapon);
 
-		pWeapon = nullptr;
-		pGameObject = nullptr;
-	}
+	//	pWeapon = nullptr;
+	//	pGameObject = nullptr;
+	//}
+
+	return S_OK;
+}
+
+HRESULT CTool_Model::Ready_AutoAnimData()
+{
+	vector<_float> vData = { -270.f, -180.f, -90.f, 0.f, 90.f, 180.f, 270.f };
+
+	for (auto x : vData)
+		for (auto y : vData)
+			for (auto z : vData)
+				m_vAutoSocket.push_back(Vec3{ x, y, z });
 
 	return S_OK;
 }
@@ -841,8 +873,130 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 			m_iSocketIndex -= 1;
 			m_iRenderSocketIndex = m_iCurBoneIndex;
 		}
+		IMGUI_NEW_LINE;
+
+
+		/* Rotation matrix */
+		{
+			_float fRot[3] = { m_vRotation.x, m_vRotation.y, m_vRotation.z };	
+			ImGui::Text("Socket Rotation");
+			
+			/*if (ImGui::DragFloat3("(Degree)", (_float*)&fRot, 0.5f))
+			{
+				memcpy(&m_vRotation, &fRot, sizeof(Vec3));
+			}*/
+			/* X */
+			{
+				if (ImGui::InputFloat("X", &fRot[0]))
+					m_vRotation.x = fRot[0];
+
+				IMGUI_SAME_LINE;
+
+				if (ImGui::ArrowButton("##Up X", ImGuiDir_Up))
+				{
+					m_vRotation.x += 90.f;
+					if (360 <= m_vRotation.x)
+						m_vRotation.x = -270.f;
+				}
+
+				IMGUI_SAME_LINE;
+
+				if (ImGui::ArrowButton("##Down X", ImGuiDir_Down))
+				{
+					m_vRotation.x -= 90.f;
+					if (-360 >= m_vRotation.x)
+						m_vRotation.x = 270.f;
+				}
+			}
+
+			/* Y */
+			{
+				if (ImGui::InputFloat("Y", &fRot[1]))
+					m_vRotation.y = fRot[1];
+
+				IMGUI_SAME_LINE;
+
+				if (ImGui::ArrowButton("##Up Y", ImGuiDir_Up))
+				{
+					m_vRotation.y += 90.f;
+					if (360 <= m_vRotation.y)
+						m_vRotation.y = -270.f;
+				}
+
+				IMGUI_SAME_LINE;
+
+				if (ImGui::ArrowButton("##Down Y", ImGuiDir_Down))
+				{
+					m_vRotation.y -= 90.f;
+					if (-360 >= m_vRotation.y)
+						m_vRotation.y = 270.f;
+				}
+			}
+
+			/* Z */
+			{
+				if (ImGui::InputFloat("Z", &fRot[2]))
+					m_vRotation.z = fRot[2];
+
+				IMGUI_SAME_LINE;
+
+				if (ImGui::ArrowButton("##Up Z", ImGuiDir_Up))
+				{
+					m_vRotation.z += 90.f;
+					if (360 <= m_vRotation.z)
+						m_vRotation.z = -270.f;
+				}
+
+				IMGUI_SAME_LINE;
+
+				if (ImGui::ArrowButton("##Down Z", ImGuiDir_Down))
+				{
+					m_vRotation.z -= 90.f;
+					if (-360 >= m_vRotation.z)
+						m_vRotation.z = 270.f;
+				}
+			}
+
+			/* Clear */
+			if (ImGui::Button("Clear Socket Rotation"))
+			{
+				m_vRotation = Vec3::Zero;
+			}
+			IMGUI_SAME_LINE;
+
+			/* Auto */
+			//if(ImGui::Checkbox("Auto Play", &m_bAuto));
+			//{
+			//	if (m_bAuto)
+			//	{
+			//		m_pDummy->Get_ModelCom()->Set_Animation(m_pDummy->Get_ModelCom()->Get_CurrAnimationIndex());
+
+			//		//m_pDummy->Get_ModelCom()->Get_CurrAnimation()->Set_Loop(FALSE);
+			//	}
+			//}
+
+			//if (m_bAuto)
+			//{
+			//	if (!m_pDummy->Get_ModelCom()->Is_Tween() && m_pDummy->Get_ModelCom()->Is_Finish())
+			//	{
+			//		m_pDummy->Get_ModelCom()->Set_Animation(m_pDummy->Get_ModelCom()->Get_CurrAnimationIndex());
+
+			//		m_iAutoAnimIndex++;
+			//		if (m_vAutoSocket.size() <= m_iAutoAnimIndex)
+			//		{
+			//			m_bAuto = FALSE;
+			//			m_iAutoAnimIndex = 0;
+			//		}
+
+			//		m_vRotation = m_vAutoSocket[m_iAutoAnimIndex];
+			//	}
+
+			//}
+		}
 
 		IMGUI_NEW_LINE;
+		IMGUI_NEW_LINE;
+
 	}
 }
 
