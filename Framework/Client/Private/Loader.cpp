@@ -206,7 +206,7 @@ HRESULT CLoader::Loading_For_Level_Test()
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Background", CBackGround::Create(m_pDevice, m_pContext), LAYER_BACKGROUND)))
 		return E_FAIL;
 	
-	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_CharacterDummy", CCharacter_Dummy::Create(m_pDevice, m_pContext, L"Dummy_Character", CCharacter::CHARACTER_TYPE::WITCH), LAYER_CHARACTER)))
+	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_CharacterDummy", CCharacter_Dummy::Create(m_pDevice, m_pContext, L"Dummy_Character"), LAYER_CHARACTER)))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Cloth_Terrain", CCloth_Terrain::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_TERRAIN)))
@@ -228,8 +228,8 @@ HRESULT CLoader::Loading_For_Level_Test()
 		return E_FAIL;
 
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Test_Witch", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Test/", L"Witch")))
-		return E_FAIL;
+	/*if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SwordMan_Body", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Test/", L"SwordMan_Body")))
+		return E_FAIL;*/
 
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Stellia", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Boss/Stellia/", L"Stellia")))
 		return E_FAIL;

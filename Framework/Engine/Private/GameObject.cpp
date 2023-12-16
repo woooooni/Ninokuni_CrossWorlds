@@ -58,9 +58,7 @@ void CGameObject::LateTick(_float fTimeDelta)
 
 HRESULT CGameObject::Render()
 {
-#ifdef _DEBUG
-	Render_Collider();
-#endif // _DEBUG
+
 	return S_OK;
 }
 

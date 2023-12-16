@@ -7,7 +7,7 @@
 
 
 
-CCharacter_Witch::CCharacter_Witch(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CCharacter::CHARACTER_TYPE eCharacterType)
+CCharacter_Witch::CCharacter_Witch(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eCharacterType)
 	: CCharacter(pDevice, pContext, strObjectTag, eCharacterType)
 {
 }
@@ -572,7 +572,7 @@ HRESULT CCharacter_Witch::Ready_Parts()
 }
 #pragma endregion
 
-CCharacter_Witch* CCharacter_Witch::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CCharacter::CHARACTER_TYPE eCharacterType)
+CCharacter_Witch* CCharacter_Witch::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eCharacterType)
 {
 	CCharacter_Witch* pInstance = new CCharacter_Witch(pDevice, pContext, strObjectTag, eCharacterType);
 	if (FAILED(pInstance->Initialize_Prototype()))

@@ -147,10 +147,10 @@ public:
 
 	
 	
-	class PxParticleClothBuffer* Get_TestClothBuffer();
+	/*class PxParticleClothBuffer* Get_TestClothBuffer();
 	class PxCudaContextManager* Get_CudaContext_Manager();
 	class PxCudaContext* Get_CudaContext();
-	class PxParticleSystem* Get_ParticleSystem();
+	class PxParticleSystem* Get_ParticleSystem();*/
 
 
 

@@ -193,7 +193,6 @@
     <ClInclude Include="..\..\ThirdParty\imstb_rectpack.h" />
     <ClInclude Include="..\..\ThirdParty\imstb_textedit.h" />
     <ClInclude Include="..\..\ThirdParty\imstb_truetype.h" />
-    <ClInclude Include="..\Private\Character_Dummy.h" />
     <ClInclude Include="..\public\BackGround.h" />
     <ClInclude Include="..\Public\Baobam_Water.h" />
     <ClInclude Include="..\Public\Baobam_WaterBT.h" />
@@ -205,11 +204,17 @@
     <ClInclude Include="..\Public\Baobam_WaterNode_Return.h" />
     <ClInclude Include="..\Public\Baobam_WaterNode_Skill1.h" />
     <ClInclude Include="..\Public\Baobam_WaterNode_Skill2.h" />
+    <ClInclude Include="..\Public\Body.h" />
     <ClInclude Include="..\Public\Building.h" />
     <ClInclude Include="..\Public\Camera_Main.h" />
     <ClInclude Include="..\Public\Camera_Manager.h" />
     <ClInclude Include="..\Public\Character.h" />
+    <ClInclude Include="..\Public\Character_Dummy.h" />
     <ClInclude Include="..\Public\Character_Witch.h" />
+    <ClInclude Include="..\Public\Face.h" />
+    <ClInclude Include="..\Public\Hair.h" />
+    <ClInclude Include="..\Public\Head.h" />
+    <ClInclude Include="..\Public\Part_Manager.h" />
     <ClInclude Include="..\Public\Shadow_ThiefBT.h" />
     <ClInclude Include="..\Public\Cloth_Terrain.h" />
     <ClInclude Include="..\Public\Gianix.h" />
@@ -352,6 +357,7 @@
     <ClCompile Include="..\Private\Baobam_WaterNode_Return.cpp" />
     <ClCompile Include="..\Private\Baobam_WaterNode_Skill1.cpp" />
     <ClCompile Include="..\Private\Baobam_WaterNode_Skill2.cpp" />
+    <ClCompile Include="..\Private\Body.cpp" />
     <ClCompile Include="..\Private\Building.cpp" />
     <ClCompile Include="..\Private\Camera_Main.cpp" />
     <ClCompile Include="..\Private\Camera_Manager.cpp" />
@@ -359,6 +365,10 @@
     <ClCompile Include="..\Private\Character.cpp" />
     <ClCompile Include="..\Private\Character_Dummy.cpp" />
     <ClCompile Include="..\Private\Character_Witch.cpp" />
+    <ClCompile Include="..\Private\Face.cpp" />
+    <ClCompile Include="..\Private\Hair.cpp" />
+    <ClCompile Include="..\Private\Head.cpp" />
+    <ClCompile Include="..\Private\Part_Manager.cpp" />
     <ClCompile Include="..\Private\Shadow_ThiefBT.cpp" />
     <ClCompile Include="..\Private\Cloth_Terrain.cpp" />
     <ClCompile Include="..\Private\Gianix.cpp" />

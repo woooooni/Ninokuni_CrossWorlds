@@ -586,26 +586,26 @@ PxMaterial* CGameInstance::Create_PxMaterial(_float fStaticFriction, _float fDyn
 	return m_pPhysXManager->Create_Material(fStaticFriction, fDynamicFriction, fRestitution);
 }
 
-PxParticleClothBuffer* CGameInstance::Get_TestClothBuffer()
-{
-	return m_pPhysXManager->Get_ClothBuffer();
-}
-
-PxCudaContextManager* CGameInstance::Get_CudaContext_Manager()
-{
-	return m_pPhysXManager->Get_CudaContext_Manager();
-}
-
-
-PxCudaContext* CGameInstance::Get_CudaContext()
-{
-	return m_pPhysXManager->Get_CudaContext();
-}
-
-PxParticleSystem* CGameInstance::Get_ParticleSystem()
-{
-	return m_pPhysXManager->Get_ParticleSystem();
-}
+//PxParticleClothBuffer* CGameInstance::Get_TestClothBuffer()
+//{
+//	return m_pPhysXManager->Get_ClothBuffer();
+//}
+//
+//PxCudaContextManager* CGameInstance::Get_CudaContext_Manager()
+//{
+//	return m_pPhysXManager->Get_CudaContext_Manager();
+//}
+//
+//
+//PxCudaContext* CGameInstance::Get_CudaContext()
+//{
+//	return m_pPhysXManager->Get_CudaContext();
+//}
+//
+//PxParticleSystem* CGameInstance::Get_ParticleSystem()
+//{
+//	return m_pPhysXManager->Get_ParticleSystem();
+//}
 
 
 

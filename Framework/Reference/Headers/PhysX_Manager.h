@@ -58,10 +58,10 @@ public:
 
 
 public:
-	PxParticleSystem* Get_ParticleSystem() { return m_pParticleSystem; }
-	PxParticleClothBuffer* Get_ClothBuffer() { return m_pClothBuffer; }
-	PxCudaContext* Get_CudaContext() { return m_pCudaContextManager->getCudaContext(); }
-	PxCudaContextManager* Get_CudaContext_Manager() { return m_pCudaContextManager; }
+	 // PxParticleSystem* Get_ParticleSystem() { return m_pParticleSystem; }
+	 // PxParticleClothBuffer* Get_ClothBuffer() { return m_pClothBuffer; }
+	 // PxCudaContext* Get_CudaContext() { return m_pCudaContextManager->getCudaContext(); }
+	 // PxCudaContextManager* Get_CudaContext_Manager() { return m_pCudaContextManager; }
 
 
 private:
@@ -105,10 +105,11 @@ private:
 	PxMaterial* m_WorldMaterial = nullptr;		// °´Ã¼ÀÇ ÀçÁú
 
 
-	// PxParticle.
-	PxCudaContextManager*       m_pCudaContextManager = nullptr;
+	// PxCloth.
+	/*PxCudaContextManager*       m_pCudaContextManager = nullptr;
 	PxPBDParticleSystem*		m_pParticleSystem = nullptr;
 	PxParticleClothBuffer*		m_pClothBuffer = nullptr;
+	PxPartitionedParticleCloth	m_Cloth = {};*/
 
 
 	_bool m_bCudaGraphics = false;
@@ -118,7 +119,7 @@ private:
 	int							m_iPortNumber = 5555;
 	_uint						m_iTimeOutSeconds = 10;
 
-
+	
 private:
 	map<_uint, vector<PHYSX_STATIC_OBJECT_DESC>> m_StaticObjects;
 	map<_uint, vector<PHYSX_DYNAMIC_OBJECT_DESC>> m_DynamicObjects;
