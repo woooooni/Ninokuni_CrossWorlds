@@ -18,6 +18,15 @@ void CUI_LevelUp::Set_Active(_bool bActive)
 {
 	if (bActive)
 	{
+		if (UILEVELUP_BG == m_eType)
+		{
+			// 원래 사이즈로 세팅한다.
+			m_tInfo.fCX = m_vOriginSize.x;
+			m_bUpdate = false;
+
+			m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+		}
+
 		m_bSetAlpha = false;
 		m_fAlpha = 0.1f;
 
@@ -50,6 +59,14 @@ HRESULT CUI_LevelUp::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
+	if (UILEVELUP_BG == m_eType)
+	{
+		m_vOriginSize.x = m_tInfo.fCX;
+		m_vOriginSize.y = m_tInfo.fCY;
+
+		m_fMaxWidth = m_vOriginSize.x + 200.f;
+	}
+
 	return S_OK;
 }
 
@@ -59,7 +76,6 @@ void CUI_LevelUp::Tick(_float fTimeDelta)
 	{
 		if (m_bSetAlpha)
 		{
-		
 			if (m_fAlpha < 0.1f)
 			{
 				m_bActive = false;
@@ -67,15 +83,11 @@ void CUI_LevelUp::Tick(_float fTimeDelta)
 			}
 			else
 				m_fAlpha -= fTimeDelta * 2.f;
-		
 		}
 		else
 		{
 			if (m_fTimeAcc > 0.1f) // 프레임을 돌린다.
 			{
-//				if (m_iTextureIndex < 6)
-//					m_iTextureIndex++;
-
 				m_fTimeAcc = 0.f;
 			}
 			
@@ -93,7 +105,21 @@ void CUI_LevelUp::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (UILEVELUP_BG == m_eType)
+		{
+			if (!m_bUpdate)
+			{
+				if (m_tInfo.fCX > m_fMaxWidth)
+				{
+					m_bUpdate = true;
+					m_tInfo.fCX = m_fMaxWidth;
+				}
+				else
+					m_tInfo.fCX += fTimeDelta * 300.f;
 
+				m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+			}
+		}
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}

@@ -8,8 +8,8 @@
 #include "Utils.h"
 
 #include "UI_Fade.h"
-#include "UI_Cursor.h"
 #include "UI_Basic.h"
+#include "UI_Cursor.h"
 #include "UI_LevelUp.h"
 #include "UI_MapName.h"
 #include "UI_BtnClose.h"
@@ -17,16 +17,30 @@
 #include "UI_BtnAccept.h"
 #include "UI_PlayerInfo.h"
 #include "UI_PopupQuest.h"
+#include "UI_PlayerHPBar.h"
 #include "UI_BasicButton.h"
 #include "UI_WindowQuest.h"
 #include "UI_BtnShowMenu.h"
+#include "UI_SubMenu_Shop.h"
 #include "UI_BtnInventory.h"
+#include "UI_MenuSeparator.h"
 #include "UI_BtnQuickQuest.h"
+#include "UI_WindowWorldMap.h"
+#include "UI_SubMenu_Imajinn.h"
 #include "UI_BtnChangeCamera.h"
+#include "UI_Btn_WorldMapIcon.h"
 #include "UI_Loading_Character.h"
 #include "UI_SubMenu_Character.h"
+#include "UI_SubMenu_Equipment.h"
 #include "UI_BtnCharacterSelect.h"
 #include "UI_Loading_Background.h"
+#include "UI_ImajinnSection_Slot.h"
+#include "UI_SkillSection_BtnRoll.h"
+#include "UI_SkillSection_BtnJump.h"
+#include "UI_ImajinnSection_Vehicle.h"
+#include "UI_SkillSection_Background.h"
+#include "UI_ImajinnSection_Emoticon.h"
+#include "UI_ImajinnSection_Background.h"
 
 IMPLEMENT_SINGLETON(CUI_Manager)
 
@@ -560,6 +574,7 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 
 	Safe_AddRef(m_pWindowQuest);
 
+#pragma region MAINMENU_BTN
 
 	//////////////////////
 	// MainMenu UI 생성 //
@@ -695,10 +710,10 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 
 	// 닫기 버튼
 	pButton = nullptr;
-	fOffset = 10.f;
+	fOffset = 20.f;
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
-	UIDesc.fCX = 64.f;
+	UIDesc.fCX = 64.f * 0.7f;
 	UIDesc.fCY = UIDesc.fCX;
 	UIDesc.fX = g_iWinSizeX - (UIDesc.fCX * 0.5f) - fOffset;
 	UIDesc.fY = UIDesc.fCY * 0.5f + fOffset;
@@ -710,6 +725,10 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	if (nullptr == m_pBtnClose)
 		return E_FAIL;
 	Safe_AddRef(m_pBtnClose);
+
+#pragma endregion
+
+#pragma region SUBMENU_CHARACTER
 
 	// SubMenu Character Tab Buttons 생성
 	m_SubMenuChar.reserve(8);
@@ -794,6 +813,239 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(pSubBtn);
 
+#pragma endregion
+
+#pragma region MENU_SEPARATOR
+
+	// Menu Separator Left
+	m_MenuSeparator.reserve(2);
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 44.f * 0.9f;
+	UIDesc.fCY = 492.f;
+	UIDesc.fX = 160.f;
+	UIDesc.fY = g_iWinSizeY * 0.5f;
+
+	CGameObject* pSeparator = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Common_MainMenu_Separator"), &UIDesc, &pSeparator)))
+		return E_FAIL;
+	m_MenuSeparator.push_back(dynamic_cast<CUI_MenuSeparator*>(pSeparator));
+	if (nullptr == pSeparator)
+		return E_FAIL;
+	Safe_AddRef(pSeparator);
+
+	// Menu Separaor Right
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 44.f * 0.9f;
+	UIDesc.fCY = 492.f;
+	UIDesc.fX = g_iWinSizeX - 160.f;
+	UIDesc.fY = g_iWinSizeY * 0.5f;
+
+	pSeparator = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Common_MainMenu_Separator"), &UIDesc, &pSeparator)))
+		return E_FAIL;
+	m_MenuSeparator.push_back(dynamic_cast<CUI_MenuSeparator*>(pSeparator));
+	if (nullptr == pSeparator)
+		return E_FAIL;
+	Safe_AddRef(pSeparator);
+
+#pragma endregion
+
+#pragma region SUBMENU_EQUIPMENT
+
+	// SubMenu Equipment Tab Buttons 생성
+	m_SubMenuEquip.reserve(6);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 128.f * 0.68f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = 230.f;
+	UIDesc.fY = 245.f;
+
+	pSubBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SubMenu_Btn_Equipment_Inventory"), &UIDesc, &pSubBtn)))
+		return E_FAIL;
+	m_SubMenuEquip.push_back(dynamic_cast<CUI_SubMenu_Equipment*>(pSubBtn));
+	if (nullptr == pSubBtn)
+		return E_FAIL;
+	Safe_AddRef(pSubBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pSubBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SubMenu_Btn_Equipment_Forge"), &UIDesc, &pSubBtn)))
+		return E_FAIL;
+	m_SubMenuEquip.push_back(dynamic_cast<CUI_SubMenu_Equipment*>(pSubBtn));
+	if (nullptr == pSubBtn)
+		return E_FAIL;
+	Safe_AddRef(pSubBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pSubBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SubMenu_Btn_Equipment_Gem"), &UIDesc, &pSubBtn)))
+		return E_FAIL;
+	m_SubMenuEquip.push_back(dynamic_cast<CUI_SubMenu_Equipment*>(pSubBtn));
+	if (nullptr == pSubBtn)
+		return E_FAIL;
+	Safe_AddRef(pSubBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pSubBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SubMenu_Btn_Equipment_TinyGenie"), &UIDesc, &pSubBtn)))
+		return E_FAIL;
+	m_SubMenuEquip.push_back(dynamic_cast<CUI_SubMenu_Equipment*>(pSubBtn));
+	if (nullptr == pSubBtn)
+		return E_FAIL;
+	Safe_AddRef(pSubBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pSubBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SubMenu_Btn_Equipment_Transcend"), &UIDesc, &pSubBtn)))
+		return E_FAIL;
+	m_SubMenuEquip.push_back(dynamic_cast<CUI_SubMenu_Equipment*>(pSubBtn));
+	if (nullptr == pSubBtn)
+		return E_FAIL;
+	Safe_AddRef(pSubBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pSubBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SubMenu_Btn_Equipment_FishingRod"), &UIDesc, &pSubBtn)))
+		return E_FAIL;
+	m_SubMenuEquip.push_back(dynamic_cast<CUI_SubMenu_Equipment*>(pSubBtn));
+	if (nullptr == pSubBtn)
+		return E_FAIL;
+	Safe_AddRef(pSubBtn);
+
+#pragma endregion
+
+#pragma region SUBMENU_IMAGINN
+
+	// SubMenu Imaginn Tab Buttons 생성
+	m_SubMenuPet.reserve(8);
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 128.f * 0.68f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = 230.f;
+	UIDesc.fY = 245.f;
+
+	pSubBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SubMenu_Btn_Imajinn_Imajinn"), &UIDesc, &pSubBtn)))
+		return E_FAIL;
+	m_SubMenuPet.push_back(dynamic_cast<CUI_SubMenu_Imajinn*>(pSubBtn));
+	if (nullptr == pSubBtn)
+		return E_FAIL;
+	Safe_AddRef(pSubBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pSubBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SubMenu_Btn_Imajinn_Training"), &UIDesc, &pSubBtn)))
+		return E_FAIL;
+	m_SubMenuPet.push_back(dynamic_cast<CUI_SubMenu_Imajinn*>(pSubBtn));
+	if (nullptr == pSubBtn)
+		return E_FAIL;
+	Safe_AddRef(pSubBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pSubBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SubMenu_Btn_Imajinn_Toy"), &UIDesc, &pSubBtn)))
+		return E_FAIL;
+	m_SubMenuPet.push_back(dynamic_cast<CUI_SubMenu_Imajinn*>(pSubBtn));
+	if (nullptr == pSubBtn)
+		return E_FAIL;
+	Safe_AddRef(pSubBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pSubBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SubMenu_Btn_Imajinn_Cradle"), &UIDesc, &pSubBtn)))
+		return E_FAIL;
+	m_SubMenuPet.push_back(dynamic_cast<CUI_SubMenu_Imajinn*>(pSubBtn));
+	if (nullptr == pSubBtn)
+		return E_FAIL;
+	Safe_AddRef(pSubBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pSubBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SubMenu_Btn_Imajinn_Return"), &UIDesc, &pSubBtn)))
+		return E_FAIL;
+	m_SubMenuPet.push_back(dynamic_cast<CUI_SubMenu_Imajinn*>(pSubBtn));
+	if (nullptr == pSubBtn)
+		return E_FAIL;
+	Safe_AddRef(pSubBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pSubBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SubMenu_Btn_Imajinn_Dungeon"), &UIDesc, &pSubBtn)))
+		return E_FAIL;
+	m_SubMenuPet.push_back(dynamic_cast<CUI_SubMenu_Imajinn*>(pSubBtn));
+	if (nullptr == pSubBtn)
+		return E_FAIL;
+	Safe_AddRef(pSubBtn);
+
+	// 두번째 열
+	UIDesc.fX = 320.f;
+	UIDesc.fY = 245.f + (fBtnOffset * 2.f);
+	pSubBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SubMenu_Btn_Imajinn_Unitetree"), &UIDesc, &pSubBtn)))
+		return E_FAIL;
+	m_SubMenuPet.push_back(dynamic_cast<CUI_SubMenu_Imajinn*>(pSubBtn));
+	if (nullptr == pSubBtn)
+		return E_FAIL;
+	Safe_AddRef(pSubBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pSubBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SubMenu_Btn_Imajinn_Ultimate"), &UIDesc, &pSubBtn)))
+		return E_FAIL;
+	m_SubMenuPet.push_back(dynamic_cast<CUI_SubMenu_Imajinn*>(pSubBtn));
+	if (nullptr == pSubBtn)
+		return E_FAIL;
+	Safe_AddRef(pSubBtn);
+
+#pragma endregion
+
+#pragma region SUBMENU_SHOP
+
+	// SubMenu Shop Tab Buttons 생성
+	m_SubMenuShop.reserve(3);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 128.f * 0.68f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = g_iWinSizeX - 230.f;
+	UIDesc.fY = 370.f;
+
+	pSubBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SubMenu_Btn_Shop_Package"), &UIDesc, &pSubBtn)))
+		return E_FAIL;
+	m_SubMenuShop.push_back(dynamic_cast<CUI_SubMenu_Shop*>(pSubBtn));
+	if (nullptr == pSubBtn)
+		return E_FAIL;
+	Safe_AddRef(pSubBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pSubBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SubMenu_Btn_Shop_Gacha"), &UIDesc, &pSubBtn)))
+		return E_FAIL;
+	m_SubMenuShop.push_back(dynamic_cast<CUI_SubMenu_Shop*>(pSubBtn));
+	if (nullptr == pSubBtn)
+		return E_FAIL;
+	Safe_AddRef(pSubBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pSubBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SubMenu_Btn_Shop_Token"), &UIDesc, &pSubBtn)))
+		return E_FAIL;
+	m_SubMenuShop.push_back(dynamic_cast<CUI_SubMenu_Shop*>(pSubBtn));
+	if (nullptr == pSubBtn)
+		return E_FAIL;
+	Safe_AddRef(pSubBtn);
+
+#pragma endregion
+
+#pragma region MAP_NAME_TEXT
 
 	// MapText 생성
 	if (LEVELID::LEVEL_EVERMORE == eID)
@@ -879,6 +1131,58 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	else
 	{
 	}
+
+#pragma endregion
+
+	// WorldMap Background 생성
+	CGameObject* pBackground = nullptr;
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 2240.f;
+	UIDesc.fCY = 1260.f;
+	UIDesc.fX = UIDesc.fCX * 0.5f;
+	UIDesc.fY = g_iWinSizeY * 0.5f + 100.f;
+
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_WorldMap_Background"), &UIDesc, &pBackground)))
+		return E_FAIL;
+
+	m_pWorldMapBG = dynamic_cast<CUI_WindowWorldMap*>(pBackground);
+	if (nullptr == m_pWorldMapBG)
+		return E_FAIL;
+	Safe_AddRef(m_pWorldMapBG);
+
+	// SkillSection
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 400.f;
+	UIDesc.fCY = 400.f;
+	UIDesc.fX = g_iWinSizeX - UIDesc.fCX * 0.5f;
+	UIDesc.fY = g_iWinSizeY - UIDesc.fCY * 0.5f;
+
+	pBackground = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SkillSection_Background"), &UIDesc, &pBackground)))
+		return E_FAIL;
+	m_pSkillBG = dynamic_cast<CUI_SkillSection_Background*>(pBackground);
+	if (nullptr == m_pSkillBG)
+		return E_FAIL;
+	Safe_AddRef(m_pSkillBG);
+
+	// Imajinn Section
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 540.f * 0.75f;
+	UIDesc.fCY = 172.f * 0.7f;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY - UIDesc.fCY * 0.5f - fOffset;
+
+	pBackground = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_ImajinnSection_Background"), &UIDesc, &pBackground)))
+		return E_FAIL;
+	m_pImajinnBG = dynamic_cast<CUI_ImajinnSection_Background*>(pBackground);
+	if (nullptr == m_pImajinnBG)
+		return E_FAIL;
+	Safe_AddRef(m_pImajinnBG);
+
 
 	return S_OK;
 }
@@ -1022,6 +1326,14 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 		}
 	}
 
+	if (KEY_TAP(KEY::W))
+	{
+		if (m_pWorldMapBG->Get_Active())
+			m_pWorldMapBG->Set_Active(false);
+		else
+			m_pWorldMapBG->Set_Active(true);
+	}
+
 	return S_OK;
 }
 
@@ -1034,6 +1346,8 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 		m_pBtnCamera->Set_Active(true);
 		m_pBtnInven->Set_Active(true);
 		m_pBtnQuest->Set_Active(true);
+		m_pSkillBG->Set_Active(true);
+		m_pImajinnBG->Set_Active(true);
 	}
 	else // Off
 	{
@@ -1042,6 +1356,8 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 		m_pBtnCamera->Set_Active(false);
 		m_pBtnInven->Set_Active(false);
 		m_pBtnQuest->Set_Active(false);
+		m_pSkillBG->Set_Active(false);
+		m_pImajinnBG->Set_Active(false);
 	}
 
 	return S_OK;
@@ -1061,13 +1377,38 @@ HRESULT CUI_Manager::OnOff_MainMenu(_bool bOnOff)
 				pUI->Set_Active(true);
 		}
 	}
-	else // Off
+	else // Off : 모든 Menu관련 창을 꺼야한다.
 	{
 		m_pMainBG->Set_Active(false);
 		for (auto& pUI : m_MainMenuBtn)
 		{
 			if (nullptr != pUI)
 				pUI->Set_Active(false);
+		}
+		for (auto& pSepar : m_MenuSeparator) // 세퍼레이터가 활성화 되어있다면 끈다.
+		{
+			if (nullptr != pSepar)
+				pSepar->Set_Active(false);
+		}
+		for (auto& pBtnChar : m_SubMenuChar) // Char Btn이 활성화 되어있다면 끈다.
+		{
+			if (nullptr != pBtnChar)
+				pBtnChar->Set_Active(false);
+		}
+		for (auto& pBtnEquip : m_SubMenuEquip) // Equip Btn이 활성화 되어있다면 끈다.
+		{
+			if (nullptr != pBtnEquip)
+				pBtnEquip->Set_Active(false);
+		}
+		for (auto& pBtnPet : m_SubMenuPet) // Imajinn Btn이 활성화 되어있다면 끈다.
+		{
+			if (nullptr != pBtnPet)
+				pBtnPet->Set_Active(false);
+		}
+		for (auto& pBtnShop : m_SubMenuShop) // Shop Btn이 활성화 되어있다면 끈다.
+		{
+			if (nullptr != pBtnShop)
+				pBtnShop->Set_Active(false);
 		}
 	}
 
@@ -1118,13 +1459,143 @@ HRESULT CUI_Manager::OnOff_SubMenu(_bool bOnOff, _uint iMagicNum)
 		switch (iMagicNum)
 		{
 		case 0: // 캐릭터창을 선택했다.
+			Off_OtherSubBtn(0);
 			for (auto& iter : m_SubMenuChar)
 			{
 				if (nullptr != iter)
 					iter->Set_Active(true);
 			}
+			m_MenuSeparator[0]->Set_Active(true); // 왼쪽구분선이 활성화된다.
+			break;
+		case 1: // 장비창을 선택했다.
+			Off_OtherSubBtn(1);
+			for (auto& iter : m_SubMenuEquip)
+			{
+				if (nullptr != iter)
+					iter->Set_Active(true);
+			}
+			m_MenuSeparator[0]->Set_Active(true); // 왼쪽구분선이 활성화된다.
+			break;
+		case 2: // 이마진창을 선택했다.
+			Off_OtherSubBtn(2);
+			for (auto& iter : m_SubMenuPet)
+			{
+				if (nullptr != iter)
+					iter->Set_Active(true);
+			}
+			m_MenuSeparator[0]->Set_Active(true); // 왼쪽구분선이 활성화된다.
+			break;
+		case 9: // 상점창을 선택했다.
+			Off_OtherSubBtn(9);
+			for (auto& iter : m_SubMenuShop)
+			{
+				if (nullptr != iter)
+					iter->Set_Active(true);
+			}
+			m_MenuSeparator[1]->Set_Active(true); // 오른쪽구분선이 활성화된다.
 			break;
 		}
+	}
+	else // off
+	{
+
+	}
+
+	return S_OK;
+}
+
+HRESULT CUI_Manager::Off_OtherSubBtn(_uint iMagicNum)
+{
+	// 내가 누른 버튼 외에 다른 버튼이 활성화 되어있다면 꺼버린다.
+	// 0 : Char, 1 : Equip, 2 : Pet, 9 : Shop -> Enum값 기준
+
+	if (0 == iMagicNum)
+	{
+		for (auto& iter : m_SubMenuEquip)
+		{
+			if (iter->Get_Active())
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_SubMenuPet)
+		{
+			if (iter->Get_Active())
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_SubMenuShop)
+		{
+			if (iter->Get_Active())
+				iter->Set_Active(false);
+		}
+		// 오른쪽 구분선이 활성화 되어있다면 끈다
+		if (m_MenuSeparator[1]->Get_Active())
+			m_MenuSeparator[1]->Set_Active(false);
+	}
+	else if (1 == iMagicNum)
+	{
+		for (auto& iter : m_SubMenuChar)
+		{
+			if (iter->Get_Active())
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_SubMenuPet)
+		{
+			if (iter->Get_Active())
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_SubMenuShop)
+		{
+			if (iter->Get_Active())
+				iter->Set_Active(false);
+		}
+		// 오른쪽 구분선이 활성화 되어있다면 끈다
+		if (m_MenuSeparator[1]->Get_Active())
+			m_MenuSeparator[1]->Set_Active(false);
+	}
+	else if (2 == iMagicNum)
+	{
+		for (auto& iter : m_SubMenuChar)
+		{
+			if (iter->Get_Active())
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_SubMenuEquip)
+		{
+			if (iter->Get_Active())
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_SubMenuShop)
+		{
+			if (iter->Get_Active())
+				iter->Set_Active(false);
+		}
+		// 오른쪽 구분선이 활성화 되어있다면 끈다
+		if (m_MenuSeparator[1]->Get_Active())
+			m_MenuSeparator[1]->Set_Active(false);
+	}
+	else if (9 == iMagicNum)
+	{
+		for (auto& iter : m_SubMenuChar)
+		{
+			if (iter->Get_Active())
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_SubMenuEquip)
+		{
+			if (iter->Get_Active())
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_SubMenuPet)
+		{
+			if (iter->Get_Active())
+				iter->Set_Active(false);
+		}
+		// 왼쪽 구분선이 활성화 되어있다면 끈다
+		if (m_MenuSeparator[0]->Get_Active())
+			m_MenuSeparator[0]->Set_Active(false);
+	}
+	else
+	{
+		return E_FAIL;
 	}
 
 	return S_OK;
@@ -1316,6 +1787,128 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 			CUI_SubMenu_Character::UI_SUBCHARACTER_TYPE::CHARBTN_BATTLE), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Common_MainMenu_Separator"),
+		CUI_MenuSeparator::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SubMenu_Btn_Equipment_Inventory"),
+		CUI_SubMenu_Equipment::Create(m_pDevice, m_pContext, L"UI_SubMenu_Btn_Equipment_Inventory",
+			CUI_SubMenu_Equipment::UI_SUBEQUIP_TYPE::EQUIPBTN_INVENTORY), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SubMenu_Btn_Equipment_Forge"),
+		CUI_SubMenu_Equipment::Create(m_pDevice, m_pContext, L"UI_SubMenu_Btn_Equipment_Forge",
+			CUI_SubMenu_Equipment::UI_SUBEQUIP_TYPE::EQUIPBTN_FORGE), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SubMenu_Btn_Equipment_Gem"),
+		CUI_SubMenu_Equipment::Create(m_pDevice, m_pContext, L"UI_SubMenu_Btn_Equipment_Gem",
+			CUI_SubMenu_Equipment::UI_SUBEQUIP_TYPE::EQUIPBTN_GEM), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SubMenu_Btn_Equipment_TinyGenie"),
+		CUI_SubMenu_Equipment::Create(m_pDevice, m_pContext, L"UI_SubMenu_Btn_Equipment_TinyGenie",
+			CUI_SubMenu_Equipment::UI_SUBEQUIP_TYPE::EQUIPBTN_TINYGENIE), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SubMenu_Btn_Equipment_Transcend"),
+		CUI_SubMenu_Equipment::Create(m_pDevice, m_pContext, L"UI_SubMenu_Btn_Equipment_Transcend",
+			CUI_SubMenu_Equipment::UI_SUBEQUIP_TYPE::EQUIPBTN_TRANSCEND), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SubMenu_Btn_Equipment_FishingRod"),
+		CUI_SubMenu_Equipment::Create(m_pDevice, m_pContext, L"UI_SubMenu_Btn_Equipment_FishingRod",
+			CUI_SubMenu_Equipment::UI_SUBEQUIP_TYPE::EQUIPBTN_FISHINGROD), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SubMenu_Btn_Imajinn_Imajinn"),
+		CUI_SubMenu_Imajinn::Create(m_pDevice, m_pContext, L"UI_SubMenu_Btn_Imajinn_Imajinn",
+			CUI_SubMenu_Imajinn::UI_SUBIMAJINN_TYPE::PETBTN_IMAJINN), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SubMenu_Btn_Imajinn_Training"),
+		CUI_SubMenu_Imajinn::Create(m_pDevice, m_pContext, L"UI_SubMenu_Btn_Imajinn_Training",
+			CUI_SubMenu_Imajinn::UI_SUBIMAJINN_TYPE::PETBTN_TRAINING), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SubMenu_Btn_Imajinn_Toy"),
+		CUI_SubMenu_Imajinn::Create(m_pDevice, m_pContext, L"UI_SubMenu_Btn_Imajinn_Toy",
+			CUI_SubMenu_Imajinn::UI_SUBIMAJINN_TYPE::PETBTN_TOY), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SubMenu_Btn_Imajinn_Cradle"),
+		CUI_SubMenu_Imajinn::Create(m_pDevice, m_pContext, L"UI_SubMenu_Btn_Imajinn_Cradle",
+			CUI_SubMenu_Imajinn::UI_SUBIMAJINN_TYPE::PETBTN_CRADLE), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SubMenu_Btn_Imajinn_Return"),
+		CUI_SubMenu_Imajinn::Create(m_pDevice, m_pContext, L"UI_SubMenu_Btn_Imajinn_Cradle",
+			CUI_SubMenu_Imajinn::UI_SUBIMAJINN_TYPE::PETBTN_RETURN), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SubMenu_Btn_Imajinn_Dungeon"),
+		CUI_SubMenu_Imajinn::Create(m_pDevice, m_pContext, L"UI_SubMenu_Btn_Imajinn_Dungeon",
+			CUI_SubMenu_Imajinn::UI_SUBIMAJINN_TYPE::PETBTN_DUNGEON), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SubMenu_Btn_Imajinn_Unitetree"),
+		CUI_SubMenu_Imajinn::Create(m_pDevice, m_pContext, L"UI_SubMenu_Btn_Imajinn_Unitetree",
+			CUI_SubMenu_Imajinn::UI_SUBIMAJINN_TYPE::PETBTN_UNITETREE), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SubMenu_Btn_Imajinn_Ultimate"),
+		CUI_SubMenu_Imajinn::Create(m_pDevice, m_pContext, L"UI_SubMenu_Btn_Imajinn_Ultimate",
+			CUI_SubMenu_Imajinn::UI_SUBIMAJINN_TYPE::PETBTN_ULTIMATE), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SubMenu_Btn_Shop_Package"),
+		CUI_SubMenu_Shop::Create(m_pDevice, m_pContext, L"UI_SubMenu_Btn_Shop_Package",
+			CUI_SubMenu_Shop::UI_SUBSHOP_TYPE::SHOPBTN_PACKAGE), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SubMenu_Btn_Shop_Gacha"),
+		CUI_SubMenu_Shop::Create(m_pDevice, m_pContext, L"UI_SubMenu_Btn_Shop_Gacha",
+			CUI_SubMenu_Shop::UI_SUBSHOP_TYPE::SHOPBTN_GACHA), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SubMenu_Btn_Shop_Token"),
+		CUI_SubMenu_Shop::Create(m_pDevice, m_pContext, L"UI_SubMenu_Btn_Shop_Token",
+			CUI_SubMenu_Shop::UI_SUBSHOP_TYPE::SHOPBTN_TOKEN), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_WorldMap_Background"),
+		CUI_WindowWorldMap::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_WorldMap_Btn_Evermore"),
+		CUI_Btn_WorldMapIcon::Create(m_pDevice, m_pContext, L"UI_WorldMap_Icon_Evermore", CUI_Btn_WorldMapIcon::ICON_EVERMORE), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_WorldMap_Btn_IceLand"),
+		CUI_Btn_WorldMapIcon::Create(m_pDevice, m_pContext, L"UI_WorldMap_Icon_IceLand", CUI_Btn_WorldMapIcon::ICON_ICELAND), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_WorldMap_Btn_WitchForest"),
+		CUI_Btn_WorldMapIcon::Create(m_pDevice, m_pContext, L"UI_WorldMap_Icon_WitchForest", CUI_Btn_WorldMapIcon::ICON_WITCHFOREST), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Player_HPBar"),
+		CUI_PlayerHPBar::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillSection_Background"),
+		CUI_SkillSection_Background::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillSection_BtnJump"),
+		CUI_SkillSection_BtnJump::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillSection_BtnRoll"),
+		CUI_SkillSection_BtnRoll::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_ImajinnSection_Background"),
+		CUI_ImajinnSection_Background::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_ImajinnSection_Slot_First"),
+		CUI_ImajinnSection_Slot::Create(m_pDevice, m_pContext, CUI_ImajinnSection_Slot::IMAJINNSLOT_FIRST), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_ImajinnSection_Slot_Second"),
+		CUI_ImajinnSection_Slot::Create(m_pDevice, m_pContext, CUI_ImajinnSection_Slot::IMAJINNSLOT_SECOND), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_ImajinnSection_Slot_Third"),
+		CUI_ImajinnSection_Slot::Create(m_pDevice, m_pContext, CUI_ImajinnSection_Slot::IMAJINNSLOT_THIRD), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_ImajinnSection_Emoticon"),
+		CUI_ImajinnSection_Emoticon::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_ImajinnSection_Vehicle"),
+		CUI_ImajinnSection_Vehicle::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -1470,6 +2063,9 @@ void CUI_Manager::Free()
 	Safe_Release(m_pWindowQuest);
 	Safe_Release(m_pMainBG);
 	Safe_Release(m_pBtnClose);
+	Safe_Release(m_pWorldMapBG);
+	Safe_Release(m_pSkillBG);
+	Safe_Release(m_pImajinnBG);
 
 	for (auto& pBasic : m_Basic)
 		Safe_Release(pBasic);
@@ -1498,6 +2094,22 @@ void CUI_Manager::Free()
 	for (auto& pCharBtn : m_SubMenuChar)
 		Safe_Release(pCharBtn);
 	m_SubMenuChar.clear();
+
+	for (auto& pEquipBtn : m_SubMenuEquip)
+		Safe_Release(pEquipBtn);
+	m_SubMenuEquip.clear();
+
+	for (auto& pPetBtn : m_SubMenuPet)
+		Safe_Release(pPetBtn);
+	m_SubMenuPet.clear();
+
+	for (auto& pShopBtn : m_SubMenuShop)
+		Safe_Release(pShopBtn);
+	m_SubMenuShop.clear();
+
+	for (auto& pSeparator : m_MenuSeparator)
+		Safe_Release(pSeparator);
+	m_MenuSeparator.clear();
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

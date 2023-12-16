@@ -44,6 +44,7 @@ public:
 	HRESULT OnOff_CloseButton(_bool bOnOff);
 
 	HRESULT OnOff_SubMenu(_bool bOnOff, _uint iMagicNum);
+	HRESULT Off_OtherSubBtn(_uint iMagicNum);
 
 public: // For UI Tool
 	HRESULT Save_UIData();
@@ -77,10 +78,20 @@ private:
 
 	// Main + Sub Menu Btns
 	vector<class CUI_MainMenu*> m_MainMenuBtn;
+	vector<class CUI_MenuSeparator*> m_MenuSeparator;
 	vector<class CUI_SubMenu_Character*> m_SubMenuChar;
-//	vector<class CUI_SubMenu_Equipment*> m_SubMenuEquip;
-//	vector<class CUI_SubMenu_Imajinn*> m_SubMenuPet;
-//	vector<class CUI_SubMenu_Shop*> m_SubMenuShop;
+	vector<class CUI_SubMenu_Equipment*> m_SubMenuEquip;
+	vector<class CUI_SubMenu_Imajinn*> m_SubMenuPet;
+	vector<class CUI_SubMenu_Shop*> m_SubMenuShop;
+
+	// For World Map
+	class CUI_WindowWorldMap* m_pWorldMapBG = { nullptr };
+
+	// For Skill Section
+	class CUI_SkillSection_Background* m_pSkillBG = { nullptr };
+
+	// For Imajinn Section
+	class CUI_ImajinnSection_Background* m_pImajinnBG = { nullptr };
 
 private:
 	ID3D11Device* m_pDevice = { nullptr };
