@@ -105,7 +105,7 @@ HRESULT CTool_Model::Clear_ToolAnimationData()
 	m_AddedTransformNames.clear();
 	m_AddedTransformNames.shrink_to_fit();
 
-	m_vRotation = Vec3::Zero;
+	m_vRotation = { 0.f, -270.f, 0.f };
 
 	m_bAuto = FALSE;
 
@@ -127,67 +127,108 @@ Matrix CTool_Model::Calculate_SocketWorldMatrix()
 {
 	TweenDesc TweenDesc = m_pDummy->Get_ModelCom()->Get_TweenDesc();
 
-	/* Current Frame */
-	Matrix matSocket = Matrix::Lerp(m_AnimTransformsCaches[TweenDesc.cur.iAnimIndex].transforms[TweenDesc.cur.iCurFrame][m_iRenderSocketIndex],
-								m_AnimTransformsCaches[TweenDesc.cur.iAnimIndex].transforms[TweenDesc.cur.iNextFrame][m_iRenderSocketIndex],
-								TweenDesc.cur.fRatio);
-	/* if Next Frame */
-	if (0 <= TweenDesc.next.iAnimIndex)
-	{
-		Matrix matSocketNext = Matrix::Lerp(m_AnimTransformsCaches[TweenDesc.next. iAnimIndex].transforms[TweenDesc.next.iCurFrame][m_iRenderSocketIndex],
-								m_AnimTransformsCaches[TweenDesc.next.iAnimIndex].transforms[TweenDesc.next.iNextFrame][m_iRenderSocketIndex],
-								TweenDesc.next.fRatio);
+	enum STEP { CURR, NEXT, STEP_END };
 
-		matSocket = Matrix::Lerp(matSocket, matSocketNext, TweenDesc.fTweenRatio);
+	Matrix		matAnimLocal;
+	Vec4        vAnimLocalPos;
+	
+	Matrix		matAnim[STEP_END][STEP_END];
+	Vec3		vScaleAnim[STEP_END][STEP_END];
+	Quaternion  qQuatAnim[STEP_END][STEP_END];
+	Vec3		vPosAnim[STEP_END][STEP_END];
+
+	Vec3		vScale[STEP_END];
+	Vec4		vRotation[STEP_END];
+	Vec3		vPos[STEP_END];
+
+	/* 현재 애니메이션 */
+	Matrix matCurAnim;
+	Vec4  vCurAnimPos;
+	{
+		matAnim[CURR][CURR]	= m_AnimTransformsCaches[TweenDesc.cur.iAnimIndex].transforms[TweenDesc.cur.iCurFrame][m_iRenderSocketIndex];
+		matAnim[CURR][NEXT]	= m_AnimTransformsCaches[TweenDesc.cur.iAnimIndex].transforms[TweenDesc.cur.iNextFrame][m_iRenderSocketIndex];
+
+		matAnim[CURR][CURR].Decompose(vScaleAnim[CURR][CURR], qQuatAnim[CURR][CURR], vPosAnim[CURR][CURR]);
+		matAnim[CURR][NEXT].Decompose(vScaleAnim[CURR][NEXT], qQuatAnim[CURR][NEXT], vPosAnim[CURR][NEXT]);
+
+		XMStoreFloat3(&vScale[CURR], XMVectorLerp(XMLoadFloat3(&vScaleAnim[CURR][CURR]), XMLoadFloat3(&vScaleAnim[CURR][NEXT]), TweenDesc.cur.fRatio));
+		XMStoreFloat4(&vRotation[CURR], XMQuaternionSlerp(XMLoadFloat4(&qQuatAnim[CURR][CURR]), XMLoadFloat4(&qQuatAnim[CURR][NEXT]), TweenDesc.cur.fRatio));
+		XMStoreFloat3(&vPos[CURR], XMVectorLerp(XMLoadFloat3(&vPosAnim[CURR][CURR]), XMLoadFloat3(&vPosAnim[CURR][NEXT]), TweenDesc.cur.fRatio));
+
+		matCurAnim = XMMatrixAffineTransformation(
+			XMLoadFloat3(&vScale[CURR]), XMVectorSet(0.f, 0.f, 0.f, 1.f), XMLoadFloat4(&vRotation[CURR]), XMVectorSetW(XMLoadFloat3(&vPos[CURR]), 1.f));
+		
+		memcpy(&vCurAnimPos, matCurAnim.m[3], sizeof(Vec4));
 	}
 
-	int k = 0;
+	/* 다음 애니메이션 */
+	if (0 <= TweenDesc.next.iAnimIndex)
+	{
+		/* 다음 애니메이션 데이터 계산 */
+
+		matAnim[NEXT][CURR] = m_AnimTransformsCaches[TweenDesc.next.iAnimIndex].transforms[TweenDesc.next.iCurFrame][m_iRenderSocketIndex];
+		matAnim[NEXT][NEXT] = m_AnimTransformsCaches[TweenDesc.next.iAnimIndex].transforms[TweenDesc.next.iNextFrame][m_iRenderSocketIndex];
+
+		matAnim[NEXT][CURR].Decompose(vScaleAnim[NEXT][CURR], qQuatAnim[NEXT][CURR], vPosAnim[NEXT][CURR]);
+		matAnim[NEXT][NEXT].Decompose(vScaleAnim[NEXT][NEXT], qQuatAnim[NEXT][NEXT], vPosAnim[NEXT][NEXT]);
+
+		XMStoreFloat3(&vScale[NEXT], XMVectorLerp(XMLoadFloat3(&vScaleAnim[NEXT][CURR]), XMLoadFloat3(&vScaleAnim[NEXT][NEXT]), TweenDesc.next.fRatio));
+		XMStoreFloat4(&vRotation[NEXT], XMQuaternionSlerp(XMLoadFloat4(&qQuatAnim[NEXT][CURR]), XMLoadFloat4(&qQuatAnim[NEXT][NEXT]), TweenDesc.next.fRatio));
+		XMStoreFloat3(&vPos[NEXT], XMVectorLerp(XMLoadFloat3(&vPosAnim[NEXT][CURR]), XMLoadFloat3(&vPosAnim[NEXT][NEXT]), TweenDesc.next.fRatio));
+
+		/* 현재 애니메이션과 다음 애니메이션 보간 */
+		{
+			Vec3 vLerpScale;
+			Vec4 vLerpRot;
+			Vec3 vLerpPos;
+
+			XMStoreFloat3(&vLerpScale, XMVectorLerp(XMLoadFloat3(&vScale[CURR]), XMLoadFloat3(&vScale[NEXT]), TweenDesc.fTweenRatio));
+			XMStoreFloat4(&vLerpRot, XMQuaternionSlerp(XMLoadFloat4(&vRotation[CURR]), XMLoadFloat4(&vRotation[NEXT]), TweenDesc.fTweenRatio));
+			XMStoreFloat3(&vLerpPos, XMVectorLerp(XMLoadFloat3(&vPos[CURR]), XMLoadFloat3(&vPos[NEXT]), TweenDesc.fTweenRatio));
+
+			matAnimLocal = XMMatrixAffineTransformation(
+				XMLoadFloat3(&vLerpScale), XMVectorSet(0.f, 0.f, 0.f, 1.f), XMLoadFloat4(&vLerpRot), XMVectorSetW(XMLoadFloat3(&vLerpPos), 1.f));
+			
+			memcpy(&vAnimLocalPos, matAnimLocal.m[3], sizeof(Vec4));
+		}
+	}
+	else
+	{
+		memcpy(&matAnimLocal, &matCurAnim, sizeof(Matrix));
+		memcpy(&vAnimLocalPos, &vCurAnimPos, sizeof(Vec4));
+	}
+		
+
+	/* 커스텀 피벗*/
+	{
+		Matrix matCustomPivot = XMMatrixRotationQuaternion(XMQuaternionRotationRollPitchYaw(
+								XMConvertToRadians(m_vRotation.x),
+								XMConvertToRadians(m_vRotation.y),
+								XMConvertToRadians(m_vRotation.z)));
+
+		matAnimLocal = matCustomPivot * matAnimLocal;
+	}
 
 	/* 정규화 */
 	{
 		Vec3 vRight, vUp, vLook;
-		memcpy(&vRight, matSocket.m[0], sizeof(Vec3));
-		memcpy(&vUp, matSocket.m[1], sizeof(Vec3));
-		memcpy(&vLook, matSocket.m[2], sizeof(Vec3));
+		memcpy(&vRight, matAnimLocal.m[0], sizeof(Vec3));
+		memcpy(&vUp, matAnimLocal.m[1], sizeof(Vec3));
+		memcpy(&vLook, matAnimLocal.m[2], sizeof(Vec3));
 
 		vRight.Normalize();
 		vUp.Normalize();
 		vLook.Normalize();
 
-		matSocket.Right(vRight);
-		matSocket.Up(vUp);
-		matSocket.Backward(vLook);
-
-	}
-	 
-	/* 포지션 */
-	Vec4 vPos;
-	{
-		memcpy(&vPos, matSocket.m[3], sizeof(Vec4));		
+		matAnimLocal.Right(vRight);
+		matAnimLocal.Up(vUp);
+		matAnimLocal.Backward(vLook);
 	}
 
-	/* 회전 */
-	Matrix matRotation;
-	{
-		XMStoreFloat4x4(&matRotation, XMMatrixRotationQuaternion(XMQuaternionRotationRollPitchYaw(
-			XMConvertToRadians(m_vRotation.x),
-			XMConvertToRadians(m_vRotation.y),
-			XMConvertToRadians(m_vRotation.z))));
+	/* 포지션 리셋*/
+	memcpy(&matAnimLocal.m[3], &vAnimLocalPos, sizeof(Vec4));
 
-		/*Matrix matRotation =
-			Matrix::CreateRotationY(XMConvertToRadians(m_vRotation.x)) *
-			Matrix::CreateRotationZ(XMConvertToRadians(m_vRotation.y)) *
-			Matrix::CreateRotationX(XMConvertToRadians(m_vRotation.z));*/
-	}
-
-	
-	/* 스케일 */
-
-
-	matSocket *= matRotation;
-	memcpy(&matSocket.m[3], &vPos, sizeof(Vec4));
-
-	return matSocket * m_pDummy->Get_TransformCom()->Get_WorldMatrix();
+	return matAnimLocal * m_pDummy->Get_TransformCom()->Get_WorldMatrix();
 }
 
 const _bool CTool_Model::Is_Exception()
@@ -253,22 +294,22 @@ HRESULT CTool_Model::Ready_DebugDraw()
 
 HRESULT CTool_Model::Ready_WeaponPrototypes()
 {
-	//CPart*			pWeapon = nullptr;
-	//CGameObject*	pGameObject = nullptr;
+	CPart*			pWeapon = nullptr;
+	CGameObject*	pGameObject = nullptr;
 
-	///* Prototype_GameObject_TempSword */
-	//if (FAILED(GI->Add_GameObject(LEVEL_TOOL, _uint(LAYER_WEAPON), TEXT("Prototype_GameObject_TempSword"), nullptr, &pGameObject)))
-	//	return E_FAIL;
-	//{
-	//	pWeapon = dynamic_cast<CPart*>(pGameObject);
-	//	if (nullptr == pWeapon)
-	//		return E_FAIL;
+	/* Prototype_GameObject_TempSword */
+	if (FAILED(GI->Add_GameObject(LEVEL_TOOL, _uint(LAYER_WEAPON), TEXT("Prototype_GameObject_TempSword"), nullptr, &pGameObject)))
+		return E_FAIL;
+	{
+		pWeapon = dynamic_cast<CPart*>(pGameObject);
+		if (nullptr == pWeapon)
+			return E_FAIL;
 
-	//	m_Weapons.push_back(pWeapon);
+		m_Weapons.push_back(pWeapon);
 
-	//	pWeapon = nullptr;
-	//	pGameObject = nullptr;
-	//}
+		pWeapon = nullptr;
+		pGameObject = nullptr;
+	}
 
 	return S_OK;
 }
@@ -763,7 +804,6 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 
 			if (ImGui::BeginListBox("##Bone_List"))
 			{
-			
 				for (size_t i = 0; i < HiearachyNodes.size(); ++i)
 				{
 					string strBoneName = CUtils::ToString(HiearachyNodes[i]->Get_Name());
@@ -775,9 +815,8 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 				}
 				ImGui::EndListBox();
 			}
-		}		
+		}
 		IMGUI_NEW_LINE;
-
 
 		/* Prototype Weapon List */
 		{
@@ -807,10 +846,10 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 				for (size_t i = 0; i < m_AddedTransformNames.size(); i++)
 				{
 					if (ImGui::Selectable(CUtils::ToString(m_AddedTransformNames[i]).c_str(), i == m_iSocketIndex))
-					{	
+					{
 						m_iSocketIndex = i;
 
-						
+
 						m_iRenderSocketIndex = m_pDummy->Get_ModelCom()->Get_HierarchyNodeIndex(m_AddedTransformNames[i]);
 
 						int k = 0;
@@ -826,10 +865,10 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 			/* 모델 컴포넌트 반영 */
 			m_pDummy->Get_ModelCom()->Add_SocketTransforms(
 				GI->Create_AnimationSocketTransform(m_pDummy->Get_ModelCom(), m_iCurBoneIndex));
-			
+
 			/* 툴 네임 리스트 반영 */
 			m_AddedTransformNames.push_back(HiearachyNodes[m_iCurBoneIndex]->Get_Name());
-			
+
 			/* 툴 인덱스 반영 */
 			m_iSocketIndex = m_AddedTransformNames.size() - 1;
 		}
@@ -870,7 +909,7 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 			/* 툴 네임 리스트 반영 */
 			m_AddedTransformNames.clear();
 			m_AddedTransformNames.shrink_to_fit();
-			
+
 			/* 툴 인덱스 반영 */
 			m_iSocketIndex -= 1;
 			m_iRenderSocketIndex = m_iCurBoneIndex;
@@ -880,13 +919,14 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 
 		/* Rotation matrix */
 		{
-			_float fRot[3] = { m_vRotation.x, m_vRotation.y, m_vRotation.z };	
+			_float fRot[3] = { m_vRotation.x, m_vRotation.y, m_vRotation.z };
 			ImGui::Text("Socket Rotation");
-			
-			/*if (ImGui::DragFloat3("(Degree)", (_float*)&fRot, 0.5f))
-			{
-				memcpy(&m_vRotation, &fRot, sizeof(Vec3));
-			}*/
+			IMGUI_SAME_LINE;
+
+			/* Clear */
+			if (ImGui::Button("Clear Socket Rotation"))
+				m_vRotation = Vec3::Zero;
+
 			/* X */
 			{
 				if (ImGui::InputFloat("X", &fRot[0]))
@@ -958,47 +998,8 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 						m_vRotation.z = 270.f;
 				}
 			}
-
-			/* Clear */
-			if (ImGui::Button("Clear Socket Rotation"))
-			{
-				m_vRotation = Vec3::Zero;
-			}
-			IMGUI_SAME_LINE;
-
-			/* Auto */
-			//if(ImGui::Checkbox("Auto Play", &m_bAuto));
-			//{
-			//	if (m_bAuto)
-			//	{
-			//		m_pDummy->Get_ModelCom()->Set_Animation(m_pDummy->Get_ModelCom()->Get_CurrAnimationIndex());
-
-			//		//m_pDummy->Get_ModelCom()->Get_CurrAnimation()->Set_Loop(FALSE);
-			//	}
-			//}
-
-			//if (m_bAuto)
-			//{
-			//	if (!m_pDummy->Get_ModelCom()->Is_Tween() && m_pDummy->Get_ModelCom()->Is_Finish())
-			//	{
-			//		m_pDummy->Get_ModelCom()->Set_Animation(m_pDummy->Get_ModelCom()->Get_CurrAnimationIndex());
-
-			//		m_iAutoAnimIndex++;
-			//		if (m_vAutoSocket.size() <= m_iAutoAnimIndex)
-			//		{
-			//			m_bAuto = FALSE;
-			//			m_iAutoAnimIndex = 0;
-			//		}
-
-			//		m_vRotation = m_vAutoSocket[m_iAutoAnimIndex];
-			//	}
-
-			//}
+			IMGUI_NEW_LINE;
 		}
-
-		IMGUI_NEW_LINE;
-		IMGUI_NEW_LINE;
-
 	}
 }
 

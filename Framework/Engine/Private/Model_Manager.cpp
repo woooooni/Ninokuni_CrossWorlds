@@ -608,7 +608,6 @@ HRESULT CModel_Manager::Export_Mesh(const wstring& strFinalFolderPath, CModel* p
 
 	filesystem::create_directories(path.parent_path());
 
-
 	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
 	File->Open(strMeshFilePath, FileMode::Write);
 

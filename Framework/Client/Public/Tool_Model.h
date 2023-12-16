@@ -77,7 +77,7 @@ private:
 	_int m_iRenderSocketIndex = 0;
 
 	/* Rotation Value */
-	Vec3 m_vRotation;
+	Vec3 m_vRotation = { 0.f, -270.f, 0.f };
 
 	vector<Vec3> m_vAutoSocket;
 	_bool		m_bAuto = FALSE;

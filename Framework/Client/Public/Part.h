@@ -38,6 +38,9 @@ public:
 	virtual void Collision_Exit(const COLLISION_INFO& tInfo) {};
 
 public:
+	CModel* Get_ModelCom() { return m_pModelCom; }
+
+public:
 	virtual void Set_SocketWorld(Matrix matSocketWorld) { memcpy(&m_matSocketWorld, &matSocketWorld, sizeof(Matrix)); } /* 주인 모델의 애니메이션 갱신이 이루어진 뒤 호출 */
 
 protected: 
