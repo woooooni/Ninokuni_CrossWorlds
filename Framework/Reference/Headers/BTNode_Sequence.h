@@ -11,11 +11,16 @@ private:
 	virtual ~CBTNode_Sequence() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype();
+	virtual HRESULT Initialize_Prototype(CBehaviorTree * pBT);
+	virtual void	Start();
 	virtual CBTNode::NODE_STATE	Tick(const _float & fTimeDelta);
 
+private:
+	list<CBTNode*>::iterator m_curIter;
+	NODE_STATE m_eResult = NODE_STATE::NODE_FAIL;
+
 public:
-	static CBTNode_Sequence* Create();
+	static CBTNode_Sequence* Create(CBehaviorTree * pBT);
 	virtual void Free() override;
 
 };

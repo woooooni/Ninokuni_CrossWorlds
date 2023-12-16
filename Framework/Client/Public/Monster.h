@@ -106,6 +106,9 @@ public:
 
 public:
 	virtual void On_Damaged(const COLLISION_INFO& tInfo);
+	virtual _bool Get_IsCombat() { return m_bIsCombat; }
+	virtual void  Set_IsCombat(_bool bIsCombat) { m_bIsCombat = bIsCombat; }
+	virtual _vector Get_OriginPos() { return m_vOriginPos; }
 
 public:
 	MONSTER_TYPE Get_Monster_Type() { return m_eMonsterType; }
@@ -140,6 +143,9 @@ protected:
 	_float m_fAccInfinite = 0.f;
 	_float m_fInfiniteTime = 0.2f;
 	_bool m_bInfinite = false;
+
+	_vector	m_vOriginPos = {};
+	_bool	m_bIsCombat = false;
 
 protected:
 	class CTrail* m_pTrails[SOCKET_TYPE::SOCKET_END];

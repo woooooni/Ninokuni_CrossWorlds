@@ -4,6 +4,7 @@
 #include "BTNode.h"
 
 #include "Transform.h"
+#include "Model.h"
 #include "GameObject.h"
 
 BEGIN(Engine)
@@ -62,15 +63,6 @@ using BLACKBOARD = unordered_map<wstring, tagBlackBoard*, djb2Hasher>;
 
 class ENGINE_DLL CBehaviorTree abstract : public CComponent
 {
-public:
-	typedef struct tagBTDesc
-	{
-		CGameObject* pOwner = nullptr;
-		CGameObject* pTarget = nullptr;
-		CTransform*  pOwnerTransform = nullptr;
-		CTransform*  pTargetTransform = nullptr;
-	}BT_DESC;
-
 protected:
 	CBehaviorTree(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);
 	CBehaviorTree(const CBehaviorTree& rhs);
@@ -82,10 +74,22 @@ public:
 	virtual void	Tick(const _float & fTimeDelta);
 	virtual void	LateTick(const _float & fTimeDelta);
 
+public:
 	BLACKBOARD& GetBlackBoard() { return m_BlackBoard; }
+
+	CModel* Get_BTModel() { return m_pBTModel; }
+
+public:
+	virtual void     Init_NodeStart() {};
+
+	virtual CBTNode* Get_CurNode() { return m_pCurNode; }
+	virtual void	 Set_CurNode(CBTNode* pNode) { m_pCurNode = pNode; }
 
 protected:
 	CBTNode* m_pRootNode = nullptr;
+	CBTNode* m_pCurNode = nullptr;
+
+	CModel* m_pBTModel = nullptr;
 
 	BLACKBOARD			m_BlackBoard;
 

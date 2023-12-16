@@ -4,37 +4,39 @@
 #include "BehaviorTree.h"
 #include "BlackBoard.h"
 
+#include "Model.h"
+
 CStelliaNode_Dead::CStelliaNode_Dead()
 {
 }
 
-HRESULT CStelliaNode_Dead::Initialize_Prototype(CBehaviorTree* pBT)
+HRESULT CStelliaNode_Dead::Initialize_Prototype(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
 {
-	m_pBT = pBT;
+	__super::Initialize_Prototype(pDesc, pBT);
 
 	return S_OK;
 }
 
+void CStelliaNode_Dead::Start()
+{
+	m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_Death"));
+}
+
 CBTNode::NODE_STATE CStelliaNode_Dead::Tick(const _float& fTimeDelta)
 {
-	m_fTemp += fTimeDelta;
-
-	//if (m_fTemp >= 4.f)
-	//	Safe_Release(m_pStellia);
-
-	BLACKBOARD& hashBlackBoard = m_pBT->GetBlackBoard();
-	const auto& target = hashBlackBoard.find(TEXT("Test2"));
-
-	// cout << target->second << endl;
+	if (m_tBTNodeDesc.pOwnerModel->Is_Finish())
+	{
+		// 여기서 객체 지우는 코드.
+	}
 
 	return NODE_STATE::NODE_RUNNING;
 }
 
-CStelliaNode_Dead* CStelliaNode_Dead::Create(CBehaviorTree* pBT)
+CStelliaNode_Dead* CStelliaNode_Dead::Create(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
 {
 	CStelliaNode_Dead* pInstance = new CStelliaNode_Dead();
 
-	if (FAILED(pInstance->Initialize_Prototype(pBT)))
+	if (FAILED(pInstance->Initialize_Prototype(pDesc, pBT)))
 	{
 		MSG_BOX("Fail Create : CStelliaNode_Dead");
 		Safe_Release(pInstance);

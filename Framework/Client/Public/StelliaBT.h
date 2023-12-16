@@ -27,6 +27,8 @@ private:
 private:
 	CStellia* m_pStellia = nullptr;
 
+	_bool m_BIsChase = true;
+
 public:
 	static CStelliaBT* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CGameObject* pObject);
 	virtual CComponent* Clone(void* pArg) override;

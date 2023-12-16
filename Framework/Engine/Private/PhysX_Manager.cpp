@@ -65,7 +65,7 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 	transport->release();
 
 	PxSceneDesc SceneDesc(m_Physics->getTolerancesScale());
-	SceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
+	SceneDesc.gravity = PxVec3(0.0f, 0.f, 0.0f);
 
 	m_Dispatcher = PxDefaultCpuDispatcherCreate(4);
 	if (!m_Dispatcher)

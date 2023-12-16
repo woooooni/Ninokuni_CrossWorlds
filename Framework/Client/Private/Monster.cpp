@@ -322,7 +322,6 @@ CHierarchyNode* CMonster::Get_Socket(const wstring& strSocketName)
 
 void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 {
-
 }
 
 

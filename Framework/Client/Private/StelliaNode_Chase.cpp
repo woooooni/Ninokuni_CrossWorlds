@@ -5,33 +5,33 @@ CStelliaNode_Chase::CStelliaNode_Chase()
 {
 }
 
-HRESULT CStelliaNode_Chase::Initialize_Prototype(CBehaviorTree* pBT)
+HRESULT CStelliaNode_Chase::Initialize_Prototype(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
 {
-	m_pBT = pBT;
+	__super::Initialize_Prototype(pDesc, pBT);
 
 	return S_OK;
 }
 
+void CStelliaNode_Chase::Start()
+{
+	m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_Run"));
+}
+
 CBTNode::NODE_STATE CStelliaNode_Chase::Tick(const _float& fTimeDelta)
 {
-	m_fTemp += fTimeDelta;
-
-	if (m_fTemp >= 4.f)
-	{
-		m_fTemp = 4.f - m_fTemp;
+	if (m_bIsSucces)
 		return NODE_STATE::NODE_SUCCESS;
-	}
 
-	cout << "Ãß°Ý Áß" << endl;
+	cout << "run" << endl;
 
 	return NODE_STATE::NODE_RUNNING;
 }
 
-CStelliaNode_Chase* CStelliaNode_Chase::Create(CBehaviorTree* pBT)
+CStelliaNode_Chase* CStelliaNode_Chase::Create(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
 {
 	CStelliaNode_Chase* pInstance = new CStelliaNode_Chase();
 
-	if (FAILED(pInstance->Initialize_Prototype(pBT)))
+	if (FAILED(pInstance->Initialize_Prototype(pDesc, pBT)))
 	{
 		MSG_BOX("Fail Create : CStelliaNode_Chase");
 		Safe_Release(pInstance);
