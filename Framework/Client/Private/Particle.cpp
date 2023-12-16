@@ -133,12 +133,12 @@ HRESULT CParticle::Bind_ShaderResource()
 	// ÅØ½ºÃ³
 	if (m_pDiffuseTextureCom != nullptr)
 	{
-		if (FAILED(m_pDiffuseTextureCom->Bind_ShaderResources(m_pShaderCom, "g_DiffuseTexture")))
+		if (FAILED(m_pDiffuseTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", 0)))
 			return E_FAIL;
 	}
 	if (m_pAlphaTextureCom != nullptr)
 	{
-		if (FAILED(m_pAlphaTextureCom->Bind_ShaderResources(m_pShaderCom, "g_AlphaTexture")))
+		if (FAILED(m_pAlphaTextureCom->Bind_ShaderResource(m_pShaderCom, "g_AlphaTexture", 0)))
 			return E_FAIL;
 	}
 

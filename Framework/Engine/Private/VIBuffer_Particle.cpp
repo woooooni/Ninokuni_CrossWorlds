@@ -879,14 +879,14 @@ void CVIBuffer_Particle::Tick(_float fTimeDelta)
 #pragma region 색상 변경
 			if ((*m_tParticleDesc.pColorRandom))
 			{
-				m_vecParticleInfoDesc[i].fColorChangeStartTime += fTimeDelta;
-				if (m_vecParticleInfoDesc[i].fColorChangeStartTime >= m_vecParticleInfoDesc[i].fColorChangeStartDelay)
-				{
+				//m_vecParticleInfoDesc[i].fColorChangeStartTime += fTimeDelta;
+				//if (m_vecParticleInfoDesc[i].fColorChangeStartTime >= m_vecParticleInfoDesc[i].fColorChangeStartDelay)
+				//{
 
-					m_vecParticleInfoDesc[i].LerpInfo.Start(0.f, 1.f, 5.f);
+				//	m_vecParticleInfoDesc[i].LerpInfo.Start(0.f, 1.f, 5.f);
 
-					_float fValue = m_vecParticleInfoDesc[i].LerpInfo.Update(fTimeDelta);
-				}
+				//	_float fValue = m_vecParticleInfoDesc[i].LerpInfo.Update(fTimeDelta);
+				//}
 			}
 #pragma endregion
 
