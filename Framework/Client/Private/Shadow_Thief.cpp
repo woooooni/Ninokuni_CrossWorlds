@@ -116,37 +116,37 @@ HRESULT CShadow_Thief::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Shadow_Thief"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 
-	CRigidBody::RIGID_BODY_DESC RigidDesc;
-	RigidDesc.pNavigation = m_pNavigationCom;
-	RigidDesc.pTransform = m_pTransformCom;
-
-
-	RigidDesc.PhysXDesc.vOffsetPos = { 0.f, 0.f, 0.f };
-	RigidDesc.PhysXDesc.vExtents = { 5.f, 5.f, 10.f };
-
-	RigidDesc.PhysXDesc.eColliderType = PHYSX_COLLIDER_TYPE::BOX;
-	RigidDesc.PhysXDesc.eRigidType = PHYSX_RIGID_TYPE::DYNAMIC;
-
-	RigidDesc.PhysXDesc.bLockAngle_X = true;
-	RigidDesc.PhysXDesc.bLockAngle_Y = false;
-	RigidDesc.PhysXDesc.bLockAngle_Z = true;
-
-	RigidDesc.PhysXDesc.bKinematic = false;
-	RigidDesc.PhysXDesc.fAngularDamping = 30.f;
-	RigidDesc.PhysXDesc.fDensity = 1.f;
-
-
-	RigidDesc.PhysXDesc.fStaticFriction = 0.f;
-	RigidDesc.PhysXDesc.fDynamicFriction = 1.f;
-	RigidDesc.PhysXDesc.fRestitution = 0.f;
-
-	RigidDesc.PhysXDesc.fMaxVelocity = 10.f;
-	RigidDesc.PhysXDesc.pGameObject = this;
-	RigidDesc.PhysXDesc.bKinematic = true;
-
-	/* For. Com_RigidBody*/
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_RigidBody"), TEXT("Com_RigidBody"), (CComponent**)&m_pRigidBodyCom, &RigidDesc)))
-		return E_FAIL;
+	//CRigidBody::RIGID_BODY_DESC RigidDesc;
+	//RigidDesc.pNavigation = m_pNavigationCom;
+	//RigidDesc.pTransform = m_pTransformCom;
+	//
+	//
+	//RigidDesc.PhysXDesc.vOffsetPos = { 0.f, 0.f, 0.f };
+	//RigidDesc.PhysXDesc.vExtents = { 5.f, 5.f, 10.f };
+	//
+	//RigidDesc.PhysXDesc.eColliderType = PHYSX_COLLIDER_TYPE::BOX;
+	//RigidDesc.PhysXDesc.eRigidType = PHYSX_RIGID_TYPE::DYNAMIC;
+	//
+	//RigidDesc.PhysXDesc.bLockAngle_X = true;
+	//RigidDesc.PhysXDesc.bLockAngle_Y = false;
+	//RigidDesc.PhysXDesc.bLockAngle_Z = true;
+	//
+	//RigidDesc.PhysXDesc.bKinematic = false;
+	//RigidDesc.PhysXDesc.fAngularDamping = 30.f;
+	//RigidDesc.PhysXDesc.fDensity = 1.f;
+	//
+	//
+	//RigidDesc.PhysXDesc.fStaticFriction = 0.f;
+	//RigidDesc.PhysXDesc.fDynamicFriction = 1.f;
+	//RigidDesc.PhysXDesc.fRestitution = 0.f;
+	//
+	//RigidDesc.PhysXDesc.fMaxVelocity = 10.f;
+	//RigidDesc.PhysXDesc.pGameObject = this;
+	//RigidDesc.PhysXDesc.bKinematic = true;
+	//
+	///* For. Com_RigidBody*/
+	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_RigidBody"), TEXT("Com_RigidBody"), (CComponent**)&m_pRigidBodyCom, &RigidDesc)))
+	//	return E_FAIL;
 
 	return S_OK;
 }
@@ -163,52 +163,52 @@ HRESULT CShadow_Thief::Ready_States()
 
 HRESULT CShadow_Thief::Ready_Colliders()
 {
-	CCollider_Sphere::SPHERE_COLLIDER_DESC ColliderDesc;
-	ZeroMemory(&ColliderDesc, sizeof ColliderDesc);
-
-	BoundingSphere tSphere;
-	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 1.f;
-
-	XMStoreFloat4x4(&ColliderDesc.ModePivotMatrix, m_pModelCom->Get_PivotMatrix());
-	ColliderDesc.pOwnerTransform = m_pTransformCom;
-
-	ColliderDesc.tSphere = tSphere;
-	ColliderDesc.pNode = m_pModelCom->Get_HierarchyNode(L"Root");
-	ColliderDesc.vOffsetPosition = _float3(0.f, 1.f, 0.f);
-
-	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BOUNDARY, &ColliderDesc)))
-		return E_FAIL;
-
-
-	ColliderDesc.tSphere.Radius = .2f;
-	ColliderDesc.pNode = m_pModelCom->Get_HierarchyNode(L"C_TongueA_2");
-	ColliderDesc.vOffsetPosition = _float3(0.f, 0.f, 0.f);
-
-	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::HEAD, &ColliderDesc)))
-		return E_FAIL;
-
-	ColliderDesc.tSphere.Radius = .6f;
-	ColliderDesc.pNode = m_pModelCom->Get_HierarchyNode(L"C_Spine_1");
-	ColliderDesc.vOffsetPosition = _float3(0.f, -0.25f, 0.f);
-	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BODY, &ColliderDesc)))
-		return E_FAIL;
-
-
-
-	ColliderDesc.tSphere.Radius = .1f;
-	ColliderDesc.pNode = m_pModelCom->Get_HierarchyNode(L"L_Foot_End");
-	ColliderDesc.vOffsetPosition = _float3(0.f, 0.f, 0.f);
-	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::ATTACK, &ColliderDesc)))
-		return E_FAIL;
-
-
-	ColliderDesc.tSphere.Radius = .1f;
-	ColliderDesc.pNode = m_pModelCom->Get_HierarchyNode(L"R_Foot_End");
-	ColliderDesc.vOffsetPosition = _float3(0.f, 0.f, 0.f);
-	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::ATTACK, &ColliderDesc)))
-		return E_FAIL;
-
+	//CCollider_Sphere::SPHERE_COLLIDER_DESC ColliderDesc;
+	//ZeroMemory(&ColliderDesc, sizeof ColliderDesc);
+	//
+	//BoundingSphere tSphere;
+	//ZeroMemory(&tSphere, sizeof(BoundingSphere));
+	//tSphere.Radius = 1.f;
+	//
+	//XMStoreFloat4x4(&ColliderDesc.ModePivotMatrix, m_pModelCom->Get_PivotMatrix());
+	//ColliderDesc.pOwnerTransform = m_pTransformCom;
+	//
+	//ColliderDesc.tSphere = tSphere;
+	//ColliderDesc.pNode = m_pModelCom->Get_HierarchyNode(L"Root");
+	//ColliderDesc.vOffsetPosition = _float3(0.f, 1.f, 0.f);
+	//
+	//if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BOUNDARY, &ColliderDesc)))
+	//	return E_FAIL;
+	//
+	//
+	//ColliderDesc.tSphere.Radius = .2f;
+	//ColliderDesc.pNode = m_pModelCom->Get_HierarchyNode(L"C_TongueA_2");
+	//ColliderDesc.vOffsetPosition = _float3(0.f, 0.f, 0.f);
+	//
+	//if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::HEAD, &ColliderDesc)))
+	//	return E_FAIL;
+	//
+	//ColliderDesc.tSphere.Radius = .6f;
+	//ColliderDesc.pNode = m_pModelCom->Get_HierarchyNode(L"C_Spine_1");
+	//ColliderDesc.vOffsetPosition = _float3(0.f, -0.25f, 0.f);
+	//if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BODY, &ColliderDesc)))
+	//	return E_FAIL;
+	//
+	//
+	//
+	//ColliderDesc.tSphere.Radius = .1f;
+	//ColliderDesc.pNode = m_pModelCom->Get_HierarchyNode(L"L_Foot_End");
+	//ColliderDesc.vOffsetPosition = _float3(0.f, 0.f, 0.f);
+	//if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::ATTACK, &ColliderDesc)))
+	//	return E_FAIL;
+	//
+	//
+	//ColliderDesc.tSphere.Radius = .1f;
+	//ColliderDesc.pNode = m_pModelCom->Get_HierarchyNode(L"R_Foot_End");
+	//ColliderDesc.vOffsetPosition = _float3(0.f, 0.f, 0.f);
+	//if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::ATTACK, &ColliderDesc)))
+	//	return E_FAIL;
+	//
 
 
 
