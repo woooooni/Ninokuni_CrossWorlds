@@ -113,6 +113,8 @@ public:
 	HRESULT Import_Model_Data(_uint iLevelIndex, const wstring & strProtoTypeTag, _uint eType, wstring strFolderPath, wstring strFileName, __out class CModel** ppOut = nullptr);
 	HRESULT Export_Model_Data_FromPath(_uint eType, wstring strFolderPath);
 	vector<ANIM_TRANSFORM_CACHE> Create_AnimationSocketTransform(class CModel* pModel, const _uint & iSocketBoneIndex);
+	vector<ANIM_TRANSFORM_CACHES> Create_AnimationTransform_Caches_InTool(class CModel* pModel); /* 툴 디버깅용 트랜스폼 생성 */
+
 
 
 public:

@@ -12,6 +12,7 @@ private:
 public:
 	virtual HRESULT Initialize() override;
 	virtual void Tick(_float fTimeDelta) override;
+	virtual HRESULT Render() override;
 
 private:
 	void Tick_Model(_float fTimeDelta);
@@ -20,15 +21,29 @@ private:
 	void Tick_Event(_float fTimeDelta);
 	void Tick_Costume(_float fTimeDelta);
 
-private:
-	const _bool Is_Exception();
+	void Tick_Dummys(_float fTimeDelta);
 
 private:
+	HRESULT Render_DebugDraw();
+
+private:
+	/* In Initialize */
+	HRESULT Ready_DebugDraw();
+	HRESULT Ready_Dummy();
 	HRESULT Ready_WeaponPrototypes();
+	HRESULT Ready_AutoAnimData();
 
+	/* In Impory Animation */
+	HRESULT Ready_SocketTransforms();
 
 private:
 	void Reset_Transform();
+	const _bool Is_Exception();
+
+	HRESULT Clear_ToolAnimationData();
+
+	Vec3 Calculate_SocketPosition();
+	Matrix Calculate_SocketWorldMatrix();
 
 private:
 	wstring m_strFilePath = L"";
@@ -36,20 +51,50 @@ private:
 
 	class CDummy* m_pDummy = nullptr;
 
-private:
+#pragma region Animation
 
-	/* Socket */
+	_bool m_bAllAnimLoop = TRUE;
 
-	/* 하이어러키 노드 */
+#pragma endregion
+
+
+#pragma region Socket
+
+	/* Bone */
 	_int m_iCurBoneIndex = 0;
-	
+
 	/* 프로토타입 무기*/
-	vector<class CPart*> m_WeaponPrototypes;
-	_uint m_iCurWeaponIndex = 0;
+	vector<class CPart*> m_Weapons;
+	_int m_iCurWeaponIndex = -1;
 
-	/* 계산된 소켓 행렬 컨테이너 (뼈인덱스, 트랜스폼맵) */
-	map<_uint, vector<ANIM_TRANSFORM_CACHE>> m_CalculatedSockets;
+	/* 소켓 */
+	vector<ANIM_TRANSFORM_CACHES>	m_AnimTransformsCaches;/* 모든 뼈 계산 됨 */
+	vector<wstring>					m_AddedTransformNames; /* 모델에 추가된 뼈 이름 기억*/
 
+	_int m_iSocketIndex = -1; /* 툴 리스트 박스에서의 인덱스 == 모델의 트랜스폼 벡터에서의 인덱스 */
+
+	/* Render Index */
+	_int m_iRenderSocketIndex = 0;
+
+	/* Rotation Value */
+	Vec3 m_vRotation;
+
+	vector<Vec3> m_vAutoSocket;
+	_bool		m_bAuto = FALSE;
+	_int		m_iAutoAnimIndex = 0;
+
+#pragma endregion
+
+
+#pragma region Debug Draw 
+
+	Vec4 m_vColor = { 0.f, 0.f, 1.f, 1.f };
+	BasicEffect* m_pEffect = nullptr;
+	BoundingSphere* m_pSphere = nullptr;
+	ID3D11InputLayout* m_pInputLayout = nullptr;
+	PrimitiveBatch<VertexPositionColor>* m_pBatch = nullptr;
+
+#pragma endregion
 
 public:
 	static CTool_Model* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

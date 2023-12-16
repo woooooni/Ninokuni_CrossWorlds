@@ -41,7 +41,7 @@ HRESULT CCamera_Manager::Ready_Cameras()
 {
 	CCamera::CAMERADESC			CameraDesc;
 
-	CameraDesc.vEye = _float4(0.f, 30.f, -30.f, 1.f);
+	CameraDesc.vEye = _float4(0.f, 5.f, -5.f, 1.f);
 	CameraDesc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
 	CameraDesc.fFovy = XMConvertToRadians(60.0f);
 	CameraDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;

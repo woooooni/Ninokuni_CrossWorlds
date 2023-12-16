@@ -42,6 +42,7 @@ public:
 
 public:
 	vector<ANIM_TRANSFORM_CACHE> Create_AnimationSocketTransform(class CModel* pModel, const _uint& iSocketBoneIndex); /* 소켓 본 하나 계산하기 위한 캐시 */
+	vector<ANIM_TRANSFORM_CACHES> Create_AnimationTransform_Caches_InTool(class CModel* pModel); /* 툴 디버깅용 트랜스폼 생성 */
 
 private:
 	HRESULT Import_Model_Data_From_Fbx(_uint iLevelIndex, const wstring& strProtoTypeTag, _uint eType, wstring strFolderPath, wstring strFileName, __out class CModel** ppOut = nullptr);

@@ -27,6 +27,7 @@ namespace Client
 		LAYER_TRAIL,
 		LAYER_UI,
 		LAYER_ETC,
+		LAYER_WEAPON,
 		LAYER_END
 	};
 

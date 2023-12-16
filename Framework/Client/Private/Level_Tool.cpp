@@ -8,6 +8,8 @@
 #include "Terrain.h"
 #include "Camera_Manager.h"
 
+#include "Part_SwordTemp.h"
+
 
 CLevel_Tool::CLevel_Tool(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -36,7 +38,7 @@ HRESULT CLevel_Tool::Initialize()
 		return E_FAIL;
 
 	if (FAILED(Ready_Layer_Character(LAYER_TYPE::LAYER_CHARACTER)))
-		return E_FAIL;
+		return E_FAIL; 
 
 	if (FAILED(Ready_Layer_Monster(LAYER_TYPE::LAYER_MONSTER)))
 		return E_FAIL;
@@ -45,6 +47,9 @@ HRESULT CLevel_Tool::Initialize()
 		return E_FAIL;
 
 	if (FAILED(Ready_Layer_UI(LAYER_TYPE::LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(Ready_Layer_Weapon(LAYER_TYPE::LAYER_WEAPON)))
 		return E_FAIL;
 
 	return S_OK;
@@ -70,10 +75,7 @@ HRESULT CLevel_Tool::Render_Debug()
 
 HRESULT CLevel_Tool::Enter_Level()
 {
-	/*Protocol::S_ENTER_LEVEL tSendPkt;
-	tSendPkt.set_ilevelid(LEVEL_TOOL);
-	SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(tSendPkt);
-	CNetwork_Manager::GetInstance()->Send(sendBuffer);*/
+	CImGui_Manager::GetInstance()->Reserve_Manager(g_hWnd, m_pDevice, m_pContext);
 
 	return S_OK;
 }
@@ -179,6 +181,11 @@ HRESULT CLevel_Tool::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 }
 
 HRESULT CLevel_Tool::Ready_Layer_Effect(const LAYER_TYPE eLayerType)
+{
+	return S_OK;
+}
+
+HRESULT CLevel_Tool::Ready_Layer_Weapon(const LAYER_TYPE eLayerType)
 {
 	return S_OK;
 }

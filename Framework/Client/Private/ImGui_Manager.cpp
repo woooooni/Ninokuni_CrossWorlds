@@ -208,6 +208,11 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 
 void CImGui_Manager::Render_ImGui()
 {
+    if (true == m_bShowModel_Tool)
+    {
+        m_pModel_Tool->Render();
+    }
+
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 

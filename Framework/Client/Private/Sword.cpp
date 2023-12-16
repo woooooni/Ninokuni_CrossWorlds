@@ -30,7 +30,7 @@ HRESULT CSword::Initialize_Prototype(const wstring& strPrototypeSwordModel)
 
 HRESULT CSword::Initialize(void* pArg)
 {
-	SWORD_DESC* pWeaponDesc = nullptr;
+	/*SWORD_DESC* pWeaponDesc = nullptr;
 	if (nullptr != pArg)
 	{
 		pWeaponDesc = (SWORD_DESC*)pArg;
@@ -55,14 +55,14 @@ HRESULT CSword::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
-	Stop_Trail();
+	Stop_Trail();*/
 
 	return S_OK;
 }
 
 void CSword::Tick(_float fTimeDelta)
 {
-	GI->Add_CollisionGroup(COLLISION_GROUP::CHARACTER, this);
+	/*GI->Add_CollisionGroup(COLLISION_GROUP::CHARACTER, this);
 
 	_float3 vRotation = _float3(0.f, 180.f, 90.f);
 	switch (m_eType)
@@ -94,7 +94,7 @@ void CSword::Tick(_float fTimeDelta)
 
 
 	m_pTrailObject->Set_TransformMatrix(m_pTransformCom->Get_WorldMatrix());
-	m_pTrailObject->Tick(fTimeDelta);
+	m_pTrailObject->Tick(fTimeDelta);*/
 }
 
 void CSword::LateTick(_float fTimeDelta)
@@ -156,7 +156,7 @@ void CSword::SetUp_Trail_Position(_vector vHighPosition, _vector vLowPosition)
 
 void CSword::Generate_Trail(const wstring& strDiffuseTextureName, const wstring& strAlphaTextureName, const _float4& vColor, _uint iVertexCount)
 {
-	Compute_RenderMatrix(m_pSocketBone->Get_CombinedTransformation() * XMLoadFloat4x4(&m_SocketPivotMatrix));
+	/*Compute_RenderMatrix(m_pSocketBone->Get_CombinedTransformation() * XMLoadFloat4x4(&m_SocketPivotMatrix));
 
 	m_pTrailObject->Set_DiffuseTexture_Index(strDiffuseTextureName);
 	m_pTrailObject->Set_AlphaTexture_Index(strAlphaTextureName);
@@ -166,7 +166,7 @@ void CSword::Generate_Trail(const wstring& strDiffuseTextureName, const wstring&
 	m_pTrailObject->Set_TrailDesc(TrailDesc);
 
 	m_pTrailObject->Set_VtxCount(iVertexCount);
-	m_pTrailObject->Start_Trail(m_pTransformCom->Get_WorldMatrix());
+	m_pTrailObject->Start_Trail(m_pTransformCom->Get_WorldMatrix());*/
 }
 
 void CSword::Stop_Trail()

@@ -1,3 +1,5 @@
+#pragma region Default 
+
 #include "stdafx.h"
 #include "Tool_Model.h"
 
@@ -5,15 +7,22 @@
 
 #include "GameInstance.h"
 #include "Utils.h"
+#include <fstream>
 
 #include "Model.h"
 #include "Animation.h"
 #include "HierarchyNode.h"
 
-#include "Part.h"
 #include "Dummy.h"
+#include "Part.h"
 
-#include <fstream>
+#pragma endregion
+
+#pragma region include Weapon Prototype
+
+
+#pragma endregion
+
 
 CTool_Model::CTool_Model(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:CTool(pDevice, pContext)
@@ -25,13 +34,16 @@ HRESULT CTool_Model::Initialize()
 	if (FAILED(__super::Initialize()))
 		return E_FAIL;
 
+	if (FAILED(Ready_DebugDraw()))
+		return E_FAIL;
+
+	if (FAILED(Ready_Dummy()))
+		return E_FAIL;
 
 	if (FAILED(Ready_WeaponPrototypes()))
 		return E_FAIL;
 
-	/* Dummy */
-	m_pDummy = CDummy::Create(m_pDevice, m_pContext, L"Dummy");
-	if (FAILED(m_pDummy->Initialize(nullptr)))
+	if (FAILED(Ready_AutoAnimData()))
 		return E_FAIL;
 
 	return S_OK;
@@ -49,8 +61,18 @@ void CTool_Model::Tick(_float fTimeDelta)
 	}
 	ImGui::End();
 
+	Tick_Dummys(fTimeDelta);
+
 	_bool bDemo = FALSE;
 	if(bDemo) ImGui::ShowDemoWindow(&bDemo);
+}
+
+HRESULT CTool_Model::Render()
+{
+	if (FAILED(Render_DebugDraw()))
+		return E_FAIL;
+
+	return S_OK;
 }
 
 void CTool_Model::Reset_Transform()
@@ -61,6 +83,109 @@ void CTool_Model::Reset_Transform()
 	m_pDummy->Get_TransformCom()->Set_State(CTransform::STATE::STATE_POSITION, XMVectorSet(0.f, 0.f, 0.f, 1.f));
 
 	return;
+}
+
+HRESULT CTool_Model::Clear_ToolAnimationData()
+{
+	m_bAllAnimLoop = TRUE;
+	vector<class CAnimation*>& Animations = m_pDummy->Get_ModelCom()->Get_Animations();
+
+	for (auto& pAnim : Animations)
+		pAnim->Set_Loop(m_bAllAnimLoop);
+	
+
+	m_iCurBoneIndex = 0;
+
+	m_iSocketIndex = -1;
+	m_iRenderSocketIndex = 0;
+
+	m_AnimTransformsCaches.clear();
+	m_AnimTransformsCaches.shrink_to_fit();
+
+	m_AddedTransformNames.clear();
+	m_AddedTransformNames.shrink_to_fit();
+
+	m_vRotation = Vec3::Zero;
+
+	m_bAuto = FALSE;
+
+	m_iAutoAnimIndex = 0;
+
+	return S_OK;
+}
+
+Vec3 CTool_Model::Calculate_SocketPosition()
+{
+	Matrix matSocketWorld = Calculate_SocketWorldMatrix();
+
+	Vec3 vWorldPos = { matSocketWorld._41, matSocketWorld._42, matSocketWorld._43 };
+
+	return vWorldPos;
+}
+
+Matrix CTool_Model::Calculate_SocketWorldMatrix()
+{
+	TweenDesc TweenDesc = m_pDummy->Get_ModelCom()->Get_TweenDesc();
+
+	/* Current Frame */
+	Matrix matSocket = Matrix::Lerp(m_AnimTransformsCaches[TweenDesc.cur.iAnimIndex].transforms[TweenDesc.cur.iCurFrame][m_iRenderSocketIndex],
+								m_AnimTransformsCaches[TweenDesc.cur.iAnimIndex].transforms[TweenDesc.cur.iNextFrame][m_iRenderSocketIndex],
+								TweenDesc.cur.fRatio);
+	/* if Next Frame */
+	if (0 <= TweenDesc.next.iAnimIndex)
+	{
+		Matrix matSocketNext = Matrix::Lerp(m_AnimTransformsCaches[TweenDesc.next. iAnimIndex].transforms[TweenDesc.next.iCurFrame][m_iRenderSocketIndex],
+								m_AnimTransformsCaches[TweenDesc.next.iAnimIndex].transforms[TweenDesc.next.iNextFrame][m_iRenderSocketIndex],
+								TweenDesc.next.fRatio);
+
+		matSocket = Matrix::Lerp(matSocket, matSocketNext, TweenDesc.fTweenRatio);
+	}
+
+	/* 정규화 */
+	{
+		Vec3 vRight, vUp, vLook;
+		memcpy(&vRight, matSocket.m[0], sizeof(Vec3));
+		memcpy(&vUp, matSocket.m[1], sizeof(Vec3));
+		memcpy(&vLook, matSocket.m[2], sizeof(Vec3));
+
+		vRight.Normalize();
+		vUp.Normalize();
+		vLook.Normalize();
+
+		matSocket.Right(vRight);
+		matSocket.Up(vUp);
+		matSocket.Backward(vLook);
+
+	}
+	 
+	/* 포지션 */
+	Vec4 vPos;
+	{
+		memcpy(&vPos, matSocket.m[3], sizeof(Vec4));		
+	}
+
+	/* 회전 */
+	Matrix matRotation;
+	{
+		XMStoreFloat4x4(&matRotation, XMMatrixRotationQuaternion(XMQuaternionRotationRollPitchYaw(
+			XMConvertToRadians(m_vRotation.x),
+			XMConvertToRadians(m_vRotation.y),
+			XMConvertToRadians(m_vRotation.z))));
+
+		/*Matrix matRotation =
+			Matrix::CreateRotationY(XMConvertToRadians(m_vRotation.x)) *
+			Matrix::CreateRotationZ(XMConvertToRadians(m_vRotation.y)) *
+			Matrix::CreateRotationX(XMConvertToRadians(m_vRotation.z));*/
+	}
+
+	
+	/* 스케일 */
+
+
+	matSocket *= matRotation;
+	memcpy(&matSocket.m[3], &vPos, sizeof(Vec4));
+
+	return matSocket * m_pDummy->Get_TransformCom()->Get_WorldMatrix();
 }
 
 const _bool CTool_Model::Is_Exception()
@@ -89,8 +214,104 @@ const _bool CTool_Model::Is_Exception()
 	return false;
 }
 
+HRESULT CTool_Model::Ready_Dummy()
+{
+	m_pDummy = CDummy::Create(m_pDevice, m_pContext, L"Dummy");
+	
+	if (FAILED(m_pDummy->Initialize(nullptr)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CTool_Model::Ready_DebugDraw()
+{
+	m_pBatch = new PrimitiveBatch<VertexPositionColor>(GI->Get_Context());
+	m_pEffect = new BasicEffect(GI->Get_Device());
+
+	m_pEffect->SetVertexColorEnabled(true);
+
+	const void* pShaderByteCodes = nullptr;
+	size_t			iLength = 0;
+
+	m_pEffect->GetVertexShaderBytecode(&pShaderByteCodes, &iLength);
+
+	if (FAILED(GI->Get_Device()->CreateInputLayout(VertexPositionColor::InputElements, VertexPositionColor::InputElementCount, pShaderByteCodes, iLength, &m_pInputLayout)))
+		return E_FAIL;
+
+	_float	fRadius = 0.1f;
+	Vec3	vOrigin = { 0.f, fRadius * 0.5f, 0.f };
+	m_pSphere = new BoundingSphere(vOrigin, fRadius);
+
+	if (nullptr == m_pSphere)
+		return E_FAIL;
+
+	return TRUE;
+}
+
 HRESULT CTool_Model::Ready_WeaponPrototypes()
 {
+	//CPart*			pWeapon = nullptr;
+	//CGameObject*	pGameObject = nullptr;
+
+	///* Prototype_GameObject_TempSword */
+	//if (FAILED(GI->Add_GameObject(LEVEL_TOOL, _uint(LAYER_WEAPON), TEXT("Prototype_GameObject_TempSword"), nullptr, &pGameObject)))
+	//	return E_FAIL;
+	//{
+	//	pWeapon = dynamic_cast<CPart*>(pGameObject);
+	//	if (nullptr == pWeapon)
+	//		return E_FAIL;
+
+	//	m_Weapons.push_back(pWeapon);
+
+	//	pWeapon = nullptr;
+	//	pGameObject = nullptr;
+	//}
+
+	return S_OK;
+}
+
+HRESULT CTool_Model::Ready_AutoAnimData()
+{
+	vector<_float> vData = { -270.f, -180.f, -90.f, 0.f, 90.f, 180.f, 270.f };
+
+	for (auto x : vData)
+		for (auto y : vData)
+			for (auto z : vData)
+				m_vAutoSocket.push_back(Vec3{ x, y, z });
+
+	return S_OK;
+}
+
+HRESULT CTool_Model::Ready_SocketTransforms()
+{
+	m_AnimTransformsCaches = GI->Create_AnimationTransform_Caches_InTool(m_pDummy->Get_ModelCom());
+
+	return S_OK;
+}
+
+HRESULT CTool_Model::Render_DebugDraw()
+{
+	if (m_iRenderSocketIndex < 0 || m_AnimTransformsCaches.empty())
+		return S_OK;
+
+	m_pEffect->SetWorld(XMMatrixIdentity());
+	m_pEffect->SetView(GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
+	m_pEffect->SetProjection(GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ));
+
+	m_pEffect->Apply(m_pContext);
+
+	m_pContext->IASetInputLayout(m_pInputLayout);
+
+	m_pBatch->Begin();
+	{
+		m_pSphere->Center = Calculate_SocketPosition();
+
+		DX::Draw(m_pBatch, *m_pSphere, XMLoadFloat4(&m_vColor));
+	}
+
+	m_pBatch->End();
+
 	return S_OK;
 }
 
@@ -181,12 +402,17 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 					else
 					{
 						MSG_BOX("Success Import.");
+						Clear_ToolAnimationData();
 						m_pDummy->Get_ModelCom()->Set_Animation(0);
+						if (CModel::TYPE::TYPE_ANIM == m_pDummy->Get_ModelCom()->Get_ModelType() && FAILED(Ready_SocketTransforms()))
+						{
+							MSG_BOX("소켓 트랜스폼 생성에 실패했습니다.");
+							return;
+						}
 					}
 				}
 				else
 					MSG_BOX("모델 타입을 선택해주세요");
-
 			}
 		}
 
@@ -295,9 +521,6 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 		//}
 		IMGUI_NEW_LINE;
 	}
-
-	m_pDummy->Tick(fTimeDelta);
-	m_pDummy->LateTick(fTimeDelta);
 }
 
 
@@ -313,8 +536,9 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 
 		vector<CAnimation*>& Animations = pModelCom->Get_Animations();
     
-		ImGui::Text("Animation List");
+		ImGui::Text("Animation List (count : %d)", Animations.size());
 		IMGUI_SAME_LINE;
+
 		/* Export Anim Names */
 		if (ImGui::Button("Export Anim Names"))
 		{
@@ -362,7 +586,7 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 		ImGui::Separator();
 		ImGui::Text("Edit 1");
 		IMGUI_SAME_LINE;
-		ImGui::TextColored(ImVec4(0.7f, 0.5f, 0.7f, 1.f), u8"삭제, 정렬, 순서 변경, 이름 변경은 다시 익스포트 해야 반영됩니다. ");
+		ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"삭제, 정렬, 순서 변경, 이름 변경은 다시 익스포트 해야 반영됩니다. ");
 		{
 			/* Swap */
 			{
@@ -445,6 +669,18 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 			IMGUI_SAME_LINE;
 			ImGui::Text("Play Time");
 		}
+
+		/* Animation Progress  */
+		pCurrAnimation = pModelCom->Get_CurrAnimation();
+		{
+			_float fPlayTime = 0.f; // pCurrAnimation->Get_PlayTime();
+			if (ImGui::SliderFloat("##Animation_Progress", &fPlayTime, 0.f, 0.f))//pCurrAnimation->Get_Duration()))
+			{
+				//pCurrAnimation->Set_AnimationPlayTime(m_pDummy->Get_TransformCom(), fPlayTime, fTimeDelta);
+			}
+			IMGUI_SAME_LINE;
+			ImGui::Text("Progress");
+		}
 		
 		/* Set Speed */
 		{
@@ -474,25 +710,36 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 			if (ImGui::Button("||"))
 				pModelCom->Set_Stop_Animation(true);
 		}
-		IMGUI_SAME_LINE;
+		//IMGUI_SAME_LINE;
 
 		/* Loop Btn */
 		{
 			_bool bLoop = pCurrAnimation->Is_Loop();
-			if (ImGui::Checkbox("##IsLoop", &bLoop))
+			if (ImGui::Checkbox("Cur Anim Loop", &bLoop))
 				pCurrAnimation->Set_Loop(bLoop);
-			IMGUI_SAME_LINE;
-			ImGui::Text("Loop              ");
+			//ImGui::SameLine;
+			//ImGui::Text("Cur Anim Loop     ");
 		}
 		IMGUI_SAME_LINE;
 
-		/* Progress */
-		_float fAnimationProgress = 0.f; // pModelCom->Get_Progress();
+		/* All Btn */
 		{
-			ImGui::Text("Progress : ");
-			IMGUI_SAME_LINE;
-			ImGui::Text(to_string(fAnimationProgress).c_str());
+			_bool bLoop = m_bAllAnimLoop;
+			if (ImGui::Checkbox("All Anim Loop", &bLoop))
+			{
+				m_bAllAnimLoop = bLoop;
+
+				vector<class CAnimation*>& Animations = pModelCom->Get_Animations();
+
+				for (auto& pAnim : Animations)
+				{
+					pAnim->Set_Loop(m_bAllAnimLoop);
+				}
+			}
+			//ImGui::SameLine;
+			//ImGui::Text("All Anim Loop");
 		}
+		
 		IMGUI_NEW_LINE;
 	}
 }
@@ -503,23 +750,17 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 	{
 		if (Is_Exception()) return;
 
-		ImGui::TextColored(ImVec4(0.7f, 0.5f, 0.7f, 1.f), u8"애니메이션이 편집된 경우 소켓 또한 다시 갱신이 필요합니다.");
+		ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"애니메이션이 편집된 경우 소켓 또한 다시 갱신이 필요합니다.");
+
+		vector<class CHierarchyNode*>& HiearachyNodes = m_pDummy->Get_ModelCom()->Get_HierarchyNodes();
+		_uint iHierarchyNodeCount = HiearachyNodes.size();
 
 		/* HierarchyNode List */
 		{
-			ImGui::Text("HierarchyNode List");
-
-			if (ImGui::TreeNode(u8"Weapon Socket Names"))
-			{
-				ImGui::Text(u8"왼손 무기 소켓 : CAT_l_wph1");
-				ImGui::Text(u8"오른손 무기 소켓 : CAT_r_wph1");
-
-				ImGui::TreePop();
-			}
+			ImGui::Text("HierarchyNode List (count : %d)", iHierarchyNodeCount);
 
 			if (ImGui::BeginListBox("##Bone_List"))
 			{
-				vector<class CHierarchyNode*>& HiearachyNodes = m_pDummy->Get_ModelCom()->Get_HierarchyNodes();
 			
 				for (size_t i = 0; i < HiearachyNodes.size(); ++i)
 				{
@@ -527,7 +768,7 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 					if (ImGui::Selectable(strBoneName.c_str(), i == m_iCurBoneIndex))
 					{
 						m_iCurBoneIndex = i;
-				
+						m_iRenderSocketIndex = i;
 					}
 				}
 				ImGui::EndListBox();
@@ -540,11 +781,11 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 		{
 			ImGui::Text("Weapon Prototypes List");
 
-			if (ImGui::BeginListBox("##Weapon Prototypes List", ImVec2(0, 40)))
+			if (ImGui::BeginListBox("##Weapon Prototypes List", ImVec2(0, 50)))
 			{
-				for (size_t i = 0; i < m_WeaponPrototypes.size(); ++i)
+				for (size_t i = 0; i < m_Weapons.size(); ++i)
 				{
-					string strBoneName = CUtils::ToString(m_WeaponPrototypes[i]->Get_ObjectTag());
+					string strBoneName = CUtils::ToString(m_Weapons[i]->Get_ObjectTag());
 					if (ImGui::Selectable(strBoneName.c_str(), i == m_iCurWeaponIndex))
 					{
 						m_iCurWeaponIndex = i;
@@ -553,53 +794,209 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 				ImGui::EndListBox();
 			}
 		}
+		IMGUI_NEW_LINE;
 
 		/* Calculated Socket List */
 		{
 			ImGui::Text("Calculated Socket List");
 
-			if (ImGui::BeginListBox("##Calculated Socket List", ImVec2(0, 40)))
+			if (ImGui::BeginListBox("##Calculated Socket List", ImVec2(0, 50)))
 			{
-				for (auto Pair : m_CalculatedSockets)
+				for (size_t i = 0; i < m_AddedTransformNames.size(); i++)
 				{
-					if (ImGui::Selectable(CUtils::ToString(m_pDummy->Get_ModelCom()->Get_HiearachyNodeName(Pair.first)).c_str(), false))
-					{
+					if (ImGui::Selectable(CUtils::ToString(m_AddedTransformNames[i]).c_str(), i == m_iSocketIndex))
+					{	
+						m_iSocketIndex = i;
 
+						
+						m_iRenderSocketIndex = m_pDummy->Get_ModelCom()->Get_HierarchyNodeIndex(m_AddedTransformNames[i]);
+
+						int k = 0;
 					}
-
 				}
-			
 				ImGui::EndListBox();
 			}
 		}
 
-
-		/* Apply */
-		if (ImGui::Button("Apply"))
+		/* Add */
+		if (ImGui::Button("Add Socket"))
 		{
-			if (0 < m_iCurBoneIndex)
+			/* 모델 컴포넌트 반영 */
+			m_pDummy->Get_ModelCom()->Add_SocketTransforms(
+				GI->Create_AnimationSocketTransform(m_pDummy->Get_ModelCom(), m_iCurBoneIndex));
+			
+			/* 툴 네임 리스트 반영 */
+			m_AddedTransformNames.push_back(HiearachyNodes[m_iCurBoneIndex]->Get_Name());
+			
+			/* 툴 인덱스 반영 */
+			m_iSocketIndex = m_AddedTransformNames.size() - 1;
+		}
+		IMGUI_SAME_LINE;
+
+		/* Delete */
+		if (ImGui::Button("Delete Socket"))
+		{
+			/* 모델 컴포넌트 반영 */
+			m_pDummy->Get_ModelCom()->Clear_SocketTransforms(m_iSocketIndex);
+
+			/* 툴 네임 리스트 반영 */
 			{
-				m_CalculatedSockets.emplace(m_iCurBoneIndex, GI->Create_AnimationSocketTransform(m_pDummy->Get_ModelCom(), m_iCurBoneIndex));
+				vector<wstring>::iterator iter = m_AddedTransformNames.begin();
+				iter += m_iSocketIndex;
+
+				m_AddedTransformNames.erase(iter);
 			}
+
+			/* 툴 인덱스 반영 */
+			m_iSocketIndex -= 1;
+			if (m_iSocketIndex < 0)
+			{
+				m_iSocketIndex = -1;
+				m_iRenderSocketIndex = m_iCurBoneIndex;
+			}
+			else
+				m_iRenderSocketIndex = m_pDummy->Get_ModelCom()->Get_HierarchyNodeIndex(m_AddedTransformNames[m_iSocketIndex]);
+		}
+		IMGUI_SAME_LINE;
+
+		/* All Delete */
+		if (ImGui::Button("All Delete Socket"))
+		{
+			/* 모델 컴포넌트 반영 */
+			m_pDummy->Get_ModelCom()->Clear_All_SocketTransforms();
+
+			/* 툴 네임 리스트 반영 */
+			m_AddedTransformNames.clear();
+			m_AddedTransformNames.shrink_to_fit();
+			
+			/* 툴 인덱스 반영 */
+			m_iSocketIndex -= 1;
+			m_iRenderSocketIndex = m_iCurBoneIndex;
+		}
+		IMGUI_NEW_LINE;
+
+
+		/* Rotation matrix */
+		{
+			_float fRot[3] = { m_vRotation.x, m_vRotation.y, m_vRotation.z };	
+			ImGui::Text("Socket Rotation");
+			
+			/*if (ImGui::DragFloat3("(Degree)", (_float*)&fRot, 0.5f))
+			{
+				memcpy(&m_vRotation, &fRot, sizeof(Vec3));
+			}*/
+			/* X */
+			{
+				if (ImGui::InputFloat("X", &fRot[0]))
+					m_vRotation.x = fRot[0];
+
+				IMGUI_SAME_LINE;
+
+				if (ImGui::ArrowButton("##Up X", ImGuiDir_Up))
+				{
+					m_vRotation.x += 90.f;
+					if (360 <= m_vRotation.x)
+						m_vRotation.x = -270.f;
+				}
+
+				IMGUI_SAME_LINE;
+
+				if (ImGui::ArrowButton("##Down X", ImGuiDir_Down))
+				{
+					m_vRotation.x -= 90.f;
+					if (-360 >= m_vRotation.x)
+						m_vRotation.x = 270.f;
+				}
+			}
+
+			/* Y */
+			{
+				if (ImGui::InputFloat("Y", &fRot[1]))
+					m_vRotation.y = fRot[1];
+
+				IMGUI_SAME_LINE;
+
+				if (ImGui::ArrowButton("##Up Y", ImGuiDir_Up))
+				{
+					m_vRotation.y += 90.f;
+					if (360 <= m_vRotation.y)
+						m_vRotation.y = -270.f;
+				}
+
+				IMGUI_SAME_LINE;
+
+				if (ImGui::ArrowButton("##Down Y", ImGuiDir_Down))
+				{
+					m_vRotation.y -= 90.f;
+					if (-360 >= m_vRotation.y)
+						m_vRotation.y = 270.f;
+				}
+			}
+
+			/* Z */
+			{
+				if (ImGui::InputFloat("Z", &fRot[2]))
+					m_vRotation.z = fRot[2];
+
+				IMGUI_SAME_LINE;
+
+				if (ImGui::ArrowButton("##Up Z", ImGuiDir_Up))
+				{
+					m_vRotation.z += 90.f;
+					if (360 <= m_vRotation.z)
+						m_vRotation.z = -270.f;
+				}
+
+				IMGUI_SAME_LINE;
+
+				if (ImGui::ArrowButton("##Down Z", ImGuiDir_Down))
+				{
+					m_vRotation.z -= 90.f;
+					if (-360 >= m_vRotation.z)
+						m_vRotation.z = 270.f;
+				}
+			}
+
+			/* Clear */
+			if (ImGui::Button("Clear Socket Rotation"))
+			{
+				m_vRotation = Vec3::Zero;
+			}
+			IMGUI_SAME_LINE;
+
+			/* Auto */
+			//if(ImGui::Checkbox("Auto Play", &m_bAuto));
+			//{
+			//	if (m_bAuto)
+			//	{
+			//		m_pDummy->Get_ModelCom()->Set_Animation(m_pDummy->Get_ModelCom()->Get_CurrAnimationIndex());
+
+			//		//m_pDummy->Get_ModelCom()->Get_CurrAnimation()->Set_Loop(FALSE);
+			//	}
+			//}
+
+			//if (m_bAuto)
+			//{
+			//	if (!m_pDummy->Get_ModelCom()->Is_Tween() && m_pDummy->Get_ModelCom()->Is_Finish())
+			//	{
+			//		m_pDummy->Get_ModelCom()->Set_Animation(m_pDummy->Get_ModelCom()->Get_CurrAnimationIndex());
+
+			//		m_iAutoAnimIndex++;
+			//		if (m_vAutoSocket.size() <= m_iAutoAnimIndex)
+			//		{
+			//			m_bAuto = FALSE;
+			//			m_iAutoAnimIndex = 0;
+			//		}
+
+			//		m_vRotation = m_vAutoSocket[m_iAutoAnimIndex];
+			//	}
+
+			//}
 		}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 		IMGUI_NEW_LINE;
+		IMGUI_NEW_LINE;
+
 	}
 }
 
@@ -656,6 +1053,17 @@ void CTool_Model::Tick_Costume(_float fTimeDelta)
 	}
 }
 
+void CTool_Model::Tick_Dummys(_float fTimeDelta)
+{
+	m_pDummy->Tick(fTimeDelta);
+	m_pDummy->LateTick(fTimeDelta);
+
+	if (0 <= m_iCurWeaponIndex && !m_Weapons.empty() && m_iCurWeaponIndex < m_Weapons.size() && nullptr != m_Weapons[m_iCurWeaponIndex])
+	{
+		m_Weapons[m_iCurWeaponIndex]->Set_SocketWorld(Calculate_SocketWorldMatrix());
+	}
+}
+
 CTool_Model* CTool_Model::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	CTool_Model* pInstance = new CTool_Model(pDevice, pContext);
@@ -671,5 +1079,17 @@ CTool_Model* CTool_Model::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
 void CTool_Model::Free()
 {
 	__super::Free();
+
+	for (auto& pWeapon : m_Weapons)
+		Safe_Release(pWeapon);
+
+	m_Weapons.clear();
+
 	Safe_Release(m_pDummy);
+
+	Safe_Delete(m_pBatch);
+	Safe_Delete(m_pEffect);
+	Safe_Delete(m_pSphere);
+	Safe_Release(m_pInputLayout);
+
 }

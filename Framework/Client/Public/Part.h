@@ -15,15 +15,6 @@ BEGIN(Client)
 
 class CPart abstract : public CGameObject
 {
-public:
-	typedef struct tagPartDesc
-	{
-		CGameObject* pOwner;
-		CHierarchyNode* pSocketBone;
-		_float4x4		SocketPivot;
-		CTransform* pParentTransform;
-	}PART_DESC;
-
 protected:
 	CPart(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObejctTag, _uint iObjectType);
 	CPart(const CPart& rhs);
@@ -31,16 +22,7 @@ protected:
 	virtual ~CPart() = default;
 
 public:
-	CHierarchyNode* Get_Socket(const wstring& strNodeName);
-	_float4x4 Get_SocketPivotMatrix();
-
-	void Set_SocketBone(class CHierarchyNode* pNode);
-
-	_float3 Get_PrevRotation() { return m_vPrevRotation; }
-	CHierarchyNode* Get_Current_SocketBone() { return m_pSocketBone; }
-
-	void Set_OriginRotation_Transform(_fmatrix RotationMatrix) { XMStoreFloat4x4(&m_OriginRotationTransform, RotationMatrix); }
-
+	HRESULT	Set_Owner(CGameObject* pOwner);
 	class CGameObject* Get_Owner() { return m_pOwner; }
 
 public:
@@ -55,25 +37,18 @@ public:
 	virtual void Collision_Continue(const COLLISION_INFO& tInfo) {};
 	virtual void Collision_Exit(const COLLISION_INFO& tInfo) {};
 
+public:
+	virtual void Set_SocketWorld(Matrix matSocketWorld) { memcpy(&m_matSocketWorld, &matSocketWorld, sizeof(Matrix)); } /* 주인 모델의 애니메이션 갱신이 이루어진 뒤 호출 */
 
-protected:
-	CTransform*				m_pParentTransform = { nullptr };
-	CHierarchyNode*			m_pSocketBone = { nullptr };
-	_float4x4				m_OriginRotationTransform;
-	_float4x4				m_SocketPivotMatrix;
-	_float3					m_vPrevRotation = {};
-
-
-protected: /* 해당 객체가 사용해야할 컴포넌트들을 저장하낟. */
-	CTransform* m_pTransformCom = { nullptr };
-	CShader* m_pShaderCom = { nullptr };
-	CModel* m_pModelCom = { nullptr };
-	CRenderer* m_pRendererCom = { nullptr };
+protected: 
 	CGameObject* m_pOwner = { nullptr };
 
-protected:
-	HRESULT Compute_RenderMatrix(_matrix ChildMatrix);
+	CModel* m_pModelCom = { nullptr };
+	CShader* m_pShaderCom = { nullptr };
+	CRenderer* m_pRendererCom = { nullptr };
+	CTransform* m_pTransformCom = { nullptr };
 
+	Matrix m_matSocketWorld;
 
 public:
 	virtual void Free() override;

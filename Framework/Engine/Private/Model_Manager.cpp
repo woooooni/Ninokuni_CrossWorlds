@@ -802,9 +802,6 @@ HRESULT CModel_Manager::Create_AnimationTransform_Caches(const _uint& iAnimIndex
 		{
 			m_HierarchyNodes[iBoneIndex]->Set_CombinedTransformation();
 
-			if (L"CAT_r_wph1" == m_HierarchyNodes[iBoneIndex]->Get_Name())
-				int k = 0;
-
 			m_AnimTransformsCaches[iAnimIndex].transforms[iFrameIndex][iBoneIndex]
 				= Matrix(m_HierarchyNodes[iBoneIndex]->Get_OffSetMatrix())
 					* Matrix(m_HierarchyNodes[iBoneIndex]->Get_CombinedTransformation()) 
@@ -817,6 +814,47 @@ HRESULT CModel_Manager::Create_AnimationTransform_Caches(const _uint& iAnimIndex
 	return S_OK;
 }
 
+vector<ANIM_TRANSFORM_CACHES> CModel_Manager::Create_AnimationTransform_Caches_InTool(CModel* pModel)
+{
+	/* 툴에서 디버깅 하기 위한 용도의 트랜스폼 맵, 어디에도 저장 되지 않고 툴레벨 클래스 객체에 저장된다. */
+	vector<ANIM_TRANSFORM_CACHES> AnimTransformsCache;
+
+	/* 툴 레벨이 아니라면 리턴 */
+	if (99 != GI->Get_CurrentLevel() || nullptr == pModel)
+		return AnimTransformsCache;
+
+	m_HierarchyNodes = pModel->Get_HierarchyNodes();
+	m_AnimationsCache = pModel->Get_Animations();
+
+	const _uint iAnimCount = pModel->Get_Animations().size();
+
+	AnimTransformsCache.resize(iAnimCount);
+
+	for (size_t iAnimIndex = 0; iAnimIndex < iAnimCount; iAnimIndex++)
+	{
+		CAnimation* pAnimation = m_AnimationsCache[iAnimIndex];
+
+		const _uint iMaxFrame = (_uint)pAnimation->Get_MaxFrameCount();
+
+		for (uint32 iFrameIndex = 0; iFrameIndex < iMaxFrame; iFrameIndex++)
+		{
+			pAnimation->Calculate_Animation(iFrameIndex);
+
+			for (uint32 iBoneIndex = 0; iBoneIndex < m_HierarchyNodes.size(); iBoneIndex++)
+			{
+				m_HierarchyNodes[iBoneIndex]->Set_CombinedTransformation();
+
+				AnimTransformsCache[iAnimIndex].transforms[iFrameIndex][iBoneIndex]
+					= Matrix(m_HierarchyNodes[iBoneIndex]->Get_OffSetMatrix())
+					* Matrix(m_HierarchyNodes[iBoneIndex]->Get_CombinedTransformation())
+					* Matrix(m_PivotMatrix);
+			}
+		}
+	}
+
+	return AnimTransformsCache;
+}
+
 vector<ANIM_TRANSFORM_CACHE> CModel_Manager::Create_AnimationSocketTransform(class CModel* pModel, const _uint& iSocketBoneIndex)
 {
 	/* 툴레벨이 아닌데 이전에 저장된 데이터가 있는 경우 찾아서 리턴 */
@@ -824,6 +862,9 @@ vector<ANIM_TRANSFORM_CACHE> CModel_Manager::Create_AnimationSocketTransform(cla
 	{
 		return Get_AnimationSocketTransform(pModel->Get_Name(), iSocketBoneIndex);
 	}
+
+	m_HierarchyNodes = pModel->Get_HierarchyNodes();
+	m_AnimationsCache = pModel->Get_Animations();
 
 	/* 툴레벨이거나 혹은, 툴레벨이 아닌데 이전에 저장된 데이터가 없는 경우 새로 만든다. */
 

@@ -302,6 +302,17 @@ const _int CModel::Get_HierarchyNodeIndex(const char* szBonename)
 	return -1;
 }
 
+const _int CModel::Get_HierarchyNodeIndex(wstring strBoneName)
+{
+	for (int32 i = 0; i < m_HierarchyNodes.size(); ++i)
+	{
+		if (m_HierarchyNodes[i]->Get_Name() == strBoneName)
+			return i;
+	}
+
+	return -1;
+}
+
 Matrix CModel::Get_SocketLocalMatrix(const _uint iSocketEnumIndex)
 {
 	Matrix matSocketLocal;
@@ -321,8 +332,22 @@ Matrix CModel::Get_SocketLocalMatrix(const _uint iSocketEnumIndex)
 												m_SocketTransforms[iSocketEnumIndex][m_TweenDesc.next.iAnimIndex].transforms[m_TweenDesc.next.iNextFrame][0],
 												m_TweenDesc.next.fRatio);
 
-		return Matrix::Lerp(matSocketLocal, matRootNextLerp, m_TweenDesc.fTweenRatio);
+		matSocketLocal =  Matrix::Lerp(matSocketLocal, matRootNextLerp, m_TweenDesc.fTweenRatio);
 	}
+
+	/* 크기를 1로 세팅 */
+	Vec3 vRight, vUp, vLook;
+	memcpy(&vRight, matSocketLocal.m[0], sizeof(Vec3));
+	memcpy(&vUp, matSocketLocal.m[1], sizeof(Vec3));
+	memcpy(&vLook, matSocketLocal.m[2], sizeof(Vec3));
+
+	vRight.Normalize();
+	vUp.Normalize();
+	vLook.Normalize();
+
+	matSocketLocal.Right(vRight);
+	matSocketLocal.Up(vUp);
+	matSocketLocal.Backward(vLook);
 
 	return matSocketLocal;
 }
@@ -519,6 +544,20 @@ HRESULT CModel::Swap_Animation(_uint iSrcIndex, _uint iDestIndex)
 	//m_iCurrentAnimIndex = iDestIndex;
 
 	return S_OK;
+}
+
+void CModel::Clear_SocketTransforms(const _uint iSocketEnumIndex)
+{
+	if (m_SocketTransforms.size() <= iSocketEnumIndex)
+		return;
+
+	vector<vector<ANIM_TRANSFORM_CACHE>>::iterator iter = m_SocketTransforms.begin();
+	iter += iSocketEnumIndex;
+	
+	iter->clear();
+	iter->shrink_to_fit();
+
+	m_SocketTransforms.erase(iter);
 }
 
 HRESULT CModel::Delete_Animation(_uint iIndex)
