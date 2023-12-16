@@ -167,7 +167,7 @@ call Copy.bat</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;ENGINE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../Public/;../Public/Fmod/;../../Reference/Headers/PhysX/;../Public/PhysX/extensions/;../Public/nlohmann/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Public/;../Public/Fmod/;../Public/PhysX/;../Public/PhysX/extentions;../Public/nlohmann/;</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
