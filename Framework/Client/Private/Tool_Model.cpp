@@ -141,6 +141,8 @@ Matrix CTool_Model::Calculate_SocketWorldMatrix()
 		matSocket = Matrix::Lerp(matSocket, matSocketNext, TweenDesc.fTweenRatio);
 	}
 
+	int k = 0;
+
 	/* ¡§±‘»≠ */
 	{
 		Vec3 vRight, vUp, vLook;
