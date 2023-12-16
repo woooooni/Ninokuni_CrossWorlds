@@ -4,9 +4,15 @@ CBTNode_Select::CBTNode_Select()
 {
 }
 
-HRESULT CBTNode_Select::Initialize_Prototype()
+HRESULT CBTNode_Select::Initialize_Prototype(CBehaviorTree* pBT)
 {
+	m_pBT = pBT;
+
 	return S_OK;
+}
+
+void CBTNode_Select::Start()
+{
 }
 
 CBTNode::NODE_STATE CBTNode_Select::Tick(const _float& fTimeDelta)
@@ -25,11 +31,11 @@ CBTNode::NODE_STATE CBTNode_Select::Tick(const _float& fTimeDelta)
 	return NODE_STATE::NODE_FAIL;
 }
 
-CBTNode_Select* CBTNode_Select::Create()
+CBTNode_Select* CBTNode_Select::Create(CBehaviorTree* pBT)
 {
 	CBTNode_Select* pInstance = new CBTNode_Select();
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(pInstance->Initialize_Prototype(pBT)))
 	{
 		MSG_BOX("Fail Create : CBTNode_Select");
 		Safe_Release(pInstance);

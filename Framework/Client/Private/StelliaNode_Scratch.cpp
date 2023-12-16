@@ -5,33 +5,36 @@ CStelliaNode_Scratch::CStelliaNode_Scratch()
 {
 }
 
-HRESULT CStelliaNode_Scratch::Initialize_Prototype(CBehaviorTree* pBT)
+HRESULT CStelliaNode_Scratch::Initialize_Prototype(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
 {
-	m_pBT = pBT;
+	__super::Initialize_Prototype(pDesc, pBT);
 
 	return S_OK;
 }
 
+void CStelliaNode_Scratch::Start()
+{
+	m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_Attack01"));
+}
+
 CBTNode::NODE_STATE CStelliaNode_Scratch::Tick(const _float& fTimeDelta)
 {
-	m_fTemp += fTimeDelta;
-
-	if (m_fTemp >= 4.f)
-	{
-		m_fTemp = 4.f - m_fTemp;
+	if(m_bIsSucces)
 		return NODE_STATE::NODE_SUCCESS;
-	}
 
-	// cout << "스크래치 진행 중" << endl;
+	cout << "atk1" << endl;
+
+	if (m_tBTNodeDesc.pOwnerModel->Is_Finish() && m_tBTNodeDesc.pOwnerModel->Is_Tween())
+		m_bIsSucces = true;
 
 	return NODE_STATE::NODE_RUNNING;
 }
 
-CStelliaNode_Scratch* CStelliaNode_Scratch::Create(CBehaviorTree* pBT)
+CStelliaNode_Scratch* CStelliaNode_Scratch::Create(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
 {
 	CStelliaNode_Scratch* pInstance = new CStelliaNode_Scratch();
 
-	if (FAILED(pInstance->Initialize_Prototype(pBT)))
+	if (FAILED(pInstance->Initialize_Prototype(pDesc, pBT)))
 	{
 		MSG_BOX("Fail Create : CStelliaNode_Scratch");
 		Safe_Release(pInstance);

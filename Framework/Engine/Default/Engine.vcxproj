@@ -202,6 +202,8 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\BTNode.h" />
     <ClInclude Include="..\Public\BTNode_Condition.h" />
     <ClInclude Include="..\Public\BTNode_Leaf.h" />
+    <ClInclude Include="..\Public\BTNode_Loop.h" />
+    <ClInclude Include="..\Public\BTNode_RandomSelect.h" />
     <ClInclude Include="..\Public\BTNode_Select.h" />
     <ClInclude Include="..\Public\BTNode_Sequence.h" />
     <ClInclude Include="..\Public\Cell.h" />
@@ -273,6 +275,8 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\BTNode.cpp" />
     <ClCompile Include="..\Private\BTNode_Condition.cpp" />
     <ClCompile Include="..\Private\BTNode_Leaf.cpp" />
+    <ClCompile Include="..\Private\BTNode_Loop.cpp" />
+    <ClCompile Include="..\Private\BTNode_RandomSelect.cpp" />
     <ClCompile Include="..\Private\BTNode_Select.cpp" />
     <ClCompile Include="..\Private\BTNode_Sequence.cpp" />
     <ClCompile Include="..\Private\Cell.cpp" />

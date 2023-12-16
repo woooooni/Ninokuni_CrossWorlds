@@ -112,11 +112,11 @@ void CMonster::LateTick(_float fTimeDelta)
 		for (auto& pCollider : m_Colliders[i])
 			m_pRendererCom->Add_Debug(pCollider);
 	}
-	m_pRendererCom->Add_Debug(m_pRigidBodyCom);
+	//m_pRendererCom->Add_Debug(m_pRigidBodyCom);
 #endif // DEBUG
 
 	
-	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
+	//m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 	m_pBTCom->LateTick(fTimeDelta);
 }
 
@@ -321,7 +321,6 @@ CHierarchyNode* CMonster::Get_Socket(const wstring& strSocketName)
 
 void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 {
-
 }
 
 
