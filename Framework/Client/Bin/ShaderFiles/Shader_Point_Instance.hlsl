@@ -2,8 +2,8 @@
 #include "Engine_Shader_Defines.hpp"
 
 matrix			g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
-texture2D		g_DiffuseTexture[100];
-Texture2D	    g_AlphaTexture[100];
+texture2D		g_DiffuseTexture;
+Texture2D	    g_AlphaTexture;
 
 vector			g_vCamPosition;
 
@@ -177,19 +177,18 @@ PS_OUT PS_MAIN(PS_IN In)
 {
 	PS_OUT			Out = (PS_OUT)0;
 
-	Out.vDiffuse   = g_DiffuseTexture[0].Sample(PointSampler, In.vTexcoord);
-	Out.vDiffuse.r = saturate((Out.vDiffuse.r + g_EffectDesc[In.iInstanceID].g_fColor.r));
-	Out.vDiffuse.g = saturate((Out.vDiffuse.g + g_EffectDesc[In.iInstanceID].g_fColor.g));
-	Out.vDiffuse.b = saturate((Out.vDiffuse.b + g_EffectDesc[In.iInstanceID].g_fColor.b));
-	//Out.vDiffuse.a = saturate(Out.vDiffuse.a - g_EffectDesc[In.iInstanceID].g_fAlpha);
-
-	if (Out.vDiffuse.a < 0.5f)
+	Out.vDiffuse   = g_DiffuseTexture.Sample(PointSampler, In.vTexcoord);
+	if (Out.vDiffuse.a < 0.5f ||
+		Out.vDiffuse.r < 0.5f && Out.vDiffuse.g < 0.5f && Out.vDiffuse.b < 0.5f)
 		discard;
+
+	Out.vDiffuse.r = saturate((Out.vDiffuse.r + g_EffectDesc[In.iInstanceID].g_fColor.r)); 
+	Out.vDiffuse.g = saturate((Out.vDiffuse.g + g_EffectDesc[In.iInstanceID].g_fColor.g));
+    Out.vDiffuse.b = saturate((Out.vDiffuse.b + g_EffectDesc[In.iInstanceID].g_fColor.b));
+	Out.vDiffuse.a = saturate(Out.vDiffuse.a - g_EffectDesc[In.iInstanceID].g_fAlpha);
 
 	// 알파 채널 반전
 	//Out.vDiffuse.a = 1.f - Out.vDiffuse.a;
-	if (Out.vDiffuse.r < 0.5f && Out.vDiffuse.g < 0.5f && Out.vDiffuse.b < 0.5f)
-		discard;
 
 	Out.vBlurPower  = float4(1.f, 1.f, 1.f, 0.f);
 	Out.vBrightness = Out.vDiffuse;
