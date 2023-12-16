@@ -249,34 +249,32 @@ namespace Engine
 #pragma region PhysXDesc
 	typedef struct tagPhysXDesc
 	{
+		PHYSX_RIGID_TYPE eRigidType = PHYSX_RIGID_TYPE::RIGID_TYPE_END;					// 오브젝트의 (스태틱, 다이나믹, 그라운드 등)타입을 결정합니다.
+		PHYSX_COLLIDER_TYPE eColliderType = PHYSX_COLLIDER_TYPE::COLLIDER_TYPE_END;		// 오브젝트의 콜라이더 모양(박스, 구, 메시)을 결정합니다.
+
 		// 콜라이더 관련.
-		_float3 vOffsetPos = { 0.f, 0.f, 0.f };	// 포지션에 대한 상대적인 오프셋 포지션
-		_float3 vExtents = { 1.f, 1.f, 1.f };	// 상자의 너비
-		_float fRadius = 1.f;					// 구의 너비
+		_float3 vOffsetPosition = { 0.f, 0.f, 0.f };	// 포지션에 대한 상대적인 오프셋 포지션
+		_float3 vExtents = { 1.f, 1.f, 1.f };			// 상자의 너비
+		_float fRadius = 1.f;							// 구의 너비
 
 
 		// 물리 관련.
 		_float fStaticFriction = 0.f;			// 스태틱 오브젝트의 마찰.
 		_float fDynamicFriction = 0.f;			// 다이나믹 오브젝트의 마찰.
 		_float fRestitution = 0.f;				// 반발력 혹은 탄성.		
-		_float fDensity = 10.f;					// 질량(무게) & 밀도입니다.
-		_float fMaxVelocity = 10.f;				// 최대 속도입니다.
-		_float fAngularDamping = 10.f;			// 회전을 방해하는 힘입니다.
+		_float fDensity = 1.f;					// 질량(무게) & 밀도입니다.
+		_float fMaxVelocity = 10000.f;				// 최대 속도입니다.
+		_float fAngularDamping = 1.f;			// 회전을 방해하는 힘입니다.
 
 		_bool bKinematic = false;				// 키네마틱이 꺼진 오브젝트는 켜져있는 오브젝트에게 밀려납니다. 키네마틱이 켜져있다면, 밀리지않으며 중력에도 영향받지 않습니다.
 
 
 		// 회전 관성 관련.
-		_bool bLockAngle_X = true;				// x축 회전을 제한할지 선택합니다.
+		_bool bLockAngle_X = false;				// x축 회전을 제한할지 선택합니다.
 		_bool bLockAngle_Y = false;				// y축 회전을 제한할지 선택합니다.
-		_bool bLockAngle_Z = true;				// z축 회전을 제한할지 선택합니다.
+		_bool bLockAngle_Z = false;				// z축 회전을 제한할지 선택합니다.
 
-		
-
-
-		PHYSX_RIGID_TYPE eRigidType = PHYSX_RIGID_TYPE::RIGID_TYPE_END;					// 오브젝트의 (스태틱, 다이나믹, 그라운드 등)타입을 결정합니다.
-		PHYSX_COLLIDER_TYPE eColliderType = PHYSX_COLLIDER_TYPE::COLLIDER_TYPE_END;		// 오브젝트의 콜라이더 모양(박스, 구, 메시)을 결정합니다.
-		class CGameObject* pGameObject = nullptr;										// 콜라이더와 리지드 바디의 주인 입니다.
+		class CGameObject* pGameObject = nullptr;										// 콜라이더의 주인 입니다.
 	} PHYSX_INIT_DESC;
 
 
@@ -564,6 +562,23 @@ namespace Engine
 		}
 
 	}TWEEN_DESC;
+
+	/* VTF 텍스처 만들기 위한 캐시 (다수 채널) */
+	typedef struct	AnimTransformCaches
+	{
+		using TransformArrayType = std::array<Matrix, MAX_MODEL_CHANNELS>;
+		std::array<TransformArrayType, MAX_MODEL_KEYFRAMES> transforms;
+
+	}ANIM_TRANSFORM_CACHES;
+
+	/* 소켓 본을 만들기 위한 캐시 (채널 하나) */
+	typedef struct	AnimTransformCache
+	{
+		using TransformArrayType = std::array<Matrix, 1>;
+		std::array<TransformArrayType, MAX_MODEL_KEYFRAMES> transforms;
+
+	}ANIM_TRANSFORM_CACHE;
+
 #pragma endregion
 }
 

@@ -219,40 +219,40 @@ HRESULT CSword::Ready_Components()
 HRESULT CSword::Ready_Colliders()
 {
 
-	CCollider_Sphere::SPHERE_COLLIDER_DESC ColliderDesc;
-	ZeroMemory(&ColliderDesc, sizeof ColliderDesc);
+	//CCollider_Sphere::SPHERE_COLLIDER_DESC ColliderDesc;
+	//ZeroMemory(&ColliderDesc, sizeof ColliderDesc);
 
-	BoundingSphere tSphere;
-	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 1.f;
+	//BoundingSphere tSphere;
+	//ZeroMemory(&tSphere, sizeof(BoundingSphere));
+	//tSphere.Radius = 1.f;
 
-	XMStoreFloat4x4(&ColliderDesc.ModePivotMatrix, m_pModelCom->Get_PivotMatrix());
+	//XMStoreFloat4x4(&ColliderDesc.ModePivotMatrix, m_pModelCom->Get_PivotMatrix());
 
-	ColliderDesc.tSphere = tSphere;
+	//ColliderDesc.tSphere = tSphere;
 
-	ColliderDesc.tSphere.Radius = 1.f;
-	ColliderDesc.pOwnerTransform = m_pTransformCom;
-	ColliderDesc.vOffsetPosition = _float3(0.f, 0.f, 50.f);
-	XMStoreFloat4x4(&ColliderDesc.ModePivotMatrix, m_pModelCom->Get_PivotMatrix());
+	//ColliderDesc.tSphere.Radius = 1.f;
+	//ColliderDesc.pOwnerTransform = m_pTransformCom;
+	//ColliderDesc.vOffsetPosition = _float3(0.f, 0.f, 50.f);
+	//XMStoreFloat4x4(&ColliderDesc.ModePivotMatrix, m_pModelCom->Get_PivotMatrix());
 
-	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider_Sphere::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BOUNDARY, &ColliderDesc)))
-		return E_FAIL;
-
-
-
-	CCollider_OBB::OBB_COLLIDER_DESC OBBDesc;
-	ZeroMemory(&OBBDesc, sizeof OBBDesc);
-	OBBDesc.tBox.Extents = _float3(5.f, 5.f, 60.f);
-	XMStoreFloat4(&OBBDesc.tBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
+	//if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider_Sphere::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BOUNDARY, &ColliderDesc)))
+	//	return E_FAIL;
 
 
-	OBBDesc.pOwnerTransform = m_pTransformCom;
-	OBBDesc.vOffsetPosition = _float3(0.f, 0.f, 60.f);
-	
-	XMStoreFloat4x4(&OBBDesc.ModePivotMatrix, m_pModelCom->Get_PivotMatrix());
 
-	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider_Sphere::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::ATTACK, &OBBDesc)))
-		return E_FAIL;
+	//CCollider_OBB::OBB_COLLIDER_DESC OBBDesc;
+	//ZeroMemory(&OBBDesc, sizeof OBBDesc);
+	//OBBDesc.tBox.Extents = _float3(5.f, 5.f, 60.f);
+	//XMStoreFloat4(&OBBDesc.tBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
+
+
+	//OBBDesc.pOwnerTransform = m_pTransformCom;
+	//OBBDesc.vOffsetPosition = _float3(0.f, 0.f, 60.f);
+	//
+	//XMStoreFloat4x4(&OBBDesc.ModePivotMatrix, m_pModelCom->Get_PivotMatrix());
+
+	//if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider_Sphere::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::ATTACK, &OBBDesc)))
+	//	return E_FAIL;
 	//ColliderDesc.tSphere.Radius = 0.2f;
 	//ColliderDesc.vOffsetPosition = _float3(0.f, 0.f, 130.f);
 	//if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider_Sphere::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::ATTACK, &ColliderDesc)))

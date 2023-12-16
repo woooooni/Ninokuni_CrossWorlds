@@ -75,7 +75,6 @@ void CMonster::Tick(_float fTimeDelta)
 		m_fDissolveWeight += 0.2f * fTimeDelta;
 		if (m_fDissolveWeight >= 1.f)
 		{
-			Set_ActiveColliders(CCollider::DETECTION_TYPE::BOUNDARY, false);
 			Set_ActiveColliders(CCollider::DETECTION_TYPE::HEAD, false);
 			Set_ActiveColliders(CCollider::DETECTION_TYPE::BODY, false);
 			Set_Dead(true);
@@ -116,8 +115,8 @@ void CMonster::LateTick(_float fTimeDelta)
 	m_pRendererCom->Add_Debug(m_pRigidBodyCom);
 #endif // DEBUG
 
+	
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
-
 	m_pBTCom->LateTick(fTimeDelta);
 }
 

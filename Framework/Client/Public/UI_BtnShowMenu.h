@@ -23,7 +23,6 @@ public:
 	virtual void On_MouseExit(_float fTimeDelta) override;
 
 private:
-	_bool m_bActive = { true };
 	_bool m_bHide = { false }; // 숨겨졌는가? -> 다른 창이 활성화 되었을때 사용할 예정
 
 	// 움직일 포지션 필요함.

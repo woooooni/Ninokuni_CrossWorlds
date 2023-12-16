@@ -1,11 +1,18 @@
 #include "stdafx.h"
 #include "Tool_Model.h"
+
 #include "imgui.h"
+
 #include "GameInstance.h"
-#include "Animation.h"
 #include "Utils.h"
-#include "Dummy.h"
+
 #include "Model.h"
+#include "Animation.h"
+#include "HierarchyNode.h"
+
+#include "Part.h"
+#include "Dummy.h"
+
 #include <fstream>
 
 CTool_Model::CTool_Model(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -18,22 +25,32 @@ HRESULT CTool_Model::Initialize()
 	if (FAILED(__super::Initialize()))
 		return E_FAIL;
 
-	m_pDummy = CDummy::Create(m_pDevice, m_pContext, L"Dummy");
 
+	if (FAILED(Ready_WeaponPrototypes()))
+		return E_FAIL;
+
+	/* Dummy */
+	m_pDummy = CDummy::Create(m_pDevice, m_pContext, L"Dummy");
 	if (FAILED(m_pDummy->Initialize(nullptr)))
 		return E_FAIL;
+
 	return S_OK;
 }
 
 void CTool_Model::Tick(_float fTimeDelta)
 {
-	Tick_Model(fTimeDelta);
-
-	Tick_Animation(fTimeDelta);
+	ImGui::Begin("Model_Tool");
+	{
+		Tick_Model(fTimeDelta);
+		Tick_Animation(fTimeDelta);
+		Tick_Socket(fTimeDelta);
+		Tick_Event(fTimeDelta);
+		Tick_Costume(fTimeDelta);
+	}
+	ImGui::End();
 
 	_bool bDemo = FALSE;
-	if(bDemo)
-		ImGui::ShowDemoWindow(&bDemo);
+	if(bDemo) ImGui::ShowDemoWindow(&bDemo);
 }
 
 void CTool_Model::Reset_Transform()
@@ -46,14 +63,45 @@ void CTool_Model::Reset_Transform()
 	return;
 }
 
+const _bool CTool_Model::Is_Exception()
+{
+	if (nullptr == m_pDummy)
+	{
+		ImGui::Text(u8"더미 오브젝트가 존재하지 않습니다.");
+		return true;
+	}
+
+	if (nullptr != m_pDummy->Get_ModelCom())
+	{
+		CModel* pModelCom = m_pDummy->Get_ModelCom();
+		if (CModel::TYPE::TYPE_NONANIM == pModelCom->Get_ModelType())
+		{
+			ImGui::Text(u8"스태틱 모델은 애니메이션이 존재하지 않습니다.");
+			return true;
+		}
+	}
+	else
+	{
+		ImGui::Text(u8"모델이 로드되지 않았습니다.");
+		return true;
+	}
+
+	return false;
+}
+
+HRESULT CTool_Model::Ready_WeaponPrototypes()
+{
+	return S_OK;
+}
+
 void CTool_Model::Tick_Model(_float fTimeDelta)
 {
-	ImGui::Begin("Model_Tool");
+	if (ImGui::CollapsingHeader("Import and Eport"))
 	{
 		/* Exception */
-		if (nullptr == m_pDummy) 
+		if (nullptr == m_pDummy)
 		{
-			ImGui::End();
+			ImGui::Text(u8"더미 오브젝트가 존재하지 않습니다.");
 			return;
 		}
 
@@ -235,18 +283,18 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 			}
 		}
 	
-		/* Etc */
-		{
-			IMGUI_NEW_LINE;
-			ImGui::Separator();
-			ImGui::Text("Etc");
+		///* Etc */
+		//{
+		//	IMGUI_NEW_LINE;
+		//	ImGui::Separator();
+		//	ImGui::Text("Etc");
 
-			/* Reset Transform*/
-			if (ImGui::Button("Reset Transform"))
-				Reset_Transform();
-		}
+		//	/* Reset Transform*/
+		//	if (ImGui::Button("Reset Transform"))
+		//		Reset_Transform();
+		//}
+		IMGUI_NEW_LINE;
 	}
-	ImGui::End();
 
 	m_pDummy->Tick(fTimeDelta);
 	m_pDummy->LateTick(fTimeDelta);
@@ -255,25 +303,15 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 
 void CTool_Model::Tick_Animation(_float fTimeDelta)
 {
-	ImGui::Begin("Animation");
-
-	if (nullptr == m_pDummy)
+	if (ImGui::CollapsingHeader("Animations"))
 	{
-		ImGui::End();
-		return;
-	}
+		if (Is_Exception())
+			return;
 
-	static char szAnimationName[255];
-	if (nullptr != m_pDummy->Get_ModelCom())
-	{
-	    CModel* pModelCom = m_pDummy->Get_ModelCom();
-	    if (CModel::TYPE::TYPE_NONANIM == pModelCom->Get_ModelType())
-	    {
-	        ImGui::End();
-	        return;
-	    }
+		CModel* pModelCom = m_pDummy->Get_ModelCom();
+		static char szAnimationName[255];
 
-	    vector<CAnimation*>& Animations = pModelCom->Get_Animations();
+		vector<CAnimation*>& Animations = pModelCom->Get_Animations();
     
 		ImGui::Text("Animation List");
 		IMGUI_SAME_LINE;
@@ -305,19 +343,19 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 		}
 
 		/* Animation List */
-	    if (ImGui::BeginListBox("##Animation_List"))
-	    {
-	        for(size_t i = 0; i< Animations.size(); ++i)
-	        {
-	            string AnimationName = CUtils::ToString(Animations[i]->Get_AnimationName());
-	            if (ImGui::Selectable(AnimationName.c_str(), i == pModelCom->Get_CurrAnimationIndex()))
-	            {
+		if (ImGui::BeginListBox("##Animation_List"))
+		{
+			for(size_t i = 0; i< Animations.size(); ++i)
+			{
+				string AnimationName = CUtils::ToString(Animations[i]->Get_AnimationName());
+				if (ImGui::Selectable(AnimationName.c_str(), i == pModelCom->Get_CurrAnimationIndex()))
+				{
 					pModelCom->Set_Animation(i);
-	                sprintf_s(szAnimationName, CUtils::ToString(pModelCom->Get_CurrAnimation()->Get_AnimationName()).c_str());
-	            }
-	        }
-	        ImGui::EndListBox();
-	    }
+					sprintf_s(szAnimationName, CUtils::ToString(pModelCom->Get_CurrAnimation()->Get_AnimationName()).c_str());
+				}
+			}
+			ImGui::EndListBox();
+		}
 	
 		/* 변경시 다시 익스포트 해야하는 유형 */
 		IMGUI_NEW_LINE;
@@ -396,8 +434,8 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 		ImGui::Separator();
 		ImGui::Text("Edit 2");
 
-	    /* Animation Time Slider */
-	    CAnimation* pCurrAnimation = pModelCom->Get_CurrAnimation();
+		/* Animation Time Slider */
+		CAnimation* pCurrAnimation = pModelCom->Get_CurrAnimation();
 		{
 			_float fPlayTime = 0.f; // pCurrAnimation->Get_PlayTime();
 			if (ImGui::SliderFloat("##Animation_PlayTime", &fPlayTime, 0.f, 0.f))//pCurrAnimation->Get_Duration()))
@@ -420,16 +458,16 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 		}
 
 		/* Play Btn*/
-	    if (ImGui::ArrowButton("##Play_AnimationButton", ImGuiDir_Right))
-	    {
+		if (ImGui::ArrowButton("##Play_AnimationButton", ImGuiDir_Right))
+		{
 			_float fAnimationProgress = pModelCom->Get_Progress();
 
-	        if(fAnimationProgress >= 1.f)
-	            pModelCom->Set_Animation(pModelCom->Get_CurrAnimationIndex());
+			if(fAnimationProgress >= 1.f)
+				pModelCom->Set_Animation(pModelCom->Get_CurrAnimationIndex());
 	
 			pModelCom->Set_Stop_Animation(false);
-	    }
-	    IMGUI_SAME_LINE;
+		}
+		IMGUI_SAME_LINE;
 
 		/* Stop Btn*/
 		{
@@ -454,18 +492,168 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 			ImGui::Text("Progress : ");
 			IMGUI_SAME_LINE;
 			ImGui::Text(to_string(fAnimationProgress).c_str());
-		}	
+		}
+		IMGUI_NEW_LINE;
+	}
+}
+
+void CTool_Model::Tick_Socket(_float fTimeDelta)
+{
+	if (ImGui::CollapsingHeader("Socket Bone"))
+	{
+		if (Is_Exception()) return;
+
+		ImGui::TextColored(ImVec4(0.7f, 0.5f, 0.7f, 1.f), u8"애니메이션이 편집된 경우 소켓 또한 다시 갱신이 필요합니다.");
+
+		/* HierarchyNode List */
+		{
+			ImGui::Text("HierarchyNode List");
+
+			if (ImGui::TreeNode(u8"Weapon Socket Names"))
+			{
+				ImGui::Text(u8"왼손 무기 소켓 : CAT_l_wph1");
+				ImGui::Text(u8"오른손 무기 소켓 : CAT_r_wph1");
+
+				ImGui::TreePop();
+			}
+
+			if (ImGui::BeginListBox("##Bone_List"))
+			{
+				vector<class CHierarchyNode*>& HiearachyNodes = m_pDummy->Get_ModelCom()->Get_HierarchyNodes();
+			
+				for (size_t i = 0; i < HiearachyNodes.size(); ++i)
+				{
+					string strBoneName = CUtils::ToString(HiearachyNodes[i]->Get_Name());
+					if (ImGui::Selectable(strBoneName.c_str(), i == m_iCurBoneIndex))
+					{
+						m_iCurBoneIndex = i;
+				
+					}
+				}
+				ImGui::EndListBox();
+			}
+		}		
+		IMGUI_NEW_LINE;
+
+
+		/* Prototype Weapon List */
+		{
+			ImGui::Text("Weapon Prototypes List");
+
+			if (ImGui::BeginListBox("##Weapon Prototypes List", ImVec2(0, 40)))
+			{
+				for (size_t i = 0; i < m_WeaponPrototypes.size(); ++i)
+				{
+					string strBoneName = CUtils::ToString(m_WeaponPrototypes[i]->Get_ObjectTag());
+					if (ImGui::Selectable(strBoneName.c_str(), i == m_iCurWeaponIndex))
+					{
+						m_iCurWeaponIndex = i;
+					}
+				}
+				ImGui::EndListBox();
+			}
+		}
+
+		/* Calculated Socket List */
+		{
+			ImGui::Text("Calculated Socket List");
+
+			if (ImGui::BeginListBox("##Calculated Socket List", ImVec2(0, 40)))
+			{
+				for (auto Pair : m_CalculatedSockets)
+				{
+					if (ImGui::Selectable(CUtils::ToString(m_pDummy->Get_ModelCom()->Get_HiearachyNodeName(Pair.first)).c_str(), false))
+					{
+
+					}
+
+				}
+			
+				ImGui::EndListBox();
+			}
+		}
+
+
+		/* Apply */
+		if (ImGui::Button("Apply"))
+		{
+			if (0 < m_iCurBoneIndex)
+			{
+				m_CalculatedSockets.emplace(m_iCurBoneIndex, GI->Create_AnimationSocketTransform(m_pDummy->Get_ModelCom(), m_iCurBoneIndex));
+			}
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 		IMGUI_NEW_LINE;
-		ImGui::Separator();
-		ImGui::Text("Event");
-		{
-			IMGUI_NEW_LINE;
-			IMGUI_NEW_LINE;
-		}
 	}
-	ImGui::End();
+}
+
+void CTool_Model::Tick_Event(_float fTimeDelta)
+{
+	if (ImGui::CollapsingHeader("Event"))
+	{
+		if (Is_Exception())
+			return;
+
+		/* Sound */
+		if (ImGui::TreeNode("Sound"))
+		{
+
+			ImGui::TreePop();
+		}
+
+		/* Effect */
+		if (ImGui::TreeNode("Effect"))
+		{
+
+			ImGui::TreePop();
+		}
+
+		/* Camera */
+		if (ImGui::TreeNode("Camera"))
+		{
+
+			ImGui::TreePop();
+		}
+
+		/* Collider  */
+		if (ImGui::TreeNode("Collider"))
+		{
+
+			ImGui::TreePop();
+		}
+		IMGUI_NEW_LINE;
+	}
+}
+
+void CTool_Model::Tick_Costume(_float fTimeDelta)
+{
+	if (ImGui::CollapsingHeader("Costume"))
+	{
+		if (Is_Exception())
+			return;
+
+		/* Function */
+		{
+
+		}
+		IMGUI_NEW_LINE;
+	}
 }
 
 CTool_Model* CTool_Model::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

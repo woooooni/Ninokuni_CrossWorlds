@@ -20,7 +20,8 @@ CCollider_Sphere::CCollider_Sphere(CCollider_Sphere& rhs)
 
 HRESULT CCollider_Sphere::Initialize_Prototype()
 {
-
+	if (FAILED(__super::Initialize_Prototype()))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -34,7 +35,24 @@ HRESULT CCollider_Sphere::Initialize(void* pArg)
 		return E_FAIL;
 
 	SPHERE_COLLIDER_DESC* pDesc = static_cast<SPHERE_COLLIDER_DESC*>(pArg);
+	m_vOffsetPosition = pDesc->vOffsetPosition;
 	m_tBoundingSphere = pDesc->tSphere;
+
+
+	PHYSX_INIT_DESC InitDesc;
+	InitDesc.eColliderType = PHYSX_COLLIDER_TYPE::SPHERE;
+	InitDesc.eRigidType = PHYSX_RIGID_TYPE::DYNAMIC;
+	InitDesc.vOffsetPosition = pDesc->vOffsetPosition;
+	InitDesc.fRadius = m_tBoundingSphere.Radius;
+	InitDesc.bKinematic = true;
+	InitDesc.pGameObject = pDesc->pOwner;
+
+	m_pPhysXActor = GI->Add_Dynamic_Actor(InitDesc);
+
+	if (nullptr == m_pPhysXActor)
+		return E_FAIL;
+
+	m_pPhysXActor->userData = this;
 
 	return S_OK;
 }
@@ -68,30 +86,14 @@ void CCollider_Sphere::LateTick_Collider(_float fTimeDelta)
 {
 	__super::LateTick_Collider(fTimeDelta);
 	XMStoreFloat3(&m_tBoundingSphere.Center, XMLoadFloat4x4(&m_FinalMatrix).r[CTransform::STATE_POSITION]);
+
+	PxTransform PxPos(PxVec3(m_tBoundingSphere.Center.x, m_tBoundingSphere.Center.y, m_tBoundingSphere.Center.z));
+	m_pPhysXActor->setKinematicTarget(PxPos);
 }
 
 #ifdef _DEBUG
 HRESULT CCollider_Sphere::Render()
 {
-	/*if (m_bActive && m_eDetectionType != CCollider::BOUNDARY)
-	{
-		m_pEffect->SetWorld(XMMatrixIdentity());
-		m_pEffect->SetView(GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
-		m_pEffect->SetProjection(GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ));
-
-
-		m_pEffect->Apply(m_pContext);
-
-		m_pContext->IASetInputLayout(m_pInputLayout);
-
-
-		m_pBatch->Begin();
-
-		DX::Draw(m_pBatch, m_tBoundingSphere, XMLoadFloat4(&m_vColor));
-
-
-		m_pBatch->End();
-	}*/
 	if (false == m_bActive)
 		return S_OK;
 
@@ -108,7 +110,6 @@ HRESULT CCollider_Sphere::Render()
 	m_pBatch->Begin();
 
 	DX::Draw(m_pBatch, m_tBoundingSphere, XMLoadFloat4(&m_vColor));
-
 
 	m_pBatch->End();
 

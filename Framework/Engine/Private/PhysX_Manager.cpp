@@ -3,45 +3,26 @@
 
 #include "GameObject.h"
 #include "Mesh.h"
+#include "Collider.h"
+#include "Collision_Manager.h"
 
-//PxFilterFlags FilterShader(
-//	PxFilterObjectAttributes attributes0, PxFilterData filterData0,
-//	PxFilterObjectAttributes attributes1, PxFilterData filterData1,
-//	PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize)
-//{
-//	// 1: 피직스
-//	// 2: 플레이어 OBB
-//	// 9: 머리카락
-//	// 10: 머리카락 컷 박스 
-//	
-//	if (
-//		// 플레이어 OBB와 피직스 물체 충돌 X
-//		(1 == filterData0.word0 && 2 == filterData1.word0)
-//		|| (2 == filterData0.word0 && 1 == filterData1.word0)
-//		|| (2 == filterData0.word0 && 10 == filterData1.word0)
-//		|| (10 == filterData0.word0 && 2 == filterData1.word0))
-//	{
-//		// 플레이어 박스 && 상자 박스
-//		// 피직스 호출 X
-//		// pairFlags = PxPairFlag::eCONTACT_DEFAULT;
-//		return PxFilterFlag::eDEFAULT;
-//	}
-//
-//	// 9 머리, 10 머리 컷 박스
-//	if (9 == filterData0.word0 || 10 == filterData1.word0 || 10 == filterData0.word0 || 9 == filterData1.word0)
-//	{
-//		if ((9 == filterData0.word0 && 10 == filterData1.word0) || (10 == filterData0.word0 && 9 == filterData1.word0)
-//			|| (9 == filterData0.word0 && 9 == filterData1.word0))
-//			pairFlags = PxPairFlag::eCONTACT_DEFAULT | PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
-//	}
-//	else
-//	{
-//		pairFlags = PxPairFlag::eCONTACT_DEFAULT | PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
-//	}
-//
-//
-//	return PxFilterFlag::eDEFAULT;
-//}
+
+physx::PxFilterFlags FilterShader(
+	physx::PxFilterObjectAttributes attributes0, physx::PxFilterData /*filterData0*/,
+	physx::PxFilterObjectAttributes attributes1, physx::PxFilterData /*filterData1*/,
+	physx::PxPairFlags& retPairFlags, const void* /*constantBlock*/, PxU32 /*constantBlockSize*/)
+{
+	
+	
+	retPairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
+	retPairFlags |= PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+	retPairFlags |= PxPairFlag::eNOTIFY_TOUCH_LOST;
+	if (PxFilterObjectIsKinematic(attributes0) && PxFilterObjectIsKinematic(attributes1))
+	{
+		retPairFlags |= PxPairFlag::eTRIGGER_DEFAULT;
+	}
+	return PxFilterFlag::eNOTIFY;
+}
 
 
 IMPLEMENT_SINGLETON(CPhysX_Manager)
@@ -67,20 +48,24 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 	PxSceneDesc SceneDesc(m_Physics->getTolerancesScale());
 	SceneDesc.gravity = PxVec3(0.0f, 0.f, 0.0f);
 
+
 	m_Dispatcher = PxDefaultCpuDispatcherCreate(4);
 	if (!m_Dispatcher)
 		return E_FAIL;
 
-	SceneDesc.wakeCounterResetValue = 0;
+	
 	SceneDesc.cpuDispatcher = m_Dispatcher;
-	SceneDesc.filterShader = PxDefaultSimulationFilterShader;
-	SceneDesc.simulationEventCallback = this;
 	SceneDesc.kineKineFilteringMode = PxPairFilteringMode::eKEEP;
-	SceneDesc.solverType = PxSolverType::eTGS;
+	SceneDesc.staticKineFilteringMode = PxPairFilteringMode::eKEEP;
+	SceneDesc.filterShader = FilterShader;
+	SceneDesc.simulationEventCallback = this;
+
 	m_pScene = m_Physics->createScene(SceneDesc);
 
-	m_pScene->setVisualizationParameter(PxVisualizationParameter::eSCALE, 1.0f);
+	
+	m_pScene->setVisualizationParameter(PxVisualizationParameter::eSCALE, 1.f);
 	m_pScene->setVisualizationParameter(PxVisualizationParameter::eACTOR_AXES, 2.0f);
+
 
 	PxPvdSceneClient* pvdClient = m_pScene->getScenePvdClient();
 	if (pvdClient)
@@ -119,9 +104,7 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 }
 
 void CPhysX_Manager::Tick(_float fTimeDelta)
-{
-	
-
+{	
 
 }
 
@@ -146,17 +129,45 @@ void CPhysX_Manager::LateTick(_float fTimeDelta)
 			iter++;
 			continue;
 		}
-		iter->second.pActor->setGlobalPose(SceneTransform);
+
+		PxTransform Position = iter->second.pActor->getGlobalPose();
+		PxTransform KinematicPos;
+		iter->second.pActor->getKinematicTarget(KinematicPos);
+
 		iter++;
 	}
 
-	m_pScene->simulate(fTimeDelta);
+
+	m_pScene->simulate(min(fTimeDelta, 1.f / 144.f));
 	m_pScene->fetchResults(true);
 }
 
 #ifdef _DEBUG
 HRESULT CPhysX_Manager::Render()
 {
+	const PxRenderBuffer& rb = m_pScene->getRenderBuffer();
+
+	PxU32 iTrangleCount = rb.getNbTriangles();
+	for (PxU32 i = 0; i < rb.getNbTriangles(); i++)
+	{
+		const PxDebugTriangle& Triangle = rb.getTriangles()[i];
+
+		Vec3 vPos0 = { Triangle.pos0.x,Triangle.pos0.y, Triangle.pos0.z };
+		Vec3 vPos1 = { Triangle.pos1.x,Triangle.pos1.y, Triangle.pos1.z };
+		Vec3 vPos2 = { Triangle.pos2.x,Triangle.pos2.y, Triangle.pos2.z };
+		
+		m_pEffect->SetWorld(XMMatrixIdentity());
+		m_pEffect->SetView(GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
+		m_pEffect->SetProjection(GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ));
+
+		m_pEffect->Apply(m_pContext);
+
+		m_pContext->IASetInputLayout(m_pInputLayout);
+		m_pBatch->Begin();
+
+		DX::DrawTriangle(m_pBatch, vPos0, vPos1, vPos2);
+		m_pBatch->End();
+	}
 
 	return S_OK;
 }
@@ -177,14 +188,11 @@ PxRigidStatic* CPhysX_Manager::Add_Static_Actor(const PHYSX_INIT_DESC& Desc)
 	if (iter != m_StaticObjects.end())
 		return nullptr;
 
-	if (Desc.eColliderType == PHYSX_COLLIDER_TYPE::BOX)
-	{
-		return Create_Static_Box(Desc);
-	}
+	if (Desc.eColliderType == PHYSX_COLLIDER_TYPE::BOX)	
+		return Create_Static_Box(Desc);	
+
 	else if (Desc.eColliderType == PHYSX_COLLIDER_TYPE::SPHERE)
-	{
 		return Create_Static_Sphere(Desc);
-	}
 
 	return nullptr;
 }
@@ -346,8 +354,6 @@ HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGroundObj)
 	return S_OK;
 }
 
-
-
 HRESULT CPhysX_Manager::Remove_Actor(_uint iObjectID, PHYSX_RIGID_TYPE eRigidType)
 {
 	if (eRigidType >= PHYSX_RIGID_TYPE::RIGID_TYPE_END)
@@ -379,28 +385,48 @@ HRESULT CPhysX_Manager::Remove_Actor(_uint iObjectID, PHYSX_RIGID_TYPE eRigidTyp
 	return S_OK;
 }
 
+HRESULT CPhysX_Manager::Remove_Actor(PxActor* pPhysXActor)
+{
+	if (nullptr == pPhysXActor)
+		return E_FAIL;
+
+	m_pScene->removeActor(*pPhysXActor);
+	return S_OK;
+}
+
 
 PxRigidDynamic* CPhysX_Manager::Create_Dynamic_Box(const PHYSX_INIT_DESC& Desc)
 {
 	PxMaterial* pMateral = Create_Material(Desc.fStaticFriction, Desc.fDynamicFriction, Desc.fRestitution);
 	PxShape* shape = m_Physics->createShape(PxBoxGeometry(Desc.vExtents.x * 0.5f, Desc.vExtents.y * 0.5f, Desc.vExtents.z * 0.5f), *pMateral);
 	shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
+	//shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
+	//shape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
+	shape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
 
 	PxTransform pxTransform;
+	
 	if (FAILED(Convert_Transform(Desc.pGameObject, pxTransform)))
 		return nullptr;
 
+	pxTransform.p += PxVec3(Desc.vOffsetPosition.x, Desc.vOffsetPosition.y, Desc.vOffsetPosition.z);
 	PxRigidDynamic* pActor = m_Physics->createRigidDynamic(pxTransform);
-	pActor->setAngularDamping(Desc.fAngularDamping);
-	pActor->setMaxLinearVelocity(Desc.fMaxVelocity);
 
-	pActor->attachShape(*shape);
+	
 	pActor->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, Desc.bKinematic);
+	
 	pActor->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, Desc.bLockAngle_X);
 	pActor->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, Desc.bLockAngle_Y);
 	pActor->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, Desc.bLockAngle_Z);
 
+	pActor->setAngularDamping(Desc.fAngularDamping);
+	pActor->setMaxLinearVelocity(Desc.fMaxVelocity);
+	pActor->setActorFlag(PxActorFlag::eVISUALIZATION, true);
+	pActor->setActorFlag(PxActorFlag::eSEND_SLEEP_NOTIFIES, true);
+
 	PxRigidBodyExt::updateMassAndInertia(*pActor, Desc.fDensity); // 무게, 관성
+
+	pActor->attachShape(*shape);
 	m_pScene->addActor(*pActor);
 
 	PHYSX_DYNAMIC_OBJECT_DESC ObjectDesc;
@@ -410,12 +436,8 @@ PxRigidDynamic* CPhysX_Manager::Create_Dynamic_Box(const PHYSX_INIT_DESC& Desc)
 	m_DynamicObjects.emplace(Desc.pGameObject->Get_ObjectID(), ObjectDesc);
 	Safe_AddRef(Desc.pGameObject);
 
-	pMateral->release();
-	shape->release();
-
 	return pActor;
 }
-
 
 PxRigidStatic* CPhysX_Manager::Create_Static_Box(const PHYSX_INIT_DESC& Desc)
 {
@@ -427,6 +449,7 @@ PxRigidStatic* CPhysX_Manager::Create_Static_Box(const PHYSX_INIT_DESC& Desc)
 	if (FAILED(Convert_Transform(Desc.pGameObject, pxTransform)))
 		return nullptr;
 
+	pxTransform.p += PxVec3(Desc.vOffsetPosition.x, Desc.vOffsetPosition.y, Desc.vOffsetPosition.z);
 	PxRigidStatic* pActor = m_Physics->createRigidStatic(pxTransform);
 	pActor->attachShape(*shape);
 	m_pScene->addActor(*pActor);
@@ -450,12 +473,13 @@ PxRigidDynamic* CPhysX_Manager::Create_Dynamic_Sphere(const PHYSX_INIT_DESC& Des
 	PxShape* shape = m_Physics->createShape(PxSphereGeometry(Desc.fRadius), *pMateral);
 	shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
 
-
 	PxTransform pxTransform;
 	if (FAILED(Convert_Transform(Desc.pGameObject, pxTransform)))
 		return nullptr;
 
+	pxTransform.p += PxVec3(Desc.vOffsetPosition.x, Desc.vOffsetPosition.y, Desc.vOffsetPosition.z);
 	PxRigidDynamic* pActor = m_Physics->createRigidDynamic(pxTransform);
+
 	pActor->attachShape(*shape);
 	pActor->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, Desc.bKinematic);
 	pActor->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, Desc.bLockAngle_X);
@@ -479,21 +503,21 @@ PxRigidDynamic* CPhysX_Manager::Create_Dynamic_Sphere(const PHYSX_INIT_DESC& Des
 	return pActor;
 }
 
-
 PxRigidStatic* CPhysX_Manager::Create_Static_Sphere(const PHYSX_INIT_DESC& Desc)
 {
 	PxMaterial* pMateral = Create_Material(Desc.fStaticFriction, Desc.fDynamicFriction, Desc.fRestitution);
 	PxShape* shape = m_Physics->createShape(PxSphereGeometry(Desc.fRadius), *pMateral);
 	shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
 
-
 	PxTransform pxTransform;
 	if (FAILED(Convert_Transform(Desc.pGameObject, pxTransform)))
 		return nullptr;
 
+	pxTransform.p += PxVec3(Desc.vOffsetPosition.x, Desc.vOffsetPosition.y, Desc.vOffsetPosition.z);
 	PxRigidStatic* pActor = m_Physics->createRigidStatic(pxTransform);
 	pActor->attachShape(*shape);
 	m_pScene->addActor(*pActor);
+	
 
 	PHYSX_STATIC_OBJECT_DESC ObjectDesc;
 	ObjectDesc.pActor = pActor;
@@ -597,7 +621,7 @@ vector<PxRigidDynamic*> CPhysX_Manager::Create_Dynamic_Mesh(const PHYSX_INIT_DES
 		PxMaterial* Material = m_Physics->createMaterial(Desc.fStaticFriction, Desc.fDynamicFriction, Desc.fRestitution);
 		PxShape* pShape = m_Physics->createShape(*pGeometry, *Material);
 
-
+		pxTransform.p += PxVec3(Desc.vOffsetPosition.x, Desc.vOffsetPosition.y, Desc.vOffsetPosition.z);
 		PxRigidDynamic* pActor = m_Physics->createRigidDynamic(pxTransform);
 		pActor->attachShape(*pShape);
 		pActor->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, Desc.bKinematic);
@@ -623,8 +647,6 @@ vector<PxRigidDynamic*> CPhysX_Manager::Create_Dynamic_Mesh(const PHYSX_INIT_DES
 
 	return Actors;
 }
-
-
 
 vector<PxRigidStatic*> CPhysX_Manager::Create_Static_Mesh(const PHYSX_INIT_DESC& Desc)
 {
@@ -716,6 +738,7 @@ vector<PxRigidStatic*> CPhysX_Manager::Create_Static_Mesh(const PHYSX_INIT_DESC&
 		PxMaterial* Material = m_Physics->createMaterial(Desc.fStaticFriction, Desc.fDynamicFriction, Desc.fRestitution);
 		PxShape* pShape = m_Physics->createShape(*pGeometry, *Material);
 
+		pxTransform.p += PxVec3(Desc.vOffsetPosition.x, Desc.vOffsetPosition.y, Desc.vOffsetPosition.z);
 		PxRigidStatic* pActor = m_Physics->createRigidStatic(pxTransform);
 		pActor->attachShape(*pShape);
 		m_pScene->addActor(*pActor);
@@ -749,8 +772,7 @@ HRESULT CPhysX_Manager::Convert_Transform(CGameObject* pObj, PxTransform& pxTran
 	Quaternion vQuat;
 
 	WorldMatrix.Decompose(vScale, vQuat, vPos);
-
-	pxTransform = PxTransform(PxVec3(vPos.x, vPos.y, vPos.z), PxQuat(vQuat.x, vQuat.y, vQuat.z, vQuat.w));
+	pxTransform = PxTransform(vPos.x, vPos.y, vPos.z, PxQuat(vQuat.x, vQuat.y, vQuat.z, vQuat.w));
 	return S_OK;
 }
 
@@ -859,6 +881,30 @@ HRESULT CPhysX_Manager::Convert_Transform(CGameObject* pObj, PxTransform& pxTran
 
 HRESULT CPhysX_Manager::Reset_PhysX()
 {
+	for (auto& iter : m_StaticObjects)
+	{
+		m_pScene->removeActor(*iter.second.pActor);
+		Safe_Release(iter.second.pObject);
+		iter.second.pActor->release();
+	}
+	m_StaticObjects.clear();
+
+	for (auto& iter : m_DynamicObjects)
+	{
+		m_pScene->removeActor(*iter.second.pActor);
+		Safe_Release(iter.second.pObject);
+		iter.second.pActor->release();
+	}
+	m_DynamicObjects.clear();
+
+
+	for (auto& iter : m_GroundObjects)
+	{
+		m_pScene->removeActor(*iter.second.pActor);
+		Safe_Release(iter.second.pObject);
+		iter.second.pActor->release();
+	}
+	m_GroundObjects.clear();
 
 	return S_OK;
 }
@@ -866,7 +912,7 @@ HRESULT CPhysX_Manager::Reset_PhysX()
 void CPhysX_Manager::Free()
 {
 	for (auto& iter : m_StaticObjects)
-	{
+	{		
 		m_pScene->removeActor(*iter.second.pActor);
 		Safe_Release(iter.second.pObject);
 		iter.second.pActor->release();
@@ -926,28 +972,60 @@ void CPhysX_Manager::Free()
 #endif
 }
 
+
+
 void CPhysX_Manager::onConstraintBreak(PxConstraintInfo* constraints, PxU32 count)
 {
 }
 
 void CPhysX_Manager::onWake(PxActor** actors, PxU32 count)
 {
+ 	_int i = 0;
 }
 
 void CPhysX_Manager::onSleep(PxActor** actors, PxU32 count)
 {
+	_int i = 0;
 }
 
 void CPhysX_Manager::onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs)
 {
+	if (nullptr == pairHeader.actors[0]->userData || nullptr == pairHeader.actors[1]->userData)
+		return;
+
+
+  	CCollider* pLeftCollider = (CCollider*)pairHeader.actors[0]->userData;
+	CCollider* pRightCollider = (CCollider*)pairHeader.actors[1]->userData;
+
+	if (pLeftCollider->Get_ColliderID() == pRightCollider->Get_ColliderID())
+		return;
+
+	if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_FOUND))
+	{
+		pLeftCollider->Collision_Enter(pRightCollider);
+		pRightCollider->Collision_Enter(pLeftCollider);
+	}
+	else if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_PERSISTS))
+	{
+		pLeftCollider->Collision_Continue(pRightCollider);
+		pRightCollider->Collision_Continue(pLeftCollider);
+	}
+	else if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_LOST))
+	{
+		pLeftCollider->Collision_Exit(pRightCollider);
+		pRightCollider->Collision_Exit(pLeftCollider);
+	}
+
 }
 
 void CPhysX_Manager::onTrigger(PxTriggerPair* pairs, PxU32 count)
 {
+	int i = 0;
 }
 
 void CPhysX_Manager::onAdvance(const PxRigidBody* const* bodyBuffer, const PxTransform* poseBuffer, const PxU32 count)
 {
+	int i = 0;
 }
 
 

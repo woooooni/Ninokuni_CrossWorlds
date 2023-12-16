@@ -123,8 +123,8 @@ void CGameInstance::Tick(_float fTimeDelta)
 
 void CGameInstance::LateTick(_float fTimeDelta)
 {
-	m_pPhysXManager->LateTick(fTimeDelta);
 	m_pObject_Manager->LateTick(fTimeDelta);
+	m_pPhysXManager->LateTick(fTimeDelta);
 	m_pCollision_Manager->LateTick(fTimeDelta);
 	m_pLevel_Manager->LateTick(fTimeDelta);
 }
@@ -364,7 +364,7 @@ const LIGHTDESC* CGameInstance::Get_LightDesc(_uint iIndex)
 	return m_pLight_Manager->Get_LightDesc(iIndex);
 }
 
-const list<class CLight*>* CGameInstance::Get_LightList()
+list<class CLight*>* CGameInstance::Get_LightList()
 {
 	if (nullptr == m_pLight_Manager)
 		return nullptr;
@@ -505,6 +505,11 @@ HRESULT CGameInstance::Import_Model_Data(_uint iLevelIndex, const wstring& strPr
 HRESULT CGameInstance::Export_Model_Data_FromPath(_uint eType, wstring strFolderPath)
 {
 	return m_pModel_Manager->Export_Model_Data_FromPath(eType, strFolderPath);
+}
+
+vector<ANIM_TRANSFORM_CACHE> CGameInstance::Create_AnimationSocketTransform(CModel* pModel, const _uint& iSocketBoneIndex)
+{
+	return m_pModel_Manager->Create_AnimationSocketTransform(pModel, iSocketBoneIndex);
 }
 
 HRESULT CGameInstance::Add_Fonts(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strFontTag, const wstring& strFontFilePath)

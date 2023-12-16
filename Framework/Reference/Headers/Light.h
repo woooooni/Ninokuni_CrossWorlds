@@ -16,6 +16,11 @@ public:
 		return &m_LightDesc;
 	}
 	LIGHTDESC* Get_ModifyLightDesc() { return &m_LightDesc; }
+	_uint Get_LightID() { return m_iLightID; }
+
+public:
+	void Set_LightID(_uint iID) { m_iLightID = iID; }
+
 public:
 	HRESULT Initialize(const LIGHTDESC& LightDesc);
 	HRESULT Render(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
@@ -26,6 +31,7 @@ private:
 
 private:
 	LIGHTDESC				m_LightDesc;
+	_uint m_iLightID = 0;
 
 public:
 	static CLight* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const LIGHTDESC& LightDesc);

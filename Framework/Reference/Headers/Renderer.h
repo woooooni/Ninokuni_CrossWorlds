@@ -104,18 +104,17 @@ private:
 
 	HRESULT Render_AlphaBlend();
 	HRESULT Render_Effect();
-
-
 	
-
-
-	///////////////////// Blur
-	HRESULT Render_Blur(const wstring& strStartTargetTag, const wstring& strFinalMrtTag, _bool bClear);
-	HRESULT Render_BlurDownSample(const wstring& strStartTargetTag);
-	HRESULT Render_Blur_Horizontal();
-	HRESULT Render_Blur_Vertical();
-	HRESULT Render_BlurUpSample(const wstring& strFinalMrtTag, _bool bClear);
-	//////////////////////
+	
+	
+	
+	/////////////////////// Blur
+	//HRESULT Render_Blur(const wstring& strStartTargetTag, const wstring& strFinalMrtTag, _bool bClear);
+	//HRESULT Render_BlurDownSample(const wstring& strStartTargetTag);
+	//HRESULT Render_Blur_Horizontal();
+	//HRESULT Render_Blur_Vertical();
+	//HRESULT Render_BlurUpSample(const wstring& strFinalMrtTag, _bool bClear);
+	////////////////////////
 
 	///////////////////// Bloom
 	// HRESULT Render_Bloom();

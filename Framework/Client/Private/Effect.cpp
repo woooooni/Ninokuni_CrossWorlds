@@ -379,7 +379,6 @@ HRESULT CEffect::Ready_Components()
 	ZeroMemory(&RigidDesc, sizeof RigidDesc);
 
 
-	RigidDesc.pNavigation = nullptr;
 	RigidDesc.pTransform = m_pTransformCom;
 
 

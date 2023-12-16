@@ -76,11 +76,11 @@ PS_OUT PS_MAIN(PS_IN In)
 	Out.vDiffuse = (vector)1.f;
 
 
-	Out.vDiffuse = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
+	Out.vDiffuse = g_DiffuseTexture.Sample(PointSampler, In.vTexUV);
 	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
 
-	if (0 == Out.vDiffuse.a)
+	if (0.3 >= Out.vDiffuse.a)
 		discard;
 
 	return Out;	
@@ -93,6 +93,9 @@ PS_OUT PS_SKY(PS_IN In)
 	Out.vDiffuse = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
 	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
 	Out.vDepth = vector(1.f, 1.f, 0.f, 0.f);
+
+	if (0.f == Out.vDiffuse.a)
+		discard;
 
 	return Out;
 
@@ -127,7 +130,7 @@ PS_OUT_SHADOW_DEPTH PS_SHADOW_DEPTH(PS_IN In)
 
 
 	vector vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);;
-	if (vColor.a <= 0.3f)
+	if (vColor.a <= 0.f)
 		discard;
 
 

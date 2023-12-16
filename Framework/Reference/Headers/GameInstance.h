@@ -81,7 +81,7 @@ public: /* For. Componenet_Manager */
 
 public: /* For.Light_Manager */
 	const LIGHTDESC* Get_LightDesc(_uint iIndex);
-	const list<class CLight*>* Get_LightList();
+	list<class CLight*>* Get_LightList();
 	HRESULT Add_Light(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const LIGHTDESC & LightDesc);
 	HRESULT Add_ShadowLight(_uint iLevelIndex, _vector vEye, _vector vAt, _vector vUp);
 	_float4x4 Get_ShadowViewMatrix(_uint iLevelIndex);
@@ -112,6 +112,7 @@ public:
 	HRESULT Export_Model_Data(class CModel* pModel, const wstring & strSubFolderName, wstring strFileName);
 	HRESULT Import_Model_Data(_uint iLevelIndex, const wstring & strProtoTypeTag, _uint eType, wstring strFolderPath, wstring strFileName, __out class CModel** ppOut = nullptr);
 	HRESULT Export_Model_Data_FromPath(_uint eType, wstring strFolderPath);
+	vector<ANIM_TRANSFORM_CACHE> Create_AnimationSocketTransform(class CModel* pModel, const _uint & iSocketBoneIndex);
 
 
 public:

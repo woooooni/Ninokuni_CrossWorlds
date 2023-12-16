@@ -147,7 +147,7 @@ CUI_BtnQuickQuest* CUI_BtnQuickQuest::Create(ID3D11Device* pDevice, ID3D11Device
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX("Failed To Create : CUI_BasicButton");
+		MSG_BOX("Failed To Create : CUI_BtnQuickQuest");
 		Safe_Release(pInstance);
 	}
 
@@ -160,7 +160,7 @@ CGameObject* CUI_BtnQuickQuest::Clone(void* pArg)
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Failed To Clone : CUI_BasicButton");
+		MSG_BOX("Failed To Clone : CUI_BtnQuickQuest");
 		Safe_Release(pInstance);
 	}
 

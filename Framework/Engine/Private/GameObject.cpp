@@ -155,7 +155,7 @@ HRESULT CGameObject::Add_Collider(_uint iLevelIndex, _uint eColliderType, _uint 
 
 	pCollider->Set_DetectionType(CCollider::DETECTION_TYPE(eDetectionType));
 
-	Safe_AddRef(pCollider);
+	
 	iter->second.push_back(pCollider);
 	return S_OK;
 }

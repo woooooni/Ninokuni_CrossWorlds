@@ -98,7 +98,7 @@ PS_OUT PS_MAIN(PS_IN In)
 	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
 
-	if (0 == Out.vDiffuse.a)
+	if (0.1 >= Out.vDiffuse.a)
 		discard;
 
 	return Out;	

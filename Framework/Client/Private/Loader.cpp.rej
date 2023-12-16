@@ -1,0 +1,9 @@
+diff a/Framework/Client/Private/Loader.cpp b/Framework/Client/Private/Loader.cpp	(rejected hunks)
+@@ -220,7 +220,6 @@
+ 	if (FAILED(Loading_Proto_AllObjects(L"../Bin/Export/NonAnimModel/Map/")))
+ 		return E_FAIL;
+ 		
+-	 ParticleInfo.bRandomStartIndex = true;
+ #pragma region Particle
+ 	 // �⺻ ��ƼŬ
+ 	 //if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Particle"),

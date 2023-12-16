@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Tool_Map.h"
 #include "imgui.h"
+#include "imgui_internal.h"
 #include "FileUtils.h"
 #include "GameObject.h"
 #include "GameInstance.h"
@@ -9,6 +10,8 @@
 #include "Mesh.h"
 #include "Light.h"
 #include <filesystem>
+//#include "ImGuizmo.h"
+#include "PipeLine.h"
 
 CTool_Map::CTool_Map(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CTool(pDevice, pContext)
@@ -20,7 +23,6 @@ HRESULT CTool_Map::Initialize()
 	if (FAILED(__super::Initialize()))
 		return E_FAIL;
 
-
 	return S_OK;
 }
 
@@ -31,7 +33,6 @@ void CTool_Map::Tick(_float fTimeDelta)
 		WindowFlags |= ImGuiWindowFlags_NoResize;
 	if (!m_bWindowMoveFlag)
 		WindowFlags |= ImGuiWindowFlags_NoMove;
-
 
 	if (ImGui::Begin("Inspector", NULL, WindowFlags))
 	{
@@ -61,8 +62,6 @@ void CTool_Map::AddMapObject(LEVELID iLevelID, LAYER_TYPE iLayerType)
 		{
 			if (true == m_bAddObject)
 				GI->Add_GameObject(iLevelID, iLayerType, Pair.first);
-
-			
 		}
 	}
 }
@@ -90,6 +89,33 @@ void CTool_Map::DeleteObject(LEVELID iLevelID, LAYER_TYPE iLayerType)
 	}
 }
 
+void CTool_Map::DeleteLight(_uint iLightID)
+{
+	list<CLight*>* pLightlist = GI->Get_LightList();
+
+	auto iter = pLightlist->begin();
+
+	while (iter != pLightlist->end())
+	{
+		if (nullptr == m_pSelectLight)
+			break;
+
+		if (m_pSelectLight->Get_LightID() == (*iter)->Get_LightID())
+		{
+			Safe_Release<CLight*>((*iter));
+			iter = pLightlist->erase(iter);
+			m_pSelectLight = nullptr;
+		}
+		else
+			++iter;
+	}
+
+	_uint iLightCount = 0;
+
+	for (auto& pLight : *pLightlist)
+		pLight->Set_LightID(iLightCount++);
+}
+
 void CTool_Map::BatchObject(LEVELID iLevelID, LAYER_TYPE iLayerType)
 {
 	list<CGameObject*>& pGameObjects = GI->Find_GameObjects(iLevelID, iLayerType);
@@ -105,6 +131,8 @@ void CTool_Map::BatchObject(LEVELID iLevelID, LAYER_TYPE iLayerType)
 			m_pSelectObj = pObj;
 	}
 }
+
+
 
 void CTool_Map::Picking()
 {
@@ -235,8 +263,6 @@ void CTool_Map::MapObjectSpace()
 				ChangeState();
 				m_iControlState = 4;
 			}
-			/*if(ImGui::RadioButton(""))*/
-
 
 			ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.f), u8"오브젝트");
 			if (nullptr != m_pSelectObj)
@@ -253,6 +279,8 @@ void CTool_Map::MapObjectSpace()
 
 				if (ImGui::CollapsingHeader("Movement"))
 				{
+					int lastUsing = 0;
+
 					CTransform* pTransform = m_pSelectObj->Get_Component<CTransform>(L"Com_Transform");
 					if (nullptr == pTransform)
 					{
@@ -260,11 +288,13 @@ void CTool_Map::MapObjectSpace()
 						return;
 					}
 
+#pragma region IMGUIZMO
+#pragma endregion IMGUIZMO
+
 					Vec3 vScaled = pTransform->Get_Scale();
 					XMVECTOR vRotation = pTransform->Get_WorldRotation();
 					XMMATRIX vPos = pTransform->Get_WorldMatrix();
 					XMVECTOR vWorldPosition = vPos.r[3];
-
 
 					ImGui::PushItemWidth(150.f);
 					ImGui::DragFloat3("Position", &vWorldPosition.m128_f32[0], 0.1f, -1000.f, 1000.f);
@@ -387,6 +417,7 @@ void CTool_Map::MapLightSpace()
 {
 	if (ImGui::CollapsingHeader("[ Light Tool ]"))
 	{
+
 		if (ImGui::BeginChild("Light_Child_List", ImVec2(0, 300.f), true))
 		{
 			if (ImGui::RadioButton("DIRECTION", (0 == m_iLightControlState)))
@@ -413,10 +444,12 @@ void CTool_Map::MapLightSpace()
 
 				string strSelectLightType = "";
 				
-				if (0 == m_pSelectLight->Get_LightDesc()->eType)
+				if (LIGHTDESC::TYPE::TYPE_POINT == m_pSelectLight->Get_LightDesc()->eType)
 					strSelectLightType = "Point";
-				else if (1 == m_pSelectLight->Get_LightDesc()->eType)
+				else if (LIGHTDESC::TYPE::TYPE_DIRECTIONAL == m_pSelectLight->Get_LightDesc()->eType)
 					strSelectLightType = "Directional";
+
+				strSelectLightType += "_" + to_string(m_pSelectLight->Get_LightID());
 
 				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), u8"선택된 라이트 : "); ImGui::SameLine();
 				ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), strSelectLightType.c_str());
@@ -439,41 +472,19 @@ void CTool_Map::MapLightSpace()
 						::XMStoreFloat4(&rLightDesc->vDirection, ::XMQuaternionMultiply(vLightDir, vRotQuatInverse));
 					}
 
-					if (0 == rLightDesc->eType)
+					if (LIGHTDESC::TYPE::TYPE_POINT == rLightDesc->eType)
 					{
 
 					}
-					else if (1 == rLightDesc->eType)
+					else if (LIGHTDESC::TYPE::TYPE_DIRECTIONAL == rLightDesc->eType)
 					{
 
 					}
 				}
 
-				if (ImGui::Button(u8"선택된 오브젝트 삭제"))
-				{
-					// TODO
-					OBJ_TYPE eType = static_cast<OBJ_TYPE>(m_pSelectObj->Get_ObjectType());
+				if (ImGui::Button(u8"선택된 조명 삭제"))
+					DeleteLight(m_pSelectLight->Get_LightID());
 
-					switch (eType)
-					{
-					case OBJ_TYPE::OBJ_BUILDING:
-						DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_BUILDING);
-						break;
-					case OBJ_TYPE::OBJ_PROP:
-						DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_PROP);
-						break;
-					case OBJ_TYPE::OBJ_GROUND:
-						DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_GROUND);
-						break;
-					case OBJ_TYPE::OBJ_GRASS:
-						DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_GRASS);
-						break;
-					case OBJ_TYPE::OBJ_TREEROCK:
-						DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_TREEROCK);
-						break;
-					}
-
-				}
 				ImGui::PopItemWidth();
 			}
 			else
@@ -489,26 +500,35 @@ void CTool_Map::MapLightSpace()
 			}ImGui::SameLine();
 
 			if (ImGui::Button(u8"배치된 조명"))
-				m_bAddObject = false;
+				m_bAddLight = false;
 
-			if (true == m_bAddObject)
+			if (true == m_bAddLight)
 			{
 				ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), u8"추가할 조명 선택");
 
 				if (ImGui::ListBoxHeader("##ASSETLIST", ImVec2(300.0f, 0.0f)))
 				{
-					if (0 == m_iControlState)
-						AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_BUILDING);
-					else if (1 == m_iControlState)
-						AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_PROP);
-					else if (2 == m_iControlState)
-						AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_GROUND);
-					else if (3 == m_iControlState)
-						AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_GRASS);
-					else if (4 == m_iControlState)
-						AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_TREEROCK);
-				}
+					const string pLightName[3] = { "DIRECTIONAL", "POINT", "SPOT" };
 
+					for (_uint i = 0; i < 3; ++i)
+					{
+						if (ImGui::Selectable(pLightName[i].c_str()))
+						{
+							LIGHTDESC lightDesc;
+							::ZeroMemory(&lightDesc, sizeof(LIGHTDESC));
+
+							lightDesc.vDiffuse = Vec4(1.f, 1.f, 1.f, 1.f);
+							lightDesc.vAmbient = Vec4(1.f, 1.f, 1.f, 1.f);
+							lightDesc.vDirection = Vec4(1.f, 1.f, 1.f, 1.f);
+
+							if (0 == m_iControlState) //Direction
+								lightDesc.eType = LIGHTDESC::TYPE::TYPE_DIRECTIONAL;
+
+							GI->Add_Light(m_pDevice, m_pContext, lightDesc);
+						}
+					}
+
+				}
 				ImGui::ListBoxFooter();
 			}
 			else
@@ -528,6 +548,8 @@ void CTool_Map::MapLightSpace()
 							strSelectLightType = "Point";
 						else if (1 == pLight->Get_LightDesc()->eType)
 							strSelectLightType = "Directional";
+
+						strSelectLightType += "_" + to_string(pLight->Get_LightID());
 
 						if (ImGui::Selectable(strSelectLightType.c_str()))
 							m_pSelectLight = pLight;
@@ -552,12 +574,12 @@ void CTool_Map::MapLightSpace()
 			ImGui::Spacing();
 
 			if (ImGui::Button(u8"Save"))
-				Save_Map_Data(TEXT("Evermore"));
+				Save_Light_Data(TEXT("Evermore Light"));
 
 			ImGui::SameLine();
 
 			if (ImGui::Button(u8"Load"))
-				Load_Map_Data(TEXT("Evermore"));
+				Load_Light_Data(TEXT("Evermore Light"));
 
 		}
 		ImGui::EndChild();
@@ -707,6 +729,84 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 	MSG_BOX("Map_Loaded.");
 	return S_OK;
 
+}
+
+HRESULT CTool_Map::Save_Light_Data(const wstring& strLightFilePath)
+{
+	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strLightFilePath + L"/" + strLightFilePath + L".light";
+
+	shared_ptr<CFileUtils> pFile = make_shared<CFileUtils>();
+	pFile->Open(strMapFilePath, FileMode::Write);
+
+	list<CLight*>* pLightList = GI->Get_LightList();
+	pFile->Write<_uint>(pLightList->size());
+	// 라이트 개수
+
+	for (auto& pLight : *pLightList)
+	{
+		const LIGHTDESC* pLightDesc = pLight->Get_LightDesc();
+
+		// Type
+		pFile->Write<_uint>(pLightDesc->eType);
+
+		if (LIGHTDESC::TYPE_DIRECTIONAL == pLightDesc->eType)
+		{
+			// ID
+			pFile->Write<_uint>(pLight->Get_LightID());
+			
+			// State
+			pFile->Write<Vec4>(pLightDesc->vDiffuse);
+			pFile->Write<Vec4>(pLightDesc->vAmbient);
+			pFile->Write<Vec4>(pLightDesc->vDirection);
+		}
+	}
+
+	return S_OK;
+}
+
+HRESULT CTool_Map::Load_Light_Data(const wstring& strLightFilePath)
+{
+	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strLightFilePath + L"/" + strLightFilePath + L".light";
+
+	shared_ptr<CFileUtils> pFile = make_shared<CFileUtils>();
+	pFile->Open(strMapFilePath, FileMode::Read);
+
+	_uint iLightSize = 0;
+	pFile->Read<_uint>(iLightSize);
+	// 라이트 개수
+
+	for (_uint i = 0; i < iLightSize; ++i)
+	{
+		LIGHTDESC LightDesc;
+		::ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
+
+		// Type
+		_uint iLightType = 0;
+		_uint iLightID = 0;
+
+		pFile->Read<_uint>(iLightType);
+
+		if (LIGHTDESC::TYPE_DIRECTIONAL == iLightType)
+		{
+			// ID
+			pFile->Read<_uint>(iLightID);
+
+			// State
+			Vec4 vDiffuse, vAmbient, vDirection;
+			pFile->Read<Vec4>(vDiffuse);
+			pFile->Read<Vec4>(vAmbient);
+			pFile->Read<Vec4>(vDirection);
+
+			LightDesc.eType = static_cast<LIGHTDESC::TYPE>(iLightType);
+			LightDesc.vDiffuse = vDiffuse;
+			LightDesc.vAmbient = vAmbient;
+			LightDesc.vDirection = vDirection;
+		}
+
+		if(FAILED(GI->Add_Light(m_pDevice, m_pContext, LightDesc)))
+			return E_FAIL;
+	}
+	return S_OK;
 }
 
 
