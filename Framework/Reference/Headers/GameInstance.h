@@ -134,6 +134,7 @@ public:
 
 
 public:
+	/* For. PhysX_Manager */
 	PxRigidStatic* Add_Static_Actor(const PHYSX_INIT_DESC& Desc);
 	PxRigidDynamic* Add_Dynamic_Actor(const PHYSX_INIT_DESC& Desc);
 
@@ -141,10 +142,15 @@ public:
 	vector<PxRigidDynamic*> Add_Dynamic_Mesh_Actor(const PHYSX_INIT_DESC& Desc);
 	HRESULT Add_Ground(class CGameObject* pGroundObj);
 
-
-	HRESULT Remove_Actor(_uint iObjectID, PHYSX_RIGID_TYPE eRigidType);
-	HRESULT Convert_Transform(class CGameObject* pObj, PxTransform& OutRef);
+	HRESULT Remove_Actor(class CGameObject* pGameObject, PxActor* pPhysXActor);
 	PxMaterial* Create_PxMaterial(_float fA, _float fB, _float fC);
+
+	
+	
+	class PxParticleClothBuffer* Get_TestClothBuffer();
+	class PxCudaContextManager* Get_CudaContext_Manager();
+	class PxCudaContext* Get_CudaContext();
+	class PxParticleSystem* Get_ParticleSystem();
 
 
 
@@ -153,6 +159,11 @@ public:
 	string To_String(const wstring& str);
 	_float RandomFloat(_float fMin, _float fMax);
 	_int RandomInt(_int iMin, _int iMax);
+
+
+public:
+	Json Json_Load(const wstring& strFilePath);
+	HRESULT Json_Save(const wstring& strFilePath, const Json& refJsonFile);
 
 
 

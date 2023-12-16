@@ -111,9 +111,9 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>DEBUG;_DEBUG;_WINDOWS;_USRDLL;ENGINE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../Public/;../Public/PhysX/;../Public/Fmod/;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Public/;../Public/PhysX/;../Public/PhysX/extensions/;../Public/Fmod/;../Public/nlohmann/;</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalOptions>/bigobj</AdditionalOptions>
+      <AdditionalOptions>/bigobj /execution-charset:utf-8</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
@@ -167,12 +167,13 @@ call Copy.bat</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;ENGINE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../Public/;../Public/Fmod/;../Public/PhysX/;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Public/;../Public/Fmod/;../Public/PhysX/;../Public/nlohmann/;</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <MinimalRebuild>false</MinimalRebuild>
+      <AdditionalOptions>/execution-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -220,6 +221,52 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Component_Manager.h" />
     <ClInclude Include="..\Public\CustomFont.h" />
     <ClInclude Include="..\Public\Frustum.h" />
+    <ClInclude Include="..\Public\JsonUtils.h" />
+    <ClInclude Include="..\Public\Json\adl_serializer.hpp" />
+    <ClInclude Include="..\Public\Json\byte_container_with_subtype.hpp" />
+    <ClInclude Include="..\Public\Json\detail\abi_macros.hpp" />
+    <ClInclude Include="..\Public\Json\detail\conversions\from_json.hpp" />
+    <ClInclude Include="..\Public\Json\detail\conversions\to_chars.hpp" />
+    <ClInclude Include="..\Public\Json\detail\conversions\to_json.hpp" />
+    <ClInclude Include="..\Public\Json\detail\exceptions.hpp" />
+    <ClInclude Include="..\Public\Json\detail\hash.hpp" />
+    <ClInclude Include="..\Public\Json\detail\input\binary_reader.hpp" />
+    <ClInclude Include="..\Public\Json\detail\input\input_adapters.hpp" />
+    <ClInclude Include="..\Public\Json\detail\input\json_sax.hpp" />
+    <ClInclude Include="..\Public\Json\detail\input\lexer.hpp" />
+    <ClInclude Include="..\Public\Json\detail\input\parser.hpp" />
+    <ClInclude Include="..\Public\Json\detail\input\position_t.hpp" />
+    <ClInclude Include="..\Public\Json\detail\iterators\internal_iterator.hpp" />
+    <ClInclude Include="..\Public\Json\detail\iterators\iteration_proxy.hpp" />
+    <ClInclude Include="..\Public\Json\detail\iterators\iterator_traits.hpp" />
+    <ClInclude Include="..\Public\Json\detail\iterators\iter_impl.hpp" />
+    <ClInclude Include="..\Public\Json\detail\iterators\json_reverse_iterator.hpp" />
+    <ClInclude Include="..\Public\Json\detail\iterators\primitive_iterator.hpp" />
+    <ClInclude Include="..\Public\Json\detail\json_custom_base_class.hpp" />
+    <ClInclude Include="..\Public\Json\detail\json_pointer.hpp" />
+    <ClInclude Include="..\Public\Json\detail\json_ref.hpp" />
+    <ClInclude Include="..\Public\Json\detail\macro_scope.hpp" />
+    <ClInclude Include="..\Public\Json\detail\macro_unscope.hpp" />
+    <ClInclude Include="..\Public\Json\detail\meta\call_std\begin.hpp" />
+    <ClInclude Include="..\Public\Json\detail\meta\call_std\end.hpp" />
+    <ClInclude Include="..\Public\Json\detail\meta\cpp_future.hpp" />
+    <ClInclude Include="..\Public\Json\detail\meta\detected.hpp" />
+    <ClInclude Include="..\Public\Json\detail\meta\identity_tag.hpp" />
+    <ClInclude Include="..\Public\Json\detail\meta\is_sax.hpp" />
+    <ClInclude Include="..\Public\Json\detail\meta\std_fs.hpp" />
+    <ClInclude Include="..\Public\Json\detail\meta\type_traits.hpp" />
+    <ClInclude Include="..\Public\Json\detail\meta\void_t.hpp" />
+    <ClInclude Include="..\Public\Json\detail\output\binary_writer.hpp" />
+    <ClInclude Include="..\Public\Json\detail\output\output_adapters.hpp" />
+    <ClInclude Include="..\Public\Json\detail\output\serializer.hpp" />
+    <ClInclude Include="..\Public\Json\detail\string_concat.hpp" />
+    <ClInclude Include="..\Public\Json\detail\string_escape.hpp" />
+    <ClInclude Include="..\Public\Json\detail\value_t.hpp" />
+    <ClInclude Include="..\Public\Json\json.hpp" />
+    <ClInclude Include="..\Public\Json\json_fwd.hpp" />
+    <ClInclude Include="..\Public\Json\ordered_map.hpp" />
+    <ClInclude Include="..\Public\Json\thirdparty\hedley\hedley.hpp" />
+    <ClInclude Include="..\Public\Json\thirdparty\hedley\hedley_undef.hpp" />
     <ClInclude Include="..\Public\Model_Manager.h" />
     <ClInclude Include="..\Public\DebugDraw.h" />
     <ClInclude Include="..\Public\Engine_Defines.h" />
@@ -293,6 +340,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\Component_Manager.cpp" />
     <ClCompile Include="..\Private\CustomFont.cpp" />
     <ClCompile Include="..\Private\Frustum.cpp" />
+    <ClCompile Include="..\Private\JsonUtils.cpp" />
     <ClCompile Include="..\Private\Model_Manager.cpp" />
     <ClCompile Include="..\Private\DebugDraw.cpp" />
     <ClCompile Include="..\Private\Engine_Struct.cpp" />

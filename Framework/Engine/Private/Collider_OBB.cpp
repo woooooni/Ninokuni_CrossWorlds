@@ -48,7 +48,7 @@ HRESULT CCollider_OBB::Initialize(void* pArg)
 	PHYSX_INIT_DESC InitDesc;
 	InitDesc.eColliderType = PHYSX_COLLIDER_TYPE::BOX;
 	InitDesc.eRigidType = PHYSX_RIGID_TYPE::DYNAMIC;
-	InitDesc.vOffsetPosition = pDesc->vOffsetPosition;
+	InitDesc.vStartPosition = m_tOBB.Center;
 	InitDesc.vExtents = m_tOBB.Extents;
 	InitDesc.bKinematic = true;
 	InitDesc.pGameObject = pDesc->pOwner;

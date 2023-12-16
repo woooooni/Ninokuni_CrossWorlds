@@ -42,7 +42,7 @@ HRESULT CCollider_Sphere::Initialize(void* pArg)
 	PHYSX_INIT_DESC InitDesc;
 	InitDesc.eColliderType = PHYSX_COLLIDER_TYPE::SPHERE;
 	InitDesc.eRigidType = PHYSX_RIGID_TYPE::DYNAMIC;
-	InitDesc.vOffsetPosition = pDesc->vOffsetPosition;
+	InitDesc.vStartPosition = m_tBoundingSphere.Center;
 	InitDesc.fRadius = m_tBoundingSphere.Radius;
 	InitDesc.bKinematic = true;
 	InitDesc.pGameObject = pDesc->pOwner;

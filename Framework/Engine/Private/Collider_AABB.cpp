@@ -42,8 +42,8 @@ HRESULT CCollider_AABB::Initialize(void* pArg)
 	PHYSX_INIT_DESC InitDesc;
 	InitDesc.eColliderType = PHYSX_COLLIDER_TYPE::BOX;
 	InitDesc.eRigidType = PHYSX_RIGID_TYPE::DYNAMIC;
-	InitDesc.vOffsetPosition = pDesc->vOffsetPosition;
-	InitDesc.vExtents = pDesc->tBox.Extents;
+	InitDesc.vStartPosition = m_tBoundingBox.Center;
+	InitDesc.vExtents = m_tBoundingBox.Extents;
 	InitDesc.bKinematic = true;
 	InitDesc.pGameObject = pDesc->pOwner;
 

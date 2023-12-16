@@ -253,7 +253,7 @@ namespace Engine
 		PHYSX_COLLIDER_TYPE eColliderType = PHYSX_COLLIDER_TYPE::COLLIDER_TYPE_END;		// 오브젝트의 콜라이더 모양(박스, 구, 메시)을 결정합니다.
 
 		// 콜라이더 관련.
-		_float3 vOffsetPosition = { 0.f, 0.f, 0.f };	// 포지션에 대한 상대적인 오프셋 포지션
+		_float3 vStartPosition = { 0.f, 0.f, 0.f };
 		_float3 vExtents = { 1.f, 1.f, 1.f };			// 상자의 너비
 		_float fRadius = 1.f;							// 구의 너비
 
@@ -270,9 +270,9 @@ namespace Engine
 
 
 		// 회전 관성 관련.
-		_bool bLockAngle_X = false;				// x축 회전을 제한할지 선택합니다.
-		_bool bLockAngle_Y = false;				// y축 회전을 제한할지 선택합니다.
-		_bool bLockAngle_Z = false;				// z축 회전을 제한할지 선택합니다.
+		_bool bLockAngle_X = true;				// x축 회전을 제한할지 선택합니다.
+		_bool bLockAngle_Y = true;				// y축 회전을 제한할지 선택합니다.
+		_bool bLockAngle_Z = true;				// z축 회전을 제한할지 선택합니다.
 
 		class CGameObject* pGameObject = nullptr;										// 콜라이더의 주인 입니다.
 	} PHYSX_INIT_DESC;

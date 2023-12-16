@@ -81,6 +81,22 @@ void CUI::Tick(_float fTimeDelta)
 			m_eMouseState = UI_MOUSESTATE::MOUSE_ENTER;
 			On_MouseEnter(fTimeDelta);
 			break;
+
+		case UI_MOUSESTATE::MOUSE_DRAG_START:
+			m_eMouseState = UI_MOUSESTATE::MOUSE_DRAG;
+			On_MouseDrag(fTimeDelta);
+			break;
+
+		case UI_MOUSESTATE::MOUSE_DRAG:
+			On_MouseDrag(fTimeDelta);
+			break;
+
+		case UI_MOUSESTATE::MOUSE_DRAG_END:
+			m_eMouseState = UI_MOUSESTATE::MOUSE_ON;
+			On_Mouse(fTimeDelta);
+			break;
+
+
 		default:
 			m_eMouseState = UI_MOUSESTATE::MOUSE_ENTER;
 			On_MouseEnter(fTimeDelta);
@@ -101,9 +117,26 @@ void CUI::Tick(_float fTimeDelta)
 			m_eMouseState = UI_MOUSESTATE::MOUSE_EXIT;
 			On_MouseExit(fTimeDelta);
 			break;
+
 		case UI_MOUSESTATE::MOUSE_EXIT:
 			m_eMouseState = UI_MOUSESTATE::MOUSE_END;
 			break;
+
+		case UI_MOUSESTATE::MOUSE_DRAG_START:
+			m_eMouseState = UI_MOUSESTATE::MOUSE_EXIT;
+			On_MouseDragExit(fTimeDelta);
+			break;
+
+		case UI_MOUSESTATE::MOUSE_DRAG:
+			m_eMouseState = UI_MOUSESTATE::MOUSE_EXIT;
+			On_MouseDragExit(fTimeDelta);
+			break;
+
+		case UI_MOUSESTATE::MOUSE_DRAG_END:
+			m_eMouseState = UI_MOUSESTATE::MOUSE_EXIT;
+			On_MouseExit(fTimeDelta);
+			break;
+
 		default:
 			break;
 		}
@@ -183,6 +216,18 @@ void CUI::Delete_AllChild()
 		}
 	}
 	m_pChild.clear();
+}
+
+void CUI::On_Mouse(_float fTimeDelta)
+{
+	if (KEY_HOLD(KEY::LBTN) || KEY_HOLD(KEY::RBTN))
+	{
+		if (GI->Get_DIMMoveState(DIMM_X) || GI->Get_DIMMoveState(DIMM_Y))
+		{
+			m_eMouseState = UI_MOUSESTATE::MOUSE_DRAG_START;
+			return;
+		}
+	}
 }
 
 void CUI::Debug_Input(_float fTimeDelta)

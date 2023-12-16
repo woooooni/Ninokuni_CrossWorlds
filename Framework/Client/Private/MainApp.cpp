@@ -54,6 +54,19 @@ HRESULT CMainApp::Initialize()
 	// CUI_Manager::GetInstance()->Ready_Cursor();
 	// ShowCursor(false);
 
+	Json Test;
+	Test["Name"] = "김태원";
+	Test["Test"] = "테스트";
+	Test["int"] = 3;
+	Test["float"] = 3.f;
+	Test["string"] = "스트링";
+
+	GI->Json_Save(L"../Bin/Test.json", Test);
+	Json Load = GI->Json_Load(L"../Bin/Test.json");
+	string strName = Load["Name"];
+
+	string strLoad = Load.dump();
+	
 
 	return S_OK;
 }
@@ -212,6 +225,13 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Terrain"),
 		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 256, 256))))
 		return E_FAIL;
+
+	/* For.Prototype_Component_VIBuffer_Cloth_Terrain*/
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Cloth_Terrain"),
+		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 100, 100))))
+		return E_FAIL;
+
+	
 
 	/* For.Prototype_Component_VIBuffer_Trail*/
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Trail"),

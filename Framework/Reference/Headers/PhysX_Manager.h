@@ -9,7 +9,6 @@ BEGIN(Engine)
 class CPhysX_Manager final : public CBase, public PxSimulationEventCallback
 {
 
-public:
 	DECLARE_SINGLETON(CPhysX_Manager)
 
 public:
@@ -39,11 +38,10 @@ public:
 	HRESULT Reset_PhysX();
 
 public:
-	HRESULT Remove_Actor(_uint iObjectID, PHYSX_RIGID_TYPE eRigidType);
-	HRESULT Remove_Actor(PxActor* pPhysXActor);
+	HRESULT Remove_Actor(class CGameObject* pGameObject, PxActor* pPhysXActor);
+	
 
-public:
-	HRESULT Convert_Transform(class CGameObject* pObj, PxTransform& PxTransform);
+	
 
 public:
 	PxMaterial* Create_Material(_float fStaticFriction, _float fDynamicFriction, _float fRestitution) {
@@ -59,6 +57,13 @@ public:
 	virtual void onAdvance(const PxRigidBody* const* bodyBuffer, const PxTransform* poseBuffer, const PxU32 count) override;
 
 
+public:
+	PxParticleSystem* Get_ParticleSystem() { return m_pParticleSystem; }
+	PxParticleClothBuffer* Get_ClothBuffer() { return m_pClothBuffer; }
+	PxCudaContext* Get_CudaContext() { return m_pCudaContextManager->getCudaContext(); }
+	PxCudaContextManager* Get_CudaContext_Manager() { return m_pCudaContextManager; }
+
+
 private:
 	PxRigidDynamic* Create_Dynamic_Box(const PHYSX_INIT_DESC& Desc);
 	PxRigidDynamic* Create_Dynamic_Sphere(const PHYSX_INIT_DESC& Desc);
@@ -69,7 +74,14 @@ private:
 	vector<PxRigidStatic*> Create_Static_Mesh(const PHYSX_INIT_DESC& Desc);
 
 
+private:
+	HRESULT Ready_ParticleSystem();
+	HRESULT Create_Cloth(class CVIBuffer* pBufferCom);
+	HRESULT Create_Cloth(class CMesh* pMesh);
 
+private:
+	HRESULT Init_Cloth(const PxU32 numX, const PxU32 numZ, const PxVec3& position = PxVec3(0, 0, 0), const PxReal particleSpacing = 0.2f, const PxReal totalClothMass = 10.f);
+	
 
 
 #ifdef _DEBUG
@@ -91,8 +103,15 @@ private:
 	PxScene*					m_pScene = nullptr;			// 시뮬레이션 돌릴 Scene.
 
 	PxMaterial* m_WorldMaterial = nullptr;		// 객체의 재질
-	PxCudaContextManager*       m_pCudaContextManager = nullptr;
 
+
+	// PxParticle.
+	PxCudaContextManager*       m_pCudaContextManager = nullptr;
+	PxPBDParticleSystem*		m_pParticleSystem = nullptr;
+	PxParticleClothBuffer*		m_pClothBuffer = nullptr;
+
+
+	_bool m_bCudaGraphics = false;
 
 	PxPvd*						m_pPvd = nullptr; // 서버
 	string						m_strIPAddress = "127.0.0.1";
@@ -101,9 +120,9 @@ private:
 
 
 private:
-	map<_uint, PHYSX_STATIC_OBJECT_DESC> m_StaticObjects;
-	map<_uint, PHYSX_DYNAMIC_OBJECT_DESC> m_DynamicObjects;
-	map<_uint, PHYSX_STATIC_OBJECT_DESC> m_GroundObjects;
+	map<_uint, vector<PHYSX_STATIC_OBJECT_DESC>> m_StaticObjects;
+	map<_uint, vector<PHYSX_DYNAMIC_OBJECT_DESC>> m_DynamicObjects;
+	map<_uint, vector<PHYSX_STATIC_OBJECT_DESC>> m_GroundObjects;
 
 private:
 	ID3D11Device* m_pDevice = nullptr;
