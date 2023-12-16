@@ -18,10 +18,14 @@ private:
 public: 
 	/* Model Prop */
 	void Set_Name(const wstring& strName) { m_strName = strName; }
+	void Set_CustomSocketPivotRotation(const _uint iIndex, Vec3 vCustomSocket);
 
 	TYPE Get_ModelType() { return m_eModelType; }
+	Vec3 Get_CustomSocketPivotRotation(const _uint iIndex); /* 파츠에서 사용하는 커스텀 피벗 매트릭스 */
 	_matrix Get_PivotMatrix() { return XMLoadFloat4x4(&m_PivotMatrix); }
 	const wstring& Get_Name() const { return m_strName; }
+
+	void Add_CustomSocketPivotRotation(Vec3 vCustomSocket) { m_SocketCustomPivotRotation.push_back(vCustomSocket); }
 
 	/* HierarchyNode */
 	Matrix Get_SocketLocalMatrix(const _uint iSocketEnumIndex); /* (모델의 Latetick 이후 호출)캐릭터가 갖고 있는 파츠의 소켓 매트릭스를 리턴한다. (캐릭터에 정의된 enum 인덱스 사용, 뼈 번호 아님) */
@@ -30,7 +34,6 @@ public:
 	const _int Get_HierarchyNodeIndex(wstring strBoneName);
 	class CHierarchyNode* Get_HierarchyNode(const wstring & strNodeName);
 	vector<class CHierarchyNode*>& Get_HierarchyNodes() { return m_HierarchyNodes; }
-
 
 	/* Meshes */
 	_uint Get_NumMeshes() const { return m_iNumMeshes; }
@@ -81,9 +84,11 @@ public:
 	const aiScene* Get_Scene() { return m_pAIScene; }
 	
 	void Add_SocketTransforms(vector<ANIM_TRANSFORM_CACHE> SocketTransforms) { m_SocketTransforms.push_back(SocketTransforms); }
-	vector<vector<ANIM_TRANSFORM_CACHE>> Get_All_SocketLoacalMatrix() { return m_SocketTransforms; }
-	void Clear_SocketTransforms(const _uint iSocketEnumIndex);
-	void Clear_All_SocketTransforms() { m_SocketTransforms.clear(); m_SocketTransforms.shrink_to_fit(); }
+
+	void Clear_SocketTransformsCache(const _uint iSocketIndex);
+	void Clear_All_SocketTransformsCaches();
+	void Add_SocketTransformIndexCache(_uint iIndex) { m_SocketTransformIndexCache.push_back(iIndex); }
+	vector<_uint> Get_SocketTransformIndexCache() { return m_SocketTransformIndexCache; }
 
 	HRESULT Delete_Animation(_uint iIndex);
 	HRESULT Swap_Animation(_uint iSrcIndex, _uint iDestIndex);
@@ -126,7 +131,9 @@ private:
 	TWEEN_DESC m_TweenDesc = {};
 	ID3D11ShaderResourceView* m_pSRV = nullptr;
 
-	vector<vector<ANIM_TRANSFORM_CACHE>> m_SocketTransforms; /* 소켓별로 vector<ANIM_TRANSOFRM_CACHE>를 갖는다.*/
+	vector<_uint> m_SocketTransformIndexCache;
+	vector<Vec3> m_SocketCustomPivotRotation;
+	vector<vector<ANIM_TRANSFORM_CACHE>> m_SocketTransforms; /* 소켓(뼈) 별로 vector<ANIM_TRANSOFRM_CACHE>를 갖는다.*/
 
 #pragma region Assimp
 private:

@@ -102,11 +102,6 @@ HRESULT CTool_Model::Clear_ToolAnimationData()
 	m_AnimTransformsCaches.clear();
 	m_AnimTransformsCaches.shrink_to_fit();
 
-	m_AddedTransformNames.clear();
-	m_AddedTransformNames.shrink_to_fit();
-
-	m_vRotation = { 0.f, -270.f, 0.f };
-
 	m_bAuto = FALSE;
 
 	m_iAutoAnimIndex = 0;
@@ -201,10 +196,15 @@ Matrix CTool_Model::Calculate_SocketWorldMatrix()
 
 	/* 커스텀 피벗*/
 	{
+		Vec3 vRot = m_pDummy->Get_ModelCom()->Get_CustomSocketPivotRotation(m_iSocketIndex);
+
 		Matrix matCustomPivot = XMMatrixRotationQuaternion(XMQuaternionRotationRollPitchYaw(
-								XMConvertToRadians(m_vRotation.x),
-								XMConvertToRadians(m_vRotation.y),
-								XMConvertToRadians(m_vRotation.z)));
+								XMConvertToRadians(vRot.x),
+								XMConvertToRadians(vRot.y),
+								XMConvertToRadians(vRot.z)));
+
+
+
 
 		matAnimLocal = matCustomPivot * matAnimLocal;
 	}
@@ -627,9 +627,8 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 		/* 변경시 다시 익스포트 해야하는 유형 */
 		IMGUI_NEW_LINE;
 		ImGui::Separator();
-		ImGui::Text("Edit 1");
-		IMGUI_SAME_LINE;
 		ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"삭제, 정렬, 순서 변경, 이름 변경은 다시 익스포트 해야 반영됩니다. ");
+		ImGui::Text("Edit 1");
 		{
 			/* Swap */
 			{
@@ -822,7 +821,7 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 		{
 			ImGui::Text("Weapon Prototypes List");
 
-			if (ImGui::BeginListBox("##Weapon Prototypes List", ImVec2(0, 50)))
+			if (ImGui::BeginListBox("##Weapon Prototypes List"))
 			{
 				for (size_t i = 0; i < m_Weapons.size(); ++i)
 				{
@@ -841,16 +840,19 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 		{
 			ImGui::Text("Calculated Socket List");
 
-			if (ImGui::BeginListBox("##Calculated Socket List", ImVec2(0, 50)))
+			if (ImGui::BeginListBox("##Calculated Socket List"))
 			{
-				for (size_t i = 0; i < m_AddedTransformNames.size(); i++)
+				vector<_uint> SocketTransformIndexCache = m_pDummy->Get_ModelCom()->Get_SocketTransformIndexCache();
+
+				for (size_t i = 0; i < SocketTransformIndexCache.size(); i++)
 				{
-					if (ImGui::Selectable(CUtils::ToString(m_AddedTransformNames[i]).c_str(), i == m_iSocketIndex))
+					wstring strBoneName = m_pDummy->Get_ModelCom()->Get_HiearachyNodeName(SocketTransformIndexCache[i]);
+
+					if (ImGui::Selectable(CUtils::ToString(strBoneName).c_str(), i == m_iSocketIndex))
 					{
 						m_iSocketIndex = i;
 
-
-						m_iRenderSocketIndex = m_pDummy->Get_ModelCom()->Get_HierarchyNodeIndex(m_AddedTransformNames[i]);
+						m_iRenderSocketIndex = m_pDummy->Get_ModelCom()->Get_HierarchyNodeIndex(strBoneName);
 
 						int k = 0;
 					}
@@ -863,14 +865,11 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 		if (ImGui::Button("Add Socket"))
 		{
 			/* 모델 컴포넌트 반영 */
-			m_pDummy->Get_ModelCom()->Add_SocketTransforms(
-				GI->Create_AnimationSocketTransform(m_pDummy->Get_ModelCom(), m_iCurBoneIndex));
-
-			/* 툴 네임 리스트 반영 */
-			m_AddedTransformNames.push_back(HiearachyNodes[m_iCurBoneIndex]->Get_Name());
+			m_pDummy->Get_ModelCom()->Add_SocketTransformIndexCache(m_iCurBoneIndex);
+			m_pDummy->Get_ModelCom()->Add_CustomSocketPivotRotation(Vec3{ 0.f, 0.f, 0.f });
 
 			/* 툴 인덱스 반영 */
-			m_iSocketIndex = m_AddedTransformNames.size() - 1;
+			m_iSocketIndex = m_pDummy->Get_ModelCom()->Get_SocketTransformIndexCache().size() - 1;
 		}
 		IMGUI_SAME_LINE;
 
@@ -878,25 +877,28 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 		if (ImGui::Button("Delete Socket"))
 		{
 			/* 모델 컴포넌트 반영 */
-			m_pDummy->Get_ModelCom()->Clear_SocketTransforms(m_iSocketIndex);
+			vector<_uint> SocketTransformIndexCache = m_pDummy->Get_ModelCom()->Get_SocketTransformIndexCache();
 
-			/* 툴 네임 리스트 반영 */
+			if (!SocketTransformIndexCache.empty())
 			{
-				vector<wstring>::iterator iter = m_AddedTransformNames.begin();
-				iter += m_iSocketIndex;
+				wstring strBoneName = m_pDummy->Get_ModelCom()->Get_HiearachyNodeName(SocketTransformIndexCache[m_iSocketIndex]);
+				_uint iIndex = m_pDummy->Get_ModelCom()->Get_HierarchyNodeIndex(strBoneName);
 
-				m_AddedTransformNames.erase(iter);
-			}
+				m_pDummy->Get_ModelCom()->Clear_SocketTransformsCache(m_pDummy->Get_ModelCom()->Get_HierarchyNodeIndex(strBoneName));
 
-			/* 툴 인덱스 반영 */
-			m_iSocketIndex -= 1;
-			if (m_iSocketIndex < 0)
-			{
-				m_iSocketIndex = -1;
-				m_iRenderSocketIndex = m_iCurBoneIndex;
+				/* 툴 인덱스 반영 */
+				m_iSocketIndex -= 1;
+				if (m_iSocketIndex < 0)
+				{
+					m_iSocketIndex = -1;
+					m_iRenderSocketIndex = m_iCurBoneIndex;
+				}
+				else
+				{
+					strBoneName = m_pDummy->Get_ModelCom()->Get_HiearachyNodeName(SocketTransformIndexCache[m_iSocketIndex]);
+					m_iRenderSocketIndex = m_pDummy->Get_ModelCom()->Get_HierarchyNodeIndex(strBoneName);
+				}
 			}
-			else
-				m_iRenderSocketIndex = m_pDummy->Get_ModelCom()->Get_HierarchyNodeIndex(m_AddedTransformNames[m_iSocketIndex]);
 		}
 		IMGUI_SAME_LINE;
 
@@ -904,11 +906,7 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 		if (ImGui::Button("All Delete Socket"))
 		{
 			/* 모델 컴포넌트 반영 */
-			m_pDummy->Get_ModelCom()->Clear_All_SocketTransforms();
-
-			/* 툴 네임 리스트 반영 */
-			m_AddedTransformNames.clear();
-			m_AddedTransformNames.shrink_to_fit();
+			m_pDummy->Get_ModelCom()->Clear_All_SocketTransformsCaches();
 
 			/* 툴 인덱스 반영 */
 			m_iSocketIndex -= 1;
@@ -919,85 +917,89 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 
 		/* Rotation matrix */
 		{
-			_float fRot[3] = { m_vRotation.x, m_vRotation.y, m_vRotation.z };
+			Vec3 vRot = m_pDummy->Get_ModelCom()->Get_CustomSocketPivotRotation(m_iSocketIndex);
+
+			_float fRot[3] = { vRot.x, vRot.y, vRot.z };
 			ImGui::Text("Socket Rotation");
 			IMGUI_SAME_LINE;
 
 			/* Clear */
 			if (ImGui::Button("Clear Socket Rotation"))
-				m_vRotation = Vec3::Zero;
+				vRot = Vec3::Zero;
 
 			/* X */
 			{
 				if (ImGui::InputFloat("X", &fRot[0]))
-					m_vRotation.x = fRot[0];
+					vRot.x = fRot[0];
 
 				IMGUI_SAME_LINE;
 
 				if (ImGui::ArrowButton("##Up X", ImGuiDir_Up))
 				{
-					m_vRotation.x += 90.f;
-					if (360 <= m_vRotation.x)
-						m_vRotation.x = -270.f;
+					vRot.x += 90.f;
+					if (360 <= vRot.x)
+						vRot.x = -270.f;
 				}
 
 				IMGUI_SAME_LINE;
 
 				if (ImGui::ArrowButton("##Down X", ImGuiDir_Down))
 				{
-					m_vRotation.x -= 90.f;
-					if (-360 >= m_vRotation.x)
-						m_vRotation.x = 270.f;
+					vRot.x -= 90.f;
+					if (-360 >= vRot.x)
+						vRot.x = 270.f;
 				}
 			}
 
 			/* Y */
 			{
 				if (ImGui::InputFloat("Y", &fRot[1]))
-					m_vRotation.y = fRot[1];
+					vRot.y = fRot[1];
 
 				IMGUI_SAME_LINE;
 
 				if (ImGui::ArrowButton("##Up Y", ImGuiDir_Up))
 				{
-					m_vRotation.y += 90.f;
-					if (360 <= m_vRotation.y)
-						m_vRotation.y = -270.f;
+					vRot.y += 90.f;
+					if (360 <= vRot.y)
+						vRot.y = -270.f;
 				}
 
 				IMGUI_SAME_LINE;
 
 				if (ImGui::ArrowButton("##Down Y", ImGuiDir_Down))
 				{
-					m_vRotation.y -= 90.f;
-					if (-360 >= m_vRotation.y)
-						m_vRotation.y = 270.f;
+					vRot.y -= 90.f;
+					if (-360 >= vRot.y)
+						vRot.y = 270.f;
 				}
 			}
 
 			/* Z */
 			{
 				if (ImGui::InputFloat("Z", &fRot[2]))
-					m_vRotation.z = fRot[2];
+					vRot.z = fRot[2];
 
 				IMGUI_SAME_LINE;
 
 				if (ImGui::ArrowButton("##Up Z", ImGuiDir_Up))
 				{
-					m_vRotation.z += 90.f;
-					if (360 <= m_vRotation.z)
-						m_vRotation.z = -270.f;
+					vRot.z += 90.f;
+					if (360 <= vRot.z)
+						vRot.z = -270.f;
 				}
 
 				IMGUI_SAME_LINE;
 
 				if (ImGui::ArrowButton("##Down Z", ImGuiDir_Down))
 				{
-					m_vRotation.z -= 90.f;
-					if (-360 >= m_vRotation.z)
-						m_vRotation.z = 270.f;
+					vRot.z -= 90.f;
+					if (-360 >= vRot.z)
+						vRot.z = 270.f;
 				}
 			}
+
+			m_pDummy->Get_ModelCom()->Set_CustomSocketPivotRotation(m_iSocketIndex, vRot);
 			IMGUI_NEW_LINE;
 		}
 	}

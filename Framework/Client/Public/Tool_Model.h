@@ -69,15 +69,11 @@ private:
 
 	/* 소켓 */
 	vector<ANIM_TRANSFORM_CACHES>	m_AnimTransformsCaches;/* 모든 뼈 계산 됨 */
-	vector<wstring>					m_AddedTransformNames; /* 모델에 추가된 뼈 이름 기억*/
 
 	_int m_iSocketIndex = -1; /* 툴 리스트 박스에서의 인덱스 == 모델의 트랜스폼 벡터에서의 인덱스 */
 
 	/* Render Index */
 	_int m_iRenderSocketIndex = 0;
-
-	/* Rotation Value */
-	Vec3 m_vRotation = { 0.f, -270.f, 0.f };
 
 	vector<Vec3> m_vAutoSocket;
 	_bool		m_bAuto = FALSE;

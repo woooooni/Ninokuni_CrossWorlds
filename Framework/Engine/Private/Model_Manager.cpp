@@ -55,6 +55,9 @@ HRESULT CModel_Manager::Export_Model_Data(CModel* pModel, const wstring& strSubF
 	{
 		if (FAILED(Create_Model_Vtf(pModel, strFinalFolderPath)))
 			return E_FAIL;
+
+		if (FAILED(Export_Socket(strFinalFolderPath, pModel)))
+			return E_FAIL;
 	}
 	return S_OK;
 }
@@ -437,6 +440,9 @@ HRESULT CModel_Manager::Import_Model_Data_From_Bin_In_Tool(_uint iLevelIndex, co
 	{
 		if (FAILED(Create_Model_Vtf(pModel, strFinalFolderPath)))
 			return E_FAIL;
+
+		if (FAILED(Import_Socket(strFinalFolderPath, pModel)))
+			return E_FAIL;
 	}
 
 	if (ppOut != nullptr)
@@ -522,6 +528,9 @@ HRESULT CModel_Manager::Import_Model_Data_From_Bin_In_Game(_uint iLevelIndex, co
 			
 			// 이거 살리면 CAnimation::Initialize(CModel* pModel)의 첫 주석도 풀어야함 리턴 하게끔
 			// 이 클래스에 Save_Model_Vtf도 내부 필터 제거
+
+		if (FAILED(Import_Socket(strFinalFolderPath, pModel)))
+			return E_FAIL;
 	}
 
 	if (ppOut != nullptr)
@@ -766,11 +775,36 @@ HRESULT CModel_Manager::Export_Animation(const wstring& strFinalFolderPath, CMod
 	return S_OK;
 }
 
+HRESULT CModel_Manager::Export_Socket(const wstring& strFinalFolderPath, CModel* pModel)
+{
+	if (pModel == nullptr)
+		return E_FAIL;
+
+	wstring strSocketFilePath = strFinalFolderPath + L".socket";
+	auto path = filesystem::path(strSocketFilePath);
+	filesystem::create_directories(path.parent_path());
+
+	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
+	File->Open(strSocketFilePath, FileMode::Write);
+	
+	vector<_uint> SocketIndices = pModel->m_SocketTransformIndexCache;
+	vector<Vec3> SocketCustomPivotRotaiton = pModel->m_SocketCustomPivotRotation;
+
+	File->Write<_uint>(_uint(SocketIndices.size()));
+
+	for (size_t i = 0; i < SocketIndices.size(); i++)
+	{
+		File->Write<_uint>(SocketIndices[i]);
+		File->Write<Vec3>(SocketCustomPivotRotaiton[i]);
+	}
+
+	return S_OK;
+}
+
 string CModel_Manager::Export_Texture(const wstring& strOriginFolder, const string& strSaveFolder, CTexture* pTexture, _uint iIdx)
 {
 	if (pTexture == nullptr)
 		return "";
-
 
 	string TextureName = CUtils::ToString(pTexture->Get_Name(iIdx));
 	
@@ -1190,6 +1224,41 @@ HRESULT CModel_Manager::Import_Animation(const wstring strFinalPath, CModel* pMo
 
 	//if (FAILED(pModel->Ready_Animation_Texture()))
 	//	return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CModel_Manager::Import_Socket(const wstring strFinalPath, CModel* pModel)
+{
+	if (nullptr == pModel)
+		return E_FAIL;
+
+	wstring strAnimationFilePath = strFinalPath + L".socket";
+	auto path = filesystem::path(strAnimationFilePath);
+
+	if (!filesystem::exists(path))
+		return S_OK;
+
+	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
+	File->Open(strAnimationFilePath, FileMode::Read);
+
+	_uint iSocketCount;
+	File->Read<_uint>(iSocketCount);
+
+	for (size_t i = 0; i < iSocketCount; i++)
+	{
+		_uint iSocketIndex;
+		File->Read<_uint>(iSocketIndex);
+
+		Vec3 vRot;
+		File->Read<Vec3>(vRot);
+
+		pModel->Add_SocketTransformIndexCache(iSocketIndex);
+		pModel->Add_CustomSocketPivotRotation(vRot);
+
+		if(99 != GI->Get_CurrentLevel())
+			pModel->Add_SocketTransforms(GI->Create_AnimationSocketTransform(pModel, iSocketCount));
+	}
 
 	return S_OK;
 }
