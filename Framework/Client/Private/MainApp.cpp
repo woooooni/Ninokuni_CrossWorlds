@@ -55,7 +55,7 @@ HRESULT CMainApp::Initialize()
 	// ShowCursor(false);
 
 	Json Test;
-	Test["Name"] = "김태원";
+	Test["Name"] = "김태원"; // babo
 	Test["Test"] = "테스트";
 	Test["int"] = 3;
 	Test["float"] = 3.f;
