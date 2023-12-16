@@ -215,8 +215,6 @@ HRESULT CModel::LateTick(_float fTimeDelta)
 	CAnimation* pCurAnim = m_Animations[m_TweenDesc.cur.iAnimIndex];
 	if (nullptr != pCurAnim)
 	{
-		pCurAnim->Add_PlayTime(fTimeDelta);
-
 		m_TweenDesc.cur.fFrameAcc += fTimeDelta;
 
 		const _float fTimePerFrame = 1 / (pCurAnim->Get_TickPerSecond() * pCurAnim->Get_AnimationSpeed());
@@ -229,8 +227,6 @@ HRESULT CModel::LateTick(_float fTimeDelta)
 
 				if (!pCurAnim->Is_Loop()) // 픽스 여부 체크
 					m_TweenDesc.cur.iFix = true;
-
-				pCurAnim->Clear_PlayTime();
 			}
 
 			if (!m_TweenDesc.cur.iFix) // 픽스가 아닐때만 프레임 갱신 (픽스라면 현재 프레임은 마지막 프레임으로 고정)
@@ -266,13 +262,9 @@ HRESULT CModel::LateTick(_float fTimeDelta)
 		{
 			m_TweenDesc.cur = m_TweenDesc.next;
 			m_TweenDesc.ClearNextAnim();
-			pCurAnim->Set_PlayTime(pNextAnim->Get_PlayTime());
-			pNextAnim->Clear_PlayTime();
 		}
 		else
 		{
-			pCurAnim->Add_PlayTime(fTimeDelta);
-
 			m_TweenDesc.next.fFrameAcc += fTimeDelta;
 
 			const _float fTimePerFrame = 1 / (pNextAnim->Get_TickPerSecond() * pNextAnim->Get_AnimationSpeed());
@@ -617,21 +609,6 @@ const _float CModel::Get_Progress()
 	std::clamp(fProgress, 0.f, 1.f);
 	
 	return fProgress;
-}
-
-const _float CModel::Get_Duration()
-{
-	CAnimation* pAnim = Get_CurrAnimation();
-
-	if (nullptr != pAnim)
-		return pAnim->Get_Duration();
-
-	return 0.f;
-}
-
-const _float CModel::Get_PlayTime()
-{
-	return m_Animations[m_TweenDesc.cur.iAnimIndex]->Get_PlayTime();
 }
 
 HRESULT CModel::Swap_Animation(_uint iSrcIndex, _uint iDestIndex)

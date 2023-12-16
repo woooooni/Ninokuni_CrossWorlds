@@ -52,8 +52,6 @@ public:
 	_uint Get_CurrAnimationIndex() { return m_TweenDesc.cur.iAnimIndex; } /* 현재 애니메이션의 인덱스 리턴*/
 	const _uint& Get_CurrAnimationFrame() const { return m_TweenDesc.cur.iCurFrame; } /* 현재 애니메이션의 프레임 리턴 */
 	const _float Get_Progress();  /* 현재 애니메이션의 진행률(0~1) 리턴*/
-	const _float Get_Duration(); /* (미완성 아직 사용 X) 현재 애니메이션 전체 재생 시간 */
-	const _float Get_PlayTime(); /* (미완성 아직 사용 X) 현재 애니메이션 현재 재생 시간 */
 	const TweenDesc& Get_TweenDesc() const { return m_TweenDesc; } /* 현재, 다음 애니메이션 정보 구조체 리턴 */
 	class CAnimation* Get_CurrAnimation() { return m_Animations[m_TweenDesc.cur.iAnimIndex]; } /* 현재 애니메이션 객체 리턴 */
 	vector<class CAnimation*>& Get_Animations() { return m_Animations; } /* 전체 애니메이션 컨테이너 리턴*/

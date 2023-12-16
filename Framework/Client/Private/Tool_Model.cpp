@@ -54,8 +54,7 @@ void CTool_Model::Tick(_float fTimeDelta)
 	ImGuiWindowFlags WindowFlags = 0;
 	if (TRUE)
 	{
-		WindowFlags |= ImGuiWindowFlags_NoResize;
-		WindowFlags |= ImGuiWindowFlags_NoMove;
+		WindowFlags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 	}
 
 	ImGui::Begin("Model_Tool", NULL, WindowFlags);
@@ -381,6 +380,7 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 				if (ImGui::IsItemHovered())
 				{
 					ImGui::BeginTooltip();
+					ImGui::Text(u8"테스트 용 : ../Bin/Export/AnimModel/Character/TempSwordMan/");
 					ImGui::Text(u8"Fbx 파일의 경우 : ../Bin/Resources/AnimModel/Boss/Stellia/");
 					ImGui::Text(u8"Binary 파일의 경우 : ../Bin/Export/AnimModel/Boss/Stellia/");
 					ImGui::EndTooltip();
@@ -394,6 +394,7 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 				if (ImGui::IsItemHovered())
 				{
 					ImGui::BeginTooltip();
+					ImGui::Text(u8"테스트 용 : TempSwordMan");
 					ImGui::Text(u8"Fbx 파일의 경우 : Stellia.fbx");
 					ImGui::Text(u8"Binary 파일의 경우 : Stellia");
 					ImGui::EndTooltip();
@@ -619,7 +620,7 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 		IMGUI_NEW_LINE;
 		ImGui::Separator();
 		ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"삭제, 정렬, 순서 변경, 이름 변경은 다시 익스포트 해야 반영됩니다. ");
-		ImGui::Text("Edit 1");
+		ImGui::Text("Prop 1");
 		{
 			/* Swap */
 			{
@@ -665,7 +666,7 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 			IMGUI_SAME_LINE;
 
 			/* Sort */
-			if (ImGui::Button("Sort"))
+			if (ImGui::Button("Sort By Name"))
 			{
 				vector<class CAnimation*>& Animations = pModelCom->Get_Animations();
 				sort(Animations.begin(), Animations.end(), [&](CAnimation* pSrcAnimation, CAnimation* pDestAnimation) {
@@ -689,7 +690,7 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 		}
 
 		ImGui::Separator();
-		ImGui::Text("Edit 2");
+		ImGui::Text("Prop 2");
 
 		/* Play and Stop Btn*/
 		_bool bStop = (m_pDummy->Get_ModelCom()->Is_Stop() || m_pDummy->Get_ModelCom()->Is_Fix()) ? TRUE : FALSE;
@@ -720,13 +721,15 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 		if (nullptr != pCurrAnimation)
 		{
 			_float fProgress = m_pDummy->Get_ModelCom()->Get_Progress();
-			if (ImGui::SliderFloat("##Animation_Progress", &fProgress, 0.f, 1.f))
+			ImGui::PushItemWidth(250.f);
+			if (ImGui::SliderFloat("##Animation_Progress", &fProgress, 0.f, 1.f, "%.3f (progress)"))
 			{
 				pModelCom->Set_Stop_Animation(true);
 				m_pDummy->Get_ModelCom()->Set_KeyFrame_By_Progress(fProgress);
 			}
+			ImGui::PopItemWidth();
 			IMGUI_SAME_LINE;
-			ImGui::Text("Progress");
+			ImGui::Text("Frmae : (%02d/%d)", m_pDummy->Get_ModelCom()->Get_CurrAnimationFrame(), pCurrAnimation->Get_MaxFrameCount() - 1);
 		}
 
 		/* Set Speed */
@@ -744,7 +747,7 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 
 		IMGUI_SAME_LINE;
 
-		/* CurLoop Btn */
+		/* Cur Loop Btn */
 		{
 			_bool bLoop = pCurrAnimation->Is_Loop();
 			if (ImGui::Checkbox("Cur Anim Loop  ", &bLoop))
@@ -770,7 +773,27 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 		}		
 	
 		IMGUI_NEW_LINE;
-	
+		ImGui::Separator();
+		ImGui::Text("Speed by Keyframe (SBK)");
+
+		/* Custom Speed */
+
+		if (ImGui::Button("Add Desc"))
+		{
+
+		}
+
+		IMGUI_SAME_LINE;
+
+		if (ImGui::Button("Del Desc"))
+		{
+
+		}
+
+
+
+
+		IMGUI_NEW_LINE;
 	}
 }
 
