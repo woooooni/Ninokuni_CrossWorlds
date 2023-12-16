@@ -17,8 +17,10 @@ CParticle::CParticle(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const
 
 CParticle::CParticle(const CParticle& rhs)
 	: CGameObject(rhs)
-	, m_tParticleDesc(rhs.m_tParticleDesc)
 	, m_isCloned(true)
+	, m_tParticleDesc(rhs.m_tParticleDesc)
+	, m_ViewMatrix(rhs.m_ViewMatrix)
+	, m_ProjMatrix(rhs.m_ProjMatrix)
 {
 }
 
@@ -35,8 +37,27 @@ void CParticle::Set_ParticleDesc(const PARTICLE_DESC& tDesc)
 		m_pVIBufferCom->Restart_ParticleBufferDesc();
 }
 
+void CParticle::Set_Position_Perspective(_float3 fPosition)
+{
+	m_tParticleDesc.eParticleType = TYPE_PERSPECTIVE;
+
+	if(m_pTransformCom != nullptr)
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(fPosition.x, fPosition.y, fPosition.z, 1.f));
+}
+
+void CParticle::Set_Position_Orthographic(_float2 fPosition)
+{
+	m_tParticleDesc.eParticleType = TYPE_ORTHOGRAPHIC;
+
+	if (m_pTransformCom != nullptr)
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(fPosition.x - g_iWinSizeX * 0.5f, -fPosition.y + g_iWinSizeY * 0.5f, 0.f, 1.f));
+}
+
 HRESULT CParticle::Initialize_Prototype(const PARTICLE_DESC* pParticleDesc, const wstring& strParticleFilePath)
 {
+	XMStoreFloat4x4(&m_ViewMatrix, XMMatrixIdentity());
+	XMStoreFloat4x4(&m_ProjMatrix, XMMatrixOrthographicLH(g_iWinSizeX, g_iWinSizeY, 0.f, 1.f));
+
 	if(pParticleDesc != nullptr)
 		m_tParticleDesc = *pParticleDesc;
 	else
@@ -55,16 +76,20 @@ HRESULT CParticle::Initialize(void* pArg)
 
 void CParticle::Tick(_float fTimeDelta)
 {
-	if(m_pVIBufferCom->Get_Finished())
-		Set_Dead(true);
-	else
+	//if(m_pVIBufferCom->Get_Finished())
+	//	Set_Dead(true);
+	//else
 		m_pVIBufferCom->Tick(fTimeDelta);
 }
 
 void CParticle::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_EFFECT, this);
+
+	if(m_tParticleDesc.eParticleType == TYPE_PERSPECTIVE)
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_EFFECT, this);
+	else if(m_tParticleDesc.eParticleType == TYPE_ORTHOGRAPHIC)
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UIEFFECT, this);
 }
 
 HRESULT CParticle::Render()
@@ -82,10 +107,21 @@ HRESULT CParticle::Bind_ShaderResource()
 {
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
-		return E_FAIL;
+
+	if (m_tParticleDesc.eParticleType == TYPE_PERSPECTIVE)
+	{
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+			return E_FAIL;
+	}
+	else if (m_tParticleDesc.eParticleType == TYPE_ORTHOGRAPHIC)
+	{
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
+			return E_FAIL;
+	}
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
 		return E_FAIL;
@@ -170,7 +206,7 @@ void CParticle::Load_ParticleData(const wstring& strFileName)
 
 	// 색상
 	File->Read<_bool>(m_tParticleDesc.bColorRandom);
-	File->Read<_float4>(m_tParticleDesc.vColor);
+	File->Read<_float4>(m_tParticleDesc.vColorS);
 
 	// 텍스처
 	File->Read<_bool>(m_tParticleDesc.bAnimation);
@@ -200,12 +236,14 @@ void* CParticle::Get_ParticleBufferInfo()
 
 	tBufferInfo.pParticleLoop = &m_tParticleDesc.bParticleLoop;
 
-	tBufferInfo.pRange        = &m_tParticleDesc.fRange;
+	tBufferInfo.pRange         = &m_tParticleDesc.fRange;
 
 	tBufferInfo.pScaleSameRate = &m_tParticleDesc.bScaleSameRate;
 	tBufferInfo.pScaleStart    = &m_tParticleDesc.fScaleStart;
 
-	tBufferInfo.pScaleChange       = &m_tParticleDesc.bScaleChange;
+	tBufferInfo.pScaleChange           = &m_tParticleDesc.bScaleChange;
+	tBufferInfo.pScaleChangeStartDelay = &m_tParticleDesc.fScaleChangeStartDelay;
+
 	tBufferInfo.pScaleChangeRandom = &m_tParticleDesc.bScaleChangeRandom;
 	tBufferInfo.pScaleChangeTime   = &m_tParticleDesc.fScaleChangeTime;
 
@@ -223,7 +261,9 @@ void* CParticle::Get_ParticleBufferInfo()
 	tBufferInfo.pVelocityMinStart = &m_tParticleDesc.vVelocityMinStart;
 	tBufferInfo.pVelocityMaxStart = &m_tParticleDesc.vVelocityMaxStart;
 
-	tBufferInfo.pVelocityChange       = &m_tParticleDesc.bVelocityChange;
+	tBufferInfo.pVelocityChange           = &m_tParticleDesc.bVelocityChange;
+	tBufferInfo.pVelocityChangeStartDelay = &m_tParticleDesc.fVelocityChangeStartDelay;
+
 	tBufferInfo.pVelocityChangeRandom = &m_tParticleDesc.bVelocityChangeRandom;
 	tBufferInfo.pVelocityChangeTime   = &m_tParticleDesc.fVelocityChangeTime;
 
@@ -242,7 +282,10 @@ void* CParticle::Get_ParticleBufferInfo()
 	tBufferInfo.pAxis        = &m_tParticleDesc.vAxis;
 	tBufferInfo.pRandomAngle = &m_tParticleDesc.bRandomAngle;
 	tBufferInfo.pAngle       = &m_tParticleDesc.fAngle;
-	tBufferInfo.pRotationChange       = &m_tParticleDesc.bRotationChange;
+
+	tBufferInfo.pRotationChange           = &m_tParticleDesc.bRotationChange;
+	tBufferInfo.pRotationChangeStartDelay = &m_tParticleDesc.fRotationChangeStartDelay;
+
 	tBufferInfo.pRotationChangeRandom = &m_tParticleDesc.bRotationChangeRandom;
 	tBufferInfo.pRotationChangeTime   = &m_tParticleDesc.fRotationChangeTime;
 	tBufferInfo.pRotationAdd   = &m_tParticleDesc.bRotationAdd;
@@ -263,8 +306,19 @@ void* CParticle::Get_ParticleBufferInfo()
 	tBufferInfo.pAnimationLoop  = &m_tParticleDesc.bAnimationLoop;
 	tBufferInfo.pAnimationSpeed = &m_tParticleDesc.fAnimationSpeed;
 
-	tBufferInfo.pRandomColor  = &m_tParticleDesc.bColorRandom;
-	tBufferInfo.pColor        = &m_tParticleDesc.vColor;
+
+	tBufferInfo.pFadeCreate = &m_tParticleDesc.bFadeCreate;
+	tBufferInfo.pFadeDelete = &m_tParticleDesc.bFadeDelete;
+
+	tBufferInfo.pFadeChange           = &m_tParticleDesc.bFadeChange;
+	tBufferInfo.pFadeChangeStartDelay = &m_tParticleDesc.fFadeChangeStartDelay;
+	tBufferInfo.pFadeIn     = &m_tParticleDesc.bFadeIn;
+	tBufferInfo.pStartAlpha = &m_tParticleDesc.fStartAlpha;
+	tBufferInfo.pFadeSpeed  = &m_tParticleDesc.fFadeSpeed;
+
+
+	tBufferInfo.pColorRandom = &m_tParticleDesc.bColorRandom;
+	tBufferInfo.pColor        = &m_tParticleDesc.vColorS;
 
 	return &tBufferInfo;
 }

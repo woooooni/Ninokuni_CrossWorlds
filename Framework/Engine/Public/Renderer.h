@@ -27,7 +27,7 @@ public:
 	} EFFECT_INSTANCE_DESC;
 
 public:
-	enum RENDERGROUP { RENDER_PRIORITY, RENDER_SHADOW, RENDER_NONLIGHT, RENDER_LIGHT, RENDER_NONBLEND, RENDER_ALPHABLEND, RENDER_EFFECT, RENDER_UI, RENDER_END };
+	enum RENDERGROUP { RENDER_PRIORITY, RENDER_SHADOW, RENDER_NONLIGHT, RENDER_LIGHT, RENDER_NONBLEND, RENDER_ALPHABLEND, RENDER_EFFECT, RENDER_UI, RENDER_UIEFFECT, RENDER_CURSOR, RENDER_END };
 	enum INSTANCING_SHADER_TYPE { ANIM_MODEL, MODEL, RECT, EFFECT_TEXTURE, EFFECT_MODEL, TYPE_END };
 	
 public:
@@ -96,17 +96,17 @@ public:
 
 private:
 	HRESULT Render_Priority();
+
 	HRESULT Render_Shadow();
 	HRESULT Render_NonLight();
+
 	HRESULT Render_NonAlphaBlend();
 	HRESULT Render_Lights();
+
 	HRESULT Render_Deferred();
 
 	HRESULT Render_AlphaBlend();
 	HRESULT Render_Effect();
-	
-	
-	
 	
 	/////////////////////// Blur
 	//HRESULT Render_Blur(const wstring& strStartTargetTag, const wstring& strFinalMrtTag, _bool bClear);
@@ -120,8 +120,12 @@ private:
 	// HRESULT Render_Bloom();
 	/////////////////////
 
-	HRESULT Render_Final();
 	HRESULT Render_UI();
+	HRESULT Render_EffectUI();
+
+	HRESULT Render_Cursor();
+
+	HRESULT Render_Final();
 	HRESULT Render_Text();
 
 #ifdef _DEBUG

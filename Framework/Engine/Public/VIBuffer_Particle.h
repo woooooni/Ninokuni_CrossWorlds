@@ -19,7 +19,9 @@ public:
 		_bool*   pScaleSameRate = nullptr;
 		_float2* pScaleStart    = nullptr;
 
-		_bool* pScaleChange       = nullptr;
+		_bool* pScaleChange             = nullptr;
+		_float2* pScaleChangeStartDelay = nullptr;
+
 		_bool* pScaleChangeRandom = nullptr;
 		_float2* pScaleChangeTime = nullptr;
 
@@ -38,7 +40,9 @@ public:
 		_float3* pVelocityMinStart = nullptr;
 		_float3* pVelocityMaxStart = nullptr;
 
-		_bool* pVelocityChange = nullptr;
+		_bool* pVelocityChange             = nullptr;
+		_float2* pVelocityChangeStartDelay = nullptr;
+
 		_bool* pVelocityChangeRandom = nullptr;
 		_float2* pVelocityChangeTime = nullptr;
 
@@ -62,6 +66,7 @@ public:
 		_float* pAngle = nullptr;
 
 		_bool* pRotationChange = nullptr;
+		_float2* pRotationChangeStartDelay = nullptr;
 
 		_bool* pRotationChangeRandom = nullptr;
 		_float2* pRotationChangeTime = nullptr;
@@ -69,6 +74,16 @@ public:
 		_bool* pRotationAdd = nullptr;
 
 		_float2* pRotationSpeed = nullptr;
+#pragma endregion
+
+#pragma region 중력
+		_bool* pRigidbodyUse = nullptr;
+		_bool* pGravityUse   = nullptr;
+		_float*   pMass        = nullptr;
+		_float*   pFricCoeff   = nullptr;
+		_vector*  pMaxVelocity = nullptr;
+
+
 #pragma endregion
 
 		// 지속 시간
@@ -89,9 +104,30 @@ public:
 		_bool* pAnimationLoop    = nullptr;
 		_float2* pAnimationSpeed = nullptr;
 
+#pragma region 알파
+		_float2* pStartAlpha = nullptr;
+
+		_bool* pFadeCreate  = nullptr;
+		_bool* pFadeDelete  = nullptr;
+		_float2* pFadeSpeed = nullptr;
+
+		_bool* pFadeChange = nullptr;
+		_bool* pFadeIn     = nullptr;
+		_float2* pFadeChangeStartDelay = nullptr;
+#pragma endregion
+
 #pragma region 색상
-		_bool*   pRandomColor = nullptr;
-		_float4* pColor       = nullptr;
+		_float4* pColor = nullptr;
+
+		_float4* vColorS = nullptr;
+		_float4* pColorM = nullptr;
+		_float4* pColorF = nullptr;
+
+		_float2* fColorChangeStartDelay = nullptr;
+		_bool* bColorChange = nullptr;
+		_float2* folorChangeTime = nullptr;
+		_bool* pColorRandom = nullptr;
+		_bool* bColorLoop = nullptr;
 #pragma endregion
 
 	} PARTICLE_BUFFER_DESC;
@@ -99,34 +135,59 @@ public:
 public:
 	typedef struct tagParticleDesc
 	{
+		_bool bIsDie = false;
+
 		// 크기
+		_float fScaleChangeStartTime;
+		_float fScaleChangeStartDelay;
 		_float fScaleTimeAccs;
 		_float fScaleChange;
 		_bool  bScaleAdd;
 		_float fScaleSpeed;
 
 		// 위치
-		_float fVelocityRanTimeAccs;
-		_float fVelocityRanChange;
-		_float fVelocitySpeeds;
+		_float  fVelocityChangeStartTime;
+		_float  fVelocityChangeStartDelay;
+		_float  fVelocityRanTimeAccs;
+		_float  fVelocityRanChange;
+		_float  fVelocitySpeeds;
 		_float4 vVelocity;
-		_uint  iVelocityCountCur;
-		_float fVeloityTimeAccs;
+		_uint   iVelocityCountCur;
+		_float  fVeloityTimeAccs;
 		_float3* pVelocity       = nullptr;
 		_float*  pVelocityChange = nullptr;
 
 		// 회전
-		_float fRotationChangeTime;
-		_float fRotationSpeed;
+		_float  fRotationChangeStartTime;
+		_float  fRotationChangeStartDelay;
+		_float  fRotationTime;
+		_float  fRotationChangeTime;
+		_float  fRotationSpeed;
+
+		// 중력
+		_float  fGravityChangeStartTime;
+		_float  fGravityChangeStartDelay;
+
 
 		// 지속 시간
 		_float fTimeAccs;       
 		_float fLifeTimes;      
 
 		// 애니메이션
-		_bool bAmimationFinish = false;
+		_bool  bAmimationFinish = false;
 		_float fAccIndex;
 		_float fAnimationSpeed; 
+
+		// 알파
+		_bool bFadeCreateSucc;
+		_float  fAlphaChangeStartTime;
+		_float  fAlphaChangeStartDelay;
+		_float  fAlphaSpeed;
+
+		// 색상
+		LERP_FLOAT_DESC LerpInfo;
+		_float  fColorChangeStartTime;
+		_float  fColorChangeStartDelay;
 
 	} PARTICLE_INFO_DESC;
 
@@ -139,10 +200,10 @@ public:
 
 		_vector vAxis;  //16
 
-		_bool   bBillboard; //4
-		_float  fAngle; //4
-		_float  fTemp0; //4
-		_float  fTemp1; //4
+		_bool   bBillboard;  //4
+		_float  fAngle;      //4
+		_float  fAlpha;      //4
+		_float  fTemp0;      //4		
 
 	} PARTICLE_SHADER_DESC;
 
