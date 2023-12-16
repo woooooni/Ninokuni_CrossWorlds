@@ -6,7 +6,7 @@
 
 BEGIN(Engine)
 
-class ENGINE_DLL CPhysX_Manager final : public CBase, public PxSimulationEventCallback
+class CPhysX_Manager final : public CBase, public PxSimulationEventCallback
 {
 
 	DECLARE_SINGLETON(CPhysX_Manager)
@@ -58,8 +58,10 @@ public:
 
 
 public:
+	PxParticleSystem* Get_ParticleSystem() { return m_pParticleSystem; }
 	PxParticleClothBuffer* Get_ClothBuffer() { return m_pClothBuffer; }
 	PxCudaContext* Get_CudaContext() { return m_pCudaContextManager->getCudaContext(); }
+	PxCudaContextManager* Get_CudaContext_Manager() { return m_pCudaContextManager; }
 
 
 private:
@@ -78,7 +80,7 @@ private:
 	HRESULT Create_Cloth(class CMesh* pMesh);
 
 private:
-	HRESULT Init_Cloth();
+	HRESULT Init_Cloth(const PxU32 numX, const PxU32 numZ, const PxVec3& position = PxVec3(0, 0, 0), const PxReal particleSpacing = 0.2f, const PxReal totalClothMass = 10.f);
 	
 
 

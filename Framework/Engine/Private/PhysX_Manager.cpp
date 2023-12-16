@@ -48,7 +48,7 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 	transport->release();
 
 	PxSceneDesc SceneDesc(m_Physics->getTolerancesScale());
-	SceneDesc.gravity = PxVec3(0.0f, 0.0f, 0.0f);
+	SceneDesc.gravity = PxVec3(0.0f, -9.8f, 0.0f);
 
 	m_Dispatcher = PxDefaultCpuDispatcherCreate(4);
 	if (!m_Dispatcher)
@@ -61,6 +61,11 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 	SceneDesc.solverType = PxSolverType::eTGS;
 	SceneDesc.filterShader = FilterShader;
 	SceneDesc.simulationEventCallback = this;
+	
+
+	PxCudaContextManagerDesc cuadContextManagerDesc;
+	m_pCudaContextManager = PxCreateCudaContextManager(*m_Foundation, cuadContextManagerDesc, PxGetProfilerCallback());
+
 	SceneDesc.cudaContextManager = m_pCudaContextManager;
 	SceneDesc.flags |= PxSceneFlag::eENABLE_GPU_DYNAMICS;
 
@@ -92,6 +97,7 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 		return E_FAIL;*/
 
 
+
 #ifdef _DEBUG
 
 	m_pBatch = new PrimitiveBatch<VertexPositionColor>(pContext);
@@ -108,8 +114,12 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 		return E_FAIL;
 #endif
 
-	/*if (FAILED(Init_Cloth()))
-		return E_FAIL;*/
+	if (FAILED(Init_Cloth(100, 100, PxVec3(-0.5f * 100 * 0.05f, 8.f, -0.5f * 100 * 0.05f), 0.05f, 10.f)))
+		return E_FAIL;
+
+
+	/*PxRigidStatic* groundPlane = PxCreatePlane(*m_Physics, PxPlane(0, 1, 0, 0), *m_WorldMaterial);
+	m_pScene->addActor(*groundPlane);*/
 
 	return S_OK;
 }
@@ -826,18 +836,14 @@ static PX_FORCE_INLINE PxU32 id(PxU32 x, PxU32 y, PxU32 numY)
 	return x * numY + y;
 }
 
-HRESULT CPhysX_Manager::Init_Cloth()
+HRESULT CPhysX_Manager::Init_Cloth(const PxU32 numX, const PxU32 numZ, const PxVec3& position, const PxReal particleSpacing, const PxReal totalClothMass)
 {
-	if (m_pCudaContextManager == NULL)
+	if (nullptr == m_pCudaContextManager)
 		return E_FAIL;
 
-	const PxVec3& position = PxVec3(0, 0, 0); 
-	const PxReal particleSpacing = 0.2f; 
-	const PxReal totalClothMass = 10.f;
-
-	const PxU32 numParticles = 100 * 100;
-	const PxU32 numSprings = (100 - 1) * (100 - 1) * 4 + (100 - 1) + (100 - 1);
-	const PxU32 numTriangles = (100 - 1) * (100 - 1) * 2;
+	const PxU32 numParticles = numX * numZ;
+	const PxU32 numSprings = (numX - 1) * (numZ - 1) * 4 + (numX - 1) + (numZ - 1);
+	const PxU32 numTriangles = (numX - 1) * (numZ - 1) * 2;
 
 	const PxReal restOffset = particleSpacing;
 
@@ -859,6 +865,7 @@ HRESULT CPhysX_Manager::Init_Cloth()
 	particleSystem->setParticleContactOffset(restOffset + 0.02f);
 	particleSystem->setSolidRestOffset(restOffset);
 	particleSystem->setFluidRestOffset(0.0f);
+	particleSystem->setWind(PxVec3(0.f, 10000.f, 0.f));
 
 	m_pScene->addActor(*particleSystem);
 
@@ -881,11 +888,11 @@ HRESULT CPhysX_Manager::Init_Cloth()
 	PxArray<PxU32> triangles;
 	triangles.reserve(numTriangles * 3);
 
-	for (PxU32 i = 0; i < 100; ++i)
+	for (PxU32 i = 0; i < numX; ++i)
 	{
-		for (PxU32 j = 0; j < 100; ++j)
+		for (PxU32 j = 0; j < numZ; ++j)
 		{
-			const PxU32 index = i * 100 + j;
+			const PxU32 index = i * numZ + j;
 
 			PxVec4 pos(x, y, z, 1.0f / particleMass);
 			phase[index] = particlePhase;
@@ -894,30 +901,30 @@ HRESULT CPhysX_Manager::Init_Cloth()
 
 			if (i > 0)
 			{
-				PxParticleSpring spring = { id(i - 1, j, 100), id(i, j, 100), particleSpacing, stretchStiffness, springDamping, 0 };
+				PxParticleSpring spring = { id(i - 1, j, numZ), id(i, j, numZ), particleSpacing, stretchStiffness, springDamping, 0 };
 				springs.pushBack(spring);
 			}
 			if (j > 0)
 			{
-				PxParticleSpring spring = { id(i, j - 1, 100), id(i, j, 100), particleSpacing, stretchStiffness, springDamping, 0 };
+				PxParticleSpring spring = { id(i, j - 1, numZ), id(i, j, numZ), particleSpacing, stretchStiffness, springDamping, 0 };
 				springs.pushBack(spring);
 			}
 
 			if (i > 0 && j > 0)
 			{
-				PxParticleSpring spring0 = { id(i - 1, j - 1, 100), id(i, j, 100), PxSqrt(2.0f) * particleSpacing, shearStiffness, springDamping, 0 };
+				PxParticleSpring spring0 = { id(i - 1, j - 1, numZ), id(i, j, numZ), PxSqrt(2.0f) * particleSpacing, shearStiffness, springDamping, 0 };
 				springs.pushBack(spring0);
-				PxParticleSpring spring1 = { id(i - 1, j, 100), id(i, j - 1, 100), PxSqrt(2.0f) * particleSpacing, shearStiffness, springDamping, 0 };
+				PxParticleSpring spring1 = { id(i - 1, j, numZ), id(i, j - 1, numZ), PxSqrt(2.0f) * particleSpacing, shearStiffness, springDamping, 0 };
 				springs.pushBack(spring1);
 
 				//Triangles are used to compute approximated aerodynamic forces for cloth falling down
-				triangles.pushBack(id(i - 1, j - 1, 100));
-				triangles.pushBack(id(i - 1, j, 100));
-				triangles.pushBack(id(i, j - 1, 100));
+				triangles.pushBack(id(i - 1, j - 1, numZ));
+				triangles.pushBack(id(i - 1, j, numZ));
+				triangles.pushBack(id(i, j - 1, numZ));
 
-				triangles.pushBack(id(i - 1, j, 100));
-				triangles.pushBack(id(i, j - 1, 100));
-				triangles.pushBack(id(i, j, 100));
+				triangles.pushBack(id(i - 1, j, numZ));
+				triangles.pushBack(id(i, j - 1, numZ));
+				triangles.pushBack(id(i, j, numZ));
 			}
 
 			z += particleSpacing;
@@ -1142,6 +1149,7 @@ void CPhysX_Manager::onAdvance(const PxRigidBody* const* bodyBuffer, const PxTra
 {
 	int i = 0;
 }
+
 
 HRESULT CPhysX_Manager::Ready_ParticleSystem()
 {

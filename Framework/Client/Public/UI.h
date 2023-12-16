@@ -14,7 +14,7 @@ END
 class CUI abstract : public CGameObject
 {
 public:
-	enum UI_MOUSESTATE { MOUSE_ENTER, MOUSE_ON, MOUSE_EXIT, MOUSE_END };
+	enum UI_MOUSESTATE { MOUSE_ENTER, MOUSE_ON, MOUSE_EXIT, MOUSE_DRAG_START, MOUSE_DRAG, MOUSE_DRAG_END, MOUSE_END };
 
 public:
 	typedef struct tagUI_Info
@@ -52,8 +52,11 @@ public:
 
 protected:
 	virtual void On_MouseEnter(_float fTimeDelta) {}
-	virtual void On_Mouse(_float fTimeDelta) {}
+	virtual void On_Mouse(_float fTimeDelta);
 	virtual void On_MouseExit(_float fTimeDelta) {}
+	virtual void On_MouseDragEnter(_float fTimeDelta) {}
+	virtual void On_MouseDrag(_float fTimeDelta) {}
+	virtual void On_MouseDragExit(_float fTimeDelta) {}
 
 	virtual void Debug_Input(_float fTimeDelta);
 
