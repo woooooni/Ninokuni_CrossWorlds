@@ -125,6 +125,7 @@ void CBaobam_WaterBT::Tick(const _float& fTimeDelta)
 
 void CBaobam_WaterBT::LateTick(const _float& fTimeDelta)
 {
+	int i = 0;
 }
 
 void CBaobam_WaterBT::Init_NodeStart()
