@@ -3,20 +3,19 @@
 #include "UI.h"
 
 BEGIN(Client)
-class CUI_SubMenu_Character final : public CUI
+class CUI_SubMenu_Equipment final : public CUI
 {
 public:
-	enum UI_SUBCHARACTER_TYPE
-	{ CHARBTN_RANK, CHARBTN_SKILL, CHARBTN_VEHICLE, CHARBTN_COSTUME, CHARBTN_DECK, CHARBTN_TITLE,
-		CHARBTN_STYLE, CHARBTN_BATTLE, CHARACTERMENU_END };
-	// 클래스 랭크, 스킬, 탈 것, 코스튬, 덱, 칭호
-	// 배틀 스타일, 배틀 랭크
+	enum UI_SUBEQUIP_TYPE
+	{ EQUIPBTN_INVENTORY, EQUIPBTN_FORGE, EQUIPBTN_GEM,
+		EQUIPBTN_TINYGENIE, EQUIPBTN_TRANSCEND, EQUIPBTN_FISHINGROD, EQUIPMENU_END };
+	// 장착, 연마, 보석, 소마인, 고대석 각인, 낚시 장비
 
 protected:
-	CUI_SubMenu_Character(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
-		const wstring& strObjectTag, UI_SUBCHARACTER_TYPE eUIType);
-	CUI_SubMenu_Character(const CUI_SubMenu_Character& rhs);
-	virtual ~CUI_SubMenu_Character() = default;
+	CUI_SubMenu_Equipment(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
+		const wstring& strObjectTag, UI_SUBEQUIP_TYPE eUIType);
+	CUI_SubMenu_Equipment(const CUI_SubMenu_Equipment& rhs);
+	virtual ~CUI_SubMenu_Equipment() = default;
 
 public: // Get/Set 함수
 	virtual void Set_Active(_bool bActive) override;
@@ -38,7 +37,7 @@ public:
 	void Reset_InitializeInfo();
 
 private: 
-	UI_SUBCHARACTER_TYPE m_eUIType = { UI_SUBCHARACTER_TYPE::CHARACTERMENU_END };
+	UI_SUBEQUIP_TYPE m_eUIType = { UI_SUBEQUIP_TYPE::EQUIPMENU_END };
 
 	_bool m_bActive = { false }; // 활성화되었다
 	_bool m_bClicked = { false }; // 선택되었다
@@ -63,8 +62,8 @@ private:
 	HRESULT	Bind_ShaderResources();
 
 public:
-	static CUI_SubMenu_Character* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext,
-		const wstring& strObjectTag, UI_SUBCHARACTER_TYPE eUIType);
+	static CUI_SubMenu_Equipment* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext,
+		const wstring& strObjectTag, UI_SUBEQUIP_TYPE eUIType);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

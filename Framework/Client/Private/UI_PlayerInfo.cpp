@@ -12,6 +12,28 @@ CUI_PlayerInfo::CUI_PlayerInfo(const CUI_PlayerInfo& rhs)
 {
 }
 
+void CUI_PlayerInfo::Set_Active(_bool bActive)
+{
+	if (bActive)
+	{
+		for (auto& pChildUI : m_pChild)
+		{
+			if (nullptr != pChildUI)
+				pChildUI->Set_Active(true);
+		}
+	}
+	else
+	{
+		for (auto& pChildUI : m_pChild)
+		{
+			if (nullptr != pChildUI)
+				pChildUI->Set_Active(false);
+		}
+	}
+
+	m_bActive = bActive;
+}
+
 HRESULT CUI_PlayerInfo::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
@@ -31,6 +53,8 @@ HRESULT CUI_PlayerInfo::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
+	Make_Child(64.f, -13.f, 160.f, 20.f, TEXT("Prototype_GameObject_UI_Player_HPBar"));
+
 	return S_OK;
 }
 
@@ -46,18 +70,80 @@ void CUI_PlayerInfo::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		// Todo : Player구조가 정리되면 Set_Level로 빼서 UIManager로 연동하자.
+
+		CRenderer::TEXT_DESC LevelDesc;
+		LevelDesc.strText = L"5"; // Temp
+		LevelDesc.strFontTag = L"Default_Bold";
+		LevelDesc.vPosition = m_vDefaultPosition; // 자릿수가 달라지면 Position.x를 조정한다.
+		LevelDesc.vColor = m_vShadowColor;
+		LevelDesc.vScale = { 1.f, 1.f };
+		m_pRendererCom->Add_Text(LevelDesc); // 그림자
+
+		LevelDesc.vPosition = _float2(m_vDefaultPosition.x - 3.f, m_vDefaultPosition.y - 3.f);
+		LevelDesc.vColor = m_vLevelColor;
+		m_pRendererCom->Add_Text(LevelDesc); // Real Text
+
+		// 전투력 외곽선
+		CRenderer::TEXT_DESC  TextDesc;
+		TextDesc.strText = L"전투력"; // Temp
+		TextDesc.strFontTag = L"Default_Medium";
+		TextDesc.vPosition = _float2(m_vTextPosition.x - 1.f, m_vTextPosition.y);
+		TextDesc.vColor = _float4(0.f, 0.f, 0.f, 1.f);
+		TextDesc.vScale = { 0.5f, 0.5f };
+		m_pRendererCom->Add_Text(TextDesc);
+		TextDesc.vPosition = _float2(m_vTextPosition.x + 1.f, m_vTextPosition.y);
+		m_pRendererCom->Add_Text(TextDesc);
+		TextDesc.vPosition = _float2(m_vTextPosition.x, m_vTextPosition.y - 1.f);
+		m_pRendererCom->Add_Text(TextDesc);
+		TextDesc.vPosition = _float2(m_vTextPosition.x, m_vTextPosition.y + 1.f);
+		m_pRendererCom->Add_Text(TextDesc);
+
+		// 전투력
+		TextDesc.vPosition = m_vTextPosition;
+		TextDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+		m_pRendererCom->Add_Text(TextDesc);
+
+		// Todo : 전투력을 받아오게끔 구조 변경 필요함.
+		// 전투력 숫자 외곽선
+		CRenderer::TEXT_DESC Power;
+		Power.strText = L"9876";
+		Power.strFontTag = L"Default_Medium";
+		Power.vPosition = _float2(m_vNumPosition.x - 2.f, m_vNumPosition.y);
+		Power.vColor = _float4(0.f, 0.f, 0.f, 1.f);
+		Power.vScale = { 0.5f, 0.5f };
+		m_pRendererCom->Add_Text(Power);
+		Power.vPosition = _float2(m_vNumPosition.x + 2.f, m_vNumPosition.y);
+		m_pRendererCom->Add_Text(Power);
+		Power.vPosition = _float2(m_vNumPosition.x, m_vNumPosition.y - 2.f);
+		m_pRendererCom->Add_Text(Power);
+		Power.vPosition = _float2(m_vNumPosition.x, m_vNumPosition.y + 2.f);
+		m_pRendererCom->Add_Text(Power);
+
+		//
+		Power.vPosition = m_vNumPosition;
+		Power.vColor = m_vPowerColor;
+		m_pRendererCom->Add_Text(Power);
+
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+
+		__super::LateTick(fTimeDelta);
 	}
 }
 
 HRESULT CUI_PlayerInfo::Render()
 {
-	if (FAILED(Bind_ShaderResources()))
-		return E_FAIL;
+	if (m_bActive)
+	{
+		if (FAILED(Bind_ShaderResources()))
+			return E_FAIL;
 
-	m_pShaderCom->Begin(1);
+		m_pShaderCom->Begin(1);
 
-	m_pVIBufferCom->Render();
+		m_pVIBufferCom->Render();
+
+		__super::Render();
+	}
 
 	return S_OK;
 }

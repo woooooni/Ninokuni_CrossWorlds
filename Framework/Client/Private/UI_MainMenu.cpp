@@ -185,6 +185,15 @@ void CUI_MainMenu::On_Mouse(_float fTimeDelta)
 			case MAINBTN_CHARACTER:
 				CUI_Manager::GetInstance()->OnOff_SubMenu(true, _uint(MAINBTN_CHARACTER));
 				break;
+			case MAINBTN_EQUIPMENT:
+				CUI_Manager::GetInstance()->OnOff_SubMenu(true, _uint(MAINBTN_EQUIPMENT));
+				break;
+			case MAINBTN_IMAJINN:
+				CUI_Manager::GetInstance()->OnOff_SubMenu(true, _uint(MAINBTN_IMAJINN));
+				break;
+			case MAINBTN_SHOP:
+				CUI_Manager::GetInstance()->OnOff_SubMenu(true, _uint(MAINBTN_SHOP));
+				break;
 			}
 		}
 	}

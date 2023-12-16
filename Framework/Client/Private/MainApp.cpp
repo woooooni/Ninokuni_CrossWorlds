@@ -47,7 +47,7 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 	/* 1-4. 게임내에서 사용할 레벨(씬)을 생성한다.   */
-	if (FAILED(Open_Level(LEVEL_TEST, L"Final_Boss")))
+	if (FAILED(Open_Level(LEVEL_LOGO, L"Final_Boss")))
 		return E_FAIL;
 
 	// UI Cursor
@@ -401,6 +401,58 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_SubMenu_Shop"),
 		CTexture::Create(m_pDevice, m_pContext,
 			TEXT("../Bin/Resources/UI/GamePlay/MainMenu/SubMenu/Right5/UI_SubMenu_Right5_%d.png"), 3))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Common_BackBtn"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Default/Common/UI_Btn_Back.png"))))) // 작업 전
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Common_CloseBtn_WithOutline"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Default/Common/UI_Btn_Close_03.png"))))) // 작업 전
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SubMenu_Separator"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/MainMenu/UI_MainMenu_Separator.png")))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_WorldMap_WorldMapBackground"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Map/WorldMap/WorldMapBase.png")))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_WorldMap_WorldMapIcon"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Map/WorldMap/UI_WorldMap_Icon_%d.png"), 3))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Common_PlayerHP_GaugeBar"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Default/Common/UI_BG_HPBar03.png")))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SkillSection_Background"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/UI_Skillsection_Bg.png")))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SkillSection_Btn_Jump"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/UI_Skillsection_Btn_Jump.png")))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SkillSection_Btn_Roll"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/UI_Skillsection_Btn_Roll.png")))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_ImajinnSection_Background"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/ImajinnSlot/UI_ImajinnSlot_BG.png")))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_ImajinnSection_Slot"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/ImajinnSlot/UI_Imajinn_Slot.png")))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_ImajinnSection_Emoticon"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/ImajinnSlot/Btn_BarterChat_Popup.png")))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_ImajinnSection_Vehicle"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/ImajinnSlot/Icon_Vehicle_Default_Ride_Re.png")))))
 		return E_FAIL;
 
 	if(FAILED(CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_STATIC)))

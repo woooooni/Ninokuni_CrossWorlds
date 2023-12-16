@@ -3,20 +3,20 @@
 #include "UI.h"
 
 BEGIN(Client)
-class CUI_SubMenu_Character final : public CUI
+class CUI_SubMenu_Imajinn final : public CUI
 {
 public:
-	enum UI_SUBCHARACTER_TYPE
-	{ CHARBTN_RANK, CHARBTN_SKILL, CHARBTN_VEHICLE, CHARBTN_COSTUME, CHARBTN_DECK, CHARBTN_TITLE,
-		CHARBTN_STYLE, CHARBTN_BATTLE, CHARACTERMENU_END };
-	// 클래스 랭크, 스킬, 탈 것, 코스튬, 덱, 칭호
-	// 배틀 스타일, 배틀 랭크
+	enum UI_SUBIMAJINN_TYPE
+	{ PETBTN_IMAJINN, PETBTN_TRAINING, PETBTN_TOY, PETBTN_CRADLE, PETBTN_RETURN, PETBTN_DUNGEON,
+	PETBTN_UNITETREE, PETBTN_ULTIMATE, PETMENU_END };
+	// 이마젠 동행, 훈련, 장난감, 부화하기, 놓아주기, 이마젠의 숲
+	// 결속의 나무, 궁극 성장
 
 protected:
-	CUI_SubMenu_Character(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
-		const wstring& strObjectTag, UI_SUBCHARACTER_TYPE eUIType);
-	CUI_SubMenu_Character(const CUI_SubMenu_Character& rhs);
-	virtual ~CUI_SubMenu_Character() = default;
+	CUI_SubMenu_Imajinn(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
+		const wstring& strObjectTag, UI_SUBIMAJINN_TYPE eUIType);
+	CUI_SubMenu_Imajinn(const CUI_SubMenu_Imajinn& rhs);
+	virtual ~CUI_SubMenu_Imajinn() = default;
 
 public: // Get/Set 함수
 	virtual void Set_Active(_bool bActive) override;
@@ -38,7 +38,7 @@ public:
 	void Reset_InitializeInfo();
 
 private: 
-	UI_SUBCHARACTER_TYPE m_eUIType = { UI_SUBCHARACTER_TYPE::CHARACTERMENU_END };
+	UI_SUBIMAJINN_TYPE m_eUIType = { UI_SUBIMAJINN_TYPE::PETMENU_END };
 
 	_bool m_bActive = { false }; // 활성화되었다
 	_bool m_bClicked = { false }; // 선택되었다
@@ -63,8 +63,8 @@ private:
 	HRESULT	Bind_ShaderResources();
 
 public:
-	static CUI_SubMenu_Character* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext,
-		const wstring& strObjectTag, UI_SUBCHARACTER_TYPE eUIType);
+	static CUI_SubMenu_Imajinn* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext,
+		const wstring& strObjectTag, UI_SUBIMAJINN_TYPE eUIType);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

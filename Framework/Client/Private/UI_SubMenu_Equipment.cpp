@@ -1,24 +1,24 @@
 #include "stdafx.h"
-#include "UI_SubMenu_Character.h"
+#include "UI_SubMenu_Equipment.h"
 #include "GameInstance.h"
 
-CUI_SubMenu_Character::CUI_SubMenu_Character(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
-	const wstring& strObjectTag, UI_SUBCHARACTER_TYPE eUIType)
+CUI_SubMenu_Equipment::CUI_SubMenu_Equipment(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
+	const wstring& strObjectTag, UI_SUBEQUIP_TYPE eUIType)
 	: CUI(pDevice, pContext, strObjectTag)
 	, m_eUIType(eUIType)
 {
 }
 
-CUI_SubMenu_Character::CUI_SubMenu_Character(const CUI_SubMenu_Character& rhs)
+CUI_SubMenu_Equipment::CUI_SubMenu_Equipment(const CUI_SubMenu_Equipment& rhs)
 	: CUI(rhs)
 	, m_eUIType(rhs.m_eUIType)
 	, m_iTextureIndex(rhs.m_iTextureIndex)
 {
 }
 
-void CUI_SubMenu_Character::Set_Active(_bool bActive)
+void CUI_SubMenu_Equipment::Set_Active(_bool bActive)
 {
-	if (CHARACTERMENU_END == m_eUIType)
+	if (EQUIPMENU_END == m_eUIType)
 		return;
 
 	if (bActive)
@@ -42,7 +42,7 @@ void CUI_SubMenu_Character::Set_Active(_bool bActive)
 	m_bActive = bActive;
 }
 
-HRESULT CUI_SubMenu_Character::Initialize_Prototype()
+HRESULT CUI_SubMenu_Equipment::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
@@ -50,7 +50,7 @@ HRESULT CUI_SubMenu_Character::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CUI_SubMenu_Character::Initialize(void* pArg)
+HRESULT CUI_SubMenu_Equipment::Initialize(void* pArg)
 {
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
@@ -62,23 +62,14 @@ HRESULT CUI_SubMenu_Character::Initialize(void* pArg)
 		return E_FAIL;
 
 	// 생성 위치는 좌표로 지정해준다.
-	if (CHARBTN_RANK == m_eUIType || CHARBTN_SKILL == m_eUIType || CHARBTN_VEHICLE == m_eUIType ||
-		CHARBTN_COSTUME == m_eUIType || CHARBTN_DECK == m_eUIType || CHARBTN_TITLE == m_eUIType)
-	{
-		// 첫번째 열에 생성되는 Btn -> 기준점 좌표 CHARBTN_RANK // 설정 완료
-		m_vOnPosition.x = 230.f;
-		m_vOnPosition.y = 245.f;
-	}
-	else if (CHARBTN_STYLE == m_eUIType || CHARBTN_BATTLE == m_eUIType)
-	{
-		// 두번째 열에 생성되는 Btn -> 기준점 좌표 CHARBTN_BATTLE
-		m_vOnPosition.x = 320.f;
-		m_vOnPosition.y = 415.f;
-	}
-	else
-	{
+
+	if (EQUIPMENU_END == m_eUIType)
 		return E_FAIL;
-	}
+
+
+	// 첫번째 열에 생성되는 Btn -> 기준점 좌표 EQUIPBTN_INVENTORY
+	m_vOnPosition.x = 230.f;
+	m_vOnPosition.y = 245.f;
 
 	// 목표 위치는 초기 세팅위치이다.
 	m_vGoalPosition.x = m_tInfo.fX;
@@ -89,9 +80,9 @@ HRESULT CUI_SubMenu_Character::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CUI_SubMenu_Character::Tick(_float fTimeDelta)
+void CUI_SubMenu_Equipment::Tick(_float fTimeDelta)
 {
-	if (CHARACTERMENU_END == m_eUIType)
+	if (EQUIPMENU_END == m_eUIType)
 		return;
 
 	if (m_bActive)
@@ -119,9 +110,9 @@ void CUI_SubMenu_Character::Tick(_float fTimeDelta)
 	}
 }
 
-void CUI_SubMenu_Character::LateTick(_float fTimeDelta)
+void CUI_SubMenu_Equipment::LateTick(_float fTimeDelta)
 {
-	if (CHARACTERMENU_END == m_eUIType)
+	if (EQUIPMENU_END == m_eUIType)
 		return;
 
 	if (m_bActive)
@@ -142,11 +133,12 @@ void CUI_SubMenu_Character::LateTick(_float fTimeDelta)
 				}
 			}
 		}
+
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
 }
 
-HRESULT CUI_SubMenu_Character::Render()
+HRESULT CUI_SubMenu_Equipment::Render()
 {
 	if (m_bActive)
 	{
@@ -161,14 +153,14 @@ HRESULT CUI_SubMenu_Character::Render()
 	return S_OK;
 }
 
-void CUI_SubMenu_Character::On_MouseEnter(_float fTimeDelta)
+void CUI_SubMenu_Equipment::On_MouseEnter(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
 	}
 }
 
-void CUI_SubMenu_Character::On_Mouse(_float fTimeDelta)
+void CUI_SubMenu_Equipment::On_Mouse(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
@@ -179,14 +171,14 @@ void CUI_SubMenu_Character::On_Mouse(_float fTimeDelta)
 	}
 }
 
-void CUI_SubMenu_Character::On_MouseExit(_float fTimeDelta)
+void CUI_SubMenu_Equipment::On_MouseExit(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
 	}
 }
 
-void CUI_SubMenu_Character::Reset_InitializeInfo()
+void CUI_SubMenu_Equipment::Reset_InitializeInfo()
 {
 //	if (BTN_CLICKED == m_eTextureType)
 //	{
@@ -198,11 +190,12 @@ void CUI_SubMenu_Character::Reset_InitializeInfo()
 //	}
 }
 
-HRESULT CUI_SubMenu_Character::Ready_Components()
+HRESULT CUI_SubMenu_Equipment::Ready_Components()
 {
 	
 	if (FAILED(__super::Ready_Components()))
 		return E_FAIL;
+
 
 	Ready_Buttons();
 
@@ -218,54 +211,44 @@ HRESULT CUI_SubMenu_Character::Ready_Components()
 	return S_OK;
 }
 
-HRESULT CUI_SubMenu_Character::Ready_Buttons()
+HRESULT CUI_SubMenu_Equipment::Ready_Buttons()
 {
 	_float fStandard = 300.f;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_SubMenu_CharacterTab"),
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_SubMenu_EquipmentTab"),
 		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 		return E_FAIL;
 
 	switch (m_eUIType)
 	{
-	case CHARBTN_RANK:
+	case EQUIPBTN_INVENTORY:
 		m_iTextureIndex = 0;
 		m_fSpeed = 0.f;
 		m_bUsable = true;
 		break;
-	case CHARBTN_SKILL:
+	case EQUIPBTN_FORGE:
 		m_iTextureIndex = 1;
 		m_fSpeed = fStandard;
-		m_bUsable = true;
+		m_bUsable = false;
 		break;
-	case CHARBTN_VEHICLE:
+	case EQUIPBTN_GEM:
 		m_iTextureIndex = 2;
 		m_fSpeed = fStandard * 2.f;
-		m_bUsable = true;
+		m_bUsable = false;
 		break;
-	case CHARBTN_COSTUME:
+	case EQUIPBTN_TINYGENIE:
 		m_iTextureIndex = 3;
 		m_fSpeed = fStandard * 3.f;
-		m_bUsable = true;
+		m_bUsable = false;
 		break;
-	case CHARBTN_DECK:
+	case EQUIPBTN_TRANSCEND:
 		m_iTextureIndex = 4;
 		m_fSpeed = fStandard * 4.f;
 		m_bUsable = false;
 		break;
-	case CHARBTN_TITLE:
+	case EQUIPBTN_FISHINGROD:
 		m_iTextureIndex = 5;
 		m_fSpeed = fStandard * 5.f;
-		m_bUsable = true;
-		break;
-	case CHARBTN_STYLE:
-		m_iTextureIndex = 6;
-		m_fSpeed = 0.f;
-		m_bUsable = false;
-		break;
-	case CHARBTN_BATTLE:
-		m_iTextureIndex = 7;
-		m_fSpeed = fStandard;
 		m_bUsable = false;
 		break;
 	}
@@ -273,7 +256,7 @@ HRESULT CUI_SubMenu_Character::Ready_Buttons()
 	return S_OK;
 }
 
-HRESULT CUI_SubMenu_Character::Ready_State()
+HRESULT CUI_SubMenu_Equipment::Ready_State()
 {
 	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
@@ -282,7 +265,7 @@ HRESULT CUI_SubMenu_Character::Ready_State()
 	return S_OK;
 }
 
-HRESULT CUI_SubMenu_Character::Bind_ShaderResources()
+HRESULT CUI_SubMenu_Equipment::Bind_ShaderResources()
 {
 	if (m_iTextureIndex < 0 || 7 < m_iTextureIndex)
 		return E_FAIL;
@@ -305,34 +288,34 @@ HRESULT CUI_SubMenu_Character::Bind_ShaderResources()
 	return S_OK;
 }
 
-CUI_SubMenu_Character* CUI_SubMenu_Character::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
-	const wstring& strObjectTag, UI_SUBCHARACTER_TYPE eUIType)
+CUI_SubMenu_Equipment* CUI_SubMenu_Equipment::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
+	const wstring& strObjectTag, UI_SUBEQUIP_TYPE eUIType)
 {
-	CUI_SubMenu_Character* pInstance = new CUI_SubMenu_Character(pDevice, pContext, strObjectTag, eUIType);
+	CUI_SubMenu_Equipment* pInstance = new CUI_SubMenu_Equipment(pDevice, pContext, strObjectTag, eUIType);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX("Failed To Create : CUI_SubMenu_Character");
+		MSG_BOX("Failed To Create : CUI_SubMenu_Equipment");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CUI_SubMenu_Character::Clone(void* pArg)
+CGameObject* CUI_SubMenu_Equipment::Clone(void* pArg)
 {
-	CUI_SubMenu_Character* pInstance = new CUI_SubMenu_Character(*this);
+	CUI_SubMenu_Equipment* pInstance = new CUI_SubMenu_Equipment(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Failed To Clone : CUI_SubMenu_Character");
+		MSG_BOX("Failed To Clone : CUI_SubMenu_Equipment");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CUI_SubMenu_Character::Free()
+void CUI_SubMenu_Equipment::Free()
 {
 	__super::Free();
 
