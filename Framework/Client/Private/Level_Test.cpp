@@ -168,8 +168,8 @@ HRESULT CLevel_Test::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Test::Ready_Layer_Terrain(const LAYER_TYPE eLayerType)
 {
-	if (FAILED(GI->Add_GameObject(LEVEL_TEST, LAYER_TYPE::LAYER_TERRAIN, TEXT("Prototype_GameObject_Cloth_Terrain"))))
-		return E_FAIL;
+	/*if (FAILED(GI->Add_GameObject(LEVEL_TEST, LAYER_TYPE::LAYER_TERRAIN, TEXT("Prototype_GameObject_Cloth_Terrain"))))
+		return E_FAIL;*/
 	
 	return S_OK;
 }

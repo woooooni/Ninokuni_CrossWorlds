@@ -63,10 +63,10 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 	SceneDesc.simulationEventCallback = this;
 	
 
-	PxCudaContextManagerDesc cuadContextManagerDesc;
+	/*PxCudaContextManagerDesc cuadContextManagerDesc;
 	m_pCudaContextManager = PxCreateCudaContextManager(*m_Foundation, cuadContextManagerDesc, PxGetProfilerCallback());
 
-	SceneDesc.cudaContextManager = m_pCudaContextManager;
+	SceneDesc.cudaContextManager = m_pCudaContextManager;*/
 	SceneDesc.flags |= PxSceneFlag::eENABLE_GPU_DYNAMICS;
 
 	m_pScene = m_Physics->createScene(SceneDesc);
@@ -114,8 +114,8 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 		return E_FAIL;
 #endif
 
-	if (FAILED(Init_Cloth(100, 100, PxVec3(-0.5f * 100 * 0.05f, 8.f, -0.5f * 100 * 0.05f), 0.05f, 10.f)))
-		return E_FAIL;
+	/*if (FAILED(Init_Cloth(100, 100, PxVec3(-0.5f * 100 * 0.05f, 8.f, -0.5f * 100 * 0.05f), 0.05f, 10.f)))
+		return E_FAIL;*/
 
 
 	/*PxRigidStatic* groundPlane = PxCreatePlane(*m_Physics, PxPlane(0, 1, 0, 0), *m_WorldMaterial);
