@@ -215,11 +215,11 @@ HRESULT CModel::LateTick(_float fTimeDelta)
 	CAnimation* pCurAnim = m_Animations[m_TweenDesc.cur.iAnimIndex];
 	if (nullptr != pCurAnim)
 	{
+		pCurAnim->Add_PlayTime(fTimeDelta);
+
 		m_TweenDesc.cur.fFrameAcc += fTimeDelta;
 
 		const _float fTimePerFrame = 1 / (pCurAnim->Get_TickPerSecond() * pCurAnim->Get_AnimationSpeed());
-
-		pCurAnim->Add_PlayTime(fTimePerFrame);
 
 		if (fTimePerFrame <= m_TweenDesc.cur.fFrameAcc)
 		{
@@ -238,6 +238,7 @@ HRESULT CModel::LateTick(_float fTimeDelta)
 				m_TweenDesc.cur.fFrameAcc = 0.f;
 				m_TweenDesc.cur.iCurFrame = (m_TweenDesc.cur.iCurFrame + 1) % pCurAnim->Get_MaxFrameCount();
 				m_TweenDesc.cur.iNextFrame = (m_TweenDesc.cur.iCurFrame + 1) % pCurAnim->Get_MaxFrameCount();
+				m_TweenDesc.cur.iFinish = false;
 			}
 		}
 
@@ -270,11 +271,11 @@ HRESULT CModel::LateTick(_float fTimeDelta)
 		}
 		else
 		{
+			pCurAnim->Add_PlayTime(fTimeDelta);
+
 			m_TweenDesc.next.fFrameAcc += fTimeDelta;
 
 			const _float fTimePerFrame = 1 / (pNextAnim->Get_TickPerSecond() * pNextAnim->Get_AnimationSpeed());
-
-			pCurAnim->Add_PlayTime(fTimePerFrame);
 
 			if (fTimePerFrame <= m_TweenDesc.next.fFrameAcc)
 			{
@@ -550,6 +551,17 @@ HRESULT CModel::Set_Animation(const wstring& strAnimationName, const _float& fTw
 	return E_FAIL;
 }
 
+void CModel::Set_KeyFrame_By_Progress(_float fProgress)
+{
+	std::clamp(fProgress, 0.f, 1.f);
+
+	_uint iKeyFrame = fProgress * (m_Animations[m_TweenDesc.cur.iAnimIndex]->Get_MaxFrameCount() - 1.f) - m_TweenDesc.cur.fRatio;
+
+	m_TweenDesc.cur.iCurFrame = iKeyFrame % m_Animations[m_TweenDesc.cur.iAnimIndex]->Get_MaxFrameCount();
+	m_TweenDesc.cur.iNextFrame = iKeyFrame % m_Animations[m_TweenDesc.cur.iAnimIndex]->Get_MaxFrameCount();
+	m_TweenDesc.cur.fRatio = 0.f;
+}
+
 HRESULT CModel::SetUp_OnShader(CShader* pShader, _uint iMaterialIndex, aiTextureType eTextureType, const char* pConstantName)
 {
 	if (iMaterialIndex >= m_iNumMaterials)
@@ -595,9 +607,16 @@ HRESULT CModel::Render_Instancing(CShader* pShader, _uint iMeshIndex, CVIBuffer_
 	return S_OK;
 }
 
-const _float CModel::Get_Progress() const
+const _float CModel::Get_Progress()
 {
-	return m_Animations[m_TweenDesc.cur.iAnimIndex]->Get_Progess();
+	if (m_TweenDesc.cur.iFinish)
+		return 1.f;
+
+	_float fProgress = (_float(m_TweenDesc.cur.iCurFrame) + m_TweenDesc.cur.fRatio) / _float(m_Animations[m_TweenDesc.cur.iAnimIndex]->Get_MaxFrameCount() - 1.f);
+	
+	std::clamp(fProgress, 0.f, 1.f);
+	
+	return fProgress;
 }
 
 const _float CModel::Get_Duration()
@@ -612,7 +631,7 @@ const _float CModel::Get_Duration()
 
 const _float CModel::Get_PlayTime()
 {
-	return _float();
+	return m_Animations[m_TweenDesc.cur.iAnimIndex]->Get_PlayTime();
 }
 
 HRESULT CModel::Swap_Animation(_uint iSrcIndex, _uint iDestIndex)

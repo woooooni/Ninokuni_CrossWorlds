@@ -20,7 +20,6 @@ private:
 	void Tick_Socket(_float fTimeDelta);
 	void Tick_Event(_float fTimeDelta);
 	void Tick_Costume(_float fTimeDelta);
-
 	void Tick_Dummys(_float fTimeDelta);
 
 private:
@@ -37,7 +36,6 @@ private:
 	HRESULT Ready_SocketTransforms();
 
 private:
-	void Reset_Transform();
 	const _bool Is_Exception();
 
 	HRESULT Clear_ToolAnimationData();
@@ -48,7 +46,6 @@ private:
 private:
 	wstring m_strFilePath = L"";
 	wstring m_strFileName = L"";
-
 	class CDummy* m_pDummy = nullptr;
 
 #pragma region Animation

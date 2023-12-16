@@ -45,12 +45,13 @@ public:
 
 	/* Animation */
 	void Set_Stop_Animation(const _bool& bStop) { m_TweenDesc.cur.iStop = bStop; } /* bStop이 트루라면 모델 레이트틱이 호출되더라도 애니메이션이 갱신되지 않는다. */
-	HRESULT Set_Animation(const _uint& iAnimationIndex, const _float& fTweenDuration = DEFAULT_TWEEN_DURATION); /* 인덱스로 애니메이션 플레이 */
-	HRESULT Set_Animation(const wstring& strAnimationName, const _float& fTweenDuration = DEFAULT_TWEEN_DURATION); /* 이름으로 애니메이션 플레이 */
-
+	void Set_KeyFrame_By_Progress(_float fProgress); /* 진행률(0 ~ 1)을 매개변수로 받아 키프레임을 세팅한다. */
+	HRESULT Set_Animation(const _uint& iAnimationIndex, const _float& fTweenDuration = DEFAULT_TWEEN_DURATION); /* 인덱스로 애니메이션 플레이 (fTweenDuration이 음수라면 보간 X) */
+	HRESULT Set_Animation(const wstring& strAnimationName, const _float& fTweenDuration = DEFAULT_TWEEN_DURATION); /* 이름으로 애니메이션 플레이 (fTweenDuration이 음수라면 보간 X) */
+	
 	_uint Get_CurrAnimationIndex() { return m_TweenDesc.cur.iAnimIndex; } /* 현재 애니메이션의 인덱스 리턴*/
 	const _uint& Get_CurrAnimationFrame() const { return m_TweenDesc.cur.iCurFrame; } /* 현재 애니메이션의 프레임 리턴 */
-	const _float Get_Progress() const;  /* 현재 애니메이션의 진행률(0~1) 리턴*/
+	const _float Get_Progress();  /* 현재 애니메이션의 진행률(0~1) 리턴*/
 	const _float Get_Duration(); /* (미완성 아직 사용 X) 현재 애니메이션 전체 재생 시간 */
 	const _float Get_PlayTime(); /* (미완성 아직 사용 X) 현재 애니메이션 현재 재생 시간 */
 	const TweenDesc& Get_TweenDesc() const { return m_TweenDesc; } /* 현재, 다음 애니메이션 정보 구조체 리턴 */
@@ -59,7 +60,7 @@ public:
 
 	_int Find_AnimationIndex(const wstring& strAnimationTag); /* 이름을 키로 사용해서 애니메이션의 인덱스 리턴 */
 
-	const _bool Is_Half() const { return (0.5f <= m_TweenDesc.cur.fRatio) ? true : false; } /* 현재 애니메이션이 반이상 진행됐는지 여부 리턴 */
+	const _bool Is_Half() const { return (0.5f <= m_TweenDesc.cur.fRatio) ? true : false; } /* 현재 애니메이션이 반 이상 진행됐는지 여부 리턴 */
 	const _bool Is_Finish() const { return m_TweenDesc.cur.iFinish; } /* 현재 애니메이션이 종료됐는지 리턴 (종료되었는데 만약 다음 애니메이션이 세팅 안되어 있다면 종료 상태 유지) */
 	const _bool Is_Tween() const { return (0 <= m_TweenDesc.next.iAnimIndex) ? true : false; } /* 애니메이션 트위닝 (다음 애니메이션 보간) 여부 리턴 */
 	const _bool Is_Fix() const { return m_TweenDesc.cur.iFix; } /* 현재 애니메이션이 마지막 프레임에서 고정 상태인지 여부 리턴*/

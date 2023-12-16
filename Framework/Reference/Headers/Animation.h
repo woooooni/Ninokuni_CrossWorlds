@@ -58,7 +58,7 @@ public:
 	_bool Is_Loop() { return m_bLoop; }
 
 
-	const _uint Get_MaxFrameCount() const { return _uint(m_fDuration) + 1; }
+	_uint Get_MaxFrameCount() const { return _uint(m_fDuration) + 1; }
 
 public:
 	HRESULT Calculate_Animation(const _uint& iFrame);

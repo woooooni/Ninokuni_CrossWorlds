@@ -51,7 +51,14 @@ HRESULT CTool_Model::Initialize()
 
 void CTool_Model::Tick(_float fTimeDelta)
 {
-	ImGui::Begin("Model_Tool");
+	ImGuiWindowFlags WindowFlags = 0;
+	if (TRUE)
+	{
+		WindowFlags |= ImGuiWindowFlags_NoResize;
+		WindowFlags |= ImGuiWindowFlags_NoMove;
+	}
+
+	ImGui::Begin("Model_Tool", NULL, WindowFlags);
 	{
 		Tick_Model(fTimeDelta);
 		Tick_Animation(fTimeDelta);
@@ -75,16 +82,6 @@ HRESULT CTool_Model::Render()
 	return S_OK;
 }
 
-void CTool_Model::Reset_Transform()
-{
-	m_pDummy->Get_TransformCom()->Set_State(CTransform::STATE::STATE_RIGHT, XMVectorSet(1.f, 0.f, 0.f, 0.f));
-	m_pDummy->Get_TransformCom()->Set_State(CTransform::STATE::STATE_UP, XMVectorSet(0.f, 1.f, 0.f, 0.f));
-	m_pDummy->Get_TransformCom()->Set_State(CTransform::STATE::STATE_LOOK, XMVectorSet(0.f, 0.f, 1.f, 0.f));
-	m_pDummy->Get_TransformCom()->Set_State(CTransform::STATE::STATE_POSITION, XMVectorSet(0.f, 0.f, 0.f, 1.f));
-
-	return;
-}
-
 HRESULT CTool_Model::Clear_ToolAnimationData()
 {
 	m_bAllAnimLoop = TRUE;
@@ -93,7 +90,6 @@ HRESULT CTool_Model::Clear_ToolAnimationData()
 	for (auto& pAnim : Animations)
 		pAnim->Set_Loop(m_bAllAnimLoop);
 	
-
 	m_iCurBoneIndex = 0;
 
 	m_iSocketIndex = -1;
@@ -235,7 +231,7 @@ const _bool CTool_Model::Is_Exception()
 {
 	if (nullptr == m_pDummy)
 	{
-		ImGui::Text(u8"더미 오브젝트가 존재하지 않습니다.");
+		ImGui::Text(u8"No Dummy");
 		return true;
 	}
 
@@ -244,13 +240,13 @@ const _bool CTool_Model::Is_Exception()
 		CModel* pModelCom = m_pDummy->Get_ModelCom();
 		if (CModel::TYPE::TYPE_NONANIM == pModelCom->Get_ModelType())
 		{
-			ImGui::Text(u8"스태틱 모델은 애니메이션이 존재하지 않습니다.");
+			ImGui::Text(u8"Animation Model not loaded");
 			return true;
 		}
 	}
 	else
 	{
-		ImGui::Text(u8"모델이 로드되지 않았습니다.");
+		ImGui::Text(u8"Animation Model not loaded");
 		return true;
 	}
 
@@ -371,197 +367,193 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 
 		/* Import */
 		{
-			ImGui::Text("Import File (Fbx)");
-			
-			char szFilePath[MAX_PATH];
-			char szFileName[MAX_PATH];
-
-			sprintf_s(szFilePath, CUtils::ToString(m_strFilePath).c_str());
-			sprintf_s(szFileName, CUtils::ToString(m_strFileName).c_str());
-
-			/* Path */
-			if (ImGui::InputText("##ModelPathText", szFilePath, MAX_PATH))
-				m_strFilePath = CUtils::ToWString(string(szFilePath));
-			if (ImGui::IsItemHovered())
+			if (ImGui::TreeNode("Import File (Fbx)s"))
 			{
-				ImGui::BeginTooltip();
-				ImGui::Text(u8"Fbx 파일의 경우 : ../Bin/Resources/AnimModel/Boss/Stellia/");
-				ImGui::Text(u8"Binary 파일의 경우 : ../Bin/Export/AnimModel/Boss/Stellia/");
-				ImGui::EndTooltip();
-			}
-			IMGUI_SAME_LINE;
-			ImGui::Text("Path");
+				char szFilePath[MAX_PATH];
+				char szFileName[MAX_PATH];
 
-			/* File Name */
-			if (ImGui::InputText("##ModelFileText", szFileName, MAX_PATH))
-				m_strFileName = CUtils::ToWString(string(szFileName));
-			if (ImGui::IsItemHovered())
-			{
-				ImGui::BeginTooltip();
-				ImGui::Text(u8"Fbx 파일의 경우 : Stellia.fbx");
-				ImGui::Text(u8"Binary 파일의 경우 : Stellia");
-				ImGui::EndTooltip();
-			}
-			IMGUI_SAME_LINE;
-			ImGui::Text("File Name");
+				sprintf_s(szFilePath, CUtils::ToString(m_strFilePath).c_str());
+				sprintf_s(szFileName, CUtils::ToString(m_strFileName).c_str());
 
-			/* Model Type */
-			static const char* szImportModelTypes[] = { "STATIC", "ANIM" };
-			static const char* szImportModelType = NULL;
-			static _int iSelectedImportModelType = -1;
-
-			if (ImGui::BeginCombo("##ImportModelType", szImportModelType))
-			{
-				for (int n = 0; n < IM_ARRAYSIZE(szImportModelTypes); n++)
+				/* Path */
+				if (ImGui::InputText("##ModelPathText", szFilePath, MAX_PATH))
+					m_strFilePath = CUtils::ToWString(string(szFilePath));
+				if (ImGui::IsItemHovered())
 				{
-					bool is_selected = (szImportModelType == szImportModelTypes[n]); // You can store your selection however you want, outside or inside your objects
-					if (ImGui::Selectable(szImportModelTypes[n], is_selected))
+					ImGui::BeginTooltip();
+					ImGui::Text(u8"Fbx 파일의 경우 : ../Bin/Resources/AnimModel/Boss/Stellia/");
+					ImGui::Text(u8"Binary 파일의 경우 : ../Bin/Export/AnimModel/Boss/Stellia/");
+					ImGui::EndTooltip();
+				}
+				IMGUI_SAME_LINE;
+				ImGui::Text("Path");
+
+				/* File Name */
+				if (ImGui::InputText("##ModelFileText", szFileName, MAX_PATH))
+					m_strFileName = CUtils::ToWString(string(szFileName));
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::BeginTooltip();
+					ImGui::Text(u8"Fbx 파일의 경우 : Stellia.fbx");
+					ImGui::Text(u8"Binary 파일의 경우 : Stellia");
+					ImGui::EndTooltip();
+				}
+				IMGUI_SAME_LINE;
+				ImGui::Text("File Name");
+
+				/* Model Type */
+				static const char* szImportModelTypes[] = { "STATIC", "ANIM" };
+				static const char* szImportModelType = NULL;
+				static _int iSelectedImportModelType = -1;
+
+				if (ImGui::BeginCombo("##ImportModelType", szImportModelType))
+				{
+					for (int n = 0; n < IM_ARRAYSIZE(szImportModelTypes); n++)
 					{
-						szImportModelType = szImportModelTypes[n];
-						iSelectedImportModelType = n;
+						bool is_selected = (szImportModelType == szImportModelTypes[n]); // You can store your selection however you want, outside or inside your objects
+						if (ImGui::Selectable(szImportModelTypes[n], is_selected))
+						{
+							szImportModelType = szImportModelTypes[n];
+							iSelectedImportModelType = n;
+						}
+
 					}
 
+					ImGui::EndCombo();
 				}
-
-				ImGui::EndCombo();
-			}
-			m_strFileName = CUtils::ToWString(string(szFileName));
-			if (ImGui::IsItemHovered())
-			{
-				ImGui::BeginTooltip();
-				ImGui::Text(u8"Static vs Animation");
-				ImGui::EndTooltip();
-			}
-			IMGUI_SAME_LINE;
-			ImGui::Text("Model Type");
-
-			/* Import Btn */
-			if (ImGui::Button("Import"))
-			{
-				if (iSelectedImportModelType != -1)
+				m_strFileName = CUtils::ToWString(string(szFileName));
+				if (ImGui::IsItemHovered())
 				{
-					if (FAILED(m_pDummy->Ready_ModelCom(iSelectedImportModelType, m_strFilePath, m_strFileName)))
-						MSG_BOX("Failed Import.");
-					else
+					ImGui::BeginTooltip();
+					ImGui::Text(u8"Static vs Animation");
+					ImGui::EndTooltip();
+				}
+				IMGUI_SAME_LINE;
+				ImGui::Text("Model Type");
+
+				/* Import Btn */
+				if (ImGui::Button("Import"))
+				{
+					if (iSelectedImportModelType != -1)
 					{
-						MSG_BOX("Success Import.");
-						Clear_ToolAnimationData();
-						m_pDummy->Get_ModelCom()->Set_Animation(0);
-						if (CModel::TYPE::TYPE_ANIM == m_pDummy->Get_ModelCom()->Get_ModelType() && FAILED(Ready_SocketTransforms()))
+						if (FAILED(m_pDummy->Ready_ModelCom(iSelectedImportModelType, m_strFilePath, m_strFileName)))
+							MSG_BOX("Failed Import.");
+						else
 						{
-							MSG_BOX("소켓 트랜스폼 생성에 실패했습니다.");
-							return;
+							MSG_BOX("Success Import.");
+							Clear_ToolAnimationData();
+							m_pDummy->Get_ModelCom()->Set_Animation(0);
+							if (CModel::TYPE::TYPE_ANIM == m_pDummy->Get_ModelCom()->Get_ModelType() && FAILED(Ready_SocketTransforms()))
+							{
+								MSG_BOX("소켓 트랜스폼 생성에 실패했습니다.");
+								return;
+							}
 						}
 					}
+					else
+						MSG_BOX("모델 타입을 선택해주세요");
 				}
-				else
-					MSG_BOX("모델 타입을 선택해주세요");
+				IMGUI_NEW_LINE;
+				ImGui::TreePop();
 			}
+			
 		}
 
 	
 		/* Export (One File) */
 		{
-			IMGUI_NEW_LINE;
-			ImGui::Separator();
-			ImGui::Text("Export File (Binary and Vtf)");
-			char szFilePath[MAX_PATH];
-			char szFileName[MAX_PATH];
-
-			static char szExportFolderName[MAX_PATH];
-			ImGui::InputText("##ModelExportFolder", szExportFolderName, MAX_PATH);
-			if (ImGui::IsItemHovered())
+			if (ImGui::TreeNode("Export File (Binary and Vtf)"))
 			{
-				ImGui::BeginTooltip();
-				ImGui::Text(u8"Fbx, Binary 파일 공통 : AnimModel/Boss/Stellia/");
-				ImGui::EndTooltip();
-			}
-			IMGUI_SAME_LINE;
-			ImGui::Text("Path");
+				char szFilePath[MAX_PATH];
+				char szFileName[MAX_PATH];
 
-			/* Export Btn*/
-			if (ImGui::Button("Export"))
-			{
-				if (strlen(szExportFolderName) > 0)
+				static char szExportFolderName[MAX_PATH];
+				ImGui::InputText("##ModelExportFolder", szExportFolderName, MAX_PATH);
+				if (ImGui::IsItemHovered())
 				{
-					if (FAILED(m_pDummy->Export_Model_Bin(CUtils::ToWString(szExportFolderName), m_strFileName)))
-					{
-						MSG_BOX("Failed Save.");
+					ImGui::BeginTooltip();
+					ImGui::Text(u8"Fbx, Binary 파일 공통 : AnimModel/Boss/Stellia/");
+					ImGui::EndTooltip();
+				}
+				IMGUI_SAME_LINE;
+				ImGui::Text("Path");
 
-					}
-					else
+				/* Export Btn*/
+				if (ImGui::Button("Export"))
+				{
+					if (strlen(szExportFolderName) > 0)
 					{
-						MSG_BOX("Save Success");
+						if (FAILED(m_pDummy->Export_Model_Bin(CUtils::ToWString(szExportFolderName), m_strFileName)))
+						{
+							MSG_BOX("Failed Save.");
+
+						}
+						else
+						{
+							MSG_BOX("Save Success");
+						}
 					}
 				}
+				IMGUI_NEW_LINE;
+				ImGui::TreePop();
 			}
 		}
 
 		/* Export (All File) */
 		{
-			IMGUI_NEW_LINE;
-			ImGui::Separator();
-			ImGui::Text("Export Files (Binary and Vtf)");
-
-			/* Path */
-			static char szAllObjectExportFolderName[MAX_PATH] = "";
-			ImGui::InputText("##All_ModelExportFolder", szAllObjectExportFolderName, MAX_PATH);
-			if (ImGui::IsItemHovered())
+			if (ImGui::TreeNode("Export Files (Binary and Vtf)"))
 			{
-				ImGui::BeginTooltip();
-				ImGui::Text(u8"익스포트할 폴더들이 포함된 상위폴더 ex : AnimModel/Boss/");
-				ImGui::EndTooltip();
-			}
-			IMGUI_SAME_LINE;
-			ImGui::Text("Path");
-
-			/* Type */
-			const char* szExportModelTypes[] = { "STATIC", "ANIM" };
-			static const char* szExportObjectModelType = NULL;
-			static _int iSelectedExportModelType = -1;
-			if (ImGui::BeginCombo("##ExportAllObject_ModelType", szExportObjectModelType))
-			{
-				for (int n = 0; n < IM_ARRAYSIZE(szExportModelTypes); n++)
+				/* Path */
+				static char szAllObjectExportFolderName[MAX_PATH] = "";
+				ImGui::InputText("##All_ModelExportFolder", szAllObjectExportFolderName, MAX_PATH);
+				if (ImGui::IsItemHovered())
 				{
-					bool is_selected = (szExportObjectModelType == szExportModelTypes[n]); 
-					if (ImGui::Selectable(szExportModelTypes[n], is_selected))
+					ImGui::BeginTooltip();
+					ImGui::Text(u8"익스포트할 폴더들이 포함된 상위폴더 ex : AnimModel/Boss/");
+					ImGui::EndTooltip();
+				}
+				IMGUI_SAME_LINE;
+				ImGui::Text("Path");
+
+				/* Type */
+				const char* szExportModelTypes[] = { "STATIC", "ANIM" };
+				static const char* szExportObjectModelType = NULL;
+				static _int iSelectedExportModelType = -1;
+				if (ImGui::BeginCombo("##ExportAllObject_ModelType", szExportObjectModelType))
+				{
+					for (int n = 0; n < IM_ARRAYSIZE(szExportModelTypes); n++)
 					{
-						szExportObjectModelType = szExportModelTypes[n];
-						iSelectedExportModelType = n;
+						bool is_selected = (szExportObjectModelType == szExportModelTypes[n]);
+						if (ImGui::Selectable(szExportModelTypes[n], is_selected))
+						{
+							szExportObjectModelType = szExportModelTypes[n];
+							iSelectedExportModelType = n;
+						}
+
 					}
+					ImGui::EndCombo();
+				}
+				IMGUI_SAME_LINE;
+				ImGui::Text("Model Type");
 
-				}
-				ImGui::EndCombo();
-			}
-			IMGUI_SAME_LINE;
-			ImGui::Text("Model Type");
+				/* Btn */
+				if (ImGui::Button("Export All"))
+				{
+					if (0 != strcmp(szAllObjectExportFolderName, "") && iSelectedExportModelType != -1)
+					{
+						if (FAILED(GI->Export_Model_Data_FromPath(iSelectedExportModelType, CUtils::ToWString(szAllObjectExportFolderName))))
+							MSG_BOX("Failed Export.");
 
-			/* Btn */
-			if (ImGui::Button("Export All"))
-			{
-				if (0 != strcmp(szAllObjectExportFolderName, "") && iSelectedExportModelType != -1)
-				{
-					if(FAILED(GI->Export_Model_Data_FromPath(iSelectedExportModelType, CUtils::ToWString(szAllObjectExportFolderName))))
-						MSG_BOX("Failed Export.");
-				
+					}
+					else
+					{
+						MSG_BOX("폴더 경로 혹은 모델 타입 지정을 확인하세요.");
+					}
 				}
-				else
-				{
-					MSG_BOX("폴더 경로 혹은 모델 타입 지정을 확인하세요.");
-				}
+				ImGui::TreePop();
 			}
+		
 		}
-	
-		///* Etc */
-		//{
-		//	IMGUI_NEW_LINE;
-		//	ImGui::Separator();
-		//	ImGui::Text("Etc");
-
-		//	/* Reset Transform*/
-		//	if (ImGui::Button("Reset Transform"))
-		//		Reset_Transform();
-		//}
 		IMGUI_NEW_LINE;
 	}
 }
@@ -597,7 +589,6 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 					fout.write(CUtils::ToString(strAnimationName).c_str(), strAnimationName.size());
 					fout.write("\n", sizeof(1));
 				}
-
 			}
 			fout.close();
 			MSG_BOX("Export OK.");
@@ -700,74 +691,72 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 		ImGui::Separator();
 		ImGui::Text("Edit 2");
 
-		/* Animation Time Slider */
-		CAnimation* pCurrAnimation = pModelCom->Get_CurrAnimation();
+		/* Play and Stop Btn*/
+		_bool bStop = (m_pDummy->Get_ModelCom()->Is_Stop() || m_pDummy->Get_ModelCom()->Is_Fix()) ? TRUE : FALSE;
+
+		if (bStop)
 		{
-			_float fPlayTime = 0.f; // pCurrAnimation->Get_PlayTime();
-			if (ImGui::SliderFloat("##Animation_PlayTime", &fPlayTime, 0.f, 0.f))//pCurrAnimation->Get_Duration()))
+			if (ImGui::ArrowButton("##Play_AnimationButton", ImGuiDir_Right))
 			{
-				//pCurrAnimation->Set_AnimationPlayTime(m_pDummy->Get_TransformCom(), fPlayTime, fTimeDelta);
+				_float fAnimationProgress = pModelCom->Get_Progress();
+
+				if (fAnimationProgress >= 1.f)
+					pModelCom->Set_Animation(pModelCom->Get_CurrAnimationIndex());
+
+				pModelCom->Set_Stop_Animation(false);
 			}
-			IMGUI_SAME_LINE;
-			ImGui::Text("Play Time");
+		}
+		else
+		{
+			float sz = ImGui::GetFrameHeight();
+			if (ImGui::Button("||", ImVec2(sz, sz)))
+				pModelCom->Set_Stop_Animation(true);
 		}
 
+		IMGUI_SAME_LINE;
+
 		/* Animation Progress  */
-		pCurrAnimation = pModelCom->Get_CurrAnimation();
+		CAnimation* pCurrAnimation = pModelCom->Get_CurrAnimation();
+		if (nullptr != pCurrAnimation)
 		{
-			_float fPlayTime = 0.f; // pCurrAnimation->Get_PlayTime();
-			if (ImGui::SliderFloat("##Animation_Progress", &fPlayTime, 0.f, 0.f))//pCurrAnimation->Get_Duration()))
+			_float fProgress = m_pDummy->Get_ModelCom()->Get_Progress();
+			if (ImGui::SliderFloat("##Animation_Progress", &fProgress, 0.f, 1.f))
 			{
-				//pCurrAnimation->Set_AnimationPlayTime(m_pDummy->Get_TransformCom(), fPlayTime, fTimeDelta);
+				pModelCom->Set_Stop_Animation(true);
+				m_pDummy->Get_ModelCom()->Set_KeyFrame_By_Progress(fProgress);
 			}
 			IMGUI_SAME_LINE;
 			ImGui::Text("Progress");
 		}
-		
+
 		/* Set Speed */
 		{
 			_float fSpeed = pCurrAnimation->Get_AnimationSpeed();
+			ImGui::PushItemWidth(60.f);
 			if (ImGui::DragFloat("##AnimationSpeed", &fSpeed, 0.01f, 0.f, 100.f))
 			{
 				pCurrAnimation->Set_AnimationSpeed(fSpeed);
 			}
+			ImGui::PopItemWidth();
 			IMGUI_SAME_LINE;
-			ImGui::Text("Set Speed");
+			ImGui::Text("Speed  ");
 		}
 
-		/* Play Btn*/
-		if (ImGui::ArrowButton("##Play_AnimationButton", ImGuiDir_Right))
-		{
-			_float fAnimationProgress = pModelCom->Get_Progress();
-
-			if(fAnimationProgress >= 1.f)
-				pModelCom->Set_Animation(pModelCom->Get_CurrAnimationIndex());
-	
-			pModelCom->Set_Stop_Animation(false);
-		}
 		IMGUI_SAME_LINE;
 
-		/* Stop Btn*/
-		{
-			if (ImGui::Button("||"))
-				pModelCom->Set_Stop_Animation(true);
-		}
-		//IMGUI_SAME_LINE;
-
-		/* Loop Btn */
+		/* CurLoop Btn */
 		{
 			_bool bLoop = pCurrAnimation->Is_Loop();
-			if (ImGui::Checkbox("Cur Anim Loop", &bLoop))
+			if (ImGui::Checkbox("Cur Anim Loop  ", &bLoop))
 				pCurrAnimation->Set_Loop(bLoop);
-			//ImGui::SameLine;
-			//ImGui::Text("Cur Anim Loop     ");
+
 		}
 		IMGUI_SAME_LINE;
 
-		/* All Btn */
+		/* All Loop Btn */
 		{
 			_bool bLoop = m_bAllAnimLoop;
-			if (ImGui::Checkbox("All Anim Loop", &bLoop))
+			if (ImGui::Checkbox("All Anim Loop  ", &bLoop))
 			{
 				m_bAllAnimLoop = bLoop;
 
@@ -778,11 +767,10 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 					pAnim->Set_Loop(m_bAllAnimLoop);
 				}
 			}
-			//ImGui::SameLine;
-			//ImGui::Text("All Anim Loop");
-		}
-		
+		}		
+	
 		IMGUI_NEW_LINE;
+	
 	}
 }
 
@@ -816,12 +804,13 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 			}
 		}
 		IMGUI_NEW_LINE;
+		ImGui::Separator();
 
 		/* Prototype Weapon List */
 		{
 			ImGui::Text("Weapon Prototypes List");
 
-			if (ImGui::BeginListBox("##Weapon Prototypes List"))
+			if (ImGui::BeginListBox("##Weapon Prototypes List", ImVec2{ 0.f, 70.f }))
 			{
 				for (size_t i = 0; i < m_Weapons.size(); ++i)
 				{
@@ -835,12 +824,13 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 			}
 		}
 		IMGUI_NEW_LINE;
+		ImGui::Separator(); 
 
 		/* Calculated Socket List */
 		{
 			ImGui::Text("Calculated Socket List");
 
-			if (ImGui::BeginListBox("##Calculated Socket List"))
+			if (ImGui::BeginListBox("##Calculated Socket List", ImVec2{ 0.f, 70.f }))
 			{
 				vector<_uint> SocketTransformIndexCache = m_pDummy->Get_ModelCom()->Get_SocketTransformIndexCache();
 
