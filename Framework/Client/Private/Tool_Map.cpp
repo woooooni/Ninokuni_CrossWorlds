@@ -46,6 +46,10 @@ void CTool_Map::Tick(_float fTimeDelta)
 		MapLightSpace();
 #pragma endregion MapLight
 
+#pragma region MapTerrain
+		MapTerrainSpace();
+#pragma endregion MapLight
+
 		Picking();
 	}
 	
@@ -58,10 +62,16 @@ void CTool_Map::AddMapObject(LEVELID iLevelID, LAYER_TYPE iLayerType)
 
 	for (auto& Pair : vecPrototypeList)
 	{
-		if (ImGui::Selectable(CUtils::ToString(Pair.first).c_str()))
+		wstring strLevelFirst = CUtils::ToWString(m_ImguiSelectableNameList[m_iCurrentLevel]);
+		wstring strFinalPath = strLevelFirst + L"_";
+
+		if (Pair.first.find(strLevelFirst.c_str()) != std::wstring::npos || Pair.first.find(TEXT("Common_")) != std::wstring::npos)
 		{
-			if (true == m_bAddObject)
-				GI->Add_GameObject(iLevelID, iLayerType, Pair.first);
+			if (ImGui::Selectable(CUtils::ToString(Pair.first).c_str()))
+			{
+				if (true == m_bAddObject)
+					GI->Add_GameObject(iLevelID, iLayerType, Pair.first);
+			}
 		}
 	}
 }
@@ -129,6 +139,45 @@ void CTool_Map::BatchObject(LEVELID iLevelID, LAYER_TYPE iLayerType)
 
 		if (ImGui::Selectable(strName.c_str()))
 			m_pSelectObj = pObj;
+	}
+}
+
+void CTool_Map::BatchTerrain(LEVELID iLevelID, LAYER_TYPE iLayerType)
+{
+	list<CGameObject*>& pGameObjects = GI->Find_GameObjects(iLevelID, iLayerType);
+
+	for (auto& pObj : pGameObjects)
+	{
+		string ObjectID = std::to_string(pObj->Get_ObjectID());
+		string ObjectTag = CUtils::ToString(pObj->Get_ObjectTag());
+
+		string strName = ObjectTag + "_" + ObjectID;
+
+		if (ImGui::Selectable(strName.c_str()))
+			m_pSelectTerrain = pObj;
+	}
+}
+
+void CTool_Map::DeleteTerrain(LEVELID iLevelID, LAYER_TYPE iLayerType)
+{
+	list<CGameObject*>& pGameObjects = GI->Find_GameObjects(iLevelID, iLayerType);
+
+	auto iter = pGameObjects.begin();
+
+	while (iter != pGameObjects.end())
+	{
+		if (nullptr == m_pSelectTerrain)
+			break;
+
+		if (m_pSelectTerrain->Get_ObjectID() == (*iter)->Get_ObjectID())
+		{
+			Safe_Release<CGameObject*>((*iter));
+			iter = pGameObjects.erase(iter);
+			m_pSelectTerrain = nullptr;
+		}
+		else
+			++iter;
+
 	}
 }
 
@@ -337,6 +386,30 @@ void CTool_Map::MapObjectSpace()
 			else
 				ImGui::TextColored(ImVec4(1.0f, 0.0f, 1.0f, 1.0f), u8"[ 현재 선택된 오브젝트가 없습니다.]");
 
+			ImGui::SameLine();
+
+			ImGui::PushItemWidth(110.f);
+
+			static const char* szLevelType = nullptr;
+
+			if (ImGui::BeginCombo(u8"Level_Type", szLevelType))
+			{
+				for (_uint i = 0; i < LEVEL_LIST_END; ++i)
+				{
+					_bool IsSelected = (szLevelType == m_ImguiSelectableNameList[i]);
+
+					if (ImGui::Selectable(m_ImguiSelectableNameList[i], IsSelected))
+					{
+						szLevelType = m_ImguiSelectableNameList[i];
+						m_iCurrentLevel = i;
+						m_strLevelName = CUtils::ToWString(m_ImguiSelectableNameList[i]);
+					}
+				}
+				ImGui::EndCombo();
+			}
+
+			ImGui::PopItemWidth();
+
 			ImGui::Dummy(ImVec2(0.0f, 5.0f));
 
 			if (ImGui::Button(u8"오브젝트 추가"))
@@ -401,12 +474,12 @@ void CTool_Map::MapObjectSpace()
 			ImGui::Spacing();
 
 			if (ImGui::Button(u8"Save"))
-				Save_Map_Data(TEXT("Evermore"));
+				Save_Map_Data(m_strLevelName);
 
 			ImGui::SameLine();
 
 			if (ImGui::Button(u8"Load"))
-				Load_Map_Data(TEXT("Evermore"));
+				Load_Map_Data(m_strLevelName);
 
 		}
 		ImGui::EndChild();
@@ -502,6 +575,8 @@ void CTool_Map::MapLightSpace()
 			if (ImGui::Button(u8"배치된 조명"))
 				m_bAddLight = false;
 
+			ImGui::SameLine();
+
 			if (true == m_bAddLight)
 			{
 				ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), u8"추가할 조명 선택");
@@ -586,6 +661,155 @@ void CTool_Map::MapLightSpace()
 	}
 }
 
+void CTool_Map::MapTerrainSpace()
+{
+	if (ImGui::CollapsingHeader("[ Terrain Tool ]"))
+	{
+		if (ImGui::BeginChild("Terrain Childe List", ImVec2(0, 300.f), true))
+		{
+			if (ImGui::RadioButton("Terrain", (0 == m_iTerrainState)))
+			{
+				ChangeState();
+				m_iTerrainState = 0;
+			} ImGui::SameLine();
+
+			if (ImGui::RadioButton("Height", (1 == m_iTerrainState)))
+			{
+				ChangeState();
+				m_iTerrainState = 1;
+			} ImGui::SameLine();
+
+			if (ImGui::RadioButton("Texture", (2 == m_iTerrainState)))
+			{
+				ChangeState();
+				m_iTerrainState = 2;
+			} ImGui::SameLine();
+
+			if (0 == m_iTerrainState)
+			{
+				ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.f), u8"지형");
+
+				if (nullptr != m_pSelectTerrain)
+				{
+					_bool iChange = 0;
+					ImGui::PushItemWidth(50);
+
+					string SelectObjectID = std::to_string(m_pSelectTerrain->Get_ObjectID());
+					string SelectObjectTag = CUtils::ToString(m_pSelectTerrain->Get_ObjectTag());
+					string SlectstrName = SelectObjectTag + "_" + SelectObjectID;
+
+					ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), u8"선택된 지형 : "); ImGui::SameLine();
+					ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), SlectstrName.c_str());
+
+					if (ImGui::CollapsingHeader("Movement"))
+					{
+						int lastUsing = 0;
+
+						CTransform* pTransform = m_pSelectTerrain->Get_Component<CTransform>(L"Com_Transform");
+						if (nullptr == pTransform)
+						{
+							ImGui::End();
+							return;
+						}
+
+#pragma region IMGUIZMO
+#pragma endregion IMGUIZMO
+
+						Vec3 vScaled = pTransform->Get_Scale();
+						XMVECTOR vRotation = pTransform->Get_WorldRotation();
+						XMMATRIX vPos = pTransform->Get_WorldMatrix();
+						XMVECTOR vWorldPosition = vPos.r[3];
+
+						ImGui::PushItemWidth(150.f);
+						ImGui::DragFloat3("Position", &vWorldPosition.m128_f32[0], 0.1f, -1000.f, 1000.f);
+						ImGui::DragFloat3("Rotation", &vRotation.m128_f32[0], 1.f);
+						ImGui::DragFloat3("Scale", &vScaled.x, 0.01f, 0.01f, 100.f);
+						ImGui::PopItemWidth();
+
+						pTransform->Set_Scale(vScaled);
+						pTransform->FixRotation(vRotation.m128_f32[0], vRotation.m128_f32[1], vRotation.m128_f32[2]);
+						pTransform->Set_State(CTransform::STATE::STATE_POSITION, vWorldPosition);
+					}
+
+					if (ImGui::Button(u8"선택된 오브젝트 삭제"))
+						DeleteTerrain(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_TERRAIN);
+				}
+				else
+					ImGui::TextColored(ImVec4(1.0f, 0.0f, 1.0f, 1.0f), u8"[ 현재 선택된 지형이 없습니다.]");
+
+				ImGui::SameLine();
+				ImGui::Dummy(ImVec2(0.0f, 5.0f));
+
+				if (ImGui::Button(u8"지형 추가"))
+				{
+					m_pSelectObj = nullptr;
+					m_bAddTerrain = true;
+
+				}ImGui::SameLine();
+
+				if (ImGui::Button(u8"배치된 지형"))
+					m_bAddTerrain = false;
+
+				if (true == m_bAddTerrain)
+				{
+
+					if (ImGui::ListBoxHeader("##ASSETLIST", ImVec2(300.0f, 0.0f)))
+					{
+						if (0 == m_iTerrainState)
+						{
+							const map<const std::wstring, CGameObject*>& vecPrototypeList = GI->Find_Prototype_GameObjects(LAYER_TYPE::LAYER_TERRAIN);
+
+							for (auto& Pair : vecPrototypeList)
+							{
+								if (ImGui::Selectable(CUtils::ToString(Pair.first).c_str()))
+								{
+									if (true == m_bAddTerrain)
+										GI->Add_GameObject(LEVELID::LEVEL_TOOL, LAYER_TERRAIN, Pair.first);
+								}
+							}
+						}
+					}
+
+					ImGui::ListBoxFooter();
+				}
+				else
+				{
+					ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), u8"맵에 배치된 터레인 리스트");
+					if (ImGui::ListBoxHeader("##TERRAINLIST", ImVec2(300.0f, 0.0f)))
+					{
+						if (0 == m_iTerrainState)
+							BatchTerrain(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_TERRAIN);
+					}
+
+					ImGui::ListBoxFooter();
+				}
+
+				ImGui::SameLine();
+			}
+			else if (1 == m_iTerrainState)
+			{
+				ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), u8"브러쉬 타입");
+				if (ImGui::RadioButton("UP", m_iBrushType == 0))
+				{
+					m_iBrushType = 0;
+				}ImGui::SameLine();
+				if (ImGui::RadioButton("DOWN", m_iBrushType == 1))
+				{
+					m_iBrushType = 1;
+				}ImGui::SameLine();
+			}
+			else if (2 == m_iTerrainState)
+			{
+				if (ImGui::RadioButton("HeightTexture", false))
+				{
+
+				}
+			}
+		}
+		ImGui::EndChild();
+	}
+}
+
 void CTool_Map::ChangeState()
 {
 	m_bAddObject = false;
@@ -615,43 +839,53 @@ HRESULT CTool_Map::Save_Map_Data(const wstring& strMapFileName)
 			|| i == LAYER_TYPE::LAYER_SKYBOX
 			|| i == LAYER_TYPE::LAYER_UI
 			|| i == LAYER_TYPE::LAYER_PLAYER
+			|| i == LAYER_TYPE::LAYER_WEAPON
 			|| i == LAYER_TYPE::LAYER_PROJECTILE
 			|| i == LAYER_TYPE::LAYER_EFFECT
 			|| i == LAYER_TYPE::LAYER_TRAIL
 			|| i == LAYER_TYPE::LAYER_NPC)
 			continue;
 
-		// 2. ObjectCount
-		list<CGameObject*>& GameObjects = GI->Find_GameObjects(LEVEL_TOOL, i);
-		File->Write<_uint>(GameObjects.size());
 
-		for (auto& Object : GameObjects)
+		//if (/*i == LAYER_TYPE::LAYER_TERRAIN ||*/
+		//	i == LAYER_TYPE::LAYER_BUILDING ||
+		//	i == LAYER_TYPE::LAYER_GRASS ||
+		//	i == LAYER_TYPE::LAYER_GROUND ||
+		//	i == LAYER_TYPE::LAYER_TREEROCK ||
+		//	i == LAYER_TYPE::LAYER_PROP)
 		{
-			CTransform* pTransform = Object->Get_Component<CTransform>(L"Com_Transform");
-			if (nullptr == pTransform)
+			// 2. ObjectCount
+			list<CGameObject*>& GameObjects = GI->Find_GameObjects(LEVEL_TOOL, i);
+			File->Write<_uint>(GameObjects.size());
+
+			for (auto& Object : GameObjects)
 			{
-				MSG_BOX("Find_Transform_Failed.");
-				return E_FAIL;
+				CTransform* pTransform = Object->Get_Component<CTransform>(L"Com_Transform");
+				if (nullptr == pTransform)
+				{
+					MSG_BOX("Find_Transform_Failed.");
+					return E_FAIL;
+				}
+
+				// 3. Object_Prototype_Tag
+				File->Write<string>(CUtils::ToString(Object->Get_PrototypeTag()));
+
+				// 4. Object_Tag
+				File->Write<string>(CUtils::ToString(Object->Get_ObjectTag()));
+
+				// 5. Obejct States
+				_float4 vRight, vUp, vLook, vPos;
+
+				XMStoreFloat4(&vRight, pTransform->Get_State(CTransform::STATE_RIGHT));
+				XMStoreFloat4(&vUp, pTransform->Get_State(CTransform::STATE_UP));
+				XMStoreFloat4(&vLook, pTransform->Get_State(CTransform::STATE_LOOK));
+				XMStoreFloat4(&vPos, pTransform->Get_State(CTransform::STATE_POSITION));
+
+				File->Write<_float4>(vRight);
+				File->Write<_float4>(vUp);
+				File->Write<_float4>(vLook);
+				File->Write<_float4>(vPos);
 			}
-
-			// 3. Object_Prototype_Tag
-			File->Write<string>(CUtils::ToString(Object->Get_PrototypeTag()));
-
-			// 4. Object_Tag
-			File->Write<string>(CUtils::ToString(Object->Get_ObjectTag()));
-
-			// 5. Obejct States
-			_float4 vRight, vUp, vLook, vPos;
-
-			XMStoreFloat4(&vRight, pTransform->Get_State(CTransform::STATE_RIGHT));
-			XMStoreFloat4(&vUp, pTransform->Get_State(CTransform::STATE_UP));
-			XMStoreFloat4(&vLook, pTransform->Get_State(CTransform::STATE_LOOK));
-			XMStoreFloat4(&vPos, pTransform->Get_State(CTransform::STATE_POSITION));
-
-			File->Write<_float4>(vRight);
-			File->Write<_float4>(vUp);
-			File->Write<_float4>(vLook);
-			File->Write<_float4>(vPos);
 		}
 	}
 
@@ -674,6 +908,7 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 			|| i == LAYER_TYPE::LAYER_SKYBOX
 			|| i == LAYER_TYPE::LAYER_UI
 			|| i == LAYER_TYPE::LAYER_PLAYER
+			|| i == LAYER_TYPE::LAYER_WEAPON
 			|| i == LAYER_TYPE::LAYER_PROJECTILE
 			|| i == LAYER_TYPE::LAYER_EFFECT
 			|| i == LAYER_TYPE::LAYER_TRAIL
@@ -684,47 +919,55 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 		GI->Clear_Layer(LEVEL_TOOL, i);
 
 		// 2. ObjectCount
-		_uint iObjectCount = File->Read<_uint>();
-
-		for (_uint j = 0; j < iObjectCount; ++j)
+		//if (/*i == LAYER_TYPE::LAYER_TERRAIN ||*/
+		//	i == LAYER_TYPE::LAYER_BUILDING ||
+		//	i == LAYER_TYPE::LAYER_GRASS ||
+		//	i == LAYER_TYPE::LAYER_GROUND ||
+		//	i == LAYER_TYPE::LAYER_TREEROCK ||
+		//	i == LAYER_TYPE::LAYER_PROP)
 		{
-			// 3. Object_Prototype_Tag
-			wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
-			wstring strObjectTag = CUtils::ToWString(File->Read<string>());
+			_uint iObjectCount = File->Read<_uint>();
 
-			CGameObject* pObj = nullptr;
-			if (FAILED(GI->Add_GameObject(LEVEL_TOOL, i, strPrototypeTag, nullptr, &pObj)))
+			for (_uint j = 0; j < iObjectCount; ++j)
 			{
-				MSG_BOX("Load_Objects_Failed.");
-				return E_FAIL;
+				// 3. Object_Prototype_Tag
+				wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
+				wstring strObjectTag = CUtils::ToWString(File->Read<string>());
+
+				CGameObject* pObj = nullptr;
+				if (FAILED(GI->Add_GameObject(LEVEL_TOOL, i, strPrototypeTag, nullptr, &pObj)))
+				{
+					MSG_BOX("Load_Objects_Failed.");
+					return E_FAIL;
+				}
+
+				if (nullptr == pObj)
+				{
+					MSG_BOX("Add_Object_Failed.");
+					return E_FAIL;
+				}
+				pObj->Set_ObjectTag(strObjectTag);
+
+				CTransform* pTransform = pObj->Get_Component<CTransform>(L"Com_Transform");
+				if (nullptr == pTransform)
+				{
+					MSG_BOX("Get_Transform_Failed.");
+					return E_FAIL;
+				}
+
+				// 6. Obejct States
+				_float4 vRight, vUp, vLook, vPos;
+
+				File->Read<_float4>(vRight);
+				File->Read<_float4>(vUp);
+				File->Read<_float4>(vLook);
+				File->Read<_float4>(vPos);
+
+				pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
+				pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
+				pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
+				pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
 			}
-
-			if (nullptr == pObj)
-			{
-				MSG_BOX("Add_Object_Failed.");
-				return E_FAIL;
-			}
-			pObj->Set_ObjectTag(strObjectTag);
-
-			CTransform* pTransform = pObj->Get_Component<CTransform>(L"Com_Transform");
-			if (nullptr == pTransform)
-			{
-				MSG_BOX("Get_Transform_Failed.");
-				return E_FAIL;
-			}
-
-			// 6. Obejct States
-			_float4 vRight, vUp, vLook, vPos;
-
-			File->Read<_float4>(vRight);
-			File->Read<_float4>(vUp);
-			File->Read<_float4>(vLook);
-			File->Read<_float4>(vPos);
-
-			pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
-			pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
-			pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
-			pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
 		}
 	}
 	MSG_BOX("Map_Loaded.");

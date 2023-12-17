@@ -244,6 +244,7 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 	vector	vToonShade = g_ShadeTarget.Sample(LinearSampler, In.vTexcoord);
 	vToonShade = saturate(vToonShade);
 	vToonShade = ceil(vToonShade * 5.f) / 5.f;
+
 	
 
 	// ºû ¿¬»ê ¸ÔÀÌ±â

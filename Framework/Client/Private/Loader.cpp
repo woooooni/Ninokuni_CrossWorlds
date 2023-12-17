@@ -284,6 +284,15 @@ HRESULT CLoader::Loading_For_Level_Tool()
 		return E_FAIL;
 #pragma endregion
 
+
+#pragma region TerrainBrush
+
+
+	//if (FAILED(GI->Add_Prototype(LEVEL_TOOL, TEXT("Prototype_Component_StructuredBuffer"),
+	//	CStructuredBuffer::Create(m_pDevice, m_pContext))))
+	//	return E_FAIL;
+#pragma endregion
+
 	/* Prototype_GameObject_TempSword */
 	{
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_TempSword"),
@@ -338,100 +347,109 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 			|| i == LAYER_TYPE::LAYER_NPC)
 			continue;
 
-		// 2. ObjectCount
-		_uint iObjectCount = File->Read<_uint>();
-
-		for (_uint j = 0; j < iObjectCount; ++j)
+		//if(/*i == LAYER_TYPE::LAYER_TERRAIN ||*/
+		//	i == LAYER_TYPE::LAYER_BUILDING ||
+		//	i == LAYER_TYPE::LAYER_GRASS ||
+		//	i == LAYER_TYPE::LAYER_GROUND ||
+		//	i == LAYER_TYPE::LAYER_TREEROCK ||
+		//	i == LAYER_TYPE::LAYER_PROP)
 		{
-			// 3. Object_Prototype_Tag
-			wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
-			wstring strObjectTag = CUtils::ToWString(File->Read<string>());
+			_uint iObjectCount = File->Read<_uint>();
 
-			CGameObject* pObj = nullptr;
-			if (FAILED(GI->Add_GameObject(m_eNextLevel, i, strPrototypeTag, nullptr, &pObj)))
+			for (_uint j = 0; j < iObjectCount; ++j)
 			{
-				MSG_BOX("Load_Objects_Failed.");
-				return E_FAIL;
-			}
+				// 3. Object_Prototype_Tag
+				wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
+				wstring strObjectTag = CUtils::ToWString(File->Read<string>());
 
-			if (nullptr == pObj)
-			{
-				MSG_BOX("Add_Object_Failed.");
-				return E_FAIL;
-			}
-			pObj->Set_ObjectTag(strObjectTag);
-
-			CTransform* pTransform = pObj->Get_Component<CTransform>(L"Com_Transform");
-			if (nullptr == pTransform)
-			{
-				MSG_BOX("Get_Transform_Failed.");
-				return E_FAIL;
-			}
-
-			// 6. Obejct States
-			_float4 vRight, vUp, vLook, vPos;
-
-			File->Read<_float4>(vRight);
-			File->Read<_float4>(vUp);
-			File->Read<_float4>(vLook);
-			File->Read<_float4>(vPos);
-
-			pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
-			pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
-			pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
-			pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
-
-
-			for (_uint iCollider = 0; iCollider < CCollider::DETECTION_TYPE::DETECTION_END; iCollider++)
-			{
-				_uint iColliderCount = File->Read<_uint>();
-				for (_uint iObejctColliderCount = 0; iObejctColliderCount < iColliderCount; ++iObejctColliderCount)
+				CGameObject* pObj = nullptr;
+				if (FAILED(GI->Add_GameObject(m_eNextLevel, i, strPrototypeTag, nullptr, &pObj)))
 				{
-					_uint iColliderType = File->Read<_uint>();
-					_float3 vColliderOffset = File->Read<_float3>();
+					MSG_BOX("Load_Objects_Failed.");
+					return E_FAIL;
+				}
 
-					if (iColliderType == CCollider::AABB)
+				if (nullptr == pObj)
+				{
+					MSG_BOX("Add_Object_Failed.");
+					return E_FAIL;
+				}
+				pObj->Set_ObjectTag(strObjectTag);
+
+				CTransform* pTransform = pObj->Get_Component<CTransform>(L"Com_Transform");
+				if (nullptr == pTransform)
+				{
+					MSG_BOX("Get_Transform_Failed.");
+					return E_FAIL;
+				}
+
+				// 6. Obejct States
+				_float4 vRight, vUp, vLook, vPos;
+
+				File->Read<_float4>(vRight);
+				File->Read<_float4>(vUp);
+				File->Read<_float4>(vLook);
+				File->Read<_float4>(vPos);
+
+				pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
+				pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
+				pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
+				pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
+
+
+				for (_uint iCollider = 0; iCollider < CCollider::DETECTION_TYPE::DETECTION_END; iCollider++)
+				{
+					_uint iColliderCount = File->Read<_uint>();
+					for (_uint iObejctColliderCount = 0; iObejctColliderCount < iColliderCount; ++iObejctColliderCount)
 					{
-						BoundingBox tBox = File->Read<BoundingBox>();
+						_uint iColliderType = File->Read<_uint>();
+						_float3 vColliderOffset = File->Read<_float3>();
 
-						CCollider_AABB::AABB_COLLIDER_DESC tDesc;
-						ZeroMemory(&tDesc, sizeof tDesc);
+						if (iColliderType == CCollider::AABB)
+						{
+							BoundingBox tBox = File->Read<BoundingBox>();
 
-						if (nullptr == pObj->Get_Component<CModel>(L"Com_Model"))
-							XMStoreFloat4x4(&tDesc.ModePivotMatrix, XMMatrixIdentity());
-						else
-							XMStoreFloat4x4(&tDesc.ModePivotMatrix, pObj->Get_Component<CModel>(L"Com_Model")->Get_PivotMatrix());
+							CCollider_AABB::AABB_COLLIDER_DESC tDesc;
+							ZeroMemory(&tDesc, sizeof tDesc);
 
-						tDesc.vOffsetPosition = vColliderOffset;
-						tDesc.pOwnerTransform = pTransform;
-						tDesc.pNode = nullptr;
-						tDesc.tBox = tBox;
+							if (nullptr == pObj->Get_Component<CModel>(L"Com_Model"))
+								XMStoreFloat4x4(&tDesc.ModePivotMatrix, XMMatrixIdentity());
+							else
+								XMStoreFloat4x4(&tDesc.ModePivotMatrix, pObj->Get_Component<CModel>(L"Com_Model")->Get_PivotMatrix());
 
-						pObj->Add_Collider(LEVEL_STATIC, iColliderType, iCollider, &tDesc);
-					}
-					else if (iColliderType == CCollider::SPHERE)
-					{
-						BoundingSphere tSphere = File->Read<BoundingSphere>();
+							tDesc.vOffsetPosition = vColliderOffset;
+							tDesc.pOwnerTransform = pTransform;
+							tDesc.pNode = nullptr;
+							tDesc.tBox = tBox;
 
-						CCollider_Sphere::SPHERE_COLLIDER_DESC tDesc;
-						ZeroMemory(&tDesc, sizeof tDesc);
+							pObj->Add_Collider(LEVEL_STATIC, iColliderType, iCollider, &tDesc);
+						}
+						else if (iColliderType == CCollider::SPHERE)
+						{
+							BoundingSphere tSphere = File->Read<BoundingSphere>();
 
-						if (nullptr == pObj->Get_Component<CModel>(L"Com_Model"))
-							XMStoreFloat4x4(&tDesc.ModePivotMatrix, XMMatrixIdentity());
-						else
-							XMStoreFloat4x4(&tDesc.ModePivotMatrix, pObj->Get_Component<CModel>(L"Com_Model")->Get_PivotMatrix());
+							CCollider_Sphere::SPHERE_COLLIDER_DESC tDesc;
+							ZeroMemory(&tDesc, sizeof tDesc);
 
-						tDesc.vOffsetPosition = vColliderOffset;
-						tDesc.pOwnerTransform = pTransform;
-						tDesc.pNode = nullptr;
-						tDesc.tSphere = tSphere;
+							if (nullptr == pObj->Get_Component<CModel>(L"Com_Model"))
+								XMStoreFloat4x4(&tDesc.ModePivotMatrix, XMMatrixIdentity());
+							else
+								XMStoreFloat4x4(&tDesc.ModePivotMatrix, pObj->Get_Component<CModel>(L"Com_Model")->Get_PivotMatrix());
+
+							tDesc.vOffsetPosition = vColliderOffset;
+							tDesc.pOwnerTransform = pTransform;
+							tDesc.pNode = nullptr;
+							tDesc.tSphere = tSphere;
 
 
-						pObj->Add_Collider(LEVEL_STATIC, iColliderType, iCollider, &tDesc);
+							pObj->Add_Collider(LEVEL_STATIC, iColliderType, iCollider, &tDesc);
+						}
 					}
 				}
 			}
 		}
+
+		// 2. ObjectCount
 	}
 
 	// MSG_BOX("Map_Loaded.");
@@ -465,7 +483,7 @@ HRESULT CLoader::Loading_Proto_AllObjects(const wstring& strPath)
 					return E_FAIL;
 				}
 			}
-			else if ((strFilePath.find(L"Probs") != wstring::npos) || (strFilePath.find(L"Prop") != wstring::npos))
+			else if ((strFilePath.find(L"Props") != wstring::npos) || (strFilePath.find(L"Prop") != wstring::npos))
 			{
 				if (FAILED(GI->Add_Prototype(wstring(strFileName),
 					CProbs::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt, OBJ_TYPE::OBJ_PROP, CModel::TYPE_NONANIM), LAYER_TYPE::LAYER_PROP)))

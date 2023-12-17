@@ -240,10 +240,10 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 	if (vDiffuse.a == 0.f)
 		discard;
 
-	// Å÷ ½¦ÀÌµù
 	vector	vToonShade = g_ShadeTarget.Sample(LinearSampler, In.vTexcoord);
 	vToonShade = saturate(vToonShade);
 	vToonShade = ceil(vToonShade * 5.f) / 5.f;
+
 	
 
 	// ºû ¿¬»ê ¸ÔÀÌ±â
@@ -251,6 +251,7 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 
 	// vDiffuse = vDiffuse * vToonShade;
 	Out.vColor = vDiffuse * vToonShade;
+
 
 
 

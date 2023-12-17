@@ -101,10 +101,20 @@ HRESULT CTerrain::Render()
 		m_pBatch->End();
 	}
 
+
+	
+
 	if (FAILED(m_pNavigationCom->Render()))
 		return E_FAIL;
 	
 #endif
+
+	if (FAILED(Bind_ShaderResources()))
+		return E_FAIL;
+
+	if(FAILED(m_pVIBufferCom->Render()))
+		return E_FAIL;
+
 
 	return S_OK;
 }
@@ -128,9 +138,9 @@ HRESULT CTerrain::Ready_Components()
 		return E_FAIL;
 
 	///* Com_Texture*/
-	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Terrain"),
-	//	TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
-	//	return E_FAIL;
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_SnowLandScape"),
+		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+		return E_FAIL;
 
 
 
@@ -163,7 +173,11 @@ HRESULT CTerrain::Bind_ShaderResources()
 	if (FAILED(GI->Bind_TransformToShader(m_pShaderCom, "g_ProjMatrix", CPipeLine::D3DTS_PROJ)))
 		return E_FAIL;
 
+	if(FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Texture")))
+		return E_FAIL;
 
+	if(FAILED(m_pShaderCom->Begin(0)))
+		return E_FAIL;
 
 
 	return S_OK;

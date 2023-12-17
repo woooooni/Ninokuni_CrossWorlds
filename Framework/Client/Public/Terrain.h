@@ -34,6 +34,8 @@ public:
 	virtual HRESULT Render();
 
 
+
+
 #ifdef _DEBUG
 public:
 	void Set_DrawGrid(_bool bDraw) { m_bDraw = bDraw; }
