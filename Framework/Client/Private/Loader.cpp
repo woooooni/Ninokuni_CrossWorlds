@@ -274,19 +274,14 @@ HRESULT CLoader::Loading_For_Level_Tool()
 		CTerrain::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_TERRAIN)))
 		return E_FAIL;
 
-	//if (FAILED(Loading_Proto_AllObjects(L"../Bin/Export/NonAnimModel/Map/")))
-	//	return E_FAIL;
+	if (FAILED(Loading_Proto_AllObjects(L"../Bin/Export/NonAnimModel/Map/")))
+		return E_FAIL;
 		
 #pragma region Particle
 	CParticle::PARTICLE_DESC ParticleInfo = {};
-	ParticleInfo.pVelocityMin  = new _float3[10];
-	ParticleInfo.pVelocityMax  = new _float3[10];
-	ParticleInfo.pVelocityTime = new _float2[10];
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Particle"),
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_TempParticle"),
 		CParticle::Create(m_pDevice, m_pContext, TEXT("Particle_Basic"), &ParticleInfo), LAYER_TYPE::LAYER_EFFECT)))
 		return E_FAIL;
-
 #pragma endregion
 
 	/* Prototype_GameObject_TempSword */

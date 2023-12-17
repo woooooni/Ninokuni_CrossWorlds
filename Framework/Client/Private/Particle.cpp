@@ -27,14 +27,14 @@ CParticle::CParticle(const CParticle& rhs)
 void CParticle::Set_ParticleDesc(const PARTICLE_DESC& tDesc)
 {
 	m_tParticleDesc = tDesc;
-	 
+
 	// 텍스처 셋팅
 	Set_Texture_Diffuse();
 	Set_Texture_Alpha();
 
 	// 버퍼 재시작
 	if (m_pVIBufferCom != nullptr)
-		m_pVIBufferCom->Restart_ParticleBufferDesc();
+		m_pVIBufferCom->Restart_ParticleBufferDesc(m_tParticleDesc.iNumEffectCount);
 }
 
 void CParticle::Set_Position_Perspective(_float3 fPosition)
@@ -58,8 +58,21 @@ HRESULT CParticle::Initialize_Prototype(const PARTICLE_DESC* pParticleDesc, cons
 	XMStoreFloat4x4(&m_ViewMatrix, XMMatrixIdentity());
 	XMStoreFloat4x4(&m_ProjMatrix, XMMatrixOrthographicLH(g_iWinSizeX, g_iWinSizeY, 0.f, 1.f));
 
-	if(pParticleDesc != nullptr)
+	if (pParticleDesc != nullptr)
+	{
 		m_tParticleDesc = *pParticleDesc;
+		if (m_tParticleDesc.iVelocityUse > 0)
+		{
+			if(m_tParticleDesc.pVelocityMin == nullptr)
+				m_tParticleDesc.pVelocityMin = new _float3[m_tParticleDesc.iVelocityUse];
+
+			if (m_tParticleDesc.pVelocityMax == nullptr)
+				m_tParticleDesc.pVelocityMax = new _float3[m_tParticleDesc.iVelocityUse];
+
+			if (m_tParticleDesc.pVelocityTime == nullptr)
+				m_tParticleDesc.pVelocityTime = new _float2[m_tParticleDesc.iVelocityUse];
+		}
+	}
 	else
 		Load_ParticleData(strParticleFilePath);
 
@@ -97,7 +110,7 @@ HRESULT CParticle::Render()
 	if (FAILED(Bind_ShaderResource()))
 		return E_FAIL;
 
-	m_pShaderCom->Begin(0);
+	m_pShaderCom->Begin(m_tParticleDesc.iShaderPass);
 	m_pVIBufferCom->Render(m_tParticleDesc.iNumEffectCount);
 
 	return S_OK;
@@ -133,14 +146,23 @@ HRESULT CParticle::Bind_ShaderResource()
 	// 텍스처
 	if (m_pDiffuseTextureCom != nullptr)
 	{
-		if (FAILED(m_pDiffuseTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", 0)))
+		if (FAILED(m_pDiffuseTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_tParticleDesc.iTextureIndexDiffuse)))
 			return E_FAIL;
 	}
 	if (m_pAlphaTextureCom != nullptr)
 	{
-		if (FAILED(m_pAlphaTextureCom->Bind_ShaderResource(m_pShaderCom, "g_AlphaTexture", 0)))
+		if (FAILED(m_pAlphaTextureCom->Bind_ShaderResource(m_pShaderCom, "g_AlphaTexture", m_tParticleDesc.iTextureIndexAlpha)))
 			return E_FAIL;
 	}
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_bBillboard", &m_tParticleDesc.bBillboard, sizeof(_bool))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha_Discard", &m_tParticleDesc.fAlpha_Discard, sizeof(_float))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fBlack_Discard", &m_tParticleDesc.fBlack_Discard, sizeof(_float3))))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -236,6 +258,8 @@ void* CParticle::Get_ParticleBufferInfo()
 
 	tBufferInfo.pParticleLoop = &m_tParticleDesc.bParticleLoop;
 
+	tBufferInfo.pNumEffectMaxCount = &m_tParticleDesc.iNumEffectMaxCount;
+
 	tBufferInfo.pRange         = &m_tParticleDesc.fRange;
 
 	tBufferInfo.pScaleSameRate = &m_tParticleDesc.bScaleSameRate;
@@ -318,7 +342,23 @@ void* CParticle::Get_ParticleBufferInfo()
 
 
 	tBufferInfo.pColorRandom = &m_tParticleDesc.bColorRandom;
-	tBufferInfo.pColor        = &m_tParticleDesc.vColorS;
+	tBufferInfo.pColorS      = &m_tParticleDesc.vColorS;
+
+	tBufferInfo.pColorChange = &m_tParticleDesc.bColorChange;
+
+	tBufferInfo.pColorChangeRandom = &m_tParticleDesc.bColorChangeRandom;
+	tBufferInfo.pColorChangeRandomTime = &m_tParticleDesc.fColorChangeRandomTime;
+
+	tBufferInfo.pColorLoop   = &m_tParticleDesc.bColorLoop;
+	tBufferInfo.pColorChangeStartDelay = &m_tParticleDesc.fColorChangeStartDelay;
+
+	tBufferInfo.pColorChangeStartM = &m_tParticleDesc.fColorChangeStartM;
+	tBufferInfo.pColorM            = &m_tParticleDesc.fColorM;
+
+	tBufferInfo.pColorChangeStartF = &m_tParticleDesc.fColorChangeStartF;
+	tBufferInfo.pColorF            = &m_tParticleDesc.fColorF;
+
+	tBufferInfo.pColorDuration = &m_tParticleDesc.fColorDuration;
 
 	return &tBufferInfo;
 }
@@ -355,6 +395,9 @@ void CParticle::Set_Texture_Diffuse()
 		Safe_Delete(pszFilePath);
 	}
 	Safe_Delete(pszFileName);
+
+	if (m_pDiffuseTextureCom != nullptr && m_tParticleDesc.iTextureIndexDiffuse > m_pDiffuseTextureCom->Get_TextureCount())
+		m_tParticleDesc.iTextureIndexDiffuse = m_pDiffuseTextureCom->Get_TextureCount();
 }
 
 void CParticle::Set_Texture_Alpha()
@@ -389,6 +432,9 @@ void CParticle::Set_Texture_Alpha()
 		Safe_Delete(pszFilePath);
 	}
 	Safe_Delete(pszFileName);
+
+	if (m_pAlphaTextureCom != nullptr && m_tParticleDesc.iTextureIndexAlpha > m_pAlphaTextureCom->Get_TextureCount())
+		m_tParticleDesc.iTextureIndexAlpha = m_pAlphaTextureCom->Get_TextureCount();
 }
 
 CParticle* CParticle::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const PARTICLE_DESC* pParticleDesc, const wstring& strParticleFilePath)

@@ -12,6 +12,9 @@ public:
 		// 반복 여부
 		_bool* pParticleLoop = nullptr;
 
+		// 파티클 개수
+		_uint* pNumEffectMaxCount = nullptr;
+
 		// 분포 범위
 		_float3* pRange = nullptr;
 
@@ -76,16 +79,6 @@ public:
 		_float2* pRotationSpeed = nullptr;
 #pragma endregion
 
-#pragma region 중력
-		_bool* pRigidbodyUse = nullptr;
-		_bool* pGravityUse   = nullptr;
-		_float*   pMass        = nullptr;
-		_float*   pFricCoeff   = nullptr;
-		_vector*  pMaxVelocity = nullptr;
-
-
-#pragma endregion
-
 		// 지속 시간
 		_float2* pLifeTime = nullptr;
 
@@ -117,17 +110,24 @@ public:
 #pragma endregion
 
 #pragma region 색상
-		_float4* pColor = nullptr;
+		_bool* pColorRandom = nullptr;
+		_float4* pColorS = nullptr;
 
-		_float4* vColorS = nullptr;
+		_bool* pColorChange = nullptr;
+
+		_bool* pColorChangeRandom = nullptr;
+		_float2* pColorChangeRandomTime = nullptr;
+
+		_bool* pColorLoop   = nullptr;
+		_float2* pColorChangeStartDelay = nullptr;
+
+		_float2* pColorChangeStartM = nullptr;
 		_float4* pColorM = nullptr;
+
+		_float2* pColorChangeStartF = nullptr;
 		_float4* pColorF = nullptr;
 
-		_float2* fColorChangeStartDelay = nullptr;
-		_bool* bColorChange = nullptr;
-		_float2* folorChangeTime = nullptr;
-		_bool* pColorRandom = nullptr;
-		_bool* bColorLoop = nullptr;
+		_float2* pColorDuration = nullptr;
 #pragma endregion
 
 	} PARTICLE_BUFFER_DESC;
@@ -164,11 +164,6 @@ public:
 		_float  fRotationChangeTime;
 		_float  fRotationSpeed;
 
-		// 중력
-		_float  fGravityChangeStartTime;
-		_float  fGravityChangeStartDelay;
-
-
 		// 지속 시간
 		_float fTimeAccs;       
 		_float fLifeTimes;      
@@ -185,9 +180,18 @@ public:
 		_float  fAlphaSpeed;
 
 		// 색상
-		LERP_FLOAT_DESC LerpInfo;
 		_float  fColorChangeStartTime;
 		_float  fColorChangeStartDelay;
+
+		LERP_VEC3_DESC LerpInfo;
+		_uint   iColorIndex;
+		_float  fColorChangeStartM;
+		_float  fColorChangeStartF;
+		_float  fColorChangeEndTime;
+
+		_float  fColorAccs;
+		_float  fColorChangeTime;
+		_float3 fNextColor;
 
 	} PARTICLE_INFO_DESC;
 
@@ -196,14 +200,11 @@ public:
 		_float2 fUVIndex;  //8
 		_float2 fMaxCount; //8
 
-		_float4 vColor; //16
+		_float3 fColor; //12
+		_float  fAlpha; //4
 
-		_vector vAxis;  //16
-
-		_bool   bBillboard;  //4
-		_float  fAngle;      //4
-		_float  fAlpha;      //4
-		_float  fTemp0;      //4		
+		_float3 fAxis;  //12
+		_float  fAngle; //4
 
 	} PARTICLE_SHADER_DESC;
 
@@ -219,7 +220,7 @@ public:
 	virtual HRESULT Render(_uint iCount);
 
 public:
-	void Restart_ParticleBufferDesc();
+	void Restart_ParticleBufferDesc(_uint iCount);
 	vector<PARTICLE_SHADER_DESC>& Get_ParticleShaderInfo() { return m_vecParticleShaderDesc; }
 
 	_bool Get_Finished() { return m_bFinished; }

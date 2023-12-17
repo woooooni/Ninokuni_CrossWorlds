@@ -7,19 +7,23 @@ Texture2D	    g_AlphaTexture;
 
 vector			g_vCamPosition;
 
+bool            g_bBillboard;
+float           g_fAlpha_Discard;
+float3          g_fBlack_Discard;
+
 struct EffectDesc //16 배수로 나눠떨어져야함.
 {
-	float2   g_fUVIndex;
-	float2   g_fMaxCount;
+	float2   g_fUVIndex;  // 8
+	float2   g_fMaxCount; // 8
 
-	float4   g_fColor;
+	float3   g_fColor; // 12
+	float    g_fAlpha; // 4
 
-	vector   g_vAxis;
+	float3   g_fAxis;  // 12
+	float    g_fAngle; // 4
 
-	bool     g_bBillboard; //4
-	float    g_fAngle;
-	float    g_fAlpha;
-	float    g_fTemp0;
+	// 블러 컬러
+	// 블러 파워
 };
 EffectDesc g_EffectDesc[1000]; // 8096
 
@@ -72,7 +76,7 @@ struct GS_OUT
 {
 	float4		vPosition : SV_POSITION;
 	float2		vTexcoord : TEXCOORD0;
-	float4		vProjPos  : TEXCOORD1;
+	//float4		vProjPos  : TEXCOORD1;
 
 	uint	iInstanceID : SV_INSTANCEID;
 };
@@ -85,7 +89,7 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> OutStream)
 	// 회전 행렬 생성
 	float3 vRight;
 	float3 vUp;
-	if (g_EffectDesc[In[0].iInstanceID].g_bBillboard)
+	if (g_bBillboard)
 	{
 		vector		vLook = g_vCamPosition - In[0].vPosition;
 
@@ -94,7 +98,7 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> OutStream)
 	}
 	else
 	{
-		float4 fAxis = g_EffectDesc[In[0].iInstanceID].g_vAxis;
+		float3 fAxis = g_EffectDesc[In[0].iInstanceID].g_fAxis;
 		float fAngle = radians(g_EffectDesc[In[0].iInstanceID].g_fAngle);
 
 		float3x3 RotationMatrix = float3x3(
@@ -115,7 +119,7 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> OutStream)
 	Out[0].vTexcoord = float2(
 		((g_EffectDesc[In[0].iInstanceID].g_fUVIndex.x + 0.f) / g_EffectDesc[In[0].iInstanceID].g_fMaxCount.x),
 		((g_EffectDesc[In[0].iInstanceID].g_fUVIndex.y + 0.f) / g_EffectDesc[In[0].iInstanceID].g_fMaxCount.y));
-	Out[0].vProjPos  = Out[0].vPosition;
+	//Out[0].vProjPos  = Out[0].vPosition;
 
 	Out[1].vPosition = vector(In[0].vPosition.xyz - vRight + vUp, 1.f);
 	Out[1].vPosition = mul(Out[1].vPosition, matVP);
@@ -123,7 +127,7 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> OutStream)
 	Out[1].vTexcoord = float2(
 		((g_EffectDesc[In[0].iInstanceID].g_fUVIndex.x + 1.f) / g_EffectDesc[In[0].iInstanceID].g_fMaxCount.x),
 		((g_EffectDesc[In[0].iInstanceID].g_fUVIndex.y + 0.f) / g_EffectDesc[In[0].iInstanceID].g_fMaxCount.y));
-	Out[1].vProjPos = Out[1].vPosition;
+	//Out[1].vProjPos = Out[1].vPosition;
 
 	Out[2].vPosition = vector(In[0].vPosition.xyz - vRight - vUp, 1.f);
 	Out[2].vPosition = mul(Out[2].vPosition, matVP);
@@ -131,7 +135,7 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> OutStream)
 	Out[2].vTexcoord = float2(
 		((g_EffectDesc[In[0].iInstanceID].g_fUVIndex.x + 1.f) / g_EffectDesc[In[0].iInstanceID].g_fMaxCount.x),
 		((g_EffectDesc[In[0].iInstanceID].g_fUVIndex.y + 1.f) / g_EffectDesc[In[0].iInstanceID].g_fMaxCount.y));
-	Out[2].vProjPos = Out[2].vPosition;
+	//Out[2].vProjPos = Out[2].vPosition;
 
 	Out[3].vPosition = vector(In[0].vPosition.xyz + vRight - vUp, 1.f);
 	Out[3].vPosition = mul(Out[3].vPosition, matVP);
@@ -139,7 +143,7 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> OutStream)
 	Out[3].vTexcoord = float2(
 		((g_EffectDesc[In[0].iInstanceID].g_fUVIndex.x + 0.f) / g_EffectDesc[In[0].iInstanceID].g_fMaxCount.x),
 		((g_EffectDesc[In[0].iInstanceID].g_fUVIndex.y + 1.f) / g_EffectDesc[In[0].iInstanceID].g_fMaxCount.y));
-	Out[3].vProjPos = Out[3].vPosition;
+	//Out[3].vProjPos = Out[3].vPosition;
 
 	Out[0].iInstanceID = In[0].iInstanceID;
 	Out[1].iInstanceID = In[0].iInstanceID;
@@ -161,7 +165,7 @@ struct PS_IN
 {
 	float4		vPosition : SV_POSITION;
 	float2		vTexcoord : TEXCOORD0;
-	float4		vProjPos  : TEXCOORD1;
+	//float4		vProjPos  : TEXCOORD1;
 
 	uint	iInstanceID : SV_INSTANCEID;
 };
@@ -178,31 +182,42 @@ PS_OUT PS_MAIN(PS_IN In)
 	PS_OUT			Out = (PS_OUT)0;
 
 	Out.vDiffuse   = g_DiffuseTexture.Sample(PointSampler, In.vTexcoord);
-	if (Out.vDiffuse.a < 0.5f ||
-		Out.vDiffuse.r < 0.5f && Out.vDiffuse.g < 0.5f && Out.vDiffuse.b < 0.5f)
+	if (Out.vDiffuse.a < g_fAlpha_Discard ||
+		Out.vDiffuse.r < g_fBlack_Discard.r && Out.vDiffuse.g < g_fBlack_Discard.g && Out.vDiffuse.b < g_fBlack_Discard.b)
 		discard;
 
-	Out.vDiffuse.r = saturate((Out.vDiffuse.r + g_EffectDesc[In.iInstanceID].g_fColor.r)); 
-	Out.vDiffuse.g = saturate((Out.vDiffuse.g + g_EffectDesc[In.iInstanceID].g_fColor.g));
-    Out.vDiffuse.b = saturate((Out.vDiffuse.b + g_EffectDesc[In.iInstanceID].g_fColor.b));
-	Out.vDiffuse.a = saturate(Out.vDiffuse.a - g_EffectDesc[In.iInstanceID].g_fAlpha);
+	Out.vDiffuse.rgb = saturate((Out.vDiffuse.rgb + g_EffectDesc[In.iInstanceID].g_fColor.rgb));
+	Out.vDiffuse.a   = saturate(Out.vDiffuse.a - g_EffectDesc[In.iInstanceID].g_fAlpha);
+
+	Out.vBlurPower   = float4(1.f, 1.f, 1.f, 0.f);
+	Out.vBrightness  = Out.vDiffuse;
 
 	// 알파 채널 반전
-	//Out.vDiffuse.a = 1.f - Out.vDiffuse.a;
-
-	Out.vBlurPower  = float4(1.f, 1.f, 1.f, 0.f);
-	Out.vBrightness = Out.vDiffuse;
+    //Out.vDiffuse.a = 1.f - Out.vDiffuse.a;
 
 	return Out;
 }
 
 technique11 DefaultTechnique
 {
-	pass Particle
+	pass Particle_Basic_BlendBlend
 	{
 		SetRasterizerState(RS_NoneCull);
 		SetDepthStencilState(DSS_Default, 0);
 		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = compile gs_5_0 GS_MAIN();
+		HullShader = NULL;
+		DomainShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN();
+	}
+
+	pass Particle_Basic_BlendDefault
+	{
+		SetRasterizerState(RS_NoneCull);
+		SetDepthStencilState(DSS_Default, 0);
+		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = compile gs_5_0 GS_MAIN();

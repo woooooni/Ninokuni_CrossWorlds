@@ -478,7 +478,11 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	if (FAILED(CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_STATIC)))
 		return E_FAIL;
 
-
+#pragma region Particle Texture
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_SubUV"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/SubUV/"), 0, true))))
+		return E_FAIL;
+#pragma endregion
 
 
 	//// Texture

@@ -109,13 +109,22 @@ private:
 	_float m_fFadeSpeed[2];
 
 
+	_float m_fColorChangeStartDelay[2];
+	_float m_fColorChangeStartM[2];
+	_float m_fColorChangeStartF[2];
+	_float m_fColorChangeStartE[2];
+
+	_float m_fColorChangeRandomTime[2];
+
 	char   m_cDiffuseTextureName[MAX_PATH] = { "" };
 	char   m_cAlphaTextureName[MAX_PATH]   = { "" };
 
 	char   m_cDiffuseTexturePath[MAX_PATH] = { "" };
-	char   m_cAlphaTexturePath[MAX_PATH] = { "" };
+	char   m_cAlphaTexturePath[MAX_PATH]   = { "" };
 
 	char   m_cSaveAndLoadName[MAX_PATH] = { "" };
+
+	_float m_fBlack_Discard[3];
 
 public:
 	static CTool_Particle* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
