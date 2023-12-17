@@ -223,7 +223,7 @@ HRESULT CMainApp::Ready_Prototype_Component()
 
 	/* For.Prototype_Component_VIBuffer_Terrain*/
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Terrain"),
-		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 256, 256))))
+		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/HeightTest/HeightMap_Test.bmp")))))
 		return E_FAIL;
 
 	/* For.Prototype_Component_VIBuffer_Cloth_Terrain*/
@@ -479,7 +479,11 @@ HRESULT CMainApp::Ready_Prototype_Component()
 		return E_FAIL;
 
 
-
+#pragma region Terrain Texture
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_SnowLandScape"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/HeightTest/T_Winter_snow_05_D.dds")))))
+		return E_FAIL;
+#pragma endregion Terrain Texture
 
 	//// Texture
 	///* For.Prototype_Component_Texture_Effect*/

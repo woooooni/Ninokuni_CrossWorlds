@@ -241,15 +241,15 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 		discard;
 
 	// Å÷ ½¦ÀÌµù
-	// vector		vToonShade = g_ShadeTarget.Sample(LinearSampler, In.vTexcoord);
-	//vToonShade = saturate(vToonShade);
+	 vector		vToonShade = g_ShadeTarget.Sample(LinearSampler, In.vTexcoord);
+	vToonShade = saturate(vToonShade);
 	//vToonShade = ceil(vToonShade * 2.f) / 2.f;
 	
 
 	// ºû ¿¬»ê ¸ÔÀÌ±â
 	/*vector		vSpecular = g_SpecularTarget.Sample(LinearSampler, In.vTexcoord);*/
 
-	// vDiffuse = vDiffuse * vToonShade;
+	vDiffuse = vDiffuse * vToonShade;
 	Out.vColor = vDiffuse;
 
 
