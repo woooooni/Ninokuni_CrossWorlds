@@ -289,6 +289,15 @@ HRESULT CMonster::Render_Instance_AnimModel_Shadow(CShader* pInstancingShader, C
 
 void CMonster::Collision_Enter(const COLLISION_INFO& tInfo)
 {
+	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER)
+	{
+		if (m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT])
+		{
+			m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND] = true;
+			m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATK] = true;
+		}
+	}
+
 	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_WEAPON)
 	{
 		if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY && tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK)
@@ -300,12 +309,22 @@ void CMonster::Collision_Enter(const COLLISION_INFO& tInfo)
 
 void CMonster::Collision_Continue(const COLLISION_INFO& tInfo)
 {
-
+	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER)
+	{
+		if (m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT])
+		{
+			m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND] = true;
+			m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATK] = true;
+		}
+	}
 }
 
 void CMonster::Collision_Exit(const COLLISION_INFO& tInfo)
 {
-
+	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER)
+	{
+		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND] = false;
+	}
 }
 
 

@@ -49,12 +49,12 @@ public:
 #pragma endregion
 	enum SOCKET_TYPE { SOCKET_LEFT_FIST, SOCKET_RIGHT_FIST, SOCKET_LEFT_FOOT, SOCKET_RIGHT_FOOT, SOCKET_END };
 	enum MONSTER_TYPE { NORMAL, BOSS, TYPE_END };
+	enum class MONSTER_BOOLTYPE { MONBOOL_COMBAT, MONBOOL_ATK, MONBOOL_HIT, MONBOOL_ATKAROUND, MONBOOL_END };
 public:
 	typedef struct tagMonsterStat
 	{
 		_float fHp = 100.f;
 		_float fMp = 0.f;
-
 
 		_float fMaxHp = 100.f;
 		_float fMaxMp = 10.f;
@@ -106,9 +106,11 @@ public:
 
 public:
 	virtual void On_Damaged(const COLLISION_INFO& tInfo);
-	virtual _bool Get_IsCombat() { return m_bIsCombat; }
-	virtual void  Set_IsCombat(_bool bIsCombat) { m_bIsCombat = bIsCombat; }
+
 	virtual _vector Get_OriginPos() { return m_vOriginPos; }
+
+	virtual _bool  Get_Bools(MONSTER_BOOLTYPE eType) { return m_bBools[(_uint)eType]; }
+	virtual void   Set_Bools(MONSTER_BOOLTYPE eType, _bool bIsBool) { m_bBools[(_uint)eType] = bIsBool; }
 
 public:
 	MONSTER_TYPE Get_Monster_Type() { return m_eMonsterType; }
@@ -145,7 +147,7 @@ protected:
 	_bool m_bInfinite = false;
 
 	_vector	m_vOriginPos = {};
-	_bool	m_bIsCombat = false;
+	_bool   m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_END] = { false, };
 
 protected:
 	class CTrail* m_pTrails[SOCKET_TYPE::SOCKET_END];

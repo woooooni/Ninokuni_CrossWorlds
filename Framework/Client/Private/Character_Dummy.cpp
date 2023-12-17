@@ -159,6 +159,8 @@ HRESULT CCharacter_Dummy::Ready_Components()
 
 	m_pRigidBodyCom->Set_Velocity(_float3(0.f, 0.f, 0.f));
 
+	m_pRigidBodyCom->Set_Use_Gravity(false);
+
 	return S_OK;
 }
 

@@ -122,6 +122,11 @@ void CShadow_ThiefBT::Tick(const _float& fTimeDelta)
 
 void CShadow_ThiefBT::LateTick(const _float& fTimeDelta)
 {
+	if (KEY_TAP(KEY::Y))
+		m_pShadow_Thief->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT, true);
+	else if (KEY_TAP(KEY::U))
+		m_pShadow_Thief->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT, false);
+
 }
 
 void CShadow_ThiefBT::Init_NodeStart()
@@ -139,44 +144,46 @@ _bool CShadow_ThiefBT::IsZeroHp()
 
 _bool CShadow_ThiefBT::IsAtkRound()
 {
-	/* 나중에 어택어라운드 추가되면 lerp 노드에서 처리. (그래야 애니메이션 끝나고 동작 가능)*/
-	if (KEY_TAP(KEY::J))
+	if (m_pShadow_Thief->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT) &&
+		m_pShadow_Thief->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK))
 	{
-		m_pShadow_Thief->Set_IsCombat(!m_pShadow_Thief->Get_IsCombat());
-	}
-
-	if (m_pShadow_Thief->Get_IsCombat())
 		return true;
+	}
 
 	return false;
 }
 
 _bool CShadow_ThiefBT::IsChase()
 {
-	// 추후 거리계산 필요
-	if (KEY_TAP(KEY::H))
+	if (m_pShadow_Thief->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT) &&
+		!m_pShadow_Thief->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK))
 	{
-		m_BIsChase = !m_BIsChase;
+		return true;
 	}
 
-	return m_BIsChase;
+	return false;
 }
 
 _bool CShadow_ThiefBT::IsReturn()
 {
-	_float4 vPos;
-	_float4 vOriginPos;
-
-	XMStoreFloat4(&vPos, m_tBTNodeDesc.pOwnerTransform->Get_Position());
-	XMStoreFloat4(&vOriginPos, dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_OriginPos());
-
-	if (vPos.x >= vOriginPos.x - 0.1f && vPos.x <= vOriginPos.x + 0.1f &&
-		vPos.z >= vOriginPos.z - 0.1f && vPos.z <= vOriginPos.z + 0.1f)
+	if (!m_pShadow_Thief->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT))
 	{
-		return false;
+		_float4 vPos;
+		_float4 vOriginPos;
+
+		XMStoreFloat4(&vPos, m_tBTNodeDesc.pOwnerTransform->Get_Position());
+		XMStoreFloat4(&vOriginPos, dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_OriginPos());
+
+		if (vPos.x >= vOriginPos.x - 0.1f && vPos.x <= vOriginPos.x + 0.1f &&
+			vPos.z >= vOriginPos.z - 0.1f && vPos.z <= vOriginPos.z + 0.1f)
+		{
+			return false;
+		}
+
+		return true;
 	}
 
-	return true;
+	return false;
 }
 
 

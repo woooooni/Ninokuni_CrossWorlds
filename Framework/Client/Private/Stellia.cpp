@@ -36,7 +36,7 @@ HRESULT CStellia::Initialize(void* pArg)
 
 
 	m_pModelCom->Set_Animation(GI->RandomInt(0, 100));
-	m_pRigidBodyCom->Set_Use_Gravity(false);
+	//m_pRigidBodyCom->Set_Use_Gravity(false);
 
 
 	return S_OK;

@@ -19,19 +19,15 @@ HRESULT CShadow_ThiefNode_Attack2::Initialize_Prototype(BTNODE_DESC* pDesc, CBeh
 
 void CShadow_ThiefNode_Attack2::Start()
 {
-	m_tBTNodeDesc.pOwnerTransform->LookAt(m_tBTNodeDesc.pTargetTransform->Get_Position());
+	m_tBTNodeDesc.pOwnerTransform->LookAt_ForLandObject(m_tBTNodeDesc.pTargetTransform->Get_Position());
 	m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Attack02"));
+	dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK, true);
 }
 
 CBTNode::NODE_STATE CShadow_ThiefNode_Attack2::Tick(const _float& fTimeDelta)
 {
-	if (m_bIsSucces)
-		return NODE_STATE::NODE_SUCCESS;
-
-	if (m_tBTNodeDesc.pOwnerModel->Is_Finish() && !m_tBTNodeDesc.pOwnerModel->Is_Tween())
-		m_bIsSucces = true;
-
-	return NODE_STATE::NODE_RUNNING;
+	// (현재 액션이 취하는 애니메이션, 동작이 끝나고 기다릴 시간, timeDelta)
+	return __super::UnLoop_BehaviorTick(TEXT("SKM_ShadowThief.ao|ShadowThief_Attack02"), 2.f, fTimeDelta);
 }
 
 CShadow_ThiefNode_Attack2* CShadow_ThiefNode_Attack2::Create(BTNODE_DESC* pDesc, CBehaviorTree* pBT)

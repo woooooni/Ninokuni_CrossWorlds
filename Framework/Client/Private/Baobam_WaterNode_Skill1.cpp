@@ -19,25 +19,14 @@ HRESULT CBaobam_WaterNode_Skill1::Initialize_Prototype(BTNODE_DESC* pDesc, CBeha
 
 void CBaobam_WaterNode_Skill1::Start()
 {
-	m_tBTNodeDesc.pOwnerTransform->LookAt(m_tBTNodeDesc.pTargetTransform->Get_Position());
+	m_tBTNodeDesc.pOwnerTransform->LookAt_ForLandObject(m_tBTNodeDesc.pTargetTransform->Get_Position());
 	m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_Baobam_Water.ao|BaoBam_Skill01"));
+	dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK, true);
 }
 
 CBTNode::NODE_STATE CBaobam_WaterNode_Skill1::Tick(const _float& fTimeDelta)
 {
-	if (m_bIsSucces)
-		return NODE_STATE::NODE_SUCCESS;
-
-	if (m_tBTNodeDesc.pOwnerModel->Get_CurrAnimationFrame() >= 40 &&
-		m_tBTNodeDesc.pOwnerModel->Get_CurrAnimationFrame() <= 60)
-	{
-		m_tBTNodeDesc.pOwnerTransform->Move(m_tBTNodeDesc.pOwnerTransform->Get_Look(), 5.f, fTimeDelta);
-	}
-
-	if (m_tBTNodeDesc.pOwnerModel->Is_Finish() && !m_tBTNodeDesc.pOwnerModel->Is_Tween())
-		m_bIsSucces = true;
-
-	return NODE_STATE::NODE_RUNNING;
+	return __super::UnLoop_BehaviorTick(TEXT("SKM_Baobam_Water.ao|BaoBam_Skill01"), 2.f, fTimeDelta);
 }
 
 CBaobam_WaterNode_Skill1* CBaobam_WaterNode_Skill1::Create(BTNODE_DESC* pDesc, CBehaviorTree* pBT)

@@ -22,20 +22,17 @@ HRESULT CBaobam_Water::Initialize_Prototype()
 
 HRESULT CBaobam_Water::Initialize(void* pArg)
 {
+	if (FAILED(__super::Initialize(pArg)))
+		return E_FAIL;
+
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	//if (FAILED(Ready_Colliders()))
-	//	return E_FAIL;
+	if (FAILED(Ready_Colliders()))
+		return E_FAIL;
 
 	if (FAILED(Ready_States()))
 		return E_FAIL;
-
-
-	//m_pModelCom->Set_Animation(GI->RandomInt(0, 10));
-
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(4.f, 1.f, 4.f, 1.f));
-	m_vOriginPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 
 	return S_OK;
 }
@@ -86,14 +83,17 @@ HRESULT CBaobam_Water::Render_ShadowDepth()
 
 void CBaobam_Water::Collision_Enter(const COLLISION_INFO& tInfo)
 {
+	__super::Collision_Enter(tInfo);
 }
 
 void CBaobam_Water::Collision_Continue(const COLLISION_INFO& tInfo)
 {
+	__super::Collision_Continue(tInfo);
 }
 
 void CBaobam_Water::Collision_Exit(const COLLISION_INFO& tInfo)
 {
+	__super::Collision_Exit(tInfo);
 }
 
 HRESULT CBaobam_Water::Ready_Components()
@@ -102,7 +102,8 @@ HRESULT CBaobam_Water::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 		return E_FAIL;
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(GI->RandomFloat(-100.f, 100.f), GI->RandomFloat(-5.f, 5.f), GI->RandomFloat(-100.f, 100.f), 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(4.f, 1.f, 4.f, 1.f));
+	m_vOriginPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 
 	/* For.Com_Renderer */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
@@ -163,53 +164,28 @@ HRESULT CBaobam_Water::Ready_States()
 
 HRESULT CBaobam_Water::Ready_Colliders()
 {
-	//CCollider_Sphere::SPHERE_COLLIDER_DESC ColliderDesc;
-	//ZeroMemory(&ColliderDesc, sizeof ColliderDesc);
-	//
-	//BoundingSphere tSphere;
-	//ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	//tSphere.Radius = 1.f;
-	//
-	//XMStoreFloat4x4(&ColliderDesc.ModePivotMatrix, m_pModelCom->Get_PivotMatrix());
-	//ColliderDesc.pOwnerTransform = m_pTransformCom;
-	//
-	//ColliderDesc.tSphere = tSphere;
-	//ColliderDesc.pNode = m_pModelCom->Get_HierarchyNode(L"Root");
-	//ColliderDesc.vOffsetPosition = _float3(0.f, 1.f, 0.f);
-	//
-	//if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BOUNDARY, &ColliderDesc)))
-	//	return E_FAIL;
-	//
-	//
-	//ColliderDesc.tSphere.Radius = .2f;
-	//ColliderDesc.pNode = m_pModelCom->Get_HierarchyNode(L"C_TongueA_2");
-	//ColliderDesc.vOffsetPosition = _float3(0.f, 0.f, 0.f);
-	//
-	//if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::HEAD, &ColliderDesc)))
-	//	return E_FAIL;
-	//
-	//ColliderDesc.tSphere.Radius = .6f;
-	//ColliderDesc.pNode = m_pModelCom->Get_HierarchyNode(L"C_Spine_1");
-	//ColliderDesc.vOffsetPosition = _float3(0.f, -0.25f, 0.f);
-	//if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BODY, &ColliderDesc)))
-	//	return E_FAIL;
-	//
-	//
-	//
-	//ColliderDesc.tSphere.Radius = .1f;
-	//ColliderDesc.pNode = m_pModelCom->Get_HierarchyNode(L"L_Foot_End");
-	//ColliderDesc.vOffsetPosition = _float3(0.f, 0.f, 0.f);
-	//if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::ATTACK, &ColliderDesc)))
-	//	return E_FAIL;
-	//
-	//
-	//ColliderDesc.tSphere.Radius = .1f;
-	//ColliderDesc.pNode = m_pModelCom->Get_HierarchyNode(L"R_Foot_End");
-	//ColliderDesc.vOffsetPosition = _float3(0.f, 0.f, 0.f);
-	//if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::ATTACK, &ColliderDesc)))
-	//	return E_FAIL;
+	CCollider_Sphere::SPHERE_COLLIDER_DESC ColliderDesc;
+	ZeroMemory(&ColliderDesc, sizeof ColliderDesc);
 
+	BoundingSphere tSphere;
+	ZeroMemory(&tSphere, sizeof(BoundingSphere));
+	tSphere.Radius = 1.2f;
+	ColliderDesc.tSphere = tSphere;
 
+	ColliderDesc.pOwner = this;
+	ColliderDesc.pNode = nullptr;
+	ColliderDesc.pOwnerTransform = m_pTransformCom;
+	ColliderDesc.ModePivotMatrix = m_pModelCom->Get_PivotMatrix();
+	ColliderDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
+	ColliderDesc.bLockAngle_X = false;
+	ColliderDesc.bLockAngle_Y = false;
+	ColliderDesc.bLockAngle_Z = false;
+
+	ColliderDesc.fAngularDamping = 0.f;
+	ColliderDesc.fDensity = 1.f;
+
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BODY, &ColliderDesc)))
+		return E_FAIL;
 
 
 	return S_OK;

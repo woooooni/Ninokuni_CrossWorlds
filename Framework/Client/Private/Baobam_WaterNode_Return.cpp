@@ -24,7 +24,7 @@ void CBaobam_WaterNode_Return::Start()
 
 CBTNode::NODE_STATE CBaobam_WaterNode_Return::Tick(const _float& fTimeDelta)
 {
-	m_tBTNodeDesc.pOwnerTransform->LookAt(dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_OriginPos());
+	m_tBTNodeDesc.pOwnerTransform->LookAt_ForLandObject(dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_OriginPos());
 	m_tBTNodeDesc.pOwnerTransform->Move(m_tBTNodeDesc.pOwnerTransform->Get_Look(), 1.f, fTimeDelta);
 
 	return NODE_STATE::NODE_RUNNING;
