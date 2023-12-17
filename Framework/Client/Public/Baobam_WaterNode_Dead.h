@@ -1,13 +1,10 @@
 #pragma once
 
-#include "Client_Defines.h"
-#include "BTNode_Leaf.h"
-
-#include "Baobam_Water.h"
+#include "Baobam_WaterNode_Base.h"
 
 BEGIN(Client)
 
-class CBaobam_WaterNode_Dead final : public CBTNode_Leaf
+class CBaobam_WaterNode_Dead final : public CBaobam_WaterNode_Base
 {
 private:
 	CBaobam_WaterNode_Dead();

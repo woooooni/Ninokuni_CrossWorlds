@@ -125,7 +125,10 @@ void CBaobam_WaterBT::Tick(const _float& fTimeDelta)
 
 void CBaobam_WaterBT::LateTick(const _float& fTimeDelta)
 {
-	int i = 0;
+	if (KEY_TAP(KEY::J))
+		m_pBaobam_Water->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT, true);
+	else if (KEY_TAP(KEY::K))
+		m_pBaobam_Water->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT, false);
 }
 
 void CBaobam_WaterBT::Init_NodeStart()
@@ -143,44 +146,46 @@ _bool CBaobam_WaterBT::IsZeroHp()
 
 _bool CBaobam_WaterBT::IsAtkRound()
 {
-	/* 나중에 어택어라운드 추가되면 lerp 노드에서 처리. (그래야 애니메이션 끝나고 동작 가능)*/
-	if (KEY_TAP(KEY::J))
+	if (m_pBaobam_Water->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT) &&
+		m_pBaobam_Water->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK))
 	{
-		m_pBaobam_Water->Set_IsCombat(!m_pBaobam_Water->Get_IsCombat());
-	}
-
-	if (m_pBaobam_Water->Get_IsCombat())
 		return true;
+	}
 
 	return false;
 }
 
 _bool CBaobam_WaterBT::IsChase()
 {
-	// 추후 거리계산 필요
-	if (KEY_TAP(KEY::H))
+	if (m_pBaobam_Water->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT) &&
+		!m_pBaobam_Water->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK))
 	{
-		m_BIsChase = !m_BIsChase;
+		return true;
 	}
 
-	return m_BIsChase;
+	return false;
 }
 
 _bool CBaobam_WaterBT::IsReturn()
 {
-	_float4 vPos;
-	_float4 vOriginPos;
-
-	XMStoreFloat4(&vPos, m_tBTNodeDesc.pOwnerTransform->Get_Position());
-	XMStoreFloat4(&vOriginPos, dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_OriginPos());
-
-	if (vPos.x >= vOriginPos.x - 0.1f && vPos.x <= vOriginPos.x + 0.1f &&
-		vPos.z >= vOriginPos.z - 0.1f && vPos.z <= vOriginPos.z + 0.1f)
+	if (!m_pBaobam_Water->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT))
 	{
-		return false;
+		_float4 vPos;
+		_float4 vOriginPos;
+
+		XMStoreFloat4(&vPos, m_tBTNodeDesc.pOwnerTransform->Get_Position());
+		XMStoreFloat4(&vOriginPos, dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_OriginPos());
+
+		if (vPos.x >= vOriginPos.x - 0.1f && vPos.x <= vOriginPos.x + 0.1f &&
+			vPos.z >= vOriginPos.z - 0.1f && vPos.z <= vOriginPos.z + 0.1f)
+		{
+			return false;
+		}
+
+		return true;
 	}
 
-	return true;
+	return false;
 }
 
 

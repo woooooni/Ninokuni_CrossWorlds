@@ -199,6 +199,7 @@
     <ClInclude Include="..\Public\Baobam_WaterBT.h" />
     <ClInclude Include="..\Public\Baobam_WaterNode_Attack1.h" />
     <ClInclude Include="..\Public\Baobam_WaterNode_Attack2.h" />
+    <ClInclude Include="..\Public\Baobam_WaterNode_Base.h" />
     <ClInclude Include="..\Public\Baobam_WaterNode_Chase.h" />
     <ClInclude Include="..\Public\Baobam_WaterNode_Dead.h" />
     <ClInclude Include="..\Public\Baobam_WaterNode_Idle.h" />
@@ -223,6 +224,7 @@
     <ClInclude Include="..\Public\Shadow_Thief.h" />
     <ClInclude Include="..\Public\Shadow_ThiefNode_Attack1.h" />
     <ClInclude Include="..\Public\Shadow_ThiefNode_Attack2.h" />
+    <ClInclude Include="..\Public\Shadow_ThiefNode_Base.h" />
     <ClInclude Include="..\Public\Shadow_ThiefNode_Chase.h" />
     <ClInclude Include="..\Public\Shadow_ThiefNode_Dead.h" />
     <ClInclude Include="..\Public\Shadow_ThiefNode_Idle.h" />
@@ -346,6 +348,7 @@
     <ClCompile Include="..\Private\Baobam_WaterBT.cpp" />
     <ClCompile Include="..\Private\Baobam_WaterNode_Attack1.cpp" />
     <ClCompile Include="..\Private\Baobam_WaterNode_Attack2.cpp" />
+    <ClCompile Include="..\Private\Baobam_WaterNode_Base.cpp" />
     <ClCompile Include="..\Private\Baobam_WaterNode_Chase.cpp" />
     <ClCompile Include="..\Private\Baobam_WaterNode_Dead.cpp" />
     <ClCompile Include="..\Private\Baobam_WaterNode_Idle.cpp" />
@@ -371,6 +374,7 @@
     <ClCompile Include="..\Private\Shadow_Thief.cpp" />
     <ClCompile Include="..\Private\Shadow_ThiefNode_Attack1.cpp" />
     <ClCompile Include="..\Private\Shadow_ThiefNode_Attack2.cpp" />
+    <ClCompile Include="..\Private\Shadow_ThiefNode_Base.cpp" />
     <ClCompile Include="..\Private\Shadow_ThiefNode_Chase.cpp" />
     <ClCompile Include="..\Private\Shadow_ThiefNode_Dead.cpp" />
     <ClCompile Include="..\Private\Shadow_ThiefNode_Idle.cpp" />

@@ -34,11 +34,12 @@ CBTNode::NODE_STATE CBTNode_Sequence::Tick(const _float& fTimeDelta)
         case NODE_STATE::NODE_SUCCESS:
             continue;
         case NODE_STATE::NODE_FAIL:
-            for (auto iter : m_ltChildNode)
-            {
-                iter->Init_Success();
-            }
-            return NODE_STATE::NODE_FAIL;
+           //for (auto iter : m_ltChildNode)
+           //{
+           //    iter->Init_Success();
+           //    iter->Set_IsStart(false);
+           //}
+           return NODE_STATE::NODE_FAIL;
         }
     }
 

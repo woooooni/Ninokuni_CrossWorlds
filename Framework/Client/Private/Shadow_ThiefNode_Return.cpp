@@ -24,8 +24,8 @@ void CShadow_ThiefNode_Return::Start()
 
 CBTNode::NODE_STATE CShadow_ThiefNode_Return::Tick(const _float& fTimeDelta)
 {
-	m_tBTNodeDesc.pOwnerTransform->LookAt(dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_OriginPos());
-	m_tBTNodeDesc.pOwnerTransform->Move(m_tBTNodeDesc.pOwnerTransform->Get_Look(), 1.f, fTimeDelta);
+	m_tBTNodeDesc.pOwnerTransform->LookAt_ForLandObject(dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_OriginPos());
+	m_tBTNodeDesc.pOwnerTransform->Move(m_tBTNodeDesc.pOwnerTransform->Get_Look(), 3.f, fTimeDelta);
 
 	return NODE_STATE::NODE_RUNNING;
 }
