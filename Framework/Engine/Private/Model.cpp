@@ -266,7 +266,7 @@ HRESULT CModel::LateTick(_float fTimeDelta)
 		if (m_TweenDesc.cur.iFix || (!pCurAnim->Is_Loop() && 0 == m_TweenDesc.cur.iNextFrame))
 			m_TweenDesc.cur.fRatio = 0.f;
 
-		pCurAnim->Update_AnimationData(fTimeDelta, m_TweenDesc);
+		pCurAnim->Update_Animation_Data(fTimeDelta, m_TweenDesc);
 	}
 
 	/* 다음 애니메이션이 예약되어 있다면 */
@@ -303,7 +303,7 @@ HRESULT CModel::LateTick(_float fTimeDelta)
 			m_TweenDesc.next.fRatio = m_TweenDesc.next.fFrameAcc / fTimePerFrame;
 			std::clamp(m_TweenDesc.next.fRatio, 0.f, 1.f);
 
-			pNextAnim->Update_AnimationData(fTimeDelta, m_TweenDesc);
+			pNextAnim->Update_Animation_Data(fTimeDelta, m_TweenDesc);
 		}
 
 	}

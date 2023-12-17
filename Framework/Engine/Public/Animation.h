@@ -8,13 +8,11 @@ class ENGINE_DLL CAnimation final : public CBase
 {
 public:
 	
-	enum class ANIM_EVENT_TYPE { SOUND, EFFECT, CAMERA, COLLIDER, TYPE_END };
-
-	typedef struct tagAnimEventDesc
+	/*typedef struct tagAnimEventDesc
 	{
 		ANIM_EVENT_TYPE eType;
 
-	}ANIM_EVENT_DESC;
+	}ANIM_EVENT_DESC;*/
 
 	typedef struct tagAnimSpeedDesc
 	{
@@ -41,7 +39,7 @@ public:
 	HRESULT Initialize(class CModel* pModel); 
 
 	/* 라이프 스피드와 이벤트 체크 */
-	void Update_AnimationData(_float fTickPerSecond, const TWEEN_DESC& tDesc);
+	void Update_Animation_Data(_float fTickPerSecond, const TWEEN_DESC& tDesc);
 	void Clear_AnimationData();
 public:
 
@@ -99,8 +97,8 @@ public:
 #pragma endregion
 
 private:
-	void Update_AnimationSpeed(_float fTickPerSecond, const TWEEN_DESC& tDesc);
-	void Update_AnimationEvent(_float fTickPerSecond, const TWEEN_DESC& tDesc);
+	void Update_Animation_Speed(_float fTickPerSecond, const TWEEN_DESC& tDesc);
+	void Update_Animation_Event(_float fTickPerSecond, const TWEEN_DESC& tDesc);
 
 	const _float Calculate_LerpTime(const ANIM_SPEED_DESC tSpeedDesc, const TWEEN_DESC tTweenDesc, const _float fTickPerSecond);
 

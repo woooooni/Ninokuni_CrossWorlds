@@ -42,6 +42,7 @@ private:
 	_bool m_bShowTerrain_Tool = false;
 	_bool m_bShowNavigation_Tool = false;
 	_bool m_bShowUI_Tool = false;
+	_bool m_bShow_Demo = false;
 
 
 private:

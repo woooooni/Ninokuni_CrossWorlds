@@ -159,6 +159,7 @@ void CImGui_Manager::Tick(_float fTimeDelta)
     ImGui::Checkbox("Terrain_Tool", &m_bShowTerrain_Tool);
     ImGui::Checkbox("Navigation_Tool", &m_bShowNavigation_Tool);
     ImGui::Checkbox("UI_Tool", &m_bShowUI_Tool);
+    ImGui::Checkbox("Demo", &m_bShow_Demo);
     ImGui::End();
 
 
@@ -200,6 +201,11 @@ void CImGui_Manager::Tick(_float fTimeDelta)
     if (true == m_bShowUI_Tool)
     {
         m_pUI_Tool->Tick(fTimeDelta);
+    }
+
+    if (true == m_bShow_Demo)
+    {
+        ImGui::ShowDemoWindow(&m_bShow_Demo);
     }
 
     ImGui::EndFrame();

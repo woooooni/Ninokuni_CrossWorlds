@@ -215,8 +215,8 @@ HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel, const wstring str
 		return E_FAIL;
 
 	//* 05 For. Save Vtf Texture */
-	if (FAILED(Save_Model_Vtf(strFilePath, pTexture)))
-		return E_FAIL;
+	/*if (FAILED(Save_Model_Vtf(strFilePath, pTexture)))
+		return E_FAIL;*/
 
 	/* 06 For. map */
 	if (nullptr != Find_Model_Vtf(pModel->Get_Name()))

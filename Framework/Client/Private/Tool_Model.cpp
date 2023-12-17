@@ -68,9 +68,6 @@ void CTool_Model::Tick(_float fTimeDelta)
 	ImGui::End();
 
 	Tick_Dummys(fTimeDelta);
-
-	_bool bDemo = FALSE;
-	if(bDemo) ImGui::ShowDemoWindow(&bDemo);
 }
 
 HRESULT CTool_Model::Render()
@@ -115,6 +112,9 @@ Vec3 CTool_Model::Calculate_SocketPosition()
 
 Matrix CTool_Model::Calculate_SocketWorldMatrix()
 {
+	if (nullptr == m_pDummy->Get_ModelCom())
+		return Matrix();
+
 	TweenDesc TweenDesc = m_pDummy->Get_ModelCom()->Get_TweenDesc();
 
 	enum STEP { CURR, NEXT, STEP_END };
@@ -1079,34 +1079,167 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 		if (Is_Exception())
 			return;
 
-		/* Sound */
-		if (ImGui::TreeNode("Sound"))
-		{
-
-			ImGui::TreePop();
-		}
-
-		/* Effect */
-		if (ImGui::TreeNode("Effect"))
-		{
-
-			ImGui::TreePop();
-		}
-
-		/* Camera */
-		if (ImGui::TreeNode("Camera"))
-		{
-
-			ImGui::TreePop();
-		}
-
-		/* Collider  */
-		if (ImGui::TreeNode("Collider"))
-		{
-
-			ImGui::TreePop();
-		}
+		ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
+		
+		/* Data */
+		const _float	fCurFrame = m_pDummy->Get_ModelCom()->Get_CurrAnimationFrame_WithRatio();
+		CAnimation*		pCurAnim = m_pDummy->Get_ModelCom()->Get_CurrAnimation();
+		if (nullptr == pCurAnim)
+			return;
+		
 		IMGUI_NEW_LINE;
+
+
+		/* Tab Bar */
+		if (ImGui::BeginTabBar("Animation Event ", tab_bar_flags))
+		{
+			/* Sound */
+			if (ImGui::BeginTabItem("Sound"))
+			{
+				ImGui::PushItemWidth(300.f);
+				{
+					static int iSoundCurIndex = 0; 
+					const char* szSoundPreview = szAnimEventSoundTypeNames[iSoundCurIndex];
+					if (ImGui::BeginCombo("Sound Event Type", szSoundPreview))
+					{
+						for (int n = 0; n < IM_ARRAYSIZE(szAnimEventSoundTypeNames); n++)
+						{
+							const bool is_selected = (iSoundCurIndex == n);
+							if (ImGui::Selectable(szAnimEventSoundTypeNames[n], is_selected))
+								iSoundCurIndex = n;
+
+
+							if (is_selected)
+								ImGui::SetItemDefaultFocus();
+						}
+						ImGui::EndCombo();
+					}
+
+				}
+				ImGui::PopItemWidth();
+
+
+				IMGUI_NEW_LINE;
+				if (ImGui::Button("Add Sound Event"))
+				{
+
+				}
+
+				ImGui::EndTabItem();
+			}
+
+
+			/* Effect */
+			if (ImGui::BeginTabItem("Effect"))
+			{
+				ImGui::PushItemWidth(300.f);
+				{
+					static int iEffectCurIndex = 0;
+					const char* szEffectPreview = szAnimEventEffectTypeNames[iEffectCurIndex];
+					if (ImGui::BeginCombo("Effect Event Type", szEffectPreview))
+					{
+						for (int n = 0; n < IM_ARRAYSIZE(szAnimEventEffectTypeNames); n++)
+						{
+							const bool is_selected = (iEffectCurIndex == n);
+							if (ImGui::Selectable(szAnimEventEffectTypeNames[n], is_selected))
+								iEffectCurIndex = n;
+
+
+							if (is_selected)
+								ImGui::SetItemDefaultFocus();
+						}
+						ImGui::EndCombo();
+					}
+
+				}
+				ImGui::PopItemWidth();
+
+
+				IMGUI_NEW_LINE;
+				if (ImGui::Button("Add Effect Event"))
+				{
+
+				}
+
+				ImGui::EndTabItem();
+			}
+
+			/* Camera */
+			if (ImGui::BeginTabItem("Camera"))
+			{
+				ImGui::PushItemWidth(300.f);
+				{
+					static int iCameraCurIndex = 0;
+					const char* szCameraPreview = szAnimEventCameraTypeNames[iCameraCurIndex];
+					if (ImGui::BeginCombo("Camera Event Type", szCameraPreview))
+					{
+						for (int n = 0; n < IM_ARRAYSIZE(szAnimEventCameraTypeNames); n++)
+						{
+							const bool is_selected = (iCameraCurIndex == n);
+							if (ImGui::Selectable(szAnimEventCameraTypeNames[n], is_selected))
+								iCameraCurIndex = n;
+
+
+							if (is_selected)
+								ImGui::SetItemDefaultFocus();
+						}
+						ImGui::EndCombo();
+					}
+
+				}
+				ImGui::PopItemWidth();
+
+
+				IMGUI_NEW_LINE;
+				if (ImGui::Button("Add Camera Event"))
+				{
+
+				}
+
+				ImGui::EndTabItem();
+			}
+
+			/* Collider */
+			if (ImGui::BeginTabItem("Collider"))
+			{
+				ImGui::PushItemWidth(300.f);
+				{
+					static int iColliderCurIndex = 0;
+					const char* szColliderPreview = szAnimEventColliderTypeNames[iColliderCurIndex];
+					if (ImGui::BeginCombo("Collider Event Type", szColliderPreview))
+					{
+						for (int n = 0; n < IM_ARRAYSIZE(szAnimEventColliderTypeNames); n++)
+						{
+							const bool is_selected = (iColliderCurIndex == n);
+							if (ImGui::Selectable(szAnimEventColliderTypeNames[n], is_selected))
+								iColliderCurIndex = n;
+
+
+							if (is_selected)
+								ImGui::SetItemDefaultFocus();
+						}
+						ImGui::EndCombo();
+					}
+
+				}
+				ImGui::PopItemWidth();
+
+
+				IMGUI_NEW_LINE;
+				if (ImGui::Button("Add Collider Event"))
+				{
+
+				}
+
+				ImGui::EndTabItem();
+			}
+			ImGui::EndTabBar();
+
+		}
+		
+		IMGUI_NEW_LINE;
+		IMGUI_NEW_LINE;
+
 	}
 }
 

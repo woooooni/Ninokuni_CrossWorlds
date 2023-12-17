@@ -79,6 +79,30 @@ enum CHANNELID
 	MAXCHANNEL
 };
 
-
 enum DIMK { DIMK_LBUTTON, DIMK_RBUTTON, DIMK_WHEEL, DIMK_X, DIMK_END };
 enum DIMM { DIMM_X, DIMM_Y, DIMM_WHEEL, DIMM_END };
+
+namespace Engine
+{
+	enum ANIM_EVENT_TYPE			{ SOUND, EFFECT, CAMERA, COLLIDER, ANIM_EVENT_TYPE_END};
+
+	enum ANIM_EVENT_SOUND_TYPE		{ PLAY_SOUND, PLAY_BGM, STOP_SOUND, STOP_ALL, SET_VOLUME, ANIM_EVENT_SOUND_TYPE_END };
+	enum ANIM_EVENT_EFFECT_TYPE		{ NONE, ANIM_EVENT_EFFECT_TYPE_END };
+	enum ANIM_EVENT_CAMERA_TYPE		{ ACTION, CHANGE, ANIM_EVENT_CAMERA_TYPE_END };
+	enum ANIM_EVENT_COLLIDER_TYPE	{ ON, OFF, ANIM_EVENT_COLLIDER_TYPE_END };
+
+	static const wstring strAnimEventTypeNames[ANIM_EVENT_TYPE::ANIM_EVENT_TYPE_END]{ L"Sound", L"Effect", L"Camera", L"Collider" };
+	static const char* szAnimEventTypeNames[ANIM_EVENT_TYPE::ANIM_EVENT_TYPE_END]{ "Sound", "Effect", "Camera", "Collider" };
+
+	static const wstring strAnimEventSoundTypeNames[ANIM_EVENT_SOUND_TYPE::ANIM_EVENT_SOUND_TYPE_END]{ L"Play Sound", L"Play Bgm", L"Stop Sound", L"Stop All", L"Set Volume" };
+	static const char* szAnimEventSoundTypeNames[ANIM_EVENT_SOUND_TYPE::ANIM_EVENT_SOUND_TYPE_END]{ "Play Sound", "Play Bgm", "Stop Sound", "Stop All", "Set Volume" };
+
+	static const wstring strAnimEventEffectTypeNames[ANIM_EVENT_EFFECT_TYPE::ANIM_EVENT_EFFECT_TYPE_END]{ L"None" };
+	static const char* szAnimEventEffectTypeNames[ANIM_EVENT_EFFECT_TYPE::ANIM_EVENT_EFFECT_TYPE_END]{ "None" };
+
+	static const wstring strAnimEventCameraTypeNames[ANIM_EVENT_CAMERA_TYPE::ANIM_EVENT_CAMERA_TYPE_END]{ L"Action", L"Change" };
+	static const char* szAnimEventCameraTypeNames[ANIM_EVENT_CAMERA_TYPE::ANIM_EVENT_CAMERA_TYPE_END]{ "Action", "Change" };
+
+	static const wstring strAnimEventColliderTypeNames[ANIM_EVENT_COLLIDER_TYPE::ANIM_EVENT_COLLIDER_TYPE_END]{ L"On", L"Off" };
+	static const char* szAnimEventColliderTypeNames[ANIM_EVENT_COLLIDER_TYPE::ANIM_EVENT_COLLIDER_TYPE_END]{ "On", "Off" };
+}

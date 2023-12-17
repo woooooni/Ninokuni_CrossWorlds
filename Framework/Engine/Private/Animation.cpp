@@ -62,10 +62,10 @@ HRESULT CAnimation::Initialize(CModel* pModel)
 	return S_OK;
 }
 
-void CAnimation::Update_AnimationData(_float fTickPerSecond, const TWEEN_DESC& tDesc)
+void CAnimation::Update_Animation_Data(_float fTickPerSecond, const TWEEN_DESC& tDesc)
 {
-	Update_AnimationSpeed(fTickPerSecond, tDesc);
-	Update_AnimationEvent(fTickPerSecond, tDesc);
+	Update_Animation_Speed(fTickPerSecond, tDesc);
+	Update_Animation_Event(fTickPerSecond, tDesc);
 }
 
 void CAnimation::Clear_AnimationData()
@@ -199,7 +199,7 @@ HRESULT CAnimation::Clear_Channels()
 	return S_OK;
 }
 
-void CAnimation::Update_AnimationSpeed(_float fTickPerSecond, const TWEEN_DESC& tDesc)
+void CAnimation::Update_Animation_Speed(_float fTickPerSecond, const TWEEN_DESC& tDesc)
 {
 	/* Checke Speed */
 	if (m_SpeedDescs.empty())
@@ -236,7 +236,7 @@ void CAnimation::Update_AnimationSpeed(_float fTickPerSecond, const TWEEN_DESC& 
 	}
 }
 
-void CAnimation::Update_AnimationEvent(_float fTickPerSecond, const TWEEN_DESC& tDesc)
+void CAnimation::Update_Animation_Event(_float fTickPerSecond, const TWEEN_DESC& tDesc)
 {
 }
 
