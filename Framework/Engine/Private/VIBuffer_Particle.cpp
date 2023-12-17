@@ -11,8 +11,12 @@ CVIBuffer_Particle::CVIBuffer_Particle(const CVIBuffer_Particle& rhs)
 {
 }
 
-void CVIBuffer_Particle::Restart_ParticleBufferDesc()
+void CVIBuffer_Particle::Restart_ParticleBufferDesc(_uint iCount)
 {
+	m_iNumInstance = iCount;
+	if (m_iNumInstance > m_iMaxCount)
+		m_iNumInstance = m_iMaxCount;
+
 	m_bFinished = false;
 
 	D3D11_MAPPED_SUBRESOURCE SubResource;
@@ -93,33 +97,27 @@ void CVIBuffer_Particle::Restart_ParticleBufferDesc()
 #pragma endregion
 
 #pragma region 회전
-		if ((*m_tParticleDesc.pBillboard))
+		if (!(*m_tParticleDesc.pBillboard))
 		{
-			m_vecParticleShaderDesc[i].bBillboard = true;
-		}
-		else
-		{
-			m_vecParticleShaderDesc[i].bBillboard = false;
-
 			if ((*m_tParticleDesc.pRandomAxis))
 			{
 				_uint iRandomCount = (_uint)CUtils::Random_Float(0.f, 2.9);
 				switch (iRandomCount)
 				{
 				case 0:
-					m_vecParticleShaderDesc[i].vAxis = XMVectorSet(1.f, 0.f, 0.f, 0.f);
+					m_vecParticleShaderDesc[i].fAxis = _float3(1.f, 0.f, 0.f);
 					break;
 				case 1:
-					m_vecParticleShaderDesc[i].vAxis = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+					m_vecParticleShaderDesc[i].fAxis = _float3(0.f, 1.f, 0.f);
 					break;
 				default:
-					m_vecParticleShaderDesc[i].vAxis = XMVectorSet(0.f, 0.f, 1.f, 0.f);
+					m_vecParticleShaderDesc[i].fAxis = _float3(0.f, 0.f, 1.f);
 					break;
 				}
 			}
 			else
 			{
-				m_vecParticleShaderDesc[i].vAxis = (*m_tParticleDesc.pAxis);
+				m_vecParticleShaderDesc[i].fAxis = _float3(XMVectorGetX((*m_tParticleDesc.pAxis)), XMVectorGetY((*m_tParticleDesc.pAxis)), XMVectorGetZ((*m_tParticleDesc.pAxis)));
 			}
 
 			if ((*m_tParticleDesc.pRandomAngle))
@@ -185,10 +183,32 @@ void CVIBuffer_Particle::Restart_ParticleBufferDesc()
 #pragma endregion
 
 #pragma region 색상
+		if ((*m_tParticleDesc.pColorChange))
+		{
+			m_vecParticleInfoDesc[i].LerpInfo = {};
+			m_vecParticleInfoDesc[i].fColorChangeEndTime = CUtils::Random_Float((*m_tParticleDesc.pColorDuration).x, (*m_tParticleDesc.pColorDuration).y);
+
+			if ((*m_tParticleDesc.pColorChangeRandom))
+			{
+				m_vecParticleInfoDesc[i].fNextColor = _float3(CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f));
+				m_vecParticleInfoDesc[i].fColorAccs = 0.f;
+				m_vecParticleInfoDesc[i].fColorChangeTime = CUtils::Random_Float((*m_tParticleDesc.pColorChangeRandomTime).x, (*m_tParticleDesc.pColorChangeRandomTime).y);
+			}
+			else
+			{
+				m_vecParticleInfoDesc[i].fColorChangeStartTime = 0.f;
+				m_vecParticleInfoDesc[i].fColorChangeStartDelay = CUtils::Random_Float((*m_tParticleDesc.pColorChangeStartDelay).x, (*m_tParticleDesc.pColorChangeStartDelay).y);
+
+				m_vecParticleInfoDesc[i].iColorIndex = 0;
+				m_vecParticleInfoDesc[i].fColorChangeStartM = CUtils::Random_Float((*m_tParticleDesc.pColorChangeStartM).x, (*m_tParticleDesc.pColorChangeStartM).y);
+				m_vecParticleInfoDesc[i].fColorChangeStartF = CUtils::Random_Float((*m_tParticleDesc.pColorChangeStartF).x, (*m_tParticleDesc.pColorChangeStartF).y);
+			}
+		}
+
 		if ((*m_tParticleDesc.pColorRandom))
-			m_vecParticleShaderDesc[i].vColor = _float4(CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.5f, 1.f));
+			m_vecParticleShaderDesc[i].fColor = _float3(CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f));
 		else
-			m_vecParticleShaderDesc[i].vColor = (*m_tParticleDesc.pColor);
+			m_vecParticleShaderDesc[i].fColor = _float3((*m_tParticleDesc.pColorS).x, (*m_tParticleDesc.pColorS).y, (*m_tParticleDesc.pColorS).z);
 #pragma endregion
 	}
 
@@ -263,6 +283,9 @@ HRESULT CVIBuffer_Particle::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_tParticleDesc = *static_cast<PARTICLE_BUFFER_DESC*>(pArg);
+
+	if ((*m_tParticleDesc.pNumEffectMaxCount) <= m_iMaxCount)
+		m_iMaxCount = (*m_tParticleDesc.pNumEffectMaxCount);
 
 	m_vecParticleInfoDesc.reserve(m_iMaxCount);
 	m_vecParticleShaderDesc.reserve(m_iMaxCount);
@@ -353,33 +376,27 @@ HRESULT CVIBuffer_Particle::Initialize(void* pArg)
 #pragma endregion
 
 #pragma region 회전
-		if ((*m_tParticleDesc.pBillboard))
+		if (!(*m_tParticleDesc.pBillboard))
 		{
-			ParticleShaderInfo.bBillboard = true;
-		}
-		else
-		{
-			ParticleShaderInfo.bBillboard = false;
-
 			if ((*m_tParticleDesc.pRandomAxis))
 			{
 				_uint iRandomCount = (_uint)CUtils::Random_Float(0.f, 2.9);
 				switch (iRandomCount)
 				{
 				case 0:
-					ParticleShaderInfo.vAxis = XMVectorSet(1.f, 0.f, 0.f, 0.f);
+					ParticleShaderInfo.fAxis = _float3(1.f, 0.f, 0.f);
 					break;
 				case 1:
-					ParticleShaderInfo.vAxis = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+					ParticleShaderInfo.fAxis = _float3(0.f, 1.f, 0.f);
 					break;
 				default:
-					ParticleShaderInfo.vAxis = XMVectorSet(0.f, 0.f, 1.f, 0.f);
+					ParticleShaderInfo.fAxis = _float3(0.f, 0.f, 1.f);
 					break;
 				}
 			}
 			else
 			{
-				ParticleShaderInfo.vAxis = (*m_tParticleDesc.pAxis);
+				ParticleShaderInfo.fAxis = _float3(XMVectorGetX((*m_tParticleDesc.pAxis)), XMVectorGetY((*m_tParticleDesc.pAxis)), XMVectorGetZ((*m_tParticleDesc.pAxis)));
 			}
 
 			if ((*m_tParticleDesc.pRandomAngle))
@@ -446,10 +463,35 @@ HRESULT CVIBuffer_Particle::Initialize(void* pArg)
 #pragma endregion
 
 #pragma region 색상
+		if ((*m_tParticleDesc.pColorChange))
+		{
+			ParticleInfo.LerpInfo = {};
+			ParticleInfo.fColorChangeEndTime = CUtils::Random_Float((*m_tParticleDesc.pColorDuration).x, (*m_tParticleDesc.pColorDuration).y);
+
+			if ((*m_tParticleDesc.pColorChangeRandom))
+			{
+				// 다음에 보간할 랜덤 색상
+				ParticleInfo.fNextColor = _float3(CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f));
+				// 누적 시간
+				ParticleInfo.fColorAccs = 0.f;
+				// 다음 보간 교체할 시간
+				ParticleInfo.fColorChangeTime = CUtils::Random_Float((*m_tParticleDesc.pColorChangeRandomTime).x, (*m_tParticleDesc.pColorChangeRandomTime).y);
+			}
+			else
+			{
+				ParticleInfo.fColorChangeStartTime  = 0.f;
+				ParticleInfo.fColorChangeStartDelay = CUtils::Random_Float((*m_tParticleDesc.pColorChangeStartDelay).x, (*m_tParticleDesc.pColorChangeStartDelay).y);
+
+				ParticleInfo.iColorIndex = 0;
+				ParticleInfo.fColorChangeStartM = CUtils::Random_Float((*m_tParticleDesc.pColorChangeStartM).x, (*m_tParticleDesc.pColorChangeStartM).y);
+				ParticleInfo.fColorChangeStartF = CUtils::Random_Float((*m_tParticleDesc.pColorChangeStartF).x, (*m_tParticleDesc.pColorChangeStartF).y);
+			}
+		}
+
 		if ((*m_tParticleDesc.pColorRandom))
-			ParticleShaderInfo.vColor = _float4(CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.5f, 1.f));
+			ParticleShaderInfo.fColor = _float3(CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f));
 		else
-			ParticleShaderInfo.vColor = (*m_tParticleDesc.pColor);
+			ParticleShaderInfo.fColor = _float3((*m_tParticleDesc.pColorS).x, (*m_tParticleDesc.pColorS).y, (*m_tParticleDesc.pColorS).z);
 #pragma endregion
 
 		m_vecParticleInfoDesc.push_back(ParticleInfo);
@@ -649,56 +691,6 @@ void CVIBuffer_Particle::Tick(_float fTimeDelta)
 			}
 #pragma endregion
 
-#pragma region 중력 사용
-			if (true) //((*m_tParticleDesc.pRigidbodyUse))
-			{
-				//if ((*m_tParticleDesc.pGravityUse))
-				//{
-				//	// 추가 가속도 중력 추가
-				//	// m_vAccelA = XMVectorSet(0.f, -10.f, 0.f, 0.f);
-				//	(VTXINSTANCE*)SubResource.pData)[i].vPosition += m_vVelocity * fTimeDelta;
-				//}
-
-				//// 힘의 크기
-				//_float fForce = XMVectorGetX(XMVector3Length(m_vForce));
-				//if (fForce != 0.f) {
-				//	// 힘의 방향
-				//	m_vForce = XMVector3Normalize(m_vForce);
-				//	// 가속도의 크기
-				//	_float fAccel = fForce / (*m_tParticleDesc.pMass);
-				//	// 가속도
-				//	m_vAccel = m_vForce * fAccel;
-				//}
-
-				//// 추가 가속도 누적 (중력)
-				//m_vAccel += m_vAccelA;
-
-				//// 속도
-				//m_vVelocity += m_vAccel * fTimeDelta;
-
-				//// 마찰력에 의한 반대 방향의 가속도
-				//if (XMVectorGetX(XMVector3Length(m_vVelocity)) != 0.f)
-				//{
-				//	_vector vFricDir = -m_vVelocity;
-				//	vFricDir = XMVector3Normalize(vFricDir);
-				//	_vector vFriction = vFricDir * m_fFricCoeff * fTimeDelta;
-				//	if (XMVectorGetX(XMVector3Length(m_vVelocity)) <= XMVectorGetX(XMVector3Length(vFriction)))
-				//		m_vVelocity = XMVectorSet(0.f, 0.f, 0.f, 0.f); // 마찰 가속도가 본래 속도보다 더 큰 경우
-				//	else
-				//		m_vVelocity += vFriction;
-				//}
-
-				//// 속도 제한 검사
-				//Limit_MaxSpeed();
-
-				//// 힘 초기화
-				//m_vForce  = XMVectorSet(0.f, 0.f, 0.f, 0.f);
-				//// 가속도 초기화
-				//m_vAccel  = XMVectorSet(0.f, 0.f, 0.f, 0.f);
-				//m_vAccelA = XMVectorSet(0.f, 0.f, 0.f, 0.f);
-			}	
-#pragma endregion
-
 #pragma region 박스 범위 검사
 			if ((*m_tParticleDesc.pUseBox))
 			{
@@ -829,13 +821,13 @@ void CVIBuffer_Particle::Tick(_float fTimeDelta)
 							switch (iRandomCount)
 							{
 							case 0:
-								m_vecParticleShaderDesc[i].vAxis = XMVectorSet(1.f, 0.f, 0.f, 0.f);
+								m_vecParticleShaderDesc[i].fAxis = _float3(1.f, 0.f, 0.f);
 								break;
 							case 1:
-								m_vecParticleShaderDesc[i].vAxis = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+								m_vecParticleShaderDesc[i].fAxis = _float3(0.f, 1.f, 0.f);
 								break;
 							default:
-								m_vecParticleShaderDesc[i].vAxis = XMVectorSet(0.f, 0.f, 1.f, 0.f);
+								m_vecParticleShaderDesc[i].fAxis = _float3(0.f, 0.f, 1.f);
 								break;
 							}
 
@@ -877,16 +869,103 @@ void CVIBuffer_Particle::Tick(_float fTimeDelta)
 #pragma endregion
 
 #pragma region 색상 변경
-			if ((*m_tParticleDesc.pColorRandom))
+			if ((*m_tParticleDesc.pColorChange))
 			{
-				//m_vecParticleInfoDesc[i].fColorChangeStartTime += fTimeDelta;
-				//if (m_vecParticleInfoDesc[i].fColorChangeStartTime >= m_vecParticleInfoDesc[i].fColorChangeStartDelay)
-				//{
+				m_vecParticleInfoDesc[i].fColorChangeStartTime += fTimeDelta;
+				if (m_vecParticleInfoDesc[i].fColorChangeStartTime >= m_vecParticleInfoDesc[i].fColorChangeStartDelay)
+				{
+					// 랜덤 체인지
+					if ((*m_tParticleDesc.pColorChangeRandom))
+					{
+						m_vecParticleInfoDesc[i].fColorAccs += fTimeDelta;
+						if (m_vecParticleInfoDesc[i].fColorAccs >= m_vecParticleInfoDesc[i].fColorChangeTime)
+						{
+							if (!m_vecParticleInfoDesc[i].LerpInfo.bActive)
+							{
+								m_vecParticleInfoDesc[i].LerpInfo.Start(Vec3(m_vecParticleShaderDesc[i].fColor.x, m_vecParticleShaderDesc[i].fColor.y, m_vecParticleShaderDesc[i].fColor.z),
+									Vec3(m_vecParticleInfoDesc[i].fNextColor.x, m_vecParticleInfoDesc[i].fNextColor.y, m_vecParticleInfoDesc[i].fNextColor.z), m_vecParticleInfoDesc[i].fColorChangeEndTime);
+							}
+							else if(m_vecParticleInfoDesc[i].LerpInfo.bActive && m_vecParticleInfoDesc[i].LerpInfo.fCurTime >= m_vecParticleInfoDesc[i].LerpInfo.fEndTime)
+							{
+								m_vecParticleInfoDesc[i].LerpInfo   = {};
+								m_vecParticleInfoDesc[i].fNextColor = _float3(CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f));
+								m_vecParticleInfoDesc[i].fColorAccs = 0.f;
+								m_vecParticleInfoDesc[i].fColorChangeTime = CUtils::Random_Float((*m_tParticleDesc.pColorChangeRandomTime).x, (*m_tParticleDesc.pColorChangeRandomTime).y);
+							}
+						}
 
-				//	m_vecParticleInfoDesc[i].LerpInfo.Start(0.f, 1.f, 5.f);
+						if (m_vecParticleInfoDesc[i].LerpInfo.bActive)
+						{
+							Vec3 vNewColor = m_vecParticleInfoDesc[i].LerpInfo.Update_Lerp(fTimeDelta);
+							m_vecParticleShaderDesc[i].fColor = _float3(vNewColor.x, vNewColor.y, vNewColor.z);
+						}
+					}
+					else
+					{
+						// S -> M
+						if (m_vecParticleInfoDesc[i].iColorIndex == 0 && m_vecParticleInfoDesc[i].fColorChangeStartTime >= m_vecParticleInfoDesc[i].fColorChangeStartM)
+						{
+							m_vecParticleInfoDesc[i].LerpInfo.Start(Vec3((*m_tParticleDesc.pColorS).x, (*m_tParticleDesc.pColorS).y, (*m_tParticleDesc.pColorS).z),
+								Vec3((*m_tParticleDesc.pColorM).x, (*m_tParticleDesc.pColorM).y, (*m_tParticleDesc.pColorM).z), m_vecParticleInfoDesc[i].fColorChangeEndTime);
 
-				//	_float fValue = m_vecParticleInfoDesc[i].LerpInfo.Update(fTimeDelta);
-				//}
+							m_vecParticleInfoDesc[i].iColorIndex++;
+						}
+						// M -> F
+						else if (m_vecParticleInfoDesc[i].iColorIndex == 1 && m_vecParticleInfoDesc[i].fColorChangeStartTime >= m_vecParticleInfoDesc[i].fColorChangeStartF)
+						{
+							if (m_vecParticleInfoDesc[i].LerpInfo.fCurTime >= m_vecParticleInfoDesc[i].LerpInfo.fEndTime)
+							{
+								m_vecParticleInfoDesc[i].LerpInfo.Start(Vec3((*m_tParticleDesc.pColorM).x, (*m_tParticleDesc.pColorM).y, (*m_tParticleDesc.pColorM).z),
+									Vec3((*m_tParticleDesc.pColorF).x, (*m_tParticleDesc.pColorF).y, (*m_tParticleDesc.pColorF).z), m_vecParticleInfoDesc[i].fColorChangeEndTime);
+
+								m_vecParticleInfoDesc[i].iColorIndex++;
+							}
+						}
+
+						if (m_vecParticleInfoDesc[i].LerpInfo.bActive)
+						{
+							Vec3 vNewColor = m_vecParticleInfoDesc[i].LerpInfo.Update_Lerp(fTimeDelta);
+							m_vecParticleShaderDesc[i].fColor = _float3(vNewColor.x, vNewColor.y, vNewColor.z);
+
+							if (m_vecParticleInfoDesc[i].iColorIndex >= 2 && m_vecParticleInfoDesc[i].LerpInfo.fCurTime >= m_vecParticleInfoDesc[i].LerpInfo.fEndTime)
+							{
+								if ((*m_tParticleDesc.pColorLoop))
+								{
+									if (m_vecParticleInfoDesc[i].iColorIndex == 2 && m_vecParticleInfoDesc[i].LerpInfo.fCurTime >= m_vecParticleInfoDesc[i].LerpInfo.fEndTime)
+									{
+										m_vecParticleInfoDesc[i].LerpInfo.Start(Vec3((*m_tParticleDesc.pColorF).x, (*m_tParticleDesc.pColorF).y, (*m_tParticleDesc.pColorF).z),
+											Vec3((*m_tParticleDesc.pColorS).x, (*m_tParticleDesc.pColorS).y, (*m_tParticleDesc.pColorS).z), m_vecParticleInfoDesc[i].fColorChangeEndTime);
+
+										m_vecParticleInfoDesc[i].iColorIndex++;
+									}
+									else if (m_vecParticleInfoDesc[i].iColorIndex == 3 && m_vecParticleInfoDesc[i].LerpInfo.fCurTime >= m_vecParticleInfoDesc[i].LerpInfo.fEndTime)
+									{
+										m_vecParticleInfoDesc[i].LerpInfo = {};
+
+										//m_vecParticleInfoDesc[i].fColorChangeStartTime  = 0.f;
+										//m_vecParticleInfoDesc[i].fColorChangeStartDelay = CUtils::Random_Float((*m_tParticleDesc.pColorChangeStartDelay).x, (*m_tParticleDesc.pColorChangeStartDelay).y);
+										m_vecParticleInfoDesc[i].fColorChangeStartTime = m_vecParticleInfoDesc[i].fColorChangeStartM;
+
+										m_vecParticleInfoDesc[i].iColorIndex = 0;
+										m_vecParticleInfoDesc[i].fColorChangeStartM = CUtils::Random_Float((*m_tParticleDesc.pColorChangeStartM).x, (*m_tParticleDesc.pColorChangeStartM).y);
+										m_vecParticleInfoDesc[i].fColorChangeStartF = CUtils::Random_Float((*m_tParticleDesc.pColorChangeStartF).x, (*m_tParticleDesc.pColorChangeStartF).y);
+
+										m_vecParticleInfoDesc[i].fColorChangeEndTime = CUtils::Random_Float((*m_tParticleDesc.pColorDuration).x, (*m_tParticleDesc.pColorDuration).y);
+
+										if ((*m_tParticleDesc.pColorRandom))
+											m_vecParticleShaderDesc[i].fColor = _float3(CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f));
+										else
+											m_vecParticleShaderDesc[i].fColor = _float3((*m_tParticleDesc.pColorS).x, (*m_tParticleDesc.pColorS).y, (*m_tParticleDesc.pColorS).z);
+									}
+								}
+								else
+								{
+									(*m_tParticleDesc.pColorChange) = false;
+								}
+							}
+						}
+					}
+				}
 			}
 #pragma endregion
 

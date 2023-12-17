@@ -25,11 +25,10 @@ void CTool_Particle::Tick(_float fTimeDelta)
 {
 	ImGui::Begin("Particle_Tool");
 
-	// 생성
+	// 생성/ 삭제
 	if (ImGui::Button("Create"))
 		Create_Particle();
 	ImGui::SameLine();
-	// 삭제
 	if (ImGui::Button("Delete"))
 	{
 		if (m_pParticle != nullptr)
@@ -51,9 +50,41 @@ void CTool_Particle::Tick(_float fTimeDelta)
 			m_fScale[2] = 0.f;
 		}
 	}
+	ImGui::SameLine();
+
+	// 확인(적용)
+	if (ImGui::Button("Select_Transform"))
+	{
+		if (m_pParticle != nullptr)
+		{
+			CTransform* pTransform = m_pParticle->Get_Component<CTransform>(L"Com_Transform");
+
+			if (m_bParticleType_Pers)
+				static_cast<CParticle*>(m_pParticle)->Set_Position_Perspective(_float3(m_fPosition[0], m_fPosition[1], m_fPosition[2]));
+			else if (m_bParticleType_Orth)
+				static_cast<CParticle*>(m_pParticle)->Set_Position_Orthographic(_float2(m_fPosition[0], m_fPosition[1]));
+
+			pTransform->FixRotation(m_fRotation[0], m_fRotation[1], m_fRotation[2]);
+			pTransform->Set_Scale(_float3(m_fScale[0], m_fScale[1], m_fScale[2]));
+		}
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Select_ParticleSystem"))
+		Store_InfoParticle();
+
+	// 저장하기/ 불러오기
+	if (ImGui::Button("Save"))
+		Save_Particle(m_cSaveAndLoadName);
+	ImGui::SameLine();
+	if (ImGui::Button("Load"))
+		Load_Particle(m_cSaveAndLoadName);
+	ImGui::SameLine();
+	ImGui::Text("FileName :");
+	ImGui::SameLine();
+	ImGui::InputText("##FileName", m_cSaveAndLoadName, IM_ARRAYSIZE(m_cSaveAndLoadName));
 
 	// 트랜스폼 정보
-	if (ImGui::CollapsingHeader("Transform"))
+	if (ImGui::CollapsingHeader("ParticleTransform"))
 	{
 		ImGui::Text("Position");
 		ImGui::InputFloat3("##Position", m_fPosition);
@@ -63,51 +94,51 @@ void CTool_Particle::Tick(_float fTimeDelta)
 
 		ImGui::Text("Scale");
 		ImGui::InputFloat3("##Scale", m_fScale);
-
-		if (ImGui::Button("Select_Transform"))
-		{
-			if (m_pParticle != nullptr)
-			{
-				CTransform* pTransform = m_pParticle->Get_Component<CTransform>(L"Com_Transform");
-
-				if (m_bParticleType_Pers)
-					static_cast<CParticle*>(m_pParticle)->Set_Position_Perspective(_float3(m_fPosition[0], m_fPosition[1], m_fPosition[2]));
-				else if(m_bParticleType_Orth)
-					static_cast<CParticle*>(m_pParticle)->Set_Position_Orthographic(_float2(m_fPosition[0], m_fPosition[1]));
-
-				pTransform->FixRotation(m_fRotation[0], m_fRotation[1], m_fRotation[2]);
-				pTransform->Set_Scale(_float3(m_fScale[0], m_fScale[1], m_fScale[2]));
-			}
-		}
 	}
 
 	// 파티클 정보
 	if (ImGui::CollapsingHeader("ParticleSystem"))
 	{
-		// 투영 타입
-		ImGui::Checkbox("PersParticles", &m_bParticleType_Pers);
-		ImGui::NewLine();
-		if (m_bParticleType_Pers == true)
-			m_bParticleType_Orth = false;
+		// 기본 정보
+		if (ImGui::CollapsingHeader("ParticleBasicInfo"))
+		{
+			// 투영 타입
+			ImGui::Checkbox("PersParticles", &m_bParticleType_Pers);
+			ImGui::NewLine();
+			if (m_bParticleType_Pers == true)
+				m_bParticleType_Orth = false;
 
-		ImGui::Checkbox("OrthParticles", &m_bParticleType_Orth);
-		ImGui::NewLine();
-		if (m_bParticleType_Orth == true)
-			m_bParticleType_Pers = false;
+			ImGui::Checkbox("OrthParticles", &m_bParticleType_Orth);
+			ImGui::NewLine();
+			if (m_bParticleType_Orth == true)
+				m_bParticleType_Pers = false;
 
-		// 반복 여부
-		ImGui::Checkbox("LoopParticles", &m_tParticleInfo.bParticleLoop);
-		ImGui::NewLine();
+			// 반복 여부
+			ImGui::Checkbox("LoopParticles", &m_tParticleInfo.bParticleLoop);
+			ImGui::NewLine();
 
-		// 파티클 개수
-		ImGui::Text("MaxParticles");
-		ImGui::InputInt("##MaxParticles", &(_int)m_tParticleInfo.iNumEffectCount);
-		ImGui::NewLine();
+			// 파티클 개수
+			ImGui::Text("MaxParticles");
+			ImGui::InputInt("##MaxParticles", &(_int)m_tParticleInfo.iNumEffectMaxCount);
+			ImGui::Text("CurrentParticles");
+			if(ImGui::InputInt("##MaxParticles", &(_int)m_tParticleInfo.iNumEffectCount))
+				Store_InfoParticle();
+			ImGui::NewLine();
+		}
 
 		// 위치 (분포 범위)
-		ImGui::Text("RangeParticles");
-		ImGui::InputFloat3("##RangeParticles", m_fParticleRange);
-		ImGui::NewLine();
+		if (ImGui::CollapsingHeader("ParticlePosition"))
+		{
+			ImGui::Text("RangeParticles");
+			if (ImGui::InputFloat3("##RangeParticles", m_fParticleRange))
+				Store_InfoParticle();
+			ImGui::NewLine();
+
+			ImGui::Text("RangeDistance");
+			if (ImGui::InputFloat("##RangeDistance", &m_tParticleInfo.fRangeDistance))
+				Store_InfoParticle();
+			ImGui::NewLine();
+		}
 
 		// 크기
 		if (ImGui::CollapsingHeader("ParticleScale"))
@@ -116,7 +147,8 @@ void CTool_Particle::Tick(_float fTimeDelta)
 			ImGui::NewLine();
 
 			ImGui::Text("ScaleStartParticles");
-			ImGui::InputFloat2("##ScaleStartParticles", m_fParticleScaleStart);
+			if (ImGui::InputFloat2("##ScaleStartParticles", m_fParticleScaleStart))
+				Store_InfoParticle();
 			ImGui::NewLine();
 
 			ImGui::Checkbox("ScaleChange", &m_tParticleInfo.bScaleChange);
@@ -193,9 +225,15 @@ void CTool_Particle::Tick(_float fTimeDelta)
 					ImGui::Text("VelocityChangeTimeParticles");
 					ImGui::InputFloat2("##VelocityChangeTimeParticles", m_fParticleVelocityChangeTime);
 					ImGui::NewLine();
+
+					if (m_tParticleInfo.iVelocityUse != 0)
+						m_tParticleInfo.iVelocityUse = 0;
 				}
 				else
 				{
+					ImGui::Text("VelocityUseParticles");
+					ImGui::InputInt("##VelocityUseParticles", &(_int)m_tParticleInfo.iVelocityUse);
+
 					ImGui::Checkbox("VelocityLoop", &m_tParticleInfo.bVelocityLoop);
 					ImGui::NewLine();
 
@@ -331,14 +369,16 @@ void CTool_Particle::Tick(_float fTimeDelta)
 						ImGui::InputFloat2("##VelocityChangeTimeParticles_10", m_fParticleVelocityTime_10);
 					}
 				}
-
 			}
+			else
+			    m_tParticleInfo.iVelocityUse = 0;
 		}
 
 		// 회전
 		if (ImGui::CollapsingHeader("ParticleRotation"))
 		{
-			ImGui::Checkbox("RotationBillboard", &m_tParticleInfo.bBillboard);
+			if(ImGui::Checkbox("RotationBillboard", &m_tParticleInfo.bBillboard))
+				Store_InfoParticle();
 			ImGui::NewLine();
 
 			ImGui::Checkbox("RotationRandomAxis", &m_tParticleInfo.bRandomAxis);
@@ -400,7 +440,9 @@ void CTool_Particle::Tick(_float fTimeDelta)
 		// 박스 범위
 		if (ImGui::CollapsingHeader("ParticleBox"))
 		{
-			ImGui::Checkbox("UseBox", &m_tParticleInfo.bUseBox);
+			if(ImGui::Checkbox("UseBox", &m_tParticleInfo.bUseBox))
+				Store_InfoParticle();
+
 			if (m_tParticleInfo.bUseBox)
 			{
 				ImGui::Text("BoxMinParticles");
@@ -421,6 +463,10 @@ void CTool_Particle::Tick(_float fTimeDelta)
 			ImGui::Text("DiffuseTexturePath :");
 			ImGui::SameLine();
 			ImGui::InputText("DiffuseTexturePath", m_cDiffuseTexturePath, IM_ARRAYSIZE(m_cDiffuseTexturePath));
+
+			ImGui::Text("DiffuseTextureIndex");
+			if (ImGui::InputInt("##DiffuseTextureIndex", &(_int)m_tParticleInfo.iTextureIndexDiffuse))
+				Store_InfoParticle();
 			ImGui::NewLine();
 
 			// 알파 텍스처 지정
@@ -431,29 +477,40 @@ void CTool_Particle::Tick(_float fTimeDelta)
 			ImGui::SameLine();
 			ImGui::InputText("AlphaTexturePath", m_cAlphaTexturePath, IM_ARRAYSIZE(m_cAlphaTexturePath));
 
+			ImGui::Text("AlphaTextureIndex");
+			if (ImGui::InputInt("##AlphaTextureIndex", &(_int)m_tParticleInfo.iTextureIndexAlpha))
+				Store_InfoParticle();
+			ImGui::NewLine();
+
 			// 디퓨즈 텍스처 시작 텍스처 인덱스
 			ImGui::Checkbox("RandomStartTextureIndex", &m_tParticleInfo.bRandomStartIndex);
 			if (!m_tParticleInfo.bRandomStartIndex)
 			{
 				ImGui::Text("ParticleUVIndex");
-				ImGui::InputFloat2("##ParticleUVIndex", m_fParticleUVIndex);
+				if (ImGui::InputFloat2("##ParticleUVIndex", m_fParticleUVIndex))
+					Store_InfoParticle();
 				ImGui::NewLine();
 			}
 			ImGui::Text("ParticleUVMaxCount");
-			ImGui::InputFloat2("##ParticleUVMaxCount", m_fParticleUVMaxCount);
+			if(ImGui::InputFloat2("##ParticleUVMaxCount", m_fParticleUVMaxCount))
+				Store_InfoParticle();
 			ImGui::NewLine();
 		}
 
 		// 텍스처 애니메이션
 		if (ImGui::CollapsingHeader("ParticleAnimation"))
 		{
-			ImGui::Checkbox("UseAnimation", &m_tParticleInfo.bAnimation);
+			if(ImGui::Checkbox("UseAnimation", &m_tParticleInfo.bAnimation))
+				Store_InfoParticle();
+
 			if (m_tParticleInfo.bAnimation)
 			{
-				ImGui::Checkbox("LoopAnimation", &m_tParticleInfo.bAnimationLoop);
+				if(ImGui::Checkbox("LoopAnimation", &m_tParticleInfo.bAnimationLoop))
+					Store_InfoParticle();
 
 				ImGui::Text("SpeedAnimation");
-				ImGui::InputFloat2("##SpeedAnimation", m_fParticleAnimationSpeed);
+				if(ImGui::InputFloat2("##SpeedAnimation", m_fParticleAnimationSpeed))
+					Store_InfoParticle();
 			}
 		}
 
@@ -462,17 +519,21 @@ void CTool_Particle::Tick(_float fTimeDelta)
 		{
 			// fStartAlpha
 			ImGui::Text("StartAlpha");
-			ImGui::InputFloat2("##StartAlpha", m_fStartAlpha);
+			if(ImGui::InputFloat2("##StartAlpha", m_fStartAlpha))
+				Store_InfoParticle();
 
-			ImGui::Checkbox("FadeCreate", &m_tParticleInfo.bFadeCreate);
+			if(ImGui::Checkbox("FadeCreate", &m_tParticleInfo.bFadeCreate))
+				Store_InfoParticle();
 			ImGui::NewLine();
 
-			ImGui::Checkbox("FadeDelete", &m_tParticleInfo.bFadeDelete);
+			if(ImGui::Checkbox("FadeDelete", &m_tParticleInfo.bFadeDelete))
+				Store_InfoParticle();
 			ImGui::NewLine();
 
 			// fFadeSpeed
 			ImGui::Text("FadeSpeed");
-			ImGui::InputFloat2("##FadeSpeed", m_fFadeSpeed);
+			if(ImGui::InputFloat2("##FadeSpeed", m_fFadeSpeed))
+				Store_InfoParticle();
 			ImGui::NewLine();
 			
 			ImGui::Checkbox("FadeChange", &m_tParticleInfo.bFadeChange);
@@ -493,33 +554,83 @@ void CTool_Particle::Tick(_float fTimeDelta)
 		// 파티클 색상
 		if (ImGui::CollapsingHeader("ParticleColor"))
 		{
-			ImGui::Checkbox("RandomColor", &m_tParticleInfo.bColorRandom);
 			if (!m_tParticleInfo.bColorRandom)
 			{
-				ImGui::Text("Diffuse Color");
-				ImGui::ColorEdit4("##DiffuseColor", (float*)&m_tParticleInfo.vColorS, ImGuiColorEditFlags_Float);
+				ImGui::Text("ColorStart");
+				if(ImGui::ColorEdit4("##ColorStart", (float*)&m_tParticleInfo.vColorS, ImGuiColorEditFlags_Float))
+					Store_InfoParticle();
+			}
+			if(ImGui::Checkbox("ColorRandom", &m_tParticleInfo.bColorRandom))
+				Store_InfoParticle();
+			ImGui::NewLine();
+
+
+			ImGui::Checkbox("ColorChange", &m_tParticleInfo.bColorChange);
+			if (m_tParticleInfo.bColorChange)
+			{
+				ImGui::Checkbox("ColorChangeRandom", &m_tParticleInfo.bColorChangeRandom);
+				ImGui::NewLine();
+
+				// fColorChangeStartDelay
+				ImGui::Text("ColorChangeStartDelay");
+				ImGui::InputFloat2("##ColorChangeStartDelay", m_fColorChangeStartDelay);
+				ImGui::NewLine();
+
+				if (m_tParticleInfo.bColorChangeRandom)
+				{
+					ImGui::Text("ColorChangeRandomTime");
+					ImGui::InputFloat2("##ColorChangeRandomTime", m_fColorChangeRandomTime);
+					ImGui::NewLine();
+				}
+				else
+				{
+					ImGui::Checkbox("ColorLoop", &m_tParticleInfo.bColorLoop);
+					ImGui::NewLine();
+
+					// fColorChangeStartM
+					ImGui::Text("ColorChangeStartM");
+					ImGui::InputFloat2("##ColorChangeStartM", m_fColorChangeStartM);
+
+					ImGui::Text("ColorMiddle");
+					ImGui::ColorEdit4("##ColorMiddle", (float*)&m_tParticleInfo.fColorM, ImGuiColorEditFlags_Float);
+					ImGui::NewLine();
+
+					// fColorChangeStartF
+					ImGui::Text("ColorChangeStartF");
+					ImGui::InputFloat2("##ColorChangeStartF", m_fColorChangeStartF);
+
+					ImGui::Text("ColorFinal");
+					ImGui::ColorEdit4("##ColorFinal", (float*)&m_tParticleInfo.fColorF, ImGuiColorEditFlags_Float);
+					ImGui::NewLine();
+				}
+
+				// ColorDurationTime
+				ImGui::Text("ColorDurationTime");
+				ImGui::InputFloat2("##ColorDurationTime", m_fColorChangeStartE);
 			}
 		}
 
-	    // Gravity Modifier 중력 효과
 
-		ImGui::NewLine();
-		if (ImGui::Button("Select_ParticleSystem"))
-			Store_InfoParticle();
-	}
+		// 쉐이더 값 셋팅
+		if (ImGui::CollapsingHeader("ParticleShader"))
+		{
+			// 쉐이더 패스
+			ImGui::Text("ShaderPass");
+			if(ImGui::InputInt("##ShaderPass", &(_int)m_tParticleInfo.iShaderPass))
+				Store_InfoParticle();
+			ImGui::NewLine();
 
-	if (ImGui::CollapsingHeader("ParticleSaveAndLoad"))
-	{
-		ImGui::Text("SaveAndLoadName :");
-		ImGui::SameLine();
-		ImGui::InputText("SaveAndLoadName", m_cSaveAndLoadName, IM_ARRAYSIZE(m_cSaveAndLoadName));
+			// 디스카드 값 셋팅
+			ImGui::Text("Alpha_Discard");
+			if (ImGui::InputFloat("##Alpha_Discard", &m_tParticleInfo.fAlpha_Discard))
+				Store_InfoParticle();
+			ImGui::Text("Black_Discard");
+			if (ImGui::InputFloat3("##Black_Discard", m_fBlack_Discard))
+				Store_InfoParticle();
 
-		// 저장하기/ 불러오기
-		if (ImGui::Button("Save"))
-			Save_Particle(m_cSaveAndLoadName);
-		ImGui::SameLine();
-		if (ImGui::Button("Load"))
-			Load_Particle(m_cSaveAndLoadName);
+			// 블러 셋팅 : 파워(랜덤)
+            // 블룸 셋팅 : 파워(랜덤)
+		}
 	}
 
 	ImGui::End();
@@ -527,14 +638,14 @@ void CTool_Particle::Tick(_float fTimeDelta)
 
 void CTool_Particle::Create_Particle()
 {
-	if (m_pParticle == nullptr)
-	{
-		// 생성
-		m_pParticle = GI->Clone_GameObject(TEXT("Prototype_GameObject_Particle"), LAYER_TYPE::LAYER_EFFECT);
-		GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_EFFECT, m_pParticle);
+	// 생성
+	if (m_pParticle != nullptr)
+		return;
 
-		Load_InfoParticle();
-	}
+	m_pParticle = GI->Clone_GameObject(TEXT("Prototype_GameObject_TempParticle"), LAYER_TYPE::LAYER_EFFECT);
+	GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_EFFECT, m_pParticle);
+
+	Load_InfoParticle();
 }
 
 void CTool_Particle::Load_InfoParticle()
@@ -788,6 +899,32 @@ void CTool_Particle::Load_InfoParticle()
 
 	m_fFadeSpeed[0] = m_tParticleInfo.fFadeSpeed.x;
 	m_fFadeSpeed[1] = m_tParticleInfo.fFadeSpeed.y;
+
+
+	m_fColorChangeStartDelay[0] = m_tParticleInfo.fColorChangeStartDelay.x;
+	m_fColorChangeStartDelay[1] = m_tParticleInfo.fColorChangeStartDelay.y;
+
+	m_fColorChangeStartM[0] = m_tParticleInfo.fColorChangeStartM.x;
+	m_fColorChangeStartM[1] = m_tParticleInfo.fColorChangeStartM.y;
+
+	m_fColorChangeStartF[0] = m_tParticleInfo.fColorChangeStartF.x;
+	m_fColorChangeStartF[1] = m_tParticleInfo.fColorChangeStartF.y;
+
+	m_fColorChangeStartE[0] = m_tParticleInfo.fColorDuration.x;
+	m_fColorChangeStartE[1] = m_tParticleInfo.fColorDuration.y;
+
+	m_fColorChangeRandomTime[0] = m_tParticleInfo.fColorChangeRandomTime.x;
+	m_fColorChangeRandomTime[1] = m_tParticleInfo.fColorChangeRandomTime.y;
+
+	size_t convertedChars = 0;
+	wcstombs_s(&convertedChars, m_cDiffuseTextureName, sizeof(m_cDiffuseTextureName), m_tParticleInfo.strDiffuseTetextureName.c_str(), _TRUNCATE);
+	wcstombs_s(&convertedChars, m_cDiffuseTexturePath, sizeof(m_cDiffuseTexturePath), m_tParticleInfo.strDiffuseTetexturePath.c_str(), _TRUNCATE);
+	wcstombs_s(&convertedChars, m_cAlphaTextureName, sizeof(m_cAlphaTextureName), m_tParticleInfo.strAlphaTexturName.c_str(), _TRUNCATE);
+	wcstombs_s(&convertedChars, m_cAlphaTexturePath, sizeof(m_cAlphaTexturePath), m_tParticleInfo.strAlphaTexturPath.c_str(), _TRUNCATE);
+
+	m_fBlack_Discard[0] = m_tParticleInfo.fBlack_Discard.x;
+	m_fBlack_Discard[1] = m_tParticleInfo.fBlack_Discard.y;
+	m_fBlack_Discard[2] = m_tParticleInfo.fBlack_Discard.z;
 }
 
 void CTool_Particle::Store_InfoParticle()
@@ -916,6 +1053,14 @@ void CTool_Particle::Store_InfoParticle()
 		m_tParticleInfo.fFadeSpeed  = _float2(m_fFadeSpeed[0],  m_fFadeSpeed[1]);
 
 
+		m_tParticleInfo.fColorChangeStartDelay = _float2(m_fColorChangeStartDelay[0], m_fColorChangeStartDelay[1]);
+		m_tParticleInfo.fColorChangeStartM = _float2(m_fColorChangeStartM[0], m_fColorChangeStartM[1]);
+		m_tParticleInfo.fColorChangeStartF = _float2(m_fColorChangeStartF[0], m_fColorChangeStartF[1]);
+		m_tParticleInfo.fColorDuration     = _float2(m_fColorChangeStartE[0], m_fColorChangeStartE[1]);
+		m_tParticleInfo.fColorChangeRandomTime = _float2(m_fColorChangeRandomTime[0], m_fColorChangeRandomTime[1]);
+
+		m_tParticleInfo.fBlack_Discard = _float3(m_fBlack_Discard[0], m_fBlack_Discard[1], m_fBlack_Discard[2]);
+
 		static_cast<CParticle*>(m_pParticle)->Set_ParticleDesc(m_tParticleInfo);
 	}
 }
@@ -923,68 +1068,189 @@ void CTool_Particle::Store_InfoParticle()
 void CTool_Particle::Save_Particle(const char* pFileName)
 {
 	if (m_pParticle == nullptr)
-	{
 		MSG_BOX("Particle_Save_Failed!");
-		return;
+
+	else
+	{
+		wstring strFileName(pFileName, pFileName + strlen(pFileName));
+		wstring strFilePath = L"../Bin/DataFiles/Particle/" + strFileName + L".Particle";
+
+		auto path = filesystem::path(strFilePath);
+		filesystem::create_directories(path.parent_path());
+
+		shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
+		File->Open(strFilePath, FileMode::Write);
+
+
+		// 파티클 정보 저장
+		m_tParticleInfo = static_cast<CParticle*>(m_pParticle)->Get_ParticleDesc();
+
+
+#pragma region 2023-12-16-ver.1
+
+		// 파티클 타입
+		File->Write<_uint>((_uint)m_tParticleInfo.eParticleType);
+
+		// 반복 여부
+		File->Write<_bool>(m_tParticleInfo.bParticleLoop);
+
+		// 파티클 개수
+		File->Write<_uint>(m_tParticleInfo.iNumEffectMaxCount);
+		File->Write<_uint>(m_tParticleInfo.iNumEffectCount);
+
+		// 분포 범위
+		File->Write<_float3>(m_tParticleInfo.fRange);
+		File->Write<_float>(m_tParticleInfo.fRangeDistance);
+
+#pragma region 크기
+		File->Write<_bool>(m_tParticleInfo.bScaleSameRate);
+		File->Write<_float2>(m_tParticleInfo.fScaleStart);
+
+		File->Write<_bool>(m_tParticleInfo.bScaleChange);
+		File->Write<_float2>(m_tParticleInfo.fScaleChangeStartDelay);
+
+		File->Write<_bool>(m_tParticleInfo.bScaleChangeRandom);
+		File->Write<_float2>(m_tParticleInfo.fScaleChangeTime);
+
+		File->Write<_bool>(m_tParticleInfo.bScaleAdd);
+		File->Write<_bool>(m_tParticleInfo.bScaleLoop);
+		File->Write<_bool>(m_tParticleInfo.bScaleLoopStart);
+
+		File->Write<_float2>(m_tParticleInfo.fScaleMin);
+		File->Write<_float2>(m_tParticleInfo.fScaleMax);
+		File->Write<_float2>(m_tParticleInfo.fScaleSpeed);
+#pragma endregion
+
+#pragma region 이동
+		File->Write<_float2>(m_tParticleInfo.fVelocitySpeed);
+
+		File->Write<_float3>(m_tParticleInfo.vVelocityMinStart);
+		File->Write<_float3>(m_tParticleInfo.vVelocityMaxStart);
+
+		File->Write<_bool>(m_tParticleInfo.bVelocityChange);
+		File->Write<_float2>(m_tParticleInfo.fVelocityChangeStartDelay);
+
+		File->Write<_bool>(m_tParticleInfo.bVelocityChangeRandom);
+		File->Write<_float2>(m_tParticleInfo.fVelocityChangeTime);
+
+		File->Write<_bool>(m_tParticleInfo.bVelocityLoop);
+		File->Write<_uint>(m_tParticleInfo.iVelocityCountCur);
+		File->Write<_uint>(m_tParticleInfo.iVelocityCountMax);
+
+		File->Write<_uint>(m_tParticleInfo.iVelocityUse);
+		if (m_tParticleInfo.pVelocityMin != nullptr)
+		{
+			for (size_t i = 0; i < m_tParticleInfo.iVelocityUse; ++i)
+				File->Write<_float3>(m_tParticleInfo.pVelocityMin[i]);
+		}
+
+		if (m_tParticleInfo.pVelocityMax != nullptr)
+		{
+			for (size_t i = 0; i < m_tParticleInfo.iVelocityUse; ++i)
+				File->Write<_float3>(m_tParticleInfo.pVelocityMax[i]);
+		}
+
+		if (m_tParticleInfo.pVelocityTime != nullptr)
+		{
+			for (size_t i = 0; i < m_tParticleInfo.iVelocityUse; ++i)
+				File->Write<_float2>(m_tParticleInfo.pVelocityTime[i]);
+		}
+#pragma endregion
+
+#pragma region 회전
+		File->Write<_bool>(m_tParticleInfo.bBillboard);
+
+		File->Write<_bool>(m_tParticleInfo.bRandomAxis);
+		File->Write<_vector>(m_tParticleInfo.vAxis);
+
+		File->Write<_bool>(m_tParticleInfo.bRandomAngle);
+		File->Write<_float>(m_tParticleInfo.fAngle);
+
+		File->Write<_bool>(m_tParticleInfo.bRotationChange);
+		File->Write<_float2>(m_tParticleInfo.fRotationChangeStartDelay);
+
+		File->Write<_float2>(m_tParticleInfo.fRotationSpeed);
+
+		File->Write<_bool>(m_tParticleInfo.bRotationChangeRandom);
+		File->Write<_float2>(m_tParticleInfo.fRotationChangeTime);
+
+		File->Write<_bool>(m_tParticleInfo.bRotationAdd);
+#pragma endregion
+
+		// 지속 시간
+		File->Write<_float2>(m_tParticleInfo.fLifeTime);
+
+		// 박스 범위
+		File->Write<_bool>(m_tParticleInfo.bUseBox);
+		File->Write<_float3>(m_tParticleInfo.fBoxMin);
+		File->Write<_float3>(m_tParticleInfo.fBoxMax);
+
+#pragma region 텍스처
+		// 문자열 저장
+		File->Write<string>(CUtils::ToString(m_tParticleInfo.strDiffuseTetextureName));
+		File->Write<string>(CUtils::ToString(m_tParticleInfo.strDiffuseTetexturePath));
+		File->Write<string>(CUtils::ToString(m_tParticleInfo.strAlphaTexturName));
+		File->Write<string>(CUtils::ToString(m_tParticleInfo.strAlphaTexturPath));
+
+		File->Write<_bool>(m_tParticleInfo.bRandomStartIndex);
+		File->Write<_float2>(m_tParticleInfo.fUVIndex);
+		File->Write<_float2>(m_tParticleInfo.fUVMaxCount);
+
+		File->Write<_uint>(m_tParticleInfo.iTextureIndexDiffuse);
+		File->Write<_uint>(m_tParticleInfo.iTextureIndexAlpha);
+#pragma endregion
+
+#pragma region 애니메이션
+		File->Write<_bool>(m_tParticleInfo.bAnimation);
+		File->Write<_bool>(m_tParticleInfo.bAnimationLoop);
+		File->Write<_float2>(m_tParticleInfo.fAnimationSpeed);
+#pragma endregion
+
+#pragma region 알파
+		File->Write<_float2>(m_tParticleInfo.fStartAlpha);
+
+		File->Write<_bool>(m_tParticleInfo.bFadeCreate);
+		File->Write<_bool>(m_tParticleInfo.bFadeDelete);
+		File->Write<_float2>(m_tParticleInfo.fFadeSpeed);
+
+		File->Write<_bool>(m_tParticleInfo.bFadeChange);
+		File->Write<_bool>(m_tParticleInfo.bFadeIn);
+		File->Write<_float2>(m_tParticleInfo.fFadeChangeStartDelay);
+#pragma endregion
+
+#pragma region 색상
+		File->Write<_bool>(m_tParticleInfo.bColorRandom);
+		File->Write<_float4>(m_tParticleInfo.vColorS);
+
+		File->Write<_bool>(m_tParticleInfo.bColorChange);
+
+		File->Write<_bool>(m_tParticleInfo.bColorChangeRandom);
+		File->Write<_float2>(m_tParticleInfo.fColorChangeRandomTime);
+
+		File->Write<_bool>(m_tParticleInfo.bColorLoop);
+		File->Write<_float2>(m_tParticleInfo.fColorChangeStartDelay);
+
+		File->Write<_float2>(m_tParticleInfo.fColorChangeStartM);
+		File->Write<_float4>(m_tParticleInfo.fColorM);
+
+		File->Write<_float2>(m_tParticleInfo.fColorChangeStartF);
+		File->Write<_float4>(m_tParticleInfo.fColorF);
+
+		File->Write<_float2>(m_tParticleInfo.fColorDuration);
+#pragma endregion
+
+#pragma region 기타 정보
+		File->Write<_uint>(m_tParticleInfo.iShaderPass);
+		File->Write<_float>(m_tParticleInfo.fAlpha_Discard);
+		File->Write<_float3>(m_tParticleInfo.fBlack_Discard);
+#pragma endregion
+
+		// 이후 추가 시 기존 정보 로드 후 추가 값 셋팅 후 재저장하기
+
+#pragma endregion
+
+		MSG_BOX("Particle_Save_Success!");
 	}
-
-	wstring strFileName(pFileName, pFileName + strlen(pFileName));
-	wstring strFilePath = L"../Bin/DataFiles/Particle/" + strFileName + L".Particle";
-
-	auto path = filesystem::path(strFilePath);
-	filesystem::create_directories(path.parent_path());
-	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
-	File->Open(strFilePath, FileMode::Write);
-
-	// 파티클 정보 저장
-	m_tParticleInfo = static_cast<CParticle*>(m_pParticle)->Get_ParticleDesc();
-
-	// 반복 여부
-	File->Write<_bool>(m_tParticleInfo.bParticleLoop);
-
-	// 파티클 개수
-	File->Write<_uint>(m_tParticleInfo.iNumEffectCount);
-
-	// 분포 범위
-	File->Write<_float3>(m_tParticleInfo.fRange);
-
-	// 크기
-	File->Write<_bool>(m_tParticleInfo.bScaleSameRate);
-	File->Write<_float2>(m_tParticleInfo.fScaleStart);
-
-	// 지속 시간
-	File->Write<_float2>(m_tParticleInfo.fLifeTime);
-
-	// 속도
-	File->Write<_float2>(m_tParticleInfo.fVelocitySpeed);
-
-	// 움직임
-	File->Write<_float3>(m_tParticleInfo.vVelocityMinStart);
-	File->Write<_float3>(m_tParticleInfo.vVelocityMaxStart);
-
-	// 박스 범위
-	File->Write<_bool>(m_tParticleInfo.bUseBox);
-	File->Write<_float3>(m_tParticleInfo.fBoxMin);
-	File->Write<_float3>(m_tParticleInfo.fBoxMax);
-
-	// 색상
-	File->Write<_bool>(m_tParticleInfo.bColorRandom);
-	File->Write<_float4>(m_tParticleInfo.vColorS);
-
-	// 텍스처
-	File->Write<_bool>(m_tParticleInfo.bAnimation);
-	File->Write<_bool>(m_tParticleInfo.bAnimationLoop);
-	File->Write<_bool>(m_tParticleInfo.bRandomStartIndex);
-	File->Write<_float2>(m_tParticleInfo.fUVIndex);
-	File->Write<_float2>(m_tParticleInfo.fUVMaxCount);
-	File->Write<_float2>(m_tParticleInfo.fAnimationSpeed);
-
-	File->Write<string>(CUtils::ToString(m_tParticleInfo.strDiffuseTetextureName));
-	File->Write<string>(CUtils::ToString(m_tParticleInfo.strAlphaTexturName));
-	File->Write<string>(CUtils::ToString(m_tParticleInfo.strDiffuseTetexturePath));
-	File->Write<string>(CUtils::ToString(m_tParticleInfo.strAlphaTexturPath));
-
-	MSG_BOX("Particle_Save_Success!");
 }
 
 void CTool_Particle::Load_Particle(const char* pFileName)
@@ -1000,54 +1266,177 @@ void CTool_Particle::Load_Particle(const char* pFileName)
 
 	CParticle::PARTICLE_DESC ParticleInfo = {};
 
+
+#pragma region 2023-12-16-ver.1
+
+	// 파티클 타입
+	_uint iParticleType = 0;
+	File->Read<_uint>(iParticleType);
+	ParticleInfo.eParticleType = (CParticle::PARTICLEPROJTYPE)iParticleType;
+
 	// 반복 여부
 	File->Read<_bool>(ParticleInfo.bParticleLoop);
 
 	// 파티클 개수
+	File->Write<_uint>(ParticleInfo.iNumEffectMaxCount);
 	File->Read<_uint>(ParticleInfo.iNumEffectCount);
 
 	// 분포 범위
 	File->Read<_float3>(ParticleInfo.fRange);
+	File->Read<_float>(ParticleInfo.fRangeDistance);
 
-	// 크기
+#pragma region 크기
 	File->Read<_bool>(ParticleInfo.bScaleSameRate);
 	File->Read<_float2>(ParticleInfo.fScaleStart);
 
-	// 지속 시간
-	File->Read<_float2>(ParticleInfo.fLifeTime);
+	File->Read<_bool>(ParticleInfo.bScaleChange);
+	File->Read<_float2>(ParticleInfo.fScaleChangeStartDelay);
 
-	// 속도
+	File->Read<_bool>(ParticleInfo.bScaleChangeRandom);
+	File->Read<_float2>(ParticleInfo.fScaleChangeTime);
+
+	File->Read<_bool>(ParticleInfo.bScaleAdd);
+	File->Read<_bool>(ParticleInfo.bScaleLoop);
+	File->Read<_bool>(ParticleInfo.bScaleLoopStart);
+
+	File->Read<_float2>(ParticleInfo.fScaleMin);
+	File->Read<_float2>(ParticleInfo.fScaleMax);
+	File->Read<_float2>(ParticleInfo.fScaleSpeed);
+#pragma endregion
+
+#pragma region 이동
 	File->Read<_float2>(ParticleInfo.fVelocitySpeed);
 
-	// 움직임
 	File->Read<_float3>(ParticleInfo.vVelocityMinStart);
 	File->Read<_float3>(ParticleInfo.vVelocityMaxStart);
+
+	File->Read<_bool>(ParticleInfo.bVelocityChange);
+	File->Read<_float2>(ParticleInfo.fVelocityChangeStartDelay);
+
+	File->Read<_bool>(ParticleInfo.bVelocityChangeRandom);
+	File->Read<_float2>(ParticleInfo.fVelocityChangeTime);
+
+	File->Read<_bool>(ParticleInfo.bVelocityLoop);
+	File->Read<_uint>(ParticleInfo.iVelocityCountCur);
+	File->Read<_uint>(ParticleInfo.iVelocityCountMax);
+
+	File->Read<_uint>(ParticleInfo.iVelocityUse);
+	ParticleInfo.pVelocityMin  = new _float3[ParticleInfo.iVelocityUse];
+	ParticleInfo.pVelocityMax  = new _float3[ParticleInfo.iVelocityUse];
+	ParticleInfo.pVelocityTime = new _float2[ParticleInfo.iVelocityUse];
+	if (ParticleInfo.pVelocityMin != nullptr)
+	{
+		for (size_t i = 0; i < ParticleInfo.iVelocityUse; ++i)
+			File->Read<_float3>(ParticleInfo.pVelocityMin[i]);
+	}
+
+	if (ParticleInfo.pVelocityMax != nullptr)
+	{
+		for (size_t i = 0; i < ParticleInfo.iVelocityUse; ++i)
+			File->Read<_float3>(ParticleInfo.pVelocityMax[i]);
+	}
+
+	if (ParticleInfo.pVelocityTime != nullptr)
+	{
+		for (size_t i = 0; i < ParticleInfo.iVelocityUse; ++i)
+			File->Read<_float2>(ParticleInfo.pVelocityTime[i]);
+	}
+#pragma endregion
+
+#pragma region 회전
+	File->Read<_bool>(ParticleInfo.bBillboard);
+
+	File->Read<_bool>(ParticleInfo.bRandomAxis);
+	File->Read<_vector>(ParticleInfo.vAxis);
+
+	File->Read<_bool>(ParticleInfo.bRandomAngle);
+	File->Read<_float>(ParticleInfo.fAngle);
+
+	File->Read<_bool>(ParticleInfo.bRotationChange);
+	File->Read<_float2>(ParticleInfo.fRotationChangeStartDelay);
+
+	File->Read<_float2>(ParticleInfo.fRotationSpeed);
+
+	File->Read<_bool>(ParticleInfo.bRotationChangeRandom);
+	File->Read<_float2>(ParticleInfo.fRotationChangeTime);
+
+	File->Read<_bool>(ParticleInfo.bRotationAdd);
+#pragma endregion
+
+	// 지속 시간
+	File->Read<_float2>(ParticleInfo.fLifeTime);
 
 	// 박스 범위
 	File->Read<_bool>(ParticleInfo.bUseBox);
 	File->Read<_float3>(ParticleInfo.fBoxMin);
 	File->Read<_float3>(ParticleInfo.fBoxMax);
 
-	// 색상
-	File->Read<_bool>(ParticleInfo.bColorRandom);
-	File->Read<_float4>(ParticleInfo.vColorS);
+#pragma region 텍스처
+	// 문자열
+	ParticleInfo.strDiffuseTetextureName = CUtils::ToWString(File->Read<string>());
+	ParticleInfo.strDiffuseTetexturePath = CUtils::ToWString(File->Read<string>());
+	ParticleInfo.strAlphaTexturName = CUtils::ToWString(File->Read<string>());
+	ParticleInfo.strAlphaTexturPath = CUtils::ToWString(File->Read<string>());
 
-	// 텍스처
-	File->Read<_bool>(ParticleInfo.bAnimation);
-	File->Read<_bool>(ParticleInfo.bAnimationLoop);
 	File->Read<_bool>(ParticleInfo.bRandomStartIndex);
 	File->Read<_float2>(ParticleInfo.fUVIndex);
 	File->Read<_float2>(ParticleInfo.fUVMaxCount);
-	File->Read<_float2>(ParticleInfo.fAnimationSpeed);
 
-	ParticleInfo.strDiffuseTetextureName = CUtils::ToWString(File->Read<string>());
-	ParticleInfo.strAlphaTexturName      = CUtils::ToWString(File->Read<string>());
-	ParticleInfo.strDiffuseTetexturePath = CUtils::ToWString(File->Read<string>());
-	ParticleInfo.strAlphaTexturPath      = CUtils::ToWString(File->Read<string>());
+	File->Read<_uint>(ParticleInfo.iTextureIndexDiffuse);
+	File->Read<_uint>(ParticleInfo.iTextureIndexAlpha);
+#pragma endregion
+
+#pragma region 애니메이션
+	File->Read<_bool>(ParticleInfo.bAnimation);
+	File->Read<_bool>(ParticleInfo.bAnimationLoop);
+	File->Read<_float2>(ParticleInfo.fAnimationSpeed);
+#pragma endregion
+
+#pragma region 알파
+	File->Read<_float2>(ParticleInfo.fStartAlpha);
+
+	File->Read<_bool>(ParticleInfo.bFadeCreate);
+	File->Read<_bool>(ParticleInfo.bFadeDelete);
+	File->Read<_float2>(ParticleInfo.fFadeSpeed);
+
+	File->Read<_bool>(ParticleInfo.bFadeChange);
+	File->Read<_bool>(ParticleInfo.bFadeIn);
+	File->Read<_float2>(ParticleInfo.fFadeChangeStartDelay);
+#pragma endregion
+
+#pragma region 색상
+	File->Read<_bool>(ParticleInfo.bColorRandom);
+	File->Read<_float4>(ParticleInfo.vColorS);
+
+	File->Read<_bool>(ParticleInfo.bColorChange);
+
+	File->Read<_bool>(ParticleInfo.bColorChangeRandom);
+	File->Read<_float2>(ParticleInfo.fColorChangeRandomTime);
+
+	File->Read<_bool>(ParticleInfo.bColorLoop);
+	File->Read<_float2>(ParticleInfo.fColorChangeStartDelay);
+
+	File->Read<_float2>(ParticleInfo.fColorChangeStartM);
+	File->Read<_float4>(ParticleInfo.fColorM);
+
+	File->Read<_float2>(ParticleInfo.fColorChangeStartF);
+	File->Read<_float4>(ParticleInfo.fColorF);
+
+	File->Read<_float2>(ParticleInfo.fColorDuration);
+#pragma endregion
+
+#pragma region 기타 정보
+	File->Read<_uint>(ParticleInfo.iShaderPass);
+	File->Read<_float>(ParticleInfo.fAlpha_Discard);
+	File->Read<_float3>(ParticleInfo.fBlack_Discard);
+#pragma endregion
+
+	// 이후 추가 시 기존 정보 로드 후 추가 값 셋팅 후 재저장하기
+
+#pragma endregion
 
 	// 적용
 	static_cast<CParticle*>(m_pParticle)->Set_ParticleDesc(ParticleInfo);
-
 	Load_InfoParticle();
 
 	MSG_BOX("Particle_Load_Success!");

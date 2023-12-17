@@ -31,14 +31,16 @@ public:
 		_bool bParticleLoop = true;
 
 		// 파티클 개수
-		_uint iNumEffectCount = 5; 
+		_uint iNumEffectMaxCount = 1000; // 사용가능한 최대 파티클 정점 개수
+		_uint iNumEffectCount    = 10;
 
 		// 위치 (분포 범위)
-		_float3 fRange = _float3(0.f, 0.f, 0.f);
+		_float3 fRange        = _float3(0.f, 0.f, 0.f);
+		_float fRangeDistance = 0.f;
 
 #pragma region 크기
 		_bool bScaleSameRate = true; // 정비율
-		_float2 fScaleStart  = _float2(5.f, 10.f);
+		_float2 fScaleStart  = _float2(2.f, 4.f);
 
 		_bool bScaleChange = false; 
 		_float2 fScaleChangeStartDelay = _float2(0.f, 0.f);
@@ -71,7 +73,7 @@ public:
 		_uint iVelocityCountCur = 0;
 		_uint iVelocityCountMax = 2;
 
-		_uint iVelocityUse     = 10;
+		_uint iVelocityUse     = 10; // 사용하는 Velocity 포인터 변수 개수
 		_float3* pVelocityMin  = nullptr;
 		_float3* pVelocityMax  = nullptr;
 		_float2* pVelocityTime = nullptr;
@@ -97,25 +99,6 @@ public:
 		_bool bRotationAdd = false;
 #pragma endregion
 
-#pragma region 중력
-		_bool bRigidbodyUse = false;
-		_bool bGravityUse   = false;
-		_bool bJumpUse      = false;
-
-		_float   fMass;         // 질량
-		_float   fFricCoeff;    // 마찰 계수
-		_vector  vMaxVelocity;  // 최대 속력
-
-
-		//_vector m_vForce = {}; // 크기, 방향
-		//_vector m_vAccel = {}; // 가속도
-		//_vector m_vVelocity = {}; // 속도(크기:속력,방향)
-
-		//_vector m_vForceA = {}; // 크기, 방향
-		//_vector m_vAccelA = {}; // 추가 가속도
-		//_vector m_vVelocityA = {}; // 속도(크기:속력,방향)
-#pragma endregion
-
 		// 지속 시간
 		_float2	fLifeTime = _float2(5.f, 10.f);
 
@@ -125,13 +108,17 @@ public:
 		_float3 fBoxMax;
 
 #pragma region 텍스처
-		wstring strDiffuseTetextureName = L"";
+		wstring strDiffuseTetextureName = L"Prototype_Component_Texture_SubUV";
 		wstring strDiffuseTetexturePath = L"";
 		wstring strAlphaTexturName      = L"";
 		wstring strAlphaTexturPath      = L"";
+
 		_bool bRandomStartIndex = true;
 		_float2 fUVIndex    = _float2(0.f, 0.f);
 		_float2 fUVMaxCount = _float2(1.f, 1.f);
+
+		_uint iTextureIndexDiffuse = 0;
+		_uint iTextureIndexAlpha = 0;
 #pragma endregion
 
 #pragma region 애니메이션
@@ -152,17 +139,32 @@ public:
 		_float2 fFadeChangeStartDelay = _float2(0.f, 0.f);
 #pragma endregion
 
-
 #pragma region 색상
-		_float4	vColorS = _float4(0.f, 0.f, 0.f, 0.f);
-		_float4 pColorM = _float4(0.f, 0.f, 0.f, 0.f);
-		_float4 pColorF = _float4(0.f, 0.f, 0.f, 0.f);
-
-		_float2 fColorChangeStartDelay = _float2(0.f, 0.f);
-		_bool bColorChange             = false;
-		_float2 folorChangeTime = _float2(1.f, 5.f);
 		_bool bColorRandom = false;
-		_bool bColorLoop   = false;
+		_float4	vColorS = _float4(1.f, 0.f, 0.f, 0.f);
+
+		_bool bColorChange       = false;
+
+		_bool bColorChangeRandom = false;
+		_float2 fColorChangeRandomTime = _float2(4.f, 4.f);
+
+		_bool bColorLoop = false;
+		_float2 fColorChangeStartDelay = _float2(2.f, 2.f);
+
+		_float2 fColorChangeStartM = _float2(4.f, 4.f);
+		_float4 fColorM = _float4(0.f, 1.f, 0.f, 0.f);
+
+		_float2 fColorChangeStartF = _float2(6.f, 6.f);
+		_float4 fColorF = _float4(0.f, 0.f, 1.f, 0.f);
+
+		// 보간 시간
+		_float2 fColorDuration = _float2(2.f, 2.f);
+#pragma endregion
+
+#pragma region 기타 정보
+		_uint iShaderPass      = 0;
+		_float  fAlpha_Discard = 0.5f;
+		_float3 fBlack_Discard = _float3(0.5f, 0.5f, 0.5f);
 #pragma endregion
 
 	} PARTICLE_DESC;
@@ -225,5 +227,3 @@ public:
 };
 
 END
-
-
