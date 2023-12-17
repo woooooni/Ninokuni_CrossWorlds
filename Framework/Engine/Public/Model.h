@@ -50,6 +50,7 @@ public:
 	HRESULT Set_Animation(const wstring& strAnimationName, const _float& fTweenDuration = DEFAULT_TWEEN_DURATION); /* 이름으로 애니메이션 플레이 (fTweenDuration이 음수라면 보간 X) */
 	
 	_uint Get_CurrAnimationIndex() { return m_TweenDesc.cur.iAnimIndex; } /* 현재 애니메이션의 인덱스 리턴*/
+	class CAnimation* Get_Animation(const _uint& iIndex);
 	const _uint& Get_CurrAnimationFrame() const { return m_TweenDesc.cur.iCurFrame; } /* 현재 애니메이션의 프레임 리턴 (정수 형태) */
 	const _float Get_CurrAnimationFrame_WithRatio() { return (m_TweenDesc.cur.iCurFrame + m_TweenDesc.cur.fRatio); } /* 현재 애니메이션의 프레임(보간 포함) (실수 형태) */
 	const _float Get_Progress();  /* 현재 애니메이션의 진행률(0~1) 리턴*/

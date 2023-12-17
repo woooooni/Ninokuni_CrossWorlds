@@ -267,6 +267,10 @@ const _float CAnimation::Calculate_LerpTime(const ANIM_SPEED_DESC tSpeedDesc, co
 				break;
 			}
 		}
+
+		/* 혹시 모를 예외 처리*/
+		if (100 < fTimeAcc)
+			return 0.f;
 	}
 
 
@@ -307,10 +311,14 @@ const _float CAnimation::Calculate_LerpTime(const ANIM_SPEED_DESC tSpeedDesc, co
 			if(!tLerpDesc.bActive)
 				return fTimeAcc;
 		}
+
+		/* 혹시 모를 예외 처리*/
+		if (100 < fTimeAcc)
+			return 0.f;
 	}
 	
 	
-	return _float();
+	return 0.f;
 }
 
 CAnimation* CAnimation::Create(aiAnimation* pAIAnimation)

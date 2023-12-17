@@ -27,6 +27,7 @@ private:
 	HRESULT Import_Mesh(const wstring strFinalPath, class CModel* pModel);
 	HRESULT Import_Material(const wstring strFinalPath, const wstring strFolderPath, class CModel* pModel);
 	HRESULT Import_Animation(const wstring strFinalPath, class CModel* pModel);
+	HRESULT Import_Animation_KeyFrameSpeed(const wstring strFinalPath, class CModel* pModel);
 	HRESULT Import_Socket(const wstring strFinalPath, class CModel* pModel);
 
 private:
@@ -34,6 +35,7 @@ private:
 	HRESULT Export_Material(const wstring& strFinalPath, class CModel* pModel);
 	HRESULT Export_Animation(const wstring& strFinalPath, class CModel* pModel);
 	HRESULT Export_Socket(const wstring& strFinalPath, class CModel* pModel);
+	HRESULT Export_Animation_KeyFrameSpeed(const wstring& strFinalPath, class CModel* pModel);
 	string Export_Texture(const wstring& strOriginFolder, const string& strSaveFolder, class CTexture* pTexture, _uint iIdx = 0);
 
 public: 

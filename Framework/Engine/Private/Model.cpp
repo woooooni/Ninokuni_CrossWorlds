@@ -575,6 +575,14 @@ HRESULT CModel::Set_Animation(const wstring& strAnimationName, const _float& fTw
 	return E_FAIL;
 }
 
+CAnimation* CModel::Get_Animation(const _uint& iIndex)
+{
+	if (m_Animations.size() <= iIndex)
+		return nullptr;
+
+	return m_Animations[iIndex];
+}
+
 void CModel::Set_KeyFrame_By_Progress(_float fProgress)
 {
 	std::clamp(fProgress, 0.f, 1.f);
