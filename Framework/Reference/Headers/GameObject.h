@@ -47,6 +47,12 @@ public:
 	virtual void Collision_Continue(const COLLISION_INFO& tInfo) {};
 	virtual void Collision_Exit(const COLLISION_INFO& tInfo) {};
 
+
+public:
+	virtual void Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo) {};
+	virtual void Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo) {};
+	virtual void Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo) {};
+
 public:
 	template<typename T>
 	T* Get_Component(const wstring& strComponentTag)
@@ -92,6 +98,7 @@ public:
 	virtual HRESULT Set_Collider_AttackMode(_uint eAttackMode, _float fAirBornPower, _float fPushPower, _float fDamage, _bool bHitLag = true);
 
 protected:
+	void Update_Collider(_float fTimedelta);
 	void LateUpdate_Collider(_float fTimedelta);
 	void Render_Collider();
 	

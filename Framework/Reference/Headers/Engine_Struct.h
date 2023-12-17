@@ -9,7 +9,19 @@ namespace Engine
 
 		class CGameObject* pOther;
 		class CCollider* pOtherCollider;
+
+		// ¶¥ ³ôÀÌ¿ë
+		_float3 vCollision_Position = {};
 	} COLLISION_INFO;
+
+	typedef struct tagPhysXGroundCollisionDesc
+	{
+		Vec3 vCollision_Position = {};
+		Vec3 vNormal = {};
+		CGameObject* pCollideObject = nullptr;
+		PxPairFlag::Enum flag = PxPairFlag::eCONTACT_DEFAULT;
+
+	}PHYSX_GROUND_COLLISION_INFO;
 
 
 	typedef struct tagKeyFrame

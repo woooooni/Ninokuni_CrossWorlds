@@ -26,6 +26,7 @@ public:
 
 public:
     virtual _bool Is_Collision(CCollider* pCollider) override;
+    void Tick_Collider(_float fTimedelta) override;
     virtual void Collision_Enter(CCollider* pCollider) override;
     virtual void Collision_Continue(CCollider* pCollider) override;
     virtual void Collision_Exit(CCollider* pCollider) override;

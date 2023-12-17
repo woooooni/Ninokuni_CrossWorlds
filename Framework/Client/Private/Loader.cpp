@@ -242,6 +242,11 @@ HRESULT CLoader::Loading_For_Level_Test()
 
 	CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_TEST);
 
+	if (FAILED(Loading_Proto_AllObjects(L"../Bin/Export/NonAnimModel/Map/")))
+		return E_FAIL;
+
+	Load_Map_Data(L"Evermore");
+
 	
 	m_strLoading = TEXT("·Îµù ³¡.");
 	m_isFinished = true;
@@ -343,13 +348,18 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 			|| i == LAYER_TYPE::LAYER_SKYBOX
 			|| i == LAYER_TYPE::LAYER_UI
 			|| i == LAYER_TYPE::LAYER_PLAYER
+			|| i == LAYER_TYPE::LAYER_WEAPON
 			|| i == LAYER_TYPE::LAYER_PROJECTILE
 			|| i == LAYER_TYPE::LAYER_EFFECT
 			|| i == LAYER_TYPE::LAYER_TRAIL
-			|| i == LAYER_TYPE::LAYER_NPC)
+			|| i == LAYER_TYPE::LAYER_NPC
+			|| i == LAYER_TYPE::LAYER_WEAPON)
 			continue;
 
-		//if(/*i == LAYER_TYPE::LAYER_TERRAIN ||*/
+		// GI->Clear_Layer(LEVEL_TOOL, i);
+
+		// 2. ObjectCount
+		//if (/*i == LAYER_TYPE::LAYER_TERRAIN ||*/
 		//	i == LAYER_TYPE::LAYER_BUILDING ||
 		//	i == LAYER_TYPE::LAYER_GRASS ||
 		//	i == LAYER_TYPE::LAYER_GROUND ||
@@ -398,64 +408,20 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 				pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
 				pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
 
-
-				for (_uint iCollider = 0; iCollider < CCollider::DETECTION_TYPE::DETECTION_END; iCollider++)
+				if (i == LAYER_TYPE::LAYER_GROUND)
 				{
-					_uint iColliderCount = File->Read<_uint>();
-					for (_uint iObejctColliderCount = 0; iObejctColliderCount < iColliderCount; ++iObejctColliderCount)
-					{
-						_uint iColliderType = File->Read<_uint>();
-						_float3 vColliderOffset = File->Read<_float3>();
-
-						if (iColliderType == CCollider::AABB)
-						{
-							BoundingBox tBox = File->Read<BoundingBox>();
-
-							CCollider_AABB::AABB_COLLIDER_DESC tDesc;
-							ZeroMemory(&tDesc, sizeof tDesc);
-
-							if (nullptr == pObj->Get_Component<CModel>(L"Com_Model"))
-								XMStoreFloat4x4(&tDesc.ModePivotMatrix, XMMatrixIdentity());
-							else
-								XMStoreFloat4x4(&tDesc.ModePivotMatrix, pObj->Get_Component<CModel>(L"Com_Model")->Get_PivotMatrix());
-
-							tDesc.vOffsetPosition = vColliderOffset;
-							tDesc.pOwnerTransform = pTransform;
-							tDesc.pNode = nullptr;
-							tDesc.tBox = tBox;
-
-							pObj->Add_Collider(LEVEL_STATIC, iColliderType, iCollider, &tDesc);
-						}
-						else if (iColliderType == CCollider::SPHERE)
-						{
-							BoundingSphere tSphere = File->Read<BoundingSphere>();
-
-							CCollider_Sphere::SPHERE_COLLIDER_DESC tDesc;
-							ZeroMemory(&tDesc, sizeof tDesc);
-
-							if (nullptr == pObj->Get_Component<CModel>(L"Com_Model"))
-								XMStoreFloat4x4(&tDesc.ModePivotMatrix, XMMatrixIdentity());
-							else
-								XMStoreFloat4x4(&tDesc.ModePivotMatrix, pObj->Get_Component<CModel>(L"Com_Model")->Get_PivotMatrix());
-
-							tDesc.vOffsetPosition = vColliderOffset;
-							tDesc.pOwnerTransform = pTransform;
-							tDesc.pNode = nullptr;
-							tDesc.tSphere = tSphere;
-
-
-							pObj->Add_Collider(LEVEL_STATIC, iColliderType, iCollider, &tDesc);
-						}
-					}
+					if (FAILED(GI->Add_Ground(pObj, pObj->Get_Component<CModel>(L"Com_Model"), pTransform->Get_WorldMatrix())))
+						return E_FAIL;
 				}
 			}
+			
 		}
-
-		// 2. ObjectCount
 	}
 
-	// MSG_BOX("Map_Loaded.");
+ 	const list<CGameObject*>& Objects = GI->Find_GameObjects(m_eNextLevel, LAYER_TYPE::LAYER_GROUND);
+	MSG_BOX("Map_Loaded.");
 	return S_OK;
+
 }
 
 HRESULT CLoader::Loading_Proto_AllObjects(const wstring& strPath)

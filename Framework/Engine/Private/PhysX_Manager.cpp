@@ -10,21 +10,22 @@
 
 
 physx::PxFilterFlags FilterShader(
-	physx::PxFilterObjectAttributes attributes0, physx::PxFilterData /*filterData0*/,
-	physx::PxFilterObjectAttributes attributes1, physx::PxFilterData /*filterData1*/,
+	physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0,
+	physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1,
 	physx::PxPairFlags& retPairFlags, const void* /*constantBlock*/, PxU32 /*constantBlockSize*/)
 {
-	
-	
 	retPairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
 	retPairFlags |= PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
 	retPairFlags |= PxPairFlag::eNOTIFY_TOUCH_LOST;
-	if (PxFilterObjectIsKinematic(attributes0) && PxFilterObjectIsKinematic(attributes1))
-	{
-		retPairFlags |= PxPairFlag::eTRIGGER_DEFAULT;
-	}
+	
+	retPairFlags |= PxPairFlag::eTRIGGER_DEFAULT;
 
-	return PxFilterFlag::eNOTIFY;
+	
+	retPairFlags |= PxPairFlag::eMODIFY_CONTACTS;
+	retPairFlags |= PxPairFlag::eNOTIFY_CONTACT_POINTS;
+	
+
+	return PxFilterFlag::eDEFAULT;
 }
 
 
@@ -63,10 +64,10 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 	SceneDesc.flags |= PxSceneFlag::eENABLE_PCM;
 	SceneDesc.flags |= PxSceneFlag::eENABLE_GPU_DYNAMICS;
 	SceneDesc.broadPhaseType = PxBroadPhaseType::eGPU;
-
 	SceneDesc.solverType = PxSolverType::eTGS;
 	SceneDesc.filterShader = FilterShader;
 	SceneDesc.simulationEventCallback = this;
+
 	
 
 	/*PxCudaContextManagerDesc cuadContextManagerDesc;
@@ -78,8 +79,12 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 	m_pScene = m_Physics->createScene(SceneDesc);
 
 	
-	m_pScene->setVisualizationParameter(PxVisualizationParameter::eSCALE, 1.f);
+#ifdef DEBUG
+	m_pScene->setVisualizationParameter(PxVisualizationParameter::eCOLLISION_STATIC, 1.f);
 	m_pScene->setVisualizationParameter(PxVisualizationParameter::eACTOR_AXES, 2.0f);
+#endif // DEBUG
+
+	
 
 
 	PxPvdSceneClient* pvdClient = m_pScene->getScenePvdClient();
@@ -134,12 +139,30 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 
 void CPhysX_Manager::Tick(_float fTimeDelta)
 {	
-	// m_pParticleSystem->setWind(PxVec3(0.f, GI->RandomFloat(-10.f, 10.f), 0.f));
+
 	
 }
 
 void CPhysX_Manager::LateTick(_float fTimeDelta)
 {
+
+	for (auto& CollisionDesc : m_GroundCollision)
+	{
+		switch (CollisionDesc.flag)
+		{
+		case PxPairFlag::eNOTIFY_TOUCH_FOUND:
+			CollisionDesc.pCollideObject->Ground_Collision_Enter(CollisionDesc);
+			break;
+		case PxPairFlag::eNOTIFY_TOUCH_PERSISTS:
+			CollisionDesc.pCollideObject->Ground_Collision_Continue(CollisionDesc);
+			break;
+		case PxPairFlag::eNOTIFY_TOUCH_LOST:
+			CollisionDesc.pCollideObject->Ground_Collision_Exit(CollisionDesc);
+			break;
+		}
+	}
+	m_GroundCollision.clear();
+
 	m_pScene->simulate(min(fTimeDelta, 1.f / 144.f));
 	m_pScene->fetchResults(true);
 	m_pScene->fetchResultsParticleSystem();
@@ -259,102 +282,117 @@ HRESULT CPhysX_Manager::Remove_Actor(class CGameObject* pGameObject, PxActor* pP
 	return S_OK;
 }
 
-HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGroundObj)
+HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGameObject, CModel* pModel, Matrix WorldMatrix)
 {
-	//auto iter = m_GroundObjects.find(pGroundObj->Get_ObjectID());
-	//if (iter != m_GroundObjects.end())
-	//	return E_FAIL;
-
-	//CTransform* pTransform = pGroundObj->Get_Component<CTransform>(L"Com_Transform");
-	//CModel* pModel = pGroundObj->Get_Component<CModel>(L"Com_Model");
-
-	//if (nullptr == pModel || nullptr == pTransform)
-	//	return E_FAIL;
-
-	//for (auto& pMesh : pModel->Get_Meshes())
-	//{
-	//	const vector<VTXANIMMODEL>& AnimVB = pMesh->Get_AnimVertices();
-	//	const vector<VTXMODEL>& NonAnimVB = pMesh->Get_NoneAnimVertice();
-
-	//	const vector<FACEINDICES32>& FaceIndices = pMesh->Get_FaceIndices();
-	//	_uint iNumVertices = pMesh->Get_VertexCount();
-	//	_uint iNumPrimitives = pMesh->Get_NumPrimitives();
-	//	_uint iNumIndices = iNumPrimitives * 3;
-
-	//	vector<PxVec3> PhysXVertices;
-	//	PhysXVertices.reserve(iNumVertices);
-
-	//	Matrix WorldMatrix = pTransform->Get_WorldMatrix();
-
-	//	if (AnimVB.size() > 0)
-	//	{
-	//		for (_uint i = 0; i < iNumVertices; ++i)
-	//		{
-	//			Vec3 vVertex = AnimVB[i].vPosition;
-	//			vVertex = XMVector3TransformCoord(vVertex, WorldMatrix);
-	//			PhysXVertices.push_back(PxVec3(vVertex.x, vVertex.y, vVertex.z));
-	//		}
-	//	}
-	//	else
-	//	{
-	//		for (_uint i = 0; i < iNumVertices; ++i)
-	//		{
-	//			Vec3 vVertex = NonAnimVB[i].vPosition;
-	//			vVertex = XMVector3TransformCoord(vVertex, WorldMatrix);
-	//			PhysXVertices.push_back(PxVec3(vVertex.x, vVertex.y, vVertex.z));
-	//		}
-	//	}
-
-	//	vector<PxU32> PhysXIndices;
-	//	PhysXIndices.reserve(iNumIndices);
-
-	//	for (_uint i = 0; i < iNumPrimitives; ++i)
-	//	{
-	//		FACEINDICES32 Index = FaceIndices[i];
-
-	//		PhysXIndices.push_back(Index._0);
-	//		PhysXIndices.push_back(Index._1);
-	//		PhysXIndices.push_back(Index._2);
-	//	}
-
-	//	PxTriangleMeshDesc tDesc;
-
-	//	tDesc.points.count = iNumVertices;
-	//	tDesc.points.stride = sizeof(PxVec3);
-	//	tDesc.points.data = PhysXVertices.data();
-
-	//	tDesc.triangles.count = iNumPrimitives;
-	//	tDesc.triangles.stride = sizeof(PxU32) * 3;
-	//	tDesc.triangles.data = PhysXIndices.data();
+	if (nullptr == pModel)
+		return E_FAIL;
 
 
-	//	PxTriangleMesh* pTriangleMesh = PxCreateTriangleMesh(PxCookingParams(PxTolerancesScale(0.0f, 0.0f)), tDesc);
+	for (auto& pMesh : pModel->Get_Meshes())
+	{
+		const vector<VTXANIMMODEL>& AnimVB = pMesh->Get_AnimVertices();
+		const vector<VTXMODEL>& NonAnimVB = pMesh->Get_NoneAnimVertice();
+
+		const vector<FACEINDICES32>& FaceIndices = pMesh->Get_FaceIndices();
+		_uint iNumVertices = pMesh->Get_VertexCount();
+		_uint iNumPrimitives = pMesh->Get_NumPrimitives();
+		_uint iNumIndices = iNumPrimitives * 3;
+		_uint iStride = pMesh->Get_Stride();
+
+		vector<PxVec3> Vertices;
+		Vertices.reserve(iNumVertices);
+
+		if (AnimVB.size() > 0)
+		{
+			for (_uint i = 0; i < iNumVertices; ++i)
+			{
+				Vec3 vVertex = AnimVB[i].vPosition;
+				vVertex = XMVector3TransformCoord(vVertex, WorldMatrix);
+				Vertices.push_back(PxVec3(vVertex.x, vVertex.y, vVertex.z));
+			}
+		}
+		else
+		{
+			for (_uint i = 0; i < iNumVertices; ++i)
+			{
+				Vec3 vVertex = NonAnimVB[i].vPosition;
+				vVertex = XMVector3TransformCoord(vVertex, WorldMatrix);
+				Vertices.push_back(PxVec3(vVertex.x, vVertex.y, vVertex.z));
+			}
+		}
+
+		vector<PxU32> Indices;
+		Indices.reserve(iNumIndices);
+
+		for (_uint i = 0; i < iNumPrimitives; ++i)
+		{
+			FACEINDICES32 Index = FaceIndices[i];
+
+			Indices.push_back(Index._0);
+			Indices.push_back(Index._1);
+			Indices.push_back(Index._2);
+		}
+
+		PxTriangleMeshDesc tDesc;
+
+		
+		tDesc.points.count = iNumVertices;
+		tDesc.points.stride = sizeof(PxVec3);
+		tDesc.points.data = Vertices.data();
+
+		tDesc.triangles.count = iNumPrimitives;
+		tDesc.triangles.stride = sizeof(PxU32) * 3;
+		tDesc.triangles.data = Indices.data();
 
 
+		PxTriangleMesh* pTriangleMesh = PxCreateTriangleMesh(PxCookingParams(PxTolerancesScale(0.f, 0.f)), tDesc);
+		PxTriangleMeshGeometry* pGeometry = new PxTriangleMeshGeometry(pTriangleMesh);
+		
+		Vec3 vScale = {};
+		Quaternion vQuat = {};
+		Vec3 vPosition = {};
+		WorldMatrix.Decompose(vScale, vQuat, vPosition);
+		
+ 		PxTransform physXTransform = PxTransform({ 0.f, 0.f, 0.f });
 
-	//	PxTriangleMeshGeometry* pGeometry = new PxTriangleMeshGeometry(pTriangleMesh);
+		
+		
+		PxRigidStatic* pActor = m_Physics->createRigidStatic(physXTransform);
+		PxMaterial* Material = m_Physics->createMaterial(0.5f, 0.5f, 0.6f);
+		PxShape* pShape = m_Physics->createShape(*pGeometry, *Material);
+		pShape->setFlag(PxShapeFlag::eVISUALIZATION, true);
+		pShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
+		pShape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
+		pActor->setName("Ground");
+		
+		// shape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
+		
+		pActor->attachShape(*pShape);
+		pActor->userData = pGameObject;
+		m_pScene->addActor(*pActor);
 
+		PHYSX_STATIC_OBJECT_DESC ObjectDesc;
+		ObjectDesc.pActor = pActor;
+		ObjectDesc.pObject = pGameObject;
 
-	//	
-	//	PxVec3 vPxStartPositon = PxVec3(Desc.vStartPosition.x, Desc.vStartPosition.y, Desc.vStartPosition.z);
-	//	PxTransform physXTransform = PxTransform(vPxStartPositon);
-	//	PxRigidDynamic* pActor = m_Physics->createRigidStatic(physXTransform);
+		auto iter = m_GroundObjects.find(pGameObject->Get_ObjectID());
+		if (iter == m_GroundObjects.end())
+		{
+			vector<PHYSX_STATIC_OBJECT_DESC> Temp;
+			m_GroundObjects.emplace(pGameObject->Get_ObjectID(), Temp);
+			iter = m_GroundObjects.find(pGameObject->Get_ObjectID());
+		}
 
+		iter->second.push_back(ObjectDesc);
 
-	//	PxMaterial* Material = m_Physics->createMaterial(0.5f, 0.5f, 0.6f);
-	//	PxShape* pShape = m_Physics->createShape(*pGeometry, *Material);
+		Safe_AddRef(pGameObject);
+		Safe_Delete(pGeometry);
 
-	//	pActor->attachShape(*pShape);
-	//	m_pScene->addActor(*pActor);
+		pTriangleMesh->release();
+		Material->release();
+		pShape->release();
+	}
 
-	//	PHYSX_STATIC_OBJECT_DESC ObjectDesc;
-	//	ObjectDesc.pActor = pActor;
-	//	ObjectDesc.pObject = pGroundObj;
-
-	//	m_GroundObjects.emplace(pGroundObj->Get_ObjectID(), ObjectDesc);
-
-	//	Safe_AddRef(pGroundObj);
-	//}
 	return S_OK;
 }
 
@@ -384,7 +422,6 @@ PxRigidDynamic* CPhysX_Manager::Create_Dynamic_Box(const PHYSX_INIT_DESC& Desc)
 	pActor->setAngularDamping(Desc.fAngularDamping);
 	pActor->setMaxLinearVelocity(Desc.fMaxVelocity);
 	pActor->setActorFlag(PxActorFlag::eVISUALIZATION, true);
-	pActor->setActorFlag(PxActorFlag::eSEND_SLEEP_NOTIFIES, true);
 
 	PxRigidBodyExt::updateMassAndInertia(*pActor, Desc.fDensity); // 무게, 관성
 
@@ -1120,27 +1157,153 @@ void CPhysX_Manager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 		return;
 
 
-  	CCollider* pLeftCollider = (CCollider*)pairHeader.actors[0]->userData;
-	CCollider* pRightCollider = (CCollider*)pairHeader.actors[1]->userData;
+	vector<PxContactPairPoint> PairPoints;
+	PairPoints.resize(pairs->contactCount);
+	pairs->extractContacts(PairPoints.data(), pairs->contactCount);
 
-	if (pLeftCollider->Get_ColliderID() == pRightCollider->Get_ColliderID())
+	Vec3 vContactPosition = {};
+	Vec3 vNormal = {};
+	PxReal fDist = 9999.f;
+
+	
+	_uint iNumContact = 0;
+	for (auto& Pair : PairPoints)
+	{
+		if (0 == iNumContact)
+		{
+			vContactPosition = Vec3(Pair.position.x, Pair.position.y, Pair.position.z);
+			vNormal = Vec3(Pair.normal.x, Pair.normal.y, Pair.normal.z);
+			iNumContact++;
+			continue;
+		}
+			
+		Vec3 vCurPos = Vec3(Pair.position.x, Pair.position.y, Pair.position.z);
+		Vec3 vCurNormal = Vec3(Pair.normal.x, Pair.normal.y, Pair.normal.z);
+		Vec3 vDist = vContactPosition - vCurPos;
+		Vec3 vNormalDist = vNormal - vCurNormal;
+
+		if (vDist.Length() > 0.05f || vNormalDist.Length() > 0.05f)
+			continue;
+
+		if (vContactPosition.y < vCurPos.y)
+		{
+			vContactPosition = vCurPos;
+			vNormal = Vec3(Pair.normal.x, Pair.normal.y, Pair.normal.z);
+			iNumContact++;
+		}
+	}
+	
+	
+	if (nullptr != pairHeader.actors[0]->getName() && !strcmp(pairHeader.actors[0]->getName(), "Ground"))
+	{
+
+		CCollider* pObjectCollider = (CCollider*)pairHeader.actors[1]->userData;
+
+		if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_FOUND))
+		{
+			PHYSX_GROUND_COLLISION_INFO Info;
+			Info.flag = PxPairFlag::eNOTIFY_TOUCH_FOUND;
+			Info.pCollideObject = pObjectCollider->Get_Owner();
+			Info.vCollision_Position = vContactPosition;
+			Info.vNormal = vNormal;
+
+			m_GroundCollision.push_back(Info);
+			return;
+		}
+
+		else if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_PERSISTS))
+		{
+			PHYSX_GROUND_COLLISION_INFO Info;
+			Info.flag = PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+			Info.pCollideObject = pObjectCollider->Get_Owner();
+			Info.vCollision_Position = vContactPosition;
+			Info.vNormal = vNormal;
+
+			m_GroundCollision.push_back(Info);
+			return;
+		}
+		else if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_LOST))
+		{
+			PHYSX_GROUND_COLLISION_INFO Info;
+			Info.flag = PxPairFlag::eNOTIFY_TOUCH_LOST;
+			Info.pCollideObject = pObjectCollider->Get_Owner();
+			Info.vCollision_Position = vContactPosition;
+			Info.vNormal = vNormal;
+
+			m_GroundCollision.push_back(Info);
+			return;
+		}
 		return;
+	}
+	else if (nullptr != pairHeader.actors[1]->getName() && !strcmp(pairHeader.actors[1]->getName(), "Ground"))
+	{
+		// 1번액터가 Ground 였다면,
+		CCollider* pObjectCollider = (CCollider*)pairHeader.actors[0]->userData;
+		if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_FOUND))
+		{
+			PHYSX_GROUND_COLLISION_INFO Info;
+			Info.flag = PxPairFlag::eNOTIFY_TOUCH_FOUND;
+			Info.pCollideObject = pObjectCollider->Get_Owner();
+			Info.vCollision_Position = vContactPosition;
+			Info.vNormal = -1.f * vNormal;
 
-	if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_FOUND))
-	{
-		pLeftCollider->Collision_Enter(pRightCollider);
-		pRightCollider->Collision_Enter(pLeftCollider);
+			m_GroundCollision.push_back(Info);
+			return;
+		}
+			
+		else if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_PERSISTS))
+		{
+			PHYSX_GROUND_COLLISION_INFO Info;
+
+			Info.flag = PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+			Info.pCollideObject = pObjectCollider->Get_Owner();
+			Info.vCollision_Position = vContactPosition;
+			Info.vNormal = -1.f * vNormal;
+
+			m_GroundCollision.push_back(Info);
+			return;
+		}
+		else if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_LOST))
+		{
+			PHYSX_GROUND_COLLISION_INFO Info;
+
+			Info.flag = PxPairFlag::eNOTIFY_TOUCH_LOST;
+			Info.pCollideObject = pObjectCollider->Get_Owner();
+			Info.vCollision_Position = vContactPosition;
+			Info.vNormal = -1.f * vNormal;
+
+			m_GroundCollision.push_back(Info);
+			return;
+		}
+
+		return;
 	}
-	else if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_PERSISTS))
+	else
 	{
-		pLeftCollider->Collision_Continue(pRightCollider);
-		pRightCollider->Collision_Continue(pLeftCollider);
+		CCollider* pLeftCollider = (CCollider*)pairHeader.actors[0]->userData;
+		CCollider* pRightCollider = (CCollider*)pairHeader.actors[1]->userData;
+
+		if (pLeftCollider->Get_ColliderID() == pRightCollider->Get_ColliderID())
+			return;
+
+		if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_FOUND))
+		{
+			pLeftCollider->Collision_Enter(pRightCollider);
+			pRightCollider->Collision_Enter(pLeftCollider);
+		}
+		else if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_PERSISTS))
+		{
+			pLeftCollider->Collision_Continue(pRightCollider);
+			pRightCollider->Collision_Continue(pLeftCollider);
+		}
+		else if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_LOST))
+		{
+			pLeftCollider->Collision_Exit(pRightCollider);
+			pRightCollider->Collision_Exit(pLeftCollider);
+		}
 	}
-	else if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_LOST))
-	{
-		pLeftCollider->Collision_Exit(pRightCollider);
-		pRightCollider->Collision_Exit(pLeftCollider);
-	}
+
+  	
 
 }
 

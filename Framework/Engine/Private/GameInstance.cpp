@@ -126,6 +126,7 @@ void CGameInstance::LateTick(_float fTimeDelta)
 {
 	m_pObject_Manager->LateTick(fTimeDelta);
 	m_pPhysXManager->LateTick(fTimeDelta);
+
 	m_pCollision_Manager->LateTick(fTimeDelta);
 	m_pLevel_Manager->LateTick(fTimeDelta);
 }
@@ -564,9 +565,9 @@ vector<PxRigidDynamic*> CGameInstance::Add_Dynamic_Mesh_Actor(const PHYSX_INIT_D
 	return m_pPhysXManager->Add_Dynamic_Mesh_Actor(Desc);
 }
 
-HRESULT CGameInstance::Add_Ground(CGameObject* pGroundObj)
+HRESULT CGameInstance::Add_Ground(CGameObject* pGameObject, CModel* pModel, _matrix WorldMatrix)
 {
-	return m_pPhysXManager->Add_Ground(pGroundObj);
+	return m_pPhysXManager->Add_Ground(pGameObject, pModel, WorldMatrix);
 }
 
 HRESULT CGameInstance::Remove_Actor(class CGameObject* pGameObject, PxActor* pPhysXActor)

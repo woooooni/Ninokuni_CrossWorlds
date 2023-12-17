@@ -31,7 +31,10 @@ public:
 	virtual void Collision_Continue(const COLLISION_INFO& tInfo) override;
 	virtual void Collision_Exit(const COLLISION_INFO& tInfo) override;
 
-	
+public:
+	virtual void Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo) override;
+	virtual void Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo) override;
+	virtual void Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo) override;
 
 protected:
 	virtual HRESULT Ready_Components() override;
@@ -43,6 +46,10 @@ private:
 	class CTransform* m_pTransformCom = nullptr;
 	class CModel* m_pModelCom = nullptr;
 	class CRigidBody* m_pRigidBodyCom = nullptr;
+
+private:
+	_bool m_bIsJumping = false;
+	_bool m_bFirstJump = false;
 	
 
 public:

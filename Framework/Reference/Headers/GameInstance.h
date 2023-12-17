@@ -140,7 +140,7 @@ public:
 
 	vector<PxRigidStatic*> Add_Static_Mesh_Actor(const PHYSX_INIT_DESC& Desc);
 	vector<PxRigidDynamic*> Add_Dynamic_Mesh_Actor(const PHYSX_INIT_DESC& Desc);
-	HRESULT Add_Ground(class CGameObject* pGroundObj);
+	HRESULT Add_Ground(CGameObject* pGameObject, CModel* pModel, _matrix WorldMatrix);
 
 	HRESULT Remove_Actor(class CGameObject* pGameObject, PxActor* pPhysXActor);
 	PxMaterial* Create_PxMaterial(_float fA, _float fB, _float fC);

@@ -9,7 +9,6 @@ CGameObject::CGameObject(ID3D11Device * pDevice, ID3D11DeviceContext * pContext,
 	, m_pContext(pContext)
 	, m_strObjectTag(strObjectTag)
 	, m_iObjectType(iObjectType)
-	, m_iObjectID(g_ObjecId++)
 {
 	Safe_AddRef(m_pDevice);
 	Safe_AddRef(m_pContext);
@@ -49,6 +48,7 @@ HRESULT CGameObject::Initialize(void* pArg)
 
 void CGameObject::Tick(_float fTimeDelta)
 {
+	Update_Collider(fTimeDelta);
 }
 
 void CGameObject::LateTick(_float fTimeDelta)
@@ -190,6 +190,15 @@ HRESULT CGameObject::Set_Collider_AttackMode(_uint eAttackMode, _float fAirBornP
 }
 
 
+
+void CGameObject::Update_Collider(_float fTimedelta)
+{
+	for (auto& Pair : m_Colliders)
+	{
+		for (auto& pCollider : Pair.second)
+			pCollider->Tick_Collider(fTimedelta);
+	}
+}
 
 void CGameObject::LateUpdate_Collider(_float fTimedelta)
 {
