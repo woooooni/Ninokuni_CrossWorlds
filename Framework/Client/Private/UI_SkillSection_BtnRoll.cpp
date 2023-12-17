@@ -34,6 +34,12 @@ HRESULT CUI_SkillSection_BtnRoll::Initialize(void* pArg)
 
 	m_bActive = true;
 	
+	m_vOriginSize.x = m_tInfo.fCX;
+	m_vOriginSize.y = m_tInfo.fCY;
+
+	m_vMinSize.x = m_vOriginSize.x * 0.9f;
+	m_vMinSize.y = m_vOriginSize.y * 0.9f;
+
 	return S_OK;
 }
 
@@ -41,6 +47,17 @@ void CUI_SkillSection_BtnRoll::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (m_bResizeStart)
+		{
+			// 시간을 누적한다.
+			m_fTimeAcc += fTimeDelta;
+
+			// MinSize로 Info를 변경해서 setting한다.
+			m_tInfo.fCX = m_vMinSize.x;
+			m_tInfo.fCY = m_vMinSize.y;
+			m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+		}
+
 		__super::Tick(fTimeDelta);
 	}
 }
@@ -49,6 +66,23 @@ void CUI_SkillSection_BtnRoll::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (0.2f < m_fTimeAcc) // 누적한 시간이 기준치 이상이되면
+		{
+			m_fTimeAcc = 0.f; // 0.f로 초기화하고,
+			m_bFinish = true; // Finish를 true로 변경해준다
+		}
+
+		if (m_bFinish)
+		{
+			m_tInfo.fCX = m_vOriginSize.x;
+			m_tInfo.fCY = m_vOriginSize.y;
+
+			m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+
+			m_bResizeStart = false;
+			m_bFinish = false;
+		}
+
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
 }
@@ -130,8 +164,11 @@ void CUI_SkillSection_BtnRoll::Key_Input(_float fTimeDelta)
 {
 	if (KEY_TAP(KEY::LBTN))
 	{
-		// 캐릭터가 점프 상태가 아니라면
-		// Jump State를 던진다.
+		// 캐릭터가 Roll 상태가 아니라면
+		// Roll State를 던진다.
+
+		if (!m_bResizeStart)
+			m_bResizeStart = true;
 	}
 }
 

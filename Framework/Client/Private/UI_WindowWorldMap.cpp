@@ -111,6 +111,8 @@ void CUI_WindowWorldMap::On_Mouse(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		__super::On_Mouse(fTimeDelta);
+
 		if (KEY_HOLD(KEY::LBTN))
 		{
 
@@ -119,6 +121,31 @@ void CUI_WindowWorldMap::On_Mouse(_float fTimeDelta)
 }
 
 void CUI_WindowWorldMap::On_MouseExit(_float fTimeDelta)
+{
+}
+
+void CUI_WindowWorldMap::On_MouseDragEnter(_float fTimeDelta)
+{
+}
+
+void CUI_WindowWorldMap::On_MouseDrag(_float fTimeDelta)
+{
+	if (m_bActive)
+	{
+//		if (KEY_HOLD(KEY::LBTN))
+//		{
+//			// Drag Test Code
+//			m_ptMouse = GI->GetMousePos();
+//
+//			m_tInfo.fX = m_ptMouse.x;
+//			m_tInfo.fY = m_ptMouse.y;
+//			m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+//				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+//		}
+	}
+}
+
+void CUI_WindowWorldMap::On_MouseDragExit(_float fTimeDelta)
 {
 }
 

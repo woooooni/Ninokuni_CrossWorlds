@@ -3,16 +3,15 @@
 #include "UI.h"
 
 BEGIN(Client)
-class CUI_WindowWorldMap final : public CUI
+class CUI_Setting_Icon final : public CUI
 {
-protected:
-	CUI_WindowWorldMap(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CUI_WindowWorldMap(const CUI_WindowWorldMap& rhs);
-	virtual ~CUI_WindowWorldMap() = default;
-
 public:
-	virtual void Set_Active(_bool bActive) override;
-	_bool Get_Active() { return m_bActive; }
+	enum UI_SETTING_ICONTYPE { SETICON_GAME, SETICON_GRAPHIC, SETICON_AUDIO, SETTINGICON_END };
+
+protected:
+	CUI_Setting_Icon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_SETTING_ICONTYPE eType);
+	CUI_Setting_Icon(const CUI_Setting_Icon& rhs);
+	virtual ~CUI_Setting_Icon() = default;
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -25,13 +24,10 @@ public:
 	virtual void On_MouseEnter(_float fTimeDelta) override;
 	virtual void On_Mouse(_float fTimeDelta) override;
 	virtual void On_MouseExit(_float fTimeDelta) override;
-	virtual void On_MouseDragEnter(_float fTimeDelta) override;
-	virtual void On_MouseDrag(_float fTimeDelta) override;
-	virtual void On_MouseDragExit(_float fTimeDelta) override;
 
 private:
-	POINT m_ptMouse = {};
-	
+	UI_SETTING_ICONTYPE m_eIconType = { SETTINGICON_END };
+
 private:
 	virtual HRESULT	Ready_Components() override;
 
@@ -39,8 +35,11 @@ private:
 	HRESULT	Ready_State();
 	HRESULT	Bind_ShaderResources();
 
+private:
+	void Key_Input(_float fTimeDelta);
+
 public:
-	static CUI_WindowWorldMap* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);
+	static CUI_Setting_Icon* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, UI_SETTING_ICONTYPE eType);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

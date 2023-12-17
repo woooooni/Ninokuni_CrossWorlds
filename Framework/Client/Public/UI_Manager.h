@@ -37,6 +37,11 @@ public:
 	HRESULT Tick_EvermoreLevel(_float fTimeDelta);
 
 public:
+	HRESULT Using_CloseButton();
+
+	HRESULT OnOff_Veil(_bool bOnOff);
+	HRESULT OnOff_SettingWindow(_bool bOnOff);
+
 	HRESULT OnOff_GamePlaySetting(_bool bOnOff); // 기본적으로 세팅되어있는 게임화면 UI들
 	HRESULT OnOff_MainMenu(_bool bOnOff);
 	HRESULT OnOff_QuestWindow(_bool bOnOff);
@@ -46,15 +51,23 @@ public:
 	HRESULT OnOff_SubMenu(_bool bOnOff, _uint iMagicNum);
 	HRESULT Off_OtherSubBtn(_uint iMagicNum);
 
+	HRESULT OnOff_WorldMap(_bool bOnOff);
+	HRESULT OnOff_CostumeWindow(_bool bOnOff); // 코스튬 탭 Window 비/활성화
+
 public: // For UI Tool
 	HRESULT Save_UIData();
 	void Load_UIData();
 
 private:
+	class CUI_Default_Background* m_pDefaultBG = { nullptr };
 	class CUI_Cursor* m_pUICursor = { nullptr };
+	class CUI_Veil* m_pUIVeil = { nullptr };
 	class CUI_Fade* m_pUIFade = { nullptr };
 	class CUI_MapName* m_pUIMapName = { nullptr };
 	class CUI_Basic* m_pMapText = { nullptr };
+
+	// For Setting Window
+	class CUI_Setting_Window* m_pSettingBG = { nullptr };
 
 	class CUI_PlayerInfo* m_pPlayerStatus = { nullptr };
 
@@ -63,9 +76,13 @@ private:
 	class CUI_BtnInventory* m_pBtnInven = { nullptr };
 	class CUI_BtnQuickQuest* m_pBtnQuest = { nullptr };
 	class CUI_BtnClose* m_pBtnClose = { nullptr };
+	class CUI_BtnShowSetting* m_pBtnShowSetting = { nullptr };
 
 	class CUI_MainMenu* m_pMainBG = { nullptr }; // MainMenu Background (버튼과 따로 관리된다)
 	class CUI_WindowQuest* m_pWindowQuest = { nullptr };
+
+	// PlayerStatus
+	vector<class CUI_PlayerEXPBar*> m_PlayerEXP;
 
 private:
 	vector<class CUI_Basic*> m_Basic;
