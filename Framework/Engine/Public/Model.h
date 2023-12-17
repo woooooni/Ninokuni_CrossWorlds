@@ -63,6 +63,8 @@ public:
 	const _bool Is_Tween() const { return (0 <= m_TweenDesc.next.iAnimIndex) ? true : false; } /* 애니메이션 트위닝 (다음 애니메이션 보간) 여부 리턴 */
 	const _bool Is_Fix() const { return m_TweenDesc.cur.iFix; } /* 현재 애니메이션이 마지막 프레임에서 고정 상태인지 여부 리턴*/
 	const _bool Is_Stop() const { return m_TweenDesc.cur.iStop; } /* 현재 애니메이션 정지 여부 */
+
+	void Debug_Animation();
 #pragma endregion
 
 #pragma region Life Cycle

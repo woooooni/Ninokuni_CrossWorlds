@@ -63,6 +63,28 @@ CModel::CModel(const CModel& rhs)
 }
 
 
+void CModel::Debug_Animation()
+{
+	cout << "Curr Anim : " << m_TweenDesc.cur.iAnimIndex <<
+		"\tCurr Frame : "		<< m_TweenDesc.cur.iCurFrame <<
+		"\tNext Frame : "		<< m_TweenDesc.cur.iNextFrame <<
+		"\tFrame Ratio : "		<< m_TweenDesc.cur.fRatio <<
+		"\tIs Finish : "		<< _bool(m_TweenDesc.cur.iFinish) <<
+		"\tIs Fix : "		<< _bool(m_TweenDesc.cur.iFix) <<
+		"\tIs Stop : "		<< _bool(m_TweenDesc.cur.iStop) << endl;
+
+	cout << "Next Anim : "	<< m_TweenDesc.next.iAnimIndex <<
+		"\tCurr Frame : " << m_TweenDesc.next.iCurFrame <<
+		"\tNext Frame : " << m_TweenDesc.next.iNextFrame <<
+		"\tFrame Ratio :" 		<< m_TweenDesc.next.fRatio << 
+		"\tIs Finish : " << _bool(m_TweenDesc.cur.iFinish) <<
+		"\tIs Fix : " << _bool(m_TweenDesc.cur.iFix) <<
+		"\tIs Stop : " << _bool(m_TweenDesc.cur.iStop) << endl;
+
+	cout << "Tween Ratio : " << m_TweenDesc.fTweenRatio << endl << endl;
+
+}
+
 HRESULT CModel::Initialize_Prototype(TYPE eType, const wstring& strModelFolderPath, const wstring& strModelFileName, _fmatrix PivotMatrix)
 {
 	XMStoreFloat4x4(&m_PivotMatrix, PivotMatrix);
@@ -100,9 +122,6 @@ HRESULT CModel::Initialize_Prototype(TYPE eType, const wstring& strModelFolderPa
 
 	if (FAILED(Ready_Animations()))
 		return E_FAIL;
-
-	/*if (FAILED(Ready_Animation_Texture()))
-		return E_FAIL;*/
 
 	return S_OK;
 }
@@ -506,7 +525,9 @@ HRESULT CModel::Clear_NotUsedData()
 
 HRESULT CModel::Set_Animation(const _uint& iAnimationIndex, const _float& fTweenDuration)
 {
-	if (m_Animations.size() <= iAnimationIndex)
+	_uint iIndex = iAnimationIndex % m_Animations.size();
+
+	if (m_Animations.size() <= iIndex)
 		return E_FAIL;
 
 	if (m_TweenDesc.cur.iAnimIndex < 0) // 최초 1회 실행 
