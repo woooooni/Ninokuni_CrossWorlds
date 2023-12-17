@@ -20,7 +20,6 @@ private:
 	void Tick_Socket(_float fTimeDelta);
 	void Tick_Event(_float fTimeDelta);
 	void Tick_Costume(_float fTimeDelta);
-
 	void Tick_Dummys(_float fTimeDelta);
 
 private:
@@ -37,7 +36,6 @@ private:
 	HRESULT Ready_SocketTransforms();
 
 private:
-	void Reset_Transform();
 	const _bool Is_Exception();
 
 	HRESULT Clear_ToolAnimationData();
@@ -48,7 +46,6 @@ private:
 private:
 	wstring m_strFilePath = L"";
 	wstring m_strFileName = L"";
-
 	class CDummy* m_pDummy = nullptr;
 
 #pragma region Animation
@@ -69,15 +66,11 @@ private:
 
 	/* 소켓 */
 	vector<ANIM_TRANSFORM_CACHES>	m_AnimTransformsCaches;/* 모든 뼈 계산 됨 */
-	vector<wstring>					m_AddedTransformNames; /* 모델에 추가된 뼈 이름 기억*/
 
 	_int m_iSocketIndex = -1; /* 툴 리스트 박스에서의 인덱스 == 모델의 트랜스폼 벡터에서의 인덱스 */
 
 	/* Render Index */
 	_int m_iRenderSocketIndex = 0;
-
-	/* Rotation Value */
-	Vec3 m_vRotation;
 
 	vector<Vec3> m_vAutoSocket;
 	_bool		m_bAuto = FALSE;
