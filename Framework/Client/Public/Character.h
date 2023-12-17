@@ -50,10 +50,7 @@ public:
 	};
 
 #pragma endregion
-
-	enum PARTTYPE { PART_SWEATH, PART_SWORD, PART_END };
 	enum SOCKET_TYPE { SOCKET_SWORD, SOCKET_SWEATH, SOCKET_RIGHT_HAND, SOCKET_LEFT_FOOT, SOCKET_RIGHT_FOOT, SOCKET_END };
-	enum CHARACTER_TYPE { SWORD_MAN, DESTROYER, ENGINEER, WITCH, CHARACTER_END };
 public:
 	typedef struct tagCharacterStat
 	{
@@ -83,18 +80,6 @@ public:
 	virtual void Collision_Exit(const COLLISION_INFO& tInfo) override;
 
 
-public:
-	CHierarchyNode* Get_Socket(PARTTYPE eType);
-	CHierarchyNode* Get_Socket(const wstring& strSocketName);
-
-	template<class T>
-	T* Get_Part(PARTTYPE eType) 
-	{ 
-		if (m_Parts[eType] == nullptr)
-			return nullptr;
-
-		return dynamic_cast<T*>(m_Parts[eType]);
-	};
 
 public:
 	void Generate_Trail(SOCKET_TYPE eSocketType);

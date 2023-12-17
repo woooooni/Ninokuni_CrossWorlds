@@ -69,6 +69,62 @@ struct VS_OUT
 	uint		iInstanceID		: SV_INSTANCEID;
 };
 
+#define QUATERNION_IDENTITY float4(0, 0, 0, 1)
+float4 QSlerp(in float4 a, in float4 b, float t)
+{
+	// if either input is zero, return the other.
+	if (length(a) == 0.0)
+	{
+		if (length(b) == 0.0)
+		{
+			return QUATERNION_IDENTITY;
+		}
+		return b;
+	}
+	else if (length(b) == 0.0)
+	{
+		return a;
+	}
+
+	float cosHalfAngle = a.w * b.w + dot(a.xyz, b.xyz);
+
+	if (cosHalfAngle >= 1.0 || cosHalfAngle <= -1.0)
+	{
+		return a;
+	}
+	else if (cosHalfAngle < 0.0)
+	{
+		b.xyz = -b.xyz;
+		b.w = -b.w;
+		cosHalfAngle = -cosHalfAngle;
+	}
+
+	float blendA;
+	float blendB;
+	if (cosHalfAngle < 0.99)
+	{
+		// do proper slerp for big angles
+		float halfAngle = acos(cosHalfAngle);
+		float sinHalfAngle = sin(halfAngle);
+		float oneOverSinHalfAngle = 1.0 / sinHalfAngle;
+		blendA = sin(halfAngle * (1.0 - t)) * oneOverSinHalfAngle;
+		blendB = sin(halfAngle * t) * oneOverSinHalfAngle;
+	}
+	else
+	{
+		// do lerp if angle is really small.
+		blendA = 1.0 - t;
+		blendB = t;
+	}
+
+	float4 result = float4(blendA * a.xyz + blendB * b.xyz, blendA * a.w + blendB * b.w);
+	if (length(result) > 0.0)
+	{
+		return normalize(result);
+	}
+	return QUATERNION_IDENTITY;
+}
+
 matrix GetAnimationMatrix(VS_IN input)
 {
 	float indices[4] = { input.vBlendIndex.x, input.vBlendIndex.y, input.vBlendIndex.z, input.vBlendIndex.w };
@@ -112,6 +168,7 @@ matrix GetAnimationMatrix(VS_IN input)
 		n3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, nextFrame[0], animIndex[0], 0));
 		next = matrix(n0, n1, n2, n3);
 
+		// matrix result = matrix(QSlerp(c0, n0, ratio[0]), QSlerp(c1, n1, ratio[0]), QSlerp(c2, n2, ratio[0]), lerp(c3, n3, ratio[0]));
 		matrix result = lerp(curr, next, ratio[0]);
 
 		/* if next */
@@ -130,7 +187,6 @@ matrix GetAnimationMatrix(VS_IN input)
 			next = matrix(n0, n1, n2, n3);
 
 			matrix nextResult = lerp(curr, next, ratio[1]);
-
 			result = lerp(result, nextResult, g_TweenFrames_Array[input.iInstanceID].fTweenRatio);
 		}
 

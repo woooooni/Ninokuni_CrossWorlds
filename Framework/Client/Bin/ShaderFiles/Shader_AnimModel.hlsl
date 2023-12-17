@@ -63,6 +63,142 @@ struct VS_OUT
 	float4		vWorldPosition	: TEXCOORD2;
 };
 
+#define QUATERNION_IDENTITY float4(0, 0, 0, 1)
+float4 QSlerp(in float4 a, in float4 b, float t)
+{
+	// if either input is zero, return the other.
+	if (length(a) == 0.0)
+	{
+		if (length(b) == 0.0)
+		{
+			return QUATERNION_IDENTITY;
+		}
+		return b;
+	}
+	else if (length(b) == 0.0)
+	{
+		return a;
+	}
+
+	float cosHalfAngle = a.w * b.w + dot(a.xyz, b.xyz);
+
+	if (cosHalfAngle >= 1.0 || cosHalfAngle <= -1.0)
+	{
+		return a;
+	}
+	else if (cosHalfAngle < 0.0)
+	{
+		b.xyz = -b.xyz;
+		b.w = -b.w;
+		cosHalfAngle = -cosHalfAngle;
+	}
+
+	float blendA;
+	float blendB;
+	if (cosHalfAngle < 0.99)
+	{
+		// do proper slerp for big angles
+		float halfAngle = acos(cosHalfAngle);
+		float sinHalfAngle = sin(halfAngle);
+		float oneOverSinHalfAngle = 1.0 / sinHalfAngle;
+		blendA = sin(halfAngle * (1.0 - t)) * oneOverSinHalfAngle;
+		blendB = sin(halfAngle * t) * oneOverSinHalfAngle;
+	}
+	else
+	{
+		// do lerp if angle is really small.
+		blendA = 1.0 - t;
+		blendB = t;
+	}
+
+	float4 result = float4(blendA * a.xyz + blendB * b.xyz, blendA * a.w + blendB * b.w);
+	if (length(result) > 0.0)
+	{
+		return normalize(result);
+	}
+	return QUATERNION_IDENTITY;
+}
+
+inline float SIGN(float x) {
+	return (x >= 0.0f) ? +1.0f : -1.0f;
+}
+
+inline float NORM(float a, float b, float c, float d) {
+	return sqrt(a * a + b * b + c * c + d * d);
+}
+
+// quaternion = [w, x, y, z]'
+matrix Rotation_To_Quaternion(matrix m) {
+	float r11 = m._11;
+	float r12 = m._21;
+	float r13 = m._31;
+	float r21 = m._12;
+	float r22 = m._22;
+	float r23 = m._32;
+	float r31 = m._13;
+	float r32 = m._23;
+	float r33 = m._33;
+	float q0 = (r11 + r22 + r33 + 1.0f) / 4.0f;
+	float q1 = (r11 - r22 - r33 + 1.0f) / 4.0f;
+	float q2 = (-r11 + r22 - r33 + 1.0f) / 4.0f;
+	float q3 = (-r11 - r22 + r33 + 1.0f) / 4.0f;
+	if (q0 < 0.0f) {
+		q0 = 0.0f;
+	}
+	if (q1 < 0.0f) {
+		q1 = 0.0f;
+	}
+	if (q2 < 0.0f) {
+		q2 = 0.0f;
+	}
+	if (q3 < 0.0f) {
+		q3 = 0.0f;
+	}
+	q0 = sqrt(q0);
+	q1 = sqrt(q1);
+	q2 = sqrt(q2);
+	q3 = sqrt(q3);
+	if (q0 >= q1 && q0 >= q2 && q0 >= q3) {
+		q0 *= +1.0f;
+		q1 *= SIGN(r32 - r23);
+		q2 *= SIGN(r13 - r31);
+		q3 *= SIGN(r21 - r12);
+	}
+	else if (q1 >= q0 && q1 >= q2 && q1 >= q3) {
+		q0 *= SIGN(r32 - r23);
+		q1 *= +1.0f;
+		q2 *= SIGN(r21 + r12);
+		q3 *= SIGN(r13 + r31);
+	}
+	else if (q2 >= q0 && q2 >= q1 && q2 >= q3) {
+		q0 *= SIGN(r13 - r31);
+		q1 *= SIGN(r21 + r12);
+		q2 *= +1.0f;
+		q3 *= SIGN(r32 + r23);
+	}
+	else if (q3 >= q0 && q3 >= q1 && q3 >= q2) {
+		q0 *= SIGN(r21 - r12);
+		q1 *= SIGN(r31 + r13);
+		q2 *= SIGN(r32 + r23);
+		q3 *= +1.0f;
+	}
+	else {
+		printf("coding error\n");
+	}
+	float r = NORM(q0, q1, q2, q3);
+	q0 /= r;
+	q1 /= r;
+	q2 /= r;
+	q3 /= r;
+
+	matrix res = m;//(Mat_<float>(4, 1) << q0, q1, q2, q3);
+	return res;
+}
+
+
+
+
+
 matrix GetAnimationMatrix(VS_IN input)
 {
 	float indices[4] = { input.vBlendIndex.x, input.vBlendIndex.y, input.vBlendIndex.z, input.vBlendIndex.w };
@@ -106,8 +242,16 @@ matrix GetAnimationMatrix(VS_IN input)
 		n3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, nextFrame[0], animIndex[0], 0));
 		next = matrix(n0, n1, n2, n3);
 
-		matrix result = lerp(curr, next, ratio[0]);
+		/*matrix result = matrix(QSlerp(curr._11_21_31_41, next._11_21_31_41, ratio[0])
+			, QSlerp(curr._12_22_32_42, next._12_22_32_42, ratio[0])
+			, QSlerp(curr._13_23_33_43, next._13_23_33_43, ratio[0])
+			//, lerp(c3, n3, ratio[0]));matrix result = matrix(QSlerp(curr._11_21_31_41, next._11_21_31_41, ratio[0])
+			//, QSlerp(curr._12_22_32_42, next._12_22_32_42, ratio[0])
+			//, QSlerp(curr._13_23_33_43, next._13_23_33_43, ratio[0])
+			//, lerp(c3, n3, ratio[0]));*/
+		
 
+		matrix result = lerp(curr, next, ratio[0]);
 		/* if next */
 		if (animIndex[1] >= 0)
 		{
@@ -124,11 +268,10 @@ matrix GetAnimationMatrix(VS_IN input)
 			next = matrix(n0, n1, n2, n3);
 
 			matrix nextResult = lerp(curr, next, ratio[1]);
-
 			result = lerp(result, nextResult, g_TweenFrames.fTweenRatio);
 		}
 
-		transform += mul(weights[i], result);
+		transform += mul(result, weights[i]);
 	}
 
 	return transform;

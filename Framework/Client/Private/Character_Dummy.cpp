@@ -7,13 +7,13 @@
 
 
 
-CCharacter_Dummy::CCharacter_Dummy(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CCharacter::CHARACTER_TYPE eCharacterType)
-	: CCharacter(pDevice, pContext, strObjectTag, eCharacterType)
+CCharacter_Dummy::CCharacter_Dummy(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
+	: CGameObject(pDevice, pContext, strObjectTag, OBJ_TYPE::OBJ_CHARACTER)
 {
 }
 
 CCharacter_Dummy::CCharacter_Dummy(const CCharacter_Dummy& rhs)
-	: CCharacter(rhs)
+	: CGameObject(rhs)
 {
 
 }
@@ -35,6 +35,9 @@ HRESULT CCharacter_Dummy::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+	if (FAILED(Ready_Colliders()))
+		return E_FAIL;
+
 	//if (FAILED(Ready_Sockets()))
 	//	return E_FAIL;
 
@@ -44,15 +47,11 @@ HRESULT CCharacter_Dummy::Initialize(void* pArg)
 	//if (FAILED(Ready_States()))
 	//	return E_FAIL;
 
- 	if (FAILED(Ready_Colliders()))
-		return E_FAIL;
-
 	return S_OK;
 }
 
 void CCharacter_Dummy::Tick(_float fTimeDelta)
 {
-	m_pStateCom->Tick_State(fTimeDelta);
 	__super::Tick(fTimeDelta);
 
 	_bool bKeyInput = false;
@@ -90,12 +89,63 @@ void CCharacter_Dummy::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
+	m_pModelCom->LateTick(fTimeDelta);
+
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
+
+#ifdef _DEBUG
+	for (_uint i = 0; i < CCollider::DETECTION_END; ++i)
+	{
+		for (auto& pCollider : m_Colliders[i])
+		{
+			m_pRendererCom->Add_Debug(pCollider);
+		}
+	}
+#endif
 }
 
 HRESULT CCharacter_Dummy::Render()
 {
 	if (FAILED(__super::Render()))
 		return E_FAIL;
+
+	if (nullptr == m_pModelCom || nullptr == m_pShaderCom)
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+		return E_FAIL;
+
+	_float4 vRimColor = { 0.f, 0.f, 0.f, 0.f };
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float4))))
+		return E_FAIL;
+
+
+	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+	for (_uint i = 0; i < iNumMeshes; ++i)
+	{
+		_uint		iPassIndex = 0;
+
+		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+			return E_FAIL;
+
+		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
+			iPassIndex = 0;
+		else
+			iPassIndex++;
+
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, iPassIndex)))
+			return E_FAIL;
+	}
+
+
+
 
 	return S_OK;
 }
@@ -115,10 +165,6 @@ void CCharacter_Dummy::Collision_Exit(const COLLISION_INFO& tInfo)
 	__super::Collision_Exit(tInfo);
 }
 
-void CCharacter_Dummy::On_Damaged(const COLLISION_INFO& tInfo)
-{
-	__super::On_Damaged(tInfo);
-}
 
 
 
@@ -140,11 +186,7 @@ HRESULT CCharacter_Dummy::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Model */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Test_Witch"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
-		return E_FAIL;
-
-	/* For.Com_StateMachine */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_StateMachine"), TEXT("Com_StateMachine"), (CComponent**)&m_pStateCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_SwordMan_Body"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 
 
@@ -163,211 +205,6 @@ HRESULT CCharacter_Dummy::Ready_Components()
 
 	return S_OK;
 }
-
-#pragma region Ready_States
-HRESULT CCharacter_Dummy::Ready_States()
-{
-	//list<wstring> strAnimationName;
-
-	//strAnimationName.clear();
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_AdvNut01_1");
-	//m_pStateCom->Add_State(CCharacter::BASIC_IDLE, CState_Tanjiro_Basic_Idle::Create(m_pDevice, m_pContext, m_pStateCom, strAnimationName));
-
-	//strAnimationName.clear();
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_AdvJumpF01_0");
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_AdvJumpF01_1");
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_AdvJumpF01_2");
-	//m_pStateCom->Add_State(CCharacter::BASIC_JUMP, CState_Tanjiro_Basic_Jump::Create(m_pDevice, m_pContext, m_pStateCom, strAnimationName));
-
-
-	//strAnimationName.clear();
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_AdvWalk01_1");
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_AdvRun01_1");
-	//m_pStateCom->Add_State(CCharacter::BASIC_MOVE, CState_Tanjiro_Basic_Move::Create(m_pDevice, m_pContext, m_pStateCom, strAnimationName));
-
-
-
-
-	//strAnimationName.clear();
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_BaseNut01_1");
-	//m_pStateCom->Add_State(CCharacter::BATTLE_IDLE, CState_Character_Battle_Idle::Create(m_pDevice, m_pContext, m_pStateCom, strAnimationName));
-
-	//strAnimationName.clear();
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_BaseRun01_1");
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_BaseDashF01_1");
-	//m_pStateCom->Add_State(CCharacter::BATTLE_MOVE,
-	//	CState_Character_Battle_Move::Create(m_pDevice, 
-	//		m_pContext, 
-	//		m_pStateCom, 
-	//		strAnimationName));
-
-	//strAnimationName.clear();
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_BaseJump01_0");
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_BaseJump01_1");
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_BaseJump01_2");
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_BaseJump01_3");
-	//m_pStateCom->Add_State(CCharacter::BATTLE_JUMP,
-	//	CState_Character_Battle_Jump::Create(m_pDevice,
-	//		m_pContext,
-	//		m_pStateCom,
-	//		strAnimationName));
-
-
-	//strAnimationName.clear();
-	//// Left
-	//// Right
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_BaseStepL01");
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_BaseStepL02");
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_BaseStepR01");
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_BaseStepR02");
-
-	//m_pStateCom->Add_State(CCharacter::BATTLE_DASH,
-	//	CState_Character_Battle_Dash::Create(m_pDevice,
-	//		m_pContext,
-	//		m_pStateCom,
-	//		strAnimationName));
-
-	//// Left
-	//// Right
-	//strAnimationName.clear();
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_BaseStepAL01");
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_BaseStepAR01");
-	//m_pStateCom->Add_State(CCharacter::BATTLE_AIRDASH,
-	//	CState_Character_Battle_AirDash::Create(m_pDevice,
-	//		m_pContext,
-	//		m_pStateCom,
-	//		strAnimationName));
-	//
-
-
-
-
-	//strAnimationName.clear();
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0000_V00_C00_Death");
-	//m_pStateCom->Add_State(CCharacter::DIE,
-	//	CState_Character_Dead::Create(m_pDevice,
-	//		m_pContext,
-	//		m_pStateCom,
-	//		strAnimationName));
-
-
-	//strAnimationName.clear();
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0000_V00_C00_Dmg01_F");
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0000_V00_C00_Dmg01_L");
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0000_V00_C00_Dmg01_R");
-	//m_pStateCom->Add_State(CCharacter::DAMAGED_BASIC,
-	//	CState_Character_Damaged_Basic::Create(m_pDevice,
-	//		m_pContext,
-	//		m_pStateCom,
-	//		strAnimationName));
-
-	//strAnimationName.clear();
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0000_V00_C00_DmgBound01_0");
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0000_V00_C00_DmgBound02_2");
-	//m_pStateCom->Add_State(CCharacter::DAMAGED_BOUND,
-	//	CState_Character_Damaged_Bound::Create(m_pDevice,
-	//		m_pContext,
-	//		m_pStateCom,
-	//		strAnimationName));
-
-	//strAnimationName.clear();
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0000_V00_C00_DmgBlowF01_0");
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0000_V00_C00_DmgBlowF01_1");
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0000_V00_C00_DmgBlowF01_2");
-	//m_pStateCom->Add_State(CCharacter::DAMAGED_BLOW,
-	//	CState_Character_Damaged_Blow::Create(m_pDevice,
-	//		m_pContext,
-	//		m_pStateCom,
-	//		strAnimationName));
-
-	//strAnimationName.clear();
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0000_V00_C00_DmgUpperF01_0");
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0000_V00_C00_DmgUpperF01_1");
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0000_V00_C00_DmgUpperF01_2");
-	//m_pStateCom->Add_State(CCharacter::DAMAGED_AIRBORN,
-	//	CState_Character_Damaged_AirBorn::Create(m_pDevice,
-	//		m_pContext,
-	//		m_pStateCom,
-	//		strAnimationName));
-
-
-	//strAnimationName.clear();
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_BaseTired01_0");
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_BaseTired01_1");
-	//m_pStateCom->Add_State(CCharacter::KNOCKDOWN,
-	//	CState_Character_Down::Create(m_pDevice,
-	//		m_pContext,
-	//		m_pStateCom,
-	//		strAnimationName));
-
-
-
-	//strAnimationName.clear();
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_AtkCmbW01");
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_AtkCmbW02");
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_AtkCmbW03");
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_AtkCmbW03D01");
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_AtkCmbW04");
-
-	//m_pStateCom->Add_State(CCharacter::ATTACK,
-	//	CState_Tanjiro_Attack::Create(m_pDevice,
-	//		m_pContext,			
-	//		m_pStateCom,
-	//		strAnimationName));
-
-
-	//strAnimationName.clear();
-	//
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_BaseJump01_2");
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_AtkCmbAW01");
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_AtkCmbAW02");
-
-	//m_pStateCom->Add_State(CCharacter::AIR_ATTACK,
-	//	CState_Tanjiro_Air_Attack::Create(m_pDevice,
-	//		m_pContext,
-	//		m_pStateCom,
-	//		strAnimationName));
-
-
-	//strAnimationName.clear();
-
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_AtkSkl02_0");
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_AtkSkl02_1");
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_AtkSkl02_2");
-
-	//m_pStateCom->Add_State(CCharacter::SKILL_0,
-	//	CState_Tanjiro_Skill_0::Create(m_pDevice,
-	//		m_pContext,
-	//		m_pStateCom,
-	//		strAnimationName));
-
-	//strAnimationName.clear();
-
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_AtkSkl03_0");
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_AtkSkl03_1");
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_AtkSkl03_2");
-
-	//m_pStateCom->Add_State(CCharacter::SKILL_1,
-	//	CState_Tanjiro_Skill_1::Create(m_pDevice,
-	//		m_pContext,
-	//		m_pStateCom,
-	//		strAnimationName));
-
-	//strAnimationName.clear();
-	//strAnimationName.push_back(L"SK_P0001_V00_C00.ao|A_P0001_V00_C00_AtkSkl04");
-	//m_pStateCom->Add_State(CCharacter::SKILL_2,
-	//	CState_Tanjiro_Skill_2::Create(m_pDevice,
-	//		m_pContext,
-	//		m_pStateCom,
-	//		strAnimationName));
-
-	//
-
-	//m_pStateCom->Change_State(CCharacter::BASIC_IDLE);
-	return S_OK;
-}
-
-#pragma endregion
 
 
 #pragma region Ready_Colliders
@@ -467,117 +304,10 @@ HRESULT CCharacter_Dummy::Ready_Colliders()
 
 #pragma endregion
 
-#pragma region Ready_Sockets
-HRESULT CCharacter_Dummy::Ready_Sockets()
+
+CCharacter_Dummy* CCharacter_Dummy::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 {
-	//if (nullptr == m_pModelCom)
-	//	return E_FAIL;
-
-	//m_Sockets.resize(SOCKET_END);
-
-	//m_Sockets[SOCKET_SWORD] = m_pModelCom->Get_HierarchyNode(L"R_HandCommon_1_Lct");
-	//m_Sockets[SOCKET_RIGHT_HAND] = m_pModelCom->Get_HierarchyNode(L"R_Hand_1");
-	//m_Sockets[SOCKET_SWEATH] = m_pModelCom->Get_HierarchyNode(L"L_Weapon_1_Lct");
-
-	//m_Sockets[SOCKET_LEFT_FOOT] = m_pModelCom->Get_HierarchyNode(L"L_Foot_End");
-	//m_Sockets[SOCKET_RIGHT_FOOT] = m_pModelCom->Get_HierarchyNode(L"R_Foot_End");
-	//
-
-	//CTrail::TRAIL_DESC TrailDesc = {};
-	//TrailDesc.bTrail = true;
-	//TrailDesc.fAccGenTrail = 0.f;
-	//TrailDesc.fGenTrailTime = 0.01f;
-	//TrailDesc.vDiffuseColor = { 0.f, 0.5f, 1.f, 0.5f };
-
-
-	//// LeftFoot
-	//m_pTrails[SOCKET_TYPE::SOCKET_LEFT_FOOT] = CTrail::Create(m_pDevice, m_pContext, L"LeftFoot_Trail", TrailDesc);
-	//if (m_pTrails[SOCKET_TYPE::SOCKET_LEFT_FOOT] == nullptr)
-	//	return E_FAIL;
-
-	//if (FAILED(m_pTrails[SOCKET_TYPE::SOCKET_LEFT_FOOT]->Initialize(nullptr)))
-	//	return E_FAIL;
-
-	//m_pTrails[SOCKET_TYPE::SOCKET_LEFT_FOOT]->SetUp_Position(XMVectorSet(0.f, 0.0f, -0.0125f, 1.f), XMVectorSet(0.f, 0.0f, 0.0125f, 1.f));
-	//m_pTrails[SOCKET_TYPE::SOCKET_LEFT_FOOT]->Set_VtxCount(66);
-
-
-
-	//// RightFoot
-	//m_pTrails[SOCKET_TYPE::SOCKET_RIGHT_FOOT] = CTrail::Create(m_pDevice, m_pContext, L"RightFoot_Trail", TrailDesc);
-	//if (m_pTrails[SOCKET_TYPE::SOCKET_RIGHT_FOOT] == nullptr)
-	//	return E_FAIL;
-
-	//if (FAILED(m_pTrails[SOCKET_TYPE::SOCKET_RIGHT_FOOT]->Initialize(nullptr)))
-	//	return E_FAIL;
-
-	//m_pTrails[SOCKET_TYPE::SOCKET_RIGHT_FOOT]->SetUp_Position(XMVectorSet(0.f, 0.0f, -0.0125f, 1.f), XMVectorSet(0.f, 0.0f, 0.0125f, 1.f));
-	//m_pTrails[SOCKET_TYPE::SOCKET_RIGHT_FOOT]->Set_VtxCount(66);
-	//
-
-
-
-	return S_OK;
-}
-#pragma endregion
-
-#pragma region Ready_Parts
-HRESULT CCharacter_Dummy::Ready_Parts()
-{
-	//m_Parts.resize(PARTTYPE::PART_END);
-
-	//CSweath::SWEATH_DESC			SweathDesc;
-
-	//SweathDesc.eType = CSweath::SWEATH_TYPE::TANJIRO;
-	//SweathDesc.pOwner = this;
-	//SweathDesc.pParentTransform = m_pTransformCom;
-	//SweathDesc.pSocketBone = m_Sockets[SOCKET_SWEATH];
-	//XMStoreFloat3(&SweathDesc.vRotationDegree, 
-	//	XMVectorSet(XMConvertToRadians(-90.f), 
-	//	XMConvertToRadians(180.f), 
-	//	XMConvertToRadians(0.f), 
-	//	XMConvertToRadians(0.f)));
-	//XMStoreFloat4x4(&SweathDesc.SocketPivot, m_pModelCom->Get_PivotMatrix());
-
-	//CGameObject* pGameObject = GI->Clone_GameObject(TEXT("Prototype_GameObject_Sweath_Tanjiro"), LAYER_TYPE::LAYER_CHARACTER, &SweathDesc);
-	//if (nullptr == pGameObject)
-	//	return E_FAIL;
-
-	//Safe_AddRef(pGameObject);
-	//m_Parts[PART_SWEATH] = (pGameObject);
-
-
-	//CSword::SWORD_DESC			SwordDesc;
-
-	//SwordDesc.eType = CSword::SWORD_TYPE::TANJIRO;
-	//SwordDesc.pOwner = this;
-	//SwordDesc.pParentTransform = m_pTransformCom;
-	//SwordDesc.pSocketBone = m_Sockets[SOCKET_SWEATH];
-	//XMStoreFloat3(&SwordDesc.vRotationDegree,
-	//	XMVectorSet(XMConvertToRadians(-90.f),
-	//		XMConvertToRadians(180.f),
-	//		XMConvertToRadians(0.f),
-	//		XMConvertToRadians(0.f)));
-
-	//XMStoreFloat4x4(&SwordDesc.SocketPivot, m_pModelCom->Get_PivotMatrix());
-
-
-	//pGameObject = GI->Clone_GameObject(TEXT("Prototype_GameObject_Sword_Tanjiro"), LAYER_TYPE::LAYER_CHARACTER, &SwordDesc);
-	//
-	//if (nullptr == pGameObject)
-	//	return E_FAIL;
-
-	//Safe_AddRef(pGameObject);
-	//m_Parts[PART_SWORD] = pGameObject;
-
-
-	return S_OK;
-}
-#pragma endregion
-
-CCharacter_Dummy* CCharacter_Dummy::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CCharacter::CHARACTER_TYPE eCharacterType)
-{
-	CCharacter_Dummy* pInstance = new CCharacter_Dummy(pDevice, pContext, strObjectTag, eCharacterType);
+	CCharacter_Dummy* pInstance = new CCharacter_Dummy(pDevice, pContext, strObjectTag);
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
 		MSG_BOX("Create Failed : CCharacter_Dummy");
@@ -603,4 +333,10 @@ CGameObject* CCharacter_Dummy::Clone(void* pArg)
 void CCharacter_Dummy::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pShaderCom);
+	Safe_Release(m_pRendererCom);
+	Safe_Release(m_pTransformCom);
+	Safe_Release(m_pModelCom);
+	Safe_Release(m_pRigidBodyCom);
 }

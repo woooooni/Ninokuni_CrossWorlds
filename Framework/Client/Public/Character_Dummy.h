@@ -1,12 +1,21 @@
 #pragma once
-#include "Character.h"
 
+#include "GameObject.h"
+BEGIN(Engine)
+
+class CShader;
+class CRenderer;
+class CTransform;
+class CModel;
+class CRigidBody;
+
+END
 BEGIN(Client)
-class CCharacter_Dummy final : public CCharacter
+class CCharacter_Dummy final : public CGameObject
 {
 
 private:
-	CCharacter_Dummy(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CCharacter::CHARACTER_TYPE eCharacterType);
+	CCharacter_Dummy(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	CCharacter_Dummy(const CCharacter_Dummy& rhs);
 	virtual ~CCharacter_Dummy() = default;
 
@@ -22,23 +31,22 @@ public:
 	virtual void Collision_Continue(const COLLISION_INFO& tInfo) override;
 	virtual void Collision_Exit(const COLLISION_INFO& tInfo) override;
 
-
-public:
-	virtual void On_Damaged(const COLLISION_INFO& tInfo) override;
 	
 
 protected:
 	virtual HRESULT Ready_Components() override;
-	virtual HRESULT Ready_States() override;
-	virtual HRESULT Ready_Colliders() override;
+	virtual HRESULT Ready_Colliders();
 
 private:
-	HRESULT Ready_Sockets();
-	HRESULT Ready_Parts();
+	class CShader* m_pShaderCom = nullptr;
+	class CRenderer* m_pRendererCom = nullptr;
+	class CTransform* m_pTransformCom = nullptr;
+	class CModel* m_pModelCom = nullptr;
+	class CRigidBody* m_pRigidBodyCom = nullptr;
 	
 
 public:
-	static CCharacter_Dummy* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CCharacter::CHARACTER_TYPE eCharacterType);
+	static CCharacter_Dummy* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

@@ -71,58 +71,55 @@ HRESULT CCloth_Terrain::Render()
 
 #ifdef _DEBUG
 
-	if (m_bDraw)
-	{
-		m_pEffect->SetWorld(m_pTransformCom->Get_WorldMatrix());
-		m_pEffect->SetView(GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
-		m_pEffect->SetProjection(GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ));
+	//if (m_bDraw)
+	//{
+	//	m_pEffect->SetWorld(m_pTransformCom->Get_WorldMatrix());
+	//	m_pEffect->SetView(GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
+	//	m_pEffect->SetProjection(GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ));
 
 
-		m_pEffect->Apply(m_pContext);
+	//	m_pEffect->Apply(m_pContext);
 
-		m_pContext->IASetInputLayout(m_pInputLayout);
-
-
-		m_pBatch->Begin();
-		
-		PxParticleClothBuffer* userBuffer = GI->Get_TestClothBuffer();
-		PxVec4* positions = userBuffer->getPositionInvMasses();
-		PxU32* Indices = userBuffer->getTriangles();
+	//	m_pContext->IASetInputLayout(m_pInputLayout);
 
 
-		PxVec4 vertices[10000];
-		PxU32 triangles[(100 - 1) * (100 - 1) * 2];
-		
-
-		const PxU32 numParticles = userBuffer->getNbActiveParticles();
-
-		PxCudaContextManager* pContextManager = GI->Get_CudaContext_Manager();
-		pContextManager->acquireContext();
-
-		PxCudaContext* cudaContext = pContextManager->getCudaContext();
+	//	m_pBatch->Begin();
+	//	
+	//	PxParticleClothBuffer* userBuffer = GI->Get_TestClothBuffer();
+	//	PxVec4* positions = userBuffer->getPositionInvMasses();
+	//	PxU32* Indices = userBuffer->getTriangles();
 
 
+	//	PxVec4 vertices[10000];
+	//	PxU32 triangles[(100 - 1) * (100 - 1) * 2];
+	//	
 
-		cudaContext->memcpyDtoH(vertices, CUdeviceptr(positions), sizeof(PxVec4) * 10000);
-		cudaContext->memcpyDtoH(triangles, CUdeviceptr(Indices), sizeof(PxU32) * ((100 - 1) * (100 - 1) * 2));
+	//	const PxU32 numParticles = userBuffer->getNbActiveParticles();
+
+	//	PxCudaContextManager* pContextManager = GI->Get_CudaContext_Manager();
+	//	pContextManager->acquireContext();
+
+	//	PxCudaContext* cudaContext = pContextManager->getCudaContext();
 
 
 
-		pContextManager->releaseContext();
-		for (_uint i = 0; i < ((100 - 1) * (100 - 1) * 2); i += 3)
-		{
-			_vector vPoint0 = XMVectorSet(vertices[triangles[i]].x, vertices[triangles[i]].y, vertices[triangles[i]].z, vertices[triangles[i]].w);
-			_vector vPoint1 = XMVectorSet(vertices[triangles[i + 1]].x, vertices[triangles[i + 1]].y, vertices[triangles[i + 1]].z, vertices[triangles[i + 1]].w);
-			_vector vPoint2 = XMVectorSet(vertices[triangles[i + 2]].x, vertices[triangles[i + 2]].y, vertices[triangles[i + 2]].z, vertices[triangles[i + 2]].w);
+	//	cudaContext->memcpyDtoH(vertices, CUdeviceptr(positions), sizeof(PxVec4) * 10000);
+	//	cudaContext->memcpyDtoH(triangles, CUdeviceptr(Indices), sizeof(PxU32) * ((100 - 1) * (100 - 1) * 2));
 
-			DX::DrawTriangle(m_pBatch, vPoint0, vPoint1, vPoint2);
-		}
 
-		m_pBatch->End();
-	}
 
-	if (FAILED(m_pNavigationCom->Render()))
-		return E_FAIL;
+	//	pContextManager->releaseContext();
+	//	for (_uint i = 0; i < ((100 - 1) * (100 - 1) * 2); i += 3)
+	//	{
+	//		_vector vPoint0 = XMVectorSet(vertices[triangles[i]].x, vertices[triangles[i]].y, vertices[triangles[i]].z, vertices[triangles[i]].w);
+	//		_vector vPoint1 = XMVectorSet(vertices[triangles[i + 1]].x, vertices[triangles[i + 1]].y, vertices[triangles[i + 1]].z, vertices[triangles[i + 1]].w);
+	//		_vector vPoint2 = XMVectorSet(vertices[triangles[i + 2]].x, vertices[triangles[i + 2]].y, vertices[triangles[i + 2]].z, vertices[triangles[i + 2]].w);
+
+	//		DX::DrawTriangle(m_pBatch, vPoint0, vPoint1, vPoint2);
+	//	}
+
+	//	m_pBatch->End();
+	//}
 	
 #endif
 

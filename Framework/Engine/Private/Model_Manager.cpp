@@ -825,8 +825,10 @@ HRESULT CModel_Manager::Create_AnimationTransform_Caches(const _uint& iAnimIndex
 	const _uint iMaxFrame = (_uint)pAnimation->Get_MaxFrameCount();
 
 	/* 모든 프레임 순회 (텍스처 가로) */
+	wstring strAnimationName = pAnimation->Get_AnimationName();
 	for (uint32 iFrameIndex = 0; iFrameIndex < iMaxFrame; iFrameIndex++)
 	{
+		
 		/* 모든 채널의 현재 프레임 갱신 */
 		pAnimation->Calculate_Animation(iFrameIndex);
 

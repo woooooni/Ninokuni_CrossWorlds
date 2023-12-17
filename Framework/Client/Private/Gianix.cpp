@@ -7,7 +7,7 @@
 
 
 
-CGianix::CGianix(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CCharacter::CHARACTER_TYPE eCharacterType)
+CGianix::CGianix(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eCharacterType)
 	: CCharacter(pDevice, pContext, strObjectTag, eCharacterType)
 {
 }
@@ -192,7 +192,7 @@ HRESULT CGianix::Ready_Parts()
 }
 #pragma endregion
 
-CGianix* CGianix::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CCharacter::CHARACTER_TYPE eCharacterType)
+CGianix* CGianix::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eCharacterType)
 {
 	CGianix* pInstance = new CGianix(pDevice, pContext, strObjectTag, eCharacterType);
 	if (FAILED(pInstance->Initialize_Prototype()))

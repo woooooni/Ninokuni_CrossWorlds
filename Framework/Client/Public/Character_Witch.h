@@ -6,7 +6,7 @@ class CCharacter_Witch final : public CCharacter
 {
 
 private:
-	CCharacter_Witch(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CCharacter::CHARACTER_TYPE eCharacterType);
+	CCharacter_Witch(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eCharacterType);
 	CCharacter_Witch(const CCharacter_Witch& rhs);
 	virtual ~CCharacter_Witch() = default;
 
@@ -38,7 +38,7 @@ private:
 	
 
 public:
-	static CCharacter_Witch* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CCharacter::CHARACTER_TYPE eCharacterType);
+	static CCharacter_Witch* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eCharacterType);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

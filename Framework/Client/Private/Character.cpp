@@ -241,25 +241,6 @@ void CCharacter::Collision_Exit(const COLLISION_INFO& tInfo)
 }
 
 
-CHierarchyNode* CCharacter::Get_Socket(PARTTYPE eType)
-{
-	if (eType >= PARTTYPE::PART_END)
-		return nullptr;
-
-
-	return m_Sockets[eType];
-}
-
-CHierarchyNode* CCharacter::Get_Socket(const wstring& strSocketName)
-{
-	for (auto& pSocket : m_Sockets)
-	{
-		if (pSocket->Get_Name() == strSocketName)
-			return pSocket;
-	}
-	return nullptr;
-}
-
 
 
 

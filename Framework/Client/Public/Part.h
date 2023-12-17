@@ -28,7 +28,7 @@ public:
 public:
 	virtual HRESULT Initialize_Prototype();
 	virtual HRESULT Initialize(void* pArg);
-	virtual void Tick(_float fTimeDelta) PURE;
+	virtual void Tick(_float fTimeDelta);
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 
@@ -45,12 +45,10 @@ public:
 
 protected: 
 	CGameObject* m_pOwner = { nullptr };
-
 	CModel* m_pModelCom = { nullptr };
 	CShader* m_pShaderCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };
 	CTransform* m_pTransformCom = { nullptr };
-
 	Matrix m_matSocketWorld;
 
 public:

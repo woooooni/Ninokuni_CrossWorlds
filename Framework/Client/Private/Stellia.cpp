@@ -117,34 +117,11 @@ HRESULT CStellia::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Stellia"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 
-	//CRigidBody::RIGID_BODY_DESC RigidDesc;
-	//RigidDesc.pTransform = m_pTransformCom;
-	//
-	//RigidDesc.PhysXDesc.vOffsetPos = { 0.f, 0.f, 0.f };
-	//RigidDesc.PhysXDesc.vExtents = { 5.f, 5.f, 10.f };
-	//
-	//RigidDesc.PhysXDesc.eColliderType = PHYSX_COLLIDER_TYPE::BOX;
-	//RigidDesc.PhysXDesc.eRigidType = PHYSX_RIGID_TYPE::DYNAMIC;
-	//
-	//RigidDesc.PhysXDesc.bLockAngle_X = true;
-	//RigidDesc.PhysXDesc.bLockAngle_Y = false;
-	//RigidDesc.PhysXDesc.bLockAngle_Z = true;
-	//
-	//RigidDesc.PhysXDesc.bKinematic = false;
-	//RigidDesc.PhysXDesc.fAngularDamping = 30.f;
-	//RigidDesc.PhysXDesc.fDensity = 1.f;
-	//
-	//
-	//RigidDesc.PhysXDesc.fStaticFriction = 0.f;
-	//RigidDesc.PhysXDesc.fDynamicFriction = 1.f;
-	//RigidDesc.PhysXDesc.fRestitution = 0.f;
-	//
-	//RigidDesc.PhysXDesc.fMaxVelocity = 10.f;
-	//RigidDesc.PhysXDesc.pGameObject = this;
-	//RigidDesc.PhysXDesc.bKinematic = true;
-	//
-	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_RigidBody"), TEXT("Com_RigidBody"), (CComponent**)&m_pRigidBodyCom, &RigidDesc)))
-	//	return E_FAIL;
+	CRigidBody::RIGID_BODY_DESC RigidDesc;
+	RigidDesc.pTransform = m_pTransformCom;
+	
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_RigidBody"), TEXT("Com_RigidBody"), (CComponent**)&m_pRigidBodyCom, &RigidDesc)))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -200,7 +177,7 @@ HRESULT CStellia::Ready_Colliders()
 	OBBDesc.pNode = nullptr;
 	OBBDesc.pOwnerTransform = m_pTransformCom;
 	OBBDesc.ModePivotMatrix = m_pModelCom->Get_PivotMatrix();
-	OBBDesc.vOffsetPosition = Vec3(0.f, 250.f, 0.f);
+	OBBDesc.vOffsetPosition = Vec3(0.f, 100.f, 0.f);
 	OBBDesc.bLockAngle_X = true;
 	OBBDesc.bLockAngle_Y = true;
 	OBBDesc.bLockAngle_Z = true;
