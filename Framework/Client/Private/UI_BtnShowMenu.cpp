@@ -137,7 +137,7 @@ CUI_BtnShowMenu* CUI_BtnShowMenu::Create(ID3D11Device* pDevice, ID3D11DeviceCont
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX("Failed To Create : CUI_BasicButton");
+		MSG_BOX("Failed To Create : CUI_BtnShowMenu");
 		Safe_Release(pInstance);
 	}
 
@@ -150,7 +150,7 @@ CGameObject* CUI_BtnShowMenu::Clone(void* pArg)
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Failed To Clone : CUI_BasicButton");
+		MSG_BOX("Failed To Clone : CUI_BtnShowMenu");
 		Safe_Release(pInstance);
 	}
 

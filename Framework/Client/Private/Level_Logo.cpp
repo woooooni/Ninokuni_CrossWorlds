@@ -87,10 +87,10 @@ HRESULT CLevel_Logo::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Logo::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 {
-	if (FAILED(GI->Add_GameObject(LEVEL_LOGO, _uint(eLayerType), TEXT("Prototype_GameObject_UI_Logo_Background"))))
-		return E_FAIL;
-	
 	if (FAILED(CUI_Manager::GetInstance()->Ready_Veils()))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_GameObject(LEVEL_LOGO, _uint(eLayerType), TEXT("Prototype_GameObject_UI_Logo_Background"))))
 		return E_FAIL;
 
 	return S_OK;

@@ -57,15 +57,15 @@ HRESULT CUI_ImajinnSection_Background::Initialize(void* pArg)
 	m_bActive = true; 
 	m_fAlpha = 0.95f;
 
-	_float fSize = 128.f * 0.7f;
-	_float2 vOffset = _float2(128.f * 0.7f + 3.f, -2.f);
+	_float fSize = 128.f * 0.6f;
+	_float2 vOffset = _float2(128.f * 0.6f + 3.f, -2.f);
 
 	Make_Child(-1.f * vOffset.x, vOffset.y, fSize, fSize, TEXT("Prototype_GameObject_UI_ImajinnSection_Slot_First")); // Section 1
 	Make_Child(0.f, vOffset.y, fSize, fSize, TEXT("Prototype_GameObject_UI_ImajinnSection_Slot_Second")); // Section 2
 	Make_Child(vOffset.x, vOffset.y, fSize, fSize, TEXT("Prototype_GameObject_UI_ImajinnSection_Slot_Third")); // Section 3
 
 	fSize = 64.f * 0.7f;
-	vOffset = _float2(222.f, -2.f);
+	vOffset = _float2(192.f, -2.f);
 	Make_Child(-1.f * vOffset.x, vOffset.y, fSize, fSize, TEXT("Prototype_GameObject_UI_ImajinnSection_Emoticon")); // 이모티콘 Button
 	Make_Child(vOffset.x, vOffset.y, fSize, fSize, TEXT("Prototype_GameObject_UI_ImajinnSection_Vehicle")); // 탈 것 Button
 

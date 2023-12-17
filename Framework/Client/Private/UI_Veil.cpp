@@ -1,20 +1,18 @@
 #include "stdafx.h"
-#include "UI_BtnClose.h"
+#include "UI_Veil.h"
 #include "GameInstance.h"
-#include "Level_Loading.h"
-#include "UI_Manager.h"
 
-CUI_BtnClose::CUI_BtnClose(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	: CUI(pDevice, pContext, L"UI_BtnClose")
+CUI_Veil::CUI_Veil(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
+	: CUI(pDevice, pContext, L"UI_Veil")
 {
 }
 
-CUI_BtnClose::CUI_BtnClose(const CUI_BtnClose& rhs)
+CUI_Veil::CUI_Veil(const CUI_Veil& rhs)
 	: CUI(rhs)
 {
 }
 
-HRESULT CUI_BtnClose::Initialize_Prototype()
+HRESULT CUI_Veil::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
@@ -22,23 +20,24 @@ HRESULT CUI_BtnClose::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CUI_BtnClose::Initialize(void* pArg)
+HRESULT CUI_Veil::Initialize(void* pArg)
 {
-	if (FAILED(Ready_Components()))
+	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
-	if (FAILED(__super::Initialize(pArg)))
+	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	m_bActive = true;
-	
+	m_fAlpha = 0.6f;
+	m_bActive = false;
+
 	return S_OK;
 }
 
-void CUI_BtnClose::Tick(_float fTimeDelta)
+void CUI_Veil::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
@@ -46,7 +45,7 @@ void CUI_BtnClose::Tick(_float fTimeDelta)
 	}
 }
 
-void CUI_BtnClose::LateTick(_float fTimeDelta)
+void CUI_Veil::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
@@ -54,7 +53,7 @@ void CUI_BtnClose::LateTick(_float fTimeDelta)
 	}
 }
 
-HRESULT CUI_BtnClose::Render()
+HRESULT CUI_Veil::Render()
 {
 	if (m_bActive)
 	{
@@ -69,45 +68,35 @@ HRESULT CUI_BtnClose::Render()
 	return S_OK;
 }
 
-void CUI_BtnClose::On_MouseEnter(_float fTimeDelta)
+HRESULT CUI_Veil::Ready_Components()
 {
-}
-
-void CUI_BtnClose::On_Mouse(_float fTimeDelta)
-{
-	if (m_bActive)
-	{
-		Key_Input(fTimeDelta);
-	}
-}
-
-void CUI_BtnClose::On_MouseExit(_float fTimeDelta)
-{
-}
-
-HRESULT CUI_BtnClose::Ready_Components()
-{
-	
 	if (FAILED(__super::Ready_Components()))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Common_Close"),
+	// Texture Component
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Veil_Black"),
 		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 		return E_FAIL;
-	
+
 	return S_OK;
 }
 
-HRESULT CUI_BtnClose::Ready_State()
+HRESULT CUI_Veil::Ready_State()
 {
+	m_tInfo.fCX = g_iWinSizeX;
+	m_tInfo.fCY = g_iWinSizeY;
+
+	m_tInfo.fX = g_iWinSizeX * 0.5f;
+	m_tInfo.fY = g_iWinSizeY * 0.5f;
+
 	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
+		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
 
 	return S_OK;
 }
 
-HRESULT CUI_BtnClose::Bind_ShaderResources()
+HRESULT CUI_Veil::Bind_ShaderResources()
 {
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
 		return E_FAIL;
@@ -127,41 +116,33 @@ HRESULT CUI_BtnClose::Bind_ShaderResources()
 	return S_OK;
 }
 
-void CUI_BtnClose::Key_Input(_float fTimeDelta)
+CUI_Veil * CUI_Veil::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
-	if (KEY_TAP(KEY::LBTN))
-	{
-		CUI_Manager::GetInstance()->Using_CloseButton();
-	}
-}
-
-CUI_BtnClose* CUI_BtnClose::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-{
-	CUI_BtnClose* pInstance = new CUI_BtnClose(pDevice, pContext);
+	CUI_Veil*	pInstance = new CUI_Veil(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX("Failed To Create : CUI_BtnClose");
+		MSG_BOX("Failed to Created : CUI_Veil");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CUI_BtnClose::Clone(void* pArg)
+CGameObject * CUI_Veil::Clone(void* pArg)
 {
-	CUI_BtnClose* pInstance = new CUI_BtnClose(*this);
+	CUI_Veil*	pInstance = new CUI_Veil(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Failed To Clone : CUI_BtnClose");
+		MSG_BOX("Failed to Cloned : CUI_Veil");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CUI_BtnClose::Free()
+void CUI_Veil::Free()
 {
 	__super::Free();
 

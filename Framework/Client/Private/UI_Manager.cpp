@@ -8,6 +8,7 @@
 #include "Utils.h"
 
 #include "UI_Fade.h"
+#include "UI_Veil.h"
 #include "UI_Basic.h"
 #include "UI_Cursor.h"
 #include "UI_LevelUp.h"
@@ -21,10 +22,14 @@
 #include "UI_BasicButton.h"
 #include "UI_WindowQuest.h"
 #include "UI_BtnShowMenu.h"
+#include "UI_Setting_Icon.h"
 #include "UI_SubMenu_Shop.h"
 #include "UI_BtnInventory.h"
+#include "UI_PlayerEXPBar.h"
 #include "UI_MenuSeparator.h"
 #include "UI_BtnQuickQuest.h"
+#include "UI_Setting_Window.h"
+#include "UI_BtnShowSetting.h"
 #include "UI_WindowWorldMap.h"
 #include "UI_SubMenu_Imajinn.h"
 #include "UI_BtnChangeCamera.h"
@@ -32,8 +37,10 @@
 #include "UI_Loading_Character.h"
 #include "UI_SubMenu_Character.h"
 #include "UI_SubMenu_Equipment.h"
+#include "UI_Default_Background.h"
 #include "UI_BtnCharacterSelect.h"
 #include "UI_Loading_Background.h"
+#include "UI_WeaponSection_Slot.h"
 #include "UI_ImajinnSection_Slot.h"
 #include "UI_SkillSection_BtnRoll.h"
 #include "UI_SkillSection_BtnJump.h"
@@ -41,6 +48,7 @@
 #include "UI_SkillSection_Background.h"
 #include "UI_ImajinnSection_Emoticon.h"
 #include "UI_ImajinnSection_Background.h"
+#include "UI_WeaponSection_DefaultWeapon.h"
 
 IMPLEMENT_SINGLETON(CUI_Manager)
 
@@ -402,6 +410,58 @@ HRESULT CUI_Manager::Ready_LobbyUIs()
 	Safe_AddRef(pBtn);
 
 
+
+	_float fOffset = 30.f;
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 64.f * 0.6f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = (UIDesc.fCX * 0.5f) + fOffset;
+	UIDesc.fY = g_iWinSizeY - (UIDesc.fCY * 0.5f + fOffset);
+
+	pButton = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVELID::LEVEL_LOBBY, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Icon_ShowSetting"), &UIDesc, &pButton)))
+		return E_FAIL;
+	m_pBtnShowSetting = dynamic_cast<CUI_BtnShowSetting*>(pButton);
+	if (nullptr == m_pBtnShowSetting)
+		return E_FAIL;
+	Safe_AddRef(m_pBtnShowSetting);
+
+	// For Setting Window
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+//	UIDesc.fCX = 957.f;
+//	UIDesc.fCY = 580.f;
+	UIDesc.fCX = _float(g_iWinSizeX);
+	UIDesc.fCY = _float(g_iWinSizeY);
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY * 0.5f;
+
+	CGameObject* pBG = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVELID::LEVEL_LOBBY, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Setting_Background"), &UIDesc, &pBG)))
+		return E_FAIL;
+	m_pSettingBG = dynamic_cast<CUI_Setting_Window*>(pBG);
+	if (nullptr == m_pSettingBG)
+		return E_FAIL;
+	Safe_AddRef(m_pSettingBG);
+
+	// Veil
+//	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+//
+//	UIDesc.fCX = g_iWinSizeX;
+//	UIDesc.fCY = g_iWinSizeY;
+//	UIDesc.fX = g_iWinSizeX * 0.5f;
+//	UIDesc.fY = g_iWinSizeY * 0.5f;
+//
+//	CGameObject* pBackground = nullptr;
+//	if (FAILED(GI->Add_GameObject(LEVELID::LEVEL_LOBBY, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Veil"), &UIDesc, &pBackground)))
+//		return E_FAIL;
+//	m_pUIVeil = dynamic_cast<CUI_Veil*>(pBackground);
+//	if (nullptr == m_pUIVeil)
+//		return E_FAIL;
+//	Safe_AddRef(m_pUIVeil);
+//
 	return S_OK;
 }
 
@@ -725,6 +785,7 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	if (nullptr == m_pBtnClose)
 		return E_FAIL;
 	Safe_AddRef(m_pBtnClose);
+	m_pBtnClose->Set_Active(false);
 
 #pragma endregion
 
@@ -1154,8 +1215,8 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	// SkillSection
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
-	UIDesc.fCX = 400.f;
-	UIDesc.fCY = 400.f;
+	UIDesc.fCX = 400.f * 0.85f;
+	UIDesc.fCY = 400.f * 0.85f;
 	UIDesc.fX = g_iWinSizeX - UIDesc.fCX * 0.5f;
 	UIDesc.fY = g_iWinSizeY - UIDesc.fCY * 0.5f;
 
@@ -1170,8 +1231,8 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	// Imajinn Section
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
-	UIDesc.fCX = 540.f * 0.75f;
-	UIDesc.fCY = 172.f * 0.7f;
+	UIDesc.fCX = 540.f * 0.65f;
+	UIDesc.fCY = 172.f * 0.6f;
 	UIDesc.fX = g_iWinSizeX * 0.5f;
 	UIDesc.fY = g_iWinSizeY - UIDesc.fCY * 0.5f - fOffset;
 
@@ -1183,6 +1244,68 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(m_pImajinnBG);
 
+	// Default Bacground(for Tabs)
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = g_iWinSizeX;
+	UIDesc.fCY = g_iWinSizeY;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY * 0.5f;
+
+	pBackground = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Common_Default_Background"), &UIDesc, &pBackground)))
+		return E_FAIL;
+	m_pDefaultBG = dynamic_cast<CUI_Default_Background*>(pBackground);
+	if (nullptr == m_pDefaultBG)
+		return E_FAIL;
+	Safe_AddRef(m_pDefaultBG);
+
+	// Veil
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = g_iWinSizeX;
+	UIDesc.fCY = g_iWinSizeY;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY * 0.5f;
+
+	pBackground = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Veil"), &UIDesc, &pBackground)))
+		return E_FAIL;
+	m_pUIVeil = dynamic_cast<CUI_Veil*>(pBackground);
+	if (nullptr == m_pUIVeil)
+		return E_FAIL;
+	Safe_AddRef(m_pUIVeil);
+
+	// PlayerStatus_EXP
+	m_PlayerEXP.reserve(2);
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = g_iWinSizeX;
+	UIDesc.fCY = 8.f;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY - (UIDesc.fCY * 0.5f);
+
+	pBackground = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_PlayerStatus_EXPBackground"), &UIDesc, &pBackground)))
+		return E_FAIL;
+	m_PlayerEXP.push_back(dynamic_cast<CUI_PlayerEXPBar*>(pBackground));
+	if (nullptr == pBackground)
+		return E_FAIL;
+	Safe_AddRef(pBackground);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = g_iWinSizeX;
+	UIDesc.fCY = 5.f;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY - (UIDesc.fCY * 0.5f);
+
+	pBackground = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_PlayerStatus_EXPBar"), &UIDesc, &pBackground)))
+		return E_FAIL;
+	m_PlayerEXP.push_back(dynamic_cast<CUI_PlayerEXPBar*>(pBackground));
+	if (nullptr == pBackground)
+		return E_FAIL;
+	Safe_AddRef(pBackground);
+
 
 	return S_OK;
 }
@@ -1192,7 +1315,6 @@ HRESULT CUI_Manager::Tick_UIs(LEVELID eID, _float fTimeDelta)
 	switch (eID)
 	{
 	case LEVELID::LEVEL_LOGO:
-		return E_FAIL;
 		break;
 
 	case LEVELID::LEVEL_TEST:
@@ -1328,11 +1450,89 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 
 	if (KEY_TAP(KEY::W))
 	{
-		if (m_pWorldMapBG->Get_Active())
-			m_pWorldMapBG->Set_Active(false);
-		else
-			m_pWorldMapBG->Set_Active(true);
+		if (m_pWorldMapBG->Get_Active()) // 켜져있다면
+			OnOff_WorldMap(false); // 끈다
+		else // 꺼져있다면
+			OnOff_WorldMap(true); // 켠다
 	}
+
+	return S_OK;
+}
+
+HRESULT CUI_Manager::Using_CloseButton()
+{
+	if (nullptr != m_pMainBG)
+	{
+		if (m_pMainBG->Get_Active())
+		{
+			OnOff_MainMenu(false);// MainMenu창을 닫고
+			OnOff_GamePlaySetting(true); // 기본 세팅을 켠다
+	
+			OnOff_CloseButton(false); // CloseBtn도 없앤다.
+		}
+	}
+
+	else if (nullptr != m_pSettingBG)
+	{
+		if (m_pSettingBG->Get_Active())
+		{
+			m_pSettingBG->Set_Active(false); // Setting창을 닫고
+			OnOff_CloseButton(false); // ClostBtn도 없앤다.
+			if (nullptr != m_pUIVeil)
+				if (m_pUIVeil->Get_Active())
+					m_pUIVeil->Set_Active(false);
+		}
+	}
+
+	return S_OK;
+}
+
+HRESULT CUI_Manager::OnOff_Veil(_bool bOnOff)
+{
+	if (nullptr == m_pUIVeil)
+		return E_FAIL;
+
+	if (bOnOff)
+	{
+		if (nullptr != m_pUIVeil)
+		{
+			if (!m_pUIVeil->Get_Active())
+				m_pUIVeil->Set_Active(true);
+		}
+	}
+	else
+	{
+		if (nullptr != m_pUIVeil)
+		{
+			if (m_pUIVeil->Get_Active())
+				m_pUIVeil->Set_Active(false);
+		}
+	}
+
+	return S_OK;
+}
+
+HRESULT CUI_Manager::OnOff_SettingWindow(_bool bOnOff)
+{
+	if (nullptr == m_pSettingBG)
+		return E_FAIL;
+
+	if (bOnOff)
+	{
+		if (!m_pSettingBG->Get_Active())
+		{
+			m_pSettingBG->Set_Active(true);
+			if (nullptr != m_pBtnClose)
+				m_pBtnClose->Set_Active(true);
+		}
+
+		OnOff_Veil(true);
+	}
+	else
+	{
+		OnOff_Veil(false);
+	}
+
 
 	return S_OK;
 }
@@ -1376,6 +1576,7 @@ HRESULT CUI_Manager::OnOff_MainMenu(_bool bOnOff)
 			if (nullptr != pUI)
 				pUI->Set_Active(true);
 		}
+		m_pBtnClose->Set_Active(true); // Close버튼
 	}
 	else // Off : 모든 Menu관련 창을 꺼야한다.
 	{
@@ -1601,6 +1802,49 @@ HRESULT CUI_Manager::Off_OtherSubBtn(_uint iMagicNum)
 	return S_OK;
 }
 
+HRESULT CUI_Manager::OnOff_WorldMap(_bool bOnOff)
+{
+	if (bOnOff) // 켠다
+	{
+		if (!m_pWorldMapBG->Get_Active())
+		{
+			// 기본 세팅을 끄고 WorldMap을 켠다
+			OnOff_GamePlaySetting(false);
+			m_pWorldMapBG->Set_Active(true);
+		}
+	}
+	else // 끈다
+	{
+		if (m_pWorldMapBG->Get_Active())
+		{
+			// WorldMap을 끄고 기본 세팅을 켠다
+			m_pWorldMapBG->Set_Active(false);
+			OnOff_GamePlaySetting(true);
+		}
+	}
+
+	return S_OK;
+}
+
+HRESULT CUI_Manager::OnOff_CostumeWindow(_bool bOnOff)
+{
+	if (bOnOff)
+	{
+		// 메뉴 창을 끈다.
+		OnOff_MainMenu(false);
+
+		// Default Window를 활성화한다
+		m_pDefaultBG->Set_Active(true);
+		// Costume관련된 객체들을 활성화한다.
+	}
+	else
+	{
+
+	}
+
+	return S_OK;
+}
+
 HRESULT CUI_Manager::Save_UIData()
 {
 	return S_OK;
@@ -1626,6 +1870,10 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Fade_Black"),
 		CUI_Fade::Create(m_pDevice, m_pContext, CUI_Fade::UI_VEIL::VEIL_BLACK), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Veil"),
+		CUI_Veil::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Cursor"),
@@ -1909,6 +2157,37 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		CUI_ImajinnSection_Vehicle::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Common_Default_Background"),
+		CUI_Default_Background::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	// 무기 슬롯은 Skill Section BG의 자식으로 Clone된다.
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_WeaponSection_Slot_First"),
+		CUI_WeaponSection_Slot::Create(m_pDevice, m_pContext, CUI_WeaponSection_Slot::WEAPONSLOT_FIRST), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_WeaponSection_Slot_Second"),
+		CUI_WeaponSection_Slot::Create(m_pDevice, m_pContext, CUI_WeaponSection_Slot::WEAPONSLOT_SECOND), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_WeaponSection_Slot_Third"),
+		CUI_WeaponSection_Slot::Create(m_pDevice, m_pContext, CUI_WeaponSection_Slot::WEAPONSLOT_THIRD), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillSection_DefaultAttack"),
+		CUI_WeaponSection_DefaultWeapon::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Icon_ShowSetting"),
+		CUI_BtnShowSetting::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	// PlayerStatus
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_PlayerStatus_EXPBackground"),
+		CUI_PlayerEXPBar::Create(m_pDevice, m_pContext, CUI_PlayerEXPBar::UIEXP_BACKGROUND), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_PlayerStatus_EXPBar"),
+		CUI_PlayerEXPBar::Create(m_pDevice, m_pContext, CUI_PlayerEXPBar::UIEXP_BAR), LAYER_UI)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -2041,6 +2320,21 @@ HRESULT CUI_Manager::Ready_UILobbyPrototypes()
 			CUI_BtnCharacterSelect::UI_SELECTBTN_CHARACTER::BTN_SWORDMAN), LAYER_UI)))
 		return E_FAIL;
 
+	// SettingWindow
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Setting_Background"),
+		CUI_Setting_Window::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Icon_Setting_Game"),
+		CUI_Setting_Icon::Create(m_pDevice, m_pContext, CUI_Setting_Icon::UI_SETTING_ICONTYPE::SETICON_GAME), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Icon_Setting_Graphic"),
+		CUI_Setting_Icon::Create(m_pDevice, m_pContext, CUI_Setting_Icon::UI_SETTING_ICONTYPE::SETICON_GRAPHIC), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Icon_Setting_Audio"),
+		CUI_Setting_Icon::Create(m_pDevice, m_pContext, CUI_Setting_Icon::UI_SETTING_ICONTYPE::SETICON_AUDIO), LAYER_UI)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -2051,18 +2345,27 @@ void CUI_Manager::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pDefaultBG);
 	Safe_Release(m_pUICursor);
+	Safe_Release(m_pUIVeil);
 	Safe_Release(m_pUIFade);
 	Safe_Release(m_pUIMapName);
 	Safe_Release(m_pMapText);
+
+	Safe_Release(m_pSettingBG);
+
 	Safe_Release(m_pPlayerStatus);
+
 	Safe_Release(m_pBtnShowMenu);
 	Safe_Release(m_pBtnCamera);
 	Safe_Release(m_pBtnInven);
 	Safe_Release(m_pBtnQuest);
-	Safe_Release(m_pWindowQuest);
-	Safe_Release(m_pMainBG);
 	Safe_Release(m_pBtnClose);
+	Safe_Release(m_pBtnShowSetting);
+
+	Safe_Release(m_pMainBG);
+	Safe_Release(m_pWindowQuest);
+
 	Safe_Release(m_pWorldMapBG);
 	Safe_Release(m_pSkillBG);
 	Safe_Release(m_pImajinnBG);
@@ -2075,6 +2378,10 @@ void CUI_Manager::Free()
 		Safe_Release(pButton);
 	m_Buttons.clear();
 
+	for (auto& pLevelUp : m_LevelUp)
+		Safe_Release(pLevelUp);
+	m_LevelUp.clear();
+
 	for (auto& pUnclickedBtn : m_UnclickedPlayer)
 		Safe_Release(pUnclickedBtn);
 	m_UnclickedPlayer.clear();
@@ -2083,13 +2390,13 @@ void CUI_Manager::Free()
 		Safe_Release(pClickedBtn);
 	m_ClickedPlayer.clear();
 
-	for (auto& pLevelUp : m_LevelUp)
-		Safe_Release(pLevelUp);
-	m_LevelUp.clear();
-
 	for (auto& pMainBtn : m_MainMenuBtn)
 		Safe_Release(pMainBtn);
 	m_MainMenuBtn.clear();
+
+	for (auto& pSeparator : m_MenuSeparator)
+		Safe_Release(pSeparator);
+	m_MenuSeparator.clear();
 
 	for (auto& pCharBtn : m_SubMenuChar)
 		Safe_Release(pCharBtn);
@@ -2107,9 +2414,9 @@ void CUI_Manager::Free()
 		Safe_Release(pShopBtn);
 	m_SubMenuShop.clear();
 
-	for (auto& pSeparator : m_MenuSeparator)
-		Safe_Release(pSeparator);
-	m_MenuSeparator.clear();
+	for (auto& pEXP : m_PlayerEXP)
+		Safe_Release(pEXP);
+	m_PlayerEXP.clear();
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

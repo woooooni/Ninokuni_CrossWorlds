@@ -283,8 +283,10 @@
     <ClInclude Include="..\Public\UI_BtnInventory.h" />
     <ClInclude Include="..\Public\UI_BtnQuickQuest.h" />
     <ClInclude Include="..\Public\UI_BtnShowMenu.h" />
+    <ClInclude Include="..\Public\UI_BtnShowSetting.h" />
     <ClInclude Include="..\Public\UI_Btn_WorldMapIcon.h" />
     <ClInclude Include="..\Public\UI_Cursor.h" />
+    <ClInclude Include="..\Public\UI_Default_Background.h" />
     <ClInclude Include="..\Public\UI_Fade.h" />
     <ClInclude Include="..\Public\UI_Flare.h" />
     <ClInclude Include="..\Public\UI_ImajinnSection_Background.h" />
@@ -300,9 +302,12 @@
     <ClInclude Include="..\Public\UI_MapName.h" />
     <ClInclude Include="..\Public\UI_MenuSeparator.h" />
     <ClInclude Include="..\Public\UI_Number.h" />
+    <ClInclude Include="..\Public\UI_PlayerEXPBar.h" />
     <ClInclude Include="..\Public\UI_PlayerHPBar.h" />
     <ClInclude Include="..\Public\UI_PlayerInfo.h" />
     <ClInclude Include="..\Public\UI_PopupQuest.h" />
+    <ClInclude Include="..\Public\UI_Setting_Icon.h" />
+    <ClInclude Include="..\Public\UI_Setting_Window.h" />
     <ClInclude Include="..\Public\UI_SkillSection_Background.h" />
     <ClInclude Include="..\Public\UI_SkillSection_BtnJump.h" />
     <ClInclude Include="..\Public\UI_SkillSection_BtnRoll.h" />
@@ -310,6 +315,9 @@
     <ClInclude Include="..\Public\UI_SubMenu_Equipment.h" />
     <ClInclude Include="..\Public\UI_SubMenu_Imajinn.h" />
     <ClInclude Include="..\Public\UI_SubMenu_Shop.h" />
+    <ClInclude Include="..\Public\UI_Veil.h" />
+    <ClInclude Include="..\Public\UI_WeaponSection_DefaultWeapon.h" />
+    <ClInclude Include="..\Public\UI_WeaponSection_Slot.h" />
     <ClInclude Include="..\Public\UI_WindowQuest.h" />
     <ClInclude Include="..\Public\UI_WindowWorldMap.h" />
     <ClInclude Include="..\Public\VIBuffer_Trail.h" />
@@ -440,8 +448,10 @@
     <ClCompile Include="..\Private\UI_BtnInventory.cpp" />
     <ClCompile Include="..\Private\UI_BtnQuickQuest.cpp" />
     <ClCompile Include="..\Private\UI_BtnShowMenu.cpp" />
+    <ClCompile Include="..\Private\UI_BtnShowSetting.cpp" />
     <ClCompile Include="..\Private\UI_Btn_WorldMapIcon.cpp" />
     <ClCompile Include="..\Private\UI_Cursor.cpp" />
+    <ClCompile Include="..\Private\UI_Default_Background.cpp" />
     <ClCompile Include="..\Private\UI_Fade.cpp" />
     <ClCompile Include="..\Private\UI_Flare.cpp" />
     <ClCompile Include="..\Private\UI_ImajinnSection_Background.cpp" />
@@ -457,9 +467,12 @@
     <ClCompile Include="..\Private\UI_MapName.cpp" />
     <ClCompile Include="..\Private\UI_MenuSeparator.cpp" />
     <ClCompile Include="..\Private\UI_Number.cpp" />
+    <ClCompile Include="..\Private\UI_PlayerEXPBar.cpp" />
     <ClCompile Include="..\Private\UI_PlayerHPBar.cpp" />
     <ClCompile Include="..\Private\UI_PlayerInfo.cpp" />
     <ClCompile Include="..\Private\UI_PopupQuest.cpp" />
+    <ClCompile Include="..\Private\UI_Setting_Icon.cpp" />
+    <ClCompile Include="..\Private\UI_Setting_Window.cpp" />
     <ClCompile Include="..\Private\UI_SkillSection_Background.cpp" />
     <ClCompile Include="..\Private\UI_SkillSection_BtnJump.cpp" />
     <ClCompile Include="..\Private\UI_SkillSection_BtnRoll.cpp" />
@@ -467,6 +480,9 @@
     <ClCompile Include="..\Private\UI_SubMenu_Equipment.cpp" />
     <ClCompile Include="..\Private\UI_SubMenu_Imajinn.cpp" />
     <ClCompile Include="..\Private\UI_SubMenu_Shop.cpp" />
+    <ClCompile Include="..\Private\UI_Veil.cpp" />
+    <ClCompile Include="..\Private\UI_WeaponSection_DefaultWeapon.cpp" />
+    <ClCompile Include="..\Private\UI_WeaponSection_Slot.cpp" />
     <ClCompile Include="..\Private\UI_WindowQuest.cpp" />
     <ClCompile Include="..\Private\UI_WindowWorldMap.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Trail.cpp" />

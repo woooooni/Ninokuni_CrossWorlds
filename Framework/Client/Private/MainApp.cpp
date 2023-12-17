@@ -15,7 +15,7 @@
 #include "Light.h"
 
 #ifdef _DEBUG
- // #include <vld.h>
+  #include <vld.h>
 #endif
 
 CMainApp::CMainApp()	
@@ -55,7 +55,7 @@ HRESULT CMainApp::Initialize()
 	// ShowCursor(false);
 
 	Json Test;
-	Test["Name"] = "김태원"; // babo
+	Test["Name"] = "김태원";
 	Test["Test"] = "테스트";
 	Test["int"] = 3;
 	Test["float"] = 3.f;
@@ -474,6 +474,59 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_ImajinnSection_Vehicle"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/ImajinnSlot/Icon_Vehicle_Default_Ride_Re.png")))))
 		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Common_DefaultBackground"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Default/UI_Default_Background.png")))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_WeaponSection_Elemental"), // 무기 속성 Texture 작업 전
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/WeaponSlot/UI_Icon_Weapon_Elemental_%d.png"), 5))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SkillSection_DefaultAttack"), // 기본 공격용 Texture
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/WeaponSlot/UI_DefaultAttack_Icon_%d.png"), 5))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_WeaponSection_Elemental_Frame"), // 속성에 따른 Frame Texture 작업 전
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/WeaponSlot/UI_Weapon_Frame_%d.png"), 5))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_WeaponSection_Slot"), // 무기 슬롯
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/WeaponSlot/Weapon_Slot_BG.png")))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_WeaponSection_Selected"), // if Selected 작업 전
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/WeaponSlot/UI_Weapon_Selected.png")))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_WeaponSection_Focused"), // 스킬 쿨타임이 다 찼을 경우 사용됨(용도 변경될 수 있음)
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/WeaponSlot/UI_Weapon_Focused.png"))))) // 작업 전
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Setting_Icon"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/Setting/UI_Icon_Setting.png")))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Setting_Window_Background"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/Setting/UI_Setting_OptionWindow.png")))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Setting_Button"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/Setting/UI_Setting_Btn_%d.png"), 3))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Setting_Selected"), // 작업 전
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/Setting/UI_Setting_Btn_Selected.png")))))
+		return E_FAIL;
+	 
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_PlayerStatus_EXP_Background"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/PlayerStatus/EXP/HP_EXPBackground.png")))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_PlayerStatus_EXP_Bar"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/PlayerStatus/EXP/HP_EXP.png")))))
+		return E_FAIL;
+
 
 	if (FAILED(CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_STATIC)))
 		return E_FAIL;

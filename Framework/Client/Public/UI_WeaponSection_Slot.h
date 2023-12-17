@@ -3,12 +3,15 @@
 #include "UI.h"
 
 BEGIN(Client)
-class CUI_SkillSection_BtnJump final : public CUI
+class CUI_WeaponSection_Slot final : public CUI
 {
+public:
+	enum UI_WEAPONSLOT { WEAPONSLOT_FIRST, WEAPONSLOT_SECOND, WEAPONSLOT_THIRD, WEAPONSLOT_END };
+
 protected:
-	CUI_SkillSection_BtnJump(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CUI_SkillSection_BtnJump(const CUI_SkillSection_BtnJump& rhs);
-	virtual ~CUI_SkillSection_BtnJump() = default;
+	CUI_WeaponSection_Slot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_WEAPONSLOT eSlotType);
+	CUI_WeaponSection_Slot(const CUI_WeaponSection_Slot& rhs);
+	virtual ~CUI_WeaponSection_Slot() = default;
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -23,12 +26,10 @@ public:
 	virtual void On_MouseExit(_float fTimeDelta) override;
 
 private:
-	_float m_fTimeAcc = { 0.f };
-	_bool m_bFinish = { false };
-	_bool m_bResizeStart = { false };
+	UI_WEAPONSLOT m_eSlotType = { WEAPONSLOT_END };
+	_bool m_bWear = { false }; // 무기를 착용한 상태인가
 
-	_float2 m_vOriginSize = _float2(0.f, 0.f);
-	_float2 m_vMinSize = _float2(0.f, 0.f);
+	class CUI_WeaponSection_DefaultWeapon* m_pNoWeapon = { nullptr };
 
 private:
 	virtual HRESULT	Ready_Components() override;
@@ -41,7 +42,7 @@ private:
 	void Key_Input(_float fTimeDelta);
 
 public:
-	static CUI_SkillSection_BtnJump* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);
+	static CUI_WeaponSection_Slot* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, UI_WEAPONSLOT eSlotType);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };
