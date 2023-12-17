@@ -64,7 +64,7 @@ struct VS_OUT
 };
 
 #define QUATERNION_IDENTITY float4(0, 0, 0, 1)
-float4 q_slerp(in float4 a, in float4 b, float t)
+float4 QSlerp(in float4 a, in float4 b, float t)
 {
 	// if either input is zero, return the other.
 	if (length(a) == 0.0)
@@ -119,148 +119,83 @@ float4 q_slerp(in float4 a, in float4 b, float t)
 	return QUATERNION_IDENTITY;
 }
 
-float4 matrix_to_quaternion(float4x4 m)
-{
-	float tr = m[0][0] + m[1][1] + m[2][2];
-	float4 q = float4(0, 0, 0, 0);
+inline float SIGN(float x) {
+	return (x >= 0.0f) ? +1.0f : -1.0f;
+}
 
-	if (tr > 0)
-	{
-		float s = sqrt(tr + 1.0) * 2; // S=4*qw 
-		q.w = 0.25 * s;
-		q.x = (m[2][1] - m[1][2]) / s;
-		q.y = (m[0][2] - m[2][0]) / s;
-		q.z = (m[1][0] - m[0][1]) / s;
+inline float NORM(float a, float b, float c, float d) {
+	return sqrt(a * a + b * b + c * c + d * d);
+}
+
+// quaternion = [w, x, y, z]'
+matrix Rotation_To_Quaternion(matrix m) {
+	float r11 = m._11;
+	float r12 = m._21;
+	float r13 = m._31;
+	float r21 = m._12;
+	float r22 = m._22;
+	float r23 = m._32;
+	float r31 = m._13;
+	float r32 = m._23;
+	float r33 = m._33;
+	float q0 = (r11 + r22 + r33 + 1.0f) / 4.0f;
+	float q1 = (r11 - r22 - r33 + 1.0f) / 4.0f;
+	float q2 = (-r11 + r22 - r33 + 1.0f) / 4.0f;
+	float q3 = (-r11 - r22 + r33 + 1.0f) / 4.0f;
+	if (q0 < 0.0f) {
+		q0 = 0.0f;
 	}
-	else if ((m[0][0] > m[1][1]) && (m[0][0] > m[2][2]))
-	{
-		float s = sqrt(1.0 + m[0][0] - m[1][1] - m[2][2]) * 2; // S=4*qx 
-		q.w = (m[2][1] - m[1][2]) / s;
-		q.x = 0.25 * s;
-		q.y = (m[0][1] + m[1][0]) / s;
-		q.z = (m[0][2] + m[2][0]) / s;
+	if (q1 < 0.0f) {
+		q1 = 0.0f;
 	}
-	else if (m[1][1] > m[2][2])
-	{
-		float s = sqrt(1.0 + m[1][1] - m[0][0] - m[2][2]) * 2; // S=4*qy
-		q.w = (m[0][2] - m[2][0]) / s;
-		q.x = (m[0][1] + m[1][0]) / s;
-		q.y = 0.25 * s;
-		q.z = (m[1][2] + m[2][1]) / s;
+	if (q2 < 0.0f) {
+		q2 = 0.0f;
 	}
-	else
-	{
-		float s = sqrt(1.0 + m[2][2] - m[0][0] - m[1][1]) * 2; // S=4*qz
-		q.w = (m[1][0] - m[0][1]) / s;
-		q.x = (m[0][2] + m[2][0]) / s;
-		q.y = (m[1][2] + m[2][1]) / s;
-		q.z = 0.25 * s;
+	if (q3 < 0.0f) {
+		q3 = 0.0f;
 	}
-
-	return q;
-}
-
-
-
-float4x4 quaternion_to_matrix(float4 quat)
-{
-	float4x4 m = float4x4(float4(0, 0, 0, 0), float4(0, 0, 0, 0), float4(0, 0, 0, 0), float4(0, 0, 0, 0));
-
-	float x = quat.x, y = quat.y, z = quat.z, w = quat.w;
-	float x2 = x + x, y2 = y + y, z2 = z + z;
-	float xx = x * x2, xy = x * y2, xz = x * z2;
-	float yy = y * y2, yz = y * z2, zz = z * z2;
-	float wx = w * x2, wy = w * y2, wz = w * z2;
-
-	m[0][0] = 1.0 - (yy + zz);
-	m[0][1] = xy - wz;
-	m[0][2] = xz + wy;
-
-	m[1][0] = xy + wz;
-	m[1][1] = 1.0 - (xx + zz);
-	m[1][2] = yz - wx;
-
-	m[2][0] = xz - wy;
-	m[2][1] = yz + wx;
-	m[2][2] = 1.0 - (xx + yy);
-
-	m[3][3] = 1.0;
-
-	return m;
-}
-
-
-float4x4 m_scale(float4x4 m, float3 v)
-{
-	float x = v.x, y = v.y, z = v.z;
-
-	m[0][0] *= x; m[1][0] *= y; m[2][0] *= z;
-	m[0][1] *= x; m[1][1] *= y; m[2][1] *= z;
-	m[0][2] *= x; m[1][2] *= y; m[2][2] *= z;
-	m[0][3] *= x; m[1][3] *= y; m[2][3] *= z;
-
-	return m;
-}
-
-float4x4 m_translate(float4x4 m, float3 v)
-{
-	float x = v.x, y = v.y, z = v.z;
-	m[0][3] = x;
-	m[1][3] = y;
-	m[2][3] = z;
-	return m;
-}
-
-
-
-void decompose(in float4x4 m, out float3 position, out float4 rotation, out float3 scale)
-{
-	float sx = length(float3(m[0][0], m[0][1], m[0][2]));
-	float sy = length(float3(m[1][0], m[1][1], m[1][2]));
-	float sz = length(float3(m[2][0], m[2][1], m[2][2]));
-
-	// if determine is negative, we need to invert one scale
-	float det = determinant(m);
-	if (det < 0) {
-		sx = -sx;
+	q0 = sqrt(q0);
+	q1 = sqrt(q1);
+	q2 = sqrt(q2);
+	q3 = sqrt(q3);
+	if (q0 >= q1 && q0 >= q2 && q0 >= q3) {
+		q0 *= +1.0f;
+		q1 *= SIGN(r32 - r23);
+		q2 *= SIGN(r13 - r31);
+		q3 *= SIGN(r21 - r12);
 	}
+	else if (q1 >= q0 && q1 >= q2 && q1 >= q3) {
+		q0 *= SIGN(r32 - r23);
+		q1 *= +1.0f;
+		q2 *= SIGN(r21 + r12);
+		q3 *= SIGN(r13 + r31);
+	}
+	else if (q2 >= q0 && q2 >= q1 && q2 >= q3) {
+		q0 *= SIGN(r13 - r31);
+		q1 *= SIGN(r21 + r12);
+		q2 *= +1.0f;
+		q3 *= SIGN(r32 + r23);
+	}
+	else if (q3 >= q0 && q3 >= q1 && q3 >= q2) {
+		q0 *= SIGN(r21 - r12);
+		q1 *= SIGN(r31 + r13);
+		q2 *= SIGN(r32 + r23);
+		q3 *= +1.0f;
+	}
+	else {
+		printf("coding error\n");
+	}
+	float r = NORM(q0, q1, q2, q3);
+	q0 /= r;
+	q1 /= r;
+	q2 /= r;
+	q3 /= r;
 
-	position.x = m[3][0];
-	position.y = m[3][1];
-	position.z = m[3][2];
-
-	// scale the rotation part
-
-	float invSX = 1.0 / sx;
-	float invSY = 1.0 / sy;
-	float invSZ = 1.0 / sz;
-
-	m[0][0] *= invSX;
-	m[0][1] *= invSX;
-	m[0][2] *= invSX;
-
-	m[1][0] *= invSY;
-	m[1][1] *= invSY;
-	m[1][2] *= invSY;
-
-	m[2][0] *= invSZ;
-	m[2][1] *= invSZ;
-	m[2][2] *= invSZ;
-
-	rotation = matrix_to_quaternion(m);
-
-	scale.x = sx;
-	scale.y = sy;
-	scale.z = sz;
+	matrix res = m;//(Mat_<float>(4, 1) << q0, q1, q2, q3);
+	return res;
 }
 
-float4x4 compose(float3 position, float4 quat, float3 scale)
-{
-	float4x4 m = quaternion_to_matrix(quat);
-	m = m_scale(m, scale);
-	m = m_translate(m, position);
-	return m;
-}
+
 
 
 
@@ -307,25 +242,16 @@ matrix GetAnimationMatrix(VS_IN input)
 		n3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, nextFrame[0], animIndex[0], 0));
 		next = matrix(n0, n1, n2, n3);
 
-		float3 vCurrPos, vCurrScale;
-		float4 vCurrQuaternion;
-
-		decompose(curr, vCurrPos, vCurrQuaternion, vCurrScale);
-
-		float3 vNextPos, vNextScale;
-		float4 vNextQuaternion;
-
-		decompose(next, vNextPos, vNextQuaternion, vNextScale);
+		/*matrix result = matrix(QSlerp(curr._11_21_31_41, next._11_21_31_41, ratio[0])
+			, QSlerp(curr._12_22_32_42, next._12_22_32_42, ratio[0])
+			, QSlerp(curr._13_23_33_43, next._13_23_33_43, ratio[0])
+			//, lerp(c3, n3, ratio[0]));matrix result = matrix(QSlerp(curr._11_21_31_41, next._11_21_31_41, ratio[0])
+			//, QSlerp(curr._12_22_32_42, next._12_22_32_42, ratio[0])
+			//, QSlerp(curr._13_23_33_43, next._13_23_33_43, ratio[0])
+			//, lerp(c3, n3, ratio[0]));*/
 		
 
-
-		float3 vLerpPos = lerp(vCurrPos, vNextPos, ratio[0]);
-		float3 vLerpScale = lerp(vCurrScale, vNextScale, ratio[0]);
-		float4 vLerpQuaternion = q_slerp(vCurrQuaternion, vNextQuaternion, ratio[0]);
-
-		float4x4 result = compose(vLerpPos, vLerpQuaternion, vLerpScale);
-
-
+		matrix result = lerp(curr, next, ratio[0]);
 		/* if next */
 		if (animIndex[1] >= 0)
 		{
@@ -341,13 +267,8 @@ matrix GetAnimationMatrix(VS_IN input)
 			n3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, nextFrame[1], animIndex[1], 0));
 			next = matrix(n0, n1, n2, n3);
 
-			/*matrix nextResult = matrix(QSlerp(c0, n0, ratio[0]), QSlerp(c1, n1, ratio[0]), QSlerp(c2, n2, ratio[0]), lerp(c3, n3, ratio[0]));
-
-
-			result = matrix(QSlerp(result._11_12_13_14, nextResult._11_12_13_14, g_TweenFrames.fTweenRatio),
-				QSlerp(result._21_22_23_24, nextResult._21_22_23_24, g_TweenFrames.fTweenRatio),
-				QSlerp(result._31_32_33_34, nextResult._31_32_33_34, g_TweenFrames.fTweenRatio),
-				lerp(result._41_42_43_44, nextResult._41_42_43_44, g_TweenFrames.fTweenRatio));*/
+			matrix nextResult = lerp(curr, next, ratio[1]);
+			result = lerp(result, nextResult, g_TweenFrames.fTweenRatio);
 		}
 
 		transform += mul(result, weights[i]);

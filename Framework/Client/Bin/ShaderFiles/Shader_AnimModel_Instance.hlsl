@@ -187,8 +187,6 @@ matrix GetAnimationMatrix(VS_IN input)
 			next = matrix(n0, n1, n2, n3);
 
 			matrix nextResult = lerp(curr, next, ratio[1]);
-			/*matrix nextResult = matrix(QSlerp(c0, n0, ratio[0]), QSlerp(c1, n1, ratio[0]), QSlerp(c2, n2, ratio[0]), lerp(c3, n3, ratio[0]));*/
-
 			result = lerp(result, nextResult, g_TweenFrames_Array[input.iInstanceID].fTweenRatio);
 		}
 
