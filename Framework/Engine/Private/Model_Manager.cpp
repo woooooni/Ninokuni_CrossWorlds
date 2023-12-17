@@ -755,7 +755,7 @@ HRESULT CModel_Manager::Export_Animation(const wstring& strFinalFolderPath, CMod
 		File->Write<string>(CUtils::ToString(Animation->m_strName));
 		File->Write<_float>(Animation->m_fDuration);
 		File->Write<_float>(Animation->m_fTickPerSecond);
-		File->Write<_float>(Animation->m_fSpeed);
+		File->Write<_float>(Animation->m_fOriginSpeed);
 		File->Write<_bool>(b);
 		File->Write<_bool>(Animation->m_bLoop);
 		File->Write<_bool>(b);
@@ -1195,7 +1195,7 @@ HRESULT CModel_Manager::Import_Animation(const wstring strFinalPath, CModel* pMo
 		pAnimation->m_strName = CUtils::ToWString(File->Read<string>());
 		File->Read<_float>(pAnimation->m_fDuration);
 		File->Read<_float>(pAnimation->m_fTickPerSecond);
-		File->Read<_float>(pAnimation->m_fSpeed);
+		File->Read<_float>(pAnimation->m_fOriginSpeed);
 
 		_bool b;
 		File->Read<_bool>(b);

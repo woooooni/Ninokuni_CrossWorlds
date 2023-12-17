@@ -16,7 +16,7 @@ CAnimation::CAnimation(const CAnimation& rhs)
 	, m_iNumChannels(rhs.m_iNumChannels)
 	, m_fTickPerSecond(rhs.m_fTickPerSecond)
 	, m_strName(rhs.m_strName)
-	, m_fSpeed(rhs.m_fSpeed)
+	, m_fOriginSpeed(rhs.m_fOriginSpeed)
 	, m_bLoop(rhs.m_bLoop)
 {
 	for (auto& pChannel : m_Channels)
@@ -62,6 +62,69 @@ HRESULT CAnimation::Initialize(CModel* pModel)
 	return S_OK;
 }
 
+void CAnimation::Update_AnimationData(_float fTickPerSecond, const TWEEN_DESC& tDesc)
+{
+	Update_AnimationSpeed(fTickPerSecond, tDesc);
+	Update_AnimationEvent(fTickPerSecond, tDesc);
+}
+
+void CAnimation::Clear_AnimationData()
+{
+	m_iCurSpeedDescIndex = 0;
+	m_fCurSpeedDescEndFrame = 0.f;
+
+	m_tLiveSpeedDesc.fCurValue = m_fOriginSpeed;
+}
+
+_float CAnimation::Get_LiveSpeed()
+{
+	if(m_SpeedDescs.empty())
+		return m_fOriginSpeed;
+
+	return m_tLiveSpeedDesc.fCurValue;
+}
+
+void CAnimation::Add_SpeedDesc(ANIM_SPEED_DESC desc)
+{
+	m_SpeedDescs.push_back(desc);
+
+	/* Sorting */
+
+	std::sort(m_SpeedDescs.begin(), m_SpeedDescs.end(),
+		[](const ANIM_SPEED_DESC& desc1, const ANIM_SPEED_DESC& desc2)
+		{
+			if (desc1.fStartFrame < desc2.fStartFrame)
+				return true;
+			else if (desc1.fStartFrame > desc2.fStartFrame)
+				return false;
+			return desc1.fEndFrame < desc2.fEndFrame;
+		});
+
+	Sort_SpeedDesces();
+}
+void CAnimation::Delete_SpeedDesc(const _uint& iIndex)
+{
+	if (m_SpeedDescs.size() <= iIndex)
+		return;
+
+	_int iCount = 0;
+	for (vector<ANIM_SPEED_DESC>::iterator iter = m_SpeedDescs.begin(); iter != m_SpeedDescs.end();)
+	{
+		if (iIndex == iCount)
+		{
+			m_SpeedDescs.erase(iter);
+			break;
+		}
+		else
+		{
+			++iter;
+			++iCount;
+		}
+	}
+
+	Sort_SpeedDesces();
+}
+
 void CAnimation::Change_SpeedDesc(const _uint& iIndex, const Vec4& vDesc)
 {
 	if (m_SpeedDescs.size() <= iIndex)
@@ -69,8 +132,23 @@ void CAnimation::Change_SpeedDesc(const _uint& iIndex, const Vec4& vDesc)
 
 	m_SpeedDescs[iIndex].fStartFrame = vDesc.x;
 	m_SpeedDescs[iIndex].fEndFrame = vDesc.y;
-	m_SpeedDescs[iIndex].fStartValue = vDesc.z;
-	m_SpeedDescs[iIndex].fEndValue = vDesc.w;
+	m_SpeedDescs[iIndex].fStartSpeed = vDesc.z;
+	m_SpeedDescs[iIndex].fEndSpeed = vDesc.w;
+}
+
+void CAnimation::Sort_SpeedDesces()
+{
+	std::sort(m_SpeedDescs.begin(), m_SpeedDescs.end(),
+		[](const ANIM_SPEED_DESC& desc1, const ANIM_SPEED_DESC& desc2)
+		{
+			if (desc1.fStartFrame < desc2.fStartFrame)
+				return true;
+			else if (desc1.fStartFrame > desc2.fStartFrame)
+				return false;
+			return desc1.fEndFrame < desc2.fEndFrame;
+		});
+
+	m_iCurSpeedDescIndex = 0;
 }
 
 CChannel* CAnimation::Get_Channel(const wstring& strChannelName)
@@ -119,6 +197,120 @@ HRESULT CAnimation::Clear_Channels()
 	//m_HierarchyNodes.clear();
 
 	return S_OK;
+}
+
+void CAnimation::Update_AnimationSpeed(_float fTickPerSecond, const TWEEN_DESC& tDesc)
+{
+	/* Checke Speed */
+	if (m_SpeedDescs.empty())
+		return;
+
+	if (m_tLiveSpeedDesc.bActive)
+		m_tLiveSpeedDesc.Update(fTickPerSecond);
+
+	for (_uint i = m_iCurSpeedDescIndex; i < m_SpeedDescs.size(); i++)
+	{
+		if (m_SpeedDescs[i].fStartFrame < tDesc.cur.iCurFrame && !m_tLiveSpeedDesc.bActive)
+		{
+			if (abs(m_tLiveSpeedDesc.fCurValue - m_SpeedDescs[i].fEndSpeed) < 0.05f)
+				continue;
+
+			if (m_SpeedDescs[m_iCurSpeedDescIndex].fStartFrame ==
+				m_SpeedDescs[m_iCurSpeedDescIndex].fEndFrame ==
+				m_SpeedDescs[m_iCurSpeedDescIndex].fStartSpeed ==
+				m_SpeedDescs[m_iCurSpeedDescIndex].fEndSpeed)
+				continue;
+
+			if (m_SpeedDescs[m_iCurSpeedDescIndex].fStartFrame >=
+				m_SpeedDescs[m_iCurSpeedDescIndex].fEndFrame)
+				continue;
+
+			m_iCurSpeedDescIndex = i;
+
+			m_tLiveSpeedDesc.Start(
+				m_SpeedDescs[m_iCurSpeedDescIndex].fStartSpeed,
+				m_SpeedDescs[m_iCurSpeedDescIndex].fEndSpeed,
+				Calculate_LerpTime(m_SpeedDescs[m_iCurSpeedDescIndex], tDesc, fTickPerSecond),
+				LERP_MODE::SMOOTH_STEP);
+		}
+	}
+}
+
+void CAnimation::Update_AnimationEvent(_float fTickPerSecond, const TWEEN_DESC& tDesc)
+{
+}
+
+const _float CAnimation::Calculate_LerpTime(const ANIM_SPEED_DESC tSpeedDesc, const TWEEN_DESC tTweenDesc, const _float fTickPerSecond)
+{
+	_float fTimeAcc = 0.f;
+	_float fFrameAcc = 0.f;
+
+	_float fCurFrame = tSpeedDesc.fStartFrame;
+	_float fEndFrame = tSpeedDesc.fEndFrame;
+
+	/* 예외 처리 조건 필수 ! */
+
+	/* 시작 프레임에서 종료 프레임까지 디폴트 시간으로 소요되는 총 시간 */
+	while (1)
+	{
+		fTimeAcc += fTickPerSecond;
+		fFrameAcc += fTickPerSecond;
+
+		const _float fTimePerFrame = 1 / (m_fTickPerSecond * m_tLiveSpeedDesc.fCurValue);
+
+		if (fTimePerFrame <= fFrameAcc)
+		{
+			fCurFrame++;
+			fFrameAcc = 0.f;
+			if (fCurFrame == tSpeedDesc.fEndFrame)
+			{
+				break;
+			}
+		}
+	}
+
+
+	fFrameAcc = 0.f;
+
+	fCurFrame = tSpeedDesc.fStartFrame;
+	fEndFrame = tSpeedDesc.fEndFrame;
+
+	LERP_FLOAT_DESC tLerpDesc;
+	tLerpDesc.Start(
+		m_SpeedDescs[m_iCurSpeedDescIndex].fStartSpeed,
+		m_SpeedDescs[m_iCurSpeedDescIndex].fEndSpeed,
+		fTimeAcc, LERP_MODE::SMOOTH_STEP);
+
+	fTimeAcc = 0.f;
+
+	/* 시작 프레임에서 종료 프레임까지 럴프 시간 소요되는 총 시간 */
+	while (1)
+	{
+		fTimeAcc += fTickPerSecond;
+		fFrameAcc += fTickPerSecond;
+
+		const _float fTimePerFrame = 1 / (m_fTickPerSecond * tLerpDesc.fCurValue);
+
+		if (fTimePerFrame <= fFrameAcc)
+		{
+			fCurFrame++;
+			fFrameAcc = 0.f;
+			if (fCurFrame == tSpeedDesc.fEndFrame)
+			{
+				return fTimeAcc;
+			}
+		}
+
+		if (tLerpDesc.bActive)
+		{
+			tLerpDesc.Update(fTickPerSecond);
+			if(!tLerpDesc.bActive)
+				return fTimeAcc;
+		}
+	}
+	
+	
+	return _float();
 }
 
 CAnimation* CAnimation::Create(aiAnimation* pAIAnimation)

@@ -358,6 +358,9 @@ namespace Engine
 
 		void Start(const _float _fStartValue, const _float _fTargetValue, const _float _fTime, const LERP_MODE _eMode = LERP_MODE::DEFAULT)
 		{
+			if (_fTime < 0)
+				return;
+
 			bActive = TRUE;
 
 			fCurTime = 0.f;
@@ -421,6 +424,9 @@ namespace Engine
 
 		void Start(const _float _fTime, const LERP_MODE _eMode = LERP_MODE::DEFAULT)
 		{
+			if (_fTime < 0)
+				return;
+
 			bActive = TRUE;
 
 			fCurTime = 0.f;
@@ -468,6 +474,9 @@ namespace Engine
 
 		void Start(const Vec3 _fStartValue, const Vec3& _fTargetValue, const _float& _fTime, const LERP_MODE& _eMode = LERP_MODE::DEFAULT)
 		{
+			if (_fTime < 0)
+				return;
+
 			bActive = TRUE;
 
 			fCurTime = 0.f;
