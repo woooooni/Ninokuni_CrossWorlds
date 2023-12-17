@@ -780,7 +780,7 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 
 		IMGUI_NEW_LINE;
 
-		ImGui::Text("(1)Start Frame    (2)End Frame     (3)Start Value (4)End Value");
+		ImGui::Text("(1)Start Frame  (2)End Frame    (3)Start Value  (4)End Value");
 		IMGUI_SAME_LINE;
 		/* Add SBK*/
 		if (ImGui::Button("Add Desc"))
@@ -800,13 +800,20 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 			float desc[4] = { vecDesc[i].fStartFrame, vecDesc[i].fEndFrame, vecDesc[i].fStartValue, vecDesc[i].fEndValue };
 			string strDescTag = (to_string(i));
 			ImGui::PushItemWidth(330.f);
-			if (ImGui::DragFloat4(strDescTag.c_str(), desc, 0.01f, 0.f, 5.f))
+			if (ImGui::DragFloat4(strDescTag.c_str(), desc, 0.01f, 0.f, 100.f))
 			{
 				Vec4 vDesc = { desc[0], desc[1], desc[2], desc[3] };
 
-				std::clamp(vDesc.x, 0.f, 1.f);
-				std::clamp(vDesc.y, 0.f, 1.f);
+				if (nullptr != pCurrAnimation)
+				{
+					const _float fMaxCount = _float(pCurrAnimation->Get_MaxFrameCount() - 1);
+					std::clamp(vDesc.x, 0.f, fMaxCount);
+					std::clamp(vDesc.y, 0.f, fMaxCount);
 
+					const _float fMaxSpeed = 5.f;
+					std::clamp(vDesc.z, 0.f, fMaxSpeed);
+					std::clamp(vDesc.w, 0.f, fMaxSpeed);
+				}
 				m_pDummy->Get_ModelCom()->Get_CurrAnimation()->Change_SpeedDesc(i, vDesc);
 			}
 			ImGui::PopItemWidth();
