@@ -62,6 +62,17 @@ HRESULT CAnimation::Initialize(CModel* pModel)
 	return S_OK;
 }
 
+void CAnimation::Change_SpeedDesc(const _uint& iIndex, const Vec4& vDesc)
+{
+	if (m_SpeedDescs.size() <= iIndex)
+		return;
+
+	m_SpeedDescs[iIndex].fStartFrame = vDesc.x;
+	m_SpeedDescs[iIndex].fEndFrame = vDesc.y;
+	m_SpeedDescs[iIndex].fStartValue = vDesc.z;
+	m_SpeedDescs[iIndex].fEndValue = vDesc.w;
+}
+
 CChannel* CAnimation::Get_Channel(const wstring& strChannelName)
 {
 	for (auto& iter : m_Channels)

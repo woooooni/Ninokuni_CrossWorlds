@@ -18,14 +18,15 @@ public:
 
 	typedef struct tagAnimSpeedDesc
 	{
-		_float fPoint1 = 0.f;
-		_float fPoint2 = 0.f;
+		_float fStartFrame = 0.f;
+		_float fEndFrame = 0.f;
 
-		_float fValue1 = 0.f;
-		_float fValue2 = 0.f;
+		_float fStartValue = 0.f;
+		_float fEndValue = 0.f;
 
+		tagAnimSpeedDesc() {};
 		tagAnimSpeedDesc(const _float& _fPoint1, const _float& _fPoint2, const _float& _fValue1, const _float& _fValue2)
-			: fPoint1(_fPoint1), fPoint2(_fPoint2), fValue1(_fValue1), fValue2(_fValue2) {}
+			: fStartFrame(_fPoint1), fEndFrame(_fPoint2), fStartValue(_fValue1), fEndValue(_fValue2) {}
 
 	}ANIM_SPEED_DESC;
 
@@ -62,8 +63,8 @@ public:
 	_float Get_AnimationSpeed() { return m_fSpeed; }
 
 	void Add_SpeedDesc(ANIM_SPEED_DESC desc) { m_SpeedDescs.push_back(desc); }
+	void Change_SpeedDesc(const _uint& iIndex, const Vec4& vDesc);
 	vector<ANIM_SPEED_DESC> Get_SpeedDescs() const { return m_SpeedDescs; }
-
 #pragma endregion
 
 

@@ -772,22 +772,53 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 			}
 		}		
 	
+
 		IMGUI_NEW_LINE;
 		ImGui::Separator();
-		ImGui::Text("Speed by Keyframe (SBK)");
+		ImGui::Text(u8"애니메이션 프레임별 속도 조절");
+		ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"Start Point와 End Point는 애니메이션 진행률 (Progress)를 기반으로 합니다.");
 
-		/* Custom Speed */
+		IMGUI_NEW_LINE;
 
+		ImGui::Text("(1)Start Frame    (2)End Frame     (3)Start Value (4)End Value");
+		IMGUI_SAME_LINE;
+		/* Add SBK*/
 		if (ImGui::Button("Add Desc"))
 		{
+			CAnimation::ANIM_SPEED_DESC desc = {};
 
+			desc.fStartValue = desc.fEndValue = m_pDummy->Get_ModelCom()->Get_CurrAnimation()->Get_AnimationSpeed();
+
+			m_pDummy->Get_ModelCom()->Get_CurrAnimation()->Add_SpeedDesc(desc);
 		}
 
-		IMGUI_SAME_LINE;
-
-		if (ImGui::Button("Del Desc"))
+		/* List */
+		vector<CAnimation::ANIM_SPEED_DESC> vecDesc = m_pDummy->Get_ModelCom()->Get_CurrAnimation()->Get_SpeedDescs();
+		for (size_t i = 0; i < vecDesc.size(); i++)
 		{
+			/* desc */
+			float desc[4] = { vecDesc[i].fStartFrame, vecDesc[i].fEndFrame, vecDesc[i].fStartValue, vecDesc[i].fEndValue };
+			string strDescTag = (to_string(i));
+			ImGui::PushItemWidth(330.f);
+			if (ImGui::DragFloat4(strDescTag.c_str(), desc, 0.01f, 0.f, 5.f))
+			{
+				Vec4 vDesc = { desc[0], desc[1], desc[2], desc[3] };
 
+				std::clamp(vDesc.x, 0.f, 1.f);
+				std::clamp(vDesc.y, 0.f, 1.f);
+
+				m_pDummy->Get_ModelCom()->Get_CurrAnimation()->Change_SpeedDesc(i, vDesc);
+			}
+			ImGui::PopItemWidth();
+
+	
+
+			///* Delete */
+			//string strDelTag = "##del" + (to_string(i));
+			//if (ImGui::Button("del"))
+			//{
+
+			//}
 		}
 
 
