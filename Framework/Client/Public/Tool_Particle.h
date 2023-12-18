@@ -38,6 +38,7 @@ private:
 	_bool m_bParticleType_Orth = false;
 
 	_float m_fParticleRange[3];
+	_float m_fParticleRangeDistance[2];
 
 	_float m_fParticleScaleStart[2];
 

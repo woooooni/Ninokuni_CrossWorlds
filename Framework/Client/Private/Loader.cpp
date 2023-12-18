@@ -280,9 +280,10 @@ HRESULT CLoader::Loading_For_Level_Tool()
 		return E_FAIL;
 		
 #pragma region Particle
+	// 툴 파티클
 	CParticle::PARTICLE_DESC ParticleInfo = {};
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_TempParticle"),
-		CParticle::Create(m_pDevice, m_pContext, TEXT("Particle_Basic"), &ParticleInfo), LAYER_TYPE::LAYER_EFFECT)))
+		CParticle::Create(m_pDevice, m_pContext, TEXT("TempParticle"), &ParticleInfo), LAYER_TYPE::LAYER_EFFECT)))
 		return E_FAIL;
 #pragma endregion
 
