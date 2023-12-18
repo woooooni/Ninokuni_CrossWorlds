@@ -115,6 +115,9 @@ Vec3 CTool_Model::Calculate_SocketPosition()
 
 Matrix CTool_Model::Calculate_SocketWorldMatrix()
 {
+	if (nullptr == m_pDummy->Get_ModelCom())
+		return Matrix();
+
 	TweenDesc TweenDesc = m_pDummy->Get_ModelCom()->Get_TweenDesc();
 
 	enum STEP { CURR, NEXT, STEP_END };

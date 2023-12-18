@@ -33,8 +33,8 @@ private:
 	void DeleteObject(LEVELID iLevelID, LAYER_TYPE iLayerType);
 	void BatchObject(LEVELID iLevelID, LAYER_TYPE iLayerType);
 
-	void BatchTerrain(LEVELID iLevelID, LAYER_TYPE iLayerType);
-	void DeleteTerrain(LEVELID iLevelID, LAYER_TYPE iLayerType);
+	void BatchDynamic(LEVELID iLevelID, LAYER_TYPE iLayerType);
+	void DeleteDynamic(LEVELID iLevelID, LAYER_TYPE iLayerType);
 
 	void DeleteLight(_uint iLightID);
 
@@ -43,7 +43,6 @@ private:
 private:
 	void MapObjectSpace();
 	void MapLightSpace();
-	void MapTerrainSpace();
 private:
 	void ChangeState();
 
@@ -60,7 +59,7 @@ private:
 	// 오브젝트 상태제어 
 	_bool m_bAddObject = false;
 	_bool m_bPlantMode = false;
-	_bool m_bAddTerrain = false;
+	_bool m_bAddDynamic = false;
 
 	_bool m_bAddLight = false;
 	LightHelper m_LightHelper = {};
@@ -68,7 +67,7 @@ private:
 	// 내 컨트롤 제어상태
 	_int m_iControlState = 0;
 	_int m_iLightControlState = 0;
-	_int m_iTerrainState = 0;
+	_int m_iDynamicState = 0;
 
 	wstring m_strLevelName = L"Evermore";
 	wstring m_strPrevLevelName = L"";
@@ -78,12 +77,13 @@ private:
 
 	// 선택한 오브젝트
 	CGameObject* m_pSelectObj = nullptr;
-	CGameObject* m_pSelectTerrain = nullptr;
 	CLight* m_pSelectLight = nullptr;
 
 	// IMGUI STATE
 	_bool m_bWindowMoveFlag = false;
 	_bool m_bWindowResizeFlag = false;
+
+
 
 	// Terrain
 	Vec2 m_vTerrainCount;

@@ -15,7 +15,7 @@
 #include "Light.h"
 
 #ifdef _DEBUG
-  #include <vld.h>
+  //#include <vld.h>
 #endif
 
 CMainApp::CMainApp()	
@@ -47,7 +47,7 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 	/* 1-4. 게임내에서 사용할 레벨(씬)을 생성한다.   */
-	if (FAILED(Open_Level(LEVEL_TEST, L"Final_Boss")))
+	if (FAILED(Open_Level(LEVEL_TOOL, L"Final_Boss")))
 		return E_FAIL;
 	
 	// UI Cursor
@@ -223,7 +223,7 @@ HRESULT CMainApp::Ready_Prototype_Component()
 
 	/* For.Prototype_Component_VIBuffer_Terrain*/
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Terrain"),
-		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/HeightTest/HeightMap_Test.bmp")))))
+		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 100, 100))))
 		return E_FAIL;
 
 	/* For.Prototype_Component_VIBuffer_Cloth_Terrain*/
