@@ -27,7 +27,9 @@ public:
 	const map<TCHAR*, FMOD_SOUND*>& Get_MapSound() const { return m_mapSound; }
 
 private:
-	void Load_SoundFile(const char* szSoundFilePath);
+	void Search_Recursive(const std::string& currentPath);
+	//void Load_SoundFile(const char* szSoundFilePath);
+	
 
 private:
 	// 사운드 리소스 정보를 갖는 객체 

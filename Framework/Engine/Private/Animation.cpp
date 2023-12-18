@@ -223,10 +223,10 @@ void CAnimation::Update_Animation_Speed(_float fTickPerSecond, const TWEEN_DESC&
 			if (abs(m_tLiveSpeedDesc.fCurValue - m_SpeedDescs[i].fEndSpeed) < 0.05f)
 				continue;
 
-			if (m_SpeedDescs[m_iCurSpeedDescIndex].fStartFrame ==
-				m_SpeedDescs[m_iCurSpeedDescIndex].fEndFrame ==
-				m_SpeedDescs[m_iCurSpeedDescIndex].fStartSpeed ==
-				m_SpeedDescs[m_iCurSpeedDescIndex].fEndSpeed)
+			if (m_SpeedDescs[m_iCurSpeedDescIndex].fStartFrame <= 0.f &&
+				m_SpeedDescs[m_iCurSpeedDescIndex].fEndFrame <= 0.f &&
+				m_SpeedDescs[m_iCurSpeedDescIndex].fStartSpeed <= 0.f &&
+				m_SpeedDescs[m_iCurSpeedDescIndex].fEndSpeed <= 0.f)
 				continue;
 
 			if (m_SpeedDescs[m_iCurSpeedDescIndex].fStartFrame >=

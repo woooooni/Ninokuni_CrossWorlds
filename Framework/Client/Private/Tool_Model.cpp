@@ -46,6 +46,9 @@ HRESULT CTool_Model::Initialize()
 	if (FAILED(Ready_AutoAnimData()))
 		return E_FAIL;
 
+	if (FAILED(Ready_SoundKey()))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -319,6 +322,43 @@ HRESULT CTool_Model::Ready_AutoAnimData()
 		for (auto y : vData)
 			for (auto z : vData)
 				m_vAutoSocket.push_back(Vec3{ x, y, z });
+
+	return S_OK;
+}
+
+HRESULT CTool_Model::Ready_SoundKey()
+{
+	const map<TCHAR*, FMOD_SOUND*>& mapSound = CSound_Manager::GetInstance()->Get_MapSound();
+
+	if (mapSound.empty())
+		return S_OK;
+
+	/* 문자열 변환 */
+	vector<wstring> strSoundKeyNames;
+
+	for (const auto& PrevData : mapSound)
+	{
+		wstring str = std::wstring(PrevData.first, PrevData.first + static_cast<int>(_tcslen(PrevData.first)));
+		strSoundKeyNames.push_back(str);
+	}
+
+	m_arrSoundKeys = new const char* [strSoundKeyNames.size()];
+
+	if (nullptr == m_arrSoundKeys) 
+		return E_FAIL;
+	
+	int index = 0;
+
+	for (const auto& Name : strSoundKeyNames)
+	{
+		std::wstring wideStr = Name;
+		std::string narrowStr(wideStr.begin(), wideStr.end());
+
+		m_arrSoundKeys[index] = _strdup(narrowStr.c_str());
+		++index;
+	}
+
+	m_iSoundKeySize = mapSound.size();
 
 	return S_OK;
 }
@@ -779,7 +819,8 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 		IMGUI_NEW_LINE;
 		ImGui::Separator();
 		ImGui::Text(u8"애니메이션 프레임별 속도 조절");
-		
+		ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"애니메이션이 재생되지 않는 경우 Sort 혹은 Delete를 클릭해주세요");
+
 		IMGUI_NEW_LINE;
 
 		/* Add SBK*/
@@ -805,7 +846,7 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 		{
 			m_pDummy->Get_ModelCom()->Get_CurrAnimation()->Sort_SpeedDesces();
 		}
-		
+		IMGUI_NEW_LINE;
 
 		/* Category */
 		ImGui::Text("(1)Start Frame  (2)End Frame  (3)Start Value   (4)End Value");
@@ -1115,8 +1156,11 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 			/* Sound */
 			if (ImGui::BeginTabItem("Sound"))
 			{
+				ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"사운드 매니저 수정 예정, 실제 이벤트 추가는 목요일 이후");
+				IMGUI_NEW_LINE;
+
 				/* Type */
-				ImGui::PushItemWidth(200.f);
+				ImGui::PushItemWidth(300.f);
 				{
 					static int iSoundCurIndex = 0; 
 					const char* szSoundPreview = szAnimEventSoundTypeNames[iSoundCurIndex];
@@ -1140,39 +1184,31 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 				/* Prop */
 				{
 					/* Sound Key */
-					ImGui::PushItemWidth(200.f);
-					{
-						//const map<TCHAR*, FMOD_SOUND*>& mapSound = CSound_Manager::GetInstance()->Get_MapSound();
-
-						///* 문자열 변환 */
-						//vector<wstring> SoundKeyNames;
-						//
-						//for (const auto& PrevData : mapSound)
-						//{
-						//	wstring strConverted = wstringResu
-						//}
-
-						
-						/*static int iSoundKeyCurIndex = 0;
-						const char* szSoundPreview = szChannelIDNames[iSoundKeyCurIndex];
-						if (ImGui::BeginCombo("Sound Key", szSoundPreview))
+					ImGui::PushItemWidth(300.f);
+					{	
+						if (0 < m_iSoundKeySize)
 						{
-							for (int n = 0; n < IM_ARRAYSIZE(szChannelIDNames); n++)
+							static int iSoundKeyCurIndex = 0;
+							const char* szSoundPreview = m_arrSoundKeys[iSoundKeyCurIndex];
+							if (ImGui::BeginCombo("Sound Key (File Name)", szSoundPreview))
 							{
-								const bool is_selected = (iSoundKeyCurIndex == n);
-								if (ImGui::Selectable(szChannelIDNames[n], is_selected))
-									iSoundKeyCurIndex = n;
+								for (int n = 0; n < m_iSoundKeySize; n++)
+								{
+									const bool is_selected = (iSoundKeyCurIndex == n);
+									if (ImGui::Selectable(m_arrSoundKeys[n], is_selected))
+										iSoundKeyCurIndex = n;
 
-								if (is_selected)
-									ImGui::SetItemDefaultFocus();
-							}
-							ImGui::EndCombo();
-						}*/
+									if (is_selected)
+										ImGui::SetItemDefaultFocus();
+								}
+								ImGui::EndCombo();
+							}	
+						}
 					}
 					ImGui::PopItemWidth();
 
 					/* Channel ID */
-					ImGui::PushItemWidth(200.f);
+					ImGui::PushItemWidth(300.f);
 					{
 						static int iChannelCurIndex = 0;
 						const char* szChannelPreview = szChannelIDNames[iChannelCurIndex];
@@ -1201,7 +1237,8 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 					}
 					ImGui::PopItemWidth();
 					IMGUI_SAME_LINE;
-					ImGui::Text("Volume");
+					ImGui::Text("Volume      ");
+					IMGUI_SAME_LINE;
 
 					/* Stop */
 					static _bool bSoundEventStop = false;
@@ -1382,6 +1419,11 @@ CTool_Model* CTool_Model::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
 void CTool_Model::Free()
 {
 	__super::Free();
+
+	for (int n = 0; n < m_iSoundKeySize; n++)
+		free((void*)m_arrSoundKeys[n]);
+
+	delete[] m_arrSoundKeys;
 
 	for (auto& pWeapon : m_Weapons)
 		Safe_Release(pWeapon);

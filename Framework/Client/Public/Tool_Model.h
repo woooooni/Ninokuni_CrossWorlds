@@ -31,6 +31,7 @@ private:
 	HRESULT Ready_Dummy();
 	HRESULT Ready_WeaponPrototypes();
 	HRESULT Ready_AutoAnimData();
+	HRESULT Ready_SoundKey();
 
 	/* In Impory Animation */
 	HRESULT Ready_SocketTransforms();
@@ -81,6 +82,9 @@ private:
 #pragma region Event 
 
 	_int m_iEventIndex = -1;
+
+	const char** m_arrSoundKeys = nullptr;
+	_uint m_iSoundKeySize = 0;
 
 #pragma endregion
 
