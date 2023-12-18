@@ -36,9 +36,6 @@ HRESULT CShadow_Thief::Initialize(void* pArg)
 	if (FAILED(Ready_States()))
 		return E_FAIL;
 
-
-	//m_pModelCom->Set_Animation(GI->RandomInt(0, 10));
-
 	return S_OK;
 }
 
@@ -109,6 +106,11 @@ HRESULT CShadow_Thief::Ready_Components()
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-4.f, 1.f, 4.f, 1.f));
 	m_vOriginPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+
+	/* 로밍 경로(임시) */
+	m_vecRoamingArea.push_back(XMVectorSet(-3.f, 1.f, 1.f, 1.f));
+	m_vecRoamingArea.push_back(XMVectorSet(-1.f, 1.f, 6.f, 1.f));
+	m_vecRoamingArea.push_back(m_vOriginPos);
 
 	/* For.Com_Renderer */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))

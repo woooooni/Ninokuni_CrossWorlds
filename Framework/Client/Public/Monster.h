@@ -49,7 +49,10 @@ public:
 #pragma endregion
 	enum SOCKET_TYPE { SOCKET_LEFT_FIST, SOCKET_RIGHT_FIST, SOCKET_LEFT_FOOT, SOCKET_RIGHT_FOOT, SOCKET_END };
 	enum MONSTER_TYPE { NORMAL, BOSS, TYPE_END };
-	enum class MONSTER_BOOLTYPE { MONBOOL_COMBAT, MONBOOL_ATK, MONBOOL_HIT, MONBOOL_ATKAROUND, MONBOOL_END };
+	enum class MONSTER_BOOLTYPE { 
+		MONBOOL_COMBAT, MONBOOL_COMBATIDLE,
+		MONBOOL_ATK, MONBOOL_ATKAROUND,
+		MONBOOL_STUN, MONBOOL_HIT, MONBOOL_HITANIM, MONBOOL_END };
 public:
 	typedef struct tagMonsterStat
 	{
@@ -109,8 +112,17 @@ public:
 
 	virtual _vector Get_OriginPos() { return m_vOriginPos; }
 
+	/* Bool 정보들 */
 	virtual _bool  Get_Bools(MONSTER_BOOLTYPE eType) { return m_bBools[(_uint)eType]; }
 	virtual void   Set_Bools(MONSTER_BOOLTYPE eType, _bool bIsBool) { m_bBools[(_uint)eType] = bIsBool; }
+
+	/* 주변 순회 */
+	virtual vector<_vector>* Get_RoamingArea() { return &m_vecRoamingArea; }
+	virtual void Add_RoamingPoint(_vector vPos) { m_vecRoamingArea.push_back(vPos); }
+
+	/* 스턴 시간 */
+	virtual _float Get_StunTime() { return m_fStunTime; }
+	virtual void   Set_StunTime(_float fStunTime) { m_fStunTime = fStunTime; }
 
 public:
 	MONSTER_TYPE Get_Monster_Type() { return m_eMonsterType; }
@@ -146,8 +158,12 @@ protected:
 	_float m_fInfiniteTime = 0.2f;
 	_bool m_bInfinite = false;
 
-	_vector	m_vOriginPos = {};
-	_bool   m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_END] = { false, };
+	_vector	m_vOriginPos = {}; // 최초 위치, 돌아갈 위치.
+	_bool   m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_END] = { false, }; // 몬스터가 사용하는 bool모음.
+
+	vector<_vector> m_vecRoamingArea; // 순회 포인트 배열
+
+	_float	m_fStunTime = 0.f; // 스턴 시간
 
 protected:
 	class CTrail* m_pTrails[SOCKET_TYPE::SOCKET_END];

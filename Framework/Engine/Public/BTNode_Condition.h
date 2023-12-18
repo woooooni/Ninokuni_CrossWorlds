@@ -11,7 +11,7 @@ private:
 	virtual ~CBTNode_Condition() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(function<_bool()> conditionFunc, CBTNode* pPairNode, CBTNode* pNextNode);
+	virtual HRESULT Initialize_Prototype(function<_bool()> conditionFunc, CBTNode* pPairNode, CBTNode * pNextNode);
 	virtual void	Start();
 	virtual CBTNode::NODE_STATE	Tick(const _float & fTimeDelta);
 
@@ -22,7 +22,7 @@ private:
 	CBTNode* m_pNextNode = nullptr;
 
 public:
-	static CBTNode_Condition* Create(function<_bool()> conditionFunc, CBTNode * pPairNode, CBTNode * pNextNode);
+	static CBTNode_Condition* Create(function<_bool()> conditionFunc, CBTNode * pPairNode, CBTNode* pNextNode);
 	virtual void Free() override;
 };
 
