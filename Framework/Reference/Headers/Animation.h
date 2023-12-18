@@ -6,29 +6,6 @@ BEGIN(Engine)
 
 class ENGINE_DLL CAnimation final : public CBase
 {
-public:
-	
-	/*typedef struct tagAnimEventDesc
-	{
-		ANIM_EVENT_TYPE eType;
-
-	}ANIM_EVENT_DESC;*/
-
-	typedef struct tagAnimSpeedDesc
-	{
-		_float fStartFrame = 0.f;
-		_float fEndFrame = 0.f;
-
-		_float fStartSpeed = 0.f;
-		_float fEndSpeed = 0.f;
-
-		tagAnimSpeedDesc() {};
-		tagAnimSpeedDesc(const _float& _fPoint1, const _float& _fPoint2, const _float& _fValue1, const _float& _fValue2)
-			: fStartFrame(_fPoint1), fEndFrame(_fPoint2), fStartSpeed(_fValue1), fEndSpeed(_fValue2) {}
-
-	}ANIM_SPEED_DESC;
-
-
 private:
 	CAnimation();
 	CAnimation(const CAnimation& rhs);
@@ -46,16 +23,15 @@ public:
 #pragma region Prop
 	_float Get_Duration() { return m_fDuration; }
 
-	void Set_AnimationName(const wstring& strName) { m_strName = strName; }
+	_uint Get_MaxFrameCount() const { return _uint(m_fDuration) + 1; }
+
 	const wstring& Get_AnimationName() { return m_strName; }
+	void Set_AnimationName(const wstring& strName) { m_strName = strName; }
 
 	void Set_Loop(_bool bLoop) { m_bLoop = bLoop; }
 	_bool Is_Loop() { return m_bLoop; }
-
-	_uint Get_MaxFrameCount() const { return _uint(m_fDuration) + 1; }
 #pragma endregion
 
-	
 #pragma region Speed
 	/* Tick Per Second */
 	void Set_TickPerSecond(_float fTickPerSecond) { m_fTickPerSecond = fTickPerSecond; }
@@ -75,12 +51,14 @@ public:
 	void Change_SpeedDesc(const _uint& iIndex, const Vec4& vDesc);
 	void Sort_SpeedDesces();
 	vector<ANIM_SPEED_DESC> Get_SpeedDescs() const { return m_SpeedDescs; }
-
 #pragma endregion
 
 
 #pragma region Events
 
+	void Add_Event(const _float fFrame, const ANIM_EVENT_TYPE& eEventType, ANIM_EVENT_DESC tDesc);
+	const vector<pair<_float, ANIM_EVENT_DESC>>& Get_Events() const { return m_Events; }
+	void Sort_Events();
 
 
 #pragma endregion
@@ -109,7 +87,6 @@ private:
 	_float m_fDuration = 0.f; 
 
 #pragma region Speed
-
 private:
 	_float m_fTickPerSecond = 0.f; 
 	_float m_fOriginSpeed = 1.f;
@@ -119,11 +96,11 @@ private:
 
 	LERP_FLOAT_DESC m_tLiveSpeedDesc;
 	vector<ANIM_SPEED_DESC> m_SpeedDescs;
-
 #pragma endregion
 
 #pragma region Events
 private:
+	vector<pair<_float, ANIM_EVENT_DESC>> m_Events;
 
 #pragma endregion
 

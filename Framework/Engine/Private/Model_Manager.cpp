@@ -830,7 +830,7 @@ HRESULT CModel_Manager::Export_Animation_KeyFrameSpeed(const wstring& strFinalPa
 	{
 		if (nullptr != Anims[i])
 		{
-			vector<CAnimation::ANIM_SPEED_DESC> Descs = Anims[i]->Get_SpeedDescs();
+			vector<ANIM_SPEED_DESC> Descs = Anims[i]->Get_SpeedDescs();
 
 			/* 현재 애니메이션의 스피드 컨테이너 소유 유무*/
 			const _bool bHave = !Descs.empty();
@@ -1322,7 +1322,7 @@ HRESULT CModel_Manager::Import_Animation_KeyFrameSpeed(const wstring strFinalPat
 			File->Read<_uint>(descCount);
 			for (size_t k = 0; k < descCount; k++)
 			{
-				CAnimation::ANIM_SPEED_DESC desc;
+				ANIM_SPEED_DESC desc;
 				File->Read<_float>(desc.fStartFrame);
 				File->Read<_float>(desc.fEndFrame);
 				File->Read<_float>(desc.fStartSpeed);

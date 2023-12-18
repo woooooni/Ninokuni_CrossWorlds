@@ -589,6 +589,56 @@ namespace Engine
 	}ANIM_TRANSFORM_CACHE;
 
 #pragma endregion
+
+#pragma region Animation Event 
+
+	typedef struct tagAnimEventDesc
+	{
+		ANIM_EVENT_TYPE eType;
+
+	}ANIM_EVENT_DESC;
+
+	typedef struct tagAnimEventSoundDesc : public ANIM_EVENT_DESC
+	{
+		TCHAR*		pSoundKey = nullptr;
+		_uint		iChannelID = CHANNELID::MAXCHANNEL;
+		_float		fVolume = 0.f;
+		_bool		bStop = false;
+
+	}ANIM_EVENT_SOUND_DESC;
+
+	typedef struct tagAnimEventEffectDesc : public ANIM_EVENT_DESC
+	{
+		wstring strPrototypeEffectNam = {};
+		Matrix RotationMatrix = {};
+		Matrix WorldMatrixl = {};
+		_float fEffectDeletionTime = 0.f;
+		class CGameObject* pOwner = nullptr;
+		class CGameObject** ppOut = nullptr;
+
+	}ANIM_EVENT_EFFECT_DESC;
+
+#pragma endregion
+
+#pragma region Animation KeyFrame Speed 
+	
+	typedef struct tagAnimSpeedDesc
+	{
+		_float fStartFrame = 0.f;
+		_float fEndFrame = 0.f;
+
+		_float fStartSpeed = 0.f;
+		_float fEndSpeed = 0.f;
+
+		tagAnimSpeedDesc() {};
+		tagAnimSpeedDesc(const _float& _fPoint1, const _float& _fPoint2, const _float& _fValue1, const _float& _fValue2)
+			: fStartFrame(_fPoint1), fEndFrame(_fPoint2), fStartSpeed(_fValue1), fEndSpeed(_fValue2) {}
+
+	}ANIM_SPEED_DESC;
+
+#pragma endregion
+
+
 }
 
 

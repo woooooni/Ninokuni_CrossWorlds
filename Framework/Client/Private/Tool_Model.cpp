@@ -98,6 +98,8 @@ HRESULT CTool_Model::Clear_ToolAnimationData()
 
 	m_iAutoAnimIndex = 0;
 
+	m_iEventIndex = -1;
+
 	return S_OK;
 }
 
@@ -783,7 +785,7 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 		/* Add SBK*/
 		if (ImGui::Button("Add Desc"))
 		{
-			CAnimation::ANIM_SPEED_DESC desc = {};
+			ANIM_SPEED_DESC desc = {};
 
 			desc.fStartSpeed = desc.fEndSpeed = m_pDummy->Get_ModelCom()->Get_CurrAnimation()->Get_LiveSpeed();
 
@@ -810,7 +812,7 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 		
 
 		/* List */
-		vector<CAnimation::ANIM_SPEED_DESC> vecDesc = m_pDummy->Get_ModelCom()->Get_CurrAnimation()->Get_SpeedDescs();
+		vector<ANIM_SPEED_DESC> vecDesc = m_pDummy->Get_ModelCom()->Get_CurrAnimation()->Get_SpeedDescs();
 		for (size_t i = 0; i < vecDesc.size(); i++)
 		{
 			/* desc */
@@ -1087,8 +1089,25 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 		if (nullptr == pCurAnim)
 			return;
 		
-		IMGUI_NEW_LINE;
+		/* 애니메이션에 저장된 이벤트 리스트 */
 
+		const vector<pair<_float, ANIM_EVENT_DESC>>& Events = pCurAnim->Get_Events();
+		ImGui::Text("Event List (count : %d)", Events.size());
+
+		if (ImGui::BeginListBox("##Event_List", ImVec2(350.f, 70.f)))
+		{
+			for (size_t i = 0; i < Events.size(); ++i)
+			{
+				string strEventTypeName = CUtils::ToString(strAnimEventTypeNames[Events[i].second.eType]);
+				
+				if (ImGui::Selectable(strEventTypeName.c_str(), i == m_iEventIndex))
+				{
+					m_iEventIndex = i;
+				}
+			}
+			ImGui::EndListBox();
+		}
+		IMGUI_NEW_LINE;
 
 		/* Tab Bar */
 		if (ImGui::BeginTabBar("Animation Event ", tab_bar_flags))
@@ -1096,7 +1115,8 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 			/* Sound */
 			if (ImGui::BeginTabItem("Sound"))
 			{
-				ImGui::PushItemWidth(300.f);
+				/* Type */
+				ImGui::PushItemWidth(200.f);
 				{
 					static int iSoundCurIndex = 0; 
 					const char* szSoundPreview = szAnimEventSoundTypeNames[iSoundCurIndex];
@@ -1108,17 +1128,74 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 							if (ImGui::Selectable(szAnimEventSoundTypeNames[n], is_selected))
 								iSoundCurIndex = n;
 
-
 							if (is_selected)
 								ImGui::SetItemDefaultFocus();
 						}
 						ImGui::EndCombo();
 					}
-
 				}
 				ImGui::PopItemWidth();
+				IMGUI_NEW_LINE;
+
+				/* Prop */
+				{
+					/* SoundKey */
+					ImGui::PushItemWidth(200.f);
+					{
+						char szFilePath[MAX_PATH];
+						string strSoundKey;
+						sprintf_s(szFilePath, strSoundKey.c_str());
+
+						if (ImGui::InputText("SoundKey", szFilePath, MAX_PATH))
+							strSoundKey = string(szFilePath);
+					}
+					ImGui::PopItemWidth();
+
+					/* Channel ID */
+					ImGui::PushItemWidth(200.f);
+					{
+						static int iChannelCurIndex = 0;
+						const char* szChannelPreview = szChannelIDNames[iChannelCurIndex];
+						if (ImGui::BeginCombo("Channel ID", szChannelPreview))
+						{
+							for (int n = 0; n < IM_ARRAYSIZE(szChannelIDNames); n++)
+							{
+								const bool is_selected = (iChannelCurIndex == n);
+								if (ImGui::Selectable(szChannelIDNames[n], is_selected))
+									iChannelCurIndex = n;
+
+								if (is_selected)
+									ImGui::SetItemDefaultFocus();
+							}
+							ImGui::EndCombo();
+						}
+					}
+					ImGui::PopItemWidth();
+
+					/* Volume */
+					static _float fSoundEventVolume = 0.f;
+					ImGui::PushItemWidth(200.f);
+					if (ImGui::SliderFloat("##Sound Event Volume", &fSoundEventVolume, 0.f, 1.f, "%.3f"))
+					{
+						
+					}
+					ImGui::PopItemWidth();
+					IMGUI_SAME_LINE;
+					ImGui::Text("Volume");
+
+					/* Stop */
+					static _bool bSoundEventStop = false;
+					if (ImGui::Checkbox("Stop", &bSoundEventStop))
+					{
+
+					}
+				}
 
 
+				//ImGui::DragFloat()
+
+
+				/* Add */
 				IMGUI_NEW_LINE;
 				if (ImGui::Button("Add Sound Event"))
 				{
@@ -1132,7 +1209,7 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 			/* Effect */
 			if (ImGui::BeginTabItem("Effect"))
 			{
-				ImGui::PushItemWidth(300.f);
+				ImGui::PushItemWidth(200.f);
 				{
 					static int iEffectCurIndex = 0;
 					const char* szEffectPreview = szAnimEventEffectTypeNames[iEffectCurIndex];
@@ -1167,7 +1244,7 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 			/* Camera */
 			if (ImGui::BeginTabItem("Camera"))
 			{
-				ImGui::PushItemWidth(300.f);
+				ImGui::PushItemWidth(200.f);
 				{
 					static int iCameraCurIndex = 0;
 					const char* szCameraPreview = szAnimEventCameraTypeNames[iCameraCurIndex];
@@ -1202,7 +1279,7 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 			/* Collider */
 			if (ImGui::BeginTabItem("Collider"))
 			{
-				ImGui::PushItemWidth(300.f);
+				ImGui::PushItemWidth(200.f);
 				{
 					static int iColliderCurIndex = 0;
 					const char* szColliderPreview = szAnimEventColliderTypeNames[iColliderCurIndex];
@@ -1233,13 +1310,14 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 
 				ImGui::EndTabItem();
 			}
-			ImGui::EndTabBar();
 
+			ImGui::EndTabBar();
 		}
 		
-		IMGUI_NEW_LINE;
-		IMGUI_NEW_LINE;
 
+
+		for (size_t i = 0; i < 10; i++)
+			IMGUI_NEW_LINE;
 	}
 }
 

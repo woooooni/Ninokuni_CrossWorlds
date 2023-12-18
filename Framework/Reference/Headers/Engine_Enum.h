@@ -59,50 +59,78 @@ enum class KEY
 	TYPE_END
 };
 
-enum CHANNELID
-{
-	SOUND_UI,
-	SOUND_VOICE_CHARACTER,
-	SOUND_VOICE_MONSTER1,
-	SOUND_VOICE_MONSTER2,
-	SOUND_VOICE_MONSTER3,
-	SOUND_SKILL,
-	SOUND_SLASH,
-	SOUND_SLASH_HIT,
-	SOUND_NORMAL_HIT,
-	SOUND_FOOT_CHARACTER,
-	SOUND_FOOT_MONSTER,
-	SOUND_BGM,
-	SOUND_SHAKE,
-	SOUND_JUMP,
-	SOUND_BOSS,
-	MAXCHANNEL
-};
-
 enum DIMK { DIMK_LBUTTON, DIMK_RBUTTON, DIMK_WHEEL, DIMK_X, DIMK_END };
 enum DIMM { DIMM_X, DIMM_Y, DIMM_WHEEL, DIMM_END };
 
 namespace Engine
 {
+
+#pragma region Channel ID 
+
+	enum CHANNELID /* enum 수정시 아래 문자열도 순서에 맞게 교체 필요 */
+	{
+		SOUND_UI,
+		SOUND_VOICE_CHARACTER,
+		SOUND_VOICE_MONSTER1,
+		SOUND_VOICE_MONSTER2,
+		SOUND_VOICE_MONSTER3,
+		SOUND_SKILL,
+		SOUND_SLASH,
+		SOUND_SLASH_HIT,
+		SOUND_NORMAL_HIT,
+		SOUND_FOOT_CHARACTER,
+		SOUND_FOOT_MONSTER,
+		SOUND_BGM,
+		SOUND_SHAKE,
+		SOUND_JUMP,
+		SOUND_BOSS,
+		MAXCHANNEL
+	};
+
+	static const char* szChannelIDNames[CHANNELID::MAXCHANNEL]
+	{
+		"SOUND_UI",
+		"SOUND_VOICE_CHARACTER",
+		"SOUND_VOICE_MONSTER1",
+		"SOUND_VOICE_MONSTER2",
+		"SOUND_VOICE_MONSTER3",
+		"SOUND_SKILL",
+		"SOUND_SLASH",
+		"SOUND_SLASH_HIT",
+		"SOUND_NORMAL_HIT",
+		"SOUND_FOOT_CHARACTER",
+		"SOUND_FOOT_MONSTER",
+		"SOUND_BGM",
+		"SOUND_SHAKE",
+		"SOUND_JUMP",
+		"SOUND_BOSS"
+	};
+
+#pragma endregion
+
+
+#pragma region Animation Event
 	enum ANIM_EVENT_TYPE			{ SOUND, EFFECT, CAMERA, COLLIDER, ANIM_EVENT_TYPE_END};
 
-	enum ANIM_EVENT_SOUND_TYPE		{ PLAY_SOUND, PLAY_BGM, STOP_SOUND, STOP_ALL, SET_VOLUME, ANIM_EVENT_SOUND_TYPE_END };
-	enum ANIM_EVENT_EFFECT_TYPE		{ NONE, ANIM_EVENT_EFFECT_TYPE_END };
+	enum ANIM_EVENT_SOUND_TYPE		{ PLAY_SOUND, ANIM_EVENT_SOUND_TYPE_END };
+	enum ANIM_EVENT_EFFECT_TYPE		{ GENERATE, ANIM_EVENT_EFFECT_TYPE_END };
 	enum ANIM_EVENT_CAMERA_TYPE		{ ACTION, CHANGE, ANIM_EVENT_CAMERA_TYPE_END };
 	enum ANIM_EVENT_COLLIDER_TYPE	{ ON, OFF, ANIM_EVENT_COLLIDER_TYPE_END };
 
 	static const wstring strAnimEventTypeNames[ANIM_EVENT_TYPE::ANIM_EVENT_TYPE_END]{ L"Sound", L"Effect", L"Camera", L"Collider" };
 	static const char* szAnimEventTypeNames[ANIM_EVENT_TYPE::ANIM_EVENT_TYPE_END]{ "Sound", "Effect", "Camera", "Collider" };
 
-	static const wstring strAnimEventSoundTypeNames[ANIM_EVENT_SOUND_TYPE::ANIM_EVENT_SOUND_TYPE_END]{ L"Play Sound", L"Play Bgm", L"Stop Sound", L"Stop All", L"Set Volume" };
-	static const char* szAnimEventSoundTypeNames[ANIM_EVENT_SOUND_TYPE::ANIM_EVENT_SOUND_TYPE_END]{ "Play Sound", "Play Bgm", "Stop Sound", "Stop All", "Set Volume" };
+	static const wstring strAnimEventSoundTypeNames[ANIM_EVENT_SOUND_TYPE::ANIM_EVENT_SOUND_TYPE_END]{ L"Play Sound" };
+	static const char* szAnimEventSoundTypeNames[ANIM_EVENT_SOUND_TYPE::ANIM_EVENT_SOUND_TYPE_END]{ "Play Sound" };
 
-	static const wstring strAnimEventEffectTypeNames[ANIM_EVENT_EFFECT_TYPE::ANIM_EVENT_EFFECT_TYPE_END]{ L"None" };
-	static const char* szAnimEventEffectTypeNames[ANIM_EVENT_EFFECT_TYPE::ANIM_EVENT_EFFECT_TYPE_END]{ "None" };
+	static const wstring strAnimEventEffectTypeNames[ANIM_EVENT_EFFECT_TYPE::ANIM_EVENT_EFFECT_TYPE_END]{ L"Generate" };
+	static const char* szAnimEventEffectTypeNames[ANIM_EVENT_EFFECT_TYPE::ANIM_EVENT_EFFECT_TYPE_END]{ "Generate" };
 
 	static const wstring strAnimEventCameraTypeNames[ANIM_EVENT_CAMERA_TYPE::ANIM_EVENT_CAMERA_TYPE_END]{ L"Action", L"Change" };
 	static const char* szAnimEventCameraTypeNames[ANIM_EVENT_CAMERA_TYPE::ANIM_EVENT_CAMERA_TYPE_END]{ "Action", "Change" };
 
 	static const wstring strAnimEventColliderTypeNames[ANIM_EVENT_COLLIDER_TYPE::ANIM_EVENT_COLLIDER_TYPE_END]{ L"On", L"Off" };
 	static const char* szAnimEventColliderTypeNames[ANIM_EVENT_COLLIDER_TYPE::ANIM_EVENT_COLLIDER_TYPE_END]{ "On", "Off" };
+#pragma endregion
+
 }

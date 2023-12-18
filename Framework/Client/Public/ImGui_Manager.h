@@ -34,7 +34,7 @@ private:
 
 
 private:
-	_bool m_bShowModel_Tool = true;
+	_bool m_bShowModel_Tool = false;
 	_bool m_bShowCamera_Tool = false;
 	_bool m_bShowEffect_Tool = false;
 	_bool m_bShowParticle_Tool = false;

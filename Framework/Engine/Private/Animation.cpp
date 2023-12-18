@@ -151,6 +151,14 @@ void CAnimation::Sort_SpeedDesces()
 	m_iCurSpeedDescIndex = 0;
 }
 
+void CAnimation::Add_Event(const _float fFrame, const ANIM_EVENT_TYPE& eEventType, ANIM_EVENT_DESC tDesc)
+{
+}
+
+void CAnimation::Sort_Events()
+{
+}
+
 CChannel* CAnimation::Get_Channel(const wstring& strChannelName)
 {
 	for (auto& iter : m_Channels)
