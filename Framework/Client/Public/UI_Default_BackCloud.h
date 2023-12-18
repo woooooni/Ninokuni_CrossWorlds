@@ -5,12 +5,12 @@
 
 BEGIN(Client)
 
-class CUI_Default_Background final : public CUI
+class CUI_Default_BackCloud final : public CUI
 {
 protected:
-	CUI_Default_Background(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CUI_Default_Background(const CUI_Default_Background& rhs);
-	virtual ~CUI_Default_Background() = default;
+	CUI_Default_BackCloud(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CUI_Default_BackCloud(const CUI_Default_BackCloud& rhs);
+	virtual ~CUI_Default_BackCloud() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -20,7 +20,7 @@ public:
 	virtual HRESULT Render();
 
 private:
-	class CUI_Default_BackStars* m_pEffect = { nullptr };
+	_float m_fTime = { 0.f };
 
 private:
 	virtual HRESULT Ready_Components() override;
@@ -28,7 +28,7 @@ private:
 	HRESULT Bind_ShaderResources();
 
 public:
-	static CUI_Default_Background* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CUI_Default_BackCloud* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

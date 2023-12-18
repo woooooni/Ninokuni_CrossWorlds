@@ -35,6 +35,20 @@ HRESULT CUI_Setting_Icon::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_bActive = true;
+
+	if (SETICON_AUDIO == m_eIconType)
+	{
+		_float2 m_vDefaultPos = _float2((g_iWinSizeX * 0.5f) + 330.f, (g_iWinSizeY * 0.5f) - 50.f);
+		Make_Child(m_vDefaultPos.x, m_vDefaultPos.y, 957.f, 580.f, TEXT("Prototype_GameObject_UI_Setting_Section_Audio"));
+
+		// 메뉴 버튼
+//		_float2 vDefaultPos = _float2(-330.f, -110.f);
+//		_float2 vSize = _float2(220.f, 64.f);
+//		_float fOffset = 80.f;
+//		Make_Child(vDefaultPos.x, vDefaultPos.y, vSize.x, vSize.y, TEXT("Prototype_GameObject_UI_Icon_Setting_Game"));
+//		Make_Child(vDefaultPos.x, vDefaultPos.y + fOffset, vSize.x, vSize.y, TEXT("Prototype_GameObject_UI_Icon_Setting_Graphic"));
+//		Make_Child(vDefaultPos.x, vDefaultPos.y + (fOffset * 2.f), vSize.x, vSize.y, TEXT("Prototype_GameObject_UI_Icon_Setting_Audio"));
+	}
 	
 	return S_OK;
 }
@@ -52,6 +66,9 @@ void CUI_Setting_Icon::LateTick(_float fTimeDelta)
 	if (m_bActive)
 	{
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+
+		if (m_bClicked)
+			__super::LateTick(fTimeDelta);
 	}
 }
 
@@ -65,6 +82,9 @@ HRESULT CUI_Setting_Icon::Render()
 		m_pShaderCom->Begin(1);
 
 		m_pVIBufferCom->Render();
+
+		if (m_bClicked)
+			__super::Render();
 	}
 
 	return S_OK;
@@ -132,7 +152,18 @@ void CUI_Setting_Icon::Key_Input(_float fTimeDelta)
 {
 	if (KEY_TAP(KEY::LBTN))
 	{
-		// 이마진이 있는 상태, 이마진이 없는 상태를 나눈다.
+		if (!m_bClicked)
+		{
+			m_bClicked = true;
+
+			__super::Set_ChildActive(true);
+		}
+		else
+		{
+			m_bClicked = false;
+
+			__super::Set_ChildActive(false);
+		}
 	}
 }
 

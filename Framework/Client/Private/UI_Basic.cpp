@@ -57,6 +57,23 @@ HRESULT CUI_Basic::Initialize(void* pArg)
 		m_bActive = false;
 	}
 
+	else if (UISTATIC_TITLELINE == m_eType)
+	{
+		// 자식 UI를 생성한다.
+//		_float2 fLeftSize = _float2(128.f * 0.8f, 64.f * 0.6f);
+//		Make_Child(-(g_iWinSizeX * 0.5f) + fLeftSize.x * 0.5f, -(g_iWinSizeY * 0.5f) + fLeftSize.y * 0.5f,
+//			fLeftSize.x, fLeftSize.y, TEXT("Prototype_GameObject_UI_Common_MenuDeco_Left"));
+//
+//		_float2 fRightSize = _float2(64.f * 0.6f, 64.f * 0.6f);
+//		Make_Child((g_iWinSizeX * 0.5f) - fRightSize.x * 0.5f, -(g_iWinSizeY * 0.5f) + fRightSize.y * 0.5f,
+//			fRightSize.x, fRightSize.y, TEXT("Prototype_GameObject_UI_Common_MenuDeco_Right"));
+//
+//		_float2 fBtnSize = _float2(128.f * 0.6f, 128.f * 0.55f);
+//		Make_Child(-(g_iWinSizeX * 0.5f) + (fBtnSize.x * 0.5f + 3.f), -(g_iWinSizeY * 0.5f) + fBtnSize.y * 0.5f,
+//			fBtnSize.x, fBtnSize.y, TEXT("Prototype_GameObject_UI_Btn_Back"));
+
+	}
+
 	return S_OK;
 }
 
@@ -85,9 +102,9 @@ void CUI_Basic::Tick(_float fTimeDelta)
 				//			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 			//}
 		}
-	}
 
-	__super::Tick(fTimeDelta);
+		__super::Tick(fTimeDelta);
+	}
 }
 
 void CUI_Basic::LateTick(_float fTimeDelta)
@@ -100,9 +117,9 @@ void CUI_Basic::LateTick(_float fTimeDelta)
 		}
 		else
 			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
-	}
 
-	__super::LateTick(fTimeDelta);
+		__super::LateTick(fTimeDelta);
+	}
 }
 
 HRESULT CUI_Basic::Render()
@@ -131,6 +148,8 @@ HRESULT CUI_Basic::Render()
 
 			return S_OK;
 		}
+
+		__super::Render();
 	}
 
 	return S_OK;
@@ -202,6 +221,13 @@ HRESULT CUI_Basic::Ready_Components()
 
 	case UIQUEST_FINISH:
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Text_QuestFinish"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		m_fAlpha = 0.9f;
+		break;
+
+	case UISTATIC_TITLELINE:
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Common_TitleLine"),
 			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 			return E_FAIL;
 		m_fAlpha = 0.9f;

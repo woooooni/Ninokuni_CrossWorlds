@@ -75,6 +75,13 @@ HRESULT CUI_SkillSection_Background::Initialize(void* pArg)
 	// 기본 스킬
 	_float fBtnSize = 128.f * 0.4f;
 	Make_Child(-5.f, -1.f, fBtnSize, fBtnSize, TEXT("Prototype_GameObject_UI_SkillSection_DefaultAttack"));
+
+	// 상호작용 버튼
+	fBtnSize = 102.f * 0.7f;
+	Make_Child(-170.f, -80.f, fBtnSize, fBtnSize, TEXT("Prototype_GameObject_UI_SkillSection_BtnInteraction"));
+
+	fBtnSize = 128.f * 0.5f;
+	Make_Child(-170.f, -80.f, fBtnSize, fBtnSize, TEXT("Prototype_GameObject_UI_SkillSection_Interaction"));
 	
 	return S_OK;
 }
