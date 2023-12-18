@@ -26,6 +26,9 @@ public:
 	FMOD_CHANNEL* Get_Channel(CHANNELID eID){ return m_pChannelArr[eID]; }
 	const map<TCHAR*, FMOD_SOUND*>& Get_MapSound() const { return m_mapSound; }
 
+	const _int Get_SoundFileIndex(TCHAR* pSoundKey);
+	TCHAR* Get_SoundFileKey(const _uint iIndex);
+
 private:
 	void Search_Recursive(const std::string& currentPath);
 	//void Load_SoundFile(const char* szSoundFilePath);

@@ -1,6 +1,6 @@
 #include "Sound_Manager.h"
 #include <io.h>
-
+#include <tchar.h>
 #include <filesystem>
 namespace fs = std::filesystem;
 
@@ -100,6 +100,34 @@ void CSound_Manager::Set_ChannelVolume(CHANNELID eID, float fVolume)
 {
 	FMOD_Channel_SetVolume(m_pChannelArr[eID], fVolume);
 	FMOD_System_Update(m_pSystem);
+}
+
+const _int CSound_Manager::Get_SoundFileIndex(TCHAR* pSoundKey)
+{
+	_int iIndex = 0;
+	for (auto& Pair : m_mapSound)
+	{
+		if (!_tcscmp(Pair.first, pSoundKey))
+			return iIndex;
+		else
+			iIndex++;
+	}
+
+	return -1;
+}
+
+TCHAR* CSound_Manager::Get_SoundFileKey(const _uint iIndex)
+{
+	_int iKeyIndex = 0;
+	for (auto& Pair : m_mapSound)
+	{
+		if (iIndex == iKeyIndex)
+			return Pair.first;
+		else
+			iKeyIndex++;
+	}
+
+	return nullptr;
 }
 
 void CSound_Manager::Search_Recursive(const std::string& currentPath)

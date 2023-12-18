@@ -1,5 +1,6 @@
 #include "../Public/Utils.h"
 #include <random>
+#include <tchar.h>
 
 bool CUtils::StartsWith(string str, string comp)
 {
@@ -45,6 +46,38 @@ void CUtils::Replace(OUT wstring& str, wstring comp, wstring rep)
 	}
 
 	str = temp;
+}
+
+wstring CUtils::TCharToWString(TCHAR* value)
+{
+	if (nullptr == value)
+		return wstring();
+
+	return std::wstring(value, value + static_cast<int>(_tcslen(value)));
+}
+
+string CUtils::TCharToString(TCHAR* value)
+{
+	if (nullptr == value)
+		return string();
+
+	wstring wstr = TCharToWString(value);
+
+	return ToString(wstr);
+}
+
+_bool CUtils::Equal_TChar_Char(TCHAR* val1, const char* val2)
+{
+	size_t str1Len = strlen(val2) + 1;
+	wchar_t* wstr1 = new wchar_t[str1Len];
+	size_t convertedChars;
+	mbstowcs_s(&convertedChars, wstr1, str1Len, val2, _TRUNCATE);
+
+	int result = _tcscmp(wstr1, val1);
+
+	delete[] wstr1;
+
+	return result == 0;
 }
 
 wstring CUtils::PathToWString(wstring strPath)

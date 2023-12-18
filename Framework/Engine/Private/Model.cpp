@@ -227,7 +227,12 @@ HRESULT CModel::Initialize_Bin(void* pArg)
 
 HRESULT CModel::LateTick(_float fTimeDelta)
 {
-	if (TYPE::TYPE_ANIM != m_eModelType || m_TweenDesc.cur.iAnimIndex < 0 || nullptr == m_pSRV || m_TweenDesc.cur.iStop)
+	if (TYPE::TYPE_ANIM != m_eModelType 
+		|| m_Animations.empty()
+		|| m_TweenDesc.cur.iAnimIndex < 0 
+		||m_Animations.size() <= m_TweenDesc.cur.iAnimIndex
+		|| nullptr == m_pSRV 
+		|| m_TweenDesc.cur.iStop)
 		return E_FAIL;
 
 	/* 현재 애니메이션 */
@@ -533,6 +538,9 @@ HRESULT CModel::Clear_NotUsedData()
 
 HRESULT CModel::Set_Animation(const _uint& iAnimationIndex, const _float& fTweenDuration)
 {
+	if (TYPE::TYPE_NONANIM == m_eModelType || m_Animations.empty())
+		return E_FAIL;
+
 	_uint iIndex = iAnimationIndex % m_Animations.size();
 
 	if (m_Animations.size() <= iIndex)

@@ -21,7 +21,9 @@ public:
 	static void Replace(OUT string& str, string comp, string rep);
 	static void Replace(OUT wstring& str, wstring comp, wstring rep);
 
-	
+	static wstring TCharToWString(TCHAR* value);
+	static string TCharToString(TCHAR* value);
 
+	static _bool Equal_TChar_Char(TCHAR* val1, const char* val2);
 };
 

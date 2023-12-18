@@ -608,6 +608,8 @@ namespace Engine
 	{
 		ANIM_EVENT_TYPE eType;
 
+		_bool bExecuted = FALSE;
+
 	}ANIM_EVENT_DESC;
 
 	typedef struct tagAnimEventSoundDesc : public ANIM_EVENT_DESC

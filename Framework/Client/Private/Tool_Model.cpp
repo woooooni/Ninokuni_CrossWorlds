@@ -101,7 +101,7 @@ HRESULT CTool_Model::Clear_ToolAnimationData()
 
 	m_iAutoAnimIndex = 0;
 
-	m_iEventIndex = -1;
+	m_iSoundEventIndex = -1;
 
 	return S_OK;
 }
@@ -328,7 +328,7 @@ HRESULT CTool_Model::Ready_AutoAnimData()
 
 HRESULT CTool_Model::Ready_SoundKey()
 {
-	const map<TCHAR*, FMOD_SOUND*>& mapSound = CSound_Manager::GetInstance()->Get_MapSound();
+	const map<TCHAR*, FMOD_SOUND*>& mapSound = GI->Get_MapSound();
 
 	if (mapSound.empty())
 		return S_OK;
@@ -404,6 +404,12 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 		{
 			ImGui::Text(u8"더미 오브젝트가 존재하지 않습니다.");
 			return;
+		}
+		
+		/* Intro */
+		{
+			ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"Import 가능한 fbx 모델의 뼈 갯수와 애니메이션 키프레임은 각각 500개 입니다.");
+			ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"위 제한 초과시 따로 말씀해주세요");
 		}
 
 		/* Import */
@@ -484,12 +490,17 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 						else
 						{
 							MSG_BOX("Success Import.");
-							Clear_ToolAnimationData();
-							m_pDummy->Get_ModelCom()->Set_Animation(0);
-							if (CModel::TYPE::TYPE_ANIM == m_pDummy->Get_ModelCom()->Get_ModelType() && FAILED(Ready_SocketTransforms()))
+							if (CModel::TYPE::TYPE_ANIM == m_pDummy->Get_ModelCom()->Get_ModelType())
 							{
-								MSG_BOX("소켓 트랜스폼 생성에 실패했습니다.");
-								return;
+								Clear_ToolAnimationData();
+								m_pDummy->Get_ModelCom()->Set_Animation(0);
+
+								if (FAILED(Ready_SocketTransforms()))
+								{
+									MSG_BOX("소켓 트랜스폼 생성에 실패했습니다.");
+									ImGui::TreePop();
+									return;
+								}
 							}
 						}
 					}
@@ -1124,30 +1135,24 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 
 		ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
 		
+		IMGUI_NEW_LINE;
+
 		/* Data */
-		const _float	fCurFrame = m_pDummy->Get_ModelCom()->Get_CurrAnimationFrame_WithRatio();
 		CAnimation*		pCurAnim = m_pDummy->Get_ModelCom()->Get_CurrAnimation();
+		_bool			bChangedEventFrame = FALSE;
 		if (nullptr == pCurAnim)
 			return;
 		
-		/* 애니메이션에 저장된 이벤트 리스트 */
-
-		const vector<pair<_float, ANIM_EVENT_DESC>>& Events = pCurAnim->Get_Events();
-		ImGui::Text("Event List (count : %d)", Events.size());
-
-		if (ImGui::BeginListBox("##Event_List", ImVec2(350.f, 70.f)))
+		/* Public Slider */
+		ImGui::PushItemWidth(250.f);
 		{
-			for (size_t i = 0; i < Events.size(); ++i)
-			{
-				string strEventTypeName = CUtils::ToString(strAnimEventTypeNames[Events[i].second.eType]);
-				
-				if (ImGui::Selectable(strEventTypeName.c_str(), i == m_iEventIndex))
-				{
-					m_iEventIndex = i;
-				}
-			}
-			ImGui::EndListBox();
+			if (ImGui::SliderFloat("##Event_Animation_Frame", &m_fCurEventFrame, 0.f, _float(pCurAnim->Get_MaxFrameCount() - 1), "%.2f (Selected Frame)"))
+				bChangedEventFrame = TRUE;
 		}
+		ImGui::PopItemWidth();
+
+		IMGUI_SAME_LINE;
+		ImGui::Text(u8"<- 이 프레임에 이벤트가 설정됩니다.");
 		IMGUI_NEW_LINE;
 
 		/* Tab Bar */
@@ -1156,11 +1161,47 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 			/* Sound */
 			if (ImGui::BeginTabItem("Sound"))
 			{
+				vector<pair<_float, ANIM_EVENT_SOUND_DESC>> SoundEvents = pCurAnim->Get_SoundEvents();
+
 				ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"사운드 매니저 수정 예정, 실제 이벤트 추가는 목요일 이후");
 				IMGUI_NEW_LINE;
 
+				/* 키프레임 수정 여부 반영 */
+				if (bChangedEventFrame && !SoundEvents.empty())
+				{
+					SoundEvents[m_iSoundEventIndex].first = m_fCurEventFrame;
+					pCurAnim->Change_EventKeyFrame(m_iSoundEventIndex, SoundEvents[m_iSoundEventIndex].first, ANIM_EVENT_TYPE::SOUND);
+				}
+
+
+				/* Sound Event List */
+				ImGui::Text(u8"설정된 사운드 이벤트 (count : %d)", SoundEvents.size());
+
+				if (ImGui::BeginListBox("##Sound_Event_List", ImVec2(450.f, 70.f)))
+				{
+					for (size_t i = 0; i < SoundEvents.size(); ++i)
+					{
+						int iSoundKeyCurIndex = GI->Get_SoundFileIndex(SoundEvents[i].second.pSoundKey);
+					
+						string strFrame = to_string(SoundEvents[i].first);
+						strFrame = strFrame.substr(0, 6);
+
+						string strEventName = "Frame : " + strFrame +
+												"    " +
+												"Name : " + string(m_arrSoundKeys[iSoundKeyCurIndex]);
+
+						if (ImGui::Selectable(strEventName.c_str(), i == m_iSoundEventIndex))
+						{
+							m_iSoundEventIndex = i;
+
+						}
+					}
+					ImGui::EndListBox();
+				}
+				IMGUI_NEW_LINE;
+
 				/* Type */
-				ImGui::PushItemWidth(300.f);
+				/*ImGui::PushItemWidth(300.f);
 				{
 					static int iSoundCurIndex = 0; 
 					const char* szSoundPreview = szAnimEventSoundTypeNames[iSoundCurIndex];
@@ -1179,30 +1220,43 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 					}
 				}
 				ImGui::PopItemWidth();
-				IMGUI_NEW_LINE;
+				IMGUI_NEW_LINE;*/
 
 				/* Prop */
 				{
 					/* Sound Key */
 					ImGui::PushItemWidth(300.f);
 					{	
-						if (0 < m_iSoundKeySize)
+						if (0 <= m_iSoundEventIndex)
 						{
-							static int iSoundKeyCurIndex = 0;
-							const char* szSoundPreview = m_arrSoundKeys[iSoundKeyCurIndex];
-							if (ImGui::BeginCombo("Sound Key (File Name)", szSoundPreview))
+							int iSoundKeyCurIndex = GI->Get_SoundFileIndex(SoundEvents[m_iSoundEventIndex].second.pSoundKey);
+							if (0 <= iSoundKeyCurIndex)
 							{
-								for (int n = 0; n < m_iSoundKeySize; n++)
+								const char* szSoundPreview = m_arrSoundKeys[iSoundKeyCurIndex];
+							
+								if (nullptr != szSoundPreview)
 								{
-									const bool is_selected = (iSoundKeyCurIndex == n);
-									if (ImGui::Selectable(m_arrSoundKeys[n], is_selected))
-										iSoundKeyCurIndex = n;
+									if (ImGui::BeginCombo("Sound Key (File Name)", szSoundPreview))
+									{
+										for (int n = 0; n < m_iSoundKeySize; n++)
+										{
+											const bool is_selected = (iSoundKeyCurIndex == n);
+											if (ImGui::Selectable(m_arrSoundKeys[n], is_selected))
+											{
+												iSoundKeyCurIndex = n;
 
-									if (is_selected)
-										ImGui::SetItemDefaultFocus();
+												SoundEvents[m_iSoundEventIndex].second.pSoundKey = GI->Get_SoundFileKey(iSoundKeyCurIndex);
+
+												pCurAnim->Change_SoundEvent(m_iSoundEventIndex, SoundEvents[m_iSoundEventIndex].second);
+											}
+
+											if (is_selected)
+												ImGui::SetItemDefaultFocus();
+										}
+										ImGui::EndCombo();
+									}	
 								}
-								ImGui::EndCombo();
-							}	
+							}
 						}
 					}
 					ImGui::PopItemWidth();
@@ -1210,53 +1264,125 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 					/* Channel ID */
 					ImGui::PushItemWidth(300.f);
 					{
-						static int iChannelCurIndex = 0;
-						const char* szChannelPreview = szChannelIDNames[iChannelCurIndex];
-						if (ImGui::BeginCombo("Channel ID", szChannelPreview))
+						if (0 <= m_iSoundEventIndex)
 						{
-							for (int n = 0; n < IM_ARRAYSIZE(szChannelIDNames); n++)
+							int iChannelCurIndex = SoundEvents[m_iSoundEventIndex].second.iChannelID;
+							const char* szChannelPreview = szChannelIDNames[iChannelCurIndex];
+							if (ImGui::BeginCombo("Channel ID", szChannelPreview))
 							{
-								const bool is_selected = (iChannelCurIndex == n);
-								if (ImGui::Selectable(szChannelIDNames[n], is_selected))
-									iChannelCurIndex = n;
+								for (int n = 0; n < IM_ARRAYSIZE(szChannelIDNames); n++)
+								{
+									const bool is_selected = (iChannelCurIndex == n);
+									if (ImGui::Selectable(szChannelIDNames[n], is_selected))
+									{
+										iChannelCurIndex = n;
+										if (0 <= m_iSoundEventIndex)
+										{
+											SoundEvents[m_iSoundEventIndex].second.iChannelID = iChannelCurIndex;
+											pCurAnim->Change_SoundEvent(m_iSoundEventIndex, SoundEvents[m_iSoundEventIndex].second);
+										}
+									}
 
-								if (is_selected)
-									ImGui::SetItemDefaultFocus();
+									if (is_selected)
+										ImGui::SetItemDefaultFocus();
+								}
+								ImGui::EndCombo();
 							}
-							ImGui::EndCombo();
 						}
 					}
 					ImGui::PopItemWidth();
 
 					/* Volume */
-					static _float fSoundEventVolume = 0.f;
-					ImGui::PushItemWidth(200.f);
-					if (ImGui::SliderFloat("##Sound Event Volume", &fSoundEventVolume, 0.f, 1.f, "%.3f"))
+
+					if (0 <= m_iSoundEventIndex)
 					{
+						_float fSoundEventVolume = SoundEvents[m_iSoundEventIndex].second.fVolume;
+						ImGui::PushItemWidth(200.f);
+						if (ImGui::SliderFloat("##Sound Event Volume", &fSoundEventVolume, 0.f, 1.f, "%.3f"))
+						{
+								SoundEvents[m_iSoundEventIndex].second.fVolume = fSoundEventVolume;
+								pCurAnim->Change_SoundEvent(m_iSoundEventIndex, SoundEvents[m_iSoundEventIndex].second);
 						
+						}
+						ImGui::PopItemWidth();
+						IMGUI_SAME_LINE;
+						ImGui::Text("Volume      ");
+						IMGUI_SAME_LINE;
 					}
-					ImGui::PopItemWidth();
-					IMGUI_SAME_LINE;
-					ImGui::Text("Volume      ");
-					IMGUI_SAME_LINE;
 
 					/* Stop */
-					static _bool bSoundEventStop = false;
-					if (ImGui::Checkbox("Stop", &bSoundEventStop))
+					if (0 <= m_iSoundEventIndex)
 					{
-
+						_bool bSoundEventStop = SoundEvents[m_iSoundEventIndex].second.bStop;
+						if (ImGui::Checkbox("Stop", &bSoundEventStop))
+						{	
+							SoundEvents[m_iSoundEventIndex].second.bStop = bSoundEventStop;
+							pCurAnim->Change_SoundEvent(m_iSoundEventIndex, SoundEvents[m_iSoundEventIndex].second);
+						}
 					}
-				}
 
+					/* Add */
+					IMGUI_NEW_LINE;
 
-				//ImGui::DragFloat()
+					if (ImGui::Button(u8"Add Sound Event"))
+					{
+						ANIM_EVENT_SOUND_DESC desc;
+						desc.pSoundKey = GI->Get_SoundFileKey(0);
+						desc.iChannelID = CHANNELID::SOUND_UI;
+						desc.fVolume = 0.5f;
+						desc.bStop = true;
+						pCurAnim->Add_SoundEvent(m_fCurEventFrame, desc);
+						++m_iSoundEventIndex;
+					}
+					if (ImGui::IsItemHovered())
+					{
+						ImGui::BeginTooltip();
+						ImGui::Text(u8"현재 프레임에 기본 설정으로 새로운 사운드 이벤트 추가");
+						ImGui::EndTooltip();
+					}
+					IMGUI_SAME_LINE;
 
+					/* Delete */
+					
+					if (ImGui::Button("Del Sound Event"))
+					{
+						pCurAnim->Del_SoundEvent(m_iSoundEventIndex);
+						--m_iSoundEventIndex;
+					}
+					if (ImGui::IsItemHovered())
+					{
+						ImGui::BeginTooltip();
+						ImGui::Text(u8"현재 설정된 사운드 이벤트 삭제");
+						ImGui::EndTooltip();
+					}
+					IMGUI_SAME_LINE;
 
-				/* Add */
-				IMGUI_NEW_LINE;
-				if (ImGui::Button("Add Sound Event"))
-				{
+					/* Delete All */
+					if (ImGui::Button("Del Sound Events"))
+					{
+						pCurAnim->Del_All_SoundEvent();
+						m_iSoundEventIndex = -1;
+					}
+					if (ImGui::IsItemHovered())
+					{
+						ImGui::BeginTooltip();
+						ImGui::Text(u8"모든 사운드 이벤트 삭제");
+						ImGui::EndTooltip();
+					}
+					IMGUI_SAME_LINE;
 
+					/* Sort */
+					
+					if (ImGui::Button("Sort Sound Events"))
+					{
+						pCurAnim->Sort_SoundEvents();
+					}
+					if (ImGui::IsItemHovered())
+					{
+						ImGui::BeginTooltip();
+						ImGui::Text(u8"키프레임 순서대로 사운드 이벤트 정렬 ");
+						ImGui::EndTooltip();
+					}
 				}
 
 				ImGui::EndTabItem();
@@ -1292,7 +1418,7 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 				IMGUI_NEW_LINE;
 				if (ImGui::Button("Add Effect Event"))
 				{
-
+					
 				}
 
 				ImGui::EndTabItem();

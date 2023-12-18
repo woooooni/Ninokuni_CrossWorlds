@@ -81,10 +81,15 @@ private:
 
 #pragma region Event 
 
-	_int m_iEventIndex = -1;
+	_float m_fCurEventFrame = 0.f;
+
+
+
+	_int m_iSoundEventIndex = -1;
 
 	const char** m_arrSoundKeys = nullptr;
 	_uint m_iSoundKeySize = 0;
+	
 
 #pragma endregion
 
