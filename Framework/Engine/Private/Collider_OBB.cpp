@@ -87,15 +87,21 @@ _bool CCollider_OBB::Is_Collision(CCollider* pCollider)
 	return false;
 }
 
+void CCollider_OBB::Tick_Collider(_float fTimedelta)
+{
+	__super::Tick_Collider(fTimedelta);
+	m_tOriginOBB.Transform(m_tOBB, XMLoadFloat4x4(&m_FinalMatrix));
+
+	PxTransform XPos(PxVec3(m_tOBB.Center.x, m_tOBB.Center.y, m_tOBB.Center.z), PxQuat(m_tOBB.Orientation.x, m_tOBB.Orientation.y, m_tOBB.Orientation.z, m_tOBB.Orientation.w));
+	m_pPhysXActor->setKinematicTarget(XPos);
+}
+
 
 
 void CCollider_OBB::LateTick_Collider(_float fTimeDelta)
 {
 	__super::LateTick_Collider(fTimeDelta);
-	m_tOriginOBB.Transform(m_tOBB, XMLoadFloat4x4(&m_FinalMatrix));
 
-	PxTransform XPos(PxVec3(m_tOBB.Center.x, m_tOBB.Center.y, m_tOBB.Center.z), PxQuat(m_tOBB.Orientation.x, m_tOBB.Orientation.y, m_tOBB.Orientation.z, m_tOBB.Orientation.w));
-	m_pPhysXActor->setKinematicTarget(XPos);
 }
 
 #ifdef _DEBUG

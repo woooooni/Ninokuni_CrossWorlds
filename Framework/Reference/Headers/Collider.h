@@ -92,6 +92,7 @@ public:
 
 
 public:
+    virtual void Tick_Collider(_float fTimeDelta);
     virtual void LateTick_Collider(_float fTimeDelta);
 
 #ifdef _DEBUG

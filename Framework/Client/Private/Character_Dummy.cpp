@@ -52,7 +52,7 @@ HRESULT CCharacter_Dummy::Initialize(void* pArg)
 
 void CCharacter_Dummy::Tick(_float fTimeDelta)
 {
-	__super::Tick(fTimeDelta);
+	
 
 	_bool bKeyInput = false;
 	if (KEY_HOLD(KEY::UP_ARROW))
@@ -81,12 +81,20 @@ void CCharacter_Dummy::Tick(_float fTimeDelta)
 
 	if (KEY_TAP(KEY::SPACE))
 	{
+		m_bIsJumping = true;
+		m_bFirstJump = true;
 		m_pRigidBodyCom->Add_Velocity(XMVectorSet(0.f, 1.f, 0.f, 0.f), 5.f, false);
+		m_pRigidBodyCom->Set_Use_Gravity(true);
+		m_pRigidBodyCom->Set_Ground(false);
 	}
+
+	__super::Tick(fTimeDelta);
+	
 }
 
 void CCharacter_Dummy::LateTick(_float fTimeDelta)
 {
+
 	__super::LateTick(fTimeDelta);
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 	m_pModelCom->LateTick(fTimeDelta);
@@ -94,7 +102,7 @@ void CCharacter_Dummy::LateTick(_float fTimeDelta)
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
 
-#ifdef _DEBUG
+#ifdef _DEBUG    
 	for (_uint i = 0; i < CCollider::DETECTION_END; ++i)
 	{
 		for (auto& pCollider : m_Colliders[i])
@@ -158,11 +166,59 @@ void CCharacter_Dummy::Collision_Enter(const COLLISION_INFO& tInfo)
 void CCharacter_Dummy::Collision_Continue(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Continue(tInfo);
+	
 }
 
 void CCharacter_Dummy::Collision_Exit(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Exit(tInfo);
+}
+
+void CCharacter_Dummy::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
+{
+	__super::Ground_Collision_Enter(tInfo);
+
+	Vec3 vVelocity = m_pRigidBodyCom->Get_Velocity();
+	m_pRigidBodyCom->Set_Use_Gravity(false);
+	m_pRigidBodyCom->Set_Ground(true);
+	m_pRigidBodyCom->Set_Velocity(Vec3(vVelocity.x, 0.f, vVelocity.z));
+
+	_vector vPosition = m_pTransformCom->Get_Position();
+	vPosition = XMVectorSetY(vPosition, tInfo.vCollision_Position.y);
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPosition);
+	
+}
+
+void CCharacter_Dummy::Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo)
+{
+	__super::Ground_Collision_Continue(tInfo);
+
+	//Vec3 vNormal = tInfo.vNormal;
+	//vNormal.Normalize();
+
+	//Vec3 vUp = Vec3(0.f, 1.f, 0.f);
+
+
+
+	//if (XMConvertToRadians(-90.f) < vNormal.Dot(vUp) || XMConvertToRadians(90.f) > vNormal.Dot(vUp))
+	//{
+	//	_vector vPosition = m_pTransformCom->Get_Position();
+	//	vPosition = XMVectorSetY(vPosition, tInfo.vCollision_Position.y);
+	//	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPosition);
+	//}
+
+}
+
+void CCharacter_Dummy::Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo)
+{
+	__super::Ground_Collision_Exit(tInfo);
+	Vec3 vVelocity = m_pRigidBodyCom->Get_Velocity();
+
+	if (false == m_bIsJumping)
+		m_pRigidBodyCom->Set_Velocity(Vec3(vVelocity.x, 0.f, vVelocity.z));
+	
+	m_pRigidBodyCom->Set_Use_Gravity(true);
+	m_pRigidBodyCom->Set_Ground(false);
 }
 
 
@@ -199,9 +255,9 @@ HRESULT CCharacter_Dummy::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_RigidBody"), TEXT("Com_RigidBody"), (CComponent**)&m_pRigidBodyCom, &RigidDesc)))
 		return E_FAIL;
 
-	m_pRigidBodyCom->Set_Velocity(_float3(0.f, 0.f, 0.f));
+	/*m_pRigidBodyCom->Set_Velocity(_float3(0.f, 0.f, 0.f));
 
-	m_pRigidBodyCom->Set_Use_Gravity(false);
+	m_pRigidBodyCom->Set_Use_Gravity(false);*/
 
 	return S_OK;
 }

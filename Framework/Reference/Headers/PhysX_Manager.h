@@ -8,9 +8,9 @@ BEGIN(Engine)
 
 class CPhysX_Manager final : public CBase, public PxSimulationEventCallback
 {
-
 	DECLARE_SINGLETON(CPhysX_Manager)
-
+	
+	
 public:
 	CPhysX_Manager();
 	virtual ~CPhysX_Manager() = default;
@@ -32,7 +32,7 @@ public:
 	vector<PxRigidStatic*> Add_Static_Mesh_Actor(const PHYSX_INIT_DESC& Desc);
 	vector<PxRigidDynamic*> Add_Dynamic_Mesh_Actor(const PHYSX_INIT_DESC& Desc);
 
-	HRESULT Add_Ground(class CGameObject* pGroundObj);
+	HRESULT Add_Ground(class CGameObject* pGameObject, class CModel* pModel, Matrix WorldMatrix);
 
 public:
 	HRESULT Reset_PhysX();
@@ -75,7 +75,7 @@ private:
 
 
 private:
-	HRESULT Ready_ParticleSystem();
+	// HRESULT Ready_ParticleSystem();
 	HRESULT Create_Cloth(class CVIBuffer* pBufferCom);
 	HRESULT Create_Cloth(class CMesh* pMesh);
 
@@ -110,6 +110,9 @@ private:
 	PxPBDParticleSystem*		m_pParticleSystem = nullptr;
 	PxParticleClothBuffer*		m_pClothBuffer = nullptr;
 	PxPartitionedParticleCloth	m_Cloth = {};*/
+
+	// 충돌처리 //
+	vector<PHYSX_GROUND_COLLISION_INFO> m_GroundCollision;
 
 
 	_bool m_bCudaGraphics = false;

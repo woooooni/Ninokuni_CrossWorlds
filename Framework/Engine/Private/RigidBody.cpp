@@ -51,7 +51,7 @@ void CRigidBody::Update_RigidBody(_float fTimeDelta)
 
 void CRigidBody::Update_Gravity(_float fTimeDelta)
 {
-	if (false == m_bUseGravity)
+	if (false == m_bUseGravity || true == m_bGround)
 		return;
 
 	m_vVelocity += Vec3(0.f, -9.8f, 0.f) * fTimeDelta;

@@ -232,12 +232,16 @@ void CCharacter::Collision_Enter(const COLLISION_INFO& tInfo)
 
 void CCharacter::Collision_Continue(const COLLISION_INFO& tInfo)
 {
-
+	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_GROUND)
+	{
+		m_pRigidBodyCom->Set_Ground(true);
+		m_pRigidBodyCom->Set_Use_Gravity(false);
+	}
 }
 
 void CCharacter::Collision_Exit(const COLLISION_INFO& tInfo)
 {
-	
+
 }
 
 
