@@ -140,27 +140,34 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 void CPhysX_Manager::Tick(_float fTimeDelta)
 {	
 
-
-	m_pScene->simulate(min(fTimeDelta, 1.f / 144.f));
-	m_pScene->fetchResults(true);
-	m_pScene->fetchResultsParticleSystem();
-
-	for (auto& CollisionDesc : m_GroundCollision)
+	_float fTime = min(fTimeDelta, 1.f / 144.f);
+	fTime /= 4.f;
+	for (_uint i = 0; i < 4; ++i)
 	{
-		switch (CollisionDesc.flag)
+		m_pScene->simulate(fTime);
+		m_pScene->fetchResults(true);
+		m_pScene->fetchResultsParticleSystem();
+
+
+		for (auto& CollisionDesc : m_GroundCollision)
 		{
-		case PxPairFlag::eNOTIFY_TOUCH_FOUND:
-			CollisionDesc.pCollideObject->Ground_Collision_Enter(CollisionDesc);
-			break;
-		case PxPairFlag::eNOTIFY_TOUCH_PERSISTS:
-			CollisionDesc.pCollideObject->Ground_Collision_Continue(CollisionDesc);
-			break;
-		case PxPairFlag::eNOTIFY_TOUCH_LOST:
-			CollisionDesc.pCollideObject->Ground_Collision_Exit(CollisionDesc);
-			break;
+			switch (CollisionDesc.flag)
+			{
+			case PxPairFlag::eNOTIFY_TOUCH_FOUND:
+				CollisionDesc.pCollideObject->Ground_Collision_Enter(CollisionDesc);
+				break;
+			case PxPairFlag::eNOTIFY_TOUCH_PERSISTS:
+				CollisionDesc.pCollideObject->Ground_Collision_Continue(CollisionDesc);
+				break;
+			case PxPairFlag::eNOTIFY_TOUCH_LOST:
+				CollisionDesc.pCollideObject->Ground_Collision_Exit(CollisionDesc);
+				break;
+			}
 		}
+		m_GroundCollision.clear();
 	}
-	m_GroundCollision.clear();
+	
+
 	
 }
 

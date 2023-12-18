@@ -193,19 +193,19 @@ void CCharacter_Dummy::Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tIn
 {
 	__super::Ground_Collision_Continue(tInfo);
 
-	Vec3 vNormal = tInfo.vNormal;
-	vNormal.Normalize();
+	//Vec3 vNormal = tInfo.vNormal;
+	//vNormal.Normalize();
 
-	Vec3 vUp = Vec3(0.f, 1.f, 0.f);
+	//Vec3 vUp = Vec3(0.f, 1.f, 0.f);
 
 
 
-	if (XMConvertToRadians(-90.f) < vNormal.Dot(vUp) || XMConvertToRadians(90.f) > vNormal.Dot(vUp))
-	{
-		_vector vPosition = m_pTransformCom->Get_Position();
-		vPosition = XMVectorSetY(vPosition, tInfo.vCollision_Position.y);
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPosition);
-	}
+	//if (XMConvertToRadians(-90.f) < vNormal.Dot(vUp) || XMConvertToRadians(90.f) > vNormal.Dot(vUp))
+	//{
+	//	_vector vPosition = m_pTransformCom->Get_Position();
+	//	vPosition = XMVectorSetY(vPosition, tInfo.vCollision_Position.y);
+	//	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPosition);
+	//}
 
 }
 
