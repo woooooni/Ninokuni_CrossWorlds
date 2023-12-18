@@ -37,6 +37,7 @@
 #include "UI_Setting_Section.h"
 #include "UI_SubMenu_Imajinn.h"
 #include "UI_BtnChangeCamera.h"
+#include "UI_Loading_MainLogo.h"
 #include "UI_Btn_WorldMapIcon.h"
 #include "UI_Default_BackCloud.h"
 #include "UI_Loading_Character.h"
@@ -48,11 +49,13 @@
 #include "UI_BtnCharacterSelect.h"
 #include "UI_Loading_Background.h"
 #include "UI_WeaponSection_Slot.h"
+#include "UI_Loading_Information.h"
 #include "UI_MonsterHP_Elemental.h"
 #include "UI_ImajinnSection_Slot.h"
 #include "UI_SkillSection_BtnRoll.h"
 #include "UI_SkillSection_BtnJump.h"
 #include "UI_MonsterHP_Background.h"
+#include "UI_Loading_CharacterLogo.h"
 #include "UI_ImajinnSection_Vehicle.h"
 #include "UI_SkillSection_Background.h"
 #include "UI_ImajinnSection_Emoticon.h"
@@ -185,6 +188,62 @@ HRESULT CUI_Manager::Ready_Veils()
 		return E_FAIL;
 
 	Safe_AddRef(m_pUIFade);
+
+	return S_OK;
+}
+
+HRESULT CUI_Manager::Ready_Loadings()
+{
+	if (FAILED(GI->Add_GameObject(LEVEL_LOADING, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Loading_Background"))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_GameObject(LEVEL_LOADING, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Loading_CharacterUI"))))
+		return E_FAIL;
+
+	CGameObject* pLogo = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_LOADING, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Loading_CharacterLogo"), nullptr, &pLogo)))
+		return E_FAIL;
+	if (nullptr == pLogo)
+		return E_FAIL;
+
+	dynamic_cast<CUI_Loading_CharacterLogo*>(pLogo)->Set_TextureIndex(GI->RandomInt(0, 4));
+	dynamic_cast<CUI_Loading_CharacterLogo*>(pLogo)->Set_Text();
+
+	CGameObject* pInform = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_LOADING, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Loading_Information"), nullptr, &pInform)))
+		return E_FAIL;
+	if (nullptr == pInform)
+		return E_FAIL;
+	dynamic_cast<CUI_Loading_Logo*>(pInform)->Set_TextureIndex(GI->RandomInt(0, 2));
+
+	//UI_Loading_MainLogo
+	CUI::UI_INFO UIDesc = {};
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 1024.f * 0.3f;
+	UIDesc.fCY = 512.f * 0.3f;
+	UIDesc.fX = (g_iWinSizeX * 0.5f);
+	UIDesc.fY = (UIDesc.fCY * 0.5f) + 25.f;
+
+	CGameObject* pMainLogo = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_LOADING, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Loading_MainLogo_Text"), &UIDesc, &pMainLogo)))
+		return E_FAIL;
+	if (nullptr == pMainLogo)
+		return E_FAIL;
+
+	CUI::UI_INFO NumDesc = {};
+	ZeroMemory(&NumDesc, sizeof(CUI::UI_INFO));
+
+	NumDesc.fCX = 147.f * 0.3f;
+	NumDesc.fCY = 198.f * 0.3f;
+	NumDesc.fX = UIDesc.fX - 40.f;
+	NumDesc.fY = UIDesc.fY - 9.f;
+
+	pMainLogo = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_LOADING, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Loading_MainLogo_Number"), &NumDesc, &pMainLogo)))
+		return E_FAIL;
+	if (nullptr == pMainLogo)
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -1644,6 +1703,13 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 		m_pImajinnBG->Set_Active(true);
 
 		OnOff_MonsterHP(true);
+
+		// EXP Bar를 보여준다.
+		for (auto& iter : m_PlayerEXP)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(true);
+		}
 	}
 	else // Off
 	{
@@ -1656,6 +1722,13 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 		m_pImajinnBG->Set_Active(false);
 	
 		OnOff_MonsterHP(false);
+
+		// EXP Bar를 감춘다
+		for (auto& iter : m_PlayerEXP)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
 	}
 
 	return S_OK;
@@ -1994,6 +2067,21 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_CharacterUI"),
 		CUI_Loading_Character::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_CharacterLogo"),
+		CUI_Loading_CharacterLogo::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_Information"),
+		CUI_Loading_Logo::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_MainLogo_Text"),
+		CUI_Loading_MainLogo::Create(m_pDevice, m_pContext, CUI_Loading_MainLogo::MAINLOGO_TEXT), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_MainLogo_Number"),
+		CUI_Loading_MainLogo::Create(m_pDevice, m_pContext, CUI_Loading_MainLogo::MAINLOGO_NUM), LAYER_UI)))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Fade_Black"),

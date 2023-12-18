@@ -9,6 +9,7 @@
 #include "Level_Test.h"
 #include "Level_Lobby.h"
 #include "Level_Evermore.h"
+#include "UI_Manager.h"
 #include "ImGui_Manager.h"
 
 
@@ -103,10 +104,7 @@ HRESULT CLevel_Loading::Exit_Level()
 
 HRESULT CLevel_Loading::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 {
-	if (FAILED(GI->Add_GameObject(LEVEL_LOADING, _uint(eLayerType), TEXT("Prototype_GameObject_UI_Loading_Background"))))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_GameObject(LEVEL_LOADING, _uint(eLayerType), TEXT("Prototype_GameObject_UI_Loading_CharacterUI"))))
+	if(FAILED(CUI_Manager::GetInstance()->Ready_Loadings()))
 		return E_FAIL;
 
 	return S_OK;

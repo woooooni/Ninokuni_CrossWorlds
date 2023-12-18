@@ -47,7 +47,7 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 	/* 1-4. 게임내에서 사용할 레벨(씬)을 생성한다.   */
-	if (FAILED(Open_Level(LEVEL_TOOL, L"Final_Boss")))
+	if (FAILED(Open_Level(LEVEL_LOGO, L"Final_Boss")))
 		return E_FAIL;
 	
 	// UI Cursor
@@ -465,11 +465,23 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Loading"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/UI_LoadingWindow.png")))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/UI_LoadingWindow_Temp.png")))))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Loading_Characters"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/UI_Loading_Character_%d.png"), 5))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Loading_CharacterLogos"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/UI_Loading_Text_%d.png"), 5))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Loading_Information"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/UI_Loading_Info_%d.png"), 3))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Loading_Logos"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/UI_Loading_Logo_%d.png"), 2))))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Cursor"),
@@ -630,6 +642,9 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Common_DefaultBackground"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Default/UI_Default_Background_Deco.png")))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Common_DefaultBackground_WithCloud"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Default/UI_Default_Background_Deco_1.png")))))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Common_DefaultBackground_StarEffect"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Default/UI_Default_Background_Star_%d.png"), 3))))

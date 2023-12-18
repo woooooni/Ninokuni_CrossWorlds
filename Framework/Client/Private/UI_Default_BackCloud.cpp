@@ -31,7 +31,7 @@ HRESULT CUI_Default_BackCloud::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	m_fAlpha = 0.3f;
+	m_fAlpha = 0.5f;
 	m_bActive = true;
 
 	return S_OK;

@@ -27,6 +27,7 @@ public: // For Prototypes
 public: // For Clone Objects
 	HRESULT Ready_Cursor();
 	HRESULT Ready_Veils();
+	HRESULT Ready_Loadings();
 	HRESULT Ready_LobbyUIs();
 	HRESULT Ready_CommonUIs(LEVELID eID); // 항상 쓰이는 UI들 (Cursor랑 Veil 옮길것)
 
