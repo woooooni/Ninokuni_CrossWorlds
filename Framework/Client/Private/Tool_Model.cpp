@@ -68,9 +68,6 @@ void CTool_Model::Tick(_float fTimeDelta)
 	ImGui::End();
 
 	Tick_Dummys(fTimeDelta);
-
-	_bool bDemo = FALSE;
-	if(bDemo) ImGui::ShowDemoWindow(&bDemo);
 }
 
 HRESULT CTool_Model::Render()
@@ -101,6 +98,8 @@ HRESULT CTool_Model::Clear_ToolAnimationData()
 
 	m_iAutoAnimIndex = 0;
 
+	m_iEventIndex = -1;
+
 	return S_OK;
 }
 
@@ -115,6 +114,9 @@ Vec3 CTool_Model::Calculate_SocketPosition()
 
 Matrix CTool_Model::Calculate_SocketWorldMatrix()
 {
+	if (nullptr == m_pDummy->Get_ModelCom())
+		return Matrix();
+
 	TweenDesc TweenDesc = m_pDummy->Get_ModelCom()->Get_TweenDesc();
 
 	enum STEP { CURR, NEXT, STEP_END };
@@ -602,7 +604,7 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 		}
 
 		/* Animation List */
-		if (ImGui::BeginListBox("##Animation_List"))
+		if (ImGui::BeginListBox("##Animation_List", ImVec2(350.f, 150.f)))
 		{
 			for(size_t i = 0; i< Animations.size(); ++i)
 			{
@@ -729,20 +731,21 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 			}
 			ImGui::PopItemWidth();
 			IMGUI_SAME_LINE;
-			ImGui::Text("Frmae : (%02d/%d)", m_pDummy->Get_ModelCom()->Get_CurrAnimationFrame(), pCurrAnimation->Get_MaxFrameCount() - 1);
+
+			ImGui::Text("Frmae : (%0.2f/%d)", m_pDummy->Get_ModelCom()->Get_CurrAnimationFrame_WithRatio(), pCurrAnimation->Get_MaxFrameCount() - 1);
 		}
 
 		/* Set Speed */
 		{
-			_float fSpeed = pCurrAnimation->Get_AnimationSpeed();
+			_float fSpeed = pCurrAnimation->Get_LiveSpeed();
 			ImGui::PushItemWidth(60.f);
 			if (ImGui::DragFloat("##AnimationSpeed", &fSpeed, 0.01f, 0.f, 100.f))
 			{
-				pCurrAnimation->Set_AnimationSpeed(fSpeed);
+				pCurrAnimation->Set_OriginSpeed(fSpeed);
 			}
 			ImGui::PopItemWidth();
 			IMGUI_SAME_LINE;
-			ImGui::Text("Speed  ");
+			ImGui::Text("Origin Speed  ");
 		}
 
 		IMGUI_SAME_LINE;
@@ -776,31 +779,47 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 		IMGUI_NEW_LINE;
 		ImGui::Separator();
 		ImGui::Text(u8"애니메이션 프레임별 속도 조절");
-		ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"Start Point와 End Point는 애니메이션 진행률 (Progress)를 기반으로 합니다.");
-
+		
 		IMGUI_NEW_LINE;
 
-		ImGui::Text("(1)Start Frame  (2)End Frame    (3)Start Value  (4)End Value");
-		IMGUI_SAME_LINE;
 		/* Add SBK*/
 		if (ImGui::Button("Add Desc"))
 		{
-			CAnimation::ANIM_SPEED_DESC desc = {};
+			ANIM_SPEED_DESC desc = {};
 
-			desc.fStartValue = desc.fEndValue = m_pDummy->Get_ModelCom()->Get_CurrAnimation()->Get_AnimationSpeed();
+			desc.fStartSpeed = desc.fEndSpeed = m_pDummy->Get_ModelCom()->Get_CurrAnimation()->Get_LiveSpeed();
 
 			m_pDummy->Get_ModelCom()->Get_CurrAnimation()->Add_SpeedDesc(desc);
 		}
+		IMGUI_SAME_LINE;
+
+		/* Delete All */
+		if (ImGui::Button("Delete All Desc"))
+		{
+			m_pDummy->Get_ModelCom()->Get_CurrAnimation()->Delete_All_SpeedDesc();
+		}
+		IMGUI_SAME_LINE;
+
+		/* Sort */
+		if (ImGui::Button("Sort Desc"))
+		{
+			m_pDummy->Get_ModelCom()->Get_CurrAnimation()->Sort_SpeedDesces();
+		}
+		
+
+		/* Category */
+		ImGui::Text("(1)Start Frame  (2)End Frame  (3)Start Value   (4)End Value");
+		
 
 		/* List */
-		vector<CAnimation::ANIM_SPEED_DESC> vecDesc = m_pDummy->Get_ModelCom()->Get_CurrAnimation()->Get_SpeedDescs();
+		vector<ANIM_SPEED_DESC> vecDesc = m_pDummy->Get_ModelCom()->Get_CurrAnimation()->Get_SpeedDescs();
 		for (size_t i = 0; i < vecDesc.size(); i++)
 		{
 			/* desc */
-			float desc[4] = { vecDesc[i].fStartFrame, vecDesc[i].fEndFrame, vecDesc[i].fStartValue, vecDesc[i].fEndValue };
-			string strDescTag = (to_string(i));
-			ImGui::PushItemWidth(330.f);
-			if (ImGui::DragFloat4(strDescTag.c_str(), desc, 0.01f, 0.f, 100.f))
+			float desc[4] = { vecDesc[i].fStartFrame, vecDesc[i].fEndFrame, vecDesc[i].fStartSpeed, vecDesc[i].fEndSpeed };
+			string strDescTag = (to_string(i) + "   ");
+			ImGui::PushItemWidth(360.f);
+			if (ImGui::DragFloat4(strDescTag.c_str(), desc, 0.01f, 0.f, 100.f, "%.2f"))
 			{
 				Vec4 vDesc = { desc[0], desc[1], desc[2], desc[3] };
 
@@ -818,14 +837,13 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 			}
 			ImGui::PopItemWidth();
 
-	
-
-			///* Delete */
-			//string strDelTag = "##del" + (to_string(i));
-			//if (ImGui::Button("del"))
-			//{
-
-			//}
+			IMGUI_SAME_LINE;
+			/* Delete */
+			string strDelTag = "del(" + (to_string(i)) + ")";
+			if (ImGui::Button(strDelTag.c_str()))
+			{
+				m_pDummy->Get_ModelCom()->Get_CurrAnimation()->Delete_SpeedDesc(i);
+			}
 		}
 
 
@@ -850,7 +868,7 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 		{
 			ImGui::Text("HierarchyNode List (count : %d)", iHierarchyNodeCount);
 
-			if (ImGui::BeginListBox("##Bone_List"))
+			if (ImGui::BeginListBox("##Bone_List", ImVec2(350.f, 150.f)))
 			{
 				for (size_t i = 0; i < HiearachyNodes.size(); ++i)
 				{
@@ -871,7 +889,7 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 		{
 			ImGui::Text("Weapon Prototypes List");
 
-			if (ImGui::BeginListBox("##Weapon Prototypes List", ImVec2{ 0.f, 70.f }))
+			if (ImGui::BeginListBox("##Weapon Prototypes List", ImVec2(350.f, 80.f)))
 			{
 				for (size_t i = 0; i < m_Weapons.size(); ++i)
 				{
@@ -891,7 +909,7 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 		{
 			ImGui::Text("Calculated Socket List");
 
-			if (ImGui::BeginListBox("##Calculated Socket List", ImVec2{ 0.f, 70.f }))
+			if (ImGui::BeginListBox("##Calculated Socket List", ImVec2(350.f, 80.f)))
 			{
 				vector<_uint> SocketTransformIndexCache = m_pDummy->Get_ModelCom()->Get_SocketTransformIndexCache();
 
@@ -1063,34 +1081,263 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 		if (Is_Exception())
 			return;
 
-		/* Sound */
-		if (ImGui::TreeNode("Sound"))
+		ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
+		
+		/* Data */
+		const _float	fCurFrame = m_pDummy->Get_ModelCom()->Get_CurrAnimationFrame_WithRatio();
+		CAnimation*		pCurAnim = m_pDummy->Get_ModelCom()->Get_CurrAnimation();
+		if (nullptr == pCurAnim)
+			return;
+		
+		/* 애니메이션에 저장된 이벤트 리스트 */
+
+		const vector<pair<_float, ANIM_EVENT_DESC>>& Events = pCurAnim->Get_Events();
+		ImGui::Text("Event List (count : %d)", Events.size());
+
+		if (ImGui::BeginListBox("##Event_List", ImVec2(350.f, 70.f)))
 		{
-
-			ImGui::TreePop();
-		}
-
-		/* Effect */
-		if (ImGui::TreeNode("Effect"))
-		{
-
-			ImGui::TreePop();
-		}
-
-		/* Camera */
-		if (ImGui::TreeNode("Camera"))
-		{
-
-			ImGui::TreePop();
-		}
-
-		/* Collider  */
-		if (ImGui::TreeNode("Collider"))
-		{
-
-			ImGui::TreePop();
+			for (size_t i = 0; i < Events.size(); ++i)
+			{
+				string strEventTypeName = CUtils::ToString(strAnimEventTypeNames[Events[i].second.eType]);
+				
+				if (ImGui::Selectable(strEventTypeName.c_str(), i == m_iEventIndex))
+				{
+					m_iEventIndex = i;
+				}
+			}
+			ImGui::EndListBox();
 		}
 		IMGUI_NEW_LINE;
+
+		/* Tab Bar */
+		if (ImGui::BeginTabBar("Animation Event ", tab_bar_flags))
+		{
+			/* Sound */
+			if (ImGui::BeginTabItem("Sound"))
+			{
+				/* Type */
+				ImGui::PushItemWidth(200.f);
+				{
+					static int iSoundCurIndex = 0; 
+					const char* szSoundPreview = szAnimEventSoundTypeNames[iSoundCurIndex];
+					if (ImGui::BeginCombo("Sound Event Type", szSoundPreview))
+					{
+						for (int n = 0; n < IM_ARRAYSIZE(szAnimEventSoundTypeNames); n++)
+						{
+							const bool is_selected = (iSoundCurIndex == n);
+							if (ImGui::Selectable(szAnimEventSoundTypeNames[n], is_selected))
+								iSoundCurIndex = n;
+
+							if (is_selected)
+								ImGui::SetItemDefaultFocus();
+						}
+						ImGui::EndCombo();
+					}
+				}
+				ImGui::PopItemWidth();
+				IMGUI_NEW_LINE;
+
+				/* Prop */
+				{
+					/* Sound Key */
+					ImGui::PushItemWidth(200.f);
+					{
+						//const map<TCHAR*, FMOD_SOUND*>& mapSound = CSound_Manager::GetInstance()->Get_MapSound();
+
+						///* 문자열 변환 */
+						//vector<wstring> SoundKeyNames;
+						//
+						//for (const auto& PrevData : mapSound)
+						//{
+						//	wstring strConverted = wstringResu
+						//}
+
+						
+						/*static int iSoundKeyCurIndex = 0;
+						const char* szSoundPreview = szChannelIDNames[iSoundKeyCurIndex];
+						if (ImGui::BeginCombo("Sound Key", szSoundPreview))
+						{
+							for (int n = 0; n < IM_ARRAYSIZE(szChannelIDNames); n++)
+							{
+								const bool is_selected = (iSoundKeyCurIndex == n);
+								if (ImGui::Selectable(szChannelIDNames[n], is_selected))
+									iSoundKeyCurIndex = n;
+
+								if (is_selected)
+									ImGui::SetItemDefaultFocus();
+							}
+							ImGui::EndCombo();
+						}*/
+					}
+					ImGui::PopItemWidth();
+
+					/* Channel ID */
+					ImGui::PushItemWidth(200.f);
+					{
+						static int iChannelCurIndex = 0;
+						const char* szChannelPreview = szChannelIDNames[iChannelCurIndex];
+						if (ImGui::BeginCombo("Channel ID", szChannelPreview))
+						{
+							for (int n = 0; n < IM_ARRAYSIZE(szChannelIDNames); n++)
+							{
+								const bool is_selected = (iChannelCurIndex == n);
+								if (ImGui::Selectable(szChannelIDNames[n], is_selected))
+									iChannelCurIndex = n;
+
+								if (is_selected)
+									ImGui::SetItemDefaultFocus();
+							}
+							ImGui::EndCombo();
+						}
+					}
+					ImGui::PopItemWidth();
+
+					/* Volume */
+					static _float fSoundEventVolume = 0.f;
+					ImGui::PushItemWidth(200.f);
+					if (ImGui::SliderFloat("##Sound Event Volume", &fSoundEventVolume, 0.f, 1.f, "%.3f"))
+					{
+						
+					}
+					ImGui::PopItemWidth();
+					IMGUI_SAME_LINE;
+					ImGui::Text("Volume");
+
+					/* Stop */
+					static _bool bSoundEventStop = false;
+					if (ImGui::Checkbox("Stop", &bSoundEventStop))
+					{
+
+					}
+				}
+
+
+				//ImGui::DragFloat()
+
+
+				/* Add */
+				IMGUI_NEW_LINE;
+				if (ImGui::Button("Add Sound Event"))
+				{
+
+				}
+
+				ImGui::EndTabItem();
+			}
+
+
+			/* Effect */
+			if (ImGui::BeginTabItem("Effect"))
+			{
+				ImGui::PushItemWidth(200.f);
+				{
+					static int iEffectCurIndex = 0;
+					const char* szEffectPreview = szAnimEventEffectTypeNames[iEffectCurIndex];
+					if (ImGui::BeginCombo("Effect Event Type", szEffectPreview))
+					{
+						for (int n = 0; n < IM_ARRAYSIZE(szAnimEventEffectTypeNames); n++)
+						{
+							const bool is_selected = (iEffectCurIndex == n);
+							if (ImGui::Selectable(szAnimEventEffectTypeNames[n], is_selected))
+								iEffectCurIndex = n;
+
+
+							if (is_selected)
+								ImGui::SetItemDefaultFocus();
+						}
+						ImGui::EndCombo();
+					}
+
+				}
+				ImGui::PopItemWidth();
+
+
+				IMGUI_NEW_LINE;
+				if (ImGui::Button("Add Effect Event"))
+				{
+
+				}
+
+				ImGui::EndTabItem();
+			}
+
+			/* Camera */
+			if (ImGui::BeginTabItem("Camera"))
+			{
+				ImGui::PushItemWidth(200.f);
+				{
+					static int iCameraCurIndex = 0;
+					const char* szCameraPreview = szAnimEventCameraTypeNames[iCameraCurIndex];
+					if (ImGui::BeginCombo("Camera Event Type", szCameraPreview))
+					{
+						for (int n = 0; n < IM_ARRAYSIZE(szAnimEventCameraTypeNames); n++)
+						{
+							const bool is_selected = (iCameraCurIndex == n);
+							if (ImGui::Selectable(szAnimEventCameraTypeNames[n], is_selected))
+								iCameraCurIndex = n;
+
+
+							if (is_selected)
+								ImGui::SetItemDefaultFocus();
+						}
+						ImGui::EndCombo();
+					}
+
+				}
+				ImGui::PopItemWidth();
+
+
+				IMGUI_NEW_LINE;
+				if (ImGui::Button("Add Camera Event"))
+				{
+
+				}
+
+				ImGui::EndTabItem();
+			}
+
+			/* Collider */
+			if (ImGui::BeginTabItem("Collider"))
+			{
+				ImGui::PushItemWidth(200.f);
+				{
+					static int iColliderCurIndex = 0;
+					const char* szColliderPreview = szAnimEventColliderTypeNames[iColliderCurIndex];
+					if (ImGui::BeginCombo("Collider Event Type", szColliderPreview))
+					{
+						for (int n = 0; n < IM_ARRAYSIZE(szAnimEventColliderTypeNames); n++)
+						{
+							const bool is_selected = (iColliderCurIndex == n);
+							if (ImGui::Selectable(szAnimEventColliderTypeNames[n], is_selected))
+								iColliderCurIndex = n;
+
+
+							if (is_selected)
+								ImGui::SetItemDefaultFocus();
+						}
+						ImGui::EndCombo();
+					}
+
+				}
+				ImGui::PopItemWidth();
+
+
+				IMGUI_NEW_LINE;
+				if (ImGui::Button("Add Collider Event"))
+				{
+
+				}
+
+				ImGui::EndTabItem();
+			}
+
+			ImGui::EndTabBar();
+		}
+		
+
+
+		for (size_t i = 0; i < 10; i++)
+			IMGUI_NEW_LINE;
 	}
 }
 

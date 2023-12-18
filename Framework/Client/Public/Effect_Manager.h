@@ -30,7 +30,6 @@ private:
 private:
 	HRESULT Ready_Proto_Effects(const wstring& strEffectPath);
 
-
 public:
 	virtual void Free() override;
 };

@@ -63,6 +63,28 @@ CModel::CModel(const CModel& rhs)
 }
 
 
+void CModel::Debug_Animation()
+{
+	cout << "Curr Anim : " << m_TweenDesc.cur.iAnimIndex <<
+		"\tCurr Frame : "		<< m_TweenDesc.cur.iCurFrame <<
+		"\tNext Frame : "		<< m_TweenDesc.cur.iNextFrame <<
+		"\tFrame Ratio : "		<< m_TweenDesc.cur.fRatio <<
+		"\tIs Finish : "		<< _bool(m_TweenDesc.cur.iFinish) <<
+		"\tIs Fix : "		<< _bool(m_TweenDesc.cur.iFix) <<
+		"\tIs Stop : "		<< _bool(m_TweenDesc.cur.iStop) << endl;
+
+	cout << "Next Anim : "	<< m_TweenDesc.next.iAnimIndex <<
+		"\tCurr Frame : " << m_TweenDesc.next.iCurFrame <<
+		"\tNext Frame : " << m_TweenDesc.next.iNextFrame <<
+		"\tFrame Ratio :" 		<< m_TweenDesc.next.fRatio << 
+		"\tIs Finish : " << _bool(m_TweenDesc.cur.iFinish) <<
+		"\tIs Fix : " << _bool(m_TweenDesc.cur.iFix) <<
+		"\tIs Stop : " << _bool(m_TweenDesc.cur.iStop) << endl;
+
+	cout << "Tween Ratio : " << m_TweenDesc.fTweenRatio << endl << endl;
+
+}
+
 HRESULT CModel::Initialize_Prototype(TYPE eType, const wstring& strModelFolderPath, const wstring& strModelFileName, _fmatrix PivotMatrix)
 {
 	XMStoreFloat4x4(&m_PivotMatrix, PivotMatrix);
@@ -100,9 +122,6 @@ HRESULT CModel::Initialize_Prototype(TYPE eType, const wstring& strModelFolderPa
 
 	if (FAILED(Ready_Animations()))
 		return E_FAIL;
-
-	/*if (FAILED(Ready_Animation_Texture()))
-		return E_FAIL;*/
 
 	return S_OK;
 }
@@ -217,7 +236,7 @@ HRESULT CModel::LateTick(_float fTimeDelta)
 	{
 		m_TweenDesc.cur.fFrameAcc += fTimeDelta;
 
-		const _float fTimePerFrame = 1 / (pCurAnim->Get_TickPerSecond() * pCurAnim->Get_AnimationSpeed());
+		const _float fTimePerFrame = 1 / (pCurAnim->Get_TickPerSecond() * pCurAnim->Get_LiveSpeed());
 
 		if (fTimePerFrame <= m_TweenDesc.cur.fFrameAcc)
 		{
@@ -227,6 +246,8 @@ HRESULT CModel::LateTick(_float fTimeDelta)
 
 				if (!pCurAnim->Is_Loop()) // 픽스 여부 체크
 					m_TweenDesc.cur.iFix = true;
+				else
+					pCurAnim->Clear_AnimationData();
 			}
 
 			if (!m_TweenDesc.cur.iFix) // 픽스가 아닐때만 프레임 갱신 (픽스라면 현재 프레임은 마지막 프레임으로 고정)
@@ -244,6 +265,8 @@ HRESULT CModel::LateTick(_float fTimeDelta)
 		/* 픽스 혹은, 다음 프레임이 0인데 루프가 아니라면 마지막 프레임의 0비율로 고정한다. 즉 마지막 프레임을 0번째 프레임과 보간을 하지 않는다. */
 		if (m_TweenDesc.cur.iFix || (!pCurAnim->Is_Loop() && 0 == m_TweenDesc.cur.iNextFrame))
 			m_TweenDesc.cur.fRatio = 0.f;
+
+		pCurAnim->Update_Animation_Data(fTimeDelta, m_TweenDesc);
 	}
 
 	/* 다음 애니메이션이 예약되어 있다면 */
@@ -260,6 +283,7 @@ HRESULT CModel::LateTick(_float fTimeDelta)
 		/* 트위닝 종료*/
 		if (1.f <= m_TweenDesc.fTweenRatio)
 		{
+			pCurAnim->Clear_AnimationData();
 			m_TweenDesc.cur = m_TweenDesc.next;
 			m_TweenDesc.ClearNextAnim();
 		}
@@ -267,7 +291,7 @@ HRESULT CModel::LateTick(_float fTimeDelta)
 		{
 			m_TweenDesc.next.fFrameAcc += fTimeDelta;
 
-			const _float fTimePerFrame = 1 / (pNextAnim->Get_TickPerSecond() * pNextAnim->Get_AnimationSpeed());
+			const _float fTimePerFrame = 1 / (pNextAnim->Get_TickPerSecond() * pNextAnim->Get_LiveSpeed());
 
 			if (fTimePerFrame <= m_TweenDesc.next.fFrameAcc)
 			{
@@ -278,7 +302,10 @@ HRESULT CModel::LateTick(_float fTimeDelta)
 
 			m_TweenDesc.next.fRatio = m_TweenDesc.next.fFrameAcc / fTimePerFrame;
 			std::clamp(m_TweenDesc.next.fRatio, 0.f, 1.f);
+
+			pNextAnim->Update_Animation_Data(fTimeDelta, m_TweenDesc);
 		}
+
 	}
 
 	return S_OK;
@@ -506,11 +533,14 @@ HRESULT CModel::Clear_NotUsedData()
 
 HRESULT CModel::Set_Animation(const _uint& iAnimationIndex, const _float& fTweenDuration)
 {
-	if (m_Animations.size() <= iAnimationIndex)
+	_uint iIndex = iAnimationIndex % m_Animations.size();
+
+	if (m_Animations.size() <= iIndex)
 		return E_FAIL;
 
 	if (m_TweenDesc.cur.iAnimIndex < 0) // 최초 1회 실행 
 	{
+		m_Animations[m_TweenDesc.cur.iAnimIndex]->Clear_AnimationData();
 		m_TweenDesc.cur.iAnimIndex = iAnimationIndex % m_Animations.size();
 		return S_OK;
 	}
@@ -518,6 +548,7 @@ HRESULT CModel::Set_Animation(const _uint& iAnimationIndex, const _float& fTween
 	/* 일부러 보간 시간을 음수로 주는 경우, 그 즉시 보간 없이 바로 다음 애니메이션을 세팅한다. */
 	if (fTweenDuration <= 0.f)
 	{
+		m_Animations[m_TweenDesc.cur.iAnimIndex]->Clear_AnimationData();
 		m_TweenDesc.cur.iAnimIndex = iAnimationIndex % m_Animations.size();
 		m_TweenDesc.ClearNextAnim();
 		return S_OK;
@@ -526,6 +557,7 @@ HRESULT CModel::Set_Animation(const _uint& iAnimationIndex, const _float& fTween
 	m_TweenDesc.ClearNextAnim();
 	m_TweenDesc.next.iAnimIndex = iAnimationIndex % m_Animations.size();
 	m_TweenDesc.fTweenDuration = fTweenDuration;
+	m_Animations[m_TweenDesc.next.iAnimIndex]->Clear_AnimationData();
 
 	return S_OK;
 }
@@ -541,6 +573,14 @@ HRESULT CModel::Set_Animation(const wstring& strAnimationName, const _float& fTw
 		}
 	}
 	return E_FAIL;
+}
+
+CAnimation* CModel::Get_Animation(const _uint& iIndex)
+{
+	if (m_Animations.size() <= iIndex)
+		return nullptr;
+
+	return m_Animations[iIndex];
 }
 
 void CModel::Set_KeyFrame_By_Progress(_float fProgress)

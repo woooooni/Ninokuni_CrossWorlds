@@ -78,6 +78,12 @@ private:
 
 #pragma endregion
 
+#pragma region Event 
+
+	_int m_iEventIndex = -1;
+
+#pragma endregion
+
 
 #pragma region Debug Draw 
 

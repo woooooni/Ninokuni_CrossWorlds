@@ -6,31 +6,6 @@ BEGIN(Engine)
 
 class ENGINE_DLL CAnimation final : public CBase
 {
-public:
-	
-	enum class ANIM_EVENT_TYPE { SOUND, EFFECT, CAMERA, COLLIDER, TYPE_END };
-
-	typedef struct tagAnimEventDesc
-	{
-		ANIM_EVENT_TYPE eType;
-
-	}ANIM_EVENT_DESC;
-
-	typedef struct tagAnimSpeedDesc
-	{
-		_float fStartFrame = 0.f;
-		_float fEndFrame = 0.f;
-
-		_float fStartValue = 0.f;
-		_float fEndValue = 0.f;
-
-		tagAnimSpeedDesc() {};
-		tagAnimSpeedDesc(const _float& _fPoint1, const _float& _fPoint2, const _float& _fValue1, const _float& _fValue2)
-			: fStartFrame(_fPoint1), fEndFrame(_fPoint2), fStartValue(_fValue1), fEndValue(_fValue2) {}
-
-	}ANIM_SPEED_DESC;
-
-
 private:
 	CAnimation();
 	CAnimation(const CAnimation& rhs);
@@ -40,36 +15,50 @@ public:
 	HRESULT Initialize_Prototype(aiAnimation* pAIAnimation); 
 	HRESULT Initialize(class CModel* pModel); 
 
+	/* 라이프 스피드와 이벤트 체크 */
+	void Update_Animation_Data(_float fTickPerSecond, const TWEEN_DESC& tDesc);
+	void Clear_AnimationData();
 public:
 
 #pragma region Prop
 	_float Get_Duration() { return m_fDuration; }
 
-	void Set_AnimationName(const wstring& strName) { m_strName = strName; }
+	_uint Get_MaxFrameCount() const { return _uint(m_fDuration) + 1; }
+
 	const wstring& Get_AnimationName() { return m_strName; }
+	void Set_AnimationName(const wstring& strName) { m_strName = strName; }
 
 	void Set_Loop(_bool bLoop) { m_bLoop = bLoop; }
 	_bool Is_Loop() { return m_bLoop; }
-
-	_uint Get_MaxFrameCount() const { return _uint(m_fDuration) + 1; }
 #pragma endregion
 
-	
 #pragma region Speed
+	/* Tick Per Second */
 	void Set_TickPerSecond(_float fTickPerSecond) { m_fTickPerSecond = fTickPerSecond; }
 	_float Get_TickPerSecond() { return m_fTickPerSecond; }
 
-	void Set_AnimationSpeed(_float fSpeed) { m_fSpeed = fSpeed; }
-	_float Get_AnimationSpeed() { return m_fSpeed; }
+	/* Origin Speed (프레임별 실시간 속도가 지정되지 않은 구간의 속도)*/
+	void Set_OriginSpeed(_float fSpeed) { m_fOriginSpeed = fSpeed; }
+	_float Get_OriginSpeed() { return m_fOriginSpeed; }
 
-	void Add_SpeedDesc(ANIM_SPEED_DESC desc) { m_SpeedDescs.push_back(desc); }
+	/* Live Speed (*프레임별 실시간 속도가 지정된 구간의 속도) */
+	_float Get_LiveSpeed();
+
+	/* Live Speed */
+	void Add_SpeedDesc(ANIM_SPEED_DESC desc);
+	void Delete_SpeedDesc(const _uint& iIndex);
+	void Delete_All_SpeedDesc() { m_SpeedDescs.clear(); m_SpeedDescs.shrink_to_fit(); }
 	void Change_SpeedDesc(const _uint& iIndex, const Vec4& vDesc);
+	void Sort_SpeedDesces();
 	vector<ANIM_SPEED_DESC> Get_SpeedDescs() const { return m_SpeedDescs; }
 #pragma endregion
 
 
 #pragma region Events
 
+	void Add_Event(const _float fFrame, const ANIM_EVENT_TYPE& eEventType, ANIM_EVENT_DESC tDesc);
+	const vector<pair<_float, ANIM_EVENT_DESC>>& Get_Events() const { return m_Events; }
+	void Sort_Events();
 
 
 #pragma endregion
@@ -86,19 +75,36 @@ public:
 #pragma endregion
 
 private:
+	void Update_Animation_Speed(_float fTickPerSecond, const TWEEN_DESC& tDesc);
+	void Update_Animation_Event(_float fTickPerSecond, const TWEEN_DESC& tDesc);
+
+	const _float Calculate_LerpTime(const ANIM_SPEED_DESC tSpeedDesc, const TWEEN_DESC tTweenDesc, const _float fTickPerSecond);
+
+private:
 	wstring	m_strName;
 
 	_bool m_bLoop = false;
 	_float m_fDuration = 0.f; 
 
+#pragma region Speed
 private:
 	_float m_fTickPerSecond = 0.f; 
-	_float m_fSpeed = 1.f;
+	_float m_fOriginSpeed = 1.f;
 
+	_uint	m_iCurSpeedDescIndex = 0; /* m_SpeedDescs의 현재 필터링 인덱스*/
+	_float	m_fCurSpeedDescEndFrame = 0; /* 가장 최근에 보간 시작한 m_SpeedDescs 인덱스의 마지막 프레임 */
 
-private:
-
+	LERP_FLOAT_DESC m_tLiveSpeedDesc;
 	vector<ANIM_SPEED_DESC> m_SpeedDescs;
+#pragma endregion
+
+#pragma region Events
+private:
+	vector<pair<_float, ANIM_EVENT_DESC>> m_Events;
+
+#pragma endregion
+
+
 
 private: 
 	_uint m_iNumChannels = 0;

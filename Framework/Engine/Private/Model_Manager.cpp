@@ -58,6 +58,9 @@ HRESULT CModel_Manager::Export_Model_Data(CModel* pModel, const wstring& strSubF
 
 		if (FAILED(Export_Socket(strFinalFolderPath, pModel)))
 			return E_FAIL;
+
+		if (FAILED(Export_Animation_KeyFrameSpeed(strFinalFolderPath, pModel)))
+			return E_FAIL;
 	}
 	return S_OK;
 }
@@ -212,8 +215,8 @@ HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel, const wstring str
 		return E_FAIL;
 
 	//* 05 For. Save Vtf Texture */
-	if (FAILED(Save_Model_Vtf(strFilePath, pTexture)))
-		return E_FAIL;
+	/*if (FAILED(Save_Model_Vtf(strFilePath, pTexture)))
+		return E_FAIL;*/
 
 	/* 06 For. map */
 	if (nullptr != Find_Model_Vtf(pModel->Get_Name()))
@@ -443,6 +446,10 @@ HRESULT CModel_Manager::Import_Model_Data_From_Bin_In_Tool(_uint iLevelIndex, co
 
 		if (FAILED(Import_Socket(strFinalFolderPath, pModel)))
 			return E_FAIL;
+
+		if (FAILED(Import_Animation_KeyFrameSpeed(strFinalFolderPath, pModel)))
+			return E_FAIL;
+
 	}
 
 	if (ppOut != nullptr)
@@ -530,6 +537,9 @@ HRESULT CModel_Manager::Import_Model_Data_From_Bin_In_Game(_uint iLevelIndex, co
 			// 이 클래스에 Save_Model_Vtf도 내부 필터 제거
 
 		if (FAILED(Import_Socket(strFinalFolderPath, pModel)))
+			return E_FAIL;
+
+		if (FAILED(Import_Animation_KeyFrameSpeed(strFinalFolderPath, pModel)))
 			return E_FAIL;
 	}
 
@@ -755,7 +765,7 @@ HRESULT CModel_Manager::Export_Animation(const wstring& strFinalFolderPath, CMod
 		File->Write<string>(CUtils::ToString(Animation->m_strName));
 		File->Write<_float>(Animation->m_fDuration);
 		File->Write<_float>(Animation->m_fTickPerSecond);
-		File->Write<_float>(Animation->m_fSpeed);
+		File->Write<_float>(Animation->m_fOriginSpeed);
 		File->Write<_bool>(b);
 		File->Write<_bool>(Animation->m_bLoop);
 		File->Write<_bool>(b);
@@ -769,9 +779,7 @@ HRESULT CModel_Manager::Export_Animation(const wstring& strFinalFolderPath, CMod
 			{
 				File->Write(&Channel->m_KeyFrames[i], sizeof(KEYFRAME));
 			}
-
 		}
-
 	}
 	return S_OK;
 }
@@ -797,6 +805,51 @@ HRESULT CModel_Manager::Export_Socket(const wstring& strFinalFolderPath, CModel*
 	{
 		File->Write<_uint>(SocketIndices[i]);
 		File->Write<Vec3>(SocketCustomPivotRotaiton[i]);
+	}
+
+	return S_OK;
+}
+
+HRESULT CModel_Manager::Export_Animation_KeyFrameSpeed(const wstring& strFinalPath, CModel* pModel)
+{
+	if (pModel == nullptr)
+		return E_FAIL;
+
+	wstring strSocketFilePath = strFinalPath + L".KeyFrameSpeed";
+	auto path = filesystem::path(strSocketFilePath);
+	filesystem::create_directories(path.parent_path());
+
+	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
+	File->Open(strSocketFilePath, FileMode::Write);
+
+	/* 전체 애니메이션 갯수*/
+	vector<CAnimation*> Anims = pModel->Get_Animations();
+	const _uint iAnimCount = Anims.size();
+	File->Write<_uint>(iAnimCount);
+	for (size_t i = 0; i < iAnimCount; i++)
+	{
+		if (nullptr != Anims[i])
+		{
+			vector<ANIM_SPEED_DESC> Descs = Anims[i]->Get_SpeedDescs();
+
+			/* 현재 애니메이션의 스피드 컨테이너 소유 유무*/
+			const _bool bHave = !Descs.empty();
+			File->Write<_bool>(bHave);
+
+			if (bHave)
+			{
+				/* 스피드 컨테이너 원소 갯수 */
+				File->Write<_uint>(Descs.size());
+				for (auto& desc : Descs)
+				{
+					/* 원소 값 */
+					File->Write<_float>(desc.fStartFrame);
+					File->Write<_float>(desc.fEndFrame);
+					File->Write<_float>(desc.fStartSpeed);
+					File->Write<_float>(desc.fEndSpeed);
+				}
+			}
+		}
 	}
 
 	return S_OK;
@@ -1195,7 +1248,7 @@ HRESULT CModel_Manager::Import_Animation(const wstring strFinalPath, CModel* pMo
 		pAnimation->m_strName = CUtils::ToWString(File->Read<string>());
 		File->Read<_float>(pAnimation->m_fDuration);
 		File->Read<_float>(pAnimation->m_fTickPerSecond);
-		File->Read<_float>(pAnimation->m_fSpeed);
+		File->Read<_float>(pAnimation->m_fOriginSpeed);
 
 		_bool b;
 		File->Read<_bool>(b);
@@ -1231,6 +1284,54 @@ HRESULT CModel_Manager::Import_Animation(const wstring strFinalPath, CModel* pMo
 	//	return E_FAIL;
 
 	return S_OK;
+}
+
+HRESULT CModel_Manager::Import_Animation_KeyFrameSpeed(const wstring strFinalPath, CModel* pModel)
+{
+	if (nullptr == pModel)
+		return E_FAIL;
+
+	wstring strAnimationFilePath = strFinalPath + L".KeyFrameSpeed";
+	auto path = filesystem::path(strAnimationFilePath);
+
+	if (!filesystem::exists(path))
+		return S_OK;
+
+	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
+	File->Open(strAnimationFilePath, FileMode::Read);
+
+
+	/* 전체 애니메이션 갯수 */
+	_uint iAnimCunt = 0;
+	File->Read<_uint>(iAnimCunt);
+
+	for (size_t i = 0; i < iAnimCunt; i++)
+	{
+		CAnimation* pAnim = pModel->Get_Animation(i);
+		
+		if (nullptr == pAnim)
+			continue;
+		
+		/* 스피드 컨테이너 소유 유무*/
+		_bool bHave = FALSE;
+		File->Read<_bool>(bHave);
+		if (bHave)
+		{
+			/* 스피드 컨테이너 원소 갯수*/
+			_uint descCount = 0;
+			File->Read<_uint>(descCount);
+			for (size_t k = 0; k < descCount; k++)
+			{
+				ANIM_SPEED_DESC desc;
+				File->Read<_float>(desc.fStartFrame);
+				File->Read<_float>(desc.fEndFrame);
+				File->Read<_float>(desc.fStartSpeed);
+				File->Read<_float>(desc.fEndSpeed);
+
+				pAnim->Add_SpeedDesc(desc);
+			}
+		}
+	}
 }
 
 HRESULT CModel_Manager::Import_Socket(const wstring strFinalPath, CModel* pModel)

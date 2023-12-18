@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "..\Public\VIBuffer_Trail.h"
 #include "Shader.h"
 #include "Texture.h"
