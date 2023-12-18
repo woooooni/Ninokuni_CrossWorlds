@@ -36,6 +36,8 @@ public:
 	_bool Get_Active() { return m_bActive; }
 	virtual void Set_Active(_bool bActive) { m_bActive = bActive; }
 
+	void Set_ChildActive(_bool bActive);
+
 public:
 	virtual HRESULT Initialize_Prototype() override { return S_OK; }
 	virtual HRESULT Initialize(void* pArg) override;

@@ -13,6 +13,7 @@
 #include "UI_Cursor.h"
 #include "UI_LevelUp.h"
 #include "UI_MapName.h"
+#include "UI_BtnBack.h"
 #include "UI_BtnClose.h"
 #include "UI_MainMenu.h"
 #include "UI_BtnAccept.h"
@@ -26,29 +27,40 @@
 #include "UI_SubMenu_Shop.h"
 #include "UI_BtnInventory.h"
 #include "UI_PlayerEXPBar.h"
+#include "UI_MonsterHP_Bar.h"
 #include "UI_MenuSeparator.h"
 #include "UI_BtnQuickQuest.h"
+#include "UI_Setting_Slider.h"
 #include "UI_Setting_Window.h"
 #include "UI_BtnShowSetting.h"
 #include "UI_WindowWorldMap.h"
+#include "UI_Setting_Section.h"
 #include "UI_SubMenu_Imajinn.h"
 #include "UI_BtnChangeCamera.h"
 #include "UI_Btn_WorldMapIcon.h"
+#include "UI_Default_BackCloud.h"
 #include "UI_Loading_Character.h"
 #include "UI_SubMenu_Character.h"
 #include "UI_SubMenu_Equipment.h"
+#include "UI_Setting_BtnVolume.h"
+#include "UI_Default_BackStars.h"
 #include "UI_Default_Background.h"
 #include "UI_BtnCharacterSelect.h"
 #include "UI_Loading_Background.h"
 #include "UI_WeaponSection_Slot.h"
+#include "UI_MonsterHP_Elemental.h"
 #include "UI_ImajinnSection_Slot.h"
 #include "UI_SkillSection_BtnRoll.h"
 #include "UI_SkillSection_BtnJump.h"
+#include "UI_MonsterHP_Background.h"
 #include "UI_ImajinnSection_Vehicle.h"
 #include "UI_SkillSection_Background.h"
 #include "UI_ImajinnSection_Emoticon.h"
+#include "UI_MonsterHP_ElementalFrame.h"
+#include "UI_SkillSection_Interaction.h"
 #include "UI_ImajinnSection_Background.h"
 #include "UI_WeaponSection_DefaultWeapon.h"
+#include "UI_SkillSection_BtnInteraction.h"
 
 IMPLEMENT_SINGLETON(CUI_Manager)
 
@@ -432,8 +444,8 @@ HRESULT CUI_Manager::Ready_LobbyUIs()
 
 //	UIDesc.fCX = 957.f;
 //	UIDesc.fCY = 580.f;
-	UIDesc.fCX = _float(g_iWinSizeX);
-	UIDesc.fCY = _float(g_iWinSizeY);
+	UIDesc.fCX = /* _float(g_iWinSizeX); */ 2000.f;
+	UIDesc.fCY = /* _float(g_iWinSizeY); */ 1600.f;
 	UIDesc.fX = g_iWinSizeX * 0.5f;
 	UIDesc.fY = g_iWinSizeY * 0.5f;
 
@@ -445,6 +457,20 @@ HRESULT CUI_Manager::Ready_LobbyUIs()
 	if (nullptr == m_pSettingBG)
 		return E_FAIL;
 	Safe_AddRef(m_pSettingBG);
+
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 128.f * 0.6f;
+	UIDesc.fCY = 128.f * 0.55f;
+	UIDesc.fX = UIDesc.fCX * 0.5f + 3.f;
+	UIDesc.fY = UIDesc.fCY * 0.5f;
+
+	pBG = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVELID::LEVEL_LOBBY, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Btn_Back"), &UIDesc, &pBG)))
+		return E_FAIL;
+	if (nullptr == pBG)
+		return E_FAIL;
 
 	// Veil
 //	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
@@ -1306,6 +1332,52 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(pBackground);
 
+	// MonsterHP
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 300.f * 0.8f;
+	UIDesc.fCY = 50.f * 0.8f;
+	UIDesc.fX = g_iWinSizeX * 0.5f + 30.f;
+	UIDesc.fY = UIDesc.fCY * 0.5f + 35.f;
+
+	pBackground = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MonsterHP_Background"), &UIDesc, &pBackground)))
+		return E_FAIL;
+	m_pMonsterHPBack = dynamic_cast<CUI_MonsterHP_Background*>(pBackground);
+	if (nullptr == m_pMonsterHPBack)
+		return E_FAIL;
+	Safe_AddRef(m_pMonsterHPBack);
+
+	pBackground = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MonsterHP_Bar"), &UIDesc, &pBackground)))
+		return E_FAIL;
+	m_pMonsterHPBar = dynamic_cast<CUI_MonsterHP_Bar*>(pBackground);
+	if (nullptr == m_pMonsterHPBar)
+		return E_FAIL;
+	Safe_AddRef(m_pMonsterHPBar);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 128.f * 0.6f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = g_iWinSizeX * 0.5f - 130.f;
+	UIDesc.fY = UIDesc.fCY * 0.5f + 15.f;
+
+	pBackground = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MonsterHP_Elemental_Frame"), &UIDesc, &pBackground)))
+		return E_FAIL;
+	m_pMonsterFrame = dynamic_cast<CUI_MonsterHP_ElementalFrame*>(pBackground);
+	if (nullptr == m_pMonsterFrame)
+		return E_FAIL;
+	Safe_AddRef(m_pMonsterFrame);
+
+	UIDesc.fCX = 64.f * 0.6f;
+	UIDesc.fCY = UIDesc.fCX;
+	pBackground = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MonsterHP_Elemental"), &UIDesc, &pBackground)))
+		return E_FAIL;
+	m_pMonsterElemental = dynamic_cast<CUI_MonsterHP_Elemental*>(pBackground);
+	if (nullptr == m_pMonsterElemental)
+		return E_FAIL;
+	Safe_AddRef(m_pMonsterElemental);
 
 	return S_OK;
 }
@@ -1456,6 +1528,28 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 			OnOff_WorldMap(true); // 켠다
 	}
 
+	if (KEY_TAP(KEY::P))
+	{
+		if (m_pMonsterHPBack->Get_Active()) // 켜져있다면
+			OnOff_MonsterHP(false); // 끈다
+		else // 꺼져있다면
+			OnOff_MonsterHP(true, ELEMENTAL_TYPE::DARK); // 임시
+	}
+
+	if (KEY_TAP(KEY::F9))
+	{
+		if (!m_pDefaultBG->Get_Active())
+		{
+			m_pDefaultBG->Set_Active(true);
+			OnOff_GamePlaySetting(false);
+		}
+		else
+		{
+			OnOff_GamePlaySetting(true);
+			m_pDefaultBG->Set_Active(false);
+		}
+	}
+
 	return S_OK;
 }
 
@@ -1548,6 +1642,8 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 		m_pBtnQuest->Set_Active(true);
 		m_pSkillBG->Set_Active(true);
 		m_pImajinnBG->Set_Active(true);
+
+		OnOff_MonsterHP(true);
 	}
 	else // Off
 	{
@@ -1558,6 +1654,8 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 		m_pBtnQuest->Set_Active(false);
 		m_pSkillBG->Set_Active(false);
 		m_pImajinnBG->Set_Active(false);
+	
+		OnOff_MonsterHP(false);
 	}
 
 	return S_OK;
@@ -1628,6 +1726,36 @@ HRESULT CUI_Manager::OnOff_QuestWindow(_bool bOnOff)
 	else // Off
 	{
 		m_pWindowQuest->Set_Active(false);
+	}
+
+	return S_OK;
+}
+
+HRESULT CUI_Manager::OnOff_MonsterHP(_bool bOnOff, ELEMENTAL_TYPE eType)
+{
+	// 몬스터가 Target이 되면 true를 던진다.
+	// Frame Active true
+	
+	// 이전에, 몬스터의 레벨 정보와 속성은 Elemental에 세팅한다.
+	// 몬스터의 이름은 HPBar Background에 세팅한다.
+	// Tick에 MonsterHPBar의 Active가 true면 현재의 체력을 계속 받아올 수 있도록 설정한다.
+	
+	if (bOnOff)
+	{
+		if (ELEMENTAL_TYPE::ELEMENTAL_END == eType)
+			return E_FAIL;
+
+		m_pMonsterHPBack->Set_Active(true);
+		m_pMonsterHPBar->Set_Active(true);
+		m_pMonsterFrame->Set_Active(true);
+		m_pMonsterElemental->Set_Active(true);
+	}
+	else
+	{
+		m_pMonsterHPBack->Set_Active(false);
+		m_pMonsterHPBar->Set_Active(false);
+		m_pMonsterFrame->Set_Active(false);
+		m_pMonsterElemental->Set_Active(false);
 	}
 
 	return S_OK;
@@ -2160,6 +2288,9 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Common_Default_Background"),
 		CUI_Default_Background::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Common_Default_BackStars"),
+		CUI_Default_BackStars::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
 
 	// 무기 슬롯은 Skill Section BG의 자식으로 Clone된다.
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_WeaponSection_Slot_First"),
@@ -2186,6 +2317,31 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_PlayerStatus_EXPBar"),
 		CUI_PlayerEXPBar::Create(m_pDevice, m_pContext, CUI_PlayerEXPBar::UIEXP_BAR), LAYER_UI)))
+		return E_FAIL;
+
+	// Monster HPBar
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_MonsterHP_Background"),
+		CUI_MonsterHP_Background::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_MonsterHP_Bar"),
+		CUI_MonsterHP_Bar::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_MonsterHP_Elemental_Frame"),
+		CUI_MonsterHP_ElementalFrame::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_MonsterHP_Elemental"),
+		CUI_MonsterHP_Elemental::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillSection_BtnInteraction"),
+		CUI_SkillSection_BtnInteraction::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillSection_Interaction"),
+		CUI_SkillSection_Interaction::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Common_TitleLine"),
+		CUI_Basic::Create(m_pDevice, m_pContext, L"UI_Common_TitleLine", CUI_Basic::UI_BASIC::UISTATIC_TITLELINE), LAYER_UI)))
 		return E_FAIL;
 
 	return S_OK;
@@ -2247,6 +2403,9 @@ HRESULT CUI_Manager::Ready_UILobbyPrototypes()
 	// 상단바 Default Deco(1)
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Common_MenuDeco_Left"),
 		CUI_Basic::Create(m_pDevice, m_pContext, L"UI_Common_MenuDeco_Left", CUI_Basic::UI_BASIC::UISTATIC_MENUDECO_L), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Common_MenuDeco_Right"),
+		CUI_Basic::Create(m_pDevice, m_pContext, L"UI_Common_MenuDeco_Right", CUI_Basic::UI_BASIC::UISTATIC_MENUDECO_R), LAYER_UI)))
 		return E_FAIL;
 
 	// 좌상단 Title Text
@@ -2335,6 +2494,37 @@ HRESULT CUI_Manager::Ready_UILobbyPrototypes()
 		CUI_Setting_Icon::Create(m_pDevice, m_pContext, CUI_Setting_Icon::UI_SETTING_ICONTYPE::SETICON_AUDIO), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Icon_Setting_Slider_First"),
+		CUI_Setting_Slider::Create(m_pDevice, m_pContext, CUI_Setting_Slider::UI_SETTING_SLIDERTYPE::FIRST_SLIDER), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Icon_Setting_Slider_Second"),
+		CUI_Setting_Slider::Create(m_pDevice, m_pContext, CUI_Setting_Slider::UI_SETTING_SLIDERTYPE::SECOND_SLIDER), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Icon_Setting_Slider_Third"),
+		CUI_Setting_Slider::Create(m_pDevice, m_pContext, CUI_Setting_Slider::UI_SETTING_SLIDERTYPE::THIRD_SLIDER), LAYER_UI)))
+		return E_FAIL;
+	
+	//Audio Section
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Setting_Section_Audio"),
+		CUI_Setting_Section::Create(m_pDevice, m_pContext, L"UI_Setting_Section_Audio", CUI_Setting_Section::UI_SETTING_SECTION::SECTION_AUDIO), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Setting_BtnVolume_Minus"),
+		CUI_Setting_BtnVolume::Create(m_pDevice, m_pContext, CUI_Setting_BtnVolume::UI_SETTING_BTNTYPE::SETBTN_MINUS), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Setting_BtnVolume_Plus"),
+		CUI_Setting_BtnVolume::Create(m_pDevice, m_pContext, CUI_Setting_BtnVolume::UI_SETTING_BTNTYPE::SETBTN_PLUS), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Btn_Back"),
+		CUI_BtnBack::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_DefaultBackground_Cloud"),
+		CUI_Default_BackCloud::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+
 	return S_OK;
 }
 
@@ -2369,6 +2559,11 @@ void CUI_Manager::Free()
 	Safe_Release(m_pWorldMapBG);
 	Safe_Release(m_pSkillBG);
 	Safe_Release(m_pImajinnBG);
+
+	Safe_Release(m_pMonsterHPBar);
+	Safe_Release(m_pMonsterHPBack);
+	Safe_Release(m_pMonsterFrame);
+	Safe_Release(m_pMonsterElemental);
 
 	for (auto& pBasic : m_Basic)
 		Safe_Release(pBasic);

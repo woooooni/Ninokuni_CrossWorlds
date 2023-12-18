@@ -46,6 +46,8 @@ public:
 	HRESULT OnOff_MainMenu(_bool bOnOff);
 	HRESULT OnOff_QuestWindow(_bool bOnOff);
 
+	HRESULT OnOff_MonsterHP(_bool bOnOff, ELEMENTAL_TYPE eType = ELEMENTAL_TYPE::ELEMENTAL_END);
+
 	HRESULT OnOff_CloseButton(_bool bOnOff);
 
 	HRESULT OnOff_SubMenu(_bool bOnOff, _uint iMagicNum);
@@ -83,6 +85,12 @@ private:
 
 	// PlayerStatus
 	vector<class CUI_PlayerEXPBar*> m_PlayerEXP;
+
+	// MonsterHP
+	class CUI_MonsterHP_Background* m_pMonsterHPBack = { nullptr };
+	class CUI_MonsterHP_Bar* m_pMonsterHPBar = { nullptr };
+	class CUI_MonsterHP_ElementalFrame* m_pMonsterFrame = { nullptr };
+	class CUI_MonsterHP_Elemental* m_pMonsterElemental = { nullptr };
 
 private:
 	vector<class CUI_Basic*> m_Basic;

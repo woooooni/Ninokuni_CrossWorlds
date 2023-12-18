@@ -14,27 +14,27 @@ CUI_WeaponSection_DefaultWeapon::CUI_WeaponSection_DefaultWeapon(const CUI_Weapo
 {
 }
 
-void CUI_WeaponSection_DefaultWeapon::Set_Weapon(PLAYERID eID)
+void CUI_WeaponSection_DefaultWeapon::Set_Weapon(CHARACTER_TYPE eID)
 {
 	switch(eID)
 	{
-	case PLAYERID::PLAYER_SWORDMAN:
+	case CHARACTER_TYPE::SWORD_MAN:
 		m_eWeaponType = UI_DEFAULTWEAPON::DEFAULTWEAPON_SWORDMAN;
 		break;
 
-	case PLAYERID::PLAYER_DESTROYER:
+	case CHARACTER_TYPE::DESTROYER:
 		m_eWeaponType = UI_DEFAULTWEAPON::DEFAULTWEAPON_DESTROYER;
 		break;
 
-	case PLAYERID::PLAYER_ENGINEER:
+	case CHARACTER_TYPE::ENGINEER:
 		m_eWeaponType = UI_DEFAULTWEAPON::DEFAULTWEAPON_ENGINEER;
 		break;
 
-	case PLAYERID::PLAYER_WITCH:
+	case CHARACTER_TYPE::WITCH:
 		m_eWeaponType = UI_DEFAULTWEAPON::DEFAULTWEAPON_WITCH;
 		break;
 
-	case PLAYERID::PLAYER_ROGUE:
+	case CHARACTER_TYPE::ROGUE:
 		m_eWeaponType = UI_DEFAULTWEAPON::DEFAULTWEAPON_ROGUE;
 		break;
 	}

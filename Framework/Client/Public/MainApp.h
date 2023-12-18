@@ -73,6 +73,7 @@ private:
 private:
 	HRESULT Initialize_Client();
 	HRESULT Ready_Prototype_Component();
+	HRESULT Ready_UI_TextureComponent();
 
 public:
 	static CMainApp* Create();

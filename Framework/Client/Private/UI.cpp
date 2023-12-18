@@ -17,6 +17,15 @@ CUI::CUI(const CUI& rhs)
 {
 }
 
+void CUI::Set_ChildActive(_bool bActive)
+{
+	for (auto& pChildUI : m_pChild)
+	{
+		if (nullptr != pChildUI)
+			pChildUI->Set_Active(bActive);
+	}
+}
+
 HRESULT CUI::Initialize(void* pArg)
 {
 	if (nullptr != pArg)

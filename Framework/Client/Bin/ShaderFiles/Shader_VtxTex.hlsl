@@ -5,6 +5,7 @@ Texture2D	g_DiffuseTexture;
 Texture2D	g_DepthTexture;
 
 float		g_Alpha = 1.f;
+float		g_Time;
 
 struct VS_IN
 {
@@ -34,6 +35,23 @@ VS_OUT VS_MAIN(VS_IN In)
 
 
 	
+	return Out;
+}
+
+VS_OUT VS_MAIN_CLOUD(VS_IN In)
+{
+	VS_OUT		Out = (VS_OUT)0;
+
+	matrix		matWV, matWVP;
+
+	matWV = mul(g_WorldMatrix, g_ViewMatrix);
+	matWVP = mul(matWV, g_ProjMatrix);
+
+	float fSpeed = 0.005f;
+
+	Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
+	Out.vTexUV = In.vTexUV + float2(g_Time * fSpeed, 0);
+
 	return Out;
 }
 
@@ -85,6 +103,19 @@ PS_OUT PS_MAIN_FADE(PS_IN In)
 	return Out;
 }
 
+PS_OUT PS_MAIN_CLOUD(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+	Out.vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
+
+	Out.vColor.a *= g_Alpha;
+	//  °ËÀº»ö 0 0 0
+	if (Out.vColor.r <= 0.2f && Out.vColor.g <= 0.2f && Out.vColor.b <= 0.2f)
+		discard;
+
+	return Out;
+}
 
 technique11 DefaultTechnique
 {
@@ -119,5 +150,16 @@ technique11 DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_FADE();
+	}
+
+	pass CloudPass // 3
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_Default, 0);
+		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+		VertexShader = compile vs_5_0 VS_MAIN_CLOUD();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN_CLOUD();
 	}
 }

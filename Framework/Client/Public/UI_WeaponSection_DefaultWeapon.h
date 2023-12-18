@@ -15,7 +15,7 @@ protected:
 	virtual ~CUI_WeaponSection_DefaultWeapon() = default;
 
 public:
-	void Set_Weapon(PLAYERID eID);
+	void Set_Weapon(CHARACTER_TYPE eID);
 
 	_bool Get_Resizable() { return m_bResizable; }
 	void Set_Resizable(_bool bResize) { m_bResizable = bResize; }

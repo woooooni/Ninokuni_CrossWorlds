@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "UI_Default_Background.h"
+#include "UI_Default_BackStars.h"
 #include "GameInstance.h"
 
 CUI_Default_Background::CUI_Default_Background(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
@@ -34,6 +35,32 @@ HRESULT CUI_Default_Background::Initialize(void* pArg)
 	m_fAlpha = 1.f;
 	m_bActive = false;
 
+	// 효과를 생성한다.
+	CGameObject* pStar = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Common_Default_BackStars"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pStar)
+		return E_FAIL;
+	m_pEffect = dynamic_cast<CUI_Default_BackStars*>(pStar);
+	m_pEffect->Set_Active(false);
+
+	// Cloud
+	Make_Child(0.f, 20.f, g_iWinSizeX, g_iWinSizeY, TEXT("Prototype_GameObject_UI_DefaultBackground_Cloud"));
+
+	// Title Line
+	_float fCY = 84.f;
+	Make_Child(0.f, -(g_iWinSizeY * 0.5f) + fCY * 0.5f, g_iWinSizeX, 84.f, TEXT("Prototype_GameObject_UI_Common_TitleLine"));
+
+	_float2 fLeftSize = _float2(128.f * 0.8f, 64.f * 0.6f);
+	Make_Child(-(g_iWinSizeX * 0.5f) + fLeftSize.x * 0.5f, -(g_iWinSizeY * 0.5f) + fLeftSize.y * 0.5f,
+		fLeftSize.x, fLeftSize.y, TEXT("Prototype_GameObject_UI_Common_MenuDeco_Left"));
+
+	_float2 fRightSize = _float2(64.f * 0.6f, 64.f * 0.6f);
+	Make_Child((g_iWinSizeX * 0.5f) - fRightSize.x * 0.5f, -(g_iWinSizeY * 0.5f) + fRightSize.y * 0.5f,
+		fRightSize.x, fRightSize.y, TEXT("Prototype_GameObject_UI_Common_MenuDeco_Right"));
+
+	_float2 fBtnSize = _float2(128.f * 0.6f, 128.f * 0.55f);
+	Make_Child(-(g_iWinSizeX * 0.5f) + (fBtnSize.x * 0.5f + 3.f), -(g_iWinSizeY * 0.5f) + fBtnSize.y * 0.5f,
+		fBtnSize.x, fBtnSize.y, TEXT("Prototype_GameObject_UI_Btn_Back"));
+
 	return S_OK;
 }
 
@@ -41,6 +68,12 @@ void CUI_Default_Background::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (!m_pEffect->Get_Active())
+			m_pEffect->Set_Active(true);
+		else
+			m_pEffect->Tick(fTimeDelta);
+
+		
 		__super::Tick(fTimeDelta);
 	}
 }
@@ -49,7 +82,12 @@ void CUI_Default_Background::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (m_pEffect->Get_Active())
+			m_pEffect->LateTick(fTimeDelta);
+
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+
+		__super::LateTick(fTimeDelta);
 	}
 }
 
@@ -63,6 +101,11 @@ HRESULT CUI_Default_Background::Render()
 		m_pShaderCom->Begin(0);
 
 		m_pVIBufferCom->Render();
+
+		if (m_pEffect->Get_Active())
+			m_pEffect->Render();
+
+		__super::Render();
 	}
 
 	return S_OK;
@@ -143,5 +186,6 @@ void CUI_Default_Background::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pEffect);
 	Safe_Release(m_pTextureCom);
 }
