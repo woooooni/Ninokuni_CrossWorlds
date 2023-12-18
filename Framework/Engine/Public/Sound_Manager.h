@@ -28,6 +28,7 @@ public:
 
 	const _int Get_SoundFileIndex(TCHAR* pSoundKey);
 	TCHAR* Get_SoundFileKey(const _uint iIndex);
+	TCHAR* Get_SoundFileKey(string strKey);
 
 private:
 	void Search_Recursive(const std::string& currentPath);

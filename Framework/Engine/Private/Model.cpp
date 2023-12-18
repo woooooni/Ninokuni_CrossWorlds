@@ -591,6 +591,18 @@ CAnimation* CModel::Get_Animation(const _uint& iIndex)
 	return m_Animations[iIndex];
 }
 
+CAnimation* CModel::Get_Animation(const string strName)
+{
+	for (auto& pAnim : m_Animations)
+	{
+		if (pAnim->Get_AnimationName() == CUtils::ToWString(strName))
+		{
+			return pAnim;
+		}
+	}
+	return nullptr;
+}
+
 void CModel::Set_KeyFrame_By_Progress(_float fProgress)
 {
 	std::clamp(fProgress, 0.f, 1.f);

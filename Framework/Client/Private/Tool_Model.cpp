@@ -43,9 +43,6 @@ HRESULT CTool_Model::Initialize()
 	if (FAILED(Ready_WeaponPrototypes()))
 		return E_FAIL;
 
-	if (FAILED(Ready_AutoAnimData()))
-		return E_FAIL;
-
 	if (FAILED(Ready_SoundKey()))
 		return E_FAIL;
 
@@ -64,8 +61,8 @@ void CTool_Model::Tick(_float fTimeDelta)
 	{
 		Tick_Model(fTimeDelta);
 		Tick_Animation(fTimeDelta);
-		Tick_Socket(fTimeDelta);
 		Tick_Event(fTimeDelta);
+		Tick_Socket(fTimeDelta);
 		Tick_Costume(fTimeDelta);
 	}
 	ImGui::End();
@@ -102,7 +99,15 @@ HRESULT CTool_Model::Clear_ToolAnimationData()
 	m_iAutoAnimIndex = 0;
 
 	m_iSoundEventIndex = -1;
+	m_fCurEventFrame = 0.f;
 
+	return S_OK;
+}
+
+HRESULT CTool_Model::Claer_EventData()
+{
+	m_iSoundEventIndex = -1;
+	m_fCurEventFrame = 0.f;
 	return S_OK;
 }
 
@@ -310,18 +315,6 @@ HRESULT CTool_Model::Ready_WeaponPrototypes()
 		pWeapon = nullptr;
 		pGameObject = nullptr;
 	}
-
-	return S_OK;
-}
-
-HRESULT CTool_Model::Ready_AutoAnimData()
-{
-	vector<_float> vData = { -270.f, -180.f, -90.f, 0.f, 90.f, 180.f, 270.f };
-
-	for (auto x : vData)
-		for (auto y : vData)
-			for (auto z : vData)
-				m_vAutoSocket.push_back(Vec3{ x, y, z });
 
 	return S_OK;
 }
@@ -597,6 +590,8 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 					{
 						if (FAILED(GI->Export_Model_Data_FromPath(iSelectedExportModelType, CUtils::ToWString(szAllObjectExportFolderName))))
 							MSG_BOX("Failed Export.");
+						else
+							MSG_BOX("Save Success");
 
 					}
 					else
@@ -664,6 +659,8 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 				{
 					pModelCom->Set_Animation(i);
 					sprintf_s(szAnimationName, CUtils::ToString(pModelCom->Get_CurrAnimation()->Get_AnimationName()).c_str());
+
+					Claer_EventData();
 				}
 			}
 			ImGui::EndListBox();
@@ -1128,7 +1125,7 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 
 void CTool_Model::Tick_Event(_float fTimeDelta)
 {
-	if (ImGui::CollapsingHeader("Event"))
+	if (ImGui::CollapsingHeader("Animation Event"))
 	{
 		if (Is_Exception())
 			return;

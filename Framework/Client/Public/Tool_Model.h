@@ -17,8 +17,8 @@ public:
 private:
 	void Tick_Model(_float fTimeDelta);
 	void Tick_Animation(_float fTimeDelta);
-	void Tick_Socket(_float fTimeDelta);
 	void Tick_Event(_float fTimeDelta);
+	void Tick_Socket(_float fTimeDelta);
 	void Tick_Costume(_float fTimeDelta);
 	void Tick_Dummys(_float fTimeDelta);
 
@@ -30,7 +30,6 @@ private:
 	HRESULT Ready_DebugDraw();
 	HRESULT Ready_Dummy();
 	HRESULT Ready_WeaponPrototypes();
-	HRESULT Ready_AutoAnimData();
 	HRESULT Ready_SoundKey();
 
 	/* In Impory Animation */
@@ -40,6 +39,7 @@ private:
 	const _bool Is_Exception();
 
 	HRESULT Clear_ToolAnimationData();
+	HRESULT Claer_EventData();
 
 	Vec3 Calculate_SocketPosition();
 	Matrix Calculate_SocketWorldMatrix();

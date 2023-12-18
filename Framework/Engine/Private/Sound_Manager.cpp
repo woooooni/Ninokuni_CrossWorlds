@@ -2,6 +2,9 @@
 #include <io.h>
 #include <tchar.h>
 #include <filesystem>
+
+#include "Utils.h"
+
 namespace fs = std::filesystem;
 
 IMPLEMENT_SINGLETON(CSound_Manager)
@@ -127,6 +130,16 @@ TCHAR* CSound_Manager::Get_SoundFileKey(const _uint iIndex)
 			iKeyIndex++;
 	}
 
+	return nullptr;
+}
+
+TCHAR* CSound_Manager::Get_SoundFileKey(string strKey)
+{
+	for (auto& Pair : m_mapSound)
+	{
+		if (CUtils::TCharToString(Pair.first) == strKey)
+			return Pair.first;
+	}
 	return nullptr;
 }
 

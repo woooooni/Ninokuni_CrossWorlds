@@ -11,6 +11,8 @@
 #include "Channel.h"
 #include "GameInstance.h"
 
+#include "Sound_Manager.h"
+
 USING(Engine)
 IMPLEMENT_SINGLETON(CModel_Manager);
 
@@ -61,6 +63,10 @@ HRESULT CModel_Manager::Export_Model_Data(CModel* pModel, const wstring& strSubF
 
 		if (FAILED(Export_Animation_KeyFrameSpeed(strFinalFolderPath, pModel)))
 			return E_FAIL;
+
+		if (FAILED(Export_Animation_Events(strFinalFolderPath, pModel)))
+			return E_FAIL;
+
 	}
 	return S_OK;
 }
@@ -450,6 +456,8 @@ HRESULT CModel_Manager::Import_Model_Data_From_Bin_In_Tool(_uint iLevelIndex, co
 		if (FAILED(Import_Animation_KeyFrameSpeed(strFinalFolderPath, pModel)))
 			return E_FAIL;
 
+		if (FAILED(Import_Animation_Events(strFinalFolderPath, pModel)))
+			return E_FAIL;
 	}
 
 	if (ppOut != nullptr)
@@ -540,6 +548,9 @@ HRESULT CModel_Manager::Import_Model_Data_From_Bin_In_Game(_uint iLevelIndex, co
 			return E_FAIL;
 
 		if (FAILED(Import_Animation_KeyFrameSpeed(strFinalFolderPath, pModel)))
+			return E_FAIL;
+
+		if (FAILED(Import_Animation_Events(strFinalFolderPath, pModel)))
 			return E_FAIL;
 	}
 
@@ -852,6 +863,45 @@ HRESULT CModel_Manager::Export_Animation_KeyFrameSpeed(const wstring& strFinalPa
 		}
 	}
 
+	return S_OK;
+}
+
+HRESULT CModel_Manager::Export_Animation_Events(const wstring& strFinalPath, CModel* pModel)
+{
+	if (nullptr == pModel)
+		return E_FAIL;
+
+	Json json;
+	vector<CAnimation*>	Anims = pModel->Get_Animations();
+	const _uint			iAnimCount = Anims.size();
+
+	for (size_t i = 0; i < iAnimCount; i++)
+	{
+		if (nullptr != Anims[i])
+		{
+			/* Sound */
+			Anims[i]->Sort_SoundEvents();
+
+			const vector<pair<_float, ANIM_EVENT_SOUND_DESC>>& SountEvents = Anims[i]->Get_SoundEvents();
+
+			for (auto& SoundEvent : SountEvents)
+			{
+				json["Sound Event"].push_back({
+					{"Animation Name", CUtils::ToString(Anims[i]->Get_AnimationName())},
+					{"KeyFrame", SoundEvent.first},
+					{"Sound Key", CUtils::TCharToString(SoundEvent.second.pSoundKey)},
+					{"Channel ID", (_uint)(SoundEvent.second.iChannelID)},
+					{"Volume", SoundEvent.second.fVolume },
+					{"Stop", SoundEvent.second.bStop}
+					});
+
+			}
+		}
+	}
+
+	json.dump(2);
+	
+	GI->Json_Save(strFinalPath + L".json", json);
 	return S_OK;
 }
 
@@ -1333,6 +1383,46 @@ HRESULT CModel_Manager::Import_Animation_KeyFrameSpeed(const wstring strFinalPat
 		}
 	}
 
+	return S_OK;
+}
+
+HRESULT CModel_Manager::Import_Animation_Events(const wstring strFinalPath, CModel* pModel)
+{
+	if (nullptr == pModel)
+		return E_FAIL;
+
+	wstring strAnimationFilePath = strFinalPath + L".json";
+	auto path = filesystem::path(strAnimationFilePath);
+
+	if (!filesystem::exists(path))
+		return S_OK;
+
+	Json json = GI->Json_Load(strAnimationFilePath);
+
+
+	for (const auto& item : json["Sound Event"]) 
+	{
+		string strAnimName;
+		string strSoundFileKey;
+		ANIM_EVENT_SOUND_DESC desc;
+		
+		strAnimName = item["Animation Name"];
+		strSoundFileKey = item["Sound Key"];
+		desc.iChannelID = item["Channel ID"];
+		desc.fVolume = item["Volume"];
+		desc.bStop = item["Stop"];
+		_float fKeyFrame = item["KeyFrame"];
+
+		desc.pSoundKey = CSound_Manager::GetInstance()->Get_SoundFileKey(strSoundFileKey);
+		if (nullptr != desc.pSoundKey)
+		{
+			CAnimation* pAnim = pModel->Get_Animation(strAnimName);
+			if (nullptr != pAnim)
+			{
+				pAnim->Add_SoundEvent(fKeyFrame, desc);
+			}
+		}
+	}
 	return S_OK;
 }
 
