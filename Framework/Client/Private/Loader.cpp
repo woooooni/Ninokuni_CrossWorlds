@@ -384,7 +384,8 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 			|| i == LAYER_TYPE::LAYER_EFFECT
 			|| i == LAYER_TYPE::LAYER_TRAIL
 			|| i == LAYER_TYPE::LAYER_NPC
-			|| i == LAYER_TYPE::LAYER_WEAPON)
+			|| i == LAYER_TYPE::LAYER_WEAPON
+			|| i == LAYER_TYPE::LAYER_DYNAMIC)
 			continue;
 
 		// GI->Clear_Layer(LEVEL_TOOL, i);

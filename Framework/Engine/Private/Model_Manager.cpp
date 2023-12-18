@@ -1332,6 +1332,8 @@ HRESULT CModel_Manager::Import_Animation_KeyFrameSpeed(const wstring strFinalPat
 			}
 		}
 	}
+
+	return S_OK;
 }
 
 HRESULT CModel_Manager::Import_Socket(const wstring strFinalPath, CModel* pModel)
