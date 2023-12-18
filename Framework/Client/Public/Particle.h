@@ -26,6 +26,7 @@ public:
 	{	
 		// 파티클 타입
 		PARTICLEPROJTYPE eParticleType = TYPE_PERSPECTIVE;
+		_bool bParticleSortZ           = false;
 
 		// 반복 여부
 		_bool bParticleLoop = true;
@@ -35,8 +36,8 @@ public:
 		_uint iNumEffectCount    = 10;
 
 		// 위치 (분포 범위)
-		_float3 fRange        = _float3(0.f, 0.f, 0.f);
-		_float fRangeDistance = 0.f;
+		_float3 fRange         = _float3(0.f, 0.f, 0.f);
+		_float2 fRangeDistance = _float2(0.f, 0.f);
 
 #pragma region 크기
 		_bool bScaleSameRate = true; // 정비율
@@ -108,7 +109,7 @@ public:
 		_float3 fBoxMax;
 
 #pragma region 텍스처
-		wstring strDiffuseTetextureName = L"Prototype_Component_Texture_SubUV";
+		wstring strDiffuseTetextureName = L"Prototype_Component_Texture_Particle_Mouse";//L"Prototype_Component_Texture_SubUV";
 		wstring strDiffuseTetexturePath = L"";
 		wstring strAlphaTexturName      = L"";
 		wstring strAlphaTexturPath      = L"";
@@ -159,6 +160,13 @@ public:
 
 		// 보간 시간
 		_float2 fColorDuration = _float2(2.f, 2.f);
+#pragma endregion
+
+#pragma region 블러 // 추후 기능 구현
+		_bool   bBlurColorRandom = false;
+		_float4 fBlurColor       = _float4(1.f, 1.f, 1.f, 1.f);
+		_bool   bBlurPowerRandom = false;
+		_float  fBlurPower       = 1.f;
 #pragma endregion
 
 #pragma region 기타 정보

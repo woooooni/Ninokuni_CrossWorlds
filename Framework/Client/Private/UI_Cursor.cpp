@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UI_Cursor.h"
 #include "GameInstance.h"
+#include "Particle_Manager.h"
 
 CUI_Cursor::CUI_Cursor(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_Cursor")
@@ -54,7 +55,7 @@ void CUI_Cursor::Tick(_float fTimeDelta)
 void CUI_Cursor::LateTick(_float fTimeDelta)
 {
 
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_CURSOR, this);
 }
 
 HRESULT CUI_Cursor::Render()
@@ -67,6 +68,20 @@ HRESULT CUI_Cursor::Render()
 	m_pVIBufferCom->Render();
 
 	return S_OK;
+}
+
+void CUI_Cursor::On_MouseEnter(_float fTimeDelta)
+{
+}
+
+void CUI_Cursor::On_Mouse(_float fTimeDelta)
+{
+	if (KEY_TAP(KEY::LBTN))
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particles_MouseClick"), XMVectorSet(m_ptMouse.x, m_ptMouse.y, 0.f, 1.f));
+}
+
+void CUI_Cursor::On_MouseExit(_float fTimeDelta)
+{
 }
 
 HRESULT CUI_Cursor::Ready_Components()

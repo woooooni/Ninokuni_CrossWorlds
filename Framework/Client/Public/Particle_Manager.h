@@ -22,19 +22,15 @@ public:
 	void	Tick(_float fTimeDelta);
 
 public:
-	HRESULT Generate_Particle(const wstring& strPrototypeParticleName, _matrix TransformMatrix);
-
-
-
+	HRESULT Generate_Particle(const wstring& strPrototypeParticleName, _vector vPosition);
 
 private:
 	ID3D11Device* m_pDevice = nullptr;
 	ID3D11DeviceContext* m_pContext = nullptr;
 
-
 private:
 	HRESULT Ready_Proto_Particles(const wstring& strParticlePath);
-
+	HRESULT Ready_Proto_Particles();
 
 public:
 	virtual void Free() override;

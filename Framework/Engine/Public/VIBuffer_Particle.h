@@ -16,7 +16,8 @@ public:
 		_uint* pNumEffectMaxCount = nullptr;
 
 		// 분포 범위
-		_float3* pRange = nullptr;
+		_float3* pRange         = nullptr;
+		_float2* pRangeDistance = nullptr;
 
 #pragma region 크기
 		_bool*   pScaleSameRate = nullptr;
@@ -130,6 +131,13 @@ public:
 		_float2* pColorDuration = nullptr;
 #pragma endregion
 
+#pragma region 블러
+		_bool*   pBlurColorRandom = nullptr;
+		_float4* pBlurColor = nullptr;
+		_bool*   pBlurPowerRandom = nullptr;
+		_float*  pBlurPower = nullptr;
+#pragma endregion
+
 	} PARTICLE_BUFFER_DESC;
 
 public:
@@ -193,6 +201,8 @@ public:
 		_float  fColorChangeTime;
 		_float3 fNextColor;
 
+		_float fViewZ;
+
 	} PARTICLE_INFO_DESC;
 
 	typedef struct tagParticleShaderDesc
@@ -206,6 +216,9 @@ public:
 		_float3 fAxis;  //12
 		_float  fAngle; //4
 
+		_float3 fBlurColor; //12
+		_float  fBlurPower; //4
+
 	} PARTICLE_SHADER_DESC;
 
 private:
@@ -218,6 +231,8 @@ public:
 	virtual HRESULT Initialize(void* pArg);
 	void Tick(_float fTimeDelta);
 	virtual HRESULT Render(_uint iCount);
+	
+	void Sort_Z(_uint iCount);
 
 public:
 	void Restart_ParticleBufferDesc(_uint iCount);
@@ -226,11 +241,13 @@ public:
 	_bool Get_Finished() { return m_bFinished; }
 
 protected:
+	class CPipeLine* m_pPipeLine = { nullptr };
+
 	_uint m_iStrideInstance = { 0 };
 	_uint m_iNumInstance    = { 0 }; // 파티클 개수
 
 	ID3D11Buffer* m_pVBInstance = { nullptr };
-	VTXINSTANCE* m_pVertices = { nullptr };
+	VTXINSTANCE*  m_pVertices = { nullptr };
 
 protected:
 	PARTICLE_BUFFER_DESC m_tParticleDesc;

@@ -47,12 +47,12 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 	/* 1-4. 게임내에서 사용할 레벨(씬)을 생성한다.   */
-	if (FAILED(Open_Level(LEVEL_TOOL, L"Final_Boss")))
+	if (FAILED(Open_Level(LEVEL_LOGO, L"Final_Boss")))
 		return E_FAIL;
 	
 	// UI Cursor
-	// CUI_Manager::GetInstance()->Ready_Cursor();
-	// ShowCursor(false);
+	 CUI_Manager::GetInstance()->Ready_Cursor();
+	 ShowCursor(false);
 
 	Json Test;
 	Test["Name"] = "김태원";
@@ -129,8 +129,8 @@ HRESULT CMainApp::Initialize_Client()
 	//if (FAILED(CEffect_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext, L"../Bin/Export/Effect/")))
 	//	return E_FAIL;
 
-	//if(FAILED(CParticle_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext, L"../Bin/Export/Particle/")))
-	//	return E_FAIL;
+	if(FAILED(CParticle_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext, L"../Bin/DataFiles/Particle/")))
+		return E_FAIL;
 
 	// Add Fonts
 	if (FAILED(GI->Add_Fonts(m_pDevice, m_pContext, L"Default_Bold", L"../Bin/Resources/Font/NiNoKuni_Bold.spritefont")))
@@ -309,8 +309,14 @@ HRESULT CMainApp::Ready_Prototype_Component()
 		return E_FAIL;
 
 #pragma region Particle Texture
+	// Temp 파티클 텍스처
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_SubUV"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/SubUV/"), 0, true))))
+		return E_FAIL;
+
+	// 마우스 클릭 파티클 텍스처
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Particle_Mouse"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/Mouse/"), 0, true))))
 		return E_FAIL;
 #pragma endregion
 
