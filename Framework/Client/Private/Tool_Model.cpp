@@ -1139,15 +1139,35 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 
 				/* Prop */
 				{
-					/* SoundKey */
+					/* Sound Key */
 					ImGui::PushItemWidth(200.f);
 					{
-						char szFilePath[MAX_PATH];
-						string strSoundKey;
-						sprintf_s(szFilePath, strSoundKey.c_str());
+						//const map<TCHAR*, FMOD_SOUND*>& mapSound = CSound_Manager::GetInstance()->Get_MapSound();
 
-						if (ImGui::InputText("SoundKey", szFilePath, MAX_PATH))
-							strSoundKey = string(szFilePath);
+						///* 문자열 변환 */
+						//vector<wstring> SoundKeyNames;
+						//
+						//for (const auto& PrevData : mapSound)
+						//{
+						//	wstring strConverted = wstringResu
+						//}
+
+						
+						/*static int iSoundKeyCurIndex = 0;
+						const char* szSoundPreview = szChannelIDNames[iSoundKeyCurIndex];
+						if (ImGui::BeginCombo("Sound Key", szSoundPreview))
+						{
+							for (int n = 0; n < IM_ARRAYSIZE(szChannelIDNames); n++)
+							{
+								const bool is_selected = (iSoundKeyCurIndex == n);
+								if (ImGui::Selectable(szChannelIDNames[n], is_selected))
+									iSoundKeyCurIndex = n;
+
+								if (is_selected)
+									ImGui::SetItemDefaultFocus();
+							}
+							ImGui::EndCombo();
+						}*/
 					}
 					ImGui::PopItemWidth();
 

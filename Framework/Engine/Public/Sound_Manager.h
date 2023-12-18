@@ -23,10 +23,8 @@ public:
 	void Stop_All();
 	void Set_ChannelVolume(CHANNELID eID, float fVolume);
 
-	FMOD_CHANNEL* Get_Channel(CHANNELID eID)
-	{
-		return m_pChannelArr[eID];
-	}
+	FMOD_CHANNEL* Get_Channel(CHANNELID eID){ return m_pChannelArr[eID]; }
+	const map<TCHAR*, FMOD_SOUND*>& Get_MapSound() const { return m_mapSound; }
 
 private:
 	void Load_SoundFile(const char* szSoundFilePath);
