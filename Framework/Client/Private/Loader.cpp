@@ -12,6 +12,7 @@
 #include "Cloth_Terrain.h"
 #include "BackGround.h"
 #include "MapHeaderGroup.h"
+#include "DynamicGroup.h"
 
 #include <filesystem>
 #include "Utils.h"
@@ -310,6 +311,8 @@ HRESULT CLoader::Loading_For_Level_Tool()
 
 	if (FAILED(Loading_Proto_AllObjects(L"../Bin/Export/NonAnimModel/Map/")))
 		return E_FAIL;
+	if (FAILED(Loading_Proto_DynamicObjects(L"..Bin/Export/AnimModel/Map/")))
+		return E_FAIL;
 		
 #pragma region Particle
 	CParticle::PARTICLE_DESC ParticleInfo = {};
@@ -526,6 +529,17 @@ HRESULT CLoader::Loading_Proto_AllObjects(const wstring& strPath)
 		}
 
 	}
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_Proto_DynamicObjects(const wstring& strPath)
+{
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Cat"), CCat::Create(m_pDevice, m_pContext, TEXT("Animal_Cat"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC)))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Cat", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/Animal/", L"Animal_Cat")))
+		return E_FAIL;
+
+
 	return S_OK;
 }
 

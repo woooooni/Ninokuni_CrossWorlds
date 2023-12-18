@@ -47,7 +47,7 @@ void CTool_Map::Tick(_float fTimeDelta)
 #pragma endregion MapLight
 
 #pragma region MapTerrain
-		MapTerrainSpace();
+		//MapDynamicSpace();
 #pragma endregion MapLight
 
 		Picking();
@@ -65,7 +65,9 @@ void CTool_Map::AddMapObject(LEVELID iLevelID, LAYER_TYPE iLayerType)
 		wstring strLevelFirst = CUtils::ToWString(m_ImguiSelectableNameList[m_iCurrentLevel]);
 		wstring strFinalPath = strLevelFirst + L"_";
 
-		if (Pair.first.find(strLevelFirst.c_str()) != std::wstring::npos || Pair.first.find(TEXT("Common_")) != std::wstring::npos)
+		if (Pair.first.find(strLevelFirst.c_str()) != std::wstring::npos 
+			|| Pair.first.find(TEXT("Common_")) != std::wstring::npos
+			|| Pair.first.find(TEXT("Animal_")) != std::wstring::npos)
 		{
 			if (ImGui::Selectable(CUtils::ToString(Pair.first).c_str()))
 			{
@@ -142,7 +144,7 @@ void CTool_Map::BatchObject(LEVELID iLevelID, LAYER_TYPE iLayerType)
 	}
 }
 
-void CTool_Map::BatchTerrain(LEVELID iLevelID, LAYER_TYPE iLayerType)
+void CTool_Map::BatchDynamic(LEVELID iLevelID, LAYER_TYPE iLayerType)
 {
 	list<CGameObject*>& pGameObjects = GI->Find_GameObjects(iLevelID, iLayerType);
 
@@ -154,11 +156,11 @@ void CTool_Map::BatchTerrain(LEVELID iLevelID, LAYER_TYPE iLayerType)
 		string strName = ObjectTag + "_" + ObjectID;
 
 		if (ImGui::Selectable(strName.c_str()))
-			m_pSelectTerrain = pObj;
+			m_pSelectObj = pObj;
 	}
 }
 
-void CTool_Map::DeleteTerrain(LEVELID iLevelID, LAYER_TYPE iLayerType)
+void CTool_Map::DeleteDynamic(LEVELID iLevelID, LAYER_TYPE iLayerType)
 {
 	list<CGameObject*>& pGameObjects = GI->Find_GameObjects(iLevelID, iLayerType);
 
@@ -166,14 +168,14 @@ void CTool_Map::DeleteTerrain(LEVELID iLevelID, LAYER_TYPE iLayerType)
 
 	while (iter != pGameObjects.end())
 	{
-		if (nullptr == m_pSelectTerrain)
+		if (nullptr == m_pSelectObj)
 			break;
 
-		if (m_pSelectTerrain->Get_ObjectID() == (*iter)->Get_ObjectID())
+		if (m_pSelectObj->Get_ObjectID() == (*iter)->Get_ObjectID())
 		{
 			Safe_Release<CGameObject*>((*iter));
 			iter = pGameObjects.erase(iter);
-			m_pSelectTerrain = nullptr;
+			m_pSelectObj = nullptr;
 		}
 		else
 			++iter;
@@ -312,6 +314,11 @@ void CTool_Map::MapObjectSpace()
 				ChangeState();
 				m_iControlState = 4;
 			}
+			if (ImGui::RadioButton("Dynamic", (5 == m_iControlState)))
+			{
+				ChangeState();
+				m_iControlState = 5;
+			}
 
 			ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.f), u8"오브젝트");
 			if (nullptr != m_pSelectObj)
@@ -377,6 +384,9 @@ void CTool_Map::MapObjectSpace()
 						break;
 					case OBJ_TYPE::OBJ_TREEROCK:
 						DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_TREEROCK);
+						break;
+					case OBJ_TYPE::OBJ_DYNAMIC:
+						DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC);
 						break;
 					}
 
@@ -447,6 +457,8 @@ void CTool_Map::MapObjectSpace()
 						AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_GRASS);
 					else if (4 == m_iControlState)
 						AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_TREEROCK);
+					else if (5 == m_iControlState)
+						AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC);
 				}
 
 				ImGui::ListBoxFooter();
@@ -466,6 +478,8 @@ void CTool_Map::MapObjectSpace()
 						BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_GRASS);
 					else if (4 == m_iControlState)
 						BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_TREEROCK);
+					else if (5 == m_iControlState)
+						BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC);
 				}
 
 				ImGui::ListBoxFooter();
@@ -661,155 +675,6 @@ void CTool_Map::MapLightSpace()
 	}
 }
 
-void CTool_Map::MapTerrainSpace()
-{
-	if (ImGui::CollapsingHeader("[ Terrain Tool ]"))
-	{
-		if (ImGui::BeginChild("Terrain Childe List", ImVec2(0, 300.f), true))
-		{
-			if (ImGui::RadioButton("Terrain", (0 == m_iTerrainState)))
-			{
-				ChangeState();
-				m_iTerrainState = 0;
-			} ImGui::SameLine();
-
-			if (ImGui::RadioButton("Height", (1 == m_iTerrainState)))
-			{
-				ChangeState();
-				m_iTerrainState = 1;
-			} ImGui::SameLine();
-
-			if (ImGui::RadioButton("Texture", (2 == m_iTerrainState)))
-			{
-				ChangeState();
-				m_iTerrainState = 2;
-			} ImGui::SameLine();
-
-			if (0 == m_iTerrainState)
-			{
-				ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.f), u8"지형");
-
-				if (nullptr != m_pSelectTerrain)
-				{
-					_bool iChange = 0;
-					ImGui::PushItemWidth(50);
-
-					string SelectObjectID = std::to_string(m_pSelectTerrain->Get_ObjectID());
-					string SelectObjectTag = CUtils::ToString(m_pSelectTerrain->Get_ObjectTag());
-					string SlectstrName = SelectObjectTag + "_" + SelectObjectID;
-
-					ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), u8"선택된 지형 : "); ImGui::SameLine();
-					ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), SlectstrName.c_str());
-
-					if (ImGui::CollapsingHeader("Movement"))
-					{
-						int lastUsing = 0;
-
-						CTransform* pTransform = m_pSelectTerrain->Get_Component<CTransform>(L"Com_Transform");
-						if (nullptr == pTransform)
-						{
-							ImGui::End();
-							return;
-						}
-
-#pragma region IMGUIZMO
-#pragma endregion IMGUIZMO
-
-						Vec3 vScaled = pTransform->Get_Scale();
-						XMVECTOR vRotation = pTransform->Get_WorldRotation();
-						XMMATRIX vPos = pTransform->Get_WorldMatrix();
-						XMVECTOR vWorldPosition = vPos.r[3];
-
-						ImGui::PushItemWidth(150.f);
-						ImGui::DragFloat3("Position", &vWorldPosition.m128_f32[0], 0.1f, -1000.f, 1000.f);
-						ImGui::DragFloat3("Rotation", &vRotation.m128_f32[0], 1.f);
-						ImGui::DragFloat3("Scale", &vScaled.x, 0.01f, 0.01f, 100.f);
-						ImGui::PopItemWidth();
-
-						pTransform->Set_Scale(vScaled);
-						pTransform->FixRotation(vRotation.m128_f32[0], vRotation.m128_f32[1], vRotation.m128_f32[2]);
-						pTransform->Set_State(CTransform::STATE::STATE_POSITION, vWorldPosition);
-					}
-
-					if (ImGui::Button(u8"선택된 오브젝트 삭제"))
-						DeleteTerrain(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_TERRAIN);
-				}
-				else
-					ImGui::TextColored(ImVec4(1.0f, 0.0f, 1.0f, 1.0f), u8"[ 현재 선택된 지형이 없습니다.]");
-
-				ImGui::SameLine();
-				ImGui::Dummy(ImVec2(0.0f, 5.0f));
-
-				if (ImGui::Button(u8"지형 추가"))
-				{
-					m_pSelectObj = nullptr;
-					m_bAddTerrain = true;
-
-				}ImGui::SameLine();
-
-				if (ImGui::Button(u8"배치된 지형"))
-					m_bAddTerrain = false;
-
-				if (true == m_bAddTerrain)
-				{
-
-					if (ImGui::ListBoxHeader("##ASSETLIST", ImVec2(300.0f, 0.0f)))
-					{
-						if (0 == m_iTerrainState)
-						{
-							const map<const std::wstring, CGameObject*>& vecPrototypeList = GI->Find_Prototype_GameObjects(LAYER_TYPE::LAYER_TERRAIN);
-
-							for (auto& Pair : vecPrototypeList)
-							{
-								if (ImGui::Selectable(CUtils::ToString(Pair.first).c_str()))
-								{
-									if (true == m_bAddTerrain)
-										GI->Add_GameObject(LEVELID::LEVEL_TOOL, LAYER_TERRAIN, Pair.first);
-								}
-							}
-						}
-					}
-
-					ImGui::ListBoxFooter();
-				}
-				else
-				{
-					ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), u8"맵에 배치된 터레인 리스트");
-					if (ImGui::ListBoxHeader("##TERRAINLIST", ImVec2(300.0f, 0.0f)))
-					{
-						if (0 == m_iTerrainState)
-							BatchTerrain(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_TERRAIN);
-					}
-
-					ImGui::ListBoxFooter();
-				}
-
-				ImGui::SameLine();
-			}
-			else if (1 == m_iTerrainState)
-			{
-				ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), u8"브러쉬 타입");
-				if (ImGui::RadioButton("UP", m_iBrushType == 0))
-				{
-					m_iBrushType = 0;
-				}ImGui::SameLine();
-				if (ImGui::RadioButton("DOWN", m_iBrushType == 1))
-				{
-					m_iBrushType = 1;
-				}ImGui::SameLine();
-			}
-			else if (2 == m_iTerrainState)
-			{
-				if (ImGui::RadioButton("HeightTexture", false))
-				{
-
-				}
-			}
-		}
-		ImGui::EndChild();
-	}
-}
-
 void CTool_Map::ChangeState()
 {
 	m_bAddObject = false;
@@ -913,7 +778,8 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 			|| i == LAYER_TYPE::LAYER_EFFECT
 			|| i == LAYER_TYPE::LAYER_TRAIL
 			|| i == LAYER_TYPE::LAYER_NPC
-			|| i == LAYER_TYPE::LAYER_WEAPON)
+			|| i == LAYER_TYPE::LAYER_WEAPON
+			|| i == LAYER_TYPE::LAYER_DYNAMIC)
 			continue;
 
 		GI->Clear_Layer(LEVEL_TOOL, i);

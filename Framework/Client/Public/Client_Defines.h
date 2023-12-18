@@ -53,6 +53,7 @@ namespace Client
 		LAYER_UI,
 		LAYER_ETC,
 		LAYER_WEAPON,
+		LAYER_DYNAMIC,
 		LAYER_END
 	};
 
@@ -77,6 +78,7 @@ namespace Client
 		OBJ_TREEROCK,
 		OBJ_GRASS,
 		OBJ_NPC,
+		OBJ_DYNAMIC,
 		OBJ_END
 	};
 

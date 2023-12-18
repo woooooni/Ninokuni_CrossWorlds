@@ -109,11 +109,11 @@ HRESULT CTerrain::Render()
 	
 #endif
 
-	if (FAILED(Bind_ShaderResources()))
-		return E_FAIL;
+	//if (FAILED(Bind_ShaderResources()))
+	//	return E_FAIL;
 
-	if(FAILED(m_pVIBufferCom->Render()))
-		return E_FAIL;
+	//if(FAILED(m_pVIBufferCom->Render()))
+	//	return E_FAIL;
 
 
 	return S_OK;

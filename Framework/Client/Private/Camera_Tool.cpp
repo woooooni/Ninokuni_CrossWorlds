@@ -39,7 +39,7 @@ void CCamera_Tool::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
-	const _float fMoveSpeed		= 20.f;
+	const _float fMoveSpeed		= 50.f;
 	const _float fRotateSpeed	= 0.5f;
 
 	if (GI->Mouse_Pressing(DIMK_WHEEL))
