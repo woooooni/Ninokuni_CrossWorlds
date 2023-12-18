@@ -254,9 +254,6 @@
     <ClInclude Include="..\Public\Clown_WizardNode_Stun.h" />
     <ClInclude Include="..\Public\PumpkinCandleNode_Base.h" />
     <ClInclude Include="..\Public\Cat.h" />
-    <ClInclude Include="..\Public\Character.h" />
-    <ClInclude Include="..\Public\Character_Dummy.h" />
-    <ClInclude Include="..\Public\Character_Witch.h" />
     <ClInclude Include="..\Public\DynamicGroup.h" />
     <ClInclude Include="..\Public\DynamicObject.h" />
     <ClInclude Include="..\Public\Effects_MouseClick.h" />
