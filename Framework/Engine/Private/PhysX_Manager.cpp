@@ -140,11 +140,10 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 void CPhysX_Manager::Tick(_float fTimeDelta)
 {	
 
-	
-}
 
-void CPhysX_Manager::LateTick(_float fTimeDelta)
-{
+	m_pScene->simulate(min(fTimeDelta, 1.f / 144.f));
+	m_pScene->fetchResults(true);
+	m_pScene->fetchResultsParticleSystem();
 
 	for (auto& CollisionDesc : m_GroundCollision)
 	{
@@ -162,10 +161,13 @@ void CPhysX_Manager::LateTick(_float fTimeDelta)
 		}
 	}
 	m_GroundCollision.clear();
+	
+}
 
-	m_pScene->simulate(min(fTimeDelta, 1.f / 144.f));
-	m_pScene->fetchResults(true);
-	m_pScene->fetchResultsParticleSystem();
+void CPhysX_Manager::LateTick(_float fTimeDelta)
+{
+
+
 }
 
 #ifdef _DEBUG
@@ -334,7 +336,6 @@ HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGameObject, CModel* pModel, Mat
 		}
 
 		PxTriangleMeshDesc tDesc;
-
 		
 		tDesc.points.count = iNumVertices;
 		tDesc.points.stride = sizeof(PxVec3);
@@ -347,6 +348,7 @@ HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGameObject, CModel* pModel, Mat
 
 		PxTriangleMesh* pTriangleMesh = PxCreateTriangleMesh(PxCookingParams(PxTolerancesScale(0.f, 0.f)), tDesc);
 		PxTriangleMeshGeometry* pGeometry = new PxTriangleMeshGeometry(pTriangleMesh);
+		
 		
 		Vec3 vScale = {};
 		Quaternion vQuat = {};
@@ -362,6 +364,7 @@ HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGameObject, CModel* pModel, Mat
 		PxShape* pShape = m_Physics->createShape(*pGeometry, *Material);
 		pShape->setFlag(PxShapeFlag::eVISUALIZATION, true);
 		pShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
+		
 		pShape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
 		pActor->setName("Ground");
 		
@@ -1161,43 +1164,40 @@ void CPhysX_Manager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 	PairPoints.resize(pairs->contactCount);
 	pairs->extractContacts(PairPoints.data(), pairs->contactCount);
 
-	Vec3 vContactPosition = {};
-	Vec3 vNormal = {};
-	PxReal fDist = 9999.f;
 
-	
-	_uint iNumContact = 0;
-	for (auto& Pair : PairPoints)
-	{
-		if (0 == iNumContact)
-		{
-			vContactPosition = Vec3(Pair.position.x, Pair.position.y, Pair.position.z);
-			vNormal = Vec3(Pair.normal.x, Pair.normal.y, Pair.normal.z);
-			iNumContact++;
-			continue;
-		}
-			
-		Vec3 vCurPos = Vec3(Pair.position.x, Pair.position.y, Pair.position.z);
-		Vec3 vCurNormal = Vec3(Pair.normal.x, Pair.normal.y, Pair.normal.z);
-		Vec3 vDist = vContactPosition - vCurPos;
-		Vec3 vNormalDist = vNormal - vCurNormal;
-
-		if (vDist.Length() > 0.05f || vNormalDist.Length() > 0.05f)
-			continue;
-
-		if (vContactPosition.y < vCurPos.y)
-		{
-			vContactPosition = vCurPos;
-			vNormal = Vec3(Pair.normal.x, Pair.normal.y, Pair.normal.z);
-			iNumContact++;
-		}
-	}
+		
 	
 	
 	if (nullptr != pairHeader.actors[0]->getName() && !strcmp(pairHeader.actors[0]->getName(), "Ground"))
 	{
 
 		CCollider* pObjectCollider = (CCollider*)pairHeader.actors[1]->userData;
+
+		Vec3 vContactPosition = {};
+		Vec3 vNormal = {};
+		PxReal fDist = 9999.f;
+
+
+		_uint iNumContact = 0;
+		for (auto& Pair : PairPoints)
+		{
+			if (0 == iNumContact)
+			{
+				vContactPosition = Vec3(Pair.position.x, Pair.position.y, Pair.position.z);
+				vNormal = Vec3(Pair.normal.x, Pair.normal.y, Pair.normal.z);
+				continue;
+			}
+			vContactPosition += Vec3(Pair.position.x, Pair.position.y, Pair.position.z);
+			vNormal += Vec3(Pair.normal.x, Pair.normal.y, Pair.normal.z);
+
+			iNumContact++;
+		}
+
+		if (iNumContact > 0)
+		{
+			vContactPosition /= iNumContact;
+			vNormal /= iNumContact;
+		}
 
 		if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_FOUND))
 		{
@@ -1237,6 +1237,35 @@ void CPhysX_Manager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 	}
 	else if (nullptr != pairHeader.actors[1]->getName() && !strcmp(pairHeader.actors[1]->getName(), "Ground"))
 	{
+
+		_uint iNumContact = 0;
+
+
+		Vec3 vContactPosition = {};
+		Vec3 vNormal = {};
+		PxReal fDist = 9999.f;
+
+		for (auto& Pair : PairPoints)
+		{
+			if (0 == iNumContact)
+			{
+				vContactPosition = Vec3(Pair.position.x, Pair.position.y, Pair.position.z);
+				vNormal = -1.f * Vec3(Pair.normal.x, Pair.normal.y, Pair.normal.z);
+				continue;
+			}
+			vContactPosition += Vec3(Pair.position.x, Pair.position.y, Pair.position.z);
+			vNormal += -1.f * Vec3(Pair.normal.x, Pair.normal.y, Pair.normal.z);
+
+			iNumContact++;
+		}
+
+		if (iNumContact > 0)
+		{
+			vContactPosition /= iNumContact;
+			vNormal /= iNumContact;
+		}
+
+
 		// 1번액터가 Ground 였다면,
 		CCollider* pObjectCollider = (CCollider*)pairHeader.actors[0]->userData;
 		if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_FOUND))

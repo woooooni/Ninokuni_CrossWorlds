@@ -88,20 +88,21 @@ void CCharacter_Dummy::Tick(_float fTimeDelta)
 		m_pRigidBodyCom->Set_Ground(false);
 	}
 
-	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 	__super::Tick(fTimeDelta);
+	
 }
 
 void CCharacter_Dummy::LateTick(_float fTimeDelta)
 {
 
 	__super::LateTick(fTimeDelta);
+	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 	m_pModelCom->LateTick(fTimeDelta);
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
 
-#ifdef _DEBUG
+#ifdef _DEBUG    
 	for (_uint i = 0; i < CCollider::DETECTION_END; ++i)
 	{
 		for (auto& pCollider : m_Colliders[i])
@@ -176,6 +177,15 @@ void CCharacter_Dummy::Collision_Exit(const COLLISION_INFO& tInfo)
 void CCharacter_Dummy::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
 {
 	__super::Ground_Collision_Enter(tInfo);
+
+	Vec3 vVelocity = m_pRigidBodyCom->Get_Velocity();
+	m_pRigidBodyCom->Set_Use_Gravity(false);
+	m_pRigidBodyCom->Set_Ground(true);
+	m_pRigidBodyCom->Set_Velocity(Vec3(vVelocity.x, 0.f, vVelocity.z));
+
+	_vector vPosition = m_pTransformCom->Get_Position();
+	vPosition = XMVectorSetY(vPosition, tInfo.vCollision_Position.y);
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPosition);
 	
 }
 
@@ -187,22 +197,26 @@ void CCharacter_Dummy::Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tIn
 	vNormal.Normalize();
 
 	Vec3 vUp = Vec3(0.f, 1.f, 0.f);
-	vUp.Normalize();
-	_float fRadian = vNormal.Dot(vUp);
 
-	if (fRadian < XMConvertToRadians(90.f))
+
+
+	if (XMConvertToRadians(-90.f) < vNormal.Dot(vUp) || XMConvertToRadians(90.f) > vNormal.Dot(vUp))
 	{
 		_vector vPosition = m_pTransformCom->Get_Position();
 		vPosition = XMVectorSetY(vPosition, tInfo.vCollision_Position.y);
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPosition);
 	}
+
 }
 
 void CCharacter_Dummy::Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo)
 {
 	__super::Ground_Collision_Exit(tInfo);
 	Vec3 vVelocity = m_pRigidBodyCom->Get_Velocity();
-	m_pRigidBodyCom->Set_Velocity(Vec3(vVelocity.x, 0.f, vVelocity.z));
+
+	if (false == m_bIsJumping)
+		m_pRigidBodyCom->Set_Velocity(Vec3(vVelocity.x, 0.f, vVelocity.z));
+	
 	m_pRigidBodyCom->Set_Use_Gravity(true);
 	m_pRigidBodyCom->Set_Ground(false);
 }
