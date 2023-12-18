@@ -293,6 +293,9 @@ void CMonster::Collision_Enter(const COLLISION_INFO& tInfo)
 	{
 		if (m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT])
 		{
+			// 둘 다 켜줘야 함.
+			// ATKAROUND는 공격 동작이 끝나고 추적할 것인지 결정하기 위함.
+			// 범위내에 없으면 ATK를 false 시켜주기 위해.
 			m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND] = true;
 			m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATK] = true;
 		}
@@ -314,7 +317,7 @@ void CMonster::Collision_Continue(const COLLISION_INFO& tInfo)
 		if (m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT])
 		{
 			m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND] = true;
-			m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATK] = true;
+			// m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATK] = true;
 		}
 	}
 }
@@ -340,6 +343,8 @@ CHierarchyNode* CMonster::Get_Socket(const wstring& strSocketName)
 
 void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 {
+	m_tStat.fHp -= 10.f;
+	// m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_HITANIM] = true;
 }
 
 

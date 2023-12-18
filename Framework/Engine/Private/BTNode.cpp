@@ -20,11 +20,14 @@ CBTNode::NODE_STATE CBTNode::Tick(const _float& fTimeDelta)
 
 void CBTNode::Init_Start()
 {
-	if(this != m_pBT->Get_CurNode())
-		m_bIsStart = false;
+	if (m_pBT != nullptr)
+	{
+		if (this != m_pBT->Get_CurNode())
+			m_bIsStart = false;
 
-	for (auto iter : m_ltChildNode)
-		iter->Init_Start();
+		for (auto iter : m_ltChildNode)
+			iter->Init_Start();
+	}
 }
 
 void CBTNode::Add_ChildNode(CBTNode* pNode)

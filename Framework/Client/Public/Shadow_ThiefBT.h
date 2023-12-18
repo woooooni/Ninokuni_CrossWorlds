@@ -23,6 +23,7 @@ public:
 
 private:
 	_bool	IsZeroHp();
+	_bool   IsHitAnim();
 	_bool	IsAtkRound();
 	_bool	IsChase();
 	_bool	IsReturn();

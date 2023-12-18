@@ -25,7 +25,7 @@ void CBaobam_WaterNode_Chase::Start()
 CBTNode::NODE_STATE CBaobam_WaterNode_Chase::Tick(const _float& fTimeDelta)
 {
 	m_tBTNodeDesc.pOwnerTransform->LookAt_ForLandObject(m_tBTNodeDesc.pTargetTransform->Get_Position());
-	m_tBTNodeDesc.pOwnerTransform->Move(m_tBTNodeDesc.pOwnerTransform->Get_Look(), 1.f, fTimeDelta);
+	m_tBTNodeDesc.pOwnerTransform->Move(m_tBTNodeDesc.pOwnerTransform->Get_Look(), 2.f, fTimeDelta);
 
 	return NODE_STATE::NODE_RUNNING;
 }
