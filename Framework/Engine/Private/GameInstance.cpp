@@ -587,6 +587,36 @@ PxMaterial* CGameInstance::Create_PxMaterial(_float fStaticFriction, _float fDyn
 	return m_pPhysXManager->Create_Material(fStaticFriction, fDynamicFriction, fRestitution);
 }
 
+PxController* CGameInstance::Add_CapsuleController(CGameObject* pGameObject, Matrix WorldMatrix, _float fHeight, _float fRadius, _float fMaxJumpHeight)
+{
+	return m_pPhysXManager->Add_CapsuleController(pGameObject, WorldMatrix, fHeight, fRadius, fMaxJumpHeight);
+}
+
+PxController* CGameInstance::Add_BoxController(CGameObject* pGameObject, Matrix WorldMatrix, _float3 fExtents, _float fMaxJumpHeight)
+{
+	return m_pPhysXManager->Add_BoxController(pGameObject, WorldMatrix, fExtents, fMaxJumpHeight);
+}
+
+//PxParticleClothBuffer* CGameInstance::Get_TestClothBuffer()
+//{
+//	return m_pPhysXManager->Get_ClothBuffer();
+//}
+//
+//PxCudaContextManager* CGameInstance::Get_CudaContext_Manager()
+//{
+//	return m_pPhysXManager->Get_CudaContext_Manager();
+//}
+//
+//PxCudaContext* CGameInstance::Get_CudaContext()
+//{
+//	return m_pPhysXManager->Get_CudaContext();
+//}
+//
+//PxParticleSystem* CGameInstance::Get_ParticleSystem()
+//{
+//	return m_pPhysXManager->Get_ParticleSystem();
+//}
+
 //PxParticleClothBuffer* CGameInstance::Get_TestClothBuffer()
 //{
 //	return m_pPhysXManager->Get_ClothBuffer();

@@ -2,8 +2,6 @@
 #include "Baobam_DarkNode_Attack1.h"
 
 #include "BehaviorTree.h"
-#include "BlackBoard.h"
-
 #include "Model.h"
 
 CBaobam_DarkNode_Attack1::CBaobam_DarkNode_Attack1()

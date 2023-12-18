@@ -2,8 +2,6 @@
 #include "Baobam_WaterNode_Hit.h"
 
 #include "BehaviorTree.h"
-#include "BlackBoard.h"
-
 #include "Model.h"
 
 CBaobam_WaterNode_Hit::CBaobam_WaterNode_Hit()

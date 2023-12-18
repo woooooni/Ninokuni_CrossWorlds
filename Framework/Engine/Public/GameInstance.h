@@ -145,6 +145,9 @@ public:
 	HRESULT Remove_Actor(class CGameObject* pGameObject, PxActor* pPhysXActor);
 	PxMaterial* Create_PxMaterial(_float fA, _float fB, _float fC);
 
+	PxController* Add_CapsuleController(class CGameObject* pGameObject, Matrix WorldMatrix, _float fHeight, _float fRadius, _float fMaxJumpHeight);
+	PxController* Add_BoxController(CGameObject* pGameObject, Matrix WorldMatrix, _float3 vExtents, _float fMaxJumpHeight);
+
 	
 	
 	/*class PxParticleClothBuffer* Get_TestClothBuffer();

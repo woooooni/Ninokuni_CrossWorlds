@@ -7,6 +7,7 @@
 #include "Model.h"
 #include "Shader.h"
 #include "RigidBody.h"
+
 #include "Navigation.h"
 #include "StateMachine.h"
 #include "VIBuffer_Rect.h"
@@ -14,12 +15,13 @@
 #include "Collider_OBB.h"
 #include "Collider_AABB.h"
 #include "Collider_Sphere.h"
-
+#include "PhysX_Controller.h"
 
 #include "VIBuffer_Cube.h"
 #include "VIBuffer_Terrain.h"
 #include "VIBuffer_Particle.h"
 #include "VIBuffer_Instancing.h"
+
 
 #include "DebugDraw.h"
 

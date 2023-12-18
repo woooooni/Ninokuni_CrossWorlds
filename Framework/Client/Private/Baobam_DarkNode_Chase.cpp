@@ -2,8 +2,6 @@
 #include "Baobam_DarkNode_Chase.h"
 
 #include "BehaviorTree.h"
-#include "BlackBoard.h"
-
 #include "Model.h"
 
 CBaobam_DarkNode_Chase::CBaobam_DarkNode_Chase()

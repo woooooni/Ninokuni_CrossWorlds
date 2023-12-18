@@ -47,7 +47,7 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 	/* 1-4. 게임내에서 사용할 레벨(씬)을 생성한다.   */
-	if (FAILED(Open_Level(LEVEL_TOOL, L"Final_Boss")))
+	if (FAILED(Open_Level(LEVEL_TEST, L"Final_Boss")))
 		return E_FAIL;
 	
 	// UI Cursor
@@ -450,6 +450,12 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_OBB_Collider"),
 		CCollider_OBB::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
+
+	/* Prototype_Component_PhysXController */
+	if(FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_PhysXController"),
+		CPhysX_Controller::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	
 
 	return S_OK;
 }

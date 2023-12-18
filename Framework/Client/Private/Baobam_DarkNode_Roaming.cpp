@@ -2,8 +2,6 @@
 #include "Baobam_DarkNode_Roaming.h"
 
 #include "BehaviorTree.h"
-#include "BlackBoard.h"
-
 #include "Model.h"
 
 CBaobam_DarkNode_Roaming::CBaobam_DarkNode_Roaming()

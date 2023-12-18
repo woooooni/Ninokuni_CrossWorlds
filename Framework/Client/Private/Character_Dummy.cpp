@@ -81,14 +81,16 @@ void CCharacter_Dummy::Tick(_float fTimeDelta)
 
 	if (KEY_TAP(KEY::SPACE))
 	{
-		m_bIsJumping = true;
+ 		m_bIsJumping = true;
 		m_bFirstJump = true;
-		m_pRigidBodyCom->Add_Velocity(XMVectorSet(0.f, 1.f, 0.f, 0.f), 5.f, false);
+		m_pRigidBodyCom->Add_Velocity(XMVectorSet(0.f, 1.f, 0.f, 0.f), 10.f, true);
 		m_pRigidBodyCom->Set_Use_Gravity(true);
 		m_pRigidBodyCom->Set_Ground(false);
 	}
 
 	__super::Tick(fTimeDelta);
+	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
+	m_pControllerCom->Tick_Controller(fTimeDelta);
 	
 }
 
@@ -96,8 +98,9 @@ void CCharacter_Dummy::LateTick(_float fTimeDelta)
 {
 
 	__super::LateTick(fTimeDelta);
-	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 	m_pModelCom->LateTick(fTimeDelta);
+
+	// m_pControllerCom->LateTick_Controller(fTimeDelta);
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
@@ -192,20 +195,11 @@ void CCharacter_Dummy::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
 void CCharacter_Dummy::Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo)
 {
 	__super::Ground_Collision_Continue(tInfo);
-
-	//Vec3 vNormal = tInfo.vNormal;
-	//vNormal.Normalize();
-
-	//Vec3 vUp = Vec3(0.f, 1.f, 0.f);
-
-
-
-	//if (XMConvertToRadians(-90.f) < vNormal.Dot(vUp) || XMConvertToRadians(90.f) > vNormal.Dot(vUp))
-	//{
-	//	_vector vPosition = m_pTransformCom->Get_Position();
-	//	vPosition = XMVectorSetY(vPosition, tInfo.vCollision_Position.y);
-	//	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPosition);
-	//}
+	if (false == m_bFirstJump)
+	{
+		m_pRigidBodyCom->Set_Use_Gravity(false);
+		m_pRigidBodyCom->Set_Ground(true);
+	}
 
 }
 
@@ -255,9 +249,22 @@ HRESULT CCharacter_Dummy::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_RigidBody"), TEXT("Com_RigidBody"), (CComponent**)&m_pRigidBodyCom, &RigidDesc)))
 		return E_FAIL;
 
-	/*m_pRigidBodyCom->Set_Velocity(_float3(0.f, 0.f, 0.f));
+	CPhysX_Controller::CONTROLLER_DESC ControllerDesc;
 
-	m_pRigidBodyCom->Set_Use_Gravity(false);*/
+	ControllerDesc.eType = CPhysX_Controller::CAPSULE;
+	ControllerDesc.pTransform = m_pTransformCom;
+	ControllerDesc.fHeight = 20.f;
+	ControllerDesc.fMaxJumpHeight = 10.f;
+	ControllerDesc.fRaidus = 1.f;
+	ControllerDesc.pOwner = this;
+	
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_PhysXController"), TEXT("Com_Controller"), (CComponent**)&m_pControllerCom, &ControllerDesc)))
+		return E_FAIL;
+	
+
+
+	
 
 	return S_OK;
 }
@@ -267,7 +274,7 @@ HRESULT CCharacter_Dummy::Ready_Components()
 HRESULT CCharacter_Dummy::Ready_Colliders()
 {
 
-	CCollider_OBB::OBB_COLLIDER_DESC OBBDesc;
+	/*CCollider_OBB::OBB_COLLIDER_DESC OBBDesc;
 	ZeroMemory(&OBBDesc, sizeof OBBDesc);
 
 	BoundingOrientedBox OBBBox;
@@ -293,7 +300,7 @@ HRESULT CCharacter_Dummy::Ready_Colliders()
 	OBBDesc.fDensity = 1.f;
 
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::BODY, &OBBDesc)))
-		return E_FAIL;
+		return E_FAIL;*/
 
 
 
@@ -395,4 +402,5 @@ void CCharacter_Dummy::Free()
 	Safe_Release(m_pTransformCom);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRigidBodyCom);
+	Safe_Release(m_pControllerCom);
 }

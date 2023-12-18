@@ -2,8 +2,6 @@
 #include "Clown_WizardNode_Attack1.h"
 
 #include "BehaviorTree.h"
-#include "BlackBoard.h"
-
 #include "Model.h"
 
 CClown_WizardNode_Attack1::CClown_WizardNode_Attack1()

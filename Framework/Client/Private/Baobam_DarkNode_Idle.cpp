@@ -2,8 +2,6 @@
 #include "Baobam_DarkNode_Idle.h"
 
 #include "BehaviorTree.h"
-#include "BlackBoard.h"
-
 #include "Model.h"
 
 CBaobam_DarkNode_Idle::CBaobam_DarkNode_Idle()

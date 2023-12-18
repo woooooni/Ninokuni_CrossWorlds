@@ -6,7 +6,7 @@
 
 BEGIN(Engine)
 
-class CPhysX_Manager final : public CBase, public PxSimulationEventCallback
+class CPhysX_Manager final : public CBase, public PxSimulationEventCallback, public PxUserControllerHitReport, public PxControllerBehaviorCallback
 {
 	DECLARE_SINGLETON(CPhysX_Manager)
 	
@@ -31,8 +31,11 @@ public:
 	PxRigidDynamic* Add_Dynamic_Actor(const PHYSX_INIT_DESC& Desc);
 	vector<PxRigidStatic*> Add_Static_Mesh_Actor(const PHYSX_INIT_DESC& Desc);
 	vector<PxRigidDynamic*> Add_Dynamic_Mesh_Actor(const PHYSX_INIT_DESC& Desc);
-
 	HRESULT Add_Ground(class CGameObject* pGameObject, class CModel* pModel, Matrix WorldMatrix);
+
+	
+	PxController* Add_CapsuleController(class CGameObject* pGameObject, Matrix WorldMatrix, _float fHeight, _float fRadius, _float fMaxJumpHeight);
+	PxController* Add_BoxController(CGameObject* pGameObject, Matrix WorldMatrix, _float3 fExtents, _float fMaxJumpHeight);
 
 public:
 	HRESULT Reset_PhysX();
@@ -58,10 +61,15 @@ public:
 
 
 public:
-	 // PxParticleSystem* Get_ParticleSystem() { return m_pParticleSystem; }
-	 // PxParticleClothBuffer* Get_ClothBuffer() { return m_pClothBuffer; }
-	 // PxCudaContext* Get_CudaContext() { return m_pCudaContextManager->getCudaContext(); }
-	 // PxCudaContextManager* Get_CudaContext_Manager() { return m_pCudaContextManager; }
+	virtual void onShapeHit(const PxControllerShapeHit& hit) override;
+	virtual void onControllerHit(const PxControllersHit& hit) override;
+	virtual void onObstacleHit(const PxControllerObstacleHit& hit) override;
+
+public:
+	  //PxParticleSystem* Get_ParticleSystem()			{ return m_pParticleSystem; }
+	  //PxParticleClothBuffer* Get_ClothBuffer()			{ return m_pClothBuffer; }
+	  //PxCudaContext* Get_CudaContext()					{ return m_pCudaContextManager->getCudaContext(); }
+	  //PxCudaContextManager* Get_CudaContext_Manager()	{ return m_pCudaContextManager; }
 
 
 private:
@@ -79,8 +87,8 @@ private:
 	HRESULT Create_Cloth(class CVIBuffer* pBufferCom);
 	HRESULT Create_Cloth(class CMesh* pMesh);
 
-private:
-	HRESULT Init_Cloth(const PxU32 numX, const PxU32 numZ, const PxVec3& position = PxVec3(0, 0, 0), const PxReal particleSpacing = 0.2f, const PxReal totalClothMass = 10.f);
+//private:
+//	HRESULT Init_Cloth(const PxU32 numX, const PxU32 numZ, const PxVec3& position = PxVec3(0, 0, 0), const PxReal particleSpacing = 0.2f, const PxReal totalClothMass = 10.f);
 	
 
 
@@ -104,12 +112,13 @@ private:
 
 	PxMaterial* m_WorldMaterial = nullptr;		// 객체의 재질
 
+	PxControllerManager* m_pController_Manager = nullptr; // 컨트롤러 매니저
 
-	// PxCloth.
-	/*PxCudaContextManager*       m_pCudaContextManager = nullptr;
-	PxPBDParticleSystem*		m_pParticleSystem = nullptr;
-	PxParticleClothBuffer*		m_pClothBuffer = nullptr;
-	PxPartitionedParticleCloth	m_Cloth = {};*/
+	//// PxCloth.
+	//PxCudaContextManager*       m_pCudaContextManager = nullptr;
+	//PxPBDParticleSystem*		m_pParticleSystem = nullptr;
+	//PxParticleClothBuffer*		m_pClothBuffer = nullptr;
+	//PxPartitionedParticleCloth	m_Cloth = {};
 
 	// 충돌처리 //
 	vector<PHYSX_GROUND_COLLISION_INFO> m_GroundCollision;
@@ -119,13 +128,16 @@ private:
 
 	PxPvd*						m_pPvd = nullptr; // 서버
 	string						m_strIPAddress = "127.0.0.1";
-	int							m_iPortNumber = 5555;
-	_uint						m_iTimeOutSeconds = 10;
+	int							m_iPortNumber = 5425;
+	int							m_iTimeOutSeconds = 100;
 
 	
 private:
 	map<_uint, vector<PHYSX_STATIC_OBJECT_DESC>> m_StaticObjects;
 	map<_uint, vector<PHYSX_DYNAMIC_OBJECT_DESC>> m_DynamicObjects;
+
+	map<_uint, class PxController*> m_Controllers;
+
 	map<_uint, vector<PHYSX_STATIC_OBJECT_DESC>> m_GroundObjects;
 
 private:
@@ -136,6 +148,10 @@ private:
 public:
 	virtual void Free() override;
 
+	// PxControllerBehaviorCallback을(를) 통해 상속됨
+	virtual PxControllerBehaviorFlags getBehaviorFlags(const PxShape& shape, const PxActor& actor) override;
+	virtual PxControllerBehaviorFlags getBehaviorFlags(const PxController& controller) override;
+	virtual PxControllerBehaviorFlags getBehaviorFlags(const PxObstacle& obstacle) override;
 };
 
 END

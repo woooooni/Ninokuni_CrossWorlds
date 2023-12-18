@@ -2,8 +2,6 @@
 #include "Baobam_WaterNode_Dead.h"
 
 #include "BehaviorTree.h"
-#include "BlackBoard.h"
-
 #include "Model.h"
 
 CBaobam_WaterNode_Dead::CBaobam_WaterNode_Dead()

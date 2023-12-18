@@ -2,8 +2,6 @@
 #include "Shadow_ThiefNode_Attack2.h"
 
 #include "BehaviorTree.h"
-#include "BlackBoard.h"
-
 #include "Model.h"
 
 CShadow_ThiefNode_Attack2::CShadow_ThiefNode_Attack2()

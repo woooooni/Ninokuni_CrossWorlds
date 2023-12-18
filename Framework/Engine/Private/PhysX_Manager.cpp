@@ -17,7 +17,14 @@ physx::PxFilterFlags FilterShader(
 	retPairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
 	retPairFlags |= PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
 	retPairFlags |= PxPairFlag::eNOTIFY_TOUCH_LOST;
+	retPairFlags |= PxPairFlag::eDETECT_CCD_CONTACT;
+	retPairFlags |= PxPairFlag::eDETECT_DISCRETE_CONTACT;
+	retPairFlags |= PxPairFlag::eNOTIFY_TOUCH_CCD;
 	
+	retPairFlags |= PxPairFlag::eNOTIFY_THRESHOLD_FORCE_FOUND;
+	retPairFlags |= PxPairFlag::eNOTIFY_THRESHOLD_FORCE_PERSISTS;
+	retPairFlags |= PxPairFlag::eNOTIFY_THRESHOLD_FORCE_LOST;
+
 	retPairFlags |= PxPairFlag::eTRIGGER_DEFAULT;
 
 	
@@ -42,18 +49,22 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 	m_Foundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_Allocator, m_ErrorCallback);
 
 	m_pPvd = PxCreatePvd(*m_Foundation);
-	PxPvdTransport* transport = PxDefaultPvdSocketTransportCreate(m_strIPAddress.c_str(), m_iPortNumber, m_iTimeOutSeconds);
+	PxPvdTransport* transport = PxDefaultPvdSocketTransportCreate("127.0.0.1", m_iPortNumber, m_iTimeOutSeconds);
 	m_pPvd->connect(*transport, PxPvdInstrumentationFlag::eALL);
+	_bool bConntected = m_pPvd->isConnected();
+
+
+
 
 	m_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_Foundation, PxTolerancesScale(), true, m_pPvd);
 	PxInitExtensions(*m_Physics, m_pPvd);
-	transport->release();
+	// transport->release();
 
 	PxSceneDesc SceneDesc(m_Physics->getTolerancesScale());
 
 	SceneDesc.gravity = PxVec3(0.0f, 0.0f, 0.0f);
 
-	m_Dispatcher = PxDefaultCpuDispatcherCreate(4);
+	m_Dispatcher = PxDefaultCpuDispatcherCreate(2);
 	if (!m_Dispatcher)
 		return E_FAIL;
 
@@ -68,18 +79,26 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 	SceneDesc.filterShader = FilterShader;
 	SceneDesc.simulationEventCallback = this;
 
-	
 
-	/*PxCudaContextManagerDesc cuadContextManagerDesc;
-	m_pCudaContextManager = PxCreateCudaContextManager(*m_Foundation, cuadContextManagerDesc, PxGetProfilerCallback());*/
 
-	// SceneDesc.cudaContextManager = m_pCudaContextManager;
-	SceneDesc.flags |= PxSceneFlag::eENABLE_GPU_DYNAMICS;
 
 	m_pScene = m_Physics->createScene(SceneDesc);
-
+	m_pController_Manager = PxCreateControllerManager(*m_pScene);
 	
+	
+	PxPvdSceneClient* pvdClient = m_pScene->getScenePvdClient();
+	if (nullptr != pvdClient)
+	{
+		//I have a PVD client, so set some flags that it needs
+		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
+		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
+		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
+	}
+
 #ifdef DEBUG
+	m_pScene->setVisualizationParameter(PxVisualizationParameter::eSIMULATION_MESH, 1.f);
+	m_pScene->setVisualizationParameter(PxVisualizationParameter::eCOLLISION_DYNAMIC, 1.f);
+	m_pScene->setVisualizationParameter(PxVisualizationParameter::eCOLLISION_SHAPES, 1.f);
 	m_pScene->setVisualizationParameter(PxVisualizationParameter::eCOLLISION_STATIC, 1.f);
 	m_pScene->setVisualizationParameter(PxVisualizationParameter::eACTOR_AXES, 2.0f);
 #endif // DEBUG
@@ -87,14 +106,6 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 	
 
 
-	PxPvdSceneClient* pvdClient = m_pScene->getScenePvdClient();
-	if (pvdClient)
-	{
-		//I have a PVD client, so set some flags that it needs
-		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
-		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
-		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
-	}
 
 	m_WorldMaterial = m_Physics->createMaterial(0.5f, 0.5f, 0.5f);
 
@@ -125,8 +136,8 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 		return E_FAIL;
 #endif
 
-	if (FAILED(Init_Cloth(100, 100, PxVec3(-0.5f * 100 * 0.05f, 8.f, -0.5f * 100 * 0.05f), 0.05f, 10.f)))
-		return E_FAIL;
+	/*if (FAILED(Init_Cloth(100, 100, PxVec3(-0.5f * 100 * 0.05f, 8.f, -0.5f * 100 * 0.05f), 0.05f, 10.f)))
+		return E_FAIL;*/
 
 	
 
@@ -140,33 +151,7 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 void CPhysX_Manager::Tick(_float fTimeDelta)
 {	
 
-	_float fTime = min(fTimeDelta, 1.f / 144.f);
-	fTime /= 4.f;
-	for (_uint i = 0; i < 4; ++i)
-	{
-		m_pScene->simulate(fTime);
-		m_pScene->fetchResults(true);
-		m_pScene->fetchResultsParticleSystem();
 
-
-		for (auto& CollisionDesc : m_GroundCollision)
-		{
-			switch (CollisionDesc.flag)
-			{
-			case PxPairFlag::eNOTIFY_TOUCH_FOUND:
-				CollisionDesc.pCollideObject->Ground_Collision_Enter(CollisionDesc);
-				break;
-			case PxPairFlag::eNOTIFY_TOUCH_PERSISTS:
-				CollisionDesc.pCollideObject->Ground_Collision_Continue(CollisionDesc);
-				break;
-			case PxPairFlag::eNOTIFY_TOUCH_LOST:
-				CollisionDesc.pCollideObject->Ground_Collision_Exit(CollisionDesc);
-				break;
-			}
-		}
-		m_GroundCollision.clear();
-	}
-	
 
 	
 }
@@ -174,12 +159,34 @@ void CPhysX_Manager::Tick(_float fTimeDelta)
 void CPhysX_Manager::LateTick(_float fTimeDelta)
 {
 
+	for (auto& CollisionDesc : m_GroundCollision)
+	{
+		switch (CollisionDesc.flag)
+		{
+		case PxPairFlag::eNOTIFY_TOUCH_FOUND:
+			CollisionDesc.pCollideObject->Ground_Collision_Enter(CollisionDesc);
+			break;
+		case PxPairFlag::eNOTIFY_TOUCH_PERSISTS:
+			CollisionDesc.pCollideObject->Ground_Collision_Continue(CollisionDesc);
+			break;
+		case PxPairFlag::eNOTIFY_TOUCH_LOST:
+			CollisionDesc.pCollideObject->Ground_Collision_Exit(CollisionDesc);
+			break;
+		}
+	}
+	m_GroundCollision.clear();
 
+	m_pScene->simulate(fTimeDelta);
+	m_pScene->fetchResults(true);
+	m_pScene->fetchResultsParticleSystem();
+
+
+	
 }
 
 #ifdef _DEBUG
 HRESULT CPhysX_Manager::Render()
-{
+{	
 	const PxRenderBuffer& rb = m_pScene->getRenderBuffer();
 
 	PxU32 iTrangleCount = rb.getNbTriangles();
@@ -296,6 +303,7 @@ HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGameObject, CModel* pModel, Mat
 	if (nullptr == pModel)
 		return E_FAIL;
 
+	WorldMatrix = WorldMatrix.Transpose();
 
 	for (auto& pMesh : pModel->Get_Meshes())
 	{
@@ -353,7 +361,7 @@ HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGameObject, CModel* pModel, Mat
 		tDesc.triangles.data = Indices.data();
 
 
-		PxTriangleMesh* pTriangleMesh = PxCreateTriangleMesh(PxCookingParams(PxTolerancesScale(0.f, 0.f)), tDesc);
+		PxTriangleMesh* pTriangleMesh = PxCreateTriangleMesh(PxCookingParams(PxTolerancesScale(10.f, 10.f)), tDesc);
 		PxTriangleMeshGeometry* pGeometry = new PxTriangleMeshGeometry(pTriangleMesh);
 		
 		
@@ -373,6 +381,7 @@ HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGameObject, CModel* pModel, Mat
 		pShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
 		
 		pShape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
+		pActor->setActorFlag(PxActorFlag::eVISUALIZATION, true);
 		pActor->setName("Ground");
 		
 		// shape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
@@ -405,6 +414,80 @@ HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGameObject, CModel* pModel, Mat
 
 	return S_OK;
 }
+
+PxController* CPhysX_Manager::Add_CapsuleController(CGameObject* pGameObject, Matrix WorldMatrix, _float fHeight, _float fRadius, _float fMaxJumpHeight)
+{
+	// 컨트롤러는 하나만 가질 수 있다.
+	if (nullptr == pGameObject)
+		return nullptr;
+
+	auto iter = m_Controllers.find(pGameObject->Get_ObjectID());
+	if (iter != m_Controllers.end())
+		return nullptr;
+
+	PxCapsuleControllerDesc CapsuleDesc;
+
+	Vec3 vPosition = {};
+	WorldMatrix.Translation(vPosition);
+
+	CapsuleDesc.setToDefault();
+
+	CapsuleDesc.reportCallback = this;
+	CapsuleDesc.behaviorCallback = this;
+
+	CapsuleDesc.material = m_WorldMaterial;
+	CapsuleDesc.position = PxExtendedVec3(vPosition.x, vPosition.y, vPosition.z);
+	CapsuleDesc.height = fHeight;
+	CapsuleDesc.radius = fRadius;
+
+	CapsuleDesc.maxJumpHeight = fMaxJumpHeight;
+	CapsuleDesc.userData = pGameObject;
+	
+
+	PxController* pController = m_pController_Manager->createController(CapsuleDesc);
+
+	pController->getActor()->setActorFlag(PxActorFlag::eVISUALIZATION, true);
+	m_pScene->addActor(*pController->getActor());
+
+	return pController;
+}
+
+PxController* CPhysX_Manager::Add_BoxController(CGameObject* pGameObject, Matrix WorldMatrix, _float3 fExtents, _float fMaxJumpHeight)
+{
+	if (nullptr == pGameObject)
+		return nullptr;
+
+	// 컨트롤러는 하나만 가질 수 있다.
+	auto iter = m_Controllers.find(pGameObject->Get_ObjectID());
+	if (iter != m_Controllers.end())
+		return nullptr;
+
+
+	PxBoxControllerDesc BoxDesc;
+
+	Vec3 vPosition = {};
+	WorldMatrix.Translation(vPosition);
+
+
+	BoxDesc.setToDefault();
+
+	BoxDesc.material = m_WorldMaterial;
+
+	BoxDesc.position = PxExtendedVec3(vPosition.x, vPosition.y, vPosition.z);
+	BoxDesc.halfSideExtent = fExtents.x / 2.f;
+	BoxDesc.halfHeight = fExtents.y / 2.f;
+	BoxDesc.halfForwardExtent = fExtents.z / 2.f;
+	
+	BoxDesc.maxJumpHeight = fMaxJumpHeight;
+	BoxDesc.userData = pGameObject;
+
+	PxController* pController = m_pController_Manager->createController(BoxDesc);
+	
+
+
+	return pController;
+}
+
 
 
 PxRigidDynamic* CPhysX_Manager::Create_Dynamic_Box(const PHYSX_INIT_DESC& Desc)
@@ -892,137 +975,137 @@ static PX_FORCE_INLINE PxU32 id(PxU32 x, PxU32 y, PxU32 numY)
 	return x * numY + y;
 }
 
-HRESULT CPhysX_Manager::Init_Cloth(const PxU32 numX, const PxU32 numZ, const PxVec3& position, const PxReal particleSpacing, const PxReal totalClothMass)
-{
-	//if (nullptr == m_pCudaContextManager)
-	//	return E_FAIL;
-
-	//const PxU32 numParticles = numX * numZ;
-	//const PxU32 numSprings = (numX - 1) * (numZ - 1) * 4 + (numX - 1) + (numZ - 1);
-	//const PxU32 numTriangles = (numX - 1) * (numZ - 1) * 2;
-
-	//const PxReal restOffset = particleSpacing;
-
-	//const PxReal stretchStiffness = 10000.f;
-	//const PxReal shearStiffness = 100.f;
-	//const PxReal springDamping = 0.001f;
-
-	//// Material setup
-	//PxPBDMaterial* defaultMat = m_Physics->createPBDMaterial(0.8f, 0.05f, 1e+6f, 0.001f, 0.5f, 0.005f, 0.05f, 0.f, 0.f);
-
-	//PxPBDParticleSystem* particleSystem = m_Physics->createPBDParticleSystem(*m_pCudaContextManager);
-	//m_pParticleSystem = particleSystem;
-
-	//// General particle system setting
-
-	//const PxReal particleMass = totalClothMass / numParticles;
-	//particleSystem->setRestOffset(restOffset);
-	//particleSystem->setContactOffset(restOffset + 0.02f);
-	//particleSystem->setParticleContactOffset(restOffset + 0.02f);
-	//particleSystem->setSolidRestOffset(restOffset);
-	//particleSystem->setFluidRestOffset(0.0f);
-
-
-
-	//m_pScene->addActor(*particleSystem);
-
-	//// Create particles and add them to the particle system
-	//const PxU32 particlePhase = particleSystem->createPhase(defaultMat, PxParticlePhaseFlags(PxParticlePhaseFlag::eParticlePhaseSelfCollideFilter | PxParticlePhaseFlag::eParticlePhaseSelfCollide));
-
-	//PxParticleClothBufferHelper* clothBuffers = PxCreateParticleClothBufferHelper(1, numTriangles, numSprings, numParticles, m_pCudaContextManager);
-
-	//PxU32* phase = m_pCudaContextManager->allocPinnedHostBuffer<PxU32>(numParticles);
-	//PxVec4* positionInvMass = m_pCudaContextManager->allocPinnedHostBuffer<PxVec4>(numParticles);
-	//PxVec4* velocity = m_pCudaContextManager->allocPinnedHostBuffer<PxVec4>(numParticles);
-
-	//PxReal x = position.x;
-	//PxReal y = position.y;
-	//PxReal z = position.z;
-
-	//// Define springs and triangles
-	//PxArray<PxParticleSpring> springs;
-	//springs.reserve(numSprings);
-	//PxArray<PxU32> triangles;
-	//triangles.reserve(numTriangles * 3);
-
-	//for (PxU32 i = 0; i < numX; ++i)
-	//{
-	//	for (PxU32 j = 0; j < numZ; ++j)
-	//	{
-	//		const PxU32 index = i * numZ + j;
-
-	//		PxVec4 pos(x, y, z, 1.0f / particleMass);
-	//		phase[index] = particlePhase;
-	//		positionInvMass[index] = pos;
-	//		velocity[index] = PxVec4(0.f, 0.f, 0.f, 0.f);
-
-	//		if (i > 0)
-	//		{
-	//			PxParticleSpring spring = { id(i - 1, j, numZ), id(i, j, numZ), particleSpacing, stretchStiffness, springDamping, 0 };
-	//			springs.pushBack(spring);
-	//		}
-	//		if (j > 0)
-	//		{
-	//			PxParticleSpring spring = { id(i, j - 1, numZ), id(i, j, numZ), particleSpacing, stretchStiffness, springDamping, 0 };
-	//			springs.pushBack(spring);
-	//		}
-
-	//		if (i > 0 && j > 0)
-	//		{
-	//			PxParticleSpring spring0 = { id(i - 1, j - 1, numZ), id(i, j, numZ), PxSqrt(2.0f) * particleSpacing, shearStiffness, springDamping, 0 };
-	//			springs.pushBack(spring0);
-	//			PxParticleSpring spring1 = { id(i - 1, j, numZ), id(i, j - 1, numZ), PxSqrt(2.0f) * particleSpacing, shearStiffness, springDamping, 0 };
-	//			springs.pushBack(spring1);
-
-	//			//Triangles are used to compute approximated aerodynamic forces for cloth falling down
-	//			triangles.pushBack(id(i - 1, j - 1, numZ));
-	//			triangles.pushBack(id(i - 1, j, numZ));
-	//			triangles.pushBack(id(i, j - 1, numZ));
-
-	//			triangles.pushBack(id(i - 1, j, numZ));
-	//			triangles.pushBack(id(i, j - 1, numZ));
-	//			triangles.pushBack(id(i, j, numZ));
-	//		}
-
-	//		z += particleSpacing;
-	//	}
-	//	z = position.z;
-	//	x += particleSpacing;
-	//}
-
-	//PX_ASSERT(numSprings == springs.size());
-	//PX_ASSERT(numTriangles == triangles.size() / 3);
-
-	//clothBuffers->addCloth(0.0f, 0.0f, 0.0f, triangles.begin(), numTriangles, springs.begin(), numSprings, positionInvMass, numParticles);
-
-	//ExtGpu::PxParticleBufferDesc bufferDesc;
-	//bufferDesc.maxParticles = numParticles;
-	//bufferDesc.numActiveParticles = numParticles;
-	//bufferDesc.positions = positionInvMass;
-	//bufferDesc.velocities = velocity;
-	//bufferDesc.phases = phase;
-
-	//const PxParticleClothDesc& clothDesc = clothBuffers->getParticleClothDesc();
-	//PxParticleClothPreProcessor* clothPreProcessor = PxCreateParticleClothPreProcessor(m_pCudaContextManager);
-
-
-	//clothPreProcessor->partitionSprings(clothDesc, m_Cloth);
-	//clothPreProcessor->release();
-
-	//m_pClothBuffer = physx::ExtGpu::PxCreateAndPopulateParticleClothBuffer(bufferDesc, clothDesc, m_Cloth, m_pCudaContextManager);
-	//
-	//m_pParticleSystem->addParticleBuffer(m_pClothBuffer);
-
-	//clothBuffers->release();
-	//defaultMat->release();
-
-
-	//m_pCudaContextManager->freePinnedHostBuffer(positionInvMass);
-	//m_pCudaContextManager->freePinnedHostBuffer(velocity);
-	//m_pCudaContextManager->freePinnedHostBuffer(phase);
-
-	return S_OK;
-}
+//HRESULT CPhysX_Manager::Init_Cloth(const PxU32 numX, const PxU32 numZ, const PxVec3& position, const PxReal particleSpacing, const PxReal totalClothMass)
+//{
+//	//if (nullptr == m_pCudaContextManager)
+//	//	return E_FAIL;
+//
+//	//const PxU32 numParticles = numX * numZ;
+//	//const PxU32 numSprings = (numX - 1) * (numZ - 1) * 4 + (numX - 1) + (numZ - 1);
+//	//const PxU32 numTriangles = (numX - 1) * (numZ - 1) * 2;
+//
+//	//const PxReal restOffset = particleSpacing;
+//
+//	//const PxReal stretchStiffness = 10000.f;
+//	//const PxReal shearStiffness = 100.f;
+//	//const PxReal springDamping = 0.001f;
+//
+//	//// Material setup
+//	//PxPBDMaterial* defaultMat = m_Physics->createPBDMaterial(0.8f, 0.05f, 1e+6f, 0.001f, 0.5f, 0.005f, 0.05f, 0.f, 0.f);
+//
+//	//PxPBDParticleSystem* particleSystem = m_Physics->createPBDParticleSystem(*m_pCudaContextManager);
+//	//m_pParticleSystem = particleSystem;
+//
+//	//// General particle system setting
+//
+//	//const PxReal particleMass = totalClothMass / numParticles;
+//	//particleSystem->setRestOffset(restOffset);
+//	//particleSystem->setContactOffset(restOffset + 0.02f);
+//	//particleSystem->setParticleContactOffset(restOffset + 0.02f);
+//	//particleSystem->setSolidRestOffset(restOffset);
+//	//particleSystem->setFluidRestOffset(0.0f);
+//
+//
+//
+//	//m_pScene->addActor(*particleSystem);
+//
+//	//// Create particles and add them to the particle system
+//	//const PxU32 particlePhase = particleSystem->createPhase(defaultMat, PxParticlePhaseFlags(PxParticlePhaseFlag::eParticlePhaseSelfCollideFilter | PxParticlePhaseFlag::eParticlePhaseSelfCollide));
+//
+//	//PxParticleClothBufferHelper* clothBuffers = PxCreateParticleClothBufferHelper(1, numTriangles, numSprings, numParticles, m_pCudaContextManager);
+//
+//	//PxU32* phase = m_pCudaContextManager->allocPinnedHostBuffer<PxU32>(numParticles);
+//	//PxVec4* positionInvMass = m_pCudaContextManager->allocPinnedHostBuffer<PxVec4>(numParticles);
+//	//PxVec4* velocity = m_pCudaContextManager->allocPinnedHostBuffer<PxVec4>(numParticles);
+//
+//	//PxReal x = position.x;
+//	//PxReal y = position.y;
+//	//PxReal z = position.z;
+//
+//	//// Define springs and triangles
+//	//PxArray<PxParticleSpring> springs;
+//	//springs.reserve(numSprings);
+//	//PxArray<PxU32> triangles;
+//	//triangles.reserve(numTriangles * 3);
+//
+//	//for (PxU32 i = 0; i < numX; ++i)
+//	//{
+//	//	for (PxU32 j = 0; j < numZ; ++j)
+//	//	{
+//	//		const PxU32 index = i * numZ + j;
+//
+//	//		PxVec4 pos(x, y, z, 1.0f / particleMass);
+//	//		phase[index] = particlePhase;
+//	//		positionInvMass[index] = pos;
+//	//		velocity[index] = PxVec4(GI->RandomFloat(-10.f, 10.f));
+//
+//	//		if (i > 0)
+//	//		{
+//	//			PxParticleSpring spring = { id(i - 1, j, numZ), id(i, j, numZ), particleSpacing, stretchStiffness, springDamping, 0 };
+//	//			springs.pushBack(spring);
+//	//		}
+//	//		if (j > 0)
+//	//		{
+//	//			PxParticleSpring spring = { id(i, j - 1, numZ), id(i, j, numZ), particleSpacing, stretchStiffness, springDamping, 0 };
+//	//			springs.pushBack(spring);
+//	//		}
+//
+//	//		if (i > 0 && j > 0)
+//	//		{
+//	//			PxParticleSpring spring0 = { id(i - 1, j - 1, numZ), id(i, j, numZ), PxSqrt(2.0f) * particleSpacing, shearStiffness, springDamping, 0 };
+//	//			springs.pushBack(spring0);
+//	//			PxParticleSpring spring1 = { id(i - 1, j, numZ), id(i, j - 1, numZ), PxSqrt(2.0f) * particleSpacing, shearStiffness, springDamping, 0 };
+//	//			springs.pushBack(spring1);
+//
+//	//			//Triangles are used to compute approximated aerodynamic forces for cloth falling down
+//	//			triangles.pushBack(id(i - 1, j - 1, numZ));
+//	//			triangles.pushBack(id(i - 1, j, numZ));
+//	//			triangles.pushBack(id(i, j - 1, numZ));
+//
+//	//			triangles.pushBack(id(i - 1, j, numZ));
+//	//			triangles.pushBack(id(i, j - 1, numZ));
+//	//			triangles.pushBack(id(i, j, numZ));
+//	//		}
+//
+//	//		z += particleSpacing;
+//	//	}
+//	//	z = position.z;
+//	//	x += particleSpacing;
+//	//}
+//
+//	//PX_ASSERT(numSprings == springs.size());
+//	//PX_ASSERT(numTriangles == triangles.size() / 3);
+//
+//	//clothBuffers->addCloth(0.0f, 0.0f, 0.0f, triangles.begin(), numTriangles, springs.begin(), numSprings, positionInvMass, numParticles);
+//
+//	//ExtGpu::PxParticleBufferDesc bufferDesc;
+//	//bufferDesc.maxParticles = numParticles;
+//	//bufferDesc.numActiveParticles = numParticles;
+//	//bufferDesc.positions = positionInvMass;
+//	//bufferDesc.velocities = velocity;
+//	//bufferDesc.phases = phase;
+//
+//	//const PxParticleClothDesc& clothDesc = clothBuffers->getParticleClothDesc();
+//	//PxParticleClothPreProcessor* clothPreProcessor = PxCreateParticleClothPreProcessor(m_pCudaContextManager);
+//
+//
+//	//clothPreProcessor->partitionSprings(clothDesc, m_Cloth);
+//	//clothPreProcessor->release();
+//
+//	//m_pClothBuffer = physx::ExtGpu::PxCreateAndPopulateParticleClothBuffer(bufferDesc, clothDesc, m_Cloth, m_pCudaContextManager);
+//	//
+//	//m_pParticleSystem->addParticleBuffer(m_pClothBuffer);
+//
+//	//clothBuffers->release();
+//	//defaultMat->release();
+//
+//
+//	//m_pCudaContextManager->freePinnedHostBuffer(positionInvMass);
+//	//m_pCudaContextManager->freePinnedHostBuffer(velocity);
+//	//m_pCudaContextManager->freePinnedHostBuffer(phase);
+//
+//	return S_OK;
+//}
 
 
 
@@ -1108,6 +1191,11 @@ void CPhysX_Manager::Free()
 		iter.second.clear();
 	}
 	m_GroundObjects.clear();
+
+	for (auto iter : m_Controllers)
+		iter.second->release();
+
+	m_pController_Manager->release();
 	
 
 	// m_pParticleSystem->removeParticleBuffer(m_pClothBuffer);
@@ -1121,6 +1209,9 @@ void CPhysX_Manager::Free()
 
 	if (m_Dispatcher)
 		m_Dispatcher->release();
+
+	if (m_pPvd->isConnected())
+		m_pPvd->disconnect();
 
 	if (m_pPvd)
 		m_pPvd->release();
@@ -1143,6 +1234,39 @@ void CPhysX_Manager::Free()
 	Safe_Delete(m_pEffect);
 	Safe_Release(m_pInputLayout);
 #endif
+}
+
+PxControllerBehaviorFlags CPhysX_Manager::getBehaviorFlags(const PxShape& shape, const PxActor& actor)
+{
+	return PxControllerBehaviorFlags();
+}
+
+PxControllerBehaviorFlags CPhysX_Manager::getBehaviorFlags(const PxController& controller)
+{
+	return PxControllerBehaviorFlags();
+}
+
+PxControllerBehaviorFlags CPhysX_Manager::getBehaviorFlags(const PxObstacle& obstacle)
+{
+	return PxControllerBehaviorFlags();
+}
+
+void CPhysX_Manager::onShapeHit(const PxControllerShapeHit& hit)
+{
+	if (nullptr != hit.actor->getName() && !strcmp("Ground", hit.actor->getName()))
+	{
+		
+	}
+}
+
+void CPhysX_Manager::onControllerHit(const PxControllersHit& hit)
+{
+	int i = 0;
+}
+
+void CPhysX_Manager::onObstacleHit(const PxControllerObstacleHit& hit)
+{
+	int i = 0;
 }
 
 
@@ -1352,6 +1476,7 @@ void CPhysX_Manager::onAdvance(const PxRigidBody* const* bodyBuffer, const PxTra
 {
 	int i = 0;
 }
+
 
 
 

@@ -2,8 +2,6 @@
 #include "PumpkinCandleNode_Attack1.h"
 
 #include "BehaviorTree.h"
-#include "BlackBoard.h"
-
 #include "Model.h"
 
 CPumpkinCandleNode_Attack1::CPumpkinCandleNode_Attack1()

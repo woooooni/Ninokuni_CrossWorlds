@@ -2,8 +2,6 @@
 #include "Clown_WizardNode_Roaming.h"
 
 #include "BehaviorTree.h"
-#include "BlackBoard.h"
-
 #include "Model.h"
 
 CClown_WizardNode_Roaming::CClown_WizardNode_Roaming()
