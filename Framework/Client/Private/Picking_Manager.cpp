@@ -106,6 +106,63 @@ _bool CPicking_Manager::Is_Picking(CTransform* pTransform, CVIBuffer* pBuffer, _
 	return fMinDistance < 999999.f;
 }
 
+_bool CPicking_Manager::Is_TestPicking(CTransform* pTransform, CVIBuffer* objectBuffer, Vec4* vPos)
+{
+	POINT pt;
+	GetCursorPos(&pt);
+	ScreenToClient(g_hWnd, &pt);
+
+	Vec3        vMousePos(pt.x, pt.y, 1.f);
+	RECT rc = { 0, 0, 1600, 900 };
+	SimpleMath::Viewport viewport(rc);
+
+	Vec3 WordlMousePos = viewport.Unproject(vMousePos,
+		GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ),
+		GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW),
+		pTransform->Get_WorldMatrix());
+
+	SimpleMath::Ray ray;
+	Vec4 vCameraPos = GI->Get_CamPosition();
+	ray.position = Vec3(vCameraPos.x, vCameraPos.y, vCameraPos.z);
+	ray.direction = WordlMousePos - ray.position;
+	ray.direction.Normalize();
+
+	ray.position = XMVector3TransformCoord(ray.position, pTransform->Get_WorldMatrixInverse());
+	ray.direction = XMVector3TransformNormal(ray.direction, pTransform->Get_WorldMatrixInverse());
+	ray.direction.Normalize();
+
+	_float minDistance = FLT_MAX;
+	_float distance = 0.f;
+
+	//Vec3* pVertex = static_cast<BinaryMesh*>(objectBuffer)->GetVertexPos();
+	const vector<_float3>& Vertices = objectBuffer->Get_VertexLocalPositions();
+	const vector<FACEINDICES32>& Indices = objectBuffer->Get_FaceIndices();
+	//_ulong* pIndices = static_cast<BinaryMesh*>(objectBuffer)->GetIndicesMeshBuffer();
+	//uint32 NumIndices = static_cast<BinaryMesh*>(objectBuffer)->GetBufferDesc()->_numIndices;
+
+	uint32		iNumIndices = 0;
+
+	for (uint32 i = 0; i < Indices.size(); ++i)
+	{
+		_vector v0, v1, v2;
+		v0 = XMVectorSet(Vertices[Indices[i]._0].x, Vertices[Indices[i]._0].y, Vertices[Indices[i]._0].z, 1.f);
+		v1 = XMVectorSet(Vertices[Indices[i]._1].x, Vertices[Indices[i]._1].y, Vertices[Indices[i]._1].z, 1.f);
+		v2 = XMVectorSet(Vertices[Indices[i]._2].x, Vertices[Indices[i]._2].y, Vertices[Indices[i]._2].z, 1.f);
+
+		if (true == ray.Intersects(v0, v1, v2, distance))
+		{
+			if (distance < minDistance)
+			{
+				*vPos = Vec4(ray.position.x + ray.direction.x * distance, ray.position.y + ray.direction.y * distance, ray.position.z + ray.direction.z * distance, 1.f);
+				*vPos = XMVector3TransformCoord(*vPos, pTransform->Get_WorldMatrix());
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
 _bool CPicking_Manager::Is_NaviPicking(CTransform* pTransform, CVIBuffer* pBuffer, _float3* pWorldOut, _float3* pLocalPos)
 {
 	if (nullptr == pTransform)

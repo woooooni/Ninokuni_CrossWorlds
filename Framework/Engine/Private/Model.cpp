@@ -533,6 +533,8 @@ HRESULT CModel::Clear_NotUsedData()
 
 HRESULT CModel::Set_Animation(const _uint& iAnimationIndex, const _float& fTweenDuration)
 {
+	
+
 	_uint iIndex = iAnimationIndex % m_Animations.size();
 
 	if (m_Animations.size() <= iIndex)
