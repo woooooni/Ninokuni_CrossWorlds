@@ -117,7 +117,7 @@ HRESULT CUI_Default_Background::Ready_Components()
 		return E_FAIL;
 
 	// Texture Component
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Common_DefaultBackground"),
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Common_DefaultBackground_WithCloud"),
 		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 		return E_FAIL;
 

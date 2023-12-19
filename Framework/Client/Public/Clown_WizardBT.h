@@ -29,7 +29,7 @@ private:
 	_bool	IsReturn();
 
 private:
-	CClown_Wizard* m_pClown_Wizard = nullptr;
+	class CClown_Wizard* m_pClown_Wizard = nullptr;
 	CBTNode::tagBTDesc m_tBTNodeDesc = {};
 
 	_bool m_BIsChase = false;
