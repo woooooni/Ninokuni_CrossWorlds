@@ -8,7 +8,7 @@
 CState::CState(CStateMachine* pStateMachine)
 	: m_pStateMachineCom(pStateMachine)
 {	
-	Safe_AddRef(m_pStateMachineCom);
+	
 }
 
 HRESULT CState::Initialize(const list<wstring>& AnimationList)
@@ -16,6 +16,8 @@ HRESULT CState::Initialize(const list<wstring>& AnimationList)
 	m_pOwner = m_pStateMachineCom->Get_Owner();
 	if (nullptr == m_pOwner)
 		return E_FAIL;
+
+	Safe_AddRef(m_pOwner);
 
 	m_pModelCom = m_pStateMachineCom->Get_Owner()->Get_Component<CModel>(L"Com_Model");
 	if (nullptr == m_pModelCom)
@@ -52,9 +54,9 @@ HRESULT CState::Initialize(const list<wstring>& AnimationList)
 void CState::Free()
 {
 	__super::Free();
+	Safe_Release(m_pOwner);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRigidBodyCom);
 	Safe_Release(m_pTransformCom);
 	Safe_Release(m_pNavigationCom);
-	Safe_Release(m_pStateMachineCom);
 }
