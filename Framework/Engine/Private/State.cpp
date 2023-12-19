@@ -29,9 +29,9 @@ HRESULT CState::Initialize(const list<wstring>& AnimationList)
 	if (nullptr == m_pTransformCom)
 		return E_FAIL;
 
-	m_pNavigationCom = m_pStateMachineCom->Get_Owner()->Get_Component<CNavigation>(L"Com_Navigation");
-	if (nullptr == m_pNavigationCom)
-		return E_FAIL;
+	//m_pNavigationCom = m_pStateMachineCom->Get_Owner()->Get_Component<CNavigation>(L"Com_Navigation");
+	//if (nullptr == m_pNavigationCom)
+	//	return E_FAIL;
 
 
 	m_AnimIndices.reserve(AnimationList.size());
@@ -52,6 +52,7 @@ HRESULT CState::Initialize(const list<wstring>& AnimationList)
 void CState::Free()
 {
 	__super::Free();
+
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pRigidBodyCom);
 	Safe_Release(m_pTransformCom);

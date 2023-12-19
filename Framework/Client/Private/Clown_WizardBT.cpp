@@ -88,7 +88,7 @@ HRESULT CClown_WizardBT::Initialize_Prototype(CGameObject* pObject)
 	vector<wstring> vecAnimationName;
 	vecAnimationName.push_back(TEXT("SKM_ClownWizard.ao|ClownWizard_Idle01"));
 	vecAnimationName.push_back(TEXT("SKM_ClownWizard.ao|ClownWizard_Idle02"));
-	vecAnimationName.push_back(TEXT("SKM_ClownWizard.ao|ClownWizard_BattleStand"));
+	vecAnimationName.push_back(TEXT("SKM_ClownWizard.ao|ClownWizard_Idle01"));
 	CClown_WizardNode_Idle* pIdleNode = CClown_WizardNode_Idle::Create(&m_tBTNodeDesc, this, vecAnimationName);
 	CClown_WizardNode_Roaming* pRoamingNode = CClown_WizardNode_Roaming::Create(&m_tBTNodeDesc, this, dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_RoamingArea());
 

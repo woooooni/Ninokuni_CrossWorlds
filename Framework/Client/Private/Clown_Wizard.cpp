@@ -56,9 +56,9 @@ void CClown_Wizard::Tick(_float fTimeDelta)
 
 	__super::Tick(fTimeDelta);
 
-	if (GetAsyncKeyState('G'))
+	if (KEY_TAP(KEY::F5))
 	{
-		m_tStat.fHp = 0;
+		m_tStat.fHp -= 10.f;
 	}
 }
 
@@ -175,7 +175,7 @@ HRESULT CClown_Wizard::Ready_Colliders()
 	/* 원거리 공격 범위 */
 	BoundingSphere tSphere;
 	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 3.f;
+	tSphere.Radius = 6.f;
 	ColliderDesc.tSphere = tSphere;
 
 	ColliderDesc.pOwner = this;

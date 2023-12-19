@@ -73,7 +73,7 @@ void CMonster::Tick(_float fTimeDelta)
 	if (m_bReserveDead)
 	{
 		m_fDissolveWeight += 0.2f * fTimeDelta;
-		if (m_fDissolveWeight >= 1.f)
+		if (m_fDissolveWeight >= 2.f)
 		{
 			Set_ActiveColliders(CCollider::DETECTION_TYPE::HEAD, false);
 			Set_ActiveColliders(CCollider::DETECTION_TYPE::BODY, false);
@@ -81,7 +81,8 @@ void CMonster::Tick(_float fTimeDelta)
 		}
 	}
 
-	m_pBTCom->Tick(fTimeDelta);
+	if(m_pBTCom != nullptr)
+		m_pBTCom->Tick(fTimeDelta);
 }
 
 void CMonster::LateTick(_float fTimeDelta)
@@ -117,7 +118,8 @@ void CMonster::LateTick(_float fTimeDelta)
 
 	
 	//m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
-	m_pBTCom->LateTick(fTimeDelta);
+	if (m_pBTCom != nullptr)
+		m_pBTCom->LateTick(fTimeDelta);
 }
 
 HRESULT CMonster::Render()
@@ -343,7 +345,6 @@ CHierarchyNode* CMonster::Get_Socket(const wstring& strSocketName)
 
 void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 {
-	m_tStat.fHp -= 10.f;
 	// m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_HITANIM] = true;
 }
 
@@ -369,7 +370,7 @@ void CMonster::Play_DamagedSound()
 	//	lstrcatW(strSoundFileName, L"Voice_Normal_Monster_0_Damanged_Basic_");
 	//	lstrcatW(strSoundFileName, to_wstring(CUtils::Random_Int(0, 4)).c_str());
 	//	lstrcatW(strSoundFileName, L".wav");
-	//	GI->Play_Sound(strSoundFileName, CHANNELID::SOUND_VOICE_MONSTER1, 1.f);
+	//  GI->Play_Sound(strSoundFileName, CHANNELID::SOUND_VOICE_MONSTER1, 1.f);
 	//	break;
 	//case Client::CMonster::NORMAL_1:
 	//	lstrcatW(strSoundFileName, L"Voice_Normal_Monster_1_Damanged_Basic_");

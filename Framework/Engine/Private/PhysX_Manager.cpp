@@ -125,8 +125,8 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 		return E_FAIL;
 #endif
 
-	if (FAILED(Init_Cloth(100, 100, PxVec3(-0.5f * 100 * 0.05f, 8.f, -0.5f * 100 * 0.05f), 0.05f, 10.f)))
-		return E_FAIL;
+	//if (FAILED(Init_Cloth(100, 100, PxVec3(-0.5f * 100 * 0.05f, 8.f, -0.5f * 100 * 0.05f), 0.05f, 10.f)))
+	//	return E_FAIL;
 
 	
 

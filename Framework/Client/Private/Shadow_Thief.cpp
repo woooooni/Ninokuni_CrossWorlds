@@ -58,9 +58,9 @@ void CShadow_Thief::Tick(_float fTimeDelta)
 
 	__super::Tick(fTimeDelta);
 
-	if (GetAsyncKeyState('T'))
+	if (KEY_TAP(KEY::B))
 	{
-		m_tStat.fHp = 0;
+		m_tStat.fHp -= 10.f;
 	}
 }
 

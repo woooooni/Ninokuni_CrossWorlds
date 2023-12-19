@@ -56,9 +56,9 @@ void CPumpkinCandle::Tick(_float fTimeDelta)
 
 	__super::Tick(fTimeDelta);
 
-	if (GetAsyncKeyState('G'))
+	if (KEY_TAP(KEY::K))
 	{
-		m_tStat.fHp = 0;
+		m_tStat.fHp -= 10.f;
 	}
 }
 
