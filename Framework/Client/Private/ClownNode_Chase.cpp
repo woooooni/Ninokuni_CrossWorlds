@@ -2,8 +2,6 @@
 #include "ClownNode_Chase.h"
 
 #include "BehaviorTree.h"
-#include "BlackBoard.h"
-
 #include "Model.h"
 
 CClownNode_Chase::CClownNode_Chase()

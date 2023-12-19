@@ -447,6 +447,12 @@ HRESULT CMainApp::Ready_Prototype_Component()
 		CCollider_OBB::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	/* Prototype_Component_PhysXController */
+	if(FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_PhysXController"),
+		CPhysX_Controller::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+	
+
 	return S_OK;
 }
 

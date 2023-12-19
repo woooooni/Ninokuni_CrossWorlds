@@ -2,8 +2,6 @@
 #include "Shadow_ThiefNode_Chase.h"
 
 #include "BehaviorTree.h"
-#include "BlackBoard.h"
-
 #include "Model.h"
 
 CShadow_ThiefNode_Chase::CShadow_ThiefNode_Chase()

@@ -145,6 +145,9 @@ public:
 	HRESULT Remove_Actor(class CGameObject* pGameObject, PxActor* pPhysXActor);
 	PxMaterial* Create_PxMaterial(_float fA, _float fB, _float fC);
 
+	PxController* Add_CapsuleController(class CGameObject* pGameObject, Matrix WorldMatrix, _float fHeight, _float fRadius, _float fMaxJumpHeight);
+	PxController* Add_BoxController(CGameObject* pGameObject, Matrix WorldMatrix, _float3 vExtents, _float fMaxJumpHeight);
+
 	
 	
 	/*class PxParticleClothBuffer* Get_TestClothBuffer();
@@ -155,10 +158,24 @@ public:
 
 
 public:
+	PxTransform To_PxTransform(Matrix matrix);
+	Matrix To_Matrix(PxTransform pxTransform);
+
+
 	wstring To_Wstring(const string& str);
 	string To_String(const wstring& str);
+
 	_float RandomFloat(_float fMin, _float fMax);
 	_int RandomInt(_int iMin, _int iMax);
+
+	Matrix To_RightHanded(Matrix matLeftHanded);
+	Matrix To_LeftHanded(Matrix matLeftHanded);
+
+	Vec4 To_RightHanded(Vec4 vLeftHanded);
+	Vec4 To_LeftHanded(Vec4 vRightHanded);
+
+	Vec3 To_RightHanded(Vec3 vLeftHanded);
+	Vec3 To_LeftHanded(Vec3 vRightHanded);
 
 
 public:

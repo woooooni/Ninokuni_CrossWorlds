@@ -2,10 +2,6 @@
 #include "Baobam_WaterNode_Hit.h"
 
 #include "BehaviorTree.h"
-#include "BlackBoard.h"
-
-#include "GameInstance.h"
-
 #include "Model.h"
 
 CBaobam_WaterNode_Hit::CBaobam_WaterNode_Hit()
@@ -39,7 +35,6 @@ CBTNode::NODE_STATE CBaobam_WaterNode_Hit::Tick(const _float& fTimeDelta)
 	if (dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_HIT) &&
 		!dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK))
 	{
-		GI->Play_Sound(L"BaoBam_V_Dmg_1_1", CHANNELID::SOUND_VOICE_MONSTER1, 1.f);
 		m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_Baobam_Water.ao|BaoBam_Damage"));
 	}
 

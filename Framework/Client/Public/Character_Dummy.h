@@ -8,6 +8,7 @@ class CRenderer;
 class CTransform;
 class CModel;
 class CRigidBody;
+class CPhysX_Controller;
 
 END
 BEGIN(Client)
@@ -46,6 +47,7 @@ private:
 	class CTransform* m_pTransformCom = nullptr;
 	class CModel* m_pModelCom = nullptr;
 	class CRigidBody* m_pRigidBodyCom = nullptr;
+	class CPhysX_Controller* m_pControllerCom = nullptr;
 
 private:
 	_bool m_bIsJumping = false;

@@ -2,8 +2,6 @@
 #include "StelliaNode_Dead.h"
 
 #include "BehaviorTree.h"
-#include "BlackBoard.h"
-
 #include "Model.h"
 
 CStelliaNode_Dead::CStelliaNode_Dead()

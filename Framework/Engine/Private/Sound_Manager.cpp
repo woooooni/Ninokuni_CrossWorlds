@@ -18,6 +18,11 @@ HRESULT CSound_Manager::Reserve_Manager()
 {
 	FMOD_System_Create(&m_pSystem);
 	FMOD_System_Init(m_pSystem, 32, FMOD_INIT_NORMAL, NULL);
+
+	for (_uint i = 0; i < MAXCHANNEL; ++i)
+	{
+		m_fSoundVolumeArr[i] = 1.f;
+	}
 	
 	Load_SoundFile("../../Client/Bin/Resources/Sound/Bgm/");
 	Load_SoundFile("../../Client/Bin/Resources/Sound/Battle/");

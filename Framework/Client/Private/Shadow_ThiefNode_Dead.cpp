@@ -2,8 +2,6 @@
 #include "Shadow_ThiefNode_Dead.h"
 
 #include "BehaviorTree.h"
-#include "BlackBoard.h"
-
 #include "Model.h"
 
 CShadow_ThiefNode_Dead::CShadow_ThiefNode_Dead()

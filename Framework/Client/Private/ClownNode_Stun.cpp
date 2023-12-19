@@ -2,8 +2,6 @@
 #include "ClownNode_Stun.h"
 
 #include "BehaviorTree.h"
-#include "BlackBoard.h"
-
 #include "Model.h"
 
 CClownNode_Stun::CClownNode_Stun()

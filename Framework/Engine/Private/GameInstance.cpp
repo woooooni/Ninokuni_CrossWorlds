@@ -587,6 +587,36 @@ PxMaterial* CGameInstance::Create_PxMaterial(_float fStaticFriction, _float fDyn
 	return m_pPhysXManager->Create_Material(fStaticFriction, fDynamicFriction, fRestitution);
 }
 
+PxController* CGameInstance::Add_CapsuleController(CGameObject* pGameObject, Matrix WorldMatrix, _float fHeight, _float fRadius, _float fMaxJumpHeight)
+{
+	return m_pPhysXManager->Add_CapsuleController(pGameObject, WorldMatrix, fHeight, fRadius, fMaxJumpHeight);
+}
+
+PxController* CGameInstance::Add_BoxController(CGameObject* pGameObject, Matrix WorldMatrix, _float3 fExtents, _float fMaxJumpHeight)
+{
+	return m_pPhysXManager->Add_BoxController(pGameObject, WorldMatrix, fExtents, fMaxJumpHeight);
+}
+
+//PxParticleClothBuffer* CGameInstance::Get_TestClothBuffer()
+//{
+//	return m_pPhysXManager->Get_ClothBuffer();
+//}
+//
+//PxCudaContextManager* CGameInstance::Get_CudaContext_Manager()
+//{
+//	return m_pPhysXManager->Get_CudaContext_Manager();
+//}
+//
+//PxCudaContext* CGameInstance::Get_CudaContext()
+//{
+//	return m_pPhysXManager->Get_CudaContext();
+//}
+//
+//PxParticleSystem* CGameInstance::Get_ParticleSystem()
+//{
+//	return m_pPhysXManager->Get_ParticleSystem();
+//}
+
 //PxParticleClothBuffer* CGameInstance::Get_TestClothBuffer()
 //{
 //	return m_pPhysXManager->Get_ClothBuffer();
@@ -611,6 +641,16 @@ PxMaterial* CGameInstance::Create_PxMaterial(_float fStaticFriction, _float fDyn
 
 
 
+PxTransform CGameInstance::To_PxTransform(Matrix matrix)
+{
+	return CUtils::To_PxTransform(matrix);
+}
+
+Matrix CGameInstance::To_Matrix(PxTransform pxTransform)
+{
+	return CUtils::To_Matrix(pxTransform);
+}
+
 wstring CGameInstance::To_Wstring(const string& str)
 {
 	return	CUtils::ToWString(str);
@@ -629,6 +669,36 @@ _float CGameInstance::RandomFloat(_float fMin, _float fMax)
 _int CGameInstance::RandomInt(_int iMin, _int iMax)
 {
 	return	CUtils::Random_Int(iMin, iMax);
+}
+
+Matrix CGameInstance::To_RightHanded(Matrix matLeftHanded)
+{
+	return CUtils::To_RightHanded(matLeftHanded);
+}
+
+Matrix CGameInstance::To_LeftHanded(Matrix matRightHanded)
+{
+	return CUtils::To_LeftHanded(matRightHanded);
+}
+
+Vec4 CGameInstance::To_RightHanded(Vec4 vLeftHanded)
+{
+	return CUtils::To_RightHanded(vLeftHanded);
+}
+
+Vec4 CGameInstance::To_LeftHanded(Vec4 vRightHanded)
+{
+	return CUtils::To_LeftHanded(vRightHanded);
+}
+
+Vec3 CGameInstance::To_RightHanded(Vec3 vLeftHanded)
+{
+	return CUtils::To_RightHanded(vLeftHanded);
+}
+
+Vec3 CGameInstance::To_LeftHanded(Vec3 vRightHanded)
+{
+	return CUtils::To_LeftHanded(vRightHanded);
 }
 
 Json CGameInstance::Json_Load(const wstring& strFilePath)
