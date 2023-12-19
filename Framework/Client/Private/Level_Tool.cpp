@@ -8,7 +8,7 @@
 #include "Terrain.h"
 #include "Camera_Manager.h"
 
-#include "Part_SwordTemp.h"
+#include "Weapon_SwordTemp.h"
 
 
 CLevel_Tool::CLevel_Tool(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

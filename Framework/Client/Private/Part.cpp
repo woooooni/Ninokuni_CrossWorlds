@@ -2,7 +2,6 @@
 #include "..\Public\Part.h"
 
 #include "GameInstance.h"
-#include "HierarchyNode.h"
 
 CPart::CPart(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObejctTag, _uint iObjectType)
 	: CGameObject(pDevice, pContext, strObejctTag, iObjectType)

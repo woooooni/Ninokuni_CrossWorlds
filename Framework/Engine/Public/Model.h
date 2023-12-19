@@ -51,6 +51,7 @@ public:
 	
 	_uint Get_CurrAnimationIndex() { return m_TweenDesc.cur.iAnimIndex; } /* 현재 애니메이션의 인덱스 리턴*/
 	class CAnimation* Get_Animation(const _uint& iIndex);
+	class CAnimation* Get_Animation(const string strName);
 	const _uint& Get_CurrAnimationFrame() const { return m_TweenDesc.cur.iCurFrame; } /* 현재 애니메이션의 프레임 리턴 (정수 형태) */
 	const _float Get_CurrAnimationFrame_WithRatio() { return (m_TweenDesc.cur.iCurFrame + m_TweenDesc.cur.fRatio); } /* 현재 애니메이션의 프레임(보간 포함) (실수 형태) */
 	const _float Get_Progress();  /* 현재 애니메이션의 진행률(0~1) 리턴*/

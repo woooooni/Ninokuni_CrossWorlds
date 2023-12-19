@@ -13,13 +13,13 @@ END
 
 BEGIN(Client)
 
-class CPart abstract : public CGameObject
+class CWeapon abstract : public CGameObject
 {
 protected:
-	CPart(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObejctTag, _uint iObjectType);
-	CPart(const CPart& rhs);
+	CWeapon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObejctTag, _uint iObjectType);
+	CWeapon(const CWeapon& rhs);
 
-	virtual ~CPart() = default;
+	virtual ~CWeapon() = default;
 
 public:
 	HRESULT	Set_Owner(CGameObject* pOwner);
@@ -37,10 +37,17 @@ public:
 	virtual void Collision_Continue(const COLLISION_INFO& tInfo) {};
 	virtual void Collision_Exit(const COLLISION_INFO& tInfo) {};
 
+protected:
+	HRESULT Ready_Components();
+	HRESULT Bind_ShaderResources();
+
 public:
 	CModel* Get_ModelCom() { return m_pModelCom; }
 
-protected: 
+public:
+	virtual void Set_SocketWorld(Matrix matSocketWorld) { memcpy(&m_matSocketWorld, &matSocketWorld, sizeof(Matrix)); } /* 주인 모델의 애니메이션 갱신이 이루어진 뒤 호출 */
+
+protected:
 	CGameObject* m_pOwner = { nullptr };
 	CModel* m_pModelCom = { nullptr };
 	CShader* m_pShaderCom = { nullptr };

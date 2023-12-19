@@ -21,6 +21,7 @@ public:
 	static void Replace(OUT string& str, string comp, string rep);
 	static void Replace(OUT wstring& str, wstring comp, wstring rep);
 
+
 	static Matrix To_RightHanded(Matrix matLeftHanded);
 	static Matrix To_LeftHanded(Matrix matLeftHanded);
 
@@ -33,5 +34,14 @@ public:
 	static PxTransform To_PxTransform(Matrix matrix);
 	static Matrix To_Matrix(PxTransform pxTransform);
 
+	static wstring TCharToWString(TCHAR* value);
+	static string TCharToString(TCHAR* value);
+
+	static _bool Equal_TChar_Char(TCHAR* val1, const char* val2);
+
+	static char* WCharToChar(const wchar_t* value);
+
+	static const char** Get_WStrings_To_ConstChar(const wstring* wstrArray, const _uint iSize);
+	static void Release_WString_To_ConstChar(const char** szArray, const _uint iSize);
 };
 

@@ -198,6 +198,9 @@ public:
 	void Stop_All();
 	void Set_ChannelVolume(CHANNELID eID, float fVolume);
 	FMOD_CHANNEL* Get_Channel(CHANNELID eID);
+	const _int Get_SoundFileIndex(TCHAR* pSoundKey);
+	TCHAR* Get_SoundFileKey(const _uint iIndex);
+	const map<TCHAR*, FMOD_SOUND*>& Get_MapSound();
 
 
 private:

@@ -17,9 +17,11 @@ public:
 private:
 	void Tick_Model(_float fTimeDelta);
 	void Tick_Animation(_float fTimeDelta);
-	void Tick_Socket(_float fTimeDelta);
 	void Tick_Event(_float fTimeDelta);
+	void Tick_Socket(_float fTimeDelta);
 	void Tick_Costume(_float fTimeDelta);
+
+private:
 	void Tick_Dummys(_float fTimeDelta);
 
 private:
@@ -29,8 +31,8 @@ private:
 	/* In Initialize */
 	HRESULT Ready_DebugDraw();
 	HRESULT Ready_Dummy();
-	HRESULT Ready_WeaponPrototypes();
-	HRESULT Ready_AutoAnimData();
+	HRESULT Ready_Weapons();
+	HRESULT Ready_SoundKey();
 
 	/* In Impory Animation */
 	HRESULT Ready_SocketTransforms();
@@ -39,6 +41,7 @@ private:
 	const _bool Is_Exception();
 
 	HRESULT Clear_ToolAnimationData();
+	HRESULT Claer_EventData();
 
 	Vec3 Calculate_SocketPosition();
 	Matrix Calculate_SocketWorldMatrix();
@@ -60,8 +63,8 @@ private:
 	/* Bone */
 	_int m_iCurBoneIndex = 0;
 
-	/* 프로토타입 무기*/
-	vector<class CPart*> m_Weapons;
+	/* 무기*/
+	vector<class CWeapon*> m_Weapons;
 	_int m_iCurWeaponIndex = -1;
 
 	/* 소켓 */
@@ -80,7 +83,22 @@ private:
 
 #pragma region Event 
 
-	_int m_iEventIndex = -1;
+	_float m_fCurEventFrame = 0.f;
+
+
+
+	_int m_iSoundEventIndex = -1;
+
+	const char** m_arrSoundKeys = nullptr;
+	_uint m_iSoundKeySize = 0;
+	
+
+#pragma endregion
+
+#pragma region Custom Parts 
+	CHARACTER_TYPE m_eCharacyerType = CHARACTER_TYPE::ENGINEER;
+	PART_TYPE m_ePartType = PART_TYPE::HEAD;
+
 
 #pragma endregion
 

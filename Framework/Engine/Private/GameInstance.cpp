@@ -741,6 +741,21 @@ FMOD_CHANNEL* CGameInstance::Get_Channel(CHANNELID eID)
 	return m_pSound_Manager->Get_Channel(eID);
 }
 
+const _int CGameInstance::Get_SoundFileIndex(TCHAR* pSoundKey)
+{
+	return m_pSound_Manager->Get_SoundFileIndex(pSoundKey);
+}
+
+TCHAR* CGameInstance::Get_SoundFileKey(const _uint iIndex)
+{
+	return m_pSound_Manager->Get_SoundFileKey(iIndex);
+}
+
+const map<TCHAR*, FMOD_SOUND*>& CGameInstance::Get_MapSound()
+{
+	return m_pSound_Manager->Get_MapSound();
+}
+
 //void CGameInstance::Set_ServerSession(ServerSessionRef session)
 //{
 //	m_pNetwork_Manager->Set_ServerSession(session);

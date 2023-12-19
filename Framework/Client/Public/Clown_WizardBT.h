@@ -5,7 +5,7 @@
 
 BEGIN(Client)
 
-class CClown;
+class CClown_Wizard;
 class CClown_WizardBT final : public CBehaviorTree
 {
 private:

@@ -1,5 +1,6 @@
 #include "../Public/Utils.h"
 #include <random>
+#include <tchar.h>
 
 bool CUtils::StartsWith(string str, string comp)
 {
@@ -119,6 +120,72 @@ Matrix CUtils::To_Matrix(PxTransform pxTransform)
 	result.Translation(Vec3(pxTransform.p.x, pxTransform.p.y, pxTransform.p.z));
 
 	return result;
+
+wstring CUtils::TCharToWString(TCHAR* value)
+{
+	if (nullptr == value)
+		return wstring();
+
+	return std::wstring(value, value + static_cast<int>(_tcslen(value)));
+}
+
+string CUtils::TCharToString(TCHAR* value)
+{
+	if (nullptr == value)
+		return string();
+
+	wstring wstr = TCharToWString(value);
+
+	return ToString(wstr);
+}
+
+_bool CUtils::Equal_TChar_Char(TCHAR* val1, const char* val2)
+{
+	size_t str1Len = strlen(val2) + 1;
+	wchar_t* wstr1 = new wchar_t[str1Len];
+	size_t convertedChars;
+	mbstowcs_s(&convertedChars, wstr1, str1Len, val2, _TRUNCATE);
+
+	int result = _tcscmp(wstr1, val1);
+
+	delete[] wstr1;
+
+	return result == 0;
+}
+
+char* CUtils::WCharToChar(const wchar_t* value)
+{
+	/* 사용후 반드시 메모리 해제 필요 */
+
+	int strSize		= WideCharToMultiByte(CP_ACP, 0, value, -1, NULL, 0, NULL, NULL);
+	char* pStr		= new char[WideCharToMultiByte(CP_ACP, 0, value, -1, NULL, 0, NULL, NULL)];
+	
+	WideCharToMultiByte(CP_ACP, 0, value, -1, pStr, strSize, 0, 0);
+
+	return pStr;
+}
+
+const char** CUtils::Get_WStrings_To_ConstChar(const wstring* wstrArray, const _uint iSize)
+{
+	const char** items = new const char* [iSize];
+
+	for (size_t i = 0; i < iSize; i++)
+	{
+		std::wstring wideStr = wstrArray[i];
+		std::string narrowStr(wideStr.begin(), wideStr.end());
+
+		items[i] = _strdup(narrowStr.c_str());
+	}
+
+	return items;
+}
+
+void CUtils::Release_WString_To_ConstChar(const char** szArray, const _uint iSize)
+{
+	for (int n = 0; n < iSize; n++)
+		free((void*)szArray[n]);
+
+	delete[] szArray;
 }
 
 wstring CUtils::PathToWString(wstring strPath)

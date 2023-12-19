@@ -56,10 +56,16 @@ public:
 
 #pragma region Events
 
-	void Add_Event(const _float fFrame, const ANIM_EVENT_TYPE& eEventType, ANIM_EVENT_DESC tDesc);
-	const vector<pair<_float, ANIM_EVENT_DESC>>& Get_Events() const { return m_Events; }
-	void Sort_Events();
+	/* All */
+	void Change_EventKeyFrame(const _uint& iIndex, const _float fFrame, const ANIM_EVENT_TYPE& eEventType);
 
+	/* Sound */
+	void Add_SoundEvent(const _float& fFrame, const ANIM_EVENT_SOUND_DESC& desc);
+	void Del_SoundEvent(const _uint iIndex);
+	void Del_All_SoundEvent();
+	void Change_SoundEvent(const _uint iIndex, const ANIM_EVENT_SOUND_DESC& desc);
+	void Sort_SoundEvents();
+	const vector<pair<_float, ANIM_EVENT_SOUND_DESC>>& Get_SoundEvents() const { return m_SoundEvents; }
 
 #pragma endregion
 
@@ -100,7 +106,7 @@ private:
 
 #pragma region Events
 private:
-	vector<pair<_float, ANIM_EVENT_DESC>> m_Events;
+	vector<pair<_float, ANIM_EVENT_SOUND_DESC>> m_SoundEvents;
 
 #pragma endregion
 

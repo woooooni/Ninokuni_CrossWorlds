@@ -39,7 +39,7 @@
 #include "Particle.h"
 #include "Effect.h"
 
-#include "Part_SwordTemp.h"
+#include "Weapon_SwordTemp.h"
 
 _bool CLoader::g_bFirstLoading = false;
 CLoader::CLoader(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
@@ -406,7 +406,7 @@ HRESULT CLoader::Loading_For_Level_Tool()
 	/* Prototype_GameObject_TempSword */
 	{
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_TempSword"),
-			CPart_SwordTemp::Create(m_pDevice, m_pContext, TEXT("TempSword")), LAYER_WEAPON)))
+			CWeapon_SwordTemp::Create(m_pDevice, m_pContext, TEXT("TempSword")), LAYER_WEAPON)))
 			return E_FAIL;
 
 		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_TempSword", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Weapon/", L"TempSword")))

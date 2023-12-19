@@ -70,10 +70,17 @@ void CAnimation::Update_Animation_Data(_float fTickPerSecond, const TWEEN_DESC& 
 
 void CAnimation::Clear_AnimationData()
 {
+	/* 키프레임별 속도 조절 관련 */
 	m_iCurSpeedDescIndex = 0;
 	m_fCurSpeedDescEndFrame = 0.f;
 
 	m_tLiveSpeedDesc.fCurValue = m_fOriginSpeed;
+
+
+	/* 사운드 이벤트 */
+	for (auto& SoundEvent : m_SoundEvents)
+		SoundEvent.second.bExecuted = false;
+
 }
 
 _float CAnimation::Get_LiveSpeed()
@@ -151,12 +158,87 @@ void CAnimation::Sort_SpeedDesces()
 	m_iCurSpeedDescIndex = 0;
 }
 
-void CAnimation::Add_Event(const _float fFrame, const ANIM_EVENT_TYPE& eEventType, ANIM_EVENT_DESC tDesc)
+void CAnimation::Change_EventKeyFrame(const _uint& iIndex, const _float fFrame, const ANIM_EVENT_TYPE& eEventType)
 {
+	switch (eEventType)
+	{
+	case Engine::SOUND:
+	{
+		if (m_SoundEvents.size() <= iIndex)
+			return;
+
+		m_SoundEvents[iIndex].first = fFrame;
+	}
+		break;
+	case Engine::EFFECT:
+		break;
+	case Engine::CAMERA:
+		break;
+	case Engine::COLLIDER:
+		break;
+	case Engine::ANIM_EVENT_TYPE_END:
+		break;
+	default:
+		break;
+	}
 }
 
-void CAnimation::Sort_Events()
+void CAnimation::Add_SoundEvent(const _float& fFrame, const ANIM_EVENT_SOUND_DESC& desc)
 {
+	m_SoundEvents.push_back(pair(fFrame, desc));
+
+	Sort_SoundEvents();
+}
+
+void CAnimation::Del_SoundEvent(const _uint iIndex)
+{
+	if (m_SoundEvents.size() <= iIndex)
+		return;
+
+	_int iCount = 0;
+	for (vector<pair<_float, ANIM_EVENT_SOUND_DESC>>::iterator iter = m_SoundEvents.begin(); iter != m_SoundEvents.end();)
+	{
+		if (iIndex == iCount)
+		{
+			m_SoundEvents.erase(iter);
+			break;
+		}
+		else
+		{
+			++iter;
+			++iCount;
+		}
+	}
+
+	Sort_SoundEvents();
+}
+
+void CAnimation::Del_All_SoundEvent()
+{
+	m_SoundEvents.clear();
+	m_SoundEvents.shrink_to_fit();
+}
+
+void CAnimation::Change_SoundEvent(const _uint iIndex, const ANIM_EVENT_SOUND_DESC& desc)
+{
+	if (m_SoundEvents.size() <= iIndex)
+		return;
+
+	m_SoundEvents[iIndex].second.pSoundKey = desc.pSoundKey;
+	m_SoundEvents[iIndex].second.iChannelID = desc.iChannelID;
+	m_SoundEvents[iIndex].second.fVolume = desc.fVolume;
+	m_SoundEvents[iIndex].second.bStop = desc.bStop;
+}
+
+void CAnimation::Sort_SoundEvents()
+{
+	if (m_SoundEvents.empty())
+		return;
+
+	std::sort(m_SoundEvents.begin(), m_SoundEvents.end(),
+		[](const auto& lhs, const auto& rhs) {
+			return lhs.first < rhs.first;
+		});
 }
 
 CChannel* CAnimation::Get_Channel(const wstring& strChannelName)
@@ -223,10 +305,10 @@ void CAnimation::Update_Animation_Speed(_float fTickPerSecond, const TWEEN_DESC&
 			if (abs(m_tLiveSpeedDesc.fCurValue - m_SpeedDescs[i].fEndSpeed) < 0.05f)
 				continue;
 
-			if (m_SpeedDescs[m_iCurSpeedDescIndex].fStartFrame ==
-				m_SpeedDescs[m_iCurSpeedDescIndex].fEndFrame ==
-				m_SpeedDescs[m_iCurSpeedDescIndex].fStartSpeed ==
-				m_SpeedDescs[m_iCurSpeedDescIndex].fEndSpeed)
+			if (m_SpeedDescs[m_iCurSpeedDescIndex].fStartFrame <= 0.f &&
+				m_SpeedDescs[m_iCurSpeedDescIndex].fEndFrame <= 0.f &&
+				m_SpeedDescs[m_iCurSpeedDescIndex].fStartSpeed <= 0.f &&
+				m_SpeedDescs[m_iCurSpeedDescIndex].fEndSpeed <= 0.f)
 				continue;
 
 			if (m_SpeedDescs[m_iCurSpeedDescIndex].fStartFrame >=
@@ -246,6 +328,17 @@ void CAnimation::Update_Animation_Speed(_float fTickPerSecond, const TWEEN_DESC&
 
 void CAnimation::Update_Animation_Event(_float fTickPerSecond, const TWEEN_DESC& tDesc)
 {
+	/* 사운드 이벤트 */
+	for (auto& SoundEvent : m_SoundEvents)
+	{
+		if (SoundEvent.first <= tDesc.cur.iCurFrame && !SoundEvent.second.bExecuted)
+		{
+			SoundEvent.second.bExecuted = true;
+			 
+			GI->Play_Sound(SoundEvent.second.pSoundKey, CHANNELID(SoundEvent.second.iChannelID), SoundEvent.second.fVolume, SoundEvent.second.bStop);
+
+		}
+	}
 }
 
 const _float CAnimation::Calculate_LerpTime(const ANIM_SPEED_DESC tSpeedDesc, const TWEEN_DESC tTweenDesc, const _float fTickPerSecond)

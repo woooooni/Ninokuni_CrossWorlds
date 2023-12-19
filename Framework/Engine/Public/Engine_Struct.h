@@ -608,6 +608,8 @@ namespace Engine
 	{
 		ANIM_EVENT_TYPE eType;
 
+		_bool bExecuted = FALSE;
+
 	}ANIM_EVENT_DESC;
 
 	typedef struct tagAnimEventSoundDesc : public ANIM_EVENT_DESC
@@ -618,17 +620,6 @@ namespace Engine
 		_bool		bStop = false;
 
 	}ANIM_EVENT_SOUND_DESC;
-
-	typedef struct tagAnimEventEffectDesc : public ANIM_EVENT_DESC
-	{
-		wstring strPrototypeEffectNam = {};
-		Matrix RotationMatrix = {};
-		Matrix WorldMatrixl = {};
-		_float fEffectDeletionTime = 0.f;
-		class CGameObject* pOwner = nullptr;
-		class CGameObject** ppOut = nullptr;
-
-	}ANIM_EVENT_EFFECT_DESC;
 
 #pragma endregion
 

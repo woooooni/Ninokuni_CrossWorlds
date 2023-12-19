@@ -54,6 +54,7 @@ HRESULT CMainApp::Initialize()
 /*	 CUI_Manager::GetInstance()->Ready_Cursor();
 	 ShowCursor(false)*/;
 
+
 	Json Test;
 	Test["Name"] = "김태원";
 	Test["Test"] = "테스트";
