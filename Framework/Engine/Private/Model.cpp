@@ -114,6 +114,30 @@ HRESULT CModel::Initialize_Prototype(TYPE eType, const wstring& strModelFolderPa
 	if (FAILED(Ready_HierarchyNodes(m_pAIScene->mRootNode, nullptr, 0)))
 		return E_FAIL;
 
+	// << : Test 
+
+
+	//ofstream fout;
+	//fout.open("../Bin/Export/ModelAnimations.txt");
+
+	//for (auto& iter : m_HierarchyNodes)
+	//{
+	//	wstring strAnimationName = iter->Get_Name();
+	//	if (fout.is_open())
+	//	{
+	//		fout.write(CUtils::ToString(strAnimationName).c_str(), strAnimationName.size());
+	//		fout.write("\n", sizeof(1));
+	//	}
+	//}
+	//fout.close();
+	//MSG_BOX("Export OK.");
+
+
+	// >> 
+
+
+
+
 	if (FAILED(Ready_MeshContainers(PivotMatrix)))
 		return E_FAIL;
 
@@ -122,6 +146,50 @@ HRESULT CModel::Initialize_Prototype(TYPE eType, const wstring& strModelFolderPa
 
 	if (FAILED(Ready_Animations()))
 		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CModel::Initialize_Prototype_Part(const wstring& strModelFilePath, const wstring& strModelFileName, _fmatrix PivotMatrix, CModel* pCharacterModel)
+{
+	if (nullptr == pCharacterModel)
+		return E_FAIL;
+
+	XMStoreFloat4x4(&m_PivotMatrix, PivotMatrix);
+
+	_tchar		szFullPath[MAX_PATH] = L"";
+
+	m_strFolderPath = strModelFilePath;
+	m_strFileName = strModelFileName;
+
+	lstrcpy(szFullPath, m_strFolderPath.c_str());
+	lstrcat(szFullPath, strModelFileName.c_str());
+
+	_uint		iFlag = 0;
+
+	m_eModelType = TYPE::TYPE_NONANIM;
+
+	if (TYPE_NONANIM == m_eModelType)
+		iFlag |= aiProcess_PreTransformVertices | aiProcess_ConvertToLeftHanded | aiProcess_CalcTangentSpace;
+	else
+		iFlag |= aiProcess_ConvertToLeftHanded | aiProcess_CalcTangentSpace;
+
+	m_pAIScene = m_Importer.ReadFile(CUtils::ToString(szFullPath).c_str(), iFlag);
+
+	if (nullptr == m_pAIScene)
+		return E_FAIL;
+
+	//if (FAILED(Ready_HierarchyNodes(m_pAIScene->mRootNode, nullptr, 0)))
+	//	return E_FAIL;
+
+	if (FAILED(Ready_MeshContainers_Part(PivotMatrix, pCharacterModel)))
+		return E_FAIL;
+
+	if (FAILED(Ready_Materials(m_strFolderPath)))
+		return E_FAIL;
+
+	//if (FAILED(Ready_Animations()))
+	//	return E_FAIL;
 
 	return S_OK;
 }
@@ -625,21 +693,32 @@ HRESULT CModel::SetUp_OnShader(CShader* pShader, _uint iMaterialIndex, aiTexture
 	return m_Materials[iMaterialIndex].pTexture[eTextureType]->Bind_ShaderResource(pShader, pConstantName);
 }
 
+HRESULT CModel::SetUp_VTF(class CShader* pShader)
+{
+	if (nullptr == m_pSRV || 
+		nullptr == pShader ||
+		0 > m_TweenDesc.cur.iAnimIndex)
+		return E_FAIL;
+
+	if (FAILED(pShader->Bind_Texture("g_TransformMap", m_pSRV)))
+		return E_FAIL;
+
+	if (FAILED(pShader->Bind_RawValue("g_TweenFrames", &m_TweenDesc, sizeof(TWEEN_DESC))))
+		return E_FAIL;
+
+	return S_OK;
+}
+
 HRESULT CModel::Render(CShader* pShader, _uint iMeshIndex, _uint iPassIndex)
 {
 	if (TYPE_ANIM == m_eModelType)
 	{
-		if (nullptr == m_pSRV || 0 > m_TweenDesc.cur.iAnimIndex)
-			return E_FAIL;
-
-		if (FAILED(pShader->Bind_Texture("g_TransformMap", m_pSRV)))
-			return E_FAIL;
-
-		if (FAILED(pShader->Bind_RawValue("g_TweenFrames", &m_TweenDesc, sizeof(TWEEN_DESC))))
+		if(FAILED(SetUp_VTF(pShader)))
 			return E_FAIL;
 	}
 
 	pShader->Begin(iPassIndex);
+
 	m_Meshes[iMeshIndex]->Render();
 
 	return S_OK;
@@ -784,6 +863,25 @@ HRESULT CModel::Ready_MeshContainers(_fmatrix PivotMatrix)
 	return S_OK;
 }
 
+HRESULT CModel::Ready_MeshContainers_Part(_fmatrix PivotMatrix, CModel* pCharacterModel)
+{
+	if (nullptr == pCharacterModel)
+		return E_FAIL;
+
+	m_iNumMeshes = m_pAIScene->mNumMeshes;
+
+	for (_uint i = 0; i < m_iNumMeshes; ++i)
+	{
+		CMesh* pMeshContainer = CMesh::Create(m_pDevice, m_pContext, m_eModelType, m_pAIScene->mMeshes[i], this, PivotMatrix);
+		if (nullptr == pMeshContainer)
+			return E_FAIL;
+
+		m_Meshes.push_back(pMeshContainer);
+	}
+
+	return S_OK;
+}
+
 HRESULT CModel::Ready_Materials(const wstring& ModelFilePath)
 {
 	if (nullptr == m_pAIScene)
@@ -880,6 +978,22 @@ CModel* CModel::Create_Bin(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 {
 	CModel* pInstance = new CModel(pDevice, pContext);
 	pInstance->m_bFromBinary = true;
+
+	return pInstance;
+}
+
+CModel* CModel::Create_Part(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TYPE eType, const wstring& strModelFilePath, const wstring& strModelFileName, CModel* pCharacterModel, _fmatrix PivotMatrix)
+{
+	if (nullptr == pCharacterModel)
+		return nullptr;
+
+	CModel* pInstance = new CModel(pDevice, pContext);
+
+	if (FAILED(pInstance->Initialize_Prototype_Part(strModelFilePath, strModelFileName, PivotMatrix, pCharacterModel)))
+	{
+		MSG_BOX("Failed To Created : CModel");
+		Safe_Release(pInstance);
+	}
 
 	return pInstance;
 }

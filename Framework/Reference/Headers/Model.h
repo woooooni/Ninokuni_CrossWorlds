@@ -73,12 +73,14 @@ public:
 #pragma region Life Cycle
 public:
 	virtual HRESULT Initialize_Prototype(TYPE eType, const wstring & strModelFilePath, const wstring & strModelFileName, _fmatrix PivotMatrix); // << : Assimp 
+	virtual HRESULT Initialize_Prototype_Part(const wstring& strModelFilePath, const wstring& strModelFileName, _fmatrix PivotMatrix, class CModel* pCharacterModel); // << : Assimp 
 	virtual HRESULT Initialize(void* pArg);
 	virtual HRESULT Initialize_Bin(void* pArg);
 
 	HRESULT LateTick(_float fTimeDelta); /* 모델의 애니메이션 키프레임 업데이트 (수업 코드에서의 PlayAnimation() 함수?) */
 
 	HRESULT SetUp_OnShader(class CShader* pShader, _uint iMaterialIndex, aiTextureType eTextureType, const char* pConstantName);
+	HRESULT SetUp_VTF(class CShader* pShader);
 	HRESULT Render(class CShader* pShader, _uint iMeshIndex, _uint iPassIndex = 0);
 	HRESULT Render_Instancing(class CShader* pShader, _uint iMeshIndex, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, _uint iPassIndex = 0);
 #pragma endregion
@@ -142,6 +144,7 @@ private:
 #pragma region Assimp
 private:
 	HRESULT Ready_MeshContainers(_fmatrix PivotMatrix);
+	HRESULT Ready_MeshContainers_Part(_fmatrix PivotMatrix, class CModel* pCharacterModel);
 	HRESULT Ready_Materials(const wstring & pModelFilePath);
 	HRESULT Ready_HierarchyNodes(aiNode * pNode, class CHierarchyNode* pParent, _uint iDepth);
 	HRESULT Ready_Animations();
@@ -150,6 +153,7 @@ private:
 private:
 	static CModel* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, TYPE eType, const wstring & strModelFilePath, const wstring & strModelFileName, _fmatrix PivotMatrix = XMMatrixIdentity());
 	static CModel* Create_Bin(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, TYPE eType, const wstring & strModelFilePath, const wstring & strModelFileName, _fmatrix PivotMatrix = XMMatrixIdentity());
+	static CModel* Create_Part(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, TYPE eType, const wstring& strModelFilePath, const wstring& strModelFileName, CModel* pCharacterModel, _fmatrix PivotMatrix = XMMatrixIdentity());
 
 public:
 	virtual CComponent* Clone(void* pArg = nullptr);

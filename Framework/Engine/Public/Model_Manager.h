@@ -20,6 +20,7 @@ public:
 	
 public:
 	HRESULT Import_Model_Data(_uint iLevelIndex, const wstring& strProtoTypeTag, _uint eType, wstring strFolderPath, wstring strFileName, __out class CModel** ppOut = nullptr);
+	HRESULT Import_Model_Data_for_Part(_uint iLevelIndex, const wstring& strProtoTypeTag, wstring strFolderPath, wstring strFileName, class CModel* pBoneModel, __out class CModel** ppOut = nullptr);
 	HRESULT Export_Model_Data(class CModel* pModel, const wstring& strSubFolderName, const wstring& strFileName);
 	HRESULT Export_Model_Data_FromPath(_uint eType, wstring strFolderPath); 
 	

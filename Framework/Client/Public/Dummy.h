@@ -19,12 +19,10 @@ BEGIN(Client)
 
 class CDummy : public CGameObject
 {
-
 private:
 	CDummy(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	CDummy(const CDummy& rhs);
 	virtual ~CDummy() = default;
-
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -50,6 +48,17 @@ public:
 public:
 	HRESULT Export_Model_Bin(const wstring& strFilePath, const wstring& strFileName);
 	HRESULT Import_Model();
+
+	// << : Test
+
+public:
+	CModel* m_pBodyModel = nullptr;
+
+
+
+	// >> 
+
+
 	
 protected:
 	CShader* m_pNonAnimShaderCom = nullptr;

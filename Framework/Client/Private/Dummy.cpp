@@ -90,6 +90,32 @@ HRESULT CDummy::Render()
 	if (FAILED(pShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
 
+
+	//// << : Test 
+
+	//if (nullptr != m_pBodyModel)
+	//{
+	//	if(FAILED(m_pModelCom->SetUp_VTF(pShader)))
+	//		return E_FAIL;
+
+	//	_uint		iNumMeshes = m_pBodyModel->Get_NumMeshes();
+
+	//	for (_uint i = 0; i < iNumMeshes; ++i)
+	//	{
+	//		if (FAILED(m_pBodyModel->SetUp_OnShader(pShader, m_pBodyModel->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+	//			return E_FAIL;
+
+	//		if (FAILED(m_pBodyModel->Render(pShader, i)))
+	//			return E_FAIL;
+	//	}
+	//}
+
+	//return S_OK;
+	//// >> : 
+
+
+	
+
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 
 	for (_uint i = 0; i < iNumMeshes; ++i)
