@@ -56,9 +56,9 @@ void CBaobam_Dark::Tick(_float fTimeDelta)
 
 	__super::Tick(fTimeDelta);
 
-	if (GetAsyncKeyState('G'))
+	if (KEY_TAP(KEY::Y))
 	{
-		m_tStat.fHp = 0;
+		m_tStat.fHp -= 10.f;
 	}
 }
 

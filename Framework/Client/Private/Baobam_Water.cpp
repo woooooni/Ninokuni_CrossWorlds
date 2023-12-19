@@ -56,14 +56,15 @@ void CBaobam_Water::Tick(_float fTimeDelta)
 
 	__super::Tick(fTimeDelta);
 
-	if (GetAsyncKeyState('G'))
+	if (KEY_TAP(KEY::X) && m_tStat.fHp > 0.f)
 	{
-		m_tStat.fHp = 0;
+		m_tStat.fHp -= 10;
 	}
 }
 
 void CBaobam_Water::LateTick(_float fTimeDelta)
 {
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 	__super::LateTick(fTimeDelta);
 }
 
@@ -153,6 +154,10 @@ HRESULT CBaobam_Water::Ready_Components()
 	///* For. Com_RigidBody*/
 	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_RigidBody"), TEXT("Com_RigidBody"), (CComponent**)&m_pRigidBodyCom, &RigidDesc)))
 	//	return E_FAIL;
+
+	/* For. Disslove Texture */
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Dissolve"), TEXT("Com_DissolveTexture"), (CComponent**)&m_pDissoveTexture)))
+		return E_FAIL;
 
 	return S_OK;
 }

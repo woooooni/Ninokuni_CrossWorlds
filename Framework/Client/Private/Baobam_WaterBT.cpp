@@ -156,7 +156,8 @@ void CBaobam_WaterBT::LateTick(const _float& fTimeDelta)
 {
 	if (KEY_TAP(KEY::Z))
 	{
-		m_pRootNode->Init_Start();
+		// 임시
+		m_pRootNode->Init_Start(); // 다음에 재생될 상태의 start를 실행하기 위해.
 		m_pBaobam_Water->Set_StunTime(3.f);
 		m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_Baobam_Water.ao|BaoBam_Stun"));
 		m_pBaobam_Water->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_STUN, true);

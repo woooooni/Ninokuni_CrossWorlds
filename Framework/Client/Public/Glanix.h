@@ -1,14 +1,22 @@
 #pragma once
-#include "Character.h"
+#include "Boss.h"
 
 BEGIN(Client)
-class CGianix final : public CCharacter
+class CGlanix final : public CBoss
 {
+public:
+	enum GLANIX_STATE {
+		GLANIX_SPAWN,
+		GLANIX_COMBATIDLE,
+		GLANIX_CHASE,
+		GLANIX_ATTACK1, GLANIX_ATTACK2,
+		GLANIX_END
+	};
 
 private:
-	CGianix(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eCharacterType);
-	CGianix(const CGianix& rhs);
-	virtual ~CGianix() = default;
+	CGlanix(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat);
+	CGlanix(const CGlanix& rhs);
+	virtual ~CGlanix() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -26,19 +34,17 @@ public:
 public:
 	virtual void On_Damaged(const COLLISION_INFO& tInfo) override;
 
-
-protected:
-	virtual HRESULT Ready_Components() override;
-	virtual HRESULT Ready_States() override;
-	virtual HRESULT Ready_Colliders() override;
+private:
+	virtual HRESULT Ready_Components();
+	virtual HRESULT Ready_States();
+	virtual HRESULT Ready_Colliders();
 
 private:
 	HRESULT Ready_Sockets();
 	HRESULT Ready_Parts();
 
-
 public:
-	static CGianix* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eCharacterType);
+	static CGlanix* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };
