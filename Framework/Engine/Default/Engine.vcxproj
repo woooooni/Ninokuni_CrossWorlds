@@ -292,7 +292,6 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\Navigation.h" />
     <ClInclude Include="..\Public\PhysX_Controller.h" />
     <ClInclude Include="..\public\Object_Manager.h" />
-    <ClInclude Include="..\Public\PhysX_Body.h" />
     <ClInclude Include="..\Public\PhysX_Manager.h" />
     <ClInclude Include="..\Public\PipeLine.h" />
     <ClInclude Include="..\public\Renderer.h" />
@@ -364,7 +363,6 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\Navigation.cpp" />
     <ClCompile Include="..\Private\PhysX_Controller.cpp" />
     <ClCompile Include="..\private\Object_Manager.cpp" />
-    <ClCompile Include="..\Private\PhysX_Body.cpp" />
     <ClCompile Include="..\Private\PhysX_Manager.cpp" />
     <ClCompile Include="..\Private\PipeLine.cpp" />
     <ClCompile Include="..\private\Renderer.cpp" />

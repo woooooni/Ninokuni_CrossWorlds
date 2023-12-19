@@ -138,11 +138,11 @@ public:
 	PxRigidStatic* Add_Static_Actor(const PHYSX_INIT_DESC& Desc);
 	PxRigidDynamic* Add_Dynamic_Actor(const PHYSX_INIT_DESC& Desc);
 
-	vector<PxRigidStatic*> Add_Static_Mesh_Actor(const PHYSX_INIT_DESC& Desc);
-	vector<PxRigidDynamic*> Add_Dynamic_Mesh_Actor(const PHYSX_INIT_DESC& Desc);
+	HRESULT Add_Static_Mesh_Actor(const PHYSX_INIT_DESC& Desc, __out vector<PxRigidStatic*>& refOut);
+	HRESULT Add_Dynamic_Mesh_Actor(const PHYSX_INIT_DESC& Desc, __out vector<PxRigidDynamic*>& refOut);
 	HRESULT Add_Ground(CGameObject* pGameObject, CModel* pModel, _matrix WorldMatrix);
 
-	HRESULT Remove_Actor(class CGameObject* pGameObject, PxActor* pPhysXActor);
+	HRESULT Remove_Actor(class CGameObject* pGameObject);
 	PxMaterial* Create_PxMaterial(_float fA, _float fB, _float fC);
 
 	PxController* Add_CapsuleController(class CGameObject* pGameObject, Matrix WorldMatrix, _float fHeight, _float fRadius, _float fMaxJumpHeight);
@@ -177,6 +177,7 @@ public:
 	Vec3 To_RightHanded(Vec3 vLeftHanded);
 	Vec3 To_LeftHanded(Vec3 vRightHanded);
 
+	_bool Is_Compare(const char* szLeft, const char* szRight);
 
 public:
 	Json Json_Load(const wstring& strFilePath);

@@ -6,7 +6,7 @@
 
 BEGIN(Engine)
 
-class CPhysX_Manager final : public CBase, public PxSimulationEventCallback, public PxUserControllerHitReport
+class CPhysX_Manager final : public CBase, public PxSimulationEventCallback
 {
 	DECLARE_SINGLETON(CPhysX_Manager)
 	
@@ -29,8 +29,8 @@ public:
 public:
 	PxRigidStatic* Add_Static_Actor(const PHYSX_INIT_DESC& Desc);
 	PxRigidDynamic* Add_Dynamic_Actor(const PHYSX_INIT_DESC& Desc);
-	vector<PxRigidStatic*> Add_Static_Mesh_Actor(const PHYSX_INIT_DESC& Desc);
-	vector<PxRigidDynamic*> Add_Dynamic_Mesh_Actor(const PHYSX_INIT_DESC& Desc);
+	HRESULT Add_Static_Mesh_Actor(const PHYSX_INIT_DESC& Desc, __out vector<PxRigidStatic*>& refOut);
+	HRESULT Add_Dynamic_Mesh_Actor(const PHYSX_INIT_DESC& Desc, __out vector<PxRigidDynamic*>& refOut);
 	HRESULT Add_Ground(class CGameObject* pGameObject, class CModel* pModel, Matrix WorldMatrix);
 
 	
@@ -41,7 +41,7 @@ public:
 	HRESULT Reset_PhysX();
 
 public:
-	HRESULT Remove_Actor(class CGameObject* pGameObject, PxActor* pPhysXActor);
+	HRESULT Remove_Actor(class CGameObject* pGameObject);
 	
 
 	
@@ -61,11 +61,6 @@ public:
 
 
 public:
-	virtual void onShapeHit(const PxControllerShapeHit& hit) override;
-	virtual void onControllerHit(const PxControllersHit& hit) override;
-	virtual void onObstacleHit(const PxControllerObstacleHit& hit) override;
-
-public:
 	  //PxParticleSystem* Get_ParticleSystem()			{ return m_pParticleSystem; }
 	  //PxParticleClothBuffer* Get_ClothBuffer()			{ return m_pClothBuffer; }
 	  //PxCudaContext* Get_CudaContext()					{ return m_pCudaContextManager->getCudaContext(); }
@@ -75,11 +70,11 @@ public:
 private:
 	PxRigidDynamic* Create_Dynamic_Box(const PHYSX_INIT_DESC& Desc);
 	PxRigidDynamic* Create_Dynamic_Sphere(const PHYSX_INIT_DESC& Desc);
-	vector<PxRigidDynamic*> Create_Dynamic_Mesh(const PHYSX_INIT_DESC& Desc);
+	HRESULT Create_Dynamic_Mesh(const PHYSX_INIT_DESC& Desc, __out vector<PxRigidDynamic*>& refOut);
 
 	PxRigidStatic* Create_Static_Box(const PHYSX_INIT_DESC& Desc);
 	PxRigidStatic* Create_Static_Sphere(const PHYSX_INIT_DESC& Desc);
-	vector<PxRigidStatic*> Create_Static_Mesh(const PHYSX_INIT_DESC& Desc);
+	HRESULT Create_Static_Mesh(const PHYSX_INIT_DESC& Desc, __out vector<PxRigidStatic*>& refOut);
 
 
 private:

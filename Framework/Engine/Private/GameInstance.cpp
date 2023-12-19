@@ -555,14 +555,14 @@ PxRigidDynamic* CGameInstance::Add_Dynamic_Actor(const PHYSX_INIT_DESC& Desc)
 	return m_pPhysXManager->Add_Dynamic_Actor(Desc);
 }
 
-vector<PxRigidStatic*> CGameInstance::Add_Static_Mesh_Actor(const PHYSX_INIT_DESC& Desc)
+HRESULT CGameInstance::Add_Static_Mesh_Actor(const PHYSX_INIT_DESC& Desc, __out vector<PxRigidStatic*>& refOut)
 {
-	return m_pPhysXManager->Add_Static_Mesh_Actor(Desc);
+	return m_pPhysXManager->Add_Static_Mesh_Actor(Desc, refOut);
 }
 
-vector<PxRigidDynamic*> CGameInstance::Add_Dynamic_Mesh_Actor(const PHYSX_INIT_DESC& Desc)
+HRESULT CGameInstance::Add_Dynamic_Mesh_Actor(const PHYSX_INIT_DESC& Desc, __out vector<PxRigidDynamic*>& refOut)
 {
-	return m_pPhysXManager->Add_Dynamic_Mesh_Actor(Desc);
+	return m_pPhysXManager->Add_Dynamic_Mesh_Actor(Desc, refOut);
 }
 
 HRESULT CGameInstance::Add_Ground(CGameObject* pGameObject, CModel* pModel, _matrix WorldMatrix)
@@ -570,9 +570,9 @@ HRESULT CGameInstance::Add_Ground(CGameObject* pGameObject, CModel* pModel, _mat
 	return m_pPhysXManager->Add_Ground(pGameObject, pModel, WorldMatrix);
 }
 
-HRESULT CGameInstance::Remove_Actor(class CGameObject* pGameObject, PxActor* pPhysXActor)
+HRESULT CGameInstance::Remove_Actor(class CGameObject* pGameObject)
 {
-	return m_pPhysXManager->Remove_Actor(pGameObject, pPhysXActor);
+	return m_pPhysXManager->Remove_Actor(pGameObject);
 }
 
 //HRESULT CGameInstance::Convert_Transform(CGameObject* pObj, PxTransform& PxTransform)
@@ -699,6 +699,11 @@ Vec3 CGameInstance::To_RightHanded(Vec3 vLeftHanded)
 Vec3 CGameInstance::To_LeftHanded(Vec3 vRightHanded)
 {
 	return CUtils::To_LeftHanded(vRightHanded);
+}
+
+_bool CGameInstance::Is_Compare(const char* szLeft, const char* szRight)
+{
+	return CUtils::Is_Compare(szLeft, szRight);
 }
 
 Json CGameInstance::Json_Load(const wstring& strFilePath)

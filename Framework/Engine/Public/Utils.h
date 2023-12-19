@@ -43,5 +43,7 @@ public:
 
 	static const char** Get_WStrings_To_ConstChar(const wstring* wstrArray, const _uint iSize);
 	static void Release_WString_To_ConstChar(const char** szArray, const _uint iSize);
+
+	static _bool Is_Compare(const char* szLeft, const char* szRight);
 };
 
