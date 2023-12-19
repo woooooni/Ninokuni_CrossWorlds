@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "UI_Cursor.h"
 #include "GameInstance.h"
-#include "Particle_Manager.h"
+#include "Effect_Manager.h"
 
 CUI_Cursor::CUI_Cursor(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_Cursor")
@@ -77,7 +77,7 @@ void CUI_Cursor::On_MouseEnter(_float fTimeDelta)
 void CUI_Cursor::On_Mouse(_float fTimeDelta)
 {
 	if (KEY_TAP(KEY::LBTN))
-		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particles_MouseClick"), XMVectorSet(m_ptMouse.x, m_ptMouse.y, 0.f, 1.f));
+		GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_MouseClick"), XMVectorSet(m_ptMouse.x, m_ptMouse.y, 0.f, 1.f));
 }
 
 void CUI_Cursor::On_MouseExit(_float fTimeDelta)

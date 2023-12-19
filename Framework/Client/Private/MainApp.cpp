@@ -126,8 +126,8 @@ HRESULT CMainApp::Open_Level(LEVELID eLevelID, const wstring& strFolderName)
 
 HRESULT CMainApp::Initialize_Client()
 {
-	//if (FAILED(CEffect_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext, L"../Bin/Export/Effect/")))
-	//	return E_FAIL;
+	if (FAILED(CEffect_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext, L"../Bin/Export/NonAnimModel/Effect/", L"../Bin/DataFiles/Effect/")))
+		return E_FAIL;
 
 	if(FAILED(CParticle_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext, L"../Bin/DataFiles/Particle/")))
 		return E_FAIL;
@@ -308,18 +308,9 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	if (FAILED(CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_STATIC)))
 		return E_FAIL;
 
-#pragma region Particle Texture
-	// Temp 파티클 텍스처
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_SubUV"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/SubUV/"), 0, true))))
+	// Particle Texture && Effect Texture
+	if (FAILED(Ready_Effect_TextureComponent()))
 		return E_FAIL;
-
-	// 마우스 클릭 파티클 텍스처
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Particle_Mouse"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/Mouse/"), 0, true))))
-		return E_FAIL;
-#pragma endregion
-
 
 #pragma region Terrain Texture
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_SnowLandScape"),
@@ -734,6 +725,122 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Default/UI_Default_Background_Cloud.png")))))
 		return E_FAIL;
 
+
+	return S_OK;
+}
+
+HRESULT CMainApp::Ready_Effect_TextureComponent()
+{
+	// Particle_Mouse_Texture
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Particle_Mouse"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/Mouse/"), 0, true))))
+		return E_FAIL;
+
+
+	// Aura_Texture
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Aura"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/Aura/"), 0, true))))
+		return E_FAIL;
+
+	// Crack_Texture
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Crack"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/Crack/"), 0, true))))
+		return E_FAIL;
+
+	// Decal_Texture
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Decal"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/Decal/"), 0, true))))
+		return E_FAIL;
+
+	// Fire_Texture
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Fire"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/Fire/"), 0, true))))
+		return E_FAIL;
+
+	// Flare_Texture
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Flare"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/Flare/"), 0, true))))
+		return E_FAIL;
+ 
+	// Glow_Texture
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Glow"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/Glow/"), 0, true))))
+		return E_FAIL;
+
+	// Hit_Texture
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Hit"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/Hit/"), 0, true))))
+		return E_FAIL;
+
+	// Ice_Texture
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Ice"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/Ice/"), 0, true))))
+		return E_FAIL;
+
+	// Image_Texture
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Image"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/Image/"), 0, true))))
+		return E_FAIL;
+
+	// Mask_Texture
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Mask"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/Mask/"), 0, true))))
+		return E_FAIL;
+
+	// MeshTrail_Texture
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_MeshTrail"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/MeshTrail/"), 0, true))))
+		return E_FAIL;
+
+	// Noise_Texture
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Noise"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/Noise/"), 0, true))))
+		return E_FAIL;
+
+	// Object_Texture
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Object"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/Object/"), 0, true))))
+		return E_FAIL;
+
+	// Ring_Texture
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Ring"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/Ring/"), 0, true))))
+		return E_FAIL;
+
+	// Slash_Texture
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Slash"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/Slash/"), 0, true))))
+		return E_FAIL;
+
+	// Smoke_Texture
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Smoke"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/Smoke/"), 0, true))))
+		return E_FAIL;
+
+	// SubUV_Texture
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_SubUV"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/SubUV/"), 0, true))))
+		return E_FAIL;
+
+	// SwordTrail_Texture
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_SwordTrail"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/SwordTrail/"), 0, true))))
+		return E_FAIL;
+
+	// UI_Texture
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_UI"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/UI/"), 0, true))))
+		return E_FAIL;
+
+	// Water_Texture
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Water"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/Water/"), 0, true))))
+		return E_FAIL;
+
+	// Wind_Texture
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Wind"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/Wind/"), 0, true))))
+		return E_FAIL;
 
 	return S_OK;
 }

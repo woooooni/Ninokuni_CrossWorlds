@@ -8,12 +8,12 @@ END
 
 BEGIN(Client)
 
-class CEffects_MouseClick final : public CGameObject
+class CVfx abstract : public CGameObject
 {
 protected:
-	CEffects_MouseClick(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
-	CEffects_MouseClick(const CEffects_MouseClick& rhs);
-	virtual ~CEffects_MouseClick() = default;
+	CVfx(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	CVfx(const CVfx& rhs);
+	virtual ~CVfx() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -25,16 +25,13 @@ public:
 protected:
 	virtual HRESULT Ready_Components() override;
 
-private:
+protected:
 	_vector m_vPosition = {};
 
 	_uint  m_iCount   = 0;
 	_float m_fTimeAcc = 0.f;
 
 public:
-	static CEffects_MouseClick* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
-		const wstring& strObjectTag);
-	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };
 

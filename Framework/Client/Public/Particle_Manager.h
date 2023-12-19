@@ -30,10 +30,18 @@ private:
 
 private:
 	HRESULT Ready_Proto_Particles(const wstring& strParticlePath);
-	HRESULT Ready_Proto_Particles();
 
 public:
 	virtual void Free() override;
 };
 
 END
+
+/* Proto_Particles
+
+   Particle_Mouse_Circle
+   Particle_Mouse_CircleLine
+   Particle_Mouse_Leaf
+   Particle_Mouse_Twinkle
+
+*/

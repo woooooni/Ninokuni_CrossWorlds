@@ -21,14 +21,16 @@ public:
 
 private:
 	void Create_Particle();
+
 	void Load_InfoParticle();
 	void Store_InfoParticle();
+
 	void Save_Particle(const char* pFileName);
 	void Load_Particle(const char* pFileName);
 
 private:
 	class CGameObject* m_pParticle = nullptr;
-	class CParticle::PARTICLE_DESC m_tParticleInfo;
+	CParticle::PARTICLE_DESC m_tParticleInfo;
 
 	_float m_fPosition[3];
 	_float m_fRotation[3];

@@ -36,6 +36,7 @@
 #include "Baobam_Dark.h"
 
 #include "Particle.h"
+#include "Effect.h"
 
 #include "Part_SwordTemp.h"
 
@@ -314,14 +315,25 @@ HRESULT CLoader::Loading_For_Level_Tool()
 	if (FAILED(Loading_Proto_DynamicObjects(L"..Bin/Export/AnimModel/Map/")))
 		return E_FAIL;
 		
+#pragma region Particle && Effect
 #pragma region Particle
 	// 툴 파티클
 	CParticle::PARTICLE_DESC ParticleInfo = {};
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_TempParticle"),
-		CParticle::Create(m_pDevice, m_pContext, TEXT("TempParticle"), &ParticleInfo), LAYER_TYPE::LAYER_EFFECT)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_TempParticle"),
+		CParticle::Create(m_pDevice, m_pContext, TEXT("TempParticle"), &ParticleInfo), 
+		LAYER_TYPE::LAYER_EFFECT)))
 		return E_FAIL;
 #pragma endregion
 
+#pragma region Effect
+	// 툴 이펙트
+	CEffect::EFFECT_DESC EffectInfo = {};
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_TempMeshEffect"),
+		CEffect::Create(m_pDevice, m_pContext, TEXT("TempMeshEffect"), &EffectInfo), 
+		LAYER_TYPE::LAYER_EFFECT)))
+		return E_FAIL;
+#pragma endregion
+#pragma endregion
 
 #pragma region TerrainBrush
 

@@ -74,6 +74,7 @@ private:
 	HRESULT Initialize_Client();
 	HRESULT Ready_Prototype_Component();
 	HRESULT Ready_UI_TextureComponent();
+	HRESULT Ready_Effect_TextureComponent();
 
 public:
 	static CMainApp* Create();
