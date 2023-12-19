@@ -390,7 +390,7 @@ HRESULT CTool_Model::Render_DebugDraw()
 
 void CTool_Model::Tick_Model(_float fTimeDelta)
 {
-	if (ImGui::CollapsingHeader("Import and Eport"))
+	if (ImGui::CollapsingHeader(u8"파일 Import, Eport"))
 	{
 		/* Exception */
 		if (nullptr == m_pDummy)
@@ -407,7 +407,7 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 
 		/* Import */
 		{
-			if (ImGui::TreeNode("Import File (Fbx)s"))
+			if (ImGui::TreeNode(u8"FBX 불러오기"))
 			{
 				char szFilePath[MAX_PATH];
 				char szFileName[MAX_PATH];
@@ -509,7 +509,7 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 	
 		/* Export (One File) */
 		{
-			if (ImGui::TreeNode("Export File (Binary and Vtf)"))
+			if (ImGui::TreeNode(u8"바이너리 파일 내보내기"))
 			{
 				char szFilePath[MAX_PATH];
 				char szFileName[MAX_PATH];
@@ -548,7 +548,7 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 
 		/* Export (All File) */
 		{
-			if (ImGui::TreeNode("Export Files (Binary and Vtf)"))
+			if (ImGui::TreeNode(u8"FBX 일괄 임포트 동시에 바로 바이너리 내보내기"))
 			{
 				/* Path */
 				static char szAllObjectExportFolderName[MAX_PATH] = "";
@@ -601,7 +601,63 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 				}
 				ImGui::TreePop();
 			}
-		
+		}
+
+		/* Export (Costume) */
+		{
+			if (ImGui::TreeNode(u8"플레이어 커스텀 파츠 바이너리 내보내기"))
+			{
+				/* Path */
+				static char szAllObjectExportFolderName[MAX_PATH] = "";
+				ImGui::InputText("##All_ModelExportFolder", szAllObjectExportFolderName, MAX_PATH);
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::BeginTooltip();
+					ImGui::Text(u8"익스포트할 폴더들이 포함된 상위폴더 ex : AnimModel/Boss/");
+					ImGui::EndTooltip();
+				}
+				IMGUI_SAME_LINE;
+				ImGui::Text("Path");
+
+				/* Type */
+				const char* szExportModelTypes[] = { "STATIC", "ANIM" };
+				static const char* szExportObjectModelType = NULL;
+				static _int iSelectedExportModelType = -1;
+				if (ImGui::BeginCombo("##ExportAllObject_ModelType", szExportObjectModelType))
+				{
+					for (int n = 0; n < IM_ARRAYSIZE(szExportModelTypes); n++)
+					{
+						bool is_selected = (szExportObjectModelType == szExportModelTypes[n]);
+						if (ImGui::Selectable(szExportModelTypes[n], is_selected))
+						{
+							szExportObjectModelType = szExportModelTypes[n];
+							iSelectedExportModelType = n;
+						}
+
+					}
+					ImGui::EndCombo();
+				}
+				IMGUI_SAME_LINE;
+				ImGui::Text("Model Type");
+
+				/* Btn */
+				if (ImGui::Button("Export All"))
+				{
+					if (0 != strcmp(szAllObjectExportFolderName, "") && iSelectedExportModelType != -1)
+					{
+						if (FAILED(GI->Export_Model_Data_FromPath(iSelectedExportModelType, CUtils::ToWString(szAllObjectExportFolderName))))
+							MSG_BOX("Failed Export.");
+						else
+							MSG_BOX("Save Success");
+
+					}
+					else
+					{
+						MSG_BOX("폴더 경로 혹은 모델 타입 지정을 확인하세요.");
+					}
+				}
+				ImGui::TreePop();
+			}
 		}
 		IMGUI_NEW_LINE;
 	}
@@ -610,7 +666,7 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 
 void CTool_Model::Tick_Animation(_float fTimeDelta)
 {
-	if (ImGui::CollapsingHeader("Animations"))
+	if (ImGui::CollapsingHeader(u8"애니메이션 편집"))
 	{
 		if (Is_Exception())
 			return;
@@ -904,7 +960,7 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 
 void CTool_Model::Tick_Socket(_float fTimeDelta)
 {
-	if (ImGui::CollapsingHeader("Socket Bone"))
+	if (ImGui::CollapsingHeader(u8"소켓, 무기 연동"))
 	{
 		if (Is_Exception()) return;
 
@@ -1125,7 +1181,7 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 
 void CTool_Model::Tick_Event(_float fTimeDelta)
 {
-	if (ImGui::CollapsingHeader("Animation Event"))
+	if (ImGui::CollapsingHeader("애니메이션 이벤트"))
 	{
 		if (Is_Exception())
 			return;
@@ -1494,22 +1550,83 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 			ImGui::EndTabBar();
 		}
 		
-
-
-		for (size_t i = 0; i < 10; i++)
-			IMGUI_NEW_LINE;
+		IMGUI_NEW_LINE;
 	}
 }
 
 void CTool_Model::Tick_Costume(_float fTimeDelta)
 {
-	if (ImGui::CollapsingHeader("Costume"))
+	if (ImGui::CollapsingHeader(u8"플레이어 파츠"))
 	{
 		if (Is_Exception())
 			return;
 
 		/* Function */
 		{
+			IMGUI_NEW_LINE;
+			/* 플레이어 타입 */
+			ImGui::PushItemWidth(200.f);
+			{
+				const char** items = CUtils::Get_WStrings_To_ConstChar(wstrCharacterTypeNames, CHARACTER_TYPE::CHARACTER_END);
+				if (nullptr != items)
+				{
+					const char* szPartPreview = items[m_eCharacyerType];
+					if (ImGui::BeginCombo("Player Type", szPartPreview))
+					{
+						for (int n = 0; n < CHARACTER_TYPE::CHARACTER_END; n++)
+						{
+							const bool is_selected = (m_eCharacyerType == n);
+							if (ImGui::Selectable(items[n], is_selected))
+							{
+								m_eCharacyerType = (CHARACTER_TYPE)n;
+							
+								// TODO 
+
+							}
+
+							if (is_selected)
+								ImGui::SetItemDefaultFocus();
+						}
+						ImGui::EndCombo();
+					}
+					CUtils::Release_WString_To_ConstChar(items, CHARACTER_TYPE::CHARACTER_END);
+				}
+			}
+			ImGui::PopItemWidth();
+
+			/* 파츠 타입 */
+			ImGui::PushItemWidth(200.f);
+			{
+				const char** items = CUtils::Get_WStrings_To_ConstChar(wstrPartTypeNames, PART_TYPE::PART_END);
+				if (nullptr != items)
+				{
+					const char* szPartPreview = items[m_ePartType];
+					if (ImGui::BeginCombo("Part Type", szPartPreview))
+					{
+						for (int n = 0; n < PART_TYPE::PART_END; n++)
+						{
+							const bool is_selected = (m_ePartType == n);
+							if (ImGui::Selectable(items[n], is_selected))
+							{
+								m_ePartType = (PART_TYPE)n;
+
+								// TODO 
+
+							}
+
+							if (is_selected)
+								ImGui::SetItemDefaultFocus();
+						}
+						ImGui::EndCombo();
+					}
+					CUtils::Release_WString_To_ConstChar(items, PART_TYPE::PART_END);
+				}
+			}
+			ImGui::PopItemWidth();
+
+			/* 해당 파츠 상세 타입 */
+
+
 
 		}
 		IMGUI_NEW_LINE;

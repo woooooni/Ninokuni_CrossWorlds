@@ -20,6 +20,8 @@ private:
 	void Tick_Event(_float fTimeDelta);
 	void Tick_Socket(_float fTimeDelta);
 	void Tick_Costume(_float fTimeDelta);
+
+private:
 	void Tick_Dummys(_float fTimeDelta);
 
 private:
@@ -90,6 +92,13 @@ private:
 	const char** m_arrSoundKeys = nullptr;
 	_uint m_iSoundKeySize = 0;
 	
+
+#pragma endregion
+
+#pragma region Custom Parts 
+	CHARACTER_TYPE m_eCharacyerType = CHARACTER_TYPE::ENGINEER;
+	PART_TYPE m_ePartType = PART_TYPE::HEAD;
+
 
 #pragma endregion
 

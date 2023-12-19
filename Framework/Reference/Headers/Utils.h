@@ -25,5 +25,10 @@ public:
 	static string TCharToString(TCHAR* value);
 
 	static _bool Equal_TChar_Char(TCHAR* val1, const char* val2);
+
+	static char* WCharToChar(const wchar_t* value);
+
+	static const char** Get_WStrings_To_ConstChar(const wstring* wstrArray, const _uint iSize);
+	static void Release_WString_To_ConstChar(const char** szArray, const _uint iSize);
 };
 
