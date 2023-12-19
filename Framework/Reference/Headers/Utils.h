@@ -21,6 +21,19 @@ public:
 	static void Replace(OUT string& str, string comp, string rep);
 	static void Replace(OUT wstring& str, wstring comp, wstring rep);
 
+
+	static Matrix To_RightHanded(Matrix matLeftHanded);
+	static Matrix To_LeftHanded(Matrix matLeftHanded);
+
+	static Vec4 To_RightHanded(Vec4 vLeftHanded);
+	static Vec4 To_LeftHanded(Vec4 vRightHanded);
+
+	static Vec3 To_RightHanded(Vec3 vLeftHanded);
+	static Vec3 To_LeftHanded(Vec3 vRightHanded);
+
+	static PxTransform To_PxTransform(Matrix matrix);
+	static Matrix To_Matrix(PxTransform pxTransform);
+
 	static wstring TCharToWString(TCHAR* value);
 	static string TCharToString(TCHAR* value);
 

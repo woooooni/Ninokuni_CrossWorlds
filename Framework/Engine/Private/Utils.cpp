@@ -120,6 +120,7 @@ Matrix CUtils::To_Matrix(PxTransform pxTransform)
 	result.Translation(Vec3(pxTransform.p.x, pxTransform.p.y, pxTransform.p.z));
 
 	return result;
+}
 
 wstring CUtils::TCharToWString(TCHAR* value)
 {
