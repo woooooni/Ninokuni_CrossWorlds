@@ -444,12 +444,17 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 						else
 						{
 							MSG_BOX("Success Import.");
-							Clear_ToolAnimationData();
-							m_pDummy->Get_ModelCom()->Set_Animation(0);
-							if (CModel::TYPE::TYPE_ANIM == m_pDummy->Get_ModelCom()->Get_ModelType() && FAILED(Ready_SocketTransforms()))
+							if (CModel::TYPE::TYPE_ANIM == m_pDummy->Get_ModelCom()->Get_ModelType())
 							{
-								MSG_BOX("소켓 트랜스폼 생성에 실패했습니다.");
-								return;
+								if (FAILED(Ready_SocketTransforms()))
+								{
+									MSG_BOX("소켓 트랜스폼 생성에 실패했습니다.");
+									ImGui::TreePop();
+									return;
+								}
+
+								Clear_ToolAnimationData();
+								m_pDummy->Get_ModelCom()->Set_Animation(0);
 							}
 						}
 					}
