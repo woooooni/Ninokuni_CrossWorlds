@@ -6,7 +6,7 @@
 
 BEGIN(Engine)
 
-class CPhysX_Manager final : public CBase, public PxSimulationEventCallback, public PxUserControllerHitReport, public PxControllerBehaviorCallback
+class CPhysX_Manager final : public CBase, public PxSimulationEventCallback, public PxUserControllerHitReport
 {
 	DECLARE_SINGLETON(CPhysX_Manager)
 	
@@ -111,7 +111,6 @@ private:
 	PxScene*					m_pScene = nullptr;			// 시뮬레이션 돌릴 Scene.
 
 	PxMaterial* m_WorldMaterial = nullptr;		// 객체의 재질
-
 	PxControllerManager* m_pController_Manager = nullptr; // 컨트롤러 매니저
 
 	//// PxCloth.
@@ -127,6 +126,7 @@ private:
 	_bool m_bCudaGraphics = false;
 
 	PxPvd*						m_pPvd = nullptr; // 서버
+	PxPvdTransport*				m_pTransport = nullptr;
 	string						m_strIPAddress = "127.0.0.1";
 	int							m_iPortNumber = 5425;
 	int							m_iTimeOutSeconds = 100;
@@ -148,10 +148,9 @@ private:
 public:
 	virtual void Free() override;
 
-	// PxControllerBehaviorCallback을(를) 통해 상속됨
-	virtual PxControllerBehaviorFlags getBehaviorFlags(const PxShape& shape, const PxActor& actor) override;
-	virtual PxControllerBehaviorFlags getBehaviorFlags(const PxController& controller) override;
-	virtual PxControllerBehaviorFlags getBehaviorFlags(const PxObstacle& obstacle) override;
+
+	
+
 };
 
 END

@@ -49,8 +49,8 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 	m_Foundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_Allocator, m_ErrorCallback);
 
 	m_pPvd = PxCreatePvd(*m_Foundation);
-	PxPvdTransport* transport = PxDefaultPvdSocketTransportCreate("127.0.0.1", m_iPortNumber, m_iTimeOutSeconds);
-	m_pPvd->connect(*transport, PxPvdInstrumentationFlag::eALL);
+	m_pTransport = PxDefaultPvdSocketTransportCreate("127.0.0.1", m_iPortNumber, m_iTimeOutSeconds);
+	m_pPvd->connect(*m_pTransport, PxPvdInstrumentationFlag::eALL);
 	_bool bConntected = m_pPvd->isConnected();
 
 
@@ -58,7 +58,7 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 
 	m_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_Foundation, PxTolerancesScale(), true, m_pPvd);
 	PxInitExtensions(*m_Physics, m_pPvd);
-	// transport->release();
+	
 
 	PxSceneDesc SceneDesc(m_Physics->getTolerancesScale());
 
@@ -96,6 +96,7 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 	}
 
 #ifdef DEBUG
+	m_pScene->setVisualizationParameter(PxVisualizationParameter::eCONTACT_NORMAL, 1.f);
 	m_pScene->setVisualizationParameter(PxVisualizationParameter::eSIMULATION_MESH, 1.f);
 	m_pScene->setVisualizationParameter(PxVisualizationParameter::eCOLLISION_DYNAMIC, 1.f);
 	m_pScene->setVisualizationParameter(PxVisualizationParameter::eCOLLISION_SHAPES, 1.f);
@@ -144,6 +145,7 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 
 	PxRigidStatic* groundPlane = PxCreatePlane(*m_Physics, PxPlane(0, 1, 0, 0), *m_WorldMaterial);
 	m_pScene->addActor(*groundPlane);
+
 
 	return S_OK;
 }
@@ -303,8 +305,6 @@ HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGameObject, CModel* pModel, Mat
 	if (nullptr == pModel)
 		return E_FAIL;
 
-	WorldMatrix = WorldMatrix.Transpose();
-
 	for (auto& pMesh : pModel->Get_Meshes())
 	{
 		const vector<VTXANIMMODEL>& AnimVB = pMesh->Get_AnimVertices();
@@ -426,17 +426,16 @@ PxController* CPhysX_Manager::Add_CapsuleController(CGameObject* pGameObject, Ma
 		return nullptr;
 
 	PxCapsuleControllerDesc CapsuleDesc;
-
-	Vec3 vPosition = {};
-	WorldMatrix.Translation(vPosition);
+	
+	PxTransform pxTransform = GI->To_PxTransform(WorldMatrix);
 
 	CapsuleDesc.setToDefault();
 
 	CapsuleDesc.reportCallback = this;
-	CapsuleDesc.behaviorCallback = this;
 
 	CapsuleDesc.material = m_WorldMaterial;
-	CapsuleDesc.position = PxExtendedVec3(vPosition.x, vPosition.y, vPosition.z);
+	CapsuleDesc.upDirection = pxTransform.q.getBasisVector1();
+	CapsuleDesc.position = PxExtendedVec3(pxTransform.p.x, pxTransform.p.y, pxTransform.p.z);
 	CapsuleDesc.height = fHeight;
 	CapsuleDesc.radius = fRadius;
 
@@ -495,6 +494,7 @@ PxRigidDynamic* CPhysX_Manager::Create_Dynamic_Box(const PHYSX_INIT_DESC& Desc)
 	PxMaterial* pMateral = Create_Material(Desc.fStaticFriction, Desc.fDynamicFriction, Desc.fRestitution);
 	PxShape* shape = m_Physics->createShape(PxBoxGeometry(Desc.vExtents.x, Desc.vExtents.y, Desc.vExtents.z), *pMateral);
 	shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
+	shape->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, true);
 	//shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
 	//shape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
 	shape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
@@ -585,6 +585,7 @@ PxRigidDynamic* CPhysX_Manager::Create_Dynamic_Sphere(const PHYSX_INIT_DESC& Des
 	PxMaterial* pMateral = Create_Material(Desc.fStaticFriction, Desc.fDynamicFriction, Desc.fRestitution);
 	PxShape* shape = m_Physics->createShape(PxSphereGeometry(Desc.fRadius), *pMateral);
 	shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
+	shape->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, true);
 
 	PxVec3 vPxStartPositon = PxVec3(Desc.vStartPosition.x, Desc.vStartPosition.y, Desc.vStartPosition.z);
 	PxTransform physXTransform = PxTransform(vPxStartPositon);
@@ -970,6 +971,8 @@ HRESULT CPhysX_Manager::Create_Cloth(CMesh* pMesh)
 	return S_OK;
 }
 
+
+
 static PX_FORCE_INLINE PxU32 id(PxU32 x, PxU32 y, PxU32 numY)
 {
 	return x * numY + y;
@@ -1210,8 +1213,9 @@ void CPhysX_Manager::Free()
 	if (m_Dispatcher)
 		m_Dispatcher->release();
 
-	if (m_pPvd->isConnected())
-		m_pPvd->disconnect();
+
+	if (m_pTransport)
+		m_pTransport->release();
 
 	if (m_pPvd)
 		m_pPvd->release();
@@ -1236,20 +1240,7 @@ void CPhysX_Manager::Free()
 #endif
 }
 
-PxControllerBehaviorFlags CPhysX_Manager::getBehaviorFlags(const PxShape& shape, const PxActor& actor)
-{
-	return PxControllerBehaviorFlags();
-}
 
-PxControllerBehaviorFlags CPhysX_Manager::getBehaviorFlags(const PxController& controller)
-{
-	return PxControllerBehaviorFlags();
-}
-
-PxControllerBehaviorFlags CPhysX_Manager::getBehaviorFlags(const PxObstacle& obstacle)
-{
-	return PxControllerBehaviorFlags();
-}
 
 void CPhysX_Manager::onShapeHit(const PxControllerShapeHit& hit)
 {

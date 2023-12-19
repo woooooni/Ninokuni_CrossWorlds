@@ -641,6 +641,16 @@ PxController* CGameInstance::Add_BoxController(CGameObject* pGameObject, Matrix 
 
 
 
+PxTransform CGameInstance::To_PxTransform(Matrix matrix)
+{
+	return CUtils::To_PxTransform(matrix);
+}
+
+Matrix CGameInstance::To_Matrix(PxTransform pxTransform)
+{
+	return CUtils::To_Matrix(pxTransform);
+}
+
 wstring CGameInstance::To_Wstring(const string& str)
 {
 	return	CUtils::ToWString(str);
@@ -659,6 +669,36 @@ _float CGameInstance::RandomFloat(_float fMin, _float fMax)
 _int CGameInstance::RandomInt(_int iMin, _int iMax)
 {
 	return	CUtils::Random_Int(iMin, iMax);
+}
+
+Matrix CGameInstance::To_RightHanded(Matrix matLeftHanded)
+{
+	return CUtils::To_RightHanded(matLeftHanded);
+}
+
+Matrix CGameInstance::To_LeftHanded(Matrix matRightHanded)
+{
+	return CUtils::To_LeftHanded(matRightHanded);
+}
+
+Vec4 CGameInstance::To_RightHanded(Vec4 vLeftHanded)
+{
+	return CUtils::To_RightHanded(vLeftHanded);
+}
+
+Vec4 CGameInstance::To_LeftHanded(Vec4 vRightHanded)
+{
+	return CUtils::To_LeftHanded(vRightHanded);
+}
+
+Vec3 CGameInstance::To_RightHanded(Vec3 vLeftHanded)
+{
+	return CUtils::To_RightHanded(vLeftHanded);
+}
+
+Vec3 CGameInstance::To_LeftHanded(Vec3 vRightHanded)
+{
+	return CUtils::To_LeftHanded(vRightHanded);
 }
 
 Json CGameInstance::Json_Load(const wstring& strFilePath)

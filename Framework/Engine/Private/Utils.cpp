@@ -47,6 +47,80 @@ void CUtils::Replace(OUT wstring& str, wstring comp, wstring rep)
 	str = temp;
 }
 
+Matrix CUtils::To_RightHanded(Matrix matLeftHanded)
+{
+	Matrix matrix = Matrix::Identity;
+	matrix.Forward(Vec3(0.f, 0.f, -1.f));
+
+	return matrix * matLeftHanded;;
+}
+
+Matrix CUtils::To_LeftHanded(Matrix matRightHanded)
+{
+	Matrix matrix = Matrix::Identity;
+	matrix.Forward(Vec3(0.f, 0.f, -1.f));
+
+	return matrix * matRightHanded;;
+}
+
+Vec4 CUtils::To_RightHanded(Vec4 vLeftHanded)
+{
+	Matrix matrix = Matrix::Identity;
+	matrix.Forward(Vec3(0.f, 0.f, -1.f));
+
+	Vec4 vTransformVector = XMVector3TransformCoord(vLeftHanded, matrix);
+	return vTransformVector;
+}
+
+Vec4 CUtils::To_LeftHanded(Vec4 vRightHanded)
+{
+	Matrix matrix = Matrix::Identity;
+	matrix.Forward(Vec3(0.f, 0.f, -1.f));
+
+	Vec4 vTransformVector = XMVector3TransformCoord(vRightHanded, matrix);
+	return vTransformVector;
+}
+
+Vec3 CUtils::To_RightHanded(Vec3 vLeftHanded)
+{
+	Matrix matrix = Matrix::Identity;
+	matrix.Forward(Vec3(0.f, 0.f, -1.f));
+
+	Vec3 vTransformVector = XMVector3TransformCoord(vLeftHanded, matrix);
+	return vTransformVector;
+}
+
+Vec3 CUtils::To_LeftHanded(Vec3 vRightHanded)
+{
+	Matrix matrix = Matrix::Identity;
+	matrix.Forward(Vec3(0.f, 0.f, -1.f));
+
+	Vec3 vTransformVector = XMVector3TransformCoord(vRightHanded, matrix);
+	return vTransformVector;
+}
+
+PxTransform CUtils::To_PxTransform(Matrix matrix)
+{
+	Vec3 vScale, vPos;
+	Quaternion vQuat;
+
+	matrix.Decompose(vScale, vQuat, vPos);
+
+
+	return PxTransform(PxVec3(vPos.x, vPos.y, vPos.z), PxQuat(vQuat.x, vQuat.y, vQuat.z, vQuat.w));
+}
+
+Matrix CUtils::To_Matrix(PxTransform pxTransform)
+{
+	Matrix result = Matrix::Identity;
+	result.Right(Vec3(pxTransform.q.getBasisVector0().x, pxTransform.q.getBasisVector0().y, pxTransform.q.getBasisVector0().z));
+	result.Up(Vec3(pxTransform.q.getBasisVector1().x, pxTransform.q.getBasisVector1().y, pxTransform.q.getBasisVector1().z));
+	result.Forward(Vec3(pxTransform.q.getBasisVector2().x, pxTransform.q.getBasisVector2().y, pxTransform.q.getBasisVector2().z));
+	result.Translation(Vec3(pxTransform.p.x, pxTransform.p.y, pxTransform.p.z));
+
+	return result;
+}
+
 wstring CUtils::PathToWString(wstring strPath)
 {
 	Replace(strPath, L"\\", L"/");

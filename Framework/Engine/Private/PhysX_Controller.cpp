@@ -1,7 +1,9 @@
 #include "RigidBody.h"
 #include "GameInstance.h"
 #include "GameObject.h"
+#include "PhysX_Manager.h"
 #include "..\Public\PhysX_Controller.h"
+
 
 CPhysX_Controller::CPhysX_Controller(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:CComponent(pDevice, pContext)
@@ -55,7 +57,8 @@ HRESULT CPhysX_Controller::Initialize(void* pArg)
 void CPhysX_Controller::Tick_Controller(_float fTimeDelta)
 {
 	Vec3 vPosition = m_pTransformCom->Get_Position();
-	m_pPhysXController->getActor()->setKinematicTarget({ vPosition.x, vPosition.y, vPosition.z });
+	
+	// m_pPhysXController->move({ vPosition.x, vPosition.y, vPosition.z }, 1000.f, fTimeDelta, PxControllerFilters);
 }
 
 void CPhysX_Controller::LateTick_Controller(_float fTimeDelta)
