@@ -14,6 +14,7 @@
 #include "HierarchyNode.h"
 
 #include "Dummy.h"
+#include "Weapon.h"
 #include "Part.h"
 
 #pragma endregion
@@ -40,7 +41,7 @@ HRESULT CTool_Model::Initialize()
 	if (FAILED(Ready_Dummy()))
 		return E_FAIL;
 
-	if (FAILED(Ready_WeaponPrototypes()))
+	if (FAILED(Ready_Weapons()))
 		return E_FAIL;
 
 	if (FAILED(Ready_SoundKey()))
@@ -297,16 +298,16 @@ HRESULT CTool_Model::Ready_DebugDraw()
 	return TRUE;
 }
 
-HRESULT CTool_Model::Ready_WeaponPrototypes()
+HRESULT CTool_Model::Ready_Weapons()
 {
-	CPart*			pWeapon = nullptr;
+	CWeapon*			pWeapon = nullptr;
 	CGameObject*	pGameObject = nullptr;
 
 	/* Prototype_GameObject_TempSword */
 	if (FAILED(GI->Add_GameObject(LEVEL_TOOL, _uint(LAYER_WEAPON), TEXT("Prototype_GameObject_TempSword"), nullptr, &pGameObject)))
 		return E_FAIL;
 	{
-		pWeapon = dynamic_cast<CPart*>(pGameObject);
+		pWeapon = dynamic_cast<CWeapon*>(pGameObject);
 		if (nullptr == pWeapon)
 			return E_FAIL;
 
@@ -406,8 +407,9 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 		}
 
 		/* Import */
+		if (ImGui::TreeNode(u8"Import"))
 		{
-			if (ImGui::TreeNode(u8"FBX 불러오기"))
+			if (ImGui::TreeNode(u8"파일 불러오기(fbx, binary)"))
 			{
 				char szFilePath[MAX_PATH];
 				char szFileName[MAX_PATH];
@@ -504,11 +506,13 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 				ImGui::TreePop();
 			}
 			
+			ImGui::TreePop();
 		}
 
-	
-		/* Export (One File) */
+		/* Export */
+		if (ImGui::TreeNode(u8"Export"))
 		{
+			/* Export (One File) */
 			if (ImGui::TreeNode(u8"바이너리 파일 내보내기"))
 			{
 				char szFilePath[MAX_PATH];
@@ -544,11 +548,37 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 				IMGUI_NEW_LINE;
 				ImGui::TreePop();
 			}
-		}
 
-		/* Export (All File) */
-		{
-			if (ImGui::TreeNode(u8"FBX 일괄 임포트 동시에 바로 바이너리 내보내기"))
+			/* Export (Costume) */
+			if (ImGui::TreeNode(u8"플레이어 + 파츠 바이너리 내보내기"))
+			{
+				/* Path */
+				static char szAllObjectExportFolderName[MAX_PATH] = "";
+				ImGui::InputText("##Parts_ModelExportFolder", szAllObjectExportFolderName, MAX_PATH);
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::BeginTooltip();
+					ImGui::Text(u8"ex : AnimModel/Boss/Stellia/");
+					ImGui::EndTooltip();
+				}
+				IMGUI_SAME_LINE;
+				ImGui::Text("Path");
+
+
+				/* Btn */
+				if (ImGui::Button("Export Player + Part"))
+				{
+					/*if (FAILED(GI->Export_Model_Data_FromPath(, CUtils::ToWString(szAllObjectExportFolderName))))
+						MSG_BOX("Failed Export.");
+					else
+						MSG_BOX("Save Success");*/
+				}
+				ImGui::TreePop();
+			}
+
+
+			/* Export (All File) */
+			if (ImGui::TreeNode(u8"FBX 폴더 일괄 임포트와 동시에 바로 바이너리 내보내기"))
 			{
 				/* Path */
 				static char szAllObjectExportFolderName[MAX_PATH] = "";
@@ -601,63 +631,8 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 				}
 				ImGui::TreePop();
 			}
-		}
 
-		/* Export (Costume) */
-		{
-			if (ImGui::TreeNode(u8"플레이어 커스텀 파츠 바이너리 내보내기"))
-			{
-				/* Path */
-				static char szAllObjectExportFolderName[MAX_PATH] = "";
-				ImGui::InputText("##All_ModelExportFolder", szAllObjectExportFolderName, MAX_PATH);
-				if (ImGui::IsItemHovered())
-				{
-					ImGui::BeginTooltip();
-					ImGui::Text(u8"익스포트할 폴더들이 포함된 상위폴더 ex : AnimModel/Boss/");
-					ImGui::EndTooltip();
-				}
-				IMGUI_SAME_LINE;
-				ImGui::Text("Path");
-
-				/* Type */
-				const char* szExportModelTypes[] = { "STATIC", "ANIM" };
-				static const char* szExportObjectModelType = NULL;
-				static _int iSelectedExportModelType = -1;
-				if (ImGui::BeginCombo("##ExportAllObject_ModelType", szExportObjectModelType))
-				{
-					for (int n = 0; n < IM_ARRAYSIZE(szExportModelTypes); n++)
-					{
-						bool is_selected = (szExportObjectModelType == szExportModelTypes[n]);
-						if (ImGui::Selectable(szExportModelTypes[n], is_selected))
-						{
-							szExportObjectModelType = szExportModelTypes[n];
-							iSelectedExportModelType = n;
-						}
-
-					}
-					ImGui::EndCombo();
-				}
-				IMGUI_SAME_LINE;
-				ImGui::Text("Model Type");
-
-				/* Btn */
-				if (ImGui::Button("Export All"))
-				{
-					if (0 != strcmp(szAllObjectExportFolderName, "") && iSelectedExportModelType != -1)
-					{
-						if (FAILED(GI->Export_Model_Data_FromPath(iSelectedExportModelType, CUtils::ToWString(szAllObjectExportFolderName))))
-							MSG_BOX("Failed Export.");
-						else
-							MSG_BOX("Save Success");
-
-					}
-					else
-					{
-						MSG_BOX("폴더 경로 혹은 모델 타입 지정을 확인하세요.");
-					}
-				}
-				ImGui::TreePop();
-			}
+			ImGui::TreePop();
 		}
 		IMGUI_NEW_LINE;
 	}

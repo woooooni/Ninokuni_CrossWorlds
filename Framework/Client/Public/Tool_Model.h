@@ -31,7 +31,7 @@ private:
 	/* In Initialize */
 	HRESULT Ready_DebugDraw();
 	HRESULT Ready_Dummy();
-	HRESULT Ready_WeaponPrototypes();
+	HRESULT Ready_Weapons();
 	HRESULT Ready_SoundKey();
 
 	/* In Impory Animation */
@@ -63,8 +63,8 @@ private:
 	/* Bone */
 	_int m_iCurBoneIndex = 0;
 
-	/* 프로토타입 무기*/
-	vector<class CPart*> m_Weapons;
+	/* 무기*/
+	vector<class CWeapon*> m_Weapons;
 	_int m_iCurWeaponIndex = -1;
 
 	/* 소켓 */

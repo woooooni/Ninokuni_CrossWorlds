@@ -1,17 +1,17 @@
 #pragma once
 
 #include "Client_Defines.h"
-#include "Part.h"
+#include "Weapon.h"
 
 BEGIN(Client)
 
-class CPart_SwordTemp final : public CPart
+class CWeapon_SwordTemp final : public CWeapon
 {
 
 private:
-	CPart_SwordTemp(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
-	CPart_SwordTemp(const CPart_SwordTemp& rhs);
-	virtual ~CPart_SwordTemp() = default;
+	CWeapon_SwordTemp(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	CWeapon_SwordTemp(const CWeapon_SwordTemp& rhs);
+	virtual ~CWeapon_SwordTemp() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -31,7 +31,7 @@ private:
 	HRESULT Bind_ShaderResources();
 
 public:
-	static CPart_SwordTemp* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	static CWeapon_SwordTemp* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };
