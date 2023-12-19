@@ -1,24 +1,24 @@
 #include "stdafx.h"
-#include "Effects_MouseClick.h"
+#include "Vfx_MouseClick.h"
 
 #include "Particle_Manager.h"
 
-CEffects_MouseClick::CEffects_MouseClick(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
-	: CGameObject(pDevice, pContext, strObjectTag, OBJ_TYPE::OBJ_PARTICLE)
+CVfx_MouseClick::CVfx_MouseClick(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
+	: CVfx(pDevice, pContext, strObjectTag)
 {
 }
 
-CEffects_MouseClick::CEffects_MouseClick(const CEffects_MouseClick& rhs)
-	: CGameObject(rhs)
+CVfx_MouseClick::CVfx_MouseClick(const CVfx_MouseClick& rhs)
+	: CVfx(rhs)
 {
 }
 
-HRESULT CEffects_MouseClick::Initialize_Prototype()
+HRESULT CVfx_MouseClick::Initialize_Prototype()
 {
  	return S_OK;
 }
 
-HRESULT CEffects_MouseClick::Initialize(void* pArg)
+HRESULT CVfx_MouseClick::Initialize(void* pArg)
 {
 	if (pArg != nullptr)
 		m_vPosition = *static_cast<_vector*>(pArg);
@@ -26,7 +26,7 @@ HRESULT CEffects_MouseClick::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CEffects_MouseClick::Tick(_float fTimeDelta)
+void CVfx_MouseClick::Tick(_float fTimeDelta)
 {
 	m_fTimeAcc += fTimeDelta;
 	if (m_iCount == 0 && m_fTimeAcc > 0.f)
@@ -53,40 +53,40 @@ void CEffects_MouseClick::Tick(_float fTimeDelta)
 	}
 }
 
-void CEffects_MouseClick::LateTick(_float fTimeDelta)
+void CVfx_MouseClick::LateTick(_float fTimeDelta)
 {
 }
 
-HRESULT CEffects_MouseClick::Render()
+HRESULT CVfx_MouseClick::Render()
 {
 	return S_OK;
 }
 
-HRESULT CEffects_MouseClick::Ready_Components()
+HRESULT CVfx_MouseClick::Ready_Components()
 {
 	return S_OK;
 }
 
-CEffects_MouseClick* CEffects_MouseClick::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
+CVfx_MouseClick* CVfx_MouseClick::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 {
-	CEffects_MouseClick* pInstance = new CEffects_MouseClick(pDevice, pContext, strObjectTag);
+	CVfx_MouseClick* pInstance = new CVfx_MouseClick(pDevice, pContext, strObjectTag);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX("Failed to Created : CEffects_MouseClick");
+		MSG_BOX("Failed to Created : CVfx_MouseClick");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CEffects_MouseClick::Clone(void* pArg)
+CGameObject* CVfx_MouseClick::Clone(void* pArg)
 {
-	CEffects_MouseClick* pInstance = new CEffects_MouseClick(*this);
+	CVfx_MouseClick* pInstance = new CVfx_MouseClick(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Failed to Cloned : CEffects_MouseClick");
+		MSG_BOX("Failed to Cloned : CVfx_MouseClick");
 		Safe_Release(pInstance);
 		return nullptr;
 	}
@@ -94,7 +94,7 @@ CGameObject* CEffects_MouseClick::Clone(void* pArg)
 	return pInstance;
 }
 
-void CEffects_MouseClick::Free()
+void CVfx_MouseClick::Free()
 {
 	__super::Free();
 }

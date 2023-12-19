@@ -109,7 +109,7 @@ public:
 		_float3 fBoxMax;
 
 #pragma region 텍스처
-		wstring strDiffuseTetextureName = L"Prototype_Component_Texture_Particle_Mouse";//L"Prototype_Component_Texture_SubUV";
+		wstring strDiffuseTetextureName = L"Prototype_Component_Texture_Effect_SubUV";
 		wstring strDiffuseTetexturePath = L"";
 		wstring strAlphaTexturName      = L"";
 		wstring strAlphaTexturPath      = L"";
@@ -119,7 +119,7 @@ public:
 		_float2 fUVMaxCount = _float2(1.f, 1.f);
 
 		_uint iTextureIndexDiffuse = 0;
-		_uint iTextureIndexAlpha = 0;
+		_uint iTextureIndexAlpha   = 0;
 #pragma endregion
 
 #pragma region 애니메이션
@@ -199,7 +199,6 @@ public:
 
 private:
 	_bool m_isCloned = { false };
-
 	PARTICLE_DESC m_tParticleDesc;
 
 	_float4x4 m_ViewMatrix;
@@ -218,13 +217,15 @@ private:
 private:
 	HRESULT Bind_ShaderResource();
 
+	void Load_ParticleData(const wstring& strFileName);
+	void* Get_ParticleBufferInfo();
+
+	void Set_Texture_Diffuse();
+	void Set_Texture_Alpha();
+
 protected:
 	// CGameObject을(를) 통해 상속됨
 	virtual HRESULT Ready_Components() override;
-	void Load_ParticleData(const wstring& strFileName);
-	void* Get_ParticleBufferInfo();
-	void Set_Texture_Diffuse();
-	void Set_Texture_Alpha();
 
 public:
 	static CParticle* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, 

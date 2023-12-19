@@ -9,6 +9,8 @@
 #include "FileUtils.h"
 #include "Utils.h"
 
+#include "Vfx_MouseClick.h"
+
 IMPLEMENT_SINGLETON(CEffect_Manager)
 
 CEffect_Manager::CEffect_Manager()
@@ -16,7 +18,7 @@ CEffect_Manager::CEffect_Manager()
 
 }
 
-HRESULT CEffect_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strEffectPath)
+HRESULT CEffect_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strEffectMeshPath, const wstring& strEffectPath)
 {
 	m_pDevice = pDevice;
 	m_pContext = pContext;
@@ -24,11 +26,15 @@ HRESULT CEffect_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceCont
 	Safe_AddRef(m_pDevice);
 	Safe_AddRef(m_pContext);
 
-	//if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_NONANIM, L"../Bin/Resources/Effect/Model/")))
-	//	return E_FAIL;
+	// 
+	if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_NONANIM, strEffectMeshPath)))
+		return E_FAIL;
 
 	//if (FAILED(Ready_Proto_Effects(strEffectPath)))
 	//	return E_FAIL;
+
+	if (FAILED(Ready_Proto_Vfx()))
+		return E_FAIL;
 	
 	return S_OK;
 }
@@ -75,6 +81,18 @@ HRESULT CEffect_Manager::Generate_Effect(const wstring& strEffectName, _matrix R
 	return S_OK;
 }
 
+HRESULT CEffect_Manager::Generate_Vfx(const wstring& strPrototypeVfxName, _vector vPosition)
+{
+	CGameObject* pGameObject = GI->Clone_GameObject(L"Prototype_" + strPrototypeVfxName, LAYER_TYPE::LAYER_EFFECT, &vPosition);
+	if (nullptr == pGameObject)
+		return E_FAIL;
+
+	_uint iLevelIndex = GI->Get_CurrentLevel();
+	if (FAILED(GI->Add_GameObject(iLevelIndex, LAYER_TYPE::LAYER_EFFECT, pGameObject)))
+		return E_FAIL;
+
+	return S_OK;
+}
 
 HRESULT CEffect_Manager::Ready_Proto_Effects(const wstring& strEffectPath)
 {
@@ -114,8 +132,7 @@ HRESULT CEffect_Manager::Ready_Proto_Effects(const wstring& strEffectPath)
 			EffectDesc.fAlpha = File->Read<_float>();
 			EffectDesc.fDestAlphaSpeed = File->Read<_float>();
 			EffectDesc.fIndexSpeed = File->Read<_float>();
-			EffectDesc.fMaxCountX = File->Read<_float>();
-			EffectDesc.fMaxCountY = File->Read<_float>();
+			EffectDesc.fMaxCount = File->Read<_float2>();
 			EffectDesc.fMoveSpeed = File->Read<_float>();
 			EffectDesc.fTurnSpeed = File->Read<_float>();
 
@@ -139,26 +156,38 @@ HRESULT CEffect_Manager::Ready_Proto_Effects(const wstring& strEffectPath)
 			bIncrement = File->Read<_bool>();
 			bGravity = File->Read<_bool>();
 
-			if (FAILED(GI->Add_Prototype(wstring(L"Prototype_Effect_") + strFileName, 
-				CEffect::Create(m_pDevice, m_pContext, 
-					strFileName, 
-					eType, 
-					CUtils::ToWString(strEffectModelName), 
-					EffectDesc, bIncrement, bLoop, bGravity), 
-					LAYER_TYPE::LAYER_EFFECT)))
-				return E_FAIL;
-			
-			CGameObject* pObject = GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_EFFECT, wstring(L"Prototype_Effect_") + strFileName);
-			if (pObject == nullptr)
-				return E_FAIL;
+			//if (FAILED(GI->Add_Prototype(wstring(L"Prototype_Effect_") + strFileName, 
+			//	CEffect::Create(m_pDevice, m_pContext, 
+			//		strFileName, 
+			//		eType, 
+			//		CUtils::ToWString(strEffectModelName), 
+			//		EffectDesc, bIncrement, bLoop, bGravity), 
+			//		LAYER_TYPE::LAYER_EFFECT)))
+			//	return E_FAIL;
+			//
+			//CGameObject* pObject = GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_EFFECT, wstring(L"Prototype_Effect_") + strFileName);
+			//if (pObject == nullptr)
+			//	return E_FAIL;
 
-			CEffect* pEffect = dynamic_cast<CEffect*>(pObject);
-			if (pEffect == nullptr)
-				return E_FAIL;
+			//CEffect* pEffect = dynamic_cast<CEffect*>(pObject);
+			//if (pEffect == nullptr)
+			//	return E_FAIL;
 		
 			
 		}
 	}
+	return S_OK;
+}
+
+HRESULT CEffect_Manager::Ready_Proto_Vfx()
+{
+	// Prototype_Particles_MouseClick
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_MouseClick"),
+		CVfx_MouseClick::Create(m_pDevice, m_pContext, TEXT("Particles_MouseClick")), LAYER_TYPE::LAYER_EFFECT)))
+		return E_FAIL;
+
+	// 
+
 	return S_OK;
 }
 

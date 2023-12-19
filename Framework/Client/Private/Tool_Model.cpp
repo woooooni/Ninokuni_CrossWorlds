@@ -446,15 +446,13 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 							MSG_BOX("Success Import.");
 							if (CModel::TYPE::TYPE_ANIM == m_pDummy->Get_ModelCom()->Get_ModelType())
 							{
+								Clear_ToolAnimationData();
+								m_pDummy->Get_ModelCom()->Set_Animation(0);
 								if (FAILED(Ready_SocketTransforms()))
 								{
 									MSG_BOX("소켓 트랜스폼 생성에 실패했습니다.");
-									ImGui::TreePop();
-									return;
+										return;
 								}
-
-								Clear_ToolAnimationData();
-								m_pDummy->Get_ModelCom()->Set_Animation(0);
 							}
 						}
 					}
@@ -489,7 +487,7 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 				/* Export Btn*/
 				if (ImGui::Button("Export"))
 				{
-					if (strlen(szExportFolderName) > 0)
+ 					if (strlen(szExportFolderName) > 0)
 					{
 						if (FAILED(m_pDummy->Export_Model_Bin(CUtils::ToWString(szExportFolderName), m_strFileName)))
 						{

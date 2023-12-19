@@ -8,7 +8,6 @@
 #include "FileUtils.h"
 #include "Utils.h"
 #include "Particle.h"
-#include "Effects_MouseClick.h"
 
 IMPLEMENT_SINGLETON(CParticle_Manager)
 
@@ -26,9 +25,6 @@ HRESULT CParticle_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceCo
 	Safe_AddRef(m_pContext);
 	
 	if (FAILED(Ready_Proto_Particles(strParticlePath)))
-		return E_FAIL;
-
-	if (FAILED(Ready_Proto_Particles()))
 		return E_FAIL;
 
 	return S_OK;
@@ -86,16 +82,6 @@ HRESULT CParticle_Manager::Ready_Proto_Particles(const wstring& strParticlePath)
 			Safe_Delete(wcharFileName);
 		}
 	}
-
-	return S_OK;
-}
-
-HRESULT CParticle_Manager::Ready_Proto_Particles()
-{
-	// 마우스 클릭 파티클
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_Particles_MouseClick"),
-		CEffects_MouseClick::Create(m_pDevice, m_pContext, TEXT("Particles_MouseClick")), LAYER_TYPE::LAYER_EFFECT)))
-		return E_FAIL;
 
 	return S_OK;
 }
