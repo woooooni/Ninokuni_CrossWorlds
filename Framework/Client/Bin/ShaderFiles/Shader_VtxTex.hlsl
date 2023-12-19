@@ -7,6 +7,9 @@ Texture2D	g_DepthTexture;
 float		g_Alpha = 1.f;
 float		g_Time;
 
+float g_LoadingProgress;
+
+
 struct VS_IN
 {
 	float3		vPosition : POSITION;
@@ -32,9 +35,6 @@ VS_OUT VS_MAIN(VS_IN In)
 	Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
 	Out.vTexUV = In.vTexUV;
 
-
-
-	
 	return Out;
 }
 
@@ -117,6 +117,24 @@ PS_OUT PS_MAIN_CLOUD(PS_IN In)
 	return Out;
 }
 
+PS_OUT PS_MAIN_LOADING(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+	float fLoadingPer = 1.f;
+
+	if (In.vTexUV.x < g_LoadingProgress || In.vTexUV.x >(g_LoadingProgress + fLoadingPer))
+	{
+		Out.vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
+	}
+	else
+	{
+		Out.vColor = float4(0.0, 0.0, 0.0, 0.0);
+	}
+
+	return Out;
+}
+
 technique11 DefaultTechnique
 {
 	pass DefaultPass // 0
@@ -161,5 +179,16 @@ technique11 DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN_CLOUD();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_CLOUD();
+	}
+
+	pass LoadingPass // 4
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_Default, 0);
+		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN_LOADING();
 	}
 }

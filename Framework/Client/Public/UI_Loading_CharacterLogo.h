@@ -28,12 +28,13 @@ protected:
 	HRESULT Bind_ShaderResources();
 
 private:
+	_bool m_bReverse = { true };
 	_int m_iTextureIndex = { -1 };
 	_float m_fTimeAcc = { 0.f };
 
 	_float2 m_vPosition = _float2(120.f, 230.f); // x -60px
 	_float4 m_vColor = _float4(0.f, 0.f, 0.f, 1.f);
-	_float2 m_vScale = _float2(0.5f, 0.5f);
+	_float2 m_vScale = _float2(0.65f, 0.65f);
 	_tchar	m_szInfoText[MAX_PATH];
 
 	_uint m_iMaxCount = { 0 };

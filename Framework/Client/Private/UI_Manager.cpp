@@ -34,6 +34,7 @@
 #include "UI_Setting_Window.h"
 #include "UI_BtnShowSetting.h"
 #include "UI_WindowWorldMap.h"
+#include "UI_Loading_Imajinn.h"
 #include "UI_Setting_Section.h"
 #include "UI_SubMenu_Imajinn.h"
 #include "UI_BtnChangeCamera.h"
@@ -49,6 +50,7 @@
 #include "UI_BtnCharacterSelect.h"
 #include "UI_Loading_Background.h"
 #include "UI_WeaponSection_Slot.h"
+#include "UI_Loading_ProgressBar.h"
 #include "UI_Loading_Information.h"
 #include "UI_MonsterHP_Elemental.h"
 #include "UI_ImajinnSection_Slot.h"
@@ -194,35 +196,56 @@ HRESULT CUI_Manager::Ready_Veils()
 
 HRESULT CUI_Manager::Ready_Loadings()
 {
-	if (FAILED(GI->Add_GameObject(LEVEL_LOADING, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Loading_Background"))))
-		return E_FAIL;
+	_int iRandom = GI->RandomInt(0, 4);
 
-	if (FAILED(GI->Add_GameObject(LEVEL_LOADING, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Loading_CharacterUI"))))
+	// 배경화면
+	CGameObject* pBackground = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_LOADING, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Loading_Background"), nullptr, &pBackground)))
 		return E_FAIL;
+	if (nullptr == pBackground)
+		return E_FAIL;
+	dynamic_cast<CUI_Loading_Background*>(pBackground)->Set_TextureIndex(iRandom);
 
+	// 캐릭터
+	CUI::UI_INFO UIDesc = {};
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = g_iWinSizeX;
+	UIDesc.fCY = g_iWinSizeY;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY * 0.5f;
+	CGameObject* pCharacter = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_LOADING, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Loading_CharacterUI"), &UIDesc, &pCharacter)))
+		return E_FAIL;
+	dynamic_cast<CUI_Loading_Character*>(pCharacter)->Set_TextureIndex(iRandom);
+
+	// 캐릭터 설명(with 로고)
 	CGameObject* pLogo = nullptr;
 	if (FAILED(GI->Add_GameObject(LEVEL_LOADING, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Loading_CharacterLogo"), nullptr, &pLogo)))
 		return E_FAIL;
 	if (nullptr == pLogo)
 		return E_FAIL;
-
-	dynamic_cast<CUI_Loading_CharacterLogo*>(pLogo)->Set_TextureIndex(GI->RandomInt(0, 4));
+	dynamic_cast<CUI_Loading_CharacterLogo*>(pLogo)->Set_TextureIndex(iRandom);
 	dynamic_cast<CUI_Loading_CharacterLogo*>(pLogo)->Set_Text();
 
-	CGameObject* pInform = nullptr;
-	if (FAILED(GI->Add_GameObject(LEVEL_LOADING, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Loading_Information"), nullptr, &pInform)))
+	CGameObject* pImajinn = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_LOADING, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Loading_Imajinn"), nullptr, &pImajinn)))
 		return E_FAIL;
-	if (nullptr == pInform)
-		return E_FAIL;
-	dynamic_cast<CUI_Loading_Logo*>(pInform)->Set_TextureIndex(GI->RandomInt(0, 2));
+
+//	CGameObject* pInform = nullptr;
+//	if (FAILED(GI->Add_GameObject(LEVEL_LOADING, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Loading_Information"), nullptr, &pInform)))
+//		return E_FAIL;
+//	if (nullptr == pInform)
+//		return E_FAIL;
+//	dynamic_cast<CUI_Loading_Logo*>(pInform)->Set_TextureIndex(GI->RandomInt(0, 2));
 
 	//UI_Loading_MainLogo
-	CUI::UI_INFO UIDesc = {};
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
-	UIDesc.fCX = 1024.f * 0.3f;
-	UIDesc.fCY = 512.f * 0.3f;
-	UIDesc.fX = (g_iWinSizeX * 0.5f);
+	UIDesc.fCX = 1024.f * 0.2f;
+	UIDesc.fCY = 512.f * 0.2f;
+//	UIDesc.fX = (g_iWinSizeX * 0.5f);
+//	UIDesc.fY = (UIDesc.fCY * 0.5f) + 25.f;
+	UIDesc.fX = g_iWinSizeX - (UIDesc.fCX * 0.5f) - 25.f;
 	UIDesc.fY = (UIDesc.fCY * 0.5f) + 25.f;
 
 	CGameObject* pMainLogo = nullptr;
@@ -231,18 +254,38 @@ HRESULT CUI_Manager::Ready_Loadings()
 	if (nullptr == pMainLogo)
 		return E_FAIL;
 
-	CUI::UI_INFO NumDesc = {};
-	ZeroMemory(&NumDesc, sizeof(CUI::UI_INFO));
+//	CUI::UI_INFO NumDesc = {};
+//	ZeroMemory(&NumDesc, sizeof(CUI::UI_INFO));
+//
+//	NumDesc.fCX = 147.f * 0.3f;
+//	NumDesc.fCY = 198.f * 0.3f;
+//	NumDesc.fX = UIDesc.fX - 40.f;
+//	NumDesc.fY = UIDesc.fY - 9.f;
+//
+//	pMainLogo = nullptr;
+//	if (FAILED(GI->Add_GameObject(LEVEL_LOADING, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Loading_MainLogo_Number"), &NumDesc, &pMainLogo)))
+//		return E_FAIL;
+//	if (nullptr == pMainLogo)
+//		return E_FAIL;
 
-	NumDesc.fCX = 147.f * 0.3f;
-	NumDesc.fCY = 198.f * 0.3f;
-	NumDesc.fX = UIDesc.fX - 40.f;
-	NumDesc.fY = UIDesc.fY - 9.f;
+	//ProgressBar
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	_float fOffset = 40.f;
+	UIDesc.fCX = 1493.f;
+	UIDesc.fCY = 40.f;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY - (UIDesc.fCY + fOffset);
 
-	pMainLogo = nullptr;
-	if (FAILED(GI->Add_GameObject(LEVEL_LOADING, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Loading_MainLogo_Number"), &NumDesc, &pMainLogo)))
+	CGameObject* pBar = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_LOADING, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Loading_Progress_Back"), &UIDesc, &pBar)))
 		return E_FAIL;
-	if (nullptr == pMainLogo)
+	if (nullptr == pBar)
+		return E_FAIL;
+
+	pBar = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_LOADING, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Loading_Progress_Bar"), &UIDesc, &pBar)))
+		return E_FAIL;
+	if (nullptr == pBar)
 		return E_FAIL;
 
 	return S_OK;
@@ -2073,6 +2116,13 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		CUI_Loading_CharacterLogo::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_Progress_Back"),
+		CUI_Loading_ProgressBar::Create(m_pDevice, m_pContext, CUI_Loading_ProgressBar::UIPROG_BACK), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_Progress_Bar"),
+		CUI_Loading_ProgressBar::Create(m_pDevice, m_pContext, CUI_Loading_ProgressBar::UIPROG_BAR), LAYER_UI)))
+		return E_FAIL;
+
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_Information"),
 		CUI_Loading_Logo::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
@@ -2080,8 +2130,12 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_MainLogo_Text"),
 		CUI_Loading_MainLogo::Create(m_pDevice, m_pContext, CUI_Loading_MainLogo::MAINLOGO_TEXT), LAYER_UI)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_MainLogo_Number"),
-		CUI_Loading_MainLogo::Create(m_pDevice, m_pContext, CUI_Loading_MainLogo::MAINLOGO_NUM), LAYER_UI)))
+//	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_MainLogo_Number"),
+//		CUI_Loading_MainLogo::Create(m_pDevice, m_pContext, CUI_Loading_MainLogo::MAINLOGO_NUM), LAYER_UI)))
+//		return E_FAIL;
+//
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_Imajinn"),
+		CUI_Loading_Imajinn::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Fade_Black"),

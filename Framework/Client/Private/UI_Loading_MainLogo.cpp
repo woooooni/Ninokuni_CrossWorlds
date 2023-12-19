@@ -64,7 +64,7 @@ HRESULT CUI_Loading_MainLogo::Initialize(void* pArg)
 		m_fRestartTimeAcc = 0.f;
 	}
 
-	m_fAlpha = 1.f;
+	m_fAlpha = 0.8f;
 
 	return S_OK;
 }

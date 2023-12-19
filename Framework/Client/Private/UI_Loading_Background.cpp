@@ -39,11 +39,17 @@ HRESULT CUI_Loading_Background::Initialize(void* pArg)
 
 void CUI_Loading_Background::Tick(_float fTimeDelta)
 {
+	if (0 > m_iTextureIndex || 4 < m_iTextureIndex)
+		return;
+
 	__super::Tick(fTimeDelta);
 }
 
 void CUI_Loading_Background::LateTick(_float fTimeDelta)
 {
+	if (0 > m_iTextureIndex || 4 < m_iTextureIndex)
+		return;
+
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 }
 
@@ -65,7 +71,10 @@ HRESULT CUI_Loading_Background::Ready_Components()
 		return E_FAIL;
 
 	// Texture Component
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Loading"),
+//	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Loading"),
+//		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+//		return E_FAIL;
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Loading_Window"),
 		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 		return E_FAIL;
 
@@ -98,7 +107,7 @@ HRESULT CUI_Loading_Background::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture")))
+	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextureIndex)))
 		return E_FAIL;
 
 	return S_OK;

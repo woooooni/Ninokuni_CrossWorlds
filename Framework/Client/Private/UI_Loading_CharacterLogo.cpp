@@ -33,10 +33,8 @@ HRESULT CUI_Loading_CharacterLogo::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	m_fAlpha = 0.7f;
-	//m_iTextureIndex = 4; // Temp
-
-	//Set_Text();
+	m_fAlpha = 0.5f;
+	m_bReverse = true;
 
 	return S_OK;
 }
@@ -45,6 +43,30 @@ void CUI_Loading_CharacterLogo::Tick(_float fTimeDelta)
 {
 	if (m_iTextureIndex < 0 || 4 < m_iTextureIndex)
 		return;
+
+	if (!m_bReverse)
+	{
+		m_fAlpha -= fTimeDelta * 0.3f;
+
+		if (0.5f > m_fAlpha)
+		{
+			m_bReverse = true;
+			m_fAlpha = 0.5f;
+
+			//if (0 <= m_iTextureIndex)
+			//	m_iTextureIndex++;
+		}
+	}
+	else
+	{
+		m_fAlpha += fTimeDelta;
+
+		if (1.f < m_fAlpha)
+		{
+			m_bReverse = false;
+			m_fAlpha = 1.f;
+		}
+	}
 
 	__super::Tick(fTimeDelta);
 
@@ -79,9 +101,9 @@ HRESULT CUI_Loading_CharacterLogo::Render()
 
 		CRenderer::TEXT_DESC  MAXHPDesc;
 		MAXHPDesc.strText = sTempText;
-		MAXHPDesc.strFontTag = L"Default_Medium";
+		MAXHPDesc.strFontTag = L"Default_Bold";
 		MAXHPDesc.vScale = m_vScale;
-		MAXHPDesc.vPosition = m_vPosition;
+		MAXHPDesc.vPosition = _float2(910.f, 345.f);
 		MAXHPDesc.vColor = m_vColor;
 		m_pRendererCom->Add_Text(MAXHPDesc);
 	}
@@ -104,10 +126,10 @@ HRESULT CUI_Loading_CharacterLogo::Ready_Components()
 
 HRESULT CUI_Loading_CharacterLogo::Ready_State()
 {
-	m_tInfo.fCX = 800.f * 0.5f;
-	m_tInfo.fCY = 102.f * 0.5f;
-	m_tInfo.fX = (g_iWinSizeX * 0.5f) - 475.f; // - 60px
-	m_tInfo.fY = g_iWinSizeY * 0.5f - 250.f;
+	m_tInfo.fCX = 800.f * 0.7f;
+	m_tInfo.fCY = 102.f * 0.7f;
+	m_tInfo.fX = (g_iWinSizeX * 0.5f) + 325.f;
+	m_tInfo.fY = g_iWinSizeY * 0.5f - 173.f;
 
 	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
@@ -147,27 +169,27 @@ void CUI_Loading_CharacterLogo::Set_Text()
 	switch (m_iTextureIndex)
 	{
 	case 0:
-		_tcscpy_s(m_szInfoText, _T("한손검을 이용해 빠르고 날렵한 공격을 자랑하는\n호쾌한 성격의 검사\n최전선에서 펼치는 화려한 검술은\n적들의 사기를 꺾습니다."));
+		_tcscpy_s(m_szInfoText, _T("      한손검을 이용해 빠르고 날렵한 공격을 자랑하는\n      호쾌한 성격의 검사\n     최전선에서 펼치는 화려한 검술은\n   적들의 사기를 꺾습니다."));
 		m_vColor = _float4(0.027f, 0.157f, 0.204f, 1.f);
 		break;
 
 	case 1:
-		_tcscpy_s(m_szInfoText, _T("거대한 망치로 강력한 일격을 날리는 거친 매력의 전사\n적에게는 무자비하지만\n아군에게는 누구보다도 믿음직한 동료입니다."));
+		_tcscpy_s(m_szInfoText, _T("         거대한 망치로 강력한 일격을 날리는 거친 매력의 전사\n          적에게는 무자비하지만\n        아군에게는 누구보다도 믿음직한 동료입니다."));
 		m_vColor = _float4(0.176f, 0.141f, 0.106f, 1.f);
 		break;
 
 	case 2:
-		_tcscpy_s(m_szInfoText, _T("라이플을 비롯한 각종 화기를 다루는 무기 전문가\n전장의 동료들을 회복시켜주는\n백의의 천사이기도 합니다."));
+		_tcscpy_s(m_szInfoText, _T("     라이플을 비롯한 각종 화기를 다루는 무기 전문가\n      전장의 동료들을 회복시켜주는\n    백의의 천사이기도 합니다."));
 		m_vColor = _float4(0.059f, 0.157f, 0.153f, 1.f);
 		break;
 
 	case 3:
-		_tcscpy_s(m_szInfoText, _T("마력이 담긴 창과 함께 매혹의 춤을 추는\n완벽주의자 마술사\n다양한 효과를 가진 스킬로도\n모든 상황에 대응합니다."));
+		_tcscpy_s(m_szInfoText, _T("     마력이 담긴 창과 함께 매혹의 춤을 추는\n      완벽주의자 마술사\n    다양한 효과를 가진 스킬로도\n   모든 상황에 대응합니다."));
 		m_vColor = _float4(0.498f, 0.329f, 0.408f, 1.f);
 		break;
 
 	case 4:
-		_tcscpy_s(m_szInfoText, _T("민첩하게 움직이며 활로 적을 교란하는 원거리 딜러\n파티를 더욱 강하게 만들어주는\n든든한 지원군 역할도 수행합니다."));
+		_tcscpy_s(m_szInfoText, _T("     민첩하게 움직이며 활로 적을 교란하는 원거리 딜러\n      파티를 더욱 강하게 만들어주는\n    든든한 지원군 역할도 수행합니다."));
 		m_vColor = _float4(0.588f, 0.494f, 0.235f, 1.f);
 		break;
 	}
