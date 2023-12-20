@@ -31,6 +31,7 @@ public:
 
 protected:
 	virtual _bool State_Wait(_float fDestTime, _float fTimeDelta);
+	virtual void Set_SkillTree();
 
 protected:
 	CCharacter_Dummy* m_pPlayer = nullptr; // 후에 플레이어로 교체.

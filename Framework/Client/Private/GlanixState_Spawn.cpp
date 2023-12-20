@@ -17,8 +17,11 @@ HRESULT CGlanixState_Spawn::Initialize(const list<wstring>& AnimationList)
 
 void CGlanixState_Spawn::Enter_State(void* pArg)
 {
-	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_Spawn"));
 	
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(1.f, 0.f, 10.f, 1.f));
+	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_Spawn_New"));
+	// m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao | Glanix_LeftTurn180"));
+
 	if(m_pPlayer != nullptr)
 		m_pTransformCom->LookAt_ForLandObject(m_pPlayerTransform->Get_Position());
 }
@@ -27,8 +30,9 @@ void CGlanixState_Spawn::Tick_State(_float fTimeDelta)
 {
 	if (m_pModelCom->Is_Finish())
 	{
-		_float fWaitTime = 1.f;
-		m_pStateMachineCom->Change_State(CGlanix::GLANIX_COMBATIDLE, &fWaitTime);
+		//_float fWaitTime = 1.f;
+		//m_pStateMachineCom->Change_State(CGlanix::GLANIX_COMBATIDLE, &fWaitTime);
+		m_pStateMachineCom->Change_State(CGlanix::GLANIX_TURN);
 	}
 }
 

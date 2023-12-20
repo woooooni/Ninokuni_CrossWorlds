@@ -4,11 +4,11 @@
 
 BEGIN(Client)
 
-class CGlanixState_CombatIdle final : public CGlanixState_Base
+class CGlanixState_Turn final : public CGlanixState_Base
 {
 private:
-	CGlanixState_CombatIdle(CStateMachine* pStateMachine);
-	virtual ~CGlanixState_CombatIdle() = default;
+	CGlanixState_Turn(CStateMachine* pStateMachine);
+	virtual ~CGlanixState_Turn() = default;
 
 public:
 	virtual HRESULT Initialize(const list<wstring>& AnimationList);
@@ -19,14 +19,11 @@ public:
 	virtual void Exit_State();
 
 private:
-	_float m_fTime = 0.f;
-	_float m_fWaitTime = 0.f;
-
 	_vector m_vDestPos = {};
 	_float  m_fTurnSpeed = 0.f;
 
 public:
-	static CGlanixState_CombatIdle* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
+	static CGlanixState_Turn* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
 };
 

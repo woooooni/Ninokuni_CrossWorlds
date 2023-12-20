@@ -10,6 +10,15 @@
 
 #include "GlanixState_Attack1.h"
 #include "GlanixState_Attack2.h"
+#include "GlanixState_SpinBomb.h"
+#include "GlanixState_JumpStamp.h"
+#include "GlanixState_QuadBlow.h"
+#include "GlanixState_IceWave.h"
+#include "GlanixState_Charge.h"
+#include "GlanixState_SnowBall.h"
+#include "GlanixState_SpinBombBomb.h"
+
+#include "GlanixState_Turn.h"
 
 CGlanix::CGlanix(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
 	: CBoss(pDevice, pContext, strObjectTag, tStat)
@@ -105,7 +114,7 @@ HRESULT CGlanix::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 		return E_FAIL;
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(1.f, 0.f, 10.f, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(1.f, 10.f, 10.f, 1.f));
 
 	/* For.Com_Renderer */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
@@ -171,7 +180,7 @@ HRESULT CGlanix::Ready_States()
 	list<wstring> strAnimationName;
 	
 	strAnimationName.clear();
-	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_Spawn");
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_Spawn_New");
 	m_pStateCom->Add_State(GLANIX_SPAWN, CGlanixState_Spawn::Create(m_pStateCom, strAnimationName));
 	
 	strAnimationName.clear();
@@ -189,6 +198,41 @@ HRESULT CGlanix::Ready_States()
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_Attack02");
 	m_pStateCom->Add_State(GLANIX_ATTACK2, CGlanixState_Attack2::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_Skill01");
+	m_pStateCom->Add_State(GLANIX_SPINBOMB, CGlanixState_SpinBomb::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_Skill03");
+	m_pStateCom->Add_State(GLANIX_JUMPSTAMP, CGlanixState_JumpStamp::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_Skill02_New");
+	m_pStateCom->Add_State(GLANIX_QUADBLOW, CGlanixState_QuadBlow::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_Skill06");
+	m_pStateCom->Add_State(GLANIX_ICEWAVE, CGlanixState_IceWave::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_Skill07_RootMotion");
+	m_pStateCom->Add_State(GLANIX_CHARGE, CGlanixState_Charge::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_Skill08");
+	m_pStateCom->Add_State(GLANIX_SNOWBALL, CGlanixState_SnowBall::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_Skill09");
+	m_pStateCom->Add_State(GLANIX_SPINBOMBBOMB, CGlanixState_SpinBombBomb::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_RightTurn");
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_RightTurn180");
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_LeftTurn");
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_LeftTurn180");
+	m_pStateCom->Add_State(GLANIX_TURN, CGlanixState_Turn::Create(m_pStateCom, strAnimationName));
 
 	m_pStateCom->Change_State(GLANIX_SPAWN);
 

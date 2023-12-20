@@ -22,10 +22,11 @@ void CGlanixState_Attack1::Enter_State(void* pArg)
 
 void CGlanixState_Attack1::Tick_State(_float fTimeDelta)
 {
-	if (m_pModelCom->Is_Finish())
+	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
-		_float fWaitTime = 2.f;
-		m_pStateMachineCom->Change_State(CGlanix::GLANIX_COMBATIDLE, &fWaitTime);
+		//_float fWaitTime = 2.f;
+		//m_pStateMachineCom->Change_State(CGlanix::GLANIX_COMBATIDLE, &fWaitTime);
+		m_pStateMachineCom->Change_State(CGlanix::GLANIX_TURN);
 	}
 }
 
