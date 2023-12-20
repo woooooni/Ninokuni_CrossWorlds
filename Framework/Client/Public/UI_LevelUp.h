@@ -16,8 +16,7 @@ protected:
 	virtual ~CUI_LevelUp() = default;
 
 public:
-	_bool Get_Active() { return m_bActive; }
-	void Set_Active(_bool bActive);
+	virtual void Set_Active(_bool bActive);
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -29,7 +28,6 @@ public:
 private:
 	UILEVELUP_TYPE m_eType = { UILEVELUP_END };
 
-	_bool m_bActive = { false };
 	_bool m_bSetAlpha = { false };
 	_bool m_bUpdate = { false };
 

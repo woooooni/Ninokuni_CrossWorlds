@@ -19,7 +19,6 @@ protected:
 
 public: // Get/Set 함수
 	virtual void Set_Active(_bool bActive) override;
-	_bool Get_Active() { return m_bActive; }
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -39,7 +38,6 @@ public:
 private: 
 	UI_MAINMENU_TYPE m_eUIType = { UI_MAINMENU_TYPE::UIMAINMENU_END };
 
-	_bool m_bActive = { false }; // 활성화되었다
 	_bool m_bClicked = { false }; // 선택되었다
 	_bool m_bArrived = { false }; // 목표 위치까지 도달했다
 

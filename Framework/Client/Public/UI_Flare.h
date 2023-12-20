@@ -11,10 +11,6 @@ protected:
 	virtual ~CUI_Flare() = default;
 
 public:
-	_bool Get_Active() { return m_bActive; }
-	void Set_Active(_bool bActive) { m_bActive = bActive; }
-
-public:
 	virtual HRESULT	Initialize_Prototype();
 	virtual HRESULT	Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta);
@@ -22,7 +18,6 @@ public:
 	virtual HRESULT	Render();
 
 private:
-	_bool m_bActive = { false };
 	_bool m_bReverse = { true };
 
 private:

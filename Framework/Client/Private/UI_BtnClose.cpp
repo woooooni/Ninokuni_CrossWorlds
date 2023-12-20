@@ -14,6 +14,21 @@ CUI_BtnClose::CUI_BtnClose(const CUI_BtnClose& rhs)
 {
 }
 
+void CUI_BtnClose::Set_Active(_bool bActive)
+{
+	if (bActive) // true일때
+	{
+		m_bUsable = false;
+		m_fTimeAcc = 0.f;
+	}
+	else
+	{
+
+	}
+
+	m_bActive = bActive;
+}
+
 HRESULT CUI_BtnClose::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
@@ -33,7 +48,8 @@ HRESULT CUI_BtnClose::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	m_bActive = true;
+	m_bActive = false;
+	m_bUsable = false;
 	
 	return S_OK;
 }
@@ -42,6 +58,16 @@ void CUI_BtnClose::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		// 활성화 상태가 된다면 시간을 누적한다.
+		if (!m_bUsable)
+			m_fTimeAcc += fTimeDelta;
+
+		if (0.2f < m_fTimeAcc)
+		{
+			//일정 시간이 지나면 사용할 수 있는 상태이다.
+			m_bUsable = true;
+			m_fTimeAcc = 0.f;
+		}
 		__super::Tick(fTimeDelta);
 	}
 }
@@ -77,7 +103,8 @@ void CUI_BtnClose::On_Mouse(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-		Key_Input(fTimeDelta);
+		if(m_bUsable)
+			Key_Input(fTimeDelta);
 	}
 }
 
@@ -129,9 +156,12 @@ HRESULT CUI_BtnClose::Bind_ShaderResources()
 
 void CUI_BtnClose::Key_Input(_float fTimeDelta)
 {
-	if (KEY_TAP(KEY::LBTN))
+	if (m_bActive)
 	{
-		CUI_Manager::GetInstance()->Using_CloseButton();
+		if (KEY_TAP(KEY::LBTN))
+		{
+			CUI_Manager::GetInstance()->Using_CloseButton();
+		}
 	}
 }
 

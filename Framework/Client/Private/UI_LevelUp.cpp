@@ -67,6 +67,8 @@ HRESULT CUI_LevelUp::Initialize(void* pArg)
 		m_fMaxWidth = m_vOriginSize.x + 200.f;
 	}
 
+	m_bActive = false;
+
 	return S_OK;
 }
 

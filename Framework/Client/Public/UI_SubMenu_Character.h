@@ -40,7 +40,6 @@ public:
 private: 
 	UI_SUBCHARACTER_TYPE m_eUIType = { UI_SUBCHARACTER_TYPE::CHARACTERMENU_END };
 
-	_bool m_bActive = { false }; // 활성화되었다
 	_bool m_bClicked = { false }; // 선택되었다
 	_bool m_bArrived = { false }; // 목표 위치까지 도달했다
 	_bool m_bUsable = { false }; // 사용할 수 있는 아이콘인가? -> 기능이 있는가

@@ -677,7 +677,7 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	_float fOffset = 10.f;
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
-	UIDesc.fCX = 64.f;
+	UIDesc.fCX = 64.f * 0.8f;
 	UIDesc.fCY = UIDesc.fCX;
 	UIDesc.fX = g_iWinSizeX - (UIDesc.fCX * 0.5f) - fOffset;
 	UIDesc.fY = UIDesc.fCY * 0.5f + fOffset;
@@ -696,7 +696,7 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	pButton = nullptr;
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
-	UIDesc.fCX = 64.f;
+	UIDesc.fCX = 64.f * 0.8f;
 	UIDesc.fCY = UIDesc.fCX;
 	UIDesc.fX = UIDesc.fCX * 0.5f + (fOffset * 2.f);
 	UIDesc.fY = g_iWinSizeY - (UIDesc.fCY * 0.5f) - fOffset;
@@ -715,9 +715,9 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	pButton = nullptr;
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
-	UIDesc.fCX = 64.f;
+	UIDesc.fCX = 64.f * 0.8f;
 	UIDesc.fCY = UIDesc.fCX;
-	UIDesc.fX = g_iWinSizeX - (UIDesc.fCX * 0.5f) - (fOffset * 7.f);
+	UIDesc.fX = g_iWinSizeX - (UIDesc.fCX * 0.5f) - (fOffset * 6.f);
 	UIDesc.fY = UIDesc.fCY * 0.5f + fOffset;
 
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Button_ShowInven"), &UIDesc, &pButton)))
@@ -734,10 +734,10 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	pButton = nullptr;
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
-	UIDesc.fCX = 64.f;
+	UIDesc.fCX = 64.f * 0.8;
 	UIDesc.fCY = UIDesc.fCX;
 	UIDesc.fX = UIDesc.fCX * 0.5f + (fOffset * 2.f);
-	UIDesc.fY = 170.f;
+	UIDesc.fY = 135.f;
 
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Button_ShowQuest"), &UIDesc, &pButton)))
 		return E_FAIL;
@@ -1348,10 +1348,10 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	// SkillSection
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
-	UIDesc.fCX = 400.f * 0.85f;
-	UIDesc.fCY = 400.f * 0.85f;
+	UIDesc.fCX = 400.f * 0.75f;
+	UIDesc.fCY = 400.f * 0.75f;
 	UIDesc.fX = g_iWinSizeX - UIDesc.fCX * 0.5f;
-	UIDesc.fY = g_iWinSizeY - UIDesc.fCY * 0.5f;
+	UIDesc.fY = g_iWinSizeY - UIDesc.fCY * 0.5f - 5.f;
 
 	pBackground = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SkillSection_Background"), &UIDesc, &pBackground)))
@@ -1364,10 +1364,10 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	// Imajinn Section
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
-	UIDesc.fCX = 540.f * 0.65f;
-	UIDesc.fCY = 172.f * 0.6f;
+	UIDesc.fCX = 540.f * 0.6f;
+	UIDesc.fCY = 172.f * 0.55f;
 	UIDesc.fX = g_iWinSizeX * 0.5f;
-	UIDesc.fY = g_iWinSizeY - UIDesc.fCY * 0.5f - fOffset;
+	UIDesc.fY = g_iWinSizeY - UIDesc.fCY * 0.5f - 15.f;
 
 	pBackground = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_ImajinnSection_Background"), &UIDesc, &pBackground)))
@@ -1443,10 +1443,10 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 
 	// MonsterHP
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
-	UIDesc.fCX = 300.f * 0.8f;
-	UIDesc.fCY = 50.f * 0.8f;
-	UIDesc.fX = g_iWinSizeX * 0.5f + 30.f;
-	UIDesc.fY = UIDesc.fCY * 0.5f + 35.f;
+	UIDesc.fCX = 300.f * 0.65f;
+	UIDesc.fCY = 50.f * 0.65f;
+	UIDesc.fX = g_iWinSizeX * 0.5f + 11.f;
+	UIDesc.fY = UIDesc.fCY * 0.5f + 25.f;
 
 	pBackground = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MonsterHP_Background"), &UIDesc, &pBackground)))
@@ -1465,10 +1465,10 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	Safe_AddRef(m_pMonsterHPBar);
 
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
-	UIDesc.fCX = 128.f * 0.6f;
+	UIDesc.fCX = 128.f * 0.45f;
 	UIDesc.fCY = UIDesc.fCX;
-	UIDesc.fX = g_iWinSizeX * 0.5f - 130.f;
-	UIDesc.fY = UIDesc.fCY * 0.5f + 15.f;
+	UIDesc.fX = g_iWinSizeX * 0.5f - 119.f;
+	UIDesc.fY = UIDesc.fCY * 0.5f + 10.f;
 
 	pBackground = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MonsterHP_Elemental_Frame"), &UIDesc, &pBackground)))
@@ -1478,7 +1478,7 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(m_pMonsterFrame);
 
-	UIDesc.fCX = 64.f * 0.6f;
+	UIDesc.fCX = 64.f * 0.45f;
 	UIDesc.fCY = UIDesc.fCX;
 	pBackground = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MonsterHP_Elemental"), &UIDesc, &pBackground)))
@@ -1580,9 +1580,19 @@ HRESULT CUI_Manager::Tick_UIs(LEVELID eID, _float fTimeDelta)
 
 HRESULT CUI_Manager::Tick_LobbyLevel(_float fTimeDelta)
 {
+
 	// Player Btn에 대한 상태를 제어한다.
 	for (_uint i = 0; i < CUI_BtnCharacterSelect::UI_SELECTBTN_CHARACTER::UICHARACTERBTN_END; i++)
 	{
+//		if (m_ClickedPlayer[i]->Get_IsMoved()) // 움직이는 상태라면
+//		{
+//			if (m_ClickedPlayer[i]->Get_MoveEnd())
+//			{
+//				// 원위치로 돌아온 상태이다
+//				m_ClickedPlayer[i]->Reset_InitializeInfo();
+//			}
+//		}
+
 		if (m_UnclickedPlayer[i]->Is_Clicked()) // Click상태로 확인되면
 		{
 			m_UnclickedPlayer[i]->Set_Active(false); // Unclicked를 false로, Clicked를 true로 전환한다.
@@ -1592,14 +1602,7 @@ HRESULT CUI_Manager::Tick_LobbyLevel(_float fTimeDelta)
 			for (_uint j = 0; j < CUI_BtnCharacterSelect::UI_SELECTBTN_CHARACTER::UICHARACTERBTN_END; j++)
 			{
 				// Arrived가 false인 경우에는
-				if (!m_ClickedPlayer[i]->Is_Arrived())
-				{
-					if (j != i)
-					{
-						m_UnclickedPlayer[j]->Set_Clicked(false); // 클릭 이벤트가 발생하지 않도록 한다.
-					}
-				}
-				else
+				if (m_ClickedPlayer[i]->Is_Arrived())
 				{
 					// Arrived된 상태에서 다른 것에 Click Event가 발생하면 다시 원위치로 돌아가야한다.
 					if (j != i)
@@ -1609,28 +1612,27 @@ HRESULT CUI_Manager::Tick_LobbyLevel(_float fTimeDelta)
 							m_ClickedPlayer[i]->Set_Move(true);
 						}
 					}
+				}
+				else
+				{
+					if (j != i)
+					{
+						m_UnclickedPlayer[j]->Set_Clicked(false); // 클릭 이벤트가 발생하지 않도록 한다.
+					}
 					
 				}
 			}
 		}
 
-		if (!m_ClickedPlayer[i]->Is_Active()) // Active가 False인데, unclicked도 false라면 unclicked를 true로 바꿔준다.
+		if (!m_ClickedPlayer[i]->Get_Active()) // Active가 False인데, unclicked도 false라면 unclicked를 true로 바꿔준다.
 		{
-			if (!m_UnclickedPlayer[i]->Is_Active())
+			if (!m_UnclickedPlayer[i]->Get_Active())
 			{
 				m_UnclickedPlayer[i]->Set_Active(true);
 			}
 		}
-
-		if (m_ClickedPlayer[i]->Get_IsMoved()) // 움직이는 상태라면
-		{
-			if (m_ClickedPlayer[i]->Get_MoveEnd())
-			{
-				// 원위치로 돌아온 상태이다
-				m_ClickedPlayer[i]->Reset_InitializeInfo();
-			}
-		}
 	}
+
 
 	return S_OK;
 }
@@ -1883,10 +1885,15 @@ HRESULT CUI_Manager::OnOff_MainMenu(_bool bOnOff)
 			if (nullptr != pUI)
 				pUI->Set_Active(true);
 		}
-		m_pBtnClose->Set_Active(true); // Close버튼
+		//m_pBtnClose->Set_Active(true); // Close버튼
+
+		OnOff_CloseButton(true);
+
 	}
 	else // Off : 모든 Menu관련 창을 꺼야한다.
 	{
+		OnOff_CloseButton(false);
+
 		m_pMainBG->Set_Active(false);
 		for (auto& pUI : m_MainMenuBtn)
 		{

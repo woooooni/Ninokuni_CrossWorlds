@@ -11,6 +11,9 @@ protected:
 	virtual ~CUI_BtnClose() = default;
 
 public:
+	virtual void Set_Active(_bool bActive) override;
+
+public:
 	virtual HRESULT	Initialize_Prototype();
 	virtual HRESULT	Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta);
@@ -24,6 +27,9 @@ public:
 
 private:
 	_bool m_bHide = { false };
+
+	_float m_fTimeAcc = { 0.f };
+	_bool m_bUsable = { false };
 
 private:
 	virtual HRESULT	Ready_Components() override;

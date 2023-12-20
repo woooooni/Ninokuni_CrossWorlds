@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "UI_BtnCharacterSelect.h"
 #include "GameInstance.h"
-#include "Level_Loading.h"
+#include "UI_Manager.h"
 
 CUI_BtnCharacterSelect::CUI_BtnCharacterSelect(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 	const wstring& strObjectTag, UI_SELECTBTN_TYPE eBtnType, UI_SELECTBTN_CHARACTER ePlayerType)
@@ -81,7 +81,6 @@ void CUI_BtnCharacterSelect::Tick(_float fTimeDelta)
 				if (m_tInfo.fX >= m_vGoalPosition.x)
 				{
 					m_bArrived = true;
-
 					m_tInfo.fX = m_vGoalPosition.x;
 				}
 				else
@@ -114,12 +113,15 @@ void CUI_BtnCharacterSelect::Tick(_float fTimeDelta)
 					// 움직인다
 					if (m_tInfo.fX < m_vOriginPosition.x)
 					{
+						Reset_InitializeInfo();
+
 						m_tInfo.fX = m_vOriginPosition.x;
 
-						m_bMoveEnd = true;
+						//m_bMoveEnd = true;
+						//Reset_InitializeInfo();
 
-						m_bActive = false;
-						m_bMoveStart = false;
+						//m_bActive = false;
+						//m_bMoveStart = false;
 					}
 					else
 					{
@@ -182,7 +184,10 @@ void CUI_BtnCharacterSelect::On_Mouse(_float fTimeDelta)
 			if (BTN_UNCLIKED == m_eTextureType)
 			{
 				if (!m_bClicked)
+				{
 					m_bClicked = true;
+					//CUI_Manager::GetInstance()->Update_LobbyBtnState(_uint(m_ePlayerType));
+				}
 			}
 		}
 	}

@@ -21,6 +21,7 @@ public:
 
 private:
 	wstring m_strName = L"";
+	_float2 m_vNamePosition = _float2(g_iWinSizeX * 0.5f - 24.f, 58.f);
 
 private:
 	virtual HRESULT	Ready_Components() override;

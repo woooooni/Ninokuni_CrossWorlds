@@ -94,6 +94,8 @@ HRESULT CUI_WindowQuest::Initialize(void* pArg)
 		break;
 	}
 
+	m_bActive = false;
+
 	return S_OK;
 }
 

@@ -27,7 +27,7 @@ private:
 	_int m_iTextureIndex = { -1 };
 	_uint m_iLevel = { 0 };
 
-	_float2 m_vTextPosition = _float2(g_iWinSizeX * 0.5f - 152.f, 75.f);
+	_float2 m_vTextPosition = _float2(g_iWinSizeX * 0.5f - 135.f, 60.f);
 
 private:
 	virtual HRESULT	Ready_Components() override;
