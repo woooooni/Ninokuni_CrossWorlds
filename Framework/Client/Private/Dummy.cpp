@@ -54,12 +54,6 @@ HRESULT CDummy::Ready_Components()
 void CDummy::Tick(_float fTimeDelta)
 {
 	Input(fTimeDelta);
-
-	// << : Test 
-
-	const _uint iSocketIndex = 64;
-
-	// >> 
 }
 
 void CDummy::LateTick(_float fTimeDelta)
@@ -75,10 +69,87 @@ void CDummy::LateTick(_float fTimeDelta)
 
 HRESULT CDummy::Render()
 {
+	// << : Test 
+
 	if (nullptr == m_pModelCom)
 		return S_OK;
 
 	CShader* pShader = m_pModelCom->Get_ModelType() == CModel::TYPE::TYPE_NONANIM ? m_pNonAnimShaderCom : m_pAnimShaderCom;
+
+	if (nullptr == pShader)
+		return S_OK;
+
+	if (FAILED(pShader->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(pShader->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(pShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+		return E_FAIL;
+
+	if (m_bCostumeMode)
+	{
+		/* 공용 키프레임 던지기 */
+		m_pModelCom->Bind_KeyFrame(pShader);
+
+		/* Body */
+		if (nullptr != m_pBodyModel)
+		{
+			_uint		iNumMeshes = m_pBodyModel->Get_NumMeshes();
+
+			for (_uint i = 0; i < iNumMeshes; ++i)
+			{
+				if (FAILED(m_pBodyModel->SetUp_OnShader(pShader, m_pBodyModel->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+					return E_FAIL;
+
+				if (FAILED(m_pBodyModel->Render_Part(pShader, i)))
+					return E_FAIL;
+			}
+		}
+
+		/* Face */
+		if (nullptr != m_pFaceModel)
+		{
+			_uint		iNumMeshes = m_pFaceModel->Get_NumMeshes();
+
+			for (_uint i = 0; i < iNumMeshes; ++i)
+			{
+				if (FAILED(m_pFaceModel->SetUp_OnShader(pShader, m_pFaceModel->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+					return E_FAIL;
+
+				if (FAILED(m_pFaceModel->Render_Part(pShader, i)))
+					return E_FAIL;
+			}
+		}
+
+
+		/* Hair */
+		if (nullptr != m_pHairModel)
+		{
+			_uint		iNumMeshes = m_pHairModel->Get_NumMeshes();
+
+			for (_uint i = 0; i < iNumMeshes; ++i)
+			{
+				if (FAILED(m_pHairModel->SetUp_OnShader(pShader, m_pHairModel->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+					return E_FAIL;
+
+				if (FAILED(m_pHairModel->Render_Part(pShader, i)))
+					return E_FAIL;
+			}
+		}
+
+
+		return S_OK;
+	}
+
+	// >> : 
+
+
+
+
+	if (nullptr == m_pModelCom)
+		return S_OK;
+
+	/* CShader* */ pShader = m_pModelCom->Get_ModelType() == CModel::TYPE::TYPE_NONANIM ? m_pNonAnimShaderCom : m_pAnimShaderCom;
 	
 	if (nullptr == pShader)
 		return S_OK;

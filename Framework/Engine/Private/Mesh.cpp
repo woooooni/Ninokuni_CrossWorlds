@@ -107,7 +107,6 @@ HRESULT CMesh::Initialize_Bin(CModel* pModel, const vector<wstring>& BoneNames)
 
 	if (0 == m_iNumBones)
 	{
-
 		CHierarchyNode* pNode = pModel->Get_HierarchyNode(m_strName);
 		if (nullptr == pNode)
 			return S_OK;
@@ -116,7 +115,6 @@ HRESULT CMesh::Initialize_Bin(CModel* pModel, const vector<wstring>& BoneNames)
 		m_BoneNames.push_back(pNode->Get_Name());
 		m_Bones.push_back(pNode);
 		Safe_AddRef(pNode);
-
 	}
 
 	return S_OK;
@@ -139,6 +137,7 @@ HRESULT CMesh::SetUp_HierarchyNodes(CModel* pModel, aiMesh* pAIMesh)
 		memcpy(&OffsetMatrix, &pAIBone->mOffsetMatrix, sizeof(_float4x4));
 
 		pHierarchyNode->Set_OffsetMatrix(XMMatrixTranspose(XMLoadFloat4x4(&OffsetMatrix)));
+
 
 		m_Bones.push_back(pHierarchyNode);
 		m_BoneNames.push_back(pHierarchyNode->Get_Name());
@@ -299,6 +298,7 @@ HRESULT CMesh::Ready_AnimVertices(const aiMesh* pAIMesh, CModel* pModel)
 	}
 
 	/* Static과 달리 해당 메시에 영향을 주는 뼈의 정보를 저장한다. */
+
 	for (_uint i = 0; i < pAIMesh->mNumBones; ++i)
 	{
 		aiBone* pAIBone = pAIMesh->mBones[i];
@@ -433,7 +433,6 @@ HRESULT CMesh::Ready_Bin_AnimVertices()
 	m_BufferDesc.MiscFlags = 0;
 	m_BufferDesc.StructureByteStride = m_iStride;
 
-
 	ZeroMemory(&m_SubResourceData, sizeof(D3D11_SUBRESOURCE_DATA));
 	m_SubResourceData.pSysMem = m_AnimVertices.data();
 
@@ -443,7 +442,6 @@ HRESULT CMesh::Ready_Bin_AnimVertices()
 
 	if (FAILED(__super::Create_VertexBuffer()))
 		return E_FAIL;
-
 
 	m_iIndexSizeofPrimitive = sizeof(FACEINDICES32);
 	m_iNumIndicesofPrimitive = 3;
@@ -458,14 +456,11 @@ HRESULT CMesh::Ready_Bin_AnimVertices()
 	m_BufferDesc.MiscFlags = 0;
 	m_BufferDesc.StructureByteStride = 0;
 
-
-
 	ZeroMemory(&m_SubResourceData, sizeof(D3D11_SUBRESOURCE_DATA));
 	m_SubResourceData.pSysMem = m_FaceIndices.data();
 
 	if (FAILED(__super::Create_IndexBuffer()))
 		return E_FAIL;
-
 
 	return S_OK;
 }

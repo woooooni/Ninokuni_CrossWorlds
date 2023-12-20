@@ -66,7 +66,6 @@ HRESULT CModel_Manager::Export_Model_Data(CModel* pModel, const wstring& strSubF
 
 		if (FAILED(Export_Animation_Events(strFinalFolderPath, pModel)))
 			return E_FAIL;
-
 	}
 	return S_OK;
 }
@@ -567,13 +566,11 @@ HRESULT CModel_Manager::Import_Model_Data_From_Bin_In_Game(_uint iLevelIndex, co
 	return S_OK;
 }
 
-
-// 원형 Prorotype_Component_Model_ 모델을 추가하낟.
 HRESULT CModel_Manager::Import_Model_Data(_uint iLevelIndex, const wstring& strProtoTypeTag, _uint eType, wstring strFolderPath, wstring strFileName, __out class CModel** ppOut)
 {
 	_tchar szFileName[MAX_PATH];
 	_tchar szExt[MAX_PATH];
-	_wsplitpath_s(strFileName.c_str(), nullptr, 0, nullptr, 0, szFileName, MAX_PATH, szExt, MAX_PATH);
+ 	_wsplitpath_s(strFileName.c_str(), nullptr, 0, nullptr, 0, szFileName, MAX_PATH, szExt, MAX_PATH);
 
 	const _bool bFbx = (0 == lstrcmp(szExt, L".fbx")) ? TRUE : FALSE;
 	const _bool bToolLevel = (99 == GI->Get_CurrentLevel()) ? TRUE : FALSE;
@@ -597,6 +594,82 @@ HRESULT CModel_Manager::Import_Model_Data(_uint iLevelIndex, const wstring& strP
 		}
 	}
 
+	return S_OK;
+}
+
+HRESULT CModel_Manager::Import_Model_Data_for_Part(_uint iLevelIndex, const wstring& strProtoTypeTag, wstring strFolderPath, wstring strFileName, class CModel* pBoneModel, CModel** ppOut)
+{
+	/* 툴에서 플레이어의 파츠 메시를 뽑아내기 위한 단독 함수 */
+	/* 플레이어의 뼈정보를 참고하여 파츠 메시의 버텍스에 기록하기 위한 과정 */
+	/* 플레이어 fbx에서 필요로 하는 것은 뼈 정보 뿐이고, 파츠는 메시와 매태리얼만을 다룬다. */
+	/* 파츠를 새로 만들되, 저장은 메시와 매태리얼 정보만 다룬다. */
+
+	_tchar szFileName[MAX_PATH];
+	_tchar szExt[MAX_PATH];
+	_wsplitpath_s(strFileName.c_str(), nullptr, 0, nullptr, 0, szFileName, MAX_PATH, szExt, MAX_PATH);
+
+	CModel* pModel = nullptr;
+
+	/* 00. 기존 fbx 파일 임포트 루틴 */
+	{
+		/* Assimp */
+		pModel = CModel::Create_Part(m_pDevice, m_pContext, CModel::TYPE::TYPE_ANIM, strFolderPath, strFileName, pBoneModel, XMLoadFloat4x4(&m_PivotMatrix));
+		
+		if (nullptr == pModel)
+			return E_FAIL;
+
+		if (FAILED(pModel->Initialize(nullptr)))
+		{
+			MSG_BOX("Model Initialize Failed : Data Manager");
+			Safe_Release(pModel);
+			return E_FAIL;
+		}
+
+		if (FAILED(GI->Add_Prototype(iLevelIndex, strProtoTypeTag, pModel)))
+		{
+			MSG_BOX("Model Add Prototype Failed : Model Manager");
+			Safe_Release(pModel);
+			return E_FAIL;
+		}
+
+		pModel->Set_Name(strFileName);
+
+		if (ppOut != nullptr)
+		{
+			*ppOut = pModel;
+			if (*ppOut == nullptr)
+			{
+				MSG_BOX("ppOut Initialize Failed. : Model Manager");
+				return E_FAIL;
+			}
+		}
+	}
+
+	/* 01. 더미 바이너리와 vtf를 추출하기 위한 임시 익스포트 과정 (스태시 폴더에 저장되므로 기존 파일에 대한 수정은 이루어지지 않는다) */
+	{
+		if (CModel::TYPE::TYPE_ANIM == pModel->Get_ModelType())
+		{
+			const wstring strStashExportPath = L"../Bin/stash/stash";
+
+			if (FAILED(Export_Mesh(strStashExportPath, pModel)))
+				return E_FAIL;
+
+			if (FAILED(Export_Material(strStashExportPath, pModel)))
+				return E_FAIL;
+
+			if (CModel::TYPE::TYPE_NONANIM == pModel->Get_ModelType())
+				return S_OK;
+
+			if (FAILED(Export_Animation(strStashExportPath, pModel)))
+				return E_FAIL;
+
+			if (FAILED(Create_Model_Vtf(pModel, strStashExportPath)))
+				return E_FAIL;
+
+			/*if (FALSE == filesystem::remove_all(strStashExportPath))
+				return E_FAIL;*/
+		}
+	}
 	return S_OK;
 }
 
@@ -1093,19 +1166,18 @@ HRESULT CModel_Manager::Import_Mesh(const wstring strFinalPath, CModel* pModel)
 	pModel->m_eModelType = iAnimationCount > 0 ? CModel::TYPE::TYPE_ANIM : CModel::TYPE::TYPE_NONANIM;
 	pModel->m_iNumAnimations = iAnimationCount;
 
+	/* 뼈 만들기 */
 	_uint iNumHierarchyNodes = File->Read<_uint>(); 
 	for (_uint i = 0; i < iNumHierarchyNodes; ++i)
 	{
 		CHierarchyNode* pNode = CHierarchyNode::Create_Bin();
-		
-
+	
 		File->Read<_uint>(pNode->m_iDepth);
 		pNode->m_strName =CUtils::ToWString(File->Read<string>());
 		pNode->m_strParentName =CUtils::ToWString(File->Read<string>());
 		// Warning ! Load Orgin Transformation to m_Transfomation
 		File->Read<_float4x4>(pNode->m_Transformation);
 		File->Read<_float4x4>(pNode->m_OffsetMatrix);
-
 
 		pModel->m_HierarchyNodes.push_back(pNode);
 	}
@@ -1115,11 +1187,10 @@ HRESULT CModel_Manager::Import_Mesh(const wstring strFinalPath, CModel* pModel)
 	for (auto& Node : pModel->m_HierarchyNodes)
 		Node->Initialize_Bin(pModel);
 
-
+	/* 메시 데이터 읽기 */
 	pModel->m_iNumMeshes = File->Read<_uint>();
 	for (_uint i = 0; i < pModel->m_iNumMeshes; ++i)
 	{
-		
 		CMesh* Mesh = CMesh::Create_Bin(m_pDevice, m_pContext, pModel->m_eModelType, XMLoadFloat4x4(&pModel->m_PivotMatrix));
 		
 		Mesh->m_strName =CUtils::ToWString(File->Read<string>());
@@ -1134,12 +1205,9 @@ HRESULT CModel_Manager::Import_Mesh(const wstring strFinalPath, CModel* pModel)
 		File->Read<D3D11_PRIMITIVE_TOPOLOGY>(Mesh->m_eTopology);
 		File->Read<DXGI_FORMAT>(Mesh->m_eIndexFormat);
 
-
-
 		vector<wstring> BoneNames(Mesh->m_iNumBones);
 		for (_uint j = 0; j < Mesh->m_iNumBones; ++j)		
 			BoneNames[j] =CUtils::ToWString(File->Read<string>());
-
 
 		_uint iIndiceSize = File->Read<_uint>();
 		Mesh->m_FaceIndices.reserve(iIndiceSize);
@@ -1149,7 +1217,6 @@ HRESULT CModel_Manager::Import_Mesh(const wstring strFinalPath, CModel* pModel)
 			File->Read<FACEINDICES32>(Index);
 			Mesh->m_FaceIndices.push_back(Index);
 		}
-
 
 		if (pModel->m_eModelType == CModel::TYPE::TYPE_ANIM)
 		{
@@ -1165,7 +1232,6 @@ HRESULT CModel_Manager::Import_Mesh(const wstring strFinalPath, CModel* pModel)
 			if(FAILED(Mesh->Ready_Bin_AnimVertices()))
 				return E_FAIL;
 		}
-
 		else
 		{
 			Mesh->m_NonAnimVertices.reserve(Mesh->m_iNumVertices);

@@ -45,9 +45,9 @@ HRESULT CMainApp::Initialize()
 
 	if (FAILED(Initialize_Client()))
 		return E_FAIL;
-	
+
 	/* 1-4. 게임내에서 사용할 레벨(씬)을 생성한다.   */
-	if (FAILED(Open_Level(LEVEL_TOOL, L"Final_Boss")))
+	if (FAILED(Open_Level(LEVEL_TEST, L"Final_Boss")))
 		return E_FAIL;
 	
 	// UI Cursor
@@ -152,7 +152,7 @@ HRESULT CMainApp::Initialize_Client()
 	ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
 	LightDesc.eType = LIGHTDESC::TYPE_DIRECTIONAL;
 	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
-	LightDesc.vDiffuse = _float4(1.0f, 1.0f, 1.0f, 1.f);
+	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
 	LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 1.f);
 	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 

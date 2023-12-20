@@ -18,6 +18,8 @@ CAnimation::CAnimation(const CAnimation& rhs)
 	, m_strName(rhs.m_strName)
 	, m_fOriginSpeed(rhs.m_fOriginSpeed)
 	, m_bLoop(rhs.m_bLoop)
+	, m_SpeedDescs(rhs.m_SpeedDescs)
+	, m_SoundEvents(rhs.m_SoundEvents)
 {
 	for (auto& pChannel : m_Channels)
 		Safe_AddRef(pChannel);
