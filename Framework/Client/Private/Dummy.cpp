@@ -91,27 +91,27 @@ HRESULT CDummy::Render()
 		return E_FAIL;
 
 
-	//// << : Test 
+	// << : Test 
 
-	//if (nullptr != m_pBodyModel)
-	//{
-	//	if(FAILED(m_pModelCom->SetUp_VTF(pShader)))
-	//		return E_FAIL;
+	if (nullptr != m_pBodyModel)
+	{
+		if(FAILED(m_pModelCom->SetUp_VTF(pShader)))
+			return E_FAIL;
 
-	//	_uint		iNumMeshes = m_pBodyModel->Get_NumMeshes();
+		_uint		iNumMeshes = m_pBodyModel->Get_NumMeshes();
 
-	//	for (_uint i = 0; i < iNumMeshes; ++i)
-	//	{
-	//		if (FAILED(m_pBodyModel->SetUp_OnShader(pShader, m_pBodyModel->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
-	//			return E_FAIL;
+		for (_uint i = 0; i < iNumMeshes; ++i)
+		{
+			if (FAILED(m_pBodyModel->SetUp_OnShader(pShader, m_pBodyModel->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+				return E_FAIL;
 
-	//		if (FAILED(m_pBodyModel->Render(pShader, i)))
-	//			return E_FAIL;
-	//	}
-	//}
+			if (FAILED(m_pBodyModel->Render(pShader, i)))
+				return E_FAIL;
+		}
+	}
 
-	//return S_OK;
-	//// >> : 
+	return S_OK;
+	// >> : 
 
 
 	
@@ -132,6 +132,25 @@ HRESULT CDummy::Render()
 
 HRESULT CDummy::Ready_ModelCom(_uint eType, const wstring& strFilePath, const wstring& strFileName)
 {
+	/* Test */
+
+	if (nullptr != m_pModelCom)
+	{
+		_tchar szFileName[MAX_PATH];
+		_tchar szExt[MAX_PATH];
+		_wsplitpath_s(strFileName.c_str(), nullptr, 0, nullptr, 0, szFileName, MAX_PATH, szExt, MAX_PATH);
+
+		if (FAILED(GI->Import_Model_Data(LEVEL_DUMMY, wstring(L"Prototype_Componenet_Model_") + szFileName, eType, strFilePath, strFileName, &m_pModelCom2)))
+			return E_FAIL;
+
+
+		m_pModelCom2->Set_Owner(this);
+
+		return S_OK;
+	}
+
+
+	//
 	if (nullptr != m_pModelCom)
 		Safe_Release(m_pModelCom);	
 
@@ -154,7 +173,11 @@ HRESULT CDummy::Export_Model_Bin(const wstring& strFilePath, const wstring& strF
 	if (nullptr == m_pModelCom)
 		return E_FAIL;
 	
-	if (FAILED(GI->Export_Model_Data(m_pModelCom, strFilePath, strFileName)))
+	/*if (FAILED(GI->Export_Model_Data(m_pModelCom, strFilePath, strFileName)))
+		return E_FAIL;*/
+
+	/* Test */
+	if (FAILED(GI->Export_Model_Data(m_pModelCom2, strFilePath, strFileName)))
 		return E_FAIL;
 
 	return S_OK;

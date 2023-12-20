@@ -53,9 +53,11 @@ public:
 
 public:
 	CModel* m_pBodyModel = nullptr;
+	CModel* m_pModelCom2 = nullptr;
 
 
-
+public:
+	_bool m_bCostumeMode = FALSE;
 	// >> 
 
 

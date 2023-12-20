@@ -66,7 +66,6 @@ HRESULT CModel_Manager::Export_Model_Data(CModel* pModel, const wstring& strSubF
 
 		if (FAILED(Export_Animation_Events(strFinalFolderPath, pModel)))
 			return E_FAIL;
-
 	}
 	return S_OK;
 }
@@ -139,7 +138,7 @@ HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel, const wstring str
 	}
 
 	if (0 == iAnimMaxFrameCount) 
-		return E_FAIL; 
+		return S_OK;  // 임시 처리 원래 E_FAIL
 
 	m_AnimTransformsCaches.resize(iAnimCount);
 
@@ -328,8 +327,25 @@ HRESULT CModel_Manager::Import_Model_Data_From_Fbx(_uint iLevelIndex, const wstr
 	
 	/* 00. 기존 fbx 파일 임포트 루틴 */
 	{
+		if (1== iTestCount) // 바디
+		{
+			// 메시 다시 설정 
+			//pSwordMan->GARA(strFolderPath, strFileName);
+		}
+
+		iTestCount++;
+
+
+
 		pModel = CModel::Create(m_pDevice, m_pContext, CModel::TYPE(eType), strFolderPath, strFileName, XMLoadFloat4x4(&m_PivotMatrix));
 	
+		if (1 == iTestCount) // 소드맨 
+		{
+			pSwordMan = pModel;
+		}
+		
+		// >> : 
+
 		if (nullptr == pModel)
 			return E_FAIL;
 
@@ -403,7 +419,7 @@ HRESULT CModel_Manager::Import_Model_Data_From_Bin_In_Tool(_uint iLevelIndex, co
 
 	XMStoreFloat4x4(&pModel->m_PivotMatrix, XMLoadFloat4x4(&m_PivotMatrix));
 
-	if (FAILED(Import_Mesh(strFinalFolderPath, pModel)))
+	if (FAILED(Import_Mesh(strFinalFolderPath, pModel, eType)))
 	{
 		MSG_BOX("Import_Mesh Failed.");
 		Safe_Release(pModel);
@@ -488,7 +504,7 @@ HRESULT CModel_Manager::Import_Model_Data_From_Bin_In_Game(_uint iLevelIndex, co
 
 	XMStoreFloat4x4(&pModel->m_PivotMatrix, XMLoadFloat4x4(&m_PivotMatrix));
 
-	if (FAILED(Import_Mesh(strFinalFolderPath, pModel)))
+	if (FAILED(Import_Mesh(strFinalFolderPath, pModel, eType)))
 	{
 		MSG_BOX("Import_Mesh Failed.");
 		Safe_Release(pModel);
@@ -1156,7 +1172,7 @@ const _bool	CModel_Manager::Find_AnimationSocketTransform(const wstring strModel
 	return true;
 }
 
-HRESULT CModel_Manager::Import_Mesh(const wstring strFinalPath, CModel* pModel)
+HRESULT CModel_Manager::Import_Mesh(const wstring strFinalPath, CModel* pModel, _uint eType)
 {
 	wstring strMeshFilePath = strFinalPath + L".mesh";
 	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
@@ -1164,23 +1180,23 @@ HRESULT CModel_Manager::Import_Mesh(const wstring strFinalPath, CModel* pModel)
 
 	_uint iAnimationCount = File->Read<_uint>();
 
-
-	pModel->m_eModelType = iAnimationCount > 0 ? CModel::TYPE::TYPE_ANIM : CModel::TYPE::TYPE_NONANIM;
+	/* 임시 */
+	pModel->m_eModelType = (CModel::TYPE)eType;
+	//pModel->m_eModelType = iAnimationCount > 0 ? CModel::TYPE::TYPE_ANIM : CModel::TYPE::TYPE_NONANIM;
 	pModel->m_iNumAnimations = iAnimationCount;
 
+	/* 뼈 만들기 */
 	_uint iNumHierarchyNodes = File->Read<_uint>(); 
 	for (_uint i = 0; i < iNumHierarchyNodes; ++i)
 	{
 		CHierarchyNode* pNode = CHierarchyNode::Create_Bin();
-		
-
+	
 		File->Read<_uint>(pNode->m_iDepth);
 		pNode->m_strName =CUtils::ToWString(File->Read<string>());
 		pNode->m_strParentName =CUtils::ToWString(File->Read<string>());
 		// Warning ! Load Orgin Transformation to m_Transfomation
 		File->Read<_float4x4>(pNode->m_Transformation);
 		File->Read<_float4x4>(pNode->m_OffsetMatrix);
-
 
 		pModel->m_HierarchyNodes.push_back(pNode);
 	}
@@ -1190,11 +1206,10 @@ HRESULT CModel_Manager::Import_Mesh(const wstring strFinalPath, CModel* pModel)
 	for (auto& Node : pModel->m_HierarchyNodes)
 		Node->Initialize_Bin(pModel);
 
-
+	/* 메시 데이터 읽기 */
 	pModel->m_iNumMeshes = File->Read<_uint>();
 	for (_uint i = 0; i < pModel->m_iNumMeshes; ++i)
 	{
-		
 		CMesh* Mesh = CMesh::Create_Bin(m_pDevice, m_pContext, pModel->m_eModelType, XMLoadFloat4x4(&pModel->m_PivotMatrix));
 		
 		Mesh->m_strName =CUtils::ToWString(File->Read<string>());
@@ -1209,12 +1224,9 @@ HRESULT CModel_Manager::Import_Mesh(const wstring strFinalPath, CModel* pModel)
 		File->Read<D3D11_PRIMITIVE_TOPOLOGY>(Mesh->m_eTopology);
 		File->Read<DXGI_FORMAT>(Mesh->m_eIndexFormat);
 
-
-
 		vector<wstring> BoneNames(Mesh->m_iNumBones);
 		for (_uint j = 0; j < Mesh->m_iNumBones; ++j)		
 			BoneNames[j] =CUtils::ToWString(File->Read<string>());
-
 
 		_uint iIndiceSize = File->Read<_uint>();
 		Mesh->m_FaceIndices.reserve(iIndiceSize);
@@ -1224,7 +1236,6 @@ HRESULT CModel_Manager::Import_Mesh(const wstring strFinalPath, CModel* pModel)
 			File->Read<FACEINDICES32>(Index);
 			Mesh->m_FaceIndices.push_back(Index);
 		}
-
 
 		if (pModel->m_eModelType == CModel::TYPE::TYPE_ANIM)
 		{
@@ -1240,7 +1251,6 @@ HRESULT CModel_Manager::Import_Mesh(const wstring strFinalPath, CModel* pModel)
 			if(FAILED(Mesh->Ready_Bin_AnimVertices()))
 				return E_FAIL;
 		}
-
 		else
 		{
 			Mesh->m_NonAnimVertices.reserve(Mesh->m_iNumVertices);

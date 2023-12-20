@@ -254,6 +254,10 @@ const _bool CTool_Model::Is_Exception()
 			return true;
 		}
 	}
+	else if (CModel::TYPE::TYPE_ANIM == m_pDummy->Get_ModelCom()->Get_ModelType() && m_pDummy->Get_ModelCom()->Get_Animations().empty())
+	{
+		ImGui::Text(u8"이 모델은 애니메이션을 갖고 있지 않습니다.");
+	}
 	else
 	{
 		ImGui::Text(u8"애니메이션 모델이 로드되지 않았습니다.");
@@ -476,7 +480,7 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 				ImGui::Text("Model Type");
 
 				/* Import Btn */
-				if (ImGui::Button("Import"))
+				if (ImGui::Button("Import Model"))
 				{
 					if (iSelectedImportModelType != -1)
 					{
@@ -613,35 +617,11 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 		{
 			if (ImGui::TreeNode(u8"파츠 메쉬 제작"))
 			{
-				// << : Test
-
-				if (ImGui::Button("TEST"))
-				{
-
-
-					/*wstring strFilePath = L"../Bin/Export/NonAnimModel/Part/SwordMan/Body1/";
-					wstring strFileName = L"SwordMan_Body_01";
-
-
-
-
-					CModel* pBodyModel = nullptr;
-					if (FAILED(GI->Import_Model_Data(LEVEL_DUMMY, wstring(L"Prototype_Componenet_Model_sdf"), CModel::TYPE::TYPE_NONANIM, strFilePath, strFileName, &pBodyModel)))
-						return;
-					else
-						m_pDummy->m_pBodyModel = pBodyModel;*/
-					
-				}
-
-
-				// >> : 
-
-
 				IMGUI_NEW_LINE;
 				/* 플레이어 원본 fbx 주소 */
 				{
-					ImGui::TextColored(ImVec4(0.9f, 0.2f, 0.2f, 1.f), u8"! 파츠 fbx를 Import 하기 전에 !");
-					ImGui::TextColored(ImVec4(0.9f, 0.2f, 0.2f, 1.f), u8"! 위에서 플레이어 fbx 혹은 binary 파일을 Import 해주시기 바랍니다. !");
+					ImGui::TextColored(ImVec4(0.9f, 0.2f, 0.2f, 1.f), u8"파츠 fbx를 Import 하기 전에 !");
+					ImGui::TextColored(ImVec4(0.9f, 0.2f, 0.2f, 1.f), u8"위에서 플레이어 fbx 혹은 binary 파일을 Import 해주시기 바랍니다. !");
 				}
 				IMGUI_NEW_LINE;
 
@@ -657,6 +637,7 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 					/* Path */
 					if (ImGui::InputText("##ModelPartPathText", szFilePath, MAX_PATH))
 						m_strPartFilePath = CUtils::ToWString(string(szFilePath));
+
 					if (ImGui::IsItemHovered())
 					{
 						ImGui::BeginTooltip();
@@ -681,6 +662,7 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 					/* Import Btn */
 					if (ImGui::Button("Import Part Fbx"))
 					{
+						m_bCostumeMode = TRUE;
 						//if (FAILED(m_pDummy->Ready_ModelCom(CModel::TYPE_NONANIM, m_strPartFilePath, m_strPartFileName)))
 						//	MSG_BOX("Failed Import.");
 						//else
@@ -1281,7 +1263,6 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 			{
 				vector<pair<_float, ANIM_EVENT_SOUND_DESC>> SoundEvents = pCurAnim->Get_SoundEvents();
 
-				ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"사운드 매니저 수정 예정, 실제 이벤트 추가는 목요일 이후");
 				IMGUI_NEW_LINE;
 
 				/* 키프레임 수정 여부 반영 */

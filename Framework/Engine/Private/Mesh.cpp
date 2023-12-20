@@ -4,6 +4,8 @@
 #include "GameInstance.h"
 #include "Utils.h"
 
+#include "Model_Manager.h"
+
 CMesh::CMesh(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CVIBuffer(pDevice, pContext)
 {
@@ -107,7 +109,6 @@ HRESULT CMesh::Initialize_Bin(CModel* pModel, const vector<wstring>& BoneNames)
 
 	if (0 == m_iNumBones)
 	{
-
 		CHierarchyNode* pNode = pModel->Get_HierarchyNode(m_strName);
 		if (nullptr == pNode)
 			return S_OK;
@@ -116,7 +117,6 @@ HRESULT CMesh::Initialize_Bin(CModel* pModel, const vector<wstring>& BoneNames)
 		m_BoneNames.push_back(pNode->Get_Name());
 		m_Bones.push_back(pNode);
 		Safe_AddRef(pNode);
-
 	}
 
 	return S_OK;
@@ -139,6 +139,7 @@ HRESULT CMesh::SetUp_HierarchyNodes(CModel* pModel, aiMesh* pAIMesh)
 		memcpy(&OffsetMatrix, &pAIBone->mOffsetMatrix, sizeof(_float4x4));
 
 		pHierarchyNode->Set_OffsetMatrix(XMMatrixTranspose(XMLoadFloat4x4(&OffsetMatrix)));
+
 
 		m_Bones.push_back(pHierarchyNode);
 		m_BoneNames.push_back(pHierarchyNode->Get_Name());
@@ -299,60 +300,124 @@ HRESULT CMesh::Ready_AnimVertices(const aiMesh* pAIMesh, CModel* pModel)
 	}
 
 	/* Static과 달리 해당 메시에 영향을 주는 뼈의 정보를 저장한다. */
-	for (_uint i = 0; i < pAIMesh->mNumBones; ++i)
+
+	if (iTestCount == 2)
 	{
-		aiBone* pAIBone = pAIMesh->mBones[i];
-
-		for (_uint j = 0; j < pAIBone->mNumWeights; ++j)
+		for (_uint i = 0; i < pAIMesh->mNumBones; ++i)
 		{
-			_uint		iVertexIndex = pAIBone->mWeights[j].mVertexId;
+			aiBone* pAIBone = pAIMesh->mBones[i];
 
-			if (0.0f == pVertices[iVertexIndex].vBlendWeight.x)
+			for (_uint j = 0; j < pAIBone->mNumWeights; ++j)
 			{
-				_int iIndex = pModel->Get_HierarchyNodeIndex(pAIBone->mName.C_Str());
+				_uint		iVertexIndex = pAIBone->mWeights[j].mVertexId;
 
-				if (iIndex < 0)
-					MSG_BOX("Failed : CMesh::Ready_AnimVertices()");
+				if (0.0f == pVertices[iVertexIndex].vBlendWeight.x)
+				{
+					_int iIndex = pSwordMan->Get_HierarchyNodeIndex(pAIBone->mName.C_Str());
 
-				pVertices[iVertexIndex].vBlendIndex.x = iIndex;
+					if (iIndex < 0)
+						MSG_BOX("Failed : CMesh::Ready_AnimVertices()");
 
-				pVertices[iVertexIndex].vBlendWeight.x = pAIBone->mWeights[j].mWeight;
+					pVertices[iVertexIndex].vBlendIndex.x = iIndex;
+
+					pVertices[iVertexIndex].vBlendWeight.x = pAIBone->mWeights[j].mWeight;
+				}
+
+				else if (0.0f == pVertices[iVertexIndex].vBlendWeight.y)
+				{
+					_int iIndex = pSwordMan->Get_HierarchyNodeIndex(pAIBone->mName.C_Str());
+
+					if (iIndex < 0)
+						MSG_BOX("Failed : CMesh::Ready_AnimVertices()");
+
+					pVertices[iVertexIndex].vBlendIndex.y = iIndex;
+
+					pVertices[iVertexIndex].vBlendWeight.y = pAIBone->mWeights[j].mWeight;
+				}
+
+				else if (0.0f == pVertices[iVertexIndex].vBlendWeight.z)
+				{
+					_int iIndex = pSwordMan->Get_HierarchyNodeIndex(pAIBone->mName.C_Str());
+
+					if (iIndex < 0)
+						MSG_BOX("Failed : CMesh::Ready_AnimVertices()");
+
+					pVertices[iVertexIndex].vBlendIndex.z = iIndex;
+
+					pVertices[iVertexIndex].vBlendWeight.z = pAIBone->mWeights[j].mWeight;
+				}
+
+				else if (0.0f == pVertices[iVertexIndex].vBlendWeight.w)
+				{
+					_int iIndex = pSwordMan->Get_HierarchyNodeIndex(pAIBone->mName.C_Str());
+
+					if (iIndex < 0)
+						MSG_BOX("Failed : CMesh::Ready_AnimVertices()");
+
+					pVertices[iVertexIndex].vBlendIndex.w = iIndex;
+
+					pVertices[iVertexIndex].vBlendWeight.w = pAIBone->mWeights[j].mWeight;
+				}
 			}
+		}
+	}
+	else
+	{
+		for (_uint i = 0; i < pAIMesh->mNumBones; ++i)
+		{
+			aiBone* pAIBone = pAIMesh->mBones[i];
 
-			else if (0.0f == pVertices[iVertexIndex].vBlendWeight.y)
+			for (_uint j = 0; j < pAIBone->mNumWeights; ++j)
 			{
-				_int iIndex = pModel->Get_HierarchyNodeIndex(pAIBone->mName.C_Str());
+				_uint		iVertexIndex = pAIBone->mWeights[j].mVertexId;
 
-				if (iIndex < 0)
-					MSG_BOX("Failed : CMesh::Ready_AnimVertices()");
+				if (0.0f == pVertices[iVertexIndex].vBlendWeight.x)
+				{
+					_int iIndex = pModel->Get_HierarchyNodeIndex(pAIBone->mName.C_Str());
 
-				pVertices[iVertexIndex].vBlendIndex.y = iIndex;
+					if (iIndex < 0)
+						MSG_BOX("Failed : CMesh::Ready_AnimVertices()");
 
-				pVertices[iVertexIndex].vBlendWeight.y = pAIBone->mWeights[j].mWeight;
-			}
+					pVertices[iVertexIndex].vBlendIndex.x = iIndex;
 
-			else if (0.0f == pVertices[iVertexIndex].vBlendWeight.z)
-			{
-				_int iIndex = pModel->Get_HierarchyNodeIndex(pAIBone->mName.C_Str());
+					pVertices[iVertexIndex].vBlendWeight.x = pAIBone->mWeights[j].mWeight;
+				}
 
-				if (iIndex < 0)
-					MSG_BOX("Failed : CMesh::Ready_AnimVertices()");
+				else if (0.0f == pVertices[iVertexIndex].vBlendWeight.y)
+				{
+					_int iIndex = pModel->Get_HierarchyNodeIndex(pAIBone->mName.C_Str());
 
-				pVertices[iVertexIndex].vBlendIndex.z = iIndex;
+					if (iIndex < 0)
+						MSG_BOX("Failed : CMesh::Ready_AnimVertices()");
 
-				pVertices[iVertexIndex].vBlendWeight.z = pAIBone->mWeights[j].mWeight;
-			}
+					pVertices[iVertexIndex].vBlendIndex.y = iIndex;
 
-			else if (0.0f == pVertices[iVertexIndex].vBlendWeight.w)
-			{
-				_int iIndex = pModel->Get_HierarchyNodeIndex(pAIBone->mName.C_Str());
+					pVertices[iVertexIndex].vBlendWeight.y = pAIBone->mWeights[j].mWeight;
+				}
 
-				if (iIndex < 0)
-					MSG_BOX("Failed : CMesh::Ready_AnimVertices()");
+				else if (0.0f == pVertices[iVertexIndex].vBlendWeight.z)
+				{
+					_int iIndex = pModel->Get_HierarchyNodeIndex(pAIBone->mName.C_Str());
 
-				pVertices[iVertexIndex].vBlendIndex.w = iIndex;
+					if (iIndex < 0)
+						MSG_BOX("Failed : CMesh::Ready_AnimVertices()");
 
-				pVertices[iVertexIndex].vBlendWeight.w = pAIBone->mWeights[j].mWeight;
+					pVertices[iVertexIndex].vBlendIndex.z = iIndex;
+
+					pVertices[iVertexIndex].vBlendWeight.z = pAIBone->mWeights[j].mWeight;
+				}
+
+				else if (0.0f == pVertices[iVertexIndex].vBlendWeight.w)
+				{
+					_int iIndex = pModel->Get_HierarchyNodeIndex(pAIBone->mName.C_Str());
+
+					if (iIndex < 0)
+						MSG_BOX("Failed : CMesh::Ready_AnimVertices()");
+
+					pVertices[iVertexIndex].vBlendIndex.w = iIndex;
+
+					pVertices[iVertexIndex].vBlendWeight.w = pAIBone->mWeights[j].mWeight;
+				}
 			}
 		}
 	}
@@ -433,7 +498,6 @@ HRESULT CMesh::Ready_Bin_AnimVertices()
 	m_BufferDesc.MiscFlags = 0;
 	m_BufferDesc.StructureByteStride = m_iStride;
 
-
 	ZeroMemory(&m_SubResourceData, sizeof(D3D11_SUBRESOURCE_DATA));
 	m_SubResourceData.pSysMem = m_AnimVertices.data();
 
@@ -443,7 +507,6 @@ HRESULT CMesh::Ready_Bin_AnimVertices()
 
 	if (FAILED(__super::Create_VertexBuffer()))
 		return E_FAIL;
-
 
 	m_iIndexSizeofPrimitive = sizeof(FACEINDICES32);
 	m_iNumIndicesofPrimitive = 3;
@@ -458,14 +521,11 @@ HRESULT CMesh::Ready_Bin_AnimVertices()
 	m_BufferDesc.MiscFlags = 0;
 	m_BufferDesc.StructureByteStride = 0;
 
-
-
 	ZeroMemory(&m_SubResourceData, sizeof(D3D11_SUBRESOURCE_DATA));
 	m_SubResourceData.pSysMem = m_FaceIndices.data();
 
 	if (FAILED(__super::Create_IndexBuffer()))
 		return E_FAIL;
-
 
 	return S_OK;
 }

@@ -33,6 +33,7 @@ public:
 	const _int Get_HierarchyNodeIndex(const char* szBonename);
 	const _int Get_HierarchyNodeIndex(wstring strBoneName);
 	class CHierarchyNode* Get_HierarchyNode(const wstring & strNodeName);
+	class CHierarchyNode* Get_HierarchyNode(const _uint iIndex);
 	vector<class CHierarchyNode*>& Get_HierarchyNodes() { return m_HierarchyNodes; }
 
 	/* Meshes */
@@ -106,6 +107,14 @@ public:
 	HRESULT Set_VtfSrv(ID3D11ShaderResourceView* pSrv);
 	HRESULT Clear_NotUsedData();
 #pragma endregion
+
+#pragma region Assimp
+
+	const aiScene* Get_AIScene() const { return m_pAIScene; }
+
+	void GARA(wstring strFolderPath, wstring strFileName);
+#pragma endregion
+
 
 private:
 	wstring m_strName;

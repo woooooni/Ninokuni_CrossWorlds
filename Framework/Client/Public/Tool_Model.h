@@ -55,6 +55,7 @@ private:
 	wstring m_strPartFileName = L"";
 
 	class CDummy* m_pDummy = nullptr;
+	class CDummy* m_pPartDummy = nullptr;
 
 #pragma region Animation
 
@@ -104,7 +105,7 @@ private:
 	CHARACTER_TYPE m_eCharacyerType = CHARACTER_TYPE::SWORD_MAN;
 	PART_TYPE m_ePartType = PART_TYPE::HEAD;
 
-
+	_bool m_bCostumeMode = FALSE;
 #pragma endregion
 
 

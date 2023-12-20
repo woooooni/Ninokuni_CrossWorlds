@@ -11,7 +11,7 @@
 #include "VIBuffer_Instancing.h"
 #include "GameObject.h"
 #include "Navigation.h"
-
+#include "Model_Manager.h"
 
 CModel::CModel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CComponent(pDevice, pContext)
@@ -113,30 +113,6 @@ HRESULT CModel::Initialize_Prototype(TYPE eType, const wstring& strModelFolderPa
 
 	if (FAILED(Ready_HierarchyNodes(m_pAIScene->mRootNode, nullptr, 0)))
 		return E_FAIL;
-
-	// << : Test 
-
-
-	//ofstream fout;
-	//fout.open("../Bin/Export/ModelAnimations.txt");
-
-	//for (auto& iter : m_HierarchyNodes)
-	//{
-	//	wstring strAnimationName = iter->Get_Name();
-	//	if (fout.is_open())
-	//	{
-	//		fout.write(CUtils::ToString(strAnimationName).c_str(), strAnimationName.size());
-	//		fout.write("\n", sizeof(1));
-	//	}
-	//}
-	//fout.close();
-	//MSG_BOX("Export OK.");
-
-
-	// >> 
-
-
-
 
 	if (FAILED(Ready_MeshContainers(PivotMatrix)))
 		return E_FAIL;
@@ -555,6 +531,17 @@ CHierarchyNode* CModel::Get_HierarchyNode(const wstring& strNodeName)
 	return *iter;
 }
 
+CHierarchyNode* CModel::Get_HierarchyNode(const _uint iIndex)
+{
+	for (int32 i = 0; i < m_HierarchyNodes.size(); ++i)
+	{
+		if (i == iIndex)
+			return m_HierarchyNodes[i];
+	}
+
+	return nullptr;
+}
+
 _uint CModel::Get_MaterialIndex(_uint iMeshIndex)
 {
 	return m_Meshes[iMeshIndex]->Get_MaterialIndex();
@@ -601,6 +588,55 @@ HRESULT CModel::Clear_NotUsedData()
 			pAnimation->Clear_Channels();
 	}
 	return S_OK;
+}
+
+void CModel::GARA(wstring strFolderPath, wstring strFileName)
+{
+
+	// Assimp
+	_tchar		szFullPath[MAX_PATH] = L"";
+
+	wstring m_strFolderPath = strFolderPath;
+	wstring m_strFileName = strFileName;
+
+	lstrcpy(szFullPath, m_strFolderPath.c_str());
+	lstrcat(szFullPath, m_strFileName.c_str());
+
+	_uint		iFlag = 0;
+	iFlag |= aiProcess_ConvertToLeftHanded | aiProcess_CalcTangentSpace;
+
+	Assimp::Importer Importer;
+	const aiScene* pAIScene = Importer.ReadFile(CUtils::ToString(szFullPath).c_str(), iFlag);
+
+
+	// 뼈 다시 설정 
+	m_HierarchyNodes.clear();
+
+	if (FAILED(Ready_HierarchyNodes(pAIScene->mRootNode, nullptr, 0)))
+		return;
+
+
+	// 메시 다시 설정 
+	m_Meshes.clear();
+
+	_uint m_iNumMeshes = pAIScene->mNumMeshes;
+
+	for (_uint i = 0; i < m_iNumMeshes; ++i)
+	{
+		CMesh* pMeshContainer = CMesh::Create(m_pDevice, m_pContext, CModel::TYPE::TYPE_ANIM, pAIScene->mMeshes[i], this, Matrix(m_PivotMatrix));
+		if (nullptr == pMeshContainer)
+			return;
+
+		m_Meshes.push_back(pMeshContainer);
+	}
+
+	// 뼈 다시 설정 
+	_uint		iNumMeshes = 0;
+	for (auto& pMeshContainer : m_Meshes)
+	{
+		if (nullptr != pMeshContainer)
+			pMeshContainer->SetUp_HierarchyNodes(this, pAIScene->mMeshes[iNumMeshes++]);
+	}
 }
 
 
@@ -713,8 +749,11 @@ HRESULT CModel::Render(CShader* pShader, _uint iMeshIndex, _uint iPassIndex)
 {
 	if (TYPE_ANIM == m_eModelType)
 	{
-		if(FAILED(SetUp_VTF(pShader)))
-			return E_FAIL;
+	/*	if(FAILED(SetUp_VTF(pShader)))
+			return E_FAIL;*/
+
+		/* 임시 */
+		SetUp_VTF(pShader);
 	}
 
 	pShader->Begin(iPassIndex);
