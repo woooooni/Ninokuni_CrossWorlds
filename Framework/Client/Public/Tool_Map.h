@@ -35,11 +35,11 @@ private:
 	void BatchObject(LEVELID iLevelID, LAYER_TYPE iLayerType);
 
 	void AddMapMonster(LEVELID iLevelID, LAYER_TYPE iLayerType);
-	void DeleteMonster(LEVELID iLevelID, LAYER_TYPE iLayerType);
-	void BatchMonster(LEVELID iLevelID, LAYER_TYPE iLayerType);
+
+	void AddMapNPC(LEVELID iLevelID, LAYER_TYPE iLayerType);
+	void BatchNPC(LEVELID iLevelID, LAYER_TYPE iLayerType);
 
 	void BatchDynamic(LEVELID iLevelID, LAYER_TYPE iLayerType);
-
 	void DeleteDynamic(LEVELID iLevelID, LAYER_TYPE iLayerType);
 
 	void DeleteLight(_uint iLightID);
@@ -50,6 +50,7 @@ private:
 	void MapObjectSpace();
 	void MapLightSpace();
 	void MapMonsterSpace();
+	void MapNPCSpace();
 private:
 	void ChangeState();
 
@@ -63,11 +64,15 @@ private:
 	HRESULT Save_Monster_Data(const wstring& strMonsterFileName);
 	HRESULT Load_Monster_Data(const wstring& strMonsterFileName);
 
+	HRESULT Save_NPC_Data(const wstring& strNPCFileName);
+	HRESULT Load_NPC_Data(const wstring& strNPCFileName);
+
 
 private:
 	// 오브젝트 상태제어 
 	_bool m_bAddObject = false;
 	_bool m_bAddMonster = false;
+	_bool m_bAddNPC = false;
 	_bool m_bPlantMode = false;
 	_bool m_bAddDynamic = false;
 
@@ -79,9 +84,11 @@ private:
 	_int m_iLightControlState = 0;
 	_int m_iDynamicState = 0;
 	_int m_iMonsterState = 0;
+	_int m_iNPCState = 0;
 
 	wstring m_strLevelName = L"Evermore";
 	wstring m_strLevelMonsterName = L"Winter";
+	wstring m_strLevelNPCName = L"";
 	wstring m_strPrevLevelName = L"";
 	_uint m_iCurrentLevel = 0;
 	_uint m_iMonsterLevel = 0;
@@ -89,11 +96,13 @@ private:
 	const char* m_ImguiSelectableNameList[LEVEL_LIST_END] =
 	{ "Lobby", "Evermore", "Kingdom", "Winter", "Witch" };
 
+	const char* m_ImguiSelectableNPCNameList[LEVEL_LIST_END] =
+	{ "Lobby", "Evermore", "Kingdom", "Winter", "Witch" };
+
 	const char* m_ImguiLevelName[2] = { "Winter", "Witch" };
 
 	// 선택한 오브젝트
 	CGameObject* m_pSelectObj = nullptr;
-	CGameObject* m_pSelectMonster = nullptr;
 	CLight* m_pSelectLight = nullptr;
 
 	// IMGUI STATE
