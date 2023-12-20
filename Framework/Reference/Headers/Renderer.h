@@ -14,15 +14,15 @@ class ENGINE_DLL CRenderer final : public CComponent
 public:
 	typedef struct tagEffectInstancingDesc
 	{
-		_int		g_iCutUV;
-		_float		g_fMaxCountX;
-		_float		g_fMaxCountY;
-		_float		g_fAlpha;
-		_float2		g_fUVIndex;
-		_float2		g_fUVFlow;
+		_float2	g_fUVIndex;  // 8
+		_float2	g_fMaxCount; // 8
 
-		_float4		g_fAdditiveDiffuseColor;
-		_float4		g_vBloomPower;
+		_float2	g_fUVFlow; // 8
+		_int	g_iUVLoop; // 4
+		_float	g_fAlpha;  // 4
+
+		_float4	g_fAdditiveDiffuseColor; // 16
+		_float4	g_vBloomPower;           // 16
 
 	} EFFECT_INSTANCE_DESC;
 

@@ -5,25 +5,21 @@ matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 Texture2D	g_DiffuseTexture;
 Texture2D	g_AlphaTexture;
 
-
-
-float g_fBlurPower = 0.f;
+float       g_fBlurPower = 0.f;
 struct EffectDesc
 {
-	int			g_iCutUV;
-	float		g_fMaxCountX;
-	float		g_fMaxCountY;
-	float		g_fAlpha;
-	float2		g_fUVIndex;
-	float2		g_fUVFlow;
-
-	float4		g_fAdditiveDiffuseColor;
-	float4		g_vBloomPower;
+	float2 g_fUVIndex;
+	float2 g_fMaxCount;
+		   
+	float2 g_fUVFlow;
+	int	   g_iUVLoop;
+	float  g_fAlpha;
+		   
+	float4 g_fAdditiveDiffuseColor;
+	float4 g_vBloomPower;
 };
 
 EffectDesc g_EffectDesc[1000];
-
-
 
 struct VS_IN
 {
@@ -65,13 +61,14 @@ VS_OUT VS_MAIN(VS_IN In)
 
 	EffectDesc Desc = g_EffectDesc[In.iInstanceID];
 	Out.vTexUV = float2(
-		((Desc.g_fUVIndex.x + In.vTexUV.x) / Desc.g_fMaxCountX) + Desc.g_fUVFlow.x,
-		((Desc.g_fUVIndex.y + In.vTexUV.y) / Desc.g_fMaxCountY) + Desc.g_fUVFlow.y);
+		((Desc.g_fUVIndex.x + In.vTexUV.x) / Desc.g_fMaxCount.x) + Desc.g_fUVFlow.x,
+		((Desc.g_fUVIndex.y + In.vTexUV.y) / Desc.g_fMaxCount.y) + Desc.g_fUVFlow.y);
 
 	Out.vTangent = normalize(mul(float4(In.vTangent, 0.f), InstanceWorld)).xyz;
 	Out.vBinormal = normalize(cross(Out.vNormal, Out.vTangent));
 	Out.vProjPos = Out.vPosition;
 	Out.iInstanceID = In.iInstanceID;
+
 	return Out;
 }
 
@@ -114,7 +111,7 @@ PS_OUT PS_DEFAULT(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
-	if (0 < g_EffectDesc[In.iInstanceID].g_iCutUV)
+	if (0 < g_EffectDesc[In.iInstanceID].g_iUVLoop)
 	{
 		if ((In.vTexUV.x > 1.f) || (In.vTexUV.y > 1.f) || (In.vTexUV.x < 0.f) || (In.vTexUV.y < 0.f))
 			discard;
@@ -135,7 +132,7 @@ PS_OUT PS_NO_ALPHA_WITH_DIFFUSE(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
-	if (0 < g_EffectDesc[In.iInstanceID].g_iCutUV)
+	if (0 < g_EffectDesc[In.iInstanceID].g_iUVLoop)
 	{
 		if ((In.vTexUV.x > 1.f) || (In.vTexUV.y > 1.f) || (In.vTexUV.x < 0.f) || (In.vTexUV.y < 0.f))
 			discard;
@@ -168,7 +165,7 @@ PS_OUT PS_NO_DIFFUSE_WITH_ALPHA(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
-	if (0 < g_EffectDesc[In.iInstanceID].g_iCutUV)
+	if (0 < g_EffectDesc[In.iInstanceID].g_iUVLoop)
 	{
 		if ((In.vTexUV.x > 1.f) || (In.vTexUV.y > 1.f) || (In.vTexUV.x < 0.f) || (In.vTexUV.y < 0.f))
 			discard;
@@ -195,7 +192,7 @@ PS_OUT PS_BOTH(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
-	if (0 < g_EffectDesc[In.iInstanceID].g_iCutUV)
+	if (0 < g_EffectDesc[In.iInstanceID].g_iUVLoop)
 	{
 		if ((In.vTexUV.x > 1.f) || (In.vTexUV.y > 1.f) || (In.vTexUV.x < 0.f) || (In.vTexUV.y < 0.f))
 			discard;

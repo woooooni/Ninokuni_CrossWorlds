@@ -21,63 +21,94 @@ class CEffect final : public CGameObject
 public:
 	enum EFFECT_TYPE { EFFECT_TEXTURE, EFFECT_MESH, EFFECT_END };
 
-	typedef struct tagEffectDesc
+public:
+	typedef struct tagEffectDesc // 반복X 자체적으로 계속 생성
 	{	
 		// 이펙트 타입
 		EFFECT_TYPE eType = EFFECT_TYPE::EFFECT_MESH;
 
-		_bool bLoop    = true;
-		_bool bGravity = false;
-		_float4x4 OffsetMatrix;
+		// 중력 
+		_bool bGravity = false; // ->
+
+		// 위치
+		_float3 fRange         = _float3(0.f, 0.f, 0.f);
+		_float2 fRangeDistance = _float2(0.f, 0.f);
 
 #pragma region 크기
-		_float3			vScaleDir   = _float3(0.f, 0.f, 0.f);
-		_float			fScaleSpeed = 0.f;
+		_bool   bScaleSameRate = true; // 정비율
+		_float2 fScaleStart    = _float2(1.f, 1.f);
+
+		_bool   bScaleChange           = false;
+		_float2 fScaleChangeStartDelay = _float2(0.f, 0.f);
+
+		_bool   bScaleChangeRandom = false;
+		_float2 fScaleChangeTime   = _float2(1.f, 5.f);
+
+		_float3	fScaleDir       = _float3(0.f, 0.f, 0.f);
+		_bool   bScaleLoop      = false;
+		_bool   bScaleLoopStart = false;
+
+		_float2 fScaleMin   = _float2(1.f, 1.f);
+		_float2 fScaleMax   = _float2(10.f, 10.f);
+		_float	fScaleSpeed = 0.f;
 #pragma endregion
 
 #pragma region 이동
-		_float3			vMoveDir = _float3(0.f, 0.f, 0.f);
+		_float3			fMoveDir   = _float3(0.f, 0.f, 0.f);
 		_float			fMoveSpeed = 0.f;
 #pragma endregion
 
 #pragma region 회전
 		_bool	bBillboard = false;
-		_float3 vTurnDir = _float3(0.f, 1.f, 0.f);
-		_float	fTurnSpeed = 0.f;
+
+		_bool	bRotationChange = false;
+		_float3 fTurnDir        = _float3(0.f, 1.f, 0.f);
+		_float	fTurnSpeed      = 0.f;
 #pragma endregion
 
 		// 지속 시간
-		_float fLifeTime = 1.f;
+		_float fLifeTime = 10.f;
 
 #pragma region 모델 && 텍스처
 		wstring strModelName            = L"Prototype_Component_Model_PS_NOTE_CIRCLE01";
-		wstring strDiffuseTetextureName = L"Prototype_Component_Texture_Effect_SubUV";
-		wstring strAlphaTexturName      = L"";
+		wstring strDiffuseTetextureName = L"";
+		wstring strAlphaTexturName      = L"Prototype_Component_Texture_Effect_Aura";
 
 		_int    iTextureIndexDiffuse = 0;
 		_int    iTextureIndexAlpha   = 0;
 
-		// Sequencetexture Effect
-		_float2	vUVIndex  = _float2(0.f, 0.f);
+		// SequenceTexture : Diffuse && Alpha
+		_bool   bRandomStartIndex = false;
+		_float2	fUVIndex  = _float2(0.f, 0.f);
 		_float2	fMaxCount = _float2(1.f, 1.f);
 
-		_int	bCutUV = -1;
-		_float2	vUVFlow = { 0.f, 0.f };
-		_float2 fAccUVFlow = _float2(0.f, 0.f);
+		// UVFlow
+		_bool   bUVFlow = true;
+		_int	iUVLoop = -1; // 0 < UVLoop -> NoLoop
+		_float2	fUVFlow = _float2(0.f, 0.f);
 #pragma endregion
 
 #pragma region 애니메이션
+		_bool  bAnimation  = false;
+		_bool  bLoop       = true;
 		_bool  bIncrement  = true;
 		_float fIndexSpeed = 20.f;
 #pragma endregion
 
 #pragma region 알파
-		_float fAlpha = 1.f;
-		_float fDestAlphaSpeed = 0.f;
+		_float2 fAlphaStart = _float2(1.f, 1.f);
+
+		_bool bAlphaCreate = false;
+		_bool bAlphaDelete = false;
+		_float2 fAlphaSpeed = _float2(0.f, 0.f);
+
+		_bool bAlphaChange = false;
+		_bool bAlphaIn     = false;
+		_float2 fAlphaChangeStartDelay = _float2(0.f, 0.f);
 #pragma endregion
 
 #pragma region 색상
-		_float4	vDiffuseColor         = _float4(0.f, 0.f, 0.f, 0.f);
+		_bool   bColorRandom = false;
 		_float4	vAdditiveDiffuseColor = _float4(0.f, 0.f, 0.f, 0.f);
 #pragma endregion
 
@@ -89,6 +120,9 @@ public:
 #pragma region 기타 정보
 		_uint   iShaderPass = 0;
 #pragma endregion
+
+		// 
+		_float4x4 OffsetMatrix;
 
 		tagEffectDesc()
 		{
@@ -105,7 +139,7 @@ public:
 			strAlphaTexturName      = rhs.strAlphaTexturName;
 
 			bBillboard = rhs.bBillboard;
-			bCutUV = rhs.bCutUV;
+			iUVLoop = rhs.iUVLoop;
 
 			fTurnSpeed = rhs.fTurnSpeed;
 			fMoveSpeed = rhs.fMoveSpeed;
@@ -113,25 +147,24 @@ public:
 			// Sequencetexture Effect
 			fMaxCount = rhs.fMaxCount;
 
-			fAlpha = rhs.fAlpha;
-			fDestAlphaSpeed = rhs.fDestAlphaSpeed;
+			//fAlpha = rhs.fAlpha;
+			//fDestAlphaSpeed = rhs.fDestAlphaSpeed;
 
 			fIndexSpeed = rhs.fIndexSpeed;
-			vUVFlow = rhs.vUVFlow;
+			fUVFlow = rhs.fUVFlow;
 
 			fBlurPower = rhs.fBlurPower;
 			vBloomPower = rhs.vBloomPower;
 
-			vDiffuseColor = rhs.vDiffuseColor;
 			vAdditiveDiffuseColor = rhs.vAdditiveDiffuseColor;
 
-			vScaleDir = rhs.vScaleDir;
+			fScaleDir = rhs.fScaleDir;
 			fScaleSpeed = rhs.fScaleSpeed;
 
 
 			// Translation
-			vMoveDir = rhs.vMoveDir;
-			vTurnDir = rhs.vTurnDir;
+			fMoveDir = rhs.fMoveDir;
+			fTurnDir = rhs.fTurnDir;
 
 			OffsetMatrix = rhs.OffsetMatrix;
 		}
@@ -153,6 +186,8 @@ public:
 public:
 	const EFFECT_DESC& Get_EffectDesc() { return m_tEffectDesc; }
 	void Set_EffectDesc(const EFFECT_DESC& tDesc);
+	void Reset_Effect();
+	void Reset_UV();
 
 public:
 	void Set_Owner(CGameObject* pGameObject) { m_pOwnerObject = pGameObject; }
@@ -171,10 +206,6 @@ public:
 	void Set_Gravity(_bool bGravity);
 
 public:
-	void Reset_Effect();
-	void Reset_UV();
-
-public:
 	class CTexture* Get_DiffuseTexture() { return m_pDiffuseTextureCom; }
 	class CTexture* Get_AlphaTexture()   { return m_pAlphaTextureCom; }
 	class CTransform* Get_TransformCom() { return m_pTransformCom; }
@@ -188,9 +219,20 @@ private:
 	_float4x4    m_ParentMatrix;
 
 private:
-	_bool   m_bEnd = false;
+	_bool   m_bEffectDie = false;
+	_bool   m_bEnd       = false;
+
 	_float  m_fAccDeletionTime = 0.f;
+
 	_float  m_fAccIndex        = 0.f;
+	_float2 m_fAccUVFlow       = _float2(0.f, 0.f);
+
+	// 알파
+	_float m_fAlpha      = 1.f;
+	_float m_fAlphaSpeed = 0.f;
+	_float m_fAlphaChangeStartTime  = 0.f;
+	_float m_fAlphaChangeStartDelay = 0.f;
+	_bool  m_bAlphaCreateSucc       = false;
 
 private:
 	class CRenderer*  m_pRendererCom  = nullptr;
@@ -209,6 +251,10 @@ private:
 	virtual void Increment(_float fTimeDelta);
 	virtual void Decrement(_float fTimeDelta);
 
+	/* Alpha */
+	void Change_Alpha(_float fTimeDelta);
+
+	void Set_Model();
 	void Set_Texture_Diffuse();
 	void Set_Texture_Alpha();
 

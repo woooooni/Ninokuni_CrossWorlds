@@ -123,38 +123,37 @@ HRESULT CEffect_Manager::Ready_Proto_Effects(const wstring& strEffectPath)
 
 
 			CEffect::EFFECT_DESC EffectDesc = {};
-			EffectDesc.strDiffuseTetextureName = CUtils::ToWString(File->Read<string>());
-			EffectDesc.strAlphaTexturName = CUtils::ToWString(File->Read<string>());
+			//EffectDesc.strDiffuseTetextureName = CUtils::ToWString(File->Read<string>());
+			//EffectDesc.strAlphaTexturName = CUtils::ToWString(File->Read<string>());
 
-			EffectDesc.bBillboard = File->Read<_bool>();
-			EffectDesc.bCutUV = File->Read<_int>();
+			//EffectDesc.bBillboard = File->Read<_bool>();
+			//EffectDesc.iUVLoop = File->Read<_int>();
 
-			EffectDesc.fAlpha = File->Read<_float>();
-			EffectDesc.fDestAlphaSpeed = File->Read<_float>();
-			EffectDesc.fIndexSpeed = File->Read<_float>();
-			EffectDesc.fMaxCount = File->Read<_float2>();
-			EffectDesc.fMoveSpeed = File->Read<_float>();
-			EffectDesc.fTurnSpeed = File->Read<_float>();
+			//EffectDesc.fAlpha = File->Read<_float>();
+			//EffectDesc.fDestAlphaSpeed = File->Read<_float>();
+			//EffectDesc.fIndexSpeed = File->Read<_float>();
+			//EffectDesc.fMaxCount = File->Read<_float2>();
+			//EffectDesc.fMoveSpeed = File->Read<_float>();
+			//EffectDesc.fTurnSpeed = File->Read<_float>();
 
-			EffectDesc.fBlurPower = File->Read<_float>();
-			EffectDesc.vBloomPower = File->Read<_float3>();
-			EffectDesc.vUVFlow = File->Read<_float2>();
+			//EffectDesc.fBlurPower = File->Read<_float>();
+			//EffectDesc.vBloomPower = File->Read<_float3>();
+			//EffectDesc.fUVFlow = File->Read<_float2>();
 
-			EffectDesc.fScaleSpeed = File->Read<_float>();
-			EffectDesc.vScaleDir = File->Read<_float3>();
+			//EffectDesc.fScaleSpeed = File->Read<_float>();
+			//EffectDesc.fScaleDir = File->Read<_float3>();
 
-			EffectDesc.vMoveDir = File->Read<_float3>();
-			EffectDesc.vTurnDir = File->Read<_float3>();
+			//EffectDesc.fMoveDir = File->Read<_float3>();
+			//EffectDesc.fTurnDir = File->Read<_float3>();
 
-			EffectDesc.vDiffuseColor = File->Read<_float4>();
-			EffectDesc.vAdditiveDiffuseColor = File->Read<_float4>();
-			EffectDesc.OffsetMatrix = File->Read<_float4x4>();
+			//EffectDesc.vAdditiveDiffuseColor = File->Read<_float4>();
+			//EffectDesc.OffsetMatrix = File->Read<_float4x4>();
 
 
-			_bool bLoop, bIncrement, bGravity;
-			bLoop = File->Read<_bool>();
-			bIncrement = File->Read<_bool>();
-			bGravity = File->Read<_bool>();
+			//_bool bLoop, bIncrement, bGravity;
+			//bLoop = File->Read<_bool>();
+			//bIncrement = File->Read<_bool>();
+			//bGravity = File->Read<_bool>();
 
 			//if (FAILED(GI->Add_Prototype(wstring(L"Prototype_Effect_") + strFileName, 
 			//	CEffect::Create(m_pDevice, m_pContext, 
