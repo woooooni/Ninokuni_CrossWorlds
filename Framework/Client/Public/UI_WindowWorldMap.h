@@ -31,6 +31,11 @@ public:
 
 private:
 	POINT m_ptMouse = {};
+	_bool m_bMove = { false };
+
+	_float m_fTimeAcc = { 0.f };
+	_float2 m_vOffsetMin = _float2(0.f, 0.f);
+	_float2 m_vOffsetMax = _float2(0.f, 0.f);
 	
 private:
 	virtual HRESULT	Ready_Components() override;

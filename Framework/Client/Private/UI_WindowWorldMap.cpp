@@ -63,6 +63,9 @@ HRESULT CUI_WindowWorldMap::Initialize(void* pArg)
 	Make_Child(-446.f, -57.5f, 170.f, 152.f, TEXT("Prototype_GameObject_UI_WorldMap_Btn_IceLand")); // 674.f, 492.5f
 	Make_Child(-429.f, 148.f, 170.f, 159.f, TEXT("Prototype_GameObject_UI_WorldMap_Btn_WitchForest")); // 691.f, 777.5f
 
+	// m_vOffsetMin
+	// m_vOffsetMax
+
 	m_bActive = false;
 
 	return S_OK;
@@ -72,6 +75,16 @@ void CUI_WindowWorldMap::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+
+		if (m_bMove)
+			m_fTimeAcc += fTimeDelta;
+
+		if (0.1f < m_fTimeAcc)
+		{
+			m_bMove = false;
+			m_fTimeAcc = 0.f;
+		}
+
 		__super::Tick(fTimeDelta);
 	}
 }
@@ -132,21 +145,46 @@ void CUI_WindowWorldMap::On_MouseDrag(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-//		if (KEY_HOLD(KEY::LBTN))
-//		{
-//			// Drag Test Code
-//			m_ptMouse = GI->GetMousePos();
-//
-//			m_tInfo.fX = m_ptMouse.x;
-//			m_tInfo.fY = m_ptMouse.y;
-//			m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-//				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
-//		}
+		if (KEY_HOLD(KEY::LBTN))
+		{
+			m_tInfo.fX += GI->Get_DIMMoveState(DIMM::DIMM_X);
+			m_tInfo.fY += GI->Get_DIMMoveState(DIMM::DIMM_Y);
+
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+		}
+
+		if (!m_bMove)
+		{
+			if (m_tInfo.fX > (m_tInfo.fCX * 0.5f + 100.f))
+			{
+				m_tInfo.fX = m_tInfo.fCX * 0.5f;
+				m_bMove = true;
+
+				m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+					XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+			}
+
+			if (m_tInfo.fX < 490.f)
+			{
+				m_tInfo.fX = 490.f;
+				m_bMove = true;
+
+				m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+					XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+			}
+		}
 	}
 }
 
 void CUI_WindowWorldMap::On_MouseDragExit(_float fTimeDelta)
 {
+	if (m_bActive)
+	{
+		// 일정 범위를 넘어가면 정해진 위치로 이동한다.
+//		_float fMinX = 0.f;
+//		_float fMaxX = 0.f;
+	}
 }
 
 HRESULT CUI_WindowWorldMap::Ready_Components()

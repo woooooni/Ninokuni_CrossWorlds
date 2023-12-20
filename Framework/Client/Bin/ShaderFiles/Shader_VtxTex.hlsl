@@ -111,8 +111,8 @@ PS_OUT PS_MAIN_CLOUD(PS_IN In)
 
 	Out.vColor.a *= g_Alpha;
 	//  °ËÀº»ö 0 0 0
-	if (Out.vColor.r <= 0.2f && Out.vColor.g <= 0.2f && Out.vColor.b <= 0.2f)
-		discard;
+//	if (Out.vColor.r <= 0.2f && Out.vColor.g <= 0.2f && Out.vColor.b <= 0.2f)
+//		discard;
 
 	return Out;
 }

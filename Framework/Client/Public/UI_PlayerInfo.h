@@ -25,9 +25,9 @@ public:
 private:
 	wstring m_strPlayerLevel = L"";
 
-	_float2 m_vDefaultPosition = _float2(90.f, 43.f); // LevelText
-	_float2 m_vTextPosition = _float2(180.f, 70.f);
-	_float2 m_vNumPosition = _float2(250.f, 70.f);
+	_float2 m_vDefaultPosition = _float2(75.f, 36.f); // LevelText
+	_float2 m_vTextPosition = _float2(145.f, 56.f);
+	_float2 m_vNumPosition = _float2(200.f, 56.f);
 
 	_float4 m_vLevelColor = { 0.82f, 0.773f, 0.627f, 1.f };
 	_float4 m_vShadowColor = { 0.361f, 0.361f, 0.361f, 1.f };

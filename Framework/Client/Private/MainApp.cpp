@@ -47,7 +47,7 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 	/* 1-4. 게임내에서 사용할 레벨(씬)을 생성한다.   */
-	if (FAILED(Open_Level(LEVEL_TEST, L"Final_Boss")))
+	if (FAILED(Open_Level(LEVEL_LOGO, L"Final_Boss")))
 		return E_FAIL;
 	
 	// UI Cursor
@@ -774,6 +774,26 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Default/UI_Default_Background_Cloud.png")))))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Dialogue_Window"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Contents/Dialogue/UI_Dialogue_%d.png"), 3))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Dialogue_MiniWindow"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Contents/Dialogue/UI_miniDialogue_%d.png"), 3))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Dialogue_FlipArrow"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Contents/Dialogue/UI_Arrow_DialogFlip.png")))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Dialogue_FlipBtn"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Contents/Dialogue/UI_Btn_DialogFlip.png")))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Common_TitleText"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Default/Title/UI_Text_%d.png"), 6))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Dialogue_PortraitFrame"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Contents/Dialogue/UI_MIniDialog_Portrait.png")))))
+		return E_FAIL;
 
 	return S_OK;
 }
