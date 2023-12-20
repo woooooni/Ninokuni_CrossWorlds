@@ -1,0 +1,26 @@
+diff a/Framework/Client/Public/Effect.h b/Framework/Client/Public/Effect.h	(rejected hunks)
+@@ -50,20 +50,16 @@
+ 		_float fLifeTime = 1.f;
+ 
+ #pragma region �� && �ؽ�ó
+-		wstring strModelName            = L"Prototype_Component_Model_PS_NOTE_CIRCLE01";
+-		wstring strDiffuseTetextureName = L"Prototype_Component_Texture_Effect_SubUV";
+-		wstring strAlphaTexturName      = L"";
++		wstring strModelName            = L"Prototype_Component_Model_PS_NOTE_CIRCLE01"; // Prototype_Component_Model_PS_NOTE_CIRCLE01
++		wstring strDiffuseTetextureName = L"Prototype_Component_Texture_Effect_Aura";
++		wstring strAlphaTexturName      = L"Prototype_Component_Texture_Effect_Glow";
+ 
+ 		_int    iTextureIndexDiffuse = 0;
+ 		_int    iTextureIndexAlpha   = 0;
+ 
+ 		// Sequencetexture Effect
+ 		_float2	vUVIndex  = _float2(0.f, 0.f);
+-		_float2	fMaxCount = _float2(1.f, 1.f);
+-
+-		_int	bCutUV = -1;
+-		_float2	vUVFlow = { 0.f, 0.f };
+-		_float2 fAccUVFlow = _float2(0.f, 0.f);
++ 
+ #pragma endregion
+ 
+ #pragma region �ִϸ��̼�

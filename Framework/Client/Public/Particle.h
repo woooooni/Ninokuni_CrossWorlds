@@ -136,7 +136,7 @@ public:
 		_float2 fFadeSpeed  = _float2(1.f, 1.f);
 
 		_bool   bFadeChange = false;
-		_bool   bFadeIn     = false; // Á¡Á¡ ¶Ñ·ÈÇØÁö´Ù.
+		_bool   bFadeIn     = false; // Á¡Á¡ ¶Ñ·ÇÇØÁö´Ù.
 		_float2 fFadeChangeStartDelay = _float2(0.f, 0.f);
 #pragma endregion
 

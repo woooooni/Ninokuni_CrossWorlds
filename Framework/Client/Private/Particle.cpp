@@ -551,8 +551,8 @@ void CParticle::Set_Texture_Diffuse()
 	}
 	Safe_Delete(pszFileName);
 
-	if (m_pDiffuseTextureCom != nullptr && m_tParticleDesc.iTextureIndexDiffuse > m_pDiffuseTextureCom->Get_TextureCount())
-		m_tParticleDesc.iTextureIndexDiffuse = m_pDiffuseTextureCom->Get_TextureCount();
+	if (m_pDiffuseTextureCom != nullptr && m_tParticleDesc.iTextureIndexDiffuse >= m_pDiffuseTextureCom->Get_TextureCount())
+		m_tParticleDesc.iTextureIndexDiffuse = m_pDiffuseTextureCom->Get_TextureCount() - 1;
 }
 
 void CParticle::Set_Texture_Alpha()
@@ -588,8 +588,8 @@ void CParticle::Set_Texture_Alpha()
 	}
 	Safe_Delete(pszFileName);
 
-	if (m_pAlphaTextureCom != nullptr && m_tParticleDesc.iTextureIndexAlpha > m_pAlphaTextureCom->Get_TextureCount())
-		m_tParticleDesc.iTextureIndexAlpha = m_pAlphaTextureCom->Get_TextureCount();
+	if (m_pAlphaTextureCom != nullptr && m_tParticleDesc.iTextureIndexAlpha >= m_pAlphaTextureCom->Get_TextureCount())
+		m_tParticleDesc.iTextureIndexAlpha = m_pAlphaTextureCom->Get_TextureCount() - 1;
 }
 
 CParticle* CParticle::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const PARTICLE_DESC* pParticleDesc, const wstring& strParticleFilePath)

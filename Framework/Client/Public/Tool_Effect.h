@@ -31,6 +31,7 @@ private:
 	void Load_Effect(const char* pFileName);
 
 	wstring Select_FolderName(_uint iFolderIndex);
+	_uint   Get_FolderIndex(wstring& strName);
 
 private:
 	class CGameObject* m_pEffect = nullptr;
@@ -40,8 +41,27 @@ private:
 	_float m_fRotation[3];
 	_float m_fScale[3];
 
+	char m_cBinaryName[MAX_PATH];
 
+	const char* m_cEffectType[3] = { "EFFECT_TEXTURE", "EFFECT_MESH", "EFFECT_END" };
+	_int m_iEffectTypeIndex = { 2 };
 
+	_float m_fEffectRange[3];
+	_float m_fEffectRangeDistance[2];
+
+	_float m_fEffectScaleStart[2];
+	_float m_fEffectScaleDir[3];
+
+	_float m_fEffectMoveDir[3];
+
+	_float m_fEffectRotationDir[3];
+
+	_float m_ffEffectUVIndex[2];
+	_float m_ffEffectUVMaxCount[2];
+
+	_float m_fEffectUVFlow[2];
+
+	char m_cModelName[MAX_PATH] = { "Prototype_Component_Model_" };
 	const char* m_cFolderName[22] = 
 	{ "Aura", "Crack", "Decal", "Fire", "Flare", 
 		"Glow", "Hit", "Ice", "Image", "Mask", 
@@ -51,13 +71,9 @@ private:
 	_int m_iDiffuseFolderIndex = { 21 };
 	_int m_iAlphaFolderIndex   = { 21 };
 
-	char m_cLoadFbxName[MAX_PATH] = { "" };
-
-	char m_cDiffuseTextureName[MAX_PATH] = { "" };
-	char m_cAlphaTextureName[MAX_PATH] = { "" };
-
-	char m_cDiffuseTexturePath[MAX_PATH] = { "" };
-	char m_cAlphaTexturePath[MAX_PATH] = { "" };
+	_float m_fAlphaStart[2];
+	_float m_fAlphaSpeed[2];
+	_float m_fAlphaChangeStartDelay[2];
 
 public:
 	static CTool_Effect* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

@@ -2,8 +2,7 @@
 #include "Effect.h"
 #include "GameInstance.h"
 #include "Effect_Manager.h"
-
-
+#include "Utils.h"
 
 CEffect::CEffect(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameObject(pDevice, pContext, strObjectTag, OBJ_TYPE::OBJ_EFFECT)
@@ -16,7 +15,117 @@ CEffect::CEffect(const CEffect& rhs)
 	, m_fAccDeletionTime(0.f)
 	, m_fAccIndex(0.f)
 {
-	m_tEffectDesc.fAlpha = 1.f;
+}
+
+void CEffect::Set_EffectDesc(const EFFECT_DESC& tDesc)
+{
+	m_tEffectDesc = tDesc;
+
+	if (m_tEffectDesc.eType == EFFECT_TYPE::EFFECT_MESH)
+	{
+		Set_Model();
+		if (m_pVIBufferCom != nullptr)
+			Safe_Release(m_pVIBufferCom);
+	}
+	else if (m_tEffectDesc.eType == EFFECT_TYPE::EFFECT_TEXTURE)
+	{
+		if (m_pVIBufferCom == nullptr)
+			m_pVIBufferCom = static_cast<CVIBuffer_Rect*>(GI->Clone_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect")));
+	}
+
+	Set_Texture_Diffuse();
+	Set_Texture_Alpha();
+
+	Reset_Effect();
+}
+
+void CEffect::Set_Gravity(_bool bGravity)
+{
+
+}
+
+void CEffect::Set_MoveDir(_vector vDir)
+{
+	XMStoreFloat3(&m_tEffectDesc.fMoveDir, XMVector3Normalize(vDir));
+}
+
+void CEffect::Reset_UV()
+{
+	m_bEnd = false;
+
+	m_fAccIndex  = 0.f;
+	m_fAccUVFlow = _float2(0.f, 0.f);
+
+	m_tEffectDesc.fUVIndex = _float2(0.f, 0.f);
+}
+
+void CEffect::Reset_Effect()
+{
+	m_bEffectDie       = false;
+	m_fAccDeletionTime = 0.f;
+
+	// 위치 조정
+	_vector vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	vPosition = XMVectorSet(
+		XMVectorGetX(vPosition) + CUtils::Random_Float(-m_tEffectDesc.fRange.x, m_tEffectDesc.fRange.x),
+		XMVectorGetY(vPosition) + CUtils::Random_Float(-m_tEffectDesc.fRange.y, m_tEffectDesc.fRange.y),
+		XMVectorGetZ(vPosition) + CUtils::Random_Float(-m_tEffectDesc.fRange.z, m_tEffectDesc.fRange.z),
+		XMVectorGetW(vPosition));
+
+#pragma region 크기
+	if (m_tEffectDesc.bScaleSameRate) {
+		_float fScale = CUtils::Random_Float(m_tEffectDesc.fScaleStart.x, m_tEffectDesc.fScaleStart.y);
+		m_pTransformCom->Set_Scale(_float3(fScale, fScale, fScale));
+	}
+	else
+	{
+		m_pTransformCom->Set_Scale(_float3(
+			CUtils::Random_Float(m_tEffectDesc.fScaleStart.x, m_tEffectDesc.fScaleStart.y),
+			CUtils::Random_Float(m_tEffectDesc.fScaleStart.x, m_tEffectDesc.fScaleStart.y),
+			CUtils::Random_Float(m_tEffectDesc.fScaleStart.x, m_tEffectDesc.fScaleStart.y)));
+	}
+
+	if (m_tEffectDesc.bScaleChange)
+	{
+		m_tEffectDesc.fScaleChangeStartDelay;
+		m_tEffectDesc.fScaleChangeTime;
+
+
+	}
+#pragma endregion
+
+	// 이동 방향 셋팅
+
+
+	// 시작 위치 거리 셋팅
+	_float fDistance = CUtils::Random_Float(m_tEffectDesc.fRangeDistance.x, m_tEffectDesc.fRangeDistance.y);
+	vPosition = XMVectorSet(
+		XMVectorGetX(vPosition) + m_tEffectDesc.fMoveDir.x * fDistance,
+		XMVectorGetY(vPosition) + m_tEffectDesc.fMoveDir.y * fDistance,
+		XMVectorGetZ(vPosition) + m_tEffectDesc.fMoveDir.z * fDistance,
+		XMVectorGetW(vPosition));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPosition);
+
+#pragma region 알파
+	m_fAlpha = CUtils::Random_Float(m_tEffectDesc.fAlphaStart.x, m_tEffectDesc.fAlphaStart.y);
+	if (m_tEffectDesc.bAlphaChange)
+	{
+		m_fAlphaChangeStartTime  = 0.f;
+		m_fAlphaChangeStartDelay = CUtils::Random_Float(m_tEffectDesc.fAlphaChangeStartDelay.x, m_tEffectDesc.fAlphaChangeStartDelay.y);
+	}
+
+	if (m_tEffectDesc.bAlphaCreate)
+	{
+		m_fAlpha           = 0.f;
+		m_bAlphaCreateSucc = false;
+	}
+	else if (m_tEffectDesc.bAlphaDelete)
+		m_bAlphaCreateSucc = true;
+
+	m_fAlphaSpeed = CUtils::Random_Float(m_tEffectDesc.fAlphaSpeed.x, m_tEffectDesc.fAlphaSpeed.y);
+#pragma endregion
+
+	Reset_UV();
 }
 
 HRESULT CEffect::Initialize_Prototype(const EFFECT_DESC* tEffectDesc)
@@ -41,109 +150,120 @@ HRESULT CEffect::Initialize(void* pArg)
 	//	m_tEffectDesc.iTextureIndexAlpha = m_pAlphaTextureCom->Find_Index(m_tEffectDesc.strAlphaTexturName);
 	XMStoreFloat4x4(&m_ParentMatrix, XMMatrixIdentity());
 
+	Reset_Effect();
+
 	return S_OK;
 }
 
 void CEffect::Tick(_float fTimeDelta)
 {
-	if (m_bDead && GI->Get_CurrentLevel() != LEVEL_TOOL)
+	if (m_bDead)
 		return;
 
+	// 지속 시간
 	m_fAccDeletionTime += fTimeDelta;
-
-	if (m_fAccDeletionTime >= m_tEffectDesc.fLifeTime)
+	if (m_bEffectDie || m_fAccDeletionTime >= m_tEffectDesc.fLifeTime )
 	{
-		m_fAccDeletionTime = 0.f;
-		//Set_Dead(true);
+		m_bEffectDie = true;
+		if (GI->Get_CurrentLevel() != LEVEL_TOOL)
+			Set_Dead(true);
+    }
+
+	if (m_bDead || m_bEffectDie)
+		return;
+
+	// 애니메이션
+	if (m_tEffectDesc.bAnimation)
+	{
+		if (m_tEffectDesc.bIncrement)
+			Increment(fTimeDelta);
+		else
+			Decrement(fTimeDelta);
 	}
 
-	if (m_tEffectDesc.bIncrement)
-		Increment(fTimeDelta);
-	else
-		Decrement(fTimeDelta);
+	// UVFlow
+	if (m_tEffectDesc.bUVFlow)
+	{
+		m_fAccUVFlow.x += m_tEffectDesc.fUVFlow.x * fTimeDelta;
+		m_fAccUVFlow.y += m_tEffectDesc.fUVFlow.y * fTimeDelta;
+	}
 
-	m_tEffectDesc.fAccUVFlow.x += m_tEffectDesc.vUVFlow.x * fTimeDelta;
-	m_tEffectDesc.fAccUVFlow.y += m_tEffectDesc.vUVFlow.y * fTimeDelta;
-	if(m_tEffectDesc.fAlpha > 0.f)
-		m_tEffectDesc.fAlpha -= m_tEffectDesc.fDestAlphaSpeed * fTimeDelta;
+	// 알파
+	Change_Alpha(fTimeDelta);
 
-
+	// 크기
 	_matrix WorldMatrix = m_pTransformCom->Get_WorldMatrix();
-	WorldMatrix.r[CTransform::STATE_RIGHT] += XMVectorSet(1.f, 0.f, 0.f, 0.f) * XMVectorGetX(XMVector3Normalize(XMLoadFloat3(&m_tEffectDesc.vScaleDir))) * m_tEffectDesc.fScaleSpeed * fTimeDelta;
-	WorldMatrix.r[CTransform::STATE_UP] += XMVectorSet(0.f, 1.f, 0.f, 0.f) * XMVectorGetY(XMVector3Normalize(XMLoadFloat3(&m_tEffectDesc.vScaleDir))) * m_tEffectDesc.fScaleSpeed * fTimeDelta;
-	WorldMatrix.r[CTransform::STATE_LOOK] += XMVectorSet(0.f, 0.f, 1.f, 0.f) * XMVectorGetZ(XMVector3Normalize(XMLoadFloat3(&m_tEffectDesc.vScaleDir))) * m_tEffectDesc.fScaleSpeed * fTimeDelta;
+	WorldMatrix.r[CTransform::STATE_RIGHT] += XMVectorSet(1.f, 0.f, 0.f, 0.f) * XMVectorGetX(XMVector3Normalize(XMLoadFloat3(&m_tEffectDesc.fScaleDir))) * m_tEffectDesc.fScaleSpeed * fTimeDelta;
+	WorldMatrix.r[CTransform::STATE_UP]    += XMVectorSet(0.f, 1.f, 0.f, 0.f) * XMVectorGetY(XMVector3Normalize(XMLoadFloat3(&m_tEffectDesc.fScaleDir))) * m_tEffectDesc.fScaleSpeed * fTimeDelta;
+	WorldMatrix.r[CTransform::STATE_LOOK]  += XMVectorSet(0.f, 0.f, 1.f, 0.f) * XMVectorGetZ(XMVector3Normalize(XMLoadFloat3(&m_tEffectDesc.fScaleDir))) * m_tEffectDesc.fScaleSpeed * fTimeDelta;
 	m_pTransformCom->Set_WorldMatrix(WorldMatrix);
 
-	
-	_vector vMoveDir = XMVector3Normalize(XMLoadFloat3(&m_tEffectDesc.vMoveDir));
-	_vector vTurnDir = XMVector3Normalize(XMLoadFloat3(&m_tEffectDesc.vTurnDir));
-
+	// 이동
+	_vector vMoveDir = XMVector3Normalize(XMLoadFloat3(&m_tEffectDesc.fMoveDir));
 	m_pTransformCom->Move(vMoveDir, m_tEffectDesc.fMoveSpeed, fTimeDelta);
+
+	// 회전
+	_vector vTurnDir = XMVector3Normalize(XMLoadFloat3(&m_tEffectDesc.fTurnDir));
 	m_pTransformCom->Turn(vTurnDir, m_tEffectDesc.fTurnSpeed, fTimeDelta);
 
+	// m_ParentMatrix
 	if (nullptr != m_pOwnerObject)
 	{
 		CTransform* pOwnerTransform = m_pOwnerObject->Get_Component<CTransform>(L"Com_Transform");
-
 		if (nullptr != pOwnerTransform)
-		{
 			XMStoreFloat4x4(&m_ParentMatrix, pOwnerTransform->Get_WorldMatrix());
-		}
 	}
 }
 
 void CEffect::LateTick(_float fTimeDelta)
 {
-	__super::LateTick(fTimeDelta);
-
-	if (m_bDead && GI->Get_CurrentLevel() != LEVEL_TOOL)
+	if (m_bDead || m_bEffectDie)
 		return;
+
+	__super::LateTick(fTimeDelta);
 
 	_float4x4 WorldMatrix;
 	_matrix OffetMatrix = XMLoadFloat4x4(&m_tEffectDesc.OffsetMatrix);
 	XMStoreFloat4x4(&WorldMatrix, OffetMatrix * m_pTransformCom->Get_WorldMatrix() * XMLoadFloat4x4(&m_ParentMatrix));
 
+	// 빌보드
 	if (m_tEffectDesc.bBillboard)
 	{
-		_matrix Temp = XMLoadFloat4x4(&WorldMatrix);
-		_vector vPosition = Temp.r[CTransform::STATE_POSITION];
+		_matrix Temp         = XMLoadFloat4x4(&WorldMatrix);
+		_vector vPosition    = Temp.r[CTransform::STATE_POSITION];
 		_vector vCamPosition = XMLoadFloat4(&GI->Get_CamPosition());
 
 		_float fLookScale = XMVectorGetX(XMVector3Length(Temp.r[CTransform::STATE_LOOK]));
-		_vector vLook = XMVectorSetW(XMVector3Normalize(vPosition - vCamPosition), 0.f) * fLookScale;
+		_vector vLook     = XMVectorSetW(XMVector3Normalize(vPosition - vCamPosition), 0.f) * fLookScale;
 
 		_float fRightScale = XMVectorGetX(XMVector3Length(Temp.r[CTransform::STATE_RIGHT]));
-		_vector vRight = XMVectorSetW(XMVector3Normalize(XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vLook)), 0.f) * fRightScale;
+		_vector vRight     = XMVectorSetW(XMVector3Normalize(XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vLook)), 0.f) * fRightScale;
 
 		_float fUpScale = XMVectorGetX(XMVector3Length(Temp.r[CTransform::STATE_UP]));
-		_vector vUp = XMVectorSetW(XMVector3Normalize(XMVector3Cross(vLook, vRight)), 0.f) * fUpScale;
+		_vector vUp     = XMVectorSetW(XMVector3Normalize(XMVector3Cross(vLook, vRight)), 0.f) * fUpScale;
 
 		Temp.r[CTransform::STATE_RIGHT] = vRight;
-		Temp.r[CTransform::STATE_UP] = vUp;
-		Temp.r[CTransform::STATE_LOOK] = vLook;
+		Temp.r[CTransform::STATE_UP]    = vUp;
+		Temp.r[CTransform::STATE_LOOK]  = vLook;
 
 		XMStoreFloat4x4(&WorldMatrix, Temp);
 	}
 	
-
-
+	// 리지드바디
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 
+	// 인스턴싱 데이터
 	CRenderer::EFFECT_INSTANCE_DESC EffectInstanceDesc;
 	ZeroMemory(&EffectInstanceDesc, sizeof CRenderer::EFFECT_INSTANCE_DESC);
-
-	EffectInstanceDesc.g_fMaxCountX = m_tEffectDesc.fMaxCount.x;
-	EffectInstanceDesc.g_fMaxCountY = m_tEffectDesc.fMaxCount.y;
-	EffectInstanceDesc.g_fAlpha = m_tEffectDesc.fAlpha;
-	EffectInstanceDesc.g_fUVIndex = m_tEffectDesc.vUVIndex;
-	EffectInstanceDesc.g_fUVFlow = m_tEffectDesc.fAccUVFlow;
-
+	EffectInstanceDesc.g_fUVIndex  = m_tEffectDesc.fUVIndex;
+	EffectInstanceDesc.g_fMaxCount = m_tEffectDesc.fMaxCount;
+	EffectInstanceDesc.g_fUVFlow   = m_fAccUVFlow;
+	EffectInstanceDesc.g_iUVLoop   = m_tEffectDesc.iUVLoop;
+	EffectInstanceDesc.g_fAlpha    = m_fAlpha;
 	EffectInstanceDesc.g_fAdditiveDiffuseColor = m_tEffectDesc.vAdditiveDiffuseColor;
-	EffectInstanceDesc.g_vBloomPower = _float4(m_tEffectDesc.vBloomPower.x, m_tEffectDesc.vBloomPower.y, m_tEffectDesc.vBloomPower.z, 0.f);
-	EffectInstanceDesc.g_iCutUV = m_tEffectDesc.bCutUV;
+	EffectInstanceDesc.g_vBloomPower           = _float4(m_tEffectDesc.vBloomPower.x, m_tEffectDesc.vBloomPower.y, m_tEffectDesc.vBloomPower.z, 0.f);
 
-
-
+	// 컬링
 	if (true == GI->Intersect_Frustum_World(XMLoadFloat4x4(&WorldMatrix).r[CTransform::STATE_POSITION], 3.f))
 	{
 		if (m_tEffectDesc.eType == EFFECT_TYPE::EFFECT_MESH)
@@ -151,13 +271,12 @@ void CEffect::LateTick(_float fTimeDelta)
 		else
 			m_pRendererCom->Add_RenderGroup_Instancing_Effect(CRenderer::RENDER_EFFECT, CRenderer::INSTANCING_SHADER_TYPE::EFFECT_TEXTURE, this, WorldMatrix, EffectInstanceDesc);
 	}
-	
 }
 
 
 HRESULT CEffect::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
 {
-	if (m_bDead && GI->Get_CurrentLevel() != LEVEL_TOOL)
+	if (m_bDead && GI->Get_CurrentLevel() != LEVEL_TOOL || m_tEffectDesc.eType == EFFECT_TYPE::EFFECT_END)
 		return S_OK;
 
 	if (FAILED(Bind_ShaderResource_Instance(pInstancingShader)))
@@ -165,6 +284,9 @@ HRESULT CEffect::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancin
 
 	if (m_tEffectDesc.eType == EFFECT_TYPE::EFFECT_MESH)
 	{
+		if(m_pModelCom == nullptr)
+			return S_OK;
+
 		_uint iNumMesh = m_pModelCom->Get_NumMeshes();
 		for (_uint i = 0; i < iNumMesh; ++i)
 		{
@@ -177,41 +299,50 @@ HRESULT CEffect::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancin
 		pInstancingShader->Begin(m_tEffectDesc.iShaderPass);
 		pInstancingBuffer->Render(WorldMatrices, m_pVIBufferCom);
 	}
+
 	return S_OK;
 }
 
-void CEffect::Set_EffectDesc(const EFFECT_DESC& tDesc)
+HRESULT CEffect::Bind_ShaderResource_Instance(CShader* pShader)
 {
-	m_tEffectDesc = tDesc;
-	Set_Texture_Diffuse();
-	Set_Texture_Alpha();
+	if (FAILED(pShader->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
+		return E_FAIL;
+
+	if (FAILED(pShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+		return E_FAIL;
+
+
+	if (FAILED(pShader->Bind_RawValue("g_fBlurPower", &m_tEffectDesc.fBlurPower, sizeof(_float))))
+		return E_FAIL;
+
+	if (m_pDiffuseTextureCom != nullptr && -1 < m_tEffectDesc.iTextureIndexDiffuse) {
+		if (FAILED(m_pDiffuseTextureCom->Bind_ShaderResource(pShader, "g_DiffuseTexture", m_tEffectDesc.iTextureIndexDiffuse)))
+			return E_FAIL;
+	}
+	if (m_pAlphaTextureCom != nullptr && -1 < m_tEffectDesc.iTextureIndexAlpha) {
+		if (FAILED(m_pAlphaTextureCom->Bind_ShaderResource(pShader, "g_AlphaTexture", m_tEffectDesc.iTextureIndexAlpha)))
+			return E_FAIL;
+	}
+
+	if (m_tEffectDesc.iShaderPass <= 3)
+	{
+		// 둘다 없다면
+		if (m_pDiffuseTextureCom == nullptr && m_pAlphaTextureCom == nullptr)
+			m_tEffectDesc.iShaderPass = 0;
+		// 디퓨즈 텍스쳐만 있다면
+		else if (m_pDiffuseTextureCom != nullptr && m_pAlphaTextureCom == nullptr)
+			m_tEffectDesc.iShaderPass = 1;
+		// 알파 텍스쳐만 있다면
+		else if (m_pDiffuseTextureCom == nullptr && m_pAlphaTextureCom != nullptr)
+			m_tEffectDesc.iShaderPass = 2;
+		// 둘다 있다면
+		else if (m_pDiffuseTextureCom != nullptr && m_pAlphaTextureCom != nullptr)
+			m_tEffectDesc.iShaderPass = 3;
+	}
+
+	return S_OK;
 }
 
-void CEffect::Set_Gravity(_bool bGravity)
-{
-
-}
-
-void CEffect::Set_MoveDir(_vector vDir)
-{
-	XMStoreFloat3(&m_tEffectDesc.vMoveDir, XMVector3Normalize(vDir));
-}
-
-void CEffect::Reset_Effect()
-{
-
-
-}
-
-void CEffect::Reset_UV()
-{
-	m_bEnd = false;
-
-	m_fAccIndex = 0.f;
-	m_tEffectDesc.vUVIndex   = { 0.f, 0.f };
-	m_tEffectDesc.fAccUVFlow = { 0.f, 0.f };
-	m_tEffectDesc.vUVFlow    = { 0.f, 0.f };
-}
 
 void CEffect::Increment(_float fTimeDelta)
 {
@@ -222,14 +353,14 @@ void CEffect::Increment(_float fTimeDelta)
 	if (m_fAccIndex >= 1.f)
 	{
 		m_fAccIndex = 0.f;
-		m_tEffectDesc.vUVIndex.x++;
-		if (m_tEffectDesc.fMaxCount.x <= m_tEffectDesc.vUVIndex.x)
+		m_tEffectDesc.fUVIndex.x++;
+		if (m_tEffectDesc.fMaxCount.x <= m_tEffectDesc.fUVIndex.x)
 		{
-			m_tEffectDesc.vUVIndex.x = 0;
-			m_tEffectDesc.vUVIndex.y++;
-			if (m_tEffectDesc.fMaxCount.y <= m_tEffectDesc.vUVIndex.y)
+			m_tEffectDesc.fUVIndex.x = 0;
+			m_tEffectDesc.fUVIndex.y++;
+			if (m_tEffectDesc.fMaxCount.y <= m_tEffectDesc.fUVIndex.y)
 			{
-				m_tEffectDesc.vUVIndex.y = 0;
+				m_tEffectDesc.fUVIndex.y = 0;
 				if (m_tEffectDesc.bLoop == false)
 					m_bEnd = true;
 				else
@@ -251,14 +382,14 @@ void CEffect::Decrement(_float fTimeDelta)
 	if (m_fAccIndex >= 1.f)
 	{
 		m_fAccIndex = 0.f;
-		m_tEffectDesc.vUVIndex.x--;
-		if (0 > m_tEffectDesc.vUVIndex.x)
+		m_tEffectDesc.fUVIndex.x--;
+		if (0 > m_tEffectDesc.fUVIndex.x)
 		{
-			m_tEffectDesc.vUVIndex.x = m_tEffectDesc.fMaxCount.x;
-			m_tEffectDesc.vUVIndex.y--;
-			if (0 > m_tEffectDesc.vUVIndex.y)
+			m_tEffectDesc.fUVIndex.x = m_tEffectDesc.fMaxCount.x;
+			m_tEffectDesc.fUVIndex.y--;
+			if (0 > m_tEffectDesc.fUVIndex.y)
 			{
-				m_tEffectDesc.vUVIndex.y = m_tEffectDesc.fMaxCount.y;
+				m_tEffectDesc.fUVIndex.y = m_tEffectDesc.fMaxCount.y;
 				if (m_tEffectDesc.bLoop == false)
 					m_bEnd = true;
 				else
@@ -266,6 +397,77 @@ void CEffect::Decrement(_float fTimeDelta)
 			}
 		}
 	}
+}
+
+void CEffect::Change_Alpha(_float fTimeDelta)
+{
+	// 생성 이벤트 0 -> 1
+	if (m_tEffectDesc.bAlphaCreate && !m_bAlphaCreateSucc && m_fAlpha < 1.f)
+	{
+		m_fAlpha += fTimeDelta * m_fAlphaSpeed;
+		if (m_fAlpha >= 1.f)
+		{
+			m_fAlpha           = 1.f;
+			m_bAlphaCreateSucc = true;
+		}
+	}
+	else
+	{
+		// 삭제 이벤트 1 -> 0
+		if (m_tEffectDesc.bAlphaDelete
+			&& m_bAlphaCreateSucc
+			&& m_fAccDeletionTime > m_tEffectDesc.fLifeTime - 2.f)
+		{
+			m_fAlpha -= fTimeDelta * m_fAlphaSpeed;
+			if (m_fAlpha < 0.f)
+			{
+				m_fAlpha     = 0.f;
+				m_bEffectDie = true;
+			}
+		}
+		else
+		{
+			if (m_tEffectDesc.bAlphaChange)
+			{
+				m_fAlphaChangeStartTime += fTimeDelta;
+				if (m_fAlphaChangeStartTime >= m_fAlphaChangeStartDelay)
+				{
+					if (m_tEffectDesc.bAlphaIn) // 0 -> 1  // 투명 -> 색상
+					{
+						if (m_fAlpha < 1.f)
+							m_fAlpha += fTimeDelta * m_fAlphaSpeed;
+						else
+							m_fAlpha = 1.f;
+					}
+					else // 1 -> 0 // 색상 -> 투명
+					{
+						if (m_fAlpha > 0.f)
+							m_fAlpha -= fTimeDelta * m_fAlphaSpeed;
+						else
+						{
+							m_fAlpha     = 0.f;
+							m_bEffectDie = true;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+void CEffect::Set_Model()
+{
+	_int  iBufferSizeName = WideCharToMultiByte(CP_UTF8, 0, m_tEffectDesc.strModelName.c_str(), -1, nullptr, 0, nullptr, nullptr);
+	char* pszFileName = new char[iBufferSizeName];
+	WideCharToMultiByte(CP_UTF8, 0, m_tEffectDesc.strModelName.c_str(), -1, pszFileName, iBufferSizeName, nullptr, nullptr);
+	if (strcmp(pszFileName, "") != 0)
+	{
+		if (m_pModelCom != nullptr)
+			Safe_Release(m_pModelCom);
+
+		m_pModelCom = static_cast<CModel*>(GI->Clone_Component(LEVEL_STATIC, m_tEffectDesc.strModelName));
+	}
+	Safe_Delete(pszFileName);
 }
 
 void CEffect::Set_Texture_Diffuse()
@@ -282,7 +484,7 @@ void CEffect::Set_Texture_Diffuse()
 	}
 	Safe_Delete(pszFileName);
 
-	if (m_pDiffuseTextureCom != nullptr && m_tEffectDesc.iTextureIndexDiffuse > m_pDiffuseTextureCom->Get_TextureCount())
+	if (m_pDiffuseTextureCom != nullptr && m_tEffectDesc.iTextureIndexDiffuse >= m_pDiffuseTextureCom->Get_TextureCount())
 		m_tEffectDesc.iTextureIndexDiffuse = m_pDiffuseTextureCom->Get_TextureCount() - 1;
 }
 
@@ -300,51 +502,9 @@ void CEffect::Set_Texture_Alpha()
 	}
 	Safe_Delete(pszFileName);
 
-	if (m_pAlphaTextureCom != nullptr && m_tEffectDesc.iTextureIndexAlpha > m_pAlphaTextureCom->Get_TextureCount())
+	if (m_pAlphaTextureCom != nullptr && m_tEffectDesc.iTextureIndexAlpha >= m_pAlphaTextureCom->Get_TextureCount())
 		m_tEffectDesc.iTextureIndexAlpha = m_pAlphaTextureCom->Get_TextureCount() - 1;
 }
-
-HRESULT CEffect::Bind_ShaderResource_Instance(CShader* pShader)
-{
-	if (FAILED(pShader->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
-		return E_FAIL;
-
-	if (FAILED(pShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
-		return E_FAIL;
-
-
-	if (FAILED(pShader->Bind_RawValue("g_fBlurPower", &m_tEffectDesc.fBlurPower, sizeof(_float))))
-		return E_FAIL;
-
-	if (m_pDiffuseTextureCom != nullptr && -1 < m_tEffectDesc.iTextureIndexDiffuse)
-	{
-		if (FAILED(m_pDiffuseTextureCom->Bind_ShaderResource(pShader, "g_DiffuseTexture", m_tEffectDesc.iTextureIndexDiffuse)))
-			return E_FAIL;
-	}
-
-	if (m_pAlphaTextureCom  != nullptr && -1 < m_tEffectDesc.iTextureIndexAlpha)
-	{
-		if (FAILED(m_pAlphaTextureCom->Bind_ShaderResource(pShader, "g_AlphaTexture", m_tEffectDesc.iTextureIndexAlpha)))
-			return E_FAIL;
-	}
-
-	// 둘다 없다면
-	if (m_pDiffuseTextureCom == nullptr && m_pAlphaTextureCom == nullptr)
-		m_tEffectDesc.iShaderPass = 0;
-	// 디퓨즈 텍스쳐만 있다면
-	else if (m_pDiffuseTextureCom != nullptr && m_pAlphaTextureCom == nullptr)
-		m_tEffectDesc.iShaderPass = 1;
-	// 알파 텍스쳐만 있다면
-	else if (m_pDiffuseTextureCom == nullptr && m_pAlphaTextureCom != nullptr)
-		m_tEffectDesc.iShaderPass = 2;
-	// 둘다 있다면
-	else if (m_pDiffuseTextureCom != nullptr && m_pAlphaTextureCom != nullptr)
-		m_tEffectDesc.iShaderPass = 3;
-
-	return S_OK;
-}
-
-
 
 HRESULT CEffect::Ready_Components()
 {
@@ -365,16 +525,16 @@ HRESULT CEffect::Ready_Components()
 	/*m_pRigidBodyCom->Set_RefHeight(-999.f);
 	m_pRigidBodyCom->Set_Gravity(m_bGravity);*/
 
-
 	Set_Texture_Diffuse();
 	Set_Texture_Alpha();
 
-
 	/* For.Com_Model */
-	if(m_tEffectDesc.eType == EFFECT_TYPE::EFFECT_MESH)
+	if (m_tEffectDesc.eType == EFFECT_TYPE::EFFECT_MESH)
 	{
-		if (FAILED(__super::Add_Component(LEVEL_STATIC, m_tEffectDesc.strModelName, TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
-			return E_FAIL;
+		Set_Model();
+
+		//if (FAILED(__super::Add_Component(LEVEL_STATIC, m_tEffectDesc.strModelName, TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+		//	return E_FAIL;
 	}
 	/* For.Com_VIBuffer */
 	else
