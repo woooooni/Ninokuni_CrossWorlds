@@ -53,6 +53,7 @@ public:
 
 	HRESULT OnOff_SubMenu(_bool bOnOff, _uint iMagicNum);
 	HRESULT Off_OtherSubBtn(_uint iMagicNum);
+	HRESULT OnOff_DialogWindow(_bool bOnOff, _uint iMagicNum);
 
 	HRESULT OnOff_WorldMap(_bool bOnOff);
 	HRESULT OnOff_CostumeWindow(_bool bOnOff); // 코스튬 탭 Window 비/활성화
@@ -84,6 +85,8 @@ private:
 	class CUI_MainMenu* m_pMainBG = { nullptr }; // MainMenu Background (버튼과 따로 관리된다)
 	class CUI_WindowQuest* m_pWindowQuest = { nullptr };
 
+	class CUI_Text_TabMenu* m_pTabMenuTitle = { nullptr };
+
 	// PlayerStatus
 	vector<class CUI_PlayerEXPBar*> m_PlayerEXP;
 
@@ -112,12 +115,14 @@ private:
 
 	// For World Map
 	class CUI_WindowWorldMap* m_pWorldMapBG = { nullptr };
-
 	// For Skill Section
 	class CUI_SkillSection_Background* m_pSkillBG = { nullptr };
-
 	// For Imajinn Section
 	class CUI_ImajinnSection_Background* m_pImajinnBG = { nullptr };
+	// For Dialog
+	class CUI_Dialog_Window* m_pDialogWindow = { nullptr };
+	class CUI_Dialog_MiniWindow* m_pDialogMini = { nullptr };
+	vector<class CUI_Dialog_Portrait*> m_Portrait;
 
 private:
 	ID3D11Device* m_pDevice = { nullptr };

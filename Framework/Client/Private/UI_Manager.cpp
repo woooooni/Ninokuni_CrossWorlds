@@ -22,24 +22,29 @@
 #include "UI_PlayerHPBar.h"
 #include "UI_BasicButton.h"
 #include "UI_WindowQuest.h"
+#include "UI_Dialog_Flip.h"
 #include "UI_BtnShowMenu.h"
 #include "UI_Setting_Icon.h"
 #include "UI_SubMenu_Shop.h"
+#include "UI_Text_TabMenu.h"
 #include "UI_BtnInventory.h"
 #include "UI_PlayerEXPBar.h"
 #include "UI_MonsterHP_Bar.h"
 #include "UI_MenuSeparator.h"
+#include "UI_Dialog_Window.h"
 #include "UI_BtnQuickQuest.h"
 #include "UI_Setting_Slider.h"
 #include "UI_Setting_Window.h"
 #include "UI_BtnShowSetting.h"
 #include "UI_WindowWorldMap.h"
+#include "UI_Dialog_Portrait.h"
 #include "UI_Loading_Imajinn.h"
 #include "UI_Setting_Section.h"
 #include "UI_SubMenu_Imajinn.h"
 #include "UI_BtnChangeCamera.h"
 #include "UI_Loading_MainLogo.h"
 #include "UI_Btn_WorldMapIcon.h"
+#include "UI_Dialog_MiniWindow.h"
 #include "UI_Default_BackCloud.h"
 #include "UI_Loading_Character.h"
 #include "UI_SubMenu_Character.h"
@@ -210,9 +215,9 @@ HRESULT CUI_Manager::Ready_Loadings()
 	CUI::UI_INFO UIDesc = {};
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 	UIDesc.fCX = g_iWinSizeX;
-	UIDesc.fCY = g_iWinSizeY;
+	UIDesc.fCY = g_iWinSizeY * 2.f;
 	UIDesc.fX = g_iWinSizeX * 0.5f;
-	UIDesc.fY = g_iWinSizeY * 0.5f;
+	UIDesc.fY = g_iWinSizeY;
 	CGameObject* pCharacter = nullptr;
 	if (FAILED(GI->Add_GameObject(LEVEL_LOADING, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Loading_CharacterUI"), &UIDesc, &pCharacter)))
 		return E_FAIL;
@@ -651,8 +656,8 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	CGameObject* pPlayerStat = nullptr;
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
-	UIDesc.fCX = 512.f * 0.75f;
-	UIDesc.fCY = 175.f * 0.7f;
+	UIDesc.fCX = 512.f * 0.6f;
+	UIDesc.fCY = 175.f * 0.57;
 	UIDesc.fX = UIDesc.fCX * 0.5f;
 	UIDesc.fY = UIDesc.fCY * 0.5f;
 
@@ -1329,7 +1334,7 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 
 	UIDesc.fCX = 2240.f;
 	UIDesc.fCY = 1260.f;
-	UIDesc.fX = UIDesc.fCX * 0.5f;
+	UIDesc.fX = UIDesc.fCX * 0.5f - 300.f;
 	UIDesc.fY = g_iWinSizeY * 0.5f + 100.f;
 
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_WorldMap_Background"), &UIDesc, &pBackground)))
@@ -1434,6 +1439,8 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(pBackground);
 
+#pragma region MONSTER_HPBAR
+
 	// MonsterHP
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 	UIDesc.fCX = 300.f * 0.8f;
@@ -1480,6 +1487,68 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	if (nullptr == m_pMonsterElemental)
 		return E_FAIL;
 	Safe_AddRef(m_pMonsterElemental);
+
+#pragma endregion
+
+#pragma region DIALOGUE
+
+	// For Dialog
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	fOffset = 20.f;
+	UIDesc.fCX = 1050.f * 0.9f;
+	UIDesc.fCY = 359.f * 0.75f;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY - (UIDesc.fCY * 0.5f + fOffset);
+
+	pBackground = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Dialog_DefaultWindow"), &UIDesc, &pBackground)))
+		return E_FAIL;
+	m_pDialogWindow = dynamic_cast<CUI_Dialog_Window*>(pBackground);
+	if (nullptr == m_pDialogWindow)
+		return E_FAIL;
+	Safe_AddRef(m_pDialogWindow);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	fOffset = 130.f;
+	UIDesc.fCX = 820.f * 0.45f;
+	UIDesc.fCY = 348.f * 0.5f;
+	UIDesc.fX = g_iWinSizeX * 0.5f + 90.f;
+	UIDesc.fY = g_iWinSizeY - (UIDesc.fCY * 0.5f + fOffset);
+
+	pBackground = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Dialog_MiniWindow"), &UIDesc, &pBackground)))
+		return E_FAIL;
+	m_pDialogMini = dynamic_cast<CUI_Dialog_MiniWindow*>(pBackground);
+	if (nullptr == m_pDialogMini)
+		return E_FAIL;
+	Safe_AddRef(m_pDialogMini);
+
+	m_Portrait.reserve(2);
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	fOffset = 92.f;
+	UIDesc.fCX = 256.f * 0.95f;
+	UIDesc.fCY = 256.f * 0.95f;
+	UIDesc.fX = g_iWinSizeX * 0.5f - 180.f;
+	UIDesc.fY = g_iWinSizeY - (UIDesc.fCY * 0.5f + fOffset);
+
+	CGameObject* pPortrait = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Dialog_PortraitFrame"), &UIDesc, &pPortrait)))
+		return E_FAIL;
+	m_Portrait.push_back(dynamic_cast<CUI_Dialog_Portrait*>(pPortrait));
+	if (nullptr == pPortrait)
+		return E_FAIL;
+	Safe_AddRef(pPortrait);
+
+#pragma endregion
+
+	// Menu Title
+	CGameObject* pTabTitle = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Common_TabMenuTitle"), nullptr, &pTabTitle)))
+		return E_FAIL;
+	m_pTabMenuTitle = dynamic_cast<CUI_Text_TabMenu*>(pTabTitle);
+	if (nullptr == m_pTabMenuTitle)
+		return E_FAIL;
+	Safe_AddRef(m_pTabMenuTitle);
 
 	return S_OK;
 }
@@ -1650,6 +1719,30 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 			OnOff_GamePlaySetting(true);
 			m_pDefaultBG->Set_Active(false);
 		}
+	}
+
+	if (KEY_TAP(KEY::F8))
+	{
+		// DIalogBox Test
+		if (nullptr == m_pDialogWindow)
+			return E_FAIL;
+
+		if (m_pDialogWindow->Get_Active())
+			OnOff_DialogWindow(false, 0);
+		else
+			OnOff_DialogWindow(true, 0);
+	}
+
+	if (KEY_TAP(KEY::F7))
+	{
+		// DialogBox(Mini) Test
+		if (nullptr == m_pDialogMini)
+			return E_FAIL;
+
+		if (m_pDialogMini->Get_Active())
+			OnOff_DialogWindow(false, 1);
+		else
+			OnOff_DialogWindow(true, 1);
 	}
 
 	return S_OK;
@@ -2046,6 +2139,64 @@ HRESULT CUI_Manager::Off_OtherSubBtn(_uint iMagicNum)
 	return S_OK;
 }
 
+HRESULT CUI_Manager::OnOff_DialogWindow(_bool bOnOff, _uint iMagicNum)
+{
+	if (iMagicNum == 0) // Normal
+	{
+		if (nullptr == m_pDialogWindow)
+			return E_FAIL;
+
+		if (bOnOff) // On
+		{
+			if (!m_pDialogWindow->Get_Active())
+			{
+				m_pDialogWindow->Set_Active(true);
+				OnOff_GamePlaySetting(false);
+			}
+
+		}
+		else // Off
+		{
+			if (m_pDialogWindow->Get_Active())
+			{
+				m_pDialogWindow->Set_Active(false);
+				OnOff_GamePlaySetting(true);
+			}
+		}
+	}
+	else if (iMagicNum == 1) // Mini
+	{
+		if (nullptr == m_pDialogMini)
+			return E_FAIL;
+
+		if (bOnOff) // On
+		{
+			if (!m_pDialogMini->Get_Active())
+			{
+				m_pDialogMini->Set_Active(true);
+
+				for (auto& pPortrait : m_Portrait)
+					pPortrait->Set_Active(true);
+			}
+		}
+		else
+		{
+			if (m_pDialogMini->Get_Active())
+			{
+				m_pDialogMini->Set_Active(false);
+
+				for (auto& pPortrait : m_Portrait)
+					pPortrait->Set_Active(false);
+			}
+		}
+	}
+
+	else
+		return E_FAIL;
+
+	return S_OK;
+}
+
 HRESULT CUI_Manager::OnOff_WorldMap(_bool bOnOff)
 {
 	if (bOnOff) // ÄÒ´Ù
@@ -2054,7 +2205,10 @@ HRESULT CUI_Manager::OnOff_WorldMap(_bool bOnOff)
 		{
 			// ±âº» ¼¼ÆÃÀ» ²ô°í WorldMapÀ» ÄÒ´Ù
 			OnOff_GamePlaySetting(false);
+
 			m_pWorldMapBG->Set_Active(true);
+			m_pTabMenuTitle->Set_TextType(CUI_Text_TabMenu::UI_MENUTITLE::TITLE_WORLDMAP);
+			m_pTabMenuTitle->Set_Active(true);
 		}
 	}
 	else // ²ö´Ù
@@ -2063,6 +2217,8 @@ HRESULT CUI_Manager::OnOff_WorldMap(_bool bOnOff)
 		{
 			// WorldMapÀ» ²ô°í ±âº» ¼¼ÆÃÀ» ÄÒ´Ù
 			m_pWorldMapBG->Set_Active(false);
+			m_pTabMenuTitle->Set_Active(false);
+
 			OnOff_GamePlaySetting(true);
 		}
 	}
@@ -2486,6 +2642,27 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		CUI_Basic::Create(m_pDevice, m_pContext, L"UI_Common_TitleLine", CUI_Basic::UI_BASIC::UISTATIC_TITLELINE), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Dialog_DefaultWindow"),
+		CUI_Dialog_Window::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Dialog_MiniWindow"),
+		CUI_Dialog_MiniWindow::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Dialog_FlipArrow"),
+		CUI_Dialog_Flip::Create(m_pDevice, m_pContext, CUI_Dialog_Flip::UIFLIP_ARROW), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Dialog_FlipButton"),
+		CUI_Dialog_Flip::Create(m_pDevice, m_pContext, CUI_Dialog_Flip::UIFLIP_BUTTON), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Common_TabMenuTitle"),
+		CUI_Text_TabMenu::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Dialog_PortraitFrame"),
+		CUI_Dialog_Portrait::Create(m_pDevice, m_pContext, CUI_Dialog_Portrait::UI_PORTRAIT::PORTRAIT_FRAME), LAYER_UI)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -2707,6 +2884,11 @@ void CUI_Manager::Free()
 	Safe_Release(m_pMonsterFrame);
 	Safe_Release(m_pMonsterElemental);
 
+	Safe_Release(m_pDialogWindow);
+	Safe_Release(m_pDialogMini);
+
+	Safe_Release(m_pTabMenuTitle);
+
 	for (auto& pBasic : m_Basic)
 		Safe_Release(pBasic);
 	m_Basic.clear();
@@ -2754,6 +2936,10 @@ void CUI_Manager::Free()
 	for (auto& pEXP : m_PlayerEXP)
 		Safe_Release(pEXP);
 	m_PlayerEXP.clear();
+
+	for (auto& pPortrait : m_Portrait)
+		Safe_Release(pPortrait);
+	m_Portrait.clear();
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

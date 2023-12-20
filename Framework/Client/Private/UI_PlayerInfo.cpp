@@ -53,7 +53,7 @@ HRESULT CUI_PlayerInfo::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	Make_Child(64.f, -13.f, 160.f, 20.f, TEXT("Prototype_GameObject_UI_Player_HPBar"));
+	Make_Child(51.f, -11.f, 125.f, 16.f, TEXT("Prototype_GameObject_UI_Player_HPBar"));
 
 	return S_OK;
 }
@@ -75,9 +75,9 @@ void CUI_PlayerInfo::LateTick(_float fTimeDelta)
 		CRenderer::TEXT_DESC LevelDesc;
 		LevelDesc.strText = L"5"; // Temp
 		LevelDesc.strFontTag = L"Default_Bold";
-		LevelDesc.vPosition = m_vDefaultPosition; // 자릿수가 달라지면 Position.x를 조정한다.
+		LevelDesc.vPosition = m_vDefaultPosition;
 		LevelDesc.vColor = m_vShadowColor;
-		LevelDesc.vScale = { 1.f, 1.f };
+		LevelDesc.vScale = { 0.8f, 0.8f };
 		m_pRendererCom->Add_Text(LevelDesc); // 그림자
 
 		LevelDesc.vPosition = _float2(m_vDefaultPosition.x - 3.f, m_vDefaultPosition.y - 3.f);
@@ -90,7 +90,7 @@ void CUI_PlayerInfo::LateTick(_float fTimeDelta)
 		TextDesc.strFontTag = L"Default_Medium";
 		TextDesc.vPosition = _float2(m_vTextPosition.x - 1.f, m_vTextPosition.y);
 		TextDesc.vColor = _float4(0.f, 0.f, 0.f, 1.f);
-		TextDesc.vScale = { 0.5f, 0.5f };
+		TextDesc.vScale = { 0.38f, 0.38f };
 		m_pRendererCom->Add_Text(TextDesc);
 		TextDesc.vPosition = _float2(m_vTextPosition.x + 1.f, m_vTextPosition.y);
 		m_pRendererCom->Add_Text(TextDesc);
@@ -107,11 +107,11 @@ void CUI_PlayerInfo::LateTick(_float fTimeDelta)
 		// Todo : 전투력을 받아오게끔 구조 변경 필요함.
 		// 전투력 숫자 외곽선
 		CRenderer::TEXT_DESC Power;
-		Power.strText = L"9876";
+		Power.strText = L"111111";
 		Power.strFontTag = L"Default_Medium";
 		Power.vPosition = _float2(m_vNumPosition.x - 2.f, m_vNumPosition.y);
 		Power.vColor = _float4(0.f, 0.f, 0.f, 1.f);
-		Power.vScale = { 0.5f, 0.5f };
+		Power.vScale = { 0.38f, 0.38f };
 		m_pRendererCom->Add_Text(Power);
 		Power.vPosition = _float2(m_vNumPosition.x + 2.f, m_vNumPosition.y);
 		m_pRendererCom->Add_Text(Power);
@@ -121,7 +121,7 @@ void CUI_PlayerInfo::LateTick(_float fTimeDelta)
 		m_pRendererCom->Add_Text(Power);
 
 		//
-		Power.vPosition = m_vNumPosition;
+		Power.vPosition = _float2(200.f, 56.f);
 		Power.vColor = m_vPowerColor;
 		m_pRendererCom->Add_Text(Power);
 

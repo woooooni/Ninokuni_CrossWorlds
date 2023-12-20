@@ -49,40 +49,20 @@ void CUI_PlayerHPBar::LateTick(_float fTimeDelta)
 		// Todo : Player구조가 정리되면 Set_Level로 빼서 UIManager로 연동하자.
 
 		// 기준점
-		CRenderer::TEXT_DESC  MAXHPDesc;
-		MAXHPDesc.strText = L"/";
-		MAXHPDesc.strFontTag = L"Default_Medium";
-//		MAXHPDesc.vPosition = _float2(m_vDefaultPosition.x - 1.f, m_vDefaultPosition.y);
-//		MAXHPDesc.vColor = _float4(0.f, 0.f, 0.f, 1.f);
-		MAXHPDesc.vScale = { 0.4f, 0.4f };
-//		m_pRendererCom->Add_Text(MAXHPDesc);
-//		MAXHPDesc.vPosition = _float2(m_vDefaultPosition.x + 1.f, m_vDefaultPosition.y);
-//		m_pRendererCom->Add_Text(MAXHPDesc);
-//		MAXHPDesc.vPosition = _float2(m_vDefaultPosition.x, m_vDefaultPosition.y - 1.f);
-//		m_pRendererCom->Add_Text(MAXHPDesc);
-//		MAXHPDesc.vPosition = _float2(m_vDefaultPosition.x, m_vDefaultPosition.y + 1.f);
-//		m_pRendererCom->Add_Text(MAXHPDesc);
-
-		MAXHPDesc.vPosition = m_vDefaultPosition;
-		MAXHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
-		m_pRendererCom->Add_Text(MAXHPDesc);
+		CRenderer::TEXT_DESC  DefaultDesc;
+		DefaultDesc.strText = L"/";
+		DefaultDesc.strFontTag = L"Default_Bold";
+		DefaultDesc.vScale = { 0.35f, 0.35f };
+		DefaultDesc.vPosition = m_vDefaultPosition;
+		DefaultDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+		m_pRendererCom->Add_Text(DefaultDesc);
 
 		// Todo : 체력을 받아오게끔 구조 변경 필요함.
 		// 현재 체력 숫자 외곽선
 		CRenderer::TEXT_DESC CurHPDesc;
 		CurHPDesc.strText = L"1234";
-		CurHPDesc.strFontTag = L"Default_Medium";
-//		CurHPDesc.vPosition = _float2(m_vCurHPPosition.x - 1.f, m_vCurHPPosition.y);
-//		CurHPDesc.vColor = _float4(0.f, 0.f, 0.f, 1.f);
-		CurHPDesc.vScale = { 0.4f, 0.4f };
-//		m_pRendererCom->Add_Text(CurHPDesc);
-//		CurHPDesc.vPosition = _float2(m_vCurHPPosition.x + 1.f, m_vCurHPPosition.y);
-//		m_pRendererCom->Add_Text(CurHPDesc);
-//		CurHPDesc.vPosition = _float2(m_vCurHPPosition.x, m_vCurHPPosition.y - 1.f);
-//		m_pRendererCom->Add_Text(CurHPDesc);
-//		CurHPDesc.vPosition = _float2(m_vCurHPPosition.x, m_vCurHPPosition.y + 1.f);
-//		m_pRendererCom->Add_Text(CurHPDesc);
-
+		CurHPDesc.strFontTag = L"Default_Bold";
+		CurHPDesc.vScale = { 0.35f, 0.35f };
 		CurHPDesc.vPosition = m_vCurHPPosition;
 		CurHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
 		m_pRendererCom->Add_Text(CurHPDesc);
@@ -90,18 +70,8 @@ void CUI_PlayerHPBar::LateTick(_float fTimeDelta)
 		// 최대 체력 숫자 외곽선
 		CRenderer::TEXT_DESC MaxHPDesc;
 		MaxHPDesc.strText = L"1235";
-		MaxHPDesc.strFontTag = L"Default_Medium";
-//		MaxHPDesc.vPosition = _float2(m_vMaxHPPosition.x - 1.f, m_vMaxHPPosition.y);
-//		MaxHPDesc.vColor = _float4(0.f, 0.f, 0.f, 1.f);
-		MaxHPDesc.vScale = { 0.4f, 0.4f };
-//		m_pRendererCom->Add_Text(MaxHPDesc);
-//		MaxHPDesc.vPosition = _float2(m_vMaxHPPosition.x + 1.f, m_vMaxHPPosition.y);
-//		m_pRendererCom->Add_Text(MaxHPDesc);
-//		MaxHPDesc.vPosition = _float2(m_vMaxHPPosition.x, m_vMaxHPPosition.y - 1.f);
-//		m_pRendererCom->Add_Text(MaxHPDesc);
-//		MaxHPDesc.vPosition = _float2(m_vMaxHPPosition.x, m_vMaxHPPosition.y + 1.f);
-//		m_pRendererCom->Add_Text(MaxHPDesc);
-
+		MaxHPDesc.strFontTag = L"Default_Bold";
+		MaxHPDesc.vScale = { 0.35f, 0.35f };
 		MaxHPDesc.vPosition = m_vMaxHPPosition;
 		MaxHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
 		m_pRendererCom->Add_Text(MaxHPDesc);
