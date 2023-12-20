@@ -590,56 +590,6 @@ HRESULT CModel::Clear_NotUsedData()
 	return S_OK;
 }
 
-void CModel::GARA(wstring strFolderPath, wstring strFileName)
-{
-
-	// Assimp
-	_tchar		szFullPath[MAX_PATH] = L"";
-
-	wstring m_strFolderPath = strFolderPath;
-	wstring m_strFileName = strFileName;
-
-	lstrcpy(szFullPath, m_strFolderPath.c_str());
-	lstrcat(szFullPath, m_strFileName.c_str());
-
-	_uint		iFlag = 0;
-	iFlag |= aiProcess_ConvertToLeftHanded | aiProcess_CalcTangentSpace;
-
-	Assimp::Importer Importer;
-	const aiScene* pAIScene = Importer.ReadFile(CUtils::ToString(szFullPath).c_str(), iFlag);
-
-
-	// 뼈 다시 설정 
-	m_HierarchyNodes.clear();
-
-	if (FAILED(Ready_HierarchyNodes(pAIScene->mRootNode, nullptr, 0)))
-		return;
-
-
-	// 메시 다시 설정 
-	m_Meshes.clear();
-
-	_uint m_iNumMeshes = pAIScene->mNumMeshes;
-
-	for (_uint i = 0; i < m_iNumMeshes; ++i)
-	{
-		CMesh* pMeshContainer = CMesh::Create(m_pDevice, m_pContext, CModel::TYPE::TYPE_ANIM, pAIScene->mMeshes[i], this, Matrix(m_PivotMatrix));
-		if (nullptr == pMeshContainer)
-			return;
-
-		m_Meshes.push_back(pMeshContainer);
-	}
-
-	// 뼈 다시 설정 
-	_uint		iNumMeshes = 0;
-	for (auto& pMeshContainer : m_Meshes)
-	{
-		if (nullptr != pMeshContainer)
-			pMeshContainer->SetUp_HierarchyNodes(this, pAIScene->mMeshes[iNumMeshes++]);
-	}
-}
-
-
 HRESULT CModel::Set_Animation(const _uint& iAnimationIndex, const _float& fTweenDuration)
 {
 	if (TYPE::TYPE_NONANIM == m_eModelType || m_Animations.empty())
@@ -749,10 +699,9 @@ HRESULT CModel::Render(CShader* pShader, _uint iMeshIndex, _uint iPassIndex)
 {
 	if (TYPE_ANIM == m_eModelType)
 	{
-	/*	if(FAILED(SetUp_VTF(pShader)))
-			return E_FAIL;*/
+		if(FAILED(SetUp_VTF(pShader)))
+			return E_FAIL;
 
-		/* 임시 */
 		SetUp_VTF(pShader);
 	}
 

@@ -4,8 +4,6 @@
 #include "GameInstance.h"
 #include "Utils.h"
 
-#include "Model_Manager.h"
-
 CMesh::CMesh(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CVIBuffer(pDevice, pContext)
 {
@@ -301,123 +299,60 @@ HRESULT CMesh::Ready_AnimVertices(const aiMesh* pAIMesh, CModel* pModel)
 
 	/* Static과 달리 해당 메시에 영향을 주는 뼈의 정보를 저장한다. */
 
-	if (iTestCount == 2)
+	for (_uint i = 0; i < pAIMesh->mNumBones; ++i)
 	{
-		for (_uint i = 0; i < pAIMesh->mNumBones; ++i)
+		aiBone* pAIBone = pAIMesh->mBones[i];
+
+		for (_uint j = 0; j < pAIBone->mNumWeights; ++j)
 		{
-			aiBone* pAIBone = pAIMesh->mBones[i];
+			_uint		iVertexIndex = pAIBone->mWeights[j].mVertexId;
 
-			for (_uint j = 0; j < pAIBone->mNumWeights; ++j)
+			if (0.0f == pVertices[iVertexIndex].vBlendWeight.x)
 			{
-				_uint		iVertexIndex = pAIBone->mWeights[j].mVertexId;
+				_int iIndex = pModel->Get_HierarchyNodeIndex(pAIBone->mName.C_Str());
 
-				if (0.0f == pVertices[iVertexIndex].vBlendWeight.x)
-				{
-					_int iIndex = pSwordMan->Get_HierarchyNodeIndex(pAIBone->mName.C_Str());
+				if (iIndex < 0)
+					MSG_BOX("Failed : CMesh::Ready_AnimVertices()");
 
-					if (iIndex < 0)
-						MSG_BOX("Failed : CMesh::Ready_AnimVertices()");
+				pVertices[iVertexIndex].vBlendIndex.x = iIndex;
 
-					pVertices[iVertexIndex].vBlendIndex.x = iIndex;
-
-					pVertices[iVertexIndex].vBlendWeight.x = pAIBone->mWeights[j].mWeight;
-				}
-
-				else if (0.0f == pVertices[iVertexIndex].vBlendWeight.y)
-				{
-					_int iIndex = pSwordMan->Get_HierarchyNodeIndex(pAIBone->mName.C_Str());
-
-					if (iIndex < 0)
-						MSG_BOX("Failed : CMesh::Ready_AnimVertices()");
-
-					pVertices[iVertexIndex].vBlendIndex.y = iIndex;
-
-					pVertices[iVertexIndex].vBlendWeight.y = pAIBone->mWeights[j].mWeight;
-				}
-
-				else if (0.0f == pVertices[iVertexIndex].vBlendWeight.z)
-				{
-					_int iIndex = pSwordMan->Get_HierarchyNodeIndex(pAIBone->mName.C_Str());
-
-					if (iIndex < 0)
-						MSG_BOX("Failed : CMesh::Ready_AnimVertices()");
-
-					pVertices[iVertexIndex].vBlendIndex.z = iIndex;
-
-					pVertices[iVertexIndex].vBlendWeight.z = pAIBone->mWeights[j].mWeight;
-				}
-
-				else if (0.0f == pVertices[iVertexIndex].vBlendWeight.w)
-				{
-					_int iIndex = pSwordMan->Get_HierarchyNodeIndex(pAIBone->mName.C_Str());
-
-					if (iIndex < 0)
-						MSG_BOX("Failed : CMesh::Ready_AnimVertices()");
-
-					pVertices[iVertexIndex].vBlendIndex.w = iIndex;
-
-					pVertices[iVertexIndex].vBlendWeight.w = pAIBone->mWeights[j].mWeight;
-				}
+				pVertices[iVertexIndex].vBlendWeight.x = pAIBone->mWeights[j].mWeight;
 			}
-		}
-	}
-	else
-	{
-		for (_uint i = 0; i < pAIMesh->mNumBones; ++i)
-		{
-			aiBone* pAIBone = pAIMesh->mBones[i];
 
-			for (_uint j = 0; j < pAIBone->mNumWeights; ++j)
+			else if (0.0f == pVertices[iVertexIndex].vBlendWeight.y)
 			{
-				_uint		iVertexIndex = pAIBone->mWeights[j].mVertexId;
+				_int iIndex = pModel->Get_HierarchyNodeIndex(pAIBone->mName.C_Str());
 
-				if (0.0f == pVertices[iVertexIndex].vBlendWeight.x)
-				{
-					_int iIndex = pModel->Get_HierarchyNodeIndex(pAIBone->mName.C_Str());
+				if (iIndex < 0)
+					MSG_BOX("Failed : CMesh::Ready_AnimVertices()");
 
-					if (iIndex < 0)
-						MSG_BOX("Failed : CMesh::Ready_AnimVertices()");
+				pVertices[iVertexIndex].vBlendIndex.y = iIndex;
 
-					pVertices[iVertexIndex].vBlendIndex.x = iIndex;
+				pVertices[iVertexIndex].vBlendWeight.y = pAIBone->mWeights[j].mWeight;
+			}
 
-					pVertices[iVertexIndex].vBlendWeight.x = pAIBone->mWeights[j].mWeight;
-				}
+			else if (0.0f == pVertices[iVertexIndex].vBlendWeight.z)
+			{
+				_int iIndex = pModel->Get_HierarchyNodeIndex(pAIBone->mName.C_Str());
 
-				else if (0.0f == pVertices[iVertexIndex].vBlendWeight.y)
-				{
-					_int iIndex = pModel->Get_HierarchyNodeIndex(pAIBone->mName.C_Str());
+				if (iIndex < 0)
+					MSG_BOX("Failed : CMesh::Ready_AnimVertices()");
 
-					if (iIndex < 0)
-						MSG_BOX("Failed : CMesh::Ready_AnimVertices()");
+				pVertices[iVertexIndex].vBlendIndex.z = iIndex;
 
-					pVertices[iVertexIndex].vBlendIndex.y = iIndex;
+				pVertices[iVertexIndex].vBlendWeight.z = pAIBone->mWeights[j].mWeight;
+			}
 
-					pVertices[iVertexIndex].vBlendWeight.y = pAIBone->mWeights[j].mWeight;
-				}
+			else if (0.0f == pVertices[iVertexIndex].vBlendWeight.w)
+			{
+				_int iIndex = pModel->Get_HierarchyNodeIndex(pAIBone->mName.C_Str());
 
-				else if (0.0f == pVertices[iVertexIndex].vBlendWeight.z)
-				{
-					_int iIndex = pModel->Get_HierarchyNodeIndex(pAIBone->mName.C_Str());
+				if (iIndex < 0)
+					MSG_BOX("Failed : CMesh::Ready_AnimVertices()");
 
-					if (iIndex < 0)
-						MSG_BOX("Failed : CMesh::Ready_AnimVertices()");
+				pVertices[iVertexIndex].vBlendIndex.w = iIndex;
 
-					pVertices[iVertexIndex].vBlendIndex.z = iIndex;
-
-					pVertices[iVertexIndex].vBlendWeight.z = pAIBone->mWeights[j].mWeight;
-				}
-
-				else if (0.0f == pVertices[iVertexIndex].vBlendWeight.w)
-				{
-					_int iIndex = pModel->Get_HierarchyNodeIndex(pAIBone->mName.C_Str());
-
-					if (iIndex < 0)
-						MSG_BOX("Failed : CMesh::Ready_AnimVertices()");
-
-					pVertices[iVertexIndex].vBlendIndex.w = iIndex;
-
-					pVertices[iVertexIndex].vBlendWeight.w = pAIBone->mWeights[j].mWeight;
-				}
+				pVertices[iVertexIndex].vBlendWeight.w = pAIBone->mWeights[j].mWeight;
 			}
 		}
 	}

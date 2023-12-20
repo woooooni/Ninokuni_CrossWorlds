@@ -108,14 +108,6 @@ public:
 	HRESULT Clear_NotUsedData();
 #pragma endregion
 
-#pragma region Assimp
-
-	const aiScene* Get_AIScene() const { return m_pAIScene; }
-
-	void GARA(wstring strFolderPath, wstring strFileName);
-#pragma endregion
-
-
 private:
 	wstring m_strName;
 	wstring m_strFileName;
