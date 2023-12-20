@@ -35,6 +35,10 @@ HRESULT CBuilding::Initialize(void* pArg)
 void CBuilding::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+
+	if (m_strMapObjName == TEXT("Evermore_Wind_WindMillaA_02"))
+		XRotation(2.0f, fTimeDelta);
+
 }
 
 void CBuilding::LateTick(_float fTimeDelta)

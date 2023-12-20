@@ -165,6 +165,30 @@ HRESULT CStaticObject::Ready_ModelCom(_uint eType, const wstring& strFilePath, c
 	return S_OK;
 }
 
+void CStaticObject::YRotation(_float fSpeed, _float fTimeDelta)
+{
+	if (nullptr == m_pTransformCom)
+		return;
+
+	m_pTransformCom->Turn(Vec4(0.0f, 1.0f, 0.0f, 1.0f), fSpeed, fTimeDelta);
+}
+
+void CStaticObject::XRotation(_float fSpeed, _float fTimeDelta)
+{
+	if (nullptr == m_pTransformCom)
+		return;
+
+	m_pTransformCom->Turn(Vec4(1.0f, 0.0f, 0.0f, 1.0f), fSpeed, fTimeDelta);
+}
+
+void CStaticObject::ZRotation(_float fSpeed, _float fTimeDelta)
+{
+	if (nullptr == m_pTransformCom)
+		return;
+
+	m_pTransformCom->Turn(Vec4(1.0f, 1.0f, 0.0f, 1.0f), fSpeed, fTimeDelta);
+}
+
 void CStaticObject::Free()
 {
 	__super::Free();

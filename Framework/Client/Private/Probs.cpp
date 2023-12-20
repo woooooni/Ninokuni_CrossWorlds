@@ -29,12 +29,22 @@ HRESULT CProbs::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+	if (m_strMapObjName == TEXT("Evermore_DecoBuild_01"))
+	{
+		m_iMoveTick = 101;
+		m_iRandomCase = GI->RandomInt(0, 1);
+	}
+
+	
+
 	return S_OK;
 }
 
 void CProbs::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+
+	MoveProps(fTimeDelta);
 }
 
 void CProbs::LateTick(_float fTimeDelta)
@@ -44,9 +54,9 @@ void CProbs::LateTick(_float fTimeDelta)
 	//if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 30.f))
 	//{
 		// Shadow 필요하면 ShadowRender 추가?
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
-		//m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDERGROUP::RENDER_SHADOW, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
-		//m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
+		//m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
+		m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDERGROUP::RENDER_SHADOW, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
+		m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
 	//}
 
 
@@ -145,6 +155,49 @@ HRESULT CProbs::Ready_Components()
 		return E_FAIL;
 
 	return S_OK;
+}
+
+void CProbs::MoveProps(_float fTimeDelta)
+{
+	if (m_strMapObjName == TEXT("Evermore_DecoBuild_01"))
+	{
+		YRotation(1.5f, fTimeDelta);
+		Vec4 vPos = m_pTransformCom->Get_State(CTransform::STATE::STATE_POSITION);
+
+		if (0 == m_iRandomCase)
+		{
+			if (m_iMoveTick > 0)
+			{
+				vPos.y += 3.0f * fTimeDelta;
+				m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vPos);
+			}
+			else
+			{
+				vPos.y -= 3.0f * fTimeDelta;
+				m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vPos);
+			}
+		}
+		else if (1 == m_iRandomCase)
+		{
+			if (m_iMoveTick < 0)
+			{
+				vPos.y += 3.0f * fTimeDelta;
+				m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vPos);
+			}
+			else
+			{
+				vPos.y -= 3.0f * fTimeDelta;
+				m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vPos);
+			}
+		}
+
+
+		--m_iMoveTick;
+
+		if (-100 == m_iMoveTick)
+			m_iMoveTick = 101;
+
+	}
 }
 
 CProbs* CProbs::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag,

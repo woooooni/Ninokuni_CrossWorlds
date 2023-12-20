@@ -51,6 +51,11 @@ public:
 	virtual HRESULT Ready_ModelCom(_uint eType, const wstring& strFilePath, const wstring& strFileName);
 
 protected:
+	void YRotation(_float fSpeed, _float fTimeDelta);
+	void XRotation(_float fSpeed, _float fTimeDelta);
+	void ZRotation(_float fSpeed, _float fTimeDelta);
+
+protected:
 	CShader* m_pNonAnimShaderCom = nullptr;
 	CShader* m_pAnimShaderCom = nullptr;
 	CRenderer* m_pRendererCom = nullptr;
@@ -58,6 +63,9 @@ protected:
 	CModel* m_pModelCom = nullptr;
 
 	wstring m_strMapObjName = L"";
+
+	_int m_iMoveTick = 0;
+	_int m_iRandomCase = 0;
 
 public:
 	virtual void Free() override;
