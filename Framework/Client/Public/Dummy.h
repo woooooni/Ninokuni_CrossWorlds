@@ -50,16 +50,14 @@ public:
 	HRESULT Import_Model();
 
 
-	// << : Test 
-
+public:
+	/* Costume */
 	_bool m_bCostumeMode = FALSE;
 
 	CModel* m_pBodyModel = nullptr;
 	CModel* m_pHairModel = nullptr;
 	CModel* m_pFaceModel = nullptr;
-
-
-	// >> : 
+	CModel* m_pHeadModel = nullptr;
 
 
 protected:

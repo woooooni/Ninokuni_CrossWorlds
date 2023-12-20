@@ -13,6 +13,7 @@
 #include "UI_Manager.h"
 #include "Camera_Manager.h"
 #include "Light.h"
+#include "Part_Manager.h"
 
 #ifdef _DEBUG
   //#include <vld.h>
@@ -47,7 +48,7 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 	/* 1-4. 게임내에서 사용할 레벨(씬)을 생성한다.   */
-	if (FAILED(Open_Level(LEVEL_TEST, L"Final_Boss")))
+	if (FAILED(Open_Level(LEVEL_TOOL, L"Final_Boss")))
 		return E_FAIL;
 	
 	// UI Cursor
@@ -938,6 +939,6 @@ void Client::CMainApp::Free()
 	CImGui_Manager::GetInstance()->DestroyInstance();
 	CPicking_Manager::GetInstance()->DestroyInstance();
 	CUI_Manager::GetInstance()->DestroyInstance();
-
+	CPart_Manager::GetInstance()->DestroyInstance();
 	CGameInstance::Release_Engine();
 }

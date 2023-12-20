@@ -69,11 +69,10 @@ void CDummy::LateTick(_float fTimeDelta)
 
 HRESULT CDummy::Render()
 {
-	// << : Test 
-
 	if (nullptr == m_pModelCom)
 		return S_OK;
 
+	/* 공용 데이터 */
 	CShader* pShader = m_pModelCom->Get_ModelType() == CModel::TYPE::TYPE_NONANIM ? m_pNonAnimShaderCom : m_pAnimShaderCom;
 
 	if (nullptr == pShader)
@@ -86,9 +85,9 @@ HRESULT CDummy::Render()
 	if (FAILED(pShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
 
+	/* 코스튬 작업시 */
 	if (m_bCostumeMode)
 	{
-		/* 공용 키프레임 던지기 */
 		m_pModelCom->Bind_KeyFrame(pShader);
 
 		/* Body */
@@ -137,30 +136,26 @@ HRESULT CDummy::Render()
 			}
 		}
 
+		/* Head */
+		if (nullptr != m_pHeadModel)
+		{
+			_uint		iNumMeshes = m_pHeadModel->Get_NumMeshes();
+
+			for (_uint i = 0; i < iNumMeshes; ++i)
+			{
+				if (FAILED(m_pHeadModel->SetUp_OnShader(pShader, m_pHeadModel->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+					return E_FAIL;
+
+				if (FAILED(m_pHeadModel->Render_Part(pShader, i)))
+					return E_FAIL;
+			}
+		}
+
 
 		return S_OK;
 	}
 
-	// >> : 
-
-
-
-
-	if (nullptr == m_pModelCom)
-		return S_OK;
-
-	/* CShader* */ pShader = m_pModelCom->Get_ModelType() == CModel::TYPE::TYPE_NONANIM ? m_pNonAnimShaderCom : m_pAnimShaderCom;
-	
-	if (nullptr == pShader)
-		return S_OK;
-
-	if (FAILED(pShader->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
-		return E_FAIL;
-	if (FAILED(pShader->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
-		return E_FAIL;
-	if (FAILED(pShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
-		return E_FAIL;
-
+	/* 코스튬 작업 아닐시 */
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 
 	for (_uint i = 0; i < iNumMeshes; ++i)

@@ -51,9 +51,6 @@ private:
 	wstring m_strFilePath = L"";
 	wstring m_strFileName = L"";
 
-	wstring m_strPartFilePath = L"";
-	wstring m_strPartFileName = L"";
-
 	class CDummy* m_pDummy = nullptr;
 	class CDummy* m_pPartDummy = nullptr;
 
@@ -102,10 +99,14 @@ private:
 #pragma endregion
 
 #pragma region Custom Parts 
+
 	CHARACTER_TYPE m_eCharacyerType = CHARACTER_TYPE::SWORD_MAN;
 	PART_TYPE m_ePartType = PART_TYPE::HEAD;
 
 	_bool m_bCostumeMode = FALSE;
+
+	_uint m_iPartIndex = 0;
+
 #pragma endregion
 
 

@@ -16,6 +16,7 @@
 #include "Dummy.h"
 #include "Weapon.h"
 #include "Part.h"
+#include "Part_Manager.h"
 
 #pragma endregion
 
@@ -101,6 +102,13 @@ HRESULT CTool_Model::Clear_ToolAnimationData()
 
 	m_iSoundEventIndex = -1;
 	m_fCurEventFrame = 0.f;
+
+
+	m_bCostumeMode = FALSE;
+	m_pDummy->m_bCostumeMode = FALSE;
+	m_pDummy->m_pBodyModel = nullptr;
+	m_pDummy->m_pFaceModel = nullptr;
+	m_pDummy->m_pHairModel = nullptr;
 
 	return S_OK;
 }
@@ -612,141 +620,141 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 			ImGui::TreePop();
 		}
 
-		/* 플레이어 커스텀 파츠 작업 */
-		if (ImGui::TreeNode(u8"플레이어 커스텀 파츠 작업"))
-		{
-			if (ImGui::TreeNode(u8"파츠 메쉬 제작"))
-			{
-				if (ImGui::Button("TEST"))
-				{
-					m_pDummy->m_bCostumeMode = TRUE;
+		///* 플레이어 커스텀 파츠 작업 */
+		//if (ImGui::TreeNode(u8"플레이어 커스텀 파츠 작업"))
+		//{
+		//	if (ImGui::TreeNode(u8"파츠 메쉬 제작"))
+		//	{
+		//		if (ImGui::Button("TEST"))
+		//		{
+		//			m_pDummy->m_bCostumeMode = TRUE;
 
-					/* Body */
-					{
-						wstring strFilePath = L"../Bin/Export/AnimModel/Part/SwordMan/Body_01/";
-						wstring strFileName = L"SwordMan_Body_01";
+		//			/* Body */
+		//			{
+		//				wstring strFilePath = L"../Bin/Export/AnimModel/Part/SwordMan/Body_01/";
+		//				wstring strFileName = L"SwordMan_Body_01";
 
-						CModel* pBodyModel = nullptr;
-						if (FAILED(GI->Import_Model_Data(LEVEL_DUMMY, wstring(L"BODY_BODY"), CModel::TYPE::TYPE_ANIM, strFilePath, strFileName, &pBodyModel)))
-							return;
-						else
-							m_pDummy->m_pBodyModel = pBodyModel;
-					}
+		//				CModel* pBodyModel = nullptr;
+		//				if (FAILED(GI->Import_Model_Data(LEVEL_DUMMY, wstring(L"BODY_BODY"), CModel::TYPE::TYPE_ANIM, strFilePath, strFileName, &pBodyModel)))
+		//					return;
+		//				else
+		//					m_pDummy->m_pBodyModel = pBodyModel;
+		//			}
 
-					/* Hair */
-					{
-						wstring strFilePath = L"../Bin/Export/AnimModel/Part/SwordMan/Hair_01/";
-						wstring strFileName = L"SwordMan_Hair_01";
+		//			/* Hair */
+		//			{
+		//				wstring strFilePath = L"../Bin/Export/AnimModel/Part/SwordMan/Hair_01/";
+		//				wstring strFileName = L"SwordMan_Hair_01";
 
-						CModel* pHairModel = nullptr;
-						if (FAILED(GI->Import_Model_Data(LEVEL_DUMMY, wstring(L"HAIR_HAIR"), CModel::TYPE::TYPE_ANIM, strFilePath, strFileName, &pHairModel)))
-							return;
-						else
-							m_pDummy->m_pHairModel = pHairModel;
-					}
+		//				CModel* pHairModel = nullptr;
+		//				if (FAILED(GI->Import_Model_Data(LEVEL_DUMMY, wstring(L"HAIR_HAIR"), CModel::TYPE::TYPE_ANIM, strFilePath, strFileName, &pHairModel)))
+		//					return;
+		//				else
+		//					m_pDummy->m_pHairModel = pHairModel;
+		//			}
 
-					/* Face */
-					{
-						wstring strFilePath = L"../Bin/Export/AnimModel/Part/SwordMan/Face_01/";
-						wstring strFileName = L"SwordMan_Face_01";
+		//			/* Face */
+		//			{
+		//				wstring strFilePath = L"../Bin/Export/AnimModel/Part/SwordMan/Face_01/";
+		//				wstring strFileName = L"SwordMan_Face_01";
 
-						CModel* pFaceModel = nullptr;
-						if (FAILED(GI->Import_Model_Data(LEVEL_DUMMY, wstring(L"FACE_FACE"), CModel::TYPE::TYPE_ANIM, strFilePath, strFileName, &pFaceModel)))
-							return;
-						else
-							m_pDummy->m_pFaceModel = pFaceModel;
-					}
-				}
+		//				CModel* pFaceModel = nullptr;
+		//				if (FAILED(GI->Import_Model_Data(LEVEL_DUMMY, wstring(L"FACE_FACE"), CModel::TYPE::TYPE_ANIM, strFilePath, strFileName, &pFaceModel)))
+		//					return;
+		//				else
+		//					m_pDummy->m_pFaceModel = pFaceModel;
+		//			}
+		//		}
 
 
-				IMGUI_NEW_LINE;
-				/* 플레이어 원본 fbx 주소 */
-				{
-					ImGui::TextColored(ImVec4(0.9f, 0.2f, 0.2f, 1.f), u8"파츠 fbx를 Import 하기 전에 !");
-					ImGui::TextColored(ImVec4(0.9f, 0.2f, 0.2f, 1.f), u8"위에서 플레이어 fbx 혹은 binary 파일을 Import 해주시기 바랍니다. !");
-				}
-				IMGUI_NEW_LINE;
+		//		IMGUI_NEW_LINE;
+		//		/* 플레이어 원본 fbx 주소 */
+		//		{
+		//			ImGui::TextColored(ImVec4(0.9f, 0.2f, 0.2f, 1.f), u8"파츠 fbx를 Import 하기 전에 !");
+		//			ImGui::TextColored(ImVec4(0.9f, 0.2f, 0.2f, 1.f), u8"위에서 플레이어 fbx 혹은 binary 파일을 Import 해주시기 바랍니다. !");
+		//		}
+		//		IMGUI_NEW_LINE;
 
-				/* 파츠 주소 fbx */
-				ImGui::Text("Part");
-				{
-					char szFilePath[MAX_PATH];
-					char szFileName[MAX_PATH];
+		//		/* 파츠 주소 fbx */
+		//		ImGui::Text("Part");
+		//		{
+		//			char szFilePath[MAX_PATH];
+		//			char szFileName[MAX_PATH];
 
-					sprintf_s(szFilePath, CUtils::ToString(m_strPartFilePath).c_str());
-					sprintf_s(szFileName, CUtils::ToString(m_strPartFileName).c_str());
+		//			sprintf_s(szFilePath, CUtils::ToString(m_strPartFilePath).c_str());
+		//			sprintf_s(szFileName, CUtils::ToString(m_strPartFileName).c_str());
 
-					/* Path */
-					if (ImGui::InputText("##ModelPartPathText", szFilePath, MAX_PATH))
-						m_strPartFilePath = CUtils::ToWString(string(szFilePath));
+		//			/* Path */
+		//			if (ImGui::InputText("##ModelPartPathText", szFilePath, MAX_PATH))
+		//				m_strPartFilePath = CUtils::ToWString(string(szFilePath));
 
-					if (ImGui::IsItemHovered())
-					{
-						ImGui::BeginTooltip();
-						ImGui::Text(u8"Fbx 파일의 경우 : ../Bin/Resources/AnimModel/Boss/Stellia/");
-						ImGui::EndTooltip();
-					}
-					IMGUI_SAME_LINE;
-					ImGui::Text("Path");
+		//			if (ImGui::IsItemHovered())
+		//			{
+		//				ImGui::BeginTooltip();
+		//				ImGui::Text(u8"Fbx 파일의 경우 : ../Bin/Resources/AnimModel/Boss/Stellia/");
+		//				ImGui::EndTooltip();
+		//			}
+		//			IMGUI_SAME_LINE;
+		//			ImGui::Text("Path");
 
-					/* File Name */
-					if (ImGui::InputText("##ModelPartFileText", szFileName, MAX_PATH))
-						m_strPartFileName = CUtils::ToWString(string(szFileName));
-					if (ImGui::IsItemHovered())
-					{
-						ImGui::BeginTooltip();
-						ImGui::Text(u8"Fbx 파일의 경우 : Stellia.fbx");
-						ImGui::EndTooltip();
-					}
-					IMGUI_SAME_LINE;
-					ImGui::Text("File Name");
+		//			/* File Name */
+		//			if (ImGui::InputText("##ModelPartFileText", szFileName, MAX_PATH))
+		//				m_strPartFileName = CUtils::ToWString(string(szFileName));
+		//			if (ImGui::IsItemHovered())
+		//			{
+		//				ImGui::BeginTooltip();
+		//				ImGui::Text(u8"Fbx 파일의 경우 : Stellia.fbx");
+		//				ImGui::EndTooltip();
+		//			}
+		//			IMGUI_SAME_LINE;
+		//			ImGui::Text("File Name");
 
-					/* Import Btn */
-					if (ImGui::Button("Import Part Fbx"))
-					{
-						m_bCostumeMode = TRUE;
-						//if (FAILED(m_pDummy->Ready_ModelCom(CModel::TYPE_NONANIM, m_strPartFilePath, m_strPartFileName)))
-						//	MSG_BOX("Failed Import.");
-						//else
-						//{
-						//	MSG_BOX("Success Import.");
-						//}
-					}
-					IMGUI_NEW_LINE;
+		//			/* Import Btn */
+		//			if (ImGui::Button("Import Part Fbx"))
+		//			{
+		//				m_bCostumeMode = TRUE;
+		//				//if (FAILED(m_pDummy->Ready_ModelCom(CModel::TYPE_NONANIM, m_strPartFilePath, m_strPartFileName)))
+		//				//	MSG_BOX("Failed Import.");
+		//				//else
+		//				//{
+		//				//	MSG_BOX("Success Import.");
+		//				//}
+		//			}
+		//			IMGUI_NEW_LINE;
 
-					/* Apply Btn */
-					if (ImGui::Button("Apply to Player"))
-					{
-						/* 여기서 파츠 매니저에 등록 */
-						
-					}
-					IMGUI_SAME_LINE;
+		//			/* Apply Btn */
+		//			if (ImGui::Button("Apply to Player"))
+		//			{
+		//				/* 여기서 파츠 매니저에 등록 */
+		//				
+		//			}
+		//			IMGUI_SAME_LINE;
 
-					/* Export Btn */
-					if (ImGui::Button("Export Part Fbx"))
-					{
-						//if (FAILED(m_pDummy->Ready_ModelCom(CModel::TYPE_NONANIM, m_strPartFilePath, m_strPartFileName)))
-						//	MSG_BOX("Failed Import.");
-						//else
-						//{
-						//	MSG_BOX("Success Import.");
-						//}
-					}
-					IMGUI_NEW_LINE;
+		//			/* Export Btn */
+		//			if (ImGui::Button("Export Part Fbx"))
+		//			{
+		//				//if (FAILED(m_pDummy->Ready_ModelCom(CModel::TYPE_NONANIM, m_strPartFilePath, m_strPartFileName)))
+		//				//	MSG_BOX("Failed Import.");
+		//				//else
+		//				//{
+		//				//	MSG_BOX("Success Import.");
+		//				//}
+		//			}
+		//			IMGUI_NEW_LINE;
 
-					ImGui::TreePop();
-				}
-			}
+		//			ImGui::TreePop();
+		//		}
+		//	}
 
-			if (ImGui::TreeNode(u8"파츠 메쉬 장착"))
-			{
-				/* 바이너리된 플레이어 주소 */
-				IMGUI_NEW_LINE;
-				ImGui::TreePop();
-			}
+		//	if (ImGui::TreeNode(u8"파츠 메쉬 장착"))
+		//	{
+		//		/* 바이너리된 플레이어 주소 */
+		//		IMGUI_NEW_LINE;
+		//		ImGui::TreePop();
+		//	}
 
-			ImGui::TreePop();
-		}
+		//	ImGui::TreePop();
+		//}
 
 		IMGUI_NEW_LINE;
 	}
@@ -814,7 +822,9 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 		/* 변경시 다시 익스포트 해야하는 유형 */
 		IMGUI_NEW_LINE;
 		ImGui::Separator();
-		ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"삭제, 정렬, 순서 변경, 이름 변경은 다시 익스포트 해야 반영됩니다. ");
+		ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"삭제, 정렬, 순서 변경, 이름 변경은 Apply를 해야 반영됩니다.");
+		ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"Save 창이 뜨더라도 Save 경로는 캐쉬 경로(Export/stash)이므로 모델의 원본은 수정되지 않습니다.");
+
 		ImGui::Text("Prop 1");
 		{
 			/* Swap */
@@ -867,6 +877,22 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 				sort(Animations.begin(), Animations.end(), [&](CAnimation* pSrcAnimation, CAnimation* pDestAnimation) {
 					return pSrcAnimation->Get_AnimationName() < pDestAnimation->Get_AnimationName();
 					});
+			}
+			IMGUI_SAME_LINE;
+
+			/* Apply */
+			if (ImGui::Button("Apply"))
+			{
+				wstring strStashPath = L"stach/";
+				if (FAILED(m_pDummy->Export_Model_Bin(strStashPath, m_strFileName)))
+				{
+					MSG_BOX("Failed Save.");
+
+				}
+				else
+				{
+					MSG_BOX("Save Success");
+				}
 			}
 
 			/* Rename */
@@ -1649,6 +1675,23 @@ void CTool_Model::Tick_Costume(_float fTimeDelta)
 		if (Is_Exception())
 			return;
 
+		/* Intro */
+		ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"플레이어 더미 파일을 Import 한 후, 아래 버튼을 눌러주세요");
+		ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"플레이어 더미의 모든 애니메이션이, 파츠 모델에도 존재해야 정상 작동합니다.");
+
+	
+		/* Start Costume */
+		if (ImGui::Checkbox("Start Costume", &m_bCostumeMode))
+		{
+			m_pDummy->m_bCostumeMode = m_bCostumeMode;
+			if (!m_bCostumeMode)
+			{
+				m_pDummy->m_pBodyModel = nullptr;
+				m_pDummy->m_pFaceModel = nullptr;
+				m_pDummy->m_pHairModel = nullptr;
+			}
+		}
+
 		/* Function */
 		{
 			IMGUI_NEW_LINE;
@@ -1667,7 +1710,7 @@ void CTool_Model::Tick_Costume(_float fTimeDelta)
 							if (ImGui::Selectable(items[n], is_selected))
 							{
 								m_eCharacyerType = (CHARACTER_TYPE)n;
-							
+								m_iPartIndex = 0;
 								// TODO 
 
 							}
@@ -1697,7 +1740,7 @@ void CTool_Model::Tick_Costume(_float fTimeDelta)
 							if (ImGui::Selectable(items[n], is_selected))
 							{
 								m_ePartType = (PART_TYPE)n;
-
+								m_iPartIndex = 0;
 								// TODO 
 
 							}
@@ -1712,10 +1755,49 @@ void CTool_Model::Tick_Costume(_float fTimeDelta)
 			}
 			ImGui::PopItemWidth();
 
-			/* 해당 파츠 상세 타입 */
+			/* 해당 파츠 모델 리스트 */
+			IMGUI_NEW_LINE;
+			ImGui::Text(u8"착용 가능한 모델 리스트");
 
+			vector<class CModel*>* pModelList = CPart_Manager::GetInstance()->Get_PartModels(m_eCharacyerType, m_ePartType);
+			if (nullptr != pModelList)
+			{
+				if (ImGui::BeginListBox("##Part Model List ", ImVec2(450.f, 70.f)))
+				{
+					for (size_t i = 0; i < pModelList->size(); ++i)
+					{
+						string strFrame = CUtils::ToString((*pModelList)[i]->Get_Name());
 
+						if (ImGui::Selectable(strFrame.c_str(), i == m_iPartIndex))
+						{
+							m_iPartIndex = i;
 
+							CModel* pModel = CPart_Manager::GetInstance()->Get_PartModel(m_eCharacyerType, m_ePartType, m_iPartIndex);
+							if (nullptr != pModel)
+							{
+								switch (m_ePartType)
+								{
+								case Client::HEAD:
+									m_pDummy->m_pHeadModel = pModel;
+									break;
+								case Client::HAIR:
+									m_pDummy->m_pHairModel = pModel;
+									break;
+								case Client::FACE:
+									m_pDummy->m_pFaceModel = pModel;
+									break;
+								case Client::BODY:
+									m_pDummy->m_pBodyModel = pModel;
+									break;
+								default:
+									break;
+								}
+							}
+						}
+					}
+					ImGui::EndListBox();
+				}
+			}
 		}
 		IMGUI_NEW_LINE;
 	}
