@@ -414,7 +414,12 @@ HRESULT CLoader::Loading_For_Level_Tool()
 		{
 			if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SwordMan_Body_01", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Part/SwordMan/Body_01/", L"SwordMan_Body_01")))
 				return E_FAIL;
+
+			if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SwordMan_Body_02", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Part/SwordMan/Body_02/", L"SwordMan_Body_02")))
+				return E_FAIL;
 		}
+
+
 
 		/* Face */
 		{

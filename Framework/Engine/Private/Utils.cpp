@@ -198,6 +198,38 @@ _bool CUtils::Is_Compare(const char* szLeft, const char* szRight)
 	return !strcmp(szLeft, szRight);
 }
 
+filesystem::path CUtils::FindFile(const filesystem::path& currentPath, const std::string& targetFileName)
+{
+	for (const auto& entry : filesystem::directory_iterator(currentPath))
+	{
+		if (filesystem::is_directory(entry.status()))
+		{
+			filesystem::path foundPath = FindFile(entry.path(), targetFileName);
+			if (!foundPath.empty()) {
+				return foundPath;
+			}
+		}
+		else if (filesystem::is_regular_file(entry.status()) && entry.path().filename() == targetFileName) {
+			return entry.path();
+		}
+	}
+
+	return "";
+}
+
+filesystem::path CUtils::RemovePrefix(const filesystem::path& fullPath, const filesystem::path& prefix)
+{
+	auto relativePath = fullPath.lexically_relative(prefix);
+
+	// 반환된 경로의 시작이 "..\\"일 경우, 상위 디렉토리로 이동하는 부분을 제거
+	while (relativePath.has_root_directory() && relativePath.root_directory() == "..\\") 
+	{
+		relativePath = relativePath.lexically_normal();
+	}
+
+	return relativePath;
+}
+
 wstring CUtils::PathToWString(wstring strPath)
 {
 	Replace(strPath, L"\\", L"/");

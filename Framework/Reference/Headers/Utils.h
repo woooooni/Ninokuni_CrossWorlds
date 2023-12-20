@@ -45,5 +45,10 @@ public:
 	static void Release_WString_To_ConstChar(const char** szArray, const _uint iSize);
 
 	static _bool Is_Compare(const char* szLeft, const char* szRight);
+
+	static filesystem::path FindFile(const filesystem::path& currentPath, const std::string& targetFileName);
+
+	static filesystem::path RemovePrefix(const filesystem::path& fullPath, const filesystem::path& prefix);
+
 };
 

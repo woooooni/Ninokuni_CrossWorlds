@@ -90,67 +90,22 @@ HRESULT CDummy::Render()
 	{
 		m_pModelCom->Bind_KeyFrame(pShader);
 
-		/* Body */
-		if (nullptr != m_pBodyModel)
+		for (size_t i = 0; i < PART_TYPE::PART_END; i++)
 		{
-			_uint		iNumMeshes = m_pBodyModel->Get_NumMeshes();
+			if (nullptr == m_pPart[i])
+				continue;
 
-			for (_uint i = 0; i < iNumMeshes; ++i)
+			const _uint		iNumMeshes = m_pPart[i]->Get_NumMeshes();
+
+			for (_uint j = 0; j < iNumMeshes; ++j)
 			{
-				if (FAILED(m_pBodyModel->SetUp_OnShader(pShader, m_pBodyModel->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+				if (FAILED(m_pPart[i]->SetUp_OnShader(pShader, m_pPart[i]->Get_MaterialIndex(j), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 					return E_FAIL;
 
-				if (FAILED(m_pBodyModel->Render_Part(pShader, i)))
+				if (FAILED(m_pPart[i]->Render_Part(pShader, j)))
 					return E_FAIL;
 			}
 		}
-
-		/* Face */
-		if (nullptr != m_pFaceModel)
-		{
-			_uint		iNumMeshes = m_pFaceModel->Get_NumMeshes();
-
-			for (_uint i = 0; i < iNumMeshes; ++i)
-			{
-				if (FAILED(m_pFaceModel->SetUp_OnShader(pShader, m_pFaceModel->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
-					return E_FAIL;
-
-				if (FAILED(m_pFaceModel->Render_Part(pShader, i)))
-					return E_FAIL;
-			}
-		}
-
-
-		/* Hair */
-		if (nullptr != m_pHairModel)
-		{
-			_uint		iNumMeshes = m_pHairModel->Get_NumMeshes();
-
-			for (_uint i = 0; i < iNumMeshes; ++i)
-			{
-				if (FAILED(m_pHairModel->SetUp_OnShader(pShader, m_pHairModel->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
-					return E_FAIL;
-
-				if (FAILED(m_pHairModel->Render_Part(pShader, i)))
-					return E_FAIL;
-			}
-		}
-
-		/* Head */
-		if (nullptr != m_pHeadModel)
-		{
-			_uint		iNumMeshes = m_pHeadModel->Get_NumMeshes();
-
-			for (_uint i = 0; i < iNumMeshes; ++i)
-			{
-				if (FAILED(m_pHeadModel->SetUp_OnShader(pShader, m_pHeadModel->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
-					return E_FAIL;
-
-				if (FAILED(m_pHeadModel->Render_Part(pShader, i)))
-					return E_FAIL;
-			}
-		}
-
 
 		return S_OK;
 	}

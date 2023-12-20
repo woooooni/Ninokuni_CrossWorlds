@@ -106,9 +106,10 @@ HRESULT CTool_Model::Clear_ToolAnimationData()
 
 	m_bCostumeMode = FALSE;
 	m_pDummy->m_bCostumeMode = FALSE;
-	m_pDummy->m_pBodyModel = nullptr;
-	m_pDummy->m_pFaceModel = nullptr;
-	m_pDummy->m_pHairModel = nullptr;
+	for (size_t i = 0; i < PART_TYPE::PART_END; i++)
+	{
+		m_pDummy->m_pPart[i] = nullptr;
+	}
 
 	return S_OK;
 }
@@ -555,6 +556,14 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 						{
 							MSG_BOX("Save Success");
 						}
+
+						if (m_bCostumeMode)
+						{
+							if(FAILED(CPart_Manager::GetInstance()->Save_Parts(CUtils::ToWString(szExportFolderName), m_eCharacyerType)))
+								MSG_BOX("Part Manage Failed Save.");
+							else
+								MSG_BOX("Part Manage Success Save.");
+						}
 					}
 				}
 				IMGUI_NEW_LINE;
@@ -832,6 +841,9 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 				if (ImGui::ArrowButton("##Swap_Animation_Up", ImGuiDir_Up))
 				{
 					pModelCom->Swap_Animation(pModelCom->Get_CurrAnimationIndex(), pModelCom->Get_CurrAnimationIndex() - 1);
+
+					if (m_bCostumeMode)
+						CPart_Manager::GetInstance()->Synchronize_PlayerAnimation_Swap(m_eCharacyerType, pModelCom->Get_CurrAnimationIndex(), TRUE);
 				}
 				if (ImGui::IsItemHovered())
 				{
@@ -843,6 +855,8 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 				if (ImGui::ArrowButton("##Swap_Animation_Down", ImGuiDir_Down))
 				{
 					pModelCom->Swap_Animation(pModelCom->Get_CurrAnimationIndex(), pModelCom->Get_CurrAnimationIndex() + 1);
+					if (m_bCostumeMode)
+						CPart_Manager::GetInstance()->Synchronize_PlayerAnimation_Swap(m_eCharacyerType, pModelCom->Get_CurrAnimationIndex(), FALSE);
 				}
 				if (ImGui::IsItemHovered())
 				{
@@ -857,7 +871,8 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 			if (ImGui::Button("Delete") || (KEY_TAP(KEY::DEL) && ImGui::IsWindowFocused()))
 			{
 				_int iCurIndex = pModelCom->Get_CurrAnimationIndex();
-
+				
+				wstring strAnimName = pModelCom->Get_Animation(iCurIndex)->Get_AnimationName();
 				pModelCom->Delete_Animation(iCurIndex);
 
 				iCurIndex = (0 < iCurIndex - 1) ? 0 : iCurIndex - 1;
@@ -867,6 +882,11 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 				Animations = pModelCom->Get_Animations();
 
 				sprintf_s(szAnimationName, CUtils::ToString(pModelCom->Get_CurrAnimation()->Get_AnimationName()).c_str());
+
+
+				if (m_bCostumeMode)
+					CPart_Manager::GetInstance()->Synchronize_PlayerAnimation_Delete(m_eCharacyerType, strAnimName);
+
 			}
 			IMGUI_SAME_LINE;
 
@@ -877,6 +897,9 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 				sort(Animations.begin(), Animations.end(), [&](CAnimation* pSrcAnimation, CAnimation* pDestAnimation) {
 					return pSrcAnimation->Get_AnimationName() < pDestAnimation->Get_AnimationName();
 					});
+
+				if (m_bCostumeMode)
+					CPart_Manager::GetInstance()->Synchronize_PlayerAnimation_Sort(m_eCharacyerType);
 			}
 			IMGUI_SAME_LINE;
 
@@ -893,11 +916,19 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 				{
 					MSG_BOX("Save Success");
 				}
+
+				if (m_bCostumeMode)
+				{
+					if (FAILED(CPart_Manager::GetInstance()->Apply_PlayAnimation(m_eCharacyerType)))
+						MSG_BOX("Failed PartManager Apply Animation");
+					else
+						MSG_BOX("Success PartManager Apply Animation");
+				}
 			}
 
 			/* Rename */
 			{
-				sprintf_s(szAnimationName, CUtils::ToString(pModelCom->Get_CurrAnimation()->Get_AnimationName()).c_str());
+				//sprintf_s(szAnimationName, CUtils::ToString(pModelCom->Get_CurrAnimation()->Get_AnimationName()).c_str());
 				ImGui::InputText("##Animation_Input_Name", szAnimationName, 255);
 				IMGUI_SAME_LINE;
 				if(ImGui::Button("Rename"))
@@ -905,6 +936,9 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 					wstring NewAnimationName = CUtils::ToWString(string(szAnimationName));
 					if (NewAnimationName.size() > 0)
 						pModelCom->Get_CurrAnimation()->Set_AnimationName(NewAnimationName);
+
+					if (m_bCostumeMode)
+						CPart_Manager::GetInstance()->Synchronize_PlayerAnimation_ChangeName(m_eCharacyerType, pModelCom->Get_CurrAnimationIndex(), NewAnimationName);
 				}
 			}
 			IMGUI_NEW_LINE;
@@ -1686,10 +1720,16 @@ void CTool_Model::Tick_Costume(_float fTimeDelta)
 			m_pDummy->m_bCostumeMode = m_bCostumeMode;
 			if (!m_bCostumeMode)
 			{
-				m_pDummy->m_pBodyModel = nullptr;
-				m_pDummy->m_pFaceModel = nullptr;
-				m_pDummy->m_pHairModel = nullptr;
+				for (size_t i = 0; i < PART_TYPE::PART_END; i++)
+				{
+					m_pDummy->m_pPart[i] = nullptr;
+				}
 			}
+			else
+			{
+				CPart_Manager::GetInstance()->Synchronize_PlayerAnimation_Init(m_eCharacyerType, m_pDummy->Get_ModelCom());
+			}
+			
 		}
 
 		/* Function */
@@ -1711,7 +1751,8 @@ void CTool_Model::Tick_Costume(_float fTimeDelta)
 							{
 								m_eCharacyerType = (CHARACTER_TYPE)n;
 								m_iPartIndex = 0;
-								// TODO 
+								
+								CPart_Manager::GetInstance()->Synchronize_PlayerAnimation_Init(m_eCharacyerType, m_pDummy->Get_ModelCom());
 
 							}
 
@@ -1741,7 +1782,7 @@ void CTool_Model::Tick_Costume(_float fTimeDelta)
 							{
 								m_ePartType = (PART_TYPE)n;
 								m_iPartIndex = 0;
-								// TODO 
+								
 
 							}
 
@@ -1773,26 +1814,8 @@ void CTool_Model::Tick_Costume(_float fTimeDelta)
 							m_iPartIndex = i;
 
 							CModel* pModel = CPart_Manager::GetInstance()->Get_PartModel(m_eCharacyerType, m_ePartType, m_iPartIndex);
-							if (nullptr != pModel)
-							{
-								switch (m_ePartType)
-								{
-								case Client::HEAD:
-									m_pDummy->m_pHeadModel = pModel;
-									break;
-								case Client::HAIR:
-									m_pDummy->m_pHairModel = pModel;
-									break;
-								case Client::FACE:
-									m_pDummy->m_pFaceModel = pModel;
-									break;
-								case Client::BODY:
-									m_pDummy->m_pBodyModel = pModel;
-									break;
-								default:
-									break;
-								}
-							}
+
+							m_pDummy->m_pPart[m_ePartType] = pModel;	
 						}
 					}
 					ImGui::EndListBox();

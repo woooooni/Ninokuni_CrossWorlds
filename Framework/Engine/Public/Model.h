@@ -45,7 +45,8 @@ public:
 	class CTexture* Get_MaterialTexture(_uint iMeshIndex, _uint iTextureType);
 
 	/* Animation */
-	void Change_Animations(const vector<class CAnimation*>& Animations);
+	const _bool Has_Animation(const wstring& strAnimationName);
+	
 	void Set_Stop_Animation(const _bool& bStop) { m_TweenDesc.cur.iStop = bStop; } /* bStop이 트루라면 모델 레이트틱이 호출되더라도 애니메이션이 갱신되지 않는다. */
 	void Set_KeyFrame_By_Progress(_float fProgress); /* 진행률(0 ~ 1)을 매개변수로 받아 키프레임을 세팅한다. */
 	HRESULT Set_Animation(const _uint& iAnimationIndex, const _float& fTweenDuration = DEFAULT_TWEEN_DURATION); /* 인덱스로 애니메이션 플레이 (fTweenDuration이 음수라면 보간 X) */
@@ -54,6 +55,7 @@ public:
 	_uint Get_CurrAnimationIndex() { return m_TweenDesc.cur.iAnimIndex; } /* 현재 애니메이션의 인덱스 리턴*/
 	class CAnimation* Get_Animation(const _uint& iIndex);
 	class CAnimation* Get_Animation(const string strName);
+	const _int Get_AnimationIndex(const wstring& strName);
 	const _uint& Get_CurrAnimationFrame() const { return m_TweenDesc.cur.iCurFrame; } /* 현재 애니메이션의 프레임 리턴 (정수 형태) */
 	const _float Get_CurrAnimationFrame_WithRatio() { return (m_TweenDesc.cur.iCurFrame + m_TweenDesc.cur.fRatio); } /* 현재 애니메이션의 프레임(보간 포함) (실수 형태) */
 	const _float Get_Progress();  /* 현재 애니메이션의 진행률(0~1) 리턴*/
