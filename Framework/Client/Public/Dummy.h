@@ -49,6 +49,19 @@ public:
 	HRESULT Export_Model_Bin(const wstring& strFilePath, const wstring& strFileName);
 	HRESULT Import_Model();
 
+
+	// << : Test 
+
+	_bool m_bCostumeMode = FALSE;
+
+	CModel* m_pBodyModel = nullptr;
+	CModel* m_pHairModel = nullptr;
+	CModel* m_pFaceModel = nullptr;
+
+
+	// >> : 
+
+
 protected:
 	CShader* m_pNonAnimShaderCom = nullptr;
 	CShader* m_pAnimShaderCom = nullptr;

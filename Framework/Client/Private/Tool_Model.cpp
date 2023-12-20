@@ -617,6 +617,48 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 		{
 			if (ImGui::TreeNode(u8"파츠 메쉬 제작"))
 			{
+				if (ImGui::Button("TEST"))
+				{
+					m_pDummy->m_bCostumeMode = TRUE;
+
+					/* Body */
+					{
+						wstring strFilePath = L"../Bin/Export/AnimModel/Part/SwordMan/Body_01/";
+						wstring strFileName = L"SwordMan_Body_01";
+
+						CModel* pBodyModel = nullptr;
+						if (FAILED(GI->Import_Model_Data(LEVEL_DUMMY, wstring(L"BODY_BODY"), CModel::TYPE::TYPE_ANIM, strFilePath, strFileName, &pBodyModel)))
+							return;
+						else
+							m_pDummy->m_pBodyModel = pBodyModel;
+					}
+
+					/* Hair */
+					{
+						wstring strFilePath = L"../Bin/Export/AnimModel/Part/SwordMan/Hair_01/";
+						wstring strFileName = L"SwordMan_Hair_01";
+
+						CModel* pHairModel = nullptr;
+						if (FAILED(GI->Import_Model_Data(LEVEL_DUMMY, wstring(L"HAIR_HAIR"), CModel::TYPE::TYPE_ANIM, strFilePath, strFileName, &pHairModel)))
+							return;
+						else
+							m_pDummy->m_pHairModel = pHairModel;
+					}
+
+					/* Face */
+					{
+						wstring strFilePath = L"../Bin/Export/AnimModel/Part/SwordMan/Face_01/";
+						wstring strFileName = L"SwordMan_Face_01";
+
+						CModel* pFaceModel = nullptr;
+						if (FAILED(GI->Import_Model_Data(LEVEL_DUMMY, wstring(L"FACE_FACE"), CModel::TYPE::TYPE_ANIM, strFilePath, strFileName, &pFaceModel)))
+							return;
+						else
+							m_pDummy->m_pFaceModel = pFaceModel;
+					}
+				}
+
+
 				IMGUI_NEW_LINE;
 				/* 플레이어 원본 fbx 주소 */
 				{

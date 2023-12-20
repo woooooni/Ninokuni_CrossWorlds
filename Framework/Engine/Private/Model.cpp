@@ -657,6 +657,22 @@ CAnimation* CModel::Get_Animation(const string strName)
 	return nullptr;
 }
 
+void CModel::Change_Animations(const vector<class CAnimation*>& Animations)
+{
+	for (auto& pAnimation : m_Animations)
+		Safe_Release(pAnimation);
+	m_Animations.clear();
+	m_Animations.shrink_to_fit();
+
+	for (auto& pAnimation : Animations)
+	{
+		Safe_AddRef(pAnimation);
+		m_Animations.push_back(pAnimation);
+	}
+
+	m_iNumAnimations = m_Animations.size();
+}
+
 void CModel::Set_KeyFrame_By_Progress(_float fProgress)
 {
 	std::clamp(fProgress, 0.f, 1.f);
@@ -666,6 +682,17 @@ void CModel::Set_KeyFrame_By_Progress(_float fProgress)
 	m_TweenDesc.cur.iCurFrame = iKeyFrame % m_Animations[m_TweenDesc.cur.iAnimIndex]->Get_MaxFrameCount();
 	m_TweenDesc.cur.iNextFrame = iKeyFrame % m_Animations[m_TweenDesc.cur.iAnimIndex]->Get_MaxFrameCount();
 	m_TweenDesc.cur.fRatio = 0.f;
+}
+
+HRESULT CModel::Bind_KeyFrame(CShader* pShader)
+{
+	if (nullptr == pShader)
+		return E_FAIL;
+
+	if (FAILED(pShader->Bind_RawValue("g_TweenFrames", &m_TweenDesc, sizeof(TWEEN_DESC))))
+		return E_FAIL;
+
+	return S_OK;
 }
 
 HRESULT CModel::SetUp_OnShader(CShader* pShader, _uint iMaterialIndex, aiTextureType eTextureType, const char* pConstantName)
@@ -703,6 +730,24 @@ HRESULT CModel::Render(CShader* pShader, _uint iMeshIndex, _uint iPassIndex)
 			return E_FAIL;
 
 		SetUp_VTF(pShader);
+	}
+
+	pShader->Begin(iPassIndex);
+
+	m_Meshes[iMeshIndex]->Render();
+
+	return S_OK;
+}
+
+HRESULT CModel::Render_Part(CShader* pShader, _uint iMeshIndex, _uint iPassIndex)
+{
+	if (nullptr == m_pSRV || nullptr == pShader)
+		return E_FAIL;
+
+	if (TYPE_ANIM == m_eModelType)
+	{
+		if (FAILED(pShader->Bind_Texture("g_TransformMap", m_pSRV)))
+			return E_FAIL;
 	}
 
 	pShader->Begin(iPassIndex);

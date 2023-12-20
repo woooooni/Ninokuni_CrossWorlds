@@ -45,6 +45,7 @@ public:
 	class CTexture* Get_MaterialTexture(_uint iMeshIndex, _uint iTextureType);
 
 	/* Animation */
+	void Change_Animations(const vector<class CAnimation*>& Animations);
 	void Set_Stop_Animation(const _bool& bStop) { m_TweenDesc.cur.iStop = bStop; } /* bStop이 트루라면 모델 레이트틱이 호출되더라도 애니메이션이 갱신되지 않는다. */
 	void Set_KeyFrame_By_Progress(_float fProgress); /* 진행률(0 ~ 1)을 매개변수로 받아 키프레임을 세팅한다. */
 	HRESULT Set_Animation(const _uint& iAnimationIndex, const _float& fTweenDuration = DEFAULT_TWEEN_DURATION); /* 인덱스로 애니메이션 플레이 (fTweenDuration이 음수라면 보간 X) */
@@ -80,9 +81,12 @@ public:
 
 	HRESULT LateTick(_float fTimeDelta); /* 모델의 애니메이션 키프레임 업데이트 (수업 코드에서의 PlayAnimation() 함수?) */
 
+	
+	HRESULT Bind_KeyFrame(class CShader* pShader);
 	HRESULT SetUp_OnShader(class CShader* pShader, _uint iMaterialIndex, aiTextureType eTextureType, const char* pConstantName);
 	HRESULT SetUp_VTF(class CShader* pShader);
 	HRESULT Render(class CShader* pShader, _uint iMeshIndex, _uint iPassIndex = 0);
+	HRESULT Render_Part(class CShader* pShader, _uint iMeshIndex, _uint iPassIndex = 0);
 	HRESULT Render_Instancing(class CShader* pShader, _uint iMeshIndex, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, _uint iPassIndex = 0);
 #pragma endregion
 

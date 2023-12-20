@@ -570,7 +570,7 @@ HRESULT CModel_Manager::Import_Model_Data(_uint iLevelIndex, const wstring& strP
 {
 	_tchar szFileName[MAX_PATH];
 	_tchar szExt[MAX_PATH];
-	_wsplitpath_s(strFileName.c_str(), nullptr, 0, nullptr, 0, szFileName, MAX_PATH, szExt, MAX_PATH);
+ 	_wsplitpath_s(strFileName.c_str(), nullptr, 0, nullptr, 0, szFileName, MAX_PATH, szExt, MAX_PATH);
 
 	const _bool bFbx = (0 == lstrcmp(szExt, L".fbx")) ? TRUE : FALSE;
 	const _bool bToolLevel = (99 == GI->Get_CurrentLevel()) ? TRUE : FALSE;
