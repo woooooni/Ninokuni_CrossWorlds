@@ -100,7 +100,7 @@ void CCharacter_Dummy::LateTick(_float fTimeDelta)
 	__super::LateTick(fTimeDelta);
 	m_pModelCom->LateTick(fTimeDelta);
 
-	// m_pControllerCom->LateTick_Controller(fTimeDelta);
+	m_pControllerCom->LateTick_Controller(fTimeDelta);
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
@@ -181,38 +181,42 @@ void CCharacter_Dummy::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
 {
 	__super::Ground_Collision_Enter(tInfo);
 
-	Vec3 vVelocity = m_pRigidBodyCom->Get_Velocity();
+	//Vec3 vVelocity = m_pRigidBodyCom->Get_Velocity();
+	//m_pRigidBodyCom->Set_Use_Gravity(false);
+	//m_pRigidBodyCom->Set_Ground(true);
+	//m_pRigidBodyCom->Set_Velocity(Vec3(vVelocity.x, 0.f, vVelocity.z));
+
+	//_vector vPosition = m_pTransformCom->Get_Position();
+	//vPosition = XMVectorSetY(vPosition, tInfo.vCollision_Position.y);
+	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPosition);
 	m_pRigidBodyCom->Set_Use_Gravity(false);
 	m_pRigidBodyCom->Set_Ground(true);
-	m_pRigidBodyCom->Set_Velocity(Vec3(vVelocity.x, 0.f, vVelocity.z));
-
-	_vector vPosition = m_pTransformCom->Get_Position();
-	vPosition = XMVectorSetY(vPosition, tInfo.vCollision_Position.y);
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPosition);
 	
 }
 
 void CCharacter_Dummy::Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo)
 {
 	__super::Ground_Collision_Continue(tInfo);
-	if (false == m_bFirstJump)
-	{
-		m_pRigidBodyCom->Set_Use_Gravity(false);
-		m_pRigidBodyCom->Set_Ground(true);
-	}
+	//if (false == m_bFirstJump)
+	//{
+	//	m_pRigidBodyCom->Set_Use_Gravity(false);
+	//	m_pRigidBodyCom->Set_Ground(true);
+	//}
 
 }
 
 void CCharacter_Dummy::Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo)
 {
 	__super::Ground_Collision_Exit(tInfo);
-	Vec3 vVelocity = m_pRigidBodyCom->Get_Velocity();
-
-	if (false == m_bIsJumping)
-		m_pRigidBodyCom->Set_Velocity(Vec3(vVelocity.x, 0.f, vVelocity.z));
-	
 	m_pRigidBodyCom->Set_Use_Gravity(true);
 	m_pRigidBodyCom->Set_Ground(false);
+	//Vec3 vVelocity = m_pRigidBodyCom->Get_Velocity();
+
+	//if (false == m_bIsJumping)
+	//	m_pRigidBodyCom->Set_Velocity(Vec3(vVelocity.x, 0.f, vVelocity.z));
+	//
+	//m_pRigidBodyCom->Set_Use_Gravity(true);
+	//m_pRigidBodyCom->Set_Ground(false);
 }
 
 
@@ -226,6 +230,8 @@ HRESULT CCharacter_Dummy::Ready_Components()
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 		return E_FAIL;
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(0.f, 1.f, 0.f, 1.f));
 
 	/* For.Com_Renderer */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
@@ -253,7 +259,8 @@ HRESULT CCharacter_Dummy::Ready_Components()
 
 	ControllerDesc.eType = CPhysX_Controller::CAPSULE;
 	ControllerDesc.pTransform = m_pTransformCom;
-	ControllerDesc.fHeight = 20.f;
+	ControllerDesc.vOffset = { 0.f, 1.125f, 0.f };
+	ControllerDesc.fHeight = 2.5f;
 	ControllerDesc.fMaxJumpHeight = 10.f;
 	ControllerDesc.fRaidus = 1.f;
 	ControllerDesc.pOwner = this;
@@ -261,10 +268,6 @@ HRESULT CCharacter_Dummy::Ready_Components()
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_PhysXController"), TEXT("Com_Controller"), (CComponent**)&m_pControllerCom, &ControllerDesc)))
 		return E_FAIL;
-	
-
-
-	
 
 	return S_OK;
 }

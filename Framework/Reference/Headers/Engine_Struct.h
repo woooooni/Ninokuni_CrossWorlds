@@ -286,6 +286,8 @@ namespace Engine
 		_bool bLockAngle_Y = true;				// y축 회전을 제한할지 선택합니다.
 		_bool bLockAngle_Z = true;				// z축 회전을 제한할지 선택합니다.
 
+
+		Matrix WorldMatrix = Matrix::Identity;
 		class CGameObject* pGameObject = nullptr;										// 콜라이더의 주인 입니다.
 	} PHYSX_INIT_DESC;
 

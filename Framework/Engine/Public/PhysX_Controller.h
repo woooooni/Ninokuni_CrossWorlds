@@ -5,7 +5,7 @@
 
 BEGIN(Engine)
 
-class ENGINE_DLL CPhysX_Controller : public CComponent
+class ENGINE_DLL CPhysX_Controller : public CComponent, public PxQueryFilterCallback, public PxControllerFilterCallback
 {
 public:
     enum CONTROLLER_TYPE { BOX, CAPSULE, TYPE_END };
@@ -16,12 +16,15 @@ public:
         class CGameObject* pOwner;
         
         // Box
-        _float3 vExtents = { 1.f, 1.f, 1.f };
+        Vec3 vExtents = { 1.f, 1.f, 1.f };
 
         // Capsule
         _float fHeight = { 0.f };
         _float fRaidus = { 0.f };
         _float fMaxJumpHeight = { 10.f };
+
+
+        Vec3 vOffset = { 0.f, 0.f ,0.f };
 
 
         CONTROLLER_TYPE eType = CONTROLLER_TYPE::TYPE_END;
@@ -45,13 +48,29 @@ private:
     class PxController* m_pPhysXController = nullptr;
     class CTransform* m_pTransformCom = nullptr;
 
+    class PxControllerFilters m_Filters = {};
+    PxFilterData m_FilterData = {};
+
 private:
     CONTROLLER_TYPE m_eType = CONTROLLER_TYPE::TYPE_END;
+    Vec3 m_vOffsetPos = {};
+    Vec3 m_vPrevPosition = {};
+    _bool m_bInitialize = true;
 
 public:
     static CPhysX_Controller* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     virtual CComponent* Clone(void* pArg);
     virtual void Free() override;
+
+
+public:
+    // PxQueryFilterCallback을(를) 통해 상속됨
+    virtual PxQueryHitType::Enum preFilter(const PxFilterData& filterData, const PxShape* shape, const PxRigidActor* actor, PxHitFlags& queryFlags) override;
+    virtual PxQueryHitType::Enum postFilter(const PxFilterData& filterData, const PxQueryHit& hit, const PxShape* shape, const PxRigidActor* actor) override;
+
+
+    // PxControllerFilterCallback을(를) 통해 상속됨
+    virtual bool filter(const PxController& a, const PxController& b) override;
 
 };
 END

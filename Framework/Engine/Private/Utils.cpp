@@ -189,6 +189,15 @@ void CUtils::Release_WString_To_ConstChar(const char** szArray, const _uint iSiz
 	delete[] szArray;
 }
 
+_bool CUtils::Is_Compare(const char* szLeft, const char* szRight)
+{
+	if (nullptr == szLeft || nullptr == szRight)
+		return false;
+
+
+	return !strcmp(szLeft, szRight);
+}
+
 wstring CUtils::PathToWString(wstring strPath)
 {
 	Replace(strPath, L"\\", L"/");
