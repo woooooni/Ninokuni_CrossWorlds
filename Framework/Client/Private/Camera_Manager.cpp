@@ -1,8 +1,11 @@
 #include "stdafx.h"
 #include "GameInstance.h"
+
 #include "Camera_Manager.h"
-#include "Camera_Tool.h"
-#include "Camera_Main.h"
+
+#include "Camera_Free.h"
+#include "Camera_Follow.h"
+
 
 IMPLEMENT_SINGLETON(CCamera_Manager)
 
@@ -13,6 +16,9 @@ CCamera_Manager::CCamera_Manager()
 
 HRESULT CCamera_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
+	if (nullptr == pDevice || nullptr == pContext)
+		return E_FAIL;
+
 	m_pDevice = pDevice;
 	m_pContext = pContext;
 
@@ -27,63 +33,127 @@ HRESULT CCamera_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceCont
 
 void CCamera_Manager::Tick(_float fTimeDelta)
 {
-	if(nullptr != m_pMainCamera)
-		m_pMainCamera->Tick(fTimeDelta);
+	if (nullptr == m_pCurCamera)
+		return;
+
+	m_pCurCamera->Tick(fTimeDelta);
 }
 
 void CCamera_Manager::LateTick(_float fTimeDelta)
 {
-	if (nullptr != m_pMainCamera)
-		m_pMainCamera->LateTick(fTimeDelta);
+	if (nullptr == m_pCurCamera)
+		return;
+
+	m_pCurCamera->LateTick(fTimeDelta);
+
+	/* 아직 보간 처리 X 기본 싱글 카메라만 파이프라인에 전달 */
+
+	/* V(WI) */
+	{
+		GI->Set_Transform(CPipeLine::D3DTS_VIEW, m_pCurCamera->Get_Transform()->Get_WorldMatrixInverse());
+	}
+
+	/* P */
+	{
+		const CCamera::PROJ_DESC& tDesc = m_pCurCamera->Get_ProjDesc();
+		GI->Set_Transform(CPipeLine::D3DTS_PROJ, XMMatrixPerspectiveFovLH(tDesc.tLerpFov.fCurValue, tDesc.fAspect, tDesc.fNear, tDesc.fFar));
+	}
+}
+
+CCamera* CCamera_Manager::Get_Camera(const CAMERA_TYPE& eType)
+{
+	if (CAMERA_TYPE::TYPE_END <= eType || 0 > CAMERA_TYPE::FREE)
+		return nullptr;
+
+	return m_Cameras[eType];
+}
+
+HRESULT CCamera_Manager::Set_CurCamera(const CAMERA_TYPE& eType)
+{
+	if (CAMERA_TYPE::TYPE_END <= eType || 0 > CAMERA_TYPE::FREE)
+		return E_FAIL;
+
+	if (nullptr == m_Cameras[eType])
+		return E_FAIL;
+
+	m_pCurCamera = m_Cameras[eType];
+
+	return S_OK;
 }
 
 HRESULT CCamera_Manager::Ready_Cameras()
 {
-	CCamera::CAMERADESC			CameraDesc;
+	/* 카메라는 오브젝트 매니저에 추가 되지 않고 카메라 매니저가 플로우를 돌린다. */
 
-	CameraDesc.vEye = _float4(0.f, 5.f, -5.f, 1.f);
-	CameraDesc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
-	CameraDesc.fFovy = XMConvertToRadians(60.0f);
-	CameraDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
-	CameraDesc.fNear = 0.2f;
-	CameraDesc.fFar = 1000.f;
+	CAMERA_TYPE eType = CAMERA_TYPE::TYPE_END;
 
-	m_pCameras[CAMERA_TYPE::TOOL] = CCamera_Tool::Create(m_pDevice, m_pContext, L"Free_Camera");
-	if (nullptr == m_pCameras[CAMERA_TYPE::TOOL])
-		return E_FAIL;
-	if (FAILED(m_pCameras[CAMERA_TYPE::TOOL]->Initialize(&CameraDesc)))
+	/* Free */
+	eType = CAMERA_TYPE::FREE;
 	{
-		Safe_Release(m_pCameras[CAMERA_TYPE::TOOL]);
-		return E_FAIL;
+		CCamera::PROJ_DESC tDesc;
+		{
+			tDesc.tLerpFov.fCurValue = XMConvertToRadians(60.0f);
+			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
+			tDesc.fNear = 0.2f;
+			tDesc.fFar = 1000.f;
+
+			m_Cameras[eType] = CCamera_Free::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
+
+			if (nullptr == m_Cameras[eType])
+				return E_FAIL;
+
+			if (FAILED(m_Cameras[eType]->Initialize(&tDesc)))
+			{
+				Safe_Release(m_Cameras[eType]);
+				return E_FAIL;
+			}
+		}
+		m_Cameras[eType]->Set_Key(eType);
+
+		m_Cameras[eType]->Get_Transform()->Set_State(CTransform::STATE::STATE_POSITION, Vec4(0.f, 10.f, -10.f, 1.f));
+		m_Cameras[eType]->Get_Transform()->LookAt(Vec4{ 0.f, 0.f, 0.f, 1.f });
 	}
 
-
-
-
-	m_pCameras[CAMERA_TYPE::GAME_PLAY] = CCamera_Main::Create(m_pDevice, m_pContext, L"Main_Camera");
-	if (nullptr == m_pCameras[CAMERA_TYPE::GAME_PLAY])
-		return E_FAIL;
-
-	if (FAILED(m_pCameras[CAMERA_TYPE::GAME_PLAY]->Initialize(&CameraDesc)))
+	/* Follow */
+	eType = CAMERA_TYPE::FOLLOW;
 	{
-		Safe_Release(m_pCameras[CAMERA_TYPE::GAME_PLAY]);
-		return E_FAIL;
-	}
+		CCamera::PROJ_DESC tDesc;
+		{
+			tDesc.tLerpFov.fCurValue = XMConvertToRadians(60.0f);
+			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
+			tDesc.fNear = 0.2f;
+			tDesc.fFar = 1000.f;
 
-	
+			m_Cameras[eType] = CCamera_Free::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
+
+			if (nullptr == m_Cameras[eType])
+				return E_FAIL;
+
+			if (FAILED(m_Cameras[eType]->Initialize(&tDesc)))
+			{
+				Safe_Release(m_Cameras[eType]);
+				return E_FAIL;
+			}
+		}
+		m_Cameras[eType]->Set_Key(eType);
+
+		m_Cameras[eType]->Get_Transform()->Set_State(CTransform::STATE::STATE_POSITION, Vec4(0.f, 10.f, -10.f, 1.f));
+		m_Cameras[eType]->Get_Transform()->LookAt(Vec4{ 0.f, 0.f, 0.f, 1.f });
+	}
 	return S_OK;
 }
 
 void CCamera_Manager::Free()
 {
 	__super::Free();
+
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
 	
 	for (_uint i = 0; i < CAMERA_TYPE::TYPE_END; ++i)
 	{
-		Safe_Release(m_pCameras[i]);
-		m_pCameras[i] = nullptr;
+		Safe_Release(m_Cameras[i]);
+		m_Cameras[i] = nullptr;
 	}
 }
 

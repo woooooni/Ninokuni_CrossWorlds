@@ -4,13 +4,21 @@
 #include "Base.h"
 #include "Camera.h"
 
+BEGIN(Engine)
+class CCamera;
+class CGameObject;
+class CTransform;
+END
+
+enum CAMERA_TYPE { FREE, FOLLOW, /* ACTION, */ TYPE_END };
+const wstring CameraWstringNames[CAMERA_TYPE::TYPE_END]{ L"Camera_Free", L"Camera_Follow" };
+static const char* CameraCharNames[CAMERA_TYPE::TYPE_END]{ "Camera_Free", "Camera_Follow" };
+
+
 BEGIN(Client)
 class CCamera_Manager : public CBase
 {	
 	DECLARE_SINGLETON(CCamera_Manager)
-
-public:
-	enum CAMERA_TYPE { GAME_PLAY, TOOL, TYPE_END};
 
 private:
 	CCamera_Manager();
@@ -22,21 +30,24 @@ public:
 	void LateTick(_float fTimeDelta);
 
 public:
-	void Set_MainCamera(CAMERA_TYPE eCameraType) {
-		if (eCameraType >= CAMERA_TYPE::TYPE_END)
-		{
-			MSG_BOX("Failed Set MainCamera");
-			return;
-		}
-			
-		m_pMainCamera = m_pCameras[eCameraType];
-	}
+	CCamera* Get_Camera(const CAMERA_TYPE& eType);
+	CCamera* Get_CurCamera() const { return m_pCurCamera; }
+	CCamera** Get_Cameras() { return m_Cameras; }
 
-	class CCamera* Get_MainCamera() { return m_pMainCamera; }
+	HRESULT Set_CurCamera(const CAMERA_TYPE& eType);
 
 private:
-	class CCamera* m_pMainCamera = nullptr;
-	class CCamera* m_pCameras[CAMERA_TYPE::TYPE_END];
+	/* Defualt */
+
+
+	/* Cameras */
+
+	CCamera* m_pCurCamera = { nullptr };
+	CCamera* m_pNextCamera = { nullptr };
+	CCamera* m_Cameras[CAMERA_TYPE::TYPE_END];
+
+	/* Lerp */
+	LERP_TIME_DESC m_tLerpTime = {};
 
 private:
 	ID3D11Device* m_pDevice = nullptr;

@@ -224,7 +224,7 @@
     <ClInclude Include="..\Public\Body.h" />
     <ClInclude Include="..\Public\Boss.h" />
     <ClInclude Include="..\Public\Building.h" />
-    <ClInclude Include="..\Public\Camera_Main.h" />
+    <ClInclude Include="..\Public\Camera_Follow.h" />
     <ClInclude Include="..\Public\Camera_Manager.h" />
     <ClInclude Include="..\Public\Baobam_DarkNode_Skill2.h" />
     <ClInclude Include="..\Public\Character.h" />
@@ -347,7 +347,7 @@
     <ClInclude Include="..\Public\Shadow_ThiefNode_Stun.h" />
     <ClInclude Include="..\Public\StaticObject.h" />
     <ClInclude Include="..\Public\Effect_Manager.h" />
-    <ClInclude Include="..\Public\Camera_Tool.h" />
+    <ClInclude Include="..\Public\Camera_Free.h" />
     <ClInclude Include="..\Public\Client_Defines.h" />
     <ClInclude Include="..\Public\Dummy.h" />
     <ClInclude Include="..\Public\Effect.h" />
@@ -505,9 +505,9 @@
     <ClCompile Include="..\Private\Body.cpp" />
     <ClCompile Include="..\Private\Boss.cpp" />
     <ClCompile Include="..\Private\Building.cpp" />
-    <ClCompile Include="..\Private\Camera_Main.cpp" />
+    <ClCompile Include="..\Private\Camera_Follow.cpp" />
     <ClCompile Include="..\Private\Camera_Manager.cpp" />
-    <ClCompile Include="..\Private\Camera_Tool.cpp" />
+    <ClCompile Include="..\Private\Camera_Free.cpp" />
     <ClCompile Include="..\Private\Cat.cpp" />
     <ClCompile Include="..\Private\Character.cpp" />
     <ClCompile Include="..\Private\Character_Dummy.cpp" />

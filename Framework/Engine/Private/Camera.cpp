@@ -15,80 +15,49 @@ CCamera::CCamera(const CCamera & rhs)
 HRESULT CCamera::Initialize_Prototype()
 {
 	m_pTransformCom = CTransform::Create(m_pDevice, m_pContext);
+	
 	if (nullptr == m_pTransformCom)
 		return E_FAIL;
-
 
 	return S_OK;
 }
 
 HRESULT CCamera::Initialize(void * pArg)
 {
-	memcpy(&m_CameraDesc, pArg, sizeof(CAMERADESC));
+	if (nullptr == pArg)
+		return E_FAIL;
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&m_CameraDesc.vEye));
-	m_pTransformCom->LookAt(XMLoadFloat4(&m_CameraDesc.vAt));
-
-	ZeroMemory(&m_tShakeDesc, sizeof(CAM_SHAKE));
-	m_tShakeDesc.bEnd = true;
-
-	m_pTransformCom->Initialize(pArg);
+	memcpy(&m_tProjDesc, pArg, sizeof(PROJ_DESC));
 
 	return S_OK;
 }
 
 void CCamera::Tick(_float fTimeDelta)
 {
-	switch (m_eCurrState)
-	{
-	case CCamera::BASIC:
-		Tick_Basic(fTimeDelta);
-		break;
-
-	default:
-		break;
-	}
-
-
+	if (!m_bActive)
+		return;
 }
 
 void CCamera::LateTick(_float fTimeDelta)
 {
-	GI->Set_Transform(CPipeLine::D3DTS_VIEW, m_pTransformCom->Get_WorldMatrixInverse());
-	GI->Set_Transform(CPipeLine::D3DTS_PROJ, XMMatrixPerspectiveFovLH(m_CameraDesc.fFovy, m_CameraDesc.fAspect, m_CameraDesc.fNear, m_CameraDesc.fFar));
+	if (!m_bActive)
+		return;
 }
 
 HRESULT CCamera::Render()
 {
+	if (!m_bActive)
+		return S_OK;
+
 	return S_OK;
 }
 
-void CCamera::Tick_Basic(_float fTimeDelta)
-{
-
-}
-
-void CCamera::Tick_CutScene(_float fTimeDelta)
-{
-
-}
-
-void CCamera::Tick_Skill(_float fTimeDelta)
-{
-
-}
-
-void CCamera::Cam_Shake(_float fDuration, _float fForce)
-{
-	m_tShakeDesc.fForce = max(fForce, 1.f);
-	m_tShakeDesc.fDuration = fDuration;
-
-	m_tShakeDesc.bEnd = false;
-	m_tShakeDesc.fAccTime = 0.f;
-}
-
-
-
+//void CCamera::Set_Transform_To_Pipeline()
+//{
+//	GI->Set_Transform(CPipeLine::D3DTS_VIEW, m_pTransformCom->Get_WorldMatrixInverse());
+//
+//	GI->Set_Transform(CPipeLine::D3DTS_PROJ, XMMatrixPerspectiveFovLH(m_tProjDesc.tLerpFov.fCurValue, m_tProjDesc.fAspect, m_tProjDesc.fNear, m_tProjDesc.fFar));
+//}
 
 HRESULT CCamera::Ready_Components()
 {
@@ -98,5 +67,4 @@ HRESULT CCamera::Ready_Components()
 void CCamera::Free()
 {
 	__super::Free();
-	Safe_Release(m_pTransformCom);
 }

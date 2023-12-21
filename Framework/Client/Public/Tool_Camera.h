@@ -12,6 +12,7 @@ public:
 	virtual HRESULT Initialize() override;
 	virtual void Tick(_float fTimeDelta) override;
 
+private:
 
 public:
 	static CTool_Camera* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

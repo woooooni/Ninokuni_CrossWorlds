@@ -152,7 +152,7 @@ HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel, const wstring str
 	}
 
 	/* 02. For. m_pTexture */
-	ID3D11Texture2D* pTexture = nullptr;
+  	ID3D11Texture2D* pTexture = nullptr;
 	{
 		D3D11_TEXTURE2D_DESC desc;
 		{

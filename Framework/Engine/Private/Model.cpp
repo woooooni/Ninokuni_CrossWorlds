@@ -630,7 +630,6 @@ HRESULT CModel::Set_Animation(const _uint& iAnimationIndex, const _float& fTween
 	m_TweenDesc.ClearNextAnim();
 	m_TweenDesc.next.iAnimIndex = iAnimationIndex % m_Animations.size();
 	m_TweenDesc.fTweenDuration = fTweenDuration;
-	m_Animations[m_TweenDesc.next.iAnimIndex]->Clear_AnimationData();
 
 	return S_OK;
 }
