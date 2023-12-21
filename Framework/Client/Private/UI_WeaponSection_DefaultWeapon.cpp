@@ -29,14 +29,6 @@ void CUI_WeaponSection_DefaultWeapon::Set_Weapon(CHARACTER_TYPE eID)
 	case CHARACTER_TYPE::ENGINEER:
 		m_eWeaponType = UI_DEFAULTWEAPON::DEFAULTWEAPON_ENGINEER;
 		break;
-
-	case CHARACTER_TYPE::WITCH:
-		m_eWeaponType = UI_DEFAULTWEAPON::DEFAULTWEAPON_WITCH;
-		break;
-
-	case CHARACTER_TYPE::ROGUE:
-		m_eWeaponType = UI_DEFAULTWEAPON::DEFAULTWEAPON_ROGUE;
-		break;
 	}
 }
 

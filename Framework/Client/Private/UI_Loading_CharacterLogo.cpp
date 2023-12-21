@@ -204,7 +204,7 @@ void CUI_Loading_CharacterLogo::Tick_Text(_float fTimeDelta)
 {
 	m_fTimeAcc += fTimeDelta;
 
-	if (0.1f < m_fTimeAcc)
+	if (0.05f < m_fTimeAcc)
 	{
 		++m_iTextCount;
 		if (MAX_PATH <= m_iTextCount)

@@ -48,7 +48,7 @@ HRESULT CUI_BtnClose::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	m_bActive = false;
+	m_bActive = true;
 	m_bUsable = false;
 	
 	return S_OK;
@@ -129,7 +129,7 @@ HRESULT CUI_BtnClose::Ready_State()
 {
 	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
+		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
 
 	return S_OK;
 }

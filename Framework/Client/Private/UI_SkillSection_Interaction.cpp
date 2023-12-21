@@ -45,6 +45,12 @@ void CUI_SkillSection_Interaction::Tick(_float fTimeDelta)
 		if (INTERACTION_END == m_eType)
 			return;
 
+		if (m_bRotate)
+		{
+			m_fTimeAcc += fTimeDelta;
+			//m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 0.f, 1.f, 1.f), fTimeDelta * 50.f); TextCode
+		}
+
 		__super::Tick(fTimeDelta);
 	}
 }
@@ -55,6 +61,9 @@ void CUI_SkillSection_Interaction::LateTick(_float fTimeDelta)
 	{
 		if (INTERACTION_END == m_eType)
 			return;
+
+		if (1.f < m_fTimeAcc)
+			m_bRotate = false;
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
@@ -137,7 +146,7 @@ void CUI_SkillSection_Interaction::Key_Input(_float fTimeDelta)
 {
 	if (KEY_TAP(KEY::LBTN))
 	{
-		//m_pTransformCom->Turn(XMVectorSet(0.f, 0.f, 1.f, 1.f), 50.f, fTimeDelta);
+		m_bRotate = true;
 	}
 }
 

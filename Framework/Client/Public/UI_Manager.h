@@ -38,7 +38,12 @@ public:
 	HRESULT Tick_EvermoreLevel(_float fTimeDelta);
 
 public:
+	void Update_LobbyBtnState(_uint iIndex);
+	void Update_CostumeBtnState(_uint iIndex);
+
+public:
 	HRESULT Using_CloseButton();
+	HRESULT Using_BackButton();
 
 	HRESULT OnOff_Veil(_bool bOnOff);
 	HRESULT OnOff_SettingWindow(_bool bOnOff);
@@ -89,6 +94,7 @@ private:
 
 	// PlayerStatus
 	vector<class CUI_PlayerEXPBar*> m_PlayerEXP;
+	vector<class CUI_SkillSection_ClassicSkill*> m_ClassicSkill;
 
 	// MonsterHP
 	class CUI_MonsterHP_Background* m_pMonsterHPBack = { nullptr };
@@ -123,6 +129,10 @@ private:
 	class CUI_Dialog_Window* m_pDialogWindow = { nullptr };
 	class CUI_Dialog_MiniWindow* m_pDialogMini = { nullptr };
 	vector<class CUI_Dialog_Portrait*> m_Portrait;
+	// For Costume
+	vector<class CUI_Costume_Btn*> m_CostumeBtn;
+	vector<class CUI_Costume_Btn*> m_CostumeClickedBtn;
+	class CUI_Costume_LineBox* m_pCostumeBox;
 
 private:
 	ID3D11Device* m_pDevice = { nullptr };

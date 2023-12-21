@@ -3,18 +3,18 @@
 #include "UI.h"
 
 BEGIN(Client)
-class CUI_SkillSection_Interaction final : public CUI
+class CUI_SkillSection_ClassicSkill final : public CUI
 {
 public:
-	enum UI_INTERACTION_TYPE { INTERACTION_KICK, INTERACTION_PICKUP, INTERACTION_PICKDOWN, INTERACTION_END };
+	enum UI_CLASSICSKILL { SKILL_FIRST, SKILL_SECOND, SKILL_THIRD, UICLASSICSKILL_END };
 
 protected:
-	CUI_SkillSection_Interaction(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CUI_SkillSection_Interaction(const CUI_SkillSection_Interaction& rhs);
-	virtual ~CUI_SkillSection_Interaction() = default;
+	CUI_SkillSection_ClassicSkill(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_CLASSICSKILL eType);
+	CUI_SkillSection_ClassicSkill(const CUI_SkillSection_ClassicSkill& rhs);
+	virtual ~CUI_SkillSection_ClassicSkill() = default;
 
 public:
-	void Set_InteractionType(UI_INTERACTION_TYPE eType) { m_eType = eType; }
+	void Set_SkillType(CHARACTER_TYPE eType);
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -29,10 +29,10 @@ public:
 	virtual void On_MouseExit(_float fTimeDelta) override;
 
 private:
-	UI_INTERACTION_TYPE m_eType = { INTERACTION_END };
+	UI_CLASSICSKILL m_eType = { UICLASSICSKILL_END };
+	CHARACTER_TYPE m_ePlayerType = { SWORD_MAN };
 
-	_bool m_bRotate = { false };
-	_float m_fTimeAcc = { 0.f };
+	_int m_iTextureIndex = { -1 };
 
 private:
 	virtual HRESULT	Ready_Components() override;
@@ -45,7 +45,7 @@ private:
 	void Key_Input(_float fTimeDelta);
 
 public:
-	static CUI_SkillSection_Interaction* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CUI_SkillSection_ClassicSkill* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_CLASSICSKILL eType);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

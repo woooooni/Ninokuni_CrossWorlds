@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UI_SubMenu_Character.h"
 #include "GameInstance.h"
+#include "UI_Manager.h"
 
 CUI_SubMenu_Character::CUI_SubMenu_Character(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 	const wstring& strObjectTag, UI_SUBCHARACTER_TYPE eUIType)
@@ -174,7 +175,8 @@ void CUI_SubMenu_Character::On_Mouse(_float fTimeDelta)
 	{
 		if (KEY_TAP(KEY::LBTN))
 		{
-
+			if (CHARBTN_COSTUME == m_eUIType)
+				CUI_Manager::GetInstance()->OnOff_CostumeWindow(true);
 		}
 	}
 }

@@ -71,7 +71,6 @@ HRESULT CUI_Basic::Initialize(void* pArg)
 //		_float2 fBtnSize = _float2(128.f * 0.6f, 128.f * 0.55f);
 //		Make_Child(-(g_iWinSizeX * 0.5f) + (fBtnSize.x * 0.5f + 3.f), -(g_iWinSizeY * 0.5f) + fBtnSize.y * 0.5f,
 //			fBtnSize.x, fBtnSize.y, TEXT("Prototype_GameObject_UI_Btn_Back"));
-
 	}
 
 	return S_OK;

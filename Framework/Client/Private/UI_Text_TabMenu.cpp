@@ -16,12 +16,18 @@ CUI_Text_TabMenu::CUI_Text_TabMenu(const CUI_Text_TabMenu& rhs)
 void CUI_Text_TabMenu::Set_TextType(UI_MENUTITLE eType)
 {
 	m_eType = eType;
+	_float2 vOffset = _float2(80.f, 5.f);
 
 	switch (m_eType)
 	{
-	case TITLE_WORLDMAP:
-		_float2 vOffset = _float2(90.f, 10.f);
+	case TITLE_COSTUME:
+		m_tInfo.fCX = 200.f * 0.7f;
+		m_tInfo.fCY = 93.f * 0.7f;
+		m_tInfo.fX = m_tInfo.fCX * 0.5f + vOffset.x;
+		m_tInfo.fY = m_tInfo.fCY * 0.5f + vOffset.y;
+		break;
 
+	case TITLE_WORLDMAP:
 		m_tInfo.fCX = 200.f * 0.7f;
 		m_tInfo.fCY = 93.f * 0.7f;
 		m_tInfo.fX = m_tInfo.fCX * 0.5f + vOffset.x;

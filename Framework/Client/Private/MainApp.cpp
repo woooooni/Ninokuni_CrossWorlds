@@ -795,6 +795,34 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Contents/Dialogue/UI_MIniDialog_Portrait.png")))))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Costume_LineBox"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Tab/Tab_Costume/UI_Coustume_WindowBackground.png")))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Costume_Clicked_Buttons"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Tab/Tab_Costume/UI_Costume_Btn_Clicked_%d.png"), 6))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Costume_Unclicked_Buttons"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Tab/Tab_Costume/UI_Costume_Btn_Unclicked_TextVer_%d.png"), 6))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Costume_Slot"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Tab/Tab_Costume/UI_Coustume_Slot_%d.png"), 3))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Costume_ChangeBtn"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Tab/Tab_Costume/UI_Costume_ChangeBtn_%d.png"), 2))))
+		return E_FAIL;
+
+	// CoolTime¿ë MaskTex
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_CoolTime_MaskTexture"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Contents/CoolTime/UI_CoolTime_0.png")))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SkillSection_ClassicSkills"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/ClassicSkill/UI_Icon_Skill_Normal_%d.png"), 9))))
+		return E_FAIL;
+	// ClassicSkill¿ë MaskTex
+//	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SkillSection_ClassicSkills"),
+//		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/ClassicSkill/UI_Icon_Skill_Mask.png")))))
+//		return E_FAIL;
+
 	return S_OK;
 }
 
