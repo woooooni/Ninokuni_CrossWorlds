@@ -703,9 +703,10 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 		/* 변경시 다시 익스포트 해야하는 유형 */
 		IMGUI_NEW_LINE;
 		ImGui::Separator();
-		ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"삭제, 정렬, 순서 변경, 이름 변경은 Apply를 해야 반영됩니다.");
-		ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"Save 창이 뜨더라도 Save 경로는 캐쉬 경로(Export/stash)이므로 모델의 원본은 수정되지 않습니다.");
-		ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"애니메이션이 이상하다면 Apply 버튼을 눌러주세요.");
+		ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"삭제, 정렬, 순서 변경, 이름 변경은 반드시 Apply를 해야 반영됩니다.");
+		ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"모델의 애니메이션이 이상하다면 Apply 버튼을 눌러주세요.");
+		ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"Save 창이 뜨더라도 Apply의 Save 경로는 캐쉬 경로(Export/stash)이므로");
+		ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"모델의 원본은 수정되지 않습니다.");
 		ImGui::Text("Prop 1");
 		{
 			/* Swap */

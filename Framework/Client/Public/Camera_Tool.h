@@ -23,6 +23,10 @@ protected:
 	virtual HRESULT Ready_Components() override;
 
 public:
+	_float m_fMoveSpeed = 50.f;
+	_float m_fRotateSpeed = 0.5f;
+
+public:
 	static CCamera_Tool* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
