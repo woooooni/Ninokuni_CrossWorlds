@@ -132,7 +132,7 @@ private:
 	// For Costume
 	vector<class CUI_Costume_Btn*> m_CostumeBtn;
 	vector<class CUI_Costume_Btn*> m_CostumeClickedBtn;
-	class CUI_Costume_LineBox* m_pCostumeBox;
+	class CUI_Costume_LineBox* m_pCostumeBox = { nullptr };
 
 private:
 	ID3D11Device* m_pDevice = { nullptr };

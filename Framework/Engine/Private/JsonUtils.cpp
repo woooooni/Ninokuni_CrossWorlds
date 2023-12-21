@@ -42,14 +42,14 @@ Json CJsonUtils::Json_Load(const wstring& strFilePath)
 	strJson = File->Read<string>();
 
 
-	data = Json::parse(strJson);
+	data = data.parse(strJson);
 	return data;
 }
 
 HRESULT CJsonUtils::Json_Save(const wstring& strFilePath, const Json& refJsonFile)
 {
 
-	string strJson = refJsonFile.dump();
+	string strJson = refJsonFile.dump(1);
 
 	_tchar szExt[MAX_PATH] = L"";
 	_wsplitpath_s(strFilePath.c_str(), nullptr, 0, nullptr, 0, nullptr, 0, szExt, MAX_PATH);
