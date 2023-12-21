@@ -57,14 +57,15 @@ HRESULT CUI_SkillSection_Background::Initialize(void* pArg)
 	m_bActive = true; 
 	m_fAlpha = 0.9f;
 
-	_float fSize = 64.f * 0.8f;
+	_float fSize = 64.f * 0.7f;
+	_float2 vOffset = _float2(63.f, -69.f);
 
 	// 플레이어 상태를 컨트롤하는 버튼들
-	Make_Child(71.f, -77.f, fSize, fSize, TEXT("Prototype_GameObject_UI_SkillSection_BtnJump"));
-	Make_Child(-77.f, 71.f, fSize, fSize, TEXT("Prototype_GameObject_UI_SkillSection_BtnRoll"));
+	Make_Child(vOffset.x, vOffset.y, fSize, fSize, TEXT("Prototype_GameObject_UI_SkillSection_BtnJump"));
+	Make_Child(vOffset.y, vOffset.x, fSize, fSize, TEXT("Prototype_GameObject_UI_SkillSection_BtnRoll"));
 	
 	// 무기 슬롯
-	_float2 vDefaultOffset = _float2(25.f, -195.f);
+	_float2 vDefaultOffset = _float2(17.f, -170.f);
 	_float fSlotSize = 128.f * 0.6f;
 	_float fOffset = 85.f;
 
@@ -73,15 +74,15 @@ HRESULT CUI_SkillSection_Background::Initialize(void* pArg)
 	Make_Child(vDefaultOffset.x + fOffset, vDefaultOffset.y, fSlotSize, fSlotSize, TEXT("Prototype_GameObject_UI_WeaponSection_Slot_Third"));
 
 	// 기본 스킬
-	_float fBtnSize = 128.f * 0.4f;
-	Make_Child(-5.f, -1.f, fBtnSize, fBtnSize, TEXT("Prototype_GameObject_UI_SkillSection_DefaultAttack"));
+	_float fBtnSize = 128.f * 0.35f;
+	Make_Child(-4.f, -1.f, fBtnSize, fBtnSize, TEXT("Prototype_GameObject_UI_SkillSection_DefaultAttack"));
 
 	// 상호작용 버튼
-	fBtnSize = 102.f * 0.7f;
-	Make_Child(-170.f, -80.f, fBtnSize, fBtnSize, TEXT("Prototype_GameObject_UI_SkillSection_BtnInteraction"));
-
-	fBtnSize = 128.f * 0.5f;
-	Make_Child(-170.f, -80.f, fBtnSize, fBtnSize, TEXT("Prototype_GameObject_UI_SkillSection_Interaction"));
+	_float2 vInteraction = _float2(-150.f, -70.f);
+	fBtnSize = 102.f * 0.55f;
+	Make_Child(vInteraction.x, vInteraction.y, fBtnSize, fBtnSize, TEXT("Prototype_GameObject_UI_SkillSection_BtnInteraction"));
+	fBtnSize = 128.f * 0.35f;
+	Make_Child(vInteraction.x, vInteraction.y, fBtnSize, fBtnSize, TEXT("Prototype_GameObject_UI_SkillSection_Interaction"));
 	
 	return S_OK;
 }

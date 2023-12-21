@@ -49,11 +49,11 @@ void CUI_MonsterHP_Elemental::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-		// Temp
+		// Temp m_vTextPosition = _float2(g_iWinSizeX * 0.5f - 152.f, 75.f);
 		CRenderer::TEXT_DESC LevelDesc;
 		LevelDesc.strText = L"Lv.20";
 		LevelDesc.strFontTag = L"Default_Medium";
-		LevelDesc.vScale = { 0.4f, 0.4f };
+		LevelDesc.vScale = { 0.3f, 0.3f };
 		LevelDesc.vPosition = m_vTextPosition;
 		LevelDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
 		m_pRendererCom->Add_Text(LevelDesc);

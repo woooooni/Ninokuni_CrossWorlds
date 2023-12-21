@@ -44,10 +44,10 @@ HRESULT CUI_WeaponSection_Slot::Initialize(void* pArg)
 	UI_INFO ParentDesc;
 	ZeroMemory(&ParentDesc, sizeof(CUI::UI_INFO));
 
-	ParentDesc.fCX = 400.f * 0.85f;
-	ParentDesc.fCY = 400.f * 0.85f;
+	ParentDesc.fCX = 400.f * 0.75f;
+	ParentDesc.fCY = 400.f * 0.75f;
 	ParentDesc.fX = g_iWinSizeX - ParentDesc.fCX * 0.5f;
-	ParentDesc.fY = g_iWinSizeY - ParentDesc.fCY * 0.5f;
+	ParentDesc.fY = g_iWinSizeY - ParentDesc.fCY * 0.5f - 5.f;
 
 	UI_INFO	UIDesc;
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));

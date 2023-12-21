@@ -5,8 +5,8 @@
 #include "Engine_Defines.h"
 namespace Client
 {
-	enum CHARACTER_TYPE { SWORD_MAN, DESTROYER, ENGINEER, WITCH, ROGUE, CHARACTER_END };
-	static const wstring wstrCharacterTypeNames[CHARACTER_TYPE::CHARACTER_END]{ L"SWORDMAN", L"DESTROYER", L"ENGINEER", L"WITCH", L"ROUGE" };
+	enum CHARACTER_TYPE { SWORD_MAN, DESTROYER, ENGINEER, CHARACTER_END };
+	static const wstring wstrCharacterTypeNames[CHARACTER_TYPE::CHARACTER_END]{ L"SWORDMAN", L"DESTROYER", L"ENGINEER" };
 	
 	enum PART_TYPE { HEAD, HAIR, FACE, BODY, PART_END };
 	static const wstring wstrPartTypeNames[PART_TYPE::PART_END]{ L"HEAD", L"HAIR", L"FACE", L"BODY" };

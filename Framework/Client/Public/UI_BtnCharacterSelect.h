@@ -18,9 +18,6 @@ protected:
 	virtual ~CUI_BtnCharacterSelect() = default;
 
 public: // Get/Set 함수
-	void Set_Active(_bool bActive) { m_bActive = bActive; }
-	_bool Is_Active() { return m_bActive; }
-
 	void Set_Clicked(_bool bClick) { m_bClicked = bClick; }
 	_bool Is_Clicked() { return m_bClicked; }
 
@@ -51,7 +48,6 @@ private:
 	UI_SELECTBTN_CHARACTER m_ePlayerType = { UI_SELECTBTN_CHARACTER::UICHARACTERBTN_END };
 	UI_SELECTBTN_TYPE m_eTextureType = { UI_SELECTBTN_TYPE::BTNTYPE_END };
 
-	_bool m_bActive = { false }; // 활성화되었다
 	_bool m_bClicked = { false }; // 선택되었다
 	_bool m_bArrived = { false }; // 목표 위치까지 도달했다
 	_bool m_bMoveStart = { false }; // 원위치로 돌아가게 제어하는 불변수

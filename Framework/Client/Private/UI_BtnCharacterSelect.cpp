@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "UI_BtnCharacterSelect.h"
 #include "GameInstance.h"
-#include "Level_Loading.h"
+#include "UI_Manager.h"
 
 CUI_BtnCharacterSelect::CUI_BtnCharacterSelect(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 	const wstring& strObjectTag, UI_SELECTBTN_TYPE eBtnType, UI_SELECTBTN_CHARACTER ePlayerType)
@@ -81,7 +81,6 @@ void CUI_BtnCharacterSelect::Tick(_float fTimeDelta)
 				if (m_tInfo.fX >= m_vGoalPosition.x)
 				{
 					m_bArrived = true;
-
 					m_tInfo.fX = m_vGoalPosition.x;
 				}
 				else
@@ -93,45 +92,6 @@ void CUI_BtnCharacterSelect::Tick(_float fTimeDelta)
 				m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 					XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 			}
-			else // Arrived가 True일때
-			{
-				if (m_bMoveStart) // 원위치로 돌아오라는 명령이 있으면
-				{
-					// 작아진다
-					if (m_tInfo.fCX < m_vOriginSize.x) // 사이즈가 일정크기 이하로 작아지지 않도록 한다.
-					{
-						m_tInfo.fCX = m_vOriginSize.x;
-						m_tInfo.fCY = m_vOriginSize.y;
-
-						m_bArrived = false;
-					}
-					else
-					{
-						m_tInfo.fCX -= fTimeDelta * 50.f;
-						m_tInfo.fCY -= fTimeDelta * 50.f;
-					}
-
-					// 움직인다
-					if (m_tInfo.fX < m_vOriginPosition.x)
-					{
-						m_tInfo.fX = m_vOriginPosition.x;
-
-						m_bMoveEnd = true;
-
-						m_bActive = false;
-						m_bMoveStart = false;
-					}
-					else
-					{
-						m_tInfo.fX -= fTimeDelta * 100.f;
-					}
-
-					m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
-					m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-						XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
-				}
-			}
-
 		}
 
 		__super::Tick(fTimeDelta);
@@ -142,6 +102,42 @@ void CUI_BtnCharacterSelect::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (BTN_CLICKED == m_eTextureType)
+		{
+			if (m_bArrived)
+			{
+				if (m_bMoveStart) // 원위치로 돌아오라는 명령이 있으면
+				{
+					m_tInfo.fCX -= fTimeDelta * 50.f;
+					m_tInfo.fCY -= fTimeDelta * 50.f;
+
+					// 작아진다
+					if (m_tInfo.fCX < m_vOriginSize.x) // 사이즈가 일정크기 이하로 작아지지 않도록 한다.
+					{
+						m_tInfo.fCX = m_vOriginSize.x;
+						m_tInfo.fCY = m_vOriginSize.y;
+
+						if (m_tInfo.fX == m_vOriginPosition.x)
+							m_bArrived = false;
+					}
+
+					m_tInfo.fX -= fTimeDelta * 100.f;
+
+					// 움직인다
+					if (m_tInfo.fX < m_vOriginPosition.x)
+					{
+						Reset_InitializeInfo();
+
+						m_tInfo.fX = m_vOriginPosition.x;
+					}
+
+					m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+					m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+						XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
+				}
+			}
+		}
+
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
 }
@@ -182,7 +178,10 @@ void CUI_BtnCharacterSelect::On_Mouse(_float fTimeDelta)
 			if (BTN_UNCLIKED == m_eTextureType)
 			{
 				if (!m_bClicked)
+				{
 					m_bClicked = true;
+					CUI_Manager::GetInstance()->Update_LobbyBtnState(_uint(m_ePlayerType));
+				}
 			}
 		}
 	}

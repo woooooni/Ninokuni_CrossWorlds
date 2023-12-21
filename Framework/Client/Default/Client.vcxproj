@@ -299,10 +299,13 @@
     <ClInclude Include="..\Public\StelliaState_SpinTail.h" />
     <ClInclude Include="..\Public\StelliaState_TripleLaser.h" />
     <ClInclude Include="..\Public\StelliaState_Turn.h" />
+    <ClInclude Include="..\Public\UI_Costume_Btn.h" />
+    <ClInclude Include="..\Public\UI_Costume_LineBox.h" />
     <ClInclude Include="..\Public\UI_Dialog_Flip.h" />
     <ClInclude Include="..\Public\UI_Dialog_MiniWindow.h" />
     <ClInclude Include="..\Public\UI_Dialog_Portrait.h" />
     <ClInclude Include="..\Public\UI_Dialog_Window.h" />
+    <ClInclude Include="..\Public\UI_SkillSection_ClassicSkill.h" />
     <ClInclude Include="..\Public\UI_Text_TabMenu.h" />
     <ClInclude Include="..\Public\Vfx_MouseClick.h" />
     <ClInclude Include="..\Public\Face.h" />
@@ -576,10 +579,13 @@
     <ClCompile Include="..\Private\StelliaState_SpinTail.cpp" />
     <ClCompile Include="..\Private\StelliaState_TripleLaser.cpp" />
     <ClCompile Include="..\Private\StelliaState_Turn.cpp" />
+    <ClCompile Include="..\Private\UI_Costume_Btn.cpp" />
+    <ClCompile Include="..\Private\UI_Costume_LineBox.cpp" />
     <ClCompile Include="..\Private\UI_Dialog_Flip.cpp" />
     <ClCompile Include="..\Private\UI_Dialog_MiniWindow.cpp" />
     <ClCompile Include="..\Private\UI_Dialog_Portrait.cpp" />
     <ClCompile Include="..\Private\UI_Dialog_Window.cpp" />
+    <ClCompile Include="..\Private\UI_SkillSection_ClassicSkill.cpp" />
     <ClCompile Include="..\Private\UI_Text_TabMenu.cpp" />
     <ClCompile Include="..\Private\Vfx_MouseClick.cpp" />
     <ClCompile Include="..\Private\Face.cpp" />

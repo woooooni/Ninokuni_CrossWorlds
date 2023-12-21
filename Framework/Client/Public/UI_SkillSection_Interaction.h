@@ -14,6 +14,9 @@ protected:
 	virtual ~CUI_SkillSection_Interaction() = default;
 
 public:
+	void Set_InteractionType(UI_INTERACTION_TYPE eType) { m_eType = eType; }
+
+public:
 	virtual HRESULT	Initialize_Prototype();
 	virtual HRESULT	Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta);
@@ -27,6 +30,9 @@ public:
 
 private:
 	UI_INTERACTION_TYPE m_eType = { INTERACTION_END };
+
+	_bool m_bRotate = { false };
+	_float m_fTimeAcc = { 0.f };
 
 private:
 	virtual HRESULT	Ready_Components() override;

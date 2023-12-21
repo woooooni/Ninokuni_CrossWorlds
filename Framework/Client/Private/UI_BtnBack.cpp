@@ -130,7 +130,7 @@ void CUI_BtnBack::Key_Input(_float fTimeDelta)
 {
 	if (KEY_TAP(KEY::LBTN))
 	{
-		CUI_Manager::GetInstance()->Using_CloseButton();
+		CUI_Manager::GetInstance()->Using_BackButton();
 	}
 }
 

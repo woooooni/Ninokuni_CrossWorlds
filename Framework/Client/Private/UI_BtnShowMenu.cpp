@@ -81,9 +81,8 @@ void CUI_BtnShowMenu::On_Mouse(_float fTimeDelta)
 		if (KEY_TAP(KEY::LBTN))
 		{
 			// UIManager에 기본으로 Scene에 생성되는 UI들이 자연스럽게 사라지고 등장할 수 있는 함수를 생성한다.
-			CUI_Manager::GetInstance()->OnOff_MainMenu(true);
 			CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
-			CUI_Manager::GetInstance()->OnOff_CloseButton(true);
+			CUI_Manager::GetInstance()->OnOff_MainMenu(true);
 		}
 	}
 }

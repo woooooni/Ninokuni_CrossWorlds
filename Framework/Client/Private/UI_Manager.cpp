@@ -24,6 +24,7 @@
 #include "UI_WindowQuest.h"
 #include "UI_Dialog_Flip.h"
 #include "UI_BtnShowMenu.h"
+#include "UI_Costume_Btn.h"
 #include "UI_Setting_Icon.h"
 #include "UI_SubMenu_Shop.h"
 #include "UI_Text_TabMenu.h"
@@ -37,6 +38,7 @@
 #include "UI_Setting_Window.h"
 #include "UI_BtnShowSetting.h"
 #include "UI_WindowWorldMap.h"
+#include "UI_Costume_LineBox.h"
 #include "UI_Dialog_Portrait.h"
 #include "UI_Loading_Imajinn.h"
 #include "UI_Setting_Section.h"
@@ -68,6 +70,7 @@
 #include "UI_ImajinnSection_Emoticon.h"
 #include "UI_MonsterHP_ElementalFrame.h"
 #include "UI_SkillSection_Interaction.h"
+#include "UI_SkillSection_ClassicSkill.h"
 #include "UI_ImajinnSection_Background.h"
 #include "UI_WeaponSection_DefaultWeapon.h"
 #include "UI_SkillSection_BtnInteraction.h"
@@ -677,7 +680,7 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	_float fOffset = 10.f;
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
-	UIDesc.fCX = 64.f;
+	UIDesc.fCX = 64.f * 0.8f;
 	UIDesc.fCY = UIDesc.fCX;
 	UIDesc.fX = g_iWinSizeX - (UIDesc.fCX * 0.5f) - fOffset;
 	UIDesc.fY = UIDesc.fCY * 0.5f + fOffset;
@@ -696,7 +699,7 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	pButton = nullptr;
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
-	UIDesc.fCX = 64.f;
+	UIDesc.fCX = 64.f * 0.8f;
 	UIDesc.fCY = UIDesc.fCX;
 	UIDesc.fX = UIDesc.fCX * 0.5f + (fOffset * 2.f);
 	UIDesc.fY = g_iWinSizeY - (UIDesc.fCY * 0.5f) - fOffset;
@@ -715,9 +718,9 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	pButton = nullptr;
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
-	UIDesc.fCX = 64.f;
+	UIDesc.fCX = 64.f * 0.8f;
 	UIDesc.fCY = UIDesc.fCX;
-	UIDesc.fX = g_iWinSizeX - (UIDesc.fCX * 0.5f) - (fOffset * 7.f);
+	UIDesc.fX = g_iWinSizeX - (UIDesc.fCX * 0.5f) - (fOffset * 6.f);
 	UIDesc.fY = UIDesc.fCY * 0.5f + fOffset;
 
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Button_ShowInven"), &UIDesc, &pButton)))
@@ -734,10 +737,10 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	pButton = nullptr;
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
-	UIDesc.fCX = 64.f;
+	UIDesc.fCX = 64.f * 0.8;
 	UIDesc.fCY = UIDesc.fCX;
 	UIDesc.fX = UIDesc.fCX * 0.5f + (fOffset * 2.f);
-	UIDesc.fY = 170.f;
+	UIDesc.fY = 135.f;
 
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Button_ShowQuest"), &UIDesc, &pButton)))
 		return E_FAIL;
@@ -906,7 +909,7 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	fOffset = 20.f;
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
-	UIDesc.fCX = 64.f * 0.7f;
+	UIDesc.fCX = 64.f * 0.5f;
 	UIDesc.fCY = UIDesc.fCX;
 	UIDesc.fX = g_iWinSizeX - (UIDesc.fCX * 0.5f) - fOffset;
 	UIDesc.fY = UIDesc.fCY * 0.5f + fOffset;
@@ -1348,10 +1351,10 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	// SkillSection
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
-	UIDesc.fCX = 400.f * 0.85f;
-	UIDesc.fCY = 400.f * 0.85f;
+	UIDesc.fCX = 400.f * 0.75f;
+	UIDesc.fCY = 400.f * 0.75f;
 	UIDesc.fX = g_iWinSizeX - UIDesc.fCX * 0.5f;
-	UIDesc.fY = g_iWinSizeY - UIDesc.fCY * 0.5f;
+	UIDesc.fY = g_iWinSizeY - UIDesc.fCY * 0.5f - 5.f;
 
 	pBackground = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SkillSection_Background"), &UIDesc, &pBackground)))
@@ -1364,10 +1367,10 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	// Imajinn Section
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
-	UIDesc.fCX = 540.f * 0.65f;
-	UIDesc.fCY = 172.f * 0.6f;
+	UIDesc.fCX = 540.f * 0.6f;
+	UIDesc.fCY = 172.f * 0.55f;
 	UIDesc.fX = g_iWinSizeX * 0.5f;
-	UIDesc.fY = g_iWinSizeY - UIDesc.fCY * 0.5f - fOffset;
+	UIDesc.fY = g_iWinSizeY - UIDesc.fCY * 0.5f - 15.f;
 
 	pBackground = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_ImajinnSection_Background"), &UIDesc, &pBackground)))
@@ -1443,10 +1446,10 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 
 	// MonsterHP
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
-	UIDesc.fCX = 300.f * 0.8f;
-	UIDesc.fCY = 50.f * 0.8f;
-	UIDesc.fX = g_iWinSizeX * 0.5f + 30.f;
-	UIDesc.fY = UIDesc.fCY * 0.5f + 35.f;
+	UIDesc.fCX = 300.f * 0.65f;
+	UIDesc.fCY = 50.f * 0.65f;
+	UIDesc.fX = g_iWinSizeX * 0.5f + 11.f;
+	UIDesc.fY = UIDesc.fCY * 0.5f + 25.f;
 
 	pBackground = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MonsterHP_Background"), &UIDesc, &pBackground)))
@@ -1465,10 +1468,10 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	Safe_AddRef(m_pMonsterHPBar);
 
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
-	UIDesc.fCX = 128.f * 0.6f;
+	UIDesc.fCX = 128.f * 0.45f;
 	UIDesc.fCY = UIDesc.fCX;
-	UIDesc.fX = g_iWinSizeX * 0.5f - 130.f;
-	UIDesc.fY = UIDesc.fCY * 0.5f + 15.f;
+	UIDesc.fX = g_iWinSizeX * 0.5f - 119.f;
+	UIDesc.fY = UIDesc.fCY * 0.5f + 10.f;
 
 	pBackground = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MonsterHP_Elemental_Frame"), &UIDesc, &pBackground)))
@@ -1478,7 +1481,7 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(m_pMonsterFrame);
 
-	UIDesc.fCX = 64.f * 0.6f;
+	UIDesc.fCX = 64.f * 0.45f;
 	UIDesc.fCY = UIDesc.fCX;
 	pBackground = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MonsterHP_Elemental"), &UIDesc, &pBackground)))
@@ -1509,9 +1512,9 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	Safe_AddRef(m_pDialogWindow);
 
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
-	fOffset = 130.f;
-	UIDesc.fCX = 820.f * 0.45f;
-	UIDesc.fCY = 348.f * 0.5f;
+	fOffset = 115.f;
+	UIDesc.fCX = 820.f * 0.35f;
+	UIDesc.fCY = 348.f * 0.4f;
 	UIDesc.fX = g_iWinSizeX * 0.5f + 90.f;
 	UIDesc.fY = g_iWinSizeY - (UIDesc.fCY * 0.5f + fOffset);
 
@@ -1525,10 +1528,10 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 
 	m_Portrait.reserve(2);
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
-	fOffset = 92.f;
-	UIDesc.fCX = 256.f * 0.95f;
-	UIDesc.fCY = 256.f * 0.95f;
-	UIDesc.fX = g_iWinSizeX * 0.5f - 180.f;
+	fOffset = 83.f;
+	UIDesc.fCX = 256.f * 0.8f;
+	UIDesc.fCY = 256.f * 0.8f;
+	UIDesc.fX = g_iWinSizeX * 0.5f - 130.f;
 	UIDesc.fY = g_iWinSizeY - (UIDesc.fCY * 0.5f + fOffset);
 
 	CGameObject* pPortrait = nullptr;
@@ -1549,6 +1552,178 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	if (nullptr == m_pTabMenuTitle)
 		return E_FAIL;
 	Safe_AddRef(m_pTabMenuTitle);
+
+#pragma region COSTUME_TAB
+
+	m_CostumeBtn.reserve(6);
+	m_CostumeClickedBtn.reserve(6);
+
+	CUI::UI_INFO ClickedDesc = {};
+	ZeroMemory(&ClickedDesc, sizeof(CUI::UI_INFO));
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 250.f * 0.7f;
+	UIDesc.fCY = 140.f * 0.7f;
+	UIDesc.fX = 130.f;
+	UIDesc.fY = 250.f;
+
+	CGameObject* pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_CostumeBtn_UnClicked_Cloth"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_CostumeBtn.push_back(dynamic_cast<CUI_Costume_Btn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+	ClickedDesc.fCX = 128.f * 0.7f;
+	ClickedDesc.fCY = 140.f * 0.7f;
+	ClickedDesc.fX = UIDesc.fX - 48.f;
+	ClickedDesc.fY = UIDesc.fY;
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_CostumeBtn_Clicked_Cloth"), &ClickedDesc, &pBtn)))
+		return E_FAIL;
+	m_CostumeClickedBtn.push_back(dynamic_cast<CUI_Costume_Btn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+
+	fBtnOffset = UIDesc.fCY - 11.f;
+	UIDesc.fY += fBtnOffset;
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_CostumeBtn_UnClicked_Hair"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_CostumeBtn.push_back(dynamic_cast<CUI_Costume_Btn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+	ClickedDesc.fY = UIDesc.fY;
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_CostumeBtn_Clicked_Hair"), &ClickedDesc, &pBtn)))
+		return E_FAIL;
+	m_CostumeClickedBtn.push_back(dynamic_cast<CUI_Costume_Btn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_CostumeBtn_UnClicked_HairAcc"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_CostumeBtn.push_back(dynamic_cast<CUI_Costume_Btn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+	ClickedDesc.fY = UIDesc.fY;
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_CostumeBtn_Clicked_HairAcc"), &ClickedDesc, &pBtn)))
+		return E_FAIL;
+	m_CostumeClickedBtn.push_back(dynamic_cast<CUI_Costume_Btn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_CostumeBtn_UnClicked_ExteriorDeco"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_CostumeBtn.push_back(dynamic_cast<CUI_Costume_Btn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+	ClickedDesc.fY = UIDesc.fY;
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_CostumeBtn_Clicked_ExteriorDeco"), &ClickedDesc, &pBtn)))
+		return E_FAIL;
+	m_CostumeClickedBtn.push_back(dynamic_cast<CUI_Costume_Btn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+
+	UIDesc.fY += fBtnOffset;
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_CostumeBtn_UnClicked_FaceDeco"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_CostumeBtn.push_back(dynamic_cast<CUI_Costume_Btn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+	ClickedDesc.fY = UIDesc.fY;
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_CostumeBtn_Clicked_FaceDeco"), &ClickedDesc, &pBtn)))
+		return E_FAIL;
+	m_CostumeClickedBtn.push_back(dynamic_cast<CUI_Costume_Btn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+
+	UIDesc.fY += (fBtnOffset + 8.f);
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_CostumeBtn_UnClicked_Weapon"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_CostumeBtn.push_back(dynamic_cast<CUI_Costume_Btn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+	ClickedDesc.fY = UIDesc.fY - 5.f;
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_CostumeBtn_Clicked_Weapon"), &ClickedDesc, &pBtn)))
+		return E_FAIL;
+	m_CostumeClickedBtn.push_back(dynamic_cast<CUI_Costume_Btn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 307.f;
+	UIDesc.fCY = 700.f;
+	UIDesc.fX = g_iWinSizeX - (UIDesc.fCX * 0.5f + 30.f);
+	UIDesc.fY = g_iWinSizeY - (UIDesc.fCY * 0.5f + 70.f);
+
+	CGameObject* pLineBox = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Costume_LineBox"), &UIDesc, &pLineBox)))
+		return E_FAIL;
+	m_pCostumeBox = dynamic_cast<CUI_Costume_LineBox*>(pLineBox);
+	if (nullptr == m_pCostumeBox)
+		return E_FAIL;
+	Safe_AddRef(m_pCostumeBox);
+
+#pragma end region
+
+#pragma region CLASSIC_SKILLS
+
+	m_ClassicSkill.reserve(3);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 256.f * 0.26f;
+	UIDesc.fCY = 256.f * 0.26f;
+	UIDesc.fX = g_iWinSizeX - 248.f;
+	UIDesc.fY = g_iWinSizeY - 158.f;
+
+	CGameObject* pClassicSkill = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SkillSection_Classic_First"), &UIDesc, &pClassicSkill)))
+		return E_FAIL;
+	m_ClassicSkill.push_back(dynamic_cast<CUI_SkillSection_ClassicSkill*>(pClassicSkill));
+	if (nullptr == pClassicSkill)
+		return E_FAIL;
+	Safe_AddRef(pClassicSkill);
+	// TestCode
+	dynamic_cast<CUI_SkillSection_ClassicSkill*>(pClassicSkill)->Set_SkillType(CHARACTER_TYPE::SWORD_MAN);
+
+	UIDesc.fX = g_iWinSizeX - 220.f;
+	UIDesc.fY = g_iWinSizeY - 230.f;
+	pClassicSkill = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SkillSection_Classic_Second"), &UIDesc, &pClassicSkill)))
+		return E_FAIL;
+	m_ClassicSkill.push_back(dynamic_cast<CUI_SkillSection_ClassicSkill*>(pClassicSkill));
+	if (nullptr == pClassicSkill)
+		return E_FAIL;
+	Safe_AddRef(pClassicSkill);
+	// TestCode
+	dynamic_cast<CUI_SkillSection_ClassicSkill*>(pClassicSkill)->Set_SkillType(CHARACTER_TYPE::SWORD_MAN);
+
+
+#pragma end region
 
 	return S_OK;
 }
@@ -1591,46 +1766,25 @@ HRESULT CUI_Manager::Tick_LobbyLevel(_float fTimeDelta)
 			// i를 제외한 나머지 것들을 제어한다.
 			for (_uint j = 0; j < CUI_BtnCharacterSelect::UI_SELECTBTN_CHARACTER::UICHARACTERBTN_END; j++)
 			{
-				// Arrived가 false인 경우에는
-				if (!m_ClickedPlayer[i]->Is_Arrived())
+				if (j == i)
+					continue;
+
+				if (!m_ClickedPlayer[i]->Is_Arrived()) // Arrived가 false인 경우에는 
 				{
-					if (j != i)
-					{
-						m_UnclickedPlayer[j]->Set_Clicked(false); // 클릭 이벤트가 발생하지 않도록 한다.
-					}
-				}
-				else
-				{
-					// Arrived된 상태에서 다른 것에 Click Event가 발생하면 다시 원위치로 돌아가야한다.
-					if (j != i)
-					{
-						if (m_UnclickedPlayer[j]->Is_Clicked())
-						{
-							m_ClickedPlayer[i]->Set_Move(true);
-						}
-					}
-					
+					m_UnclickedPlayer[j]->Set_Clicked(false); // 클릭 이벤트가 발생하지 않도록 한다.
 				}
 			}
 		}
 
-		if (!m_ClickedPlayer[i]->Is_Active()) // Active가 False인데, unclicked도 false라면 unclicked를 true로 바꿔준다.
+		if (!m_ClickedPlayer[i]->Get_Active()) // Active가 False인데, unclicked도 false라면 unclicked를 true로 바꿔준다.
 		{
-			if (!m_UnclickedPlayer[i]->Is_Active())
+			if (!m_UnclickedPlayer[i]->Get_Active())
 			{
 				m_UnclickedPlayer[i]->Set_Active(true);
 			}
 		}
-
-		if (m_ClickedPlayer[i]->Get_IsMoved()) // 움직이는 상태라면
-		{
-			if (m_ClickedPlayer[i]->Get_MoveEnd())
-			{
-				// 원위치로 돌아온 상태이다
-				m_ClickedPlayer[i]->Reset_InitializeInfo();
-			}
-		}
 	}
+
 
 	return S_OK;
 }
@@ -1707,20 +1861,6 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 			OnOff_MonsterHP(true, ELEMENTAL_TYPE::DARK); // 임시
 	}
 
-	if (KEY_TAP(KEY::F9))
-	{
-		if (!m_pDefaultBG->Get_Active())
-		{
-			m_pDefaultBG->Set_Active(true);
-			OnOff_GamePlaySetting(false);
-		}
-		else
-		{
-			OnOff_GamePlaySetting(true);
-			m_pDefaultBG->Set_Active(false);
-		}
-	}
-
 	if (KEY_TAP(KEY::F8))
 	{
 		// DIalogBox Test
@@ -1748,6 +1888,37 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 	return S_OK;
 }
 
+void CUI_Manager::Update_LobbyBtnState(_uint iIndex)
+{
+	_uint iBtnIndex = iIndex;
+
+	for (_uint i = 0; i < CUI_BtnCharacterSelect::UI_SELECTBTN_CHARACTER::UICHARACTERBTN_END; i++)
+	{
+		if (i == iBtnIndex)
+			continue;
+
+		if (m_ClickedPlayer[i]->Is_Arrived()) // 도착한 다른 Clicked Player가 있다면
+			m_ClickedPlayer[i]->Set_Move(true); // 다시 돌아가야한다.
+	}
+
+}
+
+void CUI_Manager::Update_CostumeBtnState(_uint iIndex)
+{
+	m_CostumeClickedBtn[iIndex]->Set_Active(true);
+
+	if (iIndex == _uint(CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_CLOTH))
+	{
+		if (m_CostumeClickedBtn[CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_HAIRACC]->Get_Active())
+			m_CostumeClickedBtn[CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_HAIRACC]->Set_Active(false);
+	}
+	else if (iIndex == _uint(CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_HAIRACC))
+	{
+		if (m_CostumeClickedBtn[CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_CLOTH]->Get_Active())
+			m_CostumeClickedBtn[CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_CLOTH]->Set_Active(false);
+	}
+}
+
 HRESULT CUI_Manager::Using_CloseButton()
 {
 	if (nullptr != m_pMainBG)
@@ -1770,6 +1941,27 @@ HRESULT CUI_Manager::Using_CloseButton()
 			if (nullptr != m_pUIVeil)
 				if (m_pUIVeil->Get_Active())
 					m_pUIVeil->Set_Active(false);
+		}
+	}
+
+	else if (nullptr != m_pCostumeBox)
+	{
+		if (m_pCostumeBox->Get_Active())
+		{
+			OnOff_CostumeWindow(false);
+		}
+	}
+
+	return S_OK;
+}
+
+HRESULT CUI_Manager::Using_BackButton()
+{
+	if (nullptr != m_pCostumeBox)
+	{
+		if (m_pCostumeBox->Get_Active())
+		{
+			OnOff_CostumeWindow(false);
 		}
 	}
 
@@ -1883,10 +2075,15 @@ HRESULT CUI_Manager::OnOff_MainMenu(_bool bOnOff)
 			if (nullptr != pUI)
 				pUI->Set_Active(true);
 		}
-		m_pBtnClose->Set_Active(true); // Close버튼
+		//m_pBtnClose->Set_Active(true); // Close버튼
+
+		OnOff_CloseButton(true);
+
 	}
 	else // Off : 모든 Menu관련 창을 꺼야한다.
 	{
+		OnOff_CloseButton(false);
+
 		m_pMainBG->Set_Active(false);
 		for (auto& pUI : m_MainMenuBtn)
 		{
@@ -2230,16 +2427,44 @@ HRESULT CUI_Manager::OnOff_CostumeWindow(_bool bOnOff)
 {
 	if (bOnOff)
 	{
-		// 메뉴 창을 끈다.
-		OnOff_MainMenu(false);
+		if (!m_pDefaultBG->Get_Active())
+		{
+			OnOff_MainMenu(false);
 
-		// Default Window를 활성화한다
-		m_pDefaultBG->Set_Active(true);
-		// Costume관련된 객체들을 활성화한다.
+			m_pDefaultBG->Set_Active(true);
+			for (auto& iter : m_CostumeBtn)
+			{
+				if (nullptr != iter)
+					iter->Set_Active(true);
+			}
+			m_pCostumeBox->Set_Active(true);
+
+			m_pTabMenuTitle->Set_TextType(CUI_Text_TabMenu::UI_MENUTITLE::TITLE_COSTUME);
+			m_pTabMenuTitle->Set_Active(true);
+
+			//OnOff_CloseButton(true);
+		}
 	}
 	else
 	{
+		//OnOff_GamePlaySetting(true);
+		//OnOff_CloseButton(false);
+		m_pTabMenuTitle->Set_Active(false);
 
+		m_pCostumeBox->Set_Active(false);
+		for (auto& iter : m_CostumeBtn)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_CostumeClickedBtn)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+		m_pDefaultBG->Set_Active(false);
+
+		OnOff_MainMenu(true);
 	}
 
 	return S_OK;
@@ -2663,6 +2888,74 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		CUI_Dialog_Portrait::Create(m_pDevice, m_pContext, CUI_Dialog_Portrait::UI_PORTRAIT::PORTRAIT_FRAME), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Costume_LineBox"),
+		CUI_Costume_LineBox::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_CostumeBtn_UnClicked_Cloth"),
+		CUI_Costume_Btn::Create(m_pDevice, m_pContext,
+			CUI_Costume_Btn::UI_COSTUMEBTN_TYPE::COSTUMEBTN_UNCLICKED, CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_CLOTH), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_CostumeBtn_UnClicked_Hair"),
+		CUI_Costume_Btn::Create(m_pDevice, m_pContext,
+			CUI_Costume_Btn::UI_COSTUMEBTN_TYPE::COSTUMEBTN_UNCLICKED, CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_HAIR), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_CostumeBtn_UnClicked_HairAcc"),
+		CUI_Costume_Btn::Create(m_pDevice, m_pContext,
+			CUI_Costume_Btn::UI_COSTUMEBTN_TYPE::COSTUMEBTN_UNCLICKED, CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_HAIRACC), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_CostumeBtn_UnClicked_ExteriorDeco"),
+		CUI_Costume_Btn::Create(m_pDevice, m_pContext,
+			CUI_Costume_Btn::UI_COSTUMEBTN_TYPE::COSTUMEBTN_UNCLICKED, CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_EXTERIORDECO), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_CostumeBtn_UnClicked_FaceDeco"),
+		CUI_Costume_Btn::Create(m_pDevice, m_pContext,
+			CUI_Costume_Btn::UI_COSTUMEBTN_TYPE::COSTUMEBTN_UNCLICKED, CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_FACEDECO), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_CostumeBtn_UnClicked_Weapon"),
+		CUI_Costume_Btn::Create(m_pDevice, m_pContext,
+			CUI_Costume_Btn::UI_COSTUMEBTN_TYPE::COSTUMEBTN_UNCLICKED, CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_WEAPON), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_CostumeBtn_Clicked_Cloth"),
+		CUI_Costume_Btn::Create(m_pDevice, m_pContext,
+			CUI_Costume_Btn::UI_COSTUMEBTN_TYPE::COSTUMEBTN_CLICKED, CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_CLOTH), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_CostumeBtn_Clicked_Hair"),
+		CUI_Costume_Btn::Create(m_pDevice, m_pContext,
+			CUI_Costume_Btn::UI_COSTUMEBTN_TYPE::COSTUMEBTN_CLICKED, CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_HAIR), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_CostumeBtn_Clicked_HairAcc"),
+		CUI_Costume_Btn::Create(m_pDevice, m_pContext,
+			CUI_Costume_Btn::UI_COSTUMEBTN_TYPE::COSTUMEBTN_CLICKED, CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_HAIRACC), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_CostumeBtn_Clicked_ExteriorDeco"),
+		CUI_Costume_Btn::Create(m_pDevice, m_pContext,
+			CUI_Costume_Btn::UI_COSTUMEBTN_TYPE::COSTUMEBTN_CLICKED, CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_EXTERIORDECO), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_CostumeBtn_Clicked_FaceDeco"),
+		CUI_Costume_Btn::Create(m_pDevice, m_pContext,
+			CUI_Costume_Btn::UI_COSTUMEBTN_TYPE::COSTUMEBTN_CLICKED, CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_FACEDECO), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_CostumeBtn_Clicked_Weapon"),
+		CUI_Costume_Btn::Create(m_pDevice, m_pContext,
+			CUI_Costume_Btn::UI_COSTUMEBTN_TYPE::COSTUMEBTN_CLICKED, CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_WEAPON), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Common_BackBtn"),
+		CUI_BtnBack::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillSection_Classic_First"),
+		CUI_SkillSection_ClassicSkill::Create(m_pDevice, m_pContext, CUI_SkillSection_ClassicSkill::UI_CLASSICSKILL::SKILL_FIRST), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillSection_Classic_Second"),
+		CUI_SkillSection_ClassicSkill::Create(m_pDevice, m_pContext, CUI_SkillSection_ClassicSkill::UI_CLASSICSKILL::SKILL_SECOND), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillSection_Classic_Third"),
+		CUI_SkillSection_ClassicSkill::Create(m_pDevice, m_pContext, CUI_SkillSection_ClassicSkill::UI_CLASSICSKILL::SKILL_THIRD), LAYER_UI)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -2889,6 +3182,8 @@ void CUI_Manager::Free()
 
 	Safe_Release(m_pTabMenuTitle);
 
+	Safe_Release(m_pCostumeBox);
+
 	for (auto& pBasic : m_Basic)
 		Safe_Release(pBasic);
 	m_Basic.clear();
@@ -2940,6 +3235,18 @@ void CUI_Manager::Free()
 	for (auto& pPortrait : m_Portrait)
 		Safe_Release(pPortrait);
 	m_Portrait.clear();
+
+	for (auto& pBtn : m_CostumeBtn)
+		Safe_Release(pBtn);
+	m_CostumeBtn.clear();
+
+	for (auto& pBtn : m_CostumeClickedBtn)
+		Safe_Release(pBtn);
+	m_CostumeClickedBtn.clear();
+
+	for (auto& pClassic : m_ClassicSkill)
+		Safe_Release(pClassic);
+	m_ClassicSkill.clear();
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

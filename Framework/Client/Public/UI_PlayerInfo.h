@@ -13,7 +13,7 @@ protected:
 	virtual ~CUI_PlayerInfo() = default;
 
 public:
-	virtual void Set_Active(_bool bActive);
+	virtual void Set_Active(_bool bActive) override;
 
 public:
 	virtual HRESULT	Initialize_Prototype();

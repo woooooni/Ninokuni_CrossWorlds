@@ -16,8 +16,7 @@ protected:
 	virtual ~CUI_WindowQuest() = default;
 
 public:
-	void Set_Active(_bool bActive);
-	_bool Get_Active() { return m_bActive; }
+	virtual void Set_Active(_bool bActive) override;
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -34,7 +33,6 @@ public:
 private:
 	UIQUEST_PROCESS m_eProcessType = { QUESTPROCESS_END };
 
-	_bool m_bActive = { false };
 	_bool m_bShowInfo = { false }; // 윈도우가 목표 위치까지 도착하면 true로 변한다 -> 로고, 버튼 Active
 
 	_float2 m_vOnPosition = _float2(0.f, 0.f); // UI가 이동할 최종 위치
