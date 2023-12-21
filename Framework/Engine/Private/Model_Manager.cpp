@@ -1007,7 +1007,7 @@ HRESULT CModel_Manager::Create_AnimationTransform_Caches(const _uint& iAnimIndex
 	wstring strAnimationName = pAnimation->Get_AnimationName();
 	for (uint32 iFrameIndex = 0; iFrameIndex < iMaxFrame; iFrameIndex++)
 	{
-		/* Test */
+		/* Fit */
 		{
 			vector<Matrix> vecMat;
 			m_AnimTransformsCaches[iAnimIndex].transforms.push_back(vecMat);
@@ -1022,7 +1022,7 @@ HRESULT CModel_Manager::Create_AnimationTransform_Caches(const _uint& iAnimIndex
 		{
 			m_HierarchyNodes[iBoneIndex]->Set_CombinedTransformation();
 
-			/* Test */
+			/* Fit */
 			{
 				m_AnimTransformsCaches[iAnimIndex].transforms[iFrameIndex].push_back(Matrix());
 			}
@@ -1063,11 +1063,22 @@ vector<ANIM_TRANSFORM_CACHES> CModel_Manager::Create_AnimationTransform_Caches_I
 
 		for (uint32 iFrameIndex = 0; iFrameIndex < iMaxFrame; iFrameIndex++)
 		{
+			/* Fit */
+			{
+				vector<Matrix> vecMat;
+				AnimTransformsCache[iAnimIndex].transforms.push_back(vecMat);
+			}
+
 			pAnimation->Calculate_Animation(iFrameIndex);
 
 			for (uint32 iBoneIndex = 0; iBoneIndex < m_HierarchyNodes.size(); iBoneIndex++)
 			{
 				m_HierarchyNodes[iBoneIndex]->Set_CombinedTransformation();
+
+				/* Fit */
+				{
+					AnimTransformsCache[iAnimIndex].transforms[iFrameIndex].push_back(Matrix());
+				}
 
 				AnimTransformsCache[iAnimIndex].transforms[iFrameIndex][iBoneIndex]
 					= Matrix(m_HierarchyNodes[iBoneIndex]->Get_OffSetMatrix())
@@ -1110,11 +1121,22 @@ vector<ANIM_TRANSFORM_CACHE> CModel_Manager::Create_AnimationSocketTransform(cla
 
 		for (uint32 iFrameIndex = 0; iFrameIndex < iMaxFrame; iFrameIndex++)
 		{
+			/* Fit */
+			{
+				vector<Matrix> vecMat;
+				AnimTransformsCache[iAnimIndex].transforms.push_back(vecMat);
+			}
+
 			pAnimation->Calculate_Animation(iFrameIndex);
 
 			for (uint32 iBoneIndex = 0; iBoneIndex < m_HierarchyNodes.size(); iBoneIndex++)
 			{
 				m_HierarchyNodes[iBoneIndex]->Set_CombinedTransformation();
+
+				/* Fit */
+				{
+					AnimTransformsCache[iAnimIndex].transforms[iFrameIndex].push_back(Matrix());
+				}
 
 				if (iSocketBoneIndex == iBoneIndex)
 				{

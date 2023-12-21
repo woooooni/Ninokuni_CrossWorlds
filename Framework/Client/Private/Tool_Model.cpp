@@ -705,6 +705,15 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 				if (ImGui::ArrowButton("##Swap_Animation_Up", ImGuiDir_Up))
 				{
 					pModelCom->Swap_Animation(pModelCom->Get_CurrAnimationIndex(), pModelCom->Get_CurrAnimationIndex() - 1);
+
+					if (m_bInitSocket)
+					{
+						if (FAILED(Ready_SocketTransforms()))
+						{
+							MSG_BOX("소켓 트랜스폼 갱신을 실패했습니다.");
+							return;
+						}
+					}
 				}
 				if (ImGui::IsItemHovered())
 				{
@@ -716,6 +725,15 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 				if (ImGui::ArrowButton("##Swap_Animation_Down", ImGuiDir_Down))
 				{
 					pModelCom->Swap_Animation(pModelCom->Get_CurrAnimationIndex(), pModelCom->Get_CurrAnimationIndex() + 1);
+
+					if (m_bInitSocket)
+					{
+						if (FAILED(Ready_SocketTransforms()))
+						{
+							MSG_BOX("소켓 트랜스폼 갱신을 실패했습니다.");
+							return;
+						}
+					}
 				}
 				if (ImGui::IsItemHovered())
 				{
@@ -741,6 +759,14 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 				Animations = pModelCom->Get_Animations();
 
 				sprintf_s(szAnimationName, CUtils::ToString(pModelCom->Get_CurrAnimation()->Get_AnimationName()).c_str());
+				if (m_bInitSocket)
+				{
+					if (FAILED(Ready_SocketTransforms()))
+					{
+						MSG_BOX("소켓 트랜스폼 갱신을 실패했습니다.");
+						return;
+					}
+				}
 
 			}
 			IMGUI_SAME_LINE;
@@ -752,6 +778,15 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 				sort(Animations.begin(), Animations.end(), [&](CAnimation* pSrcAnimation, CAnimation* pDestAnimation) {
 					return pSrcAnimation->Get_AnimationName() < pDestAnimation->Get_AnimationName();
 					});
+
+				if (m_bInitSocket)
+				{
+					if (FAILED(Ready_SocketTransforms()))
+					{
+						MSG_BOX("소켓 트랜스폼 갱신을 실패했습니다.");
+						return;
+					}
+				}
 			}
 			IMGUI_SAME_LINE;
 
@@ -767,7 +802,10 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 				if (m_bInitSocket)
 				{
 					if (FAILED(Ready_SocketTransforms()))
+					{
+						MSG_BOX("소켓 트랜스폼 갱신을 실패했습니다.");
 						return;
+					}
 				}
 			}
 
@@ -1096,6 +1134,7 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 
 			_float fRot[3] = { vRot.x, vRot.y, vRot.z };
 			ImGui::Text("소켓 회전 (SwordMan 기준 Best 값 : {0, -270, 0})");
+			ImGui::Text("모델에 소켓을 추가한 후 선택해야 합니다.");
 			IMGUI_SAME_LINE;
 
 			/* Clear */
