@@ -87,10 +87,13 @@ HRESULT CTexture::Load_Texture(const wstring& strTextureFilePath, _uint iNumText
 				hr = DirectX::CreateDDSTextureFromFile(m_pDevice, strNewPath.c_str(), nullptr, &pSRV);
 			}
 		}
-			
-
+		
 		if (FAILED(hr))
+		{
+			MessageBox(nullptr, szFullPath, L"Failed_Load_Texture", MB_OK);
 			return E_FAIL;
+		}
+			
 
 		m_FileNames.push_back(wstring(szName) + szExt);
 		m_SRVs.push_back(pSRV);

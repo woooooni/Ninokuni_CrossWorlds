@@ -690,16 +690,6 @@ void CModel::Set_KeyFrame_By_Progress(_float fProgress)
 	m_TweenDesc.cur.fRatio = 0.f;
 }
 
-HRESULT CModel::Bind_KeyFrame(CShader* pShader)
-{
-	if (nullptr == pShader)
-		return E_FAIL;
-
-	if (FAILED(pShader->Bind_RawValue("g_TweenFrames", &m_TweenDesc, sizeof(TWEEN_DESC))))
-		return E_FAIL;
-
-	return S_OK;
-}
 
 HRESULT CModel::SetUp_OnShader(CShader* pShader, _uint iMaterialIndex, aiTextureType eTextureType, const char* pConstantName)
 {
@@ -714,9 +704,7 @@ HRESULT CModel::SetUp_OnShader(CShader* pShader, _uint iMaterialIndex, aiTexture
 
 HRESULT CModel::SetUp_VTF(class CShader* pShader)
 {
-	if (nullptr == m_pSRV || 
-		nullptr == pShader ||
-		0 > m_TweenDesc.cur.iAnimIndex)
+	if (nullptr == m_pSRV ||  nullptr == pShader || 0 > m_TweenDesc.cur.iAnimIndex)
 		return E_FAIL;
 
 	if (FAILED(pShader->Bind_Texture("g_TransformMap", m_pSRV)))
@@ -730,38 +718,12 @@ HRESULT CModel::SetUp_VTF(class CShader* pShader)
 
 HRESULT CModel::Render(CShader* pShader, _uint iMeshIndex, _uint iPassIndex)
 {
-	if (TYPE_ANIM == m_eModelType)
-	{
-		if(FAILED(SetUp_VTF(pShader)))
-			return E_FAIL;
-
-		SetUp_VTF(pShader);
-	}
-
 	pShader->Begin(iPassIndex);
-
 	m_Meshes[iMeshIndex]->Render();
 
 	return S_OK;
 }
 
-HRESULT CModel::Render_Part(CShader* pShader, _uint iMeshIndex, _uint iPassIndex)
-{
-	if (nullptr == m_pSRV || nullptr == pShader)
-		return E_FAIL;
-
-	if (TYPE_ANIM == m_eModelType)
-	{
-		if (FAILED(pShader->Bind_Texture("g_TransformMap", m_pSRV)))
-			return E_FAIL;
-	}
-
-	pShader->Begin(iPassIndex);
-
-	m_Meshes[iMeshIndex]->Render();
-
-	return S_OK;
-}
 
 HRESULT CModel::Render_Instancing(CShader* pShader, _uint iMeshIndex, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, _uint iPassIndex)
 {

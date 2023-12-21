@@ -334,55 +334,57 @@ HRESULT CLoader::Loading_For_Level_Tool()
 	statDesc.fMaxMp = 100;
 
 
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Stellia", CStellia::Create(m_pDevice, m_pContext, TEXT("Stellia"), statDesc), LAYER_MONSTER)))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Baobam_Water", CBaobam_Water::Create(m_pDevice, m_pContext, TEXT("Baobam_Water"), statDesc), LAYER_MONSTER)))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Shadow_Thief", CShadow_Thief::Create(m_pDevice, m_pContext, TEXT("Shadow_Thief"), statDesc), LAYER_MONSTER)))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_PumpkinCandle", CPumpkinCandle::Create(m_pDevice, m_pContext, TEXT("PumpkinCandle"), statDesc), LAYER_MONSTER)))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Clown", CClown::Create(m_pDevice, m_pContext, TEXT("Clown"), statDesc), LAYER_MONSTER)))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Clown_Wizard", CClown_Wizard::Create(m_pDevice, m_pContext, TEXT("Clown"), statDesc), LAYER_MONSTER)))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Baobam_Dark", CBaobam_Dark::Create(m_pDevice, m_pContext, TEXT("Clown"), statDesc), LAYER_MONSTER)))
-		return E_FAIL;
+	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Stellia", CStellia::Create(m_pDevice, m_pContext, TEXT("Stellia"), statDesc), LAYER_MONSTER)))
+	//	return E_FAIL;
+	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Baobam_Water", CBaobam_Water::Create(m_pDevice, m_pContext, TEXT("Baobam_Water"), statDesc), LAYER_MONSTER)))
+	//	return E_FAIL;
+	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Shadow_Thief", CShadow_Thief::Create(m_pDevice, m_pContext, TEXT("Shadow_Thief"), statDesc), LAYER_MONSTER)))
+	//	return E_FAIL;
+	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_PumpkinCandle", CPumpkinCandle::Create(m_pDevice, m_pContext, TEXT("PumpkinCandle"), statDesc), LAYER_MONSTER)))
+	//	return E_FAIL;
+	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Clown", CClown::Create(m_pDevice, m_pContext, TEXT("Clown"), statDesc), LAYER_MONSTER)))
+	//	return E_FAIL;
+	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Clown_Wizard", CClown_Wizard::Create(m_pDevice, m_pContext, TEXT("Clown"), statDesc), LAYER_MONSTER)))
+	//	return E_FAIL;
+	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Baobam_Dark", CBaobam_Dark::Create(m_pDevice, m_pContext, TEXT("Clown"), statDesc), LAYER_MONSTER)))
+	//	return E_FAIL;
 
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
 	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SwordMan_Body", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Test/", L"SwordMan_Body")))
 	//	return E_FAIL;
 
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Witch", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Test/", L"Witch")))
-		return E_FAIL;
+	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Witch", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Test/", L"Witch")))
+	//	return E_FAIL;
 
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Stellia", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Boss/Stellia/", L"Stellia")))
-		return E_FAIL;
+	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Stellia", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Boss/Stellia/", L"Stellia")))
+	//	return E_FAIL;
 
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Baobam_Water", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Ice/Baobam_Water/", L"Baobam_Water")))
-		return E_FAIL;
+	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Baobam_Water", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Ice/Baobam_Water/", L"Baobam_Water")))
+	//	return E_FAIL;
 
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Shadow_Thief", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Ice/Shadow_Thief/", L"Shadow_Thief")))
-		return E_FAIL;
+	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Shadow_Thief", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Ice/Shadow_Thief/", L"Shadow_Thief")))
+	//	return E_FAIL;
 
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_PumpkinCandle", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Witch/PumpkinCandle/", L"PumpkinCandle")))
-		return E_FAIL;
+	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_PumpkinCandle", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Witch/PumpkinCandle/", L"PumpkinCandle")))
+	//	return E_FAIL;
 
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Clown", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Witch/Clown/", L"Clown")))
-		return E_FAIL;
+	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Clown", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Witch/Clown/", L"Clown")))
+	//	return E_FAIL;
 
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Clown_Wizard", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Witch/Clown_Wizard/", L"Clown_Wizard")))
-		return E_FAIL;
+	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Clown_Wizard", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Witch/Clown_Wizard/", L"Clown_Wizard")))
+	//	return E_FAIL;
 
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Baobam_Dark", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Witch/Baobam_Dark/", L"Baobam_Dark")))
-		return E_FAIL;
+	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Baobam_Dark", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Witch/Baobam_Dark/", L"Baobam_Dark")))
+	//	return E_FAIL;
 #pragma endregion
 
 
 	if (FAILED(Loading_Proto_AllObjects(L"../Bin/Export/NonAnimModel/Map/")))
 		return E_FAIL;
+
 	if (FAILED(Loading_Proto_DynamicObjects(L"..Bin/Export/AnimModel/Map/")))
 		return E_FAIL;
+
 		
 #pragma region Particle && Effect
 #pragma region Particle
@@ -414,38 +416,15 @@ HRESULT CLoader::Loading_For_Level_Tool()
 
 #pragma region Parts
 
-	/* SwordMan*/
-	{
-		/* Body */
-		{
-			if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SwordMan_Body_01", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Part/SwordMan/Body_01/", L"SwordMan_Body_01")))
-				return E_FAIL;
+	/*if (FAILED(GI->Import_Model_Data(LEVEL_PARTS, L"Prototype_Component_Model_SwordMan_Body_Picnic", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Witch/Baobam_Dark/", L"Baobam_Dark")))
+		return E_FAIL;*/
 
-			if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SwordMan_Body_02", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Part/SwordMan/Body_02/", L"SwordMan_Body_02")))
-				return E_FAIL;
-
-			if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SwordMan_Body_03", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Part/SwordMan/Body_03/", L"SwordMan_Body_03")))
-				return E_FAIL;
-		}
+	/*if (FAILED(Loading_Proto_Parts_Model(L"../Bin/Resources/AnimModel/Character/SwordMan/")))
+		return E_FAIL;*/
 
 
-
-		/* Face */
-		{
-			if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SwordMan_Face_01", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Part/SwordMan/Face_01/", L"SwordMan_Face_01")))
-				return E_FAIL;
-		}
-
-		/* Hair */
-		{
-			if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SwordMan_Hair_01", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Part/SwordMan/Hair_01/", L"SwordMan_Hair_01")))
-				return E_FAIL;
-		}
-	}
-
-
-	if(FAILED(CPart_Manager::GetInstance()->Reserve_Manager(GI->Get_Device(), GI->Get_Context())))
-		return E_FAIL;
+	/*if(FAILED(CPart_Manager::GetInstance()->Reserve_Manager(GI->Get_Device(), GI->Get_Context())))
+		return E_FAIL;*/
 
 
 #pragma endregion
@@ -658,10 +637,50 @@ HRESULT CLoader::Loading_Proto_DynamicObjects(const wstring& strPath)
 {
 	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Cat"), CCat::Create(m_pDevice, m_pContext, TEXT("Animal_Cat"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC)))
 		return E_FAIL;
+
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Cat", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/Animal/", L"Animal_Cat")))
 		return E_FAIL;
 
 
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_Proto_Parts_Model(const wstring& strFolderPath)
+{
+	for (auto& p : std::filesystem::directory_iterator(strFolderPath))
+	{
+		if (p.is_directory())
+			Loading_Proto_Parts_Model(p.path().wstring());
+
+
+		if (strFolderPath.find(L"Dummy") != wstring::npos)
+			continue;
+
+		wstring strFilePath = CUtils::PathToWString(p.path().wstring());
+		_tchar strFileName[MAX_PATH];
+		_tchar strFolderName[MAX_PATH];
+		_tchar strExt[MAX_PATH];
+
+		_wsplitpath_s(strFilePath.c_str(), nullptr, 0, strFolderName, MAX_PATH, strFileName, MAX_PATH, strExt, MAX_PATH);
+
+		if (true == !lstrcmp(strExt, L".mesh"))
+		{
+			wstring strPrototypeName = L"Prototype_Component_Model_";
+			strPrototypeName += strFileName;
+			if (FAILED(GI->Import_Model_Data(LEVEL_PARTS, strPrototypeName, CModel::TYPE_ANIM, strFolderName, strFileName)))
+				return E_FAIL;
+		}
+		//else if (true == !lstrcmp(strExt, L".fbx"))
+		//{
+		//	wstring strPrototypeName = L"Prototype_Component_Model_";
+		//	strPrototypeName += strFileName;
+
+		//	wstring strFullFileName = strFileName;
+		//	strFullFileName += strExt;
+		//	if (FAILED(GI->Import_Model_Data(LEVEL_PARTS, strPrototypeName, CModel::TYPE_ANIM, strFolderName, strFullFileName)))
+		//		return E_FAIL;
+		//}
+	}
 	return S_OK;
 }
 

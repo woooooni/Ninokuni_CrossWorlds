@@ -58,6 +58,7 @@ private:
 	// 툴에서 사용할 모든 fbx 원형 객체를 로딩한다.
 	HRESULT Loading_Proto_AllObjects(const wstring& strPath);
 	HRESULT Loading_Proto_DynamicObjects(const wstring& strPath);
+	HRESULT Loading_Proto_Parts_Model(const wstring& strFolderPath);
 public:
 	static CLoader* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVELID eNextLevel, const wstring& strFolderName);
 	virtual void Free() override;

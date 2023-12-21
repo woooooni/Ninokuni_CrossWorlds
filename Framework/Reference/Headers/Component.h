@@ -21,6 +21,9 @@ public:
 	class CGameObject* Get_Owner() { return m_pOwner; }
 	void Set_Owner(class CGameObject* pOwner);
 
+public:
+	void Set_PrototypeTag(const wstring& strPrototypeTag) { m_strPrototypeTag = strPrototypeTag; }
+	const wstring& Get_PrototypeTag() { return m_strPrototypeTag; }
 
 #ifdef _DEBUG
 public:
@@ -33,6 +36,7 @@ protected:
 	ID3D11DeviceContext*	m_pContext = { nullptr };
 	class	CGameObject*	m_pOwner = { nullptr };
 	_bool					m_isCloned = { false };
+	wstring					m_strPrototypeTag = L"";
 	
 
 public:

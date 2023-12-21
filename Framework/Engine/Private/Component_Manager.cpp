@@ -27,6 +27,7 @@ HRESULT CComponent_Manager::Add_Prototype(_uint iLevelIndex, const wstring& strP
     if (nullptr != Find_Component(iLevelIndex, strProtoTypeTag))
         return E_FAIL;
 
+    pPrototype->Set_PrototypeTag(strProtoTypeTag);
     m_Prototypes[iLevelIndex].emplace(strProtoTypeTag, pPrototype);
 
     return S_OK;
@@ -54,6 +55,11 @@ CComponent* CComponent_Manager::Find_Prototype_Component(_uint iLevelIndex, cons
         return nullptr;
 
     return pPrototype;
+}
+
+map<const wstring, class CComponent*>& CComponent_Manager::Find_Prototype_Components(_uint iLevelIndex)
+{
+    return m_Prototypes[iLevelIndex];
 }
 
 HRESULT CComponent_Manager::Check_Prototype(_uint iLevelIndex, const wstring& strProtoTypeTag)
