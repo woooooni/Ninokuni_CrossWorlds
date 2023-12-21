@@ -28,7 +28,7 @@ public:
 		EFFECT_TYPE eType = EFFECT_TYPE::EFFECT_MESH;
 
 		// 중력 
-		_bool bGravity = false; // ->
+		_bool bGravity = false; // -> 추후 필요시 기능 구현
 
 		// 위치
 		_float3 fRange         = _float3(0.f, 0.f, 0.f);
@@ -36,7 +36,8 @@ public:
 
 #pragma region 크기
 		_bool   bScaleSameRate = true; // 정비율
-		_float2 fScaleStart    = _float2(1.f, 1.f);
+		_float3 fScaleStartMin = _float3(2.f, 2.f, 2.f);
+		_float3 fScaleStartMax = _float3(2.f, 2.f, 2.f);
 
 		_bool   bScaleChange           = false;
 		_float2 fScaleChangeStartDelay = _float2(0.f, 0.f);
@@ -44,30 +45,49 @@ public:
 		_bool   bScaleChangeRandom = false;
 		_float2 fScaleChangeTime   = _float2(1.f, 5.f);
 
-		_float3	fScaleDir       = _float3(0.f, 0.f, 0.f);
+		_bool   bScaleAdd       = false;
 		_bool   bScaleLoop      = false;
 		_bool   bScaleLoopStart = false;
 
-		_float2 fScaleMin   = _float2(1.f, 1.f);
-		_float2 fScaleMax   = _float2(10.f, 10.f);
-		_float	fScaleSpeed = 0.f;
+		_float3 fScaleSizeMin  = _float3(1.f, 1.f, 1.f);
+		_float3 fScaleSizeMax  = _float3(5.f, 5.f, 5.f);
+		_float2	fScaleSpeed    = _float2(1.f, 1.f);
+		_float3	fScaleDirSpeed = _float3(1.f, 1.f, 1.f);
 #pragma endregion
 
 #pragma region 이동
-		_float3			fMoveDir   = _float3(0.f, 0.f, 0.f);
-		_float			fMoveSpeed = 0.f;
+		_float2	fVelocitySpeed = _float2(0.f, 0.f);
+
+		_float3 vVelocityMinStart = _float3(-1.0f, -1.0f, -1.0f);
+		_float3 vVelocityMaxStart = _float3(1.0f, 1.0f, 1.0f);
+
+		_bool   bVelocityChange           = false;
+		_float2 fVelocityChangeStartDelay = _float2(0.f, 0.f);
+		_float2 fVelocityChangeTime       = _float2(1.f, 5.f);
 #pragma endregion
 
 #pragma region 회전
 		_bool	bBillboard = false;
 
+		_bool   bRandomAxis = false;
+		_float3 fAxis       = _float3(0.f, 1.f, 0.f);
+
+		_bool  bRandomAngle = false;
+		_float fAngle = 0.f;
+
 		_bool	bRotationChange = false;
-		_float3 fTurnDir        = _float3(0.f, 1.f, 0.f);
-		_float	fTurnSpeed      = 0.f;
+		_float2 fRotationChangeStartDelay = _float2(0.f, 0.f);
+
+		_float2 fRotationSpeed = _float2(30.f, 30.f);
+
+		_float3 fRotationDir = _float3(0.f, 1.f, 0.f);
+
+		_bool   bRotationChangeRandom = false;
+		_float2 fRotationChangeTime = _float2(1.f, 1.f);
 #pragma endregion
 
 		// 지속 시간
-		_float fLifeTime = 10.f;
+		_float2 fLifeTime = _float2(100.f, 100.f);
 
 #pragma region 모델 && 텍스처
 		wstring strModelName            = L"Prototype_Component_Model_PS_NOTE_CIRCLE01";
@@ -83,16 +103,17 @@ public:
 		_float2	fMaxCount = _float2(1.f, 1.f);
 
 		// UVFlow
-		_bool   bUVFlow = true;
-		_int	iUVLoop = -1; // 0 < UVLoop -> NoLoop
-		_float2	fUVFlow = _float2(0.f, 0.f);
+		_bool   bUVFlowChange = true;
+		_int	iUVFlowLoop  = -1; // 0 < UVLoop -> NoLoop
+		_float2	fUVFlowDir   = _float2(0.f, 0.f);
+		_float2	fUVFlowSpeed = _float2(0.f, 0.f);
 #pragma endregion
 
 #pragma region 애니메이션
-		_bool  bAnimation  = false;
-		_bool  bLoop       = true;
-		_bool  bIncrement  = true;
-		_float fIndexSpeed = 20.f;
+		_bool   bAnimation      = false;
+		_bool   bAnimationLoop  = true;
+		_bool   bIncrement      = true;
+		_float2 fAnimationSpeed = _float2(10.f, 10.f);
 #pragma endregion
 
 #pragma region 알파
@@ -106,22 +127,43 @@ public:
 		_bool bAlphaIn     = false;
 		_float2 fAlphaChangeStartDelay = _float2(0.f, 0.f);
 #pragma endregion
-
+//
 #pragma region 색상
 		_bool   bColorRandom = false;
-		_float4	vAdditiveDiffuseColor = _float4(0.f, 0.f, 0.f, 0.f);
+		_float4	fColorS = _float4(0.f, 0.f, 0.f, 0.f);
+
+		_bool bColorChange = false;
+
+		_bool bColorChangeRandom = false;
+		_float2 fColorChangeRandomTime = _float2(4.f, 4.f);
+
+		_bool bColorLoop = false;
+		_float2 fColorChangeStartDelay = _float2(2.f, 2.f);
+
+		_float2 fColorChangeStartM = _float2(4.f, 4.f);
+		_float4 fColorM = _float4(0.f, 1.f, 0.f, 0.f);
+
+		_float2 fColorChangeStartF = _float2(6.f, 6.f);
+		_float4 fColorF = _float4(0.f, 0.f, 1.f, 0.f);
+
+		// 보간 시간
+		_float2 fColorDuration = _float2(2.f, 2.f);
 #pragma endregion
 
-#pragma region 블러
-		_float	fBlurPower  = 0.01f;
-		_float3	vBloomPower = { 0.01f, 0.01f, 0.01f };
+#pragma region 블러 // 추후 기능 구현
+		_bool   bBloomPowerRandom = false;
+		_float4	fBloomPower      = _float4(0.f, 0.f, 0.f, 0.f);
+		_bool   bBlurPowerRandom = false;
+		_float	fBlurPower       = 0.01f;
 #pragma endregion
 
 #pragma region 기타 정보
-		_uint   iShaderPass = 0;
+		_uint   iShaderPass    = 0;
+		_float  fAlpha_Discard = 0.5f;
+		_float3 fBlack_Discard = _float3(0.5f, 0.5f, 0.5f);
 #pragma endregion
 
-		// 
+		// 생성 위치 관련
 		_float4x4 OffsetMatrix;
 
 		tagEffectDesc()
@@ -132,41 +174,75 @@ public:
 		// 복사 생성자 내용 수정 전부 추가
 		tagEffectDesc(const tagEffectDesc& rhs)
 		{
-			eType = rhs.eType;
+			eType    = rhs.eType;
+			bGravity = rhs.bGravity;
+			//
+			fRange         = rhs.fRange;
+			fRangeDistance = rhs.fRangeDistance;
+			//
+			bScaleSameRate = rhs.bScaleSameRate;
+			fScaleStartMin = rhs.fScaleStartMin;
+			fScaleStartMax = rhs.fScaleStartMax;
 
-			strModelName            = rhs.strModelName;
-			strDiffuseTetextureName = rhs.strDiffuseTetextureName;
-			strAlphaTexturName      = rhs.strAlphaTexturName;
+			bScaleChange           = rhs.bScaleChange;
+			fScaleChangeStartDelay = rhs.fScaleChangeStartDelay;
+
+			bScaleChangeRandom = rhs.bScaleChangeRandom;
+			fScaleChangeTime   = rhs.fScaleChangeTime;
+
+			bScaleAdd       = rhs.bScaleAdd;
+			bScaleLoop      = rhs.bScaleLoop;
+			bScaleLoopStart = rhs.bScaleLoopStart;
+
+			fScaleSizeMin      = rhs.fScaleSizeMin;
+			fScaleSizeMax      = rhs.fScaleSizeMax;
+			fScaleSpeed    = rhs.fScaleSpeed;
+			fScaleDirSpeed = rhs.fScaleDirSpeed;
+			//
+			fVelocitySpeed = rhs.fVelocitySpeed;
+
+			vVelocityMinStart = rhs.vVelocityMinStart;
+			vVelocityMaxStart = rhs.vVelocityMaxStart;
+
+			bVelocityChange           = rhs.bVelocityChange;
+			fVelocityChangeStartDelay = rhs.fVelocityChangeStartDelay;
+			fVelocityChangeTime       = rhs.fVelocityChangeTime;
+			//
+
 
 			bBillboard = rhs.bBillboard;
-			iUVLoop = rhs.iUVLoop;
-
-			fTurnSpeed = rhs.fTurnSpeed;
-			fMoveSpeed = rhs.fMoveSpeed;
-
-			// Sequencetexture Effect
+			bRotationChange = rhs.bRotationChange;
+			fRotationDir = rhs.fRotationDir;
+			fRotationSpeed = rhs.fRotationSpeed;
+			fLifeTime = rhs.fLifeTime;
+			strModelName = rhs.strModelName;
+			strDiffuseTetextureName = rhs.strDiffuseTetextureName;
+			strAlphaTexturName = rhs.strAlphaTexturName;
+			iTextureIndexDiffuse = rhs.iTextureIndexDiffuse;
+			iTextureIndexAlpha = rhs.iTextureIndexAlpha;
+			bRandomStartIndex = rhs.bRandomStartIndex;
+			fUVIndex = rhs.fUVIndex;
 			fMaxCount = rhs.fMaxCount;
-
-			//fAlpha = rhs.fAlpha;
-			//fDestAlphaSpeed = rhs.fDestAlphaSpeed;
-
-			fIndexSpeed = rhs.fIndexSpeed;
-			fUVFlow = rhs.fUVFlow;
-
-			fBlurPower = rhs.fBlurPower;
-			vBloomPower = rhs.vBloomPower;
-
-			vAdditiveDiffuseColor = rhs.vAdditiveDiffuseColor;
-
-			fScaleDir = rhs.fScaleDir;
-			fScaleSpeed = rhs.fScaleSpeed;
-
-
-			// Translation
-			fMoveDir = rhs.fMoveDir;
-			fTurnDir = rhs.fTurnDir;
-
-			OffsetMatrix = rhs.OffsetMatrix;
+			bUVFlowChange = rhs.bUVFlowChange;
+			iUVFlowLoop = rhs.iUVFlowLoop;
+			fUVFlowDir = rhs.fUVFlowDir;
+			bAnimation = rhs.bAnimation;
+			bAnimationLoop = rhs.bAnimationLoop;
+			bIncrement = rhs.bIncrement;
+			fAnimationSpeed = rhs.fAnimationSpeed;
+			fAlphaStart = rhs.fAlphaStart;
+			bAlphaCreate = rhs.bAlphaCreate;
+			bAlphaDelete = rhs.bAlphaDelete;
+			fAlphaSpeed = rhs.fAlphaSpeed;
+			bAlphaChange = rhs.bAlphaChange;
+			bAlphaIn = rhs.bAlphaIn;
+			fAlphaChangeStartDelay = rhs.fAlphaChangeStartDelay;
+			bColorRandom = rhs.bColorRandom;
+			fColorS      = rhs.fColorS;
+			fBlurPower   = rhs.fBlurPower;
+			fBloomPower  = rhs.fBloomPower;
+			iShaderPass  = rhs.iShaderPass;
+		    OffsetMatrix = rhs.OffsetMatrix;
 		}
 
 	} EFFECT_DESC;
@@ -196,13 +272,8 @@ public:
 	void Set_ParentMatrix(_matrix ParentMatrix) { XMStoreFloat4x4(&m_ParentMatrix, ParentMatrix); }
 
 public:
-	void Set_DeletionTime(_float fLifeTime) { m_tEffectDesc.fLifeTime = fLifeTime; }
-
-	_bool Is_End() { return m_bEnd; };
-	void Set_End(_bool bEnd) { m_bEnd = bEnd; }
-
-	void Set_MoveDir(_vector vDir);
-	void Set_MoveSpeed(_float fSpeed) { m_tEffectDesc.fMoveSpeed = fSpeed; }
+	_bool Is_End() { return m_bAccIndexEnd; };
+	void Set_End(_bool bEnd) { m_bAccIndexEnd = bEnd; }
 	void Set_Gravity(_bool bGravity);
 
 public:
@@ -220,12 +291,42 @@ private:
 
 private:
 	_bool   m_bEffectDie = false;
-	_bool   m_bEnd       = false;
 
 	_float  m_fAccDeletionTime = 0.f;
 
-	_float  m_fAccIndex        = 0.f;
-	_float2 m_fAccUVFlow       = _float2(0.f, 0.f);
+	// 스케일
+	_float m_fScaleSpeed    = 0.f;
+	_float m_fScaleTimeAccs = 0.f;
+	_float m_fScaleChange   = 0.f;
+	_float m_fScaleChangeStartTime  = 0.f;
+	_float m_fScaleChangeStartDelay = 0.f;
+
+	// 이동
+	_float3	m_fVelocity      = _float3(0.f, 0.f, 0.f);
+	_float  m_fVelocitySpeed = 0.f;
+	_float  m_fVelocityChangeStartTime  = 0.f;
+	_float  m_fVelocityChangeStartDelay = 0.f;
+	_float  m_fVelocityRanTimeAccs      = 0.f;
+	_float  m_fVelocityRanChange        = 0.f;
+
+	// 회전
+	_float3 m_fAxis  = _float3(0.f, 0.f, 0.f);
+	_float  m_fAngle = 0.f;
+	_float m_fRotationSpeed = 0.f;
+	_float m_fRotationChangeStartTime  = 0.f;
+	_float m_fRotationChangeStartDelay = 0.f;
+	_float m_fRotationTime             = 0.f;
+	_float m_fRotationChangeTime       = 0.f;
+
+	// 지속 시간
+	_float m_fLifeTime = 0.f;
+
+	// 애니메이션
+	_bool   m_bAccIndexEnd    = false;
+	_float  m_fAccIndex       = 0.f;
+	_float  m_fAnimationSpeed = 0.f;
+	_float2 m_fAccUVFlow   = _float2(0.f, 0.f);
+	_float 	m_fUVFlowSpeed = 0.f;
 
 	// 알파
 	_float m_fAlpha      = 1.f;
@@ -233,6 +334,21 @@ private:
 	_float m_fAlphaChangeStartTime  = 0.f;
 	_float m_fAlphaChangeStartDelay = 0.f;
 	_bool  m_bAlphaCreateSucc       = false;
+
+	// 색상
+	_float  m_fColorChangeStartTime;
+	_float  m_fColorChangeStartDelay;
+
+	LERP_VEC3_DESC m_LerpInfo;
+	_float3 m_fColor;
+	_uint   m_iColorIndex;
+	_float  m_fColorChangeStartM;
+	_float  m_fColorChangeStartF;
+	_float  m_fColorChangeDuration;
+
+	_float  m_fColorAccs;
+	_float  m_fColorChangeTime;
+	_float3 m_fNextColor;
 
 private:
 	class CRenderer*  m_pRendererCom  = nullptr;
@@ -251,8 +367,11 @@ private:
 	virtual void Increment(_float fTimeDelta);
 	virtual void Decrement(_float fTimeDelta);
 
-	/* Alpha */
+	void Change_Scale(_float fTimeDelta);
+	void Change_Move(_float fTimeDelta);
+	void Change_Rotation(_float fTimeDelta);
 	void Change_Alpha(_float fTimeDelta);
+	void Change_Color(_float fTimeDelta);
 
 	void Set_Model();
 	void Set_Texture_Diffuse();
