@@ -8,7 +8,6 @@
 
 CAnimation::CAnimation()
 {
-	Vec3;
 }
 
 CAnimation::CAnimation(const CAnimation& rhs)
