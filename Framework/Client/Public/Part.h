@@ -40,6 +40,10 @@ public:
 public:
 	CModel* Get_ModelCom() { return m_pModelCom; }
 
+public:
+	void Set_SavePath(const wstring strPath) { m_strSavePath = strPath; }
+	wstring Get_SavePath() const { return m_strSavePath; }
+
 protected: 
 	CGameObject* m_pOwner = { nullptr };
 	CModel* m_pModelCom = { nullptr };
@@ -47,6 +51,8 @@ protected:
 	CRenderer* m_pRendererCom = { nullptr };
 	CTransform* m_pTransformCom = { nullptr };
 	Matrix m_matSocketWorld;
+
+	wstring m_strSavePath;
 
 public:
 	virtual void Free() override;

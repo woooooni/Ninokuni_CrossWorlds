@@ -16,6 +16,7 @@
 #include "Dummy.h"
 #include "Weapon.h"
 #include "Part.h"
+#include "Part_Manager.h"
 
 #pragma endregion
 
@@ -101,6 +102,14 @@ HRESULT CTool_Model::Clear_ToolAnimationData()
 
 	m_iSoundEventIndex = -1;
 	m_fCurEventFrame = 0.f;
+
+
+	m_bCostumeMode = FALSE;
+	m_pDummy->m_bCostumeMode = FALSE;
+	for (size_t i = 0; i < PART_TYPE::PART_END; i++)
+	{
+		m_pDummy->m_pPart[i] = nullptr;
+	}
 
 	return S_OK;
 }
@@ -254,9 +263,16 @@ const _bool CTool_Model::Is_Exception()
 			return true;
 		}
 	}
+	else if (nullptr == m_pDummy->Get_ModelCom())
+	{
+		ImGui::Text(u8"어떠한 모델도 로드되지 않았습니다.");
+		
+		return true;
+	}
 	else if (CModel::TYPE::TYPE_ANIM == m_pDummy->Get_ModelCom()->Get_ModelType() && m_pDummy->Get_ModelCom()->Get_Animations().empty())
 	{
 		ImGui::Text(u8"이 모델은 애니메이션을 갖고 있지 않습니다.");
+		return true;
 	}
 	else
 	{
@@ -547,6 +563,16 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 						{
 							MSG_BOX("Save Success");
 						}
+
+						if (m_bCostumeMode)
+						{
+							if(FAILED(CPart_Manager::GetInstance()->Save_Parts(CUtils::ToWString(szExportFolderName), m_eCharacyerType)))
+								MSG_BOX("Part Manage Failed Save.");
+							else
+								MSG_BOX("Part Manage Success Save.");
+						}
+
+						Ready_SocketTransforms();
 					}
 				}
 				IMGUI_NEW_LINE;
@@ -611,143 +637,6 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 
 			ImGui::TreePop();
 		}
-
-		/* 플레이어 커스텀 파츠 작업 */
-		if (ImGui::TreeNode(u8"플레이어 커스텀 파츠 작업"))
-		{
-			if (ImGui::TreeNode(u8"파츠 메쉬 제작"))
-			{
-				if (ImGui::Button("TEST"))
-				{
-					m_pDummy->m_bCostumeMode = TRUE;
-
-					/* Body */
-					{
-						wstring strFilePath = L"../Bin/Export/AnimModel/Part/SwordMan/Body_01/";
-						wstring strFileName = L"SwordMan_Body_01";
-
-						CModel* pBodyModel = nullptr;
-						if (FAILED(GI->Import_Model_Data(LEVEL_DUMMY, wstring(L"BODY_BODY"), CModel::TYPE::TYPE_ANIM, strFilePath, strFileName, &pBodyModel)))
-							return;
-						else
-							m_pDummy->m_pBodyModel = pBodyModel;
-					}
-
-					/* Hair */
-					{
-						wstring strFilePath = L"../Bin/Export/AnimModel/Part/SwordMan/Hair_01/";
-						wstring strFileName = L"SwordMan_Hair_01";
-
-						CModel* pHairModel = nullptr;
-						if (FAILED(GI->Import_Model_Data(LEVEL_DUMMY, wstring(L"HAIR_HAIR"), CModel::TYPE::TYPE_ANIM, strFilePath, strFileName, &pHairModel)))
-							return;
-						else
-							m_pDummy->m_pHairModel = pHairModel;
-					}
-
-					/* Face */
-					{
-						wstring strFilePath = L"../Bin/Export/AnimModel/Part/SwordMan/Face_01/";
-						wstring strFileName = L"SwordMan_Face_01";
-
-						CModel* pFaceModel = nullptr;
-						if (FAILED(GI->Import_Model_Data(LEVEL_DUMMY, wstring(L"FACE_FACE"), CModel::TYPE::TYPE_ANIM, strFilePath, strFileName, &pFaceModel)))
-							return;
-						else
-							m_pDummy->m_pFaceModel = pFaceModel;
-					}
-				}
-
-
-				IMGUI_NEW_LINE;
-				/* 플레이어 원본 fbx 주소 */
-				{
-					ImGui::TextColored(ImVec4(0.9f, 0.2f, 0.2f, 1.f), u8"파츠 fbx를 Import 하기 전에 !");
-					ImGui::TextColored(ImVec4(0.9f, 0.2f, 0.2f, 1.f), u8"위에서 플레이어 fbx 혹은 binary 파일을 Import 해주시기 바랍니다. !");
-				}
-				IMGUI_NEW_LINE;
-
-				/* 파츠 주소 fbx */
-				ImGui::Text("Part");
-				{
-					char szFilePath[MAX_PATH];
-					char szFileName[MAX_PATH];
-
-					sprintf_s(szFilePath, CUtils::ToString(m_strPartFilePath).c_str());
-					sprintf_s(szFileName, CUtils::ToString(m_strPartFileName).c_str());
-
-					/* Path */
-					if (ImGui::InputText("##ModelPartPathText", szFilePath, MAX_PATH))
-						m_strPartFilePath = CUtils::ToWString(string(szFilePath));
-
-					if (ImGui::IsItemHovered())
-					{
-						ImGui::BeginTooltip();
-						ImGui::Text(u8"Fbx 파일의 경우 : ../Bin/Resources/AnimModel/Boss/Stellia/");
-						ImGui::EndTooltip();
-					}
-					IMGUI_SAME_LINE;
-					ImGui::Text("Path");
-
-					/* File Name */
-					if (ImGui::InputText("##ModelPartFileText", szFileName, MAX_PATH))
-						m_strPartFileName = CUtils::ToWString(string(szFileName));
-					if (ImGui::IsItemHovered())
-					{
-						ImGui::BeginTooltip();
-						ImGui::Text(u8"Fbx 파일의 경우 : Stellia.fbx");
-						ImGui::EndTooltip();
-					}
-					IMGUI_SAME_LINE;
-					ImGui::Text("File Name");
-
-					/* Import Btn */
-					if (ImGui::Button("Import Part Fbx"))
-					{
-						m_bCostumeMode = TRUE;
-						//if (FAILED(m_pDummy->Ready_ModelCom(CModel::TYPE_NONANIM, m_strPartFilePath, m_strPartFileName)))
-						//	MSG_BOX("Failed Import.");
-						//else
-						//{
-						//	MSG_BOX("Success Import.");
-						//}
-					}
-					IMGUI_NEW_LINE;
-
-					/* Apply Btn */
-					if (ImGui::Button("Apply to Player"))
-					{
-						/* 여기서 파츠 매니저에 등록 */
-						
-					}
-					IMGUI_SAME_LINE;
-
-					/* Export Btn */
-					if (ImGui::Button("Export Part Fbx"))
-					{
-						//if (FAILED(m_pDummy->Ready_ModelCom(CModel::TYPE_NONANIM, m_strPartFilePath, m_strPartFileName)))
-						//	MSG_BOX("Failed Import.");
-						//else
-						//{
-						//	MSG_BOX("Success Import.");
-						//}
-					}
-					IMGUI_NEW_LINE;
-
-					ImGui::TreePop();
-				}
-			}
-
-			if (ImGui::TreeNode(u8"파츠 메쉬 장착"))
-			{
-				/* 바이너리된 플레이어 주소 */
-				IMGUI_NEW_LINE;
-				ImGui::TreePop();
-			}
-
-			ImGui::TreePop();
-		}
-
 		IMGUI_NEW_LINE;
 	}
 }
@@ -803,7 +692,7 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 				if (ImGui::Selectable(AnimationName.c_str(), i == pModelCom->Get_CurrAnimationIndex()))
 				{
 					pModelCom->Set_Animation(i);
-					sprintf_s(szAnimationName, CUtils::ToString(pModelCom->Get_CurrAnimation()->Get_AnimationName()).c_str());
+					sprintf_s(szAnimationName, CUtils::ToString(pModelCom->Get_Animation(i)->Get_AnimationName()).c_str());
 
 					Claer_EventData();
 				}
@@ -814,7 +703,9 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 		/* 변경시 다시 익스포트 해야하는 유형 */
 		IMGUI_NEW_LINE;
 		ImGui::Separator();
-		ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"삭제, 정렬, 순서 변경, 이름 변경은 다시 익스포트 해야 반영됩니다. ");
+		ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"삭제, 정렬, 순서 변경, 이름 변경은 Apply를 해야 반영됩니다.");
+		ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"Save 창이 뜨더라도 Save 경로는 캐쉬 경로(Export/stash)이므로 모델의 원본은 수정되지 않습니다.");
+		ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"애니메이션이 이상하다면 Apply 버튼을 눌러주세요.");
 		ImGui::Text("Prop 1");
 		{
 			/* Swap */
@@ -822,6 +713,9 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 				if (ImGui::ArrowButton("##Swap_Animation_Up", ImGuiDir_Up))
 				{
 					pModelCom->Swap_Animation(pModelCom->Get_CurrAnimationIndex(), pModelCom->Get_CurrAnimationIndex() - 1);
+
+					if (m_bCostumeMode)
+						CPart_Manager::GetInstance()->Synchronize_PlayerAnimation_Swap(m_eCharacyerType, pModelCom->Get_CurrAnimationIndex(), TRUE);
 				}
 				if (ImGui::IsItemHovered())
 				{
@@ -833,6 +727,8 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 				if (ImGui::ArrowButton("##Swap_Animation_Down", ImGuiDir_Down))
 				{
 					pModelCom->Swap_Animation(pModelCom->Get_CurrAnimationIndex(), pModelCom->Get_CurrAnimationIndex() + 1);
+					if (m_bCostumeMode)
+						CPart_Manager::GetInstance()->Synchronize_PlayerAnimation_Swap(m_eCharacyerType, pModelCom->Get_CurrAnimationIndex(), FALSE);
 				}
 				if (ImGui::IsItemHovered())
 				{
@@ -847,7 +743,8 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 			if (ImGui::Button("Delete") || (KEY_TAP(KEY::DEL) && ImGui::IsWindowFocused()))
 			{
 				_int iCurIndex = pModelCom->Get_CurrAnimationIndex();
-
+				
+				wstring strAnimName = pModelCom->Get_Animation(iCurIndex)->Get_AnimationName();
 				pModelCom->Delete_Animation(iCurIndex);
 
 				iCurIndex = (0 < iCurIndex - 1) ? 0 : iCurIndex - 1;
@@ -857,6 +754,11 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 				Animations = pModelCom->Get_Animations();
 
 				sprintf_s(szAnimationName, CUtils::ToString(pModelCom->Get_CurrAnimation()->Get_AnimationName()).c_str());
+
+
+				if (m_bCostumeMode)
+					CPart_Manager::GetInstance()->Synchronize_PlayerAnimation_Delete(m_eCharacyerType, strAnimName);
+
 			}
 			IMGUI_SAME_LINE;
 
@@ -867,11 +769,35 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 				sort(Animations.begin(), Animations.end(), [&](CAnimation* pSrcAnimation, CAnimation* pDestAnimation) {
 					return pSrcAnimation->Get_AnimationName() < pDestAnimation->Get_AnimationName();
 					});
+
+				if (m_bCostumeMode)
+					CPart_Manager::GetInstance()->Synchronize_PlayerAnimation_Sort(m_eCharacyerType);
+			}
+			IMGUI_SAME_LINE;
+
+			/* Apply */
+			if (ImGui::Button("Apply"))
+			{
+				wstring strStashPath = L"stach/";
+				if (FAILED(m_pDummy->Export_Model_Bin(strStashPath, m_strFileName)))
+					MSG_BOX("Failed Save.");
+				else
+					MSG_BOX("Save Success");
+
+				if (m_bCostumeMode)
+				{
+					if (FAILED(CPart_Manager::GetInstance()->Apply_PlayAnimation(m_eCharacyerType)))
+						MSG_BOX("Failed PartManager Apply Animation");
+					else
+						MSG_BOX("Success PartManager Apply Animation");
+				}
+				if (FAILED(Ready_SocketTransforms()))
+					return;
 			}
 
 			/* Rename */
 			{
-				sprintf_s(szAnimationName, CUtils::ToString(pModelCom->Get_CurrAnimation()->Get_AnimationName()).c_str());
+				//sprintf_s(szAnimationName, CUtils::ToString(pModelCom->Get_CurrAnimation()->Get_AnimationName()).c_str());
 				ImGui::InputText("##Animation_Input_Name", szAnimationName, 255);
 				IMGUI_SAME_LINE;
 				if(ImGui::Button("Rename"))
@@ -879,6 +805,9 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 					wstring NewAnimationName = CUtils::ToWString(string(szAnimationName));
 					if (NewAnimationName.size() > 0)
 						pModelCom->Get_CurrAnimation()->Set_AnimationName(NewAnimationName);
+
+					if (m_bCostumeMode)
+						CPart_Manager::GetInstance()->Synchronize_PlayerAnimation_ChangeName(m_eCharacyerType, pModelCom->Get_CurrAnimationIndex(), NewAnimationName);
 				}
 			}
 			IMGUI_NEW_LINE;
@@ -1081,7 +1010,7 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 
 		/* Prototype Weapon List */
 		{
-			ImGui::Text("Weapon Prototypes List");
+			ImGui::Text("현재 장착 가능한 무기 리스트");
 
 			if (ImGui::BeginListBox("##Weapon Prototypes List", ImVec2(350.f, 80.f)))
 			{
@@ -1101,7 +1030,7 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 
 		/* Calculated Socket List */
 		{
-			ImGui::Text("Calculated Socket List");
+			ImGui::Text("모델에 저장된 소켓 리스트");
 
 			if (ImGui::BeginListBox("##Calculated Socket List", ImVec2(350.f, 80.f)))
 			{
@@ -1183,7 +1112,7 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 			Vec3 vRot = m_pDummy->Get_ModelCom()->Get_CustomSocketPivotRotation(m_iSocketIndex);
 
 			_float fRot[3] = { vRot.x, vRot.y, vRot.z };
-			ImGui::Text("Socket Rotation");
+			ImGui::Text("소켓 회전 (SwordMan 기준 Best 값 : {0, -270, 0})");
 			IMGUI_SAME_LINE;
 
 			/* Clear */
@@ -1649,6 +1578,47 @@ void CTool_Model::Tick_Costume(_float fTimeDelta)
 		if (Is_Exception())
 			return;
 
+		/* Intro */
+		ImGui::TextColored(ImVec4(1.f, 0.2f, 0.2f, 1.f), u8"플레이어 더미 파일을 Import 한 후, 아래 버튼을 눌러주세요");
+
+	
+		/* Start Costume */
+		if (ImGui::Checkbox("Start Costume", &m_bCostumeMode))
+		{
+			m_pDummy->m_bCostumeMode = m_bCostumeMode;
+
+			/* OFF */
+			if (!m_bCostumeMode)
+			{
+				for (size_t i = 0; i < PART_TYPE::PART_END; i++)
+				{
+					m_pDummy->m_pPart[i] = nullptr;
+				}
+			}
+			else /* ON */
+			{
+				if (FAILED(CPart_Manager::GetInstance()->Synchronize_PlayerAnimation_Init(m_eCharacyerType, m_pDummy->Get_ModelCom())))
+					return;
+					
+				/* 플레이어 애니메이션 정리*/
+				wstring strStashPath = L"stach/";
+				if (FAILED(m_pDummy->Export_Model_Bin(strStashPath, m_strFileName)))
+					MSG_BOX("Failed Save.");
+				else
+					MSG_BOX("Save Success");
+
+				/* 플레이어 애니메이션과 파츠 애니메이션 동기화 및 정리 */
+				if (FAILED(CPart_Manager::GetInstance()->Apply_PlayAnimation(m_eCharacyerType)))
+					MSG_BOX("Failed PartManager Apply Animation");
+				else
+					MSG_BOX("Success PartManager Apply Animation");
+
+				/* 소켓 재정렬 */
+				if (FAILED(Ready_SocketTransforms()))
+					return;
+			}			
+		}
+
 		/* Function */
 		{
 			IMGUI_NEW_LINE;
@@ -1667,8 +1637,9 @@ void CTool_Model::Tick_Costume(_float fTimeDelta)
 							if (ImGui::Selectable(items[n], is_selected))
 							{
 								m_eCharacyerType = (CHARACTER_TYPE)n;
-							
-								// TODO 
+								m_iPartIndex = 0;
+								
+								CPart_Manager::GetInstance()->Synchronize_PlayerAnimation_Init(m_eCharacyerType, m_pDummy->Get_ModelCom());
 
 							}
 
@@ -1697,8 +1668,8 @@ void CTool_Model::Tick_Costume(_float fTimeDelta)
 							if (ImGui::Selectable(items[n], is_selected))
 							{
 								m_ePartType = (PART_TYPE)n;
-
-								// TODO 
+								m_iPartIndex = 0;
+								
 
 							}
 
@@ -1712,12 +1683,43 @@ void CTool_Model::Tick_Costume(_float fTimeDelta)
 			}
 			ImGui::PopItemWidth();
 
-			/* 해당 파츠 상세 타입 */
+			/* 해당 파츠 모델 리스트 */
+			IMGUI_NEW_LINE;
+			ImGui::Text(u8"착용 가능한 모델 리스트");
 
+			vector<class CModel*>* pModelList = CPart_Manager::GetInstance()->Get_PartModels(m_eCharacyerType, m_ePartType);
+			if (nullptr != pModelList)
+			{
+				if (ImGui::BeginListBox("##Part Model List ", ImVec2(450.f, 70.f)))
+				{
+					for (size_t i = 0; i < pModelList->size(); ++i)
+					{
+						string strFrame = CUtils::ToString((*pModelList)[i]->Get_Name());
 
+						if (ImGui::Selectable(strFrame.c_str(), i == m_iPartIndex))
+						{
+							m_iPartIndex = i;
+
+							CModel* pModel = CPart_Manager::GetInstance()->Get_PartModel(m_eCharacyerType, m_ePartType, m_iPartIndex);
+
+							m_pDummy->m_pPart[m_ePartType] = pModel;	
+						}
+					}
+					ImGui::EndListBox();
+				}
+			}
+			else
+			{
+				ImGui::Text("현재 옵션으로 착용 가능항 모델이 존재하지 않습니다. ");
+			}
 
 		}
-		IMGUI_NEW_LINE;
+		
+		for (size_t i = 0; i < 3; i++)
+		{
+			IMGUI_NEW_LINE;
+		}
+
 	}
 }
 

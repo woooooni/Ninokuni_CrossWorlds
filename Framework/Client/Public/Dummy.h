@@ -50,17 +50,11 @@ public:
 	HRESULT Import_Model();
 
 
-	// << : Test 
-
+public:
+	/* Costume */
 	_bool m_bCostumeMode = FALSE;
 
-	CModel* m_pBodyModel = nullptr;
-	CModel* m_pHairModel = nullptr;
-	CModel* m_pFaceModel = nullptr;
-
-
-	// >> : 
-
+	CModel* m_pPart[PART_TYPE::PART_END];
 
 protected:
 	CShader* m_pNonAnimShaderCom = nullptr;

@@ -143,8 +143,6 @@ HRESULT CLevel_Tool::Ready_Layer_Player(const LAYER_TYPE eLayerType)
 	if (FAILED(GI->Add_GameObject(LEVEL_TOOL, _uint(eLayerType), TEXT("Prototype_GameObject_Dummy"))))
 		return E_FAIL;
 
-
-
 	return S_OK;
 }
 

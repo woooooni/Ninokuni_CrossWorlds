@@ -552,6 +552,17 @@ CTexture* CModel::Get_MaterialTexture(_uint iMeshIndex, _uint iTextureType)
 	return m_Materials[iMeshIndex].pTexture[iTextureType];
 }
 
+const _bool CModel::Has_Animation(const wstring& strAnimationName)
+{
+	for (auto& pAnim : m_Animations)
+	{
+		if (strAnimationName == pAnim->Get_AnimationName())
+			return TRUE;
+	}
+
+	return FALSE;
+}
+
 HRESULT CModel::Set_VtfSrv(ID3D11ShaderResourceView* pSrv)
 {
 	if (nullptr == pSrv)
@@ -657,20 +668,15 @@ CAnimation* CModel::Get_Animation(const string strName)
 	return nullptr;
 }
 
-void CModel::Change_Animations(const vector<class CAnimation*>& Animations)
+const _int CModel::Get_AnimationIndex(const wstring& strName)
 {
-	for (auto& pAnimation : m_Animations)
-		Safe_Release(pAnimation);
-	m_Animations.clear();
-	m_Animations.shrink_to_fit();
-
-	for (auto& pAnimation : Animations)
+	for (size_t i = 0; i < m_Animations.size(); i++)
 	{
-		Safe_AddRef(pAnimation);
-		m_Animations.push_back(pAnimation);
+		if (m_Animations[i]->Get_AnimationName() == strName)
+			return i;
 	}
 
-	m_iNumAnimations = m_Animations.size();
+	return -1;
 }
 
 void CModel::Set_KeyFrame_By_Progress(_float fProgress)

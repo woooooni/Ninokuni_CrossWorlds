@@ -41,6 +41,8 @@
 
 #include "Weapon_SwordTemp.h"
 
+#include "Part_Manager.h"
+
 _bool CLoader::g_bFirstLoading = false;
 CLoader::CLoader(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: m_pDevice(pDevice)
@@ -403,6 +405,45 @@ HRESULT CLoader::Loading_For_Level_Tool()
 	//	CStructuredBuffer::Create(m_pDevice, m_pContext))))
 	//	return E_FAIL;
 #pragma endregion
+
+#pragma region Parts
+
+	/* SwordMan*/
+	{
+		/* Body */
+		{
+			if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SwordMan_Body_01", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Part/SwordMan/Body_01/", L"SwordMan_Body_01")))
+				return E_FAIL;
+
+			if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SwordMan_Body_02", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Part/SwordMan/Body_02/", L"SwordMan_Body_02")))
+				return E_FAIL;
+
+			if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SwordMan_Body_03", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Part/SwordMan/Body_03/", L"SwordMan_Body_03")))
+				return E_FAIL;
+		}
+
+
+
+		/* Face */
+		{
+			if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SwordMan_Face_01", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Part/SwordMan/Face_01/", L"SwordMan_Face_01")))
+				return E_FAIL;
+		}
+
+		/* Hair */
+		{
+			if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SwordMan_Hair_01", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Part/SwordMan/Hair_01/", L"SwordMan_Hair_01")))
+				return E_FAIL;
+		}
+	}
+
+
+	if(FAILED(CPart_Manager::GetInstance()->Reserve_Manager(GI->Get_Device(), GI->Get_Context())))
+		return E_FAIL;
+
+
+#pragma endregion
+
 
 	/* Prototype_GameObject_TempSword */
 	{
