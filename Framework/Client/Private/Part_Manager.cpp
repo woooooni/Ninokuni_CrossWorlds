@@ -61,38 +61,45 @@ HRESULT CPart_Manager::Synchronize_PlayerAnimation_Init(const CHARACTER_TYPE& eC
 	if (0 > eCharacterType || CHARACTER_TYPE::CHARACTER_END <= eCharacterType || nullptr == pDummyModel)
 		return E_FAIL;
 
+	/* 플레이어만 갖고 있는 애니메이션을 플레이어에게서 삭제 */
 	/* 플레이어에게 없는 애니메이션을 파츠들이 갖고 있을 경우, 파츠들에서 해당 애니메이션을 삭제한다. */
+	for (auto& pPartModels : m_PartModels[eCharacterType]) /* 해당 캐릭터 타입의 파트 순회*/
 	{
-		if (nullptr == pDummyModel)
-			return E_FAIL;
-
-		for (auto& pPartModels : m_PartModels[eCharacterType])
+		for (auto& pPartModel : pPartModels.second) /* 파트 벡터 순회 */
 		{
-			for (auto& pPartModel : pPartModels.second)
+			for (size_t i = 0; i < pDummyModel->Get_Animations().size();)
 			{
-				for (size_t i = 0; i < pDummyModel->Get_Animations().size(); i++)
+				/* 더미의 i번째 애니메이션을 파트모델이 갖고 있지 않은 경우*/
+				if (false == pPartModel->Has_Animation(pDummyModel->Get_Animations()[i]->Get_AnimationName()))
 				{
-					if (false == pPartModel->Has_Animation(pDummyModel->Get_Animations()[i]->Get_AnimationName()))
-					{
-						pPartModel->Delete_Animation(i);
-					}
+					/* 더미에서 해당 애니메이션을 삭제한다. */
+					pDummyModel->Delete_Animation(i);
+				}
+				else
+				{
+					i++;
 				}
 			}
 		}
 	}
 
+	/* 파츠만 갖고 있는 애니메이션을 파츠에서 삭제*/
 	/* 파츠들에게 없는 애니메이션을 플레이어가 갖고 있을 경우, 플레이어에게서 해당 애니메이션을 삭제한다. */
+	for (auto& pPartModels : m_PartModels[eCharacterType])
 	{
-		for (size_t i = 0; i < pDummyModel->Get_Animations().size(); i++)
+		for (auto& pPartModel : pPartModels.second)
 		{
-			for (auto& pPartModels : m_PartModels[eCharacterType])
+			for (size_t i = 0; i < pPartModel->Get_Animations().size();) /* 파트의 모든 애니메이션 순회 */
 			{
-				for (auto& pPartModel : pPartModels.second)
+				/* 파트 모델의 i번째 애니메이션을 더미가 갖고 있지 않은 경우*/
+				if (false == pDummyModel->Has_Animation(pPartModel->Get_Animations()[i]->Get_AnimationName()))
 				{
-					if (false == pDummyModel->Has_Animation(pPartModel->Get_Animations()[i]->Get_AnimationName()))
-					{
-						pDummyModel->Delete_Animation(i);
-					}
+					/* 파트 모델에서 해당 애니메이션을 삭제*/
+					pPartModel->Delete_Animation(i);
+				}
+				else
+				{
+					i++;
 				}
 			}
 		}
@@ -117,6 +124,11 @@ HRESULT CPart_Manager::Synchronize_PlayerAnimation_Init(const CHARACTER_TYPE& eC
 		return pSrcAnimation->Get_AnimationName() < pDestAnimation->Get_AnimationName();
 		});
 
+
+	/* Apply */
+	if (FAILED(Apply_PlayAnimation(eCharacterType)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -125,7 +137,6 @@ HRESULT CPart_Manager::Synchronize_PlayerAnimation_Delete(const CHARACTER_TYPE& 
 	if (0 > eCharacterType || CHARACTER_TYPE::CHARACTER_END <= eCharacterType)
 		return E_FAIL;
 
-	/* 플레이어에게 없는 애니메이션을 파츠가 갖고 있을 경우, 파츠에서 해당 애니메이션을 삭제한다. */
 	for (auto& pPartModels : m_PartModels[eCharacterType])
 	{
 		for (auto& pPartModel : pPartModels.second)
@@ -220,9 +231,6 @@ HRESULT CPart_Manager::Save_Parts(const wstring& strPath, const CHARACTER_TYPE& 
 	if (0 > eCharacterType || CHARACTER_TYPE::CHARACTER_END <= eCharacterType)
 		return E_FAIL;
 
-	/* 정리 */
-
-
 	for (auto& pPartModels : m_PartModels[eCharacterType])
 	{
 		for (auto& pPartModel : pPartModels.second)
@@ -234,6 +242,7 @@ HRESULT CPart_Manager::Save_Parts(const wstring& strPath, const CHARACTER_TYPE& 
 
 			if (result.empty())
 				continue;
+
 			filesystem::path finalPath = CUtils::RemovePrefix(result, prefix);
 
 			string strSavePath = finalPath.parent_path().string() + "\\";
@@ -272,6 +281,17 @@ HRESULT CPart_Manager::Ready_PartModels()
 			/* 02 */
 			{
 				CModel* pModel = dynamic_cast<CModel*>(GI->Clone_Component(LEVEL_STATIC, L"Prototype_Component_Model_SwordMan_Body_02"));
+				if (nullptr == pModel)
+				{
+					MSG_BOX("Failed CPart_Manager::Ready_PartModels()");
+					return E_FAIL;
+				}
+				pSwordMan_Bodys.push_back(pModel);
+			}
+
+			/* 02 */
+			{
+				CModel* pModel = dynamic_cast<CModel*>(GI->Clone_Component(LEVEL_STATIC, L"Prototype_Component_Model_SwordMan_Body_03"));
 				if (nullptr == pModel)
 				{
 					MSG_BOX("Failed CPart_Manager::Ready_PartModels()");
