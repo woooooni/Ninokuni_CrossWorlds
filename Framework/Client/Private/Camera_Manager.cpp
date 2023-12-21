@@ -97,7 +97,7 @@ HRESULT CCamera_Manager::Ready_Cameras()
 			tDesc.fNear = 0.2f;
 			tDesc.fFar = 1000.f;
 
-			m_Cameras[eType] = CCamera_Free::Create(m_pDevice, m_pContext, CameraNames[eType]);
+			m_Cameras[eType] = CCamera_Free::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
 
 			if (nullptr == m_Cameras[eType])
 				return E_FAIL;
@@ -108,6 +108,8 @@ HRESULT CCamera_Manager::Ready_Cameras()
 				return E_FAIL;
 			}
 		}
+		m_Cameras[eType]->Set_Key(eType);
+
 		m_Cameras[eType]->Get_Transform()->Set_State(CTransform::STATE::STATE_POSITION, Vec4(0.f, 10.f, -10.f, 1.f));
 		m_Cameras[eType]->Get_Transform()->LookAt(Vec4{ 0.f, 0.f, 0.f, 1.f });
 	}
@@ -122,7 +124,7 @@ HRESULT CCamera_Manager::Ready_Cameras()
 			tDesc.fNear = 0.2f;
 			tDesc.fFar = 1000.f;
 
-			m_Cameras[eType] = CCamera_Free::Create(m_pDevice, m_pContext, CameraNames[eType]);
+			m_Cameras[eType] = CCamera_Free::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
 
 			if (nullptr == m_Cameras[eType])
 				return E_FAIL;
@@ -133,6 +135,8 @@ HRESULT CCamera_Manager::Ready_Cameras()
 				return E_FAIL;
 			}
 		}
+		m_Cameras[eType]->Set_Key(eType);
+
 		m_Cameras[eType]->Get_Transform()->Set_State(CTransform::STATE::STATE_POSITION, Vec4(0.f, 10.f, -10.f, 1.f));
 		m_Cameras[eType]->Get_Transform()->LookAt(Vec4{ 0.f, 0.f, 0.f, 1.f });
 	}

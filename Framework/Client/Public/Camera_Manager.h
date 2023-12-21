@@ -10,14 +10,15 @@ class CGameObject;
 class CTransform;
 END
 
+enum CAMERA_TYPE { FREE, FOLLOW, /* ACTION, */ TYPE_END };
+const wstring CameraWstringNames[CAMERA_TYPE::TYPE_END]{ L"Camera_Free", L"Camera_Follow" };
+static const char* CameraCharNames[CAMERA_TYPE::TYPE_END]{ "Camera_Free", "Camera_Follow" };
+
+
 BEGIN(Client)
 class CCamera_Manager : public CBase
 {	
 	DECLARE_SINGLETON(CCamera_Manager)
-
-public:
-	enum CAMERA_TYPE { FREE, FOLLOW, /* ACTION, */ TYPE_END };
-	const wstring CameraNames[CAMERA_TYPE::TYPE_END]{ L"Camera_Free", L"Camera_Follow" };
 
 private:
 	CCamera_Manager();

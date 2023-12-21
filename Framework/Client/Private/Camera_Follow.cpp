@@ -143,8 +143,6 @@ CCamera_Follow * CCamera_Follow::Create(ID3D11Device* pDevice, ID3D11DeviceConte
 
 CGameObject * CCamera_Follow::Clone(void* pArg)
 {
-	//CCamera::CAMERADESC*		pCameraDesc = (CCamera::CAMERADESC*)pArg;
-
 	CCamera_Follow*		pInstance = new CCamera_Follow(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))

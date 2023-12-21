@@ -35,6 +35,27 @@ HRESULT CCamera_Free::Initialize(void* pArg)
 
 void CCamera_Free::Tick(_float fTimeDelta)
 {
+	Move(fTimeDelta);
+	Rotate(fTimeDelta);
+}
+
+void CCamera_Free::LateTick(_float fTimeDelta)
+{
+	__super::LateTick(fTimeDelta);
+}
+
+HRESULT CCamera_Free::Render()
+{
+	return S_OK;
+}
+
+HRESULT CCamera_Free::Ready_Components()
+{
+	return S_OK;
+}
+
+void CCamera_Free::Move(_float fTimeDelta)
+{
 	if (GI->Mouse_Pressing(DIMK_WHEEL))
 	{
 		if (KEY_HOLD(KEY::W))
@@ -56,24 +77,13 @@ void CCamera_Free::Tick(_float fTimeDelta)
 		{
 			m_pTransformCom->Move(m_pTransformCom->Get_Right(), m_fMoveSpeed, fTimeDelta);
 		}
+	}
+}
 
-		/*if (KEY_HOLD(KEY::Q))
-		{
-			m_pTransformCom->Move(XMVectorSet(0.f, 1.f, 0.f, 0.f), m_fMoveSpeed, fTimeDelta);
-		}
-
-		if (KEY_HOLD(KEY::E))
-		{
-			m_pTransformCom->Move(XMVectorSet(0.f, 1.f, 0.f, 0.f), -m_fMoveSpeed, fTimeDelta);
-		}
-
-		if (KEY_TAP(KEY::R))
-		{
-			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&m_tProjDesc.vEye));
-			m_pTransformCom->LookAt(XMLoadFloat4(&m_CameraDesc.vAt));
-		}*/
-
-
+void CCamera_Free::Rotate(_float fTimeDelta)
+{
+	if (GI->Mouse_Pressing(DIMK_WHEEL))
+	{
 		_long	MouseMove = 0;
 
 		if (MouseMove = GI->Get_DIMMoveState(DIMM_X))
@@ -86,22 +96,6 @@ void CCamera_Free::Tick(_float fTimeDelta)
 			m_pTransformCom->Turn(m_pTransformCom->Get_State(CTransform::STATE_RIGHT), MouseMove * m_fRotateSpeed, fTimeDelta);
 		}
 	}
-
-}
-
-void CCamera_Free::LateTick(_float fTimeDelta)
-{
-	__super::LateTick(fTimeDelta);
-}
-
-HRESULT CCamera_Free::Render()
-{
-	return S_OK;
-}
-
-HRESULT CCamera_Free::Ready_Components()
-{
-	return S_OK;
 }
 
 CCamera_Free* CCamera_Free::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
@@ -119,8 +113,6 @@ CCamera_Free* CCamera_Free::Create(ID3D11Device* pDevice, ID3D11DeviceContext* p
 
 CGameObject* CCamera_Free::Clone(void* pArg)
 {
-	//CCamera::CAMERADESC* pCameraDesc = (CCamera::CAMERADESC*)pArg;
-
 	CCamera_Free* pInstance = new CCamera_Free(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))

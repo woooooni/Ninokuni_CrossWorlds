@@ -19,12 +19,23 @@ public:
 	virtual void LateTick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
+public:
+	const _float& Get_MoveSpeed() const { return m_fMoveSpeed; }
+	const _float& Get_RotateSpeed() const { return m_fRotateSpeed; }
+
+	void Set_MoveSpeed(const _float& fSpeed) { m_fMoveSpeed = fSpeed; }
+	void Set_RotateSpeed(const _float& fSpeed) { m_fRotateSpeed = fSpeed; }
+
+private:
+	void Move(const _float fTimeDelta);
+	void Rotate(const _float fTimeDelta);
+
 private:
 	virtual HRESULT Ready_Components() override;
 
-public:
-	_float m_fMoveSpeed = 50.f;
-	_float m_fRotateSpeed = 0.5f;
+private:
+	_float m_fMoveSpeed		= 50.f;
+	_float m_fRotateSpeed	= 0.5f;
 
 public:
 	static CCamera_Free* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);

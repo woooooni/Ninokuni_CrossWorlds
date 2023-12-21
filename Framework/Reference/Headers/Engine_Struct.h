@@ -523,6 +523,59 @@ namespace Engine
 		}
 	}LERP_VEC3_DESC;
 
+	typedef struct tagLerpVec4Desc : public LERP_DESC
+	{
+		/* Time */
+		_float		fStartTime = 0.f;
+		_float		fEndTime = 0.f;
+		_float		fCurTime = 0.f;
+
+		/* Value */
+		Vec4		vStartVec;
+		Vec4		vTargetVec;
+		Vec4		vCurVec;
+
+		/* Prop */
+		_bool		bActive = FALSE;
+		LERP_MODE	eMode = LERP_MODE::DEFAULT;
+
+		void Start(const Vec4 _fStartValue, const Vec4& _fTargetValue, const _float& _fTime, const LERP_MODE& _eMode = LERP_MODE::DEFAULT)
+		{
+			if (_fTime < 0)
+				return;
+
+			bActive = TRUE;
+
+			fCurTime = 0.f;
+			fEndTime = _fTime;
+
+			vStartVec = vCurVec = _fStartValue;
+			vTargetVec = _fTargetValue;
+
+			eMode = _eMode;
+		}
+
+		Vec4 Update_Lerp(const _float& fTimeDelta)
+		{
+			if (!bActive)
+				return vCurVec;
+
+			fCurTime += fTimeDelta;
+
+			if (fCurTime >= fEndTime)
+			{
+				vCurVec = vTargetVec;
+				return vCurVec;
+			}
+
+			const _float fTime = LERP_DESC::Calculate_Time(fCurTime, fEndTime, eMode);
+
+			vCurVec = Vec4::Lerp(vStartVec, vTargetVec, fTime);
+
+			return vCurVec;
+		}
+	}LERP_VEC4_DESC;
+
 
 #pragma endregion
 
@@ -642,7 +695,6 @@ namespace Engine
 	}ANIM_SPEED_DESC;
 
 #pragma endregion
-
 
 }
 

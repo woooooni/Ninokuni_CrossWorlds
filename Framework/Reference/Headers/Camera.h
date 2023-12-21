@@ -54,16 +54,19 @@ public:
 
 	CTransform* Get_Transform() const { return m_pTransformCom; }
 
+	const _int Get_Key() const { return m_iKey; }
+	void Set_Key(const _int& iKey) { m_iKey = iKey; }
+
 	/* Proj */
 	const _bool& Is_Lerp_Fov() const { return m_tProjDesc.tLerpFov.bActive; }
 	const _float& Get_Fov() const { return m_tProjDesc.tLerpFov.fCurValue; }
-	void Set_Fov(const _float& fFov) { memcpy(&m_tProjDesc.tLerpFov, &fFov, sizeof(_float)); }
 	const PROJ_DESC& Get_ProjDesc() const { return m_tProjDesc; }
+	void Set_Fov(const _float& fFov) { memcpy(&m_tProjDesc.tLerpFov, &fFov, sizeof(_float)); }
 	
 	/* Distance */
 	const _bool& Is_Lerp_Distance() const { return m_tDist.bActive; }
-	const _float& Get_Distance() const { return m_tDist.fCurValue; }
 	void Set_Distance(const _float& fDistance) { memcpy(&m_tDist.fCurValue, &fDistance, sizeof(_float)); }
+	const _float& Get_Distance() const { return m_tDist.fCurValue; }
 
 	/* Target, LookAt */
 	CGameObject* Get_TargetObj() const { return m_pTargetObj; }
@@ -86,6 +89,7 @@ protected:
 	/* Default  */
 	_bool				m_bActive = { false };
 	CTransform*			m_pTransformCom = { nullptr };
+	_int				m_iKey = -1;
 
 	/* Proj */
 	PROJ_DESC			m_tProjDesc		= {};
