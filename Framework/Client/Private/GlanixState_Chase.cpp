@@ -22,6 +22,17 @@ void CGlanixState_Chase::Enter_State(void* pArg)
 
 void CGlanixState_Chase::Tick_State(_float fTimeDelta)
 {
+	__super::Tick_State(fTimeDelta);
+
+	if (m_pGlanix->Get_Stat().fHp <= m_pGlanix->Get_Stat().fMaxHp / 2.f && !m_pGlanix->Get_IsRage())
+	{
+		m_pGlanix->Set_IsRage(true);
+		m_pGlanix->Set_SkillTree();
+		m_iAtkIndex = 0;
+		m_pStateMachineCom->Change_State(CGlanix::GLANIX_RAGE);
+		return;
+	}
+
 	if (m_pPlayer != nullptr)
 		m_pTransformCom->LookAt_ForLandObject(m_pPlayerTransform->Get_Position());
 	

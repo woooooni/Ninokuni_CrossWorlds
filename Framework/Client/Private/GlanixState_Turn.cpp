@@ -17,6 +17,15 @@ HRESULT CGlanixState_Turn::Initialize(const list<wstring>& AnimationList)
 
 void CGlanixState_Turn::Enter_State(void* pArg)
 {
+	if (m_pGlanix->Get_Stat().fHp <= m_pGlanix->Get_Stat().fMaxHp / 2.f && !m_pGlanix->Get_IsRage())
+	{
+		m_pGlanix->Set_IsRage(true);
+		m_pGlanix->Set_SkillTree();
+		m_iAtkIndex = 0;
+		m_pStateMachineCom->Change_State(CGlanix::GLANIX_RAGE);
+		return;
+	}
+
 	_vector vLookNormal = XMVector3Normalize(m_pTransformCom->Get_Look());
 	_vector vDestNormal = XMVector3Normalize(m_pPlayerTransform->Get_Position() - m_pTransformCom->Get_Position());
 
@@ -73,6 +82,8 @@ void CGlanixState_Turn::Enter_State(void* pArg)
 
 void CGlanixState_Turn::Tick_State(_float fTimeDelta)
 {
+	__super::Tick_State(fTimeDelta);
+
 	_vector vLookNormal = XMVector3Normalize(m_pTransformCom->Get_Look());
 	_vector vDestNormal = XMVector3Normalize(m_vDestPos - m_pTransformCom->Get_Position());
 

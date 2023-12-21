@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Boss.h"
 
+#include "GameInstance.h"
+
 CBoss::CBoss(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
 	: CMonster(pDevice, pContext, strObjectTag, tStat)
 {

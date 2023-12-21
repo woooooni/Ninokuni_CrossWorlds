@@ -18,7 +18,7 @@ public:
 	virtual void Exit_State();
 
 private:
-	LERP_FLOAT_DESC m_tJumpLerp = {};
+	_vector vDestPos = {};
 
 public:
 	static CGlanixState_JumpStamp* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);

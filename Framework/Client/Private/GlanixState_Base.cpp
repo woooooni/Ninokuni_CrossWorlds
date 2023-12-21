@@ -29,16 +29,15 @@ HRESULT CGlanixState_Base::Initialize(const list<wstring>& AnimationList)
 
 	m_fRunSpeed = 4.f;
 
+	// 레이지 전환 어떻게 할 지 생각하기. 
+
 	/* 공격 패턴만 따로 모아놓기. (후에 순차적 혹은 랜덤으로 전환하기 위해) */
-	m_vecAtkState.push_back(CGlanix::GLANIX_CHARGE);
-	m_vecAtkState.push_back(CGlanix::GLANIX_ICEWAVE);
-	m_vecAtkState.push_back(CGlanix::GLANIX_QUADBLOW);
-	m_vecAtkState.push_back(CGlanix::GLANIX_SPINBOMBBOMB);
-	m_vecAtkState.push_back(CGlanix::GLANIX_SPINBOMB);
-	m_vecAtkState.push_back(CGlanix::GLANIX_SNOWBALL);
-	m_vecAtkState.push_back(CGlanix::GLANIX_JUMPSTAMP);
 	m_vecAtkState.push_back(CGlanix::GLANIX_ATTACK1);
 	m_vecAtkState.push_back(CGlanix::GLANIX_ATTACK2);
+	m_vecAtkState.push_back(CGlanix::GLANIX_ICEWAVE);
+	m_vecAtkState.push_back(CGlanix::GLANIX_QUADBLOW);
+	m_vecAtkState.push_back(CGlanix::GLANIX_SPINBOMB);
+	m_vecAtkState.push_back(CGlanix::GLANIX_JUMPSTAMP);
 
 	return S_OK;
 }
@@ -49,10 +48,26 @@ void CGlanixState_Base::Enter_State(void* pArg)
 
 void CGlanixState_Base::Tick_State(_float fTimeDelta)
 {
+	/* Dead */
+	if (m_pGlanix->Get_Stat().fHp <= 0.f)
+		m_pStateMachineCom->Change_State(CGlanix::GLANIX_DEAD);
 }
 
 void CGlanixState_Base::Exit_State()
 {
+}
+
+void CGlanixState_Base::Init_Pattern()
+{
+	m_vecAtkState.clear();
+
+	m_vecAtkState.push_back(CGlanix::GLANIX_CHARGE);
+	m_vecAtkState.push_back(CGlanix::GLANIX_ICEWAVE);
+	m_vecAtkState.push_back(CGlanix::GLANIX_QUADBLOW);
+	m_vecAtkState.push_back(CGlanix::GLANIX_SPINBOMBBOMB);
+	m_vecAtkState.push_back(CGlanix::GLANIX_SNOWBALL);
+	m_vecAtkState.push_back(CGlanix::GLANIX_JUMPSTAMP);
+	m_vecAtkState.push_back(CGlanix::GLANIX_ATTACK2);
 }
 
 _bool CGlanixState_Base::State_Wait(_float fDestTime, _float fTimeDelta)
@@ -71,19 +86,6 @@ _bool CGlanixState_Base::State_Wait(_float fDestTime, _float fTimeDelta)
 	}
 
 	return false;
-}
-
-void CGlanixState_Base::Set_SkillTree()
-{
-	m_vecAtkState.clear();
-
-	m_vecAtkState.push_back(CGlanix::GLANIX_CHARGE);
-	m_vecAtkState.push_back(CGlanix::GLANIX_ICEWAVE);
-	m_vecAtkState.push_back(CGlanix::GLANIX_QUADBLOW);
-	m_vecAtkState.push_back(CGlanix::GLANIX_SPINBOMBBOMB);
-	m_vecAtkState.push_back(CGlanix::GLANIX_SNOWBALL);
-	m_vecAtkState.push_back(CGlanix::GLANIX_JUMPSTAMP);
-	m_vecAtkState.push_back(CGlanix::GLANIX_ATTACK2);
 }
 
 void CGlanixState_Base::Free()

@@ -29,9 +29,11 @@ public:
 	virtual void Tick_State(_float fTimeDelta) PURE;
 	virtual void Exit_State() PURE;
 
+public:
+	void	Init_Pattern();
+
 protected:
 	virtual _bool State_Wait(_float fDestTime, _float fTimeDelta);
-	virtual void Set_SkillTree();
 
 protected:
 	CCharacter_Dummy* m_pPlayer = nullptr; // 후에 플레이어로 교체.

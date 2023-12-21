@@ -3,6 +3,8 @@
 
 #include "Glanix.h"
 
+#include "Animation.h"
+
 CGlanixState_JumpStamp::CGlanixState_JumpStamp(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
 {
@@ -17,18 +19,23 @@ HRESULT CGlanixState_JumpStamp::Initialize(const list<wstring>& AnimationList)
 
 void CGlanixState_JumpStamp::Enter_State(void* pArg)
 {
-	// 플레이어의 위치와 기안티 위치 사이의 거리를 구하기.
-	// 점프와 스피드 러프 두 개가 필요할 듯. 
-	
-	//m_tJumpLerp.Start(1.f, 2.f, 1.f, LERP_MODE::EASE_IN);
-	//m_tJumpLerp.fCurValue = m_tJumpLerp.fStartValue;
-
 	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_Skill03"));
+
+	vDestPos = m_pPlayerTransform->Get_Position();
 }
 
 void CGlanixState_JumpStamp::Tick_State(_float fTimeDelta)
 {
-	//m_tJumpLerp.Update(fTimeDelta);
+	__super::Tick_State(fTimeDelta);
+
+	if (m_pModelCom->Get_CurrAnimationFrame() >= 45 && m_pModelCom->Get_CurrAnimationFrame() <= 75)
+	{
+		m_pTransformCom->LookAt_ForLandObject(vDestPos);
+
+		XMVECTOR vCurVector = XMVectorLerp(m_pTransformCom->Get_Position(), vDestPos, fTimeDelta / 1.f);
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCurVector);
+	}
+
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{

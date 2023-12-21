@@ -22,6 +22,8 @@ void CGlanixState_SpinBomb::Enter_State(void* pArg)
 
 void CGlanixState_SpinBomb::Tick_State(_float fTimeDelta)
 {
+	__super::Tick_State(fTimeDelta);
+
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
 		m_pStateMachineCom->Change_State(CGlanix::GLANIX_TURN);

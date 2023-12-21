@@ -17,6 +17,15 @@ HRESULT CGlanixState_CombatIdle::Initialize(const list<wstring>& AnimationList)
 
 void CGlanixState_CombatIdle::Enter_State(void* pArg)
 {
+	if (m_pGlanix->Get_Stat().fHp <= m_pGlanix->Get_Stat().fMaxHp / 2.f && !m_pGlanix->Get_IsRage())
+	{
+		m_pGlanix->Set_IsRage(true);
+		m_pGlanix->Set_SkillTree();
+		m_iAtkIndex = 0;
+		m_pStateMachineCom->Change_State(CGlanix::GLANIX_RAGE);
+		return;
+	}
+
 	if (pArg != nullptr)
 		m_fWaitTime = *(_float*)pArg;
 
@@ -50,6 +59,8 @@ void CGlanixState_CombatIdle::Enter_State(void* pArg)
 
 void CGlanixState_CombatIdle::Tick_State(_float fTimeDelta)
 {
+	__super::Tick_State(fTimeDelta);
+
 	m_fTime += fTimeDelta;
 
 	_vector vLookNormal = XMVector3Normalize(m_pTransformCom->Get_Look());
