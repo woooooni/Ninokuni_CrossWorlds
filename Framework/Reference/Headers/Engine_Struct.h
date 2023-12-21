@@ -642,16 +642,23 @@ namespace Engine
 	/* VTF 텍스처 만들기 위한 캐시 (다수 채널) */
 	typedef struct	AnimTransformCaches
 	{
-		using TransformArrayType = std::array<Matrix, MAX_MODEL_CHANNELS>;
-		std::array<TransformArrayType, MAX_MODEL_KEYFRAMES> transforms;
+		using Channels = std::vector<Matrix>;
+		std::vector<Channels> transforms; // 벡터 원소 하나가 키프레임 하나에 해당하는 채널을 들고 있음 
+		
+		
+		/*using TransformArrayType = std::array<Matrix, MAX_MODEL_CHANNELS>;
+		std::array<TransformArrayType, MAX_MODEL_KEYFRAMES> transforms;*/
 
 	}ANIM_TRANSFORM_CACHES;
 
 	/* 소켓 본을 만들기 위한 캐시 (채널 하나) */
 	typedef struct	AnimTransformCache
 	{
-		using TransformArrayType = std::array<Matrix, 1>;
-		std::array<TransformArrayType, MAX_MODEL_KEYFRAMES> transforms;
+		using Channels = std::vector<Matrix>;
+		std::vector<Channels> transforms;
+
+		/*using TransformArrayType = std::array<Matrix, 1>;
+		std::array<TransformArrayType, MAX_MODEL_KEYFRAMES> transforms;*/
 
 	}ANIM_TRANSFORM_CACHE;
 

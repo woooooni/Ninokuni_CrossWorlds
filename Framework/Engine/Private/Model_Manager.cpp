@@ -179,7 +179,7 @@ HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel, const wstring str
 
 			BYTE* pageStartPtr = reinterpret_cast<BYTE*>(mallocPtr) + startOffset;
 
-			for (uint32 f = 0; f < iAnimMaxFrameCount; f++) /* 키프레임 갯수만큼 반복 (세로 크기만큼) */
+			for (uint32 f = 0; f < m_AnimationsCache[c]->Get_MaxFrameCount() ; f++) /* 키프레임 갯수만큼 반복 (세로 크기만큼) */
 			{
 				void* ptr = pageStartPtr + dataSize * f;
 
@@ -1007,7 +1007,12 @@ HRESULT CModel_Manager::Create_AnimationTransform_Caches(const _uint& iAnimIndex
 	wstring strAnimationName = pAnimation->Get_AnimationName();
 	for (uint32 iFrameIndex = 0; iFrameIndex < iMaxFrame; iFrameIndex++)
 	{
-		
+		/* Test */
+		{
+			vector<Matrix> vecMat;
+			m_AnimTransformsCaches[iAnimIndex].transforms.push_back(vecMat);
+		}
+
 		/* 모든 채널의 현재 프레임 갱신 */
 		pAnimation->Calculate_Animation(iFrameIndex);
 
@@ -1016,6 +1021,11 @@ HRESULT CModel_Manager::Create_AnimationTransform_Caches(const _uint& iAnimIndex
 		for (uint32 iBoneIndex = 0; iBoneIndex < m_HierarchyNodes.size(); iBoneIndex++)
 		{
 			m_HierarchyNodes[iBoneIndex]->Set_CombinedTransformation();
+
+			/* Test */
+			{
+				m_AnimTransformsCaches[iAnimIndex].transforms[iFrameIndex].push_back(Matrix());
+			}
 
 			m_AnimTransformsCaches[iAnimIndex].transforms[iFrameIndex][iBoneIndex]
 				= Matrix(m_HierarchyNodes[iBoneIndex]->Get_OffSetMatrix())

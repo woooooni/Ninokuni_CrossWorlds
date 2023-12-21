@@ -111,6 +111,8 @@ HRESULT CTool_Model::Clear_ToolAnimationData()
 		m_pDummy->m_pPart[i] = nullptr;
 	}
 
+	m_bInitSocket = FALSE;
+
 	return S_OK;
 }
 
@@ -379,6 +381,11 @@ HRESULT CTool_Model::Ready_SoundKey()
 
 HRESULT CTool_Model::Ready_SocketTransforms()
 {
+	if (!m_AnimTransformsCaches.empty())
+	{
+		m_AnimTransformsCaches.clear();
+		m_AnimTransformsCaches.shrink_to_fit();
+	}
 	m_AnimTransformsCaches = GI->Create_AnimationTransform_Caches_InTool(m_pDummy->Get_ModelCom());
 
 	return S_OK;
@@ -508,14 +515,7 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 							if (CModel::TYPE::TYPE_ANIM == m_pDummy->Get_ModelCom()->Get_ModelType())
 							{
 								Clear_ToolAnimationData();
-								m_pDummy->Get_ModelCom()->Set_Animation(0);
-
-								if (FAILED(Ready_SocketTransforms()))
-								{
-									MSG_BOX("소켓 트랜스폼 생성에 실패했습니다.");
-									ImGui::TreePop();
-									return;
-								}
+								m_pDummy->Get_ModelCom()->Set_Animation(0);				
 							}
 						}
 					}
@@ -764,8 +764,11 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 				else
 					MSG_BOX("Save Success");
 
-				if (FAILED(Ready_SocketTransforms()))
-					return;
+				if (m_bInitSocket)
+				{
+					if (FAILED(Ready_SocketTransforms()))
+						return;
+				}
 			}
 
 			/* Rename */
@@ -952,6 +955,16 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 	{
 		if (Is_Exception()) return;
 
+		if (!m_bInitSocket)
+		{
+			m_bInitSocket = TRUE;
+			if (FAILED(Ready_SocketTransforms()))
+			{
+				MSG_BOX("소켓 트랜스폼 생성에 실패했습니다.");
+				ImGui::TreePop();
+				return;
+			}
+		}
 		ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"애니메이션이 편집된 경우 소켓 또한 다시 갱신이 필요합니다.");
 
 		vector<class CHierarchyNode*>& HiearachyNodes = m_pDummy->Get_ModelCom()->Get_HierarchyNodes();
