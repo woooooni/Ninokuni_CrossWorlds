@@ -133,7 +133,8 @@ HRESULT CLevel_Tool::Ready_Lights()
 
 HRESULT CLevel_Tool::Ready_Layer_Camera(const LAYER_TYPE eLayerType)
 {
-	CCamera_Manager::GetInstance()->Set_MainCamera(CCamera_Manager::CAMERA_TYPE::TOOL);
+	if (FAILED(CCamera_Manager::GetInstance()->Set_CurCamera(CCamera_Manager::CAMERA_TYPE::FREE)))
+		return E_FAIL;
 
 	return S_OK;
 }

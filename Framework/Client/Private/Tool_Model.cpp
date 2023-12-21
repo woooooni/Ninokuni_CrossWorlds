@@ -1578,10 +1578,6 @@ void CTool_Model::Tick_Costume(_float fTimeDelta)
 	{
 		if (Is_Exception())
 			return;
-
-		/* Intro */
-		ImGui::TextColored(ImVec4(1.f, 0.2f, 0.2f, 1.f), u8"플레이어 더미 파일을 Import 한 후, 아래 버튼을 눌러주세요");
-
 	
 		/* Start Costume */
 		if (ImGui::Checkbox("Start Costume", &m_bCostumeMode))

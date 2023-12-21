@@ -2,8 +2,8 @@
 #include "..\Public\Loader.h"
 #include "GameInstance.h"
 #include "BackGround.h"
-#include "Camera_Tool.h"
-#include "Camera_Main.h"
+#include "Camera_Free.h"
+#include "Camera_Follow.h"
 #include "FileUtils.h"
 #include "Sword.h"
 

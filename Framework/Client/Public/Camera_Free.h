@@ -5,12 +5,12 @@
 
 BEGIN(Client)
 
-class CCamera_Tool final : public CCamera
+class CCamera_Free final : public CCamera
 {
 private:
-	CCamera_Tool(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
-	CCamera_Tool(const CCamera_Tool& rhs);
-	virtual ~CCamera_Tool() = default;
+	CCamera_Free(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
+	CCamera_Free(const CCamera_Free& rhs);
+	virtual ~CCamera_Free() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -19,7 +19,7 @@ public:
 	virtual void LateTick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
-protected:
+private:
 	virtual HRESULT Ready_Components() override;
 
 public:
@@ -27,7 +27,7 @@ public:
 	_float m_fRotateSpeed = 0.5f;
 
 public:
-	static CCamera_Tool* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
+	static CCamera_Free* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

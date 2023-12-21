@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Tool_Camera.h"
 
-#include "Camera_Tool.h"
+#include "Camera_Free.h"
 #include "imgui.h"
 
 #include "GameInstance.h"
@@ -25,7 +25,7 @@ void CTool_Camera::Tick(_float fTimeDelta)
 	ImGui::Begin("Camera_Tool");
 
 	/* 임시 코드 */
-	CCamera_Tool* pCam = dynamic_cast<CCamera_Tool*>(CCamera_Manager::GetInstance()->Get_MainCamera());
+	CCamera_Free* pCam = dynamic_cast<CCamera_Free*>(CCamera_Manager::GetInstance()->Get_CurCamera());
 
 	if (nullptr != pCam)
 	{
