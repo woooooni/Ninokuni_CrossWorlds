@@ -24,10 +24,12 @@ void CGlanixState_Charge::Enter_State(void* pArg)
 
 void CGlanixState_Charge::Tick_State(_float fTimeDelta)
 {
+	__super::Tick_State(fTimeDelta);
+
 	if(m_pModelCom->Get_CurrAnimationFrame() >= 48 && m_pModelCom->Get_CurrAnimationFrame() <= 78)
 		m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fChargeSpeed, fTimeDelta);
 	else if(m_pModelCom->Get_CurrAnimationFrame() >= 78 && m_pModelCom->Get_CurrAnimationFrame() <= 95)
-		m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fChargeSpeed / 3.f, fTimeDelta);
+		m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fChargeSpeed / 2.f, fTimeDelta);
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{

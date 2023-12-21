@@ -28,11 +28,15 @@ void CGlanixState_Spawn::Enter_State(void* pArg)
 
 void CGlanixState_Spawn::Tick_State(_float fTimeDelta)
 {
-	if (m_pModelCom->Is_Finish())
+	// player가 없으면 그냥 굳어버리게.
+	if (m_pPlayer != nullptr)
 	{
-		//_float fWaitTime = 1.f;
-		//m_pStateMachineCom->Change_State(CGlanix::GLANIX_COMBATIDLE, &fWaitTime);
-		m_pStateMachineCom->Change_State(CGlanix::GLANIX_TURN);
+		if (m_pModelCom->Is_Finish())
+		{
+			//_float fWaitTime = 1.f;
+			//m_pStateMachineCom->Change_State(CGlanix::GLANIX_COMBATIDLE, &fWaitTime);
+			m_pStateMachineCom->Change_State(CGlanix::GLANIX_TURN);
+		}
 	}
 }
 

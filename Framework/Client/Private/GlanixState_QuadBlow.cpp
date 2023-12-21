@@ -22,6 +22,8 @@ void CGlanixState_QuadBlow::Enter_State(void* pArg)
 
 void CGlanixState_QuadBlow::Tick_State(_float fTimeDelta)
 {
+	__super::Tick_State(fTimeDelta);
+
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
 		//_float fWaitTime = 2.f;

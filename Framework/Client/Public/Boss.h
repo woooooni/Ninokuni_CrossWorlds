@@ -46,8 +46,12 @@ public:
 	CHierarchyNode* Get_Socket(const wstring& strSocketName);
 	const MONSTER_STAT& Get_Stat() { return m_tStat; }
 
+	_bool	Get_IsRage() { return m_bIsRage; }
+	void	Set_IsRage(_bool bIsRage) { m_bIsRage = bIsRage; }
+
 public:
 	virtual void On_Damaged(const COLLISION_INFO& tInfo);
+	virtual void Set_SkillTree() {};
 
 private:
 	virtual HRESULT Ready_Components();
@@ -58,10 +62,8 @@ private:
 	void LookAt_DamagedObject(CGameObject* pAttacker);
 	void Play_DamagedSound();
 
-	/* 임시 변수 */
 protected:
-	_bool m_bIsSpawn = false;
-	_bool m_bIsStart = false;
+	_bool	m_bIsRage = false;
 
 public:
 	virtual void Free() override;

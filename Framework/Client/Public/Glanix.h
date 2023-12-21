@@ -13,6 +13,7 @@ public:
 		GLANIX_CHARGE, GLANIX_SNOWBALL, GLANIX_SPINBOMBBOMB,
 		GLANIX_RAGE,
 		GLANIX_TURN,
+		GLANIX_DEAD,
 		GLANIX_END
 	};
 
@@ -36,6 +37,7 @@ public:
 
 public:
 	virtual void On_Damaged(const COLLISION_INFO& tInfo) override;
+	virtual void Set_SkillTree() override;
 
 private:
 	virtual HRESULT Ready_Components();

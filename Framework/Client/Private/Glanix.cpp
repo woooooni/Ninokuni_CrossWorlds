@@ -18,7 +18,11 @@
 #include "GlanixState_SnowBall.h"
 #include "GlanixState_SpinBombBomb.h"
 
+#include "GlanixState_Rage.h"
+
 #include "GlanixState_Turn.h"
+
+#include "GlanixState_Dead.h"
 
 CGlanix::CGlanix(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
 	: CBoss(pDevice, pContext, strObjectTag, tStat)
@@ -65,6 +69,13 @@ HRESULT CGlanix::Initialize(void* pArg)
 
 void CGlanix::Tick(_float fTimeDelta)
 {
+	/* юс╫ц */
+	if (KEY_TAP(KEY::Z))
+		m_tStat.fHp -= 600.f;
+
+	if (KEY_TAP(KEY::B))
+		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND] = !m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND];
+
 	m_pStateCom->Tick_State(fTimeDelta);
 
 	__super::Tick(fTimeDelta);
@@ -106,6 +117,16 @@ void CGlanix::Collision_Exit(const COLLISION_INFO& tInfo)
 void CGlanix::On_Damaged(const COLLISION_INFO& tInfo)
 {
 	__super::On_Damaged(tInfo);
+}
+
+void CGlanix::Set_SkillTree()
+{
+	map<_uint, CState*> pStates = m_pStateCom->Get_States();
+
+	for (auto& iter : pStates)
+	{
+		dynamic_cast<CGlanixState_Base*>(iter.second)->Init_Pattern();
+	}
 }
 
 HRESULT CGlanix::Ready_Components()
@@ -165,8 +186,9 @@ HRESULT CGlanix::Ready_Components()
 	
 	m_pStateCom->Set_Owner(this);
 
-
-
+	/* For. Disslove Texture */
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Dissolve"), TEXT("Com_DissolveTexture"), (CComponent**)&m_pDissoveTexture)))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -228,11 +250,20 @@ HRESULT CGlanix::Ready_States()
 	m_pStateCom->Add_State(GLANIX_SPINBOMBBOMB, CGlanixState_SpinBombBomb::Create(m_pStateCom, strAnimationName));
 
 	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_BossSkillRage");
+	m_pStateCom->Add_State(GLANIX_RAGE, CGlanixState_Rage::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_RightTurn");
 	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_RightTurn180");
 	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_LeftTurn");
 	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_LeftTurn180");
 	m_pStateCom->Add_State(GLANIX_TURN, CGlanixState_Turn::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_Death");
+	m_pStateCom->Add_State(GLANIX_DEAD, CGlanixState_Dead::Create(m_pStateCom, strAnimationName));
+
 
 	m_pStateCom->Change_State(GLANIX_SPAWN);
 

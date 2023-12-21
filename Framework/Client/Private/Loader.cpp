@@ -31,6 +31,7 @@
 #include "Glanix.h"
 #include "Baobam_Water.h"
 #include "Shadow_Thief.h"
+#include "IceBearMan.h"
 #include "PumpkinCandle.h"
 #include "Clown.h"
 #include "Clown_Wizard.h"
@@ -235,6 +236,8 @@ HRESULT CLoader::Loading_For_Level_Test()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Shadow_Thief", CShadow_Thief::Create(m_pDevice, m_pContext, TEXT("Shadow_Thief"), statDesc), LAYER_MONSTER)))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_IceBearMan", CIceBearMan::Create(m_pDevice, m_pContext, TEXT("IceBearMan"), statDesc), LAYER_MONSTER)))
+		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_PumpkinCandle", CPumpkinCandle::Create(m_pDevice, m_pContext, TEXT("PumpkinCandle"), statDesc), LAYER_MONSTER)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Clown", CClown::Create(m_pDevice, m_pContext, TEXT("Clown"), statDesc), LAYER_MONSTER)))
@@ -262,6 +265,9 @@ HRESULT CLoader::Loading_For_Level_Test()
 		return E_FAIL;
 
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Shadow_Thief", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Ice/Shadow_Thief/", L"Shadow_Thief")))
+		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_IceBearMan", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Ice/IceBearMan/", L"IceBearMan")))
 		return E_FAIL;
 
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_PumpkinCandle", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Witch/PumpkinCandle/", L"PumpkinCandle")))
