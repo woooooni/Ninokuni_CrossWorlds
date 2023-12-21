@@ -2,8 +2,7 @@
 #include "..\Public\Loader.h"
 #include "GameInstance.h"
 #include "BackGround.h"
-#include "Camera_Tool.h"
-#include "Camera_Main.h"
+
 #include "FileUtils.h"
 #include "Sword.h"
 
@@ -419,12 +418,12 @@ HRESULT CLoader::Loading_For_Level_Tool()
 	/*if (FAILED(GI->Import_Model_Data(LEVEL_PARTS, L"Prototype_Component_Model_SwordMan_Body_Picnic", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Witch/Baobam_Dark/", L"Baobam_Dark")))
 		return E_FAIL;*/
 
-	/*if (FAILED(Loading_Proto_Parts_Model(L"../Bin/Resources/AnimModel/Character/SwordMan/")))
-		return E_FAIL;*/
+  	if (FAILED(Loading_Proto_Parts_Model(L"../Bin/Export/AnimModel/Character/SwordMan/")))
+		return E_FAIL;
 
 
-	/*if(FAILED(CPart_Manager::GetInstance()->Reserve_Manager(GI->Get_Device(), GI->Get_Context())))
-		return E_FAIL;*/
+	if(FAILED(CPart_Manager::GetInstance()->Reserve_Manager(GI->Get_Device(), GI->Get_Context())))
+		return E_FAIL;
 
 
 #pragma endregion
