@@ -40,6 +40,7 @@ public:
     HRESULT Add_Prototype(_uint iLevelIndex, const wstring& strProtoTypeTag, class CComponent* pPrototype);
     class CComponent* Clone_Component(_uint iLevelIndex, const wstring& strProtoTypeTag, class CGameObject* pOwner = nullptr, void* pArg = nullptr);
     class CComponent* Find_Prototype_Component(_uint iLevelIndex, const wstring& strProtoTypeTag);
+    map<const wstring, class CComponent*>& Find_Prototype_Components(_uint iLevelIndex);
     HRESULT Check_Prototype(_uint iLevelIndex, const wstring& strProtoTypeTag);
 
 private:

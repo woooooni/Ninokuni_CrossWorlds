@@ -343,6 +343,12 @@ CComponent* CGameInstance::Find_Prototype_Component(_uint iLevelIndex, const wst
 	return m_pComponent_Manager->Find_Prototype_Component(iLevelIndex, strProtoTypeTag);
 }
 
+map<const wstring, CComponent*>& CGameInstance::Find_Prototype_Components(_uint iLevelIndex)
+{
+	return m_pComponent_Manager->Find_Prototype_Components(iLevelIndex);
+}
+
+
 CComponent* CGameInstance::Clone_Component(_uint iLevelIndex, const wstring& strProtoTypeTag, CGameObject* pOwner, void* pArg)
 {
 	if (nullptr == m_pComponent_Manager)

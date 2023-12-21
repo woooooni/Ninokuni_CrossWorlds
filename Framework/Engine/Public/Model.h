@@ -83,12 +83,9 @@ public:
 
 	HRESULT LateTick(_float fTimeDelta); /* 모델의 애니메이션 키프레임 업데이트 (수업 코드에서의 PlayAnimation() 함수?) */
 
-	
-	HRESULT Bind_KeyFrame(class CShader* pShader);
 	HRESULT SetUp_OnShader(class CShader* pShader, _uint iMaterialIndex, aiTextureType eTextureType, const char* pConstantName);
 	HRESULT SetUp_VTF(class CShader* pShader);
 	HRESULT Render(class CShader* pShader, _uint iMeshIndex, _uint iPassIndex = 0);
-	HRESULT Render_Part(class CShader* pShader, _uint iMeshIndex, _uint iPassIndex = 0);
 	HRESULT Render_Instancing(class CShader* pShader, _uint iMeshIndex, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, _uint iPassIndex = 0);
 #pragma endregion
 

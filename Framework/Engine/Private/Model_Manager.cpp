@@ -111,6 +111,9 @@ HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel, const wstring str
 	if (nullptr == pModel || CModel::TYPE::TYPE_ANIM != pModel->Get_ModelType())
 		return E_FAIL;
 
+	if (0 == pModel->Get_Animations().size())
+		return S_OK;
+
 	ID3D11ShaderResourceView* pSrvCopy = Find_Model_Vtf(pModel->Get_Name());
 	if(nullptr != pSrvCopy && 99 != GI->Get_CurrentLevel())
 	{
@@ -402,7 +405,7 @@ HRESULT CModel_Manager::Import_Model_Data_From_Bin_In_Tool(_uint iLevelIndex, co
 
 	XMStoreFloat4x4(&pModel->m_PivotMatrix, XMLoadFloat4x4(&m_PivotMatrix));
 
-	if (FAILED(Import_Mesh(strFinalFolderPath, pModel)))
+	if (FAILED(Import_Mesh(strFinalFolderPath, pModel, eType)))
 	{
 		MSG_BOX("Import_Mesh Failed.");
 		Safe_Release(pModel);
@@ -487,7 +490,7 @@ HRESULT CModel_Manager::Import_Model_Data_From_Bin_In_Game(_uint iLevelIndex, co
 
 	XMStoreFloat4x4(&pModel->m_PivotMatrix, XMLoadFloat4x4(&m_PivotMatrix));
 
-	if (FAILED(Import_Mesh(strFinalFolderPath, pModel)))
+	if (FAILED(Import_Mesh(strFinalFolderPath, pModel, eType)))
 	{
 		MSG_BOX("Import_Mesh Failed.");
 		Safe_Release(pModel);
@@ -1155,7 +1158,7 @@ const _bool	CModel_Manager::Find_AnimationSocketTransform(const wstring strModel
 	return true;
 }
 
-HRESULT CModel_Manager::Import_Mesh(const wstring strFinalPath, CModel* pModel)
+HRESULT CModel_Manager::Import_Mesh(const wstring strFinalPath, CModel* pModel, _uint eModelType)
 {
 	wstring strMeshFilePath = strFinalPath + L".mesh";
 	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
@@ -1163,7 +1166,8 @@ HRESULT CModel_Manager::Import_Mesh(const wstring strFinalPath, CModel* pModel)
 
 	_uint iAnimationCount = File->Read<_uint>();
 
-	pModel->m_eModelType = iAnimationCount > 0 ? CModel::TYPE::TYPE_ANIM : CModel::TYPE::TYPE_NONANIM;
+	pModel->m_eModelType = CModel::TYPE(eModelType);
+	// pModel->m_eModelType = iAnimationCount > 0 ? CModel::TYPE::TYPE_ANIM : CModel::TYPE::TYPE_NONANIM;
 	pModel->m_iNumAnimations = iAnimationCount;
 
 	/* »À ¸¸µé±â */
@@ -1191,7 +1195,7 @@ HRESULT CModel_Manager::Import_Mesh(const wstring strFinalPath, CModel* pModel)
 	pModel->m_iNumMeshes = File->Read<_uint>();
 	for (_uint i = 0; i < pModel->m_iNumMeshes; ++i)
 	{
-		CMesh* Mesh = CMesh::Create_Bin(m_pDevice, m_pContext, pModel->m_eModelType, XMLoadFloat4x4(&pModel->m_PivotMatrix));
+		CMesh* Mesh = CMesh::Create_Bin(m_pDevice, m_pContext, CModel::TYPE(eModelType), XMLoadFloat4x4(&pModel->m_PivotMatrix));
 		
 		Mesh->m_strName =CUtils::ToWString(File->Read<string>());
 		File->Read<_uint>(Mesh->m_iMaterialIndex);

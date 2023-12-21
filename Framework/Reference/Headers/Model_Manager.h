@@ -25,7 +25,7 @@ public:
 	HRESULT Export_Model_Data_FromPath(_uint eType, wstring strFolderPath); 
 	
 private:
-	HRESULT Import_Mesh(const wstring strFinalPath, class CModel* pModel);
+	HRESULT Import_Mesh(const wstring strFinalPath, class CModel* pModel, _uint eModelType);
 	HRESULT Import_Material(const wstring strFinalPath, const wstring strFolderPath, class CModel* pModel);
 	HRESULT Import_Animation(const wstring strFinalPath, class CModel* pModel);
 	HRESULT Import_Animation_KeyFrameSpeed(const wstring strFinalPath, class CModel* pModel);

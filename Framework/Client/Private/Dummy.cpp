@@ -88,8 +88,8 @@ HRESULT CDummy::Render()
 	/* ÄÚ½ºÆ¬ ÀÛ¾÷½Ã */
 	if (m_bCostumeMode)
 	{
-		m_pModelCom->Bind_KeyFrame(pShader);
-
+		if (FAILED(m_pModelCom->SetUp_VTF(pShader)))
+			return E_FAIL;
 		for (size_t i = 0; i < PART_TYPE::PART_END; i++)
 		{
 			if (nullptr == m_pPart[i])
@@ -102,7 +102,7 @@ HRESULT CDummy::Render()
 				if (FAILED(m_pPart[i]->SetUp_OnShader(pShader, m_pPart[i]->Get_MaterialIndex(j), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 					return E_FAIL;
 
-				if (FAILED(m_pPart[i]->Render_Part(pShader, j)))
+				if (FAILED(m_pPart[i]->Render(pShader, j)))
 					return E_FAIL;
 			}
 		}
@@ -112,6 +112,12 @@ HRESULT CDummy::Render()
 
 	/* ÄÚ½ºÆ¬ ÀÛ¾÷ ¾Æ´Ò½Ã */
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+	if (0 < m_pModelCom->Get_Animations().size() && m_pModelCom->Get_ModelType() == CModel::TYPE_ANIM)
+	{
+		if (FAILED(m_pModelCom->SetUp_VTF(pShader)))
+			return E_FAIL;
+	}
 
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{
