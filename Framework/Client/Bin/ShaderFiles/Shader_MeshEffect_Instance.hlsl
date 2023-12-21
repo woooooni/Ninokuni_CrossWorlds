@@ -5,6 +5,9 @@ matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 Texture2D	g_DiffuseTexture;
 Texture2D	g_AlphaTexture;
 
+float       g_fAlpha_Discard;
+float3      g_fBlack_Discard;
+
 float       g_fBlurPower = 0.f;
 struct EffectDesc
 {
@@ -118,13 +121,13 @@ PS_OUT PS_DEFAULT(PS_IN In)
 	}
 
 	Out.vDiffuse = vector(g_EffectDesc[In.iInstanceID].g_fAdditiveDiffuseColor.rgb, g_EffectDesc[In.iInstanceID].g_fAlpha);
-	if (0 == Out.vDiffuse.a)
+	if (Out.vDiffuse.a <= g_fAlpha_Discard)
 		discard;
 
 	Out.vBrightness = CalcBrightness(Out.vDiffuse, In.iInstanceID);
-	Out.vBlurPower = vector(g_fBlurPower / 100.f, 0.f, 0.f, 1.f);
-	return Out;
+	Out.vBlurPower  = vector(g_fBlurPower / 100.f, 0.f, 0.f, 1.f);
 
+	return Out;
 };
 
 
@@ -139,10 +142,9 @@ PS_OUT PS_NO_ALPHA_WITH_DIFFUSE(PS_IN In)
 	}
 
 	vector vTextureDiffuse = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
-	vector vAdditiveColor = vector(g_EffectDesc[In.iInstanceID].g_fAdditiveDiffuseColor.rgb, g_EffectDesc[In.iInstanceID].g_fAlpha);
+	vector vAdditiveColor  = vector(g_EffectDesc[In.iInstanceID].g_fAdditiveDiffuseColor.rgb, g_EffectDesc[In.iInstanceID].g_fAlpha);
 
-
-	if ((vTextureDiffuse.r <= 0.01f) && (vTextureDiffuse.g <= 0.01f) && (vTextureDiffuse.b <= 0.01f))
+	if ((vTextureDiffuse.r <= g_fBlack_Discard.x) && (vTextureDiffuse.g <= g_fBlack_Discard.y) && (vTextureDiffuse.b <= g_fBlack_Discard.z))
 		discard;
 
 	vTextureDiffuse.a = 0.f;
@@ -152,7 +154,7 @@ PS_OUT PS_NO_ALPHA_WITH_DIFFUSE(PS_IN In)
 	vector vMtrlColor = vector(vDiffuseColor.rgb, g_EffectDesc[In.iInstanceID].g_fAlpha);
 	Out.vDiffuse = vMtrlColor;
 
-	if (0 == Out.vDiffuse.a)
+	if (Out.vDiffuse.a <= g_fAlpha_Discard)
 		discard;
 
 	Out.vBrightness = CalcBrightness(Out.vDiffuse, In.iInstanceID);
@@ -172,13 +174,12 @@ PS_OUT PS_NO_DIFFUSE_WITH_ALPHA(PS_IN In)
 	}
 
 	vector vTextureAlpha = g_AlphaTexture.Sample(LinearSampler, In.vTexUV);
-
-	if ((vTextureAlpha.r <= 0.01f) && (vTextureAlpha.g <= 0.01f) && (vTextureAlpha.b <= 0.01f))
+	if ((vTextureAlpha.r <= g_fBlack_Discard.x) && (vTextureAlpha.g <= g_fBlack_Discard.y) && (vTextureAlpha.b <= g_fBlack_Discard.z))
 		discard;
 
 	Out.vDiffuse = vector(g_EffectDesc[In.iInstanceID].g_fAdditiveDiffuseColor.rgb, g_EffectDesc[In.iInstanceID].g_fAlpha);
 
-	if (0 == Out.vDiffuse.a)
+	if (Out.vDiffuse.a <= g_fAlpha_Discard)
 		discard;
 
 	Out.vBrightness = CalcBrightness(Out.vDiffuse, In.iInstanceID);
@@ -199,11 +200,10 @@ PS_OUT PS_BOTH(PS_IN In)
 	}
 
 	vector vTextureDiffuse = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
-	vector vTextureAlpha = g_AlphaTexture.Sample(LinearSampler, In.vTexUV);
-	vector vAdditiveColor = vector(g_EffectDesc[In.iInstanceID].g_fAdditiveDiffuseColor.rgb, g_EffectDesc[In.iInstanceID].g_fAlpha);
+	vector vTextureAlpha   = g_AlphaTexture.Sample(LinearSampler, In.vTexUV);
+	vector vAdditiveColor  = vector(g_EffectDesc[In.iInstanceID].g_fAdditiveDiffuseColor.rgb, g_EffectDesc[In.iInstanceID].g_fAlpha);
 
-
-	if (vTextureAlpha.r <= 0.1f && vTextureAlpha.g <= 0.1f && vTextureAlpha.b <= 0.1f)
+	if ((vTextureDiffuse.r <= g_fBlack_Discard.x) && (vTextureDiffuse.g <= g_fBlack_Discard.y) && (vTextureDiffuse.b <= g_fBlack_Discard.z))
 		discard;
 
 	vector vDiffuseColor = vTextureDiffuse + vAdditiveColor;
@@ -214,7 +214,7 @@ PS_OUT PS_BOTH(PS_IN In)
 	vector vMtrlColor = vector(vDiffuseColor.rgb, g_EffectDesc[In.iInstanceID].g_fAlpha);
 	Out.vDiffuse = vMtrlColor;
 
-	if (0 == Out.vDiffuse.a)
+	if (Out.vDiffuse.a <= g_fAlpha_Discard)
 		discard;
 
 	Out.vBrightness = CalcBrightness(Out.vDiffuse, In.iInstanceID);

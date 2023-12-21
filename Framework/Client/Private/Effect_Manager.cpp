@@ -63,7 +63,7 @@ HRESULT CEffect_Manager::Generate_Effect(const wstring& strEffectName, _matrix R
 
 
 	pEffect->Set_Owner(pOwner);
-	pEffect->Set_DeletionTime(fEffectDeletionTime);
+	//pEffect->Set_DeletionTime(fEffectDeletionTime);
 
 
 	CTransform* pTransform = pEffect->Get_Component<CTransform>(L"Com_Transform");

@@ -70,7 +70,7 @@ public:
 		_bool bVelocityChangeRandom = false;
 		_float2 fVelocityChangeTime = _float2(1.f, 5.f);
 
-		_bool bVelocityLoop   = false;
+		_bool bVelocityLoop = false;
 		_uint iVelocityCountCur = 0;
 		_uint iVelocityCountMax = 2;
 

@@ -49,18 +49,6 @@ private:
 	_float m_fEffectRange[3];
 	_float m_fEffectRangeDistance[2];
 
-	_float m_fEffectScaleStart[2];
-	_float m_fEffectScaleDir[3];
-
-	_float m_fEffectMoveDir[3];
-
-	_float m_fEffectRotationDir[3];
-
-	_float m_ffEffectUVIndex[2];
-	_float m_ffEffectUVMaxCount[2];
-
-	_float m_fEffectUVFlow[2];
-
 	char m_cModelName[MAX_PATH] = { "Prototype_Component_Model_" };
 	const char* m_cFolderName[22] = 
 	{ "Aura", "Crack", "Decal", "Fire", "Flare", 
@@ -70,6 +58,9 @@ private:
 		"Wind", "None" };
 	_int m_iDiffuseFolderIndex = { 21 };
 	_int m_iAlphaFolderIndex   = { 21 };
+
+	_float m_ffEffectUVIndex[2];
+	_float m_ffEffectUVMaxCount[2];
 
 	_float m_fAlphaStart[2];
 	_float m_fAlphaSpeed[2];
