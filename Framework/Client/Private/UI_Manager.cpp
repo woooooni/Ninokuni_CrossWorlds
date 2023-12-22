@@ -16,6 +16,7 @@
 #include "UI_BtnBack.h"
 #include "UI_BtnClose.h"
 #include "UI_MainMenu.h"
+#include "UI_Announced.h"
 #include "UI_BtnAccept.h"
 #include "UI_PlayerInfo.h"
 #include "UI_PopupQuest.h"
@@ -38,12 +39,14 @@
 #include "UI_Setting_Window.h"
 #include "UI_BtnShowSetting.h"
 #include "UI_WindowWorldMap.h"
+#include "UI_QuickSlot_Item.h"
 #include "UI_Costume_LineBox.h"
 #include "UI_Dialog_Portrait.h"
 #include "UI_Loading_Imajinn.h"
 #include "UI_Setting_Section.h"
 #include "UI_SubMenu_Imajinn.h"
 #include "UI_BtnChangeCamera.h"
+#include "UI_Costume_ItemSlot.h"
 #include "UI_Loading_MainLogo.h"
 #include "UI_Btn_WorldMapIcon.h"
 #include "UI_Dialog_MiniWindow.h"
@@ -53,6 +56,8 @@
 #include "UI_SubMenu_Equipment.h"
 #include "UI_Setting_BtnVolume.h"
 #include "UI_Default_BackStars.h"
+#include "UI_Costume_ChangeBtn.h"
+#include "UI_SkillSection_Frame.h"
 #include "UI_Default_Background.h"
 #include "UI_BtnCharacterSelect.h"
 #include "UI_Loading_Background.h"
@@ -72,6 +77,7 @@
 #include "UI_SkillSection_Interaction.h"
 #include "UI_SkillSection_ClassicSkill.h"
 #include "UI_ImajinnSection_Background.h"
+#include "UI_SkillSection_SpecialSkill.h"
 #include "UI_WeaponSection_DefaultWeapon.h"
 #include "UI_SkillSection_BtnInteraction.h"
 
@@ -629,8 +635,8 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	CGameObject* pLevelUp = nullptr;
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
-	UIDesc.fCX = 1000.f * 0.5f;
-	UIDesc.fCY = 481.f * 0.5f;
+	UIDesc.fCX = 1000.f * 0.4f;
+	UIDesc.fCY = 481.f * 0.4f;
 	UIDesc.fX = g_iWinSizeX * 0.5f;
 	UIDesc.fY = g_iWinSizeY * 0.25f;
 
@@ -1687,17 +1693,18 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(m_pCostumeBox);
 
-#pragma end region
+#pragma endregion
 
 #pragma region CLASSIC_SKILLS
 
 	m_ClassicSkill.reserve(3);
+	m_ClassicFrame.reserve(3);
 
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
 	UIDesc.fCX = 256.f * 0.26f;
 	UIDesc.fCY = 256.f * 0.26f;
-	UIDesc.fX = g_iWinSizeX - 248.f;
+	UIDesc.fX = g_iWinSizeX - 245.5f;
 	UIDesc.fY = g_iWinSizeY - 158.f;
 
 	CGameObject* pClassicSkill = nullptr;
@@ -1707,11 +1714,21 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	if (nullptr == pClassicSkill)
 		return E_FAIL;
 	Safe_AddRef(pClassicSkill);
-	// TestCode
-	dynamic_cast<CUI_SkillSection_ClassicSkill*>(pClassicSkill)->Set_SkillType(CHARACTER_TYPE::SWORD_MAN);
 
-	UIDesc.fX = g_iWinSizeX - 220.f;
-	UIDesc.fY = g_iWinSizeY - 230.f;
+	UIDesc.fCX = 256.f * 0.25f;
+	UIDesc.fCY = 256.f * 0.25f;
+	CGameObject* pClassicFrame = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_ClassicSKill_Frame"), &UIDesc, &pClassicFrame)))
+		return E_FAIL;
+	m_ClassicFrame.push_back(dynamic_cast<CUI_SkillSection_Frame*>(pClassicFrame));
+	if (nullptr == pClassicFrame)
+		return E_FAIL;
+	Safe_AddRef(pClassicFrame);
+
+	UIDesc.fCX = 256.f * 0.26f;
+	UIDesc.fCY = 256.f * 0.26f;
+	UIDesc.fX = g_iWinSizeX - 220.5f;
+	UIDesc.fY = g_iWinSizeY - 227.f;
 	pClassicSkill = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SkillSection_Classic_Second"), &UIDesc, &pClassicSkill)))
 		return E_FAIL;
@@ -1719,11 +1736,269 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	if (nullptr == pClassicSkill)
 		return E_FAIL;
 	Safe_AddRef(pClassicSkill);
-	// TestCode
-	dynamic_cast<CUI_SkillSection_ClassicSkill*>(pClassicSkill)->Set_SkillType(CHARACTER_TYPE::SWORD_MAN);
+
+	UIDesc.fCX = 256.f * 0.25f;
+	UIDesc.fCY = 256.f * 0.25f;
+	pClassicFrame = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_ClassicSKill_Frame"), &UIDesc, &pClassicFrame)))
+		return E_FAIL;
+	m_ClassicFrame.push_back(dynamic_cast<CUI_SkillSection_Frame*>(pClassicFrame));
+	if (nullptr == pClassicFrame)
+		return E_FAIL;
+	Safe_AddRef(pClassicFrame);
+
+	UIDesc.fCX = 256.f * 0.26f;
+	UIDesc.fCY = 256.f * 0.26f;
+	UIDesc.fX = g_iWinSizeX - 153.f;
+	UIDesc.fY = g_iWinSizeY - 251.f;
+	pClassicSkill = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SkillSection_Classic_Third"), &UIDesc, &pClassicSkill)))
+		return E_FAIL;
+	m_ClassicSkill.push_back(dynamic_cast<CUI_SkillSection_ClassicSkill*>(pClassicSkill));
+	if (nullptr == pClassicSkill)
+		return E_FAIL;
+	Safe_AddRef(pClassicSkill);
+
+	UIDesc.fCX = 256.f * 0.25f;
+	UIDesc.fCY = 256.f * 0.25f;
+	pClassicFrame = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_ClassicSKill_Frame"), &UIDesc, &pClassicFrame)))
+		return E_FAIL;
+	m_ClassicFrame.push_back(dynamic_cast<CUI_SkillSection_Frame*>(pClassicFrame));
+	if (nullptr == pClassicFrame)
+		return E_FAIL;
+	Safe_AddRef(pClassicFrame);
+
+	//TestCode
+	for (auto& Skill : m_ClassicSkill)
+	{
+		if (nullptr != Skill)
+			Skill->Set_SkillType(CHARACTER_TYPE::SWORD_MAN);
+	}
+	for (auto& Frame : m_ClassicFrame)
+	{
+		if (nullptr != Frame)
+			Frame->Set_ClassicFrameColor(ELEMENTAL_TYPE::FIRE);
+	}
 
 
-#pragma end region
+#pragma endregion
+
+#pragma region SPECIAL_SKILLS
+
+	m_SpecialSkill.reserve(3);
+	m_SpecialFrame.reserve(3);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 256.f * 0.24f;
+	UIDesc.fCY = 256.f * 0.24f;
+	UIDesc.fX = g_iWinSizeX - 147.f;
+	UIDesc.fY = g_iWinSizeY - 60.f;
+
+	CGameObject* pSpecialSkill = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SkillSection_Special_First"), &UIDesc, &pSpecialSkill)))
+		return E_FAIL;
+	m_SpecialSkill.push_back(dynamic_cast<CUI_SkillSection_SpecialSkill*>(pSpecialSkill));
+	if (nullptr == pSpecialSkill)
+		return E_FAIL;
+	Safe_AddRef(pSpecialSkill);
+	CGameObject* pSpecialFrame = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SpecialSKill_Frame_First"), &UIDesc, &pSpecialFrame)))
+		return E_FAIL;
+	m_SpecialFrame.push_back(dynamic_cast<CUI_SkillSection_Frame*>(pSpecialFrame));
+	if (nullptr == pSpecialFrame)
+		return E_FAIL;
+	Safe_AddRef(pSpecialFrame);
+
+	UIDesc.fX = g_iWinSizeX - 81.f;
+	UIDesc.fY = g_iWinSizeY - 89.f;
+	pSpecialSkill = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SkillSection_Special_Second"), &UIDesc, &pSpecialSkill)))
+		return E_FAIL;
+	m_SpecialSkill.push_back(dynamic_cast<CUI_SkillSection_SpecialSkill*>(pSpecialSkill));
+	if (nullptr == pSpecialSkill)
+		return E_FAIL;
+	Safe_AddRef(pSpecialSkill);
+	pSpecialFrame = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SpecialSKill_Frame_Second"), &UIDesc, &pSpecialFrame)))
+		return E_FAIL;
+	m_SpecialFrame.push_back(dynamic_cast<CUI_SkillSection_Frame*>(pSpecialFrame));
+	if (nullptr == pSpecialFrame)
+		return E_FAIL;
+	Safe_AddRef(pSpecialFrame);
+
+	UIDesc.fX = g_iWinSizeX - 56.f;
+	UIDesc.fY = g_iWinSizeY - 153.f;
+	pClassicSkill = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SkillSection_Special_Third"), &UIDesc, &pSpecialSkill)))
+		return E_FAIL;
+	m_SpecialSkill.push_back(dynamic_cast<CUI_SkillSection_SpecialSkill*>(pSpecialSkill));
+	if (nullptr == pSpecialSkill)
+		return E_FAIL;
+	Safe_AddRef(pSpecialSkill);
+	pSpecialFrame = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SpecialSKill_Frame_Third"), &UIDesc, &pSpecialFrame)))
+		return E_FAIL;
+	m_SpecialFrame.push_back(dynamic_cast<CUI_SkillSection_Frame*>(pSpecialFrame));
+	if (nullptr == pSpecialFrame)
+		return E_FAIL;
+	Safe_AddRef(pSpecialFrame);
+
+	//TestCode
+	for (auto& Skill : m_SpecialSkill)
+	{
+		if (nullptr != Skill)
+			Skill->Set_SkillType(CHARACTER_TYPE::SWORD_MAN);
+	}
+	for (auto& Skill : m_SpecialFrame)
+	{
+		if (nullptr != Skill)
+			Skill->Set_SpecialFrameColor(CHARACTER_TYPE::SWORD_MAN);
+	}
+#pragma endregion
+
+#pragma region ITEM_QUICKSLOT
+
+	m_ItemQuickslot.reserve(3);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 73.f * 0.6f;
+	UIDesc.fCY = 73.f * 0.6f;
+	UIDesc.fX = 330.f;
+	UIDesc.fY = 43.f;
+
+	fOffset = 45.f;
+
+	CGameObject* pSlot = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Item_QuickSlot_First"), &UIDesc, &pSlot)))
+		return E_FAIL;
+	m_ItemQuickslot.push_back(dynamic_cast<CUI_QuickSlot_Item*>(pSlot));
+	if (nullptr == pSlot)
+		return E_FAIL;
+	Safe_AddRef(pSlot);
+
+	UIDesc.fX += fOffset;
+	pSlot = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Item_QuickSlot_Second"), &UIDesc, &pSlot)))
+		return E_FAIL;
+	m_ItemQuickslot.push_back(dynamic_cast<CUI_QuickSlot_Item*>(pSlot));
+	if (nullptr == pSlot)
+		return E_FAIL;
+	Safe_AddRef(pSlot);
+
+	UIDesc.fX += fOffset;
+	pSlot = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Item_QuickSlot_Third"), &UIDesc, &pSlot)))
+		return E_FAIL;
+	m_ItemQuickslot.push_back(dynamic_cast<CUI_QuickSlot_Item*>(pSlot));
+	if (nullptr == pSlot)
+		return E_FAIL;
+	Safe_AddRef(pSlot);
+
+#pragma endregion
+
+#pragma region COSTUME_ITEMSLOT
+
+	m_CostumeItem.reserve(3);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 270.f;
+	UIDesc.fCY = 77.f;
+	UIDesc.fX = g_iWinSizeX - 184.f;
+	UIDesc.fY = 210.f;
+
+	fOffset = 77.f;
+
+	pSlot = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Costume_ItemSlot_First"), &UIDesc, &pSlot)))
+		return E_FAIL;
+	m_CostumeItem.push_back(dynamic_cast<CUI_Costume_ItemSlot*>(pSlot));
+	if (nullptr == pSlot)
+		return E_FAIL;
+	Safe_AddRef(pSlot);
+
+	UIDesc.fY += fOffset;
+	pSlot = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Costume_ItemSlot_Second"), &UIDesc, &pSlot)))
+		return E_FAIL;
+	m_CostumeItem.push_back(dynamic_cast<CUI_Costume_ItemSlot*>(pSlot));
+	if (nullptr == pSlot)
+		return E_FAIL;
+	Safe_AddRef(pSlot);
+
+	UIDesc.fY += fOffset;
+	pSlot = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Costume_ItemSlot_Third"), &UIDesc, &pSlot)))
+		return E_FAIL;
+	m_CostumeItem.push_back(dynamic_cast<CUI_Costume_ItemSlot*>(pSlot));
+	if (nullptr == pSlot)
+		return E_FAIL;
+	Safe_AddRef(pSlot);
+
+#pragma endregion
+
+	//m_QuestPopUp
+	m_QuestPopUp.reserve(3);
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 300.f * 0.65f;
+	UIDesc.fCY = 120.f * 0.6f;
+	UIDesc.fX = 175.f;
+	UIDesc.fY = 171.f;
+
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_QuestPopup_Frame_Window"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_QuestPopUp.push_back(dynamic_cast<CUI_PopupQuest*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 300.f * 0.65f;
+	UIDesc.fCY = 32.f * 0.65f;
+	UIDesc.fX = 175.f;
+	UIDesc.fY = 135.f;
+	fOffset = 70.f;
+
+	CGameObject* pFrame = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_QuestPopup_Frame_Top"), &UIDesc, &pFrame)))
+		return E_FAIL;
+	m_QuestPopUp.push_back(dynamic_cast<CUI_PopupQuest*>(pFrame));
+	if (nullptr == pFrame)
+		return E_FAIL;
+	Safe_AddRef(pFrame);
+
+	UIDesc.fY += fOffset;
+
+	pFrame = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_QuestPopup_Frame_Bottom"), &UIDesc, &pFrame)))
+		return E_FAIL;
+	m_QuestPopUp.push_back(dynamic_cast<CUI_PopupQuest*>(pFrame));
+	if (nullptr == pFrame)
+		return E_FAIL;
+	Safe_AddRef(pFrame);
+
+	//Prototype_GameObject_UI_Announced_Camera
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 700.f * 0.7f;
+	UIDesc.fCY = 75.f * 0.7f;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = 135.f;
+
+	CGameObject* pAnnounce = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Announced_Camera"), &UIDesc, &pAnnounce)))
+		return E_FAIL;
+	m_pCameraAnnounce = dynamic_cast<CUI_Announced*>(pAnnounce);
+	if (nullptr == m_pCameraAnnounce)
+		return E_FAIL;
+	Safe_AddRef(m_pCameraAnnounce);
 
 	return S_OK;
 }
@@ -2023,11 +2298,38 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 	if (bOnOff) // On
 	{
 		m_pPlayerStatus->Set_Active(true);
+		for (auto& iter : m_ItemQuickslot)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(true);
+		}
 		m_pBtnShowMenu->Set_Active(true);
 		m_pBtnCamera->Set_Active(true);
 		m_pBtnInven->Set_Active(true);
 		m_pBtnQuest->Set_Active(true);
+
 		m_pSkillBG->Set_Active(true);
+		for (auto& iter : m_ClassicSkill)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(true);
+		}
+		for (auto& iter : m_ClassicFrame)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(true);
+		}
+		for (auto& iter : m_SpecialSkill)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(true);
+		}
+		for (auto& iter : m_SpecialFrame)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(true);
+		}
+
 		m_pImajinnBG->Set_Active(true);
 
 		OnOff_MonsterHP(true);
@@ -2042,12 +2344,41 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 	else // Off
 	{
 		m_pPlayerStatus->Set_Active(false);
+		for (auto& iter : m_ItemQuickslot)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+
 		m_pBtnShowMenu->Set_Active(false);
 		m_pBtnCamera->Set_Active(false);
 		m_pBtnInven->Set_Active(false);
 		m_pBtnQuest->Set_Active(false);
+
 		m_pSkillBG->Set_Active(false);
+		for (auto& iter : m_ClassicSkill)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_ClassicFrame)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_SpecialSkill)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_SpecialFrame)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+
 		m_pImajinnBG->Set_Active(false);
+		m_pCameraAnnounce->Set_Active(false);
 	
 		OnOff_MonsterHP(false);
 
@@ -2057,6 +2388,9 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 			if (nullptr != iter)
 				iter->Set_Active(false);
 		}
+
+		// MiniQuestPopup이 켜져있다면 끈다
+		OnOff_QuestPopup(false);
 	}
 
 	return S_OK;
@@ -2132,6 +2466,28 @@ HRESULT CUI_Manager::OnOff_QuestWindow(_bool bOnOff)
 	else // Off
 	{
 		m_pWindowQuest->Set_Active(false);
+	}
+
+	return S_OK;
+}
+
+HRESULT CUI_Manager::OnOff_QuestPopup(_bool bOnOff)
+{
+	if (bOnOff)
+	{
+		for (auto iter : m_QuestPopUp)
+		{
+			if (iter != nullptr)
+				iter->Set_Active(true);
+		}
+	}
+	else
+	{
+		for (auto iter : m_QuestPopUp)
+		{
+			if (iter != nullptr)
+				iter->Set_Active(false);
+		}
 	}
 
 	return S_OK;
@@ -2438,6 +2794,12 @@ HRESULT CUI_Manager::OnOff_CostumeWindow(_bool bOnOff)
 					iter->Set_Active(true);
 			}
 			m_pCostumeBox->Set_Active(true);
+			// 의상 등 버튼을 누를때 Active가 활성화되도록 우선 수정한다.
+			//for (auto& iter : m_CostumeItem)
+			//{
+			//	if (nullptr != iter)
+			//		iter->Set_Active(true);
+			//}
 
 			m_pTabMenuTitle->Set_TextType(CUI_Text_TabMenu::UI_MENUTITLE::TITLE_COSTUME);
 			m_pTabMenuTitle->Set_Active(true);
@@ -2450,6 +2812,8 @@ HRESULT CUI_Manager::OnOff_CostumeWindow(_bool bOnOff)
 		//OnOff_GamePlaySetting(true);
 		//OnOff_CloseButton(false);
 		m_pTabMenuTitle->Set_Active(false);
+
+		OnOff_CostumeSlot(false);
 
 		m_pCostumeBox->Set_Active(false);
 		for (auto& iter : m_CostumeBtn)
@@ -2465,6 +2829,28 @@ HRESULT CUI_Manager::OnOff_CostumeWindow(_bool bOnOff)
 		m_pDefaultBG->Set_Active(false);
 
 		OnOff_MainMenu(true);
+	}
+
+	return S_OK;
+}
+
+HRESULT CUI_Manager::OnOff_CostumeSlot(_bool bOnOff)
+{
+	if (bOnOff)
+	{
+		for (auto& iter : m_CostumeItem)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(true);
+		}
+	}
+	else
+	{
+		for (auto& iter : m_CostumeItem)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
 	}
 
 	return S_OK;
@@ -2941,6 +3327,9 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		CUI_Costume_Btn::Create(m_pDevice, m_pContext,
 			CUI_Costume_Btn::UI_COSTUMEBTN_TYPE::COSTUMEBTN_CLICKED, CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_WEAPON), LAYER_UI)))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Costume_ChangeBtn"),
+		CUI_Costume_ChangeBtn::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Common_BackBtn"),
 		CUI_BtnBack::Create(m_pDevice, m_pContext), LAYER_UI)))
@@ -2955,6 +3344,70 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillSection_Classic_Third"),
 		CUI_SkillSection_ClassicSkill::Create(m_pDevice, m_pContext, CUI_SkillSection_ClassicSkill::UI_CLASSICSKILL::SKILL_THIRD), LAYER_UI)))
 		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillSection_Special_First"),
+		CUI_SkillSection_SpecialSkill::Create(m_pDevice, m_pContext, CUI_SkillSection_SpecialSkill::UI_SPECIALSKILL::SKILL_FIRST), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillSection_Special_Second"),
+		CUI_SkillSection_SpecialSkill::Create(m_pDevice, m_pContext, CUI_SkillSection_SpecialSkill::UI_SPECIALSKILL::SKILL_SECOND), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillSection_Special_Third"),
+		CUI_SkillSection_SpecialSkill::Create(m_pDevice, m_pContext, CUI_SkillSection_SpecialSkill::UI_SPECIALSKILL::SKILL_THIRD), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Item_QuickSlot_First"),
+		CUI_QuickSlot_Item::Create(m_pDevice, m_pContext, CUI_QuickSlot_Item::UI_QUICKSLOT_ITEM::QUICKITEM_FIRST), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Item_QuickSlot_Second"),
+		CUI_QuickSlot_Item::Create(m_pDevice, m_pContext, CUI_QuickSlot_Item::UI_QUICKSLOT_ITEM::QUICKITEM_SECOND), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Item_QuickSlot_Third"),
+		CUI_QuickSlot_Item::Create(m_pDevice, m_pContext, CUI_QuickSlot_Item::UI_QUICKSLOT_ITEM::QUICKITEM_THIRD), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Costume_ItemSlot_First"),
+		CUI_Costume_ItemSlot::Create(m_pDevice, m_pContext, CUI_Costume_ItemSlot::UI_COSTUME_SLOT::COSTUMESLOT_FIRST), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Costume_ItemSlot_Second"),
+		CUI_Costume_ItemSlot::Create(m_pDevice, m_pContext, CUI_Costume_ItemSlot::UI_COSTUME_SLOT::COSTUMESLOT_SECOND), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Costume_ItemSlot_Third"),
+		CUI_Costume_ItemSlot::Create(m_pDevice, m_pContext, CUI_Costume_ItemSlot::UI_COSTUME_SLOT::COSTUMESLOT_THIRD), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_QuestPopup_Frame_Top"),
+		CUI_PopupQuest::Create(m_pDevice, m_pContext, CUI_PopupQuest::UI_QUESTPOPUP::POPUPFRAME_TOP), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_QuestPopup_Frame_Bottom"),
+		CUI_PopupQuest::Create(m_pDevice, m_pContext, CUI_PopupQuest::UI_QUESTPOPUP::POPUPFRAME_BOTTOM), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_QuestPopup_Frame_Window"),
+		CUI_PopupQuest::Create(m_pDevice, m_pContext, CUI_PopupQuest::UI_QUESTPOPUP::POPUPWINDOW), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_ClassicSKill_Frame"),
+		CUI_SkillSection_Frame::Create(m_pDevice, m_pContext, CUI_SkillSection_Frame::UI_SKILLFRAME_TYPE::FRAME_CLASSIC), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SpecialSKill_Frame_First"),
+		CUI_SkillSection_Frame::Create(m_pDevice, m_pContext,
+			CUI_SkillSection_Frame::UI_SKILLFRAME_TYPE::FRAME_SPECIAL,
+			CUI_SkillSection_Frame::UI_SPECIALSKILL_TYPE::FRAME_FIRST), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SpecialSKill_Frame_Second"),
+		CUI_SkillSection_Frame::Create(m_pDevice, m_pContext,
+			CUI_SkillSection_Frame::UI_SKILLFRAME_TYPE::FRAME_SPECIAL,
+			CUI_SkillSection_Frame::UI_SPECIALSKILL_TYPE::FRAME_SECOND), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SpecialSKill_Frame_Third"),
+		CUI_SkillSection_Frame::Create(m_pDevice, m_pContext,
+			CUI_SkillSection_Frame::UI_SKILLFRAME_TYPE::FRAME_SPECIAL,
+			CUI_SkillSection_Frame::UI_SPECIALSKILL_TYPE::FRAME_THIRD), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Announced_Camera"),
+		CUI_Announced::Create(m_pDevice, m_pContext, CUI_Announced::ANNOUNCE_CAMERA), LAYER_UI)))
+		return E_FAIL;
+
 
 	return S_OK;
 }
@@ -3183,6 +3636,7 @@ void CUI_Manager::Free()
 	Safe_Release(m_pTabMenuTitle);
 
 	Safe_Release(m_pCostumeBox);
+	Safe_Release(m_pCameraAnnounce);
 
 	for (auto& pBasic : m_Basic)
 		Safe_Release(pBasic);
@@ -3247,6 +3701,30 @@ void CUI_Manager::Free()
 	for (auto& pClassic : m_ClassicSkill)
 		Safe_Release(pClassic);
 	m_ClassicSkill.clear();
+
+	for (auto& pSpecial : m_SpecialSkill)
+		Safe_Release(pSpecial);
+	m_SpecialSkill.clear();
+
+	for (auto& pSlot : m_ItemQuickslot)
+		Safe_Release(pSlot);
+	m_ItemQuickslot.clear();
+
+	for (auto& pItemSlot : m_CostumeItem)
+		Safe_Release(pItemSlot);
+	m_CostumeItem.clear();
+
+	for (auto& pPopup : m_QuestPopUp)
+		Safe_Release(pPopup);
+	m_QuestPopUp.clear();
+
+	for (auto& pFrame : m_ClassicFrame)
+		Safe_Release(pFrame);
+	m_ClassicFrame.clear();
+
+	for (auto& pFrame : m_SpecialFrame)
+		Safe_Release(pFrame);
+	m_SpecialFrame.clear();
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

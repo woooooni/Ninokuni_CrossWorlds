@@ -3,7 +3,9 @@
 matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 Texture2D	g_DiffuseTexture;
 Texture2D	g_DepthTexture;
+Texture2D	g_MaskTexture;
 
+float4		g_vDiffuseColor = { 0.1f, 0.1f, 0.1f, 1.f };
 float		g_Alpha = 1.f;
 float		g_Time;
 
@@ -129,7 +131,29 @@ PS_OUT PS_MAIN_LOADING(PS_IN In)
 	}
 	else
 	{
-		Out.vColor = float4(0.0, 0.0, 0.0, 0.0);
+		discard;
+		//Out.vColor = float4(0.0, 0.0, 0.0, 0.0);
+	}
+
+	return Out;
+}
+
+PS_OUT PS_USING_MASK(PS_IN In)
+{
+	PS_OUT Out = (PS_OUT)0;
+
+	float4 vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV); // Diffuse Tex Sampling
+	float4 vMaskColor = g_MaskTexture.Sample(LinearSampler, In.vTexUV); // Mask Tex Sampling
+
+	if (vMaskColor.r > 0.9f && vMaskColor.g > 0.9f && vMaskColor.b > 0.9f)
+	{
+		Out.vColor = saturate(vColor);
+		if (Out.vColor.a < 0.1f)
+			discard;
+	}
+	else
+	{
+		discard;
 	}
 
 	return Out;
@@ -190,5 +214,16 @@ technique11 DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_LOADING();
+	}
+
+	pass UsingMaskPass // 5
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_None, 0);
+		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_USING_MASK();
 	}
 }

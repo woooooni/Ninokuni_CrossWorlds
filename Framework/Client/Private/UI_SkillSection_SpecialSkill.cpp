@@ -1,21 +1,21 @@
 #include "stdafx.h"
-#include "UI_SkillSection_ClassicSkill.h"
+#include "UI_SkillSection_SpecialSkill.h"
 #include "GameInstance.h"
 #include "UI_Manager.h"
 
-CUI_SkillSection_ClassicSkill::CUI_SkillSection_ClassicSkill(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_CLASSICSKILL eType)
-	: CUI(pDevice, pContext, L"UI_SkillSection_ClassicSkill")
+CUI_SkillSection_SpecialSkill::CUI_SkillSection_SpecialSkill(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_SPECIALSKILL eType)
+	: CUI(pDevice, pContext, L"UI_SkillSection_SpecialSkill")
 	, m_eType(eType)
 {
 }
 
-CUI_SkillSection_ClassicSkill::CUI_SkillSection_ClassicSkill(const CUI_SkillSection_ClassicSkill& rhs)
+CUI_SkillSection_SpecialSkill::CUI_SkillSection_SpecialSkill(const CUI_SkillSection_SpecialSkill& rhs)
 	: CUI(rhs)
 	, m_eType(rhs.m_eType)
 {
 }
 
-void CUI_SkillSection_ClassicSkill::Set_SkillType(CHARACTER_TYPE eType)
+void CUI_SkillSection_SpecialSkill::Set_SkillType(CHARACTER_TYPE eType)
 {
 //	if (m_ePlayerType == eType)
 //		return;
@@ -25,38 +25,38 @@ void CUI_SkillSection_ClassicSkill::Set_SkillType(CHARACTER_TYPE eType)
 	switch (m_ePlayerType)
 	{
 	case CHARACTER_TYPE::SWORD_MAN: // 0, 1, 2
-		if (UI_CLASSICSKILL::SKILL_FIRST == m_eType)
+		if (UI_SPECIALSKILL::SKILL_FIRST == m_eType)
 			m_iTextureIndex = 0;
-		if (UI_CLASSICSKILL::SKILL_SECOND == m_eType)
+		if (UI_SPECIALSKILL::SKILL_SECOND == m_eType)
 			m_iTextureIndex = 1;
-		if (UI_CLASSICSKILL::SKILL_THIRD == m_eType)
+		if (UI_SPECIALSKILL::SKILL_THIRD == m_eType)
 			m_iTextureIndex = 2;
 		break;
 
 	case CHARACTER_TYPE::DESTROYER: // 3, 4, 5
-		if (UI_CLASSICSKILL::SKILL_FIRST == m_eType)
+		if (UI_SPECIALSKILL::SKILL_FIRST == m_eType)
 			m_iTextureIndex = 3;
-		if (UI_CLASSICSKILL::SKILL_SECOND == m_eType)
+		if (UI_SPECIALSKILL::SKILL_SECOND == m_eType)
 			m_iTextureIndex = 4;
-		if (UI_CLASSICSKILL::SKILL_THIRD == m_eType)
+		if (UI_SPECIALSKILL::SKILL_THIRD == m_eType)
 			m_iTextureIndex = 5;
 		break;
 
 	case CHARACTER_TYPE::ENGINEER: // 6, 7, 8
-		if (UI_CLASSICSKILL::SKILL_FIRST == m_eType)
+		if (UI_SPECIALSKILL::SKILL_FIRST == m_eType)
 			m_iTextureIndex = 6;
-		if (UI_CLASSICSKILL::SKILL_SECOND == m_eType)
+		if (UI_SPECIALSKILL::SKILL_SECOND == m_eType)
 			m_iTextureIndex = 7;
-		if (UI_CLASSICSKILL::SKILL_THIRD == m_eType)
+		if (UI_SPECIALSKILL::SKILL_THIRD == m_eType)
 			m_iTextureIndex = 8;
 		break;
 	}
 
-	m_fOriginCoolTime = 9.f; // Temp
+	m_fOriginCoolTime = 10.f; // Temp
 	m_fCoolTime = m_fOriginCoolTime;
 }
 
-HRESULT CUI_SkillSection_ClassicSkill::Initialize_Prototype()
+HRESULT CUI_SkillSection_SpecialSkill::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
@@ -64,7 +64,7 @@ HRESULT CUI_SkillSection_ClassicSkill::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CUI_SkillSection_ClassicSkill::Initialize(void* pArg)
+HRESULT CUI_SkillSection_SpecialSkill::Initialize(void* pArg)
 {
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
@@ -80,22 +80,22 @@ HRESULT CUI_SkillSection_ClassicSkill::Initialize(void* pArg)
 	switch (m_eType)
 	{
 	case SKILL_FIRST:
-		m_vTextPosition = _float2(g_iWinSizeX - 265.f, g_iWinSizeY - 172.f);
+		m_vTextPosition = _float2(g_iWinSizeX - 166.f, g_iWinSizeY - 73.f);
 		break;
 
 	case SKILL_SECOND:
-		m_vTextPosition = _float2(g_iWinSizeX - 240.f, g_iWinSizeY - 240.f);
+		m_vTextPosition = _float2(g_iWinSizeX - 100.f, g_iWinSizeY - 101.f);
 		break;
 
 	case SKILL_THIRD:
-		m_vTextPosition = _float2(g_iWinSizeX - 174.f, g_iWinSizeY - 265.f);
+		m_vTextPosition = _float2(g_iWinSizeX - 75.f, g_iWinSizeY - 165.f);
 		break;
 	}
 
 	return S_OK;
 }
 
-void CUI_SkillSection_ClassicSkill::Tick(_float fTimeDelta)
+void CUI_SkillSection_SpecialSkill::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
@@ -120,7 +120,7 @@ void CUI_SkillSection_ClassicSkill::Tick(_float fTimeDelta)
 	}
 }
 
-void CUI_SkillSection_ClassicSkill::LateTick(_float fTimeDelta)
+void CUI_SkillSection_SpecialSkill::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
@@ -152,11 +152,12 @@ void CUI_SkillSection_ClassicSkill::LateTick(_float fTimeDelta)
 			}
 		}
 
+
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
 }
 
-HRESULT CUI_SkillSection_ClassicSkill::Render()
+HRESULT CUI_SkillSection_SpecialSkill::Render()
 {
 	if (m_bActive)
 	{
@@ -172,11 +173,11 @@ HRESULT CUI_SkillSection_ClassicSkill::Render()
 	return S_OK;
 }
 
-void CUI_SkillSection_ClassicSkill::On_MouseEnter(_float fTimeDelta)
+void CUI_SkillSection_SpecialSkill::On_MouseEnter(_float fTimeDelta)
 {
 }
 
-void CUI_SkillSection_ClassicSkill::On_Mouse(_float fTimeDelta)
+void CUI_SkillSection_SpecialSkill::On_Mouse(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
@@ -184,31 +185,32 @@ void CUI_SkillSection_ClassicSkill::On_Mouse(_float fTimeDelta)
 	}
 }
 
-void CUI_SkillSection_ClassicSkill::On_MouseExit(_float fTimeDelta)
+void CUI_SkillSection_SpecialSkill::On_MouseExit(_float fTimeDelta)
 {
 }
 
-HRESULT CUI_SkillSection_ClassicSkill::Ready_Components()
+HRESULT CUI_SkillSection_SpecialSkill::Ready_Components()
 {
+	
 	if (FAILED(__super::Ready_Components()))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SkillSection_ClassicSkills"),
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SkillSection_SpecialSkills"),
 		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SkillSection_ClassicSkill_Mask"),
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SkillSection_SpecialSkill_Mask"),
 		TEXT("Com_MaskTexture"), (CComponent**)&m_pMaskTextureCom)))
 		return E_FAIL;
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_CoolTime_MaskTexture"),
 		TEXT("Com_FXTexture"), (CComponent**)&m_pFXTextureCom)))
 		return E_FAIL;
-
+	
 	return S_OK;
 }
 
-HRESULT CUI_SkillSection_ClassicSkill::Ready_State()
+HRESULT CUI_SkillSection_SpecialSkill::Ready_State()
 {
 	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
@@ -217,7 +219,7 @@ HRESULT CUI_SkillSection_ClassicSkill::Ready_State()
 	return S_OK;
 }
 
-HRESULT CUI_SkillSection_ClassicSkill::Bind_ShaderResources()
+HRESULT CUI_SkillSection_SpecialSkill::Bind_ShaderResources()
 {
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
 		return E_FAIL;
@@ -252,7 +254,7 @@ HRESULT CUI_SkillSection_ClassicSkill::Bind_ShaderResources()
 	return S_OK;
 }
 
-void CUI_SkillSection_ClassicSkill::Key_Input(_float fTimeDelta)
+void CUI_SkillSection_SpecialSkill::Key_Input(_float fTimeDelta)
 {
 	if (KEY_TAP(KEY::LBTN))
 	{
@@ -260,33 +262,33 @@ void CUI_SkillSection_ClassicSkill::Key_Input(_float fTimeDelta)
 	}
 }
 
-CUI_SkillSection_ClassicSkill* CUI_SkillSection_ClassicSkill::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_CLASSICSKILL eType)
+CUI_SkillSection_SpecialSkill* CUI_SkillSection_SpecialSkill::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_SPECIALSKILL eType)
 {
-	CUI_SkillSection_ClassicSkill* pInstance = new CUI_SkillSection_ClassicSkill(pDevice, pContext, eType);
+	CUI_SkillSection_SpecialSkill* pInstance = new CUI_SkillSection_SpecialSkill(pDevice, pContext, eType);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX("Failed To Create : CUI_SkillSection_ClassicSkill");
+		MSG_BOX("Failed To Create : CUI_SkillSection_SpecialSkill");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CUI_SkillSection_ClassicSkill::Clone(void* pArg)
+CGameObject* CUI_SkillSection_SpecialSkill::Clone(void* pArg)
 {
-	CUI_SkillSection_ClassicSkill* pInstance = new CUI_SkillSection_ClassicSkill(*this);
+	CUI_SkillSection_SpecialSkill* pInstance = new CUI_SkillSection_SpecialSkill(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Failed To Clone : CUI_SkillSection_ClassicSkill");
+		MSG_BOX("Failed To Clone : CUI_SkillSection_SpecialSkill");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CUI_SkillSection_ClassicSkill::Free()
+void CUI_SkillSection_SpecialSkill::Free()
 {
 	__super::Free();
 

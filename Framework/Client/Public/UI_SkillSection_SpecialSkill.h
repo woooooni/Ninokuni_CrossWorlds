@@ -3,15 +3,15 @@
 #include "UI.h"
 
 BEGIN(Client)
-class CUI_SkillSection_ClassicSkill final : public CUI
+class CUI_SkillSection_SpecialSkill final : public CUI
 {
 public:
-	enum UI_CLASSICSKILL { SKILL_FIRST, SKILL_SECOND, SKILL_THIRD, UICLASSICSKILL_END };
+	enum UI_SPECIALSKILL { SKILL_FIRST, SKILL_SECOND, SKILL_THIRD, UICLASSICSKILL_END };
 
 protected:
-	CUI_SkillSection_ClassicSkill(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_CLASSICSKILL eType);
-	CUI_SkillSection_ClassicSkill(const CUI_SkillSection_ClassicSkill& rhs);
-	virtual ~CUI_SkillSection_ClassicSkill() = default;
+	CUI_SkillSection_SpecialSkill(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_SPECIALSKILL eType);
+	CUI_SkillSection_SpecialSkill(const CUI_SkillSection_SpecialSkill& rhs);
+	virtual ~CUI_SkillSection_SpecialSkill() = default;
 
 public:
 	void Set_SkillType(CHARACTER_TYPE eType);
@@ -29,11 +29,11 @@ public:
 	virtual void On_MouseExit(_float fTimeDelta) override;
 
 private:
-	UI_CLASSICSKILL m_eType = { UICLASSICSKILL_END };
+	UI_SPECIALSKILL m_eType = { UICLASSICSKILL_END };
 	CHARACTER_TYPE m_ePlayerType = { SWORD_MAN };
 
 	CTexture* m_pMaskTextureCom = { nullptr };
-	CTexture* m_pFXTextureCom = { nullptr }; // 스킬 쿨타임을 위한 Component
+	CTexture* m_pFXTextureCom = { nullptr };
 
 	_int m_iTextureIndex = { -1 };
 	_uint m_iPass = { 5 };
@@ -54,7 +54,7 @@ private:
 	void Key_Input(_float fTimeDelta);
 
 public:
-	static CUI_SkillSection_ClassicSkill* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_CLASSICSKILL eType);
+	static CUI_SkillSection_SpecialSkill* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_SPECIALSKILL eType);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

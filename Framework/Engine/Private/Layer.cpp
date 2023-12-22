@@ -53,7 +53,6 @@ void CLayer::Tick(_float fTimeDelta)
 		if (nullptr != pGameObject)
 			pGameObject->Tick(fTimeDelta);
 	}
-
 }
 
 void CLayer::LateTick(_float fTimeDelta)

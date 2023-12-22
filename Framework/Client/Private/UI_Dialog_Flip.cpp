@@ -80,6 +80,20 @@ void CUI_Dialog_Flip::Tick(_float fTimeDelta)
 				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 		}
 
+
+		if (UIFLIP_BUTTON == m_eType && m_bClicked)
+		{
+			m_fTimeAcc += fTimeDelta;
+			m_iPass = 7; // FX 텍스처를 더하는 Pass로 변경한다.
+
+			if (m_fTimeAcc > 0.2f)
+			{
+				m_bClicked = false;
+				m_fTimeAcc = 0.f;
+				m_iPass = 1;
+			}
+		}
+
 		__super::Tick(fTimeDelta);
 	}
 }
@@ -107,7 +121,7 @@ HRESULT CUI_Dialog_Flip::Render()
 		if (FAILED(Bind_ShaderResources()))
 			return E_FAIL;
 
-		m_pShaderCom->Begin(1);
+		m_pShaderCom->Begin(m_iPass);
 
 		m_pVIBufferCom->Render();
 	}
@@ -149,6 +163,9 @@ HRESULT CUI_Dialog_Flip::Ready_Components()
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Dialogue_FlipBtn"),
 			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 			return E_FAIL;
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Dialogue_FlipBtn_Selected"),
+			TEXT("Com_FXTexture"), (CComponent**)&m_pFXTextureCom)))
+			return E_FAIL;
 		break;
 	}
 	
@@ -181,6 +198,18 @@ HRESULT CUI_Dialog_Flip::Bind_ShaderResources()
 	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture")))
 		return E_FAIL;
 
+	if (UIFLIP_BUTTON == m_eType)
+	{
+		if (7 == m_iPass)
+		{
+			if (nullptr == m_pFXTextureCom)
+				return E_FAIL;
+
+			if (FAILED(m_pFXTextureCom->Bind_ShaderResource(m_pShaderCom, "g_FXTexture")))
+				return E_FAIL;
+		}
+	}
+
 	return S_OK;
 }
 
@@ -188,6 +217,9 @@ void CUI_Dialog_Flip::Key_Input(_float fTimeDelta)
 {
 	if (KEY_TAP(KEY::LBTN))
 	{
+		if (UIFLIP_BUTTON == m_eType && !m_bClicked)
+			m_bClicked = true;
+
 //		if (!m_bResize)
 //		{
 //			m_bResize = true;
@@ -230,5 +262,6 @@ void CUI_Dialog_Flip::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pFXTextureCom);
 	Safe_Release(m_pTextureCom);
 }
