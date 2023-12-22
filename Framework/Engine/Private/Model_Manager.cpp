@@ -143,6 +143,11 @@ HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel, const wstring str
 	if (0 == iAnimMaxFrameCount) 
 		return E_FAIL;
 
+	if (!m_AnimTransformsCaches.empty())
+	{
+		m_AnimTransformsCaches.clear();
+		m_AnimTransformsCaches.shrink_to_fit();
+	}
 	m_AnimTransformsCaches.resize(iAnimCount);
 
 	for (_uint i = 0; i < iAnimCount; i++)
@@ -179,7 +184,7 @@ HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel, const wstring str
 
 			BYTE* pageStartPtr = reinterpret_cast<BYTE*>(mallocPtr) + startOffset;
 
-			for (uint32 f = 0; f < iAnimMaxFrameCount; f++) /* 키프레임 갯수만큼 반복 (세로 크기만큼) */
+			for (uint32 f = 0; f < m_AnimationsCache[c]->Get_MaxFrameCount() ; f++) /* 키프레임 갯수만큼 반복 (세로 크기만큼) */
 			{
 				void* ptr = pageStartPtr + dataSize * f;
 
@@ -600,82 +605,6 @@ HRESULT CModel_Manager::Import_Model_Data(_uint iLevelIndex, const wstring& strP
 	return S_OK;
 }
 
-HRESULT CModel_Manager::Import_Model_Data_for_Part(_uint iLevelIndex, const wstring& strProtoTypeTag, wstring strFolderPath, wstring strFileName, class CModel* pBoneModel, CModel** ppOut)
-{
-	/* 툴에서 플레이어의 파츠 메시를 뽑아내기 위한 단독 함수 */
-	/* 플레이어의 뼈정보를 참고하여 파츠 메시의 버텍스에 기록하기 위한 과정 */
-	/* 플레이어 fbx에서 필요로 하는 것은 뼈 정보 뿐이고, 파츠는 메시와 매태리얼만을 다룬다. */
-	/* 파츠를 새로 만들되, 저장은 메시와 매태리얼 정보만 다룬다. */
-
-	_tchar szFileName[MAX_PATH];
-	_tchar szExt[MAX_PATH];
-	_wsplitpath_s(strFileName.c_str(), nullptr, 0, nullptr, 0, szFileName, MAX_PATH, szExt, MAX_PATH);
-
-	CModel* pModel = nullptr;
-
-	/* 00. 기존 fbx 파일 임포트 루틴 */
-	{
-		/* Assimp */
-		pModel = CModel::Create_Part(m_pDevice, m_pContext, CModel::TYPE::TYPE_ANIM, strFolderPath, strFileName, pBoneModel, XMLoadFloat4x4(&m_PivotMatrix));
-		
-		if (nullptr == pModel)
-			return E_FAIL;
-
-		if (FAILED(pModel->Initialize(nullptr)))
-		{
-			MSG_BOX("Model Initialize Failed : Data Manager");
-			Safe_Release(pModel);
-			return E_FAIL;
-		}
-
-		if (FAILED(GI->Add_Prototype(iLevelIndex, strProtoTypeTag, pModel)))
-		{
-			MSG_BOX("Model Add Prototype Failed : Model Manager");
-			Safe_Release(pModel);
-			return E_FAIL;
-		}
-
-		pModel->Set_Name(strFileName);
-
-		if (ppOut != nullptr)
-		{
-			*ppOut = pModel;
-			if (*ppOut == nullptr)
-			{
-				MSG_BOX("ppOut Initialize Failed. : Model Manager");
-				return E_FAIL;
-			}
-		}
-	}
-
-	/* 01. 더미 바이너리와 vtf를 추출하기 위한 임시 익스포트 과정 (스태시 폴더에 저장되므로 기존 파일에 대한 수정은 이루어지지 않는다) */
-	{
-		if (CModel::TYPE::TYPE_ANIM == pModel->Get_ModelType())
-		{
-			const wstring strStashExportPath = L"../Bin/stash/stash";
-
-			if (FAILED(Export_Mesh(strStashExportPath, pModel)))
-				return E_FAIL;
-
-			if (FAILED(Export_Material(strStashExportPath, pModel)))
-				return E_FAIL;
-
-			if (CModel::TYPE::TYPE_NONANIM == pModel->Get_ModelType())
-				return S_OK;
-
-			if (FAILED(Export_Animation(strStashExportPath, pModel)))
-				return E_FAIL;
-
-			if (FAILED(Create_Model_Vtf(pModel, strStashExportPath)))
-				return E_FAIL;
-
-			/*if (FALSE == filesystem::remove_all(strStashExportPath))
-				return E_FAIL;*/
-		}
-	}
-	return S_OK;
-}
-
 HRESULT CModel_Manager::Ready_Model_Data_FromPath(_uint iLevelIndex, _uint eType, const wstring& strFolderPath)
 {
 	for (auto& p : std::filesystem::directory_iterator(strFolderPath))
@@ -1007,7 +936,12 @@ HRESULT CModel_Manager::Create_AnimationTransform_Caches(const _uint& iAnimIndex
 	wstring strAnimationName = pAnimation->Get_AnimationName();
 	for (uint32 iFrameIndex = 0; iFrameIndex < iMaxFrame; iFrameIndex++)
 	{
-		
+		/* Fit */
+		{
+			vector<Matrix> vecMat;
+			m_AnimTransformsCaches[iAnimIndex].transforms.push_back(vecMat);
+		}
+
 		/* 모든 채널의 현재 프레임 갱신 */
 		pAnimation->Calculate_Animation(iFrameIndex);
 
@@ -1016,6 +950,11 @@ HRESULT CModel_Manager::Create_AnimationTransform_Caches(const _uint& iAnimIndex
 		for (uint32 iBoneIndex = 0; iBoneIndex < m_HierarchyNodes.size(); iBoneIndex++)
 		{
 			m_HierarchyNodes[iBoneIndex]->Set_CombinedTransformation();
+
+			/* Fit */
+			{
+				m_AnimTransformsCaches[iAnimIndex].transforms[iFrameIndex].push_back(Matrix());
+			}
 
 			m_AnimTransformsCaches[iAnimIndex].transforms[iFrameIndex][iBoneIndex]
 				= Matrix(m_HierarchyNodes[iBoneIndex]->Get_OffSetMatrix())
@@ -1053,11 +992,22 @@ vector<ANIM_TRANSFORM_CACHES> CModel_Manager::Create_AnimationTransform_Caches_I
 
 		for (uint32 iFrameIndex = 0; iFrameIndex < iMaxFrame; iFrameIndex++)
 		{
+			/* Fit */
+			{
+				vector<Matrix> vecMat;
+				AnimTransformsCache[iAnimIndex].transforms.push_back(vecMat);
+			}
+
 			pAnimation->Calculate_Animation(iFrameIndex);
 
 			for (uint32 iBoneIndex = 0; iBoneIndex < m_HierarchyNodes.size(); iBoneIndex++)
 			{
 				m_HierarchyNodes[iBoneIndex]->Set_CombinedTransformation();
+
+				/* Fit */
+				{
+					AnimTransformsCache[iAnimIndex].transforms[iFrameIndex].push_back(Matrix());
+				}
 
 				AnimTransformsCache[iAnimIndex].transforms[iFrameIndex][iBoneIndex]
 					= Matrix(m_HierarchyNodes[iBoneIndex]->Get_OffSetMatrix())
@@ -1100,11 +1050,22 @@ vector<ANIM_TRANSFORM_CACHE> CModel_Manager::Create_AnimationSocketTransform(cla
 
 		for (uint32 iFrameIndex = 0; iFrameIndex < iMaxFrame; iFrameIndex++)
 		{
+			/* Fit */
+			{
+				vector<Matrix> vecMat;
+				AnimTransformsCache[iAnimIndex].transforms.push_back(vecMat);
+			}
+
 			pAnimation->Calculate_Animation(iFrameIndex);
 
 			for (uint32 iBoneIndex = 0; iBoneIndex < m_HierarchyNodes.size(); iBoneIndex++)
 			{
 				m_HierarchyNodes[iBoneIndex]->Set_CombinedTransformation();
+
+				/* Fit */
+				{
+					AnimTransformsCache[iAnimIndex].transforms[iFrameIndex].push_back(Matrix());
+				}
 
 				if (iSocketBoneIndex == iBoneIndex)
 				{

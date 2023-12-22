@@ -277,7 +277,7 @@ HRESULT CModel::LateTick(_float fTimeDelta)
 		||m_Animations.size() <= m_TweenDesc.cur.iAnimIndex
 		|| nullptr == m_pSRV 
 		|| m_TweenDesc.cur.iStop)
-		return E_FAIL;
+		return S_OK;
 
 	/* 현재 애니메이션 */
 	CAnimation* pCurAnim = m_Animations[m_TweenDesc.cur.iAnimIndex];
@@ -613,7 +613,9 @@ HRESULT CModel::Set_Animation(const _uint& iAnimationIndex, const _float& fTween
 
 	if (m_TweenDesc.cur.iAnimIndex < 0) // 최초 1회 실행 
 	{
-		m_Animations[m_TweenDesc.cur.iAnimIndex]->Clear_AnimationData();
+		if(0 <= m_TweenDesc.cur.iAnimIndex)
+			m_Animations[m_TweenDesc.cur.iAnimIndex]->Clear_AnimationData();
+
 		m_TweenDesc.cur.iAnimIndex = iAnimationIndex % m_Animations.size();
 		return S_OK;
 	}
@@ -621,7 +623,8 @@ HRESULT CModel::Set_Animation(const _uint& iAnimationIndex, const _float& fTween
 	/* 일부러 보간 시간을 음수로 주는 경우, 그 즉시 보간 없이 바로 다음 애니메이션을 세팅한다. */
 	if (fTweenDuration <= 0.f)
 	{
-		m_Animations[m_TweenDesc.cur.iAnimIndex]->Clear_AnimationData();
+		if (0 <= m_TweenDesc.cur.iAnimIndex)
+			m_Animations[m_TweenDesc.cur.iAnimIndex]->Clear_AnimationData();
 		m_TweenDesc.cur.iAnimIndex = iAnimationIndex % m_Animations.size();
 		m_TweenDesc.ClearNextAnim();
 		return S_OK;

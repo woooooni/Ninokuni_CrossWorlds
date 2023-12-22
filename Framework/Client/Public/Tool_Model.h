@@ -82,6 +82,8 @@ private:
 	_bool		m_bAuto = FALSE;
 	_int		m_iAutoAnimIndex = 0;
 
+	_bool		m_bInitSocket = FALSE;
+
 #pragma endregion
 
 #pragma region Event 
