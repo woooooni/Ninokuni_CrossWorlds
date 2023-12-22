@@ -296,7 +296,10 @@ HRESULT CModel::LateTick(_float fTimeDelta)
 				if (!pCurAnim->Is_Loop()) // 픽스 여부 체크
 					m_TweenDesc.cur.iFix = true;
 				else
-					pCurAnim->Clear_AnimationData();
+				{
+					pCurAnim->Clear_AnimationEvent();
+					m_Animations[m_TweenDesc.cur.iAnimIndex]->Clear_AnimationSpeed();
+				}
 			}
 
 			if (!m_TweenDesc.cur.iFix) // 픽스가 아닐때만 프레임 갱신 (픽스라면 현재 프레임은 마지막 프레임으로 고정)
@@ -332,7 +335,8 @@ HRESULT CModel::LateTick(_float fTimeDelta)
 		/* 트위닝 종료*/
 		if (1.f <= m_TweenDesc.fTweenRatio)
 		{
-			pCurAnim->Clear_AnimationData();
+			pCurAnim->Clear_AnimationEvent();
+			m_Animations[m_TweenDesc.cur.iAnimIndex]->Clear_AnimationSpeed();
 			m_TweenDesc.cur = m_TweenDesc.next;
 			m_TweenDesc.ClearNextAnim();
 		}
@@ -613,8 +617,11 @@ HRESULT CModel::Set_Animation(const _uint& iAnimationIndex, const _float& fTween
 
 	if (m_TweenDesc.cur.iAnimIndex < 0) // 최초 1회 실행 
 	{
-		if(0 <= m_TweenDesc.cur.iAnimIndex)
-			m_Animations[m_TweenDesc.cur.iAnimIndex]->Clear_AnimationData();
+		if (0 <= m_TweenDesc.cur.iAnimIndex)
+		{
+			m_Animations[m_TweenDesc.cur.iAnimIndex]->Clear_AnimationEvent();
+			m_Animations[m_TweenDesc.cur.iAnimIndex]->Clear_AnimationSpeed();
+		}
 
 		m_TweenDesc.cur.iAnimIndex = iAnimationIndex % m_Animations.size();
 		return S_OK;
@@ -624,7 +631,10 @@ HRESULT CModel::Set_Animation(const _uint& iAnimationIndex, const _float& fTween
 	if (fTweenDuration <= 0.f)
 	{
 		if (0 <= m_TweenDesc.cur.iAnimIndex)
-			m_Animations[m_TweenDesc.cur.iAnimIndex]->Clear_AnimationData();
+		{
+			m_Animations[m_TweenDesc.cur.iAnimIndex]->Clear_AnimationEvent();
+			m_Animations[m_TweenDesc.cur.iAnimIndex]->Clear_AnimationSpeed();
+		}
 		m_TweenDesc.cur.iAnimIndex = iAnimationIndex % m_Animations.size();
 		m_TweenDesc.ClearNextAnim();
 		return S_OK;
@@ -633,6 +643,7 @@ HRESULT CModel::Set_Animation(const _uint& iAnimationIndex, const _float& fTween
 	m_TweenDesc.ClearNextAnim();
 	m_TweenDesc.next.iAnimIndex = iAnimationIndex % m_Animations.size();
 	m_TweenDesc.fTweenDuration = fTweenDuration;
+	//m_Animations[m_TweenDesc.cur.iAnimIndex]->Clear_AnimationSpeed();
 
 	return S_OK;
 }

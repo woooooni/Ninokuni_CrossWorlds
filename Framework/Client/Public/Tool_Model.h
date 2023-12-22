@@ -56,7 +56,7 @@ private:
 
 #pragma region Animation
 
-	_bool m_bAllAnimLoop = TRUE;
+	_bool m_bAllAnimLoop = FALSE;
 
 #pragma endregion
 

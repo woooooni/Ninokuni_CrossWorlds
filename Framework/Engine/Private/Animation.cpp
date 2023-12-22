@@ -70,24 +70,29 @@ void CAnimation::Update_Animation_Data(_float fTickPerSecond, const TWEEN_DESC& 
 	Update_Animation_Event(fTickPerSecond, tDesc);
 }
 
-void CAnimation::Clear_AnimationData()
+void CAnimation::Clear_AnimationEvent()
+{
+	/* 사운드 이벤트 초기화 */
+	for (auto& SoundEvent : m_SoundEvents)
+		SoundEvent.second.bExecuted = false;
+}
+
+void CAnimation::Clear_AnimationSpeed()
 {
 	/* 키프레임별 속도 조절 관련 */
 	m_iCurSpeedDescIndex = 0;
 	m_fCurSpeedDescEndFrame = 0.f;
 
 	m_tLiveSpeedDesc.fCurValue = m_fOriginSpeed;
-
-
-	/* 사운드 이벤트 */
-	for (auto& SoundEvent : m_SoundEvents)
-		SoundEvent.second.bExecuted = false;
-
+	m_tLiveSpeedDesc.bActive = false;
 }
 
 _float CAnimation::Get_LiveSpeed()
 {
 	if(m_SpeedDescs.empty())
+		return m_fOriginSpeed;
+
+	if(m_tLiveSpeedDesc.fCurValue <= 0.01f)
 		return m_fOriginSpeed;
 
 	return m_tLiveSpeedDesc.fCurValue;
@@ -111,6 +116,7 @@ void CAnimation::Add_SpeedDesc(ANIM_SPEED_DESC desc)
 
 	Sort_SpeedDesces();
 }
+
 void CAnimation::Delete_SpeedDesc(const _uint& iIndex)
 {
 	if (m_SpeedDescs.size() <= iIndex)
@@ -300,9 +306,15 @@ void CAnimation::Update_Animation_Speed(_float fTickPerSecond, const TWEEN_DESC&
 	if (m_tLiveSpeedDesc.bActive)
 		m_tLiveSpeedDesc.Update(fTickPerSecond);
 
+	if (m_tLiveSpeedDesc.fCurValue < 0.1f)
+		int k = 0; 
+
+	/* 트윈중이라면 다음 애니메이션 키프레임 기준으로 동작하도록 한다. */
+	const _float fCurFrame = (0 <= tDesc.next.iAnimIndex) ? tDesc.next.iCurFrame : tDesc.cur.iCurFrame;
+
 	for (_uint i = m_iCurSpeedDescIndex; i < m_SpeedDescs.size(); i++)
 	{
-		if (m_SpeedDescs[i].fStartFrame < tDesc.cur.iCurFrame && !m_tLiveSpeedDesc.bActive)
+		if (m_SpeedDescs[i].fStartFrame < fCurFrame && !m_tLiveSpeedDesc.bActive)
 		{
 			if (abs(m_tLiveSpeedDesc.fCurValue - m_SpeedDescs[i].fEndSpeed) < 0.05f)
 				continue;
@@ -313,8 +325,7 @@ void CAnimation::Update_Animation_Speed(_float fTickPerSecond, const TWEEN_DESC&
 				m_SpeedDescs[m_iCurSpeedDescIndex].fEndSpeed <= 0.f)
 				continue;
 
-			if (m_SpeedDescs[m_iCurSpeedDescIndex].fStartFrame >=
-				m_SpeedDescs[m_iCurSpeedDescIndex].fEndFrame)
+			if (m_SpeedDescs[m_iCurSpeedDescIndex].fStartFrame >= m_SpeedDescs[m_iCurSpeedDescIndex].fEndFrame)
 				continue;
 
 			m_iCurSpeedDescIndex = i;
@@ -326,14 +337,17 @@ void CAnimation::Update_Animation_Speed(_float fTickPerSecond, const TWEEN_DESC&
 				LERP_MODE::SMOOTH_STEP);
 		}
 	}
-}
+}   
 
 void CAnimation::Update_Animation_Event(_float fTickPerSecond, const TWEEN_DESC& tDesc)
 {
+	/* 트윈중이라면 다음 애니메이션 키프레임 기준으로 동작하도록 한다. */
+	const _float fCurFrame = (0 <= tDesc.next.iAnimIndex) ? tDesc.next.iCurFrame : tDesc.cur.iCurFrame;
+
 	/* 사운드 이벤트 */
 	for (auto& SoundEvent : m_SoundEvents)
 	{
-		if (SoundEvent.first <= tDesc.cur.iCurFrame && !SoundEvent.second.bExecuted)
+		if (SoundEvent.first <= fCurFrame && !SoundEvent.second.bExecuted)
 		{
 			SoundEvent.second.bExecuted = true;
 			 
@@ -354,12 +368,15 @@ const _float CAnimation::Calculate_LerpTime(const ANIM_SPEED_DESC tSpeedDesc, co
 	/* 예외 처리 조건 필수 ! */
 
 	/* 시작 프레임에서 종료 프레임까지 디폴트 시간으로 소요되는 총 시간 */
+
+	const _float fCurSpeed = (m_tLiveSpeedDesc.fCurValue <= 0.01f) ? m_fOriginSpeed : m_tLiveSpeedDesc.fCurValue;
+
 	while (1)
 	{
 		fTimeAcc += fTickPerSecond;
 		fFrameAcc += fTickPerSecond;
 
-		const _float fTimePerFrame = 1 / (m_fTickPerSecond * m_tLiveSpeedDesc.fCurValue);
+		const _float fTimePerFrame = 1 / (m_fTickPerSecond * fCurSpeed);
 
 		if (fTimePerFrame <= fFrameAcc)
 		{

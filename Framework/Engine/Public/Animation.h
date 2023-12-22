@@ -17,7 +17,9 @@ public:
 
 	/* 라이프 스피드와 이벤트 체크 */
 	void Update_Animation_Data(_float fTickPerSecond, const TWEEN_DESC& tDesc);
-	void Clear_AnimationData();
+	void Clear_AnimationEvent();
+	void Clear_AnimationSpeed();
+
 public:
 
 #pragma region Prop

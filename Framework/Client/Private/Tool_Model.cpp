@@ -82,12 +82,12 @@ HRESULT CTool_Model::Render()
 
 HRESULT CTool_Model::Clear_ToolAnimationData()
 {
-	m_bAllAnimLoop = TRUE;
-	vector<class CAnimation*>& Animations = m_pDummy->Get_ModelCom()->Get_Animations();
+	m_bAllAnimLoop = FALSE;
+	/*vector<class CAnimation*>& Animations = m_pDummy->Get_ModelCom()->Get_Animations();
 
 	for (auto& pAnim : Animations)
 		pAnim->Set_Loop(m_bAllAnimLoop);
-	
+	*/
 	m_iCurBoneIndex = 0;
 
 	m_iSocketIndex = -1;
