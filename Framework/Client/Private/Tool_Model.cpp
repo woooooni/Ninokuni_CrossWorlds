@@ -242,9 +242,20 @@ Matrix CTool_Model::Calculate_SocketWorldMatrix()
 		matAnimLocal.Backward(vLook);
 	}
 
-	/* 포지션 리셋*/
-	memcpy(&matAnimLocal.m[3], &vAnimLocalPos, sizeof(Vec4));
+	/* 회전 행렬 포지션 초기화 */
+	Vec4 vOneW = { 0.f, 0.f, 0.f, 1.f };
+	memcpy(&matAnimLocal.m[3], &vOneW, sizeof(Vec4));
 
+	/* 회전 행렬에서 피벗 포지션 값 뽑음*/
+	Vec3 vPivotPosition = m_pDummy->Get_ModelCom()->Get_CustomSocketPivotPosition(m_iSocketIndex);
+	vPivotPosition = XMVector3TransformCoord(vPivotPosition, matAnimLocal);
+
+	/* 회전 행렬 포지션에 기존 로컬 포지션과 피벗 포지션 값을 더함 */
+	vAnimLocalPos += Vec4(vPivotPosition.x, vPivotPosition.y, vPivotPosition.z, 0.f);
+
+	/* 포지션 적용  */
+	memcpy(&matAnimLocal.m[3], &vAnimLocalPos, sizeof(Vec4));
+	
 	return matAnimLocal * m_pDummy->Get_TransformCom()->Get_WorldMatrix();
 }
 
@@ -1078,7 +1089,7 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 			/* 모델 컴포넌트 반영 */
 			m_pDummy->Get_ModelCom()->Add_SocketTransformIndexCache(m_iCurBoneIndex);
 			m_pDummy->Get_ModelCom()->Add_CustomSocketPivotRotation(Vec3{ 0.f, 0.f, 0.f });
-
+			m_pDummy->Get_ModelCom()->Add_CustomSocketPivotPosition(Vec3{ 0.f, 0.f, 0.f });
 			/* 툴 인덱스 반영 */
 			m_iSocketIndex = m_pDummy->Get_ModelCom()->Get_SocketTransformIndexCache().size() - 1;
 		}
@@ -1212,6 +1223,40 @@ void CTool_Model::Tick_Socket(_float fTimeDelta)
 			}
 
 			m_pDummy->Get_ModelCom()->Set_CustomSocketPivotRotation(m_iSocketIndex, vRot);
+			IMGUI_NEW_LINE;
+		}
+
+		/* Position */
+		{
+			Vec3 vPos = m_pDummy->Get_ModelCom()->Get_CustomSocketPivotPosition(m_iSocketIndex);
+
+			_float fPos[3] = { vPos.x, vPos.y, vPos.z };
+			ImGui::Text("모델에 소켓을 추가한 후 선택해야 합니다.");
+			IMGUI_SAME_LINE;
+
+			/* Clear */
+			if (ImGui::Button("Clear Socket Position"))
+				vPos = Vec3::Zero;
+
+			/* X */
+			{
+				if (ImGui::DragFloat("Pos X", &fPos[0], 0.005f))
+					vPos.x = fPos[0];
+			}
+
+			/* Y */
+			{
+				if (ImGui::DragFloat("Pos Y", &fPos[1], 0.005f))
+					vPos.y = fPos[1];
+			}
+
+			/* Z */
+			{
+				if (ImGui::DragFloat("Pos Z", &fPos[2], 0.005f))
+					vPos.z = fPos[2];
+			}
+
+			m_pDummy->Get_ModelCom()->Set_CustomSocketPivotPosition(m_iSocketIndex, vPos);
 			IMGUI_NEW_LINE;
 		}
 	}

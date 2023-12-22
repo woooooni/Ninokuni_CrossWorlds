@@ -19,13 +19,15 @@ public:
 	/* Model Prop */
 	void Set_Name(const wstring& strName) { m_strName = strName; }
 	void Set_CustomSocketPivotRotation(const _uint iIndex, Vec3 vCustomSocket);
-
+	void Set_CustomSocketPivotPosition(const _uint iIndex, Vec3 vCustomSocket);
 	TYPE Get_ModelType() { return m_eModelType; }
 	Vec3 Get_CustomSocketPivotRotation(const _uint iIndex); /* 파츠에서 사용하는 커스텀 피벗 매트릭스 */
+	Vec3 Get_CustomSocketPivotPosition(const _uint iIndex);
 	_matrix Get_PivotMatrix() { return XMLoadFloat4x4(&m_PivotMatrix); }
 	const wstring& Get_Name() const { return m_strName; }
 
 	void Add_CustomSocketPivotRotation(Vec3 vCustomSocket) { m_SocketCustomPivotRotation.push_back(vCustomSocket); }
+	void Add_CustomSocketPivotPosition(Vec3 vCustomSocket) { m_SocketCustomPivotPosition.push_back(vCustomSocket); }
 
 	/* HierarchyNode */
 	Matrix Get_SocketLocalMatrix(const _uint iSocketEnumIndex); /* (모델의 Latetick 이후 호출)캐릭터가 갖고 있는 파츠의 소켓 매트릭스를 리턴한다. (캐릭터에 정의된 enum 인덱스 사용, 뼈 번호 아님) */
@@ -143,6 +145,7 @@ private:
 
 	vector<_uint> m_SocketTransformIndexCache;
 	vector<Vec3> m_SocketCustomPivotRotation;
+	vector<Vec3> m_SocketCustomPivotPosition;
 	vector<vector<ANIM_TRANSFORM_CACHE>> m_SocketTransforms; /* 소켓(뼈) 별로 vector<ANIM_TRANSOFRM_CACHE>를 갖는다.*/
 
 #pragma region Assimp
