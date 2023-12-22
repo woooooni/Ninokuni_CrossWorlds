@@ -39,6 +39,16 @@ HRESULT CPumpkinCandle::Initialize(void* pArg)
 
 void CPumpkinCandle::Tick(_float fTimeDelta)
 {
+	if (KEY_TAP(KEY::NUM_9))
+	{
+		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATK] = !m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATK];
+		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND] = !m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND];
+	}
+	if (KEY_TAP(KEY::J) || KEY_TAP(KEY::K))
+	{
+		m_tStat.fHp -= 10.f;
+	}
+
 	// << : Test 
 	if (KEY_TAP(KEY::HOME))
 	{
@@ -55,11 +65,6 @@ void CPumpkinCandle::Tick(_float fTimeDelta)
 	// >> 
 
 	__super::Tick(fTimeDelta);
-
-	if (KEY_TAP(KEY::K))
-	{
-		m_tStat.fHp -= 10.f;
-	}
 }
 
 void CPumpkinCandle::LateTick(_float fTimeDelta)

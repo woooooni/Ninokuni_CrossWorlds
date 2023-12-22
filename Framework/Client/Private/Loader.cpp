@@ -29,6 +29,7 @@
 
 #include "Stellia.h"
 #include "Glanix.h"
+#include "DMWitch.h"
 #include "Baobam_Water.h"
 #include "Shadow_Thief.h"
 #include "IceBearMan.h"
@@ -234,6 +235,8 @@ HRESULT CLoader::Loading_For_Level_Test()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Glanix", CGlanix::Create(m_pDevice, m_pContext, TEXT("Glanix"), statDesc), LAYER_MONSTER)))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_DreamerMazeWitch", CDMWitch::Create(m_pDevice, m_pContext, TEXT("DreamerMazeWitch"), statDesc), LAYER_MONSTER)))
+		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Baobam_Water", CBaobam_Water::Create(m_pDevice, m_pContext, TEXT("Baobam_Water"), statDesc), LAYER_MONSTER)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Shadow_Thief", CShadow_Thief::Create(m_pDevice, m_pContext, TEXT("Shadow_Thief"), statDesc), LAYER_MONSTER)))
@@ -261,6 +264,9 @@ HRESULT CLoader::Loading_For_Level_Test()
 		return E_FAIL;
 
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Glanix", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Boss/Glanix/", L"Glanix")))
+		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_DreamerMazeWitch", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Boss/DreamerMazeWitch/", L"DreamerMazeWitch")))
 		return E_FAIL;
 
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Baobam_Water", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Ice/Baobam_Water/", L"Baobam_Water")))

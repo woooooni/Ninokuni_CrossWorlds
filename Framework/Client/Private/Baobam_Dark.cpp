@@ -39,6 +39,16 @@ HRESULT CBaobam_Dark::Initialize(void* pArg)
 
 void CBaobam_Dark::Tick(_float fTimeDelta)
 {
+	if (KEY_TAP(KEY::F7))
+	{
+		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATK] = !m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATK];
+		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND] = !m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND];
+	}
+	if (KEY_TAP(KEY::T) || KEY_TAP(KEY::Y))
+	{
+		m_tStat.fHp -= 10.f;
+	}
+
 	// << : Test 
 	if (KEY_TAP(KEY::HOME))
 	{
@@ -55,11 +65,6 @@ void CBaobam_Dark::Tick(_float fTimeDelta)
 	// >> 
 
 	__super::Tick(fTimeDelta);
-
-	if (KEY_TAP(KEY::Y))
-	{
-		m_tStat.fHp -= 10.f;
-	}
 }
 
 void CBaobam_Dark::LateTick(_float fTimeDelta)
