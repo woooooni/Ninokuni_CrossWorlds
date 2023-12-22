@@ -173,8 +173,7 @@ struct PS_IN
 struct PS_OUT
 {
 	float4	vDiffuse : SV_TARGET0;
-	float4	vBlurPower : SV_TARGET1;
-	float4	vBrightness : SV_TARGET2;
+	float4	vBrightness : SV_TARGET1; // 블룸 색상 및 블러 파워
 };
 
 PS_OUT PS_MAIN(PS_IN In)
@@ -189,8 +188,7 @@ PS_OUT PS_MAIN(PS_IN In)
 	Out.vDiffuse.rgb = saturate((Out.vDiffuse.rgb + g_EffectDesc[In.iInstanceID].g_fColor.rgb));
 	Out.vDiffuse.a   = saturate(Out.vDiffuse.a - g_EffectDesc[In.iInstanceID].g_fAlpha);
 
-	Out.vBlurPower   = float4(1.f, 1.f, 1.f, 0.f);
-	Out.vBrightness  = Out.vDiffuse;
+	Out.vBrightness  = float4(Out.vDiffuse.r, Out.vDiffuse.g, Out.vDiffuse.b, 0.5f); // A는 파워
 
 	return Out;
 }
@@ -207,8 +205,7 @@ PS_OUT PS_MAIN_BLEND(PS_IN In)
 	Out.vDiffuse.rgb = saturate((Out.vDiffuse.rgb + g_EffectDesc[In.iInstanceID].g_fColor.rgb));
 	Out.vDiffuse.a   = saturate(Out.vDiffuse.a - g_EffectDesc[In.iInstanceID].g_fAlpha);
 
-	Out.vBlurPower  = float4(1.f, 1.f, 1.f, 0.f);
-	Out.vBrightness = Out.vDiffuse;
+	Out.vBrightness = float4(Out.vDiffuse.r, Out.vDiffuse.g, Out.vDiffuse.b, 0.5f); // A는 파워
 
 	// 알파 채널 반전
 	//Out.vDiffuse.a = 1.f - Out.vDiffuse.a;
@@ -218,6 +215,33 @@ PS_OUT PS_MAIN_BLEND(PS_IN In)
 
 technique11 DefaultTechnique
 {
+	// UI
+	pass Particle_UI_Basic_Default
+	{
+		SetRasterizerState(RS_NoneCull);
+		SetDepthStencilState(DSS_None, 0);
+		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = compile gs_5_0 GS_MAIN();
+		HullShader = NULL;
+		DomainShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN();
+	}
+	pass Particle_UI_Basic_Blend
+	{
+		SetRasterizerState(RS_NoneCull);
+		SetDepthStencilState(DSS_None, 0);
+		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		
+		VertexShader = compile   vs_5_0 VS_MAIN();
+		GeometryShader = compile gs_5_0 GS_MAIN();
+		HullShader = NULL;
+		DomainShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN_BLEND();
+	}
+
+	// 기본
 	pass Particle_Basic_Default
 	{
 		SetRasterizerState(RS_NoneCull);
@@ -230,13 +254,12 @@ technique11 DefaultTechnique
 		DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN();
 	}
-
 	pass Particle_Basic_Blend
 	{
 		SetRasterizerState(RS_NoneCull);
 		SetDepthStencilState(DSS_Default, 0);
 		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-		
+
 		VertexShader = compile   vs_5_0 VS_MAIN();
 		GeometryShader = compile gs_5_0 GS_MAIN();
 		HullShader = NULL;

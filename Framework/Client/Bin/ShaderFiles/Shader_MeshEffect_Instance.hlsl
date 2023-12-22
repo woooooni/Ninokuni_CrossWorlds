@@ -89,9 +89,8 @@ struct PS_IN
 
 struct PS_OUT
 {
-	float4		vDiffuse : SV_TARGET0;
-	float4		vBlurPower : SV_TARGET1;
-	float4      vBrightness : SV_TARGET2;
+	float4	vDiffuse : SV_TARGET0;
+	float4	vBrightness : SV_TARGET1;
 };
 
 
@@ -124,8 +123,9 @@ PS_OUT PS_DEFAULT(PS_IN In)
 	if (Out.vDiffuse.a <= g_fAlpha_Discard)
 		discard;
 
-	Out.vBrightness = CalcBrightness(Out.vDiffuse, In.iInstanceID);
-	Out.vBlurPower  = vector(g_fBlurPower / 100.f, 0.f, 0.f, 1.f);
+	//Out.vBrightness = CalcBrightness(Out.vDiffuse, In.iInstanceID);
+	//Out.vBlurPower  = vector(g_fBlurPower / 100.f, 0.f, 0.f, 1.f);
+	Out.vBrightness = float4(Out.vDiffuse.r, Out.vDiffuse.g, Out.vDiffuse.b, 0.5f);
 
 	return Out;
 };
@@ -157,8 +157,10 @@ PS_OUT PS_NO_ALPHA_WITH_DIFFUSE(PS_IN In)
 	if (Out.vDiffuse.a <= g_fAlpha_Discard)
 		discard;
 
-	Out.vBrightness = CalcBrightness(Out.vDiffuse, In.iInstanceID);
-	Out.vBlurPower = vector(g_fBlurPower / 100.f, 0.f, 0.f, 1.f);
+	//Out.vBrightness = CalcBrightness(Out.vDiffuse, In.iInstanceID);
+	//Out.vBlurPower = vector(g_fBlurPower / 100.f, 0.f, 0.f, 1.f);
+	Out.vBrightness = float4(Out.vDiffuse.r, Out.vDiffuse.g, Out.vDiffuse.b, 0.5f);
+
 	return Out;
 
 };
@@ -182,8 +184,10 @@ PS_OUT PS_NO_DIFFUSE_WITH_ALPHA(PS_IN In)
 	if (Out.vDiffuse.a <= g_fAlpha_Discard)
 		discard;
 
-	Out.vBrightness = CalcBrightness(Out.vDiffuse, In.iInstanceID);
-	Out.vBlurPower = vector(g_fBlurPower / 100.f, 0.f, 0.f, 1.f);
+	//Out.vBrightness = CalcBrightness(Out.vDiffuse, In.iInstanceID);
+	//Out.vBlurPower = vector(g_fBlurPower / 100.f, 0.f, 0.f, 1.f);
+	Out.vBrightness = float4(Out.vDiffuse.r, Out.vDiffuse.g, Out.vDiffuse.b, 0.5f);
+
 	return Out;
 
 };
@@ -217,8 +221,10 @@ PS_OUT PS_BOTH(PS_IN In)
 	if (Out.vDiffuse.a <= g_fAlpha_Discard)
 		discard;
 
-	Out.vBrightness = CalcBrightness(Out.vDiffuse, In.iInstanceID);
-	Out.vBlurPower = vector(g_fBlurPower / 100.f, 0.f, 0.f, 1.f);
+	//Out.vBrightness = CalcBrightness(Out.vDiffuse, In.iInstanceID);
+	//Out.vBlurPower = vector(g_fBlurPower / 100.f, 0.f, 0.f, 1.f);
+	Out.vBrightness = float4(Out.vDiffuse.r, Out.vDiffuse.g, Out.vDiffuse.b, 0.5f);
+
 	return Out;
 
 };

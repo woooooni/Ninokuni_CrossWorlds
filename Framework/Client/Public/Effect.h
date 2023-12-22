@@ -152,9 +152,9 @@ public:
 
 #pragma region 블러 // 추후 기능 구현
 		_bool   bBloomPowerRandom = false;
-		_float4	fBloomPower      = _float4(0.f, 0.f, 0.f, 0.f);
+		_float4	fBloomPower      = _float4(1.f, 0.f, 0.f, 1.f);
 		_bool   bBlurPowerRandom = false;
-		_float	fBlurPower       = 0.01f;
+		_float	fBlurPower       = 0.5f;
 #pragma endregion
 
 #pragma region 기타 정보

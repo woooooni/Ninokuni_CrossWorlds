@@ -99,11 +99,18 @@ HRESULT CParticle::Initialize(void* pArg)
 
 void CParticle::Tick(_float fTimeDelta)
 {
-	m_pVIBufferCom->Tick(fTimeDelta);
+	if (Is_Dead() == true)
+		return;
 
+	m_pVIBufferCom->Tick(fTimeDelta);
+	 
 #ifdef _DEBUG
 	if (GI->Get_CurrentLevel() != LEVEL_TOOL && m_pVIBufferCom->Get_Finished())
+	{
 		Set_Dead(true);
+		return;
+	}
+		
 #else // 릴리즈
 	if (m_pVIBufferCom->Get_Finished())
 		Set_Dead(true);
@@ -112,6 +119,9 @@ void CParticle::Tick(_float fTimeDelta)
 
 void CParticle::LateTick(_float fTimeDelta)
 {
+	if (Is_Dead() == true)
+		return;
+
 	__super::LateTick(fTimeDelta);
 
 	if(m_tParticleDesc.bParticleSortZ)
@@ -119,8 +129,15 @@ void CParticle::LateTick(_float fTimeDelta)
 
 	if(m_tParticleDesc.eParticleType == TYPE_PERSPECTIVE)
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_EFFECT, this);
-	else if(m_tParticleDesc.eParticleType == TYPE_ORTHOGRAPHIC)
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UIEFFECT, this);
+	else if (m_tParticleDesc.eParticleType == TYPE_ORTHOGRAPHIC)
+	{
+		// UI 기본
+		if (m_tParticleDesc.iShaderPass == 0)
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UIEFFECT_NONBLEND, this);
+		// UI 블랜드
+		else if (m_tParticleDesc.iShaderPass == 1)
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UIEFFECT_BLEND, this);
+	}
 }
 
 HRESULT CParticle::Render()
