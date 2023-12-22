@@ -260,6 +260,13 @@ const _bool CTool_Model::Is_Exception()
 		if (CModel::TYPE::TYPE_NONANIM == pModelCom->Get_ModelType())
 		{
 			ImGui::Text(u8"애니메이션 모델이 로드되지 않았습니다.");
+			
+			return true;
+		}
+
+		if (0 == m_pDummy->Get_ModelCom()->Get_Animations().size())
+		{
+			ImGui::Text(u8"애니메이션 모델이지만, 애니메이션이 없습니다.");
 			return true;
 		}
 	}
