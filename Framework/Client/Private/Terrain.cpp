@@ -137,10 +137,10 @@ HRESULT CTerrain::Ready_Components()
 		TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom)))
 		return E_FAIL;
 
-	///* Com_Texture*/
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_SnowLandScape"),
-		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
-		return E_FAIL;
+	/////* Com_Texture*/
+	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_SnowLandScape"),
+	//	TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+	//	return E_FAIL;
 
 
 
