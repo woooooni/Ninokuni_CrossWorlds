@@ -54,6 +54,8 @@ void CTool_Map::Tick(_float fTimeDelta)
 		MapNPCSpace();
 #pragma endregion MapNPC
 
+		int a = 0;
+
 		Picking();
 	}
 	
