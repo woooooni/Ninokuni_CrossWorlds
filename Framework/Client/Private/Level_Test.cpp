@@ -8,6 +8,7 @@
 #include "Camera_Manager.h"
 
 #include "Stellia.h"
+#include "UI_Manager.h"
 
 CLevel_Test::CLevel_Test(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -193,8 +194,8 @@ HRESULT CLevel_Test::Ready_Layer_Monster(const LAYER_TYPE eLayerType)
 
 	//if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prorotype_GameObject_Baobam_Water"))))
 	//	return E_FAIL;
-	//if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prorotype_GameObject_Shadow_Thief"))))
-	//	return E_FAIL;
+	if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prorotype_GameObject_Shadow_Thief"))))
+		return E_FAIL;
 	//if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prorotype_GameObject_IceBearMan"))))
 	//	return E_FAIL;
 	//
@@ -212,6 +213,9 @@ HRESULT CLevel_Test::Ready_Layer_Monster(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Test::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 {
+	if (FAILED(CUI_Manager::GetInstance()->Ready_CommonUIs(LEVELID::LEVEL_TEST)))
+		return E_FAIL;
+
 	return S_OK;
 }
 

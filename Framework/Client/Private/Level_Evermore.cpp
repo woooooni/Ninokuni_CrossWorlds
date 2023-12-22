@@ -22,8 +22,17 @@ HRESULT CLevel_Evermore::Initialize()
 	if (FAILED(__super::Initialize()))
 		return E_FAIL;
 
-	if (FAILED(Ready_Layer_BackGround(LAYER_TYPE::LAYER_BACKGROUND)))
-		return E_FAIL;
+//	if (FAILED(Ready_Layer_Camera(LAYER_TYPE::LAYER_CAMERA)))
+//		return E_FAIL;
+//
+//	if (FAILED(Ready_Layer_BackGround(LAYER_TYPE::LAYER_BACKGROUND)))
+//		return E_FAIL;
+//
+//	if (FAILED(Ready_Layer_Terrain(LAYER_TYPE::LAYER_TERRAIN)))
+//		return E_FAIL;
+//
+//	if (FAILED(Ready_Layer_Monster(LAYER_TYPE::LAYER_MONSTER)))
+//		return E_FAIL;
 
 	if (FAILED(Ready_Layer_UI(LAYER_TYPE::LAYER_UI)))
 		return E_FAIL;
@@ -61,9 +70,31 @@ HRESULT CLevel_Evermore::Exit_Level()
 	return S_OK;
 }
 
+HRESULT CLevel_Evermore::Ready_Layer_Camera(const LAYER_TYPE eLayerType)
+{
+	if (FAILED(CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
 HRESULT CLevel_Evermore::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 {
 	
+	return S_OK;
+}
+
+HRESULT CLevel_Evermore::Ready_Layer_Terrain(const LAYER_TYPE eLayerType)
+{
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_TERRAIN, TEXT("Prototype_GameObject_Terrain"))))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CLevel_Evermore::Ready_Layer_Monster(const LAYER_TYPE eLayerType)
+{
+
 	return S_OK;
 }
 

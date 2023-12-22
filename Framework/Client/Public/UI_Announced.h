@@ -14,7 +14,7 @@ protected:
 	virtual ~CUI_Announced() = default;
 
 public:
-	virtual void Set_Active(_bool bActive) override;
+	void Set_Active(_bool bActive, _int iMagicNum = 0);
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -31,12 +31,13 @@ private:
 	UI_ANNNOUNCE_TYPE m_eType = { ANNOUNCED_END };
 
 	_int m_iTextureIndex = { 0 };
-
 	_bool m_bArrived = { false };
 
 	_float m_fSpeed = { 80.f };
 	_float2 m_vOriginPosition = _float2(0.f, 0.f);
 	_float2 m_vStartPosition = _float2(0.f, 0.f);
+
+	_bool m_bAlpha = { false };
 
 private:
 	virtual HRESULT	Ready_Components() override;

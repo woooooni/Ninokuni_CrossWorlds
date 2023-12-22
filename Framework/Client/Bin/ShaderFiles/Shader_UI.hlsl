@@ -272,6 +272,18 @@ PS_OUT PS_MAIN_FILL_COLOR(PS_IN In)
 	return Out;
 }
 
+PS_OUT PS_MAIN_WORLDUI(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+	Out.vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
+	Out.vColor.a *= g_Alpha;
+
+	if (0.0001f >= Out.vColor.a)
+		discard;
+
+	return Out;
+}
 
 technique11 DefaultTechnique
 {
@@ -394,6 +406,17 @@ technique11 DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_FILL_COLOR();
+	}
+
+	pass MonsterWorldHPBar // 11
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_None, 0);
+		SetBlendState(BS_AlphaBlend, float4(1.f, 1.f, 1.f, 1.f), 0xffffffff);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN_WORLDUI();
 	}
 
 }

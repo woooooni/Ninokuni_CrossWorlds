@@ -327,6 +327,7 @@
     <ClInclude Include="..\Public\UI_Dialog_MiniWindow.h" />
     <ClInclude Include="..\Public\UI_Dialog_Portrait.h" />
     <ClInclude Include="..\Public\UI_Dialog_Window.h" />
+    <ClInclude Include="..\Public\UI_MonsterHP_World.h" />
     <ClInclude Include="..\Public\UI_QuickSlot_Item.h" />
     <ClInclude Include="..\Public\UI_SkillSection_ClassicSkill.h" />
     <ClInclude Include="..\Public\UI_SkillSection_Frame.h" />
@@ -632,6 +633,7 @@
     <ClCompile Include="..\Private\UI_Dialog_MiniWindow.cpp" />
     <ClCompile Include="..\Private\UI_Dialog_Portrait.cpp" />
     <ClCompile Include="..\Private\UI_Dialog_Window.cpp" />
+    <ClCompile Include="..\Private\UI_MonsterHP_World.cpp" />
     <ClCompile Include="..\Private\UI_QuickSlot_Item.cpp" />
     <ClCompile Include="..\Private\UI_SkillSection_ClassicSkill.cpp" />
     <ClCompile Include="..\Private\UI_SkillSection_Frame.cpp" />

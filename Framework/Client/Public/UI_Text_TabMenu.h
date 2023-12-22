@@ -26,6 +26,7 @@ public:
 
 private:
 	UI_MENUTITLE m_eType = { UITITLE_END };
+	_bool m_bShowChild = { false };
 
 private:
 	virtual HRESULT	Ready_Components() override;

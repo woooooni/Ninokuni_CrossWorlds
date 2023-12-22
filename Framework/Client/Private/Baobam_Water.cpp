@@ -161,8 +161,8 @@ HRESULT CBaobam_Water::Ready_Components()
 	//	return E_FAIL;
 
 	/* For. Disslove Texture */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Dissolve"), TEXT("Com_DissolveTexture"), (CComponent**)&m_pDissoveTexture)))
-		return E_FAIL;
+//	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Dissolve"), TEXT("Com_DissolveTexture"), (CComponent**)&m_pDissoveTexture)))
+//		return E_FAIL;
 
 	return S_OK;
 }

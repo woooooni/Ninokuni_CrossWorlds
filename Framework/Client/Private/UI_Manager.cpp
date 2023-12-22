@@ -41,6 +41,7 @@
 #include "UI_WindowWorldMap.h"
 #include "UI_QuickSlot_Item.h"
 #include "UI_Costume_LineBox.h"
+#include "UI_MonsterHP_World.h"
 #include "UI_Dialog_Portrait.h"
 #include "UI_Loading_Imajinn.h"
 #include "UI_Setting_Section.h"
@@ -2856,6 +2857,21 @@ HRESULT CUI_Manager::OnOff_CostumeSlot(_bool bOnOff)
 	return S_OK;
 }
 
+HRESULT CUI_Manager::OnOff_Announce(_int iMagicNum, _bool bOnOff)
+{
+	if (0 > iMagicNum || 2 < iMagicNum)
+		return E_FAIL;
+	
+	if (m_pCameraAnnounce->Get_Active())
+		return E_FAIL;
+	else
+	{
+		m_pCameraAnnounce->Set_Active(bOnOff, iMagicNum);
+	}
+
+	return S_OK;
+}
+
 HRESULT CUI_Manager::Save_UIData()
 {
 	return S_OK;
@@ -3406,6 +3422,10 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Announced_Camera"),
 		CUI_Announced::Create(m_pDevice, m_pContext, CUI_Announced::ANNOUNCE_CAMERA), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Monster_WorldHPBar"),
+		CUI_MonsterHP_World::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
 
