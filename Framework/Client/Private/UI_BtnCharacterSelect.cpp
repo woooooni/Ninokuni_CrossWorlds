@@ -179,6 +179,10 @@ void CUI_BtnCharacterSelect::On_Mouse(_float fTimeDelta)
 			{
 				if (!m_bClicked)
 				{
+					if (UI_SELECTBTN_CHARACTER::BTN_ROGUE == m_ePlayerType ||
+						UI_SELECTBTN_CHARACTER::BTN_WITCH == m_ePlayerType)
+						return;
+
 					m_bClicked = true;
 					CUI_Manager::GetInstance()->Update_LobbyBtnState(_uint(m_ePlayerType));
 				}

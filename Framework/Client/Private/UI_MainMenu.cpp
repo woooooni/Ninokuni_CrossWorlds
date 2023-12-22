@@ -254,42 +254,52 @@ HRESULT CUI_MainMenu::Ready_Buttons()
 	case MAINBTN_CHARACTER:
 		m_iTextureIndex = 0;
 		m_fSpeed = 0.f;
+		m_fAlpha = 1.f;
 		break;
 	case MAINBTN_EQUIPMENT:
 		m_iTextureIndex = 1;
 		m_fSpeed = fStandard;
+		m_fAlpha = 1.f;
 		break;
 	case MAINBTN_IMAJINN:
 		m_iTextureIndex = 2;
 		m_fSpeed = fStandard * 2.f;
+		m_fAlpha = 1.f;
 		break;
 	case MAINBTN_RECORD:
 		m_iTextureIndex = 3;
 		m_fSpeed = fStandard * 3.f;
+		m_fAlpha = 0.4f;
 		break;
 	case MAINBTN_GROWTH:
 		m_iTextureIndex = 4;
 		m_fSpeed = fStandard * 4.f;
+		m_fAlpha = 0.4f;
 		break;
 	case MAINBTN_COMMUNITY:
 		m_iTextureIndex = 5;
 		m_fSpeed = fStandard * -4.f;
+		m_fAlpha = 0.4f;
 		break;
 	case MAINBTN_DUNGEON:
 		m_iTextureIndex = 6;
 		m_fSpeed = fStandard * -3.f;
+		m_fAlpha = 0.4f;
 		break;
 	case MAINBTN_CHALLENGE:
 		m_iTextureIndex = 7;
 		m_fSpeed = fStandard * -2.f;
+		m_fAlpha = 0.4f;
 		break;
 	case MAINBTN_BATTLE:
 		m_iTextureIndex = 8;
 		m_fSpeed = fStandard * -1.f;
+		m_fAlpha = 0.4f;
 		break;
 	case MAINBTN_SHOP:
 		m_iTextureIndex = 9;
 		m_fSpeed = 0.f;
+		m_fAlpha = 1.f;
 		break;
 	}
 

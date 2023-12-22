@@ -51,6 +51,7 @@ public:
 	HRESULT OnOff_GamePlaySetting(_bool bOnOff); // 기본적으로 세팅되어있는 게임화면 UI들
 	HRESULT OnOff_MainMenu(_bool bOnOff);
 	HRESULT OnOff_QuestWindow(_bool bOnOff);
+	HRESULT OnOff_QuestPopup(_bool bOnOff);
 
 	HRESULT OnOff_MonsterHP(_bool bOnOff, ELEMENTAL_TYPE eType = ELEMENTAL_TYPE::ELEMENTAL_END);
 
@@ -62,6 +63,7 @@ public:
 
 	HRESULT OnOff_WorldMap(_bool bOnOff);
 	HRESULT OnOff_CostumeWindow(_bool bOnOff); // 코스튬 탭 Window 비/활성화
+	HRESULT OnOff_CostumeSlot(_bool bOnOff);
 
 public: // For UI Tool
 	HRESULT Save_UIData();
@@ -90,17 +92,25 @@ private:
 	class CUI_MainMenu* m_pMainBG = { nullptr }; // MainMenu Background (버튼과 따로 관리된다)
 	class CUI_WindowQuest* m_pWindowQuest = { nullptr };
 
+	vector<class CUI_PopupQuest*> m_QuestPopUp;
+
 	class CUI_Text_TabMenu* m_pTabMenuTitle = { nullptr };
 
 	// PlayerStatus
 	vector<class CUI_PlayerEXPBar*> m_PlayerEXP;
 	vector<class CUI_SkillSection_ClassicSkill*> m_ClassicSkill;
+	vector<class CUI_SkillSection_Frame*> m_ClassicFrame;
+	vector<class CUI_SkillSection_SpecialSkill*> m_SpecialSkill;
+	vector<class CUI_SkillSection_Frame*> m_SpecialFrame;
+	vector<class CUI_QuickSlot_Item*> m_ItemQuickslot;
 
 	// MonsterHP
 	class CUI_MonsterHP_Background* m_pMonsterHPBack = { nullptr };
 	class CUI_MonsterHP_Bar* m_pMonsterHPBar = { nullptr };
 	class CUI_MonsterHP_ElementalFrame* m_pMonsterFrame = { nullptr };
 	class CUI_MonsterHP_Elemental* m_pMonsterElemental = { nullptr };
+
+	class CUI_Announced* m_pCameraAnnounce = { nullptr };
 
 private:
 	vector<class CUI_Basic*> m_Basic;
@@ -133,6 +143,7 @@ private:
 	vector<class CUI_Costume_Btn*> m_CostumeBtn;
 	vector<class CUI_Costume_Btn*> m_CostumeClickedBtn;
 	class CUI_Costume_LineBox* m_pCostumeBox = { nullptr };
+	vector<class CUI_Costume_ItemSlot*> m_CostumeItem;
 
 private:
 	ID3D11Device* m_pDevice = { nullptr };

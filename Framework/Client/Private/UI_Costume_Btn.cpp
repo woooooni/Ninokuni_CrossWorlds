@@ -68,6 +68,20 @@ void CUI_Costume_Btn::LateTick(_float fTimeDelta)
 
 	if (m_bActive)
 	{
+		if (COSTUMEBTN_UNCLICKED == m_eButtonType)
+		{
+			if (COSTUME_CLOTH == m_eUIType)
+			{
+				m_fAlpha = 1.f;
+			}
+			else if (COSTUME_HAIRACC == m_eUIType)
+			{
+				m_fAlpha = 1.f;
+			}
+			else
+				m_fAlpha = 0.3f;
+		}
+
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
 }
@@ -101,26 +115,11 @@ void CUI_Costume_Btn::On_Mouse(_float fTimeDelta)
 		if (KEY_TAP(KEY::LBTN))
 		{
 			if (COSTUME_CLOTH == m_eUIType || COSTUME_HAIRACC == m_eUIType)
+			{
 				CUI_Manager::GetInstance()->Update_CostumeBtnState(_uint(m_eUIType));
+				CUI_Manager::GetInstance()->OnOff_CostumeSlot(true);
+			}
 		}
-//		if (KEY_TAP(KEY::LBTN))
-//		{
-//			switch (m_eUIType)
-//			{
-//			case MAINBTN_CHARACTER:
-//				CUI_Manager::GetInstance()->OnOff_SubMenu(true, _uint(MAINBTN_CHARACTER));
-//				break;
-//			case MAINBTN_EQUIPMENT:
-//				CUI_Manager::GetInstance()->OnOff_SubMenu(true, _uint(MAINBTN_EQUIPMENT));
-//				break;
-//			case MAINBTN_IMAJINN:
-//				CUI_Manager::GetInstance()->OnOff_SubMenu(true, _uint(MAINBTN_IMAJINN));
-//				break;
-//			case MAINBTN_SHOP:
-//				CUI_Manager::GetInstance()->OnOff_SubMenu(true, _uint(MAINBTN_SHOP));
-//				break;
-//			}
-//		}
 	}
 }
 
@@ -175,10 +174,10 @@ HRESULT CUI_Costume_Btn::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
 		return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_fAlpha, sizeof(_float))))
+	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", _uint(m_eUIType))))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", _uint(m_eUIType))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_fAlpha, sizeof(_float))))
 		return E_FAIL;
 
 	return S_OK;

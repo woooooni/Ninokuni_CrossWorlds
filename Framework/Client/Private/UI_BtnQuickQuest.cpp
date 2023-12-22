@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "UI_BtnQuickQuest.h"
 #include "GameInstance.h"
-#include "Level_Loading.h"
+#include "UI_Manager.h"
 
 CUI_BtnQuickQuest::CUI_BtnQuickQuest(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_BtnQuickQuest")
@@ -137,6 +137,15 @@ void CUI_BtnQuickQuest::Key_Input(_float fTimeDelta)
 		else
 		{
 			return;
+		}
+
+		if (m_iTextureIndex)
+		{
+			CUI_Manager::GetInstance()->OnOff_QuestPopup(true);
+		}
+		else
+		{
+			CUI_Manager::GetInstance()->OnOff_QuestPopup(false);
 		}
 	}
 }
