@@ -759,15 +759,6 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 				Animations = pModelCom->Get_Animations();
 
 				sprintf_s(szAnimationName, CUtils::ToString(pModelCom->Get_CurrAnimation()->Get_AnimationName()).c_str());
-				if (m_bInitSocket)
-				{
-					if (FAILED(Ready_SocketTransforms()))
-					{
-						MSG_BOX("소켓 트랜스폼 갱신을 실패했습니다.");
-						return;
-					}
-				}
-
 			}
 			IMGUI_SAME_LINE;
 

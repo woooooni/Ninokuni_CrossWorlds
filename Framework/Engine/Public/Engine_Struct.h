@@ -583,7 +583,7 @@ namespace Engine
 	typedef struct	KeyframeDesc
 	{
 		/* 16 byte Alignment */
-		_int	iAnimIndex = 0;		/* 현재 애니메이션 인덱스*/
+		_int	iAnimIndex = -1;		/* 현재 애니메이션 인덱스*/
 		_uint	iCurFrame = 0;		/* 애니메이션의 현재 프레임 */
 		_uint	iNextFrame = 1;		/* 애니메이션의 다음 프레임 */
 		_float	fRatio = 0.f;		/* 애니메이션의 현재 프레임과 다음 프레임 사이 진행률*/
@@ -619,7 +619,7 @@ namespace Engine
 
 		TweenDesc()
 		{
-			cur.iAnimIndex = 0;
+			cur.iAnimIndex = -1;
 			next.iAnimIndex = -1;
 		}
 

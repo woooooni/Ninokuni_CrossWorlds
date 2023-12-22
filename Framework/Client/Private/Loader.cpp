@@ -422,7 +422,6 @@ HRESULT CLoader::Loading_For_Level_Tool()
 	/*if (FAILED(Loading_Proto_Parts_Model(L"../Bin/Resources/AnimModel/Character/SwordMan/")))
 		return E_FAIL;*/
 
-
 	/*if(FAILED(CPart_Manager::GetInstance()->Reserve_Manager(GI->Get_Device(), GI->Get_Context())))
 		return E_FAIL;*/
 

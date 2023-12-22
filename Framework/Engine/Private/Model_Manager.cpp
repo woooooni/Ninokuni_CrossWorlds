@@ -143,6 +143,11 @@ HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel, const wstring str
 	if (0 == iAnimMaxFrameCount) 
 		return E_FAIL;
 
+	if (!m_AnimTransformsCaches.empty())
+	{
+		m_AnimTransformsCaches.clear();
+		m_AnimTransformsCaches.shrink_to_fit();
+	}
 	m_AnimTransformsCaches.resize(iAnimCount);
 
 	for (_uint i = 0; i < iAnimCount; i++)
