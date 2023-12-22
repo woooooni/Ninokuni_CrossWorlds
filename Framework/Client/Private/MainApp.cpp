@@ -48,7 +48,7 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 	/* 1-4. 게임내에서 사용할 레벨(씬)을 생성한다.   */
-	if (FAILED(Open_Level(LEVEL_TEST, L"Final_Boss")))
+	if (FAILED(Open_Level(LEVEL_LOGO, L"Final_Boss")))
 		return E_FAIL;
 	
 	// UI Cursor
@@ -319,11 +319,6 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	if (FAILED(Ready_Effect_TextureComponent()))
 		return E_FAIL;
 
-#pragma region Terrain Texture
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_SnowLandScape"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/HeightTest/T_Winter_snow_05_D.dds")))))
-		return E_FAIL;
-#pragma endregion Terrain Texture
 
 	// Texture
 	/* For.Prototype_Component_Texture_Effect*/
