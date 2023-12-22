@@ -30,11 +30,11 @@ HRESULT CStelliaState_Base::Initialize(const list<wstring>& AnimationList)
 	m_fRunSpeed = 4.f;
 
 	/* 공격 패턴만 따로 모아놓기. (후에 순차적 혹은 랜덤으로 전환하기 위해) */
-	//m_vecAtkState.push_back(CStellia::STELLIA_ATTACK1);
-	//m_vecAtkState.push_back(CStellia::STELLIA_ATTACK2);
-	//m_vecAtkState.push_back(CStellia::STELLIA_SPINTAIL);
-	//m_vecAtkState.push_back(CStellia::STELLIA_JUMPSTAMP);
-	//m_vecAtkState.push_back(CStellia::STELLIA_LASER);
+	m_vecAtkState.push_back(CStellia::STELLIA_ATTACK1);
+	m_vecAtkState.push_back(CStellia::STELLIA_ATTACK2);
+	m_vecAtkState.push_back(CStellia::STELLIA_SPINTAIL);
+	m_vecAtkState.push_back(CStellia::STELLIA_JUMPSTAMP);
+	m_vecAtkState.push_back(CStellia::STELLIA_LASER);
 	m_vecAtkState.push_back(CStellia::STELLIA_CHARGE);
 
 	return S_OK;

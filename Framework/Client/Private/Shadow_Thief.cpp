@@ -41,6 +41,16 @@ HRESULT CShadow_Thief::Initialize(void* pArg)
 
 void CShadow_Thief::Tick(_float fTimeDelta)
 {
+	if (KEY_TAP(KEY::NUM_5))
+	{
+		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATK] = !m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATK];
+		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND] = !m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND];
+	}
+	if (KEY_TAP(KEY::V) || KEY_TAP(KEY::B))
+	{
+		m_tStat.fHp -= 10.f;
+	}
+
 	// << : Test 
 	if (KEY_TAP(KEY::HOME))
 	{
@@ -57,11 +67,6 @@ void CShadow_Thief::Tick(_float fTimeDelta)
 	// >> 
 
 	__super::Tick(fTimeDelta);
-
-	if (KEY_TAP(KEY::B))
-	{
-		m_tStat.fHp -= 10.f;
-	}
 }
 
 void CShadow_Thief::LateTick(_float fTimeDelta)

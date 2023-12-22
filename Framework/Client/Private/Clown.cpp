@@ -39,6 +39,16 @@ HRESULT CClown::Initialize(void* pArg)
 
 void CClown::Tick(_float fTimeDelta)
 {
+	if (KEY_TAP(KEY::NUM_7))
+	{
+		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATK] = !m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATK];
+		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND] = !m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND];
+	}
+	if (KEY_TAP(KEY::I) || KEY_TAP(KEY::O))
+	{
+		m_tStat.fHp -= 10.f;
+	}
+
 	// << : Test 
 	if (KEY_TAP(KEY::HOME))
 	{
@@ -55,11 +65,6 @@ void CClown::Tick(_float fTimeDelta)
 	// >> 
 
 	__super::Tick(fTimeDelta);
-
-	if (KEY_TAP(KEY::O))
-	{
-		m_tStat.fHp -= 10.f;
-	}
 }
 
 void CClown::LateTick(_float fTimeDelta)

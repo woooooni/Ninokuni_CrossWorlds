@@ -39,6 +39,16 @@ HRESULT CBaobam_Water::Initialize(void* pArg)
 
 void CBaobam_Water::Tick(_float fTimeDelta)
 {
+	if (KEY_TAP(KEY::NUM_4))
+	{
+		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATK] = !m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATK];
+		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND] = !m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND];
+	}
+	if (KEY_TAP(KEY::X) || KEY_TAP(KEY::Z))
+	{
+		m_tStat.fHp -= 10.f;
+	}
+
 	// << : Test 
 	if (KEY_TAP(KEY::HOME))
 	{
@@ -55,11 +65,6 @@ void CBaobam_Water::Tick(_float fTimeDelta)
 	// >> 
 
 	__super::Tick(fTimeDelta);
-
-	if (KEY_TAP(KEY::X) && m_tStat.fHp > 0.f)
-	{
-		m_tStat.fHp -= 10;
-	}
 }
 
 void CBaobam_Water::LateTick(_float fTimeDelta)

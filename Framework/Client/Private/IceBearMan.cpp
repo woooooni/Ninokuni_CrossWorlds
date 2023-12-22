@@ -42,11 +42,16 @@ HRESULT CIceBearMan::Initialize(void* pArg)
 void CIceBearMan::Tick(_float fTimeDelta)
 {
 	// << : Test 
-	if (KEY_TAP(KEY::N))
+	if (KEY_TAP(KEY::NUM_6))
 	{
 		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATK] = !m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATK];
 		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND] = !m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND];
 	}
+	if (KEY_TAP(KEY::NUM_2) || KEY_TAP(KEY::NUM_1))
+	{
+		m_tStat.fHp -= 10.f;
+	}
+
 
 	if (KEY_TAP(KEY::HOME))
 	{
@@ -63,11 +68,6 @@ void CIceBearMan::Tick(_float fTimeDelta)
 	// >> 
 
 	__super::Tick(fTimeDelta);
-
-	if (KEY_TAP(KEY::B))
-	{
-		m_tStat.fHp -= 10.f;
-	}
 }
 
 void CIceBearMan::LateTick(_float fTimeDelta)
@@ -182,7 +182,7 @@ HRESULT CIceBearMan::Ready_Colliders()
 
 	BoundingSphere tSphere;
 	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 1.f;
+	tSphere.Radius = 2.f;
 	ColliderDesc.tSphere = tSphere;
 
 	ColliderDesc.pOwner = this;
