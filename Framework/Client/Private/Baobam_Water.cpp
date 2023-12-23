@@ -69,7 +69,6 @@ void CBaobam_Water::Tick(_float fTimeDelta)
 
 void CBaobam_Water::LateTick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 	__super::LateTick(fTimeDelta);
 }
 

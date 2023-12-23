@@ -272,6 +272,11 @@
     <ClInclude Include="..\Public\DMWitchState_Turn.h" />
     <ClInclude Include="..\Public\DMWitchState_Spawn.h" />
     <ClInclude Include="..\Public\DMWitchState_VulcanBall.h" />
+    <ClInclude Include="..\Public\Equipment_Weapon.h" />
+    <ClInclude Include="..\Public\GameItem.h" />
+    <ClInclude Include="..\Public\GameItem_Consumable.h" />
+    <ClInclude Include="..\Public\GameItem_Equipment.h" />
+    <ClInclude Include="..\Public\GameItem_ETC.h" />
     <ClInclude Include="..\Public\GlanixState_Attack1.h" />
     <ClInclude Include="..\Public\GlanixState_Attack2.h" />
     <ClInclude Include="..\Public\GlanixState_Base.h" />
@@ -318,6 +323,7 @@
     <ClInclude Include="..\Public\StelliaState_SpinTail.h" />
     <ClInclude Include="..\Public\StelliaState_TripleLaser.h" />
     <ClInclude Include="..\Public\StelliaState_Turn.h" />
+    <ClInclude Include="..\Public\Tool_Item.h" />
     <ClInclude Include="..\Public\UI_Announced.h" />
     <ClInclude Include="..\Public\UI_Costume_Btn.h" />
     <ClInclude Include="..\Public\UI_Costume_ChangeBtn.h" />
@@ -579,6 +585,11 @@
     <ClCompile Include="..\Private\DMWitchState_Turn.cpp" />
     <ClCompile Include="..\Private\DMWitchState_Spawn.cpp" />
     <ClCompile Include="..\Private\DMWitchState_VulcanBall.cpp" />
+    <ClCompile Include="..\Private\Equipment_Weapon.cpp" />
+    <ClCompile Include="..\Private\GameItem.cpp" />
+    <ClCompile Include="..\Private\GameItem_Consumable.cpp" />
+    <ClCompile Include="..\Private\GameItem_Equipment.cpp" />
+    <ClCompile Include="..\Private\GameItem_ETC.cpp" />
     <ClCompile Include="..\Private\GlanixState_Attack1.cpp" />
     <ClCompile Include="..\Private\GlanixState_Attack2.cpp" />
     <ClCompile Include="..\Private\GlanixState_Base.cpp" />
@@ -623,6 +634,7 @@
     <ClCompile Include="..\Private\StelliaState_SpinTail.cpp" />
     <ClCompile Include="..\Private\StelliaState_TripleLaser.cpp" />
     <ClCompile Include="..\Private\StelliaState_Turn.cpp" />
+    <ClCompile Include="..\Private\Tool_Item.cpp" />
     <ClCompile Include="..\Private\UI_Announced.cpp" />
     <ClCompile Include="..\Private\UI_Costume_Btn.cpp" />
     <ClCompile Include="..\Private\UI_Costume_ChangeBtn.cpp" />
