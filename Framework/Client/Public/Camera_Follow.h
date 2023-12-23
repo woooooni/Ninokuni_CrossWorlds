@@ -13,21 +13,9 @@ class CCamera_Follow final : public CCamera
 		/* 두 벡터의 차가 condition만큼 벌어지면 댐핑이 시작된다. */
 		_bool	bDamping = false;
 
-		_bool   bSet = false;
-		_float	fDampingCondition = 3.f;
-
-		Vec4	vCurPos;		/* 현재 카메라 포지션 */
-		Vec4	vTargetPos;		/* 목표 카메라 포지션 */
-		_float	fDampingCoefficient = 0.01f; /* 0 ~ 1*/
-
-		void Clear()
-		{
-			bDamping = false;
-			bSet = false;
-
-			vCurPos = Vec4::UnitW;
-			vTargetPos = Vec4::UnitW;
-		}
+		Vec4	vCurPos;						/* 현재 카메라 포지션 */
+		Vec4	vTargetPos;						/* 목표 카메라 포지션 */
+		_float	fDampingCoefficient = 0.03f;	/* 0 ~ 1*/
 
 	}DAMPING_DESC;
 
@@ -45,7 +33,8 @@ public:
 
 public:
 	/* Access */
-	const _bool& Is_Damping() const { return m_tDampingDesc.bDamping; }
+	const _float& Get_DampingCoefficient() const { return m_tDampingDesc.fDampingCoefficient; }
+	void Set_DampingCoefficient(const _float fCoefficient) { m_tDampingDesc.fDampingCoefficient = fCoefficient; }
 
 protected:
 	virtual HRESULT Ready_Components() override;

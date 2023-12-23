@@ -38,7 +38,7 @@ HRESULT CCamera_Follow::Initialize(void * pArg)
 
 		/* 팔로우 카메라에서 룩앳 오프셋을 사용하는 일은 없다. 타겟 오프셋만을 사용한다.*/
 		m_vLookAtOffset = Vec4::UnitW;
-		m_vTargetOffset = Vec4{ 1.f, 1.5f, 0.f, 1.f };
+		m_vTargetOffset = Vec4{ 1.2f, 1.5f, 0.f, 1.f };
 
 		m_vMouseSensitivity = Vec2{ 0.2f, 0.35f };
 	}

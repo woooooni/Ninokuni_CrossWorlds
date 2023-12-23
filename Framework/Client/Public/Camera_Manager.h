@@ -18,7 +18,7 @@ static const char*	CameraCharNames[CAMERA_TYPE::TYPE_END]{ "Camera_Free", "Camer
 
 #pragma region Distance
 
-static const _float Cam_Dist_Follow_Default = 3.5f;
+static const _float Cam_Dist_Follow_Default = 3.2f;
 
 #pragma endregion
 

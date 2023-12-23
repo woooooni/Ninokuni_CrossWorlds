@@ -277,8 +277,10 @@ void CTool_Camera::Show_Camera_Prop_Follow(CCamera* pCurCam)
 
 					/* Fov */
 					{
-						ImGui::DragFloat(u8"Fov", &tProjDesc.tLerpFov.fCurValue, 0.05f, 0.1, 10.f);
-					
+						_float fFov = XMConvertToDegrees(tProjDesc.tLerpFov.fCurValue);
+						ImGui::DragFloat(u8"Fov", &fFov, 0.1f, 10.f, 100.f);
+						tProjDesc.tLerpFov.fCurValue = XMConvertToRadians(fFov);
+
 						/*if (ImGui::Button("Default Fov"))
 							tProjDesc.tLerpFov.fCurValue = Cam_Fov_Follow_Default;*/
 					}
@@ -316,7 +318,7 @@ void CTool_Camera::Show_Camera_Prop_Follow(CCamera* pCurCam)
 					{
 						Vec4	vTargetOffset		= pFollowCam->Get_TargetOffset();
 						_float	fTargetOffset[3]	= { vTargetOffset.x, vTargetOffset.y, vTargetOffset.z };
-						if (ImGui::DragFloat3(u8"Å¸°Ù ¿ÀÇÁ¼Â", fTargetOffset))
+						if (ImGui::DragFloat3(u8"Target OffSet", fTargetOffset))
 						{
 							pFollowCam->Set_TargetOffSet(Vec4{ fTargetOffset[0], fTargetOffset[1], fTargetOffset[2], 1.f });
 						}
@@ -326,7 +328,7 @@ void CTool_Camera::Show_Camera_Prop_Follow(CCamera* pCurCam)
 					{
 						Vec4	vLookAtOffset		= pFollowCam->Get_LookAtOffset();
 						_float	fLookAtOffset[3]	= { vLookAtOffset.x, vLookAtOffset.y, vLookAtOffset.z };
-						if (ImGui::DragFloat3(u8"·è¾Ü ¿ÀÇÁ¼Â", fLookAtOffset))
+						if (ImGui::DragFloat3(u8"LookAt Offset", fLookAtOffset))
 						{
 							pFollowCam->Set_LookAtOffSet(Vec4{ fLookAtOffset[0], fLookAtOffset[1], fLookAtOffset[2], 1.f });
 						}
@@ -337,8 +339,8 @@ void CTool_Camera::Show_Camera_Prop_Follow(CCamera* pCurCam)
 				{
 					Vec2 vSeneitivity = pFollowCam->Get_MouseSensitivity();
 
-					ImGui::DragFloat(u8"XÃà ¹Î°¨µµ", &vSeneitivity.x, 0.025f);
-					ImGui::DragFloat(u8"YÃà ¹Î°¨µµ", &vSeneitivity.y, 0.025f);
+					ImGui::DragFloat(u8"Seneitivity X (XÃà ¹Î°¨µµ)", &vSeneitivity.x, 0.025f);
+					ImGui::DragFloat(u8"Seneitivity Y (YÃà ¹Î°¨µµ)", &vSeneitivity.y, 0.025f);
 
 					pFollowCam->Set_MouseSensitivity_X(vSeneitivity.x);
 					pFollowCam->Set_MouseSensitivity_Y(vSeneitivity.y);
@@ -355,6 +357,14 @@ void CTool_Camera::Show_Camera_Prop_Follow(CCamera* pCurCam)
 					}
 				}
 
+				/* ´ïÇÎ */
+				{
+					_float fCoefficient = pFollowCam->Get_DampingCoefficient();
+					if (ImGui::DragFloat(u8"Damping Coefficient(´ïÇÎ °è¼ö)", &fCoefficient, 0.002f, 0.002f, 1.f))
+					{
+						pFollowCam->Set_DampingCoefficient(fCoefficient);
+					}
+				}
 
 
 				
