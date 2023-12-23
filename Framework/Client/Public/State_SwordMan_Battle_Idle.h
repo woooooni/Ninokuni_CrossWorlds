@@ -29,8 +29,8 @@ private:
 	void Input(_float fTimeDelta);
 
 private:
-	_float m_fIdleMotionTime = 5.f;
-	_float m_fAccIdleMotion = 0.f;
+	_float m_fReturnNuetralTime = 5.f;
+	_float m_fAccReturnNuetral = 0.f;
 
 public:
 	static CState_SwordMan_Battle_Idle* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);

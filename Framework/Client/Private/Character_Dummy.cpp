@@ -293,7 +293,7 @@ HRESULT CCharacter_Dummy::Ready_Colliders()
 	OBBDesc.pOwner = this;
 	OBBDesc.pNode = nullptr;
 	OBBDesc.pOwnerTransform = m_pTransformCom;
-	OBBDesc.ModePivotMatrix = m_pModelCom->Get_PivotMatrix();
+	OBBDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
 	OBBDesc.vOffsetPosition = Vec3(0.f, 100.f, 0.f);
 	OBBDesc.bLockAngle_X = false;
 	OBBDesc.bLockAngle_Y = false;

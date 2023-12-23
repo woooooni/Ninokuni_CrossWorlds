@@ -26,6 +26,7 @@ public:
 
 private:
 	class CUI_MonsterHP_World* m_pHPBar = { nullptr };
+	class CPhysX_Controller* m_pControllerCom = { nullptr };
 
 private:
 	virtual HRESULT Ready_Components();

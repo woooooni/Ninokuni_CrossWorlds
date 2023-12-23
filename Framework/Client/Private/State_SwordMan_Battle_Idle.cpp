@@ -23,7 +23,7 @@ HRESULT CState_SwordMan_Battle_Idle::Initialize(const list<wstring>& AnimationLi
 
 void CState_SwordMan_Battle_Idle::Enter_State(void* pArg)
 {
-    m_fAccIdleMotion = 0.f;
+    m_fAccReturnNuetral = 0.f;
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }
 
@@ -31,29 +31,26 @@ void CState_SwordMan_Battle_Idle::Tick_State(_float fTimeDelta)
 {
     Input(fTimeDelta);
 
-    m_fAccIdleMotion += fTimeDelta;
-    if (m_fAccIdleMotion >= m_fIdleMotionTime)
+    m_fAccReturnNuetral += fTimeDelta;
+    if (m_fAccReturnNuetral >= m_fReturnNuetralTime)
     {
-        m_fAccIdleMotion = 0.f;
-        m_pModelCom->Set_Animation(m_AnimIndices[GI->RandomInt(1, 2)]);
+        m_fAccReturnNuetral = 0.f;
+        m_pModelCom->Set_Animation(m_AnimIndices[1]);
     }
 }
 
 void CState_SwordMan_Battle_Idle::Exit_State()
 {
-    m_fAccIdleMotion = 0.f;
+    m_fAccReturnNuetral = 0.f;
 }
 
 void CState_SwordMan_Battle_Idle::Input(_float fTimeDelta)
 {
     if (KEY_HOLD(KEY::W) || KEY_TAP(KEY::A) || KEY_TAP(KEY::S) || KEY_TAP(KEY::D))
-        m_pStateMachineCom->Change_State(CCharacter::STATE::NEUTRAL_WALK);
+        m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_WALK);
     
     if (KEY_TAP(KEY::SPACE))
-        m_pStateMachineCom->Change_State(CCharacter::STATE::NEUTRAL_JUMP);
-
-    if (KEY_TAP(KEY::C))
-        m_pStateMachineCom->Change_State(CCharacter::STATE::NEUTRAL_CROUCH_IDLE);
+        m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_JUMP);
 }
 
 CState_SwordMan_Battle_Idle* CState_SwordMan_Battle_Idle::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

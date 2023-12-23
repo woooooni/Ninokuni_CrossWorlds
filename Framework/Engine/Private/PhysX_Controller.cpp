@@ -38,27 +38,30 @@ HRESULT CPhysX_Controller::Initialize(void* pArg)
 
 	_matrix WorldMatrix = m_pTransformCom->Get_WorldMatrix();
 	WorldMatrix.r[CTransform::STATE_POSITION] += pControllerDesc->vOffset;
+	
 
 	if (m_eType == CONTROLLER_TYPE::BOX)
 	{
-		m_pPhysXController = GI->Add_BoxController(pControllerDesc->pOwner, WorldMatrix, pControllerDesc->vExtents, pControllerDesc->fMaxJumpHeight);
+		m_pPhysXController = GI->Add_BoxController(pControllerDesc->pOwner, WorldMatrix, pControllerDesc->vExtents, pControllerDesc->fMaxJumpHeight, this);
 		
 		if (nullptr == m_pPhysXController)
 			return E_FAIL;
 	}
 	else if (m_eType == CONTROLLER_TYPE::CAPSULE)
 	{
-		m_pPhysXController = GI->Add_CapsuleController(pControllerDesc->pOwner, WorldMatrix, pControllerDesc->fHeight, pControllerDesc->fRaidus, pControllerDesc->fMaxJumpHeight);
+		m_pPhysXController = GI->Add_CapsuleController(pControllerDesc->pOwner, WorldMatrix, pControllerDesc->fHeight, pControllerDesc->fRaidus, pControllerDesc->fMaxJumpHeight, this);
 
 		if (nullptr == m_pPhysXController)
 			return E_FAIL;
 	}
 	else
 		return E_FAIL;
+	
+
 
 
 	m_Filters.mFilterData = &m_FilterData;
-	m_Filters.mCCTFilterCallback = this;
+	
 
 	
 
@@ -66,7 +69,10 @@ HRESULT CPhysX_Controller::Initialize(void* pArg)
 }
 
 void CPhysX_Controller::Tick_Controller(_float fTimeDelta)
-{		
+{	
+	m_bGroundChecked = false;
+
+
 	Vec3 vPosition = m_pTransformCom->Get_Position(); // 피직스 기준으로는 발 끝이다.
 	PxExtendedVec3 vPhysPosition = m_pPhysXController->getPosition();
 
@@ -83,6 +89,24 @@ void CPhysX_Controller::LateTick_Controller(_float fTimeDelta)
 	PxExtendedVec3 vPhysXPosition = m_pPhysXController->getFootPosition();
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(vPhysXPosition.x, vPhysXPosition.y, vPhysXPosition.z, 1.f));
 	m_vPrevPosition = m_pTransformCom->Get_Position();
+
+	if (m_bGroundChecked == false)
+	{
+		if (m_eGroundFlag == PxPairFlag::eNOTIFY_TOUCH_FOUND || m_eGroundFlag == PxPairFlag::eNOTIFY_TOUCH_PERSISTS)
+		{
+			m_eGroundFlag = PxPairFlag::eNOTIFY_TOUCH_LOST;
+			PHYSX_GROUND_COLLISION_INFO Info;
+			Info.pCollideObject = m_pOwner;
+			Info.flag = m_eGroundFlag;
+
+			m_pOwner->Ground_Collision_Exit(Info);
+		}
+		else if (m_eGroundFlag == PxPairFlag::eNOTIFY_TOUCH_LOST)
+		{
+			m_eGroundFlag = PxPairFlag::eCONTACT_DEFAULT;
+		}
+	}
+
 }
 
 
@@ -121,19 +145,50 @@ void CPhysX_Controller::Free()
 	Safe_Release(m_pTransformCom);
 }
 
-PxQueryHitType::Enum CPhysX_Controller::preFilter(const PxFilterData& filterData, const PxShape* shape, const PxRigidActor* actor, PxHitFlags& queryFlags)
+
+void CPhysX_Controller::onShapeHit(const PxControllerShapeHit& hit)
 {
-	return PxQueryHitType::Enum();
+	if (GI->Is_Compare(hit.actor->getName(), "Ground"))
+	{
+		m_bGroundChecked = true;
+		if (m_eGroundFlag == PxPairFlag::eNOTIFY_TOUCH_FOUND)
+		{
+			m_eGroundFlag = PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+			PHYSX_GROUND_COLLISION_INFO Info;
+			Info.pCollideObject = m_pOwner;
+			Info.flag = m_eGroundFlag;
+
+			m_pOwner->Ground_Collision_Enter(Info);
+		}
+
+		else if (m_eGroundFlag == PxPairFlag::eNOTIFY_TOUCH_PERSISTS)
+		{
+			m_eGroundFlag = PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+			PHYSX_GROUND_COLLISION_INFO Info;
+			Info.pCollideObject = m_pOwner;
+			Info.flag = m_eGroundFlag;
+
+			m_pOwner->Ground_Collision_Continue(Info);
+		}
+
+		else if(m_eGroundFlag == PxPairFlag::eCONTACT_DEFAULT)
+		{
+			m_eGroundFlag = PxPairFlag::eNOTIFY_TOUCH_FOUND;
+			PHYSX_GROUND_COLLISION_INFO Info;
+			Info.pCollideObject = m_pOwner;
+			Info.flag = m_eGroundFlag;
+
+			m_pOwner->Ground_Collision_Enter(Info);
+		}
+	}
 }
 
-PxQueryHitType::Enum CPhysX_Controller::postFilter(const PxFilterData& filterData, const PxQueryHit& hit, const PxShape* shape, const PxRigidActor* actor)
+void CPhysX_Controller::onControllerHit(const PxControllersHit& hit)
 {
-	return PxQueryHitType::Enum();
 }
 
-bool CPhysX_Controller::filter(const PxController& a, const PxController& b)
+void CPhysX_Controller::onObstacleHit(const PxControllerObstacleHit& hit)
 {
-	return false;
 }
 
 

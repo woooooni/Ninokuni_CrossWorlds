@@ -188,7 +188,7 @@ HRESULT CIceBearMan::Ready_Colliders()
 	ColliderDesc.pOwner = this;
 	ColliderDesc.pNode = nullptr;
 	ColliderDesc.pOwnerTransform = m_pTransformCom;
-	ColliderDesc.ModePivotMatrix = m_pModelCom->Get_PivotMatrix();
+	ColliderDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
 	ColliderDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
 	ColliderDesc.bLockAngle_X = false;
 	ColliderDesc.bLockAngle_Y = false;
@@ -216,7 +216,7 @@ HRESULT CIceBearMan::Ready_Colliders()
 	//OBBDesc.pOwner = this;
 	//OBBDesc.pNode = nullptr;
 	//OBBDesc.pOwnerTransform = m_pTransformCom;
-	//OBBDesc.ModePivotMatrix = m_pModelCom->Get_PivotMatrix();
+	//OBBDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
 	//OBBDesc.vOffsetPosition = Vec3(0.f, 250.f, 0.f);
 	//OBBDesc.bLockAngle_X = true;
 	//OBBDesc.bLockAngle_Y = true;

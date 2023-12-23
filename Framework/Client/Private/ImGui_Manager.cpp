@@ -420,9 +420,9 @@ void CImGui_Manager::Free()
 //
 //            CModel* pModel = pGameObject->Get_Component<CModel>(L"Com_Model");
 //            if (pModel == nullptr)
-//                XMStoreFloat4x4(&tBoxDesc.ModePivotMatrix, XMMatrixIdentity());
+//                XMStoreFloat4x4(&tBoxDesc.ModelPivotMatrix, XMMatrixIdentity());
 //            else
-//                XMStoreFloat4x4(&tBoxDesc.ModePivotMatrix, pModel->Get_PivotMatrix());
+//                XMStoreFloat4x4(&tBoxDesc.ModelPivotMatrix, pModel->Get_PivotMatrix());
 //
 //            tBoxDesc.tBox = tBox;
 //            tBoxDesc.pOwnerTransform = pTransform;
@@ -646,9 +646,9 @@ void CImGui_Manager::Free()
 //
 //                    CModel* pModel = m_pTarget->Get_Component<CModel>(L"Com_Model");
 //                    if (pModel == nullptr)
-//                        XMStoreFloat4x4(&tBoxDesc.ModePivotMatrix, XMMatrixIdentity());
+//                        XMStoreFloat4x4(&tBoxDesc.ModelPivotMatrix, XMMatrixIdentity());
 //                    else
-//                        XMStoreFloat4x4(&tBoxDesc.ModePivotMatrix, pModel->Get_PivotMatrix());
+//                        XMStoreFloat4x4(&tBoxDesc.ModelPivotMatrix, pModel->Get_PivotMatrix());
 //
 //                    tBoxDesc.tBox = tBox;
 //                    tBoxDesc.pOwnerTransform = pTransform;
@@ -674,9 +674,9 @@ void CImGui_Manager::Free()
 //                    
 //                    CModel* pModel = m_pTarget->Get_Component<CModel>(L"Com_Model");
 //                    if (pModel == nullptr)
-//                        XMStoreFloat4x4(&tSphereDesc.ModePivotMatrix, XMMatrixIdentity());
+//                        XMStoreFloat4x4(&tSphereDesc.ModelPivotMatrix, XMMatrixIdentity());
 //                    else
-//                        XMStoreFloat4x4(&tSphereDesc.ModePivotMatrix, pModel->Get_PivotMatrix());
+//                        XMStoreFloat4x4(&tSphereDesc.ModelPivotMatrix, pModel->Get_PivotMatrix());
 //
 //                    tSphereDesc.tSphere = tSphere;
 //                    tSphereDesc.pOwnerTransform = pTransform;
@@ -1833,9 +1833,9 @@ void CImGui_Manager::Free()
 //                        ZeroMemory(&tDesc, sizeof tDesc);
 //
 //                        if (nullptr == pObj->Get_Component<CModel>(L"Com_Model"))
-//                            XMStoreFloat4x4(&tDesc.ModePivotMatrix, XMMatrixIdentity());
+//                            XMStoreFloat4x4(&tDesc.ModelPivotMatrix, XMMatrixIdentity());
 //                        else
-//                            XMStoreFloat4x4(&tDesc.ModePivotMatrix, pObj->Get_Component<CModel>(L"Com_Model")->Get_PivotMatrix());
+//                            XMStoreFloat4x4(&tDesc.ModelPivotMatrix, pObj->Get_Component<CModel>(L"Com_Model")->Get_PivotMatrix());
 //
 //                        tDesc.vOffsetPosition = vColliderOffset;
 //                        tDesc.pOwnerTransform = pTransform;
@@ -1852,9 +1852,9 @@ void CImGui_Manager::Free()
 //                        ZeroMemory(&tDesc, sizeof tDesc);
 //
 //                        if (nullptr == pObj->Get_Component<CModel>(L"Com_Model"))
-//                            XMStoreFloat4x4(&tDesc.ModePivotMatrix, XMMatrixIdentity());
+//                            XMStoreFloat4x4(&tDesc.ModelPivotMatrix, XMMatrixIdentity());
 //                        else
-//                            XMStoreFloat4x4(&tDesc.ModePivotMatrix, pObj->Get_Component<CModel>(L"Com_Model")->Get_PivotMatrix());
+//                            XMStoreFloat4x4(&tDesc.ModelPivotMatrix, pObj->Get_Component<CModel>(L"Com_Model")->Get_PivotMatrix());
 //
 //                        tDesc.vOffsetPosition = vColliderOffset;
 //                        tDesc.pOwnerTransform = pTransform;

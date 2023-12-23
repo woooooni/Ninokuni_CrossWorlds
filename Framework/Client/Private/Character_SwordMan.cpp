@@ -16,10 +16,13 @@
 
 
 
+#include "State_SwordMan_Battle_Attack.h"
+#include "State_SwordMan_Battle_Guard.h"
 #include "State_SwordMan_Battle_Idle.h"
 #include "State_SwordMan_Battle_Jump.h"
 #include "State_SwordMan_Battle_Walk.h"
 #include "State_SwordMan_Battle_Run.h"
+
 
 
 #include "State_SwordMan_Dead.h"
@@ -198,9 +201,7 @@ HRESULT CCharacter_SwordMan::Ready_States()
 
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_JumpStart");
 	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_JumpUpLoop");
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_JumpLand");
 	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_JUMP, CState_SwordMan_Neutral_Jump::Create(m_pStateCom, strAnimationNames));
 
 
@@ -223,24 +224,22 @@ HRESULT CCharacter_SwordMan::Ready_States()
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_CSBattleStand");
 	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_FinishCombat");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_IDLE, CState_SwordMan_Neutral_Idle::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_IDLE, CState_SwordMan_Battle_Idle::Create(m_pStateCom, strAnimationNames));
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_BattleRun");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_WALK, CState_SwordMan_Neutral_Walk::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_WALK, CState_SwordMan_Battle_Walk::Create(m_pStateCom, strAnimationNames));
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_Dash");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_RUN, CState_SwordMan_Neutral_Run::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_RUN, CState_SwordMan_Battle_Run::Create(m_pStateCom, strAnimationNames));
 
 
-	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_JumpStart");
+	strAnimationNames.clear();	
 	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_JumpUpLoop");
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_JumpLand");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_JUMP, CState_SwordMan_Neutral_Jump::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_JUMP, CState_SwordMan_Battle_Jump::Create(m_pStateCom, strAnimationNames));
 
 
 	
@@ -264,7 +263,7 @@ HRESULT CCharacter_SwordMan::Ready_Colliders()
 	//ZeroMemory(&tSphere, sizeof(BoundingSphere));
 	//tSphere.Radius = 1.f;
 
-	//XMStoreFloat4x4(&ColliderDesc.ModePivotMatrix, m_pModelCom->Get_PivotMatrix());
+	//XMStoreFloat4x4(&ColliderDesc.ModelPivotMatrix, m_pModelCom->Get_PivotMatrix());
 	//ColliderDesc.pOwnerTransform = m_pTransformCom;
 
 	//ColliderDesc.tSphere = tSphere;

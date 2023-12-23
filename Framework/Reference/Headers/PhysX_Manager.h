@@ -31,11 +31,10 @@ public:
 	PxRigidDynamic* Add_Dynamic_Actor(const PHYSX_INIT_DESC& Desc);
 	HRESULT Add_Static_Mesh_Actor(const PHYSX_INIT_DESC& Desc, __out vector<PxRigidStatic*>& refOut);
 	HRESULT Add_Dynamic_Mesh_Actor(const PHYSX_INIT_DESC& Desc, __out vector<PxRigidDynamic*>& refOut);
-	HRESULT Add_Ground(class CGameObject* pGameObject, class CModel* pModel, Matrix WorldMatrix);
+	HRESULT Add_Ground(class CGameObject* pGameObject, class CModel* pModel, Matrix WorldMatrix, const wstring& strCollisionTag);
 
-	
-	PxController* Add_CapsuleController(class CGameObject* pGameObject, Matrix WorldMatrix, _float fHeight, _float fRadius, _float fMaxJumpHeight);
-	PxController* Add_BoxController(CGameObject* pGameObject, Matrix WorldMatrix, _float3 fExtents, _float fMaxJumpHeight);
+	PxController* Add_CapsuleController(class CGameObject* pGameObject, Matrix WorldMatrix, _float fHeight, _float fRadius, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack);
+	PxController* Add_BoxController(CGameObject* pGameObject, Matrix WorldMatrix, _float3 fExtents, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack);
 
 public:
 	HRESULT Reset_PhysX();
@@ -58,7 +57,6 @@ public:
 	virtual void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs) override;
 	virtual void onTrigger(PxTriggerPair* pairs, PxU32 count) override;
 	virtual void onAdvance(const PxRigidBody* const* bodyBuffer, const PxTransform* poseBuffer, const PxU32 count) override;
-
 
 public:
 	  //PxParticleSystem* Get_ParticleSystem()			{ return m_pParticleSystem; }
@@ -130,10 +128,9 @@ private:
 private:
 	map<_uint, vector<PHYSX_STATIC_OBJECT_DESC>> m_StaticObjects;
 	map<_uint, vector<PHYSX_DYNAMIC_OBJECT_DESC>> m_DynamicObjects;
-
 	map<_uint, class PxController*> m_Controllers;
-
 	map<_uint, vector<PHYSX_STATIC_OBJECT_DESC>> m_GroundObjects;
+
 
 private:
 	ID3D11Device* m_pDevice = nullptr;
@@ -142,10 +139,6 @@ private:
 		
 public:
 	virtual void Free() override;
-
-
-	
-
 };
 
 END

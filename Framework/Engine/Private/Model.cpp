@@ -304,10 +304,12 @@ HRESULT CModel::LateTick(_float fTimeDelta)
 
 			if (!m_TweenDesc.cur.iFix) // 픽스가 아닐때만 프레임 갱신 (픽스라면 현재 프레임은 마지막 프레임으로 고정)
 			{
+				if (0 != m_TweenDesc.cur.iNextFrame)
+					m_TweenDesc.cur.iFinish = false;
+
 				m_TweenDesc.cur.fFrameAcc = 0.f;
 				m_TweenDesc.cur.iCurFrame = (m_TweenDesc.cur.iCurFrame + 1) % pCurAnim->Get_MaxFrameCount();
 				m_TweenDesc.cur.iNextFrame = (m_TweenDesc.cur.iCurFrame + 1) % pCurAnim->Get_MaxFrameCount();
-				m_TweenDesc.cur.iFinish = false;
 			}
 		}
 

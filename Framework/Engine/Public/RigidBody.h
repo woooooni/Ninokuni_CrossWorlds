@@ -37,7 +37,15 @@ public:
     void Set_Use_Gravity(_bool bGravity) { m_bUseGravity = bGravity; }
 
     _bool Is_Ground() { return m_bGround; }
-    void Set_Ground(_bool bGround) { m_bGround = bGround; }
+    void Set_Ground(_bool bGround) { 
+        m_vVelocity.y = 0.f; 
+        m_bGround = bGround; 
+
+        if(false == bGround)
+            m_fFrictionScale = 1.f;
+        else
+            m_fFrictionScale = 10.f;
+    }
 
 public:
     _float Get_FrictionScale() { return m_fFrictionScale; }
@@ -53,7 +61,7 @@ private:
 
 private:
     _bool m_bUseGravity = true;
-    _bool m_bGround = true;
+    _bool m_bGround = false;
     Vec3 m_vVelocity = {};
     _float m_fFrictionScale = 1.f;
 

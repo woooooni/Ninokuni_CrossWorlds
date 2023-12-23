@@ -23,6 +23,11 @@ namespace Engine
 
 	}PHYSX_GROUND_COLLISION_INFO;
 
+	typedef struct tagPhysXControllerGroundCollisionDesc
+	{
+		PxPairFlag::Enum eFlag = PxPairFlag::Enum::eNOTIFY_TOUCH_CCD;
+		_bool bChecked = false;
+	} PHYSX_CONTROLLER_GROUND;
 
 	typedef struct tagKeyFrame
 	{

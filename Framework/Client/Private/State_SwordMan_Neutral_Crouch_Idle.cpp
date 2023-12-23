@@ -45,7 +45,7 @@ void CState_SwordMan_Neutral_Crouch_Idle::Exit_State()
 
 void CState_SwordMan_Neutral_Crouch_Idle::Input(_float fTimeDelta)
 {
-    if (KEY_HOLD(KEY::W) || KEY_TAP(KEY::A) || KEY_TAP(KEY::S) || KEY_TAP(KEY::D))
+    if (KEY_HOLD(KEY::W) || KEY_HOLD(KEY::A) || KEY_HOLD(KEY::S) || KEY_HOLD(KEY::D))
         m_pStateMachineCom->Change_State(CCharacter::STATE::NEUTRAL_CROUCH_MOVE);
 
     if (KEY_TAP(KEY::C))

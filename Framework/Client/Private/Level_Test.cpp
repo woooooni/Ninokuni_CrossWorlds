@@ -146,7 +146,7 @@ HRESULT CLevel_Test::Ready_Lights()
 
 HRESULT CLevel_Test::Ready_Layer_Camera(const LAYER_TYPE eLayerType)
 {
-	if (FAILED(CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW)))
+	if (FAILED(CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE)))
 		return E_FAIL;
 
 	return S_OK;
@@ -164,8 +164,8 @@ HRESULT CLevel_Test::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 	if (FAILED(GI->Add_GameObject(LEVEL_TEST, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Character_SwordMan"), nullptr, &pTest)))
 		return E_FAIL;
 
-	CCamera_Manager::GetInstance()->Get_CurCamera()->Set_TargetObj(pTest);
-	CCamera_Manager::GetInstance()->Get_CurCamera()->Set_LookAtObj(pTest);
+	/*CCamera_Manager::GetInstance()->Get_CurCamera()->Set_TargetObj(pTest);
+	CCamera_Manager::GetInstance()->Get_CurCamera()->Set_LookAtObj(pTest);*/
 
 	return S_OK;
 }

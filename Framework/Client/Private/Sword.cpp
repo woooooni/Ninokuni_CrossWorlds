@@ -226,14 +226,14 @@ HRESULT CSword::Ready_Colliders()
 	//ZeroMemory(&tSphere, sizeof(BoundingSphere));
 	//tSphere.Radius = 1.f;
 
-	//XMStoreFloat4x4(&ColliderDesc.ModePivotMatrix, m_pModelCom->Get_PivotMatrix());
+	//XMStoreFloat4x4(&ColliderDesc.ModelPivotMatrix, m_pModelCom->Get_PivotMatrix());
 
 	//ColliderDesc.tSphere = tSphere;
 
 	//ColliderDesc.tSphere.Radius = 1.f;
 	//ColliderDesc.pOwnerTransform = m_pTransformCom;
 	//ColliderDesc.vOffsetPosition = _float3(0.f, 0.f, 50.f);
-	//XMStoreFloat4x4(&ColliderDesc.ModePivotMatrix, m_pModelCom->Get_PivotMatrix());
+	//XMStoreFloat4x4(&ColliderDesc.ModelPivotMatrix, m_pModelCom->Get_PivotMatrix());
 
 	//if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider_Sphere::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BOUNDARY, &ColliderDesc)))
 	//	return E_FAIL;
@@ -249,7 +249,7 @@ HRESULT CSword::Ready_Colliders()
 	//OBBDesc.pOwnerTransform = m_pTransformCom;
 	//OBBDesc.vOffsetPosition = _float3(0.f, 0.f, 60.f);
 	//
-	//XMStoreFloat4x4(&OBBDesc.ModePivotMatrix, m_pModelCom->Get_PivotMatrix());
+	//XMStoreFloat4x4(&OBBDesc.ModelPivotMatrix, m_pModelCom->Get_PivotMatrix());
 
 	//if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider_Sphere::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::ATTACK, &OBBDesc)))
 	//	return E_FAIL;

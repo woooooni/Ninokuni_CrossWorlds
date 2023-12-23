@@ -40,8 +40,8 @@ void CState_SwordMan_Battle_Jump::Tick_State(_float fTimeDelta)
     }
 
 
-    if (m_iCurrAnimIndex == m_AnimIndices[1] && m_pRigidBodyCom->Is_Ground())
-        m_pStateMachineCom->Change_State(CCharacter::STATE::NEUTRAL_IDLE);
+    if (m_iCurrAnimIndex == m_AnimIndices[1] && true == m_pRigidBodyCom->Is_Ground())
+        m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_JUMP);
 }
 
 void CState_SwordMan_Battle_Jump::Exit_State()

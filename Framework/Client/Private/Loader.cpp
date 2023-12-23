@@ -555,9 +555,10 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 				pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
 				pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
 
-				if (i == LAYER_TYPE::LAYER_GROUND)
+				if (i == LAYER_TYPE::LAYER_GROUND || i == LAYER_TYPE::LAYER_BUILDING)
 				{
-					if (FAILED(GI->Add_Ground(pObj, pObj->Get_Component<CModel>(L"Com_Model"), pTransform->Get_WorldMatrix())))
+					wstring strCollisionTag = L"Ground";
+					if (FAILED(GI->Add_Ground(pObj, pObj->Get_Component<CModel>(L"Com_Model"), pTransform->Get_WorldMatrix(), strCollisionTag)))
 						return E_FAIL;
 				}
 			}
