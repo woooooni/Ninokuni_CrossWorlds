@@ -36,6 +36,8 @@ HRESULT CShadow_Thief::Initialize(void* pArg)
 	if (FAILED(Ready_States()))
 		return E_FAIL;
 
+	m_pModelCom->Set_Animation(1);
+
 	return S_OK;
 }
 

@@ -776,7 +776,7 @@ void CTool_Map::MapMonsterSpace()
 
 			if (ImGui::BeginCombo(u8"Level_Type", szLevelType))
 			{
-				for (_uint i = 0; i < LEVEL_LIST_END; ++i)
+				for (_uint i = 0; i < 2; ++i)
 				{
 					_bool IsSelected = (szLevelType == m_ImguiLevelName[i]);
 
@@ -1344,7 +1344,7 @@ HRESULT CTool_Map::Save_NPC_Data(const wstring& strNPCFileName)
 
 	for (_uint i = 0; i < LAYER_TYPE::LAYER_END; ++i)
 	{
-		if (LAYER_TYPE::LAYER_MONSTER != i)
+		if (LAYER_TYPE::LAYER_NPC != i)
 			continue;
 
 		// 2. ObjectCount

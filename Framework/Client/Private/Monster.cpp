@@ -229,6 +229,9 @@ HRESULT CMonster::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffe
 	if(FAILED(pInstancingShader->Bind_RawValue("g_TweenFrames_Array", TweenDesc.data(), sizeof(TWEEN_DESC) * TweenDesc.size())))
 		return E_FAIL;
 
+	if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
+		return E_FAIL;
+
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 	_uint iPassIndex	= 0;
 
