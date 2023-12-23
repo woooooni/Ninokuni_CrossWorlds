@@ -1,8 +1,9 @@
 #include "stdafx.h"
 #include "Camera_Follow.h"
+
 #include "GameInstance.h"
-#include "Key_Manager.h"
-#include "Utils.h"
+
+#include "Camera_Manager.h"
 
 CCamera_Follow::CCamera_Follow(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
 	: CCamera(pDevice, pContext, strObjTag, OBJ_TYPE::OBJ_CAMERA)
@@ -31,34 +32,36 @@ HRESULT CCamera_Follow::Initialize(void * pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+	/* Set Camera */
+	{
+		m_tLerpDist.fCurValue = Cam_Dist_Follow_Default;
+
+		m_vLookAtOffset = Vec4{ 0.f, 0.f, 0.f, 1.f };
+		m_vTargetOffset = Vec4{ 0.f, 0.f, 0.f, 1.f };
+
+		m_vMouseSensitivity = Vec2{ 0.5f, 0.5f };
+	}
+
 	return S_OK;
 }
 
 void CCamera_Follow::Tick(_float fTimeDelta)
 {
+	if (nullptr == m_pTargetObj || nullptr == m_pLookAtObj)
+		return;
+
 	__super::Tick(fTimeDelta);
-	__super::LateTick(fTimeDelta);
+
+	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, Calculate_Position(fTimeDelta));
+	m_pTransformCom->LookAt(Calculate_Look(fTimeDelta));
 }
 
 void CCamera_Follow::LateTick(_float fTimeDelta)
 {
-	/*if (false == m_tShakeDesc.bEnd)
-	{
-		m_tShakeDesc.fAccTime += fTimeDelta;
-		if (m_tShakeDesc.fAccTime >= m_tShakeDesc.fDuration)
-			m_tShakeDesc.bEnd = true;
+	if (nullptr == m_pTargetObj || nullptr == m_pLookAtObj)
+		return;
 
-		_float fForce = CUtils::Random_Float(-m_tShakeDesc.fForce, m_tShakeDesc.fForce);
-
-		_vector vShakeDir = XMVector3Normalize(XMVectorSet(1.f, 1.f, 1.f, 0.f));
-		_vector vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
-		vPosition += vShakeDir * fForce * fTimeDelta;
-
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPosition);
-	}*/
-
-	
-	
+	__super::LateTick(fTimeDelta);
 }
 
 HRESULT CCamera_Follow::Render()
@@ -66,66 +69,62 @@ HRESULT CCamera_Follow::Render()
 	return S_OK;
 }
 
-void CCamera_Follow::Tick_Basic(_float fTimeDelta)
-{
-	//_long	MouseMove = 0;
-
-
-	//if (MouseMove = GI->Get_DIMMoveState(DIMM_Y))
-	//{
-	//	m_vAngle.x -= MouseMove * fTimeDelta * 2.f;
-	//	if (360.f <= m_vAngle.x)
-	//		m_vAngle.x = 0.f;
-	//	else if (0.f >= m_vAngle.x)
-	//		m_vAngle.x = 360.f;
-	//}
-
-	//if (MouseMove = GI->Get_DIMMoveState(DIMM_X))
-	//{
-	//	m_vAngle.y += MouseMove * fTimeDelta * 5.f;
-	//	if (360.f <= m_vAngle.y)
-	//		m_vAngle.y = 0.f;
-	//	else if (0.f >= m_vAngle.y)
-	//		m_vAngle.y = 360.f;
-	//}
-
-	//// x, y 회전 행렬
-	//_matrix mX = XMMatrixRotationAxis(XMVectorSet(1.f, 0.f, 0.f, 0.f), XMConvertToRadians(m_vAngle.x));
-	//_matrix mY = XMMatrixRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(m_vAngle.y));
-
-	//// 멀어질 방향
-	//_vector vCamDir = XMVector3Normalize(XMVectorSet(0.f, 1.f, -1.f, 0.f));
-
-	//// X, Y회전
-	//vCamDir = XMVector3TransformNormal(vCamDir, mX);
-	//vCamDir = XMVector3TransformNormal(vCamDir, mY);
-	//_vector vCamPos = vCamDir * m_fOffsetDistance;
-
-	//_vector vPlayerPos = m_pTargetTransform->Get_State(CTransform::STATE_POSITION);
-	//_vector vDestPos = vPlayerPos + vCamPos;
-
-	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorLerp(m_pTransformCom->Get_State(CTransform::STATE_POSITION), vDestPos, m_fCamSpeed * fTimeDelta));
-
-	//_float4 vLookAt;
-	//XMStoreFloat4(&vLookAt, vPlayerPos);
-	//vLookAt.y += 1.f;
-	//m_pTransformCom->LookAt(XMLoadFloat4(&vLookAt));
-}
 
 HRESULT CCamera_Follow::Ready_Components()
 {
 	return S_OK;
 }
 
-void CCamera_Follow::Follow(_float fTimeDelta)
+Vec4 CCamera_Follow::Calculate_Look(_float fTimeDelta)
 {
-	/*_vector vOffsetPosition = XMLoadFloat3(&m_vOffsetPosition);
-	_vector vTargetPosition = m_pTargetTransform->Get_State(CTransform::STATE_POSITION) + vOffsetPosition;
-	_vector vCamPostion = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	Vec3 vRelativeLookAtOffSet = XMVector3TransformCoord(m_vLookAtOffset, m_pLookAtObj->Get_Component<CTransform>(L"Com_Transform")->Get_WorldMatrix());
 
+	Vec4 vLookAt = Vec4(m_pTargetObj->Get_Component<CTransform>(L"Com_Transform")->Get_Position()) + vRelativeLookAtOffSet;
+	
+	vLookAt.w = 1.f;
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorLerp(vTargetPosition, vCamPostion, fTimeDelta));
-	m_pTransformCom->LookAt(m_pTargetTransform->Get_State(CTransform::STATE_POSITION));*/
+	return vLookAt;
+}
+
+Vec4 CCamera_Follow::Calculate_Position(_float fTimeDelta)
+{
+	_long	MouseMove = 0l;
+
+	if (MouseMove = GI->Get_DIMMoveState(DIMM_X))
+		m_vAngle.x += MouseMove * m_vMouseSensitivity.y * fTimeDelta * -1.f;
+
+	if (MouseMove = GI->Get_DIMMoveState(DIMM_Y))
+	{
+		m_vAngle.y += MouseMove * m_vMouseSensitivity.x * fTimeDelta;
+
+		if (m_vAngle.y <= 0.01f)
+		{
+			m_vAngle.y = 0.01f;
+		}
+		else if (3.13f < m_vAngle.y)
+		{
+			m_vAngle.y = 3.13f;
+		}
+	}
+
+	/* 구면 좌표계(극좌표계) -> 왼손 직교 좌표계 */
+	Vec4 vCamLocal;
+	{
+		vCamLocal.x = m_tLerpDist.fCurValue * sinf(m_vAngle.y) * cosf(m_vAngle.x);	// x = r * sin(위도 앙각) * cos(경도 방위각)
+		vCamLocal.y = m_tLerpDist.fCurValue * cosf(m_vAngle.y);					// y = r * cos(위도 앙각)
+		vCamLocal.z = m_tLerpDist.fCurValue * sinf(m_vAngle.y) * sinf(m_vAngle.x);	// z = r * sin(위도 앙각) * sin(경도 방위각)
+		vCamLocal.w = 0.f;
+	}
+
+	/* 현재 트랜스폼 상대적 오프셋 계산 */
+	//Vec3 vRelativeTargetOffSet = XMVector3TransformCoord(m_vTargetOffset, m_pTransformCom->Get_WorldMatrix());
+
+	/* 카메라 최종 월드 위치 */
+	Vec4 vCamWorld = vCamLocal + Vec4(m_pTargetObj->Get_Component<CTransform>(L"Com_Transform")->Get_Position());// +vRelativeTargetOffSet;
+
+	vCamWorld.w = 1.f;
+
+	return vCamWorld;
 }
 
 CCamera_Follow * CCamera_Follow::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)

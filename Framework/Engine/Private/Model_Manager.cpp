@@ -814,6 +814,7 @@ HRESULT CModel_Manager::Export_Socket(const wstring& strFinalFolderPath, CModel*
 	
 	vector<_uint> SocketIndices = pModel->m_SocketTransformIndexCache;
 	vector<Vec3> SocketCustomPivotRotaiton = pModel->m_SocketCustomPivotRotation;
+	vector<Vec3> SocketCustomPivotPosition = pModel->m_SocketCustomPivotPosition;
 
 	File->Write<_uint>(_uint(SocketIndices.size()));
 
@@ -821,6 +822,7 @@ HRESULT CModel_Manager::Export_Socket(const wstring& strFinalFolderPath, CModel*
 	{
 		File->Write<_uint>(SocketIndices[i]);
 		File->Write<Vec3>(SocketCustomPivotRotaiton[i]);
+		File->Write<Vec3>(SocketCustomPivotPosition[i]);
 	}
 
 	return S_OK;
@@ -1479,11 +1481,13 @@ HRESULT CModel_Manager::Import_Socket(const wstring strFinalPath, CModel* pModel
 		_uint iSocketIndex;
 		File->Read<_uint>(iSocketIndex);
 
-		Vec3 vRot;
+		Vec3 vRot, vPos;
 		File->Read<Vec3>(vRot);
+		File->Read<Vec3>(vPos);
 
 		pModel->Add_SocketTransformIndexCache(iSocketIndex);
 		pModel->Add_CustomSocketPivotRotation(vRot);
+		pModel->Add_CustomSocketPivotPosition(vPos);
 
 		if(99 != GI->Get_CurrentLevel())
 			pModel->Add_SocketTransforms(GI->Create_AnimationSocketTransform(pModel, iSocketCount));

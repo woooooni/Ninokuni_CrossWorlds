@@ -809,6 +809,8 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="..\Bin\ShaderFiles\Matrix.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Quaternion.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_AnimModel_Instance.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_MeshEffect_Instance.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Point_Instance.hlsl" />

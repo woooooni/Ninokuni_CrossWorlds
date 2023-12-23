@@ -36,6 +36,8 @@ void CCamera::Tick(_float fTimeDelta)
 {
 	if (!m_bActive)
 		return;
+
+	Tick_Lerp(fTimeDelta);
 }
 
 void CCamera::LateTick(_float fTimeDelta)
@@ -58,6 +60,19 @@ HRESULT CCamera::Render()
 //
 //	GI->Set_Transform(CPipeLine::D3DTS_PROJ, XMMatrixPerspectiveFovLH(m_tProjDesc.tLerpFov.fCurValue, m_tProjDesc.fAspect, m_tProjDesc.fNear, m_tProjDesc.fFar));
 //}
+
+void CCamera::Tick_Lerp(const _float fDeltaTime)
+{
+	if (m_tProjDesc.tLerpFov.bActive)
+	{
+		m_tProjDesc.tLerpFov.Update(fDeltaTime);
+	}
+
+	if (m_tLerpDist.bActive)
+	{
+		m_tLerpDist.Update(fDeltaTime);
+	}
+}
 
 HRESULT CCamera::Ready_Components()
 {

@@ -296,7 +296,10 @@ HRESULT CModel::LateTick(_float fTimeDelta)
 				if (!pCurAnim->Is_Loop()) // 픽스 여부 체크
 					m_TweenDesc.cur.iFix = true;
 				else
-					pCurAnim->Clear_AnimationData();
+				{
+					pCurAnim->Clear_AnimationEvent();
+					m_Animations[m_TweenDesc.cur.iAnimIndex]->Clear_AnimationSpeed();
+				}
 			}
 
 			if (!m_TweenDesc.cur.iFix) // 픽스가 아닐때만 프레임 갱신 (픽스라면 현재 프레임은 마지막 프레임으로 고정)
@@ -332,7 +335,8 @@ HRESULT CModel::LateTick(_float fTimeDelta)
 		/* 트위닝 종료*/
 		if (1.f <= m_TweenDesc.fTweenRatio)
 		{
-			pCurAnim->Clear_AnimationData();
+			pCurAnim->Clear_AnimationEvent();
+			m_Animations[m_TweenDesc.cur.iAnimIndex]->Clear_AnimationSpeed();
 			m_TweenDesc.cur = m_TweenDesc.next;
 			m_TweenDesc.ClearNextAnim();
 		}
@@ -390,12 +394,28 @@ void CModel::Set_CustomSocketPivotRotation(const _uint iIndex, Vec3 vCustomSocke
 	m_SocketCustomPivotRotation[iIndex] = vCustomSocket;
 }
 
+void CModel::Set_CustomSocketPivotPosition(const _uint iIndex, Vec3 vCustomSocket)
+{
+	if (m_SocketCustomPivotPosition.size() <= iIndex)
+		return;
+
+	m_SocketCustomPivotPosition[iIndex] = vCustomSocket;
+}
+
 Vec3 CModel::Get_CustomSocketPivotRotation(const _uint iIndex)
 {
 	if (m_SocketCustomPivotRotation.size() <= iIndex)
 		return Vec3();
 
 	return m_SocketCustomPivotRotation[iIndex];
+}
+
+Vec3 CModel::Get_CustomSocketPivotPosition(const _uint iIndex)
+{
+	if (m_SocketCustomPivotPosition.size() <= iIndex)
+		return Vec3();
+
+	return m_SocketCustomPivotPosition[iIndex];
 }
 
 Matrix CModel::Get_SocketLocalMatrix(const _uint iSocketEnumIndex)
@@ -501,7 +521,19 @@ Matrix CModel::Get_SocketLocalMatrix(const _uint iSocketEnumIndex)
 		matAnimLocal.Backward(vLook);
 	}
 
-	/* 포지션 리셋*/
+
+	/* 회전 행렬 포지션 초기화 */
+	Vec4 vOneW = { 0.f, 0.f, 0.f, 1.f };
+	memcpy(&matAnimLocal.m[3], &vOneW, sizeof(Vec4));
+
+	/* 회전 행렬에서 피벗 포지션 값 뽑음*/
+	Vec3 vPivotPosition = m_SocketCustomPivotRotation[iSocketEnumIndex];
+	vPivotPosition = XMVector3TransformCoord(vPivotPosition, matAnimLocal);
+
+	/* 회전 행렬 포지션에 기존 로컬 포지션과 피벗 포지션 값을 더함 */
+	vAnimLocalPos += Vec4(vPivotPosition.x, vPivotPosition.y, vPivotPosition.z, 0.f);
+
+	/* 포지션 적용  */
 	memcpy(&matAnimLocal.m[3], &vAnimLocalPos, sizeof(Vec4));
 
 	return matAnimLocal;
@@ -613,8 +645,11 @@ HRESULT CModel::Set_Animation(const _uint& iAnimationIndex, const _float& fTween
 
 	if (m_TweenDesc.cur.iAnimIndex < 0) // 최초 1회 실행 
 	{
-		if(0 <= m_TweenDesc.cur.iAnimIndex)
-			m_Animations[m_TweenDesc.cur.iAnimIndex]->Clear_AnimationData();
+		if (0 <= m_TweenDesc.cur.iAnimIndex)
+		{
+			m_Animations[m_TweenDesc.cur.iAnimIndex]->Clear_AnimationEvent();
+			m_Animations[m_TweenDesc.cur.iAnimIndex]->Clear_AnimationSpeed();
+		}
 
 		m_TweenDesc.cur.iAnimIndex = iAnimationIndex % m_Animations.size();
 		return S_OK;
@@ -624,7 +659,10 @@ HRESULT CModel::Set_Animation(const _uint& iAnimationIndex, const _float& fTween
 	if (fTweenDuration <= 0.f)
 	{
 		if (0 <= m_TweenDesc.cur.iAnimIndex)
-			m_Animations[m_TweenDesc.cur.iAnimIndex]->Clear_AnimationData();
+		{
+			m_Animations[m_TweenDesc.cur.iAnimIndex]->Clear_AnimationEvent();
+			m_Animations[m_TweenDesc.cur.iAnimIndex]->Clear_AnimationSpeed();
+		}
 		m_TweenDesc.cur.iAnimIndex = iAnimationIndex % m_Animations.size();
 		m_TweenDesc.ClearNextAnim();
 		return S_OK;
@@ -633,6 +671,7 @@ HRESULT CModel::Set_Animation(const _uint& iAnimationIndex, const _float& fTween
 	m_TweenDesc.ClearNextAnim();
 	m_TweenDesc.next.iAnimIndex = iAnimationIndex % m_Animations.size();
 	m_TweenDesc.fTweenDuration = fTweenDuration;
+	//m_Animations[m_TweenDesc.cur.iAnimIndex]->Clear_AnimationSpeed();
 
 	return S_OK;
 }
@@ -804,6 +843,22 @@ void CModel::Clear_SocketTransformsCache(const _uint iSocketIndex)
 			++iCount;
 		}
 	}
+
+	iCount = 0;
+	for (vector<Vec3>::iterator iter = m_SocketCustomPivotPosition.begin(); iter != m_SocketCustomPivotPosition.end();)
+	{
+		if (iCount == iIndex)
+		{
+			m_SocketCustomPivotPosition.erase(iter);
+			break;
+		}
+		else
+		{
+			++iter;
+			++iCount;
+		}
+	}
+
 }
 
 void CModel::Clear_All_SocketTransformsCaches()
@@ -813,6 +868,9 @@ void CModel::Clear_All_SocketTransformsCaches()
 
 	m_SocketCustomPivotRotation.clear(); 
 	m_SocketCustomPivotRotation.shrink_to_fit();
+
+	m_SocketCustomPivotPosition.clear();
+	m_SocketCustomPivotPosition.shrink_to_fit();
 }
 
 HRESULT CModel::Delete_Animation(_uint iIndex)

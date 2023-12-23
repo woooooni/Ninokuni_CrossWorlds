@@ -56,7 +56,7 @@ private:
 
 #pragma region Animation
 
-	_bool m_bAllAnimLoop = TRUE;
+	_bool m_bAllAnimLoop = FALSE;
 
 #pragma endregion
 
@@ -78,7 +78,6 @@ private:
 	/* Render Index */
 	_int m_iRenderSocketIndex = 0;
 
-	vector<Vec3> m_vAutoSocket;
 	_bool		m_bAuto = FALSE;
 	_int		m_iAutoAnimIndex = 0;
 

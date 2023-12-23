@@ -2,6 +2,7 @@
 #include "Dummy.h"
 #include "GameInstance.h"
 
+#include "Camera_Manager.h"
 
 CDummy::CDummy(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameObject(pDevice, pContext, strObjectTag, OBJ_TYPE::OBJ_DUMMY)
@@ -25,6 +26,11 @@ HRESULT CDummy::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+	if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))
+	{
+		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_TargetObj(this);
+		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_LookAtObj(this);
+	}
 	return S_OK;
 }
 
