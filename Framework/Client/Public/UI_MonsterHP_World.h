@@ -29,19 +29,8 @@ private:
 	wstring m_strName = L"";
 	wstring m_strSubName = L"";
 
-	wstring m_strMaxHP = L"";
-	wstring m_strCurHP = L"";
-
 	_uint m_iTextureIndex = { 0 };
-	_float m_fWorldCX = { 0.f };
-	_float m_fWorldCY = { 0.f };
-
 	_matrix m_UIWorldMatrix;
-
-	// For Text
-	_float2 m_vDefaultPosition = _float2(250.f, 39.f); // "/"
-	_float2 m_vCurHPPosition = _float2(200.f, 39.f); // 최대 체력
-	_float2 m_vMaxHPPosition = _float2(265.f, 39.f); // 현재 체력
 
 private:
 	virtual HRESULT	Ready_Components() override;
@@ -49,7 +38,7 @@ private:
 private:
 	HRESULT	Ready_State();
 	HRESULT	Bind_ShaderResources();
-	void Set_Text();
+	void Set_Text(_float2 ScreenPos);
 
 public:
 	static CUI_MonsterHP_World* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);

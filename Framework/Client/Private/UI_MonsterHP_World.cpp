@@ -34,10 +34,8 @@ HRESULT CUI_MonsterHP_World::Initialize(void* pArg)
 
 	m_bActive = true;
 
-	m_UIWorldMatrix = XMMatrixIdentity();
-
-	m_tInfo.fCX = 0.4f;
-	m_tInfo.fCY = 0.13f;
+	m_tInfo.fCX = 80.f;
+	m_tInfo.fCY = 25.f;
 	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 
 	return S_OK;
@@ -50,7 +48,7 @@ void CUI_MonsterHP_World::Tick(_float fTimeDelta)
 		if (nullptr != m_pOwner)
 		{
 			CTransform* pTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");
-			//pTransform->Get_Position();
+
 			_float4 Temp;
 			XMStoreFloat4(&Temp, pTransform->Get_Position());
 
@@ -67,40 +65,74 @@ void CUI_MonsterHP_World::LateTick(_float fTimeDelta)
 		if (nullptr != m_pOwner)
 		{
 			_float4 vCamPos = GI->Get_CamPosition();
-			_vector vTempForDistance = m_pTransformCom->Get_Position() - XMLoadFloat4(&vCamPos); //
-			_float fDistance = XMVectorGetX(XMVector3Length(vTempForDistance)); //
+			_vector vTempForDistance = m_pTransformCom->Get_Position() - XMLoadFloat4(&vCamPos);
+			_float fDistance = XMVectorGetX(XMVector3Length(vTempForDistance));
 
 			if (fDistance > 1.f) //
 			{
-				// WorldMatrix를 Update한다.
-				_float3 vTemp = m_pTransformCom->Get_Scale();
-				_vector vScale = XMVectorSet(vTemp.x, vTemp.y, vTemp.z, 0.f);
+				//CTransform* pTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");
+				//
+				//_matrix matWorld = pTransform->Get_WorldMatrix();
+				//// 회전값을 없앤다.
+				//_matrix		Matrix = matWorld;
+				//Matrix.r[0] = XMVectorSet(1.f, 0.f, 0.f, 0.f) * XMVectorGetX(XMVector3Length(matWorld.r[0]));
+				//Matrix.r[1] = XMVectorSet(0.f, 1.f, 0.f, 0.f) * XMVectorGetX(XMVector3Length(matWorld.r[1]));
+				//Matrix.r[2] = XMVectorSet(0.f, 0.f, 1.f, 0.f) * XMVectorGetX(XMVector3Length(matWorld.r[2]));
+				//matWorld = Matrix;
+				//
+				//_matrix matView = GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW);
+				//_matrix matProj = GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ);
+				//
+				//_matrix vWVP = matWorld * matView * matProj;
+				//_vector vWorldPosition = pTransform->Get_State(CTransform::STATE_POSITION); // 3D공간상의 좌표
+				//
+				//_vector vScreenPosition = XMVector3TransformCoord(vWorldPosition, vWVP);
+				//vScreenPosition = XMVectorDivide(vScreenPosition, XMVectorSplatW(vScreenPosition)); // W나누기
+				//
+				//_float4 vScreenPos;
+				//XMStoreFloat4(&vScreenPos, vScreenPosition);
+				//
+				//_float2 normalizedScreenPos;
+				//normalizedScreenPos.x = (vScreenPos.x + 1.0f) * (g_iWinSizeX * 0.5f);
+				//normalizedScreenPos.y = (1.0f - vScreenPos.y) * (g_iWinSizeY * 0.5f);
+				//
+				//m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+				//	XMVectorSet(normalizedScreenPos.x - g_iWinSizeX * 0.5f,
+				//		-(normalizedScreenPos.y - g_iWinSizeY * 0.5f), 0.f, 1.f));
+				
+
+				// 수정중
 
 				CTransform* pTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");
 
-				_vector vOwnerPos = pTransform->Get_Position();
-				_float4 vOwnerTemp;
-				XMStoreFloat4(&vOwnerTemp, vOwnerPos);
-				// CameraPosition의 y값을 Owner의 y값으로 채워준다.
-				vCamPos.y = vOwnerTemp.y;
+				_float4x4 matTargetWorld = pTransform->Get_WorldFloat4x4();
+				matTargetWorld._42 += 1.5f;
 
-				//_vector vLook = XMVector3Normalize(XMVectorSubtract(m_pTransformCom->Get_Position(), XMLoadFloat4(&vCamPos)));
-				_vector vLook = XMVector3Normalize(m_pTransformCom->Get_Position() - XMLoadFloat4(&vCamPos));
-				_vector vRight = XMVector3Normalize(XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vLook));
-				_vector vUp = XMVector3Normalize(XMVector3Cross(vLook, vRight));
+				_float4x4 matWorld;
+				matWorld = matTargetWorld;
+				//XMStoreFloat4x4(&matWorld, pTransform->Get_WorldMatrix());
+				_matrix matView = GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW);
+				_matrix matProj = GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ);
 
-				m_UIWorldMatrix.r[CTransform::STATE_RIGHT] = XMVectorScale(vRight, vTemp.x);
-				m_UIWorldMatrix.r[CTransform::STATE_UP] = XMVectorScale(vUp, vTemp.y);
-				m_UIWorldMatrix.r[CTransform::STATE_LOOK] = XMVectorScale(vLook, vTemp.z);
+				_float4x4 matWindow;
+				XMStoreFloat4x4(&matWindow, XMLoadFloat4x4(&matWorld) * matView * matProj);
 
-				vOwnerTemp.y += 1.5f;
-				m_UIWorldMatrix.r[CTransform::STATE_POSITION] = XMLoadFloat4(&vOwnerTemp);
+				_float3 vWindowPos = *(_float3*)&matWindow.m[3][0];
+				// &matWindow.m[3][0] -> 포지션의 시작 주소를 얻고,
+				// (_float3*) -> _float3 포인터로 캐스팅
+				// * -> 그 값을 가져온다.
 
-				m_pTransformCom->Set_WorldMatrix(m_UIWorldMatrix); // Text를 띄우기 위해서 추가(문제시 삭제할 것)
+				vWindowPos.x /= vWindowPos.z;
+				vWindowPos.y /= vWindowPos.z;
+				m_tInfo.fX = vWindowPos.x * g_iWinSizeX * 0.5f + (g_iWinSizeX * 0.5f);
+				m_tInfo.fY = vWindowPos.y * -( g_iWinSizeY * 0.5f ) + (g_iWinSizeY * 0.5f);
+
+				m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+					XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 
 				if (fDistance < 10.f)
 				{
-					Set_Text();
+					Set_Text(_float2(m_tInfo.fX, m_tInfo.fY));
 					m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 				}
 			}
@@ -144,16 +176,14 @@ HRESULT CUI_MonsterHP_World::Ready_State()
 
 HRESULT CUI_MonsterHP_World::Bind_ShaderResources()
 {
-	_float4x4	WorldMatrix;
-	XMStoreFloat4x4(&WorldMatrix, m_UIWorldMatrix);
 
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &WorldMatrix)))
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
 		return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &GI->Get_TransformFloat4x4(CPipeLine::D3DTS_VIEW))))
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
 		return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &GI->Get_TransformFloat4x4(CPipeLine::D3DTS_PROJ))))
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
 		return E_FAIL;
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_fAlpha, sizeof(_float))))
@@ -165,39 +195,31 @@ HRESULT CUI_MonsterHP_World::Bind_ShaderResources()
 	return S_OK;
 }
 
-void CUI_MonsterHP_World::Set_Text()
+void CUI_MonsterHP_World::Set_Text(_float2 ScreenPos)
 {
+	_float2 vSubPosition = _float2(ScreenPos.x, ScreenPos.y - 45.f);
+	_float2 vTextPosition = _float2(ScreenPos.x, ScreenPos.y - 30.f);
+
 	wstring strMonsterTag = m_pOwner->Get_ObjectTag();
-
-
+	// Todo : Text글자길이로 x값 정렬하기
 	if (strMonsterTag == TEXT("Shadow_Thief"))
 	{
 		m_strSubName = TEXT("서릿별 나무");
 		m_strName = TEXT("코부리");
-
-		//_matrix matWorld = m_pTransformCom->Get_WorldMatrix();
-		//m_UIWorldMatrix
-		_matrix matWorld = m_UIWorldMatrix;
-		_matrix matView = GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW);
-		_matrix matProj = GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ);
-
-		_matrix vWVP = matWorld * matView * matProj;
-
-		_vector vWorldPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION); // 3D공간상의 좌표
-		_vector vScreenPosition = XMVector3TransformCoord(vWorldPosition, vWVP);
-
-		// 
-		_float2 normalizedScreenPos;
-		normalizedScreenPos.x = (vScreenPosition.m128_f32[0] + 1.0f) * 0.5f * g_iWinSizeX;
-		normalizedScreenPos.y = (1.0f - vScreenPosition.m128_f32[1]) * 0.5f * g_iWinSizeY;
 		
-		CRenderer::TEXT_DESC MaxHPDesc;
-		MaxHPDesc.strText = m_strSubName;
-		MaxHPDesc.strFontTag = L"Default_Medium";
-		MaxHPDesc.vScale = { 0.4f, 0.4f };
-		MaxHPDesc.vPosition = normalizedScreenPos;
-		MaxHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
-		m_pRendererCom->Add_Text(MaxHPDesc);
+		CRenderer::TEXT_DESC MonsterDesc;
+		MonsterDesc.strText = m_strSubName;
+		MonsterDesc.strFontTag = L"Default_Medium";
+		MonsterDesc.vScale = { 0.3f, 0.3f };
+		MonsterDesc.vPosition = vSubPosition;
+		MonsterDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+		m_pRendererCom->Add_Text(MonsterDesc);
+
+		MonsterDesc.strText = m_strName;
+		MonsterDesc.vScale = { 0.4f, 0.4f };
+		MonsterDesc.vPosition = vTextPosition;
+		MonsterDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+		m_pRendererCom->Add_Text(MonsterDesc);
 	}
 
 }
