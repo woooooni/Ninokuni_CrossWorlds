@@ -53,7 +53,7 @@ private:
 
 private:
     _bool m_bUseGravity = true;
-    _bool m_bGround = true;
+    _bool m_bGround = false;
     Vec3 m_vVelocity = {};
     _float m_fFrictionScale = 1.f;
 

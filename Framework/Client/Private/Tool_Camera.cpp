@@ -61,110 +61,86 @@ void CTool_Camera::Tick(_float fTimeDelta)
 
 void CTool_Camera::Show_Temp()
 {
-	static _bool bLoadedMap = false;
-	if (ImGui::Button(u8"맵 로드"))
+	if (ImGui::TreeNode(u8"Temp"))
 	{
-		if (bLoadedMap) return;
-
-		bLoadedMap = true;
-
-		wstring strMapFileName = L"Evermore";
-		wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strMapFileName + L"/" + strMapFileName + L".map";
-
-		shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
-		File->Open(strMapFilePath, FileMode::Read);
-
-		for (_uint i = 0; i < LAYER_TYPE::LAYER_END; ++i)
+		static _bool bLoadedMap = false;
+		if (ImGui::Button(u8"맵 로드"))
 		{
-			if (i == LAYER_TYPE::LAYER_CAMERA
-				|| i == LAYER_TYPE::LAYER_TERRAIN
-				|| i == LAYER_TYPE::LAYER_BACKGROUND
-				|| i == LAYER_TYPE::LAYER_SKYBOX
-				|| i == LAYER_TYPE::LAYER_UI
-				|| i == LAYER_TYPE::LAYER_PLAYER
-				|| i == LAYER_TYPE::LAYER_WEAPON
-				|| i == LAYER_TYPE::LAYER_PROJECTILE
-				|| i == LAYER_TYPE::LAYER_EFFECT
-				|| i == LAYER_TYPE::LAYER_TRAIL
-				|| i == LAYER_TYPE::LAYER_NPC
-				|| i == LAYER_TYPE::LAYER_WEAPON)
-				continue;
-
-			GI->Clear_Layer(LEVEL_TOOL, i);
-
+			if (bLoadedMap)
 			{
-				_uint iObjectCount = File->Read<_uint>();
-
-				for (_uint j = 0; j < iObjectCount; ++j)
-				{
-					// 3. Object_Prototype_Tag
-					wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
-					wstring strObjectTag = CUtils::ToWString(File->Read<string>());
-
-					CGameObject* pObj = nullptr;
-					if (FAILED(GI->Add_GameObject(LEVEL_TOOL, i, strPrototypeTag, nullptr, &pObj)))
-					{
-						MSG_BOX("Load_Objects_Failed.");
-						return;
-					}
-
-					if (nullptr == pObj)
-					{
-						MSG_BOX("Add_Object_Failed.");
-						return;
-					}
-					pObj->Set_ObjectTag(strObjectTag);
-
-					CTransform* pTransform = pObj->Get_Component<CTransform>(L"Com_Transform");
-					if (nullptr == pTransform)
-					{
-						MSG_BOX("Get_Transform_Failed.");
-						return;
-					}
-
-					// 6. Obejct States
-					_float4 vRight, vUp, vLook, vPos;
-
-					File->Read<_float4>(vRight);
-					File->Read<_float4>(vUp);
-					File->Read<_float4>(vLook);
-					File->Read<_float4>(vPos);
-
-					pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
-					pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
-					pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
-					pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
-				}
-			}
-		}
-	}
-	IMGUI_SAME_LINE;
-
-	
-	static _bool bLoadedPlayer = false;
-	if (ImGui::Button(u8"플레이어 로드"))
-	{
-		if (!bLoadedPlayer)
-		{
-			bLoadedPlayer = true;
-
-			CGameObject* pCharacter = nullptr;
-
-			if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Character_SwordMan"), nullptr, &pCharacter)))
-			{
-				MSG_BOX("카메라 툴에서 플레이어 로드를 실패했습니다.");
+				ImGui::TreePop();
 				return;
 			}
+			bLoadedMap = true;
 
-			if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))
+			wstring strMapFileName = L"Evermore";
+			wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strMapFileName + L"/" + strMapFileName + L".map";
+
+			shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
+			File->Open(strMapFilePath, FileMode::Read);
+
+			for (_uint i = 0; i < LAYER_TYPE::LAYER_END; ++i)
 			{
-				CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_TargetObj(pCharacter);
-				CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_LookAtObj(pCharacter);
+				if (i == LAYER_TYPE::LAYER_CAMERA
+					|| i == LAYER_TYPE::LAYER_TERRAIN
+					|| i == LAYER_TYPE::LAYER_BACKGROUND
+					|| i == LAYER_TYPE::LAYER_SKYBOX
+					|| i == LAYER_TYPE::LAYER_UI
+					|| i == LAYER_TYPE::LAYER_PLAYER
+					|| i == LAYER_TYPE::LAYER_WEAPON
+					|| i == LAYER_TYPE::LAYER_PROJECTILE
+					|| i == LAYER_TYPE::LAYER_EFFECT
+					|| i == LAYER_TYPE::LAYER_TRAIL
+					|| i == LAYER_TYPE::LAYER_NPC
+					|| i == LAYER_TYPE::LAYER_WEAPON)
+					continue;
 
-				Vec3 vPos = pCharacter->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
-				vPos.y += 5.f;
-				pCharacter->Get_Component<CTransform>(L"Com_Transform")->Set_State(CTransform::STATE_POSITION, vPos);
+				GI->Clear_Layer(LEVEL_TOOL, i);
 
+				{
+					_uint iObjectCount = File->Read<_uint>();
+
+					for (_uint j = 0; j < iObjectCount; ++j)
+					{
+						// 3. Object_Prototype_Tag
+						wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
+						wstring strObjectTag = CUtils::ToWString(File->Read<string>());
+
+						CGameObject* pObj = nullptr;
+						if (FAILED(GI->Add_GameObject(LEVEL_TOOL, i, strPrototypeTag, nullptr, &pObj)))
+						{
+							MSG_BOX("Load_Objects_Failed.");
+							return;
+						}
+
+						if (nullptr == pObj)
+						{
+							MSG_BOX("Add_Object_Failed.");
+							return;
+						}
+						pObj->Set_ObjectTag(strObjectTag);
+
+						CTransform* pTransform = pObj->Get_Component<CTransform>(L"Com_Transform");
+						if (nullptr == pTransform)
+						{
+							MSG_BOX("Get_Transform_Failed.");
+							return;
+						}
+
+						// 6. Obejct States
+						_float4 vRight, vUp, vLook, vPos;
+
+						File->Read<_float4>(vRight);
+						File->Read<_float4>(vUp);
+						File->Read<_float4>(vLook);
+						File->Read<_float4>(vPos);
+
+						pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
+						pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
+						pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
+						pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
+					}
+				}
 			}
 
 			list<CGameObject*> Grounds = GI->Find_GameObjects(LEVEL_TOOL, LAYER_TYPE::LAYER_GROUND);
@@ -178,7 +154,45 @@ void CTool_Camera::Show_Temp()
 				}
 			}
 		}
+		//IMGUI_SAME_LINE;
+
+
+		/* 플레이어 로드 */
+		static _bool bLoadedPlayer = false;
+
+		static _float fCreatePos[3] = { 0.f, 7.f, 0.f };
+		ImGui::PushItemWidth(150.f);
+		ImGui::DragFloat3("플레이어 로드 포지션", fCreatePos, 1.f, -5000.f, 5000.f, "%.1f");
+		ImGui::PopItemWidth();
+
+		if (ImGui::Button(u8"플레이어 로드"))
+		{
+			if (!bLoadedPlayer)
+			{
+				bLoadedPlayer = true;
+
+				CGameObject* pCharacter = nullptr;
+
+				if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Character_SwordMan"), nullptr, &pCharacter)))
+				{
+					MSG_BOX("카메라 툴에서 플레이어 로드를 실패했습니다.");
+					return;
+				}
+
+				if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))
+				{
+					CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_TargetObj(pCharacter);
+					CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_LookAtObj(pCharacter);
+
+					Vec3 vPos;
+					memcpy(&vPos, fCreatePos, sizeof(Vec3));
+					pCharacter->Get_Component<CTransform>(L"Com_Transform")->Set_State(CTransform::STATE_POSITION, vPos);
+				}
+			}
+		}
+		ImGui::TreePop();
 	}
+	
 	IMGUI_NEW_LINE;
 }
 
@@ -188,9 +202,10 @@ void CTool_Camera::Show_Select_Camera()
 
 	if (0 <= eCurCamIndex)
 	{
+		ImGui::Text("카메라 리스트");
 		const char* Preview = CameraCharNames[eCurCamIndex];
 		ImGui::PushItemWidth(150.f);
-		if (ImGui::BeginCombo(u8"현재 선택된 카메라", Preview))
+		if (ImGui::BeginCombo(u8"현재 카메라", Preview))
 		{
 			for (int iCurComboIndex = 0; iCurComboIndex < CAMERA_TYPE::TYPE_END; iCurComboIndex++)
 			{
@@ -301,7 +316,7 @@ void CTool_Camera::Show_Camera_Prop_Follow(CCamera* pCurCam)
 					{
 						Vec4	vTargetOffset		= pFollowCam->Get_TargetOffset();
 						_float	fTargetOffset[3]	= { vTargetOffset.x, vTargetOffset.y, vTargetOffset.z };
-						if (ImGui::DragFloat3(u8"타겟 오프셋(수정중)", fTargetOffset))
+						if (ImGui::DragFloat3(u8"타겟 오프셋", fTargetOffset))
 						{
 							pFollowCam->Set_TargetOffSet(Vec4{ fTargetOffset[0], fTargetOffset[1], fTargetOffset[2], 1.f });
 						}
@@ -311,7 +326,7 @@ void CTool_Camera::Show_Camera_Prop_Follow(CCamera* pCurCam)
 					{
 						Vec4	vLookAtOffset		= pFollowCam->Get_LookAtOffset();
 						_float	fLookAtOffset[3]	= { vLookAtOffset.x, vLookAtOffset.y, vLookAtOffset.z };
-						if (ImGui::DragFloat3(u8"룩앳 오프셋(수정중)", fLookAtOffset))
+						if (ImGui::DragFloat3(u8"룩앳 오프셋", fLookAtOffset))
 						{
 							pFollowCam->Set_LookAtOffSet(Vec4{ fLookAtOffset[0], fLookAtOffset[1], fLookAtOffset[2], 1.f });
 						}

@@ -36,7 +36,8 @@ HRESULT CCamera_Follow::Initialize(void * pArg)
 	{
 		m_tLerpDist.fCurValue = Cam_Dist_Follow_Default;
 
-		m_vLookAtOffset = Vec4{ 0.f, 0.f, 0.f, 1.f };
+		/* 팔로우 카메라에서 룩앳 오프셋을 사용하는 일은 없다. 타겟 오프셋만을 사용한다.*/
+		m_vLookAtOffset = Vec4::UnitW;
 		m_vTargetOffset = Vec4{ 1.f, 1.5f, 0.f, 1.f };
 
 		m_vMouseSensitivity = Vec2{ 0.2f, 0.35f };
@@ -69,7 +70,6 @@ HRESULT CCamera_Follow::Render()
 	return S_OK;
 }
 
-
 HRESULT CCamera_Follow::Ready_Components()
 {
 	return S_OK;
@@ -89,6 +89,25 @@ Vec4 CCamera_Follow::Calculate_WorldPosition(_float fTimeDelta)
 	Vec4 vCamWorld = vCamLocal 
 		+ Vec4(pTargetTransform->Get_Position());											 /* 타겟 포지션 */
 		+ Calculate_ReleativePosition(m_vTargetOffset, pTargetTransform->Get_WorldMatrix()); /* 타겟의 회전을 반영한 오프셋 */
+
+	vCamWorld.w = 1.f;
+
+	//return vCamWorld.OneW();
+
+	/* Test */
+	if (!m_tDampingDesc.bDamping)
+	{
+		m_tDampingDesc.bDamping = true;
+		m_tDampingDesc.vCurPos	= vCamWorld;
+
+		return m_tDampingDesc.vCurPos;
+	}
+
+	Vec4 vDist = (vCamWorld.ZeroW() - m_tDampingDesc.vCurPos.ZeroW()) * m_tDampingDesc.fDampingCoefficient;
+
+	m_tDampingDesc.vCurPos += vDist;
+
+	return m_tDampingDesc.vCurPos.OneW();
 
 	return vCamWorld.OneW();
 }
