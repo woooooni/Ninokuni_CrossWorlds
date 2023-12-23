@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "Camera_Free.h"
 #include "GameInstance.h"
-#include "Key_Manager.h"
+
+#include "Camera_Manager.h"
 
 CCamera_Free::CCamera_Free(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
 	: CCamera(pDevice, pContext, strObjTag, OBJ_TYPE::OBJ_CAMERA)
@@ -35,6 +36,8 @@ HRESULT CCamera_Free::Initialize(void* pArg)
 
 void CCamera_Free::Tick(_float fTimeDelta)
 {
+	__super::Tick(fTimeDelta);
+
 	Move(fTimeDelta);
 	Rotate(fTimeDelta);
 }
@@ -76,6 +79,16 @@ void CCamera_Free::Move(_float fTimeDelta)
 		if (KEY_HOLD(KEY::D))
 		{
 			m_pTransformCom->Move(m_pTransformCom->Get_Right(), m_fMoveSpeed, fTimeDelta);
+		}
+
+		if (KEY_HOLD(KEY::Q))
+		{
+			m_pTransformCom->Move(XMVectorSet(0.f, 1.f, 0.f, 0.f), m_fMoveSpeed, fTimeDelta);
+		}
+
+		if (KEY_HOLD(KEY::E))
+		{
+			m_pTransformCom->Move(XMVectorSet(0.f, 1.f, 0.f, 0.f), -m_fMoveSpeed, fTimeDelta);
 		}
 	}
 }

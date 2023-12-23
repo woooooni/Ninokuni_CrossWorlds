@@ -896,7 +896,14 @@ void CTool_Model::Tick_Animation(_float fTimeDelta)
 		{
 			_bool bLoop = pCurrAnimation->Is_Loop();
 			if (ImGui::Checkbox("Cur Anim Loop  ", &bLoop))
+			{
 				pCurrAnimation->Set_Loop(bLoop);
+
+				if (pModelCom->Is_Finish())
+				{
+					pModelCom->Set_Animation(pModelCom->Get_CurrAnimationIndex());
+				}
+			}
 
 		}
 		IMGUI_SAME_LINE;
