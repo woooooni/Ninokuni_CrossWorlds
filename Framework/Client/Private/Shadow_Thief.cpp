@@ -44,6 +44,8 @@ HRESULT CShadow_Thief::Initialize(void* pArg)
 	m_pHPBar = dynamic_cast<CUI_MonsterHP_World*>(pHPBar);
 	m_pHPBar->Set_Owner(this);
 
+	m_pModelCom->Set_Animation(1);
+
 	return S_OK;
 }
 
