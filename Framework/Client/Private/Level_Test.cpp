@@ -208,6 +208,7 @@ HRESULT CLevel_Test::Ready_Layer_Monster(const LAYER_TYPE eLayerType)
 	//if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prorotype_GameObject_Baobam_Dark"))))
 	//	return E_FAIL;
 
+
 	return S_OK;
 }
 

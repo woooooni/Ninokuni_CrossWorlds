@@ -24,7 +24,7 @@ void CDMWitchState_Dead::Tick_State(_float fTimeDelta)
 {
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
-		m_pWitch->Reserve_Dead(true);
+		m_pWitch->Set_Dead(true);
 	}
 }
 
