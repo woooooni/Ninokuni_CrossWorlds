@@ -19,9 +19,14 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 
 private:
+	void Show_Temp();
+	void Show_Select_Camera();
 	void Show_Camera_Prop_Free(CCamera* pCurCam);
 	void Show_Camera_Prop_Follow(CCamera* pCurCam);
-	
+
+private:
+
+
 public:
 	static CTool_Camera* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free() override;

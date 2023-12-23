@@ -37,9 +37,9 @@ HRESULT CCamera_Follow::Initialize(void * pArg)
 		m_tLerpDist.fCurValue = Cam_Dist_Follow_Default;
 
 		m_vLookAtOffset = Vec4{ 0.f, 0.f, 0.f, 1.f };
-		m_vTargetOffset = Vec4{ 0.f, 0.f, 0.f, 1.f };
+		m_vTargetOffset = Vec4{ 1.f, 1.5f, 0.f, 1.f };
 
-		m_vMouseSensitivity = Vec2{ 0.5f, 0.5f };
+		m_vMouseSensitivity = Vec2{ 0.2f, 0.35f };
 	}
 
 	return S_OK;
@@ -52,7 +52,7 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 
 	__super::Tick(fTimeDelta);
 
-	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, Calculate_Position(fTimeDelta));
+	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, Calculate_WorldPosition(fTimeDelta));
 	m_pTransformCom->LookAt(Calculate_Look(fTimeDelta));
 }
 
@@ -75,18 +75,25 @@ HRESULT CCamera_Follow::Ready_Components()
 	return S_OK;
 }
 
-Vec4 CCamera_Follow::Calculate_Look(_float fTimeDelta)
+Vec4 CCamera_Follow::Calculate_WorldPosition(_float fTimeDelta)
 {
-	Vec3 vRelativeLookAtOffSet = XMVector3TransformCoord(m_vLookAtOffset, m_pLookAtObj->Get_Component<CTransform>(L"Com_Transform")->Get_WorldMatrix());
+	/* 구면 로컬 포지션 (반지름 1) */
+	Vec4 vCamLocal = Calculate_LoaclPosition(fTimeDelta);
 
-	Vec4 vLookAt = Vec4(m_pTargetObj->Get_Component<CTransform>(L"Com_Transform")->Get_Position()) + vRelativeLookAtOffSet;
+	/* 디스턴스 반영 */
+	vCamLocal *= m_tLerpDist.fCurValue;
 	
-	vLookAt.w = 1.f;
+	CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
 
-	return vLookAt;
+	/* 카메라 최종 월드 위치 */
+	Vec4 vCamWorld = vCamLocal 
+		+ Vec4(pTargetTransform->Get_Position());											 /* 타겟 포지션 */
+		+ Calculate_ReleativePosition(m_vTargetOffset, pTargetTransform->Get_WorldMatrix()); /* 타겟의 회전을 반영한 오프셋 */
+
+	return vCamWorld.OneW();
 }
 
-Vec4 CCamera_Follow::Calculate_Position(_float fTimeDelta)
+Vec4 CCamera_Follow::Calculate_LoaclPosition(_float fTimeDelta)
 {
 	_long	MouseMove = 0l;
 
@@ -97,34 +104,55 @@ Vec4 CCamera_Follow::Calculate_Position(_float fTimeDelta)
 	{
 		m_vAngle.y += MouseMove * m_vMouseSensitivity.x * fTimeDelta;
 
-		if (m_vAngle.y <= 0.01f)
+		if (m_vAngle.y <= 0.5f) /* Min : 0.f */
 		{
-			m_vAngle.y = 0.01f;
+			m_vAngle.y = 0.5f;
 		}
-		else if (3.13f < m_vAngle.y)
+		else if (2.5f < m_vAngle.y) /* Max : 3.14*/
 		{
-			m_vAngle.y = 3.13f;
+			m_vAngle.y = 2.5f;
 		}
 	}
 
 	/* 구면 좌표계(극좌표계) -> 왼손 직교 좌표계 */
-	Vec4 vCamLocal;
+	Vec4 vCamLocal
 	{
-		vCamLocal.x = m_tLerpDist.fCurValue * sinf(m_vAngle.y) * cosf(m_vAngle.x);	// x = r * sin(위도 앙각) * cos(경도 방위각)
-		vCamLocal.y = m_tLerpDist.fCurValue * cosf(m_vAngle.y);					// y = r * cos(위도 앙각)
-		vCamLocal.z = m_tLerpDist.fCurValue * sinf(m_vAngle.y) * sinf(m_vAngle.x);	// z = r * sin(위도 앙각) * sin(경도 방위각)
-		vCamLocal.w = 0.f;
-	}
+		1.f * sinf(m_vAngle.y) * cosf(m_vAngle.x),	// x = r * sin(위도 앙각) * cos(경도 방위각)
+		1.f * cosf(m_vAngle.y),						// y = r * cos(위도 앙각)
+		1.f * sinf(m_vAngle.y) * sinf(m_vAngle.x),	// z = r * sin(위도 앙각) * sin(경도 방위각)
+		0.f
+	};
 
-	/* 현재 트랜스폼 상대적 오프셋 계산 */
-	//Vec3 vRelativeTargetOffSet = XMVector3TransformCoord(m_vTargetOffset, m_pTransformCom->Get_WorldMatrix());
+	return vCamLocal;
+}
 
-	/* 카메라 최종 월드 위치 */
-	Vec4 vCamWorld = vCamLocal + Vec4(m_pTargetObj->Get_Component<CTransform>(L"Com_Transform")->Get_Position());// +vRelativeTargetOffSet;
+Vec4 CCamera_Follow::Calculate_Look(_float fTimeDelta)
+{
+	CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
 
-	vCamWorld.w = 1.f;
+	Vec4 vPosition_LookAtObject = Vec4(pTargetTransform->Get_Position());
 
-	return vCamWorld;
+	Vec4 vPosition_Offset = Calculate_ReleativePosition(m_vTargetOffset, m_pTransformCom->Get_WorldMatrix()); /* 카메라의 회전을 반영한 타겟 오프셋 */
+
+	return Vec4(vPosition_LookAtObject + vPosition_Offset).OneW();
+}
+
+Vec4 CCamera_Follow::Calculate_ReleativePosition(Vec4 vPos, Matrix matWorld)
+{
+	/* 월드형렬에서 회전상태만을 반영하여 포지션을 적용한다. */
+
+	/* 행렬의 포지션 초기화 */
+	matWorld.Translation(Vec3::Zero);
+
+	/* 행렬의 라업룩 정규화 */
+	matWorld.Right(XMVector3Normalize(matWorld.Right()));
+	matWorld.Up(XMVector3Normalize(matWorld.Up()));
+	matWorld.Backward(XMVector3Normalize(matWorld.Backward()));
+	
+	/* 행렬의 회전 적용된 포지션 값 */
+	Vec3 vRelativePos = XMVector3TransformCoord(vPos, matWorld);
+
+	return Vec4(vRelativePos.x, vRelativePos.y, vRelativePos.z, 1.f);
 }
 
 CCamera_Follow * CCamera_Follow::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)

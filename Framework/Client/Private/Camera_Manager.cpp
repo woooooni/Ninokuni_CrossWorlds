@@ -76,7 +76,19 @@ HRESULT CCamera_Manager::Set_CurCamera(const CAMERA_TYPE& eType)
 	if (nullptr == m_Cameras[eType])
 		return E_FAIL;
 
-	m_pCurCamera = m_Cameras[eType];
+	if (nullptr == m_pCurCamera) /* 置段 朝五虞 Set */
+	{
+		m_pCurCamera = m_Cameras[eType];
+		m_pCurCamera->Set_Active(true);
+	}
+	else
+	{
+		m_pCurCamera->Set_Active(false);
+
+		m_pCurCamera = m_Cameras[eType];
+
+		m_pCurCamera->Set_Active(true);
+	}
 
 	return S_OK;
 }
@@ -140,6 +152,7 @@ HRESULT CCamera_Manager::Ready_Cameras()
 		m_Cameras[eType]->Get_Transform()->Set_State(CTransform::STATE::STATE_POSITION, Vec4(0.f, 10.f, -10.f, 1.f));
 		m_Cameras[eType]->Get_Transform()->LookAt(Vec4{ 0.f, 0.f, 0.f, 1.f });
 	}
+
 	return S_OK;
 }
 

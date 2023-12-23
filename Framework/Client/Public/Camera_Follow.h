@@ -23,8 +23,13 @@ protected:
 	virtual HRESULT Ready_Components() override;
 
 private:
+	Vec4 Calculate_WorldPosition(_float fTimeDelta);
+	Vec4 Calculate_LoaclPosition(_float fTimeDelta);
+
 	Vec4 Calculate_Look(_float fTimeDelta);
-	Vec4 Calculate_Position(_float fTimeDelta);
+
+	Vec4 Calculate_ReleativePosition(Vec4 vPos, Matrix matWorld);
+private:
 
 private:
 	Vec2 m_vAngle = { 0.f, 1.f };
