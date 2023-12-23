@@ -188,7 +188,7 @@ PS_OUT PS_MAIN(PS_IN In)
 	Out.vDiffuse.rgb = saturate((Out.vDiffuse.rgb + g_EffectDesc[In.iInstanceID].g_fColor.rgb));
 	Out.vDiffuse.a   = saturate(Out.vDiffuse.a - g_EffectDesc[In.iInstanceID].g_fAlpha);
 
-	Out.vBrightness  = float4(Out.vDiffuse.r, Out.vDiffuse.g, Out.vDiffuse.b, 0.5f); // A는 파워
+	Out.vBrightness  = float4(g_EffectDesc[In.iInstanceID].g_fColor.rgb, g_EffectDesc[In.iInstanceID].g_fBlurPower);
 
 	return Out;
 }
@@ -205,7 +205,7 @@ PS_OUT PS_MAIN_BLEND(PS_IN In)
 	Out.vDiffuse.rgb = saturate((Out.vDiffuse.rgb + g_EffectDesc[In.iInstanceID].g_fColor.rgb));
 	Out.vDiffuse.a   = saturate(Out.vDiffuse.a - g_EffectDesc[In.iInstanceID].g_fAlpha);
 
-	Out.vBrightness = float4(Out.vDiffuse.r, Out.vDiffuse.g, Out.vDiffuse.b, 0.5f); // A는 파워
+	Out.vBrightness = float4(g_EffectDesc[In.iInstanceID].g_fColor.rgb, g_EffectDesc[In.iInstanceID].g_fBlurPower);
 
 	// 알파 채널 반전
 	//Out.vDiffuse.a = 1.f - Out.vDiffuse.a;

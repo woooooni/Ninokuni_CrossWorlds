@@ -125,7 +125,7 @@ PS_OUT PS_DEFAULT(PS_IN In)
 
 	//Out.vBrightness = CalcBrightness(Out.vDiffuse, In.iInstanceID);
 	//Out.vBlurPower  = vector(g_fBlurPower / 100.f, 0.f, 0.f, 1.f);
-	Out.vBrightness = float4(Out.vDiffuse.r, Out.vDiffuse.g, Out.vDiffuse.b, 0.5f);
+	Out.vBrightness = float4(g_EffectDesc[In.iInstanceID].g_fAdditiveDiffuseColor.rgb, 1.f);
 
 	return Out;
 };
@@ -159,7 +159,7 @@ PS_OUT PS_NO_ALPHA_WITH_DIFFUSE(PS_IN In)
 
 	//Out.vBrightness = CalcBrightness(Out.vDiffuse, In.iInstanceID);
 	//Out.vBlurPower = vector(g_fBlurPower / 100.f, 0.f, 0.f, 1.f);
-	Out.vBrightness = float4(Out.vDiffuse.r, Out.vDiffuse.g, Out.vDiffuse.b, 0.5f);
+	Out.vBrightness = float4(g_EffectDesc[In.iInstanceID].g_fAdditiveDiffuseColor.rgb, 1.f);
 
 	return Out;
 
@@ -186,7 +186,7 @@ PS_OUT PS_NO_DIFFUSE_WITH_ALPHA(PS_IN In)
 
 	//Out.vBrightness = CalcBrightness(Out.vDiffuse, In.iInstanceID);
 	//Out.vBlurPower = vector(g_fBlurPower / 100.f, 0.f, 0.f, 1.f);
-	Out.vBrightness = float4(Out.vDiffuse.r, Out.vDiffuse.g, Out.vDiffuse.b, 0.5f);
+	Out.vBrightness = float4(g_EffectDesc[In.iInstanceID].g_fAdditiveDiffuseColor.rgb, 1.f);
 
 	return Out;
 
@@ -223,7 +223,7 @@ PS_OUT PS_BOTH(PS_IN In)
 
 	//Out.vBrightness = CalcBrightness(Out.vDiffuse, In.iInstanceID);
 	//Out.vBlurPower = vector(g_fBlurPower / 100.f, 0.f, 0.f, 1.f);
-	Out.vBrightness = float4(Out.vDiffuse.r, Out.vDiffuse.g, Out.vDiffuse.b, 0.5f);
+	Out.vBrightness = float4(g_EffectDesc[In.iInstanceID].g_fAdditiveDiffuseColor.rgb, 1.f);
 
 	return Out;
 
