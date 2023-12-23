@@ -21,9 +21,10 @@ texture2D g_ShadowTarget;
 
 texture2D g_EffectDiffuseTarget;
 texture2D g_EffectBrightnessTarget;
+texture2D g_EffectBlurTarget;
 
-
-texture2D g_EffectUITarget;
+texture2D g_EffectUIDiffuseTarget;
+texture2D g_EffectUIBrightnessTarget;
 		  
 texture2D g_OriginBloomTarget;
 		  
@@ -196,7 +197,7 @@ float  g_fMask[9] = {
 	-1,  8, -1,
 	-1, -1, -1
 };
-float3 g_fGrayScale = float3(0.3f, 0.59, 0.11);
+float4 g_LineColor = float4(0.631f, 0.353f, 0.094f, 1.f);
 float  g_fCoord[3] = { -1, 0, +1 };
 float  g_fDivier = 1;
 float4 Outline_Caculation(PS_IN In)
@@ -209,14 +210,20 @@ float4 Outline_Caculation(PS_IN In)
 	for (int i = 0; i < 9; ++i)
 	{
 		vector vDepthDesc = g_DepthTarget.Sample(PointSampler, float2(In.vTexcoord + float2(g_fCoord[i % 3] / 1600.f, g_fCoord[i / 3] / 900.f)));
-		fDepthDifference += g_fMask[i] * (fCenterDepth - vDepthDesc.r) * 300.f;
+		fDepthDifference += g_fMask[i] * (fCenterDepth - vDepthDesc.r) * 1000.f;
 	}
 
-	float fGray = saturate(1 - dot(fDepthDifference, g_fGrayScale));
-	fOutline = float4(fGray, fGray, fGray, 1);
+	float fDepthScale = 0.01;
+	float fOutlineThickness = fDepthScale * length(fDepthDifference);
+	fOutlineThickness = saturate(fOutlineThickness * 10.f);
+
+	if (fOutlineThickness < 0.1)
+		fOutline = float4(1.f, 1.f, 1.f, 1.f);
+	else
+		fOutline = g_LineColor;
 
 	return fOutline;
-
+}
 	/*
 	// ¿Ü°û¼±
 	float3x3 Kx = { -1.f, 0.f, 1.f,
@@ -246,7 +253,6 @@ float4 Outline_Caculation(PS_IN In)
 	vector vOutline = vector(1.f - L.xxx, 1.f);
 	Out.vColor *= vOutline;
 	*/
-}
 // ---------------------------------------------------------------------
 
 float PCF_ShadowCaculation(float4 vLightPos, float3 vLightDir)
@@ -363,7 +369,7 @@ PS_OUT PS_BLUR_Horizontal(PS_IN In)
 {
 	PS_OUT Out = (PS_OUT)0;
 	float fWeights[5] = { 1.f, 0.9f, 0.55f, 0.18f, 0.1f };
-	float fBlurPower = g_BlurPowerTarget.Sample(PointSampler, In.vTexcoord).r * 100.f;
+	float fBlurPower = g_BlurPowerTarget.Sample(PointSampler, In.vTexcoord).a;
 	float fNormalization = (fWeights[0] + 2.0f * (fWeights[1] + fWeights[2] + fWeights[3] + fWeights[4]));
 
 	for (int i = 0; i < 5; ++i)
@@ -390,7 +396,7 @@ PS_OUT PS_BLUR_Vertical(PS_IN In)
 {
 	PS_OUT Out = (PS_OUT)0;
 	float fWeights[5] = { 1.f, 0.9f, 0.55f, 0.18f, 0.1f };
-	float fBlurPower = g_BlurPowerTarget.Sample(PointSampler, In.vTexcoord).r * 100.f;
+	float fBlurPower = g_BlurPowerTarget.Sample(PointSampler, In.vTexcoord).a;
 	float fNormalization = (fWeights[0] + 2.f * (fWeights[1] + fWeights[2] + fWeights[3] + fWeights[4]));
 
 	for (int i = 0; i < 5; ++i)
@@ -409,9 +415,7 @@ PS_OUT PS_BLUR_Vertical(PS_IN In)
 	vFinalColor += g_BlurTarget.Sample(PointSampler, (In.vTexcoord + float2(0.f, g_PixleSize.y * 3.f))) * fWeights[3];
 	vFinalColor += g_BlurTarget.Sample(PointSampler, (In.vTexcoord + float2(0.f, g_PixleSize.y * 4.f))) * fWeights[4];
 
-
 	Out.vColor = vFinalColor;
-
 	return Out;
 }
 
@@ -432,15 +436,24 @@ PS_OUT PS_MAIN_FINAL(PS_IN In)
 	// Diffuse
 	vector vDiffuseColor = g_DiffuseTarget.Sample(LinearSampler, In.vTexcoord);
 
+	// Effect_UI
+	vector vEffectUIDiffuseColor = g_EffectUIDiffuseTarget.Sample(PointSampler, In.vTexcoord);
+	vector vEffectUIBrightnessColor = g_EffectUIBrightnessTarget.Sample(PointSampler, In.vTexcoord);
+
 	// Effect
 	vector vEffectDiffuseColor = g_EffectDiffuseTarget.Sample(PointSampler, In.vTexcoord);
 	vector vEffectBrightnessColor = g_EffectBrightnessTarget.Sample(PointSampler, In.vTexcoord);
+	vector vEffectBlurColor = g_EffectBlurTarget.Sample(PointSampler, In.vTexcoord);
 
-	// UIEffect
-	vector vUIEffectColor = g_EffectUITarget.Sample(PointSampler, In.vTexcoord);
+	// Output // vDiffuseColor + vEffectDiffuseColor + vEffectBrightnessColor + vUIEffectColor;
+	if (vEffectUIDiffuseColor.a != 0.f)
+		Out.vColor = vEffectUIDiffuseColor;
+	else if (vEffectDiffuseColor.a != 0.f)
+		Out.vColor = vEffectDiffuseColor;
+	else
+		Out.vColor = vDiffuseColor;
 
-	// Output
-	Out.vColor = vDiffuseColor + vEffectDiffuseColor + vEffectBrightnessColor + vUIEffectColor;
+	Out.vColor += vEffectBlurColor;
 
 	/*vector vOriginEffectColor = g_OriginEffectTarget.Sample(PointSampler, In.vTexcoord);
 	vector vOriginBloomColor = g_OriginBloomTarget.Sample(PointSampler, In.vTexcoord);

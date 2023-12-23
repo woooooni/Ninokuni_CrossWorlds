@@ -71,11 +71,21 @@ HRESULT CRenderer::Initialize_Prototype()
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Effect_Brightness"),
 		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
+
+	/* For.Target_Blur */
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Effect_Blur"),
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
 #pragma endregion
 
-#pragma region MRT_EffectUI : Target_EffectUI
-	/* For.Target_Effect */
-	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_EffectUI"),
+#pragma region MRT_EffectUI : Target_Effect_UI_Diffuse / Target_Effect_UI_Brightness
+	/* For.Target_Effect_UI_Diffuse */
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Effect_UI_Diffuse"),
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+
+	/* For.Target_Effect_UI_Brightness */
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Effect_UI_Brightness"),
 		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
 #pragma endregion
@@ -84,14 +94,11 @@ HRESULT CRenderer::Initialize_Prototype()
 
 #pragma region MRT_Blend : Target_Blend // FinalTarget
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Blend"),
-		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.557f, 0.855f, 0.929f, 0.f))))
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.729f, 0.816f, 0.851f, 0.f))))
 		return E_FAIL;
 #pragma endregion
 
-	///* For.Target_Blur */
-	//if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Blur"),
-	//	ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
-	//	return E_FAIL;
+
 
 	///* For.Target_Bloom */
 	//if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Bloom"),
@@ -108,27 +115,25 @@ HRESULT CRenderer::Initialize_Prototype()
 	//	ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 	//	return E_FAIL;
 
-	/*
-		// For.Target_Blur_DownSampling
-		//if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Blur_DownSampling"),
-		//	ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
-		//	return E_FAIL;
+	// For.Target_Blur_DownSampling
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Blur_DownSampling"),
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
 
-		// For.Target_Blur_Horizontal
-		//if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Blur_Horizontal"),
-		//	ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
-		//	return E_FAIL;
+	// For.Target_Blur_Horizontal
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Blur_Horizontal"),
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
 
-		// For.Target_Blur_Vertical
-		//if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Blur_Vertical"),
-		//	ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
-		//	return E_FAIL;
+	// For.Target_Blur_Vertical
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Blur_Vertical"),
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
 
-		// For.Target_Blur_UpSampling
-		//if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Blur_UpSampling"),
-		//	ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
-		//	return E_FAIL;
-	*/
+	// For.Target_Blur_UpSampling
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Blur_UpSampling"),
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
 
 	// MRT_GameObjects
 	{
@@ -164,10 +169,12 @@ HRESULT CRenderer::Initialize_Prototype()
 			return E_FAIL;
 	}
 
-	// MRT_EffectUI
+	// MRT_Effect_UI
 	{
-		/* For.MRT_Effect */
-		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_EffectUI"), TEXT("Target_EffectUI"))))
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Effect_UI"), TEXT("Target_Effect_UI_Diffuse"))))
+			return E_FAIL;
+
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Effect_UI"), TEXT("Target_Effect_UI_Brightness"))))
 			return E_FAIL;
 	}
 	
@@ -177,6 +184,39 @@ HRESULT CRenderer::Initialize_Prototype()
 			return E_FAIL;
 	}
 
+
+	//Blur
+	{
+		///* For.MRT_Blur_Effect */
+		//if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Blur_Effect"), TEXT("Target_Blur_Effect"))))
+		//	return E_FAIL;
+
+		///* For.MRT_Blur_Bloom */
+		//if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Blur_Bloom"), TEXT("Target_Blur_Bloom"))))
+		//	return E_FAIL;
+
+
+		/* For.MRT_BlurDownSampling */
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Blur_DownSampling"), TEXT("Target_Blur_DownSampling"))))
+			return E_FAIL;
+
+		/* For.MRT_Blur_Horizontal */
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Blur_Horizontal"), TEXT("Target_Blur_Horizontal"))))
+			return E_FAIL;
+
+		/* For.MRT_Blur_Vertical */
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Blur_Vertical"), TEXT("Target_Blur_Vertical"))))
+			return E_FAIL;
+
+		/* For.MRT_BlurUpSampling */
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Blur_UpSampling"), TEXT("Target_Blur_UpSampling"))))
+			return E_FAIL;
+
+
+		/* For.MRT_BlurUpSampling */
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Blur_Effect"), TEXT("Target_Effect_Blur"))))
+			return E_FAIL;
+	}
 
 	// Debug_Ready
 #ifdef _DEBUG
@@ -199,10 +239,14 @@ HRESULT CRenderer::Initialize_Prototype()
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Effect_Brightness"), 1300, 300.f, 200.f, 200.f)))
 		return E_FAIL;
-
-	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_EffectUI"), 1500, 100.f, 200.f, 200.f)))
+	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Effect_Blur"), 1300, 500.f, 200.f, 200.f)))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Blend"), 1500, 300.f, 200.f, 200.f)))
+
+	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Effect_UI_Diffuse"), 1500, 100.f, 200.f, 200.f)))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Effect_UI_Brightness"), 1500, 300.f, 200.f, 200.f)))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Blend"), 1500, 500.f, 200.f, 200.f)))
 		return E_FAIL;
 
 #endif // DEBUG
@@ -427,6 +471,10 @@ HRESULT CRenderer::Draw()
 	if (FAILED(Render_Effect()))
 		return E_FAIL;
 
+	// 1번째 타겟에 있는 색상을 2번째 타겟에 그려낸다.
+	if (FAILED(Render_Blur(L"Target_Effect_Brightness", L"MRT_Blur_Effect", true)))
+		return E_FAIL;
+
 	if (FAILED(Render_UI()))
 		return E_FAIL;
 
@@ -439,11 +487,7 @@ HRESULT CRenderer::Draw()
 	if (FAILED(Render_UIEffectBlend()))
 		return E_FAIL;
 
-
-	/* // 1번째 타겟에 있는 색상을 2번째 타겟에 그려낸다.
-	if (FAILED(Render_Blur(L"Target_Effect", L"MRT_Blur_Effect", true)))
-		return E_FAIL;
-
+	/* 
 	if (FAILED(Render_Blur(L"Target_Bloom", L"MRT_Blur_Bloom", true)))
 		return E_FAIL;*/
 
@@ -896,10 +940,10 @@ HRESULT CRenderer::Render_Text()
 	return S_OK;
 }
 
-// MRT_EffectUI
+// MRT_Effect_UI
 HRESULT CRenderer::Render_UIEffectNonBlend()
 {
-	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_EffectUI"))))
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Effect_UI"))))
 		return E_FAIL;
 
 	for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_UIEFFECT_NONBLEND])
@@ -948,9 +992,13 @@ HRESULT CRenderer::Render_Final()
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShader, TEXT("Target_Effect_Brightness"), "g_EffectBrightnessTarget")))
 		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShader, TEXT("Target_Effect_Blur"), "g_EffectBlurTarget")))
+		return E_FAIL;
 
 	// Effect_UI
-	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShader, TEXT("Target_EffectUI"), "g_EffectUITarget")))
+	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShader, TEXT("Target_Effect_UI_Diffuse"), "g_EffectUIDiffuseTarget")))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShader, TEXT("Target_Effect_UI_Brightness"), "g_EffectUIBrightnessTarget")))
 		return E_FAIL;
 
 	/*if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShader, TEXT("Target_Bloom"), "g_OriginBloomTarget")))
@@ -1044,7 +1092,10 @@ HRESULT CRenderer::Render_Debug()
 	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Effect"), m_pShader, m_pVIBuffer)))
 		return E_FAIL;
 
-	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_EffectUI"), m_pShader, m_pVIBuffer)))
+	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Blur_Effect"), m_pShader, m_pVIBuffer)))
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Effect_UI"), m_pShader, m_pVIBuffer)))
 		return E_FAIL;
 	
 	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Blend"), m_pShader, m_pVIBuffer)))
@@ -1054,7 +1105,6 @@ HRESULT CRenderer::Render_Debug()
 }
 #endif // DEBUG
 
-/*
 HRESULT CRenderer::Render_Blur(const wstring& strStartTargetTag , const wstring& strFinalTragetTag, _bool bClear)
 {
 	if (FAILED(Render_BlurDownSample(strStartTargetTag)))
@@ -1115,7 +1165,7 @@ HRESULT CRenderer::Render_Blur_Horizontal()
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShader, TEXT("Target_Blur_DownSampling"), "g_BlurTarget")))
 		return E_FAIL;
 
-	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShader, TEXT("Target_Blur"), "g_BlurPowerTarget")))
+	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShader, TEXT("Target_Effect_Brightness"), "g_BlurPowerTarget")))
 		return E_FAIL;
 
 	if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
@@ -1149,7 +1199,7 @@ HRESULT CRenderer::Render_Blur_Vertical()
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShader, TEXT("Target_Blur_Horizontal"), "g_BlurTarget")))
 		return E_FAIL;
 
-	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShader, TEXT("Target_Blur"), "g_BlurPowerTarget")))
+	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShader, TEXT("Target_Effect_Brightness"), "g_BlurPowerTarget")))
 		return E_FAIL;
 
 	if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
@@ -1205,12 +1255,8 @@ HRESULT CRenderer::Render_BlurUpSample(const wstring& strFinalMrtTag, _bool bCle
 	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
 		return E_FAIL;
 
-
-
-
 	return S_OK;
 }
-*/
 
 CRenderer * CRenderer::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
