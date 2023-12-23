@@ -306,9 +306,9 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	// Texture //
 	///////////// For UI
 	// 디졸브 텍스쳐
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Dissolve"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Dissolve/Dissolve.png")))))
-		return E_FAIL;
+//	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Dissolve"),
+//		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Dissolve/Dissolve.png")))))
+//		return E_FAIL;
 
 	if (FAILED(Ready_UI_TextureComponent()))
 		return E_FAIL;
@@ -857,6 +857,44 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_CameraPopup"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Contents/Camera/UI_Notice_Camera_%d.png"), 3))))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Effect_CameraPopup"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Contents/Camera/UI_Effect_Flare_Blue.png")))))
+		return E_FAIL;
+
+	// DamageNum Tex
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_DamageNumber_Blue"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/DamageNum/Num_Blue_%d.png"), 10))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_DamageNumber_Gold"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/DamageNum/Num_Gold_%d.png"), 10))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_DamageNumber_Red"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/DamageNum/Num_Red_%d.png"), 10))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_DamageNumber_White"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/DamageNum/Num_White_%d.png"), 10))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_DamageNumber_WhiteGold"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/DamageNum/Num_WhiteYellow_%d.png"), 10))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_DamageNumber_Yellow"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/DamageNum/Num_Yellow_%d.png"), 10))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Damage_Critical"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/DamageNum/Img_Font_Critical_%d.png"), 4))))
+		return E_FAIL;
+
+	// Monster WorldHP
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Monster_WorldHPBars"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/MonsterStatus/UI_Monster_WorldUI_HPBar_%d.png"), 5))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Monster_WorldHP_BackBar"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/MonsterStatus/UI_Monster_WorldUI_BackHPBar.png")))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Monster_WorldHP_Frame"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/MonsterStatus/UI_Monster_WorldUI_HPBar_Frame.png")))))
+		return E_FAIL;
+
 
 	return S_OK;
 }

@@ -4,6 +4,7 @@
 #include "GameInstance.h"
 
 #include "Shadow_ThiefBT.h"
+#include "UI_MonsterHP_World.h"
 
 CShadow_Thief::CShadow_Thief(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
 	: CMonster(pDevice, pContext, strObjectTag, tStat)
@@ -36,6 +37,13 @@ HRESULT CShadow_Thief::Initialize(void* pArg)
 	if (FAILED(Ready_States()))
 		return E_FAIL;
 
+	CGameObject* pHPBar = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Monster_WorldHPBar"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pHPBar)
+		return E_FAIL;
+
+	m_pHPBar = dynamic_cast<CUI_MonsterHP_World*>(pHPBar);
+	m_pHPBar->Set_Owner(this);
+
 	return S_OK;
 }
 
@@ -65,18 +73,27 @@ void CShadow_Thief::Tick(_float fTimeDelta)
 		m_pModelCom->Set_Animation(iCurAnimIndex);
 	}
 	// >> 
+	
+	if (nullptr != m_pHPBar)
+		m_pHPBar->Tick(fTimeDelta);
 
 	__super::Tick(fTimeDelta);
 }
 
 void CShadow_Thief::LateTick(_float fTimeDelta)
 {
+	if (nullptr != m_pHPBar)
+		m_pHPBar->LateTick(fTimeDelta);
+
 	__super::LateTick(fTimeDelta);
 }
 
 HRESULT CShadow_Thief::Render()
 {
 	__super::Render();
+
+	if (nullptr != m_pHPBar)
+		m_pHPBar->Render();
 
 	return S_OK;
 }
@@ -259,5 +276,7 @@ CGameObject* CShadow_Thief::Clone(void* pArg)
 void CShadow_Thief::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pHPBar);
 
 }

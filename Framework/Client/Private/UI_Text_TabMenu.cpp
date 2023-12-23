@@ -25,6 +25,7 @@ void CUI_Text_TabMenu::Set_TextType(UI_MENUTITLE eType)
 		m_tInfo.fCY = 93.f * 0.7f;
 		m_tInfo.fX = m_tInfo.fCX * 0.5f + vOffset.x;
 		m_tInfo.fY = m_tInfo.fCY * 0.5f + vOffset.y;
+		m_bShowChild = false;
 		break;
 
 	case TITLE_WORLDMAP:
@@ -32,6 +33,7 @@ void CUI_Text_TabMenu::Set_TextType(UI_MENUTITLE eType)
 		m_tInfo.fCY = 93.f * 0.7f;
 		m_tInfo.fX = m_tInfo.fCX * 0.5f + vOffset.x;
 		m_tInfo.fY = m_tInfo.fCY * 0.5f + vOffset.y;
+		m_bShowChild = true;
 		break;
 
 	default:
@@ -47,7 +49,7 @@ void CUI_Text_TabMenu::Set_TextType(UI_MENUTITLE eType)
 HRESULT CUI_Text_TabMenu::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
-		return E_FAIL;
+		return E_FAIL; 
 
 	return S_OK;
 }
@@ -65,6 +67,18 @@ HRESULT CUI_Text_TabMenu::Initialize(void* pArg)
 	
 	m_bActive = false;
 
+	_float2 vWorldMapScale = _float2(200.f * 0.7f, 93.f * 0.7f);
+	_float2 vOffset = _float2(80.f, 5.f);
+
+	_float2 fLeftSize = _float2(128.f * 0.8f, 64.f * 0.6f);
+	Make_Child(-1.f * (vWorldMapScale.x * 0.7f),
+		-1.f * vWorldMapScale.y * 0.3f + 2.f,
+		fLeftSize.x, fLeftSize.y, TEXT("Prototype_GameObject_UI_Common_MenuDeco_Left"));
+
+	_float2 fBtnSize = _float2(128.f * 0.6f, 128.f * 0.55f);
+	Make_Child(-0.5f * fBtnSize.x - 67.f,
+		-0.5 * fBtnSize.y + 36.f,
+		fBtnSize.x, fBtnSize.y, TEXT("Prototype_GameObject_UI_Btn_Back"));
 
 	return S_OK;
 }
@@ -89,6 +103,9 @@ void CUI_Text_TabMenu::LateTick(_float fTimeDelta)
 	{
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+
+		if (m_bShowChild)
+			__super::LateTick(fTimeDelta);
 	}
 }
 
@@ -100,6 +117,9 @@ HRESULT CUI_Text_TabMenu::Render()
 	m_pShaderCom->Begin(1);
 
 	m_pVIBufferCom->Render();
+
+	if (m_bShowChild)
+		__super::Render();
 
 	return S_OK;
 }

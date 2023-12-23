@@ -64,6 +64,7 @@ public:
 	HRESULT OnOff_WorldMap(_bool bOnOff);
 	HRESULT OnOff_CostumeWindow(_bool bOnOff); // ÄÚ½ºÆ¬ ÅÇ Window ºñ/È°¼ºÈ­
 	HRESULT OnOff_CostumeSlot(_bool bOnOff);
+	HRESULT OnOff_Announce(_int iMagicNum, _bool bOnOff);
 
 public: // For UI Tool
 	HRESULT Save_UIData();

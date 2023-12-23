@@ -197,7 +197,6 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 	/* For.Model */
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
 
-
 	m_strLoading = TEXT("로딩 끝.");
 	m_isFinished = true;
 

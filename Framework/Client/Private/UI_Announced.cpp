@@ -15,8 +15,21 @@ CUI_Announced::CUI_Announced(const CUI_Announced& rhs)
 {
 }
 
-void CUI_Announced::Set_Active(_bool bActive)
+void CUI_Announced::Set_Active(_bool bActive, _int iMagicNum)
 {
+	if (bActive)
+	{
+		if (iMagicNum == m_iTextureIndex)
+			return;
+
+		m_iTextureIndex = iMagicNum;
+		m_fAlpha = 0.7f;
+		m_bAlpha = false;
+	}
+	else
+	{
+
+	}
 
 	m_bActive = bActive;
 }
@@ -40,8 +53,9 @@ HRESULT CUI_Announced::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	m_bActive = true;
-	m_fAlpha = 0.8f;
+	m_bActive = false;
+	m_fAlpha = 0.7f;
+	m_bAlpha = false;
 
 //	if (ANNOUNCE_CAMERA == m_eType)
 //	{
@@ -97,7 +111,17 @@ HRESULT CUI_Announced::Render()
 
 void CUI_Announced::Tick_CameraWindow(_float fTimeDelta)
 {
+	if (!m_bAlpha)
+	{
+		m_fAlpha -= fTimeDelta;
 
+		if (m_fAlpha < 0.f)
+		{
+			m_fAlpha = 0.f;
+			m_bAlpha = true;
+			m_bActive = false;
+		}
+	}
 }
 
 void CUI_Announced::LateTick_CameraWindow(_float fTimeDelta)
