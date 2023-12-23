@@ -22,7 +22,7 @@
 #include "Particle_Manager.h"
 
 #include "Character_Dummy.h"
-#include "Character_Witch.h"
+#include "Character_SwordMan.h"
 
 #include "UI_Logo_Background.h"
 #include "UI_Flare.h"
@@ -252,6 +252,9 @@ HRESULT CLoader::Loading_For_Level_Test()
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Baobam_Dark", CBaobam_Dark::Create(m_pDevice, m_pContext, TEXT("Clown"), statDesc), LAYER_MONSTER)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_SwordMan", CCharacter_SwordMan::Create(m_pDevice, m_pContext, TEXT("SwordMan")), LAYER_CHARACTER)))
+		return E_FAIL;
+
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
 
 	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SwordMan_Body", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Test/", L"SwordMan_Body")))
@@ -291,6 +294,15 @@ HRESULT CLoader::Loading_For_Level_Test()
 		return E_FAIL;
 
 	CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_TEST);
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SwordMan_Dummy", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/SwordMan/Dummy/", L"SwordMan_Dummy")))
+		return E_FAIL;
+
+	if (FAILED(Loading_Proto_Parts_Model(L"../Bin/Export/AnimModel/Character/SwordMan/")))
+		return E_FAIL;
+
+	if (FAILED(CPart_Manager::GetInstance()->Reserve_Manager(GI->Get_Device(), GI->Get_Context())))
+		return E_FAIL;
 
 	if (FAILED(Loading_Proto_AllObjects(L"../Bin/Export/NonAnimModel/Map/")))
 		return E_FAIL;
@@ -425,11 +437,11 @@ HRESULT CLoader::Loading_For_Level_Tool()
 	/*if (FAILED(GI->Import_Model_Data(LEVEL_PARTS, L"Prototype_Component_Model_SwordMan_Body_Picnic", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Witch/Baobam_Dark/", L"Baobam_Dark")))
 		return E_FAIL;*/
 
-	/*if (FAILED(Loading_Proto_Parts_Model(L"../Bin/Resources/AnimModel/Character/SwordMan/")))
-		return E_FAIL;*/
+	if (FAILED(Loading_Proto_Parts_Model(L"../Bin/Export/AnimModel/Character/SwordMan/")))
+		return E_FAIL;
 
-	/*if(FAILED(CPart_Manager::GetInstance()->Reserve_Manager(GI->Get_Device(), GI->Get_Context())))
-		return E_FAIL;*/
+	if(FAILED(CPart_Manager::GetInstance()->Reserve_Manager(GI->Get_Device(), GI->Get_Context())))
+		return E_FAIL;
 
 
 #pragma endregion

@@ -14,10 +14,21 @@ physx::PxFilterFlags FilterShader(
 	physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1,
 	physx::PxPairFlags& retPairFlags, const void* /*constantBlock*/, PxU32 /*constantBlockSize*/)
 {
+	retPairFlags |= PxPairFlag::eCONTACT_DEFAULT;
 	retPairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
 	retPairFlags |= PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
 	retPairFlags |= PxPairFlag::eNOTIFY_TOUCH_LOST;
+	retPairFlags |= PxPairFlag::eNOTIFY_CONTACT_POINTS;
+	retPairFlags |= PxPairFlag::eNOTIFY_TOUCH_CCD;
 
+
+	retPairFlags |= PxPairFlag::eTRIGGER_DEFAULT;
+	retPairFlags |= PxPairFlag::eDETECT_CCD_CONTACT;
+	
+	retPairFlags |= PxPairFlag::eSOLVE_CONTACT;
+
+	retPairFlags |= PxPairFlag::eCONTACT_EVENT_POSE;
+	
 	return PxFilterFlag::eDEFAULT;
 }
 
@@ -34,10 +45,10 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 {
 	m_Foundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_Allocator, m_ErrorCallback);
 
-	//m_pPvd = PxCreatePvd(*m_Foundation);
-	//m_pTransport = PxDefaultPvdSocketTransportCreate("127.0.0.1", m_iPortNumber, m_iTimeOutSeconds);
-	//m_pPvd->connect(*m_pTransport, PxPvdInstrumentationFlag::eALL);
-	//_bool bConntected = m_pPvd->isConnected();
+	m_pPvd = PxCreatePvd(*m_Foundation);
+	m_pTransport = PxDefaultPvdSocketTransportCreate("127.0.0.1", m_iPortNumber, m_iTimeOutSeconds);
+	m_pPvd->connect(*m_pTransport, PxPvdInstrumentationFlag::eALL);
+	_bool bConntected = m_pPvd->isConnected();
 
 
 
@@ -330,6 +341,7 @@ PxController* CPhysX_Manager::Add_CapsuleController(CGameObject* pGameObject, Ma
 	
 
 	PxController* pController = m_pController_Manager->createController(CapsuleDesc);
+	pController->getActor()->userData = pGameObject;
 	pController->getActor()->setActorFlag(PxActorFlag::eVISUALIZATION, true);
 	pController->getActor()->setName("Controller");
 
@@ -837,7 +849,7 @@ HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGameObject, CModel* pModel, Mat
 		tDesc.triangles.data = Indices.data();
 
 
-		PxTriangleMesh* pTriangleMesh = PxCreateTriangleMesh(PxCookingParams(PxTolerancesScale(0.f, 0.f)), tDesc);
+		PxTriangleMesh* pTriangleMesh = PxCreateTriangleMesh(PxCookingParams(PxTolerancesScale(10.f, 10.f)), tDesc);
 		PxTriangleMeshGeometry* pGeometry = new PxTriangleMeshGeometry(pTriangleMesh);
 
 
@@ -1376,7 +1388,7 @@ void CPhysX_Manager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 		if (true == GI->Is_Compare(pRightActor->getName(), "Ground"))
 		{
 			PHYSX_GROUND_COLLISION_INFO Info;
-			Info.pCollideObject = static_cast<CGameObject*>(pRightActor->userData);
+			Info.pCollideObject = static_cast<CGameObject*>(pLeftActor->userData);
 			if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_FOUND))
 				Info.flag = PxPairFlag::eNOTIFY_TOUCH_FOUND;
 

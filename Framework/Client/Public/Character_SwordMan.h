@@ -2,13 +2,13 @@
 #include "Character.h"
 
 BEGIN(Client)
-class CCharacter_Witch final : public CCharacter
+class CCharacter_SwordMan final : public CCharacter
 {
 
 private:
-	CCharacter_Witch(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eCharacterType);
-	CCharacter_Witch(const CCharacter_Witch& rhs);
-	virtual ~CCharacter_Witch() = default;
+	CCharacter_SwordMan(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	CCharacter_SwordMan(const CCharacter_SwordMan& rhs);
+	virtual ~CCharacter_SwordMan() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -38,7 +38,7 @@ private:
 	
 
 public:
-	static CCharacter_Witch* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eCharacterType);
+	static CCharacter_SwordMan* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

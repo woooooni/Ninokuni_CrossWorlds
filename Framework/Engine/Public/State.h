@@ -30,7 +30,6 @@ protected:
 	class CModel* m_pModelCom = nullptr;
 	class CTransform* m_pTransformCom = nullptr;
 	class CStateMachine* m_pStateMachineCom = nullptr;
-	class CNavigation* m_pNavigationCom = nullptr;
 	class CRigidBody* m_pRigidBodyCom = nullptr;
 	
 	

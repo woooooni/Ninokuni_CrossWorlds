@@ -90,6 +90,7 @@ HRESULT CDummy::Render()
 	{
 		if (FAILED(m_pModelCom->SetUp_VTF(pShader)))
 			return E_FAIL;
+
 		for (size_t i = 0; i < PART_TYPE::PART_END; i++)
 		{
 			if (nullptr == m_pPart[i])
