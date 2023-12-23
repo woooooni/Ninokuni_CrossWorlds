@@ -25,32 +25,47 @@ class CCharacter abstract : public CGameObject
 public:
 #pragma region CHARACTER_STATES
 	enum STATE { 
-		BASIC_IDLE, 
-		BASIC_MOVE,  
-		BASIC_JUMP,
+		NEUTRAL_IDLE, 
+		NEUTRAL_WALK,
+		NEUTRAL_RUN,
+		NEUTRAL_JUMP,
+
+		NEUTRAL_CROUCH_IDLE,
+		NEUTRAL_CROUCH_MOVE,
+
+
+		NEUTRAL_PICK_BIG,
+		NEUTRAL_PICK_MIDDLE,
+		NEUTRAL_PICK_SMALL,
+
 		BATTLE_IDLE, 
-		BATTLE_MOVE, 
+		BATTLE_WALK,
+		BATTLE_RUN,
 		BATTLE_JUMP, 
 		BATTLE_DASH,
-		BATTLE_AIRDASH,
-		ATTACK,
-		AIR_ATTACK,
+		BATTLE_ATTACK,
+		BATTLE_GUARD,
+
 		SKILL_0,
 		SKILL_1,
 		SKILL_2,
-		SPECIAL,
-		TRY_SPECIAL,
-		DAMAGED_BASIC,
-		DAMAGED_BOUND,
+		SKILL_BURST,
+		SKILL_SPECIAL,
+
+		DAMAGED_WEAK,
+		DAMAGED_FORCE,
 		DAMAGED_BLOW,
-		DAMAGED_AIRBORN,
+		DAMAGED_KNOCKBACK,
 		KNOCKDOWN,
-		DIE,
+		DEAD,
+
+
 		STATE_END
 	};
 
 #pragma endregion
 	enum SOCKET_TYPE { SOCKET_SWORD, SOCKET_SWEATH, SOCKET_RIGHT_HAND, SOCKET_LEFT_FOOT, SOCKET_RIGHT_FOOT, SOCKET_END };
+
 public:
 	typedef struct tagCharacterStat
 	{
@@ -79,6 +94,10 @@ public:
 	virtual void Collision_Continue(const COLLISION_INFO& tInfo) override;
 	virtual void Collision_Exit(const COLLISION_INFO& tInfo) override;
 
+public:
+	virtual void Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo) override;
+	virtual void Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo) override;
+	virtual void Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo) override;
 
 
 public:
@@ -107,21 +126,21 @@ protected:
 
 
 protected: /* 해당 객체가 사용해야할 컴포넌트들을 저장하낟. */
-	CShader* m_pShaderCom = nullptr;
-	CRenderer* m_pRendererCom = nullptr;
-	CTransform* m_pTransformCom = nullptr;
-	CModel* m_pModelCom = nullptr;
-	CRigidBody* m_pRigidBodyCom = nullptr;
-	CStateMachine* m_pStateCom = nullptr;
-	CNavigation* m_pNavigationCom = nullptr;
-
+	class CShader* m_pShaderCom = nullptr;
+	class CRenderer* m_pRendererCom = nullptr;
+	class CTransform* m_pTransformCom = nullptr;
+	class CModel* m_pModelCom = nullptr;
+	class CRigidBody* m_pRigidBodyCom = nullptr;
+	class CStateMachine* m_pStateCom = nullptr;
+	class CNavigation* m_pNavigationCom = nullptr;
+	class CPhysX_Controller* m_pControllerCom = nullptr;
 	class CTrail* m_pTrails[SOCKET_END];
-
+	
+	
+	class CWeapon* m_pWeapon = nullptr;
+	class CModel* m_pCharacterPartModels[PART_TYPE::PART_END];
 
 protected:
-	vector<CGameObject*>				m_Parts;
-	typedef vector<CGameObject*>		PARTS;
-
 	vector<class CHierarchyNode*>		m_Sockets;
 	typedef vector<CGameObject*>		Sockets;
 

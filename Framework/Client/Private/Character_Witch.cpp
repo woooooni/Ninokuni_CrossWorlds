@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "Character_Witch.h"
+#include "Character_SwordMan.h"
 #include "GameInstance.h"
 #include "HierarchyNode.h"
 #include "Trail.h"
@@ -7,18 +7,18 @@
 
 
 
-CCharacter_Witch::CCharacter_Witch(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eCharacterType)
+CCharacter_SwordMan::CCharacter_SwordMan(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eCharacterType)
 	: CCharacter(pDevice, pContext, strObjectTag, eCharacterType)
 {
 }
 
-CCharacter_Witch::CCharacter_Witch(const CCharacter_Witch& rhs)
+CCharacter_SwordMan::CCharacter_SwordMan(const CCharacter_SwordMan& rhs)
 	: CCharacter(rhs)
 {
 
 }
 
-HRESULT CCharacter_Witch::Initialize_Prototype()
+HRESULT CCharacter_SwordMan::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
@@ -27,7 +27,7 @@ HRESULT CCharacter_Witch::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CCharacter_Witch::Initialize(void* pArg)
+HRESULT CCharacter_SwordMan::Initialize(void* pArg)
 {
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -50,7 +50,7 @@ HRESULT CCharacter_Witch::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CCharacter_Witch::Tick(_float fTimeDelta)
+void CCharacter_SwordMan::Tick(_float fTimeDelta)
 {
 	m_pStateCom->Tick_State(fTimeDelta);
 	__super::Tick(fTimeDelta);
@@ -99,13 +99,13 @@ void CCharacter_Witch::Tick(_float fTimeDelta)
 	}
 }
 
-void CCharacter_Witch::LateTick(_float fTimeDelta)
+void CCharacter_SwordMan::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 }
 
-HRESULT CCharacter_Witch::Render()
+HRESULT CCharacter_SwordMan::Render()
 {
 	if (FAILED(__super::Render()))
 		return E_FAIL;
@@ -113,22 +113,22 @@ HRESULT CCharacter_Witch::Render()
 	return S_OK;
 }
 
-void CCharacter_Witch::Collision_Enter(const COLLISION_INFO& tInfo)
+void CCharacter_SwordMan::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
 }
 
-void CCharacter_Witch::Collision_Continue(const COLLISION_INFO& tInfo)
+void CCharacter_SwordMan::Collision_Continue(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Continue(tInfo);
 }
 
-void CCharacter_Witch::Collision_Exit(const COLLISION_INFO& tInfo)
+void CCharacter_SwordMan::Collision_Exit(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Exit(tInfo);
 }
 
-void CCharacter_Witch::On_Damaged(const COLLISION_INFO& tInfo)
+void CCharacter_SwordMan::On_Damaged(const COLLISION_INFO& tInfo)
 {
 	__super::On_Damaged(tInfo);
 }
@@ -137,7 +137,7 @@ void CCharacter_Witch::On_Damaged(const COLLISION_INFO& tInfo)
 
 
 
-HRESULT CCharacter_Witch::Ready_Components()
+HRESULT CCharacter_SwordMan::Ready_Components()
 {
 
 	/* For.Com_Transform */
@@ -201,7 +201,7 @@ HRESULT CCharacter_Witch::Ready_Components()
 }
 
 #pragma region Ready_States
-HRESULT CCharacter_Witch::Ready_States()
+HRESULT CCharacter_SwordMan::Ready_States()
 {
 	//list<wstring> strAnimationName;
 
@@ -407,7 +407,7 @@ HRESULT CCharacter_Witch::Ready_States()
 
 
 #pragma region Ready_Colliders
-HRESULT CCharacter_Witch::Ready_Colliders()
+HRESULT CCharacter_SwordMan::Ready_Colliders()
 {
 
 	//CCollider_Sphere::SPHERE_COLLIDER_DESC ColliderDesc;
@@ -465,7 +465,7 @@ HRESULT CCharacter_Witch::Ready_Colliders()
 #pragma endregion
 
 #pragma region Ready_Sockets
-HRESULT CCharacter_Witch::Ready_Sockets()
+HRESULT CCharacter_SwordMan::Ready_Sockets()
 {
 	//if (nullptr == m_pModelCom)
 	//	return E_FAIL;
@@ -519,7 +519,7 @@ HRESULT CCharacter_Witch::Ready_Sockets()
 #pragma endregion
 
 #pragma region Ready_Parts
-HRESULT CCharacter_Witch::Ready_Parts()
+HRESULT CCharacter_SwordMan::Ready_Parts()
 {
 	//m_Parts.resize(PARTTYPE::PART_END);
 
@@ -572,32 +572,32 @@ HRESULT CCharacter_Witch::Ready_Parts()
 }
 #pragma endregion
 
-CCharacter_Witch* CCharacter_Witch::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eCharacterType)
+CCharacter_SwordMan* CCharacter_SwordMan::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eCharacterType)
 {
-	CCharacter_Witch* pInstance = new CCharacter_Witch(pDevice, pContext, strObjectTag, eCharacterType);
+	CCharacter_SwordMan* pInstance = new CCharacter_SwordMan(pDevice, pContext, strObjectTag, eCharacterType);
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX("Create Failed : CCharacter_Witch");
+		MSG_BOX("Create Failed : CCharacter_SwordMan");
 		Safe_Release(pInstance);
 		return nullptr;
 	}
 	return pInstance;
 }
 
-CGameObject* CCharacter_Witch::Clone(void* pArg)
+CGameObject* CCharacter_SwordMan::Clone(void* pArg)
 {
-	CCharacter_Witch* pInstance = new CCharacter_Witch(*this);
+	CCharacter_SwordMan* pInstance = new CCharacter_SwordMan(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Failed to Cloned : CCharacter_Witch");
+		MSG_BOX("Failed to Cloned : CCharacter_SwordMan");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CCharacter_Witch::Free()
+void CCharacter_SwordMan::Free()
 {
 	__super::Free();
 }

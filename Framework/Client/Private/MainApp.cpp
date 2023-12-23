@@ -306,12 +306,15 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	// Texture //
 	///////////// For UI
 	// 디졸브 텍스쳐
+
 //	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Dissolve"),
 //		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Dissolve/Dissolve.png")))))
 //		return E_FAIL;
 
+
 	if (FAILED(Ready_UI_TextureComponent()))
 		return E_FAIL;
+
 	if (FAILED(CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_STATIC)))
 		return E_FAIL;
 
