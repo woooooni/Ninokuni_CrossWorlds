@@ -40,6 +40,12 @@ public:
 	const _bool& Is_Damping() const { return m_tDampingDesc.bDamping; }
 	void Set_Damping(const _bool& bDamping) { m_tDampingDesc.bDamping = bDamping; m_tDampingDesc.bSet = bDamping; }
 
+	const _float& Get_MaxRotationLimitDeltaY() const { return m_fMaxRotLimitDeltaY; }
+	const _float& Get_MinRotationLimitDeltaY() const { return m_fMinRotLimitDeltaY; }
+
+	void Set_MaxRotationLimitDeltaY(const _float fLimit) { m_fMaxRotLimitDeltaY = fLimit; }
+	void Set_MinRotationLimitDeltaY(const _float fLimit) { m_fMinRotLimitDeltaY = fLimit; }
+
 protected:
 	virtual HRESULT Ready_Components() override;
 
@@ -51,9 +57,15 @@ private:
 	Vec4 Calculate_DampingPosition(Vec4 vGoalPos);
 
 private:
-	Vec2			m_vAngle		= { 0.f, 1.f };
+	Vec2			m_vAngle				= { 0.f, 1.f };
+
+	/* 회전량이 너무 많거나 적을경우 카메라가 획 도는 경우를 방지하기 위한 Limit값*/
+	_float			m_fMaxRotLimitDeltaY	= { 0.05f };
+	_float			m_fMinRotLimitDeltaY	= { -0.05f };
+
+	DAMPING_DESC	m_tDampingDesc			= {};
+
 	
-	DAMPING_DESC	m_tDampingDesc	= {};
 
 public:
 	static CCamera_Follow* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);

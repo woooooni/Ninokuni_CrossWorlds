@@ -40,7 +40,7 @@ HRESULT CCamera_Follow::Initialize(void * pArg)
 		m_vLookAtOffset = Vec4::UnitW;
 		m_vTargetOffset = Vec4{ 1.2f, 1.3f, 0.f, 1.f };
 
-		m_vMouseSensitivity = Vec2{ 0.2f, 0.35f };
+		m_vMouseSensitivity = Vec2{ 0.18f, 0.5f };
 	}
 
 	return S_OK;
@@ -104,7 +104,22 @@ Vec4 CCamera_Follow::Calculate_LoaclSphericalPosition(_float fTimeDelta)
 	_long	MouseMove = 0l;
 
 	if (MouseMove = GI->Get_DIMMoveState(DIMM_X))
-		m_vAngle.x += MouseMove * m_vMouseSensitivity.y * fTimeDelta * -1.f;
+	{
+		_float fDelta = MouseMove * m_vMouseSensitivity.y * fTimeDelta * -1.f;
+		
+		/* y축 회전량이 너무 많을 경우 카메라가 획 도는 현상 방지 하기 위한 제한 */
+		{
+			if (fDelta < m_fMinRotLimitDeltaY)
+				fDelta = m_fMinRotLimitDeltaY;
+
+			if (m_fMaxRotLimitDeltaY < fDelta)
+				fDelta = m_fMaxRotLimitDeltaY;
+		}
+
+		m_vAngle.x += fDelta;
+
+		cout << "Mouse Y : " << fDelta << endl;
+	}
 
 	if (MouseMove = GI->Get_DIMMoveState(DIMM_Y))
 	{
@@ -173,6 +188,8 @@ Vec4 CCamera_Follow::Calculate_DampingPosition(Vec4 vGoalPos)
 	else /* 이전에 세팅이 이루어 졌다면 댐핑 계산을 적용한다. */
 	{
 		Vec4 vDist = (vGoalPos.ZeroW() - m_tDampingDesc.vCurPos.ZeroW()) * m_tDampingDesc.fDampingCoefficient;
+		
+		//cout << "Dist : " << vDist.Length() << endl;
 
 		m_tDampingDesc.vCurPos += vDist;
 
