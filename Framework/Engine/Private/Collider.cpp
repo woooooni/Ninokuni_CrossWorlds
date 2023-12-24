@@ -55,10 +55,12 @@ HRESULT CCollider::Initialize(void* pArg)
 	Safe_AddRef(m_pNode);
 
 	m_pOwnerTransformCom = pDesc->pOwnerTransform;
+	if (nullptr == m_pOwnerTransformCom)
+		return E_FAIL;
 	Safe_AddRef(m_pOwnerTransformCom);
 
 	m_vOffsetPosition = pDesc->vOffsetPosition;
-	m_ModelPivotMatrix = pDesc->ModePivotMatrix;
+	m_ModelPivotMatrix = pDesc->ModelPivotMatrix;
 
 	return S_OK;
 }
@@ -70,7 +72,7 @@ void CCollider::Tick_Collider(_float fTimeDelta)
 
 void CCollider::LateTick_Collider(_float fTimeDelta)
 {
-	
+	Compute_Final_Matrix();
 }
 
 #ifdef _DEBUG

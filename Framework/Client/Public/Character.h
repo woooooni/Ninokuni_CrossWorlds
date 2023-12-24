@@ -14,6 +14,7 @@ class CPipeLine;
 class CStateMachine;
 class CNavigation;
 class CHierarchyNode;
+class CPhysX_Controller;
 END
 
 
@@ -29,6 +30,7 @@ public:
 		NEUTRAL_WALK,
 		NEUTRAL_RUN,
 		NEUTRAL_JUMP,
+		NEUTRAL_KICK,
 
 		NEUTRAL_CROUCH_IDLE,
 		NEUTRAL_CROUCH_MOVE,
@@ -43,8 +45,12 @@ public:
 		BATTLE_RUN,
 		BATTLE_JUMP, 
 		BATTLE_DASH,
-		BATTLE_ATTACK,
 		BATTLE_GUARD,
+
+		BATTLE_ATTACK_0,
+		BATTLE_ATTACK_1,
+		BATTLE_ATTACK_2,
+		BATTLE_ATTACK_3,
 
 		SKILL_0,
 		SKILL_1,

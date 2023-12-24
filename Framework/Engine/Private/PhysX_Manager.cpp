@@ -19,16 +19,13 @@ physx::PxFilterFlags FilterShader(
 	retPairFlags |= PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
 	retPairFlags |= PxPairFlag::eNOTIFY_TOUCH_LOST;
 	retPairFlags |= PxPairFlag::eNOTIFY_CONTACT_POINTS;
-	retPairFlags |= PxPairFlag::eNOTIFY_TOUCH_CCD;
-
+	retPairFlags |= PxPairFlag::eDETECT_DISCRETE_CONTACT;
+	retPairFlags = PxPairFlag::eSOLVE_CONTACT;
+	
+	
 
 	retPairFlags |= PxPairFlag::eTRIGGER_DEFAULT;
-	retPairFlags |= PxPairFlag::eDETECT_CCD_CONTACT;
-	
-	retPairFlags |= PxPairFlag::eSOLVE_CONTACT;
 
-	retPairFlags |= PxPairFlag::eCONTACT_EVENT_POSE;
-	
 	return PxFilterFlag::eDEFAULT;
 }
 
@@ -45,10 +42,10 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 {
 	m_Foundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_Allocator, m_ErrorCallback);
 
-	/*m_pPvd = PxCreatePvd(*m_Foundation);
-	m_pTransport = PxDefaultPvdSocketTransportCreate("127.0.0.1", m_iPortNumber, m_iTimeOutSeconds);
-	m_pPvd->connect(*m_pTransport, PxPvdInstrumentationFlag::eALL);
-	_bool bConntected = m_pPvd->isConnected();*/
+	//m_pPvd = PxCreatePvd(*m_Foundation);
+	//m_pTransport = PxDefaultPvdSocketTransportCreate("127.0.0.1", m_iPortNumber, m_iTimeOutSeconds);
+	//m_pPvd->connect(*m_pTransport, PxPvdInstrumentationFlag::eALL);
+	//_bool bConntected = m_pPvd->isConnected();
 
 
 
@@ -61,7 +58,7 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 
 	SceneDesc.gravity = PxVec3(0.0f, 0.0f, 0.0f);
 	
-	m_Dispatcher = PxDefaultCpuDispatcherCreate(4);
+	m_Dispatcher = PxDefaultCpuDispatcherCreate(2);
 	if (!m_Dispatcher)
 		return E_FAIL;
 
@@ -81,7 +78,7 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 
 	m_pScene = m_Physics->createScene(SceneDesc);
 	m_pController_Manager = PxCreateControllerManager(*m_pScene);
-	m_pController_Manager->setOverlapRecoveryModule(true);
+	// m_pController_Manager->setOverlapRecoveryModule(true);
 	
 	
 	PxPvdSceneClient* pvdClient = m_pScene->getScenePvdClient();
@@ -96,9 +93,9 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 #ifdef DEBUG
 	m_pScene->setVisualizationParameter(PxVisualizationParameter::eCONTACT_NORMAL, 1.f);
 	m_pScene->setVisualizationParameter(PxVisualizationParameter::eSIMULATION_MESH, 1.f);
+	m_pScene->setVisualizationParameter(PxVisualizationParameter::eCOLLISION_STATIC, 1.f);
 	m_pScene->setVisualizationParameter(PxVisualizationParameter::eCOLLISION_DYNAMIC, 1.f);
 	m_pScene->setVisualizationParameter(PxVisualizationParameter::eCOLLISION_SHAPES, 1.f);
-	m_pScene->setVisualizationParameter(PxVisualizationParameter::eCOLLISION_STATIC, 1.f);
 	m_pScene->setVisualizationParameter(PxVisualizationParameter::eACTOR_AXES, 2.0f);
 #endif // DEBUG
 
@@ -174,6 +171,8 @@ void CPhysX_Manager::LateTick(_float fTimeDelta)
 	}
 	m_GroundCollision.clear();
 
+	m_pController_Manager->computeInteractions(fTimeDelta);
+
 	m_pScene->simulate(fTimeDelta);
 	m_pScene->fetchResults(true);
 	m_pScene->fetchResultsParticleSystem();
@@ -182,29 +181,29 @@ void CPhysX_Manager::LateTick(_float fTimeDelta)
 #ifdef _DEBUG
 HRESULT CPhysX_Manager::Render()
 {	
-	const PxRenderBuffer& rb = m_pScene->getRenderBuffer();
+	//const PxRenderBuffer& rb = m_pScene->getRenderBuffer();
 
-	PxU32 iTrangleCount = rb.getNbTriangles();
-	for (PxU32 i = 0; i < rb.getNbTriangles(); i++)
-	{
-		const PxDebugTriangle& Triangle = rb.getTriangles()[i];
+	//PxU32 iTrangleCount = rb.getNbTriangles();
+	//for (PxU32 i = 0; i < rb.getNbTriangles(); i++)
+	//{
+	//	const PxDebugTriangle& Triangle = rb.getTriangles()[i];
 
-		Vec3 vPos0 = { Triangle.pos0.x,Triangle.pos0.y, Triangle.pos0.z };
-		Vec3 vPos1 = { Triangle.pos1.x,Triangle.pos1.y, Triangle.pos1.z };
-		Vec3 vPos2 = { Triangle.pos2.x,Triangle.pos2.y, Triangle.pos2.z };
-		
-		m_pEffect->SetWorld(XMMatrixIdentity());
-		m_pEffect->SetView(GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
-		m_pEffect->SetProjection(GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ));
+	//	Vec3 vPos0 = { Triangle.pos0.x,Triangle.pos0.y, Triangle.pos0.z };
+	//	Vec3 vPos1 = { Triangle.pos1.x,Triangle.pos1.y, Triangle.pos1.z };
+	//	Vec3 vPos2 = { Triangle.pos2.x,Triangle.pos2.y, Triangle.pos2.z };
+	//	
+	//	m_pEffect->SetWorld(XMMatrixIdentity());
+	//	m_pEffect->SetView(GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
+	//	m_pEffect->SetProjection(GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ));
 
-		m_pEffect->Apply(m_pContext);
+	//	m_pEffect->Apply(m_pContext);
 
-		m_pContext->IASetInputLayout(m_pInputLayout);
-		m_pBatch->Begin();
+	//	m_pContext->IASetInputLayout(m_pInputLayout);
+	//	m_pBatch->Begin();
 
-		DX::DrawTriangle(m_pBatch, vPos0, vPos1, vPos2);
-		m_pBatch->End();
-	}
+	//	DX::DrawTriangle(m_pBatch, vPos0, vPos1, vPos2);
+	//	m_pBatch->End();
+	//}
 
 	return S_OK;
 }
@@ -316,7 +315,7 @@ HRESULT CPhysX_Manager::Remove_Actor(class CGameObject* pGameObject)
 	return S_OK;
 }
 
-PxController* CPhysX_Manager::Add_CapsuleController(CGameObject* pGameObject, Matrix WorldMatrix, _float fHeight, _float fRadius, _float fMaxJumpHeight)
+PxController* CPhysX_Manager::Add_CapsuleController(CGameObject* pGameObject, Matrix WorldMatrix, _float fHeight, _float fRadius, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack)
 {
 	// 컨트롤러는 하나만 가질 수 있다.
 	if (nullptr == pGameObject)
@@ -337,18 +336,24 @@ PxController* CPhysX_Manager::Add_CapsuleController(CGameObject* pGameObject, Ma
 	CapsuleDesc.radius = fRadius;
 
 	CapsuleDesc.maxJumpHeight = fMaxJumpHeight;
+	CapsuleDesc.stepOffset = 0.1f;
+	CapsuleDesc.contactOffset = 0.0001f;
 	CapsuleDesc.userData = pGameObject;
+	CapsuleDesc.reportCallback = pCallBack;
+	
 	
 
 	PxController* pController = m_pController_Manager->createController(CapsuleDesc);
+
 	pController->getActor()->userData = pGameObject;
 	pController->getActor()->setActorFlag(PxActorFlag::eVISUALIZATION, true);
 	pController->getActor()->setName("Controller");
+	
 
 	return pController;
 }
 
-PxController* CPhysX_Manager::Add_BoxController(CGameObject* pGameObject, Matrix WorldMatrix, _float3 fExtents, _float fMaxJumpHeight)
+PxController* CPhysX_Manager::Add_BoxController(CGameObject* pGameObject, Matrix WorldMatrix, _float3 fExtents, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack)
 {
 	// 컨트롤러는 하나만 가질 수 있다.
 	if (nullptr == pGameObject)
@@ -371,6 +376,7 @@ PxController* CPhysX_Manager::Add_BoxController(CGameObject* pGameObject, Matrix
 
 	BoxDesc.maxJumpHeight = fMaxJumpHeight;
 	BoxDesc.userData = pGameObject;
+	BoxDesc.reportCallback = pCallBack;
 
 
 	PxController* pController = m_pController_Manager->createController(BoxDesc);
@@ -437,8 +443,9 @@ PxRigidStatic* CPhysX_Manager::Create_Static_Box(const PHYSX_INIT_DESC& Desc)
 {
 	PxMaterial* pMateral = Create_Material(Desc.fStaticFriction, Desc.fDynamicFriction, Desc.fRestitution);
 	PxShape* shape = m_Physics->createShape(PxBoxGeometry(Desc.vExtents.x, Desc.vExtents.y, Desc.vExtents.z), *pMateral);
-	shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
-	shape->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, true);
+	shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
+	shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
+	// shape->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, true);
 	shape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
 
 	PxVec3 vPxStartPositon = PxVec3(Desc.vStartPosition.x, Desc.vStartPosition.y, Desc.vStartPosition.z);
@@ -787,7 +794,7 @@ HRESULT CPhysX_Manager::Create_Static_Mesh(const PHYSX_INIT_DESC& Desc, __out ve
 	return S_OK;
 }
 
-HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGameObject, CModel* pModel, Matrix WorldMatrix)
+HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGameObject, CModel* pModel, Matrix WorldMatrix, const wstring& strCollisionTag)
 {
 	if (nullptr == pModel)
 		return E_FAIL;
@@ -849,7 +856,7 @@ HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGameObject, CModel* pModel, Mat
 		tDesc.triangles.data = Indices.data();
 
 
-		PxTriangleMesh* pTriangleMesh = PxCreateTriangleMesh(PxCookingParams(PxTolerancesScale(10.f, 10.f)), tDesc);
+		PxTriangleMesh* pTriangleMesh = PxCreateTriangleMesh(PxCookingParams(PxTolerancesScale(100.f, 100.f)), tDesc);
 		PxTriangleMeshGeometry* pGeometry = new PxTriangleMeshGeometry(pTriangleMesh);
 
 
@@ -865,10 +872,13 @@ HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGameObject, CModel* pModel, Mat
 		PxRigidStatic* pActor = m_Physics->createRigidStatic(physXTransform);
 		PxMaterial* Material = m_Physics->createMaterial(0.f, 0.f, 0.f);
 		PxShape* pShape = m_Physics->createShape(*pGeometry, *Material);
-		pShape->setFlag(PxShapeFlag::eVISUALIZATION, true);
 		pShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
+		pShape->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, true);
+		pShape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
+		
 
 		pShape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
+
 		pActor->setName("Ground");
 
 		// shape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
@@ -1257,6 +1267,7 @@ void CPhysX_Manager::Free()
 
 
 
+
 void CPhysX_Manager::onConstraintBreak(PxConstraintInfo* constraints, PxU32 count)
 {
 }
@@ -1287,7 +1298,6 @@ void CPhysX_Manager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 
 	if (true == GI->Is_Compare(pLeftActor->getName(), "Collider"))
 	{
-		
 		if (true == GI->Is_Compare(pRightActor->getName(), "Collider"))
 		{
 			CCollider* pLeftCollider = static_cast<CCollider*>(pLeftActor->userData);
@@ -1410,7 +1420,12 @@ void CPhysX_Manager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 
 void CPhysX_Manager::onTrigger(PxTriggerPair* pairs, PxU32 count)
 {
-	int i = 0;
+	PxActor* pLeftActor = pairs->triggerActor;
+	PxActor* pRightActor = pairs->otherActor;
+	if (nullptr == pLeftActor || nullptr == pRightActor)
+		return;
+
+
 }
 
 void CPhysX_Manager::onAdvance(const PxRigidBody* const* bodyBuffer, const PxTransform* poseBuffer, const PxU32 count)

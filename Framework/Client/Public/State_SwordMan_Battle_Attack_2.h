@@ -8,12 +8,12 @@ END
 
 BEGIN(Client)
 
-class CState_SwordMan_Battle_Idle : public CState_Character
+class CState_SwordMan_Battle_Attack_2 : public CState_Character
 {
 
 private:
-	CState_SwordMan_Battle_Idle(class CStateMachine* pMachine);
-	~CState_SwordMan_Battle_Idle() = default;
+	CState_SwordMan_Battle_Attack_2(class CStateMachine* pMachine);
+	~CState_SwordMan_Battle_Attack_2() = default;
 
 
 public:
@@ -28,12 +28,8 @@ public:
 private:
 	void Input(_float fTimeDelta);
 
-private:
-	_float m_fReturnNuetralTime = 5.f;
-	_float m_fAccReturnNuetral = 0.f;
-
 public:
-	static CState_SwordMan_Battle_Idle* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
+	static CState_SwordMan_Battle_Attack_2* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
 
 };

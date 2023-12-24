@@ -38,6 +38,8 @@ HRESULT CCollider_Sphere::Initialize(void* pArg)
 	m_vOffsetPosition = pDesc->vOffsetPosition;
 	m_tBoundingSphere = pDesc->tSphere;
 
+	Compute_Final_Matrix();
+	XMStoreFloat3(&m_tBoundingSphere.Center, XMLoadFloat4x4(&m_FinalMatrix).r[CTransform::STATE_POSITION]);
 
 	PHYSX_INIT_DESC InitDesc;
 	InitDesc.eColliderType = PHYSX_COLLIDER_TYPE::SPHERE;
@@ -49,10 +51,15 @@ HRESULT CCollider_Sphere::Initialize(void* pArg)
 
 	m_pPhysXActor = GI->Add_Dynamic_Actor(InitDesc);
 
+	
+
 	if (nullptr == m_pPhysXActor)
 		return E_FAIL;
 
 	m_pPhysXActor->userData = this;
+
+
+	m_bKinematic = InitDesc.bKinematic;
 
 	return S_OK;
 }
@@ -88,7 +95,11 @@ void CCollider_Sphere::LateTick_Collider(_float fTimeDelta)
 	XMStoreFloat3(&m_tBoundingSphere.Center, XMLoadFloat4x4(&m_FinalMatrix).r[CTransform::STATE_POSITION]);
 
 	PxTransform PxPos(PxVec3(m_tBoundingSphere.Center.x, m_tBoundingSphere.Center.y, m_tBoundingSphere.Center.z));
-	m_pPhysXActor->setKinematicTarget(PxPos);
+
+	if (true == m_bKinematic)
+		m_pPhysXActor->setKinematicTarget(PxPos);
+	else
+		m_pPhysXActor->setGlobalPose(PxPos);
 }
 
 #ifdef _DEBUG

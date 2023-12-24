@@ -135,6 +135,18 @@ void CState_SwordMan_Neutral_Walk::Input(_float fTimeDelta)
 
 	if (KEY_HOLD(KEY::SHIFT))
 		m_pStateMachineCom->Change_State(CCharacter::STATE::NEUTRAL_RUN);
+
+	if (KEY_HOLD(KEY::RBTN))
+	{
+		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_GUARD);
+		return;
+	}
+
+	if (KEY_TAP(KEY::LBTN))
+	{
+		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_0);
+		return;
+	}
 		
 
 	if (!bMove)

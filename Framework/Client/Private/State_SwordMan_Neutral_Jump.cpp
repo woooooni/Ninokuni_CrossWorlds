@@ -24,29 +24,35 @@ HRESULT CState_SwordMan_Neutral_Jump::Initialize(const list<wstring>& AnimationL
 
 void CState_SwordMan_Neutral_Jump::Enter_State(void* pArg)
 {
-    m_iCurrAnimIndex = m_AnimIndices[0];
     m_pRigidBodyCom->Set_Ground(false);
     m_pRigidBodyCom->Set_Use_Gravity(true);
-    m_pRigidBodyCom->Add_Velocity(XMVectorSet(0.f, 1.f, 0.f, 0.f), 5.f, true);
-    m_pModelCom->Set_Animation(m_iCurrAnimIndex);
+
+    Vec4 vPosition = m_pTransformCom->Get_Position();
+    vPosition.y += 0.1f;
+
+    m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPosition);
+    Vec3 vJumpDir = XMVector3Normalize(m_pTransformCom->Get_Look());
+    vJumpDir.y = 1.f;
+
+    m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(vJumpDir), 10.f, true);
+    m_pModelCom->Set_Animation(m_AnimIndices[0]);
+
+
+    m_bGroundChange = false;
 }
 
 void CState_SwordMan_Neutral_Jump::Tick_State(_float fTimeDelta)
 {
-    if (m_pModelCom->Is_Finish() && m_iCurrAnimIndex == m_AnimIndices[0])
+    if (true == m_pRigidBodyCom->Is_Ground())
     {
-        m_iCurrAnimIndex = m_AnimIndices[1];
-        m_pModelCom->Set_Animation(m_iCurrAnimIndex);
-    }
-
-
-    if (m_iCurrAnimIndex == m_AnimIndices[1] && m_pRigidBodyCom->Is_Ground())
         m_pStateMachineCom->Change_State(CCharacter::STATE::NEUTRAL_IDLE);
+    }   
 }
 
 void CState_SwordMan_Neutral_Jump::Exit_State()
 {
     m_iCurrAnimIndex = 0;
+    m_bGroundChange = false;
 }
 
 void CState_SwordMan_Neutral_Jump::Input(_float fTimeDelta)

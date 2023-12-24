@@ -141,13 +141,13 @@ public:
 
 	HRESULT Add_Static_Mesh_Actor(const PHYSX_INIT_DESC& Desc, __out vector<PxRigidStatic*>& refOut);
 	HRESULT Add_Dynamic_Mesh_Actor(const PHYSX_INIT_DESC& Desc, __out vector<PxRigidDynamic*>& refOut);
-	HRESULT Add_Ground(CGameObject* pGameObject, CModel* pModel, _matrix WorldMatrix);
+	HRESULT Add_Ground(class CGameObject* pGameObject, CModel* pModel, _matrix WorldMatrix, const wstring& strCollisionTag);
 
 	HRESULT Remove_Actor(class CGameObject* pGameObject);
 	PxMaterial* Create_PxMaterial(_float fA, _float fB, _float fC);
 
-	PxController* Add_CapsuleController(class CGameObject* pGameObject, Matrix WorldMatrix, _float fHeight, _float fRadius, _float fMaxJumpHeight);
-	PxController* Add_BoxController(CGameObject* pGameObject, Matrix WorldMatrix, _float3 vExtents, _float fMaxJumpHeight);
+	PxController* Add_CapsuleController(class CGameObject* pGameObject, Matrix WorldMatrix, _float fHeight, _float fRadius, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack = nullptr);
+	PxController* Add_BoxController(CGameObject* pGameObject, Matrix WorldMatrix, _float3 vExtents, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack = nullptr);
 
 	
 	

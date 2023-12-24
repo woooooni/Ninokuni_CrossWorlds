@@ -19,7 +19,7 @@ protected:
         class CHierarchyNode* pNode;
         class CTransform* pOwnerTransform;
 
-        Matrix ModePivotMatrix;
+        Matrix ModelPivotMatrix;
         Vec3 vOffsetPosition = { 0.f, 0.f, 0.f };
 
         // ÇÇÁ÷½º
@@ -114,6 +114,7 @@ protected:
     _bool m_bActive = true;
     _bool m_bHitLag = true;
 
+    _bool m_bKinematic = false;
 
 protected:
     _float m_fDamage = 0.f;

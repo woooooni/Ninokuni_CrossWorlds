@@ -63,12 +63,30 @@ void CRigidBody::Update_Velocity(_float fTimeDelta)
 
 	if (0.f < m_vVelocity.Length())
 	{
+		WorldMatrix.r[CTransform::STATE_POSITION] += m_vVelocity * fTimeDelta;
+
 		Vec3 vVelocity = m_vVelocity;
 		vVelocity.y = 0.f;
 
-		Vec3 vFriction = -1.f * vVelocity * m_fFrictionScale;
-		WorldMatrix.r[CTransform::STATE_POSITION] += m_vVelocity * fTimeDelta;
-		m_vVelocity += vFriction * fTimeDelta;
+		Vec3 vFriction = -1.f * vVelocity * m_fFrictionScale * fTimeDelta;
+
+
+		if (vFriction.Length() >= m_vVelocity.Length())
+		{
+			m_vVelocity = Vec3(0.f, 0.f, 0.f);
+		}
+		else
+		{
+			if (fabs(vVelocity.x) < fabs(vFriction.x))
+				vFriction.x = vVelocity.x;
+
+			if (fabs(vVelocity.y) < fabs(vFriction.y))
+				vFriction.y = vVelocity.y;
+
+			if (fabs(vVelocity.z) < fabs(vFriction.z))
+				vFriction.z = vVelocity.z;
+			m_vVelocity += vFriction;
+		}
 	}
 
 	m_pTransformCom->Set_WorldMatrix(WorldMatrix);

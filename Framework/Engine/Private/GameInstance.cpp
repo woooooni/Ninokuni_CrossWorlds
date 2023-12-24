@@ -571,9 +571,9 @@ HRESULT CGameInstance::Add_Dynamic_Mesh_Actor(const PHYSX_INIT_DESC& Desc, __out
 	return m_pPhysXManager->Add_Dynamic_Mesh_Actor(Desc, refOut);
 }
 
-HRESULT CGameInstance::Add_Ground(CGameObject* pGameObject, CModel* pModel, _matrix WorldMatrix)
+HRESULT CGameInstance::Add_Ground(CGameObject* pGameObject, CModel* pModel, _matrix WorldMatrix, const wstring& strCollisionTag)
 {
-	return m_pPhysXManager->Add_Ground(pGameObject, pModel, WorldMatrix);
+	return m_pPhysXManager->Add_Ground(pGameObject, pModel, WorldMatrix, strCollisionTag);
 }
 
 HRESULT CGameInstance::Remove_Actor(class CGameObject* pGameObject)
@@ -593,14 +593,14 @@ PxMaterial* CGameInstance::Create_PxMaterial(_float fStaticFriction, _float fDyn
 	return m_pPhysXManager->Create_Material(fStaticFriction, fDynamicFriction, fRestitution);
 }
 
-PxController* CGameInstance::Add_CapsuleController(CGameObject* pGameObject, Matrix WorldMatrix, _float fHeight, _float fRadius, _float fMaxJumpHeight)
+PxController* CGameInstance::Add_CapsuleController(CGameObject* pGameObject, Matrix WorldMatrix, _float fHeight, _float fRadius, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack)
 {
-	return m_pPhysXManager->Add_CapsuleController(pGameObject, WorldMatrix, fHeight, fRadius, fMaxJumpHeight);
+	return m_pPhysXManager->Add_CapsuleController(pGameObject, WorldMatrix, fHeight, fRadius, fMaxJumpHeight, pCallBack);
 }
 
-PxController* CGameInstance::Add_BoxController(CGameObject* pGameObject, Matrix WorldMatrix, _float3 fExtents, _float fMaxJumpHeight)
+PxController* CGameInstance::Add_BoxController(CGameObject* pGameObject, Matrix WorldMatrix, _float3 fExtents, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack)
 {
-	return m_pPhysXManager->Add_BoxController(pGameObject, WorldMatrix, fExtents, fMaxJumpHeight);
+	return m_pPhysXManager->Add_BoxController(pGameObject, WorldMatrix, fExtents, fMaxJumpHeight, pCallBack);
 }
 
 //PxParticleClothBuffer* CGameInstance::Get_TestClothBuffer()

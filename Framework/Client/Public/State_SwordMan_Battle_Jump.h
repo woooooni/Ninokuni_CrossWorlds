@@ -28,6 +28,9 @@ public:
 private:
 	void Input(_float fTimeDelta);
 
+private:
+	_bool m_bGroundChange = false;
+
 public:
 	static CState_SwordMan_Battle_Jump* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

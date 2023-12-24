@@ -236,8 +236,13 @@ void CCharacter::Collision_Exit(const COLLISION_INFO& tInfo)
 void CCharacter::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
 {
 	__super::Ground_Collision_Enter(tInfo);
-	m_pRigidBodyCom->Set_Ground(true);
-	m_pRigidBodyCom->Set_Use_Gravity(false);
+
+	if (m_pRigidBodyCom->Get_Velocity().y <= 0.f)
+	{
+		m_pRigidBodyCom->Set_Ground(true);
+		m_pRigidBodyCom->Set_Use_Gravity(false);
+	}
+	
 }
 
 void CCharacter::Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo)

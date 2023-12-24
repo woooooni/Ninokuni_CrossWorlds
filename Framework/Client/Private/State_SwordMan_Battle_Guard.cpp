@@ -23,37 +23,23 @@ HRESULT CState_SwordMan_Battle_Guard::Initialize(const list<wstring>& AnimationL
 
 void CState_SwordMan_Battle_Guard::Enter_State(void* pArg)
 {
-    m_fAccIdleMotion = 0.f;
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }
 
 void CState_SwordMan_Battle_Guard::Tick_State(_float fTimeDelta)
 {
     Input(fTimeDelta);
-
-    m_fAccIdleMotion += fTimeDelta;
-    if (m_fAccIdleMotion >= m_fIdleMotionTime)
-    {
-        m_fAccIdleMotion = 0.f;
-        m_pModelCom->Set_Animation(m_AnimIndices[GI->RandomInt(1, 2)]);
-    }
 }
 
 void CState_SwordMan_Battle_Guard::Exit_State()
 {
-    m_fAccIdleMotion = 0.f;
+    
 }
 
 void CState_SwordMan_Battle_Guard::Input(_float fTimeDelta)
 {
-    if (KEY_HOLD(KEY::W) || KEY_TAP(KEY::A) || KEY_TAP(KEY::S) || KEY_TAP(KEY::D))
-        m_pStateMachineCom->Change_State(CCharacter::STATE::NEUTRAL_WALK);
-    
-    if (KEY_TAP(KEY::SPACE))
-        m_pStateMachineCom->Change_State(CCharacter::STATE::NEUTRAL_JUMP);
-
-    if (KEY_TAP(KEY::C))
-        m_pStateMachineCom->Change_State(CCharacter::STATE::NEUTRAL_CROUCH_IDLE);
+    if (KEY_NONE(KEY::RBTN))
+        m_pStateMachineCom->Change_State(CCharacter::BATTLE_IDLE);
 }
 
 CState_SwordMan_Battle_Guard* CState_SwordMan_Battle_Guard::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
