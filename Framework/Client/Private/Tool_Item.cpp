@@ -48,14 +48,9 @@ void CTool_Item::Show_Desc()
 
 void CTool_Item::Show_Weapon()
 {
-	const char* enumStrings[CEquipment_Weapon::WEAPON_END] = { "WEAPON_SWORD", "WEAPON_GAUNTLET", "WEAPON_HAMMER", "WEAPON_RIFLE" };
+	const char* enumStrings[CGameItem_Weapon::WEAPON_END] = { "WEAPON_SWORD", "WEAPON_GAUNTLET", "WEAPON_HAMMER", "WEAPON_RIFLE" };
 
-	static char strName[MAX_PATH] = "";
-	static char strContent[MAX_PATH] = "";
-
-
-	m_tWeaponDesc.eMainCategory = CEquipment_Weapon::CATEGORY_EQUIPMENT;
-	m_tWeaponDesc.eEquipCategory = CEquipment_Weapon::EQUIP_WEAPON;
+	m_tWeaponDesc.eMainCategory = CGameItem_Weapon::CATEGORY_WEAPON;
 
 	ImGui::Text("Name");
 	ImGui::SameLine();
@@ -65,16 +60,15 @@ void CTool_Item::Show_Weapon()
 	ImGui::SameLine();
 	ImGui::InputInt("##Code", &m_tWeaponDesc.eCode);
 
-
 	ImGui::Text("WeaponCategory");
-	ImGui::Combo("##WeaponCategory", &m_tWeaponDesc.eWeaponCategory, enumStrings, CEquipment_Weapon::WEAPON_END);
+	ImGui::Combo("##WeaponCategory", &m_tWeaponDesc.eWeaponCategory, enumStrings, CGameItem_Weapon::WEAPON_END);
 
 	ImGui::Text("Atk");
 	ImGui::SameLine();
 	ImGui::InputFloat("##Atk", &m_tWeaponDesc.fAtk);
 
 	ImGui::Text("Content");
-	ImGui::InputTextMultiline("##Content", strContent, MAX_PATH);
+	ImGui::InputText("##Content", strContent, MAX_PATH);
 
 	ImGui::Text("FilePath");
 	ImGui::InputText("##Path", szFilePath, MAX_PATH);
@@ -88,7 +82,6 @@ void CTool_Item::Show_Weapon()
 		WeaponDesc["Name"] = m_tWeaponDesc.strName;
 		WeaponDesc["Code"] = m_tWeaponDesc.eCode;
 		WeaponDesc["MainCategory"] = m_tWeaponDesc.eMainCategory;
-		WeaponDesc["EquipCategory"] = m_tWeaponDesc.eEquipCategory;
 		WeaponDesc["WeaponCategory"] = m_tWeaponDesc.eWeaponCategory;
 		WeaponDesc["Atk"] = m_tWeaponDesc.fAtk;
 		WeaponDesc["Content"] = m_tWeaponDesc.strContent;

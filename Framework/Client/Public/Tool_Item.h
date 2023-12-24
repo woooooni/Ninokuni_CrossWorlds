@@ -1,7 +1,8 @@
 #pragma once
 
 #include "Tool.h"
-#include "Equipment_Weapon.h"
+#include "GameItem_Weapon.h"
+
 BEGIN(Client)
 
 class CTool_Item final : public CTool
@@ -12,9 +13,8 @@ public:
 		string strName = "";
 		int eCode = CODE_END;
 		string strContent = "";
-		int eMainCategory = CEquipment_Weapon::CATEGORY_END;
-		int eEquipCategory = CEquipment_Weapon::EQUIP_END;
-		int eWeaponCategory = CEquipment_Weapon::WEAPON_END;
+		int eMainCategory = CGameItem_Weapon::CATEGORY_END;
+		int eWeaponCategory = CGameItem_Weapon::WEAPON_END;
 		_float	fAtk = 0.f;
 	}TOOLDESC_WEAPON;
 
@@ -40,6 +40,9 @@ private:
 
 	/* Desc */
 	char szFilePath[MAX_PATH] = "";
+	char strName[MAX_PATH] = "";
+	char strContent[MAX_PATH] = "";
+
 
 	TOOLDESC_WEAPON m_tWeaponDesc = {};
 

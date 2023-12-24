@@ -10,6 +10,8 @@
 #include "Stellia.h"
 #include "UI_Manager.h"
 
+#include "Utils.h"
+
 CLevel_Test::CLevel_Test(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
 {
@@ -20,7 +22,6 @@ HRESULT CLevel_Test::Initialize()
 	SetWindowText(g_hWnd, TEXT("Scene_Tool"));
 	if (FAILED(__super::Initialize()))
 		return E_FAIL;
-
 
 	if (FAILED(Ready_Layer_Camera(LAYER_TYPE::LAYER_CAMERA)))
 		return E_FAIL;
@@ -56,6 +57,7 @@ HRESULT CLevel_Test::Initialize()
 
 HRESULT CLevel_Test::Tick(_float fTimeDelta)
 {
+
 	if (KEY_TAP(KEY::F7))
 	{
 		GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_DreamerMazeWitch"));

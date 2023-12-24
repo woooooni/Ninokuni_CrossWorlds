@@ -166,6 +166,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalOptions>/execution-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard_C>Default</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -229,6 +230,7 @@
     <ClInclude Include="..\Public\Baobam_DarkNode_Skill2.h" />
     <ClInclude Include="..\Public\Character.h" />
     <ClInclude Include="..\Public\Character_Dummy.h" />
+    <ClInclude Include="..\Public\Item_Manager.h" />
     <ClInclude Include="..\Public\State_Character.h" />
     <ClInclude Include="..\Public\Character_SwordMan.h" />
     <ClInclude Include="..\Public\Clown.h" />
@@ -273,11 +275,8 @@
     <ClInclude Include="..\Public\DMWitchState_Turn.h" />
     <ClInclude Include="..\Public\DMWitchState_Spawn.h" />
     <ClInclude Include="..\Public\DMWitchState_VulcanBall.h" />
-    <ClInclude Include="..\Public\Equipment_Weapon.h" />
+    <ClInclude Include="..\Public\GameItem_Weapon.h" />
     <ClInclude Include="..\Public\GameItem.h" />
-    <ClInclude Include="..\Public\GameItem_Consumable.h" />
-    <ClInclude Include="..\Public\GameItem_Equipment.h" />
-    <ClInclude Include="..\Public\GameItem_ETC.h" />
     <ClInclude Include="..\Public\GlanixState_Attack1.h" />
     <ClInclude Include="..\Public\GlanixState_Attack2.h" />
     <ClInclude Include="..\Public\GlanixState_Base.h" />
@@ -559,6 +558,7 @@
     <ClCompile Include="..\Private\Cat.cpp" />
     <ClCompile Include="..\Private\Character.cpp" />
     <ClCompile Include="..\Private\Character_Dummy.cpp" />
+    <ClCompile Include="..\Private\Item_Manager.cpp" />
     <ClCompile Include="..\Private\State_Character.cpp" />
     <ClCompile Include="..\Private\Character_SwordMan.cpp" />
     <ClCompile Include="..\Private\Clown.cpp" />
@@ -603,11 +603,8 @@
     <ClCompile Include="..\Private\DMWitchState_Turn.cpp" />
     <ClCompile Include="..\Private\DMWitchState_Spawn.cpp" />
     <ClCompile Include="..\Private\DMWitchState_VulcanBall.cpp" />
-    <ClCompile Include="..\Private\Equipment_Weapon.cpp" />
+    <ClCompile Include="..\Private\GameItem_Weapon.cpp" />
     <ClCompile Include="..\Private\GameItem.cpp" />
-    <ClCompile Include="..\Private\GameItem_Consumable.cpp" />
-    <ClCompile Include="..\Private\GameItem_Equipment.cpp" />
-    <ClCompile Include="..\Private\GameItem_ETC.cpp" />
     <ClCompile Include="..\Private\GlanixState_Attack1.cpp" />
     <ClCompile Include="..\Private\GlanixState_Attack2.cpp" />
     <ClCompile Include="..\Private\GlanixState_Base.cpp" />

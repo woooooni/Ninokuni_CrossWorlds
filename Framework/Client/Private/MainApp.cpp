@@ -14,6 +14,7 @@
 #include "Camera_Manager.h"
 #include "Light.h"
 #include "Part_Manager.h"
+#include "Item_Manager.h"
 
 #ifdef _DEBUG
   //#include <vld.h>
@@ -132,6 +133,9 @@ HRESULT CMainApp::Initialize_Client()
 		return E_FAIL;
 
 	if(FAILED(CParticle_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext, L"../Bin/DataFiles/Particle/")))
+		return E_FAIL;
+
+	if (FAILED(CItem_Manager::GetInstance()->Reserve_Manager(L"../Bin/DataFiles/Item/")))
 		return E_FAIL;
 
 	// Add Fonts
@@ -1043,5 +1047,6 @@ void Client::CMainApp::Free()
 	CPicking_Manager::GetInstance()->DestroyInstance();
 	CUI_Manager::GetInstance()->DestroyInstance();
 	CPart_Manager::GetInstance()->DestroyInstance();
+	CItem_Manager::GetInstance()->DestroyInstance();
 	CGameInstance::Release_Engine();
 }
