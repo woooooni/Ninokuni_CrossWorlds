@@ -51,10 +51,29 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 	if (nullptr == m_pTargetObj || nullptr == m_pLookAtObj)
 		return;
 
-	__super::Tick(fTimeDelta);
-
 	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, Calculate_WorldPosition(fTimeDelta));
 	m_pTransformCom->LookAt(Calculate_Look(fTimeDelta));
+
+	__super::Tick(fTimeDelta); /* Shake, Fov, Dist */
+
+	/*static Vec4 vOrigin;
+	if (Is_Shake())
+	{
+		Vec4 vPos = vOrigin;
+
+		Vec3 vShakeLocalPos = Get_ShakeLocalPos();
+		vPos.x += vShakeLocalPos.x;
+		vPos.y += vShakeLocalPos.y;
+		vPos.z += vShakeLocalPos.z;
+
+		m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vPos);
+	}
+
+	if (KEY_TAP(KEY::H))
+	{
+		vOrigin = m_pTransformCom->Get_Position();;
+		Start_Shake(0.01f, 15.f, 0.5f);
+	}*/
 }
 
 void CCamera_Follow::LateTick(_float fTimeDelta)
@@ -85,6 +104,9 @@ Vec4 CCamera_Follow::Calculate_WorldPosition(_float fTimeDelta)
 	
 	/* 카메라 목표 월드 위치  */
 	CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
+
+	if (nullptr == pTargetTransform)
+		return Vec4::UnitW;
 
 	Vec4 vWorldGoal = vLocalSpherical
 		+ Vec4(pTargetTransform->Get_Position());											 /* 타겟 포지션 */
@@ -117,8 +139,6 @@ Vec4 CCamera_Follow::Calculate_LoaclSphericalPosition(_float fTimeDelta)
 		}
 
 		m_vAngle.x += fDelta;
-
-		cout << "Mouse Y : " << fDelta << endl;
 	}
 
 	if (MouseMove = GI->Get_DIMMoveState(DIMM_Y))
@@ -141,7 +161,7 @@ Vec4 CCamera_Follow::Calculate_LoaclSphericalPosition(_float fTimeDelta)
 		1.f * sinf(m_vAngle.y) * cosf(m_vAngle.x),	// x = r * sin(위도 앙각) * cos(경도 방위각)
 		1.f * cosf(m_vAngle.y),						// y = r * cos(위도 앙각)
 		1.f * sinf(m_vAngle.y) * sinf(m_vAngle.x),	// z = r * sin(위도 앙각) * sin(경도 방위각)
-		0.f
+		1.f
 	};
 
 	return vCamLocal;
@@ -153,7 +173,7 @@ Vec4 CCamera_Follow::Calculate_Look(_float fTimeDelta)
 
 	Vec4 vPosition_LookAtObject = Vec4(pTargetTransform->Get_Position());
 
-	Vec4 vPosition_Offset = Calculate_ReleativePosition(m_vTargetOffset, m_pTransformCom->Get_WorldMatrix()); /* 카메라의 회전을 반영한 타겟 오프셋 */
+	Vec4 vPosition_Offset = Calculate_ReleativePosition(m_vTargetOffset, m_pTransformCom->Get_WorldMatrix()); /* 카메라의 회전상태를 반영한 타겟 오프셋 */
 
 	return Vec4(vPosition_LookAtObject + vPosition_Offset).OneW();
 }
@@ -178,7 +198,7 @@ Vec4 CCamera_Follow::Calculate_ReleativePosition(Vec4 vPos, Matrix matWorld)
 
 Vec4 CCamera_Follow::Calculate_DampingPosition(Vec4 vGoalPos)
 {
-	if (!m_tDampingDesc.bSet) /* 댐핑이 켜졌지만, 최초 세팅이 안 된 경우 세팅 한다. */
+	if (!m_tDampingDesc.bSet) /* 댐핑이 켜졌지만, 최초 세팅이 안 된 경우 세팅한다. */
 	{
 		m_tDampingDesc.bSet = true;
 		m_tDampingDesc.vCurPos = vGoalPos;
@@ -189,8 +209,6 @@ Vec4 CCamera_Follow::Calculate_DampingPosition(Vec4 vGoalPos)
 	{
 		Vec4 vDist = (vGoalPos.ZeroW() - m_tDampingDesc.vCurPos.ZeroW()) * m_tDampingDesc.fDampingCoefficient;
 		
-		//cout << "Dist : " << vDist.Length() << endl;
-
 		m_tDampingDesc.vCurPos += vDist;
 
 		return m_tDampingDesc.vCurPos.OneW();

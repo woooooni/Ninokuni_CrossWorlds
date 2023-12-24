@@ -7,6 +7,76 @@ BEGIN(Engine)
 class CTransform;
 class CGameObject;
 
+#define MAX_UNIT_RAND 30
+
+const static Vec2 v2UnitRand[MAX_UNIT_RAND] =
+{
+	{ -0.394, -0.919 },
+	{ 0.922, 0.388 },
+	{ -0.668, -0.744 },
+	{ -0.892, -0.451 },
+	{ 0.960, 0.281 },
+	{ 0.125, -0.992 },
+	{ -0.931, -0.366 },
+	{ 0.673, 0.740 },
+	{ 0.237, 0.972 },
+	{ 0.138, 0.990 },
+	{ -0.595, 0.803 },
+	{ -0.992, 0.124 },
+	{ -0.985, 0.174 },
+	{ 0.763, -0.646 },
+	{ 0.950, 0.313 },
+	{ 0.743, -0.669 },
+	{ 0.760, 0.650 },
+	{ -0.999, 0.051 },
+	{ -0.721, -0.693 },
+	{ -0.919, 0.395 },
+	{ 0.797, 0.603 },
+	{ 0.999, -0.039 },
+	{ 0.170, -0.985 },
+	{ 0.966, -0.257 },
+	{ -0.815, 0.579 },
+	{ 0.240, -0.971 },
+	{ -1.000, -0.027 },
+	{ 0.933, -0.361 },
+	{ 0.649, 0.761 },
+	{ -0.920, -0.391 }
+};
+
+const static Vec3 v3UnitRand[MAX_UNIT_RAND] =
+{
+	{ -0.737, -0.555, 0.385 },
+	{ -0.019, -0.959, 0.283 },
+	{ -0.807, -0.012, 0.591 },
+	{ -0.296, -0.020, -0.955 },
+	{ -0.246, -0.402, 0.882 },
+	{ 0.330, -0.293, 0.897 },
+	{ -0.644, -0.496, 0.582 },
+	{ 0.179, 0.929, 0.325 },
+	{ -0.955, 0.294, 0.052 },
+	{ -0.477, -0.726, -0.495 },
+	{ 0.710, 0.704, -0.019 },
+	{ 0.160, -0.357, 0.920 },
+	{ -0.270, -0.371, 0.889 },
+	{ 0.824, -0.416, -0.385 },
+	{ -0.279, 0.517, 0.809 },
+	{ 0.187, 0.836, -0.516 },
+	{ 0.658, 0.512, 0.553 },
+	{ 0.842, -0.234, 0.486 },
+	{ 0.189, -0.866, 0.464 },
+	{ -0.760, 0.602, 0.244 },
+	{ 0.502, 0.334, -0.798 },
+	{ -0.907, 0.031, 0.420 },
+	{ -0.921, 0.388, 0.026 },
+	{ -0.628, 0.209, -0.750 },
+	{ -0.538, 0.737, -0.408 },
+	{ -0.043, -0.210, -0.977 },
+	{ -0.740, -0.563, -0.369 },
+	{ 0.632, 0.748, 0.206 },
+	{ -0.013, 0.919, -0.394 },
+	{ -0.327, -0.577, -0.748 }
+};
+
 class ENGINE_DLL CCamera abstract : public CGameObject
 {
 public:
@@ -22,15 +92,40 @@ public:
 
 	typedef struct tagShakeDesc
 	{
-		_bool	bActive = false;
-		_float	fAccTime = 0.f;
-		_float	fShakeTime = 0.f;
 
-		void Reset()
+		/* User */
+		_float fAmplitude = 0.f;
+		_float fFrequency = 0.f;
+
+		_float fDuration = 0.f;
+		
+		_float fBlendInTime		= 0.05f;
+		_float fBlendOutTime	= 0.05f;
+
+		/* Check */
+		_bool bActive = false;
+
+		_float fAccDuration = 0.f;
+		_float fAccFrequency = 0.f;
+		
+		_float fFreqDelta = 0.f;
+
+		LERP_VEC3_DESC tLerpShakeUnitPos;	/* 선형 보간되는 쉐이크 포지션 (fFrequency만큼의 길이)*/
+		
+		void Clear()
 		{
 			bActive = false;
-			fAccTime = 0.f;
-			fShakeTime = 0.f;
+
+			fAccDuration = 0.f;
+			fAccFrequency = 0.f;
+
+			fBlendInTime = 0.05f;
+			fBlendOutTime = 0.05f;
+		}
+
+		Vec3 Get_ShakeLocalPos()
+		{
+			return tLerpShakeUnitPos.vCurVec * fAmplitude;
 		}
 
 	}SHAKE_DESC;
@@ -95,8 +190,14 @@ public:
 	void Set_MouseSensitivity_X(const _float& fX) { m_vMouseSensitivity.x = fX; }
 	void Set_MouseSensitivity_Y(const _float& fY) { m_vMouseSensitivity.y = fY; }
 
+	/* Shake */
+	void Start_Shake(const _float& fAmplitude, const _float& fFrequency, const _float& fDuration);
+	const _bool& Is_Shake() const { return m_tShakeDesc.bActive; }
+	Vec3 Get_ShakeLocalPos() const { return m_tShakeDesc.tLerpShakeUnitPos.vCurVec; }
+
 private:
 	void Tick_Lerp(const _float fDeltaTime);
+	void Tick_Shake(const _float fDeltaTime);
 
 protected:
 	/* Default  */
@@ -120,10 +221,9 @@ protected:
 
 	/* Sensitivity */
 	Vec2				m_vMouseSensitivity = { 1.f, 1.f };
-	
+
 	/* Shake */
 	SHAKE_DESC			m_tShakeDesc	= {};
-
 
 protected:
 	virtual HRESULT Ready_Components() override;

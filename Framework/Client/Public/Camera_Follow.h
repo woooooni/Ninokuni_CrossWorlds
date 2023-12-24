@@ -16,7 +16,7 @@ class CCamera_Follow final : public CCamera
 
 		Vec4	vCurPos;						/* 현재 카메라 포지션 */
 		Vec4	vTargetPos;						/* 목표 카메라 포지션 */
-		_float	fDampingCoefficient = 0.03f;	/* 0 ~ 1*/
+		_float	fDampingCoefficient = 0.05f;	/* 0 ~ 1*/
 
 	}DAMPING_DESC;
 
