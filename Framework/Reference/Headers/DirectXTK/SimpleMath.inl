@@ -1304,6 +1304,45 @@ inline void Vector3::TransformNormal(const Vector3* varray, size_t count, const 
     XMVector3TransformNormalStream(resultArray, sizeof(XMFLOAT3), varray, sizeof(XMFLOAT3), count, M);
 }
 
+inline Vector3 Vector3::Normalized() noexcept
+{
+    using namespace DirectX;
+    XMVECTOR v1 = XMLoadFloat3(this);
+    XMVECTOR X = XMVector3Normalize(v1);
+    return   X;
+}
+
+inline Vector3 Vector3::ZeroX() noexcept
+{
+    using namespace DirectX;
+    Vector3 v1 = XMLoadFloat3(this);
+    v1.x = 0.f;
+    return v1;
+}
+
+inline Vector3 Vector3::ZeroY() noexcept
+{
+    using namespace DirectX;
+    Vector3 v1 = XMLoadFloat3(this);
+    v1.y = 0.f;
+    return v1;
+}
+
+inline Vector3 Vector3::ZeroZ() noexcept
+{
+    using namespace DirectX;
+    Vector3 v1 = XMLoadFloat3(this);
+    v1.z = 0.f;
+    return v1;
+}
+
+inline Vector3 Vector3::Inverse() noexcept
+{
+    using namespace DirectX;
+    Vector3 v1 = XMLoadFloat3(this);
+    v1 *= -1.f;
+    return v1;
+}
 
 /****************************************************************************
  *
@@ -1897,6 +1936,61 @@ inline void Vector4::Transform(const Vector4* varray, size_t count, const Matrix
     XMVector4TransformStream(resultArray, sizeof(XMFLOAT4), varray, sizeof(XMFLOAT4), count, M);
 }
 
+inline Vector4 Vector4::Normalized() noexcept
+{
+    using namespace DirectX;
+    XMVECTOR v1 = XMLoadFloat4(this);
+    XMVECTOR X = XMVector4Normalize(v1);
+    return   X;
+}
+
+inline Vector4 Vector4::ZeroX() noexcept
+{
+    using namespace DirectX;
+    Vector4 v1 = XMLoadFloat4(this);
+    v1.x = 0.f;
+    return v1;
+}
+
+inline Vector4 Vector4::ZeroY() noexcept
+{
+    using namespace DirectX;
+    Vector4 v1 = XMLoadFloat4(this);
+    v1.y = 0.f;
+    return v1;
+}
+
+inline Vector4 Vector4::ZeroZ() noexcept
+{
+    using namespace DirectX;
+    Vector4 v1 = XMLoadFloat4(this);
+    v1.z = 0.f;
+    return v1;
+}
+
+inline Vector4 Vector4::ZeroW() noexcept
+{
+    using namespace DirectX;
+    Vector4 v1 = XMLoadFloat4(this);
+    v1.w = 0.f;
+    return v1;
+}
+
+inline Vector4 Vector4::OneW() noexcept
+{
+    using namespace DirectX;
+    Vector4 v1 = XMLoadFloat4(this);
+    v1.w = 1.f;
+    return v1;
+}
+
+inline Vector4 Vector4::Inverse() noexcept
+{
+    using namespace DirectX;
+    Vector4 v1 = XMLoadFloat4(this);
+    v1 *= -1.f;
+    return v1;
+}
 
 /****************************************************************************
  *

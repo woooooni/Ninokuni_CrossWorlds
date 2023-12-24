@@ -332,6 +332,13 @@ namespace DirectX
             static const Vector3 Left;
             static const Vector3 Forward;
             static const Vector3 Backward;
+
+            // Custom
+            Vector3 Normalized() noexcept;
+            Vector3 ZeroX() noexcept;
+            Vector3 ZeroY() noexcept;
+            Vector3 ZeroZ() noexcept;
+            Vector3 Inverse() noexcept;
         };
 
         // Binary operators
@@ -446,6 +453,17 @@ namespace DirectX
             static const Vector4 UnitY;
             static const Vector4 UnitZ;
             static const Vector4 UnitW;
+
+            /* Custom */
+            Vector3 xyz() const  noexcept { return Vector3(x, y, z); }
+            Vector4 Normalized() noexcept;
+            Vector4 ZeroX() noexcept;
+            Vector4 ZeroY() noexcept;
+            Vector4 ZeroZ() noexcept;
+            Vector4 ZeroW() noexcept;
+            Vector4 OneW() noexcept;
+            Vector4 Inverse() noexcept;
+
         };
 
         // Binary operators

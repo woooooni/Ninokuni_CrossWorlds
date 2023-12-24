@@ -54,6 +54,26 @@ HRESULT CCamera::Render()
 	return S_OK;
 }
 
+void CCamera::Start_Lerp_Fov(const _float& fStartValue, const _float& fTargetValue, const _float& fTime, const LERP_MODE& eMode)
+{
+	m_tProjDesc.tLerpFov.Start(fStartValue, fTargetValue, fTime, eMode);
+}
+
+void CCamera::Start_Lerp_Fov(const _float& fTargetValue, const _float& fTime, const LERP_MODE& eMode)
+{
+	m_tProjDesc.tLerpFov.Start(m_tProjDesc.tLerpFov.fCurValue, fTargetValue, fTime, eMode);
+}
+
+void CCamera::Start_Lerp_Distance(const _float& fStartValue, const _float& fTargetValue, const _float& fTime, const LERP_MODE& eMode)
+{
+	m_tLerpDist.Start(fStartValue, fTargetValue, fTime, eMode);
+}
+
+void CCamera::Start_Lerp_Distance(const _float& fTargetValue, const _float& fTime, const LERP_MODE& eMode)
+{
+	m_tLerpDist.Start(m_tLerpDist.fCurValue, fTargetValue, fTime, eMode);
+}
+
 //void CCamera::Set_Transform_To_Pipeline()
 //{
 //	GI->Set_Transform(CPipeLine::D3DTS_VIEW, m_pTransformCom->Get_WorldMatrixInverse());

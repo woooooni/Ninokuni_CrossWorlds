@@ -10,6 +10,7 @@ class CGameObject;
 class CTransform;
 END
 
+/* FREE : 디버그 카메라 , FOLLOW : 플레이어 따라다니는 카메라 */
 enum CAMERA_TYPE { FREE, FOLLOW, /* ACTION, */ TYPE_END };
 const wstring		CameraWstringNames[CAMERA_TYPE::TYPE_END]{ L"Camera_Free", L"Camera_Follow" };
 static const char*	CameraCharNames[CAMERA_TYPE::TYPE_END]{ "Camera_Free", "Camera_Follow" };
@@ -17,7 +18,7 @@ static const char*	CameraCharNames[CAMERA_TYPE::TYPE_END]{ "Camera_Free", "Camer
 
 #pragma region Distance
 
-static const _float Cam_Dist_Follow_Default = 15.f;
+static const _float Cam_Dist_Follow_Default = 3.2f;
 
 #pragma endregion
 
@@ -47,7 +48,6 @@ public:
 public:
 	CCamera* Get_Camera(const CAMERA_TYPE& eType);
 	CCamera* Get_CurCamera() const { return m_pCurCamera; }
-	CCamera** Get_Cameras() { return m_Cameras; }
 
 	const _bool Is_Empty_Camera(const CAMERA_TYPE& eType) { return (nullptr == m_Cameras[eType]) ? true : false; }
 

@@ -66,11 +66,15 @@ public:
 	PROJ_DESC Get_ProjDesc() const { return m_tProjDesc; }
 	void Set_ProjDesc(const PROJ_DESC& tDesc) { memcpy(&m_tProjDesc, &tDesc, sizeof(PROJ_DESC)); }
 	void Set_Fov(const _float& fFov) { memcpy(&m_tProjDesc.tLerpFov, &fFov, sizeof(_float)); }
+	void Start_Lerp_Fov(const _float& fStartValue, const _float& fTargetValue, const _float& fTime, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
+	void Start_Lerp_Fov(const _float& fTargetValue, const _float& fTime, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
 	
 	/* Distance */
-	const _bool& Is_Lerp_Distance() const { return m_tLerpDist.bActive; }
 	void Set_Distance(const _float& fDistance) { memcpy(&m_tLerpDist.fCurValue, &fDistance, sizeof(_float)); }
 	const _float& Get_Distance() const { return m_tLerpDist.fCurValue; }
+	const _bool& Is_Lerp_Distance() const { return m_tLerpDist.bActive; }
+	void Start_Lerp_Distance(const _float& fStartValue, const _float& fTargetValue, const _float& fTime, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
+	void Start_Lerp_Distance(const _float& fTargetValue, const _float& fTime, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
 
 	/* Target, LookAt */
 	CGameObject* Get_TargetObj() const { return m_pTargetObj; }
@@ -91,21 +95,15 @@ public:
 	void Set_MouseSensitivity_X(const _float& fX) { m_vMouseSensitivity.x = fX; }
 	void Set_MouseSensitivity_Y(const _float& fY) { m_vMouseSensitivity.y = fY; }
 
-public:
-	/* Framework */
-	/*void Set_Transform_To_Pipeline();*/
-
 private:
 	void Tick_Lerp(const _float fDeltaTime);
 
 protected:
 	/* Default  */
-	_bool				m_bActive = { false };
+	_bool				m_bActive		= { false };
 	CTransform*			m_pTransformCom = { nullptr };
-	_int				m_iType = -1;
-
-
-	_bool				m_bCanMove = { true };
+	_int				m_iType			= -1;
+	_bool				m_bCanMove		= { true };
 
 	/* Proj */
 	PROJ_DESC			m_tProjDesc		= {};
@@ -117,14 +115,14 @@ protected:
 	Vec4				m_vTargetOffset = {};
 	Vec4				m_vLookAtOffset = {};
 
-	CGameObject*		m_pTargetObj = { nullptr };
-	CGameObject*		m_pLookAtObj = { nullptr };
+	CGameObject*		m_pTargetObj	= { nullptr };
+	CGameObject*		m_pLookAtObj	= { nullptr };
 
 	/* Sensitivity */
 	Vec2				m_vMouseSensitivity = { 1.f, 1.f };
 	
 	/* Shake */
-	SHAKE_DESC			m_tShakeDesc = {};
+	SHAKE_DESC			m_tShakeDesc	= {};
 
 
 protected:

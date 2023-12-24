@@ -442,6 +442,14 @@ HRESULT CLoader::Loading_For_Level_Tool()
 	if(FAILED(CPart_Manager::GetInstance()->Reserve_Manager(GI->Get_Device(), GI->Get_Context())))
 		return E_FAIL;
 
+	/* 툴 팔로우 카메라 테스트 용도 */
+	{
+		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SwordMan_Dummy", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/SwordMan/Dummy/", L"SwordMan_Dummy")))
+			return E_FAIL;
+
+		if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_SwordMan", CCharacter_SwordMan::Create(m_pDevice, m_pContext, TEXT("SwordMan")), LAYER_CHARACTER)))
+			return E_FAIL;
+	}
 
 #pragma endregion
 
