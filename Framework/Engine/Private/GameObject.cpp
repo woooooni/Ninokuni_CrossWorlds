@@ -48,7 +48,7 @@ HRESULT CGameObject::Initialize(void* pArg)
 
 void CGameObject::Tick(_float fTimeDelta)
 {
-	Update_Collider(fTimeDelta);
+	
 }
 
 void CGameObject::LateTick(_float fTimeDelta)
@@ -58,7 +58,14 @@ void CGameObject::LateTick(_float fTimeDelta)
 
 HRESULT CGameObject::Render()
 {
-
+	// юс╫ц
+	for (auto& iter : m_Colliders)
+	{
+		for (auto& pCollider : iter.second)
+		{
+			pCollider->Render();
+		}
+	}
 	return S_OK;
 }
 
@@ -187,17 +194,6 @@ HRESULT CGameObject::Set_Collider_AttackMode(_uint eAttackMode, _float fAirBornP
 		
 
 	return S_OK;
-}
-
-
-
-void CGameObject::Update_Collider(_float fTimedelta)
-{
-	for (auto& Pair : m_Colliders)
-	{
-		for (auto& pCollider : Pair.second)
-			pCollider->Tick_Collider(fTimedelta);
-	}
 }
 
 void CGameObject::LateUpdate_Collider(_float fTimedelta)

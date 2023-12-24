@@ -276,31 +276,31 @@ HRESULT CGlanix::Ready_States()
 #pragma region Ready_Colliders
 HRESULT CGlanix::Ready_Colliders()
 {
-	CCollider_Sphere::SPHERE_COLLIDER_DESC ColliderDesc;
-	ZeroMemory(&ColliderDesc, sizeof ColliderDesc);
+	//CCollider_Sphere::SPHERE_COLLIDER_DESC ColliderDesc;
+	//ZeroMemory(&ColliderDesc, sizeof ColliderDesc);
 
-	BoundingSphere tSphere;
-	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 4.f;
-	ColliderDesc.tSphere = tSphere;
+	//BoundingSphere tSphere;
+	//ZeroMemory(&tSphere, sizeof(BoundingSphere));
+	//tSphere.Radius = 4.f;
+	//ColliderDesc.tSphere = tSphere;
 
-	ColliderDesc.pOwner = this;
-	ColliderDesc.pNode = nullptr;
-	ColliderDesc.pOwnerTransform = m_pTransformCom;
-	ColliderDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
-	ColliderDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
-	ColliderDesc.bLockAngle_X = false;
-	ColliderDesc.bLockAngle_Y = false;
-	ColliderDesc.bLockAngle_Z = false;
+	//ColliderDesc.pOwner = this;
+	//ColliderDesc.pNode = nullptr;
+	//ColliderDesc.pOwnerTransform = m_pTransformCom;
+	//ColliderDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
+	//ColliderDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
+	//ColliderDesc.bLockAngle_X = false;
+	//ColliderDesc.bLockAngle_Y = false;
+	//ColliderDesc.bLockAngle_Z = false;
 
-	ColliderDesc.fAngularDamping = 0.f;
-	ColliderDesc.fDensity = 1.f;
+	//ColliderDesc.fAngularDamping = 0.f;
+	//ColliderDesc.fDensity = 1.f;
 
-	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BODY, &ColliderDesc)))
-		return E_FAIL;
+	//if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BODY, &ColliderDesc)))
+	//	return E_FAIL;
 
 
-	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, false);
+	//Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, false);
 
 	return S_OK;
 }

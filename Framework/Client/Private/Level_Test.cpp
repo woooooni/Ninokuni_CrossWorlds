@@ -177,8 +177,16 @@ HRESULT CLevel_Test::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Test::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 {
-	//if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prorotype_GameObject_Background"))))
-	//	return E_FAIL;
+	list<CGameObject*> Grounds = GI->Find_GameObjects(LEVEL_TEST, LAYER_TYPE::LAYER_GROUND);
+	for (auto& Ground : Grounds)
+	{
+		if (FAILED(GI->Add_Ground(Ground,
+			Ground->Get_Component<CModel>(L"Com_Model"),
+			Ground->Get_Component<CTransform>(L"Com_Transform")->Get_WorldMatrix())))
+		{
+			MSG_BOX("피직스 그라운드 생성에 실패했습니다.");
+		}
+	}
 	
 
 	return S_OK;

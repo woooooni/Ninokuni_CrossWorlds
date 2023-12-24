@@ -64,7 +64,6 @@ void CMonster::Tick(_float fTimeDelta)
 			m_bInfinite = false;
 			m_fAccInfinite = 0.f;
 
-			Set_ActiveColliders(CCollider::DETECTION_TYPE::HEAD, true);
 			Set_ActiveColliders(CCollider::DETECTION_TYPE::BODY, true);
 		}
 
@@ -75,7 +74,6 @@ void CMonster::Tick(_float fTimeDelta)
 		m_fDissolveWeight += 0.2f * fTimeDelta;
 		if (m_fDissolveWeight >= 2.f)
 		{
-			Set_ActiveColliders(CCollider::DETECTION_TYPE::HEAD, false);
 			Set_ActiveColliders(CCollider::DETECTION_TYPE::BODY, false);
 			Set_Dead(true);
 		}
@@ -83,10 +81,16 @@ void CMonster::Tick(_float fTimeDelta)
 
 	if(m_pBTCom != nullptr)
 		m_pBTCom->Tick(fTimeDelta);
+
+	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
+	m_pControllerCom->Tick_Controller(fTimeDelta);
 }
 
 void CMonster::LateTick(_float fTimeDelta)
 {
+	__super::LateTick(fTimeDelta);
+
+	m_pControllerCom->LateTick_Controller(fTimeDelta);
 	if (nullptr != m_pModelCom)
 		m_pModelCom->LateTick(fTimeDelta);
 
@@ -99,7 +103,6 @@ void CMonster::LateTick(_float fTimeDelta)
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, pPart);
 	}
 
-	__super::LateTick(fTimeDelta);
 	/*m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);*/
 	// m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_SHADOW, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc());
@@ -113,18 +116,19 @@ void CMonster::LateTick(_float fTimeDelta)
 		for (auto& pCollider : m_Colliders[i])
 			m_pRendererCom->Add_Debug(pCollider);
 	}
-	//m_pRendererCom->Add_Debug(m_pRigidBodyCom);
+	m_pRendererCom->Add_Debug(m_pControllerCom);
 #endif // DEBUG
 
-	
-	//m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
+
 	if (m_pBTCom != nullptr)
 		m_pBTCom->LateTick(fTimeDelta);
+
+	
 }
 
 HRESULT CMonster::Render()
 {
-	// __super::Render();
+	__super::Render();
 
 	if (nullptr == m_pModelCom || nullptr == m_pShaderCom)
 		return E_FAIL;
@@ -215,6 +219,8 @@ HRESULT CMonster::Render_ShadowDepth()
 
 HRESULT CMonster::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc)
 {
+	__super::Render();
+
 	if (nullptr == pInstancingShader || nullptr == m_pTransformCom)
 		return E_FAIL;
 
@@ -346,12 +352,16 @@ void CMonster::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
 		m_pRigidBodyCom->Set_Ground(true);
 		m_pRigidBodyCom->Set_Use_Gravity(false);
 	}
-	
 }
 
 void CMonster::Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo)
 {
 	__super::Ground_Collision_Continue(tInfo);
+	if (m_pRigidBodyCom->Get_Velocity().y <= 0.f)
+	{
+		m_pRigidBodyCom->Set_Ground(true);
+		m_pRigidBodyCom->Set_Use_Gravity(false);
+	}
 }
 
 void CMonster::Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo)

@@ -20,7 +20,6 @@ CPhysX_Controller::CPhysX_Controller(CPhysX_Controller& rhs)
 
 HRESULT CPhysX_Controller::Initialize_Prototype()
 {
-
 	return S_OK;
 }
 
@@ -56,12 +55,13 @@ HRESULT CPhysX_Controller::Initialize(void* pArg)
 	}
 	else
 		return E_FAIL;
+
+
 	
 
-
-
+	m_FilterData.setToDefault();
 	m_Filters.mFilterData = &m_FilterData;
-	
+	m_Filters.mCCTFilterCallback = CPhysX_Manager::GetInstance();
 
 	
 
@@ -107,6 +107,7 @@ void CPhysX_Controller::LateTick_Controller(_float fTimeDelta)
 	}
 
 }
+
 
 void CPhysX_Controller::Set_Position(Vec4 vPosition)
 {
@@ -179,7 +180,17 @@ void CPhysX_Controller::onShapeHit(const PxControllerShapeHit& hit)
 			m_pOwner->Ground_Collision_Continue(Info);
 		}
 
-		else if(m_eGroundFlag == PxPairFlag::eNOTIFY_TOUCH_LOST || m_eGroundFlag == PxPairFlag::eCONTACT_DEFAULT)
+		else if (m_eGroundFlag == PxPairFlag::eNOTIFY_TOUCH_LOST)
+		{
+			m_eGroundFlag = PxPairFlag::eNOTIFY_TOUCH_FOUND;
+			PHYSX_GROUND_COLLISION_INFO Info;
+			Info.pCollideObject = m_pOwner;
+			Info.flag = m_eGroundFlag;
+
+			m_pOwner->Ground_Collision_Enter(Info);
+		}
+
+		else if(m_eGroundFlag == PxPairFlag::eCONTACT_DEFAULT)
 		{
 			m_eGroundFlag = PxPairFlag::eNOTIFY_TOUCH_FOUND;
 			PHYSX_GROUND_COLLISION_INFO Info;

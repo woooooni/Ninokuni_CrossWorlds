@@ -306,6 +306,9 @@ HRESULT CLoader::Loading_For_Level_Test()
 	if (FAILED(Loading_Proto_AllObjects(L"../Bin/Export/NonAnimModel/Map/")))
 		return E_FAIL;
 
+	if (FAILED(Loading_Proto_DynamicObjects(L"..Bin/Export/AnimModel/Map/")))
+		return E_FAIL;
+
 	Load_Map_Data(L"Evermore");
 
 	
@@ -499,6 +502,8 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
 	File->Open(strMapFilePath, FileMode::Read);
 
+	GI->Clear_PhysX_Ground();
+
 	for (_uint i = 0; i < LAYER_TYPE::LAYER_END; ++i)
 	{
 		if (i == LAYER_TYPE::LAYER_CAMERA
@@ -513,18 +518,11 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 			|| i == LAYER_TYPE::LAYER_TRAIL
 			|| i == LAYER_TYPE::LAYER_NPC
 			|| i == LAYER_TYPE::LAYER_WEAPON
-			|| i == LAYER_TYPE::LAYER_DYNAMIC)
+			|| i == LAYER_TYPE::LAYER_MONSTER
+			|| i == LAYER_TYPE::LAYER_CHARACTER)
 			continue;
 
-		// GI->Clear_Layer(LEVEL_TOOL, i);
-
-		// 2. ObjectCount
-		//if (/*i == LAYER_TYPE::LAYER_TERRAIN ||*/
-		//	i == LAYER_TYPE::LAYER_BUILDING ||
-		//	i == LAYER_TYPE::LAYER_GRASS ||
-		//	i == LAYER_TYPE::LAYER_GROUND ||
-		//	i == LAYER_TYPE::LAYER_TREEROCK ||
-		//	i == LAYER_TYPE::LAYER_PROP)
+		GI->Clear_Layer(m_eNextLevel, i);
 		{
 			_uint iObjectCount = File->Read<_uint>();
 
@@ -537,7 +535,7 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 				CGameObject* pObj = nullptr;
 				if (FAILED(GI->Add_GameObject(m_eNextLevel, i, strPrototypeTag, nullptr, &pObj)))
 				{
-					MSG_BOX("Load_Objects_Failed.");
+					MSG_BOX("Load_Map_Objects_Failed.");
 					return E_FAIL;
 				}
 
@@ -567,20 +565,10 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 				pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
 				pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
 				pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
-
-				if (i == LAYER_TYPE::LAYER_GROUND || i == LAYER_TYPE::LAYER_BUILDING)
-				{
-					wstring strCollisionTag = L"Ground";
-					if (FAILED(GI->Add_Ground(pObj, pObj->Get_Component<CModel>(L"Com_Model"), pTransform->Get_WorldMatrix(), strCollisionTag)))
-						return E_FAIL;
-				}
 			}
-			
 		}
 	}
 
- 	const list<CGameObject*>& Objects = GI->Find_GameObjects(m_eNextLevel, LAYER_TYPE::LAYER_GROUND);
-	MSG_BOX("Map_Loaded.");
 	return S_OK;
 
 }

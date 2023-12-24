@@ -44,6 +44,7 @@ public:
 
 public:
     void Set_Position(Vec4 vPosition);
+
     
 
 private:
@@ -67,6 +68,8 @@ public:
     
 private:
     PxPairFlag::Enum m_eGroundFlag = PxPairFlag::eCONTACT_DEFAULT;
+
+
     
 
 public:

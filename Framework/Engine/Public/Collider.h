@@ -9,7 +9,7 @@ class ENGINE_DLL CCollider abstract : public CComponent
 {
 public:
     enum COLLIDER_TYPE { SPHERE, AABB, OBB, TYPE_END };
-    enum DETECTION_TYPE { HEAD, BODY, ATTACK, DETECTION_END };
+    enum DETECTION_TYPE { ATTACK, BODY, DETECTION_END };
     enum ATTACK_TYPE { BASIC, BLOW, BOUND, AIR_BORN, MODE_END };
 
 protected:
@@ -20,23 +20,7 @@ protected:
         class CTransform* pOwnerTransform;
 
         Matrix ModelPivotMatrix;
-        Vec3 vOffsetPosition = { 0.f, 0.f, 0.f };
-
-        // 피직스
-        _bool bLockAngle_X = false; // X 회전 잠금.
-        _bool bLockAngle_Y = false; // Y 회전 잠금.
-        _bool bLockAngle_Z = false; // Z 회전 잠금.
-
-        _float fAngularDamping = 30.f; // 회전을 방해하는 힘입니다.
-        _float fDensity = 1.f; // 질량(무게) & 밀도입니다.
-
-        _float fStaticFriction = 0.f;       // 스태틱 오브젝트의 마찰.
-        _float fDynamicFriction = 0.f;      // 다이나믹 오브젝트의 마찰.
-        _float fRestitution = 0.f;          // 반발력 혹은 탄성.		
-
-        _float fMaxVelocity = 10000.f;     // 최대 속도입니다.
-
-        class CGameObject* pOwner = nullptr;
+        _float3 vOffsetPosition = { 0.f, 0.f, 0.f };
 
     } COLLIDER_DESC;
 
@@ -92,7 +76,6 @@ public:
 
 
 public:
-    virtual void Tick_Collider(_float fTimeDelta);
     virtual void LateTick_Collider(_float fTimeDelta);
 
 #ifdef _DEBUG
@@ -114,7 +97,6 @@ protected:
     _bool m_bActive = true;
     _bool m_bHitLag = true;
 
-    _bool m_bKinematic = false;
 
 protected:
     _float m_fDamage = 0.f;
@@ -129,8 +111,7 @@ protected:
     class CHierarchyNode* m_pNode = nullptr;
     class CTransform* m_pOwnerTransformCom = nullptr;
 
-protected:
-    class PxRigidDynamic* m_pPhysXActor = nullptr;
+
 
 #ifdef _DEBUG
 protected:
@@ -140,7 +121,10 @@ protected:
 
     _float4	m_vColor = _float4(0.f, 1.f, 0.f, 1.f);
     _bool m_bDraw = true;
+
 #endif
+
+    
 
 public:
     virtual CComponent* Clone(void* pArg);

@@ -88,8 +88,6 @@ void CShadow_Thief::Tick(_float fTimeDelta)
 	
 	
 	__super::Tick(fTimeDelta);
-	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
-	m_pControllerCom->Tick_Controller(fTimeDelta);
 }
 
 void CShadow_Thief::LateTick(_float fTimeDelta)
@@ -97,7 +95,6 @@ void CShadow_Thief::LateTick(_float fTimeDelta)
 	if (nullptr != m_pHPBar)
 		m_pHPBar->LateTick(fTimeDelta);
 
-	m_pControllerCom->LateTick_Controller(fTimeDelta);
 	__super::LateTick(fTimeDelta);
 }
 
@@ -199,6 +196,30 @@ HRESULT CShadow_Thief::Ready_States()
 
 HRESULT CShadow_Thief::Ready_Colliders()
 {
+
+	CCollider_OBB::OBB_COLLIDER_DESC OBBDesc;
+	ZeroMemory(&OBBDesc, sizeof OBBDesc);
+
+	BoundingOrientedBox OBBBox;
+	ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
+
+	XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
+	OBBBox.Extents = { 50.f, 50.f, 50.f };
+
+	OBBDesc.tBox = OBBBox;
+	OBBDesc.pNode = nullptr;
+	OBBDesc.pOwnerTransform = m_pTransformCom;
+	OBBDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
+	OBBDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
+
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::BODY, &OBBDesc)))
+		return E_FAIL;
+
+
+	OBBDesc.vOffsetPosition = Vec3(0.f, 50.f, -100.f);
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::ATTACK, &OBBDesc)))
+		return E_FAIL;
+
 	//CCollider_Sphere::SPHERE_COLLIDER_DESC ColliderDesc;
 	//ZeroMemory(&ColliderDesc, sizeof ColliderDesc);
 	//

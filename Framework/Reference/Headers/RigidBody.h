@@ -38,13 +38,19 @@ public:
 
     _bool Is_Ground() { return m_bGround; }
     void Set_Ground(_bool bGround) { 
-        m_vVelocity.y = 0.f; 
+
         m_bGround = bGround; 
 
-        if(false == bGround)
+        if (false == bGround)
+        {
             m_fFrictionScale = 1.f;
+        }
         else
+        {
+            m_vVelocity.y = 0.f;
             m_fFrictionScale = 10.f;
+        }
+            
     }
 
 public:

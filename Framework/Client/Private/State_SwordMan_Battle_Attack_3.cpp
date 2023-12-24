@@ -30,6 +30,9 @@ void CState_SwordMan_Battle_Attack_3::Tick_State(_float fTimeDelta)
 {
     Input(fTimeDelta);
 
+    if (m_pModelCom->Get_Progress() >= 0.2f && m_pModelCom->Get_Progress() <= 0.3f)
+        m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), 4.f, fTimeDelta);
+
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
         m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_IDLE);
 }

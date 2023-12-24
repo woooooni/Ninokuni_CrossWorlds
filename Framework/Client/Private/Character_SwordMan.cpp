@@ -72,8 +72,8 @@ HRESULT CCharacter_SwordMan::Initialize(void* pArg)
 	if (FAILED(Ready_States()))
 		return E_FAIL;
 
- //	if (FAILED(Ready_Colliders()))
-	//	return E_FAIL;
+ 	if (FAILED(Ready_Colliders()))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -90,8 +90,8 @@ void CCharacter_SwordMan::Tick(_float fTimeDelta)
 void CCharacter_SwordMan::LateTick(_float fTimeDelta)
 {
 	
-	m_pControllerCom->LateTick_Controller(fTimeDelta);
 	__super::LateTick(fTimeDelta);
+	m_pRendererCom->Add_Debug(m_pControllerCom);
 }
 
 HRESULT CCharacter_SwordMan::Render()
@@ -139,7 +139,7 @@ HRESULT CCharacter_SwordMan::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Shader */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_AnimModel"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_AnimModel" ), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
 
 	/* For.Com_Model */
@@ -165,7 +165,7 @@ HRESULT CCharacter_SwordMan::Ready_Components()
 	ControllerDesc.eType = CPhysX_Controller::CAPSULE;
 	ControllerDesc.pTransform = m_pTransformCom;
 	ControllerDesc.vOffset = { 0.f, 1.125f, 0.f };
-	ControllerDesc.fHeight = 2.5f;
+	ControllerDesc.fHeight = 1.f;
 	ControllerDesc.fMaxJumpHeight = 10.f;
 	ControllerDesc.fRaidus = 1.f;
 	ControllerDesc.pOwner = this;
@@ -293,54 +293,57 @@ HRESULT CCharacter_SwordMan::Ready_States()
 HRESULT CCharacter_SwordMan::Ready_Colliders()
 {
 
+
 	//CCollider_Sphere::SPHERE_COLLIDER_DESC ColliderDesc;
 	//ZeroMemory(&ColliderDesc, sizeof ColliderDesc);
 
 	//BoundingSphere tSphere;
 	//ZeroMemory(&tSphere, sizeof(BoundingSphere));
 	//tSphere.Radius = 1.f;
-
-	//XMStoreFloat4x4(&ColliderDesc.ModelPivotMatrix, m_pModelCom->Get_PivotMatrix());
-	//ColliderDesc.pOwnerTransform = m_pTransformCom;
-
 	//ColliderDesc.tSphere = tSphere;
-	//ColliderDesc.pNode = m_pModelCom->Get_HierarchyNode(L"Root");
-	//ColliderDesc.vOffsetPosition = _float3(0.f, 1.f, 0.f);
-	//
-	//if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BOUNDARY, &ColliderDesc)))
-	//	return E_FAIL;
 
+	//ColliderDesc.pOwner = this;
+	//ColliderDesc.pNode = nullptr;
+	//ColliderDesc.pOwnerTransform = m_pTransformCom;
+	//ColliderDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
+	//ColliderDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
+	//ColliderDesc.bLockAngle_X = false;
+	//ColliderDesc.bLockAngle_Y = false;
+	//ColliderDesc.bLockAngle_Z = false;
 
-	//ColliderDesc.tSphere.Radius = .2f;
-	//ColliderDesc.pNode = m_pModelCom->Get_HierarchyNode(L"C_TongueA_2");
-	//ColliderDesc.vOffsetPosition = _float3(0.f, 0.f, 0.f);
+	//ColliderDesc.fAngularDamping = 0.f;
+	//ColliderDesc.fDensity = 1.f;
 
-	//if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::HEAD, &ColliderDesc)))
-	//	return E_FAIL;
-
-	//ColliderDesc.tSphere.Radius = .6f;
-	//ColliderDesc.pNode = m_pModelCom->Get_HierarchyNode(L"C_Spine_1");
-	//ColliderDesc.vOffsetPosition = _float3(0.f, -0.25f, 0.f);
 	//if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BODY, &ColliderDesc)))
 	//	return E_FAIL;
 
 
+	CCollider_OBB::OBB_COLLIDER_DESC OBBDesc;
+	ZeroMemory(&OBBDesc, sizeof OBBDesc);
 
-	//ColliderDesc.tSphere.Radius = .1f;
-	//ColliderDesc.pNode = m_pModelCom->Get_HierarchyNode(L"L_Foot_End");
-	//ColliderDesc.vOffsetPosition = _float3(0.f, 0.f, 0.f);
-	//if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::ATTACK, &ColliderDesc)))
-	//	return E_FAIL;
+	BoundingOrientedBox OBBBox;
+	ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
+
+	XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
+	OBBBox.Extents = { 50.f, 70.f, 50.f };
+
+	OBBDesc.tBox = OBBBox;
+	OBBDesc.tBox = OBBBox;
+	OBBDesc.pNode = nullptr;
+	OBBDesc.pOwnerTransform = m_pTransformCom;
+	OBBDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
+	OBBDesc.vOffsetPosition = Vec3(0.f, 70.f, 0.f);
+
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::BODY, &OBBDesc)))
+		return E_FAIL;
 
 
-	//ColliderDesc.tSphere.Radius = .1f;
-	//ColliderDesc.pNode = m_pModelCom->Get_HierarchyNode(L"R_Foot_End");
-	//ColliderDesc.vOffsetPosition = _float3(0.f, 0.f, 0.f);
-	//if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::ATTACK, &ColliderDesc)))
-	//	return E_FAIL;
 
+	OBBBox.Extents = { 100.f, 100.f, 50.f };
+	OBBDesc.vOffsetPosition = Vec3(0.f, 70.f, -100.f);
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::ATTACK, &OBBDesc)))
+		return E_FAIL;
 
-	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, false);
 
 	return S_OK;
 }
