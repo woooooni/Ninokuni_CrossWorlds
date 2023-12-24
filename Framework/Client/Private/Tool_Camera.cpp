@@ -359,6 +359,15 @@ void CTool_Camera::Show_Camera_Prop_Follow(CCamera* pCurCam)
 
 				/* 댐핑 */
 				{
+					/* 액티브 */
+					_bool bDamping = pFollowCam->Is_Damping();
+					if (ImGui::Checkbox(u8"Damping On Off", &bDamping))
+					{
+						pFollowCam->Set_Damping(bDamping);
+					}
+
+
+					/* 계수 */
 					_float fCoefficient = pFollowCam->Get_DampingCoefficient();
 					if (ImGui::DragFloat(u8"Damping Coefficient(댐핑 계수)", &fCoefficient, 0.002f, 0.002f, 1.f))
 					{

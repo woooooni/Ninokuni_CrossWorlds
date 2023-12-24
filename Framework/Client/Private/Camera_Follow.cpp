@@ -38,7 +38,7 @@ HRESULT CCamera_Follow::Initialize(void * pArg)
 
 		/* 팔로우 카메라에서 룩앳 오프셋을 사용하는 일은 없다. 타겟 오프셋만을 사용한다.*/
 		m_vLookAtOffset = Vec4::UnitW;
-		m_vTargetOffset = Vec4{ 1.2f, 1.5f, 0.f, 1.f };
+		m_vTargetOffset = Vec4{ 1.2f, 1.3f, 0.f, 1.f };
 
 		m_vMouseSensitivity = Vec2{ 0.2f, 0.35f };
 	}
@@ -77,42 +77,29 @@ HRESULT CCamera_Follow::Ready_Components()
 
 Vec4 CCamera_Follow::Calculate_WorldPosition(_float fTimeDelta)
 {
-	/* 구면 로컬 포지션 (반지름 1) */
-	Vec4 vCamLocal = Calculate_LoaclPosition(fTimeDelta);
+	/* 구면 로컬 위치 (반지름 1 기준) */
+	Vec4 vLocalSpherical = Calculate_LoaclSphericalPosition(fTimeDelta);
 
 	/* 디스턴스 반영 */
-	vCamLocal *= m_tLerpDist.fCurValue;
+	vLocalSpherical *= m_tLerpDist.fCurValue;
 	
+	/* 카메라 목표 월드 위치  */
 	CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
 
-	/* 카메라 최종 월드 위치 */
-	Vec4 vCamWorld = vCamLocal 
+	Vec4 vWorldGoal = vLocalSpherical
 		+ Vec4(pTargetTransform->Get_Position());											 /* 타겟 포지션 */
 		+ Calculate_ReleativePosition(m_vTargetOffset, pTargetTransform->Get_WorldMatrix()); /* 타겟의 회전을 반영한 오프셋 */
 
-	vCamWorld.w = 1.f;
+	vWorldGoal.w = 1.f;
 
-	//return vCamWorld.OneW();
+	/* 댐핑 적용 월드 위치 (카메라의 현재 위치와 목표위치를 댐핑 계수에 따라 보간한다)*/
+	if (m_tDampingDesc.bDamping)
+		return Calculate_DampingPosition(vWorldGoal);
 
-	/* Test */
-	if (!m_tDampingDesc.bDamping)
-	{
-		m_tDampingDesc.bDamping = true;
-		m_tDampingDesc.vCurPos	= vCamWorld;
-
-		return m_tDampingDesc.vCurPos;
-	}
-
-	Vec4 vDist = (vCamWorld.ZeroW() - m_tDampingDesc.vCurPos.ZeroW()) * m_tDampingDesc.fDampingCoefficient;
-
-	m_tDampingDesc.vCurPos += vDist;
-
-	return m_tDampingDesc.vCurPos.OneW();
-
-	return vCamWorld.OneW();
+	return vWorldGoal;
 }
 
-Vec4 CCamera_Follow::Calculate_LoaclPosition(_float fTimeDelta)
+Vec4 CCamera_Follow::Calculate_LoaclSphericalPosition(_float fTimeDelta)
 {
 	_long	MouseMove = 0l;
 
@@ -123,9 +110,9 @@ Vec4 CCamera_Follow::Calculate_LoaclPosition(_float fTimeDelta)
 	{
 		m_vAngle.y += MouseMove * m_vMouseSensitivity.x * fTimeDelta;
 
-		if (m_vAngle.y <= 0.5f) /* Min : 0.f */
+		if (m_vAngle.y <= 0.7f) /* Min : 0.f */
 		{
-			m_vAngle.y = 0.5f;
+			m_vAngle.y = 0.7f;
 		}
 		else if (2.5f < m_vAngle.y) /* Max : 3.14*/
 		{
@@ -172,6 +159,27 @@ Vec4 CCamera_Follow::Calculate_ReleativePosition(Vec4 vPos, Matrix matWorld)
 	Vec3 vRelativePos = XMVector3TransformCoord(vPos, matWorld);
 
 	return Vec4(vRelativePos.x, vRelativePos.y, vRelativePos.z, 1.f);
+}
+
+Vec4 CCamera_Follow::Calculate_DampingPosition(Vec4 vGoalPos)
+{
+	if (!m_tDampingDesc.bSet) /* 댐핑이 켜졌지만, 최초 세팅이 안 된 경우 세팅 한다. */
+	{
+		m_tDampingDesc.bSet = true;
+		m_tDampingDesc.vCurPos = vGoalPos;
+
+		return m_tDampingDesc.vCurPos;
+	}
+	else /* 이전에 세팅이 이루어 졌다면 댐핑 계산을 적용한다. */
+	{
+		Vec4 vDist = (vGoalPos.ZeroW() - m_tDampingDesc.vCurPos.ZeroW()) * m_tDampingDesc.fDampingCoefficient;
+
+		m_tDampingDesc.vCurPos += vDist;
+
+		return m_tDampingDesc.vCurPos.OneW();
+	}
+	
+	return vGoalPos;
 }
 
 CCamera_Follow * CCamera_Follow::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)

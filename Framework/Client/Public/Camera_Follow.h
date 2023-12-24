@@ -11,7 +11,8 @@ class CCamera_Follow final : public CCamera
 	{
 		/* 댐핑을 호출하면 현재 위치가 vCurPos에 등록되고, 매 프레임 vTargetPos에 카메라 위치가 저장되고 */
 		/* 두 벡터의 차가 condition만큼 벌어지면 댐핑이 시작된다. */
-		_bool	bDamping = false;
+		_bool	bDamping = true;
+		_bool	bSet = false;
 
 		Vec4	vCurPos;						/* 현재 카메라 포지션 */
 		Vec4	vTargetPos;						/* 목표 카메라 포지션 */
@@ -36,14 +37,18 @@ public:
 	const _float& Get_DampingCoefficient() const { return m_tDampingDesc.fDampingCoefficient; }
 	void Set_DampingCoefficient(const _float fCoefficient) { m_tDampingDesc.fDampingCoefficient = fCoefficient; }
 
+	const _bool& Is_Damping() const { return m_tDampingDesc.bDamping; }
+	void Set_Damping(const _bool& bDamping) { m_tDampingDesc.bDamping = bDamping; m_tDampingDesc.bSet = bDamping; }
+
 protected:
 	virtual HRESULT Ready_Components() override;
 
 private:
 	Vec4 Calculate_WorldPosition(_float fTimeDelta);
-	Vec4 Calculate_LoaclPosition(_float fTimeDelta);
+	Vec4 Calculate_LoaclSphericalPosition(_float fTimeDelta);
 	Vec4 Calculate_Look(_float fTimeDelta);
 	Vec4 Calculate_ReleativePosition(Vec4 vPos, Matrix matWorld);
+	Vec4 Calculate_DampingPosition(Vec4 vGoalPos);
 
 private:
 	Vec2			m_vAngle = { 0.f, 1.f };
