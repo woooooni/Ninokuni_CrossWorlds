@@ -2,6 +2,7 @@
 #include "UI_MonsterHP_World.h"
 #include "GameInstance.h"
 #include "Monster.h"
+#include "UI_Basic.h"
 
 CUI_MonsterHP_World::CUI_MonsterHP_World(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_MonsterHP_World")
@@ -38,6 +39,31 @@ HRESULT CUI_MonsterHP_World::Initialize(void* pArg)
 	m_tInfo.fCY = 25.f;
 	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 
+	_float2 vArrowSize = _float2(40.f * 0.8f, 40.f * 0.8f);
+
+	m_Arrow.reserve(2);
+	CGameObject* pArrow = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Monster_WorldHPBar_ArrowLeft"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pArrow)
+		return E_FAIL;
+	m_Arrow.push_back(dynamic_cast<CUI_Basic*>(pArrow));
+	CTransform* pUITransform = dynamic_cast<CUI_Basic*>(pArrow)->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr == pUITransform)
+		return E_FAIL;
+	pUITransform->Set_Scale(XMVectorSet(vArrowSize.x, vArrowSize.y, 1.f, 0.f));
+
+	pArrow = nullptr;
+	pArrow = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Monster_WorldHPBar_ArrowRight"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pArrow)
+		return E_FAIL;
+	m_Arrow.push_back(dynamic_cast<CUI_Basic*>(pArrow));
+	pUITransform = nullptr;
+	pUITransform = dynamic_cast<CUI_Basic*>(pArrow)->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr == pUITransform)
+		return E_FAIL;
+	pUITransform->Set_Scale(XMVectorSet(vArrowSize.x, vArrowSize.y, 1.f, 0.f));
+
+	m_bIsTarget = true;
+
 	return S_OK;
 }
 
@@ -53,6 +79,12 @@ void CUI_MonsterHP_World::Tick(_float fTimeDelta)
 			XMStoreFloat4(&Temp, pTransform->Get_Position());
 
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION, pTransform->Get_Position());
+
+			if (m_bIsTarget)
+			{
+				for (auto& iter : m_Arrow)
+					iter->Tick(fTimeDelta);
+			}
 		}
 		__super::Tick(fTimeDelta);
 	}
@@ -130,10 +162,41 @@ void CUI_MonsterHP_World::LateTick(_float fTimeDelta)
 				m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 					XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 
-				if (fDistance < 10.f)
+				//if (fDistance < 10.f)
 				{
 					Set_Text(_float2(m_tInfo.fX, m_tInfo.fY));
 					m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+				}
+
+				if (m_bIsTarget)
+				{
+					_float2 vfOffset = _float2(15.f, -25.f);
+					_float2 vArrowPos;
+					// Target인 경우에 Arrow를 보여준다. 위치 조정이 필요하다.
+					for (auto& iter : m_Arrow)
+					{
+						CTransform* pArrowTransform = iter->Get_Component<CTransform>(L"Com_Transform");
+						if (nullptr == pArrowTransform)
+							continue;
+
+						if (iter->Get_ObjectTag() == TEXT("UI_Monster_WorldHP_ArrowLeft"))
+						{
+							vArrowPos = _float2(m_tInfo.fX - ((m_tInfo.fCX * 0.5f) + vfOffset.x), m_tInfo.fY + vfOffset.y);
+
+							pArrowTransform->Set_State(CTransform::STATE_POSITION,
+								XMVectorSet(vArrowPos.x - g_iWinSizeX * 0.5f, -(vArrowPos.y - g_iWinSizeY * 0.5f), 1.f, 1.f));
+						}
+						else
+						{
+							vArrowPos = _float2(m_tInfo.fX + ((m_tInfo.fCX * 0.5f) + vfOffset.x), m_tInfo.fY + vfOffset.y);
+
+							pArrowTransform->Set_State(CTransform::STATE_POSITION,
+								XMVectorSet(vArrowPos.x - g_iWinSizeX * 0.5f, -(vArrowPos.y - g_iWinSizeY * 0.5f), 1.f, 1.f));
+						}
+					}
+
+					for (auto& iter : m_Arrow)
+						iter->LateTick(fTimeDelta);
 				}
 			}
 		}
@@ -148,6 +211,9 @@ HRESULT CUI_MonsterHP_World::Render()
 	m_pShaderCom->Begin(11);
 
 	m_pVIBufferCom->Render();
+
+	for (auto& iter : m_Arrow)
+		iter->Render();
 
 	return S_OK;
 }
@@ -206,18 +272,47 @@ void CUI_MonsterHP_World::Set_Text(_float2 ScreenPos)
 	{
 		m_strSubName = TEXT("서릿별 나무");
 		m_strName = TEXT("코부리");
-		
+
+		_int iSubLength = m_strSubName.empty() ? 0 : static_cast<_int>(m_strSubName.length());
+		_float fSubX = vSubPosition.x - iSubLength * 5.f;
+
+		_int iNameLength = m_strName.empty() ? 0 : static_cast<_int>(m_strName.length());
+		_float fNameX = vTextPosition.x - iNameLength * 8.f;
+
+		// 몬스터 설명부분 (이름 위에 뜨는 Sub Text) -> 외곽선
 		CRenderer::TEXT_DESC MonsterDesc;
 		MonsterDesc.strText = m_strSubName;
 		MonsterDesc.strFontTag = L"Default_Medium";
 		MonsterDesc.vScale = { 0.3f, 0.3f };
-		MonsterDesc.vPosition = vSubPosition;
+		MonsterDesc.vPosition = _float2(fSubX - 1, vSubPosition.y);
+		MonsterDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
+		m_pRendererCom->Add_Text(MonsterDesc);
+		MonsterDesc.vPosition = _float2(fSubX + 1, vSubPosition.y);
+		m_pRendererCom->Add_Text(MonsterDesc);
+		MonsterDesc.vPosition = _float2(fSubX, vSubPosition.y - 1);
+		m_pRendererCom->Add_Text(MonsterDesc);
+		MonsterDesc.vPosition = _float2(fSubX + 1, vSubPosition.y + 1);
+		m_pRendererCom->Add_Text(MonsterDesc);
+		// Origin Text
+		MonsterDesc.vPosition = _float2(fSubX, vSubPosition.y);
 		MonsterDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
 		m_pRendererCom->Add_Text(MonsterDesc);
 
+		// 몬스터 이름 -> 외곽선
 		MonsterDesc.strText = m_strName;
+		MonsterDesc.strFontTag = L"Default_Bold";
 		MonsterDesc.vScale = { 0.4f, 0.4f };
-		MonsterDesc.vPosition = vTextPosition;
+		MonsterDesc.vPosition = _float2(fNameX - 1.f, vTextPosition.y);
+		MonsterDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
+		m_pRendererCom->Add_Text(MonsterDesc);
+		MonsterDesc.vPosition = _float2(fNameX + 1.f, vTextPosition.y);
+		m_pRendererCom->Add_Text(MonsterDesc);
+		MonsterDesc.vPosition = _float2(fNameX, vTextPosition.y - 1.f);
+		m_pRendererCom->Add_Text(MonsterDesc);
+		MonsterDesc.vPosition = _float2(fNameX, vTextPosition.y + 1.f);
+		m_pRendererCom->Add_Text(MonsterDesc);
+		// 몬스터 이름
+		MonsterDesc.vPosition = _float2(fNameX, vTextPosition.y);
 		MonsterDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
 		m_pRendererCom->Add_Text(MonsterDesc);
 	}
@@ -253,6 +348,10 @@ CGameObject* CUI_MonsterHP_World::Clone(void* pArg)
 void CUI_MonsterHP_World::Free()
 {
 	__super::Free();
+
+	for (auto& iter : m_Arrow)
+		Safe_Release(iter);
+	m_Arrow.clear();
 
 	Safe_Release(m_pTextureCom);
 }

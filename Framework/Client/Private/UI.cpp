@@ -26,6 +26,44 @@ void CUI::Set_ChildActive(_bool bActive)
 	}
 }
 
+_float2 CUI::Get_ProjectionPosition(CTransform* pTransfrom)
+{
+	if (nullptr == pTransfrom)
+		return _float2(-1.f, -1.f);
+
+//	_vector vPosition = pTransfrom->Get_State(CTransform::STATE_POSITION);
+//
+//	_matrix ViewMatrix = GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW);
+//	_matrix ProjMatrix = GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ);
+//
+//	vPosition = XMVector3TransformCoord(vPosition, ViewMatrix);
+//	vPosition = XMVector3TransformCoord(vPosition, ProjMatrix);
+//
+//	_float fScreenX = XMVectorGetX(vPosition) * (g_iWinSizeX * 0.5f) + (g_iWinSizeX * 0.5f);
+//	_float fScreenY = -1.f * XMVectorGetY(vPosition) * (g_iWinSizeY * 0.5f) + (g_iWinSizeY* 0.5f);
+
+	_vector vPosition = pTransfrom->Get_State(CTransform::STATE_POSITION);
+
+	_float4x4 matWorld = pTransfrom->Get_WorldFloat4x4();
+	_matrix matView = GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW);
+	_matrix matProj = GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ);
+
+	_float4x4 matWindow;
+	XMStoreFloat4x4(&matWindow, XMLoadFloat4x4(&matWorld) * matView * matProj);
+
+	_float3 vWindowPos = *(_float3*)&matWindow.m[3][0];
+	// &matWindow.m[3][0] -> 포지션의 시작 주소를 얻고,
+	// (_float3*) -> _float3 포인터로 캐스팅
+	// * -> 그 값을 가져온다.
+
+	vWindowPos.x /= vWindowPos.z;
+	vWindowPos.y /= vWindowPos.z;
+	_float fScreenX = vWindowPos.x * g_iWinSizeX * 0.5f + (g_iWinSizeX * 0.5f);
+	_float fScreenY = vWindowPos.y * -(g_iWinSizeY * 0.5f) + (g_iWinSizeY * 0.5f);
+
+	return _float2(fScreenX, fScreenY);
+}
+
 HRESULT CUI::Initialize(void* pArg)
 {
 	if (nullptr != pArg)

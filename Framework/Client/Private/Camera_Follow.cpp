@@ -77,10 +77,10 @@ HRESULT CCamera_Follow::Ready_Components()
 
 Vec4 CCamera_Follow::Calculate_Look(_float fTimeDelta)
 {
-	Vec3 vRelativeLookAtOffSet = XMVector3TransformCoord(m_vLookAtOffset, m_pLookAtObj->Get_Component<CTransform>(L"Com_Transform")->Get_WorldMatrix());
+	//    Vec3 vRelativeLookAtOffSet = XMVector3TransformCoord(m_vLookAtOffset, m_pLookAtObj->Get_Component<CTransform>(L"Com_Transform")->Get_WorldMatrix());
 
-	Vec4 vLookAt = Vec4(m_pTargetObj->Get_Component<CTransform>(L"Com_Transform")->Get_Position()) + vRelativeLookAtOffSet;
-	
+	Vec4 vLookAt = Vec4(m_pTargetObj->Get_Component<CTransform>(L"Com_Transform")->Get_Position());// +vRelativeLookAtOffSet;
+
 	vLookAt.w = 1.f;
 
 	return vLookAt;

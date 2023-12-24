@@ -225,6 +225,20 @@ HRESULT CUI_Basic::Ready_Components()
 		m_fAlpha = 0.9f;
 		break;
 
+	case TARGETARROW_LEFT:
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Monster_WorldHP_TargetArrow_Left"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		m_fAlpha = 1.f;
+		break;
+
+	case TARGETARROW_RIGHT:
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Monster_WorldHP_TargetArrow_Right"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		m_fAlpha = 1.f;
+		break;
+
 	case UISTATIC_TITLELINE:
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Common_TitleLine"),
 			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))

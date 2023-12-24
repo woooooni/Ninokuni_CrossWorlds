@@ -3427,6 +3427,12 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Monster_WorldHPBar"),
 		CUI_MonsterHP_World::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Monster_WorldHPBar_ArrowLeft"),
+		CUI_Basic::Create(m_pDevice, m_pContext, L"UI_Monster_WorldHP_ArrowLeft", CUI_Basic::TARGETARROW_LEFT), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Monster_WorldHPBar_ArrowRight"),
+		CUI_Basic::Create(m_pDevice, m_pContext, L"UI_Monster_WorldHP_ArrowRight", CUI_Basic::TARGETARROW_RIGHT), LAYER_UI)))
+		return E_FAIL;
 
 
 	return S_OK;

@@ -5,6 +5,7 @@
 
 #include "Shadow_ThiefBT.h"
 #include "UI_MonsterHP_World.h"
+#include "UIDamage_Manager.h"
 
 CShadow_Thief::CShadow_Thief(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
 	: CMonster(pDevice, pContext, strObjectTag, tStat)
@@ -76,6 +77,12 @@ void CShadow_Thief::Tick(_float fTimeDelta)
 	}
 	// >> 
 	
+	if (KEY_TAP(KEY::Y))
+	{
+		if (FAILED(CUIDamage_Manager::GetInstance()->Create_SkillDamageNumber(m_pTransformCom, 43953, ELEMENTAL_TYPE::DARK)))
+			return;
+	}
+
 	if (nullptr != m_pHPBar)
 		m_pHPBar->Tick(fTimeDelta);
 
