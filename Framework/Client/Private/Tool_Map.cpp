@@ -1007,6 +1007,7 @@ HRESULT CTool_Map::Save_Map_Data(const wstring& strMapFileName)
 			|| i == LAYER_TYPE::LAYER_SKYBOX
 			|| i == LAYER_TYPE::LAYER_UI
 			|| i == LAYER_TYPE::LAYER_PLAYER
+			|| i == LAYER_TYPE::LAYER_MONSTER
 			|| i == LAYER_TYPE::LAYER_WEAPON
 			|| i == LAYER_TYPE::LAYER_PROJECTILE
 			|| i == LAYER_TYPE::LAYER_EFFECT
@@ -1081,7 +1082,8 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 			|| i == LAYER_TYPE::LAYER_EFFECT
 			|| i == LAYER_TYPE::LAYER_TRAIL
 			|| i == LAYER_TYPE::LAYER_NPC
-			|| i == LAYER_TYPE::LAYER_WEAPON)
+			|| i == LAYER_TYPE::LAYER_WEAPON
+			|| i == LAYER_TYPE::LAYER_MONSTER)
 			continue;
 
 		GI->Clear_Layer(LEVEL_TOOL, i);
