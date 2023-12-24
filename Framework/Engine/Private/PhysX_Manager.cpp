@@ -387,6 +387,7 @@ PxController* CPhysX_Manager::Add_BoxController(CGameObject* pGameObject, Matrix
 }
 
 
+
 // For. Collider.
 PxRigidDynamic* CPhysX_Manager::Create_Dynamic_Box(const PHYSX_INIT_DESC& Desc)
 {
@@ -909,6 +910,21 @@ HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGameObject, CModel* pModel, Mat
 		pShape->release();
 	}
 
+	return S_OK;
+}
+
+HRESULT CPhysX_Manager::Clear_PhysX_Ground()
+{
+	for (auto& iter : m_GroundObjects)
+	{
+		for (auto& Desc : iter.second)
+		{
+			Desc.pActor->release();
+			Safe_Release(Desc.pObject);
+		}
+		iter.second.clear();
+	}
+	m_GroundObjects.clear();
 	return S_OK;
 }
 

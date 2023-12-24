@@ -603,6 +603,11 @@ PxController* CGameInstance::Add_BoxController(CGameObject* pGameObject, Matrix 
 	return m_pPhysXManager->Add_BoxController(pGameObject, WorldMatrix, fExtents, fMaxJumpHeight, pCallBack);
 }
 
+HRESULT CGameInstance::Clear_PhysX_Ground()
+{
+	return m_pPhysXManager->Clear_PhysX_Ground();
+}
+
 //PxParticleClothBuffer* CGameInstance::Get_TestClothBuffer()
 //{
 //	return m_pPhysXManager->Get_ClothBuffer();

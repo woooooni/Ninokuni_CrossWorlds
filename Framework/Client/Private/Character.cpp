@@ -252,6 +252,7 @@ void CCharacter::Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo)
 
 void CCharacter::Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo)
 {
+
 	__super::Ground_Collision_Exit(tInfo);
 	m_pRigidBodyCom->Set_Ground(false);
  	m_pRigidBodyCom->Set_Use_Gravity(true);

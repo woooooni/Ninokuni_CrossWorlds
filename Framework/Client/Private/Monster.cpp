@@ -337,6 +337,30 @@ void CMonster::Collision_Exit(const COLLISION_INFO& tInfo)
 	}
 }
 
+void CMonster::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
+{
+	__super::Ground_Collision_Enter(tInfo);
+
+	if (m_pRigidBodyCom->Get_Velocity().y <= 0.f)
+	{
+		m_pRigidBodyCom->Set_Ground(true);
+		m_pRigidBodyCom->Set_Use_Gravity(false);
+	}
+	
+}
+
+void CMonster::Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo)
+{
+	__super::Ground_Collision_Continue(tInfo);
+}
+
+void CMonster::Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo)
+{
+	__super::Ground_Collision_Exit(tInfo);
+	m_pRigidBodyCom->Set_Ground(false);
+	m_pRigidBodyCom->Set_Use_Gravity(true);
+}
+
 
 CHierarchyNode* CMonster::Get_Socket(const wstring& strSocketName)
 {
@@ -420,6 +444,7 @@ void CMonster::Free()
 	m_Parts.clear();
 
 	Safe_Release(m_pBTCom);
+	
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pTransformCom);
@@ -428,5 +453,6 @@ void CMonster::Free()
 	Safe_Release(m_pStateCom);
 	Safe_Release(m_pNavigationCom);
 	Safe_Release(m_pDissoveTexture);
+	Safe_Release(m_pControllerCom);
 
 }

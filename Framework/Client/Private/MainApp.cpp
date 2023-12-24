@@ -50,7 +50,7 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 	/* 1-4. 게임내에서 사용할 레벨(씬)을 생성한다.   */
-	if (FAILED(Open_Level(LEVEL_TOOL, L"Final_Boss")))
+	if (FAILED(Open_Level(LEVEL_TEST, L"Final_Boss")))
 		return E_FAIL;
 
 
@@ -60,8 +60,8 @@ HRESULT CMainApp::Initialize()
 
 
 	Json Test;
-	Test["Name"] = "김태원";
-	Test["Test"] = "테스트";
+	Test["Name"] = "김태원김태원";
+	Test["Test"] = "테스트테스트테스트세트슽ㅁㄴ우ㅡㅓㅋ투차ㅓ머ㅏㅣ";
 	Test["int"] = 3;
 	Test["float"] = 3.f;
 	Test["string"] = "스트링";

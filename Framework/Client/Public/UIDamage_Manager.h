@@ -4,6 +4,10 @@
 #include "Base.h"
 
 
+BEGIN(Engine)
+class CTransform;
+END
+
 BEGIN(Client)
 class CUIDamage_Manager : public CBase
 {
@@ -21,9 +25,9 @@ public:
 	HRESULT Ready_DamageNumberPrototypes();
 
 public:
-	HRESULT Create_SkillDamageNumber(CTransform* pTransformCom, _int iDamage, ELEMENTAL_TYPE eType = ELEMENTAL_END);
-	HRESULT Create_CommonDamageNumber(CTransform* pTransformCom, _int iDamage);
-	HRESULT Create_Critical(CTransform* pTransformCom);
+	HRESULT Create_SkillDamageNumber(class CTransform* pTransformCom, _int iDamage, ELEMENTAL_TYPE eType = ELEMENTAL_END);
+	HRESULT Create_CommonDamageNumber(class CTransform* pTransformCom, _int iDamage);
+	HRESULT Create_Critical(class CTransform* pTransformCom);
 
 private:
 	ID3D11Device* m_pDevice = nullptr;

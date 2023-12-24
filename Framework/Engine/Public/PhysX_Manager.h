@@ -36,6 +36,9 @@ public:
 	PxController* Add_CapsuleController(class CGameObject* pGameObject, Matrix WorldMatrix, _float fHeight, _float fRadius, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack);
 	PxController* Add_BoxController(CGameObject* pGameObject, Matrix WorldMatrix, _float3 fExtents, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack);
 
+
+	HRESULT Clear_PhysX_Ground();
+
 public:
 	HRESULT Reset_PhysX();
 
@@ -128,8 +131,13 @@ private:
 private:
 	map<_uint, vector<PHYSX_STATIC_OBJECT_DESC>> m_StaticObjects;
 	map<_uint, vector<PHYSX_DYNAMIC_OBJECT_DESC>> m_DynamicObjects;
-	map<_uint, class PxController*> m_Controllers;
 	map<_uint, vector<PHYSX_STATIC_OBJECT_DESC>> m_GroundObjects;
+
+	map<_uint, class PxController*> m_Controllers;
+	
+
+
+	
 
 
 private:

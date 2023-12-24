@@ -15,6 +15,7 @@ class CStateMachine;
 class CNavigation;
 class CHierarchyNode;
 class CBehaviorTree;
+class CPhysX_Controller;
 END
 
 
@@ -91,6 +92,11 @@ public:
 	virtual void Collision_Exit(const COLLISION_INFO& tInfo) override;
 
 public:
+	virtual void Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo) override;
+	virtual void Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo) override;
+	virtual void Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo) override;
+
+public:
 	virtual void Set_Infinite(_float fInfiniteTime, _bool bInfinite)
 	{
 		m_bInfinite = bInfinite;
@@ -141,7 +147,7 @@ protected: /* 해당 객체가 사용해야할 컴포넌트들을 저장하낟. */
 	CStateMachine* m_pStateCom = nullptr;
 	CNavigation* m_pNavigationCom = nullptr;
 	CBehaviorTree* m_pBTCom = nullptr;
-
+	CPhysX_Controller* m_pControllerCom = { nullptr };
 
 	CTexture* m_pDissoveTexture = nullptr;
 

@@ -1,10 +1,6 @@
 #pragma once
 
 #include "Monster.h"
-BEGIN(Engine)
-class CPhysX_Controller;
-END
-
 BEGIN(Client)
 
 class CShadow_Thief final : public CMonster
@@ -29,7 +25,6 @@ public:
 
 private:
 	class CUI_MonsterHP_World* m_pHPBar = { nullptr };
-	class CPhysX_Controller* m_pControllerCom = { nullptr };
 
 private:
 	virtual HRESULT Ready_Components();
