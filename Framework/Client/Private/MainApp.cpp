@@ -15,9 +15,10 @@
 #include "Light.h"
 #include "Part_Manager.h"
 #include "Item_Manager.h"
+#include "UIDamage_Manager.h"
 
 #ifdef _DEBUG
-  //#include <vld.h>
+  // #include <vld.h>
 #endif
 
 CMainApp::CMainApp()	
@@ -149,6 +150,8 @@ HRESULT CMainApp::Initialize_Client()
 
 	
 	if (FAILED(CUI_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+		return E_FAIL;
+	if (FAILED(CUIDamage_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
 		return E_FAIL;
 
 	if (FAILED(CCamera_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
@@ -321,6 +324,8 @@ HRESULT CMainApp::Ready_Prototype_Component()
 		return E_FAIL;
 
 	if (FAILED(CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_STATIC)))
+		return E_FAIL;
+	if (FAILED(CUIDamage_Manager::GetInstance()->Ready_DamageNumberPrototypes()))
 		return E_FAIL;
 
 	// Particle Texture && Effect Texture
@@ -888,6 +893,12 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_DamageNumber_Yellow"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/DamageNum/Num_Yellow_%d.png"), 10))))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_DamageNumber_Green"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/DamageNum/Num_Green_%d.png"), 10))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_DamageNumber_Purple"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/DamageNum/Num_Purple_%d.png"), 10))))
+		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Damage_Critical"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/DamageNum/Img_Font_Critical_%d.png"), 4))))
 		return E_FAIL;
@@ -902,7 +913,12 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Monster_WorldHP_Frame"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/MonsterStatus/UI_Monster_WorldUI_HPBar_Frame.png")))))
 		return E_FAIL;
-
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Monster_WorldHP_TargetArrow_Left"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/MonsterStatus/UI_Monster_Target_Arrow_Left.png")))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Monster_WorldHP_TargetArrow_Right"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/MonsterStatus/UI_Monster_Target_Arrow_Right.png")))))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -1046,6 +1062,7 @@ void Client::CMainApp::Free()
 	CParticle_Manager::GetInstance()->DestroyInstance();
 	CImGui_Manager::GetInstance()->DestroyInstance();
 	CPicking_Manager::GetInstance()->DestroyInstance();
+	CUIDamage_Manager::GetInstance()->DestroyInstance();
 	CUI_Manager::GetInstance()->DestroyInstance();
 	CPart_Manager::GetInstance()->DestroyInstance();
 	CItem_Manager::GetInstance()->DestroyInstance();

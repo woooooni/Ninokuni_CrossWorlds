@@ -38,6 +38,8 @@ public:
 
 	void Set_ChildActive(_bool bActive);
 
+	_float2 Get_ProjectionPosition(CTransform* pTransfrom);
+
 public:
 	virtual HRESULT Initialize_Prototype() override { return S_OK; }
 	virtual HRESULT Initialize(void* pArg) override;

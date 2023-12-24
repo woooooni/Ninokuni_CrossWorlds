@@ -339,11 +339,14 @@
     <ClInclude Include="..\Public\StelliaState_TripleLaser.h" />
     <ClInclude Include="..\Public\StelliaState_Turn.h" />
     <ClInclude Include="..\Public\Tool_Item.h" />
+    <ClInclude Include="..\Public\UIDamage_Manager.h" />
     <ClInclude Include="..\Public\UI_Announced.h" />
     <ClInclude Include="..\Public\UI_Costume_Btn.h" />
     <ClInclude Include="..\Public\UI_Costume_ChangeBtn.h" />
     <ClInclude Include="..\Public\UI_Costume_ItemSlot.h" />
     <ClInclude Include="..\Public\UI_Costume_LineBox.h" />
+    <ClInclude Include="..\Public\UI_Damage_Critical.h" />
+    <ClInclude Include="..\Public\UI_Damage_Skill.h" />
     <ClInclude Include="..\Public\UI_Dialog_Flip.h" />
     <ClInclude Include="..\Public\UI_Dialog_MiniWindow.h" />
     <ClInclude Include="..\Public\UI_Dialog_Portrait.h" />
@@ -464,7 +467,6 @@
     <ClInclude Include="..\Public\UI_MonsterHP_Bar.h" />
     <ClInclude Include="..\Public\UI_MonsterHP_Elemental.h" />
     <ClInclude Include="..\Public\UI_MonsterHP_ElementalFrame.h" />
-    <ClInclude Include="..\Public\UI_Number.h" />
     <ClInclude Include="..\Public\UI_PlayerEXPBar.h" />
     <ClInclude Include="..\Public\UI_PlayerHPBar.h" />
     <ClInclude Include="..\Public\UI_PlayerInfo.h" />
@@ -665,11 +667,14 @@
     <ClCompile Include="..\Private\StelliaState_TripleLaser.cpp" />
     <ClCompile Include="..\Private\StelliaState_Turn.cpp" />
     <ClCompile Include="..\Private\Tool_Item.cpp" />
+    <ClCompile Include="..\Private\UIDamage_Manager.cpp" />
     <ClCompile Include="..\Private\UI_Announced.cpp" />
     <ClCompile Include="..\Private\UI_Costume_Btn.cpp" />
     <ClCompile Include="..\Private\UI_Costume_ChangeBtn.cpp" />
     <ClCompile Include="..\Private\UI_Costume_ItemSlot.cpp" />
     <ClCompile Include="..\Private\UI_Costume_LineBox.cpp" />
+    <ClCompile Include="..\Private\UI_Damage_Critiacal.cpp" />
+    <ClCompile Include="..\Private\UI_Damage_Skill.cpp" />
     <ClCompile Include="..\Private\UI_Dialog_Flip.cpp" />
     <ClCompile Include="..\Private\UI_Dialog_MiniWindow.cpp" />
     <ClCompile Include="..\Private\UI_Dialog_Portrait.cpp" />
@@ -796,7 +801,6 @@
     <ClCompile Include="..\Private\UI_MonsterHP_Bar.cpp" />
     <ClCompile Include="..\Private\UI_MonsterHP_Elemental.cpp" />
     <ClCompile Include="..\Private\UI_MonsterHP_ElementalFrame.cpp" />
-    <ClCompile Include="..\Private\UI_Number.cpp" />
     <ClCompile Include="..\Private\UI_PlayerEXPBar.cpp" />
     <ClCompile Include="..\Private\UI_PlayerHPBar.cpp" />
     <ClCompile Include="..\Private\UI_PlayerInfo.cpp" />

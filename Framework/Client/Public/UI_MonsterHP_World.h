@@ -14,6 +14,9 @@ public:
 	class CMonster* Get_Owner() { return m_pOwner; }
 	void Set_Owner(CMonster* pOwner) { m_pOwner = pOwner; }
 
+	_bool Is_Target() { return m_bIsTarget; }
+	void Set_Target(_bool bIsTarget) { m_bIsTarget = bIsTarget; }
+
 public:
 	virtual HRESULT	Initialize_Prototype();
 	virtual HRESULT	Initialize(void* pArg);
@@ -23,6 +26,9 @@ public:
 
 private:
 	class CMonster* m_pOwner = { nullptr };
+	_bool m_bIsTarget = { false }; // 현재 플레이어의 Target인가?
+
+	vector<class CUI_Basic*> m_Arrow;
 	_int m_iMaxHP = { 0 };
 	_int m_iCurHP = { 0 };
 
@@ -30,7 +36,6 @@ private:
 	wstring m_strSubName = L"";
 
 	_uint m_iTextureIndex = { 0 };
-	_matrix m_UIWorldMatrix;
 
 private:
 	virtual HRESULT	Ready_Components() override;
