@@ -51,9 +51,9 @@ private:
 	Vec4 Calculate_DampingPosition(Vec4 vGoalPos);
 
 private:
-	Vec2			m_vAngle = { 0.f, 1.f };
+	Vec2			m_vAngle		= { 0.f, 1.f };
 	
-	DAMPING_DESC	m_tDampingDesc = {};
+	DAMPING_DESC	m_tDampingDesc	= {};
 
 public:
 	static CCamera_Follow* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
