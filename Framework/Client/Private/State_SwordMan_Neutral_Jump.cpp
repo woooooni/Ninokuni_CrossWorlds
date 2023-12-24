@@ -46,11 +46,7 @@ void CState_SwordMan_Neutral_Jump::Tick_State(_float fTimeDelta)
     if (true == m_pRigidBodyCom->Is_Ground())
     {
         m_pStateMachineCom->Change_State(CCharacter::STATE::NEUTRAL_IDLE);
-    }
-        
-
-    
-        
+    }   
 }
 
 void CState_SwordMan_Neutral_Jump::Exit_State()

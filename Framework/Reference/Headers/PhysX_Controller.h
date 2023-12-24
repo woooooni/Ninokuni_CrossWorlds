@@ -41,6 +41,9 @@ public:
 public:
     void Tick_Controller(_float fTimeDelta);
     void LateTick_Controller(_float fTimeDelta);
+
+public:
+    void Set_Position(Vec4 vPosition);
     
 
 private:

@@ -42,10 +42,10 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 {
 	m_Foundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_Allocator, m_ErrorCallback);
 
-	m_pPvd = PxCreatePvd(*m_Foundation);
-	m_pTransport = PxDefaultPvdSocketTransportCreate("127.0.0.1", m_iPortNumber, m_iTimeOutSeconds);
-	m_pPvd->connect(*m_pTransport, PxPvdInstrumentationFlag::eALL);
-	_bool bConntected = m_pPvd->isConnected();
+	//m_pPvd = PxCreatePvd(*m_Foundation);
+	//m_pTransport = PxDefaultPvdSocketTransportCreate("127.0.0.1", m_iPortNumber, m_iTimeOutSeconds);
+	//m_pPvd->connect(*m_pTransport, PxPvdInstrumentationFlag::eALL);
+	//_bool bConntected = m_pPvd->isConnected();
 
 
 

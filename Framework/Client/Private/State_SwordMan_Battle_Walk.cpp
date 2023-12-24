@@ -52,11 +52,11 @@ void CState_SwordMan_Battle_Walk::Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamLook = XMVector3Normalize(vCamLook);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * m_fMoveSpeed * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 4.f * fTimeDelta;
 
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
-		m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fMoveSpeed, fTimeDelta);
+		m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), 4.f, fTimeDelta);
 	}
 
 
@@ -73,11 +73,11 @@ void CState_SwordMan_Battle_Walk::Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamLook = -1.f * XMVector3Normalize(vCamLook);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * m_fMoveSpeed * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 4.f * fTimeDelta;
 
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
-		m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fMoveSpeed, fTimeDelta);
+		m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), 4.f, fTimeDelta);
 	}
 
 
@@ -91,12 +91,12 @@ void CState_SwordMan_Battle_Walk::Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamRight = -1.f * XMVector3Normalize(vCamRight);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * m_fMoveSpeed * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 4.f * fTimeDelta;
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
 
 		if (!bMove)
-			m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fMoveSpeed, fTimeDelta);
+			m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), 4.f, fTimeDelta);
 
 		bMove = true;
 
@@ -115,13 +115,13 @@ void CState_SwordMan_Battle_Walk::Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamRight = XMVector3Normalize(vCamRight);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * m_fMoveSpeed * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 4.f * fTimeDelta;
 
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
 
 		if (!bMove)
-			m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fMoveSpeed, fTimeDelta);
+			m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), 4.f, fTimeDelta);
 
 		bMove = true;
 	}
@@ -135,6 +135,18 @@ void CState_SwordMan_Battle_Walk::Input(_float fTimeDelta)
 
 	if (KEY_HOLD(KEY::SHIFT))
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_RUN);
+
+	if (KEY_HOLD(KEY::RBTN))
+	{
+		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_GUARD);
+		return;
+	}
+
+	if (KEY_TAP(KEY::LBTN))
+	{
+		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_0);
+		return;
+	}
 		
 
 	if (!bMove)

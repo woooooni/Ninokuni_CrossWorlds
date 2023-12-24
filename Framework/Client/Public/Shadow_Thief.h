@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Monster.h"
+BEGIN(Engine)
+class CPhysX_Controller;
+END
 
 BEGIN(Client)
 

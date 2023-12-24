@@ -132,8 +132,21 @@ void CState_SwordMan_Battle_Run::Input(_float fTimeDelta)
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_JUMP);
 	}
 
+	if (KEY_HOLD(KEY::RBTN))
+	{
+		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_GUARD);
+		return;
+	}
+
+	if (KEY_TAP(KEY::LBTN))
+	{
+		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_0);
+		return;
+	}
+
 	if(KEY_NONE(KEY::SHIFT))
 		m_pStateMachineCom->Change_State(CCharacter::BATTLE_WALK);
+
 
 	if (!bMove)
 	{

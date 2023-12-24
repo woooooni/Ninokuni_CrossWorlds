@@ -72,7 +72,6 @@ void CPhysX_Controller::Tick_Controller(_float fTimeDelta)
 {	
 	m_bGroundChecked = false;
 
-
 	Vec3 vPosition = m_pTransformCom->Get_Position(); // 피직스 기준으로는 발 끝이다.
 	PxExtendedVec3 vPhysPosition = m_pPhysXController->getPosition();
 
@@ -107,6 +106,15 @@ void CPhysX_Controller::LateTick_Controller(_float fTimeDelta)
 		}
 	}
 
+}
+
+void CPhysX_Controller::Set_Position(Vec4 vPosition)
+{
+
+	// 트랜스폼 컴포넌트에서 호출한다.
+	vPosition.w = 1.f;
+	m_pPhysXController->setFootPosition(PxExtendedVec3(vPosition.x, vPosition.y, vPosition.z));
+	m_vPrevPosition = m_pTransformCom->Get_Position();
 }
 
 
@@ -171,7 +179,7 @@ void CPhysX_Controller::onShapeHit(const PxControllerShapeHit& hit)
 			m_pOwner->Ground_Collision_Continue(Info);
 		}
 
-		else if(m_eGroundFlag == PxPairFlag::eCONTACT_DEFAULT)
+		else if(m_eGroundFlag == PxPairFlag::eNOTIFY_TOUCH_LOST || m_eGroundFlag == PxPairFlag::eCONTACT_DEFAULT)
 		{
 			m_eGroundFlag = PxPairFlag::eNOTIFY_TOUCH_FOUND;
 			PHYSX_GROUND_COLLISION_INFO Info;

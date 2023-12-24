@@ -24,7 +24,8 @@ HRESULT CState_SwordMan_Battle_Idle::Initialize(const list<wstring>& AnimationLi
 void CState_SwordMan_Battle_Idle::Enter_State(void* pArg)
 {
     m_fAccReturnNuetral = 0.f;
-    m_pModelCom->Set_Animation(m_AnimIndices[0]);
+    m_iCurrAnimIndex = m_AnimIndices[0];
+    m_pModelCom->Set_Animation(m_iCurrAnimIndex);
 }
 
 void CState_SwordMan_Battle_Idle::Tick_State(_float fTimeDelta)
@@ -35,8 +36,12 @@ void CState_SwordMan_Battle_Idle::Tick_State(_float fTimeDelta)
     if (m_fAccReturnNuetral >= m_fReturnNuetralTime)
     {
         m_fAccReturnNuetral = 0.f;
-        m_pModelCom->Set_Animation(m_AnimIndices[1]);
+        m_iCurrAnimIndex = m_AnimIndices[1];
+        m_pModelCom->Set_Animation(m_iCurrAnimIndex);
     }
+
+    if (m_iCurrAnimIndex == m_AnimIndices[1] && false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
+        m_pStateMachineCom->Change_State(CCharacter::STATE::NEUTRAL_IDLE);
 }
 
 void CState_SwordMan_Battle_Idle::Exit_State()
@@ -46,6 +51,19 @@ void CState_SwordMan_Battle_Idle::Exit_State()
 
 void CState_SwordMan_Battle_Idle::Input(_float fTimeDelta)
 {
+    if (KEY_HOLD(KEY::RBTN))
+    {
+        m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_GUARD);
+        return;
+    }
+
+    if (KEY_TAP(KEY::LBTN))
+    {
+        m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_0);
+        return;
+    }
+        
+
     if (KEY_HOLD(KEY::W) || KEY_TAP(KEY::A) || KEY_TAP(KEY::S) || KEY_TAP(KEY::D))
         m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_WALK);
     

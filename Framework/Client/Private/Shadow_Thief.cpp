@@ -277,5 +277,6 @@ void CShadow_Thief::Free()
 	__super::Free();
 
 	Safe_Release(m_pHPBar);
+	Safe_Release(m_pControllerCom);
 
 }
