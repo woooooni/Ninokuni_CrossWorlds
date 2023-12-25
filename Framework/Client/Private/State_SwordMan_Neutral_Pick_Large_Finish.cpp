@@ -12,11 +12,6 @@ HRESULT CState_SwordMan_Neutral_Pick_Large_Finish::Initialize(const list<wstring
 {
     if (FAILED(__super::Initialize(AnimationList)))
         return E_FAIL;
-
-    m_pCharacter = dynamic_cast<CCharacter*>(m_pStateMachineCom->Get_Owner());
-
-    if (nullptr == m_pCharacter)
-        return E_FAIL;
     
     return S_OK;
 }
@@ -28,7 +23,8 @@ void CState_SwordMan_Neutral_Pick_Large_Finish::Enter_State(void* pArg)
 
 void CState_SwordMan_Neutral_Pick_Large_Finish::Tick_State(_float fTimeDelta)
 {
-    
+    if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
+        m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_IDLE);
 }
 
 void CState_SwordMan_Neutral_Pick_Large_Finish::Exit_State()

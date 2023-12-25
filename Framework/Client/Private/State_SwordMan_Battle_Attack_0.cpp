@@ -39,8 +39,21 @@ void CState_SwordMan_Battle_Attack_0::Exit_State()
 
 void CState_SwordMan_Battle_Attack_0::Input(_float fTimeDelta)
 {
+    if (true == Skill_Input(fTimeDelta))
+        return;
+
+    if (KEY_TAP(KEY::CTRL))
+    {
+        m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_DASH);
+        return;
+    }
+        
     if (KEY_TAP(KEY::LBTN))
+    {
         m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_1);
+        return;
+    }
+        
 }
 
 CState_SwordMan_Battle_Attack_0* CState_SwordMan_Battle_Attack_0::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

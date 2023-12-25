@@ -13,10 +13,6 @@ HRESULT CState_SwordMan_Neutral_Pick_Large_Idle::Initialize(const list<wstring>&
     if (FAILED(__super::Initialize(AnimationList)))
         return E_FAIL;
 
-    m_pCharacter = dynamic_cast<CCharacter*>(m_pStateMachineCom->Get_Owner());
-
-    if (nullptr == m_pCharacter)
-        return E_FAIL;
     
     return S_OK;
 }
@@ -30,12 +26,6 @@ void CState_SwordMan_Neutral_Pick_Large_Idle::Tick_State(_float fTimeDelta)
 {
     Input(fTimeDelta);
 
-    m_fAccIdleMotion += fTimeDelta;
-    if (m_fAccIdleMotion >= m_fIdleMotionTime)
-    {
-        m_fAccIdleMotion = 0.f;
-        m_pModelCom->Set_Animation(m_AnimIndices[1]);
-    }
 }
 
 void CState_SwordMan_Neutral_Pick_Large_Idle::Exit_State()
@@ -46,11 +36,8 @@ void CState_SwordMan_Neutral_Pick_Large_Idle::Exit_State()
 void CState_SwordMan_Neutral_Pick_Large_Idle::Input(_float fTimeDelta)
 {
     if (KEY_HOLD(KEY::W) || KEY_HOLD(KEY::A) || KEY_HOLD(KEY::S) || KEY_HOLD(KEY::D))
-        m_pStateMachineCom->Change_State(CCharacter::STATE::NEUTRAL_CROUCH_MOVE);
+        m_pStateMachineCom->Change_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_WALK);
 
-    if (KEY_TAP(KEY::C))
-        m_pStateMachineCom->Change_State(CCharacter::STATE::NEUTRAL_IDLE);
-    
 }
 
 CState_SwordMan_Neutral_Pick_Large_Idle* CState_SwordMan_Neutral_Pick_Large_Idle::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

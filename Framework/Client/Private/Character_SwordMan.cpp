@@ -16,7 +16,20 @@
 #include "State_SwordMan_Neutral_Crouch_Move.h"
 
 
+#include "State_SwordMan_Neutral_Pick_Small_Idle.h"
+#include "State_SwordMan_Neutral_Pick_Small_Walk.h"
+#include "State_SwordMan_Neutral_Pick_Small_Run.h"
+#include "State_SwordMan_Neutral_Pick_Small_Throw.h"
+#include "State_SwordMan_Neutral_Pick_Small_Finish.h"
 
+#include "State_SwordMan_Neutral_Pick_Large_Idle.h"
+#include "State_SwordMan_Neutral_Pick_Large_Walk.h"
+#include "State_SwordMan_Neutral_Pick_Large_Run.h"
+#include "State_SwordMan_Neutral_Pick_Large_Throw.h"
+#include "State_SwordMan_Neutral_Pick_Large_Finish.h"
+
+
+#include "State_SwordMan_AbNormality_Stun.h"
 
 #include "State_SwordMan_Battle_Guard.h"
 #include "State_SwordMan_Battle_Idle.h"
@@ -30,8 +43,24 @@
 #include "State_SwordMan_Battle_Attack_2.h"
 #include "State_SwordMan_Battle_Attack_3.h"
 
+#include "State_SwordMan_BurstSkill_MegaSlash.h"
+
+#include "State_SwordMan_Skill_PerfectBlade.h"
+#include "State_SwordMan_Skill_SipohoningLunge.h"
+#include "State_SwordMan_Skill_SpinningAssault.h"
+
+#include "State_SwordMan_SpecialSkill_AcaneBarrier.h"
+#include "State_SwordMan_SpecialSkill_FrozenStorm.h"
+#include "State_SwordMan_SpecialSkill_SwordTempest.h"
+
+#include "State_SwordMan_Damaged_Impact.h"
+#include "State_SwordMan_Damaged_KnockDown.h"
+#include "State_SwordMan_Damaged_Strong.h"
+#include "State_SwordMan_Damaged_Weak.h"
+
 
 #include "State_SwordMan_Dead.h"
+#include "State_SwordMan_Revive.h"
 
 
 
@@ -194,6 +223,8 @@ HRESULT CCharacter_SwordMan::Ready_States()
 {
 	list<wstring> strAnimationNames;
 
+
+	// Neutral
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_NeutralStand");
 	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_NeutralIdle01");
@@ -234,11 +265,56 @@ HRESULT CCharacter_SwordMan::Ready_States()
 
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_Death");
-	m_pStateCom->Add_State(CCharacter::STATE::DEAD, CState_SwordMan_Dead::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_PickStandS");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_IDLE, CState_SwordMan_Neutral_Pick_Small_Idle::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_PickWalkS");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_WALK, CState_SwordMan_Neutral_Pick_Small_Walk::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_PickRunS");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_RUN, CState_SwordMan_Neutral_Pick_Small_Run::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_PickThrowS");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_THROW, CState_SwordMan_Neutral_Pick_Small_Throw::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_PickFinishS");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_FINISH, CState_SwordMan_Neutral_Pick_Small_Finish::Create(m_pStateCom, strAnimationNames));
+	
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_PickStandL");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_IDLE, CState_SwordMan_Neutral_Pick_Large_Idle::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_PickWalkL");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_WALK, CState_SwordMan_Neutral_Pick_Large_Walk::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_PickRunL");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_RUN, CState_SwordMan_Neutral_Pick_Large_Run::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_PickThrowL");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_THROW, CState_SwordMan_Neutral_Pick_Large_Throw::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_PickFinishL");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_FINISH, CState_SwordMan_Neutral_Pick_Large_Finish::Create(m_pStateCom, strAnimationNames));
+	
+	
+	// AbNormality
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_StunLoop1");
+	m_pStateCom->Add_State(CCharacter::STATE::ABNORMALITY_STUN, CState_SwordMan_AbNormality_Stun::Create(m_pStateCom, strAnimationNames));
 
 
 
+
+	// Battle
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_CSBattleStand");
 	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_FinishCombat");
@@ -286,6 +362,70 @@ HRESULT CCharacter_SwordMan::Ready_States()
 	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_DASH, CState_SwordMan_Battle_Dash::Create(m_pStateCom, strAnimationNames));
 	
 	
+
+
+	// Skill
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_SkillMegaSlash");
+	m_pStateCom->Add_State(CCharacter::STATE::SKILL_BURST, CState_SwordMan_BurstSkill_MegaSlash::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_SkillPerfectBlades");
+	m_pStateCom->Add_State(CCharacter::STATE::CLASS_SKILL_0, CState_SwordMan_Skill_PerfectBlade::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_SkillSiphoningLunge");
+	m_pStateCom->Add_State(CCharacter::STATE::CLASS_SKILL_1, CState_SwordMan_Skill_SipohoningLunge::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_SkillSpinningAssault");
+	m_pStateCom->Add_State(CCharacter::STATE::CLASS_SKILL_2, CState_SwordMan_Skill_SpinningAssault::Create(m_pStateCom, strAnimationNames));
+	
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_SkillArcaneBarrier_re");
+	m_pStateCom->Add_State(CCharacter::STATE::SKILL_SPECIAL_0, CState_SwordMan_SpecialSkill_AcaneBarrier::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_SkillFrozenStorm");
+	m_pStateCom->Add_State(CCharacter::STATE::SKILL_SPECIAL_1, CState_SwordMan_SpecialSkill_FrozenStorm::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_SkillSwordTempest");
+	m_pStateCom->Add_State(CCharacter::STATE::SKILL_SPECIAL_2, CState_SwordMan_SpecialSkill_SwordTempest::Create(m_pStateCom, strAnimationNames));
+
+	
+	
+	// Damaged
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_Impact_Start");
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_Impact_Loop");
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_Impact_Finish");
+	m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_IMPACT, CState_SwordMan_Damaged_Impact::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_KnockUpStart1");
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_KnockDownLoop");
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_KnockDownFinish");
+
+	m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_KNOCKDOWN, CState_SwordMan_Damaged_KnockDown::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_DamageStrong");
+	m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_STRONG, CState_SwordMan_Damaged_Strong::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_DamageWeak");
+	m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_WEAK, CState_SwordMan_Damaged_Weak::Create(m_pStateCom, strAnimationNames));
+
+	// Dead & Revive
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_Death");
+	m_pStateCom->Add_State(CCharacter::STATE::DEAD, CState_SwordMan_Dead::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_Revive");
+	m_pStateCom->Add_State(CCharacter::STATE::REVIVE, CState_SwordMan_Revive::Create(m_pStateCom, strAnimationNames));
+
 
 	m_pStateCom->Change_State(CCharacter::NEUTRAL_IDLE);
 	return S_OK;

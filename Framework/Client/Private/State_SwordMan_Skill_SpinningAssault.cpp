@@ -23,6 +23,11 @@ void CState_SwordMan_Skill_SpinningAssault::Enter_State(void* pArg)
 
 void CState_SwordMan_Skill_SpinningAssault::Tick_State(_float fTimeDelta)
 {
+    if (false == m_pModelCom->Is_Tween() && m_pModelCom->Get_Progress() >= 0.25f && m_pModelCom->Get_Progress() <= 0.5f)
+    {
+        m_pTransformCom->Move(m_pTransformCom->Get_Look(), 12.5f - (m_pModelCom->Get_Progress() * 10.f), fTimeDelta);
+    }
+
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
         m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_IDLE);
 }

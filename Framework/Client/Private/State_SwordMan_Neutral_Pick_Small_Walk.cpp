@@ -4,21 +4,16 @@
 #include "State_SwordMan_Neutral_Pick_Small_Walk.h"
 
 CState_SwordMan_Neutral_Pick_Small_Walk::CState_SwordMan_Neutral_Pick_Small_Walk(CStateMachine* pMachine)
-    : CState_Character(pMachine)
+	: CState_Character(pMachine)
 {
 }
 
 HRESULT CState_SwordMan_Neutral_Pick_Small_Walk::Initialize(const list<wstring>& AnimationList)
 {
-    if (FAILED(__super::Initialize(AnimationList)))
-        return E_FAIL;
+	if (FAILED(__super::Initialize(AnimationList)))
+		return E_FAIL;
 
-    m_pCharacter = dynamic_cast<CCharacter*>(m_pStateMachineCom->Get_Owner());
-
-    if (nullptr == m_pCharacter)
-        return E_FAIL;
-    
-    return S_OK;
+	return S_OK;
 }
 
 void CState_SwordMan_Neutral_Pick_Small_Walk::Enter_State(void* pArg)
@@ -28,7 +23,7 @@ void CState_SwordMan_Neutral_Pick_Small_Walk::Enter_State(void* pArg)
 
 void CState_SwordMan_Neutral_Pick_Small_Walk::Tick_State(_float fTimeDelta)
 {
-    Input(fTimeDelta);
+	Input(fTimeDelta);
 }
 
 void CState_SwordMan_Neutral_Pick_Small_Walk::Exit_State()
@@ -126,28 +121,35 @@ void CState_SwordMan_Neutral_Pick_Small_Walk::Input(_float fTimeDelta)
 		bMove = true;
 	}
 
+	if (KEY_HOLD(KEY::SHIFT))
+	{
+		bMove = true;
+		m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_PICK_LARGE_RUN);
+	}
+
+
 	if (!bMove)
 	{
 		if (KEY_NONE(KEY::W) && KEY_NONE(KEY::A) && KEY_NONE(KEY::S) && KEY_NONE(KEY::D))
-			m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_CROUCH_IDLE);
+			m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_PICK_LARGE_IDLE);
 	}
 }
 
 
 CState_SwordMan_Neutral_Pick_Small_Walk* CState_SwordMan_Neutral_Pick_Small_Walk::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
 {
-    CState_SwordMan_Neutral_Pick_Small_Walk* pInstance = new CState_SwordMan_Neutral_Pick_Small_Walk(pStateMachine);
+	CState_SwordMan_Neutral_Pick_Small_Walk* pInstance = new CState_SwordMan_Neutral_Pick_Small_Walk(pStateMachine);
 
-    if (FAILED(pInstance->Initialize(AnimationList)))
-    {
-        MSG_BOX("Fail Create : CState_SwordMan_Neutral_Pick_Small_Walk");
-        Safe_Release(pInstance);
-    }
+	if (FAILED(pInstance->Initialize(AnimationList)))
+	{
+		MSG_BOX("Fail Create : CState_SwordMan_Neutral_Pick_Small_Walk");
+		Safe_Release(pInstance);
+	}
 
-    return pInstance;
+	return pInstance;
 }
 
 void CState_SwordMan_Neutral_Pick_Small_Walk::Free()
 {
-    __super::Free();
+	__super::Free();
 }

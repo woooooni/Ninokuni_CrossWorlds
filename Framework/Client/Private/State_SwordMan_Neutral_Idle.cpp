@@ -30,8 +30,6 @@ void CState_SwordMan_Neutral_Idle::Enter_State(void* pArg)
 
 void CState_SwordMan_Neutral_Idle::Tick_State(_float fTimeDelta)
 {
-    Input(fTimeDelta);
-
     m_fAccIdleMotion += fTimeDelta;
     if (m_fAccIdleMotion >= m_fIdleMotionTime)
     {
@@ -47,6 +45,10 @@ void CState_SwordMan_Neutral_Idle::Tick_State(_float fTimeDelta)
         m_iCurrAnimIndex = m_AnimIndices[0];
         m_pModelCom->Set_Animation(m_iCurrAnimIndex);
     }
+
+    Input(fTimeDelta);
+
+
 }
 
 void CState_SwordMan_Neutral_Idle::Exit_State()
@@ -57,6 +59,15 @@ void CState_SwordMan_Neutral_Idle::Exit_State()
 
 void CState_SwordMan_Neutral_Idle::Input(_float fTimeDelta)
 {
+    if (true == Skill_Input(fTimeDelta))
+        return;
+
+    if (KEY_TAP(KEY::CTRL))
+    {
+        m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_DASH);
+        return;
+    }
+
     if (KEY_HOLD(KEY::W) || KEY_HOLD(KEY::A) || KEY_HOLD(KEY::S) || KEY_HOLD(KEY::D))
         m_pStateMachineCom->Change_State(CCharacter::STATE::NEUTRAL_WALK);
 

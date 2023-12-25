@@ -13,10 +13,6 @@ HRESULT CState_SwordMan_Neutral_Pick_Large_Run::Initialize(const list<wstring>& 
     if (FAILED(__super::Initialize(AnimationList)))
         return E_FAIL;
 
-    m_pCharacter = dynamic_cast<CCharacter*>(m_pStateMachineCom->Get_Owner());
-
-    if (nullptr == m_pCharacter)
-        return E_FAIL;
     
     return S_OK;
 }
@@ -126,31 +122,15 @@ void CState_SwordMan_Neutral_Pick_Large_Run::Input(_float fTimeDelta)
 		bMove = true;
 	}
 
-	if (KEY_TAP(KEY::SPACE))
-	{
-		bMove = true;
-		m_pStateMachineCom->Change_State(CCharacter::STATE::NEUTRAL_JUMP);
-	}
 
-	if (KEY_HOLD(KEY::RBTN))
-	{
-		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_GUARD);
-		return;
-	}
-
-	if (KEY_TAP(KEY::LBTN))
-	{
-		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_0);
-		return;
-	}
 
 	if(KEY_NONE(KEY::SHIFT))
-		m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_WALK);
+		m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_PICK_LARGE_WALK);
 
 	if (!bMove)
 	{
 		if (KEY_NONE(KEY::W) && KEY_NONE(KEY::A) && KEY_NONE(KEY::S) && KEY_NONE(KEY::D))
-			m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_IDLE);
+			m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_PICK_LARGE_IDLE);
 	}
 }
 
