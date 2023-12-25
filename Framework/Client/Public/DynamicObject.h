@@ -10,6 +10,7 @@ class CTexture;
 class CRenderer;
 class CPipeLine;
 class CTransform;
+class CStateMachine;
 END
 
 
@@ -45,6 +46,7 @@ protected:
 	CRenderer* m_pRendererCom = nullptr;
 	CTransform* m_pTransformCom = nullptr;
 	CModel* m_pModelCom = nullptr;
+	CStateMachine* m_pStateMachineCom = nullptr;
 
 	wstring m_strDynamicName = L"";
 

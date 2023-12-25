@@ -25,6 +25,7 @@ public:
 
 public:
 	virtual HRESULT Ready_Components() override;
+	HRESULT Ready_State();
 
 public:
 	static CCat* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const wstring & strObjectTag, _int eObjType);

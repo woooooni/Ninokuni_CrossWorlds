@@ -93,6 +93,18 @@ HRESULT CCat::Ready_Components()
 		TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 		return E_FAIL;
 
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_StateMachine"),
+		TEXT("Com_StateMachine"), reinterpret_cast<CComponent**>(&m_pStateMachineCom))))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CCat::Ready_State()
+{
+	list<wstring> animMains;
+
+
 	return S_OK;
 }
 
