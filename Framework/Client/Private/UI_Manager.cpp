@@ -35,6 +35,7 @@
 #include "UI_MenuSeparator.h"
 #include "UI_Dialog_Window.h"
 #include "UI_BtnQuickQuest.h"
+#include "UI_Inventory_Slot.h"
 #include "UI_Setting_Slider.h"
 #include "UI_Setting_Window.h"
 #include "UI_BtnShowSetting.h"
@@ -46,10 +47,14 @@
 #include "UI_Loading_Imajinn.h"
 #include "UI_Setting_Section.h"
 #include "UI_SubMenu_Imajinn.h"
+#include "UI_Emoticon_Window.h"
+#include "UI_Emoticon_Button.h"
 #include "UI_BtnChangeCamera.h"
+#include "UI_Inventory_TabBtn.h"
 #include "UI_Costume_ItemSlot.h"
 #include "UI_Loading_MainLogo.h"
 #include "UI_Btn_WorldMapIcon.h"
+#include "UI_Inventory_LineBox.h"
 #include "UI_Dialog_MiniWindow.h"
 #include "UI_Default_BackCloud.h"
 #include "UI_Loading_Character.h"
@@ -72,8 +77,10 @@
 #include "UI_MonsterHP_Background.h"
 #include "UI_Loading_CharacterLogo.h"
 #include "UI_ImajinnSection_Vehicle.h"
+#include "UI_Emoticon_SpeechBalloon.h"
 #include "UI_SkillSection_Background.h"
 #include "UI_ImajinnSection_Emoticon.h"
+#include "UI_Emoticon_BalloonEmoticon.h"
 #include "UI_MonsterHP_ElementalFrame.h"
 #include "UI_SkillSection_Interaction.h"
 #include "UI_SkillSection_ClassicSkill.h"
@@ -2001,6 +2008,270 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(m_pCameraAnnounce);
 
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 540.f * 0.6f;
+	UIDesc.fCY = 440.f * 0.6f;
+	UIDesc.fX = g_iWinSizeX * 0.5f - 20.f;
+	UIDesc.fY = g_iWinSizeY - (UIDesc.fCY * 0.5f) - 70.f;
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Emoticon_Window"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_pEmoticonWindow = dynamic_cast<CUI_Emoticon_Window*>(pWindow);
+	if (nullptr == m_pEmoticonWindow)
+		return E_FAIL;
+	Safe_AddRef(m_pEmoticonWindow);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 128.f * 0.9f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY * 0.5f;
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Emoticon_SpeechBalloon"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_pBalloon = dynamic_cast<CUI_Emoticon_SpeechBalloon*>(pWindow);
+	if (nullptr == m_pBalloon)
+		return E_FAIL;
+	Safe_AddRef(m_pBalloon);
+
+#pragma region INVENTORY
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 445.f;
+	UIDesc.fCY = 700.f;
+	UIDesc.fX = g_iWinSizeX - (UIDesc.fCX * 0.5f + 40.f);
+	UIDesc.fY = g_iWinSizeY - (UIDesc.fCY * 0.5f + 40.f);
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Inventory_LineBox"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_pInvenBox = dynamic_cast<CUI_Inventory_LineBox*>(pWindow);
+	if (nullptr == m_pInvenBox)
+		return E_FAIL;
+	Safe_AddRef(m_pInvenBox);
+
+	m_InvenBtn.reserve(CUI_Inventory_TabBtn::UI_INVENTABBTN::INVENTABBTN_END);
+	m_InvenClickedBtn.reserve(CUI_Inventory_TabBtn::UI_INVENTABBTN::INVENTABBTN_END);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 132.f * 0.52f;
+	UIDesc.fCY = 85.f * 0.6f;
+	UIDesc.fX = 1165.f;
+	UIDesc.fY = 136.f;
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_InvenBtn_UnClicked_Weapon"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_InvenBtn.push_back(dynamic_cast<CUI_Inventory_TabBtn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_InvenBtn_Clicked_Weapon"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_InvenClickedBtn.push_back(dynamic_cast<CUI_Inventory_TabBtn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+
+	UIDesc.fX += UIDesc.fCX;
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_InvenBtn_UnClicked_Armor"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_InvenBtn.push_back(dynamic_cast<CUI_Inventory_TabBtn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_InvenBtn_Clicked_Armor"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_InvenClickedBtn.push_back(dynamic_cast<CUI_Inventory_TabBtn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+
+	UIDesc.fX += UIDesc.fCX;
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_InvenBtn_UnClicked_Acc"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_InvenBtn.push_back(dynamic_cast<CUI_Inventory_TabBtn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_InvenBtn_Clicked_Acc"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_InvenClickedBtn.push_back(dynamic_cast<CUI_Inventory_TabBtn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+
+	UIDesc.fX += UIDesc.fCX;
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_InvenBtn_UnClicked_CrystalBall"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_InvenBtn.push_back(dynamic_cast<CUI_Inventory_TabBtn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_InvenBtn_Clicked_CrystalBall"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_InvenClickedBtn.push_back(dynamic_cast<CUI_Inventory_TabBtn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+
+	UIDesc.fX += UIDesc.fCX;
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_InvenBtn_UnClicked_Etc1"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_InvenBtn.push_back(dynamic_cast<CUI_Inventory_TabBtn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_InvenBtn_Clicked_Etc1"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_InvenClickedBtn.push_back(dynamic_cast<CUI_Inventory_TabBtn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+
+	UIDesc.fX += UIDesc.fCX;
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_InvenBtn_UnClicked_Etc2"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_InvenBtn.push_back(dynamic_cast<CUI_Inventory_TabBtn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_InvenBtn_Clicked_Etc2"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_InvenClickedBtn.push_back(dynamic_cast<CUI_Inventory_TabBtn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+
+
+	m_InvenSlots.reserve(CUI_Inventory_Slot::UI_INVENSLOT_TYPE::INVENSLOT_END);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 128.f * 0.5f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = UIDesc.fCX;
+	UIDesc.fY = 280.f;
+
+	fOffset = UIDesc.fCX + 8.f;
+
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Inventory_Slot_Necklace"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_InvenSlots.push_back(dynamic_cast<CUI_Inventory_Slot*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+	UIDesc.fX += fOffset;
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Inventory_Slot_Sword1"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_InvenSlots.push_back(dynamic_cast<CUI_Inventory_Slot*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+
+	UIDesc.fX = UIDesc.fCX;
+	UIDesc.fY = 280.f + fOffset;
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Inventory_Slot_Earring"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_InvenSlots.push_back(dynamic_cast<CUI_Inventory_Slot*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+	UIDesc.fX += fOffset;
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Inventory_Slot_Sword2"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_InvenSlots.push_back(dynamic_cast<CUI_Inventory_Slot*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+
+	UIDesc.fX = UIDesc.fCX;
+	UIDesc.fY = 280.f + (fOffset * 2.f);
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Inventory_Slot_Ring"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_InvenSlots.push_back(dynamic_cast<CUI_Inventory_Slot*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+	UIDesc.fX += fOffset;
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Inventory_Slot_Sword3"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_InvenSlots.push_back(dynamic_cast<CUI_Inventory_Slot*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+
+	UIDesc.fX = UIDesc.fCX;
+	UIDesc.fY = 280.f + (fOffset * 3.f);
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Inventory_Slot_Helmet"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_InvenSlots.push_back(dynamic_cast<CUI_Inventory_Slot*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+	UIDesc.fX += fOffset;
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Inventory_Slot_Armor"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_InvenSlots.push_back(dynamic_cast<CUI_Inventory_Slot*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+
+	UIDesc.fX = UIDesc.fCX;
+	UIDesc.fY = 280.f + (fOffset * 4.f);
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Inventory_Slot_Gloves"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_InvenSlots.push_back(dynamic_cast<CUI_Inventory_Slot*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+	UIDesc.fX += fOffset;
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Inventory_Slot_Boots"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_InvenSlots.push_back(dynamic_cast<CUI_Inventory_Slot*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+
+	UIDesc.fX = UIDesc.fCX;
+	UIDesc.fY = 280.f + (fOffset * 5.f);
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Inventory_Slot_Crystal1"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_InvenSlots.push_back(dynamic_cast<CUI_Inventory_Slot*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+	UIDesc.fX += fOffset;
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Inventory_Slot_Crystal2"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_InvenSlots.push_back(dynamic_cast<CUI_Inventory_Slot*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+
+#pragma endregion
+
+
 	return S_OK;
 }
 
@@ -2109,16 +2380,24 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 
 	if (KEY_TAP(KEY::L))
 	{
-		if (m_LevelUp[CUI_LevelUp::UILEVELUP_FRAME]->Get_Active())
-		{
-			for (auto& pUI : m_LevelUp)
-				pUI->Set_Active(false);
-		}
+//		if (m_LevelUp[CUI_LevelUp::UILEVELUP_FRAME]->Get_Active())
+//		{
+//			for (auto& pUI : m_LevelUp)
+//				pUI->Set_Active(false);
+//		}
+//		else
+//		{
+//			for (auto& pUI : m_LevelUp)
+//				pUI->Set_Active(true);
+//		}
+	}
+
+	if (KEY_TAP(KEY::I))
+	{
+		if (m_pInvenBox->Get_Active())
+			OnOff_Inventory(false);
 		else
-		{
-			for (auto& pUI : m_LevelUp)
-				pUI->Set_Active(true);
-		}
+			OnOff_Inventory(true);
 	}
 
 	if (KEY_TAP(KEY::W))
@@ -2137,29 +2416,29 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 			OnOff_MonsterHP(true, ELEMENTAL_TYPE::DARK); // ÀÓ½Ã
 	}
 
-	if (KEY_TAP(KEY::F8))
-	{
-		// DIalogBox Test
-		if (nullptr == m_pDialogWindow)
-			return E_FAIL;
-
-		if (m_pDialogWindow->Get_Active())
-			OnOff_DialogWindow(false, 0);
-		else
-			OnOff_DialogWindow(true, 0);
-	}
-
-	if (KEY_TAP(KEY::F7))
-	{
-		// DialogBox(Mini) Test
-		if (nullptr == m_pDialogMini)
-			return E_FAIL;
-
-		if (m_pDialogMini->Get_Active())
-			OnOff_DialogWindow(false, 1);
-		else
-			OnOff_DialogWindow(true, 1);
-	}
+//	if (KEY_TAP(KEY::F8))
+//	{
+//		// DIalogBox Test
+//		if (nullptr == m_pDialogWindow)
+//			return E_FAIL;
+//
+//		if (m_pDialogWindow->Get_Active())
+//			OnOff_DialogWindow(false, 0);
+//		else
+//			OnOff_DialogWindow(true, 0);
+//	}
+//
+//	if (KEY_TAP(KEY::F7))
+//	{
+//		// DialogBox(Mini) Test
+//		if (nullptr == m_pDialogMini)
+//			return E_FAIL;
+//
+//		if (m_pDialogMini->Get_Active())
+//			OnOff_DialogWindow(false, 1);
+//		else
+//			OnOff_DialogWindow(true, 1);
+//	}
 
 	return S_OK;
 }
@@ -2195,6 +2474,28 @@ void CUI_Manager::Update_CostumeBtnState(_uint iIndex)
 	}
 }
 
+void CUI_Manager::Update_InvenBtnState(_uint iIndex)
+{
+	m_InvenClickedBtn[iIndex]->Set_Active(true);
+
+	//if (iIndex == _uint(CUI_Inventory_TabBtn::UI_INVENTABBTN::INVEN_WEAPON))
+	{
+
+		for (_uint i = 0; i < CUI_Inventory_TabBtn::INVENTABBTN_END; ++i)
+		{
+			if (i == iIndex)
+				continue;
+
+			m_InvenClickedBtn[i]->Set_Active(false);
+		}
+		//m_InvenClickedBtn[CUI_Inventory_TabBtn::UI_INVENTABBTN::INVEN_ARMOR]->Set_Active(false);
+		//m_InvenClickedBtn[CUI_Inventory_TabBtn::UI_INVENTABBTN::INVEN_ACC]->Set_Active(false);
+		//m_InvenClickedBtn[CUI_Inventory_TabBtn::UI_INVENTABBTN::INVEN_CRYSTALBALL]->Set_Active(false);
+		//m_InvenClickedBtn[CUI_Inventory_TabBtn::UI_INVENTABBTN::INVEN_ETC1]->Set_Active(false);
+		//m_InvenClickedBtn[CUI_Inventory_TabBtn::UI_INVENTABBTN::INVEN_ETC2]->Set_Active(false);
+	}
+}
+
 HRESULT CUI_Manager::Using_CloseButton()
 {
 	if (nullptr != m_pMainBG)
@@ -2208,7 +2509,7 @@ HRESULT CUI_Manager::Using_CloseButton()
 		}
 	}
 
-	else if (nullptr != m_pSettingBG)
+	if (nullptr != m_pSettingBG)
 	{
 		if (m_pSettingBG->Get_Active())
 		{
@@ -2220,12 +2521,18 @@ HRESULT CUI_Manager::Using_CloseButton()
 		}
 	}
 
-	else if (nullptr != m_pCostumeBox)
+	if (nullptr != m_pCostumeBox)
 	{
 		if (m_pCostumeBox->Get_Active())
 		{
 			OnOff_CostumeWindow(false);
 		}
+	}
+
+	if (nullptr != m_pEmoticonWindow)
+	{
+		if (m_pEmoticonWindow->Get_Active())
+			OnOff_EmoticonWindow(false);
 	}
 
 	return S_OK;
@@ -2238,6 +2545,14 @@ HRESULT CUI_Manager::Using_BackButton()
 		if (m_pCostumeBox->Get_Active())
 		{
 			OnOff_CostumeWindow(false);
+		}
+	}
+
+	if (nullptr != m_pInvenBox)
+	{
+		if (m_pInvenBox->Get_Active())
+		{
+			OnOff_Inventory(false);
 		}
 	}
 
@@ -2872,6 +3187,104 @@ HRESULT CUI_Manager::OnOff_Announce(_int iMagicNum, _bool bOnOff)
 	return S_OK;
 }
 
+HRESULT CUI_Manager::OnOff_Inventory(_bool bOnOff)
+{
+	if (bOnOff)
+	{
+		if (!m_pDefaultBG->Get_Active())
+		{
+			OnOff_GamePlaySetting(false);
+			m_pDefaultBG->Set_Active(true);
+			m_pInvenBox->Set_Active(true);
+
+			for (auto& iter : m_InvenBtn)
+			{
+				if (nullptr != iter)
+					iter->Set_Active(true);
+			}
+
+			for (auto& iter : m_InvenSlots)
+			{
+				if (nullptr != iter)
+					iter->Set_Active(true);
+			}
+
+			m_pTabMenuTitle->Set_TextType(CUI_Text_TabMenu::UI_MENUTITLE::TITLE_INVEN);
+			m_pTabMenuTitle->Set_Active(true);
+		}
+	}
+	else
+	{
+		m_pTabMenuTitle->Set_Active(false);
+
+		for (auto& iter : m_InvenBtn)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_InvenClickedBtn)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_InvenSlots)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+
+		m_pInvenBox->Set_Active(false);
+		m_pDefaultBG->Set_Active(false);
+		OnOff_GamePlaySetting(true);
+	}
+
+	return S_OK;
+}
+
+HRESULT CUI_Manager::OnOff_EmoticonWindow(_bool bOnOff)
+{
+	if (nullptr == m_pEmoticonWindow)
+		return E_FAIL;
+
+	if (bOnOff)
+	{
+		if (!m_pEmoticonWindow->Get_Active())
+			m_pEmoticonWindow->Set_Active(true);
+	}
+	else
+	{
+		if (m_pEmoticonWindow->Get_Active())
+			m_pEmoticonWindow->Set_Active(false);
+	}
+
+	return S_OK;
+}
+
+HRESULT CUI_Manager::OnOff_EmoticonBalloon(_bool bOnOff)
+{
+	if (nullptr == m_pBalloon)
+		return E_FAIL;
+
+	if (bOnOff) // ÄÓ¶§
+	{
+		m_pBalloon->Set_Active(true);
+	}
+	else // ²ø¶§
+	{
+		m_pBalloon->Set_Alpha(true);
+	}
+
+	return S_OK;
+}
+
+void CUI_Manager::Set_EmoticonType(_uint iIndex)
+{
+	if (nullptr == m_pBalloon)
+		return;
+
+	m_pBalloon->Set_EmoticonType(iIndex);
+}
+
 HRESULT CUI_Manager::Save_UIData()
 {
 	return S_OK;
@@ -3434,6 +3847,128 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		CUI_Basic::Create(m_pDevice, m_pContext, L"UI_Monster_WorldHP_ArrowRight", CUI_Basic::TARGETARROW_RIGHT), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Emoticon_Window"),
+		CUI_Emoticon_Window::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Emoticon_SpeechBalloon"),
+		CUI_Emoticon_SpeechBalloon::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Emoticon_Btn_First"),
+		CUI_Emoticon_Button::Create(m_pDevice, m_pContext, CUI_Emoticon_Button::UI_EMOTICON_BTN::EMOTIONBTN_FIRST), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Emoticon_Btn_Second"),
+		CUI_Emoticon_Button::Create(m_pDevice, m_pContext, CUI_Emoticon_Button::UI_EMOTICON_BTN::EMOTIONBTN_SECOND), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Emoticon_Btn_Third"),
+		CUI_Emoticon_Button::Create(m_pDevice, m_pContext, CUI_Emoticon_Button::UI_EMOTICON_BTN::EMOTIONBTN_THIRD), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Emoticon_Btn_Fourth"),
+		CUI_Emoticon_Button::Create(m_pDevice, m_pContext, CUI_Emoticon_Button::UI_EMOTICON_BTN::EMOTIONBTN_FOURTH), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Emoticon_Btn_Fifth"),
+		CUI_Emoticon_Button::Create(m_pDevice, m_pContext, CUI_Emoticon_Button::UI_EMOTICON_BTN::EMOTIONBTN_FIFTH), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Emoticon_Btn_Sixth"),
+		CUI_Emoticon_Button::Create(m_pDevice, m_pContext, CUI_Emoticon_Button::UI_EMOTICON_BTN::EMOTIONBTN_SIXTH), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Emoticon_Btn_Seventh"),
+		CUI_Emoticon_Button::Create(m_pDevice, m_pContext, CUI_Emoticon_Button::UI_EMOTICON_BTN::EMOTIONBTN_SEVENTH), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Emoticon_Btn_Eighth"),
+		CUI_Emoticon_Button::Create(m_pDevice, m_pContext, CUI_Emoticon_Button::UI_EMOTICON_BTN::EMOTIONBTN_EIGHTH), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Emoticon_BallonEmoticon"),
+		CUI_Emoticon_BalloonEmoticon::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Inventory_LineBox"),
+		CUI_Inventory_LineBox::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_InvenBtn_UnClicked_Weapon"),
+		CUI_Inventory_TabBtn::Create(m_pDevice, m_pContext,
+			CUI_Inventory_TabBtn::UI_INVENBTN_TYPE::INVENBTN_UNCLICKED, CUI_Inventory_TabBtn::UI_INVENTABBTN::INVEN_WEAPON), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_InvenBtn_UnClicked_Armor"),
+		CUI_Inventory_TabBtn::Create(m_pDevice, m_pContext,
+			CUI_Inventory_TabBtn::UI_INVENBTN_TYPE::INVENBTN_UNCLICKED, CUI_Inventory_TabBtn::UI_INVENTABBTN::INVEN_ARMOR), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_InvenBtn_UnClicked_Acc"),
+		CUI_Inventory_TabBtn::Create(m_pDevice, m_pContext,
+			CUI_Inventory_TabBtn::UI_INVENBTN_TYPE::INVENBTN_UNCLICKED, CUI_Inventory_TabBtn::UI_INVENTABBTN::INVEN_ACC), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_InvenBtn_UnClicked_CrystalBall"),
+		CUI_Inventory_TabBtn::Create(m_pDevice, m_pContext,
+			CUI_Inventory_TabBtn::UI_INVENBTN_TYPE::INVENBTN_UNCLICKED, CUI_Inventory_TabBtn::UI_INVENTABBTN::INVEN_CRYSTALBALL), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_InvenBtn_UnClicked_Etc1"),
+		CUI_Inventory_TabBtn::Create(m_pDevice, m_pContext,
+			CUI_Inventory_TabBtn::UI_INVENBTN_TYPE::INVENBTN_UNCLICKED, CUI_Inventory_TabBtn::UI_INVENTABBTN::INVEN_ETC1), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_InvenBtn_UnClicked_Etc2"),
+		CUI_Inventory_TabBtn::Create(m_pDevice, m_pContext,
+			CUI_Inventory_TabBtn::UI_INVENBTN_TYPE::INVENBTN_UNCLICKED, CUI_Inventory_TabBtn::UI_INVENTABBTN::INVEN_ETC2), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_InvenBtn_Clicked_Weapon"),
+		CUI_Inventory_TabBtn::Create(m_pDevice, m_pContext,
+			CUI_Inventory_TabBtn::UI_INVENBTN_TYPE::INVENBTN_CLICKED, CUI_Inventory_TabBtn::UI_INVENTABBTN::INVEN_WEAPON), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_InvenBtn_Clicked_Armor"),
+		CUI_Inventory_TabBtn::Create(m_pDevice, m_pContext,
+			CUI_Inventory_TabBtn::UI_INVENBTN_TYPE::INVENBTN_CLICKED, CUI_Inventory_TabBtn::UI_INVENTABBTN::INVEN_ARMOR), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_InvenBtn_Clicked_Acc"),
+		CUI_Inventory_TabBtn::Create(m_pDevice, m_pContext,
+			CUI_Inventory_TabBtn::UI_INVENBTN_TYPE::INVENBTN_CLICKED, CUI_Inventory_TabBtn::UI_INVENTABBTN::INVEN_ACC), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_InvenBtn_Clicked_CrystalBall"),
+		CUI_Inventory_TabBtn::Create(m_pDevice, m_pContext,
+			CUI_Inventory_TabBtn::UI_INVENBTN_TYPE::INVENBTN_CLICKED, CUI_Inventory_TabBtn::UI_INVENTABBTN::INVEN_CRYSTALBALL), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_InvenBtn_Clicked_Etc1"),
+		CUI_Inventory_TabBtn::Create(m_pDevice, m_pContext,
+			CUI_Inventory_TabBtn::UI_INVENBTN_TYPE::INVENBTN_CLICKED, CUI_Inventory_TabBtn::UI_INVENTABBTN::INVEN_ETC1), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_InvenBtn_Clicked_Etc2"),
+		CUI_Inventory_TabBtn::Create(m_pDevice, m_pContext,
+			CUI_Inventory_TabBtn::UI_INVENBTN_TYPE::INVENBTN_CLICKED, CUI_Inventory_TabBtn::UI_INVENTABBTN::INVEN_ETC2), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Inventory_Slot_Necklace"),
+		CUI_Inventory_Slot::Create(m_pDevice, m_pContext, CUI_Inventory_Slot::UI_INVENSLOT_TYPE::INVENSLOT_NECKLACE), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Inventory_Slot_Sword1"),
+		CUI_Inventory_Slot::Create(m_pDevice, m_pContext, CUI_Inventory_Slot::UI_INVENSLOT_TYPE::INVENSLOT_SWORD1), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Inventory_Slot_Earring"),
+		CUI_Inventory_Slot::Create(m_pDevice, m_pContext, CUI_Inventory_Slot::UI_INVENSLOT_TYPE::INVENSLOT_EARRING), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Inventory_Slot_Sword2"),
+		CUI_Inventory_Slot::Create(m_pDevice, m_pContext, CUI_Inventory_Slot::UI_INVENSLOT_TYPE::INVENSLOT_SWORD2), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Inventory_Slot_Ring"),
+		CUI_Inventory_Slot::Create(m_pDevice, m_pContext, CUI_Inventory_Slot::UI_INVENSLOT_TYPE::INVENSLOT_RING), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Inventory_Slot_Sword3"),
+		CUI_Inventory_Slot::Create(m_pDevice, m_pContext, CUI_Inventory_Slot::UI_INVENSLOT_TYPE::INVENSLOT_SWORD3), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Inventory_Slot_Helmet"),
+		CUI_Inventory_Slot::Create(m_pDevice, m_pContext, CUI_Inventory_Slot::UI_INVENSLOT_TYPE::INVENSLOT_HELMET), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Inventory_Slot_Armor"),
+		CUI_Inventory_Slot::Create(m_pDevice, m_pContext, CUI_Inventory_Slot::UI_INVENSLOT_TYPE::INVENSLOT_ARMOR), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Inventory_Slot_Gloves"),
+		CUI_Inventory_Slot::Create(m_pDevice, m_pContext, CUI_Inventory_Slot::UI_INVENSLOT_TYPE::INVENSLOT_GLOVES), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Inventory_Slot_Boots"),
+		CUI_Inventory_Slot::Create(m_pDevice, m_pContext, CUI_Inventory_Slot::UI_INVENSLOT_TYPE::INVENSLOT_BOOTS), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Inventory_Slot_Crystal1"),
+		CUI_Inventory_Slot::Create(m_pDevice, m_pContext, CUI_Inventory_Slot::UI_INVENSLOT_TYPE::INVENSLOT_LOCK_CRYSTAL1), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Inventory_Slot_Crystal2"),
+		CUI_Inventory_Slot::Create(m_pDevice, m_pContext, CUI_Inventory_Slot::UI_INVENSLOT_TYPE::INVENSLOT_LOCK_CRYSTAL2), LAYER_UI)))
+		return E_FAIL;
+
 
 	return S_OK;
 }
@@ -3615,7 +4150,6 @@ HRESULT CUI_Manager::Ready_UILobbyPrototypes()
 		CUI_Default_BackCloud::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
-
 	return S_OK;
 }
 
@@ -3663,6 +4197,11 @@ void CUI_Manager::Free()
 
 	Safe_Release(m_pCostumeBox);
 	Safe_Release(m_pCameraAnnounce);
+
+	Safe_Release(m_pEmoticonWindow);
+	Safe_Release(m_pBalloon);
+
+	Safe_Release(m_pInvenBox);
 
 	for (auto& pBasic : m_Basic)
 		Safe_Release(pBasic);
@@ -3751,6 +4290,18 @@ void CUI_Manager::Free()
 	for (auto& pFrame : m_SpecialFrame)
 		Safe_Release(pFrame);
 	m_SpecialFrame.clear();
+
+	for (auto& pBtn : m_InvenBtn)
+		Safe_Release(pBtn);
+	m_InvenBtn.clear();
+
+	for (auto& pBtn : m_InvenClickedBtn)
+		Safe_Release(pBtn);
+	m_InvenClickedBtn.clear();
+
+	for (auto& pSlot : m_InvenSlots)
+		Safe_Release(pSlot);
+	m_InvenSlots.clear();
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

@@ -2,6 +2,7 @@
 #include "UI_ImajinnSection_Emoticon.h"
 #include "GameInstance.h"
 #include "UI_Manager.h"
+#include "UI_Emoticon_Window.h"
 
 CUI_ImajinnSection_Emoticon::CUI_ImajinnSection_Emoticon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_ImajinnSection_Emoticon")
@@ -33,7 +34,14 @@ HRESULT CUI_ImajinnSection_Emoticon::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_bActive = true;
-	
+
+//	CGameObject* pEmoticonWindow = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_UI, TEXT("UI_Emoticon_Window"));
+//	if (nullptr != pEmoticonWindow)
+//		m_pEmoticonWindow = dynamic_cast<CUI_Emoticon_Window*>(pEmoticonWindow);
+//		return E_FAIL;
+//
+//	m_pEmoticonWindow = dynamic_cast<CUI_Emoticon_Window*>(pEmoticonWindow);
+
 	return S_OK;
 }
 
@@ -41,6 +49,19 @@ void CUI_ImajinnSection_Emoticon::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (nullptr == m_pEmoticonWindow)
+		{
+			CGameObject* pEmoticonWindow = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_UI, TEXT("UI_Emoticon_Window"));
+			if (nullptr == pEmoticonWindow)
+				return;
+
+			m_pEmoticonWindow = dynamic_cast<CUI_Emoticon_Window*>(pEmoticonWindow);
+		}
+
+		if (!m_pEmoticonWindow->Get_Active())
+			if (m_iTextureIndex == 1)
+				m_iTextureIndex = 0;
+
 		__super::Tick(fTimeDelta);
 	}
 }
@@ -120,7 +141,7 @@ HRESULT CUI_ImajinnSection_Emoticon::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_fAlpha, sizeof(_float))))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture")))
+	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextureIndex)))
 		return E_FAIL;
 
 	return S_OK;
@@ -130,7 +151,17 @@ void CUI_ImajinnSection_Emoticon::Key_Input(_float fTimeDelta)
 {
 	if (KEY_TAP(KEY::LBTN))
 	{
-		// 사용할 수 있는 이모티콘이 담긴 PopUp이 뜬다.
+		if (m_iTextureIndex == 0)
+		{
+			CUI_Manager::GetInstance()->OnOff_EmoticonWindow(true);
+			m_iTextureIndex = 1;
+		}
+		else if (m_iTextureIndex == 1)
+		{
+			CUI_Manager::GetInstance()->OnOff_EmoticonWindow(false);
+			m_iTextureIndex = 0;
+		}
+
 	}
 }
 

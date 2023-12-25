@@ -35,8 +35,11 @@ public:
 
 	_bool Get_Active() { return m_bActive; }
 	virtual void Set_Active(_bool bActive) { m_bActive = bActive; }
+	virtual void Set_ChildAlpha(float fAlpha) { m_fAlpha = fAlpha; } // 구분을 위해서 Child를 붙임
+	virtual void Set_ParentsAlpha(_float fAlpha); // 자식에게 부모의 Alpha값을 입힌다.
 
 	void Set_ChildActive(_bool bActive);
+	void Set_ChildPosition(_float3 vPosition);
 
 	_float2 Get_ProjectionPosition(CTransform* pTransfrom);
 

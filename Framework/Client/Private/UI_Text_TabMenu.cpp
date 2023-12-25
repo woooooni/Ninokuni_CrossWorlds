@@ -36,6 +36,14 @@ void CUI_Text_TabMenu::Set_TextType(UI_MENUTITLE eType)
 		m_bShowChild = true;
 		break;
 
+	case TITLE_INVEN:
+		m_tInfo.fCX = 200.f * 0.7f;
+		m_tInfo.fCY = 93.f * 0.7f;
+		m_tInfo.fX = m_tInfo.fCX * 0.5f + vOffset.x - 30.f;
+		m_tInfo.fY = m_tInfo.fCY * 0.5f + vOffset.y;
+		m_bShowChild = false;
+		break;
+
 	default:
 		break;
 	}

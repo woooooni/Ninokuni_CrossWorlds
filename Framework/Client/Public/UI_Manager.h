@@ -40,6 +40,7 @@ public:
 public:
 	void Update_LobbyBtnState(_uint iIndex);
 	void Update_CostumeBtnState(_uint iIndex);
+	void Update_InvenBtnState(_uint iIndex);
 
 public:
 	HRESULT Using_CloseButton();
@@ -65,6 +66,11 @@ public:
 	HRESULT OnOff_CostumeWindow(_bool bOnOff); // ÄÚ½ºÆ¬ ÅÇ Window ºñ/È°¼ºÈ­
 	HRESULT OnOff_CostumeSlot(_bool bOnOff);
 	HRESULT OnOff_Announce(_int iMagicNum, _bool bOnOff);
+	HRESULT OnOff_Inventory(_bool bOnOff); // °¡¹æ ÅÇ WIndow ºñ/È°¼ºÈ­
+
+	HRESULT OnOff_EmoticonWindow(_bool bOnOff);
+	HRESULT OnOff_EmoticonBalloon(_bool bOnOff);
+	void Set_EmoticonType(_uint iIndex);
 
 public: // For UI Tool
 	HRESULT Save_UIData();
@@ -113,6 +119,9 @@ private:
 
 	class CUI_Announced* m_pCameraAnnounce = { nullptr };
 
+	class CUI_Emoticon_Window* m_pEmoticonWindow = { nullptr };
+	class CUI_Emoticon_SpeechBalloon* m_pBalloon = { nullptr };
+
 private:
 	vector<class CUI_Basic*> m_Basic;
 	vector<class CUI_BasicButton*> m_Buttons;
@@ -145,6 +154,11 @@ private:
 	vector<class CUI_Costume_Btn*> m_CostumeClickedBtn;
 	class CUI_Costume_LineBox* m_pCostumeBox = { nullptr };
 	vector<class CUI_Costume_ItemSlot*> m_CostumeItem;
+	// For Inven
+	class CUI_Inventory_LineBox* m_pInvenBox = { nullptr };
+	vector<class CUI_Inventory_TabBtn*> m_InvenBtn;
+	vector<class CUI_Inventory_TabBtn*> m_InvenClickedBtn;
+	vector<class CUI_Inventory_Slot*> m_InvenSlots;
 
 private:
 	ID3D11Device* m_pDevice = { nullptr };
