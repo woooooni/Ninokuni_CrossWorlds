@@ -12,6 +12,7 @@
 #include <filesystem>
 //#include "ImGuizmo.h"
 #include "PipeLine.h"
+#include "Camera_Manager.h"
 
 CTool_Map::CTool_Map(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CTool(pDevice, pContext)
@@ -1012,7 +1013,8 @@ HRESULT CTool_Map::Save_Map_Data(const wstring& strMapFileName)
 			|| i == LAYER_TYPE::LAYER_PROJECTILE
 			|| i == LAYER_TYPE::LAYER_EFFECT
 			|| i == LAYER_TYPE::LAYER_TRAIL
-			|| i == LAYER_TYPE::LAYER_NPC)
+			|| i == LAYER_TYPE::LAYER_NPC
+			|| i == LAYER_TYPE::LAYER_CHARACTER)
 			continue;
 
 
@@ -1069,6 +1071,8 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
 	File->Open(strMapFilePath, FileMode::Read);
 	
+	GI->Clear_PhysX_Ground();
+
 	for (_uint i = 0; i < LAYER_TYPE::LAYER_END; ++i)
 	{
 		if (i == LAYER_TYPE::LAYER_CAMERA
@@ -1083,10 +1087,12 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 			|| i == LAYER_TYPE::LAYER_TRAIL
 			|| i == LAYER_TYPE::LAYER_NPC
 			|| i == LAYER_TYPE::LAYER_WEAPON
-			|| i == LAYER_TYPE::LAYER_MONSTER)
+			|| i == LAYER_TYPE::LAYER_MONSTER
+			|| i == LAYER_TYPE::LAYER_CHARACTER)
 			continue;
 
 		GI->Clear_Layer(LEVEL_TOOL, i);
+
 
 		{
 			_uint iObjectCount = File->Read<_uint>();
@@ -1100,7 +1106,7 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 				CGameObject* pObj = nullptr;
 				if (FAILED(GI->Add_GameObject(LEVEL_TOOL, i, strPrototypeTag, nullptr, &pObj)))
 				{
-					MSG_BOX("Load_Objects_Failed.");
+					MSG_BOX("Load_Map_Objects_Failed.");
 					return E_FAIL;
 				}
 
@@ -1132,7 +1138,48 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 				pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
 			}
 		}
+
+
 	}
+
+	list<CGameObject*> Grounds = GI->Find_GameObjects(LEVEL_TOOL, LAYER_TYPE::LAYER_GROUND);
+	for (auto& Ground : Grounds)
+	{
+		if (FAILED(GI->Add_Ground(Ground,
+			Ground->Get_Component<CModel>(L"Com_Model"),
+			Ground->Get_Component<CTransform>(L"Com_Transform")->Get_WorldMatrix())))
+		{
+			MSG_BOX("맵툴에서 피직스 생성에 실패했습니다.");
+		}
+	}
+
+	static _float fCreatePos[3] = { -10.f, 50.f, 0.f };
+	static _bool bCharacter = false;
+
+	if (false == bCharacter)
+	{
+		bCharacter = true;
+
+		CGameObject* pCharacter = nullptr;
+
+		if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Character_SwordMan"), nullptr, &pCharacter)))
+		{
+			MSG_BOX("맵툴에서 플레이어 로드를 실패했습니다.");
+			return E_FAIL;
+		}
+
+		if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))
+		{
+			CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_TargetObj(pCharacter);
+			CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_LookAtObj(pCharacter);
+
+			Vec3 vPos;
+			memcpy(&vPos, fCreatePos, sizeof(Vec3));
+			pCharacter->Get_Component<CTransform>(L"Com_Transform")->Set_State(CTransform::STATE_POSITION, vPos);
+		}
+
+	}
+
 	MSG_BOX("Map_Loaded.");
 	return S_OK;
 

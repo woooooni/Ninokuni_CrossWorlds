@@ -113,9 +113,9 @@ void CGameInstance::Tick(_float fTimeDelta)
 	m_pInput_Device->Update();
 	m_pKey_Manager->Tick(fTimeDelta);
 	m_pObject_Manager->Priority_Tick(fTimeDelta);
+	m_pLevel_Manager->Tick(fTimeDelta);
 	m_pObject_Manager->Tick(fTimeDelta);
 	m_pPhysXManager->Tick(fTimeDelta);
-	m_pLevel_Manager->Tick(fTimeDelta);
 	
   	m_pPipeLine->Tick();
 	m_pFrustum->Tick();

@@ -61,22 +61,22 @@ void CCamera_Free::Move(_float fTimeDelta)
 {
 	if (GI->Mouse_Pressing(DIMK_WHEEL))
 	{
-		if (KEY_HOLD(KEY::W))
+		if (KEY_HOLD(KEY::UP_ARROW))
 		{
 			m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fMoveSpeed, fTimeDelta);
 		}
 
-		if (KEY_HOLD(KEY::S))
+		if (KEY_HOLD(KEY::DOWN_ARROW))
 		{
 			m_pTransformCom->Move(m_pTransformCom->Get_Look(), -m_fMoveSpeed, fTimeDelta);
 		}
 
-		if (KEY_HOLD(KEY::A))
+		if (KEY_HOLD(KEY::LEFT_ARROW))
 		{
 			m_pTransformCom->Move(m_pTransformCom->Get_Right(), -m_fMoveSpeed, fTimeDelta);
 		}
 
-		if (KEY_HOLD(KEY::D))
+		if (KEY_HOLD(KEY::RIGHT_ARROW))
 		{
 			m_pTransformCom->Move(m_pTransformCom->Get_Right(), m_fMoveSpeed, fTimeDelta);
 		}
