@@ -1180,7 +1180,7 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 
 	}
 
-	MSG_BOX("Map_Loaded.");
+	// MSG_BOX("Map_Loaded.");
 	return S_OK;
 
 }

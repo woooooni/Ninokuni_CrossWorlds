@@ -581,7 +581,7 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 	}
 
  	const list<CGameObject*>& Objects = GI->Find_GameObjects(m_eNextLevel, LAYER_TYPE::LAYER_GROUND);
-	MSG_BOX("Map_Loaded.");
+	//MSG_BOX("Map_Loaded.");
 	return S_OK;
 
 }

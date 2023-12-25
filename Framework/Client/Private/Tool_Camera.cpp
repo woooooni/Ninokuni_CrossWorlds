@@ -228,7 +228,7 @@ void CTool_Camera::Show_Select_Camera()
 void CTool_Camera::Show_Camera_Prop_Free(CCamera* pCurCam)
 {
 	IMGUI_NEW_LINE;
-	ImGui::Text("카메라 옵션 변경");
+	ImGui::Text("Free Camera Option");
 
 	if (ImGui::BeginChild("Free Camera Option", ImVec2(0, 300.f), true))
 	{
@@ -261,7 +261,7 @@ void CTool_Camera::Show_Camera_Prop_Free(CCamera* pCurCam)
 void CTool_Camera::Show_Camera_Prop_Follow(CCamera* pCurCam)
 {
 	IMGUI_NEW_LINE;
-	ImGui::Text("카메라 옵션 변경");
+	ImGui::Text("Follow Camera Option");
 
 	if (ImGui::BeginChild("Follow Camera Option", ImVec2(0, 700.f), true))
 	{
@@ -375,6 +375,23 @@ void CTool_Camera::Show_Camera_Prop_Follow(CCamera* pCurCam)
 					}
 				}
 
+
+				/* 회전 */
+				{
+					/* Max Y */
+					_float fMaxRotDeltaY = pFollowCam->Get_MaxRotationLimitDeltaY();
+					if (ImGui::DragFloat(u8"Y축 회전 델타 최댓값 ", &fMaxRotDeltaY, 0.01f, -1.f, 1.f))
+					{
+						pFollowCam->Set_MaxRotationLimitDeltaY(fMaxRotDeltaY);
+					}
+
+					/* Min Y */
+					_float fMinRotDeltaY = pFollowCam->Get_MinRotationLimitDeltaY();
+					if (ImGui::DragFloat(u8"Y축 회전 델타 최솟값 ", &fMinRotDeltaY, 0.01f, -1.f, 1.f))
+					{
+						pFollowCam->Set_MinRotationLimitDeltaY(fMinRotDeltaY);
+					}
+				}
 
 				
 

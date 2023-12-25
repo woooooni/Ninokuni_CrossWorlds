@@ -38,6 +38,7 @@ void CCamera::Tick(_float fTimeDelta)
 		return;
 
 	Tick_Lerp(fTimeDelta);
+	Tick_Shake(fTimeDelta);
 }
 
 void CCamera::LateTick(_float fTimeDelta)
@@ -74,12 +75,22 @@ void CCamera::Start_Lerp_Distance(const _float& fTargetValue, const _float& fTim
 	m_tLerpDist.Start(m_tLerpDist.fCurValue, fTargetValue, fTime, eMode);
 }
 
-//void CCamera::Set_Transform_To_Pipeline()
-//{
-//	GI->Set_Transform(CPipeLine::D3DTS_VIEW, m_pTransformCom->Get_WorldMatrixInverse());
-//
-//	GI->Set_Transform(CPipeLine::D3DTS_PROJ, XMMatrixPerspectiveFovLH(m_tProjDesc.tLerpFov.fCurValue, m_tProjDesc.fAspect, m_tProjDesc.fNear, m_tProjDesc.fFar));
-//}
+void CCamera::Start_Shake(const _float& fAmplitude, const _float& fFrequency, const _float& fDuration)
+{
+	m_tShakeDesc.bActive = true;
+
+	m_tShakeDesc.fAmplitude = fAmplitude;
+	m_tShakeDesc.fFrequency = fFrequency;
+	m_tShakeDesc.fDuration = fDuration;
+
+	m_tShakeDesc.fFreqDelta = m_tShakeDesc.fDuration / m_tShakeDesc.fFrequency;
+
+	const _uint iRand = rand() % MAX_UNIT_RAND;
+
+	const Vec3 vTargetPos = { v2UnitRand[iRand].x, v2UnitRand[iRand].y, 0.f };
+
+	m_tShakeDesc.tLerpShakeUnitPos.Start(Vec3::Zero, vTargetPos, m_tShakeDesc.fFreqDelta, LERP_MODE::SMOOTHER_STEP);
+}
 
 void CCamera::Tick_Lerp(const _float fDeltaTime)
 {
@@ -91,6 +102,43 @@ void CCamera::Tick_Lerp(const _float fDeltaTime)
 	if (m_tLerpDist.bActive)
 	{
 		m_tLerpDist.Update(fDeltaTime);
+	}
+}
+
+void CCamera::Tick_Shake(const _float fDeltaTime)
+{
+	if (m_tShakeDesc.bActive)
+	{
+		m_tShakeDesc.fAccDuration += fDeltaTime;
+		m_tShakeDesc.fAccFrequency += fDeltaTime;
+
+		/* 최종 종료 체크 */
+		if (m_tShakeDesc.fDuration <= m_tShakeDesc.fAccDuration)
+		{
+			/* 바로 뚝 끝나는게 아니라 보간 필요 */
+
+			/* 블렌드 인 아웃 타임 적용 가능 */
+			m_tShakeDesc.Clear();
+			return;
+		}
+
+		/* 목표 위치 갱신 */
+		if (m_tShakeDesc.fFreqDelta <= m_tShakeDesc.fAccFrequency)
+		{
+			m_tShakeDesc.fAccFrequency -= m_tShakeDesc.fFreqDelta;
+
+			const Vec3 vStartPos = m_tShakeDesc.tLerpShakeUnitPos.vCurVec;
+
+			const _uint iRand = rand() % MAX_UNIT_RAND;
+
+			const Vec3 vTargetPos = { v2UnitRand[iRand].x, v2UnitRand[iRand].y, 0.f };
+
+			m_tShakeDesc.tLerpShakeUnitPos.Start(vStartPos, vTargetPos, m_tShakeDesc.fFreqDelta, LERP_MODE::SMOOTHER_STEP);
+		}
+		else /* 위치 보간 */
+		{
+			m_tShakeDesc.tLerpShakeUnitPos.Update_Lerp(fDeltaTime);
+		}
 	}
 }
 

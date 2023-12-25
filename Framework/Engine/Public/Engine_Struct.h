@@ -517,6 +517,7 @@ namespace Engine
 			if (fCurTime >= fEndTime)
 			{
 				vCurVec = vTargetVec;
+				bActive = FALSE;
 				return vCurVec;
 			}
 
@@ -570,6 +571,7 @@ namespace Engine
 			if (fCurTime >= fEndTime)
 			{
 				vCurVec = vTargetVec;
+				bActive = FALSE;
 				return vCurVec;
 			}
 
