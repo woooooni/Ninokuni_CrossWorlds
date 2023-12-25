@@ -494,7 +494,6 @@ HRESULT CLoader::Load_Navi_Data(const wstring& strNaviFileName)
 
 	return S_OK;
 }
-
 HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 {
 	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strMapFileName + L"/" + strMapFileName + L".map";
@@ -520,7 +519,6 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 			|| i == LAYER_TYPE::LAYER_WEAPON
 			|| i == LAYER_TYPE::LAYER_MONSTER
 			|| i == LAYER_TYPE::LAYER_CHARACTER)
-
 			continue;
 
 		GI->Clear_Layer(m_eNextLevel, i);
@@ -568,10 +566,10 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 				pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
 			}
 		}
+
+
 	}
 
- 	const list<CGameObject*>& Objects = GI->Find_GameObjects(m_eNextLevel, LAYER_TYPE::LAYER_GROUND);
-	//MSG_BOX("Map_Loaded.");
 	return S_OK;
 
 }

@@ -137,4 +137,5 @@ CGameObject* CCat::Clone(void* pArg)
 void CCat::Free()
 {
 	__super::Free();
+
 }

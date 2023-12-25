@@ -220,14 +220,14 @@ HRESULT CRenderer::Draw()
 		return E_FAIL;
 	if (FAILED(Render_Blur(L"Target_Effect_Brightness_01", L"MRT_Effect_Blur", true, 1)))
 		return E_FAIL;
-	if (FAILED(Render_Blur(L"Target_Effect_Brightness_02", L"MRT_Effect_Blur", false, 2)))
-		return E_FAIL;
-	if (FAILED(Render_Blur(L"Target_Effect_Brightness_03", L"MRT_Effect_Blur", false, 3)))
-		return E_FAIL;
-	if (FAILED(Render_Blur(L"Target_Effect_Brightness_04", L"MRT_Effect_Blur", false, 4)))
-		return E_FAIL;
-	if (FAILED(Render_Blur(L"Target_Effect_Brightness_05", L"MRT_Effect_Blur", false, 5)))
-		return E_FAIL;
+	//if (FAILED(Render_Blur(L"Target_Effect_Brightness_02", L"MRT_Effect_Blur", false, 2)))
+	//	return E_FAIL;
+	//if (FAILED(Render_Blur(L"Target_Effect_Brightness_03", L"MRT_Effect_Blur", false, 3)))
+	//	return E_FAIL;
+	//if (FAILED(Render_Blur(L"Target_Effect_Brightness_04", L"MRT_Effect_Blur", false, 4)))
+	//	return E_FAIL;
+	//if (FAILED(Render_Blur(L"Target_Effect_Brightness_05", L"MRT_Effect_Blur", false, 5)))
+	//	return E_FAIL;
 
 	if (FAILED(Render_UI()))
 		return E_FAIL;
