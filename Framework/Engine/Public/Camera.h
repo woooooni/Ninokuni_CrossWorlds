@@ -193,7 +193,7 @@ public:
 	/* Shake */
 	void Start_Shake(const _float& fAmplitude, const _float& fFrequency, const _float& fDuration);
 	const _bool& Is_Shake() const { return m_tShakeDesc.bActive; }
-	Vec3 Get_ShakeLocalPos() const { return m_tShakeDesc.tLerpShakeUnitPos.vCurVec; }
+	Vec3 Get_ShakeLocalPos() { return m_tShakeDesc.Get_ShakeLocalPos(); }
 
 private:
 	void Tick_Lerp(const _float fDeltaTime);

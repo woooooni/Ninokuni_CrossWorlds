@@ -52,28 +52,33 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 		return;
 
 	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, Calculate_WorldPosition(fTimeDelta));
+	
+	
+	Vec4 vLookAtPos = Calculate_Look(fTimeDelta);
+
 	m_pTransformCom->LookAt(Calculate_Look(fTimeDelta));
 
 	__super::Tick(fTimeDelta); /* Shake, Fov, Dist */
 
-	/*static Vec4 vOrigin;
+	
 	if (Is_Shake())
 	{
-		Vec4 vPos = vOrigin;
-
+	
+		cout << "Origin Look : " << vLookAtPos.x << "\t" << vLookAtPos.y << "\t" << vLookAtPos.z << endl;
 		Vec3 vShakeLocalPos = Get_ShakeLocalPos();
-		vPos.x += vShakeLocalPos.x;
-		vPos.y += vShakeLocalPos.y;
-		vPos.z += vShakeLocalPos.z;
+		vLookAtPos.x += vShakeLocalPos.x;
+		vLookAtPos.y += vShakeLocalPos.y;
+		vLookAtPos.z += vShakeLocalPos.z;
 
-		m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vPos);
+		cout << "Shake Local Look : " << vShakeLocalPos.x << "\t" << vShakeLocalPos.y << "\t" << vShakeLocalPos.z << endl << endl;
+
+		m_pTransformCom->LookAt(vLookAtPos);
 	}
 
 	if (KEY_TAP(KEY::H))
 	{
-		vOrigin = m_pTransformCom->Get_Position();;
-		Start_Shake(0.01f, 15.f, 0.5f);
-	}*/
+		Start_Shake(0.1f, 10.f, 0.5f);
+	}
 }
 
 void CCamera_Follow::LateTick(_float fTimeDelta)
