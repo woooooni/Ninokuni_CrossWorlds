@@ -1,15 +1,15 @@
 
 #include "Engine_Shader_Defines.hpp"
 
-matrix			g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
-texture2D		g_DiffuseTexture;
-Texture2D	    g_AlphaTexture;
+matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
+texture2D	g_DiffuseTexture;
+Texture2D	g_AlphaTexture;
 
-vector			g_vCamPosition;
+vector		g_vCamPosition;
 
-bool            g_bBillboard;
-float           g_fAlpha_Discard;
-float3          g_fBlack_Discard;
+bool        g_bBillboard;
+float       g_fAlpha_Discard;
+float3      g_fBlack_Discard;
 
 struct EffectDesc //16 배수로 나눠떨어져야함.
 {
@@ -172,23 +172,70 @@ struct PS_IN
 
 struct PS_OUT
 {
-	float4	vDiffuse : SV_TARGET0;
-	float4	vBrightness : SV_TARGET1; // 블룸 색상 및 블러 파워
+	float4 vDiffuse       : SV_TARGET0;
+	float4 vBloom         : SV_TARGET1;
+
+	float4 vBrightness_01 : SV_TARGET2;
+	float4 vBrightness_02 : SV_TARGET3;
+	float4 vBrightness_03 : SV_TARGET4;
+	float4 vBrightness_04 : SV_TARGET5;
+	float4 vBrightness_05 : SV_TARGET6;
 };
 
 PS_OUT PS_MAIN(PS_IN In)
 {
-	PS_OUT			Out = (PS_OUT)0;
+	PS_OUT Out = (PS_OUT)0;
 
 	Out.vDiffuse   = g_DiffuseTexture.Sample(LinearSampler, In.vTexcoord);
 	if (Out.vDiffuse.a < g_fAlpha_Discard ||
 		Out.vDiffuse.r < g_fBlack_Discard.r && Out.vDiffuse.g < g_fBlack_Discard.g && Out.vDiffuse.b < g_fBlack_Discard.b)
 		discard;
 
-	Out.vDiffuse.rgb = saturate((Out.vDiffuse.rgb + g_EffectDesc[In.iInstanceID].g_fColor.rgb));
-	Out.vDiffuse.a   = saturate(Out.vDiffuse.a - g_EffectDesc[In.iInstanceID].g_fAlpha);
+	Out.vDiffuse.rgb   = saturate((Out.vDiffuse.rgb + g_EffectDesc[In.iInstanceID].g_fColor.rgb));
+	Out.vDiffuse.a     = saturate(Out.vDiffuse.a - g_EffectDesc[In.iInstanceID].g_fAlpha);
 
-	Out.vBrightness  = float4(g_EffectDesc[In.iInstanceID].g_fColor.rgb, g_EffectDesc[In.iInstanceID].g_fBlurPower);
+	Out.vBloom = float4(1.f, 1.f, 1.f, 1.f);
+
+	if (g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.2f)
+	{
+		Out.vBrightness_01 = float4(g_EffectDesc[In.iInstanceID].g_fColor.rgb, 1.f);
+		Out.vBrightness_02 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_03 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_04 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_05 = float4(0.f, 0.f, 0.f, 0.f);
+	}
+	else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.2f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.4f)
+	{
+		Out.vBrightness_01 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_02 = float4(g_EffectDesc[In.iInstanceID].g_fColor.rgb, 1.f);
+		Out.vBrightness_03 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_04 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_05 = float4(0.f, 0.f, 0.f, 0.f);
+	}
+	else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.4f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.6f)
+	{
+		Out.vBrightness_01 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_02 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_03 = float4(g_EffectDesc[In.iInstanceID].g_fColor.rgb, 1.f);
+		Out.vBrightness_04 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_05 = float4(0.f, 0.f, 0.f, 0.f);
+	}
+	else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.6f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.8f)
+	{
+		Out.vBrightness_01 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_02 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_03 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_04 = float4(g_EffectDesc[In.iInstanceID].g_fColor.rgb, 1.f);
+		Out.vBrightness_05 = float4(0.f, 0.f, 0.f, 0.f);
+	}
+	else
+	{
+		Out.vBrightness_01 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_02 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_03 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_04 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_05 = float4(g_EffectDesc[In.iInstanceID].g_fColor.rgb, 1.f);
+	}
 
 	return Out;
 }
@@ -205,7 +252,48 @@ PS_OUT PS_MAIN_BLEND(PS_IN In)
 	Out.vDiffuse.rgb = saturate((Out.vDiffuse.rgb + g_EffectDesc[In.iInstanceID].g_fColor.rgb));
 	Out.vDiffuse.a   = saturate(Out.vDiffuse.a - g_EffectDesc[In.iInstanceID].g_fAlpha);
 
-	Out.vBrightness = float4(g_EffectDesc[In.iInstanceID].g_fColor.rgb, g_EffectDesc[In.iInstanceID].g_fBlurPower);
+	Out.vBloom = float4(1.f, 1.f, 1.f, 1.f);
+
+	if (g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.2f)
+	{
+		Out.vBrightness_01 = float4(g_EffectDesc[In.iInstanceID].g_fColor.rgb, 1.f);
+		Out.vBrightness_02 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_03 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_04 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_05 = float4(0.f, 0.f, 0.f, 0.f);
+	}
+	else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.2f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.4f)
+	{
+		Out.vBrightness_01 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_02 = float4(g_EffectDesc[In.iInstanceID].g_fColor.rgb, 1.f);
+		Out.vBrightness_03 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_04 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_05 = float4(0.f, 0.f, 0.f, 0.f);
+	}
+	else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.4f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.6f)
+	{
+		Out.vBrightness_01 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_02 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_03 = float4(g_EffectDesc[In.iInstanceID].g_fColor.rgb, 1.f);
+		Out.vBrightness_04 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_05 = float4(0.f, 0.f, 0.f, 0.f);
+	}
+	else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.6f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.8f)
+	{
+		Out.vBrightness_01 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_02 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_03 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_04 = float4(g_EffectDesc[In.iInstanceID].g_fColor.rgb, 1.f);
+		Out.vBrightness_05 = float4(0.f, 0.f, 0.f, 0.f);
+	}
+	else
+	{
+		Out.vBrightness_01 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_02 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_03 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_04 = float4(0.f, 0.f, 0.f, 0.f);
+		Out.vBrightness_05 = float4(g_EffectDesc[In.iInstanceID].g_fColor.rgb, 1.f);
+	}
 
 	// 알파 채널 반전
 	//Out.vDiffuse.a = 1.f - Out.vDiffuse.a;

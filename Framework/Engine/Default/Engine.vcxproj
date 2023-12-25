@@ -390,8 +390,12 @@ call Copy.bat</Command>
     <ClCompile Include="..\Public\DirectXTK\SimpleMath.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Blur.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Cell.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Deferred.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Final.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_OutLine.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Ssao.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
