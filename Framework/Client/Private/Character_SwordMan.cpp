@@ -91,7 +91,12 @@ void CCharacter_SwordMan::LateTick(_float fTimeDelta)
 {
 	
 	__super::LateTick(fTimeDelta);
+
+#ifdef DEBUG
 	m_pRendererCom->Add_Debug(m_pControllerCom);
+#endif // DEBUG
+
+	
 }
 
 HRESULT CCharacter_SwordMan::Render()

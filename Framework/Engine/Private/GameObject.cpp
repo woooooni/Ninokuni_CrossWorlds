@@ -58,6 +58,7 @@ void CGameObject::LateTick(_float fTimeDelta)
 
 HRESULT CGameObject::Render()
 {
+#ifdef DEBUG
 	// юс╫ц
 	for (auto& iter : m_Colliders)
 	{
@@ -66,6 +67,9 @@ HRESULT CGameObject::Render()
 			pCollider->Render();
 		}
 	}
+#endif // DEBUG
+
+	
 	return S_OK;
 }
 
