@@ -102,6 +102,27 @@ namespace Client
 	const unsigned int		g_iWinSizeX = 1600;
 	const unsigned int		g_iWinSizeY = 900;
 
+	enum CAMERA_TYPE { FREE, FOLLOW, /* ACTION, */ CAMERA_TYPE_END };
+
+	enum CAMERA_EVENT_TYPE { LERP_FOV, LERP_DIST, SHAKE, CAMERA_EVENT_TYPE_END };
+	typedef struct tagCameraEventDesc
+	{					
+								/* LERP_FOV,		LERP_DIST,		SHAKE */
+		_float fTag1 = 0.f;		/* fTargetValue,	fTargetValue,	fAmplitude*/
+		_float fTag2 = 0.f;		/* fTime,			fTime,			fFrequency */
+		_float fTag3 = 0.f;		/*		,				,			fDuration */				
+		_float fTag4 = 0.f;
+		
+		void* ptr1	= nullptr;
+		void* ptr2	= nullptr;
+
+		_int iTag1 = 0.f;		/* eMode */
+		_int iTag2 = 0.f;
+	}CAMERA_EVENT_DESC;
+
+	const wstring		CameraWstringNames[CAMERA_TYPE::CAMERA_TYPE_END]{ L"Camera_Free", L"Camera_Follow" };
+	static const char* CameraCharNames[CAMERA_TYPE::CAMERA_TYPE_END]{ "Camera_Free", "Camera_Follow" };
+
 }
 
 extern HWND g_hWnd;

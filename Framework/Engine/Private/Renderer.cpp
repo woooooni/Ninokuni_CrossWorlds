@@ -205,8 +205,8 @@ HRESULT CRenderer::Draw()
 
 	if (FAILED(Render_Ssao()))
 		return E_FAIL;
-	if (FAILED(Render_Blur(L"Target_SSAO", L"MRT_SSAO_Blur", true, 1)))
-		return E_FAIL;
+	//if (FAILED(Render_Blur(L"Target_SSAO", L"MRT_SSAO_Blur", true, 1)))
+	//	return E_FAIL;
 
 	if (FAILED(Render_OutLine()))
 		return E_FAIL;
@@ -218,8 +218,8 @@ HRESULT CRenderer::Draw()
 
 	if (FAILED(Render_Effect()))
 		return E_FAIL;
-	if (FAILED(Render_Blur(L"Target_Effect_Brightness_01", L"MRT_Effect_Blur", true, 1)))
-		return E_FAIL;
+	/*if (FAILED(Render_Blur(L"Target_Effect_Brightness_01", L"MRT_Effect_Blur", true, 1)))
+		return E_FAIL;*/
 	//if (FAILED(Render_Blur(L"Target_Effect_Brightness_02", L"MRT_Effect_Blur", false, 2)))
 	//	return E_FAIL;
 	//if (FAILED(Render_Blur(L"Target_Effect_Brightness_03", L"MRT_Effect_Blur", false, 3)))
@@ -236,8 +236,8 @@ HRESULT CRenderer::Draw()
 
 	if (FAILED(Render_UIEffectNonBlend()))
 		return E_FAIL;
-	if (FAILED(Render_Blur(L"Target_Effect_UI_Brightness", L"MRT_Effect_UI_Blur", true, 1)))
-		return E_FAIL;
+	/*if (FAILED(Render_Blur(L"Target_Effect_UI_Brightness", L"MRT_Effect_UI_Blur", true, 1)))
+		return E_FAIL;*/
 	if (FAILED(Render_UIEffectBlend()))
 		return E_FAIL;
 

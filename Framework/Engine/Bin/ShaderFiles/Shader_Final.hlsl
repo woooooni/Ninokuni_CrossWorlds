@@ -76,7 +76,9 @@ PS_OUT PS_MAIN_FINAL(PS_IN In)
 	else
 		Out.vColor = vDiffuseColor;
 
-	Out.vColor = Out.vColor + vEffectBlurColor + vEffectUIBlurColor;
+	//Out.vColor = Out.vColor + vEffectBlurColor + vEffectUIBlurColor;
+	Out.vColor = Out.vColor;// +vEffectBlurColor + vEffectUIBlurColor;
+
 
 	return Out;
 

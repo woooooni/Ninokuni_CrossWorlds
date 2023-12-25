@@ -31,17 +31,20 @@ void CTool_Camera::Tick(_float fTimeDelta)
 {
 	ImGui::Begin("Camera_Tool");
 
-	/* Temp */
-	Show_Temp();
-
 	/* Select Camera */
 	Show_Select_Camera();
 	
+
+
 	/* Camera Prop */
 	{
 		CCamera* pCurCam = CCamera_Manager::GetInstance()->Get_CurCamera();
 		if (nullptr != pCurCam)
 		{
+			/* 카메라 공통 옵션 */
+			Show_Camera_Prop_Default(pCurCam);
+
+			/* 카메라 개별 옵션 */
 			switch (pCurCam->Get_Type())
 			{
 			case CAMERA_TYPE::FREE :
@@ -59,143 +62,6 @@ void CTool_Camera::Tick(_float fTimeDelta)
 	ImGui::End();
 }
 
-void CTool_Camera::Show_Temp()
-{
-	if (ImGui::TreeNode(u8"Temp"))
-	{
-		static _bool bLoadedMap = false;
-		if (ImGui::Button(u8"맵 로드"))
-		{
-			if (bLoadedMap)
-			{
-				ImGui::TreePop();
-				return;
-			}
-			bLoadedMap = true;
-
-			wstring strMapFileName = L"Evermore";
-			wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strMapFileName + L"/" + strMapFileName + L".map";
-
-			shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
-			File->Open(strMapFilePath, FileMode::Read);
-
-			for (_uint i = 0; i < LAYER_TYPE::LAYER_END; ++i)
-			{
-				if (i == LAYER_TYPE::LAYER_CAMERA
-					|| i == LAYER_TYPE::LAYER_TERRAIN
-					|| i == LAYER_TYPE::LAYER_BACKGROUND
-					|| i == LAYER_TYPE::LAYER_SKYBOX
-					|| i == LAYER_TYPE::LAYER_UI
-					|| i == LAYER_TYPE::LAYER_PLAYER
-					|| i == LAYER_TYPE::LAYER_WEAPON
-					|| i == LAYER_TYPE::LAYER_PROJECTILE
-					|| i == LAYER_TYPE::LAYER_EFFECT
-					|| i == LAYER_TYPE::LAYER_TRAIL
-					|| i == LAYER_TYPE::LAYER_NPC
-					|| i == LAYER_TYPE::LAYER_WEAPON)
-					continue;
-
-				GI->Clear_Layer(LEVEL_TOOL, i);
-
-				{
-					_uint iObjectCount = File->Read<_uint>();
-
-					for (_uint j = 0; j < iObjectCount; ++j)
-					{
-						// 3. Object_Prototype_Tag
-						wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
-						wstring strObjectTag = CUtils::ToWString(File->Read<string>());
-
-						CGameObject* pObj = nullptr;
-						if (FAILED(GI->Add_GameObject(LEVEL_TOOL, i, strPrototypeTag, nullptr, &pObj)))
-						{
-							MSG_BOX("Load_Objects_Failed.");
-							return;
-						}
-
-						if (nullptr == pObj)
-						{
-							MSG_BOX("Add_Object_Failed.");
-							return;
-						}
-						pObj->Set_ObjectTag(strObjectTag);
-
-						CTransform* pTransform = pObj->Get_Component<CTransform>(L"Com_Transform");
-						if (nullptr == pTransform)
-						{
-							MSG_BOX("Get_Transform_Failed.");
-							return;
-						}
-
-						// 6. Obejct States
-						_float4 vRight, vUp, vLook, vPos;
-
-						File->Read<_float4>(vRight);
-						File->Read<_float4>(vUp);
-						File->Read<_float4>(vLook);
-						File->Read<_float4>(vPos);
-
-						pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
-						pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
-						pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
-						pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
-					}
-				}
-			}
-
-			list<CGameObject*> Grounds = GI->Find_GameObjects(LEVEL_TOOL, LAYER_TYPE::LAYER_GROUND);
-			for (auto& Ground : Grounds)
-			{
-				if (FAILED(GI->Add_Ground(Ground,
-					Ground->Get_Component<CModel>(L"Com_Model"),
-					Ground->Get_Component<CTransform>(L"Com_Transform")->Get_WorldMatrix())))
-				{
-					MSG_BOX("카메라 툴에서 피직스 생성에 실패했습니다.");
-				}
-			}
-		}
-		//IMGUI_SAME_LINE;
-
-
-		/* 플레이어 로드 */
-		static _bool bLoadedPlayer = false;
-
-		static _float fCreatePos[3] = { 0.f, 7.f, 0.f };
-		ImGui::PushItemWidth(150.f);
-		ImGui::DragFloat3("플레이어 로드 포지션", fCreatePos, 1.f, -5000.f, 5000.f, "%.1f");
-		ImGui::PopItemWidth();
-
-		if (ImGui::Button(u8"플레이어 로드"))
-		{
-			if (!bLoadedPlayer)
-			{
-				bLoadedPlayer = true;
-
-				CGameObject* pCharacter = nullptr;
-
-				if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Character_SwordMan"), nullptr, &pCharacter)))
-				{
-					MSG_BOX("카메라 툴에서 플레이어 로드를 실패했습니다.");
-					return;
-				}
-
-				if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))
-				{
-					CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_TargetObj(pCharacter);
-					CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_LookAtObj(pCharacter);
-
-					Vec3 vPos;
-					memcpy(&vPos, fCreatePos, sizeof(Vec3));
-					pCharacter->Get_Component<CTransform>(L"Com_Transform")->Set_State(CTransform::STATE_POSITION, vPos);
-				}
-			}
-		}
-		ImGui::TreePop();
-	}
-	
-	IMGUI_NEW_LINE;
-}
-
 void CTool_Camera::Show_Select_Camera()
 {
 	const CAMERA_TYPE eCurCamIndex = (CAMERA_TYPE)CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Type();
@@ -207,7 +73,7 @@ void CTool_Camera::Show_Select_Camera()
 		ImGui::PushItemWidth(150.f);
 		if (ImGui::BeginCombo(u8"현재 카메라", Preview))
 		{
-			for (int iCurComboIndex = 0; iCurComboIndex < CAMERA_TYPE::TYPE_END; iCurComboIndex++)
+			for (int iCurComboIndex = 0; iCurComboIndex < CAMERA_TYPE::CAMERA_TYPE_END; iCurComboIndex++)
 			{
 				const bool is_selected = (eCurCamIndex == iCurComboIndex);
 
@@ -225,17 +91,141 @@ void CTool_Camera::Show_Select_Camera()
 	}
 }
 
+void CTool_Camera::Show_Camera_Prop_Default(CCamera* pCurCam)
+{
+	IMGUI_NEW_LINE;
+	ImGui::Text("Camera Public Option (카메라 공통 옵션)");
+
+	if (ImGui::BeginChild("Public Camera Option", ImVec2(0, 500.f), true))
+	{
+		ImGui::PushItemWidth(150.f);
+		{
+			/* 투영 관련 */
+			{
+				CCamera::PROJ_DESC tProjDesc = pCurCam->Get_ProjDesc();
+
+				/* Fov */
+				{
+					_float fFov = XMConvertToDegrees(tProjDesc.tLerpFov.fCurValue);
+					ImGui::DragFloat(u8"Fov", &fFov, 0.1f, 10.f, 100.f);
+					tProjDesc.tLerpFov.fCurValue = XMConvertToRadians(fFov);
+
+					/*if (ImGui::Button("Default Fov"))
+						tProjDesc.tLerpFov.fCurValue = Cam_Fov_Follow_Default;*/
+				}
+
+				/* Aspect */
+				{
+					ImGui::DragFloat(u8"Aspect", &tProjDesc.fAspect, 0.05f, 0.1f, 10.f);
+
+					if (ImGui::Button("Default Aspect"))
+						tProjDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
+				}
+
+				/* Near */
+				{
+					ImGui::DragFloat(u8"Near", &tProjDesc.fNear, 0.05f, 0.01f, 1.f);
+
+					/*if (ImGui::Button("Default Near"))
+						tProjDesc.fNear = 0.2f;*/
+				}
+
+				/* Far */
+				{
+					ImGui::DragFloat(u8"Far", &tProjDesc.fFar, 0.05f, 1.f, 2000.f);
+
+					/*if (ImGui::Button("Default Far"))
+						tProjDesc.fFar = 1000.f;*/
+				}
+
+				pCurCam->Set_ProjDesc(tProjDesc);
+			}
+			IMGUI_NEW_LINE;
+
+			/* 오프셋 */
+			{
+				/* 타겟 오프셋 */
+				{
+					Vec4	vTargetOffset = pCurCam->Get_TargetOffset();
+					_float	fTargetOffset[3] = { vTargetOffset.x, vTargetOffset.y, vTargetOffset.z };
+					if (ImGui::DragFloat3(u8"Target OffSet", fTargetOffset))
+					{
+						pCurCam->Set_TargetOffSet(Vec4{ fTargetOffset[0], fTargetOffset[1], fTargetOffset[2], 1.f });
+					}
+				}
+
+				/* 룩앳 오프셋 */
+				{
+					Vec4	vLookAtOffset = pCurCam->Get_LookAtOffset();
+					_float	fLookAtOffset[3] = { vLookAtOffset.x, vLookAtOffset.y, vLookAtOffset.z };
+					if (ImGui::DragFloat3(u8"LookAt Offset", fLookAtOffset))
+					{
+						pCurCam->Set_LookAtOffSet(Vec4{ fLookAtOffset[0], fLookAtOffset[1], fLookAtOffset[2], 1.f });
+					}
+				}
+			}
+			IMGUI_NEW_LINE;
+
+			/* 민감도 */
+			{
+				Vec2 vSeneitivity = pCurCam->Get_MouseSensitivity();
+
+				ImGui::DragFloat(u8"Seneitivity X (X축 민감도)", &vSeneitivity.x, 0.025f);
+				ImGui::DragFloat(u8"Seneitivity Y (Y축 민감도)", &vSeneitivity.y, 0.025f);
+
+				pCurCam->Set_MouseSensitivity_X(vSeneitivity.x);
+				pCurCam->Set_MouseSensitivity_Y(vSeneitivity.y);
+			}
+			IMGUI_NEW_LINE;
+
+			/* 디스턴스 */
+			{
+				_float fDistance = pCurCam->Get_Distance();
+				if (ImGui::DragFloat(u8"Distance(타겟과의 거리)", &fDistance, 0.5f, 0.1f, 100.f))
+				{
+					pCurCam->Set_Distance(fDistance);
+				}
+			}
+			IMGUI_NEW_LINE;
+
+			/* Shake */
+			{
+				_bool bShake = pCurCam->Is_Shake();
+				ImGui::Checkbox(u8"Is Shake", &bShake);
+
+				static _float fAmplitudeInput = 0.1f;
+				ImGui::DragFloat(u8"Shake Amplitude (쉐이킹 진폭) ", &fAmplitudeInput, 0.01f, 0.f, 5.f);
+
+				static _float fFrquencyInput = 13.f;
+				ImGui::DragFloat(u8"Shake Frquency (쉐이킹 빈도) ", &fFrquencyInput, 0.01f, 0.f, 100.f);
+
+				static _float fDurationInput = 0.5f;
+				ImGui::DragFloat(u8"Shake Duration (쉐이킹 시간) ", &fDurationInput, 0.01f, 0.f, 10.f);
+
+				if (ImGui::Button(u8"Start Shake(쉐이킹 시작)"))
+				{
+					pCurCam->Start_Shake(fAmplitudeInput, fFrquencyInput, fDurationInput);
+				}
+
+			}
+		}
+		ImGui::PopItemWidth();
+		
+	}
+	ImGui::EndChild();
+}
+
 void CTool_Camera::Show_Camera_Prop_Free(CCamera* pCurCam)
 {
 	IMGUI_NEW_LINE;
-	ImGui::Text("Free Camera Option");
+	ImGui::Text("Free Camera Option (카메라 개별 옵션)");
 
-	if (ImGui::BeginChild("Free Camera Option", ImVec2(0, 300.f), true))
+	if (ImGui::BeginChild("Free Camera Option", ImVec2(0, 200.f), true))
 	{
 		CCamera_Free* pFreeCam = dynamic_cast<CCamera_Free*>(pCurCam);
 		if (nullptr != pFreeCam)
 		{
-			ImGui::PushItemWidth(100.f);
+			ImGui::PushItemWidth(150.f);
 			{
 				/* 카메라 이동속도 */
 				_float fCameraMoveSpeed = pFreeCam->Get_MoveSpeed();
@@ -261,9 +251,9 @@ void CTool_Camera::Show_Camera_Prop_Free(CCamera* pCurCam)
 void CTool_Camera::Show_Camera_Prop_Follow(CCamera* pCurCam)
 {
 	IMGUI_NEW_LINE;
-	ImGui::Text("Follow Camera Option");
+	ImGui::Text("Follow Camera Option (카메라 개별 옵션)");
 
-	if (ImGui::BeginChild("Follow Camera Option", ImVec2(0, 700.f), true))
+	if (ImGui::BeginChild("Follow Camera Option", ImVec2(0, 200.f), true))
 	{
 		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(pCurCam);
 
@@ -271,92 +261,6 @@ void CTool_Camera::Show_Camera_Prop_Follow(CCamera* pCurCam)
 		{
 			ImGui::PushItemWidth(150.f);
 			{
-				/* 투영 관련 */
-				{
-					CCamera::PROJ_DESC tProjDesc = pFollowCam->Get_ProjDesc();
-
-					/* Fov */
-					{
-						_float fFov = XMConvertToDegrees(tProjDesc.tLerpFov.fCurValue);
-						ImGui::DragFloat(u8"Fov", &fFov, 0.1f, 10.f, 100.f);
-						tProjDesc.tLerpFov.fCurValue = XMConvertToRadians(fFov);
-
-						/*if (ImGui::Button("Default Fov"))
-							tProjDesc.tLerpFov.fCurValue = Cam_Fov_Follow_Default;*/
-					}
-
-					/* Aspect */
-					{
-						ImGui::DragFloat(u8"Aspect", &tProjDesc.fAspect, 0.05f, 0.f, 10.f);
-
-						/*if (ImGui::Button("Default Aspect"))
-							tProjDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;*/
-					}
-
-					/* Near */
-					{
-						ImGui::DragFloat(u8"Near", &tProjDesc.fNear, 0.05f, 0.01f, 1.f);
-
-						/*if (ImGui::Button("Default Near"))
-							tProjDesc.fNear = 0.2f;*/
-					}
-
-					/* Far */
-					{
-						ImGui::DragFloat(u8"Far", &tProjDesc.fFar, 0.05f, 0.f, 2000.f);
-
-						/*if (ImGui::Button("Default Far"))
-							tProjDesc.fFar = 1000.f;*/
-					}
-
-					pFollowCam->Set_ProjDesc(tProjDesc);
-				}
-
-				/* 오프셋 */
-				{
-					/* 타겟 오프셋 */
-					{
-						Vec4	vTargetOffset		= pFollowCam->Get_TargetOffset();
-						_float	fTargetOffset[3]	= { vTargetOffset.x, vTargetOffset.y, vTargetOffset.z };
-						if (ImGui::DragFloat3(u8"Target OffSet", fTargetOffset))
-						{
-							pFollowCam->Set_TargetOffSet(Vec4{ fTargetOffset[0], fTargetOffset[1], fTargetOffset[2], 1.f });
-						}
-					}
-					
-					/* 룩앳 오프셋 */
-					{
-						Vec4	vLookAtOffset		= pFollowCam->Get_LookAtOffset();
-						_float	fLookAtOffset[3]	= { vLookAtOffset.x, vLookAtOffset.y, vLookAtOffset.z };
-						if (ImGui::DragFloat3(u8"LookAt Offset", fLookAtOffset))
-						{
-							pFollowCam->Set_LookAtOffSet(Vec4{ fLookAtOffset[0], fLookAtOffset[1], fLookAtOffset[2], 1.f });
-						}
-					}
-				}
-
-				/* 민감도 */
-				{
-					Vec2 vSeneitivity = pFollowCam->Get_MouseSensitivity();
-
-					ImGui::DragFloat(u8"Seneitivity X (X축 민감도)", &vSeneitivity.x, 0.025f);
-					ImGui::DragFloat(u8"Seneitivity Y (Y축 민감도)", &vSeneitivity.y, 0.025f);
-
-					pFollowCam->Set_MouseSensitivity_X(vSeneitivity.x);
-					pFollowCam->Set_MouseSensitivity_Y(vSeneitivity.y);
-
-				}
-
-
-				/* 디스턴스 */
-				{
-					_float fDistance = pFollowCam->Get_Distance();
-					if (ImGui::DragFloat(u8"Distance(타겟과의 거리)", &fDistance, 0.5f, 0.1f, 100.f))
-					{
-						pFollowCam->Set_Distance(fDistance);
-					}
-				}
-
 				/* 댐핑 */
 				{
 					/* 액티브 */
@@ -374,7 +278,7 @@ void CTool_Camera::Show_Camera_Prop_Follow(CCamera* pCurCam)
 						pFollowCam->Set_DampingCoefficient(fCoefficient);
 					}
 				}
-
+				IMGUI_NEW_LINE;
 
 				/* 회전 */
 				{
@@ -392,22 +296,6 @@ void CTool_Camera::Show_Camera_Prop_Follow(CCamera* pCurCam)
 						pFollowCam->Set_MinRotationLimitDeltaY(fMinRotDeltaY);
 					}
 				}
-
-				
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 			}
 			ImGui::PopItemWidth();
 		}

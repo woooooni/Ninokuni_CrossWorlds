@@ -38,7 +38,7 @@ HRESULT CCamera_Follow::Initialize(void * pArg)
 
 		/* 팔로우 카메라에서 룩앳 오프셋을 사용하는 일은 없다. 타겟 오프셋만을 사용한다.*/
 		m_vLookAtOffset = Vec4::UnitW;
-		m_vTargetOffset = Vec4{ 1.2f, 1.3f, 0.f, 1.f };
+		m_vTargetOffset = Vec4{ 0.7f, 1.3f, 0.f, 1.f };
 
 		m_vMouseSensitivity = Vec2{ 0.18f, 0.5f };
 	}
@@ -51,33 +51,24 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 	if (nullptr == m_pTargetObj || nullptr == m_pLookAtObj)
 		return;
 
+	__super::Tick(fTimeDelta); /* Shake, Fov, Dist Lerp Update */
+
+	/* Position */
 	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, Calculate_WorldPosition(fTimeDelta));
 	
-	
-	Vec4 vLookAtPos = Calculate_Look(fTimeDelta);
+	/* Look & Shake */
+	const Vec4 vLookAtPos = Calculate_Look(fTimeDelta);
 
-	m_pTransformCom->LookAt(Calculate_Look(fTimeDelta));
-
-	__super::Tick(fTimeDelta); /* Shake, Fov, Dist */
-
-	
 	if (Is_Shake())
-	{
-	
-		cout << "Origin Look : " << vLookAtPos.x << "\t" << vLookAtPos.y << "\t" << vLookAtPos.z << endl;
-		Vec3 vShakeLocalPos = Get_ShakeLocalPos();
-		vLookAtPos.x += vShakeLocalPos.x;
-		vLookAtPos.y += vShakeLocalPos.y;
-		vLookAtPos.z += vShakeLocalPos.z;
-
-		cout << "Shake Local Look : " << vShakeLocalPos.x << "\t" << vShakeLocalPos.y << "\t" << vShakeLocalPos.z << endl << endl;
-
+		m_pTransformCom->LookAt(Vec4(vLookAtPos + Vec4(Get_ShakeLocalPos()).OneW()));
+	else
 		m_pTransformCom->LookAt(vLookAtPos);
-	}
+
+
 
 	if (KEY_TAP(KEY::H))
 	{
-		Start_Shake(0.1f, 10.f, 0.5f);
+		Start_Shake(0.1f, 13.f, 0.5f);
 	}
 }
 

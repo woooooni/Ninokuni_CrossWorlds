@@ -19,8 +19,9 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 
 private:
-	void Show_Temp();
 	void Show_Select_Camera();
+
+	void Show_Camera_Prop_Default(CCamera* pCurCam);
 	void Show_Camera_Prop_Free(CCamera* pCurCam);
 	void Show_Camera_Prop_Follow(CCamera* pCurCam);
 

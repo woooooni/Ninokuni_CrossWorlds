@@ -507,6 +507,17 @@ namespace Engine
 			eMode = _eMode;
 		}
 
+		void Clear()
+		{
+			bActive = FALSE;
+
+			fStartTime = fCurTime = fEndTime = 0.f;
+
+			vStartVec = vCurVec = vTargetVec = Vec3::Zero;
+
+			eMode = LERP_MODE::DEFAULT;
+		}
+
 		Vec3 Update_Lerp(const _float& fTimeDelta)
 		{
 			if (!bActive) 
