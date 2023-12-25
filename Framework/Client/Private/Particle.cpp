@@ -133,10 +133,10 @@ void CParticle::LateTick(_float fTimeDelta)
 	{
 		// UI 기본
 		if (m_tParticleDesc.iShaderPass == 0)
-			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UIEFFECT_NONBLEND, this);
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI_EFFECT_NONBLEND, this);
 		// UI 블랜드
 		else if (m_tParticleDesc.iShaderPass == 1)
-			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UIEFFECT_BLEND, this);
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI_EFFECT_BLEND, this);
 	}
 }
 

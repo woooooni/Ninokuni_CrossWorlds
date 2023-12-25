@@ -1,11 +1,10 @@
 #include "Engine_Shader_Defines.hpp"
 
-
 texture2D g_Texture; // 디버그용 텍스쳐
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
-matrix g_ProjMatrixInv;
-matrix g_ViewMatrixInv;
+matrix g_ViewMatrixInv, g_ProjMatrixInv;
+
 matrix g_CamProjMatrix;
 matrix g_LightViewMatrix;
 
@@ -16,25 +15,9 @@ texture2D g_DepthTarget;
 texture2D g_ShadeTarget;
 texture2D g_SpecularTarget;
 		  
+texture2D g_SSAOTarget;
 texture2D g_ShadowTarget;
-		  
-
-texture2D g_EffectDiffuseTarget;
-texture2D g_EffectBrightnessTarget;
-texture2D g_EffectBlurTarget;
-
-texture2D g_EffectUIDiffuseTarget;
-texture2D g_EffectUIBrightnessTarget;
-		  
-texture2D g_OriginBloomTarget;
-		  
-texture2D g_BlurBloomTarget;
-texture2D g_BlurEffectTarget;
-		  
-texture2D g_BlurTarget;
-texture2D g_BlurPowerTarget;
-texture2D g_UITarget;
-
+texture2D g_OutlineTarget;
 
 // 조명
 vector g_vCamPosition;
@@ -53,8 +36,8 @@ vector g_vMtrlSpecular = vector(1.f, 1.f, 1.f, 1.f);
 // 안개
 float2 g_vFogStartEnd = { 1.f, 5.f };
 float4 g_vFogColor    = { .5f, .5f, .5f, 1.f };
+
 float  g_fBias        = 0.2f;
-// ---------------------------------------------------------------------
 
 struct VS_IN
 {
@@ -83,8 +66,8 @@ VS_OUT VS_MAIN(VS_IN In)
 
 	return Out;
 }
-// ---------------------------------------------------------------------
 
+// DEBUG
 struct PS_IN
 {
 	float4		vPosition : SV_POSITION;
@@ -104,9 +87,8 @@ PS_OUT PS_MAIN_DEBUG(PS_IN In)
 
 	return Out;
 }
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
 
+// LIGHT
 struct PS_OUT_LIGHT
 {
 	float4	vShade : SV_TARGET0;	
@@ -189,72 +171,8 @@ PS_OUT_LIGHT PS_MAIN_POINT(PS_IN In)
 
 	return Out;
 }
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
 
-float  g_fMask[9] = {
-	-1, -1, -1,
-	-1,  8, -1,
-	-1, -1, -1
-};
-float4 g_LineColor = float4(0.631f, 0.353f, 0.094f, 1.f);
-float  g_fCoord[3] = { -1, 0, +1 };
-float  g_fDivier = 1;
-float4 Outline_Caculation(PS_IN In)
-{
-	float4 fOutline;
-
-	float fCenterDepth = g_DepthTarget.Sample(PointSampler, In.vTexcoord).r;
-
-	float4 fDepthDifference = 0;
-	for (int i = 0; i < 9; ++i)
-	{
-		vector vDepthDesc = g_DepthTarget.Sample(PointSampler, float2(In.vTexcoord + float2(g_fCoord[i % 3] / 1600.f, g_fCoord[i / 3] / 900.f)));
-		fDepthDifference += g_fMask[i] * (fCenterDepth - vDepthDesc.r) * 1000.f;
-	}
-
-	float fDepthScale = 0.01;
-	float fOutlineThickness = fDepthScale * length(fDepthDifference);
-	fOutlineThickness = saturate(fOutlineThickness * 10.f);
-
-	if (fOutlineThickness < 0.1)
-		fOutline = float4(1.f, 1.f, 1.f, 1.f);
-	else
-		fOutline = g_LineColor;
-
-	return fOutline;
-}
-	/*
-	// 외곽선
-	float3x3 Kx = { -1.f, 0.f, 1.f,
-	        		-2.f, 0.f, 2.f,
-			        -1.f, 0.f, 1.f };
-    float3x3 Ky = { 1.f,  2.f,  1.f,
-     		    	0.f,  0.f,  0.f,
-     		       -1.f, -2.f, -1.f };
-    float2 g_PixelOffset = float2(1.f / 1600.f, 1.f / 900.f);
-    float3 g_PixelDot = float3(.4f, .2f, 0.f);
-	float Lx = 0;
-	float Ly = 0;
-
-	for (int y = -1; y <= 1; ++y)
-	{
-		for (int x = -1; x <= 1; ++x)
-		{
-			float2 offset = float2(x, y) * g_PixelOffset;
-			float3 tex = g_ShadeTarget.Sample(PointSampler, In.vTexcoord + offset).rgb;
-			float luminance = dot(tex, g_PixelDot);
-
-			Lx += luminance * Kx[y + 1][x + 1];
-			Ly += luminance * Ky[y + 1][x + 1];
-		}
-	}
-	float L = sqrt((Lx * Lx) + (Ly * Ly));
-	vector vOutline = vector(1.f - L.xxx, 1.f);
-	Out.vColor *= vOutline;
-	*/
-// ---------------------------------------------------------------------
-
+// SHADOW
 float PCF_ShadowCaculation(float4 vLightPos, float3 vLightDir)
 {
 	float3 projCoords = vLightPos.xyz / vLightPos.w;
@@ -316,8 +234,8 @@ float4 Shadow_Caculation(PS_IN In)
 
 	return vector(fShadowColor, fShadowColor, fShadowColor, 1.f);
 }
-// ---------------------------------------------------------------------
 
+// DEFERRED
 PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 {
 	PS_OUT Out = (PS_OUT)0;
@@ -340,133 +258,21 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 	// Shadow
 	vector vShadow = Shadow_Caculation(In);
 
+    // SSAO
+	vector vSSAO = g_SSAOTarget.Sample(LinearSampler, In.vTexcoord);
+
+	// Outline
+	vector vOutline = g_OutlineTarget.Sample(LinearSampler, In.vTexcoord);
+
 	/* Fog
 	float fFogFactor = saturate(((g_vFogStartEnd.y - (fViewZ)) / (g_vFogStartEnd.y - g_vFogStartEnd.x)));
 	Out.vColor = fFogFactor * Out.vColor + (1.f - fFogFactor) * g_vFogColor;*/
 
-	// Outline
-	vector vOutline = Outline_Caculation(In);
-
 	// Output
-	Out.vColor = vDiffuse * vShade * vShadow * vOutline; // +vSpecular;
+	Out.vColor = vDiffuse * vShade * vShadow * vSSAO * vOutline; // +vSpecular;
 
 	return Out;
 }
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
-
-PS_OUT PS_BLUR_DOWNSCALE(PS_IN In)
-{
-	PS_OUT			Out = (PS_OUT)0;
-
-	Out.vColor = g_BlurTarget.Sample(LinearSampler, In.vTexcoord);
-	return Out;
-}
-
-float2 g_PixleSize = float2(1.f / (1600.f / 2.f), 1.f / (900.f / 2.f));
-
-PS_OUT PS_BLUR_Horizontal(PS_IN In)
-{
-	PS_OUT Out = (PS_OUT)0;
-	float fWeights[5] = { 1.f, 0.9f, 0.55f, 0.18f, 0.1f };
-	float fBlurPower = g_BlurPowerTarget.Sample(PointSampler, In.vTexcoord).a;
-	float fNormalization = (fWeights[0] + 2.0f * (fWeights[1] + fWeights[2] + fWeights[3] + fWeights[4]));
-
-	for (int i = 0; i < 5; ++i)
-	{
-		fWeights[i] /= fNormalization;
-	}
-
-	vector vFinalColor = float4(0.f, 0.f, 0.f, 0.f);
-	vFinalColor += g_BlurTarget.Sample(PointSampler, (In.vTexcoord + float2(g_PixleSize.x * -4.f, 0.f))) * fWeights[4];
-	vFinalColor += g_BlurTarget.Sample(PointSampler, (In.vTexcoord + float2(g_PixleSize.x * -3.f, 0.f))) * fWeights[3];
-	vFinalColor += g_BlurTarget.Sample(PointSampler, (In.vTexcoord + float2(g_PixleSize.x * -2.f, 0.f))) * fWeights[2];
-	vFinalColor += g_BlurTarget.Sample(PointSampler, (In.vTexcoord + float2(g_PixleSize.x * -1.f, 0.f))) * fWeights[1];
-	vFinalColor += g_BlurTarget.Sample(PointSampler, (In.vTexcoord + float2(g_PixleSize.x * 0.f, 0.f))) * fWeights[0];
-	vFinalColor += g_BlurTarget.Sample(PointSampler, (In.vTexcoord + float2(g_PixleSize.x * 1.f, 0.f))) * fWeights[1];
-	vFinalColor += g_BlurTarget.Sample(PointSampler, (In.vTexcoord + float2(g_PixleSize.x * 2.f, 0.f))) * fWeights[2];
-	vFinalColor += g_BlurTarget.Sample(PointSampler, (In.vTexcoord + float2(g_PixleSize.x * 3.f, 0.f))) * fWeights[3];
-	vFinalColor += g_BlurTarget.Sample(PointSampler, (In.vTexcoord + float2(g_PixleSize.x * 4.f, 0.f))) * fWeights[4];
-
-	Out.vColor = vFinalColor;
-	return Out;
-}
-
-PS_OUT PS_BLUR_Vertical(PS_IN In)
-{
-	PS_OUT Out = (PS_OUT)0;
-	float fWeights[5] = { 1.f, 0.9f, 0.55f, 0.18f, 0.1f };
-	float fBlurPower = g_BlurPowerTarget.Sample(PointSampler, In.vTexcoord).a;
-	float fNormalization = (fWeights[0] + 2.f * (fWeights[1] + fWeights[2] + fWeights[3] + fWeights[4]));
-
-	for (int i = 0; i < 5; ++i)
-	{
-		fWeights[i] /= fNormalization;
-	}
-
-	vector vFinalColor = float4(0.f, 0.f, 0.f, 0.f);
-	vFinalColor += g_BlurTarget.Sample(PointSampler, (In.vTexcoord + float2(0.f, g_PixleSize.y * -4.f))) * fWeights[4];
-	vFinalColor += g_BlurTarget.Sample(PointSampler, (In.vTexcoord + float2(0.f, g_PixleSize.y * -3.f))) * fWeights[3];
-	vFinalColor += g_BlurTarget.Sample(PointSampler, (In.vTexcoord + float2(0.f, g_PixleSize.y * -2.f))) * fWeights[2];
-	vFinalColor += g_BlurTarget.Sample(PointSampler, (In.vTexcoord + float2(0.f, g_PixleSize.y * -1.f))) * fWeights[1];
-	vFinalColor += g_BlurTarget.Sample(PointSampler, (In.vTexcoord + float2(0.f, g_PixleSize.y * 0.f))) * fWeights[0];
-	vFinalColor += g_BlurTarget.Sample(PointSampler, (In.vTexcoord + float2(0.f, g_PixleSize.y * 1.f))) * fWeights[1];
-	vFinalColor += g_BlurTarget.Sample(PointSampler, (In.vTexcoord + float2(0.f, g_PixleSize.y * 2.f))) * fWeights[2];
-	vFinalColor += g_BlurTarget.Sample(PointSampler, (In.vTexcoord + float2(0.f, g_PixleSize.y * 3.f))) * fWeights[3];
-	vFinalColor += g_BlurTarget.Sample(PointSampler, (In.vTexcoord + float2(0.f, g_PixleSize.y * 4.f))) * fWeights[4];
-
-	Out.vColor = vFinalColor;
-	return Out;
-}
-
-PS_OUT PS_BLUR_UPSCALE(PS_IN In)
-{
-	PS_OUT			Out = (PS_OUT)0;
-	Out.vColor = g_BlurTarget.Sample(LinearSampler, In.vTexcoord);
-
-	return Out;
-}
-// ---------------------------------------------------------------------
-// ---------------------------------------------------------------------
-
-PS_OUT PS_MAIN_FINAL(PS_IN In)
-{
-	PS_OUT Out = (PS_OUT)0;
-
-	// Diffuse
-	vector vDiffuseColor = g_DiffuseTarget.Sample(LinearSampler, In.vTexcoord);
-
-	// Effect_UI
-	vector vEffectUIDiffuseColor = g_EffectUIDiffuseTarget.Sample(PointSampler, In.vTexcoord);
-	vector vEffectUIBrightnessColor = g_EffectUIBrightnessTarget.Sample(PointSampler, In.vTexcoord);
-
-	// Effect
-	vector vEffectDiffuseColor = g_EffectDiffuseTarget.Sample(PointSampler, In.vTexcoord);
-	vector vEffectBrightnessColor = g_EffectBrightnessTarget.Sample(PointSampler, In.vTexcoord);
-	vector vEffectBlurColor = g_EffectBlurTarget.Sample(PointSampler, In.vTexcoord);
-
-	// Output // vDiffuseColor + vEffectDiffuseColor + vEffectBrightnessColor + vUIEffectColor;
-	if (vEffectUIDiffuseColor.a != 0.f)
-		Out.vColor = vEffectUIDiffuseColor;
-	else if (vEffectDiffuseColor.a != 0.f)
-		Out.vColor = vEffectDiffuseColor;
-	else
-		Out.vColor = vDiffuseColor;
-
-	Out.vColor += vEffectBlurColor;
-
-	/*vector vOriginEffectColor = g_OriginEffectTarget.Sample(PointSampler, In.vTexcoord);
-	vector vOriginBloomColor = g_OriginBloomTarget.Sample(PointSampler, In.vTexcoord);
-	vector vBlurBloomColor = g_BlurBloomTarget.Sample(PointSampler, In.vTexcoord);
-	vector vBlurEffectColor = g_BlurEffectTarget.Sample(PointSampler, In.vTexcoord);
-	Out.vColor += g_OriginEffectTarget.Sample(LinearSampler, In.vTexcoord);
-	Out.vColor += vOriginBloomColor;
-	Out.vColor += vBlurBloomColor;
-	Out.vColor += vBlurEffectColor;*/
-
-	return Out;
-}
-// ---------------------------------------------------------------------
 
 technique11 DefaultTechnique
 {
@@ -524,86 +330,4 @@ technique11 DefaultTechnique
 		DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_DEFERRED();
 	}
-
-	// 4
-	pass Bloom
-	{
-		SetRasterizerState(RS_Default);
-		SetDepthStencilState(DSS_None, 0);
-		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
-		VertexShader = compile vs_5_0 VS_MAIN();
-		GeometryShader = NULL;
-		HullShader = NULL;
-		DomainShader = NULL;
-		PixelShader = compile ps_5_0 PS_MAIN_DEBUG();
-	}
-
-	// 5
-	pass BlurDownScale
-	{
-		SetRasterizerState(RS_Default);
-		SetDepthStencilState(DSS_None, 0);
-		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
-		VertexShader = compile vs_5_0 VS_MAIN();
-		GeometryShader = NULL;
-		HullShader = NULL;
-		DomainShader = NULL;
-		PixelShader = compile ps_5_0 PS_BLUR_DOWNSCALE();
-	}
-
-	// 6
-	pass Blur_Horizontal
-	{
-		SetRasterizerState(RS_Default);
-		SetDepthStencilState(DSS_None, 0);
-		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
-		VertexShader = compile vs_5_0 VS_MAIN();
-		GeometryShader = NULL;
-		HullShader = NULL;
-		DomainShader = NULL;
-		PixelShader = compile ps_5_0 PS_BLUR_Horizontal();
-	}
-
-	// 7
-	pass Blur_Vertical
-	{
-		SetRasterizerState(RS_Default);
-		SetDepthStencilState(DSS_None, 0);
-		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
-		VertexShader = compile vs_5_0 VS_MAIN();
-		GeometryShader = NULL;
-		HullShader = NULL;
-		DomainShader = NULL;
-		PixelShader = compile ps_5_0 PS_BLUR_Vertical();
-	}
-
-	// 8
-	pass BlurUpScale
-	{
-		SetRasterizerState(RS_Default);
-		SetDepthStencilState(DSS_None, 0);
-		SetBlendState(BS_OneBlend, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
-		VertexShader = compile vs_5_0 VS_MAIN();
-		GeometryShader = NULL;
-		HullShader = NULL;
-		DomainShader = NULL;
-		PixelShader = compile ps_5_0 PS_BLUR_UPSCALE();
-	}
-
-	// 9
-	pass Render_Final
-	{
-		SetRasterizerState(RS_Default);
-		SetDepthStencilState(DSS_Default, 0);
-		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
-		VertexShader = compile vs_5_0 VS_MAIN();
-		GeometryShader = NULL;
-		HullShader = NULL;
-		DomainShader = NULL;
-		PixelShader = compile ps_5_0 PS_MAIN_FINAL();
-	}
 }
-
-
-
-
