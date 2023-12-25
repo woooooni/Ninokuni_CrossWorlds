@@ -136,8 +136,8 @@ namespace Engine
 /* 아이템 코드 */
 	enum ITEM_CODE
 	{
-#pragma region Sword
-		SWORD_CHRISTMAS,
+#pragma region Sword = 0
+		SWORD_CHRISTMAS = 0,
 		SWORD_CROSSSERVER,
 		SWORD_DARKNESS,
 		SWORD_DARKNESS02,
@@ -157,7 +157,7 @@ namespace Engine
 		SWORD_WOOD02,
 #pragma endregion
 
-#pragma region Hammer
+#pragma region Hammer 18
 		HAMMER_CHRISTMAS,
 		HAMMER_CROSSSERVEVR,
 		HAMMER_DARKNESS,
@@ -178,7 +178,7 @@ namespace Engine
 		HAMMER_WOOD02,
 #pragma endregion
 
-#pragma region Gauntlet
+#pragma region Gauntlet 36
 		GAUNTLET_CHRISTMAS,
 		GAUNTLET_CROSSSEVER,
 		GAUNTLET_FISH,
@@ -192,6 +192,18 @@ namespace Engine
 #pragma endregion
 
 #pragma region Rifle
+
+#pragma region Helmet = 46
+		HELMET_HARD,
+		HELMET_MYSTIC,
+		HELMET_IMMORTAL,
+#pragma endregion
+
+#pragma region Armor = 49
+		ARMOR_STRONG,
+		ARMOR_IMPERIAL,
+		ARMOR_CELESTIAL,
+#pragma endregion
 
 #pragma endregion
 		CODE_END

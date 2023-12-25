@@ -22,7 +22,7 @@ HRESULT CDMWitchState_Base::Initialize(const list<wstring>& AnimationList)
 	/* 후에 플레이어로 교체 */
 	for (auto iter : GI->Find_GameObjects(LEVEL_TEST, LAYER_CHARACTER))
 	{
-		m_pPlayer = dynamic_cast<CCharacter_Dummy*>(iter);
+		m_pPlayer = dynamic_cast<CCharacter_SwordMan*>(iter);
 	}
 	if (m_pPlayer != nullptr)
 		m_pPlayerTransform = m_pPlayer->Get_Component<CTransform>(TEXT("Com_Transform"));

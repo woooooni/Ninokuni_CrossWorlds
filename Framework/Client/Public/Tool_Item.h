@@ -2,6 +2,7 @@
 
 #include "Tool.h"
 #include "GameItem_Weapon.h"
+#include "GameItem_Armor.h"
 
 BEGIN(Client)
 
@@ -13,10 +14,20 @@ public:
 		string strName = "";
 		int eCode = CODE_END;
 		string strContent = "";
-		int eMainCategory = CGameItem_Weapon::CATEGORY_END;
+		int eMainCategory = CGameItem::CATEGORY_END;
 		int eWeaponCategory = CGameItem_Weapon::WEAPON_END;
 		_float	fAtk = 0.f;
 	}TOOLDESC_WEAPON;
+
+	typedef struct tagToolArmorDesc
+	{
+		string strName = "";
+		int eCode = CODE_END;
+		string strContent = "";
+		int eMainCategory = CGameItem::CATEGORY_END;
+		int eArmorCategory = CGameItem_Armor::ARMOR_END;
+		_float	fDef = 0.f;
+	}TOOLDESC_ARMOR;
 
 private:
 	CTool_Item(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -45,6 +56,7 @@ private:
 
 
 	TOOLDESC_WEAPON m_tWeaponDesc = {};
+	TOOLDESC_ARMOR m_tArmorDesc = {};
 
 	/* enum */
 	int m_iCodes[CODE_END];

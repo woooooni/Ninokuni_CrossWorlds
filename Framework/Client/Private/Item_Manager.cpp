@@ -72,15 +72,29 @@ HRESULT CItem_Manager::Add_ItemDesc(const wstring& strPatriclePath)
 			{
 				CGameItem_Weapon::ITEMDESC_WEAPON tItemDesc;
 				Json Load = GI->Json_Load(strFilePath);
-
+				
 				tItemDesc.eCode = Load["Code"];
 				tItemDesc.eMainCategory = Load["MainCategory"];
 				tItemDesc.eWeaponCategory = Load["WeaponCategory"];
-				tItemDesc.strName = CUtils::ToWString(Load["Name"]);
-				tItemDesc.strContent = CUtils::ToWString(Load["Content"]);
+				tItemDesc.strName = CUtils::Utf8_To_Wstring(Load["Name"]);
+				tItemDesc.strContent = CUtils::Utf8_To_Wstring(Load["Content"]);
 				tItemDesc.fAtk = Load["Atk"];
+				
+				m_mapWeaponItem.emplace(tItemDesc.eCode, CGameItem_Weapon::Create(&tItemDesc));
+ 			}
+			else if (strFilePath.find(L"Armor") != wstring::npos)
+			{
+				CGameItem_Armor::ITEMDESC_ARMOR tItemDesc;
+				Json Load = GI->Json_Load(strFilePath);
 
-				m_mapWeaponItemDesc.emplace(tItemDesc.eCode, tItemDesc);
+				tItemDesc.eCode = Load["Code"];
+				tItemDesc.eMainCategory = Load["MainCategory"];
+				tItemDesc.eArmorCategory = Load["ArmorCategory"];
+				tItemDesc.strName = CUtils::Utf8_To_Wstring(Load["Name"]);
+				tItemDesc.strContent = CUtils::Utf8_To_Wstring(Load["Content"]);
+				tItemDesc.fDef = Load["Def"];
+
+				m_mapArmorItem.emplace(tItemDesc.eCode, CGameItem_Armor::Create(&tItemDesc));
 			}
 		}
 	}
@@ -88,6 +102,35 @@ HRESULT CItem_Manager::Add_ItemDesc(const wstring& strPatriclePath)
 	return S_OK;
 }
 
+CGameItem_Weapon::ITEMDESC_WEAPON CItem_Manager::Get_WeaponItemDesc(ITEM_CODE eCode)
+{
+	auto iter = m_mapWeaponItem.find(eCode);
+
+	if (iter == m_mapWeaponItem.end())
+		return {};
+
+	return iter->second->Get_ItemDesc();
+}
+
+CGameItem_Armor::ITEMDESC_ARMOR CItem_Manager::Get_ArmorItemDesc(ITEM_CODE eCode)
+{
+	auto iter = m_mapArmorItem.find(eCode);
+
+	if (iter == m_mapArmorItem.end())
+		return {};
+
+	return iter->second->Get_ItemDesc();
+}
+
 void CItem_Manager::Free()
 {
+	__super::Free();
+
+	for (auto& iter : m_mapWeaponItem)
+		Safe_Release(iter.second);
+	m_mapWeaponItem.clear();
+
+	for (auto& iter : m_mapArmorItem)
+		Safe_Release(iter.second);
+	m_mapArmorItem.clear();
 }

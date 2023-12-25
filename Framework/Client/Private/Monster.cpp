@@ -169,8 +169,8 @@ HRESULT CMonster::Render()
 			if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveWeight", &m_fDissolveWeight, sizeof(_float))))
 				return E_FAIL;
 
-			if (FAILED(m_pDissoveTexture->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
-				return E_FAIL;
+			//if (FAILED(m_pDissoveTexture->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
+			//	return E_FAIL;
 		}
 
 		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, iPassIndex)))

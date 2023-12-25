@@ -29,9 +29,6 @@ public:
 	virtual void Tick(_float fTimeDelta);
 
 public:
-	virtual ITEMDESC Get_ItemDesc() PURE;
-
-public:
 	virtual void Free() override;
 };
 

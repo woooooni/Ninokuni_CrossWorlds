@@ -10,7 +10,7 @@
 #include "Navigation.h"
 #include "RigidBody.h"
 
-#include "Character_Dummy.h" // 후에 플레이어로 교체
+#include "Character_SwordMan.h" // 후에 플레이어로 교체
 
 BEGIN(Client)
 
@@ -36,7 +36,7 @@ protected:
 	virtual _bool State_Wait(_float fDestTime, _float fTimeDelta);
 
 protected:
-	CCharacter_Dummy* m_pPlayer = nullptr; // 후에 플레이어로 교체.
+	CCharacter_SwordMan* m_pPlayer = nullptr; // 후에 플레이어로 교체.
 	CTransform* m_pPlayerTransform = nullptr;
 	
 	CGlanix* m_pGlanix = nullptr;

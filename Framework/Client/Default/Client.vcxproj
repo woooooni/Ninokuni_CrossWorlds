@@ -119,7 +119,7 @@
       <LanguageStandard_C>Default</LanguageStandard_C>
       <CombineFilesOnlyFromTheSameFolder>false</CombineFilesOnlyFromTheSameFolder>
       <MaxFilesInUnityFile>0</MaxFilesInUnityFile>
-      <AdditionalOptions>/bigobj /execution-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/execution-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -230,6 +230,7 @@
     <ClInclude Include="..\Public\Baobam_DarkNode_Skill2.h" />
     <ClInclude Include="..\Public\Character.h" />
     <ClInclude Include="..\Public\Character_Dummy.h" />
+    <ClInclude Include="..\Public\GameItem_Armor.h" />
     <ClInclude Include="..\Public\Item_Manager.h" />
     <ClInclude Include="..\Public\State_Character.h" />
     <ClInclude Include="..\Public\Character_SwordMan.h" />
@@ -564,6 +565,7 @@
     <ClCompile Include="..\Private\Cat.cpp" />
     <ClCompile Include="..\Private\Character.cpp" />
     <ClCompile Include="..\Private\Character_Dummy.cpp" />
+    <ClCompile Include="..\Private\GameItem_Armor.cpp" />
     <ClCompile Include="..\Private\Item_Manager.cpp" />
     <ClCompile Include="..\Private\State_Character.cpp" />
     <ClCompile Include="..\Private\Character_SwordMan.cpp" />
