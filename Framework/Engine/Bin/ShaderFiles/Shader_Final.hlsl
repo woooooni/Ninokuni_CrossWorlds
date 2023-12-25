@@ -12,6 +12,9 @@ texture2D g_EffectUIDiffuseTarget;
 texture2D g_EffectUIBrightnessTarget;
 texture2D g_EffectUIBlurTarget;
 
+// ¿É¼Ç
+bool g_bBlurDraw;
+
 struct VS_IN
 {
 	float3		vPosition : POSITION;
@@ -76,7 +79,8 @@ PS_OUT PS_MAIN_FINAL(PS_IN In)
 	else
 		Out.vColor = vDiffuseColor;
 
-	Out.vColor = Out.vColor + vEffectBlurColor + vEffectUIBlurColor;
+	if(g_bBlurDraw)
+		Out.vColor = Out.vColor + vEffectBlurColor + vEffectUIBlurColor;
 
 	return Out;
 

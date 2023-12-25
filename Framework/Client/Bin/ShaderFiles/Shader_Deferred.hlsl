@@ -37,7 +37,12 @@ vector g_vMtrlSpecular = vector(1.f, 1.f, 1.f, 1.f);
 float2 g_vFogStartEnd = { 1.f, 5.f };
 float4 g_vFogColor    = { .5f, .5f, .5f, 1.f };
 
-float  g_fBias        = 0.2f;
+// ¿É¼Ç
+bool   g_bShadowDraw;
+bool   g_bSsaoDraw;
+bool   g_bOutLineDraw;
+
+float  g_fBias = 0.2f;
 
 struct VS_IN
 {
@@ -256,13 +261,19 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 	vSpecular = ceil(vSpecular * 5.f) / 5.f;*/
 
 	// Shadow
-	vector vShadow = Shadow_Caculation(In);
+	vector vShadow = float4(1.f, 1.f, 1.f, 1.f);
+	if(g_bShadowDraw)
+		vShadow = Shadow_Caculation(In);
 
     // SSAO
-	vector vSSAO = g_SSAOTarget.Sample(LinearSampler, In.vTexcoord);
+	vector vSSAO = float4(1.f, 1.f, 1.f, 1.f);
+	if(g_bSsaoDraw)
+		vSSAO = g_SSAOTarget.Sample(LinearSampler, In.vTexcoord);
 
 	// Outline
-	vector vOutline = g_OutlineTarget.Sample(LinearSampler, In.vTexcoord);
+	vector vOutline = float4(1.f, 1.f, 1.f, 1.f);
+	if(g_bOutLineDraw)
+		vOutline = g_OutlineTarget.Sample(LinearSampler, In.vTexcoord);
 
 	/* Fog
 	float fFogFactor = saturate(((g_vFogStartEnd.y - (fViewZ)) / (g_vFogStartEnd.y - g_vFogStartEnd.x)));

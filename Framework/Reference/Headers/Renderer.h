@@ -120,10 +120,10 @@ private:
 	HRESULT Render_Cursor();
 
 	// Blur
-	HRESULT Render_Blur(const wstring& strStartTargetTag, const wstring& strFinalTragetTag, _bool bClear, int iPower);
+	HRESULT Render_Blur(const wstring& strStartTargetTag, const wstring& strFinalTragetTag, _bool bClear, _int iHorizontalPass, _int iVerticalPass);
 	HRESULT Render_BlurDownSample(const wstring& strStartTargetTag);
-	HRESULT Render_Blur_Horizontal(int iPower);
-	HRESULT Render_Blur_Vertical(int iPower);
+	HRESULT Render_Blur_Horizontal(_int iHorizontalPass);
+	HRESULT Render_Blur_Vertical(_int iVerticalPass);
 	HRESULT Render_BlurUpSample(const wstring& strFinalMrtTag, _bool bClear);
 
 #ifdef _DEBUG
@@ -149,8 +149,8 @@ private:
 	map<wstring, INSTANCING_DESC> m_Render_Instancing_Objects[RENDER_END];
 
 private:
-	class CShader*        m_pShaders[RENDERER_SHADER_TYPE::SHADER_END];
-	class CShader*        m_pIntancingShaders[INSTANCING_SHADER_TYPE::TYPE_END];
+	class CShader* m_pShaders[RENDERER_SHADER_TYPE::SHADER_END];
+	class CShader* m_pIntancingShaders[INSTANCING_SHADER_TYPE::TYPE_END];
 
 	class CVIBuffer_Rect*       m_pVIBuffer = { nullptr };
 	class CVIBuffer_Instancing* m_pVIBuffer_Instancing = nullptr;
@@ -160,9 +160,17 @@ private:
 	class CTarget_Manager* m_pTarget_Manager = { nullptr };
 	class CLight_Manager*  m_pLight_Manager = { nullptr };
 
-private:
-	_bool   m_bSsaoDraw = false;
-	_bool	m_bDebugDraw = false;
+private: 
+	_bool	m_bDebugDraw   = false;
+	_bool   m_bOption      = false;
+	// On/Off_Option
+	_bool   m_bShadowDraw  = false;
+	_bool   m_bSsaoDraw    = false;
+	_bool   m_bOutlineDraw = false;
+	_bool   m_bBlurDraw    = false;
+	// 구현 필요
+	_bool   m_bBlomDraw = false;
+	_bool   m_bPbrDraw  = false;
 
 private:
 	_float4	m_vFogColor = {.5f, .5f, .5f, 1.f };
