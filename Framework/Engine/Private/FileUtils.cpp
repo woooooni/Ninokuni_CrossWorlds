@@ -90,3 +90,4 @@ void CFileUtils::Read(OUT string& data)
 	data = temp;
 	delete[] temp;
 }
+

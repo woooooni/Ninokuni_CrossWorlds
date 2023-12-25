@@ -164,7 +164,7 @@ void CImGui_Manager::Tick(_float fTimeDelta)
     ImGui::Checkbox("Terrain_Tool", &m_bShowTerrain_Tool);
     ImGui::Checkbox("Navigation_Tool", &m_bShowNavigation_Tool);
     ImGui::Checkbox("UI_Tool", &m_bShowUI_Tool);
-    ImGui::Checkbox("UI_Item", &m_bShowItem_Tool);
+    ImGui::Checkbox("Item_Tool", &m_bShowItem_Tool);
     ImGui::Checkbox("Demo", &m_bShow_Demo);
     ImGui::End();
 

@@ -294,6 +294,23 @@ _float CUtils::Random_Float(_float fMin, _float fMax)
 	return Distribution(Generater);
 }
 
+wstring CUtils::Utf8_To_Wstring(const string& strUtf8)
+{
+	int requiredSize = MultiByteToWideChar(CP_UTF8, 0, strUtf8.c_str(), -1, nullptr, 0);
+	if (requiredSize == 0) {
+		MSG_BOX("Fail UTF-8 To Wstring");
+		return L"";
+	}
+
+	std::wstring strUtf16(requiredSize, L'\0');
+	if (MultiByteToWideChar(CP_UTF8, 0, strUtf8.c_str(), -1, &strUtf16[0], requiredSize) == 0) {
+		MSG_BOX("Fail UTF-8 To Wstring");
+		return L"";
+	}
+
+	return strUtf16;
+}
+
 std::wstring CUtils::ToWString(string value)
 {
 	return wstring(value.begin(), value.end());

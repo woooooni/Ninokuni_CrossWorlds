@@ -4,6 +4,7 @@
 #include "Base.h"
 
 #include "GameItem_Weapon.h"
+#include "GameItem_Armor.h"
 
 BEGIN(Client)
 
@@ -18,13 +19,16 @@ public:
 	HRESULT Reserve_Manager(const wstring& strPatriclePath);
 	void	Tick(_float fTimeDelta);
 
-public:
 	// void	Add_ItemDesc(CGameItem::ITEMCATEGORY_MAIN eCategory, void* pDesc);
 	HRESULT	Add_ItemDesc(const wstring& strPatriclePath);
-
+public:
+	CGameItem_Weapon::ITEMDESC_WEAPON Get_WeaponItemDesc(ITEM_CODE eCode);
+	CGameItem_Armor::ITEMDESC_ARMOR Get_ArmorItemDesc(ITEM_CODE eCode);
 
 private:
-	map<ITEM_CODE, CGameItem_Weapon::ITEMDESC_WEAPON> m_mapWeaponItemDesc;
+	map<ITEM_CODE, CGameItem_Weapon*> m_mapWeaponItem;
+	map<ITEM_CODE, CGameItem_Armor*> m_mapArmorItem;
+	// 여기에 이어서 다른 카테고리도 만들기.
 
 public:
 	virtual void Free() override;

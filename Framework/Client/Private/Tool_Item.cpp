@@ -5,6 +5,8 @@
 
 #include "GameInstance.h"
 
+#include "Item_Manager.h"
+
 CTool_Item::CTool_Item(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CTool(pDevice, pContext)
 {
@@ -32,8 +34,21 @@ void CTool_Item::Show_Button()
 {
 	ImGui::Begin("Type");
 
-	ImGui::Checkbox("Show_WeaponDesc", &m_bShowWeapon);
-	ImGui::Checkbox("Show_ArmorDesc", &m_bShowArmor);
+	if (ImGui::Checkbox("Show_WeaponDesc", &m_bShowWeapon))
+	{
+		if (m_bShowWeapon)
+		{
+			m_bShowArmor = false;
+		}
+	}
+	
+	if (ImGui::Checkbox("Show_ArmorDesc", &m_bShowArmor))
+	{
+		if (m_bShowArmor)
+		{
+			m_bShowWeapon = false;
+		}
+	}
 
 	ImGui::End();
 }
@@ -99,6 +114,53 @@ void CTool_Item::Show_Weapon()
 
 void CTool_Item::Show_Armor()
 {
+	const char* enumStrings[CGameItem_Armor::ARMOR_END] = { "ARMOR_HELMET", "ARMOR_ARMOR", "ARMOR_GLOVE", "ARMOR_BOOT" };
+
+	m_tArmorDesc.eMainCategory = CGameItem_Weapon::CATEGORY_ARMOR;
+
+	ImGui::Text("Name");
+	ImGui::SameLine();
+	ImGui::InputText("##Name", strName, MAX_PATH);
+
+	ImGui::Text("Code");
+	ImGui::SameLine();
+	ImGui::InputInt("##Code", &m_tArmorDesc.eCode);
+
+	ImGui::Text("ArmorCategory");
+	ImGui::Combo("##ArmorCategory", &m_tArmorDesc.eArmorCategory, enumStrings, CGameItem_Armor::ARMOR_END);
+
+	ImGui::Text("Def");
+	ImGui::SameLine();
+	ImGui::InputFloat("##Def", &m_tArmorDesc.fDef);
+
+	ImGui::Text("Content");
+	ImGui::InputText("##Content", strContent, MAX_PATH);
+
+	ImGui::Text("FilePath");
+	ImGui::InputText("##Path", szFilePath, MAX_PATH);
+
+	if (ImGui::Button("Export"))
+	{
+		m_tArmorDesc.strName = strName;
+		m_tArmorDesc.strContent = strContent;
+
+		Json ArmorDesc;
+		ArmorDesc["Name"] = m_tArmorDesc.strName;
+		ArmorDesc["Code"] = m_tArmorDesc.eCode;
+		ArmorDesc["MainCategory"] = m_tArmorDesc.eMainCategory;
+		ArmorDesc["ArmorCategory"] = m_tArmorDesc.eArmorCategory;
+		ArmorDesc["Def"] = m_tArmorDesc.fDef;
+		ArmorDesc["Content"] = m_tArmorDesc.strContent;
+
+		if (FAILED(GI->Json_Save(CUtils::ToWString(szFilePath), ArmorDesc)))
+		{
+			MSG_BOX("Failed Export.");
+		}
+		else
+		{
+			MSG_BOX("Success Export.");
+		}
+	}
 }
 
 CTool_Item* CTool_Item::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
