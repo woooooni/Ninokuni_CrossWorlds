@@ -701,6 +701,17 @@ namespace Engine
 
 	}ANIM_EVENT_SOUND_DESC;
 
+	typedef struct tagAnimEventColliderDesc : public ANIM_EVENT_DESC
+	{
+		_bool bOnOff;
+		Vec3 vOffset;
+		Vec3 vExtents;
+		_uint iDetectionType;
+
+		Vec3 vPadding;
+
+	}ANIM_EVENT_COLLIDER_DESC;
+
 #pragma endregion
 
 #pragma region Animation KeyFrame Speed 

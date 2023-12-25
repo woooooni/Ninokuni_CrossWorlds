@@ -101,6 +101,7 @@ HRESULT CTool_Model::Clear_ToolAnimationData()
 	m_iAutoAnimIndex = 0;
 
 	m_iSoundEventIndex = -1;
+	m_iColliderEventIndex = -1;
 	m_fCurEventFrame = 0.f;
 
 
@@ -119,6 +120,7 @@ HRESULT CTool_Model::Clear_ToolAnimationData()
 HRESULT CTool_Model::Claer_EventData()
 {
 	m_iSoundEventIndex = -1;
+	m_iColliderEventIndex = -1;
 	m_fCurEventFrame = 0.f;
 	return S_OK;
 }
@@ -1342,28 +1344,6 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 				}
 				IMGUI_NEW_LINE;
 
-				/* Type */
-				/*ImGui::PushItemWidth(300.f);
-				{
-					static int iSoundCurIndex = 0; 
-					const char* szSoundPreview = szAnimEventSoundTypeNames[iSoundCurIndex];
-					if (ImGui::BeginCombo("Sound Event Type", szSoundPreview))
-					{
-						for (int n = 0; n < IM_ARRAYSIZE(szAnimEventSoundTypeNames); n++)
-						{
-							const bool is_selected = (iSoundCurIndex == n);
-							if (ImGui::Selectable(szAnimEventSoundTypeNames[n], is_selected))
-								iSoundCurIndex = n;
-
-							if (is_selected)
-								ImGui::SetItemDefaultFocus();
-						}
-						ImGui::EndCombo();
-					}
-				}
-				ImGui::PopItemWidth();
-				IMGUI_NEW_LINE;*/
-
 				/* Prop */
 				{
 					/* Sound Key */
@@ -1604,34 +1584,125 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 			/* Collider */
 			if (ImGui::BeginTabItem("Collider"))
 			{
-				ImGui::PushItemWidth(200.f);
-				{
-					static int iColliderCurIndex = 0;
-					const char* szColliderPreview = szAnimEventColliderTypeNames[iColliderCurIndex];
-					if (ImGui::BeginCombo("Collider Event Type", szColliderPreview))
-					{
-						for (int n = 0; n < IM_ARRAYSIZE(szAnimEventColliderTypeNames); n++)
-						{
-							const bool is_selected = (iColliderCurIndex == n);
-							if (ImGui::Selectable(szAnimEventColliderTypeNames[n], is_selected))
-								iColliderCurIndex = n;
+				///*
+				//vector<pair<_float, ANIM_EVENT_COLLIDER_DESC>> ColliderEvents = pCurAnim->Get_ColliderEvents();
+
+				//IMGUI_NEW_LINE;
+
+				///* 키프레임 수정 여부 반영 */
+				//if (bChangedEventFrame && !ColliderEvents.empty())
+				//{
+				//	ColliderEvents[m_iColliderEventIndex].first = m_fCurEventFrame;
+				//	pCurAnim->Change_EventKeyFrame(m_iColliderEventIndex, ColliderEvents[m_iColliderEventIndex].first, ANIM_EVENT_TYPE::COLLIDER);
+				//}
 
 
-							if (is_selected)
-								ImGui::SetItemDefaultFocus();
-						}
-						ImGui::EndCombo();
-					}
+				///* Collider Event List */
+				//ImGui::Text(u8"설정된 콜라이더 이벤트 (count : %d)", ColliderEvents.size());
 
-				}
-				ImGui::PopItemWidth();
+				//if (ImGui::BeginListBox("##Collider_Event_List", ImVec2(450.f, 70.f)))
+				//{
+				//	/*for (size_t i = 0; i < ColliderEvents.size(); ++i)
+				//	{
+				//		int iSoundKeyCurIndex = GI->Get_SoundFileIndex(ColliderEvents[i].second.pSoundKey);
 
+				//		string strFrame = to_string(ColliderEvents[i].first);
+				//		strFrame = strFrame.substr(0, 6);
 
-				IMGUI_NEW_LINE;
-				if (ImGui::Button("Add Collider Event"))
-				{
+				//		string strEventName = "Frame : " + strFrame +
+				//			"    " +
+				//			"Name : " + string(m_arrSoundKeys[iSoundKeyCurIndex]);
 
-				}
+				//		if (ImGui::Selectable(strEventName.c_str(), i == m_iSoundEventIndex))
+				//		{
+				//			m_iSoundEventIndex = i;
+
+				//		}
+				//	}*/
+				//	ImGui::EndListBox();
+				//}
+				//IMGUI_NEW_LINE;
+
+				//ImGui::PushItemWidth(200.f);
+				//{
+				//	if (0 <= m_iColliderEventIndex)
+				//	{
+				//		/* On Off 여부 */
+				//		_bool bSetCollider = false;
+				//		if (ImGui::Checkbox("On Off Collider", &bSetCollider))
+				//		{
+
+				//		}
+
+				//		/* 디텍션 타입 */
+				//		int iDetectionTypeIndex = ColliderEvents[m_iColliderEventIndex].second.iDetectionType;
+				//		const char* items[] = { "BOUNDARY", "BODY", "ATTACK"};
+				//		const char* combo_preview_value = items[m_iColliderEventIndex];  // Pass in the preview value visible before opening the combo (it could be anything)
+				//		if (ImGui::BeginCombo("combo 1", combo_preview_value))
+				//		{
+				//			for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+				//			{
+				//				const bool is_selected = (iDetectionTypeIndex == n);
+				//				if (ImGui::Selectable(items[n], is_selected))
+				//				{
+				//					iDetectionTypeIndex = n;
+				//					if (0 <= m_iColliderEventIndex)
+				//					{
+				//						ColliderEvents[m_iColliderEventIndex].second.iDetectionType = iDetectionTypeIndex;
+				//						pCurAnim->Change_ColliderEvent(m_iColliderEventIndex, ColliderEvents[m_iColliderEventIndex].second);
+				//					}
+				//				}
+
+				//				if (is_selected)
+				//					ImGui::SetItemDefaultFocus();
+				//			}
+				//			ImGui::EndCombo();
+				//		}
+
+				//		/* 오프셋 */
+				//		Vec4	vColliderOffset = Vec3::Zero;
+				//		_float	fColliderOffset[3] = { vColliderOffset.x, vColliderOffset.y, vColliderOffset.z };
+				//	
+				//		if (ImGui::DragFloat3(u8"Collider OffSet", fColliderOffset))
+				//		{
+
+				//		}
+
+				//		/* Extent */
+				//		Vec4	vColliderExtent = Vec3::Zero;
+				//		_float	fColliderExtent[3] = { vColliderExtent.x, vColliderExtent.y, vColliderExtent.z };
+
+				//		if (ImGui::DragFloat3(u8"Collider Extent", fColliderExtent))
+				//		{
+
+				//		}
+				//	}
+				//}
+				//ImGui::PopItemWidth();
+				//IMGUI_NEW_LINE;
+
+				//if (ImGui::Button("Add Collider Event"))
+				//{
+
+				//}
+				//IMGUI_SAME_LINE;
+
+				//if (ImGui::Button("Del Collider Event"))
+				//{
+
+				//}
+				//IMGUI_SAME_LINE;
+
+				//if (ImGui::Button("Del Collider Events"))
+				//{
+
+				//}
+				//IMGUI_SAME_LINE;
+
+				//if (ImGui::Button("Sort Collider Event"))
+				//{
+
+				//}
 
 				ImGui::EndTabItem();
 			}

@@ -95,6 +95,8 @@ private:
 
 	const char** m_arrSoundKeys = nullptr;
 	_uint m_iSoundKeySize = 0;
+
+	_int m_iColliderEventIndex = -1;
 	
 
 #pragma endregion

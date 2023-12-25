@@ -88,7 +88,7 @@ void CMainApp::Tick(_float fTimeDelta)
 	
 	
 	m_fTimeAcc += fTimeDelta;
-	
+
 }
 
 HRESULT CMainApp::Render()
