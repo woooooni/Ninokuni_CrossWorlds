@@ -12,11 +12,6 @@ HRESULT CState_SwordMan_Battle_Idle::Initialize(const list<wstring>& AnimationLi
 {
     if (FAILED(__super::Initialize(AnimationList)))
         return E_FAIL;
-
-    m_pCharacter = dynamic_cast<CCharacter*>(m_pStateMachineCom->Get_Owner());
-
-    if (nullptr == m_pCharacter)
-        return E_FAIL;
     
     return S_OK;
 }

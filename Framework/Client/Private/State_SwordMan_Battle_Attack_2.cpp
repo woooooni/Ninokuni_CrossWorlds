@@ -12,11 +12,6 @@ HRESULT CState_SwordMan_Battle_Attack_2::Initialize(const list<wstring>& Animati
 {
     if (FAILED(__super::Initialize(AnimationList)))
         return E_FAIL;
-
-    m_pCharacter = dynamic_cast<CCharacter*>(m_pStateMachineCom->Get_Owner());
-
-    if (nullptr == m_pCharacter)
-        return E_FAIL;
     
     return S_OK;
 }
@@ -28,6 +23,9 @@ void CState_SwordMan_Battle_Attack_2::Enter_State(void* pArg)
 
 void CState_SwordMan_Battle_Attack_2::Tick_State(_float fTimeDelta)
 {
+    if (m_pModelCom->Get_Progress() >= 0.2f && m_pModelCom->Get_Progress() <= 0.4f)
+        m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), 3.f, fTimeDelta);
+
     Input(fTimeDelta);
 
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())

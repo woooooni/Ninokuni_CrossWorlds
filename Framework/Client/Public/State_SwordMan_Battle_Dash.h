@@ -26,10 +26,7 @@ public:
 	virtual void Exit_State() override;
 
 private:
-	void Input(_float fTimeDelta);
-
-private:
-	_bool m_bGroundChange = false;
+	Vec3 m_vDir = {};
 
 public:
 	static CState_SwordMan_Battle_Dash* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);

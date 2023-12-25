@@ -7,6 +7,7 @@
 #include "GameInstance.h"
 #include "Utils.h"
 #include "Picking_Manager.h"
+#include "Camera_Manager.h"
 #include "Mesh.h"
 #include "Light.h"
 #include <filesystem>
@@ -988,8 +989,6 @@ void CTool_Map::ChangeState()
 	m_pSelectLight = nullptr;
 	m_bAddLight = false;
 }
-
-
 HRESULT CTool_Map::Save_Map_Data(const wstring& strMapFileName)
 {
 	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strMapFileName + L"/" + strMapFileName + L".map";
@@ -1067,10 +1066,10 @@ HRESULT CTool_Map::Save_Map_Data(const wstring& strMapFileName)
 HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 {
 	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strMapFileName + L"/" + strMapFileName + L".map";
-	
+
 	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
 	File->Open(strMapFilePath, FileMode::Read);
-	
+
 	GI->Clear_PhysX_Ground();
 
 	for (_uint i = 0; i < LAYER_TYPE::LAYER_END; ++i)
@@ -1092,8 +1091,6 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 			continue;
 
 		GI->Clear_Layer(LEVEL_TOOL, i);
-
-
 		{
 			_uint iObjectCount = File->Read<_uint>();
 
@@ -1153,6 +1150,7 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 		}
 	}
 
+
 	static _float fCreatePos[3] = { -10.f, 50.f, 0.f };
 	static _bool bCharacter = false;
 
@@ -1180,7 +1178,7 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 
 	}
 
-	// MSG_BOX("Map_Loaded.");
+	MSG_BOX("Map_Loaded.");
 	return S_OK;
 
 }

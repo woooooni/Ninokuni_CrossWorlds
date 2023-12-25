@@ -62,10 +62,18 @@ HRESULT CCharacter::Initialize(void* pArg)
 
 void CCharacter::Tick(_float fTimeDelta)
 {
+	__super::Tick(fTimeDelta);
 	GI->Add_CollisionGroup(COLLISION_GROUP::CHARACTER, this);
 
-	if(nullptr != m_pWeapon)
-		m_pWeapon->Tick(fTimeDelta);
+	if (KEY_TAP(KEY::L))
+	{
+		GI->Lock_Mouse();
+	}
+	if (KEY_TAP(KEY::U))
+	{
+		GI->UnLock_Mouse();
+	}
+
 	//if (m_bInfinite)
 	//{
 	//	m_fAccInfinite += fTimeDelta;
@@ -103,6 +111,7 @@ void CCharacter::LateTick(_float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return;
 
+	m_pControllerCom->LateTick_Controller(fTimeDelta);
 	m_pModelCom->LateTick(fTimeDelta);
 
 	if (nullptr != m_pWeapon)
@@ -114,19 +123,21 @@ void CCharacter::LateTick(_float fTimeDelta)
 
 
 #ifdef _DEBUG
-	//m_pRendererCom->Set_PlayerPosition(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-	//for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
-	//{
-	//	for (auto& pCollider : m_Colliders[i])
-	//		m_pRendererCom->Add_Debug(pCollider);
-	//}
-	//m_pRendererCom->Add_Debug(m_pNavigationCom);
-	//m_pRendererCom->Add_Debug(m_pRigidBodyCom);
+	m_pRendererCom->Set_PlayerPosition(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
+	{
+		for (auto& pCollider : m_Colliders[i])
+			m_pRendererCom->Add_Debug(pCollider);
+	}
+
 #endif
 }
 
 HRESULT CCharacter::Render()
 {
+
+	if(FAILED(__super::Render()))
+		return E_FAIL;
 	if (nullptr == m_pModelCom || nullptr == m_pShaderCom)
 		return E_FAIL;
 

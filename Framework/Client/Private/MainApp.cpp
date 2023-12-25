@@ -60,8 +60,8 @@ HRESULT CMainApp::Initialize()
 
 
 	Json Test;
-	Test["Name"] = "김태원김태원";
-	Test["Test"] = "테스트테스트테스트세트슽ㅁㄴ우ㅡㅓㅋ투차ㅓ머ㅏㅣ";
+	Test["Name"] = "김태원김태원김태원김태원김태원김태원김태원김태원김태원김태원김태원김태원김태원김태원";
+	Test["Test"] = "테스트테스트테스트테스트";
 	Test["int"] = 3;
 	Test["float"] = 3.f;
 	Test["string"] = "스트링";

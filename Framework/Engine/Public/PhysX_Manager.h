@@ -6,7 +6,7 @@
 
 BEGIN(Engine)
 
-class CPhysX_Manager final : public CBase, public PxSimulationEventCallback
+class CPhysX_Manager final : public CBase, public PxSimulationEventCallback, public PxControllerFilterCallback
 {
 	DECLARE_SINGLETON(CPhysX_Manager)
 	
@@ -62,6 +62,8 @@ public:
 	virtual void onAdvance(const PxRigidBody* const* bodyBuffer, const PxTransform* poseBuffer, const PxU32 count) override;
 
 public:
+	// PxControllerFilterCallback을(를) 통해 상속됨
+	virtual bool filter(const PxController& a, const PxController& b) override;
 	  //PxParticleSystem* Get_ParticleSystem()			{ return m_pParticleSystem; }
 	  //PxParticleClothBuffer* Get_ClothBuffer()			{ return m_pClothBuffer; }
 	  //PxCudaContext* Get_CudaContext()					{ return m_pCudaContextManager->getCudaContext(); }
@@ -110,10 +112,10 @@ private:
 	PxControllerManager* m_pController_Manager = nullptr; // 컨트롤러 매니저
 
 	//// PxCloth.
-	//PxCudaContextManager*       m_pCudaContextManager = nullptr;
-	//PxPBDParticleSystem*		m_pParticleSystem = nullptr;
-	//PxParticleClothBuffer*		m_pClothBuffer = nullptr;
-	//PxPartitionedParticleCloth	m_Cloth = {};
+	PxCudaContextManager*       m_pCudaContextManager = nullptr;
+	/*PxPBDParticleSystem*		m_pParticleSystem = nullptr;
+	PxParticleClothBuffer*		m_pClothBuffer = nullptr;
+	PxPartitionedParticleCloth	m_Cloth = {};*/
 
 	// 충돌처리 //
 	vector<PHYSX_GROUND_COLLISION_INFO> m_GroundCollision;
@@ -147,6 +149,8 @@ private:
 		
 public:
 	virtual void Free() override;
+
+	
 };
 
 END

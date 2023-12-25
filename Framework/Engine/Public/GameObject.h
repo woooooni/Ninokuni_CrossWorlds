@@ -98,7 +98,6 @@ public:
 	virtual HRESULT Set_Collider_AttackMode(_uint eAttackMode, _float fAirBornPower, _float fPushPower, _float fDamage, _bool bHitLag = true);
 
 protected:
-	void Update_Collider(_float fTimedelta);
 	void LateUpdate_Collider(_float fTimedelta);
 	void Render_Collider();
 	

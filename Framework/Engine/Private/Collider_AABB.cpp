@@ -9,7 +9,7 @@ CCollider_AABB::CCollider_AABB(ID3D11Device* pDevice, ID3D11DeviceContext* pCont
 	: CCollider(pDevice, pContext, CCollider::AABB)
 
 {
-	
+
 }
 
 CCollider_AABB::CCollider_AABB(CCollider_AABB& rhs)
@@ -20,8 +20,7 @@ CCollider_AABB::CCollider_AABB(CCollider_AABB& rhs)
 
 HRESULT CCollider_AABB::Initialize_Prototype()
 {
-	if(FAILED(__super::Initialize_Prototype()))
-		return E_FAIL;
+
 
 	return S_OK;
 }
@@ -36,22 +35,7 @@ HRESULT CCollider_AABB::Initialize(void* pArg)
 
 
 	AABB_COLLIDER_DESC* pDesc = static_cast<AABB_COLLIDER_DESC*>(pArg);
-	m_vOffsetPosition = pDesc->vOffsetPosition;
 	m_tBoundingBox = pDesc->tBox;
-
-	PHYSX_INIT_DESC InitDesc;
-	InitDesc.eColliderType = PHYSX_COLLIDER_TYPE::BOX;
-	InitDesc.eRigidType = PHYSX_RIGID_TYPE::DYNAMIC;
-	InitDesc.vStartPosition = m_tBoundingBox.Center;
-	InitDesc.vExtents = m_tBoundingBox.Extents;
-	InitDesc.bKinematic = true;
-	InitDesc.pGameObject = pDesc->pOwner;
-
-	m_pPhysXActor = GI->Add_Dynamic_Actor(InitDesc);
-	if (nullptr == m_pPhysXActor)
-		return E_FAIL;
-
-	m_pPhysXActor->userData = this;
 
 	return S_OK;
 }

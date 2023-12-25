@@ -32,7 +32,7 @@ void CState_SwordMan_Neutral_Jump::Enter_State(void* pArg)
 
     m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPosition);
     Vec3 vJumpDir = XMVector3Normalize(m_pTransformCom->Get_Look());
-    vJumpDir.y = 1.f;
+    vJumpDir.y = 0.8f;
 
     m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(vJumpDir), 10.f, true);
     m_pModelCom->Set_Animation(m_AnimIndices[0]);

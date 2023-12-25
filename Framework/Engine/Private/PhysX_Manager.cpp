@@ -6,6 +6,7 @@
 #include "Collider.h"
 #include "Collision_Manager.h"
 #include "VIBuffer.h"
+#define PX_SUPPORT_PVD
 
 
 
@@ -14,17 +15,12 @@ physx::PxFilterFlags FilterShader(
 	physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1,
 	physx::PxPairFlags& retPairFlags, const void* /*constantBlock*/, PxU32 /*constantBlockSize*/)
 {
-	retPairFlags |= PxPairFlag::eCONTACT_DEFAULT;
+	retPairFlags |= PxPairFlag::eTRIGGER_DEFAULT;
 	retPairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
 	retPairFlags |= PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
 	retPairFlags |= PxPairFlag::eNOTIFY_TOUCH_LOST;
-	retPairFlags |= PxPairFlag::eNOTIFY_CONTACT_POINTS;
-	retPairFlags |= PxPairFlag::eDETECT_DISCRETE_CONTACT;
-	retPairFlags = PxPairFlag::eSOLVE_CONTACT;
+	retPairFlags &= ~PxPairFlag::eSOLVE_CONTACT;
 	
-	
-
-	retPairFlags |= PxPairFlag::eTRIGGER_DEFAULT;
 
 	return PxFilterFlag::eDEFAULT;
 }
@@ -42,12 +38,13 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 {
 	m_Foundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_Allocator, m_ErrorCallback);
 
-	//m_pPvd = PxCreatePvd(*m_Foundation);
-	//m_pTransport = PxDefaultPvdSocketTransportCreate("127.0.0.1", m_iPortNumber, m_iTimeOutSeconds);
-	//m_pPvd->connect(*m_pTransport, PxPvdInstrumentationFlag::eALL);
-	//_bool bConntected = m_pPvd->isConnected();
+	PxCudaContextManagerDesc CudaDesc;
+	m_pCudaContextManager = PxCreateCudaContextManager(*m_Foundation, CudaDesc);
 
-
+	/*m_pPvd = PxCreatePvd(*m_Foundation);
+	m_pTransport = PxDefaultPvdSocketTransportCreate("127.0.0.1", m_iPortNumber, m_iTimeOutSeconds);
+	m_pPvd->connect(*m_pTransport, PxPvdInstrumentationFlag::eALL);
+	_bool bConntected = m_pPvd->isConnected();*/
 
 
 	m_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_Foundation, PxTolerancesScale(), true, m_pPvd);
@@ -58,7 +55,7 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 
 	SceneDesc.gravity = PxVec3(0.0f, 0.0f, 0.0f);
 	
-	m_Dispatcher = PxDefaultCpuDispatcherCreate(2);
+	m_Dispatcher = PxDefaultCpuDispatcherCreate(4);
 	if (!m_Dispatcher)
 		return E_FAIL;
 
@@ -72,7 +69,7 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 	SceneDesc.solverType = PxSolverType::eTGS;
 	SceneDesc.filterShader = FilterShader;
 	SceneDesc.simulationEventCallback = this;
-
+	SceneDesc.cudaContextManager = m_pCudaContextManager;
 
 
 
@@ -171,8 +168,7 @@ void CPhysX_Manager::LateTick(_float fTimeDelta)
 	}
 	m_GroundCollision.clear();
 
-	m_pController_Manager->computeInteractions(fTimeDelta);
-
+	
 	m_pScene->simulate(fTimeDelta);
 	m_pScene->fetchResults(true);
 	m_pScene->fetchResultsParticleSystem();
@@ -341,7 +337,6 @@ PxController* CPhysX_Manager::Add_CapsuleController(CGameObject* pGameObject, Ma
 	CapsuleDesc.userData = pGameObject;
 	CapsuleDesc.reportCallback = pCallBack;
 	
-	
 
 	PxController* pController = m_pController_Manager->createController(CapsuleDesc);
 
@@ -394,7 +389,7 @@ PxRigidDynamic* CPhysX_Manager::Create_Dynamic_Box(const PHYSX_INIT_DESC& Desc)
 	PxMaterial* pMateral = Create_Material(Desc.fStaticFriction, Desc.fDynamicFriction, Desc.fRestitution);
 	PxShape* shape = m_Physics->createShape(PxBoxGeometry(Desc.vExtents.x, Desc.vExtents.y, Desc.vExtents.z), *pMateral);
 	shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
-	shape->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, true);
+	shape->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, false);
 	shape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
 
 	PxVec3 vPxStartPositon = PxVec3(Desc.vStartPosition.x, Desc.vStartPosition.y, Desc.vStartPosition.z);
@@ -403,7 +398,6 @@ PxRigidDynamic* CPhysX_Manager::Create_Dynamic_Box(const PHYSX_INIT_DESC& Desc)
 
 	
 	pActor->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, Desc.bKinematic);
-	
 	pActor->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, Desc.bLockAngle_X);
 	pActor->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, Desc.bLockAngle_Y);
 	pActor->setRigidDynamicLockFlag(PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, Desc.bLockAngle_Z);
@@ -445,7 +439,7 @@ PxRigidStatic* CPhysX_Manager::Create_Static_Box(const PHYSX_INIT_DESC& Desc)
 	PxMaterial* pMateral = Create_Material(Desc.fStaticFriction, Desc.fDynamicFriction, Desc.fRestitution);
 	PxShape* shape = m_Physics->createShape(PxBoxGeometry(Desc.vExtents.x, Desc.vExtents.y, Desc.vExtents.z), *pMateral);
 	shape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
-	shape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
+	shape->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, false);
 	// shape->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, true);
 	shape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
 
@@ -857,7 +851,7 @@ HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGameObject, CModel* pModel, Mat
 		tDesc.triangles.data = Indices.data();
 
 
-		PxTriangleMesh* pTriangleMesh = PxCreateTriangleMesh(PxCookingParams(PxTolerancesScale(100.f, 100.f)), tDesc);
+		PxTriangleMesh* pTriangleMesh = PxCreateTriangleMesh(PxCookingParams(PxTolerancesScale(1.f, 1.f)), tDesc);
 		PxTriangleMeshGeometry* pGeometry = new PxTriangleMeshGeometry(pTriangleMesh);
 
 
@@ -873,7 +867,9 @@ HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGameObject, CModel* pModel, Mat
 		PxRigidStatic* pActor = m_Physics->createRigidStatic(physXTransform);
 		PxMaterial* Material = m_Physics->createMaterial(0.f, 0.f, 0.f);
 		PxShape* pShape = m_Physics->createShape(*pGeometry, *Material);
+
 		pShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
+		pShape->setFlag(PxShapeFlag::eVISUALIZATION, true);
 		pShape->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, true);
 		pShape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
 		
@@ -886,6 +882,7 @@ HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGameObject, CModel* pModel, Mat
 
 		pActor->attachShape(*pShape);
 		pActor->userData = nullptr;
+
 		m_pScene->addActor(*pActor);
 
 		PHYSX_STATIC_OBJECT_DESC ObjectDesc;
@@ -898,6 +895,7 @@ HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGameObject, CModel* pModel, Mat
 			vector<PHYSX_STATIC_OBJECT_DESC> Temp;
 			m_GroundObjects.emplace(pGameObject->Get_ObjectID(), Temp);
 			iter = m_GroundObjects.find(pGameObject->Get_ObjectID());
+			iter->second.reserve(10);
 		}
 
 		iter->second.push_back(ObjectDesc);
@@ -919,6 +917,7 @@ HRESULT CPhysX_Manager::Clear_PhysX_Ground()
 	{
 		for (auto& Desc : iter.second)
 		{
+			m_pScene->removeActor(*Desc.pActor);
 			Desc.pActor->release();
 			Safe_Release(Desc.pObject);
 		}
@@ -1265,6 +1264,9 @@ void CPhysX_Manager::Free()
 	if (m_Physics)
 		m_Physics->release();
 
+	if (m_pCudaContextManager)
+		m_pCudaContextManager->release();
+
 	if(m_Foundation)
 		m_Foundation->release();
 
@@ -1277,6 +1279,11 @@ void CPhysX_Manager::Free()
 	Safe_Delete(m_pEffect);
 	Safe_Release(m_pInputLayout);
 #endif
+}
+
+bool CPhysX_Manager::filter(const PxController& a, const PxController& b)
+{
+	return false;
 }
 
 
@@ -1334,102 +1341,6 @@ void CPhysX_Manager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 				pLeftCollider->Collision_Exit(pRightCollider);
 				pRightCollider->Collision_Exit(pLeftCollider);
 			}
-		}
-
-		if (true == GI->Is_Compare(pRightActor->getName(), "Ground"))
-		{
-			PHYSX_GROUND_COLLISION_INFO Info;
-			Info.pCollideObject = static_cast<CCollider*>(pLeftActor->userData)->Get_Owner();
-			if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_FOUND))
-			{
-				Info.flag = PxPairFlag::eNOTIFY_TOUCH_FOUND;
-			}
-			else if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_PERSISTS))
-			{
-				Info.flag = PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
-			}
-			else if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_LOST))
-			{
-				Info.flag = PxPairFlag::eNOTIFY_TOUCH_LOST;
-			}
-			m_GroundCollision.push_back(Info);
-		}
-
-		if (true == GI->Is_Compare(pRightActor->getName(), "Controller"))
-		{
-			CGameObject* pControllerOwner = static_cast<CGameObject*>(pLeftActor->userData);
-			
-		}
-	}
-
-	if (true == GI->Is_Compare(pLeftActor->getName(), "Ground"))
-	{
-		if (true == GI->Is_Compare(pRightActor->getName(), "Collider"))
-		{
-			PHYSX_GROUND_COLLISION_INFO Info;
-			Info.pCollideObject = static_cast<CCollider*>(pRightActor->userData)->Get_Owner();
-			if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_FOUND))
-			{
-				Info.flag = PxPairFlag::eNOTIFY_TOUCH_FOUND;
-			}
-			else if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_PERSISTS))
-			{
-				Info.flag = PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
-			}
-			else if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_LOST))
-			{
-				Info.flag = PxPairFlag::eNOTIFY_TOUCH_LOST;
-			}
-			m_GroundCollision.push_back(Info);
-		}
-
-		else if (true == GI->Is_Compare(pRightActor->getName(), "Controller"))
-		{
-			PHYSX_GROUND_COLLISION_INFO Info;
-			Info.pCollideObject = static_cast<CGameObject*>(pRightActor->userData);
-			if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_FOUND))
-			{
-				Info.flag = PxPairFlag::eNOTIFY_TOUCH_FOUND;
-			}
-			else if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_PERSISTS))
-			{
-				Info.flag = PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
-			}
-			else if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_LOST))
-			{
-				Info.flag = PxPairFlag::eNOTIFY_TOUCH_LOST;
-			}
-			m_GroundCollision.push_back(Info);
-
-		}
-	}
-
-	if (true == GI->Is_Compare(pLeftActor->getName(), "Controller"))
-	{
-		if (true == GI->Is_Compare(pRightActor->getName(), "Collider"))
-		{
-
-		}
-
-		if (true == GI->Is_Compare(pRightActor->getName(), "Ground"))
-		{
-			PHYSX_GROUND_COLLISION_INFO Info;
-			Info.pCollideObject = static_cast<CGameObject*>(pLeftActor->userData);
-			if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_FOUND))
-				Info.flag = PxPairFlag::eNOTIFY_TOUCH_FOUND;
-
-			else if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_PERSISTS))			
-				Info.flag = PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
-
-			else if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_LOST))
-				Info.flag = PxPairFlag::eNOTIFY_TOUCH_LOST;
-
-			m_GroundCollision.push_back(Info);
-		}
-
-		if (true == GI->Is_Compare(pRightActor->getName(), "Controller"))
-		{
-
 		}
 	}
 }

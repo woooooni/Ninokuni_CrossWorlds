@@ -65,11 +65,6 @@ HRESULT CCollider::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CCollider::Tick_Collider(_float fTimeDelta)
-{
-	Compute_Final_Matrix();
-}
-
 void CCollider::LateTick_Collider(_float fTimeDelta)
 {
 	Compute_Final_Matrix();
