@@ -57,18 +57,13 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, Calculate_WorldPosition(fTimeDelta));
 	
 	/* Look & Shake */
-	const Vec4 vLookAtPos = Calculate_Look(fTimeDelta);
-
-	if (Is_Shake())
-		m_pTransformCom->LookAt(Vec4(vLookAtPos + Vec4(Get_ShakeLocalPos()).OneW()));
-	else
-		m_pTransformCom->LookAt(vLookAtPos);
-
-
-
-	if (KEY_TAP(KEY::H))
 	{
-		Start_Shake(0.1f, 13.f, 0.5f);
+		const Vec4 vLookAtPos = Calculate_Look(fTimeDelta);
+
+		if (Is_Shake())
+			m_pTransformCom->LookAt(Vec4(vLookAtPos + Vec4(Get_ShakeLocalPos())).OneW());
+		else
+			m_pTransformCom->LookAt(vLookAtPos);
 	}
 }
 

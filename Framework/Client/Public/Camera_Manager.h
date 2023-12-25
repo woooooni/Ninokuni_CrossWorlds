@@ -55,6 +55,8 @@ public:
 	HRESULT Start_Action_Lerp_Fov(const CAMERA_EVENT_DESC& tDesc);
 	HRESULT Start_Action_Lerp_Dist(const CAMERA_EVENT_DESC& tDesc);
 
+	HRESULT Start_Action_Shake_Default();
+
 private:
 	/* Defualt */
 

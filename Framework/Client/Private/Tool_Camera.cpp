@@ -96,7 +96,7 @@ void CTool_Camera::Show_Camera_Prop_Default(CCamera* pCurCam)
 	IMGUI_NEW_LINE;
 	ImGui::Text("Camera Public Option (Ä«¸Þ¶ó °øÅë ¿É¼Ç)");
 
-	if (ImGui::BeginChild("Public Camera Option", ImVec2(0, 500.f), true))
+	if (ImGui::BeginChild("Public Camera Option", ImVec2(0, 450.f), true))
 	{
 		ImGui::PushItemWidth(150.f);
 		{
@@ -193,20 +193,19 @@ void CTool_Camera::Show_Camera_Prop_Default(CCamera* pCurCam)
 				_bool bShake = pCurCam->Is_Shake();
 				ImGui::Checkbox(u8"Is Shake", &bShake);
 
-				static _float fAmplitudeInput = 0.1f;
+				static _float fAmplitudeInput = 0.05f;
 				ImGui::DragFloat(u8"Shake Amplitude (½¦ÀÌÅ· ÁøÆø) ", &fAmplitudeInput, 0.01f, 0.f, 5.f);
 
-				static _float fFrquencyInput = 13.f;
+				static _float fFrquencyInput = 20.f;
 				ImGui::DragFloat(u8"Shake Frquency (½¦ÀÌÅ· ºóµµ) ", &fFrquencyInput, 0.01f, 0.f, 100.f);
 
-				static _float fDurationInput = 0.5f;
+				static _float fDurationInput = 0.3f;
 				ImGui::DragFloat(u8"Shake Duration (½¦ÀÌÅ· ½Ã°£) ", &fDurationInput, 0.01f, 0.f, 10.f);
 
 				if (ImGui::Button(u8"Start Shake(½¦ÀÌÅ· ½ÃÀÛ)"))
 				{
 					pCurCam->Start_Shake(fAmplitudeInput, fFrquencyInput, fDurationInput);
 				}
-
 			}
 		}
 		ImGui::PopItemWidth();

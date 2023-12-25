@@ -117,6 +117,16 @@ HRESULT CCamera_Manager::Start_Action_Lerp_Dist(const CAMERA_EVENT_DESC& tDesc)
 	return S_OK;
 }
 
+HRESULT CCamera_Manager::Start_Action_Shake_Default()
+{
+	if (nullptr == m_pCurCamera)
+		return E_FAIL;
+
+	m_pCurCamera->Start_Shake(0.05f, 20.f, 0.3f);
+	
+	return S_OK;
+}
+
 
 HRESULT CCamera_Manager::Ready_Cameras()
 {
