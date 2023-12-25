@@ -25,12 +25,10 @@ public:
 	virtual void Tick_State(_float fTimeDelta) override;
 	virtual void Exit_State() override;
 
-private:
-	void Input(_float fTimeDelta);
 
 private:
-	_float m_fIdleMotionTime = 5.f;
-	_float m_fAccIdleMotion = 0.f;
+	_float m_fRecoveryTime = 5.f;
+	_float m_fAccRecovery = 0.f;
 
 public:
 	static CState_SwordMan_AbNormality_Stun* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);

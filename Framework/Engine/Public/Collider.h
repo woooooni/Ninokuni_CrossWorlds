@@ -9,8 +9,8 @@ class ENGINE_DLL CCollider abstract : public CComponent
 {
 public:
     enum COLLIDER_TYPE { SPHERE, AABB, OBB, TYPE_END };
-    enum DETECTION_TYPE { ATTACK, BODY, DETECTION_END };
-    enum ATTACK_TYPE { BASIC, BLOW, BOUND, AIR_BORN, MODE_END };
+    enum DETECTION_TYPE { BOUNDARY, BODY, ATTACK, DETECTION_END };
+    enum ATTACK_TYPE { WEAK, STRONG, BOUND, AIR_BORN, MODE_END };
 
 protected:
     typedef struct tagColliderDesc
@@ -89,8 +89,8 @@ protected:
     static _uint g_iNextID;
     _uint m_iColliderID;
     
-    ATTACK_TYPE m_eAttackType = BASIC;
-    DETECTION_TYPE m_eDetectionType = DETECTION_END;
+    ATTACK_TYPE m_eAttackType = ATTACK_TYPE::WEAK;
+    DETECTION_TYPE m_eDetectionType = DETECTION_TYPE::DETECTION_END;
     COLLIDER_TYPE m_eColliderType = COLLIDER_TYPE::TYPE_END;
 
     _float3 m_vOffsetPosition = { 0.f, 0.f, 0.f };

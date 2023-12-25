@@ -8,12 +8,12 @@ END
 
 BEGIN(Client)
 
-class CState_SwordMan_Battle_Dash : public CState_Character
+class CState_SwordMan_Neutral_Pick_Small_Idle : public CState_Character
 {
 
 private:
-	CState_SwordMan_Battle_Dash(class CStateMachine* pMachine);
-	~CState_SwordMan_Battle_Dash() = default;
+	CState_SwordMan_Neutral_Pick_Small_Idle(class CStateMachine* pMachine);
+	~CState_SwordMan_Neutral_Pick_Small_Idle() = default;
 
 
 public:
@@ -26,10 +26,11 @@ public:
 	virtual void Exit_State() override;
 
 private:
-	Vec3 m_vDir = {};
+	void Input(_float fTimeDelta);
+
 
 public:
-	static CState_SwordMan_Battle_Dash* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
+	static CState_SwordMan_Neutral_Pick_Small_Idle* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
 
 };

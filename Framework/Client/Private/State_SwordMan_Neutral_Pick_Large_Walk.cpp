@@ -1,37 +1,42 @@
 #include "stdafx.h"
 #include "GameInstance.h"
 #include "Character.h"
-#include "State_SwordMan_Battle_Run.h"
+#include "State_SwordMan_Neutral_Pick_Large_Walk.h"
 
-CState_SwordMan_Battle_Run::CState_SwordMan_Battle_Run(CStateMachine* pMachine)
+CState_SwordMan_Neutral_Pick_Large_Walk::CState_SwordMan_Neutral_Pick_Large_Walk(CStateMachine* pMachine)
     : CState_Character(pMachine)
 {
 }
 
-HRESULT CState_SwordMan_Battle_Run::Initialize(const list<wstring>& AnimationList)
+HRESULT CState_SwordMan_Neutral_Pick_Large_Walk::Initialize(const list<wstring>& AnimationList)
 {
     if (FAILED(__super::Initialize(AnimationList)))
+        return E_FAIL;
+
+    m_pCharacter = dynamic_cast<CCharacter*>(m_pStateMachineCom->Get_Owner());
+
+    if (nullptr == m_pCharacter)
         return E_FAIL;
     
     return S_OK;
 }
 
-void CState_SwordMan_Battle_Run::Enter_State(void* pArg)
+void CState_SwordMan_Neutral_Pick_Large_Walk::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }
 
-void CState_SwordMan_Battle_Run::Tick_State(_float fTimeDelta)
+void CState_SwordMan_Neutral_Pick_Large_Walk::Tick_State(_float fTimeDelta)
 {
-	Input(fTimeDelta);
+    Input(fTimeDelta);
 }
 
-void CState_SwordMan_Battle_Run::Exit_State()
+void CState_SwordMan_Neutral_Pick_Large_Walk::Exit_State()
 {
 
 }
 
-void CState_SwordMan_Battle_Run::Input(_float fTimeDelta)
+void CState_SwordMan_Neutral_Pick_Large_Walk::Input(_float fTimeDelta)
 {
 	_bool bMove = false;
 	if (KEY_HOLD(KEY::W))
@@ -121,49 +126,28 @@ void CState_SwordMan_Battle_Run::Input(_float fTimeDelta)
 		bMove = true;
 	}
 
-	if (KEY_TAP(KEY::SPACE))
-	{
-		bMove = true;
-		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_JUMP);
-	}
-
-	if (KEY_HOLD(KEY::RBTN))
-	{
-		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_GUARD);
-		return;
-	}
-
-	if (KEY_TAP(KEY::LBTN))
-	{
-		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_0);
-		return;
-	}
-
-	if(KEY_NONE(KEY::SHIFT))
-		m_pStateMachineCom->Change_State(CCharacter::BATTLE_WALK);
-
-
 	if (!bMove)
 	{
 		if (KEY_NONE(KEY::W) && KEY_NONE(KEY::A) && KEY_NONE(KEY::S) && KEY_NONE(KEY::D))
-			m_pStateMachineCom->Change_State(CCharacter::BATTLE_IDLE);
+			m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_CROUCH_IDLE);
 	}
 }
 
-CState_SwordMan_Battle_Run* CState_SwordMan_Battle_Run::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
+
+CState_SwordMan_Neutral_Pick_Large_Walk* CState_SwordMan_Neutral_Pick_Large_Walk::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
 {
-    CState_SwordMan_Battle_Run* pInstance = new CState_SwordMan_Battle_Run(pStateMachine);
+    CState_SwordMan_Neutral_Pick_Large_Walk* pInstance = new CState_SwordMan_Neutral_Pick_Large_Walk(pStateMachine);
 
     if (FAILED(pInstance->Initialize(AnimationList)))
     {
-        MSG_BOX("Fail Create : CState_SwordMan_Battle_Run");
+        MSG_BOX("Fail Create : CState_SwordMan_Neutral_Pick_Large_Walk");
         Safe_Release(pInstance);
     }
 
     return pInstance;
 }
 
-void CState_SwordMan_Battle_Run::Free()
+void CState_SwordMan_Neutral_Pick_Large_Walk::Free()
 {
     __super::Free();
 }

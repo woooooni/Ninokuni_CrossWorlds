@@ -12,23 +12,18 @@ HRESULT CState_SwordMan_Dead::Initialize(const list<wstring>& AnimationList)
 {
     if (FAILED(__super::Initialize(AnimationList)))
         return E_FAIL;
-
-    m_pCharacter = dynamic_cast<CCharacter*>(m_pStateMachineCom->Get_Owner());
-
-    if (nullptr == m_pCharacter)
-        return E_FAIL;
     
     return S_OK;
 }
 
 void CState_SwordMan_Dead::Enter_State(void* pArg)
 {
-
+    m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }
 
 void CState_SwordMan_Dead::Tick_State(_float fTimeDelta)
 {
-
+    Input(fTimeDelta);
 }
 
 void CState_SwordMan_Dead::Exit_State()
@@ -38,7 +33,10 @@ void CState_SwordMan_Dead::Exit_State()
 
 void CState_SwordMan_Dead::Input(_float fTimeDelta)
 {
-
+    if (KEY_TAP(KEY::R))
+    {
+        m_pStateMachineCom->Change_State(CCharacter::STATE::REVIVE);
+    }
 }
 
 CState_SwordMan_Dead* CState_SwordMan_Dead::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

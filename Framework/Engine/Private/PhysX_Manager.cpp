@@ -47,8 +47,6 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 	_bool bConntected = m_pPvd->isConnected();*/
 
 
-
-
 	m_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_Foundation, PxTolerancesScale(), true, m_pPvd);
 	PxInitExtensions(*m_Physics, m_pPvd);
 	

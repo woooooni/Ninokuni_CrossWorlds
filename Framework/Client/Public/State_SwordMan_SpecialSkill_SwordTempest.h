@@ -8,12 +8,12 @@ END
 
 BEGIN(Client)
 
-class CState_SwordMan_Battle_Dash : public CState_Character
+class CState_SwordMan_SpecialSkill_SwordTempest : public CState_Character
 {
 
 private:
-	CState_SwordMan_Battle_Dash(class CStateMachine* pMachine);
-	~CState_SwordMan_Battle_Dash() = default;
+	CState_SwordMan_SpecialSkill_SwordTempest(class CStateMachine* pMachine);
+	~CState_SwordMan_SpecialSkill_SwordTempest() = default;
 
 
 public:
@@ -25,11 +25,8 @@ public:
 	virtual void Tick_State(_float fTimeDelta) override;
 	virtual void Exit_State() override;
 
-private:
-	Vec3 m_vDir = {};
-
 public:
-	static CState_SwordMan_Battle_Dash* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
+	static CState_SwordMan_SpecialSkill_SwordTempest* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
 
 };
