@@ -17,12 +17,39 @@ CUI::CUI(const CUI& rhs)
 {
 }
 
+void CUI::Set_ParentsAlpha(_float fAlpha)
+{
+	// 자식에게 부모의 알파값을 입힌다.
+	for (auto& pChildUI : m_pChild)
+	{
+		if (nullptr != pChildUI)
+			pChildUI->Set_ChildAlpha(fAlpha);
+	}
+}
+
 void CUI::Set_ChildActive(_bool bActive)
 {
 	for (auto& pChildUI : m_pChild)
 	{
 		if (nullptr != pChildUI)
 			pChildUI->Set_Active(bActive);
+	}
+}
+
+void CUI::Set_ChildPosition(_float3 vPosition)
+{
+	CTransform* pChildTransform = nullptr;
+
+	for (auto& pChildUI : m_pChild)
+	{
+		if (nullptr != pChildUI)
+		{
+			pChildTransform = pChildUI->Get_Component<CTransform>(L"Com_Transform");
+			if (nullptr == pChildTransform)
+				continue;
+
+			pChildTransform->Set_State(CTransform::STATE_POSITION, XMVectorSet(vPosition.x, vPosition.y, vPosition.z, 1.f));
+		}
 	}
 }
 

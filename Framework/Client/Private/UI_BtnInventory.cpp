@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "UI_BtnInventory.h"
 #include "GameInstance.h"
-#include "Level_Loading.h"
+#include "UI_Manager.h"
 
 CUI_BtnInventory::CUI_BtnInventory(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_BtnInventory")
@@ -134,8 +134,7 @@ void CUI_BtnInventory::Key_Input(_float fTimeDelta)
 {
 	if (KEY_TAP(KEY::LBTN))
 	{
-		// 메인 UI를 Hide한다
-		// 인벤토리를 연다
+		CUI_Manager::GetInstance()->OnOff_Inventory(true);
 	}
 }
 

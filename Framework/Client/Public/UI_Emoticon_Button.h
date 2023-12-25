@@ -3,12 +3,16 @@
 #include "UI.h"
 
 BEGIN(Client)
-class CUI_ImajinnSection_Emoticon final : public CUI
+class CUI_Emoticon_Button final : public CUI
 {
+public:
+	enum UI_EMOTICON_BTN { EMOTIONBTN_FIRST, EMOTIONBTN_SECOND, EMOTIONBTN_THIRD, EMOTIONBTN_FOURTH,
+		EMOTIONBTN_FIFTH, EMOTIONBTN_SIXTH, EMOTIONBTN_SEVENTH, EMOTIONBTN_EIGHTH, EMOTICONBTN_END };
+
 protected:
-	CUI_ImajinnSection_Emoticon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CUI_ImajinnSection_Emoticon(const CUI_ImajinnSection_Emoticon& rhs);
-	virtual ~CUI_ImajinnSection_Emoticon() = default;
+	CUI_Emoticon_Button(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_EMOTICON_BTN eType);
+	CUI_Emoticon_Button(const CUI_Emoticon_Button& rhs);
+	virtual ~CUI_Emoticon_Button() = default;
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -23,8 +27,7 @@ public:
 	virtual void On_MouseExit(_float fTimeDelta) override;
 
 private:
-	_uint m_iTextureIndex = { 0 };
-	class CUI_Emoticon_Window* m_pEmoticonWindow = { nullptr };
+	UI_EMOTICON_BTN m_eType = { EMOTICONBTN_END };
 
 private:
 	virtual HRESULT	Ready_Components() override;
@@ -33,11 +36,8 @@ private:
 	HRESULT	Ready_State();
 	HRESULT	Bind_ShaderResources();
 
-private:
-	void Key_Input(_float fTimeDelta);
-
 public:
-	static CUI_ImajinnSection_Emoticon* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);
+	static CUI_Emoticon_Button* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, UI_EMOTICON_BTN eType);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

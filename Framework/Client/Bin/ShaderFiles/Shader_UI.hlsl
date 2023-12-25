@@ -11,6 +11,8 @@ float g_Alpha = 1.f;
 float g_Ratio;
 float g_Time;
 float g_LimitX;
+float g_LimitY;
+float g_FXAlpha;
 
 float g_LoadingProgress;
 float4 g_Diffusecolor;
@@ -285,6 +287,39 @@ PS_OUT PS_MAIN_WORLDUI(PS_IN In)
 	return Out;
 }
 
+PS_OUT PS_MAIN_LIMITED_VERTICAL(PS_IN In)
+{
+	PS_OUT Out = (PS_OUT)0;
+
+	Out.vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
+	Out.vColor.a *= g_Alpha;
+
+	float fY = In.vPosition.y / In.vPosition.w;
+
+
+	if (fY > g_LimitY)
+		discard;
+
+	return Out;
+}
+
+PS_OUT PS_USING_FX_ALPHA(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0; // 초기화
+
+	float4 vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
+	vColor.a *= g_Alpha;
+
+	float4 vfxColor = g_FXTexture.Sample(LinearSampler, In.vTexUV);
+	vfxColor.a *= g_FXAlpha;
+	Out.vColor = lerp(vColor, vfxColor, vfxColor.a);
+
+	if (0.0001f >= Out.vColor.a)
+		discard;
+
+	return Out;
+}
+
 technique11 DefaultTechnique
 {
 	pass DefaultPass // 0
@@ -386,7 +421,7 @@ technique11 DefaultTechnique
 		PixelShader = compile ps_5_0 PS_MAIN_APPEAR();
 	}
 
-	pass LimitedAppearTexture // 9
+	pass LimitedHorizonTexture // 9 -> X부분을 잘라줌
 	{
 		SetRasterizerState(RS_Default);
 		SetDepthStencilState(DSS_None, 0);
@@ -419,6 +454,27 @@ technique11 DefaultTechnique
 		PixelShader = compile ps_5_0 PS_MAIN_WORLDUI();
 	}
 
+	pass LimitedVerticalTexture // 12 -> Y부분을 잘라줌
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_None, 0);
+		SetBlendState(BS_AlphaBlend, float4(1.f, 1.f, 1.f, 1.f), 0xffffffff);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN_LIMITED_VERTICAL();
+	}
+
+	pass UsingFXTextureWithAlpha // 13
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_None, 0);
+		SetBlendState(BS_AlphaBlend, float4(1.f, 1.f, 1.f, 1.f), 0xffffffff);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_USING_FX_ALPHA();
+	}
 }
 
 
