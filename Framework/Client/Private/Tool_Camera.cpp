@@ -269,12 +269,25 @@ void CTool_Camera::Show_Camera_Prop_Follow(CCamera* pCurCam)
 						pFollowCam->Set_Damping(bDamping);
 					}
 
-
-					/* 계수 */
+					/* 댐핑 계수 */
 					_float fCoefficient = pFollowCam->Get_DampingCoefficient();
 					if (ImGui::DragFloat(u8"Damping Coefficient(댐핑 계수)", &fCoefficient, 0.002f, 0.002f, 1.f))
 					{
 						pFollowCam->Set_DampingCoefficient(fCoefficient);
+					}
+
+					/* 역방향시 댐핑 계수 배율 */
+					_float fMag = pFollowCam->Get_DampingCoefficientBackMag();
+					if (ImGui::DragFloat(u8"역방향 댐핑 계수 비율", &fMag, 0.1f, 1.f, 10.f))
+					{
+						pFollowCam->Set_DampingCoefficientBackMag(fMag);
+					}
+
+					/* 역방향 기준 각도 */
+					_float fRad = pFollowCam->Get_DampingBackLimitRad();
+					if (ImGui::DragFloat(u8"역방향 기준 각도 (rad)", &fRad, 0.1f, 1.f, 3.14f))
+					{
+						pFollowCam->Set_DampingBackLimitRad(fRad);
 					}
 				}
 				IMGUI_NEW_LINE;

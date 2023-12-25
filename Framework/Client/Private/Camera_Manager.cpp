@@ -122,7 +122,7 @@ HRESULT CCamera_Manager::Start_Action_Shake_Default()
 	if (nullptr == m_pCurCamera)
 		return E_FAIL;
 
-	m_pCurCamera->Start_Shake(0.05f, 20.f, 0.3f);
+	m_pCurCamera->Start_Shake(0.1f, 17.f, 0.3f);
 	
 	return S_OK;
 }
