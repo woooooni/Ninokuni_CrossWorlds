@@ -25,11 +25,6 @@ public:
 	virtual void Tick_State(_float fTimeDelta) override;
 	virtual void Exit_State() override;
 
-private:
-	void Input(_float fTimeDelta);
-
-private:
-	_float m_fMoveSpeed = 2.f;
 
 public:
 	static CState_SwordMan_Neutral_Pick_Small_Finish* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);

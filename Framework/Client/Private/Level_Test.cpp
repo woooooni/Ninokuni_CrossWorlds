@@ -71,6 +71,16 @@ HRESULT CLevel_Test::Tick(_float fTimeDelta)
 		GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Stellia"));
 	}
 
+	if (KEY_TAP(KEY::PAGE_UP))
+	{
+		CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
+	}
+
+	if (KEY_TAP(KEY::PAGE_DOWN))
+	{
+		CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE);
+	}
+
 	return S_OK;
 }
 

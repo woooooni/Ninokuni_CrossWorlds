@@ -33,8 +33,18 @@ void CState_SwordMan_Battle_Guard::Exit_State()
 
 void CState_SwordMan_Battle_Guard::Input(_float fTimeDelta)
 {
+    if (KEY_TAP(KEY::CTRL))
+    {
+        m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_DASH);
+        return;
+    }
+
     if (KEY_NONE(KEY::RBTN))
+    {
         m_pStateMachineCom->Change_State(CCharacter::BATTLE_IDLE);
+        return;
+    }
+        
 }
 
 CState_SwordMan_Battle_Guard* CState_SwordMan_Battle_Guard::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

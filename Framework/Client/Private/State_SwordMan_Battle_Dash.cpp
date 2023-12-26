@@ -21,31 +21,20 @@ HRESULT CState_SwordMan_Battle_Dash::Initialize(const list<wstring>& AnimationLi
 void CState_SwordMan_Battle_Dash::Enter_State(void* pArg)
 {
     // 마우스 방향으로 구르기
-    POINT pt = GI->GetMousePos();
-
-    _vector vMousePos = XMVectorSet(
-        _float(pt.x / (g_iWinSizeX * .5f) - 1.f),
-        _float(pt.y / (g_iWinSizeY * -.5f) + 1.f),
-        1.f, 1.f);
-
-
-
-    _matrix ViewMatrixInv = GI->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
-    _matrix ProjMatrixInv = GI->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ);
-
-    vMousePos = XMVector3TransformCoord(vMousePos, ProjMatrixInv);
-    vMousePos = XMVector3TransformCoord(vMousePos, ViewMatrixInv);
-
-
-    m_vDir = XMVector3Normalize(vMousePos - m_pTransformCom->Get_Position());
-    m_pTransformCom->LookAt_ForLandObject(XMLoadFloat3(&m_vDir) + m_pTransformCom->Get_Position());
-
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }
 
 void CState_SwordMan_Battle_Dash::Tick_State(_float fTimeDelta)
 {
-    m_pTransformCom->Move(m_pTransformCom->Get_Look(), 2.f, fTimeDelta);
+    if (m_pModelCom->Get_Progress() <= 0.5f)
+    {
+        m_pTransformCom->Move(m_pTransformCom->Get_Look(), 8.f, fTimeDelta);
+    }
+    else if (false == m_pModelCom->Is_Tween() && m_pModelCom->Get_Progress() >= 0.85f)
+    {
+        Input(fTimeDelta);
+    }
+    
 
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
         m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_IDLE);
@@ -56,6 +45,12 @@ void CState_SwordMan_Battle_Dash::Exit_State()
     m_iCurrAnimIndex = 0;
 }
 
+
+void CState_SwordMan_Battle_Dash::Input(_float fTimeDelta)
+{
+    if(KEY_HOLD(KEY::W) || KEY_HOLD(KEY::A) || KEY_HOLD(KEY::S) || KEY_HOLD(KEY::D))
+        m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_IDLE);
+}
 
 CState_SwordMan_Battle_Dash* CState_SwordMan_Battle_Dash::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
 {

@@ -23,7 +23,7 @@ void CState_SwordMan_Dead::Enter_State(void* pArg)
 
 void CState_SwordMan_Dead::Tick_State(_float fTimeDelta)
 {
-    Input(fTimeDelta);
+    
 }
 
 void CState_SwordMan_Dead::Exit_State()

@@ -8,12 +8,12 @@ END
 
 BEGIN(Client)
 
-class CState_SwordMan_Neutral_Pick_Large_Idle : public CState_Character
+class CState_SwordMan_Neutral_Pick_Large_Throw : public CState_Character
 {
 
 private:
-	CState_SwordMan_Neutral_Pick_Large_Idle(class CStateMachine* pMachine);
-	~CState_SwordMan_Neutral_Pick_Large_Idle() = default;
+	CState_SwordMan_Neutral_Pick_Large_Throw(class CStateMachine* pMachine);
+	~CState_SwordMan_Neutral_Pick_Large_Throw() = default;
 
 
 public:
@@ -25,11 +25,9 @@ public:
 	virtual void Tick_State(_float fTimeDelta) override;
 	virtual void Exit_State() override;
 
-private:
-	void Input(_float fTimeDelta);
 
 public:
-	static CState_SwordMan_Neutral_Pick_Large_Idle* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
+	static CState_SwordMan_Neutral_Pick_Large_Throw* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
 
 };

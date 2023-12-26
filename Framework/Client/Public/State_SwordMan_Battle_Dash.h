@@ -28,6 +28,9 @@ public:
 private:
 	Vec3 m_vDir = {};
 
+private:
+	void Input(_float fTimeDelta);
+
 public:
 	static CState_SwordMan_Battle_Dash* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

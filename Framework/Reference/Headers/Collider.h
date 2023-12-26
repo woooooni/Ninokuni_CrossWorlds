@@ -65,6 +65,11 @@ public:
     void Set_HitLag(_bool bHitLag) { m_bHitLag = bHitLag; }
 
     virtual _vector Get_Position() { return XMVectorSet(0.f, 0.f, 0.f, 0.f); }
+
+
+    virtual void Set_Extents(Vec3 vExtents) {};
+    virtual void Set_Radius(_float fRadius) {};
+
     virtual _float Get_Radius() { return 0.f; }
     virtual _float3 Get_Extents() { return _float3(0.f, 0.f, 0.f); }
 

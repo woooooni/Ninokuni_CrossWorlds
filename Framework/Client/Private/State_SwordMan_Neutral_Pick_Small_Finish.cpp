@@ -13,124 +13,23 @@ HRESULT CState_SwordMan_Neutral_Pick_Small_Finish::Initialize(const list<wstring
     if (FAILED(__super::Initialize(AnimationList)))
         return E_FAIL;
 
-    m_pCharacter = dynamic_cast<CCharacter*>(m_pStateMachineCom->Get_Owner());
-
-    if (nullptr == m_pCharacter)
-        return E_FAIL;
-    
     return S_OK;
 }
 
 void CState_SwordMan_Neutral_Pick_Small_Finish::Enter_State(void* pArg)
 {
-	m_pModelCom->Set_Animation(m_AnimIndices[0]);
+    m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }
 
 void CState_SwordMan_Neutral_Pick_Small_Finish::Tick_State(_float fTimeDelta)
 {
-    Input(fTimeDelta);
+    if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
+        m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_IDLE);
 }
 
 void CState_SwordMan_Neutral_Pick_Small_Finish::Exit_State()
 {
 
-}
-
-void CState_SwordMan_Neutral_Pick_Small_Finish::Input(_float fTimeDelta)
-{
-	_bool bMove = false;
-	if (KEY_HOLD(KEY::W))
-	{
-		bMove = true;
-
-
-		_matrix vCamWolrd = GI->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
-
-		_vector vRight = m_pTransformCom->Get_State(CTransform::STATE_RIGHT);
-		_vector vCamLook = vCamWolrd.r[CTransform::STATE_LOOK];
-
-		vRight = XMVector3Normalize(vRight);
-		vCamLook = XMVector3Normalize(vCamLook);
-
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * m_fMoveSpeed * fTimeDelta;
-
-
-		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
-		m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fMoveSpeed, fTimeDelta);
-	}
-
-
-	if (KEY_HOLD(KEY::S))
-	{
-		bMove = true;
-
-
-		_matrix vCamWolrd = GI->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
-
-		_vector vRight = m_pTransformCom->Get_State(CTransform::STATE_RIGHT);
-		_vector vCamLook = vCamWolrd.r[CTransform::STATE_LOOK];
-
-		vRight = XMVector3Normalize(vRight);
-		vCamLook = -1.f * XMVector3Normalize(vCamLook);
-
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * m_fMoveSpeed * fTimeDelta;
-
-
-		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
-		m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fMoveSpeed, fTimeDelta);
-	}
-
-
-	if (KEY_HOLD(KEY::A))
-	{
-		_matrix vCamWolrd = GI->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
-
-		_vector vRight = m_pTransformCom->Get_State(CTransform::STATE_RIGHT);
-		_vector vCamRight = vCamWolrd.r[CTransform::STATE_RIGHT];
-
-		vRight = XMVector3Normalize(vRight);
-		vCamRight = -1.f * XMVector3Normalize(vCamRight);
-
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * m_fMoveSpeed * fTimeDelta;
-
-		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
-
-		if (!bMove)
-			m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fMoveSpeed, fTimeDelta);
-
-		bMove = true;
-
-	}
-
-
-	if (KEY_HOLD(KEY::D))
-	{
-		// m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), 10.f, -1.f * fTimeDelta);
-
-		_matrix vCamWolrd = GI->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
-
-		_vector vRight = m_pTransformCom->Get_State(CTransform::STATE_RIGHT);
-		_vector vCamRight = vCamWolrd.r[CTransform::STATE_RIGHT];
-
-		vRight = XMVector3Normalize(vRight);
-		vCamRight = XMVector3Normalize(vCamRight);
-
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * m_fMoveSpeed * fTimeDelta;
-
-
-		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
-
-		if (!bMove)
-			m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fMoveSpeed, fTimeDelta);
-
-		bMove = true;
-	}
-
-	if (!bMove)
-	{
-		if (KEY_NONE(KEY::W) && KEY_NONE(KEY::A) && KEY_NONE(KEY::S) && KEY_NONE(KEY::D))
-			m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_CROUCH_IDLE);
-	}
 }
 
 

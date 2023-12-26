@@ -24,12 +24,17 @@ void CState_SwordMan_AbNormality_Stun::Enter_State(void* pArg)
 
 void CState_SwordMan_AbNormality_Stun::Tick_State(_float fTimeDelta)
 {
-    
+    m_fAccRecovery += fTimeDelta;
+    if (m_fAccRecovery >= m_fRecoveryTime)
+    {
+        m_fAccRecovery = 0.f;
+        m_pStateMachineCom->Change_State(CCharacter::BATTLE_IDLE);
+    }
 }
 
 void CState_SwordMan_AbNormality_Stun::Exit_State()
 {
-    
+    m_fAccRecovery = 0.f;
 }
 
 
