@@ -204,12 +204,13 @@ PS_OUT PS_MAIN(PS_IN In)
 		Out.vDiffuse1 = vDiffuseColor;
 	else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.2f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.4f)
 		Out.vDiffuse2 = vDiffuseColor;
-	else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.4f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.6f)
-		Out.vDiffuse3 = vDiffuseColor;
-	else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.6f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.8f)
-		Out.vDiffuse4 = vDiffuseColor;
+	//else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.4f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.6f)
 	else
-		Out.vDiffuse5 = vDiffuseColor;
+		Out.vDiffuse3 = vDiffuseColor;
+	//else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.6f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.8f)
+	//	Out.vDiffuse4 = vDiffuseColor;
+	//else
+	//	Out.vDiffuse5 = vDiffuseColor;
 
 	Out.vBloom = float4(1.f, 1.f, 1.f, 1.f);
 

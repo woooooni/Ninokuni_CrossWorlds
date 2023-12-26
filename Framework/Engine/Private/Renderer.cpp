@@ -228,9 +228,10 @@ HRESULT CRenderer::Draw()
 			return E_FAIL;
 	}
 
-	if (FAILED(Render_Effect()))
-		return E_FAIL;
 	if(FAILED(Render_Deferred()))
+		return E_FAIL;
+
+	if (FAILED(Render_Effect()))
 		return E_FAIL;
 	if (!m_bBlurDraw)
 	{
@@ -246,10 +247,6 @@ HRESULT CRenderer::Draw()
 			return E_FAIL;
 		if (FAILED(Render_Blur(L"Target_Effect_Diffuse_03", L"MRT_Blend", false, 6, 7)))
 			return E_FAIL;
-		if (FAILED(Render_Blur(L"Target_Effect_Diffuse_04", L"MRT_Blend", false, 8, 9)))
-			return E_FAIL;
-		if (FAILED(Render_Blur(L"Target_Effect_Diffuse_05", L"MRT_Blend", false, 10, 11)))
-			return E_FAIL;
 	}
 	if(FAILED(Render_AlphaBlend()))
 		return E_FAIL;
@@ -260,17 +257,13 @@ HRESULT CRenderer::Draw()
 		return E_FAIL;
 	if (FAILED(Render_UIEffectNonBlend()))
 		return E_FAIL;
-	if (m_bBlurDraw) // 테스트중 // 이펙트는 하나의 렌더타겟을 써도 되는거 아닌가? 모르겠네 이펙트 블러가 디퍼드에서 더해져야할지도?
+	if (m_bBlurDraw)
 	{
 		if (FAILED(Render_Blur(L"Target_Effect_UI_Brightness_01", L"MRT_Effect_UI_Blur", true, 2, 3)))
 			return E_FAIL;
 		if (FAILED(Render_Blur(L"Target_Effect_UI_Brightness_02", L"MRT_Effect_UI_Blur", false, 4, 5)))
 			return E_FAIL;
 		if (FAILED(Render_Blur(L"Target_Effect_UI_Brightness_03", L"MRT_Effect_UI_Blur", false, 6, 7)))
-			return E_FAIL;
-		if (FAILED(Render_Blur(L"Target_Effect_UI_Brightness_04", L"MRT_Effect_UI_Blur", false, 8, 9)))
-			return E_FAIL;
-		if (FAILED(Render_Blur(L"Target_Effect_UI_Brightness_05", L"MRT_Effect_UI_Blur", false, 10, 11)))
 			return E_FAIL;
 	}
 	if (FAILED(Render_UIEffectBlend()))
