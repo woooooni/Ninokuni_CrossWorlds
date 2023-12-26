@@ -2,6 +2,8 @@
 #include "Clown_WizardNode_Stun.h"
 
 #include "BehaviorTree.h"
+
+#include "GameInstance.h"
 #include "Model.h"
 
 CClown_WizardNode_Stun::CClown_WizardNode_Stun()
@@ -27,6 +29,7 @@ CBTNode::NODE_STATE CClown_WizardNode_Stun::Tick(const _float& fTimeDelta)
 	// 스턴 시 피격
 	if (dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_HIT))
 	{
+		GI->Play_Sound(TEXT("../Bin/Resources/Sound/Monster/ClownWizard/ClownWizard_V_Dmg_1_2.ogg"), CHANNELID::SOUND_VOICE_MONSTER3, 0.4f, true);
 		dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_HIT, false);
 	}
 

@@ -30,7 +30,7 @@ void CDMWitchState_Teleport::Tick_State(_float fTimeDelta)
 	// 일정 프레임 이상일 때 셋 트랜스폼 시켜서 플레이어 위치 뒤로 이동시키자.
 	m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fRunSpeed, fTimeDelta);
 
-	if (m_pWitch->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATKAROUND))
+	if (m_pWitch->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_ATKAROUND))
 	{
 		if (m_iAtkIndex >= m_vecAtkState.size())
 			m_iAtkIndex = 0;

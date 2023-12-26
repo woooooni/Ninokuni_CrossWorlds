@@ -3,7 +3,7 @@
 
 #include "BehaviorTree.h"
 
-
+#include "GameInstance.h"
 #include "Model.h"
 
 CPumpkinCandleNode_Stun::CPumpkinCandleNode_Stun()
@@ -29,6 +29,7 @@ CBTNode::NODE_STATE CPumpkinCandleNode_Stun::Tick(const _float& fTimeDelta)
 	// 스턴 시 피격
 	if (dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_HIT))
 	{
+		GI->Play_Sound(TEXT("../Bin/Resources/Sound/Monster/PumpkinCandle/PumpkinCandle_V_Dmg_1_2.ogg"), CHANNELID::SOUND_VOICE_MONSTER1, 0.4f, true);
 		dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_HIT, false);
 	}
 

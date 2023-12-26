@@ -17,9 +17,9 @@ HRESULT CGlanixState_CombatIdle::Initialize(const list<wstring>& AnimationList)
 
 void CGlanixState_CombatIdle::Enter_State(void* pArg)
 {
-	if (m_pGlanix->Get_Stat().fHp <= m_pGlanix->Get_Stat().fMaxHp / 2.f && !m_pGlanix->Get_IsRage())
+	if (m_pGlanix->Get_Stat().fHp <= m_pGlanix->Get_Stat().fMaxHp / 2.f && !m_pGlanix->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_RAGE))
 	{
-		m_pGlanix->Set_IsRage(true);
+		m_pGlanix->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_RAGE, true);
 		m_pGlanix->Set_SkillTree();
 		m_iAtkIndex = 0;
 		m_pStateMachineCom->Change_State(CGlanix::GLANIX_RAGE);
@@ -85,15 +85,7 @@ void CGlanixState_CombatIdle::Tick_State(_float fTimeDelta)
 
 	if (m_fTime >= m_fWaitTime)
 	{
-		if (m_pGlanix->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATKAROUND))
-		{
-			if (m_iAtkIndex >= m_vecAtkState.size())
-				m_iAtkIndex = 0;
-
-			m_pStateMachineCom->Change_State(m_vecAtkState[m_iAtkIndex++]);
-		}
-		else
-			m_pStateMachineCom->Change_State(CGlanix::GLANIX_CHASE);
+		__super::Start_Pattern();
 	}
 }
 

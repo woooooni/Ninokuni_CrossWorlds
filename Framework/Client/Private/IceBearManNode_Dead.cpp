@@ -22,7 +22,7 @@ void CIceBearManNode_Dead::Start()
 
 CBTNode::NODE_STATE CIceBearManNode_Dead::Tick(const _float& fTimeDelta)
 {
-	if (m_tBTNodeDesc.pOwnerModel->Is_Finish())
+	if (m_tBTNodeDesc.pOwnerModel->Is_Finish() && !m_tBTNodeDesc.pOwnerModel->Is_Tween())
 	{
 		m_tBTNodeDesc.pOwner->Set_Dead(true);
 	}

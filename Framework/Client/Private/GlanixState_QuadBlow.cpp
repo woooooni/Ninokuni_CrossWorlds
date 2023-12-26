@@ -12,6 +12,8 @@ HRESULT CGlanixState_QuadBlow::Initialize(const list<wstring>& AnimationList)
 {
 	__super::Initialize(AnimationList);
 
+	m_fFowardSpeed = 5.f;
+
 	return S_OK;
 }
 
@@ -24,10 +26,16 @@ void CGlanixState_QuadBlow::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
+	if (m_pModelCom->Get_CurrAnimationFrame() >= 86 && m_pModelCom->Get_CurrAnimationFrame() <= 92 ||
+		m_pModelCom->Get_CurrAnimationFrame() >= 106 && m_pModelCom->Get_CurrAnimationFrame() <= 111 ||
+		m_pModelCom->Get_CurrAnimationFrame() >= 116 && m_pModelCom->Get_CurrAnimationFrame() <= 121 ||
+		m_pModelCom->Get_CurrAnimationFrame() >= 130 && m_pModelCom->Get_CurrAnimationFrame() <= 140)
+	{
+		m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fFowardSpeed, fTimeDelta);
+	}
+
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
-		//_float fWaitTime = 2.f;
-		//m_pStateMachineCom->Change_State(CGlanix::GLANIX_COMBATIDLE, &fWaitTime);
 		m_pStateMachineCom->Change_State(CGlanix::GLANIX_TURN);
 	}
 }

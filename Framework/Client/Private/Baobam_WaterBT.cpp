@@ -102,7 +102,7 @@ HRESULT CBaobam_WaterBT::Initialize_Prototype(CGameObject* pObject)
 	/* Condition 관련*/
 	/* function<_bool()>을 받는 CBTNode_Condition::Create 함수에서는 멤버 함수를 사용하고 있기 때문에 추가적인 처리가 필요 */
 	CBTNode_Condition* pCon_IsDead = CBTNode_Condition::Create(bind(&CBaobam_WaterBT::IsZeroHp, this), pDeadNode, pHitNode);
-	CBTNode_Condition* pCon_IsHitAnim = CBTNode_Condition::Create(bind(&CBaobam_WaterBT::IsHitAnim, this), pHitNode, pChaseNode);
+	CBTNode_Condition* pCon_IsHit = CBTNode_Condition::Create(bind(&CBaobam_WaterBT::IsHit, this), pHitNode, pChaseNode);
 	CBTNode_Condition* pCon_IsCombat = CBTNode_Condition::Create(bind(&CBaobam_WaterBT::IsAtk, this), nullptr, pChaseNode);
 	CBTNode_Condition* pCon_IsChase = CBTNode_Condition::Create(bind(&CBaobam_WaterBT::IsChase, this), pChaseNode, nullptr);
 	//CBTNode_Condition* pCon_IsReturn = CBTNode_Condition::Create(bind(&CBaobam_WaterBT::IsReturn, this), pReturnNode, pIdleNode);
@@ -113,7 +113,7 @@ HRESULT CBaobam_WaterBT::Initialize_Prototype(CGameObject* pObject)
 	pSeq_Dead->Add_ChildNode(pDeadNode); 
 	
 	m_pRootNode->Add_ChildNode(pSeq_Hit);
-	pSeq_Hit->Add_ChildNode(pCon_IsHitAnim);
+	pSeq_Hit->Add_ChildNode(pCon_IsHit);
 	pSeq_Hit->Add_ChildNode(pSel_Hit);
 	pSel_Hit->Add_ChildNode(pStunNode);
 	pSel_Hit->Add_ChildNode(pHitNode);
@@ -154,25 +154,14 @@ void CBaobam_WaterBT::Tick(const _float& fTimeDelta)
 
 void CBaobam_WaterBT::LateTick(const _float& fTimeDelta)
 {
-	if (KEY_TAP(KEY::Z))
+	if (KEY_TAP(KEY::T))
 	{
-		// 임시
-		m_pRootNode->Init_Start(); // 다음에 재생될 상태의 start를 실행하기 위해.
+		m_pRootNode->Init_Start();
 		m_pBaobam_Water->Set_StunTime(3.f);
-		m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_Baobam_Water.ao|BaoBam_Stun"));
+		m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_Baobam_Darkness.ao|BaoBam_Stun"));
 		m_pBaobam_Water->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_STUN, true);
 		m_pBaobam_Water->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT, true);
 	}
-
-	if (KEY_TAP(KEY::X))
-	{
-		m_pBaobam_Water->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_HIT, true);
-		m_pBaobam_Water->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_HITANIM, true);
-		m_pBaobam_Water->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT, true);
-	}
-
-	if (KEY_TAP(KEY::C))
-		m_pBaobam_Water->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT, false);
 }
 
 void CBaobam_WaterBT::Init_NodeStart()
@@ -188,7 +177,7 @@ _bool CBaobam_WaterBT::IsZeroHp()
 	return false;
 }
 
-_bool CBaobam_WaterBT::IsHitAnim()
+_bool CBaobam_WaterBT::IsHit()
 {
 	if (m_pBaobam_Water->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_HITANIM) ||
 		m_pBaobam_Water->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_STUN))
@@ -199,13 +188,12 @@ _bool CBaobam_WaterBT::IsHitAnim()
 
 _bool CBaobam_WaterBT::IsAtk()
 {
-	if (m_pBaobam_Water->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT))
+	if (m_pBaobam_Water->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT) &&
+		m_pBaobam_Water->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATKAROUND) ||
+		m_pBaobam_Water->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK) ||
+		m_pBaobam_Water->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBATIDLE))
 	{
-		if(m_pBaobam_Water->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK) ||
-		   m_pBaobam_Water->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBATIDLE))
-		{
-			return true;
-		}
+		return true;
 	}
 
 	return false;

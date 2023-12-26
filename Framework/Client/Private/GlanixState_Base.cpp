@@ -61,13 +61,13 @@ void CGlanixState_Base::Init_Pattern()
 {
 	m_vecAtkState.clear();
 
+	m_vecAtkState.push_back(CGlanix::GLANIX_ATTACK2);
 	m_vecAtkState.push_back(CGlanix::GLANIX_CHARGE);
 	m_vecAtkState.push_back(CGlanix::GLANIX_ICEWAVE);
 	m_vecAtkState.push_back(CGlanix::GLANIX_QUADBLOW);
 	m_vecAtkState.push_back(CGlanix::GLANIX_SPINBOMBBOMB);
 	m_vecAtkState.push_back(CGlanix::GLANIX_SNOWBALL);
 	m_vecAtkState.push_back(CGlanix::GLANIX_JUMPSTAMP);
-	m_vecAtkState.push_back(CGlanix::GLANIX_ATTACK2);
 }
 
 _bool CGlanixState_Base::State_Wait(_float fDestTime, _float fTimeDelta)
@@ -86,6 +86,33 @@ _bool CGlanixState_Base::State_Wait(_float fDestTime, _float fTimeDelta)
 	}
 
 	return false;
+}
+
+void CGlanixState_Base::Start_Pattern()
+{
+	if (m_iAtkIndex >= m_vecAtkState.size())
+		m_iAtkIndex = 0;
+
+	// 기본 공격 패턴이면 
+	if (m_vecAtkState[m_iAtkIndex] == CGlanix::GLANIX_ATTACK1 || m_vecAtkState[m_iAtkIndex] == CGlanix::GLANIX_ATTACK2)
+	{
+		if (m_pGlanix->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_ATKAROUND))
+		{
+			m_pStateMachineCom->Change_State(m_vecAtkState[m_iAtkIndex++]);
+		}
+		else
+			m_pStateMachineCom->Change_State(CGlanix::GLANIX_CHASE);
+	}
+	// 스킬 패턴이면(사정거리 긴)
+	else
+	{
+		if (m_pGlanix->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_SKILLAROUND))
+		{
+			m_pStateMachineCom->Change_State(m_vecAtkState[m_iAtkIndex++]);
+		}
+		else
+			m_pStateMachineCom->Change_State(CGlanix::GLANIX_CHASE);
+	}
 }
 
 void CGlanixState_Base::Free()

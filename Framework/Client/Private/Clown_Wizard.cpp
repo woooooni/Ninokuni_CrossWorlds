@@ -127,37 +127,26 @@ HRESULT CClown_Wizard::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Clown_Wizard"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 
-	//CRigidBody::RIGID_BODY_DESC RigidDesc;
-	//RigidDesc.pNavigation = m_pNavigationCom;
-	//RigidDesc.pTransform = m_pTransformCom;
-	//
-	//
-	//RigidDesc.PhysXDesc.vOffsetPos = { 0.f, 0.f, 0.f };
-	//RigidDesc.PhysXDesc.vExtents = { 5.f, 5.f, 10.f };
-	//
-	//RigidDesc.PhysXDesc.eColliderType = PHYSX_COLLIDER_TYPE::BOX;
-	//RigidDesc.PhysXDesc.eRigidType = PHYSX_RIGID_TYPE::DYNAMIC;
-	//
-	//RigidDesc.PhysXDesc.bLockAngle_X = true;
-	//RigidDesc.PhysXDesc.bLockAngle_Y = false;
-	//RigidDesc.PhysXDesc.bLockAngle_Z = true;
-	//
-	//RigidDesc.PhysXDesc.bKinematic = false;
-	//RigidDesc.PhysXDesc.fAngularDamping = 30.f;
-	//RigidDesc.PhysXDesc.fDensity = 1.f;
-	//
-	//
-	//RigidDesc.PhysXDesc.fStaticFriction = 0.f;
-	//RigidDesc.PhysXDesc.fDynamicFriction = 1.f;
-	//RigidDesc.PhysXDesc.fRestitution = 0.f;
-	//
-	//RigidDesc.PhysXDesc.fMaxVelocity = 10.f;
-	//RigidDesc.PhysXDesc.pGameObject = this;
-	//RigidDesc.PhysXDesc.bKinematic = true;
-	//
-	///* For. Com_RigidBody*/
-	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_RigidBody"), TEXT("Com_RigidBody"), (CComponent**)&m_pRigidBodyCom, &RigidDesc)))
-	//	return E_FAIL;
+	/* For.Com_PhysXBody */
+	CPhysX_Controller::CONTROLLER_DESC ControllerDesc;
+
+	ControllerDesc.eType = CPhysX_Controller::CAPSULE;
+	ControllerDesc.pTransform = m_pTransformCom;
+	ControllerDesc.vOffset = { 0.f, 1.125f, 0.f };
+	ControllerDesc.fHeight = 1.f;
+	ControllerDesc.fMaxJumpHeight = 10.f;
+	ControllerDesc.fRaidus = 1.f;
+	ControllerDesc.pOwner = this;
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_PhysXController"), TEXT("Com_Controller"), (CComponent**)&m_pControllerCom, &ControllerDesc)))
+		return E_FAIL;
+
+	CRigidBody::RIGID_BODY_DESC RigidDesc;
+	RigidDesc.pTransform = m_pTransformCom;
+
+	/* For. Com_RigidBody*/
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_RigidBody"), TEXT("Com_RigidBody"), (CComponent**)&m_pRigidBodyCom, &RigidDesc)))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -174,29 +163,45 @@ HRESULT CClown_Wizard::Ready_States()
 
 HRESULT CClown_Wizard::Ready_Colliders()
 {
-	//CCollider_Sphere::SPHERE_COLLIDER_DESC ColliderDesc;
-	//ZeroMemory(&ColliderDesc, sizeof ColliderDesc);
+	CCollider_OBB::OBB_COLLIDER_DESC OBBDesc;
+	ZeroMemory(&OBBDesc, sizeof OBBDesc);
 
-	///* 원거리 공격 범위 */
-	//BoundingSphere tSphere;
-	//ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	//tSphere.Radius = 6.f;
-	//ColliderDesc.tSphere = tSphere;
+	BoundingOrientedBox OBBBox;
+	ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
 
-	//ColliderDesc.pOwner = this;
-	//ColliderDesc.pNode = nullptr;
-	//ColliderDesc.pOwnerTransform = m_pTransformCom;
-	//ColliderDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
-	//ColliderDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
-	//ColliderDesc.bLockAngle_X = false;
-	//ColliderDesc.bLockAngle_Y = false;
-	//ColliderDesc.bLockAngle_Z = false;
+	XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
+	OBBBox.Extents = { 50.f, 50.f, 50.f };
 
-	//ColliderDesc.fAngularDamping = 0.f;
-	//ColliderDesc.fDensity = 1.f;
+	OBBDesc.tBox = OBBBox;
+	OBBDesc.pNode = nullptr;
+	OBBDesc.pOwnerTransform = m_pTransformCom;
+	OBBDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
+	OBBDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
 
-	//if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BODY, &ColliderDesc)))
-	//	return E_FAIL;
+	/* Body */
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::BODY, &OBBDesc)))
+		return E_FAIL;
+
+	/* Atk */
+	OBBDesc.vOffsetPosition = Vec3(0.f, 50.f, -100.f);
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::ATTACK, &OBBDesc)))
+		return E_FAIL;
+
+	CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
+	ZeroMemory(&SphereDesc, sizeof SphereDesc);
+
+	BoundingSphere tSphere;
+	ZeroMemory(&tSphere, sizeof(BoundingSphere));
+	tSphere.Radius = 2.f;
+	SphereDesc.tSphere = tSphere;
+
+	SphereDesc.pNode = nullptr;
+	SphereDesc.pOwnerTransform = m_pTransformCom;
+	SphereDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
+	SphereDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
+
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BOUNDARY, &SphereDesc)))
+		return E_FAIL;
 
 	return S_OK;
 }

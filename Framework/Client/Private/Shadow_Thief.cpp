@@ -45,23 +45,13 @@ HRESULT CShadow_Thief::Initialize(void* pArg)
 	m_pHPBar = dynamic_cast<CUI_MonsterHP_World*>(pHPBar);
 	m_pHPBar->Set_Owner(this);
 
-	m_pModelCom->Set_Animation(1);
+	m_pModelCom->Set_Animation(12);
 
 	return S_OK;
 }
 
 void CShadow_Thief::Tick(_float fTimeDelta)
 {
-	if (KEY_TAP(KEY::NUM_5))
-	{
-		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATK] = !m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATK];
-		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND] = !m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND];
-	}
-	if (KEY_TAP(KEY::V) || KEY_TAP(KEY::B))
-	{
-		m_tStat.fHp -= 10.f;
-	}
-
 	// << : Test 
 	if (KEY_TAP(KEY::HOME))
 	{
@@ -196,7 +186,6 @@ HRESULT CShadow_Thief::Ready_States()
 
 HRESULT CShadow_Thief::Ready_Colliders()
 {
-
 	CCollider_OBB::OBB_COLLIDER_DESC OBBDesc;
 	ZeroMemory(&OBBDesc, sizeof OBBDesc);
 
@@ -212,36 +201,30 @@ HRESULT CShadow_Thief::Ready_Colliders()
 	OBBDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
 	OBBDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
 
+	/* Body */
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::BODY, &OBBDesc)))
 		return E_FAIL;
 
-
+	/* Atk */
 	OBBDesc.vOffsetPosition = Vec3(0.f, 50.f, -100.f);
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::ATTACK, &OBBDesc)))
 		return E_FAIL;
 
-	//CCollider_Sphere::SPHERE_COLLIDER_DESC ColliderDesc;
-	//ZeroMemory(&ColliderDesc, sizeof ColliderDesc);
-	//
-	//BoundingSphere tSphere;
-	//ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	//tSphere.Radius = 1.f;
-	//ColliderDesc.tSphere = tSphere;
-	//
-	//ColliderDesc.pOwner = this;
-	//ColliderDesc.pNode = nullptr;
-	//ColliderDesc.pOwnerTransform = m_pTransformCom;
-	//ColliderDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
-	//ColliderDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
-	//ColliderDesc.bLockAngle_X = false;
-	//ColliderDesc.bLockAngle_Y = false;
-	//ColliderDesc.bLockAngle_Z = false;
-	//
-	//ColliderDesc.fAngularDamping = 0.f;
-	//ColliderDesc.fDensity = 1.f;
-	//
-	//if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BODY, &ColliderDesc)))
-	//	return E_FAIL;
+	CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
+	ZeroMemory(&SphereDesc, sizeof SphereDesc);
+	
+	BoundingSphere tSphere;
+	ZeroMemory(&tSphere, sizeof(BoundingSphere));
+	tSphere.Radius = 2.f;
+	SphereDesc.tSphere = tSphere;
+	
+	SphereDesc.pNode = nullptr;
+	SphereDesc.pOwnerTransform = m_pTransformCom;
+	SphereDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
+	SphereDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
+	
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BOUNDARY, &SphereDesc)))
+		return E_FAIL;
 
 
 
