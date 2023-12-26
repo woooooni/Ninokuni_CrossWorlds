@@ -452,12 +452,12 @@ void CTool_Effect::Tick(_float fTimeDelta)
 		ImGui::NewLine();
 
 		// 블러 셋팅
-		ImGui::Checkbox("BloomColorRandom", &m_tEffectInfo.bBloomPowerRandom);
+		ImGui::Checkbox("BloomPowerRandom", &m_tEffectInfo.bBloomPowerRandom);
 		ImGui::NewLine();
 		if (!m_tEffectInfo.bBloomPowerRandom)
 		{
-			ImGui::Text("BloomColor");
-			if (ImGui::ColorEdit4("##BloomColor", (float*)&m_tEffectInfo.fBloomPower, ImGuiColorEditFlags_Float))
+			ImGui::Text("BloomPower");
+			if (ImGui::ColorEdit4("##BloomPower", (float*)&m_tEffectInfo.fBloomPower, ImGuiColorEditFlags_Float))
 				Store_InfoEffect();
 			ImGui::NewLine();
 		}

@@ -22,8 +22,8 @@ struct EffectDesc //16 배수로 나눠떨어져야함.
 	float3   g_fAxis;  // 12
 	float    g_fAngle; // 4
 
-	float3   g_fBlurColor; // 12
-	float    g_fBlurPower; // 4
+	float3   g_fBloomPower; // 12
+	float    g_fBlurPower;  // 4
 };
 EffectDesc g_EffectDesc[1000]; // 8096
 
@@ -184,8 +184,8 @@ float4 Caculation_Brightness(float4 vColor, uint iInstanceID)
 {
 	float4 vBrightnessColor = float4(0.f, 0.f, 0.f, 0.f);
 
-	float fPixelBrightness = dot(vColor.rgb, float3(0.2126, 0.7152, 0.0722)); // 블룸파워 받아오기
-	if (fPixelBrightness > 0.99f)                                             // 임계값 받아오기
+	float fPixelBrightness = dot(vColor.rgb, g_EffectDesc[iInstanceID].g_fBloomPower.rgb);
+	if (fPixelBrightness > 0.99f)
 		vBrightnessColor = float4(vColor.rgb, 1.0f);
 
 	return vBrightnessColor;

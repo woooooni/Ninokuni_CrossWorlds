@@ -21,7 +21,7 @@ struct EffectDesc
 
 	float4 g_fAdditiveDiffuseColor;
 
-	float3 g_vBlurColor;
+	float3 g_fBloomPower;
 	float  g_fBlurPower;
 };
 EffectDesc g_EffectDesc[1000];
@@ -95,15 +95,15 @@ struct PS_OUT
 
 
 
-float4 CalcBrightness(float4 vColor, uint iInstanceID)
+float4 Caculation_Brightness(float4 vColor, uint iInstanceID)
 {
-	float BrightColor = 0.f;
+	float4 vBrightnessColor = float4(0.f, 0.f, 0.f, 0.f);
 
-	//float brightness = dot(vColor.rgb, g_EffectDesc[iInstanceID].g_vBloomPower.rgb);
-	//if (brightness > 0.99f)
-	//	BrightColor = float4(vColor.rgb, 1.0f);
+	float fPixelBrightness = dot(vColor.rgb, g_EffectDesc[iInstanceID].g_fBloomPower.rgb);
+	if (fPixelBrightness > 0.99f)
+		vBrightnessColor = float4(vColor.rgb, 1.0f);
 
-	return BrightColor;
+	return vBrightnessColor;
 }
 
 
@@ -138,7 +138,7 @@ PS_OUT PS_DEFAULT(PS_IN In)
 		Out.vDiffuse_High = vDiffuseColor;
 
 	// Bloom
-	Out.vBloom = float4(1.f, 1.f, 1.f, 1.f);
+	Out.vBloom = Caculation_Brightness(vDiffuseColor, In.iInstanceID);
 
 	return Out;
 
@@ -178,7 +178,7 @@ PS_OUT PS_NO_DIFFUSE_WITH_ALPHA(PS_IN In)
 		Out.vDiffuse_High = vDiffuseColor;
 
 	// Bloom
-	Out.vBloom = float4(1.f, 1.f, 1.f, 1.f);
+	Out.vBloom = Caculation_Brightness(vDiffuseColor, In.iInstanceID);
 
 	return Out;
 };
@@ -219,7 +219,7 @@ PS_OUT PS_NO_ALPHA_WITH_DIFFUSE(PS_IN In)
 		Out.vDiffuse_High = vDiffuseColor;
 
 	// Bloom
-	Out.vBloom = float4(1.f, 1.f, 1.f, 1.f);
+	Out.vBloom = Caculation_Brightness(vDiffuseColor, In.iInstanceID);
 
 	return Out;
 
@@ -264,7 +264,7 @@ PS_OUT PS_BOTH(PS_IN In)
 		Out.vDiffuse_High = vDiffuseColor;
 
 	// Bloom
-	Out.vBloom = float4(1.f, 1.f, 1.f, 1.f);
+	Out.vBloom = Caculation_Brightness(vDiffuseColor, In.iInstanceID);
 
 	return Out;
 

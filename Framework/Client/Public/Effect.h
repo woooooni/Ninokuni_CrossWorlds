@@ -150,7 +150,7 @@ public:
 		_float2 fColorDuration = _float2(2.f, 2.f);
 #pragma endregion
 
-#pragma region 블러 // 추후 기능 구현
+#pragma region 블러
 		_bool   bBloomPowerRandom = false;
 		_float4	fBloomPower      = _float4(1.f, 0.f, 0.f, 1.f);
 		_bool   bBlurPowerRandom = false;

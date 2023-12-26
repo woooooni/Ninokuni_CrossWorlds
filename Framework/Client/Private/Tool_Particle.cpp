@@ -619,12 +619,12 @@ void CTool_Particle::Tick(_float fTimeDelta)
 		ImGui::NewLine();
 
 		// 블러 셋팅
-		ImGui::Checkbox("BlurColorRandom", &m_tParticleInfo.bBlurColorRandom);
+		ImGui::Checkbox("BloomPowerRandom", &m_tParticleInfo.bBloomPowerRandom);
 		ImGui::NewLine();
-		if (!m_tParticleInfo.bBlurColorRandom)
+		if (!m_tParticleInfo.bBloomPowerRandom)
 		{
-			ImGui::Text("BlurColor");
-			if (ImGui::ColorEdit4("##BlurColor", (float*)&m_tParticleInfo.fBlurColor, ImGuiColorEditFlags_Float))
+			ImGui::Text("BloomPower");
+			if (ImGui::ColorEdit4("##BloomPower", (float*)&m_tParticleInfo.fBloomPower, ImGuiColorEditFlags_Float))
 				Store_InfoParticle();
 			ImGui::NewLine();
 		}
@@ -1265,8 +1265,8 @@ void CTool_Particle::Save_Particle(const char* pFileName)
 #pragma endregion
 
 #pragma region 블러
-		File->Write<_bool>(m_tParticleInfo.bBlurColorRandom);
-		File->Write<_float4>(m_tParticleInfo.fBlurColor);
+		File->Write<_bool>(m_tParticleInfo.bBloomPowerRandom);
+		File->Write<_float4>(m_tParticleInfo.fBloomPower);
 		File->Write<_bool>(m_tParticleInfo.bBlurPowerRandom);
 		File->Write<_float>(m_tParticleInfo.fBlurPower);
 #pragma endregion
@@ -1468,8 +1468,8 @@ void CTool_Particle::Load_Particle(const char* pFileName)
 #pragma endregion
 
 #pragma region 블러
-	File->Read<_bool>(ParticleInfo.bBlurColorRandom);
-	File->Read<_float4>(ParticleInfo.fBlurColor);
+	File->Read<_bool>(ParticleInfo.bBloomPowerRandom);
+	File->Read<_float4>(ParticleInfo.fBloomPower);
 	File->Read<_bool>(ParticleInfo.bBlurPowerRandom);
 	File->Read<_float>(ParticleInfo.fBlurPower);
 #pragma endregion

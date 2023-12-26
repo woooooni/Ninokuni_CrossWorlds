@@ -398,8 +398,8 @@ void CParticle::Load_ParticleData(const wstring& strFileName)
 #pragma endregion
 
 #pragma region ºí·¯
-	File->Read<_bool>(m_tParticleDesc.bBlurColorRandom);
-	File->Read<_float4>(m_tParticleDesc.fBlurColor);
+	File->Read<_bool>(m_tParticleDesc.bBloomPowerRandom);
+	File->Read<_float4>(m_tParticleDesc.fBloomPower);
 	File->Read<_bool>(m_tParticleDesc.bBlurPowerRandom);
 	File->Read<_float>(m_tParticleDesc.fBlurPower);
 #pragma endregion
@@ -526,10 +526,10 @@ void* CParticle::Get_ParticleBufferInfo()
 	tBufferInfo.pColorDuration = &m_tParticleDesc.fColorDuration;
 
 
-	tBufferInfo.pBlurColorRandom = &m_tParticleDesc.bBlurColorRandom;
-	tBufferInfo.pBlurColor       = &m_tParticleDesc.fBlurColor;
-	tBufferInfo.pBlurPowerRandom = &m_tParticleDesc.bBlurPowerRandom;
-	tBufferInfo.pBlurPower       = &m_tParticleDesc.fBlurPower;
+	tBufferInfo.pBloomPowerRandom = &m_tParticleDesc.bBloomPowerRandom;
+	tBufferInfo.pBloomPower       = &m_tParticleDesc.fBloomPower;
+	tBufferInfo.pBlurPowerRandom  = &m_tParticleDesc.bBlurPowerRandom;
+	tBufferInfo.pBlurPower        = &m_tParticleDesc.fBlurPower;
 
 
 	return &tBufferInfo;
