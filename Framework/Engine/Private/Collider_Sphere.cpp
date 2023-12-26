@@ -20,7 +20,8 @@ CCollider_Sphere::CCollider_Sphere(CCollider_Sphere& rhs)
 
 HRESULT CCollider_Sphere::Initialize_Prototype()
 {
-
+	if (FAILED(__super::Initialize_Prototype()))
+		return E_FAIL;
 
 	return S_OK;
 }

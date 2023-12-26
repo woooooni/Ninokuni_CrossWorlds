@@ -11,6 +11,7 @@ class CRenderer;
 class CPipeLine;
 class CTransform;
 class CStateMachine;
+class CRigidBody;
 END
 
 
@@ -31,7 +32,7 @@ public:
 	virtual HRESULT Render() override;
 	virtual HRESULT Render_ShadowDepth() override;
 
-	virtual HRESULT Render_Instance(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices);
+
 	virtual HRESULT Render_Instance_Shadow(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices);
 
 public:
@@ -47,6 +48,7 @@ protected:
 	CTransform* m_pTransformCom = nullptr;
 	CModel* m_pModelCom = nullptr;
 	CStateMachine* m_pStateMachineCom = nullptr;
+	CRigidBody* m_pRigidBodyCom = nullptr;
 
 	wstring m_strDynamicName = L"";
 
