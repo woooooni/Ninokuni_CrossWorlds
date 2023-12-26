@@ -165,22 +165,19 @@ struct PS_IN
 {
 	float4		vPosition : SV_POSITION;
 	float2		vTexcoord : TEXCOORD0;
-	//float4		vProjPos  : TEXCOORD1;
+	//float4	vProjPos  : TEXCOORD1;
 
 	uint	iInstanceID : SV_INSTANCEID;
 };
 
 struct PS_OUT
 {
-	float4 vDiffuse  : SV_TARGET0;
-
-	float4 vDiffuse1 : SV_TARGET1;
-	float4 vDiffuse2 : SV_TARGET2;
-	float4 vDiffuse3 : SV_TARGET3;
-	float4 vDiffuse4 : SV_TARGET4;
-	float4 vDiffuse5 : SV_TARGET5;
-
-	float4 vBloom : SV_TARGET6;
+	float4 vDiffuse_All    : SV_TARGET0;
+	float4 vDiffuse_None   : SV_TARGET1;
+	float4 vDiffuse_Low    : SV_TARGET2;
+	float4 vDiffuse_Middle : SV_TARGET3;
+	float4 vDiffuse_High   : SV_TARGET4;
+	float4 vBloom          : SV_TARGET5;
 };
 
 PS_OUT PS_MAIN(PS_IN In)
@@ -194,24 +191,22 @@ PS_OUT PS_MAIN(PS_IN In)
 	vDiffuseColor.rgb = saturate((vDiffuseColor.rgb + g_EffectDesc[In.iInstanceID].g_fColor.rgb));
 	vDiffuseColor.a = saturate(vDiffuseColor.a - g_EffectDesc[In.iInstanceID].g_fAlpha);
 
-	Out.vDiffuse  = vDiffuseColor;
-	Out.vDiffuse1 = float4(0.f, 0.f, 0.f, 0.f);
-	Out.vDiffuse2 = float4(0.f, 0.f, 0.f, 0.f);
-	Out.vDiffuse3 = float4(0.f, 0.f, 0.f, 0.f);
-	Out.vDiffuse4 = float4(0.f, 0.f, 0.f, 0.f);
-	Out.vDiffuse5 = float4(0.f, 0.f, 0.f, 0.f);
-	if (g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.2f)
-		Out.vDiffuse1 = vDiffuseColor;
-	else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.2f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.4f)
-		Out.vDiffuse2 = vDiffuseColor;
-	//else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.4f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.6f)
-	else
-		Out.vDiffuse3 = vDiffuseColor;
-	//else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.6f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.8f)
-	//	Out.vDiffuse4 = vDiffuseColor;
-	//else
-	//	Out.vDiffuse5 = vDiffuseColor;
+	Out.vDiffuse_All    = vDiffuseColor;
+	Out.vDiffuse_None   = float4(0.f, 0.f, 0.f, 0.f);
+	Out.vDiffuse_Low    = float4(0.f, 0.f, 0.f, 0.f);
+	Out.vDiffuse_Middle = float4(0.f, 0.f, 0.f, 0.f);
+	Out.vDiffuse_High   = float4(0.f, 0.f, 0.f, 0.f);
 
+	if (g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.0f)
+		Out.vDiffuse_None = vDiffuseColor;
+	else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.0f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.3f)
+		Out.vDiffuse_Low = vDiffuseColor;
+	else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.3f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.7f)
+		Out.vDiffuse_Middle = vDiffuseColor;
+	else
+		Out.vDiffuse_High = vDiffuseColor;
+
+	// Bloom
 	Out.vBloom = float4(1.f, 1.f, 1.f, 1.f);
 
 	return Out;

@@ -4,20 +4,25 @@
 matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 Texture2D	g_DiffuseTexture;
 Texture2D	g_AlphaTexture;
-float g_fBlurPower = 0.f;
 
+float       g_fAlpha_Discard;
+float3      g_fBlack_Discard;
+
+float       g_fBlurPower = 0.f;
 
 struct EffectDesc
 {
-	int			g_iCutUV;
-	float		g_fMaxCountX;
-	float		g_fMaxCountY;
-	float		g_fAlpha;
-	float2		g_fUVIndex;
-	float2		g_fUVFlow;
+	float2 g_fUVIndex;
+	float2 g_fMaxCount;
 
-	float4		g_fAdditiveDiffuseColor;
-	float4		g_vBloomPower;
+	float2 g_fUVFlow;
+	int	   g_iUVLoop;
+	float  g_fAlpha;
+
+	float4 g_fAdditiveDiffuseColor;
+
+	float3 g_vBlurColor;
+	float  g_fBlurPower;
 };
 EffectDesc g_EffectDesc[1000];
 
@@ -61,8 +66,8 @@ VS_OUT VS_MAIN(VS_IN In)
 	Out.vPosition = mul(Out.vPosition, matVP);
 	
 	Out.vTexUV = float2(
-		((g_EffectDesc[In.iInstanceID].g_fUVIndex.x + In.vTexUV.x) / g_EffectDesc[In.iInstanceID].g_fMaxCountX) + g_EffectDesc[In.iInstanceID].g_fUVFlow.x,
-		((g_EffectDesc[In.iInstanceID].g_fUVIndex.y + In.vTexUV.y) / g_EffectDesc[In.iInstanceID].g_fMaxCountY) + g_EffectDesc[In.iInstanceID].g_fUVFlow.y);
+		((g_EffectDesc[In.iInstanceID].g_fUVIndex.x + In.vTexUV.x) / g_EffectDesc[In.iInstanceID].g_fMaxCount.x) + g_EffectDesc[In.iInstanceID].g_fUVFlow.x,
+		((g_EffectDesc[In.iInstanceID].g_fUVIndex.y + In.vTexUV.y) / g_EffectDesc[In.iInstanceID].g_fMaxCount.y) + g_EffectDesc[In.iInstanceID].g_fUVFlow.y);
 
 	Out.iInstanceID = In.iInstanceID;
 
@@ -80,8 +85,12 @@ struct PS_IN
 
 struct PS_OUT
 {
-	float4	vDiffuse : SV_TARGET0;
-	float4	vBrightness : SV_TARGET1;
+	float4 vDiffuse_All    : SV_TARGET0;
+	float4 vDiffuse_None   : SV_TARGET1;
+	float4 vDiffuse_Low    : SV_TARGET2;
+	float4 vDiffuse_Middle : SV_TARGET3;
+	float4 vDiffuse_High   : SV_TARGET4;
+	float4 vBloom          : SV_TARGET5;
 };
 
 
@@ -90,9 +99,9 @@ float4 CalcBrightness(float4 vColor, uint iInstanceID)
 {
 	float BrightColor = 0.f;
 
-	float brightness = dot(vColor.rgb, g_EffectDesc[iInstanceID].g_vBloomPower.rgb);
-	if (brightness > 0.99f)
-		BrightColor = float4(vColor.rgb, 1.0f);
+	//float brightness = dot(vColor.rgb, g_EffectDesc[iInstanceID].g_vBloomPower.rgb);
+	//if (brightness > 0.99f)
+	//	BrightColor = float4(vColor.rgb, 1.0f);
 
 	return BrightColor;
 }
@@ -103,19 +112,33 @@ PS_OUT PS_DEFAULT(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
-	if (0 < g_EffectDesc[In.iInstanceID].g_iCutUV)
+	if (0 < g_EffectDesc[In.iInstanceID].g_iUVLoop)
 	{
 		if ((In.vTexUV.x > 1.f) || (In.vTexUV.y > 1.f) || (In.vTexUV.x < 0.f) || (In.vTexUV.y < 0.f))
 			discard;
 	}
 
-	Out.vDiffuse = vector(g_EffectDesc[In.iInstanceID].g_fAdditiveDiffuseColor.rgb, g_EffectDesc[In.iInstanceID].g_fAlpha);
-	if (0 == Out.vDiffuse.a)
+	vector vDiffuseColor = vector(g_EffectDesc[In.iInstanceID].g_fAdditiveDiffuseColor.rgb, g_EffectDesc[In.iInstanceID].g_fAlpha);
+	if (vDiffuseColor.a < g_fAlpha_Discard)
 		discard;
 
-	//Out.vBlurPower = vector(g_fBlurPower / 100.f, 0.f, 0.f, 1.f);
-	//Out.vBrightness = CalcBrightness(Out.vDiffuse, In.iInstanceID);
-	Out.vBrightness = float4(Out.vDiffuse.r, Out.vDiffuse.g, Out.vDiffuse.b, 0.5f);
+	Out.vDiffuse_All = vDiffuseColor;
+	Out.vDiffuse_None = float4(0.f, 0.f, 0.f, 0.f);
+	Out.vDiffuse_Low = float4(0.f, 0.f, 0.f, 0.f);
+	Out.vDiffuse_Middle = float4(0.f, 0.f, 0.f, 0.f);
+	Out.vDiffuse_High = float4(0.f, 0.f, 0.f, 0.f);
+
+	if (g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.0f)
+		Out.vDiffuse_None = vDiffuseColor;
+	else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.0f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.3f)
+		Out.vDiffuse_Low = vDiffuseColor;
+	else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.3f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.7f)
+		Out.vDiffuse_Middle = vDiffuseColor;
+	else
+		Out.vDiffuse_High = vDiffuseColor;
+
+	// Bloom
+	Out.vBloom = float4(1.f, 1.f, 1.f, 1.f);
 
 	return Out;
 
@@ -125,61 +148,78 @@ PS_OUT PS_NO_DIFFUSE_WITH_ALPHA(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
-	if (0 < g_EffectDesc[In.iInstanceID].g_iCutUV)
+	if (0 < g_EffectDesc[In.iInstanceID].g_iUVLoop)
 	{
 		if ((In.vTexUV.x > 1.f) || (In.vTexUV.y > 1.f) || (In.vTexUV.x < 0.f) || (In.vTexUV.y < 0.f))
 			discard;
 	}
 
 	vector vTextureAlpha = g_AlphaTexture.Sample(LinearSampler, In.vTexUV);
-
-	if (vTextureAlpha.r <= 0.001f)
+	if ((vTextureAlpha.r <= g_fBlack_Discard.x) && (vTextureAlpha.g <= g_fBlack_Discard.y) && (vTextureAlpha.b <= g_fBlack_Discard.z))
 		discard;
 
-	Out.vDiffuse = vector(g_EffectDesc[In.iInstanceID].g_fAdditiveDiffuseColor.rgb, g_EffectDesc[In.iInstanceID].g_fAlpha);
-
-	if (0 == Out.vDiffuse.a)
+	vector vDiffuseColor = vector(g_EffectDesc[In.iInstanceID].g_fAdditiveDiffuseColor.rgb, g_EffectDesc[In.iInstanceID].g_fAlpha);
+	if (vDiffuseColor.a <= g_fAlpha_Discard)
 		discard;
 
-	//Out.vBlurPower = vector(g_fBlurPower / 100.f, 0.f, 0.f, 1.f);
-	//Out.vBrightness = CalcBrightness(Out.vDiffuse, In.iInstanceID);
+	Out.vDiffuse_All = vDiffuseColor;
+	Out.vDiffuse_None = float4(0.f, 0.f, 0.f, 0.f);
+	Out.vDiffuse_Low = float4(0.f, 0.f, 0.f, 0.f);
+	Out.vDiffuse_Middle = float4(0.f, 0.f, 0.f, 0.f);
+	Out.vDiffuse_High = float4(0.f, 0.f, 0.f, 0.f);
 
-	Out.vBrightness = float4(Out.vDiffuse.r, Out.vDiffuse.g, Out.vDiffuse.b, 0.5f); // A는 파워
+	if (g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.0f)
+		Out.vDiffuse_None = vDiffuseColor;
+	else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.0f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.3f)
+		Out.vDiffuse_Low = vDiffuseColor;
+	else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.3f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.7f)
+		Out.vDiffuse_Middle = vDiffuseColor;
+	else
+		Out.vDiffuse_High = vDiffuseColor;
+
+	// Bloom
+	Out.vBloom = float4(1.f, 1.f, 1.f, 1.f);
 
 	return Out;
-
 };
 
 PS_OUT PS_NO_ALPHA_WITH_DIFFUSE(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
-	if (0 < g_EffectDesc[In.iInstanceID].g_iCutUV)
+	if (0 < g_EffectDesc[In.iInstanceID].g_iUVLoop)
 	{
 		if ((In.vTexUV.x > 1.f) || (In.vTexUV.y > 1.f) || (In.vTexUV.x < 0.f) || (In.vTexUV.y < 0.f))
 			discard;
 	}
 
-	vector vTextureDiffuse = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
-	vector vAdditiveColor = vector(g_EffectDesc[In.iInstanceID].g_fAdditiveDiffuseColor.rgb, g_EffectDesc[In.iInstanceID].g_fAlpha);
-
-
-	if (vTextureDiffuse.r <= 0.01f)
+	vector vDiffuseColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
+	if (vDiffuseColor.a < g_fAlpha_Discard ||
+		vDiffuseColor.r < g_fBlack_Discard.r && vDiffuseColor.g < g_fBlack_Discard.g && vDiffuseColor.b < g_fBlack_Discard.b)
 		discard;
 
-	vTextureDiffuse.a = 0.f;
-	vector vDiffuseColor = vTextureDiffuse + vAdditiveColor;
-	saturate(vDiffuseColor);
-
-	vector vMtrlColor = vector(vDiffuseColor.rgb, g_EffectDesc[In.iInstanceID].g_fAlpha);
-	Out.vDiffuse = vMtrlColor;
-
-	if (0 == Out.vDiffuse.a)
+	vDiffuseColor.rgb = saturate((vDiffuseColor.rgb + g_EffectDesc[In.iInstanceID].g_fAdditiveDiffuseColor.rgb));
+	vDiffuseColor.a = g_EffectDesc[In.iInstanceID].g_fAlpha;
+	if (Out.vDiffuse_All.a <= g_fAlpha_Discard)
 		discard;
 
-	//Out.vBlurPower = vector(g_fBlurPower / 100.f, 0.f, 0.f, 1.f);
-	//Out.vBrightness = CalcBrightness(Out.vDiffuse, In.iInstanceID);
-	Out.vBrightness = float4(Out.vDiffuse.r, Out.vDiffuse.g, Out.vDiffuse.b, 0.5f); // A는 파워
+	Out.vDiffuse_All = vDiffuseColor;
+	Out.vDiffuse_None = float4(0.f, 0.f, 0.f, 0.f);
+	Out.vDiffuse_Low = float4(0.f, 0.f, 0.f, 0.f);
+	Out.vDiffuse_Middle = float4(0.f, 0.f, 0.f, 0.f);
+	Out.vDiffuse_High = float4(0.f, 0.f, 0.f, 0.f);
+
+	if (g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.0f)
+		Out.vDiffuse_None = vDiffuseColor;
+	else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.0f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.3f)
+		Out.vDiffuse_Low = vDiffuseColor;
+	else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.3f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.7f)
+		Out.vDiffuse_Middle = vDiffuseColor;
+	else
+		Out.vDiffuse_High = vDiffuseColor;
+
+	// Bloom
+	Out.vBloom = float4(1.f, 1.f, 1.f, 1.f);
 
 	return Out;
 
@@ -189,34 +229,42 @@ PS_OUT PS_BOTH(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
 
-	if (0 < g_EffectDesc[In.iInstanceID].g_iCutUV)
+	if (0 < g_EffectDesc[In.iInstanceID].g_iUVLoop)
 	{
 		if ((In.vTexUV.x > 1.f) || (In.vTexUV.y > 1.f) || (In.vTexUV.x < 0.f) || (In.vTexUV.y < 0.f))
 			discard;
 	}
 
-	vector vTextureDiffuse = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
+	vector vDiffuseColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
+	if ((vDiffuseColor.r <= g_fBlack_Discard.x) && (vDiffuseColor.g <= g_fBlack_Discard.y) && (vDiffuseColor.b <= g_fBlack_Discard.z))
+		discard;
+
+	vDiffuseColor.rgb = saturate((vDiffuseColor.rgb + g_EffectDesc[In.iInstanceID].g_fAdditiveDiffuseColor.rgb));
+	vDiffuseColor.a = g_EffectDesc[In.iInstanceID].g_fAlpha;
+	if (vDiffuseColor.a <= g_fAlpha_Discard)
+		discard;
+
 	vector vTextureAlpha = g_AlphaTexture.Sample(LinearSampler, In.vTexUV);
-	vector vAdditiveColor = vector(g_EffectDesc[In.iInstanceID].g_fAdditiveDiffuseColor.rgb, g_EffectDesc[In.iInstanceID].g_fAlpha);
-
-	if (vTextureAlpha.r <= 0.1f)
+	if ((vTextureAlpha.r <= g_fBlack_Discard.x) && (vTextureAlpha.g <= g_fBlack_Discard.y) && (vTextureAlpha.b <= g_fBlack_Discard.z))
 		discard;
 
+	Out.vDiffuse_All = vDiffuseColor;
+	Out.vDiffuse_None = float4(0.f, 0.f, 0.f, 0.f);
+	Out.vDiffuse_Low = float4(0.f, 0.f, 0.f, 0.f);
+	Out.vDiffuse_Middle = float4(0.f, 0.f, 0.f, 0.f);
+	Out.vDiffuse_High = float4(0.f, 0.f, 0.f, 0.f);
 
-	vector vDiffuseColor = vTextureDiffuse + vAdditiveColor;
+	if (g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.0f)
+		Out.vDiffuse_None = vDiffuseColor;
+	else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.0f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.3f)
+		Out.vDiffuse_Low = vDiffuseColor;
+	else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.3f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.7f)
+		Out.vDiffuse_Middle = vDiffuseColor;
+	else
+		Out.vDiffuse_High = vDiffuseColor;
 
-	saturate(vDiffuseColor);
-	vDiffuseColor.a = 0.f;
-
-	vector vMtrlColor = vector(vDiffuseColor.rgb, g_EffectDesc[In.iInstanceID].g_fAlpha);
-	Out.vDiffuse = vMtrlColor;
-
-	if (0 == Out.vDiffuse.a)
-		discard;
-
-	//Out.vBlurPower = vector(g_fBlurPower / 100.f, 0.f, 0.f, 1.f);
-	//Out.vBrightness = CalcBrightness(Out.vDiffuse, In.iInstanceID);
-	Out.vBrightness = float4(Out.vDiffuse.r, Out.vDiffuse.g, Out.vDiffuse.b, 0.5f); // A는 파워
+	// Bloom
+	Out.vBloom = float4(1.f, 1.f, 1.f, 1.f);
 
 	return Out;
 

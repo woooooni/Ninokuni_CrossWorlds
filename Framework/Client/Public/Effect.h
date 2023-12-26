@@ -130,7 +130,7 @@ public:
 //
 #pragma region »ö»ó
 		_bool   bColorRandom = false;
-		_float4	fColorS = _float4(0.f, 0.f, 0.f, 0.f);
+		_float4	fColorS = _float4(1.f, 1.f, 1.f, 1.f);
 
 		_bool bColorChange = false;
 
@@ -349,6 +349,10 @@ private:
 	_float  m_fColorAccs;
 	_float  m_fColorChangeTime;
 	_float3 m_fNextColor;
+	_bool   m_fColorFade;
+
+	_float3 m_fBlurColor;
+	_float  m_fBlurPower;
 
 private:
 	class CRenderer*  m_pRendererCom  = nullptr;
