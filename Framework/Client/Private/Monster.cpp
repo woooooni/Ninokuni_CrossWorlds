@@ -314,13 +314,18 @@ void CMonster::Collision_Enter(const COLLISION_INFO& tInfo)
 		}
 	}
 
-	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_WEAPON)
-	{
-		if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY && tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK)
-		{
-			On_Damaged(tInfo);
-		}
-	}
+	//if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_WEAPON)
+	//{
+	//	
+	//	if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY &&
+	//		tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK &&
+	//		//tInfo.pOtherCollider->Is_Active()
+	//		KEY_TAP(KEY::LBTN))
+	//	{
+	//		On_Damaged(tInfo);
+	//		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
+	//	}
+	//}
 }
 
 void CMonster::Collision_Continue(const COLLISION_INFO& tInfo)
@@ -333,11 +338,24 @@ void CMonster::Collision_Continue(const COLLISION_INFO& tInfo)
 			// m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATK] = true;
 		}
 	}
+
+	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_WEAPON)
+	{
+		if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY &&
+			tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK &&
+			//tInfo.pOtherCollider->Is_Active()
+			KEY_TAP(KEY::LBTN))
+		{
+			On_Damaged(tInfo);
+			m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
+		}
+	}
 }
 
 void CMonster::Collision_Exit(const COLLISION_INFO& tInfo)
 {
-	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER)
+	if(tInfo.pMyCollider->Get_ColliderType() == CCollider::DETECTION_TYPE::BOUNDARY &&
+	   tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER)
 	{
 		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND] = false;
 	}
@@ -384,7 +402,10 @@ CHierarchyNode* CMonster::Get_Socket(const wstring& strSocketName)
 
 void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 {
-	// m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_HITANIM] = true;
+	m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_HIT] = true;
+	m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_HITANIM] = true;
+
+	m_tStat.fHp -= 5;
 }
 
 

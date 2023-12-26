@@ -99,8 +99,8 @@ HRESULT CShadow_ThiefBT::Initialize_Prototype(CGameObject* pObject)
 	/* Condition 관련*/
 	/* function<_bool()>을 받는 CBTNode_Condition::Create 함수에서는 멤버 함수를 사용하고 있기 때문에 추가적인 처리가 필요 */
 	CBTNode_Condition* pCon_IsDead = CBTNode_Condition::Create(bind(&CShadow_ThiefBT::IsZeroHp, this), pDeadNode, pAtk1Node);
-	CBTNode_Condition* pCon_IsHitAnim = CBTNode_Condition::Create(bind(&CShadow_ThiefBT::IsHitAnim, this), pHitNode, pChaseNode);
-	CBTNode_Condition* pCon_IsCombat = CBTNode_Condition::Create(bind(&CShadow_ThiefBT::IsAtkRound, this), nullptr, pChaseNode);
+	CBTNode_Condition* pCon_IsHit = CBTNode_Condition::Create(bind(&CShadow_ThiefBT::IsHit, this), pHitNode, pChaseNode);
+	CBTNode_Condition* pCon_IsCombat = CBTNode_Condition::Create(bind(&CShadow_ThiefBT::IsAtk, this), nullptr, pChaseNode);
 	CBTNode_Condition* pCon_IsChase = CBTNode_Condition::Create(bind(&CShadow_ThiefBT::IsChase, this), pChaseNode, pRoamingNode);
 	//CBTNode_Condition* pCon_IsReturn = CBTNode_Condition::Create(bind(&CShadow_ThiefBT::IsReturn, this), pReturnNode, pIdleNode);
 
@@ -110,7 +110,7 @@ HRESULT CShadow_ThiefBT::Initialize_Prototype(CGameObject* pObject)
 	pSeq_Dead->Add_ChildNode(pDeadNode);
 
 	m_pRootNode->Add_ChildNode(pSeq_Hit);
-	pSeq_Hit->Add_ChildNode(pCon_IsHitAnim);
+	pSeq_Hit->Add_ChildNode(pCon_IsHit);
 	pSeq_Hit->Add_ChildNode(pSel_Hit);
 	pSel_Hit->Add_ChildNode(pStunNode);
 	pSel_Hit->Add_ChildNode(pHitNode);
@@ -150,7 +150,7 @@ void CShadow_ThiefBT::Tick(const _float& fTimeDelta)
 
 void CShadow_ThiefBT::LateTick(const _float& fTimeDelta)
 {
-	if (KEY_TAP(KEY::V))
+	if (KEY_TAP(KEY::M))
 	{
 		m_pRootNode->Init_Start();
 		m_pShadow_Thief->Set_StunTime(3.f);
@@ -159,15 +159,6 @@ void CShadow_ThiefBT::LateTick(const _float& fTimeDelta)
 		m_pShadow_Thief->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT, true);
 	}
 
-	if (KEY_TAP(KEY::B))
-	{
-		m_pShadow_Thief->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_HIT, true);
-		m_pShadow_Thief->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_HITANIM, true);
-		m_pShadow_Thief->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT, true);
-	}
-
-	if (KEY_TAP(KEY::N))
-		m_pShadow_Thief->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT, false);
 }
 
 void CShadow_ThiefBT::Init_NodeStart()
@@ -183,7 +174,7 @@ _bool CShadow_ThiefBT::IsZeroHp()
 	return false;
 }
 
-_bool CShadow_ThiefBT::IsHitAnim()
+_bool CShadow_ThiefBT::IsHit()
 {
 	if (m_pShadow_Thief->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_HITANIM) ||
 		m_pShadow_Thief->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_STUN))
@@ -192,15 +183,14 @@ _bool CShadow_ThiefBT::IsHitAnim()
 	return false;
 }
 
-_bool CShadow_ThiefBT::IsAtkRound()
+_bool CShadow_ThiefBT::IsAtk()
 {
-	if (m_pShadow_Thief->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT))
+	if (m_pShadow_Thief->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT) &&
+		m_pShadow_Thief->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATKAROUND) ||
+		m_pShadow_Thief->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK) ||
+		m_pShadow_Thief->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBATIDLE))
 	{
-		if (m_pShadow_Thief->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK) ||
-			m_pShadow_Thief->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBATIDLE))
-		{
-			return true;
-		}
+		return true;
 	}
 
 	return false;

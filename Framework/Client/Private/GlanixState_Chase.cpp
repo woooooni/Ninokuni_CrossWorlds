@@ -24,9 +24,9 @@ void CGlanixState_Chase::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
-	if (m_pGlanix->Get_Stat().fHp <= m_pGlanix->Get_Stat().fMaxHp / 2.f && !m_pGlanix->Get_IsRage())
+	if (m_pGlanix->Get_Stat().fHp <= m_pGlanix->Get_Stat().fMaxHp / 2.f && !m_pGlanix->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_RAGE))
 	{
-		m_pGlanix->Set_IsRage(true);
+		m_pGlanix->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_RAGE, true);
 		m_pGlanix->Set_SkillTree();
 		m_iAtkIndex = 0;
 		m_pStateMachineCom->Change_State(CGlanix::GLANIX_RAGE);
@@ -38,13 +38,29 @@ void CGlanixState_Chase::Tick_State(_float fTimeDelta)
 	
 	m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fRunSpeed, fTimeDelta);
 
-	if (m_pGlanix->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATKAROUND))
+	// 기본 공격 패턴이면 
+	if (m_vecAtkState[m_iAtkIndex] == CGlanix::GLANIX_ATTACK1 || m_vecAtkState[m_iAtkIndex] == CGlanix::GLANIX_ATTACK2)
 	{
-		if (m_iAtkIndex >= m_vecAtkState.size())
-			m_iAtkIndex = 0;
+		if (m_pGlanix->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_ATKAROUND))
+		{
+			if (m_iAtkIndex >= m_vecAtkState.size())
+				m_iAtkIndex = 0;
 
-		m_pStateMachineCom->Change_State(m_vecAtkState[m_iAtkIndex++]);
+			m_pStateMachineCom->Change_State(m_vecAtkState[m_iAtkIndex++]);
+		}
 	}
+	// 스킬 패턴이면(사정거리 긴)
+	else
+	{
+		if (m_pGlanix->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_SKILLAROUND))
+		{
+			if (m_iAtkIndex >= m_vecAtkState.size())
+				m_iAtkIndex = 0;
+
+			m_pStateMachineCom->Change_State(m_vecAtkState[m_iAtkIndex++]);
+		}
+	}
+
 }
 
 void CGlanixState_Chase::Exit_State()

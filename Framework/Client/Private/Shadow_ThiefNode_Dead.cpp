@@ -22,7 +22,7 @@ void CShadow_ThiefNode_Dead::Start()
 
 CBTNode::NODE_STATE CShadow_ThiefNode_Dead::Tick(const _float& fTimeDelta)
 {
-	if (m_tBTNodeDesc.pOwnerModel->Is_Finish())
+	if (m_tBTNodeDesc.pOwnerModel->Is_Finish() && !m_tBTNodeDesc.pOwnerModel->Is_Tween())
 	{
 		m_tBTNodeDesc.pOwner->Set_Dead(true);
 	}

@@ -24,9 +24,8 @@ void CClown_WizardNode_Dead::Start()
 
 CBTNode::NODE_STATE CClown_WizardNode_Dead::Tick(const _float& fTimeDelta)
 {
-	if (m_tBTNodeDesc.pOwnerModel->Is_Finish())
+	if (m_tBTNodeDesc.pOwnerModel->Is_Finish() && !m_tBTNodeDesc.pOwnerModel->Is_Tween())
 	{
-		// 여기서 객체 지우는 코드.
 		m_tBTNodeDesc.pOwner->Set_Dead(true);
 	}
 

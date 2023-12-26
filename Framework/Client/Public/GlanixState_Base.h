@@ -33,7 +33,8 @@ public:
 	void	Init_Pattern();
 
 protected:
-	virtual _bool State_Wait(_float fDestTime, _float fTimeDelta);
+	_bool State_Wait(_float fDestTime, _float fTimeDelta);
+	void  Start_Pattern();
 
 protected:
 	CCharacter_SwordMan* m_pPlayer = nullptr; // 후에 플레이어로 교체.

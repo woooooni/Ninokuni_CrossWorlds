@@ -17,6 +17,9 @@ public:
 	virtual void Tick_State(_float fTimeDelta);
 	virtual void Exit_State();
 
+private:
+	_float m_fFowardSpeed = 0.f;
+
 public:
 	static CGlanixState_QuadBlow* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

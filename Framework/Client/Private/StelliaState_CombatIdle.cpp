@@ -17,9 +17,9 @@ HRESULT CStelliaState_CombatIdle::Initialize(const list<wstring>& AnimationList)
 
 void CStelliaState_CombatIdle::Enter_State(void* pArg)
 {
-	if (m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp / 2.f && !m_pStellia->Get_IsRage())
+	if (m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp / 2.f && !m_pStellia->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_RAGE))
 	{
-		m_pStellia->Set_IsRage(true);
+		m_pStellia->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_RAGE, true);
 		m_pStellia->Set_SkillTree();
 		m_iAtkIndex = 0;
 		m_pStateMachineCom->Change_State(CStellia::STELLIA_RAGE);
@@ -85,7 +85,7 @@ void CStelliaState_CombatIdle::Tick_State(_float fTimeDelta)
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
-		if (m_pStellia->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATKAROUND))
+		if (m_pStellia->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_ATKAROUND))
 		{
 			if (m_iAtkIndex >= m_vecAtkState.size())
 				m_iAtkIndex = 0;

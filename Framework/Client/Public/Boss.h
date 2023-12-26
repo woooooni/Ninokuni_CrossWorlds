@@ -7,6 +7,12 @@ BEGIN(Client)
 class CBoss abstract : public CMonster
 {
 public:
+	enum class BOSS_BOOLTYPE {
+		BOSSBOOL_ATKAROUND, BOSSBOOL_SKILLAROUND, BOSSBOOL_RAGE,
+		BOSSBOOL_END
+	};
+
+public:
 	CBoss(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat);
 	CBoss(const CBoss& rhs);
 	virtual ~CBoss() = default;
@@ -46,12 +52,14 @@ public:
 	CHierarchyNode* Get_Socket(const wstring& strSocketName);
 	const MONSTER_STAT& Get_Stat() { return m_tStat; }
 
-	_bool	Get_IsRage() { return m_bIsRage; }
-	void	Set_IsRage(_bool bIsRage) { m_bIsRage = bIsRage; }
 
 public:
 	virtual void On_Damaged(const COLLISION_INFO& tInfo);
 	virtual void Set_SkillTree() {};
+
+	/* Bool 정보들 */
+	virtual _bool  Get_Bools(BOSS_BOOLTYPE eType) { return m_bBools[(_uint)eType]; }
+	virtual void   Set_Bools(BOSS_BOOLTYPE eType, _bool bIsBool) { m_bBools[(_uint)eType] = bIsBool; }
 
 private:
 	virtual HRESULT Ready_Components();
@@ -63,7 +71,7 @@ private:
 	void Play_DamagedSound();
 
 protected:
-	_bool	m_bIsRage = false;
+	_bool   m_bBools[(_uint)BOSS_BOOLTYPE::BOSSBOOL_END] = { false, }; // 보스가 사용하는 bool모음.
 
 public:
 	virtual void Free() override;
