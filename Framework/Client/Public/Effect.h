@@ -127,7 +127,7 @@ public:
 		_bool bAlphaIn     = false;
 		_float2 fAlphaChangeStartDelay = _float2(0.f, 0.f);
 #pragma endregion
-//
+
 #pragma region »ö»ó
 		_bool   bColorRandom = false;
 		_float4	fColorS = _float4(1.f, 1.f, 1.f, 1.f);
