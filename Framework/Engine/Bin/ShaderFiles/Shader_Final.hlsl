@@ -4,10 +4,6 @@ matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 
 texture2D g_DiffuseTarget;
 
-texture2D g_EffectDiffuseTarget;
-texture2D g_EffectBrightnessTarget;
-texture2D g_EffectBlurTarget;
-
 texture2D g_EffectUIDiffuseTarget;
 texture2D g_EffectUIBrightnessTarget;
 texture2D g_EffectUIBlurTarget;
@@ -66,21 +62,14 @@ PS_OUT PS_MAIN_FINAL(PS_IN In)
 	vector vEffectUIBrightnessColor = g_EffectUIBrightnessTarget.Sample(PointSampler, In.vTexcoord);
 	vector vEffectUIBlurColor = g_EffectUIBlurTarget.Sample(PointSampler, In.vTexcoord);
 
-	// Effect
-	vector vEffectDiffuseColor = g_EffectDiffuseTarget.Sample(PointSampler, In.vTexcoord);
-	vector vEffectBrightnessColor = g_EffectBrightnessTarget.Sample(PointSampler, In.vTexcoord);
-	vector vEffectBlurColor = g_EffectBlurTarget.Sample(PointSampler, In.vTexcoord);
-
-	// Output // vDiffuseColor + vEffectDiffuseColor + vEffectBrightnessColor + vUIEffectColor;
+	// Output
 	if (vEffectUIDiffuseColor.a != 0.f)
 		Out.vColor = vEffectUIDiffuseColor;
-	else if (vEffectDiffuseColor.a != 0.f)
-		Out.vColor = vEffectDiffuseColor;
 	else
 		Out.vColor = vDiffuseColor;
 
-	if(g_bBlurDraw)
-		Out.vColor = Out.vColor + vEffectBlurColor + vEffectUIBlurColor;
+	//if(g_bBlurDraw)
+	//	Out.vColor = Out.vColor + vEffectBlurColor + vEffectUIBlurColor;
 
 	return Out;
 

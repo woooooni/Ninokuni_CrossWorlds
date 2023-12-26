@@ -126,6 +126,9 @@ private:
 	HRESULT Render_Blur_Vertical(_int iVerticalPass);
 	HRESULT Render_BlurUpSample(const wstring& strFinalMrtTag, _bool bClear);
 
+	// 
+	HRESULT Render_BlendTargetMix(const wstring& strStartTargetTag, const wstring& strFinalTragetTag, _bool bClear);
+
 #ifdef _DEBUG
 private:
 	HRESULT Render_Debug();
