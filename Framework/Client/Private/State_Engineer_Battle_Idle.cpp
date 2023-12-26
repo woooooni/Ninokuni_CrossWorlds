@@ -1,14 +1,14 @@
 #include "stdafx.h"
 #include "GameInstance.h"
 #include "Character.h"
-#include "State_SwordMan_Battle_Idle.h"
+#include "State_Engineer_Battle_Idle.h"
 
-CState_SwordMan_Battle_Idle::CState_SwordMan_Battle_Idle(CStateMachine* pMachine)
+CState_Engineer_Battle_Idle::CState_Engineer_Battle_Idle(CStateMachine* pMachine)
     : CState_Character(pMachine)
 {
 }
 
-HRESULT CState_SwordMan_Battle_Idle::Initialize(const list<wstring>& AnimationList)
+HRESULT CState_Engineer_Battle_Idle::Initialize(const list<wstring>& AnimationList)
 {
     if (FAILED(__super::Initialize(AnimationList)))
         return E_FAIL;
@@ -16,14 +16,14 @@ HRESULT CState_SwordMan_Battle_Idle::Initialize(const list<wstring>& AnimationLi
     return S_OK;
 }
 
-void CState_SwordMan_Battle_Idle::Enter_State(void* pArg)
+void CState_Engineer_Battle_Idle::Enter_State(void* pArg)
 {
     m_fAccReturnNuetral = 0.f;
     m_iCurrAnimIndex = m_AnimIndices[0];
     m_pModelCom->Set_Animation(m_iCurrAnimIndex);
 }
 
-void CState_SwordMan_Battle_Idle::Tick_State(_float fTimeDelta)
+void CState_Engineer_Battle_Idle::Tick_State(_float fTimeDelta)
 {
     m_fAccReturnNuetral += fTimeDelta;
     if (m_fAccReturnNuetral >= m_fReturnNuetralTime)
@@ -40,12 +40,12 @@ void CState_SwordMan_Battle_Idle::Tick_State(_float fTimeDelta)
     
 }
 
-void CState_SwordMan_Battle_Idle::Exit_State()
+void CState_Engineer_Battle_Idle::Exit_State()
 {
     m_fAccReturnNuetral = 0.f;
 }
 
-void CState_SwordMan_Battle_Idle::Input(_float fTimeDelta)
+void CState_Engineer_Battle_Idle::Input(_float fTimeDelta)
 {
     if (true == Skill_Input(fTimeDelta))
         return;
@@ -76,9 +76,9 @@ void CState_SwordMan_Battle_Idle::Input(_float fTimeDelta)
         m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_JUMP);
 }
 
-CState_SwordMan_Battle_Idle* CState_SwordMan_Battle_Idle::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
+CState_Engineer_Battle_Idle* CState_Engineer_Battle_Idle::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
 {
-    CState_SwordMan_Battle_Idle* pInstance = new CState_SwordMan_Battle_Idle(pStateMachine);
+    CState_Engineer_Battle_Idle* pInstance = new CState_Engineer_Battle_Idle(pStateMachine);
 
     if (FAILED(pInstance->Initialize(AnimationList)))
     {
@@ -89,7 +89,7 @@ CState_SwordMan_Battle_Idle* CState_SwordMan_Battle_Idle::Create(CStateMachine* 
     return pInstance;
 }
 
-void CState_SwordMan_Battle_Idle::Free()
+void CState_Engineer_Battle_Idle::Free()
 {
     __super::Free();
 }
