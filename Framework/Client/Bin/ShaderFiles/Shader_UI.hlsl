@@ -1,11 +1,18 @@
 #include "Engine_Shader_Defines.hpp"
 
+// 11번 Pass 자리 비어있음 // // // // // // // //
+
 matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
+
 Texture2D	g_DiffuseTexture;
 Texture2D	g_AlphaTexture;
 Texture2D	g_DepthTexture;
+
 Texture2D	g_FXTexture;
 Texture2D	g_MaskTexture;
+
+Texture2D	g_LerpTexture;
+Texture2D	g_HPGaugeTexture;
 
 float g_Alpha = 1.f;
 float g_Ratio;
@@ -16,6 +23,10 @@ float g_FXAlpha;
 
 float g_LoadingProgress;
 float4 g_Diffusecolor;
+
+float g_MaxHP;
+float g_CurrentHP;
+float g_LerpHP;
 
 
 struct VS_IN
@@ -274,15 +285,25 @@ PS_OUT PS_MAIN_FILL_COLOR(PS_IN In)
 	return Out;
 }
 
-PS_OUT PS_MAIN_WORLDUI(PS_IN In)
+PS_OUT PS_MAIN_HPBAR_GAUGE_LERP(PS_IN In)
 {
-	PS_OUT		Out = (PS_OUT)0;
+	PS_OUT Out = (PS_OUT)0;
 
-	Out.vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
-	Out.vColor.a *= g_Alpha;
+	float4 vLerpColor = g_LerpTexture.Sample(LinearSampler, In.vTexUV);
+	float4 vGaugeColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
 
-	if (0.0001f >= Out.vColor.a)
+	if (g_LerpHP / g_MaxHP < In.vTexUV.x) // 현재 체력과 최대 체력의 비에 따라 UV좌표가 잘린다.
 		discard;
+
+	if (g_LerpHP / g_MaxHP >= In.vTexUV.x && g_CurrentHP / g_MaxHP <= In.vTexUV.x)
+		Out.vColor = vLerpColor;
+
+	if (g_CurrentHP / g_MaxHP > In.vTexUV.x)
+		Out.vColor = vGaugeColor;
+
+	//if (vGaugeColor.a < 0.3f)
+	//	discard;
+	//Out.vColor = lerp(vLerpColor, vGaugeColor, vGaugeColor.a);
 
 	return Out;
 }
@@ -316,6 +337,27 @@ PS_OUT PS_USING_FX_ALPHA(PS_IN In)
 
 	if (0.0001f >= Out.vColor.a)
 		discard;
+
+	return Out;
+}
+
+PS_OUT PS_HPBAR_GAUGE(PS_IN In)
+{
+	PS_OUT Out = (PS_OUT)0;
+
+	float4 vBackColor = g_HPGaugeTexture.Sample(LinearSampler, In.vTexUV);
+
+	if (g_CurrentHP / g_MaxHP < In.vTexUV.x) // 현재 체력과 최대 체력의 비에 따라 UV좌표가 잘린다.
+	{
+		Out.vColor = vBackColor;
+		return Out;
+	}
+
+	float4 vGaugeColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
+	if (vGaugeColor.a < 0.3f)
+		discard;
+
+	Out.vColor = lerp(vBackColor, vGaugeColor, vGaugeColor.a);
 
 	return Out;
 }
@@ -443,7 +485,7 @@ technique11 DefaultTechnique
 		PixelShader = compile ps_5_0 PS_MAIN_FILL_COLOR();
 	}
 
-	pass MonsterWorldHPBar // 11
+	pass HPBarGauge_Lerp // 11
 	{
 		SetRasterizerState(RS_Default);
 		SetDepthStencilState(DSS_None, 0);
@@ -451,7 +493,7 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
-		PixelShader = compile ps_5_0 PS_MAIN_WORLDUI();
+		PixelShader = compile ps_5_0 PS_MAIN_HPBAR_GAUGE_LERP();
 	}
 
 	pass LimitedVerticalTexture // 12 -> Y부분을 잘라줌
@@ -474,6 +516,17 @@ technique11 DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_USING_FX_ALPHA();
+	}
+
+	pass HPBarGauge // 14
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_None, 0);
+		SetBlendState(BS_AlphaBlend, float4(1.f, 1.f, 1.f, 1.f), 0xffffffff);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_HPBAR_GAUGE();
 	}
 }
 

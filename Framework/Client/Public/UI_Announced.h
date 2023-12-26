@@ -29,6 +29,7 @@ public:
 
 private:
 	UI_ANNNOUNCE_TYPE m_eType = { ANNOUNCED_END };
+	CTexture* m_pFXTextureCom = { nullptr };
 
 	_int m_iTextureIndex = { 0 };
 	_bool m_bArrived = { false };

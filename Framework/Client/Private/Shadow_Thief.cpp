@@ -43,7 +43,7 @@ HRESULT CShadow_Thief::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_pHPBar = dynamic_cast<CUI_MonsterHP_World*>(pHPBar);
-	m_pHPBar->Set_Owner(this);
+	m_pHPBar->Set_Owner(this, ELEMENTAL_TYPE::DARK);
 
 	m_pModelCom->Set_Animation(12);
 
@@ -67,11 +67,22 @@ void CShadow_Thief::Tick(_float fTimeDelta)
 	}
 	// >> 
 	
+	// UI TestCode
+	/*
 	if (KEY_TAP(KEY::Y))
 	{
-		if (FAILED(CUIDamage_Manager::GetInstance()->Create_SkillDamageNumber(m_pTransformCom, 43953, ELEMENTAL_TYPE::DARK)))
+		if (FAILED(CUIDamage_Manager::GetInstance()->Create_SkillDamageNumber(m_pTransformCom, GI->RandomInt(1, 999999), ELEMENTAL_TYPE::DARK)))
+			return;
+		if (FAILED(CUIDamage_Manager::GetInstance()->Create_CommonDamageNumber(m_pTransformCom, GI->RandomInt(1, 999999))))
 			return;
 	}
+
+	if (KEY_TAP(KEY::M))
+	{
+		if (FAILED(CUIDamage_Manager::GetInstance()->Create_Critical(m_pTransformCom)))
+			return;
+	}
+	*/
 
 	if (nullptr != m_pHPBar)
 		m_pHPBar->Tick(fTimeDelta);

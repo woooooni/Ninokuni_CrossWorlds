@@ -2443,6 +2443,30 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 	return S_OK;
 }
 
+void CUI_Manager::Tick_Fade(_float fTimeDelta)
+{
+	if (nullptr == m_pUIFade)
+		return;
+
+	m_pUIFade->Tick(fTimeDelta);
+}
+
+void CUI_Manager::LateTick_Fade(_float fTimeDelta)
+{
+	if (nullptr == m_pUIFade)
+		return;
+
+	m_pUIFade->LateTick(fTimeDelta);
+}
+
+void CUI_Manager::Render_Fade()
+{
+	if (nullptr == m_pUIFade)
+		return;
+
+	m_pUIFade->Render();
+}
+
 void CUI_Manager::Update_LobbyBtnState(_uint iIndex)
 {
 	_uint iBtnIndex = iIndex;

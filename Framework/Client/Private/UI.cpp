@@ -216,9 +216,6 @@ void CUI::Tick(_float fTimeDelta)
 		}
 	}
 
-
-	// UI 자식 Tick
-
 	if (nullptr != m_tInfo.pParent) // 부모가 있는 UI라면
 	{
 		//m_tInfo.fX = m_tInfo.pParent->Get_UI_Info().fX + m_tInfo.fX;

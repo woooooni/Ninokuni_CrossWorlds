@@ -28,6 +28,7 @@ public:
 	HRESULT Create_SkillDamageNumber(class CTransform* pTransformCom, _int iDamage, ELEMENTAL_TYPE eType = ELEMENTAL_END);
 	HRESULT Create_CommonDamageNumber(class CTransform* pTransformCom, _int iDamage);
 	HRESULT Create_Critical(class CTransform* pTransformCom);
+	HRESULT Create_Miss(class CTransform* pTransformCom);
 
 private:
 	ID3D11Device* m_pDevice = nullptr;

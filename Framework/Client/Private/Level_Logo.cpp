@@ -30,7 +30,7 @@ HRESULT CLevel_Logo::Initialize()
 		return E_FAIL;
 
 	if (nullptr != CUI_Manager::GetInstance()->Get_Fade())
-		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 5.f);
+		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 3.f);
 
 	return S_OK;
 }
@@ -51,13 +51,14 @@ HRESULT CLevel_Logo::Tick(_float fTimeDelta)
 			return E_FAIL;
 	}
 
-	//CUI_Manager::GetInstance()->Tick_UIs(LEVELID::LEVEL_LOGO, fTimeDelta);
+	CUI_Manager::GetInstance()->Tick_Fade(fTimeDelta);
 
 	return S_OK;
 }
 
 HRESULT CLevel_Logo::LateTick(_float fTimeDelta)
 {
+	CUI_Manager::GetInstance()->LateTick_Fade(fTimeDelta);
 
 	return S_OK;
 }

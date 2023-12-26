@@ -58,7 +58,7 @@ HRESULT CUI_BtnChangeCamera::Render()
 		if (FAILED(Bind_ShaderResources()))
 			return E_FAIL;
 
-		m_pShaderCom->Begin(7);
+		m_pShaderCom->Begin(1);
 
 		m_pVIBufferCom->Render();
 	}
@@ -89,9 +89,6 @@ HRESULT CUI_BtnChangeCamera::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_ChangeCamera"),
 		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 		return E_FAIL;
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Effect_CameraPopup"),
-		TEXT("Com_FXTexture"), (CComponent**)&m_pFXTextureCom)))
-		return E_FAIL;
 	
 	return S_OK;
 }
@@ -120,9 +117,6 @@ HRESULT CUI_BtnChangeCamera::Bind_ShaderResources()
 		return E_FAIL;
 
 	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextureIndex)))
-		return E_FAIL;
-
-	if (FAILED(m_pFXTextureCom->Bind_ShaderResource(m_pShaderCom, "g_FXTexture")))
 		return E_FAIL;
 
 	return S_OK;
@@ -187,6 +181,5 @@ void CUI_BtnChangeCamera::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pFXTextureCom);
 	Safe_Release(m_pTextureCom);
 }

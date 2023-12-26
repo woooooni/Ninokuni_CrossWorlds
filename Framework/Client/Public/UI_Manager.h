@@ -38,6 +38,11 @@ public:
 	HRESULT Tick_EvermoreLevel(_float fTimeDelta);
 
 public:
+	void Tick_Fade(_float fTimeDelta);
+	void LateTick_Fade(_float fTimeDelta);
+	void Render_Fade();
+
+public:
 	void Update_LobbyBtnState(_uint iIndex);
 	void Update_CostumeBtnState(_uint iIndex);
 	void Update_InvenBtnState(_uint iIndex);
