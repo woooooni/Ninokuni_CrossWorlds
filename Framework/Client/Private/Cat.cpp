@@ -2,6 +2,11 @@
 #include "Cat.h"
 #include "GameInstance.h"
 
+#include "State_Animal_Idle.h"
+#include "State_Animal_Run.h"
+#include "State_Animal_Walk.h"
+#include "State_Animal_Lift.h"
+
 CCat::CCat(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType)
 	: CAnimals(pDevice, pContext, strObjectTag, eType)
 {
@@ -28,11 +33,22 @@ HRESULT CCat::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+	if (FAILED(Ready_State()))
+		return E_FAIL;
+
+	if (FAILED(Ready_Collider()))
+		return E_FAIL;
+
+	m_vCenter = m_pTransformCom->Get_Position();
+
 	return S_OK;
 }
 
 void CCat::Tick(_float fTimeDelta)
 {
+	m_pStateMachineCom->Tick_State(fTimeDelta);
+
+
 	__super::Tick(fTimeDelta);
 }
 
@@ -58,9 +74,9 @@ HRESULT CCat::Render_ShadowDepth()
 	return S_OK;
 }
 
-HRESULT CCat::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
+HRESULT CCat::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc)
 {
-	if (FAILED(__super::Render_Instance(pInstancingShader, pInstancingBuffer, WorldMatrices)))
+	if (FAILED(__super::Render_Instance_AnimModel(pInstancingShader, pInstancingBuffer, WorldMatrices, TweenDesc)))
 		return E_FAIL;
 
 	return S_OK;
@@ -97,15 +113,86 @@ HRESULT CCat::Ready_Components()
 		TEXT("Com_StateMachine"), reinterpret_cast<CComponent**>(&m_pStateMachineCom))))
 		return E_FAIL;
 
+	CRigidBody::RIGID_BODY_DESC RigidDesc;
+	RigidDesc.pTransform = m_pTransformCom;
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_RigidBody"), TEXT("Com_RigidBody"),
+		reinterpret_cast<CComponent**>(&m_pRigidBodyCom), &RigidDesc)))
+		return E_FAIL;
+
+	
+
+	m_pModelCom->Set_Animation(0);
+
 	return S_OK;
 }
 
 HRESULT CCat::Ready_State()
 {
-	list<wstring> animMains;
+	list<wstring> strAnimationNames;
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Cat.ao|SKM_Cat.ao|SKM_Cat.ao|Cat_Idle01");
+	m_pStateMachineCom->Add_State(CAnimals::STATE::STATE_IDLE, CState_Animal_Idle::Create(m_pStateMachineCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Cat.ao|SKM_Cat.ao|SKM_Cat.ao|Cat_Run");
+	m_pStateMachineCom->Add_State(CAnimals:: STATE::STATE_RUN, CState_Animal_Run::Create(m_pStateMachineCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Cat.ao|SKM_Cat.ao|SKM_Cat.ao|Cat_Walk");
+	m_pStateMachineCom->Add_State(CAnimals::STATE::STATE_WALK, CState_Animal_Walk::Create(m_pStateMachineCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Cat.ao|SKM_Cat.ao|SKM_Cat.ao|Cat_Lifted");
+	strAnimationNames.push_back(L"SKM_Cat.ao|SKM_Cat.ao|SKM_Cat.ao|Cat_LiftedLoop");
+	strAnimationNames.push_back(L"SKM_Cat.ao|SKM_Cat.ao|SKM_Cat.ao|Cat_LiftedLoop2");
+	strAnimationNames.push_back(L"SKM_Cat.ao|SKM_Cat.ao|SKM_Cat.ao|Cat_LiftedFinish");
+	m_pStateMachineCom->Add_State(CAnimals::STATE::STATE_LIFT, CState_Animal_Lift::Create(m_pStateMachineCom, strAnimationNames));
+
+
+	m_pStateMachineCom->Change_State(CAnimals::STATE::STATE_IDLE);
+
+	return S_OK;
+}
+
+HRESULT CCat::Ready_Collider()
+{
+	CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
+	::ZeroMemory(&SphereDesc, sizeof(SphereDesc));
+
+	BoundingSphere Sphere;
+	ZeroMemory(&Sphere, sizeof(BoundingSphere));
+
+	Sphere.Center = Vec3(0.f, 0.f, 0.f);
+	Sphere.Radius = 1.f;
+
+	SphereDesc.tSphere = Sphere;
+	SphereDesc.pNode = nullptr;
+	SphereDesc.pOwnerTransform = m_pTransformCom;
+	SphereDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
+	SphereDesc.vOffsetPosition = Vec3::Zero;
+
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider_Sphere::SPHERE, CCollider::DETECTION_TYPE::BODY, &SphereDesc)))
+		return E_FAIL;
 
 
 	return S_OK;
+}
+
+void CCat::Collision_Enter(const COLLISION_INFO& tInfo)
+{
+	__super::Collision_Enter(tInfo);
+}
+
+void CCat::Collision_Continue(const COLLISION_INFO& tInfo)
+{
+	__super::Collision_Continue(tInfo);
+}
+
+void CCat::Collision_Exit(const COLLISION_INFO& tInfo)
+{
+	__super::Collision_Exit(tInfo);
 }
 
 CCat* CCat::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eObjType)

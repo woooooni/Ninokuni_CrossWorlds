@@ -31,6 +31,8 @@ HRESULT CAnimals::Initialize(void* pArg)
 void CAnimals::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+
+	GI->Add_CollisionGroup(COLLISION_GROUP::ANIMAL, this);
 }
 
 void CAnimals::LateTick(_float fTimeDelta)
@@ -61,31 +63,48 @@ HRESULT CAnimals::Render_ShadowDepth()
 	return S_OK;
 }
 
-HRESULT CAnimals::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
+HRESULT CAnimals::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc)
 {
-	if (nullptr == m_pModelCom || nullptr == pInstancingShader)
+	if (FAILED(__super::Render()))
 		return E_FAIL;
-	if (FAILED(pInstancingShader->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
+
+	if (nullptr == pInstancingShader || nullptr == m_pTransformCom)
 		return E_FAIL;
+
+
 	if (FAILED(pInstancingShader->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
 		return E_FAIL;
+
 	if (FAILED(pInstancingShader->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
 		return E_FAIL;
+
 	if (FAILED(pInstancingShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
+
+	if (FAILED(pInstancingShader->Bind_RawValue("g_TweenFrames_Array", TweenDesc.data(), sizeof(TWEEN_DESC) * TweenDesc.size())))
+		return E_FAIL;
+
+	if (FAILED(m_pModelCom->SetUp_VTF(m_pAnimShaderCom)))
+		return E_FAIL;
+
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+	_uint iPassIndex = 0;
+
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{
-		_uint iPassIndex = 0;
 		if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
+
 		if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
 			iPassIndex = 0;
 		else
 			iPassIndex++;
+
 		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, i, pInstancingBuffer, WorldMatrices, iPassIndex)))
 			return E_FAIL;
 	}
+
+
 	return S_OK;
 }
 
@@ -113,6 +132,32 @@ HRESULT CAnimals::Render_Instance_Shadow(CShader* pInstancingShader, CVIBuffer_I
 			return E_FAIL;
 	}
 	return S_OK;
+}
+
+void CAnimals::Collision_Enter(const COLLISION_INFO& tInfo)
+{
+
+}
+
+void CAnimals::Collision_Continue(const COLLISION_INFO& tInfo)
+{
+	if (OBJ_TYPE::OBJ_CHARACTER == tInfo.pOther->Get_ObjectType())
+	{
+		if (KEY_TAP(KEY::E))
+		{
+			if (true == m_bLift)
+			{
+				m_bLift = false;
+				return;
+			}
+
+			m_bLift = true;
+		}
+	}
+}
+
+void CAnimals::Collision_Exit(const COLLISION_INFO& tInfo)
+{
 }
 
 HRESULT CAnimals::Ready_Components()

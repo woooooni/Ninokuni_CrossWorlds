@@ -58,6 +58,16 @@ HRESULT CLevel_Test::Initialize()
 HRESULT CLevel_Test::Tick(_float fTimeDelta)
 {
 
+	if (KEY_TAP(KEY::PAGE_UP))
+	{
+		CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
+	}
+
+	if (KEY_TAP(KEY::PAGE_DOWN))
+	{
+		CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE);
+	}
+
 	if (KEY_TAP(KEY::F7))
 	{
 		GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_DreamerMazeWitch"));

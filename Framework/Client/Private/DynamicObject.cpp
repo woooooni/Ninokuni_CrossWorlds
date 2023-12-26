@@ -25,12 +25,16 @@ HRESULT CDynamicObject::Initialize_Prototype()
 
 HRESULT CDynamicObject::Initialize(void* pArg)
 {
+	if (FAILED(__super::Initialize(pArg)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
 void CDynamicObject::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+
 }
 
 void CDynamicObject::LateTick(_float fTimeDelta)
@@ -40,34 +44,8 @@ void CDynamicObject::LateTick(_float fTimeDelta)
 
 HRESULT CDynamicObject::Render()
 {
-	if (nullptr == m_pModelCom)
+	if(FAILED(__super::Render()))
 		return E_FAIL;
-
-	if (FAILED(m_pAnimShaderCom->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
-		return E_FAIL;
-	if (FAILED(m_pAnimShaderCom->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
-		return E_FAIL;
-	if (FAILED(m_pAnimShaderCom->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
-		return E_FAIL;
-	if (FAILED(m_pAnimShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
-		return E_FAIL;
-
-	_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
-	for (_uint i = 0; i < iNumMeshes; ++i)
-	{
-		_uint		iPassIndex = 0;
-
-		if (FAILED(m_pModelCom->SetUp_OnShader(m_pAnimShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
-			return E_FAIL;
-
-		//if (FAILED(m_pModelCom->SetUp_OnShader(pShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
-		//	iPassIndex = 0;
-		//else
-		//	iPassIndex++;
-
-		if (FAILED(m_pModelCom->Render(m_pAnimShaderCom, i)))
-			return E_FAIL;
-	}
 
 	return S_OK;
 }
@@ -104,10 +82,6 @@ HRESULT CDynamicObject::Render_ShadowDepth()
 	return S_OK;
 }
 
-HRESULT CDynamicObject::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
-{
-	return S_OK;
-}
 
 HRESULT CDynamicObject::Render_Instance_Shadow(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
 {
@@ -140,6 +114,6 @@ void CDynamicObject::Free()
 	Safe_Release<CRenderer*>(m_pRendererCom);
 	Safe_Release<CTransform*>(m_pTransformCom);
 	Safe_Release<CModel*>(m_pModelCom);
-
+	Safe_Release<CRigidBody*>(m_pRigidBodyCom);
 	
 }

@@ -22,6 +22,8 @@ HRESULT CCollision_Manager::Reserve_Manager()
 
 	Reserve_CheckGroup(COLLISION_GROUP::PORTAL, COLLISION_GROUP::CHARACTER);
 
+	Reserve_CheckGroup(COLLISION_GROUP::ANIMAL, COLLISION_GROUP::CHARACTER);
+
 	for (_uint i = 0; i < COLLISION_GROUP::GROUP_END; ++i)
 		m_CollisionObjects[i].reserve(300);
 
