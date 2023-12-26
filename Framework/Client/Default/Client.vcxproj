@@ -367,6 +367,7 @@
     <ClInclude Include="..\Public\UI_Costume_ItemSlot.h" />
     <ClInclude Include="..\Public\UI_Costume_LineBox.h" />
     <ClInclude Include="..\Public\UI_Damage_Critical.h" />
+    <ClInclude Include="..\Public\UI_Damage_General.h" />
     <ClInclude Include="..\Public\UI_Damage_Skill.h" />
     <ClInclude Include="..\Public\UI_Dialog_Flip.h" />
     <ClInclude Include="..\Public\UI_Dialog_MiniWindow.h" />
@@ -723,6 +724,7 @@
     <ClCompile Include="..\Private\UI_Costume_ItemSlot.cpp" />
     <ClCompile Include="..\Private\UI_Costume_LineBox.cpp" />
     <ClCompile Include="..\Private\UI_Damage_Critiacal.cpp" />
+    <ClCompile Include="..\Private\UI_Damage_General.cpp" />
     <ClCompile Include="..\Private\UI_Damage_Skill.cpp" />
     <ClCompile Include="..\Private\UI_Dialog_Flip.cpp" />
     <ClCompile Include="..\Private\UI_Dialog_MiniWindow.cpp" />

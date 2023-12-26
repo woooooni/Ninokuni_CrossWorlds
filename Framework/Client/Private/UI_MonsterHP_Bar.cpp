@@ -32,6 +32,12 @@ HRESULT CUI_MonsterHP_Bar::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_bActive = true;
+	m_bLerp = false;
+
+	// TestCode
+	m_fMaxHP = 1000.f;
+	m_fCurHP = 1000.f;
+	m_fPreHP = 1000.f;
 
 	return S_OK;
 }
@@ -40,6 +46,25 @@ void CUI_MonsterHP_Bar::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+
+		// TestCode
+		if (KEY_TAP(KEY::G))
+		{
+			m_fCurHP -= 100.f;
+			m_bLerp = false;
+		}
+
+		if (!m_bLerp && m_fPreHP > m_fCurHP)
+		{
+			m_fPreHP -= fTimeDelta * 100.f;
+		
+			if (m_fPreHP <= m_fCurHP)
+			{
+				m_fPreHP = m_fCurHP;
+				m_bLerp = true;
+			}
+		}
+
 		__super::Tick(fTimeDelta);
 	}
 }
@@ -87,7 +112,7 @@ HRESULT CUI_MonsterHP_Bar::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	m_pShaderCom->Begin(1);
+	m_pShaderCom->Begin(11);
 
 	m_pVIBufferCom->Render();
 
@@ -98,6 +123,10 @@ HRESULT CUI_MonsterHP_Bar::Ready_Components()
 {
 	
 	if (FAILED(__super::Ready_Components()))
+		return E_FAIL;
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MonsterHP_WhiteBar"),
+		TEXT("Com_FXTexture"), (CComponent**)&m_pFXTextureCom)))
 		return E_FAIL;
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MonsterHP_Bar"),
@@ -128,6 +157,15 @@ HRESULT CUI_MonsterHP_Bar::Bind_ShaderResources()
 		return E_FAIL;
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_fAlpha, sizeof(_float))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_LerpHP", &m_fPreHP, sizeof(_float))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_CurrentHP", &m_fCurHP, sizeof(_float))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_MaxHP", &m_fMaxHP, sizeof(_float))))
+		return E_FAIL;
+
+	if (FAILED(m_pFXTextureCom->Bind_ShaderResource(m_pShaderCom, "g_LerpTexture")))
 		return E_FAIL;
 
 	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", 0)))
@@ -166,5 +204,6 @@ void CUI_MonsterHP_Bar::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pFXTextureCom);
 	Safe_Release(m_pTextureCom);
 }

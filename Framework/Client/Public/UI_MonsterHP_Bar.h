@@ -18,9 +18,16 @@ public:
 	virtual HRESULT	Render();
 
 private:
+	CTexture* m_pFXTextureCom = { nullptr };
+
 	wstring m_strName = L"";
 	wstring m_strMaxHP = L"";
 	wstring m_strCurHP = L"";
+
+	_float m_fMaxHP = { 0.f };
+	_bool m_bLerp = { false };
+	_float m_fPreHP = { 0.f };
+	_float m_fCurHP = { 0.f };
 
 	// For Text
 	_float2 m_vDefaultPosition = _float2(250.f, 39.f); // "/"

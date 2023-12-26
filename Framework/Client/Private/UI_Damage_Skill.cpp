@@ -50,18 +50,15 @@ HRESULT CUI_Damage_Skill::Initialize(void* pArg)
 	if (nullptr == m_pTargetTransform)
 		return E_FAIL;
 	m_vTargetPosition = Get_ProjectionPosition(m_pTargetTransform);
-	m_fRandomOffset = _float2(GI->RandomFloat(0.f, 100.f), GI->RandomFloat(0.f, 60.f));
 
-	m_tInfo.fX = m_vTargetPosition.x + m_fRandomOffset.x;
-	m_tInfo.fY = m_vTargetPosition.y + m_fRandomOffset.y;
-
+	m_tInfo.fX = m_vTargetPosition.x;
+	m_tInfo.fY = m_vTargetPosition.y;
 	_float fNumSize = 112.f * 0.3f;
 	m_pTransformCom->Set_Scale(XMVectorSet(fNumSize, fNumSize, 1.f, 0.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
 
 	m_fOffsetX = fNumSize * 0.6f;
-	m_fArrivedPosY = m_tInfo.fY - 100.f;
 
 	CUI::UI_INFO UIDesc = {};
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
@@ -75,6 +72,7 @@ HRESULT CUI_Damage_Skill::Initialize(void* pArg)
 
 	m_bFadeOut = false;
 	m_fAlpha = 1.f;
+	m_bSetPosition = false;
 
 	return S_OK;
 }
@@ -85,6 +83,23 @@ void CUI_Damage_Skill::Tick(_float fTimeDelta)
 	{
 		if (!Is_Dead())
 		{
+			if (!m_bSetPosition)
+			{
+				m_bSetPosition = true;
+				m_fRandomOffset = _float2(GI->RandomFloat(-100.f, 100.f), GI->RandomFloat(-200.f, 0.f));
+
+				m_tInfo.fX += m_fRandomOffset.x;
+				m_tInfo.fY += m_fRandomOffset.y;
+
+				m_vTargetPosition.x = m_tInfo.fX;
+				m_vTargetPosition.y = m_tInfo.fY;
+
+				m_fArrivedPosY = m_vTargetPosition.y - 100.f;
+
+				m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+					XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+			}
+
 			if (!m_bFadeOut)
 			{
 				// FadeOut상태가 아니라면 시간을 누적한다.
@@ -97,11 +112,15 @@ void CUI_Damage_Skill::Tick(_float fTimeDelta)
 				}
 			}
 			else // FadeOut 상태라면.
-			{
-				m_tInfo.fY -= fTimeDelta * 100.f;
+			{ // Y값 조정 안됨
+				m_tInfo.fY -= fTimeDelta * 200.f;
 				m_fAlpha -= fTimeDelta;
+
 				if (m_fAlpha <= 0.f)
+				{
 					m_fAlpha = 0.f;
+					Set_Dead(true);
+				}
 
 				if (m_tInfo.fY <= m_fArrivedPosY)
 				{
@@ -149,6 +168,8 @@ HRESULT CUI_Damage_Skill::Render()
 	{
 		m_iTextNum = (_uint)m_iDamage / 100000; // 제일 첫번째 숫자가 나온다.
 
+		m_tInfo.fX = m_vTargetPosition.x;
+		m_tInfo.fY = m_vTargetPosition.y;
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
 
@@ -168,6 +189,7 @@ HRESULT CUI_Damage_Skill::Render()
 		//(m_iDamage % 100000 계산을 통해서 6자리 이상인 경우에는 첫번째 숫자를 버린다.
 		//m_tInfo.fX = m_tInfo.fX + m_fOffsetX; // Offset을 줘서 다음 숫자를 그릴 위치를 지정한다. // 1210.f - m_fOffsetX;
 		m_tInfo.fX = m_vTargetPosition.x + m_fOffsetX;
+		m_tInfo.fY = m_vTargetPosition.y;
 
 		//m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 		//	XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY + g_iWinSizeY) * 0.5f, 0.f, 1.f));
@@ -189,6 +211,7 @@ HRESULT CUI_Damage_Skill::Render()
 		m_iTextNum = ((m_iDamage % 10000) / 1000);
 		//m_tInfo.fX = m_tInfo.fX + m_fOffsetX; // 1230.f - m_fOffsetX;
 		m_tInfo.fX = m_vTargetPosition.x + m_fOffsetX * 2.f; // Offset을 줘서 다음 숫자를 그릴 위치를 지정한다. // 1210.f - m_fOffsetX;
+		m_tInfo.fY = m_vTargetPosition.y;
 
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
@@ -208,6 +231,7 @@ HRESULT CUI_Damage_Skill::Render()
 		m_iTextNum = ((m_iDamage % 1000) / 100); // 3번째 자리를 구한다.
 		//m_tInfo.fX = m_tInfo.fX + m_fOffsetX; // 1250.f - m_fOffsetX;
 		m_tInfo.fX = m_vTargetPosition.x + m_fOffsetX * 3.f; // Offset을 줘서 다음 숫자를 그릴 위치를 지정한다. // 1210.f - m_fOffsetX;
+		m_tInfo.fY = m_vTargetPosition.y;
 
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
@@ -227,6 +251,7 @@ HRESULT CUI_Damage_Skill::Render()
 		m_iTextNum = ((m_iDamage % 100) / 10); ;// 2번째 자리를 구한다.
 		//m_tInfo.fX = m_tInfo.fX + m_fOffsetX; //1270.f - m_fOffsetX;
 		m_tInfo.fX = m_vTargetPosition.x + m_fOffsetX * 4.f; // Offset을 줘서 다음 숫자를 그릴 위치를 지정한다. // 1210.f - m_fOffsetX;
+		m_tInfo.fY = m_vTargetPosition.y;
 
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
@@ -246,6 +271,7 @@ HRESULT CUI_Damage_Skill::Render()
 		m_iTextNum = (m_iDamage % 10);
 		//m_tInfo.fX = m_tInfo.fX + m_fOffsetX; //1290.f - m_fOffsetX;
 		m_tInfo.fX = m_vTargetPosition.x + m_fOffsetX * 5.f; // Offset을 줘서 다음 숫자를 그릴 위치를 지정한다. // 1210.f - m_fOffsetX;
+		m_tInfo.fY = m_vTargetPosition.y;
 
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
@@ -283,10 +309,10 @@ HRESULT CUI_Damage_Skill::Ready_Components()
 	case UI_DAMAGEFONT::BLUE:
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_DamageNumber_Blue"),
 			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
-			return E_FAIL;
+			return E_FAIL; // Water
 		break;
 
-	case UI_DAMAGEFONT::GOLD_WITHRED:
+	case UI_DAMAGEFONT::GOLD_WITHRED: ////////////////////////////////////////////////////
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_DamageNumber_Gold"),
 			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 			return E_FAIL;
@@ -295,33 +321,34 @@ HRESULT CUI_Damage_Skill::Ready_Components()
 	case UI_DAMAGEFONT::GREEN:
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_DamageNumber_Green"),
 			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
-			return E_FAIL;
+			return E_FAIL; // Wood
 		break;
 
 	case UI_DAMAGEFONT::PURPLE:
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_DamageNumber_Purple"),
 			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
-			return E_FAIL;
+			return E_FAIL; // Dark
 		break;
 
 	case UI_DAMAGEFONT::RED:
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_DamageNumber_Red"),
 			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
-			return E_FAIL;
+			return E_FAIL; // Fire
+		break;
 
-	case UI_DAMAGEFONT::WHITE:
+	case UI_DAMAGEFONT::WHITE: //////////////////////////////////////////////////// General
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_DamageNumber_White"),
 			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 			return E_FAIL;
 		break;
 
-	case UI_DAMAGEFONT::WHITEGOLD:
+	case UI_DAMAGEFONT::WHITEGOLD: ////////////////////////////////////////////////////
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_DamageNumber_WhiteGold"),
 			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
-			return E_FAIL;
+			return E_FAIL; // Light
 		break;
 
-	case UI_DAMAGEFONT::GOLD:
+	case UI_DAMAGEFONT::GOLD: ////////////////////////////////////////////////////
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_DamageNumber_Yellow"),
 			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 			return E_FAIL;

@@ -23,8 +23,6 @@ public:
 	virtual void On_MouseExit(_float fTimeDelta) override;
 
 private:
-	CTexture* m_pFXTextureCom = { nullptr };
-
 	_bool m_bUpdate = { false }; // 인덱스 Change용 변수
 	_uint m_iTextureIndex = { 0 };
 

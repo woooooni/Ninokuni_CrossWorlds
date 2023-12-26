@@ -8,7 +8,9 @@
 #include "Utils.h"
 
 #include "UI_Damage_Skill.h"
+#include "UI_Damage_General.h"
 #include "UI_Damage_Critical.h"
+
 
 IMPLEMENT_SINGLETON(CUIDamage_Manager)
 
@@ -67,6 +69,21 @@ HRESULT CUIDamage_Manager::Ready_DamageNumberPrototypes()
 		CUI_Damage_Skill::Create(m_pDevice, m_pContext, CUI_Damage_Skill::UI_DAMAGEFONT::WHITE), LAYER_UI)))
 		return E_FAIL;
 
+	// Critical
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_DamageNumber_Critical"),
+		CUI_Damage_Critical::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	// General
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_DamageNumber_General"),
+		CUI_Damage_General::Create(m_pDevice, m_pContext, CUI_Damage_General::UI_DMG_FONTTYPE::DMG_GENERALATTACK), LAYER_UI)))
+		return E_FAIL;
+
+	// Miss
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_DamageNumber_Miss"),
+		CUI_Damage_General::Create(m_pDevice, m_pContext, CUI_Damage_General::UI_DMG_FONTTYPE::DMG_MISS), LAYER_UI)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -112,6 +129,8 @@ HRESULT CUIDamage_Manager::Create_SkillDamageNumber(CTransform* pTransformCom, _
 		break;
 	}
 
+	// 일정 Damage이상이 되면 Critical을 Create한다
+
 	if (nullptr == pNumber)
 		return E_FAIL;
 	//Safe_AddRef(pNumber);
@@ -149,11 +168,58 @@ HRESULT CUIDamage_Manager::Create_SkillDamageNumber(CTransform* pTransformCom, _
 
 HRESULT CUIDamage_Manager::Create_CommonDamageNumber(CTransform* pTransformCom, _int iDamage)
 {
+	CGameObject* pNumber = nullptr;
+	CUI_Damage_General::GENERAL_DESC DamageDesc = {};
+
+	ZeroMemory(&DamageDesc, sizeof(CUI_Damage_General::GENERAL_DESC));
+
+	DamageDesc.pTargetTransform = pTransformCom;
+	DamageDesc.iDamage = iDamage;
+
+	if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_DamageNumber_General"), &DamageDesc, &pNumber)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
 HRESULT CUIDamage_Manager::Create_Critical(CTransform* pTransformCom)
 {
+	CGameObject* pCritical = nullptr;
+	CUI_Damage_Critical::CRITICAL_DESC CriticalDesc = {};
+	ZeroMemory(&CriticalDesc, sizeof(CUI_Damage_Critical::CRITICAL_DESC));
+
+	CriticalDesc.pTargetTransform = pTransformCom;
+	CriticalDesc.eType = CUI_Damage_Critical::UI_CRITICALFONT::CRITICAL_BLUE; // Temp
+
+	if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_DamageNumber_Critical"), &CriticalDesc, &pCritical)))
+		return E_FAIL;
+
+
+	if (nullptr == pCritical)
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CUIDamage_Manager::Create_Miss(CTransform* pTransformCom)
+{
+	CGameObject* pMiss = nullptr;
+
+	CUI_Damage_General::GENERAL_DESC MissDesc = {};
+	ZeroMemory(&MissDesc, sizeof(CUI_Damage_General::GENERAL_DESC));
+
+	MissDesc.pTargetTransform = pTransformCom;
+	MissDesc.iDamage = 0; // 아무값이나 넣어도 상관없음. 반영X
+
+	if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_DamageNumber_Miss"), &MissDesc, &pMiss)))
+		return E_FAIL;
+
+	if (nullptr == pMiss)
+		return E_FAIL;
+
 	return S_OK;
 }
 

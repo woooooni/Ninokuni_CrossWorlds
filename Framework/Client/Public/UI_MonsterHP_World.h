@@ -12,7 +12,10 @@ protected:
 
 public:
 	class CMonster* Get_Owner() { return m_pOwner; }
-	void Set_Owner(CMonster* pOwner) { m_pOwner = pOwner; }
+	void Set_Owner(CMonster* pOwner, _int iElementalType) {
+		m_pOwner = pOwner;
+		m_iTextureIndex = iElementalType;
+	}
 
 	_bool Is_Target() { return m_bIsTarget; }
 	void Set_Target(_bool bIsTarget) { m_bIsTarget = bIsTarget; }
@@ -26,11 +29,13 @@ public:
 
 private:
 	class CMonster* m_pOwner = { nullptr };
+	CTexture* m_pBackTextureCom = { nullptr };
+
 	_bool m_bIsTarget = { false }; // 현재 플레이어의 Target인가?
 
 	vector<class CUI_Basic*> m_Arrow;
-	_int m_iMaxHP = { 0 };
-	_int m_iCurHP = { 0 };
+	_float m_fMaxHP = { 0.f };
+	_float m_fCurHP = { 0.f };
 
 	wstring m_strName = L"";
 	wstring m_strSubName = L"";

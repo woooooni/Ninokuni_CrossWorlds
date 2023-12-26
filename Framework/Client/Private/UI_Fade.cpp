@@ -67,8 +67,8 @@ void CUI_Fade::Tick(_float fTimeDelta)
 
 void CUI_Fade::LateTick(_float fTimeDelta)
 {
-	if (m_bIsComplete)
-		return;
+//	if (m_bIsComplete)
+//		return;
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 }
@@ -78,7 +78,7 @@ HRESULT CUI_Fade::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	m_pShaderCom->Begin(2);
+	m_pShaderCom->Begin(1);
 
 	m_pVIBufferCom->Render();
 

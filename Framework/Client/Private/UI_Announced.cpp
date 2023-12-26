@@ -3,6 +3,8 @@
 #include "GameInstance.h"
 #include "UI_Manager.h"
 
+
+// FXTextureCom-> Alpha
 CUI_Announced::CUI_Announced(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_ANNNOUNCE_TYPE eType)
 	: CUI(pDevice, pContext, L"UI_Dialog_Portrait")
 	, m_eType(eType)
@@ -101,7 +103,7 @@ HRESULT CUI_Announced::Render()
 		if (FAILED(Bind_ShaderResources()))
 			return E_FAIL;
 
-		m_pShaderCom->Begin(1);
+		m_pShaderCom->Begin(7);
 
 		m_pVIBufferCom->Render();
 	}
@@ -141,6 +143,9 @@ HRESULT CUI_Announced::Ready_Components()
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_CameraPopup"),
 			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 			return E_FAIL;
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Effect_CameraPopup"),
+			TEXT("Com_FXTexture"), (CComponent**)&m_pFXTextureCom)))
+			return E_FAIL;
 		break;
 	}
 
@@ -174,6 +179,8 @@ HRESULT CUI_Announced::Bind_ShaderResources()
 	if (ANNOUNCE_CAMERA == m_eType)
 	{
 		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextureIndex)))
+			return E_FAIL;
+		if (FAILED(m_pFXTextureCom->Bind_ShaderResource(m_pShaderCom, "g_FXTexture")))
 			return E_FAIL;
 	}
 	else
@@ -216,5 +223,6 @@ void CUI_Announced::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pFXTextureCom);
 	Safe_Release(m_pTextureCom);
 }

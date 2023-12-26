@@ -64,6 +64,10 @@ HRESULT CUI_MonsterHP_World::Initialize(void* pArg)
 
 	m_bIsTarget = true;
 
+	//Test Code
+	m_fMaxHP = 2000.f;
+	m_fCurHP = 2000.f;
+
 	return S_OK;
 }
 
@@ -201,6 +205,12 @@ void CUI_MonsterHP_World::LateTick(_float fTimeDelta)
 			}
 		}
 	}
+
+	// TestCode
+	if (KEY_TAP(KEY::T))
+	{
+		m_fCurHP = m_fCurHP - 100.f;
+	}
 }
 
 HRESULT CUI_MonsterHP_World::Render()
@@ -208,7 +218,7 @@ HRESULT CUI_MonsterHP_World::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	m_pShaderCom->Begin(11);
+	m_pShaderCom->Begin(14);
 
 	m_pVIBufferCom->Render();
 
@@ -227,7 +237,11 @@ HRESULT CUI_MonsterHP_World::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Monster_WorldHPBars"),
 		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 		return E_FAIL;
-	
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Monster_WorldHP_Frame"),
+		TEXT("Com_Texture_Background"), (CComponent**)&m_pBackTextureCom)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -254,7 +268,14 @@ HRESULT CUI_MonsterHP_World::Bind_ShaderResources()
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_fAlpha, sizeof(_float))))
 		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_CurrentHP", &m_fCurHP, sizeof(_float))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_MaxHP", &m_fMaxHP, sizeof(_float))))
+		return E_FAIL;
 
+
+	if (FAILED(m_pBackTextureCom->Bind_ShaderResource(m_pShaderCom, "g_HPGaugeTexture")))
+		return E_FAIL;
 	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextureIndex)))
 		return E_FAIL;
 
@@ -353,5 +374,6 @@ void CUI_MonsterHP_World::Free()
 		Safe_Release(iter);
 	m_Arrow.clear();
 
+	Safe_Release(m_pBackTextureCom);
 	Safe_Release(m_pTextureCom);
 }

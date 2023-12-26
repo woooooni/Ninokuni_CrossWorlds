@@ -9,6 +9,7 @@
 #include "Level_Loading.h"
 
 #include "UI_Manager.h"
+#include "UI_Fade.h"
 
 
 CLevel_Evermore::CLevel_Evermore(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -37,11 +38,15 @@ HRESULT CLevel_Evermore::Initialize()
 	if (FAILED(Ready_Layer_UI(LAYER_TYPE::LAYER_UI)))
 		return E_FAIL;
 
+	if (nullptr != CUI_Manager::GetInstance()->Get_Fade())
+		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 3.f);
+
 	return S_OK;
 }
 
 HRESULT CLevel_Evermore::Tick(_float fTimeDelta)
 {
+	CUI_Manager::GetInstance()->Tick_Fade(fTimeDelta);
 	CUI_Manager::GetInstance()->Tick_UIs(LEVELID::LEVEL_EVERMORE, fTimeDelta);
 
 	return S_OK;
@@ -49,6 +54,7 @@ HRESULT CLevel_Evermore::Tick(_float fTimeDelta)
 
 HRESULT CLevel_Evermore::LateTick(_float fTimeDelta)
 {
+	CUI_Manager::GetInstance()->LateTick_Fade(fTimeDelta);
 
 	return S_OK;
 }
