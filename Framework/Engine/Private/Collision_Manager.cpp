@@ -112,9 +112,10 @@ void CCollision_Manager::Collision_Update(COLLISION_GROUP eLeft, COLLISION_GROUP
 								continue;
 
 							COLLIDER_ID ID;
-							ID.iLeft_id = pLeftCollider->Get_ColliderID();
-							ID.iRight_id = pRightCollider->Get_ColliderID();
+							ID.iLeft_id = min(pLeftCollider->Get_ColliderID(), pRightCollider->Get_ColliderID());
+							ID.iRight_id = max(pLeftCollider->Get_ColliderID(), pRightCollider->Get_ColliderID());
 
+							
 
 							iter = m_mapColInfo.find(ID.ID);
 							if (m_mapColInfo.end() == iter)
