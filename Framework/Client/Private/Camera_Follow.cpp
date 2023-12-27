@@ -311,4 +311,6 @@ void CCamera_Follow::Free()
 	__super::Free();
 
 	Safe_Release(m_pTransformCom);
+
+	Safe_Release(m_pControllerCom);
 }
