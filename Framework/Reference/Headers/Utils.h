@@ -6,6 +6,8 @@ class ENGINE_DLL CUtils : public CBase
 {
 
 public:
+	static wstring PopEof_WString(const wstring& str);
+
 	/* utf-8 -> wstring º¯È¯ */
 	static wstring Utf8_To_Wstring(const string& strUtf8);
 

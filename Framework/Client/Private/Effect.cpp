@@ -10,10 +10,7 @@ CEffect::CEffect(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wst
 }
 
 CEffect::CEffect(const CEffect& rhs)
-	: CGameObject(rhs)
-	, m_tEffectDesc(rhs.m_tEffectDesc)
-	, m_fAccDeletionTime(0.f)
-	, m_fAccIndex(0.f)
+	: CGameObject(rhs), m_tEffectDesc(rhs.m_tEffectDesc)
 {
 }
 
@@ -938,12 +935,7 @@ HRESULT CEffect::Ready_Components()
 
 	/* For.Com_Model */
 	if (m_tEffectDesc.eType == EFFECT_TYPE::EFFECT_MESH)
-	{
 		Set_Model();
-
-		//if (FAILED(__super::Add_Component(LEVEL_STATIC, m_tEffectDesc.strModelName, TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
-		//	return E_FAIL;
-	}
 	/* For.Com_VIBuffer */
 	else
 	{

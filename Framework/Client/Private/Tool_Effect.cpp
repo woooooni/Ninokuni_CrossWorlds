@@ -1046,9 +1046,9 @@ void CTool_Effect::Load_Effect(const char* pFileName)
 		EffectInfo.fLifeTime.y = item["LifeTime"]["y"];
 
 #pragma region ¸ðµ¨ && ÅØ½ºÃ³
-		EffectInfo.strModelName            = CUtils::Utf8_To_Wstring(item["ModelName"]);
-		EffectInfo.strDiffuseTetextureName = CUtils::Utf8_To_Wstring(item["DiffuseTetextureName"]);
-		EffectInfo.strAlphaTexturName      = CUtils::Utf8_To_Wstring(item["AlphaTexturName"]);
+		EffectInfo.strModelName            = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(item["ModelName"]));
+		EffectInfo.strDiffuseTetextureName = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(item["DiffuseTetextureName"]));
+		EffectInfo.strAlphaTexturName      = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(item["AlphaTexturName"]));
 
 		EffectInfo.iTextureIndexDiffuse = item["TextureIndexDiffuse"];
 		EffectInfo.iTextureIndexAlpha   = item["TextureIndexAlpha"];
