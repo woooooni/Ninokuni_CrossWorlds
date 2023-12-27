@@ -48,6 +48,7 @@
 #include "UI_Setting_Section.h"
 #include "UI_SubMenu_Imajinn.h"
 #include "UI_Emoticon_Window.h"
+#include "UI_SkillWindow_Btn.h"
 #include "UI_Emoticon_Button.h"
 #include "UI_BtnChangeCamera.h"
 #include "UI_Inventory_TabBtn.h"
@@ -68,6 +69,7 @@
 #include "UI_BtnCharacterSelect.h"
 #include "UI_Loading_Background.h"
 #include "UI_WeaponSection_Slot.h"
+#include "UI_SkillWindow_LineBox.h"
 #include "UI_Loading_ProgressBar.h"
 #include "UI_Loading_Information.h"
 #include "UI_MonsterHP_Elemental.h"
@@ -75,6 +77,7 @@
 #include "UI_SkillSection_BtnRoll.h"
 #include "UI_SkillSection_BtnJump.h"
 #include "UI_MonsterHP_Background.h"
+#include "UI_SkillWindow_SkillSlot.h"
 #include "UI_Loading_CharacterLogo.h"
 #include "UI_ImajinnSection_Vehicle.h"
 #include "UI_Emoticon_SpeechBalloon.h"
@@ -2271,6 +2274,241 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 
 #pragma endregion
 
+#pragma region SKILLWINDOW
+
+	m_SkillWindow.reserve(4);
+	m_SkillBtn.reserve(3);
+	m_SkillClickedBtn.reserve(3);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 119.f;
+	UIDesc.fCY = 818.f + 10.f;
+	UIDesc.fX = UIDesc.fCX * 0.5f;
+	UIDesc.fY = g_iWinSizeY - UIDesc.fCY * 0.5f;
+
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SkillWindow_SubMenuBg"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_SkillWindow.push_back(dynamic_cast<CUI_SkillWindow_LineBox*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 412.f * 0.9f;
+	UIDesc.fCY = 900.f * 0.9f;
+	UIDesc.fX = g_iWinSizeX - (UIDesc.fCX * 0.5f + 12.f);
+	UIDesc.fY = g_iWinSizeY - (UIDesc.fCY * 0.5f + 8.f);
+
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SkillWindow_LineBox"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_SkillWindow.push_back(dynamic_cast<CUI_SkillWindow_LineBox*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	fOffset = 100.f;
+
+	UIDesc.fCX = 168.f * 0.55f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = 60.f;
+	UIDesc.fY = 120.f; // 220
+
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SkillWindow_Unclicked_ClassicBtn"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_SkillBtn.push_back(dynamic_cast<CUI_SkillWindow_Btn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SkillWindow_Clicked_ClassicBtn"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_SkillClickedBtn.push_back(dynamic_cast<CUI_SkillWindow_Btn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+
+
+	UIDesc.fY += fOffset;
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SkillWindow_Unclicked_ActiveBtn"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_SkillBtn.push_back(dynamic_cast<CUI_SkillWindow_Btn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SkillWindow_Clicked_ActiveBtn"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_SkillClickedBtn.push_back(dynamic_cast<CUI_SkillWindow_Btn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+
+
+	UIDesc.fY += fOffset;
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SkillWindow_Unclicked_PassiveBtn"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_SkillBtn.push_back(dynamic_cast<CUI_SkillWindow_Btn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SkillWindow_Clicked_PassiveBtn"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_SkillClickedBtn.push_back(dynamic_cast<CUI_SkillWindow_Btn*>(pBtn));
+	if (nullptr == pBtn)
+		return E_FAIL;
+	Safe_AddRef(pBtn);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 32.f;
+	UIDesc.fCY = 37.f;
+	UIDesc.fX = 100.f + UIDesc.fCX * 0.5f;
+	UIDesc.fY = 120.f;
+
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SkillWindow_Select_Arrow"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_SkillWindow.push_back(dynamic_cast<CUI_SkillWindow_LineBox*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 250.f * 0.7f;
+	UIDesc.fCY = 53.f * 0.7f;
+	UIDesc.fX = 80.f + UIDesc.fCX * 0.5f;
+	UIDesc.fY = 36.f;
+
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SkillWindow_Title"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_SkillWindow.push_back(dynamic_cast<CUI_SkillWindow_LineBox*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+
+	m_ClassSkillSlot.reserve(5); // Class 3개, Separ~ 1개, Burst 1개
+	m_SpecialSkillSlot.reserve(3); // 3개
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	fOffset = 102.f;
+
+	UIDesc.fCX = 380.f * 0.9f;
+	UIDesc.fCY = 125.f * 0.9f;
+	UIDesc.fX = g_iWinSizeX - (UIDesc.fCX * 0.5f + 25.f);
+	UIDesc.fY = 180.f;
+
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SkillWindow_ClassSkill_First"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_ClassSkillSlot.push_back(dynamic_cast<CUI_SkillWindow_SkillSlot*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+	UIDesc.fY += fOffset;
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SkillWindow_ClassSkill_Second"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_ClassSkillSlot.push_back(dynamic_cast<CUI_SkillWindow_SkillSlot*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+	UIDesc.fY += fOffset;
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SkillWindow_ClassSkill_Third"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_ClassSkillSlot.push_back(dynamic_cast<CUI_SkillWindow_SkillSlot*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+	UIDesc.fCX = 375.f * 0.9f;
+	UIDesc.fCY = 24.f * 0.9f;
+	UIDesc.fY += 80.f;
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SkillWindow_ClassSkill_Separator"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_ClassSkillSlot.push_back(dynamic_cast<CUI_SkillWindow_SkillSlot*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+	UIDesc.fCX = 380.f * 0.9f;
+	UIDesc.fCY = 155.f * 0.9f;
+	UIDesc.fY += fOffset;
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SkillWindow_ClassSkill_Burst"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_ClassSkillSlot.push_back(dynamic_cast<CUI_SkillWindow_SkillSlot*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+	//m_SpecialSkillSlot
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	fOffset = 102.f;
+
+	UIDesc.fCX = 380.f * 0.9f;
+	UIDesc.fCY = 125.f * 0.9f;
+	UIDesc.fX = g_iWinSizeX - (UIDesc.fCX * 0.5f + 25.f);
+	UIDesc.fY = 180.f;
+
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SkillWindow_ActiveSkill_First"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_SpecialSkillSlot.push_back(dynamic_cast<CUI_SkillWindow_SkillSlot*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+	UIDesc.fY += fOffset;
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SkillWindow_ActiveSkill_Second"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_SpecialSkillSlot.push_back(dynamic_cast<CUI_SkillWindow_SkillSlot*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+	UIDesc.fY += fOffset;
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SkillWindow_ActiveSkill_Third"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_SpecialSkillSlot.push_back(dynamic_cast<CUI_SkillWindow_SkillSlot*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 762.f;
+	UIDesc.fCY = 196.f;
+	UIDesc.fX = 500.f;
+	UIDesc.fY = g_iWinSizeY - (UIDesc.fCY * 0.5f);
+
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_SkillWindow_SkillDesc"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_pSkillDesc = dynamic_cast<CUI_SkillWindow_LineBox*>(pWindow);
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+#pragma endregion
+
 
 	return S_OK;
 }
@@ -2378,28 +2616,6 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 			m_pWindowQuest->Set_Active(true);
 	}
 
-	if (KEY_TAP(KEY::L))
-	{
-//		if (m_LevelUp[CUI_LevelUp::UILEVELUP_FRAME]->Get_Active())
-//		{
-//			for (auto& pUI : m_LevelUp)
-//				pUI->Set_Active(false);
-//		}
-//		else
-//		{
-//			for (auto& pUI : m_LevelUp)
-//				pUI->Set_Active(true);
-//		}
-	}
-
-	if (KEY_TAP(KEY::I))
-	{
-		if (m_pInvenBox->Get_Active())
-			OnOff_Inventory(false);
-		else
-			OnOff_Inventory(true);
-	}
-
 	if (KEY_TAP(KEY::W))
 	{
 		if (m_pWorldMapBG->Get_Active()) // 켜져있다면
@@ -2467,6 +2683,14 @@ void CUI_Manager::Render_Fade()
 	m_pUIFade->Render();
 }
 
+_bool CUI_Manager::Is_FadeFinished()
+{
+	if (nullptr == m_pUIFade)
+		return false;
+
+	return m_pUIFade->Get_Finish();
+}
+
 void CUI_Manager::Update_LobbyBtnState(_uint iIndex)
 {
 	_uint iBtnIndex = iIndex;
@@ -2512,11 +2736,114 @@ void CUI_Manager::Update_InvenBtnState(_uint iIndex)
 
 			m_InvenClickedBtn[i]->Set_Active(false);
 		}
-		//m_InvenClickedBtn[CUI_Inventory_TabBtn::UI_INVENTABBTN::INVEN_ARMOR]->Set_Active(false);
-		//m_InvenClickedBtn[CUI_Inventory_TabBtn::UI_INVENTABBTN::INVEN_ACC]->Set_Active(false);
-		//m_InvenClickedBtn[CUI_Inventory_TabBtn::UI_INVENTABBTN::INVEN_CRYSTALBALL]->Set_Active(false);
-		//m_InvenClickedBtn[CUI_Inventory_TabBtn::UI_INVENTABBTN::INVEN_ETC1]->Set_Active(false);
-		//m_InvenClickedBtn[CUI_Inventory_TabBtn::UI_INVENTABBTN::INVEN_ETC2]->Set_Active(false);
+
+	}
+}
+
+void CUI_Manager::Update_SkillBtnState(CTransform* pTransform, _uint iIndex)
+{
+	m_SkillClickedBtn[iIndex]->Set_Active(true);
+
+	//CTransform* pTransform = m_SkillBtn[iIndex]->Get_Component<CTransform>(TEXT("Com_Transform"));
+	//_float4 vClickedPosition;
+	//XMStoreFloat4(&vClickedPosition, pTransform->Get_Position());
+	//_float fY = vClickedPosition.y;
+	_float fY;
+
+	if (!m_SkillWindow[CUI_SkillWindow_LineBox::UI_SKILLWINDOW::SKWINDOW_ARROW]->Get_Active())
+	{
+		m_SkillWindow[CUI_SkillWindow_LineBox::UI_SKILLWINDOW::SKWINDOW_ARROW]->Set_Active(true);
+
+		if (iIndex == 0)
+			fY = 116.f;
+		else if (iIndex == 1)
+			fY = 226.f;
+		else
+			fY = 326.f;
+	}
+	else
+	{
+		if (iIndex == 0)
+			fY = 116.f;
+		else if (iIndex == 1)
+			fY = 226.f;
+		else
+			fY = 326.f;
+	}
+
+	m_SkillWindow[CUI_SkillWindow_LineBox::UI_SKILLWINDOW::SKWINDOW_TITLE]->Set_TitleIndex(iIndex);
+	m_SkillWindow[CUI_SkillWindow_LineBox::UI_SKILLWINDOW::SKWINDOW_ARROW]->Set_ArrowPosition(fY);
+
+	for (_uint i = 0; i < CUI_SkillWindow_Btn::SKILLSUBBTN_END; ++i)
+	{
+		if (i == iIndex)
+			continue;
+	
+		m_SkillClickedBtn[i]->Set_Active(false);
+	}
+}
+
+void CUI_Manager::Update_SkillSlotState(_uint iSectionType, _uint iSlotIndex)
+{
+	//	enum UI_SKILLMENU_SECTION { SKILL_CLASS, SKILL_BURST, SKILL_ACTIVE, SKILL_SEPARATOR, SKILLSECTION_END };
+	// enum UI_SKILLMENU_SLOT { SKILLSLOT_FIRST, SKILLSLOT_SECOND, SKILLSLOT_THIRD, SKILLSLOT_END };
+
+	switch (iSectionType)
+	{
+	case 0:
+		if (iSlotIndex < 0 || CUI_SkillWindow_SkillSlot::UI_SKILLMENU_SECTION::SKILLSECTION_END < iSlotIndex)
+			return;
+		
+		m_ClassSkillSlot[iSlotIndex]->Set_Clicked(true);
+		m_pSkillDesc->Set_iDescIndex(iSlotIndex); // 0, 1, 2
+
+		for (_uint i = 0; i < m_ClassSkillSlot.size(); ++i)
+		{
+			if (i == iSlotIndex)
+				continue;
+
+			if (0 == m_ClassSkillSlot[i]->Get_SectionType() ||
+				1 == m_ClassSkillSlot[i]->Get_SectionType())
+				m_ClassSkillSlot[i]->Set_Clicked(false);
+		}
+		break;
+
+	case 1: // BurstSkill이면 FirstSlot만 있음
+		if (iSlotIndex < 0 || CUI_SkillWindow_SkillSlot::UI_SKILLMENU_SECTION::SKILLSECTION_END < iSlotIndex)
+			return;
+
+		m_ClassSkillSlot[iSlotIndex + 4]->Set_Clicked(true);
+		m_pSkillDesc->Set_iDescIndex(iSlotIndex + 3); // 3
+
+		for (_uint i = 0; i < m_ClassSkillSlot.size(); ++i)
+		{
+			if (i == iSlotIndex + 4)
+				continue;
+
+			if (0 == m_ClassSkillSlot[i]->Get_SectionType())
+				m_ClassSkillSlot[i]->Set_Clicked(false);
+		}
+		break;
+
+	case 2:
+		if (iSlotIndex < 0 || CUI_SkillWindow_SkillSlot::UI_SKILLMENU_SECTION::SKILLSECTION_END < iSlotIndex)
+			return;
+
+		m_SpecialSkillSlot[iSlotIndex]->Set_Clicked(true);
+		m_pSkillDesc->Set_iDescIndex(iSlotIndex + 4); // 4, 5, 6
+
+		for (_uint i = 0; i < m_SpecialSkillSlot.size(); ++i)
+		{
+			if (i == iSlotIndex)
+				continue;
+
+			m_SpecialSkillSlot[i]->Set_Clicked(false);
+		}
+		break;
+
+	case 3: // 선택이 되면 안된다.
+		//return;
+		break;
 	}
 }
 
@@ -2577,6 +2904,14 @@ HRESULT CUI_Manager::Using_BackButton()
 		if (m_pInvenBox->Get_Active())
 		{
 			OnOff_Inventory(false);
+		}
+	}
+
+	if (nullptr != m_SkillWindow[CUI_SkillWindow_LineBox::UI_SKILLWINDOW::SKWINDOW_SUBMENU])
+	{
+		if (m_SkillWindow[CUI_SkillWindow_LineBox::UI_SKILLWINDOW::SKWINDOW_SUBMENU]->Get_Active())
+		{
+			OnOff_SkillWindow(false);
 		}
 	}
 
@@ -3196,6 +3531,72 @@ HRESULT CUI_Manager::OnOff_CostumeSlot(_bool bOnOff)
 	return S_OK;
 }
 
+HRESULT CUI_Manager::OnOff_SkillWindowSlot(_uint iMenuType, _bool bOnOff)
+{
+	// 	enum UI_SKILLSUBBTN { SUBMENU_CLASSIC, SUBMENU_ACTIVE, SUBMENU_PASSIVE, SKILLSUBBTN_END };
+
+	if (bOnOff) // On
+	{
+		switch (iMenuType)
+		{
+		case 0:
+			for (auto& iter : m_ClassSkillSlot)
+			{
+				if (nullptr != iter)
+					iter->Set_Active(true);
+			}
+			for (auto& iter : m_SpecialSkillSlot) // Active
+			{
+				if (nullptr != iter)
+					iter->Set_Active(false);
+			}
+			break;
+
+		case 1:
+			for (auto& iter : m_SpecialSkillSlot) // Active
+			{
+				if (nullptr != iter)
+					iter->Set_Active(true);
+			}
+			for (auto& iter : m_ClassSkillSlot)
+			{
+				if (nullptr != iter)
+				{
+					if(iter->Get_Active())
+						iter->Set_Active(false);
+				}
+			}
+			break;
+
+		case 2:
+			for (auto& iter : m_SpecialSkillSlot) // Active
+			{
+				if (nullptr != iter)
+					iter->Set_Active(false);
+			}
+			for (auto& iter : m_ClassSkillSlot)
+			{
+				if (nullptr != iter)
+				{
+					if (iter->Get_Active())
+						iter->Set_Active(false);
+				}
+			}
+			break;
+		}
+	}
+	else
+	{
+//		for (auto& iter : m_CostumeItem)
+//		{
+//			if (nullptr != iter)
+//				iter->Set_Active(false);
+//		}
+	}
+
+	return S_OK;
+}
+
 HRESULT CUI_Manager::OnOff_Announce(_int iMagicNum, _bool bOnOff)
 {
 	if (0 > iMagicNum || 2 < iMagicNum)
@@ -3261,6 +3662,80 @@ HRESULT CUI_Manager::OnOff_Inventory(_bool bOnOff)
 		m_pDefaultBG->Set_Active(false);
 		OnOff_GamePlaySetting(true);
 	}
+
+	return S_OK;
+}
+
+HRESULT CUI_Manager::OnOff_SkillWindow(_bool bOnOff)
+{
+	if (bOnOff)
+	{
+		if (!m_pDefaultBG->Get_Active())
+		{
+			OnOff_MainMenu(false);
+			m_pDefaultBG->Set_Active(true);
+
+			for (auto& iter : m_SkillWindow)
+			{
+				if (nullptr != iter)
+					iter->Set_Active(true);
+			}
+			m_SkillWindow[CUI_SkillWindow_LineBox::UI_SKILLWINDOW::SKWINDOW_ARROW]->Set_Active(false);
+
+			for (auto& iter : m_SkillBtn)
+			{
+				if (nullptr != iter)
+					iter->Set_Active(true);
+			}
+
+			m_pSkillDesc->Set_iDescIndex(-1);
+			m_pSkillDesc->Set_Active(true);
+
+			//m_pCostumeBox->Set_Active(true);
+			//m_pTabMenuTitle->Set_TextType(CUI_Text_TabMenu::UI_MENUTITLE::TITLE_COSTUME);
+			//m_pTabMenuTitle->Set_Active(true);
+		}
+	}
+	else
+	{
+		//m_pTabMenuTitle->Set_Active(false);
+		//OnOff_CostumeSlot(false);
+		//m_pCostumeBox->Set_Active(false);
+		// 
+		//Test Code
+		m_pSkillDesc->Set_Active(false);
+
+		for (auto& iter : m_SpecialSkillSlot)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_ClassSkillSlot)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+
+		for (auto& iter : m_SkillBtn)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_SkillClickedBtn)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_SkillWindow)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+
+		m_pDefaultBG->Set_Active(false);
+		OnOff_MainMenu(true);
+	}
+
 
 	return S_OK;
 }
@@ -3993,6 +4468,86 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		CUI_Inventory_Slot::Create(m_pDevice, m_pContext, CUI_Inventory_Slot::UI_INVENSLOT_TYPE::INVENSLOT_LOCK_CRYSTAL2), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillWindow_Unclicked_ClassicBtn"),
+		CUI_SkillWindow_Btn::Create(m_pDevice, m_pContext,
+			CUI_SkillWindow_Btn::UI_SKILLBTN_TYPE::SKILLBTN_UNCLICKED, CUI_SkillWindow_Btn::UI_SKILLSUBBTN::SUBMENU_CLASSIC), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillWindow_Clicked_ClassicBtn"),
+		CUI_SkillWindow_Btn::Create(m_pDevice, m_pContext,
+			CUI_SkillWindow_Btn::UI_SKILLBTN_TYPE::SKILLBTN_CLICKED, CUI_SkillWindow_Btn::UI_SKILLSUBBTN::SUBMENU_CLASSIC), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillWindow_Unclicked_PassiveBtn"),
+		CUI_SkillWindow_Btn::Create(m_pDevice, m_pContext,
+			CUI_SkillWindow_Btn::UI_SKILLBTN_TYPE::SKILLBTN_UNCLICKED, CUI_SkillWindow_Btn::UI_SKILLSUBBTN::SUBMENU_PASSIVE), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillWindow_Clicked_PassiveBtn"),
+		CUI_SkillWindow_Btn::Create(m_pDevice, m_pContext,
+			CUI_SkillWindow_Btn::UI_SKILLBTN_TYPE::SKILLBTN_CLICKED, CUI_SkillWindow_Btn::UI_SKILLSUBBTN::SUBMENU_PASSIVE), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillWindow_Unclicked_ActiveBtn"),
+		CUI_SkillWindow_Btn::Create(m_pDevice, m_pContext,
+			CUI_SkillWindow_Btn::UI_SKILLBTN_TYPE::SKILLBTN_UNCLICKED, CUI_SkillWindow_Btn::UI_SKILLSUBBTN::SUBMENU_ACTIVE), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillWindow_Clicked_ActiveBtn"),
+		CUI_SkillWindow_Btn::Create(m_pDevice, m_pContext,
+			CUI_SkillWindow_Btn::UI_SKILLBTN_TYPE::SKILLBTN_CLICKED, CUI_SkillWindow_Btn::UI_SKILLSUBBTN::SUBMENU_ACTIVE), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillWindow_SubMenuBg"),
+		CUI_SkillWindow_LineBox::Create(m_pDevice, m_pContext, CUI_SkillWindow_LineBox::UI_SKILLWINDOW::SKWINDOW_SUBMENU), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillWindow_LineBox"),
+		CUI_SkillWindow_LineBox::Create(m_pDevice, m_pContext, CUI_SkillWindow_LineBox::UI_SKILLWINDOW::SKWINDOW_LINEBOX), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillWindow_Select_Arrow"),
+		CUI_SkillWindow_LineBox::Create(m_pDevice, m_pContext, CUI_SkillWindow_LineBox::UI_SKILLWINDOW::SKWINDOW_ARROW), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillWindow_Title"),
+		CUI_SkillWindow_LineBox::Create(m_pDevice, m_pContext, CUI_SkillWindow_LineBox::UI_SKILLWINDOW::SKWINDOW_TITLE), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillWindow_ClassSkill_First"),
+		CUI_SkillWindow_SkillSlot::Create(m_pDevice, m_pContext,
+			CUI_SkillWindow_SkillSlot::UI_SKILLMENU_SECTION::SKILL_CLASS,
+			CUI_SkillWindow_SkillSlot::UI_SKILLMENU_SLOT::SKILLSLOT_FIRST), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillWindow_ClassSkill_Second"),
+		CUI_SkillWindow_SkillSlot::Create(m_pDevice, m_pContext,
+			CUI_SkillWindow_SkillSlot::UI_SKILLMENU_SECTION::SKILL_CLASS,
+			CUI_SkillWindow_SkillSlot::UI_SKILLMENU_SLOT::SKILLSLOT_SECOND), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillWindow_ClassSkill_Third"),
+		CUI_SkillWindow_SkillSlot::Create(m_pDevice, m_pContext,
+			CUI_SkillWindow_SkillSlot::UI_SKILLMENU_SECTION::SKILL_CLASS,
+			CUI_SkillWindow_SkillSlot::UI_SKILLMENU_SLOT::SKILLSLOT_THIRD), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillWindow_ClassSkill_Burst"),
+		CUI_SkillWindow_SkillSlot::Create(m_pDevice, m_pContext,
+			CUI_SkillWindow_SkillSlot::UI_SKILLMENU_SECTION::SKILL_BURST,
+			CUI_SkillWindow_SkillSlot::UI_SKILLMENU_SLOT::SKILLSLOT_FIRST), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillWindow_ClassSkill_Separator"),
+		CUI_SkillWindow_SkillSlot::Create(m_pDevice, m_pContext,
+			CUI_SkillWindow_SkillSlot::UI_SKILLMENU_SECTION::SKILL_SEPARATOR,
+			CUI_SkillWindow_SkillSlot::UI_SKILLMENU_SLOT::SKILLSLOT_FIRST), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillWindow_ActiveSkill_First"),
+		CUI_SkillWindow_SkillSlot::Create(m_pDevice, m_pContext,
+			CUI_SkillWindow_SkillSlot::UI_SKILLMENU_SECTION::SKILL_ACTIVE,
+			CUI_SkillWindow_SkillSlot::UI_SKILLMENU_SLOT::SKILLSLOT_FIRST), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillWindow_ActiveSkill_Second"),
+		CUI_SkillWindow_SkillSlot::Create(m_pDevice, m_pContext,
+			CUI_SkillWindow_SkillSlot::UI_SKILLMENU_SECTION::SKILL_ACTIVE,
+			CUI_SkillWindow_SkillSlot::UI_SKILLMENU_SLOT::SKILLSLOT_SECOND), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillWindow_ActiveSkill_Third"),
+		CUI_SkillWindow_SkillSlot::Create(m_pDevice, m_pContext,
+			CUI_SkillWindow_SkillSlot::UI_SKILLMENU_SECTION::SKILL_ACTIVE,
+			CUI_SkillWindow_SkillSlot::UI_SKILLMENU_SLOT::SKILLSLOT_THIRD), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillWindow_SkillDesc"),
+		CUI_SkillWindow_LineBox::Create(m_pDevice, m_pContext, CUI_SkillWindow_LineBox::UI_SKILLWINDOW::SKWINDOW_DESC), LAYER_UI)))
+		return E_FAIL;
+
 
 	return S_OK;
 }
@@ -4226,6 +4781,7 @@ void CUI_Manager::Free()
 	Safe_Release(m_pBalloon);
 
 	Safe_Release(m_pInvenBox);
+	Safe_Release(m_pSkillDesc);
 
 	for (auto& pBasic : m_Basic)
 		Safe_Release(pBasic);
@@ -4326,6 +4882,26 @@ void CUI_Manager::Free()
 	for (auto& pSlot : m_InvenSlots)
 		Safe_Release(pSlot);
 	m_InvenSlots.clear();
+
+	for (auto& pBtn : m_SkillBtn)
+		Safe_Release(pBtn);
+	m_SkillBtn.clear();
+
+	for (auto& pBtn : m_SkillClickedBtn)
+		Safe_Release(pBtn);
+	m_SkillClickedBtn.clear();
+
+	for (auto& pWindow : m_SkillWindow)
+		Safe_Release(pWindow);
+	m_SkillWindow.clear();
+
+	for (auto& pSlot : m_ClassSkillSlot)
+		Safe_Release(pSlot);
+	m_ClassSkillSlot.clear();
+
+	for (auto& pSlot : m_SpecialSkillSlot)
+		Safe_Release(pSlot);
+	m_SpecialSkillSlot.clear();
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

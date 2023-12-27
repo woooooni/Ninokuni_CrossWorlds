@@ -3,6 +3,10 @@
 #include "Client_Defines.h"
 #include "Base.h"
 
+BEGIN(Engine)
+class CTransform;
+END
+
 BEGIN(Client)
 class CUI_Manager : public CBase
 {
@@ -41,11 +45,14 @@ public:
 	void Tick_Fade(_float fTimeDelta);
 	void LateTick_Fade(_float fTimeDelta);
 	void Render_Fade();
+	_bool Is_FadeFinished();
 
 public:
 	void Update_LobbyBtnState(_uint iIndex);
 	void Update_CostumeBtnState(_uint iIndex);
 	void Update_InvenBtnState(_uint iIndex);
+	void Update_SkillBtnState(class CTransform* pTransform, _uint iIndex);
+	void Update_SkillSlotState(_uint iSectionType, _uint iSlotIndex);
 
 public:
 	HRESULT Using_CloseButton();
@@ -70,8 +77,10 @@ public:
 	HRESULT OnOff_WorldMap(_bool bOnOff);
 	HRESULT OnOff_CostumeWindow(_bool bOnOff); // ÄÚ½ºÆ¬ ÅÇ Window ºñ/È°¼ºÈ­
 	HRESULT OnOff_CostumeSlot(_bool bOnOff);
+	HRESULT OnOff_SkillWindowSlot(_uint iMenuType, _bool bOnOff);
 	HRESULT OnOff_Announce(_int iMagicNum, _bool bOnOff);
 	HRESULT OnOff_Inventory(_bool bOnOff); // °¡¹æ ÅÇ WIndow ºñ/È°¼ºÈ­
+	HRESULT OnOff_SkillWindow(_bool bOnOff);
 
 	HRESULT OnOff_EmoticonWindow(_bool bOnOff);
 	HRESULT OnOff_EmoticonBalloon(_bool bOnOff);
@@ -164,6 +173,13 @@ private:
 	vector<class CUI_Inventory_TabBtn*> m_InvenBtn;
 	vector<class CUI_Inventory_TabBtn*> m_InvenClickedBtn;
 	vector<class CUI_Inventory_Slot*> m_InvenSlots;
+	// For Skill
+	vector<class CUI_SkillWindow_LineBox*> m_SkillWindow;
+	vector<class CUI_SkillWindow_Btn*> m_SkillBtn;
+	vector<class CUI_SkillWindow_Btn*> m_SkillClickedBtn;
+	vector<class CUI_SkillWindow_SkillSlot*> m_ClassSkillSlot;
+	vector<class CUI_SkillWindow_SkillSlot*> m_SpecialSkillSlot;
+	class CUI_SkillWindow_LineBox* m_pSkillDesc = { nullptr };
 
 private:
 	ID3D11Device* m_pDevice = { nullptr };
