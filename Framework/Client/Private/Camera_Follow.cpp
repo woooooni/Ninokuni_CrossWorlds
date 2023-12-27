@@ -62,9 +62,11 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 	m_pTransformCom->LookAt(Calculate_Look(fTimeDelta));
 
 	__super::Tick(fTimeDelta); /* Shake, Fov, Dist */
+
+	/* Collision */
 	m_pControllerCom->Tick_Controller(fTimeDelta);
 
-	
+	/* Deffered */
 	if (Is_Shake())
 	{
 		const Vec4 vLookAtPos = Calculate_Look(fTimeDelta);
@@ -74,37 +76,6 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 		else
 			m_pTransformCom->LookAt(vLookAtPos);
 	}
-
-	/* Test */
-	{
-		/*if (KEY_TAP(KEY::J))
-		{
-			CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
-		}
-		if (KEY_TAP(KEY::K))
-		{
-			static _bool bLerpFov = false;
-
-			if (!bLerpFov)
-				Start_Lerp_Fov(XMConvertToRadians(85.0f), 0.5f);
-			else
-				Start_Lerp_Fov(Cam_Fov_Follow_Default, 0.5f);
-
-			bLerpFov = !bLerpFov;
-		}
-
-		if (KEY_TAP(KEY::L))
-		{
-			static _bool bLerpDist = false;
-
-			if (!bLerpDist)
-				Start_Lerp_Distance(6.3f, 0.5f);
-			else
-				Start_Lerp_Distance(Cam_Dist_Follow_Default, 0.5f);
-
-			bLerpDist = !bLerpDist;
-		}*/
-	}
 }
 
 void CCamera_Follow::LateTick(_float fTimeDelta)
@@ -113,8 +84,8 @@ void CCamera_Follow::LateTick(_float fTimeDelta)
 		return;
 
 	m_pControllerCom->LateTick_Controller(fTimeDelta);
+
 	__super::LateTick(fTimeDelta);
-	
 }
 
 HRESULT CCamera_Follow::Render()
@@ -124,19 +95,22 @@ HRESULT CCamera_Follow::Render()
 
 HRESULT CCamera_Follow::Ready_Components()
 {
-	CPhysX_Controller::CONTROLLER_DESC ControllerDesc;
+	/* CPhysX_Controller */
+	{
+		CPhysX_Controller::CONTROLLER_DESC ControllerDesc;
+		{
+			ControllerDesc.eType = CPhysX_Controller::CAPSULE;
+			ControllerDesc.pTransform = m_pTransformCom;
+			ControllerDesc.vOffset = { 0.f, 0.f, 0.f };
+			ControllerDesc.fHeight = 0.01f;
+			ControllerDesc.fMaxJumpHeight = 10.f;
+			ControllerDesc.fRaidus = 0.1f;
+			ControllerDesc.pOwner = this;
+		}
 
-	ControllerDesc.eType = CPhysX_Controller::CAPSULE;
-	ControllerDesc.pTransform = m_pTransformCom;
-	ControllerDesc.vOffset = { 0.f, 0.f, 0.f };
-	ControllerDesc.fHeight = 0.01f;
-	ControllerDesc.fMaxJumpHeight = 10.f;
-	ControllerDesc.fRaidus = 0.1f;
-	ControllerDesc.pOwner = this;
-
-
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_PhysXController"), TEXT("Com_Controller"), (CComponent**)&m_pControllerCom, &ControllerDesc)))
-		return E_FAIL;
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_PhysXController"), TEXT("Com_Controller"), (CComponent**)&m_pControllerCom, &ControllerDesc)))
+			return E_FAIL;
+	}
 
 	return S_OK;
 }

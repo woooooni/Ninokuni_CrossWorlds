@@ -183,7 +183,7 @@ matrix Rotation_To_Quaternion(matrix m) {
 		q3 *= +1.0f;
 	}
 	else {
-		printf("coding error\n");
+		//printf("coding error\n");
 	}
 	float r = NORM(q0, q1, q2, q3);
 	q0 /= r;
@@ -277,6 +277,194 @@ matrix GetAnimationMatrix(VS_IN input)
 	return transform;
 }
 
+matrix GetAnimationMatrixEdited(VS_IN input)
+{
+	float indices[4] = { input.vBlendIndex.x, input.vBlendIndex.y, input.vBlendIndex.z, input.vBlendIndex.w };
+	float weights[4] = { input.vBlendWeight.x, input.vBlendWeight.y, input.vBlendWeight.z, input.vBlendWeight.w };
+
+	int animIndex[2];
+	int currFrame[2];
+	int nextFrame[2];
+	float ratio[2];
+
+	/* cur */
+	animIndex[0] = g_TweenFrames.cur.iAnimIndex;
+	currFrame[0] = g_TweenFrames.cur.iCurFrame;
+	nextFrame[0] = g_TweenFrames.cur.iNextFrame;
+	ratio[0] = g_TweenFrames.cur.fRatio;
+
+	/* next */
+	animIndex[1] = g_TweenFrames.next.iAnimIndex;
+	currFrame[1] = g_TweenFrames.next.iCurFrame;
+	nextFrame[1] = g_TweenFrames.next.iNextFrame;
+	ratio[1] = g_TweenFrames.next.fRatio;
+
+	float4 c0, c1, c2, c3;
+	float4 n0, n1, n2, n3;
+	matrix curr = 0;
+	matrix next = 0;
+	matrix transform = 0;
+
+	for (int i = 0; i < 4; i++)
+	{
+		float3 fSourceScale, fDestScale, fLerpScale;
+		float4 fSourceRot, fDestRot, fLerpRot;
+		float3 fSourcePos, fDestPos, fLerpPos;
+
+		/* cur */
+		{
+			c0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, currFrame[0], animIndex[0], 0)); /* Scale */
+			c1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, currFrame[0], animIndex[0], 0)); /* Quat */
+			c2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, currFrame[0], animIndex[0], 0)); /* Pos */
+			c3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, currFrame[0], animIndex[0], 0)); /* None */
+
+			fSourceScale.x = c0.x;
+			fSourceScale.y = c0.y;
+			fSourceScale.z = c0.z;
+
+			fSourceRot.x = c1.x;
+			fSourceRot.y = c1.y;
+			fSourceRot.z = c1.z;
+			fSourceRot.w = c1.w;
+
+			fSourcePos.x = c2.x;
+			fSourcePos.y = c2.y;
+			fSourcePos.z = c2.z;
+		}
+
+		/* next */
+		{
+			n0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, nextFrame[0], animIndex[0], 0));
+			n1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, nextFrame[0], animIndex[0], 0));
+			n2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, nextFrame[0], animIndex[0], 0));
+			n3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, nextFrame[0], animIndex[0], 0));
+			
+			fDestScale.x = n0.x;
+			fDestScale.y = n0.y;
+			fDestScale.z = n0.z;
+
+			fDestRot.x = n1.x;
+			fDestRot.y = n1.y;
+			fDestRot.z = n1.z;
+			fDestRot.w = n1.w;
+
+			fDestPos.x = n2.x;
+			fDestPos.y = n2.y;
+			fDestPos.z = n2.z;
+		}
+
+		/* Lerp */
+		{
+			fLerpScale = lerp(fSourceScale, fDestScale, ratio[0]);
+			fLerpRot = QSlerp(fSourceRot, fDestRot, ratio[0]);
+			fLerpPos = lerp(fSourcePos, fDestPos, ratio[0]);
+		}
+
+		/* AffineTransformation */
+		{
+			matrix scaleMatrix = 0;
+			{
+				scaleMatrix[0][0] = fLerpScale.x;
+				scaleMatrix[1][1] = fLerpScale.y;
+				scaleMatrix[2][2] = fLerpScale.z;
+				scaleMatrix[3][3] = 1.f;
+			}
+			matrix translationToOrigin = 0;
+			{			
+				translationToOrigin[0][0] = 1.f;
+				translationToOrigin[1][1] = 1.f;
+				translationToOrigin[2][2] = 1.f;
+				translationToOrigin[3][3] = 1.f;
+			}
+			matrix translationBack = translationToOrigin;
+			{
+				//translationBack[3][0] = 1.f;
+				//translationBack[3][1] = 1.f;
+				//translationBack[3][2] = 1.f;
+				//translationBack[3][3] = 1.f;
+			}
+			matrix rotationMatrix = 0;
+			{
+				float x = fLerpRot.x;
+				float y = fLerpRot.y;
+				float z = fLerpRot.z;
+				float w = fLerpRot.w;
+
+				float xx = x * x;
+				float yy = y * y;
+				float zz = z * z;
+				float xy = x * y;
+				float xz = x * z;
+				float yz = y * z;
+				float wx = w * x;
+				float wy = w * y;
+				float wz = w * z;
+
+				rotationMatrix[0][0] = 1.0f - 2.0f * (yy + zz);
+				rotationMatrix[1][0] = 2.0f * (xy + wz);
+				rotationMatrix[2][0] = 2.0f * (xz - wy);
+				rotationMatrix[3][0] = 0.f;
+
+				rotationMatrix[0][1] = 2.0f * (xy - wz);
+				rotationMatrix[1][1] = 1.0f - 2.0f * (xx + zz);
+				rotationMatrix[2][1] = 2.0f * (yz + wx);
+				rotationMatrix[3][1] = 0.f;
+
+				rotationMatrix[0][2] = 2.0f * (xz + wy);
+				rotationMatrix[1][2] = 2.0f * (yz - wx);
+				rotationMatrix[2][2] = 1.0f - 2.0f * (xx + yy);
+				rotationMatrix[3][2] = 0.f;
+
+				rotationMatrix[0][3] = 0.f;
+				rotationMatrix[1][3] = 0.f;
+				rotationMatrix[2][3] = 0.f;
+				rotationMatrix[3][3] = 1.f;
+			}
+			matrix translationMatrix = 0;
+			{
+				translationMatrix[0][0] = 1.f;
+				translationMatrix[1][1] = 1.f;
+				translationMatrix[2][2] = 1.f;
+				
+				translationMatrix[0][3] = fLerpPos.x;
+				translationMatrix[1][3] = fLerpPos.y;
+				translationMatrix[2][3] = fLerpPos.z;
+				translationMatrix[3][3] = 1.f;
+			}
+
+			curr = scaleMatrix * translationBack * rotationMatrix * translationToOrigin * translationMatrix;
+		}
+
+
+
+		matrix result = curr;
+		//matrix result = lerp(curr, next, ratio[0]);
+
+		/* if next */
+		/*if (animIndex[1] >= 0)
+		{
+			c0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, currFrame[1], animIndex[1], 0));
+			c1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, currFrame[1], animIndex[1], 0));
+			c2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, currFrame[1], animIndex[1], 0));
+			c3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, currFrame[1], animIndex[1], 0));
+			curr = matrix(c0, c1, c2, c3);
+
+			n0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, nextFrame[1], animIndex[1], 0));
+			n1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, nextFrame[1], animIndex[1], 0));
+			n2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, nextFrame[1], animIndex[1], 0));
+			n3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, nextFrame[1], animIndex[1], 0));
+			next = matrix(n0, n1, n2, n3);
+
+			matrix nextResult = lerp(curr, next, ratio[1]);
+			result = lerp(result, nextResult, g_TweenFrames.fTweenRatio);
+		}*/
+
+		transform += mul(result, weights[i]);
+	}
+
+	return transform;
+}
+
 
 VS_OUT VS_MAIN(VS_IN In)
 {
@@ -288,7 +476,8 @@ VS_OUT VS_MAIN(VS_IN In)
 	matWV = mul(g_WorldMatrix, g_ViewMatrix);
 	matWVP = mul(matWV, g_ProjMatrix);
 
-	float4x4	BoneMatrix = GetAnimationMatrix(In);
+	float4x4	BoneMatrix = GetAnimationMatrixEdited(In);
+	//float4x4	BoneMatrix = GetAnimationMatrix(In);
 
 	vector		vPosition = mul(vector(In.vPosition, 1.f), BoneMatrix);
 	vector		vNormal = mul(vector(In.vNormal, 0.f), BoneMatrix);
@@ -432,9 +621,6 @@ PS_OUT_SHADOW_DEPTH PS_SHADOW_DEPTH(PS_IN In)
 
 	return Out;
 }
-
-
-
 
 technique11 DefaultTechnique
 {
