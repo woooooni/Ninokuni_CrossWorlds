@@ -164,8 +164,7 @@ _uint CChannel::Update_Transformation_NoneLerp(_uint iCurrentKeyFrame, CHierarch
 		pNode->Set_Transformation(TransformationMatrix);
 
 	return iCurrentKeyFrame;*/
-
-	// << : 
+	// >> : 
 
 	/* 기존 아핀 트랜스폼 생성 함수 */
 	{

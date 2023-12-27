@@ -1,6 +1,7 @@
-
 #include "Engine_Shader_Defines.hpp"
 
+#include "Matrix.hlsl"
+#include "Quaternion.hlsl"
 matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 
 Texture2D		g_DiffuseTexture;
@@ -63,137 +64,137 @@ struct VS_OUT
 	float4		vWorldPosition	: TEXCOORD2;
 };
 
-#define QUATERNION_IDENTITY float4(0, 0, 0, 1)
-float4 QSlerp(in float4 a, in float4 b, float t)
-{
-	// if either input is zero, return the other.
-	if (length(a) == 0.0)
-	{
-		if (length(b) == 0.0)
-		{
-			return QUATERNION_IDENTITY;
-		}
-		return b;
-	}
-	else if (length(b) == 0.0)
-	{
-		return a;
-	}
+//#define QUATERNION_IDENTITY float4(0, 0, 0, 1)
+//float4 QSlerp(in float4 a, in float4 b, float t)
+//{
+//	// if either input is zero, return the other.
+//	if (length(a) == 0.0)
+//	{
+//		if (length(b) == 0.0)
+//		{
+//			return QUATERNION_IDENTITY;
+//		}
+//		return b;
+//	}
+//	else if (length(b) == 0.0)
+//	{
+//		return a;
+//	}
 
-	float cosHalfAngle = a.w * b.w + dot(a.xyz, b.xyz);
+//	float cosHalfAngle = a.w * b.w + dot(a.xyz, b.xyz);
 
-	if (cosHalfAngle >= 1.0 || cosHalfAngle <= -1.0)
-	{
-		return a;
-	}
-	else if (cosHalfAngle < 0.0)
-	{
-		b.xyz = -b.xyz;
-		b.w = -b.w;
-		cosHalfAngle = -cosHalfAngle;
-	}
+//	if (cosHalfAngle >= 1.0 || cosHalfAngle <= -1.0)
+//	{
+//		return a;
+//	}
+//	else if (cosHalfAngle < 0.0)
+//	{
+//		b.xyz = -b.xyz;
+//		b.w = -b.w;
+//		cosHalfAngle = -cosHalfAngle;
+//	}
 
-	float blendA;
-	float blendB;
-	if (cosHalfAngle < 0.99)
-	{
-		// do proper slerp for big angles
-		float halfAngle = acos(cosHalfAngle);
-		float sinHalfAngle = sin(halfAngle);
-		float oneOverSinHalfAngle = 1.0 / sinHalfAngle;
-		blendA = sin(halfAngle * (1.0 - t)) * oneOverSinHalfAngle;
-		blendB = sin(halfAngle * t) * oneOverSinHalfAngle;
-	}
-	else
-	{
-		// do lerp if angle is really small.
-		blendA = 1.0 - t;
-		blendB = t;
-	}
+//	float blendA;
+//	float blendB;
+//	if (cosHalfAngle < 0.99)
+//	{
+//		// do proper slerp for big angles
+//		float halfAngle = acos(cosHalfAngle);
+//		float sinHalfAngle = sin(halfAngle);
+//		float oneOverSinHalfAngle = 1.0 / sinHalfAngle;
+//		blendA = sin(halfAngle * (1.0 - t)) * oneOverSinHalfAngle;
+//		blendB = sin(halfAngle * t) * oneOverSinHalfAngle;
+//	}
+//	else
+//	{
+//		// do lerp if angle is really small.
+//		blendA = 1.0 - t;
+//		blendB = t;
+//	}
 
-	float4 result = float4(blendA * a.xyz + blendB * b.xyz, blendA * a.w + blendB * b.w);
-	if (length(result) > 0.0)
-	{
-		return normalize(result);
-	}
-	return QUATERNION_IDENTITY;
-}
+//	float4 result = float4(blendA * a.xyz + blendB * b.xyz, blendA * a.w + blendB * b.w);
+//	if (length(result) > 0.0)
+//	{
+//		return normalize(result);
+//	}
+//	return QUATERNION_IDENTITY;
+//}
 
-inline float SIGN(float x) {
-	return (x >= 0.0f) ? +1.0f : -1.0f;
-}
+//inline float SIGN(float x) {
+//	return (x >= 0.0f) ? +1.0f : -1.0f;
+//}
 
-inline float NORM(float a, float b, float c, float d) {
-	return sqrt(a * a + b * b + c * c + d * d);
-}
+//inline float NORM(float a, float b, float c, float d) {
+//	return sqrt(a * a + b * b + c * c + d * d);
+//}
 
-// quaternion = [w, x, y, z]'
-matrix Rotation_To_Quaternion(matrix m) {
-	float r11 = m._11;
-	float r12 = m._21;
-	float r13 = m._31;
-	float r21 = m._12;
-	float r22 = m._22;
-	float r23 = m._32;
-	float r31 = m._13;
-	float r32 = m._23;
-	float r33 = m._33;
-	float q0 = (r11 + r22 + r33 + 1.0f) / 4.0f;
-	float q1 = (r11 - r22 - r33 + 1.0f) / 4.0f;
-	float q2 = (-r11 + r22 - r33 + 1.0f) / 4.0f;
-	float q3 = (-r11 - r22 + r33 + 1.0f) / 4.0f;
-	if (q0 < 0.0f) {
-		q0 = 0.0f;
-	}
-	if (q1 < 0.0f) {
-		q1 = 0.0f;
-	}
-	if (q2 < 0.0f) {
-		q2 = 0.0f;
-	}
-	if (q3 < 0.0f) {
-		q3 = 0.0f;
-	}
-	q0 = sqrt(q0);
-	q1 = sqrt(q1);
-	q2 = sqrt(q2);
-	q3 = sqrt(q3);
-	if (q0 >= q1 && q0 >= q2 && q0 >= q3) {
-		q0 *= +1.0f;
-		q1 *= SIGN(r32 - r23);
-		q2 *= SIGN(r13 - r31);
-		q3 *= SIGN(r21 - r12);
-	}
-	else if (q1 >= q0 && q1 >= q2 && q1 >= q3) {
-		q0 *= SIGN(r32 - r23);
-		q1 *= +1.0f;
-		q2 *= SIGN(r21 + r12);
-		q3 *= SIGN(r13 + r31);
-	}
-	else if (q2 >= q0 && q2 >= q1 && q2 >= q3) {
-		q0 *= SIGN(r13 - r31);
-		q1 *= SIGN(r21 + r12);
-		q2 *= +1.0f;
-		q3 *= SIGN(r32 + r23);
-	}
-	else if (q3 >= q0 && q3 >= q1 && q3 >= q2) {
-		q0 *= SIGN(r21 - r12);
-		q1 *= SIGN(r31 + r13);
-		q2 *= SIGN(r32 + r23);
-		q3 *= +1.0f;
-	}
-	else {
-		//printf("coding error\n");
-	}
-	float r = NORM(q0, q1, q2, q3);
-	q0 /= r;
-	q1 /= r;
-	q2 /= r;
-	q3 /= r;
+//// quaternion = [w, x, y, z]'
+//matrix Rotation_To_Quaternion(matrix m) {
+//	float r11 = m._11;
+//	float r12 = m._21;
+//	float r13 = m._31;
+//	float r21 = m._12;
+//	float r22 = m._22;
+//	float r23 = m._32;
+//	float r31 = m._13;
+//	float r32 = m._23;
+//	float r33 = m._33;
+//	float q0 = (r11 + r22 + r33 + 1.0f) / 4.0f;
+//	float q1 = (r11 - r22 - r33 + 1.0f) / 4.0f;
+//	float q2 = (-r11 + r22 - r33 + 1.0f) / 4.0f;
+//	float q3 = (-r11 - r22 + r33 + 1.0f) / 4.0f;
+//	if (q0 < 0.0f) {
+//		q0 = 0.0f;
+//	}
+//	if (q1 < 0.0f) {
+//		q1 = 0.0f;
+//	}
+//	if (q2 < 0.0f) {
+//		q2 = 0.0f;
+//	}
+//	if (q3 < 0.0f) {
+//		q3 = 0.0f;
+//	}
+//	q0 = sqrt(q0);
+//	q1 = sqrt(q1);
+//	q2 = sqrt(q2);
+//	q3 = sqrt(q3);
+//	if (q0 >= q1 && q0 >= q2 && q0 >= q3) {
+//		q0 *= +1.0f;
+//		q1 *= SIGN(r32 - r23);
+//		q2 *= SIGN(r13 - r31);
+//		q3 *= SIGN(r21 - r12);
+//	}
+//	else if (q1 >= q0 && q1 >= q2 && q1 >= q3) {
+//		q0 *= SIGN(r32 - r23);
+//		q1 *= +1.0f;
+//		q2 *= SIGN(r21 + r12);
+//		q3 *= SIGN(r13 + r31);
+//	}
+//	else if (q2 >= q0 && q2 >= q1 && q2 >= q3) {
+//		q0 *= SIGN(r13 - r31);
+//		q1 *= SIGN(r21 + r12);
+//		q2 *= +1.0f;
+//		q3 *= SIGN(r32 + r23);
+//	}
+//	else if (q3 >= q0 && q3 >= q1 && q3 >= q2) {
+//		q0 *= SIGN(r21 - r12);
+//		q1 *= SIGN(r31 + r13);
+//		q2 *= SIGN(r32 + r23);
+//		q3 *= +1.0f;
+//	}
+//	else {
+//		//printf("coding error\n");
+//	}
+//	float r = NORM(q0, q1, q2, q3);
+//	q0 /= r;
+//	q1 /= r;
+//	q2 /= r;
+//	q3 /= r;
 
-	matrix res = m;//(Mat_<float>(4, 1) << q0, q1, q2, q3);
-	return res;
-}
+//	matrix res = m;//(Mat_<float>(4, 1) << q0, q1, q2, q3);
+//	return res;
+//}
 
 
 
@@ -236,22 +237,15 @@ matrix GetAnimationMatrix(VS_IN input)
 		c3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, currFrame[0], animIndex[0], 0));
 		curr = matrix(c0, c1, c2, c3);
 
+
 		n0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, nextFrame[0], animIndex[0], 0));
 		n1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, nextFrame[0], animIndex[0], 0));
 		n2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, nextFrame[0], animIndex[0], 0));
 		n3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, nextFrame[0], animIndex[0], 0));
 		next = matrix(n0, n1, n2, n3);
 
-		/*matrix result = matrix(QSlerp(curr._11_21_31_41, next._11_21_31_41, ratio[0])
-			, QSlerp(curr._12_22_32_42, next._12_22_32_42, ratio[0])
-			, QSlerp(curr._13_23_33_43, next._13_23_33_43, ratio[0])
-			//, lerp(c3, n3, ratio[0]));matrix result = matrix(QSlerp(curr._11_21_31_41, next._11_21_31_41, ratio[0])
-			//, QSlerp(curr._12_22_32_42, next._12_22_32_42, ratio[0])
-			//, QSlerp(curr._13_23_33_43, next._13_23_33_43, ratio[0])
-			//, lerp(c3, n3, ratio[0]));*/
-		
-
 		matrix result = lerp(curr, next, ratio[0]);
+		
 		/* if next */
 		if (animIndex[1] >= 0)
 		{
@@ -356,7 +350,7 @@ matrix GetAnimationMatrixEdited(VS_IN input)
 		/* Lerp */
 		{
 			fLerpScale = lerp(fSourceScale, fDestScale, ratio[0]);
-			fLerpRot = QSlerp(fSourceRot, fDestRot, ratio[0]);
+            fLerpRot = q_slerp(fSourceRot, fDestRot, ratio[0]);
 			fLerpPos = lerp(fSourcePos, fDestPos, ratio[0]);
 		}
 
@@ -465,6 +459,113 @@ matrix GetAnimationMatrixEdited(VS_IN input)
 	return transform;
 }
 
+matrix GetAnimationMatrix_2(VS_IN input)
+{
+    float indices[4] = { input.vBlendIndex.x, input.vBlendIndex.y, input.vBlendIndex.z, input.vBlendIndex.w };
+    float weights[4] = { input.vBlendWeight.x, input.vBlendWeight.y, input.vBlendWeight.z, input.vBlendWeight.w };
+
+    int animIndex[2];
+    int currFrame[2];
+    int nextFrame[2];
+    float ratio[2];
+
+	/* cur */
+    animIndex[0] = g_TweenFrames.cur.iAnimIndex;
+    currFrame[0] = g_TweenFrames.cur.iCurFrame;
+    nextFrame[0] = g_TweenFrames.cur.iNextFrame;
+    ratio[0] = g_TweenFrames.cur.fRatio;
+
+	/* next */
+    animIndex[1] = g_TweenFrames.next.iAnimIndex;
+    currFrame[1] = g_TweenFrames.next.iCurFrame;
+    nextFrame[1] = g_TweenFrames.next.iNextFrame;
+    ratio[1] = g_TweenFrames.next.fRatio;
+
+    float4 c0, c1, c2, c3;
+    float4 n0, n1, n2, n3;
+    float4x4 curr = 0;
+    float4x4 next = 0;
+    matrix transform = 0;
+
+    for (int i = 0; i < 4; i++)
+    {
+        float3 fSourceScale[2], fDestScale[2], fLerpScale[2];
+        float4 fSourceRot[2], fDestRot[2], fLerpRot[2];
+        float3 fSourcePos[2], fDestPos[2], fLerpPos[2];
+        matrix result;
+		
+		/* curr Frame */
+        c0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, currFrame[0], animIndex[0], 0));
+        c1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, currFrame[0], animIndex[0], 0));
+        c2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, currFrame[0], animIndex[0], 0));
+        c3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, currFrame[0], animIndex[0], 0));
+		
+        curr = float4x4(c0, c1, c2, c3);
+        decompose(curr, fSourcePos[0], fSourceRot[0], fSourceScale[0]);
+
+		/* next Frame */ 
+        n0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, nextFrame[0], animIndex[0], 0));
+        n1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, nextFrame[0], animIndex[0], 0));
+        n2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, nextFrame[0], animIndex[0], 0));
+        n3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, nextFrame[0], animIndex[0], 0));
+		
+        next = float4x4(n0, n1, n2, n3);
+        decompose(next, fDestPos[0], fDestRot[0], fDestScale[0]);
+		
+		/* Frame Lerp */
+		{
+            fLerpScale[0]	= lerp(fSourceScale[0], fDestScale[0], ratio[0]);
+            fLerpRot[0]		= q_slerp(fSourceRot[0], fDestRot[0], ratio[0]);
+            fLerpPos[0]		= lerp(fSourcePos[0], fDestPos[0], ratio[0]);
+        }
+        
+		/* if next */
+        if (0 <= animIndex[1])
+        {
+			/* curr Frame */
+            c0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, currFrame[1], animIndex[1], 0));
+            c1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, currFrame[1], animIndex[1], 0));
+            c2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, currFrame[1], animIndex[1], 0));
+            c3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, currFrame[1], animIndex[1], 0));
+			
+            curr = float4x4(c0, c1, c2, c3);
+            decompose(curr, fSourcePos[1], fSourceRot[1], fSourceScale[1]);
+			
+			/* next Frame */ 
+            n0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, nextFrame[1], animIndex[1], 0));
+            n1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, nextFrame[1], animIndex[1], 0));
+            n2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, nextFrame[1], animIndex[1], 0));
+            n3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, nextFrame[1], animIndex[1], 0));
+
+            next = float4x4(n0, n1, n2, n3);
+            decompose(next, fDestPos[1], fDestRot[1], fDestScale[1]);
+			
+			/* Frame Lerp */
+			{
+                fLerpScale[1]	= lerp(fSourceScale[1], fDestScale[1], ratio[1]);
+                fLerpRot[1]		= q_slerp(fSourceRot[1], fDestRot[1], ratio[1]);
+                fLerpPos[1]		= lerp(fSourcePos[1], fDestPos[1], ratio[1]);
+            }
+			
+			/* Tween Lerp */
+			{
+                fLerpScale[1]	= lerp(fLerpScale[0], fLerpScale[1], g_TweenFrames.fTweenRatio);
+                fLerpRot[1]		= q_slerp(fLerpRot[0], fLerpRot[1], g_TweenFrames.fTweenRatio);
+                fLerpPos[1]		= lerp(fLerpPos[0], fLerpPos[1], g_TweenFrames.fTweenRatio);
+            }
+						
+            result = compose(fLerpPos[1], fLerpRot[1], fLerpScale[1]);
+        }
+        else
+        {
+            result = compose(fLerpPos[0], fLerpRot[0], fLerpScale[0]);
+        }
+
+        transform += mul(result, weights[i]);
+    }
+
+    return transform;
+}
 
 VS_OUT VS_MAIN(VS_IN In)
 {
@@ -476,7 +577,7 @@ VS_OUT VS_MAIN(VS_IN In)
 	matWV = mul(g_WorldMatrix, g_ViewMatrix);
 	matWVP = mul(matWV, g_ProjMatrix);
 
-	float4x4	BoneMatrix = GetAnimationMatrixEdited(In);
+	float4x4	BoneMatrix = GetAnimationMatrix_2(In);
 	//float4x4	BoneMatrix = GetAnimationMatrix(In);
 
 	vector		vPosition = mul(vector(In.vPosition, 1.f), BoneMatrix);
