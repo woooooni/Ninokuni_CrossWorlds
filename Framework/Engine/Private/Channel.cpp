@@ -153,7 +153,66 @@ _uint CChannel::Update_Transformation_NoneLerp(_uint iCurrentKeyFrame, CHierarch
 		vPosition = m_KeyFrames.back().vPosition;
 	}
 
-	_matrix TransformationMatrix = XMMatrixAffineTransformation(XMLoadFloat3(&vScale), XMVectorSet(0.f, 0.f, 0.f, 1.f), XMLoadFloat4(&vRotation), XMVectorSetW(XMLoadFloat3(&vPosition), 1.f));
+	Matrix TransformationMatrix;
+
+	/* 기존 아핀 트랜스폼 생성 함수 */
+	{
+		/*TransformationMatrix = XMMatrixAffineTransformation(
+			XMLoadFloat3(&vScale), 
+			XMVectorSet(0.f, 0.f, 0.f, 1.f), 
+			XMLoadFloat4(&vRotation), 
+			XMVectorSetW(XMLoadFloat3(&vPosition), 1.f)
+		);*/
+	}
+
+	/* 커스텀 아핀 트랜스폼 생성 함수 */
+	{
+		// 크기 조절 행렬 생성
+		XMMATRIX scaleMatrix = XMMatrixScalingFromVector(Vec3(vScale));
+
+		// 회전 중심을 원점으로 이동
+		XMMATRIX translationToOrigin = XMMatrixTranslationFromVector(XMVectorNegate(Vec4(0.f, 0.f, 0.f, 1.f)));
+		XMMATRIX translationBack = XMMatrixTranslationFromVector(Vec4(0.f, 0.f, 0.f, 1.f));
+
+		// 회전 행렬 생성
+		XMMATRIX rotationMatrix;
+
+		/* 기존 쿼터니언 생성 함수 */
+		{
+			//rotationMatrix = XMMatrixRotationQuaternion(Vec4(vRotation));
+		}
+
+		/* 커스텀 쿼터니언 생성 함수 */
+		{
+			// Extract quaternion components
+			float x = XMVectorGetX(Vec4(vRotation));
+			float y = XMVectorGetY(Vec4(vRotation));
+			float z = XMVectorGetZ(Vec4(vRotation));
+			float w = XMVectorGetW(Vec4(vRotation));
+
+			// Calculate rotation matrix elements
+			float xx = x * x;
+			float yy = y * y;
+			float zz = z * z;
+			float xy = x * y;
+			float xz = x * z;
+			float yz = y * z;
+			float wx = w * x;
+			float wy = w * y;
+			float wz = w * z;
+
+			rotationMatrix.r[0] = XMVectorSet(1.0f - 2.0f * (yy + zz), 2.0f * (xy + wz), 2.0f * (xz - wy), 0.0f);
+			rotationMatrix.r[1] = XMVectorSet(2.0f * (xy - wz), 1.0f - 2.0f * (xx + zz), 2.0f * (yz + wx), 0.0f);
+			rotationMatrix.r[2] = XMVectorSet(2.0f * (xz + wy), 2.0f * (yz - wx), 1.0f - 2.0f * (xx + yy), 0.0f);
+			rotationMatrix.r[3] = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+		}
+
+		// 이동 행렬 생성
+		XMMATRIX translationMatrix = XMMatrixTranslationFromVector(Vec3(vPosition));
+
+		// 순서대로 행렬 곱셈을 수행하여 Affine 변환 행렬 생성
+		TransformationMatrix = scaleMatrix * translationBack * rotationMatrix * translationToOrigin * translationMatrix;
+	}
 
 	if (nullptr != pNode)
 		pNode->Set_Transformation(TransformationMatrix);
