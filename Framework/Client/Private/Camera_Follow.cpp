@@ -167,22 +167,24 @@ Vec4 CCamera_Follow::Calculate_LoaclSphericalPosition(_float fTimeDelta)
 	{
 		m_vAngle.y += MouseMove * m_vMouseSensitivity.x * fTimeDelta;
 
-		if (m_vAngle.y <= 0.7f) /* Min : 0.f */
+		if (m_vAngle.y <= m_fMinLimitY) /* Min : 0.f */
 		{
-			m_vAngle.y = 0.7f;
+			m_vAngle.y = m_fMinLimitY;
 		}
-		else if (2.5f < m_vAngle.y) /* Max : 3.14*/
+		else if (m_fMaxLimitY < m_vAngle.y) /* Max : 3.14*/
 		{
-			m_vAngle.y = 2.5f;
+			m_vAngle.y = m_fMaxLimitY;
 		}
 	}
 
 	/* 구면 좌표계(극좌표계) -> 왼손 직교 좌표계 */
+	const _float fRadius = 1.f;
+
 	Vec4 vCamLocal
 	{
-		1.f * sinf(m_vAngle.y) * cosf(m_vAngle.x),	// x = r * sin(위도 앙각) * cos(경도 방위각)
-		1.f * cosf(m_vAngle.y),						// y = r * cos(위도 앙각)
-		1.f * sinf(m_vAngle.y) * sinf(m_vAngle.x),	// z = r * sin(위도 앙각) * sin(경도 방위각)
+		fRadius * sinf(m_vAngle.y) * cosf(m_vAngle.x),	// x = r * sin(위도 앙각) * cos(경도 방위각)
+		fRadius * cosf(m_vAngle.y),						// y = r * cos(위도 앙각)
+		fRadius * sinf(m_vAngle.y) * sinf(m_vAngle.x),	// z = r * sin(위도 앙각) * sin(경도 방위각)
 		1.f
 	};
 
