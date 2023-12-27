@@ -191,6 +191,7 @@ HRESULT CLevel_Test::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 	if (FAILED(GI->Add_GameObject(LEVEL_TEST, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Character_Engineer"), nullptr, &pTest)))
 		return E_FAIL;
 
+
 	if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))
 	{
 		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_TargetObj(pTest);

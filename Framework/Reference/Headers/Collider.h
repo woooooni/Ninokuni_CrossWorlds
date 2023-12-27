@@ -46,6 +46,9 @@ public:
     void Set_ColliderID(_uint iColliderID) { m_iColliderID = iColliderID; }
     _uint Get_ColliderID() { return m_iColliderID; }
 
+    ELEMENTAL_TYPE Get_ElementalType() { return m_eElementalType; }
+    void Set_ElementalType(ELEMENTAL_TYPE eType) { m_eElementalType = eType; }
+
     DETECTION_TYPE Get_DetectionType() { return m_eDetectionType; }
     void Set_DetectionType(DETECTION_TYPE eType) { m_eDetectionType = eType; }
 
@@ -94,6 +97,7 @@ protected:
     static _uint g_iNextID;
     _uint m_iColliderID;
     
+    ELEMENTAL_TYPE m_eElementalType = ELEMENTAL_TYPE::BASIC;
     ATTACK_TYPE m_eAttackType = ATTACK_TYPE::WEAK;
     DETECTION_TYPE m_eDetectionType = DETECTION_TYPE::DETECTION_END;
     COLLIDER_TYPE m_eColliderType = COLLIDER_TYPE::TYPE_END;

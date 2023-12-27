@@ -74,7 +74,7 @@ HRESULT CChannel::Initialize(aiNodeAnim* pAIChannel)
 }
 
 
-_uint CChannel::Update_Transformation(_float fPlayTime, _float fTimeDelta, _uint iCurrentKeyFrame, CTransform* pTransform, CHierarchyNode* pNode, __out _float* pRatio)
+_uint CChannel::Update_Transformation(_float fPlayTime, _uint iCurrentKeyFrame, CHierarchyNode* pNode, __out _float* pRatio)
 {
 	_float3			vScale;
 	_float4			vRotation;

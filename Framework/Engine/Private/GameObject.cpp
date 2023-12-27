@@ -200,6 +200,14 @@ HRESULT CGameObject::Set_Collider_AttackMode(_uint eAttackMode, _float fAirBornP
 	return S_OK;
 }
 
+HRESULT CGameObject::Set_Collider_Elemental(_uint eColliderType, ELEMENTAL_TYPE eElementalType)
+{
+	for (auto& pCollider : m_Colliders[eColliderType])
+		pCollider->Set_ElementalType(eElementalType);
+
+	return S_OK;
+}
+
 void CGameObject::LateUpdate_Collider(_float fTimedelta)
 {
 	for (auto& Pair : m_Colliders)

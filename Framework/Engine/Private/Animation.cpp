@@ -336,18 +336,16 @@ CChannel* CAnimation::Get_Channel(const wstring& strChannelName)
 
 HRESULT CAnimation::Calculate_Animation(const _uint& iFrame)
 {
-	for (auto& pChannel : m_Channels)
+	/*for (auto& pChannel : m_Channels)
 	{
 		for (auto& iCurrentKeyFrame : m_ChannelKeyFrames)
 			iCurrentKeyFrame = iFrame;
-	}
+	}*/
 
 	_uint iChannelIndex = 0;
 	for (auto& pChannel : m_Channels)
 	{
-		m_ChannelKeyFrames[iChannelIndex]
-			= pChannel->Update_Transformation_NoneLerp(m_ChannelKeyFrames[iChannelIndex], m_HierarchyNodes[iChannelIndex]);
-
+		m_ChannelKeyFrames[iChannelIndex] = pChannel->Update_Transformation(iFrame, m_ChannelKeyFrames[iChannelIndex], m_HierarchyNodes[iChannelIndex]);
 		++iChannelIndex;
 	}
 
