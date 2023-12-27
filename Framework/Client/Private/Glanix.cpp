@@ -18,7 +18,7 @@
 #include "GlanixState_SnowBall.h"
 #include "GlanixState_SpinBombBomb.h"
 
-#include "GlanixState_Rage.h"
+#include "GlanixState_Berserk.h"
 
 #include "GlanixState_Turn.h"
 
@@ -163,7 +163,10 @@ HRESULT CGlanix::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 		return E_FAIL;
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(1.f, 10.f, 10.f, 1.f));
+	// m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(0.f, 10.f, 0.f, 1.f));
+
+	m_vOriginLook = m_pTransformCom->Get_Look();
+	m_vOriginPos = m_pTransformCom->Get_Position();
 
 	/* For.Com_Renderer */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
@@ -269,7 +272,7 @@ HRESULT CGlanix::Ready_States()
 
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_BossSkillRage");
-	m_pStateCom->Add_State(GLANIX_RAGE, CGlanixState_Rage::Create(m_pStateCom, strAnimationName));
+	m_pStateCom->Add_State(GLANIX_BERSERK, CGlanixState_Berserk::Create(m_pStateCom, strAnimationName));
 
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_RightTurn");

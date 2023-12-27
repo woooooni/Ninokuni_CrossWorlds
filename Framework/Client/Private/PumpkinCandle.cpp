@@ -145,8 +145,10 @@ HRESULT CPumpkinCandle::Ready_States()
 {
 	m_pBTCom = CPumpkinCandleBT::Create(m_pDevice, m_pContext, this);
 
-	m_tStat.fMaxHp = 100;
-	m_tStat.fHp = 100;
+	m_strKorName = TEXT("ศฃนฺระบา");
+	m_tStat.iLv = 8;
+	m_tStat.fMaxHp = 150;
+	m_tStat.fHp = 150;
 
 	return S_OK;
 }

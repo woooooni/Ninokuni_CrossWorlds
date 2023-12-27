@@ -61,13 +61,13 @@ void CGlanixState_Base::Init_Pattern()
 {
 	m_vecAtkState.clear();
 
-	m_vecAtkState.push_back(CGlanix::GLANIX_ATTACK2);
-	m_vecAtkState.push_back(CGlanix::GLANIX_CHARGE);
-	m_vecAtkState.push_back(CGlanix::GLANIX_ICEWAVE);
-	m_vecAtkState.push_back(CGlanix::GLANIX_QUADBLOW);
-	m_vecAtkState.push_back(CGlanix::GLANIX_SPINBOMBBOMB);
-	m_vecAtkState.push_back(CGlanix::GLANIX_SNOWBALL);
-	m_vecAtkState.push_back(CGlanix::GLANIX_JUMPSTAMP);
+	//m_vecAtkState.push_back(CGlanix::GLANIX_ATTACK2);
+	//m_vecAtkState.push_back(CGlanix::GLANIX_CHARGE);
+	//m_vecAtkState.push_back(CGlanix::GLANIX_ICEWAVE);
+	//m_vecAtkState.push_back(CGlanix::GLANIX_QUADBLOW);
+	//m_vecAtkState.push_back(CGlanix::GLANIX_SPINBOMBBOMB);
+	//m_vecAtkState.push_back(CGlanix::GLANIX_SNOWBALL);
+	//m_vecAtkState.push_back(CGlanix::GLANIX_JUMPSTAMP);
 }
 
 _bool CGlanixState_Base::State_Wait(_float fDestTime, _float fTimeDelta)

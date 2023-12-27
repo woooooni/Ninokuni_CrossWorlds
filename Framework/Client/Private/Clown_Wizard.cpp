@@ -155,8 +155,10 @@ HRESULT CClown_Wizard::Ready_States()
 {
 	m_pBTCom = CClown_WizardBT::Create(m_pDevice, m_pContext, this);
 
-	m_tStat.fMaxHp = 100;
-	m_tStat.fHp = 100;
+	m_strKorName = TEXT("Çã¼ö±úºñ");
+	m_tStat.iLv = 10;
+	m_tStat.fMaxHp = 200;
+	m_tStat.fHp = 200;
 
 	return S_OK;
 }

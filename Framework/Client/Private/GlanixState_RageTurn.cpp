@@ -1,21 +1,21 @@
 #include "stdafx.h"
-#include "GlanixState_Turn.h"
+#include "GlanixState_RageTurn.h"
 
 #include "Glanix.h"
 
-CGlanixState_Turn::CGlanixState_Turn(CStateMachine* pStateMachine)
+CGlanixState_RageTurn::CGlanixState_RageTurn(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
 {
 }
 
-HRESULT CGlanixState_Turn::Initialize(const list<wstring>& AnimationList)
+HRESULT CGlanixState_RageTurn::Initialize(const list<wstring>& AnimationList)
 {
 	__super::Initialize(AnimationList);
 
 	return S_OK;
 }
 
-void CGlanixState_Turn::Enter_State(void* pArg)
+void CGlanixState_RageTurn::Enter_State(void* pArg)
 {
 	if (m_pGlanix->Get_Stat().fHp <= m_pGlanix->Get_Stat().fMaxHp / 2.f && !m_pGlanix->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK))
 	{
@@ -36,7 +36,7 @@ void CGlanixState_Turn::Enter_State(void* pArg)
 	/* 만약 회전모션이 필요할 정도가 아닌 각도라면 1초정도의 idle 상태로 전환.*/
 	if (fAngle < 20.f)
 	{
-		_float fWaitTime = 1.f;
+		_float fWaitTime = 2.5f;
 		m_pStateMachineCom->Change_State(CGlanix::GLANIX_COMBATIDLE, &fWaitTime);
 	}
 	/* 회전이 필요한 각도라면 */
@@ -80,7 +80,7 @@ void CGlanixState_Turn::Enter_State(void* pArg)
 	m_vDestPos = m_pPlayerTransform->Get_Position();
 }
 
-void CGlanixState_Turn::Tick_State(_float fTimeDelta)
+void CGlanixState_RageTurn::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
@@ -103,31 +103,32 @@ void CGlanixState_Turn::Tick_State(_float fTimeDelta)
 		if (fCrossProductY < 0.f)
 			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), m_fTurnSpeed, fTimeDelta);
 	}
-	
+
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
-		__super::Start_Pattern();
+		_float fWaitTime = 1.f;
+		m_pStateMachineCom->Change_State(CGlanix::GLANIX_RAGEIDLE, &fWaitTime);
 	}
 }
 
-void CGlanixState_Turn::Exit_State()
+void CGlanixState_RageTurn::Exit_State()
 {
 }
 
-CGlanixState_Turn* CGlanixState_Turn::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
+CGlanixState_RageTurn* CGlanixState_RageTurn::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
 {
-	CGlanixState_Turn* pInstance = new CGlanixState_Turn(pStateMachine);
+	CGlanixState_RageTurn* pInstance = new CGlanixState_RageTurn(pStateMachine);
 
 	if (FAILED(pInstance->Initialize(AnimationList)))
 	{
-		MSG_BOX("Fail Create : CGlanixState_Turn");
+		MSG_BOX("Fail Create : CGlanixState_RageTurn");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CGlanixState_Turn::Free()
+void CGlanixState_RageTurn::Free()
 {
 	__super::Free();
 }

@@ -24,12 +24,12 @@ void CGlanixState_Chase::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
-	if (m_pGlanix->Get_Stat().fHp <= m_pGlanix->Get_Stat().fMaxHp / 2.f && !m_pGlanix->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_RAGE))
+	if (m_pGlanix->Get_Stat().fHp <= m_pGlanix->Get_Stat().fMaxHp / 2.f && !m_pGlanix->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK))
 	{
-		m_pGlanix->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_RAGE, true);
+		m_pGlanix->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK, true);
 		m_pGlanix->Set_SkillTree();
 		m_iAtkIndex = 0;
-		m_pStateMachineCom->Change_State(CGlanix::GLANIX_RAGE);
+		m_pStateMachineCom->Change_State(CGlanix::GLANIX_BERSERK);
 		return;
 	}
 
