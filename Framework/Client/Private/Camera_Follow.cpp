@@ -59,6 +59,7 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 	m_pTransformCom->LookAt(Calculate_Look(fTimeDelta));
 
 	__super::Tick(fTimeDelta); /* Shake, Fov, Dist */
+	m_pControllerCom->Tick_Controller(fTimeDelta);
 
 	
 	if (Is_Shake())
@@ -86,7 +87,9 @@ void CCamera_Follow::LateTick(_float fTimeDelta)
 	if (nullptr == m_pTargetObj || nullptr == m_pLookAtObj)
 		return;
 
+	m_pControllerCom->LateTick_Controller(fTimeDelta);
 	__super::LateTick(fTimeDelta);
+	
 }
 
 HRESULT CCamera_Follow::Render()
@@ -96,6 +99,20 @@ HRESULT CCamera_Follow::Render()
 
 HRESULT CCamera_Follow::Ready_Components()
 {
+	CPhysX_Controller::CONTROLLER_DESC ControllerDesc;
+
+	ControllerDesc.eType = CPhysX_Controller::CAPSULE;
+	ControllerDesc.pTransform = m_pTransformCom;
+	ControllerDesc.vOffset = { 0.f, 0.f, 0.f };
+	ControllerDesc.fHeight = 0.01f;
+	ControllerDesc.fMaxJumpHeight = 10.f;
+	ControllerDesc.fRaidus = 0.1f;
+	ControllerDesc.pOwner = this;
+
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_PhysXController"), TEXT("Com_Controller"), (CComponent**)&m_pControllerCom, &ControllerDesc)))
+		return E_FAIL;
+
 	return S_OK;
 }
 

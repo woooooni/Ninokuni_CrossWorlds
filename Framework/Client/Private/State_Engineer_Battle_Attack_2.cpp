@@ -24,7 +24,7 @@ void CState_Engineer_Battle_Attack_2::Enter_State(void* pArg)
 void CState_Engineer_Battle_Attack_2::Tick_State(_float fTimeDelta)
 {
     if (m_pModelCom->Get_Progress() >= 0.2f && m_pModelCom->Get_Progress() <= 0.4f)
-        m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), 3.f, fTimeDelta);
+        m_pTransformCom->Move(XMVector3Normalize(-1.f * XMVector3Normalize(m_pTransformCom->Get_Look())), 3.f, fTimeDelta);
 
     Input(fTimeDelta);
 

@@ -3,6 +3,10 @@
 #include "Client_Defines.h"
 #include "Camera.h"
 
+BEGIN(Engine)
+class CPhysX_Controller;
+END
+
 BEGIN(Client)
 
 class CCamera_Follow final : public CCamera
@@ -65,6 +69,7 @@ private:
 
 	DAMPING_DESC	m_tDampingDesc			= {};
 
+	class CPhysX_Controller* m_pControllerCom = nullptr;
 	
 
 public:
