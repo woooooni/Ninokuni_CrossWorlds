@@ -189,8 +189,10 @@ HRESULT CShadow_Thief::Ready_States()
 {
 	m_pBTCom = CShadow_ThiefBT::Create(m_pDevice, m_pContext, this);
 
-	m_tStat.fMaxHp = 100;
-	m_tStat.fHp = 100;
+	m_strKorName = TEXT("ÄÚºÎ¸®");
+	m_tStat.iLv = 3;
+	m_tStat.fMaxHp = 80;
+	m_tStat.fHp = 80;
 
 	return S_OK;
 }

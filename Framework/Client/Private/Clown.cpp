@@ -155,8 +155,10 @@ HRESULT CClown::Ready_States()
 {
 	m_pBTCom = CClownBT::Create(m_pDevice, m_pContext, this);
 
-	m_tStat.fMaxHp = 100;
-	m_tStat.fHp = 100;
+	m_strKorName = TEXT("Çã¼ö");
+	m_tStat.iLv = 9;
+	m_tStat.fMaxHp = 250;
+	m_tStat.fHp = 250;
 
 	return S_OK;
 }

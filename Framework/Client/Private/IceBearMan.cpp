@@ -146,8 +146,10 @@ HRESULT CIceBearMan::Ready_States()
 {
 	m_pBTCom = CIceBearManBT::Create(m_pDevice, m_pContext, this);
 
-	m_tStat.fMaxHp = 100;
-	m_tStat.fHp = 100;
+	m_strKorName = TEXT("¾óÀ½°õÇü");
+	m_tStat.iLv = 7;
+	m_tStat.fMaxHp = 250;
+	m_tStat.fHp = 250;
 
 	return S_OK;
 }

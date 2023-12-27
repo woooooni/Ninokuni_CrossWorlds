@@ -155,8 +155,10 @@ HRESULT CBaobam_Dark::Ready_States()
 {
 	m_pBTCom = CBaobam_DarkBT::Create(m_pDevice, m_pContext, this);
 
-	m_tStat.fMaxHp = 100;
-	m_tStat.fHp = 100;
+	m_strKorName = TEXT("¹ã¹Ù¿À¹ã");
+	m_tStat.iLv = 10;
+	m_tStat.fMaxHp = 300;
+	m_tStat.fHp = 300;
 
 	return S_OK;
 }

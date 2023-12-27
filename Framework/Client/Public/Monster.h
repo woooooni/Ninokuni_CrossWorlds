@@ -57,6 +57,9 @@ public:
 public:
 	typedef struct tagMonsterStat
 	{
+		_TCHAR strKorName[MAX_PATH] = {};
+		_int   iLv = 0;
+
 		_float fHp = 100.f;
 		_float fMp = 0.f;
 
@@ -111,7 +114,7 @@ public:
 public:
 	CHierarchyNode* Get_Socket(const wstring& strSocketName);
 	const MONSTER_STAT& Get_Stat() { return m_tStat; }
-
+	const wstring& Get_KorName() { return m_strKorName; }
 
 public:
 	virtual void On_Damaged(const COLLISION_INFO& tInfo);
@@ -160,6 +163,8 @@ protected:
 
 protected:
 	MONSTER_STAT m_tStat = {};
+	wstring m_strKorName = TEXT("");
+
 	_float m_fAccInfinite = 0.f;
 	_float m_fInfiniteTime = 0.2f;
 	_bool m_bInfinite = false;

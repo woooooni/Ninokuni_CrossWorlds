@@ -27,8 +27,9 @@
 #include "UI_Logo_Background.h"
 #include "UI_Flare.h"
 
-#include "Stellia.h"
 #include "Glanix.h"
+#include "Glanix_IcePillar.h"
+#include "Stellia.h"
 #include "DMWitch.h"
 #include "Baobam_Water.h"
 #include "Shadow_Thief.h"
@@ -229,10 +230,12 @@ HRESULT CLoader::Loading_For_Level_Test()
 	statDesc.fMp= 100;
 	statDesc.fMaxMp = 100;
 
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Glanix", CGlanix::Create(m_pDevice, m_pContext, TEXT("Glanix"), statDesc), LAYER_MONSTER)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Glanix_IcePillar", CGlanix_IcePillar::Create(m_pDevice, m_pContext, TEXT("Clanix_IcePillar")), LAYER_PROP)))
+		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Stellia", CStellia::Create(m_pDevice, m_pContext, TEXT("Stellia"), statDesc), LAYER_MONSTER)))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Glanix", CGlanix::Create(m_pDevice, m_pContext, TEXT("Glanix"), statDesc), LAYER_MONSTER)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_DreamerMazeWitch", CDMWitch::Create(m_pDevice, m_pContext, TEXT("DreamerMazeWitch"), statDesc), LAYER_MONSTER)))
 		return E_FAIL;

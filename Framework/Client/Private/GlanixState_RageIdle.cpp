@@ -1,34 +1,35 @@
 #include "stdafx.h"
-#include "DMWitchState_Turn.h"
+#include "GlanixState_RageIdle.h"
 
-#include "DMWitch.h"
+#include "Glanix.h"
 
-CDMWitchState_Turn::CDMWitchState_Turn(CStateMachine* pStateMachine)
-	: CDMWitchState_Base(pStateMachine)
+CGlanixState_RageIdle::CGlanixState_RageIdle(CStateMachine* pStateMachine)
+	: CGlanixState_Base(pStateMachine)
 {
 }
 
-HRESULT CDMWitchState_Turn::Initialize(const list<wstring>& AnimationList)
+HRESULT CGlanixState_RageIdle::Initialize(const list<wstring>& AnimationList)
 {
 	__super::Initialize(AnimationList);
 
 	return S_OK;
 }
 
-void CDMWitchState_Turn::Enter_State(void* pArg)
+void CGlanixState_RageIdle::Enter_State(void* pArg)
 {
-	if (m_pWitch->Get_Stat().fHp <= m_pWitch->Get_Stat().fMaxHp / 2.f && !m_pWitch->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK))
+	if (m_pGlanix->Get_Stat().fHp <= m_pGlanix->Get_Stat().fMaxHp / 2.f && !m_pGlanix->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK))
 	{
-		m_pWitch->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK, true);
-		m_pWitch->Set_SkillTree();
+		m_pGlanix->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK, true);
+		m_pGlanix->Set_SkillTree();
 		m_iAtkIndex = 0;
-		m_pStateMachineCom->Change_State(CDMWitch::DMWITCH_RAGE);
+		m_pStateMachineCom->Change_State(CGlanix::GLANIX_BERSERK);
 		return;
 	}
 
-	m_fWaitTime = 1.f;
+	if (pArg != nullptr)
+		m_fWaitTime = *(_float*)pArg;
 
-	m_pModelCom->Set_Animation(TEXT("SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Stand"));
+	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_BattleStand"));
 	m_fTime = 0.f;
 
 	_vector vLookNormal = XMVector3Normalize(m_pTransformCom->Get_Look());
@@ -45,20 +46,21 @@ void CDMWitchState_Turn::Enter_State(void* pArg)
 	/* 보스가 바라보는 방향을 기준으로 오른쪽에 위치. */
 	if (fCrossProductY > 0.f)
 	{
-		m_fTurnSpeed = 4.f;
+		m_fTurnSpeed = 2.f;
 	}
 	/* 보스가 바라보는 방향을 기준으로 왼쪽에 위치. */
 	else if (fCrossProductY < 0.f)
 	{
-		m_fTurnSpeed = -4.f;
+		m_fTurnSpeed = -2.f;
 	}
-
-	m_vDestPos = m_pPlayerTransform->Get_Position();
 }
 
-void CDMWitchState_Turn::Tick_State(_float fTimeDelta)
+void CGlanixState_RageIdle::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
+
+	/* 레이지 패턴은 계속 look 추적하게 */
+	m_vDestPos = m_pPlayerTransform->Get_Position();
 
 	m_fTime += fTimeDelta;
 
@@ -84,36 +86,28 @@ void CDMWitchState_Turn::Tick_State(_float fTimeDelta)
 
 	if (m_fTime >= m_fWaitTime)
 	{
-		if (m_pWitch->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_ATKAROUND))
-		{
-			if (m_iAtkIndex >= m_vecAtkState.size())
-				m_iAtkIndex = 0;
-
-			m_pStateMachineCom->Change_State(m_vecAtkState[m_iAtkIndex++]);
-		}
-		else
-			m_pStateMachineCom->Change_State(CDMWitch::DMWITCH_CHASE);
+		m_pStateMachineCom->Change_State(CGlanix::GLANIX_RAGECHARGE);
 	}
 }
 
-void CDMWitchState_Turn::Exit_State()
+void CGlanixState_RageIdle::Exit_State()
 {
 }
 
-CDMWitchState_Turn* CDMWitchState_Turn::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
+CGlanixState_RageIdle* CGlanixState_RageIdle::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
 {
-	CDMWitchState_Turn* pInstance = new CDMWitchState_Turn(pStateMachine);
+	CGlanixState_RageIdle* pInstance = new CGlanixState_RageIdle(pStateMachine);
 
 	if (FAILED(pInstance->Initialize(AnimationList)))
 	{
-		MSG_BOX("Fail Create : CDMWitchState_Turn");
+		MSG_BOX("Fail Create : CGlanixState_RageIdle");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CDMWitchState_Turn::Free()
+void CGlanixState_RageIdle::Free()
 {
 	__super::Free();
 }

@@ -145,8 +145,10 @@ HRESULT CBaobam_Water::Ready_States()
 {
 	m_pBTCom = CBaobam_WaterBT::Create(m_pDevice, m_pContext, this);
 
-	m_tStat.fMaxHp = 100;
-	m_tStat.fHp = 100;
+	m_strKorName = TEXT("¹ã¹Ù¿À¹ã");
+	m_tStat.iLv = 5;
+	m_tStat.fMaxHp = 150;
+	m_tStat.fHp = 150;
 
 	return S_OK;
 }

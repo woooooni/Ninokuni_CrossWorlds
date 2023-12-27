@@ -4,11 +4,11 @@
 
 BEGIN(Client)
 
-class CGlanixState_Rage final : public CGlanixState_Base
+class CGlanixState_RageStart final : public CGlanixState_Base
 {
 private:
-	CGlanixState_Rage(CStateMachine* pStateMachine);
-	virtual ~CGlanixState_Rage() = default;
+	CGlanixState_RageStart(CStateMachine* pStateMachine);
+	virtual ~CGlanixState_RageStart() = default;
 
 public:
 	virtual HRESULT Initialize(const list<wstring>& AnimationList);
@@ -19,7 +19,7 @@ public:
 	virtual void Exit_State();
 
 public:
-	static CGlanixState_Rage* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
+	static CGlanixState_RageStart* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
 };
 

@@ -50,5 +50,3 @@ void CDMWitchState_Rage::Free()
 	__super::Free();
 }
 
-#include "stdafx.h"
-#include "GlanixState_Rage.h"

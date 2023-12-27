@@ -231,6 +231,14 @@
     <ClInclude Include="..\Public\Character.h" />
     <ClInclude Include="..\Public\Character_Dummy.h" />
     <ClInclude Include="..\Public\GameItem_Armor.h" />
+    <ClInclude Include="..\Public\GlanixState_RageChargeEnd.h" />
+    <ClInclude Include="..\Public\GlanixState_RageCharge.h" />
+    <ClInclude Include="..\Public\GlanixState_RageCrash.h" />
+    <ClInclude Include="..\Public\GlanixState_RageIdle.h" />
+    <ClInclude Include="..\Public\GlanixState_RageReturn.h" />
+    <ClInclude Include="..\Public\GlanixState_RageStart.h" />
+    <ClInclude Include="..\Public\GlanixState_RageTurn.h" />
+    <ClInclude Include="..\Public\Glanix_IcePillar.h" />
     <ClInclude Include="..\Public\Item_Manager.h" />
     <ClInclude Include="..\Public\State_Animals.h" />
     <ClInclude Include="..\Public\State_Animal_Idle.h" />
@@ -294,7 +302,7 @@
     <ClInclude Include="..\Public\GlanixState_IceWave.h" />
     <ClInclude Include="..\Public\GlanixState_JumpStamp.h" />
     <ClInclude Include="..\Public\GlanixState_QuadBlow.h" />
-    <ClInclude Include="..\Public\GlanixState_Rage.h" />
+    <ClInclude Include="..\Public\GlanixState_Berserk.h" />
     <ClInclude Include="..\Public\GlanixState_SnowBall.h" />
     <ClInclude Include="..\Public\GlanixState_Spawn.h" />
     <ClInclude Include="..\Public\GlanixState_SpinBomb.h" />
@@ -602,6 +610,14 @@
     <ClCompile Include="..\Private\Character.cpp" />
     <ClCompile Include="..\Private\Character_Dummy.cpp" />
     <ClCompile Include="..\Private\GameItem_Armor.cpp" />
+    <ClCompile Include="..\Private\GlanixState_RageChargeEnd.cpp" />
+    <ClCompile Include="..\Private\GlanixState_RageCharge.cpp" />
+    <ClCompile Include="..\Private\GlanixState_RageCrash.cpp" />
+    <ClCompile Include="..\Private\GlanixState_RageIdle.cpp" />
+    <ClCompile Include="..\Private\GlanixState_RageReturn.cpp" />
+    <ClCompile Include="..\Private\GlanixState_RageStart.cpp" />
+    <ClCompile Include="..\Private\GlanixState_RageTurn.cpp" />
+    <ClCompile Include="..\Private\Glanix_IcePillar.cpp" />
     <ClCompile Include="..\Private\Item_Manager.cpp" />
     <ClCompile Include="..\Private\State_Animals.cpp" />
     <ClCompile Include="..\Private\State_Animal_Idle.cpp" />
@@ -665,7 +681,7 @@
     <ClCompile Include="..\Private\GlanixState_IceWave.cpp" />
     <ClCompile Include="..\Private\GlanixState_JumpStamp.cpp" />
     <ClCompile Include="..\Private\GlanixState_QuadBlow.cpp" />
-    <ClCompile Include="..\Private\GlanixState_Rage.cpp" />
+    <ClCompile Include="..\Private\GlanixState_Berserk.cpp" />
     <ClCompile Include="..\Private\GlanixState_SnowBall.cpp" />
     <ClCompile Include="..\Private\GlanixState_Spawn.cpp" />
     <ClCompile Include="..\Private\GlanixState_SpinBomb.cpp" />
