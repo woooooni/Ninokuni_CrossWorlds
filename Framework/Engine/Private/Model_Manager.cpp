@@ -237,6 +237,10 @@ HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel, const wstring str
 	else
 		Safe_Release(pSrv);
 
+	/* Æ®·£½ºÆû ¸Ê Áö¿ì±â */
+	m_AnimTransformsCaches.clear();
+	m_AnimationsCache.shrink_to_fit();
+
 	Safe_Release(pTexture);
 
 	return S_OK;

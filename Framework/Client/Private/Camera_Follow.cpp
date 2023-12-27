@@ -167,13 +167,13 @@ Vec4 CCamera_Follow::Calculate_LoaclSphericalPosition(_float fTimeDelta)
 	{
 		m_vAngle.y += MouseMove * m_vMouseSensitivity.x * fTimeDelta;
 
-		if (m_vAngle.y <= 0.7f) /* Min : 0.f */
+		if (m_vAngle.y <= m_fMinLimitY) /* Min : 0.f */
 		{
-			m_vAngle.y = 0.7f;
+			m_vAngle.y = m_fMinLimitY;
 		}
-		else if (2.5f < m_vAngle.y) /* Max : 3.14*/
+		else if (m_fMaxLimitY < m_vAngle.y) /* Max : 3.14*/
 		{
-			m_vAngle.y = 2.5f;
+			m_vAngle.y = m_fMaxLimitY;
 		}
 	}
 

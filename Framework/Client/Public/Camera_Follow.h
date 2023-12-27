@@ -71,9 +71,11 @@ private:
 	_float			m_fMaxRotLimitDeltaY	= { 0.05f };
 	_float			m_fMinRotLimitDeltaY	= { -0.05f };
 
-	DAMPING_DESC	m_tDampingDesc			= {};
+	/* 구면 좌표계에서 카메라의 최대 최소 y 값*/
+	_float			m_fMinLimitY			= { 0.7f };
+	_float			m_fMaxLimitY			= { 1.4f };
 
-	
+	DAMPING_DESC	m_tDampingDesc			= {};
 
 public:
 	static CCamera_Follow* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
