@@ -22,6 +22,7 @@ HRESULT CState_Animal_Idle::Initialize(const list<wstring>& AnimationList)
 void CState_Animal_Idle::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(m_AnimIndices[0]);
+	
 }
 
 void CState_Animal_Idle::Tick_State(_float fTimeDelta)
@@ -43,9 +44,37 @@ void CState_Animal_Idle::Tick_State(_float fTimeDelta)
 	_bool bLift = static_cast<CAnimals*>(m_pOwner)->Lifting();
 
 	if (true == bLift)
+	{
 		m_pStateMachineCom->Change_State(CAnimals::STATE::STATE_LIFT);
+		m_iPrevAnim = CAnimals::STATE::STATE_LIFT;
+	}
 	else if (fDistance <= 2.0f && false == m_bExit)
-		m_pStateMachineCom->Change_State(CAnimals::STATE::STATE_RUN);
+	{
+		if (m_iPrevAnim != CAnimals::STATE::STATE_LIFT)
+		{
+			m_pStateMachineCom->Change_State(CAnimals::STATE::STATE_RUN);
+			m_iPrevAnim = CAnimals::STATE::STATE_RUN;
+		}
+		else
+		{
+			if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
+			{
+				_int iRandomVal = GI->RandomInt(0, 1);
+
+				switch (iRandomVal)
+				{
+				case 0:
+					m_pStateMachineCom->Change_State(CAnimals::STATE::STATE_IDLE);
+					m_iPrevAnim = CAnimals::STATE::STATE_IDLE;
+					break;
+				case 1:
+					m_pStateMachineCom->Change_State(CAnimals::STATE::STATE_WALK);
+					m_iPrevAnim = CAnimals::STATE::STATE_WALK;
+					break;
+				}
+			}
+		}
+	}
 	else if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
 	{
 		_int iRandomVal = GI->RandomInt(0, 1);
@@ -54,9 +83,11 @@ void CState_Animal_Idle::Tick_State(_float fTimeDelta)
 		{
 		case 0:
 			m_pStateMachineCom->Change_State(CAnimals::STATE::STATE_IDLE);
+			m_iPrevAnim = CAnimals::STATE::STATE_IDLE;
 			break;
 		case 1:
 			m_pStateMachineCom->Change_State(CAnimals::STATE::STATE_WALK);
+			m_iPrevAnim = CAnimals::STATE::STATE_WALK;
 			break;
 		}
 	}

@@ -23,7 +23,7 @@ void CState_Animal_Lift::Enter_State(void* pArg)
 {
 	m_fNextTime = 0.0f;
 	m_iCurrAnimIndex = m_AnimIndices[0];
-	m_pModelCom->Set_Animation(m_AnimIndices[0]);
+	m_pModelCom->Set_Animation(m_iCurrAnimIndex);
 }
 
 void CState_Animal_Lift::Tick_State(_float fTimeDelta)
@@ -40,16 +40,31 @@ void CState_Animal_Lift::Tick_State(_float fTimeDelta)
 	m_pTransformCom->Set_WorldMatrix(mPlayerWorld);
 
 	m_fNextTime += fTimeDelta;
-	if (m_fNextTime >= m_fChangeMotionTime)
+
+	_bool bLift = static_cast<CAnimals*>(m_pOwner)->Lifting();
+	if (m_iCurrAnimIndex != m_AnimIndices[3] && false == bLift && false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
 	{
 		m_fNextTime = 0.0f;
-		m_iCurrAnimIndex = m_AnimIndices[1];
+		m_iCurrAnimIndex = m_AnimIndices[3];
+
+		m_pModelCom->Set_Animation(m_iCurrAnimIndex);
 	}
+	else if (m_iCurrAnimIndex != m_AnimIndices[3] && m_fNextTime >= m_fChangeMotionTime)
+	{
+		m_fNextTime = 0.0f;
+		m_iCurrAnimIndex = m_AnimIndices[GI->RandomInt(1, 2)];
+
+		m_pModelCom->Set_Animation(m_iCurrAnimIndex);
+	}
+
+
+	if (m_iCurrAnimIndex == m_AnimIndices[3] && true == m_pModelCom->Is_Finish() && false == m_pModelCom->Is_Tween())
+		m_pStateMachineCom->Change_State(CAnimals::STATE::STATE_IDLE);
 }
 
 void CState_Animal_Lift::Exit_State()
 {
-	m_fNextTime = 0.0f;
+	m_bFirstLift = true;
 }
 
 CState_Animal_Lift* CState_Animal_Lift::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

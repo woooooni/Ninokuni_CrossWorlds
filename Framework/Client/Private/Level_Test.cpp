@@ -11,6 +11,7 @@
 #include "UI_Manager.h"
 
 #include "Utils.h"
+#include <FileUtils.h>
 
 CLevel_Test::CLevel_Test(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -47,7 +48,8 @@ HRESULT CLevel_Test::Initialize()
 	if (FAILED(Ready_Layer_UI(LAYER_TYPE::LAYER_UI)))
 		return E_FAIL;
 
-
+	if (FAILED(Ready_Layer_Dynamic(LAYER_TYPE::LAYER_DYNAMIC, TEXT("Evermore"))))
+		return E_FAIL;
 
 
 
@@ -263,6 +265,62 @@ HRESULT CLevel_Test::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Test::Ready_Layer_Effect(const LAYER_TYPE eLayerType)
 {
+
+	return S_OK;
+}
+
+HRESULT CLevel_Test::Ready_Layer_Dynamic(const LAYER_TYPE eLayerType, const wstring& strMapFileName)
+{
+	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strMapFileName + L"/" + strMapFileName + L"Dynamic.map";
+
+	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
+	File->Open(strMapFilePath, FileMode::Read);
+
+
+	GI->Clear_Layer(LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC);
+
+
+	_uint iObjectCount = File->Read<_uint>();
+	for (_uint j = 0; j < iObjectCount; ++j)
+	{
+		// 3. Object_Prototype_Tag
+		wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
+		wstring strObjectTag = CUtils::ToWString(File->Read<string>());
+
+		CGameObject* pObj = nullptr;
+		if (FAILED(GI->Add_GameObject(LEVEL_TEST, eLayerType, strPrototypeTag, nullptr, &pObj)))
+		{
+			MSG_BOX("Load_Objects_Failed.");
+			return E_FAIL;
+		}
+
+		if (nullptr == pObj)
+		{
+			MSG_BOX("Add_Object_Failed.");
+			return E_FAIL;
+		}
+		pObj->Set_ObjectTag(strObjectTag);
+
+		CTransform* pTransform = pObj->Get_Component<CTransform>(L"Com_Transform");
+		if (nullptr == pTransform)
+		{
+			MSG_BOX("Get_Transform_Failed.");
+			return E_FAIL;
+		}
+
+		// 6. Obejct States
+		_float4 vRight, vUp, vLook, vPos;
+
+		File->Read<_float4>(vRight);
+		File->Read<_float4>(vUp);
+		File->Read<_float4>(vLook);
+		File->Read<_float4>(vPos);
+
+		pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
+		pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
+		pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
+		pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
+	}
 
 	return S_OK;
 }

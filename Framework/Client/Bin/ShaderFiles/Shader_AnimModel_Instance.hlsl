@@ -351,7 +351,7 @@ technique11 DefaultTechnique
 	pass DefaultPass
 	{
 		// 0
-		SetRasterizerState(RS_Default);
+		SetRasterizerState(RS_NoneCull);
 		SetDepthStencilState(DSS_Default, 0);
 		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
@@ -363,7 +363,7 @@ technique11 DefaultTechnique
 	pass NormalPass
 	{
 		// 1
-		SetRasterizerState(RS_Default);
+		SetRasterizerState(RS_NoneCull);
 		SetDepthStencilState(DSS_Default, 0);
 		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
@@ -375,7 +375,7 @@ technique11 DefaultTechnique
 	pass DissolveDead
 	{
 		// 2
-		SetRasterizerState(RS_Default);
+		SetRasterizerState(RS_NoneCull);
 		SetDepthStencilState(DSS_Default, 0);
 		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
@@ -387,7 +387,7 @@ technique11 DefaultTechnique
 	pass Temp0
 	{
 		// 3
-		SetRasterizerState(RS_Default);
+		SetRasterizerState(RS_NoneCull);
 		SetDepthStencilState(DSS_Default, 0);
 		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
@@ -399,7 +399,7 @@ technique11 DefaultTechnique
 	pass Temp1
 	{
 		// 4
-		SetRasterizerState(RS_Default);
+		SetRasterizerState(RS_NoneCull);
 		SetDepthStencilState(DSS_Default, 0);
 		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
@@ -411,7 +411,7 @@ technique11 DefaultTechnique
 	pass Temp2
 	{
 		// 5
-		SetRasterizerState(RS_Default);
+		SetRasterizerState(RS_NoneCull);
 		SetDepthStencilState(DSS_Default, 0);
 		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
@@ -423,7 +423,7 @@ technique11 DefaultTechnique
 	pass Temp3
 	{
 		// 6
-		SetRasterizerState(RS_Default);
+		SetRasterizerState(RS_NoneCull);
 		SetDepthStencilState(DSS_Default, 0);
 		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
@@ -435,7 +435,7 @@ technique11 DefaultTechnique
 	pass Temp4
 	{
 		// 6
-		SetRasterizerState(RS_Default);
+		SetRasterizerState(RS_NoneCull);
 		SetDepthStencilState(DSS_Default, 0);
 		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
@@ -447,7 +447,7 @@ technique11 DefaultTechnique
 	pass Temp5
 	{
 		// 7
-		SetRasterizerState(RS_Default);
+		SetRasterizerState(RS_NoneCull);
 		SetDepthStencilState(DSS_Default, 0);
 		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
@@ -459,7 +459,7 @@ technique11 DefaultTechnique
 	pass Temp6
 	{
 		// 8
-		SetRasterizerState(RS_Default);
+		SetRasterizerState(RS_NoneCull);
 		SetDepthStencilState(DSS_Default, 0);
 		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
@@ -471,7 +471,7 @@ technique11 DefaultTechnique
 	pass Shadow_Depth
 	{
 		// 10
-		SetRasterizerState(RS_Default);
+		SetRasterizerState(RS_NoneCull);
 		SetDepthStencilState(DSS_Shadow, 0);
 		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 

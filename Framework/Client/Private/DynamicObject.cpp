@@ -105,6 +105,11 @@ HRESULT CDynamicObject::Ready_Components()
 	return S_OK;
 }
 
+void CDynamicObject::Find_MinDistanceObject()
+{
+
+}
+
 void CDynamicObject::Free()
 {
 	__super::Free();
@@ -115,5 +120,5 @@ void CDynamicObject::Free()
 	Safe_Release<CTransform*>(m_pTransformCom);
 	Safe_Release<CModel*>(m_pModelCom);
 	Safe_Release<CRigidBody*>(m_pRigidBodyCom);
-	
+	Safe_Release<CPhysX_Controller*>(m_pControllerCom);
 }

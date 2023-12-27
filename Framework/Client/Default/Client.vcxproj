@@ -195,6 +195,7 @@
     <ClInclude Include="..\..\ThirdParty\imstb_textedit.h" />
     <ClInclude Include="..\..\ThirdParty\imstb_truetype.h" />
     <ClInclude Include="..\Public\Animals.h" />
+    <ClInclude Include="..\Public\Animal_Ray.h" />
     <ClInclude Include="..\public\BackGround.h" />
     <ClInclude Include="..\Public\Baobam_Dark.h" />
     <ClInclude Include="..\Public\Baobam_DarkBT.h" />
@@ -231,6 +232,10 @@
     <ClInclude Include="..\Public\Character.h" />
     <ClInclude Include="..\Public\Character_Dummy.h" />
     <ClInclude Include="..\Public\Character_Engineer.h" />
+    <ClInclude Include="..\Public\Dochi.h" />
+    <ClInclude Include="..\Public\DuckGoo.h" />
+    <ClInclude Include="..\Public\Ermine.h" />
+    <ClInclude Include="..\Public\Fox.h" />
     <ClInclude Include="..\Public\GameItem_Armor.h" />
     <ClInclude Include="..\Public\GlanixState_RageChargeEnd.h" />
     <ClInclude Include="..\Public\GlanixState_RageCharge.h" />
@@ -241,7 +246,11 @@
     <ClInclude Include="..\Public\GlanixState_RageTurn.h" />
     <ClInclude Include="..\Public\Glanix_IcePillar.h" />
     <ClInclude Include="..\Public\Item_Manager.h" />
+    <ClInclude Include="..\Public\Pigeon.h" />
+    <ClInclude Include="..\Public\PolarBear.h" />
+    <ClInclude Include="..\Public\Rabbit.h" />
     <ClInclude Include="..\Public\State_Animals.h" />
+    <ClInclude Include="..\Public\State_Animal_Fly.h" />
     <ClInclude Include="..\Public\State_Animal_Idle.h" />
     <ClInclude Include="..\Public\State_Animal_Lift.h" />
     <ClInclude Include="..\Public\State_Animal_Run.h" />
@@ -470,6 +479,7 @@
     <ClInclude Include="..\Public\Level_Evermore.h" />
     <ClInclude Include="..\Public\Level_Lobby.h" />
     <ClInclude Include="..\Public\MapHeaderGroup.h" />
+    <ClInclude Include="..\Public\Water.h" />
     <ClInclude Include="..\Public\Weapon.h" />
     <ClInclude Include="..\Public\Weapon_SwordTemp.h" />
     <ClInclude Include="..\Public\Plants.h" />
@@ -614,6 +624,7 @@
       <IncludeInUnityFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</IncludeInUnityFile>
     </ClCompile>
     <ClCompile Include="..\Private\Animals.cpp" />
+    <ClCompile Include="..\Private\Animal_Ray.cpp" />
     <ClCompile Include="..\private\BackGround.cpp" />
     <ClCompile Include="..\Private\Baobam_Dark.cpp" />
     <ClCompile Include="..\Private\Baobam_DarkBT.cpp" />
@@ -652,6 +663,10 @@
     <ClCompile Include="..\Private\Character.cpp" />
     <ClCompile Include="..\Private\Character_Dummy.cpp" />
     <ClCompile Include="..\Private\Character_Engineer.cpp" />
+    <ClCompile Include="..\Private\Dochi.cpp" />
+    <ClCompile Include="..\Private\DuckGoo.cpp" />
+    <ClCompile Include="..\Private\Ermine.cpp" />
+    <ClCompile Include="..\Private\Fox.cpp" />
     <ClCompile Include="..\Private\GameItem_Armor.cpp" />
     <ClCompile Include="..\Private\GlanixState_RageChargeEnd.cpp" />
     <ClCompile Include="..\Private\GlanixState_RageCharge.cpp" />
@@ -662,7 +677,11 @@
     <ClCompile Include="..\Private\GlanixState_RageTurn.cpp" />
     <ClCompile Include="..\Private\Glanix_IcePillar.cpp" />
     <ClCompile Include="..\Private\Item_Manager.cpp" />
+    <ClCompile Include="..\Private\Pigeon.cpp" />
+    <ClCompile Include="..\Private\PolarBear.cpp" />
+    <ClCompile Include="..\Private\Rabbit.cpp" />
     <ClCompile Include="..\Private\State_Animals.cpp" />
+    <ClCompile Include="..\Private\State_Animal_Fly.cpp" />
     <ClCompile Include="..\Private\State_Animal_Idle.cpp" />
     <ClCompile Include="..\Private\State_Animal_Lift.cpp" />
     <ClCompile Include="..\Private\State_Animal_Run.cpp" />
@@ -888,6 +907,7 @@
     <ClCompile Include="..\Private\Grounds.cpp" />
     <ClCompile Include="..\Private\Level_Evermore.cpp" />
     <ClCompile Include="..\Private\Level_Lobby.cpp" />
+    <ClCompile Include="..\Private\Water.cpp" />
     <ClCompile Include="..\Private\Weapon.cpp" />
     <ClCompile Include="..\Private\Weapon_SwordTemp.cpp" />
     <ClCompile Include="..\Private\Plants.cpp" />

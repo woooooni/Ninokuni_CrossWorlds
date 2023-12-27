@@ -9,11 +9,11 @@ END
 
 BEGIN(Client)
 
-class CState_Animal_Idle : public CState_Animals
+class CState_Animal_Fly : public CState_Animals
 {
 private:
-	explicit CState_Animal_Idle(class CStateMachine* pMachine);
-	virtual ~CState_Animal_Idle() = default;
+	explicit CState_Animal_Fly(class CStateMachine* pMachine);
+	virtual ~CState_Animal_Fly() = default;
 
 public:
 	virtual HRESULT Initialize(const list<wstring>& AnimationList);
@@ -24,16 +24,12 @@ public:
 	virtual void Exit_State() override;
 
 private:
-	_bool m_bExit = false;
-	_int m_iPrevAnim = 0;
-
+	Matrix m_RevolutionMatrix;
+	Matrix m_OriginMatrix;
+	_float m_fAngle = 0.1f;
 public:
-	static CState_Animal_Idle* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
+	static CState_Animal_Fly* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
-};
-
-class State_Animal_Idle
-{
 };
 
 END

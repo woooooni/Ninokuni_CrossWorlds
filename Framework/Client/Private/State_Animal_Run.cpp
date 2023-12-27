@@ -53,7 +53,7 @@ void CState_Animal_Run::Tick_State(_float fTimeDelta)
 		m_bIsRun = false;
 	}
 
-	m_pTransformCom->Move(m_vDirection, 6.f, fTimeDelta);
+	m_pTransformCom->Move(m_vDirection, 2.f, fTimeDelta);
 
 	_bool bLift = static_cast<CAnimals*>(m_pOwner)->Lifting();
 

@@ -12,6 +12,7 @@ class CPipeLine;
 class CTransform;
 class CStateMachine;
 class CRigidBody;
+class CPhysX_Controller;
 END
 
 
@@ -19,6 +20,9 @@ BEGIN(Client)
 
 class CDynamicObject abstract : public CGameObject
 {
+public:
+	enum DYNAMIC_TYPE { DYNAMIC_ANIMAL, DYNAMIC_PROP, DYNAMIC_END };
+
 protected:
 	explicit CDynamicObject(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int iObjectType);
 	explicit CDynamicObject(const CDynamicObject& rhs);
@@ -42,6 +46,12 @@ public:
 
 	virtual HRESULT Ready_Components() PURE;
 
+public:
+	const DYNAMIC_TYPE Get_DynamicType() const { return m_eType; }
+
+protected:
+	void Find_MinDistanceObject();
+
 protected:
 	CShader* m_pAnimShaderCom = nullptr;
 	CRenderer* m_pRendererCom = nullptr;
@@ -49,9 +59,12 @@ protected:
 	CModel* m_pModelCom = nullptr;
 	CStateMachine* m_pStateMachineCom = nullptr;
 	CRigidBody* m_pRigidBodyCom = nullptr;
+	CPhysX_Controller* m_pControllerCom = nullptr;
 
 	wstring m_strDynamicName = L"";
 
+
+	DYNAMIC_TYPE m_eType = DYNAMIC_TYPE::DYNAMIC_END;
 public:
 	virtual void Free() override;
 };

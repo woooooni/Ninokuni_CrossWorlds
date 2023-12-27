@@ -158,9 +158,6 @@ void CCharacter_SwordMan::On_Damaged(const COLLISION_INFO& tInfo)
 }
 
 
-
-
-
 HRESULT CCharacter_SwordMan::Ready_Components()
 {
 
@@ -214,7 +211,7 @@ HRESULT CCharacter_SwordMan::Ready_Components()
 
 	
 	m_pModelCom->Set_Animation(0);
-
+	//m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, Vec4(-10.0f, 50.0f, 0.0f, 1.0f));
 	return S_OK;
 }
 

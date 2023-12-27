@@ -527,6 +527,14 @@ void CTool_Map::MapObjectSpace()
 			if (ImGui::Button(u8"Load"))
 				Load_Map_Data(m_strLevelName);
 
+			if (ImGui::Button(u8"Dynamic_Save"))
+				Save_Dynamic_Data(m_strLevelName);
+
+			ImGui::SameLine();
+
+			if (ImGui::Button(u8"Dynamic_Load"))
+				Load_Dynamic_Data(m_strLevelName);
+
 		}
 		ImGui::EndChild();
 	}
@@ -971,7 +979,6 @@ void CTool_Map::MapNPCSpace()
 
 			if (ImGui::Button(u8"Load"))
 				Load_NPC_Data(m_strLevelNPCName);
-
 		}
 		ImGui::EndChild();
 	}
@@ -1013,16 +1020,10 @@ HRESULT CTool_Map::Save_Map_Data(const wstring& strMapFileName)
 			|| i == LAYER_TYPE::LAYER_EFFECT
 			|| i == LAYER_TYPE::LAYER_TRAIL
 			|| i == LAYER_TYPE::LAYER_NPC
-			|| i == LAYER_TYPE::LAYER_CHARACTER)
+			|| i == LAYER_TYPE::LAYER_CHARACTER
+			|| i == LAYER_TYPE::LAYER_DYNAMIC)
 			continue;
 
-
-		//if (/*i == LAYER_TYPE::LAYER_TERRAIN ||*/
-		//	i == LAYER_TYPE::LAYER_BUILDING ||
-		//	i == LAYER_TYPE::LAYER_GRASS ||
-		//	i == LAYER_TYPE::LAYER_GROUND ||
-		//	i == LAYER_TYPE::LAYER_TREEROCK ||
-		//	i == LAYER_TYPE::LAYER_PROP)
 		{
 			// 2. ObjectCount
 			list<CGameObject*>& GameObjects = GI->Find_GameObjects(LEVEL_TOOL, i);
@@ -1059,6 +1060,8 @@ HRESULT CTool_Map::Save_Map_Data(const wstring& strMapFileName)
 		}
 	}
 
+	
+
 	MSG_BOX("Map_Saved.");
 	return S_OK;
 }
@@ -1087,7 +1090,8 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 			|| i == LAYER_TYPE::LAYER_NPC
 			|| i == LAYER_TYPE::LAYER_WEAPON
 			|| i == LAYER_TYPE::LAYER_MONSTER
-			|| i == LAYER_TYPE::LAYER_CHARACTER)
+			|| i == LAYER_TYPE::LAYER_CHARACTER
+			|| i == LAYER_TYPE::LAYER_DYNAMIC)
 			continue;
 
 		GI->Clear_Layer(LEVEL_TOOL, i);
@@ -1135,9 +1139,57 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 				pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
 			}
 		}
-
-
 	}
+
+	//GI->Clear_Layer(LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC);
+
+
+	//strMapFilePath = L"../Bin/DataFiles/Map/" + strMapFileName + L"/" + strMapFileName + L".Dynamic";
+	//File->Open(strMapFilePath, FileMode::Read);
+
+	//_uint iObjectCount = File->Read<_uint>();
+
+	//for (_uint j = 0; j < iObjectCount; ++j)
+	//{
+	//	// 3. Object_Prototype_Tag
+	//	wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
+	//	wstring strObjectTag = CUtils::ToWString(File->Read<string>());
+
+	//	CGameObject* pObj = nullptr;
+	//	if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC, strPrototypeTag, nullptr, &pObj)))
+	//	{
+	//		MSG_BOX("Load_Map_Objects_Failed.");
+	//		return E_FAIL;
+	//	}
+
+	//	if (nullptr == pObj)
+	//	{
+	//		MSG_BOX("Add_Object_Failed.");
+	//		return E_FAIL;
+	//	}
+	//	pObj->Set_ObjectTag(strObjectTag);
+
+	//	CTransform* pTransform = pObj->Get_Component<CTransform>(L"Com_Transform");
+	//	if (nullptr == pTransform)
+	//	{
+	//		MSG_BOX("Get_Transform_Failed.");
+	//		return E_FAIL;
+	//	}
+
+	//	// 6. Obejct States
+	//	_float4 vRight, vUp, vLook, vPos;
+
+	//	File->Read<_float4>(vRight);
+	//	File->Read<_float4>(vUp);
+	//	File->Read<_float4>(vLook);
+	//	File->Read<_float4>(vPos);
+
+	//	pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
+	//	pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
+	//	pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
+	//	pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
+	//}
+	//
 
 	list<CGameObject*> Grounds = GI->Find_GameObjects(LEVEL_TOOL, LAYER_TYPE::LAYER_GROUND);
 	for (auto& Ground : Grounds)
@@ -1181,6 +1233,113 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 	MSG_BOX("Map_Loaded.");
 	return S_OK;
 
+}
+
+HRESULT CTool_Map::Save_Dynamic_Data(const wstring& strMapFileName)
+{
+	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strMapFileName + L"/" + strMapFileName + L"Dynamic.map";
+
+	auto path = filesystem::path(strMapFilePath);
+	filesystem::create_directories(path.parent_path());
+
+
+	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
+	File->Open(strMapFilePath, FileMode::Write);
+
+		// 2. ObjectCount
+	list<CGameObject*>& GameObjects = GI->Find_GameObjects(LEVEL_TOOL, LAYER_DYNAMIC);
+	File->Write<_uint>(GameObjects.size());
+
+	for (auto& Object : GameObjects)
+	{
+		CTransform* pTransform = Object->Get_Component<CTransform>(L"Com_Transform");
+		if (nullptr == pTransform)
+		{
+			MSG_BOX("Find_Transform_Failed.");
+			return E_FAIL;
+		}
+
+		// 3. Object_Prototype_Tag
+		File->Write<string>(CUtils::ToString(Object->Get_PrototypeTag()));
+
+		// 4. Object_Tag
+		File->Write<string>(CUtils::ToString(Object->Get_ObjectTag()));
+
+		// 5. Obejct States
+		_float4 vRight, vUp, vLook, vPos;
+
+		XMStoreFloat4(&vRight, pTransform->Get_State(CTransform::STATE_RIGHT));
+		XMStoreFloat4(&vUp, pTransform->Get_State(CTransform::STATE_UP));
+		XMStoreFloat4(&vLook, pTransform->Get_State(CTransform::STATE_LOOK));
+		XMStoreFloat4(&vPos, pTransform->Get_State(CTransform::STATE_POSITION));
+
+		File->Write<_float4>(vRight);
+		File->Write<_float4>(vUp);
+		File->Write<_float4>(vLook);
+		File->Write<_float4>(vPos);
+	}
+	
+
+	MSG_BOX("Dynamic_Saved.");
+	return S_OK;
+}
+
+HRESULT CTool_Map::Load_Dynamic_Data(const wstring& strMapFileName)
+{
+	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strMapFileName + L"/" + strMapFileName + L"Dynamic.map";
+
+	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
+	File->Open(strMapFilePath, FileMode::Read);
+
+	
+	GI->Clear_Layer(LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC);
+
+
+	_uint iObjectCount = File->Read<_uint>();
+	for (_uint j = 0; j < iObjectCount; ++j)
+	{
+		// 3. Object_Prototype_Tag
+		wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
+		wstring strObjectTag = CUtils::ToWString(File->Read<string>());
+
+		CGameObject* pObj = nullptr;
+		if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC, strPrototypeTag, nullptr, &pObj)))
+		{
+			MSG_BOX("Load_Objects_Failed.");
+			return E_FAIL;
+		}
+
+		if (nullptr == pObj)
+		{
+			MSG_BOX("Add_Object_Failed.");
+			return E_FAIL;
+		}
+		pObj->Set_ObjectTag(strObjectTag);
+
+		CTransform* pTransform = pObj->Get_Component<CTransform>(L"Com_Transform");
+		if (nullptr == pTransform)
+		{
+			MSG_BOX("Get_Transform_Failed.");
+			return E_FAIL;
+		}
+
+		// 6. Obejct States
+		_float4 vRight, vUp, vLook, vPos;
+
+		File->Read<_float4>(vRight);
+		File->Read<_float4>(vUp);
+		File->Read<_float4>(vLook);
+		File->Read<_float4>(vPos);
+
+		pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
+		pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
+		pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
+		pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
+	}
+
+	
+	MSG_BOX("Dynamic_Loaded.");
+	return S_OK;
 }
 
 HRESULT CTool_Map::Save_Light_Data(const wstring& strLightFilePath)
