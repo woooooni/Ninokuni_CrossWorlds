@@ -171,10 +171,10 @@ public:
 			XMStoreFloat4x4(&OffsetMatrix, XMMatrixIdentity());
 		}
 
-		// 복사 생성자 내용 수정 전부 추가
 		tagEffectDesc(const tagEffectDesc& rhs)
 		{
 			eType    = rhs.eType;
+
 			bGravity = rhs.bGravity;
 			//
 			fRange         = rhs.fRange;
@@ -208,28 +208,41 @@ public:
 			fVelocityChangeStartDelay = rhs.fVelocityChangeStartDelay;
 			fVelocityChangeTime       = rhs.fVelocityChangeTime;
 			//
-
-
 			bBillboard = rhs.bBillboard;
+			bRandomAxis = rhs.bRandomAxis;
+			fAxis = rhs.fAxis;
+			bRandomAngle = rhs.bRandomAngle;
+			fAngle = rhs.fAngle;
 			bRotationChange = rhs.bRotationChange;
-			fRotationDir = rhs.fRotationDir;
+			fRotationChangeStartDelay = rhs.fRotationChangeStartDelay;
 			fRotationSpeed = rhs.fRotationSpeed;
+			fRotationDir = rhs.fRotationDir;
+			bRotationChangeRandom = rhs.bRotationChangeRandom;
+			fRotationChangeTime = rhs.fRotationChangeTime;
 			fLifeTime = rhs.fLifeTime;
+
 			strModelName = rhs.strModelName;
 			strDiffuseTetextureName = rhs.strDiffuseTetextureName;
 			strAlphaTexturName = rhs.strAlphaTexturName;
+
 			iTextureIndexDiffuse = rhs.iTextureIndexDiffuse;
 			iTextureIndexAlpha = rhs.iTextureIndexAlpha;
+
 			bRandomStartIndex = rhs.bRandomStartIndex;
+
 			fUVIndex = rhs.fUVIndex;
 			fMaxCount = rhs.fMaxCount;
+
 			bUVFlowChange = rhs.bUVFlowChange;
 			iUVFlowLoop = rhs.iUVFlowLoop;
 			fUVFlowDir = rhs.fUVFlowDir;
+			fUVFlowSpeed = rhs.fUVFlowSpeed;
+
 			bAnimation = rhs.bAnimation;
 			bAnimationLoop = rhs.bAnimationLoop;
 			bIncrement = rhs.bIncrement;
 			fAnimationSpeed = rhs.fAnimationSpeed;
+
 			fAlphaStart = rhs.fAlphaStart;
 			bAlphaCreate = rhs.bAlphaCreate;
 			bAlphaDelete = rhs.bAlphaDelete;
@@ -237,11 +250,29 @@ public:
 			bAlphaChange = rhs.bAlphaChange;
 			bAlphaIn = rhs.bAlphaIn;
 			fAlphaChangeStartDelay = rhs.fAlphaChangeStartDelay;
+
 			bColorRandom = rhs.bColorRandom;
 			fColorS      = rhs.fColorS;
-			fBlurPower   = rhs.fBlurPower;
-			fBloomPower  = rhs.fBloomPower;
+			bColorChange = rhs.bColorChange;
+			bColorChangeRandom = rhs.bColorChangeRandom;
+			fColorChangeRandomTime = rhs.fColorChangeRandomTime;
+			bColorLoop = rhs.bColorLoop;
+			fColorChangeStartDelay = rhs.fColorChangeStartDelay;
+			fColorChangeStartM = rhs.fColorChangeStartM;
+			fColorM = rhs.fColorM;
+			fColorChangeStartF = rhs.fColorChangeStartF;
+			fColorF = rhs.fColorF;
+			fColorDuration = rhs.fColorDuration;
+
+			bBloomPowerRandom = rhs.bBloomPowerRandom;
+			fBloomPower = rhs.fBloomPower;
+			bBlurPowerRandom = rhs.bBlurPowerRandom;
+			fBlurPower = rhs.fBlurPower;
+
 			iShaderPass  = rhs.iShaderPass;
+			fAlpha_Discard = rhs.fAlpha_Discard;
+			fBlack_Discard = rhs.fBlack_Discard;
+
 		    OffsetMatrix = rhs.OffsetMatrix;
 		}
 

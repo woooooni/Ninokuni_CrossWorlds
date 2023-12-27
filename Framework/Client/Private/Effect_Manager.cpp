@@ -26,12 +26,11 @@ HRESULT CEffect_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceCont
 	Safe_AddRef(m_pDevice);
 	Safe_AddRef(m_pContext);
 
-	// 
 	if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_NONANIM, strEffectMeshPath)))
 		return E_FAIL;
 
-	//if (FAILED(Ready_Proto_Effects(strEffectPath)))
-	//	return E_FAIL;
+	if (FAILED(Ready_Proto_Effects(strEffectPath)))
+		return E_FAIL;
 
 	if (FAILED(Ready_Proto_Vfx()))
 		return E_FAIL;
@@ -96,12 +95,10 @@ HRESULT CEffect_Manager::Generate_Vfx(const wstring& strPrototypeVfxName, _vecto
 
 HRESULT CEffect_Manager::Ready_Proto_Effects(const wstring& strEffectPath)
 {
-
 	for (auto& p : std::filesystem::directory_iterator(strEffectPath))
 	{
 		if (p.is_directory())
 			Ready_Proto_Effects(p.path());
-
 
 		wstring strFullPath = CUtils::PathToWString(p.path().wstring());
 		_tchar strFileName[MAX_PATH];
@@ -110,71 +107,260 @@ HRESULT CEffect_Manager::Ready_Proto_Effects(const wstring& strEffectPath)
 
 		_wsplitpath_s(strFullPath.c_str(), nullptr, 0, strFolderName, MAX_PATH, strFileName, MAX_PATH, strExt, MAX_PATH);
 
-		if (0 == lstrcmp(TEXT(".effect"), strExt))
+		if (0 == lstrcmp(TEXT(".json"), strExt))
 		{
-			shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
-			File->Open(strFullPath, FileMode::Read);
+			Json json = GI->Json_Load(strFullPath);
 
-			string strEffectModelName;
-			strEffectModelName = File->Read<string>();
+			CEffect::EFFECT_DESC EffectInfo = {};
+			for (const auto& item : json["EffectInfo"])
+			{
+				// 이펙트 타입
+				_int iType = item["Type"];
+				EffectInfo.eType = (CEffect::EFFECT_TYPE)iType;
 
-			CEffect::EFFECT_TYPE eType;
-			eType = File->Read<CEffect::EFFECT_TYPE>();
+				// 중력 
+				EffectInfo.bGravity = item["Gravity"];
 
+				// 위치		
+				EffectInfo.fRange.x = item["Range"]["x"];
+				EffectInfo.fRange.y = item["Range"]["y"];
+				EffectInfo.fRange.z = item["Range"]["z"];
 
-			CEffect::EFFECT_DESC EffectDesc = {};
-			//EffectDesc.strDiffuseTetextureName = CUtils::ToWString(File->Read<string>());
-			//EffectDesc.strAlphaTexturName = CUtils::ToWString(File->Read<string>());
+				EffectInfo.fRangeDistance.x = item["RangeDistance"]["x"];
+				EffectInfo.fRangeDistance.y = item["RangeDistance"]["y"];
 
-			//EffectDesc.bBillboard = File->Read<_bool>();
-			//EffectDesc.iUVLoop = File->Read<_int>();
+#pragma region 크기		  
+				EffectInfo.bScaleSameRate = item["ScaleSameRate"];
 
-			//EffectDesc.fAlpha = File->Read<_float>();
-			//EffectDesc.fDestAlphaSpeed = File->Read<_float>();
-			//EffectDesc.fIndexSpeed = File->Read<_float>();
-			//EffectDesc.fMaxCount = File->Read<_float2>();
-			//EffectDesc.fMoveSpeed = File->Read<_float>();
-			//EffectDesc.fTurnSpeed = File->Read<_float>();
+				EffectInfo.fScaleStartMin.x = item["ScaleStartMin"]["x"];
+				EffectInfo.fScaleStartMin.y = item["ScaleStartMin"]["y"];
+				EffectInfo.fScaleStartMin.z = item["ScaleStartMin"]["z"];
 
-			//EffectDesc.fBlurPower = File->Read<_float>();
-			//EffectDesc.vBloomPower = File->Read<_float3>();
-			//EffectDesc.fUVFlow = File->Read<_float2>();
+				EffectInfo.fScaleStartMax.x = item["ScaleStartMax"]["x"];
+				EffectInfo.fScaleStartMax.y = item["ScaleStartMax"]["y"];
+				EffectInfo.fScaleStartMax.z = item["ScaleStartMax"]["z"];
 
-			//EffectDesc.fScaleSpeed = File->Read<_float>();
-			//EffectDesc.fScaleDir = File->Read<_float3>();
+				EffectInfo.bScaleChange = item["ScaleChange"];
 
-			//EffectDesc.fMoveDir = File->Read<_float3>();
-			//EffectDesc.fTurnDir = File->Read<_float3>();
+				EffectInfo.fScaleChangeStartDelay.x = item["ScaleChangeStartDelay"]["x"];
+				EffectInfo.fScaleChangeStartDelay.y = item["ScaleChangeStartDelay"]["y"];
 
-			//EffectDesc.vAdditiveDiffuseColor = File->Read<_float4>();
-			//EffectDesc.OffsetMatrix = File->Read<_float4x4>();
+				EffectInfo.bScaleChangeRandom = item["ScaleChangeRandom"];
 
+				EffectInfo.fScaleChangeTime.x = item["ScaleChangeTime"]["x"];
+				EffectInfo.fScaleChangeTime.y = item["ScaleChangeTime"]["y"];
 
-			//_bool bLoop, bIncrement, bGravity;
-			//bLoop = File->Read<_bool>();
-			//bIncrement = File->Read<_bool>();
-			//bGravity = File->Read<_bool>();
+				EffectInfo.bScaleAdd = item["ScaleAdd"];
+				EffectInfo.bScaleLoop = item["ScaleLoop"];
+				EffectInfo.bScaleLoopStart = item["ScaleLoopStart"];
 
-			//if (FAILED(GI->Add_Prototype(wstring(L"Prototype_Effect_") + strFileName, 
-			//	CEffect::Create(m_pDevice, m_pContext, 
-			//		strFileName, 
-			//		eType, 
-			//		CUtils::ToWString(strEffectModelName), 
-			//		EffectDesc, bIncrement, bLoop, bGravity), 
-			//		LAYER_TYPE::LAYER_EFFECT)))
-			//	return E_FAIL;
-			//
-			//CGameObject* pObject = GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_EFFECT, wstring(L"Prototype_Effect_") + strFileName);
-			//if (pObject == nullptr)
-			//	return E_FAIL;
+				EffectInfo.fScaleSizeMin.x = item["ScaleSizeMin"]["x"];
+				EffectInfo.fScaleSizeMin.y = item["ScaleSizeMin"]["y"];
+				EffectInfo.fScaleSizeMin.z = item["ScaleSizeMin"]["z"];
 
-			//CEffect* pEffect = dynamic_cast<CEffect*>(pObject);
-			//if (pEffect == nullptr)
-			//	return E_FAIL;
-		
+				EffectInfo.fScaleSizeMax.x = item["ScaleSizeMax"]["x"];
+				EffectInfo.fScaleSizeMax.y = item["ScaleSizeMax"]["y"];
+				EffectInfo.fScaleSizeMax.z = item["ScaleSizeMax"]["z"];
+
+				EffectInfo.fScaleSpeed.x = item["ScaleSpeed"]["x"];
+				EffectInfo.fScaleSpeed.y = item["ScaleSpeed"]["y"];
+
+				EffectInfo.fScaleDirSpeed.x = item["ScaleDirSpeed"]["x"];
+				EffectInfo.fScaleDirSpeed.y = item["ScaleDirSpeed"]["y"];
+				EffectInfo.fScaleDirSpeed.z = item["ScaleDirSpeed"]["z"];
+#pragma endregion
+
+#pragma region 이동
+				EffectInfo.fVelocitySpeed.x = item["VelocitySpeed"]["x"];
+				EffectInfo.fVelocitySpeed.y = item["VelocitySpeed"]["y"];
+
+				EffectInfo.vVelocityMinStart.x = item["VelocityMinStart"]["x"];
+				EffectInfo.vVelocityMinStart.y = item["VelocityMinStart"]["y"];
+				EffectInfo.vVelocityMinStart.z = item["VelocityMinStart"]["z"];
+
+				EffectInfo.vVelocityMaxStart.x = item["VelocityMaxStart"]["x"];
+				EffectInfo.vVelocityMaxStart.y = item["VelocityMaxStart"]["y"];
+				EffectInfo.vVelocityMaxStart.z = item["VelocityMaxStart"]["z"];
+
+				EffectInfo.bVelocityChange = item["VelocityChange"];
+
+				EffectInfo.fVelocityChangeStartDelay.x = item["VelocityChangeStartDelay"]["x"];
+				EffectInfo.fVelocityChangeStartDelay.y = item["VelocityChangeStartDelay"]["y"];
+
+				EffectInfo.fVelocityChangeTime.x = item["VelocityChangeTime"]["x"];
+				EffectInfo.fVelocityChangeTime.y = item["VelocityChangeTime"]["y"];
+#pragma endregion
+
+#pragma region 회전
+				EffectInfo.bBillboard = item["Billboard"];
+
+				EffectInfo.bRandomAxis = item["RandomAxis"];
+
+				EffectInfo.fAxis.x = item["Axis"]["x"];
+				EffectInfo.fAxis.y = item["Axis"]["y"];
+				EffectInfo.fAxis.z = item["Axis"]["z"];
+
+				EffectInfo.bRandomAngle = item["RandomAngle"];
+
+				EffectInfo.fAngle = item["Angle"];
+
+				EffectInfo.bRotationChange = item["RotationChange"];
+
+				EffectInfo.fRotationChangeStartDelay.x = item["RotationChangeStartDelay"]["x"];
+				EffectInfo.fRotationChangeStartDelay.y = item["RotationChangeStartDelay"]["y"];
+
+				EffectInfo.fRotationSpeed.x = item["RotationSpeed"]["x"];
+				EffectInfo.fRotationSpeed.y = item["RotationSpeed"]["y"];
+
+				EffectInfo.fRotationDir.x = item["RotationDir"]["x"];
+				EffectInfo.fRotationDir.y = item["RotationDir"]["y"];
+				EffectInfo.fRotationDir.z = item["RotationDir"]["z"];
+
+				EffectInfo.bRotationChangeRandom = item["RotationChangeRandom"];
+
+				EffectInfo.fRotationChangeTime.x = item["RotationChangeTime"]["x"];
+				EffectInfo.fRotationChangeTime.y = item["RotationChangeTime"]["y"];
+#pragma endregion
+
+				// 지속 시간
+				EffectInfo.fLifeTime.x = item["LifeTime"]["x"];
+				EffectInfo.fLifeTime.y = item["LifeTime"]["y"];
+
+#pragma region 모델 && 텍스처
+				EffectInfo.strModelName = CUtils::Utf8_To_Wstring(item["ModelName"]);
+				EffectInfo.strDiffuseTetextureName = CUtils::Utf8_To_Wstring(item["DiffuseTetextureName"]);
+				EffectInfo.strAlphaTexturName = CUtils::Utf8_To_Wstring(item["AlphaTexturName"]);
+
+				EffectInfo.iTextureIndexDiffuse = item["TextureIndexDiffuse"];
+				EffectInfo.iTextureIndexAlpha = item["TextureIndexAlpha"];
+
+				EffectInfo.bRandomStartIndex = item["RandomStartIndex"];
+
+				EffectInfo.fUVIndex.x = item["UVIndex"]["x"];
+				EffectInfo.fUVIndex.y = item["UVIndex"]["y"];
+
+				EffectInfo.fMaxCount.x = item["MaxCount"]["x"];
+				EffectInfo.fMaxCount.y = item["MaxCount"]["y"];
+
+				EffectInfo.bUVFlowChange = item["UVFlowChange"];
+
+				EffectInfo.iUVFlowLoop = item["UVFlowLoop"];
+
+				EffectInfo.fUVFlowDir.x = item["UVFlowDir"]["x"];
+				EffectInfo.fUVFlowDir.y = item["UVFlowDir"]["y"];
+
+				EffectInfo.fUVFlowSpeed.x = item["UVFlowSpeed"]["x"];
+				EffectInfo.fUVFlowSpeed.y = item["UVFlowSpeed"]["y"];
+#pragma endregion
+
+#pragma region 애니메이션
+				EffectInfo.bAnimation = item["Animation"];
+
+				EffectInfo.bAnimationLoop = item["AnimationLoop"];
+
+				EffectInfo.bIncrement = item["Increment"];
+
+				EffectInfo.fAnimationSpeed.x = item["AnimationSpeed"]["x"];
+				EffectInfo.fAnimationSpeed.y = item["AnimationSpeed"]["y"];
+#pragma endregion
+
+#pragma region 알파
+				EffectInfo.fAlphaStart.x = item["AlphaStart"]["x"];
+				EffectInfo.fAlphaStart.y = item["AlphaStart"]["y"];
+
+				EffectInfo.bAlphaCreate = item["AlphaCreate"];
+
+				EffectInfo.bAlphaDelete = item["AlphaDelete"];
+
+				EffectInfo.fAlphaSpeed.x = item["AlphaSpeed"]["x"];
+				EffectInfo.fAlphaSpeed.y = item["AlphaSpeed"]["y"];
+
+				EffectInfo.bAlphaChange = item["AlphaChange"];
+
+				EffectInfo.bAlphaIn = item["AlphaIn"];
+
+				EffectInfo.fAlphaChangeStartDelay.x = item["AlphaChangeStartDelay"]["x"];
+				EffectInfo.fAlphaChangeStartDelay.y = item["AlphaChangeStartDelay"]["y"];
+#pragma endregion
+
+#pragma region 색상
+				EffectInfo.bColorRandom = item["ColorRandom"];
+
+				EffectInfo.fColorS.x = item["ColorS"]["x"];
+				EffectInfo.fColorS.y = item["ColorS"]["y"];
+				EffectInfo.fColorS.z = item["ColorS"]["z"];
+				EffectInfo.fColorS.w = item["ColorS"]["w"];
+
+				EffectInfo.bColorChange = item["ColorChange"];
+
+				EffectInfo.bColorChangeRandom = item["ColorChangeRandom"];
+
+				EffectInfo.fColorChangeRandomTime.x = item["ColorChangeRandomTime"]["x"];
+				EffectInfo.fColorChangeRandomTime.y = item["ColorChangeRandomTime"]["y"];
+
+				EffectInfo.bColorLoop = item["ColorChangeRandom"];
+
+				EffectInfo.fColorChangeStartDelay.x = item["ColorChangeStartDelay"]["x"];
+				EffectInfo.fColorChangeStartDelay.y = item["ColorChangeStartDelay"]["y"];
+
+				EffectInfo.fColorChangeStartM.x = item["ColorChangeStartM"]["x"];
+				EffectInfo.fColorChangeStartM.y = item["ColorChangeStartM"]["y"];
+
+				EffectInfo.fColorM.x = item["ColorM"]["x"];
+				EffectInfo.fColorM.y = item["ColorM"]["y"];
+				EffectInfo.fColorM.z = item["ColorM"]["z"];
+				EffectInfo.fColorM.w = item["ColorM"]["w"];
+
+				EffectInfo.fColorChangeStartF.x = item["ColorChangeStartF"]["x"];
+				EffectInfo.fColorChangeStartF.y = item["ColorChangeStartF"]["y"];
+
+				EffectInfo.fColorF.x = item["ColorF"]["x"];
+				EffectInfo.fColorF.y = item["ColorF"]["y"];
+				EffectInfo.fColorF.z = item["ColorF"]["z"];
+				EffectInfo.fColorF.w = item["ColorF"]["w"];
+
+				EffectInfo.fColorDuration.x = item["ColorDuration"]["x"];
+				EffectInfo.fColorDuration.y = item["ColorDuration"]["y"];
+#pragma endregion
+
+#pragma region 블러
+				EffectInfo.bBloomPowerRandom = item["BloomPowerRandom"];
+
+				EffectInfo.fBloomPower.x = item["BloomPower"]["x"];
+				EffectInfo.fBloomPower.y = item["BloomPower"]["y"];
+				EffectInfo.fBloomPower.z = item["BloomPower"]["z"];
+				EffectInfo.fBloomPower.w = item["BloomPower"]["w"];
+
+				EffectInfo.bBlurPowerRandom = item["BlurPowerRandom"];
+
+				EffectInfo.fBlurPower = item["BlurPower"];
+#pragma endregion
+
+#pragma region 기타 정보
+				EffectInfo.iShaderPass = item["ShaderPass"];
+
+				EffectInfo.fAlpha_Discard = item["Alpha_Discard"];
+
+				EffectInfo.fBlack_Discard.x = item["Black_Discard"]["x"];
+				EffectInfo.fBlack_Discard.y = item["Black_Discard"]["y"];
+				EffectInfo.fBlack_Discard.z = item["Black_Discard"]["z"];
+#pragma endregion
+			}
+
+			if (FAILED(GI->Add_Prototype(wstring(L"Prototype_Effect_") + strFileName, 
+				CEffect::Create(m_pDevice, m_pContext, strFileName, &EffectInfo), LAYER_TYPE::LAYER_EFFECT)))
+				return E_FAIL;
 			
+			CGameObject* pObject = GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_EFFECT, wstring(L"Prototype_Effect_") + strFileName);
+			if (pObject == nullptr)
+				return E_FAIL;
+
+			CEffect* pEffect = dynamic_cast<CEffect*>(pObject);
+			if (pEffect == nullptr)
+				return E_FAIL;
 		}
 	}
+
 	return S_OK;
 }
 
