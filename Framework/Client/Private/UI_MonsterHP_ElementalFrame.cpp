@@ -31,7 +31,8 @@ HRESULT CUI_MonsterHP_ElementalFrame::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	m_bActive = true;
+	//m_bActive = true;
+	m_bActive = false;
 
 	return S_OK;
 }

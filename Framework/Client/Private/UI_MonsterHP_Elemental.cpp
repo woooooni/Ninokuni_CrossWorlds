@@ -31,7 +31,8 @@ HRESULT CUI_MonsterHP_Elemental::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	m_bActive = true;
+	m_bActive = false;
+	//m_bActive = true;
 	m_iTextureIndex = 0; // For Test
 
 	return S_OK;

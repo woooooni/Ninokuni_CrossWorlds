@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UI_SubMenu_Equipment.h"
 #include "GameInstance.h"
+#include "UI_Manager.h"
 
 CUI_SubMenu_Equipment::CUI_SubMenu_Equipment(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 	const wstring& strObjectTag, UI_SUBEQUIP_TYPE eUIType)
@@ -166,7 +167,11 @@ void CUI_SubMenu_Equipment::On_Mouse(_float fTimeDelta)
 	{
 		if (KEY_TAP(KEY::LBTN))
 		{
-
+			if (m_eUIType == EQUIPBTN_INVENTORY)
+			{
+				CUI_Manager::GetInstance()->OnOff_Inventory(true);
+				// 만약에 이 버튼을 통해서 들어오면 Off할때 SubMenu가 떠있는 상태로 하는 것도 좋을 것 같음.
+			}
 		}
 	}
 }

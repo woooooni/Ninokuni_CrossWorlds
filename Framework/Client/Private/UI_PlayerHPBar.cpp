@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UI_PlayerHPBar.h"
 #include "GameInstance.h"
+#include "UI_Manager.h"
 
 CUI_PlayerHPBar::CUI_PlayerHPBar(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_PlayerHPBar")
@@ -47,34 +48,36 @@ void CUI_PlayerHPBar::LateTick(_float fTimeDelta)
 	if (m_bActive)
 	{
 		// Todo : Player구조가 정리되면 Set_Level로 빼서 UIManager로 연동하자.
+		if (CUI_Manager::GetInstance()->Is_FadeFinished())
+		{
+			// 기준점
+			CRenderer::TEXT_DESC  DefaultDesc;
+			DefaultDesc.strText = L"/";
+			DefaultDesc.strFontTag = L"Default_Bold";
+			DefaultDesc.vScale = { 0.35f, 0.35f };
+			DefaultDesc.vPosition = m_vDefaultPosition;
+			DefaultDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+			m_pRendererCom->Add_Text(DefaultDesc);
 
-		// 기준점
-		CRenderer::TEXT_DESC  DefaultDesc;
-		DefaultDesc.strText = L"/";
-		DefaultDesc.strFontTag = L"Default_Bold";
-		DefaultDesc.vScale = { 0.35f, 0.35f };
-		DefaultDesc.vPosition = m_vDefaultPosition;
-		DefaultDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
-		m_pRendererCom->Add_Text(DefaultDesc);
+			// Todo : 체력을 받아오게끔 구조 변경 필요함.
+			// 현재 체력 숫자 외곽선
+			CRenderer::TEXT_DESC CurHPDesc;
+			CurHPDesc.strText = L"1234";
+			CurHPDesc.strFontTag = L"Default_Bold";
+			CurHPDesc.vScale = { 0.35f, 0.35f };
+			CurHPDesc.vPosition = m_vCurHPPosition;
+			CurHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+			m_pRendererCom->Add_Text(CurHPDesc);
 
-		// Todo : 체력을 받아오게끔 구조 변경 필요함.
-		// 현재 체력 숫자 외곽선
-		CRenderer::TEXT_DESC CurHPDesc;
-		CurHPDesc.strText = L"1234";
-		CurHPDesc.strFontTag = L"Default_Bold";
-		CurHPDesc.vScale = { 0.35f, 0.35f };
-		CurHPDesc.vPosition = m_vCurHPPosition;
-		CurHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
-		m_pRendererCom->Add_Text(CurHPDesc);
-
-		// 최대 체력 숫자 외곽선
-		CRenderer::TEXT_DESC MaxHPDesc;
-		MaxHPDesc.strText = L"1235";
-		MaxHPDesc.strFontTag = L"Default_Bold";
-		MaxHPDesc.vScale = { 0.35f, 0.35f };
-		MaxHPDesc.vPosition = m_vMaxHPPosition;
-		MaxHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
-		m_pRendererCom->Add_Text(MaxHPDesc);
+			// 최대 체력 숫자 외곽선
+			CRenderer::TEXT_DESC MaxHPDesc;
+			MaxHPDesc.strText = L"1235";
+			MaxHPDesc.strFontTag = L"Default_Bold";
+			MaxHPDesc.vScale = { 0.35f, 0.35f };
+			MaxHPDesc.vPosition = m_vMaxHPPosition;
+			MaxHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+			m_pRendererCom->Add_Text(MaxHPDesc);
+		}
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}

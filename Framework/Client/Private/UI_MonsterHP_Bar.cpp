@@ -31,7 +31,8 @@ HRESULT CUI_MonsterHP_Bar::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	m_bActive = true;
+	m_bActive = false;
+	//m_bActive = true;
 	m_bLerp = false;
 
 	// TestCode

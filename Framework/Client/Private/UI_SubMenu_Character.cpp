@@ -177,6 +177,11 @@ void CUI_SubMenu_Character::On_Mouse(_float fTimeDelta)
 		{
 			if (CHARBTN_COSTUME == m_eUIType)
 				CUI_Manager::GetInstance()->OnOff_CostumeWindow(true);
+
+			if (CHARBTN_SKILL == m_eUIType)
+			{
+				CUI_Manager::GetInstance()->OnOff_SkillWindow(true);
+			}
 		}
 	}
 }
