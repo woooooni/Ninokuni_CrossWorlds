@@ -27,7 +27,8 @@ HRESULT CUI_Damage_Skill::Initialize(void* pArg)
 	if (nullptr == pArg)
 		return E_FAIL;
 
-//	CUI::UI_INFO UIDesc = {};
+//	CUI::UI_INFO UI
+// ;
 //	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 //	UIDesc.fX = g_iWinSizeX * 0.5f;
 //	UIDesc.fY = g_iWinSizeY * 0.5f;

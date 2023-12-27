@@ -12,10 +12,7 @@ protected:
 
 public:
 	class CMonster* Get_Owner() { return m_pOwner; }
-	void Set_Owner(CMonster* pOwner, _int iElementalType) {
-		m_pOwner = pOwner;
-		m_iTextureIndex = iElementalType;
-	}
+	void Set_Owner(CMonster* pOwner, _int iElementalType);
 
 	_bool Is_Target() { return m_bIsTarget; }
 	void Set_Target(_bool bIsTarget) { m_bIsTarget = bIsTarget; }

@@ -117,7 +117,7 @@ void CUI_Costume_Btn::On_Mouse(_float fTimeDelta)
 			if (COSTUME_CLOTH == m_eUIType || COSTUME_HAIRACC == m_eUIType)
 			{
 				CUI_Manager::GetInstance()->Update_CostumeBtnState(_uint(m_eUIType));
-				CUI_Manager::GetInstance()->OnOff_CostumeSlot(true);
+				CUI_Manager::GetInstance()->OnOff_CostumeSlot(_uint(m_eUIType), true);
 			}
 		}
 	}

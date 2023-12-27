@@ -53,6 +53,7 @@ public:
 	void Update_InvenBtnState(_uint iIndex);
 	void Update_SkillBtnState(class CTransform* pTransform, _uint iIndex);
 	void Update_SkillSlotState(_uint iSectionType, _uint iSlotIndex);
+	void Update_ClothSlotState(_uint iSectionType, _uint iSlotIndex);
 
 public:
 	HRESULT Using_CloseButton();
@@ -76,7 +77,7 @@ public:
 
 	HRESULT OnOff_WorldMap(_bool bOnOff);
 	HRESULT OnOff_CostumeWindow(_bool bOnOff); // ÄÚ½ºÆ¬ ÅÇ Window ºñ/È°¼ºÈ­
-	HRESULT OnOff_CostumeSlot(_bool bOnOff);
+	HRESULT OnOff_CostumeSlot(_uint iSection, _bool bOnOff);
 	HRESULT OnOff_SkillWindowSlot(_uint iMenuType, _bool bOnOff);
 	HRESULT OnOff_Announce(_int iMagicNum, _bool bOnOff);
 	HRESULT OnOff_Inventory(_bool bOnOff); // °¡¹æ ÅÇ WIndow ºñ/È°¼ºÈ­
@@ -167,7 +168,8 @@ private:
 	vector<class CUI_Costume_Btn*> m_CostumeBtn;
 	vector<class CUI_Costume_Btn*> m_CostumeClickedBtn;
 	class CUI_Costume_LineBox* m_pCostumeBox = { nullptr };
-	vector<class CUI_Costume_ItemSlot*> m_CostumeItem;
+	vector<class CUI_Costume_ItemSlot*> m_CostumeCloth;
+	vector<class CUI_Costume_ItemSlot*> m_CostumeHairAcc;
 	// For Inven
 	class CUI_Inventory_LineBox* m_pInvenBox = { nullptr };
 	vector<class CUI_Inventory_TabBtn*> m_InvenBtn;

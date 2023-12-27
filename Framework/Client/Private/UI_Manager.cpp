@@ -1912,7 +1912,8 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 
 #pragma region COSTUME_ITEMSLOT
 
-	m_CostumeItem.reserve(3);
+	m_CostumeCloth.reserve(3);
+	m_CostumeHairAcc.reserve(3);
 
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
@@ -1924,27 +1925,48 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	fOffset = 77.f;
 
 	pSlot = nullptr;
-	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Costume_ItemSlot_First"), &UIDesc, &pSlot)))
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Costume_CostumeSection_First"), &UIDesc, &pSlot)))
 		return E_FAIL;
-	m_CostumeItem.push_back(dynamic_cast<CUI_Costume_ItemSlot*>(pSlot));
+	m_CostumeCloth.push_back(dynamic_cast<CUI_Costume_ItemSlot*>(pSlot));
+	if (nullptr == pSlot)
+		return E_FAIL;
+	Safe_AddRef(pSlot);
+	pSlot = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Costume_HairAccSection_First"), &UIDesc, &pSlot)))
+		return E_FAIL;
+	m_CostumeHairAcc.push_back(dynamic_cast<CUI_Costume_ItemSlot*>(pSlot));
 	if (nullptr == pSlot)
 		return E_FAIL;
 	Safe_AddRef(pSlot);
 
 	UIDesc.fY += fOffset;
 	pSlot = nullptr;
-	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Costume_ItemSlot_Second"), &UIDesc, &pSlot)))
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Costume_CostumeSection_Second"), &UIDesc, &pSlot)))
 		return E_FAIL;
-	m_CostumeItem.push_back(dynamic_cast<CUI_Costume_ItemSlot*>(pSlot));
+	m_CostumeCloth.push_back(dynamic_cast<CUI_Costume_ItemSlot*>(pSlot));
+	if (nullptr == pSlot)
+		return E_FAIL;
+	Safe_AddRef(pSlot);
+	pSlot = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Costume_HairAccSection_Second"), &UIDesc, &pSlot)))
+		return E_FAIL;
+	m_CostumeHairAcc.push_back(dynamic_cast<CUI_Costume_ItemSlot*>(pSlot));
 	if (nullptr == pSlot)
 		return E_FAIL;
 	Safe_AddRef(pSlot);
 
 	UIDesc.fY += fOffset;
 	pSlot = nullptr;
-	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Costume_ItemSlot_Third"), &UIDesc, &pSlot)))
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Costume_CostumeSection_Third"), &UIDesc, &pSlot)))
 		return E_FAIL;
-	m_CostumeItem.push_back(dynamic_cast<CUI_Costume_ItemSlot*>(pSlot));
+	m_CostumeCloth.push_back(dynamic_cast<CUI_Costume_ItemSlot*>(pSlot));
+	if (nullptr == pSlot)
+		return E_FAIL;
+	Safe_AddRef(pSlot);
+	pSlot = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Costume_HairAccSection_Third"), &UIDesc, &pSlot)))
+		return E_FAIL;
+	m_CostumeHairAcc.push_back(dynamic_cast<CUI_Costume_ItemSlot*>(pSlot));
 	if (nullptr == pSlot)
 		return E_FAIL;
 	Safe_AddRef(pSlot);
@@ -2847,6 +2869,39 @@ void CUI_Manager::Update_SkillSlotState(_uint iSectionType, _uint iSlotIndex)
 	}
 }
 
+void CUI_Manager::Update_ClothSlotState(_uint iSectionType, _uint iSlotIndex)
+{
+	//enum UI_COSTUME_SECTION { COSTUMESECTION_CLOTH, COSTUMESECTION_HAIRACC, COSTUMESECTION_END }; iSectionType
+	//enum UI_COSTUME_SLOT { COSTUMESLOT_FIRST, COSTUMESLOT_SECOND, COSTUMESLOT_THIRD, COSTUMESLOT_END }; iSlotIndex
+
+	switch (iSectionType)
+	{
+	case 0: // Cloth
+		m_CostumeCloth[iSlotIndex]->Set_Clicked(true); // 선택되었다.
+		// 나머지는 선택을 해제한다.
+		for (_uint i = 0; i < m_CostumeCloth.size(); ++i)
+		{
+			if (i == iSlotIndex)
+				continue;
+
+			m_CostumeCloth[i]->Set_Clicked(false);
+		}
+		break;
+		
+	case 1: // HairAcc
+		m_CostumeHairAcc[iSlotIndex]->Set_Clicked(true); // 선택되었다.
+
+		for (_uint i = 0; i < m_CostumeHairAcc.size(); ++i)
+		{
+			if (i == iSlotIndex)
+				continue;
+
+			m_CostumeHairAcc[i]->Set_Clicked(false);
+		}
+		break;
+	}
+}
+
 HRESULT CUI_Manager::Using_CloseButton()
 {
 	if (nullptr != m_pMainBG)
@@ -3488,7 +3543,7 @@ HRESULT CUI_Manager::OnOff_CostumeWindow(_bool bOnOff)
 		//OnOff_CloseButton(false);
 		m_pTabMenuTitle->Set_Active(false);
 
-		OnOff_CostumeSlot(false);
+		OnOff_CostumeSlot(0, false); // false에는 숫자가 영향을 미치지않음. 함수 인자 순서 수정 필요함.
 
 		m_pCostumeBox->Set_Active(false);
 		for (auto& iter : m_CostumeBtn)
@@ -3509,19 +3564,50 @@ HRESULT CUI_Manager::OnOff_CostumeWindow(_bool bOnOff)
 	return S_OK;
 }
 
-HRESULT CUI_Manager::OnOff_CostumeSlot(_bool bOnOff)
+HRESULT CUI_Manager::OnOff_CostumeSlot(_uint iSection, _bool bOnOff)
 {
+	// enum UI_COSTUMEBTN_TYPE { COSTUMEBTN_UNCLICKED, COSTUMEBTN_CLICKED, SKILLBTNTYPE_END };
+	
 	if (bOnOff)
 	{
-		for (auto& iter : m_CostumeItem)
+		// 옷을 켠거면 ,,
+		switch (iSection)
 		{
-			if (nullptr != iter)
-				iter->Set_Active(true);
+		case 0:
+			for (auto& iter : m_CostumeCloth)
+			{
+				if (nullptr != iter)
+					iter->Set_Active(true);
+			}
+			for (auto& iter : m_CostumeHairAcc)
+			{
+				if (nullptr != iter)
+					iter->Set_Active(false);
+			}
+			break;
+
+		case 2:
+			for (auto& iter : m_CostumeCloth)
+			{
+				if (nullptr != iter)
+					iter->Set_Active(false);
+			}
+			for (auto& iter : m_CostumeHairAcc)
+			{
+				if (nullptr != iter)
+					iter->Set_Active(true);
+			}
+			break;
 		}
 	}
 	else
 	{
-		for (auto& iter : m_CostumeItem)
+		for (auto& iter : m_CostumeCloth)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_CostumeHairAcc)
 		{
 			if (nullptr != iter)
 				iter->Set_Active(false);
@@ -4293,14 +4379,29 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		CUI_QuickSlot_Item::Create(m_pDevice, m_pContext, CUI_QuickSlot_Item::UI_QUICKSLOT_ITEM::QUICKITEM_THIRD), LAYER_UI)))
 		return E_FAIL;
 
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Costume_ItemSlot_First"),
-		CUI_Costume_ItemSlot::Create(m_pDevice, m_pContext, CUI_Costume_ItemSlot::UI_COSTUME_SLOT::COSTUMESLOT_FIRST), LAYER_UI)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Costume_CostumeSection_First"),
+		CUI_Costume_ItemSlot::Create(m_pDevice, m_pContext, CUI_Costume_ItemSlot::UI_COSTUME_SECTION::COSTUMESECTION_CLOTH,
+			CUI_Costume_ItemSlot::UI_COSTUME_SLOT::COSTUMESLOT_FIRST), LAYER_UI)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Costume_ItemSlot_Second"),
-		CUI_Costume_ItemSlot::Create(m_pDevice, m_pContext, CUI_Costume_ItemSlot::UI_COSTUME_SLOT::COSTUMESLOT_SECOND), LAYER_UI)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Costume_CostumeSection_Second"),
+		CUI_Costume_ItemSlot::Create(m_pDevice, m_pContext, CUI_Costume_ItemSlot::UI_COSTUME_SECTION::COSTUMESECTION_CLOTH, 
+			CUI_Costume_ItemSlot::UI_COSTUME_SLOT::COSTUMESLOT_SECOND), LAYER_UI)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Costume_ItemSlot_Third"),
-		CUI_Costume_ItemSlot::Create(m_pDevice, m_pContext, CUI_Costume_ItemSlot::UI_COSTUME_SLOT::COSTUMESLOT_THIRD), LAYER_UI)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Costume_CostumeSection_Third"),
+		CUI_Costume_ItemSlot::Create(m_pDevice, m_pContext, CUI_Costume_ItemSlot::UI_COSTUME_SECTION::COSTUMESECTION_CLOTH, 
+			CUI_Costume_ItemSlot::UI_COSTUME_SLOT::COSTUMESLOT_THIRD), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Costume_HairAccSection_First"),
+		CUI_Costume_ItemSlot::Create(m_pDevice, m_pContext, CUI_Costume_ItemSlot::UI_COSTUME_SECTION::COSTUMESECTION_HAIRACC,
+			CUI_Costume_ItemSlot::UI_COSTUME_SLOT::COSTUMESLOT_FIRST), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Costume_HairAccSection_Second"),
+		CUI_Costume_ItemSlot::Create(m_pDevice, m_pContext, CUI_Costume_ItemSlot::UI_COSTUME_SECTION::COSTUMESECTION_HAIRACC,
+			CUI_Costume_ItemSlot::UI_COSTUME_SLOT::COSTUMESLOT_SECOND), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Costume_HairAccSection_Third"),
+		CUI_Costume_ItemSlot::Create(m_pDevice, m_pContext, CUI_Costume_ItemSlot::UI_COSTUME_SECTION::COSTUMESECTION_HAIRACC,
+			CUI_Costume_ItemSlot::UI_COSTUME_SLOT::COSTUMESLOT_THIRD), LAYER_UI)))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_QuestPopup_Frame_Top"),
@@ -4855,9 +4956,13 @@ void CUI_Manager::Free()
 		Safe_Release(pSlot);
 	m_ItemQuickslot.clear();
 
-	for (auto& pItemSlot : m_CostumeItem)
+	for (auto& pItemSlot : m_CostumeCloth)
 		Safe_Release(pItemSlot);
-	m_CostumeItem.clear();
+	m_CostumeCloth.clear();
+
+	for (auto& pItemSlot : m_CostumeHairAcc)
+		Safe_Release(pItemSlot);
+	m_CostumeHairAcc.clear();
 
 	for (auto& pPopup : m_QuestPopUp)
 		Safe_Release(pPopup);

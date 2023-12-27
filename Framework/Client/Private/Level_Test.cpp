@@ -9,6 +9,7 @@
 
 #include "Stellia.h"
 #include "UI_Manager.h"
+#include "UI_Fade.h"
 
 #include "Utils.h"
 #include <FileUtils.h>
@@ -51,7 +52,8 @@ HRESULT CLevel_Test::Initialize()
 	if (FAILED(Ready_Layer_Dynamic(LAYER_TYPE::LAYER_DYNAMIC, TEXT("Evermore"))))
 		return E_FAIL;
 
-
+	if (nullptr != CUI_Manager::GetInstance()->Get_Fade())
+		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 3.f);
 
 
 	return S_OK;
@@ -93,11 +95,15 @@ HRESULT CLevel_Test::Tick(_float fTimeDelta)
 		CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE);
 	}
 
+	CUI_Manager::GetInstance()->Tick_Fade(fTimeDelta);
+
 	return S_OK;
 }
 
 HRESULT CLevel_Test::LateTick(_float fTimeDelta)
 {
+	CUI_Manager::GetInstance()->LateTick_Fade(fTimeDelta);
+
 	return S_OK;
 }
 
@@ -185,11 +191,11 @@ HRESULT CLevel_Test::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 {
 	CGameObject* pTest = nullptr;
 
-	/*if (FAILED(GI->Add_GameObject(LEVEL_TEST, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Character_SwordMan"), nullptr, &pTest)))
-		return E_FAIL;*/
-
-	if (FAILED(GI->Add_GameObject(LEVEL_TEST, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Character_Engineer"), nullptr, &pTest)))
+	if (FAILED(GI->Add_GameObject(LEVEL_TEST, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Character_SwordMan"), nullptr, &pTest)))
 		return E_FAIL;
+
+	//if (FAILED(GI->Add_GameObject(LEVEL_TEST, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Character_Engineer"), nullptr, &pTest)))
+	//	return E_FAIL;
 
 	if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))
 	{
@@ -257,6 +263,9 @@ HRESULT CLevel_Test::Ready_Layer_Monster(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Test::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 {
+	if (FAILED(CUI_Manager::GetInstance()->Ready_Veils()))
+		return E_FAIL;
+
 	if (FAILED(CUI_Manager::GetInstance()->Ready_CommonUIs(LEVELID::LEVEL_TEST)))
 		return E_FAIL;
 
