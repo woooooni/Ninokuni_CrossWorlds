@@ -168,7 +168,7 @@ HRESULT CLevel_Test::Ready_Lights()
 
 HRESULT CLevel_Test::Ready_Layer_Camera(const LAYER_TYPE eLayerType)
 {
-	if (FAILED(CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE)))
+	if (FAILED(CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW)))
 		return E_FAIL;
 
 	return S_OK;

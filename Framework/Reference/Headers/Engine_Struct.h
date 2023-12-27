@@ -507,6 +507,17 @@ namespace Engine
 			eMode = _eMode;
 		}
 
+		void Clear()
+		{
+			bActive = FALSE;
+
+			fStartTime = fCurTime = fEndTime = 0.f;
+
+			vStartVec = vCurVec = vTargetVec = Vec3::Zero;
+
+			eMode = LERP_MODE::DEFAULT;
+		}
+
 		Vec3 Update_Lerp(const _float& fTimeDelta)
 		{
 			if (!bActive) 
@@ -689,6 +700,17 @@ namespace Engine
 		_bool		bStop = false;
 
 	}ANIM_EVENT_SOUND_DESC;
+
+	typedef struct tagAnimEventColliderDesc : public ANIM_EVENT_DESC
+	{
+		_bool bOnOff;
+		Vec3 vOffset;
+		Vec3 vExtents;
+		_uint iDetectionType;
+
+		Vec3 vPadding;
+
+	}ANIM_EVENT_COLLIDER_DESC;
 
 #pragma endregion
 

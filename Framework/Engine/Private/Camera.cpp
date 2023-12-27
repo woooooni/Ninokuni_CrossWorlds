@@ -127,11 +127,18 @@ void CCamera::Tick_Shake(const _float fDeltaTime)
 		{
 			m_tShakeDesc.fAccFrequency -= m_tShakeDesc.fFreqDelta;
 
-			const Vec3 vStartPos = m_tShakeDesc.tLerpShakeUnitPos.vCurVec;
+			Vec3 vStartPos, vTargetPos;
 
-			const _uint iRand = rand() % MAX_UNIT_RAND;
+			vStartPos = m_tShakeDesc.tLerpShakeUnitPos.vCurVec;
 
-			const Vec3 vTargetPos = { v2UnitRand[iRand].x, v2UnitRand[iRand].y, 0.f };
+			/* 만약 마지막 빈도라면 원점으로 보간 */
+			if (m_tShakeDesc.fDuration <= m_tShakeDesc.fAccFrequency + m_tShakeDesc.fFreqDelta)
+				vTargetPos = Vec3::Zero;
+			else
+			{
+				const _uint iRand = rand() % MAX_UNIT_RAND;
+				vTargetPos = { v2UnitRand[iRand].x, v2UnitRand[iRand].y, 0.f };
+			}
 
 			m_tShakeDesc.tLerpShakeUnitPos.Start(vStartPos, vTargetPos, m_tShakeDesc.fFreqDelta, LERP_MODE::SMOOTHER_STEP);
 		}

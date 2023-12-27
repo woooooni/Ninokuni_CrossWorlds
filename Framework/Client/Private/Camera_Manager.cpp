@@ -62,7 +62,7 @@ void CCamera_Manager::LateTick(_float fTimeDelta)
 
 CCamera* CCamera_Manager::Get_Camera(const CAMERA_TYPE& eType)
 {
-	if (CAMERA_TYPE::TYPE_END <= eType || 0 > CAMERA_TYPE::FREE)
+	if (CAMERA_TYPE::CAMERA_TYPE_END <= eType || 0 > CAMERA_TYPE::FREE)
 		return nullptr;
 
 	return m_Cameras[eType];
@@ -70,7 +70,7 @@ CCamera* CCamera_Manager::Get_Camera(const CAMERA_TYPE& eType)
 
 HRESULT CCamera_Manager::Set_CurCamera(const CAMERA_TYPE& eType)
 {
-	if (CAMERA_TYPE::TYPE_END <= eType || 0 > CAMERA_TYPE::FREE)
+	if (CAMERA_TYPE::CAMERA_TYPE_END <= eType || 0 > CAMERA_TYPE::FREE)
 		return E_FAIL;
 
 	if (nullptr == m_Cameras[eType])
@@ -93,11 +93,46 @@ HRESULT CCamera_Manager::Set_CurCamera(const CAMERA_TYPE& eType)
 	return S_OK;
 }
 
+HRESULT CCamera_Manager::Start_Action_Shake(const CAMERA_EVENT_DESC& tDesc)
+{
+	if (nullptr == m_pCurCamera)
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CCamera_Manager::Start_Action_Lerp_Fov(const CAMERA_EVENT_DESC& tDesc)
+{
+	if (nullptr == m_pCurCamera)
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CCamera_Manager::Start_Action_Lerp_Dist(const CAMERA_EVENT_DESC& tDesc)
+{
+	if (nullptr == m_pCurCamera)
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CCamera_Manager::Start_Action_Shake_Default()
+{
+	if (nullptr == m_pCurCamera)
+		return E_FAIL;
+
+	m_pCurCamera->Start_Shake(0.1f, 17.f, 0.3f);
+	
+	return S_OK;
+}
+
+
 HRESULT CCamera_Manager::Ready_Cameras()
 {
 	/* 카메라는 오브젝트 매니저에 추가 되지 않고 카메라 매니저가 플로우를 돌린다. */
 
-	CAMERA_TYPE eType = CAMERA_TYPE::TYPE_END;
+	CAMERA_TYPE eType = CAMERA_TYPE::CAMERA_TYPE_END;
 
 	/* Free */
 	eType = CAMERA_TYPE::FREE;
@@ -163,7 +198,7 @@ void CCamera_Manager::Free()
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
 	
-	for (_uint i = 0; i < CAMERA_TYPE::TYPE_END; ++i)
+	for (_uint i = 0; i < CAMERA_TYPE::CAMERA_TYPE_END; ++i)
 	{
 		Safe_Release(m_Cameras[i]);
 		m_Cameras[i] = nullptr;

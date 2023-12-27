@@ -233,6 +233,7 @@ HRESULT CRenderer::Draw()
 
 	if (FAILED(Render_Effect()))
 		return E_FAIL;
+
 	if (!m_bBlurDraw)
 	{
 		// Render_BlendTargetMix()
@@ -257,6 +258,7 @@ HRESULT CRenderer::Draw()
 		return E_FAIL;
 	if (FAILED(Render_UIEffectNonBlend()))
 		return E_FAIL;
+
 	if (m_bBlurDraw)
 	{
 		if (FAILED(Render_Blur(L"Target_Effect_UI_Brightness_01", L"MRT_Effect_UI_Blur", true, 2, 3)))
@@ -266,6 +268,7 @@ HRESULT CRenderer::Draw()
 		if (FAILED(Render_Blur(L"Target_Effect_UI_Brightness_03", L"MRT_Effect_UI_Blur", false, 6, 7)))
 			return E_FAIL;
 	}
+
 	if (FAILED(Render_UIEffectBlend()))
 		return E_FAIL;
 

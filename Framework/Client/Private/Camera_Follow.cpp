@@ -38,7 +38,7 @@ HRESULT CCamera_Follow::Initialize(void * pArg)
 
 		/* 팔로우 카메라에서 룩앳 오프셋을 사용하는 일은 없다. 타겟 오프셋만을 사용한다.*/
 		m_vLookAtOffset = Vec4::UnitW;
-		m_vTargetOffset = Vec4{ 1.2f, 1.3f, 0.f, 1.f };
+		m_vTargetOffset = Vec4{ 0.7f, 1.3f, 0.f, 1.f };
 
 		m_vMouseSensitivity = Vec2{ 0.18f, 0.5f };
 	}
@@ -51,33 +51,50 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 	if (nullptr == m_pTargetObj || nullptr == m_pLookAtObj)
 		return;
 
+	__super::Tick(fTimeDelta); /* Shake, Fov, Dist Lerp Update */
+
+	/* Position */
 	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, Calculate_WorldPosition(fTimeDelta));
 	
-	
-	Vec4 vLookAtPos = Calculate_Look(fTimeDelta);
-
-	m_pTransformCom->LookAt(Calculate_Look(fTimeDelta));
-
-	__super::Tick(fTimeDelta); /* Shake, Fov, Dist */
-
-	
-	if (Is_Shake())
+	/* Look & Shake */
 	{
-	
-		cout << "Origin Look : " << vLookAtPos.x << "\t" << vLookAtPos.y << "\t" << vLookAtPos.z << endl;
-		Vec3 vShakeLocalPos = Get_ShakeLocalPos();
-		vLookAtPos.x += vShakeLocalPos.x;
-		vLookAtPos.y += vShakeLocalPos.y;
-		vLookAtPos.z += vShakeLocalPos.z;
+		const Vec4 vLookAtPos = Calculate_Look(fTimeDelta);
 
-		cout << "Shake Local Look : " << vShakeLocalPos.x << "\t" << vShakeLocalPos.y << "\t" << vShakeLocalPos.z << endl << endl;
-
-		m_pTransformCom->LookAt(vLookAtPos);
+		if (Is_Shake())
+			m_pTransformCom->LookAt(Vec4(vLookAtPos + Vec4(Get_ShakeLocalPos())).OneW());
+		else
+			m_pTransformCom->LookAt(vLookAtPos);
 	}
 
-	if (KEY_TAP(KEY::H))
+	/* Test */
 	{
-		Start_Shake(0.1f, 10.f, 0.5f);
+		/*if (KEY_TAP(KEY::J))
+		{
+			CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
+		}
+		if (KEY_TAP(KEY::K))
+		{
+			static _bool bLerpFov = false;
+
+			if (!bLerpFov)
+				Start_Lerp_Fov(XMConvertToRadians(85.0f), 0.5f);
+			else
+				Start_Lerp_Fov(Cam_Fov_Follow_Default, 0.5f);
+
+			bLerpFov = !bLerpFov;
+		}
+
+		if (KEY_TAP(KEY::L))
+		{
+			static _bool bLerpDist = false;
+
+			if (!bLerpDist)
+				Start_Lerp_Distance(6.3f, 0.5f);
+			else
+				Start_Lerp_Distance(Cam_Dist_Follow_Default, 0.5f);
+
+			bLerpDist = !bLerpDist;
+		}*/
 	}
 }
 
@@ -212,8 +229,22 @@ Vec4 CCamera_Follow::Calculate_DampingPosition(Vec4 vGoalPos)
 	}
 	else /* 이전에 세팅이 이루어 졌다면 댐핑 계산을 적용한다. */
 	{
-		Vec4 vDist = (vGoalPos.ZeroW() - m_tDampingDesc.vCurPos.ZeroW()) * m_tDampingDesc.fDampingCoefficient;
+		/* 만약 타겟의 룩과 카메라의 룩이 역방향에 가까울 경우 댐핑의 속도를 올린다. */
+		Vec4 vTargetLook	= m_pTargetObj->Get_Component<CTransform>(L"Com_Transform")->Get_Look();
+		Vec4 vCamLook		= m_pTransformCom->Get_Look();
+
+		vTargetLook.y = vCamLook.y = 0.f;
 		
+		const _float fRad = acosf(vCamLook.Normalized().Dot(vTargetLook.Normalized()));
+
+		_float fCoeff = 0.f;
+		if (m_tDampingDesc.fDampingBackLimitRad <= fRad)
+			fCoeff = m_tDampingDesc.fDampingCoefficient * m_tDampingDesc.fDampingCoefficientBackMag;
+		else
+			fCoeff = m_tDampingDesc.fDampingCoefficient;
+
+		const Vec4 vDist = (vGoalPos.ZeroW() - m_tDampingDesc.vCurPos.ZeroW()) * fCoeff;
+
 		m_tDampingDesc.vCurPos += vDist;
 
 		return m_tDampingDesc.vCurPos.OneW();

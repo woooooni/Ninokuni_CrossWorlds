@@ -75,6 +75,10 @@ void CAnimation::Clear_AnimationEvent()
 	/* 사운드 이벤트 초기화 */
 	for (auto& SoundEvent : m_SoundEvents)
 		SoundEvent.second.bExecuted = false;
+
+	/* 콜라이더 이벤트 초기화 */
+	for (auto& ColliderEvent : m_ColliderEvents)
+		ColliderEvent.second.bExecuted = false;
 }
 
 void CAnimation::Clear_AnimationSpeed()
@@ -179,10 +183,22 @@ void CAnimation::Change_EventKeyFrame(const _uint& iIndex, const _float fFrame, 
 	}
 		break;
 	case Engine::EFFECT:
+	{
+
+	}
 		break;
 	case Engine::CAMERA:
+	{
+
+	}
 		break;
 	case Engine::COLLIDER:
+	{
+		if (m_ColliderEvents.size() <= iIndex)
+			return;
+
+		m_ColliderEvents[iIndex].first = fFrame;
+	}
 		break;
 	case Engine::ANIM_EVENT_TYPE_END:
 		break;
@@ -244,6 +260,64 @@ void CAnimation::Sort_SoundEvents()
 		return;
 
 	std::sort(m_SoundEvents.begin(), m_SoundEvents.end(),
+		[](const auto& lhs, const auto& rhs) {
+			return lhs.first < rhs.first;
+		});
+}
+
+void CAnimation::Add_ColliderEvent(const _float& fFrame, const ANIM_EVENT_COLLIDER_DESC& desc)
+{
+	m_ColliderEvents.push_back(pair(fFrame, desc));
+
+	Sort_ColliderEvents();
+}
+
+void CAnimation::Del_ColliderEvent(const _uint iIndex)
+{
+	if (m_ColliderEvents.size() <= iIndex)
+		return;
+
+	_int iCount = 0;
+	for (vector<pair<_float, ANIM_EVENT_COLLIDER_DESC>>::iterator iter = m_ColliderEvents.begin(); iter != m_ColliderEvents.end();)
+	{
+		if (iIndex == iCount)
+		{
+			m_ColliderEvents.erase(iter);
+			break;
+		}
+		else
+		{
+			++iter;
+			++iCount;
+		}
+	}
+
+	Sort_ColliderEvents();
+}
+
+void CAnimation::Del_All_ColliderEvent()
+{
+	m_ColliderEvents.clear();
+	m_ColliderEvents.shrink_to_fit();
+}
+
+void CAnimation::Change_ColliderEvent(const _uint iIndex, const ANIM_EVENT_COLLIDER_DESC& desc)
+{
+	if (m_ColliderEvents.size() <= iIndex)
+		return;
+
+	m_ColliderEvents[iIndex].second.bOnOff = desc.bOnOff;
+	m_ColliderEvents[iIndex].second.vOffset = desc.vOffset;
+	m_ColliderEvents[iIndex].second.vExtents = desc.vExtents;
+	m_ColliderEvents[iIndex].second.iDetectionType = desc.iDetectionType;
+}
+
+void CAnimation::Sort_ColliderEvents()
+{
+	if (m_ColliderEvents.empty())
+		return;
+
+	std::sort(m_ColliderEvents.begin(), m_ColliderEvents.end(),
 		[](const auto& lhs, const auto& rhs) {
 			return lhs.first < rhs.first;
 		});
@@ -353,6 +427,17 @@ void CAnimation::Update_Animation_Event(_float fTickPerSecond, const TWEEN_DESC&
 			 
 			GI->Play_Sound(SoundEvent.second.pSoundKey, CHANNELID(SoundEvent.second.iChannelID), SoundEvent.second.fVolume, SoundEvent.second.bStop);
 
+		}
+	}
+
+	/* 콜라이더 이벤트 */
+	for (auto& ColliderEvent : m_ColliderEvents)
+	{
+		if (ColliderEvent.first <= fCurFrame && !ColliderEvent.second.bExecuted)
+		{
+			ColliderEvent.second.bExecuted = true;
+
+			//GI->Play_Sound(SoundEvent.second.pSoundKey, CHANNELID(SoundEvent.second.iChannelID), SoundEvent.second.fVolume, SoundEvent.second.bStop);
 		}
 	}
 }

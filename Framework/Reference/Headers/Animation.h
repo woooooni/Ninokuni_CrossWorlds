@@ -69,6 +69,15 @@ public:
 	void Sort_SoundEvents();
 	const vector<pair<_float, ANIM_EVENT_SOUND_DESC>>& Get_SoundEvents() const { return m_SoundEvents; }
 
+	/* Collider */
+	void Add_ColliderEvent(const _float& fFrame, const ANIM_EVENT_COLLIDER_DESC& desc);
+	void Del_ColliderEvent(const _uint iIndex);
+	void Del_All_ColliderEvent();
+	void Change_ColliderEvent(const _uint iIndex, const ANIM_EVENT_COLLIDER_DESC& desc);
+	void Sort_ColliderEvents();
+	const vector<pair<_float, ANIM_EVENT_COLLIDER_DESC>>& Get_ColliderEvents() const { return m_ColliderEvents; }
+
+
 #pragma endregion
 
 
@@ -109,6 +118,7 @@ private:
 #pragma region Events
 private:
 	vector<pair<_float, ANIM_EVENT_SOUND_DESC>> m_SoundEvents;
+	vector<pair<_float, ANIM_EVENT_COLLIDER_DESC>> m_ColliderEvents;
 
 #pragma endregion
 

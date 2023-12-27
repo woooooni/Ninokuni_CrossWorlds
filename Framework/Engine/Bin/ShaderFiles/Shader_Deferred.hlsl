@@ -280,8 +280,8 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 	Out.vColor = fFogFactor * Out.vColor + (1.f - fFogFactor) * g_vFogColor;*/
 
 	// Output
-	Out.vColor = vDiffuse * vShade * vShadow * vSSAO * vOutline; // +vSpecular;
-
+	//Out.vColor = vDiffuse * vShade * vShadow * vSSAO * vOutline; // +vSpecular;
+	Out.vColor = vDiffuse * vShade * vShadow * vOutline; // +vSpecular;
 	return Out;
 }
 
