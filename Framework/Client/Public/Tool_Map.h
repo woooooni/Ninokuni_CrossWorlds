@@ -58,6 +58,9 @@ private:
 	HRESULT Save_Map_Data(const wstring& strMapFileName);
 	HRESULT Load_Map_Data(const wstring& strMapFileName);
 
+	HRESULT Save_Dynamic_Data(const wstring& strMapFileName);
+	HRESULT Load_Dynamic_Data(const wstring& strMapFileName);
+
 	HRESULT Save_Light_Data(const wstring& strLightFilePath);
 	HRESULT Load_Light_Data(const wstring& strLightFilePath);
 

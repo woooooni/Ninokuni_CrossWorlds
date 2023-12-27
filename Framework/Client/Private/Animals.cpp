@@ -10,6 +10,7 @@ CAnimals::CAnimals(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const w
 CAnimals::CAnimals(const CAnimals& rhs)
 	: CDynamicObject(rhs)
 {
+
 }
 
 HRESULT CAnimals::Initialize_Prototype()
@@ -25,13 +26,17 @@ HRESULT CAnimals::Initialize(void* pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
+	m_eType = DYNAMIC_TYPE::DYNAMIC_ANIMAL;
+
 	return S_OK;
 }
 
 void CAnimals::Tick(_float fTimeDelta)
 {
-	__super::Tick(fTimeDelta);
+	//m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
+	//m_pControllerCom->Tick_Controller(fTimeDelta);
 
+	__super::Tick(fTimeDelta);
 	GI->Add_CollisionGroup(COLLISION_GROUP::ANIMAL, this);
 }
 
@@ -43,8 +48,12 @@ void CAnimals::LateTick(_float fTimeDelta)
 
 	__super::LateTick(fTimeDelta);
 
-	m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_SHADOW, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc());
-	m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_NONBLEND, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc());
+	if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 30.0f))
+	{
+		m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_SHADOW, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc());
+		m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_NONBLEND, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc());
+
+	}
 
 }
 
@@ -141,7 +150,8 @@ void CAnimals::Collision_Enter(const COLLISION_INFO& tInfo)
 
 void CAnimals::Collision_Continue(const COLLISION_INFO& tInfo)
 {
-	if (OBJ_TYPE::OBJ_CHARACTER == tInfo.pOther->Get_ObjectType())
+
+	if (OBJ_TYPE::OBJ_CHARACTER == tInfo.pOther->Get_ObjectType() && tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
 	{
 		if (KEY_TAP(KEY::E))
 		{
@@ -151,13 +161,51 @@ void CAnimals::Collision_Continue(const COLLISION_INFO& tInfo)
 				return;
 			}
 
-			m_bLift = true;
+			Find_MinObject();
 		}
 	}
 }
-
+	
 void CAnimals::Collision_Exit(const COLLISION_INFO& tInfo)
 {
+}
+
+void CAnimals::Find_MinObject()
+{
+	CGameObject* pPlayerObj = GI->Find_GameObject(LEVEL_TEST, LAYER_TYPE::LAYER_CHARACTER, TEXT("SwordMan"));
+
+	CTransform* pTransform = pPlayerObj->Get_Component<CTransform>(TEXT("Com_Transform"));
+
+	const _uint iCurrenLevel = GI->Get_CurrentLevel();
+	list<CGameObject*>& GameObjList = GI->Find_GameObjects(iCurrenLevel, LAYER_TYPE::LAYER_DYNAMIC);
+
+	_float fMaxDistance = FLT_MAX;
+
+	CGameObject* pMinObj = nullptr;
+
+	for (auto& pObj : GameObjList)
+	{
+		DYNAMIC_TYPE eType = static_cast<CDynamicObject*>(pObj)->Get_DynamicType();
+
+		if (DYNAMIC_TYPE::DYNAMIC_ANIMAL == eType)
+		{
+			Vec4 vPlayerPos = pTransform->Get_Position();
+			Vec4 vThisPos = pObj->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_Position();
+
+			Vec4 vDir = vPlayerPos - vThisPos;
+			_float vDist = vDir.Length();
+
+			if (vDist < fMaxDistance)
+			{
+				fMaxDistance = vDist;
+				pMinObj = pObj;
+			}
+		}
+	}
+
+	
+
+	static_cast<CAnimals*>(pMinObj)->m_bLift = true;
 }
 
 HRESULT CAnimals::Ready_Components()
@@ -176,6 +224,14 @@ HRESULT CAnimals::Ready_Components()
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_") + m_strDynamicName,
 		TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+		return E_FAIL;
+
+	CRigidBody::RIGID_BODY_DESC RigidDesc;
+	RigidDesc.pTransform = m_pTransformCom;
+
+	/* For.Com_RigidBody */
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_RigidBody"), TEXT("Com_RigidBody"),
+		reinterpret_cast<CComponent**>(&m_pRigidBodyCom), &RigidDesc)))
 		return E_FAIL;
 
 	return S_OK;

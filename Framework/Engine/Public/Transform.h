@@ -84,6 +84,7 @@ public:
 	void LookAt_ForLandObject(_vector vPosition);
 
 	void FixRotation(_float x, _float y, _float z);
+	void RevolutionRotation(const Vec3& vPoint, const Vec3 vAxis, const _float& fAngle);
 	XMVECTOR Get_WorldRotation() { return m_vRotation; }
 
 

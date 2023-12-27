@@ -518,7 +518,8 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 			|| i == LAYER_TYPE::LAYER_NPC
 			|| i == LAYER_TYPE::LAYER_WEAPON
 			|| i == LAYER_TYPE::LAYER_MONSTER
-			|| i == LAYER_TYPE::LAYER_CHARACTER)
+			|| i == LAYER_TYPE::LAYER_CHARACTER
+			|| i == LAYER_TYPE::LAYER_DYNAMIC)
 			continue;
 
 		GI->Clear_Layer(m_eNextLevel, i);
@@ -627,10 +628,10 @@ HRESULT CLoader::Loading_Proto_AllObjects(const wstring& strPath)
 					CTreeRock::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt, OBJ_TYPE::OBJ_TREEROCK, CModel::TYPE_NONANIM), LAYER_TYPE::LAYER_TREEROCK)))
 					return E_FAIL;
 			}
-			//else if (strFilePath.find(L"Tree") != wstring::npos)
+			//else if (strFilePath.find(L"Water") != wstring::npos)
 			//{
 			//	if (FAILED(GI->Add_Prototype(wstring(strFileName),
-			//		CTree::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt), LAYER_TYPE::LAYER_TREE)))
+			//		CWater::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt, OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_WATER)))
 			//		return E_FAIL;
 			//}
 			//else if (strFilePath.find(L"Road") != wstring::npos)
@@ -656,8 +657,37 @@ HRESULT CLoader::Loading_Proto_DynamicObjects(const wstring& strPath)
 {
 	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Cat"), CCat::Create(m_pDevice, m_pContext, TEXT("Animal_Cat"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC)))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Dochi"), CDochi::Create(m_pDevice, m_pContext, TEXT("Animal_Dochi"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_DuckGoo"), CDuckGoo::Create(m_pDevice, m_pContext, TEXT("Animal_DuckGoo"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Fox"), CFox::Create(m_pDevice, m_pContext, TEXT("Animal_Fox"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Rabbit"), CRabbit::Create(m_pDevice, m_pContext, TEXT("Animal_Rabbit"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_PolarBear"), CPolarBear::Create(m_pDevice, m_pContext, TEXT("Animal_PolarBear"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Ermine"), CErmine::Create(m_pDevice, m_pContext, TEXT("Animal_Ermine"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Pigeon"), CPigeon::Create(m_pDevice, m_pContext, TEXT("Animal_Pigeon"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC)))
+		return E_FAIL;
+
 
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Cat", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/Animal/", L"Animal_Cat")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Dochi", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/Animal/", L"Animal_Dochi")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_DuckGoo", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/Animal/", L"Animal_Duckgoo")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Animal_Fox", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/Animal/", L"Animal_FennecFox")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Animal_Rabbit", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/Animal/", L"Animal_Rabbit")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Animal_PolarBear", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/Animal/", L"Animal_PolarBear")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Animal_Ermine", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/Animal/", L"Animal_Ermine")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Animal_Pigeon", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/Animal/", L"Animal_Pigeon")))
 		return E_FAIL;
 
 

@@ -205,6 +205,26 @@ void CTransform::FixRotation(_float x, _float y, _float z)
 	Set_State(STATE::STATE_LOOK, vLook);
 }
 
+void CTransform::RevolutionRotation(const Vec3& vPoint, const Vec3 vAxis, const _float& fAngle)
+{
+	Quaternion quat;
+	Matrix matRotate;
+	Vec3 vOut;
+
+	Vec3 vPos = Get_Position();
+
+	quat = ::XMQuaternionRotationAxis(vAxis, fAngle);
+	matRotate = ::XMMatrixRotationQuaternion(quat);
+	vOut = XMVector3TransformCoord(vPos - vPoint, matRotate);
+
+	for (_uint i = 0; i < STATE::STATE_POSITION; ++i)
+		Set_State(static_cast<STATE>(i), ::XMVector3TransformNormal(Get_State(static_cast<STATE>(i)), matRotate));
+
+	Vec3 vResultPos = vOut + vPoint;
+	Vec4 vFinalPos = Vec4(vResultPos.x, vResultPos.y, vResultPos.z, 1.0f);
+	Set_State(CTransform::STATE_POSITION, vFinalPos);
+}
+
 
 CTransform * CTransform::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {

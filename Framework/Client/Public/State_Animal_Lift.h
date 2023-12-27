@@ -26,6 +26,7 @@ public:
 private:
 	_float m_fChangeMotionTime = 5.0f;
 	_float m_fNextTime = 0.0f;
+	_bool  m_bFirstLift = true;
 
 public:
 	static CState_Animal_Lift* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
