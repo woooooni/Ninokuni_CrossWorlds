@@ -132,8 +132,8 @@ public:
 #pragma endregion
 
 #pragma region ºí·¯
-		_bool*   pBlurColorRandom = nullptr;
-		_float4* pBlurColor = nullptr;
+		_bool*   pBloomPowerRandom = nullptr;
+		_float4* pBloomPower = nullptr;
 		_bool*   pBlurPowerRandom = nullptr;
 		_float*  pBlurPower = nullptr;
 #pragma endregion
@@ -216,8 +216,8 @@ public:
 		_float3 fAxis;  //12
 		_float  fAngle; //4
 
-		_float3 fBlurColor; //12
-		_float  fBlurPower; //4
+		_float3 fBloomPower; //12
+		_float  fBlurPower;  //4
 
 	} PARTICLE_SHADER_DESC;
 

@@ -210,6 +210,8 @@ void CEffect::Reset_Effect()
 			m_fNextColor = _float3(CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f));
 			m_fColorAccs = 0.f;
 			m_fColorChangeTime = CUtils::Random_Float(m_tEffectDesc.fColorChangeRandomTime.x, m_tEffectDesc.fColorChangeRandomTime.y);
+
+			m_fColorFade = false;
 		}
 		else
 		{
@@ -226,6 +228,18 @@ void CEffect::Reset_Effect()
 		m_fColor = _float3(CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f));
 	else
 		m_fColor = _float3(m_tEffectDesc.fColorS.x, m_tEffectDesc.fColorS.y, m_tEffectDesc.fColorS.z);
+#pragma endregion
+
+#pragma region 블러
+	if (m_tEffectDesc.bBloomPowerRandom)
+		m_fBlurColor = _float3(CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f));
+	else
+		m_fBlurColor = _float3(m_tEffectDesc.fBloomPower.x, m_tEffectDesc.fBloomPower.y, m_tEffectDesc.fBloomPower.z);
+
+	if (m_tEffectDesc.bBlurPowerRandom)
+		m_fBlurPower = CUtils::Random_Float(0.1f, 1.f);
+	else
+		m_fBlurPower = m_tEffectDesc.fBlurPower;
 #pragma endregion
 
 	Reset_UV();
@@ -345,7 +359,8 @@ void CEffect::LateTick(_float fTimeDelta)
 	}
 	
 	// 리지드바디
-	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
+	if(m_tEffectDesc.bGravity)
+		m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 
 	// 인스턴싱 데이터
 	CRenderer::EFFECT_INSTANCE_DESC EffectInstanceDesc;
@@ -355,8 +370,9 @@ void CEffect::LateTick(_float fTimeDelta)
 	EffectInstanceDesc.g_fUVFlow   = m_fAccUVFlow;
 	EffectInstanceDesc.g_iUVLoop   = m_tEffectDesc.iUVFlowLoop;
 	EffectInstanceDesc.g_fAlpha    = m_fAlpha;
-	EffectInstanceDesc.g_fAdditiveDiffuseColor = _float4(m_fColor.x, m_fColor.y, m_fColor.z, 1.f);
-	EffectInstanceDesc.g_vBloomPower           = _float4(m_tEffectDesc.fBloomPower.x, m_tEffectDesc.fBloomPower.y, m_tEffectDesc.fBloomPower.z, 0.f);
+	EffectInstanceDesc.g_fAdditiveDiffuseColor = _float4(m_fColor.x, m_fColor.y, m_fColor.z, 1.f); // Add 컬러
+	EffectInstanceDesc.g_vBlurColor = m_fBlurColor;
+	EffectInstanceDesc.g_fBlurPower = m_fBlurPower;
 
 	// 컬링
 	if (true == GI->Intersect_Frustum_World(XMLoadFloat4x4(&WorldMatrix).r[CTransform::STATE_POSITION], 3.f))
@@ -756,17 +772,21 @@ void CEffect::Change_Color(_float fTimeDelta)
 				m_fColorAccs += fTimeDelta;
 				if (m_fColorAccs >= m_fColorChangeTime)
 				{
-					if (!m_LerpInfo.bActive)
+					if (!m_fColorFade)
 					{
 						m_LerpInfo.Start(Vec3(m_fColor.x, m_fColor.y, m_fColor.z),
-							Vec3(m_fNextColor.x, m_fNextColor.y, m_fNextColor.z), m_fColorChangeTime);
+							Vec3(m_fNextColor.x, m_fNextColor.y, m_fNextColor.z), m_fColorChangeDuration);
+
+						m_fColorFade = true;
 					}
-					else if (m_LerpInfo.bActive && m_LerpInfo.fCurTime >= m_LerpInfo.fEndTime)
+					else if (m_fColorFade && m_LerpInfo.fCurTime >= m_LerpInfo.fEndTime)
 					{
 						m_LerpInfo   = {};
 						m_fNextColor = _float3(CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f));
 						m_fColorAccs = 0.f;
 						m_fColorChangeTime = CUtils::Random_Float(m_tEffectDesc.fColorChangeRandomTime.x, m_tEffectDesc.fColorChangeRandomTime.y);
+					
+						m_fColorFade = false;
 					}
 				}
 

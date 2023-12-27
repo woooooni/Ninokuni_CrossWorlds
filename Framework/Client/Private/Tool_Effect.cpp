@@ -47,7 +47,7 @@ void CTool_Effect::Tick(_float fTimeDelta)
 		Store_InfoEffect();
 	ImGui::NewLine();
 
-	// 저장하기/ 불러오기 -> 추후 구현
+	// 저장하기/ 불러오기
 	if (ImGui::CollapsingHeader("EffectBinary"))
 	{
 		if (ImGui::Button("SaveEffect"))
@@ -452,12 +452,12 @@ void CTool_Effect::Tick(_float fTimeDelta)
 		ImGui::NewLine();
 
 		// 블러 셋팅
-		ImGui::Checkbox("BloomColorRandom", &m_tEffectInfo.bBloomPowerRandom);
+		ImGui::Checkbox("BloomPowerRandom", &m_tEffectInfo.bBloomPowerRandom);
 		ImGui::NewLine();
 		if (!m_tEffectInfo.bBloomPowerRandom)
 		{
-			ImGui::Text("BloomColor");
-			if (ImGui::ColorEdit4("##BloomColor", (float*)&m_tEffectInfo.fBloomPower, ImGuiColorEditFlags_Float))
+			ImGui::Text("BloomPower");
+			if (ImGui::ColorEdit4("##BloomPower", (float*)&m_tEffectInfo.fBloomPower, ImGuiColorEditFlags_Float))
 				Store_InfoEffect();
 			ImGui::NewLine();
 		}
@@ -525,9 +525,9 @@ void CTool_Effect::Load_InfoEffect() // Load
 	m_tEffectInfo = static_cast<CEffect*>(m_pEffect)->Get_EffectDesc();
 
 
-	if (m_tEffectInfo.eType = CEffect::EFFECT_TEXTURE)
+	if (m_tEffectInfo.eType == CEffect::EFFECT_TEXTURE)
 		m_iEffectTypeIndex = 0;
-	else if (m_tEffectInfo.eType = CEffect::EFFECT_MESH)
+	else if (m_tEffectInfo.eType == CEffect::EFFECT_MESH)
 		m_iEffectTypeIndex = 1;
 	else
 		m_iEffectTypeIndex = 2;
@@ -609,70 +609,310 @@ void CTool_Effect::Save_Effect(const char* pFileName)
 
 	Json json;
 	json["EffectInfo"].push_back({
-		{"Type",                     (_int)m_tEffectInfo.eType},
-		{"Gravity",                  m_tEffectInfo.bGravity}
-		////				             
-		//{"Range",                    m_tEffectInfo.fRange.x, m_tEffectInfo.fRange.y, m_tEffectInfo.fRange.z},
-		//{"RangeDistance",            m_tEffectInfo.fRangeDistance.x, m_tEffectInfo.fRangeDistance.y},
-		////				             
-		//{"ScaleSameRate",            m_tEffectInfo.bScaleSameRate},
-		//{"ScaleStartMin",            m_tEffectInfo.fScaleStartMin.x, m_tEffectInfo.fScaleStartMin.y, m_tEffectInfo.fScaleStartMin.z},
-		//{"ScaleStartMax",            m_tEffectInfo.fScaleStartMax.x, m_tEffectInfo.fScaleStartMax.y, m_tEffectInfo.fScaleStartMax.z},				     
-		//{"ScaleChange",              m_tEffectInfo.bScaleChange},
-		//{"ScaleChangeStartDelay",    m_tEffectInfo.fScaleChangeStartDelay.x, m_tEffectInfo.fScaleChangeStartDelay.y},				     
-		//{"ScaleChangeRandom",        m_tEffectInfo.bScaleChangeRandom},
-	 //   {"ScaleChangeTime",          m_tEffectInfo.fScaleChangeTime.x, m_tEffectInfo.fScaleChangeTime.y},					     
-		//{"ScaleAdd",                 m_tEffectInfo.bScaleAdd},
-		//{"ScaleLoop",                m_tEffectInfo.bScaleLoop},
-		//{"ScaleLoopStart",           m_tEffectInfo.bScaleLoopStart},				     
-		//{"ScaleSizeMin",             m_tEffectInfo.fScaleSizeMin.x, m_tEffectInfo.fScaleSizeMin.y, m_tEffectInfo.fScaleSizeMin.z},
-		//{"ScaleSizeMax",             m_tEffectInfo.fScaleSizeMax.x, m_tEffectInfo.fScaleSizeMax.y, m_tEffectInfo.fScaleSizeMax.z},
-		//{"ScaleSpeed",               m_tEffectInfo.fScaleSpeed.x, m_tEffectInfo.fScaleSpeed.y},
-		//{"ScaleDirSpeed",            m_tEffectInfo.fScaleDirSpeed.x, m_tEffectInfo.fScaleDirSpeed.y, m_tEffectInfo.fScaleDirSpeed.z},
-		////						     
-		//{"VelocitySpeed",            m_tEffectInfo.fVelocitySpeed.x, m_tEffectInfo.fVelocitySpeed.y},
-		//{"VelocityMinStart",         m_tEffectInfo.vVelocityMinStart.x, m_tEffectInfo.vVelocityMinStart.y, m_tEffectInfo.vVelocityMinStart.z},
-		//{"VelocityMaxStart",         m_tEffectInfo.vVelocityMaxStart.x, m_tEffectInfo.vVelocityMaxStart.y, m_tEffectInfo.vVelocityMaxStart.z},
-		//{"VelocityChange",           m_tEffectInfo.bVelocityChange},
-		//{"VelocityChangeStartDelay", m_tEffectInfo.fVelocityChangeStartDelay.x, m_tEffectInfo.fVelocityChangeStartDelay.y},
-		//{"VelocityChangeTime",       m_tEffectInfo.fVelocityChangeTime.x, m_tEffectInfo.fVelocityChangeTime.y},
-		////
-		//{"Billboard",                m_tEffectInfo.bBillboard},
-		//{"RandomAxis",               m_tEffectInfo.bRandomAxis},
-		//{"Axis",                     m_tEffectInfo.fAxis.x, m_tEffectInfo.fAxis.y, m_tEffectInfo.fAxis.z},
-		//{"RandomAngle",              m_tEffectInfo.bRandomAngle},
-		//{"Angle",                    m_tEffectInfo.fAngle},
-		//{"RotationChange",           m_tEffectInfo.bRotationChange},
-		//{"RotationChangeStartDelay", m_tEffectInfo.fRotationChangeStartDelay.x, m_tEffectInfo.fRotationChangeStartDelay.y},
-		//{"RotationSpeed",            m_tEffectInfo.fRotationSpeed.x, m_tEffectInfo.fRotationSpeed.y},
-		//{"RotationDir",              m_tEffectInfo.fRotationDir.x, m_tEffectInfo.fRotationDir.y, m_tEffectInfo.fRotationDir.z},
-		//{"RotationChangeRandom",     m_tEffectInfo.bRotationChangeRandom},
-		//{"RotationChangeTime",       m_tEffectInfo.fRotationChangeTime.x, m_tEffectInfo.fRotationChangeTime.y},
-		////
-		//{"LifeTime",                 m_tEffectInfo.fLifeTime.x, m_tEffectInfo.fLifeTime.y},
-		////
-		//{"ModelName",                m_tEffectInfo.strModelName},
-		//{"DiffuseTetextureName",     m_tEffectInfo.strDiffuseTetextureName},
-		//{"AlphaTexturName",          m_tEffectInfo.strAlphaTexturName},
-		//{"TextureIndexDiffuse",      m_tEffectInfo.iTextureIndexDiffuse},
-		//{"TextureIndexAlpha",        m_tEffectInfo.iTextureIndexAlpha},
-		//{"RandomStartIndex",         m_tEffectInfo.bRandomStartIndex},
-		//{"UVIndex",                  m_tEffectInfo.fUVIndex.x, m_tEffectInfo.fUVIndex.y},
-		//{},
-		//{},
-		//{},
-		//{},
-		//{},
-		//{},
-		//{},
-		//{},
-		//{},
-		//{},
-		//{},
-		//{},
-		//{},
 
-		});
+		// 이펙트 타입
+		{"Type", (_int)m_tEffectInfo.eType},
+
+		// 중력 
+		{"Gravity", m_tEffectInfo.bGravity},
+
+		// 위치			             
+		{"Range", {
+			{"x", m_tEffectInfo.fRange.x},
+			{"y", m_tEffectInfo.fRange.y},
+			{"z", m_tEffectInfo.fRange.z}}
+		},
+
+		{"RangeDistance", {
+			{"x", m_tEffectInfo.fRangeDistance.x},
+			{"y", m_tEffectInfo.fRangeDistance.y}}
+		},
+
+#pragma region 크기		             
+		{"ScaleSameRate", m_tEffectInfo.bScaleSameRate},
+
+		{"ScaleStartMin", {
+			{"x", m_tEffectInfo.fScaleStartMin.x},
+			{"y", m_tEffectInfo.fScaleStartMin.y},
+			{"z", m_tEffectInfo.fScaleStartMin.z}}
+		},
+
+		{"ScaleStartMax", {
+			{"x", m_tEffectInfo.fScaleStartMax.x},
+			{"y", m_tEffectInfo.fScaleStartMax.y},
+			{"z", m_tEffectInfo.fScaleStartMax.z}}
+		},
+
+		{"ScaleChange", m_tEffectInfo.bScaleChange},
+
+		{"ScaleChangeStartDelay", {
+			{"x", m_tEffectInfo.fScaleChangeStartDelay.x},
+			{"y", m_tEffectInfo.fScaleChangeStartDelay.y}}
+		},
+
+		{"ScaleChangeRandom", m_tEffectInfo.bScaleChangeRandom},
+
+		{"ScaleChangeTime", {
+			{"x", m_tEffectInfo.fScaleChangeTime.x},
+			{"y", m_tEffectInfo.fScaleChangeTime.y}}
+		},
+
+		{"ScaleAdd", m_tEffectInfo.bScaleAdd},
+		{"ScaleLoop", m_tEffectInfo.bScaleLoop},
+		{"ScaleLoopStart", m_tEffectInfo.bScaleLoopStart},
+
+		{"ScaleSizeMin", {
+			{"x", m_tEffectInfo.fScaleSizeMin.x},
+			{"y", m_tEffectInfo.fScaleSizeMin.y},
+			{"z", m_tEffectInfo.fScaleSizeMin.z}}
+		},
+
+		{"ScaleSizeMax", {
+			{"x", m_tEffectInfo.fScaleSizeMax.x},
+			{"y", m_tEffectInfo.fScaleSizeMax.y},
+			{"z", m_tEffectInfo.fScaleSizeMax.z}}
+		},
+
+		{"ScaleSpeed", {
+			{"x", m_tEffectInfo.fScaleSpeed.x},
+			{"y", m_tEffectInfo.fScaleSpeed.y}}
+		},
+
+		{"ScaleDirSpeed", {
+			{"x", m_tEffectInfo.fScaleDirSpeed.x},
+			{"y", m_tEffectInfo.fScaleDirSpeed.y},
+			{"z", m_tEffectInfo.fScaleDirSpeed.z}}
+		},
+#pragma endregion
+
+#pragma region 이동
+		{"VelocitySpeed", {
+			{"x", m_tEffectInfo.fVelocitySpeed.x},
+			{"y", m_tEffectInfo.fVelocitySpeed.y}}
+		},
+
+		{"VelocityMinStart", {
+			{"x", m_tEffectInfo.vVelocityMinStart.x},
+			{"y", m_tEffectInfo.vVelocityMinStart.y},
+			{"z", m_tEffectInfo.vVelocityMinStart.z}}
+		},
+
+		{"VelocityMaxStart", {
+			{"x", m_tEffectInfo.vVelocityMaxStart.x},
+			{"y", m_tEffectInfo.vVelocityMaxStart.y},
+			{"z", m_tEffectInfo.vVelocityMaxStart.z}}
+		},
+
+		{"VelocityChange", m_tEffectInfo.bVelocityChange},
+
+		{"VelocityChangeStartDelay", {
+			{"x", m_tEffectInfo.fVelocityChangeStartDelay.x},
+			{"y", m_tEffectInfo.fVelocityChangeStartDelay.y}}
+		},
+
+		{"VelocityChangeTime", {
+			{"x", m_tEffectInfo.fVelocityChangeTime.x},
+			{"y", m_tEffectInfo.fVelocityChangeTime.y}}
+		},
+#pragma endregion
+
+#pragma region 회전
+		{"Billboard", m_tEffectInfo.bBillboard},
+
+		{"RandomAxis", m_tEffectInfo.bRandomAxis},
+
+		{ "Axis", {
+			{"x", m_tEffectInfo.fAxis.x},
+			{"y", m_tEffectInfo.fAxis.y},
+			{"z", m_tEffectInfo.fAxis.z}}
+		},
+
+		{"RandomAngle", m_tEffectInfo.bRandomAngle},
+
+		{"Angle", m_tEffectInfo.fAngle},
+
+		{"RotationChange", m_tEffectInfo.bRotationChange},
+
+		{ "RotationChangeStartDelay", {
+			{"x", m_tEffectInfo.fRotationChangeStartDelay.x},
+			{"y", m_tEffectInfo.fRotationChangeStartDelay.y}}
+		},
+
+		{ "RotationSpeed", {
+			{"x", m_tEffectInfo.fRotationSpeed.x},
+			{"y", m_tEffectInfo.fRotationSpeed.y}}
+		},
+
+		{ "RotationDir", {
+			{"x", m_tEffectInfo.fRotationDir.x},
+			{"y", m_tEffectInfo.fRotationDir.y},
+			{"z", m_tEffectInfo.fRotationDir.z}}
+		},
+
+		{"RotationChangeRandom", m_tEffectInfo.bRotationChangeRandom},
+
+		{ "RotationChangeTime", {
+			{"x", m_tEffectInfo.fRotationChangeTime.x},
+			{"y", m_tEffectInfo.fRotationChangeTime.y}}
+		},
+#pragma endregion
+
+		// 지속 시간
+		{ "LifeTime", {
+			{"x", m_tEffectInfo.fLifeTime.x},
+			{"y", m_tEffectInfo.fLifeTime.y}}
+		},
+
+#pragma region 모델 && 텍스처
+		{"ModelName", CUtils::ToString(m_tEffectInfo.strModelName)},
+		{"DiffuseTetextureName", CUtils::ToString(m_tEffectInfo.strDiffuseTetextureName)},
+		{"AlphaTexturName", CUtils::ToString(m_tEffectInfo.strAlphaTexturName)},
+
+		{"TextureIndexDiffuse", m_tEffectInfo.iTextureIndexDiffuse},
+		{"TextureIndexAlpha", m_tEffectInfo.iTextureIndexAlpha},
+
+		{"RandomStartIndex", m_tEffectInfo.bRandomStartIndex},
+
+		{ "UVIndex", {
+			{"x", m_tEffectInfo.fUVIndex.x},
+			{"y", m_tEffectInfo.fUVIndex.y}}
+		},
+
+		{ "MaxCount", {
+			{"x", m_tEffectInfo.fMaxCount.x},
+			{"y", m_tEffectInfo.fMaxCount.y}}
+		},
+
+		{"UVFlowChange", m_tEffectInfo.bUVFlowChange },
+		{"UVFlowLoop", m_tEffectInfo.iUVFlowLoop },
+
+		{ "UVFlowDir", {
+			{"x", m_tEffectInfo.fUVFlowDir.x},
+			{"y", m_tEffectInfo.fUVFlowDir.y}} 
+        },
+
+		{ "UVFlowSpeed", {
+			{"x", m_tEffectInfo.fUVFlowSpeed.x},
+			{"y", m_tEffectInfo.fUVFlowSpeed.y}}
+		},
+#pragma endregion
+
+#pragma region 애니메이션
+		{"Animation", m_tEffectInfo.bAnimation},
+		{"AnimationLoop", m_tEffectInfo.bAnimationLoop},
+		{"Increment", m_tEffectInfo.bIncrement},
+
+		{"AnimationSpeed", {
+			{"x", m_tEffectInfo.fAnimationSpeed.x},
+			{"y", m_tEffectInfo.fAnimationSpeed.y}}
+		},
+#pragma endregion
+
+#pragma region 알파
+		{ "AlphaStart", {
+			{"x", m_tEffectInfo.fAlphaStart.x},
+			{"y", m_tEffectInfo.fAlphaStart.y}}
+		},
+
+		{"AlphaCreate", m_tEffectInfo.bAlphaCreate},
+		{"AlphaDelete", m_tEffectInfo.bAlphaDelete},
+
+		{ "AlphaSpeed", {
+			{"x", m_tEffectInfo.fAlphaSpeed.x},
+			{"y", m_tEffectInfo.fAlphaSpeed.y}}
+		},
+
+		{"AlphaChange", m_tEffectInfo.bAlphaChange},
+		{"AlphaIn", m_tEffectInfo.bAlphaIn},
+
+		{ "AlphaChangeStartDelay", {
+			{"x", m_tEffectInfo.fAlphaChangeStartDelay.x},
+			{"y", m_tEffectInfo.fAlphaChangeStartDelay.y}}
+		},
+#pragma endregion
+
+#pragma region 색상
+		{"ColorRandom", m_tEffectInfo.bColorRandom},
+
+		{ "ColorS", {
+			{"x", m_tEffectInfo.fColorS.x},
+			{"y", m_tEffectInfo.fColorS.y},
+			{"z", m_tEffectInfo.fColorS.z},
+			{"w", m_tEffectInfo.fColorS.w}} 
+		},
+
+		{"ColorChange", m_tEffectInfo.bColorChange},
+
+		{"ColorChangeRandom", m_tEffectInfo.bColorChangeRandom},
+
+		{ "ColorChangeRandomTime", {
+			{"x", m_tEffectInfo.fColorChangeRandomTime.x},
+			{"y", m_tEffectInfo.fColorChangeRandomTime.y}} 
+		},
+
+		{"ColorChangeRandom", m_tEffectInfo.bColorLoop},
+
+		{ "ColorChangeStartDelay", {
+			{"x", m_tEffectInfo.fColorChangeStartDelay.x},
+			{"y", m_tEffectInfo.fColorChangeStartDelay.y}} 
+		},
+
+		{ "ColorChangeStartM", {
+			{"x", m_tEffectInfo.fColorChangeStartM.x},
+			{"y", m_tEffectInfo.fColorChangeStartM.y}} 
+		},
+
+		{ "ColorM", {
+			{"x", m_tEffectInfo.fColorM.x},
+			{"y", m_tEffectInfo.fColorM.y},
+			{"z", m_tEffectInfo.fColorM.z},
+			{"w", m_tEffectInfo.fColorM.w}} 
+		},
+
+		{ "ColorChangeStartF", {
+			{"x", m_tEffectInfo.fColorChangeStartF.x},
+			{"y", m_tEffectInfo.fColorChangeStartF.y}} 
+		},
+
+		{ "ColorF", {
+			{"x", m_tEffectInfo.fColorF.x},
+			{"y", m_tEffectInfo.fColorF.y},
+			{"z", m_tEffectInfo.fColorF.z},
+			{"w", m_tEffectInfo.fColorF.w}} 
+		},
+
+		{ "ColorDuration", {
+			{"x", m_tEffectInfo.fColorDuration.x},
+			{"y", m_tEffectInfo.fColorDuration.y}} 
+		},
+#pragma endregion
+
+#pragma region 블러
+		{"BloomPowerRandom", m_tEffectInfo.bBloomPowerRandom },
+
+		{ "BloomPower", {
+			{"x", m_tEffectInfo.fBloomPower.x},
+			{"y", m_tEffectInfo.fBloomPower.y},
+			{"z", m_tEffectInfo.fBloomPower.z},
+			{"w", m_tEffectInfo.fBloomPower.w}} 
+		},
+
+		{"BlurPowerRandom", m_tEffectInfo.bBlurPowerRandom },
+		{"BlurPower", m_tEffectInfo.fBlurPower },
+#pragma endregion
+
+#pragma region 기타 정보
+		{"ShaderPass", m_tEffectInfo.iShaderPass },
+		{"Alpha_Discard", m_tEffectInfo.fAlpha_Discard },
+
+		{ "Black_Discard", {
+			{"x", m_tEffectInfo.fBlack_Discard.x},
+			{"y", m_tEffectInfo.fBlack_Discard.y},
+			{"z", m_tEffectInfo.fBlack_Discard.z}} 
+		}
+#pragma endregion
+
+	});
 
 	wstring strFileName(pFileName, pFileName + strlen(pFileName));
 	wstring strFilePath = L"../Bin/DataFiles/Effect/" + strFileName + L".json";
@@ -683,12 +923,8 @@ void CTool_Effect::Save_Effect(const char* pFileName)
 
 void CTool_Effect::Load_Effect(const char* pFileName)
 {
-	if (m_pEffect != nullptr)
-	{
-		m_pEffect->Set_Dead(true);
-		m_pEffect = nullptr;
-	}
-	Create_Effect();
+	if (m_pEffect == nullptr)
+		Create_Effect();
 
 	wstring strFileName(pFileName, pFileName + strlen(pFileName));
 	wstring strFilePath = L"../Bin/DataFiles/Effect/" + strFileName + L".json";
@@ -697,15 +933,240 @@ void CTool_Effect::Load_Effect(const char* pFileName)
 	CEffect::EFFECT_DESC EffectInfo = {}; 
 	for (const auto& item : json["EffectInfo"])
 	{
+		// 이펙트 타입
 		_int iType          = item["Type"];
 		EffectInfo.eType    = (CEffect::EFFECT_TYPE)iType;
 
+		// 중력 
 		EffectInfo.bGravity = item["Gravity"];
+
+		// 위치		
+		EffectInfo.fRange.x = item["Range"]["x"];
+		EffectInfo.fRange.y = item["Range"]["y"];
+		EffectInfo.fRange.z = item["Range"]["z"];
+
+		EffectInfo.fRangeDistance.x = item["RangeDistance"]["x"];
+		EffectInfo.fRangeDistance.y = item["RangeDistance"]["y"];
+
+#pragma region 크기		  
+		EffectInfo.bScaleSameRate = item["ScaleSameRate"];
+
+		EffectInfo.fScaleStartMin.x = item["ScaleStartMin"]["x"];
+		EffectInfo.fScaleStartMin.y = item["ScaleStartMin"]["y"];
+		EffectInfo.fScaleStartMin.z = item["ScaleStartMin"]["z"];
+
+		EffectInfo.fScaleStartMax.x = item["ScaleStartMax"]["x"];
+		EffectInfo.fScaleStartMax.y = item["ScaleStartMax"]["y"];
+		EffectInfo.fScaleStartMax.z = item["ScaleStartMax"]["z"];
+
+		EffectInfo.bScaleChange = item["ScaleChange"];
+
+		EffectInfo.fScaleChangeStartDelay.x = item["ScaleChangeStartDelay"]["x"];
+		EffectInfo.fScaleChangeStartDelay.y = item["ScaleChangeStartDelay"]["y"];
+
+		EffectInfo.bScaleChangeRandom = item["ScaleChangeRandom"];
+
+		EffectInfo.fScaleChangeTime.x = item["ScaleChangeTime"]["x"];
+		EffectInfo.fScaleChangeTime.y = item["ScaleChangeTime"]["y"];
+
+		EffectInfo.bScaleAdd  = item["ScaleAdd"];
+		EffectInfo.bScaleLoop = item["ScaleLoop"];
+		EffectInfo.bScaleLoopStart = item["ScaleLoopStart"];
+
+		EffectInfo.fScaleSizeMin.x = item["ScaleSizeMin"]["x"];
+		EffectInfo.fScaleSizeMin.y = item["ScaleSizeMin"]["y"];
+		EffectInfo.fScaleSizeMin.z = item["ScaleSizeMin"]["z"];
+
+		EffectInfo.fScaleSizeMax.x = item["ScaleSizeMax"]["x"];
+		EffectInfo.fScaleSizeMax.y = item["ScaleSizeMax"]["y"];
+		EffectInfo.fScaleSizeMax.z = item["ScaleSizeMax"]["z"];
+
+		EffectInfo.fScaleSpeed.x = item["ScaleSpeed"]["x"];
+		EffectInfo.fScaleSpeed.y = item["ScaleSpeed"]["y"];
+
+		EffectInfo.fScaleDirSpeed.x = item["ScaleDirSpeed"]["x"];
+		EffectInfo.fScaleDirSpeed.y = item["ScaleDirSpeed"]["y"];
+		EffectInfo.fScaleDirSpeed.z = item["ScaleDirSpeed"]["z"];
+#pragma endregion
+
+#pragma region 이동
+		EffectInfo.fVelocitySpeed.x = item["VelocitySpeed"]["x"];
+		EffectInfo.fVelocitySpeed.y = item["VelocitySpeed"]["y"];
+
+		EffectInfo.vVelocityMinStart.x = item["VelocityMinStart"]["x"];
+		EffectInfo.vVelocityMinStart.y = item["VelocityMinStart"]["y"];
+		EffectInfo.vVelocityMinStart.z = item["VelocityMinStart"]["z"];
+
+		EffectInfo.vVelocityMaxStart.x = item["VelocityMaxStart"]["x"];
+		EffectInfo.vVelocityMaxStart.y = item["VelocityMaxStart"]["y"];
+		EffectInfo.vVelocityMaxStart.z = item["VelocityMaxStart"]["z"];
+
+		EffectInfo.bVelocityChange = item["VelocityChange"];
+
+		EffectInfo.fVelocityChangeStartDelay.x = item["VelocityChangeStartDelay"]["x"];
+		EffectInfo.fVelocityChangeStartDelay.y = item["VelocityChangeStartDelay"]["y"];
+
+		EffectInfo.fVelocityChangeTime.x = item["VelocityChangeTime"]["x"];
+		EffectInfo.fVelocityChangeTime.y = item["VelocityChangeTime"]["y"];
+#pragma endregion
+
+#pragma region 회전
+		EffectInfo.bBillboard = item["Billboard"];
+
+		EffectInfo.bRandomAxis = item["RandomAxis"];
+
+		EffectInfo.fAxis.x = item["Axis"]["x"];
+		EffectInfo.fAxis.y = item["Axis"]["y"];
+		EffectInfo.fAxis.z = item["Axis"]["z"];
+
+		EffectInfo.bRandomAngle = item["RandomAngle"];
+
+		EffectInfo.fAngle = item["Angle"];
+
+		EffectInfo.bRotationChange = item["RotationChange"];
+
+		EffectInfo.fRotationChangeStartDelay.x = item["RotationChangeStartDelay"]["x"];
+		EffectInfo.fRotationChangeStartDelay.y = item["RotationChangeStartDelay"]["y"];
+
+		EffectInfo.fRotationSpeed.x = item["RotationSpeed"]["x"];
+		EffectInfo.fRotationSpeed.y = item["RotationSpeed"]["y"];
+
+		EffectInfo.fRotationDir.x = item["RotationDir"]["x"];
+		EffectInfo.fRotationDir.y = item["RotationDir"]["y"];
+		EffectInfo.fRotationDir.z = item["RotationDir"]["z"];
+
+		EffectInfo.bRotationChangeRandom = item["RotationChangeRandom"];
+
+		EffectInfo.fRotationChangeTime.x = item["RotationChangeTime"]["x"];
+		EffectInfo.fRotationChangeTime.y = item["RotationChangeTime"]["y"];
+#pragma endregion
+
+		// 지속 시간
+		EffectInfo.fLifeTime.x = item["LifeTime"]["x"];
+		EffectInfo.fLifeTime.y = item["LifeTime"]["y"];
+
+#pragma region 모델 && 텍스처
+		EffectInfo.strModelName            = CUtils::Utf8_To_Wstring(item["ModelName"]);
+		EffectInfo.strDiffuseTetextureName = CUtils::Utf8_To_Wstring(item["DiffuseTetextureName"]);
+		EffectInfo.strAlphaTexturName      = CUtils::Utf8_To_Wstring(item["AlphaTexturName"]);
+
+		EffectInfo.iTextureIndexDiffuse = item["TextureIndexDiffuse"];
+		EffectInfo.iTextureIndexAlpha   = item["TextureIndexAlpha"];
+
+		EffectInfo.bRandomStartIndex = item["RandomStartIndex"];
+
+		EffectInfo.fUVIndex.x = item["UVIndex"]["x"];
+		EffectInfo.fUVIndex.y = item["UVIndex"]["y"];
+
+		EffectInfo.fMaxCount.x = item["MaxCount"]["x"];
+		EffectInfo.fMaxCount.y = item["MaxCount"]["y"];
+
+		EffectInfo.bUVFlowChange = item["UVFlowChange"];
+
+		EffectInfo.iUVFlowLoop = item["UVFlowLoop"];
+
+		EffectInfo.fUVFlowDir.x = item["UVFlowDir"]["x"];
+		EffectInfo.fUVFlowDir.y = item["UVFlowDir"]["y"];
+
+		EffectInfo.fUVFlowSpeed.x = item["UVFlowSpeed"]["x"];
+		EffectInfo.fUVFlowSpeed.y = item["UVFlowSpeed"]["y"];
+#pragma endregion
+
+#pragma region 애니메이션
+		EffectInfo.bAnimation = item["Animation"];
+		
+		EffectInfo.bAnimationLoop = item["AnimationLoop"];
+
+		EffectInfo.bIncrement = item["Increment"];
+
+		EffectInfo.fAnimationSpeed.x = item["AnimationSpeed"]["x"];
+		EffectInfo.fAnimationSpeed.y = item["AnimationSpeed"]["y"];
+#pragma endregion
+
+#pragma region 알파
+		EffectInfo.fAlphaStart.x = item["AlphaStart"]["x"];
+		EffectInfo.fAlphaStart.y = item["AlphaStart"]["y"];
+
+		EffectInfo.bAlphaCreate = item["AlphaCreate"];
+
+		EffectInfo.bAlphaDelete = item["AlphaDelete"];
+
+		EffectInfo.fAlphaSpeed.x = item["AlphaSpeed"]["x"];
+		EffectInfo.fAlphaSpeed.y = item["AlphaSpeed"]["y"];
+
+		EffectInfo.bAlphaChange = item["AlphaChange"];
+
+		EffectInfo.bAlphaIn = item["AlphaIn"];
+
+		EffectInfo.fAlphaChangeStartDelay.x = item["AlphaChangeStartDelay"]["x"];
+		EffectInfo.fAlphaChangeStartDelay.y = item["AlphaChangeStartDelay"]["y"];
+#pragma endregion
+
+#pragma region 색상
+		EffectInfo.bColorRandom = item["ColorRandom"];
+
+		EffectInfo.fColorS.x = item["ColorS"]["x"];
+		EffectInfo.fColorS.y = item["ColorS"]["y"];
+		EffectInfo.fColorS.z = item["ColorS"]["z"];
+		EffectInfo.fColorS.w = item["ColorS"]["w"];
+
+		EffectInfo.bColorChange = item["ColorChange"];
+
+		EffectInfo.bColorChangeRandom = item["ColorChangeRandom"];
+
+		EffectInfo.fColorChangeRandomTime.x = item["ColorChangeRandomTime"]["x"];
+		EffectInfo.fColorChangeRandomTime.y = item["ColorChangeRandomTime"]["y"];
+
+		EffectInfo.bColorLoop = item["ColorChangeRandom"];
+
+		EffectInfo.fColorChangeStartDelay.x = item["ColorChangeStartDelay"]["x"];
+		EffectInfo.fColorChangeStartDelay.y = item["ColorChangeStartDelay"]["y"];
+
+		EffectInfo.fColorChangeStartM.x = item["ColorChangeStartM"]["x"];
+		EffectInfo.fColorChangeStartM.y = item["ColorChangeStartM"]["y"];
+
+		EffectInfo.fColorM.x = item["ColorM"]["x"];
+		EffectInfo.fColorM.y = item["ColorM"]["y"];
+		EffectInfo.fColorM.z = item["ColorM"]["z"];
+		EffectInfo.fColorM.w = item["ColorM"]["w"];
+
+		EffectInfo.fColorChangeStartF.x = item["ColorChangeStartF"]["x"];
+		EffectInfo.fColorChangeStartF.y = item["ColorChangeStartF"]["y"];
+
+		EffectInfo.fColorF.x = item["ColorF"]["x"];
+		EffectInfo.fColorF.y = item["ColorF"]["y"];
+		EffectInfo.fColorF.z = item["ColorF"]["z"];
+		EffectInfo.fColorF.w = item["ColorF"]["w"];
+
+		EffectInfo.fColorDuration.x = item["ColorDuration"]["x"];
+		EffectInfo.fColorDuration.y = item["ColorDuration"]["y"];
+#pragma endregion
+
+#pragma region 블러
+		EffectInfo.bBloomPowerRandom = item["BloomPowerRandom"];
+
+		EffectInfo.fBloomPower.x = item["BloomPower"]["x"];
+		EffectInfo.fBloomPower.y = item["BloomPower"]["y"];
+		EffectInfo.fBloomPower.z = item["BloomPower"]["z"];
+		EffectInfo.fBloomPower.w = item["BloomPower"]["w"];
+
+		EffectInfo.bBlurPowerRandom = item["BlurPowerRandom"];
+
+		EffectInfo.fBlurPower = item["BlurPower"];
+#pragma endregion
+
+#pragma region 기타 정보
+		EffectInfo.iShaderPass = item["ShaderPass"];
+
+		EffectInfo.fAlpha_Discard = item["Alpha_Discard"];
+
+		EffectInfo.fBlack_Discard.x = item["Black_Discard"]["x"];
+		EffectInfo.fBlack_Discard.y = item["Black_Discard"]["y"];
+		EffectInfo.fBlack_Discard.z = item["Black_Discard"]["z"];
+#pragma endregion
 	}
 
-
 	// 적용
-	m_tEffectInfo = EffectInfo;
 	static_cast<CEffect*>(m_pEffect)->Set_EffectDesc(EffectInfo);
 	Load_InfoEffect();
 

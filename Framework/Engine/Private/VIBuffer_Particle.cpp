@@ -228,10 +228,10 @@ void CVIBuffer_Particle::Restart_ParticleBufferDesc(_uint iCount)
 #pragma endregion
 
 #pragma region 블러
-		if ((*m_tParticleDesc.pBlurColorRandom))
-			m_vecParticleShaderDesc[i].fBlurColor = _float3(CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f));
+		if ((*m_tParticleDesc.pBloomPowerRandom))
+			m_vecParticleShaderDesc[i].fBloomPower = _float3(CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f));
 		else
-			m_vecParticleShaderDesc[i].fBlurColor = _float3((*m_tParticleDesc.pBlurColor).x, (*m_tParticleDesc.pBlurColor).y, (*m_tParticleDesc.pBlurColor).z);
+			m_vecParticleShaderDesc[i].fBloomPower = _float3((*m_tParticleDesc.pBloomPower).x, (*m_tParticleDesc.pBloomPower).y, (*m_tParticleDesc.pBloomPower).z);
 
 		if ((*m_tParticleDesc.pBlurPowerRandom))
 			m_vecParticleShaderDesc[i].fBlurPower = CUtils::Random_Float(0.1f, 1.f);
@@ -541,10 +541,10 @@ HRESULT CVIBuffer_Particle::Initialize(void* pArg)
 #pragma endregion
 
 #pragma region 블러
-		if ((*m_tParticleDesc.pBlurColorRandom))
-			ParticleShaderInfo.fBlurColor = _float3(CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f));
+		if ((*m_tParticleDesc.pBloomPowerRandom))
+			ParticleShaderInfo.fBloomPower = _float3(CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f));
 		else
-			ParticleShaderInfo.fBlurColor = _float3((*m_tParticleDesc.pBlurColor).x, (*m_tParticleDesc.pBlurColor).y, (*m_tParticleDesc.pBlurColor).z);
+			ParticleShaderInfo.fBloomPower = _float3((*m_tParticleDesc.pBloomPower).x, (*m_tParticleDesc.pBloomPower).y, (*m_tParticleDesc.pBloomPower).z);
 
 		if ((*m_tParticleDesc.pBlurPowerRandom))
 			ParticleShaderInfo.fBlurPower = CUtils::Random_Float(0.1f, 1.f);

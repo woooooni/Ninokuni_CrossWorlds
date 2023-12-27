@@ -21,8 +21,7 @@ public:
 	enum RENDERER_SHADER_TYPE   { SHADER_DEFERRED, SHADER_OUTLINE, SHADER_BLUR, SHADER_SSAO, SHADER_FINAL, SHADER_END };
 	enum INSTANCING_SHADER_TYPE { ANIM_MODEL, MODEL, RECT, EFFECT_TEXTURE, EFFECT_MODEL, TYPE_END };
 	enum BLUR_PASS              { 
-		BLUR_NONE, 
-		BLUR_DOWN, BLUR_UP, 
+		BLUR_DOWN, BLUR_UP,
 		BLUR_HOR_LOW,    BLUR_VER_LOW,
 		BLUR_HOR_MIDDLE, BLUR_VER_MIDDLE,
 		BLUR_HOR_HIGH,   BLUR_VER_HIGH
@@ -39,8 +38,9 @@ public:
 		_float	g_fAlpha;  // 4
 
 		_float4	g_fAdditiveDiffuseColor; // 16
-		_float4	g_vBloomPower;           // 16
 
+		_float3	g_vBlurColor;            // 12
+		_float  g_fBlurPower;            // 4
 	} EFFECT_INSTANCE_DESC;
 
 	typedef struct tagTextDesc
@@ -127,14 +127,14 @@ private:
 	HRESULT Render_Cursor();
 
 	// Blur
-	HRESULT Render_Blur(const wstring& strStartTargetTag, const wstring& strFinalTragetTag, _bool bClear, _int iHorizontalPass, _int iVerticalPass);
+	HRESULT Render_Blur(const wstring& strStartTargetTag, const wstring& strFinalTragetTag, _bool bClear, BLUR_PASS eHorizontalPass, BLUR_PASS eVerticalPass);
 	HRESULT Render_BlurDownSample(const wstring& strStartTargetTag);
-	HRESULT Render_Blur_Horizontal(_int iHorizontalPass);
-	HRESULT Render_Blur_Vertical(_int iVerticalPass);
+	HRESULT Render_Blur_Horizontal(BLUR_PASS eHorizontalPass);
+	HRESULT Render_Blur_Vertical(BLUR_PASS eVerticalPass);
 	HRESULT Render_BlurUpSample(const wstring& strFinalMrtTag, _bool bClear);
 
-	// 
-	HRESULT Render_BlendTargetMix(const wstring& strStartTargetTag, const wstring& strFinalTragetTag, _bool bClear);
+	// Mix
+	HRESULT Render_AlphaBlendTargetMix(const wstring& strStartTargetTag, const wstring& strFinalTragetTag, _bool bClear);
 
 #ifdef _DEBUG
 private:

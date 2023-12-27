@@ -162,11 +162,11 @@ public:
 		_float2 fColorDuration = _float2(2.f, 2.f);
 #pragma endregion
 
-#pragma region 블러 // 추후 기능 구현
-		_bool   bBlurColorRandom = false;
-		_float4 fBlurColor       = _float4(1.f, 0.f, 0.f, 1.f);
-		_bool   bBlurPowerRandom = false;
-		_float  fBlurPower       = 0.5f;
+#pragma region 블러
+		_bool   bBloomPowerRandom = false;
+		_float4 fBloomPower       = _float4(1.f, 0.f, 0.f, 1.f);
+		_bool   bBlurPowerRandom  = false;
+		_float  fBlurPower        = 0.5f;
 #pragma endregion
 
 #pragma region 기타 정보

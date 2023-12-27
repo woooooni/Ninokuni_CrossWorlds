@@ -19,6 +19,8 @@ texture2D g_SSAOTarget;
 texture2D g_ShadowTarget;
 texture2D g_OutlineTarget;
 
+texture2D g_BlendMixTarget;
+
 // Α¶Έν
 vector g_vCamPosition;
 
@@ -285,6 +287,16 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 	return Out;
 }
 
+// ALPHABLENDMIX
+PS_OUT PS_MAIN_ALPHABLENDMIX(PS_IN In)
+{
+	PS_OUT Out = (PS_OUT)0;
+
+	Out.vColor = g_BlendMixTarget.Sample(PointSampler, In.vTexcoord);
+
+	return Out;
+}
+
 technique11 DefaultTechnique
 {
 	// 0
@@ -340,5 +352,18 @@ technique11 DefaultTechnique
 		HullShader = NULL; 
 		DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_DEFERRED();
+	}
+
+	// 4
+	pass AlphaBlendMix
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_Default, 0);
+		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		HullShader = NULL;
+		DomainShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN_ALPHABLENDMIX();
 	}
 }
