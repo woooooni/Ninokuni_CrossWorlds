@@ -18,6 +18,9 @@ public:
 	virtual void Tick_State(_float fTimeDelta);
 	virtual void Exit_State();
 
+private:
+	_float m_fSlidingSpeed = 0.f;
+
 public:
 	static CGlanixState_RageChargeEnd* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

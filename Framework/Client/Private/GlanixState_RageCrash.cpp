@@ -2,6 +2,7 @@
 #include "GlanixState_RageCrash.h"
 
 #include "Glanix.h"
+#include "Camera_Manager.h"
 
 CGlanixState_RageCrash::CGlanixState_RageCrash(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
@@ -18,6 +19,8 @@ HRESULT CGlanixState_RageCrash::Initialize(const list<wstring>& AnimationList)
 void CGlanixState_RageCrash::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_Crash"));
+
+	CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
 }
 
 void CGlanixState_RageCrash::Tick_State(_float fTimeDelta)

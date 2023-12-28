@@ -2,6 +2,7 @@
 #include "GlanixState_IceWave.h"
 
 #include "Glanix.h"
+#include "Camera_Manager.h"
 
 CGlanixState_IceWave::CGlanixState_IceWave(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
@@ -23,6 +24,11 @@ void CGlanixState_IceWave::Enter_State(void* pArg)
 void CGlanixState_IceWave::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
+
+	if (m_pModelCom->Get_CurrAnimationFrame() == 50)
+	{
+		CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
+	}
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{

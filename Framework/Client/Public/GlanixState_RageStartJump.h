@@ -3,11 +3,11 @@
 #include "GlanixState_Base.h"
 BEGIN(Client)
 
-class CGlanixState_RageReturn final : public CGlanixState_Base
+class CGlanixState_RageStartJump final : public CGlanixState_Base
 {
 private:
-	CGlanixState_RageReturn(CStateMachine* pStateMachine);
-	virtual ~CGlanixState_RageReturn() = default;
+	CGlanixState_RageStartJump(CStateMachine* pStateMachine);
+	virtual ~CGlanixState_RageStartJump() = default;
 
 public:
 	virtual HRESULT Initialize(const list<wstring>& AnimationList);
@@ -19,10 +19,9 @@ public:
 
 private:
 	_vector vDestPos = {};
-	_bool	bIsInit = false;
 
 public:
-	static CGlanixState_RageReturn* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
+	static CGlanixState_RageStartJump* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
 };
 

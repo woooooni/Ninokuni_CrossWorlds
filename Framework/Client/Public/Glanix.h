@@ -12,10 +12,19 @@ public:
 		GLANIX_ATTACK1, GLANIX_ATTACK2, GLANIX_SPINBOMB, GLANIX_JUMPSTAMP, GLANIX_QUADBLOW, GLANIX_ICEWAVE,
 		GLANIX_CHARGE, GLANIX_SNOWBALL, GLANIX_SPINBOMBBOMB,
 		GLANIX_BERSERK,
-		GLANIX_RAGERETURN, GLANIX_RAGESTART, GLANIX_RAGETURN, GLANIX_RAGEIDLE,
-		GLANIX_RAGECHARGE, GLANIX_RAGECHARGE_END,
+		/* 레이지1 */
+		GLANIX_RAGESTART_TURN_OC, GLANIX_RAGESTART_JUMP, GLANIX_RAGESTART_TURN_OL,
+		GLANIX_RAGESTART, GLANIX_RAGETURN, GLANIX_RAGEIDLE,
+		GLANIX_RAGECHARGE, GLANIX_RAGECHARGE_END, 
+		GLANIX_RAGERETURN, GLANIX_FINISHTURN_OL, GLANIX_RAGEPULL, GLANIX_RAGERISING, GLANIX_RAGESTAMP,
+		GLANIX_RAGECRASH,
+		/* 레이지2 */
+		GLANIX_RAGE2START_TURN_WP, GLANIX_RAGE2START_JUMP, GLANIX_RAGE2START_TURN_OL, GLANIX_RAGE2START,
+		GLANIX_RAGE2WAVE, GLANIX_RAGE2IDLE,
+		GLANIX_RAGE2RISING, GLANIX_RAGE2STAMP,
 
 		GLANIX_TURN,
+		GLANIX_STUN,
 		GLANIX_DEAD,
 		GLANIX_END
 	};
@@ -37,10 +46,14 @@ public:
 	virtual void Collision_Continue(const COLLISION_INFO& tInfo) override;
 	virtual void Collision_Exit(const COLLISION_INFO& tInfo) override;
 
-
 public:
 	virtual void On_Damaged(const COLLISION_INFO& tInfo) override;
 	virtual void Set_SkillTree() override;
+
+	_bool	Get_IsCrash() { return m_bIsCrash; }
+	void	Set_IsCrash(_bool bIsCrash) { m_bIsCrash = bIsCrash; }
+
+	_vector	Get_WavePoint() { return m_vWavePoint; }
 
 private:
 	virtual HRESULT Ready_Components();
@@ -50,6 +63,10 @@ private:
 private:
 	HRESULT Ready_Sockets();
 	HRESULT Ready_Parts();
+
+private:
+	_bool	m_bIsCrash = false;
+	_vector	m_vWavePoint = {};
 
 public:
 	static CGlanix* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat);

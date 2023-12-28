@@ -2,6 +2,7 @@
 #include "GlanixState_Attack2.h"
 
 #include "Glanix.h"
+#include "Camera_Manager.h"
 
 CGlanixState_Attack2::CGlanixState_Attack2(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
@@ -23,6 +24,11 @@ void CGlanixState_Attack2::Enter_State(void* pArg)
 void CGlanixState_Attack2::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
+
+	if (m_pModelCom->Get_CurrAnimationFrame() == 62)
+	{
+		CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
+	}
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{

@@ -17,15 +17,6 @@ HRESULT CGlanixState_RageIdle::Initialize(const list<wstring>& AnimationList)
 
 void CGlanixState_RageIdle::Enter_State(void* pArg)
 {
-	if (m_pGlanix->Get_Stat().fHp <= m_pGlanix->Get_Stat().fMaxHp / 2.f && !m_pGlanix->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK))
-	{
-		m_pGlanix->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK, true);
-		m_pGlanix->Set_SkillTree();
-		m_iAtkIndex = 0;
-		m_pStateMachineCom->Change_State(CGlanix::GLANIX_BERSERK);
-		return;
-	}
-
 	if (pArg != nullptr)
 		m_fWaitTime = *(_float*)pArg;
 

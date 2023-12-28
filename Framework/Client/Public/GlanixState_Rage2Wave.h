@@ -3,11 +3,11 @@
 #include "GlanixState_Base.h"
 BEGIN(Client)
 
-class CGlanixState_RageReturn final : public CGlanixState_Base
+class CGlanixState_Rage2Wave final : public CGlanixState_Base
 {
 private:
-	CGlanixState_RageReturn(CStateMachine* pStateMachine);
-	virtual ~CGlanixState_RageReturn() = default;
+	CGlanixState_Rage2Wave(CStateMachine* pStateMachine);
+	virtual ~CGlanixState_Rage2Wave() = default;
 
 public:
 	virtual HRESULT Initialize(const list<wstring>& AnimationList);
@@ -18,11 +18,11 @@ public:
 	virtual void Exit_State();
 
 private:
-	_vector vDestPos = {};
-	_bool	bIsInit = false;
+	_int	m_iWaveCount = 0;
+	_int    m_iMaxCount = 0;
 
 public:
-	static CGlanixState_RageReturn* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
+	static CGlanixState_Rage2Wave* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
 };
 

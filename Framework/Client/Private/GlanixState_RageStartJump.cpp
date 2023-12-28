@@ -1,31 +1,31 @@
 #include "stdafx.h"
-#include "GlanixState_RageReturn.h"
+#include "GlanixState_RageStartJump.h"
 
 #include "Glanix.h"
 
 #include "Animation.h"
 #include "Camera_Manager.h"
 
-CGlanixState_RageReturn::CGlanixState_RageReturn(CStateMachine* pStateMachine)
+CGlanixState_RageStartJump::CGlanixState_RageStartJump(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
 {
 }
 
-HRESULT CGlanixState_RageReturn::Initialize(const list<wstring>& AnimationList)
+HRESULT CGlanixState_RageStartJump::Initialize(const list<wstring>& AnimationList)
 {
 	__super::Initialize(AnimationList);
 
 	return S_OK;
 }
 
-void CGlanixState_RageReturn::Enter_State(void* pArg)
+void CGlanixState_RageStartJump::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_Skill03"));
 
 	vDestPos = m_pGlanix->Get_OriginPos();
 }
 
-void CGlanixState_RageReturn::Tick_State(_float fTimeDelta)
+void CGlanixState_RageStartJump::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
@@ -44,28 +44,28 @@ void CGlanixState_RageReturn::Tick_State(_float fTimeDelta)
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
-		m_pStateMachineCom->Change_State(CGlanix::GLANIX_FINISHTURN_OL);
+		m_pStateMachineCom->Change_State(CGlanix::GLANIX_RAGESTART_TURN_OL);
 	}
 }
 
-void CGlanixState_RageReturn::Exit_State()
+void CGlanixState_RageStartJump::Exit_State()
 {
 }
 
-CGlanixState_RageReturn* CGlanixState_RageReturn::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
+CGlanixState_RageStartJump* CGlanixState_RageStartJump::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
 {
-	CGlanixState_RageReturn* pInstance = new CGlanixState_RageReturn(pStateMachine);
+	CGlanixState_RageStartJump* pInstance = new CGlanixState_RageStartJump(pStateMachine);
 
 	if (FAILED(pInstance->Initialize(AnimationList)))
 	{
-		MSG_BOX("Fail Create : CGlanixState_RageReturn");
+		MSG_BOX("Fail Create : CGlanixState_RageStartJump");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CGlanixState_RageReturn::Free()
+void CGlanixState_RageStartJump::Free()
 {
 	__super::Free();
 }

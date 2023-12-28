@@ -12,17 +12,29 @@ HRESULT CGlanixState_Chase::Initialize(const list<wstring>& AnimationList)
 {
 	__super::Initialize(AnimationList);
 
+	m_fChaseTime = 2.f;
+
 	return S_OK;
 }
 
 void CGlanixState_Chase::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_Battlerun"));
+
+	m_fTime = 0.f;
 }
 
 void CGlanixState_Chase::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
+
+	m_fTime += fTimeDelta;
+
+	if (m_fTime >= m_fChaseTime)
+	{
+		m_pStateMachineCom->Change_State(CGlanix::GLANIX_JUMPSTAMP);
+		return;
+	}
 
 	if (m_pGlanix->Get_Stat().fHp <= m_pGlanix->Get_Stat().fMaxHp / 2.f && !m_pGlanix->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK))
 	{
