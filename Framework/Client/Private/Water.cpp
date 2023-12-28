@@ -135,6 +135,7 @@ HRESULT CWater::Bind_ShaderResources()
 	if (FAILED(m_pModelCom->Render(m_pWaterShaderCom, 0, 3)))
 		return E_FAIL;
 	
+	int a = 0;
 
 	return S_OK;
 }
