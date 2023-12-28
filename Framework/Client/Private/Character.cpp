@@ -111,7 +111,9 @@ void CCharacter::LateTick(_float fTimeDelta)
 	if (nullptr == m_pRendererCom)
 		return;
 
-	m_pControllerCom->LateTick_Controller(fTimeDelta);
+	if(nullptr != m_pControllerCom)
+		m_pControllerCom->LateTick_Controller(fTimeDelta);
+
 	m_pModelCom->LateTick(fTimeDelta);
 
 	if (nullptr != m_pWeapon)

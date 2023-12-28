@@ -23,15 +23,21 @@ void CUI_SkillWindow_SkillSlot::Set_SkillSlot(CHARACTER_TYPE eType)
 	switch (eType)
 	{
 	case CHARACTER_TYPE::SWORD_MAN:
-		m_iClassTexIndex = 0;
-		m_iBurstTexIndex = 0; // 0~4 무기 속성에 따라 접근할 수 있게 수정할 예정임
-		m_iActiveTexIndex = 0;
+		m_iClassTexIndex = 0; // 0, 1, 2
+		m_iBurstTexIndex = 0; // 0 ~ 4 무기 속성에 따라 접근할 수 있게 수정할 예정임
+		m_iActiveTexIndex = 0; // 0, 1, 2
 		break;
 
 	case CHARACTER_TYPE::DESTROYER:
+		m_iClassTexIndex = 3; // 3, 4, 5
+		m_iBurstTexIndex = 5; // 5 ~ 9
+		m_iActiveTexIndex = 3; // 3, 4, 5
 		break;
 
 	case CHARACTER_TYPE::ENGINEER:
+		m_iClassTexIndex = 6; // 6, 7, 8
+		m_iBurstTexIndex = 10; // 10 ~ 14
+		m_iActiveTexIndex = 6; // 6, 7, 8
 		break;
 	}
 }
@@ -61,6 +67,8 @@ void CUI_SkillWindow_SkillSlot::Set_Active(_bool bActive)
 	}
 
 	m_bActive = bActive;
+
+	Set_SkillSlot(CHARACTER_TYPE::ENGINEER);
 }
 
 HRESULT CUI_SkillWindow_SkillSlot::Initialize_Prototype()

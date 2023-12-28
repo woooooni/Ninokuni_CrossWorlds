@@ -450,6 +450,7 @@
     <ClInclude Include="..\Public\Tool_Item.h" />
     <ClInclude Include="..\Public\UIDamage_Manager.h" />
     <ClInclude Include="..\Public\UI_Announced.h" />
+    <ClInclude Include="..\Public\UI_CharacterDummy.h" />
     <ClInclude Include="..\Public\UI_Costume_Btn.h" />
     <ClInclude Include="..\Public\UI_Costume_ChangeBtn.h" />
     <ClInclude Include="..\Public\UI_Costume_ItemSlot.h" />
@@ -899,6 +900,7 @@
     <ClCompile Include="..\Private\Tool_Item.cpp" />
     <ClCompile Include="..\Private\UIDamage_Manager.cpp" />
     <ClCompile Include="..\Private\UI_Announced.cpp" />
+    <ClCompile Include="..\Private\UI_CharacterDummy.cpp" />
     <ClCompile Include="..\Private\UI_Costume_Btn.cpp" />
     <ClCompile Include="..\Private\UI_Costume_ChangeBtn.cpp" />
     <ClCompile Include="..\Private\UI_Costume_ItemSlot.cpp" />

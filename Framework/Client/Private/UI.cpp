@@ -53,6 +53,24 @@ void CUI::Set_ChildPosition(_float3 vPosition)
 	}
 }
 
+void CUI::Set_ElementalTypeToChild(ELEMENTAL_TYPE eElementalType)
+{
+	for (auto& pChildUI : m_pChild)
+	{
+		if (nullptr != pChildUI)
+			pChildUI->Set_ElementalType(eElementalType);
+	}
+}
+
+void CUI::Set_PlayerTypeToChild(CHARACTER_TYPE eCharacterType)
+{
+	for (auto& pChildUI : m_pChild)
+	{
+		if (nullptr != pChildUI)
+			pChildUI->Set_CharacterType(eCharacterType);
+	}
+}
+
 _float2 CUI::Get_ProjectionPosition(CTransform* pTransfrom)
 {
 	if (nullptr == pTransfrom)

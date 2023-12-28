@@ -91,8 +91,10 @@ void CUI_SkillWindow_LineBox::LateTick(_float fTimeDelta)
 
 		if (m_eUIType == UI_SKILLWINDOW::SKWINDOW_DESC)
 		{
-			if (0 > m_iDescIndex || 6 < m_iDescIndex)
+			if (0 > m_iDescIndex || 20 < m_iDescIndex)
 				return;
+
+			// 소드맨 0~6, 디스트로이어 7~13, 엔지니어 14~20
 		}
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
@@ -155,6 +157,12 @@ HRESULT CUI_SkillWindow_LineBox::Ready_Components()
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SkillWindow_Desc_Swordsman"),
 			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 			return E_FAIL;
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SkillWindow_Desc_Engineer"),
+			TEXT("Com_Texture1"), (CComponent**)&m_pTextureCom_Eng)))
+			return E_FAIL;
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SkillWindow_Desc_Destroyer"),
+			TEXT("Com_Texture2"), (CComponent**)&m_pTextureCom_Des)))
+			return E_FAIL;
 		break;
 	}
 
@@ -192,11 +200,23 @@ HRESULT CUI_SkillWindow_LineBox::Bind_ShaderResources()
 	}
 	else if (m_eUIType == UI_SKILLWINDOW::SKWINDOW_DESC)
 	{
-		//if (0 > m_iDescIndex || 6 < m_iDescIndex)
-		//	return E_FAIL;
+		switch(m_eCurPlayerType)
+		{
+		case CHARACTER_TYPE::SWORD_MAN:
+			if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iDescIndex)))
+				return E_FAIL;
+			break;
 
-		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iDescIndex)))
-			return E_FAIL;
+		case CHARACTER_TYPE::DESTROYER:
+			if (FAILED(m_pTextureCom_Des->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iDescIndex)))
+				return E_FAIL;
+			break;
+
+		case CHARACTER_TYPE::ENGINEER:
+			if (FAILED(m_pTextureCom_Eng->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iDescIndex)))
+				return E_FAIL;
+			break;
+		}
 	}
 	else
 	{
@@ -236,6 +256,12 @@ CGameObject* CUI_SkillWindow_LineBox::Clone(void* pArg)
 void CUI_SkillWindow_LineBox::Free()
 {
 	__super::Free();
+
+	if (SKWINDOW_DESC == m_eUIType)
+	{
+		Safe_Release(m_pTextureCom_Des);
+		Safe_Release(m_pTextureCom_Eng);
+	}
 
 	Safe_Release(m_pTextureCom);
 }

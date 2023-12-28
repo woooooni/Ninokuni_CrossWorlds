@@ -14,6 +14,23 @@ CUI_MonsterHP_World::CUI_MonsterHP_World(const CUI_MonsterHP_World& rhs)
 {
 }
 
+void CUI_MonsterHP_World::Set_Owner(CMonster* pOwner, _int iElementalType)
+{
+	m_pOwner = pOwner;
+	m_iTextureIndex = iElementalType;
+
+	CMonster::MONSTER_STAT StatDesc = {};
+	ZeroMemory(&StatDesc, sizeof(CMonster::MONSTER_STAT));
+
+	memcpy(&StatDesc, &(m_pOwner->Get_Stat()), sizeof(CMonster::MONSTER_STAT));
+
+	m_fCurHP = StatDesc.fHp;
+	m_fMaxHP = StatDesc.fMaxHp;
+	
+	m_strName = m_pOwner->Get_KorName();
+
+}
+
 HRESULT CUI_MonsterHP_World::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
@@ -64,10 +81,6 @@ HRESULT CUI_MonsterHP_World::Initialize(void* pArg)
 
 	m_bIsTarget = true;
 
-	//Test Code
-	m_fMaxHP = 2000.f;
-	m_fCurHP = 2000.f;
-
 	return S_OK;
 }
 
@@ -75,6 +88,9 @@ void CUI_MonsterHP_World::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (Is_Dead())
+			return;
+
 		if (nullptr != m_pOwner)
 		{
 			CTransform* pTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");
@@ -89,7 +105,18 @@ void CUI_MonsterHP_World::Tick(_float fTimeDelta)
 				for (auto& iter : m_Arrow)
 					iter->Tick(fTimeDelta);
 			}
+
+			// 체력을 update한다
+			CMonster::MONSTER_STAT StatDesc = {};
+			ZeroMemory(&StatDesc, sizeof(CMonster::MONSTER_STAT));
+			memcpy(&StatDesc, &(m_pOwner->Get_Stat()), sizeof(CMonster::MONSTER_STAT));
+
+			m_fCurHP = StatDesc.fHp;
 		}
+
+		if (m_pOwner->Is_Dead())
+			Set_Dead(true);
+
 		__super::Tick(fTimeDelta);
 	}
 }
@@ -98,6 +125,9 @@ void CUI_MonsterHP_World::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (Is_Dead())
+			return;
+
 		if (nullptr != m_pOwner)
 		{
 			_float4 vCamPos = GI->Get_CamPosition();
@@ -204,13 +234,16 @@ void CUI_MonsterHP_World::LateTick(_float fTimeDelta)
 				}
 			}
 		}
+
+		if (m_pOwner->Is_Dead())
+			Set_Dead(true);
 	}
 
 	// TestCode
-	if (KEY_TAP(KEY::T))
-	{
-		m_fCurHP = m_fCurHP - 100.f;
-	}
+//	if (KEY_TAP(KEY::T))
+//	{
+//		m_fCurHP = m_fCurHP - 100.f;
+//	}
 }
 
 HRESULT CUI_MonsterHP_World::Render()
@@ -289,10 +322,11 @@ void CUI_MonsterHP_World::Set_Text(_float2 ScreenPos)
 
 	wstring strMonsterTag = m_pOwner->Get_ObjectTag();
 	// Todo : Text글자길이로 x값 정렬하기
+
 	if (strMonsterTag == TEXT("Shadow_Thief"))
 	{
 		m_strSubName = TEXT("서릿별 나무");
-		m_strName = TEXT("코부리");
+		//m_strName = TEXT("코부리");
 
 		_int iSubLength = m_strSubName.empty() ? 0 : static_cast<_int>(m_strSubName.length());
 		_float fSubX = vSubPosition.x - iSubLength * 5.f;

@@ -1,0 +1,233 @@
+#include "stdafx.h"
+#include "UI_CharacterDummy.h"
+#include "GameInstance.h"
+#include "HierarchyNode.h"
+#include "Trail.h"
+#include "Part_Manager.h"
+
+
+CUI_CharacterDummy::CUI_CharacterDummy(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
+	: CCharacter(pDevice, pContext, strObjectTag, CHARACTER_TYPE::ENGINEER)
+{
+}
+
+CUI_CharacterDummy::CUI_CharacterDummy(const CUI_CharacterDummy& rhs)
+	: CCharacter(rhs)
+{
+
+}
+
+HRESULT CUI_CharacterDummy::Initialize_Prototype()
+{
+	if (FAILED(__super::Initialize_Prototype()))
+		return E_FAIL;
+
+
+	return S_OK;
+}
+
+HRESULT CUI_CharacterDummy::Initialize(void* pArg)
+{
+	if (FAILED(__super::Initialize(pArg)))
+		return E_FAIL;
+
+	if (FAILED(Ready_Components()))
+		return E_FAIL;
+
+	// 임의의 카메라 위치를 만들어낸다.
+	_float3 vCamPos = _float3(0.f, 0.7f, -2.f);
+	_float3 vLook = _float3(0.f, 0.7, 0.f);
+	_float3 vUp = _float3(0.f, 1.f, 0.f);
+
+	m_vCamMatrix = XMMatrixLookAtLH(XMLoadFloat3(&vCamPos), XMLoadFloat3(&vLook), XMLoadFloat3(&vUp));
+	m_vCamPosition = XMVectorSet(vCamPos.x, vCamPos.y, vCamPos.z, 1.f);
+
+	XMStoreFloat4x4(&m_ViewMatrix, XMMatrixTranspose(m_vCamMatrix));
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-0.3f, 0.f, 0.f, 1.f));
+
+	return S_OK;
+}
+
+void CUI_CharacterDummy::Tick(_float fTimeDelta)
+{
+	m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
+
+	__super::Tick(fTimeDelta);
+}
+
+void CUI_CharacterDummy::LateTick(_float fTimeDelta)
+{
+	m_pModelCom->LateTick(fTimeDelta);
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
+
+#ifdef DEBUG
+	m_pRendererCom->Add_Debug(m_pControllerCom);
+#endif // DEBUG
+
+	
+}
+
+HRESULT CUI_CharacterDummy::Render()
+{
+	if (nullptr == m_pModelCom || nullptr == m_pShaderCom)
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &m_vCamPosition, sizeof(_float4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_ViewMatrix", &m_ViewMatrix, sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+		return E_FAIL;
+
+	_float4 vRimColor = { 0.f, 0.f, 0.f, 0.f };
+	if (m_bInfinite)
+	{
+		vRimColor = { 0.f, 0.5f, 1.f, 1.f };
+	}
+
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float4))))
+		return E_FAIL;
+
+	if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
+		return E_FAIL;
+
+
+	for (size_t i = 0; i < PART_TYPE::PART_END; i++)
+	{
+		if (nullptr == m_pCharacterPartModels[i])
+			continue;
+
+		const _uint		iNumMeshes = m_pCharacterPartModels[i]->Get_NumMeshes();
+
+		for (_uint j = 0; j < iNumMeshes; ++j)
+		{
+			if (FAILED(m_pCharacterPartModels[i]->SetUp_OnShader(m_pShaderCom, m_pCharacterPartModels[i]->Get_MaterialIndex(j), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+				return E_FAIL;
+
+			if (FAILED(m_pCharacterPartModels[i]->Render(m_pShaderCom, j)))
+				return E_FAIL;
+		}
+	}
+
+
+	return S_OK;
+}
+
+
+HRESULT CUI_CharacterDummy::Ready_Components()
+{
+
+	/* For.Com_Transform */
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
+		return E_FAIL;
+
+	/* For.Com_Renderer */
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
+		return E_FAIL;
+
+	/* For.Com_Shader */
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_AnimModel" ), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
+		return E_FAIL;
+
+	/* For.Com_Model */
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Engineer_Dummy"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+		return E_FAIL;
+
+
+	for (_uint i = 0; i < PART_TYPE::PART_END; ++i)
+ 		m_pCharacterPartModels[i] = CPart_Manager::GetInstance()->Get_PartModel(m_eCharacterType, PART_TYPE(i), 0);
+
+	m_pModelCom->Set_Animation(140);
+
+	return S_OK;
+}
+
+#pragma region Ready_States
+HRESULT CUI_CharacterDummy::Ready_States()
+{
+	return S_OK;
+}
+
+#pragma endregion
+
+
+#pragma region Ready_Colliders
+HRESULT CUI_CharacterDummy::Ready_Colliders()
+{
+	return S_OK;
+}
+
+#pragma endregion
+
+#pragma region Ready_Sockets
+HRESULT CUI_CharacterDummy::Ready_Sockets()
+{
+	return S_OK;
+}
+#pragma endregion
+
+#pragma region Ready_Parts
+HRESULT CUI_CharacterDummy::Ready_Parts()
+{
+	return S_OK;
+}
+#pragma endregion
+
+_float2 CUI_CharacterDummy::Transpose_ProjectionPosition()
+{
+	_vector vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+
+	_float4x4 matWorld = m_pTransformCom->Get_WorldFloat4x4();
+	_matrix matView = GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW);
+	_matrix matProj = GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ);
+
+	_float4x4 matWindow;
+	XMStoreFloat4x4(&matWindow, XMLoadFloat4x4(&matWorld) * matView * matProj);
+
+	_float3 vWindowPos = *(_float3*)&matWindow.m[3][0];
+	// &matWindow.m[3][0] -> 포지션의 시작 주소를 얻고,
+	// (_float3*) -> _float3 포인터로 캐스팅
+	// * -> 그 값을 가져온다.
+
+	vWindowPos.x /= vWindowPos.z;
+	vWindowPos.y /= vWindowPos.z;
+	_float fScreenX = vWindowPos.x * g_iWinSizeX * 0.5f + (g_iWinSizeX * 0.5f);
+	_float fScreenY = vWindowPos.y * -(g_iWinSizeY * 0.5f) + (g_iWinSizeY * 0.5f);
+
+	return _float2(fScreenX, fScreenY);
+}
+
+CUI_CharacterDummy* CUI_CharacterDummy::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
+{
+	CUI_CharacterDummy* pInstance = new CUI_CharacterDummy(pDevice, pContext, strObjectTag);
+	if (FAILED(pInstance->Initialize_Prototype()))
+	{
+		MSG_BOX("Create Failed : CUI_CharacterDummy");
+		Safe_Release(pInstance);
+		return nullptr;
+	}
+	return pInstance;
+}
+
+CGameObject* CUI_CharacterDummy::Clone(void* pArg)
+{
+	CUI_CharacterDummy* pInstance = new CUI_CharacterDummy(*this);
+
+	if (FAILED(pInstance->Initialize(pArg)))
+	{
+		MSG_BOX("Failed to Cloned : CUI_CharacterDummy");
+		Safe_Release(pInstance);
+	}
+
+	return pInstance;
+}
+
+void CUI_CharacterDummy::Free()
+{
+	__super::Free();
+}
+

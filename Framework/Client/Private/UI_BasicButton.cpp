@@ -59,11 +59,14 @@ void CUI_BasicButton::Tick(_float fTimeDelta)
 
 void CUI_BasicButton::LateTick(_float fTimeDelta)
 {
-	if (0.5f < m_fTimeAcc) // 누적한 시간이 기준치 이상이되면
+	if (m_bCanClick)
 	{
-		m_fTimeAcc = 0.f; // 0.f로 초기화하고,
-		m_bFinish = true; // Finish를 true로 변경해준다
-		// Finish가 true가 되면 Event가 발생한다.
+		if (0.5f < m_fTimeAcc) // 누적한 시간이 기준치 이상이되면
+		{
+			m_fTimeAcc = 0.f; // 0.f로 초기화하고,
+			m_bFinish = true; // Finish를 true로 변경해준다
+			// Finish가 true가 되면 Event가 발생한다.
+		}
 	}
 
 	if (BUTTON_CHANGESCENE == m_eType)
@@ -84,7 +87,7 @@ HRESULT CUI_BasicButton::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	m_pShaderCom->Begin(0);
+	m_pShaderCom->Begin(m_iPass);
 
 	m_pVIBufferCom->Render();
 
@@ -94,31 +97,40 @@ HRESULT CUI_BasicButton::Render()
 void CUI_BasicButton::On_MouseEnter(_float fTimeDelta)
 {
 	// 사이즈 조절
+	if (m_bCanClick)
+	{
+		m_tInfo.fCX = m_vMinSize.x;
+		m_tInfo.fCY = m_vMinSize.y;
 
-	m_tInfo.fCX = m_vMinSize.x;
-	m_tInfo.fCY = m_vMinSize.y;
-
-	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+		m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+		
+	}
 }
 
 void CUI_BasicButton::On_Mouse(_float fTimeDelta)
 {
-	if (KEY_TAP(KEY::LBTN))
+	if (m_bCanClick)
 	{
-		if (BUTTON_CHANGESCENE == m_eType)
+		if (KEY_TAP(KEY::LBTN))
 		{
-			if (!m_bResizeStart) // 리사이즈가 진행되지 않은 상황.
-				m_bResizeStart = true;
+			if (BUTTON_CHANGESCENE == m_eType)
+			{
+				if (!m_bResizeStart) // 리사이즈가 진행되지 않은 상황.
+					m_bResizeStart = true;
+			}
 		}
 	}
 }
 
 void CUI_BasicButton::On_MouseExit(_float fTimeDelta)
 {
-	m_tInfo.fCX = m_vOriginSize.x;
-	m_tInfo.fCY = m_vOriginSize.y;
+	if (m_bCanClick)
+	{
+		m_tInfo.fCX = m_vOriginSize.x;
+		m_tInfo.fCY = m_vOriginSize.y;
 
-	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+		m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+	}
 }
 
 HRESULT CUI_BasicButton::Ready_Components()

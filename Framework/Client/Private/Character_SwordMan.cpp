@@ -118,7 +118,7 @@ void CCharacter_SwordMan::Tick(_float fTimeDelta)
 
 void CCharacter_SwordMan::LateTick(_float fTimeDelta)
 {
-	
+
 	__super::LateTick(fTimeDelta);
 
 #ifdef DEBUG

@@ -17,6 +17,14 @@ CUI_WeaponSection_Slot::CUI_WeaponSection_Slot(const CUI_WeaponSection_Slot& rhs
 {
 }
 
+void CUI_WeaponSection_Slot::Set_CharacterType(CHARACTER_TYPE eType)
+{
+	m_eCurPlayerType = eType;
+
+	if (nullptr != m_pNoWeapon)
+		m_pNoWeapon->Set_CharacterType(m_eCurPlayerType);
+}
+
 HRESULT CUI_WeaponSection_Slot::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))

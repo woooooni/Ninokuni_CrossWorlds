@@ -48,7 +48,7 @@ void CUI_SkillSection_Interaction::Tick(_float fTimeDelta)
 		if (m_bRotate)
 		{
 			m_fTimeAcc += fTimeDelta;
-			//m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 0.f, 1.f, 1.f), fTimeDelta * 50.f); TextCode
+			//m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 1.f), fTimeDelta * 50.f); //TextCode
 		}
 
 		__super::Tick(fTimeDelta);
@@ -76,7 +76,7 @@ HRESULT CUI_SkillSection_Interaction::Render()
 		if (FAILED(Bind_ShaderResources()))
 			return E_FAIL;
 
-		m_pShaderCom->Begin(1);
+		m_pShaderCom->Begin(15);
 
 		m_pVIBufferCom->Render();
 	}

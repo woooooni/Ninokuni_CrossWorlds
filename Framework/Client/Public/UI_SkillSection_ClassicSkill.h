@@ -14,7 +14,7 @@ protected:
 	virtual ~CUI_SkillSection_ClassicSkill() = default;
 
 public:
-	void Set_SkillType(CHARACTER_TYPE eType);
+	virtual void Set_CharacterType(CHARACTER_TYPE eType) override;
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -52,6 +52,7 @@ private:
 
 private:
 	void Key_Input(_float fTimeDelta);
+	void Set_SkillType();
 
 public:
 	static CUI_SkillSection_ClassicSkill* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_CLASSICSKILL eType);

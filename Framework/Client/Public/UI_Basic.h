@@ -21,6 +21,7 @@ protected:
 	virtual ~CUI_Basic() = default;
 
 public:
+	void Set_UIPass(_uint iPass) { m_iPass = iPass; }
 	void Set_Alpha(_float fAlpha) { m_fAlpha = fAlpha; }
 	_bool Get_Active() { return m_bActive; }
 	virtual void Set_Active(_bool bActive) override;
@@ -36,6 +37,7 @@ private:
 	UI_BASIC m_eType = { UI_BASIC::UIBASIC_END };
 
 	_float m_bFade = { false }; // Alpha값으로 FadeIn, Out을 하는 것들을 구분함.
+	_uint m_iPass = { 1 };
 
 private:
 	virtual HRESULT	Ready_Components() override;

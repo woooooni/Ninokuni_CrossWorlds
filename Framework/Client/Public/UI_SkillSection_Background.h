@@ -11,6 +11,8 @@ protected:
 	virtual ~CUI_SkillSection_Background() = default;
 
 public:
+	virtual void Set_CharacterType(CHARACTER_TYPE eType) override;
+	virtual void Set_ElementalType(ELEMENTAL_TYPE eType) override;
 	virtual void Set_Active(_bool bActive) override;
 
 public:

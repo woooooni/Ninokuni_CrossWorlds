@@ -27,6 +27,7 @@
 
 #include "UI_Logo_Background.h"
 #include "UI_Flare.h"
+#include "UI_CharacterDummy.h"
 
 #include "Glanix.h"
 #include "Glanix_IcePillar.h"
@@ -197,8 +198,22 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 //	if (FAILED(CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_EVERMORE)))
 //		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_UI_CharacterDummy_Engineer",
+		CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy_Engineer")), LAYER_CHARACTER)))
+		return E_FAIL;
+
 	/* For.Model */
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Engineer_Dummy", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Engineer/Dummy/", L"Engineer_Dummy")))
+		return E_FAIL;
+
+	
+	if (FAILED(Loading_Proto_Parts_Model(L"../Bin/Export/AnimModel/Character/Engineer/")))
+		return E_FAIL;
+
+	if (FAILED(CPart_Manager::GetInstance()->Reserve_Manager(GI->Get_Device(), GI->Get_Context())))
+		return E_FAIL;
 
 	m_strLoading = TEXT("로딩 끝.");
 	m_isFinished = true;
@@ -307,14 +322,19 @@ HRESULT CLoader::Loading_For_Level_Test()
 	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SwordMan_Dummy", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/SwordMan/Dummy/", L"SwordMan_Dummy")))
 	//	return E_FAIL;
 
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Engineer_Dummy", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Engineer/Dummy/", L"Engineer_Dummy")))
-		return E_FAIL;
-
 	//if (FAILED(Loading_Proto_Parts_Model(L"../Bin/Export/AnimModel/Character/SwordMan/")))
 	//	return E_FAIL;
 
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Engineer_Dummy", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Engineer/Dummy/", L"Engineer_Dummy")))
+		return E_FAIL;
+
 	if (FAILED(Loading_Proto_Parts_Model(L"../Bin/Export/AnimModel/Character/Engineer/")))
 		return E_FAIL;
+
+
+
+
+	
 
 	if (FAILED(CPart_Manager::GetInstance()->Reserve_Manager(GI->Get_Device(), GI->Get_Context())))
 		return E_FAIL;

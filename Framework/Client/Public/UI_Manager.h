@@ -33,7 +33,17 @@ public: // For Clone Objects
 	HRESULT Ready_Veils();
 	HRESULT Ready_Loadings();
 	HRESULT Ready_LobbyUIs();
-	HRESULT Ready_CommonUIs(LEVELID eID); // 항상 쓰이는 UI들 (Cursor랑 Veil 옮길것)
+	HRESULT Ready_CommonUIs(LEVELID eID); // 항상 쓰이는 UI들 (Cursor랑 Veil 옮길것)]
+	
+public: // UI들이 Player, 무기 속성을 알기 위한 함수
+	void Ready_CharacterTypeForUI(CHARACTER_TYPE eType) {
+		m_eCurPlayer = eType;
+		Set_CharacterType();
+	}
+	void Ready_ElementalTypeForUI(ELEMENTAL_TYPE eType) {
+		m_eElemental = eType;
+		Set_ElementalType();
+	}
 
 public:
 	HRESULT Tick_UIs(LEVELID eID, _float fTimeDelta);
@@ -53,6 +63,7 @@ public:
 	void Update_InvenBtnState(_uint iIndex);
 	void Update_SkillBtnState(class CTransform* pTransform, _uint iIndex);
 	void Update_SkillSlotState(_uint iSectionType, _uint iSlotIndex);
+	void Update_ClothSlotState(_uint iSectionType, _uint iSlotIndex);
 
 public:
 	HRESULT Using_CloseButton();
@@ -76,7 +87,7 @@ public:
 
 	HRESULT OnOff_WorldMap(_bool bOnOff);
 	HRESULT OnOff_CostumeWindow(_bool bOnOff); // 코스튬 탭 Window 비/활성화
-	HRESULT OnOff_CostumeSlot(_bool bOnOff);
+	HRESULT OnOff_CostumeSlot(_uint iSection, _bool bOnOff);
 	HRESULT OnOff_SkillWindowSlot(_uint iMenuType, _bool bOnOff);
 	HRESULT OnOff_Announce(_int iMagicNum, _bool bOnOff);
 	HRESULT OnOff_Inventory(_bool bOnOff); // 가방 탭 WIndow 비/활성화
@@ -86,9 +97,9 @@ public:
 	HRESULT OnOff_EmoticonBalloon(_bool bOnOff);
 	void Set_EmoticonType(_uint iIndex);
 
-public: // For UI Tool
-	HRESULT Save_UIData();
-	void Load_UIData();
+private:
+	CHARACTER_TYPE m_eCurPlayer = { CHARACTER_TYPE::SWORD_MAN };
+	ELEMENTAL_TYPE m_eElemental = { ELEMENTAL_TYPE::FIRE };
 
 private:
 	class CUI_Default_Background* m_pDefaultBG = { nullptr };
@@ -167,7 +178,8 @@ private:
 	vector<class CUI_Costume_Btn*> m_CostumeBtn;
 	vector<class CUI_Costume_Btn*> m_CostumeClickedBtn;
 	class CUI_Costume_LineBox* m_pCostumeBox = { nullptr };
-	vector<class CUI_Costume_ItemSlot*> m_CostumeItem;
+	vector<class CUI_Costume_ItemSlot*> m_CostumeCloth;
+	vector<class CUI_Costume_ItemSlot*> m_CostumeHairAcc;
 	// For Inven
 	class CUI_Inventory_LineBox* m_pInvenBox = { nullptr };
 	vector<class CUI_Inventory_TabBtn*> m_InvenBtn;
@@ -188,6 +200,8 @@ private:
 private:
 	HRESULT Ready_UIStaticPrototypes();
 	HRESULT Ready_UILobbyPrototypes();
+	void Set_CharacterType();
+	void Set_ElementalType();
 
 public:
 	virtual void Free() override;

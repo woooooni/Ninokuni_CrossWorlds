@@ -15,45 +15,10 @@ CUI_SkillSection_ClassicSkill::CUI_SkillSection_ClassicSkill(const CUI_SkillSect
 {
 }
 
-void CUI_SkillSection_ClassicSkill::Set_SkillType(CHARACTER_TYPE eType)
+void CUI_SkillSection_ClassicSkill::Set_CharacterType(CHARACTER_TYPE eType)
 {
-//	if (m_ePlayerType == eType)
-//		return;
-
-	// CHaracterType에따른 SkillType을 설정한다 (For Texture Component)
-	m_ePlayerType = eType;
-	switch (m_ePlayerType)
-	{
-	case CHARACTER_TYPE::SWORD_MAN: // 0, 1, 2
-		if (UI_CLASSICSKILL::SKILL_FIRST == m_eType)
-			m_iTextureIndex = 0;
-		if (UI_CLASSICSKILL::SKILL_SECOND == m_eType)
-			m_iTextureIndex = 1;
-		if (UI_CLASSICSKILL::SKILL_THIRD == m_eType)
-			m_iTextureIndex = 2;
-		break;
-
-	case CHARACTER_TYPE::DESTROYER: // 3, 4, 5
-		if (UI_CLASSICSKILL::SKILL_FIRST == m_eType)
-			m_iTextureIndex = 3;
-		if (UI_CLASSICSKILL::SKILL_SECOND == m_eType)
-			m_iTextureIndex = 4;
-		if (UI_CLASSICSKILL::SKILL_THIRD == m_eType)
-			m_iTextureIndex = 5;
-		break;
-
-	case CHARACTER_TYPE::ENGINEER: // 6, 7, 8
-		if (UI_CLASSICSKILL::SKILL_FIRST == m_eType)
-			m_iTextureIndex = 6;
-		if (UI_CLASSICSKILL::SKILL_SECOND == m_eType)
-			m_iTextureIndex = 7;
-		if (UI_CLASSICSKILL::SKILL_THIRD == m_eType)
-			m_iTextureIndex = 8;
-		break;
-	}
-
-	m_fOriginCoolTime = 9.f; // Temp
-	m_fCoolTime = m_fOriginCoolTime;
+	m_eCurPlayerType = eType;
+	Set_SkillType();
 }
 
 HRESULT CUI_SkillSection_ClassicSkill::Initialize_Prototype()
@@ -258,6 +223,45 @@ void CUI_SkillSection_ClassicSkill::Key_Input(_float fTimeDelta)
 	{
 		m_bClicked = true;
 	}
+}
+
+void CUI_SkillSection_ClassicSkill::Set_SkillType()
+{
+	//	if (m_ePlayerType == eType)
+	//		return;
+
+	switch (m_eCurPlayerType)
+	{
+	case CHARACTER_TYPE::SWORD_MAN: // 0, 1, 2
+		if (UI_CLASSICSKILL::SKILL_FIRST == m_eType)
+			m_iTextureIndex = 0;
+		if (UI_CLASSICSKILL::SKILL_SECOND == m_eType)
+			m_iTextureIndex = 1;
+		if (UI_CLASSICSKILL::SKILL_THIRD == m_eType)
+			m_iTextureIndex = 2;
+		break;
+
+	case CHARACTER_TYPE::DESTROYER: // 3, 4, 5
+		if (UI_CLASSICSKILL::SKILL_FIRST == m_eType)
+			m_iTextureIndex = 3;
+		if (UI_CLASSICSKILL::SKILL_SECOND == m_eType)
+			m_iTextureIndex = 4;
+		if (UI_CLASSICSKILL::SKILL_THIRD == m_eType)
+			m_iTextureIndex = 5;
+		break;
+
+	case CHARACTER_TYPE::ENGINEER: // 6, 7, 8
+		if (UI_CLASSICSKILL::SKILL_FIRST == m_eType)
+			m_iTextureIndex = 6;
+		if (UI_CLASSICSKILL::SKILL_SECOND == m_eType)
+			m_iTextureIndex = 7;
+		if (UI_CLASSICSKILL::SKILL_THIRD == m_eType)
+			m_iTextureIndex = 8;
+		break;
+	}
+
+	m_fOriginCoolTime = 9.f; // Temp
+	m_fCoolTime = m_fOriginCoolTime;
 }
 
 CUI_SkillSection_ClassicSkill* CUI_SkillSection_ClassicSkill::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_CLASSICSKILL eType)

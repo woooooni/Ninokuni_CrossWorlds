@@ -14,7 +14,7 @@ protected:
 	virtual ~CUI_SkillSection_SpecialSkill() = default;
 
 public:
-	void Set_SkillType(CHARACTER_TYPE eType);
+	virtual void Set_CharacterType(CHARACTER_TYPE eType) override;
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -30,7 +30,6 @@ public:
 
 private:
 	UI_SPECIALSKILL m_eType = { UICLASSICSKILL_END };
-	CHARACTER_TYPE m_ePlayerType = { SWORD_MAN };
 
 	CTexture* m_pMaskTextureCom = { nullptr };
 	CTexture* m_pFXTextureCom = { nullptr };
@@ -52,6 +51,7 @@ private:
 
 private:
 	void Key_Input(_float fTimeDelta);
+	void Set_SkillType();
 
 public:
 	static CUI_SkillSection_SpecialSkill* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_SPECIALSKILL eType);
