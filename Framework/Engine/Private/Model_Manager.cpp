@@ -962,11 +962,12 @@ HRESULT CModel_Manager::Create_AnimationTransform_Caches(const _uint& iAnimIndex
 				m_AnimTransformsCaches[iAnimIndex].transforms[iFrameIndex].push_back(Matrix());
 			}
 
-			Matrix mat = Matrix(m_HierarchyNodes[iBoneIndex]->Get_OffSetMatrix())
+			m_AnimTransformsCaches[iAnimIndex].transforms[iFrameIndex][iBoneIndex]
+					= Matrix(m_HierarchyNodes[iBoneIndex]->Get_OffSetMatrix())
 					* Matrix(m_HierarchyNodes[iBoneIndex]->Get_CombinedTransformation()) 
 					* Matrix(m_PivotMatrix);
 
-			m_AnimTransformsCaches[iAnimIndex].transforms[iFrameIndex][iBoneIndex] = mat;
+			//m_AnimTransformsCaches[iAnimIndex].transforms[iFrameIndex][iBoneIndex] = mat;
 			
 			///* 디컴포즈 하여 다시 담음 */
 			//Vec3 vScale, vPos;

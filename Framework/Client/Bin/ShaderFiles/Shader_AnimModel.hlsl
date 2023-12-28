@@ -483,82 +483,100 @@ matrix GetAnimationMatrix_2(VS_IN input)
 
     float4 c0, c1, c2, c3;
     float4 n0, n1, n2, n3;
-    float4x4 curr = 0;
-    float4x4 next = 0;
+    
     matrix transform = 0;
 
     for (int i = 0; i < 4; i++)
     {
-        float3 fSourceScale[2], fDestScale[2], fLerpScale[2];
-        float4 fSourceRot[2], fDestRot[2], fLerpRot[2];
-        float3 fSourcePos[2], fDestPos[2], fLerpPos[2];
+        float3 fCurAnimSourceScale, fCurAnimDestScale, fCurAnimLerpScale;
+        float4 fCurAnimSourceRot, fCurAnimDestRot, fCurAnimLerpRot;
+        float3 fCurAnimSourcePos, fCurAnimDestPos, fCurAnimLerpPos;
+		
+        float4x4 fCurAnimCurFrame = 0;
+        float4x4 fCurAnimNextFrame = 0;
+		
         matrix result;
 		
 		/* curr Frame */
-        c0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, currFrame[0], animIndex[0], 0));
-        c1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, currFrame[0], animIndex[0], 0));
-        c2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, currFrame[0], animIndex[0], 0));
-        c3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, currFrame[0], animIndex[0], 0));
+		{
+			c0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, currFrame[0], animIndex[0], 0));
+			c1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, currFrame[0], animIndex[0], 0));
+			c2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, currFrame[0], animIndex[0], 0));
+			c3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, currFrame[0], animIndex[0], 0));
 		
-        curr = float4x4(c0, c1, c2, c3);
-        decompose(curr, fSourcePos[0], fSourceRot[0], fSourceScale[0]);
+			fCurAnimCurFrame = float4x4(c0, c1, c2, c3);
+			decompose(fCurAnimCurFrame, fCurAnimSourcePos, fCurAnimSourceRot, fCurAnimSourceScale);
+        }
 
 		/* next Frame */ 
-        n0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, nextFrame[0], animIndex[0], 0));
-        n1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, nextFrame[0], animIndex[0], 0));
-        n2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, nextFrame[0], animIndex[0], 0));
-        n3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, nextFrame[0], animIndex[0], 0));
+		{
+			n0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, nextFrame[0], animIndex[0], 0));
+			n1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, nextFrame[0], animIndex[0], 0));
+			n2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, nextFrame[0], animIndex[0], 0));
+			n3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, nextFrame[0], animIndex[0], 0));
 		
-        next = float4x4(n0, n1, n2, n3);
-        decompose(next, fDestPos[0], fDestRot[0], fDestScale[0]);
+			fCurAnimNextFrame = float4x4(n0, n1, n2, n3);
+			decompose(fCurAnimNextFrame, fCurAnimDestPos, fCurAnimDestRot, fCurAnimDestScale);
+        }
 		
 		/* Frame Lerp */
 		{
-            fLerpScale[0]	= lerp(fSourceScale[0], fDestScale[0], ratio[0]);
-            fLerpRot[0]		= q_slerp(fSourceRot[0], fDestRot[0], ratio[0]);
-            fLerpPos[0]		= lerp(fSourcePos[0], fDestPos[0], ratio[0]);
+			fCurAnimLerpScale	= lerp(fCurAnimSourceScale, fCurAnimDestScale, ratio[0]);
+			fCurAnimLerpRot		= q_slerp(fCurAnimSourceRot, fCurAnimDestRot, ratio[0]);
+			fCurAnimLerpPos		= lerp(fCurAnimSourcePos, fCurAnimDestPos, ratio[0]);
         }
         
 		/* if next */
-        if (0 <= animIndex[1])
+        if (animIndex[1] >= 0)
         {
-			/* curr Frame */
-            c0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, currFrame[1], animIndex[1], 0));
-            c1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, currFrame[1], animIndex[1], 0));
-            c2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, currFrame[1], animIndex[1], 0));
-            c3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, currFrame[1], animIndex[1], 0));
+            float3 fNextAnimSourceScale, fNextAnimDestScale, fNextAnimLerpScale;
+            float4 fNextAnimSourceRot, fNextAnimDestRot, fNextAnimLerpRot;
+            float3 fNextAnimSourcePos, fNextAnimDestPos, fNextAnimLerpPos;
 			
-            curr = float4x4(c0, c1, c2, c3);
-            decompose(curr, fSourcePos[1], fSourceRot[1], fSourceScale[1]);
+            float4x4 fNextAnimCurFrame = 0;
+            float4x4 fNextAnimNextFrame = 0;
+			
+			/* curr Frame */
+			{
+				c0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, currFrame[1], animIndex[1], 0));
+				c1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, currFrame[1], animIndex[1], 0));
+				c2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, currFrame[1], animIndex[1], 0));
+				c3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, currFrame[1], animIndex[1], 0));
+			
+				fNextAnimCurFrame = float4x4(c0, c1, c2, c3);
+				decompose(fNextAnimCurFrame, fNextAnimSourcePos, fNextAnimSourceRot, fNextAnimSourceScale);
+            }
 			
 			/* next Frame */ 
-            n0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, nextFrame[1], animIndex[1], 0));
-            n1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, nextFrame[1], animIndex[1], 0));
-            n2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, nextFrame[1], animIndex[1], 0));
-            n3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, nextFrame[1], animIndex[1], 0));
+			{
+                n0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, nextFrame[1], animIndex[1], 0));
+				n1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, nextFrame[1], animIndex[1], 0));
+				n2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, nextFrame[1], animIndex[1], 0));
+				n3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, nextFrame[1], animIndex[1], 0));
 
-            next = float4x4(n0, n1, n2, n3);
-            decompose(next, fDestPos[1], fDestRot[1], fDestScale[1]);
-			
-			/* Frame Lerp */
-			{
-                fLerpScale[1]	= lerp(fSourceScale[1], fDestScale[1], ratio[1]);
-                fLerpRot[1]		= q_slerp(fSourceRot[1], fDestRot[1], ratio[1]);
-                fLerpPos[1]		= lerp(fSourcePos[1], fDestPos[1], ratio[1]);
+				fNextAnimNextFrame = float4x4(n0, n1, n2, n3);
+				decompose(fNextAnimNextFrame, fNextAnimDestPos, fNextAnimDestRot, fNextAnimDestScale);
             }
 			
-			/* Tween Lerp */
+			/* Frame Lerp */			
 			{
-                fLerpScale[1]	= lerp(fLerpScale[0], fLerpScale[1], g_TweenFrames.fTweenRatio);
-                fLerpRot[1]		= q_slerp(fLerpRot[0], fLerpRot[1], g_TweenFrames.fTweenRatio);
-                fLerpPos[1]		= lerp(fLerpPos[0], fLerpPos[1], g_TweenFrames.fTweenRatio);
+				fNextAnimLerpScale	= lerp(fNextAnimSourceScale, fNextAnimDestScale, ratio[1]);
+				fNextAnimLerpRot	= q_slerp(fNextAnimSourceRot, fNextAnimDestRot, ratio[1]);
+				fNextAnimLerpPos	= lerp(fNextAnimSourcePos, fNextAnimDestPos, ratio[1]);
             }
-						
-            result = compose(fLerpPos[1], fLerpRot[1], fLerpScale[1]);
+			
+			/* Tween Lerp */			
+			{
+				float3 fTweenScale	= lerp(fCurAnimLerpScale, fNextAnimLerpScale, g_TweenFrames.fTweenRatio);
+				float4 fTweenRot	= q_slerp(fCurAnimLerpRot, fNextAnimLerpRot, g_TweenFrames.fTweenRatio);
+				float3 fTweenPos	= lerp(fCurAnimLerpPos, fNextAnimLerpPos, g_TweenFrames.fTweenRatio);
+            
+				result = compose(fTweenPos, fTweenRot, fTweenScale);
+            }
         }
         else
         {
-            result = compose(fLerpPos[0], fLerpRot[0], fLerpScale[0]);
+            result = compose(fCurAnimLerpPos, fCurAnimLerpRot, fCurAnimLerpScale);
         }
 
         transform += mul(result, weights[i]);
@@ -577,8 +595,8 @@ VS_OUT VS_MAIN(VS_IN In)
 	matWV = mul(g_WorldMatrix, g_ViewMatrix);
 	matWVP = mul(matWV, g_ProjMatrix);
 
-	float4x4	BoneMatrix = GetAnimationMatrix_2(In);
-	//float4x4	BoneMatrix = GetAnimationMatrix(In);
+	//float4x4	BoneMatrix = GetAnimationMatrix_2(In);
+	float4x4	BoneMatrix = GetAnimationMatrix(In);
 
 	vector		vPosition = mul(vector(In.vPosition, 1.f), BoneMatrix);
 	vector		vNormal = mul(vector(In.vNormal, 0.f), BoneMatrix);
