@@ -88,11 +88,12 @@ public:
 		_float fNear = 0.f;
 		_float fFar = 0.f;
 
+		_float fPrevFov = 0.f;
+
 	}PROJ_DESC;
 
 	typedef struct tagShakeDesc
 	{
-
 		/* User */
 		_float fAmplitude = 0.f;
 		_float fFrequency = 0.f;
@@ -195,10 +196,6 @@ public:
 	const _bool& Is_Shake() const { return m_tShakeDesc.bActive; }
 	Vec3 Get_ShakeLocalPos() { return m_tShakeDesc.Get_ShakeLocalPos(); }
 
-private:
-	void Tick_Lerp(const _float fDeltaTime);
-	void Tick_Shake(const _float fDeltaTime);
-
 protected:
 	/* Default  */
 	_bool				m_bActive		= { false };
@@ -211,6 +208,7 @@ protected:
 
 	/* Dist */
 	LERP_FLOAT_DESC		m_tLerpDist		= {};
+	_float				m_fPrevDist		= 0.f;
 
 	/* Target, Look */
 	Vec4				m_vTargetOffset = {};
@@ -227,6 +225,10 @@ protected:
 
 protected:
 	virtual HRESULT Ready_Components() override;
+
+private:
+	void Tick_Lerp(const _float fDeltaTime);
+	void Tick_Shake(const _float fDeltaTime);
 
 public:
 	virtual CGameObject* Clone(void* pArg) = 0;

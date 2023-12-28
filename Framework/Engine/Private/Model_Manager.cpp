@@ -963,11 +963,26 @@ HRESULT CModel_Manager::Create_AnimationTransform_Caches(const _uint& iAnimIndex
 			}
 
 			m_AnimTransformsCaches[iAnimIndex].transforms[iFrameIndex][iBoneIndex]
-				= Matrix(m_HierarchyNodes[iBoneIndex]->Get_OffSetMatrix())
+					= Matrix(m_HierarchyNodes[iBoneIndex]->Get_OffSetMatrix())
 					* Matrix(m_HierarchyNodes[iBoneIndex]->Get_CombinedTransformation()) 
 					* Matrix(m_PivotMatrix);
 
-			/* 여기서 원래 개별 보관 뼈 저장 (ex 루트, 무기 뼈) */
+			//m_AnimTransformsCaches[iAnimIndex].transforms[iFrameIndex][iBoneIndex] = mat;
+			
+			///* 디컴포즈 하여 다시 담음 */
+			//Vec3 vScale, vPos;
+			//Quaternion vQuat;
+			//
+			//mat.Decompose(vScale, vQuat, vPos);
+			//vQuat *= -1.f; /* 쿼터니언은 부호 반대 */
+
+			//Matrix matDecompose;
+			//memcpy(matDecompose.m[0], &vScale, sizeof(Vec3));
+			//memcpy(matDecompose.m[1], &vQuat, sizeof(Vec4));
+			//memcpy(matDecompose.m[2], &vPos, sizeof(Vec3));
+
+
+			//m_AnimTransformsCaches[iAnimIndex].transforms[iFrameIndex][iBoneIndex] = matDecompose;
 		}
 	}
 

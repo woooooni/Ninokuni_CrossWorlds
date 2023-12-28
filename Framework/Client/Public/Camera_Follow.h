@@ -77,10 +77,13 @@ private:
 
 	/* 구면 좌표계에서 카메라의 최대 최소 y 값*/
 	_float			m_fMinLimitY			= { 0.7f };
-	_float			m_fMaxLimitY			= { 1.4f };
+	_float			m_fMaxLimitY			= { 3.f };
 
+	/* Damping */
 	DAMPING_DESC	m_tDampingDesc			= {};
-	class CPhysX_Controller* m_pControllerCom = nullptr;
+
+	/* PhysX */
+	CPhysX_Controller* m_pControllerCom = nullptr;
 
 public:
 	static CCamera_Follow* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);

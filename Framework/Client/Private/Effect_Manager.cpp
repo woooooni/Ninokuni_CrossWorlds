@@ -29,8 +29,8 @@ HRESULT CEffect_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceCont
 	if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_NONANIM, strEffectMeshPath)))
 		return E_FAIL;
 
-	if (FAILED(Ready_Proto_Effects(strEffectPath)))
-		return E_FAIL;
+	/*if (FAILED(Ready_Proto_Effects(strEffectPath)))
+		return E_FAIL;*/
 
 	if (FAILED(Ready_Proto_Vfx()))
 		return E_FAIL;

@@ -74,7 +74,7 @@ HRESULT CChannel::Initialize(aiNodeAnim* pAIChannel)
 }
 
 
-_uint CChannel::Update_Transformation(_float fPlayTime, _float fTimeDelta, _uint iCurrentKeyFrame, CTransform* pTransform, CHierarchyNode* pNode, __out _float* pRatio)
+_uint CChannel::Update_Transformation(_float fPlayTime, _uint iCurrentKeyFrame, CHierarchyNode* pNode, __out _float* pRatio)
 {
 	_float3			vScale;
 	_float4			vRotation;
@@ -155,14 +155,30 @@ _uint CChannel::Update_Transformation_NoneLerp(_uint iCurrentKeyFrame, CHierarch
 
 	Matrix TransformationMatrix;
 
+	// << : Shader SRT Test 
+	/*memcpy(&TransformationMatrix.m[0], &vScale, sizeof(Vec3));
+	memcpy(&TransformationMatrix.m[1], &vRotation, sizeof(Vec4));
+	memcpy(&TransformationMatrix.m[2], &vPosition, sizeof(Vec3));
+
+	if (nullptr != pNode)
+		pNode->Set_Transformation(TransformationMatrix);
+
+	return iCurrentKeyFrame;*/
+	// >> : 
+
 	/* ±âÁ¸ ¾ÆÇÉ Æ®·£½ºÆû »ý¼º ÇÔ¼ö */
 	{
-		/*TransformationMatrix = XMMatrixAffineTransformation(
+		TransformationMatrix = XMMatrixAffineTransformation(
 			XMLoadFloat3(&vScale), 
 			XMVectorSet(0.f, 0.f, 0.f, 1.f), 
 			XMLoadFloat4(&vRotation), 
 			XMVectorSetW(XMLoadFloat3(&vPosition), 1.f)
-		);*/
+		);
+
+		if (nullptr != pNode)
+			pNode->Set_Transformation(TransformationMatrix);
+
+		return iCurrentKeyFrame;
 	}
 
 	/* Ä¿½ºÅÒ ¾ÆÇÉ Æ®·£½ºÆû »ý¼º ÇÔ¼ö */
@@ -201,9 +217,24 @@ _uint CChannel::Update_Transformation_NoneLerp(_uint iCurrentKeyFrame, CHierarch
 			float wy = w * y;
 			float wz = w * z;
 
-			rotationMatrix.r[0] = XMVectorSet(1.0f - 2.0f * (yy + zz), 2.0f * (xy + wz), 2.0f * (xz - wy), 0.0f);
-			rotationMatrix.r[1] = XMVectorSet(2.0f * (xy - wz), 1.0f - 2.0f * (xx + zz), 2.0f * (yz + wx), 0.0f);
-			rotationMatrix.r[2] = XMVectorSet(2.0f * (xz + wy), 2.0f * (yz - wx), 1.0f - 2.0f * (xx + yy), 0.0f);
+			rotationMatrix.r[0] = XMVectorSet(
+				1.0f - 2.0f * (yy + zz), 
+				2.0f * (xy + wz), 
+				2.0f * (xz - wy), 
+				0.0f);
+
+			rotationMatrix.r[1] = XMVectorSet(
+				2.0f * (xy - wz), 
+				1.0f - 2.0f * (xx + zz), 
+				2.0f * (yz + wx), 
+				0.0f);
+
+			rotationMatrix.r[2] = XMVectorSet(
+				2.0f * (xz + wy), 
+				2.0f * (yz - wx), 
+				1.0f - 2.0f * (xx + yy), 
+				0.0f);
+
 			rotationMatrix.r[3] = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 		}
 
