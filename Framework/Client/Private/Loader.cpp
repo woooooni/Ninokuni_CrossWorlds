@@ -331,11 +331,6 @@ HRESULT CLoader::Loading_For_Level_Test()
 	if (FAILED(Loading_Proto_Parts_Model(L"../Bin/Export/AnimModel/Character/Engineer/")))
 		return E_FAIL;
 
-
-
-
-	
-
 	if (FAILED(CPart_Manager::GetInstance()->Reserve_Manager(GI->Get_Device(), GI->Get_Context())))
 		return E_FAIL;
 

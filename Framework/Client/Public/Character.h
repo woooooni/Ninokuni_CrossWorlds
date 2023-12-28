@@ -84,18 +84,28 @@ public:
 	};
 
 #pragma endregion
-	enum SOCKET_TYPE { SOCKET_SWORD, SOCKET_SWEATH, SOCKET_RIGHT_HAND, SOCKET_LEFT_FOOT, SOCKET_RIGHT_FOOT, SOCKET_END };
 
+#pragma region SOCKET_TYPE
+enum SOCKET_TYPE { SOCKET_SWORD, SOCKET_SWEATH, SOCKET_RIGHT_HAND, SOCKET_LEFT_FOOT, SOCKET_RIGHT_FOOT, SOCKET_END };
+#pragma endregion
+
+#pragma region CHARACTER_STAT
 public:
 	typedef struct tagCharacterStat
 	{
-		_float fHp = 100.f;
-		_float fMp = 100.f;
+		_uint iLevel = 1;
 
-		_float fMaxHp = 100.f;
-		_float fMaxMp = 100.f;
+		_uint iAtt = 1;
+		_uint iDef = 1;
+
+		_int iHp = 100;
+		_int iMaxHp = 100;
+
+		_int iExp = 0;
+		_int iMaxExp = 100;
 	}CHARACTER_STAT;
 
+#pragma endregion
 protected:
 	CCharacter(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eCharacterType);
 	CCharacter(const CCharacter& rhs);
@@ -140,8 +150,6 @@ protected:
 	virtual HRESULT Ready_States() PURE;
 	virtual HRESULT Ready_Colliders() PURE;
 	virtual void On_Damaged(const COLLISION_INFO& tInfo);
-
-	
 
 
 

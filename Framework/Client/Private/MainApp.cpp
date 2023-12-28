@@ -131,8 +131,8 @@ HRESULT CMainApp::Open_Level(LEVELID eLevelID, const wstring& strFolderName)
 
 HRESULT CMainApp::Initialize_Client()
 {
-	if (FAILED(CEffect_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext, L"../Bin/Export/NonAnimModel/Effect/", L"../Bin/DataFiles/Effect/")))
-		return E_FAIL;
+	//if (FAILED(CEffect_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext, L"../Bin/Export/NonAnimModel/Effect/", L"../Bin/DataFiles/Effect/")))
+	//	return E_FAIL;
 
 	if(FAILED(CParticle_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext, L"../Bin/DataFiles/Particle/")))
 		return E_FAIL;
@@ -149,10 +149,10 @@ HRESULT CMainApp::Initialize_Client()
 		return E_FAIL;
 
 	
-	if (FAILED(CUI_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
-		return E_FAIL;
-	if (FAILED(CUIDamage_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
-		return E_FAIL;
+	//if (FAILED(CUI_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+	//	return E_FAIL;
+	//if (FAILED(CUIDamage_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+	//	return E_FAIL;
 
 	if (FAILED(CCamera_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
 		return E_FAIL;
