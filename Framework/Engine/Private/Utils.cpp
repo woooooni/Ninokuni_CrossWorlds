@@ -294,6 +294,18 @@ _float CUtils::Random_Float(_float fMin, _float fMax)
 	return Distribution(Generater);
 }
 
+wstring CUtils::PopEof_WString(const wstring& str)
+{
+	wstring strName = L"";
+
+	size_t NamePosition = str.find_last_of(L'\0');
+
+	if (NamePosition != std::wstring::npos && NamePosition > 0)
+		strName = str.substr(0, NamePosition);
+
+	return strName;
+}
+
 wstring CUtils::Utf8_To_Wstring(const string& strUtf8)
 {
 	int requiredSize = MultiByteToWideChar(CP_UTF8, 0, strUtf8.c_str(), -1, nullptr, 0);

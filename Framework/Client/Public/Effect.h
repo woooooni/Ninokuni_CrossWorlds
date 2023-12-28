@@ -314,11 +314,11 @@ public:
 	class CRigidBody* Get_RigidBodyCom() { return m_pRigidBodyCom; }
 
 private:
-	EFFECT_DESC m_tEffectDesc;
+	EFFECT_DESC m_tEffectDesc = {};
 
 private:
 	CGameObject* m_pOwnerObject = nullptr;
-	_float4x4    m_ParentMatrix;
+	_float4x4    m_ParentMatrix = {};
 
 private:
 	_bool   m_bEffectDie = false;
@@ -367,23 +367,23 @@ private:
 	_bool  m_bAlphaCreateSucc       = false;
 
 	// »ö»ó
-	_float  m_fColorChangeStartTime;
-	_float  m_fColorChangeStartDelay;
+	_float  m_fColorChangeStartTime  = 0.f;
+	_float  m_fColorChangeStartDelay = 0.f;
 
-	LERP_VEC3_DESC m_LerpInfo;
-	_float3 m_fColor;
-	_uint   m_iColorIndex;
-	_float  m_fColorChangeStartM;
-	_float  m_fColorChangeStartF;
-	_float  m_fColorChangeDuration;
+	LERP_VEC3_DESC m_LerpInfo = {};
+	_float3 m_fColor      = _float3(0.f, 0.f, 0.f);
+	_uint   m_iColorIndex = 0;
+	_float  m_fColorChangeStartM   = 0.f;
+	_float  m_fColorChangeStartF   = 0.f;
+	_float  m_fColorChangeDuration = 0.f;
 
-	_float  m_fColorAccs;
-	_float  m_fColorChangeTime;
-	_float3 m_fNextColor;
-	_bool   m_fColorFade;
+	_float  m_fColorAccs = 0.f;
+	_float  m_fColorChangeTime = 0.f;
+	_float3 m_fNextColor = _float3(0.f, 0.f, 0.f);
+	_bool   m_fColorFade = false;
 
-	_float3 m_fBlurColor;
-	_float  m_fBlurPower;
+	_float3 m_fBlurColor = _float3(0.f, 0.f, 0.f);
+	_float  m_fBlurPower = 0.f;
 
 private:
 	class CRenderer*  m_pRendererCom  = nullptr;

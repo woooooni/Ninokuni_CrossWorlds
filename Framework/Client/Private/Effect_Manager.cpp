@@ -45,7 +45,7 @@ void CEffect_Manager::Tick(_float fTimeDelta)
 
 HRESULT CEffect_Manager::Generate_Effect(const wstring& strEffectName, _matrix RotationMatrix, _matrix WorldMatrix, _float fEffectDeletionTime, CGameObject* pOwner, CEffect** ppOut)
 {
-	CGameObject* pGameObject = GI->Clone_GameObject(L"Prototype_Effect_" + strEffectName, LAYER_EFFECT);
+	CGameObject* pGameObject = GI->Clone_GameObject(L"Prototype_" + strEffectName, LAYER_EFFECT);
 	if (nullptr == pGameObject)
 		return E_FAIL;
 
@@ -227,9 +227,9 @@ HRESULT CEffect_Manager::Ready_Proto_Effects(const wstring& strEffectPath)
 				EffectInfo.fLifeTime.y = item["LifeTime"]["y"];
 
 #pragma region ¸ðµ¨ && ÅØ½ºÃ³
-				EffectInfo.strModelName = CUtils::Utf8_To_Wstring(item["ModelName"]);
-				EffectInfo.strDiffuseTetextureName = CUtils::Utf8_To_Wstring(item["DiffuseTetextureName"]);
-				EffectInfo.strAlphaTexturName = CUtils::Utf8_To_Wstring(item["AlphaTexturName"]);
+				EffectInfo.strModelName            = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(item["ModelName"]));
+				EffectInfo.strDiffuseTetextureName = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(item["DiffuseTetextureName"]));
+				EffectInfo.strAlphaTexturName      = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(item["AlphaTexturName"]));
 
 				EffectInfo.iTextureIndexDiffuse = item["TextureIndexDiffuse"];
 				EffectInfo.iTextureIndexAlpha = item["TextureIndexAlpha"];
@@ -347,16 +347,12 @@ HRESULT CEffect_Manager::Ready_Proto_Effects(const wstring& strEffectPath)
 #pragma endregion
 			}
 
-			if (FAILED(GI->Add_Prototype(wstring(L"Prototype_Effect_") + strFileName, 
+			if (FAILED(GI->Add_Prototype(wstring(L"Prototype_") + strFileName, 
 				CEffect::Create(m_pDevice, m_pContext, strFileName, &EffectInfo), LAYER_TYPE::LAYER_EFFECT)))
 				return E_FAIL;
 			
-			CGameObject* pObject = GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_EFFECT, wstring(L"Prototype_Effect_") + strFileName);
+			CGameObject* pObject = GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_EFFECT, wstring(L"Prototype_") + strFileName);
 			if (pObject == nullptr)
-				return E_FAIL;
-
-			CEffect* pEffect = dynamic_cast<CEffect*>(pObject);
-			if (pEffect == nullptr)
 				return E_FAIL;
 		}
 	}
