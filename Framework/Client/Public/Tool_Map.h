@@ -51,6 +51,7 @@ private:
 	void MapLightSpace();
 	void MapMonsterSpace();
 	void MapNPCSpace();
+	void MapWaterSpace();
 private:
 	void ChangeState();
 

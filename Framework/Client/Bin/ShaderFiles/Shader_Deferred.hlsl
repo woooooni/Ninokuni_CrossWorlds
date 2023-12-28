@@ -255,12 +255,13 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 	// vShade
 	vector vShade = g_ShadeTarget.Sample(LinearSampler, In.vTexcoord);
 	vShade = saturate(vShade);
-	vShade = ceil(vShade * 5.f) / 5.f;
+	//vShade = ceil(vShade * 5.f) / 5.f;
 
-	/* vSpecular
+    //vSpecular
+
     vector vSpecular = g_SpecularTarget.Sample(LinearSampler, In.vTexcoord);
-	vSpecular = saturate(vSpecular);
-	vSpecular = ceil(vSpecular * 5.f) / 5.f;*/
+    vSpecular = saturate(vSpecular);
+    //vSpecular = ceil(vSpecular * 5.f) / 5.f;
 
 	// Shadow
 	vector vShadow = float4(1.f, 1.f, 1.f, 1.f);
@@ -283,7 +284,7 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 
 	// Output
 	//Out.vColor = vDiffuse * vShade * vShadow * vSSAO * vOutline; // +vSpecular;
-	Out.vColor = vDiffuse * vShade * vShadow * vOutline; // +vSpecular;
+	Out.vColor = vDiffuse * vShade * vShadow * vOutline +vSpecular;
 	return Out;
 }
 
