@@ -4,11 +4,11 @@
 
 BEGIN(Client)
 
-class CGlanixState_Turn final : public CGlanixState_Base
+class CGlanixState_Rage2StartTurnWP final : public CGlanixState_Base
 {
 private:
-	CGlanixState_Turn(CStateMachine* pStateMachine);
-	virtual ~CGlanixState_Turn() = default;
+	CGlanixState_Rage2StartTurnWP(CStateMachine* pStateMachine);
+	virtual ~CGlanixState_Rage2StartTurnWP() = default;
 
 public:
 	virtual HRESULT Initialize(const list<wstring>& AnimationList);
@@ -22,11 +22,8 @@ private:
 	_vector m_vDestPos = {};
 	_float  m_fTurnSpeed = 0.f;
 
-	_bool   m_bIsRageInit = false;
-	_bool   m_bIsRage2Init = false;
-
 public:
-	static CGlanixState_Turn* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
+	static CGlanixState_Rage2StartTurnWP* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
 };
 

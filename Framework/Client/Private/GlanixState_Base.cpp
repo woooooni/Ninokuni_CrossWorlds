@@ -22,14 +22,12 @@ HRESULT CGlanixState_Base::Initialize(const list<wstring>& AnimationList)
 	/* 후에 플레이어로 교체 */
 	for (auto iter : GI->Find_GameObjects(LEVEL_TEST, LAYER_CHARACTER))
 	{
-		m_pPlayer = dynamic_cast<CCharacter_SwordMan*>(iter);
+		m_pPlayer = dynamic_cast<CCharacter_Engineer*>(iter);
 	}
 	if(m_pPlayer != nullptr)
 		m_pPlayerTransform = m_pPlayer->Get_Component<CTransform>(TEXT("Com_Transform"));
 
-	m_fRunSpeed = 4.f;
-
-	// 레이지 전환 어떻게 할 지 생각하기. 
+	m_fRunSpeed = 6.f;
 
 	/* 공격 패턴만 따로 모아놓기. (후에 순차적 혹은 랜덤으로 전환하기 위해) */
 	m_vecAtkState.push_back(CGlanix::GLANIX_ATTACK1);
@@ -37,7 +35,6 @@ HRESULT CGlanixState_Base::Initialize(const list<wstring>& AnimationList)
 	m_vecAtkState.push_back(CGlanix::GLANIX_ICEWAVE);
 	m_vecAtkState.push_back(CGlanix::GLANIX_QUADBLOW);
 	m_vecAtkState.push_back(CGlanix::GLANIX_SPINBOMB);
-	m_vecAtkState.push_back(CGlanix::GLANIX_JUMPSTAMP);
 
 	return S_OK;
 }
@@ -61,13 +58,12 @@ void CGlanixState_Base::Init_Pattern()
 {
 	m_vecAtkState.clear();
 
-	//m_vecAtkState.push_back(CGlanix::GLANIX_ATTACK2);
-	//m_vecAtkState.push_back(CGlanix::GLANIX_CHARGE);
-	//m_vecAtkState.push_back(CGlanix::GLANIX_ICEWAVE);
-	//m_vecAtkState.push_back(CGlanix::GLANIX_QUADBLOW);
-	//m_vecAtkState.push_back(CGlanix::GLANIX_SPINBOMBBOMB);
-	//m_vecAtkState.push_back(CGlanix::GLANIX_SNOWBALL);
-	//m_vecAtkState.push_back(CGlanix::GLANIX_JUMPSTAMP);
+	m_vecAtkState.push_back(CGlanix::GLANIX_ATTACK2);
+	m_vecAtkState.push_back(CGlanix::GLANIX_CHARGE);
+	m_vecAtkState.push_back(CGlanix::GLANIX_ICEWAVE);
+	m_vecAtkState.push_back(CGlanix::GLANIX_QUADBLOW);
+	m_vecAtkState.push_back(CGlanix::GLANIX_SPINBOMBBOMB);
+	m_vecAtkState.push_back(CGlanix::GLANIX_SNOWBALL);
 }
 
 _bool CGlanixState_Base::State_Wait(_float fDestTime, _float fTimeDelta)
@@ -93,8 +89,11 @@ void CGlanixState_Base::Start_Pattern()
 	if (m_iAtkIndex >= m_vecAtkState.size())
 		m_iAtkIndex = 0;
 
-	// 기본 공격 패턴이면 
-	if (m_vecAtkState[m_iAtkIndex] == CGlanix::GLANIX_ATTACK1 || m_vecAtkState[m_iAtkIndex] == CGlanix::GLANIX_ATTACK2)
+	// 근접 공격 패턴이면 
+	if (m_vecAtkState[m_iAtkIndex] == CGlanix::GLANIX_ATTACK1 || 
+		m_vecAtkState[m_iAtkIndex] == CGlanix::GLANIX_ATTACK2 ||
+		m_vecAtkState[m_iAtkIndex] == CGlanix::GLANIX_SPINBOMB || 
+		m_vecAtkState[m_iAtkIndex] == CGlanix::GLANIX_SPINBOMBBOMB)
 	{
 		if (m_pGlanix->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_ATKAROUND))
 		{
@@ -103,7 +102,7 @@ void CGlanixState_Base::Start_Pattern()
 		else
 			m_pStateMachineCom->Change_State(CGlanix::GLANIX_CHASE);
 	}
-	// 스킬 패턴이면(사정거리 긴)
+	// 장거리 패턴이면(사정거리 긴)
 	else
 	{
 		if (m_pGlanix->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_SKILLAROUND))

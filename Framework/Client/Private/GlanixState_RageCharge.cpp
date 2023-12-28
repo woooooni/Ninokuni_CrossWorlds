@@ -2,6 +2,7 @@
 #include "GlanixState_RageCharge.h"
 
 #include "Glanix.h"
+#include "Camera_Manager.h"
 
 CGlanixState_RageCharge::CGlanixState_RageCharge(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
@@ -13,31 +14,52 @@ HRESULT CGlanixState_RageCharge::Initialize(const list<wstring>& AnimationList)
 	__super::Initialize(AnimationList);
 
 	m_fChargeSpeed = 20.f;
-	m_fChargeTime = 2.f;
+	m_fChargeTime = 1.5f;
 
 	return S_OK;
 }
 
 void CGlanixState_RageCharge::Enter_State(void* pArg)
 {
+	if (m_iChargeCount >= 4)
+	{
+		m_iChargeCount = 0;
+		m_pStateMachineCom->Change_State(CGlanix::GLANIX_RAGERETURN);
+
+		return;
+	}
+
+	m_fTime = 0.f;
+
 	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_RageSkillCharge"));
 }
 
 void CGlanixState_RageCharge::Tick_State(_float fTimeDelta)
 {
+	if (m_pModelCom->Get_CurrAnimationFrame() >= 48 && m_pModelCom->Get_CurrAnimationFrame() <= 180)
+	{
+		CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
+	}
+
 	if (m_pModelCom->Get_CurrAnimationFrame() <= 45)
 		m_pTransformCom->LookAt_ForLandObject(m_pPlayerTransform->Get_Position());
 
 	else if (m_pModelCom->Get_CurrAnimationFrame() >= 50)
 	{
 		/* 여기서 충돌 했을 때 Crash로 전환하면서 Crash 카운트 추가. */
+		if (m_pGlanix->Get_IsCrash())
+		{
+			m_pGlanix->Set_IsCrash(false);
+			m_iChargeCount += 1;
+			m_pStateMachineCom->Change_State(CGlanix::GLANIX_RAGECRASH);
+		}
 
 		m_fTime += fTimeDelta;
 		m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fChargeSpeed, fTimeDelta);
 
 		if (m_fTime >= m_fChargeTime)
 		{
-			m_fTime = m_fChargeTime - m_fTime;
+			m_iChargeCount += 1;
 			m_pStateMachineCom->Change_State(CGlanix::GLANIX_RAGECHARGE_END);
 		}
 	}

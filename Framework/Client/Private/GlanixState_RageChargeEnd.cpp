@@ -2,6 +2,7 @@
 #include "GlanixState_RageChargeEnd.h"
 
 #include "Glanix.h"
+#include "Camera_Manager.h"
 
 CGlanixState_RageChargeEnd::CGlanixState_RageChargeEnd(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
@@ -11,6 +12,8 @@ CGlanixState_RageChargeEnd::CGlanixState_RageChargeEnd(CStateMachine* pStateMach
 HRESULT CGlanixState_RageChargeEnd::Initialize(const list<wstring>& AnimationList)
 {
 	__super::Initialize(AnimationList);
+
+	m_fSlidingSpeed = 10.f;
 
 	return S_OK;
 }
@@ -22,6 +25,14 @@ void CGlanixState_RageChargeEnd::Enter_State(void* pArg)
 
 void CGlanixState_RageChargeEnd::Tick_State(_float fTimeDelta)
 {
+	if (m_pModelCom->Get_CurrAnimationFrame() == 10)
+	{
+		CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
+	}
+
+	if (m_pModelCom->Get_CurrAnimationFrame() <= 20)
+		m_pTransformCom->Move(m_pTransformCom->Get_Look(), 10.f, fTimeDelta);
+
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
 		m_pStateMachineCom->Change_State(CGlanix::GLANIX_RAGETURN);

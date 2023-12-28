@@ -17,15 +17,6 @@ HRESULT CGlanixState_RageTurn::Initialize(const list<wstring>& AnimationList)
 
 void CGlanixState_RageTurn::Enter_State(void* pArg)
 {
-	if (m_pGlanix->Get_Stat().fHp <= m_pGlanix->Get_Stat().fMaxHp / 2.f && !m_pGlanix->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK))
-	{
-		m_pGlanix->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK, true);
-		m_pGlanix->Set_SkillTree();
-		m_iAtkIndex = 0;
-		m_pStateMachineCom->Change_State(CGlanix::GLANIX_BERSERK);
-		return;
-	}
-
 	_vector vLookNormal = XMVector3Normalize(m_pTransformCom->Get_Look());
 	_vector vDestNormal = XMVector3Normalize(m_pPlayerTransform->Get_Position() - m_pTransformCom->Get_Position());
 
@@ -36,8 +27,8 @@ void CGlanixState_RageTurn::Enter_State(void* pArg)
 	/* 만약 회전모션이 필요할 정도가 아닌 각도라면 1초정도의 idle 상태로 전환.*/
 	if (fAngle < 20.f)
 	{
-		_float fWaitTime = 2.5f;
-		m_pStateMachineCom->Change_State(CGlanix::GLANIX_COMBATIDLE, &fWaitTime);
+		_float fWaitTime = 0.5f;
+		m_pStateMachineCom->Change_State(CGlanix::GLANIX_RAGEIDLE, &fWaitTime);
 	}
 	/* 회전이 필요한 각도라면 */
 	else
@@ -106,7 +97,7 @@ void CGlanixState_RageTurn::Tick_State(_float fTimeDelta)
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
-		_float fWaitTime = 1.f;
+		_float fWaitTime = 0.5f;
 		m_pStateMachineCom->Change_State(CGlanix::GLANIX_RAGEIDLE, &fWaitTime);
 	}
 }

@@ -1,23 +1,23 @@
 #include "stdafx.h"
-#include "Glanix_IcePillar.h"
+#include "Glanix_FireSpirit.h"
 #include "GameInstance.h"
 #include "HierarchyNode.h"
 #include "Trail.h"
 
 #include "Glanix.h"
 
-CGlanix_IcePillar::CGlanix_IcePillar(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
+CGlanix_FireSpirit::CGlanix_FireSpirit(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameObject(pDevice, pContext, strObjectTag, LAYER_TYPE::LAYER_PROP)
 {
 }
 
-CGlanix_IcePillar::CGlanix_IcePillar(const CGlanix_IcePillar& rhs)
+CGlanix_FireSpirit::CGlanix_FireSpirit(const CGlanix_FireSpirit& rhs)
 	: CGameObject(rhs)
 {
 
 }
 
-HRESULT CGlanix_IcePillar::Initialize_Prototype()
+HRESULT CGlanix_FireSpirit::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
@@ -26,7 +26,7 @@ HRESULT CGlanix_IcePillar::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CGlanix_IcePillar::Initialize(void* pArg)
+HRESULT CGlanix_FireSpirit::Initialize(void* pArg)
 {
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -42,7 +42,7 @@ HRESULT CGlanix_IcePillar::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CGlanix_IcePillar::Tick(_float fTimeDelta)
+void CGlanix_FireSpirit::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
@@ -52,7 +52,7 @@ void CGlanix_IcePillar::Tick(_float fTimeDelta)
 
 }
 
-void CGlanix_IcePillar::LateTick(_float fTimeDelta)
+void CGlanix_FireSpirit::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
 
@@ -66,7 +66,7 @@ void CGlanix_IcePillar::LateTick(_float fTimeDelta)
 	m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
 }
 
-HRESULT CGlanix_IcePillar::Render()
+HRESULT CGlanix_FireSpirit::Render()
 {
 	if (FAILED(__super::Render()))
 		return E_FAIL;
@@ -74,7 +74,7 @@ HRESULT CGlanix_IcePillar::Render()
 	return S_OK;
 }
 
-HRESULT CGlanix_IcePillar::Render_ShadowDepth()
+HRESULT CGlanix_FireSpirit::Render_ShadowDepth()
 {
 	if (FAILED(__super::Render_ShadowDepth()))
 		return E_FAIL;
@@ -82,7 +82,7 @@ HRESULT CGlanix_IcePillar::Render_ShadowDepth()
 	return S_OK;
 }
 
-HRESULT CGlanix_IcePillar::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
+HRESULT CGlanix_FireSpirit::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
 {
 	__super::Render();
 
@@ -112,7 +112,7 @@ HRESULT CGlanix_IcePillar::Render_Instance(CShader* pInstancingShader, CVIBuffer
 	return S_OK;
 }
 
-HRESULT CGlanix_IcePillar::Render_Instance_Shadow(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
+HRESULT CGlanix_FireSpirit::Render_Instance_Shadow(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
 {
 	if (nullptr == m_pModelCom || nullptr == pInstancingShader)
 		return E_FAIL;
@@ -139,31 +139,33 @@ HRESULT CGlanix_IcePillar::Render_Instance_Shadow(CShader* pInstancingShader, CV
 	return S_OK;
 }
 
-void CGlanix_IcePillar::Collision_Enter(const COLLISION_INFO& tInfo)
+void CGlanix_FireSpirit::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	int i = 0;
 }
 
-void CGlanix_IcePillar::Collision_Continue(const COLLISION_INFO& tInfo)
+void CGlanix_FireSpirit::Collision_Continue(const COLLISION_INFO& tInfo)
 {
-	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER && 
+	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER &&
 		tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY &&
-		tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
+		tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BOUNDARY)
 	{
-		if (dynamic_cast<CGlanix*>(tInfo.pOther)->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Get_CurrState() == CGlanix::GLANIX_RAGECHARGE)
-		{
-			dynamic_cast<CGlanix*>(tInfo.pOther)->Set_IsCrash(true);
-			Set_Dead(this);
-		}
+		_float fX = GI->RandomFloat(-10.f, 10.f);
+		_float fZ = GI->RandomFloat(0.f, -10.f);
+
+		_vector vFireSpiritPos = { fX, 0.f, fZ, 1.f };
+		GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_FireSpirit"), &vFireSpiritPos);
+
+		Set_Dead(this);
 	}
 }
 
-void CGlanix_IcePillar::Collision_Exit(const COLLISION_INFO& tInfo)
+void CGlanix_FireSpirit::Collision_Exit(const COLLISION_INFO& tInfo)
 {
 	int i = 0;
 }
 
-HRESULT CGlanix_IcePillar::Ready_Components()
+HRESULT CGlanix_FireSpirit::Ready_Components()
 {
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
@@ -199,25 +201,24 @@ HRESULT CGlanix_IcePillar::Ready_Components()
 }
 
 #pragma region Ready_Colliders
-HRESULT CGlanix_IcePillar::Ready_Colliders()
+HRESULT CGlanix_FireSpirit::Ready_Colliders()
 {
-	CCollider_OBB::OBB_COLLIDER_DESC OBBDesc;
-	ZeroMemory(&OBBDesc, sizeof OBBDesc);
+	CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
+	::ZeroMemory(&SphereDesc, sizeof(SphereDesc));
 
-	BoundingOrientedBox OBBBox;
-	ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
+	BoundingSphere Sphere;
+	ZeroMemory(&Sphere, sizeof(BoundingSphere));
 
-	XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
-	OBBBox.Extents = { 200.f, 200.f, 250.f };
+	Sphere.Center = Vec3(0.f, 0.f, 0.f);
+	Sphere.Radius = 1.f;
 
-	OBBDesc.tBox = OBBBox;
-	OBBDesc.pNode = nullptr;
-	OBBDesc.pOwnerTransform = m_pTransformCom;
-	OBBDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
-	OBBDesc.vOffsetPosition = Vec3(0.f, 200.f, 0.f);
+	SphereDesc.tSphere = Sphere;
+	SphereDesc.pNode = nullptr;
+	SphereDesc.pOwnerTransform = m_pTransformCom;
+	SphereDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
+	SphereDesc.vOffsetPosition = Vec3::Zero;
 
-	/* Body */
-	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::BODY, &OBBDesc)))
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider_Sphere::SPHERE, CCollider::DETECTION_TYPE::BOUNDARY, &SphereDesc)))
 		return E_FAIL;
 
 	return S_OK;
@@ -225,32 +226,32 @@ HRESULT CGlanix_IcePillar::Ready_Colliders()
 
 #pragma endregion
 
-CGlanix_IcePillar* CGlanix_IcePillar::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
+CGlanix_FireSpirit* CGlanix_FireSpirit::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 {
-	CGlanix_IcePillar* pInstance = new CGlanix_IcePillar(pDevice, pContext, strObjectTag);
+	CGlanix_FireSpirit* pInstance = new CGlanix_FireSpirit(pDevice, pContext, strObjectTag);
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX("Create Failed : CGlanix_IcePillar");
+		MSG_BOX("Create Failed : CGlanix_FireSpirit");
 		Safe_Release(pInstance);
 		return nullptr;
 	}
 	return pInstance;
 }
 
-CGameObject* CGlanix_IcePillar::Clone(void* pArg)
+CGameObject* CGlanix_FireSpirit::Clone(void* pArg)
 {
-	CGlanix_IcePillar* pInstance = new CGlanix_IcePillar(*this);
+	CGlanix_FireSpirit* pInstance = new CGlanix_FireSpirit(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Failed to Cloned : CGlanix_IcePillar");
+		MSG_BOX("Failed to Cloned : CGlanix_FireSpirit");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CGlanix_IcePillar::Free()
+void CGlanix_FireSpirit::Free()
 {
 	__super::Free();
 

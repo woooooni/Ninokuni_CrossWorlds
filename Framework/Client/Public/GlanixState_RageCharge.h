@@ -23,6 +23,8 @@ private:
 	_float m_fChargeTime = 0.f;
 	_float m_fTime = 0.f;
 
+	_int   m_iChargeCount = 0;
+
 public:
 	static CGlanixState_RageCharge* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

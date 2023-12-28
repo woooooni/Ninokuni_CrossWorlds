@@ -20,8 +20,41 @@
 
 #include "GlanixState_Berserk.h"
 
-#include "GlanixState_Turn.h"
+#pragma region Rage1
+#include "GlanixState_RageStartTurnOC.h"
+#include "GlanixState_RageStartJump.h"
+#include "GlanixState_RageStartTurnOL.h"
+#include "GlanixState_RageStart.h"
 
+#include "GlanixState_RageTurn.h"
+#include "GlanixState_RageIdle.h"
+
+#include "GlanixState_RageCharge.h"
+#include "GlanixState_RageChargeEnd.h"
+
+#include "GlanixState_RageReturn.h"
+#include "GlanixState_RageFinishTurnOL.h"
+#include "GlanixState_RagePull.h"
+#include "GlanixState_RageRising.h"
+#include "GlanixState_RageStamp.h"
+#include "GlanixState_RageCrash.h"
+#pragma endregion
+
+#pragma region Rage2
+#include "GlanixState_Rage2StartTurnWP.h"
+#include "GlanixState_Rage2StartJump.h"
+#include "GlanixState_Rage2StartTurnOL.h"
+#include "GlanixState_Rage2Start.h"
+
+#include "GlanixState_Rage2Wave.h"
+#include "GlanixState_Rage2Idle.h"
+
+#include "GlanixState_Rage2Rising.h"
+#include "GlanixState_Rage2Stamp.h"
+#pragma endregion
+
+#include "GlanixState_Turn.h"
+#include "GlanixState_Stun.h"
 #include "GlanixState_Dead.h"
 
 CGlanix::CGlanix(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
@@ -71,7 +104,7 @@ void CGlanix::Tick(_float fTimeDelta)
 {
 	/* 임시 */
 	if (KEY_TAP(KEY::Z))
-		m_tStat.fHp -= 600.f;
+		m_tStat.fHp -= 100.f;
 
 	m_pStateCom->Tick_State(fTimeDelta);
 
@@ -93,6 +126,7 @@ HRESULT CGlanix::Render()
 
 void CGlanix::Collision_Enter(const COLLISION_INFO& tInfo)
 {
+	/* 플레이어와 충돌 */
 	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER &&
 		tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY &&
 		tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
@@ -164,9 +198,12 @@ HRESULT CGlanix::Ready_Components()
 		return E_FAIL;
 
 	// m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(0.f, 10.f, 0.f, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(0.f, 0.f, 0.f, 1.f));
+	m_pTransformCom->FixRotation(0.f, 180.f, 0.f);
 
 	m_vOriginLook = m_pTransformCom->Get_Look();
 	m_vOriginPos = m_pTransformCom->Get_Position();
+	m_vWavePoint = { 0.f, 0.f, 20.f, 1.f };
 
 	/* For.Com_Renderer */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
@@ -274,12 +311,128 @@ HRESULT CGlanix::Ready_States()
 	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_BossSkillRage");
 	m_pStateCom->Add_State(GLANIX_BERSERK, CGlanixState_Berserk::Create(m_pStateCom, strAnimationName));
 
+#pragma region Rage1
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_RightTurn");
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_RightTurn180");
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_LeftTurn");
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_LeftTurn180");
+	m_pStateCom->Add_State(GLANIX_RAGESTART_TURN_OC, CGlanixState_RageStartTurnOC::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_Skill03");
+	m_pStateCom->Add_State(GLANIX_RAGESTART_JUMP, CGlanixState_RageStartJump::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_RightTurn");
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_RightTurn180");
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_LeftTurn");
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_LeftTurn180");
+	m_pStateCom->Add_State(GLANIX_RAGESTART_TURN_OL, CGlanixState_RageStartTurnOL::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_BossSkillRage");
+	m_pStateCom->Add_State(GLANIX_RAGESTART, CGlanixState_RageStart::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_RightTurn");
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_RightTurn180");
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_LeftTurn");
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_LeftTurn180");
+	m_pStateCom->Add_State(GLANIX_RAGETURN, CGlanixState_RageTurn::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_BattleStand");
+	m_pStateCom->Add_State(GLANIX_RAGEIDLE, CGlanixState_RageIdle::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_RageSkillCharge");
+	m_pStateCom->Add_State(GLANIX_RAGECHARGE, CGlanixState_RageCharge::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_Skill07_Finish");
+	m_pStateCom->Add_State(GLANIX_RAGECHARGE_END, CGlanixState_RageChargeEnd::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_Skill03");
+	m_pStateCom->Add_State(GLANIX_RAGERETURN, CGlanixState_RageReturn::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_RightTurn");
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_RightTurn180");
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_LeftTurn");
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_LeftTurn180");
+	m_pStateCom->Add_State(GLANIX_FINISHTURN_OL, CGlanixState_RageFinishTurnOL::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_RageSkillPull");
+	m_pStateCom->Add_State(GLANIX_RAGEPULL, CGlanixState_RagePull::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_RageFinalJump");
+	m_pStateCom->Add_State(GLANIX_RAGERISING, CGlanixState_RageRising::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_RageFinalStamp");
+	m_pStateCom->Add_State(GLANIX_RAGESTAMP, CGlanixState_RageStamp::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_Crash");
+	m_pStateCom->Add_State(GLANIX_RAGECRASH, CGlanixState_RageCrash::Create(m_pStateCom, strAnimationName));
+
+#pragma endregion 
+
+#pragma region Rage2
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_RightTurn");
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_RightTurn180");
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_LeftTurn");
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_LeftTurn180");
+	m_pStateCom->Add_State(GLANIX_RAGE2START_TURN_WP, CGlanixState_Rage2StartTurnWP::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_Skill03");
+	m_pStateCom->Add_State(GLANIX_RAGE2START_JUMP, CGlanixState_Rage2StartJump::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_RightTurn");
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_RightTurn180");
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_LeftTurn");
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_LeftTurn180");
+	m_pStateCom->Add_State(GLANIX_RAGE2START_TURN_OL, CGlanixState_Rage2StartTurnOL::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_BossSkillRage");
+	m_pStateCom->Add_State(GLANIX_RAGE2START, CGlanixState_Rage2Start::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_Skill06");
+	m_pStateCom->Add_State(GLANIX_RAGE2WAVE, CGlanixState_Rage2Wave::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_BattleStand");
+	m_pStateCom->Add_State(GLANIX_RAGE2IDLE, CGlanixState_Rage2Idle::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_RageFinalJump");
+	m_pStateCom->Add_State(GLANIX_RAGE2RISING, CGlanixState_Rage2Rising::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_RageFinalStamp");
+	m_pStateCom->Add_State(GLANIX_RAGE2STAMP, CGlanixState_Rage2Stamp::Create(m_pStateCom, strAnimationName));
+
+#pragma endregion
+
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_RightTurn");
 	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_RightTurn180");
 	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_LeftTurn");
 	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_LeftTurn180");
 	m_pStateCom->Add_State(GLANIX_TURN, CGlanixState_Turn::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_BattleStand");
+	m_pStateCom->Add_State(GLANIX_STUN, CGlanixState_Stun::Create(m_pStateCom, strAnimationName));
 
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_Death");
