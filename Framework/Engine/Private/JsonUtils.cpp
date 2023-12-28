@@ -46,6 +46,7 @@ Json CJsonUtils::Json_Load(const wstring& strFilePath)
 
 	getline(file, strJson, static_cast<char>(EOF));
 
+
 	// Bom이 있다면 제거 후 로드.
 	if (strJson.size() >= 3 && strJson[0] == '\xEF' && strJson[1] == '\xBB' && strJson[2] == '\xBF') {
 		strJson.erase(0, 3);

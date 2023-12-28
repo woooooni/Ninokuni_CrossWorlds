@@ -56,6 +56,9 @@ void CTool_Map::Tick(_float fTimeDelta)
 		MapNPCSpace();
 #pragma endregion MapNPC
 
+#pragma region MapWater
+		//MapWaterSpace();
+#pragma endregion MapWater
 		int a = 0;
 
 		Picking();
@@ -75,7 +78,8 @@ void CTool_Map::AddMapObject(LEVELID iLevelID, LAYER_TYPE iLayerType)
 
 		if (Pair.first.find(strLevelFirst.c_str()) != std::wstring::npos 
 			|| Pair.first.find(TEXT("Common_")) != std::wstring::npos
-			|| Pair.first.find(TEXT("Animal_")) != std::wstring::npos)
+			|| Pair.first.find(TEXT("Animal_")) != std::wstring::npos
+			|| Pair.first.find(TEXT("Water")) != std::wstring::npos)
 		{
 			if (ImGui::Selectable(CUtils::ToString(Pair.first).c_str()))
 			{
@@ -981,6 +985,14 @@ void CTool_Map::MapNPCSpace()
 				Load_NPC_Data(m_strLevelNPCName);
 		}
 		ImGui::EndChild();
+	}
+}
+
+void CTool_Map::MapWaterSpace()
+{
+	if (ImGui::CollapsingHeader("[ Water Tool ]", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ImGui::TextColored(ImVec4(0.0f, 0.0f, 1.0f, 1.0f), u8"Water Inspector");
 	}
 }
 
