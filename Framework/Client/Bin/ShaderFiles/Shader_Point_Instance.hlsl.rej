@@ -1,0 +1,36 @@
+diff a/Framework/Client/Bin/ShaderFiles/Shader_Point_Instance.hlsl b/Framework/Client/Bin/ShaderFiles/Shader_Point_Instance.hlsl	(rejected hunks)
+@@ -82,16 +82,28 @@
+ {
+ 	GS_OUT		Out[4];
+ 
++	// ȸ�� ��� ����
++	float3 vRight;
++	float3 vUp;
++	if (g_EffectDesc[In[0].iInstanceID].g_bBillboard)
++	{
++
++	}
++	else
++		float4 fAxis = g_EffectDesc[In[0].iInstanceID].g_vAxis;
++		float fAngle = radians(g_EffectDesc[In[0].iInstanceID].g_fAngle);
+ 
+-	/* �޾ƿ� ������ ���������Ͽ� �簢���� �����ϱ����� ���� �������� ����ž�. */
+-	vector		vLook = g_vCamPosition - In[0].vPosition;
++		float3x3 RotationMatrix = float3x3(
++			fAxis.x * fAxis.x * (1.0 - cos(fAngle)) + cos(fAngle), fAxis.x * fAxis.y * (1.0 - cos(fAngle)) + fAxis.z * sin(fAngle), fAxis.x * fAxis.z * (1.0 - cos(fAngle)) - fAxis.y * sin(fAngle),
++			fAxis.x * fAxis.y * (1.0 - cos(fAngle)) - fAxis.z * sin(fAngle), fAxis.y * fAxis.y * (1.0 - cos(fAngle)) + cos(fAngle), fAxis.y * fAxis.z * (1.0 - cos(fAngle)) + fAxis.x * sin(fAngle),
++			fAxis.x * fAxis.z * (1.0 - cos(fAngle)) + fAxis.y * sin(fAngle), fAxis.y * fAxis.z * (1.0 - cos(fAngle)) - fAxis.x * sin(fAngle), fAxis.z * fAxis.z * (1.0 - cos(fAngle)) + cos(fAngle));
+ 
+-	float3		vRight = normalize(cross(float3(0.f, 1.f, 0.f), vLook.xyz)) * In[0].vPSize.x * 0.5f;
+-	float3		vUp = normalize(cross(vLook.xyz, vRight.xyz)) * In[0].vPSize.y * 0.5f;
++		vRight = mul(float4(float3(1.0f, 0.0f, 0.0f), 0), RotationMatrix).xyz;
++		vUp = mul(float4(float3(0.0f, 1.0f, 0.0f), 0), RotationMatrix).xyz;
++	}
+ 
+-	matrix		matVP;
++	matrix matVP = mul(g_ViewMatrix, g_ProjMatrix);
+ 
+-	matVP = mul(g_ViewMatrix, g_ProjMatrix);
+ 
+ 	Out[0].vPosition = vector(In[0].vPosition.xyz + vRight + vUp, 1.f);
+ 	Out[0].vPosition = mul(Out[0].vPosition, matVP);
