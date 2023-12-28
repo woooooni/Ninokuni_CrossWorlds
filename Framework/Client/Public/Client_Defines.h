@@ -100,9 +100,24 @@ namespace Client
 	const unsigned int		g_iWinSizeX = 1600;
 	const unsigned int		g_iWinSizeY = 900;
 
-	enum CAMERA_TYPE { FREE, FOLLOW, /* ACTION, */ CAMERA_TYPE_END };
+
+	/* Camera */
+
+	static const _float Cam_Dist_Follow_Default = 3.2f;
+
+	
+	static const _float Cam_Fov_Free_Default = XMConvertToRadians(60.0f);
+	static const _float Cam_Fov_Follow_Default = XMConvertToRadians(60.0f);
+	static const _float Cam_Fov_CurScene_Default = XMConvertToRadians(70.0f);
+
+	enum CAMERA_TYPE { FREE, FOLLOW, CUTSCENE, CAMERA_TYPE_END };
+
+	const wstring		CameraWstringNames[CAMERA_TYPE::CAMERA_TYPE_END]{ L"Camera_Free", L"Camera_Follow", L"Camera_CutScene"};
+	
+	static const char*	CameraCharNames[CAMERA_TYPE::CAMERA_TYPE_END]{ "Camera_Free", "Camera_Follow", "Camera_CutScene" };
 
 	enum CAMERA_EVENT_TYPE { LERP_FOV, LERP_DIST, SHAKE, CAMERA_EVENT_TYPE_END };
+
 	typedef struct tagCameraEventDesc
 	{					
 								/* LERP_FOV,		LERP_DIST,		SHAKE */
@@ -116,11 +131,23 @@ namespace Client
 
 		_int iTag1 = 0.f;		/* eMode */
 		_int iTag2 = 0.f;
+
 	}CAMERA_EVENT_DESC;
 
-	const wstring		CameraWstringNames[CAMERA_TYPE::CAMERA_TYPE_END]{ L"Camera_Free", L"Camera_Follow" };
-	static const char* CameraCharNames[CAMERA_TYPE::CAMERA_TYPE_END]{ "Camera_Free", "Camera_Follow" };
+	typedef struct tagCameraCutSceneEventDesc
+	{
+		Vec4 vCamPos;
+		Vec4 vLookAt;
 
+		_float fFov = Cam_Fov_CurScene_Default;
+
+		_float fTime = 1.f;
+
+		LERP_MODE eLerpMode = LERP_MODE::DEFAULT;
+
+		_int iPadding = 0;
+
+	}CAMERA_CUT_SCENE_EVENT_DESC;
 }
 
 extern HWND g_hWnd;

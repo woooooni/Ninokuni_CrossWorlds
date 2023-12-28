@@ -5,6 +5,7 @@
 
 #include "Camera_Free.h"
 #include "Camera_Follow.h"
+#include "Camera_CutScene.h"
 
 
 IMPLEMENT_SINGLETON(CCamera_Manager)
@@ -127,6 +128,48 @@ HRESULT CCamera_Manager::Start_Action_Shake_Default()
 	return S_OK;
 }
 
+HRESULT CCamera_Manager::Start_Action_CutScene(const string& strCutSceneName)
+{
+	return S_OK;
+}
+
+string CCamera_Manager::Get_Action_CutSceneEvent_Name(const _int& iIndex)
+{
+	return Find_Action_CutSceneEvent_Name(iIndex);
+}
+
+vector<CAMERA_CUT_SCENE_EVENT_DESC> CCamera_Manager::Get_Action_CutSceneEvent(const string& strTag)
+{
+	return Find_Action_CutSceneEvent(strTag);
+}
+
+void CCamera_Manager::Add_Action_CutSceneEvent(const string& strTag)
+{
+	m_CutSceneEvents.emplace(strTag, vector<CAMERA_CUT_SCENE_EVENT_DESC>());
+}
+
+string CCamera_Manager::Find_Action_CutSceneEvent_Name(const _int& iIndex)
+{
+	_int iCount = 0;
+
+	for (auto& iter : m_CutSceneEvents)
+	{
+		if (iCount == iIndex)
+			return iter.first;
+	}
+
+	return string();
+}
+
+vector<CAMERA_CUT_SCENE_EVENT_DESC> CCamera_Manager::Find_Action_CutSceneEvent(const string& strTag)
+{
+	auto iterEvent = m_CutSceneEvents.find(strTag);
+
+	if(iterEvent == m_CutSceneEvents.end())
+		return vector<CAMERA_CUT_SCENE_EVENT_DESC>();
+
+	return iterEvent->second;
+}
 
 HRESULT CCamera_Manager::Ready_Cameras()
 {
@@ -167,6 +210,33 @@ HRESULT CCamera_Manager::Ready_Cameras()
 		CCamera::PROJ_DESC tDesc;
 		{
 			tDesc.tLerpFov.fCurValue = Cam_Fov_Follow_Default;
+			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
+			tDesc.fNear = 0.2f;
+			tDesc.fFar = 1000.f;
+
+			m_Cameras[eType] = CCamera_Follow::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
+
+			if (nullptr == m_Cameras[eType])
+				return E_FAIL;
+
+			if (FAILED(m_Cameras[eType]->Initialize(&tDesc)))
+			{
+				Safe_Release(m_Cameras[eType]);
+				return E_FAIL;
+			}
+		}
+		m_Cameras[eType]->Set_Type(eType);
+
+		m_Cameras[eType]->Get_Transform()->Set_State(CTransform::STATE::STATE_POSITION, Vec4(0.f, 10.f, -10.f, 1.f));
+		m_Cameras[eType]->Get_Transform()->LookAt(Vec4{ 0.f, 0.f, 0.f, 1.f });
+	}
+
+	/* CutScene */
+	eType = CAMERA_TYPE::CUTSCENE;
+	{
+		CCamera::PROJ_DESC tDesc;
+		{
+			tDesc.tLerpFov.fCurValue = Cam_Fov_CurScene_Default;
 			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
 			tDesc.fNear = 0.2f;
 			tDesc.fFar = 1000.f;

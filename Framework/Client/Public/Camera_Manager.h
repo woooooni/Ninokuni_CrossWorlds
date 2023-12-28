@@ -10,21 +10,6 @@ class CGameObject;
 class CTransform;
 END
 
-#pragma region Distance
-
-static const _float Cam_Dist_Follow_Default = 3.2f;
-
-#pragma endregion
-
-#pragma region Fov
-
-static const _float Cam_Fov_Free_Default = XMConvertToRadians(60.0f);
-
-static const _float Cam_Fov_Follow_Default = XMConvertToRadians(60.0f);
-
-#pragma endregion
-
-
 BEGIN(Client)
 class CCamera_Manager : public CBase
 {
@@ -57,6 +42,19 @@ public:
 
 	HRESULT Start_Action_Shake_Default();
 
+	/* ÄÆ½Å Ä«¸Þ¶ó */
+	HRESULT Start_Action_CutScene(const string& strCutSceneName);
+	
+	vector<CAMERA_CUT_SCENE_EVENT_DESC> Get_Action_CutSceneEvent(const string& strTag);
+	string								Get_Action_CutSceneEvent_Name(const _int& iIndex);
+	const map<string, vector<CAMERA_CUT_SCENE_EVENT_DESC>>& Get_Action_CutSceneEvents() const { return m_CutSceneEvents; }
+
+	void								Add_Action_CutSceneEvent(const string& strTag);
+
+private:
+	string Find_Action_CutSceneEvent_Name(const _int& iIndex);
+	vector<CAMERA_CUT_SCENE_EVENT_DESC> Find_Action_CutSceneEvent(const string& strTag);
+
 private:
 	/* Defualt */
 
@@ -69,6 +67,9 @@ private:
 
 	/* Lerp */
 	LERP_TIME_DESC m_tLerpTime = {};
+
+	/* CutScene Events*/
+	map<string, vector<CAMERA_CUT_SCENE_EVENT_DESC>> m_CutSceneEvents;
 
 private:
 	ID3D11Device* m_pDevice = nullptr;
