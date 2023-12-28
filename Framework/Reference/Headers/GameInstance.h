@@ -205,6 +205,8 @@ public:
 	TCHAR* Get_SoundFileKey(const _uint iIndex);
 	const map<TCHAR*, FMOD_SOUND*>& Get_MapSound();
 
+public:
+	HRESULT Bind_SRV(class CShader* pShader, const wstring& strTargetTag, const _char* pConstantName);
 
 private:
 	class CTimer_Manager*			m_pTimer_Manager = { nullptr };

@@ -30,6 +30,7 @@ private:
 
 private:
 	HRESULT Ready_Proto_Effects(const wstring& strEffectPath);
+	HRESULT Ready_Proto_Decal();
 	HRESULT Ready_Proto_Vfx();
 
 public:

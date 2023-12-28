@@ -1,14 +1,17 @@
 #include "stdafx.h"
 #include "Effect_Manager.h"
+
 #include "GameInstance.h"
 #include "PipeLine.h"
-#include "Transform.h"
-#include "GameObject.h"
-#include "Effect.h"
 #include <filesystem>
 #include "FileUtils.h"
 #include "Utils.h"
 
+#include "GameObject.h"
+#include "Transform.h"
+
+#include "Effect.h"
+#include "Decal.h"
 #include "Vfx_MouseClick.h"
 
 IMPLEMENT_SINGLETON(CEffect_Manager)
@@ -31,6 +34,9 @@ HRESULT CEffect_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceCont
 
 	/*if (FAILED(Ready_Proto_Effects(strEffectPath)))
 		return E_FAIL;*/
+
+	if (FAILED(Ready_Proto_Decal()))
+		return E_FAIL;
 
 	if (FAILED(Ready_Proto_Vfx()))
 		return E_FAIL;
@@ -356,6 +362,16 @@ HRESULT CEffect_Manager::Ready_Proto_Effects(const wstring& strEffectPath)
 				return E_FAIL;
 		}
 	}
+
+	return S_OK;
+}
+
+HRESULT CEffect_Manager::Ready_Proto_Decal()
+{
+	// Prototype_Decale
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_Decal"),
+		CDecal::Create(m_pDevice, m_pContext, TEXT("Decal_Temp")), LAYER_TYPE::LAYER_EFFECT)))
+		return E_FAIL;
 
 	return S_OK;
 }
