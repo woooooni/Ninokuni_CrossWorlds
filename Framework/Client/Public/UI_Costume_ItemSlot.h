@@ -17,7 +17,7 @@ protected:
 
 public:
 	virtual void Set_Active(_bool bActive) override;
-	void Set_CharacterType(CHARACTER_TYPE eType);
+	//void Set_CharacterType(CHARACTER_TYPE eType);
 	void Set_Clicked(_bool bClicked) { m_bClicked = bClicked; }
 
 public:
@@ -33,7 +33,7 @@ public:
 	virtual void On_MouseExit(_float fTimeDelta) override;
 
 private:
-	CHARACTER_TYPE m_ePlayerType = { CHARACTER_END };
+	//CHARACTER_TYPE m_ePlayerType = { CHARACTER_END };
 	UI_COSTUME_SECTION m_eSectionType = { COSTUMESECTION_END };
 	UI_COSTUME_SLOT m_eType = { COSTUMESLOT_END };
 

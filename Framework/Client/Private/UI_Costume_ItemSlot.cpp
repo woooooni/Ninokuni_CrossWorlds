@@ -43,27 +43,6 @@ void CUI_Costume_ItemSlot::Set_Active(_bool bActive)
 	m_bActive = bActive;
 }
 
-void CUI_Costume_ItemSlot::Set_CharacterType(CHARACTER_TYPE eType)
-{
-	m_ePlayerType = eType;
-
-	switch (m_eType)
-	{
-	case COSTUMESLOT_FIRST:
-		m_iTextureIndex = 0;
-		break;
-
-	case COSTUMESLOT_SECOND:
-		m_iTextureIndex = 1;
-		break;
-
-	case COSTUMESLOT_THIRD:
-		m_iTextureIndex = 2;
-		break;
-	}
-
-}
-
 HRESULT CUI_Costume_ItemSlot::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
@@ -90,16 +69,19 @@ HRESULT CUI_Costume_ItemSlot::Initialize(void* pArg)
 	case COSTUMESLOT_FIRST:
 		m_vArrivedPosition = _float2(m_tInfo.fX, m_tInfo.fY);
 		m_vStartPosition = _float2(m_vArrivedPosition.x + 100.f, m_vArrivedPosition.y);
+		m_iTextureIndex = 0;
 		break;
 
 	case COSTUMESLOT_SECOND:
 		m_vArrivedPosition = _float2(m_tInfo.fX, m_tInfo.fY);
 		m_vStartPosition = _float2(m_vArrivedPosition.x + 150.f, m_vArrivedPosition.y);
+		m_iTextureIndex = 1;
 		break;
 
 	case COSTUMESLOT_THIRD:
 		m_vArrivedPosition = _float2(m_tInfo.fX, m_tInfo.fY);
 		m_vStartPosition = _float2(m_vArrivedPosition.x + 200.f, m_vArrivedPosition.y);
+		m_iTextureIndex = 2;
 		break;
 	}
 
@@ -151,7 +133,7 @@ void CUI_Costume_ItemSlot::LateTick(_float fTimeDelta)
 		if (COSTUMESLOT_END == m_eType)
 			return;
 
-		if (SWORD_MAN == m_ePlayerType && COSTUMESECTION_HAIRACC == m_eSectionType && COSTUMESLOT_THIRD == m_eType)
+		if (SWORD_MAN == m_eCurPlayerType && COSTUMESECTION_HAIRACC == m_eSectionType && COSTUMESLOT_THIRD == m_eType)
 			return;
 
 		if (m_bClicked)
@@ -262,7 +244,7 @@ HRESULT CUI_Costume_ItemSlot::Bind_ShaderResources()
 	}
 
 	// 직업과 Section에 따른 DiffuseTexture 구분.
-	switch (m_ePlayerType)
+	switch (m_eCurPlayerType)
 	{
 	case CHARACTER_TYPE::SWORD_MAN:
 		if (COSTUMESECTION_CLOTH == m_eSectionType)

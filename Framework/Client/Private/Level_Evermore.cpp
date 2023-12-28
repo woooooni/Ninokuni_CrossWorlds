@@ -23,15 +23,18 @@ HRESULT CLevel_Evermore::Initialize()
 	if (FAILED(__super::Initialize()))
 		return E_FAIL;
 
-//	if (FAILED(Ready_Layer_Camera(LAYER_TYPE::LAYER_CAMERA)))
-//		return E_FAIL;
+	if (FAILED(Ready_Layer_Camera(LAYER_TYPE::LAYER_CAMERA)))
+		return E_FAIL;
 //
 //	if (FAILED(Ready_Layer_BackGround(LAYER_TYPE::LAYER_BACKGROUND)))
 //		return E_FAIL;
 //
 //	if (FAILED(Ready_Layer_Terrain(LAYER_TYPE::LAYER_TERRAIN)))
 //		return E_FAIL;
-//
+	
+	if (FAILED(Ready_Layer_Character(LAYER_TYPE::LAYER_CHARACTER)))
+		return E_FAIL;
+ 
 //	if (FAILED(Ready_Layer_Monster(LAYER_TYPE::LAYER_MONSTER)))
 //		return E_FAIL;
 
@@ -98,6 +101,16 @@ HRESULT CLevel_Evermore::Ready_Layer_Terrain(const LAYER_TYPE eLayerType)
 	return S_OK;
 }
 
+HRESULT CLevel_Evermore::Ready_Layer_Character(const LAYER_TYPE eLayerType)
+{
+	CGameObject* pTest = nullptr;
+
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, eLayerType, TEXT("Prototype_GameObject_UI_CharacterDummy_Engineer"), nullptr, &pTest)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
 HRESULT CLevel_Evermore::Ready_Layer_Monster(const LAYER_TYPE eLayerType)
 {
 
@@ -108,6 +121,9 @@ HRESULT CLevel_Evermore::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 {
 	if (FAILED(CUI_Manager::GetInstance()->Ready_CommonUIs(LEVELID::LEVEL_EVERMORE)))
 		return E_FAIL;
+
+	CUI_Manager::GetInstance()->Ready_CharacterTypeForUI(CHARACTER_TYPE::ENGINEER);
+	CUI_Manager::GetInstance()->Ready_ElementalTypeForUI(ELEMENTAL_TYPE::DARK);
 
 	return S_OK;
 }

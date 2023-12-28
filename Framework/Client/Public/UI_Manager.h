@@ -33,7 +33,17 @@ public: // For Clone Objects
 	HRESULT Ready_Veils();
 	HRESULT Ready_Loadings();
 	HRESULT Ready_LobbyUIs();
-	HRESULT Ready_CommonUIs(LEVELID eID); // 항상 쓰이는 UI들 (Cursor랑 Veil 옮길것)
+	HRESULT Ready_CommonUIs(LEVELID eID); // 항상 쓰이는 UI들 (Cursor랑 Veil 옮길것)]
+	
+public: // UI들이 Player, 무기 속성을 알기 위한 함수
+	void Ready_CharacterTypeForUI(CHARACTER_TYPE eType) {
+		m_eCurPlayer = eType;
+		Set_CharacterType();
+	}
+	void Ready_ElementalTypeForUI(ELEMENTAL_TYPE eType) {
+		m_eElemental = eType;
+		Set_ElementalType();
+	}
 
 public:
 	HRESULT Tick_UIs(LEVELID eID, _float fTimeDelta);
@@ -87,9 +97,9 @@ public:
 	HRESULT OnOff_EmoticonBalloon(_bool bOnOff);
 	void Set_EmoticonType(_uint iIndex);
 
-public: // For UI Tool
-	HRESULT Save_UIData();
-	void Load_UIData();
+private:
+	CHARACTER_TYPE m_eCurPlayer = { CHARACTER_TYPE::SWORD_MAN };
+	ELEMENTAL_TYPE m_eElemental = { ELEMENTAL_TYPE::FIRE };
 
 private:
 	class CUI_Default_Background* m_pDefaultBG = { nullptr };
@@ -190,6 +200,8 @@ private:
 private:
 	HRESULT Ready_UIStaticPrototypes();
 	HRESULT Ready_UILobbyPrototypes();
+	void Set_CharacterType();
+	void Set_ElementalType();
 
 public:
 	virtual void Free() override;

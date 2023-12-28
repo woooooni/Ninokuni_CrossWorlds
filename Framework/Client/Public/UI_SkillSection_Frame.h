@@ -16,8 +16,8 @@ protected:
 	virtual ~CUI_SkillSection_Frame() = default;
 
 public:
-	void Set_ClassicFrameColor(ELEMENTAL_TYPE eType);
-	void Set_SpecialFrameColor(CHARACTER_TYPE eType);
+	virtual void Set_CharacterType(CHARACTER_TYPE eType) override;
+	virtual void Set_ElementalType(ELEMENTAL_TYPE eType) override;
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -37,6 +37,8 @@ private:
 private:
 	HRESULT	Ready_State();
 	HRESULT	Bind_ShaderResources();
+	void Set_ClassicFrameColor();
+	void Set_SpecialFrameColor();
 
 public:
 	static CUI_SkillSection_Frame* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext,

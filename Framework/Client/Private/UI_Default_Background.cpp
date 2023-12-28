@@ -85,7 +85,7 @@ void CUI_Default_Background::LateTick(_float fTimeDelta)
 		if (m_pEffect->Get_Active())
 			m_pEffect->LateTick(fTimeDelta);
 
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_PRIORITY, this);
 
 		__super::LateTick(fTimeDelta);
 	}

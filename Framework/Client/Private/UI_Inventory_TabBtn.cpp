@@ -145,6 +145,8 @@ void CUI_Inventory_TabBtn::LateTick(_float fTimeDelta)
 		}
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+
+		__super::LateTick(fTimeDelta);
 	}
 }
 
@@ -158,6 +160,8 @@ HRESULT CUI_Inventory_TabBtn::Render()
 		m_pShaderCom->Begin(m_iPass);
 
 		m_pVIBufferCom->Render();
+
+		__super::Render();
 	}
 
 	return S_OK;

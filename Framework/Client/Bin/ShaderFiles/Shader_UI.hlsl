@@ -362,6 +362,21 @@ PS_OUT PS_HPBAR_GAUGE(PS_IN In)
 	return Out;
 }
 
+PS_OUT PS_MAIN_GRAY(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+	float3 vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV).rgb;
+	float vGrayScale = dot(vColor, float3(0.299, 0.587, 0.114)); // 그레이 스케일로 변환하는데 사용하는 가중치
+	// RGB값과 그레이스케일을 내적한다. 0.299×R+0.587×G+0.114×B -> RGB를 같은값으로 넣으면 흑백으로 출력된다.
+	Out.vColor = float4(vGrayScale, vGrayScale, vGrayScale, g_DiffuseTexture.Sample(LinearSampler, In.vTexUV).a);
+
+	if (0.0001f >= Out.vColor.a)
+		discard;
+
+	return Out;
+}
+
 technique11 DefaultTechnique
 {
 	pass DefaultPass // 0
@@ -527,6 +542,28 @@ technique11 DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_HPBAR_GAUGE();
+	}
+
+	pass NoneCull // 15
+	{
+		SetRasterizerState(RS_Sky);
+		SetDepthStencilState(DSS_None, 0);
+		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN_ALPHA();
+	}
+
+	pass GrayScale // 16
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_None, 0);
+		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN_GRAY();
 	}
 }
 

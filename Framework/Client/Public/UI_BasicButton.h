@@ -17,6 +17,10 @@ protected:
 	virtual ~CUI_BasicButton() = default;
 
 public:
+	void Set_UIPass(_uint iPass) { m_iPass = iPass; }
+	void Set_AllowClick(_bool bAllow) { m_bCanClick = bAllow; }
+
+public:
 	virtual HRESULT	Initialize_Prototype();
 	virtual HRESULT	Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta);
@@ -37,6 +41,9 @@ private:
 	_float2 m_vOriginSize = _float2(0.f, 0.f);
 	_float2 m_vMinSize = _float2(0.f, 0.f);
 	_float m_fTimeAcc = { 0.f };
+
+	_uint m_iPass = { 1 };
+	_bool m_bCanClick = { false };
 
 private:
 	virtual HRESULT	Ready_Components() override;

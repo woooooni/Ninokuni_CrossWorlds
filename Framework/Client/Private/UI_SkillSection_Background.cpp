@@ -13,6 +13,18 @@ CUI_SkillSection_Background::CUI_SkillSection_Background(const CUI_SkillSection_
 {
 }
 
+void CUI_SkillSection_Background::Set_CharacterType(CHARACTER_TYPE eType)
+{
+	m_eCurPlayerType = eType;
+	Set_PlayerTypeToChild(m_eCurPlayerType);
+}
+
+void CUI_SkillSection_Background::Set_ElementalType(ELEMENTAL_TYPE eType)
+{
+	m_eElementalType = eType;
+	Set_ElementalTypeToChild(m_eElementalType);
+}
+
 void CUI_SkillSection_Background::Set_Active(_bool bActive)
 {
 	if (bActive)

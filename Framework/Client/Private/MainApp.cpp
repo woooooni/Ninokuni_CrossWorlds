@@ -689,7 +689,7 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SkillSection_DefaultAttack"), // 기본 공격용 Texture
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/WeaponSlot/UI_DefaultAttack_Icon_%d.png"), 5))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/WeaponSlot/UI_DefaultAttack_Icon_%d.png"), 3))))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_WeaponSection_Elemental_Frame"), // 속성에 따른 Frame Texture 작업 전
@@ -829,7 +829,7 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 		return E_FAIL;
 	// ClassicSkill용 MaskTex
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SkillSection_ClassicSkill_Mask"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/ClassicSkill/UI_Icon_Skill_Mask.png")))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/ClassicSkill/UI_Icon_Skill_Mask_Temp.png")))))
 		return E_FAIL;
 
 	// SpecialSkill
@@ -962,6 +962,9 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Inventory_LineBox"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Tab/Tab_Inventory/UI_Inventory_WindowBackground.png")))))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Inventory_Decoline"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Tab/Tab_Inventory/UI_Inventory_Decoline.png")))))
+		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Inventory_UnSelectedTab"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Tab/Tab_Inventory/UI_Tab_Unselected_%d.png"), 6))))
 		return E_FAIL;
@@ -995,28 +998,28 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Tab/Tab_Skill/Skill_Title_%d.png"), 4))))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SkillWindow_ClassSkillSlot"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Tab/Tab_Skill/UI_SkillWindow_Swordsman_SkllSlot_Class_%d.png"), 3))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Tab/Tab_Skill/UI_SkillWindow_SkllSlot_Class_%d.png"), 9))))
 		return E_FAIL;
-	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SkillWindow_ClassSkillSlot_Engineer"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Tab/Tab_Skill/UI_SkillWindow_Engineer_SkllSlot_Class_%d.png"), 3))))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SkillWindow_ClassSkillSlot_Destroyer"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Tab/Tab_Skill/UI_SkillWindow_Destroyer_SkllSlot_Class_%d.png"), 3))))
-	//	return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SkillWindow_BurstSkillSlot"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Tab/Tab_Skill/UI_SkillWindow_Swordsman_SkillSlot_Burst_%d.png"), 5))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Tab/Tab_Skill/UI_SkillWindow_SkillSlot_Burst_%d.png"), 15))))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SkillWindow_ClassSkill_Separator"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Tab/Tab_Skill/UI_SkillWindow_ClassSkill_Separator.png")))))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SkillWindow_ActiveSkillSlot"), // 0, 1, 2 소드맨 3, 4, 5 ~
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Tab/Tab_Skill/UI_SkillWindow_Swordsman_SkllSlot_Active_%d.png"), 3))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Tab/Tab_Skill/UI_SkillWindow_SkllSlot_Active_%d.png"), 9))))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SkillWindow_SkillSlot_FXTexture"), // 선택시 Glow Tex
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Tab/Tab_Skill/UI_SkillSlot__Glow_%d.png"), 2))))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SkillWindow_Desc_Swordsman"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Tab/Tab_Skill/UI_SkillWindow_Swordsman_SkillDesc_%d.png"), 7))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SkillWindow_Desc_Destroyer"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Tab/Tab_Skill/UI_SkillWindow_Destroyer_SkillDesc_%d.png"), 7))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SkillWindow_Desc_Engineer"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Tab/Tab_Skill/UI_SkillWindow_Engineer_SkillDesc_%d.png"), 7))))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Costume_Swordsman_Clothes"),

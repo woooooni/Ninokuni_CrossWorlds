@@ -25,6 +25,7 @@ private:
 	HRESULT Ready_Layer_Camera(const LAYER_TYPE eLayerType);
 	HRESULT Ready_Layer_BackGround(const LAYER_TYPE eLayerType);
 	HRESULT Ready_Layer_Terrain(const LAYER_TYPE eLayerType);
+	HRESULT Ready_Layer_Character(const LAYER_TYPE eLayerType);
 	HRESULT Ready_Layer_Monster(const LAYER_TYPE eLayerType);
 	HRESULT Ready_Layer_UI(const LAYER_TYPE eLayerType);
 

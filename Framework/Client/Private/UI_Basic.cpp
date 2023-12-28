@@ -141,7 +141,7 @@ HRESULT CUI_Basic::Render()
 			if (FAILED(Bind_ShaderResources()))
 				return E_FAIL;
 
-			m_pShaderCom->Begin(1);
+			m_pShaderCom->Begin(m_iPass);
 
 			m_pVIBufferCom->Render();
 

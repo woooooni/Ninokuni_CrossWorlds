@@ -30,6 +30,7 @@ protected:
 	virtual ~CUI() = default;
 
 public:
+	_float2 Get_ProjectionPosition(CTransform* pTransfrom);
 	const UI_INFO& Get_UI_Info() { return m_tInfo; }
 	void Set_UI_Info(const UI_INFO& tInfo) { m_tInfo = tInfo; }
 
@@ -40,8 +41,11 @@ public:
 
 	void Set_ChildActive(_bool bActive);
 	void Set_ChildPosition(_float3 vPosition);
+	void Set_ElementalTypeToChild(ELEMENTAL_TYPE eElementalType); // 자식에게도 플레이어 정보를 공유하기 위한 함수
+	void Set_PlayerTypeToChild(CHARACTER_TYPE eCharacterType);
 
-	_float2 Get_ProjectionPosition(CTransform* pTransfrom);
+	virtual void Set_CharacterType(CHARACTER_TYPE eType) { m_eCurPlayerType = eType; }
+	virtual void Set_ElementalType(ELEMENTAL_TYPE eType) { m_eElementalType = eType; }
 
 public:
 	virtual HRESULT Initialize_Prototype() override { return S_OK; }
@@ -78,6 +82,9 @@ protected:
 	CVIBuffer_Rect* m_pVIBufferCom = nullptr;
 
 protected:
+	CHARACTER_TYPE m_eCurPlayerType = { CHARACTER_TYPE::SWORD_MAN };
+	ELEMENTAL_TYPE m_eElementalType = { ELEMENTAL_TYPE::FIRE };
+
 	list<CUI*> m_pChild;
 
 	UI_INFO m_tInfo = { 0 };

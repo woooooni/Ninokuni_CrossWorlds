@@ -5,18 +5,12 @@
 BEGIN(Client)
 class CUI_WeaponSection_DefaultWeapon final : public CUI
 {
-public:
-	enum UI_DEFAULTWEAPON { DEFAULTWEAPON_SWORDMAN, DEFAULTWEAPON_DESTROYER, DEFAULTWEAPON_ENGINEER,
-		DEFAULTWEAPON_WITCH, DEFAULTWEAPON_ROGUE, DEFAULTWEAPON_END };
-
 protected:
 	CUI_WeaponSection_DefaultWeapon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CUI_WeaponSection_DefaultWeapon(const CUI_WeaponSection_DefaultWeapon& rhs);
 	virtual ~CUI_WeaponSection_DefaultWeapon() = default;
 
 public:
-	void Set_Weapon(CHARACTER_TYPE eID);
-
 	_bool Get_Resizable() { return m_bResizable; }
 	void Set_Resizable(_bool bResize) { m_bResizable = bResize; }
 
@@ -33,7 +27,6 @@ public:
 	virtual void On_MouseExit(_float fTimeDelta) override;
 
 private:
-	UI_DEFAULTWEAPON m_eWeaponType = { DEFAULTWEAPON_SWORDMAN };
 	_bool m_bResizable = { true }; // 사이즈 조정이 가능한가
 
 	_float m_fTimeAcc = { 0.f };

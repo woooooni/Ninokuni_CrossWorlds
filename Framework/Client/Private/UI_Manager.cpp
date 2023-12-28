@@ -1780,19 +1780,6 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(pClassicFrame);
 
-	//TestCode
-	for (auto& Skill : m_ClassicSkill)
-	{
-		if (nullptr != Skill)
-			Skill->Set_SkillType(CHARACTER_TYPE::SWORD_MAN);
-	}
-	for (auto& Frame : m_ClassicFrame)
-	{
-		if (nullptr != Frame)
-			Frame->Set_ClassicFrameColor(ELEMENTAL_TYPE::FIRE);
-	}
-
-
 #pragma endregion
 
 #pragma region SPECIAL_SKILLS
@@ -1856,17 +1843,6 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(pSpecialFrame);
 
-	//TestCode
-	for (auto& Skill : m_SpecialSkill)
-	{
-		if (nullptr != Skill)
-			Skill->Set_SkillType(CHARACTER_TYPE::SWORD_MAN);
-	}
-	for (auto& Skill : m_SpecialFrame)
-	{
-		if (nullptr != Skill)
-			Skill->Set_SpecialFrameColor(CHARACTER_TYPE::SWORD_MAN);
-	}
 #pragma endregion
 
 #pragma region ITEM_QUICKSLOT
@@ -2592,6 +2568,32 @@ HRESULT CUI_Manager::Tick_LobbyLevel(_float fTimeDelta)
 		}
 	}
 
+	//m_Buttons
+	// 만약 Click된 것이 없다면 회색으로 출력되게 한다.
+//				m_Buttons[0]->Set_UIPass(1); 16
+	if (!m_ClickedPlayer[CUI_BtnCharacterSelect::BTN_ENGINEER]->Get_Active()
+		&& !m_ClickedPlayer[CUI_BtnCharacterSelect::BTN_DESTROYER]->Get_Active()
+		&& !m_ClickedPlayer[CUI_BtnCharacterSelect::BTN_SWORDMAN]->Get_Active())
+	{
+		m_Buttons[CUI_BasicButton::BUTTON_CHANGESCENE]->Set_UIPass(16);
+		m_Buttons[CUI_BasicButton::BUTTON_CHANGESCENE]->Set_AllowClick(false);
+		for (auto& iter : m_Basic)
+		{
+			if (TEXT("UI_Lobby_BtnText") == iter->Get_ObjectTag())
+				iter->Set_UIPass(16);
+		}
+	}
+	else
+	{
+		m_Buttons[CUI_BasicButton::BUTTON_CHANGESCENE]->Set_UIPass(1);
+		m_Buttons[CUI_BasicButton::BUTTON_CHANGESCENE]->Set_AllowClick(true);
+		for (auto& iter : m_Basic)
+		{
+			if (TEXT("UI_Lobby_BtnText") == iter->Get_ObjectTag())
+				iter->Set_UIPass(1);
+		}
+	}
+
 
 	return S_OK;
 }
@@ -2810,6 +2812,7 @@ void CUI_Manager::Update_SkillSlotState(_uint iSectionType, _uint iSlotIndex)
 	//	enum UI_SKILLMENU_SECTION { SKILL_CLASS, SKILL_BURST, SKILL_ACTIVE, SKILL_SEPARATOR, SKILLSECTION_END };
 	// enum UI_SKILLMENU_SLOT { SKILLSLOT_FIRST, SKILLSLOT_SECOND, SKILLSLOT_THIRD, SKILLSLOT_END };
 
+	
 	switch (iSectionType)
 	{
 	case 0:
@@ -2946,27 +2949,33 @@ HRESULT CUI_Manager::Using_CloseButton()
 
 HRESULT CUI_Manager::Using_BackButton()
 {
-	if (nullptr != m_pCostumeBox)
+	if (LEVELID::LEVEL_LOBBY != GI->Get_CurrentLevel())
 	{
-		if (m_pCostumeBox->Get_Active())
+		if (nullptr != m_pCostumeBox)
 		{
-			OnOff_CostumeWindow(false);
+			if (m_pCostumeBox->Get_Active())
+			{
+				OnOff_CostumeWindow(false);
+			}
 		}
-	}
 
-	if (nullptr != m_pInvenBox)
-	{
-		if (m_pInvenBox->Get_Active())
+		if (nullptr != m_pInvenBox)
 		{
-			OnOff_Inventory(false);
+			if (m_pInvenBox->Get_Active())
+			{
+				OnOff_Inventory(false);
+			}
 		}
-	}
 
-	if (nullptr != m_SkillWindow[CUI_SkillWindow_LineBox::UI_SKILLWINDOW::SKWINDOW_SUBMENU])
-	{
-		if (m_SkillWindow[CUI_SkillWindow_LineBox::UI_SKILLWINDOW::SKWINDOW_SUBMENU]->Get_Active())
+		if (!m_SkillWindow.size())
 		{
-			OnOff_SkillWindow(false);
+			if (nullptr != m_SkillWindow[CUI_SkillWindow_LineBox::UI_SKILLWINDOW::SKWINDOW_SUBMENU])
+			{
+				if (m_SkillWindow[CUI_SkillWindow_LineBox::UI_SKILLWINDOW::SKWINDOW_SUBMENU]->Get_Active())
+				{
+					OnOff_SkillWindow(false);
+				}
+			}
 		}
 	}
 
@@ -3870,15 +3879,6 @@ void CUI_Manager::Set_EmoticonType(_uint iIndex)
 	m_pBalloon->Set_EmoticonType(iIndex);
 }
 
-HRESULT CUI_Manager::Save_UIData()
-{
-	return S_OK;
-}
-
-void CUI_Manager::Load_UIData()
-{
-}
-
 
 #pragma region Loading_Prototypes
 
@@ -4482,7 +4482,10 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Inventory_LineBox"),
-		CUI_Inventory_LineBox::Create(m_pDevice, m_pContext), LAYER_UI)))
+		CUI_Inventory_LineBox::Create(m_pDevice, m_pContext, CUI_Inventory_LineBox::UI_INVENDECOTYPE::INVEN_LINEBOX), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Inventory_Decoline"),
+		CUI_Inventory_LineBox::Create(m_pDevice, m_pContext, CUI_Inventory_LineBox::UI_INVENDECOTYPE::INVEN_DECOLINE), LAYER_UI)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_InvenBtn_UnClicked_Weapon"),
 		CUI_Inventory_TabBtn::Create(m_pDevice, m_pContext,
@@ -4835,6 +4838,56 @@ HRESULT CUI_Manager::Ready_UILobbyPrototypes()
 
 #pragma endregion
 
+void CUI_Manager::Set_CharacterType()
+{
+	// 캐릭터 타입에 따라 변경되어야 하는 UI들에게 CharacterType을 알려준다.
+
+	// For Main UI(GamePlay Default Setting)
+	if (nullptr != m_pSkillBG)
+		m_pSkillBG->Set_CharacterType(m_eCurPlayer);
+
+	for (auto& iter : m_SpecialFrame)
+	{
+		if (nullptr != iter)
+			iter->Set_CharacterType(m_eCurPlayer);
+	}
+	for (auto& iter : m_SpecialSkill)
+	{
+		if (nullptr != iter)
+			iter->Set_CharacterType(m_eCurPlayer);
+	}
+	for (auto& iter : m_ClassicSkill)
+	{
+		if (nullptr != iter)
+			iter->Set_CharacterType(m_eCurPlayer);
+	}
+	
+	// For Costume Window
+	for (auto& iter : m_CostumeCloth)
+	{
+		if (nullptr != iter)
+			iter->Set_CharacterType(m_eCurPlayer);
+	}
+	for (auto& iter : m_CostumeHairAcc)
+	{
+		if (nullptr != iter)
+			iter->Set_CharacterType(m_eCurPlayer);
+	}
+
+	// For SkillWindow Desc
+	m_pSkillDesc->Set_CharacterType(m_eCurPlayer);
+}
+
+void CUI_Manager::Set_ElementalType()
+{
+	// 무기 속성에 따른 색 변경 등이 필요한 경우에 사용한다.
+	for (auto& iter : m_ClassicFrame)
+	{
+		if (nullptr != iter)
+			iter->Set_ElementalType(m_eElemental);
+	}
+
+}
 
 void CUI_Manager::Free()
 {

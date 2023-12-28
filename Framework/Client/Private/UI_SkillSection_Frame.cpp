@@ -19,72 +19,16 @@ CUI_SkillSection_Frame::CUI_SkillSection_Frame(const CUI_SkillSection_Frame& rhs
 {
 }
 
-void CUI_SkillSection_Frame::Set_ClassicFrameColor(ELEMENTAL_TYPE eType)
+void CUI_SkillSection_Frame::Set_CharacterType(CHARACTER_TYPE eType)
 {
-	if (FRAME_CLASSIC != m_eFrameType)
-		return;
-
-	if (ELEMENTAL_END == eType)
-		return;
-
-	switch (eType)
-	{
-	case FIRE:
-		m_vColor = _float4(0.914f, 0.2f, 0.192f, 1.f);
-		break;
-
-	case WATER:
-		m_vColor = _float4(0.192f, 0.694f, 0.996f, 1.f);
-		break;
-
-	case WOOD:
-		m_vColor = _float4(0.294f, 0.965f, 0.263f, 1.f);
-		break;
-
-	case LIGHT:
-		m_vColor = _float4(0.965f, 0.718f, 0.071f, 1.f);
-		break;
-
-	case DARK:
-		m_vColor = _float4(0.612f, 0.22f, 1.f, 1.f);
-		break;
-	}
+	m_eCurPlayerType = eType;
+	Set_SpecialFrameColor();
 }
 
-void CUI_SkillSection_Frame::Set_SpecialFrameColor(CHARACTER_TYPE eType)
+void CUI_SkillSection_Frame::Set_ElementalType(ELEMENTAL_TYPE eType)
 {
-	if (FRAME_SPECIAL != m_eFrameType)
-		return;
-
-	switch (eType)
-	{
-	case CHARACTER_TYPE::SWORD_MAN:
-		if (UI_SPECIALSKILL_TYPE::FRAME_FIRST == m_eNumType)
-			m_vColor = _float4(0.612f, 0.22f, 1.f, 1.f);
-		else if (UI_SPECIALSKILL_TYPE::FRAME_SECOND == m_eNumType)
-			m_vColor = _float4(0.192f, 0.694f, 0.996f, 1.f);
-		else if (UI_SPECIALSKILL_TYPE::FRAME_THIRD == m_eNumType)
-			m_vColor = _float4(0.294f, 0.965f, 0.263f, 1.f);
-		break;
-
-	case CHARACTER_TYPE::DESTROYER:
-		if (UI_SPECIALSKILL_TYPE::FRAME_FIRST == m_eNumType)
-			m_vColor = _float4(0.612f, 0.22f, 1.f, 1.f);
-		else if (UI_SPECIALSKILL_TYPE::FRAME_SECOND == m_eNumType)
-			m_vColor = _float4(0.914f, 0.2f, 0.192f, 1.f);
-		else if (UI_SPECIALSKILL_TYPE::FRAME_THIRD == m_eNumType)
-			m_vColor = _float4(0.294f, 0.965f, 0.263f, 1.f);
-		break;
-
-	case CHARACTER_TYPE::ENGINEER:
-		if (UI_SPECIALSKILL_TYPE::FRAME_FIRST == m_eNumType)
-			m_vColor = _float4(0.965f, 0.718f, 0.071f, 1.f);
-		else if (UI_SPECIALSKILL_TYPE::FRAME_SECOND == m_eNumType)
-			m_vColor = _float4(0.965f, 0.718f, 0.071f, 1.f);
-		else if (UI_SPECIALSKILL_TYPE::FRAME_THIRD == m_eNumType)
-			m_vColor = _float4(0.294f, 0.965f, 0.263f, 1.f);
-		break;
-	}
+	m_eElementalType = eType;
+	Set_ClassicFrameColor();
 }
 
 HRESULT CUI_SkillSection_Frame::Initialize_Prototype()
@@ -206,6 +150,74 @@ HRESULT CUI_SkillSection_Frame::Bind_ShaderResources()
 		return E_FAIL;
 
 	return S_OK;
+}
+
+void CUI_SkillSection_Frame::Set_ClassicFrameColor()
+{
+	if (FRAME_CLASSIC != m_eFrameType)
+		return;
+
+	if (ELEMENTAL_END == m_eElementalType)
+		return;
+
+	switch (m_eElementalType)
+	{
+	case FIRE:
+		m_vColor = _float4(0.914f, 0.2f, 0.192f, 1.f);
+		break;
+
+	case WATER:
+		m_vColor = _float4(0.192f, 0.694f, 0.996f, 1.f);
+		break;
+
+	case WOOD:
+		m_vColor = _float4(0.294f, 0.965f, 0.263f, 1.f);
+		break;
+
+	case LIGHT:
+		m_vColor = _float4(0.965f, 0.718f, 0.071f, 1.f);
+		break;
+
+	case DARK:
+		m_vColor = _float4(0.612f, 0.22f, 1.f, 1.f);
+		break;
+	}
+}
+
+void CUI_SkillSection_Frame::Set_SpecialFrameColor()
+{
+	if (FRAME_SPECIAL != m_eFrameType)
+		return;
+
+	switch (m_eCurPlayerType)
+	{
+	case CHARACTER_TYPE::SWORD_MAN:
+		if (UI_SPECIALSKILL_TYPE::FRAME_FIRST == m_eNumType)
+			m_vColor = _float4(0.612f, 0.22f, 1.f, 1.f);
+		else if (UI_SPECIALSKILL_TYPE::FRAME_SECOND == m_eNumType)
+			m_vColor = _float4(0.192f, 0.694f, 0.996f, 1.f);
+		else if (UI_SPECIALSKILL_TYPE::FRAME_THIRD == m_eNumType)
+			m_vColor = _float4(0.294f, 0.965f, 0.263f, 1.f);
+		break;
+
+	case CHARACTER_TYPE::DESTROYER:
+		if (UI_SPECIALSKILL_TYPE::FRAME_FIRST == m_eNumType)
+			m_vColor = _float4(0.612f, 0.22f, 1.f, 1.f);
+		else if (UI_SPECIALSKILL_TYPE::FRAME_SECOND == m_eNumType)
+			m_vColor = _float4(0.914f, 0.2f, 0.192f, 1.f);
+		else if (UI_SPECIALSKILL_TYPE::FRAME_THIRD == m_eNumType)
+			m_vColor = _float4(0.294f, 0.965f, 0.263f, 1.f);
+		break;
+
+	case CHARACTER_TYPE::ENGINEER:
+		if (UI_SPECIALSKILL_TYPE::FRAME_FIRST == m_eNumType)
+			m_vColor = _float4(0.965f, 0.718f, 0.071f, 1.f);
+		else if (UI_SPECIALSKILL_TYPE::FRAME_SECOND == m_eNumType)
+			m_vColor = _float4(0.965f, 0.718f, 0.071f, 1.f);
+		else if (UI_SPECIALSKILL_TYPE::FRAME_THIRD == m_eNumType)
+			m_vColor = _float4(0.294f, 0.965f, 0.263f, 1.f);
+		break;
+	}
 }
 
 CUI_SkillSection_Frame* CUI_SkillSection_Frame::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,

@@ -3,13 +3,15 @@
 #include "GameInstance.h"
 #include "UI_Manager.h"
 
-CUI_Inventory_LineBox::CUI_Inventory_LineBox(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CUI_Inventory_LineBox::CUI_Inventory_LineBox(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_INVENDECOTYPE eType)
 	: CUI(pDevice, pContext, L"UI_Inventory_LineBox")
+	, m_eType(eType)
 {
 }
 
 CUI_Inventory_LineBox::CUI_Inventory_LineBox(const CUI_Inventory_LineBox& rhs)
 	: CUI(rhs)
+	, m_eType(rhs.m_eType)
 {
 }
 
@@ -35,9 +37,11 @@ HRESULT CUI_Inventory_LineBox::Initialize(void* pArg)
 	m_bActive = false;
 	m_fAlpha = 0.85f;
 
-
-//	_float2 vButtonSize = _float2(300.f * 0.5f, 153.f * 0.5f);
-//	Make_Child(70.f, 280.f, vButtonSize.x * 0.8f, vButtonSize.y * 0.8f, TEXT("Prototype_GameObject_UI_Costume_ChangeBtn"));
+//	if (INVEN_LINEBOX == m_eType)
+//	{
+//		_float2 vDecoSize = _float2(200.f * 0.8f, 30.f * 0.8f);
+//		Make_Child(-800.f, 0.f, vDecoSize.x, vDecoSize.y, TEXT("Prototype_GameObject_UI_Inventory_Decoline"));
+//	}
 
 	return S_OK;
 }
@@ -93,10 +97,21 @@ HRESULT CUI_Inventory_LineBox::Ready_Components()
 	
 	if (FAILED(__super::Ready_Components()))
 		return E_FAIL;
+	
+	switch (m_eType)
+	{
+	case UI_INVENDECOTYPE::INVEN_LINEBOX:
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Inventory_LineBox"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		break;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Inventory_LineBox"),
-		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
-		return E_FAIL;
+	case UI_INVENDECOTYPE::INVEN_DECOLINE:
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Inventory_Decoline"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		break;
+	}
 
 	
 	return S_OK;
@@ -131,9 +146,9 @@ HRESULT CUI_Inventory_LineBox::Bind_ShaderResources()
 	return S_OK;
 }
 
-CUI_Inventory_LineBox* CUI_Inventory_LineBox::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CUI_Inventory_LineBox* CUI_Inventory_LineBox::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_INVENDECOTYPE eType)
 {
-	CUI_Inventory_LineBox* pInstance = new CUI_Inventory_LineBox(pDevice, pContext);
+	CUI_Inventory_LineBox* pInstance = new CUI_Inventory_LineBox(pDevice, pContext, eType);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{

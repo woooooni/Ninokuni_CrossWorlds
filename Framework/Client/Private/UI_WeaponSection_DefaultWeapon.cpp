@@ -10,26 +10,7 @@ CUI_WeaponSection_DefaultWeapon::CUI_WeaponSection_DefaultWeapon(ID3D11Device* p
 
 CUI_WeaponSection_DefaultWeapon::CUI_WeaponSection_DefaultWeapon(const CUI_WeaponSection_DefaultWeapon& rhs)
 	: CUI(rhs)
-	, m_eWeaponType(rhs.m_eWeaponType)
 {
-}
-
-void CUI_WeaponSection_DefaultWeapon::Set_Weapon(CHARACTER_TYPE eID)
-{
-	switch(eID)
-	{
-	case CHARACTER_TYPE::SWORD_MAN:
-		m_eWeaponType = UI_DEFAULTWEAPON::DEFAULTWEAPON_SWORDMAN;
-		break;
-
-	case CHARACTER_TYPE::DESTROYER:
-		m_eWeaponType = UI_DEFAULTWEAPON::DEFAULTWEAPON_DESTROYER;
-		break;
-
-	case CHARACTER_TYPE::ENGINEER:
-		m_eWeaponType = UI_DEFAULTWEAPON::DEFAULTWEAPON_ENGINEER;
-		break;
-	}
 }
 
 HRESULT CUI_WeaponSection_DefaultWeapon::Initialize_Prototype()
@@ -64,9 +45,6 @@ HRESULT CUI_WeaponSection_DefaultWeapon::Initialize(void* pArg)
 
 void CUI_WeaponSection_DefaultWeapon::Tick(_float fTimeDelta)
 {
-	if (DEFAULTWEAPON_END == m_eWeaponType)
-		return;
-
 	if (m_bActive)
 	{
 		// 현재 플레이어의 고유ID를 얻어서 m_eWeaponType을 update한다.
@@ -93,9 +71,6 @@ void CUI_WeaponSection_DefaultWeapon::Tick(_float fTimeDelta)
 
 void CUI_WeaponSection_DefaultWeapon::LateTick(_float fTimeDelta)
 {
-	if (DEFAULTWEAPON_END == m_eWeaponType)
-		return;
-
 	if (m_bActive)
 	{
 		if (m_bResizable)
@@ -190,7 +165,7 @@ HRESULT CUI_WeaponSection_DefaultWeapon::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_fAlpha, sizeof(_float))))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_eWeaponType)))
+	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_eCurPlayerType)))
 		return E_FAIL;
 
 	return S_OK;

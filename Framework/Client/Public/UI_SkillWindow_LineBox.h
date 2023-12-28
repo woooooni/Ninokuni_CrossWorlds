@@ -43,6 +43,10 @@ private:
 	_int m_iDescIndex = { 0 };
 
 private:
+	CTexture* m_pTextureCom_Eng = { nullptr };
+	CTexture* m_pTextureCom_Des = { nullptr };
+
+private:
 	virtual HRESULT	Ready_Components() override;
 
 private:
