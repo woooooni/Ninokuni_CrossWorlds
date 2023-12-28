@@ -50,7 +50,7 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 	/* 1-4. 게임내에서 사용할 레벨(씬)을 생성한다.   */
-	if (FAILED(Open_Level(LEVEL_TOOL, L"Final_Boss")))
+	if (FAILED(Open_Level(LEVEL_TEST, L"Final_Boss")))
 		return E_FAIL;
 
 
@@ -131,8 +131,8 @@ HRESULT CMainApp::Open_Level(LEVELID eLevelID, const wstring& strFolderName)
 
 HRESULT CMainApp::Initialize_Client()
 {
-	//if (FAILED(CEffect_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext, L"../Bin/Export/NonAnimModel/Effect/", L"../Bin/DataFiles/Effect/")))
-	//	return E_FAIL;
+	if (FAILED(CEffect_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext, L"../Bin/Export/NonAnimModel/Effect/", L"../Bin/DataFiles/Effect/")))
+		return E_FAIL;
 
 	if(FAILED(CParticle_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext, L"../Bin/DataFiles/Particle/")))
 		return E_FAIL;
