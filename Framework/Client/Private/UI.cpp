@@ -272,7 +272,7 @@ HRESULT CUI::Render()
 	return S_OK;
 }
 
-HRESULT CUI::Make_Child(_float fX, _float fY, _float fCX, _float fCY, const wstring& strObjectTag, void* pChildArg)
+HRESULT CUI::Make_Child(_float fX, _float fY, _float fCX, _float fCY, const wstring& strPrototypeTag, const wstring& strObjectTag, void* pChildArg)
 {
 	UI_INFO	UIDesc;
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
@@ -287,7 +287,9 @@ HRESULT CUI::Make_Child(_float fX, _float fY, _float fCX, _float fCY, const wstr
 		UIDesc.pDesc = pChildArg;
 
 	CGameObject* pChild = nullptr;
-	pChild = GI->Clone_GameObject(strObjectTag, LAYER_TYPE::LAYER_UI, &UIDesc);
+	pChild = GI->Clone_GameObject(strPrototypeTag, LAYER_TYPE::LAYER_UI, &UIDesc);
+	if (TEXT("") != strObjectTag)
+		pChild->Set_ObjectTag(strObjectTag);
 
 	m_pChild.push_back(dynamic_cast<CUI*>(pChild));
 

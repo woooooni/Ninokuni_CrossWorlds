@@ -9,7 +9,7 @@ class CUI_BasicButton final : public CUI
 {
 public:
 	enum UIBUTTON_TYPE // 버튼의 기능
-	{ BUTTON_CHANGESCENE, UIBUTTONTYPE_END };
+	{ BUTTON_CHANGESCENE, BUTTON_SETNICKNAME, UIBUTTONTYPE_END };
 
 protected:
 	CUI_BasicButton(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, UIBUTTON_TYPE eType);

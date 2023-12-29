@@ -21,7 +21,6 @@ public:
 	virtual HRESULT	Render();
 
 private:
-	vector<_bool> m_bApproach;
 	_bool m_bResize = { false };
 
 	_float2 m_vMinSize = _float2(0.f, 0.f); // Window가 Active됐을때 처음 사이즈

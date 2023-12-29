@@ -55,7 +55,8 @@ public:
 	virtual HRESULT Render() override;
 
 public:
-	HRESULT Make_Child(_float fX, _float fY, _float fCX, _float fCY, const wstring& strObjectTag, void* pChildArg = nullptr);
+	HRESULT Make_Child(_float fX, _float fY, _float fCX, _float fCY, const wstring& strPrototypeTag,
+		const wstring& strObjectTag = TEXT(""), void* pChildArg = nullptr);
 	void Delete_AllChild();
 
 public:
