@@ -18,10 +18,10 @@ public:
 	unsigned long Release();
 
 private:
-	unsigned long		m_dwRefCnt = 0;
+	long		m_dwRefCnt = 0;
 
 public:
+	virtual void Free_Clone();
 	virtual void Free();
-
 };
 

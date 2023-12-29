@@ -25,8 +25,16 @@ unsigned long CBase::Release()
 	else
 	{
 		/* 감소하낟. */
-		return m_dwRefCnt--;
+		if (1 < m_dwRefCnt--)
+			Free_Clone();
+
+		return m_dwRefCnt;
 	}
+}
+
+void CBase::Free_Clone()
+{
+	// 복사본 객체가 삭제될 때 호출된다.
 }
 
 void CBase::Free()

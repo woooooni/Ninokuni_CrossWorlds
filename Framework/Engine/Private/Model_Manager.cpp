@@ -1014,7 +1014,7 @@ vector<ANIM_TRANSFORM_CACHES> CModel_Manager::Create_AnimationTransform_Caches_I
 				}
 
 
-				m_AnimTransformsCaches[iAnimIndex].transforms[iFrameIndex][iBoneIndex]
+				AnimTransformsCache[iAnimIndex].transforms[iFrameIndex][iBoneIndex]
 					= Matrix(m_HierarchyNodes[iBoneIndex]->Get_OffSetMatrix())
 					* Matrix(m_HierarchyNodes[iBoneIndex]->Get_CombinedTransformation())
 					* Matrix(m_PivotMatrix);

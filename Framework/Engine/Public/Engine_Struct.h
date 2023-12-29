@@ -3,15 +3,18 @@
 
 namespace Engine
 {
+	typedef struct tagObjectInitDesc
+	{
+		Vec4 vStartPosition = { 0.f, 0.f, 0.f, 1.f };
+
+	} OBJECT_INIT_DESC;
+
 	typedef struct tagCollisionInfoDesc
 	{
 		class CCollider* pMyCollider;
 
 		class CGameObject* pOther;
 		class CCollider* pOtherCollider;
-
-		// ¶¥ ³ôÀÌ¿ë
-		_float3 vCollision_Position = {};
 	} COLLISION_INFO;
 
 	typedef struct tagPhysXGroundCollisionDesc

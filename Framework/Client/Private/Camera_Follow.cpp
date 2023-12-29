@@ -110,6 +110,8 @@ HRESULT CCamera_Follow::Ready_Components()
 
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_PhysXController"), TEXT("Com_Controller"), (CComponent**)&m_pControllerCom, &ControllerDesc)))
 			return E_FAIL;
+
+		m_pControllerCom->Set_Active(false);
 	}
 
 	return S_OK;

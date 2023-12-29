@@ -18,6 +18,7 @@ HRESULT CState_Engineer_Battle_Attack_0::Initialize(const list<wstring>& Animati
 
 void CState_Engineer_Battle_Attack_0::Enter_State(void* pArg)
 {
+    m_iShootCount = 3;
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }
 
@@ -25,8 +26,12 @@ void CState_Engineer_Battle_Attack_0::Tick_State(_float fTimeDelta)
 {
     Input(fTimeDelta);
 
-    if (m_pModelCom->Get_Progress() >= 0.5f && m_pModelCom->Get_Progress() <= 0.6f)    
+    if (m_pModelCom->Get_Progress() >= 0.5f && m_pModelCom->Get_Progress() <= 0.6f)
+    {
+        Shoot();
         m_pTransformCom->Move(XMVector3Normalize(-1.f * XMVector3Normalize(m_pTransformCom->Get_Look())), 2.f, fTimeDelta);
+    }
+        
 
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
         m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_IDLE);
@@ -34,7 +39,6 @@ void CState_Engineer_Battle_Attack_0::Tick_State(_float fTimeDelta)
 
 void CState_Engineer_Battle_Attack_0::Exit_State()
 {
-    
 }
 
 void CState_Engineer_Battle_Attack_0::Input(_float fTimeDelta)
@@ -54,6 +58,27 @@ void CState_Engineer_Battle_Attack_0::Input(_float fTimeDelta)
         return;
     }
         
+}
+
+void CState_Engineer_Battle_Attack_0::Shoot()
+{
+    if (0 == m_iShootCount)
+        return;
+
+    m_iShootCount = 0;
+    CGameObject* pBullet = GI->Clone_GameObject(L"Prototype_GameObject_Engineer_Bullet", LAYER_TYPE::LAYER_CHARACTER);
+    if (nullptr == pBullet)
+        return;
+
+    CTransform* pBulletTransform = pBullet->Get_Component<CTransform>(L"Com_Transform");
+    pBulletTransform->Set_WorldMatrix(m_pTransformCom->Get_WorldMatrix());
+    Vec4 vStartPosition = pBulletTransform->Get_Position();
+    vStartPosition += XMVector3Normalize(pBulletTransform->Get_Look()) * 0.5f;
+    vStartPosition.y += 0.9f;
+    pBulletTransform->Set_State(CTransform::STATE_POSITION, vStartPosition);
+
+    if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_CHARACTER, pBullet)))
+        MSG_BOX("Generate Bullet Failed.");
 }
 
 CState_Engineer_Battle_Attack_0* CState_Engineer_Battle_Attack_0::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

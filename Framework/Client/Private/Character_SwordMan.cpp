@@ -3,7 +3,7 @@
 #include "GameInstance.h"
 #include "HierarchyNode.h"
 #include "Trail.h"
-#include "Part_Manager.h"
+#include "Character_Manager.h"
 
 
 #include "State_SwordMan_Neutral_Idle.h"
@@ -207,9 +207,10 @@ HRESULT CCharacter_SwordMan::Ready_Components()
 
 
 	for (_uint i = 0; i < PART_TYPE::PART_END; ++i)
-		m_pCharacterPartModels[i] = CPart_Manager::GetInstance()->Get_PartModel(m_eCharacterType, PART_TYPE(i), 0);
+		m_pCharacterPartModels[i] = CCharacter_Manager::GetInstance()->Get_PartModel(m_eCharacterType, PART_TYPE(i), 0);
 
 	
+	m_pControllerCom->Set_Active(false);
 	m_pModelCom->Set_Animation(0);
 	//m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, Vec4(-10.0f, 50.0f, 0.0f, 1.0f));
 	return S_OK;

@@ -234,6 +234,7 @@
     <ClInclude Include="..\Public\Character_Engineer.h" />
     <ClInclude Include="..\Public\Dochi.h" />
     <ClInclude Include="..\Public\DuckGoo.h" />
+    <ClInclude Include="..\Public\Engineer_Bullet.h" />
     <ClInclude Include="..\Public\Ermine.h" />
     <ClInclude Include="..\Public\Fox.h" />
     <ClInclude Include="..\Public\GameItem_Armor.h" />
@@ -264,6 +265,8 @@
     <ClInclude Include="..\Public\Glanix_IcePillar.h" />
     <ClInclude Include="..\Public\Item_Manager.h" />
     <ClInclude Include="..\Public\Pigeon.h" />
+    <ClInclude Include="..\Public\Character_Manager.h" />
+    <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\PolarBear.h" />
     <ClInclude Include="..\Public\Rabbit.h" />
     <ClInclude Include="..\Public\State_Animals.h" />
@@ -478,11 +481,11 @@
     <ClInclude Include="..\Public\UI_SkillWindow_LineBox.h" />
     <ClInclude Include="..\Public\UI_SkillWindow_SkillSlot.h" />
     <ClInclude Include="..\Public\UI_Text_TabMenu.h" />
+    <ClInclude Include="..\Public\Game_Manager.h" />
     <ClInclude Include="..\Public\Vfx_MouseClick.h" />
     <ClInclude Include="..\Public\Face.h" />
     <ClInclude Include="..\Public\Hair.h" />
     <ClInclude Include="..\Public\Head.h" />
-    <ClInclude Include="..\Public\Part_Manager.h" />
     <ClInclude Include="..\Public\PumpkinCandle.h" />
     <ClInclude Include="..\Public\PumpkinCandleBT.h" />
     <ClInclude Include="..\Public\PumpkinCandleNode_Attack1.h" />
@@ -686,6 +689,7 @@
     <ClCompile Include="..\Private\Character_Engineer.cpp" />
     <ClCompile Include="..\Private\Dochi.cpp" />
     <ClCompile Include="..\Private\DuckGoo.cpp" />
+    <ClCompile Include="..\Private\Engineer_Bullet.cpp" />
     <ClCompile Include="..\Private\Ermine.cpp" />
     <ClCompile Include="..\Private\Fox.cpp" />
     <ClCompile Include="..\Private\GameItem_Armor.cpp" />
@@ -716,6 +720,8 @@
     <ClCompile Include="..\Private\Glanix_IcePillar.cpp" />
     <ClCompile Include="..\Private\Item_Manager.cpp" />
     <ClCompile Include="..\Private\Pigeon.cpp" />
+    <ClCompile Include="..\Private\Character_Manager.cpp" />
+    <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\Private\PolarBear.cpp" />
     <ClCompile Include="..\Private\Rabbit.cpp" />
     <ClCompile Include="..\Private\State_Animals.cpp" />
@@ -928,11 +934,11 @@
     <ClCompile Include="..\Private\UI_SkillWindow_LineBox.cpp" />
     <ClCompile Include="..\Private\UI_SkillWindow_SkillSlot.cpp" />
     <ClCompile Include="..\Private\UI_Text_TabMenu.cpp" />
+    <ClCompile Include="..\Private\Game_Manager.cpp" />
     <ClCompile Include="..\Private\Vfx_MouseClick.cpp" />
     <ClCompile Include="..\Private\Face.cpp" />
     <ClCompile Include="..\Private\Hair.cpp" />
     <ClCompile Include="..\Private\Head.cpp" />
-    <ClCompile Include="..\Private\Part_Manager.cpp" />
     <ClCompile Include="..\Private\PumpkinCandle.cpp" />
     <ClCompile Include="..\Private\PumpkinCandleBT.cpp" />
     <ClCompile Include="..\Private\PumpkinCandleNode_Attack1.cpp" />

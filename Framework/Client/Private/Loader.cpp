@@ -14,6 +14,7 @@
 #include "MapHeaderGroup.h"
 #include "DynamicGroup.h"
 
+
 #include <filesystem>
 #include "Utils.h"
 #include "UI_Manager.h"
@@ -21,9 +22,9 @@
 #include "Effect_Manager.h"
 #include "Particle_Manager.h"
 
-#include "Character_Dummy.h"
-#include "Character_SwordMan.h"
-#include "Character_Engineer.h"
+
+#include "Character_Manager.h"
+#include "Game_Manager.h"
 
 #include "UI_Logo_Background.h"
 #include "UI_Flare.h"
@@ -44,10 +45,7 @@
 
 #include "Particle.h"
 #include "Effect.h"
-
 #include "Weapon_SwordTemp.h"
-
-#include "Part_Manager.h"
 
 _bool CLoader::g_bFirstLoading = false;
 CLoader::CLoader(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
@@ -153,9 +151,19 @@ HRESULT CLoader::Loading_For_Level_Logo()
 		return E_FAIL;
 
 
+	if (false == g_bFirstLoading)
+	{
+		if (FAILED(CCharacter_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+			return E_FAIL;
+
+		if (FAILED(CGame_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+			return E_FAIL;
+	}
+
 
 	m_strLoading = TEXT("로딩 끝.");
 	m_isFinished = true;
+	g_bFirstLoading = true;
 
 	return S_OK;
 }
@@ -211,9 +219,19 @@ HRESULT CLoader::Loading_For_Level_Lobby()
 	/* For.Model */
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
 
+	if (false == g_bFirstLoading)
+	{
+		if (FAILED(CCharacter_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+			return E_FAIL;
+
+		if (FAILED(CGame_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+			return E_FAIL;
+	}
+	
 
 	m_strLoading = TEXT("로딩 끝.");
 	m_isFinished = true;
+	g_bFirstLoading = true;
 
 	return S_OK;
 }
@@ -239,18 +257,20 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 	/* For.Model */
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
 
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Engineer_Dummy", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Engineer/Dummy/", L"Engineer_Dummy")))
-		return E_FAIL;
-
 	
-	if (FAILED(Loading_Proto_Parts_Model(L"../Bin/Export/AnimModel/Character/Engineer/")))
-		return E_FAIL;
+	if (false == g_bFirstLoading)
+	{
+		if (FAILED(CCharacter_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+			return E_FAIL;
 
-	if (FAILED(CPart_Manager::GetInstance()->Reserve_Manager(GI->Get_Device(), GI->Get_Context())))
-		return E_FAIL;
+		if (FAILED(CGame_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+			return E_FAIL;
+	}
+
 
 	m_strLoading = TEXT("로딩 끝.");
 	m_isFinished = true;
+	g_bFirstLoading = true;
 
 	return S_OK;
 }
@@ -266,9 +286,6 @@ HRESULT CLoader::Loading_For_Level_Test()
 	/* For.GameObject */
 	m_strLoading = TEXT("객체원형을 로딩 중 입니다.");
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Background", CBackGround::Create(m_pDevice, m_pContext), LAYER_BACKGROUND)))
-		return E_FAIL;
-	
-	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_CharacterDummy", CCharacter_Dummy::Create(m_pDevice, m_pContext, L"Dummy_Character"), LAYER_CHARACTER)))
 		return E_FAIL;
 
 	/*if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Cloth_Terrain", CCloth_Terrain::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_TERRAIN)))
@@ -307,22 +324,16 @@ HRESULT CLoader::Loading_For_Level_Test()
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Baobam_Dark", CBaobam_Dark::Create(m_pDevice, m_pContext, TEXT("Clown"), statDesc), LAYER_MONSTER)))
 		return E_FAIL;
 
-	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_SwordMan", CCharacter_SwordMan::Create(m_pDevice, m_pContext, TEXT("SwordMan")), LAYER_CHARACTER)))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_Engineer", CCharacter_Engineer::Create(m_pDevice, m_pContext, TEXT("Engineer")), LAYER_CHARACTER)))
-		return E_FAIL;
-
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
 
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Stellia", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Boss/Stellia/", L"Stellia")))
-		return E_FAIL;
+	/*if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Stellia", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Boss/Stellia/", L"Stellia")))
+		return E_FAIL;*/
 
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Glanix", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Boss/Glanix/", L"Glanix")))
 		return E_FAIL;
 
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_DreamerMazeWitch", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Boss/DreamerMazeWitch/", L"DreamerMazeWitch")))
-		return E_FAIL;
+	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_DreamerMazeWitch", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Boss/DreamerMazeWitch/", L"DreamerMazeWitch")))
+	//	return E_FAIL;
 
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Baobam_Water", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Ice/Baobam_Water/", L"Baobam_Water")))
 		return E_FAIL;
@@ -347,21 +358,6 @@ HRESULT CLoader::Loading_For_Level_Test()
 
 	CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_TEST);
 
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SwordMan_Dummy", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/SwordMan/Dummy/", L"SwordMan_Dummy")))
-	//	return E_FAIL;
-
-	//if (FAILED(Loading_Proto_Parts_Model(L"../Bin/Export/AnimModel/Character/SwordMan/")))
-	//	return E_FAIL;
-
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Engineer_Dummy", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Engineer/Dummy/", L"Engineer_Dummy")))
-		return E_FAIL;
-
-	if (FAILED(Loading_Proto_Parts_Model(L"../Bin/Export/AnimModel/Character/Engineer/")))
-		return E_FAIL;
-
-	if (FAILED(CPart_Manager::GetInstance()->Reserve_Manager(GI->Get_Device(), GI->Get_Context())))
-		return E_FAIL;
-
 	if (FAILED(Loading_Proto_AllObjects(L"../Bin/Export/NonAnimModel/Map/")))
 		return E_FAIL;
 
@@ -370,9 +366,19 @@ HRESULT CLoader::Loading_For_Level_Test()
 
 	Load_Map_Data(L"Evermore");
 
+
+	if (false == g_bFirstLoading)
+	{
+		if (FAILED(CCharacter_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+			return E_FAIL;
+
+		if (FAILED(CGame_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+			return E_FAIL;
+	}
 	
 	m_strLoading = TEXT("로딩 끝.");
 	m_isFinished = true;
+	g_bFirstLoading = true;
 
 	return S_OK;
 }
@@ -500,26 +506,15 @@ HRESULT CLoader::Loading_For_Level_Tool()
 
 #pragma region Parts
 
-	/*if (FAILED(GI->Import_Model_Data(LEVEL_PARTS, L"Prototype_Component_Model_SwordMan_Body_Picnic", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Witch/Baobam_Dark/", L"Baobam_Dark")))
-		return E_FAIL;*/
-
-	if (FAILED(Loading_Proto_Parts_Model(L"../Bin/Export/AnimModel/Character/SwordMan/")))
-		return E_FAIL;
-
-	if (FAILED(Loading_Proto_Parts_Model(L"../Bin/Export/AnimModel/Character/Engineer/")))
-		return E_FAIL;
-
-	if(FAILED(CPart_Manager::GetInstance()->Reserve_Manager(GI->Get_Device(), GI->Get_Context())))
-		return E_FAIL;
 
 	/* 툴 팔로우 카메라 테스트 용도 */
-	{
+	/*{
 		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SwordMan_Dummy", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/SwordMan/Dummy/", L"SwordMan_Dummy")))
 			return E_FAIL;
 
 		if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_SwordMan", CCharacter_SwordMan::Create(m_pDevice, m_pContext, TEXT("SwordMan")), LAYER_CHARACTER)))
 			return E_FAIL;
-	}
+	}*/
 
 #pragma endregion
 
@@ -534,11 +529,24 @@ HRESULT CLoader::Loading_For_Level_Tool()
 			return E_FAIL;
 	}
 
+
+
+	//if (false == g_bFirstLoading)
+	//{
+	//	if (FAILED(CCharacter_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+	//		return E_FAIL;
+
+	//	if (FAILED(CGame_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+	//		return E_FAIL;
+	//}
+
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
 	_matrix		PivotMatrix = XMMatrixIdentity();
 
 	m_strLoading = TEXT("로딩 끝.");
 	m_isFinished = true;
+
+	g_bFirstLoading = true;
 
 	return S_OK;
 }
@@ -760,44 +768,6 @@ HRESULT CLoader::Loading_Proto_DynamicObjects(const wstring& strPath)
 	return S_OK;
 }
 
-HRESULT CLoader::Loading_Proto_Parts_Model(const wstring& strFolderPath)
-{
-	for (auto& p : std::filesystem::directory_iterator(strFolderPath))
-	{
-		if (p.is_directory())
-			Loading_Proto_Parts_Model(p.path().wstring());
-
-
-		if (strFolderPath.find(L"Dummy") != wstring::npos)
-			continue;
-
-		wstring strFilePath = CUtils::PathToWString(p.path().wstring());
-		_tchar strFileName[MAX_PATH];
-		_tchar strFolderName[MAX_PATH];
-		_tchar strExt[MAX_PATH];
-
-		_wsplitpath_s(strFilePath.c_str(), nullptr, 0, strFolderName, MAX_PATH, strFileName, MAX_PATH, strExt, MAX_PATH);
-
-		if (true == !lstrcmp(strExt, L".mesh"))
-		{
-			wstring strPrototypeName = L"Prototype_Component_Model_";
-			strPrototypeName += strFileName;
-			if (FAILED(GI->Import_Model_Data(LEVEL_PARTS, strPrototypeName, CModel::TYPE_ANIM, strFolderName, strFileName)))
-				return E_FAIL;
-		}
-		//else if (true == !lstrcmp(strExt, L".fbx"))
-		//{
-		//	wstring strPrototypeName = L"Prototype_Component_Model_";
-		//	strPrototypeName += strFileName;
-
-		//	wstring strFullFileName = strFileName;
-		//	strFullFileName += strExt;
-		//	if (FAILED(GI->Import_Model_Data(LEVEL_PARTS, strPrototypeName, CModel::TYPE_ANIM, strFolderName, strFullFileName)))
-		//		return E_FAIL;
-		//}
-	}
-	return S_OK;
-}
 
 
 CLoader * CLoader::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, LEVELID eNextLevel, const wstring& strFolderName)

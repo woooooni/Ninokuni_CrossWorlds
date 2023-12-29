@@ -63,13 +63,12 @@ HRESULT CPhysX_Controller::Initialize(void* pArg)
 	m_Filters.mFilterData = &m_FilterData;
 	m_Filters.mCCTFilterCallback = CPhysX_Manager::GetInstance();
 
-	
-
 	return S_OK;
 }
 
 void CPhysX_Controller::Tick_Controller(_float fTimeDelta)
 {	
+	
 	m_bGroundChecked = false;
 
 	Vec3 vPosition = m_pTransformCom->Get_Position(); // 피직스 기준으로는 발 끝이다.
@@ -84,11 +83,7 @@ void CPhysX_Controller::Tick_Controller(_float fTimeDelta)
 }
 
 void CPhysX_Controller::LateTick_Controller(_float fTimeDelta)
-{		
-	PxExtendedVec3 vPhysXPosition = m_pPhysXController->getFootPosition();
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(vPhysXPosition.x, vPhysXPosition.y, vPhysXPosition.z, 1.f));
-	m_vPrevPosition = m_pTransformCom->Get_Position();
-
+{
 	if (m_bGroundChecked == false)
 	{
 		if (m_eGroundFlag == PxPairFlag::eNOTIFY_TOUCH_FOUND || m_eGroundFlag == PxPairFlag::eNOTIFY_TOUCH_PERSISTS)
@@ -106,21 +101,27 @@ void CPhysX_Controller::LateTick_Controller(_float fTimeDelta)
 		}
 	}
 
-}
+	if (false == Is_Active())
+		return;
 
-
-void CPhysX_Controller::Set_Position(Vec4 vPosition)
-{
-
-	// 트랜스폼 컴포넌트에서 호출한다.
-	vPosition.w = 1.f;
-	m_pPhysXController->setFootPosition(PxExtendedVec3(vPosition.x, vPosition.y, vPosition.z));
+	PxExtendedVec3 vPhysXPosition = m_pPhysXController->getFootPosition();
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(vPhysXPosition.x, vPhysXPosition.y, vPhysXPosition.z, 1.f));
 	m_vPrevPosition = m_pTransformCom->Get_Position();
+
 }
 
+void CPhysX_Controller::Set_Active(_bool bActive)
+{
+	m_pPhysXController->getActor()->setActorFlag(PxActorFlag::eVISUALIZATION, bActive);
+	m_pPhysXController->getActor()->setActorFlag(PxActorFlag::eDISABLE_SIMULATION, !bActive);
 
+	m_bActive = bActive;
+}
 
-
+_bool CPhysX_Controller::Is_Active()
+{
+	return m_bActive;
+}
 
 
 CPhysX_Controller* CPhysX_Controller::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -209,5 +210,4 @@ void CPhysX_Controller::onControllerHit(const PxControllersHit& hit)
 void CPhysX_Controller::onObstacleHit(const PxControllerObstacleHit& hit)
 {
 }
-
 

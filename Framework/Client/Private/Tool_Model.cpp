@@ -16,7 +16,7 @@
 #include "Dummy.h"
 #include "Weapon.h"
 #include "Part.h"
-#include "Part_Manager.h"
+#include "Character_Manager.h"
 
 #pragma endregion
 
@@ -1801,7 +1801,7 @@ void CTool_Model::Tick_Costume(_float fTimeDelta)
 			IMGUI_NEW_LINE;
 			ImGui::Text(u8"Âø¿ë °¡´ÉÇÑ ¸ðµ¨ ¸®½ºÆ®");
 
-			vector<class CModel*>* pModelList = CPart_Manager::GetInstance()->Get_PartModels(m_eCharacyerType, m_ePartType);
+			vector<class CModel*>* pModelList = CCharacter_Manager::GetInstance()->Get_PartModels(m_eCharacyerType, m_ePartType);
 			if (nullptr != pModelList)
 			{
 				if (ImGui::BeginListBox("##Part Model List ", ImVec2(450.f, 70.f)))
@@ -1814,7 +1814,7 @@ void CTool_Model::Tick_Costume(_float fTimeDelta)
 						{
 							m_iPartIndex = i;
 
-							CModel* pModel = CPart_Manager::GetInstance()->Get_PartModel(m_eCharacyerType, m_ePartType, m_iPartIndex);
+							CModel* pModel = CCharacter_Manager::GetInstance()->Get_PartModel(m_eCharacyerType, m_ePartType, m_iPartIndex);
 
 							m_pDummy->m_pPart[m_ePartType] = pModel;	
 						}

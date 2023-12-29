@@ -308,6 +308,22 @@ void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 
 }
 
+HRESULT CCharacter::Enter_Character()
+{
+	if (nullptr != m_pControllerCom)
+		m_pControllerCom->Set_Active(true);
+
+	return S_OK;
+}
+
+HRESULT CCharacter::Exit_Character()
+{
+	if (nullptr != m_pControllerCom)
+		m_pControllerCom->Set_Active(true);
+
+	return S_OK;
+}
+
 
 void CCharacter::Free()
 {
