@@ -58,6 +58,12 @@ public:
 		return XMMatrixInverse(nullptr, Get_WorldMatrix());
 	}
 
+	_float4x4 Get_WorldMatrix_Float4x4_Inverse() const {
+		_float4x4 WorldMatrixInverse;
+		XMStoreFloat4x4(&WorldMatrixInverse, XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_WorldMatrix)));
+		return WorldMatrixInverse;
+	}
+
 public:
 	void Set_State(STATE eState, _vector vState);
 

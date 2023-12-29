@@ -85,6 +85,9 @@ PS_OUT_EFFECT PS_MAIN_DECAL(PS_IN In) // 캐릭터 픽셀에는 찍히면 안된다.
 	
 	// Decal Box x,y 위치 기준으로 깊이 값을 가져옴.
     vector vDepthDesc = g_DepthTarget.Sample(PointSampler, vTexUV);
+    if (vDepthDesc.z == 1.f)
+        discard;
+    
     float fViewZ      = vDepthDesc.y * 1000.f; // far
 
     vector vProjPos = (vector) 0.f;
@@ -104,21 +107,26 @@ PS_OUT_EFFECT PS_MAIN_DECAL(PS_IN In) // 캐릭터 픽셀에는 찍히면 안된다.
 	// 데칼박스 버퍼가 -0.5 ~0.5 사이므로, 0.5를 더해줘서 UV좌표로 만들어줌.
     float2 fDecalUV      = vLocalPos.xz + 0.5f;
     vector vDiffuseColor = g_Diffuse2DTexture.Sample(LinearSampler, fDecalUV);
-    vDiffuseColor.rgb    = float3(0.4f, 0.8f, 1.f);
-    
-    Out.vDiffuse_All = vDiffuseColor;
-    
+    if (vDiffuseColor.a == 0.0f)
+        discard;
+        
+    Out.vDiffuse_All    = float4(0.f, 0.f, 0.f, 0.f);
     Out.vDiffuse_None   = float4(0.f, 0.f, 0.f, 0.f);
     Out.vDiffuse_Low    = float4(0.f, 0.f, 0.f, 0.f);
     Out.vDiffuse_Middle = float4(0.f, 0.f, 0.f, 0.f);
     Out.vDiffuse_High   = float4(0.f, 0.f, 0.f, 0.f);
     Out.vBloom          = float4(0.f, 0.f, 0.f, 0.f);
     
-    if (vDiffuseColor.a > 0.5f)
+    if (vDiffuseColor.a >= 0.9)
     {
-        Out.vDiffuse_None   = vDiffuseColor;
-        Out.vBloom          = vDiffuseColor;
+        vDiffuseColor.rgb = float3(0.4f, 0.8f, 1.f);
+        Out.vBloom        = vDiffuseColor;
     }
+    else
+        vDiffuseColor.rgb = float3(0.0f, 0.2f, 0.4f);
+    
+    Out.vDiffuse_All  = vDiffuseColor;
+    Out.vDiffuse_None = vDiffuseColor;
     
     return Out;
 }
@@ -150,7 +158,7 @@ technique11 DefaultTechnique
     pass Decal
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_None, 0);
+        SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader   = compile vs_5_0 VS_MAIN();
