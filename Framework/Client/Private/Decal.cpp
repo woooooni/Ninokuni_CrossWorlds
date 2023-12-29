@@ -33,7 +33,7 @@ HRESULT CDecal::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	m_pTransformCom->Set_Scale(_float3(5.f, 1.f, 5.f));
+	Restart_Decal();
 
 	return S_OK;
 }
@@ -43,7 +43,15 @@ void CDecal::Tick(_float fTimeDelta)
 	if (Is_Dead() == true)
 		return;
 
+	m_fAccLifeTime += fTimeDelta;
+	if (m_bDecalDie || m_fAccLifeTime >= m_tDecalDesc.fLifeTime)
+	{
+		m_bDecalDie = true;
+		if (GI->Get_CurrentLevel() != LEVEL_TOOL)
+			Set_Dead(true);
+	}
 
+	Tick_Alpha(fTimeDelta);
 }
 
 void CDecal::LateTick(_float fTimeDelta)
@@ -77,19 +85,15 @@ HRESULT CDecal::Bind_ShaderResource()
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &GI->Get_TransformFloat4x4(CPipeLine::D3DTS_PROJ))))
 		return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_matWorldInv", &m_pTransformCom->Get_WorldMatrix_Float4x4_Inverse())))
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrixInv", &m_pTransformCom->Get_WorldMatrix_Float4x4_Inverse())))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_matViewInv", &GI->Get_TransformMatrixInverse_Float4x4(CPipeLine::D3DTS_VIEW))))
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrixInv", &GI->Get_TransformMatrixInverse_Float4x4(CPipeLine::D3DTS_VIEW))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_matProjInv", &GI->Get_TransformMatrixInverse_Float4x4(CPipeLine::D3DTS_PROJ))))
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrixInv", &GI->Get_TransformMatrixInverse_Float4x4(CPipeLine::D3DTS_PROJ))))
 		return E_FAIL;
 
 	if (FAILED(GI->Bind_SRV(m_pShaderCom, TEXT("Target_Depth"), "g_DepthTarget")))
 		return E_FAIL;
-
-	// 이펙트 정보
-	//if (FAILED(m_pShaderCom->Bind_RawValue("g_EffectDesc", m_pVIBufferCom->Get_ParticleShaderInfo().data(), sizeof(CVIBuffer_Particle::PARTICLE_SHADER_DESC) * m_pVIBufferCom->Get_ParticleShaderInfo().size())))
-	//	return E_FAIL;
 
 	// 텍스처
 	if (m_pDiffuseTextureCom != nullptr)
@@ -97,16 +101,23 @@ HRESULT CDecal::Bind_ShaderResource()
 		if (FAILED(m_pDiffuseTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Diffuse2DTexture", m_tDecalDesc.iTextureIndexDiffuse)))
 			return E_FAIL;
 	}
-	if (m_pAlphaTextureCom != nullptr)
-	{
-		if (FAILED(m_pAlphaTextureCom->Bind_ShaderResource(m_pShaderCom, "g_Alpha2DTexture", m_tDecalDesc.iTextureIndexAlpha)))
-			return E_FAIL;
-	}
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha_Discard", &m_tDecalDesc.fAlpha_Discard, sizeof(_float))))
 		return E_FAIL;
-
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fBlack_Discard", &m_tDecalDesc.fBlack_Discard, sizeof(_float3))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fColor_Add_01_Alpha", &m_tDecalDesc.fColorAdd_01_Alpha, sizeof(_float))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fColor_Add_01", &m_tDecalDesc.fColorAdd_01, sizeof(_float3))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fColor_Add_02", &m_tDecalDesc.fColorAdd_02, sizeof(_float3))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fColor_Alpha", &m_tDecalDesc.fAlphaRemove, sizeof(_float))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fBloom_Power", &m_tDecalDesc.fBloomPower, sizeof(_float3))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fBlur_Power", &m_tDecalDesc.fBlurPower, sizeof(_float))))
 		return E_FAIL;
 
 	return S_OK;
@@ -131,14 +142,40 @@ HRESULT CDecal::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Texture */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Decal"),
-		TEXT("Com_Diffuse_Texture"), (CComponent**)&m_pDiffuseTextureCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Decal"), TEXT("Com_Texture"), (CComponent**)&m_pDiffuseTextureCom)))
 		return E_FAIL;
-	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Decal"),
-	//	TEXT("Com_Alpha_Texture"), (CComponent**)&m_pAlphaTextureCom)))
-	//	return E_FAIL;
 
 	return S_OK;
+}
+
+void CDecal::Set_DecalDesc(const DECAL_DESC& tDesc)
+{
+	m_tDecalDesc = tDesc;
+
+	if (m_pDiffuseTextureCom != nullptr && m_tDecalDesc.iTextureIndexDiffuse >= m_pDiffuseTextureCom->Get_TextureCount())
+		m_tDecalDesc.iTextureIndexDiffuse = m_pDiffuseTextureCom->Get_TextureCount() - 1;
+}
+
+void CDecal::Restart_Decal()
+{
+	m_pTransformCom->Set_Scale(m_tDecalDesc.fScale);
+
+
+}
+
+void CDecal::Tick_Alpha(_float fTimeDelta)
+{
+	// 생성 이벤트 1 -> 0
+	if (m_tDecalDesc.bAlphaCreate)
+	{
+
+	}
+
+	// 삭제 이벤트 0 -> 1
+	else if (m_tDecalDesc.bAlphaDelete)
+	{
+
+	}
 }
 
 CDecal* CDecal::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const DECAL_DESC* pDecalDesc, const wstring& strDecalFilePath)
@@ -177,5 +214,4 @@ void CDecal::Free()
 	Safe_Release(m_pTransformCom);
 	Safe_Release(m_pVIBufferCom);
 	Safe_Release(m_pDiffuseTextureCom);
-	Safe_Release(m_pAlphaTextureCom);
 }

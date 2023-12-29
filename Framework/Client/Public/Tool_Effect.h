@@ -2,6 +2,7 @@
 #include "Tool.h"
 
 #include "Effect.h"
+#include "Decal.h"
 
 BEGIN(Engine)
 class CGameObject;
@@ -20,22 +21,35 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 
 private:
+	void Tick_EffectTool();
+	void Tick_DecalTool();
+
 	void Create_Effect();
+	void Create_Decal();
 	
 	void Store_TransformEffect();
+	void Store_TransformDecal();
 
 	void Load_InfoEffect();
+	void Load_InfoDecal();
+
 	void Store_InfoEffect();
+	void Store_InfoDecal();
 
 	void Save_Effect(const char* pFileName);
+	void Save_Decal(const char* pFileName);
+
 	void Load_Effect(const char* pFileName);
+	void Load_Decal(const char* pFileName);
 
 	wstring Select_FolderName(_uint iFolderIndex);
 	_uint   Get_FolderIndex(wstring& strName);
 
 private:
 	class CGameObject* m_pEffect = nullptr;
+	class CGameObject* m_pDecal  = nullptr;
 	CEffect::EFFECT_DESC m_tEffectInfo;
+	CDecal::DECAL_DESC   m_tDecalInfo;
 
 	_float m_fPosition[3];
 	_float m_fRotation[3];
