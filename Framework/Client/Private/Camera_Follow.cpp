@@ -76,9 +76,6 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 		else
 			m_pTransformCom->LookAt(vLookAtPos);
 	}
-
-	/* Collision */
-	m_pControllerCom->Tick_Controller(fTimeDelta);
 }
 
 void CCamera_Follow::LateTick(_float fTimeDelta)
@@ -116,7 +113,8 @@ HRESULT CCamera_Follow::Ready_Components()
 			return E_FAIL;
 	}*/
 
-	m_pControllerCom->Set_Active(false);
+	if(nullptr != m_pControllerCom)
+		m_pControllerCom->Set_Active(false);
 
 	return S_OK;
 }

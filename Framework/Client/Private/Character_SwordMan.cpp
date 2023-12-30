@@ -560,13 +560,17 @@ HRESULT CCharacter_SwordMan::Ready_Weapon()
 {
 	m_pWeapon = CSword::Create(m_pDevice, m_pContext, L"SwordMane_Sword");
 	if (nullptr == m_pWeapon)
-		return E_FAIL;
+		return S_OK;
 	
 
 	m_pWeapon->Set_ModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Flower01"));
 
 	if (nullptr == m_pWeapon->Get_ModelCom())
-		return E_FAIL;
+	{
+		Safe_Release(m_pWeapon);
+		return S_OK;
+	}
+		
 
 
 

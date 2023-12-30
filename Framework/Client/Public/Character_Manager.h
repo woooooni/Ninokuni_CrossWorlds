@@ -7,11 +7,8 @@
 /*
 * [TW] 모든 캐릭터와 파츠 모델들을 가지고 있습니다.
 */
-BEGIN(Engine)
-class CCharacter;
-END
-
 BEGIN(Client)
+class CCharacter;
 
 class CCharacter_Manager : public CBase
 {	
