@@ -1490,7 +1490,7 @@ HRESULT CModel_Manager::Import_Socket(const wstring strFinalPath, CModel* pModel
 		pModel->Add_CustomSocketPivotPosition(vPos);
 
 		if(99 != GI->Get_CurrentLevel())
-			pModel->Add_SocketTransforms(GI->Create_AnimationSocketTransform(pModel, iSocketCount));
+			pModel->Add_SocketTransforms(GI->Create_AnimationSocketTransform(pModel, iSocketIndex));
 	}
 
 	return S_OK;

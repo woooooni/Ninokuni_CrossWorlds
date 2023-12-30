@@ -118,8 +118,10 @@ void CCharacter_SwordMan::Tick(_float fTimeDelta)
 
 	if (m_pWeapon != nullptr)
 	{
-		Matrix matWorld = m_pModelCom->Get_SocketLocalMatrix(0) * m_pTransformCom->Get_WorldMatrix();
-		m_pWeapon->Set_SocketWorld(matWorld);
+		Matrix matSocketLocal = m_pModelCom->Get_SocketLocalMatrix(0);
+		Matrix matSocketWorld = matSocketLocal * m_pTransformCom->Get_WorldMatrix();
+
+		m_pWeapon->Set_SocketWorld(matSocketWorld);
 	}
 	__super::Tick(fTimeDelta);
 }
