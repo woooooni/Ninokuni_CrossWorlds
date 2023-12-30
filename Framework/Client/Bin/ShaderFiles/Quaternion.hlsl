@@ -166,7 +166,7 @@ float4 q_slerp(in float4 a, in float4 b, float t)
 
     float blendA;
     float blendB;
-    if (cosHalfAngle < 0.99)
+    if (cosHalfAngle < 0.9995f)
     {
         // do proper slerp for big angles
         float halfAngle = acos(cosHalfAngle);
@@ -183,10 +183,10 @@ float4 q_slerp(in float4 a, in float4 b, float t)
     }
 
     float4 result = float4(blendA * a.xyz + blendB * b.xyz, blendA * a.w + blendB * b.w);
+    
     if (length(result) > 0.0)
-    {
         return normalize(result);
-    }
+    
     return QUATERNION_IDENTITY;
 }
 

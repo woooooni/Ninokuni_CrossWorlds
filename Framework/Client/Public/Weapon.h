@@ -17,8 +17,6 @@ class CWeapon abstract : public CGameObject
 {
 protected:
 	CWeapon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObejctTag, _uint iObjectType);
-	CWeapon(const CWeapon& rhs);
-
 	virtual ~CWeapon() = default;
 
 public:
@@ -26,7 +24,6 @@ public:
 	class CGameObject* Get_Owner() { return m_pOwner; }
 
 public:
-	virtual HRESULT Initialize_Prototype();
 	virtual HRESULT Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta);
 	virtual void LateTick(_float fTimeDelta);
@@ -42,7 +39,8 @@ protected:
 	HRESULT Bind_ShaderResources();
 
 public:
-	CModel* Get_ModelCom() { return m_pModelCom; }
+	void Set_ModelCom(class CModel* pModel) { m_pModelCom = pModel; }
+	class CModel* Get_ModelCom() { return m_pModelCom; }
 
 public:
 	virtual void Set_SocketWorld(Matrix matSocketWorld) { memcpy(&m_matSocketWorld, &matSocketWorld, sizeof(Matrix)); } /* 주인 모델의 애니메이션 갱신이 이루어진 뒤 호출 */

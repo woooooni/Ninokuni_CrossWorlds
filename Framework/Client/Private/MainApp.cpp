@@ -13,9 +13,14 @@
 #include "UI_Manager.h"
 #include "Camera_Manager.h"
 #include "Light.h"
-#include "Part_Manager.h"
 #include "Item_Manager.h"
 #include "UIDamage_Manager.h"
+
+
+#include "Game_Manager.h"
+#include "Character_Manager.h"
+#include "Weapon_Manager.h"
+
 
 #ifdef _DEBUG
   // #include <vld.h>
@@ -59,7 +64,6 @@ HRESULT CMainApp::Initialize()
 	//ShowCursor(false);
 
 
-
 	Json Test;
 	Test["Name"] = "±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø";
 	Test["Test"] = "Å×½ºÆ®Å×½ºÆ®Å×½ºÆ®Å×½ºÆ®";
@@ -79,17 +83,18 @@ HRESULT CMainApp::Initialize()
 
 void CMainApp::Tick(_float fTimeDelta)
 {
+	CGame_Manager::GetInstance()->Tick(fTimeDelta);
 	CCamera_Manager::GetInstance()->Tick(fTimeDelta);
 	GI->Tick(fTimeDelta);
 	CUI_Manager::GetInstance()->Tick(fTimeDelta);
 	
+	CGame_Manager::GetInstance()->LateTick(fTimeDelta);
 	CCamera_Manager::GetInstance()->LateTick(fTimeDelta);
 	GI->LateTick(fTimeDelta);
 	CUI_Manager::GetInstance()->LateTick(fTimeDelta);
 	
 	
 	m_fTimeAcc += fTimeDelta;
-
 }
 
 HRESULT CMainApp::Render()
@@ -1224,7 +1229,9 @@ void Client::CMainApp::Free()
 	CPicking_Manager::GetInstance()->DestroyInstance();
 	CUIDamage_Manager::GetInstance()->DestroyInstance();
 	CUI_Manager::GetInstance()->DestroyInstance();
-	CPart_Manager::GetInstance()->DestroyInstance();
 	CItem_Manager::GetInstance()->DestroyInstance();
+	CWeapon_Manager::GetInstance()->DestroyInstance();
+	CCharacter_Manager::GetInstance()->DestroyInstance();
+	CGame_Manager::GetInstance()->DestroyInstance();
 	CGameInstance::Release_Engine();
 }

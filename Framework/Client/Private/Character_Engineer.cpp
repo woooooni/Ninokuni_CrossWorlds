@@ -3,7 +3,7 @@
 #include "GameInstance.h"
 #include "HierarchyNode.h"
 #include "Trail.h"
-#include "Part_Manager.h"
+#include "Character_Manager.h"
 
 
 #include "State_Engineer_Neutral_Idle.h"
@@ -210,9 +210,10 @@ HRESULT CCharacter_Engineer::Ready_Components()
 
 
 	for (_uint i = 0; i < PART_TYPE::PART_END; ++i)
-		m_pCharacterPartModels[i] = CPart_Manager::GetInstance()->Get_PartModel(m_eCharacterType, PART_TYPE(i), 0);
+		m_pCharacterPartModels[i] = CCharacter_Manager::GetInstance()->Get_PartModel(m_eCharacterType, PART_TYPE(i), 0);
 
-	
+
+	m_pControllerCom->Set_Active(false);
 	m_pModelCom->Set_Animation(0);
 
 	return S_OK;
@@ -222,7 +223,6 @@ HRESULT CCharacter_Engineer::Ready_Components()
 HRESULT CCharacter_Engineer::Ready_States()
 {
 	list<wstring> strAnimationNames;
-
 
 	// Neutral
 	strAnimationNames.clear();

@@ -14,6 +14,9 @@
 #include "Utils.h"
 #include <FileUtils.h>
 
+#include "Game_Manager.h"
+#include "Player.h"
+
 CLevel_Test::CLevel_Test(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
 {
@@ -196,19 +199,14 @@ HRESULT CLevel_Test::Ready_Layer_Player(const LAYER_TYPE eLayerType)
 }
 
 HRESULT CLevel_Test::Ready_Layer_Character(const LAYER_TYPE eLayerType)
-{
-	CGameObject* pTest = nullptr;
-
-	/*if (FAILED(GI->Add_GameObject(LEVEL_TEST, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Character_SwordMan"), nullptr, &pTest)))
-		return E_FAIL;*/
-
-	if (FAILED(GI->Add_GameObject(LEVEL_TEST, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Character_Engineer"), nullptr, &pTest)))
+{	
+	if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN)))
 		return E_FAIL;
 
 	if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))
 	{
-		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_TargetObj(pTest);
-		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_LookAtObj(pTest);
+		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
 	}
 
 	return S_OK;
@@ -252,7 +250,7 @@ HRESULT CLevel_Test::Ready_Layer_Terrain(const LAYER_TYPE eLayerType)
 }
 
 HRESULT CLevel_Test::Ready_Layer_Monster(const LAYER_TYPE eLayerType)
-{
+{	
 	//if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prorotype_GameObject_Stellia"))))
 	//	return E_FAIL;
 	//if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prorotype_GameObject_Glanix"))))
@@ -266,16 +264,18 @@ HRESULT CLevel_Test::Ready_Layer_Monster(const LAYER_TYPE eLayerType)
 
 	//if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prorotype_GameObject_IceBearMan"))))
 	//	return E_FAIL;
-	//
+	
 	//if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prorotype_GameObject_PumpkinCandle"))))
 	//	return E_FAIL;
+	
 	//if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prorotype_GameObject_Clown"))))
 	//	return E_FAIL;
+	
 	//if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prorotype_GameObject_Clown_Wizard"))))
 	//	return E_FAIL;
+	
 	//if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prorotype_GameObject_Baobam_Dark"))))
 	//	return E_FAIL;
-
 
 	return S_OK;
 }

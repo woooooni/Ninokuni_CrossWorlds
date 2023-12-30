@@ -116,6 +116,8 @@ HRESULT CCamera_Follow::Ready_Components()
 			return E_FAIL;
 	}*/
 
+	m_pControllerCom->Set_Active(false);
+
 	return S_OK;
 }
 

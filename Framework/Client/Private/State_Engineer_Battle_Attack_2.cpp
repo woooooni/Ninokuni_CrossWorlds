@@ -53,6 +53,12 @@ void CState_Engineer_Battle_Attack_2::Input(_float fTimeDelta)
         
 }
 
+void CState_Engineer_Battle_Attack_2::Shoot()
+{
+    if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_CHARACTER, L"Prototype_GameObject_Engineer_Bullet")))
+        MSG_BOX("Generate Bullet Failed.");
+}
+
 CState_Engineer_Battle_Attack_2* CState_Engineer_Battle_Attack_2::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
 {
     CState_Engineer_Battle_Attack_2* pInstance = new CState_Engineer_Battle_Attack_2(pStateMachine);

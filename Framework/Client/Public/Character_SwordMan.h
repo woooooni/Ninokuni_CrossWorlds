@@ -34,13 +34,16 @@ protected:
 
 private:
 	HRESULT Ready_Sockets();
-	HRESULT Ready_Parts();
+	HRESULT Ready_Weapon();
 	
 
-public:
+private:
 	static CCharacter_SwordMan* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;
+
+public:
 	virtual void Free() override;
+	friend class CCharacter_Manager;
 };
 
 END

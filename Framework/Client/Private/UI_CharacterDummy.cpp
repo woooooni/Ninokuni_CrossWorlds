@@ -3,7 +3,7 @@
 #include "GameInstance.h"
 #include "HierarchyNode.h"
 #include "Trail.h"
-#include "Part_Manager.h"
+#include "Character_Manager.h"
 
 
 CUI_CharacterDummy::CUI_CharacterDummy(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
@@ -140,7 +140,7 @@ HRESULT CUI_CharacterDummy::Ready_Components()
 
 
 	for (_uint i = 0; i < PART_TYPE::PART_END; ++i)
- 		m_pCharacterPartModels[i] = CPart_Manager::GetInstance()->Get_PartModel(m_eCharacterType, PART_TYPE(i), 0);
+ 		m_pCharacterPartModels[i] = CCharacter_Manager::GetInstance()->Get_PartModel(m_eCharacterType, PART_TYPE(i), 0);
 
 	m_pModelCom->Set_Animation(140);
 

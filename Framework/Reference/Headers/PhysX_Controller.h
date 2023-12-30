@@ -8,6 +8,7 @@ class ENGINE_DLL CPhysX_Controller : public CComponent, public PxUserControllerH
 {
 public:
     enum CONTROLLER_TYPE { BOX, CAPSULE, TYPE_END };
+
 public:
     typedef struct tagPxController
     {
@@ -42,9 +43,10 @@ public:
     void Tick_Controller(_float fTimeDelta);
     void LateTick_Controller(_float fTimeDelta);
 
-public:
-    void Set_Position(Vec4 vPosition);
 
+public:
+    void Set_Active(_bool bActive); 
+    _bool Is_Active();
     
 
 private:
@@ -61,6 +63,7 @@ private:
     _bool m_bInitialize = true;
     _bool m_bGroundChecked = false;
 
+
 public:
     static CPhysX_Controller* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
     virtual CComponent* Clone(void* pArg);
@@ -70,7 +73,9 @@ private:
     PxPairFlag::Enum m_eGroundFlag = PxPairFlag::eCONTACT_DEFAULT;
 
 
-    
+private:
+    _bool m_bActive = true;
+
 
 public:
     // PxUserControllerHitReport을(를) 통해 상속됨

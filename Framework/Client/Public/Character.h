@@ -145,6 +145,10 @@ public:
 public:
 	CHARACTER_TYPE Get_CharacterType() { return m_eCharacterType; }
 
+public:
+	virtual HRESULT Enter_Character();
+	virtual HRESULT Exit_Character();
+
 protected:
 	virtual HRESULT Ready_Components() PURE;
 	virtual HRESULT Ready_States() PURE;

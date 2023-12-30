@@ -551,25 +551,25 @@ _bool CGameInstance::Intersect_Frustum_World(_fvector vWorldPos, _float fRadius)
 	return m_pFrustum->Intersect_Frustum_World(vWorldPos, fRadius);
 }
 
-PxRigidStatic* CGameInstance::Add_Static_Actor(const PHYSX_INIT_DESC& Desc)
-{
-	return m_pPhysXManager->Add_Static_Actor(Desc);
-}
-
-PxRigidDynamic* CGameInstance::Add_Dynamic_Actor(const PHYSX_INIT_DESC& Desc)
-{
-	return m_pPhysXManager->Add_Dynamic_Actor(Desc);
-}
-
-HRESULT CGameInstance::Add_Static_Mesh_Actor(const PHYSX_INIT_DESC& Desc, __out vector<PxRigidStatic*>& refOut)
-{
-	return m_pPhysXManager->Add_Static_Mesh_Actor(Desc, refOut);
-}
-
-HRESULT CGameInstance::Add_Dynamic_Mesh_Actor(const PHYSX_INIT_DESC& Desc, __out vector<PxRigidDynamic*>& refOut)
-{
-	return m_pPhysXManager->Add_Dynamic_Mesh_Actor(Desc, refOut);
-}
+//PxRigidStatic* CGameInstance::Add_Static_Actor(const PHYSX_INIT_DESC& Desc)
+//{
+//	return m_pPhysXManager->Add_Static_Actor(Desc);
+//}
+//
+//PxRigidDynamic* CGameInstance::Add_Dynamic_Actor(const PHYSX_INIT_DESC& Desc)
+//{
+//	return m_pPhysXManager->Add_Dynamic_Actor(Desc);
+//}
+//
+//HRESULT CGameInstance::Add_Static_Mesh_Actor(const PHYSX_INIT_DESC& Desc, __out vector<PxRigidStatic*>& refOut)
+//{
+//	return m_pPhysXManager->Add_Static_Mesh_Actor(Desc, refOut);
+//}
+//
+//HRESULT CGameInstance::Add_Dynamic_Mesh_Actor(const PHYSX_INIT_DESC& Desc, __out vector<PxRigidDynamic*>& refOut)
+//{
+//	return m_pPhysXManager->Add_Dynamic_Mesh_Actor(Desc, refOut);
+//}
 
 HRESULT CGameInstance::Add_Ground(CGameObject* pGameObject, CModel* pModel, _matrix WorldMatrix, const wstring& strCollisionTag)
 {
@@ -587,11 +587,11 @@ HRESULT CGameInstance::Remove_Actor(class CGameObject* pGameObject)
 //}
 
 
-
-PxMaterial* CGameInstance::Create_PxMaterial(_float fStaticFriction, _float fDynamicFriction, _float fRestitution)
-{
-	return m_pPhysXManager->Create_Material(fStaticFriction, fDynamicFriction, fRestitution);
-}
+//
+//PxMaterial* CGameInstance::Create_PxMaterial(_float fStaticFriction, _float fDynamicFriction, _float fRestitution)
+//{
+//	return m_pPhysXManager->Create_Material(fStaticFriction, fDynamicFriction, fRestitution);
+//}
 
 PxController* CGameInstance::Add_CapsuleController(CGameObject* pGameObject, Matrix WorldMatrix, _float fHeight, _float fRadius, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack)
 {

@@ -27,6 +27,9 @@ public:
 
 private:
 	void Input(_float fTimeDelta);
+	void Shoot();
+private:
+	_int m_iShootCount = 3;
 
 public:
 	static CState_Engineer_Battle_Attack_0* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);

@@ -3,8 +3,10 @@
 #include "GameInstance.h"
 #include "HierarchyNode.h"
 #include "Trail.h"
-#include "Part_Manager.h"
-
+#include "Character_Manager.h"
+#include "Weapon_Manager.h"
+#include "Weapon.h"
+#include "Sword.h"
 
 #include "State_SwordMan_Neutral_Idle.h"
 #include "State_SwordMan_Neutral_Jump.h"
@@ -95,8 +97,8 @@ HRESULT CCharacter_SwordMan::Initialize(void* pArg)
 	//if (FAILED(Ready_Sockets()))
 	//	return E_FAIL;
 
-	//if (FAILED(Ready_Parts()))
-	//	return E_FAIL;
+	if (FAILED(Ready_Weapon()))
+		return E_FAIL;
 
 	if (FAILED(Ready_States()))
 		return E_FAIL;
@@ -113,6 +115,12 @@ void CCharacter_SwordMan::Tick(_float fTimeDelta)
 
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 	m_pControllerCom->Tick_Controller(fTimeDelta);
+
+	if (m_pWeapon != nullptr)
+	{
+		Matrix matWorld = m_pModelCom->Get_SocketLocalMatrix(0) * m_pTransformCom->Get_WorldMatrix();
+		m_pWeapon->Set_SocketWorld(matWorld);
+	}
 	__super::Tick(fTimeDelta);
 }
 
@@ -207,9 +215,10 @@ HRESULT CCharacter_SwordMan::Ready_Components()
 
 
 	for (_uint i = 0; i < PART_TYPE::PART_END; ++i)
-		m_pCharacterPartModels[i] = CPart_Manager::GetInstance()->Get_PartModel(m_eCharacterType, PART_TYPE(i), 0);
+		m_pCharacterPartModels[i] = CCharacter_Manager::GetInstance()->Get_PartModel(m_eCharacterType, PART_TYPE(i), 0);
 
 	
+	m_pControllerCom->Set_Active(false);
 	m_pModelCom->Set_Animation(0);
 	//m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, Vec4(-10.0f, 50.0f, 0.0f, 1.0f));
 	return S_OK;
@@ -546,54 +555,19 @@ HRESULT CCharacter_SwordMan::Ready_Sockets()
 }
 #pragma endregion
 
-#pragma region Ready_Parts
-HRESULT CCharacter_SwordMan::Ready_Parts()
+#pragma region Ready_Weapon
+HRESULT CCharacter_SwordMan::Ready_Weapon()
 {
-	//m_Parts.resize(PARTTYPE::PART_END);
+	m_pWeapon = CSword::Create(m_pDevice, m_pContext, L"SwordMane_Sword");
+	if (nullptr == m_pWeapon)
+		return E_FAIL;
+	
 
-	//CSweath::SWEATH_DESC			SweathDesc;
+	m_pWeapon->Set_ModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Flower01"));
 
-	//SweathDesc.eType = CSweath::SWEATH_TYPE::TANJIRO;
-	//SweathDesc.pOwner = this;
-	//SweathDesc.pParentTransform = m_pTransformCom;
-	//SweathDesc.pSocketBone = m_Sockets[SOCKET_SWEATH];
-	//XMStoreFloat3(&SweathDesc.vRotationDegree, 
-	//	XMVectorSet(XMConvertToRadians(-90.f), 
-	//	XMConvertToRadians(180.f), 
-	//	XMConvertToRadians(0.f), 
-	//	XMConvertToRadians(0.f)));
-	//XMStoreFloat4x4(&SweathDesc.SocketPivot, m_pModelCom->Get_PivotMatrix());
+	if (nullptr == m_pWeapon->Get_ModelCom())
+		return E_FAIL;
 
-	//CGameObject* pGameObject = GI->Clone_GameObject(TEXT("Prototype_GameObject_Sweath_Tanjiro"), LAYER_TYPE::LAYER_CHARACTER, &SweathDesc);
-	//if (nullptr == pGameObject)
-	//	return E_FAIL;
-
-	//Safe_AddRef(pGameObject);
-	//m_Parts[PART_SWEATH] = (pGameObject);
-
-
-	//CSword::SWORD_DESC			SwordDesc;
-
-	//SwordDesc.eType = CSword::SWORD_TYPE::TANJIRO;
-	//SwordDesc.pOwner = this;
-	//SwordDesc.pParentTransform = m_pTransformCom;
-	//SwordDesc.pSocketBone = m_Sockets[SOCKET_SWEATH];
-	//XMStoreFloat3(&SwordDesc.vRotationDegree,
-	//	XMVectorSet(XMConvertToRadians(-90.f),
-	//		XMConvertToRadians(180.f),
-	//		XMConvertToRadians(0.f),
-	//		XMConvertToRadians(0.f)));
-
-	//XMStoreFloat4x4(&SwordDesc.SocketPivot, m_pModelCom->Get_PivotMatrix());
-
-
-	//pGameObject = GI->Clone_GameObject(TEXT("Prototype_GameObject_Sword_Tanjiro"), LAYER_TYPE::LAYER_CHARACTER, &SwordDesc);
-	//
-	//if (nullptr == pGameObject)
-	//	return E_FAIL;
-
-	//Safe_AddRef(pGameObject);
-	//m_Parts[PART_SWORD] = pGameObject;
 
 
 	return S_OK;
