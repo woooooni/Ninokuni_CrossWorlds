@@ -357,6 +357,7 @@ namespace Engine
 
 			return fLerpTime;
 		}
+
 	}LERP_DESC;
 
 	typedef struct tagLerpFloatDesc : public LERP_DESC
@@ -473,6 +474,7 @@ namespace Engine
 
 			return fLerpTime;
 		}
+
 	}LERP_TIME_DESC;
 
 	typedef struct tagLerpVec3Desc : public LERP_DESC

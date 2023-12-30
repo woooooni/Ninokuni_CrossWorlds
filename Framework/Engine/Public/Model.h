@@ -144,8 +144,8 @@ private:
 	ID3D11ShaderResourceView* m_pSRV = nullptr;
 
 	vector<_uint> m_SocketTransformIndexCache;
-	vector<Vec3> m_SocketCustomPivotRotation;
-	vector<Vec3> m_SocketCustomPivotPosition;
+	vector<Vec3>  m_SocketCustomPivotRotation;
+	vector<Vec3>  m_SocketCustomPivotPosition;
 	vector<vector<ANIM_TRANSFORM_CACHE>> m_SocketTransforms; /* 소켓(뼈) 별로 vector<ANIM_TRANSOFRM_CACHE>를 갖는다.*/
 
 #pragma region Assimp

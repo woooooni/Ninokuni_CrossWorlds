@@ -925,11 +925,11 @@ HRESULT CRenderer::Render_Debug()
 	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Outline"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
 		return E_FAIL;
 
-	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Effect"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
-		return E_FAIL;
-
-	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Effect_UI"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
-		return E_FAIL;
+	//if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Effect"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
+	//	return E_FAIL;
+	//
+	//if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Effect_UI"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
+	//	return E_FAIL;
 	
 	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Blend"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
 		return E_FAIL;

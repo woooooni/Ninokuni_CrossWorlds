@@ -23,6 +23,8 @@ HRESULT CTool_Camera::Initialize()
 	if (FAILED(__super::Initialize()))
 		return E_FAIL;
 
+	if (FAILED(Ready_DebugDraw()))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -33,14 +35,20 @@ void CTool_Camera::Tick(_float fTimeDelta)
 
 	/* Select Camera */
 	Show_Select_Camera();
-	
-
 
 	/* Camera Prop */
 	{
 		CCamera* pCurCam = CCamera_Manager::GetInstance()->Get_CurCamera();
 		if (nullptr != pCurCam)
 		{
+			/* Cut Scene */
+			if (m_bShow_Prop_CutScene)
+			{
+				Show_Camera_Prop_CutScene(fTimeDelta);
+				ImGui::End();
+				return;
+			}
+
 			/* 카메라 공통 옵션 */
 			Show_Camera_Prop_Default(pCurCam);
 
@@ -62,6 +70,13 @@ void CTool_Camera::Tick(_float fTimeDelta)
 	ImGui::End();
 }
 
+HRESULT CTool_Camera::Render()
+{
+	Render_DebugDraw();
+
+	return S_OK;
+}
+
 void CTool_Camera::Show_Select_Camera()
 {
 	const CAMERA_TYPE eCurCamIndex = (CAMERA_TYPE)CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Type();
@@ -73,12 +88,16 @@ void CTool_Camera::Show_Select_Camera()
 		ImGui::PushItemWidth(150.f);
 		if (ImGui::BeginCombo(u8"현재 카메라", Preview))
 		{
-			for (int iCurComboIndex = 0; iCurComboIndex < CAMERA_TYPE::CAMERA_TYPE_END; iCurComboIndex++)
+			/* 컷신 카메라는 별도 창에서 작업 하기 위해 인덱스를 -1 한다. */
+			for (int iCurComboIndex = 0; iCurComboIndex < CAMERA_TYPE::CAMERA_TYPE_END - 1; iCurComboIndex++)
 			{
 				const bool is_selected = (eCurCamIndex == iCurComboIndex);
 
 				if (ImGui::Selectable(CameraCharNames[iCurComboIndex], is_selected))
 				{
+					if (CAMERA_TYPE::CUTSCENE == iCurComboIndex)
+						iCurComboIndex = CAMERA_TYPE::FREE;
+
 					CCamera_Manager::GetInstance()->Set_CurCamera((CAMERA_TYPE)iCurComboIndex);
 				}
 
@@ -87,6 +106,18 @@ void CTool_Camera::Show_Select_Camera()
 			}
 			ImGui::EndCombo();
 		}
+		ImGui::PushItemWidth(300.f);
+
+
+		if (ImGui::Checkbox("컷신 작업", &m_bShow_Prop_CutScene))
+		{
+			if (!m_bShow_Prop_CutScene)
+			{
+				Clear_CutSceneCache();
+			}
+		}
+			
+
 		ImGui::PopItemWidth();
 	}
 }
@@ -315,6 +346,272 @@ void CTool_Camera::Show_Camera_Prop_Follow(CCamera* pCurCam)
 	ImGui::EndChild();
 }
 
+void CTool_Camera::Show_Camera_Prop_CutScene(_float fTimeDelta)
+{
+	/* 플레이 */
+	IMGUI_NEW_LINE;
+	if (ImGui::Checkbox("Play CutScene", &m_bPlay))
+	{
+		if (m_bPlay)
+		{
+			if (FAILED(CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::CUTSCENE)))
+				return;
+
+			m_tDesc.Start(m_tDesc.fEndTime, LERP_MODE::DEFAULT);
+		}
+	}
+
+	if (m_bPlay)
+	{
+		if (m_tDesc.bActive)
+		{
+			Vec3 vPos = Calculate_Bezier(true);
+			Vec4 vFinalPos = { vPos.x, vPos.y, vPos.z, 1.f };
+
+			Vec3 vLook = Calculate_Bezier(false);
+			Vec4 vFinalLook = { vLook.x, vLook.y, vLook.z, 1.f };
+			CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE)->Get_Transform()->Set_State(CTransform::STATE_POSITION, vFinalPos);
+			CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE)->Get_Transform()->LookAt(vFinalLook);
+		}
+		else
+		{
+			m_bPlay = false;
+			if (FAILED(CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE)))
+				return;
+		}
+	}
+	
+
+	/* 포지션 리스트*/
+	if (0 <= m_iTempPositionIndex)
+	{
+		ImGui::Text("캠 포지션 리스트");
+		const char* Preview = to_string(m_iTempPositionIndex).c_str();
+		if (ImGui::BeginCombo(u8"포지션 인덱스", Preview))
+		{
+			/* 컷신 카메라는 별도 창에서 작업 하기 위해 인덱스를 -1 한다. */
+			for (int iCurComboIndex = 0; iCurComboIndex < m_vTempPositions.size(); iCurComboIndex++)
+			{
+				const bool is_selected = (iCurComboIndex == m_iTempPositionIndex);
+
+				if (ImGui::Selectable(to_string(iCurComboIndex).c_str(), is_selected))
+				{
+				m_iTempPositionIndex = iCurComboIndex;
+
+				m_tDesc.Start(m_tDesc.fEndTime, LERP_MODE::DEFAULT);
+				}
+
+				if (is_selected)
+					ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+
+		_float vPos[3] = { m_vTempPositions[m_iTempPositionIndex].x, m_vTempPositions[m_iTempPositionIndex].y , m_vTempPositions[m_iTempPositionIndex].z };
+		if (ImGui::DragFloat3("포지션 수정", vPos))
+		{
+			memcpy(&m_vTempPositions[m_iTempPositionIndex], vPos, sizeof(Vec3));
+
+			m_tDesc.Start(m_tDesc.fEndTime, LERP_MODE::DEFAULT);
+		}
+	}
+
+
+	/* 룩앳 리스트 */
+	if (0 <= m_iTempLookAtIndex)
+	{
+		ImGui::Text("캠 룩앳 리스트");
+		const char* Preview = to_string(m_iTempLookAtIndex).c_str();
+		if (ImGui::BeginCombo(u8"룩앳 리스트", Preview))
+		{
+			for (int iCurComboIndex = 0; iCurComboIndex < m_vTempLookAts.size(); iCurComboIndex++)
+			{
+				const bool is_selected = (iCurComboIndex == m_iTempLookAtIndex);
+
+				if (ImGui::Selectable(to_string(iCurComboIndex).c_str(), is_selected))
+				{
+					m_iTempLookAtIndex = iCurComboIndex;
+
+					m_tDesc.Start(m_tDesc.fEndTime, LERP_MODE::DEFAULT);
+				}
+
+				if (is_selected)
+					ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+
+		_float vLook[3] = { m_vTempLookAts[m_iTempLookAtIndex].x, m_vTempLookAts[m_iTempLookAtIndex].y , m_vTempLookAts[m_iTempLookAtIndex].z };
+		if (ImGui::DragFloat3("룩앳 수정", vLook))
+		{
+			memcpy(&m_vTempLookAts[m_iTempLookAtIndex], vLook, sizeof(Vec3));
+
+			m_tDesc.Start(m_tDesc.fEndTime, LERP_MODE::DEFAULT);
+		}
+	}
+
+
+
+
+
+	IMGUI_NEW_LINE;
+	if (ImGui::Button("Add Position"))
+	{
+		Vec3 vCurCamLook = CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Transform()->Get_Look();
+		
+		Vec3 vCreateStartPos = CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Transform()->Get_Position();
+		vCreateStartPos += vCurCamLook * 30.f;
+
+		for (size_t i = 0; i < 4; i++)
+		{
+			Vec3 vCreatePos = vCreateStartPos + (vCurCamLook.ZeroY() * 30.f * i);
+
+			m_vTempPositions.push_back(vCreatePos);
+		}
+		
+		m_tDesc.Start(m_tDesc.fEndTime, LERP_MODE::DEFAULT);
+
+		m_iTempPositionIndex++;
+	}
+
+	IMGUI_SAME_LINE;
+	if (ImGui::Button("Add LookAt"))
+	{
+		Vec3 vCurCamLook = CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Transform()->Get_Look();
+
+		Vec3 vCreateStartPos = CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Transform()->Get_Position();
+		vCreateStartPos += vCurCamLook * 30.f;
+
+		for (size_t i = 0; i < 4; i++)
+		{
+			Vec3 vCreatePos = vCreateStartPos + (vCurCamLook.ZeroY() * 30.f * i);
+
+			m_vTempLookAts.push_back(vCreatePos);
+		}
+
+		m_tDesc.Start(m_tDesc.fEndTime, LERP_MODE::DEFAULT);
+
+		m_iTempLookAtIndex++;
+	}
+
+
+	if (!m_tDesc.bActive)
+		m_tDesc.Start(m_tDesc.fEndTime, LERP_MODE::DEFAULT);
+	else
+		m_tDesc.Update(fTimeDelta);
+
+
+
+
+	_float fDuration = m_tDesc.fEndTime;
+	if (ImGui::DragFloat("Duration", &fDuration, 0.1f, 0.1f, 100.f))
+	{
+		m_tDesc.fEndTime = fDuration;
+		
+	}
+
+
+}
+
+void CTool_Camera::Clear_CutSceneCache()
+{
+	m_bShow_Prop_CutScene = false;
+	m_iCurCutSceneEventIndex = -1;
+	m_strCurCutSceneEventName = "";
+}
+
+Vec3 CTool_Camera::Calculate_Bezier(_bool bPos)
+{
+	vector<Vec3> vPath;
+
+	if (bPos)
+		vPath = m_vTempPositions;
+	else
+		vPath = m_vTempLookAts;
+
+	if (4 > vPath.size())
+		return Vec3::Zero;
+		
+	_float fNormalizedTime = m_tDesc.fCurTime / m_tDesc.fEndTime;
+	fNormalizedTime = min(1.0f, max(0.0f, fNormalizedTime));
+
+	Vec3 v0 = Vec3::Lerp(vPath[0], vPath[1], fNormalizedTime);
+	Vec3 v1 = Vec3::Lerp(vPath[1], vPath[2], fNormalizedTime);
+	Vec3 v2 = Vec3::Lerp(vPath[2], vPath[3], fNormalizedTime);
+
+	Vec3 r0 = Vec3::Lerp(v0, v1, fNormalizedTime);
+	Vec3 r1 = Vec3::Lerp(v1, v2, fNormalizedTime);
+
+	return Vec3::Lerp(r0, r1, fNormalizedTime);
+}
+
+HRESULT CTool_Camera::Ready_DebugDraw()
+{
+	m_pBatch = new PrimitiveBatch<VertexPositionColor>(GI->Get_Context());
+	m_pEffect = new BasicEffect(GI->Get_Device());
+
+	m_pEffect->SetVertexColorEnabled(true);
+
+	const void* pShaderByteCodes = nullptr;
+	size_t			iLength = 0;
+
+	m_pEffect->GetVertexShaderBytecode(&pShaderByteCodes, &iLength);
+
+	if (FAILED(GI->Get_Device()->CreateInputLayout(VertexPositionColor::InputElements, VertexPositionColor::InputElementCount, pShaderByteCodes, iLength, &m_pInputLayout)))
+		return E_FAIL;
+
+	_float	fRadius = 0.5f;
+	Vec3	vOrigin = { 0.f, fRadius * 0.5f, 0.f };
+	m_pSphere = new BoundingSphere(vOrigin, fRadius);
+
+	if (nullptr == m_pSphere)
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CTool_Camera::Render_DebugDraw()
+{
+	if (m_bPlay)
+		return S_OK;
+
+	m_pEffect->SetWorld(XMMatrixIdentity());
+	m_pEffect->SetView(GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
+	m_pEffect->SetProjection(GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ));
+
+	m_pEffect->Apply(m_pContext);
+
+	m_pContext->IASetInputLayout(m_pInputLayout);
+
+	m_pBatch->Begin();
+	{
+		/* 포지션 위치 */
+		m_pSphere->Center = Calculate_Bezier(true);
+		DX::Draw(m_pBatch, *m_pSphere, Colors::Red);
+
+		/* 룩앳 위치 */
+		m_pSphere->Center = Calculate_Bezier(false);
+		DX::Draw(m_pBatch, *m_pSphere, Colors::Green);
+
+		/* 포지션 경로 */
+		for (size_t i = 0; i < m_vTempPositions.size(); i++)
+		{
+			m_pSphere->Center = m_vTempPositions[i];
+			DX::Draw(m_pBatch, *m_pSphere, Colors::Chocolate);
+		}
+
+		/* 룩앳 경로*/
+		for (size_t i = 0; i < m_vTempLookAts.size(); i++)
+		{
+			m_pSphere->Center = m_vTempLookAts[i];
+			DX::Draw(m_pBatch, *m_pSphere, Colors::Black);
+		}
+	}
+	m_pBatch->End();
+
+	return S_OK;
+}
+
 CTool_Camera* CTool_Camera::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	CTool_Camera* pInstance = new CTool_Camera(pDevice, pContext);
@@ -330,4 +627,9 @@ CTool_Camera* CTool_Camera::Create(ID3D11Device* pDevice, ID3D11DeviceContext* p
 void CTool_Camera::Free()
 {
 	__super::Free();
+
+	Safe_Delete(m_pBatch);
+	Safe_Delete(m_pEffect);
+	Safe_Delete(m_pSphere);
+	Safe_Release(m_pInputLayout);
 }

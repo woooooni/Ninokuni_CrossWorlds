@@ -10,21 +10,6 @@ class CGameObject;
 class CTransform;
 END
 
-#pragma region Distance
-
-static const _float Cam_Dist_Follow_Default = 3.2f;
-
-#pragma endregion
-
-#pragma region Fov
-
-static const _float Cam_Fov_Free_Default = XMConvertToRadians(60.0f);
-
-static const _float Cam_Fov_Follow_Default = XMConvertToRadians(60.0f);
-
-#pragma endregion
-
-
 BEGIN(Client)
 class CCamera_Manager : public CBase
 {
@@ -56,6 +41,10 @@ public:
 	HRESULT Start_Action_Lerp_Dist(const CAMERA_EVENT_DESC& tDesc);
 
 	HRESULT Start_Action_Shake_Default();
+
+	/* ÄÆ½Å Ä«¸Þ¶ó */
+	HRESULT Start_Action_CutScene(const string& strCutSceneName);
+	
 
 private:
 	/* Defualt */

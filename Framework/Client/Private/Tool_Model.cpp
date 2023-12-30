@@ -1880,5 +1880,4 @@ void CTool_Model::Free()
 	Safe_Delete(m_pEffect);
 	Safe_Delete(m_pSphere);
 	Safe_Release(m_pInputLayout);
-
 }
