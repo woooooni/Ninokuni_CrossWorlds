@@ -36,7 +36,10 @@ CModel::CModel(const CModel& rhs)
 	, m_strFileName(rhs.m_strFileName)
 	, m_strFolderPath(rhs.m_strFolderPath)
 	, m_bFromBinary(rhs.m_bFromBinary)
-
+	, m_SocketTransformIndexCache(rhs.m_SocketTransformIndexCache)
+	, m_SocketCustomPivotRotation(rhs.m_SocketCustomPivotRotation)
+	, m_SocketCustomPivotPosition(rhs.m_SocketCustomPivotPosition)
+	, m_SocketTransforms(rhs.m_SocketTransforms)
 {
 	for (auto& pMeshContainer : m_Meshes)
 		Safe_AddRef(pMeshContainer);

@@ -359,6 +359,20 @@ HRESULT CTool_Model::Ready_Weapons()
 		pGameObject = nullptr;
 	}
 
+	/* Npc_Halberd*/
+	if (FAILED(GI->Add_GameObject(LEVEL_TOOL, _uint(LAYER_WEAPON), TEXT("Prorotype_GameObject_NpcWeapon_Halberd"), nullptr, &pGameObject)))
+		return E_FAIL;
+	{
+		pWeapon = dynamic_cast<CWeapon*>(pGameObject);
+		if (nullptr == pWeapon)
+			return E_FAIL;
+
+		m_Weapons.push_back(pWeapon);
+
+		pWeapon = nullptr;
+		pGameObject = nullptr;
+	}
+
 	return S_OK;
 }
 

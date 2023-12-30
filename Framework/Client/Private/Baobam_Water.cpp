@@ -28,6 +28,17 @@ HRESULT CBaobam_Water::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, *(_vector*)pArg);
+	// m_pTransformCom->Set_State(CTransform::STATE_POSITION, {2.f, 0.f, 2.f, 1.f});
+	if (FAILED(__super::Ready_RoamingPoint()))
+		return E_FAIL;
+	//m_vOriginPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	//
+	///* 로밍 경로(임시) */
+	//m_vecRoamingArea.push_back(XMVectorSet(-3.f, 1.f, 1.f, 1.f));
+	//m_vecRoamingArea.push_back(XMVectorSet(-1.f, 1.f, 6.f, 1.f));
+	//m_vecRoamingArea.push_back(m_vOriginPos);
+
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
@@ -96,14 +107,6 @@ HRESULT CBaobam_Water::Ready_Components()
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 		return E_FAIL;
-
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(4.f, 1.f, 4.f, 1.f));
-	m_vOriginPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
-
-	/* 로밍 경로(임시) */
-	m_vecRoamingArea.push_back(XMVectorSet(1.f, 1.f, 1.f, 1.f));
-	m_vecRoamingArea.push_back(XMVectorSet(6.f, 1.f, 6.f, 1.f));
-	m_vecRoamingArea.push_back(m_vOriginPos);
 
 	/* For.Com_Renderer */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
