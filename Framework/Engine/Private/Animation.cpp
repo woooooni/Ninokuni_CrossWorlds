@@ -336,11 +336,11 @@ CChannel* CAnimation::Get_Channel(const wstring& strChannelName)
 
 HRESULT CAnimation::Calculate_Animation(const _uint& iFrame)
 {
-	/*for (auto& pChannel : m_Channels)
+	for (auto& pChannel : m_Channels)
 	{
 		for (auto& iCurrentKeyFrame : m_ChannelKeyFrames)
-			iCurrentKeyFrame = iFrame;
-	}*/
+			iCurrentKeyFrame = 0;
+	}
 
 	_uint iChannelIndex = 0;
 	for (auto& pChannel : m_Channels)

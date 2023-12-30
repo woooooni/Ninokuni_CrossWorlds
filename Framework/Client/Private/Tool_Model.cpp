@@ -1584,6 +1584,7 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 			/* Collider */
 			if (ImGui::BeginTabItem("Collider"))
 			{
+				
 				///*
 				//vector<pair<_float, ANIM_EVENT_COLLIDER_DESC>> ColliderEvents = pCurAnim->Get_ColliderEvents();
 

@@ -19,6 +19,7 @@
 
 #include "Game_Manager.h"
 #include "Character_Manager.h"
+#include "Weapon_Manager.h"
 
 
 #ifdef _DEBUG
@@ -1196,6 +1197,7 @@ void Client::CMainApp::Free()
 	CUIDamage_Manager::GetInstance()->DestroyInstance();
 	CUI_Manager::GetInstance()->DestroyInstance();
 	CItem_Manager::GetInstance()->DestroyInstance();
+	CWeapon_Manager::GetInstance()->DestroyInstance();
 	CCharacter_Manager::GetInstance()->DestroyInstance();
 	CGame_Manager::GetInstance()->DestroyInstance();
 	CGameInstance::Release_Engine();

@@ -1067,13 +1067,9 @@ vector<ANIM_TRANSFORM_CACHE> CModel_Manager::Create_AnimationSocketTransform(cla
 			{
 				m_HierarchyNodes[iBoneIndex]->Set_CombinedTransformation();
 
-				/* Fit */
-				{
-					AnimTransformsCache[iAnimIndex].transforms[iFrameIndex].push_back(Matrix());
-				}
-
 				if (iSocketBoneIndex == iBoneIndex)
 				{
+					AnimTransformsCache[iAnimIndex].transforms[iFrameIndex].push_back(Matrix());
 					AnimTransformsCache[iAnimIndex].transforms[iFrameIndex][0]
 						= Matrix(m_HierarchyNodes[iBoneIndex]->Get_OffSetMatrix())
 						* Matrix(m_HierarchyNodes[iBoneIndex]->Get_CombinedTransformation())

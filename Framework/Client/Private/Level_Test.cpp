@@ -192,7 +192,7 @@ HRESULT CLevel_Test::Ready_Layer_Player(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Test::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 {	
-	if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::ENGINEER)))
+	if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN)))
 		return E_FAIL;
 
 	if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))

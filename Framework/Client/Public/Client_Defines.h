@@ -11,6 +11,8 @@ namespace Client
 	enum PART_TYPE { HEAD, HAIR, FACE, BODY, PART_END };
 	static const wstring wstrPartTypeNames[PART_TYPE::PART_END]{ L"HEAD", L"HAIR", L"FACE", L"BODY" };
 
+	enum WEAPON_TYPE { SWORD, HAMMER, RIFLE, WEAPON_END };
+
 	/* ShadowMan */
 	enum SWORDMAN_HEAD_MODEL_TYPE { HEAD_TEMP, SWORDMAN_HEAD_MODEL_TYPE_END };
 	static const wstring wstrSwordManHeadTypeNames[SWORDMAN_HEAD_MODEL_TYPE::SWORDMAN_HEAD_MODEL_TYPE_END]{ L"HEAD_TEMP" };

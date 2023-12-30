@@ -9,11 +9,6 @@ CWeapon::CWeapon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wst
 
 }
 
-CWeapon::CWeapon(const CWeapon& rhs)
-	: CGameObject(rhs)
-{
-
-}
 
 
 HRESULT CWeapon::Set_Owner(CGameObject* pOwner)
@@ -26,11 +21,6 @@ HRESULT CWeapon::Set_Owner(CGameObject* pOwner)
 
 	Safe_AddRef(m_pOwner);
 
-	return S_OK;
-}
-
-HRESULT CWeapon::Initialize_Prototype()
-{
 	return S_OK;
 }
 
@@ -70,11 +60,24 @@ void CWeapon::LateTick(_float fTimeDelta)
 
 HRESULT CWeapon::Render()
 {
-	if (FAILED(__super::Render()))
+	if (FAILED(__super::Render() || nullptr == m_pModelCom))
 		return E_FAIL;
 
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
+
+
+	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+	_uint		iPassIndex = 0;
+
+	for (_uint i = 0; i < iNumMeshes; ++i)
+	{
+		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+			return E_FAIL;
+
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, iPassIndex)))
+			return E_FAIL;
+	}
 
 	return S_OK;
 }

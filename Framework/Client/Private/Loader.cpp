@@ -22,7 +22,7 @@
 #include "Effect_Manager.h"
 #include "Particle_Manager.h"
 
-
+#include "Weapon_Manager.h"
 #include "Character_Manager.h"
 #include "Game_Manager.h"
 
@@ -369,6 +369,9 @@ HRESULT CLoader::Loading_For_Level_Test()
 
 	if (false == g_bFirstLoading)
 	{
+		if (FAILED(CWeapon_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+			return E_FAIL;
+
 		if (FAILED(CCharacter_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
 			return E_FAIL;
 
