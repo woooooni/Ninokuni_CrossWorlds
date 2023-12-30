@@ -35,6 +35,9 @@ private:
 	HRESULT Ready_DebugDraw();
 	HRESULT Render_DebugDraw();
 
+	Vec3 EvaluateBezierSegment(const vector<Vec3>& controlPoints, float t);
+	Vec3 EvaluateBezier(const vector<Vec3>& controlPoints, float t);
+
 private:
 
 	/* Test */

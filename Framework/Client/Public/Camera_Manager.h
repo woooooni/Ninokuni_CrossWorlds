@@ -44,20 +44,22 @@ public:
 
 	/* ÄÆ½Å Ä«¸Þ¶ó */
 	HRESULT Start_Action_CutScene(const string& strCutSceneName);
-	
 
 private:
 	/* Defualt */
 
 
 	/* Cameras */
-
 	CCamera* m_pCurCamera = { nullptr };
 	CCamera* m_pNextCamera = { nullptr };
 	CCamera* m_Cameras[CAMERA_TYPE::CAMERA_TYPE_END];
 
+
+
 	/* Lerp */
 	LERP_TIME_DESC m_tLerpTime = {};
+
+
 
 private:
 	ID3D11Device* m_pDevice = nullptr;
