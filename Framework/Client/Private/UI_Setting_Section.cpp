@@ -45,21 +45,30 @@ HRESULT CUI_Setting_Section::Initialize(void* pArg)
 		_float2 vSize = _float2(30.f, 30.f);
 		_float fOffset = 55.f;
 
-		Make_Child(vDefaultPos.x, vDefaultPos.y, vSize.x, vSize.y, TEXT("Prototype_GameObject_UI_Icon_Setting_Slider_First"));
-		Make_Child(vDefaultPos.x, vDefaultPos.y + fOffset, vSize.x, vSize.y, TEXT("Prototype_GameObject_UI_Icon_Setting_Slider_Second"));
-		Make_Child(vDefaultPos.x, vDefaultPos.y + (fOffset * 1.8f), vSize.x, vSize.y, TEXT("Prototype_GameObject_UI_Icon_Setting_Slider_Third"));
+		Make_Child(vDefaultPos.x, vDefaultPos.y, vSize.x, vSize.y,
+			TEXT("Prototype_GameObject_UI_Icon_Setting_Slider_First"), TEXT("UI_Setting_Audio_FirstSlider"));
+		Make_Child(vDefaultPos.x, vDefaultPos.y + fOffset, vSize.x, vSize.y,
+			TEXT("Prototype_GameObject_UI_Icon_Setting_Slider_Second"), TEXT("UI_Setting_Audio_SecondSlider"));
+		Make_Child(vDefaultPos.x, vDefaultPos.y + (fOffset * 1.8f), vSize.x, vSize.y,
+			TEXT("Prototype_GameObject_UI_Icon_Setting_Slider_Third"), TEXT("UI_Setting_Audio_ThirdSlider"));
 
 		// Minus Btn
 		_float2 vMinusPos = _float2(-142.f, -3.f);
-		Make_Child(vMinusPos.x, vMinusPos.y, vSize.x, vSize.y, TEXT("Prototype_GameObject_UI_Setting_BtnVolume_Minus"));
+		Make_Child(vMinusPos.x, vMinusPos.y, vSize.x, vSize.y,
+			TEXT("Prototype_GameObject_UI_Setting_BtnVolume_Minus"), TEXT("UI_Setting_Audio_FirstMinusBtn"));
 		_float2 vPlusPos = _float2(72.f, -3.f);
-		Make_Child(vPlusPos.x, vPlusPos.y, vSize.x, vSize.y, TEXT("Prototype_GameObject_UI_Setting_BtnVolume_Plus"));
+		Make_Child(vPlusPos.x, vPlusPos.y, vSize.x, vSize.y,
+			TEXT("Prototype_GameObject_UI_Setting_BtnVolume_Plus"), TEXT("UI_Setting_Audio_FirstPlusBtn"));
 
-		Make_Child(vMinusPos.x, vMinusPos.y + fOffset, vSize.x, vSize.y, TEXT("Prototype_GameObject_UI_Setting_BtnVolume_Minus"));
-		Make_Child(vPlusPos.x, vPlusPos.y + fOffset, vSize.x, vSize.y, TEXT("Prototype_GameObject_UI_Setting_BtnVolume_Plus"));
+		Make_Child(vMinusPos.x, vMinusPos.y + fOffset, vSize.x, vSize.y,
+			TEXT("Prototype_GameObject_UI_Setting_BtnVolume_Minus"), TEXT("UI_Setting_Audio_SecondMinusBtn"));
+		Make_Child(vPlusPos.x, vPlusPos.y + fOffset, vSize.x, vSize.y,
+			TEXT("Prototype_GameObject_UI_Setting_BtnVolume_Plus"), TEXT("UI_Setting_Audio_SecondPlusBtn"));
 
-		Make_Child(vMinusPos.x, vMinusPos.y + (fOffset * 1.8f), vSize.x, vSize.y, TEXT("Prototype_GameObject_UI_Setting_BtnVolume_Minus"));
-		Make_Child(vPlusPos.x, vPlusPos.y + (fOffset * 1.8f), vSize.x, vSize.y, TEXT("Prototype_GameObject_UI_Setting_BtnVolume_Plus"));
+		Make_Child(vMinusPos.x, vMinusPos.y + (fOffset * 1.8f), vSize.x, vSize.y,
+			TEXT("Prototype_GameObject_UI_Setting_BtnVolume_Minus"), TEXT("UI_Setting_Audio_ThirdMinusBtn"));
+		Make_Child(vPlusPos.x, vPlusPos.y + (fOffset * 1.8f), vSize.x, vSize.y,
+			TEXT("Prototype_GameObject_UI_Setting_BtnVolume_Plus"), TEXT("UI_Setting_Audio_ThirdPlusBtn"));
 	}
 
 	return S_OK;
@@ -100,6 +109,18 @@ HRESULT CUI_Setting_Section::Render()
 	}
 
 	return S_OK;
+}
+
+void CUI_Setting_Section::On_MouseEnter(_float fTimeDelta)
+{
+}
+
+void CUI_Setting_Section::On_Mouse(_float fTimeDelta)
+{
+}
+
+void CUI_Setting_Section::On_MouseExit(_float fTimeDelta)
+{
 }
 
 HRESULT CUI_Setting_Section::Ready_Components()

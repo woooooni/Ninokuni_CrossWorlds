@@ -214,6 +214,10 @@ HRESULT CLoader::Loading_For_Level_Lobby()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Lobby/UI_Lobby_NickName_Frame.png")))))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(LEVEL_LOBBY, TEXT("Prototype_Component_Texture_Lobby_Announce"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Lobby/UI_Announce_CharacterSelect.png")))))
+		return E_FAIL;
+
 	if (FAILED(GI->Add_Prototype(LEVEL_LOBBY, TEXT("Prototype_Component_Texture_Lobby_Btn_GameStart"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Lobby/UI_Btn_HighGreen.png")))))
 		return E_FAIL;
@@ -241,6 +245,20 @@ HRESULT CLoader::Loading_For_Level_Lobby()
 	// 클릭 후 이미지(캐릭터 선택창)
 	if (FAILED(GI->Add_Prototype(LEVEL_LOBBY, TEXT("Prototype_Component_Texture_Lobby_Click_Texture"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Lobby/Icon_Portrait_Style02_%d.png"), 5))))
+		return E_FAIL;
+
+	// 닉네임 설정창
+	if (FAILED(GI->Add_Prototype(LEVEL_LOBBY, TEXT("Prototype_Component_Texture_Lobby_SetNickname_Dice"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Lobby/Set_Nickname/UI_Set_Nickname_DiceIcon.png")))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_LOBBY, TEXT("Prototype_Component_Texture_Lobby_SetNickname_Window"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Lobby/Set_Nickname/UI_Set_Nickname_Window.png")))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_LOBBY, TEXT("Prototype_Component_Texture_Lobby_SetNickname_Button"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Lobby/Set_Nickname/UI_Set_Nickname_Btn.png")))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_LOBBY, TEXT("Prototype_Component_Texture_Lobby_SetNickname_Textbox"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Lobby/Set_Nickname/UI_SetNickname_TextBox.png")))))
 		return E_FAIL;
 
 

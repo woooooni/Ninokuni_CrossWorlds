@@ -8,7 +8,7 @@ BEGIN(Client)
 class CUI_Basic final : public CUI
 {
 public:
-	enum UI_BASIC { UILOBBY_NICKFRAME, UILOBBY_TITLE, UILOBBY_BTNTEXT,
+	enum UI_BASIC { UILOBBY_NICKFRAME, UILOBBY_TITLE, UILOBBY_BTNTEXT, UILOBBY_ANNOUNCE, UILOBBY_DICE,
 		UIMAPNAME_EVERMORE, UIMAPNAME_KINGDOM, UIMAPNAME_ICELAND, UIMAPNAME_FOREST,
 		UIQUEST_ACCEPT, UIQUEST_FINISH,
 		TARGETARROW_LEFT, TARGETARROW_RIGHT,
@@ -38,6 +38,8 @@ private:
 
 	_float m_bFade = { false }; // Alpha값으로 FadeIn, Out을 하는 것들을 구분함.
 	_uint m_iPass = { 1 };
+
+	_float m_bAlpha = { false }; // Alpha값을 조정하면서 깜빡이는 UI들에게 사용함.
 
 private:
 	virtual HRESULT	Ready_Components() override;

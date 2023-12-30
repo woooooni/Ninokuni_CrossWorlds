@@ -14,6 +14,10 @@ protected:
 	virtual ~CUI_Setting_Slider() = default;
 
 public:
+	_int Get_Percent() { return m_iPercent; }
+	void Set_Percent(_int iPercent) { m_iPercent = iPercent; }
+
+public:
 	virtual HRESULT	Initialize_Prototype();
 	virtual HRESULT	Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta);
@@ -24,8 +28,19 @@ public:
 	virtual void On_MouseEnter(_float fTimeDelta) override;
 	virtual void On_Mouse(_float fTimeDelta) override;
 	virtual void On_MouseExit(_float fTimeDelta) override;
+	virtual void On_MouseDragEnter(_float fTimeDelta) override;
+	virtual void On_MouseDrag(_float fTimeDelta) override;
+	virtual void On_MouseDragExit(_float fTimeDelta) override;
 
 private:
+	_float m_fMinX = { 0.f };
+	_float m_fMaxX = { 0.f };
+
+	_float m_fLength = { 0.f };
+	_int m_iPercent = { 0 };
+
+	_float2 m_vTextPos = _float2(0.f, 0.f);
+
 	UI_SETTING_SLIDERTYPE m_eType = { SLIDERTYPE_END };
 
 private:
@@ -36,6 +51,7 @@ private:
 	HRESULT	Bind_ShaderResources();
 
 private:
+	void Set_SliderRange();
 	void Key_Input(_float fTimeDelta);
 
 public:

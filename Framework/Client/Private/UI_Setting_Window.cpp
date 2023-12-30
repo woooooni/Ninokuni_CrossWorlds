@@ -60,26 +60,6 @@ HRESULT CUI_Setting_Window::Initialize(void* pArg)
 	m_bActive = false;
 	m_fAlpha = 1.f;
 
-	// Min, Origin, Max Size를 설정한다.
-//	m_vMinSize.x = m_tInfo.fCX;
-//	m_vMinSize.y = m_tInfo.fCY;
-//
-//	m_vOriginSIze.x = 2000.f;
-//	m_vOriginSIze.y = 1300.f; /// 원래 이미지의 size
-//
-//	m_vMaxSize.x = m_vOriginSIze.x * 1.1f;
-//	m_vMaxSize.y = m_vOriginSIze.y * 1.1f; /// 최대로 커질 Size(효과를 위한 것)
-//
-//	// 최초 사이즈를 MinSize로 Setting한다.
-//	m_tInfo.fCX = m_vMinSize.x;
-//	m_tInfo.fCY = m_vMinSize.y; // 켜졌을때 가장 작은 size
-//	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
-//
-//	m_bApproach.resize(2);
-//	m_bApproach[0] = false;
-//	m_bApproach[1] = false;
-
-
 	// 닫기 버튼
 	_float fSize = 64.f * 0.5f;
 	Make_Child(425.f, -245.f, fSize, fSize, TEXT("Prototype_GameObject_UI_Common_Btn_Close"));
@@ -99,18 +79,6 @@ void CUI_Setting_Window::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-//		if (m_bResize) // 사이즈 변형이 완료되었으면 자식을 Update한다.
-//		{
-//			__super::Tick(fTimeDelta);
-//		}
-//		else // 사이즈 변형이 완료되지 않았으면 사이즈를 키운다.
-//		{
-//			m_tInfo.fCX += fTimeDelta * 1000.f;
-//			m_tInfo.fCY += fTimeDelta * 1000.f; // MinSize인 상태
-//
-//			m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
-//		}
-
 		__super::Tick(fTimeDelta);
 	}
 }
@@ -119,27 +87,6 @@ void CUI_Setting_Window::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-//		if (!m_bResize) // 변형이 완료되지 않은 상태라면
-//		{
-//			if (m_tInfo.fCX > m_vMaxSize.x)
-//				m_bApproach[0] = true; //MaxSize보다 커진다면 true
-//
-//			if (m_tInfo.fCY > m_vMaxSize.y)
-//				m_bApproach[1] = true; // MaxSize보다 커진다면 true
-//
-//
-//			if (m_bApproach[0] && m_bApproach[1]) // 두개 다 원하는 사이즈까지 도달했다면
-//			{
-//				m_bResize = true; // Resize가 완료되었다.
-//
-//				m_tInfo.fCX = m_vOriginSIze.x; // 사용할 Window 사이즈로 만든다
-//				m_tInfo.fCY = m_vOriginSIze.y;
-//				m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
-//
-//				// 자식들을 활성화시킨다.
-//				__super::Set_ChildActive(true);
-//			}
-//		}
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 
@@ -181,7 +128,7 @@ HRESULT CUI_Setting_Window::Ready_State()
 {
 	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
+		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
 
 	return S_OK;
 }

@@ -18,24 +18,24 @@ private:
 	
 public: // Get/Set
 	class CUI_Fade* Get_Fade();
-	_bool Get_MainMenuActive();
+	_bool			Get_MainMenuActive();
 
 public:
 	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	void	Tick(_float fTimeDelta);
 	void	LateTick(_float fTImeDelta);
 
-public: // For Prototypes
+public: // For Ready Prototypes
 	HRESULT Ready_UIPrototypes(LEVELID eID);
 
-public: // For Clone Objects
+public: // For Clone
 	HRESULT Ready_Cursor();
 	HRESULT Ready_Veils();
 	HRESULT Ready_Loadings();
 	HRESULT Ready_LobbyUIs();
-	HRESULT Ready_CommonUIs(LEVELID eID); // 항상 쓰이는 UI들 (Cursor랑 Veil 옮길것)]
+	HRESULT Ready_CommonUIs(LEVELID eID); // + Ready_Cursor, Ready_Veil 정리 필요함.
 	
-public: // UI들이 Player, 무기 속성을 알기 위한 함수
+public:
 	void Ready_CharacterTypeForUI(CHARACTER_TYPE eType) {
 		m_eCurPlayer = eType;
 		Set_CharacterType();
@@ -45,44 +45,46 @@ public: // UI들이 Player, 무기 속성을 알기 위한 함수
 		Set_ElementalType();
 	}
 
-public:
+public: // Todo Wonhye : 테스트 끝나면 지울것
 	HRESULT Tick_UIs(LEVELID eID, _float fTimeDelta);
-
 	HRESULT Tick_LobbyLevel(_float fTimeDelta);
 	HRESULT Tick_EvermoreLevel(_float fTimeDelta);
 
 public:
-	void Tick_Fade(_float fTimeDelta);
-	void LateTick_Fade(_float fTimeDelta);
-	void Render_Fade();
-	_bool Is_FadeFinished();
+	void	Tick_Fade(_float fTimeDelta);
+	void	LateTick_Fade(_float fTimeDelta);
+	void	Render_Fade();
+	_bool	Is_FadeFinished();
 
 public:
-	void Update_LobbyBtnState(_uint iIndex);
-	void Update_CostumeBtnState(_uint iIndex);
-	void Update_InvenBtnState(_uint iIndex);
-	void Update_SkillBtnState(class CTransform* pTransform, _uint iIndex);
-	void Update_SkillSlotState(_uint iSectionType, _uint iSlotIndex);
-	void Update_ClothSlotState(_uint iSectionType, _uint iSlotIndex);
+	void	Update_LobbyBtnState(_uint iIndex);
+	void	Update_CostumeBtnState(_uint iIndex);
+	void	Update_InvenBtnState(_uint iIndex);
+	void	Update_SkillBtnState(class CTransform* pTransform, _uint iIndex);
+	void	Update_SkillSlotState(_uint iSectionType, _uint iSlotIndex);
+	void	Update_ClothSlotState(_uint iSectionType, _uint iSlotIndex);
 
 public:
-	HRESULT Using_CloseButton();
-	HRESULT Using_BackButton();
+	HRESULT		Using_CloseButton();
+	HRESULT		Using_BackButton();
 
+public:
 	HRESULT OnOff_Veil(_bool bOnOff);
+	
+public: // Lobby
 	HRESULT OnOff_SettingWindow(_bool bOnOff);
+	HRESULT OnOff_NickNameWindow(_bool bOnOff);
 
-	HRESULT OnOff_GamePlaySetting(_bool bOnOff); // 기본적으로 세팅되어있는 게임화면 UI들
+	HRESULT OnOff_GamePlaySetting(_bool bOnOff);
 	HRESULT OnOff_MainMenu(_bool bOnOff);
-	HRESULT OnOff_QuestWindow(_bool bOnOff);
-	HRESULT OnOff_QuestPopup(_bool bOnOff);
-
-	HRESULT OnOff_MonsterHP(_bool bOnOff, ELEMENTAL_TYPE eType = ELEMENTAL_TYPE::ELEMENTAL_END);
-
-	HRESULT OnOff_CloseButton(_bool bOnOff);
-
 	HRESULT OnOff_SubMenu(_bool bOnOff, _uint iMagicNum);
 	HRESULT Off_OtherSubBtn(_uint iMagicNum);
+	HRESULT OnOff_QuestWindow(_bool bOnOff);
+	HRESULT OnOff_CloseButton(_bool bOnOff);
+
+	HRESULT OnOff_QuestPopup(_bool bOnOff);
+	HRESULT OnOff_MonsterHP(_bool bOnOff, ELEMENTAL_TYPE eType = ELEMENTAL_TYPE::ELEMENTAL_END);
+
 	HRESULT OnOff_DialogWindow(_bool bOnOff, _uint iMagicNum);
 
 	HRESULT OnOff_WorldMap(_bool bOnOff);
@@ -111,10 +113,14 @@ private:
 
 	// For Setting Window
 	class CUI_Setting_Window* m_pSettingBG = { nullptr };
+	// For Set Nickname
+	class CUI_SetNickname_Window* m_pSetNickBG = { nullptr };
+	class CUI_SetNickname_Textbox* m_pNicknamebox = { nullptr };
 
 	class CUI_PlayerInfo* m_pPlayerStatus = { nullptr };
 
 	class CUI_BtnShowMenu* m_pBtnShowMenu = { nullptr };
+	class CUI_Btn_Minimap* m_pBtnShowMinimap = { nullptr };
 	class CUI_BtnChangeCamera* m_pBtnCamera = { nullptr };
 	class CUI_BtnInventory* m_pBtnInven = { nullptr };
 	class CUI_BtnQuickQuest* m_pBtnQuest = { nullptr };
@@ -194,14 +200,14 @@ private:
 	class CUI_SkillWindow_LineBox* m_pSkillDesc = { nullptr };
 
 private:
-	ID3D11Device* m_pDevice = { nullptr };
-	ID3D11DeviceContext* m_pContext = { nullptr };
+	ID3D11Device*			m_pDevice = { nullptr };
+	ID3D11DeviceContext*	m_pContext = { nullptr };
 
 private:
-	HRESULT Ready_UIStaticPrototypes();
-	HRESULT Ready_UILobbyPrototypes();
-	void Set_CharacterType();
-	void Set_ElementalType();
+	HRESULT		Ready_UIStaticPrototypes();
+	HRESULT		Ready_UILobbyPrototypes();
+	void		Set_CharacterType();
+	void		Set_ElementalType();
 
 public:
 	virtual void Free() override;

@@ -34,6 +34,8 @@ HRESULT CUI_Setting_Slider::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
+	Set_SliderRange();
+
 	m_bActive = true;
 	
 	return S_OK;
@@ -46,6 +48,12 @@ void CUI_Setting_Slider::Tick(_float fTimeDelta)
 		// 타입별로 Slider BG의 총Width를 1로두고,
 		// 슬라이더 커서의 현재 위치의 값을 SoundManager의 변수에 보내준다.
 
+		// 슬라이더 ratio로 percent를 계산한다
+		m_fLength = fabs(m_fMaxX - m_fMinX);
+
+		_float fCurPosX = m_fLength - fabs(m_fMaxX - m_tInfo.fX); // 슬라이더 시작 기준 현재 내가 있는 상대적 위치
+		m_iPercent = _int((fCurPosX / m_fLength) * 100.f);
+
 		__super::Tick(fTimeDelta);
 	}
 }
@@ -54,6 +62,26 @@ void CUI_Setting_Slider::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (0 > m_iPercent || 100 < m_iPercent)
+			return;
+
+		if (SLIDERTYPE_END == m_eType)
+			return;
+
+		CRenderer::TEXT_DESC PercentDesc = {};
+		
+		PercentDesc.strText = to_wstring(m_iPercent);
+		PercentDesc.strFontTag = L"Default_Bold";
+		PercentDesc.vScale = { 0.5f, 0.5f };
+
+		_int iNumstr = PercentDesc.strText.size();
+		_float fOffsetX = (3 - iNumstr) * 10.f;
+		PercentDesc.vPosition = _float2(m_vTextPos.x + fOffsetX, m_vTextPos.y);
+
+		PercentDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+
+		m_pRendererCom->Add_Text(PercentDesc);
+
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
 }
@@ -81,12 +109,42 @@ void CUI_Setting_Slider::On_Mouse(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		__super::On_Mouse(fTimeDelta);
+
 		// Type에 따라서 증감되는 것이 다르다.
 		Key_Input(fTimeDelta);
 	}
 }
 
 void CUI_Setting_Slider::On_MouseExit(_float fTimeDelta)
+{
+}
+
+void CUI_Setting_Slider::On_MouseDragEnter(_float fTimeDelta)
+{
+}
+
+void CUI_Setting_Slider::On_MouseDrag(_float fTimeDelta)
+{
+	if (m_bActive)
+	{
+		if (KEY_HOLD(KEY::LBTN))
+		{
+			m_tInfo.fX += GI->Get_DIMMoveState(DIMM::DIMM_X);
+
+			if (m_tInfo.fX >= m_fMaxX)
+				m_tInfo.fX = m_fMaxX;
+
+			if (m_tInfo.fX <= m_fMinX)
+				m_tInfo.fX = m_fMinX;
+
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+		}
+	}
+}
+
+void CUI_Setting_Slider::On_MouseDragExit(_float fTimeDelta)
 {
 }
 
@@ -130,6 +188,24 @@ HRESULT CUI_Setting_Slider::Bind_ShaderResources()
 		return E_FAIL;
 
 	return S_OK;
+}
+
+void CUI_Setting_Slider::Set_SliderRange()
+{
+	// 슬라이더가 만들어질때 Range를 설정한다.
+
+	// Setting창에서의 설정 -> 필요시 switch문 추가
+	m_fMinX = m_tInfo.fX;
+	m_fMaxX = m_tInfo.fX + 150.f;
+
+	_float fOffset = 56.f;
+
+	if (FIRST_SLIDER == m_eType)
+		m_vTextPos = _float2(880.f, 385.f);
+	else if (SECOND_SLIDER == m_eType)
+		m_vTextPos = _float2(880.f, 385.f + fOffset);
+	else
+		m_vTextPos = _float2(880.f, 385.f + (fOffset * 2.f - 12.f));
 }
 
 void CUI_Setting_Slider::Key_Input(_float fTimeDelta)

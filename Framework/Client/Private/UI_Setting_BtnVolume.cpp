@@ -2,6 +2,7 @@
 #include "UI_Setting_BtnVolume.h"
 #include "GameInstance.h"
 #include "UI_Manager.h"
+#include "UI_Setting_Slider.h"
 
 CUI_Setting_BtnVolume::CUI_Setting_BtnVolume(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_SETTING_BTNTYPE eType)
 	: CUI(pDevice, pContext, L"UI_Setting_Button")
@@ -41,6 +42,9 @@ HRESULT CUI_Setting_BtnVolume::Initialize(void* pArg)
 
 	m_vMinSize.x = m_vOriginSize.x * 0.8f;
 	m_vMinSize.y = m_vOriginSize.y * 0.8f;
+
+	if (BTNTYPE_END == m_eType)
+		return E_FAIL;
 	
 	return S_OK;
 }
@@ -161,6 +165,9 @@ HRESULT CUI_Setting_BtnVolume::Bind_ShaderResources()
 
 void CUI_Setting_BtnVolume::Key_Input(_float fTimeDelta)
 {
+	if (BTNTYPE_END == m_eType)
+		return;
+
 	if (KEY_TAP(KEY::LBTN))
 	{
 		if (!m_bResize)
@@ -171,6 +178,15 @@ void CUI_Setting_BtnVolume::Key_Input(_float fTimeDelta)
 			m_tInfo.fCY = m_vMinSize.y;
 
 			m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+		}
+
+		if (SETBTN_PLUS == m_eType)
+		{
+			// Plus버튼을 눌렀을 때
+		}
+		else
+		{
+			// Minus버튼을 눌렀을 때
 		}
 	}
 }

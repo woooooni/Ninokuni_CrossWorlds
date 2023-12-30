@@ -57,6 +57,11 @@ void CUI_Setting_Icon::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (m_bClicked)
+			m_iPass = 7; // 선택이 되었으면 FXTexture를 같이 던진다.
+		else
+			m_iPass = 1;
+
 		__super::Tick(fTimeDelta);
 	}
 }
@@ -79,7 +84,7 @@ HRESULT CUI_Setting_Icon::Render()
 		if (FAILED(Bind_ShaderResources()))
 			return E_FAIL;
 
-		m_pShaderCom->Begin(1);
+		m_pShaderCom->Begin(m_iPass);
 
 		m_pVIBufferCom->Render();
 
@@ -115,6 +120,10 @@ HRESULT CUI_Setting_Icon::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Setting_Button"),
 		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 		return E_FAIL;
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Setting_Selected"),
+		TEXT("Com_FXTexture"), (CComponent**)&m_pFXTextureCom)))
+		return E_FAIL;
 	
 	return S_OK;
 }
@@ -144,6 +153,12 @@ HRESULT CUI_Setting_Icon::Bind_ShaderResources()
 
 	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", _uint(m_eIconType))))
 		return E_FAIL;
+
+	if (m_bClicked && m_iPass == 7)
+	{
+		if (FAILED(m_pFXTextureCom->Bind_ShaderResource(m_pShaderCom, "g_FXTexture")))
+			return E_FAIL;
+	}
 
 	return S_OK;
 }
@@ -197,5 +212,6 @@ void CUI_Setting_Icon::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pFXTextureCom);
 	Safe_Release(m_pTextureCom);
 }

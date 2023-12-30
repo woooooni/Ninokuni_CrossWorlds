@@ -26,6 +26,7 @@
 #include "UI_Dialog_Flip.h"
 #include "UI_BtnShowMenu.h"
 #include "UI_Costume_Btn.h"
+#include "UI_Btn_Minimap.h"
 #include "UI_Setting_Icon.h"
 #include "UI_SubMenu_Shop.h"
 #include "UI_Text_TabMenu.h"
@@ -67,8 +68,10 @@
 #include "UI_SkillSection_Frame.h"
 #include "UI_Default_Background.h"
 #include "UI_BtnCharacterSelect.h"
+#include "UI_SetNickname_Window.h"
 #include "UI_Loading_Background.h"
 #include "UI_WeaponSection_Slot.h"
+#include "UI_SetNickname_Textbox.h"
 #include "UI_SkillWindow_LineBox.h"
 #include "UI_Loading_ProgressBar.h"
 #include "UI_Loading_Information.h"
@@ -203,9 +206,6 @@ HRESULT CUI_Manager::Ready_Veils()
 	UIDesc.fCY = g_iWinSizeY;
 	UIDesc.fX = g_iWinSizeX * 0.5f;
 	UIDesc.fY = g_iWinSizeY * 0.5f;
-	
-	//	Add_GameObject(_uint iLevelIndex, const _uint iLayerType, const wstring & strPrototypeTag,
-	//					void* pArg = nullptr, __out class CGameObject** ppOut = nullptr);
 
 	if(FAILED(GI->Add_GameObject(LEVELID::LEVEL_STATIC, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Fade_Black"), &UIDesc, &pVeil)))
 		return E_FAIL;
@@ -363,7 +363,7 @@ HRESULT CUI_Manager::Ready_LobbyUIs()
 	pDeco = nullptr; // 3
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 	// 상단 메뉴 Title
-	_float2 vOffset = _float2(90.f, 10.f);
+	_float2 vOffset = _float2(90.f, 3.f);
 
 	UIDesc.fCX = 277.f * 0.7f;
 	UIDesc.fCY = 93.f * 0.7f;
@@ -424,6 +424,19 @@ HRESULT CUI_Manager::Ready_LobbyUIs()
 
 
 	// Buttons
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 128.f * 0.6f;
+	UIDesc.fCY = 128.f * 0.55f;
+	UIDesc.fX = UIDesc.fCX * 0.5f + 3.f;
+	UIDesc.fY = UIDesc.fCY * 0.5f;
+
+	CGameObject* pBack = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVELID::LEVEL_LOBBY, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Btn_Back"), &UIDesc, &pBack)))
+		return E_FAIL;
+	if (nullptr == pBack)
+		return E_FAIL;
+
 	m_ClickedPlayer.reserve(5);
 	m_UnclickedPlayer.reserve(5);
 	vOffset = _float2(50.f, 90.f);
@@ -585,19 +598,38 @@ HRESULT CUI_Manager::Ready_LobbyUIs()
 		return E_FAIL;
 	Safe_AddRef(m_pSettingBG);
 
-
+	// For SetNickname Window
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
-	UIDesc.fCX = 128.f * 0.6f;
-	UIDesc.fCY = 128.f * 0.55f;
-	UIDesc.fX = UIDesc.fCX * 0.5f + 3.f;
-	UIDesc.fY = UIDesc.fCY * 0.5f;
+
+	UIDesc.fCX = g_iWinSizeX;
+	UIDesc.fCY = g_iWinSizeY;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY * 0.5f;
 
 	pBG = nullptr;
 	if (FAILED(GI->Add_GameObject(LEVELID::LEVEL_LOBBY, LAYER_TYPE::LAYER_UI,
-		TEXT("Prototype_GameObject_UI_Btn_Back"), &UIDesc, &pBG)))
+		TEXT("Prototype_GameObject_UI_SetNickname_Window"), &UIDesc, &pBG)))
 		return E_FAIL;
-	if (nullptr == pBG)
+	m_pSetNickBG = dynamic_cast<CUI_SetNickname_Window*>(pBG);
+	if (nullptr == m_pSetNickBG)
 		return E_FAIL;
+	Safe_AddRef(m_pSetNickBG);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 420.f;
+	UIDesc.fCY = 52.f;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY * 0.5f;
+
+	pBG = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVELID::LEVEL_LOBBY, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_SetNickname_Textbox"), &UIDesc, &pBG)))
+		return E_FAIL;
+	m_pNicknamebox = dynamic_cast<CUI_SetNickname_Textbox*>(pBG);
+	if (nullptr == m_pNicknamebox)
+		return E_FAIL;
+	Safe_AddRef(m_pNicknamebox);
 
 	// Veil
 //	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
@@ -731,7 +763,25 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	Safe_AddRef(m_pBtnCamera);
 
 
-	// InventoryBtn 생성
+	// Minimap 활성화 버튼 생성
+	pButton = nullptr;
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 64.f * 0.8f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = g_iWinSizeX - (UIDesc.fCX * 0.5f) - fOffset - 5.f;
+	UIDesc.fY = (UIDesc.fCY * 1.5f) + fOffset;
+
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Common_Btn_ShowMinimap"), &UIDesc, &pButton)))
+		return E_FAIL;
+
+	m_pBtnShowMinimap = dynamic_cast<CUI_Btn_Minimap*>(pButton);
+	if (nullptr == m_pBtnShowMinimap)
+		return E_FAIL;
+
+	Safe_AddRef(m_pBtnShowMinimap);
+
+	// MinimapBtn 생성
 	pButton = nullptr;
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
@@ -2623,23 +2673,6 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 		}
 	}
 
-	// MainGame Btn과 BG가 활성화가 되면, 기본 세팅 UI들은 비활성화 되어야한다.
-//	if (m_pMainBG->Get_Active())
-//	{
-//		OnOff_GamePlaySetting(false);
-//	}
-	// else로 조건을 주지 않는다. -> 꼬일 확률 높음
-	// X버튼을 통해서 true로 전환하도록 한다.
-
-	// TestCiode
-	if (KEY_TAP(KEY::Q))
-	{
-		if (m_pWindowQuest->Get_Active())
-			m_pWindowQuest->Set_Active(false);
-		else
-			m_pWindowQuest->Set_Active(true);
-	}
-
 	if (KEY_TAP(KEY::W))
 	{
 		if (m_pWorldMapBG->Get_Active()) // 켜져있다면
@@ -2647,38 +2680,6 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 		else // 꺼져있다면
 			OnOff_WorldMap(true); // 켠다
 	}
-
-	if (KEY_TAP(KEY::P))
-	{
-		if (m_pMonsterHPBack->Get_Active()) // 켜져있다면
-			OnOff_MonsterHP(false); // 끈다
-		else // 꺼져있다면
-			OnOff_MonsterHP(true, ELEMENTAL_TYPE::DARK); // 임시
-	}
-
-//	if (KEY_TAP(KEY::F8))
-//	{
-//		// DIalogBox Test
-//		if (nullptr == m_pDialogWindow)
-//			return E_FAIL;
-//
-//		if (m_pDialogWindow->Get_Active())
-//			OnOff_DialogWindow(false, 0);
-//		else
-//			OnOff_DialogWindow(true, 0);
-//	}
-//
-//	if (KEY_TAP(KEY::F7))
-//	{
-//		// DialogBox(Mini) Test
-//		if (nullptr == m_pDialogMini)
-//			return E_FAIL;
-//
-//		if (m_pDialogMini->Get_Active())
-//			OnOff_DialogWindow(false, 1);
-//		else
-//			OnOff_DialogWindow(true, 1);
-//	}
 
 	return S_OK;
 }
@@ -2967,14 +2968,11 @@ HRESULT CUI_Manager::Using_BackButton()
 			}
 		}
 
-		if (!m_SkillWindow.size())
+		if (nullptr != m_SkillWindow[CUI_SkillWindow_LineBox::UI_SKILLWINDOW::SKWINDOW_SUBMENU])
 		{
-			if (nullptr != m_SkillWindow[CUI_SkillWindow_LineBox::UI_SKILLWINDOW::SKWINDOW_SUBMENU])
+			if (m_SkillWindow[CUI_SkillWindow_LineBox::UI_SKILLWINDOW::SKWINDOW_SUBMENU]->Get_Active())
 			{
-				if (m_SkillWindow[CUI_SkillWindow_LineBox::UI_SKILLWINDOW::SKWINDOW_SUBMENU]->Get_Active())
-				{
-					OnOff_SkillWindow(false);
-				}
+				OnOff_SkillWindow(false);
 			}
 		}
 	}
@@ -3032,6 +3030,25 @@ HRESULT CUI_Manager::OnOff_SettingWindow(_bool bOnOff)
 	return S_OK;
 }
 
+HRESULT CUI_Manager::OnOff_NickNameWindow(_bool bOnOff)
+{
+	if (nullptr == m_pSetNickBG)
+		return E_FAIL;
+
+	if (bOnOff)
+	{
+		m_pSetNickBG->Set_Active(true);
+		m_pNicknamebox->Set_Active(true);
+	}
+	else
+	{
+		m_pSetNickBG->Set_Active(false);
+		m_pNicknamebox->Set_Active(false);
+	}
+
+	return S_OK;
+}
+
 HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 {
 	if (bOnOff) // On
@@ -3046,6 +3063,7 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 		m_pBtnCamera->Set_Active(true);
 		m_pBtnInven->Set_Active(true);
 		m_pBtnQuest->Set_Active(true);
+		m_pBtnShowMinimap->Set_Active(true);
 
 		m_pSkillBG->Set_Active(true);
 		for (auto& iter : m_ClassicSkill)
@@ -3093,6 +3111,7 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 		m_pBtnCamera->Set_Active(false);
 		m_pBtnInven->Set_Active(false);
 		m_pBtnQuest->Set_Active(false);
+		m_pBtnShowMinimap->Set_Active(false);
 
 		m_pSkillBG->Set_Active(false);
 		for (auto& iter : m_ClassicSkill)
@@ -4652,17 +4671,16 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		CUI_SkillWindow_LineBox::Create(m_pDevice, m_pContext, CUI_SkillWindow_LineBox::UI_SKILLWINDOW::SKWINDOW_DESC), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Common_Btn_ShowMinimap"),
+		CUI_Btn_Minimap::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
 
 	return S_OK;
 }
 
 HRESULT CUI_Manager::Ready_UILobbyPrototypes()
 {
-	//////////////
-	// Textures //
-	//////////////
-
-	
 	/////////////////
 	// GameObjects //
 	/////////////////
@@ -4670,6 +4688,11 @@ HRESULT CUI_Manager::Ready_UILobbyPrototypes()
 	// Character NickName Frame
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Lobby_NicknameFrame"),
 		CUI_Basic::Create(m_pDevice, m_pContext, L"UI_Lobby_NicknameFrame", CUI_Basic::UI_BASIC::UILOBBY_NICKFRAME), LAYER_UI)))
+		return E_FAIL;
+
+	// PopUp
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Lobby_Announce"),
+		CUI_Basic::Create(m_pDevice, m_pContext, L"UI_Lobby_NicknameFrame", CUI_Basic::UI_BASIC::UILOBBY_ANNOUNCE), LAYER_UI)))
 		return E_FAIL;
 
 	// GameStart Button
@@ -4756,6 +4779,10 @@ HRESULT CUI_Manager::Ready_UILobbyPrototypes()
 			CUI_BtnCharacterSelect::UI_SELECTBTN_CHARACTER::BTN_SWORDMAN), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Btn_Back"),
+		CUI_BtnBack::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
 	// SettingWindow
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Setting_Background"),
 		CUI_Setting_Window::Create(m_pDevice, m_pContext), LAYER_UI)))
@@ -4793,13 +4820,32 @@ HRESULT CUI_Manager::Ready_UILobbyPrototypes()
 		CUI_Setting_BtnVolume::Create(m_pDevice, m_pContext, CUI_Setting_BtnVolume::UI_SETTING_BTNTYPE::SETBTN_PLUS), LAYER_UI)))
 		return E_FAIL;
 
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Btn_Back"),
-		CUI_BtnBack::Create(m_pDevice, m_pContext), LAYER_UI)))
-		return E_FAIL;
+
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_DefaultBackground_Cloud"),
 		CUI_Default_BackCloud::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
+
+
+
+	// Set Nickname Window
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SetNickname_Window"),
+		CUI_SetNickname_Window::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Btn_SetNickname"),
+		CUI_BasicButton::Create(m_pDevice, m_pContext, L"UI_Btn_Basic_SetNickname", CUI_BasicButton::UIBUTTON_TYPE::BUTTON_SETNICKNAME), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SetNickname_Textbox"),
+		CUI_SetNickname_Textbox::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SetNickname_Dice"),
+		CUI_Basic::Create(m_pDevice, m_pContext, L"UI_Btn_Basic_SetNickname_Dice", CUI_Basic::UI_BASIC::UILOBBY_DICE), LAYER_UI)))
+		return E_FAIL;
+
+
 
 	return S_OK;
 }
@@ -4904,6 +4950,10 @@ void CUI_Manager::Free()
 
 	Safe_Release(m_pInvenBox);
 	Safe_Release(m_pSkillDesc);
+
+	Safe_Release(m_pSetNickBG);
+	Safe_Release(m_pNicknamebox);
+	Safe_Release(m_pBtnShowMinimap);
 
 	for (auto& pBasic : m_Basic)
 		Safe_Release(pBasic);

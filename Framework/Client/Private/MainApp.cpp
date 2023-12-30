@@ -1075,6 +1075,10 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Tab/Tab_Costume/UI_Coustume_Slot_Glow.png")))))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Common_Btn_Show_Minimap"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Default/Common/Btn_Map_%d.png"), 2))))
+		return E_FAIL;
+
 
 	return S_OK;
 }

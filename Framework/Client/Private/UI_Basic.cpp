@@ -102,6 +102,33 @@ void CUI_Basic::Tick(_float fTimeDelta)
 			//}
 		}
 
+		if (m_eType == UILOBBY_ANNOUNCE)
+		{
+			if (!m_bAlpha)
+			{
+				if (m_fAlpha <= 0.7f)
+				{
+					m_fAlpha -= fTimeDelta * 0.5f;
+
+					if (m_fAlpha <= 0.f)
+					{
+						m_bAlpha = true;
+						m_fAlpha = 0.f;
+					}
+				}
+			}
+			else
+			{
+				m_fAlpha += fTimeDelta * 0.5f;
+
+				if (m_fAlpha >= 0.7f)
+				{
+					m_bAlpha = false;
+					m_fAlpha = 0.7f;
+				}
+			}
+		}
+
 		__super::Tick(fTimeDelta);
 	}
 }
@@ -181,6 +208,21 @@ HRESULT CUI_Basic::Ready_Components()
 			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 			return E_FAIL;
 		m_fAlpha = 0.9f;
+		break;
+
+	case UILOBBY_ANNOUNCE:
+		if (FAILED(__super::Add_Component(LEVEL_LOBBY, TEXT("Prototype_Component_Texture_Lobby_Announce"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		m_fAlpha = 0.7f;
+		m_bAlpha = false;
+		break;
+
+	case UILOBBY_DICE:
+		if (FAILED(__super::Add_Component(LEVEL_LOBBY, TEXT("Prototype_Component_Texture_Lobby_SetNickname_Dice"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		m_fAlpha = 1.f;
 		break;
 
 	case UIMAPNAME_EVERMORE:
