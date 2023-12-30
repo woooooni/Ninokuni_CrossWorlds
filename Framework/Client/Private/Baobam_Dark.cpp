@@ -34,6 +34,8 @@ HRESULT CBaobam_Dark::Initialize(void* pArg)
 	if (FAILED(Ready_States()))
 		return E_FAIL;
 
+	m_pModelCom->Set_Animation(0);
+
 	return S_OK;
 }
 

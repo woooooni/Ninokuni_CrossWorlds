@@ -31,8 +31,12 @@ HRESULT CShadow_Thief::Initialize(void* pArg)
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
-
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, *(_vector*)pArg);
+	
+	if (nullptr != pArg)
+	{
+		m_vOriginPos = *(_vector*)pArg;
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, *(_vector*)pArg);
+	}
 	// m_pTransformCom->Set_State(CTransform::STATE_POSITION, { 10.f, 0.f, 10.f, 1.f });
 
 	if (FAILED(__super::Ready_RoamingPoint()))

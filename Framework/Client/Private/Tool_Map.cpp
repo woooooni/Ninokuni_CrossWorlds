@@ -79,7 +79,8 @@ void CTool_Map::AddMapObject(LEVELID iLevelID, LAYER_TYPE iLayerType)
 		if (Pair.first.find(strLevelFirst.c_str()) != std::wstring::npos 
 			|| Pair.first.find(TEXT("Common_")) != std::wstring::npos
 			|| Pair.first.find(TEXT("Animal_")) != std::wstring::npos
-			|| Pair.first.find(TEXT("Water")) != std::wstring::npos)
+			|| Pair.first.find(TEXT("Water")) != std::wstring::npos
+			|| Pair.first.find(TEXT("Sky")) != std::wstring::npos)
 		{
 			if (ImGui::Selectable(CUtils::ToString(Pair.first).c_str()))
 			{
@@ -173,6 +174,17 @@ void CTool_Map::AddMapMonster(LEVELID iLevelID, LAYER_TYPE iLayerType)
 
 void CTool_Map::AddMapNPC(LEVELID iLevelID, LAYER_TYPE iLayerType)
 {
+	const map<const std::wstring, CGameObject*>& vecPrototypeList = GI->Find_Prototype_GameObjects(iLayerType);
+
+	for (auto& Pair : vecPrototypeList)
+	{
+		if (ImGui::Selectable(CUtils::ToString(Pair.first).c_str()))
+		{
+			if (true == m_bAddNPC)
+				GI->Add_GameObject(iLevelID, iLayerType, Pair.first);
+		}
+
+	}
 }
 
 void CTool_Map::BatchNPC(LEVELID iLevelID, LAYER_TYPE iLayerType)
@@ -293,7 +305,7 @@ void CTool_Map::Picking()
 
 					if (true == m_bPlantMode)
 					{
-						if (CPicking_Manager::GetInstance()->Is_TestPicking(pTransform, pMesh, &vPosition))
+						if (CPicking_Manager::GetInstance()->Is_Picking(pTransform, pMesh, false, &vPosition))
 						{
 							CGameObject* pPlant = GI->Clone_GameObject(m_pSelectObj->Get_PrototypeTag(), LAYER_TYPE::LAYER_GRASS);
 
@@ -306,7 +318,7 @@ void CTool_Map::Picking()
 					}
 					else
 					{
-						if (CPicking_Manager::GetInstance()->Is_TestPicking(pTransform, pMesh, &vPosition))
+						if (CPicking_Manager::GetInstance()->Is_Picking(pTransform, pMesh, false, &vPosition))
 						{
 							CTransform* pTargetTransform = m_pSelectObj->Get_Component<CTransform>(L"Com_Transform");
 							pTargetTransform->Set_State(CTransform::STATE::STATE_POSITION, ::XMLoadFloat4(&vPosition));
@@ -357,6 +369,11 @@ void CTool_Map::MapObjectSpace()
 			{
 				ChangeState();
 				m_iControlState = 5;
+			} ImGui::SameLine();
+			if (ImGui::RadioButton("SkyBox", (6 == m_iControlState)))
+			{
+				ChangeState();
+				m_iControlState = 6;
 			}
 
 			ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.f), u8"오브젝트");
@@ -427,6 +444,9 @@ void CTool_Map::MapObjectSpace()
 					case OBJ_TYPE::OBJ_DYNAMIC:
 						DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC);
 						break;
+					case OBJ_TYPE::OBJ_SKY:
+						DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_SKYBOX);
+						break;
 					}
 
 				}
@@ -434,8 +454,11 @@ void CTool_Map::MapObjectSpace()
 
 				ImGui::SameLine();
 
+				_bool bEnable = false;
 
-				_bool bEnable = m_pSelectObj->Get_Enable();
+				if(nullptr != m_pSelectObj)
+					bEnable = m_pSelectObj->Get_Enable();
+				
 				if (ImGui::Checkbox("Enable", &bEnable))
 				{
 					m_pSelectObj->Set_Enable(bEnable);
@@ -507,6 +530,8 @@ void CTool_Map::MapObjectSpace()
 						AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_TREEROCK);
 					else if (5 == m_iControlState)
 						AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC);
+					else if (6 == m_iControlState)
+						AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_SKYBOX);
 				}
 
 				ImGui::ListBoxFooter();
@@ -528,6 +553,8 @@ void CTool_Map::MapObjectSpace()
 						BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_TREEROCK);
 					else if (5 == m_iControlState)
 						BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC);
+					else if(6 == m_iControlState)
+						BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_SKYBOX);
 				}
 
 				ImGui::ListBoxFooter();
@@ -965,7 +992,7 @@ void CTool_Map::MapNPCSpace()
 			if (ImGui::Button(u8"배치된 NPC"))
 				m_bAddNPC = false;
 
-			if (true == m_bAddMonster)
+			if (true == m_bAddNPC)
 			{
 				ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), u8"추가할 NPC 선택");
 
@@ -1035,7 +1062,6 @@ HRESULT CTool_Map::Save_Map_Data(const wstring& strMapFileName)
 		if (i == LAYER_TYPE::LAYER_CAMERA
 			|| i == LAYER_TYPE::LAYER_TERRAIN
 			|| i == LAYER_TYPE::LAYER_BACKGROUND
-			|| i == LAYER_TYPE::LAYER_SKYBOX
 			|| i == LAYER_TYPE::LAYER_UI
 			|| i == LAYER_TYPE::LAYER_PLAYER
 			|| i == LAYER_TYPE::LAYER_MONSTER
@@ -1226,34 +1252,6 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 		{
 			MSG_BOX("맵툴에서 피직스 생성에 실패했습니다.");
 		}
-	}
-
-
-	static _float fCreatePos[3] = { -10.f, 50.f, 0.f };
-	static _bool bCharacter = false;
-
-	if (false == bCharacter)
-	{
-		bCharacter = true;
-
-		CGameObject* pCharacter = nullptr;
-
-		if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Character_SwordMan"), nullptr, &pCharacter)))
-		{
-			MSG_BOX("맵툴에서 플레이어 로드를 실패했습니다.");
-			return E_FAIL;
-		}
-
-		if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))
-		{
-			CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_TargetObj(pCharacter);
-			CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_LookAtObj(pCharacter);
-
-			Vec3 vPos;
-			memcpy(&vPos, fCreatePos, sizeof(Vec3));
-			pCharacter->Get_Component<CTransform>(L"Com_Transform")->Set_State(CTransform::STATE_POSITION, vPos);
-		}
-
 	}
 
 	MSG_BOX("Map_Loaded.");

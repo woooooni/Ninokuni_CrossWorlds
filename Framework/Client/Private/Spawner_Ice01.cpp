@@ -119,12 +119,14 @@ HRESULT CSpawner_Ice01::Spawn_Monster()
 	_float4 vSpawnerPos = {}; 
 	XMStoreFloat4(&vSpawnerPos,  m_pTransformCom->Get_Position());
 
+	_uint iCurr = GI->Get_CurrentLevel();
+
 	for (_int i = m_vecBaobam.size(); i < m_iMaxBaobamCount; ++i)
 	{
 		_float4 vSpawnPos = {};
-		vSpawnPos.x = vSpawnerPos.x + GI->RandomFloat(-5.f, 5.f);
-		vSpawnPos.y = 0.f;
-		vSpawnPos.z = vSpawnerPos.z + GI->RandomFloat(-5.f, 5.f);
+		vSpawnPos.x = vSpawnerPos.x + GI->RandomFloat(-2.5f, 2.5f);
+		vSpawnPos.y = vSpawnerPos.y;
+		vSpawnPos.z = vSpawnerPos.z + GI->RandomFloat(-2.5f, 2.5f);
 		vSpawnPos.w = 1.f;
 
 		CGameObject* pObj = GI->Clone_GameObject(TEXT("Prorotype_GameObject_Baobam_Water"), _uint(LAYER_MONSTER), &vSpawnPos);
@@ -132,16 +134,16 @@ HRESULT CSpawner_Ice01::Spawn_Monster()
 		if (pObj == nullptr)
 			return E_FAIL;
 
-		GI->Add_GameObject(LEVEL_TEST, (_uint)LAYER_MONSTER, pObj);
+		GI->Add_GameObject(iCurr, (_uint)LAYER_MONSTER, pObj);
 		m_vecBaobam.push_back(pObj);
 	}
 
 	for (_int i = m_vecThief.size(); i < m_iMaxThiefCount; ++i)
 	{
 		_float4 vSpawnPos = {};
-		vSpawnPos.x = vSpawnerPos.x + GI->RandomFloat(-5.f, 5.f);
-		vSpawnPos.y = 0.f;
-		vSpawnPos.z = vSpawnerPos.z + GI->RandomFloat(-5.f, 5.f);
+		vSpawnPos.x = vSpawnerPos.x + GI->RandomFloat(-2.5f, 2.5f);
+		vSpawnPos.y = vSpawnerPos.y;
+		vSpawnPos.z = vSpawnerPos.z + GI->RandomFloat(-2.5f, 2.5f);
 		vSpawnPos.w = 1.f;
 
 		CGameObject* pObj = GI->Clone_GameObject(TEXT("Prorotype_GameObject_Shadow_Thief"), _uint(LAYER_MONSTER), &vSpawnPos);
@@ -149,16 +151,16 @@ HRESULT CSpawner_Ice01::Spawn_Monster()
 		if (pObj == nullptr)
 			return E_FAIL;
 
-		GI->Add_GameObject(LEVEL_TEST, (_uint)LAYER_MONSTER, pObj);
+		GI->Add_GameObject(iCurr, (_uint)LAYER_MONSTER, pObj);
 		m_vecThief.push_back(pObj);
 	}
 
 	for (_int i = m_vecBear.size(); i < m_iMaxBearCount; ++i)
 	{
 		_float4 vSpawnPos = {};
-		vSpawnPos.x = vSpawnerPos.x + GI->RandomFloat(-5.f, 5.f);
-		vSpawnPos.y = 0.f;
-		vSpawnPos.z = vSpawnerPos.z + GI->RandomFloat(-5.f, 5.f);
+		vSpawnPos.x = vSpawnerPos.x + GI->RandomFloat(-2.5f, 2.5f);
+		vSpawnPos.y = vSpawnerPos.y;
+		vSpawnPos.z = vSpawnerPos.z + GI->RandomFloat(-2.5f, 2.5f);
 		vSpawnPos.w = 1.f;
 
 		CGameObject* pObj = GI->Clone_GameObject(TEXT("Prorotype_GameObject_IceBearMan"), _uint(LAYER_MONSTER), &vSpawnPos);
@@ -166,7 +168,7 @@ HRESULT CSpawner_Ice01::Spawn_Monster()
 		if (pObj == nullptr)
 			return E_FAIL;
 
-		GI->Add_GameObject(LEVEL_TEST, (_uint)LAYER_MONSTER, pObj);
+		GI->Add_GameObject(iCurr, (_uint)LAYER_MONSTER, pObj);
 		m_vecBear.push_back(pObj);
 	}
 

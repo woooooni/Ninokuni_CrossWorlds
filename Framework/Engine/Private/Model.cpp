@@ -759,7 +759,7 @@ HRESULT CModel::SetUp_VTF(class CShader* pShader)
 
 	if (FAILED(pShader->Bind_RawValue("g_TweenFrames", &m_TweenDesc, sizeof(TWEEN_DESC))))
 		return E_FAIL;
-
+	
 	return S_OK;
 }
 

@@ -31,11 +31,14 @@ HRESULT CSpawner::Initialize(void* pArg)
 
 void CSpawner::Tick(_float fTimeDelta)
 {
+	__super::Tick(fTimeDelta);
 }
 
 void CSpawner::LateTick(_float fTimeDelta)
 {
 	// 랜더 그룹 추가하기.
+	__super::LateTick(fTimeDelta);
+
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 //#ifdef _DEBUG
 //	for (auto& iter : m_Colliders)
@@ -77,13 +80,13 @@ HRESULT CSpawner::Ready_Colliders()
 	ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
 
 	XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
-	OBBBox.Extents = { 50.f, 50.f, 50.f };
+	OBBBox.Extents = { 5.f, 5.f, 5.f };
 
 	OBBDesc.tBox = OBBBox;
 	OBBDesc.pNode = nullptr;
 	OBBDesc.pOwnerTransform = m_pTransformCom;
 	OBBDesc.ModelPivotMatrix = {};
-	OBBDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
+	OBBDesc.vOffsetPosition = Vec3(0.f, 0.f, 0.f);
 
 	/* Body */
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::BODY, &OBBDesc)))
