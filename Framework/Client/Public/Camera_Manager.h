@@ -45,15 +45,6 @@ public:
 	/* ÄÆ½Å Ä«¸Þ¶ó */
 	HRESULT Start_Action_CutScene(const string& strCutSceneName);
 	
-	vector<CAMERA_CUT_SCENE_EVENT_DESC> Get_Action_CutSceneEvent(const string& strTag);
-	string								Get_Action_CutSceneEvent_Name(const _int& iIndex);
-	const map<string, vector<CAMERA_CUT_SCENE_EVENT_DESC>>& Get_Action_CutSceneEvents() const { return m_CutSceneEvents; }
-
-	void								Add_Action_CutSceneEvent(const string& strTag);
-
-private:
-	string Find_Action_CutSceneEvent_Name(const _int& iIndex);
-	vector<CAMERA_CUT_SCENE_EVENT_DESC> Find_Action_CutSceneEvent(const string& strTag);
 
 private:
 	/* Defualt */
@@ -67,9 +58,6 @@ private:
 
 	/* Lerp */
 	LERP_TIME_DESC m_tLerpTime = {};
-
-	/* CutScene Events*/
-	map<string, vector<CAMERA_CUT_SCENE_EVENT_DESC>> m_CutSceneEvents;
 
 private:
 	ID3D11Device* m_pDevice = nullptr;

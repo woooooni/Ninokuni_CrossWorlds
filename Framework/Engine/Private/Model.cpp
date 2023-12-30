@@ -36,6 +36,10 @@ CModel::CModel(const CModel& rhs)
 	, m_strFileName(rhs.m_strFileName)
 	, m_strFolderPath(rhs.m_strFolderPath)
 	, m_bFromBinary(rhs.m_bFromBinary)
+	, m_SocketTransformIndexCache(rhs.m_SocketTransformIndexCache)
+	, m_SocketCustomPivotRotation(rhs.m_SocketCustomPivotRotation)
+	, m_SocketCustomPivotPosition(rhs.m_SocketCustomPivotPosition)
+	, m_SocketTransforms(rhs.m_SocketTransforms)
 
 {
 	for (auto& pMeshContainer : m_Meshes)
@@ -529,7 +533,7 @@ Matrix CModel::Get_SocketLocalMatrix(const _uint iSocketEnumIndex)
 	memcpy(&matAnimLocal.m[3], &vOneW, sizeof(Vec4));
 
 	/* 회전 행렬에서 피벗 포지션 값 뽑음*/
-	Vec3 vPivotPosition = m_SocketCustomPivotRotation[iSocketEnumIndex];
+	Vec3 vPivotPosition = m_SocketCustomPivotPosition[iSocketEnumIndex];
 	vPivotPosition = XMVector3TransformCoord(vPivotPosition, matAnimLocal);
 
 	/* 회전 행렬 포지션에 기존 로컬 포지션과 피벗 포지션 값을 더함 */

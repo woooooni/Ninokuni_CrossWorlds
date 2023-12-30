@@ -133,44 +133,6 @@ HRESULT CCamera_Manager::Start_Action_CutScene(const string& strCutSceneName)
 	return S_OK;
 }
 
-string CCamera_Manager::Get_Action_CutSceneEvent_Name(const _int& iIndex)
-{
-	return Find_Action_CutSceneEvent_Name(iIndex);
-}
-
-vector<CAMERA_CUT_SCENE_EVENT_DESC> CCamera_Manager::Get_Action_CutSceneEvent(const string& strTag)
-{
-	return Find_Action_CutSceneEvent(strTag);
-}
-
-void CCamera_Manager::Add_Action_CutSceneEvent(const string& strTag)
-{
-	m_CutSceneEvents.emplace(strTag, vector<CAMERA_CUT_SCENE_EVENT_DESC>());
-}
-
-string CCamera_Manager::Find_Action_CutSceneEvent_Name(const _int& iIndex)
-{
-	_int iCount = 0;
-
-	for (auto& iter : m_CutSceneEvents)
-	{
-		if (iCount == iIndex)
-			return iter.first;
-	}
-
-	return string();
-}
-
-vector<CAMERA_CUT_SCENE_EVENT_DESC> CCamera_Manager::Find_Action_CutSceneEvent(const string& strTag)
-{
-	auto iterEvent = m_CutSceneEvents.find(strTag);
-
-	if(iterEvent == m_CutSceneEvents.end())
-		return vector<CAMERA_CUT_SCENE_EVENT_DESC>();
-
-	return iterEvent->second;
-}
-
 HRESULT CCamera_Manager::Ready_Cameras()
 {
 	/* 카메라는 오브젝트 매니저에 추가 되지 않고 카메라 매니저가 플로우를 돌린다. */
@@ -236,7 +198,7 @@ HRESULT CCamera_Manager::Ready_Cameras()
 	{
 		CCamera::PROJ_DESC tDesc;
 		{
-			tDesc.tLerpFov.fCurValue = Cam_Fov_CurScene_Default;
+			tDesc.tLerpFov.fCurValue = Cam_Fov_CutScene_Default;
 			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
 			tDesc.fNear = 0.2f;
 			tDesc.fFar = 1000.f;

@@ -48,39 +48,31 @@ HRESULT CCamera_Follow::Initialize(void * pArg)
 
 void CCamera_Follow::Tick(_float fTimeDelta)
 {
-	if (nullptr == m_pTargetObj || nullptr == m_pLookAtObj)
+	if (!m_bActive || nullptr == m_pTargetObj || nullptr == m_pLookAtObj)
 		return;
 
-	__super::Tick(fTimeDelta); /* Shake, Fov, Dist Lerp Update */
+	/* Shake, Fov, Dist Lerp Update */
+	__super::Tick(fTimeDelta); 
 
 	/* Position */
 	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, Calculate_WorldPosition(fTimeDelta));
 	
 	/* Look & Shake */
-	Vec4 vLookAtPos = Calculate_Look(fTimeDelta);
-
-	m_pTransformCom->LookAt(Calculate_Look(fTimeDelta));
-
-	__super::Tick(fTimeDelta); /* Shake, Fov, Dist */
-
-	/* Collision */
-	m_pControllerCom->Tick_Controller(fTimeDelta);
-
-	/* Deffered */
-	if (Is_Shake())
+	const Vec4 vLookAtPos = Calculate_Look(fTimeDelta);
 	{
-		const Vec4 vLookAtPos = Calculate_Look(fTimeDelta);
-
 		if (Is_Shake())
 			m_pTransformCom->LookAt(Vec4(vLookAtPos + Vec4(Get_ShakeLocalPos())).OneW());
 		else
 			m_pTransformCom->LookAt(vLookAtPos);
 	}
+
+	/* Collision */
+	m_pControllerCom->Tick_Controller(fTimeDelta);
 }
 
 void CCamera_Follow::LateTick(_float fTimeDelta)
 {
-	if (nullptr == m_pTargetObj || nullptr == m_pLookAtObj)
+	if (!m_bActive || nullptr == m_pTargetObj || nullptr == m_pLookAtObj)
 		return;
 
 	m_pControllerCom->LateTick_Controller(fTimeDelta);

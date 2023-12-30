@@ -108,7 +108,7 @@ namespace Client
 	
 	static const _float Cam_Fov_Free_Default = XMConvertToRadians(60.0f);
 	static const _float Cam_Fov_Follow_Default = XMConvertToRadians(60.0f);
-	static const _float Cam_Fov_CurScene_Default = XMConvertToRadians(70.0f);
+	static const _float Cam_Fov_CutScene_Default = XMConvertToRadians(70.0f);
 
 	enum CAMERA_TYPE { FREE, FOLLOW, CUTSCENE, CAMERA_TYPE_END };
 
@@ -134,20 +134,28 @@ namespace Client
 
 	}CAMERA_EVENT_DESC;
 
-	typedef struct tagCameraCutSceneEventDesc
+	typedef struct tagCameraCutScenePathDesc
 	{
-		Vec4 vCamPos;
-		Vec4 vLookAt;
+		Vec3 vCamPositions[4];
+		Vec3 vCamLookAts[4];
 
-		_float fFov = Cam_Fov_CurScene_Default;
+		LERP_TIME_DESC	m_tTimeDesc;
 
-		_float fTime = 1.f;
+		_bool bPlay = false;
 
-		LERP_MODE eLerpMode = LERP_MODE::DEFAULT;
+	}CAMERA_CUSTCENE_PATH_DESC;
 
-		_int iPadding = 0;
+	typedef struct tagCameraCutSceneDesc
+	{
+		vector<CAMERA_CUSTCENE_PATH_DESC> tPaths;
 
-	}CAMERA_CUT_SCENE_EVENT_DESC;
+		_bool bPlay = false;
+
+		string strCutSceneName;
+
+	}CAMERA_CUTSCENE_DESC;
+
+
 }
 
 extern HWND g_hWnd;

@@ -36,11 +36,17 @@ HRESULT CCamera_CutScene::Initialize(void* pArg)
 
 void CCamera_CutScene::Tick(_float fTimeDelta)
 {
+	if (!m_bActive)
+		return;
+
 	__super::Tick(fTimeDelta);
 }
 
 void CCamera_CutScene::LateTick(_float fTimeDelta)
 {
+	if (!m_bActive)
+		return;
+
 	__super::LateTick(fTimeDelta);
 }
 

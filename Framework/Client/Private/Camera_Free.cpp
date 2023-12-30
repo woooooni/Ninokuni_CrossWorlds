@@ -36,14 +36,20 @@ HRESULT CCamera_Free::Initialize(void* pArg)
 
 void CCamera_Free::Tick(_float fTimeDelta)
 {
-	Move(fTimeDelta);
-	Rotate(fTimeDelta);
+	if (!m_bActive)
+		return;
 
 	__super::Tick(fTimeDelta);
+
+	Move(fTimeDelta);
+	Rotate(fTimeDelta);
 }
 
 void CCamera_Free::LateTick(_float fTimeDelta)
 {
+	if (!m_bActive)
+		return;
+
 	__super::LateTick(fTimeDelta);
 }
 

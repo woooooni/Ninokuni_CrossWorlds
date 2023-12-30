@@ -354,6 +354,9 @@ void CTool_Camera::Show_Camera_Prop_CutScene(_float fTimeDelta)
 	{
 		if (m_bPlay)
 		{
+			if (FAILED(CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::CUTSCENE)))
+				return;
+
 			m_tDesc.Start(m_tDesc.fEndTime, LERP_MODE::DEFAULT);
 		}
 	}
@@ -367,11 +370,15 @@ void CTool_Camera::Show_Camera_Prop_CutScene(_float fTimeDelta)
 
 			Vec3 vLook = Calculate_Bezier(false);
 			Vec4 vFinalLook = { vLook.x, vLook.y, vLook.z, 1.f };
-			CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FREE)->Get_Transform()->Set_State(CTransform::STATE_POSITION, vFinalPos);
-			CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FREE)->Get_Transform()->LookAt(vFinalLook);
+			CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE)->Get_Transform()->Set_State(CTransform::STATE_POSITION, vFinalPos);
+			CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE)->Get_Transform()->LookAt(vFinalLook);
 		}
 		else
+		{
 			m_bPlay = false;
+			if (FAILED(CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE)))
+				return;
+		}
 	}
 	
 
@@ -450,13 +457,18 @@ void CTool_Camera::Show_Camera_Prop_CutScene(_float fTimeDelta)
 	IMGUI_NEW_LINE;
 	if (ImGui::Button("Add Position"))
 	{
-		Vec3 vPos = Vec3::Zero;
+		Vec3 vCurCamLook = CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Transform()->Get_Look();
+		
+		Vec3 vCreateStartPos = CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Transform()->Get_Position();
+		vCreateStartPos += vCurCamLook * 30.f;
 
-		if (!m_vTempPositions.empty())
-			vPos = m_vTempPositions.back();
+		for (size_t i = 0; i < 4; i++)
+		{
+			Vec3 vCreatePos = vCreateStartPos + (vCurCamLook.ZeroY() * 30.f * i);
 
-		m_vTempPositions.push_back(vPos);
-
+			m_vTempPositions.push_back(vCreatePos);
+		}
+		
 		m_tDesc.Start(m_tDesc.fEndTime, LERP_MODE::DEFAULT);
 
 		m_iTempPositionIndex++;
@@ -465,12 +477,17 @@ void CTool_Camera::Show_Camera_Prop_CutScene(_float fTimeDelta)
 	IMGUI_SAME_LINE;
 	if (ImGui::Button("Add LookAt"))
 	{
-		Vec3 vPos = Vec3::Zero;
+		Vec3 vCurCamLook = CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Transform()->Get_Look();
 
-		if (!m_vTempLookAts.empty())
-			vPos = m_vTempLookAts.back();
+		Vec3 vCreateStartPos = CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Transform()->Get_Position();
+		vCreateStartPos += vCurCamLook * 30.f;
 
-		m_vTempLookAts.push_back(vPos);
+		for (size_t i = 0; i < 4; i++)
+		{
+			Vec3 vCreatePos = vCreateStartPos + (vCurCamLook.ZeroY() * 30.f * i);
+
+			m_vTempLookAts.push_back(vCreatePos);
+		}
 
 		m_tDesc.Start(m_tDesc.fEndTime, LERP_MODE::DEFAULT);
 
@@ -486,67 +503,14 @@ void CTool_Camera::Show_Camera_Prop_CutScene(_float fTimeDelta)
 
 
 
-	_float fSpeed = m_tDesc.fEndTime;
-	if (ImGui::DragFloat("Speed", &fSpeed, 0.1f, 0.1f, 100.f))
+	_float fDuration = m_tDesc.fEndTime;
+	if (ImGui::DragFloat("Duration", &fDuration, 0.1f, 0.1f, 100.f))
 	{
-		m_tDesc.fEndTime = fSpeed;
+		m_tDesc.fEndTime = fDuration;
 		
 	}
 
 
-	//if (FAILED(CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE)))
-	//	return;
-
-	//IMGUI_NEW_LINE;
-	//ImGui::Text("CutScene Camera Option (카메라 개별 옵션)");
-
-	//map<string, vector<CAMERA_CUT_SCENE_EVENT_DESC>> CutSceneEvents = CCamera_Manager::GetInstance()->Get_Action_CutSceneEvents();
-
-	//if (CutSceneEvents.empty())
-	//{
-	//	ImGui::Text("현재 등록된 컷신 이벤트가 없습니다.");
-	//	return;
-	//}
-
-	//if (ImGui::BeginChild("CutScene Camera Option", ImVec2(0, 200.f), true))
-	//{
-	//	ImGui::PushItemWidth(150.f);
-
-	//	/* 전체 컷신 이벤트 리스트 */
-	//	ImGui::Text("현재 등록된 컷신 이벤트");
-
-	//	if (0 <= m_iCurCutSceneEventIndex)
-	//	{
-	//		const char* Preview = m_strCurCutSceneEventName.c_str();
-
-	//		if (ImGui::BeginListBox("##CutScenes_List", ImVec2(150.f, 150.f)))
-	//		{
-	//			for (size_t i = 0; i < CutSceneEvents.size(); ++i)
-	//			{
-	//				string strCutSceneEventName = CCamera_Manager::GetInstance()->Get_Action_CutSceneEvent_Name(i).c_str();
-
-	//				if (ImGui::Selectable(strCutSceneEventName.c_str(), i == m_iCurCutSceneEventIndex))
-	//				{
-	//					m_iCurCutSceneEventIndex = i;
-
-	//					m_strCurCutSceneEventName = CCamera_Manager::GetInstance()->Get_Action_CutSceneEvent_Name(m_iCurCutSceneEventIndex);
-	//				}
-	//			}
-	//			ImGui::EndListBox();
-	//		}
-	//	}
-
-	//	/* Add Event */
-	//	if (ImGui::Button("Add CutScene Event"))
-	//	{
-	//		CCamera_Manager::GetInstance()->Add_Action_CutSceneEvent(m_strCurCutSceneEventName);
-	//	}
-	//	IMGUI_SAME_LINE;
-
-
-	//	ImGui::PopItemWidth();
-	//}
-	//ImGui::EndChild();
 }
 
 void CTool_Camera::Clear_CutSceneCache()
@@ -560,12 +524,10 @@ Vec3 CTool_Camera::Calculate_Bezier(_bool bPos)
 {
 	vector<Vec3> vPath;
 
-
 	if (bPos)
 		vPath = m_vTempPositions;
 	else
 		vPath = m_vTempLookAts;
-
 
 	if (4 > vPath.size())
 		return Vec3::Zero;
@@ -604,16 +566,6 @@ HRESULT CTool_Camera::Ready_DebugDraw()
 
 	if (nullptr == m_pSphere)
 		return E_FAIL;
-
-
-	m_vTempPositions.push_back(Vec3{ 0.f, 10.f, 0.f });
-	m_vTempPositions.push_back(Vec3{ -30.f, 30.f, 30.f });
-	m_vTempPositions.push_back(Vec3{ -30.f, 40.f, 60.f });
-	m_vTempPositions.push_back(Vec3{ 0.f, 20.f, 90.f });
-
-	m_iTempPositionIndex = 0;
-
-	m_tDesc.fEndTime = 1.f;
 
 	return S_OK;
 }
