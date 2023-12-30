@@ -1,14 +1,17 @@
 #include "stdafx.h"
 #include "Effect_Manager.h"
+
 #include "GameInstance.h"
 #include "PipeLine.h"
-#include "Transform.h"
-#include "GameObject.h"
-#include "Effect.h"
 #include <filesystem>
 #include "FileUtils.h"
 #include "Utils.h"
 
+#include "GameObject.h"
+#include "Transform.h"
+
+#include "Effect.h"
+#include "Decal.h"
 #include "Vfx_MouseClick.h"
 
 IMPLEMENT_SINGLETON(CEffect_Manager)
@@ -29,8 +32,11 @@ HRESULT CEffect_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceCont
 	if (FAILED(GI->Ready_Model_Data_FromPath(LEVEL_STATIC, CModel::TYPE_NONANIM, strEffectMeshPath)))
 		return E_FAIL;
 
-	/*if (FAILED(Ready_Proto_Effects(strEffectPath)))
-		return E_FAIL;*/
+	//if (FAILED(Ready_Proto_Effects(strEffectPath)))
+	//	return E_FAIL;
+
+	if (FAILED(Ready_Proto_Decal()))
+		return E_FAIL;
 
 	if (FAILED(Ready_Proto_Vfx()))
 		return E_FAIL;
@@ -40,7 +46,6 @@ HRESULT CEffect_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceCont
 
 void CEffect_Manager::Tick(_float fTimeDelta)
 {
-	int i = 0;
 }
 
 HRESULT CEffect_Manager::Generate_Effect(const wstring& strEffectName, _matrix RotationMatrix, _matrix WorldMatrix, _float fEffectDeletionTime, CGameObject* pOwner, CEffect** ppOut)
@@ -76,6 +81,19 @@ HRESULT CEffect_Manager::Generate_Effect(const wstring& strEffectName, _matrix R
 
 	if (ppOut != nullptr)
 		*ppOut = pEffect;
+
+	return S_OK;
+}
+
+HRESULT CEffect_Manager::Generate_Decal(const wstring& strPrototypeDecalName, _vector vPosition)
+{
+	CGameObject* pGameObject = GI->Clone_GameObject(L"Prototype_" + strPrototypeDecalName, LAYER_TYPE::LAYER_EFFECT, &vPosition);
+	if (nullptr == pGameObject)
+		return E_FAIL;
+
+	_uint iLevelIndex = GI->Get_CurrentLevel();
+	if (FAILED(GI->Add_GameObject(iLevelIndex, LAYER_TYPE::LAYER_EFFECT, pGameObject)))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -356,6 +374,19 @@ HRESULT CEffect_Manager::Ready_Proto_Effects(const wstring& strEffectPath)
 				return E_FAIL;
 		}
 	}
+
+	return S_OK;
+}
+
+HRESULT CEffect_Manager::Ready_Proto_Decal()
+{
+	CDecal::DECAL_DESC tDecalInfo = {};
+
+	// Prototype_Decale
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_Decal_Temp"),
+		CDecal::Create(m_pDevice, m_pContext, TEXT("Decal_Temp"), &tDecalInfo), LAYER_TYPE::LAYER_EFFECT)))
+		return E_FAIL;
+
 
 	return S_OK;
 }

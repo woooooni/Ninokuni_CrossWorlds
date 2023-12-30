@@ -247,7 +247,7 @@ PS_OUT PS_MAIN(PS_IN In)
 
 	Out.vDiffuse = g_DiffuseTexture.Sample(ModelSampler, In.vTexUV);
 	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
-	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
+	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
 
 
 	float fRimPower = 1.f - saturate(dot(In.vNormal.xyz, normalize((-1.f * (In.vWorldPosition - g_vCamPosition)))));
@@ -279,7 +279,7 @@ PS_OUT PS_MAIN_NORMAL(PS_IN In)
 	vNormal = normalize(mul(vNormal, WorldMatrix));
 
 	Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
-	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
+	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
 
 
 
@@ -316,7 +316,7 @@ PS_OUT PS_DISSOLVE_DEAD(PS_IN In)
 
 
 	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
-	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
+	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
 
 	if (0.f == Out.vDiffuse.a)
 		discard;

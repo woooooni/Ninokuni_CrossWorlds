@@ -24,14 +24,33 @@ HRESULT CTool_Effect::Initialize()
 void CTool_Effect::Tick(_float fTimeDelta)
 {
 	ImGui::Begin("Effect_Tool");
+	ImGui::BeginTabBar("Effect_Tab");
 
+	if (ImGui::BeginTabItem("Effect"))
+	{
+		Tick_EffectTool();
+		ImGui::EndTabItem();
+	}
+
+	if (ImGui::BeginTabItem("Decal"))
+	{
+		Tick_DecalTool();
+		ImGui::EndTabItem();
+	}
+
+	ImGui::EndTabBar();
+	ImGui::End();
+}
+
+void CTool_Effect::Tick_EffectTool()
+{
 	// 생성/ 삭제
 	if (ImGui::Button("EffectCreate"))
 		Create_Effect();
 	ImGui::SameLine();
-	if (ImGui::Button("EffectDelete")) 
+	if (ImGui::Button("EffectDelete"))
 	{
-		if (m_pEffect != nullptr) 
+		if (m_pEffect != nullptr)
 		{
 			m_pEffect->Set_Dead(true);
 			m_pEffect = nullptr;
@@ -268,7 +287,7 @@ void CTool_Effect::Tick(_float fTimeDelta)
 		// 디퓨즈 텍스처
 		ImGui::Text("DiffuseFolderName :");
 		ImGui::SameLine();
-		if(ImGui::Combo("##DiffuseFolderName", &m_iDiffuseFolderIndex, m_cFolderName, IM_ARRAYSIZE(m_cFolderName)))
+		if (ImGui::Combo("##DiffuseFolderName", &m_iDiffuseFolderIndex, m_cFolderName, IM_ARRAYSIZE(m_cFolderName)))
 			Store_InfoEffect();
 
 		ImGui::Text("DiffuseTextureIndex");
@@ -470,8 +489,133 @@ void CTool_Effect::Tick(_float fTimeDelta)
 				Store_InfoEffect();
 		}
 	}
+}
 
-	ImGui::End();
+void CTool_Effect::Tick_DecalTool()
+{
+	// 생성/ 삭제
+	if (ImGui::Button("DecalCreate"))
+		Create_Decal();
+	ImGui::SameLine();
+	if (ImGui::Button("DecalDelete"))
+	{
+		if (m_pDecal != nullptr)
+		{
+			m_pDecal->Set_Dead(true);
+			m_pDecal = nullptr;
+		}
+	}
+	ImGui::SameLine();
+
+
+	// 확인(적용)
+	if (ImGui::Button("DecalTransformSelect"))
+		Store_TransformDecal();
+	ImGui::SameLine();
+	if (ImGui::Button("DecalInfoSelect"))
+		Store_InfoDecal();
+	ImGui::NewLine();
+
+	// 저장하기/ 불러오기
+	if (ImGui::CollapsingHeader("DecalBinary"))
+	{
+		if (ImGui::Button("SaveDecal"))
+			Save_Decal(m_cBinaryName);
+		ImGui::SameLine();
+		if (ImGui::Button("LoadDecal"))
+			Load_Decal(m_cBinaryName);
+		ImGui::SameLine();
+		ImGui::Text("FileName :");
+		ImGui::SameLine();
+		ImGui::InputText("##FileName", m_cBinaryName, IM_ARRAYSIZE(m_cBinaryName));
+	}
+
+
+	// 트랜스폼
+	if (ImGui::CollapsingHeader("DecalTransform"))
+	{
+		ImGui::Text("Position");
+		ImGui::InputFloat3("##Position", m_fPosition);
+
+		ImGui::Text("Rotation");
+		ImGui::InputFloat3("##Rotation", m_fRotation);
+
+		ImGui::Text("Scale");
+		ImGui::InputFloat3("##Scale", m_fScale);
+	}
+
+	// 텍스처 지정
+	if (ImGui::CollapsingHeader("DecalTexture"))
+	{
+		ImGui::Text("DiffuseTextureIndex");
+		ImGui::SameLine();
+		if (ImGui::InputInt("##DiffuseTextureIndex", &(_int)m_tDecalInfo.iTextureIndexDiffuse))
+			Store_InfoDecal();
+		ImGui::NewLine();
+	}
+
+	// 파티클 색상
+	if (ImGui::CollapsingHeader("DecalColor"))
+	{
+		ImGui::Text("Color_Add_01_Alpha");
+		if (ImGui::InputFloat("##Color_Add_01_Alpha", &m_tDecalInfo.fColorAdd_01_Alpha))
+			Store_InfoDecal();
+
+		ImGui::Text("ColorAdd_01");
+		if (ImGui::ColorEdit3("##ColorAdd_01", (float*)&m_tDecalInfo.fColorAdd_01, ImGuiColorEditFlags_Float))
+			Store_InfoDecal();
+
+		ImGui::Text("ColorAdd_02");
+		if (ImGui::ColorEdit3("##ColorAdd_02", (float*)&m_tDecalInfo.fColorAdd_02, ImGuiColorEditFlags_Float))
+			Store_InfoDecal();
+	}
+
+	if (ImGui::CollapsingHeader("DecalAlpha"))
+	{
+		ImGui::Text("AlphaRemove");
+		if (ImGui::InputFloat("##AlphaRemove", &m_tDecalInfo.fAlphaRemove))
+			Store_InfoDecal();
+
+		if (ImGui::Checkbox("AlphaCreate", &m_tDecalInfo.bAlphaCreate))
+			Store_InfoEffect();
+		ImGui::NewLine();
+
+		if (ImGui::Checkbox("AlphaDelete", &m_tDecalInfo.bAlphaDelete))
+			Store_InfoEffect();
+		ImGui::NewLine();
+
+		ImGui::Text("AlphaSpeed");
+		if (ImGui::InputFloat("##AlphaSpeed", &m_tDecalInfo.fAlphaSpeed))
+			Store_InfoDecal();
+	}
+
+	// 쉐이더 값 셋팅
+	if (ImGui::CollapsingHeader("DecalShader"))
+	{
+		// 쉐이더 패스
+		ImGui::Text("ShaderPass");
+		if (ImGui::InputInt("##ShaderPass", &(_int)m_tDecalInfo.iShaderPass))
+			Store_InfoDecal();
+		ImGui::NewLine();
+
+		// 디스카드 값 셋팅
+		ImGui::Text("Alpha_Discard");
+		if (ImGui::InputFloat("##Alpha_Discard", &m_tDecalInfo.fAlpha_Discard))
+			Store_InfoDecal();
+		ImGui::Text("Black_Discard");
+		if (ImGui::InputFloat3("##Black_Discard", &m_tDecalInfo.fBlack_Discard.x))
+			Store_InfoDecal();
+		ImGui::NewLine();
+
+		// 블룸 셋팅
+		ImGui::Text("BloomPower");
+		if (ImGui::ColorEdit4("##BloomPower", (float*)&m_tDecalInfo.fBloomPower, ImGuiColorEditFlags_Float))
+			Store_InfoDecal();
+		ImGui::NewLine();
+
+		if (ImGui::InputFloat("##BlurPower", &m_tDecalInfo.fBlurPower))
+			Store_InfoDecal();
+	}
 }
 
 void CTool_Effect::Create_Effect()
@@ -486,12 +630,36 @@ void CTool_Effect::Create_Effect()
 	Load_InfoEffect();
 }
 
+void CTool_Effect::Create_Decal()
+{
+	// 생성
+	if (m_pDecal != nullptr)
+		return;
+
+	m_pDecal = GI->Clone_GameObject(TEXT("Prototype_Decal_Temp"), LAYER_TYPE::LAYER_EFFECT);
+	GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_EFFECT, m_pDecal);
+
+	Load_InfoDecal();
+}
+
 void CTool_Effect::Store_TransformEffect()
 {
 	if (m_pEffect == nullptr)
 		return;
 
 	CTransform* pTransform = m_pEffect->Get_Component<CTransform>(L"Com_Transform");
+
+	pTransform->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_fPosition[0], m_fPosition[1], m_fPosition[2], 1.f));
+	pTransform->FixRotation(m_fRotation[0], m_fRotation[1], m_fRotation[2]);
+	pTransform->Set_Scale(_float3(m_fScale[0], m_fScale[1], m_fScale[2]));
+}
+
+void CTool_Effect::Store_TransformDecal()
+{
+	if (m_pDecal == nullptr)
+		return;
+
+	CTransform* pTransform = m_pDecal->Get_Component<CTransform>(L"Com_Transform");
 
 	pTransform->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_fPosition[0], m_fPosition[1], m_fPosition[2], 1.f));
 	pTransform->FixRotation(m_fRotation[0], m_fRotation[1], m_fRotation[2]);
@@ -560,6 +728,31 @@ void CTool_Effect::Load_InfoEffect() // Load
 	m_fAlphaChangeStartDelay[1] = m_tEffectInfo.fAlphaChangeStartDelay.y;
 }
 
+void CTool_Effect::Load_InfoDecal()
+{
+	if (m_pDecal == nullptr)
+		return;
+
+	CTransform* pTransform = m_pDecal->Get_Component<CTransform>(L"Com_Transform");
+
+	_vector vPosition = pTransform->Get_State(CTransform::STATE_POSITION);
+	m_fPosition[0] = XMVectorGetX(vPosition);
+	m_fPosition[1] = XMVectorGetY(vPosition);
+	m_fPosition[2] = XMVectorGetZ(vPosition);
+
+	_vector vRotation = pTransform->Get_WorldRotation();
+	m_fRotation[0] = XMVectorGetX(vRotation);
+	m_fRotation[1] = XMVectorGetY(vRotation);
+	m_fRotation[2] = XMVectorGetZ(vRotation);
+
+	_float3 fScale = pTransform->Get_Scale();
+	m_fScale[0] = fScale.x;
+	m_fScale[1] = fScale.y;
+	m_fScale[2] = fScale.z;
+
+	m_tDecalInfo = static_cast<CDecal*>(m_pDecal)->Get_DecalDesc();
+}
+
 void CTool_Effect::Store_InfoEffect() // Save
 {
 	if (m_pEffect == nullptr)
@@ -594,7 +787,13 @@ void CTool_Effect::Store_InfoEffect() // Save
 	static_cast<CEffect*>(m_pEffect)->Set_EffectDesc(m_tEffectInfo);
 }
 
+void CTool_Effect::Store_InfoDecal()
+{
+	if (m_pDecal == nullptr)
+		return;
 
+	static_cast<CDecal*>(m_pDecal)->Set_DecalDesc(m_tDecalInfo);
+}
 
 
 void CTool_Effect::Save_Effect(const char* pFileName)
@@ -921,6 +1120,15 @@ void CTool_Effect::Save_Effect(const char* pFileName)
 	MSG_BOX("Effect_Save_Success!");
 }
 
+void CTool_Effect::Save_Decal(const char* pFileName)
+{
+	// 기본 정보
+
+	// 추가 정보
+
+	// 등등 따로 저장?
+}
+
 void CTool_Effect::Load_Effect(const char* pFileName)
 {
 	if (m_pEffect == nullptr)
@@ -1171,6 +1379,10 @@ void CTool_Effect::Load_Effect(const char* pFileName)
 	Load_InfoEffect();
 
 	MSG_BOX("Effect_Load_Success!");
+}
+
+void CTool_Effect::Load_Decal(const char* pFileName)
+{
 }
 
 wstring CTool_Effect::Select_FolderName(_uint iFolderIndex)  

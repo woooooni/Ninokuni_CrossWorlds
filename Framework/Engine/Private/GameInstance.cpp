@@ -772,6 +772,11 @@ const map<TCHAR*, FMOD_SOUND*>& CGameInstance::Get_MapSound()
 	return m_pSound_Manager->Get_MapSound();
 }
 
+HRESULT CGameInstance::Bind_SRV(CShader* pShader, const wstring& strTargetTag, const _char* pConstantName)
+{
+	return m_pTarget_Manager->Bind_SRV(pShader, strTargetTag, pConstantName);
+}
+
 //void CGameInstance::Set_ServerSession(ServerSessionRef session)
 //{
 //	m_pNetwork_Manager->Set_ServerSession(session);

@@ -22,6 +22,7 @@ public:
 	HRESULT Generate_Effect(const wstring& strPrototypeEffectName, _matrix RotationMatrix, _matrix WorldMatrix, _float fEffectDeletionTime, 
 		class CGameObject* pOwner = nullptr, 
 		class CEffect** ppOut = nullptr);
+	HRESULT Generate_Decal(const wstring& strPrototypeDecalName, _vector vPosition);
 	HRESULT Generate_Vfx(const wstring& strPrototypeVfxName, _vector vPosition);
 
 private:
@@ -30,6 +31,7 @@ private:
 
 private:
 	HRESULT Ready_Proto_Effects(const wstring& strEffectPath);
+	HRESULT Ready_Proto_Decal();
 	HRESULT Ready_Proto_Vfx();
 
 public:
