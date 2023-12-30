@@ -45,13 +45,14 @@ HRESULT CUI_CharacterDummy::Initialize(void* pArg)
 	XMStoreFloat4x4(&m_ViewMatrix, XMMatrixTranspose(m_vCamMatrix));
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-0.3f, 0.f, 0.f, 1.f));
+	m_pTransformCom->LookAt_ForLandObject(m_vCamPosition);
 
 	return S_OK;
 }
 
 void CUI_CharacterDummy::Tick(_float fTimeDelta)
 {
-	m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
+	//m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
 
 	__super::Tick(fTimeDelta);
 }

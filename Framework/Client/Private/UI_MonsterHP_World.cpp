@@ -3,6 +3,7 @@
 #include "GameInstance.h"
 #include "Monster.h"
 #include "UI_Basic.h"
+#include "Camera_Manager.h"
 
 CUI_MonsterHP_World::CUI_MonsterHP_World(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_MonsterHP_World")
@@ -134,41 +135,8 @@ void CUI_MonsterHP_World::LateTick(_float fTimeDelta)
 			_vector vTempForDistance = m_pTransformCom->Get_Position() - XMLoadFloat4(&vCamPos);
 			_float fDistance = XMVectorGetX(XMVector3Length(vTempForDistance));
 
-			if (fDistance > 1.f) //
+			if (fDistance > 1.f)
 			{
-				//CTransform* pTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");
-				//
-				//_matrix matWorld = pTransform->Get_WorldMatrix();
-				//// 회전값을 없앤다.
-				//_matrix		Matrix = matWorld;
-				//Matrix.r[0] = XMVectorSet(1.f, 0.f, 0.f, 0.f) * XMVectorGetX(XMVector3Length(matWorld.r[0]));
-				//Matrix.r[1] = XMVectorSet(0.f, 1.f, 0.f, 0.f) * XMVectorGetX(XMVector3Length(matWorld.r[1]));
-				//Matrix.r[2] = XMVectorSet(0.f, 0.f, 1.f, 0.f) * XMVectorGetX(XMVector3Length(matWorld.r[2]));
-				//matWorld = Matrix;
-				//
-				//_matrix matView = GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW);
-				//_matrix matProj = GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ);
-				//
-				//_matrix vWVP = matWorld * matView * matProj;
-				//_vector vWorldPosition = pTransform->Get_State(CTransform::STATE_POSITION); // 3D공간상의 좌표
-				//
-				//_vector vScreenPosition = XMVector3TransformCoord(vWorldPosition, vWVP);
-				//vScreenPosition = XMVectorDivide(vScreenPosition, XMVectorSplatW(vScreenPosition)); // W나누기
-				//
-				//_float4 vScreenPos;
-				//XMStoreFloat4(&vScreenPos, vScreenPosition);
-				//
-				//_float2 normalizedScreenPos;
-				//normalizedScreenPos.x = (vScreenPos.x + 1.0f) * (g_iWinSizeX * 0.5f);
-				//normalizedScreenPos.y = (1.0f - vScreenPos.y) * (g_iWinSizeY * 0.5f);
-				//
-				//m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-				//	XMVectorSet(normalizedScreenPos.x - g_iWinSizeX * 0.5f,
-				//		-(normalizedScreenPos.y - g_iWinSizeY * 0.5f), 0.f, 1.f));
-				
-
-				// 수정중
-
 				CTransform* pTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");
 
 				_float4x4 matTargetWorld = pTransform->Get_WorldFloat4x4();
@@ -176,7 +144,6 @@ void CUI_MonsterHP_World::LateTick(_float fTimeDelta)
 
 				_float4x4 matWorld;
 				matWorld = matTargetWorld;
-				//XMStoreFloat4x4(&matWorld, pTransform->Get_WorldMatrix());
 				_matrix matView = GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW);
 				_matrix matProj = GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ);
 
@@ -196,41 +163,61 @@ void CUI_MonsterHP_World::LateTick(_float fTimeDelta)
 				m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 					XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 
-				//if (fDistance < 10.f)
+				if (fDistance < 10.f)
 				{
-					Set_Text(_float2(m_tInfo.fX, m_tInfo.fY));
-					m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
-				}
+					// 몬스터 방향 벡터를 구하고, 카메라 방향과의 각도 계산
+					_vector vCameraPos = XMLoadFloat4(&vCamPos);
+					_vector vMonsterToCamera = pTransform->Get_Position() - vCameraPos;
 
-				if (m_bIsTarget)
-				{
-					_float2 vfOffset = _float2(15.f, -25.f);
-					_float2 vArrowPos;
-					// Target인 경우에 Arrow를 보여준다. 위치 조정이 필요하다.
-					for (auto& iter : m_Arrow)
+					vMonsterToCamera = XMVector3Normalize(vMonsterToCamera);
+					CCamera* pCurCamera = CCamera_Manager::GetInstance()->Get_CurCamera();
+					if (nullptr == pCurCamera)
+						return;
+
+					CTransform* pCameraTrans = pCurCamera->Get_Transform();
+					if (nullptr == pCameraTrans)
+						return;
+
+					_vector vCameraForward = pCameraTrans->Get_State(CTransform::STATE_LOOK);
+					vCameraForward = XMVector3Normalize(vCameraForward);
+
+					_float fAngle = XMVectorGetX(XMVector3Dot(vMonsterToCamera, vCameraForward));
+					if (fAngle >= XMConvertToRadians(0.f) && fAngle <= XMConvertToRadians(180.f))
 					{
-						CTransform* pArrowTransform = iter->Get_Component<CTransform>(L"Com_Transform");
-						if (nullptr == pArrowTransform)
-							continue;
-
-						if (iter->Get_ObjectTag() == TEXT("UI_Monster_WorldHP_ArrowLeft"))
+						if (m_bIsTarget)
 						{
-							vArrowPos = _float2(m_tInfo.fX - ((m_tInfo.fCX * 0.5f) + vfOffset.x), m_tInfo.fY + vfOffset.y);
+							_float2 vfOffset = _float2(15.f, -25.f);
+							_float2 vArrowPos;
+							// Target인 경우에 Arrow를 보여준다. 위치 조정이 필요하다.
+							for (auto& iter : m_Arrow)
+							{
+								CTransform* pArrowTransform = iter->Get_Component<CTransform>(L"Com_Transform");
+								if (nullptr == pArrowTransform)
+									continue;
 
-							pArrowTransform->Set_State(CTransform::STATE_POSITION,
-								XMVectorSet(vArrowPos.x - g_iWinSizeX * 0.5f, -(vArrowPos.y - g_iWinSizeY * 0.5f), 1.f, 1.f));
-						}
-						else
-						{
-							vArrowPos = _float2(m_tInfo.fX + ((m_tInfo.fCX * 0.5f) + vfOffset.x), m_tInfo.fY + vfOffset.y);
+								if (iter->Get_ObjectTag() == TEXT("UI_Monster_WorldHP_ArrowLeft"))
+								{
+									vArrowPos = _float2(m_tInfo.fX - ((m_tInfo.fCX * 0.5f) + vfOffset.x), m_tInfo.fY + vfOffset.y);
 
-							pArrowTransform->Set_State(CTransform::STATE_POSITION,
-								XMVectorSet(vArrowPos.x - g_iWinSizeX * 0.5f, -(vArrowPos.y - g_iWinSizeY * 0.5f), 1.f, 1.f));
+									pArrowTransform->Set_State(CTransform::STATE_POSITION,
+										XMVectorSet(vArrowPos.x - g_iWinSizeX * 0.5f, -(vArrowPos.y - g_iWinSizeY * 0.5f), 1.f, 1.f));
+								}
+								else
+								{
+									vArrowPos = _float2(m_tInfo.fX + ((m_tInfo.fCX * 0.5f) + vfOffset.x), m_tInfo.fY + vfOffset.y);
+
+									pArrowTransform->Set_State(CTransform::STATE_POSITION,
+										XMVectorSet(vArrowPos.x - g_iWinSizeX * 0.5f, -(vArrowPos.y - g_iWinSizeY * 0.5f), 1.f, 1.f));
+								}
+							}
+
+							for (auto& iter : m_Arrow)
+								iter->LateTick(fTimeDelta);
 						}
+
+						Set_Text(_float2(m_tInfo.fX, m_tInfo.fY));
+						m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 					}
-
-					for (auto& iter : m_Arrow)
-						iter->LateTick(fTimeDelta);
 				}
 			}
 		}
@@ -239,11 +226,6 @@ void CUI_MonsterHP_World::LateTick(_float fTimeDelta)
 			Set_Dead(true);
 	}
 
-	// TestCode
-//	if (KEY_TAP(KEY::T))
-//	{
-//		m_fCurHP = m_fCurHP - 100.f;
-//	}
 }
 
 HRESULT CUI_MonsterHP_World::Render()
