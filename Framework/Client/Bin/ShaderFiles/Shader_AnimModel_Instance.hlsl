@@ -35,7 +35,7 @@ struct TweenFrameDesc
 	float fTweenAcc;
 	float fPadding;
 };
-
+TweenFrameDesc  g_TweenFrames;
 TweenFrameDesc  g_TweenFrames_Array[200];
 Texture2DArray  g_TransformMap;
 

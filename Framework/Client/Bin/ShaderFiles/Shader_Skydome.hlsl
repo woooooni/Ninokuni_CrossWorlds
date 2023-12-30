@@ -70,7 +70,7 @@ PS_OUT SkyDomePixelShader(PS_IN input)
         height = 0.0f;
     }
     
-    float4 SkyColor = SkydomeTexture.Sample(LinearSampler, input.vTexcoord);
+    float4 SkyColor = SkydomeTexture.Sample(LinearSampler, input.vTexcoord * 2.0f);
     
    //output.vColor = lerp(centerColor, apexColor, height);
     output.vColor = SkyColor;

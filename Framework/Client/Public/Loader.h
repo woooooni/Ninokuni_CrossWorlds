@@ -59,6 +59,8 @@ private:
 	HRESULT Loading_Proto_AllObjects(const wstring& strPath);
 	HRESULT Loading_Proto_DynamicObjects(const wstring& strPath);
 
+	HRESULT Loading_Proto_MonsterOrNPC();
+
 public:
 	static CLoader* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVELID eNextLevel, const wstring& strFolderName);
 	virtual void Free() override;

@@ -28,7 +28,11 @@ HRESULT CBaobam_Water::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, *(_vector*)pArg);
+	if (nullptr != pArg)
+	{
+		m_vOriginPos = *(_vector*)pArg;
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, *(_vector*)pArg);
+	}
 	// m_pTransformCom->Set_State(CTransform::STATE_POSITION, {2.f, 0.f, 2.f, 1.f});
 	if (FAILED(__super::Ready_RoamingPoint()))
 		return E_FAIL;
@@ -44,6 +48,8 @@ HRESULT CBaobam_Water::Initialize(void* pArg)
 
 	if (FAILED(Ready_States()))
 		return E_FAIL;
+
+	m_pModelCom->Set_Animation(0);
 
 	return S_OK;
 }
