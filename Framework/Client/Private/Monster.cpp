@@ -405,7 +405,25 @@ void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 	m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_HIT] = true;
 	m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_HITANIM] = true;
 
-	m_tStat.fHp -= 5;
+	m_tStat.fHp -= 40;
+}
+
+HRESULT CMonster::Ready_RoamingPoint()
+{
+	_float4 vOriginPos = {};
+	XMStoreFloat4(&vOriginPos, m_vOriginPos);
+
+	_float fX = GI->RandomFloat(-6.f, 6.f);
+	_float fZ = GI->RandomFloat(-6.f, 6.f);
+
+	m_vecRoamingArea.push_back({ vOriginPos.x + fX, vOriginPos.y, vOriginPos.z + fZ, 1.f });
+
+	fX = GI->RandomFloat(-6.f, 6.f);
+	fZ = GI->RandomFloat(-6.f, 6.f);
+
+	m_vecRoamingArea.push_back({ vOriginPos.x + fX, vOriginPos.y, vOriginPos.z + fZ, 1.f });
+
+	return S_OK;
 }
 
 

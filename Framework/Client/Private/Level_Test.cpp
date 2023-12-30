@@ -40,6 +40,9 @@ HRESULT CLevel_Test::Initialize()
 	if (FAILED(Ready_Layer_Character(LAYER_TYPE::LAYER_CHARACTER)))
 		return E_FAIL;
 
+	if (FAILED(Ready_Layer_Npc(LAYER_TYPE::LAYER_NPC)))
+		return E_FAIL;
+
  	if (FAILED(Ready_Layer_Monster(LAYER_TYPE::LAYER_MONSTER)))
 		return E_FAIL;
 
@@ -70,6 +73,11 @@ HRESULT CLevel_Test::Tick(_float fTimeDelta)
 	if (KEY_TAP(KEY::PAGE_DOWN))
 	{
 		CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE);
+	}
+
+	if (KEY_TAP(KEY::K))
+	{
+		GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Spawner_Ice01"));
 	}
 
 	if (KEY_TAP(KEY::F7))
@@ -206,6 +214,18 @@ HRESULT CLevel_Test::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 	return S_OK;
 }
 
+HRESULT CLevel_Test::Ready_Layer_Npc(const LAYER_TYPE eLayerType)
+{
+	if (FAILED(GI->Add_GameObject(LEVEL_TEST, eLayerType, TEXT("Prorotype_GameObject_KingdomGuard"), nullptr)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_GameObject(LEVEL_TEST, eLayerType, TEXT("Prorotype_GameObject_HumanFAT01"), nullptr)))
+		return E_FAIL;
+
+
+	return S_OK;
+}
+
 HRESULT CLevel_Test::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 {
 	list<CGameObject*> Grounds = GI->Find_GameObjects(LEVEL_TEST, LAYER_TYPE::LAYER_GROUND);
@@ -233,7 +253,6 @@ HRESULT CLevel_Test::Ready_Layer_Terrain(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Test::Ready_Layer_Monster(const LAYER_TYPE eLayerType)
 {
-		
 	//if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prorotype_GameObject_Stellia"))))
 	//	return E_FAIL;
 	//if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prorotype_GameObject_Glanix"))))
@@ -242,8 +261,8 @@ HRESULT CLevel_Test::Ready_Layer_Monster(const LAYER_TYPE eLayerType)
 	//if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prorotype_GameObject_Baobam_Water"))))
 	//	return E_FAIL;
 
-	if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prorotype_GameObject_Shadow_Thief"))))
-		return E_FAIL;
+	//if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prorotype_GameObject_Shadow_Thief"))))
+	//	return E_FAIL;
 
 	//if (FAILED(GI->Add_GameObject(LEVEL_TEST, _uint(eLayerType), TEXT("Prorotype_GameObject_IceBearMan"))))
 	//	return E_FAIL;

@@ -89,6 +89,7 @@ namespace Client
 		OBJ_GRASS,
 		OBJ_NPC,
 		OBJ_DYNAMIC,
+		OBJ_SPAWNER,
 		OBJ_END
 	};
 

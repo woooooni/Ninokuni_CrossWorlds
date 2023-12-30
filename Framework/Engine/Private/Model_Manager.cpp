@@ -238,8 +238,8 @@ HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel, const wstring str
 		Safe_Release(pSrv);
 
 	/* Æ®·£½ºÆû ¸Ê Áö¿ì±â */
-	m_AnimTransformsCaches.clear();
-	m_AnimationsCache.shrink_to_fit();
+	//m_AnimTransformsCaches.clear();
+	//m_AnimationsCache.shrink_to_fit();
 
 	Safe_Release(pTexture);
 
@@ -1014,7 +1014,7 @@ vector<ANIM_TRANSFORM_CACHES> CModel_Manager::Create_AnimationTransform_Caches_I
 				}
 
 
-				m_AnimTransformsCaches[iAnimIndex].transforms[iFrameIndex][iBoneIndex]
+				AnimTransformsCache[iAnimIndex].transforms[iFrameIndex][iBoneIndex]
 					= Matrix(m_HierarchyNodes[iBoneIndex]->Get_OffSetMatrix())
 					* Matrix(m_HierarchyNodes[iBoneIndex]->Get_CombinedTransformation())
 					* Matrix(m_PivotMatrix);
