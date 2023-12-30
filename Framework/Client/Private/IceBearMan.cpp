@@ -30,21 +30,15 @@ HRESULT CIceBearMan::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 	
-	if (nullptr != pArg)
+	if (pArg != nullptr)
 	{
-		m_vOriginPos = *(_vector*)pArg;
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, *(_vector*)pArg);
+		OBJECT_INIT_DESC tInfo = *(OBJECT_INIT_DESC*)pArg;
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, tInfo.vStartPosition);
+		m_vOriginPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 	}
-	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, { -5.f, 0.f, -5.f, 1.f });
 
 	if (FAILED(__super::Ready_RoamingPoint()))
 		return E_FAIL;
-	//m_vOriginPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
-	//
-	///* 로밍 경로(임시) */
-	//m_vecRoamingArea.push_back(XMVectorSet(-3.f, 1.f, 1.f, 1.f));
-	//m_vecRoamingArea.push_back(XMVectorSet(-1.f, 1.f, 6.f, 1.f));
-	//m_vecRoamingArea.push_back(m_vOriginPos);
 
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;

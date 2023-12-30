@@ -3,12 +3,12 @@
 #include "Spawner.h"
 
 BEGIN(Client)
-class CSpawner_Ice01 final : public CSpawner
+class CSpawner_Ice03 final : public CSpawner
 {
 private:
-	CSpawner_Ice01(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
-	CSpawner_Ice01(const CSpawner_Ice01& rhs);
-	virtual ~CSpawner_Ice01() = default;
+	CSpawner_Ice03(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	CSpawner_Ice03(const CSpawner_Ice03& rhs);
+	virtual ~CSpawner_Ice03() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -23,14 +23,14 @@ private:
 	virtual HRESULT Spawn_Monster();
 
 private:
-	_int m_iMaxBaobamCount = 0;
 	_int m_iMaxThiefCount = 0;
+	_int m_iMaxBearCount = 0;
 
-	vector<CGameObject*> m_vecBaobam;
 	vector<CGameObject*> m_vecThief;
+	vector<CGameObject*> m_vecBear;
 
 public:
-	static CSpawner_Ice01* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	static CSpawner_Ice03* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

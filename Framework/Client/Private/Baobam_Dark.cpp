@@ -28,6 +28,17 @@ HRESULT CBaobam_Dark::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+	OBJECT_INIT_DESC tInfo = *(OBJECT_INIT_DESC*)pArg;
+
+	if (pArg != nullptr)
+	{
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, tInfo.vStartPosition);
+		m_vOriginPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+	}
+
+	if (FAILED(__super::Ready_RoamingPoint()))
+		return E_FAIL;
+
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 

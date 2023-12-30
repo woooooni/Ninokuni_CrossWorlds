@@ -501,13 +501,13 @@ Matrix CModel::Get_SocketLocalMatrix(const _uint iSocketEnumIndex)
 
 
 	/* 커스텀 피벗*/
-	if (iSocketEnumIndex < m_SocketCustomPivotRotation.size())
+	//if (iSocketEnumIndex < m_SocketCustomPivotRotation.size())
 	{
 		Matrix matCustomPivot = XMMatrixRotationQuaternion(XMQuaternionRotationRollPitchYaw(
 			XMConvertToRadians(m_SocketCustomPivotRotation[iSocketEnumIndex].x),
 			XMConvertToRadians(m_SocketCustomPivotRotation[iSocketEnumIndex].y),
 			XMConvertToRadians(m_SocketCustomPivotRotation[iSocketEnumIndex].z)));
-
+	
 		matAnimLocal = matCustomPivot * matAnimLocal;
 	}
 

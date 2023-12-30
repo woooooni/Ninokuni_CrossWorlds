@@ -33,6 +33,8 @@
 #include "UI_CharacterDummy.h"
 
 #include "Spawner_Ice01.h"
+#include "Spawner_Ice02.h"
+#include "Spawner_Ice03.h"
 #include "Glanix.h"
 #include "Glanix_IcePillar.h"
 #include "Glanix_FireSpirit.h"
@@ -355,13 +357,14 @@ HRESULT CLoader::Loading_For_Level_Test()
 		return E_FAIL;*/
 
 
-	CMonster::MONSTER_STAT statDesc;
-	statDesc.fHp = 100;
-	statDesc.fMaxHp = 100;
-	statDesc.fMp= 100;
-	statDesc.fMaxMp = 100;
+	m_strLoading = TEXT("모델을 로딩 중 입니다.");
 
 	/* Monster */
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Stellia", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Boss/Stellia/", L"Stellia")))
+		return E_FAIL;
+
+	m_strLoading = TEXT("모델을 로딩 중 입니다.");
+
 
 	CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_TEST);
 
@@ -422,58 +425,6 @@ HRESULT CLoader::Loading_For_Level_Tool()
  	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Terrain"),
 		CTerrain::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_TERRAIN)))
 		return E_FAIL;
-
-#pragma region Monster
-
-	/*if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Stellia", CStellia::Create(m_pDevice, m_pContext, TEXT("Stellia"), statDesc), LAYER_MONSTER)))
-		return E_FAIL;*/
-	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Baobam_Water", CBaobam_Water::Create(m_pDevice, m_pContext, TEXT("Baobam_Water"), statDesc), LAYER_MONSTER)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Shadow_Thief", CShadow_Thief::Create(m_pDevice, m_pContext, TEXT("Shadow_Thief"), statDesc), LAYER_MONSTER)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_PumpkinCandle", CPumpkinCandle::Create(m_pDevice, m_pContext, TEXT("PumpkinCandle"), statDesc), LAYER_MONSTER)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Clown", CClown::Create(m_pDevice, m_pContext, TEXT("Clown"), statDesc), LAYER_MONSTER)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Clown_Wizard", CClown_Wizard::Create(m_pDevice, m_pContext, TEXT("Clown"), statDesc), LAYER_MONSTER)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Baobam_Dark", CBaobam_Dark::Create(m_pDevice, m_pContext, TEXT("Clown"), statDesc), LAYER_MONSTER)))
-	//	return E_FAIL;
-	/*if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_DreamerMazeWitch", CDMWitch::Create(m_pDevice, m_pContext, TEXT("DreamerMazeWitch"), statDesc), LAYER_MONSTER)))
-		return E_FAIL;*/
-
-	m_strLoading = TEXT("모델을 로딩 중 입니다.");
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SwordMan_Body", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Test/", L"SwordMan_Body")))
-	//	return E_FAIL;
-
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Witch", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Test/", L"Witch")))
-	//	return E_FAIL;
-
-	/*if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Stellia", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Boss/Stellia/", L"Stellia")))
-		return E_FAIL;*/
-
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Baobam_Water", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Ice/Baobam_Water/", L"Baobam_Water")))
-	//	return E_FAIL;
-
-	/*if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Shadow_Thief", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Ice/Shadow_Thief/", L"Shadow_Thief")))
-		return E_FAIL;
-
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_DreamerMazeWitch", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Boss/DreamerMazeWitch/", L"DreamerMazeWitch")))
-		return E_FAIL;*/
-
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_PumpkinCandle", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Witch/PumpkinCandle/", L"PumpkinCandle")))
-	//	return E_FAIL;
-
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Clown", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Witch/Clown/", L"Clown")))
-	//	return E_FAIL;
-
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Clown_Wizard", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Witch/Clown_Wizard/", L"Clown_Wizard")))
-	//	return E_FAIL;
-
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Baobam_Dark", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Witch/Baobam_Dark/", L"Baobam_Dark")))
-	//	return E_FAIL;
-#pragma endregion
-
 
 	if (FAILED(Loading_Proto_AllObjects(L"../Bin/Export/NonAnimModel/Map/")))
 		return E_FAIL;

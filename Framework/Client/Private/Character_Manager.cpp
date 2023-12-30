@@ -32,8 +32,8 @@ HRESULT CCharacter_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceC
 	/*if (FAILED(Loading_Proto_Parts_Model(L"../Bin/Export/AnimModel/Character/SwordMan/")))
 		return E_FAIL;*/
 
-	if (FAILED(Loading_Proto_Parts_Model(L"../Bin/Export/AnimModel/Character/Engineer/")))
-		return E_FAIL;
+	//if (FAILED(Loading_Proto_Parts_Model(L"../Bin/Export/AnimModel/Character/Engineer/")))
+	//	return E_FAIL;
 
 	if (FAILED(Ready_PartModels()))
 		return E_FAIL;
@@ -84,20 +84,20 @@ HRESULT CCharacter_Manager::Ready_Characters()
 	//if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_SwordMan", CCharacter_SwordMan::Create(m_pDevice, m_pContext, TEXT("SwordMan")), LAYER_CHARACTER)))
 	//	return E_FAIL;
 
-	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_Engineer", CCharacter_Engineer::Create(m_pDevice, m_pContext, TEXT("Engineer")), LAYER_CHARACTER)))
-		return E_FAIL;
+	//if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_Engineer", CCharacter_Engineer::Create(m_pDevice, m_pContext, TEXT("Engineer")), LAYER_CHARACTER)))
+	//	return E_FAIL;
 
-	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Engineer_Bullet", CEngineer_Bullet::Create(m_pDevice, m_pContext), LAYER_CHARACTER)))
-		return E_FAIL;
+	//if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Engineer_Bullet", CEngineer_Bullet::Create(m_pDevice, m_pContext), LAYER_CHARACTER)))
+	//	return E_FAIL;
 
 	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SwordMan_Dummy", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/SwordMan/Dummy/", L"SwordMan_Dummy")))
 	//	return E_FAIL;
 
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Engineer_Dummy", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Engineer/Dummy/", L"Engineer_Dummy")))
-		return E_FAIL;
+	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Engineer_Dummy", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Engineer/Dummy/", L"Engineer_Dummy")))
+	//	return E_FAIL;
 
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Engineer_Bullet", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Bullet/", L"Engineer_Bullet")))
-		return E_FAIL;
+	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Engineer_Bullet", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Bullet/", L"Engineer_Bullet")))
+	//	return E_FAIL;
 
 	
 
@@ -113,14 +113,14 @@ HRESULT CCharacter_Manager::Ready_Characters()
 
 
 
-	CCharacter* pCharacterEngineer = dynamic_cast<CCharacter*>(GI->Find_Prototype_GameObject(LAYER_CHARACTER, L"Prototype_GameObject_Character_Engineer"));
-	if (nullptr == pCharacterEngineer)
-		return E_FAIL;
+	//CCharacter* pCharacterEngineer = dynamic_cast<CCharacter*>(GI->Find_Prototype_GameObject(LAYER_CHARACTER, L"Prototype_GameObject_Character_Engineer"));
+	//if (nullptr == pCharacterEngineer)
+	//	return E_FAIL;
 
 
-	m_pCharacters[CHARACTER_TYPE::ENGINEER] = dynamic_cast<CCharacter*>(pCharacterEngineer->Clone(nullptr));
-	if (nullptr == m_pCharacters[CHARACTER_TYPE::ENGINEER])
-		return E_FAIL;
+	//m_pCharacters[CHARACTER_TYPE::ENGINEER] = dynamic_cast<CCharacter*>(pCharacterEngineer->Clone(nullptr));
+	//if (nullptr == m_pCharacters[CHARACTER_TYPE::ENGINEER])
+	//	return E_FAIL;
 
 
 	return S_OK;
