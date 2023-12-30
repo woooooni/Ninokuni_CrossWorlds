@@ -3,12 +3,20 @@
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix, ReflectionMatrix;
 Texture2D	g_DiffuseTexture;
 Texture2D	g_NormalTexture;
+Texture2D	g_MaskMap;
+Texture2D	g_MaskMap2;
 float4		g_vCamPosition;
 
 cbuffer WaterOption
 {
-    float fWaterTranslation;
+    float fWaterTranslationSpeed;
+    float fWaterTime;
     float fReflectRefractScale;
+	
+    float fTiling = 5.0f;
+    float fStrength = 2.0f;
+    float2 flowDirection;
+	
     bool bFresnel = false;
 };
 
@@ -132,6 +140,7 @@ struct WaterPixelToFrame
     float4 vColor : SV_TARGET0;
     float4 vNormal : SV_TARGET1;
     float4 vDepth : SV_TARGET2;
+    float4 vBloom : SV_TARGET3;
     //float4 vSunMask : SV_TARGET3;
 };
 
@@ -197,17 +206,39 @@ WaterPixelToFrame WaterPS(WaterVertexToPixel input)
     float2 vReflectTexCoord;
     float2 vRefractTexCoord;
     float4 vNormalMap;
+    float4 vNormalMap2;
     float3 vNormal;
     float4 vReflectionColor;
     float4 vRefractionColor;
-    
-    float4 vMtrlDiffuse = g_DiffuseTexture.Sample(LinearSampler, input.vTexUV);
-    
-    input.vTexUV.y += fWaterTranslation;
-    
-    vNormalMap = g_NormalTexture.Sample(LinearSampler, input.vTexUV * 4);
+	
+	// TODO 
+    float2 vFlowDir = normalize(flowDirection);
+    float2 flow = vFlowDir * fWaterTime * fWaterTranslationSpeed;
+	
+    vNormalMap = g_NormalTexture.Sample(LinearSampler, input.vTexUV * fTiling + flow) * fStrength;
+    vNormalMap2 = g_NormalTexture.Sample(LinearSampler, input.vTexUV * fTiling - flow * 0.3f) * fStrength * 0.5f;
+    vNormal = (vNormalMap + vNormalMap2) * 0.5f;
+	
+    float4 vMtrlDiffuse = float4(0.0f, 144.0f / 255.0f, 233.0f / 255.0f, 0.85f);
     vNormal = (vNormalMap.xyz * 2.0f) - 1.0f;
+	
+    float4 vMaskMap = g_MaskMap.Sample(LinearSampler, input.vTexUV * fTiling + flow) * fStrength;
+    float4 vMaskMap2 = g_MaskMap.Sample(LinearSampler, input.vTexUV * fTiling - flow * 0.3f) * fStrength * 0.5f;
+	
+    float4 vFinalMask = (vMaskMap + vMaskMap2) * 0.5f;
+	
+    if (vFinalMask.r >= 0.5f && vFinalMask.g >= 0.5f && vFinalMask.b >= 0.5f)
+        vMtrlDiffuse.rgb += 0.3f;
+
+    float4 vMaskMap3 = g_MaskMap2.Sample(LinearSampler, input.vTexUV * 12.0f + flow) * 1.05f;
+	
+    if (vMaskMap3.r >= 0.99999999f && vMaskMap3.g >= 0.99999999f && vMaskMap3.b >= 0.99999999f)
+        output.vBloom = float4(1.0f, 1.0f, 1.0f,0.5f);
+	else
+        output.vBloom = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	
     float3x3 WorldMatrix = float3x3(input.vTangent, input.vBinormal, input.vNormal.xyz);
+	
     vNormal = normalize(mul(vNormal, WorldMatrix));
 	
 	
@@ -241,7 +272,7 @@ WaterPixelToFrame WaterPS(WaterVertexToPixel input)
     //    output.vColor = lerp(vReflectionColor, vRefractionColor, 0.5f);
     
     output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
-    output.vDepth = float4(input.vProjPos.z / input.vProjPos.w, input.vProjPos.w / 1000.f, 0.0f, 0.0f);
+    output.vDepth = float4(input.vProjPos.z / input.vProjPos.w, input.vProjPos.w / 1000.f, 1.0f, 0.0f);
     
     return output;
 }

@@ -52,6 +52,9 @@ HRESULT CLevel_Tool::Initialize()
 	if (FAILED(Ready_Layer_Weapon(LAYER_TYPE::LAYER_WEAPON)))
 		return E_FAIL;
 
+	if (FAILED(Ready_Layer_Skydome(LAYER_TYPE::LAYER_SKYBOX)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -186,6 +189,16 @@ HRESULT CLevel_Tool::Ready_Layer_Effect(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Tool::Ready_Layer_Weapon(const LAYER_TYPE eLayerType)
 {
+	return S_OK;
+}
+
+HRESULT CLevel_Tool::Ready_Layer_Skydome(const LAYER_TYPE eLayerType)
+{
+	if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_SKYBOX, TEXT("Prototype_GameObject_Skydome"))))
+		return E_FAIL;
+	//if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_SKYBOX, TEXT("Prototype_GameObject_SkyPlane"))))
+	//	return E_FAIL;
+
 	return S_OK;
 }
 

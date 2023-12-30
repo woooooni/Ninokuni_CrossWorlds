@@ -41,7 +41,7 @@ void CPlants::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
 
-	if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 30.f))
+	if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 170.f))
 	{
 		// Shadow 필요하면 ShadowRender 추가?
 	//m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
@@ -70,6 +70,10 @@ HRESULT CPlants::Render_ShadowDepth()
 
 HRESULT CPlants::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
 {
+	if (true == m_bEnable)
+		return S_OK;
+
+
 	if (nullptr == m_pModelCom || nullptr == pInstancingShader)
 		return E_FAIL;
 	if (FAILED(pInstancingShader->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
@@ -98,6 +102,9 @@ HRESULT CPlants::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancin
 
 HRESULT CPlants::Render_Instance_Shadow(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
 {
+	if (true == m_bEnable)
+		return S_OK;
+
 	if (nullptr == m_pModelCom || nullptr == pInstancingShader)
 		return E_FAIL;
 	_float4 vCamPosition = GI->Get_CamPosition();

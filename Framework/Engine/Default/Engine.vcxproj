@@ -311,9 +311,11 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\VIBuffer.h" />
     <ClInclude Include="..\Public\VIBuffer_Cell.h" />
     <ClInclude Include="..\Public\VIBuffer_Cube.h" />
+    <ClInclude Include="..\Public\VIBuffer_Grass.h" />
     <ClInclude Include="..\Public\VIBuffer_Instancing.h" />
     <ClInclude Include="..\Public\VIBuffer_Particle.h" />
     <ClInclude Include="..\Public\VIBuffer_Rect.h" />
+    <ClInclude Include="..\Public\VIBuffer_SkyPlane.h" />
     <ClInclude Include="..\Public\VIBuffer_Terrain.h" />
   </ItemGroup>
   <ItemGroup>
@@ -384,9 +386,11 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\VIBuffer.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Cell.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Cube.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_Grass.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Instancing.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Particle.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Rect.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_SkyPlane.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Terrain.cpp" />
     <ClCompile Include="..\Public\DirectXTK\SimpleMath.cpp" />
   </ItemGroup>

@@ -236,6 +236,9 @@ void CTool_Map::Picking()
 			list<CGameObject*>& GameObjects = GI->Find_GameObjects(LEVEL_TOOL, i);
 			for (auto& Object : GameObjects)
 			{
+				if (true == Object->Get_Enable())
+					continue;
+
 				CTransform* pTransform = Object->Get_Component<CTransform>(L"Com_Transform");
 				CModel* pModel = Object->Get_Component<CModel>(L"Com_Model");
 				if (pTransform == nullptr)
@@ -290,7 +293,7 @@ void CTool_Map::Picking()
 
 					if (true == m_bPlantMode)
 					{
-						if (CPicking_Manager::GetInstance()->Is_Picking(pTransform, pMesh, false, &vPosition))
+						if (CPicking_Manager::GetInstance()->Is_TestPicking(pTransform, pMesh, &vPosition))
 						{
 							CGameObject* pPlant = GI->Clone_GameObject(m_pSelectObj->Get_PrototypeTag(), LAYER_TYPE::LAYER_GRASS);
 
@@ -303,7 +306,7 @@ void CTool_Map::Picking()
 					}
 					else
 					{
-						if (CPicking_Manager::GetInstance()->Is_Picking(pTransform, pMesh, false, &vPosition))
+						if (CPicking_Manager::GetInstance()->Is_TestPicking(pTransform, pMesh, &vPosition))
 						{
 							CTransform* pTargetTransform = m_pSelectObj->Get_Component<CTransform>(L"Com_Transform");
 							pTargetTransform->Set_State(CTransform::STATE::STATE_POSITION, ::XMLoadFloat4(&vPosition));
@@ -358,7 +361,7 @@ void CTool_Map::MapObjectSpace()
 
 			ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.f), u8"오브젝트");
 			if (nullptr != m_pSelectObj)
-			{ 
+			{
 				_bool iChange = 0;
 				ImGui::PushItemWidth(50);
 
@@ -428,6 +431,15 @@ void CTool_Map::MapObjectSpace()
 
 				}
 				ImGui::PopItemWidth();
+
+				ImGui::SameLine();
+
+
+				_bool bEnable = m_pSelectObj->Get_Enable();
+				if (ImGui::Checkbox("Enable", &bEnable))
+				{
+					m_pSelectObj->Set_Enable(bEnable);
+				}
 			}
 			else
 				ImGui::TextColored(ImVec4(1.0f, 0.0f, 1.0f, 1.0f), u8"[ 현재 선택된 오브젝트가 없습니다.]");
@@ -1086,6 +1098,8 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 	File->Open(strMapFilePath, FileMode::Read);
 
 	GI->Clear_PhysX_Ground();
+	GI->Clear_Layer(LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC);
+	m_pSelectObj = nullptr;
 
 	for (_uint i = 0; i < LAYER_TYPE::LAYER_END; ++i)
 	{

@@ -41,16 +41,25 @@ HRESULT CStaticObject::Initialize(void* pArg)
 
 void CStaticObject::Tick(_float fTimeDelta)
 {
+	if (true == m_bEnable)
+		return;
+
 	__super::Tick(fTimeDelta);
 }
 
 void CStaticObject::LateTick(_float fTimeDelta)
 {
+	if (true == m_bEnable)
+		return;
+
 	__super::LateTick(fTimeDelta);
 }
 
 HRESULT CStaticObject::Render()
 {
+	if (true == m_bEnable)
+		return S_OK;
+
 	if (nullptr == m_pModelCom)
 		return E_FAIL;
 
@@ -87,6 +96,9 @@ HRESULT CStaticObject::Render()
 
 HRESULT CStaticObject::Render_ShadowDepth()
 {
+	if (true == m_bEnable)
+		return S_OK;
+
 	CShader* pShader = m_pModelCom->Get_ModelType() == CModel::TYPE::TYPE_NONANIM ? m_pNonAnimShaderCom : m_pAnimShaderCom;
 
 	if (nullptr == pShader || nullptr == m_pTransformCom)

@@ -18,6 +18,7 @@ texture2D g_SpecularTarget;
 texture2D g_SSAOTarget;
 texture2D g_ShadowTarget;
 texture2D g_OutlineTarget;
+texture2D g_BloomTarget;
 
 texture2D g_BlendMixTarget;
 
@@ -109,7 +110,7 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
 	vector		vNormalDesc = g_NormalTarget.Sample(PointSampler, In.vTexcoord);
 	vector		vDepthDesc = g_DepthTarget.Sample(PointSampler, In.vTexcoord);
 	float		fViewZ = vDepthDesc.y * 1000.f;
-
+		
 	vector		vNormal = vector(vNormalDesc.xyz * 2.f - 1.f, 0.f);
 
 	Out.vShade = g_vLightDiffuse * (saturate(dot(normalize(g_vLightDir) * -1.f, vNormal)) + (g_vLightAmbient * g_vMtrlAmbient));
@@ -247,6 +248,8 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 {
 	PS_OUT Out = (PS_OUT)0;
 
+    vector vDepthDesc = g_DepthTarget.Sample(PointSampler, In.vTexcoord);
+	
 	// vDiffuse
 	vector vDiffuse = g_DiffuseTarget.Sample(LinearSampler, In.vTexcoord);
 	if (vDiffuse.a == 0.f)
@@ -259,7 +262,7 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 
     //vSpecular
 
-    vector vSpecular = g_SpecularTarget.Sample(LinearSampler, In.vTexcoord);
+    vector vSpecular = float4(0.f, 0.f, 0.f, 0.f);
     vSpecular = saturate(vSpecular);
     //vSpecular = ceil(vSpecular * 5.f) / 5.f;
 
@@ -278,13 +281,16 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 	if(g_bOutLineDraw)
 		vOutline = g_OutlineTarget.Sample(LinearSampler, In.vTexcoord);
 
+    vector vBloomColor = g_BloomTarget.Sample(LinearSampler, In.vTexcoord);
+	
+	
 	/* Fog
 	float fFogFactor = saturate(((g_vFogStartEnd.y - (fViewZ)) / (g_vFogStartEnd.y - g_vFogStartEnd.x)));
 	Out.vColor = fFogFactor * Out.vColor + (1.f - fFogFactor) * g_vFogColor;*/
 
 	// Output
 	//Out.vColor = vDiffuse * vShade * vShadow * vSSAO * vOutline; // +vSpecular;
-	Out.vColor = vDiffuse * vShade * vShadow * vOutline +vSpecular;
+	Out.vColor = vDiffuse * vShade * vShadow * vOutline + vSpecular + vBloomColor;
 	return Out;
 }
 

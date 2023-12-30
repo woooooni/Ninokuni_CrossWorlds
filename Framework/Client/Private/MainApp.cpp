@@ -241,6 +241,11 @@ HRESULT CMainApp::Ready_Prototype_Component()
 		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 100, 100))))
 		return E_FAIL;
 
+	/* For.Prototype_Component_VIBuffer_Sky_Plane*/
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Sky_Plane"),
+		CVIBuffer_SkyPlane::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 	
 
 	/* For.Prototype_Component_VIBuffer_Trail*/
@@ -311,6 +316,16 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	/* For. Prototype_Component_Shader_Water */
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Water"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Water.hlsl"), VTXTEX_DECLARATION::Elements, VTXTEX_DECLARATION::iNumElements))))
+		return E_FAIL;
+
+	/* For. Prototype_Component_Shader_Skydome */
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Skydome"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Skydome.hlsl"), VTXMODEL_DECLARATION::Elements, VTXMODEL_DECLARATION::iNumElements))))
+		return E_FAIL;
+
+	/* For. Prototype_Component_Shader_SkyPlane */
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Plane"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_SkyPlane.hlsl"), VTXTEX_DECLARATION::Elements, VTXTEX_DECLARATION::iNumElements))))
 		return E_FAIL;
 
 
@@ -430,9 +445,23 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Water_Normal"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/AnimModel/Map/Water/Water_normal1.png")))))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Water_Normal2"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/AnimModel/Map/Water/others_0020_normal_directx_2k.png")))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Water_Diffuse"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/AnimModel/Map/Water/others_0020_color_2k.png")))))
+		return E_FAIL;
 
-
-
+	/* For.Prototype_Component_Sky */
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Sky_Cloud"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/SkyDom/Cloud1.dds")))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Sky_Cloud2"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/SkyDom/Cloud2.dds")))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Sky_DomeTex"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/SkyDom/T_skyyy.png")))))
+		return E_FAIL;
 
 	/* For.Prototype_Component_Transform */
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Transform"),

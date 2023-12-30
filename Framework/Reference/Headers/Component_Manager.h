@@ -21,6 +21,8 @@
 #include "VIBuffer_Terrain.h"
 #include "VIBuffer_Particle.h"
 #include "VIBuffer_Instancing.h"
+#include "VIBuffer_SkyPlane.h"
+#include "VIBuffer_Grass.h"
 
 
 #include "DebugDraw.h"

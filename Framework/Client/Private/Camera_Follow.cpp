@@ -58,7 +58,18 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, Calculate_WorldPosition(fTimeDelta));
 	
 	/* Look & Shake */
-	const Vec4 vLookAtPos = Calculate_Look(fTimeDelta);
+	Vec4 vLookAtPos = Calculate_Look(fTimeDelta);
+
+	m_pTransformCom->LookAt(Calculate_Look(fTimeDelta));
+
+	__super::Tick(fTimeDelta); /* Shake, Fov, Dist */
+
+	/* Collision */
+	if(nullptr != m_pControllerCom)
+		m_pControllerCom->Tick_Controller(fTimeDelta);
+
+	/* Deffered */
+	if (Is_Shake())
 	{
 		if (Is_Shake())
 			m_pTransformCom->LookAt(Vec4(vLookAtPos + Vec4(Get_ShakeLocalPos())).OneW());
@@ -75,7 +86,8 @@ void CCamera_Follow::LateTick(_float fTimeDelta)
 	if (!m_bActive || nullptr == m_pTargetObj || nullptr == m_pLookAtObj)
 		return;
 
-	m_pControllerCom->LateTick_Controller(fTimeDelta);
+	if (nullptr != m_pControllerCom)
+		m_pControllerCom->LateTick_Controller(fTimeDelta);
 
 	__super::LateTick(fTimeDelta);
 }
@@ -88,7 +100,7 @@ HRESULT CCamera_Follow::Render()
 HRESULT CCamera_Follow::Ready_Components()
 {
 	/* CPhysX_Controller */
-	{
+	/*{
 		CPhysX_Controller::CONTROLLER_DESC ControllerDesc;
 		{
 			ControllerDesc.eType = CPhysX_Controller::CAPSULE;
@@ -102,7 +114,7 @@ HRESULT CCamera_Follow::Ready_Components()
 
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_PhysXController"), TEXT("Com_Controller"), (CComponent**)&m_pControllerCom, &ControllerDesc)))
 			return E_FAIL;
-	}
+	}*/
 
 	return S_OK;
 }

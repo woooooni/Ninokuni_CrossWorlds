@@ -263,10 +263,13 @@
     <ClInclude Include="..\Public\GlanixState_Stun.h" />
     <ClInclude Include="..\Public\Glanix_FireSpirit.h" />
     <ClInclude Include="..\Public\Glanix_IcePillar.h" />
+    <ClInclude Include="..\Public\Grass.h" />
     <ClInclude Include="..\Public\Item_Manager.h" />
     <ClInclude Include="..\Public\Pigeon.h" />
     <ClInclude Include="..\Public\PolarBear.h" />
     <ClInclude Include="..\Public\Rabbit.h" />
+    <ClInclude Include="..\Public\SkyDome.h" />
+    <ClInclude Include="..\Public\SkyPlane.h" />
     <ClInclude Include="..\Public\State_Animals.h" />
     <ClInclude Include="..\Public\State_Animal_Fly.h" />
     <ClInclude Include="..\Public\State_Animal_Idle.h" />
@@ -716,10 +719,13 @@
     <ClCompile Include="..\Private\GlanixState_Stun.cpp" />
     <ClCompile Include="..\Private\Glanix_FireSpirit.cpp" />
     <ClCompile Include="..\Private\Glanix_IcePillar.cpp" />
+    <ClCompile Include="..\Private\Grass.cpp" />
     <ClCompile Include="..\Private\Item_Manager.cpp" />
     <ClCompile Include="..\Private\Pigeon.cpp" />
     <ClCompile Include="..\Private\PolarBear.cpp" />
     <ClCompile Include="..\Private\Rabbit.cpp" />
+    <ClCompile Include="..\Private\SkyDome.cpp" />
+    <ClCompile Include="..\Private\SkyPlane.cpp" />
     <ClCompile Include="..\Private\State_Animals.cpp" />
     <ClCompile Include="..\Private\State_Animal_Fly.cpp" />
     <ClCompile Include="..\Private\State_Animal_Idle.cpp" />
@@ -1093,6 +1099,18 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_AnimModel_Instance.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_MeshEffect_Instance.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Point_Instance.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Skydome.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_SkyPlane.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>
+    </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_TextureEffect_Instance.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Trail.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_UI.hlsl" />

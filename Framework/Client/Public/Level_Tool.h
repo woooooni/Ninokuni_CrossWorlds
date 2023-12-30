@@ -33,6 +33,7 @@ private:
 	HRESULT Ready_Layer_UI(const LAYER_TYPE eLayerType);
 	HRESULT Ready_Layer_Effect(const LAYER_TYPE eLayerType);
 	HRESULT Ready_Layer_Weapon(const LAYER_TYPE eLayerType);
+	HRESULT Ready_Layer_Skydome(const LAYER_TYPE eLayerType);
 
 
 private:
