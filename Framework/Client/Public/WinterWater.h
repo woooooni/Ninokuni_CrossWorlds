@@ -4,12 +4,14 @@
 
 BEGIN(Client)
 
-class CWater final : public CDynamicObject
+class CWinterWater final : public CDynamicObject
 {
 private:
-	explicit CWater(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType);
-	explicit CWater(const CWater& rhs);
-	virtual ~CWater() = default;
+	enum TEX_TYPE { TEX_DIFFUSE, TEX_NORMAL, TEX_MASK1, TEX_MASK2, TEX_END };
+private:
+	explicit CWinterWater(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType);
+	explicit CWinterWater(const CWinterWater& rhs);
+	virtual ~CWinterWater() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -24,26 +26,19 @@ public:
 
 	virtual HRESULT Bind_ShaderResources();
 
-public:
-	static CWater* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eObjType);
-	virtual CGameObject* Clone(void* pArg);
-
-
 private:
 	CShader* m_pWaterShaderCom = nullptr;
-	CTexture* m_pTextureCom = nullptr;
-	CTexture* m_pDiffuseTextureCom = nullptr;
-	CTexture* m_pNoiseTextureCom[2] = { nullptr, nullptr };
+	CTexture* m_pTextureCom[TEX_END] = {};
+
 private:
-	// Water State
-	_float m_fReflectRefractSacle = 0.1f;
 	_float m_fWaterTranslationSpeed = 0.015f;
-
 	_float m_fTime = 0.0f;
-
 	Vec2 m_vDirection;
 
-	_bool m_bFresnel = false;
+public:
+	static CWinterWater* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eObjType);
+	virtual CGameObject* Clone(void* pArg);
+
 public:
 	virtual void Free() override;
 };

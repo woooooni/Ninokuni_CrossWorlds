@@ -244,6 +244,7 @@
     <ClInclude Include="..\Public\Enbi.h" />
     <ClInclude Include="..\Public\Engineer_Bullet.h" />
     <ClInclude Include="..\Public\Ermine.h" />
+    <ClInclude Include="..\Public\EvermoreWater.h" />
     <ClInclude Include="..\Public\Fox.h" />
     <ClInclude Include="..\Public\FunyaSnowman.h" />
     <ClInclude Include="..\Public\GameItem_Armor.h" />
@@ -669,6 +670,8 @@
     <ClInclude Include="..\Public\VIBuffer_Trail.h" />
     <ClInclude Include="..\Public\UI.h" />
     <ClInclude Include="..\Public\Sword.h" />
+    <ClInclude Include="..\Public\WinterWater.h" />
+    <ClInclude Include="..\Public\WitchWater.h" />
     <ClInclude Include="..\Public\Zehra.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="Resource.h" />
@@ -750,6 +753,7 @@
     <ClCompile Include="..\Private\Enbi.cpp" />
     <ClCompile Include="..\Private\Engineer_Bullet.cpp" />
     <ClCompile Include="..\Private\Ermine.cpp" />
+    <ClCompile Include="..\Private\EvermoreWater.cpp" />
     <ClCompile Include="..\Private\Fox.cpp" />
     <ClCompile Include="..\Private\FunyaSnowman.cpp" />
     <ClCompile Include="..\Private\GameItem_Armor.cpp" />
@@ -1177,6 +1181,8 @@
     <ClCompile Include="..\Private\UI_WindowWorldMap.cpp" />
     <ClCompile Include="..\Private\Vfx.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Trail.cpp" />
+    <ClCompile Include="..\Private\WinterWater.cpp" />
+    <ClCompile Include="..\Private\WitchWater.cpp" />
     <ClCompile Include="..\Private\Zehra.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="stdafx.cpp">
