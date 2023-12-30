@@ -18,6 +18,7 @@ HRESULT CState_SwordMan_BurstSkill_MegaSlash::Initialize(const list<wstring>& An
 
 void CState_SwordMan_BurstSkill_MegaSlash::Enter_State(void* pArg)
 {
+    m_pCharacter->Appear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }
 

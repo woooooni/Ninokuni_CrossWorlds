@@ -55,7 +55,7 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 	/* 1-4. 게임내에서 사용할 레벨(씬)을 생성한다.   */
-	if (FAILED(Open_Level(LEVEL_LOGO, L"Final_Boss")))
+	if (FAILED(Open_Level(LEVEL_TEST, L"Final_Boss")))
 		return E_FAIL;
 
 
@@ -340,9 +340,9 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	///////////// For UI
 	// 디졸브 텍스쳐
 
-//	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Dissolve"),
-//		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Dissolve/Dissolve.png")))))
-//		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_DissolveWeapon"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/Noise"), 0, true))))
+		return E_FAIL;
 
 
 	if (FAILED(Ready_UI_TextureComponent()))

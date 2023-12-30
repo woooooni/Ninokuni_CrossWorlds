@@ -18,6 +18,7 @@ HRESULT CState_SwordMan_Dead::Initialize(const list<wstring>& AnimationList)
 
 void CState_SwordMan_Dead::Enter_State(void* pArg)
 {
+    m_pCharacter->Appear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }
 

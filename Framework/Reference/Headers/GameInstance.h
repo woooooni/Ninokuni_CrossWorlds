@@ -136,6 +136,7 @@ public:
 
 public:
 	/* For. PhysX_Manager */
+	HRESULT Add_Building(class CGameObject* pGameObject, class CModel* pModel, Matrix WorldMatrix, const wstring& strCollisionTag = L"");
 	HRESULT Add_Ground(class CGameObject* pGameObject, CModel* pModel, _matrix WorldMatrix, const wstring& strCollisionTag = L"");
 	PxController* Add_CapsuleController(class CGameObject* pGameObject, Matrix WorldMatrix, _float fHeight, _float fRadius, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack = nullptr);
 	PxController* Add_BoxController(CGameObject* pGameObject, Matrix WorldMatrix, _float3 vExtents, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack = nullptr);

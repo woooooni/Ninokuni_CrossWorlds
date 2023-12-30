@@ -18,6 +18,7 @@ HRESULT CState_SwordMan_Battle_Run::Initialize(const list<wstring>& AnimationLis
 
 void CState_SwordMan_Battle_Run::Enter_State(void* pArg)
 {
+	m_pCharacter->Appear_Weapon();
 	m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }
 

@@ -31,10 +31,12 @@ HRESULT CSpawner::Initialize(void* pArg)
 
 void CSpawner::Tick(_float fTimeDelta)
 {
+	__super::Tick(fTimeDelta);
 }
 
 void CSpawner::LateTick(_float fTimeDelta)
 {
+	__super::LateTick(fTimeDelta);
 	// 랜더 그룹 추가하기.
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 //#ifdef _DEBUG

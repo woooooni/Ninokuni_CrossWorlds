@@ -34,6 +34,7 @@ public:
 	vector<class CModel*>* Get_PartModels(const CHARACTER_TYPE& eCharacterType, const PART_TYPE& ePartType);
 
 
+
 private:
 	ID3D11Device* m_pDevice = nullptr;
 	ID3D11DeviceContext* m_pContext = nullptr;

@@ -36,6 +36,13 @@ HRESULT CWeapon::Initialize(void* pArg)
 
 void CWeapon::Tick(_float fTimeDelta)
 {
+	__super::Tick(fTimeDelta);
+	if (true == m_bDisappear)
+	{
+		m_fAccDissolve += fTimeDelta;
+		if (m_fAccDissolve >= 1.f)
+			m_fAccDissolve = 1.f;
+	}
 }
 
 void CWeapon::LateTick(_float fTimeDelta)
@@ -75,6 +82,10 @@ HRESULT CWeapon::Render()
 		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
 
+		if (true == m_bDisappear)
+			iPassIndex = 4;
+
+
 		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, iPassIndex)))
 			return E_FAIL;
 	}
@@ -95,6 +106,11 @@ HRESULT CWeapon::Ready_Components()
 	/* For.Com_Shader */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Model"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
+
+	/* For.Com_DissolveTexture */
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_DissolveWeapon"), TEXT("Com_DissolveTexture"), (CComponent**)&m_pDissolveTextureCom)))
+		return E_FAIL;
+	
 
 	return S_OK;
 }
@@ -118,6 +134,37 @@ HRESULT CWeapon::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
 
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveWeight", &m_fAccDissolve, sizeof(_float))))
+		return E_FAIL;
+
+	if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture", 12)))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveWeight", &m_fAccDissolve, sizeof(_float))))
+		return E_FAIL;
+
+
+	return S_OK;
+}
+
+HRESULT CWeapon::Appear_Weapon()
+{
+	if (true == m_bDisappear)
+	{
+		m_bDisappear = false;
+		m_fAccDissolve = 1.f;
+	}
+	return S_OK;
+}
+
+HRESULT CWeapon::Disappear_Weapon()
+{
+	if (false == m_bDisappear)
+	{
+		m_fAccDissolve = 0.f;
+		m_bDisappear = true;
+	}
+
 	return S_OK;
 }
 
@@ -125,9 +172,11 @@ void CWeapon::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pRendererCom);
-	Safe_Release(m_pTransformCom);
+	Safe_Release(m_pOwner);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pRendererCom);
-	Safe_Release(m_pOwner);
+	Safe_Release(m_pTransformCom);
+	Safe_Release(m_pDissolveTextureCom);
+	
+	
 }

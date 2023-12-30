@@ -18,6 +18,7 @@ HRESULT CState_SwordMan_SpecialSkill_AcaneBarrier::Initialize(const list<wstring
 
 void CState_SwordMan_SpecialSkill_AcaneBarrier::Enter_State(void* pArg)
 {
+    m_pCharacter->Appear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }
 

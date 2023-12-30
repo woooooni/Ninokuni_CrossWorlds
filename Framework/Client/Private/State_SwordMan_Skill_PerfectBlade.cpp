@@ -18,6 +18,7 @@ HRESULT CState_SwordMan_Skill_PerfectBlade::Initialize(const list<wstring>& Anim
 
 void CState_SwordMan_Skill_PerfectBlade::Enter_State(void* pArg)
 {
+    m_pCharacter->Appear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }
 

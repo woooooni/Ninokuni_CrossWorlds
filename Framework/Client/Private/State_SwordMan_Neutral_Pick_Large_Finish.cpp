@@ -10,14 +10,17 @@ CState_SwordMan_Neutral_Pick_Large_Finish::CState_SwordMan_Neutral_Pick_Large_Fi
 
 HRESULT CState_SwordMan_Neutral_Pick_Large_Finish::Initialize(const list<wstring>& AnimationList)
 {
+    
     if (FAILED(__super::Initialize(AnimationList)))
         return E_FAIL;
+
     
     return S_OK;
 }
 
 void CState_SwordMan_Neutral_Pick_Large_Finish::Enter_State(void* pArg)
 {
+    m_pCharacter->Disappear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }
 

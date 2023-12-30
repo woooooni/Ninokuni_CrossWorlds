@@ -214,11 +214,11 @@ HRESULT CLevel_Test::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Test::Ready_Layer_Npc(const LAYER_TYPE eLayerType)
 {
-	if (FAILED(GI->Add_GameObject(LEVEL_TEST, eLayerType, TEXT("Prorotype_GameObject_KingdomGuard"), nullptr)))
-		return E_FAIL;
+	//if (FAILED(GI->Add_GameObject(LEVEL_TEST, eLayerType, TEXT("Prorotype_GameObject_KingdomGuard"), nullptr)))
+	//	return E_FAIL;
 
-	if (FAILED(GI->Add_GameObject(LEVEL_TEST, eLayerType, TEXT("Prorotype_GameObject_HumanFAT01"), nullptr)))
-		return E_FAIL;
+	//if (FAILED(GI->Add_GameObject(LEVEL_TEST, eLayerType, TEXT("Prorotype_GameObject_HumanFAT01"), nullptr)))
+	//	return E_FAIL;
 
 
 	return S_OK;
@@ -234,6 +234,18 @@ HRESULT CLevel_Test::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 			Ground->Get_Component<CTransform>(L"Com_Transform")->Get_WorldMatrix())))
 		{
 			MSG_BOX("피직스 그라운드 생성에 실패했습니다.");
+		}
+	}
+
+
+	list<CGameObject*> Buildings = GI->Find_GameObjects(LEVEL_TEST, LAYER_TYPE::LAYER_BUILDING);
+	for (auto& Building : Buildings)
+	{
+		if (FAILED(GI->Add_Building(Building,
+			Building->Get_Component<CModel>(L"Com_Model"),
+			Building->Get_Component<CTransform>(L"Com_Transform")->Get_WorldMatrix())))
+		{
+			MSG_BOX("피직스 빌딩 생성에 실패했습니다.");
 		}
 	}
 	

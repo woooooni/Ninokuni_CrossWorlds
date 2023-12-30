@@ -10,7 +10,7 @@ class ENGINE_DLL CCollider abstract : public CComponent
 public:
     enum COLLIDER_TYPE { SPHERE, AABB, OBB, TYPE_END };
     enum DETECTION_TYPE { BOUNDARY, BODY, ATTACK, DETECTION_END };
-    enum ATTACK_TYPE { WEAK, STRONG, BOUND, AIR_BORN, MODE_END };
+    enum ATTACK_TYPE { WEAK, STRONG, BOUND, AIR_BORNE, BLOW, IF_DEAD_BLOW, MODE_END };
 
 protected:
     typedef struct tagColliderDesc

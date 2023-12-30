@@ -83,6 +83,8 @@ vector<class CModel*>* CCharacter_Manager::Get_PartModels(const CHARACTER_TYPE& 
 
 
 
+
+
 HRESULT CCharacter_Manager::Ready_Characters()
 {
 	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_SwordMan", CCharacter_SwordMan::Create(m_pDevice, m_pContext, TEXT("SwordMan")), LAYER_CHARACTER)))

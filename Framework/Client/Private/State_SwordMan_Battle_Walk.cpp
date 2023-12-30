@@ -18,6 +18,7 @@ HRESULT CState_SwordMan_Battle_Walk::Initialize(const list<wstring>& AnimationLi
 
 void CState_SwordMan_Battle_Walk::Enter_State(void* pArg)
 {
+	m_pCharacter->Appear_Weapon();
 	m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }
 
@@ -67,7 +68,6 @@ void CState_SwordMan_Battle_Walk::Input(_float fTimeDelta)
 	if (KEY_HOLD(KEY::S))
 	{
 		bMove = true;
-
 
 		_matrix vCamWolrd = GI->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
 

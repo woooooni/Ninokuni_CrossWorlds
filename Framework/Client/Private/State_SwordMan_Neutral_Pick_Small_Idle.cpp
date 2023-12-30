@@ -19,6 +19,7 @@ HRESULT CState_SwordMan_Neutral_Pick_Small_Idle::Initialize(const list<wstring>&
 
 void CState_SwordMan_Neutral_Pick_Small_Idle::Enter_State(void* pArg)
 {
+    m_pCharacter->Disappear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }
 

@@ -65,6 +65,8 @@ HRESULT CDMWitch::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
+	m_pModelCom->Set_Animation(0);
+
 	return S_OK;
 }
 
