@@ -141,47 +141,6 @@ HRESULT CLevel_Test::Exit_Level()
 
 HRESULT CLevel_Test::Ready_Lights()
 {
-	
-
-
-	//GI->Reset_Lights();
-
-	//LIGHTDESC			LightDesc;
-
-	//ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
-	//LightDesc.eType = LIGHTDESC::TYPE_POINT;
-	//LightDesc.vPosition = _float4(15.0f, 5.0f, 15.0f, 1.f);
-	//LightDesc.fRange = 10.f;
-	//LightDesc.vDiffuse = _float4(1.f, 0.0f, 0.f, 1.f);
-	//LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
-	//LightDesc.vSpecular = LightDesc.vDiffuse;
-
-	//if (FAILED(GI->Add_Light(m_pDevice, m_pContext, LightDesc)))
-	//	return E_FAIL;
-
-	//ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
-	//LightDesc.eType = LIGHTDESC::TYPE_POINT;
-	//LightDesc.vPosition = _float4(25.0f, 5.0f, 15.0f, 1.f);
-	//LightDesc.fRange = 10.f;
-	//LightDesc.vDiffuse = _float4(0.0f, 1.f, 0.f, 1.f);
-	//LightDesc.vAmbient = _float4(0.5f, 0.5f, 0.5f, 1.f);
-	//LightDesc.vSpecular = LightDesc.vDiffuse;
-
-	//if (FAILED(GI->Add_Light(m_pDevice, m_pContext, LightDesc)))
-	//	return E_FAIL;
-
-	//ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
-	//LightDesc.eType = LIGHTDESC::TYPE_DIRECTIONAL;
-	//LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
-	//LightDesc.vDiffuse = _float4(0.5, 0.5, 0.5, 1.f);
-	//LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 1.f);
-	//LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
-
-	//if (FAILED(GI->Add_Light(m_pDevice, m_pContext, LightDesc)))
-	//	return E_FAIL;
-
-
-
 	return S_OK;
 }
 

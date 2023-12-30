@@ -350,18 +350,7 @@ HRESULT CLoader::Loading_For_Level_Test()
 
 	/* For.GameObject */
 	m_strLoading = TEXT("객체원형을 로딩 중 입니다.");
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Background", CBackGround::Create(m_pDevice, m_pContext), LAYER_BACKGROUND)))
-		return E_FAIL;
 
-	/*if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Cloth_Terrain", CCloth_Terrain::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_TERRAIN)))
-		return E_FAIL;*/
-
-
-	m_strLoading = TEXT("모델을 로딩 중 입니다.");
-
-	/* Monster */
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Stellia", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Boss/Stellia/", L"Stellia")))
-		return E_FAIL;
 
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
 
@@ -374,7 +363,7 @@ HRESULT CLoader::Loading_For_Level_Test()
 	if (FAILED(Loading_Proto_DynamicObjects(L"..Bin/Export/AnimModel/Map/")))
 		return E_FAIL;
 
-	if (FAILED(Loading_Proto_MonsterOrNPC()))
+ 	if (FAILED(Loading_Proto_MonsterOrNPC()))
 		return E_FAIL;
 
 	Load_Map_Data(L"Evermore");
@@ -860,15 +849,11 @@ HRESULT CLoader::Loading_Proto_MonsterOrNPC()
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Stellia", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Boss/Stellia/", L"Stellia")))
 		return E_FAIL;
 
-
-	/*if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Stellia", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Boss/Stellia/", L"Stellia")))
-		return E_FAIL;*/
-
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Glanix", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Boss/Glanix/", L"Glanix")))
 		return E_FAIL;
 
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_DreamerMazeWitch", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Boss/DreamerMazeWitch/", L"DreamerMazeWitch")))
-	//	return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_DreamerMazeWitch", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Boss/DreamerMazeWitch/", L"DreamerMazeWitch")))
+		return E_FAIL;
 
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Baobam_Water", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Ice/Baobam_Water/", L"Baobam_Water")))
 		return E_FAIL;
