@@ -10,3 +10,6 @@
 #include "Fox.h"
 #include "Ermine.h"
 #include "Water.h"
+#include "WinterWater.h"
+#include "WitchWater.h"
+#include "EvermoreWater.h"
