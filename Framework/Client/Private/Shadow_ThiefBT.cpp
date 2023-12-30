@@ -47,12 +47,7 @@ HRESULT CShadow_ThiefBT::Initialize_Prototype(CGameObject* pObject)
 	m_tBTNodeDesc.pOwnerModel = pObject->Get_Component<CModel>(L"Com_Model");
 	m_tBTNodeDesc.pOwnerTransform = pObject->Get_Component<CTransform>(L"Com_Transform");
 
-	
-
-	//for (auto iter : GI->Find_GameObjects(LEVEL_TEST, LAYER_CHARACTER))
-	//{
 	m_tBTNodeDesc.pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
-	//}
 
 	if (m_tBTNodeDesc.pTarget != nullptr)
 	{

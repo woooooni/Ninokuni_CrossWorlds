@@ -31,6 +31,7 @@ HRESULT CSpawner::Initialize(void* pArg)
 
 void CSpawner::Tick(_float fTimeDelta)
 {
+	__super::Tick(fTimeDelta);
 }
 
 void CSpawner::LateTick(_float fTimeDelta)
@@ -46,6 +47,7 @@ void CSpawner::LateTick(_float fTimeDelta)
 //		}
 //	}
 //#endif
+	__super::LateTick(fTimeDelta);
 }
 
 HRESULT CSpawner::Render()
@@ -70,25 +72,21 @@ HRESULT CSpawner::Ready_Components()
 
 HRESULT CSpawner::Ready_Colliders()
 {
-	CCollider_OBB::OBB_COLLIDER_DESC OBBDesc;
-	ZeroMemory(&OBBDesc, sizeof OBBDesc);
+	CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
+	ZeroMemory(&SphereDesc, sizeof SphereDesc);
 
-	BoundingOrientedBox OBBBox;
-	ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
+	BoundingSphere tSphere;
+	ZeroMemory(&tSphere, sizeof(BoundingSphere));
+	tSphere.Radius = 1.f;
+	SphereDesc.tSphere = tSphere;
 
-	XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
-	OBBBox.Extents = { 50.f, 50.f, 50.f };
+	SphereDesc.pNode = nullptr;
+	SphereDesc.pOwnerTransform = m_pTransformCom;
+	SphereDesc.ModelPivotMatrix = {};
+	SphereDesc.vOffsetPosition = Vec3(0.f, 0.f, 0.f);
 
-	OBBDesc.tBox = OBBBox;
-	OBBDesc.pNode = nullptr;
-	OBBDesc.pOwnerTransform = m_pTransformCom;
-	OBBDesc.ModelPivotMatrix = {};
-	OBBDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
-
-	/* Body */
-	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::BODY, &OBBDesc)))
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BOUNDARY, &SphereDesc)))
 		return E_FAIL;
-
 
 	return S_OK;
 }

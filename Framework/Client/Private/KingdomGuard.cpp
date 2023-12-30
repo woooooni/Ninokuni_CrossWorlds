@@ -70,9 +70,12 @@ void CKingdomGuard::LateTick(_float fTimeDelta)
 
 	if (m_pWeapon != nullptr)
 	{
-		Matrix matWorld = m_pModelCom->Get_SocketLocalMatrix(0) * m_pWeapon->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_WorldMatrix();
-		m_pWeapon->Get_Component<CTransform>(TEXT("Com_Transform"))->Set_WorldMatrix(matWorld);
+		Matrix matSocketLocal = m_pModelCom->Get_SocketLocalMatrix(0); // 내가 추가한 소켓에서 인덱스 선택.
+		Matrix matSocketWorld = matSocketLocal * m_pTransformCom->Get_WorldMatrix();
+
+		m_pWeapon->Set_SocketWorld(matSocketWorld);
 	}
+
 
 #ifdef DEBUG
 	m_pRendererCom->Add_Debug(m_pControllerCom);

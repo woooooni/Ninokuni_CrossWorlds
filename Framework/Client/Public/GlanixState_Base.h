@@ -10,7 +10,7 @@
 #include "Navigation.h"
 #include "RigidBody.h"
 
-#include "Character_Engineer.h" // 후에 플레이어로 교체
+#include "Character.h" // 후에 플레이어로 교체
 
 BEGIN(Client)
 
@@ -37,7 +37,7 @@ protected:
 	void  Start_Pattern();
 
 protected:
-	CCharacter_Engineer* m_pPlayer = nullptr; // 후에 플레이어로 교체.
+	CCharacter* m_pPlayer = nullptr; // 후에 플레이어로 교체.
 	CTransform* m_pPlayerTransform = nullptr;
 	
 	CGlanix* m_pGlanix = nullptr;

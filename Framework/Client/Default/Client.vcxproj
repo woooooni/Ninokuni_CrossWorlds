@@ -311,6 +311,8 @@
     <ClInclude Include="..\Public\SeekerObserver.h" />
     <ClInclude Include="..\Public\Spawner.h" />
     <ClInclude Include="..\Public\Spawner_Ice01.h" />
+    <ClInclude Include="..\Public\Spawner_Ice02.h" />
+    <ClInclude Include="..\Public\Spawner_Ice03.h" />
     <ClInclude Include="..\Public\State_Animals.h" />
     <ClInclude Include="..\Public\State_Animal_Fly.h" />
     <ClInclude Include="..\Public\State_Animal_Idle.h" />
@@ -817,6 +819,8 @@
     <ClCompile Include="..\Private\SeekerObserver.cpp" />
     <ClCompile Include="..\Private\Spawner.cpp" />
     <ClCompile Include="..\Private\Spawner_Ice01.cpp" />
+    <ClCompile Include="..\Private\Spawner_Ice02.cpp" />
+    <ClCompile Include="..\Private\Spawner_Ice03.cpp" />
     <ClCompile Include="..\Private\State_Animals.cpp" />
     <ClCompile Include="..\Private\State_Animal_Fly.cpp" />
     <ClCompile Include="..\Private\State_Animal_Idle.cpp" />

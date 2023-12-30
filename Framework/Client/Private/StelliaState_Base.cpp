@@ -6,6 +6,9 @@
 
 #include "Stellia.h"
 
+#include "Game_Manager.h"
+#include "Player.h"
+
 _uint CStelliaState_Base::m_iAtkIndex = 0;
 
 CStelliaState_Base::CStelliaState_Base(CStateMachine* pStateMachine)
@@ -19,11 +22,8 @@ HRESULT CStelliaState_Base::Initialize(const list<wstring>& AnimationList)
 
 	m_pStellia = dynamic_cast<CStellia*>(m_pOwner);
 
-	/* 후에 플레이어로 교체 */
-	for (auto iter : GI->Find_GameObjects(LEVEL_TEST, LAYER_CHARACTER))
-	{
-		m_pPlayer = dynamic_cast<CCharacter_SwordMan*>(iter);
-	}
+	m_pPlayer = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+
 	if (m_pPlayer != nullptr)
 		m_pPlayerTransform = m_pPlayer->Get_Component<CTransform>(TEXT("Com_Transform"));
 
