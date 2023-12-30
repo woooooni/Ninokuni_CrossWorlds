@@ -481,7 +481,6 @@ HRESULT CCharacter_SwordMan::Ready_Colliders()
 	OBBBox.Extents = { 50.f, 70.f, 50.f };
 
 	OBBDesc.tBox = OBBBox;
-	OBBDesc.tBox = OBBBox;
 	OBBDesc.pNode = nullptr;
 	OBBDesc.pOwnerTransform = m_pTransformCom;
 	OBBDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();

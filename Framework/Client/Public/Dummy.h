@@ -50,6 +50,8 @@ public:
 	HRESULT Import_Model();
 
 
+	HRESULT Add_Collider(CCollider::COLLIDER_TYPE eColliderType, CCollider::DETECTION_TYPE eDetectionType);
+
 public:
 	/* Costume */
 	_bool m_bCostumeMode = FALSE;

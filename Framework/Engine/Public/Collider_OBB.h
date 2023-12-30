@@ -32,7 +32,7 @@ public:
 
     virtual _vector Get_Position() override { return XMLoadFloat3(&m_tBoundingBox.Center); }
 
-
+    virtual void Set_Extents(Vec3 vExtents) override;
 
 public:
     void LateTick_Collider(_float fTimeDelta) override;

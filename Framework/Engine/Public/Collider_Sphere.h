@@ -33,6 +33,8 @@ public:
     virtual _vector Get_Position() override { return XMLoadFloat3(&m_tBoundingSphere.Center); }
     virtual _float Get_Radius() override { return m_tBoundingSphere.Radius; }
 
+    virtual void Set_Radius(_float fRadius) override;
+
 public:
     void LateTick_Collider(_float fTimeDelta) override;
 

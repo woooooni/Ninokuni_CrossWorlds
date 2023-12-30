@@ -130,6 +130,8 @@ private:
 	vector<_uint> m_ChannelKeyFrames;
 	vector<class CHierarchyNode*> m_HierarchyNodes;
 
+	class CModel* m_pModel = nullptr;
+
 public:
 	static CAnimation* Create(aiAnimation* pAIAnimation);
 	static CAnimation* Create_Bin();

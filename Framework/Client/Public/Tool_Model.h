@@ -35,7 +35,7 @@ private:
 	HRESULT Ready_Weapons();
 	HRESULT Ready_SoundKey();
 
-	/* In Impory Animation */
+	/* In Import Animation */
 	HRESULT Ready_SocketTransforms();
 
 private:
@@ -91,10 +91,11 @@ private:
 
 
 
-	_int m_iSoundEventIndex = -1;
 
 	const char** m_arrSoundKeys = nullptr;
 	_uint m_iSoundKeySize = 0;
+
+	_int m_iSoundEventIndex = -1;
 
 	_int m_iColliderEventIndex = -1;
 	

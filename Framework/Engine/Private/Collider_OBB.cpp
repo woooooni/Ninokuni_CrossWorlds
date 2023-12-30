@@ -70,6 +70,15 @@ _bool CCollider_OBB::Is_Collision(CCollider* pCollider)
 
 
 
+void CCollider_OBB::Set_Extents(Vec3 vExtents)
+{
+	m_tOriginOBB.Extents = vExtents;
+
+	Compute_Final_Matrix();
+
+	m_tOriginOBB.Transform(m_tBoundingBox, XMLoadFloat4x4(&m_FinalMatrix));
+}
+
 void CCollider_OBB::LateTick_Collider(_float fTimeDelta)
 {
 	__super::LateTick_Collider(fTimeDelta);
