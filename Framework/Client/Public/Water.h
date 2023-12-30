@@ -32,11 +32,16 @@ public:
 private:
 	CShader* m_pWaterShaderCom = nullptr;
 	CTexture* m_pTextureCom = nullptr;
+	CTexture* m_pDiffuseTextureCom = nullptr;
+	CTexture* m_pNoiseTextureCom[2] = { nullptr, nullptr };
 private:
 	// Water State
-	_float m_fWaterTranslation = 0.1f;
 	_float m_fReflectRefractSacle = 0.1f;
 	_float m_fWaterTranslationSpeed = 0.015f;
+
+	_float m_fTime = 0.0f;
+
+	Vec2 m_vDirection;
 
 	_bool m_bFresnel = false;
 public:

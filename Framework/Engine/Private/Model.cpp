@@ -761,8 +761,11 @@ HRESULT CModel::SetUp_VTF(class CShader* pShader)
 
 HRESULT CModel::Render(CShader* pShader, _uint iMeshIndex, _uint iPassIndex)
 {
-	pShader->Begin(iPassIndex);
-	m_Meshes[iMeshIndex]->Render();
+	if(FAILED(pShader->Begin(iPassIndex)))
+		return E_FAIL;
+
+	if (FAILED(m_Meshes[iMeshIndex]->Render()))
+		return E_FAIL;
 
 	return S_OK;
 }

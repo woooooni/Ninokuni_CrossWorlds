@@ -25,14 +25,19 @@ HRESULT CWater::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+	m_vDirection.x = GI->RandomFloat(-1.0f, 1.0f);
+	m_vDirection.y = GI->RandomFloat(-1.0f, 1.0f);
+
+
 	return S_OK;
 }
 
 void CWater::Tick(_float fTimeDelta)
 {
-	m_fWaterTranslation += m_fWaterTranslationSpeed * -fTimeDelta;
+	m_fTime += fTimeDelta;
 
-	if (m_fWaterTranslation < 0.0f) m_fWaterTranslation = 1.0f;
+	if (m_fTime > FLT_MAX)
+		m_fTime = 0.0f;
 }
 
 void CWater::LateTick(_float fTimeDelta)
@@ -68,6 +73,18 @@ HRESULT CWater::Ready_Components()
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Water_Normal"),
 		TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+		return E_FAIL;
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Water_Diffuse"),
+		TEXT("Com_Texture2"), reinterpret_cast<CComponent**>(&m_pDiffuseTextureCom))))
+		return E_FAIL;
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Noise"),
+		TEXT("Com_Texture3"), reinterpret_cast<CComponent**>(&m_pNoiseTextureCom[0]))))
+		return E_FAIL;
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Noise"),
+		TEXT("Com_Texture4"), reinterpret_cast<CComponent**>(&m_pNoiseTextureCom[1]))))
 		return E_FAIL;
 
 	return S_OK;
@@ -112,13 +129,24 @@ HRESULT CWater::Bind_ShaderResources()
 	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pWaterShaderCom, "g_NormalTexture", 0)))
 		return E_FAIL;
 
-	if (FAILED(m_pWaterShaderCom->Bind_RawValue("fWaterTranslation", &m_fWaterTranslation, sizeof(_float))))
+	if (FAILED(m_pNoiseTextureCom[0]->Bind_ShaderResource(m_pWaterShaderCom, "g_MaskMap", 69)))
+		return E_FAIL;
+	if (FAILED(m_pNoiseTextureCom[1]->Bind_ShaderResource(m_pWaterShaderCom, "g_MaskMap2", 149)))
+		return E_FAIL;
+
+	if (FAILED(m_pWaterShaderCom->Bind_RawValue("fWaterTranslationSpeed", &m_fWaterTranslationSpeed, sizeof(_float))))
+		return E_FAIL;
+
+	if (FAILED(m_pWaterShaderCom->Bind_RawValue("fWaterTime", &m_fTime, sizeof(_float))))
 		return E_FAIL;
 
 	if (FAILED(m_pWaterShaderCom->Bind_RawValue("fReflectRefractScale", &m_fReflectRefractSacle, sizeof(_float))))
 		return E_FAIL;
 
 	if(FAILED(m_pWaterShaderCom->Bind_RawValue("bFresnel", &m_bFresnel, sizeof(_bool))))
+		return E_FAIL;
+
+	if (FAILED(m_pWaterShaderCom->Bind_RawValue("flowDirection", &m_vDirection, sizeof(Vec2))))
 		return E_FAIL;
 
 
@@ -130,6 +158,9 @@ HRESULT CWater::Bind_ShaderResources()
 		if (FAILED(m_pModelCom->SetUp_OnShader(m_pWaterShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
 	}
+
+	//if (FAILED(m_pDiffuseTextureCom->Bind_ShaderResource(m_pWaterShaderCom, "g_DiffuseTexture", 0)))
+	//	return E_FAIL;
 
 
 	if (FAILED(m_pModelCom->Render(m_pWaterShaderCom, 0, 3)))
@@ -172,4 +203,8 @@ void CWater::Free()
 
 	Safe_Release<CShader*>(m_pWaterShaderCom);
 	Safe_Release<CTexture*>(m_pTextureCom);
+	Safe_Release<CTexture*>(m_pDiffuseTextureCom);
+	
+	for(_uint i = 0; i < 2; ++i)
+		Safe_Release<CTexture*>(m_pNoiseTextureCom[i]);
 }

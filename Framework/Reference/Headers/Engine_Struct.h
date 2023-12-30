@@ -732,6 +732,15 @@ namespace Engine
 
 #pragma endregion
 
+
+#pragma region SkyPlane
+	struct SkyPlaneType
+	{
+		Vec3 vPosition;
+		Vec2 vUV;
+	};
+#pragma endregion SkyPlane
+
 }
 
 

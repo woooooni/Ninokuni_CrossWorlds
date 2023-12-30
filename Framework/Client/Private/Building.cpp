@@ -73,6 +73,9 @@ HRESULT CBuilding::Render_ShadowDepth()
 
 HRESULT CBuilding::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
 {
+	if (true == m_bEnable)
+		return S_OK;
+
 	if (nullptr == m_pModelCom || nullptr == pInstancingShader)
 		return E_FAIL;
 	if (FAILED(pInstancingShader->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
@@ -101,6 +104,9 @@ HRESULT CBuilding::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instanc
 
 HRESULT CBuilding::Render_Instance_Shadow(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
 {
+	if (true == m_bEnable)
+		return S_OK;
+
 	if (nullptr == m_pModelCom || nullptr == pInstancingShader)
 		return E_FAIL;
 	_float4 vCamPosition = GI->Get_CamPosition();

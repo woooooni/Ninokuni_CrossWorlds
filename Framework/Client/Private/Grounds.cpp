@@ -44,9 +44,9 @@ void CGrounds::LateTick(_float fTimeDelta)
 	//if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 30.f))
 	//{
 		// Shadow 필요하면 ShadowRender 추가?
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
+		//m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 		//m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDERGROUP::RENDER_SHADOW, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
-		//m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
+		m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
 	//}
 
 
@@ -70,6 +70,9 @@ HRESULT CGrounds::Render_ShadowDepth()
 
 HRESULT CGrounds::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
 {
+	if (true == m_bEnable)
+		return S_OK;
+
 	if (nullptr == m_pModelCom || nullptr == pInstancingShader)
 		return E_FAIL;
 	if (FAILED(pInstancingShader->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
@@ -98,6 +101,9 @@ HRESULT CGrounds::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instanci
 
 HRESULT CGrounds::Render_Instance_Shadow(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
 {
+	if (true == m_bEnable)
+		return S_OK;
+
 	if (nullptr == m_pModelCom || nullptr == pInstancingShader)
 		return E_FAIL;
 	_float4 vCamPosition = GI->Get_CamPosition();

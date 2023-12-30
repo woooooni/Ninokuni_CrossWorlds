@@ -77,6 +77,10 @@ public:
 	const wstring& Get_ObjectTag() { return m_strObjectTag; }
 	
 	void Set_ObjectID(_uint iID) { m_iObjectID = iID; }
+	
+	void Set_Enable(_bool enable) { m_bEnable = enable; }
+	const _bool& Get_Enable() const { return m_bEnable; }
+
 	_uint Get_ObjectID() { return m_iObjectID; }
 	_uint Get_ObjectType() { return m_iObjectType; }
 
@@ -132,6 +136,7 @@ protected:
 	_bool				m_bReserveDead = false;
 	_bool				m_bDead = false;
 
+	_bool				m_bEnable = false;
 
 protected:
 	_bool m_bNaviObject = false;
