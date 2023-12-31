@@ -3,7 +3,6 @@
 
 #include "BehaviorTree.h"
 
-
 #include "Model.h"
 
 CShadow_ThiefNode_Roaming::CShadow_ThiefNode_Roaming()

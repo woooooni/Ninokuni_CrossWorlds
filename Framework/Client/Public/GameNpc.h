@@ -21,7 +21,9 @@ END
 BEGIN(Client)
 class CGameNpc abstract : public CGameObject
 {
-#pragma region CHARACTER_STAT
+public:
+	enum class NPC_BOOLTYPE { NPC_ONEWAY, NPC_TWOWAY, NPC_END };
+
 public:
 	typedef struct tagNpcStat
 	{
@@ -34,7 +36,6 @@ public:
 		_int iMaxHp = 100;
 	}NPC_STAT;
 
-#pragma endregion
 protected:
 	CGameNpc(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	CGameNpc(const CGameNpc& rhs);
@@ -66,6 +67,17 @@ public:
 	const NPC_STAT& Get_Stat() { return m_tStat; }
 	void Set_Stat(const NPC_STAT& StatDesc) { m_tStat = StatDesc; }
 
+	/* npc bool */
+	virtual _bool	Get_Bools(NPC_BOOLTYPE eType) { return m_bBools[(_uint)eType]; }
+	virtual void    Set_Bools(NPC_BOOLTYPE eType, _bool bIsBool) { m_bBools[(_uint)eType] = bIsBool; }
+
+	vector<_vector>* Get_RoamingArea() { return &m_vecRoaming; }
+	void			 Set_RoamingArea(vector<_vector> vecRoaming) { m_vecRoaming = vecRoaming; }
+
+	///* npc AnimName */
+	//wstring			 Get_MoveAnimName() { m_strMoveName; }
+	//vector<wstring>* Get_IdleAnimNames() { return &m_vecIdleName; }
+
 protected:
 	virtual HRESULT Ready_Components() PURE;
 	virtual HRESULT Ready_States() PURE;
@@ -94,6 +106,14 @@ protected:
 	_bool m_bInfinite = false;
 
 	NPC_STAT m_tStat = {};
+
+	_bool   m_bBools[(_uint)NPC_BOOLTYPE::NPC_END] = { false, }; // Npc가 사용하는 bool모음.
+	vector<_vector> m_vecRoaming = {};
+	_int			m_iCurRoamingIdx = 0;
+
+	///* Npc가 사용하는 AnimName 모음. */
+	//wstring m_strMoveName = TEXT();
+	//vector<wstring> m_vecIdleName = {};
 
 public:
 	virtual void Free() override;

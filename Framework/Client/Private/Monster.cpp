@@ -315,7 +315,7 @@ void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 	m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_HIT] = true;
 	m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_HITANIM] = true;
 
-	m_tStat.fHp -= 40;
+	m_tStat.fHp -= 5;
 }
 
 HRESULT CMonster::Ready_RoamingPoint()

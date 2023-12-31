@@ -189,7 +189,7 @@ HRESULT CBaobam_Water::Ready_Colliders()
 
 	BoundingSphere tSphere;
 	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 2.f;
+	tSphere.Radius = 1.5f;
 	SphereDesc.tSphere = tSphere;
 
 	SphereDesc.pNode = nullptr;
