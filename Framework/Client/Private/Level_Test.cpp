@@ -175,7 +175,7 @@ HRESULT CLevel_Test::Ready_Layer_Npc(const LAYER_TYPE eLayerType)
 {
 	//if (FAILED(GI->Add_GameObject(LEVEL_TEST, eLayerType, TEXT("Prorotype_GameObject_KingdomGuard"), nullptr)))
 	//	return E_FAIL;
-
+	// 
 	//if (FAILED(GI->Add_GameObject(LEVEL_TEST, eLayerType, TEXT("Prorotype_GameObject_HumanFAT01"), nullptr)))
 	//	return E_FAIL;
 

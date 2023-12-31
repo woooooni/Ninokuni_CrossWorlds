@@ -213,7 +213,6 @@ void CGameNpc::On_Damaged(const COLLISION_INFO& tInfo)
 
 }
 
-
 void CGameNpc::Free()
 {
 	__super::Free();
