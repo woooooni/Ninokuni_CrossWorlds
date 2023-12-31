@@ -1795,15 +1795,15 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 
 						/* 어택 타입 */
 						{
+							
 							int iAttackType = ColliderEvents[m_iColliderEventIndex].second.iAttackType;
-							const char* items[] = { "WEAK", "STRONG", "BOUND", "AIR_BORN" };
-							const char* combo_preview_value = items[iAttackType];
+							const char* combo_preview_value = g_szColliderAttackType[iAttackType];
 							if (ImGui::BeginCombo("Attack Type", combo_preview_value))
 							{
-								for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+								for (int n = 0; n < IM_ARRAYSIZE(g_szColliderAttackType); n++)
 								{
 									const bool is_selected = (iAttackType == n);
-									if (ImGui::Selectable(items[n], is_selected))
+									if (ImGui::Selectable(g_szColliderAttackType[n], is_selected))
 									{
 										iAttackType = n;
 										if (0 <= m_iColliderEventIndex)

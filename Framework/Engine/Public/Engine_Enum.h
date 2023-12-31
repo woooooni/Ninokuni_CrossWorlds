@@ -3,6 +3,7 @@
 
 
 enum COLLISION_GROUP { CHARACTER, MONSTER, PROP, NPC, PORTAL, ANIMAL, GROUP_END };
+static const char* g_szColliderAttackType[7] = { "WEAK", "STRONG", "BOUND", "AIR_BORNE",  "BLOW", "IF_DEAD_BLOW", "STUN" };
 
 enum class TIMER_TYPE
 {
