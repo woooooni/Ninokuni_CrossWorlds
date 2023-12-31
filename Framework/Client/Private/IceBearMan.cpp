@@ -167,20 +167,21 @@ HRESULT CIceBearMan::Ready_Colliders()
 	ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
 
 	XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
-	OBBBox.Extents = { 50.f, 50.f, 50.f };
+	OBBBox.Extents = { 80.f, 100.f, 80.f };
 
 	OBBDesc.tBox = OBBBox;
 	OBBDesc.pNode = nullptr;
 	OBBDesc.pOwnerTransform = m_pTransformCom;
 	OBBDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
-	OBBDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
+	OBBDesc.vOffsetPosition = Vec3(0.f, 100.f, -15.f);
 
 	/* Body */
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::BODY, &OBBDesc)))
 		return E_FAIL;
 
 	/* Atk */
-	OBBDesc.vOffsetPosition = Vec3(0.f, 50.f, -100.f);
+	OBBBox.Extents = { 0.f, 0.f, 0.f };
+	OBBDesc.vOffsetPosition = Vec3(0.f, 0.f, 0.f);
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::ATTACK, &OBBDesc)))
 		return E_FAIL;
 
@@ -189,13 +190,13 @@ HRESULT CIceBearMan::Ready_Colliders()
 
 	BoundingSphere tSphere;
 	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 2.f;
+	tSphere.Radius = 1.6f;
 	SphereDesc.tSphere = tSphere;
 
 	SphereDesc.pNode = nullptr;
 	SphereDesc.pOwnerTransform = m_pTransformCom;
 	SphereDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
-	SphereDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
+	SphereDesc.vOffsetPosition = Vec3(0.f, 100.f, 0.f);
 
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BOUNDARY, &SphereDesc)))
 		return E_FAIL;

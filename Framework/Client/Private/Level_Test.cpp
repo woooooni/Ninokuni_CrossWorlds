@@ -43,8 +43,8 @@ HRESULT CLevel_Test::Initialize()
 	if (FAILED(Ready_Layer_Character(LAYER_TYPE::LAYER_CHARACTER)))
 		return E_FAIL;
 
-	if (FAILED(Ready_Layer_Npc(LAYER_TYPE::LAYER_NPC)))
-		return E_FAIL;
+	//if (FAILED(Ready_Layer_Npc(LAYER_TYPE::LAYER_NPC)))
+	//	return E_FAIL;
 
  	if (FAILED(Ready_Layer_Monster(LAYER_TYPE::LAYER_MONSTER)))
 		return E_FAIL;
@@ -80,7 +80,12 @@ HRESULT CLevel_Test::Tick(_float fTimeDelta)
 
 	if (KEY_TAP(KEY::K))
 	{
-		GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Spawner_Ice01"));
+		// GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Spawner_Ice01"));
+		GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Shadow_Thief"));
+	}
+	if (KEY_TAP(KEY::J))
+	{
+		GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Spawner_Witch01"));
 	}
 
 	if (KEY_TAP(KEY::F7))

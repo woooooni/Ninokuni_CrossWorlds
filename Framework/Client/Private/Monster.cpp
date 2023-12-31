@@ -312,8 +312,8 @@ CHierarchyNode* CMonster::Get_Socket(const wstring& strSocketName)
 
 void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 {
-	m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_HIT] = true;
-	m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_HITANIM] = true;
+	m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_WEAK] = true;
+	m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ISHIT] = true;
 
 	m_tStat.fHp -= 5;
 }

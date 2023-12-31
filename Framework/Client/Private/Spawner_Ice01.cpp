@@ -28,6 +28,7 @@ HRESULT CSpawner_Ice01::Initialize(void* pArg)
 
 	m_iMaxBaobamCount = 1;
 	m_iMaxThiefCount = 3;
+	m_iMaxBearCount = 1;
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -72,6 +73,14 @@ void CSpawner_Ice01::Tick(_float fTimeDelta)
 	{
 		if (m_vecThief[i]->Is_Dead())
 			m_vecThief.erase(m_vecThief.begin() + i);
+		else
+			++i;
+	}
+
+	for (_int i = 0; i < m_vecBear.size();)
+	{
+		if (m_vecBear[i]->Is_Dead())
+			m_vecBear.erase(m_vecBear.begin() + i);
 		else
 			++i;
 	}
@@ -146,6 +155,22 @@ HRESULT CSpawner_Ice01::Spawn_Monster()
 		m_vecThief.push_back(pObj);
 	}
 
+	for (_int i = m_vecBear.size(); i < m_iMaxBearCount; ++i)
+	{
+		tInfo.vStartPosition.x = vSpawnerPos.x + GI->RandomFloat(-5.f, 5.f);
+		tInfo.vStartPosition.y = vSpawnerPos.y;
+		tInfo.vStartPosition.z = vSpawnerPos.z + GI->RandomFloat(-5.f, 5.f);
+		tInfo.vStartPosition.w = 1.f;
+
+		CGameObject* pObj = GI->Clone_GameObject(TEXT("Prorotype_GameObject_IceBearMan"), _uint(LAYER_MONSTER), &tInfo);
+
+		if (pObj == nullptr)
+			return E_FAIL;
+
+		GI->Add_GameObject(iCurLevel, (_uint)LAYER_MONSTER, pObj);
+		m_vecBear.push_back(pObj);
+	}
+
 	return S_OK;
 }
 
@@ -181,4 +206,5 @@ void CSpawner_Ice01::Free()
 
 	m_vecThief.clear();
 	m_vecBaobam.clear();
+	m_vecBear.clear();
 }

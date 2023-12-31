@@ -167,20 +167,20 @@ HRESULT CBaobam_Water::Ready_Colliders()
 	ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
 
 	XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
-	OBBBox.Extents = { 50.f, 50.f, 50.f };
+	OBBBox.Extents = { 100.f, 100.f, 100.f };
 
 	OBBDesc.tBox = OBBBox;
 	OBBDesc.pNode = nullptr;
 	OBBDesc.pOwnerTransform = m_pTransformCom;
 	OBBDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
-	OBBDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
-
+	OBBDesc.vOffsetPosition = Vec3(0.f, 100.f, 25.f);
 	/* Body */
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::BODY, &OBBDesc)))
 		return E_FAIL;
 
 	/* Atk */
-	OBBDesc.vOffsetPosition = Vec3(0.f, 50.f, -100.f);
+	OBBBox.Extents = { 0.f, 0.f, 0.f };
+	OBBDesc.vOffsetPosition = Vec3(0.f, 0.f, 0.f);
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::ATTACK, &OBBDesc)))
 		return E_FAIL;
 
