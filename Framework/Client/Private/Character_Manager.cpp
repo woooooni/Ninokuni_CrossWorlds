@@ -29,13 +29,7 @@ HRESULT CCharacter_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceC
 	for (_uint i = 0; i < CHARACTER_TYPE::CHARACTER_END; ++i)
 		m_pCharacters[i] = nullptr;
 
-	if (FAILED(Loading_Proto_Parts_Model(L"../Bin/Export/AnimModel/Character/SwordMan/")))
-		return E_FAIL;
-
-	//if (FAILED(Loading_Proto_Parts_Model(L"../Bin/Export/AnimModel/Character/Engineer/")))
-	//	return E_FAIL;
-
-	if (FAILED(Ready_PartModels()))
+	if (FAILED(Ready_Character_Models()))
 		return E_FAIL;
 
 	if (FAILED(Ready_Characters()))
@@ -81,94 +75,37 @@ vector<class CModel*>* CCharacter_Manager::Get_PartModels(const CHARACTER_TYPE& 
 
 HRESULT CCharacter_Manager::Ready_Characters()
 {
-	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_SwordMan", CCharacter_SwordMan::Create(m_pDevice, m_pContext, TEXT("SwordMan")), LAYER_CHARACTER)))
+	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_SwordMan", CCharacter_SwordMan::Create(m_pDevice, m_pContext, L"SwordMan"), LAYER_CHARACTER, true)))
 		return E_FAIL;
-
-	//if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_Engineer", CCharacter_Engineer::Create(m_pDevice, m_pContext, TEXT("Engineer")), LAYER_CHARACTER)))
-	//	return E_FAIL;
-
-	//if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Engineer_Bullet", CEngineer_Bullet::Create(m_pDevice, m_pContext), LAYER_CHARACTER)))
-	//	return E_FAIL;
-
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SwordMan_Dummy", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/SwordMan/Dummy/", L"SwordMan_Dummy")))
-		return E_FAIL;
-
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Engineer_Dummy", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Engineer/Dummy/", L"Engineer_Dummy")))
-	//	return E_FAIL;
-
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Engineer_Bullet", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Bullet/", L"Engineer_Bullet")))
-	//	return E_FAIL;
-
-	
-
 
 	CCharacter* pCharacterSwordMan = dynamic_cast<CCharacter*>(GI->Find_Prototype_GameObject(LAYER_CHARACTER, L"Prototype_GameObject_Character_SwordMan"));
 	if (nullptr == pCharacterSwordMan)
 		return E_FAIL;
 
-
 	m_pCharacters[CHARACTER_TYPE::SWORD_MAN] = dynamic_cast<CCharacter*>(pCharacterSwordMan->Clone(nullptr));
 	if (nullptr == m_pCharacters[CHARACTER_TYPE::SWORD_MAN])
 		return E_FAIL;
-
-
+#pragma region Engineer
+	/* Engineer */
+	/*if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_Engineer", CCharacter_Engineer::Create(m_pDevice, m_pContext, L"Engineer"), LAYER_CHARACTER, true)))
+		return E_FAIL;*/
 
 	//CCharacter* pCharacterEngineer = dynamic_cast<CCharacter*>(GI->Find_Prototype_GameObject(LAYER_CHARACTER, L"Prototype_GameObject_Character_Engineer"));
 	//if (nullptr == pCharacterEngineer)
 	//	return E_FAIL;
 
-
 	//m_pCharacters[CHARACTER_TYPE::ENGINEER] = dynamic_cast<CCharacter*>(pCharacterEngineer->Clone(nullptr));
 	//if (nullptr == m_pCharacters[CHARACTER_TYPE::ENGINEER])
 	//	return E_FAIL;
+#pragma endregion
 
-
-	return S_OK;
-}
-
-HRESULT CCharacter_Manager::Loading_Proto_Parts_Model(const wstring& strFolderPath)
-{
-	for (auto& p : std::filesystem::directory_iterator(strFolderPath))
-	{
-		if (p.is_directory())
-			Loading_Proto_Parts_Model(p.path().wstring());
-
-
-		if (strFolderPath.find(L"Dummy") != wstring::npos)
-			continue;
-
-		wstring strFilePath = CUtils::PathToWString(p.path().wstring());
-		_tchar strFileName[MAX_PATH];
-		_tchar strFolderName[MAX_PATH];
-		_tchar strExt[MAX_PATH];
-
-		_wsplitpath_s(strFilePath.c_str(), nullptr, 0, strFolderName, MAX_PATH, strFileName, MAX_PATH, strExt, MAX_PATH);
-
-		if (true == !lstrcmp(strExt, L".mesh"))
-		{
-			wstring strPrototypeName = L"Prototype_Component_Model_";
-			strPrototypeName += strFileName;
-			if (FAILED(GI->Import_Model_Data(LEVEL_PARTS, strPrototypeName, CModel::TYPE_ANIM, strFolderName, strFileName)))
-				return E_FAIL;
-		}
-		//else if (true == !lstrcmp(strExt, L".fbx"))
-		//{
-		//	wstring strPrototypeName = L"Prototype_Component_Model_";
-		//	strPrototypeName += strFileName;
-
-		//	wstring strFullFileName = strFileName;
-		//	strFullFileName += strExt;
-		//	if (FAILED(GI->Import_Model_Data(LEVEL_PARTS, strPrototypeName, CModel::TYPE_ANIM, strFolderName, strFullFileName)))
-		//		return E_FAIL;
-		//}
-	}
 	return S_OK;
 }
 
 
 
 // 파츠 모델들을 Clone하여 가지고 있는다.
-HRESULT CCharacter_Manager::Ready_PartModels()
+HRESULT CCharacter_Manager::Ready_Character_Models()
 {
 	const map<const wstring, CComponent*> PrototypeModels = GI->Find_Prototype_Components(LEVEL_PARTS);
 
@@ -238,7 +175,6 @@ HRESULT CCharacter_Manager::Ready_PartModels()
 
 		iterPartModel->second.push_back(pPartModel);
 	}
-
 
 	return S_OK;
 }

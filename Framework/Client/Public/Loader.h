@@ -9,6 +9,18 @@ BEGIN(Client)
 
 class CLoader final : public CBase
 {
+
+private:
+	enum LOADING_THREAD { 
+		STATIC_OBJECT_PROTOTYPE, 
+		DYNAMIC_OBJECT_PROTOTYPE, 
+		LOAD_MAP,
+		MONSTER_AND_NPC,
+		CHARACTER_MODEL_SWORDMAN, 
+		CHARACTER_MODEL_ENGINEER,
+		CHARACTER_MODEL_DESTROYER,
+		THREAD_END 
+	};
 private:
 	CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual~CLoader() = default;
@@ -56,10 +68,18 @@ private:
 
 private:
 	// 툴에서 사용할 모든 fbx 원형 객체를 로딩한다.
-	HRESULT Loading_Proto_AllObjects(const wstring& strPath);
-	HRESULT Loading_Proto_DynamicObjects(const wstring& strPath);
+	HRESULT Loading_Proto_Static_Map_Objects(const wstring& strPath);
+	HRESULT Loading_Proto_Dynamic_Map_Objects(const wstring& strPath);
+	HRESULT Loading_Proto_Monster_Npc();
 
-	HRESULT Loading_Proto_MonsterOrNPC();
+
+	// 캐릭터 로딩 및 매니저 준비.
+	HRESULT Loading_For_Character();
+	HRESULT Loading_Character_Models(const wstring& strFolderPath);
+
+
+private:
+	std::future<HRESULT> m_Threads[THREAD_END];
 
 public:
 	static CLoader* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVELID eNextLevel, const wstring& strFolderName);

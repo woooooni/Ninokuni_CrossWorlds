@@ -48,9 +48,7 @@ private:
 	_bool m_bReserved = false;
 	
 private:
-	/* Loading_Proto_Parts_Model() -> Ready_PartModels() -> Ready_Characters()*/
-	HRESULT Loading_Proto_Parts_Model(const wstring& strFolderPath);
-	HRESULT Ready_PartModels();
+	HRESULT Ready_Character_Models();
 	HRESULT Ready_Characters();
 
 public:

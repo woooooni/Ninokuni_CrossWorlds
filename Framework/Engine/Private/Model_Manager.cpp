@@ -125,17 +125,19 @@ HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel, const wstring str
 
 	/* 01. For m_AnimTransforms */
 	/* 해당 모델이 사용하는 모든 애니메이션과 Bone의 정보를 m_AnimTransforms에 세팅한다. */
-	m_HierarchyNodes	= pModel->Get_HierarchyNodes();
-	m_AnimationsCache	= pModel->Get_Animations();
 
-	const _uint iAnimCount = (_uint)m_AnimationsCache.size();
-	const _uint iHiearachynodeCount = (_uint)m_HierarchyNodes.size();
+	vector<CHierarchyNode*> TempHierarchyNodes = pModel->Get_HierarchyNodes();
+	vector<CAnimation*> TempAnimationCache = pModel->Get_Animations();
+	vector<ANIM_TRANSFORM_CACHES> TempTransformCaches;
+
+	const _uint iAnimCount = (_uint)TempAnimationCache.size();
+	const _uint iHiearachynodeCount = (_uint)TempHierarchyNodes.size();
 
 	_uint iAnimMaxFrameCount = 0;
 
 	for (uint32 i = 0; i < iAnimCount; i++)
 	{
-		_uint iCurAnimFrameCnt = (_uint)m_AnimationsCache[i]->Get_MaxFrameCount();
+		_uint iCurAnimFrameCnt = (_uint)TempAnimationCache[i]->Get_MaxFrameCount();
 
 		iAnimMaxFrameCount = iAnimMaxFrameCount < iCurAnimFrameCnt ? iCurAnimFrameCnt : iAnimMaxFrameCount;
 	}
@@ -143,16 +145,17 @@ HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel, const wstring str
 	if (0 == iAnimMaxFrameCount) 
 		return E_FAIL;
 
-	if (!m_AnimTransformsCaches.empty())
+	if (!TempTransformCaches.empty())
 	{
-		m_AnimTransformsCaches.clear();
-		m_AnimTransformsCaches.shrink_to_fit();
+		TempTransformCaches.clear();
+		TempTransformCaches.shrink_to_fit();
 	}
-	m_AnimTransformsCaches.resize(iAnimCount);
+	TempTransformCaches.resize(iAnimCount);
 
+	
 	for (_uint i = 0; i < iAnimCount; i++)
 	{
-		if (FAILED(Create_AnimationTransform_Caches(i)))
+		if (FAILED(Create_AnimationTransform_Caches(TempHierarchyNodes, TempAnimationCache, TempTransformCaches, i)))
 			return E_FAIL;
 	}
 
@@ -184,11 +187,11 @@ HRESULT CModel_Manager::Create_Model_Vtf(class CModel* pModel, const wstring str
 
 			BYTE* pageStartPtr = reinterpret_cast<BYTE*>(mallocPtr) + startOffset;
 
-			for (uint32 f = 0; f < m_AnimationsCache[c]->Get_MaxFrameCount() ; f++) /* 키프레임 갯수만큼 반복 (세로 크기만큼) */
+			for (uint32 f = 0; f < TempAnimationCache[c]->Get_MaxFrameCount() ; f++) /* 키프레임 갯수만큼 반복 (세로 크기만큼) */
 			{
 				void* ptr = pageStartPtr + dataSize * f;
 
-				::memcpy(ptr, m_AnimTransformsCaches[c].transforms[f].data(), dataSize); /* 텍스처에 가로 1줄만큼 데이터 저장 */
+				::memcpy(ptr, TempTransformCaches[c].transforms[f].data(), dataSize); /* 텍스처에 가로 1줄만큼 데이터 저장 */
 			}
 		}
 
@@ -353,7 +356,8 @@ HRESULT CModel_Manager::Import_Model_Data_From_Fbx(_uint iLevelIndex, const wstr
 
 		if (FAILED(GI->Add_Prototype(iLevelIndex, strProtoTypeTag, pModel)))
 		{
-			MSG_BOX("Model Add Prototype Failed : Model Manager");
+			wstring strMsg = L"Model Add Prototype Failed : Model Manager(" + strProtoTypeTag + L")";
+			MessageBox(nullptr, strMsg.c_str(), L"System Message", MB_OK);
 			Safe_Release(pModel);
 			return E_FAIL;
 		}
@@ -432,7 +436,8 @@ HRESULT CModel_Manager::Import_Model_Data_From_Bin_In_Tool(_uint iLevelIndex, co
 	{
 		if (FAILED(GI->Add_Prototype(iLevelIndex, strProtoTypeTag, pModel)))
 		{
-			MSG_BOX("Model Add Prototype Failed : Model Manager");
+			wstring strMsg = L"Model Add Prototype Failed : Model Manager(" + strProtoTypeTag + L")";
+			MessageBox(nullptr, strMsg.c_str(), L"System Message", MB_OK);
 			Safe_Release(pModel);
 			return E_FAIL;
 		}
@@ -448,7 +453,9 @@ HRESULT CModel_Manager::Import_Model_Data_From_Bin_In_Tool(_uint iLevelIndex, co
 
 		if (FAILED(GI->Add_Prototype(iLevelIndex, strProtoTypeTag, pModel)))
 		{
-			MSG_BOX("Model Add Prototype Failed : Model Manager");
+			wstring strMsg = L"Model Add Prototype Failed : Model Manager(" + strProtoTypeTag + L")";
+			MessageBox(nullptr, strMsg.c_str(), L"System Message", MB_OK);
+
 			Safe_Release(pModel);
 			return E_FAIL;
 		}
@@ -517,7 +524,8 @@ HRESULT CModel_Manager::Import_Model_Data_From_Bin_In_Game(_uint iLevelIndex, co
 	{
 		if (FAILED(GI->Add_Prototype(iLevelIndex, strProtoTypeTag, pModel)))
 		{
-			MSG_BOX("Model Add Prototype Failed : Model Manager");
+			wstring strMsg = L"Model Add Prototype Failed : Model Manager(" + strProtoTypeTag + L")";
+			MessageBox(nullptr, strMsg.c_str(), L"System Message", MB_OK);
 			Safe_Release(pModel);
 			return E_FAIL;
 		}
@@ -533,7 +541,7 @@ HRESULT CModel_Manager::Import_Model_Data_From_Bin_In_Game(_uint iLevelIndex, co
 
 		if (FAILED(GI->Add_Prototype(iLevelIndex, strProtoTypeTag, pModel)))
 		{
-			MSG_BOX("Model Add Prototype Failed : Model Manager");
+			wstring strMsg = L"Model Add Prototype Failed : Model Manager(" + strProtoTypeTag + L")";
 			Safe_Release(pModel);
 			return E_FAIL;
 		}
@@ -962,10 +970,10 @@ string CModel_Manager::Export_Texture(const wstring& strOriginFolder, const stri
 	return TextureName;
 }
 
-HRESULT CModel_Manager::Create_AnimationTransform_Caches(const _uint& iAnimIndex)
+HRESULT CModel_Manager::Create_AnimationTransform_Caches(vector<CHierarchyNode*>& HierarchyNodeCashes, vector<CAnimation*>& AnimationCashes, vector<ANIM_TRANSFORM_CACHES>& TransformCaches, const _uint& iAnimIndex)
 {
 	/* 현재 애니메이션에 대한 텍스처 한 장(프레임 행, 본 열)정보를 세팅한다. */
-	CAnimation* pAnimation = m_AnimationsCache[iAnimIndex];
+	CAnimation* pAnimation = AnimationCashes[iAnimIndex];
 
 	const _uint iMaxFrame = (_uint)pAnimation->Get_MaxFrameCount();
 
@@ -976,7 +984,7 @@ HRESULT CModel_Manager::Create_AnimationTransform_Caches(const _uint& iAnimIndex
 		/* Fit */
 		{
 			vector<Matrix> vecMat;
-			m_AnimTransformsCaches[iAnimIndex].transforms.push_back(vecMat);
+			TransformCaches[iAnimIndex].transforms.push_back(vecMat);
 		}
 
 		/* 모든 채널의 현재 프레임 갱신 */
@@ -984,18 +992,18 @@ HRESULT CModel_Manager::Create_AnimationTransform_Caches(const _uint& iAnimIndex
 
 		/* 모든 본 글로벌 변환 -> 애니메이션 변환 */
 
-		for (uint32 iBoneIndex = 0; iBoneIndex < m_HierarchyNodes.size(); iBoneIndex++)
+		for (uint32 iBoneIndex = 0; iBoneIndex < HierarchyNodeCashes.size(); iBoneIndex++)
 		{
-			m_HierarchyNodes[iBoneIndex]->Set_CombinedTransformation();
+			HierarchyNodeCashes[iBoneIndex]->Set_CombinedTransformation();
 
 			/* Fit */
 			{
-				m_AnimTransformsCaches[iAnimIndex].transforms[iFrameIndex].push_back(Matrix());
+				TransformCaches[iAnimIndex].transforms[iFrameIndex].push_back(Matrix());
 			}
 
-			m_AnimTransformsCaches[iAnimIndex].transforms[iFrameIndex][iBoneIndex]
-					= Matrix(m_HierarchyNodes[iBoneIndex]->Get_OffSetMatrix())
-					* Matrix(m_HierarchyNodes[iBoneIndex]->Get_CombinedTransformation()) 
+			TransformCaches[iAnimIndex].transforms[iFrameIndex][iBoneIndex]
+					= Matrix(HierarchyNodeCashes[iBoneIndex]->Get_OffSetMatrix())
+					* Matrix(HierarchyNodeCashes[iBoneIndex]->Get_CombinedTransformation())
 					* Matrix(m_PivotMatrix);
 		}
 	}
@@ -1012,8 +1020,8 @@ vector<ANIM_TRANSFORM_CACHES> CModel_Manager::Create_AnimationTransform_Caches_I
 	if (99 != GI->Get_CurrentLevel() || nullptr == pModel)
 		return AnimTransformsCache;
 
-	m_HierarchyNodes = pModel->Get_HierarchyNodes();
-	m_AnimationsCache = pModel->Get_Animations();
+	vector<CHierarchyNode*> TempHierarchyNodes = pModel->Get_HierarchyNodes();
+	vector<CAnimation*> TempAnimationCache = pModel->Get_Animations();
 
 	const _uint iAnimCount = pModel->Get_Animations().size();
 
@@ -1021,7 +1029,7 @@ vector<ANIM_TRANSFORM_CACHES> CModel_Manager::Create_AnimationTransform_Caches_I
 
 	for (size_t iAnimIndex = 0; iAnimIndex < iAnimCount; iAnimIndex++)
 	{
-		CAnimation* pAnimation = m_AnimationsCache[iAnimIndex];
+		CAnimation* pAnimation = TempAnimationCache[iAnimIndex];
 
 		const _uint iMaxFrame = (_uint)pAnimation->Get_MaxFrameCount();
 
@@ -1035,9 +1043,9 @@ vector<ANIM_TRANSFORM_CACHES> CModel_Manager::Create_AnimationTransform_Caches_I
 
 			pAnimation->Calculate_Animation(iFrameIndex);
 
-			for (uint32 iBoneIndex = 0; iBoneIndex < m_HierarchyNodes.size(); iBoneIndex++)
+			for (uint32 iBoneIndex = 0; iBoneIndex < TempHierarchyNodes.size(); iBoneIndex++)
 			{
-				m_HierarchyNodes[iBoneIndex]->Set_CombinedTransformation();
+				TempHierarchyNodes[iBoneIndex]->Set_CombinedTransformation();
 
 				/* Fit */
 				{
@@ -1046,8 +1054,8 @@ vector<ANIM_TRANSFORM_CACHES> CModel_Manager::Create_AnimationTransform_Caches_I
 
 
 				AnimTransformsCache[iAnimIndex].transforms[iFrameIndex][iBoneIndex]
-					= Matrix(m_HierarchyNodes[iBoneIndex]->Get_OffSetMatrix())
-					* Matrix(m_HierarchyNodes[iBoneIndex]->Get_CombinedTransformation())
+					= Matrix(TempHierarchyNodes[iBoneIndex]->Get_OffSetMatrix())
+					* Matrix(TempHierarchyNodes[iBoneIndex]->Get_CombinedTransformation())
 					* Matrix(m_PivotMatrix);
 			}
 		}
@@ -1064,8 +1072,9 @@ vector<ANIM_TRANSFORM_CACHE> CModel_Manager::Create_AnimationSocketTransform(cla
 		return Get_AnimationSocketTransform(pModel->Get_Name(), iSocketBoneIndex);
 	}
 
-	m_HierarchyNodes = pModel->Get_HierarchyNodes();
-	m_AnimationsCache = pModel->Get_Animations();
+
+	vector<CHierarchyNode*> TempHierarchyNodes = pModel->Get_HierarchyNodes();
+	vector<CAnimation*> TempAnimationCache = pModel->Get_Animations();
 
 	/* 툴레벨이거나 혹은, 툴레벨이 아닌데 이전에 저장된 데이터가 없는 경우 새로 만든다. */
 
@@ -1080,7 +1089,7 @@ vector<ANIM_TRANSFORM_CACHE> CModel_Manager::Create_AnimationSocketTransform(cla
 
 	for (size_t iAnimIndex = 0; iAnimIndex < iAnimCount; iAnimIndex++)
 	{
-		CAnimation* pAnimation = m_AnimationsCache[iAnimIndex];
+		CAnimation* pAnimation = TempAnimationCache[iAnimIndex];
 
 		const _uint iMaxFrame = (_uint)pAnimation->Get_MaxFrameCount();
 
@@ -1094,17 +1103,17 @@ vector<ANIM_TRANSFORM_CACHE> CModel_Manager::Create_AnimationSocketTransform(cla
 
 			pAnimation->Calculate_Animation(iFrameIndex);
 
-			for (uint32 iBoneIndex = 0; iBoneIndex < m_HierarchyNodes.size(); iBoneIndex++)
+			for (uint32 iBoneIndex = 0; iBoneIndex < TempHierarchyNodes.size(); iBoneIndex++)
 			{
-				m_HierarchyNodes[iBoneIndex]->Set_CombinedTransformation();
+				TempHierarchyNodes[iBoneIndex]->Set_CombinedTransformation();
 
 				if (iSocketBoneIndex == iBoneIndex)
 				{
 					AnimTransformsCache[iAnimIndex].transforms[iFrameIndex].push_back(Matrix());
 
 					AnimTransformsCache[iAnimIndex].transforms[iFrameIndex][0]
-						= Matrix(m_HierarchyNodes[iBoneIndex]->Get_OffSetMatrix())
-						* Matrix(m_HierarchyNodes[iBoneIndex]->Get_CombinedTransformation())
+						= Matrix(TempHierarchyNodes[iBoneIndex]->Get_OffSetMatrix())
+						* Matrix(TempHierarchyNodes[iBoneIndex]->Get_CombinedTransformation())
 						* Matrix(m_PivotMatrix);
 				}
 			}
