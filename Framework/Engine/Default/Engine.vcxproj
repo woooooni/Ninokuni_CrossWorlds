@@ -313,6 +313,7 @@ call Copy.bat</Command>
     <ClInclude Include="..\Public\VIBuffer_Cube.h" />
     <ClInclude Include="..\Public\VIBuffer_Grass.h" />
     <ClInclude Include="..\Public\VIBuffer_Instancing.h" />
+    <ClInclude Include="..\Public\VIBuffer_Ocean.h" />
     <ClInclude Include="..\Public\VIBuffer_Particle.h" />
     <ClInclude Include="..\Public\VIBuffer_Rect.h" />
     <ClInclude Include="..\Public\VIBuffer_SkyPlane.h" />
@@ -388,6 +389,7 @@ call Copy.bat</Command>
     <ClCompile Include="..\Private\VIBuffer_Cube.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Grass.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Instancing.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_Ocean.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Particle.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Rect.cpp" />
     <ClCompile Include="..\Private\VIBuffer_SkyPlane.cpp" />

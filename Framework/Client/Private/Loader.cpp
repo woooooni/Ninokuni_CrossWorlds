@@ -525,7 +525,6 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 		if (i == LAYER_TYPE::LAYER_CAMERA
 			|| i == LAYER_TYPE::LAYER_TERRAIN
 			|| i == LAYER_TYPE::LAYER_BACKGROUND
-			|| i == LAYER_TYPE::LAYER_SKYBOX
 			|| i == LAYER_TYPE::LAYER_UI
 			|| i == LAYER_TYPE::LAYER_PLAYER
 			|| i == LAYER_TYPE::LAYER_WEAPON
@@ -688,13 +687,19 @@ HRESULT CLoader::Loading_Proto_DynamicObjects(const wstring& strPath)
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Pigeon"), CPigeon::Create(m_pDevice, m_pContext, TEXT("Animal_Pigeon"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC)))
 		return E_FAIL;
+
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Water"), CWater::Create(m_pDevice, m_pContext, TEXT("Evermore_Water"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC)))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_WInter_Water"), CWinterWater::Create(m_pDevice, m_pContext, TEXT("Winter_Water"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC)))
+		return E_FAIL;
+
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Skydome"), CSkyDome::Create(m_pDevice, m_pContext, TEXT("Sky_dome"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Skydome2"), CSkyDome::Create(m_pDevice, m_pContext, TEXT("Sky_dome2"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_SkyPlane"), CSkyPlane::Create(m_pDevice, m_pContext, TEXT("Sky_Plane"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_EvermoreWater"), CEvermoreWater::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_DYNAMIC)))
 		return E_FAIL;
 
 
@@ -716,10 +721,13 @@ HRESULT CLoader::Loading_Proto_DynamicObjects(const wstring& strPath)
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Everemore_Water", CModel::TYPE_NONANIM, L"../Bin/Export/AnimModel/Map/Water/", L"Evermore_WaterA_01")))
 		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Entire_Water", CModel::TYPE_NONANIM, L"../Bin/Export/AnimModel/Map/Water/", L"Entire_Water")))
+		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Sky_dome", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/SkyDom/", L"Skydome")))
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Sky_dome2", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/SkyDom/", L"Skydome2")))
 		return E_FAIL;
+
 
 
 	return S_OK;

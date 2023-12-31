@@ -55,7 +55,7 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 	/* 1-4. 게임내에서 사용할 레벨(씬)을 생성한다.   */
-	if (FAILED(Open_Level(LEVEL_TEST, L"Final_Boss")))
+	if (FAILED(Open_Level(LEVEL_TOOL, L"Final_Boss")))
 		return E_FAIL;
 
 
@@ -247,6 +247,10 @@ HRESULT CMainApp::Ready_Prototype_Component()
 		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, 100, 100))))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Ocean_Terrain"),
+		CVIBuffer_Ocean::Create(m_pDevice, m_pContext, 64, 64, 8.0f))))
+		return E_FAIL;
+
 	/* For.Prototype_Component_VIBuffer_Sky_Plane*/
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Sky_Plane"),
 		CVIBuffer_SkyPlane::Create(m_pDevice, m_pContext))))
@@ -321,7 +325,7 @@ HRESULT CMainApp::Ready_Prototype_Component()
 		return E_FAIL;
 	/* For. Prototype_Component_Shader_Water */
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Water"),
-		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Water.hlsl"), VTXTEX_DECLARATION::Elements, VTXTEX_DECLARATION::iNumElements))))
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Water.hlsl"), VTXMODEL_DECLARATION::Elements, VTXMODEL_DECLARATION::iNumElements))))
 		return E_FAIL;
 
 	/* For. Prototype_Component_Shader_Skydome */
@@ -332,6 +336,11 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	/* For. Prototype_Component_Shader_SkyPlane */
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Plane"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_SkyPlane.hlsl"), VTXTEX_DECLARATION::Elements, VTXTEX_DECLARATION::iNumElements))))
+		return E_FAIL;
+
+	/* For. Prototype_Component_Shader_SkyPlane */
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Ocean"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Ocean.hlsl"), VTXTEX_DECLARATION::Elements, VTXTEX_DECLARATION::iNumElements))))
 		return E_FAIL;
 
 
@@ -457,6 +466,11 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Water_Diffuse"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/AnimModel/Map/Water/others_0020_color_2k.png")))))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Water_HeightMap"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/AnimModel/Map/Water/others_0020_height_2k.png")))))
+		return E_FAIL;
+
+
 
 	/* For.Prototype_Component_Sky */
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Sky_Cloud"),

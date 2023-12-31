@@ -66,25 +66,25 @@ HRESULT CWinterWater::Ready_Components()
 		TEXT("Com_Water_Shader"), reinterpret_cast<CComponent**>(&m_pWaterShaderCom))))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_GameObject_Water"),
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Entire_Water"),
 		TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 		return E_FAIL;
 
-	/*if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Water_Normal"),
-		TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Water_Normal"),
+		TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom[TEX_TYPE::TEX_NORMAL]))))
 		return E_FAIL;
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Water_Diffuse"),
-		TEXT("Com_Texture2"), reinterpret_cast<CComponent**>(&m_pDiffuseTextureCom))))
+		TEXT("Com_Texture2"), reinterpret_cast<CComponent**>(&m_pTextureCom[TEX_TYPE::TEX_DIFFUSE]))))
 		return E_FAIL;
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Noise"),
-		TEXT("Com_Texture3"), reinterpret_cast<CComponent**>(&m_pNoiseTextureCom[0]))))
+		TEXT("Com_Texture3"), reinterpret_cast<CComponent**>(&m_pTextureCom[TEX_TYPE::TEX_MASK1]))))
 		return E_FAIL;
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Noise"),
-		TEXT("Com_Texture4"), reinterpret_cast<CComponent**>(&m_pNoiseTextureCom[1]))))
-		return E_FAIL;*/
+		TEXT("Com_Texture4"), reinterpret_cast<CComponent**>(&m_pTextureCom[TEX_TYPE::TEX_MASK2]))))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -125,13 +125,13 @@ HRESULT CWinterWater::Bind_ShaderResources()
 	if (FAILED(m_pWaterShaderCom->Bind_RawValue("g_vCamPosition", &vCameraPos, sizeof(Vec4))))
 		return E_FAIL;
 
-	/*if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pWaterShaderCom, "g_NormalTexture", 0)))
+	if (FAILED(m_pTextureCom[TEX_TYPE::TEX_NORMAL]->Bind_ShaderResource(m_pWaterShaderCom, "g_NormalTexture", 0)))
 		return E_FAIL;
 
-	if (FAILED(m_pNoiseTextureCom[0]->Bind_ShaderResource(m_pWaterShaderCom, "g_MaskMap", 69)))
+	if (FAILED(m_pTextureCom[TEX_TYPE::TEX_MASK1]->Bind_ShaderResource(m_pWaterShaderCom, "g_MaskMap", 69)))
 		return E_FAIL;
-	if (FAILED(m_pNoiseTextureCom[1]->Bind_ShaderResource(m_pWaterShaderCom, "g_MaskMap2", 149)))
-		return E_FAIL;*/
+	if (FAILED(m_pTextureCom[TEX_TYPE::TEX_MASK2]->Bind_ShaderResource(m_pWaterShaderCom, "g_MaskMap2", 149)))
+		return E_FAIL;
 
 	if (FAILED(m_pWaterShaderCom->Bind_RawValue("fWaterTranslationSpeed", &m_fWaterTranslationSpeed, sizeof(_float))))
 		return E_FAIL;
@@ -143,8 +143,8 @@ HRESULT CWinterWater::Bind_ShaderResources()
 		return E_FAIL;
 
 
-	//if (FAILED(m_pDiffuseTextureCom->Bind_ShaderResource(m_pWaterShaderCom, "g_DiffuseTexture", 0)))
-	//	return E_FAIL;
+	if (FAILED(m_pTextureCom[TEX_TYPE::TEX_DIFFUSE]->Bind_ShaderResource(m_pWaterShaderCom, "g_DiffuseTexture", 0)))
+		return E_FAIL;
 
 
 	if (FAILED(m_pModelCom->Render(m_pWaterShaderCom, 0, 3)))
