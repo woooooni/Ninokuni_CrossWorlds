@@ -544,6 +544,22 @@ void CTool_Effect::Tick_DecalTool()
 		ImGui::InputFloat3("##Scale", m_fScale);
 	}
 
+	// 데칼 박스 크기
+	if (ImGui::CollapsingHeader("DecalBoxScale"))
+	{
+		ImGui::Text("DecalBoxScale");
+		ImGui::InputFloat3("##DecalBoxScale", &m_tDecalInfo.fScale.x);
+		ImGui::NewLine();
+	}
+
+	// 지속 시간
+	if (ImGui::CollapsingHeader("DecalLifeTime"))
+	{
+		ImGui::Text("DecalLifeTime");
+		ImGui::InputFloat("##DecalLifeTime", &m_tDecalInfo.fLifeTime);
+		ImGui::NewLine();
+	}
+
 	// 텍스처 지정
 	if (ImGui::CollapsingHeader("DecalTexture"))
 	{
@@ -570,6 +586,7 @@ void CTool_Effect::Tick_DecalTool()
 			Store_InfoDecal();
 	}
 
+	// 데칼 알파
 	if (ImGui::CollapsingHeader("DecalAlpha"))
 	{
 		ImGui::Text("AlphaRemove");

@@ -18,37 +18,35 @@ class CDecal final : public CGameObject
 public:
 	typedef struct tagDecalDesc
 	{	
-		//
+		// 데칼 박스 크기
 		_float3 fScale    = _float3(5.f, 1.f, 5.f);
+
+		// 지속 시간
 		_float  fLifeTime = 50.f;
 
-		// 
-		_uint   iShaderPass = 1;
+		// 리소스 및 설정
 		_int    iTextureIndexDiffuse = 23;
 
+		_uint   iShaderPass = 1;
 		_float  fAlpha_Discard = 0.f;
 		_float3 fBlack_Discard = _float3(-1.f, -1.f, -1.f);
 
+		_float3 fBloomPower = _float3(0.5f, 0.5f, 0.5f);
+		_float  fBlurPower = 0.f;
+
+		// 색상
 		_float  fColorAdd_01_Alpha = 0.9f;               // 01 색상 더하는 알파 기준 값
 		_float3 fColorAdd_01 = _float3(0.4f, 0.8f, 1.f); // 알파 값 0.9 이상 색상 지정
 		_float3 fColorAdd_02 = _float3(0.0f, 0.2f, 0.4f);// 나머지 색상 지정
 
-		// -->
+		// 알파
+		_float fAlphaRemove = 0.f; // 기존 알파 값에서 빼는 알파값
 		_bool bAlphaCreate = false;
 		_bool bAlphaDelete = false;
 		_float fAlphaSpeed = 0.f;
-		//
-		_float  fAlphaRemove = 0.f;                      // 기존 알파 값에서 빼는 알파값
-		
-		_float3 fBloomPower  = _float3(0.5f, 0.5f, 0.5f);
-		_float  fBlurPower   = 0.f;
-
 
 		// --------------------------------------------------
-
-
 		// 오너 따라갈 것인가?
-
 		// 앞쪽 방향으로 픽셀이 진하게 움직이는 기능 -> 패스로 바꿀까? 고민 필요
 
 	} DECAL_DESC;
@@ -80,8 +78,9 @@ private:
 	DECAL_DESC m_tDecalDesc;
 
 private:
-	_bool  m_bDecalDie = false;
-	_float m_fAccLifeTime = 0.f;
+	_bool  m_bDecalDie        = false;
+	_float m_fAccLifeTime     = 0.f;
+	_bool  m_bAlphaCreateSucc = false;
 
 private:
 	class CGameobject* m_pOwnerObject = nullptr;
