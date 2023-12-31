@@ -43,15 +43,27 @@ public:
 	class CModel* Get_ModelCom() { return m_pModelCom; }
 
 public:
+	HRESULT Appear_Weapon();
+	HRESULT Disappear_Weapon();
+
+public:
 	virtual void Set_SocketWorld(Matrix matSocketWorld) { memcpy(&m_matSocketWorld, &matSocketWorld, sizeof(Matrix)); } /* 주인 모델의 애니메이션 갱신이 이루어진 뒤 호출 */
 
 protected:
-	CGameObject* m_pOwner = { nullptr };
-	CModel* m_pModelCom = { nullptr };
-	CShader* m_pShaderCom = { nullptr };
-	CRenderer* m_pRendererCom = { nullptr };
-	CTransform* m_pTransformCom = { nullptr };
+	class CGameObject* m_pOwner = { nullptr };
+	class CModel* m_pModelCom = { nullptr };
+	class CShader* m_pShaderCom = { nullptr };
+	class CRenderer* m_pRendererCom = { nullptr };
+	class CTransform* m_pTransformCom = { nullptr };
+	class CTexture* m_pDissolveTextureCom = { nullptr };
+
+protected:
 	Matrix m_matSocketWorld;
+
+protected:
+	_bool m_bDisappear = false;
+	_float m_fAccDissolve = 0.f;
+
 
 public:
 	virtual void Free() override;

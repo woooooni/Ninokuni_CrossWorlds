@@ -18,6 +18,7 @@ HRESULT CState_SwordMan_Revive::Initialize(const list<wstring>& AnimationList)
 
 void CState_SwordMan_Revive::Enter_State(void* pArg)
 {
+    m_pCharacter->Disappear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }
 

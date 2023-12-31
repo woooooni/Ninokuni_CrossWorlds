@@ -21,6 +21,7 @@ HRESULT CState_SwordMan_Battle_Dash::Initialize(const list<wstring>& AnimationLi
 void CState_SwordMan_Battle_Dash::Enter_State(void* pArg)
 {
     // 마우스 방향으로 구르기
+    m_pCharacter->Appear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }
 

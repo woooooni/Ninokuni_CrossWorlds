@@ -24,6 +24,8 @@ HRESULT CState_SwordMan_Neutral_Jump::Initialize(const list<wstring>& AnimationL
 
 void CState_SwordMan_Neutral_Jump::Enter_State(void* pArg)
 {
+    m_pCharacter->Disappear_Weapon();
+
     m_pRigidBodyCom->Set_Ground(false);
     m_pRigidBodyCom->Set_Use_Gravity(true);
 

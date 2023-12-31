@@ -23,6 +23,7 @@ HRESULT CState_SwordMan_Neutral_Kick::Initialize(const list<wstring>& AnimationL
 
 void CState_SwordMan_Neutral_Kick::Enter_State(void* pArg)
 {
+    m_pCharacter->Disappear_Weapon();
     m_fAccIdleMotion = 0.f;
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }

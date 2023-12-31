@@ -36,6 +36,7 @@ void CSpawner::Tick(_float fTimeDelta)
 
 void CSpawner::LateTick(_float fTimeDelta)
 {
+	__super::LateTick(fTimeDelta);
 	// 랜더 그룹 추가하기.
 	__super::LateTick(fTimeDelta);
 

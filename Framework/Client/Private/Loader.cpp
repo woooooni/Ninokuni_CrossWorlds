@@ -354,7 +354,6 @@ HRESULT CLoader::Loading_For_Level_Test()
 
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
 
-
 	CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_TEST);
 
 	if (FAILED(Loading_Proto_AllObjects(L"../Bin/Export/NonAnimModel/Map/")))

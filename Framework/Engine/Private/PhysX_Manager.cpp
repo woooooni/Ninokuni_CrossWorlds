@@ -885,6 +885,130 @@ HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGameObject, CModel* pModel, Mat
 	return S_OK;
 }
 
+HRESULT CPhysX_Manager::Add_Building(CGameObject* pGameObject, CModel* pModel, Matrix WorldMatrix, const wstring& strCollisionTag)
+{
+	if (nullptr == pModel)
+		return E_FAIL;
+
+
+	for (auto& pMesh : pModel->Get_Meshes())
+	{
+		const vector<VTXANIMMODEL>& AnimVB = pMesh->Get_AnimVertices();
+		const vector<VTXMODEL>& NonAnimVB = pMesh->Get_NoneAnimVertice();
+
+		const vector<FACEINDICES32>& FaceIndices = pMesh->Get_FaceIndices();
+		_uint iNumVertices = pMesh->Get_VertexCount();
+		_uint iNumPrimitives = pMesh->Get_NumPrimitives();
+		_uint iNumIndices = iNumPrimitives * 3;
+		_uint iStride = pMesh->Get_Stride();
+
+		vector<PxVec3> Vertices;
+		Vertices.reserve(iNumVertices);
+
+		if (AnimVB.size() > 0)
+		{
+			for (_uint i = 0; i < iNumVertices; ++i)
+			{
+				Vec3 vVertex = AnimVB[i].vPosition;
+				vVertex = XMVector3TransformCoord(vVertex, WorldMatrix);
+				Vertices.push_back(PxVec3(vVertex.x, vVertex.y, vVertex.z));
+			}
+		}
+		else
+		{
+			for (_uint i = 0; i < iNumVertices; ++i)
+			{
+				Vec3 vVertex = NonAnimVB[i].vPosition;
+				vVertex = XMVector3TransformCoord(vVertex, WorldMatrix);
+				Vertices.push_back(PxVec3(vVertex.x, vVertex.y, vVertex.z));
+			}
+		}
+
+		vector<PxU32> Indices;
+		Indices.reserve(iNumIndices);
+
+		for (_uint i = 0; i < iNumPrimitives; ++i)
+		{
+			FACEINDICES32 Index = FaceIndices[i];
+
+			Indices.push_back(Index._0);
+			Indices.push_back(Index._1);
+			Indices.push_back(Index._2);
+		}
+
+		PxTriangleMeshDesc tDesc;
+
+		tDesc.points.count = iNumVertices;
+		tDesc.points.stride = sizeof(PxVec3);
+		tDesc.points.data = Vertices.data();
+
+		tDesc.triangles.count = iNumPrimitives;
+		tDesc.triangles.stride = sizeof(PxU32) * 3;
+		tDesc.triangles.data = Indices.data();
+
+
+		PxTriangleMesh* pTriangleMesh = PxCreateTriangleMesh(PxCookingParams(PxTolerancesScale(1.f, 1.f)), tDesc);
+		PxTriangleMeshGeometry* pGeometry = new PxTriangleMeshGeometry(pTriangleMesh);
+
+
+		Vec3 vScale = {};
+		Quaternion vQuat = {};
+		Vec3 vPosition = {};
+		WorldMatrix.Decompose(vScale, vQuat, vPosition);
+
+		PxTransform physXTransform = PxTransform({ 0.f, 0.f, 0.f });
+
+
+
+		PxRigidStatic* pActor = m_Physics->createRigidStatic(physXTransform);
+		PxMaterial* Material = m_Physics->createMaterial(0.f, 0.f, 0.f);
+		PxShape* pShape = m_Physics->createShape(*pGeometry, *Material);
+
+		pShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
+		pShape->setFlag(PxShapeFlag::eVISUALIZATION, true);
+		pShape->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, true);
+		pShape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
+
+
+		pShape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
+
+		pActor->setName("Building");
+
+		// shape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
+
+		pActor->attachShape(*pShape);
+		pActor->userData = nullptr;
+
+		while (m_bSimulating) {};
+
+		m_pScene->addActor(*pActor);
+
+		PHYSX_STATIC_OBJECT_DESC ObjectDesc;
+		ObjectDesc.pActor = pActor;
+		ObjectDesc.pObject = pGameObject;
+
+		auto iter = m_GroundObjects.find(pGameObject->Get_ObjectID());
+		if (iter == m_GroundObjects.end())
+		{
+			vector<PHYSX_STATIC_OBJECT_DESC> Temp;
+			m_GroundObjects.emplace(pGameObject->Get_ObjectID(), Temp);
+			iter = m_GroundObjects.find(pGameObject->Get_ObjectID());
+			iter->second.reserve(10);
+		}
+
+		iter->second.push_back(ObjectDesc);
+
+		Safe_AddRef(pGameObject);
+		Safe_Delete(pGeometry);
+
+		pTriangleMesh->release();
+		Material->release();
+		pShape->release();
+	}
+
+	return S_OK;
+}
+
 HRESULT CPhysX_Manager::Clear_PhysX_Ground()
 {
 	for (auto& iter : m_GroundObjects)

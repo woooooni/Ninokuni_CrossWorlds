@@ -5,7 +5,10 @@ Texture2D	g_DiffuseTexture;
 Texture2D	g_NormalTexture;
 Texture2D	g_MaskMap;
 Texture2D	g_MaskMap2;
+Texture2D   g_DissolveTexture;
+
 float4		g_vCamPosition;
+float		g_fDissolveWeight;
 
 cbuffer WaterOption
 {
@@ -277,6 +280,37 @@ WaterPixelToFrame WaterPS(WaterVertexToPixel input)
     return output;
 }
 
+PS_OUT PS_DISSOVE(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+	
+	
+    vector vDissoveSample = g_DissolveTexture.Sample(LinearSampler, In.vTexUV);
+    
+    float fInterval = saturate(vDissoveSample.r - g_fDissolveWeight);
+
+    Out.vDiffuse = (vector) 1.f;
+	
+	if(0.f == fInterval)
+        discard;
+    else if (fInterval >= 0.1f && fInterval >= 0.15f)
+        Out.vDiffuse = vector(1.f, 0.98f, 0.812f, 1.f);
+    else if (fInterval >= 0.2f && fInterval >= 0.25f)
+        Out.vDiffuse = vector(1.f, 0.957f, 0.569f, 1.f);
+	else
+        Out.vDiffuse = g_DiffuseTexture.Sample(PointSampler, In.vTexUV);
+	
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
+
+    
+    
+	
+    return Out;
+}
+
+
+
 
 // ±×¸²ÀÚ ÇÈ¼¿ ½¦ÀÌ´õ
 PS_OUT_SHADOW_DEPTH PS_SHADOW_DEPTH(PS_IN In)
@@ -343,16 +377,16 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 WaterPS();
     }
 
-	pass Temp4
+	pass Weapon_Dissove
 	{
 		// 4
 		SetRasterizerState(RS_Default);
 		SetDepthStencilState(DSS_Default, 0);
-		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
-		PixelShader = compile ps_5_0 PS_MAIN();
+		PixelShader = compile ps_5_0 PS_DISSOVE();
 	}
 
 	pass Temp5

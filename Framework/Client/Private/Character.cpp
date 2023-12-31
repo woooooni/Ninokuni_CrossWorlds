@@ -74,6 +74,8 @@ void CCharacter::Tick(_float fTimeDelta)
 		GI->UnLock_Mouse();
 	}
 
+	if (nullptr != m_pWeapon)
+		m_pWeapon->Tick(fTimeDelta);
 	//if (m_bInfinite)
 	//{
 	//	m_fAccInfinite += fTimeDelta;
@@ -306,6 +308,23 @@ void CCharacter::Set_Infinite(_float fInfiniteTime, _bool bInfinite)
 void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 {
 
+}
+
+
+HRESULT CCharacter::Disappear_Weapon()
+{
+	if (nullptr != m_pWeapon)
+		m_pWeapon->Disappear_Weapon();
+
+	return S_OK;
+}
+
+HRESULT CCharacter::Appear_Weapon()
+{
+	if (nullptr != m_pWeapon)
+		m_pWeapon->Appear_Weapon();
+
+	return S_OK;
 }
 
 HRESULT CCharacter::Enter_Character()

@@ -23,6 +23,7 @@ HRESULT CState_SwordMan_Neutral_Crouch_Idle::Initialize(const list<wstring>& Ani
 
 void CState_SwordMan_Neutral_Crouch_Idle::Enter_State(void* pArg)
 {
+    m_pCharacter->Disappear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }
 

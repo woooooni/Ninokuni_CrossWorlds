@@ -23,6 +23,7 @@ void CState_SwordMan_Battle_Guard::Enter_State(void* pArg)
 
 void CState_SwordMan_Battle_Guard::Tick_State(_float fTimeDelta)
 {
+    m_pCharacter->Appear_Weapon();
     Input(fTimeDelta);
 }
 

@@ -571,6 +571,11 @@ _bool CGameInstance::Intersect_Frustum_World(_fvector vWorldPos, _float fRadius)
 //	return m_pPhysXManager->Add_Dynamic_Mesh_Actor(Desc, refOut);
 //}
 
+HRESULT CGameInstance::Add_Building(CGameObject* pGameObject, CModel* pModel, Matrix WorldMatrix, const wstring& strCollisionTag)
+{
+	return m_pPhysXManager->Add_Building(pGameObject, pModel, WorldMatrix, strCollisionTag);
+}
+
 HRESULT CGameInstance::Add_Ground(CGameObject* pGameObject, CModel* pModel, _matrix WorldMatrix, const wstring& strCollisionTag)
 {
 	return m_pPhysXManager->Add_Ground(pGameObject, pModel, WorldMatrix, strCollisionTag);

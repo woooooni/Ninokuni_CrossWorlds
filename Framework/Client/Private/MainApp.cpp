@@ -340,9 +340,9 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	///////////// For UI
 	// 디졸브 텍스쳐
 
-//	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Dissolve"),
-//		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Dissolve/Dissolve.png")))))
-//		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_DissolveWeapon"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/Noise"), 0, true))))
+		return E_FAIL;
 
 
 	if (FAILED(Ready_UI_TextureComponent()))

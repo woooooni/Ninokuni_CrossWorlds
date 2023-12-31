@@ -11,6 +11,7 @@ CState_SwordMan_Battle_Jump::CState_SwordMan_Battle_Jump(CStateMachine* pMachine
 
 HRESULT CState_SwordMan_Battle_Jump::Initialize(const list<wstring>& AnimationList)
 {
+    
     if (FAILED(__super::Initialize(AnimationList)))
         return E_FAIL;
     
@@ -19,6 +20,8 @@ HRESULT CState_SwordMan_Battle_Jump::Initialize(const list<wstring>& AnimationLi
 
 void CState_SwordMan_Battle_Jump::Enter_State(void* pArg)
 {
+    m_pCharacter->Appear_Weapon();
+
     m_pRigidBodyCom->Set_Ground(false);
     m_pRigidBodyCom->Set_Use_Gravity(true);
 

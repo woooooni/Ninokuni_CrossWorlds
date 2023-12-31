@@ -28,7 +28,7 @@ HRESULT CSword::Initialize(void* pArg)
 
 void CSword::Tick(_float fTimeDelta)
 {
-
+	__super::Tick(fTimeDelta);
 }
 
 void CSword::LateTick(_float fTimeDelta)

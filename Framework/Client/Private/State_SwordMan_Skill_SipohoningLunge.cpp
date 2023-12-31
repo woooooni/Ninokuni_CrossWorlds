@@ -18,6 +18,7 @@ HRESULT CState_SwordMan_Skill_SipohoningLunge::Initialize(const list<wstring>& A
 
 void CState_SwordMan_Skill_SipohoningLunge::Enter_State(void* pArg)
 {
+    m_pCharacter->Appear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }
 

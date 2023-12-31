@@ -18,6 +18,7 @@ HRESULT CState_SwordMan_Battle_Idle::Initialize(const list<wstring>& AnimationLi
 
 void CState_SwordMan_Battle_Idle::Enter_State(void* pArg)
 {
+    m_pCharacter->Appear_Weapon();
     m_fAccReturnNuetral = 0.f;
     m_iCurrAnimIndex = m_AnimIndices[0];
     m_pModelCom->Set_Animation(m_iCurrAnimIndex);
