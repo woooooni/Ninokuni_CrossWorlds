@@ -23,6 +23,7 @@
 #include "VIBuffer_Instancing.h"
 #include "VIBuffer_SkyPlane.h"
 #include "VIBuffer_Grass.h"
+#include "VIBuffer_Ocean.h"
 
 
 #include "DebugDraw.h"

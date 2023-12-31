@@ -62,7 +62,7 @@ HRESULT CWater::Ready_Components()
 		TEXT("Com_Transform"), reinterpret_cast<CComponent**>(&m_pTransformCom))))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Model"),
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Water"),
 		TEXT("Com_Water_Shader"), reinterpret_cast<CComponent**>(&m_pWaterShaderCom))))
 		return E_FAIL;
 
@@ -113,11 +113,11 @@ HRESULT CWater::Bind_ShaderResources()
 	if (nullptr == m_pModelCom)
 		return E_FAIL;
 
-	if (FAILED(m_pWaterShaderCom->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
+	if (FAILED(m_pWaterShaderCom->Bind_RawValue("World", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
 		return E_FAIL;
-	if (FAILED(m_pWaterShaderCom->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
+	if (FAILED(m_pWaterShaderCom->Bind_RawValue("View", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
 		return E_FAIL;
-	if (FAILED(m_pWaterShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+	if (FAILED(m_pWaterShaderCom->Bind_RawValue("Projection", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
 
 	Vec4 vCameraPos = GI->Get_CamPosition();
@@ -125,12 +125,12 @@ HRESULT CWater::Bind_ShaderResources()
 	if (FAILED(m_pWaterShaderCom->Bind_RawValue("g_vCamPosition", &vCameraPos, sizeof(Vec4))))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pWaterShaderCom, "g_NormalTexture", 0)))
+	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pWaterShaderCom, "NormalTexture", 0)))
 		return E_FAIL;
 
-	if (FAILED(m_pNoiseTextureCom[0]->Bind_ShaderResource(m_pWaterShaderCom, "g_MaskMap", 69)))
+	if (FAILED(m_pNoiseTextureCom[0]->Bind_ShaderResource(m_pWaterShaderCom, "MaskTexture", 69)))
 		return E_FAIL;
-	if (FAILED(m_pNoiseTextureCom[1]->Bind_ShaderResource(m_pWaterShaderCom, "g_MaskMap2", 149)))
+	if (FAILED(m_pNoiseTextureCom[1]->Bind_ShaderResource(m_pWaterShaderCom, "MaskTexture2", 149)))
 		return E_FAIL;
 
 	if (FAILED(m_pWaterShaderCom->Bind_RawValue("fWaterTranslationSpeed", &m_fWaterTranslationSpeed, sizeof(_float))))
@@ -154,18 +154,13 @@ HRESULT CWater::Bind_ShaderResources()
 
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{
-		if (FAILED(m_pModelCom->SetUp_OnShader(m_pWaterShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+		if (FAILED(m_pModelCom->SetUp_OnShader(m_pWaterShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "DiffuseTexture")))
 			return E_FAIL;
 	}
 
-	//if (FAILED(m_pDiffuseTextureCom->Bind_ShaderResource(m_pWaterShaderCom, "g_DiffuseTexture", 0)))
-	//	return E_FAIL;
-
-
-	if (FAILED(m_pModelCom->Render(m_pWaterShaderCom, 0, 3)))
+	if (FAILED(m_pModelCom->Render(m_pWaterShaderCom, 0, 0)))
 		return E_FAIL;
 	
-	int a = 0;
 
 	return S_OK;
 }

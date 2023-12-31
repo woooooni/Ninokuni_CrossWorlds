@@ -262,7 +262,9 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 
     //vSpecular
 
-    vector vSpecular = float4(0.f, 0.f, 0.f, 0.f);
+	
+    //vector vSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    vector vSpecular = g_SpecularTarget.Sample(LinearSampler, In.vTexcoord);
     vSpecular = saturate(vSpecular);
     //vSpecular = ceil(vSpecular * 5.f) / 5.f;
 

@@ -14,6 +14,7 @@
 //#include "ImGuizmo.h"
 #include "PipeLine.h"
 #include "Camera_Manager.h"
+#include "Game_Manager.h"
 
 CTool_Map::CTool_Map(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CTool(pDevice, pContext)
@@ -1110,7 +1111,14 @@ HRESULT CTool_Map::Save_Map_Data(const wstring& strMapFileName)
 		}
 	}
 
-	
+	if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN)))
+		return E_FAIL;
+
+	if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))
+	{
+		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+	}
 
 	MSG_BOX("Map_Saved.");
 	return S_OK;
@@ -1132,7 +1140,6 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 		if (i == LAYER_TYPE::LAYER_CAMERA
 			|| i == LAYER_TYPE::LAYER_TERRAIN
 			|| i == LAYER_TYPE::LAYER_BACKGROUND
-			|| i == LAYER_TYPE::LAYER_SKYBOX
 			|| i == LAYER_TYPE::LAYER_UI
 			|| i == LAYER_TYPE::LAYER_PLAYER
 			|| i == LAYER_TYPE::LAYER_WEAPON
