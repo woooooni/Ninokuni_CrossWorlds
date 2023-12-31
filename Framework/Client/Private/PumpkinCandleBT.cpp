@@ -94,7 +94,7 @@ HRESULT CPumpkinCandleBT::Initialize_Prototype(CGameObject* pObject)
 	/* Condition 관련*/
 	/* function<_bool()>을 받는 CBTNode_Condition::Create 함수에서는 멤버 함수를 사용하고 있기 때문에 추가적인 처리가 필요 */
 	CBTNode_Condition* pCon_IsDead = CBTNode_Condition::Create(bind(&CPumpkinCandleBT::IsZeroHp, this), pDeadNode, pHitNode);
-	CBTNode_Condition* pCon_IsHit = CBTNode_Condition::Create(bind(&CPumpkinCandleBT::IsHit, this), pHitNode, pChaseNode);
+	CBTNode_Condition* pCon_IsWeak = CBTNode_Condition::Create(bind(&CPumpkinCandleBT::IsWeak, this), pHitNode, pChaseNode);
 	CBTNode_Condition* pCon_IsCombat = CBTNode_Condition::Create(bind(&CPumpkinCandleBT::IsAtk, this), nullptr, pChaseNode);
 	CBTNode_Condition* pCon_IsChase = CBTNode_Condition::Create(bind(&CPumpkinCandleBT::IsChase, this), pChaseNode, nullptr);
 	//CBTNode_Condition* pCon_IsReturn = CBTNode_Condition::Create(bind(&CPumpkinCandleBT::IsReturn, this), pReturnNode, pIdleNode);
@@ -105,7 +105,7 @@ HRESULT CPumpkinCandleBT::Initialize_Prototype(CGameObject* pObject)
 	pSeq_Dead->Add_ChildNode(pDeadNode);
 
 	m_pRootNode->Add_ChildNode(pSeq_Hit);
-	pSeq_Hit->Add_ChildNode(pCon_IsHit);
+	pSeq_Hit->Add_ChildNode(pCon_IsWeak);
 	pSeq_Hit->Add_ChildNode(pSel_Hit);
 	pSel_Hit->Add_ChildNode(pStunNode);
 	pSel_Hit->Add_ChildNode(pHitNode);
@@ -167,9 +167,9 @@ _bool CPumpkinCandleBT::IsZeroHp()
 	return false;
 }
 
-_bool CPumpkinCandleBT::IsHit()
+_bool CPumpkinCandleBT::IsWeak()
 {
-	if (m_pPumpkinCandle->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_HITANIM) ||
+	if (m_pPumpkinCandle->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ISHIT) ||
 		m_pPumpkinCandle->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_STUN))
 		return true;
 
@@ -194,7 +194,7 @@ _bool CPumpkinCandleBT::IsChase()
 	if (m_pPumpkinCandle->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT) &&
 		!m_pPumpkinCandle->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK) &&
 		!m_pPumpkinCandle->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBATIDLE) &&
-		!m_pPumpkinCandle->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_HITANIM) &&
+		!m_pPumpkinCandle->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ISHIT) &&
 		!m_pPumpkinCandle->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_STUN))
 	{
 		return true;

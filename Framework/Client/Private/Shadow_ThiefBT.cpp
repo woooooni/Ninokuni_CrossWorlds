@@ -14,6 +14,7 @@
 
 #include "Shadow_ThiefNode_Dead.h"
 
+#include "Shadow_ThiefNode_Air.h"
 #include "Shadow_ThiefNode_Stun.h"
 #include "Shadow_ThiefNode_Hit.h"
 
@@ -72,6 +73,7 @@ HRESULT CShadow_ThiefBT::Initialize_Prototype(CGameObject* pObject)
 
 	/* Hit ฐüทร */
 	CBTNode_Select* pSel_Hit = CBTNode_Select::Create(this);
+	CShadow_ThiefNode_Air* pAirNode = CShadow_ThiefNode_Air::Create(&m_tBTNodeDesc, this);
 	CShadow_ThiefNode_Stun* pStunNode = CShadow_ThiefNode_Stun::Create(&m_tBTNodeDesc, this);
 	CShadow_ThiefNode_Hit* pHitNode = CShadow_ThiefNode_Hit::Create(&m_tBTNodeDesc, this);
 
@@ -111,6 +113,7 @@ HRESULT CShadow_ThiefBT::Initialize_Prototype(CGameObject* pObject)
 	m_pRootNode->Add_ChildNode(pSeq_Hit);
 	pSeq_Hit->Add_ChildNode(pCon_IsHit);
 	pSeq_Hit->Add_ChildNode(pSel_Hit);
+	pSel_Hit->Add_ChildNode(pAirNode);
 	pSel_Hit->Add_ChildNode(pStunNode);
 	pSel_Hit->Add_ChildNode(pHitNode);
 
@@ -154,7 +157,18 @@ void CShadow_ThiefBT::LateTick(const _float& fTimeDelta)
 		m_pRootNode->Init_Start();
 		m_pShadow_Thief->Set_StunTime(3.f);
 		m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Stun"));
+		m_pShadow_Thief->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ISHIT, true);
 		m_pShadow_Thief->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_STUN, true);
+		m_pShadow_Thief->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT, true);
+	}
+
+	if (KEY_TAP(KEY::N))
+	{
+		m_pRootNode->Init_Start();
+		m_pShadow_Thief->Set_StunTime(3.f);
+		m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Knock"));
+		m_pShadow_Thief->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ISHIT, true);
+		m_pShadow_Thief->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_AIR, true);
 		m_pShadow_Thief->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT, true);
 	}
 
@@ -175,8 +189,7 @@ _bool CShadow_ThiefBT::IsZeroHp()
 
 _bool CShadow_ThiefBT::IsHit()
 {
-	if (m_pShadow_Thief->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_HITANIM) ||
-		m_pShadow_Thief->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_STUN))
+	if (m_pShadow_Thief->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ISHIT))
 		return true;
 
 	return false;
@@ -200,7 +213,7 @@ _bool CShadow_ThiefBT::IsChase()
 	if (m_pShadow_Thief->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT) &&
 		!m_pShadow_Thief->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK) &&
 		!m_pShadow_Thief->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBATIDLE) &&
-		!m_pShadow_Thief->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_HITANIM) &&
+		!m_pShadow_Thief->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ISHIT) &&
 		!m_pShadow_Thief->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_STUN))
 	{
 		return true;

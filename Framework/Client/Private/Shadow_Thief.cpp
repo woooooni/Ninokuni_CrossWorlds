@@ -208,29 +208,30 @@ HRESULT CShadow_Thief::Ready_Colliders()
 	ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
 
 	XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
-	OBBBox.Extents = { 50.f, 50.f, 50.f };
+	OBBBox.Extents = { 35.f , 60.f, 40.f };
 
 	OBBDesc.tBox = OBBBox;
 	OBBDesc.pNode = nullptr;
 	OBBDesc.pOwnerTransform = m_pTransformCom;
 	OBBDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
-	OBBDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
+	OBBDesc.vOffsetPosition = Vec3(5.f, 60.f, 5.f);
 
 	/* Body */
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::BODY, &OBBDesc)))
 		return E_FAIL;
 
 	/* Atk */
-	OBBDesc.vOffsetPosition = Vec3(0.f, 50.f, -100.f);
+	OBBDesc.vOffsetPosition = Vec3(0.f, 0.f, 0.f);
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::ATTACK, &OBBDesc)))
 		return E_FAIL;
 
+	/* Boundary */
 	CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
 	ZeroMemory(&SphereDesc, sizeof SphereDesc);
 	
 	BoundingSphere tSphere;
 	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 1.f;
+	tSphere.Radius = 0.65f;
 	SphereDesc.tSphere = tSphere;
 	
 	SphereDesc.pNode = nullptr;
@@ -240,34 +241,6 @@ HRESULT CShadow_Thief::Ready_Colliders()
 	
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BOUNDARY, &SphereDesc)))
 		return E_FAIL;
-
-
-
-	//CCollider_OBB::OBB_COLLIDER_DESC OBBDesc;
-	//ZeroMemory(&OBBDesc, sizeof OBBDesc);
-	//
-	//BoundingOrientedBox OBBBox;
-	//ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
-	//
-	//XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYawFromVector(XMVectorSet(0.f, 0.f, 0.f, 1.f)));
-	//OBBBox.Extents = { 500.f, 200.f, 500.f };
-	//
-	//OBBDesc.tBox = OBBBox;
-	//
-	//OBBDesc.pOwner = this;
-	//OBBDesc.pNode = nullptr;
-	//OBBDesc.pOwnerTransform = m_pTransformCom;
-	//OBBDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
-	//OBBDesc.vOffsetPosition = Vec3(0.f, 250.f, 0.f);
-	//OBBDesc.bLockAngle_X = true;
-	//OBBDesc.bLockAngle_Y = true;
-	//OBBDesc.bLockAngle_Z = true;
-	//
-	//OBBDesc.fAngularDamping = 0.f;
-	//OBBDesc.fDensity = 1.f;
-	//
-	//if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::BODY, &OBBDesc)))
-	//	return E_FAIL;
 
 	return S_OK;
 }

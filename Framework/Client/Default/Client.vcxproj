@@ -306,6 +306,7 @@
     <ClInclude Include="..\Public\Player.h" />
     <ClInclude Include="..\Public\PolarBear.h" />
     <ClInclude Include="..\Public\Rabbit.h" />
+    <ClInclude Include="..\Public\Shadow_ThiefNode_Air.h" />
     <ClInclude Include="..\Public\SkyDome.h" />
     <ClInclude Include="..\Public\SkyPlane.h" />
     <ClInclude Include="..\Public\Ruby.h" />
@@ -318,6 +319,7 @@
     <ClInclude Include="..\Public\Spawner_Ice01.h" />
     <ClInclude Include="..\Public\Spawner_Ice02.h" />
     <ClInclude Include="..\Public\Spawner_Ice03.h" />
+    <ClInclude Include="..\Public\Spawner_Witch01.h" />
     <ClInclude Include="..\Public\State_Animals.h" />
     <ClInclude Include="..\Public\State_Animal_Fly.h" />
     <ClInclude Include="..\Public\State_Animal_Idle.h" />
@@ -821,6 +823,7 @@
     <ClCompile Include="..\Private\Player.cpp" />
     <ClCompile Include="..\Private\PolarBear.cpp" />
     <ClCompile Include="..\Private\Rabbit.cpp" />
+    <ClCompile Include="..\Private\Shadow_ThiefNode_Air.cpp" />
     <ClCompile Include="..\Private\SkyDome.cpp" />
     <ClCompile Include="..\Private\SkyPlane.cpp" />
     <ClCompile Include="..\Private\Ruby.cpp" />
@@ -833,6 +836,7 @@
     <ClCompile Include="..\Private\Spawner_Ice01.cpp" />
     <ClCompile Include="..\Private\Spawner_Ice02.cpp" />
     <ClCompile Include="..\Private\Spawner_Ice03.cpp" />
+    <ClCompile Include="..\Private\Spawner_Witch01.cpp" />
     <ClCompile Include="..\Private\State_Animals.cpp" />
     <ClCompile Include="..\Private\State_Animal_Fly.cpp" />
     <ClCompile Include="..\Private\State_Animal_Idle.cpp" />
