@@ -201,7 +201,11 @@ HRESULT CLoader::Loading_For_Level_Logo()
 		Loading_For_Character();
 
 	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
-		m_Threads[i].wait();
+	{
+		if(true == m_Threads[i].valid())
+			m_Threads[i].wait();
+	}
+		
 
 
 	m_strLoading = TEXT("로딩 끝.");
@@ -357,7 +361,6 @@ HRESULT CLoader::Loading_For_Level_Test()
 
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
 
-	CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_TEST);
 
 	if (false == g_bFirstLoading)
 		Loading_For_Character();
@@ -371,6 +374,8 @@ HRESULT CLoader::Loading_For_Level_Test()
 	m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE].wait();
 
 	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Evermore");
+
+	CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_TEST);
 	
 
 	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
@@ -655,17 +660,18 @@ HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Pigeon"), CPigeon::Create(m_pDevice, m_pContext, TEXT("Animal_Pigeon"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Water"), CWater::Create(m_pDevice, m_pContext, TEXT("Evermore_Water"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Water"), CWater::Create(m_pDevice, m_pContext, TEXT("Evermore_Water"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_WInter_Water"), CWinterWater::Create(m_pDevice, m_pContext, TEXT("Winter_Water"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_WInter_Water"), CWinterWater::Create(m_pDevice, m_pContext, TEXT("Winter_Water"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Skydome"), CSkyDome::Create(m_pDevice, m_pContext, TEXT("Sky_dome"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Skydome"), CSkyDome::Create(m_pDevice, m_pContext, TEXT("Sky_dome"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Skydome2"), CSkyDome::Create(m_pDevice, m_pContext, TEXT("Sky_dome2"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_SkyPlane"), CSkyPlane::Create(m_pDevice, m_pContext, TEXT("Sky_Plane"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_EvermoreWater"), CEvermoreWater::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_DYNAMIC)))
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_EvermoreWater"), CEvermoreWater::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
 
 

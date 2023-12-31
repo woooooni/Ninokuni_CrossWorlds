@@ -41,10 +41,10 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 	PxCudaContextManagerDesc CudaDesc;
 	m_pCudaContextManager = PxCreateCudaContextManager(*m_Foundation, CudaDesc);
 
-	/*m_pPvd = PxCreatePvd(*m_Foundation);
+	m_pPvd = PxCreatePvd(*m_Foundation);
 	m_pTransport = PxDefaultPvdSocketTransportCreate("127.0.0.1", m_iPortNumber, m_iTimeOutSeconds);
 	m_pPvd->connect(*m_pTransport, PxPvdInstrumentationFlag::eALL);
-	_bool bConntected = m_pPvd->isConnected();*/
+	_bool bConntected = m_pPvd->isConnected();
 
 
 	m_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_Foundation, PxTolerancesScale(), true, m_pPvd);
@@ -853,9 +853,11 @@ HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGameObject, CModel* pModel, Mat
 		// shape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
 
 		pActor->attachShape(*pShape);
-		pActor->userData = nullptr;
+		pActor->userData = pGameObject;
 
-		while (m_bSimulating) {};
+		while (true == m_bSimulating) {
+			int i = 0;
+		};
 
 		m_pScene->addActor(*pActor);
 
@@ -969,15 +971,12 @@ HRESULT CPhysX_Manager::Add_Building(CGameObject* pGameObject, CModel* pModel, M
 		pShape->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, true);
 		pShape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
 
-
-		pShape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
-
 		pActor->setName("Building");
 
 		// shape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
 
 		pActor->attachShape(*pShape);
-		pActor->userData = nullptr;
+		pActor->userData = pGameObject;
 
 		while (m_bSimulating) {};
 
