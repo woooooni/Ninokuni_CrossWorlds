@@ -160,21 +160,34 @@ void CDecal::Restart_Decal()
 {
 	m_pTransformCom->Set_Scale(m_tDecalDesc.fScale);
 
-
+	if (m_tDecalDesc.bAlphaCreate)
+	{
+		m_tDecalDesc.fAlphaRemove = 1.f;
+		m_bAlphaCreateSucc = false;
+	}
+	else if (m_tDecalDesc.bAlphaDelete)
+		m_bAlphaCreateSucc = true;
 }
 
 void CDecal::Tick_Alpha(_float fTimeDelta)
 {
 	// 생성 이벤트 1 -> 0
-	if (m_tDecalDesc.bAlphaCreate)
+	if (m_tDecalDesc.bAlphaCreate && !m_bAlphaCreateSucc && m_tDecalDesc.fAlphaRemove > 0.f)
 	{
-
+		m_tDecalDesc.fAlphaRemove -= fTimeDelta * m_tDecalDesc.fAlphaSpeed;
+		if (m_tDecalDesc.fAlphaRemove <= 0.f)
+		{
+			m_tDecalDesc.fAlphaRemove = 0.f;
+			m_bAlphaCreateSucc = true;
+		}
 	}
 
 	// 삭제 이벤트 0 -> 1
-	else if (m_tDecalDesc.bAlphaDelete)
+	else if (m_tDecalDesc.bAlphaDelete && m_bAlphaCreateSucc && m_fAccLifeTime > m_tDecalDesc.fLifeTime - 2.f)
 	{
-
+		m_tDecalDesc.fAlphaRemove += fTimeDelta * m_tDecalDesc.fAlphaSpeed;
+		if (m_tDecalDesc.fAlphaRemove >= 1.f)
+			m_tDecalDesc.fAlphaRemove = 1.f;
 	}
 }
 
