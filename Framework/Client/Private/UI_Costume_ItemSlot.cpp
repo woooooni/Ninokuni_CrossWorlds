@@ -120,6 +120,8 @@ void CUI_Costume_ItemSlot::Tick(_float fTimeDelta)
 		}
 		else
 		{
+			if (m_bClicked)
+				Update_Costume(fTimeDelta);
 		}
 
 		__super::Tick(fTimeDelta);
@@ -277,6 +279,25 @@ HRESULT CUI_Costume_ItemSlot::Bind_ShaderResources()
 	}
 
 	return S_OK;
+}
+
+void CUI_Costume_ItemSlot::Update_Costume(_float fTimeDelta)
+{
+	if (COSTUMESECTION_END <= m_eSectionType ||
+		COSTUMESLOT_END <= m_eType)
+		return;
+
+	switch (m_eSectionType)
+	{
+	case COSTUMESECTION_CLOTH:
+		CUI_Manager::GetInstance()->Update_CostumeModel(m_eCurPlayerType, PART_TYPE::BODY, m_eType);
+		break;
+
+	case COSTUMESECTION_HAIRACC:
+		CUI_Manager::GetInstance()->Update_CostumeModel(m_eCurPlayerType, PART_TYPE::HEAD, m_eType);
+		break;
+	}
+
 }
 
 void CUI_Costume_ItemSlot::Key_Input(_float fTimeDelta)

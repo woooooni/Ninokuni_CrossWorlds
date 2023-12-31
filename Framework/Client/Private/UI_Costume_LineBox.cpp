@@ -62,6 +62,8 @@ void CUI_Costume_LineBox::LateTick(_float fTimeDelta)
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 
 		__super::LateTick(fTimeDelta);
+
+		CUI_Manager::GetInstance()->LateTick_Dummy(fTimeDelta);
 	}
 }
 
@@ -77,6 +79,8 @@ HRESULT CUI_Costume_LineBox::Render()
 		m_pVIBufferCom->Render();
 
 		__super::Render();
+
+		CUI_Manager::GetInstance()->Render_Dummy();
 	}
 
 	return S_OK;

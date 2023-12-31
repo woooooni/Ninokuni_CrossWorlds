@@ -130,7 +130,7 @@ void CUI_Costume_ChangeBtn::Key_Input(_float fTimeDelta)
 {
 	if (KEY_TAP(KEY::LBTN))
 	{
-
+		CUI_Manager::GetInstance()->Set_CostumeModel();
 	}
 }
 

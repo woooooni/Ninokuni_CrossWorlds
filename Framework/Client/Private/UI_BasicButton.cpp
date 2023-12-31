@@ -3,6 +3,7 @@
 #include "GameInstance.h"
 #include "Level_Loading.h"
 #include "UI_Manager.h"
+#include "Game_Manager.h"
 
 CUI_BasicButton::CUI_BasicButton(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, UIBUTTON_TYPE eType)
 	: CUI(pDevice, pContext, strObjectTag), m_eType(eType)
@@ -151,6 +152,19 @@ void CUI_BasicButton::On_Mouse(_float fTimeDelta)
 			{
 				if (!m_bResizeStart)
 					m_bResizeStart = true;
+
+				if (BUTTON_SETNICKNAME == m_eType)
+				{
+					if (m_bActive)
+					{
+						if (KEY_TAP(KEY::LBTN))
+						{
+							CUI_Manager::GetInstance()->Set_Textable(false);
+							CUI_Manager::GetInstance()->Set_UserName();
+							
+						}
+					}
+				}
 			}
 		}
 	}

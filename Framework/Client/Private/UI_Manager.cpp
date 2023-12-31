@@ -6,6 +6,9 @@
 #include <filesystem>
 #include "FileUtils.h"
 #include "Utils.h"
+#include "Character_Manager.h"
+#include "Game_Manager.h"
+#include "Player.h"
 
 #include "UI_Fade.h"
 #include "UI_Veil.h"
@@ -42,6 +45,7 @@
 #include "UI_BtnShowSetting.h"
 #include "UI_WindowWorldMap.h"
 #include "UI_QuickSlot_Item.h"
+#include "UI_CharacterDummy.h"
 #include "UI_Costume_LineBox.h"
 #include "UI_MonsterHP_World.h"
 #include "UI_Dialog_Portrait.h"
@@ -113,6 +117,11 @@ CUI_Fade* CUI_Manager::Get_Fade()
 _bool CUI_Manager::Get_MainMenuActive()
 {
 	return m_pMainBG->Get_Active();
+}
+
+void CUI_Manager::Set_UserName()
+{
+	CGame_Manager::GetInstance()->Set_UserName(m_strNickname);
 }
 
 HRESULT CUI_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -215,6 +224,18 @@ HRESULT CUI_Manager::Ready_Veils()
 		return E_FAIL;
 
 	Safe_AddRef(m_pUIFade);
+
+	return S_OK;
+}
+
+HRESULT CUI_Manager::Ready_Dummy()
+{
+	CGameObject* pDummy = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_CharacterDummy"), LAYER_TYPE::LAYER_CHARACTER);
+	if (nullptr == pDummy)
+		return E_FAIL;
+
+	m_pDummy = dynamic_cast<CUI_CharacterDummy*>(pDummy);
+	//Safe_AddRef(m_pDummy);
 
 	return S_OK;
 }
@@ -652,6 +673,9 @@ HRESULT CUI_Manager::Ready_LobbyUIs()
 
 HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 {
+	if(FAILED(Ready_Dummy()))
+		return E_FAIL;
+
 	// MapName 생성
 	CGameObject* pMapName = nullptr;
 	CUI::UI_INFO UIDesc = {};
@@ -708,8 +732,13 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	CGameObject* pPlayerStat = nullptr;
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
-	UIDesc.fCX = 512.f * 0.6f;
-	UIDesc.fCY = 175.f * 0.57;
+//	UIDesc.fCX = 512.f * 0.6f;
+//	UIDesc.fCY = 175.f * 0.57;
+//	UIDesc.fX = UIDesc.fCX * 0.5f;
+//	UIDesc.fY = UIDesc.fCY * 0.5f;
+
+	UIDesc.fCX = 670.f * 0.55f;
+	UIDesc.fCY = 175.f * 0.52;
 	UIDesc.fX = UIDesc.fCX * 0.5f;
 	UIDesc.fY = UIDesc.fCY * 0.5f;
 
@@ -1903,7 +1932,7 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 
 	UIDesc.fCX = 73.f * 0.6f;
 	UIDesc.fCY = 73.f * 0.6f;
-	UIDesc.fX = 330.f;
+	UIDesc.fX = 380.f;
 	UIDesc.fY = 43.f;
 
 	fOffset = 45.f;
@@ -2561,6 +2590,61 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	return S_OK;
 }
 
+HRESULT CUI_Manager::UI_WndProcHandler(UINT message, WPARAM wParam, LPARAM lParam)
+{
+//	if (message == WM_LBUTTONDOWN)
+//	{
+//		m_bUpdate = true;
+//	}
+
+	// 입력 컨텍스트를 얻는다.
+	HIMC himc = ImmGetContext(g_hWnd);
+	_uint iLanguage = ImmGetOpenStatus(himc);
+	WCHAR wszComBuffer[256] = { 0 }; // 입력정보를 저장할 버퍼
+
+	switch (message)
+	{
+	case WM_CHAR:
+	{
+		wchar_t wchInput = static_cast<wchar_t>(wParam);
+		wstring strInput(&wchInput, 1); // wchar_t 타입의 문자 wchInput을 이용하여 wstring 타입의 문자열 strInput을 생성함.
+		if (strInput.length() > 0)
+		{
+			if (strInput == L"\b") // 백스페이스를 누르면
+			{
+				Update_SetNickname(strInput, false);
+			}
+			else
+			{
+				Update_SetNickname(strInput);
+			}
+		}
+		break;
+	}
+
+	case WM_IME_COMPOSITION:
+	{
+		if (lParam & GCS_COMPSTR) // 조합중인 글자 출력
+		{
+			_uint ilength = ImmGetCompositionStringW(himc, GCS_COMPSTR, NULL, 0);
+			ImmGetCompositionStringW(himc, GCS_COMPSTR, wszComBuffer, ilength);
+
+		}
+
+		if (lParam & GCS_RESULTSTR) // 완성된 글자 출력
+		{
+			_uint ilength = ImmGetCompositionStringW(himc, GCS_RESULTSTR, NULL, 0);
+			ImmGetCompositionStringW(himc, GCS_RESULTSTR, wszComBuffer, ilength);
+		}
+
+		//ImmReleaseContext(hWnd, hIMC); str[len] = '\0';
+		}
+		break;
+	}
+
+	return S_OK;
+}
+
 HRESULT CUI_Manager::Tick_UIs(LEVELID eID, _float fTimeDelta)
 {
 	switch (eID)
@@ -2650,6 +2734,8 @@ HRESULT CUI_Manager::Tick_LobbyLevel(_float fTimeDelta)
 
 HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 {
+	m_pDummy->Tick(fTimeDelta);
+
 	if (nullptr != m_pUIMapName)
 	{
 		if (m_pUIMapName->Get_Active())
@@ -2684,6 +2770,30 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 	return S_OK;
 }
 
+HRESULT CUI_Manager::LateTick_EvermoreLevel(_float fTimeDelta)
+{
+	m_pDummy->LateTick(fTimeDelta);
+
+	return S_OK;
+}
+
+void CUI_Manager::LateTick_Dummy(_float fTimeDelta)
+{
+	m_pDummy->LateTick(fTimeDelta);
+}
+
+HRESULT CUI_Manager::Render_EvermoreLevel()
+{
+	//m_pDummy->Render();
+
+	return S_OK;
+}
+
+void CUI_Manager::Render_Dummy()
+{
+	m_pDummy->Render();
+}
+
 void CUI_Manager::Tick_Fade(_float fTimeDelta)
 {
 	if (nullptr == m_pUIFade)
@@ -2714,6 +2824,39 @@ _bool CUI_Manager::Is_FadeFinished()
 		return false;
 
 	return m_pUIFade->Get_Finish();
+}
+
+void CUI_Manager::Update_SetNickname(const wstring& strNickname, _bool bUpdate)
+{
+	if (m_pNicknamebox == nullptr)
+		return;
+
+	if (bUpdate)
+	{
+		if (m_pNicknamebox->Get_Active())
+		{
+			if (m_bUpdate)
+			{
+				m_strNickname += strNickname;
+				m_pNicknamebox->Set_Text(m_strNickname);
+			}
+		}
+	}
+	else
+	{
+		if (m_pNicknamebox->Get_Active())
+		{
+			if (m_bUpdate)
+			{
+				if (m_strNickname.length() > 0)
+				{
+					m_strNickname.pop_back();
+					m_pNicknamebox->Set_Text(m_strNickname);
+				}
+			}
+		}
+	}
+
 }
 
 void CUI_Manager::Update_LobbyBtnState(_uint iIndex)
@@ -2904,6 +3047,81 @@ void CUI_Manager::Update_ClothSlotState(_uint iSectionType, _uint iSlotIndex)
 		}
 		break;
 	}
+}
+
+void CUI_Manager::Update_CostumeModel(const CHARACTER_TYPE& eCharacterType, const PART_TYPE& ePartType, const _uint iIndex)
+{
+	CModel* pParts = CCharacter_Manager::GetInstance()->Get_PartModel(eCharacterType, ePartType, iIndex);
+	if (nullptr == pParts)
+		return;
+
+	m_pDummy->Set_PartModel(ePartType, pParts);
+
+}
+
+void CUI_Manager::Set_CostumeModel()
+{
+	// 현재 Active되어있는 CostumeButton.. 혹은 Slot을 찾아내서
+	// PartType을 파악하고
+
+	CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+	if (pPlayer == nullptr)
+		return;
+	CCharacter* pCharacter = pPlayer->Get_Character();
+	if (pCharacter == nullptr)
+		return;
+
+	_uint iIndex;
+
+	for (auto& iter : m_CostumeClickedBtn)
+	{
+		if (iter->Get_Active()) // 선택이 되었으면 활성화 되어있다.
+		{
+			iIndex = iter->Get_CostumeType();
+		}
+	}
+
+	PART_TYPE eType = PART_TYPE::PART_END;
+	_int iSlotIndex = -1;
+
+	if (iIndex == CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_CLOTH)
+	{
+		for (auto& iter : m_CostumeCloth)
+		{
+			if (iter->Get_Clicked())
+				iSlotIndex = _int(iter->Get_SlotIndex());
+		}
+		eType = PART_TYPE::BODY;
+	}
+	else if (iIndex == CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_HAIRACC)
+	{
+		for (auto& iter : m_CostumeHairAcc)
+		{
+			if (iter->Get_Clicked())
+				iSlotIndex = _int(iter->Get_SlotIndex());
+		}
+		eType = PART_TYPE::HEAD;
+	}
+
+	if (PART_TYPE::PART_END == eType)
+		return;
+
+	if (-1 == iSlotIndex)
+		return;
+
+	pCharacter->Set_PartModel(eType,
+		CCharacter_Manager::GetInstance()->Get_PartModel(pCharacter->Get_CharacterType(), eType, iSlotIndex));
+}
+
+void CUI_Manager::Set_MouseCursor(_uint iIndex)
+{
+	if (nullptr == m_pUICursor)
+		return;
+
+	if (0 > iIndex || 1 < iIndex)
+		return;
+
+	m_pUICursor->Set_TextureIndex(iIndex);
 }
 
 HRESULT CUI_Manager::Using_CloseButton()
@@ -3545,6 +3763,16 @@ HRESULT CUI_Manager::OnOff_CostumeWindow(_bool bOnOff)
 		{
 			OnOff_MainMenu(false);
 
+			// 시작할때 더미 캐릭터가 지금 플레이어와 같은 의상을 착용하도록 세팅 해주어야 한다.
+			CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+			if (pPlayer == nullptr)
+				return E_FAIL;
+			CCharacter* pCharacter = pPlayer->Get_Character();
+			if (pCharacter == nullptr)
+				return E_FAIL;
+			m_pDummy->Set_PartModel(PART_TYPE::BODY, pCharacter->Get_PartModel(PART_TYPE::BODY));
+			m_pDummy->Set_PartModel(PART_TYPE::HEAD, pCharacter->Get_PartModel(PART_TYPE::HEAD));
+
 			m_pDefaultBG->Set_Active(true);
 			for (auto& iter : m_CostumeBtn)
 			{
@@ -3562,6 +3790,8 @@ HRESULT CUI_Manager::OnOff_CostumeWindow(_bool bOnOff)
 			m_pTabMenuTitle->Set_TextType(CUI_Text_TabMenu::UI_MENUTITLE::TITLE_COSTUME);
 			m_pTabMenuTitle->Set_Active(true);
 
+			m_pDummy->Set_Active(true);
+
 			//OnOff_CloseButton(true);
 		}
 	}
@@ -3569,6 +3799,7 @@ HRESULT CUI_Manager::OnOff_CostumeWindow(_bool bOnOff)
 	{
 		//OnOff_GamePlaySetting(true);
 		//OnOff_CloseButton(false);
+		m_pDummy->Set_Active(false);
 		m_pTabMenuTitle->Set_Active(false);
 
 		OnOff_CostumeSlot(0, false); // false에는 숫자가 영향을 미치지않음. 함수 인자 순서 수정 필요함.
@@ -3598,6 +3829,7 @@ HRESULT CUI_Manager::OnOff_CostumeSlot(_uint iSection, _bool bOnOff)
 	
 	if (bOnOff)
 	{
+
 		// 옷을 켠거면 ,,
 		switch (iSection)
 		{
@@ -4888,8 +5120,18 @@ void CUI_Manager::Set_CharacterType()
 			iter->Set_CharacterType(m_eCurPlayer);
 	}
 
-	// For SkillWindow Desc
+	// For SkillWindow
 	m_pSkillDesc->Set_CharacterType(m_eCurPlayer);
+	for (auto& iter : m_ClassSkillSlot)
+	{
+		if (nullptr != iter)
+			iter->Set_SkillSlot(m_eCurPlayer);
+	}
+	for (auto& iter : m_SpecialSkillSlot)
+	{
+		if (nullptr != iter)
+			iter->Set_SkillSlot(m_eCurPlayer);
+	}
 }
 
 void CUI_Manager::Set_ElementalType()
@@ -4954,6 +5196,8 @@ void CUI_Manager::Free()
 	Safe_Release(m_pSetNickBG);
 	Safe_Release(m_pNicknamebox);
 	Safe_Release(m_pBtnShowMinimap);
+
+	Safe_Release(m_pDummy);
 
 	for (auto& pBasic : m_Basic)
 		Safe_Release(pBasic);

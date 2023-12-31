@@ -56,6 +56,16 @@ void CUI_SetNickname_Textbox::LateTick(_float fTimeDelta)
 	if (m_bActive)
 	{
 
+		CRenderer::TEXT_DESC NickDesc = {};
+		NickDesc.strText = m_strText;
+		_int iLength = m_strText.length();
+
+		NickDesc.strFontTag = L"Default_Bold";
+		NickDesc.vScale = { 0.4f, 0.4f };
+		NickDesc.vPosition = _float2((g_iWinSizeX * 0.5f)  - (iLength * 8.f), g_iWinSizeY * 0.5f - 8.f);
+		NickDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+		m_pRendererCom->Add_Text(NickDesc);
+
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 
 		__super::LateTick(fTimeDelta);
@@ -77,6 +87,33 @@ HRESULT CUI_SetNickname_Textbox::Render()
 	}
 
 	return S_OK;
+}
+
+void CUI_SetNickname_Textbox::On_MouseEnter(_float fTimeDelta)
+{
+	if (m_bActive)
+	{
+		CUI_Manager::GetInstance()->Set_MouseCursor(1);
+	}
+}
+
+void CUI_SetNickname_Textbox::On_Mouse(_float fTimeDelta)
+{
+	if (m_bActive)
+	{
+		if (KEY_TAP(KEY::LBTN))
+		{
+			CUI_Manager::GetInstance()->Set_Textable(true);
+		}
+	}
+}
+
+void CUI_SetNickname_Textbox::On_MouseExit(_float fTimeDelta)
+{
+	if (m_bActive)
+	{
+		CUI_Manager::GetInstance()->Set_MouseCursor(0);
+	}
 }
 
 HRESULT CUI_SetNickname_Textbox::Ready_Components()

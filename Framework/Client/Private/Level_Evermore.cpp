@@ -7,6 +7,8 @@
 #include "Terrain.h"
 #include "Camera_Manager.h"
 #include "Level_Loading.h"
+#include "Game_Manager.h"
+#include "Player.h"
 
 #include "UI_Manager.h"
 #include "UI_Fade.h"
@@ -31,10 +33,10 @@ HRESULT CLevel_Evermore::Initialize()
 //
 //	if (FAILED(Ready_Layer_Terrain(LAYER_TYPE::LAYER_TERRAIN)))
 //		return E_FAIL;
-	
+//	
 	if (FAILED(Ready_Layer_Character(LAYER_TYPE::LAYER_CHARACTER)))
 		return E_FAIL;
- 
+
 //	if (FAILED(Ready_Layer_Monster(LAYER_TYPE::LAYER_MONSTER)))
 //		return E_FAIL;
 
@@ -81,7 +83,7 @@ HRESULT CLevel_Evermore::Exit_Level()
 
 HRESULT CLevel_Evermore::Ready_Layer_Camera(const LAYER_TYPE eLayerType)
 {
-	if (FAILED(CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE)))
+	if (FAILED(CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW)))
 		return E_FAIL;
 
 	return S_OK;
@@ -103,10 +105,14 @@ HRESULT CLevel_Evermore::Ready_Layer_Terrain(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Evermore::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 {
-	CGameObject* pTest = nullptr;
-
-	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, eLayerType, TEXT("Prototype_GameObject_UI_CharacterDummy_Engineer"), nullptr, &pTest)))
+	if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN)))
 		return E_FAIL;
+
+	if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))
+	{
+		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+	}
 
 	return S_OK;
 }
@@ -122,7 +128,16 @@ HRESULT CLevel_Evermore::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 	if (FAILED(CUI_Manager::GetInstance()->Ready_CommonUIs(LEVELID::LEVEL_EVERMORE)))
 		return E_FAIL;
 
-	CUI_Manager::GetInstance()->Ready_CharacterTypeForUI(CHARACTER_TYPE::ENGINEER);
+	CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+	if (pPlayer == nullptr)
+		return E_FAIL;
+	CCharacter* pCharacter = pPlayer->Get_Character();
+	if (pCharacter == nullptr)
+		return E_FAIL;
+
+	CHARACTER_TYPE eCharacterType = pCharacter->Get_CharacterType();
+
+	CUI_Manager::GetInstance()->Ready_CharacterTypeForUI(eCharacterType);
 	CUI_Manager::GetInstance()->Ready_ElementalTypeForUI(ELEMENTAL_TYPE::DARK);
 
 	return S_OK;

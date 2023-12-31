@@ -315,8 +315,8 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 //	if (FAILED(CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_EVERMORE)))
 //		return E_FAIL;
 
-	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_UI_CharacterDummy_Engineer",
-		CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy_Engineer")), LAYER_CHARACTER)))
+	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_UI_CharacterDummy",
+		CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy")), LAYER_CHARACTER)))
 		return E_FAIL;
 
 	/* For.Model */
@@ -337,6 +337,7 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 	m_isFinished = true;
 	g_bFirstLoading = true;
 
+
 	return S_OK;
 }
 
@@ -350,6 +351,10 @@ HRESULT CLoader::Loading_For_Level_Test()
 
 	/* For.GameObject */
 	m_strLoading = TEXT("객체원형을 로딩 중 입니다.");
+
+	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_UI_CharacterDummy",
+		CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy")), LAYER_CHARACTER)))
+		return E_FAIL;
 
 
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
@@ -370,8 +375,8 @@ HRESULT CLoader::Loading_For_Level_Test()
 
 	if (false == g_bFirstLoading)
 	{
-		if (FAILED(CWeapon_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
-			return E_FAIL;
+//		if (FAILED(CWeapon_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+//			return E_FAIL;
 
 		if (FAILED(CCharacter_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
 			return E_FAIL;

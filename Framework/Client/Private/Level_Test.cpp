@@ -175,7 +175,7 @@ HRESULT CLevel_Test::Ready_Layer_Npc(const LAYER_TYPE eLayerType)
 {
 	//if (FAILED(GI->Add_GameObject(LEVEL_TEST, eLayerType, TEXT("Prorotype_GameObject_KingdomGuard"), nullptr)))
 	//	return E_FAIL;
-	// 
+
 	//if (FAILED(GI->Add_GameObject(LEVEL_TEST, eLayerType, TEXT("Prorotype_GameObject_HumanFAT01"), nullptr)))
 	//	return E_FAIL;
 
@@ -259,7 +259,16 @@ HRESULT CLevel_Test::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 	if (FAILED(CUI_Manager::GetInstance()->Ready_CommonUIs(LEVELID::LEVEL_TEST)))
 		return E_FAIL;
 
-	CUI_Manager::GetInstance()->Ready_CharacterTypeForUI(CHARACTER_TYPE::ENGINEER);
+	CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+	if (pPlayer == nullptr)
+		return E_FAIL;
+	CCharacter* pCharacter = pPlayer->Get_Character();
+	if (pCharacter == nullptr)
+		return E_FAIL;
+
+	CHARACTER_TYPE eCharacterType = pCharacter->Get_CharacterType();
+
+	CUI_Manager::GetInstance()->Ready_CharacterTypeForUI(eCharacterType);
 	CUI_Manager::GetInstance()->Ready_ElementalTypeForUI(ELEMENTAL_TYPE::DARK);
 
 	//CUI_Manager::GetInstance()->Ready_CharacterTypeForUI(CHARACTER_TYPE::ENGINEER);

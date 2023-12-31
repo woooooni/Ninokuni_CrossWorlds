@@ -167,7 +167,6 @@ public:
 	HRESULT Disappear_Weapon();
 	HRESULT Appear_Weapon();
 
-
 public:
 	virtual HRESULT Enter_Character();
 	virtual HRESULT Exit_Character();
