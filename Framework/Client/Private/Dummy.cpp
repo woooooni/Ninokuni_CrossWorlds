@@ -64,17 +64,28 @@ void CDummy::LateTick(_float fTimeDelta)
 {
 	if (nullptr == m_pRendererCom || nullptr == m_pModelCom)
 		return;
-
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
+	
+	__super::LateTick(fTimeDelta);
 
 	if (CModel::TYPE::TYPE_ANIM == m_pModelCom->Get_ModelType())
 		m_pModelCom->LateTick(fTimeDelta);
+
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
+
+	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
+	{
+		for (auto& pCollider : m_Colliders[i])
+			m_pRendererCom->Add_Debug(pCollider);
+	}
 }
 
 HRESULT CDummy::Render()
 {
 	if (nullptr == m_pModelCom)
 		return S_OK;
+
+	if (FAILED(__super::Render()))
+		return E_FAIL;
 
 	/* 공용 데이터 */
 	CShader* pShader = m_pModelCom->Get_ModelType() == CModel::TYPE::TYPE_NONANIM ? m_pNonAnimShaderCom : m_pAnimShaderCom;
@@ -185,7 +196,7 @@ HRESULT CDummy::Add_Collider(CCollider::COLLIDER_TYPE eColliderType, CCollider::
 
 		BoundingSphere tSphere;
 		ZeroMemory(&tSphere, sizeof(BoundingSphere));
-		tSphere.Radius = 3.f;
+		tSphere.Radius = 1.f;
 		SphereDesc.tSphere = tSphere;
 
 		SphereDesc.pNode = nullptr;

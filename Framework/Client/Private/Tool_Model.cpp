@@ -1592,7 +1592,6 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 			/* Collider */
 			if (ImGui::BeginTabItem("Collider"))
 			{
-
 				/* Intro */
 				{
 					ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"Detection Type당 설정 가능한 콜라이더는 1개 입니다.");
@@ -1657,14 +1656,52 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 
 							if (FAILED(m_pDummy->Add_Collider(eColType, CCollider::DETECTION_TYPE(iDetectionChoice))))
 								MSG_BOX("Collider 생성에 실패했습니다.");
+							else
+								m_AddedColliderTypeCaches.push_back({ eColType, CCollider::DETECTION_TYPE(iDetectionChoice)});
 						}
-						IMGUI_SAME_LINE;
+						IMGUI_NEW_LINE;
 
-						/* Delete Collider */
-						if (ImGui::Button("Del Collider"))
+						/* 현재 설정된 콜라이더 정보 */
+						ImGui::Text(u8"현재 설정된 콜라이더 정보");
+						for (size_t i = 0; i < m_AddedColliderTypeCaches.size(); i++)
 						{
+							string strColType, strDetectionType;
 
+							switch (m_AddedColliderTypeCaches[i].first)
+							{
+							case CCollider::COLLIDER_TYPE::OBB :
+								strColType = "OBB";
+								break;
+							case CCollider::COLLIDER_TYPE::SPHERE :
+								strColType = "SPHERE";
+								break;
+							default:
+								break;
+							}
+
+							switch (m_AddedColliderTypeCaches[i].second)
+							{
+							case CCollider::DETECTION_TYPE::ATTACK :
+								strDetectionType = "ATTACK";
+								break;
+							case CCollider::DETECTION_TYPE::BODY : 
+								strDetectionType = "BODY";
+								break;
+							case CCollider::DETECTION_TYPE::BOUNDARY:
+								strDetectionType = "BOUNDARY";
+								break;
+							default:
+								break;
+							}
+
+							string strText = "Col Type : " + strColType + "    Detection Type : " + strDetectionType;
+							ImGui::Text(strText.c_str());
 						}
+
+						IMGUI_NEW_LINE;
+						ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"각 클래스 Ready Collider에서 현재 설정된 콜라이더 정보와 똑같이 콜라이더를 세팅해주어야 합니다.");
+						ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"콜라이더 이벤트가 동작하지 않을시 Detection Type이 일치하는지 확인해주세요 ");
+
 					}
 					ImGui::PopItemWidth();
 					
@@ -1704,7 +1741,7 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 							"  " +
 							"Frame : " + strFrame +
 							"  " +
-							"Type : " + strType;
+							"Detection Type : " + strType;
 
 						if (ImGui::Selectable(strEventName.c_str(), i == m_iColliderEventIndex))
 						{
@@ -1787,7 +1824,7 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 						Vec4	vColliderOffset = ColliderEvents[m_iColliderEventIndex].second.vOffset;
 						_float	fColliderOffset[3] = { vColliderOffset.x, vColliderOffset.y, vColliderOffset.z };
 					
-						if (ImGui::DragFloat3(u8"Collider OffSet", fColliderOffset))
+						if (ImGui::DragFloat3(u8"Collider OffSet", fColliderOffset, 10.f, -1000.f, 1000.f))
 						{
 							ColliderEvents[m_iColliderEventIndex].second.vOffset = Vec3{ fColliderOffset[0], fColliderOffset[1], fColliderOffset[2] };
 							pCurAnim->Change_ColliderEvent(m_iColliderEventIndex, ColliderEvents[m_iColliderEventIndex].second);
@@ -1797,7 +1834,7 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 						Vec4	vColliderExtent = ColliderEvents[m_iColliderEventIndex].second.vExtents;
 						_float	fColliderExtent[3] = { vColliderExtent.x, vColliderExtent.y, vColliderExtent.z };
 
-						if (ImGui::DragFloat3(u8"Collider Extent", fColliderExtent))
+						if (ImGui::DragFloat3(u8"Collider Extent", fColliderExtent, 10.f, 0.f, 1000.f))
 						{
 							ColliderEvents[m_iColliderEventIndex].second.vExtents = Vec3{ fColliderExtent[0], fColliderExtent[1], fColliderExtent[2] };
 							pCurAnim->Change_ColliderEvent(m_iColliderEventIndex, ColliderEvents[m_iColliderEventIndex].second);
@@ -1810,11 +1847,18 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 				if (ImGui::Button("Add Collider Event"))
 				{
 					ANIM_EVENT_COLLIDER_DESC desc;
-					desc.bOnOff = true;
-					desc.vExtents = Vec3::One;
-					desc.vOffset = Vec3::One;
-					desc.iDetectionType = 0;
-					desc.iAttackType = 0;
+
+					if (0 <= m_iColliderEventIndex)
+						desc = ColliderEvents[m_iColliderEventIndex].second;
+					else
+					{
+						desc.bOnOff = true;
+						desc.vExtents = Vec3{ 50.f, 50.f, 50.f };
+						desc.vOffset = Vec3::Zero;
+						desc.iDetectionType = 0;
+						desc.iAttackType = 0;
+					}
+
 					pCurAnim->Add_ColliderEvent(m_fCurEventFrame, desc);
 					++m_iColliderEventIndex;
 

@@ -87,6 +87,17 @@ void CAnimation::Clear_AnimationEvent()
 	for (auto& ColliderEvent : m_ColliderEvents)
 	{
 		ColliderEvent.second.bExecuted = false;
+
+		/* 어택 타입의 경우 트위닝시 종료 프레임에 도달하지 않으면 안꺼지는 것을 방지하기 위해 강제로 꺼준다. */
+		if (CCollider::DETECTION_TYPE::ATTACK == ColliderEvent.second.iDetectionType)
+		{
+			vector<class CCollider*>& pColliders = m_pModel->Get_Owner()->Get_Collider(ColliderEvent.second.iDetectionType);
+
+			for (size_t i = 0; i < pColliders.size(); i++)
+			{
+				pColliders[i]->Set_Active(false);
+			}
+		}
 	}
 }
 
@@ -448,12 +459,6 @@ void CAnimation::Update_Animation_Event(_float fTickPerSecond, const TWEEN_DESC&
 		{
 			ColliderEvent.second.bExecuted = true;
 
-
-			// bOnOff;
-			// vOffset;
-			// vExtents;
-			// iDetectionType;
-
 			if (ColliderEvent.second.bOnOff)
 			{
 				if (!m_pModel->Get_Owner()->Get_Collider(ColliderEvent.second.iDetectionType).empty())
@@ -464,6 +469,7 @@ void CAnimation::Update_Animation_Event(_float fTickPerSecond, const TWEEN_DESC&
 					pCollider->Set_Offset(ColliderEvent.second.vOffset);
 					pCollider->Set_Radius(ColliderEvent.second.vExtents.x);
 					pCollider->Set_Extents(ColliderEvent.second.vExtents);
+					pCollider->Set_AttackType(CCollider::ATTACK_TYPE(ColliderEvent.second.iAttackType));
 				}
 			}
 			else
