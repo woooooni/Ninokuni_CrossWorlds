@@ -10,7 +10,7 @@ public:
 	{ COSTUME_CLOTH, COSTUME_HAIR, COSTUME_HAIRACC, COSTUME_EXTERIORDECO,
 		COSTUME_FACEDECO, COSTUME_WEAPON, COSTUMEBTN_END };
 	// 의상, 헤어, 머리 장식, 외형 장식, 얼굴, 무기
-	enum UI_COSTUMEBTN_TYPE { COSTUMEBTN_UNCLICKED, COSTUMEBTN_CLICKED, SKILLBTNTYPE_END };
+	enum UI_COSTUMEBTN_TYPE { COSTUMEBTN_UNCLICKED, COSTUMEBTN_CLICKED, COSTUMEBTNTYPE_END };
 
 protected:
 	CUI_Costume_Btn(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_COSTUMEBTN_TYPE eButtonType, UI_COSTUMEBTN eUIType);
@@ -19,6 +19,8 @@ protected:
 
 public:
 	virtual void Set_Active(_bool bActive) override;
+	_bool Get_Clicked() { return m_bClicked; }
+	UI_COSTUMEBTN Get_CostumeType() { return m_eUIType; }
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -34,7 +36,7 @@ public:
 
 private: 
 	UI_COSTUMEBTN m_eUIType = { UI_COSTUMEBTN::COSTUMEBTN_END };
-	UI_COSTUMEBTN_TYPE m_eButtonType = { UI_COSTUMEBTN_TYPE::SKILLBTNTYPE_END };
+	UI_COSTUMEBTN_TYPE m_eButtonType = { UI_COSTUMEBTN_TYPE::COSTUMEBTNTYPE_END };
 	_bool m_bClicked = { false }; // 선택되었다
 
 private:

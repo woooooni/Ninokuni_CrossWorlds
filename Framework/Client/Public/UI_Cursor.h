@@ -11,6 +11,9 @@ protected:
 	virtual ~CUI_Cursor() = default;
 
 public:
+	void Set_TextureIndex(_uint iIndex) { m_iTextureIndex = iIndex; }
+
+public:
 	virtual HRESULT	Initialize_Prototype();
 	virtual HRESULT	Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta);
@@ -25,6 +28,7 @@ public:
 private:
 	POINT m_ptMouse = {};
 	POINT m_ptOffset = {};
+	_uint m_iTextureIndex = { 0 };
 
 private:
 	virtual HRESULT	Ready_Components() override;

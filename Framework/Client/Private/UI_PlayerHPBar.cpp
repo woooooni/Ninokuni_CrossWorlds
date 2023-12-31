@@ -2,6 +2,8 @@
 #include "UI_PlayerHPBar.h"
 #include "GameInstance.h"
 #include "UI_Manager.h"
+#include "Game_Manager.h"
+#include "Player.h"
 
 CUI_PlayerHPBar::CUI_PlayerHPBar(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_PlayerHPBar")
@@ -47,6 +49,16 @@ void CUI_PlayerHPBar::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+		if (nullptr == pPlayer)
+			return;
+
+		CCharacter* pCurCharacter = pPlayer->Get_Character();
+		if (nullptr == pCurCharacter)
+			return;
+
+		CCharacter::CHARACTER_STAT StatDesc = pCurCharacter->Get_Stat();
+
 		// Todo : Player구조가 정리되면 Set_Level로 빼서 UIManager로 연동하자.
 		if (CUI_Manager::GetInstance()->Is_FadeFinished())
 		{
@@ -62,7 +74,7 @@ void CUI_PlayerHPBar::LateTick(_float fTimeDelta)
 			// Todo : 체력을 받아오게끔 구조 변경 필요함.
 			// 현재 체력 숫자 외곽선
 			CRenderer::TEXT_DESC CurHPDesc;
-			CurHPDesc.strText = L"1234";
+			CurHPDesc.strText = to_wstring(StatDesc.iHp);
 			CurHPDesc.strFontTag = L"Default_Bold";
 			CurHPDesc.vScale = { 0.35f, 0.35f };
 			CurHPDesc.vPosition = m_vCurHPPosition;
@@ -71,7 +83,7 @@ void CUI_PlayerHPBar::LateTick(_float fTimeDelta)
 
 			// 최대 체력 숫자 외곽선
 			CRenderer::TEXT_DESC MaxHPDesc;
-			MaxHPDesc.strText = L"1235";
+			MaxHPDesc.strText = to_wstring(StatDesc.iMaxHp);
 			MaxHPDesc.strFontTag = L"Default_Bold";
 			MaxHPDesc.vScale = { 0.35f, 0.35f };
 			MaxHPDesc.vPosition = m_vMaxHPPosition;
@@ -103,6 +115,10 @@ HRESULT CUI_PlayerHPBar::Ready_Components()
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Common_PlayerHP_GaugeBar"),
 		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+		return E_FAIL;
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Common_PlayerHP_GaugeBar_Back"),
+		TEXT("Com_FXTexture"), (CComponent**)&m_pFXTextureCom)))
 		return E_FAIL;
 	
 	return S_OK;
@@ -167,5 +183,6 @@ void CUI_PlayerHPBar::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pFXTextureCom);
 	Safe_Release(m_pTextureCom);
 }

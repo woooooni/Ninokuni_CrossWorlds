@@ -146,6 +146,24 @@ public:
 	CHARACTER_TYPE Get_CharacterType() { return m_eCharacterType; }
 
 public:
+	HRESULT Set_PartModel(PART_TYPE ePartType, class CModel* pModel)
+	{
+		if (ePartType >= PART_TYPE::PART_END)
+			return E_FAIL;
+
+		m_pCharacterPartModels[ePartType] = pModel;
+	}
+
+	class CModel* Get_PartModel(PART_TYPE ePartType)
+	{
+		if (ePartType >= PART_TYPE::PART_END)
+			return nullptr;
+
+		return m_pCharacterPartModels[ePartType];
+
+	}
+
+public:
 	virtual HRESULT Enter_Character();
 	virtual HRESULT Exit_Character();
 

@@ -645,6 +645,42 @@ PS_OUT_SHADOW_DEPTH PS_SHADOW_DEPTH(PS_IN In)
 	return Out;
 }
 
+
+PS_OUT PS_MAIN_UIDUMMY(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+	Out.vDiffuse = g_DiffuseTexture.Sample(ModelSampler, In.vTexUV);
+	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
+
+
+	float fRimPower = 1.f - saturate(dot(In.vNormal.xyz, normalize((-1.f * (In.vWorldPosition - g_vCamPosition)))));
+	fRimPower = pow(fRimPower, 2.f);
+
+	vector vRimColor = g_vRimColor * fRimPower;
+	Out.vDiffuse += vRimColor;
+
+	if (0.f == Out.vDiffuse.a)
+		discard;
+
+	// UI의 깊이 값을 설정
+	float uiDepth = 1.f;
+
+	// 메쉬의 깊이 값과 UI의 깊이 값을 비교하여 UI를 가려내기
+	float meshDepth = In.vProjPos.z / In.vProjPos.w;
+	float adjustedDepth = saturate(meshDepth - uiDepth);
+
+	// 메쉬의 원래 깊이 값은 그대로 사용
+	Out.vDepth = vector(meshDepth, 1.0f - meshDepth, 0.0f, 0.0f);
+
+	// 메쉬의 깊이 값이 UI의 깊이 값보다 작은 경우에만 UI를 가리도록 함
+	if (adjustedDepth >= 0.0f)
+		discard;
+
+	return Out;
+}
+
 technique11 DefaultTechnique
 {
 	pass DefaultPass
@@ -777,5 +813,17 @@ technique11 DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_SHADOW_DEPTH();
+	}
+
+	pass UI_Dummy_NonDepth
+	{
+		// 11
+		SetRasterizerState(RS_CostumeDummy);
+		SetDepthStencilState(DSS_CostumeDummy, 0);
+		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN();
 	}
 };

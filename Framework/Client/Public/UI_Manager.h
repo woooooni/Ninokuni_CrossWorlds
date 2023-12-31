@@ -19,6 +19,8 @@ private:
 public: // Get/Set
 	class CUI_Fade* Get_Fade();
 	_bool			Get_MainMenuActive();
+	void			Set_Textable(_bool bTextable) { m_bUpdate = bTextable; }
+	void			Set_UserName();
 
 public:
 	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -31,9 +33,11 @@ public: // For Ready Prototypes
 public: // For Clone
 	HRESULT Ready_Cursor();
 	HRESULT Ready_Veils();
+	HRESULT Ready_Dummy();
 	HRESULT Ready_Loadings();
 	HRESULT Ready_LobbyUIs();
 	HRESULT Ready_CommonUIs(LEVELID eID); // + Ready_Cursor, Ready_Veil 정리 필요함.
+	HRESULT UI_WndProcHandler(UINT message, WPARAM wParam, LPARAM lParam);
 	
 public:
 	void Ready_CharacterTypeForUI(CHARACTER_TYPE eType) {
@@ -50,6 +54,12 @@ public: // Todo Wonhye : 테스트 끝나면 지울것
 	HRESULT Tick_LobbyLevel(_float fTimeDelta);
 	HRESULT Tick_EvermoreLevel(_float fTimeDelta);
 
+	HRESULT LateTick_EvermoreLevel(_float fTimeDelta);
+	void	LateTick_Dummy(_float fTimeDelta);
+
+	HRESULT Render_EvermoreLevel();
+	void	Render_Dummy();
+
 public:
 	void	Tick_Fade(_float fTimeDelta);
 	void	LateTick_Fade(_float fTimeDelta);
@@ -57,12 +67,17 @@ public:
 	_bool	Is_FadeFinished();
 
 public:
+	void	Update_SetNickname(const wstring& strNickname, _bool bUpdate = true);
 	void	Update_LobbyBtnState(_uint iIndex);
 	void	Update_CostumeBtnState(_uint iIndex);
 	void	Update_InvenBtnState(_uint iIndex);
 	void	Update_SkillBtnState(class CTransform* pTransform, _uint iIndex);
 	void	Update_SkillSlotState(_uint iSectionType, _uint iSlotIndex);
 	void	Update_ClothSlotState(_uint iSectionType, _uint iSlotIndex);
+
+	void	Update_CostumeModel(const CHARACTER_TYPE& eCharacterType, const PART_TYPE& ePartType, const _uint iIndex);
+	void	Set_CostumeModel();
+	void	Set_MouseCursor(_uint iIndex);
 
 public:
 	HRESULT		Using_CloseButton();
@@ -102,6 +117,12 @@ public: // Lobby
 private:
 	CHARACTER_TYPE m_eCurPlayer = { CHARACTER_TYPE::SWORD_MAN };
 	ELEMENTAL_TYPE m_eElemental = { ELEMENTAL_TYPE::FIRE };
+
+private:
+	_bool m_bUpdate = { false };
+	wstring m_strNickname;
+	wstring m_strResult;
+	class CUI_CharacterDummy* m_pDummy = { nullptr };
 
 private:
 	class CUI_Default_Background* m_pDefaultBG = { nullptr };

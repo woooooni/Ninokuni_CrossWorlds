@@ -8,6 +8,7 @@
 #include "MainApp.h"
 #include "GameInstance.h"
 #include "ImGui_Manager.h"
+#include "UI_Manager.h"
 
 #define MAX_LOADSTRING 100
 
@@ -194,6 +195,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
         return true;
+
+    if (FAILED(CUI_Manager::GetInstance()->UI_WndProcHandler(message, wParam, lParam)))
+        return false;
 
     switch (message)
     {

@@ -18,7 +18,9 @@ protected:
 public:
 	virtual void Set_Active(_bool bActive) override;
 	//void Set_CharacterType(CHARACTER_TYPE eType);
+	_bool Get_Clicked() { return m_bClicked; }
 	void Set_Clicked(_bool bClicked) { m_bClicked = bClicked; }
+	UI_COSTUME_SLOT Get_SlotIndex() { return m_eType; }
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -64,6 +66,7 @@ private:
 	HRESULT	Bind_ShaderResources();
 
 private:
+	void Update_Costume(_float fTimeDelta);
 	void Key_Input(_float fTimeDelta);
 
 public:

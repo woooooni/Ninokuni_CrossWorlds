@@ -11,6 +11,10 @@ private:
 	virtual ~CUI_CharacterDummy() = default;
 
 public:
+	_bool Get_Active() { return m_bActive; }
+	void Set_Active(_bool bActive) { m_bActive = bActive; }
+
+public:
 	virtual HRESULT Initialize_Prototype() override;
 	virtual HRESULT Initialize(void* pArg) override;
 	virtual void Tick(_float fTimeDelta) override;
@@ -23,9 +27,11 @@ protected:
 	virtual HRESULT Ready_Colliders() override;
 
 private:
+	_bool m_bActive = { false };
 	_vector m_vCamPosition = XMVectorSet(0.f, 0.f, 0.f, 0.f);
 	_matrix m_vCamMatrix = XMMatrixIdentity();
 	_float4x4 m_ViewMatrix;
+	CHARACTER_TYPE m_eCurCharacter = { CHARACTER_TYPE::SWORD_MAN };
 
 private:
 	HRESULT Ready_Sockets();

@@ -4,10 +4,12 @@
 #include "HierarchyNode.h"
 #include "Trail.h"
 #include "Character_Manager.h"
+#include "Game_Manager.h"
+#include "Player.h"
 
 
 CUI_CharacterDummy::CUI_CharacterDummy(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
-	: CCharacter(pDevice, pContext, strObjectTag, CHARACTER_TYPE::ENGINEER)
+	: CCharacter(pDevice, pContext, strObjectTag, CHARACTER_TYPE::SWORD_MAN)
 {
 }
 
@@ -34,10 +36,22 @@ HRESULT CUI_CharacterDummy::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	// 임의의 카메라 위치를 만들어낸다.
-	_float3 vCamPos = _float3(0.f, 0.7f, -2.f);
-	_float3 vLook = _float3(0.f, 0.7, 0.f);
-	_float3 vUp = _float3(0.f, 1.f, 0.f);
+	_float3 vCamPos, vLook, vUp;
+
+	switch (m_eCurCharacter)
+	{
+	case CHARACTER_TYPE::SWORD_MAN:
+		vCamPos = _float3(0.f, 0.9f, -3.f);
+		vLook = _float3(0.f, 0.9, 0.f);
+		vUp = _float3(0.f, 1.f, 0.f);
+		break;
+
+	case CHARACTER_TYPE::ENGINEER:
+		vCamPos = _float3(0.f, 0.7f, -2.3f);
+		vLook = _float3(0.f, 0.7, 0.f);
+		vUp = _float3(0.f, 1.f, 0.f);
+		break;
+	}
 
 	m_vCamMatrix = XMMatrixLookAtLH(XMLoadFloat3(&vCamPos), XMLoadFloat3(&vLook), XMLoadFloat3(&vUp));
 	m_vCamPosition = XMVectorSet(vCamPos.x, vCamPos.y, vCamPos.z, 1.f);
@@ -47,73 +61,78 @@ HRESULT CUI_CharacterDummy::Initialize(void* pArg)
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-0.3f, 0.f, 0.f, 1.f));
 	m_pTransformCom->LookAt_ForLandObject(m_vCamPosition);
 
+	m_bActive = false;
+
 	return S_OK;
 }
 
 void CUI_CharacterDummy::Tick(_float fTimeDelta)
 {
-	//m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
+	if (m_bActive)
+	{
+		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
 
-	__super::Tick(fTimeDelta);
+		__super::Tick(fTimeDelta);
+	}
 }
 
 void CUI_CharacterDummy::LateTick(_float fTimeDelta)
 {
-	m_pModelCom->LateTick(fTimeDelta);
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
-
-#ifdef DEBUG
-	m_pRendererCom->Add_Debug(m_pControllerCom);
-#endif // DEBUG
-
+	if (m_bActive)
+	{
+		m_pModelCom->LateTick(fTimeDelta);
+		//m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
+	}
 	
 }
 
 HRESULT CUI_CharacterDummy::Render()
 {
-	if (nullptr == m_pModelCom || nullptr == m_pShaderCom)
-		return E_FAIL;
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &m_vCamPosition, sizeof(_float4))))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_ViewMatrix", &m_ViewMatrix, sizeof(_float4x4))))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
-		return E_FAIL;
-
-	_float4 vRimColor = { 0.f, 0.f, 0.f, 0.f };
-	if (m_bInfinite)
+	if (m_bActive)
 	{
-		vRimColor = { 0.f, 0.5f, 1.f, 1.f };
-	}
+		if (nullptr == m_pModelCom || nullptr == m_pShaderCom)
+			return E_FAIL;
 
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &m_vCamPosition, sizeof(_float4))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_ViewMatrix", &m_ViewMatrix, sizeof(_float4x4))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+			return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float4))))
-		return E_FAIL;
-
-	if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
-		return E_FAIL;
-
-
-	for (size_t i = 0; i < PART_TYPE::PART_END; i++)
-	{
-		if (nullptr == m_pCharacterPartModels[i])
-			continue;
-
-		const _uint		iNumMeshes = m_pCharacterPartModels[i]->Get_NumMeshes();
-
-		for (_uint j = 0; j < iNumMeshes; ++j)
+		_float4 vRimColor = { 0.f, 0.f, 0.f, 0.f };
+		if (m_bInfinite)
 		{
-			if (FAILED(m_pCharacterPartModels[i]->SetUp_OnShader(m_pShaderCom, m_pCharacterPartModels[i]->Get_MaterialIndex(j), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
-				return E_FAIL;
+			vRimColor = { 0.f, 0.5f, 1.f, 1.f };
+		}
 
-			if (FAILED(m_pCharacterPartModels[i]->Render(m_pShaderCom, j)))
-				return E_FAIL;
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float4))))
+			return E_FAIL;
+
+		if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
+			return E_FAIL;
+
+
+		for (size_t i = 0; i < PART_TYPE::PART_END; i++)
+		{
+			if (nullptr == m_pCharacterPartModels[i])
+				continue;
+
+			const _uint		iNumMeshes = m_pCharacterPartModels[i]->Get_NumMeshes();
+
+			for (_uint j = 0; j < iNumMeshes; ++j)
+			{
+				if (FAILED(m_pCharacterPartModels[i]->SetUp_OnShader(m_pShaderCom, m_pCharacterPartModels[i]->Get_MaterialIndex(j), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+					return E_FAIL;
+
+				if (FAILED(m_pCharacterPartModels[i]->Render(m_pShaderCom, j, 11)))
+					return E_FAIL;
+			}
 		}
 	}
-
 
 	return S_OK;
 }
@@ -134,9 +153,30 @@ HRESULT CUI_CharacterDummy::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_AnimModel" ), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
 
-	/* For.Com_Model */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Engineer_Dummy"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+	CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+	if (pPlayer == nullptr)
 		return E_FAIL;
+	CCharacter* pCharacter = pPlayer->Get_Character();
+	if (pCharacter == nullptr)
+		return E_FAIL;
+
+	CHARACTER_TYPE eCharacterType = pCharacter->Get_CharacterType();
+
+	switch (eCharacterType)
+	{
+	case CHARACTER_TYPE::SWORD_MAN:
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_SwordMan_Dummy"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+			return E_FAIL;
+		break;
+
+	case CHARACTER_TYPE::ENGINEER:
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Engineer_Dummy"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+			return E_FAIL;
+		break;
+
+	case CHARACTER_TYPE::DESTROYER:
+		break;
+	}
 
 
 	for (_uint i = 0; i < PART_TYPE::PART_END; ++i)

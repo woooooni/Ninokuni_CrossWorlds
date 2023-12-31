@@ -20,7 +20,9 @@ CUI_SkillWindow_SkillSlot::CUI_SkillWindow_SkillSlot(const CUI_SkillWindow_Skill
 
 void CUI_SkillWindow_SkillSlot::Set_SkillSlot(CHARACTER_TYPE eType)
 {
-	switch (eType)
+	m_eCurPlayerType = eType;
+
+	switch (m_eCurPlayerType)
 	{
 	case CHARACTER_TYPE::SWORD_MAN:
 		m_iClassTexIndex = 0; // 0, 1, 2
@@ -67,8 +69,6 @@ void CUI_SkillWindow_SkillSlot::Set_Active(_bool bActive)
 	}
 
 	m_bActive = bActive;
-
-	Set_SkillSlot(CHARACTER_TYPE::ENGINEER);
 }
 
 HRESULT CUI_SkillWindow_SkillSlot::Initialize_Prototype()

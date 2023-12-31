@@ -2,6 +2,8 @@
 #include "UI_PlayerInfo.h"
 #include "GameInstance.h"
 #include "UI_Manager.h"
+#include "Game_Manager.h"
+#include "Player.h"
 
 CUI_PlayerInfo::CUI_PlayerInfo(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_PlayerInfo")
@@ -54,7 +56,7 @@ HRESULT CUI_PlayerInfo::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	Make_Child(51.f, -11.f, 125.f, 16.f, TEXT("Prototype_GameObject_UI_Player_HPBar"));
+	Make_Child(41.5f, -10.f, 192.f, 15.f, TEXT("Prototype_GameObject_UI_Player_HPBar"));
 
 	return S_OK;
 }
@@ -75,8 +77,18 @@ void CUI_PlayerInfo::LateTick(_float fTimeDelta)
 
 		if (CUI_Manager::GetInstance()->Is_FadeFinished())
 		{
+			CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+			if (nullptr == pPlayer)
+				return;
+
+			CCharacter* pCurCharacter = pPlayer->Get_Character();
+			if (nullptr == pCurCharacter)
+				return;
+			
+			CCharacter::CHARACTER_STAT StatDesc = pCurCharacter->Get_Stat();
+			
 			CRenderer::TEXT_DESC LevelDesc;
-			LevelDesc.strText = L"5"; // Temp
+			LevelDesc.strText = to_wstring(StatDesc.iLevel);
 			LevelDesc.strFontTag = L"Default_Bold";
 			LevelDesc.vPosition = m_vDefaultPosition;
 			LevelDesc.vColor = m_vShadowColor;
@@ -110,7 +122,7 @@ void CUI_PlayerInfo::LateTick(_float fTimeDelta)
 			// Todo : 전투력을 받아오게끔 구조 변경 필요함.
 			// 전투력 숫자 외곽선
 			CRenderer::TEXT_DESC Power;
-			Power.strText = L"111111";
+			Power.strText = to_wstring(StatDesc.iAtt);
 			Power.strFontTag = L"Default_Medium";
 			Power.vPosition = _float2(m_vNumPosition.x - 2.f, m_vNumPosition.y);
 			Power.vColor = _float4(0.f, 0.f, 0.f, 1.f);
@@ -124,7 +136,7 @@ void CUI_PlayerInfo::LateTick(_float fTimeDelta)
 			m_pRendererCom->Add_Text(Power);
 
 			//
-			Power.vPosition = _float2(200.f, 56.f);
+			Power.vPosition = m_vNumPosition;
 			Power.vColor = m_vPowerColor;
 			m_pRendererCom->Add_Text(Power);
 		}

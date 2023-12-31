@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UI_Basic.h"
 #include "GameInstance.h"
+#include "Game_Manager.h"
 
 CUI_Basic::CUI_Basic(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, UI_BASIC eType)
 	: CUI(pDevice, pContext, strObjectTag), m_eType(eType)
@@ -143,6 +144,21 @@ void CUI_Basic::LateTick(_float fTimeDelta)
 		}
 		else
 			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+
+		if (UILOBBY_NICKFRAME == m_eType)
+		{
+			m_strText = CGame_Manager::GetInstance()->Get_UserName();
+			// 글씨를 추가한다.
+			CRenderer::TEXT_DESC NickDesc = {};
+			NickDesc.strText = m_strText;
+			_int iLength = m_strText.length();
+
+			NickDesc.strFontTag = L"Default_Bold";
+			NickDesc.vScale = { 0.6f, 0.6f };
+			NickDesc.vPosition = _float2(m_tInfo.fX - (iLength * 11.f), m_tInfo.fY - 5.f);
+			NickDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+			m_pRendererCom->Add_Text(NickDesc);
+		}
 
 		__super::LateTick(fTimeDelta);
 	}
