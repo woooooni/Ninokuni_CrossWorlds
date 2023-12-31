@@ -319,6 +319,7 @@ namespace Engine
 #pragma region Lerp Desc
 
 	enum class LERP_MODE { DEFAULT, EASE_OUT, EASE_IN, EXPONENTIAL, SMOOTH_STEP, SMOOTHER_STEP, TYPEEND };
+	static string LerpModeNames[(UINT)LERP_MODE::TYPEEND] = { "DEFAULT", "EASE_OUT", "EASE_IN", "EXPONENTIAL", "SMOOTH_STEP", "SMOOTHER_STEP" };
 
 	typedef struct tagLerpDesc
 	{

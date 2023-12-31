@@ -214,7 +214,7 @@ HRESULT CCamera_Manager::Ready_Cameras()
 			tDesc.fNear = 0.2f;
 			tDesc.fFar = 1000.f;
 
-			m_Cameras[eType] = CCamera_Follow::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
+			m_Cameras[eType] = CCamera_CutScene::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
 
 			if (nullptr == m_Cameras[eType])
 				return E_FAIL;

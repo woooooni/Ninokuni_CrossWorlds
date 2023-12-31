@@ -40,11 +40,6 @@ void CCamera_CutScene::Tick(_float fTimeDelta)
 		return;
 
 	__super::Tick(fTimeDelta);
-
-	m_CurrCutSceneDesc.Update(fTimeDelta);
-
-	if (!m_CurrCutSceneDesc.bPlay)
-		CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE);
 }
 
 void CCamera_CutScene::LateTick(_float fTimeDelta)
@@ -60,169 +55,100 @@ HRESULT CCamera_CutScene::Render()
 	return S_OK;
 }
 
-HRESULT CCamera_CutScene::Add_CutSceneDesc(string strCutSceneName)
+HRESULT CCamera_CutScene::Start_CutScene(const string& strCutSceneName)
 {
-	if (Has_CutSceneDesc(strCutSceneName))
+	m_pCurCutSceneDesc = Find_CutSceneDesc(strCutSceneName);
+	if (nullptr == m_pCurCutSceneDesc)
 		return E_FAIL;
-
-	CAMERA_CUTSCENE_DESC CutSceneDesc;
-
-	m_CutSceneDescs.emplace(strCutSceneName, CutSceneDesc);
-	
-	if (FAILED(Add_PathDesc(strCutSceneName)))
-		return E_FAIL;
-
-	m_CurrCutSceneDesc = CutSceneDesc;
 
 	return S_OK;
 }
 
-HRESULT CCamera_CutScene::Del_CutSceneDesc(string strCutSceneName)
+HRESULT CCamera_CutScene::Save_CutSceneDescs()
 {
-	if (Has_CutSceneDesc(strCutSceneName))
-		return E_FAIL;
-
-	auto& iter = m_CutSceneDescs.find(strCutSceneName);
-
-	if (iter == m_CutSceneDescs.end())
-		return E_FAIL;
-
-	m_CutSceneDescs.erase(iter);
+	/* json */
 
 	return S_OK;
 }
 
-const _bool CCamera_CutScene::Has_CutSceneDesc(string strCutSceneName)
+HRESULT CCamera_CutScene::Load_CutSceneDescs()
 {
-	auto& iter = m_CutSceneDescs.find(strCutSceneName);
-
-	if (iter == m_CutSceneDescs.end())
-		return false;
-
-	return true;
-}
-
-HRESULT CCamera_CutScene::Change_CutSceneName(string strOriginName, string strChangedName)
-{
-	auto& iter = m_CutSceneDescs.find(strOriginName);
-
-	if (iter == m_CutSceneDescs.end())
-		return E_FAIL;
-
-	m_CutSceneDescs[strChangedName] = move(iter->second);
-
-	m_CutSceneDescs.erase(iter);
+	/* json */
 
 	return S_OK;
 }
 
-HRESULT CCamera_CutScene::Add_PathDesc(string strCutSceneName)
+Vec4 CCamera_CutScene::Get_Point_In_Bezier(Vec3 vPoints[MAX_BEZIER_POINT], const _float& fRatio)
 {
-	auto& iter = m_CutSceneDescs.find(strCutSceneName);
+	if (nullptr == vPoints)
+		return Vec4::UnitW;
 
-	if (iter == m_CutSceneDescs.end())
+	if (sizeof(vPoints) / sizeof(Vec3) != MAX_BEZIER_POINT)
+		return Vec4::UnitW;
+
+	const _float fNormalizedRatio = min(1.0f, max(0.0f, fRatio));
+
+	const Vec3 v0 = Vec3::Lerp(vPoints[0], vPoints[1], fNormalizedRatio);
+	const Vec3 v1 = Vec3::Lerp(vPoints[1], vPoints[2], fNormalizedRatio);
+	const Vec3 v2 = Vec3::Lerp(vPoints[2], vPoints[3], fNormalizedRatio);
+
+	const Vec3 r0 = Vec3::Lerp(v0, v1, fNormalizedRatio);
+	const Vec3 r1 = Vec3::Lerp(v1, v2, fNormalizedRatio);
+
+	return Vec3::Lerp(r0, r1, fNormalizedRatio);
+}
+
+HRESULT CCamera_CutScene::Add_CutSceneDesc(const CAMERA_CUTSCENE_DESC& desc)
+{
+	if (nullptr != Find_CutSceneDesc(desc.strCutSceneName))
 		return E_FAIL;
 
-	CAMERA_CUSTCENE_PATH_DESC CutScenePathDesc;
+	m_CutSceneDescs.push_back(desc);
+
+	return S_OK;
+}
+
+HRESULT CCamera_CutScene::Del_CutSceneDesc(const string& strCutSceneName)
+{
+	if (nullptr == Find_CutSceneDesc(strCutSceneName))
+		return E_FAIL;
+
+	for (vector<CAMERA_CUTSCENE_DESC>::iterator iter = m_CutSceneDescs.begin(); iter != m_CutSceneDescs.end(); ++iter)
 	{
-		CutScenePathDesc.m_tTimeDesc.fEndTime = 1.f;
-
-		/* Postion */
-		Vec3 vCurCamLook = CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Transform()->Get_Look();
-
-		Vec3 vCreateStartPos = CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Transform()->Get_Position();
-
-		vCreateStartPos += vCurCamLook * 30.f;
-
-		Vec3 vPosDelta = Vec3(10.f, 0.f, 0.f);
-
-		for (size_t i = 0; i < 4; i++)
+		if (strCutSceneName == (*iter).strCutSceneName)
 		{
-			Vec3 vCreatePos = vCreateStartPos + vPosDelta + (vCurCamLook.ZeroY() * 30.f * i);
-
-			CutScenePathDesc.vCamPositions[i] = vCreatePos;
-		}
-
-		/* LookAt */
-		Vec3 vLookDelta = Vec3(-10.f, 0.f, 0.f);
-
-		for (size_t i = 0; i < 4; i++)
-		{
-			Vec3 vCreatePos = vCreateStartPos + vPosDelta + (vCurCamLook.ZeroY() * 30.f * i);
-
-			CutScenePathDesc.vCamLookAts[i] = vCreatePos;
+			m_CutSceneDescs.erase(iter);
+			return S_OK;
 		}
 	}
 
-	/* 만약 이전에 추가된 경로가 있다면 현재 추가될 위치의 첫 포지션을 앞 경로의 마지막 경로로 잡아준다.*/
-	if (!iter->second.tPaths.empty())
-	{
-		CutScenePathDesc.vCamPositions[0] = iter->second.tPaths.back().vCamPositions[0];
-
-		CutScenePathDesc.vCamLookAts[0] = iter->second.tPaths.back().vCamLookAts[0];
-	}
-
-	iter->second.tPaths.push_back(CutScenePathDesc);
-
-	return S_OK;
+	return E_FAIL;
 }
 
-HRESULT CCamera_CutScene::Del_PathDesc(string strCutSceneName, const _uint iIndex)
+HRESULT CCamera_CutScene::Change_CutSceneDesc(const _int& iIndex, const CAMERA_CUTSCENE_DESC& desc)
 {
-	return S_OK;
-}
-
-HRESULT CCamera_CutScene::Start_CutScene(string strCutSceneName)
-{
-	auto& iter = m_CutSceneDescs.find(strCutSceneName);
-
-	if (iter == m_CutSceneDescs.end())
+	if (0 > iIndex || m_CutSceneDescs.size() <= iIndex)
 		return E_FAIL;
 
-	m_CurrCutSceneDesc = iter->second;
-
-	m_CurrCutSceneDesc.Start();
+	m_CutSceneDescs[iIndex] = desc;
 
 	return S_OK;
 }
 
-Vec3 CCamera_CutScene::Get_Bezier_CamPosition(string strCutSceneName)
+CAMERA_CUTSCENE_DESC* CCamera_CutScene::Find_CutSceneDesc(const string& strCutSceneName)
 {
-	if (!m_CurrCutSceneDesc.bPlay)
-		return Vec3::Zero;
+	for (auto& iter : m_CutSceneDescs)
+	{
+		if (strCutSceneName == iter.strCutSceneName)
+			return &iter;
+	}
 
-	CAMERA_CUSTCENE_PATH_DESC path = m_CurrCutSceneDesc.tPaths[m_CurrCutSceneDesc.iCurPathIndex];
-
-	return Calculate_Bezier_Position(path.vCamPositions, path.m_tTimeDesc.fCurTime / path.m_tTimeDesc.fEndTime );
-}
-
-Vec3 CCamera_CutScene::Get_Bezier_CamLookAt(string strCutSceneName)
-{
-	if (!m_CurrCutSceneDesc.bPlay)
-		return Vec3::Zero;
-
-	CAMERA_CUSTCENE_PATH_DESC path = m_CurrCutSceneDesc.tPaths[m_CurrCutSceneDesc.iCurPathIndex];
-
-	return Calculate_Bezier_Position(path.vCamLookAts, path.m_tTimeDesc.fCurTime / path.m_tTimeDesc.fEndTime);
+	return nullptr;
 }
 
 HRESULT CCamera_CutScene::Ready_Components()
 {
 	return S_OK;
-}
-
-Vec3 CCamera_CutScene::Calculate_Bezier_Position(Vec3 vPoint[MAX_BEZIER_POINT], const _float& fRatio)
-{
-	/* 4개의 베지어 포인트와 시간에 대한 곡선상 위치를 찾는다. */
-
-	const Vec3 v0 = Vec3::Lerp(vPoint[0], vPoint[1], fRatio);
-	const Vec3 v1 = Vec3::Lerp(vPoint[1], vPoint[2], fRatio);
-	const Vec3 v2 = Vec3::Lerp(vPoint[2], vPoint[3], fRatio);
-
-	const Vec3 r0 = Vec3::Lerp(v0, v1, fRatio);
-	const Vec3 r1 = Vec3::Lerp(v1, v2, fRatio);
-
-	return Vec3::Lerp(r0, r1, fRatio);
 }
 
 CCamera_CutScene* CCamera_CutScene::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)

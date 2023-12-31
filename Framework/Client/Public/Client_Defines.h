@@ -141,66 +141,20 @@ namespace Client
 
 	}CAMERA_EVENT_DESC;
 
-	typedef struct tagCameraCutScenePathDesc
-	{
-		Vec3 vCamPositions[MAX_BEZIER_POINT];
-		Vec3 vCamLookAts[MAX_BEZIER_POINT];
-
-		_float		fDuration;
-		LERP_MODE	eLerpMode;
-
-		LERP_TIME_DESC	m_tTimeDesc;
-
-		void Start()
-		{
-			m_tTimeDesc.Start(fDuration, eLerpMode);
-		}
-
-		void Update(const _float fTimeDelta)
-		{
-			m_tTimeDesc.Update(fTimeDelta);
-		}
-
-	}CAMERA_CUSTCENE_PATH_DESC;
-
 	typedef struct tagCameraCutSceneDesc
 	{
-		vector<CAMERA_CUSTCENE_PATH_DESC> tPaths;
+		string		strCutSceneName = {};
 
-		_int iCurPathIndex = -1;
+		Vec3		vCamPositions[MAX_BEZIER_POINT];
+		Vec3		vCamLookAts[MAX_BEZIER_POINT];
 
-		_bool bPlay = false;
+		_float		fDuration = 2.f;
+		_float		fStartDelayTime = 0.f;
+		_float		fFinishDelayTime = 0.f;
 
-		void Start()
-		{
-			iCurPathIndex = 0;
+		LERP_MODE	eLerpMode = LERP_MODE::SMOOTHER_STEP;
 
-			bPlay = true;
-
-			tPaths[iCurPathIndex].Start();
-		}
-
-		void Update(const _float fTimeDelta)
-		{
-			if (!bPlay)
-				return;
-
-			if (!tPaths[iCurPathIndex].m_tTimeDesc.bActive)
-			{
-				if (iCurPathIndex < tPaths.size() - 1)
-				{
-					iCurPathIndex++;
-					tPaths[iCurPathIndex].m_tTimeDesc.Start(tPaths[iCurPathIndex].fDuration, tPaths[iCurPathIndex].eLerpMode);
-				}
-				else
-				{
-					bPlay = false;
-					return;
-				}
-			}
-		
-			tPaths[iCurPathIndex].Update(fTimeDelta);
-		}
+		LERP_TIME_DESC	tTimeDesc;
 
 	}CAMERA_CUTSCENE_DESC;
 }
