@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Engine_Macro.h"
 #include "Base.h"
 
 BEGIN(Engine)
@@ -7,6 +8,7 @@ BEGIN(Engine)
 class CModel_Manager final : public CBase
 {
 	DECLARE_SINGLETON(CModel_Manager);
+
 
 public:
 	CModel_Manager();
@@ -54,7 +56,7 @@ private:
 	HRESULT Import_Model_Data_From_Fbx(_uint iLevelIndex, const wstring& strProtoTypeTag, _uint eType, wstring strFolderPath, wstring strFileName, __out class CModel** ppOut = nullptr);
 	HRESULT Import_Model_Data_From_Bin_In_Tool(_uint iLevelIndex, const wstring& strProtoTypeTag, _uint eType, wstring strFolderPath, wstring strFileName, __out class CModel** ppOut = nullptr);
 	HRESULT Import_Model_Data_From_Bin_In_Game(_uint iLevelIndex, const wstring& strProtoTypeTag, _uint eType, wstring strFolderPath, wstring strFileName, __out class CModel** ppOut = nullptr);
-	HRESULT Create_AnimationTransform_Caches(const _uint& iAnimIndex); /* VTF 텍스처를 만들기 위한 캐시 (다수 채널) */
+	HRESULT Create_AnimationTransform_Caches(vector<class CHierarchyNode*>& HierarchyNodeCashes, vector<class CAnimation*>& AnimationCashes, vector<ANIM_TRANSFORM_CACHES>& TransformCaches, const _uint& iAnimIndex); /* VTF 텍스처를 만들기 위한 캐시 (다수 채널) */
 
 	const _bool	Find_AnimationSocketTransform(const wstring strModelName, const _uint& iSocketBoneIndex); /* 소켓 본 트랜스폼 기존에 만들어진거 있는지 확인*/
 	vector<ANIM_TRANSFORM_CACHE> Get_AnimationSocketTransform(const wstring strModelName, const _uint& iSocketBoneIndex); /* 소켓 본 트랜스폼 찾기 */
@@ -67,14 +69,15 @@ private:
 	_float4x4 m_PivotMatrix;
 
 
-	vector<ANIM_TRANSFORM_CACHES>	m_AnimTransformsCaches; 
+	/*vector<ANIM_TRANSFORM_CACHES>	m_AnimTransformsCaches; 
 	vector<class CHierarchyNode*>	m_HierarchyNodes;
-	vector<class CAnimation*>		m_AnimationsCache;
+	vector<class CAnimation*>		m_AnimationsCache;*/
 
 	/* 클라이언트에서 공용으로 사용 */
 	map<wstring, ID3D11ShaderResourceView*> m_VtfTextures; /* 모델 이름, srv */
 	map<wstring, map<_uint, vector<ANIM_TRANSFORM_CACHE>>> m_SocketTransforms; /* 모델 이름, 뼈 인덱스, 트랜스폼 정보 */
 
+	
 public:
 	virtual void Free() override;
 };

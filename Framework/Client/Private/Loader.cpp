@@ -187,25 +187,21 @@ HRESULT CLoader::Loading_For_Level_Logo()
 	/* For.Shader */
 	m_strLoading = TEXT("셰이더를 로딩 중 입니다.");
 
+
 	/* For.GameObject */
 	m_strLoading = TEXT("객체원형을 로딩 중 입니다.");
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Logo_Background"),
-		CUI_Logo_Background::Create(m_pDevice, m_pContext), LAYER_UI)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Logo_Background"), CUI_Logo_Background::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Logo_Flare"),
-		CUI_Flare::Create(m_pDevice, m_pContext), LAYER_UI)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Logo_Flare"), CUI_Flare::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
 
 	if (false == g_bFirstLoading)
-	{
-		if (FAILED(CCharacter_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
-			return E_FAIL;
+		Loading_For_Character();
 
-		if (FAILED(CGame_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
-			return E_FAIL;
-	}
+	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
+		m_Threads[i].wait();
 
 
 	m_strLoading = TEXT("로딩 끝.");
@@ -222,7 +218,7 @@ HRESULT CLoader::Loading_For_Level_Lobby()
 
 	if (FAILED(GI->Add_Prototype(LEVEL_LOBBY, TEXT("Prototype_Component_Texture_Lobby_NicknameFrame"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Lobby/UI_Lobby_NickName_Frame.png")))))
-		return E_FAIL;
+		return E_FAIL; 
 
 	if (FAILED(GI->Add_Prototype(LEVEL_LOBBY, TEXT("Prototype_Component_Texture_Lobby_Announce"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Lobby/UI_Announce_CharacterSelect.png")))))
@@ -281,18 +277,20 @@ HRESULT CLoader::Loading_For_Level_Lobby()
 	if (FAILED(CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_LOBBY)))
 		return E_FAIL;
 
+
 	/* For.Model */
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
 
-	if (false == g_bFirstLoading)
-	{
-		if (FAILED(CCharacter_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
-			return E_FAIL;
 
-		if (FAILED(CGame_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
-			return E_FAIL;
+	if (false == g_bFirstLoading)
+		Loading_For_Character();
+
+	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
+	{
+		if(true == m_Threads[i].valid())
+			m_Threads[i].wait();
 	}
-	
+		
 
 	m_strLoading = TEXT("로딩 끝.");
 	m_isFinished = true;
@@ -322,16 +320,16 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 	/* For.Model */
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
 
-	
 	if (false == g_bFirstLoading)
+		Loading_For_Character();
+
+
+	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
 	{
-		if (FAILED(CCharacter_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
-			return E_FAIL;
-
-		if (FAILED(CGame_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
-			return E_FAIL;
+		if(true == m_Threads[i].valid())
+			m_Threads[i].wait();
 	}
-
+		
 
 	m_strLoading = TEXT("로딩 끝.");
 	m_isFinished = true;
@@ -356,30 +354,26 @@ HRESULT CLoader::Loading_For_Level_Test()
 
 	CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_TEST);
 
-	if (FAILED(Loading_Proto_AllObjects(L"../Bin/Export/NonAnimModel/Map/")))
-		return E_FAIL;
-
-	if (FAILED(Loading_Proto_DynamicObjects(L"..Bin/Export/AnimModel/Map/")))
-		return E_FAIL;
-
- 	if (FAILED(Loading_Proto_MonsterOrNPC()))
-		return E_FAIL;
-
-	Load_Map_Data(L"Evermore");
-
-
 	if (false == g_bFirstLoading)
-	{
-		if (FAILED(CWeapon_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
-			return E_FAIL;
+		Loading_For_Character();
 
-		if (FAILED(CCharacter_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
-			return E_FAIL;
-
-		if (FAILED(CGame_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
-			return E_FAIL;
-	}
 	
+	m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Static_Map_Objects, this, L"../Bin/Export/NonAnimModel/Map/");
+	m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Dynamic_Map_Objects, this, L"..Bin/Export/AnimModel/Map/");
+	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Loading_Proto_Monster_Npc, this);
+
+	m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE].wait();
+	m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE].wait();
+
+	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Evermore");
+	
+
+	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
+	{
+		if (true == m_Threads[i].valid())
+			m_Threads[i].wait();
+	}
+
 	m_strLoading = TEXT("로딩 끝.");
 	m_isFinished = true;
 	g_bFirstLoading = true;
@@ -406,64 +400,15 @@ HRESULT CLoader::Loading_For_Level_Tool()
 	m_strLoading = TEXT("객체 원형을 로딩 중 입니다.");
 
 
+
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Dummy"),
 		CDummy::Create(m_pDevice, m_pContext, TEXT("Dummy")), LAYER_TYPE::LAYER_PLAYER)))
 		return E_FAIL;
 
- 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Terrain"),
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Terrain"),
 		CTerrain::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_TERRAIN)))
 		return E_FAIL;
 
-	if (FAILED(Loading_Proto_AllObjects(L"../Bin/Export/NonAnimModel/Map/")))
-		return E_FAIL;
-
-	if (FAILED(Loading_Proto_DynamicObjects(L"..Bin/Export/AnimModel/Map/")))
-		return E_FAIL;
-
-	if(FAILED(Loading_Proto_MonsterOrNPC()))
-		return E_FAIL;
-		
-#pragma region Particle && Effect
-#pragma region Particle
-	// 툴 파티클
-	CParticle::PARTICLE_DESC ParticleInfo = {};
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_TempParticle"),
-		CParticle::Create(m_pDevice, m_pContext, TEXT("TempParticle"), &ParticleInfo), 
-		LAYER_TYPE::LAYER_EFFECT)))
-		return E_FAIL;
-#pragma endregion
-
-#pragma region Effect
-	// 툴 이펙트
-	CEffect::EFFECT_DESC EffectInfo = {};
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_TempMeshEffect"),
-		CEffect::Create(m_pDevice, m_pContext, TEXT("TempMeshEffect"), &EffectInfo), 
-		LAYER_TYPE::LAYER_EFFECT)))
-		return E_FAIL;
-#pragma endregion
-#pragma endregion
-
-#pragma region TerrainBrush
-
-
-	//if (FAILED(GI->Add_Prototype(LEVEL_TOOL, TEXT("Prototype_Component_StructuredBuffer"),
-	//	CStructuredBuffer::Create(m_pDevice, m_pContext))))
-	//	return E_FAIL;
-#pragma endregion
-
-#pragma region Parts
-
-
-	/* 툴 팔로우 카메라 테스트 용도 */
-	/*{
-		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SwordMan_Dummy", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/SwordMan/Dummy/", L"SwordMan_Dummy")))
-			return E_FAIL;
-
-		if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_SwordMan", CCharacter_SwordMan::Create(m_pDevice, m_pContext, TEXT("SwordMan")), LAYER_CHARACTER)))
-			return E_FAIL;
-	}*/
-
-#pragma endregion
 
 
 	/* Prototype_GameObject_TempSword */
@@ -475,20 +420,36 @@ HRESULT CLoader::Loading_For_Level_Tool()
 		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_TempSword", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Weapon/", L"TempSword")))
 			return E_FAIL;
 	}
+		
+	// 툴 파티클
+	CParticle::PARTICLE_DESC ParticleInfo = {};
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_TempParticle"),
+		CParticle::Create(m_pDevice, m_pContext, TEXT("TempParticle"), &ParticleInfo), 
+		LAYER_TYPE::LAYER_EFFECT)))
+		return E_FAIL;
 
-
-
-	if (false == g_bFirstLoading)
-	{
-		if (FAILED(CCharacter_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
-			return E_FAIL;
-
-		if (FAILED(CGame_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
-			return E_FAIL;
-	}
+	// 툴 이펙트
+	CEffect::EFFECT_DESC EffectInfo = {};
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_TempMeshEffect"),
+		CEffect::Create(m_pDevice, m_pContext, TEXT("TempMeshEffect"), &EffectInfo), 
+		LAYER_TYPE::LAYER_EFFECT)))
+		return E_FAIL;
 
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
-	_matrix		PivotMatrix = XMMatrixIdentity();
+	if (false == g_bFirstLoading)
+		Loading_For_Character();
+
+	m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Static_Map_Objects, this, L"../Bin/Export/NonAnimModel/Map/");
+	m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Dynamic_Map_Objects, this, L"..Bin/Export/AnimModel/Map/");
+	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Loading_Proto_Monster_Npc, this);
+
+
+	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
+	{
+		if (true == m_Threads[i].valid())
+			m_Threads[i].wait();
+	}
+
 
 	m_strLoading = TEXT("로딩 끝.");
 	m_isFinished = true;
@@ -511,6 +472,8 @@ HRESULT CLoader::Load_Navi_Data(const wstring& strNaviFileName)
 
 	return S_OK;
 }
+
+/*===================================================================*/
 HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 {
 	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strMapFileName + L"/" + strMapFileName + L".map";
@@ -550,7 +513,7 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 				wstring strObjectTag = CUtils::ToWString(File->Read<string>());
 
 				CGameObject* pObj = nullptr;
-				if (FAILED(GI->Add_GameObject(m_eNextLevel, i, strPrototypeTag, nullptr, &pObj)))
+				if (FAILED(GI->Add_GameObject(m_eNextLevel, i, strPrototypeTag, nullptr, &pObj, true)))
 				{
 					MSG_BOX("Load_Map_Objects_Failed.");
 					return E_FAIL;
@@ -592,13 +555,13 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 
 }
 
-HRESULT CLoader::Loading_Proto_AllObjects(const wstring& strPath)
+HRESULT CLoader::Loading_Proto_Static_Map_Objects(const wstring& strPath)
 {
 	for (auto& p : std::filesystem::directory_iterator(strPath))
 	{
 		if (p.is_directory())
 		{
-			Loading_Proto_AllObjects(p.path().wstring());
+			Loading_Proto_Static_Map_Objects(p.path().wstring());
 		}
 
  		wstring strFilePath = CUtils::PathToWString(p.path().wstring());
@@ -614,7 +577,7 @@ HRESULT CLoader::Loading_Proto_AllObjects(const wstring& strPath)
 			if (strFilePath.find(L"Buildings") != wstring::npos)
 			{
 				if (FAILED(GI->Add_Prototype(wstring(strFileName),
-					CBuilding::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt, OBJ_TYPE::OBJ_BUILDING, CModel::TYPE_NONANIM), LAYER_TYPE::LAYER_BUILDING)))
+					CBuilding::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt, OBJ_TYPE::OBJ_BUILDING, CModel::TYPE_NONANIM), LAYER_TYPE::LAYER_BUILDING, true)))
 				{
 					return E_FAIL;
 				}
@@ -622,7 +585,7 @@ HRESULT CLoader::Loading_Proto_AllObjects(const wstring& strPath)
 			else if ((strFilePath.find(L"Props") != wstring::npos) || (strFilePath.find(L"Prop") != wstring::npos))
 			{
 				if (FAILED(GI->Add_Prototype(wstring(strFileName),
-					CProbs::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt, OBJ_TYPE::OBJ_PROP, CModel::TYPE_NONANIM), LAYER_TYPE::LAYER_PROP)))
+					CProbs::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt, OBJ_TYPE::OBJ_PROP, CModel::TYPE_NONANIM), LAYER_TYPE::LAYER_PROP, true)))
 				{
 					return E_FAIL;
 				}
@@ -630,19 +593,19 @@ HRESULT CLoader::Loading_Proto_AllObjects(const wstring& strPath)
 			else if (strFilePath.find(L"Plants") != wstring::npos)
 			{
 				if (FAILED(GI->Add_Prototype(wstring(strFileName),
-					CPlants::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt, OBJ_TYPE::OBJ_GRASS, CModel::TYPE_NONANIM), LAYER_TYPE::LAYER_GRASS)))
+					CPlants::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt, OBJ_TYPE::OBJ_GRASS, CModel::TYPE_NONANIM), LAYER_TYPE::LAYER_GRASS, true)))
 					return E_FAIL;
 			}
 			else if (strFilePath.find(L"Grounds") != wstring::npos)
 			{
 				if (FAILED(GI->Add_Prototype(wstring(strFileName),
-					CGrounds::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt, OBJ_TYPE::OBJ_GROUND, CModel::TYPE_NONANIM), LAYER_TYPE::LAYER_GROUND)))
+					CGrounds::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt, OBJ_TYPE::OBJ_GROUND, CModel::TYPE_NONANIM), LAYER_TYPE::LAYER_GROUND, true)))
 					return E_FAIL;
 			}
 			else if (strFilePath.find(L"Rocks And Trees") != wstring::npos)
 			{
 				if (FAILED(GI->Add_Prototype(wstring(strFileName),
-					CTreeRock::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt, OBJ_TYPE::OBJ_TREEROCK, CModel::TYPE_NONANIM), LAYER_TYPE::LAYER_TREEROCK)))
+					CTreeRock::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt, OBJ_TYPE::OBJ_TREEROCK, CModel::TYPE_NONANIM), LAYER_TYPE::LAYER_TREEROCK, true)))
 					return E_FAIL;
 			}
 			//else if (strFilePath.find(L"Water") != wstring::npos)
@@ -670,31 +633,31 @@ HRESULT CLoader::Loading_Proto_AllObjects(const wstring& strPath)
 	return S_OK;
 }
 
-HRESULT CLoader::Loading_Proto_DynamicObjects(const wstring& strPath)
+HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 {
-	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Cat"), CCat::Create(m_pDevice, m_pContext, TEXT("Animal_Cat"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Cat"), CCat::Create(m_pDevice, m_pContext, TEXT("Animal_Cat"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Dochi"), CDochi::Create(m_pDevice, m_pContext, TEXT("Animal_Dochi"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Dochi"), CDochi::Create(m_pDevice, m_pContext, TEXT("Animal_Dochi"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_DuckGoo"), CDuckGoo::Create(m_pDevice, m_pContext, TEXT("Animal_DuckGoo"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_DuckGoo"), CDuckGoo::Create(m_pDevice, m_pContext, TEXT("Animal_DuckGoo"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Fox"), CFox::Create(m_pDevice, m_pContext, TEXT("Animal_Fox"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Fox"), CFox::Create(m_pDevice, m_pContext, TEXT("Animal_Fox"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Rabbit"), CRabbit::Create(m_pDevice, m_pContext, TEXT("Animal_Rabbit"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Rabbit"), CRabbit::Create(m_pDevice, m_pContext, TEXT("Animal_Rabbit"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_PolarBear"), CPolarBear::Create(m_pDevice, m_pContext, TEXT("Animal_PolarBear"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_PolarBear"), CPolarBear::Create(m_pDevice, m_pContext, TEXT("Animal_PolarBear"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Ermine"), CErmine::Create(m_pDevice, m_pContext, TEXT("Animal_Ermine"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Ermine"), CErmine::Create(m_pDevice, m_pContext, TEXT("Animal_Ermine"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Pigeon"), CPigeon::Create(m_pDevice, m_pContext, TEXT("Animal_Pigeon"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Pigeon"), CPigeon::Create(m_pDevice, m_pContext, TEXT("Animal_Pigeon"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Water"), CWater::Create(m_pDevice, m_pContext, TEXT("Evermore_Water"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Water"), CWater::Create(m_pDevice, m_pContext, TEXT("Evermore_Water"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Skydome"), CSkyDome::Create(m_pDevice, m_pContext, TEXT("Sky_dome"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Skydome"), CSkyDome::Create(m_pDevice, m_pContext, TEXT("Sky_dome"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Skydome2"), CSkyDome::Create(m_pDevice, m_pContext, TEXT("Sky_dome2"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Skydome2"), CSkyDome::Create(m_pDevice, m_pContext, TEXT("Sky_dome2"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_SkyPlane"), CSkyPlane::Create(m_pDevice, m_pContext, TEXT("Sky_Plane"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_SkyPlane"), CSkyPlane::Create(m_pDevice, m_pContext, TEXT("Sky_Plane"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX, true)))
 		return E_FAIL;
 
 
@@ -725,7 +688,62 @@ HRESULT CLoader::Loading_Proto_DynamicObjects(const wstring& strPath)
 	return S_OK;
 }
 
-HRESULT CLoader::Loading_Proto_MonsterOrNPC()
+HRESULT CLoader::Loading_For_Character()
+{
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SwordMan_Dummy", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/SwordMan/Dummy/", L"SwordMan_Dummy")))
+		return E_FAIL;
+
+	m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN] = std::async(&CLoader::Loading_Character_Models, this, L"../Bin/Export/AnimModel/Character/SwordMan/");
+	m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN].wait();
+
+	if (FAILED(CWeapon_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+		return E_FAIL;
+
+	if (FAILED(CCharacter_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+		return E_FAIL;
+
+	if (FAILED(CGame_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_Character_Models(const wstring& strFolderPath)
+{
+	for (auto& p : std::filesystem::directory_iterator(strFolderPath))
+	{
+		if (p.is_directory())
+			Loading_Character_Models(p.path().wstring());
+
+		wstring strFilePath = CUtils::PathToWString(p.path().wstring());
+
+
+
+		_tchar strFileName[MAX_PATH];
+		_tchar strFolderName[MAX_PATH];
+		_tchar strExt[MAX_PATH];
+
+
+
+		_wsplitpath_s(strFilePath.c_str(), nullptr, 0, strFolderName, MAX_PATH, strFileName, MAX_PATH, strExt, MAX_PATH);
+
+		if (strFilePath.find(L"Dummy") != wstring::npos)
+			continue;
+
+		if (true == !lstrcmp(strExt, L".mesh"))
+		{
+			wstring strPrototypeName = L"Prototype_Component_Model_";
+			strPrototypeName += strFileName;
+			if (FAILED(GI->Import_Model_Data(LEVEL_PARTS, strPrototypeName, CModel::TYPE_ANIM, strFolderName, strFileName)))
+				return E_FAIL;
+		}
+	}
+
+
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_Proto_Monster_Npc()
 {
 	CMonster::MONSTER_STAT statDesc;
 	statDesc.fHp = 100;
@@ -734,114 +752,114 @@ HRESULT CLoader::Loading_Proto_MonsterOrNPC()
 	statDesc.fMaxMp = 100;
 
 
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Glanix", CGlanix::Create(m_pDevice, m_pContext, TEXT("Glanix"), statDesc), LAYER_MONSTER)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Glanix", CGlanix::Create(m_pDevice, m_pContext, TEXT("Glanix"), statDesc), LAYER_MONSTER, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Glanix_IcePillar", CGlanix_IcePillar::Create(m_pDevice, m_pContext, TEXT("Clanix_IcePillar")), LAYER_PROP)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Glanix_IcePillar", CGlanix_IcePillar::Create(m_pDevice, m_pContext, TEXT("Clanix_IcePillar")), LAYER_PROP, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Glanix_FireSpirit", CGlanix_FireSpirit::Create(m_pDevice, m_pContext, TEXT("Clanix_IcePillar")), LAYER_PROP)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Glanix_FireSpirit", CGlanix_FireSpirit::Create(m_pDevice, m_pContext, TEXT("Clanix_IcePillar")), LAYER_PROP, true)))
 		return E_FAIL;
 
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Spawner_Ice01", CSpawner_Ice01::Create(m_pDevice, m_pContext, TEXT("Spawner_Ice01")), LAYER_MONSTER)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Spawner_Ice01", CSpawner_Ice01::Create(m_pDevice, m_pContext, TEXT("Spawner_Ice01")), LAYER_MONSTER, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Stellia", CStellia::Create(m_pDevice, m_pContext, TEXT("Stellia"), statDesc), LAYER_MONSTER)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Stellia", CStellia::Create(m_pDevice, m_pContext, TEXT("Stellia"), statDesc), LAYER_MONSTER, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_DreamerMazeWitch", CDMWitch::Create(m_pDevice, m_pContext, TEXT("DreamerMazeWitch"), statDesc), LAYER_MONSTER)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_DreamerMazeWitch", CDMWitch::Create(m_pDevice, m_pContext, TEXT("DreamerMazeWitch"), statDesc), LAYER_MONSTER, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Baobam_Water", CBaobam_Water::Create(m_pDevice, m_pContext, TEXT("Baobam_Water"), statDesc), LAYER_MONSTER)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Baobam_Water", CBaobam_Water::Create(m_pDevice, m_pContext, TEXT("Baobam_Water"), statDesc), LAYER_MONSTER, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Shadow_Thief", CShadow_Thief::Create(m_pDevice, m_pContext, TEXT("Shadow_Thief"), statDesc), LAYER_MONSTER)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Shadow_Thief", CShadow_Thief::Create(m_pDevice, m_pContext, TEXT("Shadow_Thief"), statDesc), LAYER_MONSTER, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_IceBearMan", CIceBearMan::Create(m_pDevice, m_pContext, TEXT("IceBearMan"), statDesc), LAYER_MONSTER)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_IceBearMan", CIceBearMan::Create(m_pDevice, m_pContext, TEXT("IceBearMan"), statDesc), LAYER_MONSTER, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_PumpkinCandle", CPumpkinCandle::Create(m_pDevice, m_pContext, TEXT("PumpkinCandle"), statDesc), LAYER_MONSTER)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_PumpkinCandle", CPumpkinCandle::Create(m_pDevice, m_pContext, TEXT("PumpkinCandle"), statDesc), LAYER_MONSTER, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Clown", CClown::Create(m_pDevice, m_pContext, TEXT("Clown"), statDesc), LAYER_MONSTER)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Clown", CClown::Create(m_pDevice, m_pContext, TEXT("Clown"), statDesc), LAYER_MONSTER, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Clown_Wizard", CClown_Wizard::Create(m_pDevice, m_pContext, TEXT("Clown"), statDesc), LAYER_MONSTER)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Clown_Wizard", CClown_Wizard::Create(m_pDevice, m_pContext, TEXT("Clown"), statDesc), LAYER_MONSTER, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Baobam_Dark", CBaobam_Dark::Create(m_pDevice, m_pContext, TEXT("Clown"), statDesc), LAYER_MONSTER)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Baobam_Dark", CBaobam_Dark::Create(m_pDevice, m_pContext, TEXT("Clown"), statDesc), LAYER_MONSTER, true)))
 		return E_FAIL;
 
 	/* Npc */
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanFAT01", CHumanFAT01::Create(m_pDevice, m_pContext, TEXT("HumanFAT01")), LAYER_NPC)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanFAT01", CHumanFAT01::Create(m_pDevice, m_pContext, TEXT("HumanFAT01")), LAYER_NPC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanFL04", CHumanFL04::Create(m_pDevice, m_pContext, TEXT("HumanFL04")), LAYER_NPC)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanFL04", CHumanFL04::Create(m_pDevice, m_pContext, TEXT("HumanFL04")), LAYER_NPC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanFL05", CHumanFL05::Create(m_pDevice, m_pContext, TEXT("HumanFL05")), LAYER_NPC)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanFL05", CHumanFL05::Create(m_pDevice, m_pContext, TEXT("HumanFL05")), LAYER_NPC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanFL07", CHumanFL07::Create(m_pDevice, m_pContext, TEXT("HumanFL07")), LAYER_NPC)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanFL07", CHumanFL07::Create(m_pDevice, m_pContext, TEXT("HumanFL07")), LAYER_NPC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanFLCapitalMerchant", CHumanFLCapitalMerchant::Create(m_pDevice, m_pContext, TEXT("HumanFLCapitalMerchant")), LAYER_NPC)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanFLCapitalMerchant", CHumanFLCapitalMerchant::Create(m_pDevice, m_pContext, TEXT("HumanFLCapitalMerchant")), LAYER_NPC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_KingdomGuard", CKingdomGuard::Create(m_pDevice, m_pContext, TEXT("KingdomGuard")), LAYER_NPC)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_KingdomGuard", CKingdomGuard::Create(m_pDevice, m_pContext, TEXT("KingdomGuard")), LAYER_NPC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_NpcWeapon_Halberd", CNpcWeapon_Halberd::Create(m_pDevice, m_pContext, TEXT("NpcWeapon_Halberd")), LAYER_WEAPON)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_NpcWeapon_Halberd", CNpcWeapon_Halberd::Create(m_pDevice, m_pContext, TEXT("NpcWeapon_Halberd")), LAYER_WEAPON, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanML12", CHumanML12::Create(m_pDevice, m_pContext, TEXT("HumanML12")), LAYER_NPC)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanML12", CHumanML12::Create(m_pDevice, m_pContext, TEXT("HumanML12")), LAYER_NPC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanMM03", CHumanMM03::Create(m_pDevice, m_pContext, TEXT("HumanMM03")), LAYER_NPC)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanMM03", CHumanMM03::Create(m_pDevice, m_pContext, TEXT("HumanMM03")), LAYER_NPC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_LuxerionHuman", CLuxerionHuman::Create(m_pDevice, m_pContext, TEXT("LuxerionHuman")), LAYER_NPC)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_LuxerionHuman", CLuxerionHuman::Create(m_pDevice, m_pContext, TEXT("LuxerionHuman")), LAYER_NPC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanChild01", CHumanChild01::Create(m_pDevice, m_pContext, TEXT("HumanChild01")), LAYER_NPC)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanChild01", CHumanChild01::Create(m_pDevice, m_pContext, TEXT("HumanChild01")), LAYER_NPC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanChild02", CHumanChild02::Create(m_pDevice, m_pContext, TEXT("HumanChild02")), LAYER_NPC)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanChild02", CHumanChild02::Create(m_pDevice, m_pContext, TEXT("HumanChild02")), LAYER_NPC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_SeekerCat", CSeekerCat::Create(m_pDevice, m_pContext, TEXT("SeekerCat")), LAYER_NPC)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_SeekerCat", CSeekerCat::Create(m_pDevice, m_pContext, TEXT("SeekerCat")), LAYER_NPC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_SeekerKing", CSeekerKing::Create(m_pDevice, m_pContext, TEXT("SeekerKing")), LAYER_NPC)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_SeekerKing", CSeekerKing::Create(m_pDevice, m_pContext, TEXT("SeekerKing")), LAYER_NPC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_SeekerObserver", CSeekerObserver::Create(m_pDevice, m_pContext, TEXT("SeekerObserver")), LAYER_NPC)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_SeekerObserver", CSeekerObserver::Create(m_pDevice, m_pContext, TEXT("SeekerObserver")), LAYER_NPC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Ruslan", CRuslan::Create(m_pDevice, m_pContext, TEXT("Ruslan")), LAYER_NPC)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Ruslan", CRuslan::Create(m_pDevice, m_pContext, TEXT("Ruslan")), LAYER_NPC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanFS03", CHumanFS03::Create(m_pDevice, m_pContext, TEXT("HumanFS03")), LAYER_NPC)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanFS03", CHumanFS03::Create(m_pDevice, m_pContext, TEXT("HumanFS03")), LAYER_NPC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_SwiftSolutionMaster", CSwiftSolutionMaster::Create(m_pDevice, m_pContext, TEXT("SwiftSolutionMaster")), LAYER_NPC)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_SwiftSolutionMaster", CSwiftSolutionMaster::Create(m_pDevice, m_pContext, TEXT("SwiftSolutionMaster")), LAYER_NPC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Zehra", CZehra::Create(m_pDevice, m_pContext, TEXT("Zehra")), LAYER_NPC)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Zehra", CZehra::Create(m_pDevice, m_pContext, TEXT("Zehra")), LAYER_NPC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Enbi", CEnbi::Create(m_pDevice, m_pContext, TEXT("Enbi")), LAYER_NPC)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Enbi", CEnbi::Create(m_pDevice, m_pContext, TEXT("Enbi")), LAYER_NPC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Edellian", CEdellian::Create(m_pDevice, m_pContext, TEXT("Edellian")), LAYER_NPC)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Edellian", CEdellian::Create(m_pDevice, m_pContext, TEXT("Edellian")), LAYER_NPC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Chloe", CChloe::Create(m_pDevice, m_pContext, TEXT("Chloe")), LAYER_NPC)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Chloe", CChloe::Create(m_pDevice, m_pContext, TEXT("Chloe")), LAYER_NPC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Aren", CAren::Create(m_pDevice, m_pContext, TEXT("Aren")), LAYER_NPC)))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanChildHalloweenA", CHumanChildHalloweenA::Create(m_pDevice, m_pContext, TEXT("HumanChildHalloweenA")), LAYER_NPC)))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanChildHalloweenB", CHumanChildHalloweenB::Create(m_pDevice, m_pContext, TEXT("HumanChildHalloweenB")), LAYER_NPC)))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_CaliaHuman", CCaliaHuman::Create(m_pDevice, m_pContext, TEXT("CaliaHuman")), LAYER_NPC)))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanMSCrossFieldMerchant", CHumanMSCrossFieldMerchant::Create(m_pDevice, m_pContext, TEXT("HumanMSCrossFieldMerchant")), LAYER_NPC)))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_RunnerCat", CRunnerCat::Create(m_pDevice, m_pContext, TEXT("RunnerCat")), LAYER_NPC)))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_ThiefCat", CThiefCat::Create(m_pDevice, m_pContext, TEXT("ThiefCat")), LAYER_NPC)))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Ghost1", CGhost1::Create(m_pDevice, m_pContext, TEXT("Ghost1")), LAYER_NPC)))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Ghost2", CGhost2::Create(m_pDevice, m_pContext, TEXT("Ghost2")), LAYER_NPC)))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Ruby", CRuby::Create(m_pDevice, m_pContext, TEXT("Ruby")), LAYER_NPC)))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanFSPioneer", CHumanFSPioneer::Create(m_pDevice, m_pContext, TEXT("HumanFSPioneer")), LAYER_NPC)))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_TreeGrandfa", CTreeGrandfa::Create(m_pDevice, m_pContext, TEXT("TreeGrandfa")), LAYER_NPC)))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Verde", CVerde::Create(m_pDevice, m_pContext, TEXT("Verde")), LAYER_NPC)))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Gosling", CGosling::Create(m_pDevice, m_pContext, TEXT("Gosling")), LAYER_NPC)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Aren", CAren::Create(m_pDevice, m_pContext, TEXT("Aren")), LAYER_NPC, true)))
 		return E_FAIL;
 
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_FunyaSnowman", CFunyaSnowman::Create(m_pDevice, m_pContext, TEXT("FunyaSnowman")), LAYER_NPC)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanChildHalloweenA", CHumanChildHalloweenA::Create(m_pDevice, m_pContext, TEXT("HumanChildHalloweenA")), LAYER_NPC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_GiftFunyaSnowman", CGiftFunyaSnowman::Create(m_pDevice, m_pContext, TEXT("GiftFunyaSnowman")), LAYER_NPC)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanChildHalloweenB", CHumanChildHalloweenB::Create(m_pDevice, m_pContext, TEXT("HumanChildHalloweenB")), LAYER_NPC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_AquarisBella", CAquarisBella::Create(m_pDevice, m_pContext, TEXT("AquarisBella")), LAYER_NPC)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_CaliaHuman", CCaliaHuman::Create(m_pDevice, m_pContext, TEXT("CaliaHuman")), LAYER_NPC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanMSCrossFieldMerchant", CHumanMSCrossFieldMerchant::Create(m_pDevice, m_pContext, TEXT("HumanMSCrossFieldMerchant")), LAYER_NPC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_RunnerCat", CRunnerCat::Create(m_pDevice, m_pContext, TEXT("RunnerCat")), LAYER_NPC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_ThiefCat", CThiefCat::Create(m_pDevice, m_pContext, TEXT("ThiefCat")), LAYER_NPC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Ghost1", CGhost1::Create(m_pDevice, m_pContext, TEXT("Ghost1")), LAYER_NPC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Ghost2", CGhost2::Create(m_pDevice, m_pContext, TEXT("Ghost2")), LAYER_NPC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Ruby", CRuby::Create(m_pDevice, m_pContext, TEXT("Ruby")), LAYER_NPC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanFSPioneer", CHumanFSPioneer::Create(m_pDevice, m_pContext, TEXT("HumanFSPioneer")), LAYER_NPC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_TreeGrandfa", CTreeGrandfa::Create(m_pDevice, m_pContext, TEXT("TreeGrandfa")), LAYER_NPC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Verde", CVerde::Create(m_pDevice, m_pContext, TEXT("Verde")), LAYER_NPC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Gosling", CGosling::Create(m_pDevice, m_pContext, TEXT("Gosling")), LAYER_NPC, true)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_FunyaSnowman", CFunyaSnowman::Create(m_pDevice, m_pContext, TEXT("FunyaSnowman")), LAYER_NPC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_GiftFunyaSnowman", CGiftFunyaSnowman::Create(m_pDevice, m_pContext, TEXT("GiftFunyaSnowman")), LAYER_NPC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_AquarisBella", CAquarisBella::Create(m_pDevice, m_pContext, TEXT("AquarisBella")), LAYER_NPC, true)))
 		return E_FAIL;
 
 	/* Monster */
@@ -960,8 +978,7 @@ HRESULT CLoader::Loading_Proto_MonsterOrNPC()
 
 	return S_OK;
 }
-
-
+/*===================================================================*/
 
 CLoader * CLoader::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, LEVELID eNextLevel, const wstring& strFolderName)
 {

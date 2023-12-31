@@ -142,7 +142,7 @@ HRESULT CSkyPlane::SkyPlaneRSCreate()
 	if (FAILED(m_pDevice->CreateRasterizerState(&rasterDesc, &m_pRasterStateNoCulling)))
 		return E_FAIL;
 
-
+	return S_OK;
 }
 
 CSkyPlane* CSkyPlane::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eObjType)
