@@ -6,6 +6,10 @@
 #include "Utils.h"
 #include "GameInstance.h"
 
+#include "GameObject.h"
+#include "Collider.h"
+#include "Collider_OBB.h"
+
 CAnimation::CAnimation()
 {
 }
@@ -20,6 +24,7 @@ CAnimation::CAnimation(const CAnimation& rhs)
 	, m_bLoop(rhs.m_bLoop)
 	, m_SpeedDescs(rhs.m_SpeedDescs)
 	, m_SoundEvents(rhs.m_SoundEvents)
+	, m_ColliderEvents(rhs.m_ColliderEvents)
 {
 	for (auto& pChannel : m_Channels)
 		Safe_AddRef(pChannel);
@@ -46,6 +51,8 @@ HRESULT CAnimation::Initialize_Prototype(aiAnimation* pAIAnimation)
 
 HRESULT CAnimation::Initialize(CModel* pModel)
 {
+	m_pModel = pModel;
+	
 	//if (99 != GI->Get_CurrentLevel()) return S_OK;
 
 	for (_uint i = 0; i < m_iNumChannels; ++i)
@@ -78,7 +85,20 @@ void CAnimation::Clear_AnimationEvent()
 
 	/* 콜라이더 이벤트 초기화 */
 	for (auto& ColliderEvent : m_ColliderEvents)
+	{
 		ColliderEvent.second.bExecuted = false;
+
+		/* 어택 타입의 경우 트위닝시 종료 프레임에 도달하지 않으면 안꺼지는 것을 방지하기 위해 강제로 꺼준다. */
+		if (CCollider::DETECTION_TYPE::ATTACK == ColliderEvent.second.iDetectionType)
+		{
+			vector<class CCollider*>& pColliders = m_pModel->Get_Owner()->Get_Collider(ColliderEvent.second.iDetectionType);
+
+			for (size_t i = 0; i < pColliders.size(); i++)
+			{
+				pColliders[i]->Set_Active(false);
+			}
+		}
+	}
 }
 
 void CAnimation::Clear_AnimationSpeed()
@@ -310,6 +330,7 @@ void CAnimation::Change_ColliderEvent(const _uint iIndex, const ANIM_EVENT_COLLI
 	m_ColliderEvents[iIndex].second.vOffset = desc.vOffset;
 	m_ColliderEvents[iIndex].second.vExtents = desc.vExtents;
 	m_ColliderEvents[iIndex].second.iDetectionType = desc.iDetectionType;
+	m_ColliderEvents[iIndex].second.iAttackType = desc.iAttackType;
 }
 
 void CAnimation::Sort_ColliderEvents()
@@ -429,13 +450,35 @@ void CAnimation::Update_Animation_Event(_float fTickPerSecond, const TWEEN_DESC&
 	}
 
 	/* 콜라이더 이벤트 */
+	if (nullptr == m_pModel || nullptr == m_pModel->Get_Owner())
+		return;
+
 	for (auto& ColliderEvent : m_ColliderEvents)
 	{
 		if (ColliderEvent.first <= fCurFrame && !ColliderEvent.second.bExecuted)
 		{
 			ColliderEvent.second.bExecuted = true;
 
-			//GI->Play_Sound(SoundEvent.second.pSoundKey, CHANNELID(SoundEvent.second.iChannelID), SoundEvent.second.fVolume, SoundEvent.second.bStop);
+			if (ColliderEvent.second.bOnOff)
+			{
+				if (!m_pModel->Get_Owner()->Get_Collider(ColliderEvent.second.iDetectionType).empty())
+				{
+					CCollider* pCollider = m_pModel->Get_Owner()->Get_Collider(ColliderEvent.second.iDetectionType).front();
+
+					pCollider->Set_Active(ColliderEvent.second.bOnOff);
+					pCollider->Set_Offset(ColliderEvent.second.vOffset);
+					pCollider->Set_Radius(ColliderEvent.second.vExtents.x);
+					pCollider->Set_Extents(ColliderEvent.second.vExtents);
+					pCollider->Set_AttackType(CCollider::ATTACK_TYPE(ColliderEvent.second.iAttackType));
+				}
+			}
+			else
+			{
+				if (!m_pModel->Get_Owner()->Get_Collider(ColliderEvent.second.iDetectionType).empty())
+				{
+					m_pModel->Get_Owner()->Get_Collider(ColliderEvent.second.iDetectionType).front()->Set_Active(ColliderEvent.second.bOnOff);
+				}
+			}
 		}
 	}
 }

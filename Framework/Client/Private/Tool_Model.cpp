@@ -460,12 +460,6 @@ void CTool_Model::Tick_Model(_float fTimeDelta)
 			ImGui::Text(u8"더미 오브젝트가 존재하지 않습니다.");
 			return;
 		}
-		
-		/* Intro */
-		{
-			ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"Import 가능한 fbx 모델의 뼈 갯수와 애니메이션 키프레임은 각각 500개 입니다.");
-			ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"위 제한 초과시 따로 말씀해주세요");
-		}
 
 		/* Import */
 		if (ImGui::TreeNode(u8"Import"))
@@ -1598,126 +1592,297 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 			/* Collider */
 			if (ImGui::BeginTabItem("Collider"))
 			{
-				
-				///*
-				//vector<pair<_float, ANIM_EVENT_COLLIDER_DESC>> ColliderEvents = pCurAnim->Get_ColliderEvents();
+				/* Intro */
+				{
+					ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"Detection Type당 설정 가능한 콜라이더는 1개 입니다.");
+					ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"더미에서 테스트할 Detection Type별 콜라이더를 선택해 추가해주세요");
 
-				//IMGUI_NEW_LINE;
+					IMGUI_NEW_LINE;
 
-				///* 키프레임 수정 여부 반영 */
-				//if (bChangedEventFrame && !ColliderEvents.empty())
-				//{
-				//	ColliderEvents[m_iColliderEventIndex].first = m_fCurEventFrame;
-				//	pCurAnim->Change_EventKeyFrame(m_iColliderEventIndex, ColliderEvents[m_iColliderEventIndex].first, ANIM_EVENT_TYPE::COLLIDER);
-				//}
+					ImGui::PushItemWidth(200.f);
+					{
+						/* Collider Type */
+						static int iColliderChoice = 0;
+						{
+							const char* Collideritems[] = { "OBB", "SPHERE" };
+							const char* Collider_preview_value = Collideritems[iColliderChoice];
+							if (ImGui::BeginCombo("Collider Type", Collider_preview_value))
+							{
+								for (int n = 0; n < IM_ARRAYSIZE(Collideritems); n++)
+								{
+									const bool is_selected = (iColliderChoice == n);
+									if (ImGui::Selectable(Collideritems[n], is_selected))
+									{
+										iColliderChoice = n;
+									}
+
+									if (is_selected)
+										ImGui::SetItemDefaultFocus();
+								}
+								ImGui::EndCombo();
+							}
+						}
+
+						/* Decection Type */
+						static int iDetectionChoice = 0;
+						{
+							const char* Detectionitems[] = { "BOUNDARY", "BODY", "ATTACK" };
+							const char* Detection_preview_value = Detectionitems[iDetectionChoice];
+							if (ImGui::BeginCombo("Collider Detection Type", Detection_preview_value))
+							{
+								for (int n = 0; n < IM_ARRAYSIZE(Detectionitems); n++)
+								{
+									const bool is_selected = (iDetectionChoice == n);
+									if (ImGui::Selectable(Detectionitems[n], is_selected))
+									{
+										iDetectionChoice = n;
+									}
+
+									if (is_selected)
+										ImGui::SetItemDefaultFocus();
+								}
+								ImGui::EndCombo();
+							}
+						}
+
+						/* Add Collider */
+						if (ImGui::Button("Add Collider"))
+						{
+							CCollider::COLLIDER_TYPE eColType;
+							if (0 == iColliderChoice)
+								eColType = CCollider::COLLIDER_TYPE::OBB;
+							else
+								eColType = CCollider::COLLIDER_TYPE::SPHERE;
+
+							if (FAILED(m_pDummy->Add_Collider(eColType, CCollider::DETECTION_TYPE(iDetectionChoice))))
+								MSG_BOX("Collider 생성에 실패했습니다.");
+							else
+								m_AddedColliderTypeCaches.push_back({ eColType, CCollider::DETECTION_TYPE(iDetectionChoice)});
+						}
+						IMGUI_NEW_LINE;
+
+						/* 현재 설정된 콜라이더 정보 */
+						ImGui::Text(u8"현재 설정된 콜라이더 정보");
+						for (size_t i = 0; i < m_AddedColliderTypeCaches.size(); i++)
+						{
+							string strColType, strDetectionType;
+
+							switch (m_AddedColliderTypeCaches[i].first)
+							{
+							case CCollider::COLLIDER_TYPE::OBB :
+								strColType = "OBB";
+								break;
+							case CCollider::COLLIDER_TYPE::SPHERE :
+								strColType = "SPHERE";
+								break;
+							default:
+								break;
+							}
+
+							switch (m_AddedColliderTypeCaches[i].second)
+							{
+							case CCollider::DETECTION_TYPE::ATTACK :
+								strDetectionType = "ATTACK";
+								break;
+							case CCollider::DETECTION_TYPE::BODY : 
+								strDetectionType = "BODY";
+								break;
+							case CCollider::DETECTION_TYPE::BOUNDARY:
+								strDetectionType = "BOUNDARY";
+								break;
+							default:
+								break;
+							}
+
+							string strText = "Col Type : " + strColType + "    Detection Type : " + strDetectionType;
+							ImGui::Text(strText.c_str());
+						}
+
+						IMGUI_NEW_LINE;
+						ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"각 클래스 Ready Collider에서 현재 설정된 콜라이더 정보와 똑같이 콜라이더를 세팅해주어야 합니다.");
+						ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"콜라이더 이벤트가 동작하지 않을시 Detection Type이 일치하는지 확인해주세요 ");
+
+					}
+					ImGui::PopItemWidth();
+					
+				}
 
 
-				///* Collider Event List */
-				//ImGui::Text(u8"설정된 콜라이더 이벤트 (count : %d)", ColliderEvents.size());
+				vector<pair<_float, ANIM_EVENT_COLLIDER_DESC>> ColliderEvents = pCurAnim->Get_ColliderEvents();
 
-				//if (ImGui::BeginListBox("##Collider_Event_List", ImVec2(450.f, 70.f)))
-				//{
-				//	/*for (size_t i = 0; i < ColliderEvents.size(); ++i)
-				//	{
-				//		int iSoundKeyCurIndex = GI->Get_SoundFileIndex(ColliderEvents[i].second.pSoundKey);
+				IMGUI_NEW_LINE;
 
-				//		string strFrame = to_string(ColliderEvents[i].first);
-				//		strFrame = strFrame.substr(0, 6);
+				/* 키프레임 수정 여부 반영 */
+				if (bChangedEventFrame && !ColliderEvents.empty())
+				{
+					ColliderEvents[m_iColliderEventIndex].first = m_fCurEventFrame;
+					pCurAnim->Change_EventKeyFrame(m_iColliderEventIndex, ColliderEvents[m_iColliderEventIndex].first, ANIM_EVENT_TYPE::COLLIDER);
+				}
 
-				//		string strEventName = "Frame : " + strFrame +
-				//			"    " +
-				//			"Name : " + string(m_arrSoundKeys[iSoundKeyCurIndex]);
 
-				//		if (ImGui::Selectable(strEventName.c_str(), i == m_iSoundEventIndex))
-				//		{
-				//			m_iSoundEventIndex = i;
+				/* Collider Event List */
+				ImGui::Text(u8"설정된 콜라이더 이벤트 (count : %d)", ColliderEvents.size());
 
-				//		}
-				//	}*/
-				//	ImGui::EndListBox();
-				//}
-				//IMGUI_NEW_LINE;
+				if (ImGui::BeginListBox("##Collider_Event_List", ImVec2(450.f, 70.f)))
+				{
+					for (size_t i = 0; i < ColliderEvents.size(); ++i)
+					{
+						string strIndex = to_string(i);
 
-				//ImGui::PushItemWidth(200.f);
-				//{
-				//	if (0 <= m_iColliderEventIndex)
-				//	{
-				//		/* On Off 여부 */
-				//		_bool bSetCollider = false;
-				//		if (ImGui::Checkbox("On Off Collider", &bSetCollider))
-				//		{
+						string strFrame = to_string(ColliderEvents[i].first);
+						strFrame = strFrame.substr(0, 6);
+						
+						int iDetectionTypeIndex = ColliderEvents[i].second.iDetectionType;
+						const char* items[] = { "BOUNDARY", "BODY", "ATTACK" };
+						string strType = items[iDetectionTypeIndex];
 
-				//		}
+						string strEventName = 
+							"No. " + strIndex + 
+							"  " +
+							"Frame : " + strFrame +
+							"  " +
+							"Detection Type : " + strType;
 
-				//		/* 디텍션 타입 */
-				//		int iDetectionTypeIndex = ColliderEvents[m_iColliderEventIndex].second.iDetectionType;
-				//		const char* items[] = { "BOUNDARY", "BODY", "ATTACK"};
-				//		const char* combo_preview_value = items[m_iColliderEventIndex];  // Pass in the preview value visible before opening the combo (it could be anything)
-				//		if (ImGui::BeginCombo("combo 1", combo_preview_value))
-				//		{
-				//			for (int n = 0; n < IM_ARRAYSIZE(items); n++)
-				//			{
-				//				const bool is_selected = (iDetectionTypeIndex == n);
-				//				if (ImGui::Selectable(items[n], is_selected))
-				//				{
-				//					iDetectionTypeIndex = n;
-				//					if (0 <= m_iColliderEventIndex)
-				//					{
-				//						ColliderEvents[m_iColliderEventIndex].second.iDetectionType = iDetectionTypeIndex;
-				//						pCurAnim->Change_ColliderEvent(m_iColliderEventIndex, ColliderEvents[m_iColliderEventIndex].second);
-				//					}
-				//				}
+						if (ImGui::Selectable(strEventName.c_str(), i == m_iColliderEventIndex))
+						{
+							m_iColliderEventIndex = i;
+						}
+					}
+					ImGui::EndListBox();
+				}
+				IMGUI_NEW_LINE;
 
-				//				if (is_selected)
-				//					ImGui::SetItemDefaultFocus();
-				//			}
-				//			ImGui::EndCombo();
-				//		}
+				/* Prop */
+				ImGui::PushItemWidth(200.f);
+				{
+					if (0 <= m_iColliderEventIndex)
+					{
+						/* On Off 여부 */
+						_bool bSetCollider = ColliderEvents[m_iColliderEventIndex].second.bOnOff;
+						if (ImGui::Checkbox("On Off Collider", &bSetCollider))
+						{
+							ColliderEvents[m_iColliderEventIndex].second.bOnOff = bSetCollider;
+							pCurAnim->Change_ColliderEvent(m_iColliderEventIndex, ColliderEvents[m_iColliderEventIndex].second);
+						}
 
-				//		/* 오프셋 */
-				//		Vec4	vColliderOffset = Vec3::Zero;
-				//		_float	fColliderOffset[3] = { vColliderOffset.x, vColliderOffset.y, vColliderOffset.z };
-				//	
-				//		if (ImGui::DragFloat3(u8"Collider OffSet", fColliderOffset))
-				//		{
+						/* 디텍션 타입 */ 
+						{
+							int iDetectionTypeIndex = ColliderEvents[m_iColliderEventIndex].second.iDetectionType;
+							const char* items[] = { "BOUNDARY", "BODY", "ATTACK"};
+							const char* combo_preview_value = items[iDetectionTypeIndex];  
+							if (ImGui::BeginCombo("Detection Type", combo_preview_value))
+							{
+								for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+								{
+									const bool is_selected = (iDetectionTypeIndex == n);
+									if (ImGui::Selectable(items[n], is_selected))
+									{
+										iDetectionTypeIndex = n;
+										if (0 <= m_iColliderEventIndex)
+										{
+											ColliderEvents[m_iColliderEventIndex].second.iDetectionType = iDetectionTypeIndex;
+											pCurAnim->Change_ColliderEvent(m_iColliderEventIndex, ColliderEvents[m_iColliderEventIndex].second);
+										}
+									}
 
-				//		}
+									if (is_selected)
+										ImGui::SetItemDefaultFocus();
+								}
+								ImGui::EndCombo();
+							}
 
-				//		/* Extent */
-				//		Vec4	vColliderExtent = Vec3::Zero;
-				//		_float	fColliderExtent[3] = { vColliderExtent.x, vColliderExtent.y, vColliderExtent.z };
+						}
 
-				//		if (ImGui::DragFloat3(u8"Collider Extent", fColliderExtent))
-				//		{
+						/* 어택 타입 */
+						{
+							int iAttackType = ColliderEvents[m_iColliderEventIndex].second.iAttackType;
+							const char* items[] = { "WEAK", "STRONG", "BOUND", "AIR_BORN" };
+							const char* combo_preview_value = items[iAttackType];
+							if (ImGui::BeginCombo("Attack Type", combo_preview_value))
+							{
+								for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+								{
+									const bool is_selected = (iAttackType == n);
+									if (ImGui::Selectable(items[n], is_selected))
+									{
+										iAttackType = n;
+										if (0 <= m_iColliderEventIndex)
+										{
+											ColliderEvents[m_iColliderEventIndex].second.iAttackType = iAttackType;
+											pCurAnim->Change_ColliderEvent(m_iColliderEventIndex, ColliderEvents[m_iColliderEventIndex].second);
+										}
+									}
 
-				//		}
-				//	}
-				//}
-				//ImGui::PopItemWidth();
-				//IMGUI_NEW_LINE;
+									if (is_selected)
+										ImGui::SetItemDefaultFocus();
+								}
+								ImGui::EndCombo();
+							}
+						}
 
-				//if (ImGui::Button("Add Collider Event"))
-				//{
+						/* 오프셋 */
+						Vec4	vColliderOffset = ColliderEvents[m_iColliderEventIndex].second.vOffset;
+						_float	fColliderOffset[3] = { vColliderOffset.x, vColliderOffset.y, vColliderOffset.z };
+					
+						if (ImGui::DragFloat3(u8"Collider OffSet", fColliderOffset, 10.f, -1000.f, 1000.f))
+						{
+							ColliderEvents[m_iColliderEventIndex].second.vOffset = Vec3{ fColliderOffset[0], fColliderOffset[1], fColliderOffset[2] };
+							pCurAnim->Change_ColliderEvent(m_iColliderEventIndex, ColliderEvents[m_iColliderEventIndex].second);
+						}
 
-				//}
-				//IMGUI_SAME_LINE;
+						/* Extent */
+						Vec4	vColliderExtent = ColliderEvents[m_iColliderEventIndex].second.vExtents;
+						_float	fColliderExtent[3] = { vColliderExtent.x, vColliderExtent.y, vColliderExtent.z };
 
-				//if (ImGui::Button("Del Collider Event"))
-				//{
+						if (ImGui::DragFloat3(u8"Collider Extent", fColliderExtent, 10.f, 0.f, 1000.f))
+						{
+							ColliderEvents[m_iColliderEventIndex].second.vExtents = Vec3{ fColliderExtent[0], fColliderExtent[1], fColliderExtent[2] };
+							pCurAnim->Change_ColliderEvent(m_iColliderEventIndex, ColliderEvents[m_iColliderEventIndex].second);
+						}
+					}
+				}
+				ImGui::PopItemWidth();
+				IMGUI_NEW_LINE;
 
-				//}
-				//IMGUI_SAME_LINE;
+				if (ImGui::Button("Add Collider Event"))
+				{
+					ANIM_EVENT_COLLIDER_DESC desc;
 
-				//if (ImGui::Button("Del Collider Events"))
-				//{
+					if (0 <= m_iColliderEventIndex)
+						desc = ColliderEvents[m_iColliderEventIndex].second;
+					else
+					{
+						desc.bOnOff = true;
+						desc.vExtents = Vec3{ 50.f, 50.f, 50.f };
+						desc.vOffset = Vec3::Zero;
+						desc.iDetectionType = 0;
+						desc.iAttackType = 0;
+					}
 
-				//}
-				//IMGUI_SAME_LINE;
+					pCurAnim->Add_ColliderEvent(m_fCurEventFrame, desc);
+					++m_iColliderEventIndex;
 
-				//if (ImGui::Button("Sort Collider Event"))
-				//{
+				}
+				IMGUI_SAME_LINE;
 
-				//}
+				if (ImGui::Button("Del Collider Event"))
+				{
+					pCurAnim->Del_ColliderEvent(m_iColliderEventIndex);
+					--m_iColliderEventIndex;
+				}
+				IMGUI_SAME_LINE;
+
+				if (ImGui::Button("Del Collider Events"))
+				{
+					pCurAnim->Del_All_ColliderEvent();
+					m_iColliderEventIndex = -1;
+				}
+				IMGUI_SAME_LINE;
+
+				if (ImGui::Button("Sort Collider Event"))
+				{
+					pCurAnim->Sort_ColliderEvents();
+				}
 
 				ImGui::EndTabItem();
 			}

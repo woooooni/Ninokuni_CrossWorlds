@@ -9,6 +9,7 @@
 #include "Camera.h"
 #include "Camera_Free.h"
 #include "Camera_Follow.h"
+#include "Camera_CutScene.h"
 
 #include "Utils.h"
 #include "FileUtils.h"
@@ -382,6 +383,11 @@ void CTool_Camera::Show_Camera_Prop_CutScene(_float fTimeDelta)
 	}
 	
 
+
+
+
+
+
 	/* 포지션 리스트*/
 	if (0 <= m_iTempPositionIndex)
 	{
@@ -610,6 +616,56 @@ HRESULT CTool_Camera::Render_DebugDraw()
 	m_pBatch->End();
 
 	return S_OK;
+}
+
+Vec3 CTool_Camera::EvaluateBezierSegment(const vector<Vec3>& controlPoints, float t)
+{
+	vector<Vec3> tempPoints = controlPoints;
+
+	while (tempPoints.size() > 1)
+	{
+		vector<Vec3> newPoints;
+
+		for (size_t i = 0; i < tempPoints.size() - 1; ++i)
+		{
+			Vec3 point = Vec3::Lerp(tempPoints[i], tempPoints[i + 1], t);
+			newPoints.push_back(point);
+		}
+
+		tempPoints = newPoints;
+	}
+
+	if (tempPoints.size() != 1)
+	{
+		// 예외 처리: tempPoints의 크기가 1이 아닌 경우
+		// 적절한 조치를 취하거나 예외를 throw할 수 있습니다.
+	}
+
+	return tempPoints[0];
+}
+
+Vec3 CTool_Camera::EvaluateBezier(const vector<Vec3>& controlPoints, float t)
+{
+	// 예외 처리: controlPoints의 크기가 2보다 작은 경우
+	if (controlPoints.size() < 2)
+	{
+		return Vec3::Zero;
+	}
+
+	// 베지에 곡선을 세그먼트로 나누어 계산
+	vector<Vec3> segmentPoints;
+	size_t numSegments = controlPoints.size() - 1;
+
+	for (size_t i = 0; i < numSegments; ++i) {
+		float tSegment = t * static_cast<float>(numSegments);
+		tSegment = tSegment - static_cast<float>(i);
+
+		Vec3 segmentPoint = EvaluateBezierSegment(controlPoints, tSegment);
+		segmentPoints.push_back(segmentPoint);
+	}
+
+	// 나누어 계산된 세그먼트들을 다시 베지에 곡선으로 계산
+	return EvaluateBezierSegment(segmentPoints, t);
 }
 
 CTool_Camera* CTool_Camera::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

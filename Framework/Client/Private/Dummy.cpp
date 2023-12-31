@@ -23,6 +23,9 @@ HRESULT CDummy::Initialize_Prototype()
 
 HRESULT CDummy::Initialize(void* pArg)
 {
+	if (FAILED(__super::Initialize(pArg)))
+		return E_FAIL;
+
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
@@ -61,17 +64,31 @@ void CDummy::LateTick(_float fTimeDelta)
 {
 	if (nullptr == m_pRendererCom || nullptr == m_pModelCom)
 		return;
-
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
+	
+	__super::LateTick(fTimeDelta);
 
 	if (CModel::TYPE::TYPE_ANIM == m_pModelCom->Get_ModelType())
 		m_pModelCom->LateTick(fTimeDelta);
+
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
+
+#ifdef _DEBUG
+	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
+	{
+		for (auto& pCollider : m_Colliders[i])
+			m_pRendererCom->Add_Debug(pCollider);
+	}
+#endif // DEBUG
+
 }
 
 HRESULT CDummy::Render()
 {
 	if (nullptr == m_pModelCom)
 		return S_OK;
+
+	if (FAILED(__super::Render()))
+		return E_FAIL;
 
 	/* 공용 데이터 */
 	CShader* pShader = m_pModelCom->Get_ModelType() == CModel::TYPE::TYPE_NONANIM ? m_pNonAnimShaderCom : m_pAnimShaderCom;
@@ -169,6 +186,57 @@ HRESULT CDummy::Import_Model()
 		return E_FAIL;
 
 	return S_OK;
+}
+
+HRESULT CDummy::Add_Collider(CCollider::COLLIDER_TYPE eColliderType, CCollider::DETECTION_TYPE eDetectionType)
+{
+	switch (eColliderType)
+	{
+	case Engine::CCollider::SPHERE:
+	{
+		CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
+		ZeroMemory(&SphereDesc, sizeof SphereDesc);
+
+		BoundingSphere tSphere;
+		ZeroMemory(&tSphere, sizeof(BoundingSphere));
+		tSphere.Radius = 1.f;
+		SphereDesc.tSphere = tSphere;
+
+		SphereDesc.pNode = nullptr;
+		SphereDesc.pOwnerTransform = m_pTransformCom;
+		SphereDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
+		SphereDesc.vOffsetPosition = Vec3(0.f, 0.f, 0.f);
+
+		if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, eDetectionType, &SphereDesc)))
+			return E_FAIL;
+	}
+		break;
+	case Engine::CCollider::OBB:
+	{
+		CCollider_OBB::OBB_COLLIDER_DESC OBBDesc;
+		ZeroMemory(&OBBDesc, sizeof OBBDesc);
+
+		BoundingOrientedBox OBBBox;
+		ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
+
+		XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
+		OBBBox.Extents = { 50.f, 50.f, 50.f };
+
+		OBBDesc.tBox = OBBBox;
+		OBBDesc.pNode = nullptr;
+		OBBDesc.pOwnerTransform = m_pTransformCom;
+		OBBDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
+		OBBDesc.vOffsetPosition = Vec3(0.f, 0.f, 0.f);
+
+		if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, eDetectionType, &OBBDesc)))
+			return E_FAIL;
+	}
+		break;
+	case Engine::CCollider::TYPE_END:
+		break;
+	default:
+		break;
+	}
 }
 
 void CDummy::Input(_float fTimeDelta)

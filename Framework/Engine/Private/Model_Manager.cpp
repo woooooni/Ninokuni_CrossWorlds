@@ -890,22 +890,53 @@ HRESULT CModel_Manager::Export_Animation_Events(const wstring& strFinalPath, CMo
 	{
 		if (nullptr != Anims[i])
 		{
-			/* Sound */
+			/* Sound Event */
 			Anims[i]->Sort_SoundEvents();
-
 			const vector<pair<_float, ANIM_EVENT_SOUND_DESC>>& SountEvents = Anims[i]->Get_SoundEvents();
 
 			for (auto& SoundEvent : SountEvents)
 			{
 				json["Sound Event"].push_back({
+
 					{"Animation Name", CUtils::ToString(Anims[i]->Get_AnimationName())},
 					{"KeyFrame", SoundEvent.first},
+					
 					{"Sound Key", CUtils::TCharToString(SoundEvent.second.pSoundKey)},
 					{"Channel ID", (_uint)(SoundEvent.second.iChannelID)},
 					{"Volume", SoundEvent.second.fVolume },
 					{"Stop", SoundEvent.second.bStop}
-					});
+				});
 
+			}
+
+			/* Collider Event */
+			Anims[i]->Sort_ColliderEvents();
+			const vector<pair<_float, ANIM_EVENT_COLLIDER_DESC>>& ColliderEvents = Anims[i]->Get_ColliderEvents();
+
+			for (auto& ColliderEvent : ColliderEvents)
+			{
+				json["Collider Event"].push_back({
+
+					{"Animation Name", CUtils::ToString(Anims[i]->Get_AnimationName())},
+					{"KeyFrame", ColliderEvent.first},
+					
+					{"On Off", ColliderEvent.second.bOnOff},
+					{"Detection Type", ColliderEvent.second.iDetectionType},
+					{"Attack Type", ColliderEvent.second.iAttackType},
+					
+					{"Offset", {
+						{"x", ColliderEvent.second.vOffset.x},
+						{"y", ColliderEvent.second.vOffset.y},
+						{"z", ColliderEvent.second.vOffset.z}},
+					},
+
+					{"Extents", {
+						{"x", ColliderEvent.second.vExtents.x},
+						{"y", ColliderEvent.second.vExtents.y},
+						{"z", ColliderEvent.second.vExtents.z}},
+					}
+
+				});
 			}
 		}
 	}
@@ -1432,7 +1463,7 @@ HRESULT CModel_Manager::Import_Animation_Events(const wstring strFinalPath, CMod
 
 	Json json = GI->Json_Load(strAnimationFilePath);
 
-
+	/* Sound Event */
 	for (const auto& item : json["Sound Event"]) 
 	{
 		string strAnimName;
@@ -1456,6 +1487,39 @@ HRESULT CModel_Manager::Import_Animation_Events(const wstring strFinalPath, CMod
 			}
 		}
 	}
+
+	/* Collider Event */
+	for (const auto& item : json["Collider Event"])
+	{
+		string	strAnimName;
+		_float	fKeyFrame;
+
+		ANIM_EVENT_COLLIDER_DESC desc;
+
+		strAnimName		= item["Animation Name"];
+		fKeyFrame		= item["KeyFrame"];
+
+		desc.bOnOff			= item["On Off"];
+		desc.iDetectionType	= item["Detection Type"];
+		desc.iAttackType		= item["Attack Type"];
+
+		desc.vOffset.x = item["Offset"]["x"];
+		desc.vOffset.y = item["Offset"]["y"];
+		desc.vOffset.z = item["Offset"]["z"];
+
+		desc.vExtents.x = item["Extents"]["x"];
+		desc.vExtents.y = item["Extents"]["y"];
+		desc.vExtents.z = item["Extents"]["z"];
+
+		CAnimation* pAnim = pModel->Get_Animation(strAnimName);
+		if (nullptr != pAnim)
+		{
+			pAnim->Add_ColliderEvent(fKeyFrame, desc);
+		}
+	}
+
+
+
 	return S_OK;
 }
 

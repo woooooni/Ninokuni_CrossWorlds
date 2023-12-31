@@ -691,7 +691,7 @@ namespace Engine
 
 	typedef struct tagAnimEventDesc
 	{
-		ANIM_EVENT_TYPE eType;
+		//ANIM_EVENT_TYPE eType;
 
 		_bool bExecuted = FALSE;
 
@@ -708,12 +708,12 @@ namespace Engine
 
 	typedef struct tagAnimEventColliderDesc : public ANIM_EVENT_DESC
 	{
-		_bool bOnOff;
-		Vec3 vOffset;
-		Vec3 vExtents;
-		_uint iDetectionType;
+		_bool	bOnOff;
 
-		Vec3 vPadding;
+		Vec3	vOffset;
+		Vec3	vExtents;
+		_uint	iDetectionType;
+		_uint	iAttackType;
 
 	}ANIM_EVENT_COLLIDER_DESC;
 

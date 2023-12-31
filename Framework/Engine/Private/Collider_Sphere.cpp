@@ -65,6 +65,11 @@ _bool CCollider_Sphere::Is_Collision(CCollider* pCollider)
 	return false;
 }
 
+void CCollider_Sphere::Set_Radius(_float fRadius)
+{
+	m_tBoundingSphere.Radius = fRadius;
+}
+
 void CCollider_Sphere::LateTick_Collider(_float fTimeDelta)
 {
 	__super::LateTick_Collider(fTimeDelta);

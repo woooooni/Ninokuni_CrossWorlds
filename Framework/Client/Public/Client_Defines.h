@@ -111,7 +111,6 @@ namespace Client
 
 	static const _float Cam_Dist_Follow_Default = 3.2f;
 
-	
 	static const _float Cam_Fov_Free_Default = XMConvertToRadians(60.0f);
 	static const _float Cam_Fov_Follow_Default = XMConvertToRadians(60.0f);
 	static const _float Cam_Fov_CutScene_Default = XMConvertToRadians(70.0f);
@@ -123,6 +122,8 @@ namespace Client
 	static const char*	CameraCharNames[CAMERA_TYPE::CAMERA_TYPE_END]{ "Camera_Free", "Camera_Follow", "Camera_CutScene" };
 
 	enum CAMERA_EVENT_TYPE { LERP_FOV, LERP_DIST, SHAKE, CAMERA_EVENT_TYPE_END };
+
+#define MAX_BEZIER_POINT 4
 
 	typedef struct tagCameraEventDesc
 	{					
@@ -142,12 +143,23 @@ namespace Client
 
 	typedef struct tagCameraCutScenePathDesc
 	{
-		Vec3 vCamPositions[4];
-		Vec3 vCamLookAts[4];
+		Vec3 vCamPositions[MAX_BEZIER_POINT];
+		Vec3 vCamLookAts[MAX_BEZIER_POINT];
+
+		_float		fDuration;
+		LERP_MODE	eLerpMode;
 
 		LERP_TIME_DESC	m_tTimeDesc;
 
-		_bool bPlay = false;
+		void Start()
+		{
+			m_tTimeDesc.Start(fDuration, eLerpMode);
+		}
+
+		void Update(const _float fTimeDelta)
+		{
+			m_tTimeDesc.Update(fTimeDelta);
+		}
 
 	}CAMERA_CUSTCENE_PATH_DESC;
 
@@ -155,13 +167,42 @@ namespace Client
 	{
 		vector<CAMERA_CUSTCENE_PATH_DESC> tPaths;
 
+		_int iCurPathIndex = -1;
+
 		_bool bPlay = false;
 
-		string strCutSceneName;
+		void Start()
+		{
+			iCurPathIndex = 0;
+
+			bPlay = true;
+
+			tPaths[iCurPathIndex].Start();
+		}
+
+		void Update(const _float fTimeDelta)
+		{
+			if (!bPlay)
+				return;
+
+			if (!tPaths[iCurPathIndex].m_tTimeDesc.bActive)
+			{
+				if (iCurPathIndex < tPaths.size() - 1)
+				{
+					iCurPathIndex++;
+					tPaths[iCurPathIndex].m_tTimeDesc.Start(tPaths[iCurPathIndex].fDuration, tPaths[iCurPathIndex].eLerpMode);
+				}
+				else
+				{
+					bPlay = false;
+					return;
+				}
+			}
+		
+			tPaths[iCurPathIndex].Update(fTimeDelta);
+		}
 
 	}CAMERA_CUTSCENE_DESC;
-
-
 }
 
 extern HWND g_hWnd;

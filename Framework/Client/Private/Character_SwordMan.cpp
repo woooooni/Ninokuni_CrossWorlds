@@ -118,8 +118,10 @@ void CCharacter_SwordMan::Tick(_float fTimeDelta)
 
 	if (m_pWeapon != nullptr)
 	{
-		Matrix matWorld = m_pModelCom->Get_SocketLocalMatrix(0) * m_pTransformCom->Get_WorldMatrix();
-		m_pWeapon->Set_SocketWorld(matWorld);
+		Matrix matSocketLocal = m_pModelCom->Get_SocketLocalMatrix(0);
+		Matrix matSocketWorld = matSocketLocal * m_pTransformCom->Get_WorldMatrix();
+
+		m_pWeapon->Set_SocketWorld(matSocketWorld);
 	}
 	__super::Tick(fTimeDelta);
 }
@@ -478,7 +480,6 @@ HRESULT CCharacter_SwordMan::Ready_Colliders()
 	XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
 	OBBBox.Extents = { 50.f, 70.f, 50.f };
 
-	OBBDesc.tBox = OBBBox;
 	OBBDesc.tBox = OBBBox;
 	OBBDesc.pNode = nullptr;
 	OBBDesc.pOwnerTransform = m_pTransformCom;
