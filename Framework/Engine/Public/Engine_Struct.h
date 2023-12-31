@@ -715,8 +715,6 @@ namespace Engine
 		_uint	iDetectionType;
 		_uint	iAttackType;
 
-		Vec2	vPadding;
-
 	}ANIM_EVENT_COLLIDER_DESC;
 
 #pragma endregion
