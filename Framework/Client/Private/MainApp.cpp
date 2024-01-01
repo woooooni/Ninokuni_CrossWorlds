@@ -58,7 +58,7 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 	/* 1-4. 게임내에서 사용할 레벨(씬)을 생성한다.   */
-	if (FAILED(Open_Level(LEVEL_TOOL, L"Final_Boss")))
+	if (FAILED(Open_Level(LEVEL_TEST, L"Final_Boss")))
 		return E_FAIL;
 
 
@@ -172,7 +172,7 @@ HRESULT CMainApp::Initialize_Client()
 			tDesc.tLerpFov.fCurValue = Cam_Fov_Free_Default;
 			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
 			tDesc.fNear = 0.2f;
-			tDesc.fFar = 2000.f;
+			tDesc.fFar = 1000.f;
 
 			pCamera = CCamera_Free::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
 			if (nullptr == pCamera)
@@ -199,7 +199,7 @@ HRESULT CMainApp::Initialize_Client()
 			tDesc.tLerpFov.fCurValue = Cam_Fov_Follow_Default;
 			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
 			tDesc.fNear = 0.2f;
-			tDesc.fFar = 2000.f;
+			tDesc.fFar = 1000.f;
 
 			pCamera = CCamera_Follow::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
 			if (nullptr == pCamera)
@@ -226,7 +226,7 @@ HRESULT CMainApp::Initialize_Client()
 			tDesc.tLerpFov.fCurValue = Cam_Fov_CutScene_Default;
 			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
 			tDesc.fNear = 0.2f;
-			tDesc.fFar = 2000.f;
+			tDesc.fFar = 1000.f;
 
 			pCamera = CCamera_CutScene::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
 
