@@ -53,7 +53,7 @@ HRESULT CIceBearMan::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_pHPBar = dynamic_cast<CUI_MonsterHP_World*>(pHPBar);
-	m_pHPBar->Set_Owner(this, m_tStat.eElementType);
+	m_pHPBar->Set_Owner(this, m_tStat.eElementType, 2.5f);
 
 	m_pModelCom->Set_Animation(0);
 
@@ -239,7 +239,7 @@ HRESULT CIceBearMan::Ready_States()
 	m_pBTCom = CIceBearManBT::Create(m_pDevice, m_pContext, this);
 
 	strKorName = TEXT("얼음곰형");
-	strKorName = TEXT("코에루크 설원");
+	strSubName = TEXT("코에루크 설원");
 	m_tStat.eElementType = ELEMENTAL_TYPE::WATER;
 
 	m_tStat.iLv = 7;

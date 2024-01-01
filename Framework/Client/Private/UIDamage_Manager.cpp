@@ -37,11 +37,11 @@ void CUIDamage_Manager::Tick(_float fTimeDelta)
 
 HRESULT CUIDamage_Manager::Ready_DamageNumberPrototypes()
 {
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_DamageNumber_Blue"), // Water
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_DamageNumber_Blue"), // Water -> Weakness
 		CUI_Damage_Skill::Create(m_pDevice, m_pContext, CUI_Damage_Skill::UI_DAMAGEFONT::BLUE), LAYER_UI)))
 		return E_FAIL;
 
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_DamageNumber_Red"), // Fire
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_DamageNumber_Red"), // Fire -> PlayerDamage
 		CUI_Damage_Skill::Create(m_pDevice, m_pContext, CUI_Damage_Skill::UI_DAMAGEFONT::RED), LAYER_UI)))
 		return E_FAIL;
 
@@ -61,8 +61,8 @@ HRESULT CUIDamage_Manager::Ready_DamageNumberPrototypes()
 		CUI_Damage_Skill::Create(m_pDevice, m_pContext, CUI_Damage_Skill::UI_DAMAGEFONT::GOLD), LAYER_UI)))
 		return E_FAIL;
 
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_DamageNumber_GoldWithRed"),
-		CUI_Damage_Skill::Create(m_pDevice, m_pContext, CUI_Damage_Skill::UI_DAMAGEFONT::BLUE), LAYER_UI)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_DamageNumber_GoldWithRed"), // Strong
+		CUI_Damage_Skill::Create(m_pDevice, m_pContext, CUI_Damage_Skill::UI_DAMAGEFONT::GOLD_WITHRED), LAYER_UI)))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_DamageNumber_White"),
@@ -87,6 +87,122 @@ HRESULT CUIDamage_Manager::Ready_DamageNumberPrototypes()
 	return S_OK;
 }
 
+_int CUIDamage_Manager::Calculate_DamageColor(ELEMENTAL_TYPE eMonsterType, ELEMENTAL_TYPE eWeaponType, _int iDamage)
+{
+	if (ELEMENTAL_TYPE::BASIC <= eMonsterType || ELEMENTAL_TYPE::BASIC <= eWeaponType)
+		return -1;
+
+	if (999999 < iDamage)
+	{
+		iDamage = 999999;
+		// 혹은 return -1;
+	}
+
+	UI_DAMAGEFONTCOLOR eColor = UI_DAMAGEFONTCOLOR::FONT_DAMAGECOLOR_END;
+
+	switch (eMonsterType)
+	{
+	case ELEMENTAL_TYPE::FIRE: // 불 몬스터
+		if (ELEMENTAL_TYPE::WATER == eWeaponType) // 물 무기 -> Strong
+		{
+			if (m_iMaxStandard <= iDamage)
+				eColor = UI_DAMAGEFONTCOLOR::FONT_GOLD_AND_RED; //Critical Damage
+			else
+				eColor = UI_DAMAGEFONTCOLOR::FONT_GOLD; // 기본 공격
+		}
+		else if (ELEMENTAL_TYPE::WOOD == eWeaponType) // 나무 무기 -> Weakness
+		{
+			eColor = UI_DAMAGEFONTCOLOR::FONT_BLUE;
+		}
+		else
+		{
+			if (m_iStandard <= iDamage)
+				eColor = UI_DAMAGEFONTCOLOR::FONT_WHITE_AND_GOLD; //Critical Damage
+			else
+				eColor = UI_DAMAGEFONTCOLOR::FONT_WHITE; // 기본 공격
+		}
+		break;
+
+	case ELEMENTAL_TYPE::WATER: // 물 몬스터
+		if (ELEMENTAL_TYPE::WOOD == eWeaponType) // 나무 무기 -> Strong
+		{
+			if (m_iMaxStandard <= iDamage)
+				eColor = UI_DAMAGEFONTCOLOR::FONT_GOLD_AND_RED; //Critical Damage
+			else
+				eColor = UI_DAMAGEFONTCOLOR::FONT_GOLD; // 기본 공격
+		}
+		else if (ELEMENTAL_TYPE::FIRE == eWeaponType) // 불 무기 -> Weakness
+		{
+			eColor = UI_DAMAGEFONTCOLOR::FONT_BLUE;
+		}
+		else
+		{
+			if (m_iStandard <= iDamage)
+				eColor = UI_DAMAGEFONTCOLOR::FONT_WHITE_AND_GOLD; //Critical Damage
+			else
+				eColor = UI_DAMAGEFONTCOLOR::FONT_WHITE; // 기본 공격
+		}
+		break;
+
+	case ELEMENTAL_TYPE::WOOD: // 나무 몬스터
+		if (ELEMENTAL_TYPE::FIRE == eWeaponType) // 불 무기 -> Strong
+		{
+			if (m_iMaxStandard <= iDamage)
+				eColor = UI_DAMAGEFONTCOLOR::FONT_GOLD_AND_RED; //Critical Damage
+			else
+				eColor = UI_DAMAGEFONTCOLOR::FONT_GOLD; // 기본 공격
+		}
+		else if (ELEMENTAL_TYPE::WATER == eWeaponType) // 물 무기 -> Weakness
+		{
+			eColor = UI_DAMAGEFONTCOLOR::FONT_BLUE;
+		}
+		else
+		{
+			if (m_iStandard <= iDamage)
+				eColor = UI_DAMAGEFONTCOLOR::FONT_WHITE_AND_GOLD; //Critical Damage
+			else
+				eColor = UI_DAMAGEFONTCOLOR::FONT_WHITE; // 기본 공격
+		}
+		break;
+
+	case ELEMENTAL_TYPE::LIGHT: // 빛 몬스터
+		if (ELEMENTAL_TYPE::DARK == eWeaponType) // 어둠 무기 -> Strong
+		{
+			if (m_iMaxStandard <= iDamage)
+				eColor = UI_DAMAGEFONTCOLOR::FONT_GOLD_AND_RED; //Critical Damage
+			else
+				eColor = UI_DAMAGEFONTCOLOR::FONT_GOLD; // 기본 공격
+		}
+		else
+		{
+			if (m_iStandard <= iDamage)
+				eColor = UI_DAMAGEFONTCOLOR::FONT_WHITE_AND_GOLD; //Critical Damage
+			else
+				eColor = UI_DAMAGEFONTCOLOR::FONT_WHITE; // 기본 공격
+		}
+		break;
+
+	case ELEMENTAL_TYPE::DARK: // 어둠 몬스터
+		if (ELEMENTAL_TYPE::LIGHT == eWeaponType) // 빛 무기 -> Strong
+		{
+			if (m_iMaxStandard <= iDamage)
+				eColor = UI_DAMAGEFONTCOLOR::FONT_GOLD_AND_RED; //Critical Damage
+			else
+				eColor = UI_DAMAGEFONTCOLOR::FONT_GOLD; // 기본 공격
+		}
+		else
+		{
+			if (m_iStandard <= iDamage)
+				eColor = UI_DAMAGEFONTCOLOR::FONT_WHITE_AND_GOLD; //Critical Damage
+			else
+				eColor = UI_DAMAGEFONTCOLOR::FONT_WHITE; // 기본 공격
+		}
+		break;
+	}
+
+	return _int(eColor);
+}
+
 HRESULT CUIDamage_Manager::Create_PlayerDamageNumber(CTransform* pTransformCom, _int iDamage)
 {
 	CUI_Damage_Skill::DAMAGE_DESC DamageDesc = {};
@@ -103,115 +219,114 @@ HRESULT CUIDamage_Manager::Create_PlayerDamageNumber(CTransform* pTransformCom, 
 	return S_OK;
 }
 
-HRESULT CUIDamage_Manager::Create_SkillDamageNumber(CTransform* pTransformCom, _int iDamage, ELEMENTAL_TYPE eType)
+HRESULT CUIDamage_Manager::Create_MonsterDamageNumber(CTransform* pTransformCom, UI_DAMAGEFONTCOLOR eType, _int iDamage)
 {
+	if (UI_DAMAGEFONTCOLOR::FONT_DAMAGECOLOR_END <= eType)
+		return E_FAIL;
+
 	CGameObject* pNumber = nullptr;
 	CUI_Damage_Skill::DAMAGE_DESC DamageDesc = {};
 	ZeroMemory(&DamageDesc, sizeof(CUI_Damage_Skill::DAMAGE_DESC));
 
 	DamageDesc.pTargetTransform = pTransformCom;
 	DamageDesc.iDamage = iDamage;
+	if (m_iMaxStandard <= iDamage)
+		DamageDesc.bCritical = true;
+	else
+		DamageDesc.bCritical = false;
 
 	switch (eType)
 	{
-	case ELEMENTAL_TYPE::FIRE:
-		if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
-			TEXT("Prototype_GameObject_UI_DamageNumber_Red"), &DamageDesc, &pNumber)))
-			return E_FAIL;
-		break;
-
-	case ELEMENTAL_TYPE::WATER:
+	case UI_DAMAGEFONTCOLOR::FONT_BLUE:
 		if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
 			TEXT("Prototype_GameObject_UI_DamageNumber_Blue"), &DamageDesc, &pNumber)))
 			return E_FAIL;
 		break;
 
-	case ELEMENTAL_TYPE::WOOD:
+	case UI_DAMAGEFONTCOLOR::FONT_WHITE:
 		if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
-			TEXT("Prototype_GameObject_UI_DamageNumber_Green"), &DamageDesc, &pNumber)))
+			TEXT("Prototype_GameObject_UI_DamageNumber_White"), &DamageDesc, &pNumber)))
 			return E_FAIL;
 		break;
 
-	case ELEMENTAL_TYPE::LIGHT:
+	case UI_DAMAGEFONTCOLOR::FONT_WHITE_AND_GOLD:
 		if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
 			TEXT("Prototype_GameObject_UI_DamageNumber_WhiteGold"), &DamageDesc, &pNumber)))
 			return E_FAIL;
 		break;
 
-	case ELEMENTAL_TYPE::DARK:
+	case UI_DAMAGEFONTCOLOR::FONT_GOLD:
 		if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
-			TEXT("Prototype_GameObject_UI_DamageNumber_Purple"), &DamageDesc, &pNumber)))
+			TEXT("Prototype_GameObject_UI_DamageNumber_Gold"), &DamageDesc, &pNumber)))
+			return E_FAIL;
+		break;
+
+	case UI_DAMAGEFONTCOLOR::FONT_GOLD_AND_RED:
+		if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
+			TEXT("Prototype_GameObject_UI_DamageNumber_GoldWithRed"), &DamageDesc, &pNumber)))
 			return E_FAIL;
 		break;
 	}
 
-	// 일정 Damage이상이 되면 Critical을 Create한다
-
 	if (nullptr == pNumber)
 		return E_FAIL;
-	//Safe_AddRef(pNumber);
 
-	//타겟의 Transform을 이용해 WorldMatrix를 가지고온다.
-//	_float4x4 matTargetWorld = pTransformCom->Get_WorldFloat4x4();
+	return S_OK;
+}
+
+//HRESULT CUIDamage_Manager::Create_CommonDamageNumber(CTransform* pTransformCom, _int iDamage)
+//{
+//	CGameObject* pNumber = nullptr;
+//	CUI_Damage_General::GENERAL_DESC DamageDesc = {};
 //
-//	_float4x4 matWorld;
-//	matWorld = matTargetWorld;
-//	_matrix matView = GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW);
-//	_matrix matProj = GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ);
-//	matTargetWorld._42 += 2.5f;
+//	ZeroMemory(&DamageDesc, sizeof(CUI_Damage_General::GENERAL_DESC));
 //
-//	_float4x4 matWindow;
-//	XMStoreFloat4x4(&matWindow, XMLoadFloat4x4(&matWorld) * matView * matProj);
+//	DamageDesc.pTargetTransform = pTransformCom;
+//	DamageDesc.iDamage = iDamage;
 //
-//	_float3 vWindowPos = *(_float3*)&matWindow.m[3][0];
-//
-//	vWindowPos.x /= vWindowPos.z;
-//	vWindowPos.y /= vWindowPos.z;
-//	_float fX = vWindowPos.x * g_iWinSizeX * 0.5f + (g_iWinSizeX * 0.5f);
-//	_float fY = vWindowPos.y * -(g_iWinSizeY * 0.5f) + (g_iWinSizeY * 0.5f);
-//
-//	CTransform* pNumTransform = dynamic_cast<CUI_Damage_Skill*>(pNumber)->Get_Component<CTransform>(L"Com_Transform");
-//	if (nullptr == pTransformCom)
+//	if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
+//		TEXT("Prototype_GameObject_UI_DamageNumber_General"), &DamageDesc, &pNumber)))
 //		return E_FAIL;
 //
-//	pNumTransform->Set_State(CTransform::STATE_POSITION,
-//		XMVectorSet(fX - g_iWinSizeX * 0.5f, -(fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
-//
-	//dynamic_cast<CUI_Damage_Skill*>(pNumber)->Set_Damage((_uint)iDamage);// DamageNumber를 넘긴다.
+//	return S_OK;
+//}
 
-	return S_OK;
-}
-
-HRESULT CUIDamage_Manager::Create_CommonDamageNumber(CTransform* pTransformCom, _int iDamage)
+HRESULT CUIDamage_Manager::Create_Critical(_uint eDamageFontType, _float2 vPosition)
 {
-	CGameObject* pNumber = nullptr;
-	CUI_Damage_General::GENERAL_DESC DamageDesc = {};
+	//enum UI_DAMAGEFONT { BLUE, GOLD_WITHRED, GREEN, PURPLE, RED, WHITE, WHITEGOLD, GOLD, DAMAGEFOND_END };
+	CUI_Damage_Critical::UI_CRITICALFONT eType = CUI_Damage_Critical::UI_CRITICALFONT::CRITICALFONT_END;
 
-	ZeroMemory(&DamageDesc, sizeof(CUI_Damage_General::GENERAL_DESC));
-
-	DamageDesc.pTargetTransform = pTransformCom;
-	DamageDesc.iDamage = iDamage;
-
-	if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
-		TEXT("Prototype_GameObject_UI_DamageNumber_General"), &DamageDesc, &pNumber)))
+	if (CUI_Damage_Skill::UI_DAMAGEFONT::BLUE == eDamageFontType)
+	{
+		eType = CUI_Damage_Critical::UI_CRITICALFONT::CRITICAL_BLUE;
+	}
+	else if (CUI_Damage_Skill::UI_DAMAGEFONT::GOLD_WITHRED)
+	{
+		eType = CUI_Damage_Critical::UI_CRITICALFONT::CRITICAL_YELLOW;
+//		eType = CUI_Damage_Critical::UI_CRITICALFONT::CRITICAL_REDBLUR;
+	}
+//	else if (CUI_Damage_Skill::UI_DAMAGEFONT::WHITE)
+//	{
+//		eType = CUI_Damage_Critical::UI_CRITICALFONT::CRITICAL_BLUE;
+//	}
+	else if (CUI_Damage_Skill::UI_DAMAGEFONT::WHITEGOLD)
+	{
+		eType = CUI_Damage_Critical::UI_CRITICALFONT::CRITICAL_REDBLUR;
+	}
+	else
 		return E_FAIL;
 
-	return S_OK;
-}
-
-HRESULT CUIDamage_Manager::Create_Critical(CTransform* pTransformCom)
-{
 	CGameObject* pCritical = nullptr;
 	CUI_Damage_Critical::CRITICAL_DESC CriticalDesc = {};
 	ZeroMemory(&CriticalDesc, sizeof(CUI_Damage_Critical::CRITICAL_DESC));
 
-	CriticalDesc.pTargetTransform = pTransformCom;
-	CriticalDesc.eType = CUI_Damage_Critical::UI_CRITICALFONT::CRITICAL_BLUE; // Temp
+	CriticalDesc.vPosition = vPosition;
+	// 	enum UI_CRITICALFONT { CRITICAL_BLUE, CRITICAL_YELLOW, CRITICAL_RED, CRITICAL_REDBLUR, CRITICALFONT_END };
+	CriticalDesc.eType = CUI_Damage_Critical::UI_CRITICALFONT::CRITICAL_BLUE;
 
 	if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
 		TEXT("Prototype_GameObject_UI_DamageNumber_Critical"), &CriticalDesc, &pCritical)))
 		return E_FAIL;
-
 
 	if (nullptr == pCritical)
 		return E_FAIL;

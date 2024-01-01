@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UI_Damage_Skill.h"
 #include "GameInstance.h"
+#include "UIDamage_Manager.h"
 
 CUI_Damage_Skill::CUI_Damage_Skill(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_DAMAGEFONT eType)
 	: CUI(pDevice, pContext, L"UI_Damage_Skill")
@@ -51,6 +52,8 @@ HRESULT CUI_Damage_Skill::Initialize(void* pArg)
 	if (nullptr == m_pTargetTransform)
 		return E_FAIL;
 	m_vTargetPosition = Get_ProjectionPosition(m_pTargetTransform);
+	if (m_FontDesc.bCritical)
+		CUIDamage_Manager::GetInstance()->Create_Critical(m_eFontType, m_vTargetPosition);
 
 	m_tInfo.fX = m_vTargetPosition.x;
 	m_tInfo.fY = m_vTargetPosition.y;
@@ -89,7 +92,7 @@ void CUI_Damage_Skill::Tick(_float fTimeDelta)
 				m_bSetPosition = true;
 				m_fRandomOffset = _float2(GI->RandomFloat(-100.f, 100.f), GI->RandomFloat(-200.f, 0.f));
 
-				m_tInfo.fX += m_fRandomOffset.x;
+				m_tInfo.fX += m_fRandomOffset.x; // Initialize할때 Offset 더하는 것으로 수정할 예정 -> Critical때문에
 				m_tInfo.fY += m_fRandomOffset.y;
 
 				m_vTargetPosition.x = m_tInfo.fX;

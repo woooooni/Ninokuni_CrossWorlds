@@ -34,12 +34,13 @@ HRESULT CUI_Damage_Critical::Initialize(void* pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
-	m_pTargetTransform = m_FontDesc.pTargetTransform;
-	if (nullptr == m_pTargetTransform)
-		return E_FAIL;
-	m_vTargetPosition = Get_ProjectionPosition(m_pTargetTransform);
-	m_tInfo.fX = m_vTargetPosition.x;
-	m_tInfo.fY = m_vTargetPosition.y;
+	//m_pTargetTransform = m_FontDesc.pTargetTransform;
+	//if (nullptr == m_pTargetTransform)
+	//	return E_FAIL;
+	//m_vTargetPosition = Get_ProjectionPosition(m_pTargetTransform);
+	m_vTargetPosition = m_FontDesc.vPosition;
+	m_tInfo.fX = m_vTargetPosition.x - 10.f;
+	m_tInfo.fY = m_vTargetPosition.y - 5.f;
 
 	m_eFontType = m_FontDesc.eType;
 
