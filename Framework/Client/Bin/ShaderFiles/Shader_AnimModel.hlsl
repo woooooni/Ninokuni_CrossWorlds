@@ -15,8 +15,10 @@ float           g_fDissolveWeight;
 float4          g_vDissolveColor = { 0.6f, 0.039f, 0.039f, 1.f };
 
 float3          g_vBloomPower;
+float           g_fMotionTrailAlpha;
 
 float4			g_vCamPosition;
+float           g_fBlurPower;
 
 
 struct KeyframeDesc
@@ -732,6 +734,48 @@ PS_OUT PS_DISSOLVE_DEAD(PS_IN In)
 	return Out;
 }
 
+struct PS_OUT_MOTIONTRAIL
+{
+    float4 vDiffuse_All : SV_TARGET0;
+    float4 vDiffuse_None : SV_TARGET1;
+    float4 vDiffuse_Low : SV_TARGET2;
+    float4 vDiffuse_Middle : SV_TARGET3;
+    float4 vDiffuse_High : SV_TARGET4;
+    float4 vBloom : SV_TARGET5;
+};
+
+PS_OUT_MOTIONTRAIL PS_MOTION_TRAIL(PS_IN In)
+{
+    PS_OUT_MOTIONTRAIL Out = (PS_OUT_MOTIONTRAIL) 0;
+    
+    float fRimPower = 1.f - saturate(dot(In.vNormal.xyz, normalize((-1.f * (In.vWorldPosition - g_vCamPosition)))));
+    fRimPower = pow(fRimPower, 5.f);
+	
+    vector vRimColor = g_vRimColor * fRimPower;
+    vRimColor.a = g_fMotionTrailAlpha;
+    
+    Out.vDiffuse_All = vRimColor;
+    Out.vDiffuse_None = float4(0.f, 0.f, 0.f, 0.f);
+    Out.vDiffuse_Low = float4(0.f, 0.f, 0.f, 0.f);
+    Out.vDiffuse_Middle = float4(0.f, 0.f, 0.f, 0.f);
+    Out.vDiffuse_High = float4(0.f, 0.f, 0.f, 0.f);
+    
+    if (g_fBlurPower <= 0.0f)
+        Out.vDiffuse_None = vRimColor;
+    else if (g_fBlurPower > 0.0f && g_fBlurPower <= 0.3f)
+        Out.vDiffuse_Low = vRimColor;
+    else if (g_fBlurPower > 0.3f && g_fBlurPower <= 0.7f)
+        Out.vDiffuse_Middle = vRimColor;
+    else
+        Out.vDiffuse_High = vRimColor;
+    
+    // Bloom
+    Out.vBloom = Caculation_Brightness(vRimColor);
+    
+    
+	
+    return Out;
+}
 
 // ±×¸²ÀÚ ÇÈ¼¿ ½¦ÀÌ´õ.
 struct PS_OUT_SHADOW_DEPTH
@@ -792,16 +836,17 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_DISSOLVE_DEAD();
     }
 
-    pass Temp0
+
+    pass MotionTrail
     {
 		// 3
-        SetRasterizerState(RS_Default);
+        SetRasterizerState(RS_NoneCull);
         SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN();
+        PixelShader = compile ps_5_0 PS_MOTION_TRAIL();
     }
 
     pass Temp1

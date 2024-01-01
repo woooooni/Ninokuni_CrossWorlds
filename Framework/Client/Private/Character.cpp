@@ -76,6 +76,11 @@ void CCharacter::Tick(_float fTimeDelta)
 
 	if (nullptr != m_pWeapon)
 		m_pWeapon->Tick(fTimeDelta);
+
+	if(true == m_bMotionTrail)
+		Tick_MotionTrail(fTimeDelta);
+#pragma region Deprecated.
+
 	//if (m_bInfinite)
 	//{
 	//	m_fAccInfinite += fTimeDelta;
@@ -104,6 +109,53 @@ void CCharacter::Tick(_float fTimeDelta)
 	//	m_pTrails[i]->Set_TransformMatrix(WorldMatrix * m_pTransformCom->Get_WorldMatrix());
 	//	m_pTrails[i]->Tick(fTimeDelta);
 	//}
+#pragma endregion
+}
+
+
+void CCharacter::Tick_MotionTrail(_float fTimeDelta)
+{
+	m_MotionTrailDesc.fAccMotionTrail += fTimeDelta;
+	if (m_MotionTrailDesc.fAccMotionTrail >= m_MotionTrailDesc.fMotionTrailTime)
+	{
+		m_MotionTrailDesc.fAccMotionTrail = 0.f;
+
+		MOTION_TRAIL_DESC TrailDesc;
+		TrailDesc.WorldMatrix = m_pTransformCom->Get_WorldMatrix();
+		TrailDesc.fAlphaSpeed = 1.f;
+		TrailDesc.pModel = m_pModelCom;
+		TrailDesc.pRenderModel = m_pCharacterPartModels[PART_TYPE::HEAD];
+		TrailDesc.TweenDesc = m_pModelCom->Get_TweenDesc();
+		TrailDesc.vBloomPower = m_MotionTrailDesc.vBloomPower;
+		TrailDesc.vRimColor = m_MotionTrailDesc.vRimColor;
+		TrailDesc.fBlurPower = m_MotionTrailDesc.fBlurPower;
+
+		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, L"Prototype_GameObject_MotionTrail", &TrailDesc)))
+		{
+			MSG_BOX("MotionTrail_Failed");
+		}
+
+		TrailDesc.pRenderModel = m_pCharacterPartModels[PART_TYPE::HAIR];
+
+		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, L"Prototype_GameObject_MotionTrail", &TrailDesc)))
+		{
+			MSG_BOX("MotionTrail_Failed");
+		}
+
+		TrailDesc.pRenderModel = m_pCharacterPartModels[PART_TYPE::FACE];
+
+		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, L"Prototype_GameObject_MotionTrail", &TrailDesc)))
+		{
+			MSG_BOX("MotionTrail_Failed");
+		}
+
+		TrailDesc.pRenderModel = m_pCharacterPartModels[PART_TYPE::BODY];
+
+		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, L"Prototype_GameObject_MotionTrail", &TrailDesc)))
+		{
+			MSG_BOX("MotionTrail_Failed");
+		}
+	}
 }
 
 void CCharacter::LateTick(_float fTimeDelta)
@@ -142,6 +194,7 @@ HRESULT CCharacter::Render()
 
 	if(FAILED(__super::Render()))
 		return E_FAIL;
+
 	if (nullptr == m_pModelCom || nullptr == m_pShaderCom)
 		return E_FAIL;
 
@@ -277,6 +330,17 @@ void CCharacter::Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo)
 
 
 
+void CCharacter::Generate_MotionTrail(const MOTION_TRAIL_DESC& MotionTrailDesc)
+{
+	m_bMotionTrail = true;
+	m_MotionTrailDesc = MotionTrailDesc;
+}
+
+void CCharacter::Stop_MotionTrail()
+{
+	m_bMotionTrail = false;
+}
+
 void CCharacter::Generate_Trail(SOCKET_TYPE eSocketType)
 {
 	if (eSocketType >= SOCKET_TYPE::SOCKET_END)
@@ -342,6 +406,9 @@ HRESULT CCharacter::Exit_Character()
 
 	return S_OK;
 }
+
+
+
 
 
 void CCharacter::Free()

@@ -93,6 +93,7 @@
 #include "Particle.h"
 #include "Effect.h"
 #include "Decal.h"
+#include "Motion_Trail.h"
 
 #include "Weapon_SwordTemp.h"
 
@@ -381,6 +382,11 @@ HRESULT CLoader::Loading_For_Level_Test()
 	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_UI_CharacterDummy",
 		CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy")), LAYER_CHARACTER)))
 		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_MotionTrail",
+		CMotion_Trail::Create(m_pDevice, m_pContext), LAYER_EFFECT)))
+		return E_FAIL;
+
 
 
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");

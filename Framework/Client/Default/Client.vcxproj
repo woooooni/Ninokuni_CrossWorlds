@@ -302,6 +302,8 @@
     <ClInclude Include="..\Public\Item_Manager.h" />
     <ClInclude Include="..\Public\LuxerionHuman.h" />
     <ClInclude Include="..\Public\MonsterBT.h" />
+    <ClInclude Include="..\Public\Motion_Trail.h" />
+    <ClInclude Include="..\Public\NpcNode_Base.h" />
     <ClInclude Include="..\Public\NpcWeapon_Halberd.h" />
     <ClInclude Include="..\Public\KingdomGuard.h" />
     <ClInclude Include="..\Public\Pigeon.h" />
@@ -868,6 +870,8 @@
     <ClCompile Include="..\Private\Item_Manager.cpp" />
     <ClCompile Include="..\Private\LuxerionHuman.cpp" />
     <ClCompile Include="..\Private\MonsterBT.cpp" />
+    <ClCompile Include="..\Private\Motion_Trail.cpp" />
+    <ClCompile Include="..\Private\NpcNode_Base.cpp" />
     <ClCompile Include="..\Private\NpcWeapon_Halberd.cpp" />
     <ClCompile Include="..\Private\KingdomGuard.cpp" />
     <ClCompile Include="..\Private\Pigeon.cpp" />

@@ -27,7 +27,7 @@ public:
 
 private:
 	Vec3 m_vDir = {};
-
+	MOTION_TRAIL_DESC m_MotionTrailDesc = {};
 private:
 	void Input(_float fTimeDelta);
 
