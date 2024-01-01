@@ -75,8 +75,11 @@ public:
 	virtual HRESULT Initialize(void* pArg) override;
 
 public:
-	void Set_FogColor(_float4 vFogColor) { m_vFogColor = vFogColor; }
-	void Set_FogStartEnd(_float2 vFogStartEnd) { m_vFogStartEnd = vFogStartEnd; }
+	void Set_Fog(_float4 vFogColor, _float fFogStart, _float fFogEnd)
+	{
+		m_vFogColor    = vFogColor;
+		m_vFogStartEnd = _float2(fFogStart, fFogEnd);
+	}
 
 public:
 	HRESULT Add_RenderGroup(RENDERGROUP eRenderGroup, class CGameObject* pGameObject);
@@ -178,6 +181,7 @@ private:
 	_bool   m_bSsaoDraw    = false;
 	_bool   m_bOutlineDraw = false;
 	_bool   m_bBlurDraw    = false;
+
 	// 구현 필요
 	_bool   m_bBlomDraw = false;
 	_bool   m_bPbrDraw  = false;
