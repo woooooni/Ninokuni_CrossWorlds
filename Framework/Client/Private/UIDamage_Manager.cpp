@@ -87,6 +87,22 @@ HRESULT CUIDamage_Manager::Ready_DamageNumberPrototypes()
 	return S_OK;
 }
 
+HRESULT CUIDamage_Manager::Create_PlayerDamageNumber(CTransform* pTransformCom, _int iDamage)
+{
+	CUI_Damage_Skill::DAMAGE_DESC DamageDesc = {};
+	ZeroMemory(&DamageDesc, sizeof(CUI_Damage_Skill::DAMAGE_DESC));
+
+	DamageDesc.pTargetTransform = pTransformCom;
+	DamageDesc.iDamage = iDamage;
+
+	CGameObject* pNumber = nullptr;
+	if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_DamageNumber_Red"), &DamageDesc, &pNumber)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
 HRESULT CUIDamage_Manager::Create_SkillDamageNumber(CTransform* pTransformCom, _int iDamage, ELEMENTAL_TYPE eType)
 {
 	CGameObject* pNumber = nullptr;

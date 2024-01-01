@@ -20,6 +20,17 @@ void CUI_Basic::Set_Active(_bool bActive)
 	{
 		m_bActive = bActive;
 	}
+//	else if (COSTUME_INSTALL == m_eType)
+//	{
+//		CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+//		if (nullptr == pPlayer)
+//			return;
+//
+//		CCharacter* pCharacter = pPlayer->Get_Character();
+//
+//		pCharacter->Get_PartModel(PART_TYPE::HEAD);
+//		pCharacter->Get_PartModel(PART_TYPE::BODY);
+//	}
 	else
 	{
 		m_bActive = bActive;
@@ -292,6 +303,13 @@ HRESULT CUI_Basic::Ready_Components()
 
 	case TARGETARROW_RIGHT:
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Monster_WorldHP_TargetArrow_Right"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		m_fAlpha = 1.f;
+		break;
+
+	case COSTUME_INSTALL:
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Costume_Announce_Install"),
 			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 			return E_FAIL;
 		m_fAlpha = 1.f;

@@ -21,6 +21,7 @@ public: // Get/Set
 	_bool			Get_MainMenuActive();
 	void			Set_Textable(_bool bTextable) { m_bUpdate = bTextable; }
 	void			Set_UserName();
+	void			Set_MonsterDescForUI(class CMonster* pOwner, void* pArg, _bool bActive = true);
 
 public:
 	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -74,6 +75,7 @@ public:
 	void	Update_SkillBtnState(class CTransform* pTransform, _uint iIndex);
 	void	Update_SkillSlotState(_uint iSectionType, _uint iSlotIndex);
 	void	Update_ClothSlotState(_uint iSectionType, _uint iSlotIndex);
+	void	Update_CostumeBtn();
 
 	void	Update_CostumeModel(const CHARACTER_TYPE& eCharacterType, const PART_TYPE& ePartType, const _uint iIndex);
 	void	Set_CostumeModel();
@@ -94,25 +96,26 @@ public: // Lobby
 	HRESULT OnOff_MainMenu(_bool bOnOff);
 	HRESULT OnOff_SubMenu(_bool bOnOff, _uint iMagicNum);
 	HRESULT Off_OtherSubBtn(_uint iMagicNum);
+
+	HRESULT OnOff_Announce(_int iMagicNum, _bool bOnOff);
+	HRESULT OnOff_DialogWindow(_bool bOnOff, _uint iMagicNum);
 	HRESULT OnOff_QuestWindow(_bool bOnOff);
+	HRESULT OnOff_QuestPopup(_bool bOnOff);
+	HRESULT OnOff_WorldMap(_bool bOnOff);
+
 	HRESULT OnOff_CloseButton(_bool bOnOff);
 
-	HRESULT OnOff_QuestPopup(_bool bOnOff);
 	HRESULT OnOff_MonsterHP(_bool bOnOff, ELEMENTAL_TYPE eType = ELEMENTAL_TYPE::ELEMENTAL_END);
 
-	HRESULT OnOff_DialogWindow(_bool bOnOff, _uint iMagicNum);
-
-	HRESULT OnOff_WorldMap(_bool bOnOff);
-	HRESULT OnOff_CostumeWindow(_bool bOnOff); // ÄÚ½ºÆ¬ ÅÇ Window ºñ/È°¼ºÈ­
+	HRESULT OnOff_CostumeWindow(_bool bOnOff);
 	HRESULT OnOff_CostumeSlot(_uint iSection, _bool bOnOff);
-	HRESULT OnOff_SkillWindowSlot(_uint iMenuType, _bool bOnOff);
-	HRESULT OnOff_Announce(_int iMagicNum, _bool bOnOff);
-	HRESULT OnOff_Inventory(_bool bOnOff); // °¡¹æ ÅÇ WIndow ºñ/È°¼ºÈ­
 	HRESULT OnOff_SkillWindow(_bool bOnOff);
+	HRESULT OnOff_SkillWindowSlot(_uint iMenuType, _bool bOnOff);
+	HRESULT OnOff_Inventory(_bool bOnOff);
 
+	void	Set_EmoticonType(_uint iIndex);
 	HRESULT OnOff_EmoticonWindow(_bool bOnOff);
 	HRESULT OnOff_EmoticonBalloon(_bool bOnOff);
-	void Set_EmoticonType(_uint iIndex);
 
 private:
 	CHARACTER_TYPE m_eCurPlayer = { CHARACTER_TYPE::SWORD_MAN };
@@ -123,6 +126,7 @@ private:
 	wstring m_strNickname;
 	wstring m_strResult;
 	class CUI_CharacterDummy* m_pDummy = { nullptr };
+	class CMonster* m_pHPBarOwner = { nullptr };
 
 private:
 	class CUI_Default_Background* m_pDefaultBG = { nullptr };
@@ -207,6 +211,7 @@ private:
 	class CUI_Costume_LineBox* m_pCostumeBox = { nullptr };
 	vector<class CUI_Costume_ItemSlot*> m_CostumeCloth;
 	vector<class CUI_Costume_ItemSlot*> m_CostumeHairAcc;
+	class CUI_Basic* m_pCostumeAnnounce = { nullptr };
 	// For Inven
 	class CUI_Inventory_LineBox* m_pInvenBox = { nullptr };
 	vector<class CUI_Inventory_TabBtn*> m_InvenBtn;

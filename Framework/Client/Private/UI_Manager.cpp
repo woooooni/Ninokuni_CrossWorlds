@@ -9,6 +9,7 @@
 #include "Character_Manager.h"
 #include "Game_Manager.h"
 #include "Player.h"
+#include "Monster.h"
 
 #include "UI_Fade.h"
 #include "UI_Veil.h"
@@ -22,6 +23,7 @@
 #include "UI_Announced.h"
 #include "UI_BtnAccept.h"
 #include "UI_PlayerInfo.h"
+#include "UI_BossHP_Bar.h"
 #include "UI_PopupQuest.h"
 #include "UI_PlayerHPBar.h"
 #include "UI_BasicButton.h"
@@ -60,6 +62,7 @@
 #include "UI_Costume_ItemSlot.h"
 #include "UI_Loading_MainLogo.h"
 #include "UI_Btn_WorldMapIcon.h"
+#include "UI_BossHP_Background.h"
 #include "UI_Inventory_LineBox.h"
 #include "UI_Dialog_MiniWindow.h"
 #include "UI_Default_BackCloud.h"
@@ -122,6 +125,54 @@ _bool CUI_Manager::Get_MainMenuActive()
 void CUI_Manager::Set_UserName()
 {
 	CGame_Manager::GetInstance()->Set_UserName(m_strNickname);
+}
+
+void CUI_Manager::Set_MonsterDescForUI(CMonster* pOwner, void* pArg, _bool bActive)
+{
+	// 몬스터의 정보를 받아 상단 HPBar UI를 세팅한다.
+	// 플레이어의 타겟이 있는지 확인하고 nullptr이면 Active False 후 return;
+
+	if (nullptr == pArg || nullptr == pOwner)
+		return;
+
+	m_pHPBarOwner = pOwner;
+
+	CMonster::MONSTER_STAT StatDesc = {};
+	ZeroMemory(&StatDesc, sizeof(CMonster::MONSTER_STAT));
+
+	memcpy(&StatDesc, &(m_pHPBarOwner->Get_Stat()), sizeof(CMonster::MONSTER_STAT));
+
+//	m_fCurHP = StatDesc.fHp;
+//	m_fMaxHP = StatDesc.fMaxHp;
+//
+//	m_strName = m_pOwner->Get_KorName();
+
+
+	// 몬스터가 Target이 되면 true를 던진다.
+	// Frame Active true
+
+	// 이전에, 몬스터의 레벨 정보와 속성은 Elemental에 세팅한다.
+	// 몬스터의 이름은 HPBar Background에 세팅한다.
+	// Tick에 MonsterHPBar의 Active가 true면 현재의 체력을 계속 받아올 수 있도록 설정한다.
+
+	if (bActive)
+	{
+//		if (ELEMENTAL_TYPE::ELEMENTAL_END == eType)
+//			return E_FAIL;
+
+		// m_pMonsterElemental->Set_ElementalType();
+		m_pMonsterHPBack->Set_Active(true);
+		m_pMonsterHPBar->Set_Active(true);
+		m_pMonsterFrame->Set_Active(true);
+		m_pMonsterElemental->Set_Active(true);
+	}
+	else
+	{
+		m_pMonsterHPBack->Set_Active(false);
+		m_pMonsterHPBar->Set_Active(false);
+		m_pMonsterFrame->Set_Active(false);
+		m_pMonsterElemental->Set_Active(false);
+	}	
 }
 
 HRESULT CUI_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -2586,6 +2637,55 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 
 #pragma endregion
 
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 72.f * 0.8f;
+	UIDesc.fCY = 30.f * 0.8f;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = 200;
+
+	pFrame = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Costume_AnnounceInstall"), &UIDesc, &pFrame)))
+		return E_FAIL;
+	m_pCostumeAnnounce = dynamic_cast<CUI_Basic*>(pFrame);
+	if (nullptr == m_pCostumeAnnounce)
+		return E_FAIL;
+	Safe_AddRef(m_pCostumeAnnounce);
+
+	// Gara
+	_float fY = 755.f;
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 689.f * 0.8f;
+	UIDesc.fCY = 81.f * 0.8f;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = fY;
+
+	pFrame = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_BossHP_Information"), &UIDesc, &pFrame)))
+		return E_FAIL;
+	if (nullptr == pFrame)
+		return E_FAIL;
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = 596.f * 0.8f;
+	UIDesc.fCY = 22.f * 0.8f;
+	UIDesc.fX = g_iWinSizeX * 0.5f - 30.f;
+	UIDesc.fY = fY + 22.f;
+
+	pFrame = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_BossHP_Barframe"), &UIDesc, &pFrame)))
+		return E_FAIL;
+	if (nullptr == pFrame)
+		return E_FAIL;
+
+	//Prototype_GameObject_UI_BossHP_GaugeBar
+	pFrame = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_BossHP_GaugeBar"), &UIDesc, &pFrame)))
+		return E_FAIL;
+	if (nullptr == pFrame)
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -2766,6 +2866,9 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 		else // 꺼져있다면
 			OnOff_WorldMap(true); // 켠다
 	}
+
+	if (m_pCostumeBox->Get_Active())
+		Update_CostumeBtn();
 
 	return S_OK;
 }
@@ -3047,6 +3150,40 @@ void CUI_Manager::Update_ClothSlotState(_uint iSectionType, _uint iSlotIndex)
 		}
 		break;
 	}
+}
+
+void CUI_Manager::Update_CostumeBtn()
+{
+	// 코스튬 Window가 활성화 되어있을 때 돌린다.
+
+	CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+	if (nullptr == pPlayer)
+		return;
+
+	CCharacter* pCharacter = pPlayer->Get_Character();
+
+	_int iIndex = -1;
+
+	for (_uint i = 0; i < m_CostumeClickedBtn.size(); ++i)
+	{
+		if (m_CostumeClickedBtn[i]->Get_Active())
+			iIndex = i;
+	}
+
+	if (iIndex < 0)
+		return;
+
+	switch (iIndex)
+	{
+	case 0:
+		pCharacter->Get_PartModel(PART_TYPE::BODY);
+		break;
+
+	case 1:
+		pCharacter->Get_PartModel(PART_TYPE::HEAD);
+		break;
+	}
+
 }
 
 void CUI_Manager::Update_CostumeModel(const CHARACTER_TYPE& eCharacterType, const PART_TYPE& ePartType, const _uint iIndex)
@@ -4165,7 +4302,7 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 //	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_MainLogo_Number"),
 //		CUI_Loading_MainLogo::Create(m_pDevice, m_pContext, CUI_Loading_MainLogo::MAINLOGO_NUM), LAYER_UI)))
 //		return E_FAIL;
-//
+
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_Imajinn"),
 		CUI_Loading_Imajinn::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
@@ -4595,6 +4732,9 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Costume_ChangeBtn"),
 		CUI_Costume_ChangeBtn::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Costume_AnnounceInstall"),
+		CUI_Basic::Create(m_pDevice, m_pContext, L"UI_Costume_Announce", CUI_Basic::UI_BASIC::COSTUME_INSTALL), LAYER_UI)))
+		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Common_BackBtn"),
 		CUI_BtnBack::Create(m_pDevice, m_pContext), LAYER_UI)))
@@ -4907,6 +5047,18 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		CUI_Btn_Minimap::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_BossHP_Information"),
+		CUI_BossHP_Background::Create(m_pDevice, m_pContext,
+			CUI_BossHP_Background::UI_BOSSHPBACK::BOSS_INFO), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_BossHP_Barframe"),
+		CUI_BossHP_Background::Create(m_pDevice, m_pContext,
+			CUI_BossHP_Background::UI_BOSSHPBACK::BOSS_BARFRAME), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_BossHP_GaugeBar"),
+		CUI_BossHP_Bar::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
 
 	return S_OK;
 }
@@ -5186,6 +5338,7 @@ void CUI_Manager::Free()
 
 	Safe_Release(m_pCostumeBox);
 	Safe_Release(m_pCameraAnnounce);
+	Safe_Release(m_pCostumeAnnounce);
 
 	Safe_Release(m_pEmoticonWindow);
 	Safe_Release(m_pBalloon);

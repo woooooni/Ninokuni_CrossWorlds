@@ -1,7 +1,5 @@
 #include "Engine_Shader_Defines.hpp"
 
-// 11번 Pass 자리 비어있음 // // // // // // // //
-
 matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 
 Texture2D	g_DiffuseTexture;
@@ -9,7 +7,9 @@ Texture2D	g_AlphaTexture;
 Texture2D	g_DepthTexture;
 
 Texture2D	g_FXTexture;
+Texture2D	g_GlowTexture;
 Texture2D	g_MaskTexture;
+Texture2D	g_DissolveTexture;
 
 Texture2D	g_LerpTexture;
 Texture2D	g_HPGaugeTexture;
@@ -20,6 +20,7 @@ float g_Time;
 float g_LimitX;
 float g_LimitY;
 float g_FXAlpha;
+float g_SinValue;
 
 float g_LoadingProgress;
 float4 g_Diffusecolor;
@@ -27,6 +28,9 @@ float4 g_Diffusecolor;
 float g_MaxHP;
 float g_CurrentHP;
 float g_LerpHP;
+
+float2	g_DissolveStart;
+float	g_DissolveRange;
 
 
 struct VS_IN
@@ -377,6 +381,84 @@ PS_OUT PS_MAIN_GRAY(PS_IN In)
 	return Out;
 }
 
+PS_OUT PS_MAIN_HPBAR_LERP_AND_GLOW(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+	float4 vLerpColor = g_LerpTexture.Sample(LinearSampler, In.vTexUV);
+	float4 vGaugeColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
+	float4 vFXColor = g_GlowTexture.Sample(LinearSampler, float2(In.vTexUV.x + g_Time, In.vTexUV.y));
+
+	if (g_LerpHP / g_MaxHP < In.vTexUV.x) // 현재 체력과 최대 체력의 비에 따라 UV좌표가 잘린다.
+		discard;
+
+	if (g_LerpHP / g_MaxHP >= In.vTexUV.x && g_CurrentHP / g_MaxHP <= In.vTexUV.x)
+		Out.vColor = vLerpColor;
+	else if (g_CurrentHP / g_MaxHP > In.vTexUV.x)
+	{
+		if (0.001f > vFXColor.a)
+			Out.vColor = vGaugeColor;
+		else
+		{
+			if (0.001f > vGaugeColor.a)
+			{
+				Out.vColor.a = 0.f;
+			}
+			else
+				Out.vColor = vFXColor;
+		}
+	}
+
+	return Out;
+}
+
+PS_OUT PS_MAIN_DISSOLVE(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0;
+
+//	float4 vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
+//	float4 vDissolve = g_DissolveTexture.Sample(LinearSampler, In.vTexUV);
+//
+//	if (vColor.a == 0.f)
+//		clip(-1);
+//
+//	if (vDissolve.r >= g_SinValue)
+//		vColor.a = 1;
+//	else
+//		vColor.a = 0;
+//
+//	if (vDissolve.r >= g_SinValue - 0.05f && vDissolve.r <= g_SinValue + 0.05f)
+//		vColor = float4(0.f, 0.9f, 1.f, 1.f);
+//	else
+//		;
+//
+//	if (vDissolve.r >= g_SinValue - 0.03f && vDissolve.r <= g_SinValue + 0.03f)
+//		vColor = float4(0.502f, 0.949f, 1.f, 1.f);
+//	else
+//		;
+//
+//	if (vDissolve.r >= g_SinValue - 0.025 && vDissolve.r <= g_SinValue + 0.025)
+//		vColor = float4(1.f, 1.f, 1.f, 1.f);
+//	else
+//		;
+//
+//	Out.vColor = vColor;
+
+	vector vMtrlDissolve = g_DissolveTexture.Sample(LinearSampler, In.vTexUV * 3.f);
+	float fDissolveAlpha = saturate(1.0 - g_Time / 5.f + vMtrlDissolve.r);
+	//float fDissolveAlpha = saturate(1.0 - g_Time / g_DissolveTotalTime + vMtrlDissolve.r);
+
+	if (fDissolveAlpha < 0.3)
+		discard;
+
+	if (fDissolveAlpha < 0.5)
+	{
+		Out.vColor = float4(1.f, 0.2f, 0.2f, 1.f);
+	}
+
+	return Out;
+}
+
 technique11 DefaultTechnique
 {
 	pass DefaultPass // 0
@@ -564,6 +646,28 @@ technique11 DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_GRAY();
+	}
+
+	pass HPBarGauge_Lerp_WithGlow // 17
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_None, 0);
+		SetBlendState(BS_AlphaBlend, float4(1.f, 1.f, 1.f, 1.f), 0xffffffff);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN_HPBAR_LERP_AND_GLOW();
+	}
+
+	pass HPBar_Dissolve // 18
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_None, 0);
+		SetBlendState(BS_AlphaBlend, float4(1.f, 1.f, 1.f, 1.f), 0xffffffff);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_MAIN_DISSOLVE();
 	}
 }
 
