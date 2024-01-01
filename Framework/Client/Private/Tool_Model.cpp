@@ -18,12 +18,10 @@
 #include "Part.h"
 #include "Character_Manager.h"
 
-#pragma endregion
-
-#pragma region include Weapon Prototype
-
+#include "Camera_Manager.h"
 
 #pragma endregion
+
 
 
 CTool_Model::CTool_Model(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -119,9 +117,12 @@ HRESULT CTool_Model::Clear_ToolAnimationData()
 
 HRESULT CTool_Model::Claer_EventData()
 {
-	m_iSoundEventIndex = -1;
-	m_iColliderEventIndex = -1;
-	m_fCurEventFrame = 0.f;
+	m_iSoundEventIndex		= -1;
+	m_iColliderEventIndex	= -1;
+	m_iCameraEventIndex		= -1;
+	
+	m_fCurEventFrame		= 0.f;
+
 	return S_OK;
 }
 
@@ -1559,32 +1560,50 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 			{
 				ImGui::PushItemWidth(200.f);
 				{
-					static int iCameraCurIndex = 0;
-					const char* szCameraPreview = szAnimEventCameraTypeNames[iCameraCurIndex];
-					if (ImGui::BeginCombo("Camera Event Type", szCameraPreview))
+					vector<pair<_float, CAMERA_EVENT_DESC>> CameraEvents = pCurAnim->Get_CameraEvents();
+
+					IMGUI_NEW_LINE;
+
+					/* 키프레임 수정 여부 반영 */
+					if (bChangedEventFrame && !CameraEvents.empty())
 					{
-						for (int n = 0; n < IM_ARRAYSIZE(szAnimEventCameraTypeNames); n++)
-						{
-							const bool is_selected = (iCameraCurIndex == n);
-							if (ImGui::Selectable(szAnimEventCameraTypeNames[n], is_selected))
-								iCameraCurIndex = n;
-
-
-							if (is_selected)
-								ImGui::SetItemDefaultFocus();
-						}
-						ImGui::EndCombo();
+						CameraEvents[m_iCameraEventIndex].first = m_fCurEventFrame;
+						pCurAnim->Change_EventKeyFrame(m_iCameraEventIndex, CameraEvents[m_iCameraEventIndex].first, ANIM_EVENT_TYPE::CAMERA);
 					}
+
+					/* Camera Event List */
+					ImGui::Text(u8"설정된 카메라 이벤트 (count : %d)", CameraEvents.size());
+
+					if (ImGui::BeginListBox("##Sound_Event_List", ImVec2(450.f, 70.f)))
+					{
+						/*for (size_t i = 0; i < SoundEvents.size(); ++i)
+						{
+							int iSoundKeyCurIndex = GI->Get_SoundFileIndex(SoundEvents[i].second.pSoundKey);
+
+							string strFrame = to_string(SoundEvents[i].first);
+							strFrame = strFrame.substr(0, 6);
+
+							string strEventName = "Frame : " + strFrame +
+								"    " +
+								"Name : " + string(m_arrSoundKeys[iSoundKeyCurIndex]);
+
+							if (ImGui::Selectable(strEventName.c_str(), i == m_iSoundEventIndex))
+							{
+								m_iSoundEventIndex = i;
+
+							}
+						}
+						ImGui::EndListBox();*/
+					}
+					IMGUI_NEW_LINE;
+
+
+
+
+
 
 				}
 				ImGui::PopItemWidth();
-
-
-				IMGUI_NEW_LINE;
-				if (ImGui::Button("Add Camera Event"))
-				{
-
-				}
 
 				ImGui::EndTabItem();
 			}

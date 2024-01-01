@@ -150,8 +150,8 @@ public:
 
 	CTransform* Get_Transform() const { return m_pTransformCom; }
 
-	const _int Get_Type() const { return m_iType; }
-	void Set_Type(const _int& iType) { m_iType = iType; }
+	const _int Get_Key() const { return m_iKey; }
+	void Set_Key(const _int& iKey) { m_iKey = iKey; }
 
 	const _bool& Can_Move() const { return m_bCanMove; }
 	void Set_CanMove(const _bool& bCanMove) { m_bCanMove = bCanMove; }
@@ -200,7 +200,7 @@ protected:
 	/* Default  */
 	_bool				m_bActive		= { false };
 	CTransform*			m_pTransformCom = { nullptr };
-	_int				m_iType			= -1;
+	_int				m_iKey			= -1;
 	_bool				m_bCanMove		= { true };
 
 	/* Proj */

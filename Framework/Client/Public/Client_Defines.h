@@ -109,55 +109,11 @@ namespace Client
 
 	/* Camera */
 
-	static const _float Cam_Dist_Follow_Default = 5.f;
-
-	static const _float Cam_Fov_Free_Default = XMConvertToRadians(60.0f);
-	static const _float Cam_Fov_Follow_Default = XMConvertToRadians(60.0f);
-	static const _float Cam_Fov_CutScene_Default = XMConvertToRadians(70.0f);
-
 	enum CAMERA_TYPE { FREE, FOLLOW, CUTSCENE, CAMERA_TYPE_END };
 
 	const wstring		CameraWstringNames[CAMERA_TYPE::CAMERA_TYPE_END]{ L"Camera_Free", L"Camera_Follow", L"Camera_CutScene"};
 	
 	static const char*	CameraCharNames[CAMERA_TYPE::CAMERA_TYPE_END]{ "Camera_Free", "Camera_Follow", "Camera_CutScene" };
-
-	enum CAMERA_EVENT_TYPE { LERP_FOV, LERP_DIST, SHAKE, CAMERA_EVENT_TYPE_END };
-
-#define MAX_BEZIER_POINT 4
-
-	typedef struct tagCameraEventDesc
-	{					
-								/* LERP_FOV,		LERP_DIST,		SHAKE */
-		_float fTag1 = 0.f;		/* fTargetValue,	fTargetValue,	fAmplitude*/
-		_float fTag2 = 0.f;		/* fTime,			fTime,			fFrequency */
-		_float fTag3 = 0.f;		/*		,				,			fDuration */				
-		_float fTag4 = 0.f;
-		
-		void* ptr1	= nullptr;
-		void* ptr2	= nullptr;
-
-		_int iTag1 = 0.f;		/* eMode */
-		_int iTag2 = 0.f;
-
-	}CAMERA_EVENT_DESC;
-
-	typedef struct tagCameraCutSceneDesc
-	{
-		string		strCutSceneName = {};
-
-		Vec3		vCamPositions[MAX_BEZIER_POINT];
-		Vec3		vCamLookAts[MAX_BEZIER_POINT];
-
-		_float		fDuration = 4.f;
-		_float		fStartDelayTime = 0.f;
-		_float		fFinishDelayTime = 0.f;
-
-		_float		fStartFov = 0.f;
-		_float		fFinishFov = 0.f;
-
-		LERP_MODE	eLerpMode = LERP_MODE::SMOOTHER_STEP;
-
-	}CAMERA_CUTSCENE_DESC;
 }
 
 extern HWND g_hWnd;

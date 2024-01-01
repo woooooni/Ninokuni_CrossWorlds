@@ -57,12 +57,21 @@ void CTerrain::Priority_Tick(_float fTimeDelta)
 void CTerrain::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+#ifdef _DEBUG
+	if (KEY_TAP(KEY::F7))
+		m_bDraw = !m_bDraw;
+#endif
 }
 
 void CTerrain::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDERGROUP::RENDER_NONBLEND, this);	
+#ifdef _DEBUG
+
+	if(m_bDraw)
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDERGROUP::RENDER_NONBLEND, this);	
+#endif
+
 }
 
 HRESULT CTerrain::Render()

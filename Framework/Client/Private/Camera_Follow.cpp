@@ -5,6 +5,9 @@
 
 #include "Camera_Manager.h"
 
+/* Test */
+#include "Camera_CutScene.h"
+
 CCamera_Follow::CCamera_Follow(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
 	: CCamera(pDevice, pContext, strObjTag, OBJ_TYPE::OBJ_CAMERA)
 {
@@ -67,6 +70,22 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 	/* Collision */
 	if(nullptr != m_pControllerCom)
 		m_pControllerCom->Tick_Controller(fTimeDelta);
+
+	/* Test */
+	{
+		if (KEY_TAP(KEY::INSERT))
+		{
+			dynamic_cast<CCamera_CutScene*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE))->Start_CutScene("Evermore_Street_00");
+		}
+		if (KEY_TAP(KEY::DEL))
+		{
+			vector<string> CutSceneNames;
+			CutSceneNames.push_back("Evermore_Street_00");
+			CutSceneNames.push_back("Evermore_Street_01");
+
+			dynamic_cast<CCamera_CutScene*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE))->Start_CutScenes(CutSceneNames);
+		}
+	}
 }
 
 void CCamera_Follow::LateTick(_float fTimeDelta)
@@ -130,7 +149,7 @@ Vec4 CCamera_Follow::Calculate_WorldPosition(_float fTimeDelta)
 
 	vWorldGoal.w = 1.f;
 
-	/* 댐핑 적용 월드 위치 (카메라의 현재 위치와 목표위치를 댐핑 계수에 따라 보간한다)*/
+	/* 댐핑 적용 월드 위치 (카메라의 현재 위치와 목표위치를 댐핑 계수에 따라 보간한다) */
 	if (m_tDampingDesc.bDamping)
 		return Calculate_DampingPosition(vWorldGoal);
 

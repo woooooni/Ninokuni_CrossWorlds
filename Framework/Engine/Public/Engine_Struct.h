@@ -475,16 +475,14 @@ namespace Engine
 				return fLerpTime;
 			}
 
-			fLerpTime = LERP_DESC::Calculate_Time(fCurTime, fEndTime, eMode);
+			const _float fTime = LERP_DESC::Calculate_Time(fCurTime, fEndTime, eMode);
+
+			fLerpTime = Lerp_Float(fStartTime, fEndTime, fTime);
 
 			return fLerpTime;
 		}
 
-		_float Get_Progress()
-		{
-			return fCurTime / fEndTime;
-		}
-
+		_float Lerp_Float(const _float& _f1, const _float& _f2, const _float _fTime) { return (1 - _fTime) * _f1 + (_fTime * _f2); }
 	}LERP_TIME_DESC;
 
 	typedef struct tagLerpVec3Desc : public LERP_DESC

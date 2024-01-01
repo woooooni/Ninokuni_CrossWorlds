@@ -33,6 +33,7 @@ HRESULT CCamera_CutScene::Initialize(void* pArg)
 
 	if (FAILED(Load_CutSceneDescs()))
 		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -41,16 +42,37 @@ void CCamera_CutScene::Tick(_float fTimeDelta)
 	if (!m_bActive)
 		return;
 
+	__super::Tick(fTimeDelta);
+
+	/* 컷신 종료*/
+	if (!m_tTimeDesc.bActive)
+	{
+		/* 예약된 컷신이 있다면 실행 */
+		if (!m_CutSceneNamesReserved.empty())
+		{
+			string strCutSceneName = m_CutSceneNamesReserved.front();
+
+			Start_CutScene(strCutSceneName);
+
+			m_CutSceneNamesReserved.pop();
+		}
+		else /* 없다면 이전 카메라로 체인지 */
+		{
+			CCamera_Manager::GetInstance()->Set_PrevCamera();
+			return;
+		}
+	}
+	
+	/* 컷신 로케이션 갱신 */
 	m_tTimeDesc.Update(fTimeDelta);
 
-	__super::Tick(fTimeDelta);
-	
-	Vec4 vCamPosition = Get_Point_In_Bezier(m_pCurCutSceneDesc->vCamPositions, m_tTimeDesc.Get_Progress());
-	Vec4 vLookAt = Get_Point_In_Bezier(m_pCurCutSceneDesc->vCamLookAts, m_tTimeDesc.Get_Progress());
+	const _float fRatio = m_tTimeDesc.fLerpTime / m_tTimeDesc.fEndTime;
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCamPosition.OneW());
+	Vec4 vLookAt = Get_Point_In_Bezier(m_pCurCutSceneDesc->vCamLookAts, fRatio);
+	Vec4 vCamPosition = Get_Point_In_Bezier(m_pCurCutSceneDesc->vCamPositions, fRatio);
+
 	m_pTransformCom->LookAt(vLookAt.OneW());
-
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCamPosition.OneW());
 }
 
 void CCamera_CutScene::LateTick(_float fTimeDelta)
@@ -72,7 +94,34 @@ HRESULT CCamera_CutScene::Start_CutScene(const string& strCutSceneName)
 	if (nullptr == m_pCurCutSceneDesc)
 		return E_FAIL;
 
+	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::CUTSCENE);
+
 	m_tTimeDesc.Start(m_pCurCutSceneDesc->fDuration, m_pCurCutSceneDesc->eLerpMode);
+
+	return S_OK;
+}
+
+HRESULT CCamera_CutScene::Start_CutScenes(vector<string> strCutSceneNames)
+{
+	if (Is_Playing_CutScenc())
+		return E_FAIL;
+
+	for (auto& iter : strCutSceneNames)
+	{
+		if (nullptr != Find_CutSceneDesc(iter))
+		{
+			m_CutSceneNamesReserved.push(iter);
+		}
+	}
+
+	if (!m_CutSceneNamesReserved.empty())
+	{
+		string strCutSceneName = m_CutSceneNamesReserved.front();
+
+		Start_CutScene(strCutSceneName);
+
+		m_CutSceneNamesReserved.pop();
+	}
 
 	return S_OK;
 }
@@ -162,7 +211,10 @@ HRESULT CCamera_CutScene::Load_CutSceneDescs()
 	auto path = filesystem::path(strPath);
 
 	if (!filesystem::exists(strPath))
+	{
+		MSG_BOX("컷신 데이터 파일이 존재하지 않습니다.");
 		return S_OK;
+	}
 
 	Json json = GI->Json_Load(strPath);
 

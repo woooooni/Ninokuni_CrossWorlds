@@ -7,8 +7,10 @@
 #include "GameInstance.h"
 
 #include "GameObject.h"
+
 #include "Collider.h"
 #include "Collider_OBB.h"
+#include "Camera.h"
 
 CAnimation::CAnimation()
 {
@@ -99,6 +101,10 @@ void CAnimation::Clear_AnimationEvent()
 			}
 		}
 	}
+
+	/* 카메라 이벤트 초기화 */
+	for (auto& CameraEvent : m_CameraEvents)
+		CameraEvent.second.bTag1 = false;
 }
 
 void CAnimation::Clear_AnimationSpeed()
@@ -344,6 +350,66 @@ void CAnimation::Sort_ColliderEvents()
 		});
 }
 
+void CAnimation::Add_CameraEvent(const _float& fFrame, const CAMERA_EVENT_DESC& desc)
+{
+	m_CameraEvents.push_back(pair(fFrame, desc));
+
+	Sort_CameraEvents();
+}
+
+void CAnimation::Del_CameraEvent(const _uint iIndex)
+{
+	if (m_CameraEvents.size() <= iIndex)
+		return;
+
+	_int iCount = 0;
+	for (vector<pair<_float, CAMERA_EVENT_DESC>>::iterator iter = m_CameraEvents.begin(); iter != m_CameraEvents.end();)
+	{
+		if (iIndex == iCount)
+		{
+			m_CameraEvents.erase(iter);
+			break;
+		}
+		else
+		{
+			++iter;
+			++iCount;
+		}
+	}
+
+	Sort_CameraEvents();
+}
+
+void CAnimation::Del_All_CameraEvent()
+{
+	m_CameraEvents.clear();
+	m_CameraEvents.shrink_to_fit();
+}
+
+void CAnimation::Change_CameraEvent(const _uint iIndex, const CAMERA_EVENT_DESC& desc)
+{
+	if (m_CameraEvents.size() <= iIndex)
+		return;
+
+	m_CameraEvents[iIndex].second.fTag1 = desc.fTag1;
+	m_CameraEvents[iIndex].second.fTag2 = desc.fTag2;
+	m_CameraEvents[iIndex].second.fTag3 = desc.fTag3;
+
+	m_CameraEvents[iIndex].second.iTag1 = desc.iTag1;
+	m_CameraEvents[iIndex].second.iTag2 = desc.iTag2;
+}
+
+void CAnimation::Sort_CameraEvents()
+{
+	if (m_CameraEvents.empty())
+		return;
+
+	std::sort(m_CameraEvents.begin(), m_CameraEvents.end(),
+		[](const auto& lhs, const auto& rhs) {
+			return lhs.first < rhs.first;
+		});
+}
+
 CChannel* CAnimation::Get_Channel(const wstring& strChannelName)
 {
 	for (auto& iter : m_Channels)
@@ -445,39 +511,71 @@ void CAnimation::Update_Animation_Event(_float fTickPerSecond, const TWEEN_DESC&
 			SoundEvent.second.bExecuted = true;
 			 
 			GI->Play_Sound(SoundEvent.second.pSoundKey, CHANNELID(SoundEvent.second.iChannelID), SoundEvent.second.fVolume, SoundEvent.second.bStop);
-
 		}
 	}
 
 	/* 콜라이더 이벤트 */
-	if (nullptr == m_pModel || nullptr == m_pModel->Get_Owner())
-		return;
-
-	for (auto& ColliderEvent : m_ColliderEvents)
+	if (nullptr != m_pModel && nullptr != m_pModel->Get_Owner())
 	{
-		if (ColliderEvent.first <= fCurFrame && !ColliderEvent.second.bExecuted)
+		for (auto& ColliderEvent : m_ColliderEvents)
 		{
-			ColliderEvent.second.bExecuted = true;
-
-			if (ColliderEvent.second.bOnOff)
+			if (ColliderEvent.first <= fCurFrame && !ColliderEvent.second.bExecuted)
 			{
-				if (!m_pModel->Get_Owner()->Get_Collider(ColliderEvent.second.iDetectionType).empty())
-				{
-					CCollider* pCollider = m_pModel->Get_Owner()->Get_Collider(ColliderEvent.second.iDetectionType).front();
+				ColliderEvent.second.bExecuted = true;
 
-					pCollider->Set_Active(ColliderEvent.second.bOnOff);
-					pCollider->Set_Offset(ColliderEvent.second.vOffset);
-					pCollider->Set_Radius(ColliderEvent.second.vExtents.x);
-					pCollider->Set_Extents(ColliderEvent.second.vExtents);
-					pCollider->Set_AttackType(CCollider::ATTACK_TYPE(ColliderEvent.second.iAttackType));
+				if (ColliderEvent.second.bOnOff)
+				{
+					if (!m_pModel->Get_Owner()->Get_Collider(ColliderEvent.second.iDetectionType).empty())
+					{
+						CCollider* pCollider = m_pModel->Get_Owner()->Get_Collider(ColliderEvent.second.iDetectionType).front();
+
+						pCollider->Set_Active(ColliderEvent.second.bOnOff);
+						pCollider->Set_Offset(ColliderEvent.second.vOffset);
+						pCollider->Set_Radius(ColliderEvent.second.vExtents.x);
+						pCollider->Set_Extents(ColliderEvent.second.vExtents);
+						pCollider->Set_AttackType(CCollider::ATTACK_TYPE(ColliderEvent.second.iAttackType));
+					}
+				}
+				else
+				{
+					if (!m_pModel->Get_Owner()->Get_Collider(ColliderEvent.second.iDetectionType).empty())
+					{
+						m_pModel->Get_Owner()->Get_Collider(ColliderEvent.second.iDetectionType).front()->Set_Active(ColliderEvent.second.bOnOff);
+					}
 				}
 			}
-			else
+		}
+	}
+
+	/* 카메라 이벤트 */
+	for (auto& CameraEvent : m_CameraEvents)
+	{
+		if (CameraEvent.first <= fCurFrame && !CameraEvent.second.bTag1)
+		{
+			CameraEvent.second.bTag1 = true;
+			
+			switch (CameraEvent.second.iTag2)
 			{
-				if (!m_pModel->Get_Owner()->Get_Collider(ColliderEvent.second.iDetectionType).empty())
-				{
-					m_pModel->Get_Owner()->Get_Collider(ColliderEvent.second.iDetectionType).front()->Set_Active(ColliderEvent.second.bOnOff);
-				}
+			case CAMERA_EVENT_TYPE::FOV :
+			{
+				CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Lerp_Fov(
+					CameraEvent.second.fTag1, CameraEvent.second.fTag2, CameraEvent.second.iTag1);
+			}
+				break;
+			case CAMERA_EVENT_TYPE::DISTANCE :
+			{
+				CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Lerp_Distance(
+					CameraEvent.second.fTag1, CameraEvent.second.fTag2, CameraEvent.second.iTag1);
+			}
+				break;
+			case CAMERA_EVENT_TYPE::SHAKE :
+			{
+				CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Shake(
+					CameraEvent.second.fTag1, CameraEvent.second.fTag2, CameraEvent.second.fTag3);
+			}
+				break;
+			default:
+				break;
 			}
 		}
 	}

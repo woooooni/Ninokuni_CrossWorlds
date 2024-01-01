@@ -117,23 +117,16 @@ namespace Engine
 
 	enum ANIM_EVENT_SOUND_TYPE		{ PLAY_SOUND, ANIM_EVENT_SOUND_TYPE_END };
 	enum ANIM_EVENT_EFFECT_TYPE		{ GENERATE, ANIM_EVENT_EFFECT_TYPE_END };
-	enum ANIM_EVENT_CAMERA_TYPE		{ ACTION, CHANGE, ANIM_EVENT_CAMERA_TYPE_END };
-	enum ANIM_EVENT_COLLIDER_TYPE	{ ON, OFF, ANIM_EVENT_COLLIDER_TYPE_END };
 
-	static const wstring strAnimEventTypeNames[ANIM_EVENT_TYPE::ANIM_EVENT_TYPE_END]{ L"Sound", L"Effect", L"Camera", L"Collider" };
 	static const char* szAnimEventTypeNames[ANIM_EVENT_TYPE::ANIM_EVENT_TYPE_END]{ "Sound", "Effect", "Camera", "Collider" };
+	static const wstring strAnimEventTypeNames[ANIM_EVENT_TYPE::ANIM_EVENT_TYPE_END]{ L"Sound", L"Effect", L"Camera", L"Collider" };
 
-	static const wstring strAnimEventSoundTypeNames[ANIM_EVENT_SOUND_TYPE::ANIM_EVENT_SOUND_TYPE_END]{ L"Play Sound" };
 	static const char* szAnimEventSoundTypeNames[ANIM_EVENT_SOUND_TYPE::ANIM_EVENT_SOUND_TYPE_END]{ "Play Sound" };
+	static const wstring strAnimEventSoundTypeNames[ANIM_EVENT_SOUND_TYPE::ANIM_EVENT_SOUND_TYPE_END]{ L"Play Sound" };
 
-	static const wstring strAnimEventEffectTypeNames[ANIM_EVENT_EFFECT_TYPE::ANIM_EVENT_EFFECT_TYPE_END]{ L"Generate" };
 	static const char* szAnimEventEffectTypeNames[ANIM_EVENT_EFFECT_TYPE::ANIM_EVENT_EFFECT_TYPE_END]{ "Generate" };
+	static const wstring strAnimEventEffectTypeNames[ANIM_EVENT_EFFECT_TYPE::ANIM_EVENT_EFFECT_TYPE_END]{ L"Generate" };
 
-	static const wstring strAnimEventCameraTypeNames[ANIM_EVENT_CAMERA_TYPE::ANIM_EVENT_CAMERA_TYPE_END]{ L"Action", L"Change" };
-	static const char* szAnimEventCameraTypeNames[ANIM_EVENT_CAMERA_TYPE::ANIM_EVENT_CAMERA_TYPE_END]{ "Action", "Change" };
-
-	static const wstring strAnimEventColliderTypeNames[ANIM_EVENT_COLLIDER_TYPE::ANIM_EVENT_COLLIDER_TYPE_END]{ L"On", L"Off" };
-	static const char* szAnimEventColliderTypeNames[ANIM_EVENT_COLLIDER_TYPE::ANIM_EVENT_COLLIDER_TYPE_END]{ "On", "Off" };
 #pragma endregion
 
 /* 아이템 코드 */
