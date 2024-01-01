@@ -9,25 +9,27 @@
 
 static const _float Cam_Dist_Follow_Default = 5.f;
 
-static const _float Cam_Fov_Free_Default = XMConvertToRadians(60.0f);
-static const _float Cam_Fov_Follow_Default = XMConvertToRadians(60.0f);
-static const _float Cam_Fov_CutScene_Default = XMConvertToRadians(70.0f);
+static const _float Cam_Fov_Free_Default		= XMConvertToRadians(60.0f);
+static const _float Cam_Fov_Follow_Default		= XMConvertToRadians(60.0f);
+static const _float Cam_Fov_CutScene_Default	= XMConvertToRadians(70.0f);
 
-enum CAMERA_EVENT_TYPE { LERP_FOV, LERP_DIST, SHAKE, CAMERA_EVENT_TYPE_END };
+enum CAMERA_EVENT_TYPE { FOV, DISTANCE, SHAKE, CAMERA_EVENT_TYPE_END };
+
+static const wstring CameraEventTypeNames[CAMERA_EVENT_TYPE::CAMERA_EVENT_TYPE_END] { L"FOV", L"DISTANCE", L"SHAKE" };
 
 typedef struct tagCameraEventDesc
 {
-							/* LERP_FOV,		LERP_DIST,		SHAKE */
-	_float fTag1 = 0.f;		/* fTargetValue,	fTargetValue,	fAmplitude*/
-	_float fTag2 = 0.f;		/* fTime,			fTime,			fFrequency */
-	_float fTag3 = 0.f;		/*		,				,			fDuration */
-	_float fTag4 = 0.f;
+								/* FOV,				DIST,			SHAKE */
 
-	void* ptr1 = nullptr;
-	void* ptr2 = nullptr;
+	_float	fTag1 = 0.f;		/* fTargetValue,	fTargetValue,	fAmplitude */
+	_float	fTag2 = 0.f;		/* fTime,			fTime,			fFrequency */
+	_float	fTag3 = 0.f;		/*		,				 ,			fDuration  */
 
-	_int iTag1 = 0.f;		/* eMode */
-	_int iTag2 = 0.f;
+	_int	iTag1 = 0;			/* eMode,			eMode */
+
+	_int	iTag2 = 0;			/* Anim Camera Event에서 CAMERA_EVENT_TYPE 역할 */
+
+	_bool	bTag1 = false;		/* Anim Camera Event에서 Executed 역할 */
 
 }CAMERA_EVENT_DESC;
 

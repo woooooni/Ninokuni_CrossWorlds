@@ -18,7 +18,7 @@ typedef struct tagCameraCutSceneDesc
 	_float		fStartDelayTime		= 0.f;
 	_float		fFinishDelayTime	= 0.f;
 
-	_float		fStartFov			= 0.f;
+	_float		fStartFov			= 0.f; // 아직 미사용 
 	_float		fFinishFov			= 0.f;
 
 	LERP_MODE	eLerpMode = LERP_MODE::SMOOTHER_STEP;

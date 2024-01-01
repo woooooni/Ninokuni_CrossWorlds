@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base.h"
+#include "Camera_Manager.h"
 
 BEGIN(Engine)
 
@@ -15,7 +16,7 @@ public:
 	HRESULT Initialize_Prototype(aiAnimation* pAIAnimation); 
 	HRESULT Initialize(class CModel* pModel); 
 
-	/* 라이프 스피드와 이벤트 체크 */
+public:
 	void Update_Animation_Data(_float fTickPerSecond, const TWEEN_DESC& tDesc);
 	void Clear_AnimationEvent();
 	void Clear_AnimationSpeed();
@@ -77,6 +78,13 @@ public:
 	void Sort_ColliderEvents();
 	const vector<pair<_float, ANIM_EVENT_COLLIDER_DESC>>& Get_ColliderEvents() const { return m_ColliderEvents; }
 
+	/* Camera */
+	void Add_CameraEvent(const _float& fFrame, const CAMERA_EVENT_DESC& desc);
+	void Del_CameraEvent(const _uint iIndex);
+	void Del_All_CameraEvent();
+	void Change_CameraEvent(const _uint iIndex, const CAMERA_EVENT_DESC& desc);
+	void Sort_CameraEvents();
+	const vector<pair<_float, CAMERA_EVENT_DESC>>& Get_CameraEvents() const { return m_CameraEvents; }
 
 #pragma endregion
 
@@ -119,6 +127,7 @@ private:
 private:
 	vector<pair<_float, ANIM_EVENT_SOUND_DESC>> m_SoundEvents;
 	vector<pair<_float, ANIM_EVENT_COLLIDER_DESC>> m_ColliderEvents;
+	vector<pair<_float, CAMERA_EVENT_DESC>> m_CameraEvents;
 
 #pragma endregion
 

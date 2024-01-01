@@ -366,7 +366,6 @@ void CTool_Camera::Show_Camera_Prop_CutScene(_float fTimeDelta)
 			{
 				vector<CAMERA_CUTSCENE_DESC> CutSceneDescs = pCutSceneCam->Get_CutSceneDescs();
 
-
 				/* Func */
 				{
 					if (m_bPlayCutScene)

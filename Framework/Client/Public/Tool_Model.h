@@ -99,6 +99,8 @@ private:
 
 	_int m_iColliderEventIndex = -1;
 
+	_int m_iCameraEventIndex = -1;
+
 	vector<pair<CCollider::COLLIDER_TYPE, CCollider::DETECTION_TYPE>> m_AddedColliderTypeCaches;
 	
 	

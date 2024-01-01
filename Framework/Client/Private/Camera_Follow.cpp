@@ -149,7 +149,7 @@ Vec4 CCamera_Follow::Calculate_WorldPosition(_float fTimeDelta)
 
 	vWorldGoal.w = 1.f;
 
-	/* 댐핑 적용 월드 위치 (카메라의 현재 위치와 목표위치를 댐핑 계수에 따라 보간한다)*/
+	/* 댐핑 적용 월드 위치 (카메라의 현재 위치와 목표위치를 댐핑 계수에 따라 보간한다) */
 	if (m_tDampingDesc.bDamping)
 		return Calculate_DampingPosition(vWorldGoal);
 

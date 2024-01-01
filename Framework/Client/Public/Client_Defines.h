@@ -114,10 +114,6 @@ namespace Client
 	const wstring		CameraWstringNames[CAMERA_TYPE::CAMERA_TYPE_END]{ L"Camera_Free", L"Camera_Follow", L"Camera_CutScene"};
 	
 	static const char*	CameraCharNames[CAMERA_TYPE::CAMERA_TYPE_END]{ "Camera_Free", "Camera_Follow", "Camera_CutScene" };
-
-	
-
-	
 }
 
 extern HWND g_hWnd;

@@ -39,7 +39,7 @@ void CCamera_Free::Tick(_float fTimeDelta)
 	if (!m_bActive)
 		return;
 
-	__super::Tick(fTimeDelta);
+	//__super::Tick(fTimeDelta);
 
 	Move(fTimeDelta);
 	Rotate(fTimeDelta);
@@ -50,7 +50,7 @@ void CCamera_Free::LateTick(_float fTimeDelta)
 	if (!m_bActive)
 		return;
 
-	__super::LateTick(fTimeDelta);
+	//__super::LateTick(fTimeDelta);
 }
 
 HRESULT CCamera_Free::Render()
