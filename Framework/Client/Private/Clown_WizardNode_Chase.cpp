@@ -10,7 +10,7 @@ CClown_WizardNode_Chase::CClown_WizardNode_Chase()
 {
 }
 
-HRESULT CClown_WizardNode_Chase::Initialize_Prototype(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
+HRESULT CClown_WizardNode_Chase::Initialize_Prototype(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT)
 {
 	__super::Initialize_Prototype(pDesc, pBT);
 
@@ -19,18 +19,18 @@ HRESULT CClown_WizardNode_Chase::Initialize_Prototype(BTNODE_DESC* pDesc, CBehav
 
 void CClown_WizardNode_Chase::Start()
 {
-	m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_ClownWizard.ao|ClownWizard_BattleRun"));
+	m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_ClownWizard.ao|ClownWizard_BattleRun"));
 }
 
 CBTNode::NODE_STATE CClown_WizardNode_Chase::Tick(const _float& fTimeDelta)
 {
-	m_tBTNodeDesc.pOwnerTransform->LookAt_ForLandObject(m_tBTNodeDesc.pTargetTransform->Get_Position());
-	m_tBTNodeDesc.pOwnerTransform->Move(m_tBTNodeDesc.pOwnerTransform->Get_Look(), 3.5f, fTimeDelta);
+	m_tBTMonsterDesc.pOwnerTransform->LookAt_ForLandObject(m_tBTMonsterDesc.pOwner->Get_TargetDesc().pTragetTransform->Get_Position());
+	m_tBTMonsterDesc.pOwnerTransform->Move(m_tBTMonsterDesc.pOwnerTransform->Get_Look(), 3.5f, fTimeDelta);
 
 	return NODE_STATE::NODE_RUNNING;
 }
 
-CClown_WizardNode_Chase* CClown_WizardNode_Chase::Create(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
+CClown_WizardNode_Chase* CClown_WizardNode_Chase::Create(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT)
 {
 	CClown_WizardNode_Chase* pInstance = new CClown_WizardNode_Chase();
 

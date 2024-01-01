@@ -140,7 +140,7 @@ HRESULT CRenderer::Add_RenderGroup_AnimInstancing(RENDERGROUP eRenderGroup, CGam
 	if (eRenderGroup >= RENDER_END)
 		return E_FAIL;
 
-	auto iter = m_Render_Instancing_Objects[eRenderGroup].find(pGameObject->Get_PrototypeTag());
+	auto iter = m_Render_Instancing_Objects[eRenderGroup].find(pGameObject->Get_ObjectTag());
 	if (iter == m_Render_Instancing_Objects[eRenderGroup].end())
 	{
 		INSTANCING_DESC InstancingDesc;
@@ -154,7 +154,7 @@ HRESULT CRenderer::Add_RenderGroup_AnimInstancing(RENDERGROUP eRenderGroup, CGam
 		InstancingDesc.TweenDesc.reserve(500);
 		InstancingDesc.TweenDesc.push_back(TweenInstanceDesc);
 
-		m_Render_Instancing_Objects[eRenderGroup].emplace(pGameObject->Get_PrototypeTag(), InstancingDesc);
+		m_Render_Instancing_Objects[eRenderGroup].emplace(pGameObject->Get_ObjectTag(), InstancingDesc);
 	}
 
 	else

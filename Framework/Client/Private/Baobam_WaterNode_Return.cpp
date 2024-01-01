@@ -10,7 +10,7 @@ CBaobam_WaterNode_Return::CBaobam_WaterNode_Return()
 {
 }
 
-HRESULT CBaobam_WaterNode_Return::Initialize_Prototype(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
+HRESULT CBaobam_WaterNode_Return::Initialize_Prototype(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT)
 {
 	__super::Initialize_Prototype(pDesc, pBT);
 
@@ -19,18 +19,18 @@ HRESULT CBaobam_WaterNode_Return::Initialize_Prototype(BTNODE_DESC* pDesc, CBeha
 
 void CBaobam_WaterNode_Return::Start()
 {
-	m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_Baobam_Water.ao|BaoBam_BattleRun"));
+	m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_Baobam_Water.ao|BaoBam_BattleRun"));
 }
 
 CBTNode::NODE_STATE CBaobam_WaterNode_Return::Tick(const _float& fTimeDelta)
 {
-	m_tBTNodeDesc.pOwnerTransform->LookAt_ForLandObject(dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_OriginPos());
-	m_tBTNodeDesc.pOwnerTransform->Move(m_tBTNodeDesc.pOwnerTransform->Get_Look(), 1.f, fTimeDelta);
+	m_tBTMonsterDesc.pOwnerTransform->LookAt_ForLandObject(dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_OriginPos());
+	m_tBTMonsterDesc.pOwnerTransform->Move(m_tBTMonsterDesc.pOwnerTransform->Get_Look(), 1.f, fTimeDelta);
 
 	return NODE_STATE::NODE_RUNNING;
 }
 
-CBaobam_WaterNode_Return* CBaobam_WaterNode_Return::Create(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
+CBaobam_WaterNode_Return* CBaobam_WaterNode_Return::Create(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT)
 {
 	CBaobam_WaterNode_Return* pInstance = new CBaobam_WaterNode_Return();
 

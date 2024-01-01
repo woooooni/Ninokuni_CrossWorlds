@@ -8,7 +8,7 @@ CShadow_ThiefNode_Chase::CShadow_ThiefNode_Chase()
 {
 }
 
-HRESULT CShadow_ThiefNode_Chase::Initialize_Prototype(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
+HRESULT CShadow_ThiefNode_Chase::Initialize_Prototype(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT)
 {
 	__super::Initialize_Prototype(pDesc, pBT);
 
@@ -17,18 +17,18 @@ HRESULT CShadow_ThiefNode_Chase::Initialize_Prototype(BTNODE_DESC* pDesc, CBehav
 
 void CShadow_ThiefNode_Chase::Start()
 {
-	m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Run"));
+	m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Run"));
 }
 
 CBTNode::NODE_STATE CShadow_ThiefNode_Chase::Tick(const _float& fTimeDelta)
 {
-	m_tBTNodeDesc.pOwnerTransform->LookAt_ForLandObject(m_tBTNodeDesc.pTargetTransform->Get_Position());
-	m_tBTNodeDesc.pOwnerTransform->Move(m_tBTNodeDesc.pOwnerTransform->Get_Look(), 6.f, fTimeDelta);
+	m_tBTMonsterDesc.pOwnerTransform->LookAt_ForLandObject(m_tBTMonsterDesc.pOwner->Get_TargetDesc().pTragetTransform->Get_Position());
+	m_tBTMonsterDesc.pOwnerTransform->Move(m_tBTMonsterDesc.pOwnerTransform->Get_Look(), 6.f, fTimeDelta);
 
 	return NODE_STATE::NODE_RUNNING;
 }
 
-CShadow_ThiefNode_Chase* CShadow_ThiefNode_Chase::Create(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
+CShadow_ThiefNode_Chase* CShadow_ThiefNode_Chase::Create(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT)
 {
 	CShadow_ThiefNode_Chase* pInstance = new CShadow_ThiefNode_Chase();
 

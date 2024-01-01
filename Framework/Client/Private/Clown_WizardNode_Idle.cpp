@@ -10,7 +10,7 @@ CClown_WizardNode_Idle::CClown_WizardNode_Idle()
 {
 }
 
-HRESULT CClown_WizardNode_Idle::Initialize_Prototype(BTNODE_DESC* pDesc, CBehaviorTree* pBT, vector<wstring> vecAnimationName)
+HRESULT CClown_WizardNode_Idle::Initialize_Prototype(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT, vector<wstring> vecAnimationName)
 {
 	__super::Initialize_Prototype(pDesc, pBT);
 
@@ -21,16 +21,16 @@ HRESULT CClown_WizardNode_Idle::Initialize_Prototype(BTNODE_DESC* pDesc, CBehavi
 
 void CClown_WizardNode_Idle::Start()
 {
-	m_tBTNodeDesc.pOwnerModel->Set_Animation(m_vecAnimationName[m_iCurAnimationIndex]);
+	m_tBTMonsterDesc.pOwnerModel->Set_Animation(m_vecAnimationName[m_iCurAnimationIndex]);
 }
 
 CBTNode::NODE_STATE CClown_WizardNode_Idle::Tick(const _float& fTimeDelta)
 {
-	if (m_tBTNodeDesc.pOwnerModel->Is_Fix() && m_tBTNodeDesc.pOwnerModel->Is_Finish() &&
-		!m_bWait && m_tBTNodeDesc.pOwnerModel->Get_CurrAnimation()->Get_AnimationName() == m_vecAnimationName[m_iCurAnimationIndex])
+	if (m_tBTMonsterDesc.pOwnerModel->Is_Fix() && m_tBTMonsterDesc.pOwnerModel->Is_Finish() &&
+		!m_bWait && m_tBTMonsterDesc.pOwnerModel->Get_CurrAnimation()->Get_AnimationName() == m_vecAnimationName[m_iCurAnimationIndex])
 	{
 		m_bWait = true;
-		m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_ClownWizard.ao|ClownWizard_BattleStand"));
+		m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_ClownWizard.ao|ClownWizard_BattleStand"));
 	}
 
 	if (m_bWait)
@@ -50,7 +50,7 @@ CBTNode::NODE_STATE CClown_WizardNode_Idle::Tick(const _float& fTimeDelta)
 	return NODE_STATE::NODE_RUNNING;
 }
 
-CClown_WizardNode_Idle* CClown_WizardNode_Idle::Create(BTNODE_DESC* pDesc, CBehaviorTree* pBT, vector<wstring> vecAnimationName)
+CClown_WizardNode_Idle* CClown_WizardNode_Idle::Create(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT, vector<wstring> vecAnimationName)
 {
 	CClown_WizardNode_Idle* pInstance = new CClown_WizardNode_Idle();
 

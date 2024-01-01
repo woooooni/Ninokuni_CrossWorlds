@@ -30,30 +30,20 @@
 #include "Player.h"
 
 CClownBT::CClownBT(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	: CBehaviorTree(pDevice, pContext)
+	: CMonsterBT(pDevice, pContext)
 {
 }
 
 CClownBT::CClownBT(const CClownBT& rhs)
-	: CBehaviorTree(rhs)
+	: CMonsterBT(rhs)
 {
 }
 
-HRESULT CClownBT::Initialize_Prototype(CGameObject* pObject)
+HRESULT CClownBT::Initialize_Prototype(CMonster* pOwner)
 {
-	m_tBTNodeDesc.pOwner = pObject;
-	m_tBTNodeDesc.pOwnerModel = pObject->Get_Component<CModel>(L"Com_Model");
-	m_tBTNodeDesc.pOwnerTransform = pObject->Get_Component<CTransform>(L"Com_Transform");
+	__super::Initialize_Prototype(pOwner);
 
-	m_tBTNodeDesc.pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
-
-	if (m_tBTNodeDesc.pTarget != nullptr)
-	{
-		m_tBTNodeDesc.pTargetModel = m_tBTNodeDesc.pTarget->Get_Component<CModel>(L"Com_Model");
-		m_tBTNodeDesc.pTargetTransform = m_tBTNodeDesc.pTarget->Get_Component<CTransform>(L"Com_Transform");
-	}
-
-	m_pClown = dynamic_cast<CClown*>(pObject);
+	m_pClown = dynamic_cast<CClown*>(m_tBTMonsterDesc.pOwner);
 	m_pRootNode = CBTNode_Select::Create(this);
 
 	/* 상위 Sequence 관련 */
@@ -65,32 +55,32 @@ HRESULT CClownBT::Initialize_Prototype(CGameObject* pObject)
 	CBTNode_Sequence* pSeq_Idle = CBTNode_Sequence::Create(this);
 
 	/* Dead 관련 */
-	CClownNode_Dead* pDeadNode = CClownNode_Dead::Create(&m_tBTNodeDesc, this);
+	CClownNode_Dead* pDeadNode = CClownNode_Dead::Create(&m_tBTMonsterDesc, this);
 
 	/* Hit 관련 */
 	CBTNode_Select* pSel_Hit = CBTNode_Select::Create(this);
-	CClownNode_Stun* pStunNode = CClownNode_Stun::Create(&m_tBTNodeDesc, this);
-	CClownNode_Hit* pHitNode = CClownNode_Hit::Create(&m_tBTNodeDesc, this);
+	CClownNode_Stun* pStunNode = CClownNode_Stun::Create(&m_tBTMonsterDesc, this);
+	CClownNode_Hit* pHitNode = CClownNode_Hit::Create(&m_tBTMonsterDesc, this);
 
 	/* Combat 관련 */
 	CBTNode_Sequence* pSeq_Pattern = CBTNode_Sequence::Create(this);
-	CClownNode_Attack1* pAtk1Node = CClownNode_Attack1::Create(&m_tBTNodeDesc, this);
-	CClownNode_Attack2* pAtk2Node = CClownNode_Attack2::Create(&m_tBTNodeDesc, this);
-	CClownNode_Skill* pSkillNode = CClownNode_Skill::Create(&m_tBTNodeDesc, this);
+	CClownNode_Attack1* pAtk1Node = CClownNode_Attack1::Create(&m_tBTMonsterDesc, this);
+	CClownNode_Attack2* pAtk2Node = CClownNode_Attack2::Create(&m_tBTMonsterDesc, this);
+	CClownNode_Skill* pSkillNode = CClownNode_Skill::Create(&m_tBTMonsterDesc, this);
 
 	/* Chase 관련 */
-	CClownNode_Chase* pChaseNode = CClownNode_Chase::Create(&m_tBTNodeDesc, this);
+	CClownNode_Chase* pChaseNode = CClownNode_Chase::Create(&m_tBTMonsterDesc, this);
 
 	/* Return 관련 */
-	//CBaobam_WaterNode_Return* pReturnNode = CBaobam_WaterNode_Return::Create(&m_tBTNodeDesc, this);
+	//CBaobam_WaterNode_Return* pReturnNode = CBaobam_WaterNode_Return::Create(&m_tBTMonsterDesc, this);
 
 	/* Idel 관련 */
 	vector<wstring> vecAnimationName;
 	vecAnimationName.push_back(TEXT("SKM_Clown.ao|Clown_Idle01"));
 	vecAnimationName.push_back(TEXT("SKM_Clown.ao|Clown_Idle02"));
 	vecAnimationName.push_back(TEXT("SKM_Clown.ao|Clown_Idle01"));
-	CClownNode_Idle* pIdleNode = CClownNode_Idle::Create(&m_tBTNodeDesc, this, vecAnimationName);
-	CClownNode_Roaming* pRoamingNode = CClownNode_Roaming::Create(&m_tBTNodeDesc, this, dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_RoamingArea());
+	CClownNode_Idle* pIdleNode = CClownNode_Idle::Create(&m_tBTMonsterDesc, this, vecAnimationName);
+	CClownNode_Roaming* pRoamingNode = CClownNode_Roaming::Create(&m_tBTMonsterDesc, this, dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_RoamingArea());
 
 	/* Condition 관련*/
 	/* function<_bool()>을 받는 CBTNode_Condition::Create 함수에서는 멤버 함수를 사용하고 있기 때문에 추가적인 처리가 필요 */
@@ -140,7 +130,7 @@ HRESULT CClownBT::Initialize(void* pArg)
 
 void CClownBT::Tick(const _float& fTimeDelta)
 {
-	if (m_tBTNodeDesc.pTarget != nullptr)
+	if (m_tBTMonsterDesc.pOwner != nullptr)
 		m_pRootNode->Tick(fTimeDelta);
 }
 
@@ -150,7 +140,7 @@ void CClownBT::LateTick(const _float& fTimeDelta)
 	{
 		m_pRootNode->Init_Start();
 		m_pClown->Set_StunTime(3.f);
-		m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_Clown.ao|Clown_Stun"));
+		m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_Clown.ao|Clown_Stun"));
 		m_pClown->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_STUN, true);
 		m_pClown->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT, true);
 	}
@@ -212,8 +202,8 @@ _bool CClownBT::IsChase()
 //		_float4 vPos;
 //		_float4 vOriginPos;
 //
-//		XMStoreFloat4(&vPos, m_tBTNodeDesc.pOwnerTransform->Get_Position());
-//		XMStoreFloat4(&vOriginPos, dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_OriginPos());
+//		XMStoreFloat4(&vPos, m_tBTMonsterDesc.pOwnerTransform->Get_Position());
+//		XMStoreFloat4(&vOriginPos, dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_OriginPos());
 //
 //		if (vPos.x >= vOriginPos.x - 0.1f && vPos.x <= vOriginPos.x + 0.1f &&
 //			vPos.z >= vOriginPos.z - 0.1f && vPos.z <= vOriginPos.z + 0.1f)
@@ -228,11 +218,11 @@ _bool CClownBT::IsChase()
 //}
 
 
-CClownBT* CClownBT::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CGameObject* pObject)
+CClownBT* CClownBT::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CMonster* pOwner)
 {
 	CClownBT* pInstance = new CClownBT(pDevice, pContext);
 
-	if (FAILED(pInstance->Initialize_Prototype(pObject)))
+	if (FAILED(pInstance->Initialize_Prototype(pOwner)))
 	{
 		MSG_BOX("Fail Create : CClownBT");
 		Safe_Release(pInstance);

@@ -10,7 +10,7 @@ CShadow_ThiefNode_Return::CShadow_ThiefNode_Return()
 {
 }
 
-HRESULT CShadow_ThiefNode_Return::Initialize_Prototype(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
+HRESULT CShadow_ThiefNode_Return::Initialize_Prototype(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT)
 {
 	__super::Initialize_Prototype(pDesc, pBT);
 
@@ -19,18 +19,18 @@ HRESULT CShadow_ThiefNode_Return::Initialize_Prototype(BTNODE_DESC* pDesc, CBeha
 
 void CShadow_ThiefNode_Return::Start()
 {
-	m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Walk"));
+	m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Walk"));
 }
 
 CBTNode::NODE_STATE CShadow_ThiefNode_Return::Tick(const _float& fTimeDelta)
 {
-	m_tBTNodeDesc.pOwnerTransform->LookAt_ForLandObject(dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_OriginPos());
-	m_tBTNodeDesc.pOwnerTransform->Move(m_tBTNodeDesc.pOwnerTransform->Get_Look(), 3.f, fTimeDelta);
+	m_tBTMonsterDesc.pOwnerTransform->LookAt_ForLandObject(dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_OriginPos());
+	m_tBTMonsterDesc.pOwnerTransform->Move(m_tBTMonsterDesc.pOwnerTransform->Get_Look(), 3.f, fTimeDelta);
 
 	return NODE_STATE::NODE_RUNNING;
 }
 
-CShadow_ThiefNode_Return* CShadow_ThiefNode_Return::Create(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
+CShadow_ThiefNode_Return* CShadow_ThiefNode_Return::Create(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT)
 {
 	CShadow_ThiefNode_Return* pInstance = new CShadow_ThiefNode_Return();
 

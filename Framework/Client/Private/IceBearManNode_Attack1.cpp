@@ -8,7 +8,7 @@ CIceBearManNode_Attack1::CIceBearManNode_Attack1()
 {
 }
 
-HRESULT CIceBearManNode_Attack1::Initialize_Prototype(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
+HRESULT CIceBearManNode_Attack1::Initialize_Prototype(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT)
 {
 	__super::Initialize_Prototype(pDesc, pBT);
 
@@ -17,9 +17,9 @@ HRESULT CIceBearManNode_Attack1::Initialize_Prototype(BTNODE_DESC* pDesc, CBehav
 
 void CIceBearManNode_Attack1::Start()
 {
-	m_tBTNodeDesc.pOwnerTransform->LookAt_ForLandObject(m_tBTNodeDesc.pTargetTransform->Get_Position());
-	m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_IceBearMan_Water.ao|IceBearMan_Attack01"));
-	dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK, true);
+	m_tBTMonsterDesc.pOwnerTransform->LookAt_ForLandObject(m_tBTMonsterDesc.pOwner->Get_TargetDesc().pTragetTransform->Get_Position());
+	m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_IceBearMan_Water.ao|IceBearMan_Attack01"));
+	dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK, true);
 }
 
 CBTNode::NODE_STATE CIceBearManNode_Attack1::Tick(const _float& fTimeDelta)
@@ -28,7 +28,7 @@ CBTNode::NODE_STATE CIceBearManNode_Attack1::Tick(const _float& fTimeDelta)
 	return __super::Atk_BehaviorTick(1.f, fTimeDelta);
 }
 
-CIceBearManNode_Attack1* CIceBearManNode_Attack1::Create(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
+CIceBearManNode_Attack1* CIceBearManNode_Attack1::Create(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT)
 {
 	CIceBearManNode_Attack1* pInstance = new CIceBearManNode_Attack1();
 

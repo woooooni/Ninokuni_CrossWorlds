@@ -10,7 +10,7 @@ CPumpkinCandleNode_Dead::CPumpkinCandleNode_Dead()
 {
 }
 
-HRESULT CPumpkinCandleNode_Dead::Initialize_Prototype(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
+HRESULT CPumpkinCandleNode_Dead::Initialize_Prototype(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT)
 {
 	__super::Initialize_Prototype(pDesc, pBT);
 
@@ -19,20 +19,20 @@ HRESULT CPumpkinCandleNode_Dead::Initialize_Prototype(BTNODE_DESC* pDesc, CBehav
 
 void CPumpkinCandleNode_Dead::Start()
 {
-	m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_PumpkinCandle.ao|PumpkinCandle_Death"));
+	m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_PumpkinCandle.ao|PumpkinCandle_Death"));
 }
 
 CBTNode::NODE_STATE CPumpkinCandleNode_Dead::Tick(const _float& fTimeDelta)
 {
-	if (m_tBTNodeDesc.pOwnerModel->Is_Finish() && !m_tBTNodeDesc.pOwnerModel->Is_Tween())
+	if (m_tBTMonsterDesc.pOwnerModel->Is_Finish() && !m_tBTMonsterDesc.pOwnerModel->Is_Tween())
 	{
-		m_tBTNodeDesc.pOwner->Set_Dead(true);
+		m_tBTMonsterDesc.pOwner->Reserve_Dead(true);
 	}
 
 	return NODE_STATE::NODE_RUNNING;
 }
 
-CPumpkinCandleNode_Dead* CPumpkinCandleNode_Dead::Create(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
+CPumpkinCandleNode_Dead* CPumpkinCandleNode_Dead::Create(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT)
 {
 	CPumpkinCandleNode_Dead* pInstance = new CPumpkinCandleNode_Dead();
 

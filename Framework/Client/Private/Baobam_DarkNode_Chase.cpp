@@ -8,7 +8,7 @@ CBaobam_DarkNode_Chase::CBaobam_DarkNode_Chase()
 {
 }
 
-HRESULT CBaobam_DarkNode_Chase::Initialize_Prototype(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
+HRESULT CBaobam_DarkNode_Chase::Initialize_Prototype(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT)
 {
 	__super::Initialize_Prototype(pDesc, pBT);
 
@@ -17,18 +17,18 @@ HRESULT CBaobam_DarkNode_Chase::Initialize_Prototype(BTNODE_DESC* pDesc, CBehavi
 
 void CBaobam_DarkNode_Chase::Start()
 {
-	m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_Baobam_Darkness.ao|BaoBam_BattleRun"));
+	m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_Baobam_Darkness.ao|BaoBam_BattleRun"));
 }
 
 CBTNode::NODE_STATE CBaobam_DarkNode_Chase::Tick(const _float& fTimeDelta)
 {
-	m_tBTNodeDesc.pOwnerTransform->LookAt_ForLandObject(m_tBTNodeDesc.pTargetTransform->Get_Position());
-	m_tBTNodeDesc.pOwnerTransform->Move(m_tBTNodeDesc.pOwnerTransform->Get_Look(), 2.f, fTimeDelta);
+	m_tBTMonsterDesc.pOwnerTransform->LookAt_ForLandObject(m_tBTMonsterDesc.pOwner->Get_TargetDesc().pTragetTransform->Get_Position());
+	m_tBTMonsterDesc.pOwnerTransform->Move(m_tBTMonsterDesc.pOwnerTransform->Get_Look(), 2.f, fTimeDelta);
 
 	return NODE_STATE::NODE_RUNNING;
 }
 
-CBaobam_DarkNode_Chase* CBaobam_DarkNode_Chase::Create(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
+CBaobam_DarkNode_Chase* CBaobam_DarkNode_Chase::Create(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT)
 {
 	CBaobam_DarkNode_Chase* pInstance = new CBaobam_DarkNode_Chase();
 

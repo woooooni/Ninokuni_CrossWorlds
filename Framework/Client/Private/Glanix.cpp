@@ -143,6 +143,16 @@ void CGlanix::Collision_Enter(const COLLISION_INFO& tInfo)
 	{
 		m_bBools[(_uint)BOSS_BOOLTYPE::BOSSBOOL_SKILLAROUND] = true;
 	}
+
+	/* ÇÇ°Ý */
+	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER &&
+		tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK)
+	{
+		if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
+		{
+			On_Damaged(tInfo);
+		}
+	}
 }
 
 void CGlanix::Collision_Continue(const COLLISION_INFO& tInfo)
@@ -201,12 +211,15 @@ HRESULT CGlanix::Ready_Components()
 		return E_FAIL;
 
 	// m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(0.f, 10.f, 0.f, 1.f));
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(0.f, 0.f, 0.f, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-40.f, 1.6, 361.f, 1.f));
 	m_pTransformCom->FixRotation(0.f, 180.f, 0.f);
 
 	m_vOriginLook = m_pTransformCom->Get_Look();
 	m_vOriginPos = m_pTransformCom->Get_Position();
-	m_vWavePoint = { 0.f, 0.f, 20.f, 1.f };
+
+	_float4 vTemp = {};
+	XMStoreFloat4(&vTemp, m_vOriginPos);
+	m_vWavePoint = { vTemp.x, 1.6f, vTemp.z + 20.f, 1.f };
 
 	/* For.Com_Renderer */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))

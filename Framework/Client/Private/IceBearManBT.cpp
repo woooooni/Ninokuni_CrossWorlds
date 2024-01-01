@@ -31,30 +31,20 @@
 #include "Player.h"
 
 CIceBearManBT::CIceBearManBT(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	: CBehaviorTree(pDevice, pContext)
+	: CMonsterBT(pDevice, pContext)
 {
 }
 
 CIceBearManBT::CIceBearManBT(const CIceBearManBT& rhs)
-	: CBehaviorTree(rhs)
+	: CMonsterBT(rhs)
 {
 }
 
-HRESULT CIceBearManBT::Initialize_Prototype(CGameObject* pObject)
+HRESULT CIceBearManBT::Initialize_Prototype(CMonster* pOwner)
 {
-	m_tBTNodeDesc.pOwner = pObject;
-	m_tBTNodeDesc.pOwnerModel = pObject->Get_Component<CModel>(L"Com_Model");
-	m_tBTNodeDesc.pOwnerTransform = pObject->Get_Component<CTransform>(L"Com_Transform");
+	__super::Initialize_Prototype(pOwner);
 
-	m_tBTNodeDesc.pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
-
-	if (m_tBTNodeDesc.pTarget != nullptr)
-	{
-		m_tBTNodeDesc.pTargetModel = m_tBTNodeDesc.pTarget->Get_Component<CModel>(L"Com_Model");
-		m_tBTNodeDesc.pTargetTransform = m_tBTNodeDesc.pTarget->Get_Component<CTransform>(L"Com_Transform");
-	}
-
-	m_pIceBearMan = dynamic_cast<CIceBearMan*>(pObject);
+	m_pIceBearMan = dynamic_cast<CIceBearMan*>(m_tBTMonsterDesc.pOwner);
 	m_pRootNode = CBTNode_Select::Create(this);
 
 	/* 상위 Sequence 관련 */
@@ -66,33 +56,33 @@ HRESULT CIceBearManBT::Initialize_Prototype(CGameObject* pObject)
 	CBTNode_Sequence* pSeq_Idle = CBTNode_Sequence::Create(this);
 
 	/* Dead 관련 */
-	CIceBearManNode_Dead* pDeadNode = CIceBearManNode_Dead::Create(&m_tBTNodeDesc, this);
+	CIceBearManNode_Dead* pDeadNode = CIceBearManNode_Dead::Create(&m_tBTMonsterDesc, this);
 
 	/* Hit 관련 */
 	CBTNode_Select* pSel_Hit = CBTNode_Select::Create(this);
-	CIceBearManNode_Blow* pBlowNode = CIceBearManNode_Blow::Create(&m_tBTNodeDesc, this);
-	CIceBearManNode_Air* pAirNode = CIceBearManNode_Air::Create(&m_tBTNodeDesc, this);
-	CIceBearManNode_Stun* pStunNode = CIceBearManNode_Stun::Create(&m_tBTNodeDesc, this);
-	CIceBearManNode_Hit* pHitNode = CIceBearManNode_Hit::Create(&m_tBTNodeDesc, this);
+	CIceBearManNode_Blow* pBlowNode = CIceBearManNode_Blow::Create(&m_tBTMonsterDesc, this);
+	CIceBearManNode_Air* pAirNode = CIceBearManNode_Air::Create(&m_tBTMonsterDesc, this);
+	CIceBearManNode_Stun* pStunNode = CIceBearManNode_Stun::Create(&m_tBTMonsterDesc, this);
+	CIceBearManNode_Hit* pHitNode = CIceBearManNode_Hit::Create(&m_tBTMonsterDesc, this);
 
 	/* Combat 관련 */
 	CBTNode_Sequence* pSeq_Pattern = CBTNode_Sequence::Create(this);
-	CIceBearManNode_Attack1* pAtk1Node = CIceBearManNode_Attack1::Create(&m_tBTNodeDesc, this);
-	CIceBearManNode_Attack2* pAtk2Node = CIceBearManNode_Attack2::Create(&m_tBTNodeDesc, this);
+	CIceBearManNode_Attack1* pAtk1Node = CIceBearManNode_Attack1::Create(&m_tBTMonsterDesc, this);
+	CIceBearManNode_Attack2* pAtk2Node = CIceBearManNode_Attack2::Create(&m_tBTMonsterDesc, this);
 
 	/* Chase 관련 */
-	CIceBearManNode_Chase* pChaseNode = CIceBearManNode_Chase::Create(&m_tBTNodeDesc, this);
+	CIceBearManNode_Chase* pChaseNode = CIceBearManNode_Chase::Create(&m_tBTMonsterDesc, this);
 
 	/* Return 관련 */
-	//CIceBearManNode_Return* pReturnNode = CIceBearManNode_Return::Create(&m_tBTNodeDesc, this);
+	//CIceBearManNode_Return* pReturnNode = CIceBearManNode_Return::Create(&m_tBTMonsterDesc, this);
 
 	/* Idel 관련 */
 	vector<wstring> vecAnimationName;
 	vecAnimationName.push_back(TEXT("SKM_IceBearMan_Water.ao|IceBearMan_Idle02"));
 	vecAnimationName.push_back(TEXT("SKM_IceBearMan_Water.ao|IceBearMan_Idle01"));
 	vecAnimationName.push_back(TEXT("SKM_IceBearMan_Water.ao|IceBearMan_Idle02"));
-	CIceBearManNode_Idle* pIdleNode = CIceBearManNode_Idle::Create(&m_tBTNodeDesc, this, vecAnimationName);
-	CIceBearManNode_Roaming* pRoamingNode = CIceBearManNode_Roaming::Create(&m_tBTNodeDesc, this, dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_RoamingArea());
+	CIceBearManNode_Idle* pIdleNode = CIceBearManNode_Idle::Create(&m_tBTMonsterDesc, this, vecAnimationName);
+	CIceBearManNode_Roaming* pRoamingNode = CIceBearManNode_Roaming::Create(&m_tBTMonsterDesc, this, dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_RoamingArea());
 
 	/* Condition 관련*/
 	/* function<_bool()>을 받는 CBTNode_Condition::Create 함수에서는 멤버 함수를 사용하고 있기 때문에 추가적인 처리가 필요 */
@@ -143,7 +133,7 @@ HRESULT CIceBearManBT::Initialize(void* pArg)
 
 void CIceBearManBT::Tick(const _float& fTimeDelta)
 {
-	if (m_tBTNodeDesc.pTarget != nullptr)
+	if (m_tBTMonsterDesc.pOwner != nullptr)
 		m_pRootNode->Tick(fTimeDelta);
 }
 
@@ -209,8 +199,8 @@ _bool CIceBearManBT::IsChase()
 //		_float4 vPos;
 //		_float4 vOriginPos;
 //
-//		XMStoreFloat4(&vPos, m_tBTNodeDesc.pOwnerTransform->Get_Position());
-//		XMStoreFloat4(&vOriginPos, dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_OriginPos());
+//		XMStoreFloat4(&vPos, m_tBTMonsterDesc.pOwnerTransform->Get_Position());
+//		XMStoreFloat4(&vOriginPos, dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_OriginPos());
 //
 //		if (vPos.x >= vOriginPos.x - 0.1f && vPos.x <= vOriginPos.x + 0.1f &&
 //			vPos.z >= vOriginPos.z - 0.1f && vPos.z <= vOriginPos.z + 0.1f)
@@ -225,11 +215,11 @@ _bool CIceBearManBT::IsChase()
 //}
 
 
-CIceBearManBT* CIceBearManBT::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CGameObject* pObject)
+CIceBearManBT* CIceBearManBT::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CMonster* pOwner)
 {
 	CIceBearManBT* pInstance = new CIceBearManBT(pDevice, pContext);
 
-	if (FAILED(pInstance->Initialize_Prototype(pObject)))
+	if (FAILED(pInstance->Initialize_Prototype(pOwner)))
 	{
 		MSG_BOX("Fail Create : CIceBearManBT");
 		Safe_Release(pInstance);

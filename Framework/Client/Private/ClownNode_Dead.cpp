@@ -10,7 +10,7 @@ CClownNode_Dead::CClownNode_Dead()
 {
 }
 
-HRESULT CClownNode_Dead::Initialize_Prototype(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
+HRESULT CClownNode_Dead::Initialize_Prototype(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT)
 {
 	__super::Initialize_Prototype(pDesc, pBT);
 
@@ -19,20 +19,20 @@ HRESULT CClownNode_Dead::Initialize_Prototype(BTNODE_DESC* pDesc, CBehaviorTree*
 
 void CClownNode_Dead::Start()
 {
-	m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_Clown.ao|Clown_Death"));
+	m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_Clown.ao|Clown_Death"));
 }
 
 CBTNode::NODE_STATE CClownNode_Dead::Tick(const _float& fTimeDelta)
 {
-	if (m_tBTNodeDesc.pOwnerModel->Is_Finish() && !m_tBTNodeDesc.pOwnerModel->Is_Tween())
+	if (m_tBTMonsterDesc.pOwnerModel->Is_Finish() && !m_tBTMonsterDesc.pOwnerModel->Is_Tween())
 	{
-		m_tBTNodeDesc.pOwner->Set_Dead(true);
+		m_tBTMonsterDesc.pOwner->Reserve_Dead(true);
 	}
 
 	return NODE_STATE::NODE_RUNNING;
 }
 
-CClownNode_Dead* CClownNode_Dead::Create(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
+CClownNode_Dead* CClownNode_Dead::Create(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT)
 {
 	CClownNode_Dead* pInstance = new CClownNode_Dead();
 

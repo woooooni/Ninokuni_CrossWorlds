@@ -1,12 +1,12 @@
 #pragma once
 
 #include "Client_Defines.h"
-#include "BehaviorTree.h"
+#include "MonsterBT.h"
 
 BEGIN(Client)
 
 class CClown_Wizard;
-class CClown_WizardBT final : public CBehaviorTree
+class CClown_WizardBT final : public CMonsterBT
 {
 private:
 	CClown_WizardBT(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -14,7 +14,7 @@ private:
 	virtual ~CClown_WizardBT() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(CGameObject* pObject);
+	virtual HRESULT Initialize_Prototype(CMonster* pOwner);
 	virtual HRESULT Initialize(void* pArg);
 	virtual void	Tick(const _float& fTimeDelta);
 	virtual void	LateTick(const _float& fTimeDelta);
@@ -30,13 +30,12 @@ private:
 
 private:
 	class CClown_Wizard* m_pClown_Wizard = nullptr;
-	CBTNode::tagBTDesc m_tBTNodeDesc = {};
 
 	_bool m_BIsChase = false;
 
 
 public:
-	static CClown_WizardBT* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CGameObject* pObject);
+	static CClown_WizardBT* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CMonster* pOwner);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 };

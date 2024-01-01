@@ -13,15 +13,15 @@ class CBehaviorTree;
 class ENGINE_DLL CBTNode abstract : public CBase
 {
 public:
-	typedef struct tagBTDesc
-	{
-		CGameObject* pOwner = nullptr;
-		CGameObject* pTarget = nullptr;
-		CModel*		 pOwnerModel = nullptr;
-		CModel*		 pTargetModel = nullptr;
-		CTransform*  pOwnerTransform = nullptr;
-		CTransform*  pTargetTransform = nullptr;
-	}BTNODE_DESC;
+	//typedef struct tagBTDesc
+	//{
+	//	CGameObject* pOwner = nullptr;
+	//	//CGameObject* pTarget = nullptr;
+	//	CModel*		 pOwnerModel = nullptr;
+	//	//CModel*		 pTargetModel = nullptr;
+	//	CTransform*  pOwnerTransform = nullptr;
+	//	//CTransform*  pTargetTransform = nullptr;
+	//}BTNODE_DESC;
 
 public:
 	enum class NODE_STATE { NODE_RUNNING, NODE_FAIL, NODE_SUCCESS, NODE_END };
@@ -31,7 +31,7 @@ protected:
 	virtual ~CBTNode() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(BTNODE_DESC* pDesc, CBehaviorTree* pBT);
+	virtual HRESULT Initialize_Prototype(CBehaviorTree* pBT);
 	virtual void	Start() {};
 	virtual CBTNode::NODE_STATE	Tick(const _float& fTimeDelta);
 
@@ -54,7 +54,7 @@ protected:
 	list<CBTNode*> m_ltChildNode;
 	CBehaviorTree* m_pBT = nullptr;
 
-	BTNODE_DESC m_tBTNodeDesc = {};
+	//BTNODE_DESC m_tBTMonsterDesc = {};
 
 public:
 	virtual void Free() override;

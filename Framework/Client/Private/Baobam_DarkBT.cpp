@@ -32,30 +32,20 @@
 #include "Player.h"
 
 CBaobam_DarkBT::CBaobam_DarkBT(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	: CBehaviorTree(pDevice, pContext)
+	: CMonsterBT(pDevice, pContext)
 {
 }
 
 CBaobam_DarkBT::CBaobam_DarkBT(const CBaobam_DarkBT& rhs)
-	: CBehaviorTree(rhs)
+	: CMonsterBT(rhs)
 {
 }
 
-HRESULT CBaobam_DarkBT::Initialize_Prototype(CGameObject* pObject)
+HRESULT CBaobam_DarkBT::Initialize_Prototype(CMonster* pOwner)
 {
-	m_tBTNodeDesc.pOwner = pObject;
-	m_tBTNodeDesc.pOwnerModel = pObject->Get_Component<CModel>(L"Com_Model");
-	m_tBTNodeDesc.pOwnerTransform = pObject->Get_Component<CTransform>(L"Com_Transform");
+	__super::Initialize_Prototype(pOwner);
 
-	m_tBTNodeDesc.pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
-
-	if (m_tBTNodeDesc.pTarget != nullptr)
-	{
-		m_tBTNodeDesc.pTargetModel = m_tBTNodeDesc.pTarget->Get_Component<CModel>(L"Com_Model");
-		m_tBTNodeDesc.pTargetTransform = m_tBTNodeDesc.pTarget->Get_Component<CTransform>(L"Com_Transform");
-	}
-
-	m_pBaobam_Dark = dynamic_cast<CBaobam_Dark*>(pObject);
+	m_pBaobam_Dark = dynamic_cast<CBaobam_Dark*>(m_tBTMonsterDesc.pOwner);
 	m_pRootNode = CBTNode_Select::Create(this);
 
 	/* 상위 Sequence 관련 */
@@ -67,33 +57,33 @@ HRESULT CBaobam_DarkBT::Initialize_Prototype(CGameObject* pObject)
 	CBTNode_Sequence* pSeq_Idle = CBTNode_Sequence::Create(this);
 
 	/* Dead 관련 */
-	CBaobam_DarkNode_Dead* pDeadNode = CBaobam_DarkNode_Dead::Create(&m_tBTNodeDesc, this);
+	CBaobam_DarkNode_Dead* pDeadNode = CBaobam_DarkNode_Dead::Create(&m_tBTMonsterDesc, this);
 
 	/* Hit 관련 */
 	CBTNode_Select* pSel_Hit = CBTNode_Select::Create(this);
-	CBaobam_DarkNode_Stun* pStunNode = CBaobam_DarkNode_Stun::Create(&m_tBTNodeDesc, this);
-	CBaobam_DarkNode_Hit* pHitNode = CBaobam_DarkNode_Hit::Create(&m_tBTNodeDesc, this);
+	CBaobam_DarkNode_Stun* pStunNode = CBaobam_DarkNode_Stun::Create(&m_tBTMonsterDesc, this);
+	CBaobam_DarkNode_Hit* pHitNode = CBaobam_DarkNode_Hit::Create(&m_tBTMonsterDesc, this);
 
 	/* Combat 관련 */
 	CBTNode_Sequence* pSeq_Pattern = CBTNode_Sequence::Create(this);
-	CBaobam_DarkNode_Attack1* pAtk1Node = CBaobam_DarkNode_Attack1::Create(&m_tBTNodeDesc, this);
-	CBaobam_DarkNode_Attack2* pAtk2Node = CBaobam_DarkNode_Attack2::Create(&m_tBTNodeDesc, this);
-	CBaobam_DarkNode_Skill1* pSkill1Node = CBaobam_DarkNode_Skill1::Create(&m_tBTNodeDesc, this);
-	CBaobam_DarkNode_Skill2* pSkill2Node = CBaobam_DarkNode_Skill2::Create(&m_tBTNodeDesc, this);
+	CBaobam_DarkNode_Attack1* pAtk1Node = CBaobam_DarkNode_Attack1::Create(&m_tBTMonsterDesc, this);
+	CBaobam_DarkNode_Attack2* pAtk2Node = CBaobam_DarkNode_Attack2::Create(&m_tBTMonsterDesc, this);
+	CBaobam_DarkNode_Skill1* pSkill1Node = CBaobam_DarkNode_Skill1::Create(&m_tBTMonsterDesc, this);
+	CBaobam_DarkNode_Skill2* pSkill2Node = CBaobam_DarkNode_Skill2::Create(&m_tBTMonsterDesc, this);
 
 	/* Chase 관련 */
-	CBaobam_DarkNode_Chase* pChaseNode = CBaobam_DarkNode_Chase::Create(&m_tBTNodeDesc, this);
+	CBaobam_DarkNode_Chase* pChaseNode = CBaobam_DarkNode_Chase::Create(&m_tBTMonsterDesc, this);
 
 	/* Return 관련 */
-	//CBaobam_DarkNode_Return* pReturnNode = CBaobam_DarkNode_Return::Create(&m_tBTNodeDesc, this);
+	//CBaobam_DarkNode_Return* pReturnNode = CBaobam_DarkNode_Return::Create(&m_tBTMonsterDesc, this);
 
 	/* Idel 관련 */
 	vector<wstring> vecAnimationName;
 	vecAnimationName.push_back(TEXT("SKM_Baobam_Darkness.ao|BaoBam_Idle02"));
 	vecAnimationName.push_back(TEXT("SKM_Baobam_Darkness.ao|BaoBam_Idle01"));
 	vecAnimationName.push_back(TEXT("SKM_Baobam_Darkness.ao|BaoBam_Idle02"));
-	CBaobam_DarkNode_Idle* pIdleNode = CBaobam_DarkNode_Idle::Create(&m_tBTNodeDesc, this, vecAnimationName);
-	CBaobam_DarkNode_Roaming* pRoamingNode = CBaobam_DarkNode_Roaming::Create(&m_tBTNodeDesc, this, dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_RoamingArea());
+	CBaobam_DarkNode_Idle* pIdleNode = CBaobam_DarkNode_Idle::Create(&m_tBTMonsterDesc, this, vecAnimationName);
+	CBaobam_DarkNode_Roaming* pRoamingNode = CBaobam_DarkNode_Roaming::Create(&m_tBTMonsterDesc, this, dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_RoamingArea());
 
 	/* Condition 관련*/
 	/* function<_bool()>을 받는 CBTNode_Condition::Create 함수에서는 멤버 함수를 사용하고 있기 때문에 추가적인 처리가 필요 */
@@ -144,7 +134,7 @@ HRESULT CBaobam_DarkBT::Initialize(void* pArg)
 
 void CBaobam_DarkBT::Tick(const _float& fTimeDelta)
 {
-	if (m_tBTNodeDesc.pTarget != nullptr)
+	if (m_tBTMonsterDesc.pOwner != nullptr)
 		m_pRootNode->Tick(fTimeDelta);
 }
 
@@ -154,7 +144,7 @@ void CBaobam_DarkBT::LateTick(const _float& fTimeDelta)
 	{
 		m_pRootNode->Init_Start();
 		m_pBaobam_Dark->Set_StunTime(3.f);
-		m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_Baobam_Darkness.ao|BaoBam_Stun"));
+		m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_Baobam_Darkness.ao|BaoBam_Stun"));
 		m_pBaobam_Dark->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_STUN, true);
 		m_pBaobam_Dark->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT, true);
 	}
@@ -216,8 +206,8 @@ _bool CBaobam_DarkBT::IsChase()
 //		_float4 vPos;
 //		_float4 vOriginPos;
 //
-//		XMStoreFloat4(&vPos, m_tBTNodeDesc.pOwnerTransform->Get_Position());
-//		XMStoreFloat4(&vOriginPos, dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_OriginPos());
+//		XMStoreFloat4(&vPos, m_tBTMonsterDesc.pOwnerTransform->Get_Position());
+//		XMStoreFloat4(&vOriginPos, dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_OriginPos());
 //
 //		if (vPos.x >= vOriginPos.x - 0.1f && vPos.x <= vOriginPos.x + 0.1f &&
 //			vPos.z >= vOriginPos.z - 0.1f && vPos.z <= vOriginPos.z + 0.1f)
@@ -232,11 +222,11 @@ _bool CBaobam_DarkBT::IsChase()
 //}
 
 
-CBaobam_DarkBT* CBaobam_DarkBT::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CGameObject* pObject)
+CBaobam_DarkBT* CBaobam_DarkBT::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CMonster* pOwner)
 {
 	CBaobam_DarkBT* pInstance = new CBaobam_DarkBT(pDevice, pContext);
 
-	if (FAILED(pInstance->Initialize_Prototype(pObject)))
+	if (FAILED(pInstance->Initialize_Prototype(pOwner)))
 	{
 		MSG_BOX("Fail Create : CBaobam_DarkBT");
 		Safe_Release(pInstance);

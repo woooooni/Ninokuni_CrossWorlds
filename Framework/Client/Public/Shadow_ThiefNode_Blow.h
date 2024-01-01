@@ -11,12 +11,12 @@ private:
 	virtual ~CShadow_ThiefNode_Blow() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(BTNODE_DESC* pDesc, CBehaviorTree* pBT);
+	virtual HRESULT Initialize_Prototype(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT);
 	virtual void	Start();
 	virtual CBTNode::NODE_STATE	Tick(const _float& fTimeDelta);
 
 public:
-	static CShadow_ThiefNode_Blow* Create(BTNODE_DESC* pDesc, CBehaviorTree* pBT);
+	static CShadow_ThiefNode_Blow* Create(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT);
 	virtual void Free() override;
 };
 
