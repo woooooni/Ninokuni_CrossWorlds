@@ -75,7 +75,11 @@ void CState_Animal_Walk::Tick_State(_float fTimeDelta)
 		m_pTransformCom->Set_State(CTransform::STATE::STATE_UP, vUp);
 	}
 
-	m_pTransformCom->Move(m_vRandomDir, 1.0f, fTimeDelta);
+	if (true == ReturnToCenter(fTimeDelta, m_vRandomDir))
+		m_pTransformCom->Move(m_vRandomDir, 1.0f, fTimeDelta);
+	else
+		m_pTransformCom->Move(m_vRandomDir, 1.0f, fTimeDelta);
+
 #pragma endregion WALK
 	_bool bLift = static_cast<CAnimals*>(m_pOwner)->Lifting();
 

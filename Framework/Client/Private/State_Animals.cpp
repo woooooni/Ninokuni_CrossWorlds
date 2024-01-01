@@ -21,6 +21,43 @@ HRESULT CState_Animals::Initialize(const list<wstring>& AnimationList)
 	return S_OK;
 }
 
+_bool CState_Animals::ReturnToCenter(_float fTimeDelta, Vec4& vDir)
+{
+	Vec4 vCenterPos = static_cast<CAnimals*>(m_pOwner)->Get_Center();
+
+	CTransform* pTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr == pTransform)
+		return false;
+
+	Vec4 vCurPos = pTransform->Get_Position();
+	Vec4 vCenterDir = vCenterPos - vCurPos;
+
+	_float fDistance = vCenterDir.Length();
+	vCenterDir.Normalize();
+
+	if (6.f <= fDistance)
+	{
+		m_pTransformCom->Set_State(CTransform::STATE::STATE_LOOK, vCenterDir);
+
+		Vec3 vUp = Vec3(0.0f, 1.0f, 0.0f);
+		Vec3 vRight;
+		Vec3 vCurDir = m_pTransformCom->Get_Look();
+
+		vRight = vUp.Cross(vCurDir);
+		vRight.Normalize();
+		m_pTransformCom->Set_State(CTransform::STATE::STATE_RIGHT, vRight);
+
+		vUp = vCurDir.Cross(vRight);
+		vUp.Normalize();
+		m_pTransformCom->Set_State(CTransform::STATE::STATE_UP, vUp);
+
+		vDir = vCenterDir;
+		return true;
+	}
+
+	return false;
+}
+
 void CState_Animals::Free()
 {
 	__super::Free();

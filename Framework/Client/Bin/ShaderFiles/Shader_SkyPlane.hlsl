@@ -59,8 +59,6 @@ struct PS_OUT
 Texture2D cloudTexture : register(t0);
 Texture2D perturbTexture : register(t1);
 
-
-
 PS_OUT SkyPlanePixelShader(PS_IN input)
 {
     PS_OUT output = (PS_OUT) 0;
@@ -83,27 +81,39 @@ PS_OUT SkyPlanePixelShader(PS_IN input)
     output.vColor = cloudColor;
     
     return output;
-    
-    //sampleLocation.x = input.vTexcoord.x + firstTranslationX;
-    //sampleLocation.y = input.vTexcoord.y + firstTranslationZ;
-    
-    //textureColor1 = cloudTexture1.Sample(PointSampler, sampleLocation);
-    
-    //sampleLocation.x = input.vTexcoord.x + secondTranslationX;
-    //sampleLocation.y = input.vTexcoord.y + secondTranslationZ;
-    
-    //textureColor2 = cloudTexture2.Sample(PointSampler, sampleLocation);
-    
-    //finalColor = lerp(textureColor1, textureColor2, 0.5f);
-    
-    //finalColor = finalColor * brightness;
-    
-    //if(finalColor.a <= 0.3f)
-    //    discard;
-    
-    //output.vColor = finalColor;
-    //output.vColor = vector(1.0f, 1.0f, 1.0f, 1.0f);
+}
 
+Texture2D WinterNoiseTexture : register(t2);
+Texture2D WinterNoiseTexture2 : register(t3);
+Texture2D WinterAuraTexture : register(t4);
+
+PS_OUT WinterSkyPlanePixelShader(PS_IN input)
+{
+    PS_OUT output = (PS_OUT) 0;
+    
+    float4 perturbValue;
+    float4 cloudColor;
+    float4 cloudColor2;
+    
+    //input.vTexcoord.x = input.vTexcoord.x + fTranslation;
+    
+    //perturbValue = perturbTexture.Sample(LinearSampler, input.vTexcoord);
+    
+    //perturbValue = perturbValue * fScale;
+    
+    //perturbValue.xy = perturbValue.xy + input.vTexcoord.xy + fTranslation;
+    
+  
+    // PerturbValue·Î Aurora.
+    //cloudColor = WinterNoiseTexture.Sample(LinearSampler, input.vTexcoord * 2.0f);
+    float noiseValue = WinterNoiseTexture2.Sample(LinearSampler, input.vTexcoord * 12.0).r;
+    
+   if(noiseValue > 0.9)
+       output.vColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+   else
+       output.vColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    
+    return output;
 }
 
 RasterizerState RS_SkyPlane
@@ -140,5 +150,16 @@ technique11 CloudDefault
         VertexShader = compile vs_5_0 SkyPlaneVertexShader();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 SkyPlanePixelShader();
+    }
+
+    pass WinterSkyPlane
+    {
+        SetRasterizerState(RS_SkyPlane);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Blend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 SkyPlaneVertexShader();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 WinterSkyPlanePixelShader();
     }
 }

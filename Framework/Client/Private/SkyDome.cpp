@@ -23,6 +23,14 @@ HRESULT CSkyDome::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+	_uint iCurrLevel = GI->Get_CurrentLevel();
+
+	if (m_strPrototypeTag == TEXT("Prototype_GameObject_Skydome2"))
+	{
+		m_vApexColor = Vec4(0.161f, 0.478f, 0.541f, 1.0f);
+		m_vCenterColor = Vec4(0.647f, 0.871f, 0.824f, 1.0f);
+	}
+
 	return S_OK;
 }
 
@@ -57,10 +65,10 @@ HRESULT CSkyDome::Render()
 
 	_uint iCurrLevel = GI->Get_CurrentLevel();
 
-	if (m_strPrototypeTag == TEXT("Prototype_GameObject_Skydome"))
-		m_pTextureCom[LEVEL_SKY::EVERMORE_SKY]->Bind_ShaderResource(m_pShaderCom, "SkydomeTexture");
-	else if (m_strPrototypeTag == TEXT("Prototype_GameObject_Skydome2"))
-		m_pTextureCom[LEVEL_SKY::WINTER_SKY]->Bind_ShaderResource(m_pShaderCom, "SkydomeTexture");
+	//if (m_strPrototypeTag == TEXT("Prototype_GameObject_Skydome"))
+	//	m_pTextureCom[LEVEL_SKY::EVERMORE_SKY]->Bind_ShaderResource(m_pShaderCom, "SkydomeTexture");
+	//else if (m_strPrototypeTag == TEXT("Prototype_GameObject_Skydome2"))
+	//	m_pTextureCom[LEVEL_SKY::WINTER_SKY]->Bind_ShaderResource(m_pShaderCom, "SkydomeTexture");
 
 	if (FAILED(m_pModelCom->Render(m_pShaderCom, 0, 0)))
 		return E_FAIL;
@@ -86,9 +94,9 @@ HRESULT CSkyDome::Ready_Components()
 		TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Sky_DomeTex2"),
-		TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom[LEVEL_SKY::EVERMORE_SKY]))))
-		return E_FAIL;
+	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Sky_DomeTex2"),
+	//	TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom[LEVEL_SKY::EVERMORE_SKY]))))
+	//	return E_FAIL;
 
 	return S_OK;
 }

@@ -20,6 +20,9 @@ public:
 	virtual void Exit_State() PURE;
 
 protected:
+	_bool ReturnToCenter(_float fTimeDelta, Vec4& vDir);
+
+protected:
 	class CAnimals* m_pAnimal = nullptr;
 
 public:
