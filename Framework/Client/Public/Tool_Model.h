@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Tool.h"
+#include "Collider.h"
 
 BEGIN(Client)
 
