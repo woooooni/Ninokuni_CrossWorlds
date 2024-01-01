@@ -31,6 +31,8 @@ HRESULT CCamera_CutScene::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+	if (FAILED(Load_CutSceneDescs()))
+		return E_FAIL;
 	return S_OK;
 }
 
@@ -39,7 +41,16 @@ void CCamera_CutScene::Tick(_float fTimeDelta)
 	if (!m_bActive)
 		return;
 
+	m_tTimeDesc.Update(fTimeDelta);
+
 	__super::Tick(fTimeDelta);
+	
+	Vec4 vCamPosition = Get_Point_In_Bezier(m_pCurCutSceneDesc->vCamPositions, m_tTimeDesc.Get_Progress());
+	Vec4 vLookAt = Get_Point_In_Bezier(m_pCurCutSceneDesc->vCamLookAts, m_tTimeDesc.Get_Progress());
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCamPosition.OneW());
+	m_pTransformCom->LookAt(vLookAt.OneW());
+
 }
 
 void CCamera_CutScene::LateTick(_float fTimeDelta)
@@ -61,29 +72,152 @@ HRESULT CCamera_CutScene::Start_CutScene(const string& strCutSceneName)
 	if (nullptr == m_pCurCutSceneDesc)
 		return E_FAIL;
 
+	m_tTimeDesc.Start(m_pCurCutSceneDesc->fDuration, m_pCurCutSceneDesc->eLerpMode);
+
 	return S_OK;
 }
 
 HRESULT CCamera_CutScene::Save_CutSceneDescs()
 {
-	/* json */
+	Json json;
+
+	for (auto& CutSceneDesc : m_CutSceneDescs)
+	{
+		json["CutScene Desc"].push_back({
+
+			{"Name", CutSceneDesc.strCutSceneName},
+			
+			{"Duration", CutSceneDesc.fDuration},
+
+			{"Start Delay Time", CutSceneDesc.fStartDelayTime},
+			{"Finish Delay Time", CutSceneDesc.fFinishDelayTime},
+			
+			{"Start Fov", CutSceneDesc.fStartFov },
+			{"Finish Fov", CutSceneDesc.fFinishFov},
+
+			{"Lerp Mode", (_uint)CutSceneDesc.eLerpMode},
+
+			{"Position_0", {
+						{"x", CutSceneDesc.vCamPositions[0].x},
+						{"y", CutSceneDesc.vCamPositions[0].y},
+						{"z", CutSceneDesc.vCamPositions[0].z}},
+			},
+
+			{"Position_1", {
+						{"x", CutSceneDesc.vCamPositions[1].x},
+						{"y", CutSceneDesc.vCamPositions[1].y},
+						{"z", CutSceneDesc.vCamPositions[1].z}},
+			},
+
+			{"Position_2", {
+						{"x", CutSceneDesc.vCamPositions[2].x},
+						{"y", CutSceneDesc.vCamPositions[2].y},
+						{"z", CutSceneDesc.vCamPositions[2].z}},
+			},
+
+			{"Position_3", {
+						{"x", CutSceneDesc.vCamPositions[3].x},
+						{"y", CutSceneDesc.vCamPositions[3].y},
+						{"z", CutSceneDesc.vCamPositions[3].z}},
+			},
+
+			{"LookAt_0", {
+						{"x", CutSceneDesc.vCamLookAts[0].x},
+						{"y", CutSceneDesc.vCamLookAts[0].y},
+						{"z", CutSceneDesc.vCamLookAts[0].z}},
+			},
+
+			{"LookAt_1", {
+						{"x", CutSceneDesc.vCamLookAts[1].x},
+						{"y", CutSceneDesc.vCamLookAts[1].y},
+						{"z", CutSceneDesc.vCamLookAts[1].z}},
+			},
+
+			{"LookAt_2", {
+						{"x", CutSceneDesc.vCamLookAts[2].x},
+						{"y", CutSceneDesc.vCamLookAts[2].y},
+						{"z", CutSceneDesc.vCamLookAts[2].z}},
+			},
+
+			{"LookAt_3", {
+						{"x", CutSceneDesc.vCamLookAts[3].x},
+						{"y", CutSceneDesc.vCamLookAts[3].y},
+						{"z", CutSceneDesc.vCamLookAts[3].z}},
+			},
+
+		});
+	}
+
+	json.dump(2);
+
+	wstring strPath = L"../Bin/DataFiles/Camera/CutScene/CutSceneData";
+	GI->Json_Save(strPath + L".json", json);
 
 	return S_OK;
 }
 
 HRESULT CCamera_CutScene::Load_CutSceneDescs()
 {
-	/* json */
+	wstring strPath = L"../Bin/DataFiles/Camera/CutScene/CutSceneData.json";
+	auto path = filesystem::path(strPath);
 
+	if (!filesystem::exists(strPath))
+		return S_OK;
+
+	Json json = GI->Json_Load(strPath);
+
+	for (const auto& item : json["CutScene Desc"])
+	{
+		CAMERA_CUTSCENE_DESC desc;
+		
+		desc.strCutSceneName	= item["Name"];
+		desc.fDuration			= item["Duration"];
+		desc.fStartDelayTime	= item["Start Delay Time"];
+		desc.fFinishDelayTime	= item["Finish Delay Time"];
+		desc.fStartFov			= item["Start Fov"];
+		desc.fFinishFov			= item["Finish Fov"];
+		desc.eLerpMode			= item["Lerp Mode"];
+
+		desc.vCamPositions[0].x = item["Position_0"]["x"];
+		desc.vCamPositions[0].y = item["Position_0"]["y"];
+		desc.vCamPositions[0].z = item["Position_0"]["z"];
+
+		desc.vCamPositions[1].x = item["Position_1"]["x"];
+		desc.vCamPositions[1].y = item["Position_1"]["y"];
+		desc.vCamPositions[1].z = item["Position_1"]["z"];
+
+		desc.vCamPositions[2].x = item["Position_2"]["x"];
+		desc.vCamPositions[2].y = item["Position_2"]["y"];
+		desc.vCamPositions[2].z = item["Position_2"]["z"];
+
+		desc.vCamPositions[3].x = item["Position_3"]["x"];
+		desc.vCamPositions[3].y = item["Position_3"]["y"];
+		desc.vCamPositions[3].z = item["Position_3"]["z"];
+
+		desc.vCamLookAts[0].x = item["LookAt_0"]["x"];
+		desc.vCamLookAts[0].y = item["LookAt_0"]["y"];
+		desc.vCamLookAts[0].z = item["LookAt_0"]["z"];
+
+		desc.vCamLookAts[1].x = item["LookAt_1"]["x"];
+		desc.vCamLookAts[1].y = item["LookAt_1"]["y"];
+		desc.vCamLookAts[1].z = item["LookAt_1"]["z"];
+
+		desc.vCamLookAts[2].x = item["LookAt_2"]["x"];
+		desc.vCamLookAts[2].y = item["LookAt_2"]["y"];
+		desc.vCamLookAts[2].z = item["LookAt_2"]["z"];
+
+		desc.vCamLookAts[3].x = item["LookAt_3"]["x"];
+		desc.vCamLookAts[3].y = item["LookAt_3"]["y"];
+		desc.vCamLookAts[3].z = item["LookAt_3"]["z"];
+
+		m_CutSceneDescs.push_back(desc);
+	}
 	return S_OK;
 }
 
 Vec4 CCamera_CutScene::Get_Point_In_Bezier(Vec3 vPoints[MAX_BEZIER_POINT], const _float& fRatio)
 {
 	if (nullptr == vPoints)
-		return Vec4::UnitW;
-
-	if (sizeof(vPoints) / sizeof(Vec3) != MAX_BEZIER_POINT)
 		return Vec4::UnitW;
 
 	const _float fNormalizedRatio = min(1.0f, max(0.0f, fRatio));

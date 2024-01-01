@@ -952,6 +952,7 @@ HRESULT CModel_Manager::Export_Animation_Events(const wstring& strFinalPath, CMo
 	json.dump(2);
 	
 	GI->Json_Save(strFinalPath + L".json", json);
+
 	return S_OK;
 }
 

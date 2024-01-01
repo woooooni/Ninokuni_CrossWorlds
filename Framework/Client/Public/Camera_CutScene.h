@@ -21,7 +21,7 @@ public:
 
 public:
 	HRESULT Start_CutScene(const string& strCutSceneName);
-
+	const _bool Is_Playing_CutScenc() const { return m_tTimeDesc.bActive; }
 public:
 	static Vec4 Get_Point_In_Bezier(Vec3 vPoints[MAX_BEZIER_POINT], const _float& fRatio);
 
@@ -44,6 +44,8 @@ private:
 	vector<CAMERA_CUTSCENE_DESC>	m_CutSceneDescs;
 
 	CAMERA_CUTSCENE_DESC*			m_pCurCutSceneDesc = nullptr;
+
+	LERP_TIME_DESC					m_tTimeDesc;
 	
 public:
 	static CCamera_CutScene* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);

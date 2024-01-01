@@ -461,7 +461,7 @@ namespace Engine
 
 		_float Update(const _float& fTimeDelta)
 		{
-			if (!bActive) 
+			if (!bActive)
 				return fLerpTime;
 
 			fCurTime += fTimeDelta;
@@ -477,6 +477,11 @@ namespace Engine
 			fLerpTime = LERP_DESC::Calculate_Time(fCurTime, fEndTime, eMode);
 
 			return fLerpTime;
+		}
+
+		_float Get_Progress()
+		{
+			return fCurTime / fEndTime;
 		}
 
 	}LERP_TIME_DESC;

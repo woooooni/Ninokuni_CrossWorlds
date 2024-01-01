@@ -32,13 +32,18 @@ private:
 	HRESULT Render_DebugDraw();
 
 	/* 베지어 곡선의 경로를 나타내기 위해 사용 */
+	vector<Vec3> Get_CamPositionPaths();
+	vector<Vec3> Get_CamLookAtPaths();
 	vector<Vec3> Subdivide_Bezier(const vector<Vec3>& controlPoints, int numSegments);
 
 private:
 	/* CutScene */
 	_bool	m_bShow_Prop_CutScene		= false;
 	_int	m_iCurCutSceneIndex			= -1;
-	_bool	m_bShowMarker				= false;
+	_bool	m_bShowMarker				= true;
+	_bool	m_bPlayCutScene				= false;
+
+	LERP_TIME_DESC	m_tCutSceneDebugTimeDesc;
 
 #pragma region Debug Draw 
 	BasicEffect*							m_pEffect = nullptr;

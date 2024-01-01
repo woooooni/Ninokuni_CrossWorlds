@@ -359,12 +359,33 @@ void CTool_Camera::Show_Camera_Prop_CutScene(_float fTimeDelta)
 		{
 			ImGui::PushItemWidth(220.f);
 			{
+				vector<CAMERA_CUTSCENE_DESC> CutSceneDescs = pCutSceneCam->Get_CutSceneDescs();
+
+				if (m_bPlayCutScene)
+				{
+					if (!pCutSceneCam->Is_Playing_CutScenc())
+					{
+						CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE);
+						m_tCutSceneDebugTimeDesc.Start(CutSceneDescs[m_iCurCutSceneIndex].fDuration, CutSceneDescs[m_iCurCutSceneIndex].eLerpMode);
+						m_bPlayCutScene = false;
+						m_bShowMarker = true;
+					}
+				}
+
 				/* Func */
 				{
 					/* 컷신 시작 */
-					if (ImGui::Button("Play CutScene"))
+					if (ImGui::Checkbox("Play CutScene", &m_bPlayCutScene))
 					{
-
+						if (m_bPlayCutScene)
+						{
+							if (0 <= m_iCurCutSceneIndex)
+							{
+								CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::CUTSCENE);
+								pCutSceneCam->Start_CutScene(CutSceneDescs[m_iCurCutSceneIndex].strCutSceneName);
+								m_bShowMarker = false;
+							}
+						}
 					}
 					IMGUI_SAME_LINE;
 
@@ -374,7 +395,6 @@ void CTool_Camera::Show_Camera_Prop_CutScene(_float fTimeDelta)
 				}
 				IMGUI_NEW_LINE;
 
-				vector<CAMERA_CUTSCENE_DESC> CutSceneDescs = pCutSceneCam->Get_CutSceneDescs();
 
 				/* 전체 컷신 리스트 */
 				{
@@ -386,6 +406,7 @@ void CTool_Camera::Show_Camera_Prop_CutScene(_float fTimeDelta)
 							if (ImGui::Selectable(CutSceneDescs[i].strCutSceneName.c_str(), i == m_iCurCutSceneIndex))
 							{
 								m_iCurCutSceneIndex = i;
+								m_tCutSceneDebugTimeDesc.Start(CutSceneDescs[m_iCurCutSceneIndex].fDuration, CutSceneDescs[m_iCurCutSceneIndex].eLerpMode);
 							}
 						}
 						ImGui::EndListBox();
@@ -397,6 +418,14 @@ void CTool_Camera::Show_Camera_Prop_CutScene(_float fTimeDelta)
 				/* 현재 컷신 정보*/
 				if(0 <= m_iCurCutSceneIndex)
 				{
+					/* 디버그 업데이트 */
+					{
+						if (!m_tCutSceneDebugTimeDesc.bActive)
+							m_tCutSceneDebugTimeDesc.Start(CutSceneDescs[m_iCurCutSceneIndex].fDuration, CutSceneDescs[m_iCurCutSceneIndex].eLerpMode);
+						else
+							m_tCutSceneDebugTimeDesc.Update(fTimeDelta);
+					}
+
 					/* 이름 편집 */
 					{
 						char szCutSceneName[MAX_PATH];
@@ -426,6 +455,7 @@ void CTool_Camera::Show_Camera_Prop_CutScene(_float fTimeDelta)
 							{
 								CutSceneDescs[m_iCurCutSceneIndex].vCamPositions[i] = { fPositions[0], fPositions[1], fPositions[2] };
 								pCutSceneCam->Change_CutSceneDesc(m_iCurCutSceneIndex, CutSceneDescs[m_iCurCutSceneIndex]);
+								m_tCutSceneDebugTimeDesc.Start(CutSceneDescs[m_iCurCutSceneIndex].fDuration, CutSceneDescs[m_iCurCutSceneIndex].eLerpMode);
 							}
 						}
 					}
@@ -448,6 +478,7 @@ void CTool_Camera::Show_Camera_Prop_CutScene(_float fTimeDelta)
 							{
 								CutSceneDescs[m_iCurCutSceneIndex].vCamLookAts[i] = { fLookAt[0], fLookAt[1], fLookAt[2] };
 								pCutSceneCam->Change_CutSceneDesc(m_iCurCutSceneIndex, CutSceneDescs[m_iCurCutSceneIndex]);
+								m_tCutSceneDebugTimeDesc.Start(CutSceneDescs[m_iCurCutSceneIndex].fDuration, CutSceneDescs[m_iCurCutSceneIndex].eLerpMode);
 							}
 						}
 					}
@@ -457,12 +488,14 @@ void CTool_Camera::Show_Camera_Prop_CutScene(_float fTimeDelta)
 					if (ImGui::DragFloat("컷신 플레이 타임", &CutSceneDescs[m_iCurCutSceneIndex].fDuration, 0.1f, 0.1f, 100.f))
 					{
 						pCutSceneCam->Change_CutSceneDesc(m_iCurCutSceneIndex, CutSceneDescs[m_iCurCutSceneIndex]);
+						m_tCutSceneDebugTimeDesc.Start(CutSceneDescs[m_iCurCutSceneIndex].fDuration, CutSceneDescs[m_iCurCutSceneIndex].eLerpMode);
 					}
 					
 					/* 시작 딜레이 시간 */
 					if (ImGui::DragFloat(u8"시작 딜레이 시간", &CutSceneDescs[m_iCurCutSceneIndex].fStartDelayTime, 0.05f, 0.f, 100.f))
 					{
 						pCutSceneCam->Change_CutSceneDesc(m_iCurCutSceneIndex, CutSceneDescs[m_iCurCutSceneIndex]);
+						m_tCutSceneDebugTimeDesc.Start(CutSceneDescs[m_iCurCutSceneIndex].fDuration, CutSceneDescs[m_iCurCutSceneIndex].eLerpMode);
 					}
 
 
@@ -470,6 +503,7 @@ void CTool_Camera::Show_Camera_Prop_CutScene(_float fTimeDelta)
 					if (ImGui::DragFloat(u8"종료 딜레이 시간", &CutSceneDescs[m_iCurCutSceneIndex].fFinishDelayTime, 0.05f, 0.f, 100.f))
 					{
 						pCutSceneCam->Change_CutSceneDesc(m_iCurCutSceneIndex, CutSceneDescs[m_iCurCutSceneIndex]);
+						m_tCutSceneDebugTimeDesc.Start(CutSceneDescs[m_iCurCutSceneIndex].fDuration, CutSceneDescs[m_iCurCutSceneIndex].eLerpMode);
 					}
 
 					IMGUI_NEW_LINE;
@@ -484,10 +518,11 @@ void CTool_Camera::Show_Camera_Prop_CutScene(_float fTimeDelta)
 							{
 								const bool is_selected = (iCurComboIndex == (_uint)CutSceneDescs[m_iCurCutSceneIndex].eLerpMode);
 
-								if (ImGui::Selectable(to_string(iCurComboIndex).c_str(), is_selected))
+								if (ImGui::Selectable(LerpModeNames[iCurComboIndex].c_str(), is_selected))
 								{
 									CutSceneDescs[m_iCurCutSceneIndex].eLerpMode = (LERP_MODE)iCurComboIndex;
 									pCutSceneCam->Change_CutSceneDesc(m_iCurCutSceneIndex, CutSceneDescs[m_iCurCutSceneIndex]);
+									m_tCutSceneDebugTimeDesc.Start(CutSceneDescs[m_iCurCutSceneIndex].fDuration, CutSceneDescs[m_iCurCutSceneIndex].eLerpMode);
 								}
 
 								if (is_selected)
@@ -510,21 +545,22 @@ void CTool_Camera::Show_Camera_Prop_CutScene(_float fTimeDelta)
 						Vec3 vCurCamLook = pCutSceneCam->Get_Transform()->Get_Look();
 
 						Vec3 vCreateStartPos = CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Transform()->Get_Position();
-						vCreateStartPos += vCurCamLook * 30.f;
+						vCreateStartPos += vCurCamLook * 20.f;
 
 						for (size_t i = 0; i < 4; i++)
 						{
-							desc.vCamPositions[i] = vCreateStartPos + (vCurCamLook.ZeroY() * 30.f * i);
-							desc.vCamPositions[i].x -= 10.f;
+							desc.vCamPositions[i] = vCreateStartPos + (vCurCamLook.ZeroY() * 10.f * i);
+							desc.vCamPositions[i].x -= 3.f;
 
-							desc.vCamLookAts[i] = vCreateStartPos + (vCurCamLook.ZeroY() * 30.f * i);
-							desc.vCamLookAts[i].x += 10.f;
+							desc.vCamLookAts[i] = vCreateStartPos + (vCurCamLook.ZeroY() * 10.f * i);
+							desc.vCamLookAts[i].x += 3.f;
 						}
 					}
 
 					pCutSceneCam->Add_CutSceneDesc(desc);
 
 					m_iCurCutSceneIndex++;
+					m_tCutSceneDebugTimeDesc.Start(desc.fDuration, desc.eLerpMode);
 				}
 				IMGUI_SAME_LINE;
 
@@ -533,6 +569,9 @@ void CTool_Camera::Show_Camera_Prop_CutScene(_float fTimeDelta)
 				{
 					pCutSceneCam->Del_CutSceneDesc(CutSceneDescs[m_iCurCutSceneIndex].strCutSceneName);
 					m_iCurCutSceneIndex--;
+
+					if(0 <= m_iCurCutSceneIndex)
+						m_tCutSceneDebugTimeDesc.Start(CutSceneDescs[m_iCurCutSceneIndex].fDuration, CutSceneDescs[m_iCurCutSceneIndex].eLerpMode);
 				}
 				IMGUI_SAME_LINE;
 
@@ -546,128 +585,6 @@ void CTool_Camera::Show_Camera_Prop_CutScene(_float fTimeDelta)
 		}
 	}
 	ImGui::EndChild();
-
-
-
-	///* 포지션 리스트*/
-	//if (0 <= m_iTempPositionIndex)
-	//{
-	//	ImGui::Text("캠 포지션 리스트");
-	//	const char* Preview = to_string(m_iTempPositionIndex).c_str();
-	//	if (ImGui::BeginCombo(u8"포지션 인덱스", Preview))
-	//	{
-	//		/* 컷신 카메라는 별도 창에서 작업 하기 위해 인덱스를 -1 한다. */
-	//		for (int iCurComboIndex = 0; iCurComboIndex < m_vTempPositions.size(); iCurComboIndex++)
-	//		{
-	//			const bool is_selected = (iCurComboIndex == m_iTempPositionIndex);
-
-	//			if (ImGui::Selectable(to_string(iCurComboIndex).c_str(), is_selected))
-	//			{
-	//			m_iTempPositionIndex = iCurComboIndex;
-
-	//			m_tDesc.Start(m_tDesc.fEndTime, LERP_MODE::DEFAULT);
-	//			}
-
-	//			if (is_selected)
-	//				ImGui::SetItemDefaultFocus();
-	//		}
-	//		ImGui::EndCombo();
-	//	}
-
-	//	_float vPos[3] = { m_vTempPositions[m_iTempPositionIndex].x, m_vTempPositions[m_iTempPositionIndex].y , m_vTempPositions[m_iTempPositionIndex].z };
-	//	if (ImGui::DragFloat3("포지션 수정", vPos))
-	//	{
-	//		memcpy(&m_vTempPositions[m_iTempPositionIndex], vPos, sizeof(Vec3));
-
-	//		m_tDesc.Start(m_tDesc.fEndTime, LERP_MODE::DEFAULT);
-	//	}
-	//}
-
-
-	///* 룩앳 리스트 */
-	//if (0 <= m_iTempLookAtIndex)
-	//{
-	//	ImGui::Text("캠 룩앳 리스트");
-	//	const char* Preview = to_string(m_iTempLookAtIndex).c_str();
-	//	if (ImGui::BeginCombo(u8"룩앳 리스트", Preview))
-	//	{
-	//		for (int iCurComboIndex = 0; iCurComboIndex < m_vTempLookAts.size(); iCurComboIndex++)
-	//		{
-	//			const bool is_selected = (iCurComboIndex == m_iTempLookAtIndex);
-
-	//			if (ImGui::Selectable(to_string(iCurComboIndex).c_str(), is_selected))
-	//			{
-	//				m_iTempLookAtIndex = iCurComboIndex;
-
-	//				m_tDesc.Start(m_tDesc.fEndTime, LERP_MODE::DEFAULT);
-	//			}
-
-	//			if (is_selected)
-	//				ImGui::SetItemDefaultFocus();
-	//		}
-	//		ImGui::EndCombo();
-	//	}
-
-	//	_float vLook[3] = { m_vTempLookAts[m_iTempLookAtIndex].x, m_vTempLookAts[m_iTempLookAtIndex].y , m_vTempLookAts[m_iTempLookAtIndex].z };
-	//	if (ImGui::DragFloat3("룩앳 수정", vLook))
-	//	{
-	//		memcpy(&m_vTempLookAts[m_iTempLookAtIndex], vLook, sizeof(Vec3));
-
-	//		m_tDesc.Start(m_tDesc.fEndTime, LERP_MODE::DEFAULT);
-	//	}
-	//}
-
-
-
-
-
-	//IMGUI_NEW_LINE;
-	//if (ImGui::Button("Add Position"))
-	//{
-	//	Vec3 vCurCamLook = CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Transform()->Get_Look();
-	//	
-	//	Vec3 vCreateStartPos = CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Transform()->Get_Position();
-	//	vCreateStartPos += vCurCamLook * 30.f;
-
-	//	for (size_t i = 0; i < 4; i++)
-	//	{
-	//		Vec3 vCreatePos = vCreateStartPos + (vCurCamLook.ZeroY() * 30.f * i);
-
-	//		m_vTempPositions.push_back(vCreatePos);
-	//	}
-	//	
-	//	m_tDesc.Start(m_tDesc.fEndTime, LERP_MODE::DEFAULT);
-
-	//	m_iTempPositionIndex++;
-	//}
-
-	//IMGUI_SAME_LINE;
-	//if (ImGui::Button("Add LookAt"))
-	//{
-	//	Vec3 vCurCamLook = CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Transform()->Get_Look();
-
-	//	Vec3 vCreateStartPos = CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Transform()->Get_Position();
-	//	vCreateStartPos += vCurCamLook * 30.f;
-
-	//	for (size_t i = 0; i < 4; i++)
-	//	{
-	//		Vec3 vCreatePos = vCreateStartPos + (vCurCamLook.ZeroY() * 30.f * i);
-
-	//		m_vTempLookAts.push_back(vCreatePos);
-	//	}
-
-	//	m_tDesc.Start(m_tDesc.fEndTime, LERP_MODE::DEFAULT);
-
-	//	m_iTempLookAtIndex++;
-	//}
-
-
-	//if (!m_tDesc.bActive)
-	//	m_tDesc.Start(m_tDesc.fEndTime, LERP_MODE::DEFAULT);
-	//else
-	//	m_tDesc.Update(fTimeDelta);
-
-
 }
 
 void CTool_Camera::Clear_CutSceneCache()
@@ -678,8 +595,6 @@ void CTool_Camera::Clear_CutSceneCache()
 
 	m_bShowMarker = false;
 }
-
-
 
 HRESULT CTool_Camera::Ready_DebugDraw()
 {
@@ -708,6 +623,12 @@ HRESULT CTool_Camera::Ready_DebugDraw()
 
 HRESULT CTool_Camera::Render_DebugDraw()
 {
+	if (0 > m_iCurCutSceneIndex || !m_bShowMarker)
+		return S_OK;
+
+	vector<CAMERA_CUTSCENE_DESC> CutSceneDescs =
+		dynamic_cast<CCamera_CutScene*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE))->Get_CutSceneDescs();
+
 
 	m_pEffect->SetWorld(XMMatrixIdentity());
 	m_pEffect->SetView(GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
@@ -719,31 +640,97 @@ HRESULT CTool_Camera::Render_DebugDraw()
 
 	m_pBatch->Begin();
 	{
-		///* 포지션 위치 */
-		//m_pSphere->Center = Calculate_Bezier(true);
-		//DX::Draw(m_pBatch, *m_pSphere, Colors::Red);
+		/* 포지션 경로 */
+		vector<Vec3> CamPositions = Get_CamPositionPaths();
+		for (size_t i = 0; i < CamPositions.size(); i++)
+		{
+			m_pSphere->Center = CamPositions[i];
+			DX::Draw(m_pBatch, *m_pSphere, Colors::Yellow);
+		}
 
-		///* 룩앳 위치 */
-		//m_pSphere->Center = Calculate_Bezier(false);
-		//DX::Draw(m_pBatch, *m_pSphere, Colors::Green);
+		/* 룩앳 경로*/
+		vector<Vec3> CamLookAts = Get_CamLookAtPaths();
+		for (size_t i = 0; i < CamLookAts.size(); i++)
+		{
+			m_pSphere->Center = CamLookAts[i];
+			DX::Draw(m_pBatch, *m_pSphere, Colors::Green);
+		}
 
-		///* 포지션 경로 */
-		//for (size_t i = 0; i < m_vTempPositions.size(); i++)
-		//{
-		//	m_pSphere->Center = m_vTempPositions[i];
-		//	DX::Draw(m_pBatch, *m_pSphere, Colors::Chocolate);
-		//}
+		/* 포지션 4개*/
+		for (size_t i = 0; i < MAX_BEZIER_POINT; i++)
+		{
+			m_pSphere->Center = CutSceneDescs[m_iCurCutSceneIndex].vCamPositions[i];
+			DX::Draw(m_pBatch, *m_pSphere, Colors::Navy);
+		}
 
-		///* 룩앳 경로*/
-		//for (size_t i = 0; i < m_vTempLookAts.size(); i++)
-		//{
-		//	m_pSphere->Center = m_vTempLookAts[i];
-		//	DX::Draw(m_pBatch, *m_pSphere, Colors::Black);
-		//}
+		/* 룩앳 4개 */
+		for (size_t i = 0; i < MAX_BEZIER_POINT; i++)
+		{
+			m_pSphere->Center = CutSceneDescs[m_iCurCutSceneIndex].vCamLookAts[i];
+			DX::Draw(m_pBatch, *m_pSphere, Colors::Black);
+		}
+
+		/* 실시간 포지션 위치 */
+		m_pSphere->Center = CCamera_CutScene::Get_Point_In_Bezier(CutSceneDescs[m_iCurCutSceneIndex].vCamPositions, m_tCutSceneDebugTimeDesc.Get_Progress()).xyz();
+		DX::Draw(m_pBatch, *m_pSphere, Colors::Red);
+
+		/* 실시간 룩앳 위치 */
+		m_pSphere->Center = CCamera_CutScene::Get_Point_In_Bezier(CutSceneDescs[m_iCurCutSceneIndex].vCamLookAts, m_tCutSceneDebugTimeDesc.Get_Progress()).xyz();
+		DX::Draw(m_pBatch, *m_pSphere, Colors::Blue);
 	}
 	m_pBatch->End();
 
 	return S_OK;
+}
+
+vector<Vec3> CTool_Camera::Get_CamPositionPaths()
+{
+	/* 포인트를 배열에서 벡터로 옮기기 */
+	vector<Vec3> vPoints;
+	{
+		vector<CAMERA_CUTSCENE_DESC> CutSceneDescs =
+			dynamic_cast<CCamera_CutScene*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE))->Get_CutSceneDescs();
+
+		for (size_t i = 0; i < MAX_BEZIER_POINT; i++)
+			vPoints.push_back(CutSceneDescs[m_iCurCutSceneIndex].vCamPositions[i]);
+	}
+
+	/* 포인트들 간의 총 거리 구하기 */
+	_float fDistance = 0.f;
+	{
+		for (size_t i = 0; i < MAX_BEZIER_POINT - 1; i++)
+			fDistance += Vec3::Distance(vPoints[i], vPoints[i + 1]);
+	}
+
+	/* 거리를 바탕으로 적절한 세그먼트 수 결정 */
+	fDistance *= 0.7f;
+
+	return Subdivide_Bezier(vPoints, _int(fDistance));
+}
+
+vector<Vec3> CTool_Camera::Get_CamLookAtPaths()
+{
+	/* 포인트를 배열에서 벡터로 옮기기 */
+	vector<Vec3> vPoints;
+	{
+		vector<CAMERA_CUTSCENE_DESC> CutSceneDescs =
+			dynamic_cast<CCamera_CutScene*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE))->Get_CutSceneDescs();
+
+		for (size_t i = 0; i < MAX_BEZIER_POINT; i++)
+			vPoints.push_back(CutSceneDescs[m_iCurCutSceneIndex].vCamLookAts[i]);
+	}
+
+	/* 포인트들 간의 총 거리 구하기 */
+	_float fDistance = 0.f;
+	{
+		for (size_t i = 0; i < MAX_BEZIER_POINT - 1; i++)
+			fDistance += Vec3::Distance(vPoints[i], vPoints[i + 1]);
+	}
+
+	/* 거리를 바탕으로 적절한 세그먼트 수 결정 */
+	fDistance *= 0.7f;
+
+	return Subdivide_Bezier(vPoints, _int(fDistance));
 }
 
 vector<Vec3> CTool_Camera::Subdivide_Bezier(const vector<Vec3>& controlPoints, int numSegments)
