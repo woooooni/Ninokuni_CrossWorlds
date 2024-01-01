@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "..\Public\Animals.h"
 #include "GameInstance.h"
+#include "Game_Manager.h"
+#include "Player.h"
 
 CAnimals::CAnimals(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType)
 	: CDynamicObject(pDevice, pContext, strObjectTag, eType)
@@ -27,6 +29,7 @@ HRESULT CAnimals::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_eType = DYNAMIC_TYPE::DYNAMIC_ANIMAL;
+	
 
 	return S_OK;
 }
@@ -49,10 +52,10 @@ void CAnimals::LateTick(_float fTimeDelta)
 	if (nullptr != m_pModelCom)
 		m_pModelCom->LateTick(fTimeDelta);
 
-	__super::LateTick(fTimeDelta);
-
 	if(nullptr != m_pControllerCom)
 		m_pControllerCom->LateTick_Controller(fTimeDelta);
+
+	__super::LateTick(fTimeDelta);
 
 	if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 30.0f))
 	{
@@ -178,9 +181,11 @@ void CAnimals::Collision_Exit(const COLLISION_INFO& tInfo)
 
 void CAnimals::Find_MinObject()
 {
-	CGameObject* pPlayerObj = GI->Find_GameObject(LEVEL_TEST, LAYER_TYPE::LAYER_CHARACTER, TEXT("SwordMan"));
+	CPlayer* pPlayerObj = CGame_Manager::GetInstance()->Get_Player();
+	if (nullptr == pPlayerObj)
+		return;
 
-	CTransform* pTransform = pPlayerObj->Get_Component<CTransform>(TEXT("Com_Transform"));
+	CTransform* pTransform = pPlayerObj->Get_Character()->Get_Component<CTransform>(TEXT("Com_Transform"));
 
 	const _uint iCurrenLevel = GI->Get_CurrentLevel();
 	list<CGameObject*>& GameObjList = GI->Find_GameObjects(iCurrenLevel, LAYER_TYPE::LAYER_DYNAMIC);
@@ -208,8 +213,6 @@ void CAnimals::Find_MinObject()
 			}
 		}
 	}
-
-	
 
 	static_cast<CAnimals*>(pMinObj)->m_bLift = true;
 }

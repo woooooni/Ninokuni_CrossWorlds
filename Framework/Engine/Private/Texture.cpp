@@ -37,7 +37,7 @@ HRESULT CTexture::Initialize_Prototype(const wstring& strTextureFilePath, _uint 
 HRESULT CTexture::Initialize(void* pArg)
 {
 	return S_OK;
-}
+} 
 
 HRESULT CTexture::Bind_ShaderResource(const CShader* pShader, const char* pConstantName, _uint iTextureIndex)
 {

@@ -479,19 +479,19 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Sky_Cloud2"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/SkyDom/Cloud4.dds")))))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Sky_DomeTex"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/SkyDom/T_skyyy.png")))))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Sky_DomeTex2"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/SkyDom/T_SkyBox_RoxanneBlueSkyAndCloud.png")))))
-		return E_FAIL;
+	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Sky_DomeTex"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/SkyDom/T_skyyy.png")))))
+	//	return E_FAIL;
+	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Sky_DomeTex2"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/SkyDom/T_SkyBox_RoxanneBlueSkyAndCloud.png")))))
+	//	return E_FAIL;
 	// Winter
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Sky_Dome_Winter_Diffuse"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/Image/T_Image_013.png")))))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Sky_Dome_Winter_Alpha"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/Image/T_Image_013_Alpha004.png")))))
-		return E_FAIL;
+	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Sky_Dome_Winter_Diffuse"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/Image/T_Image_013.png")))))
+	//	return E_FAIL;
+	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Sky_Dome_Winter_Alpha"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/Image/T_Image_013_Alpha004.png")))))
+	//	return E_FAIL;
 
 	// Witch
 	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Sky_DomeTex2"),

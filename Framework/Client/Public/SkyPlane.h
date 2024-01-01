@@ -17,6 +17,8 @@ END
 BEGIN(Client)
 class CSkyPlane final : public CGameObject
 {
+private:
+	enum PLANE_TEX { CLOUD_TEX, CLOUDE_NOISE, CLOUDE_NOISE2, CLOUDE_PERT, CLOUDE_AURA, TEX_END };
 protected:
 	explicit CSkyPlane(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType);
 	explicit CSkyPlane(const CSkyPlane& rhs);
@@ -38,7 +40,7 @@ private:
 	CRenderer* m_pRendererCom = nullptr;
 	CTransform* m_pTransformCom = nullptr;
 	CModel* m_pModelCom = nullptr;
-	CTexture* m_pTextureCom[2] = { nullptr, nullptr };
+	CTexture* m_pTextureCom[PLANE_TEX::TEX_END] = {};
 	CVIBuffer_SkyPlane* m_pSkyPlaneCom = nullptr;
 
 	_float m_fBrightness = 0.5f;

@@ -74,13 +74,35 @@ HRESULT CSkyPlane::Render()
 	if (FAILED(m_pShaderCom->Bind_RawValue("fbrightness", &m_fBrightness, sizeof(_float))))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom[0]->Bind_ShaderResource(m_pShaderCom, "cloudTexture")))
-		return E_FAIL;
-	if (FAILED(m_pTextureCom[1]->Bind_ShaderResource(m_pShaderCom, "perturbTexture")))
-		return E_FAIL;
+	if (m_strObjectTag == TEXT("Sky_Plane"))
+	{
+		if (FAILED(m_pTextureCom[PLANE_TEX::CLOUDE_NOISE]->Bind_ShaderResource(m_pShaderCom, "cloudTexture")))
+			return E_FAIL;
+		if (FAILED(m_pTextureCom[PLANE_TEX::CLOUDE_PERT]->Bind_ShaderResource(m_pShaderCom, "perturbTexture")))
+			return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Begin(0)))
-		return E_FAIL;
+		if (FAILED(m_pShaderCom->Begin(0)))
+			return E_FAIL;
+	}
+	else if (m_strObjectTag == TEXT("Sky_Plane2"))
+	{
+
+		_int iIndex = m_pTextureCom[PLANE_TEX::CLOUDE_NOISE]->Find_Index(TEXT("T_Image_014"));
+		if (FAILED(m_pTextureCom[PLANE_TEX::CLOUDE_NOISE]->Bind_ShaderResource(m_pShaderCom, "WinterNoiseTexture", iIndex)))
+			return E_FAIL;
+		iIndex = m_pTextureCom[PLANE_TEX::CLOUDE_NOISE2]->Find_Index(TEXT("T_Noise_702"));
+		if (FAILED(m_pTextureCom[PLANE_TEX::CLOUDE_NOISE2]->Bind_ShaderResource(m_pShaderCom, "WinterNoiseTexture2", iIndex)))
+			return E_FAIL;
+		if (FAILED(m_pTextureCom[PLANE_TEX::CLOUDE_PERT]->Bind_ShaderResource(m_pShaderCom, "perturbTexture")))
+			return E_FAIL;
+		if (FAILED(m_pTextureCom[PLANE_TEX::CLOUDE_AURA]->Bind_ShaderResource(m_pShaderCom, "WinterAuraTexture", 0)))
+			return E_FAIL;
+
+		if (FAILED(m_pShaderCom->Begin(1)))
+			return E_FAIL;
+	}
+
+	
 	if (FAILED(m_pSkyPlaneCom->Render()))
 		return E_FAIL;
 
@@ -105,13 +127,31 @@ HRESULT CSkyPlane::Ready_Components()
 		TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pSkyPlaneCom))))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Sky_Cloud"),
-		TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom[0]))))
-		return E_FAIL;
+	if (m_strObjectTag == TEXT("Sky_Plane"))
+	{
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Sky_Cloud"),
+			TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom[PLANE_TEX::CLOUDE_NOISE]))))
+			return E_FAIL;
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Sky_Cloud2"),
+			TEXT("Com_Texture2"), reinterpret_cast<CComponent**>(&m_pTextureCom[PLANE_TEX::CLOUDE_PERT]))))
+			return E_FAIL;
+	}
+	else if (m_strObjectTag == TEXT("Sky_Plane2"))
+	{
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Image"),
+			TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom[PLANE_TEX::CLOUDE_NOISE]))))
+			return E_FAIL;
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Sky_Cloud2"),
+			TEXT("Com_Texture2"), reinterpret_cast<CComponent**>(&m_pTextureCom[PLANE_TEX::CLOUDE_PERT]))))
+			return E_FAIL;
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Aura"),
+			TEXT("Com_Texture3"), reinterpret_cast<CComponent**>(&m_pTextureCom[PLANE_TEX::CLOUDE_AURA]))))
+			return E_FAIL;
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Noise"),
+			TEXT("Com_Texture4"), reinterpret_cast<CComponent**>(&m_pTextureCom[PLANE_TEX::CLOUDE_NOISE2]))))
+			return E_FAIL;
+	}
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Sky_Cloud2"),
-		TEXT("Com_Texture2"), reinterpret_cast<CComponent**>(&m_pTextureCom[1]))))
-		return E_FAIL;
 
 
 	return S_OK;
@@ -172,7 +212,7 @@ void CSkyPlane::Free()
 	Safe_Release<CRenderer*>(m_pRendererCom);
 	Safe_Release<CTransform*>(m_pTransformCom);
 
-	for(_uint i = 0; i < 2; ++i)
+	for(_uint i = 0; i < PLANE_TEX::TEX_END; ++i)
 		Safe_Release<CTexture*>(m_pTextureCom[i]);
 
 	Safe_Release<CModel*>(m_pModelCom);

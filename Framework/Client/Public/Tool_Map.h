@@ -125,6 +125,10 @@ private:
 
 	USE_SPACE m_eUseSpace = SPACE_END;
 
+	// OBJECT_INIT_DATA
+	vector<Vec4> m_vRomingPoints;
+
+
 
 public:
 	static CTool_Map* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

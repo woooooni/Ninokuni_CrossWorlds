@@ -198,6 +198,7 @@
     <ClInclude Include="..\Public\Animal_Ray.h" />
     <ClInclude Include="..\Public\AquarisBella.h" />
     <ClInclude Include="..\Public\Aren.h" />
+    <ClInclude Include="..\Public\Aurora.h" />
     <ClInclude Include="..\public\BackGround.h" />
     <ClInclude Include="..\Public\Baobam_Dark.h" />
     <ClInclude Include="..\Public\Baobam_DarkBT.h" />
@@ -720,6 +721,7 @@
     <ClCompile Include="..\Private\Animal_Ray.cpp" />
     <ClCompile Include="..\Private\AquarisBella.cpp" />
     <ClCompile Include="..\Private\Aren.cpp" />
+    <ClCompile Include="..\Private\Aurora.cpp" />
     <ClCompile Include="..\private\BackGround.cpp" />
     <ClCompile Include="..\Private\Baobam_Dark.cpp" />
     <ClCompile Include="..\Private\Baobam_DarkBT.cpp" />
