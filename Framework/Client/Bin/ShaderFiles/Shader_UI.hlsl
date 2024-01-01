@@ -396,7 +396,7 @@ PS_OUT PS_MAIN_HPBAR_LERP_AND_GLOW(PS_IN In)
 		Out.vColor = vLerpColor;
 	else if (g_CurrentHP / g_MaxHP > In.vTexUV.x)
 	{
-		if (0.001f > vFXColor.a)
+		if (0.1f > vFXColor.a)
 			Out.vColor = vGaugeColor;
 		else
 		{
@@ -405,7 +405,9 @@ PS_OUT PS_MAIN_HPBAR_LERP_AND_GLOW(PS_IN In)
 				Out.vColor.a = 0.f;
 			}
 			else
+			{
 				Out.vColor = vFXColor;
+			}
 		}
 	}
 

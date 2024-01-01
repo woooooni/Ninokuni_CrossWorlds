@@ -2,6 +2,9 @@
 #include "UI_Emoticon_SpeechBalloon.h"
 #include "GameInstance.h"
 #include "UI_Manager.h"
+#include "Player.h"
+#include "Character.h"
+#include "Game_Manager.h"
 #include "UI_Emoticon_BalloonEmoticon.h"
 
 CUI_Emoticon_SpeechBalloon::CUI_Emoticon_SpeechBalloon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -21,17 +24,20 @@ void CUI_Emoticon_SpeechBalloon::Set_Active(_bool bActive)
 		m_bAlpha = false;
 		m_fAlpha = 0.9f;
 
-		if (_uint(LEVELID::LEVEL_TEST) == GI->Get_CurrentLevel())
+		// 플레이어 찾는것 바꿔야함.
+		//if (_uint(LEVELID::LEVEL_TEST) == GI->Get_CurrentLevel())
 		{
-			CGameObject* pTarget = GI->Find_GameObject(_uint(GI->Get_CurrentLevel()), _uint(LAYER_TYPE::LAYER_CHARACTER),
-				TEXT("SwordMan"));
-			if (nullptr == pTarget)
+			CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+			if (nullptr == pPlayer)
+				return;
+			CCharacter* pCharacter = pPlayer->Get_Character();
+			if (nullptr == pCharacter)
 				return;
 
-			CTransform* pTargetTransform = pTarget->Get_Component<CTransform>(L"Com_Transform");
+			CTransform* pTargetTransform = pCharacter->Get_Component<CTransform>(L"Com_Transform");
 			if (nullptr == pTargetTransform)
 				return;
-
+			
 			m_pCharacterTrans = pTargetTransform;
 		}
 	}
@@ -119,7 +125,7 @@ void CUI_Emoticon_SpeechBalloon::LateTick(_float fTimeDelta)
 
 		_float2 vPosition = Get_ProjectionPosition(m_pCharacterTrans);
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-			XMVectorSet(vPosition.x - g_iWinSizeX * 0.5f, -((vPosition.y - 200.f) - g_iWinSizeY * 0.5f), 0.f, 1.f));
+			XMVectorSet(vPosition.x - g_iWinSizeX * 0.5f, -((vPosition.y - 400.f) - g_iWinSizeY * 0.5f), 0.f, 1.f));
 
 		if (m_bAlpha)
 		{

@@ -89,34 +89,75 @@ void CUI_BossHP_Bar::LateTick(_float fTimeDelta)
 		}
 		else
 		{
-			_float fX = g_iWinSizeX * 0.5f - 30.f;
-			_float fY = 766.f;
-
 			// 기준점
 			CRenderer::TEXT_DESC  DividerDesc;
 			DividerDesc.strText = L"/";
 			DividerDesc.strFontTag = L"Default_Bold";
 			DividerDesc.vScale = { 0.45f, 0.45f };
-			DividerDesc.vPosition = _float2(fX, fY);
+			// OutLine
+			DividerDesc.vPosition = _float2(m_vDividerPos.x - 1.f, m_vDividerPos.y);
 			DividerDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
 			m_pRendererCom->Add_Text(DividerDesc);
+			DividerDesc.vPosition = _float2(m_vDividerPos.x + 1.f, m_vDividerPos.y);
+			DividerDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
+			m_pRendererCom->Add_Text(DividerDesc);
+			DividerDesc.vPosition = _float2(m_vDividerPos.x, m_vDividerPos.y - 1.f);
+			DividerDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
+			m_pRendererCom->Add_Text(DividerDesc);
+			DividerDesc.vPosition = _float2(m_vDividerPos.x, m_vDividerPos.y + 1.f);
+			DividerDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
+			m_pRendererCom->Add_Text(DividerDesc);
+			// Origin
+			DividerDesc.vPosition = m_vDividerPos;
+			DividerDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+			m_pRendererCom->Add_Text(DividerDesc);
 
+			// 현재 체력
 			wstring strCurHP = to_wstring(_int(m_fCurHP));
 			CRenderer::TEXT_DESC CurHPDesc;
 			CurHPDesc.strText = strCurHP;
 			CurHPDesc.strFontTag = L"Default_Bold";
 			CurHPDesc.vScale = { 0.4f, 0.4f };
-			CurHPDesc.vPosition = _float2(fX - 50.f, fY + 2.f);
+			// OutLine
+			CurHPDesc.vPosition = _float2(m_vCurHPPos.x - 1.f, m_vCurHPPos.y);
 			CurHPDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
 			m_pRendererCom->Add_Text(CurHPDesc);
+			CurHPDesc.vPosition = _float2(m_vCurHPPos.x + 1.f, m_vCurHPPos.y);
+			CurHPDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
+			m_pRendererCom->Add_Text(CurHPDesc);
+			CurHPDesc.vPosition = _float2(m_vCurHPPos.x, m_vCurHPPos.y - 1.f);
+			CurHPDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
+			m_pRendererCom->Add_Text(CurHPDesc);
+			CurHPDesc.vPosition = _float2(m_vCurHPPos.x, m_vCurHPPos.y + 1.f);
+			CurHPDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
+			m_pRendererCom->Add_Text(CurHPDesc);
+			// Origin
+			CurHPDesc.vPosition = m_vCurHPPos;
+			CurHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+			m_pRendererCom->Add_Text(CurHPDesc);
 
+			// 최대 체력
 			wstring strMaxHP = to_wstring(_int(m_fMaxHP));
 			CRenderer::TEXT_DESC MaxHPDesc;
 			MaxHPDesc.strText = strMaxHP;
 			MaxHPDesc.strFontTag = L"Default_Bold";
 			MaxHPDesc.vScale = { 0.4f, 0.4f };
-			MaxHPDesc.vPosition = _float2(fX + 30.f, fY + 2.f);
+			// OutLine
+			MaxHPDesc.vPosition = _float2(m_vMaxHPPos.x - 1.f, m_vMaxHPPos.y);
 			MaxHPDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
+			m_pRendererCom->Add_Text(MaxHPDesc);
+			MaxHPDesc.vPosition = _float2(m_vMaxHPPos.x + 1.f, m_vMaxHPPos.y);
+			MaxHPDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
+			m_pRendererCom->Add_Text(MaxHPDesc);
+			MaxHPDesc.vPosition = _float2(m_vMaxHPPos.x, m_vMaxHPPos.y - 1.f);
+			MaxHPDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
+			m_pRendererCom->Add_Text(MaxHPDesc);
+			MaxHPDesc.vPosition = _float2(m_vMaxHPPos.x, m_vMaxHPPos.y + 1.f);
+			MaxHPDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
+			m_pRendererCom->Add_Text(MaxHPDesc);
+			// Origin
+			MaxHPDesc.vPosition = m_vMaxHPPos;
+			MaxHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
 			m_pRendererCom->Add_Text(MaxHPDesc);
 		}
 

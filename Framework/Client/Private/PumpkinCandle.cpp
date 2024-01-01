@@ -4,6 +4,8 @@
 #include "GameInstance.h"
 
 #include "PumpkinCandleBT.h"
+#include "UI_MonsterHP_World.h"
+#include "UIDamage_Manager.h"
 
 CPumpkinCandle::CPumpkinCandle(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
 	: CMonster(pDevice, pContext, strObjectTag, tStat)
@@ -45,6 +47,13 @@ HRESULT CPumpkinCandle::Initialize(void* pArg)
 	if (FAILED(Ready_States()))
 		return E_FAIL;
 
+	CGameObject* pHPBar = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Monster_WorldHPBar"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pHPBar)
+		return E_FAIL;
+
+	m_pHPBar = dynamic_cast<CUI_MonsterHP_World*>(pHPBar);
+	m_pHPBar->Set_Owner(this, m_tStat.eElementType);
+
 	m_pModelCom->Set_Animation(0);
 
 	return S_OK;
@@ -67,17 +76,26 @@ void CPumpkinCandle::Tick(_float fTimeDelta)
 	}
 	// >> 
 
+	if (nullptr != m_pHPBar)
+		m_pHPBar->Tick(fTimeDelta);
+
 	__super::Tick(fTimeDelta);
 }
 
 void CPumpkinCandle::LateTick(_float fTimeDelta)
 {
+	if (nullptr != m_pHPBar)
+		m_pHPBar->LateTick(fTimeDelta);
+
 	__super::LateTick(fTimeDelta);
 }
 
 HRESULT CPumpkinCandle::Render()
 {
 	__super::Render();
+
+	if (nullptr != m_pHPBar)
+		m_pHPBar->Render();
 
 	return S_OK;
 }
@@ -245,4 +263,5 @@ void CPumpkinCandle::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pHPBar);
 }

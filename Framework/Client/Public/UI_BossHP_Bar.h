@@ -35,9 +35,9 @@ private:
 	_float m_fRatio = { 0.5f };
 
 	// For Text
-	_float2 m_vDefaultPosition = _float2(250.f, 39.f); // "/"
-	_float2 m_vCurHPPosition = _float2(200.f, 39.f); // 최대 체력
-	_float2 m_vMaxHPPosition = _float2(265.f, 39.f); // 현재 체력
+	_float2 m_vDividerPos = _float2(g_iWinSizeX * 0.5f - 30.f, 766.f);
+	_float2 m_vCurHPPos = _float2(g_iWinSizeX * 0.5f - 80.f, 768.f);
+	_float2 m_vMaxHPPos = _float2(g_iWinSizeX * 0.5f, 768.f);
 
 private:
 	virtual HRESULT	Ready_Components() override;

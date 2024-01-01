@@ -17,10 +17,11 @@ protected:
 
 public:
 	virtual void Set_Active(_bool bActive) override;
-	//void Set_CharacterType(CHARACTER_TYPE eType);
 	_bool Get_Clicked() { return m_bClicked; }
 	void Set_Clicked(_bool bClicked) { m_bClicked = bClicked; }
+
 	UI_COSTUME_SLOT Get_SlotIndex() { return m_eType; }
+	const wstring& Get_PartTag() { return m_strPartTag; }
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -43,7 +44,11 @@ private:
 	CTexture* m_pTexCom_SMAcc = { nullptr };
 	CTexture* m_pTexCom_EGCostume = { nullptr };
 	CTexture* m_pTexCom_EGAcc = { nullptr };
+	CTexture* m_pTexCom_DTCostume = { nullptr };
+	CTexture* m_pTexCom_DTAcc = { nullptr };
 	CTexture* m_pFXTextureCom = { nullptr };
+
+	wstring m_strPartTag;
 
 	_bool m_bArrived = { false };
 	_float2 m_vArrivedPosition = _float2(0.f, 0.f);
@@ -63,6 +68,7 @@ private:
 
 private:
 	HRESULT	Ready_State();
+	HRESULT Ready_PartTag();
 	HRESULT	Bind_ShaderResources();
 
 private:

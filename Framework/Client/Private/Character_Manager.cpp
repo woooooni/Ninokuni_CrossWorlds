@@ -43,7 +43,26 @@ HRESULT CCharacter_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceC
 
 
 
-CModel* CCharacter_Manager::Get_PartModel(const CHARACTER_TYPE& eCharacterType, const PART_TYPE& ePartType, const _uint iIndex)
+CModel* CCharacter_Manager::Get_PartModel(const CHARACTER_TYPE& eCharacterType, const PART_TYPE& ePartType, const wstring& strPartTag)
+{
+	if (CHARACTER_TYPE::CHARACTER_END <= eCharacterType || PART_TYPE::PART_END < ePartType || eCharacterType < 0 || ePartType < 0)
+		return nullptr;
+
+	auto iter = m_PartModels[eCharacterType].find(ePartType);
+
+	if (iter == m_PartModels[eCharacterType].end())
+		return nullptr;
+
+	for (auto& pModel : iter->second)
+	{
+		if (wstring::npos != pModel->Get_Name().find(strPartTag))
+			return pModel;
+	}
+
+	return nullptr;
+}
+
+CModel* CCharacter_Manager::Get_PartModel(const CHARACTER_TYPE& eCharacterType, const PART_TYPE& ePartType, _uint iIndex)
 {
 	if (CHARACTER_TYPE::CHARACTER_END <= eCharacterType || PART_TYPE::PART_END < ePartType || eCharacterType < 0 || ePartType < 0)
 		return nullptr;

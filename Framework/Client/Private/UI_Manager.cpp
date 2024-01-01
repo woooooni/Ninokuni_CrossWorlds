@@ -18,6 +18,7 @@
 #include "UI_LevelUp.h"
 #include "UI_MapName.h"
 #include "UI_BtnBack.h"
+#include "UI_Milepost.h"
 #include "UI_BtnClose.h"
 #include "UI_MainMenu.h"
 #include "UI_Announced.h"
@@ -120,6 +121,18 @@ CUI_Fade* CUI_Manager::Get_Fade()
 _bool CUI_Manager::Get_MainMenuActive()
 {
 	return m_pMainBG->Get_Active();
+}
+
+void CUI_Manager::Set_RandomNick(const wstring& strRandom)
+{
+	if (LEVELID::LEVEL_LOBBY != GI->Get_CurrentLevel())
+		return;
+
+	if (nullptr == m_pNicknamebox || !m_pNicknamebox->Get_Active())
+		return;
+
+	m_strNickname = strRandom;
+	m_pNicknamebox->Set_Nickname(m_strNickname);
 }
 
 void CUI_Manager::Set_UserName()
@@ -2637,6 +2650,8 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 
 #pragma endregion
 
+#pragma region BOSSHPBAR
+
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
 	UIDesc.fCX = 72.f * 0.8f;
@@ -2664,8 +2679,10 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	pFrame = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_BossHP_Information"), &UIDesc, &pFrame)))
 		return E_FAIL;
-	if (nullptr == pFrame)
+	m_pBossInfo = dynamic_cast<CUI_BossHP_Background*>(pFrame);
+	if (nullptr == m_pBossInfo)
 		return E_FAIL;
+	Safe_AddRef(m_pBossInfo);
 
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
@@ -2677,15 +2694,43 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	pFrame = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_BossHP_Barframe"), &UIDesc, &pFrame)))
 		return E_FAIL;
-	if (nullptr == pFrame)
+	m_pBossHPBack = dynamic_cast<CUI_BossHP_Background*>(pFrame);
+	if (nullptr == m_pBossHPBack)
 		return E_FAIL;
+	Safe_AddRef(m_pBossHPBack);
 
-	//Prototype_GameObject_UI_BossHP_GaugeBar
 	pFrame = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_BossHP_GaugeBar"), &UIDesc, &pFrame)))
 		return E_FAIL;
-	if (nullptr == pFrame)
+	m_pBossHPBar = dynamic_cast<CUI_BossHP_Bar*>(pFrame);
+	if (nullptr == m_pBossHPBar)
 		return E_FAIL;
+	Safe_AddRef(m_pBossHPBar);
+
+#pragma endregion
+
+	m_Milepost.reserve(2);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 128.f * 0.35f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY * 0.5f;
+	CGameObject* pMilepost = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Milepost_Flag"), &UIDesc, &pMilepost)))
+		return E_FAIL;
+	m_Milepost.push_back(dynamic_cast<CUI_Milepost*>(pMilepost));
+	if (nullptr == pMilepost)
+		return E_FAIL;
+	Safe_AddRef(pMilepost);
+
+	pMilepost = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Milepost_Arrow"), &UIDesc, &pMilepost)))
+		return E_FAIL;
+	m_Milepost.push_back(dynamic_cast<CUI_Milepost*>(pMilepost));
+	if (nullptr == pMilepost)
+		return E_FAIL;
+	Safe_AddRef(pMilepost);
 
 	return S_OK;
 }
@@ -3186,9 +3231,10 @@ void CUI_Manager::Update_CostumeBtn()
 
 }
 
-void CUI_Manager::Update_CostumeModel(const CHARACTER_TYPE& eCharacterType, const PART_TYPE& ePartType, const _uint iIndex)
+void CUI_Manager::Update_CostumeModel(const CHARACTER_TYPE& eCharacterType, const PART_TYPE& ePartType, const wstring& strPartTag)
 {
-	CModel* pParts = CCharacter_Manager::GetInstance()->Get_PartModel(eCharacterType, ePartType, iIndex);
+	CModel* pParts = CCharacter_Manager::GetInstance()->Get_PartModel(eCharacterType, ePartType, strPartTag);
+	//CModel* pParts = CCharacter_Manager::GetInstance()->Get_PartModel(eCharacterType, ePartType, iIndex);
 	if (nullptr == pParts)
 		return;
 
@@ -3219,14 +3265,18 @@ void CUI_Manager::Set_CostumeModel()
 	}
 
 	PART_TYPE eType = PART_TYPE::PART_END;
-	_int iSlotIndex = -1;
+	//_int iSlotIndex = -1;
+	wstring strPartTag;
 
 	if (iIndex == CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_CLOTH)
 	{
 		for (auto& iter : m_CostumeCloth)
 		{
 			if (iter->Get_Clicked())
-				iSlotIndex = _int(iter->Get_SlotIndex());
+			{
+				//iSlotIndex = _int(iter->Get_SlotIndex());
+				strPartTag = iter->Get_PartTag();
+			}
 		}
 		eType = PART_TYPE::BODY;
 	}
@@ -3235,7 +3285,10 @@ void CUI_Manager::Set_CostumeModel()
 		for (auto& iter : m_CostumeHairAcc)
 		{
 			if (iter->Get_Clicked())
-				iSlotIndex = _int(iter->Get_SlotIndex());
+			{
+				//iSlotIndex = _int(iter->Get_SlotIndex());
+				strPartTag = iter->Get_PartTag();
+			}
 		}
 		eType = PART_TYPE::HEAD;
 	}
@@ -3243,11 +3296,11 @@ void CUI_Manager::Set_CostumeModel()
 	if (PART_TYPE::PART_END == eType)
 		return;
 
-	if (-1 == iSlotIndex)
-		return;
+//	if (-1 == iSlotIndex)
+//		return;
 
 	pCharacter->Set_PartModel(eType,
-		CCharacter_Manager::GetInstance()->Get_PartModel(pCharacter->Get_CharacterType(), eType, iSlotIndex));
+		CCharacter_Manager::GetInstance()->Get_PartModel(pCharacter->Get_CharacterType(), eType, strPartTag));
 }
 
 void CUI_Manager::Set_MouseCursor(_uint iIndex)
@@ -5059,6 +5112,12 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		CUI_BossHP_Bar::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Milepost_Flag"),
+		CUI_Milepost::Create(m_pDevice, m_pContext, CUI_Milepost::UI_MILEPOST::MILEPOST_FLAG), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Milepost_Arrow"),
+		CUI_Milepost::Create(m_pDevice, m_pContext, CUI_Milepost::UI_MILEPOST::MILEPOST_ARROW), LAYER_UI)))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -5350,6 +5409,10 @@ void CUI_Manager::Free()
 	Safe_Release(m_pNicknamebox);
 	Safe_Release(m_pBtnShowMinimap);
 
+	Safe_Release(m_pBossInfo);
+	Safe_Release(m_pBossHPBack);
+	Safe_Release(m_pBossHPBar);
+
 	Safe_Release(m_pDummy);
 
 	for (auto& pBasic : m_Basic)
@@ -5475,6 +5538,10 @@ void CUI_Manager::Free()
 	for (auto& pSlot : m_SpecialSkillSlot)
 		Safe_Release(pSlot);
 	m_SpecialSkillSlot.clear();
+
+	for (auto& pMilepost : m_Milepost)
+		Safe_Release(pMilepost);
+	m_Milepost.clear();
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

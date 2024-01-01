@@ -53,7 +53,7 @@ HRESULT CShadow_Thief::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_pHPBar = dynamic_cast<CUI_MonsterHP_World*>(pHPBar);
-	m_pHPBar->Set_Owner(this, ELEMENTAL_TYPE::DARK);
+	m_pHPBar->Set_Owner(this, m_tStat.eElementType);
 
 	m_pModelCom->Set_Animation(12);
 
@@ -352,7 +352,6 @@ CGameObject* CShadow_Thief::Clone(void* pArg)
 void CShadow_Thief::Free()
 {
 	__super::Free();
-	Safe_Release(m_pHPBar);
-	
 
+	Safe_Release(m_pHPBar);
 }

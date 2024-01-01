@@ -25,6 +25,9 @@ public:
 	virtual void Collision_Exit(const COLLISION_INFO& tInfo) override;
 
 private:
+	class CUI_MonsterHP_World* m_pHPBar = { nullptr };
+
+private:
 	virtual HRESULT Ready_Components();
 	virtual HRESULT Ready_States();
 	virtual HRESULT Ready_Colliders();

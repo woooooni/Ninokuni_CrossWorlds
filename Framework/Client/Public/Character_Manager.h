@@ -30,8 +30,10 @@ public:
 	}
 
 public:
-	class CModel* Get_PartModel(const CHARACTER_TYPE& eCharacterType, const PART_TYPE& ePartType, const _uint iIndex);
+	class CModel* Get_PartModel(const CHARACTER_TYPE& eCharacterType, const PART_TYPE& ePartType, const wstring& strPartTag);
+	class CModel* Get_PartModel(const CHARACTER_TYPE& eCharacterType, const PART_TYPE& ePartType, _uint iIndex);
 	vector<class CModel*>* Get_PartModels(const CHARACTER_TYPE& eCharacterType, const PART_TYPE& ePartType);
+
 
 
 
