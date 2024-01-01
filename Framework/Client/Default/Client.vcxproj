@@ -505,6 +505,8 @@
     <ClInclude Include="..\Public\TreeGrandfa.h" />
     <ClInclude Include="..\Public\UIDamage_Manager.h" />
     <ClInclude Include="..\Public\UI_Announced.h" />
+    <ClInclude Include="..\Public\UI_BossHP_Background.h" />
+    <ClInclude Include="..\Public\UI_BossHP_Bar.h" />
     <ClInclude Include="..\Public\UI_Btn_Minimap.h" />
     <ClInclude Include="..\Public\UI_CharacterDummy.h" />
     <ClInclude Include="..\Public\UI_Costume_Btn.h" />
@@ -1018,6 +1020,8 @@
     <ClCompile Include="..\Private\TreeGrandfa.cpp" />
     <ClCompile Include="..\Private\UIDamage_Manager.cpp" />
     <ClCompile Include="..\Private\UI_Announced.cpp" />
+    <ClCompile Include="..\Private\UI_BossHP_Background.cpp" />
+    <ClCompile Include="..\Private\UI_BossHP_Bar.cpp" />
     <ClCompile Include="..\Private\UI_Btn_Minimap.cpp" />
     <ClCompile Include="..\Private\UI_CharacterDummy.cpp" />
     <ClCompile Include="..\Private\UI_Costume_Btn.cpp" />

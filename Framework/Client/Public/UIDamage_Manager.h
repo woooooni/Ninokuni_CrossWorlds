@@ -25,6 +25,7 @@ public:
 	HRESULT Ready_DamageNumberPrototypes();
 
 public:
+	HRESULT Create_PlayerDamageNumber(class CTransform* pTransformCom, _int iDamage);
 	HRESULT Create_SkillDamageNumber(class CTransform* pTransformCom, _int iDamage, ELEMENTAL_TYPE eType = ELEMENTAL_END);
 	HRESULT Create_CommonDamageNumber(class CTransform* pTransformCom, _int iDamage);
 	HRESULT Create_Critical(class CTransform* pTransformCom);

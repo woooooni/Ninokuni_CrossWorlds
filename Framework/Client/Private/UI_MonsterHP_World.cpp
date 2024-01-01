@@ -80,7 +80,7 @@ HRESULT CUI_MonsterHP_World::Initialize(void* pArg)
 		return E_FAIL;
 	pUITransform->Set_Scale(XMVectorSet(vArrowSize.x, vArrowSize.y, 1.f, 0.f));
 
-	m_bIsTarget = true;
+	m_bIsTarget = false;
 
 	return S_OK;
 }
@@ -91,6 +91,7 @@ void CUI_MonsterHP_World::Tick(_float fTimeDelta)
 	{
 		if (Is_Dead())
 			return;
+
 
 		if (nullptr != m_pOwner)
 		{
