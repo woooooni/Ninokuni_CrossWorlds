@@ -23,13 +23,13 @@ private:
 	virtual HRESULT Spawn_Monster();
 
 private:
-	_int m_iMaxBaobamCount = 0;
+	//_int m_iMaxBaobamCount = 0;
 	_int m_iMaxThiefCount = 0;
-	_int m_iMaxBearCount = 0;
+	//_int m_iMaxBearCount = 0;
 
-	vector<CGameObject*> m_vecBaobam;
+	//vector<CGameObject*> m_vecBaobam;
 	vector<CGameObject*> m_vecThief;
-	vector<CGameObject*> m_vecBear;
+	//vector<CGameObject*> m_vecBear;
 
 public:
 	static CSpawner_Ice01* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);

@@ -24,7 +24,7 @@ void CShadow_ThiefNode_Dead::Start()
 	{
 		m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Knock_Start"));
 		m_tBTNodeDesc.pOwner->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(
-			m_tBTNodeDesc.pTargetTransform->Get_Look()
+			-m_tBTNodeDesc.pOwnerTransform->Get_Look()
 			, dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_Stat().fAirDeadVelocity, false);
 	}
 	else

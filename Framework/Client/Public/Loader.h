@@ -65,6 +65,7 @@ private:
 	HRESULT Loading_For_Level_Tool();
 	HRESULT Load_Navi_Data(const wstring& strNaviFileName);
 	HRESULT Load_Map_Data(const wstring& strMapFileName);
+	HRESULT Load_Monster_Data(const wstring& strMonsterFileName);
 
 private:
 	// 툴에서 사용할 모든 fbx 원형 객체를 로딩한다.

@@ -297,6 +297,8 @@
     <ClInclude Include="..\Public\HumanML12.h" />
     <ClInclude Include="..\Public\HumanMM03.h" />
     <ClInclude Include="..\Public\HumanMSCrossFieldMerchant.h" />
+    <ClInclude Include="..\Public\IceBearManNode_Air.h" />
+    <ClInclude Include="..\Public\IceBearManNode_Blow.h" />
     <ClInclude Include="..\Public\Item_Manager.h" />
     <ClInclude Include="..\Public\LuxerionHuman.h" />
     <ClInclude Include="..\Public\NpcNode_Base.h" />
@@ -821,6 +823,8 @@
     <ClCompile Include="..\Private\HumanML12.cpp" />
     <ClCompile Include="..\Private\HumanMM03.cpp" />
     <ClCompile Include="..\Private\HumanMSCrossFieldMerchant.cpp" />
+    <ClCompile Include="..\Private\IceBearManNode_Air.cpp" />
+    <ClCompile Include="..\Private\IceBearManNode_Blow.cpp" />
     <ClCompile Include="..\Private\Item_Manager.cpp" />
     <ClCompile Include="..\Private\LuxerionHuman.cpp" />
     <ClCompile Include="..\Private\NpcNode_Base.cpp" />

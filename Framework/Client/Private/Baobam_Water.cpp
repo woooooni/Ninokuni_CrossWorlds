@@ -101,6 +101,8 @@ void CBaobam_Water::Collision_Enter(const COLLISION_INFO& tInfo)
 		{
 			if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
 			{
+				m_pTransformCom->LookAt_ForLandObject(dynamic_cast<CTransform*>(tInfo.pOther->Get_Component<CTransform>(TEXT("Com_Transform")))->Get_Position());
+
 				/* Blow */
 				if (tInfo.pOtherCollider->Get_AttackType() == CCollider::ATTACK_TYPE::BLOW)
 				{
@@ -109,12 +111,8 @@ void CBaobam_Water::Collision_Enter(const COLLISION_INFO& tInfo)
 					On_Damaged(tInfo);
 
 					m_pModelCom->Set_Animation(TEXT("SKM_Baobam_Water.ao|BaoBam_KnockDown"));
-					m_pTransformCom->LookAt_ForLandObject(dynamic_cast<CTransform*>(tInfo.pOther->Get_Component<CTransform>(TEXT("Com_Transform")))->Get_Position());
-
-					m_pRigidBodyCom->Add_Velocity(
-						dynamic_cast<CTransform*>(tInfo.pOther->Get_Component<CTransform>(TEXT("Com_Transform")))->Get_Look()
-						, m_tStat.fAirVelocity, false);
-					m_pRigidBodyCom->Add_Velocity({ 0.f, 1.f, 0.f, 1.f }, m_tStat.fAirVelocity / 2.f, false);
+					m_pRigidBodyCom->Add_Velocity(-m_pTransformCom->Get_Look(), m_tStat.fAirVelocity, false);
+					m_pRigidBodyCom->Add_Velocity({ 0.f, 1.f, 0.f, 1.f }, m_tStat.fAirVelocity / 1.5f, false);
 
 					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_BLOW] = true;
 
@@ -130,9 +128,8 @@ void CBaobam_Water::Collision_Enter(const COLLISION_INFO& tInfo)
 					On_Damaged(tInfo);
 
 					m_pModelCom->Set_Animation(TEXT("SKM_Baobam_Water.ao|BaoBam_KnockDown"));
-					m_pTransformCom->LookAt_ForLandObject(dynamic_cast<CTransform*>(tInfo.pOther->Get_Component<CTransform>(TEXT("Com_Transform")))->Get_Position());
 
-					m_pRigidBodyCom->Add_Velocity({ 0.f, 1.f, 0.f, 1.f }, m_tStat.fAirVelocity / 2.f, false);
+					m_pRigidBodyCom->Add_Velocity({ 0.f, 1.f, 0.f, 1.f }, m_tStat.fAirVelocity / 1.5f, false);
 
 					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
 				}

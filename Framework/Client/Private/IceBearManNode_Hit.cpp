@@ -19,7 +19,6 @@ HRESULT CIceBearManNode_Hit::Initialize_Prototype(BTNODE_DESC* pDesc, CBehaviorT
 
 void CIceBearManNode_Hit::Start()
 {
-	// m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_Baobam_Water.ao|BaoBam_Damage"));
 }
 
 CBTNode::NODE_STATE CIceBearManNode_Hit::Tick(const _float& fTimeDelta)
@@ -40,17 +39,14 @@ CBTNode::NODE_STATE CIceBearManNode_Hit::Tick(const _float& fTimeDelta)
 		m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_IceBearMan_Water.ao|IceBearMan_Damage"));
 	}
 
-	if (m_tBTNodeDesc.pOwnerModel->Is_Fix() && m_tBTNodeDesc.pOwnerModel->Is_Finish() &&
-		!m_bWait && m_tBTNodeDesc.pOwnerModel->Get_CurrAnimation()->Get_AnimationName() == TEXT("SKM_IceBearMan_Water.ao|IceBearMan_Damage"))
+	if (m_tBTNodeDesc.pOwnerModel->Is_Fix() && m_tBTNodeDesc.pOwnerModel->Is_Finish())
 	{
 		dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ISHIT, false);
 		dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_WEAK, false);
 
-		// 하드코딩
-		if (dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBATIDLE))
-			m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_IceBearMan_Water.ao|IceBearMan_BattleStand"));
+		return __super::Atk_BehaviorTick(1.f, fTimeDelta);
 
-		return NODE_STATE::NODE_SUCCESS;
+		// return NODE_STATE::NODE_SUCCESS;
 	}
 
 	dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_WEAK, false);

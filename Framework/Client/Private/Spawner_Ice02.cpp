@@ -26,7 +26,8 @@ HRESULT CSpawner_Ice02::Initialize(void* pArg)
 {
 	m_fSpawnTime = 30.f;
 
-	m_iMaxThiefCount = 5;
+	m_iMaxBaobamCount = 2;
+	m_iMaxThiefCount = 3;
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -39,8 +40,11 @@ HRESULT CSpawner_Ice02::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
-	if (FAILED(Spawn_Monster()))
-		return E_FAIL;
+	if (GI->Get_CurrentLevel() != LEVELID::LEVEL_TOOL)
+	{
+		if (FAILED(Spawn_Monster()))
+			return E_FAIL;
+	}
 
 
 	return S_OK;
@@ -50,23 +54,33 @@ void CSpawner_Ice02::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
-	m_fCurTime += fTimeDelta;
-
-	if (m_fCurTime >= m_fSpawnTime)
+	if (GI->Get_CurrentLevel() != LEVELID::LEVEL_TOOL)
 	{
-		Spawn_Monster();
+		m_fCurTime += fTimeDelta;
 
-		m_fCurTime = m_fSpawnTime - m_fCurTime;
+		if (m_fCurTime >= m_fSpawnTime)
+		{
+			Spawn_Monster();
+
+			m_fCurTime = m_fSpawnTime - m_fCurTime;
+		}
+
+		for (_int i = 0; i < m_vecBaobam.size();)
+		{
+			if (m_vecBaobam[i]->Is_Dead())
+				m_vecBaobam.erase(m_vecBaobam.begin() + i);
+			else
+				++i;
+		}
+
+		for (_int i = 0; i < m_vecThief.size();)
+		{
+			if (m_vecThief[i]->Is_Dead())
+				m_vecThief.erase(m_vecThief.begin() + i);
+			else
+				++i;
+		}
 	}
-
-	for (_int i = 0; i < m_vecThief.size();)
-	{
-		if (m_vecThief[i]->Is_Dead())
-			m_vecThief.erase(m_vecThief.begin() + i);
-		else
-			++i;
-	}
-
 }
 
 void CSpawner_Ice02::LateTick(_float fTimeDelta)
@@ -105,6 +119,22 @@ HRESULT CSpawner_Ice02::Spawn_Monster()
 	XMStoreFloat4(&vSpawnerPos, m_pTransformCom->Get_Position());
 
 	OBJECT_INIT_DESC tInfo = {};
+
+	for (_int i = m_vecBaobam.size(); i < m_iMaxBaobamCount; ++i)
+	{
+		tInfo.vStartPosition.x = vSpawnerPos.x + GI->RandomFloat(-5.f, 5.f);
+		tInfo.vStartPosition.y = vSpawnerPos.y;
+		tInfo.vStartPosition.z = vSpawnerPos.z + GI->RandomFloat(-5.f, 5.f);
+		tInfo.vStartPosition.w = 1.f;
+	
+		CGameObject* pObj = GI->Clone_GameObject(TEXT("Prorotype_GameObject_Baobam_Water"), _uint(LAYER_MONSTER), &tInfo);
+	
+		if (pObj == nullptr)
+			return E_FAIL;
+	
+		GI->Add_GameObject(iCurLevel, (_uint)LAYER_MONSTER, pObj);
+		m_vecBaobam.push_back(pObj);
+	}
 
 	for (_int i = m_vecThief.size(); i < m_iMaxThiefCount; ++i)
 	{
@@ -155,5 +185,6 @@ void CSpawner_Ice02::Free()
 {
 	__super::Free();
 
+	m_vecBaobam.clear();
 	m_vecThief.clear();
 }

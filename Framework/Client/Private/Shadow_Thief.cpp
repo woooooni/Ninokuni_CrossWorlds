@@ -45,6 +45,8 @@ HRESULT CShadow_Thief::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
+	m_pModelCom->Set_Animation(12);
+
 	if (FAILED(Ready_States()))
 		return E_FAIL;
 
@@ -54,8 +56,6 @@ HRESULT CShadow_Thief::Initialize(void* pArg)
 
 	m_pHPBar = dynamic_cast<CUI_MonsterHP_World*>(pHPBar);
 	m_pHPBar->Set_Owner(this, ELEMENTAL_TYPE::DARK);
-
-	m_pModelCom->Set_Animation(12);
 
 	return S_OK;
 }
@@ -67,7 +67,7 @@ void CShadow_Thief::Tick(_float fTimeDelta)
 	{
 		_uint iCurAnimIndex = m_pModelCom->Get_CurrAnimationIndex();
 		m_pModelCom->Set_Animation(iCurAnimIndex + 1);
-	}
+	} 
 	else if (KEY_TAP(KEY::DEL))
 	{
 		_int iCurAnimIndex = m_pModelCom->Get_CurrAnimationIndex() - 1;
@@ -138,6 +138,8 @@ void CShadow_Thief::Collision_Enter(const COLLISION_INFO& tInfo)
 		{
 			if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
 			{
+				m_pTransformCom->LookAt_ForLandObject(dynamic_cast<CTransform*>(tInfo.pOther->Get_Component<CTransform>(TEXT("Com_Transform")))->Get_Position());
+
 				/* Blow */
 				if (tInfo.pOtherCollider->Get_AttackType() == CCollider::ATTACK_TYPE::BLOW)
 				{
@@ -146,12 +148,9 @@ void CShadow_Thief::Collision_Enter(const COLLISION_INFO& tInfo)
 					On_Damaged(tInfo);
 
 					m_pModelCom->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Knock"));
-					m_pTransformCom->LookAt_ForLandObject(dynamic_cast<CTransform*>(tInfo.pOther->Get_Component<CTransform>(TEXT("Com_Transform")))->Get_Position());
 					
-					m_pRigidBodyCom->Add_Velocity(
-						dynamic_cast<CTransform*>(tInfo.pOther->Get_Component<CTransform>(TEXT("Com_Transform")))->Get_Look()
-						, m_tStat.fAirVelocity, false);
-					m_pRigidBodyCom->Add_Velocity({ 0.f, 1.f, 0.f, 1.f }, m_tStat.fAirVelocity / 2.f, false);
+					m_pRigidBodyCom->Add_Velocity(-m_pTransformCom->Get_Look(), m_tStat.fAirVelocity, false);
+					m_pRigidBodyCom->Add_Velocity({ 0.f, 1.f, 0.f, 1.f }, m_tStat.fAirVelocity / 1.5f, false);
 
 					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_BLOW] = true;
 
@@ -167,8 +166,6 @@ void CShadow_Thief::Collision_Enter(const COLLISION_INFO& tInfo)
 					On_Damaged(tInfo);
 
 					m_pModelCom->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Knock"));
-					m_pTransformCom->LookAt_ForLandObject(dynamic_cast<CTransform*>(tInfo.pOther->Get_Component<CTransform>(TEXT("Com_Transform")))->Get_Position());
-
 					m_pRigidBodyCom->Add_Velocity({ 0.f, 1.f, 0.f, 1.f }, m_tStat.fAirVelocity / 2.f, false);
 
 					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;

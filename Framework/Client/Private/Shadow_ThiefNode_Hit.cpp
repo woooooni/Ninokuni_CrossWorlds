@@ -44,9 +44,9 @@ CBTNode::NODE_STATE CShadow_ThiefNode_Hit::Tick(const _float& fTimeDelta)
 		dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ISHIT, false);
 		dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_WEAK, false);
 
-		__super::Atk_BehaviorTick(1.f, fTimeDelta);
+		return __super::Atk_BehaviorTick(1.f, fTimeDelta);
 
-		return NODE_STATE::NODE_SUCCESS;
+		// return NODE_STATE::NODE_SUCCESS;
 	}
 
 	dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_WEAK, false);
