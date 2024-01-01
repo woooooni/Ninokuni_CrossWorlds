@@ -168,7 +168,7 @@ HRESULT CBaobam_Dark::Ready_States()
 {
 	m_pBTCom = CBaobam_DarkBT::Create(m_pDevice, m_pContext, this);
 
-	m_strKorName = TEXT("广官坷广");
+	strKorName = TEXT("广官坷广");
 	m_tStat.iLv = 10;
 	m_tStat.fMaxHp = 300;
 	m_tStat.fHp = 300;

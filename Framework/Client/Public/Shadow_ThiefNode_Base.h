@@ -18,7 +18,7 @@ public:
 	virtual void	Start();
 	virtual CBTNode::NODE_STATE	Tick(const _float& fTimeDelta);
 
-	virtual CBTNode::NODE_STATE Atk_BehaviorTick(const wstring& strAnimName, _float fDestWaitTime, const _float& fTimeDelta);
+	virtual CBTNode::NODE_STATE Atk_BehaviorTick(_float fDestWaitTime, const _float& fTimeDelta);
 
 	virtual _bool Behavior_Wait(_float fDestWaitTime, const _float& fTimeDelta);
 

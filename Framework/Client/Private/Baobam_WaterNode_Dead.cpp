@@ -3,6 +3,7 @@
 
 #include "BehaviorTree.h"
 #include "Model.h"
+#include "RigidBody.h"
 
 CBaobam_WaterNode_Dead::CBaobam_WaterNode_Dead()
 {
@@ -17,14 +18,33 @@ HRESULT CBaobam_WaterNode_Dead::Initialize_Prototype(BTNODE_DESC* pDesc, CBehavi
 
 void CBaobam_WaterNode_Dead::Start()
 {
-	m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_Baobam_Water.ao|BaoBam_Death"));
+	if (dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_BLOWDEAD))
+	{
+		m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_Baobam_Water.ao|BaoBam_KnockDown"));
+		m_tBTNodeDesc.pOwner->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(
+			m_tBTNodeDesc.pTargetTransform->Get_Look()
+			, dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_Stat().fAirDeadVelocity, false);
+	}
+	else
+	{
+		m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_Baobam_Water.ao|BaoBam_Death"));
+	}
 }
 
 CBTNode::NODE_STATE CBaobam_WaterNode_Dead::Tick(const _float& fTimeDelta)
 {
 	if (m_tBTNodeDesc.pOwnerModel->Is_Finish() && !m_tBTNodeDesc.pOwnerModel->Is_Tween())
 	{
-		m_tBTNodeDesc.pOwner->Set_Dead(true);
+		if (dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_BLOWDEAD))
+		{
+			m_fTime += fTimeDelta;
+			if (m_fTime > m_fBlowDeadTime)
+			{
+				m_tBTNodeDesc.pOwner->Set_Dead(true);
+			}
+		}
+		else
+			m_tBTNodeDesc.pOwner->Set_Dead(true);
 	}
 
 	return NODE_STATE::NODE_RUNNING;

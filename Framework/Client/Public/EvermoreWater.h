@@ -11,6 +11,7 @@ class CRenderer;
 class CTransform;
 class CNavigation;
 class CVIBuffer_Ocean;
+class CModel;
 END
 
 BEGIN(Client)
