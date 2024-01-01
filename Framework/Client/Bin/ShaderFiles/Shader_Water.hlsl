@@ -20,6 +20,7 @@ cbuffer WaterOption
     float fReflectRefractScale;
 	
     float fTiling = 5.0f;
+    float fBloomTiling = 5.0f;
     float fStrength = 2.0f;
     float2 flowDirection;
 	
@@ -134,7 +135,7 @@ WaterPixelToFrame WaterPS (WaterVertexToPixel input)
     if (vFinalMask.r >= 0.5f && vFinalMask.g >= 0.5f && vFinalMask.b >= 0.5f)
         vMtrlDiffuse.rgb += 0.3f;
 
-    float4 vMaskMap3 = MaskTexture2.Sample(LinearSampler, input.vTexUV * 12.0f + flow) * 1.05f;
+    float4 vMaskMap3 = MaskTexture2.Sample(LinearSampler, input.vTexUV * fBloomTiling + flow) * 1.05f;
 	
     if (vMaskMap3.r >= 0.99999999f && vMaskMap3.g >= 0.99999999f && vMaskMap3.b >= 0.99999999f)
         output.vBloom = float4(1.0f, 1.0f, 1.0f, 0.5f);

@@ -20,7 +20,7 @@ public:
 
 private:
 	SkyPlaneType* m_pSkyPlane = nullptr;
-	_uint m_iSkyPlaneResolution = 20;
+	_uint m_iSkyPlaneResolution = 50;
 
 public:
 	static CVIBuffer_SkyPlane* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);

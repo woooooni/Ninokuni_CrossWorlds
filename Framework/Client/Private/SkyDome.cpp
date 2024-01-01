@@ -28,7 +28,7 @@ HRESULT CSkyDome::Initialize(void* pArg)
 
 void CSkyDome::Tick(_float fTimeDelta)
 {
-	//m_pTransformCom->Turn(Vec4(0.0f, 1.0f, 0.0f, 1.0f), 0.005f, fTimeDelta);
+	m_pTransformCom->Turn(Vec4(0.0f, 1.0f, 0.0f, 1.0f), 0.005f, fTimeDelta);
 }
 
 void CSkyDome::LateTick(_float fTimeDelta)
@@ -55,16 +55,12 @@ HRESULT CSkyDome::Render()
 		return E_FAIL;
 	//
 
-	//if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "SkydomeTexture")))
-	//	return E_FAIL;
+	_uint iCurrLevel = GI->Get_CurrentLevel();
 
-	//_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
-	
-
-	//if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(0), aiTextureType_DIFFUSE, "SkydomeTexture")))
-	//	return E_FAIL;
-
-	m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "SkydomeTexture");
+	if (m_strPrototypeTag == TEXT("Prototype_GameObject_Skydome"))
+		m_pTextureCom[LEVEL_SKY::EVERMORE_SKY]->Bind_ShaderResource(m_pShaderCom, "SkydomeTexture");
+	else if (m_strPrototypeTag == TEXT("Prototype_GameObject_Skydome2"))
+		m_pTextureCom[LEVEL_SKY::WINTER_SKY]->Bind_ShaderResource(m_pShaderCom, "SkydomeTexture");
 
 	if (FAILED(m_pModelCom->Render(m_pShaderCom, 0, 0)))
 		return E_FAIL;
@@ -90,8 +86,8 @@ HRESULT CSkyDome::Ready_Components()
 		TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Sky_Dome_Winter_Diffuse"),
-		TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Sky_DomeTex2"),
+		TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom[LEVEL_SKY::EVERMORE_SKY]))))
 		return E_FAIL;
 
 	return S_OK;
@@ -130,7 +126,10 @@ void CSkyDome::Free()
 	Safe_Release<CShader*>(m_pShaderCom);
 	Safe_Release<CRenderer*>(m_pRendererCom);
 	Safe_Release<CTransform*>(m_pTransformCom);
-	Safe_Release<CTexture*>(m_pTextureCom);
+
+	for(_uint i = 0; i < LEVEL_SKY::SKY_END; ++i)
+		Safe_Release<CTexture*>(m_pTextureCom[i]);
+
 	Safe_Release<CModel*>(m_pModelCom);
 
 }

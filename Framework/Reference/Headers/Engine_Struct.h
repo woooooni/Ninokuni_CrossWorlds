@@ -6,7 +6,6 @@ namespace Engine
 	typedef struct tagObjectInitDesc
 	{
 		Vec4 vStartPosition = { 0.f, 0.f, 0.f, 1.f };
-
 	} OBJECT_INIT_DESC;
 
 	typedef struct tagCollisionInfoDesc

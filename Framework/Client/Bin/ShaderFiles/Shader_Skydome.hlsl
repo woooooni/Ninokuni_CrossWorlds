@@ -70,10 +70,10 @@ PS_OUT SkyDomePixelShader(PS_IN input)
         height = 0.0f;
     }
     
-    float4 SkyColor = SkydomeTexture.Sample(LinearSampler, input.vTexcoord);
+    //float4 SkyColor = SkydomeTexture.Sample(LinearSampler, input.vTexcoord);
     
-   //output.vColor = lerp(centerColor, apexColor, height);
-    output.vColor = SkyColor;
+   output.vColor = lerp(centerColor, apexColor, height);
+   //output.vColor = SkyColor;
     
    return output;
 }
@@ -93,7 +93,7 @@ technique11 Sky
     {
         SetRasterizerState(RS_SkyDome);
         SetDepthStencilState(DSS_None, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_NoneBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 SkyDomeVertexShader();
         GeometryShader = NULL;

@@ -40,6 +40,7 @@ private:
 	_float m_fWaterTranslationSpeed = 0.015f;
 
 	_float m_fTime = 0.0f;
+	_float m_fBloomTile = 12.0f;
 
 	Vec2 m_vDirection;
 

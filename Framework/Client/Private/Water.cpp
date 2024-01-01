@@ -148,6 +148,9 @@ HRESULT CWater::Bind_ShaderResources()
 	if (FAILED(m_pWaterShaderCom->Bind_RawValue("flowDirection", &m_vDirection, sizeof(Vec2))))
 		return E_FAIL;
 
+	if (FAILED(m_pWaterShaderCom->Bind_RawValue("fBloomTiling", &m_fBloomTile, sizeof(_float))))
+		return E_FAIL;
+
 
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 	_uint iPassIndex = 0;

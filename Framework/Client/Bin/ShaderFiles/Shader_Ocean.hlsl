@@ -41,6 +41,7 @@ cbuffer CameraBuffer : register(b1)
 struct VS_IN
 {
     float3 vPosition : POSITION;
+    float3 vNormal : NORMAL0;
     float2 vTexcoord : TEXCOORD0;
 };
 
@@ -138,7 +139,6 @@ PixelInput VS_WAVE(VS_IN input)
     output.wPosition = mul(float4(input.vPosition, 1.0f), World);
     float4 wPosition = mul(float4(input.vPosition, 1.0f), World);
     output.View = vCameraPosition.xyz - wPosition.xyz;
-    output.vTexcoord = input.vTexcoord;
     
     float tempTime = fmod(runTime, 100);
     output.vBump[0] = output.vTexScale + tempTime * vBumpSpeed;

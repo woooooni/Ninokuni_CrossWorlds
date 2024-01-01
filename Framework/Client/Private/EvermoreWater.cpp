@@ -65,9 +65,13 @@ HRESULT CEvermoreWater::Ready_Components()
 		TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Everemore_Water"),
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Entire_Water"),
 		TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 		return E_FAIL;
+
+	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Ocean_Terrain"),
+	//	TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom))))
+	//	return E_FAIL;
 
 	/* Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"),
@@ -112,12 +116,12 @@ HRESULT CEvermoreWater::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &vCameraPos, sizeof(Vec4))))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom[TEX_TYPE::TEX_NORMAL]->Bind_ShaderResource(m_pShaderCom, "NormalTexture", 0)))
+	if (FAILED(m_pTextureCom[TEX_TYPE::TEX_NORMAL]->Bind_ShaderResource(m_pShaderCom, "NormalTexture")))
 		return E_FAIL;
 
 	if (FAILED(m_pTextureCom[TEX_TYPE::TEX_NOISE1]->Bind_ShaderResource(m_pShaderCom, "MaskTexture", 69)))
 		return E_FAIL;
-	if (FAILED(m_pTextureCom[TEX_TYPE::TEX_NOISE2]->Bind_ShaderResource(m_pShaderCom, "MaskTexture2", 149)))
+	if (FAILED(m_pTextureCom[TEX_TYPE::TEX_NOISE2]->Bind_ShaderResource(m_pShaderCom, "MaskTexture2", 158)))
 		return E_FAIL;
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("fWaterTranslationSpeed", &m_fWaterTranslationSpeed, sizeof(_float))))
@@ -135,6 +139,9 @@ HRESULT CEvermoreWater::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("flowDirection", &m_vDirection, sizeof(Vec2))))
 		return E_FAIL;
 
+	if (FAILED(m_pShaderCom->Bind_RawValue("fBloomTiling", &m_fBloomTiling, sizeof(_float))))
+		return E_FAIL;
+
 
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 	_uint iPassIndex = 0;
@@ -147,6 +154,11 @@ HRESULT CEvermoreWater::Bind_ShaderResources()
 
 	if (FAILED(m_pModelCom->Render(m_pShaderCom, 0, 0)))
 		return E_FAIL;
+
+	//if (FAILED(m_pShaderCom->Begin(0)))
+	//	return E_FAIL;
+	//if (FAILED(m_pVIBufferCom->Render()))
+	//	return E_FAIL;
 
 #pragma region Wave
 	//if (FAILED(m_pTransformCom->Bind_ShaderResources(m_pShaderCom, "World")))
