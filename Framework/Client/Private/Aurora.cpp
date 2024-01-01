@@ -38,17 +38,50 @@ HRESULT CAurora::Render()
 
 HRESULT CAurora::Ready_Components()
 {
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"),
+		TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
+		return E_FAIL;
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"),
+		TEXT("Com_Transform"), reinterpret_cast<CComponent**>(&m_pTransformCom))))
+		return E_FAIL;
+
+	// Aurora Shader.
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Skydome"),
+		TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+		return E_FAIL;
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect"),
+		TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom))))
+		return E_FAIL;
+
 	return S_OK;
 }
 
 CAurora* CAurora::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eObjType)
 {
-	return nullptr;
+	CAurora* pInstance = new CAurora(pDevice, pContext, strObjectTag, eObjType);
+
+	if (FAILED(pInstance->Initialize_Prototype()))
+	{
+		MSG_BOX("Failed to Created : CAurora");
+		Safe_Release<CAurora*>(pInstance);
+	}
+
+	return pInstance;
 }
 
 CGameObject* CAurora::Clone(void* pArg)
 {
-	return nullptr;
+	CAurora* pInstance = new CAurora(*this);
+
+	if (FAILED(pInstance->Initialize(pArg)))
+	{
+		MSG_BOX("Failed to Cloned : CAurora");
+		Safe_Release<CAurora*>(pInstance);
+	}
+
+	return pInstance;
 }
 
 void CAurora::Free()
