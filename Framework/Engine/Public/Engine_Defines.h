@@ -73,6 +73,7 @@ using namespace DirectX;
 #include <array>
 #include <process.h>
 #include <stdlib.h>
+#include <queue>
 
 #include <iostream>
 using namespace std;

@@ -185,7 +185,7 @@ HRESULT CMainApp::Initialize_Client()
 				return E_FAIL;
 			}
 		}
-		pCamera->Set_Type(eType);
+		pCamera->Set_Key(eType);
 		pCamera->Get_Transform()->Set_State(CTransform::STATE::STATE_POSITION, Vec4(0.f, 10.f, -10.f, 1.f));
 		pCamera->Get_Transform()->LookAt(Vec4{ 0.f, 0.f, 0.f, 1.f });
 	}
@@ -212,7 +212,7 @@ HRESULT CMainApp::Initialize_Client()
 				return E_FAIL;
 			}
 		}
-		pCamera->Set_Type(eType);
+		pCamera->Set_Key(eType);
 		pCamera->Get_Transform()->Set_State(CTransform::STATE::STATE_POSITION, Vec4(0.f, 10.f, -10.f, 1.f));
 		pCamera->Get_Transform()->LookAt(Vec4{ 0.f, 0.f, 0.f, 1.f });
 	}
@@ -240,7 +240,7 @@ HRESULT CMainApp::Initialize_Client()
 				return E_FAIL;
 			}
 		}
-		pCamera->Set_Type(eType);
+		pCamera->Set_Key(eType);
 		pCamera->Get_Transform()->Set_State(CTransform::STATE::STATE_POSITION, Vec4(0.f, 10.f, -10.f, 1.f));
 		pCamera->Get_Transform()->LookAt(Vec4{ 0.f, 0.f, 0.f, 1.f });
 	}

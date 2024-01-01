@@ -54,7 +54,7 @@ void CTool_Camera::Tick(_float fTimeDelta)
 			Show_Camera_Prop_Default(pCurCam);
 
 			/* 카메라 개별 옵션 */
-			switch (pCurCam->Get_Type())
+			switch (pCurCam->Get_Key())
 			{
 			case CAMERA_TYPE::FREE :
 				Show_Camera_Prop_Free(pCurCam);
@@ -79,7 +79,7 @@ HRESULT CTool_Camera::Render()
 
 void CTool_Camera::Show_Select_Camera()
 {
-	const CAMERA_TYPE eCurCamIndex = (CAMERA_TYPE)CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Type();
+	const CAMERA_TYPE eCurCamIndex = (CAMERA_TYPE)CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key();
 
 	if (0 <= eCurCamIndex)
 	{

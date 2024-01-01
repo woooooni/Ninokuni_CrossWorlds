@@ -73,11 +73,18 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 
 	/* Test */
 	{
-		if (KEY_TAP(KEY::F6))
+		if (KEY_TAP(KEY::INSERT))
 		{
 			dynamic_cast<CCamera_CutScene*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE))->Start_CutScene("Evermore_Street_00");
 		}
+		if (KEY_TAP(KEY::DEL))
+		{
+			vector<string> CutSceneNames;
+			CutSceneNames.push_back("Evermore_Street_00");
+			CutSceneNames.push_back("Evermore_Street_01");
 
+			dynamic_cast<CCamera_CutScene*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE))->Start_CutScenes(CutSceneNames);
+		}
 	}
 }
 

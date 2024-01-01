@@ -40,7 +40,8 @@ public:
 	virtual HRESULT Render() override;
 
 public:
-	HRESULT Start_CutScene(const string& strCutSceneName);
+	HRESULT Start_CutScene(const string& strCutSceneName); /* 단일 컷신 실행 */
+	HRESULT Start_CutScenes(vector<string> strCutSceneNames); /* 복수 컷신 실행 */
 	const _bool Is_Playing_CutScenc() const { return m_tTimeDesc.bActive; }
 public:
 	static Vec4 Get_Point_In_Bezier(Vec3 vPoints[MAX_BEZIER_POINT], const _float& fRatio);
@@ -64,6 +65,8 @@ private:
 	vector<CAMERA_CUTSCENE_DESC>	m_CutSceneDescs;
 
 	CAMERA_CUTSCENE_DESC*			m_pCurCutSceneDesc = nullptr;
+
+	queue<string>					m_CutSceneNamesReserved;
 
 	LERP_TIME_DESC					m_tTimeDesc;
 	

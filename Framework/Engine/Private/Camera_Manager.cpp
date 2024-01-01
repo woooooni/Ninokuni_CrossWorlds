@@ -83,6 +83,9 @@ HRESULT CCamera_Manager::Set_CurCamera(const _uint& iKey)
 	}
 	else
 	{
+		if (pCamera == m_pCurCamera)
+			return S_OK;
+
 		m_pPrevCamera = m_pCurCamera;
 
 		m_pCurCamera->Set_Active(false);
