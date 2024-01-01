@@ -176,7 +176,7 @@ WaterPixelToFrame WaterPS (WaterVertexToPixel input)
     //    output.vColor = lerp(vReflectionColor, vRefractionColor, 0.5f);
     
     output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
-    output.vDepth = float4(input.vProjPos.z / input.vProjPos.w, input.vProjPos.w / 1000.f, 1.0f, 0.0f);
+    output.vDepth  = float4(input.vProjPos.z / input.vProjPos.w, input.vProjPos.w / 1000.f, 0.0f, 1.0f);
     
     return output;
 }
