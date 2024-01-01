@@ -240,7 +240,7 @@ HRESULT CIceBearMan::Ready_States()
 
 	strKorName = TEXT("얼음곰형");
 	strKorName = TEXT("코에루크 설원");
-	m_tStat.eElementType = ELEMENTAL_TYPE::BASIC;
+	m_tStat.eElementType = ELEMENTAL_TYPE::WATER;
 
 	m_tStat.iLv = 7;
 	m_tStat.fMaxHp = 250;

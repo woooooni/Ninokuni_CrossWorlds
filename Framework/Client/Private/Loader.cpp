@@ -401,10 +401,10 @@ HRESULT CLoader::Loading_For_Level_Test()
 
 	m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE].wait();
 	m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE].wait();
-	m_Threads[LOADING_THREAD::MONSTER_AND_NPC].wait();
+	//m_Threads[LOADING_THREAD::MONSTER_AND_NPC].wait();
 
-	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Winter");
-	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Monster_Data, this, L"Winter");
+	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Evermore");
+	//m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Monster_Data, this, L"Winter");
 
 	CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_TEST);
 	
@@ -630,7 +630,7 @@ HRESULT CLoader::Load_Monster_Data(const wstring& strMonsterFileName)
 		if (LAYER_TYPE::LAYER_MONSTER != i)
 			continue;
 
-		GI->Clear_Layer(LEVEL_TEST, i);
+		GI->Clear_Layer(m_eNextLevel, i);
 
 
 		_uint iObjectCount = File->Read<_uint>();
@@ -654,7 +654,7 @@ HRESULT CLoader::Load_Monster_Data(const wstring& strMonsterFileName)
 			Init_Data.vStartPosition = vPos;
 			CGameObject* pObj = nullptr;
 
-			if (FAILED(GI->Add_GameObject(LEVEL_TEST, i, strPrototypeTag, &Init_Data, &pObj, true)))
+			if (FAILED(GI->Add_GameObject(m_eNextLevel, i, strPrototypeTag, &Init_Data, &pObj, true)))
 			{
 				MSG_BOX("Load_Objects_Failed.");
 				return E_FAIL;
