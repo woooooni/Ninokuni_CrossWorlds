@@ -5,16 +5,9 @@
 
 #pragma region Camera Define 
 
-#define MAX_BEZIER_POINT 4
-
-static const _float Cam_Dist_Follow_Default = 5.f;
-
-static const _float Cam_Fov_Free_Default		= XMConvertToRadians(60.0f);
-static const _float Cam_Fov_Follow_Default		= XMConvertToRadians(60.0f);
-static const _float Cam_Fov_CutScene_Default	= XMConvertToRadians(70.0f);
-
 enum CAMERA_EVENT_TYPE { FOV, DISTANCE, SHAKE, CAMERA_EVENT_TYPE_END };
 
+static const char* szCameraEventTypeNames[CAMERA_EVENT_TYPE::CAMERA_EVENT_TYPE_END]{ "FOV", "DISTANCE", "SHAKE" };
 static const wstring CameraEventTypeNames[CAMERA_EVENT_TYPE::CAMERA_EVENT_TYPE_END] { L"FOV", L"DISTANCE", L"SHAKE" };
 
 typedef struct tagCameraEventDesc
@@ -63,17 +56,17 @@ public:
 	HRESULT		Add_Camera(const _uint& iKey, CCamera* pCamera);
 
 public:
-	HRESULT Start_Action_Shake_Default();
+	HRESULT		Start_Action_Shake_Default();
 
 private:
-	CCamera* Find_Camera(const _uint& iKey);
+	CCamera*	Find_Camera(const _uint& iKey);
 
 private:
 	CCamera* m_pPrevCamera	= { nullptr };
 	CCamera* m_pCurCamera	= { nullptr };
 	CCamera* m_pNextCamera	= { nullptr };
 	
-	map<_uint, CCamera*>	m_pCameras;
+	map<_uint, CCamera*> m_pCameras;
 
 private:
 	ID3D11Device* m_pDevice = { nullptr };

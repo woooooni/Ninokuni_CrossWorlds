@@ -1511,7 +1511,7 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 					if (ImGui::IsItemHovered())
 					{
 						ImGui::BeginTooltip();
-						ImGui::Text(u8"키프레임 순서대로 사운드 이벤트 정렬 ");
+						ImGui::Text(u8"키프레임 순서대로 사운드 이벤트 정렬");
 						ImGui::EndTooltip();
 					}
 				}
@@ -1574,34 +1574,61 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 					/* Camera Event List */
 					ImGui::Text(u8"설정된 카메라 이벤트 (count : %d)", CameraEvents.size());
 
-					if (ImGui::BeginListBox("##Sound_Event_List", ImVec2(450.f, 70.f)))
+					if (ImGui::BeginListBox("##Camera_Event_List", ImVec2(450.f, 70.f)))
 					{
-						/*for (size_t i = 0; i < SoundEvents.size(); ++i)
+						for (size_t i = 0; i < CameraEvents.size(); ++i)
 						{
-							int iSoundKeyCurIndex = GI->Get_SoundFileIndex(SoundEvents[i].second.pSoundKey);
-
-							string strFrame = to_string(SoundEvents[i].first);
+							string strFrame = to_string(CameraEvents[i].first);
 							strFrame = strFrame.substr(0, 6);
-
-							string strEventName = "Frame : " + strFrame +
+							
+							string strEventName = 
+								"Frame : " + strFrame +
 								"    " +
-								"Name : " + string(m_arrSoundKeys[iSoundKeyCurIndex]);
+								"Type : " + CUtils::ToString(CameraEventTypeNames[CameraEvents[i].second.iTag2]);
 
-							if (ImGui::Selectable(strEventName.c_str(), i == m_iSoundEventIndex))
+							if (ImGui::Selectable(strEventName.c_str(), i == m_iCameraEventIndex))
 							{
-								m_iSoundEventIndex = i;
-
+								m_iCameraEventIndex = i;
 							}
 						}
-						ImGui::EndListBox();*/
+						ImGui::EndListBox();
 					}
 					IMGUI_NEW_LINE;
 
+					/* Prop */
+					if (0 <= m_iCameraEventIndex)
+					{
+						/* Camera Event Type */
+						static int iCameraEventType = 0;
+						{
+							const char* event_preview_value = szCameraEventTypeNames[iCameraEventType];
+							if (ImGui::BeginCombo("Camera Event Type", event_preview_value))
+							{
+								for (int n = 0; n < CAMERA_EVENT_TYPE::CAMERA_EVENT_TYPE_END; n++)
+								{
+									const bool is_selected = (iCameraEventType == n);
+									if (ImGui::Selectable(szCameraEventTypeNames[n], is_selected))
+									{
+										iCameraEventType = n;
+									}
+
+									if (is_selected)
+										ImGui::SetItemDefaultFocus();
+								}
+								ImGui::EndCombo();
+							}
+						}
+
+						/* 카메라 이벤트 타입에 따라 프로퍼티가 달라져야 한다. */
 
 
 
 
 
+					}
+
+
+					/* Add...... */
 				}
 				ImGui::PopItemWidth();
 
