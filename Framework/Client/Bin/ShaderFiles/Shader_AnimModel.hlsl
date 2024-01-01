@@ -112,24 +112,24 @@ matrix GetAnimationMatrix(VS_IN input)
         matrix result = lerp(curr, next, ratio[0]);
 		
 		///* Tweening */
-  //      if (animIndex[1] >= 0)
-  //      {
-  //          c0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, currFrame[1], animIndex[1], 0));
-  //          c1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, currFrame[1], animIndex[1], 0));
-  //          c2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, currFrame[1], animIndex[1], 0));
-  //          c3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, currFrame[1], animIndex[1], 0));
-  //          curr = matrix(c0, c1, c2, c3);
+        if (animIndex[1] >= 0)
+        {
+            c0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, currFrame[1], animIndex[1], 0));
+            c1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, currFrame[1], animIndex[1], 0));
+            c2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, currFrame[1], animIndex[1], 0));
+            c3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, currFrame[1], animIndex[1], 0));
+            curr = matrix(c0, c1, c2, c3);
             
 
-  //          n0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, nextFrame[1], animIndex[1], 0));
-  //          n1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, nextFrame[1], animIndex[1], 0));
-  //          n2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, nextFrame[1], animIndex[1], 0));
-  //          n3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, nextFrame[1], animIndex[1], 0));
-  //          next = matrix(n0, n1, n2, n3);
+            n0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, nextFrame[1], animIndex[1], 0));
+            n1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, nextFrame[1], animIndex[1], 0));
+            n2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, nextFrame[1], animIndex[1], 0));
+            n3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, nextFrame[1], animIndex[1], 0));
+            next = matrix(n0, n1, n2, n3);
 		
-  //          matrix nextResult = lerp(curr, next, ratio[1]);
-  //          result = lerp(result, nextResult, g_TweenFrames.fTweenRatio);
-  //      }
+            matrix nextResult = lerp(curr, next, ratio[1]);
+            result = lerp(result, nextResult, g_TweenFrames.fTweenRatio);
+        }
 
 		transform += mul(result, weights[i]);
 	}

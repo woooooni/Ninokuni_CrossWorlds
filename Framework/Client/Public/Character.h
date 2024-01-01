@@ -152,6 +152,7 @@ public:
 			return E_FAIL;
 
 		m_pCharacterPartModels[ePartType] = pModel;
+		return S_OK;
 	}
 
 	class CModel* Get_PartModel(PART_TYPE ePartType)
