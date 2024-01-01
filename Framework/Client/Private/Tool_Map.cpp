@@ -15,6 +15,7 @@
 #include "PipeLine.h"
 #include "Camera_Manager.h"
 #include "Game_Manager.h"
+#include "Player.h"
 
 CTool_Map::CTool_Map(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CTool(pDevice, pContext)

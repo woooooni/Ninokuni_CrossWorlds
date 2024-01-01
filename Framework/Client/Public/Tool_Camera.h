@@ -3,11 +3,8 @@
 
 #include "Camera.h"
 
-BEGIN(Engine)
-class CCamera;
-END
-
 BEGIN(Client)
+
 class CTool_Camera final : public CTool
 {
 private:
@@ -20,50 +17,41 @@ public:
 	virtual HRESULT Render() override;
 
 private:
-	void	Show_Select_Camera();
-
-	void	Show_Camera_Prop_Default(CCamera* pCurCam);
-	void	Show_Camera_Prop_Free(CCamera* pCurCam);
-	void	Show_Camera_Prop_Follow(CCamera* pCurCam);
-	void	Show_Camera_Prop_CutScene(_float fTimeDelta);
-	
-private:
-	void	Clear_CutSceneCache();
-	Vec3	Calculate_Bezier(_bool bPos);
+	void Show_Select_Camera();
+		 
+	void Show_Camera_Prop_Default(CCamera* pCurCam);
+	void Show_Camera_Prop_Free(CCamera* pCurCam);
+	void Show_Camera_Prop_Follow(CCamera* pCurCam);
+	void Show_Camera_Prop_CutScene(_float fTimeDelta);
+		 
+private: 
+	void Clear_CutSceneCache();
 
 private:
 	HRESULT Ready_DebugDraw();
 	HRESULT Render_DebugDraw();
 
-	Vec3 EvaluateBezierSegment(const vector<Vec3>& controlPoints, float t);
-	Vec3 EvaluateBezier(const vector<Vec3>& controlPoints, float t);
+	/* 베지어 곡선의 경로를 나타내기 위해 사용 */
+	vector<Vec3> Get_CamPositionPaths();
+	vector<Vec3> Get_CamLookAtPaths();
+	vector<Vec3> Subdivide_Bezier(const vector<Vec3>& controlPoints, int numSegments);
 
 private:
-
-	/* Test */
-	vector<Vec3>	m_vTempPositions;
-	vector<Vec3>	m_vTempLookAts;
-	_int			m_iTempPositionIndex = -1;
-	_int			m_iTempLookAtIndex = -1;
-	LERP_TIME_DESC	m_tDesc;
-	_bool			m_bPlay = false;
-
 	/* CutScene */
-	_bool	m_bShow_Prop_CutScene = false;
-	_int	m_iCurCutSceneEventIndex = -1;
-	string	m_strCurCutSceneEventName = "";
+	_bool	m_bShow_Prop_CutScene		= false;
+	_int	m_iCurCutSceneIndex			= -1;
+	_bool	m_bShowMarker				= true;
+	_bool	m_bPlayCutScene				= false;
 
+	LERP_TIME_DESC	m_tCutSceneDebugTimeDesc;
 
 #pragma region Debug Draw 
-
 	BasicEffect*							m_pEffect = nullptr;
 	BoundingSphere*							m_pSphere = nullptr;
 	ID3D11InputLayout*						m_pInputLayout = nullptr;
 	PrimitiveBatch<VertexPositionColor>*	m_pBatch = nullptr;
-
 #pragma endregion
 	
-
 public:
 	static CTool_Camera* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free() override;

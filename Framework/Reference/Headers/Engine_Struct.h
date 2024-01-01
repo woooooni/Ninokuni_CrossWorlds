@@ -319,6 +319,7 @@ namespace Engine
 #pragma region Lerp Desc
 
 	enum class LERP_MODE { DEFAULT, EASE_OUT, EASE_IN, EXPONENTIAL, SMOOTH_STEP, SMOOTHER_STEP, TYPEEND };
+	static string LerpModeNames[(UINT)LERP_MODE::TYPEEND] = { "DEFAULT", "EASE_OUT", "EASE_IN", "EXPONENTIAL", "SMOOTH_STEP", "SMOOTHER_STEP" };
 
 	typedef struct tagLerpDesc
 	{
@@ -460,7 +461,7 @@ namespace Engine
 
 		_float Update(const _float& fTimeDelta)
 		{
-			if (!bActive) 
+			if (!bActive)
 				return fLerpTime;
 
 			fCurTime += fTimeDelta;
@@ -476,6 +477,11 @@ namespace Engine
 			fLerpTime = LERP_DESC::Calculate_Time(fCurTime, fEndTime, eMode);
 
 			return fLerpTime;
+		}
+
+		_float Get_Progress()
+		{
+			return fCurTime / fEndTime;
 		}
 
 	}LERP_TIME_DESC;
