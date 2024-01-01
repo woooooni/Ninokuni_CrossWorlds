@@ -78,7 +78,7 @@ public:
 	void Set_Fog(_float4 vFogColor, _float fFogStart, _float fFogEnd)
 	{
 		m_vFogColor    = vFogColor;
-		m_vFogStartEnd = _float2(fFogStart, fFogEnd);
+		m_fFogStartEnd = _float2(fFogStart, fFogEnd);
 	}
 
 public:
@@ -187,8 +187,8 @@ private:
 	_bool   m_bPbrDraw  = false;
 
 private:
-	_float4	m_vFogColor = {.5f, .5f, .5f, 1.f };
-	_float2	m_vFogStartEnd = { 1000000.f, 1000000.f };
+	_float4	m_vFogColor    = { 0.f, 0.635f, 1.f, 1.f };
+	_float2	m_fFogStartEnd = { 300.f, 600.f };
 
 
 	_float	m_fBias = 0.2f;

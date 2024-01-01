@@ -334,7 +334,6 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 	// Fog
     float fFogFactor = FogFactor_Caculation(vDepthDesc.y * 1000.f);
     Out.vColor = lerp(g_vFogColor, Out.vColor, fFogFactor);
-	//Out.vColor = fFogFactor * Out.vColor + (1.f - fFogFactor) * g_vFogColor;
 	
 	return Out;
 }
