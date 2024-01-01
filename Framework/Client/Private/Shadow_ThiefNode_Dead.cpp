@@ -42,11 +42,11 @@ CBTNode::NODE_STATE CShadow_ThiefNode_Dead::Tick(const _float& fTimeDelta)
 			m_fTime += fTimeDelta;
 			if (m_fTime > m_fBlowDeadTime)
 			{
-				m_tBTNodeDesc.pOwner->Set_Dead(true);
+				m_tBTNodeDesc.pOwner->Reserve_Dead(true);
 			}
 		}
 		else
-			m_tBTNodeDesc.pOwner->Set_Dead(true);
+			m_tBTNodeDesc.pOwner->Reserve_Dead(true);
 	}
 
 	return NODE_STATE::NODE_RUNNING;

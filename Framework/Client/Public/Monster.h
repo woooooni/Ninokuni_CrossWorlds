@@ -189,13 +189,27 @@ protected:
 	class CTrail* m_pTrails[SOCKET_TYPE::SOCKET_END];
 
 protected:
-	_float m_fDissolveWeight = 0.f;
 	MONSTER_TYPE m_eMonsterType = MONSTER_TYPE::TYPE_END;
+
+	_float4 m_vRimLightColor = _float4(1.f, 0.f, 0.f, 0.f);
+	_float  m_fRimDuration   = 0.5f;
+
+	_float4 m_vDissolveColor    = _float4(0.427f, 0.894f, 1.f, 1.f);
+	_float  m_fDissolveDuration = 5.f;
+	_float  m_fDissolveWeight   = 0.f;
+	_float  m_fDissolveSpeed    = 5.f;
+
+	_float3 m_vBloomPower    = _float3(1.f, 1.f, 1.f);
+
+private:
+	_bool   m_bIsRimUse = false;
+	_float  m_fRimTimeAcc = 0.f;
 
 private:
 	void LookAt_DamagedObject(CGameObject* pAttacker);
 	void Play_DamagedSound();
-
+	void Start_RimLight();
+	void Tick_RimLight(_float fTimeDelta);
 
 public:
 	virtual void Free() override;
