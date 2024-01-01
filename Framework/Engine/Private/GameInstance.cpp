@@ -15,6 +15,7 @@
 #include "PhysX_Manager.h"
 #include "Utils.h"
 #include "JsonUtils.h"
+#include "Camera_Manager.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -36,6 +37,7 @@ CGameInstance::CGameInstance()
 	, m_pSound_Manager(CSound_Manager::GetInstance())
 	, m_pPhysXManager(CPhysX_Manager::GetInstance())
 	// , m_pNetwork_Manager(CNetwork_Manager::GetInstance())
+	, m_pCamera_Manager(CCamera_Manager::GetInstance())
 	
 {
 	Safe_AddRef(m_pTarget_Manager);
@@ -55,6 +57,7 @@ CGameInstance::CGameInstance()
 	Safe_AddRef(m_pSound_Manager);
 	Safe_AddRef(m_pPhysXManager);
 	// Safe_AddRef(m_pNetwork_Manager);
+	Safe_AddRef(m_pCamera_Manager);
 }
 
 HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, _uint iNumLayerType, 
@@ -103,13 +106,17 @@ HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, _uint iNumLayerType,
 	if (FAILED(m_pSound_Manager->Reserve_Manager()))
 		return E_FAIL;
 	
-	
+	if (FAILED(m_pCamera_Manager->Reserve_Manager(*ppDevice, *ppContext)))
+		return E_FAIL;
+
 
 	return S_OK;
 }
 
 void CGameInstance::Tick(_float fTimeDelta)
 {
+	m_pCamera_Manager->Tick(fTimeDelta);
+
 	m_pInput_Device->Update();
 	m_pKey_Manager->Tick(fTimeDelta);
 	m_pObject_Manager->Priority_Tick(fTimeDelta);
@@ -124,6 +131,8 @@ void CGameInstance::Tick(_float fTimeDelta)
 
 void CGameInstance::LateTick(_float fTimeDelta)
 {
+	m_pCamera_Manager->LateTick(fTimeDelta);
+
 	m_pPhysXManager->LateTick(fTimeDelta);
 	m_pObject_Manager->LateTick(fTimeDelta);
 
@@ -828,6 +837,7 @@ void CGameInstance::Release_Engine()
 	CObject_Manager::GetInstance()->DestroyInstance();
 	CComponent_Manager::GetInstance()->DestroyInstance();
 	CGraphic_Device::GetInstance()->DestroyInstance();
+	CCamera_Manager::GetInstance()->DestroyInstance();
 }
 
 void CGameInstance::Free()
@@ -848,4 +858,5 @@ void CGameInstance::Free()
 	Safe_Release(m_pFrustum);
 	Safe_Release(m_pSound_Manager);
 	Safe_Release(m_pPhysXManager);
+	Safe_Release(m_pCamera_Manager);
 }

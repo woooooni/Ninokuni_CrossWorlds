@@ -226,6 +226,8 @@ private:
 	class CSound_Manager* m_pSound_Manager = { nullptr };
 	class CPhysX_Manager* m_pPhysXManager = { nullptr };
 
+	class CCamera_Manager* m_pCamera_Manager = { nullptr };
+
 public:
 	static void Release_Engine();
 	virtual void Free() override;

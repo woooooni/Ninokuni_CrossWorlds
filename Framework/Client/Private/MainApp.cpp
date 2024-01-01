@@ -21,6 +21,9 @@
 #include "Character_Manager.h"
 #include "Weapon_Manager.h"
 
+#include "Camera_Free.h"
+#include "Camera_Follow.h"
+#include "Camera_CutScene.h"
 
 #ifdef _DEBUG
   // #include <vld.h>
@@ -84,12 +87,10 @@ HRESULT CMainApp::Initialize()
 void CMainApp::Tick(_float fTimeDelta)
 {
 	CGame_Manager::GetInstance()->Tick(fTimeDelta);
-	CCamera_Manager::GetInstance()->Tick(fTimeDelta);
 	GI->Tick(fTimeDelta);
 	CUI_Manager::GetInstance()->Tick(fTimeDelta);
 	
 	CGame_Manager::GetInstance()->LateTick(fTimeDelta);
-	CCamera_Manager::GetInstance()->LateTick(fTimeDelta);
 	GI->LateTick(fTimeDelta);
 	CUI_Manager::GetInstance()->LateTick(fTimeDelta);
 	
@@ -160,8 +161,89 @@ HRESULT CMainApp::Initialize_Client()
 	//if (FAILED(CUIDamage_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
 	//	return E_FAIL;
 
-	if (FAILED(CCamera_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
-		return E_FAIL;
+
+	// << : Camera
+	/* Free */
+	{
+		CCamera* pCamera = nullptr;
+		CAMERA_TYPE eType = CAMERA_TYPE::FREE;
+		CCamera::PROJ_DESC tDesc;
+		{
+			tDesc.tLerpFov.fCurValue = Cam_Fov_Free_Default;
+			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
+			tDesc.fNear = 0.2f;
+			tDesc.fFar = 1000.f;
+
+			pCamera = CCamera_Free::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
+			if (nullptr == pCamera)
+				return E_FAIL;
+
+			CCamera_Manager::GetInstance()->Add_Camera(eType, pCamera);
+
+			if (FAILED(pCamera->Initialize(&tDesc)))
+			{
+				return E_FAIL;
+			}
+		}
+		pCamera->Set_Type(eType);
+		pCamera->Get_Transform()->Set_State(CTransform::STATE::STATE_POSITION, Vec4(0.f, 10.f, -10.f, 1.f));
+		pCamera->Get_Transform()->LookAt(Vec4{ 0.f, 0.f, 0.f, 1.f });
+	}
+
+	/* Follow */
+	{
+		CCamera* pCamera = nullptr;
+		CAMERA_TYPE eType = CAMERA_TYPE::FOLLOW;
+		CCamera::PROJ_DESC tDesc;
+		{
+			tDesc.tLerpFov.fCurValue = Cam_Fov_Follow_Default;
+			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
+			tDesc.fNear = 0.2f;
+			tDesc.fFar = 1000.f;
+
+			pCamera = CCamera_Follow::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
+			if (nullptr == pCamera)
+				return E_FAIL;
+
+			CCamera_Manager::GetInstance()->Add_Camera(eType, pCamera);
+
+			if (FAILED(pCamera->Initialize(&tDesc)))
+			{
+				return E_FAIL;
+			}
+		}
+		pCamera->Set_Type(eType);
+		pCamera->Get_Transform()->Set_State(CTransform::STATE::STATE_POSITION, Vec4(0.f, 10.f, -10.f, 1.f));
+		pCamera->Get_Transform()->LookAt(Vec4{ 0.f, 0.f, 0.f, 1.f });
+	}
+
+	/* CutScene */
+	{
+		CCamera* pCamera = nullptr;
+		CAMERA_TYPE eType = CAMERA_TYPE::CUTSCENE;
+		CCamera::PROJ_DESC tDesc;
+		{
+			tDesc.tLerpFov.fCurValue = Cam_Fov_CutScene_Default;
+			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
+			tDesc.fNear = 0.2f;
+			tDesc.fFar = 1000.f;
+
+			pCamera = CCamera_CutScene::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
+
+			if (nullptr == pCamera)
+				return E_FAIL;
+
+			CCamera_Manager::GetInstance()->Add_Camera(eType, pCamera);
+
+			if (FAILED(pCamera->Initialize(&tDesc)))
+			{
+				return E_FAIL;
+			}
+		}
+		pCamera->Set_Type(eType);
+		pCamera->Get_Transform()->Set_State(CTransform::STATE::STATE_POSITION, Vec4(0.f, 10.f, -10.f, 1.f));
+		pCamera->Get_Transform()->LookAt(Vec4{ 0.f, 0.f, 0.f, 1.f });
+	}
 
 	LIGHTDESC LightDesc;
 	ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
@@ -1280,7 +1362,6 @@ void Client::CMainApp::Free()
 	__super::Free();
 	Safe_Release(m_pRenderer_Com);
 
-	CCamera_Manager::GetInstance()->DestroyInstance();
 	CEffect_Manager::GetInstance()->DestroyInstance();
 	CParticle_Manager::GetInstance()->DestroyInstance();
 	CImGui_Manager::GetInstance()->DestroyInstance();

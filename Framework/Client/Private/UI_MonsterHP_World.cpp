@@ -4,6 +4,7 @@
 #include "Monster.h"
 #include "UI_Basic.h"
 #include "Camera_Manager.h"
+#include "Camera.h"
 
 CUI_MonsterHP_World::CUI_MonsterHP_World(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_MonsterHP_World")
