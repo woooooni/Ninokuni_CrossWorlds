@@ -8,66 +8,67 @@
 #include "Weapon.h"
 #include "Sword.h"
 
-#include "State_SwordMan_Neutral_Idle.h"
-#include "State_SwordMan_Neutral_Jump.h"
-#include "State_SwordMan_Neutral_Walk.h"
-#include "State_SwordMan_Neutral_Run.h"
-#include "State_SwordMan_Neutral_Kick.h"
+#include "State_Destroyer_Neutral_Idle.h"
+#include "State_Destroyer_Neutral_Jump.h"
+#include "State_Destroyer_Neutral_Walk.h"
+#include "State_Destroyer_Neutral_Run.h"
+#include "State_Destroyer_Neutral_Kick.h"
 
-#include "State_SwordMan_Neutral_Crouch_Idle.h"
-#include "State_SwordMan_Neutral_Crouch_Move.h"
-
-
-#include "State_SwordMan_Neutral_Pick_Small_Idle.h"
-#include "State_SwordMan_Neutral_Pick_Small_Walk.h"
-#include "State_SwordMan_Neutral_Pick_Small_Run.h"
-#include "State_SwordMan_Neutral_Pick_Small_Throw.h"
-#include "State_SwordMan_Neutral_Pick_Small_Finish.h"
-
-#include "State_SwordMan_Neutral_Pick_Large_Idle.h"
-#include "State_SwordMan_Neutral_Pick_Large_Walk.h"
-#include "State_SwordMan_Neutral_Pick_Large_Run.h"
-#include "State_SwordMan_Neutral_Pick_Large_Throw.h"
-#include "State_SwordMan_Neutral_Pick_Large_Finish.h"
+#include "State_Destroyer_Neutral_Crouch_Idle.h"
+#include "State_Destroyer_Neutral_Crouch_Move.h"
 
 
-#include "State_SwordMan_AbNormality_Stun.h"
+#include "State_Destroyer_Neutral_Pick_Small_Idle.h"
+#include "State_Destroyer_Neutral_Pick_Small_Walk.h"
+#include "State_Destroyer_Neutral_Pick_Small_Run.h"
+#include "State_Destroyer_Neutral_Pick_Small_Throw.h"
+#include "State_Destroyer_Neutral_Pick_Small_Finish.h"
 
-#include "State_SwordMan_Battle_Guard.h"
-#include "State_SwordMan_Battle_Idle.h"
-#include "State_SwordMan_Battle_Jump.h"
-#include "State_SwordMan_Battle_Walk.h"
-#include "State_SwordMan_Battle_Run.h"
-#include "State_SwordMan_Battle_Dash.h"
-
-#include "State_SwordMan_Battle_Attack_0.h"
-#include "State_SwordMan_Battle_Attack_1.h"
-#include "State_SwordMan_Battle_Attack_2.h"
-#include "State_SwordMan_Battle_Attack_3.h"
-
-#include "State_SwordMan_BurstSkill_MegaSlash.h"
-
-#include "State_SwordMan_Skill_PerfectBlade.h"
-#include "State_SwordMan_Skill_SipohoningLunge.h"
-#include "State_SwordMan_Skill_SpinningAssault.h"
-
-#include "State_SwordMan_SpecialSkill_AcaneBarrier.h"
-#include "State_SwordMan_SpecialSkill_FrozenStorm.h"
-#include "State_SwordMan_SpecialSkill_SwordTempest.h"
-
-#include "State_SwordMan_Damaged_Impact.h"
-#include "State_SwordMan_Damaged_KnockDown.h"
-#include "State_SwordMan_Damaged_Strong.h"
-#include "State_SwordMan_Damaged_Weak.h"
+#include "State_Destroyer_Neutral_Pick_Large_Idle.h"
+#include "State_Destroyer_Neutral_Pick_Large_Walk.h"
+#include "State_Destroyer_Neutral_Pick_Large_Run.h"
+#include "State_Destroyer_Neutral_Pick_Large_Throw.h"
+#include "State_Destroyer_Neutral_Pick_Large_Finish.h"
 
 
-#include "State_SwordMan_Dead.h"
-#include "State_SwordMan_Revive.h"
+#include "State_Destroyer_AbNormality_Stun.h"
+
+#include "State_Destroyer_Battle_Guard.h"
+#include "State_Destroyer_Battle_Idle.h"
+#include "State_Destroyer_Battle_Jump.h"
+#include "State_Destroyer_Battle_Walk.h"
+#include "State_Destroyer_Battle_Run.h"
+#include "State_Destroyer_Battle_Dash.h"
+
+#include "State_Destroyer_Battle_Attack_0.h"
+#include "State_Destroyer_Battle_Attack_1.h"
+#include "State_Destroyer_Battle_Attack_2.h"
+#include "State_Destroyer_Battle_Attack_3.h"
+
+#include "State_Destroyer_BurstSkill_HyperStrike.h"
+
+#include "State_Destroyer_Skill_WheelWind.h"
+#include "State_Destroyer_Skill_BrutalStrike.h"
+#include "State_Destroyer_Skill_LeafSlam.h"
+
+
+#include "State_Destroyer_SpecialSkill_BattleCry.h"
+#include "State_Destroyer_SpecialSkill_FrengeCharge.h"
+#include "State_Destroyer_SpecialSkill_IgnorePain.h"
+
+#include "State_Destroyer_Damaged_Impact.h"
+#include "State_Destroyer_Damaged_KnockDown.h"
+#include "State_Destroyer_Damaged_Strong.h"
+#include "State_Destroyer_Damaged_Weak.h"
+
+
+#include "State_Destroyer_Dead.h"
+#include "State_Destroyer_Revive.h"
 
 
 
 CCharacter_Destroyer::CCharacter_Destroyer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
-	: CCharacter(pDevice, pContext, strObjectTag, CHARACTER_TYPE::SWORD_MAN)
+	: CCharacter(pDevice, pContext, strObjectTag, CHARACTER_TYPE::DESTROYER)
 {
 }
 
@@ -184,7 +185,7 @@ HRESULT CCharacter_Destroyer::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Model */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_SwordMan_Dummy"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Destroyer_Dummy"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 
 	/* For.Com_StateMachine */
@@ -234,205 +235,210 @@ HRESULT CCharacter_Destroyer::Ready_States()
 
 	// Neutral
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_NeutralStand");
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_NeutralIdle01");
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_NeutralIdle02");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_IDLE, CState_SwordMan_Neutral_Idle::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_NeutralStand");
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_NeutralIdle01");
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_NeutralIdle02");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_IDLE, CState_Destroyer_Neutral_Idle::Create(m_pStateCom, strAnimationNames));
 
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_NeutralWalk");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_WALK, CState_SwordMan_Neutral_Walk::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_NeutralWalk");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_WALK, CState_Destroyer_Neutral_Walk::Create(m_pStateCom, strAnimationNames));
 
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_NeutralRun");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_RUN, CState_SwordMan_Neutral_Run::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_NeutralRun");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_RUN, CState_Destroyer_Neutral_Run::Create(m_pStateCom, strAnimationNames));
 
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_JumpUpLoop");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_JUMP, CState_SwordMan_Neutral_Jump::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_JumpUpLoop");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_JUMP, CState_Destroyer_Neutral_Jump::Create(m_pStateCom, strAnimationNames));
 
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_CrouchStand");
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_CrouchIdle01");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_CROUCH_IDLE, CState_SwordMan_Neutral_Crouch_Idle::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_DSCrouchStand");
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_DSCrouchLookAround");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_CROUCH_IDLE, CState_Destroyer_Neutral_Crouch_Idle::Create(m_pStateCom, strAnimationNames));
 
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_CrouchWalk");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_CROUCH_MOVE, CState_SwordMan_Neutral_Crouch_Move::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_DSCrouchWalk");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_CROUCH_MOVE, CState_Destroyer_Neutral_Crouch_Move::Create(m_pStateCom, strAnimationNames));
 
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_Kick");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_KICK, CState_SwordMan_Neutral_Kick::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_Kick");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_KICK, CState_Destroyer_Neutral_Kick::Create(m_pStateCom, strAnimationNames));
 
 
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_PickStandS");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_IDLE, CState_SwordMan_Neutral_Pick_Small_Idle::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickStandS");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_IDLE, CState_Destroyer_Neutral_Pick_Small_Idle::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_PickWalkS");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_WALK, CState_SwordMan_Neutral_Pick_Small_Walk::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickWalkS");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_WALK, CState_Destroyer_Neutral_Pick_Small_Walk::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_PickRunS");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_RUN, CState_SwordMan_Neutral_Pick_Small_Run::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickRunS");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_RUN, CState_Destroyer_Neutral_Pick_Small_Run::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_PickThrowS");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_THROW, CState_SwordMan_Neutral_Pick_Small_Throw::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickThrowS");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_THROW, CState_Destroyer_Neutral_Pick_Small_Throw::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_PickFinishS");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_FINISH, CState_SwordMan_Neutral_Pick_Small_Finish::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickFinishS");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_FINISH, CState_Destroyer_Neutral_Pick_Small_Finish::Create(m_pStateCom, strAnimationNames));
 	
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_PickStandL");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_IDLE, CState_SwordMan_Neutral_Pick_Large_Idle::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickStandL");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_IDLE, CState_Destroyer_Neutral_Pick_Large_Idle::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_PickWalkL");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_WALK, CState_SwordMan_Neutral_Pick_Large_Walk::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickWalkL");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_WALK, CState_Destroyer_Neutral_Pick_Large_Walk::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_PickRunL");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_RUN, CState_SwordMan_Neutral_Pick_Large_Run::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickRunL");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_RUN, CState_Destroyer_Neutral_Pick_Large_Run::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_PickThrowL");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_THROW, CState_SwordMan_Neutral_Pick_Large_Throw::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickThrowL");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_THROW, CState_Destroyer_Neutral_Pick_Large_Throw::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_PickFinishL");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_FINISH, CState_SwordMan_Neutral_Pick_Large_Finish::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickFinishL");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_FINISH, CState_Destroyer_Neutral_Pick_Large_Finish::Create(m_pStateCom, strAnimationNames));
 	
 	
 	// AbNormality
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_StunLoop1");
-	m_pStateCom->Add_State(CCharacter::STATE::ABNORMALITY_STUN, CState_SwordMan_AbNormality_Stun::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_StunLoop");
+	m_pStateCom->Add_State(CCharacter::STATE::ABNORMALITY_STUN, CState_Destroyer_AbNormality_Stun::Create(m_pStateCom, strAnimationNames));
 
 
 
 
 	// Battle
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_CSBattleStand");
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_FinishCombat");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_IDLE, CState_SwordMan_Battle_Idle::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_BattleStand");
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_FinishCombat");
+	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_IDLE, CState_Destroyer_Battle_Idle::Create(m_pStateCom, strAnimationNames));
 
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_BattleRun");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_WALK, CState_SwordMan_Battle_Walk::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_BattleWalk");
+	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_WALK, CState_Destroyer_Battle_Walk::Create(m_pStateCom, strAnimationNames));
 
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_Dash");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_RUN, CState_SwordMan_Battle_Run::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_Dash");
+	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_RUN, CState_Destroyer_Battle_Run::Create(m_pStateCom, strAnimationNames));
 
 
 	strAnimationNames.clear();	
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_JumpUpLoop");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_JUMP, CState_SwordMan_Battle_Jump::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_JumpUpLoop");
+	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_JUMP, CState_Destroyer_Battle_Jump::Create(m_pStateCom, strAnimationNames));
 
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_Attack01_1");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_ATTACK_0, CState_SwordMan_Battle_Attack_0::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_AttackHammer01");
+	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_ATTACK_0, CState_Destroyer_Battle_Attack_0::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_Attack01_2");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_ATTACK_1, CState_SwordMan_Battle_Attack_1::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_AttackHammer02");
+	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_ATTACK_1, CState_Destroyer_Battle_Attack_1::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_Attack01_3");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_ATTACK_2, CState_SwordMan_Battle_Attack_2::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_AttackHammer03");
+	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_ATTACK_2, CState_Destroyer_Battle_Attack_2::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_Attack01_4");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_ATTACK_3, CState_SwordMan_Battle_Attack_3::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_AttackHammer04");
+	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_ATTACK_3, CState_Destroyer_Battle_Attack_3::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_CSGuardLoop");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_GUARD, CState_SwordMan_Battle_Guard::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_CSGuardLoop");
+	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_GUARD, CState_Destroyer_Battle_Guard::Create(m_pStateCom, strAnimationNames));
 	
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_SkillDash");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_DASH, CState_SwordMan_Battle_Dash::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillDash");
+	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_DASH, CState_Destroyer_Battle_Dash::Create(m_pStateCom, strAnimationNames));
 	
 	
 
 
 	// Skill
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_SkillMegaSlash");
-	m_pStateCom->Add_State(CCharacter::STATE::SKILL_BURST, CState_SwordMan_BurstSkill_MegaSlash::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillHyperStrike");
+	m_pStateCom->Add_State(CCharacter::STATE::SKILL_BURST, CState_Destroyer_BurstSkill_HyperStrike::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_SkillPerfectBlades");
-	m_pStateCom->Add_State(CCharacter::STATE::CLASS_SKILL_0, CState_SwordMan_Skill_PerfectBlade::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillWhirlwindStart");
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillWhirlwindLoop");
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillWhirlwindfinish");
+	m_pStateCom->Add_State(CCharacter::STATE::CLASS_SKILL_0, CState_Destroyer_Skill_WheelWind::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_SkillSiphoningLunge");
-	m_pStateCom->Add_State(CCharacter::STATE::CLASS_SKILL_1, CState_SwordMan_Skill_SipohoningLunge::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillBrutalStrikeNew");
+	m_pStateCom->Add_State(CCharacter::STATE::CLASS_SKILL_1, CState_Destroyer_Skill_BrutalStrike::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_SkillSpinningAssault");
-	m_pStateCom->Add_State(CCharacter::STATE::CLASS_SKILL_2, CState_SwordMan_Skill_SpinningAssault::Create(m_pStateCom, strAnimationNames));
+	// 리프 슬램
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillMegaCrushStart");
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillMegaCrushFinish");
+	m_pStateCom->Add_State(CCharacter::STATE::CLASS_SKILL_2, CState_Destroyer_Skill_LeafSlam::Create(m_pStateCom, strAnimationNames));
 	
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_SkillArcaneBarrier_re");
-	m_pStateCom->Add_State(CCharacter::STATE::SKILL_SPECIAL_0, CState_SwordMan_SpecialSkill_AcaneBarrier::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillBattleCry");
+	m_pStateCom->Add_State(CCharacter::STATE::SKILL_SPECIAL_0, CState_Destroyer_SpecialSkill_BattleCry::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_SkillFrozenStorm");
-	m_pStateCom->Add_State(CCharacter::STATE::SKILL_SPECIAL_1, CState_SwordMan_SpecialSkill_FrozenStorm::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillIgnorePain");
+	m_pStateCom->Add_State(CCharacter::STATE::SKILL_SPECIAL_1, CState_Destroyer_SpecialSkill_IgnorePain::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_SkillSwordTempest");
-	m_pStateCom->Add_State(CCharacter::STATE::SKILL_SPECIAL_2, CState_SwordMan_SpecialSkill_SwordTempest::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillMegaCrushStart");
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillMegaCrushFinish");
+	m_pStateCom->Add_State(CCharacter::STATE::SKILL_SPECIAL_2, CState_Destroyer_SpecialSkill_FrengeCharge::Create(m_pStateCom, strAnimationNames));
 
 	
 	
 	// Damaged
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_Impact_Start");
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_Impact_Loop");
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_Impact_Finish");
-	m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_IMPACT, CState_SwordMan_Damaged_Impact::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_ImpactStart");
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_ImpactLoop");
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_ImpactFinish");
+	m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_IMPACT, CState_Destroyer_Damaged_Impact::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_KnockUpStart1");
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_KnockDownLoop");
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_KnockDownFinish");
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_KnockUpStart");
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_KnockDownLoop");
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_KnockDownFinish");
 
-	m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_KNOCKDOWN, CState_SwordMan_Damaged_KnockDown::Create(m_pStateCom, strAnimationNames));
-
-	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_DamageStrong");
-	m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_STRONG, CState_SwordMan_Damaged_Strong::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_KNOCKDOWN, CState_Destroyer_Damaged_KnockDown::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_DamageWeak");
-	m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_WEAK, CState_SwordMan_Damaged_Weak::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_DamageStrong");
+	m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_STRONG, CState_Destroyer_Damaged_Strong::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_DamageWeak");
+	m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_WEAK, CState_Destroyer_Damaged_Weak::Create(m_pStateCom, strAnimationNames));
 
 	// Dead & Revive
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_Death");
-	m_pStateCom->Add_State(CCharacter::STATE::DEAD, CState_SwordMan_Dead::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_Death");
+	m_pStateCom->Add_State(CCharacter::STATE::DEAD, CState_Destroyer_Dead::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_Revive");
-	m_pStateCom->Add_State(CCharacter::STATE::REVIVE, CState_SwordMan_Revive::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_Revive");
+	m_pStateCom->Add_State(CCharacter::STATE::REVIVE, CState_Destroyer_Revive::Create(m_pStateCom, strAnimationNames));
 
 
 	m_pStateCom->Change_State(CCharacter::NEUTRAL_IDLE);
@@ -478,13 +484,13 @@ HRESULT CCharacter_Destroyer::Ready_Colliders()
 	ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
 
 	XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
-	OBBBox.Extents = { 50.f, 70.f, 50.f };
+	OBBBox.Extents = { 50.f, 100.f, 50.f };
 
 	OBBDesc.tBox = OBBBox;
 	OBBDesc.pNode = nullptr;
 	OBBDesc.pOwnerTransform = m_pTransformCom;
 	OBBDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
-	OBBDesc.vOffsetPosition = Vec3(0.f, 70.f, 0.f);
+	OBBDesc.vOffsetPosition = Vec3(0.f, 100.f, 0.f);
 
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::BODY, &OBBDesc)))
 		return E_FAIL;
@@ -492,7 +498,7 @@ HRESULT CCharacter_Destroyer::Ready_Colliders()
 
 
 	OBBBox.Extents = { 100.f, 100.f, 50.f };
-	OBBDesc.vOffsetPosition = Vec3(0.f, 70.f, -100.f);
+	OBBDesc.vOffsetPosition = Vec3(0.f, 100.f, -100.f);
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::ATTACK, &OBBDesc)))
 		return E_FAIL;
 
@@ -559,12 +565,12 @@ HRESULT CCharacter_Destroyer::Ready_Sockets()
 #pragma region Ready_Weapon
 HRESULT CCharacter_Destroyer::Ready_Weapon()
 {
-	m_pWeapon = CSword::Create(m_pDevice, m_pContext, L"SwordMane_Sword");
+	m_pWeapon = CSword::Create(m_pDevice, m_pContext, L"Destroyer_Hammer");
 	if (nullptr == m_pWeapon)
 		return S_OK;
 	
 
-	m_pWeapon->Set_ModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Flower01"));
+	m_pWeapon->Set_ModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Food02"));
 
 	if (nullptr == m_pWeapon->Get_ModelCom())
 	{

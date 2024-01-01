@@ -200,7 +200,11 @@ HRESULT CLoader::Loading_For_Level_Logo()
 
 
 	if (false == g_bFirstLoading)
-		Loading_For_Character();
+	{
+		m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN] = std::async(&CLoader::Loading_For_Character, this , CHARACTER_TYPE::SWORD_MAN);
+		/*m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);
+		m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);*/
+	}
 
 	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
 	{
@@ -208,6 +212,8 @@ HRESULT CLoader::Loading_For_Level_Logo()
 			m_Threads[i].wait();
 	}
 		
+	if (FAILED(Reserve_Character_Managers()))
+		return E_FAIL;
 
 
 	m_strLoading = TEXT("로딩 끝.");
@@ -289,7 +295,11 @@ HRESULT CLoader::Loading_For_Level_Lobby()
 
 
 	if (false == g_bFirstLoading)
-		Loading_For_Character();
+	{
+		m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::SWORD_MAN);
+		/*m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);
+		m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);*/
+	}
 
 	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
 	{
@@ -297,6 +307,8 @@ HRESULT CLoader::Loading_For_Level_Lobby()
 			m_Threads[i].wait();
 	}
 		
+	if (FAILED(Reserve_Character_Managers()))
+		return E_FAIL;
 
 	m_strLoading = TEXT("로딩 끝.");
 	m_isFinished = true;
@@ -327,7 +339,14 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
 
 	if (false == g_bFirstLoading)
-		Loading_For_Character();
+	{
+		m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::SWORD_MAN);
+		/*m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);
+		m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);*/
+
+		if (FAILED(Reserve_Character_Managers()))
+			return E_FAIL;
+	}
 
 
 	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
@@ -335,6 +354,9 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 		if(true == m_Threads[i].valid())
 			m_Threads[i].wait();
 	}
+
+	if (FAILED(Reserve_Character_Managers()))
+		return E_FAIL;
 		
 
 	m_strLoading = TEXT("로딩 끝.");
@@ -365,7 +387,12 @@ HRESULT CLoader::Loading_For_Level_Test()
 
 
 	if (false == g_bFirstLoading)
-		Loading_For_Character();
+	{
+		m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::SWORD_MAN);
+		/*m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);
+		m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);*/
+	}
+		
 
 	
 	m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Static_Map_Objects, this, L"../Bin/Export/NonAnimModel/Map/");
@@ -387,6 +414,9 @@ HRESULT CLoader::Loading_For_Level_Test()
 		if (true == m_Threads[i].valid())
 			m_Threads[i].wait();
 	}
+
+	if (FAILED(Reserve_Character_Managers()))
+		return E_FAIL;
 
 	m_strLoading = TEXT("로딩 끝.");
 	m_isFinished = true;
@@ -458,7 +488,12 @@ HRESULT CLoader::Loading_For_Level_Tool()
 
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
 	if (false == g_bFirstLoading)
-		Loading_For_Character();
+	{
+		m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::SWORD_MAN);
+		/*m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);
+		m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);*/
+	}
+		
 
 	m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Static_Map_Objects, this, L"../Bin/Export/NonAnimModel/Map/");
 	m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Dynamic_Map_Objects, this, L"..Bin/Export/AnimModel/Map/");
@@ -470,6 +505,9 @@ HRESULT CLoader::Loading_For_Level_Tool()
 		if (true == m_Threads[i].valid())
 			m_Threads[i].wait();
 	}
+
+	if (FAILED(Reserve_Character_Managers()))
+		return E_FAIL;
 
 
 	m_strLoading = TEXT("로딩 끝.");
@@ -792,22 +830,36 @@ HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 	return S_OK;
 }
 
-HRESULT CLoader::Loading_For_Character()
+HRESULT CLoader::Loading_For_Character(CHARACTER_TYPE eCharacterType)
 {
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SwordMan_Dummy", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/SwordMan/Dummy/", L"SwordMan_Dummy")))
+	if (eCharacterType >= CHARACTER_TYPE::CHARACTER_END)
 		return E_FAIL;
+	
+	if (eCharacterType == CHARACTER_TYPE::SWORD_MAN)
+	{
+		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SwordMan_Dummy", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/SwordMan/Dummy/", L"SwordMan_Dummy")))
+			return E_FAIL;
 
-	m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN] = std::async(&CLoader::Loading_Character_Models, this, L"../Bin/Export/AnimModel/Character/SwordMan/");
-	m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN].wait();
+		if (FAILED(Loading_Character_Models(L"../Bin/Export/AnimModel/Character/SwordMan/")))
+			return E_FAIL;
+	}
 
-	if (FAILED(CWeapon_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
-		return E_FAIL;
+	else if (eCharacterType == CHARACTER_TYPE::ENGINEER)
+	{
+		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Engineer_Dummy", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Engineer/Dummy/", L"Engineer_Dummy")))
+			return E_FAIL;
 
-	if (FAILED(CCharacter_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
-		return E_FAIL;
+		if (FAILED(Loading_Character_Models(L"../Bin/Export/AnimModel/Character/Engineer/")))
+			return E_FAIL;
+	}
+	else if (eCharacterType == CHARACTER_TYPE::DESTROYER)
+	{
+		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Destroyer_Dummy", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Destroyer/Dummy/", L"Destroyer_Dummy")))
+			return E_FAIL;
 
-	if (FAILED(CGame_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
-		return E_FAIL;
+		if (FAILED(Loading_Character_Models(L"../Bin/Export/AnimModel/Character/Destroyer/")))
+			return E_FAIL;
+	}
 
 	return S_OK;
 }
@@ -843,6 +895,21 @@ HRESULT CLoader::Loading_Character_Models(const wstring& strFolderPath)
 		}
 	}
 
+
+	return S_OK;
+}
+
+HRESULT CLoader::Reserve_Character_Managers()
+{
+
+	if (FAILED(CWeapon_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+		return E_FAIL;
+
+	if (FAILED(CCharacter_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+		return E_FAIL;
+
+	if (FAILED(CGame_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+		return E_FAIL;
 
 	return S_OK;
 }

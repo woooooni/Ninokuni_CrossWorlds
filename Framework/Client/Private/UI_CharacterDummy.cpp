@@ -175,6 +175,8 @@ HRESULT CUI_CharacterDummy::Ready_Components()
 		break;
 
 	case CHARACTER_TYPE::DESTROYER:
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Destroyer_Dummy"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+			return E_FAIL;
 		break;
 	}
 
