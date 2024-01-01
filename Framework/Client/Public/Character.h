@@ -131,6 +131,9 @@ public:
 
 
 public:
+	void Generate_MotionTrail(const MOTION_TRAIL_DESC& MotionTrailDesc);
+	void Stop_MotionTrail();
+
 	void Generate_Trail(SOCKET_TYPE eSocketType);
 	void Stop_Trail(SOCKET_TYPE eSocketType);
 
@@ -213,6 +216,18 @@ protected:
 
 	CHARACTER_STAT m_tStat = {};
 	CHARACTER_TYPE m_eCharacterType = CHARACTER_TYPE::CHARACTER_END;
+
+
+
+
+	_bool m_bMotionTrail = false;
+	MOTION_TRAIL_DESC m_MotionTrailDesc = {};
+
+private:
+	void Tick_MotionTrail(_float fTimeDelta);
+
+	
+
 
 public:
 	virtual void Free() override;

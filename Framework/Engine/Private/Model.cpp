@@ -776,12 +776,6 @@ HRESULT CModel::Render(CShader* pShader, _uint iMeshIndex, _uint iPassIndex)
 
 HRESULT CModel::Render_Instancing(CShader* pShader, _uint iMeshIndex, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, _uint iPassIndex)
 {
-	if (TYPE_ANIM == m_eModelType)
-	{
-		if (FAILED(pShader->Bind_Texture("g_TransformMap", m_pSRV)))
-			return E_FAIL;
-	}
-
 	pShader->Begin(iPassIndex);
 	pInstancingBuffer->Render(WorldMatrices, m_Meshes[iMeshIndex]);
 

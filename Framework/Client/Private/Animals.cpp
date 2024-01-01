@@ -102,7 +102,7 @@ HRESULT CAnimals::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffe
 	if (FAILED(pInstancingShader->Bind_RawValue("g_TweenFrames_Array", TweenDesc.data(), sizeof(TWEEN_DESC) * TweenDesc.size())))
 		return E_FAIL;
 
-	if (FAILED(m_pModelCom->SetUp_VTF(m_pAnimShaderCom)))
+	if (FAILED(m_pModelCom->SetUp_VTF(pInstancingShader)))
 		return E_FAIL;
 
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
@@ -139,6 +139,10 @@ HRESULT CAnimals::Render_Instance_Shadow(CShader* pInstancingShader, CVIBuffer_I
 		return E_FAIL;
 	if (FAILED(pInstancingShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
+
+	if (FAILED(m_pModelCom->SetUp_VTF(pInstancingShader)))
+		return E_FAIL;
+
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{

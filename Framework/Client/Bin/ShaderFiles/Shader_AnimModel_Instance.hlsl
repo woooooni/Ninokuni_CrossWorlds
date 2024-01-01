@@ -13,8 +13,10 @@ float			g_fDissolveWeight;
 float4          g_vDissolveColor = { 0.6f, 0.039f, 0.039f, 1.f };
 
 float3          g_vBloomPower;
-
 float4			g_vCamPosition;
+
+
+float g_fMotionTrailAlpha;
 
 struct KeyframeDesc
 {
@@ -340,6 +342,24 @@ PS_OUT PS_DISSOLVE_DEAD(PS_IN In)
 	return Out;
 }
 
+PS_OUT PS_MOTION_TRAIL(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+	
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
+
+    float fRimPower = 1.f - saturate(dot(In.vNormal.xyz, normalize((-1.f * (In.vWorldPosition - g_vCamPosition)))));
+    fRimPower = pow(fRimPower, 5.f);
+	
+    vector vRimColor = g_vRimColor * fRimPower;
+    Out.vDiffuse = vRimColor;
+    Out.vDiffuse.a = 1.f;
+    Out.vBloom = Caculation_Brightness(Out.vDiffuse);
+	
+    return Out;
+}
+
 // ±×¸²ÀÚ ÇÈ¼¿ ½¦ÀÌ´õ.
 struct PS_OUT_SHADOW_DEPTH
 {
@@ -400,7 +420,7 @@ technique11 DefaultTechnique
 		PixelShader = compile ps_5_0 PS_DISSOLVE_DEAD();
 	}
 
-	pass Temp0
+	pass MotionTrail
 	{
 		// 3
 		SetRasterizerState(RS_NoneCull);
@@ -409,7 +429,7 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
-		PixelShader = compile ps_5_0 PS_MAIN();
+		PixelShader = compile ps_5_0 PS_MOTION_TRAIL();
 	}
 
 	pass Temp1

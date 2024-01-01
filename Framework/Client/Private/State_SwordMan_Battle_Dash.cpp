@@ -3,6 +3,7 @@
 #include "Character.h"
 #include "Animation.h"
 #include "State_SwordMan_Battle_Dash.h"
+#include "Motion_Trail.h"
 
 CState_SwordMan_Battle_Dash::CState_SwordMan_Battle_Dash(CStateMachine* pMachine)
     : CState_Character(pMachine)
@@ -15,6 +16,7 @@ HRESULT CState_SwordMan_Battle_Dash::Initialize(const list<wstring>& AnimationLi
         return E_FAIL;
 
     
+    
     return S_OK;
 }
 
@@ -23,6 +25,14 @@ void CState_SwordMan_Battle_Dash::Enter_State(void* pArg)
     // 마우스 방향으로 구르기
     m_pCharacter->Appear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
+
+    m_MotionTrailDesc.fAlphaSpeed = 2.f;
+    m_MotionTrailDesc.fBlurPower = 0.1f;
+    m_MotionTrailDesc.vBloomPower = { 0.f ,0.f, 0.f };
+    m_MotionTrailDesc.vRimColor = { 1.f, 1.f, 0.f, 1.f };
+    m_MotionTrailDesc.fMotionTrailTime = 0.1f;
+
+    m_pCharacter->Generate_MotionTrail(m_MotionTrailDesc);
 }
 
 void CState_SwordMan_Battle_Dash::Tick_State(_float fTimeDelta)
@@ -34,8 +44,8 @@ void CState_SwordMan_Battle_Dash::Tick_State(_float fTimeDelta)
     else if (false == m_pModelCom->Is_Tween() && m_pModelCom->Get_Progress() >= 0.85f)
     {
         Input(fTimeDelta);
+        m_pCharacter->Stop_MotionTrail();
     }
-    
 
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
         m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_IDLE);
