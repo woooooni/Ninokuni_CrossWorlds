@@ -77,7 +77,16 @@ void CUI_Cursor::On_MouseEnter(_float fTimeDelta)
 void CUI_Cursor::On_Mouse(_float fTimeDelta)
 {
 	if (KEY_TAP(KEY::LBTN))
-		GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_MouseClick"), XMVectorSet(m_ptMouse.x, m_ptMouse.y, 0.f, 1.f));
+	{
+		_matrix WorldMatrix = XMMatrixIdentity();
+		_float4x4 Worldfloat4x4;
+		XMStoreFloat4x4(&Worldfloat4x4, WorldMatrix);
+		Worldfloat4x4.m[3][0] = m_ptMouse.x;
+		Worldfloat4x4.m[3][1] = m_ptMouse.y;
+		Worldfloat4x4.m[3][2] = 0.f;
+		WorldMatrix = XMLoadFloat4x4(&Worldfloat4x4);
+		GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_MouseClick"), WorldMatrix);
+	}
 }
 
 void CUI_Cursor::On_MouseExit(_float fTimeDelta)

@@ -27,12 +27,12 @@ public:
 		// 리소스 및 설정
 		_int    iTextureIndexDiffuse = 23;
 
-		_uint   iShaderPass = 1;
+		_uint   iShaderPass    = 1;
 		_float  fAlpha_Discard = 0.f;
 		_float3 fBlack_Discard = _float3(-1.f, -1.f, -1.f);
 
 		_float3 fBloomPower = _float3(0.5f, 0.5f, 0.5f);
-		_float  fBlurPower = 0.f;
+		_float  fBlurPower  = 0.f;
 
 		// 색상
 		_float  fColorAdd_01_Alpha = 0.9f;               // 01 색상 더하는 알파 기준 값
@@ -41,9 +41,9 @@ public:
 
 		// 알파
 		_float fAlphaRemove = 0.f; // 기존 알파 값에서 빼는 알파값
-		_bool bAlphaCreate = false;
-		_bool bAlphaDelete = false;
-		_float fAlphaSpeed = 0.f;
+		_bool bAlphaCreate  = false;
+		_bool bAlphaDelete  = false;
+		_float fAlphaSpeed  = 0.f;
 
 		// --------------------------------------------------
 		// 오너 따라갈 것인가?
@@ -68,13 +68,14 @@ public:
 	void Set_DecalDesc(const DECAL_DESC& tDesc);
 	void Restart_Decal();
  
+	void Set_Owner(CGameObject* pGameObject) { m_pOwnerObject = pGameObject; }
 	class CTransform* Get_TransformCom() { return m_pTransformCom; }
 
 private:
 	void Tick_Alpha(_float fTimeDelta);
 
 private:
-	_bool m_isCloned = { false };
+	_bool      m_isCloned = { false };
 	DECAL_DESC m_tDecalDesc;
 
 private:
@@ -83,7 +84,7 @@ private:
 	_bool  m_bAlphaCreateSucc = false;
 
 private:
-	class CGameobject* m_pOwnerObject = nullptr;
+	class CGameObject* m_pOwnerObject = nullptr;
 
 private:
 	class CRenderer*  m_pRendererCom  = nullptr;

@@ -562,6 +562,7 @@
     <ClInclude Include="..\Public\Level_Evermore.h" />
     <ClInclude Include="..\Public\Level_Lobby.h" />
     <ClInclude Include="..\Public\MapHeaderGroup.h" />
+    <ClInclude Include="..\Public\Vfx_SwordMan_Skill_PerfectBlade.h" />
     <ClInclude Include="..\Public\Water.h" />
     <ClInclude Include="..\Public\Weapon.h" />
     <ClInclude Include="..\Public\Weapon_Manager.h" />
@@ -1077,6 +1078,7 @@
     <ClCompile Include="..\Private\Grounds.cpp" />
     <ClCompile Include="..\Private\Level_Evermore.cpp" />
     <ClCompile Include="..\Private\Level_Lobby.cpp" />
+    <ClCompile Include="..\Private\Vfx_SwordMan_Skill_PerfectBlade.cpp" />
     <ClCompile Include="..\Private\Water.cpp" />
     <ClCompile Include="..\Private\Weapon.cpp" />
     <ClCompile Include="..\Private\Weapon_Manager.cpp" />

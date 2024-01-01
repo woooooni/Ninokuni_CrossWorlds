@@ -35,14 +35,34 @@ void CParticle_Manager::Tick(_float fTimeDelta)
 
 }
 
-HRESULT CParticle_Manager::Generate_Particle(const wstring& strParticleName, _vector vPosition)
+HRESULT CParticle_Manager::Generate_Particle(const wstring& strParticleName, _matrix WorldMatrix, _matrix* pRotationMatrix, CGameObject* pOwner, class CParticle** ppOut)
 {
-	CGameObject* pGameObject = GI->Clone_GameObject(L"Prototype_" + strParticleName, LAYER_TYPE::LAYER_EFFECT, &vPosition);
+	// strParticleName
+	CGameObject* pGameObject = GI->Clone_GameObject(L"Prototype_" + strParticleName, LAYER_TYPE::LAYER_EFFECT);
 	if (nullptr == pGameObject)
 		return E_FAIL;
 
-	_uint iLevelIndex = GI->Get_CurrentLevel();
-	if (FAILED(GI->Add_GameObject(iLevelIndex, LAYER_TYPE::LAYER_EFFECT, pGameObject)))
+	CParticle* pParticle = dynamic_cast<CParticle*>(pGameObject);
+	if (nullptr == pParticle)
+		return E_FAIL;
+
+	// WorldMatrix
+	_float4x4 World4X4;
+	XMStoreFloat4x4(&World4X4, WorldMatrix);
+	pParticle->Set_Position_Particle(World4X4);
+
+	// pRotationMatrix
+	// 
+
+	// pOwner
+	if(pOwner != nullptr)
+		pParticle->Set_Owner(pOwner);
+
+	// ppOut
+	if (ppOut != nullptr)
+		*ppOut = pParticle;
+
+	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, pGameObject)))
 		return E_FAIL;
 
 	return S_OK;

@@ -653,7 +653,7 @@ void CTool_Effect::Create_Decal()
 	if (m_pDecal != nullptr)
 		return;
 
-	m_pDecal = GI->Clone_GameObject(TEXT("Prototype_Decal_Temp"), LAYER_TYPE::LAYER_EFFECT);
+	m_pDecal = GI->Clone_GameObject(TEXT("Prototype_TempDecal"), LAYER_TYPE::LAYER_EFFECT);
 	GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_EFFECT, m_pDecal);
 
 	Load_InfoDecal();
@@ -1140,10 +1140,68 @@ void CTool_Effect::Save_Effect(const char* pFileName)
 void CTool_Effect::Save_Decal(const char* pFileName)
 {
 	// 기본 정보
+	if (m_pDecal == nullptr)
+	{
+		MSG_BOX("Decal_Save_Failed!");
+		return;
+	}
 
-	// 추가 정보
+	m_tDecalInfo = static_cast<CDecal*>(m_pDecal)->Get_DecalDesc();
 
-	// 등등 따로 저장?
+	Json json;
+	json["DecalInfo"].push_back({
+
+		{"Scale", {
+			{"x", m_tDecalInfo.fScale.x},
+			{"y", m_tDecalInfo.fScale.y},
+			{"z", m_tDecalInfo.fScale.z}}
+		},
+
+		{"LifeTime", m_tDecalInfo.fLifeTime},
+
+		{"TextureIndexDiffuse", m_tDecalInfo.iTextureIndexDiffuse},
+
+		{"ShaderPass", m_tDecalInfo.iShaderPass},
+		{"Alpha_Discard", m_tDecalInfo.fAlpha_Discard},
+		{"Black_Discard", {
+			{"x", m_tDecalInfo.fBlack_Discard.x},
+			{"y", m_tDecalInfo.fBlack_Discard.y},
+			{"z", m_tDecalInfo.fBlack_Discard.z}}
+		},
+
+		{"BloomPower", {
+			{"x", m_tDecalInfo.fBloomPower.x},
+			{"y", m_tDecalInfo.fBloomPower.y},
+			{"z", m_tDecalInfo.fBloomPower.z}}
+		},
+		{"BlurPower", m_tDecalInfo.fBlurPower},
+
+		{"ColorAdd_01_Alpha", m_tDecalInfo.fColorAdd_01_Alpha},
+		{"ColorAdd_01", {
+			{"x", m_tDecalInfo.fColorAdd_01.x},
+			{"y", m_tDecalInfo.fColorAdd_01.y},
+			{"z", m_tDecalInfo.fColorAdd_01.z}}
+		},
+		{"ColorAdd_02", {
+			{"x", m_tDecalInfo.fColorAdd_02.x},
+			{"y", m_tDecalInfo.fColorAdd_02.y},
+			{"z", m_tDecalInfo.fColorAdd_02.z}}
+		},
+
+		{"AlphaRemove", m_tDecalInfo.fAlphaRemove},
+		{"AlphaCreate", m_tDecalInfo.bAlphaCreate},
+		{"AlphaDelete", m_tDecalInfo.bAlphaDelete},
+		{"AlphaSpeed", m_tDecalInfo.fAlphaSpeed},
+
+		});
+
+	wstring strFileName(pFileName, pFileName + strlen(pFileName));
+	wstring strFilePath = L"../Bin/DataFiles/Decal/" + strFileName + L".json";
+	GI->Json_Save(strFilePath, json);
+
+	MSG_BOX("Decal_Save_Success!");
+
+	// 추가 정보 따로 저장
 }
 
 void CTool_Effect::Load_Effect(const char* pFileName)
@@ -1400,6 +1458,54 @@ void CTool_Effect::Load_Effect(const char* pFileName)
 
 void CTool_Effect::Load_Decal(const char* pFileName)
 {
+	if (m_pDecal == nullptr)
+		Create_Decal();
+
+	wstring strFileName(pFileName, pFileName + strlen(pFileName));
+	wstring strFilePath = L"../Bin/DataFiles/Decal/" + strFileName + L".json";
+	Json json = GI->Json_Load(strFilePath);
+
+	CDecal::DECAL_DESC DecalInfo = {};
+	for (const auto& item : json["DecalInfo"])
+	{
+		DecalInfo.fScale.x = item["Scale"]["x"];
+		DecalInfo.fScale.y = item["Scale"]["y"];
+		DecalInfo.fScale.z = item["Scale"]["z"];
+
+		DecalInfo.fLifeTime = item["LifeTime"];
+
+		DecalInfo.iTextureIndexDiffuse = item["TextureIndexDiffuse"];
+
+		DecalInfo.iShaderPass    = item["ShaderPass"];
+		DecalInfo.fAlpha_Discard = item["Alpha_Discard"];
+		DecalInfo.fBlack_Discard.x = item["Black_Discard"]["x"];
+		DecalInfo.fBlack_Discard.y = item["Black_Discard"]["y"];
+		DecalInfo.fBlack_Discard.z = item["Black_Discard"]["z"];
+
+		DecalInfo.fBloomPower.x = item["BloomPower"]["x"];
+		DecalInfo.fBloomPower.y = item["BloomPower"]["y"];
+		DecalInfo.fBloomPower.z = item["BloomPower"]["z"];
+		DecalInfo.fBlurPower = item["BlurPower"];
+
+		DecalInfo.fColorAdd_01_Alpha = item["ColorAdd_01_Alpha"];
+		DecalInfo.fColorAdd_01.x = item["ColorAdd_01"]["x"];
+		DecalInfo.fColorAdd_01.y = item["ColorAdd_01"]["y"];
+		DecalInfo.fColorAdd_01.z = item["ColorAdd_01"]["z"];
+		DecalInfo.fColorAdd_02.x = item["ColorAdd_02"]["x"];
+		DecalInfo.fColorAdd_02.y = item["ColorAdd_02"]["y"];
+		DecalInfo.fColorAdd_02.z = item["ColorAdd_02"]["z"];
+
+		DecalInfo.fAlphaRemove = item["AlphaRemove"];
+		DecalInfo.bAlphaCreate = item["AlphaCreate"];
+		DecalInfo.bAlphaDelete = item["AlphaDelete"];
+		DecalInfo.fAlphaSpeed = item["AlphaSpeed"];
+	}
+
+	// 적용
+	static_cast<CDecal*>(m_pDecal)->Set_DecalDesc(DecalInfo);
+	Load_InfoDecal();
+
+	MSG_BOX("Decal_Load_Success!");
 }
 
 wstring CTool_Effect::Select_FolderName(_uint iFolderIndex)  

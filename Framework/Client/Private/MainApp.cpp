@@ -137,7 +137,7 @@ HRESULT CMainApp::Open_Level(LEVELID eLevelID, const wstring& strFolderName)
 
 HRESULT CMainApp::Initialize_Client()
 {
-	if (FAILED(CEffect_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext, L"../Bin/Export/NonAnimModel/Effect/", L"../Bin/DataFiles/Effect/")))
+	if (FAILED(CEffect_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext, L"../Bin/Export/NonAnimModel/Effect/", L"../Bin/DataFiles/Effect/", L"../Bin/DataFiles/Decal/")))
 		return E_FAIL;
 
 	if(FAILED(CParticle_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext, L"../Bin/DataFiles/Particle/")))

@@ -192,9 +192,9 @@ public:
 public:
 	const PARTICLE_DESC& Get_ParticleDesc() { return m_tParticleDesc; }
 	void Set_ParticleDesc(const PARTICLE_DESC& tDesc);
- 
-	void Set_Position_Perspective(_float3 fPosition);
-	void Set_Position_Orthographic(_float2 fPosition);
+	void Set_Position_Particle(_float4x4 WorldMatrix);
+
+	void Set_Owner(CGameObject* pGameObject) { m_pOwnerObject = pGameObject; }
 	class CTransform* Get_TransformCom() { return m_pTransformCom; }
 
 private:
@@ -203,6 +203,8 @@ private:
 
 	_float4x4 m_ViewMatrix;
 	_float4x4 m_ProjMatrix;
+
+	class CGameObject* m_pOwnerObject = nullptr;
 
 private:
 	class CRenderer*  m_pRendererCom = nullptr;
@@ -220,6 +222,8 @@ private:
 	void Load_ParticleData(const wstring& strFileName);
 	void* Get_ParticleBufferInfo();
 
+	void Set_Position_Perspective(_float3 fPosition);
+	void Set_Position_Orthographic(_float2 fPosition);
 	void Set_Texture_Diffuse();
 	void Set_Texture_Alpha();
 

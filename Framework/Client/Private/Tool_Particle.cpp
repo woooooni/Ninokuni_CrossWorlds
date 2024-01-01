@@ -46,10 +46,14 @@ void CTool_Particle::Tick(_float fTimeDelta)
 		{
 			CTransform* pTransform = m_pParticle->Get_Component<CTransform>(L"Com_Transform");
 
-			if (m_bParticleType_Pers)
-				static_cast<CParticle*>(m_pParticle)->Set_Position_Perspective(_float3(m_fPosition[0], m_fPosition[1], m_fPosition[2]));
-			else if (m_bParticleType_Orth)
-				static_cast<CParticle*>(m_pParticle)->Set_Position_Orthographic(_float2(m_fPosition[0], m_fPosition[1]));
+			_matrix IdentityMatrix = XMMatrixIdentity();
+
+			_float4x4 WorldMatrix;
+			XMStoreFloat4x4(&WorldMatrix, IdentityMatrix);
+			WorldMatrix.m[3][0] = m_fPosition[0];
+			WorldMatrix.m[3][1] = m_fPosition[1];
+			WorldMatrix.m[3][2] = m_fPosition[2];
+			static_cast<CParticle*>(m_pParticle)->Set_Position_Particle(WorldMatrix);
 
 			pTransform->FixRotation(m_fRotation[0], m_fRotation[1], m_fRotation[2]);
 			pTransform->Set_Scale(_float3(m_fScale[0], m_fScale[1], m_fScale[2]));

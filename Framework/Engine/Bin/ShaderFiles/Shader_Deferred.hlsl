@@ -248,8 +248,6 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 {
 	PS_OUT Out = (PS_OUT)0;
 
-    vector vDepthDesc = g_DepthTarget.Sample(PointSampler, In.vTexcoord);
-	
 	// vDiffuse
 	vector vDiffuse = g_DiffuseTarget.Sample(LinearSampler, In.vTexcoord);
 	if (vDiffuse.a == 0.f)
@@ -258,15 +256,19 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 	// vShade
 	vector vShade = g_ShadeTarget.Sample(LinearSampler, In.vTexcoord);
 	vShade = saturate(vShade);
-	//vShade = ceil(vShade * 5.f) / 5.f;
-
-    //vSpecular
-
 	
-    //vector vSpecular = float4(0.f, 0.f, 0.f, 0.f);
+	//vSpecular
     vector vSpecular = g_SpecularTarget.Sample(LinearSampler, In.vTexcoord);
     vSpecular = saturate(vSpecular);
-    //vSpecular = ceil(vSpecular * 5.f) / 5.f;
+	//vSpecular = ceil(vSpecular * 5.f) / 5.f;
+	
+	// 물 픽셀 제외 후 기타 처리
+    vector vDepthDesc = g_DepthTarget.Sample(PointSampler, In.vTexcoord);
+    if (vDepthDesc.w != 1.f) 
+    {
+        vShade    = ceil(vShade * 5.f) / 5.f;
+        vSpecular = float4(0.f, 0.f, 0.f, 0.f);
+    }
 
 	// Shadow
 	vector vShadow = float4(1.f, 1.f, 1.f, 1.f);
@@ -282,17 +284,17 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 	vector vOutline = float4(1.f, 1.f, 1.f, 1.f);
 	if(g_bOutLineDraw)
 		vOutline = g_OutlineTarget.Sample(LinearSampler, In.vTexcoord);
-
-    vector vBloomColor = g_BloomTarget.Sample(LinearSampler, In.vTexcoord);
 	
+	// Bloom
+    vector vBloom = g_BloomTarget.Sample(LinearSampler, In.vTexcoord);
 	
 	/* Fog
 	float fFogFactor = saturate(((g_vFogStartEnd.y - (fViewZ)) / (g_vFogStartEnd.y - g_vFogStartEnd.x)));
 	Out.vColor = fFogFactor * Out.vColor + (1.f - fFogFactor) * g_vFogColor;*/
 
 	// Output
-	//Out.vColor = vDiffuse * vShade * vShadow * vSSAO * vOutline; // +vSpecular;
-	Out.vColor = vDiffuse * vShade * vShadow * vOutline + vSpecular + vBloomColor;
+    Out.vColor = (vDiffuse * vShade * vShadow * vOutline) + vSpecular + vBloom;
+	
 	return Out;
 }
 

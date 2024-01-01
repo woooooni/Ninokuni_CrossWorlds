@@ -16,6 +16,10 @@ protected:
 	virtual ~CVfx() = default;
 
 public:
+	void Set_Owner(CGameObject* pGameObject) { m_pOwnerObject = pGameObject; }
+	void Set_WorldMatrix(_matrix WorldMatrix) { XMStoreFloat4x4(&m_WorldMatrix, WorldMatrix); }
+
+public:
 	virtual HRESULT Initialize_Prototype();
 	virtual HRESULT Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta) override;
@@ -26,10 +30,13 @@ protected:
 	virtual HRESULT Ready_Components() override;
 
 protected:
-	_vector m_vPosition = {};
+	_float4x4 m_WorldMatrix;
 
 	_uint  m_iCount   = 0;
 	_float m_fTimeAcc = 0.f;
+
+protected:
+	class CGameObject* m_pOwnerObject = nullptr;
 
 public:
 	virtual void Free() override;
