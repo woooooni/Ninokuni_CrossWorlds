@@ -33,13 +33,21 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT	Render();
 
+public:
+	virtual void On_MouseEnter(_float fTimeDelta) override;
+	virtual void On_Mouse(_float fTimeDelta) override;
+	virtual void On_MouseExit(_float fTimeDelta) override;
+
 private:
 	UI_BASIC m_eType = { UI_BASIC::UIBASIC_END };
 
 	_float m_bFade = { false }; // Alpha값으로 FadeIn, Out을 하는 것들을 구분함.
 	_uint m_iPass = { 1 };
-
 	_float m_bAlpha = { false }; // Alpha값을 조정하면서 깜빡이는 UI들에게 사용함.
+
+	vector<wstring> m_RandomNickname;
+	_int m_iRandomNum = { -1 };
+	_uint m_iMaxNick = { 0 };
 
 private:
 	virtual HRESULT	Ready_Components() override;
@@ -51,6 +59,8 @@ private:
 private:
 	void Tick_FadeObject(_float fTimeDelta);
 	void LateTick_FadeObject(_float fTimeDelta);
+	void Ready_Nickname();
+	void Set_RandomNickname();
 
 public:
 	static CUI_Basic* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const wstring& strObjectTag, UI_BASIC eType);

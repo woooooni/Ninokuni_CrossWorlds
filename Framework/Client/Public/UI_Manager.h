@@ -20,6 +20,7 @@ public: // Get/Set
 	class CUI_Fade* Get_Fade();
 	_bool			Get_MainMenuActive();
 	void			Set_Textable(_bool bTextable) { m_bUpdate = bTextable; }
+	void			Set_RandomNick(const wstring& strRandom);
 	void			Set_UserName();
 	void			Set_MonsterDescForUI(class CMonster* pOwner, void* pArg, _bool bActive = true);
 
@@ -77,7 +78,7 @@ public:
 	void	Update_ClothSlotState(_uint iSectionType, _uint iSlotIndex);
 	void	Update_CostumeBtn();
 
-	void	Update_CostumeModel(const CHARACTER_TYPE& eCharacterType, const PART_TYPE& ePartType, const _uint iIndex);
+	void	Update_CostumeModel(const CHARACTER_TYPE& eCharacterType, const PART_TYPE& ePartType, const wstring& strPartTag);
 	void	Set_CostumeModel();
 	void	Set_MouseCursor(_uint iIndex);
 
@@ -167,16 +168,24 @@ private:
 	vector<class CUI_SkillSection_Frame*> m_SpecialFrame;
 	vector<class CUI_QuickSlot_Item*> m_ItemQuickslot;
 
-	// MonsterHP
+	// MonsterHP (단일 HPBar -> UIManager에서 관리함)
 	class CUI_MonsterHP_Background* m_pMonsterHPBack = { nullptr };
 	class CUI_MonsterHP_Bar* m_pMonsterHPBar = { nullptr };
 	class CUI_MonsterHP_ElementalFrame* m_pMonsterFrame = { nullptr };
 	class CUI_MonsterHP_Elemental* m_pMonsterElemental = { nullptr };
 
+	// BossHP (단일 HPBar -> UIManager에서 관리함)
+	class CUI_BossHP_Background* m_pBossInfo = { nullptr };
+	class CUI_BossHP_Background* m_pBossHPBack = { nullptr };
+	class CUI_BossHP_Bar* m_pBossHPBar = { nullptr };
+
 	class CUI_Announced* m_pCameraAnnounce = { nullptr };
 
 	class CUI_Emoticon_Window* m_pEmoticonWindow = { nullptr };
 	class CUI_Emoticon_SpeechBalloon* m_pBalloon = { nullptr };
+
+	// MilePost
+	vector<class CUI_Milepost*> m_Milepost;
 
 private:
 	vector<class CUI_Basic*> m_Basic;

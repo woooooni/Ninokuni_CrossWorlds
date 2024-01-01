@@ -11,6 +11,13 @@ protected:
 	virtual ~CUI_SetNickname_Textbox() = default;
 
 public:
+	void Set_Nickname(const wstring& strNickname) {
+		if (m_strText.length() > 0)
+			m_strText.clear();
+
+		m_strText = strNickname; }
+
+public:
 	virtual HRESULT	Initialize_Prototype();
 	virtual HRESULT	Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta);
@@ -21,9 +28,6 @@ public:
 	virtual void On_MouseEnter(_float fTimeDelta) override;
 	virtual void On_Mouse(_float fTimeDelta) override;
 	virtual void On_MouseExit(_float fTimeDelta) override;
-
-private:
-	wstring m_strNickname;
 
 private:
 	virtual HRESULT	Ready_Components() override;

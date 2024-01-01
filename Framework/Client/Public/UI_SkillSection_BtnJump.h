@@ -23,6 +23,8 @@ public:
 	virtual void On_MouseExit(_float fTimeDelta) override;
 
 private:
+	class CCharacter* m_pCharacter = { nullptr };
+
 	_float m_fTimeAcc = { 0.f };
 	_bool m_bFinish = { false };
 	_bool m_bResizeStart = { false };

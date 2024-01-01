@@ -2,6 +2,9 @@
 #include "UI_WeaponSection_DefaultWeapon.h"
 #include "GameInstance.h"
 #include "UI_Manager.h"
+#include "Game_Manager.h"
+#include "Player.h"
+#include "Character.h"
 
 CUI_WeaponSection_DefaultWeapon::CUI_WeaponSection_DefaultWeapon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_WeaponSection_DefaultWeapon")
@@ -39,6 +42,17 @@ HRESULT CUI_WeaponSection_DefaultWeapon::Initialize(void* pArg)
 
 	m_vMinSize.x = m_vOriginSize.x * 0.85f;
 	m_vMinSize.y = m_vOriginSize.y * 0.85f;
+
+	if (nullptr == m_pCharacter)
+	{
+		CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+		if (nullptr == pPlayer)
+			return E_FAIL;
+
+		m_pCharacter = pPlayer->Get_Character();
+		if (nullptr == m_pCharacter)
+			return E_FAIL;
+	}
 	
 	return S_OK;
 }
@@ -47,8 +61,6 @@ void CUI_WeaponSection_DefaultWeapon::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-		// 현재 플레이어의 고유ID를 얻어서 m_eWeaponType을 update한다.
-
 
 		// 버튼 Resize
 		if (m_bResizable)
@@ -63,6 +75,14 @@ void CUI_WeaponSection_DefaultWeapon::Tick(_float fTimeDelta)
 				m_tInfo.fCY = m_vMinSize.y;
 				m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 			}
+			else
+			{
+				CStateMachine* pStateMachine = m_pCharacter->Get_Component<CStateMachine>(TEXT("Com_StateMachine"));
+		
+				if (CCharacter::STATE::BATTLE_ATTACK_0 == pStateMachine->Get_CurrState())
+					m_bResizeStart = true;
+			}
+
 		}
 
 		__super::Tick(fTimeDelta);

@@ -62,6 +62,9 @@ HRESULT CUI_Costume_ItemSlot::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
+	if (FAILED(Ready_PartTag()))
+		return E_FAIL;
+
 	m_bActive = false;
 
 	switch (m_eType)
@@ -92,8 +95,6 @@ HRESULT CUI_Costume_ItemSlot::Initialize(void* pArg)
 	m_tInfo.fY = m_vStartPosition.y;
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
-
-	Set_CharacterType(CHARACTER_TYPE::SWORD_MAN);  // TestCode
 
 	return S_OK;
 }
@@ -202,6 +203,15 @@ HRESULT CUI_Costume_ItemSlot::Ready_Components()
 		TEXT("Com_Texture4"), (CComponent**)&m_pTexCom_EGAcc)))
 		return E_FAIL;
 
+	// Destroyer_Clothes
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Costume_Destroyer_Clothes"),
+		TEXT("Com_Texture5"), (CComponent**)&m_pTexCom_DTCostume)))
+		return E_FAIL;
+	// Destroyer_HairAcc
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Costume_Destroyer_HairAcc"),
+		TEXT("Com_Texture6"), (CComponent**)&m_pTexCom_DTAcc)))
+		return E_FAIL;
+
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Costume_Slot_Glow"),
 		TEXT("Com_FXTexture"), (CComponent**)&m_pFXTextureCom)))
@@ -275,6 +285,153 @@ HRESULT CUI_Costume_ItemSlot::Bind_ShaderResources()
 		break;
 
 	case CHARACTER_TYPE::DESTROYER:
+		if (COSTUMESECTION_CLOTH == m_eSectionType)
+		{
+			if (FAILED(m_pTexCom_DTCostume->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextureIndex)))
+				return E_FAIL;
+		}
+		else if (COSTUMESECTION_HAIRACC == m_eSectionType)
+		{
+			if (FAILED(m_pTexCom_DTAcc->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextureIndex)))
+				return E_FAIL;
+		}
+		break;
+	}
+
+	return S_OK;
+}
+
+HRESULT CUI_Costume_ItemSlot::Ready_PartTag()
+{
+	switch (m_eCurPlayerType)
+	{
+	case CHARACTER_TYPE::SWORD_MAN:
+		if (COSTUMESECTION_CLOTH == m_eSectionType)
+		{
+			if (COSTUMESLOT_END <= m_eType)
+				return E_FAIL;
+
+			switch (m_eType)
+			{
+			case COSTUMESLOT_FIRST: // 고전 양식 의상
+				m_strPartTag = TEXT("SwordMan_Body_Picnic");
+				break;
+
+			case COSTUMESLOT_SECOND: // 용의 기사단 의상
+				m_strPartTag = TEXT("SwordMan_Body_DragonKnight");
+				break;
+
+			case COSTUMESLOT_THIRD: // 유랑음악단 의상
+				m_strPartTag = TEXT("SwordMan_Body_Hippie");
+				break;
+			}
+		}
+		else if (COSTUMESECTION_HAIRACC == m_eSectionType)
+		{
+			if (COSTUMESLOT_END <= m_eType)
+				return E_FAIL;
+
+			switch (m_eType)
+			{
+			case COSTUMESLOT_FIRST: // 둥근 장난감 후냐 모자
+				m_strPartTag = TEXT("SwordMan_Head_FunyaBlock");
+				break;
+
+			case COSTUMESLOT_SECOND: // 용의 기사단 모자
+				m_strPartTag = TEXT("SwordMan_Head_DragonKnight");
+				break;
+
+			case COSTUMESLOT_THIRD: // X
+				m_strPartTag = TEXT("");
+				break;
+			}
+		}
+		break;
+
+	case CHARACTER_TYPE::ENGINEER:
+		if (COSTUMESECTION_CLOTH == m_eSectionType)
+		{
+			if (COSTUMESLOT_END <= m_eType)
+				return E_FAIL;
+
+			switch (m_eType)
+			{
+			case COSTUMESLOT_FIRST: // 모험가 의상
+				m_strPartTag = TEXT("Engineer_Body_Adventure");
+				break;
+
+			case COSTUMESLOT_SECOND: // 국왕의 예복
+				m_strPartTag = TEXT("Engineer_Body_Ninokuni_King");
+				break;
+
+			case COSTUMESLOT_THIRD: // 우다닥 인형옷
+				m_strPartTag = TEXT("Engineer_Body_Udadak");
+				break;
+			}
+		}
+		else if (COSTUMESECTION_HAIRACC == m_eSectionType)
+		{
+			if (COSTUMESLOT_END <= m_eType)
+				return E_FAIL;
+
+			switch (m_eType)
+			{
+			case COSTUMESLOT_FIRST: // 모험가 고글
+				m_strPartTag = TEXT("Engineer_Head_Adventure");
+				break;
+
+			case COSTUMESLOT_SECOND: // 신화 속 영웅 머리 장식
+				m_strPartTag = TEXT("Engineer_Head_GreekMyth");
+				break;
+
+			case COSTUMESLOT_THIRD: // 퐁퐁 모자
+				m_strPartTag = TEXT("Engineer_Head_Yomi");
+				break;
+			}
+		}
+		break;
+
+	case CHARACTER_TYPE::DESTROYER:
+		if (COSTUMESECTION_CLOTH == m_eSectionType)
+		{
+			if (COSTUMESLOT_END <= m_eType)
+				return E_FAIL;
+
+			switch (m_eType)
+			{
+			case COSTUMESLOT_FIRST: // 대장장의 의상
+				m_strPartTag = TEXT("");
+				break;
+
+			case COSTUMESLOT_SECOND: // 눈사람 후냐 의상
+				m_strPartTag = TEXT("");
+				break;
+
+			case COSTUMESLOT_THIRD: // 신화 속 영웅 의상
+				m_strPartTag = TEXT("");
+				break;
+			}
+		}
+		else if (COSTUMESECTION_HAIRACC == m_eSectionType)
+		{
+			if (COSTUMESLOT_END <= m_eType)
+				return E_FAIL;
+
+			switch (m_eType)
+			{
+			case COSTUMESLOT_FIRST: // 눈사람 후냐 머리 장식
+				m_strPartTag = TEXT("");
+				break;
+
+			case COSTUMESLOT_SECOND: // 꿀꾸리 모자
+				m_strPartTag = TEXT("");
+				break;
+
+			case COSTUMESLOT_THIRD: // X
+				m_strPartTag = TEXT("");
+				break;
+			}
+		}
 		break;
 	}
 
@@ -290,11 +447,11 @@ void CUI_Costume_ItemSlot::Update_Costume(_float fTimeDelta)
 	switch (m_eSectionType)
 	{
 	case COSTUMESECTION_CLOTH:
-		CUI_Manager::GetInstance()->Update_CostumeModel(m_eCurPlayerType, PART_TYPE::BODY, m_eType);
+		CUI_Manager::GetInstance()->Update_CostumeModel(m_eCurPlayerType, PART_TYPE::BODY, m_strPartTag);
 		break;
 
 	case COSTUMESECTION_HAIRACC:
-		CUI_Manager::GetInstance()->Update_CostumeModel(m_eCurPlayerType, PART_TYPE::HEAD, m_eType);
+		CUI_Manager::GetInstance()->Update_CostumeModel(m_eCurPlayerType, PART_TYPE::HEAD, m_strPartTag);
 		break;
 	}
 
@@ -342,6 +499,8 @@ void CUI_Costume_ItemSlot::Free()
 	__super::Free();
 
 	Safe_Release(m_pFXTextureCom);
+	Safe_Release(m_pTexCom_DTAcc);
+	Safe_Release(m_pTexCom_DTCostume);
 	Safe_Release(m_pTexCom_SMAcc);
 	Safe_Release(m_pTexCom_EGCostume);
 	Safe_Release(m_pTexCom_EGAcc);

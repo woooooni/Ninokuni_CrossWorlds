@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UI_Basic.h"
 #include "GameInstance.h"
+#include "UI_Manager.h"
 #include "Game_Manager.h"
 
 CUI_Basic::CUI_Basic(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, UI_BASIC eType)
@@ -63,27 +64,12 @@ HRESULT CUI_Basic::Initialize(void* pArg)
 		m_bActive = false;
 		m_bFade = true;
 	}
-
 	else if (UIQUEST_ACCEPT == m_eType || UIQUEST_FINISH == m_eType || COSTUME_INSTALL == m_eType)
 	{
 		m_bActive = false;
 	}
-
-	else if (UISTATIC_TITLELINE == m_eType)
-	{
-		// 자식 UI를 생성한다.
-//		_float2 fLeftSize = _float2(128.f * 0.8f, 64.f * 0.6f);
-//		Make_Child(-(g_iWinSizeX * 0.5f) + fLeftSize.x * 0.5f, -(g_iWinSizeY * 0.5f) + fLeftSize.y * 0.5f,
-//			fLeftSize.x, fLeftSize.y, TEXT("Prototype_GameObject_UI_Common_MenuDeco_Left"));
-//
-//		_float2 fRightSize = _float2(64.f * 0.6f, 64.f * 0.6f);
-//		Make_Child((g_iWinSizeX * 0.5f) - fRightSize.x * 0.5f, -(g_iWinSizeY * 0.5f) + fRightSize.y * 0.5f,
-//			fRightSize.x, fRightSize.y, TEXT("Prototype_GameObject_UI_Common_MenuDeco_Right"));
-//
-//		_float2 fBtnSize = _float2(128.f * 0.6f, 128.f * 0.55f);
-//		Make_Child(-(g_iWinSizeX * 0.5f) + (fBtnSize.x * 0.5f + 3.f), -(g_iWinSizeY * 0.5f) + fBtnSize.y * 0.5f,
-//			fBtnSize.x, fBtnSize.y, TEXT("Prototype_GameObject_UI_Btn_Back"));
-	}
+	else if (UILOBBY_DICE == m_eType)
+		Ready_Nickname();
 
 	return S_OK;
 }
@@ -206,6 +192,26 @@ HRESULT CUI_Basic::Render()
 	}
 
 	return S_OK;
+}
+
+void CUI_Basic::On_MouseEnter(_float fTimeDelta)
+{
+}
+
+void CUI_Basic::On_Mouse(_float fTimeDelta)
+{
+	if (m_bActive)
+	{
+		if (UILOBBY_DICE == m_eType)
+		{
+			if (KEY_TAP(KEY::LBTN))
+				Set_RandomNickname();
+		}
+	}
+}
+
+void CUI_Basic::On_MouseExit(_float fTimeDelta)
+{
 }
 
 HRESULT CUI_Basic::Ready_Components()
@@ -380,6 +386,35 @@ void CUI_Basic::Tick_FadeObject(_float fTimeDelta)
 void CUI_Basic::LateTick_FadeObject(_float fTimeDelta)
 {
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+}
+
+void CUI_Basic::Ready_Nickname()
+{
+	m_iMaxNick = 5;
+
+	m_RandomNickname.reserve(m_iMaxNick);
+	
+	m_RandomNickname.push_back(TEXT("너네선비형"));
+	m_RandomNickname.push_back(TEXT("욕반장"));
+	m_RandomNickname.push_back(TEXT("아이엠구이"));
+	m_RandomNickname.push_back(TEXT("피직스하고웃었다"));
+	m_RandomNickname.push_back(TEXT("네비잘못찍었어"));
+}
+
+void CUI_Basic::Set_RandomNickname()
+{
+	// 주사위만 사용하는 함수
+	_int iRandom;
+
+	do {
+		iRandom = GI->RandomInt(0, m_iMaxNick - 1);
+
+	} while (m_iRandomNum == iRandom);
+	// 같지 않은 숫자가 나오면 빠져나온다.
+
+	// Text를 세팅해주고 랜덤넘버를 저장한다.
+	CUI_Manager::GetInstance()->Set_RandomNick(m_RandomNickname[iRandom]);
+	m_iRandomNum = iRandom;
 }
 
 CUI_Basic* CUI_Basic::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, UI_BASIC eType)

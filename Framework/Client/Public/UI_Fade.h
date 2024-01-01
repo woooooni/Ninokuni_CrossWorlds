@@ -58,6 +58,7 @@ private:
 	_float m_fFadeTime = { 0.f }; // FadeIn or FadeOut하는 총 시간
 
 	UI_VEIL m_eVeilType = { VEIL_END }; // Veil Color Type
+	_uint m_iTextureIndex = { 0 };
 
 private:
 	HRESULT	Ready_Components();

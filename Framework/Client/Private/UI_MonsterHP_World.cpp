@@ -30,6 +30,7 @@ void CUI_MonsterHP_World::Set_Owner(CMonster* pOwner, _int iElementalType)
 	m_fMaxHP = StatDesc.fMaxHp;
 	
 	m_strName = m_pOwner->Get_KorName();
+	m_strSubName = m_pOwner->Get_SubName();
 
 }
 
@@ -81,6 +82,9 @@ HRESULT CUI_MonsterHP_World::Initialize(void* pArg)
 		return E_FAIL;
 	pUITransform->Set_Scale(XMVectorSet(vArrowSize.x, vArrowSize.y, 1.f, 0.f));
 
+	for (auto& iter : m_Arrow)
+		iter->Set_Active(false);
+
 	m_bIsTarget = false;
 
 	return S_OK;
@@ -106,7 +110,17 @@ void CUI_MonsterHP_World::Tick(_float fTimeDelta)
 			if (m_bIsTarget)
 			{
 				for (auto& iter : m_Arrow)
+				{
+					iter->Set_Active(true);
 					iter->Tick(fTimeDelta);
+				}
+			}
+			else
+			{
+				for (auto& iter : m_Arrow)
+				{
+					iter->Set_Active(false);
+				}
 			}
 
 			// 체력을 update한다
@@ -307,54 +321,48 @@ void CUI_MonsterHP_World::Set_Text(_float2 ScreenPos)
 	wstring strMonsterTag = m_pOwner->Get_ObjectTag();
 	// Todo : Text글자길이로 x값 정렬하기
 
-	if (strMonsterTag == TEXT("Shadow_Thief"))
-	{
-		m_strSubName = TEXT("서릿별 나무");
-		//m_strName = TEXT("코부리");
+	_int iSubLength = m_strSubName.empty() ? 0 : static_cast<_int>(m_strSubName.length());
+	_float fSubX = vSubPosition.x - iSubLength * 5.f;
 
-		_int iSubLength = m_strSubName.empty() ? 0 : static_cast<_int>(m_strSubName.length());
-		_float fSubX = vSubPosition.x - iSubLength * 5.f;
+	_int iNameLength = m_strName.empty() ? 0 : static_cast<_int>(m_strName.length());
+	_float fNameX = vTextPosition.x - iNameLength * 8.f;
 
-		_int iNameLength = m_strName.empty() ? 0 : static_cast<_int>(m_strName.length());
-		_float fNameX = vTextPosition.x - iNameLength * 8.f;
+	// 몬스터 설명부분 (이름 위에 뜨는 Sub Text) -> 외곽선
+	CRenderer::TEXT_DESC MonsterDesc;
+	MonsterDesc.strText = m_strSubName;
+	MonsterDesc.strFontTag = L"Default_Medium";
+	MonsterDesc.vScale = { 0.3f, 0.3f };
+	MonsterDesc.vPosition = _float2(fSubX - 1, vSubPosition.y);
+	MonsterDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
+	m_pRendererCom->Add_Text(MonsterDesc);
+	MonsterDesc.vPosition = _float2(fSubX + 1, vSubPosition.y);
+	m_pRendererCom->Add_Text(MonsterDesc);
+	MonsterDesc.vPosition = _float2(fSubX, vSubPosition.y - 1);
+	m_pRendererCom->Add_Text(MonsterDesc);
+	MonsterDesc.vPosition = _float2(fSubX + 1, vSubPosition.y + 1);
+	m_pRendererCom->Add_Text(MonsterDesc);
+	// Origin Text
+	MonsterDesc.vPosition = _float2(fSubX, vSubPosition.y);
+	MonsterDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+	m_pRendererCom->Add_Text(MonsterDesc);
 
-		// 몬스터 설명부분 (이름 위에 뜨는 Sub Text) -> 외곽선
-		CRenderer::TEXT_DESC MonsterDesc;
-		MonsterDesc.strText = m_strSubName;
-		MonsterDesc.strFontTag = L"Default_Medium";
-		MonsterDesc.vScale = { 0.3f, 0.3f };
-		MonsterDesc.vPosition = _float2(fSubX - 1, vSubPosition.y);
-		MonsterDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
-		m_pRendererCom->Add_Text(MonsterDesc);
-		MonsterDesc.vPosition = _float2(fSubX + 1, vSubPosition.y);
-		m_pRendererCom->Add_Text(MonsterDesc);
-		MonsterDesc.vPosition = _float2(fSubX, vSubPosition.y - 1);
-		m_pRendererCom->Add_Text(MonsterDesc);
-		MonsterDesc.vPosition = _float2(fSubX + 1, vSubPosition.y + 1);
-		m_pRendererCom->Add_Text(MonsterDesc);
-		// Origin Text
-		MonsterDesc.vPosition = _float2(fSubX, vSubPosition.y);
-		MonsterDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
-		m_pRendererCom->Add_Text(MonsterDesc);
-
-		// 몬스터 이름 -> 외곽선
-		MonsterDesc.strText = m_strName;
-		MonsterDesc.strFontTag = L"Default_Bold";
-		MonsterDesc.vScale = { 0.4f, 0.4f };
-		MonsterDesc.vPosition = _float2(fNameX - 1.f, vTextPosition.y);
-		MonsterDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
-		m_pRendererCom->Add_Text(MonsterDesc);
-		MonsterDesc.vPosition = _float2(fNameX + 1.f, vTextPosition.y);
-		m_pRendererCom->Add_Text(MonsterDesc);
-		MonsterDesc.vPosition = _float2(fNameX, vTextPosition.y - 1.f);
-		m_pRendererCom->Add_Text(MonsterDesc);
-		MonsterDesc.vPosition = _float2(fNameX, vTextPosition.y + 1.f);
-		m_pRendererCom->Add_Text(MonsterDesc);
-		// 몬스터 이름
-		MonsterDesc.vPosition = _float2(fNameX, vTextPosition.y);
-		MonsterDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
-		m_pRendererCom->Add_Text(MonsterDesc);
-	}
+	// 몬스터 이름 -> 외곽선
+	MonsterDesc.strText = m_strName;
+	MonsterDesc.strFontTag = L"Default_Bold";
+	MonsterDesc.vScale = { 0.4f, 0.4f };
+	MonsterDesc.vPosition = _float2(fNameX - 1.f, vTextPosition.y);
+	MonsterDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
+	m_pRendererCom->Add_Text(MonsterDesc);
+	MonsterDesc.vPosition = _float2(fNameX + 1.f, vTextPosition.y);
+	m_pRendererCom->Add_Text(MonsterDesc);
+	MonsterDesc.vPosition = _float2(fNameX, vTextPosition.y - 1.f);
+	m_pRendererCom->Add_Text(MonsterDesc);
+	MonsterDesc.vPosition = _float2(fNameX, vTextPosition.y + 1.f);
+	m_pRendererCom->Add_Text(MonsterDesc);
+	// 몬스터 이름
+	MonsterDesc.vPosition = _float2(fNameX, vTextPosition.y);
+	MonsterDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+	m_pRendererCom->Add_Text(MonsterDesc);
 
 }
 

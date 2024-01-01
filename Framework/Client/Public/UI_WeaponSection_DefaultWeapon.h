@@ -27,6 +27,7 @@ public:
 	virtual void On_MouseExit(_float fTimeDelta) override;
 
 private:
+	class CCharacter* m_pCharacter = { nullptr };
 	_bool m_bResizable = { true }; // 사이즈 조정이 가능한가
 
 	_float m_fTimeAcc = { 0.f };
