@@ -26,8 +26,8 @@ HRESULT CSpawner_Ice03::Initialize(void* pArg)
 {
 	m_fSpawnTime = 30.f;
 
-	m_iMaxThiefCount = 2;
-	m_iMaxBearCount = 2;
+	m_iMaxThiefCount = 3;
+	m_iMaxBearCount = 1;
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -40,9 +40,11 @@ HRESULT CSpawner_Ice03::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
-	if (FAILED(Spawn_Monster()))
-		return E_FAIL;
-
+	if (GI->Get_CurrentLevel() != LEVELID::LEVEL_TOOL)
+	{
+		if (FAILED(Spawn_Monster()))
+			return E_FAIL;
+	}
 
 	return S_OK;
 }
@@ -51,29 +53,32 @@ void CSpawner_Ice03::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
-	m_fCurTime += fTimeDelta;
-
-	if (m_fCurTime >= m_fSpawnTime)
+	if (GI->Get_CurrentLevel() != LEVELID::LEVEL_TOOL)
 	{
-		Spawn_Monster();
+		m_fCurTime += fTimeDelta;
 
-		m_fCurTime = m_fSpawnTime - m_fCurTime;
-	}
+		if (m_fCurTime >= m_fSpawnTime)
+		{
+			Spawn_Monster();
 
-	for (_int i = 0; i < m_vecThief.size();)
-	{
-		if (m_vecThief[i]->Is_Dead())
-			m_vecThief.erase(m_vecThief.begin() + i);
-		else
-			++i;
-	}
+			m_fCurTime = m_fSpawnTime - m_fCurTime;
+		}
 
-	for (_int i = 0; i < m_vecBear.size();)
-	{
-		if (m_vecBear[i]->Is_Dead())
-			m_vecBear.erase(m_vecBear.begin() + i);
-		else
-			++i;
+		for (_int i = 0; i < m_vecThief.size();)
+		{
+			if (m_vecThief[i]->Is_Dead())
+				m_vecThief.erase(m_vecThief.begin() + i);
+			else
+				++i;
+		}
+
+		for (_int i = 0; i < m_vecBear.size();)
+		{
+			if (m_vecBear[i]->Is_Dead())
+				m_vecBear.erase(m_vecBear.begin() + i);
+			else
+				++i;
+		}
 	}
 }
 

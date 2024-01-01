@@ -14,6 +14,8 @@
 
 #include "IceBearManNode_Dead.h"
 
+#include "IceBearManNode_Blow.h"
+#include "IceBearManNode_Air.h"
 #include "IceBearManNode_Stun.h"
 #include "IceBearManNode_Hit.h"
 
@@ -69,6 +71,8 @@ HRESULT CIceBearManBT::Initialize_Prototype(CGameObject* pObject)
 
 	/* Hit 관련 */
 	CBTNode_Select* pSel_Hit = CBTNode_Select::Create(this);
+	CIceBearManNode_Blow* pBlowNode = CIceBearManNode_Blow::Create(&m_tBTNodeDesc, this);
+	CIceBearManNode_Air* pAirNode = CIceBearManNode_Air::Create(&m_tBTNodeDesc, this);
 	CIceBearManNode_Stun* pStunNode = CIceBearManNode_Stun::Create(&m_tBTNodeDesc, this);
 	CIceBearManNode_Hit* pHitNode = CIceBearManNode_Hit::Create(&m_tBTNodeDesc, this);
 
@@ -94,7 +98,7 @@ HRESULT CIceBearManBT::Initialize_Prototype(CGameObject* pObject)
 	/* Condition 관련*/
 	/* function<_bool()>을 받는 CBTNode_Condition::Create 함수에서는 멤버 함수를 사용하고 있기 때문에 추가적인 처리가 필요 */
 	CBTNode_Condition* pCon_IsDead = CBTNode_Condition::Create(bind(&CIceBearManBT::IsZeroHp, this), pDeadNode, pAtk1Node);
-	CBTNode_Condition* pCon_IsWeak = CBTNode_Condition::Create(bind(&CIceBearManBT::IsWeak, this), pHitNode, pChaseNode);
+	CBTNode_Condition* pCon_IsHit = CBTNode_Condition::Create(bind(&CIceBearManBT::IsHit, this), pHitNode, pChaseNode);
 	CBTNode_Condition* pCon_IsCombat = CBTNode_Condition::Create(bind(&CIceBearManBT::IsAtk, this), nullptr, pChaseNode);
 	CBTNode_Condition* pCon_IsChase = CBTNode_Condition::Create(bind(&CIceBearManBT::IsChase, this), pChaseNode, pRoamingNode);
 	//CBTNode_Condition* pCon_IsReturn = CBTNode_Condition::Create(bind(&CIceBearManBT::IsReturn, this), pReturnNode, pIdleNode);
@@ -105,8 +109,10 @@ HRESULT CIceBearManBT::Initialize_Prototype(CGameObject* pObject)
 	pSeq_Dead->Add_ChildNode(pDeadNode);
 
 	m_pRootNode->Add_ChildNode(pSeq_Hit);
-	pSeq_Hit->Add_ChildNode(pCon_IsWeak);
+	pSeq_Hit->Add_ChildNode(pCon_IsHit);
 	pSeq_Hit->Add_ChildNode(pSel_Hit);
+	pSel_Hit->Add_ChildNode(pBlowNode);
+	pSel_Hit->Add_ChildNode(pAirNode);
 	pSel_Hit->Add_ChildNode(pStunNode);
 	pSel_Hit->Add_ChildNode(pHitNode);
 
@@ -144,14 +150,6 @@ void CIceBearManBT::Tick(const _float& fTimeDelta)
 
 void CIceBearManBT::LateTick(const _float& fTimeDelta)
 {
-	if (KEY_TAP(KEY::NUM_1))
-	{
-		m_pRootNode->Init_Start();
-		m_pIceBearMan->Set_StunTime(3.f);
-		m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_IceBearMan_Water.ao|IceBearMan_Stun"));
-		m_pIceBearMan->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_STUN, true);
-		m_pIceBearMan->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT, true);
-	}
 }
 
 void CIceBearManBT::Init_NodeStart()
@@ -167,23 +165,25 @@ _bool CIceBearManBT::IsZeroHp()
 	return false;
 }
 
-_bool CIceBearManBT::IsWeak()
+_bool CIceBearManBT::IsHit()
 {
-	if (m_pIceBearMan->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ISHIT) ||
-		m_pIceBearMan->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_STUN))
+	if (m_pIceBearMan->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ISHIT))
 		return true;
 
 	return false;
+
 }
 
 _bool CIceBearManBT::IsAtk()
 {
-	if (m_pIceBearMan->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT) &&
-		m_pIceBearMan->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATKAROUND) ||
-		m_pIceBearMan->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK) ||
-		m_pIceBearMan->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBATIDLE))
+	if (m_pIceBearMan->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT))
 	{
-		return true;
+		if (m_pIceBearMan->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATKAROUND) ||
+			m_pIceBearMan->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK) ||
+			m_pIceBearMan->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBATIDLE))
+		{
+			return true;
+		}
 	}
 
 	return false;

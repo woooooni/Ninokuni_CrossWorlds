@@ -1,3 +1,4 @@
+
 #include "stdafx.h"
 #include "Baobam_WaterNode_Hit.h"
 
@@ -34,7 +35,7 @@ CBTNode::NODE_STATE CBaobam_WaterNode_Hit::Tick(const _float& fTimeDelta)
 	if (dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_WEAK) &&
 		!dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK))
 	{
-		m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Damage"));
+		m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_Baobam_Water.ao|BaoBam_Damage"));
 	}
 
 	if (m_tBTNodeDesc.pOwnerModel->Is_Fix() && m_tBTNodeDesc.pOwnerModel->Is_Finish())
@@ -42,9 +43,9 @@ CBTNode::NODE_STATE CBaobam_WaterNode_Hit::Tick(const _float& fTimeDelta)
 		dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ISHIT, false);
 		dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_WEAK, false);
 
-		__super::Atk_BehaviorTick(1.f, fTimeDelta);
+		return __super::Atk_BehaviorTick(1.f, fTimeDelta);
 
-		return NODE_STATE::NODE_SUCCESS;
+		// return NODE_STATE::NODE_SUCCESS;
 	}
 
 	dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_WEAK, false);

@@ -83,6 +83,7 @@ HRESULT CLevel_Test::Tick(_float fTimeDelta)
 		// GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Spawner_Ice01"));
 		GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Shadow_Thief"));
 		GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Baobam_Water"));
+		GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_IceBearMan"));
 	}
 	if (KEY_TAP(KEY::J))
 	{

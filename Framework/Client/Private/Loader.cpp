@@ -374,8 +374,10 @@ HRESULT CLoader::Loading_For_Level_Test()
 
 	m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE].wait();
 	m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE].wait();
+	m_Threads[LOADING_THREAD::MONSTER_AND_NPC].wait();
 
-	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Evermore");
+	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Winter");
+	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Monster_Data, this, L"Winter");
 
 	CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_TEST);
 	
@@ -576,6 +578,75 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 
 	return S_OK;
 
+}
+
+HRESULT CLoader::Load_Monster_Data(const wstring& strMonsterFileName)
+{
+	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strMonsterFileName + L"/" + strMonsterFileName + L"Monster.map";
+
+	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
+	File->Open(strMapFilePath, FileMode::Read);
+
+	for (_uint i = 0; i < LAYER_TYPE::LAYER_END; ++i)
+	{
+		if (LAYER_TYPE::LAYER_MONSTER != i)
+			continue;
+
+		GI->Clear_Layer(LEVEL_TEST, i);
+
+
+		_uint iObjectCount = File->Read<_uint>();
+
+		for (_uint j = 0; j < iObjectCount; ++j)
+		{
+			// 3. Object_Prototype_Tag
+			wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
+			wstring strObjectTag = CUtils::ToWString(File->Read<string>());
+
+			// 6. Obejct States
+			_float4 vRight, vUp, vLook, vPos;
+
+			File->Read<_float4>(vRight);
+			File->Read<_float4>(vUp);
+			File->Read<_float4>(vLook);
+			File->Read<_float4>(vPos);
+
+
+			OBJECT_INIT_DESC Init_Data = {};
+			Init_Data.vStartPosition = vPos;
+			CGameObject* pObj = nullptr;
+
+			if (FAILED(GI->Add_GameObject(LEVEL_TEST, i, strPrototypeTag, &Init_Data, &pObj, true)))
+			{
+				MSG_BOX("Load_Objects_Failed.");
+				return E_FAIL;
+			}
+
+			if (nullptr == pObj)
+			{
+				MSG_BOX("Add_Object_Failed.");
+				return E_FAIL;
+			}
+			pObj->Set_ObjectTag(strObjectTag);
+
+			CTransform* pTransform = pObj->Get_Component<CTransform>(L"Com_Transform");
+			if (nullptr == pTransform)
+			{
+				MSG_BOX("Get_Transform_Failed.");
+				return E_FAIL;
+			}
+
+
+
+			pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
+			pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
+			pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
+			pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
+		}
+
+	}
+	MSG_BOX("Monster_Loaded.");
+	return S_OK;
 }
 
 HRESULT CLoader::Loading_Proto_Static_Map_Objects(const wstring& strPath)
@@ -794,6 +865,10 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Spawner_Ice01", CSpawner_Ice01::Create(m_pDevice, m_pContext, TEXT("Spawner_Ice01")), LAYER_MONSTER, true)))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Spawner_Ice02", CSpawner_Ice02::Create(m_pDevice, m_pContext, TEXT("Spawner_Ice02")), LAYER_MONSTER, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Spawner_Ice03", CSpawner_Ice03::Create(m_pDevice, m_pContext, TEXT("Spawner_Ice03")), LAYER_MONSTER, true)))
+		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Stellia", CStellia::Create(m_pDevice, m_pContext, TEXT("Stellia"), statDesc), LAYER_MONSTER, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_DreamerMazeWitch", CDMWitch::Create(m_pDevice, m_pContext, TEXT("DreamerMazeWitch"), statDesc), LAYER_MONSTER, true)))
@@ -860,7 +935,7 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Aren", CAren::Create(m_pDevice, m_pContext, TEXT("Aren")), LAYER_NPC, true)))
 		return E_FAIL;
-
+	
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanChildHalloweenA", CHumanChildHalloweenA::Create(m_pDevice, m_pContext, TEXT("HumanChildHalloweenA")), LAYER_NPC, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanChildHalloweenB", CHumanChildHalloweenB::Create(m_pDevice, m_pContext, TEXT("HumanChildHalloweenB")), LAYER_NPC, true)))
@@ -887,7 +962,7 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Gosling", CGosling::Create(m_pDevice, m_pContext, TEXT("Gosling")), LAYER_NPC, true)))
 		return E_FAIL;
-
+	
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_FunyaSnowman", CFunyaSnowman::Create(m_pDevice, m_pContext, TEXT("FunyaSnowman")), LAYER_NPC, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_GiftFunyaSnowman", CGiftFunyaSnowman::Create(m_pDevice, m_pContext, TEXT("GiftFunyaSnowman")), LAYER_NPC, true)))
@@ -974,7 +1049,7 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Aren", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/Aren/", L"Aren")))
 		return E_FAIL;
-
+	
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanChildHalloweenA", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Witch/HumanChildHalloweenA/", L"HumanChildHalloweenA")))
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanChildHalloweenB", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Witch/HumanChildHalloweenB/", L"HumanChildHalloweenB")))
@@ -1001,7 +1076,7 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Gosling", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Witch/Gosling/", L"Gosling")))
 		return E_FAIL;
-
+	
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_FunyaSnowman", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Ice/FunyaSnowman/", L"FunyaSnowman")))
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_GiftFunyaSnowman", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Ice/GiftFunyaSnowman/", L"GiftFunyaSnowman")))

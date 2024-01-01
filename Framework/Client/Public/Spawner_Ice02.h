@@ -23,8 +23,10 @@ private:
 	virtual HRESULT Spawn_Monster();
 
 private:
+	_int m_iMaxBaobamCount = 0;
 	_int m_iMaxThiefCount = 0;
 
+	vector<CGameObject*> m_vecBaobam;
 	vector<CGameObject*> m_vecThief;
 
 public:

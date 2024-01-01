@@ -85,6 +85,8 @@ HRESULT CGlanix::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+	m_pModelCom->Set_Animation(0);
+
 	//if (FAILED(Ready_Sockets()))
 	//	return E_FAIL;
 
@@ -97,7 +99,6 @@ HRESULT CGlanix::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
-	m_pModelCom->Set_Animation(0);
 
 	return S_OK;
 }
