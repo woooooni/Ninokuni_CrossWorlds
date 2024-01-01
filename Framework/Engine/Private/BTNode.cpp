@@ -6,9 +6,8 @@ CBTNode::CBTNode()
 {
 }
 
-HRESULT CBTNode::Initialize_Prototype(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
+HRESULT CBTNode::Initialize_Prototype(CBehaviorTree* pBT)
 {
-	m_tBTNodeDesc = *pDesc;
 	m_pBT = pBT;
 	return S_OK;
 }

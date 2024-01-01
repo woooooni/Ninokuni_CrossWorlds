@@ -9,7 +9,7 @@ CBaobam_DarkNode_Dead::CBaobam_DarkNode_Dead()
 {
 }
 
-HRESULT CBaobam_DarkNode_Dead::Initialize_Prototype(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
+HRESULT CBaobam_DarkNode_Dead::Initialize_Prototype(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT)
 {
 	__super::Initialize_Prototype(pDesc, pBT);
 
@@ -18,20 +18,20 @@ HRESULT CBaobam_DarkNode_Dead::Initialize_Prototype(BTNODE_DESC* pDesc, CBehavio
 
 void CBaobam_DarkNode_Dead::Start()
 {
-	m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_Baobam_Darkness.ao|BaoBam_Death"));
+	m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_Baobam_Darkness.ao|BaoBam_Death"));
 }
 
 CBTNode::NODE_STATE CBaobam_DarkNode_Dead::Tick(const _float& fTimeDelta)
 {
-	if (m_tBTNodeDesc.pOwnerModel->Is_Finish() && !m_tBTNodeDesc.pOwnerModel->Is_Tween())
+	if (m_tBTMonsterDesc.pOwnerModel->Is_Finish() && !m_tBTMonsterDesc.pOwnerModel->Is_Tween())
 	{
-		m_tBTNodeDesc.pOwner->Set_Dead(true);
+		m_tBTMonsterDesc.pOwner->Reserve_Dead(true);
 	}
 
 	return NODE_STATE::NODE_RUNNING;
 }
 
-CBaobam_DarkNode_Dead* CBaobam_DarkNode_Dead::Create(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
+CBaobam_DarkNode_Dead* CBaobam_DarkNode_Dead::Create(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT)
 {
 	CBaobam_DarkNode_Dead* pInstance = new CBaobam_DarkNode_Dead();
 

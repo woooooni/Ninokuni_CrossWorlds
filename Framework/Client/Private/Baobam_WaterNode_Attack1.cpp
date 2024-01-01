@@ -10,7 +10,7 @@ CBaobam_WaterNode_Attack1::CBaobam_WaterNode_Attack1()
 {
 }
 
-HRESULT CBaobam_WaterNode_Attack1::Initialize_Prototype(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
+HRESULT CBaobam_WaterNode_Attack1::Initialize_Prototype(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT)
 {
 	__super::Initialize_Prototype(pDesc, pBT);
 
@@ -19,9 +19,9 @@ HRESULT CBaobam_WaterNode_Attack1::Initialize_Prototype(BTNODE_DESC* pDesc, CBeh
 
 void CBaobam_WaterNode_Attack1::Start()
 {
-	m_tBTNodeDesc.pOwnerTransform->LookAt_ForLandObject(m_tBTNodeDesc.pTargetTransform->Get_Position());
-	m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_Baobam_Water.ao|BaoBam_Attack01"));
-	dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK, true);
+	m_tBTMonsterDesc.pOwnerTransform->LookAt_ForLandObject(m_tBTMonsterDesc.pOwner->Get_TargetDesc().pTragetTransform->Get_Position());
+	m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_Baobam_Water.ao|BaoBam_Attack01"));
+	dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK, true);
 }
 
 CBTNode::NODE_STATE CBaobam_WaterNode_Attack1::Tick(const _float& fTimeDelta)
@@ -29,7 +29,7 @@ CBTNode::NODE_STATE CBaobam_WaterNode_Attack1::Tick(const _float& fTimeDelta)
 	return __super::Atk_BehaviorTick(1.f, fTimeDelta);
 }
 
-CBaobam_WaterNode_Attack1* CBaobam_WaterNode_Attack1::Create(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
+CBaobam_WaterNode_Attack1* CBaobam_WaterNode_Attack1::Create(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT)
 {
 	CBaobam_WaterNode_Attack1* pInstance = new CBaobam_WaterNode_Attack1();
 

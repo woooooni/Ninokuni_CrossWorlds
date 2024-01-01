@@ -84,6 +84,7 @@ CHierarchyNode* CBoss::Get_Socket(const wstring& strSocketName)
 
 void CBoss::On_Damaged(const COLLISION_INFO& tInfo)
 {
+	__super::On_Damaged(tInfo);
 }
 
 HRESULT CBoss::Ready_Components()

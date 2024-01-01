@@ -1,12 +1,12 @@
 #pragma once
 
 #include "Client_Defines.h"
-#include "BehaviorTree.h"
+#include "MonsterBT.h"
 
 BEGIN(Client)
 
 class CBaobam_Water;
-class CBaobam_WaterBT final : public CBehaviorTree
+class CBaobam_WaterBT final : public CMonsterBT
 {
 private:
 	CBaobam_WaterBT(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -14,7 +14,7 @@ private:
 	virtual ~CBaobam_WaterBT() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(CGameObject* pObject);
+	virtual HRESULT Initialize_Prototype(CMonster* pOwner);
 	virtual HRESULT Initialize(void* pArg);
 	virtual void	Tick(const _float& fTimeDelta);
 	virtual void	LateTick(const _float& fTimeDelta);
@@ -30,13 +30,9 @@ private:
 
 private:
 	CBaobam_Water* m_pBaobam_Water = nullptr;
-	CBTNode::tagBTDesc m_tBTNodeDesc = {};
-
-	_bool m_BIsChase = false;
-
 
 public:
-	static CBaobam_WaterBT* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CGameObject* pObject);
+	static CBaobam_WaterBT* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CMonster* pOwner);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free() override;
 };

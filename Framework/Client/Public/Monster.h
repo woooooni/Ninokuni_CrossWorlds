@@ -76,6 +76,12 @@ public:
 		_float fAirDeadVelocity = 0.f;
 	} MONSTER_STAT;
 
+	typedef struct tagTargetDesc
+	{
+		CGameObject* pTarget = nullptr;
+		CTransform*  pTragetTransform = nullptr;
+	}TARGET_DESC;
+
 protected:
 	CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat);
 	CMonster(const CMonster& rhs);
@@ -140,6 +146,9 @@ public:
 	virtual _float Get_StunTime() { return m_fStunTime; }
 	virtual void   Set_StunTime(_float fStunTime) { m_fStunTime = fStunTime; }
 
+	/* Target */
+	virtual TARGET_DESC Get_TargetDesc() { return m_tTargetDesc; }
+
 public:
 	MONSTER_TYPE Get_Monster_Type() { return m_eMonsterType; }
 
@@ -187,6 +196,8 @@ protected:
 
 protected:
 	class CTrail* m_pTrails[SOCKET_TYPE::SOCKET_END];
+
+	TARGET_DESC  m_tTargetDesc = {};
 
 protected:
 	MONSTER_TYPE m_eMonsterType = MONSTER_TYPE::TYPE_END;

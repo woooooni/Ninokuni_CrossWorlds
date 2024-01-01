@@ -284,7 +284,6 @@
     <ClInclude Include="..\Public\Grass.h" />
     <ClInclude Include="..\Public\Gosling.h" />
     <ClInclude Include="..\Public\HumanChild01.h" />
-    <ClInclude Include="..\Public\HumanChild01BT.h" />
     <ClInclude Include="..\Public\HumanChild02.h" />
     <ClInclude Include="..\Public\HumanChildHalloweenA.h" />
     <ClInclude Include="..\Public\HumanChildHalloweenB.h" />
@@ -302,11 +301,9 @@
     <ClInclude Include="..\Public\IceBearManNode_Blow.h" />
     <ClInclude Include="..\Public\Item_Manager.h" />
     <ClInclude Include="..\Public\LuxerionHuman.h" />
-    <ClInclude Include="..\Public\NpcNode_Base.h" />
+    <ClInclude Include="..\Public\MonsterBT.h" />
     <ClInclude Include="..\Public\NpcWeapon_Halberd.h" />
     <ClInclude Include="..\Public\KingdomGuard.h" />
-    <ClInclude Include="..\Public\Npc_RoamingNode.h" />
-    <ClInclude Include="..\Public\Npc_SpecialIdleNode.h" />
     <ClInclude Include="..\Public\Pigeon.h" />
     <ClInclude Include="..\Public\Character_Manager.h" />
     <ClInclude Include="..\Public\Player.h" />
@@ -853,7 +850,6 @@
     <ClCompile Include="..\Private\Grass.cpp" />
     <ClCompile Include="..\Private\Gosling.cpp" />
     <ClCompile Include="..\Private\HumanChild01.cpp" />
-    <ClCompile Include="..\Private\HumanChild01BT.cpp" />
     <ClCompile Include="..\Private\HumanChild02.cpp" />
     <ClCompile Include="..\Private\HumanChildHalloweenA.cpp" />
     <ClCompile Include="..\Private\HumanChildHalloweenB.cpp" />
@@ -871,11 +867,9 @@
     <ClCompile Include="..\Private\IceBearManNode_Blow.cpp" />
     <ClCompile Include="..\Private\Item_Manager.cpp" />
     <ClCompile Include="..\Private\LuxerionHuman.cpp" />
-    <ClCompile Include="..\Private\NpcNode_Base.cpp" />
+    <ClCompile Include="..\Private\MonsterBT.cpp" />
     <ClCompile Include="..\Private\NpcWeapon_Halberd.cpp" />
     <ClCompile Include="..\Private\KingdomGuard.cpp" />
-    <ClCompile Include="..\Private\Npc_RoamingNode.cpp" />
-    <ClCompile Include="..\Private\Npc_SpecialIdleNode.cpp" />
     <ClCompile Include="..\Private\Pigeon.cpp" />
     <ClCompile Include="..\Private\Character_Manager.cpp" />
     <ClCompile Include="..\Private\Player.cpp" />

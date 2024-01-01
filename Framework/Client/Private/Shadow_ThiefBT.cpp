@@ -34,30 +34,20 @@
 #include "Player.h"
 
 CShadow_ThiefBT::CShadow_ThiefBT(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	: CBehaviorTree(pDevice, pContext)
+	: CMonsterBT(pDevice, pContext)
 {
 }
 
 CShadow_ThiefBT::CShadow_ThiefBT(const CShadow_ThiefBT& rhs)
-	: CBehaviorTree(rhs)
+	: CMonsterBT(rhs)
 {
 }
 
-HRESULT CShadow_ThiefBT::Initialize_Prototype(CGameObject* pObject)
+HRESULT CShadow_ThiefBT::Initialize_Prototype(CMonster* pOwner)
 {
-	m_tBTNodeDesc.pOwner = pObject;
-	m_tBTNodeDesc.pOwnerModel = pObject->Get_Component<CModel>(L"Com_Model");
-	m_tBTNodeDesc.pOwnerTransform = pObject->Get_Component<CTransform>(L"Com_Transform");
+	__super::Initialize_Prototype(pOwner);
 
-	m_tBTNodeDesc.pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
-
-	if (m_tBTNodeDesc.pTarget != nullptr)
-	{
-		m_tBTNodeDesc.pTargetModel = m_tBTNodeDesc.pTarget->Get_Component<CModel>(L"Com_Model");
-		m_tBTNodeDesc.pTargetTransform = m_tBTNodeDesc.pTarget->Get_Component<CTransform>(L"Com_Transform");
-	}
-
-	m_pShadow_Thief = dynamic_cast<CShadow_Thief*>(pObject);
+	m_pShadow_Thief = dynamic_cast<CShadow_Thief*>(m_tBTMonsterDesc.pOwner);
 	m_pRootNode = CBTNode_Select::Create(this);
 
 	/* 상위 Sequence 관련 */
@@ -69,34 +59,34 @@ HRESULT CShadow_ThiefBT::Initialize_Prototype(CGameObject* pObject)
 	CBTNode_Sequence* pSeq_Idle = CBTNode_Sequence::Create(this);
 
 	/* Dead 관련 */
-	CShadow_ThiefNode_Dead* pDeadNode = CShadow_ThiefNode_Dead::Create(&m_tBTNodeDesc, this);
+	CShadow_ThiefNode_Dead* pDeadNode = CShadow_ThiefNode_Dead::Create(&m_tBTMonsterDesc, this);
 
 	/* Hit 관련 */
 	CBTNode_Select* pSel_Hit = CBTNode_Select::Create(this);
-	CShadow_ThiefNode_Blow* pBlowNode = CShadow_ThiefNode_Blow::Create(&m_tBTNodeDesc, this);
-	CShadow_ThiefNode_Air* pAirNode = CShadow_ThiefNode_Air::Create(&m_tBTNodeDesc, this);
-	CShadow_ThiefNode_Stun* pStunNode = CShadow_ThiefNode_Stun::Create(&m_tBTNodeDesc, this);
-	CShadow_ThiefNode_Hit* pHitNode = CShadow_ThiefNode_Hit::Create(&m_tBTNodeDesc, this);
+	CShadow_ThiefNode_Blow* pBlowNode = CShadow_ThiefNode_Blow::Create(&m_tBTMonsterDesc, this);
+	CShadow_ThiefNode_Air* pAirNode = CShadow_ThiefNode_Air::Create(&m_tBTMonsterDesc, this);
+	CShadow_ThiefNode_Stun* pStunNode = CShadow_ThiefNode_Stun::Create(&m_tBTMonsterDesc, this);
+	CShadow_ThiefNode_Hit* pHitNode = CShadow_ThiefNode_Hit::Create(&m_tBTMonsterDesc, this);
 
 	/* Combat 관련 */
 	CBTNode_Sequence* pSeq_Pattern = CBTNode_Sequence::Create(this);
-	CShadow_ThiefNode_Attack1* pAtk1Node = CShadow_ThiefNode_Attack1::Create(&m_tBTNodeDesc, this);
-	CShadow_ThiefNode_Attack2* pAtk2Node = CShadow_ThiefNode_Attack2::Create(&m_tBTNodeDesc, this);
-	CShadow_ThiefNode_Skill1* pSkill1Node = CShadow_ThiefNode_Skill1::Create(&m_tBTNodeDesc, this);
+	CShadow_ThiefNode_Attack1* pAtk1Node = CShadow_ThiefNode_Attack1::Create(&m_tBTMonsterDesc, this);
+	CShadow_ThiefNode_Attack2* pAtk2Node = CShadow_ThiefNode_Attack2::Create(&m_tBTMonsterDesc, this);
+	CShadow_ThiefNode_Skill1* pSkill1Node = CShadow_ThiefNode_Skill1::Create(&m_tBTMonsterDesc, this);
 
 	/* Chase 관련 */
-	CShadow_ThiefNode_Chase* pChaseNode = CShadow_ThiefNode_Chase::Create(&m_tBTNodeDesc, this);
+	CShadow_ThiefNode_Chase* pChaseNode = CShadow_ThiefNode_Chase::Create(&m_tBTMonsterDesc, this);
 
 	/* Return 관련 */
-	//CShadow_ThiefNode_Return* pReturnNode = CShadow_ThiefNode_Return::Create(&m_tBTNodeDesc, this);
+	//CShadow_ThiefNode_Return* pReturnNode = CShadow_ThiefNode_Return::Create(&m_tBTMonsterDesc, this);
 
 	/* Idel 관련 */
 	vector<wstring> vecAnimationName;
 	vecAnimationName.push_back(TEXT("SKM_ShadowThief.ao|ShadowThief_Idle02"));
 	vecAnimationName.push_back(TEXT("SKM_ShadowThief.ao|ShadowThief_Idle01"));
 	vecAnimationName.push_back(TEXT("SKM_ShadowThief.ao|ShadowThief_Idle02"));
-	CShadow_ThiefNode_Idle* pIdleNode = CShadow_ThiefNode_Idle::Create(&m_tBTNodeDesc, this, vecAnimationName);
-	CShadow_ThiefNode_Roaming* pRoamingNode = CShadow_ThiefNode_Roaming::Create(&m_tBTNodeDesc, this, dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_RoamingArea());
+	CShadow_ThiefNode_Idle* pIdleNode = CShadow_ThiefNode_Idle::Create(&m_tBTMonsterDesc, this, vecAnimationName);
+	CShadow_ThiefNode_Roaming* pRoamingNode = CShadow_ThiefNode_Roaming::Create(&m_tBTMonsterDesc, this, dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_RoamingArea());
 
 	/* Condition 관련*/
 	/* function<_bool()>을 받는 CBTNode_Condition::Create 함수에서는 멤버 함수를 사용하고 있기 때문에 추가적인 처리가 필요 */
@@ -148,7 +138,7 @@ HRESULT CShadow_ThiefBT::Initialize(void* pArg)
 
 void CShadow_ThiefBT::Tick(const _float& fTimeDelta)
 {
-	if (m_tBTNodeDesc.pTarget != nullptr)
+	if (m_tBTMonsterDesc.pOwner != nullptr)
 		m_pRootNode->Tick(fTimeDelta);
 }
 
@@ -158,7 +148,7 @@ void CShadow_ThiefBT::LateTick(const _float& fTimeDelta)
 	{
 		m_pRootNode->Init_Start();
 		m_pShadow_Thief->Set_StunTime(3.f);
-		m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Stun"));
+		m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Stun"));
 		m_pShadow_Thief->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ISHIT, true);
 		m_pShadow_Thief->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_STUN, true);
 		m_pShadow_Thief->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT, true);
@@ -222,8 +212,8 @@ _bool CShadow_ThiefBT::IsChase()
 //		_float4 vPos;
 //		_float4 vOriginPos;
 //
-//		XMStoreFloat4(&vPos, m_tBTNodeDesc.pOwnerTransform->Get_Position());
-//		XMStoreFloat4(&vOriginPos, dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_OriginPos());
+//		XMStoreFloat4(&vPos, m_tBTMonsterDesc.pOwnerTransform->Get_Position());
+//		XMStoreFloat4(&vOriginPos, dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_OriginPos());
 //
 //		if (vPos.x >= vOriginPos.x - 0.1f && vPos.x <= vOriginPos.x + 0.1f &&
 //			vPos.z >= vOriginPos.z - 0.1f && vPos.z <= vOriginPos.z + 0.1f)
@@ -238,11 +228,11 @@ _bool CShadow_ThiefBT::IsChase()
 //}
 
 
-CShadow_ThiefBT* CShadow_ThiefBT::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CGameObject* pObject)
+CShadow_ThiefBT* CShadow_ThiefBT::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CMonster* pOwner)
 {
 	CShadow_ThiefBT* pInstance = new CShadow_ThiefBT(pDevice, pContext);
 
-	if (FAILED(pInstance->Initialize_Prototype(pObject)))
+	if (FAILED(pInstance->Initialize_Prototype(pOwner)))
 	{
 		MSG_BOX("Fail Create : CShadow_ThiefBT");
 		Safe_Release(pInstance);

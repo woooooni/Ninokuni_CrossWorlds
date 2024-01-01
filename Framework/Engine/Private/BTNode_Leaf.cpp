@@ -4,9 +4,9 @@ CBTNode_Leaf::CBTNode_Leaf()
 {
 }
 
-HRESULT CBTNode_Leaf::Initialize_Prototype(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
+HRESULT CBTNode_Leaf::Initialize_Prototype(CBehaviorTree* pBT)
 {
-	__super::Initialize_Prototype(pDesc, pBT);
+	__super::Initialize_Prototype(pBT);
 
 	return S_OK;
 }

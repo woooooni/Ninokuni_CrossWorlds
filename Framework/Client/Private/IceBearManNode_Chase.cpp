@@ -8,7 +8,7 @@ CIceBearManNode_Chase::CIceBearManNode_Chase()
 {
 }
 
-HRESULT CIceBearManNode_Chase::Initialize_Prototype(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
+HRESULT CIceBearManNode_Chase::Initialize_Prototype(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT)
 {
 	__super::Initialize_Prototype(pDesc, pBT);
 
@@ -17,18 +17,18 @@ HRESULT CIceBearManNode_Chase::Initialize_Prototype(BTNODE_DESC* pDesc, CBehavio
 
 void CIceBearManNode_Chase::Start()
 {
-	m_tBTNodeDesc.pOwnerModel->Set_Animation(TEXT("SKM_IceBearMan_Water.ao|IceBearMan_BattleRun"));
+	m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_IceBearMan_Water.ao|IceBearMan_BattleRun"));
 }
 
 CBTNode::NODE_STATE CIceBearManNode_Chase::Tick(const _float& fTimeDelta)
 {
-	m_tBTNodeDesc.pOwnerTransform->LookAt_ForLandObject(m_tBTNodeDesc.pTargetTransform->Get_Position());
-	m_tBTNodeDesc.pOwnerTransform->Move(m_tBTNodeDesc.pOwnerTransform->Get_Look(), 6.f, fTimeDelta);
+	m_tBTMonsterDesc.pOwnerTransform->LookAt_ForLandObject(m_tBTMonsterDesc.pOwner->Get_TargetDesc().pTragetTransform->Get_Position());
+	m_tBTMonsterDesc.pOwnerTransform->Move(m_tBTMonsterDesc.pOwnerTransform->Get_Look(), 6.f, fTimeDelta);
 
 	return NODE_STATE::NODE_RUNNING;
 }
 
-CIceBearManNode_Chase* CIceBearManNode_Chase::Create(BTNODE_DESC* pDesc, CBehaviorTree* pBT)
+CIceBearManNode_Chase* CIceBearManNode_Chase::Create(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT)
 {
 	CIceBearManNode_Chase* pInstance = new CIceBearManNode_Chase();
 

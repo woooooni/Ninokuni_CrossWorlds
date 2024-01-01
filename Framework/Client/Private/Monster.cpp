@@ -11,6 +11,9 @@
 #include "UI_Manager.h"
 #include "BehaviorTree.h"
 
+#include "Game_Manager.h"
+#include "Player.h"
+
 USING(Client)
 CMonster::CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
 	: CGameObject(pDevice, pContext, strObjectTag, OBJ_TYPE::OBJ_MONSTER)
@@ -53,6 +56,13 @@ HRESULT CMonster::Initialize(void* pArg)
 void CMonster::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+	
+	/* 최초 타겟 설정 */
+	if (m_tTargetDesc.pTarget == nullptr)
+	{
+		m_tTargetDesc.pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+		m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component<CTransform>(L"Com_Transform");
+	}
 
 	GI->Add_CollisionGroup(COLLISION_GROUP::MONSTER, this);
 
@@ -114,6 +124,18 @@ void CMonster::LateTick(_float fTimeDelta)
 	/*m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);*/
 	// m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_SHADOW, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc());
+	
+	if (m_bIsRimUse)
+	{
+		m_strObjectTag = m_strPrototypeTag + TEXT("Rim");
+	}
+	else if (m_bReserveDead)
+	{
+		m_strObjectTag = m_strPrototypeTag + TEXT("Dead");
+	}
+	else
+		m_strObjectTag = m_strPrototypeTag;
+
 	m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_NONBLEND, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc());
 
 
@@ -332,7 +354,7 @@ void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 {
 	m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ISHIT] = true;
 
-	m_tStat.fHp -= 10;
+	m_tStat.fHp -= dynamic_cast<CPlayer*>(tInfo.pOther)->Get_Character()->Get_Stat().iAtt;
 
 	Start_RimLight();
 }

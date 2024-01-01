@@ -11,7 +11,7 @@ private:
 	virtual ~CIceBearManNode_Idle() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(BTNODE_DESC* pDesc, CBehaviorTree* pBT, vector<wstring> vecAnimationName);
+	virtual HRESULT Initialize_Prototype(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT, vector<wstring> vecAnimationName);
 	virtual void	Start();
 	virtual CBTNode::NODE_STATE	Tick(const _float& fTimeDelta);
 
@@ -20,7 +20,7 @@ private:
 	_uint			m_iCurAnimationIndex = 0;
 
 public:
-	static CIceBearManNode_Idle* Create(BTNODE_DESC* pDesc, CBehaviorTree* pBT, vector<wstring> vecAnimationName);
+	static CIceBearManNode_Idle* Create(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT, vector<wstring> vecAnimationName);
 	virtual void Free() override;
 };
 

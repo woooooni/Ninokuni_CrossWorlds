@@ -11,12 +11,12 @@ private:
 	virtual ~CBaobam_WaterNode_Return() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(BTNODE_DESC* pDesc, CBehaviorTree* pBT);
+	virtual HRESULT Initialize_Prototype(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT);
 	virtual void	Start();
 	virtual CBTNode::NODE_STATE	Tick(const _float& fTimeDelta);
 
 public:
-	static CBaobam_WaterNode_Return* Create(BTNODE_DESC* pDesc, CBehaviorTree* pBT);
+	static CBaobam_WaterNode_Return* Create(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT);
 	virtual void Free() override;
 };
 

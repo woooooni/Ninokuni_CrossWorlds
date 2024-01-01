@@ -4,6 +4,7 @@
 #include "BTNode_Leaf.h"
 
 #include "PumpkinCandle.h"
+#include "MonsterBt.h"
 
 BEGIN(Client)
 
@@ -14,7 +15,7 @@ public:
 	virtual ~CPumpkinCandleNode_Base() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(BTNODE_DESC* pDesc, CBehaviorTree* pBT);
+	virtual HRESULT Initialize_Prototype(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT);
 	virtual void	Start();
 	virtual CBTNode::NODE_STATE	Tick(const _float& fTimeDelta);
 
@@ -24,6 +25,7 @@ public:
 
 protected:
 	_bool	m_bWait = false;
+	CMonsterBT::BT_MONSTERDESC m_tBTMonsterDesc = {};
 
 private:
 	_float  m_fSourWaitTime = 0.f;
