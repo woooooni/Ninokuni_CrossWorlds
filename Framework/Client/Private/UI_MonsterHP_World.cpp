@@ -16,10 +16,11 @@ CUI_MonsterHP_World::CUI_MonsterHP_World(const CUI_MonsterHP_World& rhs)
 {
 }
 
-void CUI_MonsterHP_World::Set_Owner(CMonster* pOwner, _int iElementalType)
+void CUI_MonsterHP_World::Set_Owner(CMonster* pOwner, _int iElementalType, _float fOffsetY)
 {
 	m_pOwner = pOwner;
 	m_iTextureIndex = iElementalType;
+	m_fOffsetY = fOffsetY;
 
 	CMonster::MONSTER_STAT StatDesc = {};
 	ZeroMemory(&StatDesc, sizeof(CMonster::MONSTER_STAT));
@@ -156,7 +157,8 @@ void CUI_MonsterHP_World::LateTick(_float fTimeDelta)
 				CTransform* pTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");
 
 				_float4x4 matTargetWorld = pTransform->Get_WorldFloat4x4();
-				matTargetWorld._42 += 1.5f;
+				//matTargetWorld._42 += 1.5f;
+				matTargetWorld._42 += m_fOffsetY;
 
 				_float4x4 matWorld;
 				matWorld = matTargetWorld;
@@ -343,7 +345,7 @@ void CUI_MonsterHP_World::Set_Text(_float2 ScreenPos)
 	m_pRendererCom->Add_Text(MonsterDesc);
 	// Origin Text
 	MonsterDesc.vPosition = _float2(fSubX, vSubPosition.y);
-	MonsterDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+	MonsterDesc.vColor = m_vSubNameColor;
 	m_pRendererCom->Add_Text(MonsterDesc);
 
 	// 몬스터 이름 -> 외곽선
@@ -361,7 +363,7 @@ void CUI_MonsterHP_World::Set_Text(_float2 ScreenPos)
 	m_pRendererCom->Add_Text(MonsterDesc);
 	// 몬스터 이름
 	MonsterDesc.vPosition = _float2(fNameX, vTextPosition.y);
-	MonsterDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+	MonsterDesc.vColor = m_vNameColor;
 	m_pRendererCom->Add_Text(MonsterDesc);
 
 }

@@ -17,6 +17,7 @@ public:
 	{
 		CTransform* pTargetTransform = nullptr;
 		_uint iDamage = 0;
+		_bool bCritical = false; // Critical Font를 생성하는가
 	}DAMAGE_DESC;
 
 public:

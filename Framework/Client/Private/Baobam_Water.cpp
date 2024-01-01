@@ -52,7 +52,7 @@ HRESULT CBaobam_Water::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_pHPBar = dynamic_cast<CUI_MonsterHP_World*>(pHPBar);
-	m_pHPBar->Set_Owner(this, m_tStat.eElementType);
+	m_pHPBar->Set_Owner(this, m_tStat.eElementType, 2.f);
 
 	m_pModelCom->Set_Animation(0);
 

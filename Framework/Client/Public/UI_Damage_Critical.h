@@ -15,7 +15,7 @@ public:
 public:
 	typedef struct tagCriticalFont
 	{
-		CTransform* pTargetTransform = nullptr;
+		_float2 vPosition = _float2(g_iWinSizeX * 0.5f, g_iWinSizeY * 0.5f);
 		UI_CRITICALFONT eType = { CRITICALFONT_END };
 
 	}CRITICAL_DESC;

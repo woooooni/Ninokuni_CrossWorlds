@@ -12,7 +12,7 @@ protected:
 
 public:
 	class CMonster* Get_Owner() { return m_pOwner; }
-	void Set_Owner(CMonster* pOwner, _int iElementalType);
+	void Set_Owner(CMonster* pOwner, _int iElementalType, _float fOffsetY = 0.f);
 
 	_bool Is_Target() { return m_bIsTarget; }
 	void Set_Target(_bool bIsTarget) { m_bIsTarget = bIsTarget; }
@@ -38,6 +38,10 @@ private:
 	wstring m_strSubName = L"";
 
 	_uint m_iTextureIndex = { 0 };
+	_float m_fOffsetY = { 0.f };
+
+	_float4 m_vSubNameColor = _float4(0.62f, 0.631f, 0.561f, 1.f);
+	_float4 m_vNameColor = _float4(0.98f, 0.953f, 0.588f, 1.f);
 
 private:
 	virtual HRESULT	Ready_Components() override;
