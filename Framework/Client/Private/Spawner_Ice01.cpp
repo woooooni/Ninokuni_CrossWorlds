@@ -25,7 +25,7 @@ HRESULT CSpawner_Ice01::Initialize_Prototype()
 HRESULT CSpawner_Ice01::Initialize(void* pArg)
 {
 	m_fSpawnTime = 30.f;
-
+	m_fCurTime = 30.f;
 	//m_iMaxBaobamCount = 1;
 	m_iMaxThiefCount = 4;
 	//m_iMaxBearCount = 1;
@@ -36,17 +36,16 @@ HRESULT CSpawner_Ice01::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, { 0.f, 0.f, 0.f, 1.f });
-
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
-	if (GI->Get_CurrentLevel() != LEVELID::LEVEL_TOOL)
-	{
-		if (FAILED(Spawn_Monster()))
-			return E_FAIL;
-	}
+	//if (GI->Get_CurrentLevel() != LEVELID::LEVEL_TOOL)
+	//{
+	//	if (FAILED(Spawn_Monster()))
+	//		return E_FAIL;
+	//}
 
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, { 0.f, 0.f, 0.f, 1.f });
 
 	return S_OK;
 }
@@ -149,7 +148,7 @@ HRESULT CSpawner_Ice01::Spawn_Monster()
 	for (_int i = m_vecThief.size(); i < m_iMaxThiefCount; ++i)
 	{
 		tInfo.vStartPosition.x = vSpawnerPos.x + GI->RandomFloat(-5.f, 5.f);
-		tInfo.vStartPosition.y = vSpawnerPos.y;
+		tInfo.vStartPosition.y = vSpawnerPos.y + 1.f;
 		tInfo.vStartPosition.z = vSpawnerPos.z + GI->RandomFloat(-5.f, 5.f);
 		tInfo.vStartPosition.w = 1.f;
 

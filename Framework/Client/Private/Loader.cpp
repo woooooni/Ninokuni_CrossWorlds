@@ -630,7 +630,7 @@ HRESULT CLoader::Load_Monster_Data(const wstring& strMonsterFileName)
 		if (LAYER_TYPE::LAYER_MONSTER != i)
 			continue;
 
-		GI->Clear_Layer(LEVEL_TEST, i);
+		GI->Clear_Layer(m_eNextLevel, i);
 
 
 		_uint iObjectCount = File->Read<_uint>();
@@ -654,7 +654,7 @@ HRESULT CLoader::Load_Monster_Data(const wstring& strMonsterFileName)
 			Init_Data.vStartPosition = vPos;
 			CGameObject* pObj = nullptr;
 
-			if (FAILED(GI->Add_GameObject(LEVEL_TEST, i, strPrototypeTag, &Init_Data, &pObj, true)))
+			if (FAILED(GI->Add_GameObject(m_eNextLevel, i, strPrototypeTag, &Init_Data, &pObj, true)))
 			{
 				MSG_BOX("Load_Objects_Failed.");
 				return E_FAIL;
