@@ -74,8 +74,9 @@ private:
 
 
 	// 캐릭터 로딩 및 매니저 준비.
-	HRESULT Loading_For_Character();
+	HRESULT Loading_For_Character(CHARACTER_TYPE eCharacterType);
 	HRESULT Loading_Character_Models(const wstring& strFolderPath);
+	HRESULT Reserve_Character_Managers();
 
 
 private:

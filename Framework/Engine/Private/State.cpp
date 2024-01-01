@@ -41,6 +41,9 @@ HRESULT CState::Initialize(const list<wstring>& AnimationList)
 			return E_FAIL;
 	}
 
+	if (0 == m_AnimIndices.size())
+		return E_FAIL;
+
 
 	return S_OK;
 }

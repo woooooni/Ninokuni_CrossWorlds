@@ -43,9 +43,6 @@ float4x4 inverse(float4x4 m)
     return ret;
 }
 
-
-
-
 // http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/
 float4 matrix_to_quaternion(float4x4 m)
 {
@@ -88,6 +85,26 @@ float4 matrix_to_quaternion(float4x4 m)
     return q;
 }
 
+float4x4 m_scale(float4x4 m, float3 v)
+{
+    float x = v.x, y = v.y, z = v.z;
+
+    m[0][0] *= x;
+    m[1][0] *= y;
+    m[2][0] *= z;
+    m[0][1] *= x;
+    m[1][1] *= y;
+    m[2][1] *= z;
+    m[0][2] *= x;
+    m[1][2] *= y;
+    m[2][2] *= z;
+    m[0][3] *= x;
+    m[1][3] *= y;
+    m[2][3] *= z;
+
+    return m;
+}
+
 float4x4 quaternion_to_matrix(float4 quat)
 {
     float4x4 m = float4x4(float4(0, 0, 0, 0), float4(0, 0, 0, 0), float4(0, 0, 0, 0), float4(0, 0, 0, 0));
@@ -115,47 +132,6 @@ float4x4 quaternion_to_matrix(float4 quat)
     return m;
 }
 
-matrix AffinTransformation(float3 vScale, float4 vQuat, float3 vTranslation)
-{
-    matrix scaleMatrix = 0;
-    scaleMatrix._11 = vScale.x;
-    scaleMatrix._22 = vScale.y;
-    scaleMatrix._33 = vScale.z;
-    scaleMatrix._44 = 1.f;
-    
-    matrix translationToOrigin = IDENTITY_MATRIX;
-    matrix translationBack = IDENTITY_MATRIX;
-    
-    matrix rotationMatrix = quaternion_to_matrix(vQuat);
-    
-    matrix translationMatrix = 0;
-    
-    translationMatrix._11 = 1.f;
-    translationMatrix._22 = 1.f;
-    translationMatrix._33 = 1.f;
-				
-    translationMatrix[3][0] = vTranslation.x;
-    translationMatrix[3][1] = vTranslation.y;
-    translationMatrix[3][2] = vTranslation.z;
-    translationMatrix[3][3] = 1.f;
-
-    return scaleMatrix * translationBack * rotationMatrix * translationToOrigin * translationMatrix;
-}
-
-float4x4 m_scale(float4x4 m, float3 v)
-{
-    float x = v.x, y = v.y, z = v.z;
-
-    m[0][0] *= x; m[1][0] *= y; m[2][0] *= z;
-    m[0][1] *= x; m[1][1] *= y; m[2][1] *= z;
-    m[0][2] *= x; m[1][2] *= y; m[2][2] *= z;
-    m[0][3] *= x; m[1][3] *= y; m[2][3] *= z;
-
-    return m;
-}
-
-
-
 float4x4 m_translate(float4x4 m, float3 v)
 {
     float x = v.x, y = v.y, z = v.z;
@@ -175,19 +151,20 @@ float4x4 compose(float3 position, float4 quat, float3 scale)
 
 void decompose(in float4x4 m, out float3 position, out float4 rotation, out float3 scale)
 {
-    float sx = length(m._11_12_13_14);
-    float sy = length(m._21_22_23_24);
-    float sz = length(m._31_32_33_34);
+    float sx = length(float3(m[0][0], m[0][1], m[0][2]));
+    float sy = length(float3(m[1][0], m[1][1], m[1][2]));
+    float sz = length(float3(m[2][0], m[2][1], m[2][2]));
 
     // if determine is negative, we need to invert one scale
     float det = determinant(m);
-    if (det < 0) {
+    if (det < 0)
+    {
         sx = -sx;
     }
 
-    position.x = m._41;
-    position.y = m._42;
-    position.z = m._43;
+    position.x = m[3][0];
+    position.y = m[3][1];
+    position.z = m[3][2];
 
     // scale the rotation part
 
@@ -252,7 +229,8 @@ float4x4 extract_rotation_matrix(float4x4 m)
 
     // if determine is negative, we need to invert one scale
     float det = determinant(m);
-    if (det < 0) {
+    if (det < 0)
+    {
         sx = -sx;
     }
 
