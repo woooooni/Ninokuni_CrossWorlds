@@ -56,18 +56,18 @@ public:
 	CCamera*	Get_Camera(const _uint& iKey);
 	CCamera*	Get_CurCamera() const { return m_pCurCamera; }
 	HRESULT		Set_CurCamera(const _uint& iKey);
+	HRESULT		Set_PrevCamera();
 	const _bool Is_Empty_Camera(const _uint& iKey);
 	HRESULT		Add_Camera(const _uint& iKey, CCamera* pCamera);
 
 public:
 	HRESULT Start_Action_Shake_Default();
 
-	HRESULT Start_Action_CutScene(const string& strCutSceneName);
-
 private:
 	CCamera* Find_Camera(const _uint& iKey);
 
 private:
+	CCamera* m_pPrevCamera	= { nullptr };
 	CCamera* m_pCurCamera	= { nullptr };
 	CCamera* m_pNextCamera	= { nullptr };
 	

@@ -14,12 +14,12 @@ typedef struct tagCameraCutSceneDesc
 	Vec3		vCamPositions[MAX_BEZIER_POINT];
 	Vec3		vCamLookAts[MAX_BEZIER_POINT];
 
-	_float		fDuration = 4.f;
-	_float		fStartDelayTime = 0.f;
-	_float		fFinishDelayTime = 0.f;
+	_float		fDuration			= 4.f;
+	_float		fStartDelayTime		= 0.f;
+	_float		fFinishDelayTime	= 0.f;
 
-	_float		fStartFov = 0.f;
-	_float		fFinishFov = 0.f;
+	_float		fStartFov			= 0.f;
+	_float		fFinishFov			= 0.f;
 
 	LERP_MODE	eLerpMode = LERP_MODE::SMOOTHER_STEP;
 

@@ -83,12 +83,32 @@ HRESULT CCamera_Manager::Set_CurCamera(const _uint& iKey)
 	}
 	else
 	{
+		m_pPrevCamera = m_pCurCamera;
+
 		m_pCurCamera->Set_Active(false);
 
 		m_pCurCamera = pCamera;
 
 		m_pCurCamera->Set_Active(true);
 	}
+
+	return S_OK;
+}
+
+HRESULT CCamera_Manager::Set_PrevCamera()
+{
+	if (nullptr == m_pPrevCamera || nullptr == m_pCurCamera)
+		return E_FAIL;
+
+	CCamera* pTemp = m_pCurCamera;
+
+	m_pCurCamera->Set_Active(false);
+
+	m_pCurCamera = m_pPrevCamera;
+
+	m_pCurCamera->Set_Active(true);
+
+	m_pPrevCamera = pTemp;
 
 	return S_OK;
 }
@@ -116,11 +136,6 @@ HRESULT CCamera_Manager::Start_Action_Shake_Default()
 
 	m_pCurCamera->Start_Shake(0.1f, 17.f, 0.3f);
 	
-	return S_OK;
-}
-
-HRESULT CCamera_Manager::Start_Action_CutScene(const string& strCutSceneName)
-{
 	return S_OK;
 }
 

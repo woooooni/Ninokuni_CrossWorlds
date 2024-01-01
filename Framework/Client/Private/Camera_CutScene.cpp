@@ -33,6 +33,7 @@ HRESULT CCamera_CutScene::Initialize(void* pArg)
 
 	if (FAILED(Load_CutSceneDescs()))
 		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -41,16 +42,24 @@ void CCamera_CutScene::Tick(_float fTimeDelta)
 	if (!m_bActive)
 		return;
 
-	m_tTimeDesc.Update(fTimeDelta);
-
 	__super::Tick(fTimeDelta);
-	
-	Vec4 vCamPosition = Get_Point_In_Bezier(m_pCurCutSceneDesc->vCamPositions, m_tTimeDesc.Get_Progress());
-	Vec4 vLookAt = Get_Point_In_Bezier(m_pCurCutSceneDesc->vCamLookAts, m_tTimeDesc.Get_Progress());
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCamPosition.OneW());
-	m_pTransformCom->LookAt(vLookAt.OneW());
+	if (!m_tTimeDesc.bActive)
+	{
+		CCamera_Manager::GetInstance()->Set_PrevCamera();
+	}
+	else
+	{
+		m_tTimeDesc.Update(fTimeDelta);
 
+		const _float fRatio = m_tTimeDesc.fLerpTime / m_tTimeDesc.fEndTime;
+
+		Vec4 vLookAt		= Get_Point_In_Bezier(m_pCurCutSceneDesc->vCamLookAts, fRatio);
+		Vec4 vCamPosition	= Get_Point_In_Bezier(m_pCurCutSceneDesc->vCamPositions, fRatio);
+
+		m_pTransformCom->LookAt(vLookAt.OneW());
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCamPosition.OneW());
+	}
 }
 
 void CCamera_CutScene::LateTick(_float fTimeDelta)
@@ -71,6 +80,8 @@ HRESULT CCamera_CutScene::Start_CutScene(const string& strCutSceneName)
 	m_pCurCutSceneDesc = Find_CutSceneDesc(strCutSceneName);
 	if (nullptr == m_pCurCutSceneDesc)
 		return E_FAIL;
+
+	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::CUTSCENE);
 
 	m_tTimeDesc.Start(m_pCurCutSceneDesc->fDuration, m_pCurCutSceneDesc->eLerpMode);
 
@@ -162,7 +173,10 @@ HRESULT CCamera_CutScene::Load_CutSceneDescs()
 	auto path = filesystem::path(strPath);
 
 	if (!filesystem::exists(strPath))
+	{
+		MSG_BOX("컷신 데이터 파일이 존재하지 않습니다.");
 		return S_OK;
+	}
 
 	Json json = GI->Json_Load(strPath);
 

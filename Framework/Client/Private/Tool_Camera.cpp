@@ -349,6 +349,11 @@ void CTool_Camera::Show_Camera_Prop_Follow(CCamera* pCurCam)
 void CTool_Camera::Show_Camera_Prop_CutScene(_float fTimeDelta)
 {
 	IMGUI_NEW_LINE;
+
+	ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"F7을 누르면 그리드를 렌더하지 않습니다.");
+	ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"디버그로 실행한뒤 F2를 눌러야 경로 및 위치를 확인할 수 있습니다.");
+
+	IMGUI_NEW_LINE;
 	ImGui::Text("CutScene Camera Option (카메라 개별 옵션)");
 
 	if (ImGui::BeginChild("CutScene Camera Option", ImVec2(0, 650.f), true))
@@ -361,19 +366,19 @@ void CTool_Camera::Show_Camera_Prop_CutScene(_float fTimeDelta)
 			{
 				vector<CAMERA_CUTSCENE_DESC> CutSceneDescs = pCutSceneCam->Get_CutSceneDescs();
 
-				if (m_bPlayCutScene)
-				{
-					if (!pCutSceneCam->Is_Playing_CutScenc())
-					{
-						CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE);
-						m_tCutSceneDebugTimeDesc.Start(CutSceneDescs[m_iCurCutSceneIndex].fDuration, CutSceneDescs[m_iCurCutSceneIndex].eLerpMode);
-						m_bPlayCutScene = false;
-						m_bShowMarker = true;
-					}
-				}
 
 				/* Func */
 				{
+					if (m_bPlayCutScene)
+					{
+						if (!pCutSceneCam->Is_Playing_CutScenc())
+						{
+							m_tCutSceneDebugTimeDesc.Start(CutSceneDescs[m_iCurCutSceneIndex].fDuration, CutSceneDescs[m_iCurCutSceneIndex].eLerpMode);
+							m_bPlayCutScene = false;
+							m_bShowMarker = true;
+						}
+					}
+
 					/* 컷신 시작 */
 					if (ImGui::Checkbox("Play CutScene", &m_bPlayCutScene))
 					{
@@ -381,7 +386,6 @@ void CTool_Camera::Show_Camera_Prop_CutScene(_float fTimeDelta)
 						{
 							if (0 <= m_iCurCutSceneIndex)
 							{
-								CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::CUTSCENE);
 								pCutSceneCam->Start_CutScene(CutSceneDescs[m_iCurCutSceneIndex].strCutSceneName);
 								m_bShowMarker = false;
 							}
@@ -522,6 +526,8 @@ void CTool_Camera::Show_Camera_Prop_CutScene(_float fTimeDelta)
 								{
 									CutSceneDescs[m_iCurCutSceneIndex].eLerpMode = (LERP_MODE)iCurComboIndex;
 									pCutSceneCam->Change_CutSceneDesc(m_iCurCutSceneIndex, CutSceneDescs[m_iCurCutSceneIndex]);
+
+									m_tCutSceneDebugTimeDesc.eMode = (LERP_MODE)iCurComboIndex;
 									m_tCutSceneDebugTimeDesc.Start(CutSceneDescs[m_iCurCutSceneIndex].fDuration, CutSceneDescs[m_iCurCutSceneIndex].eLerpMode);
 								}
 
@@ -670,12 +676,14 @@ HRESULT CTool_Camera::Render_DebugDraw()
 			DX::Draw(m_pBatch, *m_pSphere, Colors::Black);
 		}
 
+		const _float fRatio = m_tCutSceneDebugTimeDesc.fLerpTime / m_tCutSceneDebugTimeDesc.fEndTime;
+
 		/* 실시간 포지션 위치 */
-		m_pSphere->Center = CCamera_CutScene::Get_Point_In_Bezier(CutSceneDescs[m_iCurCutSceneIndex].vCamPositions, m_tCutSceneDebugTimeDesc.Get_Progress()).xyz();
+		m_pSphere->Center = CCamera_CutScene::Get_Point_In_Bezier(CutSceneDescs[m_iCurCutSceneIndex].vCamPositions, fRatio).xyz();
 		DX::Draw(m_pBatch, *m_pSphere, Colors::Red);
 
 		/* 실시간 룩앳 위치 */
-		m_pSphere->Center = CCamera_CutScene::Get_Point_In_Bezier(CutSceneDescs[m_iCurCutSceneIndex].vCamLookAts, m_tCutSceneDebugTimeDesc.Get_Progress()).xyz();
+		m_pSphere->Center = CCamera_CutScene::Get_Point_In_Bezier(CutSceneDescs[m_iCurCutSceneIndex].vCamLookAts, fRatio).xyz();
 		DX::Draw(m_pBatch, *m_pSphere, Colors::Blue);
 	}
 	m_pBatch->End();
