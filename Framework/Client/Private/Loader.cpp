@@ -530,8 +530,19 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 				wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
 				wstring strObjectTag = CUtils::ToWString(File->Read<string>());
 
+				// 6. Obejct States
+				_float4 vRight, vUp, vLook, vPos;
+
+				File->Read<_float4>(vRight);
+				File->Read<_float4>(vUp);
+				File->Read<_float4>(vLook);
+				File->Read<_float4>(vPos);
+
+				OBJECT_INIT_DESC Init_Data = {};
+				Init_Data.vStartPosition = vPos;
+
 				CGameObject* pObj = nullptr;
-				if (FAILED(GI->Add_GameObject(m_eNextLevel, i, strPrototypeTag, nullptr, &pObj, true)))
+				if (FAILED(GI->Add_GameObject(m_eNextLevel, i, strPrototypeTag, &Init_Data, &pObj, true)))
 				{
 					MSG_BOX("Load_Map_Objects_Failed.");
 					return E_FAIL;
@@ -551,13 +562,7 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 					return E_FAIL;
 				}
 
-				// 6. Obejct States
-				_float4 vRight, vUp, vLook, vPos;
-
-				File->Read<_float4>(vRight);
-				File->Read<_float4>(vUp);
-				File->Read<_float4>(vLook);
-				File->Read<_float4>(vPos);
+	
 
 				pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
 				pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));

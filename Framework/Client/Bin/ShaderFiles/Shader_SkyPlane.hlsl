@@ -9,16 +9,14 @@ cbuffer MatrixBuffer
 
 cbuffer SkyBuffer
 {
-    float firstTranslationX;
-    float firstTranslationZ;
-    float secondTranslationX;
-    float secondTranslationZ;
-    float brightness;
-    float3 padding;
+    float fTranslation;
+    float fScale;
+    float fbrightness;
+    float padding;
 };
 
-Texture2D cloudTexture1 : register(t0);
-Texture2D cloudTexture2 : register(t1);
+//Texture2D cloudTexture1 : register(t0);
+//Texture2D cloudTexture2 : register(t1);
 
 struct VS_IN
 {
@@ -58,32 +56,54 @@ struct PS_OUT
     float4 vColor : SV_TARGET;
 };
 
+Texture2D cloudTexture : register(t0);
+Texture2D perturbTexture : register(t1);
+
+
+
 PS_OUT SkyPlanePixelShader(PS_IN input)
 {
     PS_OUT output = (PS_OUT) 0;
     
-    float2 sampleLocation;
-    float4 textureColor1;
-    float4 textureColor2;
-    float4 finalColor;
+    float4 perturbValue;
+    float4 cloudColor;
     
-    sampleLocation.x = input.vTexcoord.x + firstTranslationX;
-    sampleLocation.y = input.vTexcoord.y + firstTranslationZ;
+    input.vTexcoord.x = input.vTexcoord.x + fTranslation;
     
-    textureColor1 = cloudTexture1.Sample(LinearSampler, sampleLocation);
+    perturbValue = perturbTexture.Sample(LinearSampler, input.vTexcoord);
     
-    sampleLocation.x = input.vTexcoord.x + secondTranslationX;
-    sampleLocation.y = input.vTexcoord.y + secondTranslationZ;
+    perturbValue = perturbValue * fScale;
     
-    textureColor2 = cloudTexture2.Sample(LinearSampler, sampleLocation);
+    perturbValue.xy = perturbValue.xy + input.vTexcoord.xy + fTranslation;
     
-    finalColor = lerp(textureColor1, textureColor2, 0.5f);
+    cloudColor = cloudTexture.Sample(LinearSampler, perturbValue.xy);
     
-    output.vColor = finalColor * brightness;
-    //output.vColor = vector(1.0f, 1.0f, 1.0f, 1.0f);
+    cloudColor = cloudColor * fbrightness;
     
+    output.vColor = cloudColor;
     
     return output;
+    
+    //sampleLocation.x = input.vTexcoord.x + firstTranslationX;
+    //sampleLocation.y = input.vTexcoord.y + firstTranslationZ;
+    
+    //textureColor1 = cloudTexture1.Sample(PointSampler, sampleLocation);
+    
+    //sampleLocation.x = input.vTexcoord.x + secondTranslationX;
+    //sampleLocation.y = input.vTexcoord.y + secondTranslationZ;
+    
+    //textureColor2 = cloudTexture2.Sample(PointSampler, sampleLocation);
+    
+    //finalColor = lerp(textureColor1, textureColor2, 0.5f);
+    
+    //finalColor = finalColor * brightness;
+    
+    //if(finalColor.a <= 0.3f)
+    //    discard;
+    
+    //output.vColor = finalColor;
+    //output.vColor = vector(1.0f, 1.0f, 1.0f, 1.0f);
+
 }
 
 RasterizerState RS_SkyPlane
@@ -91,10 +111,22 @@ RasterizerState RS_SkyPlane
     FillMode = Solid;
 
 	/* 앞면을 컬링하겠다. == 후면을 보여주겠다. */
-    CullMode = None;
+    CullMode = back;
 
 	/* 앞면을 시계방향으로 쓰겠다. */
     FrontCounterClockwise = false;
+};
+
+BlendState BS_Blend
+{
+    BlendEnable[0] = true;
+    SrcBlend[0] = ONE;
+    DestBlend[0] = ONE;
+    BlendOp[0] = ADD;
+    SrcBlendAlpha[0] = ONE;
+    DestBlendAlpha[0] = Zero;
+    BlendOpAlpha[0] = ADD;
+    RenderTargetWriteMask[0] = 0x0f;
 };
 
 technique11 CloudDefault
@@ -103,7 +135,7 @@ technique11 CloudDefault
     {
         SetRasterizerState(RS_SkyPlane);
         SetDepthStencilState(DSS_None, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_Blend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 SkyPlaneVertexShader();
         GeometryShader = NULL;

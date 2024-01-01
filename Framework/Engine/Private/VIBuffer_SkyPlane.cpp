@@ -141,7 +141,7 @@ HRESULT CVIBuffer_SkyPlane::Initialize(void* pArg)
 
 HRESULT CVIBuffer_SkyPlane::Initialize_SkyPlane()
 {
-	_int iTextureRepeat = 4;
+	_int iTextureRepeat = 2;
 	_float fSkyPlaneWidth = 10.f;
 	_float fSkyPlaneTop = 0.5f;
 	_float fSkyPlaneBottom = 0.0f;

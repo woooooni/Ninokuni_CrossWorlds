@@ -23,13 +23,6 @@ HRESULT CSkyPlane::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	m_fTranslationSpeed[0] = 0.0003f;
-	m_fTranslationSpeed[1] = 0.0f;
-	m_fTranslationSpeed[2] = 0.00015f;
-	m_fTranslationSpeed[3] = 0.0f;
-
-	::ZeroMemory(m_fTextureTranslation, sizeof(_float) * 4);
-
 	SkyPlaneRSCreate();
 
 	return S_OK;
@@ -37,17 +30,21 @@ HRESULT CSkyPlane::Initialize(void* pArg)
 
 void CSkyPlane::Tick(_float fTimeDelta)
 {
-	m_fTextureTranslation[0] += m_fTranslationSpeed[0]; // firstX
-	m_fTextureTranslation[1] += m_fTranslationSpeed[1]; // firstZ
-	m_fTextureTranslation[2] += m_fTranslationSpeed[2]; // secondX
-	m_fTextureTranslation[3] += m_fTranslationSpeed[3]; // secondZ
+	//m_fTextureTranslation[0] += m_fTranslationSpeed[0]; // firstX
+	//m_fTextureTranslation[1] += m_fTranslationSpeed[1]; // firstZ
+	//m_fTextureTranslation[2] += m_fTranslationSpeed[2]; // secondX
+	//m_fTextureTranslation[3] += m_fTranslationSpeed[3]; // secondZ
 
-	if (m_fTextureTranslation[0] > 1.0f) m_fTextureTranslation[0] -= 1.0f;
-	if (m_fTextureTranslation[1] > 1.0f) m_fTextureTranslation[1] -= 1.0f;
-	if (m_fTextureTranslation[2] > 1.0f) m_fTextureTranslation[2] -= 1.0f;
-	if (m_fTextureTranslation[3] > 1.0f) m_fTextureTranslation[3] -= 1.0f;
+	//if (m_fTextureTranslation[0] > 1.0f) m_fTextureTranslation[0] -= 1.0f;
+	//if (m_fTextureTranslation[1] > 1.0f) m_fTextureTranslation[1] -= 1.0f;
+	//if (m_fTextureTranslation[2] > 1.0f) m_fTextureTranslation[2] -= 1.0f;
+	//if (m_fTextureTranslation[3] > 1.0f) m_fTextureTranslation[3] -= 1.0f;
 
-	m_pTransformCom->Move(Vec4(0.0f, 1.0f, 0.0f, 1.0f), 0.05f, fTimeDelta);
+	//m_pTransformCom->Move(Vec4(0.0f, 1.0f, 0.0f, 1.0f), 0.05f, fTimeDelta);
+
+	m_fTranslation += 0.0001f;
+	if (m_fTranslation > 1.0f)
+		m_fTranslation -= 1.0f;
 }
 
 void CSkyPlane::LateTick(_float fTimeDelta)
@@ -70,20 +67,16 @@ HRESULT CSkyPlane::Render()
 	if (FAILED(m_pShaderCom->Bind_RawValue("projectionMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("firstTranslationX", &m_fTextureTranslation[0], sizeof(_float))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("fTranslation", &m_fTranslation, sizeof(_float))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("firstTranslationZ", &m_fTextureTranslation[1], sizeof(_float))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("fScale", &m_fScale, sizeof(_float))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("secondTranslationX", &m_fTextureTranslation[2], sizeof(_float))))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("secondTranslationZ", &m_fTextureTranslation[3], sizeof(_float))))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("brightness", &m_fBrightness, sizeof(_float))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("fbrightness", &m_fBrightness, sizeof(_float))))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom[0]->Bind_ShaderResource(m_pShaderCom, "cloudTexture1")))
+	if (FAILED(m_pTextureCom[0]->Bind_ShaderResource(m_pShaderCom, "cloudTexture")))
 		return E_FAIL;
-	if (FAILED(m_pTextureCom[1]->Bind_ShaderResource(m_pShaderCom, "cloudTexture2")))
+	if (FAILED(m_pTextureCom[1]->Bind_ShaderResource(m_pShaderCom, "perturbTexture")))
 		return E_FAIL;
 
 	if (FAILED(m_pShaderCom->Begin(0)))

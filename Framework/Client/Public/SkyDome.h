@@ -16,6 +16,9 @@ END
 BEGIN(Client)
 class CSkyDome final : public CGameObject 
 {
+private:
+	enum LEVEL_SKY { EVERMORE_SKY, WINTER_SKY, WITCH_SKY, SKY_END };
+
 protected:
 	explicit CSkyDome(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType);
 	explicit CSkyDome(const CSkyDome& rhs);
@@ -35,11 +38,11 @@ private:
 	CRenderer* m_pRendererCom = nullptr;
 	CTransform* m_pTransformCom = nullptr;
 	CModel* m_pModelCom = nullptr;
-	CTexture* m_pTextureCom = nullptr;
+	CTexture* m_pTextureCom[LEVEL_SKY::SKY_END] = {};
 
 private:
-	Vec4 m_vApexColor = Vec4(0.0f, 31.0f / 255.0f, 114.0f / 255.0f, 1.0f);
-	Vec4 m_vCenterColor = Vec4(183.0f / 255.0f, 255.0f/ 255.0f , 261.0f / 255.0f,1.0f);
+	Vec4 m_vApexColor = Vec4(0.173f, 0.631f, 0.851f, 1.0f);
+	Vec4 m_vCenterColor = Vec4(183.0f / 255.0f, 255.0f/ 255.0f , 255.0f / 255.0f,1.0f);
 
 
 public:

@@ -33,8 +33,11 @@ HRESULT CAnimals::Initialize(void* pArg)
 
 void CAnimals::Tick(_float fTimeDelta)
 {
-	//m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
-	//m_pControllerCom->Tick_Controller(fTimeDelta);
+	if (m_pRigidBodyCom != nullptr && m_pControllerCom != nullptr)
+	{
+		m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
+		m_pControllerCom->Tick_Controller(fTimeDelta);
+	}
 
 	__super::Tick(fTimeDelta);
 	GI->Add_CollisionGroup(COLLISION_GROUP::ANIMAL, this);
@@ -47,6 +50,9 @@ void CAnimals::LateTick(_float fTimeDelta)
 		m_pModelCom->LateTick(fTimeDelta);
 
 	__super::LateTick(fTimeDelta);
+
+	if(nullptr != m_pControllerCom)
+		m_pControllerCom->LateTick_Controller(fTimeDelta);
 
 	if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 30.0f))
 	{

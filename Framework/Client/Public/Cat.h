@@ -26,7 +26,7 @@ public:
 	virtual HRESULT Render_Instance_Shadow(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>&WorldMatrices);
 
 public:
-	virtual HRESULT Ready_Components() override;
+	virtual HRESULT Ready_Components(void* pArg);
 	HRESULT Ready_State();
 	HRESULT Ready_Collider();
 

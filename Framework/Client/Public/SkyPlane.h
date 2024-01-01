@@ -41,14 +41,12 @@ private:
 	CTexture* m_pTextureCom[2] = { nullptr, nullptr };
 	CVIBuffer_SkyPlane* m_pSkyPlaneCom = nullptr;
 
-	_float m_fBrightness = 0.6f;
-	_float m_fTranslationSpeed[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	_float m_fTextureTranslation[4] = { 0.0f,0.0f,0.0f,0.0f };
+	_float m_fBrightness = 0.5f;
+	_float m_fScale = 0.3f;
+	_float m_fTranslation = 0.0f;
 
 private:
 	ID3D11RasterizerState* m_pRasterStateNoCulling = nullptr;
-
-
 public:
 	static CSkyPlane* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eObjType);
 	virtual CGameObject* Clone(void* pArg);

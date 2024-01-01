@@ -305,8 +305,19 @@ HRESULT CLevel_Test::Ready_Layer_Dynamic(const LAYER_TYPE eLayerType, const wstr
 		wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
 		wstring strObjectTag = CUtils::ToWString(File->Read<string>());
 
+		// 6. Obejct States
+		_float4 vRight, vUp, vLook, vPos;
+
+		File->Read<_float4>(vRight);
+		File->Read<_float4>(vUp);
+		File->Read<_float4>(vLook);
+		File->Read<_float4>(vPos);
+
+		OBJECT_INIT_DESC Init_Data = {};
+		Init_Data.vStartPosition = vPos;
+
 		CGameObject* pObj = nullptr;
-		if (FAILED(GI->Add_GameObject(LEVEL_TEST, eLayerType, strPrototypeTag, nullptr, &pObj)))
+		if (FAILED(GI->Add_GameObject(LEVEL_TEST, eLayerType, strPrototypeTag, &Init_Data, &pObj)))
 		{
 			MSG_BOX("Load_Objects_Failed.");
 			return E_FAIL;
@@ -326,13 +337,7 @@ HRESULT CLevel_Test::Ready_Layer_Dynamic(const LAYER_TYPE eLayerType, const wstr
 			return E_FAIL;
 		}
 
-		// 6. Obejct States
-		_float4 vRight, vUp, vLook, vPos;
 
-		File->Read<_float4>(vRight);
-		File->Read<_float4>(vUp);
-		File->Read<_float4>(vLook);
-		File->Read<_float4>(vPos);
 
 		pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
 		pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));

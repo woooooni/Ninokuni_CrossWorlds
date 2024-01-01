@@ -2,6 +2,8 @@
 #include "GameInstance.h"
 #include "Animals.h"
 #include "..\Public\State_Animal_Run.h"
+#include "Player.h"
+#include "Game_Manager.h"
 
 CState_Animal_Run::CState_Animal_Run(CStateMachine* pMachine)
 	: CState_Animals(pMachine)
@@ -24,11 +26,11 @@ void CState_Animal_Run::Enter_State(void* pArg)
 
 void CState_Animal_Run::Tick_State(_float fTimeDelta)
 {
-	CGameObject* pObj = GI->Find_GameObject(LEVELID::LEVEL_TEST, LAYER_TYPE::LAYER_CHARACTER, TEXT("SwordMan"));
+	CPlayer* pObj = CGame_Manager::GetInstance()->Get_Player();
 	if (nullptr == pObj)
 		return;
 
-	CTransform* pTransform = pObj->Get_Component<CTransform>(L"Com_Transform");
+	CTransform* pTransform = pObj->Get_Character()->Get_Component<CTransform>(L"Com_Transform");
 	if (nullptr == pTransform)
 		return;
 

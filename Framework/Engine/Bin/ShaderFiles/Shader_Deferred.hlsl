@@ -47,6 +47,40 @@ bool   g_bOutLineDraw;
 
 float  g_fBias = 0.2f;
 
+// JunYeop
+cbuffer cbDirLightPS : register(b1)
+{
+    float4 vLightAmbientDown : packoffset(c0);
+    float4 vLightAmbientUp : packoffset(c1);
+    float4 vDirToLight : packoffset(c2);
+    float4 vDirLightColor : packoffset(c3);
+}
+
+void GammaToLinear(inout float4 color)
+{
+    color.x *= color.x;
+    color.y *= color.y;
+    color.z *= color.z;
+}
+
+float CaclAmbient(float4 normal, float4 color)
+{
+    float up = normal.y * 0.5f + 0.5f;
+	
+    float4 downColor = vLightAmbientDown;
+    float4 UpColor = vLightAmbientUp;
+    float4 range = (float4) 0;
+	
+    GammaToLinear(downColor);
+    GammaToLinear(UpColor);
+	
+    range = UpColor - downColor;
+	
+    float4 Ambient = downColor + up * range;
+	
+    return Ambient * color;
+}
+
 struct VS_IN
 {
 	float3		vPosition : POSITION;
@@ -59,6 +93,9 @@ struct VS_OUT
 	float2		vTexcoord : TEXCOORD0;
 	float		fFogFactor : FOG;
 };
+
+
+
 
 VS_OUT VS_MAIN(VS_IN In)
 {

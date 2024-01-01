@@ -1112,15 +1112,6 @@ HRESULT CTool_Map::Save_Map_Data(const wstring& strMapFileName)
 		}
 	}
 
-	if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN)))
-		return E_FAIL;
-
-	if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))
-	{
-		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
-		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
-	}
-
 	MSG_BOX("Map_Saved.");
 	return S_OK;
 }
@@ -1164,8 +1155,19 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 				wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
 				wstring strObjectTag = CUtils::ToWString(File->Read<string>());
 
+				// 6. Obejct States
+				_float4 vRight, vUp, vLook, vPos;
+
+				File->Read<_float4>(vRight);
+				File->Read<_float4>(vUp);
+				File->Read<_float4>(vLook);
+				File->Read<_float4>(vPos);
+
+				OBJECT_INIT_DESC Init_Data = {};
+				Init_Data.vStartPosition = vPos;
+
 				CGameObject* pObj = nullptr;
-				if (FAILED(GI->Add_GameObject(LEVEL_TOOL, i, strPrototypeTag, nullptr, &pObj)))
+				if (FAILED(GI->Add_GameObject(LEVEL_TOOL, i, strPrototypeTag, &Init_Data, &pObj)))
 				{
 					MSG_BOX("Load_Map_Objects_Failed.");
 					return E_FAIL;
@@ -1185,14 +1187,6 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 					return E_FAIL;
 				}
 
-				// 6. Obejct States
-				_float4 vRight, vUp, vLook, vPos;
-
-				File->Read<_float4>(vRight);
-				File->Read<_float4>(vUp);
-				File->Read<_float4>(vLook);
-				File->Read<_float4>(vPos);
-
 				pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
 				pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
 				pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
@@ -1200,56 +1194,6 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 			}
 		}
 	}
-
-	//GI->Clear_Layer(LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC);
-
-
-	//strMapFilePath = L"../Bin/DataFiles/Map/" + strMapFileName + L"/" + strMapFileName + L".Dynamic";
-	//File->Open(strMapFilePath, FileMode::Read);
-
-	//_uint iObjectCount = File->Read<_uint>();
-
-	//for (_uint j = 0; j < iObjectCount; ++j)
-	//{
-	//	// 3. Object_Prototype_Tag
-	//	wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
-	//	wstring strObjectTag = CUtils::ToWString(File->Read<string>());
-
-	//	CGameObject* pObj = nullptr;
-	//	if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC, strPrototypeTag, nullptr, &pObj)))
-	//	{
-	//		MSG_BOX("Load_Map_Objects_Failed.");
-	//		return E_FAIL;
-	//	}
-
-	//	if (nullptr == pObj)
-	//	{
-	//		MSG_BOX("Add_Object_Failed.");
-	//		return E_FAIL;
-	//	}
-	//	pObj->Set_ObjectTag(strObjectTag);
-
-	//	CTransform* pTransform = pObj->Get_Component<CTransform>(L"Com_Transform");
-	//	if (nullptr == pTransform)
-	//	{
-	//		MSG_BOX("Get_Transform_Failed.");
-	//		return E_FAIL;
-	//	}
-
-	//	// 6. Obejct States
-	//	_float4 vRight, vUp, vLook, vPos;
-
-	//	File->Read<_float4>(vRight);
-	//	File->Read<_float4>(vUp);
-	//	File->Read<_float4>(vLook);
-	//	File->Read<_float4>(vPos);
-
-	//	pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
-	//	pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
-	//	pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
-	//	pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
-	//}
-	//
 
 	list<CGameObject*> Grounds = GI->Find_GameObjects(LEVEL_TOOL, LAYER_TYPE::LAYER_GROUND);
 	for (auto& Ground : Grounds)
@@ -1261,6 +1205,16 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 			MSG_BOX("맵툴에서 피직스 생성에 실패했습니다.");
 		}
 	}
+
+	if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN)))
+		return E_FAIL;
+
+	if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))
+	{
+		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+	}
+
 
 	MSG_BOX("Map_Loaded.");
 	return S_OK;
@@ -1334,8 +1288,19 @@ HRESULT CTool_Map::Load_Dynamic_Data(const wstring& strMapFileName)
 		wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
 		wstring strObjectTag = CUtils::ToWString(File->Read<string>());
 
+		// 6. Obejct States
+		_float4 vRight, vUp, vLook, vPos;
+
+		File->Read<_float4>(vRight);
+		File->Read<_float4>(vUp);
+		File->Read<_float4>(vLook);
+		File->Read<_float4>(vPos);
+
+
+		OBJECT_INIT_DESC Init_Data = {};
+		Init_Data.vStartPosition = vPos;
 		CGameObject* pObj = nullptr;
-		if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC, strPrototypeTag, nullptr, &pObj)))
+		if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC, strPrototypeTag, &Init_Data, &pObj)))
 		{
 			MSG_BOX("Load_Objects_Failed.");
 			return E_FAIL;
@@ -1354,14 +1319,6 @@ HRESULT CTool_Map::Load_Dynamic_Data(const wstring& strMapFileName)
 			MSG_BOX("Get_Transform_Failed.");
 			return E_FAIL;
 		}
-
-		// 6. Obejct States
-		_float4 vRight, vUp, vLook, vPos;
-
-		File->Read<_float4>(vRight);
-		File->Read<_float4>(vUp);
-		File->Read<_float4>(vLook);
-		File->Read<_float4>(vPos);
 
 		pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
 		pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
@@ -1529,8 +1486,20 @@ HRESULT CTool_Map::Load_Monster_Data(const wstring& strMonsterFileName)
 			wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
 			wstring strObjectTag = CUtils::ToWString(File->Read<string>());
 
+			// 6. Obejct States
+			_float4 vRight, vUp, vLook, vPos;
+
+			File->Read<_float4>(vRight);
+			File->Read<_float4>(vUp);
+			File->Read<_float4>(vLook);
+			File->Read<_float4>(vPos);
+
+
+			OBJECT_INIT_DESC Init_Data = {};
+			Init_Data.vStartPosition = vPos;
 			CGameObject* pObj = nullptr;
-			if (FAILED(GI->Add_GameObject(LEVEL_TOOL, i, strPrototypeTag, nullptr, &pObj)))
+
+			if (FAILED(GI->Add_GameObject(LEVEL_TOOL, i, strPrototypeTag, &Init_Data, &pObj)))
 			{
 				MSG_BOX("Load_Objects_Failed.");
 				return E_FAIL;
@@ -1550,13 +1519,7 @@ HRESULT CTool_Map::Load_Monster_Data(const wstring& strMonsterFileName)
 				return E_FAIL;
 			}
 
-			// 6. Obejct States
-			_float4 vRight, vUp, vLook, vPos;
 
-			File->Read<_float4>(vRight);
-			File->Read<_float4>(vUp);
-			File->Read<_float4>(vLook);
-			File->Read<_float4>(vPos);
 
 			pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
 			pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
@@ -1646,8 +1609,19 @@ HRESULT CTool_Map::Load_NPC_Data(const wstring& strNPCFileName)
 			wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
 			wstring strObjectTag = CUtils::ToWString(File->Read<string>());
 
+			// 6. Obejct States
+			_float4 vRight, vUp, vLook, vPos;
+
+			File->Read<_float4>(vRight);
+			File->Read<_float4>(vUp);
+			File->Read<_float4>(vLook);
+			File->Read<_float4>(vPos);
+
+			
+			OBJECT_INIT_DESC Init_Data = {};
+			Init_Data.vStartPosition = vPos;
 			CGameObject* pObj = nullptr;
-			if (FAILED(GI->Add_GameObject(LEVEL_TOOL, i, strPrototypeTag, nullptr, &pObj)))
+			if (FAILED(GI->Add_GameObject(LEVEL_TOOL, i, strPrototypeTag, &Init_Data, &pObj)))
 			{
 				MSG_BOX("Load_Objects_Failed.");
 				return E_FAIL;
@@ -1667,13 +1641,6 @@ HRESULT CTool_Map::Load_NPC_Data(const wstring& strNPCFileName)
 				return E_FAIL;
 			}
 
-			// 6. Obejct States
-			_float4 vRight, vUp, vLook, vPos;
-
-			File->Read<_float4>(vRight);
-			File->Read<_float4>(vUp);
-			File->Read<_float4>(vLook);
-			File->Read<_float4>(vPos);
 
 			pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
 			pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));

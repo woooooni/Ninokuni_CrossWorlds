@@ -64,7 +64,7 @@ private: /* 해당 객체가 사용해야할 컴포넌트들을 저장하낟. */
 	CShader* m_pShaderCom = { nullptr };
 	CTexture* m_pTextureCom[TEX_TYPE::TEX_END] = {};
 	CModel* m_pModelCom = nullptr;
-	//CVIBuffer_Ocean* m_pVIBufferCom = { nullptr };
+	CVIBuffer_Ocean* m_pVIBufferCom = { nullptr };
 private:
 	VS_OceanBuffer m_vsOceanBuffer = {};
 	PS_OceanBuffer m_psOceanBuffer = {};
@@ -78,6 +78,7 @@ private:
 	Vec2 m_vDirection;
 
 	_bool m_bFresnel = false;
+	_float m_fBloomTiling = 10.f;
 
 private:
 	HRESULT Ready_Components();

@@ -41,6 +41,7 @@ cbuffer CameraBuffer : register(b1)
 struct VS_IN
 {
     float3 vPosition : POSITION;
+    float3 vNormal : NORMAL0;
     float2 vTexcoord : TEXCOORD0;
 };
 
