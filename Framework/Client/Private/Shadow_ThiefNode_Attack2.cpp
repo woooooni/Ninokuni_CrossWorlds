@@ -25,7 +25,7 @@ void CShadow_ThiefNode_Attack2::Start()
 CBTNode::NODE_STATE CShadow_ThiefNode_Attack2::Tick(const _float& fTimeDelta)
 {
 	// (현재 액션이 취하는 애니메이션, 동작이 끝나고 기다릴 시간, timeDelta)
-	return __super::Atk_BehaviorTick(TEXT("SKM_ShadowThief.ao|ShadowThief_Attack02"), 1.f, fTimeDelta);
+	return __super::Atk_BehaviorTick(1.f, fTimeDelta);
 }
 
 CShadow_ThiefNode_Attack2* CShadow_ThiefNode_Attack2::Create(BTNODE_DESC* pDesc, CBehaviorTree* pBT)

@@ -212,60 +212,39 @@ HRESULT CMonster::Render_Instance_AnimModel_Shadow(CShader* pInstancingShader, C
 
 void CMonster::Collision_Enter(const COLLISION_INFO& tInfo)
 {
-	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER)
+	/* 공격 */
+	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER &&
+		tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY &&
+		tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BOUNDARY)
 	{
 		if (m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT])
 		{
 			// 둘 다 켜줘야 함.
 			// ATKAROUND는 공격 동작이 끝나고 추적할 것인지 결정하기 위함.
-			// 범위내에 없으면 ATK를 false 시켜주기 위해.
+			// 범위내에 없으면 ATK을 false 시켜주기 위해.
 			m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND] = true;
 			m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATK] = true;
 		}
 	}
-
-	//if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_WEAPON)
-	//{
-	//	
-	//	if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY &&
-	//		tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK &&
-	//		//tInfo.pOtherCollider->Is_Active()
-	//		KEY_TAP(KEY::LBTN))
-	//	{
-	//		On_Damaged(tInfo);
-	//		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
-	//	}
-	//}
 }
 
 void CMonster::Collision_Continue(const COLLISION_INFO& tInfo)
 {
-	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER)
+	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER &&
+		tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
 	{
 		if (m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT])
 		{
 			m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND] = true;
-			// m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATK] = true;
-		}
-	}
-
-	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_WEAPON)
-	{
-		if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY &&
-			tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK &&
-			//tInfo.pOtherCollider->Is_Active()
-			KEY_TAP(KEY::LBTN))
-		{
-			On_Damaged(tInfo);
-			m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
 		}
 	}
 }
 
 void CMonster::Collision_Exit(const COLLISION_INFO& tInfo)
 {
-	if(tInfo.pMyCollider->Get_ColliderType() == CCollider::DETECTION_TYPE::BOUNDARY &&
-	   tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER)
+	if(tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BOUNDARY &&
+	   tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER &&
+	   tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
 	{
 		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND] = false;
 	}
@@ -312,10 +291,9 @@ CHierarchyNode* CMonster::Get_Socket(const wstring& strSocketName)
 
 void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 {
-	m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_WEAK] = true;
 	m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ISHIT] = true;
 
-	m_tStat.fHp -= 5;
+	m_tStat.fHp -= 10;
 }
 
 HRESULT CMonster::Ready_RoamingPoint()

@@ -4,23 +4,19 @@
 
 BEGIN(Client)
 
-class CBaobam_WaterNode_Dead final : public CBaobam_WaterNode_Base
+class CBaobam_WaterNode_Blow final : public CBaobam_WaterNode_Base
 {
 private:
-	CBaobam_WaterNode_Dead();
-	virtual ~CBaobam_WaterNode_Dead() = default;
+	CBaobam_WaterNode_Blow();
+	virtual ~CBaobam_WaterNode_Blow() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype(BTNODE_DESC* pDesc, CBehaviorTree* pBT);
 	virtual void	Start();
 	virtual CBTNode::NODE_STATE	Tick(const _float& fTimeDelta);
 
-private:
-	_float m_fTime = 0.f;
-	_float m_fBlowDeadTime = 0.f;
-
 public:
-	static CBaobam_WaterNode_Dead* Create(BTNODE_DESC* pDesc, CBehaviorTree* pBT);
+	static CBaobam_WaterNode_Blow* Create(BTNODE_DESC* pDesc, CBehaviorTree* pBT);
 	virtual void Free() override;
 };
 

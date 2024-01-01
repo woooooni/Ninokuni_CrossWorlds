@@ -150,7 +150,10 @@ HRESULT CIceBearMan::Ready_States()
 {
 	m_pBTCom = CIceBearManBT::Create(m_pDevice, m_pContext, this);
 
-	m_strKorName = TEXT("얼음곰형");
+	strKorName = TEXT("얼음곰형");
+	strKorName = TEXT("코에루크 설원");
+	m_tStat.eElementType = ELEMENTAL_TYPE::BASIC;
+
 	m_tStat.iLv = 7;
 	m_tStat.fMaxHp = 250;
 	m_tStat.fHp = 250;

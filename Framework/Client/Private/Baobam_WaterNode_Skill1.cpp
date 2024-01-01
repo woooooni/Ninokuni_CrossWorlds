@@ -26,7 +26,7 @@ void CBaobam_WaterNode_Skill1::Start()
 
 CBTNode::NODE_STATE CBaobam_WaterNode_Skill1::Tick(const _float& fTimeDelta)
 {
-	return __super::Atk_BehaviorTick(TEXT("SKM_Baobam_Water.ao|BaoBam_Skill01"), 1.f, fTimeDelta);
+	return __super::Atk_BehaviorTick(1.f, fTimeDelta);
 }
 
 CBaobam_WaterNode_Skill1* CBaobam_WaterNode_Skill1::Create(BTNODE_DESC* pDesc, CBehaviorTree* pBT)

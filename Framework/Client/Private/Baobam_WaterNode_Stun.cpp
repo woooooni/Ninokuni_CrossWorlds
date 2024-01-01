@@ -25,13 +25,6 @@ CBTNode::NODE_STATE CBaobam_WaterNode_Stun::Tick(const _float& fTimeDelta)
 {
 	if (!dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_STUN))
 		return NODE_STATE::NODE_FAIL;
-		
-	// 스턴 시 피격
-	if (dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_WEAK))
-	{
-		GI->Play_Sound(TEXT("../Bin/Resources/Sound/Monster/BaoBam/BaoBam_V_Dmg_1_2.ogg"), CHANNELID::SOUND_VOICE_MONSTER1, 0.4f, true);
-		dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_WEAK, false);
-	}
 
 	m_fTime += fTimeDelta;
 
@@ -43,7 +36,7 @@ CBTNode::NODE_STATE CBaobam_WaterNode_Stun::Tick(const _float& fTimeDelta)
 		dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_WEAK, false);
 		dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ISHIT, false);
 
-		if(dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATKAROUND))
+		if (dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATKAROUND))
 			dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK, true);
 		else
 			dynamic_cast<CMonster*>(m_tBTNodeDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK, false);

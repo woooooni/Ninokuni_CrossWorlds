@@ -53,12 +53,17 @@ public:
 	enum class MONSTER_BOOLTYPE { 
 		MONBOOL_COMBAT, MONBOOL_COMBATIDLE,
 		MONBOOL_ATK, MONBOOL_ATKAROUND,
-		MONBOOL_AIR, MONBOOL_STUN, MONBOOL_WEAK, MONBOOL_ISHIT,
+		MONBOOL_BLOW, MONBOOL_AIR, MONBOOL_STUN, MONBOOL_WEAK, MONBOOL_ISHIT,
+		MONBOOL_BLOWDEAD,
 		MONBOOL_END };
 public:
 	typedef struct tagMonsterStat
 	{
 		_TCHAR strKorName[MAX_PATH] = {};
+		_TCHAR strSubName[MAX_PATH] = {};
+		
+		ELEMENTAL_TYPE eElementType = ELEMENTAL_END;
+
 		_int   iLv = 0;
 
 		_float fHp = 100.f;
@@ -66,6 +71,9 @@ public:
 
 		_float fMaxHp = 100.f;
 		_float fMaxMp = 10.f;
+
+		_float fAirVelocity = 0.f;
+		_float fAirDeadVelocity = 0.f;
 	} MONSTER_STAT;
 
 protected:
@@ -112,7 +120,8 @@ public:
 public:
 	CHierarchyNode* Get_Socket(const wstring& strSocketName);
 	const MONSTER_STAT& Get_Stat() { return m_tStat; }
-	const wstring& Get_KorName() { return m_strKorName; }
+	const wstring& Get_KorName() { return strKorName; }
+	const wstring& Get_SubName() { return strSubName; }
 
 public:
 	virtual void On_Damaged(const COLLISION_INFO& tInfo);
@@ -162,7 +171,8 @@ protected:
 
 protected:
 	MONSTER_STAT m_tStat = {};
-	wstring m_strKorName = TEXT("");
+	wstring strKorName = TEXT("");
+	wstring strSubName = TEXT("");
 
 	_float m_fAccInfinite = 0.f;
 	_float m_fInfiniteTime = 0.2f;

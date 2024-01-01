@@ -129,6 +129,79 @@ HRESULT CShadow_Thief::Render_ShadowDepth()
 void CShadow_Thief::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
+
+	/* 乔拜 */
+	if (m_tStat.fHp > 0.f)
+	{
+		if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER &&
+			tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK)
+		{
+			if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
+			{
+				/* Blow */
+				if (tInfo.pOtherCollider->Get_AttackType() == CCollider::ATTACK_TYPE::BLOW)
+				{
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_BLOWDEAD] = true;
+
+					On_Damaged(tInfo);
+
+					m_pModelCom->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Knock"));
+					m_pTransformCom->LookAt_ForLandObject(dynamic_cast<CTransform*>(tInfo.pOther->Get_Component<CTransform>(TEXT("Com_Transform")))->Get_Position());
+					
+					m_pRigidBodyCom->Add_Velocity(
+						dynamic_cast<CTransform*>(tInfo.pOther->Get_Component<CTransform>(TEXT("Com_Transform")))->Get_Look()
+						, m_tStat.fAirVelocity, false);
+					m_pRigidBodyCom->Add_Velocity({ 0.f, 1.f, 0.f, 1.f }, m_tStat.fAirVelocity / 2.f, false);
+
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_BLOW] = true;
+
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
+				}
+
+				/* Air || Bound */
+				else if (tInfo.pOtherCollider->Get_AttackType() == CCollider::ATTACK_TYPE::AIR_BORNE ||
+					tInfo.pOtherCollider->Get_AttackType() == CCollider::ATTACK_TYPE::BOUND)
+				{
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_BLOWDEAD] = true;
+
+					On_Damaged(tInfo);
+
+					m_pModelCom->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Knock"));
+					m_pTransformCom->LookAt_ForLandObject(dynamic_cast<CTransform*>(tInfo.pOther->Get_Component<CTransform>(TEXT("Com_Transform")))->Get_Position());
+
+					m_pRigidBodyCom->Add_Velocity({ 0.f, 1.f, 0.f, 1.f }, m_tStat.fAirVelocity / 2.f, false);
+
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
+				}
+
+				/* Stun */
+				else if (tInfo.pOtherCollider->Get_AttackType() == CCollider::ATTACK_TYPE::STUN)
+				{
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_BLOWDEAD] = false;
+
+					On_Damaged(tInfo);
+
+					if (m_pModelCom->Get_CurrAnimation()->Get_AnimationName() != TEXT("SKM_ShadowThief.ao|ShadowThief_Stun"))
+						m_pModelCom->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Stun"));
+
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_STUN] = true;
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
+				}
+
+				/* Hit */
+				else if (tInfo.pOtherCollider->Get_AttackType() == CCollider::ATTACK_TYPE::STRONG ||
+					tInfo.pOtherCollider->Get_AttackType() == CCollider::ATTACK_TYPE::WEAK)
+				{
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_BLOWDEAD] = false;
+
+					On_Damaged(tInfo);
+
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_WEAK] = true;
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
+				}
+			}
+		}
+	}
 }
 
 void CShadow_Thief::Collision_Continue(const COLLISION_INFO& tInfo)
@@ -191,10 +264,15 @@ HRESULT CShadow_Thief::Ready_States()
 {
 	m_pBTCom = CShadow_ThiefBT::Create(m_pDevice, m_pContext, this);
 
-	m_strKorName = TEXT("内何府");
+	strKorName = TEXT("内何府");
+	strSubName = TEXT("内俊风农 汲盔");
+	m_tStat.eElementType = ELEMENTAL_TYPE::WATER;
 	m_tStat.iLv = 3;
 	m_tStat.fMaxHp = 80;
 	m_tStat.fHp = 80;
+	
+	m_tStat.fAirVelocity = 10.f;
+	m_tStat.fAirDeadVelocity = 20.f;
 
 	return S_OK;
 }

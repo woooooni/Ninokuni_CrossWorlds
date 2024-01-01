@@ -158,7 +158,10 @@ HRESULT CPumpkinCandle::Ready_States()
 {
 	m_pBTCom = CPumpkinCandleBT::Create(m_pDevice, m_pContext, this);
 
-	m_strKorName = TEXT("È£¹ÚÃÐºÒ");
+	strKorName = TEXT("È£¹ÚÃÐºÒ");
+	strKorName = TEXT("¸¶³àÀÇ ½£");
+	m_tStat.eElementType = ELEMENTAL_TYPE::FIRE;
+
 	m_tStat.iLv = 8;
 	m_tStat.fMaxHp = 150;
 	m_tStat.fHp = 150;

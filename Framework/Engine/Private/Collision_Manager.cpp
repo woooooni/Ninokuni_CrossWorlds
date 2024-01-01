@@ -108,9 +108,6 @@ void CCollision_Manager::Collision_Update(COLLISION_GROUP eLeft, COLLISION_GROUP
 					{
 						for (auto& pRightCollider : RightColliders)
 						{
-							if (false == pLeftCollider->Is_Active() || false == pRightCollider->Is_Active())
-								continue;
-
 							COLLIDER_ID ID;
 							ID.iLeft_id = min(pLeftCollider->Get_ColliderID(), pRightCollider->Get_ColliderID());
 							ID.iRight_id = max(pLeftCollider->Get_ColliderID(), pRightCollider->Get_ColliderID());
