@@ -237,6 +237,7 @@ HRESULT CDummy::Add_Collider(CCollider::COLLIDER_TYPE eColliderType, CCollider::
 	default:
 		break;
 	}
+	return S_OK;
 }
 
 void CDummy::Input(_float fTimeDelta)

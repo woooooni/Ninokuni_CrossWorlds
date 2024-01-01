@@ -106,7 +106,8 @@ void CSound_Manager::Stop_All()
 
 void CSound_Manager::Set_ChannelVolume(CHANNELID eID, float fVolume)
 {
-	FMOD_Channel_SetVolume(m_pChannelArr[eID], fVolume);
+	m_fSoundVolumeArr[eID] = fVolume;
+	FMOD_Channel_SetVolume(m_pChannelArr[eID], m_fSoundVolumeArr[eID]);
 	FMOD_System_Update(m_pSystem);
 }
 
