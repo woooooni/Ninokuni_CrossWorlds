@@ -34,8 +34,6 @@ HRESULT CMonster::Initialize_Prototype()
 	if (FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
 
-	m_fDissolveWeight = 1.f;
-
 	return S_OK;
 }
 
@@ -44,6 +42,10 @@ HRESULT CMonster::Initialize(void* pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
+	// Dissolve Texture
+	m_pDissoveTexture = static_cast<CTexture*>(GI->Clone_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Noise")));
+	if (m_pDissoveTexture == nullptr)
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -70,14 +72,16 @@ void CMonster::Tick(_float fTimeDelta)
 
 	}
 
-	if (m_bReserveDead)
+	if (m_bReserveDead) // Dissolve
 	{
-		m_fDissolveWeight += 0.2f * fTimeDelta;
-		if (m_fDissolveWeight >= 2.f)
+		if (m_fDissolveWeight >= 10.f)
 		{
 			Set_ActiveColliders(CCollider::DETECTION_TYPE::BODY, false);
 			Set_Dead(true);
+			return;
 		}
+
+		m_fDissolveWeight += m_fDissolveSpeed * fTimeDelta;
 	}
 
 	if(m_pBTCom != nullptr)
@@ -85,6 +89,9 @@ void CMonster::Tick(_float fTimeDelta)
 
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 	m_pControllerCom->Tick_Controller(fTimeDelta);
+
+	if (m_bIsRimUse) // RimLight
+		Tick_RimLight(fTimeDelta);
 }
 
 void CMonster::LateTick(_float fTimeDelta)
@@ -150,15 +157,47 @@ HRESULT CMonster::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffe
 	if (FAILED(m_pModelCom->SetUp_VTF(pInstancingShader)))
 		return E_FAIL;
 
-	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
-	_uint iPassIndex	= 0;
+	if (FAILED(pInstancingShader->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
+		return E_FAIL;
+
+	// Bloom -----------------
+	if (FAILED(pInstancingShader->Bind_RawValue("g_vBloomPower", &m_vBloomPower, sizeof(_float3))))
+		return E_FAIL;
+	// ----------------- Bloom
+
+	// RimLight -----------------
+	_float4 vRimLightColor = _float4(0.f, 0.f, 0.f, 0.f);
+	if (m_bIsRimUse)
+		vRimLightColor = m_vRimLightColor;
+	if (FAILED(pInstancingShader->Bind_RawValue("g_vRimColor", &vRimLightColor, sizeof(_float4))))
+		return E_FAIL;
+	// ----------------- RimLight
+
+	// Dissolve -----------------
+	if (FAILED(m_pDissoveTexture->Bind_ShaderResource(pInstancingShader, "g_DissolveTexture", 51)))
+		return E_FAIL;
+
+	if (FAILED(pInstancingShader->Bind_RawValue("g_DissolveDuration", &m_fDissolveDuration, sizeof(_float))))
+		return E_FAIL;
+
+	if (FAILED(pInstancingShader->Bind_RawValue("g_fDissolveWeight", &m_fDissolveWeight, sizeof(_float))))
+		return E_FAIL;
+
+	if (FAILED(pInstancingShader->Bind_RawValue("g_vDissolveColor", &m_vDissolveColor, sizeof(_float4))))
+		return E_FAIL;
+	// ----------------- Dissolve
+
+	_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
+	_uint iPassIndex = 0;
 
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{
 		if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
 
-		if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
+		if (m_bReserveDead)
+			iPassIndex = 2;
+		else if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
 			iPassIndex = 0;
 		else
 			iPassIndex++;
@@ -294,6 +333,8 @@ void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 	m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ISHIT] = true;
 
 	m_tStat.fHp -= 10;
+
+	Start_RimLight();
 }
 
 HRESULT CMonster::Ready_RoamingPoint()
@@ -366,6 +407,19 @@ void CMonster::Play_DamagedSound()
 	//}
 
 
+}
+
+void CMonster::Start_RimLight()
+{
+	m_bIsRimUse = true;
+	m_fRimTimeAcc = 0.f;
+}
+
+void CMonster::Tick_RimLight(_float fTimeDelta)
+{
+	m_fRimTimeAcc += fTimeDelta;
+	if (m_fRimTimeAcc >= m_fRimDuration)
+		m_bIsRimUse = false;
 }
 
 void CMonster::Free()

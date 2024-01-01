@@ -37,8 +37,8 @@ vector g_vMtrlAmbient  = vector(0.4f, 0.4f, 0.4f, 1.f);
 vector g_vMtrlSpecular = vector(1.f, 1.f, 1.f, 1.f);
 
 // 안개
-float2 g_vFogStartEnd = { 1.f, 5.f };
-float4 g_vFogColor    = { .5f, .5f, .5f, 1.f };
+float4 g_vFogColor    = { 0.f, 0.635f, 1.f, 1.f };
+float2 g_fFogStartEnd = { 300.f, 600.f };
 
 // 옵션
 bool   g_bShadowDraw;
@@ -93,8 +93,6 @@ struct VS_OUT
 	float2		vTexcoord : TEXCOORD0;
 	float		fFogFactor : FOG;
 };
-
-
 
 
 VS_OUT VS_MAIN(VS_IN In)
@@ -251,16 +249,15 @@ float PCF_ShadowCaculation(float4 vLightPos, float3 vLightDir)
 	return fShadow;
 }
 
-float4 Shadow_Caculation(PS_IN In)
+float4 Shadow_Caculation(PS_IN In, float vDepthX, float vDepthY)
 {
 	vector vWorldPos;
-	vector vDepthDesc = g_DepthTarget.Sample(PointSampler, In.vTexcoord);
-	float  fViewZ = vDepthDesc.y * 1000.f;
+    float fViewZ = vDepthY * 1000.f;
 
 	/* 투영스페이스 상의 위치를 구한다. */
 	vWorldPos.x = In.vTexcoord.x * 2.f - 1.f;
 	vWorldPos.y = In.vTexcoord.y * -2.f + 1.f;
-	vWorldPos.z = vDepthDesc.x;
+    vWorldPos.z = vDepthX;
 	vWorldPos.w = 1.f;
 
 	/* 뷰스페이스 상의 위치를 구한다. */
@@ -278,6 +275,12 @@ float4 Shadow_Caculation(PS_IN In)
 	float fShadowColor = PCF_ShadowCaculation(vLightPos, vLightDir);
 
 	return vector(fShadowColor, fShadowColor, fShadowColor, 1.f);
+}
+
+// FOG
+float FogFactor_Caculation(float fViewZ)
+{
+    return saturate((g_fFogStartEnd.y - fViewZ) / (g_fFogStartEnd.y - g_fFogStartEnd.x));
 }
 
 // DEFERRED
@@ -310,7 +313,7 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 	// Shadow
 	vector vShadow = float4(1.f, 1.f, 1.f, 1.f);
 	if(g_bShadowDraw)
-		vShadow = Shadow_Caculation(In);
+        vShadow = Shadow_Caculation(In, vDepthDesc.x, vDepthDesc.y);
 
     // SSAO
 	vector vSSAO = float4(1.f, 1.f, 1.f, 1.f);
@@ -324,13 +327,13 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 	
 	// Bloom
     vector vBloom = g_BloomTarget.Sample(LinearSampler, In.vTexcoord);
-	
-	/* Fog
-	float fFogFactor = saturate(((g_vFogStartEnd.y - (fViewZ)) / (g_vFogStartEnd.y - g_vFogStartEnd.x)));
-	Out.vColor = fFogFactor * Out.vColor + (1.f - fFogFactor) * g_vFogColor;*/
 
 	// Output
     Out.vColor = (vDiffuse * vShade * vShadow * vOutline) + vSpecular + vBloom;
+	
+	// Fog
+    float fFogFactor = FogFactor_Caculation(vDepthDesc.y * 1000.f);
+    Out.vColor = lerp(g_vFogColor, Out.vColor, fFogFactor);
 	
 	return Out;
 }
