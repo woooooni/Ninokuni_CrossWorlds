@@ -44,7 +44,8 @@ HRESULT CSpawner_Ice02::Initialize(void* pArg)
 	//		return E_FAIL;
 	//}
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, { 0.f, 0.f, 0.f, 1.f });
+	if (GI->Get_CurrentLevel() == LEVELID::LEVEL_TOOL)
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, { 0.f, 0.f, 0.f, 1.f });
 
 	return S_OK;
 }

@@ -44,6 +44,14 @@ HRESULT CClown_WizardBT::Initialize_Prototype(CGameObject* pObject)
 	m_tBTNodeDesc.pOwnerModel = pObject->Get_Component<CModel>(L"Com_Model");
 	m_tBTNodeDesc.pOwnerTransform = pObject->Get_Component<CTransform>(L"Com_Transform");
 
+	m_tBTNodeDesc.pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+
+	if (m_tBTNodeDesc.pTarget != nullptr)
+	{
+		m_tBTNodeDesc.pTargetModel = m_tBTNodeDesc.pTarget->Get_Component<CModel>(L"Com_Model");
+		m_tBTNodeDesc.pTargetTransform = m_tBTNodeDesc.pTarget->Get_Component<CTransform>(L"Com_Transform");
+	}
+
 	m_pClown_Wizard = dynamic_cast<CClown_Wizard*>(pObject);
 	m_pRootNode = CBTNode_Select::Create(this);
 
@@ -129,17 +137,6 @@ HRESULT CClown_WizardBT::Initialize(void* pArg)
 
 void CClown_WizardBT::Tick(const _float& fTimeDelta)
 {
-	if (m_tBTNodeDesc.pTarget == nullptr)
-	{
-		m_tBTNodeDesc.pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
-		// m_tBTNodeDesc.pTarget = GI->Find_GameObjects(LEVEL_TEST, LAYER_CHARACTER);
-		if (m_tBTNodeDesc.pTarget != nullptr)
-		{
-			m_tBTNodeDesc.pTargetModel = m_tBTNodeDesc.pTarget->Get_Component<CModel>(L"Com_Model");
-			m_tBTNodeDesc.pTargetTransform = m_tBTNodeDesc.pTarget->Get_Component<CTransform>(L"Com_Transform");
-		}
-	}
-
 	if (m_tBTNodeDesc.pTarget != nullptr)
 		m_pRootNode->Tick(fTimeDelta);
 }
