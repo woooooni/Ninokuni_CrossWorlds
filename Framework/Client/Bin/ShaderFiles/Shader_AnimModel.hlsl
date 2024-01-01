@@ -65,44 +65,6 @@ struct VS_OUT
 };
 
 
-// 큐빅 스플라인 보간을 수행하는 함수
-float4x4 CubicSplineInterpolation(float4x4 p0, float4x4 p1, float4x4 p2, float4x4 p3, float t)
-{
-    float t2 = t * t;
-    float t3 = t2 * t;
-
-    float4x4 interpolatedMatrix;
-    for (int i = 0; i < 4; ++i)
-    {
-        for (int j = 0; j < 4; ++j)
-        {
-            float c0 = -0.5f * p0[i][j] + 1.5f * p1[i][j] - 1.5f * p2[i][j] + 0.5f * p3[i][j];
-            float c1 = p0[i][j] - 2.5f * p1[i][j] + 2.0f * p2[i][j] - 0.5f * p3[i][j];
-            float c2 = -0.5f * p0[i][j] + 0.5f * p2[i][j];
-            float c3 = p1[i][j];
-
-            interpolatedMatrix[i][j] = c0 * t3 + c1 * t2 + c2 * t + c3;
-        }
-    }
-
-    return interpolatedMatrix;
-}
-
-// 두 개의 행렬을 큐빅 스플라인으로 보간하는 함수
-float4x4 InterpolateMatricesWithCubicSpline(float4x4 matrix1, float4x4 matrix2, float t)
-{
-    // 추가적인 행렬을 계산
-    float4x4 extraMatrix1 = matrix1 * 10.0f - matrix2;
-    float4x4 extraMatrix2 = matrix2 * 10.0f - matrix1;
-
-    // 큐빅 스플라인 보간 수행
-    float4x4 resultMatrix = CubicSplineInterpolation(extraMatrix1, matrix1, matrix2, extraMatrix2, t);
-
-    return resultMatrix;
-}
-
-
-
 matrix GetAnimationMatrix(VS_IN input)
 {
 	float indices[4] = { input.vBlendIndex.x, input.vBlendIndex.y, input.vBlendIndex.z, input.vBlendIndex.w };
@@ -149,25 +111,25 @@ matrix GetAnimationMatrix(VS_IN input)
 
         matrix result = lerp(curr, next, ratio[0]);
 		
-		/* Tweening */
-        if (animIndex[1] >= 0)
-        {
-            c0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, currFrame[1], animIndex[1], 0));
-            c1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, currFrame[1], animIndex[1], 0));
-            c2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, currFrame[1], animIndex[1], 0));
-            c3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, currFrame[1], animIndex[1], 0));
-            curr = matrix(c0, c1, c2, c3);
+		///* Tweening */
+  //      if (animIndex[1] >= 0)
+  //      {
+  //          c0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, currFrame[1], animIndex[1], 0));
+  //          c1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, currFrame[1], animIndex[1], 0));
+  //          c2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, currFrame[1], animIndex[1], 0));
+  //          c3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, currFrame[1], animIndex[1], 0));
+  //          curr = matrix(c0, c1, c2, c3);
             
 
-            n0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, nextFrame[1], animIndex[1], 0));
-            n1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, nextFrame[1], animIndex[1], 0));
-            n2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, nextFrame[1], animIndex[1], 0));
-            n3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, nextFrame[1], animIndex[1], 0));
-            next = matrix(n0, n1, n2, n3);
+  //          n0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, nextFrame[1], animIndex[1], 0));
+  //          n1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, nextFrame[1], animIndex[1], 0));
+  //          n2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, nextFrame[1], animIndex[1], 0));
+  //          n3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, nextFrame[1], animIndex[1], 0));
+  //          next = matrix(n0, n1, n2, n3);
 		
-            matrix nextResult = lerp(curr, next, ratio[1]);
-            result = lerp(result, nextResult, g_TweenFrames.fTweenRatio);
-        }
+  //          matrix nextResult = lerp(curr, next, ratio[1]);
+  //          result = lerp(result, nextResult, g_TweenFrames.fTweenRatio);
+  //      }
 
 		transform += mul(result, weights[i]);
 	}
@@ -363,7 +325,19 @@ matrix GetAnimationMatrixEdited(VS_IN input)
 	return transform;
 }
 
-matrix GetAnimationMatrix_2(VS_IN input)
+
+float3 PositionSlerp(float3 start, float3 end, float t)
+{
+    start = normalize(start);
+    end = normalize(end);
+    float dotProduct = dot(start, end); // Ensure the dot product doesn't exceed 1 to prevent NaN in acos 
+	dotProduct = saturate(dotProduct); 
+	float theta = acos(dotProduct); 
+	float sinTheta = sin(theta); // Perform spherical linear interpolation 
+	return (sin((1.0 - t) * theta) * start + sin(t * theta) * end) / sinTheta;
+}
+
+matrix GetAnimationMatrix_2(VS_IN input, bool bNext)
 {
     float indices[4] = { input.vBlendIndex.x, input.vBlendIndex.y, input.vBlendIndex.z, input.vBlendIndex.w };
     float weights[4] = { input.vBlendWeight.x, input.vBlendWeight.y, input.vBlendWeight.z, input.vBlendWeight.w };
@@ -387,105 +361,55 @@ matrix GetAnimationMatrix_2(VS_IN input)
 
     float4 c0, c1, c2, c3;
     float4 n0, n1, n2, n3;
-    
+    matrix curr = 0;
+    matrix next = 0;
     matrix transform = 0;
-
+	
+    int iChoice = 0;
+	if(true == bNext)
+        iChoice = 1;
+	
     for (int i = 0; i < 4; i++)
     {
-        float3 fCurAnimSourceScale, fCurAnimDestScale, fCurAnimLerpScale;
-        float4 fCurAnimSourceRot, fCurAnimDestRot, fCurAnimLerpRot;
-        float3 fCurAnimSourcePos, fCurAnimDestPos, fCurAnimLerpPos;
-		
-        float4x4 fCurAnimCurFrame = 0;
-        float4x4 fCurAnimNextFrame = 0;
-		
-        matrix result;
-		
-		/* curr Frame */
-		{
-			c0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, currFrame[0], animIndex[0], 0));
-			c1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, currFrame[0], animIndex[0], 0));
-			c2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, currFrame[0], animIndex[0], 0));
-			c3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, currFrame[0], animIndex[0], 0));
-		
-			fCurAnimCurFrame = float4x4(c0, c1, c2, c3);
-			decompose(fCurAnimCurFrame, fCurAnimSourcePos, fCurAnimSourceRot, fCurAnimSourceScale);
-        }
+		/* cur */
+        c0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, currFrame[iChoice], animIndex[iChoice], 0));
+        c1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, currFrame[iChoice], animIndex[iChoice], 0));
+        c2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, currFrame[iChoice], animIndex[iChoice], 0));
+        c3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, currFrame[iChoice], animIndex[iChoice], 0));
+        curr = matrix(c0, c1, c2, c3);
 
-		/* next Frame */ 
-		{
-			n0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, nextFrame[0], animIndex[0], 0));
-			n1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, nextFrame[0], animIndex[0], 0));
-			n2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, nextFrame[0], animIndex[0], 0));
-			n3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, nextFrame[0], animIndex[0], 0));
-		
-			fCurAnimNextFrame = float4x4(n0, n1, n2, n3);
-			decompose(fCurAnimNextFrame, fCurAnimDestPos, fCurAnimDestRot, fCurAnimDestScale);
-        }
-		
-		/* Frame Lerp */
-		{
-			fCurAnimLerpScale	= lerp(fCurAnimSourceScale, fCurAnimDestScale, ratio[0]);
-			fCurAnimLerpRot		= q_slerp(fCurAnimSourceRot, fCurAnimDestRot, ratio[0]);
-			fCurAnimLerpPos		= lerp(fCurAnimSourcePos, fCurAnimDestPos, ratio[0]);
-        }
-        
-		/* if next */
-        if (animIndex[1] >= 0)
-        {
-            float3 fNextAnimSourceScale, fNextAnimDestScale, fNextAnimLerpScale;
-            float4 fNextAnimSourceRot, fNextAnimDestRot, fNextAnimLerpRot;
-            float3 fNextAnimSourcePos, fNextAnimDestPos, fNextAnimLerpPos;
-			
-            float4x4 fNextAnimCurFrame = 0;
-            float4x4 fNextAnimNextFrame = 0;
-			
-			/* curr Frame */
-			{
-				c0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, currFrame[1], animIndex[1], 0));
-				c1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, currFrame[1], animIndex[1], 0));
-				c2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, currFrame[1], animIndex[1], 0));
-				c3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, currFrame[1], animIndex[1], 0));
-			
-				fNextAnimCurFrame = float4x4(c0, c1, c2, c3);
-				decompose(fNextAnimCurFrame, fNextAnimSourcePos, fNextAnimSourceRot, fNextAnimSourceScale);
-            }
-			
-			/* next Frame */ 
-			{
-                n0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, nextFrame[1], animIndex[1], 0));
-				n1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, nextFrame[1], animIndex[1], 0));
-				n2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, nextFrame[1], animIndex[1], 0));
-				n3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, nextFrame[1], animIndex[1], 0));
 
-				fNextAnimNextFrame = float4x4(n0, n1, n2, n3);
-				decompose(fNextAnimNextFrame, fNextAnimDestPos, fNextAnimDestRot, fNextAnimDestScale);
-            }
-			
-			/* Frame Lerp */			
-			{
-				fNextAnimLerpScale	= lerp(fNextAnimSourceScale, fNextAnimDestScale, ratio[1]);
-				fNextAnimLerpRot	= q_slerp(fNextAnimSourceRot, fNextAnimDestRot, ratio[1]);
-				fNextAnimLerpPos	= lerp(fNextAnimSourcePos, fNextAnimDestPos, ratio[1]);
-            }
-			
-			/* Tween Lerp */			
-			{
-				float3 fTweenScale	= lerp(fCurAnimLerpScale, fNextAnimLerpScale, g_TweenFrames.fTweenRatio);
-				float4 fTweenRot	= q_slerp(fCurAnimLerpRot, fNextAnimLerpRot, g_TweenFrames.fTweenRatio);
-				float3 fTweenPos	= lerp(fCurAnimLerpPos, fNextAnimLerpPos, g_TweenFrames.fTweenRatio);
+        n0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, nextFrame[iChoice], animIndex[iChoice], 0));
+        n1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, nextFrame[iChoice], animIndex[iChoice], 0));
+        n2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, nextFrame[iChoice], animIndex[iChoice], 0));
+        n3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, nextFrame[iChoice], animIndex[iChoice], 0));
+        next = matrix(n0, n1, n2, n3);
+
+        matrix result = lerp(curr, next, ratio[iChoice]);
+		
+		///* Tweening */
+  //      if (animIndex[1] >= 0)
+  //      {
+  //          c0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, currFrame[1], animIndex[1], 0));
+  //          c1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, currFrame[1], animIndex[1], 0));
+  //          c2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, currFrame[1], animIndex[1], 0));
+  //          c3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, currFrame[1], animIndex[1], 0));
+  //          curr = matrix(c0, c1, c2, c3);
             
-				result = compose(fTweenPos, fTweenRot, fTweenScale);
-            }
-        }
-        else
-        {
-            result = compose(fCurAnimLerpPos, fCurAnimLerpRot, fCurAnimLerpScale);
-        }
+
+  //          n0 = g_TransformMap.Load(int4(indices[i] * 4 + 0, nextFrame[1], animIndex[1], 0));
+  //          n1 = g_TransformMap.Load(int4(indices[i] * 4 + 1, nextFrame[1], animIndex[1], 0));
+  //          n2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, nextFrame[1], animIndex[1], 0));
+  //          n3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, nextFrame[1], animIndex[1], 0));
+  //          next = matrix(n0, n1, n2, n3);
+		
+  //          matrix nextResult = lerp(curr, next, ratio[1]);
+  //          result = lerp(result, nextResult, g_TweenFrames.fTweenRatio);
+  //      }
 
         transform += mul(result, weights[i]);
     }
-
+	
     return transform;
 }
 
@@ -500,14 +424,35 @@ VS_OUT VS_MAIN(VS_IN In)
 	matWVP = mul(matWV, g_ProjMatrix);
 
 	//float4x4	BoneMatrix = GetAnimationMatrix_2(In);
-	float4x4	BoneMatrix = GetAnimationMatrix(In);
-
-	vector		vPosition = mul(vector(In.vPosition, 1.f), BoneMatrix);
-	vector		vNormal = mul(vector(In.vNormal, 0.f), BoneMatrix);
-	vector		vTangent = mul(vector(In.vTangent, 0.f), BoneMatrix);
+    vector vPosition = 0;
+    vector vNormal = 0;
+    vector vTangent = 0;
+	
+    //bool bTween = g_TweenFrames.next.iAnimIndex > 0;
+	
+    //if (true == bTween)
+    //{
+    //    float4x4 CurrBoneMatrix = GetAnimationMatrix_2(In, false);
+    //    float4x4 NextBoneMatrix = GetAnimationMatrix_2(In, true);
+		
+    //    vPosition = vector(PositionSlerp(mul(vector(In.vPosition, 1.f), CurrBoneMatrix).xyz, mul(vector(In.vPosition, 1.f), NextBoneMatrix).xyz, g_TweenFrames.fTweenRatio), 1.f);
+    //    vNormal = lerp(mul(vector(In.vNormal, 0.f), CurrBoneMatrix), mul(vector(In.vNormal, 0.f), NextBoneMatrix), g_TweenFrames.fTweenRatio);
+    //    vTangent = lerp(mul(vector(In.vTangent, 0.f), CurrBoneMatrix), mul(vector(In.vTangent, 0.f), NextBoneMatrix), g_TweenFrames.fTweenRatio);
+    //}
+    //else
+    //{
+    //    float4x4 BoneMatrix = GetAnimationMatrix_2(In, false);
+    //    vPosition = mul(vector(In.vPosition, 1.f), BoneMatrix);
+    //    vNormal = mul(vector(In.vNormal, 0.f), BoneMatrix);
+    //    vTangent = mul(vector(In.vTangent, 0.f), BoneMatrix);
+    //}
+	
+    float4x4 BoneMatrix = GetAnimationMatrix(In);
+    vPosition = mul(vector(In.vPosition, 1.f), BoneMatrix);
+    vNormal = mul(vector(In.vNormal, 0.f), BoneMatrix);
+    vTangent = mul(vector(In.vTangent, 0.f), BoneMatrix);
 
 	Out.vPosition = mul(vPosition, matWVP);
-	Out.vWorldPosition = mul(vPosition, g_WorldMatrix);
 	Out.vWorldPosition = mul(vPosition, g_WorldMatrix);
 	Out.vNormal = normalize(mul(vNormal, g_WorldMatrix));
 	Out.vTangent = normalize(mul(vTangent, g_WorldMatrix)).xyz;

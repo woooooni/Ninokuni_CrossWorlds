@@ -163,8 +163,9 @@ HRESULT CGameObject::Add_Collider(_uint iLevelIndex, _uint eColliderType, _uint 
 	}
 
 	pCollider->Set_DetectionType(CCollider::DETECTION_TYPE(eDetectionType));
+	if (CCollider::DETECTION_TYPE::ATTACK == eDetectionType)
+		pCollider->Set_Active(false);
 
-	
 	iter->second.push_back(pCollider);
 	return S_OK;
 }

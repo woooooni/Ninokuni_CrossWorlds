@@ -109,7 +109,7 @@ namespace Client
 
 	/* Camera */
 
-	static const _float Cam_Dist_Follow_Default = 3.2f;
+	static const _float Cam_Dist_Follow_Default = 5.f;
 
 	static const _float Cam_Fov_Free_Default = XMConvertToRadians(60.0f);
 	static const _float Cam_Fov_Follow_Default = XMConvertToRadians(60.0f);

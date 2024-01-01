@@ -234,6 +234,7 @@
     <ClInclude Include="..\Public\Camera_Manager.h" />
     <ClInclude Include="..\Public\Baobam_DarkNode_Skill2.h" />
     <ClInclude Include="..\Public\Character.h" />
+    <ClInclude Include="..\Public\Character_Destroyer.h" />
     <ClInclude Include="..\Public\Character_Dummy.h" />
     <ClInclude Include="..\Public\Character_Engineer.h" />
     <ClInclude Include="..\Public\Chloe.h" />
@@ -751,6 +752,7 @@
     <ClCompile Include="..\Private\Camera_Free.cpp" />
     <ClCompile Include="..\Private\Cat.cpp" />
     <ClCompile Include="..\Private\Character.cpp" />
+    <ClCompile Include="..\Private\Character_Destroyer.cpp" />
     <ClCompile Include="..\Private\Character_Dummy.cpp" />
     <ClCompile Include="..\Private\Character_Engineer.cpp" />
     <ClCompile Include="..\Private\Chloe.cpp" />

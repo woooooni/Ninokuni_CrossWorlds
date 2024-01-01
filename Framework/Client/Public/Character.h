@@ -164,6 +164,11 @@ public:
 	}
 
 public:
+	void Set_Target(class CGameObject* pTarget) { m_pTarget = pTarget; }
+	class CGameObject* Get_Target() { return m_pTarget; }
+
+
+public:
 	HRESULT Disappear_Weapon();
 	HRESULT Appear_Weapon();
 
@@ -189,10 +194,12 @@ protected: /* 해당 객체가 사용해야할 컴포넌트들을 저장하낟. */
 	class CNavigation* m_pNavigationCom = nullptr;
 	class CPhysX_Controller* m_pControllerCom = nullptr;
 	class CTrail* m_pTrails[SOCKET_END];
-	
-	
 	class CWeapon* m_pWeapon = nullptr;
 	class CModel* m_pCharacterPartModels[PART_TYPE::PART_END];
+
+protected:
+	class CGameObject* m_pTarget = nullptr;
+
 
 protected:
 	vector<class CHierarchyNode*>		m_Sockets;
