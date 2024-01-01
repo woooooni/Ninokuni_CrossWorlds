@@ -64,7 +64,7 @@ HRESULT CUI_Basic::Initialize(void* pArg)
 		m_bFade = true;
 	}
 
-	else if (UIQUEST_ACCEPT == m_eType || UIQUEST_FINISH == m_eType)
+	else if (UIQUEST_ACCEPT == m_eType || UIQUEST_FINISH == m_eType || COSTUME_INSTALL == m_eType)
 	{
 		m_bActive = false;
 	}
