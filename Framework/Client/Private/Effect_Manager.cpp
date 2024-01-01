@@ -13,6 +13,7 @@
 #include "Effect.h"
 #include "Decal.h"
 #include "Vfx_MouseClick.h"
+#include "Vfx_SwordMan_Skill_PerfectBlade.h"
 
 IMPLEMENT_SINGLETON(CEffect_Manager)
 
@@ -21,7 +22,7 @@ CEffect_Manager::CEffect_Manager()
 
 }
 
-HRESULT CEffect_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strEffectMeshPath, const wstring& strEffectPath)
+HRESULT CEffect_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strEffectMeshPath, const wstring& strEffectPath, const wstring& strDecalPath)
 {
 	m_pDevice = pDevice;
 	m_pContext = pContext;
@@ -35,7 +36,7 @@ HRESULT CEffect_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceCont
 	if (FAILED(Ready_Proto_Effects(strEffectPath)))
 		return E_FAIL;
 
-	if (FAILED(Ready_Proto_Decal()))
+	if (FAILED(Ready_Proto_Decal(strDecalPath)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Proto_Vfx()))
@@ -48,8 +49,9 @@ void CEffect_Manager::Tick(_float fTimeDelta)
 {
 }
 
-HRESULT CEffect_Manager::Generate_Effect(const wstring& strEffectName, _matrix RotationMatrix, _matrix WorldMatrix, _float fEffectDeletionTime, CGameObject* pOwner, CEffect** ppOut)
+HRESULT CEffect_Manager::Generate_Effect(const wstring& strEffectName, _matrix WorldMatrix, _matrix* pRotationMatrix, CGameObject* pOwner, class CEffect** ppOut)
 {
+	// strEffectName
 	CGameObject* pGameObject = GI->Clone_GameObject(L"Prototype_" + strEffectName, LAYER_EFFECT);
 	if (nullptr == pGameObject)
 		return E_FAIL;
@@ -58,54 +60,94 @@ HRESULT CEffect_Manager::Generate_Effect(const wstring& strEffectName, _matrix R
 	if (nullptr == pEffect)
 		return E_FAIL;
 
-	CEffect::EFFECT_DESC EffectDesc = pEffect->Get_EffectDesc();
-	_matrix OffsetMatrix = XMLoadFloat4x4(&EffectDesc.OffsetMatrix);
-	OffsetMatrix *= RotationMatrix;
-
-	XMStoreFloat4x4(&EffectDesc.OffsetMatrix, OffsetMatrix);
-	pEffect->Set_EffectDesc(EffectDesc);
-
-
-	pEffect->Set_Owner(pOwner);
-	//pEffect->Set_DeletionTime(fEffectDeletionTime);
-
-
+	// WorldMatrix
 	CTransform* pTransform = pEffect->Get_Component<CTransform>(L"Com_Transform");
 	if (pTransform == nullptr)
 		return E_FAIL;
-
 	pTransform->Set_WorldMatrix(WorldMatrix);
-	
-	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, pEffect)))
-		return E_FAIL;
 
+	// RotationMatrix
+	/* CEffect::EFFECT_DESC EffectDesc = pEffect->Get_EffectDesc();
+    _matrix OffsetMatrix = XMLoadFloat4x4(&EffectDesc.OffsetMatrix);
+    OffsetMatrix *= RotationMatrix;
+    XMStoreFloat4x4(&EffectDesc.OffsetMatrix, OffsetMatrix);
+    pEffect->Set_EffectDesc(EffectDesc);
+	*/
+
+	// pOwner
+	if(pOwner != nullptr)
+		pEffect->Set_Owner(pOwner);
+
+	// ppOut
 	if (ppOut != nullptr)
 		*ppOut = pEffect;
-
-	return S_OK;
-}
-
-HRESULT CEffect_Manager::Generate_Decal(const wstring& strPrototypeDecalName, _vector vPosition)
-{
-	CGameObject* pGameObject = GI->Clone_GameObject(L"Prototype_" + strPrototypeDecalName, LAYER_TYPE::LAYER_EFFECT, &vPosition);
-	if (nullptr == pGameObject)
-		return E_FAIL;
-
-	_uint iLevelIndex = GI->Get_CurrentLevel();
-	if (FAILED(GI->Add_GameObject(iLevelIndex, LAYER_TYPE::LAYER_EFFECT, pGameObject)))
+	
+	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, pGameObject)))
 		return E_FAIL;
 
 	return S_OK;
 }
 
-HRESULT CEffect_Manager::Generate_Vfx(const wstring& strPrototypeVfxName, _vector vPosition)
+HRESULT CEffect_Manager::Generate_Decal(const wstring& strDecalName, _matrix WorldMatrix, _matrix* pRotationMatrix, CGameObject* pOwner, class CDecal** ppOut)
 {
-	CGameObject* pGameObject = GI->Clone_GameObject(L"Prototype_" + strPrototypeVfxName, LAYER_TYPE::LAYER_EFFECT, &vPosition);
+	// strDecalName
+	CGameObject* pGameObject = GI->Clone_GameObject(L"Prototype_" + strDecalName, LAYER_TYPE::LAYER_EFFECT);
 	if (nullptr == pGameObject)
 		return E_FAIL;
 
-	_uint iLevelIndex = GI->Get_CurrentLevel();
-	if (FAILED(GI->Add_GameObject(iLevelIndex, LAYER_TYPE::LAYER_EFFECT, pGameObject)))
+	CDecal* pDecal = dynamic_cast<CDecal*>(pGameObject);
+	if (nullptr == pDecal)
+		return E_FAIL;
+
+	// WorldMatrix
+	CTransform* pTransform = pDecal->Get_Component<CTransform>(L"Com_Transform");
+	if (pTransform == nullptr)
+		return E_FAIL;
+	pTransform->Set_WorldMatrix(WorldMatrix);
+
+	// RotationMatrix
+	//
+
+	// pOwner
+	if (pOwner != nullptr)
+		pDecal->Set_Owner(pOwner);
+
+	// ppOut
+	if (ppOut != nullptr)
+		*ppOut = pDecal;
+
+	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, pGameObject)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CEffect_Manager::Generate_Vfx(const wstring& strVfxName, _matrix WorldMatrix, _matrix* pRotationMatrix, CGameObject* pOwner, class CVfx** ppOut)
+{
+	// strVfxName
+	CGameObject* pGameObject = GI->Clone_GameObject(L"Prototype_" + strVfxName, LAYER_TYPE::LAYER_EFFECT);
+	if (nullptr == pGameObject)
+		return E_FAIL;
+
+	CVfx* pVfx = dynamic_cast<CVfx*>(pGameObject);
+	if (nullptr == pVfx)
+		return E_FAIL;
+
+	// WorldMatrix
+	pVfx->Set_WorldMatrix(WorldMatrix);
+
+	// pRotationMatrix
+	//
+
+	// pOwner
+	if (pOwner != nullptr)
+		pVfx->Set_Owner(pOwner);
+
+	// ppOut
+	if (ppOut != nullptr)
+		*ppOut = pVfx;
+
+	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, pGameObject)))
 		return E_FAIL;
 
 	return S_OK;
@@ -378,27 +420,84 @@ HRESULT CEffect_Manager::Ready_Proto_Effects(const wstring& strEffectPath)
 	return S_OK;
 }
 
-HRESULT CEffect_Manager::Ready_Proto_Decal()
+HRESULT CEffect_Manager::Ready_Proto_Decal(const wstring& strDecalPath)
 {
-	CDecal::DECAL_DESC tDecalInfo = {};
+	for (auto& p : std::filesystem::directory_iterator(strDecalPath))
+	{
+		if (p.is_directory())
+			Ready_Proto_Effects(p.path());
 
-	// Prototype_Decale
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_Decal_Temp"),
-		CDecal::Create(m_pDevice, m_pContext, TEXT("Decal_Temp"), &tDecalInfo), LAYER_TYPE::LAYER_EFFECT)))
-		return E_FAIL;
+		wstring strFullPath = CUtils::PathToWString(p.path().wstring());
+		_tchar strFileName[MAX_PATH];
+		_tchar strFolderName[MAX_PATH];
+		_tchar strExt[MAX_PATH];
 
+		_wsplitpath_s(strFullPath.c_str(), nullptr, 0, strFolderName, MAX_PATH, strFileName, MAX_PATH, strExt, MAX_PATH);
+
+		if (0 == lstrcmp(TEXT(".json"), strExt))
+		{
+			Json json = GI->Json_Load(strFullPath);
+
+			CDecal::DECAL_DESC DecalInfo = {};
+			for (const auto& item : json["DecalInfo"])
+			{
+				DecalInfo.fScale.x = item["Scale"]["x"];
+				DecalInfo.fScale.y = item["Scale"]["y"];
+				DecalInfo.fScale.z = item["Scale"]["z"];
+
+				DecalInfo.fLifeTime = item["LifeTime"];
+
+				DecalInfo.iTextureIndexDiffuse = item["TextureIndexDiffuse"];
+
+				DecalInfo.iShaderPass = item["ShaderPass"];
+				DecalInfo.fAlpha_Discard = item["Alpha_Discard"];
+				DecalInfo.fBlack_Discard.x = item["Black_Discard"]["x"];
+				DecalInfo.fBlack_Discard.y = item["Black_Discard"]["y"];
+				DecalInfo.fBlack_Discard.z = item["Black_Discard"]["z"];
+
+				DecalInfo.fBloomPower.x = item["BloomPower"]["x"];
+				DecalInfo.fBloomPower.y = item["BloomPower"]["y"];
+				DecalInfo.fBloomPower.z = item["BloomPower"]["z"];
+				DecalInfo.fBlurPower = item["BlurPower"];
+
+				DecalInfo.fColorAdd_01_Alpha = item["ColorAdd_01_Alpha"];
+				DecalInfo.fColorAdd_01.x = item["ColorAdd_01"]["x"];
+				DecalInfo.fColorAdd_01.y = item["ColorAdd_01"]["y"];
+				DecalInfo.fColorAdd_01.z = item["ColorAdd_01"]["z"];
+				DecalInfo.fColorAdd_02.x = item["ColorAdd_02"]["x"];
+				DecalInfo.fColorAdd_02.y = item["ColorAdd_02"]["y"];
+				DecalInfo.fColorAdd_02.z = item["ColorAdd_02"]["z"];
+
+				DecalInfo.fAlphaRemove = item["AlphaRemove"];
+				DecalInfo.bAlphaCreate = item["AlphaCreate"];
+				DecalInfo.bAlphaDelete = item["AlphaDelete"];
+				DecalInfo.fAlphaSpeed = item["AlphaSpeed"];
+			}
+
+			if (FAILED(GI->Add_Prototype(wstring(L"Prototype_") + strFileName,
+				CDecal::Create(m_pDevice, m_pContext, strFileName, &DecalInfo), LAYER_TYPE::LAYER_EFFECT)))
+				return E_FAIL;
+
+			CGameObject* pObject = GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_EFFECT, wstring(L"Prototype_") + strFileName);
+			if (pObject == nullptr)
+				return E_FAIL;
+		}
+	}
 
 	return S_OK;
 }
 
 HRESULT CEffect_Manager::Ready_Proto_Vfx()
 {
-	// Prototype_Particles_MouseClick
+	// Prototype_Vfx_MouseClick
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_MouseClick"),
 		CVfx_MouseClick::Create(m_pDevice, m_pContext, TEXT("Particles_MouseClick")), LAYER_TYPE::LAYER_EFFECT)))
 		return E_FAIL;
 
-	// 
+	// Prototype_Vfx_SwordMan_Skill_PerfectBlade
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_SwordMan_Skill_PerfectBlade"),
+		CVfx_SwordMan_Skill_PerfectBlade::Create(m_pDevice, m_pContext, TEXT("Effect_PerfectBlade")), LAYER_TYPE::LAYER_EFFECT)))
+		return E_FAIL;
 
 	return S_OK;
 }

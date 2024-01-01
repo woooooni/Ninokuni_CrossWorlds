@@ -37,11 +37,23 @@ void CParticle::Set_ParticleDesc(const PARTICLE_DESC& tDesc)
 		m_pVIBufferCom->Restart_ParticleBufferDesc(m_tParticleDesc.iNumEffectCount);
 }
 
+void CParticle::Set_Position_Particle(_float4x4 WorldMatrix)
+{
+	_float fX = WorldMatrix.m[3][0];
+	_float fY = WorldMatrix.m[3][1];
+	_float fZ = WorldMatrix.m[3][2];
+
+	if (m_tParticleDesc.eParticleType == TYPE_PERSPECTIVE)
+		Set_Position_Perspective(_float3(fX, fY, fZ));
+	else if (m_tParticleDesc.eParticleType == TYPE_ORTHOGRAPHIC)
+		Set_Position_Orthographic(_float2(fX, fY));
+}
+
 void CParticle::Set_Position_Perspective(_float3 fPosition)
 {
 	m_tParticleDesc.eParticleType = TYPE_PERSPECTIVE;
 
-	if(m_pTransformCom != nullptr)
+	if (m_pTransformCom != nullptr)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(fPosition.x, fPosition.y, fPosition.z, 1.f));
 }
 
@@ -83,16 +95,6 @@ HRESULT CParticle::Initialize(void* pArg)
 {
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
-
-	if (pArg != nullptr)
-	{
-		_vector vPosition = *static_cast<_vector*>(pArg);
-
-		if (m_tParticleDesc.eParticleType == TYPE_PERSPECTIVE)
-			Set_Position_Perspective(_float3(XMVectorGetX(vPosition), XMVectorGetY(vPosition), XMVectorGetZ(vPosition)));
-		else if (m_tParticleDesc.eParticleType == TYPE_ORTHOGRAPHIC)
-			Set_Position_Orthographic(_float2(XMVectorGetX(vPosition), XMVectorGetY(vPosition)));
-	}
 
 	return S_OK;
 }

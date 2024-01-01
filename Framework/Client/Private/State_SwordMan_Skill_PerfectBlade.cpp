@@ -3,6 +3,8 @@
 #include "Character.h"
 #include "State_SwordMan_Skill_PerfectBlade.h"
 
+#include "Effect_Manager.h"
+
 CState_SwordMan_Skill_PerfectBlade::CState_SwordMan_Skill_PerfectBlade(CStateMachine* pMachine)
     : CState_Character(pMachine)
 {
@@ -20,6 +22,12 @@ void CState_SwordMan_Skill_PerfectBlade::Enter_State(void* pArg)
 {
     m_pCharacter->Appear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
+
+    // Effect Create
+    CTransform* pTransformCom = m_pCharacter->Get_Component<CTransform>(L"Com_Transform");
+    if (pTransformCom == nullptr)
+        return;
+    GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_SwordMan_Skill_PerfectBlade"), pTransformCom->Get_WorldMatrix());
 }
 
 void CState_SwordMan_Skill_PerfectBlade::Tick_State(_float fTimeDelta)

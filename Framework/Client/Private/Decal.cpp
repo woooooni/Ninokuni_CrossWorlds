@@ -154,10 +154,15 @@ void CDecal::Set_DecalDesc(const DECAL_DESC& tDesc)
 
 	if (m_pDiffuseTextureCom != nullptr && m_tDecalDesc.iTextureIndexDiffuse >= m_pDiffuseTextureCom->Get_TextureCount())
 		m_tDecalDesc.iTextureIndexDiffuse = m_pDiffuseTextureCom->Get_TextureCount() - 1;
+
+	Restart_Decal();
 }
 
 void CDecal::Restart_Decal()
 {
+	m_bDecalDie        = false;
+	m_fAccLifeTime     = 0.f;
+
 	m_pTransformCom->Set_Scale(m_tDecalDesc.fScale);
 
 	if (m_tDecalDesc.bAlphaCreate)

@@ -15,15 +15,13 @@ private:
 	virtual ~CEffect_Manager() = default;
 
 public:
-	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strEffectMeshPath, const wstring& strEffectPath);
+	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strEffectMeshPath, const wstring& strEffectPath, const wstring& strDecalPath);
 	void	Tick(_float fTimeDelta);
 
 public:
-	HRESULT Generate_Effect(const wstring& strPrototypeEffectName, _matrix RotationMatrix, _matrix WorldMatrix, _float fEffectDeletionTime, 
-		class CGameObject* pOwner = nullptr, 
-		class CEffect** ppOut = nullptr);
-	HRESULT Generate_Decal(const wstring& strPrototypeDecalName, _vector vPosition);
-	HRESULT Generate_Vfx(const wstring& strPrototypeVfxName, _vector vPosition);
+	HRESULT Generate_Effect(const wstring& strEffectName, _matrix WorldMatrix, _matrix* pRotationMatrix = nullptr, CGameObject* pOwner = nullptr, class CEffect** ppOut = nullptr);
+	HRESULT Generate_Decal(const wstring& strDecalName, _matrix WorldMatrix, _matrix* pRotationMatrix = nullptr, CGameObject* pOwner = nullptr, class CDecal** ppOut = nullptr);
+	HRESULT Generate_Vfx(const wstring& strVfxName, _matrix WorldMatrix, _matrix* pRotationMatrix = nullptr, CGameObject* pOwner = nullptr, class CVfx** ppOut = nullptr);
 
 private:
 	ID3D11Device* m_pDevice = nullptr;
@@ -31,7 +29,7 @@ private:
 
 private:
 	HRESULT Ready_Proto_Effects(const wstring& strEffectPath);
-	HRESULT Ready_Proto_Decal();
+	HRESULT Ready_Proto_Decal(const wstring& strDecalPath);
 	HRESULT Ready_Proto_Vfx();
 
 public:

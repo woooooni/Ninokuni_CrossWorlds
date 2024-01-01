@@ -18,9 +18,6 @@ HRESULT CVfx::Initialize_Prototype()
 
 HRESULT CVfx::Initialize(void* pArg)
 {
-	if (pArg != nullptr)
-		m_vPosition = *static_cast<_vector*>(pArg);
-
 	return S_OK;
 }
 

@@ -20,9 +20,6 @@ HRESULT CVfx_MouseClick::Initialize_Prototype()
 
 HRESULT CVfx_MouseClick::Initialize(void* pArg)
 {
-	if (pArg != nullptr)
-		m_vPosition = *static_cast<_vector*>(pArg);
-
 	return S_OK;
 }
 
@@ -31,22 +28,22 @@ void CVfx_MouseClick::Tick(_float fTimeDelta)
 	m_fTimeAcc += fTimeDelta;
 	if (m_iCount == 0 && m_fTimeAcc > 0.f)
 	{
-		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Mouse_Circle"), m_vPosition);
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Mouse_Circle"), XMLoadFloat4x4(&m_WorldMatrix));
 		m_iCount++;
 	}
 	else if (m_iCount == 1 && m_fTimeAcc > 0.1f)
 	{
-		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Mouse_CircleLine"), m_vPosition);
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Mouse_CircleLine"), XMLoadFloat4x4(&m_WorldMatrix));
 		m_iCount++;
 	}
 	else if (m_iCount == 2 && m_fTimeAcc > 0.25f)
 	{
-		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Mouse_Leaf"), m_vPosition);
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Mouse_Leaf"), XMLoadFloat4x4(&m_WorldMatrix));
 		m_iCount++;
 	}
 	else if (m_iCount == 3 && m_fTimeAcc > 0.35f)
 	{
-		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Mouse_Twinkle"), m_vPosition);
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Mouse_Twinkle"), XMLoadFloat4x4(&m_WorldMatrix));
 		m_iCount++;
 
 		Set_Dead(true);

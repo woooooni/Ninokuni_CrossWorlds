@@ -92,6 +92,8 @@
 
 #include "Particle.h"
 #include "Effect.h"
+#include "Decal.h"
+
 #include "Weapon_SwordTemp.h"
 
 _bool CLoader::g_bFirstLoading = false;
@@ -442,6 +444,13 @@ HRESULT CLoader::Loading_For_Level_Tool()
 	CEffect::EFFECT_DESC EffectInfo = {};
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_TempMeshEffect"),
 		CEffect::Create(m_pDevice, m_pContext, TEXT("TempMeshEffect"), &EffectInfo), 
+		LAYER_TYPE::LAYER_EFFECT)))
+		return E_FAIL;
+
+	// Åø µ¥Ä®
+	CDecal::DECAL_DESC DecalInfo = {};
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_TempDecal"),
+		CDecal::Create(m_pDevice, m_pContext, TEXT("TempDecal"), &DecalInfo), 
 		LAYER_TYPE::LAYER_EFFECT)))
 		return E_FAIL;
 
