@@ -186,7 +186,7 @@ float4 Caculation_Brightness(float4 vColor, uint iInstanceID)
 
 	float fPixelBrightness = dot(vColor.rgb, g_EffectDesc[iInstanceID].g_fBloomPower.rgb);
 	if (fPixelBrightness > 0.99f)
-		vBrightnessColor = float4(vColor.rgb, 1.0f);
+        vBrightnessColor = vColor;
 
 	return vBrightnessColor;
 }
@@ -218,7 +218,7 @@ PS_OUT PS_MAIN(PS_IN In)
 		Out.vDiffuse_High = vDiffuseColor;
 
 	// Bloom
-	Out.vBloom = Caculation_Brightness(vDiffuseColor, In.iInstanceID);
+    Out.vBloom = Caculation_Brightness(vDiffuseColor, In.iInstanceID);
 
 	return Out;
 }
