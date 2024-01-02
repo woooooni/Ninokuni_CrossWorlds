@@ -7,7 +7,7 @@ class CTransform;
 END
 
 BEGIN(Client)
-class CUI_Damage_Skill final : public CUI
+class CUI_Damage_Number final : public CUI
 {
 public:
 	enum UI_DAMAGEFONT { BLUE, GOLD_WITHRED, GREEN, PURPLE, RED, WHITE, WHITEGOLD, GOLD, DAMAGEFOND_END };
@@ -18,13 +18,14 @@ public:
 		CTransform* pTargetTransform = nullptr;
 		_uint iDamage = 0;
 		_float2 vTargetPosition = _float2(g_iWinSizeX * 0.5f, g_iWinSizeY * 0.5f);
+		_bool bIsPlayer = false;
 
 	}DAMAGE_DESC;
 
 public:
-	CUI_Damage_Skill(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_DAMAGEFONT eType);
-	CUI_Damage_Skill(const CUI_Damage_Skill& rhs);
-	virtual ~CUI_Damage_Skill() = default;
+	CUI_Damage_Number(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_DAMAGEFONT eType);
+	CUI_Damage_Number(const CUI_Damage_Number& rhs);
+	virtual ~CUI_Damage_Number() = default;
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -32,6 +33,12 @@ public:
 	virtual void Tick(_float fTimeDelta);
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT	Render();
+
+	void Tick_Player(_float fTimeDelta);
+	void Tick_Monster(_float fTimeDelta);
+
+	void LateTick_Player(_float fTimeDelta);
+	void LateTick_Monster(_float fTimeDelta);
 
 public:
 	void Resize_Scale();
@@ -67,7 +74,7 @@ private:
 	HRESULT	Bind_ShaderResources();
 
 public:
-	static CUI_Damage_Skill* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, UI_DAMAGEFONT eType);
+	static CUI_Damage_Number* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, UI_DAMAGEFONT eType);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

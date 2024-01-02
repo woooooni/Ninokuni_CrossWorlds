@@ -16,7 +16,7 @@ public:
 	typedef struct tagCriticalFont
 	{
 		_float2 vPosition = _float2(g_iWinSizeX * 0.5f, g_iWinSizeY * 0.5f);
-		UI_CRITICALFONT eType = { CRITICALFONT_END };
+		UI_CRITICALFONT eType = { CRITICAL_RED };
 
 	}CRITICAL_DESC;
 
@@ -33,7 +33,7 @@ public:
 	virtual HRESULT	Render();
 
 private:
-	UI_CRITICALFONT m_eFontType = { CRITICALFONT_END };
+	UI_CRITICALFONT m_eFontType = { CRITICAL_REDBLUR };
 	CRITICAL_DESC m_FontDesc;
 
 	class CTransform* m_pTargetTransform = { nullptr };
@@ -43,14 +43,12 @@ private:
 	_float m_fFadeTimeAcc = { 0.f };
 	_float m_fArrivedPosY = { 0.f };
 
-	_float2 m_fRandomOffset;
-
 	_bool m_bResize = { false };
 	_float2 m_fMaxScale = _float2(0.f, 0.f);
 	_float2 m_fOriginScale = _float2(0.f, 0.f);
 
 	_uint m_iPass = { 1 };
-	_bool m_bSetPosition = { false };
+//	_bool m_bSetPosition = { false };
 
 private:
 	HRESULT	Ready_Components();

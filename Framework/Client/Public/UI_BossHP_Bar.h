@@ -11,6 +11,9 @@ protected:
 	virtual ~CUI_BossHP_Bar() = default;
 
 public:
+	void Set_Owner(class CBoss* pBoss);
+
+public:
 	virtual HRESULT	Initialize_Prototype();
 	virtual HRESULT	Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta);
@@ -18,6 +21,7 @@ public:
 	virtual HRESULT	Render();
 
 private:
+	class CBoss* m_pOwner = { nullptr };
 	CTexture* m_pFXTextureCom = { nullptr };
 	CTexture* m_pGlowTextureCom = { nullptr };
 	CTexture* m_pDissolveTextureCom = { nullptr };
@@ -33,6 +37,9 @@ private:
 
 	_uint m_iPass = { 17 };
 	_float m_fRatio = { 0.5f };
+
+	_uint m_iGaugeIndex = { 0 };
+	_uint m_iFXTexIndex = { 0 };
 
 	// For Text
 	_float2 m_vDividerPos = _float2(g_iWinSizeX * 0.5f - 30.f, 766.f);

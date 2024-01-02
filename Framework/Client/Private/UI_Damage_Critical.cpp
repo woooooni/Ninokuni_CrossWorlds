@@ -34,17 +34,13 @@ HRESULT CUI_Damage_Critical::Initialize(void* pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
-	//m_pTargetTransform = m_FontDesc.pTargetTransform;
-	//if (nullptr == m_pTargetTransform)
-	//	return E_FAIL;
-	//m_vTargetPosition = Get_ProjectionPosition(m_pTargetTransform);
 	m_vTargetPosition = m_FontDesc.vPosition;
 	m_tInfo.fX = m_vTargetPosition.x - 10.f;
-	m_tInfo.fY = m_vTargetPosition.y - 5.f;
-
+	m_tInfo.fY = m_vTargetPosition.y - 16.f;
 	m_eFontType = m_FontDesc.eType;
 
-	_float fRandom = GI->RandomFloat(0.2f, 0.4f);
+	//_float fRandom = GI->RandomFloat(0.2f, 0.4f);
+	_float fRandom = 0.2f;
 	_float2 fNumSize = _float2(256.f * fRandom, 57.f * fRandom);
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
@@ -66,7 +62,7 @@ HRESULT CUI_Damage_Critical::Initialize(void* pArg)
 
 	m_bFadeOut = false;
 	m_bResize = false;
-	m_bSetPosition = false;
+//	m_bSetPosition = false;
 	m_fAlpha = 1.f;
 
 	m_tInfo.fCX = m_fMaxScale.x;
@@ -83,22 +79,22 @@ void CUI_Damage_Critical::Tick(_float fTimeDelta)
 	{
 		if (!Is_Dead())
 		{
-			if (!m_bSetPosition)
-			{
-				m_bSetPosition = true;
-				m_fRandomOffset = _float2(GI->RandomFloat(-70.f, 70.f), GI->RandomFloat(-200.f, -100.f));
-
-				m_vTargetPosition.x += m_fRandomOffset.x;
-				m_vTargetPosition.y += m_fRandomOffset.y;
-
-				m_tInfo.fX = m_vTargetPosition.x;
-				m_tInfo.fY = m_vTargetPosition.y;
-				m_fArrivedPosY = m_tInfo.fY - 100.f;
-
-				m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-					XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
-			}
-			else
+			//if (!m_bSetPosition)
+			//{
+			//	m_bSetPosition = true;
+			//	m_fRandomOffset = _float2(GI->RandomFloat(-70.f, 70.f), GI->RandomFloat(-200.f, -100.f));
+			//
+			//	m_vTargetPosition.x += m_fRandomOffset.x;
+			//	m_vTargetPosition.y += m_fRandomOffset.y;
+			//
+			//	m_tInfo.fX = m_vTargetPosition.x;
+			//	m_tInfo.fY = m_vTargetPosition.y;
+			//	m_fArrivedPosY = m_tInfo.fY - 100.f;
+			//
+			//	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			//		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+			//}
+			//else
 			{
 				if (!m_bResize)
 				{
@@ -128,7 +124,7 @@ void CUI_Damage_Critical::Tick(_float fTimeDelta)
 							Set_Dead(true);
 						}
 
-						if (m_tInfo.fY < m_fArrivedPosY)
+						if (m_tInfo.fY <= m_fArrivedPosY)
 						{
 							m_tInfo.fY = m_fArrivedPosY;
 							m_bFadeOut = true;

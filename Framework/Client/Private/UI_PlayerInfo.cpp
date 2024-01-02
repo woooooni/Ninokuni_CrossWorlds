@@ -86,16 +86,17 @@ void CUI_PlayerInfo::LateTick(_float fTimeDelta)
 				return;
 			
 			CCharacter::CHARACTER_STAT StatDesc = pCurCharacter->Get_Stat();
-			
+			wstring strLevel = to_wstring(StatDesc.iLevel);
+			_int iOffsetX = (strLevel.length() - 1) * 10.f;
 			CRenderer::TEXT_DESC LevelDesc;
-			LevelDesc.strText = to_wstring(StatDesc.iLevel);
+			LevelDesc.strText = strLevel;
 			LevelDesc.strFontTag = L"Default_Bold";
-			LevelDesc.vPosition = m_vDefaultPosition;
+			LevelDesc.vPosition = _float2(m_vDefaultPosition.x - iOffsetX, m_vDefaultPosition.y);
 			LevelDesc.vColor = m_vShadowColor;
 			LevelDesc.vScale = { 0.8f, 0.8f };
 			m_pRendererCom->Add_Text(LevelDesc); // 그림자
 
-			LevelDesc.vPosition = _float2(m_vDefaultPosition.x - 3.f, m_vDefaultPosition.y - 3.f);
+			LevelDesc.vPosition = _float2(m_vDefaultPosition.x - (iOffsetX + 3.f), m_vDefaultPosition.y - 3.f);
 			LevelDesc.vColor = m_vLevelColor;
 			m_pRendererCom->Add_Text(LevelDesc); // Real Text
 
@@ -122,21 +123,24 @@ void CUI_PlayerInfo::LateTick(_float fTimeDelta)
 			// Todo : 전투력을 받아오게끔 구조 변경 필요함.
 			// 전투력 숫자 외곽선
 			CRenderer::TEXT_DESC Power;
-			Power.strText = to_wstring(StatDesc.iAtt);
+			wstring strAttack = to_wstring(StatDesc.iAtt);
+			iOffsetX = (strAttack.length() - 1) * 2.f;
+
+			Power.strText = strAttack;
 			Power.strFontTag = L"Default_Medium";
-			Power.vPosition = _float2(m_vNumPosition.x - 2.f, m_vNumPosition.y);
+			Power.vPosition = _float2((m_vNumPosition.x + iOffsetX) - 2.f, m_vNumPosition.y);
 			Power.vColor = _float4(0.f, 0.f, 0.f, 1.f);
 			Power.vScale = { 0.38f, 0.38f };
 			m_pRendererCom->Add_Text(Power);
-			Power.vPosition = _float2(m_vNumPosition.x + 2.f, m_vNumPosition.y);
+			Power.vPosition = _float2((m_vNumPosition.x + iOffsetX) + 2.f, m_vNumPosition.y);
 			m_pRendererCom->Add_Text(Power);
-			Power.vPosition = _float2(m_vNumPosition.x, m_vNumPosition.y - 2.f);
+			Power.vPosition = _float2((m_vNumPosition.x + iOffsetX), m_vNumPosition.y - 2.f);
 			m_pRendererCom->Add_Text(Power);
-			Power.vPosition = _float2(m_vNumPosition.x, m_vNumPosition.y + 2.f);
+			Power.vPosition = _float2((m_vNumPosition.x + iOffsetX), m_vNumPosition.y + 2.f);
 			m_pRendererCom->Add_Text(Power);
 
 			//
-			Power.vPosition = m_vNumPosition;
+			Power.vPosition = _float2((m_vNumPosition.x + iOffsetX), m_vNumPosition.y);
 			Power.vColor = m_vPowerColor;
 			m_pRendererCom->Add_Text(Power);
 		}

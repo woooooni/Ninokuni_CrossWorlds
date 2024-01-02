@@ -59,10 +59,8 @@ void CUI_PlayerHPBar::LateTick(_float fTimeDelta)
 
 		CCharacter::CHARACTER_STAT StatDesc = pCurCharacter->Get_Stat();
 
-		// Todo : Player구조가 정리되면 Set_Level로 빼서 UIManager로 연동하자.
 		if (CUI_Manager::GetInstance()->Is_FadeFinished())
 		{
-			// 기준점
 			CRenderer::TEXT_DESC  DefaultDesc;
 			DefaultDesc.strText = L"/";
 			DefaultDesc.strFontTag = L"Default_Bold";
@@ -71,18 +69,20 @@ void CUI_PlayerHPBar::LateTick(_float fTimeDelta)
 			DefaultDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
 			m_pRendererCom->Add_Text(DefaultDesc);
 
-			// Todo : 체력을 받아오게끔 구조 변경 필요함.
-			// 현재 체력 숫자 외곽선
 			CRenderer::TEXT_DESC CurHPDesc;
-			CurHPDesc.strText = to_wstring(StatDesc.iHp);
+			wstring strCurHP = to_wstring(StatDesc.iHp);
+			_float fOffsetX = (strCurHP.length() - 1) * 8.f;
+
+			CurHPDesc.strText = strCurHP;
 			CurHPDesc.strFontTag = L"Default_Bold";
 			CurHPDesc.vScale = { 0.35f, 0.35f };
-			CurHPDesc.vPosition = m_vCurHPPosition;
+			CurHPDesc.vPosition = _float2(m_vCurHPPosition.x - fOffsetX, m_vCurHPPosition.y);
 			CurHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
 			m_pRendererCom->Add_Text(CurHPDesc);
 
-			// 최대 체력 숫자 외곽선
 			CRenderer::TEXT_DESC MaxHPDesc;
+			wstring strMaxHP = to_wstring(StatDesc.iMaxHp);
+
 			MaxHPDesc.strText = to_wstring(StatDesc.iMaxHp);
 			MaxHPDesc.strFontTag = L"Default_Bold";
 			MaxHPDesc.vScale = { 0.35f, 0.35f };

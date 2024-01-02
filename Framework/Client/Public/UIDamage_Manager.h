@@ -15,10 +15,10 @@ class CUIDamage_Manager : public CBase
 
 public:
 	enum UI_DAMAGETYPE { WEAKNESS, NONE, STRENGTH, DAMAGETYPE_END };
-	enum UI_DAMAGEFONTCOLOR { FONT_BLUE,
-		FONT_WHITE, FONT_WHITE_AND_GOLD,
-		FONT_GOLD, FONT_GOLD_AND_RED,
-		FONT_DAMAGECOLOR_END };
+//	enum UI_DAMAGEFONTCOLOR { FONT_BLUE,
+//		FONT_WHITE, FONT_WHITE_AND_GOLD,
+//		FONT_GOLD, FONT_GOLD_AND_RED,
+//		FONT_DAMAGECOLOR_END };
 
 private:
 	CUIDamage_Manager();
@@ -38,7 +38,7 @@ public:
 private:
 	_float2 Designate_RandomPosition(_float2 vTargetPosition);
 	HRESULT Create_Miss(class CTransform* pTransformCom);
-	HRESULT Create_Critical(_uint eDamageFontType, _float2 vPosition);
+	HRESULT Create_Critical(UI_DAMAGETYPE eType, _float2 vPosition);
 
 private:
 	ID3D11Device* m_pDevice = nullptr;

@@ -37,17 +37,6 @@ void CUI_BossHP_Background::Set_Owner(CBoss* pBoss)
 		m_iTextureIndex = 1;
 	else if (TEXT("DreamerMazeWitch") == m_pOwner->Get_ObjectTag())
 		m_iTextureIndex = 2;
-
-	/*
-		_TCHAR strKorName[MAX_PATH] = {};
-		_int   iLv = 0;
-
-		_float fHp = 100.f;
-		_float fMp = 0.f;
-
-		_float fMaxHp = 100.f;
-		_float fMaxMp = 10.f;
-	*/
 }
 
 HRESULT CUI_BossHP_Background::Initialize_Prototype()
@@ -69,7 +58,7 @@ HRESULT CUI_BossHP_Background::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	m_bActive = true;
+	m_bActive = false;
 
 	return S_OK;
 }
@@ -150,8 +139,16 @@ HRESULT CUI_BossHP_Background::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_fAlpha, sizeof(_float))))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", 0)))
-		return E_FAIL;
+	if (BOSS_INFO == m_eUIType)
+	{
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextureIndex)))
+			return E_FAIL;
+	}
+	else
+	{
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture")))
+			return E_FAIL;
+	}
 
 	return S_OK;
 }
