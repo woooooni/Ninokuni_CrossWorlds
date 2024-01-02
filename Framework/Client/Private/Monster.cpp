@@ -66,8 +66,6 @@ void CMonster::Tick(_float fTimeDelta)
 		m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component<CTransform>(L"Com_Transform");
 	}
 
-	GI->Add_CollisionGroup(COLLISION_GROUP::MONSTER, this);
-
 	for (auto& pPart : m_Parts)
 		pPart->Tick(fTimeDelta);
 
@@ -101,6 +99,8 @@ void CMonster::Tick(_float fTimeDelta)
 
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 	m_pControllerCom->Tick_Controller(fTimeDelta);
+
+	GI->Add_CollisionGroup(COLLISION_GROUP::MONSTER, this);
 
 	if (m_bIsRimUse) // RimLight
 		Tick_RimLight(fTimeDelta);
