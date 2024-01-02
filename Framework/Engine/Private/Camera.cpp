@@ -85,6 +85,9 @@ void CCamera::Start_Lerp_Distance(const _float& fTargetValue, const _float& fTim
 
 void CCamera::Start_Shake(const _float& fAmplitude, const _float& fFrequency, const _float& fDuration)
 {
+	if (0 >= fAmplitude || 0 >= fFrequency || 0 >= fDuration)
+		return;
+
 	m_tShakeDesc.bActive = true;
 
 	m_tShakeDesc.fAmplitude = fAmplitude;

@@ -215,7 +215,10 @@ void CAnimation::Change_EventKeyFrame(const _uint& iIndex, const _float fFrame, 
 		break;
 	case Engine::CAMERA:
 	{
+		if (m_CameraEvents.size() <= iIndex)
+			return;
 
+		m_CameraEvents[iIndex].first = fFrame;
 	}
 		break;
 	case Engine::COLLIDER:
@@ -559,15 +562,15 @@ void CAnimation::Update_Animation_Event(_float fTickPerSecond, const TWEEN_DESC&
 			case CAMERA_EVENT_TYPE::FOV :
 			{
 				CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Lerp_Fov(
-					CameraEvent.second.fTag1, CameraEvent.second.fTag2, CameraEvent.second.iTag1);
+					CameraEvent.second.fTag1, CameraEvent.second.fTag2, (LERP_MODE)CameraEvent.second.iTag1);
 			}
 				break;
-			case CAMERA_EVENT_TYPE::DISTANCE :
+			/*case CAMERA_EVENT_TYPE::DISTANCE :
 			{
 				CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Lerp_Distance(
-					CameraEvent.second.fTag1, CameraEvent.second.fTag2, CameraEvent.second.iTag1);
+					CameraEvent.second.fTag1, CameraEvent.second.fTag2, (LERP_MODE)CameraEvent.second.iTag1);
 			}
-				break;
+				break;*/
 			case CAMERA_EVENT_TYPE::SHAKE :
 			{
 				CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Shake(

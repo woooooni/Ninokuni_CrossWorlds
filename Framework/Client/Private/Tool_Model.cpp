@@ -19,6 +19,7 @@
 #include "Character_Manager.h"
 
 #include "Camera_Manager.h"
+#include "Camera.h"
 
 #pragma endregion
 
@@ -1312,6 +1313,8 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 		/* Tab Bar */
 		if (ImGui::BeginTabBar("Animation Event ", tab_bar_flags))
 		{
+			CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE);
+
 			/* Sound */
 			if (ImGui::BeginTabItem("Sound"))
 			{
@@ -1558,6 +1561,13 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 			/* Camera */
 			if (ImGui::BeginTabItem("Camera"))
 			{
+				/* 카메라 팔로우로 변경*/
+				if (E_FAIL != CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW))
+				{
+					CCamera_Manager::GetInstance()->Get_CurCamera()->Set_TargetObj(m_pDummy);
+					CCamera_Manager::GetInstance()->Get_CurCamera()->Set_LookAtObj(m_pDummy);
+				}
+
 				ImGui::PushItemWidth(200.f);
 				{
 					vector<pair<_float, CAMERA_EVENT_DESC>> CameraEvents = pCurAnim->Get_CameraEvents();
@@ -1599,17 +1609,21 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 					if (0 <= m_iCameraEventIndex)
 					{
 						/* Camera Event Type */
-						static int iCameraEventType = 0;
+						int iCameraEventType = CameraEvents[m_iCameraEventIndex].second.iTag2;
 						{
 							const char* event_preview_value = szCameraEventTypeNames[iCameraEventType];
 							if (ImGui::BeginCombo("Camera Event Type", event_preview_value))
 							{
 								for (int n = 0; n < CAMERA_EVENT_TYPE::CAMERA_EVENT_TYPE_END; n++)
 								{
+									if (CAMERA_EVENT_TYPE::DISTANCE == n)
+										continue;
+
 									const bool is_selected = (iCameraEventType == n);
 									if (ImGui::Selectable(szCameraEventTypeNames[n], is_selected))
 									{
-										iCameraEventType = n;
+										CameraEvents[m_iCameraEventIndex].second.iTag2 = iCameraEventType = n;
+										pCurAnim->Change_CameraEvent(m_iCameraEventIndex, CameraEvents[m_iCameraEventIndex].second);
 									}
 
 									if (is_selected)
@@ -1618,19 +1632,149 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 								ImGui::EndCombo();
 							}
 						}
+						IMGUI_NEW_LINE;
 
 						/* 카메라 이벤트 타입에 따라 프로퍼티가 달라져야 한다. */
+						switch (iCameraEventType)
+						{
+						case CAMERA_EVENT_TYPE::FOV :
+						{
+							/* Target Fov */
+							{
+								_float fTargetFov = XMConvertToDegrees(CameraEvents[m_iCameraEventIndex].second.fTag1);
+								if (ImGui::DragFloat("Target Fov (Default Fov : 60)", &fTargetFov, 0.5f, 40.f, 100.f))
+								{
+									CameraEvents[m_iCameraEventIndex].second.fTag1 = XMConvertToRadians(fTargetFov);
+									pCurAnim->Change_CameraEvent(m_iCameraEventIndex, CameraEvents[m_iCameraEventIndex].second);
+								}
+	
+							}
 
+							/* Time */
+							{
+								_float fLerpTime = CameraEvents[m_iCameraEventIndex].second.fTag2;
+								if (ImGui::DragFloat("Lerp Time", &fLerpTime, 0.05f, 0.f, 1.f))
+								{
+									CameraEvents[m_iCameraEventIndex].second.fTag2 = fLerpTime;
+									pCurAnim->Change_CameraEvent(m_iCameraEventIndex, CameraEvents[m_iCameraEventIndex].second);
+								}
 
+							}
 
+							/* Lerp Mode */
+							{
+								const char* Preview = LerpModeNames[CameraEvents[m_iCameraEventIndex].second.iTag1].c_str();
 
+								if (ImGui::BeginCombo(u8"보간 모드", Preview))
+								{
+									for (int iCurComboIndex = 0; iCurComboIndex < (_uint)LERP_MODE::TYPEEND; iCurComboIndex++)
+									{
+										const bool is_selected = (iCurComboIndex == (_uint)CameraEvents[m_iCameraEventIndex].second.iTag1);
 
+										if (ImGui::Selectable(LerpModeNames[iCurComboIndex].c_str(), is_selected))
+										{
+											CameraEvents[m_iCameraEventIndex].second.iTag1 = iCurComboIndex;
+											pCurAnim->Change_CameraEvent(m_iCameraEventIndex, CameraEvents[m_iCameraEventIndex].second);
+										}
+
+										if (is_selected)
+											ImGui::SetItemDefaultFocus();
+									}
+									ImGui::EndCombo();
+								}
+							}
+						}
+						break;
+						case CAMERA_EVENT_TYPE::SHAKE :
+						{
+							/* fAmplitude */
+							{
+								_float fAmplitudeInput = CameraEvents[m_iCameraEventIndex].second.fTag1;
+								if (ImGui::DragFloat(u8"Shake Amplitude (쉐이킹 진폭) (적정값 : 0.1 ~ 0.5)", &fAmplitudeInput, 0.01f, 0.f, 5.f))
+								{
+									CameraEvents[m_iCameraEventIndex].second.fTag1 = fAmplitudeInput;
+									pCurAnim->Change_CameraEvent(m_iCameraEventIndex, CameraEvents[m_iCameraEventIndex].second);
+								}
+							}
+
+							/* fFrequency */
+							{
+								_float fFrquencyInput = CameraEvents[m_iCameraEventIndex].second.fTag2;
+								if (ImGui::DragFloat(u8"Shake Frquency (쉐이킹 빈도) ", &fFrquencyInput, 0.01f, 0.f, 100.f))
+								{
+									CameraEvents[m_iCameraEventIndex].second.fTag2 = fFrquencyInput;
+									pCurAnim->Change_CameraEvent(m_iCameraEventIndex, CameraEvents[m_iCameraEventIndex].second);
+								}
+							}
+
+							/* fDuration */
+							{
+								_float fDurationInput = CameraEvents[m_iCameraEventIndex].second.fTag3;
+								if (ImGui::DragFloat(u8"Shake Duration (쉐이킹 시간) ", &fDurationInput, 0.01f, 0.f, 10.f))
+								{
+									CameraEvents[m_iCameraEventIndex].second.fTag3 = fDurationInput;
+									pCurAnim->Change_CameraEvent(m_iCameraEventIndex, CameraEvents[m_iCameraEventIndex].second);
+								}
+							}
+						}
+						break;
+						default:
+							break;
+						}
 					}
-
-
-					/* Add...... */
 				}
 				ImGui::PopItemWidth();
+				IMGUI_NEW_LINE;
+
+				if (ImGui::Button("Add Camera Event (Fov)"))
+				{
+					CAMERA_EVENT_DESC desc;
+					{
+						desc.iTag2 = CAMERA_EVENT_TYPE::FOV;
+
+						desc.fTag1 = XMConvertToRadians(60.0f);
+						desc.fTag2 = 0.2f;
+
+						desc.iTag1 = (_uint)LERP_MODE::EASE_OUT;
+					}
+					pCurAnim->Add_CameraEvent(m_fCurEventFrame, desc);
+					++m_iCameraEventIndex;
+				}
+				IMGUI_SAME_LINE;
+
+				if (ImGui::Button("Add Camera Event (Shake)"))
+				{
+					CAMERA_EVENT_DESC desc;
+					{
+						desc.iTag2 = CAMERA_EVENT_TYPE::SHAKE;
+
+						desc.fTag1 = 0.1f;
+						desc.fTag2 = 17.f;
+						desc.fTag3 = 0.3f;
+					}
+					pCurAnim->Add_CameraEvent(m_fCurEventFrame, desc);
+					++m_iCameraEventIndex;
+				}
+				IMGUI_SAME_LINE;
+
+				if (ImGui::Button("Del Camera Event"))
+				{
+					pCurAnim->Del_CameraEvent(m_iCameraEventIndex);
+					--m_iCameraEventIndex;
+				}
+				IMGUI_SAME_LINE;
+
+				if (ImGui::Button("Del Camera Events"))
+				{
+					pCurAnim->Del_All_CameraEvent();
+					m_iCameraEventIndex = -1;
+				}
+				IMGUI_SAME_LINE;
+
+				if (ImGui::Button("Sort Camera Event"))
+				{
+					pCurAnim->Sort_CameraEvents();
+				}
 
 				ImGui::EndTabItem();
 			}
@@ -1638,6 +1782,8 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 			/* Collider */
 			if (ImGui::BeginTabItem("Collider"))
 			{
+				CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE);
+
 				/* Intro */
 				{
 					ImGui::TextColored(ImVec4(1.f, 0.3f, 0.6f, 1.f), u8"Detection Type당 설정 가능한 콜라이더는 1개 입니다.");

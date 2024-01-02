@@ -16,7 +16,7 @@ typedef struct tagCameraEventDesc
 
 	_float	fTag1 = 0.f;		/* fTargetValue,	fTargetValue,	fAmplitude */
 	_float	fTag2 = 0.f;		/* fTime,			fTime,			fFrequency */
-	_float	fTag3 = 0.f;		/*		,				 ,			fDuration  */
+	_float	fTag3 = 0.f;		/*		,			,				fDuration  */
 
 	_int	iTag1 = 0;			/* eMode,			eMode */
 
@@ -56,7 +56,9 @@ public:
 	HRESULT		Add_Camera(const _uint& iKey, CCamera* pCamera);
 
 public:
+	/* Action */
 	HRESULT		Start_Action_Shake_Default();
+	HRESULT		Start_Action_Shake(const _float& fAmplitude, const _float& fFrequency, const _float& fDuration);
 
 private:
 	CCamera*	Find_Camera(const _uint& iKey);

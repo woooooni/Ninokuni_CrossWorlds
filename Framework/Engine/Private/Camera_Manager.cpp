@@ -142,6 +142,16 @@ HRESULT CCamera_Manager::Start_Action_Shake_Default()
 	return S_OK;
 }
 
+HRESULT CCamera_Manager::Start_Action_Shake(const _float& fAmplitude, const _float& fFrequency, const _float& fDuration)
+{
+	if (nullptr == m_pCurCamera)
+		return E_FAIL;
+
+	m_pCurCamera->Start_Shake(fAmplitude, fFrequency, fDuration);
+
+	return S_OK;
+}
+
 CCamera* CCamera_Manager::Find_Camera(const _uint& iKey)
 {
 	auto iter = m_pCameras.find(iKey);
