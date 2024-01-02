@@ -103,7 +103,17 @@ HRESULT CCharacter_Manager::Ready_Characters()
 	if (nullptr == pCharacterSwordMan)
 		return E_FAIL;
 
-	m_pCharacters[CHARACTER_TYPE::SWORD_MAN] = dynamic_cast<CCharacter*>(pCharacterSwordMan->Clone(nullptr));
+
+	CCharacter::CHARACTER_STAT StatDesc;
+	StatDesc.iAtt = 10;
+	StatDesc.iDef = 1;
+	StatDesc.iExp = 0;
+	StatDesc.iMaxExp = 1000;
+	StatDesc.iMaxHp = 123456;
+	StatDesc.iHp = 123456;
+	StatDesc.iLevel = 10;
+
+	m_pCharacters[CHARACTER_TYPE::SWORD_MAN] = dynamic_cast<CCharacter*>(pCharacterSwordMan->Clone(&StatDesc));
 	if (nullptr == m_pCharacters[CHARACTER_TYPE::SWORD_MAN])
 		return E_FAIL;
 #pragma endregion

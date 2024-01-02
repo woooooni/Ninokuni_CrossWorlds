@@ -112,31 +112,16 @@ void CMonster::LateTick(_float fTimeDelta)
 	if (nullptr != m_pModelCom)
 		m_pModelCom->LateTick(fTimeDelta);
 
-	for (auto& pPart : m_Parts)
-		pPart->LateTick(fTimeDelta);
-
-	for (auto& pPart : m_Parts)
-	{
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, pPart);
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, pPart);
-	}
-
 	/*m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);*/
 	// m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_SHADOW, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc());
 	
-	if (m_bIsRimUse)
-	{
-		m_strObjectTag = m_strPrototypeTag + TEXT("Rim");
-	}
-	else if (m_bReserveDead)
-	{
-		m_strObjectTag = m_strPrototypeTag + TEXT("Dead");
-	}
-	else
-		m_strObjectTag = m_strPrototypeTag;
 
-	m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_NONBLEND, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc());
+	if (GI->Intersect_Frustum_World(m_pTransformCom->Get_Position(), 10.f))
+	{
+		m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_NONBLEND, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc());
+	}
+	
 
 
 
@@ -354,7 +339,7 @@ void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 {
 	m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ISHIT] = true;
 
-	m_tStat.fHp -= dynamic_cast<CPlayer*>(tInfo.pOther)->Get_Character()->Get_Stat().iAtt;
+	m_tStat.fHp -= dynamic_cast<CCharacter*>(tInfo.pOther)->Get_Stat().iAtt;
 
 	Start_RimLight();
 }

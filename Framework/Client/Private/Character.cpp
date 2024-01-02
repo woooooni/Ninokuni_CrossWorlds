@@ -288,17 +288,25 @@ HRESULT CCharacter::Render_ShadowDepth()
 
 void CCharacter::Collision_Enter(const COLLISION_INFO& tInfo)
 {
-	
+	__super::Collision_Enter(tInfo);
+	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER)
+	{
+		if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY
+			&& tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK)
+		{
+			On_Damaged(tInfo);
+		}
+	}
 }
 
 void CCharacter::Collision_Continue(const COLLISION_INFO& tInfo)
 {
-	
+	__super::Collision_Continue(tInfo);
 }
 
 void CCharacter::Collision_Exit(const COLLISION_INFO& tInfo)
 {
-
+	__super::Collision_Exit(tInfo);
 }
 
 void CCharacter::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
@@ -371,7 +379,43 @@ void CCharacter::Set_Infinite(_float fInfiniteTime, _bool bInfinite)
 
 void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 {
+	CMonster* pMonster = dynamic_cast<CMonster*>(tInfo.pOther);
+	if (nullptr == pMonster)
+		return;
 
+
+	CTransform* pOtherTransform = pMonster->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr != pOtherTransform)
+		m_pTransformCom->LookAt_ForLandObject(pOtherTransform->Get_Position());
+
+	if (CCollider::ATTACK_TYPE::AIR_BORNE == tInfo.pOtherCollider->Get_AttackType())
+	{
+		m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(XMVectorSet(0.f, 1.f, 0.f, 0.f)), 7.f, true);
+		m_pStateCom->Change_State(CCharacter::DAMAGED_KNOCKDOWN);
+	}
+
+	else if (CCollider::ATTACK_TYPE::BLOW == tInfo.pOtherCollider->Get_AttackType())
+	{
+		m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(XMVectorSet(0.f, 1.f, 0.f, 0.f)), 7.f, true);
+		m_pStateCom->Change_State(CCharacter::DAMAGED_IMPACT);
+	}
+
+	else if (CCollider::ATTACK_TYPE::BOUND == tInfo.pOtherCollider->Get_AttackType())
+	{
+		m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(XMVectorSet(0.f, 1.f, 0.f, 0.f)), 2.f, true);
+		m_pStateCom->Change_State(CCharacter::DAMAGED_KNOCKDOWN);
+	}
+
+	else if (CCollider::ATTACK_TYPE::STRONG == tInfo.pOtherCollider->Get_AttackType())
+	{
+		m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(m_pTransformCom->Get_Look()), 2.f, true);
+		m_pStateCom->Change_State(CCharacter::DAMAGED_STRONG);
+	}
+
+	else if (CCollider::ATTACK_TYPE::WEAK == tInfo.pOtherCollider->Get_AttackType())
+	{
+		m_pStateCom->Change_State(CCharacter::DAMAGED_WEAK);
+	}
 }
 
 
