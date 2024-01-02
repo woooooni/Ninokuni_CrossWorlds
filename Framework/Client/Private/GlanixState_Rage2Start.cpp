@@ -38,8 +38,10 @@ void CGlanixState_Rage2Start::Tick_State(_float fTimeDelta)
 
 void CGlanixState_Rage2Start::Exit_State()
 {
-	_vector vPillarPos = { 0.f, 0.f, 2.f, 1.f };
-	GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_FireSpirit"), &vPillarPos);
+	//_float4 vOwnerPos = {};
+	//XMStoreFloat4(&vOwnerPos, m_pGlanix->Get_OriginPos());
+	//_vector vSpritPos = { vOwnerPos.x, vOwnerPos.y, vOwnerPos.z, 1.f };
+	GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_Phoenix"), &m_pGlanix);
 }
 
 CGlanixState_Rage2Start* CGlanixState_Rage2Start::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

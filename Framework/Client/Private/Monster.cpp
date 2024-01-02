@@ -12,6 +12,8 @@
 #include "BehaviorTree.h"
 
 #include "Game_Manager.h"
+#include "Character.h"
+
 #include "Player.h"
 
 USING(Client)
@@ -354,7 +356,7 @@ void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 {
 	m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ISHIT] = true;
 
-	m_tStat.fHp -= dynamic_cast<CPlayer*>(tInfo.pOther)->Get_Character()->Get_Stat().iAtt;
+	m_tStat.fHp -= dynamic_cast<CCharacter*>(tInfo.pOther)->Get_Stat().iAtt;
 
 	Start_RimLight();
 }

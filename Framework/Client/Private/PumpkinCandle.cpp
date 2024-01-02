@@ -183,6 +183,8 @@ HRESULT CPumpkinCandle::Ready_States()
 	m_tStat.iLv = 8;
 	m_tStat.fMaxHp = 150;
 	m_tStat.fHp = 150;
+	m_tStat.iAtk = 15;
+	m_tStat.iDef = 0;
 
 	return S_OK;
 }

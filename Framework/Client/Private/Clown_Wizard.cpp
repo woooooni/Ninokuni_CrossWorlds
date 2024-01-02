@@ -193,6 +193,8 @@ HRESULT CClown_Wizard::Ready_States()
 	m_tStat.iLv = 10;
 	m_tStat.fMaxHp = 200;
 	m_tStat.fHp = 200;
+	m_tStat.iAtk = 20;
+	m_tStat.iDef = 1;
 
 	return S_OK;
 }

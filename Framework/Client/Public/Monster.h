@@ -72,6 +72,9 @@ public:
 		_float fMaxHp = 100.f;
 		_float fMaxMp = 10.f;
 
+		_int   iAtk = 0;
+		_int   iDef = 0;
+
 		_float fAirVelocity = 0.f;
 		_float fAirDeadVelocity = 0.f;
 	} MONSTER_STAT;

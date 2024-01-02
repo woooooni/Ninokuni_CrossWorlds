@@ -216,10 +216,7 @@ HRESULT CGlanix::Ready_Components()
 
 	m_vOriginLook = m_pTransformCom->Get_Look();
 	m_vOriginPos = m_pTransformCom->Get_Position();
-
-	_float4 vTemp = {};
-	XMStoreFloat4(&vTemp, m_vOriginPos);
-	m_vWavePoint = { vTemp.x, 1.6f, vTemp.z + 20.f, 1.f };
+	m_vWavePoint = { -63.f, 1.6f, 393.f, 1.f };
 
 	/* For.Com_Renderer */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
@@ -272,6 +269,8 @@ HRESULT CGlanix::Ready_States()
 {
 	m_tStat.fMaxHp = 1000;
 	m_tStat.fHp = 1000;
+	m_tStat.iAtk = 25;
+	m_tStat.iDef = 5;
 	
 	list<wstring> strAnimationName;
 	

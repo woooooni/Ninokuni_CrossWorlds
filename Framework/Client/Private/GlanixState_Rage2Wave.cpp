@@ -27,6 +27,9 @@ void CGlanixState_Rage2Wave::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
+	// 여기서 슬로우 처리.
+	//m_pGlanix->Get_SlowStack();
+
 	if (m_pModelCom->Get_CurrAnimationFrame() == 50)
 	{
 		CCamera_Manager::GetInstance()->Start_Action_Shake_Default();

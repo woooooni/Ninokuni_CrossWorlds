@@ -190,6 +190,8 @@ HRESULT CBaobam_Dark::Ready_States()
 	m_tStat.iLv = 10;
 	m_tStat.fMaxHp = 300;
 	m_tStat.fHp = 300;
+	m_tStat.iAtk = 15;
+	m_tStat.iDef = 3;
 
 	return S_OK;
 }

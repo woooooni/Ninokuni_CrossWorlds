@@ -38,15 +38,32 @@ void CGlanixState_RageStart::Tick_State(_float fTimeDelta)
 
 void CGlanixState_RageStart::Exit_State()
 {
-	//_vector vPillarPos = { 8.f, 0.f, -8.f, 1.f };
+	//_float4 vGlanixPos = {};
+	//XMStoreFloat4(&vGlanixPos, m_pTransformCom->Get_Position());
+	//
+	//_vector vPillarPos = { vGlanixPos.x + 8.f, 1.6f, vGlanixPos.z + -8.f, 1.f };
 	//GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
-	//vPillarPos = { -11.f, 0.f, -8.f, 1.f };
+	//vPillarPos = { vGlanixPos.x + -15.f, 1.6f, vGlanixPos.z + -8.f, 1.f };
 	//GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
-	//vPillarPos = { 12.f, 0.f, 11.f, 1.f };
+	//vPillarPos = { vGlanixPos.x + 12.f, 1.6f, vGlanixPos.z + 11.f, 1.f };
 	//GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
-	//vPillarPos = { -6.f, 0.f, 7.f, 1.f };
+	//vPillarPos = { vGlanixPos.x + -11.f, 1.6f, vGlanixPos.z + 13.f, 1.f };
 	//GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
 
+	_vector vPillarPos = { -64.f, 1.6f, 360.f, 1.f };
+	GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
+	vPillarPos = { -34.f, 1.6f, 350.f, 1.f };
+	GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
+	vPillarPos = { -60.f, 1.6f, 334.f, 1.f };
+	GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
+	vPillarPos = { -36.f, 1.6f, 378.f, 1.f };
+	GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
+	vPillarPos = { -63.f, 1.6f, 378.f, 1.f };
+	GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
+	vPillarPos = { -44.f, 1.6f, 391.f, 1.f };
+	GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
+	vPillarPos = { -23.f, 1.6f, 363.f, 1.f };
+	GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
 }
 
 CGlanixState_RageStart* CGlanixState_RageStart::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

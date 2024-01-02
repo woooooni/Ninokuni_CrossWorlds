@@ -264,9 +264,12 @@ HRESULT CShadow_Thief::Ready_States()
 	strKorName = TEXT("内何府");
 	strSubName = TEXT("内俊风农 汲盔");
 	m_tStat.eElementType = ELEMENTAL_TYPE::WATER;
+
 	m_tStat.iLv = 3;
 	m_tStat.fMaxHp = 80;
 	m_tStat.fHp = 80;
+	m_tStat.iAtk = 5;
+	m_tStat.iDef = 0;
 	
 	m_tStat.fAirVelocity = 10.f;
 	m_tStat.fAirDeadVelocity = 20.f;

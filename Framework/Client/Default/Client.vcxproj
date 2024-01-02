@@ -279,8 +279,12 @@
     <ClInclude Include="..\Public\GlanixState_RageStartTurnOC.h" />
     <ClInclude Include="..\Public\GlanixState_RageStartTurnOL.h" />
     <ClInclude Include="..\Public\GlanixState_Stun.h" />
-    <ClInclude Include="..\Public\Glanix_FireSpirit.h" />
+    <ClInclude Include="..\Public\Glanix_Phoenix.h" />
     <ClInclude Include="..\Public\Glanix_IcePillar.h" />
+    <ClInclude Include="..\Public\Glanix_PhoenixState_Base.h" />
+    <ClInclude Include="..\Public\Glanix_PhoenixState_Idle.h" />
+    <ClInclude Include="..\Public\Glanix_PhoenixState_Out.h" />
+    <ClInclude Include="..\Public\Glanix_PhoenixState_Spawn.h" />
     <ClInclude Include="..\Public\Grass.h" />
     <ClInclude Include="..\Public\Gosling.h" />
     <ClInclude Include="..\Public\HumanChild01.h" />
@@ -303,7 +307,6 @@
     <ClInclude Include="..\Public\LuxerionHuman.h" />
     <ClInclude Include="..\Public\MonsterBT.h" />
     <ClInclude Include="..\Public\Motion_Trail.h" />
-    <ClInclude Include="..\Public\NpcNode_Base.h" />
     <ClInclude Include="..\Public\NpcWeapon_Halberd.h" />
     <ClInclude Include="..\Public\KingdomGuard.h" />
     <ClInclude Include="..\Public\Pigeon.h" />
@@ -847,8 +850,12 @@
     <ClCompile Include="..\Private\GlanixState_RageStartTurnOC.cpp" />
     <ClCompile Include="..\Private\GlanixState_RageStartTurnOL.cpp" />
     <ClCompile Include="..\Private\GlanixState_Stun.cpp" />
-    <ClCompile Include="..\Private\Glanix_FireSpirit.cpp" />
+    <ClCompile Include="..\Private\Glanix_Phoenix.cpp" />
     <ClCompile Include="..\Private\Glanix_IcePillar.cpp" />
+    <ClCompile Include="..\Private\Glanix_PhoenixState_Base.cpp" />
+    <ClCompile Include="..\Private\Glanix_PhoenixState_Idle.cpp" />
+    <ClCompile Include="..\Private\Glanix_PhoenixState_Out.cpp" />
+    <ClCompile Include="..\Private\Glanix_PhoenixState_Spawn.cpp" />
     <ClCompile Include="..\Private\Grass.cpp" />
     <ClCompile Include="..\Private\Gosling.cpp" />
     <ClCompile Include="..\Private\HumanChild01.cpp" />
@@ -871,7 +878,6 @@
     <ClCompile Include="..\Private\LuxerionHuman.cpp" />
     <ClCompile Include="..\Private\MonsterBT.cpp" />
     <ClCompile Include="..\Private\Motion_Trail.cpp" />
-    <ClCompile Include="..\Private\NpcNode_Base.cpp" />
     <ClCompile Include="..\Private\NpcWeapon_Halberd.cpp" />
     <ClCompile Include="..\Private\KingdomGuard.cpp" />
     <ClCompile Include="..\Private\Pigeon.cpp" />

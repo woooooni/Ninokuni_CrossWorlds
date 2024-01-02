@@ -33,7 +33,7 @@ void CGlanixState_Rage2StartJump::Tick_State(_float fTimeDelta)
 	{
 		m_pTransformCom->LookAt_ForLandObject(vDestPos);
 
-		XMVECTOR vCurVector = XMVectorLerp(m_pTransformCom->Get_Position(), vDestPos, fTimeDelta / 0.25f);
+		XMVECTOR vCurVector = XMVectorLerp(m_pTransformCom->Get_Position(), vDestPos, fTimeDelta / 0.5f);
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCurVector);
 	}
 
