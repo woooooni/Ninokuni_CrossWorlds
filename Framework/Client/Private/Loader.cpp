@@ -409,8 +409,10 @@ HRESULT CLoader::Loading_For_Level_Test()
 	m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE].wait();
 	m_Threads[LOADING_THREAD::MONSTER_AND_NPC].wait();
 
+
 	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Winter");
 	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Monster_Data, this, L"Winter");
+
 
 	CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_TEST);
 	

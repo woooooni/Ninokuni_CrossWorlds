@@ -17,7 +17,8 @@ public:
 	{
 		CTransform* pTargetTransform = nullptr;
 		_uint iDamage = 0;
-		_bool bCritical = false; // Critical Font를 생성하는가
+		_float2 vTargetPosition = _float2(g_iWinSizeX * 0.5f, g_iWinSizeY * 0.5f);
+
 	}DAMAGE_DESC;
 
 public:

@@ -83,7 +83,7 @@ void CShadow_Thief::Tick(_float fTimeDelta)
 	{
 		_int iDamage = GI->RandomInt(1, 999999);
 		if (FAILED(CUIDamage_Manager::GetInstance()->Create_MonsterDamageNumber(m_pTransformCom,
-			CUIDamage_Manager::UI_DAMAGEFONTCOLOR::FONT_GOLD, iDamage)))
+			CUIDamage_Manager::UI_DAMAGETYPE::STRENGTH, iDamage)))
 			return;
 	}
 	/*

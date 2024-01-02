@@ -14,9 +14,10 @@ class CUIDamage_Manager : public CBase
 	DECLARE_SINGLETON(CUIDamage_Manager)
 
 public:
-	enum UI_DAMAGEFONTCOLOR { FONT_BLUE, // Weakness
-		FONT_WHITE, FONT_WHITE_AND_GOLD, // General
-		FONT_GOLD, FONT_GOLD_AND_RED, // strong
+	enum UI_DAMAGETYPE { WEAKNESS, NONE, STRENGTH, DAMAGETYPE_END };
+	enum UI_DAMAGEFONTCOLOR { FONT_BLUE,
+		FONT_WHITE, FONT_WHITE_AND_GOLD,
+		FONT_GOLD, FONT_GOLD_AND_RED,
 		FONT_DAMAGECOLOR_END };
 
 private:
@@ -31,14 +32,11 @@ public:
 	HRESULT Ready_DamageNumberPrototypes();
 
 public:
-	_int Calculate_DamageColor(ELEMENTAL_TYPE eMonsterType, ELEMENTAL_TYPE eWeaponType, _int iDamage);
-
-public:
 	HRESULT Create_PlayerDamageNumber(class CTransform* pTransformCom, _int iDamage); // ColorRed
+	HRESULT Create_MonsterDamageNumber(class CTransform* pTransformCom, UI_DAMAGETYPE eType, _int iDamage);
 
-public:
-	HRESULT Create_MonsterDamageNumber(class CTransform* pTransformCom, UI_DAMAGEFONTCOLOR eType, _int iDamage);
-	//HRESULT Create_CommonDamageNumber(class CTransform* pTransformCom, _int iDamage);
+private:
+	_float2 Designate_RandomPosition(_float2 vTargetPosition);
 	HRESULT Create_Miss(class CTransform* pTransformCom);
 	HRESULT Create_Critical(_uint eDamageFontType, _float2 vPosition);
 
@@ -54,3 +52,8 @@ public:
 	virtual void Free() override;
 };
 END
+
+/*
+public:
+	_int Calculate_DamageColor(ELEMENTAL_TYPE eMonsterType, ELEMENTAL_TYPE eWeaponType, _int iDamage);
+*/

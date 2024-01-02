@@ -23,6 +23,7 @@ public: // Get/Set
 	void			Set_RandomNick(const wstring& strRandom);
 	void			Set_UserName();
 	void			Set_MonsterDescForUI(class CMonster* pOwner, void* pArg, _bool bActive = true);
+	_float2			Get_ProjectionPosition(class CTransform* pTransform);
 
 public:
 	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
