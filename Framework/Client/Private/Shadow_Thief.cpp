@@ -77,22 +77,6 @@ void CShadow_Thief::Tick(_float fTimeDelta)
 	}
 	// >> 
 	
-	// UI TestCode
-	
-	if (KEY_TAP(KEY::Y))
-	{
-		_int iDamage = GI->RandomInt(1, 999999);
-		if (FAILED(CUIDamage_Manager::GetInstance()->Create_MonsterDamageNumber(m_pTransformCom,
-			CUIDamage_Manager::UI_DAMAGETYPE::STRENGTH, iDamage)))
-			return;
-	}
-	/*
-	if (KEY_TAP(KEY::M))
-	{
-		if (FAILED(CUIDamage_Manager::GetInstance()->Create_Critical(m_pTransformCom)))
-			return;
-	}
-	*/
 
 	if (nullptr != m_pHPBar)
 		m_pHPBar->Tick(fTimeDelta);

@@ -2739,6 +2739,21 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	return S_OK;
 }
 
+HRESULT CUI_Manager::Ready_BossHPBar(CBoss* pBoss, void* pArg)
+{
+	if (nullptr == pBoss)
+		return E_FAIL;
+
+	m_pBossInfo->Set_Owner(pBoss);
+	m_pBossHPBar->Set_Owner(pBoss);
+
+	m_pBossInfo->Set_Active(true);
+	m_pBossHPBack->Set_Active(true);
+	m_pBossHPBar->Set_Active(true);
+
+	return S_OK;
+}
+
 HRESULT CUI_Manager::UI_WndProcHandler(UINT message, WPARAM wParam, LPARAM lParam)
 {
 //	if (message == WM_LBUTTONDOWN)
@@ -3688,6 +3703,30 @@ HRESULT CUI_Manager::OnOff_MonsterHP(_bool bOnOff, ELEMENTAL_TYPE eType)
 		m_pMonsterHPBar->Set_Active(false);
 		m_pMonsterFrame->Set_Active(false);
 		m_pMonsterElemental->Set_Active(false);
+	}
+
+	return S_OK;
+}
+
+HRESULT CUI_Manager::OnOff_BossHP(_bool bOnOff)
+{
+	if (bOnOff)
+	{
+		//if (!m_pBossHPBack->Get_Active())
+		{
+			m_pBossInfo->Set_Active(true);
+			m_pBossHPBack->Set_Active(true);
+			m_pBossHPBar->Set_Active(true);
+		}
+	}
+	else
+	{
+		//if (m_pBossHPBack->Get_Active())
+		{
+			m_pBossInfo->Set_Active(false);
+			m_pBossHPBack->Set_Active(false);
+			m_pBossHPBar->Set_Active(false);
+		}
 	}
 
 	return S_OK;

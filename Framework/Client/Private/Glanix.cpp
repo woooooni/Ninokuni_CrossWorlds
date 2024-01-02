@@ -3,6 +3,7 @@
 #include "GameInstance.h"
 #include "HierarchyNode.h"
 #include "Trail.h"
+#include "UI_Manager.h"
 
 #include "GlanixState_Spawn.h"
 #include "GlanixState_CombatIdle.h"
@@ -99,6 +100,8 @@ HRESULT CGlanix::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
+	if (FAILED(CUI_Manager::GetInstance()->Ready_BossHPBar(this)))
+		return E_FAIL;
 
 	return S_OK;
 }

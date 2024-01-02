@@ -40,6 +40,7 @@ public: // For Clone
 	HRESULT Ready_Loadings();
 	HRESULT Ready_LobbyUIs();
 	HRESULT Ready_CommonUIs(LEVELID eID); // + Ready_Cursor, Ready_Veil 정리 필요함.
+	HRESULT Ready_BossHPBar(class CBoss* pBoss, void* pArg = nullptr);
 	HRESULT UI_WndProcHandler(UINT message, WPARAM wParam, LPARAM lParam);
 	
 public:
@@ -108,6 +109,7 @@ public: // Lobby
 	HRESULT OnOff_CloseButton(_bool bOnOff);
 
 	HRESULT OnOff_MonsterHP(_bool bOnOff, ELEMENTAL_TYPE eType = ELEMENTAL_TYPE::ELEMENTAL_END);
+	HRESULT OnOff_BossHP(_bool bOnOff);
 
 	HRESULT OnOff_CostumeWindow(_bool bOnOff);
 	HRESULT OnOff_CostumeSlot(_uint iSection, _bool bOnOff);

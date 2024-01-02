@@ -567,7 +567,7 @@
     <ClInclude Include="..\Public\UI_Costume_LineBox.h" />
     <ClInclude Include="..\Public\UI_Damage_Critical.h" />
     <ClInclude Include="..\Public\UI_Damage_General.h" />
-    <ClInclude Include="..\Public\UI_Damage_Skill.h" />
+    <ClInclude Include="..\Public\UI_Damage_Number.h" />
     <ClInclude Include="..\Public\UI_Dialog_Flip.h" />
     <ClInclude Include="..\Public\UI_Dialog_MiniWindow.h" />
     <ClInclude Include="..\Public\UI_Dialog_Portrait.h" />
@@ -1136,7 +1136,7 @@
     <ClCompile Include="..\Private\UI_Costume_LineBox.cpp" />
     <ClCompile Include="..\Private\UI_Damage_Critical.cpp" />
     <ClCompile Include="..\Private\UI_Damage_General.cpp" />
-    <ClCompile Include="..\Private\UI_Damage_Skill.cpp" />
+    <ClCompile Include="..\Private\UI_Damage_Number.cpp" />
     <ClCompile Include="..\Private\UI_Dialog_Flip.cpp" />
     <ClCompile Include="..\Private\UI_Dialog_MiniWindow.cpp" />
     <ClCompile Include="..\Private\UI_Dialog_Portrait.cpp" />

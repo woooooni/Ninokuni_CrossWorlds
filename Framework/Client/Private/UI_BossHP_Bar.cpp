@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "UI_BossHP_Bar.h"
 #include "GameInstance.h"
+#include "Boss.h"
+#include "UI_Manager.h"
 
 CUI_BossHP_Bar::CUI_BossHP_Bar(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_BossHP_Bar")
@@ -10,6 +12,39 @@ CUI_BossHP_Bar::CUI_BossHP_Bar(ID3D11Device* pDevice, ID3D11DeviceContext* pCont
 CUI_BossHP_Bar::CUI_BossHP_Bar(const CUI_BossHP_Bar& rhs)
 	: CUI(rhs)
 {
+}
+
+void CUI_BossHP_Bar::Set_Owner(CBoss* pBoss)
+{
+	if (nullptr == pBoss)
+		return;
+
+	m_pOwner = pBoss;
+
+	CMonster::MONSTER_STAT StatDesc = {};
+	ZeroMemory(&StatDesc, sizeof(CMonster::MONSTER_STAT));
+
+	memcpy(&StatDesc, &(m_pOwner->Get_Stat()), sizeof(CMonster::MONSTER_STAT));
+
+	if (TEXT("Glanix") == m_pOwner->Get_ObjectTag())
+	{
+		m_iGaugeIndex = 0;
+		m_iFXTexIndex = 0;
+	}
+	else if (TEXT("Stellia") == m_pOwner->Get_ObjectTag())
+	{
+		m_iGaugeIndex = 1;
+		m_iFXTexIndex = 1;
+	}
+	else if (TEXT("DreamerMazeWitch") == m_pOwner->Get_ObjectTag())
+	{
+		m_iGaugeIndex = 1;
+		m_iFXTexIndex = 2;
+	}
+
+	m_fMaxHP = StatDesc.fMaxHp;
+	m_fCurHP = StatDesc.fHp;
+	m_fPreHP = m_fCurHP;
 }
 
 HRESULT CUI_BossHP_Bar::Initialize_Prototype()
@@ -31,8 +66,7 @@ HRESULT CUI_BossHP_Bar::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	m_bActive = true;
-	//m_bActive = true;
+	m_bActive = false;
 	m_bLerp = false;
 
 	// TestCode
@@ -53,8 +87,11 @@ void CUI_BossHP_Bar::Tick(_float fTimeDelta)
 		if (KEY_TAP(KEY::G))
 		{
 			m_fCurHP -= 100.f;
-			m_bLerp = false;
+			//m_bLerp = false;
 		}
+
+		if (m_fCurHP < m_fPreHP)
+			m_bLerp = false;
 
 		if (!m_bLerp && m_fPreHP > m_fCurHP)
 		{
@@ -75,17 +112,25 @@ void CUI_BossHP_Bar::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		CMonster::MONSTER_STAT StatDesc = {};
+		ZeroMemory(&StatDesc, sizeof(CMonster::MONSTER_STAT));
+		memcpy(&StatDesc, &(m_pOwner->Get_Stat()), sizeof(CMonster::MONSTER_STAT));
+
+		m_fCurHP = StatDesc.fHp;
+
 		if (0.f >= m_fCurHP)
 		{
-			m_iPass = 18;
+			CUI_Manager::GetInstance()->OnOff_BossHP(false);
 
-			m_fDissolveAcc += fTimeDelta;
-
-			m_fRatio -= fTimeDelta * 0.5f;
-			if (0 >= m_fRatio)
-				m_fRatio = 0.f;
-
-			m_fSinValue = sin(m_fTimeAcc);
+			//m_iPass = 18;
+			//
+			//m_fDissolveAcc += fTimeDelta;
+			//
+			//m_fRatio -= fTimeDelta * 0.5f;
+			//if (0 >= m_fRatio)
+			//	m_fRatio = 0.f;
+			//
+			//m_fSinValue = sin(m_fTimeAcc);
 		}
 		else
 		{
@@ -237,28 +282,28 @@ HRESULT CUI_BossHP_Bar::Bind_ShaderResources()
 			return E_FAIL;
 	}
 
-	if (m_iPass == 18)
-	{
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_Time", &m_fDissolveAcc, sizeof(_float))))
-			return E_FAIL;
+//	if (m_iPass == 18)
+//	{
+//		if (FAILED(m_pShaderCom->Bind_RawValue("g_Time", &m_fDissolveAcc, sizeof(_float))))
+//			return E_FAIL;
+//
+//		if (FAILED(m_pShaderCom->Bind_RawValue("g_SinValue", &m_fSinValue, sizeof(_float))))
+//			return E_FAIL;
+//
+//		if (FAILED(m_pShaderCom->Bind_RawValue("g_Ratio", &m_fRatio, sizeof(_float))))
+//			return E_FAIL;
+//
+//		if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
+//			return E_FAIL;
+//	}
 
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_SinValue", &m_fSinValue, sizeof(_float))))
-			return E_FAIL;
-
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_Ratio", &m_fRatio, sizeof(_float))))
-			return E_FAIL;
-
-		if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture")))
-			return E_FAIL;
-	}
-
-	if (FAILED(m_pGlowTextureCom->Bind_ShaderResource(m_pShaderCom, "g_GlowTexture")))
+	if (FAILED(m_pGlowTextureCom->Bind_ShaderResource(m_pShaderCom, "g_GlowTexture", m_iFXTexIndex)))
 		return E_FAIL;
 
 	if (FAILED(m_pFXTextureCom->Bind_ShaderResource(m_pShaderCom, "g_LerpTexture")))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", 0)))
+	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iGaugeIndex)))
 		return E_FAIL;
 
 	return S_OK;

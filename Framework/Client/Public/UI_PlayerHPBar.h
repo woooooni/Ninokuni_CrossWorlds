@@ -26,8 +26,8 @@ private:
 	wstring m_strPlayerCurHP = L"";
 
 	_float2 m_vDefaultPosition = _float2(226.f, 27.f);
-	_float2 m_vCurHPPosition = _float2(183.f, 27.f);
-	_float2 m_vMaxHPPosition = _float2(239.f, 27.f);
+	_float2 m_vCurHPPosition = _float2(210.f, 27.f);
+	_float2 m_vMaxHPPosition = _float2(235.f, 27.f);
 
 private:
 	virtual HRESULT	Ready_Components() override;

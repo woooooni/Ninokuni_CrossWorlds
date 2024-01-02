@@ -1,21 +1,21 @@
 #include "stdafx.h"
-#include "UI_Damage_Skill.h"
+#include "UI_Damage_Number.h"
 #include "GameInstance.h"
 #include "UIDamage_Manager.h"
 
-CUI_Damage_Skill::CUI_Damage_Skill(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_DAMAGEFONT eType)
+CUI_Damage_Number::CUI_Damage_Number(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_DAMAGEFONT eType)
 	: CUI(pDevice, pContext, L"UI_Damage_Skill")
 	, m_eFontType(eType)
 {
 }
 
-CUI_Damage_Skill::CUI_Damage_Skill(const CUI_Damage_Skill& rhs)
+CUI_Damage_Number::CUI_Damage_Number(const CUI_Damage_Number& rhs)
 	: CUI(rhs)
 	, m_eFontType(rhs.m_eFontType)
 {
 }
 
-HRESULT CUI_Damage_Skill::Initialize_Prototype()
+HRESULT CUI_Damage_Number::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
@@ -23,7 +23,7 @@ HRESULT CUI_Damage_Skill::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CUI_Damage_Skill::Initialize(void* pArg)
+HRESULT CUI_Damage_Number::Initialize(void* pArg)
 {
 	if (nullptr == pArg)
 		return E_FAIL;
@@ -44,7 +44,13 @@ HRESULT CUI_Damage_Skill::Initialize(void* pArg)
 
 	m_tInfo.fX = m_vTargetPosition.x;
 	m_tInfo.fY = m_vTargetPosition.y;
-	_float fNumSize = 112.f * 0.25f; // CamDistance를 받아서 사이즈 조절하는 것도 필요함.
+	_float fNumSize;
+
+	if (m_FontDesc.bIsPlayer)
+		fNumSize = 112.f * 0.15f;
+	else
+		fNumSize = 112.f * 0.25f; // CamDistance를 받아서 사이즈 조절하는 것도 필요함.
+
 	m_pTransformCom->Set_Scale(XMVectorSet(fNumSize, fNumSize, 1.f, 0.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
@@ -64,64 +70,21 @@ HRESULT CUI_Damage_Skill::Initialize(void* pArg)
 
 	m_bFadeOut = false;
 	m_fAlpha = 1.f;
-	m_bSetPosition = false;
+//	m_bSetPosition = false;
 
 	return S_OK;
 }
 
-void CUI_Damage_Skill::Tick(_float fTimeDelta)
+void CUI_Damage_Number::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
 		if (!Is_Dead())
 		{
-//			if (!m_bSetPosition)
-//			{
-//				m_bSetPosition = true;
-//				m_fRandomOffset = _float2(GI->RandomFloat(-100.f, 100.f), GI->RandomFloat(-200.f, 0.f));
-//
-//				m_tInfo.fX += m_fRandomOffset.x; // Initialize할때 Offset 더하는 것으로 수정할 예정 -> Critical때문에
-//				m_tInfo.fY += m_fRandomOffset.y;
-//
-//				m_vTargetPosition.x = m_tInfo.fX;
-//				m_vTargetPosition.y = m_tInfo.fY;
-//
-//				m_fArrivedPosY = m_vTargetPosition.y - 100.f;
-//
-//				m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-//					XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
-//			}
-
-			if (!m_bFadeOut)
-			{
-				m_fFadeTimeAcc += fTimeDelta;
-
-				if (m_fFadeTimeAcc > 0.3f)
-				{
-					m_bFadeOut = true;
-					m_fFadeTimeAcc = 0.f;
-				}
-			}
+			if (m_FontDesc.bIsPlayer)
+				Tick_Player(fTimeDelta);
 			else
-			{
-				m_fAlpha -= fTimeDelta;
-
-				if (m_fAlpha <= 0.f)
-				{
-					m_fAlpha = 0.f;
-					Set_Dead(true);
-				}
-				else
-				{
-					m_tInfo.fY -= fTimeDelta * 1000.f;
-					if (m_tInfo.fY <= m_fArrivedPosY)
-					{
-						m_tInfo.fY = m_fArrivedPosY;
-					}
-					m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-						XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
-				}
-			}
+				Tick_Monster(fTimeDelta);
 
 			__super::Tick(fTimeDelta);
 		}
@@ -129,7 +92,7 @@ void CUI_Damage_Skill::Tick(_float fTimeDelta)
 
 }
 
-void CUI_Damage_Skill::LateTick(_float fTimeDelta)
+void CUI_Damage_Number::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
@@ -146,25 +109,21 @@ void CUI_Damage_Skill::LateTick(_float fTimeDelta)
 	}
 }
 
-HRESULT CUI_Damage_Skill::Render()
+HRESULT CUI_Damage_Number::Render()
 {
-	if (0 == m_iDamage || 999999 < m_iDamage) // Damage변수를 가지고 숫자가 총 몇자리인지 파악하여 Render할 것이다.
+	if (0 == m_iDamage || 999999 < m_iDamage)
 		return E_FAIL;
 
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	// 큰 수부터 if문으로 걸러낸다.
 	if (100000 <= m_iDamage) // 6 자리
 	{
-		m_iTextNum = (_uint)m_iDamage / 100000; // 제일 첫번째 숫자가 나온다.
+		m_iTextNum = (_uint)m_iDamage / 100000;
 
-		m_tInfo.fX = m_vTargetPosition.x;
-		m_tInfo.fY = m_vTargetPosition.y;
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
 
-		// 셰이더에 바인딩한다.
 		if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
 			return E_FAIL;
 		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextNum)))
@@ -177,16 +136,13 @@ HRESULT CUI_Damage_Skill::Render()
 	if (10000 <= m_iDamage) // 5자리
 	{
 		m_iTextNum = ((m_iDamage % 100000) / 10000);
-		//(m_iDamage % 100000 계산을 통해서 6자리 이상인 경우에는 첫번째 숫자를 버린다.
 		m_tInfo.fX = m_vTargetPosition.x + m_fOffsetX;
-		m_tInfo.fY = m_vTargetPosition.y;
+		if (!m_FontDesc.bIsPlayer)
+			m_tInfo.fY = m_vTargetPosition.y;
 
-		//m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-		//	XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY + g_iWinSizeY) * 0.5f, 0.f, 1.f));
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
 
-		// 셰이더에 바인딩한다.
 		if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
 			return E_FAIL;
 		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextNum)))
@@ -199,14 +155,13 @@ HRESULT CUI_Damage_Skill::Render()
 	if (1000 <= m_iDamage) // 4자리
 	{
 		m_iTextNum = ((m_iDamage % 10000) / 1000);
-		//m_tInfo.fX = m_tInfo.fX + m_fOffsetX; // 1230.f - m_fOffsetX;
-		m_tInfo.fX = m_vTargetPosition.x + m_fOffsetX * 2.f; // Offset을 줘서 다음 숫자를 그릴 위치를 지정한다. // 1210.f - m_fOffsetX;
-		m_tInfo.fY = m_vTargetPosition.y;
+		m_tInfo.fX = m_vTargetPosition.x + m_fOffsetX * 2.f;
+		if (!m_FontDesc.bIsPlayer)
+			m_tInfo.fY = m_vTargetPosition.y;
 
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
 
-		// 셰이더에 바인딩한다.
 		if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
 			return E_FAIL;
 		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextNum)))
@@ -218,15 +173,14 @@ HRESULT CUI_Damage_Skill::Render()
 
 	if (100 <= m_iDamage)
 	{
-		m_iTextNum = ((m_iDamage % 1000) / 100); // 3번째 자리를 구한다.
-		//m_tInfo.fX = m_tInfo.fX + m_fOffsetX; // 1250.f - m_fOffsetX;
-		m_tInfo.fX = m_vTargetPosition.x + m_fOffsetX * 3.f; // Offset을 줘서 다음 숫자를 그릴 위치를 지정한다. // 1210.f - m_fOffsetX;
-		m_tInfo.fY = m_vTargetPosition.y;
+		m_iTextNum = ((m_iDamage % 1000) / 100);
+		m_tInfo.fX = m_vTargetPosition.x + m_fOffsetX * 3.f;
+		if (!m_FontDesc.bIsPlayer)
+			m_tInfo.fY = m_vTargetPosition.y;
 
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
 
-		// 셰이더에 바인딩한다.
 		if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
 			return E_FAIL;
 		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextNum)))
@@ -238,15 +192,14 @@ HRESULT CUI_Damage_Skill::Render()
 
 	if (10 <= m_iDamage)
 	{
-		m_iTextNum = ((m_iDamage % 100) / 10); ;// 2번째 자리를 구한다.
-		//m_tInfo.fX = m_tInfo.fX + m_fOffsetX; //1270.f - m_fOffsetX;
-		m_tInfo.fX = m_vTargetPosition.x + m_fOffsetX * 4.f; // Offset을 줘서 다음 숫자를 그릴 위치를 지정한다. // 1210.f - m_fOffsetX;
-		m_tInfo.fY = m_vTargetPosition.y;
+		m_iTextNum = ((m_iDamage % 100) / 10);
+		m_tInfo.fX = m_vTargetPosition.x + m_fOffsetX * 4.f;
+		if (!m_FontDesc.bIsPlayer)
+			m_tInfo.fY = m_vTargetPosition.y;
 
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
 
-		// 셰이더에 바인딩한다.
 		if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
 			return E_FAIL;
 		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextNum)))
@@ -259,14 +212,13 @@ HRESULT CUI_Damage_Skill::Render()
 	if (0 < m_iDamage)
 	{
 		m_iTextNum = (m_iDamage % 10);
-		//m_tInfo.fX = m_tInfo.fX + m_fOffsetX; //1290.f - m_fOffsetX;
-		m_tInfo.fX = m_vTargetPosition.x + m_fOffsetX * 5.f; // Offset을 줘서 다음 숫자를 그릴 위치를 지정한다. // 1210.f - m_fOffsetX;
-		m_tInfo.fY = m_vTargetPosition.y;
+		m_tInfo.fX = m_vTargetPosition.x + m_fOffsetX * 5.f;
+		if (!m_FontDesc.bIsPlayer)
+			m_tInfo.fY = m_vTargetPosition.y;
 
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
 
-		// 셰이더에 바인딩한다.
 		if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
 			return E_FAIL;
 		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextNum)))
@@ -278,7 +230,81 @@ HRESULT CUI_Damage_Skill::Render()
 	return S_OK;
 }
 
-void CUI_Damage_Skill::Resize_Scale()
+void CUI_Damage_Number::Tick_Player(_float fTimeDelta)
+{
+	if (!m_bFadeOut)
+	{
+		if (m_fAlpha <= 0.f)
+		{
+			m_fAlpha = 0.f;
+			Set_Dead(true);
+		}
+		else
+		{
+			m_fAlpha -= fTimeDelta;
+		}
+
+		if (m_tInfo.fY <= m_fArrivedPosY)
+		{
+			m_tInfo.fY = m_fArrivedPosY;
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+
+			m_bFadeOut = true;
+		}
+		else
+		{
+			m_tInfo.fY -= fTimeDelta * 200.f;
+
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+		}
+	}
+}
+
+void CUI_Damage_Number::Tick_Monster(_float fTimeDelta)
+{
+	if (!m_bFadeOut)
+	{
+		m_fFadeTimeAcc += fTimeDelta;
+
+		if (m_fFadeTimeAcc > 0.3f)
+		{
+			m_bFadeOut = true;
+			m_fFadeTimeAcc = 0.f;
+		}
+	}
+	else
+	{
+		m_fAlpha -= fTimeDelta;
+
+		if (m_fAlpha <= 0.f)
+		{
+			m_fAlpha = 0.f;
+			Set_Dead(true);
+		}
+		else
+		{
+			m_tInfo.fY -= fTimeDelta * 1000.f;
+			if (m_tInfo.fY <= m_fArrivedPosY)
+			{
+				m_tInfo.fY = m_fArrivedPosY;
+			}
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+		}
+	}
+}
+
+void CUI_Damage_Number::LateTick_Player(_float fTimeDelta)
+{
+}
+
+void CUI_Damage_Number::LateTick_Monster(_float fTimeDelta)
+{
+}
+
+void CUI_Damage_Number::Resize_Scale()
 {
 	// Resize를 시작한다.
 
@@ -288,7 +314,7 @@ void CUI_Damage_Skill::Resize_Scale()
 	m_tInfo.fCY = m_fMaxScale;
 }
 
-HRESULT CUI_Damage_Skill::Ready_Components()
+HRESULT CUI_Damage_Number::Ready_Components()
 {
 	if (FAILED(__super::Ready_Components()))
 		return E_FAIL;
@@ -347,7 +373,7 @@ HRESULT CUI_Damage_Skill::Ready_Components()
 	return S_OK;
 }
 
-HRESULT CUI_Damage_Skill::Ready_State()
+HRESULT CUI_Damage_Number::Ready_State()
 {
 	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
@@ -356,7 +382,7 @@ HRESULT CUI_Damage_Skill::Ready_State()
 	return S_OK;
 }
 
-HRESULT CUI_Damage_Skill::Bind_ShaderResources()
+HRESULT CUI_Damage_Number::Bind_ShaderResources()
 {
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
 		return E_FAIL;
@@ -376,33 +402,33 @@ HRESULT CUI_Damage_Skill::Bind_ShaderResources()
 	return S_OK;
 }
 
-CUI_Damage_Skill* CUI_Damage_Skill::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_DAMAGEFONT eType)
+CUI_Damage_Number* CUI_Damage_Number::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_DAMAGEFONT eType)
 {
-	CUI_Damage_Skill* pInstance = new CUI_Damage_Skill(pDevice, pContext, eType);
+	CUI_Damage_Number* pInstance = new CUI_Damage_Number(pDevice, pContext, eType);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX("Failed To Create : CUI_Damage_Skill");
+		MSG_BOX("Failed To Create : CUI_Damage_Number");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CUI_Damage_Skill::Clone(void* pArg)
+CGameObject* CUI_Damage_Number::Clone(void* pArg)
 {
-	CUI_Damage_Skill* pInstance = new CUI_Damage_Skill(*this);
+	CUI_Damage_Number* pInstance = new CUI_Damage_Number(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Failed To Clone : CUI_Damage_Skill");
+		MSG_BOX("Failed To Clone : CUI_Damage_Number");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CUI_Damage_Skill::Free()
+void CUI_Damage_Number::Free()
 {
 	__super::Free();
 
