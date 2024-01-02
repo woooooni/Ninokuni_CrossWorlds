@@ -28,17 +28,6 @@ HRESULT CUI_Damage_Skill::Initialize(void* pArg)
 	if (nullptr == pArg)
 		return E_FAIL;
 
-//	CUI::UI_INFO UI
-// ;
-//	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
-//	UIDesc.fX = g_iWinSizeX * 0.5f;
-//	UIDesc.fY = g_iWinSizeY * 0.5f;
-//	UIDesc.fCX = 112.f;
-//	UIDesc.fCY = 112.f;
-//	UIDesc.pParent = nullptr;
-//	UIDesc.pDesc = nullptr;
-//	Set_UI_Info(UIDesc);
-
 	memcpy(&m_FontDesc, pArg, sizeof(DAMAGE_DESC));
 
 	if (FAILED(Ready_Components()))
@@ -51,18 +40,17 @@ HRESULT CUI_Damage_Skill::Initialize(void* pArg)
 	m_iDamage = m_FontDesc.iDamage;
 	if (nullptr == m_pTargetTransform)
 		return E_FAIL;
-	m_vTargetPosition = Get_ProjectionPosition(m_pTargetTransform);
-	if (m_FontDesc.bCritical)
-		CUIDamage_Manager::GetInstance()->Create_Critical(m_eFontType, m_vTargetPosition);
+	m_vTargetPosition = m_FontDesc.vTargetPosition;
 
 	m_tInfo.fX = m_vTargetPosition.x;
 	m_tInfo.fY = m_vTargetPosition.y;
-	_float fNumSize = 112.f * 0.3f;
+	_float fNumSize = 112.f * 0.25f; // CamDistance를 받아서 사이즈 조절하는 것도 필요함.
 	m_pTransformCom->Set_Scale(XMVectorSet(fNumSize, fNumSize, 1.f, 0.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
 
 	m_fOffsetX = fNumSize * 0.6f;
+	m_fArrivedPosY = m_vTargetPosition.y - 200.f;
 
 	CUI::UI_INFO UIDesc = {};
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
@@ -87,26 +75,25 @@ void CUI_Damage_Skill::Tick(_float fTimeDelta)
 	{
 		if (!Is_Dead())
 		{
-			if (!m_bSetPosition)
-			{
-				m_bSetPosition = true;
-				m_fRandomOffset = _float2(GI->RandomFloat(-100.f, 100.f), GI->RandomFloat(-200.f, 0.f));
-
-				m_tInfo.fX += m_fRandomOffset.x; // Initialize할때 Offset 더하는 것으로 수정할 예정 -> Critical때문에
-				m_tInfo.fY += m_fRandomOffset.y;
-
-				m_vTargetPosition.x = m_tInfo.fX;
-				m_vTargetPosition.y = m_tInfo.fY;
-
-				m_fArrivedPosY = m_vTargetPosition.y - 100.f;
-
-				m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-					XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
-			}
+//			if (!m_bSetPosition)
+//			{
+//				m_bSetPosition = true;
+//				m_fRandomOffset = _float2(GI->RandomFloat(-100.f, 100.f), GI->RandomFloat(-200.f, 0.f));
+//
+//				m_tInfo.fX += m_fRandomOffset.x; // Initialize할때 Offset 더하는 것으로 수정할 예정 -> Critical때문에
+//				m_tInfo.fY += m_fRandomOffset.y;
+//
+//				m_vTargetPosition.x = m_tInfo.fX;
+//				m_vTargetPosition.y = m_tInfo.fY;
+//
+//				m_fArrivedPosY = m_vTargetPosition.y - 100.f;
+//
+//				m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+//					XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+//			}
 
 			if (!m_bFadeOut)
 			{
-				// FadeOut상태가 아니라면 시간을 누적한다.
 				m_fFadeTimeAcc += fTimeDelta;
 
 				if (m_fFadeTimeAcc > 0.3f)
@@ -115,9 +102,8 @@ void CUI_Damage_Skill::Tick(_float fTimeDelta)
 					m_fFadeTimeAcc = 0.f;
 				}
 			}
-			else // FadeOut 상태라면.
-			{ // Y값 조정 안됨
-				m_tInfo.fY -= fTimeDelta * 200.f;
+			else
+			{
 				m_fAlpha -= fTimeDelta;
 
 				if (m_fAlpha <= 0.f)
@@ -125,14 +111,16 @@ void CUI_Damage_Skill::Tick(_float fTimeDelta)
 					m_fAlpha = 0.f;
 					Set_Dead(true);
 				}
-
-				if (m_tInfo.fY <= m_fArrivedPosY)
+				else
 				{
-					m_tInfo.fY = m_fArrivedPosY;
+					m_tInfo.fY -= fTimeDelta * 1000.f;
+					if (m_tInfo.fY <= m_fArrivedPosY)
+					{
+						m_tInfo.fY = m_fArrivedPosY;
+					}
+					m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+						XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
 				}
-
-				m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-					XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
 			}
 
 			__super::Tick(fTimeDelta);
@@ -147,7 +135,6 @@ void CUI_Damage_Skill::LateTick(_float fTimeDelta)
 	{
 		if (Is_Dead())
 			return;
-
 
 		if (0 == m_iDamage || 999999 < m_iDamage)
 			return;
@@ -191,7 +178,6 @@ HRESULT CUI_Damage_Skill::Render()
 	{
 		m_iTextNum = ((m_iDamage % 100000) / 10000);
 		//(m_iDamage % 100000 계산을 통해서 6자리 이상인 경우에는 첫번째 숫자를 버린다.
-		//m_tInfo.fX = m_tInfo.fX + m_fOffsetX; // Offset을 줘서 다음 숫자를 그릴 위치를 지정한다. // 1210.f - m_fOffsetX;
 		m_tInfo.fX = m_vTargetPosition.x + m_fOffsetX;
 		m_tInfo.fY = m_vTargetPosition.y;
 
@@ -307,7 +293,6 @@ HRESULT CUI_Damage_Skill::Ready_Components()
 	if (FAILED(__super::Ready_Components()))
 		return E_FAIL;
 
-	// 	enum UI_DAMAGEFONT { BLUE, GOLD_WITHRED, RED, WHITE, WHITEYELLOW, GOLD, DAMAGEFOND_END };
 	switch (m_eFontType)
 	{
 	case UI_DAMAGEFONT::BLUE:
@@ -340,7 +325,7 @@ HRESULT CUI_Damage_Skill::Ready_Components()
 			return E_FAIL; // Fire
 		break;
 
-	case UI_DAMAGEFONT::WHITE: //////////////////////////////////////////////////// General
+	case UI_DAMAGEFONT::WHITE: ////////////////////////////////////////////////////
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_DamageNumber_White"),
 			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 			return E_FAIL;

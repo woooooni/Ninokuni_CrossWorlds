@@ -188,6 +188,30 @@ void CUI_Manager::Set_MonsterDescForUI(CMonster* pOwner, void* pArg, _bool bActi
 	}	
 }
 
+_float2 CUI_Manager::Get_ProjectionPosition(CTransform* pTransform)
+{
+	if (nullptr == pTransform)
+		return _float2(-1.f, -1.f);
+
+	_vector vPosition = pTransform->Get_State(CTransform::STATE_POSITION);
+
+	_float4x4 matWorld = pTransform->Get_WorldFloat4x4();
+	_matrix matView = GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW);
+	_matrix matProj = GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ);
+
+	_float4x4 matWindow;
+	XMStoreFloat4x4(&matWindow, XMLoadFloat4x4(&matWorld) * matView * matProj);
+
+	_float3 vWindowPos = *(_float3*)&matWindow.m[3][0];
+
+	vWindowPos.x /= vWindowPos.z;
+	vWindowPos.y /= vWindowPos.z;
+	_float fScreenX = vWindowPos.x * g_iWinSizeX * 0.5f + (g_iWinSizeX * 0.5f);
+	_float fScreenY = vWindowPos.y * -(g_iWinSizeY * 0.5f) + (g_iWinSizeY * 0.5f);
+
+	return _float2(fScreenX, fScreenY);
+}
+
 HRESULT CUI_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	m_pDevice = pDevice;
@@ -408,7 +432,7 @@ HRESULT CUI_Manager::Ready_LobbyUIs()
 {
 	if (nullptr == m_pUIVeil)
 	{
-		if (FAILED(CUI_Manager::GetInstance()->Ready_Veils()))
+		if (FAILED(Ready_Veils()))
 			return E_FAIL;
 	}
 

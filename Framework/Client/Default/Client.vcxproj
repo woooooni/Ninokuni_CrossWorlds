@@ -1128,7 +1128,7 @@
     <ClCompile Include="..\Private\UI_Costume_ChangeBtn.cpp" />
     <ClCompile Include="..\Private\UI_Costume_ItemSlot.cpp" />
     <ClCompile Include="..\Private\UI_Costume_LineBox.cpp" />
-    <ClCompile Include="..\Private\UI_Damage_Critiacal.cpp" />
+    <ClCompile Include="..\Private\UI_Damage_Critical.cpp" />
     <ClCompile Include="..\Private\UI_Damage_General.cpp" />
     <ClCompile Include="..\Private\UI_Damage_Skill.cpp" />
     <ClCompile Include="..\Private\UI_Dialog_Flip.cpp" />

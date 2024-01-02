@@ -7,6 +7,7 @@
 #include "FileUtils.h"
 #include "Utils.h"
 
+#include "UI_Manager.h"
 #include "UI_Damage_Skill.h"
 #include "UI_Damage_General.h"
 #include "UI_Damage_Critical.h"
@@ -86,6 +87,176 @@ HRESULT CUIDamage_Manager::Ready_DamageNumberPrototypes()
 
 	return S_OK;
 }
+
+HRESULT CUIDamage_Manager::Create_PlayerDamageNumber(CTransform* pTransformCom, _int iDamage)
+{
+	CUI_Damage_Skill::DAMAGE_DESC DamageDesc = {};
+	ZeroMemory(&DamageDesc, sizeof(CUI_Damage_Skill::DAMAGE_DESC));
+
+	DamageDesc.pTargetTransform = pTransformCom;
+	DamageDesc.iDamage = iDamage;
+
+	CGameObject* pNumber = nullptr;
+	if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_DamageNumber_Red"), &DamageDesc, &pNumber)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CUIDamage_Manager::Create_MonsterDamageNumber(CTransform* pTransformCom, UI_DAMAGETYPE eType, _int iDamage)
+{
+	if (UI_DAMAGETYPE::DAMAGETYPE_END <= eType)
+		return E_FAIL;
+
+	if (999999 < iDamage)
+		return E_FAIL;
+
+	CGameObject* pNumber = nullptr;
+	CUI_Damage_Skill::DAMAGE_DESC DamageDesc = {};
+	ZeroMemory(&DamageDesc, sizeof(CUI_Damage_Skill::DAMAGE_DESC));
+
+	DamageDesc.pTargetTransform = pTransformCom;
+	DamageDesc.iDamage = iDamage;
+	_float2 vRandomPosition = Designate_RandomPosition(CUI_Manager::GetInstance()->Get_ProjectionPosition(pTransformCom));
+	if (vRandomPosition.x == -9999.f)
+		return E_FAIL;
+	DamageDesc.vTargetPosition = vRandomPosition;
+
+	switch (eType)
+	{
+	case UI_DAMAGETYPE::WEAKNESS:
+		if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
+			TEXT("Prototype_GameObject_UI_DamageNumber_Blue"), &DamageDesc, &pNumber)))
+			return E_FAIL;
+		break;
+
+	case UI_DAMAGETYPE::NONE:
+		if (m_iStandard < iDamage)
+		{
+			if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
+				TEXT("Prototype_GameObject_UI_DamageNumber_WhiteGold"), &DamageDesc, &pNumber)))
+				return E_FAIL;
+			//+ Critical
+		}
+		else
+		{
+			if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
+				TEXT("Prototype_GameObject_UI_DamageNumber_White"), &DamageDesc, &pNumber)))
+				return E_FAIL;
+		}
+		break;
+
+	case UI_DAMAGETYPE::STRENGTH:
+		if (m_iStandard < iDamage)
+		{
+			if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
+				TEXT("Prototype_GameObject_UI_DamageNumber_GoldWithRed"), &DamageDesc, &pNumber)))
+				return E_FAIL;
+			// + Critical
+		}
+		else
+		{
+			if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
+				TEXT("Prototype_GameObject_UI_DamageNumber_Gold"), &DamageDesc, &pNumber)))
+				return E_FAIL;
+		}
+		break;
+	}
+
+	return S_OK;
+}
+
+HRESULT CUIDamage_Manager::Create_Critical(_uint eDamageFontType, _float2 vPosition)
+{
+	//enum UI_DAMAGEFONT { BLUE, GOLD_WITHRED, GREEN, PURPLE, RED, WHITE, WHITEGOLD, GOLD, DAMAGEFOND_END };
+	CUI_Damage_Critical::UI_CRITICALFONT eType = CUI_Damage_Critical::UI_CRITICALFONT::CRITICALFONT_END;
+
+	if (CUI_Damage_Skill::UI_DAMAGEFONT::BLUE == eDamageFontType)
+	{
+		eType = CUI_Damage_Critical::UI_CRITICALFONT::CRITICAL_BLUE;
+	}
+	else if (CUI_Damage_Skill::UI_DAMAGEFONT::GOLD_WITHRED)
+	{
+		eType = CUI_Damage_Critical::UI_CRITICALFONT::CRITICAL_YELLOW;
+//		eType = CUI_Damage_Critical::UI_CRITICALFONT::CRITICAL_REDBLUR;
+	}
+//	else if (CUI_Damage_Skill::UI_DAMAGEFONT::WHITE)
+//	{
+//		eType = CUI_Damage_Critical::UI_CRITICALFONT::CRITICAL_BLUE;
+//	}
+	else if (CUI_Damage_Skill::UI_DAMAGEFONT::WHITEGOLD)
+	{
+		eType = CUI_Damage_Critical::UI_CRITICALFONT::CRITICAL_REDBLUR;
+	}
+	else
+		return E_FAIL;
+
+	CGameObject* pCritical = nullptr;
+	CUI_Damage_Critical::CRITICAL_DESC CriticalDesc = {};
+	ZeroMemory(&CriticalDesc, sizeof(CUI_Damage_Critical::CRITICAL_DESC));
+
+	CriticalDesc.vPosition = vPosition;
+	// 	enum UI_CRITICALFONT { CRITICAL_BLUE, CRITICAL_YELLOW, CRITICAL_RED, CRITICAL_REDBLUR, CRITICALFONT_END };
+	CriticalDesc.eType = CUI_Damage_Critical::UI_CRITICALFONT::CRITICAL_BLUE;
+
+	if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_DamageNumber_Critical"), &CriticalDesc, &pCritical)))
+		return E_FAIL;
+
+	if (nullptr == pCritical)
+		return E_FAIL;
+
+	return S_OK;
+}
+
+_float2 CUIDamage_Manager::Designate_RandomPosition(_float2 vTargetPosition)
+{
+	if (0.f > vTargetPosition.x || 1600.f < vTargetPosition.x ||
+		0.f > vTargetPosition.y || 900.f < vTargetPosition.y)
+		return _float2(-9999.f, -9999.f);
+
+	_float2 vResultPosition;
+	_float2 fRandomOffset = _float2(GI->RandomFloat(-100.f, 100.f), GI->RandomFloat(-200.f, 0.f));
+
+	vTargetPosition.x += fRandomOffset.x;
+	vTargetPosition.y += fRandomOffset.y;
+
+	vResultPosition.x = vTargetPosition.x;
+	vResultPosition.y = vTargetPosition.y;
+
+	return vResultPosition;
+}
+
+HRESULT CUIDamage_Manager::Create_Miss(CTransform* pTransformCom)
+{
+	CGameObject* pMiss = nullptr;
+
+	CUI_Damage_General::GENERAL_DESC MissDesc = {};
+	ZeroMemory(&MissDesc, sizeof(CUI_Damage_General::GENERAL_DESC));
+
+	MissDesc.pTargetTransform = pTransformCom;
+	MissDesc.iDamage = 0;
+
+	if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_DamageNumber_Miss"), &MissDesc, &pMiss)))
+		return E_FAIL;
+
+	if (nullptr == pMiss)
+		return E_FAIL;
+
+	return S_OK;
+}
+
+void CUIDamage_Manager::Free()
+{
+	__super::Free();
+
+	Safe_Release(m_pDevice);
+	Safe_Release(m_pContext);
+}
+
+/*
 
 _int CUIDamage_Manager::Calculate_DamageColor(ELEMENTAL_TYPE eMonsterType, ELEMENTAL_TYPE eWeaponType, _int iDamage)
 {
@@ -203,161 +374,4 @@ _int CUIDamage_Manager::Calculate_DamageColor(ELEMENTAL_TYPE eMonsterType, ELEME
 	return _int(eColor);
 }
 
-HRESULT CUIDamage_Manager::Create_PlayerDamageNumber(CTransform* pTransformCom, _int iDamage)
-{
-	CUI_Damage_Skill::DAMAGE_DESC DamageDesc = {};
-	ZeroMemory(&DamageDesc, sizeof(CUI_Damage_Skill::DAMAGE_DESC));
-
-	DamageDesc.pTargetTransform = pTransformCom;
-	DamageDesc.iDamage = iDamage;
-
-	CGameObject* pNumber = nullptr;
-	if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
-		TEXT("Prototype_GameObject_UI_DamageNumber_Red"), &DamageDesc, &pNumber)))
-		return E_FAIL;
-
-	return S_OK;
-}
-
-HRESULT CUIDamage_Manager::Create_MonsterDamageNumber(CTransform* pTransformCom, UI_DAMAGEFONTCOLOR eType, _int iDamage)
-{
-	if (UI_DAMAGEFONTCOLOR::FONT_DAMAGECOLOR_END <= eType)
-		return E_FAIL;
-
-	CGameObject* pNumber = nullptr;
-	CUI_Damage_Skill::DAMAGE_DESC DamageDesc = {};
-	ZeroMemory(&DamageDesc, sizeof(CUI_Damage_Skill::DAMAGE_DESC));
-
-	DamageDesc.pTargetTransform = pTransformCom;
-	DamageDesc.iDamage = iDamage;
-	if (m_iMaxStandard <= iDamage)
-		DamageDesc.bCritical = true;
-	else
-		DamageDesc.bCritical = false;
-
-	switch (eType)
-	{
-	case UI_DAMAGEFONTCOLOR::FONT_BLUE:
-		if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
-			TEXT("Prototype_GameObject_UI_DamageNumber_Blue"), &DamageDesc, &pNumber)))
-			return E_FAIL;
-		break;
-
-	case UI_DAMAGEFONTCOLOR::FONT_WHITE:
-		if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
-			TEXT("Prototype_GameObject_UI_DamageNumber_White"), &DamageDesc, &pNumber)))
-			return E_FAIL;
-		break;
-
-	case UI_DAMAGEFONTCOLOR::FONT_WHITE_AND_GOLD:
-		if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
-			TEXT("Prototype_GameObject_UI_DamageNumber_WhiteGold"), &DamageDesc, &pNumber)))
-			return E_FAIL;
-		break;
-
-	case UI_DAMAGEFONTCOLOR::FONT_GOLD:
-		if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
-			TEXT("Prototype_GameObject_UI_DamageNumber_Gold"), &DamageDesc, &pNumber)))
-			return E_FAIL;
-		break;
-
-	case UI_DAMAGEFONTCOLOR::FONT_GOLD_AND_RED:
-		if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
-			TEXT("Prototype_GameObject_UI_DamageNumber_GoldWithRed"), &DamageDesc, &pNumber)))
-			return E_FAIL;
-		break;
-	}
-
-	if (nullptr == pNumber)
-		return E_FAIL;
-
-	return S_OK;
-}
-
-//HRESULT CUIDamage_Manager::Create_CommonDamageNumber(CTransform* pTransformCom, _int iDamage)
-//{
-//	CGameObject* pNumber = nullptr;
-//	CUI_Damage_General::GENERAL_DESC DamageDesc = {};
-//
-//	ZeroMemory(&DamageDesc, sizeof(CUI_Damage_General::GENERAL_DESC));
-//
-//	DamageDesc.pTargetTransform = pTransformCom;
-//	DamageDesc.iDamage = iDamage;
-//
-//	if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
-//		TEXT("Prototype_GameObject_UI_DamageNumber_General"), &DamageDesc, &pNumber)))
-//		return E_FAIL;
-//
-//	return S_OK;
-//}
-
-HRESULT CUIDamage_Manager::Create_Critical(_uint eDamageFontType, _float2 vPosition)
-{
-	//enum UI_DAMAGEFONT { BLUE, GOLD_WITHRED, GREEN, PURPLE, RED, WHITE, WHITEGOLD, GOLD, DAMAGEFOND_END };
-	CUI_Damage_Critical::UI_CRITICALFONT eType = CUI_Damage_Critical::UI_CRITICALFONT::CRITICALFONT_END;
-
-	if (CUI_Damage_Skill::UI_DAMAGEFONT::BLUE == eDamageFontType)
-	{
-		eType = CUI_Damage_Critical::UI_CRITICALFONT::CRITICAL_BLUE;
-	}
-	else if (CUI_Damage_Skill::UI_DAMAGEFONT::GOLD_WITHRED)
-	{
-		eType = CUI_Damage_Critical::UI_CRITICALFONT::CRITICAL_YELLOW;
-//		eType = CUI_Damage_Critical::UI_CRITICALFONT::CRITICAL_REDBLUR;
-	}
-//	else if (CUI_Damage_Skill::UI_DAMAGEFONT::WHITE)
-//	{
-//		eType = CUI_Damage_Critical::UI_CRITICALFONT::CRITICAL_BLUE;
-//	}
-	else if (CUI_Damage_Skill::UI_DAMAGEFONT::WHITEGOLD)
-	{
-		eType = CUI_Damage_Critical::UI_CRITICALFONT::CRITICAL_REDBLUR;
-	}
-	else
-		return E_FAIL;
-
-	CGameObject* pCritical = nullptr;
-	CUI_Damage_Critical::CRITICAL_DESC CriticalDesc = {};
-	ZeroMemory(&CriticalDesc, sizeof(CUI_Damage_Critical::CRITICAL_DESC));
-
-	CriticalDesc.vPosition = vPosition;
-	// 	enum UI_CRITICALFONT { CRITICAL_BLUE, CRITICAL_YELLOW, CRITICAL_RED, CRITICAL_REDBLUR, CRITICALFONT_END };
-	CriticalDesc.eType = CUI_Damage_Critical::UI_CRITICALFONT::CRITICAL_BLUE;
-
-	if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
-		TEXT("Prototype_GameObject_UI_DamageNumber_Critical"), &CriticalDesc, &pCritical)))
-		return E_FAIL;
-
-	if (nullptr == pCritical)
-		return E_FAIL;
-
-	return S_OK;
-}
-
-HRESULT CUIDamage_Manager::Create_Miss(CTransform* pTransformCom)
-{
-	CGameObject* pMiss = nullptr;
-
-	CUI_Damage_General::GENERAL_DESC MissDesc = {};
-	ZeroMemory(&MissDesc, sizeof(CUI_Damage_General::GENERAL_DESC));
-
-	MissDesc.pTargetTransform = pTransformCom;
-	MissDesc.iDamage = 0; // 아무값이나 넣어도 상관없음. 반영X
-
-	if (FAILED(GI->Add_GameObject(_uint(GI->Get_CurrentLevel()), LAYER_TYPE::LAYER_UI,
-		TEXT("Prototype_GameObject_UI_DamageNumber_Miss"), &MissDesc, &pMiss)))
-		return E_FAIL;
-
-	if (nullptr == pMiss)
-		return E_FAIL;
-
-	return S_OK;
-}
-
-void CUIDamage_Manager::Free()
-{
-	__super::Free();
-
-	Safe_Release(m_pDevice);
-	Safe_Release(m_pContext);
-}
+*/
