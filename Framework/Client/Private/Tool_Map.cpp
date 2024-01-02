@@ -82,7 +82,8 @@ void CTool_Map::AddMapObject(LEVELID iLevelID, LAYER_TYPE iLayerType)
 			|| Pair.first.find(TEXT("Common_")) != std::wstring::npos
 			|| Pair.first.find(TEXT("Animal_")) != std::wstring::npos
 			|| Pair.first.find(TEXT("Water")) != std::wstring::npos
-			|| Pair.first.find(TEXT("Sky")) != std::wstring::npos)
+			|| Pair.first.find(TEXT("Sky")) != std::wstring::npos
+			|| Pair.first.find(TEXT("Aurora")) != std::wstring::npos)
 		{
 			if (ImGui::Selectable(CUtils::ToString(Pair.first).c_str()))
 			{

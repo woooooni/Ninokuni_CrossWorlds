@@ -41,7 +41,7 @@ void CWater::Tick(_float fTimeDelta)
 
 void CWater::LateTick(_float fTimeDelta)
 {
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDERGROUP::RENDER_NONBLEND, this);
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDERGROUP::RENDER_EFFECT, this);
 }
 
 HRESULT CWater::Render()
