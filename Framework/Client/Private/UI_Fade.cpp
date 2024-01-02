@@ -2,13 +2,13 @@
 #include "UI_Fade.h"
 #include "GameInstance.h"
 
-CUI_Fade::CUI_Fade(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_VEIL eType)
-	: CUI(pDevice, pContext, L"UI_Fade"), m_eVeilType(eType)
+CUI_Fade::CUI_Fade(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+	: CUI(pDevice, pContext, L"UI_Fade")
 {
 }
 
 CUI_Fade::CUI_Fade(const CUI_Fade& rhs)
-	: CUI(rhs), m_eVeilType(rhs.m_eVeilType)
+	: CUI(rhs)
 {
 }
 
@@ -91,22 +91,10 @@ HRESULT CUI_Fade::Ready_Components()
 	if (FAILED(__super::Ready_Components()))
 		return E_FAIL;
 
-//	switch (m_eVeilType)
-//	{
-//	case UI_VEIL::VEIL_BLACK:
-		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Veil_Black"),
-			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
-			return E_FAIL;
-//		break;
-
-//	case UI_VEIL::VEIL_WHITE:
-//		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Veil_Black"),
-//			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
-//			return E_FAIL;
-//		break;
-//	}
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Veils"),
+		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+		return E_FAIL;
 	
-
 	return S_OK;
 }
 
@@ -133,15 +121,15 @@ HRESULT CUI_Fade::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_fAlpha, sizeof(_float))))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", 0)))
+	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", _uint(m_bIsWhite))))
 		return E_FAIL;
 
 	return S_OK;
 }
 
-CUI_Fade* CUI_Fade::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_VEIL eType)
+CUI_Fade* CUI_Fade::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-	CUI_Fade* pInstance = new CUI_Fade(pDevice, pContext, eType);
+	CUI_Fade* pInstance = new CUI_Fade(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{

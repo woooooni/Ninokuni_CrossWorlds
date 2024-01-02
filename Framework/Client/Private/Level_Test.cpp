@@ -279,8 +279,8 @@ HRESULT CLevel_Test::Ready_Layer_Monster(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Test::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 {
-	if (FAILED(CUI_Manager::GetInstance()->Ready_Veils()))
-		return E_FAIL;
+//	if (FAILED(CUI_Manager::GetInstance()->Ready_Veils()))
+//		return E_FAIL;
 
 	if (FAILED(CUI_Manager::GetInstance()->Ready_CommonUIs(LEVELID::LEVEL_TEST)))
 		return E_FAIL;
@@ -296,8 +296,6 @@ HRESULT CLevel_Test::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 
 	CUI_Manager::GetInstance()->Ready_CharacterTypeForUI(eCharacterType);
 	CUI_Manager::GetInstance()->Ready_ElementalTypeForUI(ELEMENTAL_TYPE::DARK);
-
-	//CUI_Manager::GetInstance()->Ready_CharacterTypeForUI(CHARACTER_TYPE::ENGINEER);
 
 	return S_OK;
 }

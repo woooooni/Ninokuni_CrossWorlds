@@ -9,17 +9,16 @@ END
 BEGIN(Client)
 class CUI_Fade final : public CUI
 {
-public:
-	enum UI_VEIL { VEIL_BLACK, VEIL_WHITE, VEIL_END };
-
 protected:
-	CUI_Fade(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_VEIL eType);
+	CUI_Fade(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CUI_Fade(const CUI_Fade& rhs);
 	virtual ~CUI_Fade() = default;
 
 public:
-	void	Set_Fade(const _bool& pIsFadeOut, const _float& pFadeTime)
+	void	Set_Fade(const _bool& pIsFadeOut, const _float& pFadeTime, const _bool& bIsWhite = false)
 	{
+		Set_White(bIsWhite);
+
 		m_bIsFadeOut = pIsFadeOut;
 		m_fAlpha = !(float)pIsFadeOut;
 		m_fFadeTime = pFadeTime;
@@ -57,16 +56,13 @@ private:
 	_float m_fAlpha = { 0.f }; // Veil에 지정할 알파값
 	_float m_fFadeTime = { 0.f }; // FadeIn or FadeOut하는 총 시간
 
-	UI_VEIL m_eVeilType = { VEIL_END }; // Veil Color Type
-	_uint m_iTextureIndex = { 0 };
-
 private:
 	HRESULT	Ready_Components();
 	HRESULT	Ready_State();
 	HRESULT	Bind_ShaderResources();
 
 public:
-	static CUI_Fade* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, UI_VEIL eType);
+	static CUI_Fade* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };
