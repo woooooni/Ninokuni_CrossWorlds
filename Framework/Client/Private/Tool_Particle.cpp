@@ -1117,6 +1117,8 @@ void CTool_Particle::Save_Particle(const char* pFileName)
 		File->Write<_bool>(m_tParticleInfo.bParticleLoop);
 
 		// 파티클 개수
+		if (m_tParticleInfo.iNumEffectMaxCount > m_tParticleInfo.iNumEffectCount)
+			m_tParticleInfo.iNumEffectMaxCount = m_tParticleInfo.iNumEffectCount;
 		File->Write<_uint>(m_tParticleInfo.iNumEffectMaxCount);
 		File->Write<_uint>(m_tParticleInfo.iNumEffectCount);
 

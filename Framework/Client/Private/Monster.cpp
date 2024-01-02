@@ -10,6 +10,7 @@
 #include "Camera_Manager.h"
 #include "UI_Manager.h"
 #include "BehaviorTree.h"
+#include "Particle.h"
 
 USING(Client)
 CMonster::CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)

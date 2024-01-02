@@ -67,12 +67,14 @@ HRESULT CEffect_Manager::Generate_Effect(const wstring& strEffectName, _matrix W
 	pTransform->Set_WorldMatrix(WorldMatrix);
 
 	// RotationMatrix
-	/* CEffect::EFFECT_DESC EffectDesc = pEffect->Get_EffectDesc();
-    _matrix OffsetMatrix = XMLoadFloat4x4(&EffectDesc.OffsetMatrix);
-    OffsetMatrix *= RotationMatrix;
-    XMStoreFloat4x4(&EffectDesc.OffsetMatrix, OffsetMatrix);
-    pEffect->Set_EffectDesc(EffectDesc);
-	*/
+	if (pRotationMatrix != nullptr)
+	{
+		CEffect::EFFECT_DESC EffectDesc = pEffect->Get_EffectDesc();
+		_matrix OffsetMatrix = XMLoadFloat4x4(&EffectDesc.OffsetMatrix);
+		OffsetMatrix *= *pRotationMatrix;
+		XMStoreFloat4x4(&EffectDesc.OffsetMatrix, OffsetMatrix);
+		pEffect->Set_EffectDesc(EffectDesc);
+	}
 
 	// pOwner
 	if(pOwner != nullptr)
@@ -104,6 +106,7 @@ HRESULT CEffect_Manager::Generate_Decal(const wstring& strDecalName, _matrix Wor
 	if (pTransform == nullptr)
 		return E_FAIL;
 	pTransform->Set_WorldMatrix(WorldMatrix);
+	pTransform->Set_Scale(pDecal->Get_DecalDesc().fScale);
 
 	// RotationMatrix
 	//
@@ -151,6 +154,59 @@ HRESULT CEffect_Manager::Generate_Vfx(const wstring& strVfxName, _matrix WorldMa
 		return E_FAIL;
 
 	return S_OK;
+}
+
+_matrix CEffect_Manager::Get_WorldMatrixEffect(_matrix OwnerWorldMatrix, _float3 fPositionOffset, _float3 fScaleOffset, _float3 fRotationOffset)
+{
+	_matrix WorldMatrix = OwnerWorldMatrix;
+
+	XMVECTOR vRight = XMVector3Normalize(WorldMatrix.r[CTransform::STATE_RIGHT]) * fScaleOffset.x;
+	XMVECTOR vUp    = XMVector3Normalize(WorldMatrix.r[CTransform::STATE_UP])    * fScaleOffset.y;
+	XMVECTOR vLook  = XMVector3Normalize(WorldMatrix.r[CTransform::STATE_LOOK])  * fScaleOffset.z;
+
+	Matrix mRotationMatrix = Matrix::Identity;
+	mRotationMatrix *= XMMatrixRotationX(XMConvertToRadians(fRotationOffset.x));
+	mRotationMatrix *= XMMatrixRotationY(XMConvertToRadians(fRotationOffset.y));
+	mRotationMatrix *= XMMatrixRotationZ(XMConvertToRadians(fRotationOffset.z));
+
+	vRight = XMVector4Transform(vRight, mRotationMatrix);
+	vUp    = XMVector4Transform(vUp,    mRotationMatrix);
+	vLook  = XMVector4Transform(vLook,  mRotationMatrix);
+
+	WorldMatrix.r[CTransform::STATE_RIGHT] = vRight;
+	WorldMatrix.r[CTransform::STATE_UP]    = vUp;
+	WorldMatrix.r[CTransform::STATE_LOOK]  = vLook;
+	WorldMatrix.r[CTransform::STATE_POSITION] += XMVectorSet(fPositionOffset.x, fPositionOffset.y, fPositionOffset.z, 0.f);
+
+	return WorldMatrix;
+}
+
+_matrix CEffect_Manager::Get_RotationMatrix(_float3 fRotationOffset)
+{
+	//XMVECTOR vRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
+	//XMVECTOR vUp    = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	//XMVECTOR vLook  = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+
+	//RotationMatrix *= XMMatrixRotationX(XMConvertToRadians(fRotationOffset.x));
+	//RotationMatrix *= XMMatrixRotationY(XMConvertToRadians(fRotationOffset.y));
+	//RotationMatrix *= XMMatrixRotationZ(XMConvertToRadians(fRotationOffset.z));
+
+	//vRight = XMVector4Transform(vRight, RotationMatrix);
+	//vUp    = XMVector4Transform(vUp,    RotationMatrix);
+	//vLook  = XMVector4Transform(vLook,  RotationMatrix);
+
+	//RotationMatrix = XMMatrixIdentity();
+	//RotationMatrix.r[CTransform::STATE_RIGHT] = vRight;
+	//RotationMatrix.r[CTransform::STATE_UP]    = vUp;
+	//RotationMatrix.r[CTransform::STATE_LOOK]  = vLook;
+	
+	// 라디안각도
+	_vector vRotation = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(fRotationOffset.x), XMConvertToRadians(fRotationOffset.y), XMConvertToRadians(fRotationOffset.z));
+	_matrix RotationMatrix = XMMatrixRotationQuaternion(vRotation);
+
+	
+
+	return RotationMatrix;
 }
 
 HRESULT CEffect_Manager::Ready_Proto_Effects(const wstring& strEffectPath)

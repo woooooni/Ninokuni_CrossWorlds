@@ -234,7 +234,7 @@ void CVIBuffer_Particle::Restart_ParticleBufferDesc(_uint iCount)
 			m_vecParticleShaderDesc[i].fBloomPower = _float3((*m_tParticleDesc.pBloomPower).x, (*m_tParticleDesc.pBloomPower).y, (*m_tParticleDesc.pBloomPower).z);
 
 		if ((*m_tParticleDesc.pBlurPowerRandom))
-			m_vecParticleShaderDesc[i].fBlurPower = CUtils::Random_Float(0.1f, 1.f);
+			m_vecParticleShaderDesc[i].fBlurPower = CUtils::Random_Float(0.0f, 1.f);
 		else
 			m_vecParticleShaderDesc[i].fBlurPower = (*m_tParticleDesc.pBlurPower);
 #pragma endregion
@@ -916,7 +916,8 @@ void CVIBuffer_Particle::Tick(_float fTimeDelta)
 									m_vecParticleShaderDesc[i].fUVIndex = _float2(0.f, 0.f);
 								else
 								{
-									m_vecParticleInfoDesc[i].bAmimationFinish = true;
+									//m_vecParticleInfoDesc[i].bAmimationFinish = true;
+									m_bFinished = true;
 									m_vecParticleShaderDesc[i].fUVIndex = m_vecParticleShaderDesc[i].fMaxCount;
 								}
 							}

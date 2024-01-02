@@ -23,6 +23,7 @@ public:
 private:
 	void Tick_EffectTool();
 	void Tick_DecalTool();
+	void Tick_VfxTool();
 
 	void Create_Effect();
 	void Create_Decal();
