@@ -22,10 +22,10 @@ private:
 	void Show_Camera_Prop_Default(CCamera* pCurCam);
 	void Show_Camera_Prop_Free(CCamera* pCurCam);
 	void Show_Camera_Prop_Follow(CCamera* pCurCam);
-	void Show_Camera_Prop_CutScene(_float fTimeDelta);
+	void Show_Camera_Prop_CutScene_Map(_float fTimeDelta);
 		 
 private: 
-	void Clear_CutSceneCache();
+	void Clear_CutScene_Map_Cache();
 
 private:
 	HRESULT Ready_DebugDraw();
@@ -37,7 +37,7 @@ private:
 	vector<Vec3> Subdivide_Bezier(const vector<Vec3>& controlPoints, int numSegments);
 
 private:
-	/* CutScene */
+	/* CutScene Map */
 	_bool	m_bShow_Prop_CutScene		= false;
 	_int	m_iCurCutSceneIndex			= -1;
 	_bool	m_bShowMarker				= true;

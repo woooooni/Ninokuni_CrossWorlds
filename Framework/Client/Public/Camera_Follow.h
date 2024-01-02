@@ -15,13 +15,14 @@ class CCamera_Follow final : public CCamera
 	{
 		/* 댐핑을 호출하면 현재 위치가 vCurPos에 등록되고, 매 프레임 vTargetPos에 카메라 위치가 저장되고 */
 		/* 두 벡터의 차가 condition만큼 벌어지면 댐핑이 시작된다. */
+
 		_bool	bDamping = true;
 		_bool	bSet = false;
 
-		Vec4	vCurPos;						/* 현재 카메라 포지션 */
-		Vec4	vTargetPos;						/* 목표 카메라 포지션 */
+		Vec4	vCurPos;									/* 현재 카메라 포지션 */
+		Vec4	vTargetPos;									/* 목표 카메라 포지션 */
 		_float	fDampingCoefficient			= 0.02f;		/* 0 ~ 1 (값이 클수록 빨리 따라감)*/
-		_float	fDampingCoefficientBackMag	= 2.75f;			/* 타겟의 룩과 카메라의 룩이 역방향일 경우 DampingCoeff에 곱해짐 (더 빨리 쫓아감) */
+		_float	fDampingCoefficientBackMag	= 2.75f;		/* 타겟의 룩과 카메라의 룩이 역방향일 경우 DampingCoeff에 곱해짐 (더 빨리 쫓아감) */
 		_float	fDampingBackLimitRad		= 1.57f;		/* 역방향임을 판단할 기준 각도 */
 
 	}DAMPING_DESC;
@@ -57,6 +58,9 @@ public:
 
 	void Set_MaxRotationLimitDeltaY(const _float& fLimit) { m_fMaxRotLimitDeltaY = fLimit; }
 	void Set_MinRotationLimitDeltaY(const _float& fLimit) { m_fMinRotLimitDeltaY = fLimit; }
+
+public:
+	Vec4 Get_Default_Location();
 
 protected:
 	virtual HRESULT Ready_Components() override;

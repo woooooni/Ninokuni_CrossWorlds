@@ -7,7 +7,7 @@
 
 BEGIN(Client)
 
-typedef struct tagCameraCutSceneDesc
+typedef struct tagCameraCutSceneMapDesc
 {
 	string		strCutSceneName = {};
 
@@ -23,14 +23,14 @@ typedef struct tagCameraCutSceneDesc
 
 	LERP_MODE	eLerpMode = LERP_MODE::SMOOTHER_STEP;
 
-}CAMERA_CUTSCENE_DESC;
+}CAMERA_CUTSCENE_MAP_DESC;
 
-class CCamera_CutScene final : public CCamera
+class CCamera_CutScene_Map final : public CCamera
 {
 private:
-	CCamera_CutScene(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
-	CCamera_CutScene(const CCamera_CutScene& rhs);
-	virtual ~CCamera_CutScene() = default;
+	CCamera_CutScene_Map(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
+	CCamera_CutScene_Map(const CCamera_CutScene_Map& rhs);
+	virtual ~CCamera_CutScene_Map() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -52,26 +52,26 @@ public:
 
 public:
 	/* Tool */
-	HRESULT	Add_CutSceneDesc(const CAMERA_CUTSCENE_DESC& desc);
+	HRESULT	Add_CutSceneDesc(const CAMERA_CUTSCENE_MAP_DESC& desc);
 	HRESULT Del_CutSceneDesc(const string& strCutSceneName);
-	HRESULT Change_CutSceneDesc(const _int& iIndex, const CAMERA_CUTSCENE_DESC& desc);
-	CAMERA_CUTSCENE_DESC* Find_CutSceneDesc(const string& strCutSceneName);
-	const vector<CAMERA_CUTSCENE_DESC>& Get_CutSceneDescs() const { return m_CutSceneDescs; }
+	HRESULT Change_CutSceneDesc(const _int& iIndex, const CAMERA_CUTSCENE_MAP_DESC& desc);
+	CAMERA_CUTSCENE_MAP_DESC* Find_CutSceneDesc(const string& strCutSceneName);
+	const vector<CAMERA_CUTSCENE_MAP_DESC>& Get_CutSceneDescs() const { return m_CutSceneDescs; }
 
 private:
 	virtual HRESULT Ready_Components() override;
 
 private:
-	vector<CAMERA_CUTSCENE_DESC>	m_CutSceneDescs;
+	vector<CAMERA_CUTSCENE_MAP_DESC>	m_CutSceneDescs;
 
-	CAMERA_CUTSCENE_DESC*			m_pCurCutSceneDesc = nullptr;
+	CAMERA_CUTSCENE_MAP_DESC*			m_pCurCutSceneDesc = nullptr;
 
 	queue<string>					m_CutSceneNamesReserved;
 
 	LERP_TIME_DESC					m_tTimeDesc;
 	
 public:
-	static CCamera_CutScene* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
+	static CCamera_CutScene_Map* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

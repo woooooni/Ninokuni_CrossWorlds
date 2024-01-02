@@ -1,21 +1,21 @@
 #include "stdafx.h"
-#include "Camera_CutScene.h"
+#include "Camera_CutScene_Map.h"
 #include "GameInstance.h"
 
 #include "Camera_Manager.h"
 
-CCamera_CutScene::CCamera_CutScene(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
+CCamera_CutScene_Map::CCamera_CutScene_Map(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
 	: CCamera(pDevice, pContext, strObjTag, OBJ_TYPE::OBJ_CAMERA)
 {
 }
 
-CCamera_CutScene::CCamera_CutScene(const CCamera_CutScene& rhs)
+CCamera_CutScene_Map::CCamera_CutScene_Map(const CCamera_CutScene_Map& rhs)
 	: CCamera(rhs)
 {
 
 }
 
-HRESULT CCamera_CutScene::Initialize_Prototype()
+HRESULT CCamera_CutScene_Map::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
@@ -23,7 +23,7 @@ HRESULT CCamera_CutScene::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CCamera_CutScene::Initialize(void* pArg)
+HRESULT CCamera_CutScene_Map::Initialize(void* pArg)
 {
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -37,7 +37,7 @@ HRESULT CCamera_CutScene::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CCamera_CutScene::Tick(_float fTimeDelta)
+void CCamera_CutScene_Map::Tick(_float fTimeDelta)
 {
 	if (!m_bActive)
 		return;
@@ -75,7 +75,7 @@ void CCamera_CutScene::Tick(_float fTimeDelta)
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCamPosition.OneW());
 }
 
-void CCamera_CutScene::LateTick(_float fTimeDelta)
+void CCamera_CutScene_Map::LateTick(_float fTimeDelta)
 {
 	if (!m_bActive)
 		return;
@@ -83,25 +83,25 @@ void CCamera_CutScene::LateTick(_float fTimeDelta)
 	__super::LateTick(fTimeDelta);
 }
 
-HRESULT CCamera_CutScene::Render()
+HRESULT CCamera_CutScene_Map::Render()
 {
 	return S_OK;
 }
 
-HRESULT CCamera_CutScene::Start_CutScene(const string& strCutSceneName)
+HRESULT CCamera_CutScene_Map::Start_CutScene(const string& strCutSceneName)
 {
 	m_pCurCutSceneDesc = Find_CutSceneDesc(strCutSceneName);
 	if (nullptr == m_pCurCutSceneDesc)
 		return E_FAIL;
 
-	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::CUTSCENE);
+	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::CUTSCENE_MAP);
 
 	m_tTimeDesc.Start(m_pCurCutSceneDesc->fDuration, m_pCurCutSceneDesc->eLerpMode);
 
 	return S_OK;
 }
 
-HRESULT CCamera_CutScene::Start_CutScenes(vector<string> strCutSceneNames)
+HRESULT CCamera_CutScene_Map::Start_CutScenes(vector<string> strCutSceneNames)
 {
 	if (Is_Playing_CutScenc())
 		return E_FAIL;
@@ -126,7 +126,7 @@ HRESULT CCamera_CutScene::Start_CutScenes(vector<string> strCutSceneNames)
 	return S_OK;
 }
 
-HRESULT CCamera_CutScene::Save_CutSceneDescs()
+HRESULT CCamera_CutScene_Map::Save_CutSceneDescs()
 {
 	Json json;
 
@@ -205,7 +205,7 @@ HRESULT CCamera_CutScene::Save_CutSceneDescs()
 	return S_OK;
 }
 
-HRESULT CCamera_CutScene::Load_CutSceneDescs()
+HRESULT CCamera_CutScene_Map::Load_CutSceneDescs()
 {
 	wstring strPath = L"../Bin/DataFiles/Camera/CutScene/CutSceneData.json";
 	auto path = filesystem::path(strPath);
@@ -220,7 +220,7 @@ HRESULT CCamera_CutScene::Load_CutSceneDescs()
 
 	for (const auto& item : json["CutScene Desc"])
 	{
-		CAMERA_CUTSCENE_DESC desc;
+		CAMERA_CUTSCENE_MAP_DESC desc;
 		
 		desc.strCutSceneName	= item["Name"];
 		desc.fDuration			= item["Duration"];
@@ -267,7 +267,7 @@ HRESULT CCamera_CutScene::Load_CutSceneDescs()
 	return S_OK;
 }
 
-Vec4 CCamera_CutScene::Get_Point_In_Bezier(Vec3 vPoints[MAX_BEZIER_POINT], const _float& fRatio)
+Vec4 CCamera_CutScene_Map::Get_Point_In_Bezier(Vec3 vPoints[MAX_BEZIER_POINT], const _float& fRatio)
 {
 	if (nullptr == vPoints)
 		return Vec4::UnitW;
@@ -284,7 +284,7 @@ Vec4 CCamera_CutScene::Get_Point_In_Bezier(Vec3 vPoints[MAX_BEZIER_POINT], const
 	return Vec3::Lerp(r0, r1, fNormalizedRatio);
 }
 
-HRESULT CCamera_CutScene::Add_CutSceneDesc(const CAMERA_CUTSCENE_DESC& desc)
+HRESULT CCamera_CutScene_Map::Add_CutSceneDesc(const CAMERA_CUTSCENE_MAP_DESC& desc)
 {
 	if (nullptr != Find_CutSceneDesc(desc.strCutSceneName))
 		return E_FAIL;
@@ -294,12 +294,12 @@ HRESULT CCamera_CutScene::Add_CutSceneDesc(const CAMERA_CUTSCENE_DESC& desc)
 	return S_OK;
 }
 
-HRESULT CCamera_CutScene::Del_CutSceneDesc(const string& strCutSceneName)
+HRESULT CCamera_CutScene_Map::Del_CutSceneDesc(const string& strCutSceneName)
 {
 	if (nullptr == Find_CutSceneDesc(strCutSceneName))
 		return E_FAIL;
 
-	for (vector<CAMERA_CUTSCENE_DESC>::iterator iter = m_CutSceneDescs.begin(); iter != m_CutSceneDescs.end(); ++iter)
+	for (vector<CAMERA_CUTSCENE_MAP_DESC>::iterator iter = m_CutSceneDescs.begin(); iter != m_CutSceneDescs.end(); ++iter)
 	{
 		if (strCutSceneName == (*iter).strCutSceneName)
 		{
@@ -311,7 +311,7 @@ HRESULT CCamera_CutScene::Del_CutSceneDesc(const string& strCutSceneName)
 	return E_FAIL;
 }
 
-HRESULT CCamera_CutScene::Change_CutSceneDesc(const _int& iIndex, const CAMERA_CUTSCENE_DESC& desc)
+HRESULT CCamera_CutScene_Map::Change_CutSceneDesc(const _int& iIndex, const CAMERA_CUTSCENE_MAP_DESC& desc)
 {
 	if (0 > iIndex || m_CutSceneDescs.size() <= iIndex)
 		return E_FAIL;
@@ -321,7 +321,7 @@ HRESULT CCamera_CutScene::Change_CutSceneDesc(const _int& iIndex, const CAMERA_C
 	return S_OK;
 }
 
-CAMERA_CUTSCENE_DESC* CCamera_CutScene::Find_CutSceneDesc(const string& strCutSceneName)
+CAMERA_CUTSCENE_MAP_DESC* CCamera_CutScene_Map::Find_CutSceneDesc(const string& strCutSceneName)
 {
 	for (auto& iter : m_CutSceneDescs)
 	{
@@ -332,38 +332,38 @@ CAMERA_CUTSCENE_DESC* CCamera_CutScene::Find_CutSceneDesc(const string& strCutSc
 	return nullptr;
 }
 
-HRESULT CCamera_CutScene::Ready_Components()
+HRESULT CCamera_CutScene_Map::Ready_Components()
 {
 	return S_OK;
 }
 
-CCamera_CutScene* CCamera_CutScene::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
+CCamera_CutScene_Map* CCamera_CutScene_Map::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
 {
-	CCamera_CutScene* pInstance = new CCamera_CutScene(pDevice, pContext, strObjTag);
+	CCamera_CutScene_Map* pInstance = new CCamera_CutScene_Map(pDevice, pContext, strObjTag);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX("Failed To Created : CCamera_CutScene");
+		MSG_BOX("Failed To Created : CCamera_CutScene_Map");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CCamera_CutScene::Clone(void* pArg)
+CGameObject* CCamera_CutScene_Map::Clone(void* pArg)
 {
-	CCamera_CutScene* pInstance = new CCamera_CutScene(*this);
+	CCamera_CutScene_Map* pInstance = new CCamera_CutScene_Map(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Failed To Created : CCamera_CutScene");
+		MSG_BOX("Failed To Created : CCamera_CutScene_Map");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CCamera_CutScene::Free()
+void CCamera_CutScene_Map::Free()
 {
 	__super::Free();
 

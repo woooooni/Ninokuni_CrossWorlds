@@ -231,7 +231,8 @@
     <ClInclude Include="..\Public\Body.h" />
     <ClInclude Include="..\Public\Boss.h" />
     <ClInclude Include="..\Public\Building.h" />
-    <ClInclude Include="..\Public\Camera_CutScene.h" />
+    <ClInclude Include="..\Public\Camera_CutScene_Boss.h" />
+    <ClInclude Include="..\Public\Camera_CutScene_Map.h" />
     <ClInclude Include="..\Public\CaliaHuman.h" />
     <ClInclude Include="..\Public\Camera_Follow.h" />
     <ClInclude Include="..\Public\Camera_Manager.h" />
@@ -799,7 +800,8 @@
     <ClCompile Include="..\Private\Body.cpp" />
     <ClCompile Include="..\Private\Boss.cpp" />
     <ClCompile Include="..\Private\Building.cpp" />
-    <ClCompile Include="..\Private\Camera_CutScene.cpp" />
+    <ClCompile Include="..\Private\Camera_CutScene_Boss.cpp" />
+    <ClCompile Include="..\Private\Camera_CutScene_Map.cpp" />
     <ClCompile Include="..\Private\CaliaHuman.cpp" />
     <ClCompile Include="..\Private\Camera_Follow.cpp" />
     <ClCompile Include="..\Private\Camera_Manager.cpp" />

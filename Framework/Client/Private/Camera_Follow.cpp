@@ -6,7 +6,7 @@
 #include "Camera_Manager.h"
 
 /* Test */
-#include "Camera_CutScene.h"
+#include "Camera_CutScene_Map.h"
 
 CCamera_Follow::CCamera_Follow(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
 	: CCamera(pDevice, pContext, strObjTag, OBJ_TYPE::OBJ_CAMERA)
@@ -75,7 +75,7 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 	{
 		if (KEY_TAP(KEY::INSERT))
 		{
-			dynamic_cast<CCamera_CutScene*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE))->Start_CutScene("Evermore_Street_00");
+			dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP))->Start_CutScene("Evermore_Street_00");
 		}
 		if (KEY_TAP(KEY::DEL))
 		{
@@ -83,7 +83,7 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 			CutSceneNames.push_back("Evermore_Street_00");
 			CutSceneNames.push_back("Evermore_Street_01");
 
-			dynamic_cast<CCamera_CutScene*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE))->Start_CutScenes(CutSceneNames);
+			dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP))->Start_CutScenes(CutSceneNames);
 		}
 	}
 }
@@ -102,6 +102,12 @@ void CCamera_Follow::LateTick(_float fTimeDelta)
 HRESULT CCamera_Follow::Render()
 {
 	return S_OK;
+}
+
+Vec4 CCamera_Follow::Get_Default_Location()
+{
+
+	return Vec4();
 }
 
 HRESULT CCamera_Follow::Ready_Components()
@@ -137,7 +143,7 @@ Vec4 CCamera_Follow::Calculate_WorldPosition(_float fTimeDelta)
 	/* 디스턴스 반영 */
 	vLocalSpherical *= m_tLerpDist.fCurValue;
 	
-	/* 카메라 목표 월드 위치  */
+	/* 카메라 목표 월드 위치 */
 	CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
 
 	if (nullptr == pTargetTransform)
