@@ -486,7 +486,7 @@ HRESULT CGlanix::Ready_Colliders()
 
 	/* Atk */
 	OBBDesc.vOffsetPosition = Vec3(0.f, 200.f, -200.f);
-	OBBBox.Extents = { 200.f, 200.f, 100.f };
+	OBBBox.Extents = { 200.f, 200.f, 200.f };
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::ATTACK, &OBBDesc)))
 		return E_FAIL;
 

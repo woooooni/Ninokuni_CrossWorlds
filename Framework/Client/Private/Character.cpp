@@ -291,8 +291,8 @@ void CCharacter::Collision_Enter(const COLLISION_INFO& tInfo)
 	__super::Collision_Enter(tInfo);
 	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER)
 	{
-		if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY
-			&& tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK)
+		if ((tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
+			&& (tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK))
 		{
 			On_Damaged(tInfo);
 		}
@@ -392,6 +392,11 @@ void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 	{
 		m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(XMVectorSet(0.f, 1.f, 0.f, 0.f)), 7.f, true);
 		m_pStateCom->Change_State(CCharacter::DAMAGED_KNOCKDOWN);
+	}
+
+	else if (CCollider::ATTACK_TYPE::STUN == tInfo.pOtherCollider->Get_AttackType())
+	{
+		m_pStateCom->Change_State(CCharacter::ABNORMALITY_STUN);
 	}
 
 	else if (CCollider::ATTACK_TYPE::BLOW == tInfo.pOtherCollider->Get_AttackType())

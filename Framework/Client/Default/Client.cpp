@@ -99,7 +99,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		fTimeAcc += GI->Compute_TimeDelta(TIMER_TYPE::DEFAULT);
 
-		if (fTimeAcc >= 1.f / 120.f)
+		if (fTimeAcc >= 1.f / 144.f)
 		{
             GI->Compute_TimeDelta(TIMER_TYPE::UI);
 			pMainApp->Tick(GI->Compute_TimeDelta(TIMER_TYPE::GAME_PLAY));
