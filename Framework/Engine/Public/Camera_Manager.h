@@ -28,7 +28,6 @@ typedef struct tagCameraEventDesc
 
 #pragma endregion
 
-
 BEGIN(Engine)
 
 class CCamera;

@@ -164,35 +164,38 @@ Vec4 CCamera_Follow::Calculate_WorldPosition(_float fTimeDelta)
 
 Vec4 CCamera_Follow::Calculate_LoaclSphericalPosition(_float fTimeDelta)
 {
-	_long	MouseMove = 0l;
-
-	if (MouseMove = GI->Get_DIMMoveState(DIMM_X))
+	if (m_bCanInput)
 	{
-		_float fDelta = MouseMove * m_vMouseSensitivity.y * fTimeDelta * -1.f;
+		_long	MouseMove = 0l;
+
+		if (MouseMove = GI->Get_DIMMoveState(DIMM_X))
+		{
+			_float fDelta = MouseMove * m_vMouseSensitivity.y * fTimeDelta * -1.f;
 		
-		/* y축 회전량이 너무 많을 경우 카메라가 획 도는 현상 방지 하기 위한 제한 */
-		{
-			if (fDelta < m_fMinRotLimitDeltaY)
-				fDelta = m_fMinRotLimitDeltaY;
+			/* y축 회전량이 너무 많을 경우 카메라가 획 도는 현상 방지 하기 위한 제한 */
+			{
+				if (fDelta < m_fMinRotLimitDeltaY)
+					fDelta = m_fMinRotLimitDeltaY;
 
-			if (m_fMaxRotLimitDeltaY < fDelta)
-				fDelta = m_fMaxRotLimitDeltaY;
+				if (m_fMaxRotLimitDeltaY < fDelta)
+					fDelta = m_fMaxRotLimitDeltaY;
+			}
+
+			m_vAngle.x += fDelta;
 		}
 
-		m_vAngle.x += fDelta;
-	}
-
-	if (MouseMove = GI->Get_DIMMoveState(DIMM_Y))
-	{
-		m_vAngle.y += MouseMove * m_vMouseSensitivity.x * fTimeDelta;
-
-		if (m_vAngle.y <= m_fMinLimitY) /* Min : 0.f */
+		if (MouseMove = GI->Get_DIMMoveState(DIMM_Y))
 		{
-			m_vAngle.y = m_fMinLimitY;
-		}
-		else if (m_fMaxLimitY < m_vAngle.y) /* Max : 3.14*/
-		{
-			m_vAngle.y = m_fMaxLimitY;
+			m_vAngle.y += MouseMove * m_vMouseSensitivity.x * fTimeDelta;
+
+			if (m_vAngle.y <= m_fMinLimitY) /* Min : 0.f */
+			{
+				m_vAngle.y = m_fMinLimitY;
+			}
+			else if (m_fMaxLimitY < m_vAngle.y) /* Max : 3.14*/
+			{
+				m_vAngle.y = m_fMaxLimitY;
+			}
 		}
 	}
 

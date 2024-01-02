@@ -75,7 +75,7 @@ private:
 private:
 	Vec2			m_vAngle				= { 0.f, 1.f };
 
-	/* 회전량이 너무 많거나 적을경우 카메라가 획 도는 경우를 방지하기 위한 Limit값*/
+	/* 회전량이 너무 많거나 적을경우 카메라가 획 도는 경우를 방지하기 위한 Limit값 */
 	_float			m_fMaxRotLimitDeltaY	= { 0.05f };
 	_float			m_fMinRotLimitDeltaY	= { -0.05f };
 
@@ -87,7 +87,7 @@ private:
 	DAMPING_DESC	m_tDampingDesc			= {};
 
 	/* PhysX */
-	CPhysX_Controller* m_pControllerCom = nullptr;
+	CPhysX_Controller* m_pControllerCom		= nullptr;
 
 public:
 	static CCamera_Follow* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);

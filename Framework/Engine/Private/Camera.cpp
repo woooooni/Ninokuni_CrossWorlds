@@ -83,6 +83,18 @@ void CCamera::Start_Lerp_Distance(const _float& fTargetValue, const _float& fTim
 	m_tLerpDist.Start(m_tLerpDist.fCurValue, fTargetValue, fTime, eMode);
 }
 
+void CCamera::Change_TargetObj(CGameObject* pTargetObj1, CGameObject* pTargetObj2, const _float& fChangeTime, const LERP_MODE& eMode)
+{
+	if (nullptr == pTargetObj1 || nullptr == pTargetObj2 || 0.f > fChangeTime)
+		return;
+}
+
+void CCamera::Change_LookAtObj(CGameObject* pLookAtObj1, CGameObject* pLookAtObj2, const _float& fChangeTime, const LERP_MODE& eMode)
+{
+	if (nullptr == pLookAtObj1 || nullptr == pLookAtObj2 || 0.f > fChangeTime)
+		return;
+}
+
 void CCamera::Start_Shake(const _float& fAmplitude, const _float& fFrequency, const _float& fDuration)
 {
 	if (0 >= fAmplitude || 0 >= fFrequency || 0 >= fDuration)
