@@ -38,6 +38,9 @@ void CGlanixState_Rage2Idle::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
+	// 여기서 슬로우 처리.
+	//m_pGlanix->Get_SlowStack();
+
 	m_fTime += fTimeDelta;
 
 	if (m_fTime >= m_fWaitTime)

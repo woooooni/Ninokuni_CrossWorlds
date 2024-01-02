@@ -245,6 +245,8 @@ HRESULT CBaobam_Water::Ready_States()
 	m_tStat.iLv = 5;
 	m_tStat.fMaxHp = 150;
 	m_tStat.fHp = 150;
+	m_tStat.iAtk = 10;
+	m_tStat.iDef = 2;
 
 	m_tStat.fAirVelocity = 5.f;
 	m_tStat.fAirDeadVelocity = 10.f;

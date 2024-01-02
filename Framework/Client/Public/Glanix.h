@@ -55,6 +55,9 @@ public:
 
 	_vector	Get_WavePoint() { return m_vWavePoint; }
 
+	/* Rage2 Stack */
+	_bool	Get_SlowStack() { return m_iSlowStack; }
+	void	Set_SlowStack(_int iAmount) { m_iSlowStack += iAmount; }
 private:
 	virtual HRESULT Ready_Components();
 	virtual HRESULT Ready_States();
@@ -68,6 +71,7 @@ private:
 	_bool	m_bIsCrash = false;
 	_vector	m_vWavePoint = {};
 
+	_uint	m_iSlowStack = 0;
 public:
 	static CGlanix* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat);
 	virtual CGameObject* Clone(void* pArg) override;

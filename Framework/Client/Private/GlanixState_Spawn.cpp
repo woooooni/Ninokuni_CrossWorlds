@@ -23,18 +23,6 @@ void CGlanixState_Spawn::Enter_State(void* pArg)
 	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_Spawn_New"));
 	// m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao | Glanix_LeftTurn180"));
 
-	_float4 vGlanixPos = {};
-	XMStoreFloat4(&vGlanixPos, m_pTransformCom->Get_Position());
-
-	_vector vPillarPos = { vGlanixPos.x + 8.f, 1.6f, vGlanixPos.z + -8.f, 1.f };
-	GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
-	vPillarPos = { vGlanixPos.x + -11.f, 1.6f, vGlanixPos.z + -8.f, 1.f };
-	GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
-	vPillarPos = { vGlanixPos.x + 12.f, 1.6f, vGlanixPos.z + 11.f, 1.f };
-	GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
-	vPillarPos = { vGlanixPos.x + -6.f, 1.6f, vGlanixPos.z + 7.f, 1.f };
-	GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
-
 	//if(m_pPlayer != nullptr)
 	//	m_pTransformCom->LookAt_ForLandObject(m_pPlayerTransform->Get_Position());
 }

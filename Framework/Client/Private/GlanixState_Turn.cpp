@@ -53,10 +53,10 @@ void CGlanixState_Turn::Enter_State(void* pArg)
 	_float fDotProduct = XMVectorGetX(XMVector3Dot(vLookNormal, vDestNormal));
 	_float fAngle = XMConvertToDegrees(acosf(fDotProduct));
 
-	/* 만약 회전모션이 필요할 정도가 아닌 각도라면 1초정도의 idle 상태로 전환.*/
+	/* 만약 회전모션이 필요할 정도가 아닌 각도라면 3초정도의 idle 상태로 전환.*/
 	if (fAngle < 20.f)
 	{
-		_float fWaitTime = 0.5f;
+		_float fWaitTime = 3.f;
 		m_pStateMachineCom->Change_State(CGlanix::GLANIX_COMBATIDLE, &fWaitTime);
 	}
 	/* 회전이 필요한 각도라면 */
@@ -125,7 +125,9 @@ void CGlanixState_Turn::Tick_State(_float fTimeDelta)
 	
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
-		__super::Start_Pattern();
+		//__super::Start_Pattern();
+		_float fWaitTime = 1.5f;
+		m_pStateMachineCom->Change_State(CGlanix::GLANIX_COMBATIDLE, &fWaitTime);
 	}
 }
 

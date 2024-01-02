@@ -12,6 +12,8 @@
 #include "BehaviorTree.h"
 
 #include "Game_Manager.h"
+#include "Character.h"
+
 #include "Player.h"
 
 USING(Client)
