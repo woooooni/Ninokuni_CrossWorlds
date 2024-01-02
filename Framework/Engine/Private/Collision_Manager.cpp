@@ -11,18 +11,7 @@ CCollision_Manager::CCollision_Manager()
 
 HRESULT CCollision_Manager::Reserve_Manager()
 {
-	Reserve_CheckGroup(COLLISION_GROUP::MONSTER, COLLISION_GROUP::MONSTER);
 	Reserve_CheckGroup(COLLISION_GROUP::CHARACTER, COLLISION_GROUP::MONSTER);
-
-	Reserve_CheckGroup(COLLISION_GROUP::CHARACTER, COLLISION_GROUP::PROP);
-	Reserve_CheckGroup(COLLISION_GROUP::PROP, COLLISION_GROUP::MONSTER);
-
-	Reserve_CheckGroup(COLLISION_GROUP::NPC, COLLISION_GROUP::MONSTER);
-	Reserve_CheckGroup(COLLISION_GROUP::NPC, COLLISION_GROUP::CHARACTER);
-
-	Reserve_CheckGroup(COLLISION_GROUP::PORTAL, COLLISION_GROUP::CHARACTER);
-
-	Reserve_CheckGroup(COLLISION_GROUP::ANIMAL, COLLISION_GROUP::CHARACTER);
 
 	for (_uint i = 0; i < COLLISION_GROUP::GROUP_END; ++i)
 		m_CollisionObjects[i].reserve(300);
@@ -109,16 +98,18 @@ void CCollision_Manager::Collision_Update(COLLISION_GROUP eLeft, COLLISION_GROUP
 						for (auto& pRightCollider : RightColliders)
 						{
 
-							if (false == pLeftCollider->Is_Active() && false == pRightCollider->Is_Active())
-								continue;
+							
 
 							COLLIDER_ID ID;
 							ID.iLeft_id = min(pLeftCollider->Get_ColliderID(), pRightCollider->Get_ColliderID());
 							ID.iRight_id = max(pLeftCollider->Get_ColliderID(), pRightCollider->Get_ColliderID());
 
 							iter = m_mapColInfo.find(ID.ID);
-							if (m_mapColInfo.end() == iter)
+							if (iter == m_mapColInfo.end())
 							{
+								if (false == pLeftCollider->Is_Active() && false == pRightCollider->Is_Active())
+									continue;
+
 								m_mapColInfo.insert(make_pair(ID.ID, false));
 								iter = m_mapColInfo.find(ID.ID);
 							}
@@ -174,6 +165,9 @@ void CCollision_Manager::Collision_Update(COLLISION_GROUP eLeft, COLLISION_GROUP
 
 _bool CCollision_Manager::Is_Collision(CCollider* pLeft, CCollider* pRight)
 {
+	if (false == pLeft->Is_Active() || false == pRight->Is_Active())
+		return false;
+
 	return pLeft->Is_Collision(pRight);
 }
 

@@ -42,8 +42,8 @@ public:
 
 private:
 	map<ULONGLONG, bool>		m_mapColInfo;
-	_uint						m_arrCheck[(_uint)COLLISION_GROUP::GROUP_END] = {};
-	vector<class CGameObject*>	m_CollisionObjects[(_uint)COLLISION_GROUP::GROUP_END] = {};
+	_uint						m_arrCheck[(_uint)COLLISION_GROUP::GROUP_END];
+	vector<class CGameObject*>	m_CollisionObjects[(_uint)COLLISION_GROUP::GROUP_END];
 
 private:
 	HRESULT Reserve_CheckGroup(COLLISION_GROUP eLeft, COLLISION_GROUP eRight);

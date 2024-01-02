@@ -44,7 +44,6 @@ void CState_SwordMan_Battle_Dash::Tick_State(_float fTimeDelta)
     else if (false == m_pModelCom->Is_Tween() && m_pModelCom->Get_Progress() >= 0.85f)
     {
         Input(fTimeDelta);
-        m_pCharacter->Stop_MotionTrail();
     }
 
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
@@ -54,6 +53,7 @@ void CState_SwordMan_Battle_Dash::Tick_State(_float fTimeDelta)
 void CState_SwordMan_Battle_Dash::Exit_State()
 {
     m_iCurrAnimIndex = 0;
+    m_pCharacter->Stop_MotionTrail();
 }
 
 
