@@ -195,6 +195,7 @@ public:
 	void Set_Position_Particle(_float4x4 WorldMatrix);
 
 	void Set_Owner(CGameObject* pGameObject) { m_pOwnerObject = pGameObject; }
+	void Set_LoopParticle(_bool bLoop) { m_tParticleDesc.bParticleLoop = bLoop; }
 	class CTransform* Get_TransformCom() { return m_pTransformCom; }
 
 private:

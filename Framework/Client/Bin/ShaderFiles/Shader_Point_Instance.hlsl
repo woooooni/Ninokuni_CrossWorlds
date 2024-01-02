@@ -185,8 +185,8 @@ float4 Caculation_Brightness(float4 vColor, uint iInstanceID)
 	float4 vBrightnessColor = float4(0.f, 0.f, 0.f, 0.f);
 
 	float fPixelBrightness = dot(vColor.rgb, g_EffectDesc[iInstanceID].g_fBloomPower.rgb);
-	if (fPixelBrightness > 0.99f)
-		vBrightnessColor = float4(vColor.rgb, 1.0f);
+    if (fPixelBrightness > 0.99f)
+        vBrightnessColor = vColor;
 
 	return vBrightnessColor;
 }
@@ -207,18 +207,22 @@ PS_OUT PS_MAIN(PS_IN In)
 	Out.vDiffuse_Low    = float4(0.f, 0.f, 0.f, 0.f);
 	Out.vDiffuse_Middle = float4(0.f, 0.f, 0.f, 0.f);
 	Out.vDiffuse_High   = float4(0.f, 0.f, 0.f, 0.f);
+    Out.vBloom          = float4(0.f, 0.f, 0.f, 0.f);
 
 	if (g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.0f)
 		Out.vDiffuse_None = vDiffuseColor;
-	else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.0f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.3f)
-		Out.vDiffuse_Low = vDiffuseColor;
-	else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.3f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.7f)
-		Out.vDiffuse_Middle = vDiffuseColor;
-	else
-		Out.vDiffuse_High = vDiffuseColor;
-
-	// Bloom
-	Out.vBloom = Caculation_Brightness(vDiffuseColor, In.iInstanceID);
+    else if (vDiffuseColor.a >= 0.5f)
+    {
+        if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.0f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.3f)
+            Out.vDiffuse_Low = vDiffuseColor;
+        else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.3f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.7f)
+            Out.vDiffuse_Middle = vDiffuseColor;
+        else
+            Out.vDiffuse_High = vDiffuseColor;
+		
+		// Bloom
+        Out.vBloom = Caculation_Brightness(vDiffuseColor, In.iInstanceID);
+    }
 
 	return Out;
 }

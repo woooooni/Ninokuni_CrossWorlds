@@ -23,7 +23,10 @@ public:
 	HRESULT Generate_Decal(const wstring& strDecalName, _matrix WorldMatrix, _matrix* pRotationMatrix = nullptr, CGameObject* pOwner = nullptr, class CDecal** ppOut = nullptr);
 	HRESULT Generate_Vfx(const wstring& strVfxName, _matrix WorldMatrix, _matrix* pRotationMatrix = nullptr, CGameObject* pOwner = nullptr, class CVfx** ppOut = nullptr);
 
-private:
+	_matrix Get_WorldMatrixEffect(_matrix OwnerWorldMatrix, _float3 fPositionOffset, _float3 fScaleOffset, _float3 fRotationOffset);
+	_matrix Get_RotationMatrix(_float3 fRotationOffset);
+
+private:						  
 	ID3D11Device* m_pDevice = nullptr;
 	ID3D11DeviceContext* m_pContext = nullptr;
 

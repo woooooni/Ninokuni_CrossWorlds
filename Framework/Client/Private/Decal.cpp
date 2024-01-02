@@ -160,8 +160,8 @@ void CDecal::Set_DecalDesc(const DECAL_DESC& tDesc)
 
 void CDecal::Restart_Decal()
 {
-	m_bDecalDie        = false;
-	m_fAccLifeTime     = 0.f;
+	m_bDecalDie    = false;
+	m_fAccLifeTime = 0.f;
 
 	m_pTransformCom->Set_Scale(m_tDecalDesc.fScale);
 

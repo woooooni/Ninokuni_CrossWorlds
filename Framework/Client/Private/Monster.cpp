@@ -11,6 +11,7 @@
 #include "UI_Manager.h"
 #include "UIDamage_Manager.h"
 #include "BehaviorTree.h"
+#include "Particle.h"
 
 #include "Game_Manager.h"
 #include "Character.h"
@@ -82,19 +83,6 @@ void CMonster::Tick(_float fTimeDelta)
 
 			Set_ActiveColliders(CCollider::DETECTION_TYPE::BODY, true);
 		}
-
-	}
-
-	if (m_bReserveDead) // Dissolve
-	{
-		if (m_fDissolveWeight >= 10.f)
-		{
-			Set_ActiveColliders(CCollider::DETECTION_TYPE::BODY, false);
-			Set_Dead(true);
-			return;
-		}
-
-		m_fDissolveWeight += m_fDissolveSpeed * fTimeDelta;
 	}
 
 	if(m_pBTCom != nullptr)
@@ -105,6 +93,28 @@ void CMonster::Tick(_float fTimeDelta)
 
 	if (m_bIsRimUse) // RimLight
 		Tick_RimLight(fTimeDelta);
+
+	if (m_bReserveDead) // Dissolve
+	{
+		if (!m_bDissolveEffect)
+		{
+			m_bDissolveEffect = true;
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Monster_Dissolve"), m_pTransformCom->Get_WorldMatrix(), nullptr, nullptr, &m_pDissolveObject);
+		}
+		else if (m_pDissolveObject != nullptr && m_fDissolveWeight >= (m_fDissolveTotal - 3.f))
+		{
+			m_pDissolveObject->Set_Dead(true);
+			m_pDissolveObject = nullptr;
+		}
+		else if (m_fDissolveWeight >= m_fDissolveTotal)
+		{
+			Set_ActiveColliders(CCollider::DETECTION_TYPE::BODY, false);
+			Set_Dead(true);
+			return;
+		}
+		else
+			m_fDissolveWeight += m_fDissolveSpeed * fTimeDelta;
+	}
 }
 
 void CMonster::LateTick(_float fTimeDelta)

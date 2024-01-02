@@ -372,7 +372,7 @@ void CEffect::LateTick(_float fTimeDelta)
 	EffectInstanceDesc.g_fBlurPower = m_fBlurPower;
 
 	// ÄÃ¸µ
-	if (true == GI->Intersect_Frustum_World(XMLoadFloat4x4(&WorldMatrix).r[CTransform::STATE_POSITION], 3.f))
+	if (true == GI->Intersect_Frustum_World(XMLoadFloat4x4(&WorldMatrix).r[CTransform::STATE_POSITION], 10.f))
 	{
 		if (m_tEffectDesc.eType == EFFECT_TYPE::EFFECT_MESH)
 			m_pRendererCom->Add_RenderGroup_Instancing_Effect(CRenderer::RENDER_EFFECT, CRenderer::INSTANCING_SHADER_TYPE::EFFECT_MODEL, this, WorldMatrix, EffectInstanceDesc);

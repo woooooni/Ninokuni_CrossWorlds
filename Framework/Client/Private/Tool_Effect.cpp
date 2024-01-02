@@ -38,6 +38,12 @@ void CTool_Effect::Tick(_float fTimeDelta)
 		ImGui::EndTabItem();
 	}
 
+	if (ImGui::BeginTabItem("VFX"))
+	{
+		Tick_VfxTool();
+		ImGui::EndTabItem();
+	}
+
 	ImGui::EndTabBar();
 	ImGui::End();
 }
@@ -633,6 +639,25 @@ void CTool_Effect::Tick_DecalTool()
 		if (ImGui::InputFloat("##BlurPower", &m_tDecalInfo.fBlurPower))
 			Store_InfoDecal();
 	}
+}
+
+void CTool_Effect::Tick_VfxTool()
+{
+	// 积己/ 昏力
+	//if (ImGui::Button("VfxCreate"))
+	//{
+
+	//}
+	//ImGui::SameLine();
+
+
+	//// 犬牢(利侩)
+	//if (ImGui::Button("DecalTransformSelect"))
+	//	Store_TransformDecal();
+	//ImGui::SameLine();
+	//if (ImGui::Button("DecalInfoSelect"))
+	//	Store_InfoDecal();
+	//ImGui::NewLine();
 }
 
 void CTool_Effect::Create_Effect()
