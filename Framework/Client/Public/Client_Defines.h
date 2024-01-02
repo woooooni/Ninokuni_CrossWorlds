@@ -123,6 +123,11 @@ namespace Client
 	static const _float Cam_Fov_CutScene_Map_Default	= XMConvertToRadians(70.0f);
 	static const _float Cam_Fov_CutScene_Boss_Default	= XMConvertToRadians(70.0f);
 
+	static const Vec4	Cam_TargetOffset_Follow_Default	= { 0.7f, 1.3f, 0.f, 1.f };
+	static const Vec4	Cam_LookAtOffset_Follow_Default = { 0.7f, 1.3f, 0.f, 1.f };
+
+	static const _float Cam_LockOn_Blending_Time = 0.5f;
+
 #define MAX_BEZIER_POINT 4
 }
 
