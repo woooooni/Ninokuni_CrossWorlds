@@ -15,6 +15,7 @@
 #include "DynamicGroup.h"
 #include "SkyDome.h"
 #include "SkyPlane.h"
+#include "Aurora.h"
 
 
 #include <filesystem>
@@ -806,7 +807,8 @@ HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_EvermoreWater"), CEvermoreWater::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
-
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Aurora"), CAurora::Create(m_pDevice, m_pContext, TEXT("Sky_Aurora"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX, true)))
+		return E_FAIL;
 
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Cat", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/Animal/", L"Animal_Cat")))
 		return E_FAIL;
@@ -832,7 +834,8 @@ HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Sky_dome2", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/SkyDom/", L"Skydome2")))
 		return E_FAIL;
-
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Aurora", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/SkyDom/", L"AuroraTesselatedPlane")))
+		return E_FAIL;
 
 
 	return S_OK;
