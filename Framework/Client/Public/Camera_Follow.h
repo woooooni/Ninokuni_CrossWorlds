@@ -15,13 +15,14 @@ class CCamera_Follow final : public CCamera
 	{
 		/* 댐핑을 호출하면 현재 위치가 vCurPos에 등록되고, 매 프레임 vTargetPos에 카메라 위치가 저장되고 */
 		/* 두 벡터의 차가 condition만큼 벌어지면 댐핑이 시작된다. */
+
 		_bool	bDamping = true;
 		_bool	bSet = false;
 
-		Vec4	vCurPos;						/* 현재 카메라 포지션 */
-		Vec4	vTargetPos;						/* 목표 카메라 포지션 */
+		Vec4	vCurPos;									/* 현재 카메라 포지션 */
+		Vec4	vTargetPos;									/* 목표 카메라 포지션 */
 		_float	fDampingCoefficient			= 0.02f;		/* 0 ~ 1 (값이 클수록 빨리 따라감)*/
-		_float	fDampingCoefficientBackMag	= 2.75f;			/* 타겟의 룩과 카메라의 룩이 역방향일 경우 DampingCoeff에 곱해짐 (더 빨리 쫓아감) */
+		_float	fDampingCoefficientBackMag	= 2.75f;		/* 타겟의 룩과 카메라의 룩이 역방향일 경우 DampingCoeff에 곱해짐 (더 빨리 쫓아감) */
 		_float	fDampingBackLimitRad		= 1.57f;		/* 역방향임을 판단할 기준 각도 */
 
 	}DAMPING_DESC;
@@ -58,6 +59,9 @@ public:
 	void Set_MaxRotationLimitDeltaY(const _float& fLimit) { m_fMaxRotLimitDeltaY = fLimit; }
 	void Set_MinRotationLimitDeltaY(const _float& fLimit) { m_fMinRotLimitDeltaY = fLimit; }
 
+public:
+	Vec4 Get_Default_Location();
+
 protected:
 	virtual HRESULT Ready_Components() override;
 
@@ -71,7 +75,7 @@ private:
 private:
 	Vec2			m_vAngle				= { 0.f, 1.f };
 
-	/* 회전량이 너무 많거나 적을경우 카메라가 획 도는 경우를 방지하기 위한 Limit값*/
+	/* 회전량이 너무 많거나 적을경우 카메라가 획 도는 경우를 방지하기 위한 Limit값 */
 	_float			m_fMaxRotLimitDeltaY	= { 0.05f };
 	_float			m_fMinRotLimitDeltaY	= { -0.05f };
 
@@ -83,7 +87,7 @@ private:
 	DAMPING_DESC	m_tDampingDesc			= {};
 
 	/* PhysX */
-	CPhysX_Controller* m_pControllerCom = nullptr;
+	CPhysX_Controller* m_pControllerCom		= nullptr;
 
 public:
 	static CCamera_Follow* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);

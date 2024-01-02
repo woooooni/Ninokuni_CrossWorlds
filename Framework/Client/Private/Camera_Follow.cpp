@@ -6,7 +6,7 @@
 #include "Camera_Manager.h"
 
 /* Test */
-#include "Camera_CutScene.h"
+#include "Camera_CutScene_Map.h"
 
 CCamera_Follow::CCamera_Follow(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
 	: CCamera(pDevice, pContext, strObjTag, OBJ_TYPE::OBJ_CAMERA)
@@ -75,7 +75,7 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 	{
 		if (KEY_TAP(KEY::INSERT))
 		{
-			dynamic_cast<CCamera_CutScene*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE))->Start_CutScene("Evermore_Street_00");
+			dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP))->Start_CutScene("Evermore_Street_00");
 		}
 		if (KEY_TAP(KEY::DEL))
 		{
@@ -83,7 +83,7 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 			CutSceneNames.push_back("Evermore_Street_00");
 			CutSceneNames.push_back("Evermore_Street_01");
 
-			dynamic_cast<CCamera_CutScene*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE))->Start_CutScenes(CutSceneNames);
+			dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP))->Start_CutScenes(CutSceneNames);
 		}
 	}
 }
@@ -102,6 +102,12 @@ void CCamera_Follow::LateTick(_float fTimeDelta)
 HRESULT CCamera_Follow::Render()
 {
 	return S_OK;
+}
+
+Vec4 CCamera_Follow::Get_Default_Location()
+{
+
+	return Vec4();
 }
 
 HRESULT CCamera_Follow::Ready_Components()
@@ -137,7 +143,7 @@ Vec4 CCamera_Follow::Calculate_WorldPosition(_float fTimeDelta)
 	/* 디스턴스 반영 */
 	vLocalSpherical *= m_tLerpDist.fCurValue;
 	
-	/* 카메라 목표 월드 위치  */
+	/* 카메라 목표 월드 위치 */
 	CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
 
 	if (nullptr == pTargetTransform)
@@ -158,35 +164,38 @@ Vec4 CCamera_Follow::Calculate_WorldPosition(_float fTimeDelta)
 
 Vec4 CCamera_Follow::Calculate_LoaclSphericalPosition(_float fTimeDelta)
 {
-	_long	MouseMove = 0l;
-
-	if (MouseMove = GI->Get_DIMMoveState(DIMM_X))
+	if (m_bCanInput)
 	{
-		_float fDelta = MouseMove * m_vMouseSensitivity.y * fTimeDelta * -1.f;
+		_long	MouseMove = 0l;
+
+		if (MouseMove = GI->Get_DIMMoveState(DIMM_X))
+		{
+			_float fDelta = MouseMove * m_vMouseSensitivity.y * fTimeDelta * -1.f;
 		
-		/* y축 회전량이 너무 많을 경우 카메라가 획 도는 현상 방지 하기 위한 제한 */
-		{
-			if (fDelta < m_fMinRotLimitDeltaY)
-				fDelta = m_fMinRotLimitDeltaY;
+			/* y축 회전량이 너무 많을 경우 카메라가 획 도는 현상 방지 하기 위한 제한 */
+			{
+				if (fDelta < m_fMinRotLimitDeltaY)
+					fDelta = m_fMinRotLimitDeltaY;
 
-			if (m_fMaxRotLimitDeltaY < fDelta)
-				fDelta = m_fMaxRotLimitDeltaY;
+				if (m_fMaxRotLimitDeltaY < fDelta)
+					fDelta = m_fMaxRotLimitDeltaY;
+			}
+
+			m_vAngle.x += fDelta;
 		}
 
-		m_vAngle.x += fDelta;
-	}
-
-	if (MouseMove = GI->Get_DIMMoveState(DIMM_Y))
-	{
-		m_vAngle.y += MouseMove * m_vMouseSensitivity.x * fTimeDelta;
-
-		if (m_vAngle.y <= m_fMinLimitY) /* Min : 0.f */
+		if (MouseMove = GI->Get_DIMMoveState(DIMM_Y))
 		{
-			m_vAngle.y = m_fMinLimitY;
-		}
-		else if (m_fMaxLimitY < m_vAngle.y) /* Max : 3.14*/
-		{
-			m_vAngle.y = m_fMaxLimitY;
+			m_vAngle.y += MouseMove * m_vMouseSensitivity.x * fTimeDelta;
+
+			if (m_vAngle.y <= m_fMinLimitY) /* Min : 0.f */
+			{
+				m_vAngle.y = m_fMinLimitY;
+			}
+			else if (m_fMaxLimitY < m_vAngle.y) /* Max : 3.14*/
+			{
+				m_vAngle.y = m_fMaxLimitY;
+			}
 		}
 	}
 

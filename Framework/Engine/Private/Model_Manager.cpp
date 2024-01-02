@@ -946,6 +946,27 @@ HRESULT CModel_Manager::Export_Animation_Events(const wstring& strFinalPath, CMo
 
 				});
 			}
+
+			/* Camera Event */
+			Anims[i]->Sort_CameraEvents();
+			const vector<pair<_float, CAMERA_EVENT_DESC>>& CameraEvents = Anims[i]->Get_CameraEvents();
+
+			for (auto& CameraEvent : CameraEvents)
+			{
+				json["Camera Event"].push_back({
+
+									{"Animation Name", CUtils::ToString(Anims[i]->Get_AnimationName())},
+									{"KeyFrame", CameraEvent.first},
+
+									{"fTag1", CameraEvent.second.fTag1},
+									{"fTag2", CameraEvent.second.fTag2},
+									{"fTag3", CameraEvent.second.fTag3},
+
+									{"iTag1", CameraEvent.second.iTag1},
+									{"iTag2", CameraEvent.second.iTag2},
+									// bTag1은 단순 체크용이므로 저장하지 않는다.
+					});
+			}
 		}
 	}
 
@@ -1528,6 +1549,32 @@ HRESULT CModel_Manager::Import_Animation_Events(const wstring strFinalPath, CMod
 		}
 	}
 
+	/* Camera Event */
+	for (const auto& item : json["Camera Event"])
+	{
+		string	strAnimName;
+		_float	fKeyFrame;
+
+		CAMERA_EVENT_DESC desc;
+		
+		strAnimName = item["Animation Name"];
+		fKeyFrame = item["KeyFrame"];
+
+		desc.fTag1 = item["fTag1"];
+		desc.fTag2 = item["fTag2"];
+		desc.fTag3 = item["fTag3"];
+
+		desc.iTag1 = item["iTag1"];
+		desc.iTag2 = item["iTag2"];
+		
+		// bTag1은 단순 체크용이므로 저장하지 않는다.
+
+		CAnimation* pAnim = pModel->Get_Animation(strAnimName);
+		if (nullptr != pAnim)
+		{
+			pAnim->Add_CameraEvent(fKeyFrame, desc);
+		}
+	}
 
 
 	return S_OK;

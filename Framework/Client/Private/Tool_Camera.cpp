@@ -12,7 +12,8 @@
 #include "Camera.h"
 #include "Camera_Free.h"
 #include "Camera_Follow.h"
-#include "Camera_CutScene.h"
+#include "Camera_CutScene_Map.h"
+#include "Camera_CutScene_Boss.h"
 
 CTool_Camera::CTool_Camera(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CTool(pDevice, pContext)
@@ -45,7 +46,7 @@ void CTool_Camera::Tick(_float fTimeDelta)
 			/* Cut Scene */
 			if (m_bShow_Prop_CutScene)
 			{
-				Show_Camera_Prop_CutScene(fTimeDelta);
+				Show_Camera_Prop_CutScene_Map(fTimeDelta);
 				ImGui::End();
 				return;
 			}
@@ -95,7 +96,7 @@ void CTool_Camera::Show_Select_Camera()
 
 				if (ImGui::Selectable(CameraCharNames[iCurComboIndex], is_selected))
 				{
-					if (CAMERA_TYPE::CUTSCENE == iCurComboIndex)
+					if (CAMERA_TYPE::CUTSCENE_MAP == iCurComboIndex)
 						iCurComboIndex = CAMERA_TYPE::FREE;
 
 					CCamera_Manager::GetInstance()->Set_CurCamera((CAMERA_TYPE)iCurComboIndex);
@@ -109,11 +110,11 @@ void CTool_Camera::Show_Select_Camera()
 		ImGui::PushItemWidth(300.f);
 
 		/* 컷신은 별도 작업 */
-		if (ImGui::Checkbox("컷신 작업", &m_bShow_Prop_CutScene))
+		if (ImGui::Checkbox("맵 컷신 작업", &m_bShow_Prop_CutScene))
 		{
 			if (!m_bShow_Prop_CutScene)
 			{
-				Clear_CutSceneCache();
+				Clear_CutScene_Map_Cache();
 			}
 		}
 			
@@ -346,7 +347,7 @@ void CTool_Camera::Show_Camera_Prop_Follow(CCamera* pCurCam)
 	ImGui::EndChild();
 }
 
-void CTool_Camera::Show_Camera_Prop_CutScene(_float fTimeDelta)
+void CTool_Camera::Show_Camera_Prop_CutScene_Map(_float fTimeDelta)
 {
 	IMGUI_NEW_LINE;
 
@@ -358,13 +359,13 @@ void CTool_Camera::Show_Camera_Prop_CutScene(_float fTimeDelta)
 
 	if (ImGui::BeginChild("CutScene Camera Option", ImVec2(0, 650.f), true))
 	{
-		CCamera_CutScene* pCutSceneCam = dynamic_cast<CCamera_CutScene*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE));
+		CCamera_CutScene_Map* pCutSceneCam = dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP));
 
 		if (nullptr != pCutSceneCam)
 		{
 			ImGui::PushItemWidth(220.f);
 			{
-				vector<CAMERA_CUTSCENE_DESC> CutSceneDescs = pCutSceneCam->Get_CutSceneDescs();
+				vector<CAMERA_CUTSCENE_MAP_DESC> CutSceneDescs = pCutSceneCam->Get_CutSceneDescs();
 
 				/* Func */
 				{
@@ -543,7 +544,7 @@ void CTool_Camera::Show_Camera_Prop_CutScene(_float fTimeDelta)
 				/* 추가 */
 				if (ImGui::Button("Add CutScene"))
 				{
-					CAMERA_CUTSCENE_DESC desc;
+					CAMERA_CUTSCENE_MAP_DESC desc;
 					{
 						desc.strCutSceneName = "New CutScene Data " + to_string(CutSceneDescs.size());
 
@@ -592,7 +593,7 @@ void CTool_Camera::Show_Camera_Prop_CutScene(_float fTimeDelta)
 	ImGui::EndChild();
 }
 
-void CTool_Camera::Clear_CutSceneCache()
+void CTool_Camera::Clear_CutScene_Map_Cache()
 {
 	m_bShow_Prop_CutScene = false;
 	
@@ -631,8 +632,8 @@ HRESULT CTool_Camera::Render_DebugDraw()
 	if (0 > m_iCurCutSceneIndex || !m_bShowMarker)
 		return S_OK;
 
-	vector<CAMERA_CUTSCENE_DESC> CutSceneDescs =
-		dynamic_cast<CCamera_CutScene*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE))->Get_CutSceneDescs();
+	vector<CAMERA_CUTSCENE_MAP_DESC> CutSceneDescs =
+		dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP))->Get_CutSceneDescs();
 
 
 	m_pEffect->SetWorld(XMMatrixIdentity());
@@ -678,11 +679,11 @@ HRESULT CTool_Camera::Render_DebugDraw()
 		const _float fRatio = m_tCutSceneDebugTimeDesc.fLerpTime / m_tCutSceneDebugTimeDesc.fEndTime;
 
 		/* 실시간 포지션 위치 */
-		m_pSphere->Center = CCamera_CutScene::Get_Point_In_Bezier(CutSceneDescs[m_iCurCutSceneIndex].vCamPositions, fRatio).xyz();
+		m_pSphere->Center = CCamera_CutScene_Map::Get_Point_In_Bezier(CutSceneDescs[m_iCurCutSceneIndex].vCamPositions, fRatio).xyz();
 		DX::Draw(m_pBatch, *m_pSphere, Colors::Red);
 
 		/* 실시간 룩앳 위치 */
-		m_pSphere->Center = CCamera_CutScene::Get_Point_In_Bezier(CutSceneDescs[m_iCurCutSceneIndex].vCamLookAts, fRatio).xyz();
+		m_pSphere->Center = CCamera_CutScene_Map::Get_Point_In_Bezier(CutSceneDescs[m_iCurCutSceneIndex].vCamLookAts, fRatio).xyz();
 		DX::Draw(m_pBatch, *m_pSphere, Colors::Blue);
 	}
 	m_pBatch->End();
@@ -695,8 +696,8 @@ vector<Vec3> CTool_Camera::Get_CamPositionPaths()
 	/* 포인트를 배열에서 벡터로 옮기기 */
 	vector<Vec3> vPoints;
 	{
-		vector<CAMERA_CUTSCENE_DESC> CutSceneDescs =
-			dynamic_cast<CCamera_CutScene*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE))->Get_CutSceneDescs();
+		vector<CAMERA_CUTSCENE_MAP_DESC> CutSceneDescs =
+			dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP))->Get_CutSceneDescs();
 
 		for (size_t i = 0; i < MAX_BEZIER_POINT; i++)
 			vPoints.push_back(CutSceneDescs[m_iCurCutSceneIndex].vCamPositions[i]);
@@ -720,8 +721,8 @@ vector<Vec3> CTool_Camera::Get_CamLookAtPaths()
 	/* 포인트를 배열에서 벡터로 옮기기 */
 	vector<Vec3> vPoints;
 	{
-		vector<CAMERA_CUTSCENE_DESC> CutSceneDescs =
-			dynamic_cast<CCamera_CutScene*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE))->Get_CutSceneDescs();
+		vector<CAMERA_CUTSCENE_MAP_DESC> CutSceneDescs =
+			dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP))->Get_CutSceneDescs();
 
 		for (size_t i = 0; i < MAX_BEZIER_POINT; i++)
 			vPoints.push_back(CutSceneDescs[m_iCurCutSceneIndex].vCamLookAts[i]);

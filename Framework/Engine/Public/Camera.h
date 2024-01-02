@@ -153,9 +153,6 @@ public:
 	const _int Get_Key() const { return m_iKey; }
 	void Set_Key(const _int& iKey) { m_iKey = iKey; }
 
-	const _bool& Can_Move() const { return m_bCanMove; }
-	void Set_CanMove(const _bool& bCanMove) { m_bCanMove = bCanMove; }
-
 	/* Proj */
 	const _bool& Is_Lerp_Fov() const { return m_tProjDesc.tLerpFov.bActive; }
 	const _float& Get_Fov() const { return m_tProjDesc.tLerpFov.fCurValue; }
@@ -185,11 +182,16 @@ public:
 	void Set_TargetOffSet(const Vec4& vTargetOffset) { memcpy(&m_vTargetOffset, &vTargetOffset, sizeof(Vec4)); }
 	void Set_LookAtOffSet(const Vec4& vLookAtOffset) { memcpy(&m_vLookAtOffset, &vLookAtOffset, sizeof(Vec4)); }
 
-	/* Sensitivity */
+	void Change_TargetObj(CGameObject* pTargetObj1, CGameObject* pTargetObj2, const _float& fChangeTime, const LERP_MODE& eMode);
+	void Change_LookAtObj(CGameObject* pLookAtObj1, CGameObject* pLookAtObj2, const _float& fChangeTime, const LERP_MODE& eMode);
+
+	/* Input */
 	const Vec2& Get_MouseSensitivity() const { return m_vMouseSensitivity; }
 
 	void Set_MouseSensitivity_X(const _float& fX) { m_vMouseSensitivity.x = fX; }
 	void Set_MouseSensitivity_Y(const _float& fY) { m_vMouseSensitivity.y = fY; }
+
+	void Set_CanInput(const _bool& bInput) { m_bCanInput = bInput; }
 
 	/* Shake */
 	void Start_Shake(const _float& fAmplitude, const _float& fFrequency, const _float& fDuration);
@@ -201,7 +203,6 @@ protected:
 	_bool				m_bActive		= { false };
 	CTransform*			m_pTransformCom = { nullptr };
 	_int				m_iKey			= -1;
-	_bool				m_bCanMove		= { true };
 
 	/* Proj */
 	PROJ_DESC			m_tProjDesc		= {};
@@ -217,8 +218,9 @@ protected:
 	CGameObject*		m_pTargetObj	= { nullptr };
 	CGameObject*		m_pLookAtObj	= { nullptr };
 
-	/* Sensitivity */
+	/* Input */
 	Vec2				m_vMouseSensitivity = { 1.f, 1.f };
+	_bool				m_bCanInput		= true;
 
 	/* Shake */
 	SHAKE_DESC			m_tShakeDesc	= {};

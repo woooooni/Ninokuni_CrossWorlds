@@ -109,11 +109,21 @@ namespace Client
 
 	/* Camera */
 
-	enum CAMERA_TYPE { FREE, FOLLOW, CUTSCENE, CAMERA_TYPE_END };
+	enum CAMERA_TYPE { FREE, FOLLOW, CUTSCENE_MAP, CUTSCENE_BOSS, CAMERA_TYPE_END };
 
-	const wstring		CameraWstringNames[CAMERA_TYPE::CAMERA_TYPE_END]{ L"Camera_Free", L"Camera_Follow", L"Camera_CutScene"};
+	const wstring		CameraWstringNames[CAMERA_TYPE::CAMERA_TYPE_END]{ L"Camera_Free", L"Camera_Follow", L"Camera_CutScene_Map", L"Camera_CutScene_Boss" };
 	
-	static const char*	CameraCharNames[CAMERA_TYPE::CAMERA_TYPE_END]{ "Camera_Free", "Camera_Follow", "Camera_CutScene" };
+	static const char*	CameraCharNames[CAMERA_TYPE::CAMERA_TYPE_END]{ "Camera_Free", "Camera_Follow", "Camera_CutScene_Map", "Camera_CutScene_Boss" };
+
+	static const _float Cam_Dist_Follow_Default		= 5.f;
+
+	static const _float Cam_Fov_Default					= XMConvertToRadians(60.0f);
+	static const _float Cam_Fov_Free_Default			= XMConvertToRadians(60.0f);
+	static const _float Cam_Fov_Follow_Default			= XMConvertToRadians(60.0f);
+	static const _float Cam_Fov_CutScene_Map_Default	= XMConvertToRadians(70.0f);
+	static const _float Cam_Fov_CutScene_Boss_Default	= XMConvertToRadians(70.0f);
+
+#define MAX_BEZIER_POINT 4
 }
 
 extern HWND g_hWnd;

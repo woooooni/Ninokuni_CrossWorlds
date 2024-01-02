@@ -23,7 +23,8 @@
 
 #include "Camera_Free.h"
 #include "Camera_Follow.h"
-#include "Camera_CutScene.h"
+#include "Camera_CutScene_Map.h"
+#include "Camera_CutScene_Boss.h"
 
 #ifdef _DEBUG
  // #include <vld.h>
@@ -217,18 +218,46 @@ HRESULT CMainApp::Initialize_Client()
 		pCamera->Get_Transform()->LookAt(Vec4{ 0.f, 0.f, 0.f, 1.f });
 	}
 
-	/* CutScene */
+	/* CutScene Map */
 	{
 		CCamera* pCamera = nullptr;
-		CAMERA_TYPE eType = CAMERA_TYPE::CUTSCENE;
+		CAMERA_TYPE eType = CAMERA_TYPE::CUTSCENE_MAP;
 		CCamera::PROJ_DESC tDesc;
 		{
-			tDesc.tLerpFov.fCurValue = Cam_Fov_CutScene_Default;
+			tDesc.tLerpFov.fCurValue = Cam_Fov_CutScene_Map_Default;
 			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
 			tDesc.fNear = 0.2f;
 			tDesc.fFar = 1000.f;
 
-			pCamera = CCamera_CutScene::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
+			pCamera = CCamera_CutScene_Map::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
+
+			if (nullptr == pCamera)
+				return E_FAIL;
+
+			CCamera_Manager::GetInstance()->Add_Camera(eType, pCamera);
+
+			if (FAILED(pCamera->Initialize(&tDesc)))
+			{
+				return E_FAIL;
+			}
+		}
+		pCamera->Set_Key(eType);
+		pCamera->Get_Transform()->Set_State(CTransform::STATE::STATE_POSITION, Vec4(0.f, 10.f, -10.f, 1.f));
+		pCamera->Get_Transform()->LookAt(Vec4{ 0.f, 0.f, 0.f, 1.f });
+	}
+
+	/* CutScene Boss */
+	{
+		CCamera* pCamera = nullptr;
+		CAMERA_TYPE eType = CAMERA_TYPE::CUTSCENE_BOSS;
+		CCamera::PROJ_DESC tDesc;
+		{
+			tDesc.tLerpFov.fCurValue = Cam_Fov_CutScene_Boss_Default;
+			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
+			tDesc.fNear = 0.2f;
+			tDesc.fFar = 1000.f;
+
+			pCamera = CCamera_CutScene_Boss::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
 
 			if (nullptr == pCamera)
 				return E_FAIL;
