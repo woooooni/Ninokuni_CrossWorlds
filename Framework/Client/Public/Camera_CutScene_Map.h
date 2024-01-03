@@ -66,9 +66,9 @@ private:
 
 	CAMERA_CUTSCENE_MAP_DESC*			m_pCurCutSceneDesc = nullptr;
 
-	queue<string>					m_CutSceneNamesReserved;
+	queue<string>						m_CutSceneNamesReserved;
 
-	LERP_TIME_DESC					m_tTimeDesc;
+	LERP_TIME_DESC						m_tTimeDesc;
 	
 public:
 	static CCamera_CutScene_Map* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);

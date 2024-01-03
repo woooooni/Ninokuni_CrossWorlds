@@ -99,13 +99,10 @@ HRESULT CCamera_Follow::Start_LockOn(CGameObject* pTargetObject, const Vec4& vTa
 	if (nullptr == pTargetObject || LOCK_PROGRESS::NOT != m_eLockProgress)
 		return E_FAIL;
 
-	/* 룩앳 오브젝트 변경 보간 시작 */
 	Change_LookAtObj(pTargetObject, fLockOnBlendingTime);
 
-	/* 룩앳 오프셋 변경 보간 시작 */
 	Change_LookAtOffSet(vLookAtOffset, fLockOnBlendingTime);
 
-	/* 타겟 오프셋 변경 보간 시작 */
 	Change_TargetOffSet(vTargetOffset, fLockOnBlendingTime);
 	
 	m_eLockProgress = LOCK_PROGRESS::START_BLENDING;
@@ -118,13 +115,10 @@ HRESULT CCamera_Follow::Finish_LockOn(CGameObject* pTargetObject, const _float& 
 	if (nullptr == pTargetObject || LOCK_PROGRESS::NOT == m_eLockProgress)
 		return E_FAIL;
 
-	/* 룩앳 오브젝트 변경 보간 시작 */
 	Change_LookAtObj(pTargetObject, fLockOnBlendingTime);
 
-	/* 룩앳 오프셋 변경 보간 시작 */
 	Change_LookAtOffSet(Cam_LookAtOffset_Follow_Default, fLockOnBlendingTime);
 
-	/* 타겟 오프셋 변경 보간 시작 */
 	Change_TargetOffSet(Cam_TargetOffset_Follow_Default, fLockOnBlendingTime);
 
 	m_eLockProgress = LOCK_PROGRESS::FINISH_BLEIDING;
@@ -135,7 +129,7 @@ HRESULT CCamera_Follow::Finish_LockOn(CGameObject* pTargetObject, const _float& 
 HRESULT CCamera_Follow::Ready_Components()
 {
 	/* CPhysX_Controller */
-	/*{
+	{
 		CPhysX_Controller::CONTROLLER_DESC ControllerDesc;
 		{
 			ControllerDesc.eType = CPhysX_Controller::CAPSULE;
@@ -149,10 +143,10 @@ HRESULT CCamera_Follow::Ready_Components()
 
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_PhysXController"), TEXT("Com_Controller"), (CComponent**)&m_pControllerCom, &ControllerDesc)))
 			return E_FAIL;
-	}*/
+	}
 
 	if(nullptr != m_pControllerCom)
-		m_pControllerCom->Set_Active(false);
+		m_pControllerCom->Set_Active(true);
 
 	return S_OK;
 }
@@ -165,8 +159,6 @@ Vec4 CCamera_Follow::Calculate_WorldPosition(_float fTimeDelta)
 
 	if (LOCK_PROGRESS::NOT != m_eLockProgress)
 	{
-		/* 락온 상태에서는 구면 좌표계를 사용하지 않는다. */
-
 		/* 카메라 목표 월드 위치 */
 		vWorldGoal = Vec4(pTargetTransform->Get_Position())
 			+ Calculate_ReleativePosition(m_tTargetOffset.vCurVec, m_pTransformCom->Get_WorldMatrix());	/* 카메라의 회전 상태를 반영한 오프셋 */
@@ -256,8 +248,15 @@ Vec4 CCamera_Follow::Calculate_Look(_float fTimeDelta)
 		/* 룩앳 오브젝트가 현재 블렌딩 중이라면 */
 		if (Is_Blending_LookAtObj()) 
 			vLookAt = m_tBlendingLookAtPosition.vCurVec;
-		else 
-			vLookAt = m_pLookAtObj->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
+		else
+		{
+			Matrix matLookWorld = m_pLookAtObj->Get_Component<CModel>(L"Com_Model")->Get_SocketLocalMatrix(0)
+								* m_pLookAtObj->Get_Component<CTransform>(L"Com_Transform")->Get_WorldMatrix();
+
+			memcpy(&vLookAt, &matLookWorld.m[3], sizeof(Vec4));
+
+			//vLookAt = m_pLookAtObj->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
+		}
 	}
 	else
 		vLookAt = Vec4(pTargetTransform->Get_Position());

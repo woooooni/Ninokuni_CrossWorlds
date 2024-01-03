@@ -128,10 +128,10 @@ namespace Client
 	static const Vec4	Cam_LookAtOffset_Follow_Default		= { 0.7f, 1.3f, 0.f, 1.f };
 
 	/* Camera - LockOn */
-	static const _float Cam_LockOn_Blending_Time_Default	= 0.5f;
+	static const _float Cam_LockOn_Blending_Time_Default	= 0.f; // 0.5f;
 
-	static const Vec4	Cam_Target_Offset_LockOn_Glanix		= Vec4{ 0.7f, 2.f, -4.5f, 1.f };
-	static const Vec4	Cam_LookAt_Offset_LockOn_Glanix		= Vec4{ 0.f, 2.f, 0.f, 1.f };
+	static const Vec4	Cam_Target_Offset_LockOn_Glanix		= Vec4{ 0.7f, 2.f, -4.f, 1.f };
+	static const Vec4	Cam_LookAt_Offset_LockOn_Glanix		= Vec4{ 0.f, 0.5f, 0.f, 1.f };
 
 #define MAX_BEZIER_POINT 4
 }

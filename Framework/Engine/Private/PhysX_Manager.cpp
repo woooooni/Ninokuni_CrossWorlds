@@ -1,65 +1,48 @@
 #include "PhysX_Manager.h"
 #include "GameInstance.h"
-
 #include "GameObject.h"
 #include "Mesh.h"
 #include "Collider.h"
 #include "Collision_Manager.h"
 #include "VIBuffer.h"
 #define PX_SUPPORT_PVD
-
-
-
 physx::PxFilterFlags FilterShader(
 	physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0,
 	physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1,
-	physx::PxPairFlags& retPairFlags, const void* /*constantBlock*/, PxU32 /*constantBlockSize*/)
+	physx::PxPairFlags & retPairFlags, const void* /*constantBlock*/, PxU32 /*constantBlockSize*/)
 {
 	retPairFlags |= PxPairFlag::eTRIGGER_DEFAULT;
 	retPairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
 	retPairFlags |= PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
 	retPairFlags |= PxPairFlag::eNOTIFY_TOUCH_LOST;
 	retPairFlags &= ~PxPairFlag::eSOLVE_CONTACT;
-	
 
 	return PxFilterFlag::eDEFAULT;
 }
-
-
 IMPLEMENT_SINGLETON(CPhysX_Manager)
-
-
 CPhysX_Manager::CPhysX_Manager()
 {
-	
-}
 
+}
 HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	m_Foundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_Allocator, m_ErrorCallback);
-
 	PxCudaContextManagerDesc CudaDesc;
 	m_pCudaContextManager = PxCreateCudaContextManager(*m_Foundation, CudaDesc);
-
 	//m_pPvd = PxCreatePvd(*m_Foundation);
 	//m_pTransport = PxDefaultPvdSocketTransportCreate("127.0.0.1", m_iPortNumber, m_iTimeOutSeconds);
 	//m_pPvd->connect(*m_pTransport, PxPvdInstrumentationFlag::eALL);
 	//_bool bConntected = m_pPvd->isConnected();
-
-
 	m_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_Foundation, PxTolerancesScale(), true, m_pPvd);
 	PxInitExtensions(*m_Physics, m_pPvd);
-	
 
 	PxSceneDesc SceneDesc(m_Physics->getTolerancesScale());
-
 	SceneDesc.gravity = PxVec3(0.0f, -9.8f, 0.0f);
-	
+
 	m_Dispatcher = PxDefaultCpuDispatcherCreate(4);
 	if (!m_Dispatcher)
 		return E_FAIL;
 
-	
 	SceneDesc.cpuDispatcher = m_Dispatcher;
 	SceneDesc.kineKineFilteringMode = PxPairFilteringMode::eKEEP;
 	SceneDesc.staticKineFilteringMode = PxPairFilteringMode::eKEEP;
@@ -70,14 +53,11 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 	SceneDesc.filterShader = FilterShader;
 	SceneDesc.simulationEventCallback = this;
 	SceneDesc.cudaContextManager = m_pCudaContextManager;
-
-
-
 	m_pScene = m_Physics->createScene(SceneDesc);
 	m_pController_Manager = PxCreateControllerManager(*m_pScene);
 	// m_pController_Manager->setOverlapRecoveryModule(true);
-	
-	
+
+
 	PxPvdSceneClient* pvdClient = m_pScene->getScenePvdClient();
 	if (nullptr != pvdClient)
 	{
@@ -86,7 +66,6 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
 		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
 	}
-
 #ifdef DEBUG
 	m_pScene->setVisualizationParameter(PxVisualizationParameter::eCONTACT_NORMAL, 1.f);
 	m_pScene->setVisualizationParameter(PxVisualizationParameter::eSIMULATION_MESH, 1.f);
@@ -96,79 +75,51 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 	m_pScene->setVisualizationParameter(PxVisualizationParameter::eACTOR_AXES, 2.0f);
 #endif // DEBUG
 
-	
-
-
-
 	m_WorldMaterial = m_Physics->createMaterial(0.f, 0.f, 0.f);
-
 	m_pDevice = pDevice;
 	m_pContext = pContext;
 	Safe_AddRef(m_pDevice);
 	Safe_AddRef(m_pContext);
-
-
 	/*if (FAILED(Ready_ParticleSystem()))
 		return E_FAIL;*/
-
-
-
 #ifdef _DEBUG
-
 	m_pBatch = new PrimitiveBatch<VertexPositionColor>(pContext);
 	m_pEffect = new BasicEffect(pDevice);
-
 	m_pEffect->SetVertexColorEnabled(true);
-
 	const void* pShaderByteCodes = nullptr;
 	size_t			iLength = 0;
-
 	m_pEffect->GetVertexShaderBytecode(&pShaderByteCodes, &iLength);
-
 	if (FAILED(pDevice->CreateInputLayout(VertexPositionColor::InputElements, VertexPositionColor::InputElementCount, pShaderByteCodes, iLength, &m_pInputLayout)))
 		return E_FAIL;
 #endif
-
 	//if (FAILED(Init_Cloth(100, 100, PxVec3(-0.5f * 100 * 0.05f, 8.f, -0.5f * 100 * 0.05f), 0.05f, 10.f)))
 	//	return E_FAIL;
-
 	/*PxRigidStatic* groundPlane = PxCreatePlane(*m_Physics, PxPlane(0, 1, 0, 0), *m_WorldMaterial);
 	m_pScene->addActor(*groundPlane);*/
-
-
 	return S_OK;
 }
-
 void CPhysX_Manager::Tick(_float fTimeDelta)
-{	
+{
 
-
-
-	
 }
-
 void CPhysX_Manager::LateTick(_float fTimeDelta)
 {
 	m_bSimulating = true;
 	fTimeDelta = min(fTimeDelta, 1.f / 120.f);
-	
+
 	m_pScene->simulate(fTimeDelta);
 	m_pScene->fetchResults(true);
 	m_pScene->fetchResultsParticleSystem();
-
 	m_bSimulating = false;
 }
-
 #ifdef _DEBUG
 HRESULT CPhysX_Manager::Render()
-{	
+{
 	//const PxRenderBuffer& rb = m_pScene->getRenderBuffer();
-
 	//PxU32 iTrangleCount = rb.getNbTriangles();
 	//for (PxU32 i = 0; i < rb.getNbTriangles(); i++)
 	//{
 	//	const PxDebugTriangle& Triangle = rb.getTriangles()[i];
-
 	//	Vec3 vPos0 = { Triangle.pos0.x,Triangle.pos0.y, Triangle.pos0.z };
 	//	Vec3 vPos1 = { Triangle.pos1.x,Triangle.pos1.y, Triangle.pos1.z };
 	//	Vec3 vPos2 = { Triangle.pos2.x,Triangle.pos2.y, Triangle.pos2.z };
@@ -176,58 +127,39 @@ HRESULT CPhysX_Manager::Render()
 	//	m_pEffect->SetWorld(XMMatrixIdentity());
 	//	m_pEffect->SetView(GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
 	//	m_pEffect->SetProjection(GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ));
-
 	//	m_pEffect->Apply(m_pContext);
-
 	//	m_pContext->IASetInputLayout(m_pInputLayout);
 	//	m_pBatch->Begin();
-
 	//	DX::DrawTriangle(m_pBatch, vPos0, vPos1, vPos2);
 	//	m_pBatch->End();
 	//}
-
 	return S_OK;
 }
 #endif
-
-
 #pragma region Deprecated.
-
 /* PxRigidStatic* CPhysX_Manager::Add_Static_Actor(const PHYSX_INIT_DESC& Desc)
 {
 	if (nullptr == Desc.pGameObject)
 		return nullptr;
-
 	if (Desc.eRigidType == PHYSX_COLLIDER_TYPE::MESH)
 		return nullptr;
-
-	if (Desc.eColliderType == PHYSX_COLLIDER_TYPE::BOX)	
+	if (Desc.eColliderType == PHYSX_COLLIDER_TYPE::BOX)
 		return Create_Static_Box(Desc);
-
 	else if (Desc.eColliderType == PHYSX_COLLIDER_TYPE::SPHERE)
 		return Create_Static_Sphere(Desc);
-
 	return nullptr;
 }
-
 PxRigidDynamic* CPhysX_Manager::Add_Dynamic_Actor(const PHYSX_INIT_DESC& Desc)
 {
 	if (nullptr == Desc.pGameObject)
 		return nullptr;
-
 	if (Desc.eRigidType >= PHYSX_RIGID_TYPE::RIGID_TYPE_END)
 		return nullptr;
-
-
 	if (Desc.eRigidType == PHYSX_COLLIDER_TYPE::MESH)
 		return nullptr;
-
 	auto iter = m_DynamicObjects.find(Desc.pGameObject->Get_ObjectID());
 	if (iter != m_DynamicObjects.end())
 		return nullptr;
-
-
-
 	if (Desc.eColliderType == PHYSX_COLLIDER_TYPE::BOX)
 	{
 		return Create_Dynamic_Box(Desc);
@@ -236,123 +168,96 @@ PxRigidDynamic* CPhysX_Manager::Add_Dynamic_Actor(const PHYSX_INIT_DESC& Desc)
 	{
 		return Create_Dynamic_Sphere(Desc);
 	}
-
 	return nullptr;
 }
-
 HRESULT CPhysX_Manager::Add_Static_Mesh_Actor(const PHYSX_INIT_DESC& Desc, __out vector<PxRigidStatic*>& refOut)
 {
 	if (Desc.eRigidType != PHYSX_COLLIDER_TYPE::MESH)
 		return E_FAIL;
-
 	auto iter = m_StaticObjects.find(Desc.pGameObject->Get_ObjectID());
 	if (iter != m_StaticObjects.end())
 		return E_FAIL;
-
 	return Create_Static_Mesh(Desc, refOut);
 }
-
 HRESULT CPhysX_Manager::Add_Dynamic_Mesh_Actor(const PHYSX_INIT_DESC& Desc, __out vector<PxRigidDynamic*>& refOut)
 {
 	if (Desc.eRigidType != PHYSX_COLLIDER_TYPE::MESH)
 		return E_FAIL;
-
 	auto iter = m_DynamicObjects.find(Desc.pGameObject->Get_ObjectID());
 	if (iter != m_DynamicObjects.end())
 		return E_FAIL;
-
 	return Create_Dynamic_Mesh(Desc, refOut);
 }*/
-
 #pragma endregion
-
 HRESULT CPhysX_Manager::Remove_Actor(class CGameObject* pGameObject)
 {
 	if (nullptr == pGameObject)
 		return E_FAIL;
-
 	auto iterGround = m_GroundObjects.find(pGameObject->Get_ObjectID());
 	for (auto& Desc : iterGround->second)
 	{
+		m_pScene->lockWrite();
 		m_pScene->removeActor(*Desc.pActor);
+		m_pScene->unlockWrite();
 		Safe_Release(Desc.pObject);
 	}
 	iterGround->second.clear();
-
-
 	return S_OK;
 }
-
 PxController* CPhysX_Manager::Add_CapsuleController(CGameObject* pGameObject, Matrix WorldMatrix, _float fHeight, _float fRadius, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack)
 {
 	// 컨트롤러는 하나만 가질 수 있다.
 	if (nullptr == pGameObject)
 		return nullptr;
-
 	auto iter = m_Controllers.find(pGameObject->Get_ObjectID());
 	if (iter != m_Controllers.end())
 		return nullptr;
-
 	PxCapsuleControllerDesc CapsuleDesc;
 	PxTransform pxTransform = GI->To_PxTransform(WorldMatrix);
-
 	CapsuleDesc.setToDefault();
-
 	CapsuleDesc.material = m_WorldMaterial;
 	CapsuleDesc.position = PxExtendedVec3(pxTransform.p.x, pxTransform.p.y, pxTransform.p.z);
 	CapsuleDesc.height = fHeight;
 	CapsuleDesc.radius = fRadius;
-
 	CapsuleDesc.maxJumpHeight = fMaxJumpHeight;
 	CapsuleDesc.stepOffset = 0.1f;
 	CapsuleDesc.contactOffset = 0.0001f;
 	CapsuleDesc.userData = pGameObject;
 	CapsuleDesc.reportCallback = pCallBack;
-	
-	while (m_bSimulating) {};
+
+	m_pScene->lockWrite();
 
 	PxController* pController = m_pController_Manager->createController(CapsuleDesc);
-
 	pController->getActor()->userData = pGameObject;
 	pController->getActor()->setName("Controller");
-	
+	m_pScene->unlockWrite();
+
 	return pController;
 }
-
 PxController* CPhysX_Manager::Add_BoxController(CGameObject* pGameObject, Matrix WorldMatrix, _float3 fExtents, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack)
 {
 	// 컨트롤러는 하나만 가질 수 있다.
 	if (nullptr == pGameObject)
 		return nullptr;
-
 	auto iter = m_Controllers.find(pGameObject->Get_ObjectID());
 	if (iter != m_Controllers.end())
 		return nullptr;
-
 	PxBoxControllerDesc BoxDesc;
 	PxTransform pxTransform = GI->To_PxTransform(WorldMatrix);
-
 	BoxDesc.setToDefault();
-
 	BoxDesc.material = m_WorldMaterial;
 	BoxDesc.position = PxExtendedVec3(pxTransform.p.x, pxTransform.p.y, pxTransform.p.z);
 	BoxDesc.halfSideExtent = fExtents.x / 2.f;
 	BoxDesc.halfHeight = fExtents.y / 2.f;
 	BoxDesc.halfForwardExtent = fExtents.z / 2.f;
-
 	BoxDesc.maxJumpHeight = fMaxJumpHeight;
 	BoxDesc.userData = pGameObject;
 	BoxDesc.reportCallback = pCallBack;
-
-
 	PxController* pController = m_pController_Manager->createController(BoxDesc);
 	pController->getActor()->setActorFlag(PxActorFlag::eVISUALIZATION, true);
 	pController->getActor()->setName("Controller");
-
 	return pController;
 }
-
-
 #pragma region Deprecated.
 //// For. Collider.
 //PxRigidDynamic* CPhysX_Manager::Create_Dynamic_Box(const PHYSX_INIT_DESC& Desc)
@@ -760,27 +665,21 @@ PxController* CPhysX_Manager::Add_BoxController(CGameObject* pGameObject, Matrix
 //	return S_OK;
 //}
 #pragma endregion
-
 HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGameObject, CModel* pModel, Matrix WorldMatrix, const wstring& strCollisionTag)
 {
 	if (nullptr == pModel)
 		return E_FAIL;
-
-
 	for (auto& pMesh : pModel->Get_Meshes())
 	{
 		const vector<VTXANIMMODEL>& AnimVB = pMesh->Get_AnimVertices();
 		const vector<VTXMODEL>& NonAnimVB = pMesh->Get_NoneAnimVertice();
-
 		const vector<FACEINDICES32>& FaceIndices = pMesh->Get_FaceIndices();
 		_uint iNumVertices = pMesh->Get_VertexCount();
 		_uint iNumPrimitives = pMesh->Get_NumPrimitives();
 		_uint iNumIndices = iNumPrimitives * 3;
 		_uint iStride = pMesh->Get_Stride();
-
 		vector<PxVec3> Vertices;
 		Vertices.reserve(iNumVertices);
-
 		if (AnimVB.size() > 0)
 		{
 			for (_uint i = 0; i < iNumVertices; ++i)
@@ -799,72 +698,48 @@ HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGameObject, CModel* pModel, Mat
 				Vertices.push_back(PxVec3(vVertex.x, vVertex.y, vVertex.z));
 			}
 		}
-
 		vector<PxU32> Indices;
 		Indices.reserve(iNumIndices);
-
 		for (_uint i = 0; i < iNumPrimitives; ++i)
 		{
 			FACEINDICES32 Index = FaceIndices[i];
-
 			Indices.push_back(Index._0);
 			Indices.push_back(Index._1);
 			Indices.push_back(Index._2);
 		}
-
 		PxTriangleMeshDesc tDesc;
-
 		tDesc.points.count = iNumVertices;
 		tDesc.points.stride = sizeof(PxVec3);
 		tDesc.points.data = Vertices.data();
-
 		tDesc.triangles.count = iNumPrimitives;
 		tDesc.triangles.stride = sizeof(PxU32) * 3;
 		tDesc.triangles.data = Indices.data();
-
-
 		PxTriangleMesh* pTriangleMesh = PxCreateTriangleMesh(PxCookingParams(PxTolerancesScale(1.f, 1.f)), tDesc);
 		PxTriangleMeshGeometry* pGeometry = new PxTriangleMeshGeometry(pTriangleMesh);
-
-
 		Vec3 vScale = {};
 		Quaternion vQuat = {};
 		Vec3 vPosition = {};
 		WorldMatrix.Decompose(vScale, vQuat, vPosition);
-
+		m_pScene->lockWrite();
 		PxTransform physXTransform = PxTransform({ 0.f, 0.f, 0.f });
-
-
-
 		PxRigidStatic* pActor = m_Physics->createRigidStatic(physXTransform);
 		PxMaterial* Material = m_Physics->createMaterial(0.f, 0.f, 0.f);
 		PxShape* pShape = m_Physics->createShape(*pGeometry, *Material);
-
 		pShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
 		pShape->setFlag(PxShapeFlag::eVISUALIZATION, true);
 		pShape->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, true);
 		pShape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
-		
 
 		pShape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
-
 		pActor->setName("Ground");
-
 		// shape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
-
 		pActor->attachShape(*pShape);
 		pActor->userData = pGameObject;
-
-		while (true == m_bSimulating) {
-			int i = 0;
-		};
-
 		m_pScene->addActor(*pActor);
-
+		m_pScene->unlockWrite();
 		PHYSX_STATIC_OBJECT_DESC ObjectDesc;
 		ObjectDesc.pActor = pActor;
 		ObjectDesc.pObject = pGameObject;
-
 		auto iter = m_GroundObjects.find(pGameObject->Get_ObjectID());
 		if (iter == m_GroundObjects.end())
 		{
@@ -873,40 +748,30 @@ HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGameObject, CModel* pModel, Mat
 			iter = m_GroundObjects.find(pGameObject->Get_ObjectID());
 			iter->second.reserve(10);
 		}
-
 		iter->second.push_back(ObjectDesc);
-
 		Safe_AddRef(pGameObject);
 		Safe_Delete(pGeometry);
-
 		pTriangleMesh->release();
 		Material->release();
 		pShape->release();
 	}
-
 	return S_OK;
 }
-
 HRESULT CPhysX_Manager::Add_Building(CGameObject* pGameObject, CModel* pModel, Matrix WorldMatrix, const wstring& strCollisionTag)
 {
 	if (nullptr == pModel)
 		return E_FAIL;
-
-
 	for (auto& pMesh : pModel->Get_Meshes())
 	{
 		const vector<VTXANIMMODEL>& AnimVB = pMesh->Get_AnimVertices();
 		const vector<VTXMODEL>& NonAnimVB = pMesh->Get_NoneAnimVertice();
-
 		const vector<FACEINDICES32>& FaceIndices = pMesh->Get_FaceIndices();
 		_uint iNumVertices = pMesh->Get_VertexCount();
 		_uint iNumPrimitives = pMesh->Get_NumPrimitives();
 		_uint iNumIndices = iNumPrimitives * 3;
 		_uint iStride = pMesh->Get_Stride();
-
 		vector<PxVec3> Vertices;
 		Vertices.reserve(iNumVertices);
-
 		if (AnimVB.size() > 0)
 		{
 			for (_uint i = 0; i < iNumVertices; ++i)
@@ -925,67 +790,48 @@ HRESULT CPhysX_Manager::Add_Building(CGameObject* pGameObject, CModel* pModel, M
 				Vertices.push_back(PxVec3(vVertex.x, vVertex.y, vVertex.z));
 			}
 		}
-
 		vector<PxU32> Indices;
 		Indices.reserve(iNumIndices);
-
 		for (_uint i = 0; i < iNumPrimitives; ++i)
 		{
 			FACEINDICES32 Index = FaceIndices[i];
-
 			Indices.push_back(Index._0);
 			Indices.push_back(Index._1);
 			Indices.push_back(Index._2);
 		}
-
 		PxTriangleMeshDesc tDesc;
-
 		tDesc.points.count = iNumVertices;
 		tDesc.points.stride = sizeof(PxVec3);
 		tDesc.points.data = Vertices.data();
-
 		tDesc.triangles.count = iNumPrimitives;
 		tDesc.triangles.stride = sizeof(PxU32) * 3;
 		tDesc.triangles.data = Indices.data();
-
-
 		PxTriangleMesh* pTriangleMesh = PxCreateTriangleMesh(PxCookingParams(PxTolerancesScale(1.f, 1.f)), tDesc);
 		PxTriangleMeshGeometry* pGeometry = new PxTriangleMeshGeometry(pTriangleMesh);
-
-
 		Vec3 vScale = {};
 		Quaternion vQuat = {};
 		Vec3 vPosition = {};
 		WorldMatrix.Decompose(vScale, vQuat, vPosition);
-
+		m_pScene->lockWrite();
 		PxTransform physXTransform = PxTransform({ 0.f, 0.f, 0.f });
-
-
-
+		while (true == m_bSimulating) {};
 		PxRigidStatic* pActor = m_Physics->createRigidStatic(physXTransform);
 		PxMaterial* Material = m_Physics->createMaterial(0.f, 0.f, 0.f);
 		PxShape* pShape = m_Physics->createShape(*pGeometry, *Material);
-
 		pShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
 		pShape->setFlag(PxShapeFlag::eVISUALIZATION, true);
 		pShape->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, true);
 		pShape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
-
 		pActor->setName("Building");
-
 		// shape->setSimulationFilterData(PxFilterData(1, 0, 0, 0));
-
 		pActor->attachShape(*pShape);
 		pActor->userData = pGameObject;
-
 		while (m_bSimulating) {};
-
 		m_pScene->addActor(*pActor);
-
+		m_pScene->unlockWrite();
 		PHYSX_STATIC_OBJECT_DESC ObjectDesc;
 		ObjectDesc.pActor = pActor;
 		ObjectDesc.pObject = pGameObject;
-
 		auto iter = m_GroundObjects.find(pGameObject->Get_ObjectID());
 		if (iter == m_GroundObjects.end())
 		{
@@ -994,28 +840,24 @@ HRESULT CPhysX_Manager::Add_Building(CGameObject* pGameObject, CModel* pModel, M
 			iter = m_GroundObjects.find(pGameObject->Get_ObjectID());
 			iter->second.reserve(10);
 		}
-
 		iter->second.push_back(ObjectDesc);
-
 		Safe_AddRef(pGameObject);
 		Safe_Delete(pGeometry);
-
 		pTriangleMesh->release();
 		Material->release();
 		pShape->release();
 	}
-
 	return S_OK;
 }
-
 HRESULT CPhysX_Manager::Clear_PhysX_Ground()
 {
 	for (auto& iter : m_GroundObjects)
 	{
 		for (auto& Desc : iter.second)
 		{
-			while (true == m_bSimulating) {};
+			m_pScene->lockWrite();
 			m_pScene->removeActor(*Desc.pActor);
+			m_pScene->unlockWrite();
 			Desc.pActor->release();
 			Safe_Release(Desc.pObject);
 		}
@@ -1024,7 +866,6 @@ HRESULT CPhysX_Manager::Clear_PhysX_Ground()
 	m_GroundObjects.clear();
 	return S_OK;
 }
-
 #pragma region Deprecated.
 //HRESULT CPhysX_Manager::Create_Cloth(CVIBuffer* pBufferCom)
 //{
@@ -1105,13 +946,10 @@ HRESULT CPhysX_Manager::Clear_PhysX_Ground()
 //	return S_OK;
 //}
 #pragma endregion
-
-
 static PX_FORCE_INLINE PxU32 id(PxU32 x, PxU32 y, PxU32 numY)
 {
 	return x * numY + y;
 }
-
 //HRESULT CPhysX_Manager::Init_Cloth(const PxU32 numX, const PxU32 numZ, const PxVec3& position, const PxReal particleSpacing, const PxReal totalClothMass)
 //{
 //	//if (nullptr == m_pCudaContextManager)
@@ -1243,11 +1081,6 @@ static PX_FORCE_INLINE PxU32 id(PxU32 x, PxU32 y, PxU32 numY)
 //
 //	return S_OK;
 //}
-
-
-
-
-
 HRESULT CPhysX_Manager::Reset_PhysX()
 {
 	//for (auto iter : m_StaticObjects)
@@ -1261,7 +1094,6 @@ HRESULT CPhysX_Manager::Reset_PhysX()
 	//	iter.second.clear();
 	//}
 	//m_StaticObjects.clear();
-
 	//for (auto iter : m_DynamicObjects)
 	//{
 	//	for (_uint i = 0; i < iter.second.size(); ++i)
@@ -1273,23 +1105,21 @@ HRESULT CPhysX_Manager::Reset_PhysX()
 	//	iter.second.clear();
 	//}
 	//m_DynamicObjects.clear();
-
-
 	for (auto iter : m_GroundObjects)
 	{
 		for (_uint i = 0; i < iter.second.size(); ++i)
 		{
+			m_pScene->lockWrite();
 			m_pScene->removeActor(*iter.second[i].pActor);
+			m_pScene->unlockWrite();
 			Safe_Release(iter.second[i].pObject);
 			iter.second[i].pActor->release();
 		}
 		iter.second.clear();
 	}
 	m_GroundObjects.clear();
-
 	return S_OK;
 }
-
 void CPhysX_Manager::Free()
 {
 	//for (auto iter : m_StaticObjects)
@@ -1303,7 +1133,6 @@ void CPhysX_Manager::Free()
 	//	iter.second.clear();
 	//}
 	//m_StaticObjects.clear();
-
 	//for (auto iter : m_DynamicObjects)
 	//{
 	//	for (_uint i = 0; i < iter.second.size(); ++i)
@@ -1315,115 +1144,83 @@ void CPhysX_Manager::Free()
 	//	iter.second.clear();
 	//}
 	//m_DynamicObjects.clear();
-
-
 	for (auto iter : m_GroundObjects)
 	{
 		for (_uint i = 0; i < iter.second.size(); ++i)
 		{
+			m_pScene->lockWrite();
 			m_pScene->removeActor(*iter.second[i].pActor);
+			m_pScene->unlockWrite();
 			Safe_Release(iter.second[i].pObject);
 			iter.second[i].pActor->release();
 		}
 		iter.second.clear();
 	}
 	m_GroundObjects.clear();
-
 	for (auto iter : m_Controllers)
 		iter.second->release();
-
 	m_pController_Manager->release();
-	
 
 	// m_pParticleSystem->removeParticleBuffer(m_pClothBuffer);
 	// m_pScene->removeActor(*m_pParticleSystem);
 	// m_pParticleSystem->release();
-
-
 	PxCloseExtensions();
 	if (m_WorldMaterial)
 		m_WorldMaterial->release();
-
 	if (m_Dispatcher)
 		m_Dispatcher->release();
 
-
-	
-
 	if (m_pPvd)
 		m_pPvd->release();
-
 	if (m_pTransport)
 		m_pTransport->release();
-
 	if (m_pScene)
 		m_pScene->release();
-
 	if (m_Physics)
 		m_Physics->release();
-
 	if (m_pCudaContextManager)
 		m_pCudaContextManager->release();
-
-	if(m_Foundation)
+	if (m_Foundation)
 		m_Foundation->release();
-
-
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
-
 #ifdef _DEBUG
 	Safe_Delete(m_pBatch);
 	Safe_Delete(m_pEffect);
 	Safe_Release(m_pInputLayout);
 #endif
 }
-
 bool CPhysX_Manager::filter(const PxController& a, const PxController& b)
 {
 	return false;
 }
-
-
-
-
-
-
 void CPhysX_Manager::onConstraintBreak(PxConstraintInfo* constraints, PxU32 count)
 {
 }
-
 void CPhysX_Manager::onWake(PxActor** actors, PxU32 count)
 {
- 	_int i = 0;
+	_int i = 0;
 }
-
 void CPhysX_Manager::onSleep(PxActor** actors, PxU32 count)
 {
 	_int i = 0;
 }
-
 void CPhysX_Manager::onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs)
-{	
-	
+{
+
 	vector<PxContactPairPoint> PairPoints;
 	PairPoints.resize(pairs->contactCount);
 	pairs->extractContacts(PairPoints.data(), pairs->contactCount);
-
-
 	if (nullptr == pairHeader.actors[0] || nullptr == pairHeader.actors[1])
 		return;
-
 	PxActor* pLeftActor = pairHeader.actors[0];
 	PxActor* pRightActor = pairHeader.actors[1];
-
 	if (true == GI->Is_Compare(pLeftActor->getName(), "Collider"))
 	{
 		if (true == GI->Is_Compare(pRightActor->getName(), "Collider"))
 		{
 			CCollider* pLeftCollider = static_cast<CCollider*>(pLeftActor->userData);
 			CCollider* pRightCollider = static_cast<CCollider*>(pRightActor->userData);
-
 			if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_FOUND))
 			{
 				pLeftCollider->Collision_Enter(pRightCollider);
@@ -1442,26 +1239,14 @@ void CPhysX_Manager::onContact(const PxContactPairHeader& pairHeader, const PxCo
 		}
 	}
 }
-
 void CPhysX_Manager::onTrigger(PxTriggerPair* pairs, PxU32 count)
 {
 	PxActor* pLeftActor = pairs->triggerActor;
 	PxActor* pRightActor = pairs->otherActor;
 	if (nullptr == pLeftActor || nullptr == pRightActor)
 		return;
-
-
 }
-
 void CPhysX_Manager::onAdvance(const PxRigidBody* const* bodyBuffer, const PxTransform* poseBuffer, const PxU32 count)
 {
 	int i = 0;
 }
-
-
-
-
-
-
-
-

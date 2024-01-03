@@ -426,6 +426,9 @@ Vec3 CModel::Get_CustomSocketPivotPosition(const _uint iIndex)
 
 Matrix CModel::Get_SocketLocalMatrix(const _uint iSocketEnumIndex)
 {
+	if (m_SocketTransforms.empty() || m_SocketTransforms.size() <= iSocketEnumIndex)
+		return Matrix::Identity;
+
 	/* 수정시 클라 쪽 툴 모델에서도 수정 필요 (같은 함수)*/
 
 	enum STEP { CURR, NEXT, STEP_END };
