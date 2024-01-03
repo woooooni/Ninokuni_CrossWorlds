@@ -63,6 +63,10 @@ public:
 
 	const _bool& Is_LockOn() const { return (LOCK_PROGRESS::OFF == m_eLockProgress) ? false : true; }
 
+	void Set_Default_Position();
+
+	void Reset_Damping() { m_tDampingDesc.bSet = false; }
+
 public:
 	HRESULT Start_LockOn(CGameObject* pTargetObject, const Vec4& vTargetOffset, const Vec4& vLookAtOffset, const _float& fLockOnBlendingTime = Cam_LockOn_Blending_Time_Default);
 	HRESULT Finish_LockOn(CGameObject* pTargetObject, const _float& fLockOnBlendingTime = Cam_LockOn_Blending_Time_Default);
@@ -82,7 +86,7 @@ private:
 
 private:
 	/* 구면 좌표계 */
-	Vec2			m_vAngle				= { 0.f, 1.f };
+	Vec2			m_vAngle				= { -1.57f, 1.f }; /* x가 0일 경우 플레이어 라이트에서 시작*/
 
 	/* 구면 좌표계에서 카메라의 최대 최소 y 값*/
 	_float			m_fMinLimitY			= { 0.7f };
@@ -99,7 +103,7 @@ private:
 	CPhysX_Controller* m_pControllerCom		= nullptr;
 
 	/* Lock On */
-	LOCK_PROGRESS	m_eLockProgress		= LOCK_PROGRESS::OFF;
+	LOCK_PROGRESS	m_eLockProgress			= LOCK_PROGRESS::OFF;
 
 	/* 카메라의 월드 행렬 상태 변환으로 인해 오프셋의 y가 -가 되어 땅을 뚫는 현상 방지*/
 	_float			m_fLockTargetOffsetMinY = 0.5f;

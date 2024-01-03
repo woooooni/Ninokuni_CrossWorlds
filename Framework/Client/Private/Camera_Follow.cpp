@@ -94,6 +94,43 @@ void CCamera_Follow::LateTick(_float fTimeDelta)
 	__super::LateTick(fTimeDelta);
 }
 
+void CCamera_Follow::Set_Default_Position()
+{
+	CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
+
+	/* 현재 타겟의 Y축 회전 상태를 CW 0 ~ 360로 반환한다. */
+	_float fRot = 0.f;
+	{
+		Vec3 vLook = pTargetTransform->Get_Look();
+
+		_float fAngle = atan2(vLook.x, vLook.z);
+
+		const _float fDegreesPerRadian = 180.0f / DirectX::XM_PI;
+		fRot = fAngle * fDegreesPerRadian;
+		if (fRot < 0)
+			fRot += 360.f;
+	}
+
+	float result = 0.f;
+
+	if (fRot >= 0 && fRot <= 270) {
+		// 0 ~ 270의 값은 -0.5 pi ~ -2 pi로 변환
+		result = -0.5f * XM_PI - fRot * (1.5f * XM_PI / 270.0f);
+	}
+	else if (fRot > 270 && fRot <= 360) {
+		// 270 ~ 360의 값은 0 ~ -0.5pi로 변환
+		result = 0.0f - (fRot - 270) * (0.5f * XM_PI / 90.0f); //0.0f - fRot * (0.5f * XM_PI / 90.0f);
+	}
+	else {
+		// 범위를 벗어나면 그대로 반환
+		result = fRot;
+	}
+
+	m_vAngle = { result, 1.f };
+
+	m_tDampingDesc.bSet = false;
+}
+
 HRESULT CCamera_Follow::Start_LockOn(CGameObject* pTargetObject, const Vec4& vTargetOffset, const Vec4& vLookAtOffset, const _float& fLockOnBlendingTime)
 {
 	if (nullptr == pTargetObject || LOCK_PROGRESS::OFF != m_eLockProgress)
@@ -262,8 +299,6 @@ Vec4 CCamera_Follow::Calculate_Look(_float fTimeDelta)
 								* m_pLookAtObj->Get_Component<CTransform>(L"Com_Transform")->Get_WorldMatrix();
 
 			memcpy(&vLookAt, &matLookWorld.m[3], sizeof(Vec4));
-
-			//vLookAt = m_pLookAtObj->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
 		}
 	}
 	else
@@ -359,6 +394,44 @@ void CCamera_Follow::Test(_float fTimeDelta)
 			}
 			else
 				Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+		}
+
+		/* Default Position */
+		if (KEY_TAP(KEY::HOME))
+		{
+			Set_Default_Position();
+		}
+	}
+
+	{
+		CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
+
+		/* 현재 타겟의 Y축 회전 상태를 CW 0 ~ 360로 반환한다. */
+		_float fRot = 0.f;
+		{
+			Vec3 vLook = pTargetTransform->Get_Look();
+
+			_float fAngle = atan2(vLook.x, vLook.z);
+
+			const _float fDegreesPerRadian = 180.0f / DirectX::XM_PI;
+			fRot = fAngle * fDegreesPerRadian;
+			if (fRot < 0)
+				fRot += 360.f;
+		}
+
+		float result = 0.f;// -1.5f * XM_PI + fRot * (0.5f * XM_PI) / 90.0f;
+
+		if (fRot >= 0 && fRot <= 270) {
+			// 0 ~ 270의 값은 -0.5 pi ~ -2 pi로 변환
+			result =  -0.5f * XM_PI - fRot * (1.5f * XM_PI / 270.0f);
+		}
+		else if (fRot > 270 && fRot <= 360) {
+			// 270 ~ 360의 값은 0 ~ -0.5pi로 변환
+			result =  0.0f - fRot * (0.5f * XM_PI / 90.0f);
+		}
+		else {
+			// 범위를 벗어나면 그대로 반환
+			result = fRot;
 		}
 	}
 }
