@@ -200,10 +200,9 @@ HRESULT CRenderer::Draw()
 
 	if(FAILED(Render_Priority()))
 		return E_FAIL;
-	if (FAILED(Render_NonLight()))
-		return E_FAIL;
-
 	if (FAILED(Render_Aurora()))
+		return E_FAIL;
+	if (FAILED(Render_NonLight()))
 		return E_FAIL;
 
 	if (FAILED(Render_NonAlphaBlend()))
@@ -261,9 +260,6 @@ HRESULT CRenderer::Draw()
 			return E_FAIL;
 	}
 
-	//if (FAILED(Render_OneBlendTargetMix(L"Target_Aurora_Post", L"MRT_Blend", false)))
-	//	return E_FAIL;
-
 	if(FAILED(Render_AlphaBlend()))
 		return E_FAIL;
 
@@ -296,7 +292,7 @@ HRESULT CRenderer::Draw()
 	}
 	if (FAILED(Render_UIEffectBlend()))
 		return E_FAIL;
-
+ 
 	// FinalRender
 	if (FAILED(Render_Final()))
 		return E_FAIL;
@@ -344,6 +340,48 @@ HRESULT CRenderer::Render_Priority()
 		Safe_Release(Pair.second.pGameObject);
 		Pair.second.pGameObject = nullptr;
 	}
+
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+// MRT_Aurora / MRT_Blend
+HRESULT CRenderer::Render_Aurora()
+{
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Aurora"), true)))
+		return E_FAIL;
+
+	for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_AURORA])
+	{
+		if (FAILED(iter->Render()))
+			return E_FAIL;
+		Safe_Release(iter);
+	}
+	m_RenderObjects[RENDERGROUP::RENDER_AURORA].clear();
+
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
+
+
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Blend"), false)))
+		return E_FAIL;
+
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA]->Bind_Matrix("world", &m_WorldMatrix)))
+		return E_FAIL;
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA]->Bind_Matrix("view", &m_ViewMatrix)))
+		return E_FAIL;
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA]->Bind_Matrix("projection", &m_ProjMatrix)))
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA], TEXT("Target_Aurora_Diffuse"), "DiffuseTexture")))
+		return E_FAIL;
+
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA]->Begin(0)))
+		return E_FAIL;
+	if (FAILED(m_pVIBuffer->Render()))
+		return E_FAIL;
 
 	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
 		return E_FAIL;
@@ -645,9 +683,9 @@ HRESULT CRenderer::Render_Deferred()
 
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_SSAO_Blur"), "g_SSAOTarget")))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_Outline"), "g_OutlineTarget")))
-		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_Bloom_Blur"), "g_BloomTarget")))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_Outline"), "g_OutlineTarget")))
 		return E_FAIL;
 
 	// 옵션 셋팅
@@ -1093,6 +1131,7 @@ HRESULT CRenderer::Render_BlurUpSample(const wstring& strFinalMrtTag, _bool bCle
 	return S_OK;
 }
 
+
 // BlendTargetMix
 HRESULT CRenderer::Render_AlphaBlendTargetMix(const wstring& strStartTargetTag, const wstring& strFinalTragetTag, _bool bClear)
 {
@@ -1113,75 +1152,6 @@ HRESULT CRenderer::Render_AlphaBlendTargetMix(const wstring& strStartTargetTag, 
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Begin(4)))
 		return E_FAIL;
 
-	if (FAILED(m_pVIBuffer->Render()))
-		return E_FAIL;
-
-	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
-		return E_FAIL;
-
-	return S_OK;
-}
-
-HRESULT CRenderer::Render_OneBlendTargetMix(const wstring& strStartTargetTag, const wstring& strFinalTragetTag, _bool bClear)
-{
-	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, strFinalTragetTag, bClear)))
-		return E_FAIL;
-
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
-		return E_FAIL;
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
-		return E_FAIL;
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
-		return E_FAIL;
-
-	// Diffuse
-	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], strStartTargetTag, "g_BlendMixTarget")))
-		return E_FAIL;
-
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Begin(5)))
-		return E_FAIL;
-
-	if (FAILED(m_pVIBuffer->Render()))
-		return E_FAIL;
-
-	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
-		return E_FAIL;
-
-	return S_OK;
-}
-
-HRESULT CRenderer::Render_Aurora()
-{
-	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Aurora"), true)))
-		return E_FAIL;
-
-	for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_AURORA])
-	{
-		if (FAILED(iter->Render()))
-			return E_FAIL;
-		Safe_Release(iter);
-	}
-	m_RenderObjects[RENDERGROUP::RENDER_AURORA].clear();
-
-	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
-		return E_FAIL;
-
-
-	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Aurora_Post"), true)))
-		return E_FAIL;
-
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA]->Bind_Matrix("world", &m_WorldMatrix)))
-		return E_FAIL;
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA]->Bind_Matrix("view", &m_ViewMatrix)))
-		return E_FAIL;
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA]->Bind_Matrix("projection", &m_ProjMatrix)))
-		return E_FAIL;
-
-	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA], TEXT("Target_Aurora_Dfifuse"), "DiffuseTexture")))
-		return E_FAIL;
-
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA]->Begin(0)))
-		return E_FAIL;
 	if (FAILED(m_pVIBuffer->Render()))
 		return E_FAIL;
 
@@ -1423,14 +1393,12 @@ HRESULT CRenderer::Create_Target()
 		return E_FAIL;
 #pragma endregion
 
-#pragma region Aurora_Targets
-	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Aurora_Dfifuse"),
+#pragma region MRT_Aurora : Target_Aurora_Diffuse
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Aurora_Diffuse"),
 		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Aurora_Post"),
-		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
-		return E_FAIL;
-#pragma endregion Aurora_Targets
+#pragma endregion
+
 	XMStoreFloat4x4(&m_WorldMatrix, XMMatrixIdentity());
 	m_WorldMatrix._11 = ViewportDesc.Width;
 	m_WorldMatrix._22 = ViewportDesc.Height;
@@ -1442,7 +1410,7 @@ HRESULT CRenderer::Create_Target()
 
 HRESULT CRenderer::Set_TargetsMrt()
 {
-	// MRT_GameObjects
+	// MRT_GameObjects / MRT_Bloom_Blur
 	{
 		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Diffuse"))))
 			return E_FAIL;
@@ -1452,10 +1420,13 @@ HRESULT CRenderer::Set_TargetsMrt()
 			return E_FAIL;
 		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Bloom"))))
 			return E_FAIL;
-	}
 
-	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Bloom_Blur"), TEXT("Target_Bloom_Blur"))))
-		return E_FAIL;
+		// MRT_Bloom_Blur
+		{
+			if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Bloom_Blur"), TEXT("Target_Bloom_Blur"))))
+				return E_FAIL;
+		}
+	}
 
 	// MRT_Lights
 	{
@@ -1524,13 +1495,19 @@ HRESULT CRenderer::Set_TargetsMrt()
 			return E_FAIL;
 	}
 
+	// MRT_Aurora
+	{
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Aurora"), TEXT("Target_Aurora_Diffuse"))))
+			return E_FAIL;
+	}
+
 	// MRT_Blend
 	{
 		if (FAILED(m_pTarget_Manager->Add_MRT(L"MRT_Blend", L"Target_Blend")))
 			return E_FAIL;
 	}
 
-	// Blur / . . .
+	// Blur
 	{
 		/* For.MRT_BlurDownSampling */
 		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Blur_DownSampling"), TEXT("Target_Blur_DownSampling"))))
@@ -1546,14 +1523,6 @@ HRESULT CRenderer::Set_TargetsMrt()
 
 		/* For.MRT_BlurUpSampling */
 		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Blur_UpSampling"), TEXT("Target_Blur_UpSampling"))))
-			return E_FAIL;
-	}
-
-	// Aurora
-	{
-		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Aurora"), TEXT("Target_Aurora_Dfifuse"))))
-			return E_FAIL;
-		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Aurora_Post"), TEXT("Target_Aurora_Post"))))
 			return E_FAIL;
 	}
 
@@ -1630,9 +1599,7 @@ HRESULT CRenderer::Set_Debug()
 		return E_FAIL;
 
 	// Aurora
-	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Aurora_Dfifuse"), (fSizeX / 2.f) + (fSizeX * 0), (fSizeY / 2.f) + (fSizeY * 5), fSizeX, fSizeY)))
-		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Aurora_Post"), (fSizeX / 2.f) + (fSizeX * 1), (fSizeY / 2.f) + (fSizeY * 5), fSizeX, fSizeY)))
+	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Aurora_Diffuse"),           (fSizeX / 2.f) + (fSizeX * 0), (fSizeY / 2.f) + (fSizeY * 5), fSizeX, fSizeY)))
 		return E_FAIL;
 
 	// MRT_Blend

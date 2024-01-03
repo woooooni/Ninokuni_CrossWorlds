@@ -10,11 +10,11 @@ class ENGINE_DLL CRenderer final : public CComponent
 {
 public:
 	enum RENDERGROUP {
-		RENDER_PRIORITY, RENDER_NONLIGHT,
+		RENDER_PRIORITY, RENDER_AURORA, RENDER_NONLIGHT,
 		RENDER_NONBLEND, RENDER_LIGHT, RENDER_SHADOW,
 		RENDER_ALPHABLEND, RENDER_EFFECT,
 		RENDER_UI, RENDER_UI_EFFECT_NONBLEND, RENDER_UI_EFFECT_BLEND,
-		RENDER_CURSOR, RENDER_AURORA,
+		RENDER_CURSOR, 
 		RENDER_END
 	};
 
@@ -107,6 +107,7 @@ public:
 
 private:
 	HRESULT Render_Priority();
+	HRESULT Render_Aurora();
 	HRESULT Render_NonLight();
 
 	HRESULT Render_Shadow();
@@ -138,10 +139,7 @@ private:
 
 	// Mix
 	HRESULT Render_AlphaBlendTargetMix(const wstring& strStartTargetTag, const wstring& strFinalTragetTag, _bool bClear);
-	HRESULT Render_OneBlendTargetMix(const wstring& strStartTargetTag, const wstring& strFinalTragetTag, _bool bClear);
 
-	// RenderAurora
-	HRESULT Render_Aurora();
 #ifdef _DEBUG
 private:
 	HRESULT Render_Debug();
