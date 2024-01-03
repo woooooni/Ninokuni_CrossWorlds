@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "Level_Evermore.h"
+#include "Level_IceLand.h"
 #include "GameInstance.h"
 #include "Camera.h"
 #include "Character.h"
@@ -14,12 +14,12 @@
 #include "UI_Fade.h"
 
 
-CLevel_Evermore::CLevel_Evermore(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CLevel_IceLand::CLevel_IceLand(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
 {
 }
 
-HRESULT CLevel_Evermore::Initialize()
+HRESULT CLevel_IceLand::Initialize()
 {
 	SetWindowText(g_hWnd, TEXT("Ni no Kuni : Cross Worlds"));
 	if (FAILED(__super::Initialize()))
@@ -49,10 +49,10 @@ HRESULT CLevel_Evermore::Initialize()
 	return S_OK;
 }
 
-HRESULT CLevel_Evermore::Tick(_float fTimeDelta)
+HRESULT CLevel_IceLand::Tick(_float fTimeDelta)
 {
 	CUI_Manager::GetInstance()->Tick_Fade(fTimeDelta);
-	CUI_Manager::GetInstance()->Tick_UIs(LEVELID::LEVEL_EVERMORE, fTimeDelta);
+	CUI_Manager::GetInstance()->Tick_UIs(LEVELID::LEVEL_ICELAND, fTimeDelta);
 
 	if (KEY_TAP(KEY::PAGE_UP))
 	{
@@ -64,15 +64,15 @@ HRESULT CLevel_Evermore::Tick(_float fTimeDelta)
 		CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE);
 	}
 
-	if (KEY_TAP(KEY::CLOSE_SQUARE_BRACKET))
+	if (KEY_TAP(KEY::F8))
 	{
-		GI->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_ICELAND, L"Winter"));
+		GI->Add_GameObject(LEVEL_ICELAND, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Glanix"));
 	}
 
 	return S_OK;
 }
 
-HRESULT CLevel_Evermore::LateTick(_float fTimeDelta)
+HRESULT CLevel_IceLand::LateTick(_float fTimeDelta)
 {
 	CUI_Manager::GetInstance()->LateTick_Fade(fTimeDelta);
 	CUI_Manager::GetInstance()->LateTick_EvermoreLevel(fTimeDelta);
@@ -80,24 +80,24 @@ HRESULT CLevel_Evermore::LateTick(_float fTimeDelta)
 	return S_OK;
 }
 
-HRESULT CLevel_Evermore::Render_Debug()
+HRESULT CLevel_IceLand::Render_Debug()
 {
 
 	return S_OK;
 }
 
-HRESULT CLevel_Evermore::Enter_Level()
+HRESULT CLevel_IceLand::Enter_Level()
 {
 
 	return S_OK;
 }
 
-HRESULT CLevel_Evermore::Exit_Level()
+HRESULT CLevel_IceLand::Exit_Level()
 {
 	return S_OK;
 }
 
-HRESULT CLevel_Evermore::Ready_Layer_Camera(const LAYER_TYPE eLayerType)
+HRESULT CLevel_IceLand::Ready_Layer_Camera(const LAYER_TYPE eLayerType)
 {
 	if (FAILED(CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW)))
 		return E_FAIL;
@@ -105,10 +105,10 @@ HRESULT CLevel_Evermore::Ready_Layer_Camera(const LAYER_TYPE eLayerType)
 	return S_OK;
 }
 
-HRESULT CLevel_Evermore::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
+HRESULT CLevel_IceLand::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 {
 
-	list<CGameObject*> Grounds = GI->Find_GameObjects(LEVEL_EVERMORE, LAYER_TYPE::LAYER_GROUND);
+	list<CGameObject*> Grounds = GI->Find_GameObjects(LEVEL_ICELAND, LAYER_TYPE::LAYER_GROUND);
 	for (auto& Ground : Grounds)
 	{
 		if (FAILED(GI->Add_Ground(Ground,
@@ -120,7 +120,7 @@ HRESULT CLevel_Evermore::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 	}
 
 
-	list<CGameObject*> Buildings = GI->Find_GameObjects(LEVEL_EVERMORE, LAYER_TYPE::LAYER_BUILDING);
+	list<CGameObject*> Buildings = GI->Find_GameObjects(LEVEL_ICELAND, LAYER_TYPE::LAYER_BUILDING);
 	for (auto& Building : Buildings)
 	{
 		if (FAILED(GI->Add_Building(Building,
@@ -133,7 +133,7 @@ HRESULT CLevel_Evermore::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 
 
 
-	list<CGameObject*> Props = GI->Find_GameObjects(LEVEL_EVERMORE, LAYER_TYPE::LAYER_PROP);
+	list<CGameObject*> Props = GI->Find_GameObjects(LEVEL_ICELAND, LAYER_TYPE::LAYER_PROP);
 	for (auto& Prop : Props)
 	{
 		CModel* pModel = Prop->Get_Component<CModel>(L"Com_Model");
@@ -154,7 +154,7 @@ HRESULT CLevel_Evermore::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 	return S_OK;
 }
 
-HRESULT CLevel_Evermore::Ready_Layer_Terrain(const LAYER_TYPE eLayerType)
+HRESULT CLevel_IceLand::Ready_Layer_Terrain(const LAYER_TYPE eLayerType)
 {
 	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_TERRAIN, TEXT("Prototype_GameObject_Terrain"))))
 		return E_FAIL;
@@ -162,7 +162,7 @@ HRESULT CLevel_Evermore::Ready_Layer_Terrain(const LAYER_TYPE eLayerType)
 	return S_OK;
 }
 
-HRESULT CLevel_Evermore::Ready_Layer_Character(const LAYER_TYPE eLayerType)
+HRESULT CLevel_IceLand::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 {
 	if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN)))
 		return E_FAIL;
@@ -171,7 +171,8 @@ HRESULT CLevel_Evermore::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 	if (nullptr == pCharacterTransform)
 		return E_FAIL;
 
-	pCharacterTransform->Set_State(CTransform::STATE_POSITION, Vec4(0.f, 0.f, 0.f, 1.f));
+
+	pCharacterTransform->Set_State(CTransform::STATE_POSITION, Vec4(-44.f, 1.6f, 315.f, 1.f));
 
 	if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))
 	{
@@ -182,13 +183,13 @@ HRESULT CLevel_Evermore::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 	return S_OK;
 }
 
-HRESULT CLevel_Evermore::Ready_Layer_Monster(const LAYER_TYPE eLayerType)
+HRESULT CLevel_IceLand::Ready_Layer_Monster(const LAYER_TYPE eLayerType)
 {
 
 	return S_OK;
 }
 
-HRESULT CLevel_Evermore::Ready_Layer_UI(const LAYER_TYPE eLayerType)
+HRESULT CLevel_IceLand::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 {
 	if (FAILED(CUI_Manager::GetInstance()->Ready_CommonUIs(LEVELID::LEVEL_EVERMORE)))
 		return E_FAIL;
@@ -208,20 +209,20 @@ HRESULT CLevel_Evermore::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 	return S_OK;
 }
 
-CLevel_Evermore* CLevel_Evermore::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CLevel_IceLand* CLevel_IceLand::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-	CLevel_Evermore* pInstance = new CLevel_Evermore(pDevice, pContext);
+	CLevel_IceLand* pInstance = new CLevel_IceLand(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize()))
 	{
-		MSG_BOX("Failed To Create : CLevel_Evermore");
+		MSG_BOX("Failed To Create : CLevel_IceLand");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CLevel_Evermore::Free()
+void CLevel_IceLand::Free()
 {
 	__super::Free();
 }

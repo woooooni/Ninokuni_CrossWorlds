@@ -159,6 +159,7 @@ HRESULT CMainApp::Initialize_Client()
 	
 	if (FAILED(CUI_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
 		return E_FAIL;
+
 	if (FAILED(CUIDamage_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
 		return E_FAIL;
 

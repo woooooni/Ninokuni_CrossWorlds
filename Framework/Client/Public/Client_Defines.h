@@ -95,6 +95,7 @@ namespace Client
 		OBJ_DYNAMIC,
 		OBJ_SPAWNER,
 		OBJ_SKY,
+		OBJ_PORTAL,
 		OBJ_END
 	};
 

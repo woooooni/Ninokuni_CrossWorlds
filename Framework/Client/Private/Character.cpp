@@ -15,6 +15,9 @@
 #include "Weapon.h"
 #include <future>
 
+#include "Game_Manager.h"
+#include "Player.h"
+
 USING(Client)
 CCharacter::CCharacter(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eCharacterType)
 	: CGameObject(pDevice, pContext, strObjectTag, OBJ_TYPE::OBJ_CHARACTER)
@@ -74,6 +77,25 @@ void CCharacter::Tick(_float fTimeDelta)
 		GI->UnLock_Mouse();
 	}
 
+	if (KEY_TAP(KEY::TAB))
+	{
+		switch (m_eCharacterType)
+		{
+		case CHARACTER_TYPE::SWORD_MAN:
+			CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::ENGINEER);
+			break;
+
+		case CHARACTER_TYPE::ENGINEER:
+			CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::DESTROYER);
+			break;
+
+		case CHARACTER_TYPE::DESTROYER:
+			CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN);
+			break;
+		}
+		
+	}
+
 	if (nullptr != m_pWeapon)
 		m_pWeapon->Tick(fTimeDelta);
 
@@ -127,7 +149,7 @@ void CCharacter::Tick_MotionTrail(_float fTimeDelta)
 		TrailDesc.pRenderModel = m_pCharacterPartModels[PART_TYPE::HEAD];
 		TrailDesc.TweenDesc = m_pModelCom->Get_TweenDesc();
 		TrailDesc.vBloomPower = m_MotionTrailDesc.vBloomPower;
-		TrailDesc.vRimColor = m_MotionTrailDesc.vRimColor;
+		TrailDesc.vRimColor = { 0.f, 1.f, 1.f, 1.f };
 		TrailDesc.fBlurPower = m_MotionTrailDesc.fBlurPower;
 
 		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, L"Prototype_GameObject_MotionTrail", &TrailDesc)))

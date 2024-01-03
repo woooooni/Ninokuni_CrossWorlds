@@ -3,6 +3,8 @@
 #include "Player.h"
 #include "Character.h"
 #include "Character_Manager.h"
+#include "Camera_Manager.h"
+#include "Camera.h"
 
 
 CPlayer::CPlayer()
@@ -46,6 +48,12 @@ HRESULT CPlayer::Set_Character(CHARACTER_TYPE eType)
 
 	if (FAILED(m_pCharacter->Enter_Character()))
 		return E_FAIL;
+
+	if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))
+	{
+		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_TargetObj(m_pCharacter);
+		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_LookAtObj(m_pCharacter);
+	}
 
 	return S_OK;
 }

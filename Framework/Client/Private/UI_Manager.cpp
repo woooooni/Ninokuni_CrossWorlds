@@ -2842,6 +2842,10 @@ HRESULT CUI_Manager::Tick_UIs(LEVELID eID, _float fTimeDelta)
 		Tick_EvermoreLevel(fTimeDelta);
 		break;
 
+	case LEVELID::LEVEL_ICELAND:
+		Tick_EvermoreLevel(fTimeDelta);
+		break;
+
 	default:
 		break;
 	}
@@ -2938,13 +2942,13 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 		}
 	}
 
-	if (KEY_TAP(KEY::W))
-	{
-		if (m_pWorldMapBG->Get_Active()) // ÄÑÁ®ÀÖ´Ù¸é
-			OnOff_WorldMap(false); // ²ö´Ù
-		else // ²¨Á®ÀÖ´Ù¸é
-			OnOff_WorldMap(true); // ÄÒ´Ù
-	}
+	//if (KEY_TAP(KEY::O))
+	//{
+	//	if (m_pWorldMapBG->Get_Active()) // ÄÑÁ®ÀÖ´Ù¸é
+	//		OnOff_WorldMap(false); // ²ö´Ù
+	//	else // ²¨Á®ÀÖ´Ù¸é
+	//		OnOff_WorldMap(true); // ÄÒ´Ù
+	//}
 
 	if (m_pCostumeBox->Get_Active())
 		Update_CostumeBtn();

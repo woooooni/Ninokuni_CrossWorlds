@@ -96,6 +96,7 @@
 #include "Effect.h"
 #include "Decal.h"
 #include "Motion_Trail.h"
+#include "Portal.h"
 
 #include "Weapon_SwordTemp.h"
 
@@ -164,6 +165,10 @@ _int CLoader::Loading()
 		hr = Loading_For_Level_Evermore();
 		break;
 
+	case LEVEL_ICELAND:
+		hr = Loading_For_Level_IceLand();
+		break;
+
 	case LEVEL_TOOL:
 		hr = Loading_For_Level_Tool();
 		break;
@@ -201,12 +206,15 @@ HRESULT CLoader::Loading_For_Level_Logo()
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Logo_Flare"), CUI_Flare::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Portal"), CPortal::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_PROP)))
+		return E_FAIL;
+
 
 	if (false == g_bFirstLoading)
 	{
 		m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN] = std::async(&CLoader::Loading_For_Character, this , CHARACTER_TYPE::SWORD_MAN);
-		/*m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);
-		m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);*/
+		m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);
+		m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);
 	}
 
 	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
@@ -346,10 +354,16 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 		m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::SWORD_MAN);
 		/*m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);
 		m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);*/
-
-		if (FAILED(Reserve_Character_Managers()))
-			return E_FAIL;
 	}
+
+	m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Static_Map_Objects, this, L"../Bin/Export/NonAnimModel/Map/");
+	m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Dynamic_Map_Objects, this, L"..Bin/Export/AnimModel/Map/");
+	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Loading_Proto_Monster_Npc, this);
+
+	m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE].wait();
+	m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE].wait();
+	m_Threads[LOADING_THREAD::MONSTER_AND_NPC].wait();
+	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Evermore");
 
 
 	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
@@ -370,6 +384,23 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 	return S_OK;
 }
 
+HRESULT CLoader::Loading_For_Level_IceLand()
+{
+
+	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Winter");
+	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
+	{
+		if (true == m_Threads[i].valid())
+			m_Threads[i].wait();
+	}
+
+	m_strLoading = TEXT("로딩 끝.");
+	m_isFinished = true;
+	g_bFirstLoading = true;
+
+	return S_OK;
+}
+
 HRESULT CLoader::Loading_For_Level_Test()
 {
 	/* For.Texture */
@@ -384,12 +415,6 @@ HRESULT CLoader::Loading_For_Level_Test()
 	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_UI_CharacterDummy",
 		CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy")), LAYER_CHARACTER)))
 		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_MotionTrail",
-		CMotion_Trail::Create(m_pDevice, m_pContext), LAYER_EFFECT)))
-		return E_FAIL;
-
-
 
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
 
@@ -413,7 +438,7 @@ HRESULT CLoader::Loading_For_Level_Test()
 
 
 	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Winter");
-	//m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Monster_Data, this, L"Evermore");
+	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Monster_Data, this, L"Winter");
 
 
 	CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_TEST);
