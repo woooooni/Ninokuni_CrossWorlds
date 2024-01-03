@@ -7,6 +7,8 @@
 
 /* Test */
 #include "Camera_CutScene_Map.h"
+#include "Game_Manager.h"
+#include "Player.h"
 
 CCamera_Follow::CCamera_Follow(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
 	: CCamera(pDevice, pContext, strObjTag, OBJ_TYPE::OBJ_CAMERA)
@@ -40,8 +42,8 @@ HRESULT CCamera_Follow::Initialize(void * pArg)
 		m_tLerpDist.fCurValue = Cam_Dist_Follow_Default;
 
 		/* 팔로우 카메라에서 룩앳 오프셋을 사용하는 일은 없다. 타겟 오프셋만을 사용한다.*/
-		m_vLookAtOffset = Vec4::UnitW;
-		m_vTargetOffset = Vec4{ 0.7f, 1.3f, 0.f, 1.f };
+		m_tTargetOffset.vCurVec = Cam_TargetOffset_Follow_Default;
+		m_tLookAtOffset.vCurVec = Cam_LookAtOffset_Follow_Default;
 
 		m_vMouseSensitivity = Vec2{ 0.18f, 0.5f };
 	}
@@ -54,8 +56,14 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 	if (!m_bActive || nullptr == m_pTargetObj || nullptr == m_pLookAtObj)
 		return;
 
-	/* Shake, Fov, Dist Update */
 	__super::Tick(fTimeDelta); 
+
+	/* Check Lock */
+	if (LOCK_PROGRESS::FINISH_BLEIDING == m_eLockProgress)
+	{
+		if (!m_tBlendingLookAtPosition.bActive)
+			m_eLockProgress = LOCK_PROGRESS::NOT;
+	}
 
 	/* Position */
 	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, Calculate_WorldPosition(fTimeDelta));
@@ -72,20 +80,7 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 		m_pControllerCom->Tick_Controller(fTimeDelta);
 
 	/* Test */
-	{
-		if (KEY_TAP(KEY::INSERT))
-		{
-			dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP))->Start_CutScene("Evermore_Street_00");
-		}
-		if (KEY_TAP(KEY::DEL))
-		{
-			vector<string> CutSceneNames;
-			CutSceneNames.push_back("Evermore_Street_00");
-			CutSceneNames.push_back("Evermore_Street_01");
-
-			dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP))->Start_CutScenes(CutSceneNames);
-		}
-	}
+	Test(fTimeDelta);
 }
 
 void CCamera_Follow::LateTick(_float fTimeDelta)
@@ -99,15 +94,42 @@ void CCamera_Follow::LateTick(_float fTimeDelta)
 	__super::LateTick(fTimeDelta);
 }
 
-HRESULT CCamera_Follow::Render()
+HRESULT CCamera_Follow::Start_LockOn(CGameObject* pTargetObject, const Vec4& vTargetOffset, const Vec4& vLookAtOffset, const _float& fLockOnBlendingTime)
 {
+	if (nullptr == pTargetObject || LOCK_PROGRESS::NOT != m_eLockProgress)
+		return E_FAIL;
+
+	/* 룩앳 오브젝트 변경 보간 시작 */
+	Change_LookAtObj(pTargetObject, fLockOnBlendingTime);
+
+	/* 룩앳 오프셋 변경 보간 시작 */
+	Change_LookAtOffSet(vLookAtOffset, fLockOnBlendingTime);
+
+	/* 타겟 오프셋 변경 보간 시작 */
+	Change_TargetOffSet(vTargetOffset, fLockOnBlendingTime);
+	
+	m_eLockProgress = LOCK_PROGRESS::START_BLENDING;
+
 	return S_OK;
 }
 
-Vec4 CCamera_Follow::Get_Default_Location()
+HRESULT CCamera_Follow::Finish_LockOn(CGameObject* pTargetObject, const _float& fLockOnBlendingTime)
 {
+	if (nullptr == pTargetObject || LOCK_PROGRESS::NOT == m_eLockProgress)
+		return E_FAIL;
 
-	return Vec4();
+	/* 룩앳 오브젝트 변경 보간 시작 */
+	Change_LookAtObj(pTargetObject, fLockOnBlendingTime);
+
+	/* 룩앳 오프셋 변경 보간 시작 */
+	Change_LookAtOffSet(Cam_LookAtOffset_Follow_Default, fLockOnBlendingTime);
+
+	/* 타겟 오프셋 변경 보간 시작 */
+	Change_TargetOffSet(Cam_TargetOffset_Follow_Default, fLockOnBlendingTime);
+
+	m_eLockProgress = LOCK_PROGRESS::FINISH_BLEIDING;
+
+	return S_OK;
 }
 
 HRESULT CCamera_Follow::Ready_Components()
@@ -137,25 +159,34 @@ HRESULT CCamera_Follow::Ready_Components()
 
 Vec4 CCamera_Follow::Calculate_WorldPosition(_float fTimeDelta)
 {
-	/* 구면 로컬 위치 (반지름 1 기준) */
-	Vec4 vLocalSpherical = Calculate_LoaclSphericalPosition(fTimeDelta);
+	Vec4 vWorldGoal = Vec4::UnitW;
 
-	/* 디스턴스 반영 */
-	vLocalSpherical *= m_tLerpDist.fCurValue;
-	
-	/* 카메라 목표 월드 위치 */
 	CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
 
-	if (nullptr == pTargetTransform)
-		return Vec4::UnitW;
+	if (LOCK_PROGRESS::NOT != m_eLockProgress)
+	{
+		/* 락온 상태에서는 구면 좌표계를 사용하지 않는다. */
 
-	Vec4 vWorldGoal = vLocalSpherical
-		+ Vec4(pTargetTransform->Get_Position());											 /* 타겟 포지션 */
-		+ Calculate_ReleativePosition(m_vTargetOffset, pTargetTransform->Get_WorldMatrix()); /* 타겟의 회전을 반영한 오프셋 */
-
+		/* 카메라 목표 월드 위치 */
+		vWorldGoal = Vec4(pTargetTransform->Get_Position())
+			+ Calculate_ReleativePosition(m_tTargetOffset.vCurVec, m_pTransformCom->Get_WorldMatrix());	/* 카메라의 회전 상태를 반영한 오프셋 */
+	}
+	else
+	{
+		/* 구면 로컬 위치 (원점, 반지름 1 기준) */
+		Vec4 vLocalSpherical = Calculate_LoaclSphericalPosition(fTimeDelta);
+	
+		/* 디스턴스 반영 */
+		vLocalSpherical *= m_tLerpDist.fCurValue;
+	
+		/* 카메라 목표 월드 위치 */
+		vWorldGoal = vLocalSpherical
+			+ Vec4(pTargetTransform->Get_Position())													 /* 타겟 포지션 */
+			+ Calculate_ReleativePosition(m_tTargetOffset.vCurVec, pTargetTransform->Get_WorldMatrix()); /* 타겟의 회전 상태를 반영한 오프셋 */
+	}
 	vWorldGoal.w = 1.f;
 
-	/* 댐핑 적용 월드 위치 (카메라의 현재 위치와 목표위치를 댐핑 계수에 따라 보간한다) */
+	/* 댐핑 적용 최종 월드 위치 (카메라의 현재 위치와 목표위치를 댐핑 계수에 따라 보간한다) */
 	if (m_tDampingDesc.bDamping)
 		return Calculate_DampingPosition(vWorldGoal);
 
@@ -164,7 +195,7 @@ Vec4 CCamera_Follow::Calculate_WorldPosition(_float fTimeDelta)
 
 Vec4 CCamera_Follow::Calculate_LoaclSphericalPosition(_float fTimeDelta)
 {
-	if (m_bCanInput)
+	if (m_bCanInput) 
 	{
 		_long	MouseMove = 0l;
 
@@ -215,13 +246,26 @@ Vec4 CCamera_Follow::Calculate_LoaclSphericalPosition(_float fTimeDelta)
 
 Vec4 CCamera_Follow::Calculate_Look(_float fTimeDelta)
 {
+	Vec4 vLookAt, vOffSet;
+
 	CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
 
-	Vec4 vPosition_LookAtObject = Vec4(pTargetTransform->Get_Position());
+	/* 룩앳 위치 */
+	if (LOCK_PROGRESS::NOT != m_eLockProgress)
+	{
+		/* 룩앳 오브젝트가 현재 블렌딩 중이라면 */
+		if (Is_Blending_LookAtObj()) 
+			vLookAt = m_tBlendingLookAtPosition.vCurVec;
+		else 
+			vLookAt = m_pLookAtObj->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
+	}
+	else
+		vLookAt = Vec4(pTargetTransform->Get_Position());
 
-	Vec4 vPosition_Offset = Calculate_ReleativePosition(m_vTargetOffset, m_pTransformCom->Get_WorldMatrix()); /* 카메라의 회전상태를 반영한 타겟 오프셋 */
+	/* 룩앳 오프셋 위치 */
+	vOffSet = Calculate_ReleativePosition(m_tLookAtOffset.vCurVec, m_pTransformCom->Get_WorldMatrix()); /* 카메라의 회전 상태를 반영한 타겟 오프셋 */
 
-	return Vec4(vPosition_LookAtObject + vPosition_Offset).OneW();
+	return Vec4(vLookAt + vOffSet).OneW();
 }
 
 Vec4 CCamera_Follow::Calculate_ReleativePosition(Vec4 vPos, Matrix matWorld)
@@ -275,6 +319,41 @@ Vec4 CCamera_Follow::Calculate_DampingPosition(Vec4 vGoalPos)
 	}
 	
 	return vGoalPos;
+}
+
+void CCamera_Follow::Test(_float fTimeDelta)
+{
+	/* Test */
+	{
+		/* CutScene - Evermore */
+		if (KEY_TAP(KEY::INSERT))
+		{
+			vector<string> CutSceneNames;
+			CutSceneNames.push_back("Evermore_Street_00");
+			CutSceneNames.push_back("Evermore_Street_01");
+
+			dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP))->Start_CutScenes(CutSceneNames);
+		}
+
+		/* Lock On Off */
+		if (KEY_TAP(KEY::DEL))
+		{
+			if (LOCK_PROGRESS::NOT == m_eLockProgress)
+			{
+				const _int iBossCount = 3;
+				wstring strBossNames[iBossCount] = { L"Glanix", L"DreamerMazeWitch", L"Stellia" };
+
+				for (size_t i = 0; i < iBossCount; i++)
+				{
+					CGameObject * pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_MONSTER, strBossNames[i]);
+					if (nullptr != pTarget)
+						Start_LockOn(pTarget, Cam_Target_Offset_LockOn_Glanix, Cam_LookAt_Offset_LockOn_Glanix);
+				}
+			}
+			else
+				Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+		}
+	}
 }
 
 CCamera_Follow * CCamera_Follow::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)

@@ -107,21 +107,30 @@ namespace Client
 	const unsigned int		g_iWinSizeY = 900;
 
 
-	/* Camera */
+	/* Camera - Default */
 
 	enum CAMERA_TYPE { FREE, FOLLOW, CUTSCENE_MAP, CUTSCENE_BOSS, CAMERA_TYPE_END };
 
+	static const char*	CameraCharNames[CAMERA_TYPE::CAMERA_TYPE_END]{ "Camera_Free", "Camera_Follow", "Camera_CutScene_Map", "Camera_CutScene_Boss" };
+	
 	const wstring		CameraWstringNames[CAMERA_TYPE::CAMERA_TYPE_END]{ L"Camera_Free", L"Camera_Follow", L"Camera_CutScene_Map", L"Camera_CutScene_Boss" };
 	
-	static const char*	CameraCharNames[CAMERA_TYPE::CAMERA_TYPE_END]{ "Camera_Free", "Camera_Follow", "Camera_CutScene_Map", "Camera_CutScene_Boss" };
+	static const _float Cam_Dist_Follow_Default				= 5.f;
 
-	static const _float Cam_Dist_Follow_Default		= 5.f;
+	static const _float Cam_Fov_Default						= XMConvertToRadians(60.0f);
+	static const _float Cam_Fov_Free_Default				= XMConvertToRadians(60.0f);
+	static const _float Cam_Fov_Follow_Default				= XMConvertToRadians(60.0f);
+	static const _float Cam_Fov_CutScene_Map_Default		= XMConvertToRadians(70.0f);
+	static const _float Cam_Fov_CutScene_Boss_Default		= XMConvertToRadians(70.0f);
 
-	static const _float Cam_Fov_Default					= XMConvertToRadians(60.0f);
-	static const _float Cam_Fov_Free_Default			= XMConvertToRadians(60.0f);
-	static const _float Cam_Fov_Follow_Default			= XMConvertToRadians(60.0f);
-	static const _float Cam_Fov_CutScene_Map_Default	= XMConvertToRadians(70.0f);
-	static const _float Cam_Fov_CutScene_Boss_Default	= XMConvertToRadians(70.0f);
+	static const Vec4	Cam_TargetOffset_Follow_Default		= { 0.7f, 1.3f, 0.f, 1.f };
+	static const Vec4	Cam_LookAtOffset_Follow_Default		= { 0.7f, 1.3f, 0.f, 1.f };
+
+	/* Camera - LockOn */
+	static const _float Cam_LockOn_Blending_Time_Default	= 0.5f;
+
+	static const Vec4	Cam_Target_Offset_LockOn_Glanix		= Vec4{ 0.7f, 2.f, -4.5f, 1.f };
+	static const Vec4	Cam_LookAt_Offset_LockOn_Glanix		= Vec4{ 0.f, 2.f, 0.f, 1.f };
 
 #define MAX_BEZIER_POINT 4
 }

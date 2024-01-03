@@ -83,16 +83,42 @@ void CCamera::Start_Lerp_Distance(const _float& fTargetValue, const _float& fTim
 	m_tLerpDist.Start(m_tLerpDist.fCurValue, fTargetValue, fTime, eMode);
 }
 
-void CCamera::Change_TargetObj(CGameObject* pTargetObj1, CGameObject* pTargetObj2, const _float& fChangeTime, const LERP_MODE& eMode)
+void CCamera::Change_TargetOffSet(const Vec4& vTargetValue, const _float& fTime, const LERP_MODE& eMode)
 {
-	if (nullptr == pTargetObj1 || nullptr == pTargetObj2 || 0.f > fChangeTime)
-		return;
+	m_tTargetOffset.Start(m_tTargetOffset.vCurVec, vTargetValue, fTime, eMode);
 }
 
-void CCamera::Change_LookAtObj(CGameObject* pLookAtObj1, CGameObject* pLookAtObj2, const _float& fChangeTime, const LERP_MODE& eMode)
+void CCamera::Change_LookAtOffSet(const Vec4& vTargetValue, const _float& fTime, const LERP_MODE& eMode)
 {
-	if (nullptr == pLookAtObj1 || nullptr == pLookAtObj2 || 0.f > fChangeTime)
+	m_tLookAtOffset.Start(m_tLookAtOffset.vCurVec, vTargetValue, fTime, eMode);
+}
+
+void CCamera::Change_TargetObj(CGameObject* pTargetObj, const _float& fChangeTime, const LERP_MODE& eMode)
+{
+	if (nullptr == m_pTargetObj || nullptr == pTargetObj)
 		return;
+
+	Vec4 vSrc	= m_pTargetObj->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
+	Vec4 vDest	= pTargetObj->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
+
+	m_tBlendingTargetPosition.Start(vSrc, vDest, fChangeTime, eMode);
+
+	/* 어차피 블렌딩 되는 동안은 m_tBlendingTargetPosition으로 포지션 사용 */
+	m_pTargetObj = pTargetObj;
+}
+
+void CCamera::Change_LookAtObj(CGameObject* pLookAtObj, const _float& fChangeTime, const LERP_MODE& eMode)
+{
+	if (nullptr == m_pLookAtObj || nullptr == pLookAtObj)
+		return;
+
+	Vec4 vSrc	= m_pLookAtObj->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
+	Vec4 vDest	= pLookAtObj->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
+
+	m_tBlendingLookAtPosition.Start(vSrc, vDest, fChangeTime, eMode);
+
+	/* 어차피 블렌딩 되는 동안은 m_tBlendingLookAtPosition으로 포지션 사용 */
+	m_pLookAtObj = pLookAtObj;
 }
 
 void CCamera::Start_Shake(const _float& fAmplitude, const _float& fFrequency, const _float& fDuration)
@@ -118,14 +144,22 @@ void CCamera::Start_Shake(const _float& fAmplitude, const _float& fFrequency, co
 void CCamera::Tick_Lerp(const _float fDeltaTime)
 {
 	if (m_tProjDesc.tLerpFov.bActive)
-	{
 		m_tProjDesc.tLerpFov.Update(fDeltaTime);
-	}
-
+	
 	if (m_tLerpDist.bActive)
-	{
 		m_tLerpDist.Update(fDeltaTime);
-	}
+	
+	if (m_tTargetOffset.bActive)
+		m_tTargetOffset.Update_Lerp(fDeltaTime);
+
+	if (m_tLookAtOffset.bActive)
+		m_tLookAtOffset.Update_Lerp(fDeltaTime);
+
+	if (m_tBlendingTargetPosition.bActive)
+		m_tBlendingTargetPosition.Update_Lerp(fDeltaTime);
+
+	if (m_tBlendingLookAtPosition.bActive)
+		m_tBlendingLookAtPosition.Update_Lerp(fDeltaTime);
 }
 
 void CCamera::Tick_Shake(const _float fDeltaTime)
