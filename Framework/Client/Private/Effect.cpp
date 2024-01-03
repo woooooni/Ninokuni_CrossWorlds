@@ -51,6 +51,9 @@ void CEffect::Reset_UV()
 
 void CEffect::Reset_Effect()
 {
+	if (m_pTransformCom == nullptr)
+		return;
+
 	m_bEffectDie       = false;
 	m_fAccDeletionTime = 0.f;
 
@@ -242,10 +245,10 @@ void CEffect::Reset_Effect()
 	Reset_UV();
 }
 
-HRESULT CEffect::Initialize_Prototype(const EFFECT_DESC* tEffectDesc)
+HRESULT CEffect::Initialize_Prototype(const EFFECT_DESC* pEffectDesc)
 {
-	if (tEffectDesc != nullptr)
-		m_tEffectDesc = *tEffectDesc;
+	if (pEffectDesc != nullptr)
+		m_tEffectDesc = *pEffectDesc;
 
 	return S_OK;
 }
@@ -948,10 +951,10 @@ HRESULT CEffect::Ready_Components()
 
 
 CEffect* CEffect::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, 
-	const wstring& strObjectTag, const EFFECT_DESC* tEffectDesc, const wstring& strEffectFilePath)
+	const wstring& strObjectTag, const EFFECT_DESC* pEffectDesc)
 {
 	CEffect* pInstance = new CEffect(pDevice, pContext, strObjectTag);
-	if (FAILED(pInstance->Initialize_Prototype(tEffectDesc)))
+	if (FAILED(pInstance->Initialize_Prototype(pEffectDesc)))
 	{
 		MSG_BOX("Failed to Created : CEffect");
 		Safe_Release(pInstance);

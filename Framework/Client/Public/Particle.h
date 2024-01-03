@@ -183,7 +183,7 @@ protected:
 	virtual ~CParticle() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(const PARTICLE_DESC* pParticleDesc, const wstring& strParticleFilePath);
+	virtual HRESULT Initialize_Prototype(const PARTICLE_DESC* pParticleDesc);
 	virtual HRESULT Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void LateTick(_float fTimeDelta) override;
@@ -220,9 +220,7 @@ private:
 private:
 	HRESULT Bind_ShaderResource();
 
-	void Load_ParticleData(const wstring& strFileName);
 	void* Get_ParticleBufferInfo();
-
 	void Set_Position_Perspective(_float3 fPosition);
 	void Set_Position_Orthographic(_float2 fPosition);
 	void Set_Texture_Diffuse();
@@ -234,7 +232,7 @@ protected:
 
 public:
 	static CParticle* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, 
-		const wstring& strObjectTag, const PARTICLE_DESC* pParticleDesc = nullptr, const wstring& strParticleFilePath = {});
+		const wstring& strObjectTag, const PARTICLE_DESC* pParticleDesc);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 

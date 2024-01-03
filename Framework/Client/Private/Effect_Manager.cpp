@@ -224,9 +224,10 @@ HRESULT CEffect_Manager::Ready_Proto_Effects(const wstring& strEffectPath)
 
 		if (0 == lstrcmp(TEXT(".json"), strExt))
 		{
-			Json json = GI->Json_Load(strFullPath);
-
+#pragma region Load
 			CEffect::EFFECT_DESC EffectInfo = {};
+
+			Json json = GI->Json_Load(strFullPath);
 			for (const auto& item : json["EffectInfo"])
 			{
 				// ÀÌÆåÆ® Å¸ÀÔ
@@ -461,6 +462,7 @@ HRESULT CEffect_Manager::Ready_Proto_Effects(const wstring& strEffectPath)
 				EffectInfo.fBlack_Discard.z = item["Black_Discard"]["z"];
 #pragma endregion
 			}
+#pragma endregion
 
 			if (FAILED(GI->Add_Prototype(wstring(L"Prototype_") + strFileName, 
 				CEffect::Create(m_pDevice, m_pContext, strFileName, &EffectInfo), LAYER_TYPE::LAYER_EFFECT)))
@@ -491,9 +493,10 @@ HRESULT CEffect_Manager::Ready_Proto_Decal(const wstring& strDecalPath)
 
 		if (0 == lstrcmp(TEXT(".json"), strExt))
 		{
-			Json json = GI->Json_Load(strFullPath);
-
+#pragma region Load
 			CDecal::DECAL_DESC DecalInfo = {};
+
+			Json json = GI->Json_Load(strFullPath);
 			for (const auto& item : json["DecalInfo"])
 			{
 				DecalInfo.fScale.x = item["Scale"]["x"];
@@ -528,6 +531,7 @@ HRESULT CEffect_Manager::Ready_Proto_Decal(const wstring& strDecalPath)
 				DecalInfo.bAlphaDelete = item["AlphaDelete"];
 				DecalInfo.fAlphaSpeed = item["AlphaSpeed"];
 			}
+#pragma endregion
 
 			if (FAILED(GI->Add_Prototype(wstring(L"Prototype_") + strFileName,
 				CDecal::Create(m_pDevice, m_pContext, strFileName, &DecalInfo), LAYER_TYPE::LAYER_EFFECT)))

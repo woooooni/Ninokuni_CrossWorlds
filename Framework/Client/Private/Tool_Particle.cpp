@@ -8,6 +8,7 @@
 #include "FileUtils.h"
 #include "Utils.h"
 
+
 CTool_Particle::CTool_Particle(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:CTool(pDevice, pContext)
 {
@@ -63,6 +64,8 @@ void CTool_Particle::Tick(_float fTimeDelta)
 	if (ImGui::Button("Select_ParticleSystem"))
 		Store_InfoParticle();
 
+	ImGui::NewLine();
+
 	// 저장하기/ 불러오기
 	if (ImGui::Button("Save"))
 		Save_Particle(m_cSaveAndLoadName);
@@ -73,6 +76,18 @@ void CTool_Particle::Tick(_float fTimeDelta)
 	ImGui::Text("FileName :");
 	ImGui::SameLine();
 	ImGui::InputText("##FileName", m_cSaveAndLoadName, IM_ARRAYSIZE(m_cSaveAndLoadName));
+
+	ImGui::NewLine();
+
+	// 원형에 적용
+	if (ImGui::Button("Set_Prototype"))
+		Set_OriginalInfoParticle();
+	ImGui::SameLine();
+	ImGui::Text("PrototypeObjectName :");
+	ImGui::SameLine();
+	ImGui::InputText("##PrototypeObjectName", m_cPrototypeName, IM_ARRAYSIZE(m_cPrototypeName));
+
+	ImGui::NewLine();
 
 	// 트랜스폼 정보
 	if (ImGui::CollapsingHeader("ParticleTransform"))
@@ -87,6 +102,7 @@ void CTool_Particle::Tick(_float fTimeDelta)
 		ImGui::InputFloat3("##Scale", m_fScale);
 	}
 
+	ImGui::NewLine();
 
 	// 기본 정보
 	if (ImGui::CollapsingHeader("ParticleBasicInfo"))
@@ -1084,6 +1100,154 @@ void CTool_Particle::Store_InfoParticle()
 	}
 }
 
+void CTool_Particle::Set_OriginalInfoParticle()
+{
+	wstring strPropertyName(m_cPrototypeName, m_cPrototypeName + strlen(m_cPrototypeName));
+
+	CGameObject* pGameObject = GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_EFFECT, strPropertyName);
+	if (pGameObject == nullptr)
+	{
+		MSG_BOX("Prototype_Find_Failed!");
+		return;
+	}		
+
+	// Store
+	{
+		if (m_bParticleType_Pers == true)
+			m_tParticleInfo.eParticleType = CParticle::TYPE_PERSPECTIVE;
+		else if (m_bParticleType_Orth == true)
+			m_tParticleInfo.eParticleType = CParticle::TYPE_ORTHOGRAPHIC;
+
+		m_tParticleInfo.fRange = _float3(m_fParticleRange[0], m_fParticleRange[1], m_fParticleRange[2]);
+		m_tParticleInfo.fRangeDistance = _float2(m_fParticleRangeDistance[0], m_fParticleRangeDistance[1]);
+
+		m_tParticleInfo.fScaleStart = _float2(m_fParticleScaleStart[0], m_fParticleScaleStart[1]);
+		m_tParticleInfo.fScaleChangeStartDelay = _float2(m_fParticleScaleChangeStartDelay[0], m_fParticleScaleChangeStartDelay[1]);
+		m_tParticleInfo.fScaleChangeTime = _float2(m_fParticleScaleChangeTime[0], m_fParticleScaleChangeTime[1]);
+
+		m_tParticleInfo.fScaleMin = _float2(m_fParticleScaleMin[0], m_fParticleScaleMin[1]);
+		m_tParticleInfo.fScaleMax = _float2(m_fParticleScaleMax[0], m_fParticleScaleMax[1]);
+		m_tParticleInfo.fScaleSpeed = _float2(m_fParticleScaleSpeed[0], m_fParticleScaleSpeed[1]);
+
+		m_tParticleInfo.vVelocityMinStart = _float3(m_fParticleVelocityMin[0], m_fParticleVelocityMin[1], m_fParticleVelocityMin[2]);
+		m_tParticleInfo.vVelocityMaxStart = _float3(m_fParticleVelocityMax[0], m_fParticleVelocityMax[1], m_fParticleVelocityMax[2]);
+
+		m_tParticleInfo.fVelocityChangeStartDelay = _float2(m_fParticleVelocityChangeStartDelay[0], m_fParticleVelocityChangeStartDelay[1]);
+		m_tParticleInfo.fVelocityChangeTime = _float2(m_fParticleVelocityChangeTime[0], m_fParticleVelocityChangeTime[1]);
+
+		if (m_tParticleInfo.bVelocityChange && m_tParticleInfo.pVelocityMin != nullptr && m_tParticleInfo.pVelocityMax != nullptr && m_tParticleInfo.pVelocityTime != nullptr)
+		{
+			if (m_tParticleInfo.iVelocityCountMax > 1) //2
+			{
+				m_tParticleInfo.pVelocityMin[0] = _float3(m_fParticleVelocityMin[0], m_fParticleVelocityMin[1], m_fParticleVelocityMin[2]);
+				m_tParticleInfo.pVelocityMax[0] = _float3(m_fParticleVelocityMax[0], m_fParticleVelocityMax[1], m_fParticleVelocityMax[2]);
+				m_tParticleInfo.pVelocityTime[0] = _float2(m_fParticleVelocityTime_01[0], m_fParticleVelocityTime_01[1]);
+
+				m_tParticleInfo.pVelocityMin[1] = _float3(m_fParticleVelocityMin_02[0], m_fParticleVelocityMin_02[1], m_fParticleVelocityMin_02[2]);
+				m_tParticleInfo.pVelocityMax[1] = _float3(m_fParticleVelocityMax_02[0], m_fParticleVelocityMax_02[1], m_fParticleVelocityMax_02[2]);
+				m_tParticleInfo.pVelocityTime[1] = _float2(m_fParticleVelocityTime_02[0], m_fParticleVelocityTime_02[1]);
+			}
+
+			if (m_tParticleInfo.iVelocityCountMax > 2) //3
+			{
+				m_tParticleInfo.pVelocityMin[2] = _float3(m_fParticleVelocityMin_03[0], m_fParticleVelocityMin_03[1], m_fParticleVelocityMin_03[2]);
+				m_tParticleInfo.pVelocityMax[2] = _float3(m_fParticleVelocityMax_03[0], m_fParticleVelocityMax_03[1], m_fParticleVelocityMax_03[2]);
+				m_tParticleInfo.pVelocityTime[2] = _float2(m_fParticleVelocityTime_03[0], m_fParticleVelocityTime_03[1]);
+			}
+
+			if (m_tParticleInfo.iVelocityCountMax > 3) //4
+			{
+				m_tParticleInfo.pVelocityMin[3] = _float3(m_fParticleVelocityMin_04[0], m_fParticleVelocityMin_04[1], m_fParticleVelocityMin_04[2]);
+				m_tParticleInfo.pVelocityMax[3] = _float3(m_fParticleVelocityMax_04[0], m_fParticleVelocityMax_04[1], m_fParticleVelocityMax_04[2]);
+				m_tParticleInfo.pVelocityTime[3] = _float2(m_fParticleVelocityTime_04[0], m_fParticleVelocityTime_04[1]);
+			}
+
+			if (m_tParticleInfo.iVelocityCountMax > 4) //5
+			{
+				m_tParticleInfo.pVelocityMin[4] = _float3(m_fParticleVelocityMin_05[0], m_fParticleVelocityMin_05[1], m_fParticleVelocityMin_05[2]);
+				m_tParticleInfo.pVelocityMax[4] = _float3(m_fParticleVelocityMax_05[0], m_fParticleVelocityMax_05[1], m_fParticleVelocityMax_05[2]);
+				m_tParticleInfo.pVelocityTime[4] = _float2(m_fParticleVelocityTime_05[0], m_fParticleVelocityTime_05[1]);
+			}
+
+			if (m_tParticleInfo.iVelocityCountMax > 5) //6
+			{
+				m_tParticleInfo.pVelocityMin[5] = _float3(m_fParticleVelocityMin_06[0], m_fParticleVelocityMin_06[1], m_fParticleVelocityMin_06[2]);
+				m_tParticleInfo.pVelocityMax[5] = _float3(m_fParticleVelocityMax_06[0], m_fParticleVelocityMax_06[1], m_fParticleVelocityMax_06[2]);
+				m_tParticleInfo.pVelocityTime[5] = _float2(m_fParticleVelocityTime_06[0], m_fParticleVelocityTime_06[1]);
+			}
+
+			if (m_tParticleInfo.iVelocityCountMax > 6) //7
+			{
+				m_tParticleInfo.pVelocityMin[6] = _float3(m_fParticleVelocityMin_07[0], m_fParticleVelocityMin_07[1], m_fParticleVelocityMin_07[2]);
+				m_tParticleInfo.pVelocityMax[6] = _float3(m_fParticleVelocityMax_07[0], m_fParticleVelocityMax_07[1], m_fParticleVelocityMax_07[2]);
+				m_tParticleInfo.pVelocityTime[6] = _float2(m_fParticleVelocityTime_07[0], m_fParticleVelocityTime_07[1]);
+			}
+
+			if (m_tParticleInfo.iVelocityCountMax > 7) //8
+			{
+				m_tParticleInfo.pVelocityMin[7] = _float3(m_fParticleVelocityMin_08[0], m_fParticleVelocityMin_08[1], m_fParticleVelocityMin_08[2]);
+				m_tParticleInfo.pVelocityMax[7] = _float3(m_fParticleVelocityMax_08[0], m_fParticleVelocityMax_08[1], m_fParticleVelocityMax_08[2]);
+				m_tParticleInfo.pVelocityTime[7] = _float2(m_fParticleVelocityTime_08[0], m_fParticleVelocityTime_08[1]);
+			}
+
+			if (m_tParticleInfo.iVelocityCountMax > 8) //9
+			{
+				m_tParticleInfo.pVelocityMin[8] = _float3(m_fParticleVelocityMin_09[0], m_fParticleVelocityMin_09[1], m_fParticleVelocityMin_09[2]);
+				m_tParticleInfo.pVelocityMax[8] = _float3(m_fParticleVelocityMax_09[0], m_fParticleVelocityMax_09[1], m_fParticleVelocityMax_09[2]);
+				m_tParticleInfo.pVelocityTime[8] = _float2(m_fParticleVelocityTime_09[0], m_fParticleVelocityTime_09[1]);
+			}
+
+			if (m_tParticleInfo.iVelocityCountMax > 9) //10
+			{
+				m_tParticleInfo.pVelocityMin[9] = _float3(m_fParticleVelocityMin_10[0], m_fParticleVelocityMin_10[1], m_fParticleVelocityMin_10[2]);
+				m_tParticleInfo.pVelocityMax[9] = _float3(m_fParticleVelocityMax_10[0], m_fParticleVelocityMax_10[1], m_fParticleVelocityMax_10[2]);
+				m_tParticleInfo.pVelocityTime[9] = _float2(m_fParticleVelocityTime_10[0], m_fParticleVelocityTime_10[1]);
+			}
+		}
+
+
+		m_tParticleInfo.vAxis = XMVectorSet(m_fParticleAxis[0], m_fParticleAxis[1], m_fParticleAxis[2], 0.f);
+		m_tParticleInfo.fRotationSpeed = _float2(m_fParticleRotationSpeed[0], m_fParticleRotationSpeed[1]);
+		m_tParticleInfo.fRotationChangeStartDelay = _float2(m_fParticleRotationChangeStartDelay[0], m_fParticleRotationChangeStartDelay[1]);
+		m_tParticleInfo.fRotationChangeTime = _float2(m_fParticleRotationChangeTime[0], m_fParticleRotationChangeTime[1]);
+
+
+		m_tParticleInfo.fLifeTime = _float2(m_fParticleLifeTime[0], m_fParticleLifeTime[1]);
+		m_tParticleInfo.fVelocitySpeed = _float2(m_fParticleSpeed[0], m_fParticleSpeed[1]);
+		m_tParticleInfo.fBoxMin = _float3(m_fParticleBoxMin[0], m_fParticleBoxMin[1], m_fParticleBoxMin[2]);
+		m_tParticleInfo.fBoxMax = _float3(m_fParticleBoxMax[0], m_fParticleBoxMax[1], m_fParticleBoxMax[2]);
+		m_tParticleInfo.fAnimationSpeed = _float2(m_fParticleAnimationSpeed[0], m_fParticleAnimationSpeed[1]);
+
+		m_tParticleInfo.fUVIndex = _float2(m_fParticleUVIndex[0], m_fParticleUVIndex[1]);
+		m_tParticleInfo.fUVMaxCount = _float2(m_fParticleUVMaxCount[0], m_fParticleUVMaxCount[1]);
+
+		wstring strDiffuseTextureName(m_cDiffuseTextureName, m_cDiffuseTextureName + strlen(m_cDiffuseTextureName));
+		m_tParticleInfo.strDiffuseTetextureName = strDiffuseTextureName;
+		wstring strDiffuseTexturePath(m_cDiffuseTexturePath, m_cDiffuseTexturePath + strlen(m_cDiffuseTexturePath));
+		m_tParticleInfo.strDiffuseTetexturePath = strDiffuseTexturePath;
+		wstring strAlphaTextureName(m_cAlphaTextureName, m_cAlphaTextureName + strlen(m_cAlphaTextureName));
+		m_tParticleInfo.strAlphaTexturName = strAlphaTextureName;
+		wstring strAlphaTexturePath(m_cAlphaTexturePath, m_cAlphaTexturePath + strlen(m_cAlphaTexturePath));
+		m_tParticleInfo.strAlphaTexturPath = strAlphaTexturePath;
+
+
+		m_tParticleInfo.fFadeChangeStartDelay = _float2(m_fFadeChangeStartDelay[0], m_fFadeChangeStartDelay[1]);
+		m_tParticleInfo.fStartAlpha = _float2(m_fStartAlpha[0], m_fStartAlpha[1]);
+		m_tParticleInfo.fFadeSpeed = _float2(m_fFadeSpeed[0], m_fFadeSpeed[1]);
+
+
+		m_tParticleInfo.fColorChangeStartDelay = _float2(m_fColorChangeStartDelay[0], m_fColorChangeStartDelay[1]);
+		m_tParticleInfo.fColorChangeStartM = _float2(m_fColorChangeStartM[0], m_fColorChangeStartM[1]);
+		m_tParticleInfo.fColorChangeStartF = _float2(m_fColorChangeStartF[0], m_fColorChangeStartF[1]);
+		m_tParticleInfo.fColorDuration = _float2(m_fColorChangeStartE[0], m_fColorChangeStartE[1]);
+		m_tParticleInfo.fColorChangeRandomTime = _float2(m_fColorChangeRandomTime[0], m_fColorChangeRandomTime[1]);
+
+		m_tParticleInfo.fBlack_Discard = _float3(m_fBlack_Discard[0], m_fBlack_Discard[1], m_fBlack_Discard[2]);
+	}
+	
+	static_cast<CParticle*>(pGameObject)->Set_ParticleDesc(m_tParticleInfo);
+}
+
 void CTool_Particle::Save_Particle(const char* pFileName)
 {
 	if (m_pParticle == nullptr)
@@ -1092,20 +1256,18 @@ void CTool_Particle::Save_Particle(const char* pFileName)
 	else
 	{
 		wstring strFileName(pFileName, pFileName + strlen(pFileName));
-		wstring strFilePath = L"../Bin/DataFiles/Particle/" + strFileName + L".Particle";
-
-		auto path = filesystem::path(strFilePath);
-		filesystem::create_directories(path.parent_path());
-
-		shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
-		File->Open(strFilePath, FileMode::Write);
-
+		wstring strFilePath = L"../Bin/DataFiles/Vfx/Particle/" + strFileName + L".Particle";
 
 		// 파티클 정보 저장
 		m_tParticleInfo = static_cast<CParticle*>(m_pParticle)->Get_ParticleDesc();
 
+		auto path = filesystem::path(strFilePath);
+		filesystem::create_directories(path.parent_path());
 
-#pragma region 2023-12-16-ver.1
+#pragma region Save
+
+		shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
+		File->Open(strFilePath, FileMode::Write);
 
 		// 파티클 타입
 		File->Write<_uint>((_uint)m_tParticleInfo.eParticleType);
@@ -1301,15 +1463,13 @@ void CTool_Particle::Load_Particle(const char* pFileName)
 	Create_Particle();
 
 	wstring strFileName(pFileName, pFileName + strlen(pFileName));
-	wstring strFilePath = L"../Bin/DataFiles/Particle/" + strFileName + L".Particle";
+	wstring strFilePath = L"../Bin/DataFiles/Vfx/Particle/" + strFileName + L".Particle";
+	
+#pragma region Load
+	CParticle::PARTICLE_DESC ParticleInfo = {};
 
 	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
 	File->Open(strFilePath, FileMode::Read);
-
-	CParticle::PARTICLE_DESC ParticleInfo = {};
-
-
-#pragma region 2023-12-16-ver.1
 
 	// 파티클 타입
 	_uint iParticleType = 0;

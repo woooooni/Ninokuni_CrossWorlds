@@ -37,6 +37,9 @@ private:
 	void Store_InfoEffect();
 	void Store_InfoDecal();
 
+	void Set_OriginalInfoEffect();
+	void Set_OriginalInfoDecal();
+
 	void Save_Effect(const char* pFileName);
 	void Save_Decal(const char* pFileName);
 
@@ -80,6 +83,9 @@ private:
 	_float m_fAlphaStart[2];
 	_float m_fAlphaSpeed[2];
 	_float m_fAlphaChangeStartDelay[2];
+
+	char   m_cPrototypeEffectName[MAX_PATH] = { "Prototype_" };
+	char   m_cPrototypeDecalName[MAX_PATH] = { "Prototype_" };
 
 public:
 	static CTool_Effect* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

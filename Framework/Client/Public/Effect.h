@@ -284,7 +284,7 @@ protected:
 	virtual ~CEffect() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(const EFFECT_DESC* tEffectDesc);
+	virtual HRESULT Initialize_Prototype(const EFFECT_DESC* pEffectDesc);
 	virtual HRESULT Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void LateTick(_float fTimeDelta) override;
@@ -418,7 +418,7 @@ protected:
 
 public:
 	static CEffect* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, 
-		const wstring& strObjectTag, const EFFECT_DESC* tEffectDesc = nullptr, const wstring& strEffectFilePath = {});
+		const wstring& strObjectTag, const EFFECT_DESC* pEffectDesc);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };
