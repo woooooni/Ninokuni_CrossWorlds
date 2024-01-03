@@ -79,7 +79,15 @@ void CPhysX_Controller::Tick_Controller(_float fTimeDelta)
 
 	
 	PxVec3 vDisp = PxVec3(vNewCenterPosition.x, vNewCenterPosition.y, vNewCenterPosition.z) - PxVec3(m_pPhysXController->getPosition().x, m_pPhysXController->getPosition().y, m_pPhysXController->getPosition().z);
-	m_pPhysXController->move(vDisp, 0.00001f, fTimeDelta, m_Filters);
+	PxControllerCollisionFlags Flags =  m_pPhysXController->move(vDisp, 0.00001f, fTimeDelta, m_Filters);
+	if (true == Flags.isSet(PxControllerCollisionFlag::Enum::eCOLLISION_SIDES))
+	{
+		PxVec3 vPhysXPosition = PxVec3(m_pPhysXController->getPosition().x, m_pPhysXController->getPosition().y, m_pPhysXController->getPosition().z);
+		PxVec3 vNextPosition = vPhysXPosition + PxVec3(0.f, -1.f, 0.f) * 9.8f * fTimeDelta;
+		
+		m_pPhysXController->move(vNextPosition - vPhysXPosition, 0.00001f, fTimeDelta, m_Filters);
+	}
+		
 }
 
 void CPhysX_Controller::LateTick_Controller(_float fTimeDelta)

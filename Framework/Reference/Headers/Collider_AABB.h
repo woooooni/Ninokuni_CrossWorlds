@@ -42,11 +42,12 @@ public:
 #endif
 
 public:
-    void Set_AABB_Box(BoundingBox & tBoundingBox) { m_tBoundingBox = tBoundingBox; }
+    void Set_AABB_Box(BoundingBox & tBoundingBox) { m_tOriginBox = tBoundingBox; }
     const BoundingBox& Get_AABB_Box() { return m_tBoundingBox; }
 
 
 private:
+    BoundingBox m_tOriginBox = {};
     BoundingBox m_tBoundingBox = {};
 
 public:

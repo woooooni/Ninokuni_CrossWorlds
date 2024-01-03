@@ -35,7 +35,10 @@ HRESULT CCollider_AABB::Initialize(void* pArg)
 
 
 	AABB_COLLIDER_DESC* pDesc = static_cast<AABB_COLLIDER_DESC*>(pArg);
-	m_tBoundingBox = pDesc->tBox;
+	m_tOriginBox = pDesc->tBox;
+
+	Compute_Final_Matrix();
+	m_tOriginBox.Transform(m_tBoundingBox, XMLoadFloat4x4(&m_FinalMatrix));
 
 	return S_OK;
 }
@@ -70,7 +73,7 @@ _bool CCollider_AABB::Is_Collision(CCollider* pCollider)
 void CCollider_AABB::LateTick_Collider(_float fTimeDelta)
 {
 	__super::LateTick_Collider(fTimeDelta);
-	XMStoreFloat3(&m_tBoundingBox.Center, XMLoadFloat4x4(&m_FinalMatrix).r[CTransform::STATE_POSITION]);
+	m_tOriginBox.Transform(m_tBoundingBox, XMLoadFloat4x4(&m_FinalMatrix));
 }
 
 #ifdef _DEBUG

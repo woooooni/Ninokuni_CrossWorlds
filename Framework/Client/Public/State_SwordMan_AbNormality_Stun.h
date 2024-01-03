@@ -27,7 +27,7 @@ public:
 
 
 private:
-	_float m_fRecoveryTime = 3.f;
+	_float m_fRecoveryTime = 1.5f;
 	_float m_fAccRecovery = 0.f;
 
 public:
