@@ -59,6 +59,13 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 	/* Shake, Fov, Dist, Offset, Lerp Update */
 	__super::Tick(fTimeDelta); 
 
+	/* Check Lock */
+	if (LOCK_PROGRESS::FINISH_BLEIDING == m_eLockProgress)
+	{
+		if (!m_tBlendingLookAtPosition.bActive)
+			m_eLockProgress = LOCK_PROGRESS::NOT;
+	}
+
 	/* Position */
 	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, Calculate_WorldPosition(fTimeDelta));
 	
@@ -75,7 +82,7 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 
 	/* Test */
 	{
-		if (KEY_TAP(KEY::DEL))
+		if (KEY_TAP(KEY::INSERT))
 		{
 			vector<string> CutSceneNames;
 			CutSceneNames.push_back("Evermore_Street_00");
@@ -84,17 +91,20 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 			dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP))->Start_CutScenes(CutSceneNames);
 		}
 
-		if (KEY_TAP(KEY::PAGE_UP))
+		if (KEY_TAP(KEY::DEL))
 		{
-			CGameObject* pGlianix = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_MONSTER, L"Glanix");
-			if (nullptr != pGlianix)
+			if (LOCK_PROGRESS::NOT == m_eLockProgress)
 			{
-				Start_LockOn(pGlianix, Vec4(0.f, 3.f, 0.f, 1.f));
+				CGameObject* pGlianix = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_MONSTER, L"Glanix");
+				if (nullptr != pGlianix)
+				{
+					Start_LockOn(pGlianix, Cam_Target_Offset_LockOn_Glanix, Cam_LookAt_Offset_LockOn_Glanix);
+				}
 			}
-		}
-		if (KEY_TAP(KEY::PAGE_DOWN))
-		{
-			Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+			else
+			{
+				Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+			}
 		}
 	}
 }
@@ -110,34 +120,40 @@ void CCamera_Follow::LateTick(_float fTimeDelta)
 	__super::LateTick(fTimeDelta);
 }
 
-HRESULT CCamera_Follow::Start_LockOn(CGameObject* pTargetObject, const Vec4& vLookAtOffset)
+HRESULT CCamera_Follow::Start_LockOn(CGameObject* pTargetObject, const Vec4& vTargetOffset, const Vec4& vLookAtOffset, const _float& fLockOnBlendingTime)
 {
-	if (nullptr == pTargetObject || m_bLockOn)
+	if (nullptr == pTargetObject || LOCK_PROGRESS::NOT != m_eLockProgress)
 		return E_FAIL;
 
 	/* 룩앳 오브젝트 변경 보간 시작 */
-	Change_LookAtObj(pTargetObject, Cam_LockOn_Blending_Time);
+	Change_LookAtObj(pTargetObject, fLockOnBlendingTime);
 
 	/* 룩앳 오프셋 변경 보간 시작 */
-	Change_LookAtOffSet(vLookAtOffset, Cam_LockOn_Blending_Time);
+	Change_LookAtOffSet(vLookAtOffset, fLockOnBlendingTime);
 
-	Change_TargetOffSet(Vec4{ 0.f, 2.f, -5.f, 1.f }, Cam_LockOn_Blending_Time);
+	/* 타겟 오프셋 변경 보간 시작 */
+	Change_TargetOffSet(vTargetOffset, fLockOnBlendingTime);
 	
-	m_bLockOn = true;
+	m_eLockProgress = LOCK_PROGRESS::START_BLENDING;
 
 	return S_OK;
 }
 
-HRESULT CCamera_Follow::Finish_LockOn(CGameObject* pTargetObject)
+HRESULT CCamera_Follow::Finish_LockOn(CGameObject* pTargetObject, const _float& fLockOnBlendingTime)
 {
-	if (nullptr == pTargetObject || !m_bLockOn)
+	if (nullptr == pTargetObject || LOCK_PROGRESS::NOT == m_eLockProgress)
 		return E_FAIL;
 
 	/* 룩앳 오브젝트 변경 보간 시작 */
-	Change_LookAtObj(pTargetObject, Cam_LockOn_Blending_Time);
+	Change_LookAtObj(pTargetObject, fLockOnBlendingTime);
 
 	/* 룩앳 오프셋 변경 보간 시작 */
-	Change_LookAtOffSet(Cam_LookAtOffset_Follow_Default, Cam_LockOn_Blending_Time);
+	Change_LookAtOffSet(Cam_LookAtOffset_Follow_Default, fLockOnBlendingTime);
+
+	/* 타겟 오프셋 변경 보간 시작 */
+	Change_TargetOffSet(Cam_TargetOffset_Follow_Default, fLockOnBlendingTime);
+
+	m_eLockProgress = LOCK_PROGRESS::FINISH_BLEIDING;
 
 	return S_OK;
 }
@@ -169,21 +185,17 @@ HRESULT CCamera_Follow::Ready_Components()
 
 Vec4 CCamera_Follow::Calculate_WorldPosition(_float fTimeDelta)
 {
-	Vec4 vWorldGoal;
-	if (m_bLockOn)
+	Vec4 vWorldGoal = Vec4::UnitW;
+
+	CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
+
+	if (LOCK_PROGRESS::NOT != m_eLockProgress)
 	{
+		/* 락온 상태에서는 구면 좌표계를 사용하지 않는다. */
+
 		/* 카메라 목표 월드 위치 */
-		{
-			CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
-
-			if (nullptr == pTargetTransform)
-				return Vec4::UnitW;
-
-			vWorldGoal = Vec4(pTargetTransform->Get_Position());
-				+ Calculate_ReleativePosition(m_tTargetOffset.vCurVec, pTargetTransform->Get_WorldMatrix());
-
-			vWorldGoal.w = 1.f;
-		}
+		vWorldGoal = Vec4(pTargetTransform->Get_Position())
+			+ Calculate_ReleativePosition(m_tTargetOffset.vCurVec, m_pTransformCom->Get_WorldMatrix());	/* 카메라의 회전 상태를 반영한 오프셋 */
 	}
 	else
 	{
@@ -194,20 +206,11 @@ Vec4 CCamera_Follow::Calculate_WorldPosition(_float fTimeDelta)
 		vLocalSpherical *= m_tLerpDist.fCurValue;
 	
 		/* 카메라 목표 월드 위치 */
-		{
-			CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
-
-			if (nullptr == pTargetTransform)
-				return Vec4::UnitW;
-
-			vWorldGoal = vLocalSpherical
-				+ Vec4(pTargetTransform->Get_Position())														/* 타겟 포지션 */
-				+ Calculate_ReleativePosition(m_tTargetOffset.vCurVec, pTargetTransform->Get_WorldMatrix());	/* 타겟의 회전을 반영한 오프셋 */
-
-			vWorldGoal.w = 1.f;
-		}
-
+		vWorldGoal = vLocalSpherical
+			+ Vec4(pTargetTransform->Get_Position())													 /* 타겟 포지션 */
+			+ Calculate_ReleativePosition(m_tTargetOffset.vCurVec, pTargetTransform->Get_WorldMatrix()); /* 타겟의 회전 상태를 반영한 오프셋 */
 	}
+	vWorldGoal.w = 1.f;
 
 	/* 댐핑 적용 최종 월드 위치 (카메라의 현재 위치와 목표위치를 댐핑 계수에 따라 보간한다) */
 	if (m_tDampingDesc.bDamping)
@@ -274,7 +277,7 @@ Vec4 CCamera_Follow::Calculate_Look(_float fTimeDelta)
 	CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
 
 	/* 룩앳 위치 */
-	if (m_bLockOn)
+	if (LOCK_PROGRESS::NOT != m_eLockProgress)
 	{
 		/* 룩앳 오브젝트가 현재 블렌딩 중이라면 */
 		if (Is_Blending_LookAtObj()) 

@@ -27,6 +27,8 @@ class CCamera_Follow final : public CCamera
 
 	}DAMPING_DESC;
 
+	enum class LOCK_PROGRESS { NOT, START_BLENDING, FINISH_BLEIDING };
+
 private:
 	CCamera_Follow(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
 	CCamera_Follow(const CCamera_Follow& rhs);
@@ -59,11 +61,11 @@ public:
 	void Set_MaxRotationLimitDeltaY(const _float& fLimit) { m_fMaxRotLimitDeltaY = fLimit; }
 	void Set_MinRotationLimitDeltaY(const _float& fLimit) { m_fMinRotLimitDeltaY = fLimit; }
 
-	const _bool& Is_LockOn() const { return m_bLockOn; }
+	const _bool& Is_LockOn() const { return (LOCK_PROGRESS::NOT == m_eLockProgress) ? false : true; }
 
 public:
-	HRESULT Start_LockOn(CGameObject* pTargetObject, const Vec4& vLookAtOffset);
-	HRESULT Finish_LockOn(CGameObject* pTargetObject);
+	HRESULT Start_LockOn(CGameObject* pTargetObject, const Vec4& vTargetOffset, const Vec4& vLookAtOffset, const _float& fLockOnBlendingTime = Cam_LockOn_Blending_Time_Default);
+	HRESULT Finish_LockOn(CGameObject* pTargetObject, const _float& fLockOnBlendingTime = Cam_LockOn_Blending_Time_Default);
 
 protected:
 	virtual HRESULT Ready_Components() override;
@@ -94,7 +96,7 @@ private:
 	CPhysX_Controller* m_pControllerCom		= nullptr;
 
 	/* Lock On */
-	_bool			m_bLockOn				= false;
+	LOCK_PROGRESS		m_eLockProgress		= LOCK_PROGRESS::NOT;
 
 public:
 	static CCamera_Follow* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
