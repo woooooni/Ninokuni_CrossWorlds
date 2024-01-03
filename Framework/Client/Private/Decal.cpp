@@ -61,7 +61,14 @@ void CDecal::LateTick(_float fTimeDelta)
 
 	__super::LateTick(fTimeDelta);
 
-	//if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_Position(), 3.f))
+	if (m_pOwnerObject != nullptr)
+	{
+		CTransform* pTransform = m_pOwnerObject->Get_Component<CTransform>(L"Com_Transform");
+		if (pTransform != nullptr)
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, pTransform->Get_Position());
+	}
+
+	if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_Position(), 10.f))
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_EFFECT, this);
 }
 

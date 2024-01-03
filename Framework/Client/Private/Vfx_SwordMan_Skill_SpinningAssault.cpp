@@ -22,6 +22,8 @@ HRESULT CVfx_SwordMan_Skill_SpinningAssault::Initialize_Prototype()
 
 HRESULT CVfx_SwordMan_Skill_SpinningAssault::Initialize(void* pArg)
 {
+	m_bOwnerStateIndex = CCharacter::CLASS_SKILL_2;
+
 	return S_OK;
 }
 

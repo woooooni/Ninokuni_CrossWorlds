@@ -17,6 +17,8 @@ CVfx_SwordMan_Skill_SipohoningLunge::CVfx_SwordMan_Skill_SipohoningLunge(const C
 
 HRESULT CVfx_SwordMan_Skill_SipohoningLunge::Initialize_Prototype()
 {
+	m_bOwnerStateIndex = CCharacter::CLASS_SKILL_1;
+
  	return S_OK;
 }
 
