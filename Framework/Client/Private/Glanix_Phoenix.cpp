@@ -39,14 +39,10 @@ HRESULT CGlanix_Phoenix::Initialize(void* pArg)
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 		return E_FAIL;
 
-	m_pGlanix = (CGlanix*)pArg;
-	//XMStoreFloat4(&m_pOriginPos, *(_vector*)pArg);
-	XMStoreFloat4(&m_pOriginPos, m_pGlanix->Get_OriginPos());
-
 	_float fX = GI->RandomFloat(-30.f, 18.f);
 	_float fZ = GI->RandomFloat(-31.f, 0.f);
 
-	_vector vFireSpiritPos = { m_pOriginPos.x + fX, 3.f, m_pOriginPos.z + fZ, 1.f };
+	_vector vFireSpiritPos = { -40.f + fX, 3.f, 361.f + fZ, 1.f };
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vFireSpiritPos);
 
@@ -181,18 +177,17 @@ HRESULT CGlanix_Phoenix::Render_Instance_Shadow(CShader* pInstancingShader, CVIB
 
 void CGlanix_Phoenix::Collision_Enter(const COLLISION_INFO& tInfo)
 {
-	int i = 0;
-}
-
-void CGlanix_Phoenix::Collision_Continue(const COLLISION_INFO& tInfo)
-{
 	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER &&
 		tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY &&
 		tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BOUNDARY)
 	{
-		m_pGlanix->Set_SlowStack(-1);
 		m_bIsOut = true;
 	}
+}
+
+void CGlanix_Phoenix::Collision_Continue(const COLLISION_INFO& tInfo)
+{
+
 }
 
 void CGlanix_Phoenix::Collision_Exit(const COLLISION_INFO& tInfo)

@@ -257,6 +257,7 @@
     <ClInclude Include="..\Public\Ghost1.h" />
     <ClInclude Include="..\Public\Ghost2.h" />
     <ClInclude Include="..\Public\GiftFunyaSnowman.h" />
+    <ClInclude Include="..\Public\GlanixState_Counter.h" />
     <ClInclude Include="..\Public\GlanixState_Rage2Idle.h" />
     <ClInclude Include="..\Public\GlanixState_Rage2Rising.h" />
     <ClInclude Include="..\Public\GlanixState_Rage2Stamp.h" />
@@ -286,6 +287,7 @@
     <ClInclude Include="..\Public\Glanix_PhoenixState_Idle.h" />
     <ClInclude Include="..\Public\Glanix_PhoenixState_Out.h" />
     <ClInclude Include="..\Public\Glanix_PhoenixState_Spawn.h" />
+    <ClInclude Include="..\Public\Glanix_ShockWave.h" />
     <ClInclude Include="..\Public\Grass.h" />
     <ClInclude Include="..\Public\Gosling.h" />
     <ClInclude Include="..\Public\HumanChild01.h" />
@@ -829,6 +831,7 @@
     <ClCompile Include="..\Private\Ghost1.cpp" />
     <ClCompile Include="..\Private\Ghost2.cpp" />
     <ClCompile Include="..\Private\GiftFunyaSnowman.cpp" />
+    <ClCompile Include="..\Private\GlanixState_Counter.cpp" />
     <ClCompile Include="..\Private\GlanixState_Rage2Idle.cpp" />
     <ClCompile Include="..\Private\GlanixState_Rage2Rising.cpp" />
     <ClCompile Include="..\Private\GlanixState_Rage2Stamp.cpp" />
@@ -858,6 +861,7 @@
     <ClCompile Include="..\Private\Glanix_PhoenixState_Idle.cpp" />
     <ClCompile Include="..\Private\Glanix_PhoenixState_Out.cpp" />
     <ClCompile Include="..\Private\Glanix_PhoenixState_Spawn.cpp" />
+    <ClCompile Include="..\Private\Glanix_ShockWave.cpp" />
     <ClCompile Include="..\Private\Grass.cpp" />
     <ClCompile Include="..\Private\Gosling.cpp" />
     <ClCompile Include="..\Private\HumanChild01.cpp" />

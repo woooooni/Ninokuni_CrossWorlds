@@ -36,20 +36,9 @@ void CSpawner::Tick(_float fTimeDelta)
 
 void CSpawner::LateTick(_float fTimeDelta)
 {
-	__super::LateTick(fTimeDelta);
 	// 랜더 그룹 추가하기.
-	__super::LateTick(fTimeDelta);
-
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
-//#ifdef _DEBUG
-//	for (auto& iter : m_Colliders)
-//	{
-//		for (auto& pCollider : iter.second)
-//		{
-//			pCollider->Render();
-//		}
-//	}
-//#endif
+
 	__super::LateTick(fTimeDelta);
 }
 

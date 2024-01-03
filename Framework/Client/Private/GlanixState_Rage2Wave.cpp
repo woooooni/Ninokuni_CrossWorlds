@@ -1,8 +1,13 @@
 #include "stdafx.h"
 #include "GlanixState_Rage2Wave.h"
 
+#include "GameInstance.h"
+
 #include "Glanix.h"
 #include "Camera_Manager.h"
+
+#include "Game_Manager.h"
+#include "Glanix_ShockWave.h"
 
 CGlanixState_Rage2Wave::CGlanixState_Rage2Wave(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
@@ -13,7 +18,7 @@ HRESULT CGlanixState_Rage2Wave::Initialize(const list<wstring>& AnimationList)
 {
 	__super::Initialize(AnimationList);
 
-	m_iMaxCount = 6;
+	m_iMaxCount = 3;
 
 	return S_OK;
 }
@@ -33,6 +38,11 @@ void CGlanixState_Rage2Wave::Tick_State(_float fTimeDelta)
 	if (m_pModelCom->Get_CurrAnimationFrame() == 50)
 	{
 		CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
+		//_float4 vOwnerPos = {};
+		//XMStoreFloat4(&vOwnerPos, m_pGlanix->Get_OriginPos());
+		//_vector vSpritPos = { vOwnerPos.x, vOwnerPos.y, vOwnerPos.z, 1.f };
+		GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_ShockWave"), &m_pGlanix->Get_WavePoint());
+
 	}
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())

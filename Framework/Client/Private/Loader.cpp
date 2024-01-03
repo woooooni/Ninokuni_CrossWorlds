@@ -39,6 +39,7 @@
 #include "Glanix.h"
 #include "Glanix_IcePillar.h"
 #include "Glanix_Phoenix.h"
+#include "Glanix_ShockWave.h"
 #include "Stellia.h"
 #include "DMWitch.h"
 #include "Baobam_Water.h"
@@ -943,6 +944,8 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Glanix_IcePillar", CGlanix_IcePillar::Create(m_pDevice, m_pContext, TEXT("Clanix_IcePillar")), LAYER_PROP, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Glanix_Phoenix", CGlanix_Phoenix::Create(m_pDevice, m_pContext, TEXT("Glanix_Phoenix")), LAYER_PROP, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Glanix_ShockWave", CGlanix_ShockWave::Create(m_pDevice, m_pContext, TEXT("Glanix_ShockWave")), LAYER_PROP, true)))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Spawner_Ice01", CSpawner_Ice01::Create(m_pDevice, m_pContext, TEXT("Spawner_Ice01")), LAYER_MONSTER, true)))

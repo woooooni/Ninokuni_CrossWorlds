@@ -1,5 +1,6 @@
 #pragma once
-#include "Boss.h"
+
+#include "Glanix.h"
 
 BEGIN(Client)
 class CGlanix_Phoenix final : public CGameObject
@@ -46,10 +47,9 @@ private:
 	CPhysX_Controller* m_pControllerCom = { nullptr };
 	CStateMachine* m_pStateCom = nullptr;
 
-	CGlanix* m_pGlanix = nullptr;
-
 	_float4 m_pOriginPos = {};
 	_bool m_bIsOut = false;
+	_int* m_pSlowStack = nullptr;
 
 public:
 	static CGlanix_Phoenix* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);

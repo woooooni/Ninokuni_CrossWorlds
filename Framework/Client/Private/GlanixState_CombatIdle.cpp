@@ -61,6 +61,8 @@ void CGlanixState_CombatIdle::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
+	m_pTransformCom->LookAt_ForLandObject(m_pPlayerTransform->Get_Position());
+
 	m_fTime += fTimeDelta;
 
 	_vector vLookNormal = XMVector3Normalize(m_pTransformCom->Get_Look());
