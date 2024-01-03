@@ -56,7 +56,7 @@ HRESULT CUI_CharacterDummy::Initialize(void* pArg)
 	m_vCamMatrix = XMMatrixLookAtLH(XMLoadFloat3(&vCamPos), XMLoadFloat3(&vLook), XMLoadFloat3(&vUp));
 	m_vCamPosition = XMVectorSet(vCamPos.x, vCamPos.y, vCamPos.z, 1.f);
 
-	XMStoreFloat4x4(&m_ViewMatrix, XMMatrixTranspose(m_vCamMatrix));
+	XMStoreFloat4x4(&m_ViewMatrix, XMMatrixTranspose(m_vCamMatrix)); // 카메라 행렬을 전치시킴
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-0.3f, 0.f, 0.f, 1.f));
 	m_pTransformCom->LookAt_ForLandObject(m_vCamPosition);

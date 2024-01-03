@@ -3,6 +3,8 @@
 #include "GameInstance.h"
 #include "UI_Manager.h"
 #include "Game_Manager.h"
+#include "Character_Manager.h"
+#include "Player.h"
 
 CUI_Basic::CUI_Basic(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, UI_BASIC eType)
 	: CUI(pDevice, pContext, strObjectTag), m_eType(eType)
@@ -15,27 +17,68 @@ CUI_Basic::CUI_Basic(const CUI_Basic& rhs)
 {
 }
 
-void CUI_Basic::Set_Active(_bool bActive)
+void CUI_Basic::Set_AnnouncePosition(_float2 vBtnPos)
 {
-	if (UIQUEST_ACCEPT == m_eType || UIQUEST_FINISH == m_eType)
+	if (COSTUME_INSTALL != m_eType)
+		return;
+
+	m_tInfo.fX = vBtnPos.x;
+	m_tInfo.fY = vBtnPos.y;
+
+	m_iPass = 9;
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
+
+	if (!Get_Active())
+		Set_Active(true);
+}
+
+void CUI_Basic::Set_WorldmapIcon()
+{
+	if (WORLDMAP_ICON != m_eType)
+		return;
+
+	CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+	if (nullptr == pPlayer)
+		return;
+
+	CCharacter* pCharacter = pPlayer->Get_Character();
+	if (nullptr == pCharacter)
+		return;
+
+	CHARACTER_TYPE eType = pCharacter->Get_CharacterType();
+	switch (eType)
 	{
-		m_bActive = bActive;
+	case CHARACTER_TYPE::SWORD_MAN:
+		m_iTextureIndex = 0;
+		break;
+
+	case CHARACTER_TYPE::DESTROYER:
+		m_iTextureIndex = 1;
+		break;
+
+	case CHARACTER_TYPE::ENGINEER:
+		m_iTextureIndex = 2;
+		break;
 	}
-//	else if (COSTUME_INSTALL == m_eType)
-//	{
-//		CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
-//		if (nullptr == pPlayer)
-//			return;
-//
-//		CCharacter* pCharacter = pPlayer->Get_Character();
-//
-//		pCharacter->Get_PartModel(PART_TYPE::HEAD);
-//		pCharacter->Get_PartModel(PART_TYPE::BODY);
-//	}
-	else
-	{
-		m_bActive = bActive;
-	}
+
+//	m_tInfo.fCX = 108.f * 0.5f;
+//	m_tInfo.fCY = 128.f * 0.5f;
+//	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+//	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+//		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
+}
+
+void CUI_Basic::Update_Position(_float2 vPosition)
+{
+	if (WORLDMAP_ICON != m_eType)
+		return;
+
+	m_tInfo.fX = vPosition.x;
+	m_tInfo.fY = vPosition.y - (m_tInfo.fCY * 1.f);
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 }
 
 HRESULT CUI_Basic::Initialize_Prototype()
@@ -87,17 +130,7 @@ void CUI_Basic::Tick(_float fTimeDelta)
 		}
 		else
 		{
-			//if (CUI_Basic::UILOBBY_BTNTEXT == m_eType)
-			//{
-				//		m_tInfo.fCX = 188.f * 0.7f;
-				//		m_tInfo.fCY = 53.f * 0.7f;
-				//		m_tInfo.fX = g_iWinSizeX - m_tInfo.fCX * 0.5f - 115.f;
-				//		m_tInfo.fY = g_iWinSizeY - 70.f;
-				//
-				//		m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
-				//		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-				//			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
-			//}
+
 		}
 
 		if (m_eType == UILOBBY_ANNOUNCE)
@@ -321,6 +354,13 @@ HRESULT CUI_Basic::Ready_Components()
 		m_fAlpha = 1.f;
 		break;
 
+	case WORLDMAP_ICON:
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_WorldMap_WorldMapPortrait"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		m_fAlpha = 1.f;
+		break;
+
 	case UISTATIC_TITLELINE:
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Common_TitleLine"),
 			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
@@ -351,6 +391,14 @@ HRESULT CUI_Basic::Ready_Components()
 
 HRESULT CUI_Basic::Ready_State()
 {
+	if (WORLDMAP_ICON == m_eType)
+	{
+		m_tInfo.fCX = 108.f * 0.5f;
+		m_tInfo.fCY = 128.f * 0.5f;
+		m_tInfo.fX = g_iWinSizeX * 0.5f;
+		m_tInfo.fY = g_iWinSizeY * 0.5f;
+	}
+
 	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));

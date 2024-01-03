@@ -352,7 +352,7 @@ void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 {
 	m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ISHIT] = true;
 
-	CUIDamage_Manager::GetInstance()->Create_MonsterDamageNumber(m_pTransformCom, CUIDamage_Manager::UI_DAMAGETYPE::WEAKNESS, dynamic_cast<CCharacter*>(tInfo.pOther)->Get_Stat().iAtt);
+	CUIDamage_Manager::GetInstance()->Create_MonsterDamageNumber(m_pTransformCom, CUIDamage_Manager::UI_DAMAGETYPE::NONE, dynamic_cast<CCharacter*>(tInfo.pOther)->Get_Stat().iAtt);
 	m_tStat.fHp -= dynamic_cast<CCharacter*>(tInfo.pOther)->Get_Stat().iAtt;
 
 	Start_RimLight();

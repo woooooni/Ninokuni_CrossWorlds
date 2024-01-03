@@ -35,12 +35,8 @@ HRESULT CUI_Costume_LineBox::Initialize(void* pArg)
 	m_bActive = false;
 	m_fAlpha = 0.85f;
 
-
-	_float2 vButtonSize = _float2(300.f * 0.5f, 153.f * 0.5f);
-
-	Make_Child(70.f, 280.f, vButtonSize.x * 0.8f, vButtonSize.y * 0.8f, TEXT("Prototype_GameObject_UI_Costume_ChangeBtn"));
-//	_float2 vArrowSize = _float2(64.f, 64.f);
-//	Make_Child(0.f, 100.f, vArrowSize.x * 0.5f, vArrowSize.y * 0.5f, TEXT("Prototype_GameObject_UI_Dialog_FlipArrow"));
+//	_float2 vButtonSize = _float2(300.f * 0.5f, 153.f * 0.5f);
+//	Make_Child(70.f, 280.f, vButtonSize.x * 0.8f, vButtonSize.y * 0.8f, TEXT("Prototype_GameObject_UI_Costume_ChangeBtn"));
 
 	return S_OK;
 }

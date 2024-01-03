@@ -1851,6 +1851,21 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(m_pCostumeBox);
 
+	_float2 vButtonSize = _float2(300.f * 0.5f * 0.8f, 153.f * 0.5f * 0.8f);
+
+	UIDesc.fCX = vButtonSize.x;
+	UIDesc.fCY = vButtonSize.y;
+	UIDesc.fX += 70.f;
+	UIDesc.fY += 280.f;
+
+	pBtn = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Costume_ChangeBtn"), &UIDesc, &pBtn)))
+		return E_FAIL;
+	m_pCostumeChange = dynamic_cast<CUI_Costume_ChangeBtn*>(pBtn);
+	if (nullptr == m_pCostumeChange)
+		return E_FAIL;
+	Safe_AddRef(m_pCostumeChange);
+
 #pragma endregion
 
 #pragma region CLASSIC_SKILLS
@@ -2933,6 +2948,12 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 
 	if (m_pCostumeBox->Get_Active())
 		Update_CostumeBtn();
+	else
+	{
+		if (m_pCostumeAnnounce->Get_Active())
+			m_pCostumeAnnounce->Set_Active(false);
+	}
+
 
 	return S_OK;
 }
@@ -3237,17 +3258,84 @@ void CUI_Manager::Update_CostumeBtn()
 	if (iIndex < 0)
 		return;
 
+	CModel* pPart = nullptr;
+	_int iSlotIndex = -1;
+
 	switch (iIndex)
 	{
 	case 0:
-		pCharacter->Get_PartModel(PART_TYPE::BODY);
+		pPart = pCharacter->Get_PartModel(PART_TYPE::BODY); // 현재 착용하고 있는 파츠
+		if (nullptr == pPart)
+			return;
+
+		for (auto& iter : m_CostumeCloth)
+		{
+			if (pPart->Get_Name() == iter->Get_PartTag())
+				iSlotIndex = iter->Get_SlotIndex(); // 현재 장착중인 아이템이 있는 슬롯 인덱스
+		}
+		if (0 <= iSlotIndex && m_CostumeCloth.size() >= iSlotIndex)
+		{
+			CUI::UI_INFO UIDesc = {};
+			UIDesc = m_CostumeCloth[iSlotIndex]->Get_UI_Info();
+			m_pCostumeAnnounce->Set_AnnouncePosition(_float2(UIDesc.fX + 100.f, UIDesc.fY + 15.f));
+
+			for (auto& iter : m_CostumeCloth)
+			{
+				if (iter->Get_Clicked())
+				{
+					if (iSlotIndex == iter->Get_SlotIndex())
+					{
+						// 현재 장착하고있는 것과 코스튬 태그가 같은 슬롯이 Clicked되면 버튼의 인덱스를 변경한다.
+						m_pCostumeChange->Set_TextureIndex(1);
+					}
+					else
+					{
+						// 그렇지 않으면 기존 '장착'버튼이 선택된다.
+						m_pCostumeChange->Set_TextureIndex(0);
+					}
+				}
+			}
+		}
 		break;
 
-	case 1:
-		pCharacter->Get_PartModel(PART_TYPE::HEAD);
+	case 2: // m_CostumeHairAcc
+		pPart = pCharacter->Get_PartModel(PART_TYPE::HEAD);
+		if (nullptr == pPart)
+			return;
+
+		for (auto& iter : m_CostumeHairAcc)
+		{
+			if (pPart->Get_Name() == iter->Get_PartTag())
+				iSlotIndex = iter->Get_SlotIndex(); // 현재 장착중인 아이템이 있는 슬롯 인덱스
+		}
+		if (0 <= iSlotIndex && m_CostumeHairAcc.size() >= iSlotIndex)
+		{
+			CUI::UI_INFO UIDesc = {};
+			UIDesc = m_CostumeHairAcc[iSlotIndex]->Get_UI_Info();
+			m_pCostumeAnnounce->Set_AnnouncePosition(_float2(UIDesc.fX + 100.f, UIDesc.fY + 15.f));
+
+			for (auto& iter : m_CostumeHairAcc)
+			{
+				if (iter->Get_Clicked())
+				{
+					if (iSlotIndex == iter->Get_SlotIndex())
+					{
+						// 현재 장착하고있는 것과 코스튬 태그가 같은 슬롯이 Clicked되면 버튼의 인덱스를 변경한다.
+						m_pCostumeChange->Set_TextureIndex(1);
+					}
+					else
+					{
+						// 그렇지 않으면 기존 '장착'버튼이 선택된다.
+						m_pCostumeChange->Set_TextureIndex(0);
+					}
+				}
+			}
+		}
 		break;
 	}
-
+	
+//	CCharacter_Manager::GetInstance()->Get_PartModel(pCharacter->Get_CharacterType(),
+//		const PART_TYPE & ePartType, const wstring & strPartTag);
 }
 
 void CUI_Manager::Update_CostumeModel(const CHARACTER_TYPE& eCharacterType, const PART_TYPE& ePartType, const wstring& strPartTag)
@@ -4013,6 +4101,7 @@ HRESULT CUI_Manager::OnOff_CostumeWindow(_bool bOnOff)
 					iter->Set_Active(true);
 			}
 			m_pCostumeBox->Set_Active(true);
+			m_pCostumeChange->Set_Active(true);
 			// 의상 등 버튼을 누를때 Active가 활성화되도록 우선 수정한다.
 			//for (auto& iter : m_CostumeItem)
 			//{
@@ -4030,13 +4119,12 @@ HRESULT CUI_Manager::OnOff_CostumeWindow(_bool bOnOff)
 	}
 	else
 	{
-		//OnOff_GamePlaySetting(true);
-		//OnOff_CloseButton(false);
 		m_pDummy->Set_Active(false);
 		m_pTabMenuTitle->Set_Active(false);
 
 		OnOff_CostumeSlot(0, false); // false에는 숫자가 영향을 미치지않음. 함수 인자 순서 수정 필요함.
 
+		m_pCostumeChange->Set_Active(false);
 		m_pCostumeBox->Set_Active(false);
 		for (auto& iter : m_CostumeBtn)
 		{
@@ -4059,7 +4147,8 @@ HRESULT CUI_Manager::OnOff_CostumeWindow(_bool bOnOff)
 HRESULT CUI_Manager::OnOff_CostumeSlot(_uint iSection, _bool bOnOff)
 {
 	// enum UI_COSTUMEBTN_TYPE { COSTUMEBTN_UNCLICKED, COSTUMEBTN_CLICKED, SKILLBTNTYPE_END };
-	
+	m_pCostumeChange->Set_TextureIndex(0);
+
 	if (bOnOff)
 	{
 
@@ -4657,6 +4746,10 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_WorldMap_Btn_WitchForest"),
 		CUI_Btn_WorldMapIcon::Create(m_pDevice, m_pContext, L"UI_WorldMap_Icon_WitchForest", CUI_Btn_WorldMapIcon::ICON_WITCHFOREST), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_WorldMap_Icon_PlayerPortrait"),
+		CUI_Basic::Create(m_pDevice, m_pContext, L"UI_WorldMap_Icon_Portrait", CUI_Basic::UI_BASIC::WORLDMAP_ICON), LAYER_UI)))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Player_HPBar"),
@@ -5441,6 +5534,7 @@ void CUI_Manager::Free()
 	Safe_Release(m_pCostumeBox);
 	Safe_Release(m_pCameraAnnounce);
 	Safe_Release(m_pCostumeAnnounce);
+	Safe_Release(m_pCostumeChange);
 
 	Safe_Release(m_pEmoticonWindow);
 	Safe_Release(m_pBalloon);

@@ -32,7 +32,7 @@ HRESULT CUI_Costume_ChangeBtn::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	m_bActive = true;
+	m_bActive = false;
 	
 	return S_OK;
 }
@@ -49,6 +49,10 @@ void CUI_Costume_ChangeBtn::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (1 < m_iTextureIndex ||
+			0 > m_iTextureIndex)
+			return;
+
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
 }
@@ -120,7 +124,7 @@ HRESULT CUI_Costume_ChangeBtn::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_fAlpha, sizeof(_float))))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture")))
+	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextureIndex)))
 		return E_FAIL;
 
 	return S_OK;
@@ -130,7 +134,8 @@ void CUI_Costume_ChangeBtn::Key_Input(_float fTimeDelta)
 {
 	if (KEY_TAP(KEY::LBTN))
 	{
-		CUI_Manager::GetInstance()->Set_CostumeModel();
+		if (0 == m_iTextureIndex)
+			CUI_Manager::GetInstance()->Set_CostumeModel();
 	}
 }
 
