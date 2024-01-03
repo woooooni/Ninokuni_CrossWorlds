@@ -5,12 +5,9 @@ matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 Texture2D		g_DiffuseTexture;
 Texture2D		g_NormalTexture;
 
-float4          g_vRimColor = { 0.f, 0.f, 0.f, 0.f };
 
 Texture2D		g_DissolveTexture;
-float           g_DissolveDuration;
-float			g_fDissolveWeight;
-float4          g_vDissolveColor = { 0.6f, 0.039f, 0.039f, 1.f };
+
 
 float3          g_vBloomPower;
 float4			g_vCamPosition;
@@ -45,6 +42,18 @@ struct TweenFrameDesc
 TweenFrameDesc  g_TweenFrames;
 TweenFrameDesc  g_TweenFrames_Array[200];
 Texture2DArray  g_TransformMap;
+
+struct AnimInstancingDesc
+{
+    float4 vRimColor;
+    float4 vDissolveColor;
+	
+    float fDissolveTotal;
+    float fDissolveDuration;
+    float fDissolveWeight;
+    float fDissolveSpeed;
+};
+AnimInstancingDesc g_AnimInstancingDesc[200];
 
 struct VS_IN
 {
@@ -239,6 +248,8 @@ struct PS_IN
 	float3		vBinormal : BINORMAL;
 	float4		vProjPos : TEXCOORD1;
 	float4		vWorldPosition : TEXCOORD2;
+	
+    uint		iInstanceID : SV_INSTANCEID;
 };
 
 struct PS_OUT
@@ -270,7 +281,7 @@ PS_OUT PS_MAIN(PS_IN In)
 
 	float fRimPower = 1.f - saturate(dot(In.vNormal.xyz, normalize((-1.f * (In.vWorldPosition - g_vCamPosition)))));
     fRimPower = pow(fRimPower, 5.f);
-	vector vRimColor = g_vRimColor * fRimPower;
+    vector vRimColor = g_AnimInstancingDesc[In.iInstanceID].vRimColor * fRimPower;
 	Out.vDiffuse += vRimColor;
     Out.vBloom = Caculation_Brightness(Out.vDiffuse) + vRimColor;
 
@@ -298,7 +309,8 @@ PS_OUT PS_MAIN_NORMAL(PS_IN In)
 
     float fRimPower = 1.f - saturate(dot(In.vNormal.xyz, normalize((-1.f * (In.vWorldPosition - g_vCamPosition)))));
     fRimPower = pow(fRimPower, 5.f);
-    vector vRimColor = g_vRimColor * fRimPower;
+    vector vRimColor = g_AnimInstancingDesc[In.iInstanceID].vRimColor * fRimPower;
+	
 	Out.vDiffuse += vRimColor;
     Out.vBloom = Caculation_Brightness(Out.vDiffuse) + vRimColor;
 
@@ -313,7 +325,7 @@ PS_OUT PS_DISSOLVE_DEAD(PS_IN In)
 	PS_OUT	Out = (PS_OUT)0;
 
     vector vDissoveTexture = g_DissolveTexture.Sample(LinearSampler, In.vTexUV);
-    float fDissolveAlpha = saturate(1.0 - g_fDissolveWeight / g_DissolveDuration + vDissoveTexture.r);
+    float fDissolveAlpha = saturate(1.0 - g_AnimInstancingDesc[In.iInstanceID].fDissolveWeight / g_AnimInstancingDesc[In.iInstanceID].fDissolveDuration + vDissoveTexture.r);
 	
 	// 픽셀 생략
     if (fDissolveAlpha < 0.3)
@@ -322,7 +334,7 @@ PS_OUT PS_DISSOLVE_DEAD(PS_IN In)
 	// 픽셀 색상 지정 : 명암 연산 X
     else if (fDissolveAlpha < 0.5)
     {
-        Out.vDiffuse = g_vDissolveColor;
+        Out.vDiffuse = g_AnimInstancingDesc[In.iInstanceID].vDissolveColor;
         Out.vNormal = float4(1.f, 1.f, 1.f, 0.f);
         Out.vBloom = float4(Out.vDiffuse.r, Out.vDiffuse.g, Out.vDiffuse.b, 0.5f);
     }
@@ -352,7 +364,7 @@ PS_OUT PS_MOTION_TRAIL(PS_IN In)
     float fRimPower = 1.f - saturate(dot(In.vNormal.xyz, normalize((-1.f * (In.vWorldPosition - g_vCamPosition)))));
     fRimPower = pow(fRimPower, 5.f);
 	
-    vector vRimColor = g_vRimColor * fRimPower;
+    vector vRimColor = g_AnimInstancingDesc[In.iInstanceID].vRimColor * fRimPower;
     Out.vDiffuse = vRimColor;
     Out.vDiffuse.a = 1.f;
     Out.vBloom = Caculation_Brightness(Out.vDiffuse);

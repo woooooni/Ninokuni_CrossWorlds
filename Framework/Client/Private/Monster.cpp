@@ -60,7 +60,7 @@ HRESULT CMonster::Initialize(void* pArg)
 void CMonster::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
-	
+
 	/* 최초 타겟 설정 */
 	if (m_tTargetDesc.pTarget == nullptr)
 	{
@@ -83,7 +83,7 @@ void CMonster::Tick(_float fTimeDelta)
 		}
 	}
 
-	if(m_pBTCom != nullptr)
+	if (m_pBTCom != nullptr)
 		m_pBTCom->Tick(fTimeDelta);
 
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
@@ -92,7 +92,16 @@ void CMonster::Tick(_float fTimeDelta)
 	GI->Add_CollisionGroup(COLLISION_GROUP::MONSTER, this);
 
 	if (m_bIsRimUse) // RimLight
+	{
+		m_vRimLightColor = { 1.f, 0.f, 0.f, 1.f };
 		Tick_RimLight(fTimeDelta);
+	}
+	else
+	{
+		m_vRimLightColor = { 0.f, 0.f, 0.f, 0.f };
+	}
+
+		
 
 	if (m_bReserveDead) // Dissolve
 	{
@@ -129,10 +138,17 @@ void CMonster::LateTick(_float fTimeDelta)
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);*/
 	// m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_SHADOW, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc());
 	
+	m_AnimInstanceDesc.fDissolveDuration = m_fDissolveDuration;
+	m_AnimInstanceDesc.fDissolveSpeed = m_fDissolveDuration;
+	m_AnimInstanceDesc.fDissolveTotal = m_fDissolveTotal;
+	m_AnimInstanceDesc.fDissolveWeight = m_fDissolveWeight;
+	m_AnimInstanceDesc.vDissolveColor = m_vDissolveColor;
+	m_AnimInstanceDesc.vRimColor = m_vRimLightColor;
 
-	if (GI->Intersect_Frustum_World(m_pTransformCom->Get_Position(), 120.f))
+
+	if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_Position(), 120.f))
 	{
-		m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_NONBLEND, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc());
+		m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_NONBLEND, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);
 	}
 	
 
@@ -154,7 +170,7 @@ void CMonster::LateTick(_float fTimeDelta)
 	
 }
 
-HRESULT CMonster::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc)
+HRESULT CMonster::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc)
 {
 	__super::Render();
 
@@ -180,30 +196,20 @@ HRESULT CMonster::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffe
 	if (FAILED(pInstancingShader->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
 		return E_FAIL;
 
+	if (FAILED(pInstancingShader->Bind_RawValue("g_AnimInstancingDesc", AnimModelDesc.data(), sizeof(ANIMODEL_INSTANCE_DESC) * AnimModelDesc.size())))
+		return E_FAIL;
+
 	// Bloom -----------------
 	if (FAILED(pInstancingShader->Bind_RawValue("g_vBloomPower", &m_vBloomPower, sizeof(_float3))))
 		return E_FAIL;
 	// ----------------- Bloom
 
 	// RimLight -----------------
-	_float4 vRimLightColor = _float4(0.f, 0.f, 0.f, 0.f);
-	if (m_bIsRimUse)
-		vRimLightColor = m_vRimLightColor;
-	if (FAILED(pInstancingShader->Bind_RawValue("g_vRimColor", &vRimLightColor, sizeof(_float4))))
-		return E_FAIL;
+
 	// ----------------- RimLight
 
 	// Dissolve -----------------
 	if (FAILED(m_pDissoveTexture->Bind_ShaderResource(pInstancingShader, "g_DissolveTexture", 51)))
-		return E_FAIL;
-
-	if (FAILED(pInstancingShader->Bind_RawValue("g_DissolveDuration", &m_fDissolveDuration, sizeof(_float))))
-		return E_FAIL;
-
-	if (FAILED(pInstancingShader->Bind_RawValue("g_fDissolveWeight", &m_fDissolveWeight, sizeof(_float))))
-		return E_FAIL;
-
-	if (FAILED(pInstancingShader->Bind_RawValue("g_vDissolveColor", &m_vDissolveColor, sizeof(_float4))))
 		return E_FAIL;
 	// ----------------- Dissolve
 

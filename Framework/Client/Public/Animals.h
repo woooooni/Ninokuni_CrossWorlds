@@ -24,7 +24,7 @@ public:
 public:
 	virtual HRESULT Render_Instance_AnimModel(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer,
 		const vector<_float4x4>& WorldMatrices,
-		const vector<TWEEN_DESC>& TweenDesc) override;
+		const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc) override;
 	virtual HRESULT Render_Instance_Shadow(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>&WorldMatrices);
 
 public:
@@ -42,6 +42,9 @@ public:
 protected:
 	Vec4 m_vCenter;
 	_bool m_bLift = false;
+
+protected:
+	ANIMODEL_INSTANCE_DESC m_AnimInstanceDesc = {};
 
 public:
 	virtual HRESULT Ready_Components() override;

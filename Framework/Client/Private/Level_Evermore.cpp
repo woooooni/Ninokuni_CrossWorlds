@@ -107,6 +107,48 @@ HRESULT CLevel_Evermore::Ready_Layer_Camera(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Evermore::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 {
+	list<CGameObject*> Grounds = GI->Find_GameObjects(LEVEL_EVERMORE, LAYER_TYPE::LAYER_GROUND);
+	for (auto& Ground : Grounds)
+	{
+		if (FAILED(GI->Add_Ground(Ground,
+			Ground->Get_Component<CModel>(L"Com_Model"),
+			Ground->Get_Component<CTransform>(L"Com_Transform")->Get_WorldMatrix())))
+		{
+			MSG_BOX("피직스 그라운드 생성에 실패했습니다.");
+		}
+	}
+
+
+	list<CGameObject*> Buildings = GI->Find_GameObjects(LEVEL_EVERMORE, LAYER_TYPE::LAYER_BUILDING);
+	for (auto& Building : Buildings)
+	{
+		if (FAILED(GI->Add_Building(Building,
+			Building->Get_Component<CModel>(L"Com_Model"),
+			Building->Get_Component<CTransform>(L"Com_Transform")->Get_WorldMatrix())))
+		{
+			MSG_BOX("피직스 빌딩 생성에 실패했습니다.");
+		}
+	}
+
+
+
+	list<CGameObject*> Props = GI->Find_GameObjects(LEVEL_EVERMORE, LAYER_TYPE::LAYER_PROP);
+	for (auto& Prop : Props)
+	{
+		CModel* pModel = Prop->Get_Component<CModel>(L"Com_Model");
+		if (nullptr == pModel)
+			continue;
+
+		if (pModel->Get_Name().find(L"Evermore_Prob_03") != wstring::npos)
+		{
+			if (FAILED(GI->Add_Building(Prop,
+				Prop->Get_Component<CModel>(L"Com_Model"),
+				Prop->Get_Component<CTransform>(L"Com_Transform")->Get_WorldMatrix())))
+			{
+				MSG_BOX("피직스 계단 생성에 실패했습니다.");
+			}
+		}
+	}
 	return S_OK;
 }
 

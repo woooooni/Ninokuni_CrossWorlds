@@ -52,7 +52,7 @@ HRESULT CLevel_WitchForest::Initialize()
 HRESULT CLevel_WitchForest::Tick(_float fTimeDelta)
 {
 	CUI_Manager::GetInstance()->Tick_Fade(fTimeDelta);
-	CUI_Manager::GetInstance()->Tick_UIs(LEVELID::LEVEL_ICELAND, fTimeDelta);
+	CUI_Manager::GetInstance()->Tick_UIs(LEVELID::LEVEL_WITCHFOREST, fTimeDelta);
 
 	if (KEY_TAP(KEY::PAGE_UP))
 	{
@@ -66,7 +66,7 @@ HRESULT CLevel_WitchForest::Tick(_float fTimeDelta)
 
 	if (KEY_TAP(KEY::F8))
 	{
-		GI->Add_GameObject(LEVEL_ICELAND, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Glanix"));
+		GI->Add_GameObject(LEVEL_WITCHFOREST, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Glanix"));
 	}
 
 	return S_OK;
@@ -108,7 +108,7 @@ HRESULT CLevel_WitchForest::Ready_Layer_Camera(const LAYER_TYPE eLayerType)
 HRESULT CLevel_WitchForest::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 {
 
-	list<CGameObject*> Grounds = GI->Find_GameObjects(LEVEL_ICELAND, LAYER_TYPE::LAYER_GROUND);
+	list<CGameObject*> Grounds = GI->Find_GameObjects(LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_GROUND);
 	for (auto& Ground : Grounds)
 	{
 		if (FAILED(GI->Add_Ground(Ground,
@@ -120,7 +120,7 @@ HRESULT CLevel_WitchForest::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 	}
 
 
-	list<CGameObject*> Buildings = GI->Find_GameObjects(LEVEL_ICELAND, LAYER_TYPE::LAYER_BUILDING);
+	list<CGameObject*> Buildings = GI->Find_GameObjects(LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_BUILDING);
 	for (auto& Building : Buildings)
 	{
 		if (FAILED(GI->Add_Building(Building,
@@ -133,7 +133,7 @@ HRESULT CLevel_WitchForest::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 
 
 
-	list<CGameObject*> Props = GI->Find_GameObjects(LEVEL_ICELAND, LAYER_TYPE::LAYER_PROP);
+	list<CGameObject*> Props = GI->Find_GameObjects(LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_PROP);
 	for (auto& Prop : Props)
 	{
 		CModel* pModel = Prop->Get_Component<CModel>(L"Com_Model");
@@ -156,7 +156,7 @@ HRESULT CLevel_WitchForest::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_WitchForest::Ready_Layer_Terrain(const LAYER_TYPE eLayerType)
 {
-	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_TERRAIN, TEXT("Prototype_GameObject_Terrain"))))
+	if (FAILED(GI->Add_GameObject(LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_TERRAIN, TEXT("Prototype_GameObject_Terrain"))))
 		return E_FAIL;
 
 	return S_OK;
@@ -191,7 +191,7 @@ HRESULT CLevel_WitchForest::Ready_Layer_Monster(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_WitchForest::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 {
-	if (FAILED(CUI_Manager::GetInstance()->Ready_CommonUIs(LEVELID::LEVEL_EVERMORE)))
+	if (FAILED(CUI_Manager::GetInstance()->Ready_CommonUIs(LEVELID::LEVEL_WITCHFOREST)))
 		return E_FAIL;
 
 	CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();

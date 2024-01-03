@@ -8,6 +8,7 @@ class CVIBuffer_Instancing;
 
 class ENGINE_DLL CRenderer final : public CComponent
 {
+
 public:
 	enum RENDERGROUP {
 		RENDER_PRIORITY, RENDER_NONLIGHT,
@@ -62,6 +63,9 @@ private:
 		vector<XMFLOAT4X4> WorldMatrices;
 		vector<EFFECT_INSTANCE_DESC> EffectInstancingDesc;
 		vector<TweenDesc> TweenDesc;
+		vector<ANIMODEL_INSTANCE_DESC> AnimInstanceDesc;
+
+
 		INSTANCING_SHADER_TYPE eShaderType = INSTANCING_SHADER_TYPE::TYPE_END;
 	}INSTANCING_DESC;
 
@@ -84,7 +88,7 @@ public:
 public:
 	HRESULT Add_RenderGroup(RENDERGROUP eRenderGroup, class CGameObject* pGameObject);
 	HRESULT Add_RenderGroup_Instancing(RENDERGROUP eRenderGroup, INSTANCING_SHADER_TYPE eShaderType, class CGameObject* pGameObject, _float4x4 WorldMatrix);
-	HRESULT Add_RenderGroup_AnimInstancing(RENDERGROUP eRenderGroup, class CGameObject* pGameObject, _float4x4 WorldMatrix, const TweenDesc& TweenInstanceDesc);
+	HRESULT Add_RenderGroup_AnimInstancing(RENDERGROUP eRenderGroup, class CGameObject* pGameObject, _float4x4 WorldMatrix, const TweenDesc& TweenInstanceDesc, const ANIMODEL_INSTANCE_DESC& AnimModelInstanceDesc);
 	HRESULT Add_RenderGroup_Instancing_Effect(RENDERGROUP eRenderGroup, INSTANCING_SHADER_TYPE eShaderType, class CGameObject* pGameObject, _float4x4 WorldMatrix, const EFFECT_INSTANCE_DESC& EffectInstanceDesc);
 	HRESULT Add_Text(const TEXT_DESC& TextDesc);
 #ifdef _DEBUG
@@ -196,6 +200,7 @@ private:
 
 	_float	m_fBias = 0.2f;
 	_float4	m_vPlayerPosition = {0.f, 0.f, 0.f, 1.f};
+
 	
 public:
 	static CRenderer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
