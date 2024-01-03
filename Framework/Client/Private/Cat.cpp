@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Cat.h"
 #include "GameInstance.h"
+#include "UI_World_Interaction.h"
 
 #include "State_Animal_Idle.h"
 #include "State_Animal_Run.h"
@@ -41,6 +42,14 @@ HRESULT CCat::Initialize(void* pArg)
 
 	m_vCenter = m_pTransformCom->Get_Position();
 
+	//UI_TestCode
+	CGameObject* pBtn = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_World_Interaction_Btn"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pBtn)
+		return E_FAIL;
+	m_pBtn = dynamic_cast<CUI_World_Interaction*>(pBtn);
+	m_pBtn->Set_Owner(this);
+	m_pBtn->Set_Active(true);
+
 	return S_OK;
 }
 
@@ -48,20 +57,29 @@ void CCat::Tick(_float fTimeDelta)
 {
 	m_pStateMachineCom->Tick_State(fTimeDelta);
 
-
 	__super::Tick(fTimeDelta);
+
+	//UI_TestCode
+	if (nullptr != m_pBtn)
+		m_pBtn->Tick(fTimeDelta);
 }
 
 void CCat::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
 
+	//UI_TestCode
+	if (nullptr != m_pBtn)
+		m_pBtn->LateTick(fTimeDelta);
 }
 
 HRESULT CCat::Render()
 {
 	if (FAILED(__super::Render()))
 		return E_FAIL;
+
+	if (nullptr != m_pBtn)
+		m_pBtn->Render();
 
 	return S_OK;
 }
@@ -247,4 +265,6 @@ void CCat::Free()
 {
 	__super::Free();
 
+	// UI_TestCode
+	Safe_Release(m_pBtn);
 }

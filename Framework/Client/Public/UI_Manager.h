@@ -105,6 +105,7 @@ public: // Lobby
 	HRESULT OnOff_QuestWindow(_bool bOnOff);
 	HRESULT OnOff_QuestPopup(_bool bOnOff);
 	HRESULT OnOff_WorldMap(_bool bOnOff);
+	HRESULT OnOff_MiniMap(_bool bOnOff);
 
 	HRESULT OnOff_CloseButton(_bool bOnOff);
 
@@ -237,6 +238,9 @@ private:
 	vector<class CUI_SkillWindow_SkillSlot*> m_ClassSkillSlot;
 	vector<class CUI_SkillWindow_SkillSlot*> m_SpecialSkillSlot;
 	class CUI_SkillWindow_LineBox* m_pSkillDesc = { nullptr };
+
+	vector<class CUI_Minimap_Frame*> m_Minimap;
+	class CUI_World_NameTag* m_pName = { nullptr };
 
 private:
 	ID3D11Device*			m_pDevice = { nullptr };

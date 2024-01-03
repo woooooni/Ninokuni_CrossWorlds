@@ -38,10 +38,12 @@
 #include "UI_Text_TabMenu.h"
 #include "UI_BtnInventory.h"
 #include "UI_PlayerEXPBar.h"
+#include "UI_Minimap_Frame.h"
 #include "UI_MonsterHP_Bar.h"
 #include "UI_MenuSeparator.h"
 #include "UI_Dialog_Window.h"
 #include "UI_BtnQuickQuest.h"
+#include "UI_World_NameTag.h"
 #include "UI_Inventory_Slot.h"
 #include "UI_Setting_Slider.h"
 #include "UI_Setting_Window.h"
@@ -63,6 +65,7 @@
 #include "UI_Costume_ItemSlot.h"
 #include "UI_Loading_MainLogo.h"
 #include "UI_Btn_WorldMapIcon.h"
+#include "UI_World_Interaction.h"
 #include "UI_BossHP_Background.h"
 #include "UI_Inventory_LineBox.h"
 #include "UI_Dialog_MiniWindow.h"
@@ -1875,8 +1878,8 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
-	UIDesc.fCX = 256.f * 0.26f;
-	UIDesc.fCY = 256.f * 0.26f;
+	UIDesc.fCX = 256.f * 0.24f;
+	UIDesc.fCY = 256.f * 0.24f;
 	UIDesc.fX = g_iWinSizeX - 245.5f;
 	UIDesc.fY = g_iWinSizeY - 158.f;
 
@@ -1888,8 +1891,8 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(pClassicSkill);
 
-	UIDesc.fCX = 256.f * 0.25f;
-	UIDesc.fCY = 256.f * 0.25f;
+	UIDesc.fCX = 256.f * 0.23f;
+	UIDesc.fCY = 256.f * 0.23f;
 	CGameObject* pClassicFrame = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_ClassicSKill_Frame"), &UIDesc, &pClassicFrame)))
 		return E_FAIL;
@@ -1898,8 +1901,8 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(pClassicFrame);
 
-	UIDesc.fCX = 256.f * 0.26f;
-	UIDesc.fCY = 256.f * 0.26f;
+	UIDesc.fCX = 256.f * 0.24f;
+	UIDesc.fCY = 256.f * 0.24f;
 	UIDesc.fX = g_iWinSizeX - 220.5f;
 	UIDesc.fY = g_iWinSizeY - 227.f;
 	pClassicSkill = nullptr;
@@ -1910,8 +1913,8 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(pClassicSkill);
 
-	UIDesc.fCX = 256.f * 0.25f;
-	UIDesc.fCY = 256.f * 0.25f;
+	UIDesc.fCX = 256.f * 0.23f;
+	UIDesc.fCY = 256.f * 0.23f;
 	pClassicFrame = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_ClassicSKill_Frame"), &UIDesc, &pClassicFrame)))
 		return E_FAIL;
@@ -1920,8 +1923,8 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(pClassicFrame);
 
-	UIDesc.fCX = 256.f * 0.26f;
-	UIDesc.fCY = 256.f * 0.26f;
+	UIDesc.fCX = 256.f * 0.24f;
+	UIDesc.fCY = 256.f * 0.24f;
 	UIDesc.fX = g_iWinSizeX - 153.f;
 	UIDesc.fY = g_iWinSizeY - 251.f;
 	pClassicSkill = nullptr;
@@ -1932,8 +1935,8 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(pClassicSkill);
 
-	UIDesc.fCX = 256.f * 0.25f;
-	UIDesc.fCY = 256.f * 0.25f;
+	UIDesc.fCX = 256.f * 0.23f;
+	UIDesc.fCY = 256.f * 0.23f;
 	pClassicFrame = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_ClassicSKill_Frame"), &UIDesc, &pClassicFrame)))
 		return E_FAIL;
@@ -2751,6 +2754,31 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(pMilepost);
 
+
+	m_Minimap.reserve(2);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 300.f * 0.6f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = g_iWinSizeX - (UIDesc.fCX - 30.f);
+	UIDesc.fY = UIDesc.fCY - 30.f;
+
+	CGameObject* pMinimap = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Minimap_Frame"), &UIDesc, &pMinimap)))
+		return E_FAIL;
+	m_Minimap.push_back(dynamic_cast<CUI_Minimap_Frame*>(pMinimap));
+	if (nullptr == pMinimap)
+		return E_FAIL;
+	Safe_AddRef(pMinimap);
+
+	pMinimap = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Minimap_FrameArrow"), &UIDesc, &pMinimap)))
+		return E_FAIL;
+	m_Minimap.push_back(dynamic_cast<CUI_Minimap_Frame*>(pMinimap));
+	if (nullptr == pMinimap)
+		return E_FAIL;
+	Safe_AddRef(pMinimap);
+
 	return S_OK;
 }
 
@@ -3494,6 +3522,12 @@ HRESULT CUI_Manager::Using_BackButton()
 				OnOff_SkillWindow(false);
 			}
 		}
+
+		if (nullptr != m_pWorldMapBG)
+		{
+			if (m_pWorldMapBG->Get_Active())
+				OnOff_WorldMap(false);
+		}
 	}
 
 	return S_OK;
@@ -3572,6 +3606,11 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 {
 	if (bOnOff) // On
 	{
+		for (auto& iter : m_Milepost)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(true);
+		}
 		m_pPlayerStatus->Set_Active(true);
 		for (auto& iter : m_ItemQuickslot)
 		{
@@ -3619,6 +3658,12 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 	}
 	else // Off
 	{
+		for (auto& iter : m_Milepost)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+
 		m_pPlayerStatus->Set_Active(false);
 		for (auto& iter : m_ItemQuickslot)
 		{
@@ -3658,6 +3703,7 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 		m_pCameraAnnounce->Set_Active(false);
 	
 		OnOff_MonsterHP(false);
+		OnOff_MiniMap(false);
 
 		// EXP Bar¸¦ °¨Ãá´Ù
 		for (auto& iter : m_PlayerEXP)
@@ -3764,6 +3810,11 @@ HRESULT CUI_Manager::OnOff_QuestPopup(_bool bOnOff)
 		{
 			if (iter != nullptr)
 				iter->Set_Active(false);
+		}
+
+		if (1 == m_pBtnQuest->Get_TextureIndex())
+		{
+			m_pBtnQuest->Set_TextureIndex(0);
 		}
 	}
 
@@ -4075,6 +4126,31 @@ HRESULT CUI_Manager::OnOff_WorldMap(_bool bOnOff)
 
 			OnOff_GamePlaySetting(true);
 		}
+	}
+
+	return S_OK;
+}
+
+HRESULT CUI_Manager::OnOff_MiniMap(_bool bOnOff)
+{
+	if (bOnOff) // ÄÒ´Ù
+	{
+		for (auto& iter : m_Minimap)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(true);
+		}
+	}
+	else // ²ö´Ù
+	{
+		for (auto& iter : m_Minimap)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+
+		if (1 == m_pBtnShowMinimap->Get_TextureIndex())
+			m_pBtnShowMinimap->Set_TextureIndex(0);
 	}
 
 	return S_OK;
@@ -5259,6 +5335,21 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		CUI_Milepost::Create(m_pDevice, m_pContext, CUI_Milepost::UI_MILEPOST::MILEPOST_ARROW), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_World_Interaction_Btn"),
+		CUI_World_Interaction::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minimap_Frame"),
+		CUI_Minimap_Frame::Create(m_pDevice, m_pContext, CUI_Minimap_Frame::UI_MINIMAP::MINIMAP_FRAME), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minimap_FrameArrow"),
+		CUI_Minimap_Frame::Create(m_pDevice, m_pContext, CUI_Minimap_Frame::UI_MINIMAP::MINIMAP_ARROW), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_World_NameTag"),
+		CUI_World_NameTag::Create(m_pDevice, m_pContext, CUI_World_NameTag::UI_NAMETAG::NAMETAG_GAMEPLAY), LAYER_UI)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -5555,6 +5646,7 @@ void CUI_Manager::Free()
 	Safe_Release(m_pBossHPBar);
 
 	Safe_Release(m_pDummy);
+	Safe_Release(m_pName);
 
 	for (auto& pBasic : m_Basic)
 		Safe_Release(pBasic);
@@ -5683,6 +5775,10 @@ void CUI_Manager::Free()
 	for (auto& pMilepost : m_Milepost)
 		Safe_Release(pMilepost);
 	m_Milepost.clear();
+
+	for (auto& pMinimap : m_Minimap)
+		Safe_Release(pMinimap);
+	m_Minimap.clear();
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

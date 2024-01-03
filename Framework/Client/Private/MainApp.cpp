@@ -27,7 +27,7 @@
 #include "Camera_CutScene_Boss.h"
 
 #ifdef _DEBUG
- // #include <vld.h>
+  #include <vld.h>
 #endif
 
 CMainApp::CMainApp()	
@@ -974,6 +974,9 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Common_InteractionIcon"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/Interaction/UI_Icon_Interaction_%d.png"), 3))))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Common_InteractionWorld"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/Interaction/UI_Btn_InteractionIcon_%d.png"), 3))))
+		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Common_TitleLine"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Default/Common/UI_TitleBar.png")))))
@@ -1277,6 +1280,22 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Map_TargetPosition_Arrow"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Map/Etc/UI_Target_Rotation.png")))))
+		return E_FAIL;
+
+	// Minimap
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Map_Minimap_Frame"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Map/Minimap/UI_Frame_MiniMap.png")))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Map_Minimap_FrameArrow"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Map/Minimap/UI_Icon_Minimap_TrackDirectionArrow.png")))))
+		return E_FAIL;
+	
+	// NameTag
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Lobby_NameTag"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Lobby/NameTag/UI_Lobby_NameTag_%d.png"), 3))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Lobby_NameTag_FX"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Lobby/NameTag/UI_Lobby_NameTag_FX_%d.png"), 3))))
 		return E_FAIL;
 
 

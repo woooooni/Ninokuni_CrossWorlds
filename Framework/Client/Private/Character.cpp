@@ -17,6 +17,7 @@
 
 #include "Game_Manager.h"
 #include "Player.h"
+#include "UI_World_NameTag.h"
 
 USING(Client)
 CCharacter::CCharacter(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eCharacterType)
@@ -60,6 +61,13 @@ HRESULT CCharacter::Initialize(void* pArg)
 		m_pCharacterPartModels[i] = nullptr;
 
 
+	CGameObject* pNameTag = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_World_NameTag"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pNameTag)
+		return E_FAIL;
+
+	m_pName = dynamic_cast<CUI_World_NameTag*>(pNameTag);
+	m_pName->Set_Owner(this);
+
 	return S_OK;
 }
 
@@ -95,6 +103,9 @@ void CCharacter::Tick(_float fTimeDelta)
 	//	}
 	//	
 	//}
+
+	if (nullptr != m_pName)
+		m_pName->Tick(fTimeDelta);
 
 	if (nullptr != m_pWeapon)
 		m_pWeapon->Tick(fTimeDelta);
@@ -192,6 +203,9 @@ void CCharacter::LateTick(_float fTimeDelta)
 
 	m_pModelCom->LateTick(fTimeDelta);
 
+	if (nullptr != m_pName)
+		m_pName->LateTick(fTimeDelta);
+
 	if (nullptr != m_pWeapon)
 		m_pWeapon->LateTick(fTimeDelta);
 		
@@ -259,8 +273,6 @@ HRESULT CCharacter::Render()
 				return E_FAIL;
 		}
 	}
-
-	
 
 	return S_OK;
 }
@@ -489,7 +501,7 @@ void CCharacter::Free()
 	/*for (_uint i = 0; i < PART_TYPE::PART_END; ++i)
 		Safe_Release(m_pCharacterPartModels[i]);*/
 
-
+	Safe_Release(m_pName);
 
 	for (_uint i = 0; i < SOCKET_END; ++i)
 	{

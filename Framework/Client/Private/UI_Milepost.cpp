@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "UI_Milepost.h"
 #include "GameInstance.h"
+#include "Game_Manager.h"
+#include "Player.h"
+#include "Camera_Manager.h"
+#include "Camera.h"
 
 CUI_Milepost::CUI_Milepost(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_MILEPOST eType)
 	: CUI(pDevice, pContext, L"UI_Milepost")
@@ -12,6 +16,16 @@ CUI_Milepost::CUI_Milepost(const CUI_Milepost& rhs)
 	: CUI(rhs)
 	, m_eType(rhs.m_eType)
 {
+}
+
+void CUI_Milepost::Set_Active(_bool bActive)
+{
+	// Set_TargetPosition을 먼저 하고 Set_Active해야함.
+
+	if (!m_bGoal)
+		return;
+
+	m_bActive = bActive;
 }
 
 HRESULT CUI_Milepost::Initialize_Prototype()
@@ -33,7 +47,22 @@ HRESULT CUI_Milepost::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	m_bActive = false;
+	m_bActive = true;
+
+	if (nullptr == m_pPlayer)
+	{
+		CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+		if (nullptr == pPlayer)
+			return E_FAIL;
+
+		CCharacter* pCharacter = pPlayer->Get_Character();
+		if (nullptr == pCharacter)
+			return E_FAIL;
+
+		m_pPlayer = pCharacter;
+	}
+
+	Set_TargetPosition(_float4(-69.5f, -2.7f, -10.f, 1.f));
 
 	return S_OK;
 }
@@ -42,8 +71,6 @@ void CUI_Milepost::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-		// TargetPos와 Player의 Position을 비교해서 1m안쪽으로 들어오면 m_bActive = false처리함.
-
 		__super::Tick(fTimeDelta);
 	}
 }
@@ -52,72 +79,133 @@ void CUI_Milepost::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-
-		/*
-		if (nullptr != m_pOwner)
+		if (nullptr != m_pPlayer)
 		{
-			_float4 vCamPos = GI->Get_CamPosition();
-			_vector vTempForDistance = m_pTransformCom->Get_Position() - XMLoadFloat4(&vCamPos);
-			_float fDistance = XMVectorGetX(XMVector3Length(vTempForDistance));
-
-			if (fDistance > 1.f)
+			if (m_bGoal)
 			{
-				CTransform* pTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");
+				// 카메라 범위
+				_float4 vCamPos = GI->Get_CamPosition();
+				_vector vCameraPos = XMLoadFloat4(&vCamPos);
+				_vector vTargetToCamera = XMLoadFloat4(&m_vTargetPos) - vCameraPos;
+				_float fDistance = XMVectorGetX(XMVector3Length(vTargetToCamera));
 
-				_float4x4 matTargetWorld = pTransform->Get_WorldFloat4x4();
-				matTargetWorld._42 += 1.5f;
+				vTargetToCamera = XMVector3Normalize(vTargetToCamera);
+				CCamera* pCurCamera = CCamera_Manager::GetInstance()->Get_CurCamera();
+				if (nullptr == pCurCamera)
+					return;
 
-				_float4x4 matWorld;
-				matWorld = matTargetWorld;
-				_matrix matView = GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW);
-				_matrix matProj = GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ);
+				CTransform* pCameraTrans = pCurCamera->Get_Transform();
+				if (nullptr == pCameraTrans)
+					return;
 
-				_float4x4 matWindow;
-				XMStoreFloat4x4(&matWindow, XMLoadFloat4x4(&matWorld) * matView * matProj);
+				_vector vCameraForward = pCameraTrans->Get_State(CTransform::STATE_LOOK);
+				vCameraForward = XMVector3Normalize(vCameraForward);
 
-				_float3 vWindowPos = *(_float3*)&matWindow.m[3][0];
-				// &matWindow.m[3][0] -> 포지션의 시작 주소를 얻고,
-				// (_float3*) -> _float3 포인터로 캐스팅
-				// * -> 그 값을 가져온다.
-
-				vWindowPos.x /= vWindowPos.z;
-				vWindowPos.y /= vWindowPos.z;
-				m_tInfo.fX = vWindowPos.x * g_iWinSizeX * 0.5f + (g_iWinSizeX * 0.5f);
-				m_tInfo.fY = vWindowPos.y * -( g_iWinSizeY * 0.5f ) + (g_iWinSizeY * 0.5f);
-
-				m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-					XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
-
-				if (fDistance < 10.f)
+				_float fAngle = XMVectorGetX(XMVector3Dot(vTargetToCamera, vCameraForward));
+				if (5.f < fDistance)
 				{
-					// 몬스터 방향 벡터를 구하고, 카메라 방향과의 각도 계산
-					_vector vCameraPos = XMLoadFloat4(&vCamPos);
-					_vector vMonsterToCamera = pTransform->Get_Position() - vCameraPos;
-
-					vMonsterToCamera = XMVector3Normalize(vMonsterToCamera);
-					CCamera* pCurCamera = CCamera_Manager::GetInstance()->Get_CurCamera();
-					if (nullptr == pCurCamera)
-						return;
-
-					CTransform* pCameraTrans = pCurCamera->Get_Transform();
-					if (nullptr == pCameraTrans)
-						return;
-
-					_vector vCameraForward = pCameraTrans->Get_State(CTransform::STATE_LOOK);
-					vCameraForward = XMVector3Normalize(vCameraForward);
-
-					_float fAngle = XMVectorGetX(XMVector3Dot(vMonsterToCamera, vCameraForward));
-					if (fAngle >= XMConvertToRadians(0.f) && fAngle <= XMConvertToRadians(180.f))
+					// Degree는 -180 ~ 180
+					if (fAngle >= XMConvertToRadians(40.f) && fAngle <= XMConvertToRadians(140.f) ||
+						fAngle <= XMConvertToRadians(-40.f) && fAngle >= XMConvertToRadians(-140.f))
 					{
-						Set_Text(_float2(m_tInfo.fX, m_tInfo.fY));
-						m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+						_matrix matTemp = XMMatrixIdentity();
+						matTemp.r[3] = XMLoadFloat4(&m_vTargetPos);
+						_float4x4 matTargetWorld;
+						XMStoreFloat4x4(&matTargetWorld, matTemp);
+
+						_float4x4 matWorld;
+						matWorld = matTargetWorld;
+						_matrix matView = GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW);
+						_matrix matProj = GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ);
+
+						_float4x4 matWindow;
+						XMStoreFloat4x4(&matWindow, XMLoadFloat4x4(&matWorld) * matView * matProj);
+
+						_float3 vWindowPos = *(_float3*)&matWindow.m[3][0];
+
+						vWindowPos.x /= vWindowPos.z;
+						vWindowPos.y /= vWindowPos.z;
+
+						m_vCurrentPos.x = vWindowPos.x * g_iWinSizeX * 0.5f + (g_iWinSizeX * 0.5f);
+						m_vCurrentPos.y = vWindowPos.y * -(g_iWinSizeY * 0.5f) + (g_iWinSizeY * 0.5f);
+
+						// 0 ~ 900 . 200 ~ 700
+						if (m_vCurrentPos.y <= 200.f)
+							m_vCurrentPos.y = 200.f;
+
+						if (m_vCurrentPos.y >= 700)
+							m_vCurrentPos.y = 700.f;
+
+						m_tInfo.fX = m_vCurrentPos.x;
+						m_tInfo.fY = m_vCurrentPos.y;
+
+						m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+							XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 					}
+					else
+					{
+						if (m_vCurrentPos.x > g_iWinSizeX)
+							m_vCurrentPos.x = (g_iWinSizeX - m_tInfo.fCX);
+
+						if (m_vCurrentPos.x < 0)
+							m_vCurrentPos.x = (m_tInfo.fCX);
+
+						if (m_vCurrentPos.y > g_iWinSizeY)
+							m_vCurrentPos.y = (g_iWinSizeY - m_tInfo.fCY);
+						
+						if (m_vCurrentPos.y < 0)
+							m_vCurrentPos.y = (m_tInfo.fCY);
+
+						m_tInfo.fX = m_vCurrentPos.x;
+						m_tInfo.fY = m_vCurrentPos.y;
+
+						m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+							XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
+					}
+
+					if (m_eType == UI_MILEPOST::MILEPOST_FLAG)
+					{
+						CTransform* pPlayerTransform = m_pPlayer->Get_Component<CTransform>(L"Com_Transform");
+						if (nullptr == pPlayerTransform)
+							return;
+						_vector vTemp = XMLoadFloat4(&m_vTargetPos) - (pPlayerTransform->Get_Position());
+						_float fTotarget = XMVectorGetX(XMVector3Length(vTemp));
+
+						wstring strDistance = to_wstring(_uint(fTotarget));
+						_int iLength = strDistance.length() - 1;
+						_float2 vFontPos = _float2(m_vCurrentPos.x - 6.8f - (iLength * (6.8f - iLength)), m_vCurrentPos.y + 4.f);
+
+						CRenderer::TEXT_DESC TextDesc = {};
+						TextDesc.strText = strDistance;
+						TextDesc.strFontTag = L"Default_Bold";
+						TextDesc.vScale = { 0.35f, 0.35f };
+						TextDesc.vColor = _float4(0.655f, 0.475f, 0.325f, 1.f);
+						TextDesc.vPosition = _float2(vFontPos.x - 1.f, vFontPos.y);
+						m_pRendererCom->Add_Text(TextDesc);
+						TextDesc.vPosition = _float2(vFontPos.x + 1.f, vFontPos.y);
+						m_pRendererCom->Add_Text(TextDesc);
+						TextDesc.vPosition = _float2(vFontPos.x, vFontPos.y - 1.f);
+						m_pRendererCom->Add_Text(TextDesc);
+						TextDesc.vPosition = _float2(vFontPos.x, vFontPos.y + 1.f);
+						m_pRendererCom->Add_Text(TextDesc);
+
+						TextDesc.vColor = _float4(1.f, 0.973f, 0.588f, 1.f);
+						TextDesc.vPosition = _float2(m_vCurrentPos.x - 7.f - (iLength * (6.8f - iLength)), m_vCurrentPos.y + 4.f);
+						m_pRendererCom->Add_Text(TextDesc);
+					}
+				}
+				else
+				{
+					m_bGoal = false;
+					m_bActive = false;
 				}
 			}
 		}
-		*/
 		
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+		if (m_bGoal)
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+
+		__super::LateTick(fTimeDelta);
 	}
 
 }
@@ -219,5 +307,6 @@ void CUI_Milepost::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pPlayer);
 	Safe_Release(m_pTextureCom);
 }

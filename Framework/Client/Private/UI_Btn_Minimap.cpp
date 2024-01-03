@@ -129,12 +129,12 @@ void CUI_Btn_Minimap::Key_Input(_float fTimeDelta)
 		if (m_iTextureIndex == 0)
 		{
 			m_iTextureIndex = 1;
-			//CUI_Manager::GetInstance()->OnOff_Minimap(true);
+			CUI_Manager::GetInstance()->OnOff_MiniMap(true);
 		}
 		else if (m_iTextureIndex == 1)
 		{
 			m_iTextureIndex = 0;
-			//CUI_Manager::GetInstance()->OnOff_Minimap(false);
+			CUI_Manager::GetInstance()->OnOff_MiniMap(false);
 		}
 	}
 }
