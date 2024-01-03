@@ -34,7 +34,9 @@ HRESULT CGlanixState_Base::Initialize(const list<wstring>& AnimationList)
 	m_vecAtkState.push_back(CGlanix::GLANIX_ATTACK2);
 	m_vecAtkState.push_back(CGlanix::GLANIX_ICEWAVE);
 	m_vecAtkState.push_back(CGlanix::GLANIX_QUADBLOW);
+	m_vecAtkState.push_back(CGlanix::GLANIX_ATTACK2);
 	m_vecAtkState.push_back(CGlanix::GLANIX_SPINBOMB);
+	m_vecAtkState.push_back(CGlanix::GLANIX_ATTACK1);
 
 	return S_OK;
 }

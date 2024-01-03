@@ -56,6 +56,7 @@
 
 #include "GlanixState_Turn.h"
 #include "GlanixState_Stun.h"
+#include "GlanixState_Counter.h"
 #include "GlanixState_Dead.h"
 
 CGlanix::CGlanix(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
@@ -156,6 +157,22 @@ void CGlanix::Collision_Enter(const COLLISION_INFO& tInfo)
 			On_Damaged(tInfo);
 		}
 	}
+
+	/* Counter */
+	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER &&
+		tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK &&
+		tInfo.pOtherCollider->Get_AttackType() == CCollider::ATTACK_TYPE::STUN)
+	{
+		if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)			
+		{
+			if (m_pStateCom->Get_CurrState() == GLANIX_ATTACK1 || m_pStateCom->Get_CurrState() == GLANIX_ATTACK2)
+			{
+				m_pStateCom->Change_State(GLANIX_COUNTER);
+				On_Damaged(tInfo);
+			}
+		}
+	}
+
 }
 
 void CGlanix::Collision_Continue(const COLLISION_INFO& tInfo)
@@ -451,6 +468,10 @@ HRESULT CGlanix::Ready_States()
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_BattleStand");
 	m_pStateCom->Add_State(GLANIX_STUN, CGlanixState_Stun::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_BattleStand");
+	m_pStateCom->Add_State(GLANIX_COUNTER, CGlanixState_Counter::Create(m_pStateCom, strAnimationName));
 
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_Death");

@@ -35,7 +35,7 @@ void CGlanixState_Rage2Stamp::Tick_State(_float fTimeDelta)
 		/* 남아있는 화염정령 제거 */
 		for (auto iter : GI->Find_GameObjects(LEVEL_TEST, LAYER_PROP))
 		{
-			if (iter->Get_PrototypeTag() == TEXT("Prorotype_GameObject_Glanix_FireSpirit"))
+			if (iter->Get_PrototypeTag() == TEXT("Prorotype_GameObject_Glanix_Phoenix"))
 			{
 				iter->Set_Dead(true);
 			}

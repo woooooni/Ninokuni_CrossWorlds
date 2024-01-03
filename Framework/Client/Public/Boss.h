@@ -62,7 +62,6 @@ public:
 	virtual void   Set_Bools(BOSS_BOOLTYPE eType, _bool bIsBool) { m_bBools[(_uint)eType] = bIsBool; }
 
 	/* Origin 정보 */
-	virtual _vector Get_OriginPos() { return m_vOriginPos; }
 	virtual _vector Get_OriginLook() { return m_vOriginLook; }
 
 private:
@@ -78,7 +77,6 @@ protected:
 	_bool   m_bBools[(_uint)BOSS_BOOLTYPE::BOSSBOOL_END] = { false, }; // 보스가 사용하는 bool모음.
 
 	// 최초 위치와 최초 look
-	_vector	m_vOriginPos = {};
 	_vector	m_vOriginLook = {};
 
 public:
