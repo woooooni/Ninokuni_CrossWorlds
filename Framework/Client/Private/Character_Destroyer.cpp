@@ -570,9 +570,9 @@ HRESULT CCharacter_Destroyer::Ready_Weapon()
 		return S_OK;
 	
 
-	m_pWeapon->Set_ModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Food02"));
+	m_pWeapon->Set_WeaponModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Food02"));
 
-	if (nullptr == m_pWeapon->Get_ModelCom())
+	if (nullptr == m_pWeapon->Get_WeaponModelCom())
 	{
 		Safe_Release(m_pWeapon);
 		return S_OK;

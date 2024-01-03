@@ -559,14 +559,14 @@ HRESULT CCharacter_SwordMan::Ready_Sockets()
 #pragma region Ready_Weapon
 HRESULT CCharacter_SwordMan::Ready_Weapon()
 {
-	m_pWeapon = CSword::Create(m_pDevice, m_pContext, L"SwordMane_Sword");
+	m_pWeapon = CSword::Create(m_pDevice, m_pContext, L"SwordMan_Sword");
 	if (nullptr == m_pWeapon)
 		return S_OK;
 	
 
-	m_pWeapon->Set_ModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Flower01"));
+	m_pWeapon->Set_WeaponModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Flower01"));
 
-	if (nullptr == m_pWeapon->Get_ModelCom())
+	if (nullptr == m_pWeapon->Get_WeaponModelCom())
 	{
 		Safe_Release(m_pWeapon);
 		return S_OK;

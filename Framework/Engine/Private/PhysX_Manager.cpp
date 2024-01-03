@@ -274,7 +274,10 @@ HRESULT CPhysX_Manager::Remove_Actor(class CGameObject* pGameObject)
 	auto iterGround = m_GroundObjects.find(pGameObject->Get_ObjectID());
 	for (auto& Desc : iterGround->second)
 	{
+		m_pScene->lockWrite();
 		m_pScene->removeActor(*Desc.pActor);
+		m_pScene->unlockWrite();
+
 		Safe_Release(Desc.pObject);
 	}
 	iterGround->second.clear();
@@ -309,12 +312,14 @@ PxController* CPhysX_Manager::Add_CapsuleController(CGameObject* pGameObject, Ma
 	CapsuleDesc.userData = pGameObject;
 	CapsuleDesc.reportCallback = pCallBack;
 	
-	while (m_bSimulating) {};
-
+	m_pScene->lockWrite();
+	
 	PxController* pController = m_pController_Manager->createController(CapsuleDesc);
 
 	pController->getActor()->userData = pGameObject;
 	pController->getActor()->setName("Controller");
+
+	m_pScene->unlockWrite();
 	
 	return pController;
 }
@@ -832,10 +837,8 @@ HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGameObject, CModel* pModel, Mat
 		Vec3 vPosition = {};
 		WorldMatrix.Decompose(vScale, vQuat, vPosition);
 
+		m_pScene->lockWrite();
 		PxTransform physXTransform = PxTransform({ 0.f, 0.f, 0.f });
-
-
-
 		PxRigidStatic* pActor = m_Physics->createRigidStatic(physXTransform);
 		PxMaterial* Material = m_Physics->createMaterial(0.f, 0.f, 0.f);
 		PxShape* pShape = m_Physics->createShape(*pGeometry, *Material);
@@ -855,11 +858,8 @@ HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGameObject, CModel* pModel, Mat
 		pActor->attachShape(*pShape);
 		pActor->userData = pGameObject;
 
-		while (true == m_bSimulating) {
-			int i = 0;
-		};
-
 		m_pScene->addActor(*pActor);
+		m_pScene->unlockWrite();
 
 		PHYSX_STATIC_OBJECT_DESC ObjectDesc;
 		ObjectDesc.pActor = pActor;
@@ -958,9 +958,10 @@ HRESULT CPhysX_Manager::Add_Building(CGameObject* pGameObject, CModel* pModel, M
 		Vec3 vPosition = {};
 		WorldMatrix.Decompose(vScale, vQuat, vPosition);
 
+		m_pScene->lockWrite();
 		PxTransform physXTransform = PxTransform({ 0.f, 0.f, 0.f });
 
-
+		while (true == m_bSimulating) {};
 
 		PxRigidStatic* pActor = m_Physics->createRigidStatic(physXTransform);
 		PxMaterial* Material = m_Physics->createMaterial(0.f, 0.f, 0.f);
@@ -981,6 +982,7 @@ HRESULT CPhysX_Manager::Add_Building(CGameObject* pGameObject, CModel* pModel, M
 		while (m_bSimulating) {};
 
 		m_pScene->addActor(*pActor);
+		m_pScene->unlockWrite();
 
 		PHYSX_STATIC_OBJECT_DESC ObjectDesc;
 		ObjectDesc.pActor = pActor;
@@ -1014,8 +1016,9 @@ HRESULT CPhysX_Manager::Clear_PhysX_Ground()
 	{
 		for (auto& Desc : iter.second)
 		{
-			while (true == m_bSimulating) {};
+			m_pScene->lockWrite();
 			m_pScene->removeActor(*Desc.pActor);
+			m_pScene->unlockWrite();
 			Desc.pActor->release();
 			Safe_Release(Desc.pObject);
 		}
@@ -1279,7 +1282,10 @@ HRESULT CPhysX_Manager::Reset_PhysX()
 	{
 		for (_uint i = 0; i < iter.second.size(); ++i)
 		{
+			m_pScene->lockWrite();
 			m_pScene->removeActor(*iter.second[i].pActor);
+			m_pScene->unlockWrite();
+
 			Safe_Release(iter.second[i].pObject);
 			iter.second[i].pActor->release();
 		}
@@ -1321,7 +1327,10 @@ void CPhysX_Manager::Free()
 	{
 		for (_uint i = 0; i < iter.second.size(); ++i)
 		{
+			m_pScene->lockWrite();
 			m_pScene->removeActor(*iter.second[i].pActor);
+			m_pScene->unlockWrite();
+
 			Safe_Release(iter.second[i].pObject);
 			iter.second[i].pActor->release();
 		}

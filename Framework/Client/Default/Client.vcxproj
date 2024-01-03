@@ -322,6 +322,7 @@
     <ClInclude Include="..\Public\Rabbit.h" />
     <ClInclude Include="..\Public\Shadow_ThiefNode_Air.h" />
     <ClInclude Include="..\Public\Shadow_ThiefNode_Blow.h" />
+    <ClInclude Include="..\Public\Skill_Manager.h" />
     <ClInclude Include="..\Public\SkyDome.h" />
     <ClInclude Include="..\Public\SkyPlane.h" />
     <ClInclude Include="..\Public\Ruby.h" />
@@ -920,6 +921,7 @@
     <ClCompile Include="..\Private\Rabbit.cpp" />
     <ClCompile Include="..\Private\Shadow_ThiefNode_Air.cpp" />
     <ClCompile Include="..\Private\Shadow_ThiefNode_Blow.cpp" />
+    <ClCompile Include="..\Private\Skill_Manager.cpp" />
     <ClCompile Include="..\Private\SkyDome.cpp" />
     <ClCompile Include="..\Private\SkyPlane.cpp" />
     <ClCompile Include="..\Private\Ruby.cpp" />
