@@ -27,23 +27,28 @@ HRESULT CVfx_SwordMan_Skill_SpinningAssault::Initialize(void* pArg)
 
 void CVfx_SwordMan_Skill_SpinningAssault::Tick(_float fTimeDelta)
 {
-	if (m_pOwnerObject != nullptr)
-	{
-		CStateMachine* pMachine = m_pOwnerObject->Get_Component<CStateMachine>(L"Com_StateMachine");
-		if (pMachine != nullptr)
-		{
-			if (pMachine->Get_CurrState() != CCharacter::CLASS_SKILL_1)
-			{
-				Set_Dead(true);
-				return;
-			}
-		}
+	__super::Tick(fTimeDelta);
 
-		m_fTimeAcc += fTimeDelta;
+	if (!m_bOwnerTween)
+	{
 		// 
 		if (m_iCount == 0)
 		{
-			m_fTimeAcc = 0.f;
+			_matrix WorldMatrix = XMLoadFloat4x4(&m_WorldMatrix);
+
+			_vector vPositionOrigin = WorldMatrix.r[CTransform::STATE_POSITION];
+			_vector vPosition = vPositionOrigin + WorldMatrix.r[CTransform::STATE_LOOK];
+			WorldMatrix.r[CTransform::STATE_POSITION] = XMVectorSet(XMVectorGetX(vPosition), XMVectorGetY(vPositionOrigin), XMVectorGetZ(vPosition), 1.f);
+
+			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_Perfectblade_Circle"), WorldMatrix, nullptr, m_pOwnerObject);
+
+			m_iCount++;
+		}
+
+		// 
+		else if (m_iCount == 1 && m_iOwnerFrame >= 15)
+		{
+
 			m_iCount++;
 		}
 	}

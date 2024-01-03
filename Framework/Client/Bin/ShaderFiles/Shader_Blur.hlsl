@@ -1,29 +1,16 @@
 #include "Engine_Shader_Defines.hpp"
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
+
 texture2D g_BlurTarget;
 
-float2 g_WinSize = float2(1900.f, 900.f);
-float  g_fWeight_low[3] =
-{ 
-	0.5f, 
-	1.f, 
-	0.5f 
-};
+int   g_iBlurSamplers = 15;
+float g_fBlurRange    = 0.09f;
 
-float  g_fWeight_middle[7] =
-{ 
-	0.2f, 0.5f, 0.8f,
-	1.f, 
-	0.8f, 0.5f, 0.2f
-};
-
-float  g_fWeight_high[11] =
-{ 
-	0.1f, 0.2f, 0.4f, 0.6f, 0.8f,
-	1.f,
-	0.8f, 0.6f, 0.4f, 0.2f, 0.1f
-};
+float2 g_WinSize           = float2(1900.f, 900.f);
+float  g_fWeight_low[3]    = { 0.5f, 1.f, 0.5f };
+float  g_fWeight_middle[7] = { 0.2f, 0.5f, 0.8f, 1.f, 0.8f, 0.5f, 0.2f };
+float  g_fWeight_high[11]  = { 0.1f, 0.2f, 0.4f, 0.6f, 0.8f, 1.f, 0.8f, 0.6f, 0.4f, 0.2f, 0.1f };
 
 struct VS_IN
 {
@@ -35,7 +22,6 @@ struct VS_OUT
 {
 	float4		vPosition : SV_POSITION;
 	float2		vTexcoord : TEXCOORD0;
-	float		fFogFactor : FOG;
 };
 
 VS_OUT VS_MAIN(VS_IN In)
@@ -156,7 +142,6 @@ PS_OUT PS_BLUR_Vertical_middle(PS_IN In)
 }
 
 
-
 // Power high
 PS_OUT PS_BLUR_Horizontal_high(PS_IN In)
 {
@@ -194,6 +179,31 @@ PS_OUT PS_BLUR_Vertical_high(PS_IN In)
 	return Out;
 }
 
+// All
+PS_OUT PS_BLUR_All(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    float4 fvColor = 0.0f;
+    float fTotal = 0.0f;
+    
+    for (int x = 0; x < g_iBlurSamplers; ++x)
+    {
+        for (int y = 0; y < g_iBlurSamplers; ++y)
+        {
+            float2 fvCoord = In.vTexcoord;
+            float2 fvDelta = float2(x, y);
+            fvDelta -= float2(g_iBlurSamplers / 2.0f, g_iBlurSamplers / 2.0f);
+            fvDelta /= float2(g_iBlurSamplers, g_iBlurSamplers);
+            fvColor += g_BlurTarget.Sample(LinearSampler, fvCoord + fvDelta * g_fBlurRange);
+        }
+    }
+
+    fvColor /= g_iBlurSamplers * g_iBlurSamplers;
+    Out.vColor = fvColor;
+
+    return Out;
+}
 
 technique11 DefaultTechnique
 {
@@ -211,11 +221,11 @@ technique11 DefaultTechnique
 	}
 
 	// 1
-	pass BlurUpScale
+	pass BlurUpScale_OneMax
 	{
 		SetRasterizerState(RS_Default);
 		SetDepthStencilState(DSS_None, 0);
-		SetBlendState(BS_OneBlend, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
+        SetBlendState(BS_OneMaxBlend, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		HullShader = NULL;
@@ -223,8 +233,20 @@ technique11 DefaultTechnique
 		PixelShader = compile ps_5_0 PS_BLUR_UPSCALE();
 	}
 
+    // 2
+    pass BlurUpScale_OneAdd
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_OneBlend, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_BLUR_UPSCALE();
+    }
 
-	// 2
+	// 3
 	pass Blur_Horizontal_low
 	{
 		SetRasterizerState(RS_Default);
@@ -237,7 +259,7 @@ technique11 DefaultTechnique
 		PixelShader = compile ps_5_0 PS_BLUR_Horizontal_low();
 	}
 
-	// 3
+	// 4
 	pass Blur_Vertical_low
 	{
 		SetRasterizerState(RS_Default);
@@ -251,7 +273,7 @@ technique11 DefaultTechnique
 	}
 
 
-	// 4
+	// 5
 	pass Blur_Horizontal_middle
 	{
 		SetRasterizerState(RS_Default);
@@ -264,7 +286,7 @@ technique11 DefaultTechnique
 		PixelShader = compile ps_5_0 PS_BLUR_Horizontal_middle();
 	}
 
-	// 5
+	// 6
 	pass Blur_Vertical_middle
 	{
 		SetRasterizerState(RS_Default);
@@ -278,7 +300,7 @@ technique11 DefaultTechnique
 	}
 
 
-	// 6
+	// 7
 	pass Blur_Horizontal_high
 	{
 		SetRasterizerState(RS_Default);
@@ -291,7 +313,7 @@ technique11 DefaultTechnique
 		PixelShader = compile ps_5_0 PS_BLUR_Horizontal_high();
 	}
 
-	// 7
+	// 8
 	pass Blur_Vertical_high
 	{
 		SetRasterizerState(RS_Default);
@@ -303,4 +325,17 @@ technique11 DefaultTechnique
 		DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_BLUR_Vertical_high();
 	}
+
+    // 9
+    pass Blur_All
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_OneBlend, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_BLUR_All();
+    }
 }

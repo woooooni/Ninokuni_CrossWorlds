@@ -37,6 +37,11 @@ protected:
 
 protected:
 	class CGameObject* m_pOwnerObject = nullptr;
+	_int m_bOwnerStateIndex = -1;
+	_bool m_bOwnerTween = true;
+	_uint m_iOwnerFrame = 0;
+
+	_bool m_bFinish = false;
 
 public:
 	virtual void Free() override;

@@ -264,19 +264,39 @@ PS_OUT PS_MAIN(PS_IN In)
 {
 	PS_OUT Out = (PS_OUT)0;
 
-	Out.vDiffuse = g_DiffuseTexture.Sample(ModelSampler, In.vTexUV);
-	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
-	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
+    vector vDissoveTexture = g_DissolveTexture.Sample(LinearSampler, In.vTexUV);
+    float fDissolveAlpha   = saturate(1.0 - g_fDissolveWeight / g_DissolveDuration + vDissoveTexture.r);
+	
+	// ÇÈ¼¿ »ý·«
+    if (fDissolveAlpha < 0.3)
+        discard;
+	
+	// ÇÈ¼¿ »ö»ó ÁöÁ¤ : ¸í¾Ï ¿¬»ê X
+    else if (fDissolveAlpha < 0.5)
+    {
+        Out.vDiffuse = g_vDissolveColor;
+        Out.vNormal  = float4(1.f, 1.f, 1.f, 0.f);
+        Out.vBloom   = float4(Out.vDiffuse.r, Out.vDiffuse.g, Out.vDiffuse.b, 0.5f);
+    }
+	
+	// ±âº» ÇÈ¼¿ ·»´õ¸µ
+    else
+    {
+        Out.vDiffuse = g_DiffuseTexture.Sample(ModelSampler, In.vTexUV);
+        Out.vNormal  = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
 
-	float fRimPower = 1.f - saturate(dot(In.vNormal.xyz, normalize((-1.f * (In.vWorldPosition - g_vCamPosition)))));
-    fRimPower = pow(fRimPower, 5.f);
-	vector vRimColor = g_vRimColor * fRimPower;
-	Out.vDiffuse += vRimColor;
-    Out.vBloom = Caculation_Brightness(Out.vDiffuse) + vRimColor;
+        float fRimPower = 1.f - saturate(dot(In.vNormal.xyz, normalize((-1.f * (In.vWorldPosition - g_vCamPosition)))));
+        fRimPower = pow(fRimPower, 5.f);
+        vector vRimColor = g_vRimColor * fRimPower;
+        Out.vDiffuse += vRimColor;
+        Out.vBloom = Caculation_Brightness(Out.vDiffuse) + vRimColor;
 
-	if (0.f == Out.vDiffuse.a)
-		discard;
-
+        if (0.f == Out.vDiffuse.a)
+            discard;
+    }
+	
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
+	
 	return Out;
 }
 
@@ -284,26 +304,46 @@ PS_OUT PS_MAIN_NORMAL(PS_IN In)
 {
 	PS_OUT Out = (PS_OUT)0;
 
-	Out.vDiffuse = g_DiffuseTexture.Sample(ModelSampler, In.vTexUV);
+    vector vDissoveTexture = g_DissolveTexture.Sample(LinearSampler, In.vTexUV);
+    float fDissolveAlpha = saturate(1.0 - g_fDissolveWeight / g_DissolveDuration + vDissoveTexture.r);
+	
+	// ÇÈ¼¿ »ý·«
+    if (fDissolveAlpha < 0.3)
+        discard;
+	
+	// ÇÈ¼¿ »ö»ó ÁöÁ¤ : ¸í¾Ï ¿¬»ê X
+    else if (fDissolveAlpha < 0.5)
+    {
+        Out.vDiffuse = g_vDissolveColor;
+        Out.vNormal = float4(1.f, 1.f, 1.f, 0.f);
+        Out.vBloom = float4(Out.vDiffuse.r, Out.vDiffuse.g, Out.vDiffuse.b, 0.5f);
+    }
+	
+	// ±âº» ÇÈ¼¿ ·»´õ¸µ
+    else
+    {
+        Out.vDiffuse = g_DiffuseTexture.Sample(ModelSampler, In.vTexUV);
 
-	vector	vTextureNormal = g_NormalTexture.Sample(ModelSampler, In.vTexUV);
+        vector vTextureNormal = g_NormalTexture.Sample(ModelSampler, In.vTexUV);
 
-	float3	vNormal = vTextureNormal.xyz * 2.f - 1.f;
-	float3x3 WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
+        float3 vNormal = vTextureNormal.xyz * 2.f - 1.f;
+        float3x3 WorldMatrix = float3x3(In.vTangent, In.vBinormal, In.vNormal.xyz);
 
-	vNormal = normalize(mul(vNormal, WorldMatrix));
+        vNormal = normalize(mul(vNormal, WorldMatrix));
 
-	Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
-	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
+        Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
 
-    float fRimPower = 1.f - saturate(dot(In.vNormal.xyz, normalize((-1.f * (In.vWorldPosition - g_vCamPosition)))));
-    fRimPower = pow(fRimPower, 5.f);
-    vector vRimColor = g_vRimColor * fRimPower;
-	Out.vDiffuse += vRimColor;
-    Out.vBloom = Caculation_Brightness(Out.vDiffuse) + vRimColor;
+        float fRimPower = 1.f - saturate(dot(In.vNormal.xyz, normalize((-1.f * (In.vWorldPosition - g_vCamPosition)))));
+        fRimPower = pow(fRimPower, 5.f);
+        vector vRimColor = g_vRimColor * fRimPower;
+        Out.vDiffuse += vRimColor;
+        Out.vBloom = Caculation_Brightness(Out.vDiffuse) + vRimColor;
 
-	if (0.f == Out.vDiffuse.a)
-		discard;
+        if (0.f == Out.vDiffuse.a)
+            discard;
+    }
+
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
 
 	return Out;
 }
@@ -313,7 +353,7 @@ PS_OUT PS_DISSOLVE_DEAD(PS_IN In)
 	PS_OUT	Out = (PS_OUT)0;
 
     vector vDissoveTexture = g_DissolveTexture.Sample(LinearSampler, In.vTexUV);
-    float fDissolveAlpha = saturate(1.0 - g_fDissolveWeight / g_DissolveDuration + vDissoveTexture.r);
+    float fDissolveAlpha   = saturate(1.0 - g_fDissolveWeight / g_DissolveDuration + vDissoveTexture.r);
 	
 	// ÇÈ¼¿ »ý·«
     if (fDissolveAlpha < 0.3)

@@ -11,7 +11,7 @@ class ENGINE_DLL CRenderer final : public CComponent
 public:
 	enum RENDERGROUP {
 		RENDER_PRIORITY, RENDER_AURORA, RENDER_NONLIGHT,
-		RENDER_NONBLEND, RENDER_LIGHT, RENDER_SHADOW,
+		RENDER_SHADOW, RENDER_NONBLEND, RENDER_LIGHT,
 		RENDER_ALPHABLEND, RENDER_EFFECT,
 		RENDER_UI, RENDER_UI_EFFECT_NONBLEND, RENDER_UI_EFFECT_BLEND,
 		RENDER_CURSOR, 
@@ -21,10 +21,11 @@ public:
 	enum RENDERER_SHADER_TYPE   { SHADER_DEFERRED, SHADER_OUTLINE, SHADER_BLUR, SHADER_SSAO, SHADER_FINAL, SHADER_AURORA, SHADER_END };
 	enum INSTANCING_SHADER_TYPE { ANIM_MODEL, MODEL, RECT, EFFECT_TEXTURE, EFFECT_MODEL, TYPE_END };
 	enum BLUR_PASS              { 
-		BLUR_DOWN, BLUR_UP,
+		BLUR_DOWN, BLUR_UP_ONEMAX, BLUR_UP_ONEADD,
 		BLUR_HOR_LOW,    BLUR_VER_LOW,
 		BLUR_HOR_MIDDLE, BLUR_VER_MIDDLE,
-		BLUR_HOR_HIGH,   BLUR_VER_HIGH
+		BLUR_HOR_HIGH,   BLUR_VER_HIGH,
+		BLUR_ALL
 	};
 
 public:
@@ -131,11 +132,12 @@ private:
 	HRESULT Render_Cursor();
 
 	// Blur
-	HRESULT Render_Blur(const wstring& strStartTargetTag, const wstring& strFinalTragetTag, _bool bClear, BLUR_PASS eHorizontalPass, BLUR_PASS eVerticalPass);
+	HRESULT Render_Blur_All(const wstring& strStartTargetTag, const wstring& strFinalTragetTag, _bool bClear, _int iBlurSamplers, _float fBlurRange);
+	HRESULT Render_Blur(const wstring& strStartTargetTag, const wstring& strFinalTragetTag, _bool bClear, BLUR_PASS eHorizontalPass, BLUR_PASS eVerticalPass, BLUR_PASS eBlendType);
 	HRESULT Render_BlurDownSample(const wstring& strStartTargetTag);
 	HRESULT Render_Blur_Horizontal(BLUR_PASS eHorizontalPass);
 	HRESULT Render_Blur_Vertical(BLUR_PASS eVerticalPass);
-	HRESULT Render_BlurUpSample(const wstring& strFinalMrtTag, _bool bClear);
+	HRESULT Render_BlurUpSample(const wstring& strFinalMrtTag, _bool bClear, BLUR_PASS eBlendType);
 
 	// Mix
 	HRESULT Render_AlphaBlendTargetMix(const wstring& strStartTargetTag, const wstring& strFinalTragetTag, _bool bClear);
@@ -178,13 +180,15 @@ private:
 	_bool	m_bDebugDraw   = false;
 	_bool   m_bOption      = false;
 	// On/Off_Option
+	_bool   m_bNaturalDraw = false;
 	_bool   m_bShadowDraw  = false;
 	_bool   m_bSsaoDraw    = false;
 	_bool   m_bOutlineDraw = false;
 	_bool   m_bBlurDraw    = false;
+	_bool   m_bBlomDraw    = true;
 
 	// 구현 필요
-	_bool   m_bBlomDraw = false;
+
 	_bool   m_bPbrDraw  = false;
 
 private:

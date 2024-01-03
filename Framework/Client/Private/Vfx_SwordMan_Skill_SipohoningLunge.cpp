@@ -27,23 +27,21 @@ HRESULT CVfx_SwordMan_Skill_SipohoningLunge::Initialize(void* pArg)
 
 void CVfx_SwordMan_Skill_SipohoningLunge::Tick(_float fTimeDelta)
 {
-	if (m_pOwnerObject != nullptr)
-	{
-		CStateMachine* pMachine = m_pOwnerObject->Get_Component<CStateMachine>(L"Com_StateMachine");
-		if (pMachine != nullptr)
-		{
-			if (pMachine->Get_CurrState() != CCharacter::CLASS_SKILL_2)
-			{
-				Set_Dead(true);
-				return;
-			}
-		}
+	__super::Tick(fTimeDelta);
 
-		m_fTimeAcc += fTimeDelta;
+	if (!m_bOwnerTween)
+	{
 		// 
 		if (m_iCount == 0)
 		{
-			m_fTimeAcc = 0.f;
+
+			m_iCount++;
+		}
+
+		// 
+		else if (m_iCount == 1 && m_iOwnerFrame >= 15)
+		{
+
 			m_iCount++;
 		}
 	}

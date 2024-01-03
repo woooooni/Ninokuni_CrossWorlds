@@ -184,121 +184,159 @@ HRESULT CRenderer::Add_Text(const TEXT_DESC& TextDesc)
 
 HRESULT CRenderer::Draw()
 {
-	if (KEY_TAP(KEY::F2))
-		m_bDebugDraw = !m_bDebugDraw;
-	else if (KEY_TAP(KEY::F3)) 
+	// Keyinput
 	{
-		m_bOption      = !m_bOption;
+		if (KEY_TAP(KEY::F2))
+			m_bDebugDraw = !m_bDebugDraw;
+		else if (KEY_TAP(KEY::F3))
+		{
+			m_bOption = !m_bOption;
 
-		m_bShadowDraw  = m_bOption;
-		m_bSsaoDraw    = m_bOption;
-		m_bOutlineDraw = m_bOption;
-		m_bBlurDraw    = m_bOption;
-		m_bBlomDraw    = m_bOption;
-		m_bPbrDraw     = m_bOption;
+			m_bNaturalDraw = m_bOption;
+			m_bShadowDraw = m_bOption;
+			m_bSsaoDraw = m_bOption;
+			m_bOutlineDraw = m_bOption;
+			m_bBlurDraw = m_bOption;
+			m_bBlomDraw = m_bOption;
+			m_bPbrDraw = m_bOption;
+		}
 	}
 
-	if(FAILED(Render_Priority()))
-		return E_FAIL;
-	if (FAILED(Render_Aurora()))
-		return E_FAIL;
-	if (FAILED(Render_NonLight()))
-		return E_FAIL;
-
-	if (FAILED(Render_NonAlphaBlend()))
-		return E_FAIL;
-	if (FAILED(Render_Shadow()))
-		return E_FAIL;
-	if (FAILED(Render_Lights()))
-		return E_FAIL;
-
-	if (m_bSsaoDraw)
+	// Blend : Background
 	{
-		if (FAILED(Render_Ssao()))
+		if (FAILED(Render_Priority()))  // MRT_Blend
 			return E_FAIL;
+		if (FAILED(Render_Aurora()))    // MRT_Aurora / MRT_Blend
+			return E_FAIL;
+		if (FAILED(Render_NonLight()))  // MRT_Blend
+			return E_FAIL;
+	}
 
-		if (m_bBlurDraw)
+	// Target : Object
+	{
+		if (FAILED(Render_Shadow()))        // MRT_Shadow      -> ShadowDepth
+			return E_FAIL;
+		if (FAILED(Render_NonAlphaBlend())) // MRT_GameObjects -> Diffuse / Normal / Depth / Bloom
+			return E_FAIL;
+		if (FAILED(Render_Lights()))        // MRT_Lights      -> Shade / Specular
+			return E_FAIL;
+	}
+
+
+	// *Target : Ssao
+	{
+		if (m_bSsaoDraw && m_bBlurDraw)
 		{
-			if (FAILED(Render_Blur(L"Target_SSAO", L"MRT_SSAO_Blur", true, BLUR_HOR_MIDDLE, BLUR_VER_MIDDLE)))
+			if (FAILED(Render_Ssao()))
+				return E_FAIL;
+
+			if (FAILED(Render_Blur(L"Target_SSAO", L"MRT_SSAO_Blur", true, BLUR_HOR_MIDDLE, BLUR_VER_MIDDLE, BLUR_UP_ONEADD)))
 				return E_FAIL;
 		}
 	}
 
-	if (m_bOutlineDraw)
+	// Target : Bloom
 	{
-		if (FAILED(Render_OutLine()))
-			return E_FAIL;
+		if (m_bBlomDraw)
+		{
+			if (FAILED(Render_Blur(L"Target_Bloom", L"MRT_Bloom_Blur", true, BLUR_HOR_MIDDLE, BLUR_VER_MIDDLE, BLUR_UP_ONEADD)))
+				return E_FAIL;
+		}
 	}
 
-	if (FAILED(Render_Blur(L"Target_Bloom", L"MRT_Bloom_Blur", true, BLUR_HOR_MIDDLE, BLUR_VER_MIDDLE)))
-		return E_FAIL;
+	// *Target : OutLine
+	{
+		if (m_bOutlineDraw) // MRT_Outline -> Outline
+		{
+			if (FAILED(Render_OutLine()))
+				return E_FAIL;
+		}
+	}
 
+	// DeferredRender
 	if(FAILED(Render_Deferred()))
 		return E_FAIL;
 
-	if (FAILED(Render_Effect()))
-		return E_FAIL;
-
-	if (!m_bBlurDraw)
+	// *Effect
 	{
-		if (FAILED(Render_AlphaBlendTargetMix(L"Target_Effect_Diffuse_All", L"MRT_Blend", false)))
+		if (FAILED(Render_Effect()))
 			return E_FAIL;
+
+		if (!m_bBlurDraw)
+		{
+			if (FAILED(Render_AlphaBlendTargetMix(L"Target_Effect_Diffuse_All", L"MRT_Blend", false)))
+				return E_FAIL;
+		}
+		else
+		{
+			if (FAILED(Render_AlphaBlendTargetMix(L"Target_Effect_Diffuse_None", L"MRT_Blend", false)))
+				return E_FAIL;
+
+			if (FAILED(Render_Blur(L"Target_Effect_Diffuse_Low",    L"MRT_Blend", false, BLUR_HOR_LOW, BLUR_VER_LOW,       BLUR_UP_ONEMAX)))
+				return E_FAIL;
+			if (FAILED(Render_Blur(L"Target_Effect_Diffuse_Middle", L"MRT_Blend", false, BLUR_HOR_MIDDLE, BLUR_VER_MIDDLE, BLUR_UP_ONEMAX)))
+				return E_FAIL;
+			if (FAILED(Render_Blur(L"Target_Effect_Diffuse_High",   L"MRT_Blend", false, BLUR_HOR_HIGH, BLUR_VER_HIGH,     BLUR_UP_ONEMAX)))
+				return E_FAIL;
+
+			if (m_bBlomDraw)
+			{
+				if (FAILED(Render_Blur(L"Target_Effect_Bloom", L"MRT_Blend", false, BLUR_HOR_MIDDLE, BLUR_VER_MIDDLE, BLUR_UP_ONEADD)))
+					return E_FAIL;
+			}
+		}
 	}
-	else
-	{
-		if (FAILED(Render_AlphaBlendTargetMix(L"Target_Effect_Diffuse_None", L"MRT_Blend", false)))
-			return E_FAIL;
 
-		if (FAILED(Render_Blur(L"Target_Effect_Diffuse_Low", L"MRT_Blend", false, BLUR_HOR_LOW, BLUR_VER_LOW)))
-			return E_FAIL;
-		if (FAILED(Render_Blur(L"Target_Effect_Diffuse_Middle", L"MRT_Blend", false, BLUR_HOR_MIDDLE, BLUR_VER_MIDDLE)))
-			return E_FAIL;
-		if (FAILED(Render_Blur(L"Target_Effect_Diffuse_High", L"MRT_Blend", false, BLUR_HOR_HIGH, BLUR_VER_HIGH)))
-			return E_FAIL;
-
-		if (FAILED(Render_Blur(L"Target_Effect_Bloom", L"MRT_Blend", false, BLUR_HOR_MIDDLE, BLUR_VER_MIDDLE)))
-			return E_FAIL;
-	}
-
+	// AlphaRender
 	if(FAILED(Render_AlphaBlend()))
 		return E_FAIL;
 
-	if (FAILED(Render_UI()))
-		return E_FAIL;
-	if (FAILED(Render_Text()))
-		return E_FAIL;
-
-	if (FAILED(Render_UIEffectNonBlend()))
-		return E_FAIL;
-	if (!m_bBlurDraw)
+	// *UI / TEXT / UI_Effect
 	{
-		if (FAILED(Render_AlphaBlendTargetMix(L"Target_Effect_UI_Diffuse_All", L"MRT_Blend", false)))
+		if (FAILED(Render_UI()))
+			return E_FAIL;
+
+		if (FAILED(Render_Text()))
+			return E_FAIL;
+
+		if (FAILED(Render_UIEffectNonBlend()))
+			return E_FAIL;
+
+		if (!m_bBlurDraw)
+		{
+			if (FAILED(Render_AlphaBlendTargetMix(L"Target_Effect_UI_Diffuse_All", L"MRT_Blend", false)))
+				return E_FAIL;
+		}
+		else
+		{
+			if (FAILED(Render_AlphaBlendTargetMix(L"Target_Effect_UI_Diffuse_None", L"MRT_Blend", false)))
+				return E_FAIL;
+
+			if (FAILED(Render_Blur(L"Target_Effect_UI_Diffuse_Low",    L"MRT_Blend", false, BLUR_HOR_LOW, BLUR_VER_LOW,       BLUR_UP_ONEMAX)))
+				return E_FAIL;
+			if (FAILED(Render_Blur(L"Target_Effect_UI_Diffuse_Middle", L"MRT_Blend", false, BLUR_HOR_MIDDLE, BLUR_VER_MIDDLE, BLUR_UP_ONEMAX)))
+				return E_FAIL;
+			if (FAILED(Render_Blur(L"Target_Effect_UI_Diffuse_High",   L"MRT_Blend", false, BLUR_HOR_HIGH, BLUR_VER_HIGH,     BLUR_UP_ONEMAX)))
+				return E_FAIL;
+
+			if (m_bBlomDraw)
+			{
+				if (FAILED(Render_Blur(L"Target_Effect_UI_Bloom", L"MRT_Blend", false, BLUR_HOR_MIDDLE, BLUR_VER_MIDDLE, BLUR_UP_ONEADD)))
+					return E_FAIL;
+			}
+		}
+
+		if (FAILED(Render_UIEffectBlend()))
 			return E_FAIL;
 	}
-	else
-	{
-		if (FAILED(Render_AlphaBlendTargetMix(L"Target_Effect_UI_Diffuse_None", L"MRT_Blend", false)))
-			return E_FAIL;
 
-		if (FAILED(Render_Blur(L"Target_Effect_UI_Diffuse_Low", L"MRT_Blend", false, BLUR_HOR_LOW, BLUR_VER_LOW)))
-			return E_FAIL;
-		if (FAILED(Render_Blur(L"Target_Effect_UI_Diffuse_Middle", L"MRT_Blend", false, BLUR_HOR_MIDDLE, BLUR_VER_MIDDLE)))
-			return E_FAIL;
-		if (FAILED(Render_Blur(L"Target_Effect_UI_Diffuse_High", L"MRT_Blend", false, BLUR_HOR_HIGH, BLUR_VER_HIGH)))
-			return E_FAIL;
-
-		if (FAILED(Render_Blur(L"Target_Effect_UI_Bloom", L"MRT_Blend", false, BLUR_HOR_MIDDLE, BLUR_VER_MIDDLE)))
-			return E_FAIL;
-	}
-	if (FAILED(Render_UIEffectBlend()))
-		return E_FAIL;
- 
 	// FinalRender
 	if (FAILED(Render_Final()))
 		return E_FAIL;
 
 	if (FAILED(Render_Cursor()))
 		return E_FAIL;
+
 
 #ifdef _DEBUG
 	if (FAILED(Render_Debug()))
@@ -355,8 +393,11 @@ HRESULT CRenderer::Render_Aurora()
 
 	for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_AURORA])
 	{
-		if (FAILED(iter->Render()))
-			return E_FAIL;
+		if (m_bNaturalDraw)
+		{
+			if (FAILED(iter->Render()))
+				return E_FAIL;
+		}
 		Safe_Release(iter);
 	}
 	m_RenderObjects[RENDERGROUP::RENDER_AURORA].clear();
@@ -364,27 +405,29 @@ HRESULT CRenderer::Render_Aurora()
 	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
 		return E_FAIL;
 
+	if (m_bNaturalDraw)
+	{
+		if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Blend"), false)))
+			return E_FAIL;
 
-	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Blend"), false)))
-		return E_FAIL;
+		if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA]->Bind_Matrix("world", &m_WorldMatrix)))
+			return E_FAIL;
+		if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA]->Bind_Matrix("view", &m_ViewMatrix)))
+			return E_FAIL;
+		if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA]->Bind_Matrix("projection", &m_ProjMatrix)))
+			return E_FAIL;
 
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA]->Bind_Matrix("world", &m_WorldMatrix)))
-		return E_FAIL;
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA]->Bind_Matrix("view", &m_ViewMatrix)))
-		return E_FAIL;
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA]->Bind_Matrix("projection", &m_ProjMatrix)))
-		return E_FAIL;
+		if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA], TEXT("Target_Aurora_Diffuse"), "DiffuseTexture")))
+			return E_FAIL;
 
-	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA], TEXT("Target_Aurora_Diffuse"), "DiffuseTexture")))
-		return E_FAIL;
+		if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA]->Begin(0)))
+			return E_FAIL;
+		if (FAILED(m_pVIBuffer->Render()))
+			return E_FAIL;
 
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA]->Begin(0)))
-		return E_FAIL;
-	if (FAILED(m_pVIBuffer->Render()))
-		return E_FAIL;
-
-	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
-		return E_FAIL;
+		if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+			return E_FAIL;
+	}
 
 	return S_OK;
 }
@@ -990,8 +1033,39 @@ HRESULT CRenderer::Render_Debug()
 }
 #endif // DEBUG
 
+HRESULT CRenderer::Render_Blur_All(const wstring& strStartTargetTag, const wstring& strFinalTragetTag, _bool bClear, _int iBlurSamplers, _float fBlurRange)
+{
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, strFinalTragetTag, bClear)))
+		return E_FAIL;
+
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_BLUR]->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
+		return E_FAIL;
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_BLUR]->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
+		return E_FAIL;
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_BLUR]->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_BLUR], strStartTargetTag, "g_BlurTarget")))
+		return E_FAIL;
+
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_BLUR]->Bind_RawValue("g_iBlurSamplers", &iBlurSamplers, sizeof(_int))))
+		return E_FAIL;
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_BLUR]->Bind_RawValue("g_fBlurRange", &fBlurRange, sizeof(_float))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_BLUR]->Begin(BLUR_PASS::BLUR_ALL)))
+		return E_FAIL;
+	if (FAILED(m_pVIBuffer->Render()))
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
 // Blur
-HRESULT CRenderer::Render_Blur(const wstring& strStartTargetTag, const wstring& strFinalTragetTag, _bool bClear, BLUR_PASS eHorizontalPass, BLUR_PASS eVerticalPass)
+HRESULT CRenderer::Render_Blur(const wstring& strStartTargetTag, const wstring& strFinalTragetTag, _bool bClear, BLUR_PASS eHorizontalPass, BLUR_PASS eVerticalPass, BLUR_PASS eBlendType)
 {
 	if (FAILED(Render_BlurDownSample(strStartTargetTag)))
 		return E_FAIL;
@@ -1002,7 +1076,7 @@ HRESULT CRenderer::Render_Blur(const wstring& strStartTargetTag, const wstring& 
 	if (FAILED(Render_Blur_Vertical(eVerticalPass)))
 		return E_FAIL;
 
-	if (FAILED(Render_BlurUpSample(strFinalTragetTag, bClear)))
+	if (FAILED(Render_BlurUpSample(strFinalTragetTag, bClear, eBlendType)))
 		return E_FAIL;
 
 	return S_OK;
@@ -1099,7 +1173,7 @@ HRESULT CRenderer::Render_Blur_Vertical(BLUR_PASS eVerticalPass)
 	return S_OK;
 }
 
-HRESULT CRenderer::Render_BlurUpSample(const wstring& strFinalMrtTag, _bool bClear)
+HRESULT CRenderer::Render_BlurUpSample(const wstring& strFinalMrtTag, _bool bClear, BLUR_PASS eBlendType)
 {
 	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, strFinalMrtTag, bClear)))
 		return E_FAIL;
@@ -1119,7 +1193,7 @@ HRESULT CRenderer::Render_BlurUpSample(const wstring& strFinalMrtTag, _bool bCle
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_BLUR]->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
 		return E_FAIL;
 
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_BLUR]->Begin(BLUR_PASS::BLUR_UP)))
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_BLUR]->Begin(eBlendType)))
 		return E_FAIL;
 
 	if (FAILED(m_pVIBuffer->Render()))
@@ -1582,7 +1656,7 @@ HRESULT CRenderer::Set_Debug()
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Effect_Diffuse_High"),   (fSizeX / 2.f) + (fSizeX * 4), (fSizeY / 2.f) + (fSizeY * 3), fSizeX, fSizeY)))
 		return E_FAIL;																														 																					 
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Effect_Bloom"),          (fSizeX / 2.f) + (fSizeX * 5), (fSizeY / 2.f) + (fSizeY * 3), fSizeX, fSizeY)))
-		return E_FAIL;																														 																												
+		return E_FAIL;	
 
 	// MRT_Effect_UI
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Effect_UI_Diffuse_All"),    (fSizeX / 2.f) + (fSizeX * 0), (fSizeY / 2.f) + (fSizeY * 4), fSizeX, fSizeY)))
