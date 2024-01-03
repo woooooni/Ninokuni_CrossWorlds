@@ -203,11 +203,14 @@ HRESULT CRenderer::Draw()
 	if (FAILED(Render_NonLight()))
 		return E_FAIL;
 
+	if (FAILED(Render_Aurora()))
+		return E_FAIL;
+
 	if (FAILED(Render_NonAlphaBlend()))
 		return E_FAIL;
-	if (FAILED(Render_Lights()))
-		return E_FAIL;
 	if (FAILED(Render_Shadow()))
+		return E_FAIL;
+	if (FAILED(Render_Lights()))
 		return E_FAIL;
 
 	if (m_bSsaoDraw)
@@ -234,12 +237,6 @@ HRESULT CRenderer::Draw()
 	if(FAILED(Render_Deferred()))
 		return E_FAIL;
 
-	if (FAILED(Render_Aurora()))
-		return E_FAIL;
-
-	if (FAILED(Render_OneBlendTargetMix(L"Target_Aurora_Post", L"MRT_Blend", false)))
-		return E_FAIL;
-
 	if (FAILED(Render_Effect()))
 		return E_FAIL;
 
@@ -264,17 +261,19 @@ HRESULT CRenderer::Draw()
 			return E_FAIL;
 	}
 
+	//if (FAILED(Render_OneBlendTargetMix(L"Target_Aurora_Post", L"MRT_Blend", false)))
+	//	return E_FAIL;
+
 	if(FAILED(Render_AlphaBlend()))
 		return E_FAIL;
-
 
 	if (FAILED(Render_UI()))
 		return E_FAIL;
 	if (FAILED(Render_Text()))
 		return E_FAIL;
+
 	if (FAILED(Render_UIEffectNonBlend()))
 		return E_FAIL;
-
 	if (!m_bBlurDraw)
 	{
 		if (FAILED(Render_AlphaBlendTargetMix(L"Target_Effect_UI_Diffuse_All", L"MRT_Blend", false)))
@@ -295,7 +294,6 @@ HRESULT CRenderer::Draw()
 		if (FAILED(Render_Blur(L"Target_Effect_UI_Bloom", L"MRT_Blend", false, BLUR_HOR_MIDDLE, BLUR_VER_MIDDLE)))
 			return E_FAIL;
 	}
-
 	if (FAILED(Render_UIEffectBlend()))
 		return E_FAIL;
 
@@ -936,11 +934,11 @@ HRESULT CRenderer::Render_Debug()
 	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Outline"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
 		return E_FAIL;
 
-	//if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Effect"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
-	//	return E_FAIL;
-	//
-	//if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Effect_UI"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
-	//	return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Effect"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
+		return E_FAIL;
+	
+	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Effect_UI"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
+		return E_FAIL;
 	
 	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Blend"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
 		return E_FAIL;
@@ -1164,8 +1162,10 @@ HRESULT CRenderer::Render_Aurora()
 		Safe_Release(iter);
 	}
 	m_RenderObjects[RENDERGROUP::RENDER_AURORA].clear();
+
 	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
 		return E_FAIL;
+
 
 	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Aurora_Post"), true)))
 		return E_FAIL;
