@@ -31,6 +31,8 @@ public:
 
 private:
 	UI_WORLDMAP_ICONTYPE m_eIconType = { WORLDMAPICON_END };
+	class CUI_Basic* m_pIcon = { nullptr };
+	class CUI_WindowWorldMap* m_pWorldMap = { nullptr };
 	_int m_iTextureIndex = { -1 };
 
 private:

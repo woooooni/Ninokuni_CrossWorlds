@@ -12,6 +12,7 @@ public:
 		UIMAPNAME_EVERMORE, UIMAPNAME_KINGDOM, UIMAPNAME_ICELAND, UIMAPNAME_FOREST,
 		UIQUEST_ACCEPT, UIQUEST_FINISH,
 		TARGETARROW_LEFT, TARGETARROW_RIGHT, COSTUME_INSTALL,
+		WORLDMAP_ICON,
 		UISTATIC_TITLELINE, UISTATIC_MENUDECO_L, UISTATIC_MENUDECO_R,
 		UIBASIC_END };
 
@@ -24,7 +25,9 @@ public:
 	void Set_UIPass(_uint iPass) { m_iPass = iPass; }
 	void Set_Alpha(_float fAlpha) { m_fAlpha = fAlpha; }
 	_bool Get_Active() { return m_bActive; }
-	virtual void Set_Active(_bool bActive) override;
+	void Set_AnnouncePosition(_float2 vBtnPos);
+	void Set_WorldmapIcon();
+	void Update_Position(_float2 vPosition);
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -46,6 +49,7 @@ private:
 	_float m_bAlpha = { false }; // Alpha값을 조정하면서 깜빡이는 UI들에게 사용함.
 
 	vector<wstring> m_RandomNickname;
+	_uint m_iTextureIndex = { 0 };
 	_int m_iRandomNum = { -1 };
 	_uint m_iMaxNick = { 0 };
 

@@ -11,6 +11,9 @@ protected:
 	virtual ~CUI_Costume_ChangeBtn() = default;
 
 public:
+	void Set_TextureIndex(_uint iIndex) { m_iTextureIndex = iIndex; }
+
+public:
 	virtual HRESULT	Initialize_Prototype();
 	virtual HRESULT	Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta);
@@ -21,6 +24,9 @@ public:
 	virtual void On_MouseEnter(_float fTimeDelta) override;
 	virtual void On_Mouse(_float fTimeDelta) override;
 	virtual void On_MouseExit(_float fTimeDelta) override;
+
+private:
+	_uint m_iTextureIndex = { 0 };
 
 private:
 	virtual HRESULT	Ready_Components() override;
