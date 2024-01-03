@@ -23,6 +23,9 @@ HRESULT CAurora::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+	if (m_strObjectTag == TEXT("Sky_Aurora_Reverse"))
+		m_PSAuroraDesc.fGlowWaveSpeed *= -1.f;
+
 	return S_OK;
 }
 
@@ -38,7 +41,7 @@ void CAurora::LateTick(_float fTimeDelta)
 	Vec4 vCamePos = GI->Get_CamPosition();
 
 	//m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vCamePos);
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDERGROUP::RENDER_PRIORITY, this);
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDERGROUP::RENDER_AURORA, this);
 }
 
 HRESULT CAurora::Render()

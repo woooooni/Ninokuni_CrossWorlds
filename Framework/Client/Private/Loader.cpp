@@ -462,7 +462,9 @@ HRESULT CLoader::Loading_For_Level_Tool()
 		CTerrain::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_TERRAIN)))
 		return E_FAIL;
 
-
+	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_MotionTrail",
+		CMotion_Trail::Create(m_pDevice, m_pContext), LAYER_EFFECT)))
+		return E_FAIL;
 
 	/* Prototype_GameObject_TempSword */
 	{
@@ -808,6 +810,8 @@ HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_EvermoreWater"), CEvermoreWater::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Aurora"), CAurora::Create(m_pDevice, m_pContext, TEXT("Sky_Aurora"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Aurora_Reverse"), CAurora::Create(m_pDevice, m_pContext, TEXT("Sky_Aurora_Reverse"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX, true)))
 		return E_FAIL;
 
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Cat", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/Animal/", L"Animal_Cat")))
