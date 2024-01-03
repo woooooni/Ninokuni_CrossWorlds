@@ -437,8 +437,8 @@ HRESULT CLoader::Loading_For_Level_Test()
 	m_Threads[LOADING_THREAD::MONSTER_AND_NPC].wait();
 
 
-	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Winter");
-	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Monster_Data, this, L"Winter");
+	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Evermore");
+	//m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Monster_Data, this, L"Evermore");
 
 
 	CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_TEST);
@@ -800,6 +800,7 @@ HRESULT CLoader::Loading_Proto_Static_Map_Objects(const wstring& strPath)
 
 HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 {
+#pragma region Animal ProtoType
 	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Cat"), CCat::Create(m_pDevice, m_pContext, TEXT("Animal_Cat"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Dochi"), CDochi::Create(m_pDevice, m_pContext, TEXT("Animal_Dochi"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
@@ -816,10 +817,9 @@ HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Pigeon"), CPigeon::Create(m_pDevice, m_pContext, TEXT("Animal_Pigeon"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Water"), CWater::Create(m_pDevice, m_pContext, TEXT("Evermore_Water"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_WInter_Water"), CWinterWater::Create(m_pDevice, m_pContext, TEXT("Winter_Water"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
-		return E_FAIL;
+#pragma endregion Animals Prototype
+
+#pragma region Sky
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Skydome"), CSkyDome::Create(m_pDevice, m_pContext, TEXT("Sky_dome"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Skydome2"), CSkyDome::Create(m_pDevice, m_pContext, TEXT("Sky_dome2"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX, true)))
@@ -828,14 +828,25 @@ HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_SkyPlane2"), CSkyPlane::Create(m_pDevice, m_pContext, TEXT("Sky_Plane2"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX, true)))
 		return E_FAIL;
+#pragma endregion Sky
 
+#pragma region Water
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Water"), CWater::Create(m_pDevice, m_pContext, TEXT("Evermore_Water"), OBJ_TYPE::OBJ_WATER), LAYER_TYPE::LAYER_DYNAMIC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_WInter_Water"), CWinterWater::Create(m_pDevice, m_pContext, TEXT("Winter_Water"), OBJ_TYPE::OBJ_WATER), LAYER_TYPE::LAYER_DYNAMIC, true)))
+		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_EvermoreWater"), CEvermoreWater::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
+#pragma endregion Water
+
+#pragma region Aurora
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Aurora"), CAurora::Create(m_pDevice, m_pContext, TEXT("Sky_Aurora"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Aurora_Reverse"), CAurora::Create(m_pDevice, m_pContext, TEXT("Sky_Aurora_Reverse"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX, true)))
 		return E_FAIL;
+#pragma endregion Aurora
 
+#pragma region Animal
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Cat", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/Animal/", L"Animal_Cat")))
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Dochi", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/Animal/", L"Animal_Dochi")))
@@ -852,16 +863,23 @@ HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Animal_Pigeon", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/Animal/", L"Animal_Pigeon")))
 		return E_FAIL;
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Everemore_Water", CModel::TYPE_NONANIM, L"../Bin/Export/AnimModel/Map/Water/", L"Evermore_WaterA_01")))
+#pragma endregion Animal
+
+#pragma region Water
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Everemore_Water", CModel::TYPE_NONANIM, L"../Bin/Export/AnimModel/Map/Water/", L"Ocean_Tesselation")))
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Entire_Water", CModel::TYPE_NONANIM, L"../Bin/Export/AnimModel/Map/Water/", L"Entire_Water")))
 		return E_FAIL;
+#pragma endregion Water
+
+#pragma region Sky
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Sky_dome", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/SkyDom/", L"Skydome")))
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Sky_dome2", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/SkyDom/", L"Skydome2")))
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Aurora", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/SkyDom/", L"AuroraTesselatedPlane")))
 		return E_FAIL;
+#pragma endregion Sky
 
 
 	return S_OK;
