@@ -77,6 +77,8 @@ private:
 	Vec4 Calculate_ReleativePosition(Vec4 vPos, Matrix matWorld);
 	Vec4 Calculate_DampingPosition(Vec4 vGoalPos);
 
+	void Test(_float fTimeDelta);
+
 private:
 	/* 구면 좌표계 */
 	Vec2			m_vAngle				= { 0.f, 1.f };

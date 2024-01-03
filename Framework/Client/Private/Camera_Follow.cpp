@@ -56,7 +56,6 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 	if (!m_bActive || nullptr == m_pTargetObj || nullptr == m_pLookAtObj)
 		return;
 
-	/* Shake, Fov, Dist, Offset, Lerp Update */
 	__super::Tick(fTimeDelta); 
 
 	/* Check Lock */
@@ -81,32 +80,7 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 		m_pControllerCom->Tick_Controller(fTimeDelta);
 
 	/* Test */
-	{
-		if (KEY_TAP(KEY::INSERT))
-		{
-			vector<string> CutSceneNames;
-			CutSceneNames.push_back("Evermore_Street_00");
-			CutSceneNames.push_back("Evermore_Street_01");
-
-			dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP))->Start_CutScenes(CutSceneNames);
-		}
-
-		if (KEY_TAP(KEY::DEL))
-		{
-			if (LOCK_PROGRESS::NOT == m_eLockProgress)
-			{
-				CGameObject* pGlianix = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_MONSTER, L"Glanix");
-				if (nullptr != pGlianix)
-				{
-					Start_LockOn(pGlianix, Cam_Target_Offset_LockOn_Glanix, Cam_LookAt_Offset_LockOn_Glanix);
-				}
-			}
-			else
-			{
-				Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
-			}
-		}
-	}
+	Test(fTimeDelta);
 }
 
 void CCamera_Follow::LateTick(_float fTimeDelta)
@@ -345,6 +319,41 @@ Vec4 CCamera_Follow::Calculate_DampingPosition(Vec4 vGoalPos)
 	}
 	
 	return vGoalPos;
+}
+
+void CCamera_Follow::Test(_float fTimeDelta)
+{
+	/* Test */
+	{
+		/* CutScene - Evermore */
+		if (KEY_TAP(KEY::INSERT))
+		{
+			vector<string> CutSceneNames;
+			CutSceneNames.push_back("Evermore_Street_00");
+			CutSceneNames.push_back("Evermore_Street_01");
+
+			dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP))->Start_CutScenes(CutSceneNames);
+		}
+
+		/* Lock On Off */
+		if (KEY_TAP(KEY::DEL))
+		{
+			if (LOCK_PROGRESS::NOT == m_eLockProgress)
+			{
+				const _int iBossCount = 3;
+				wstring strBossNames[iBossCount] = { L"Glanix", L"DreamerMazeWitch", L"Stellia" };
+
+				for (size_t i = 0; i < iBossCount; i++)
+				{
+					CGameObject * pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_MONSTER, strBossNames[i]);
+					if (nullptr != pTarget)
+						Start_LockOn(pTarget, Cam_Target_Offset_LockOn_Glanix, Cam_LookAt_Offset_LockOn_Glanix);
+				}
+			}
+			else
+				Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+		}
+	}
 }
 
 CCamera_Follow * CCamera_Follow::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
