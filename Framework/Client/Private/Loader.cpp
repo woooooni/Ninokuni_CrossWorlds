@@ -716,7 +716,7 @@ HRESULT CLoader::Load_Monster_Data(const wstring& strMonsterFileName)
 		}
 
 	}
-	MSG_BOX("Monster_Loaded.");
+	//MSG_BOX("Monster_Loaded.");
 	return S_OK;
 }
 
