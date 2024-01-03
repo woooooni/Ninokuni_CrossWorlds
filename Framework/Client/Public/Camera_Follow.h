@@ -27,7 +27,7 @@ class CCamera_Follow final : public CCamera
 
 	}DAMPING_DESC;
 
-	enum class LOCK_PROGRESS { NOT, START_BLENDING, FINISH_BLEIDING };
+	enum class LOCK_PROGRESS { OFF, START_BLENDING, FINISH_BLEIDING };
 
 private:
 	CCamera_Follow(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
@@ -61,7 +61,7 @@ public:
 	void Set_MaxRotationLimitDeltaY(const _float& fLimit) { m_fMaxRotLimitDeltaY = fLimit; }
 	void Set_MinRotationLimitDeltaY(const _float& fLimit) { m_fMinRotLimitDeltaY = fLimit; }
 
-	const _bool& Is_LockOn() const { return (LOCK_PROGRESS::NOT == m_eLockProgress) ? false : true; }
+	const _bool& Is_LockOn() const { return (LOCK_PROGRESS::OFF == m_eLockProgress) ? false : true; }
 
 public:
 	HRESULT Start_LockOn(CGameObject* pTargetObject, const Vec4& vTargetOffset, const Vec4& vLookAtOffset, const _float& fLockOnBlendingTime = Cam_LockOn_Blending_Time_Default);
@@ -99,7 +99,10 @@ private:
 	CPhysX_Controller* m_pControllerCom		= nullptr;
 
 	/* Lock On */
-	LOCK_PROGRESS		m_eLockProgress		= LOCK_PROGRESS::NOT;
+	LOCK_PROGRESS	m_eLockProgress		= LOCK_PROGRESS::OFF;
+
+	/* 카메라의 월드 행렬 상태 변환으로 인해 오프셋의 y가 -가 되어 땅을 뚫는 현상 방지*/
+	_float			m_fLockTargetOffsetMinY = 0.5f;
 
 public:
 	static CCamera_Follow* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);

@@ -62,7 +62,7 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 	if (LOCK_PROGRESS::FINISH_BLEIDING == m_eLockProgress)
 	{
 		if (!m_tBlendingLookAtPosition.bActive)
-			m_eLockProgress = LOCK_PROGRESS::NOT;
+			m_eLockProgress = LOCK_PROGRESS::OFF;
 	}
 
 	/* Position */
@@ -96,7 +96,7 @@ void CCamera_Follow::LateTick(_float fTimeDelta)
 
 HRESULT CCamera_Follow::Start_LockOn(CGameObject* pTargetObject, const Vec4& vTargetOffset, const Vec4& vLookAtOffset, const _float& fLockOnBlendingTime)
 {
-	if (nullptr == pTargetObject || LOCK_PROGRESS::NOT != m_eLockProgress)
+	if (nullptr == pTargetObject || LOCK_PROGRESS::OFF != m_eLockProgress)
 		return E_FAIL;
 
 	Change_LookAtObj(pTargetObject, fLockOnBlendingTime);
@@ -112,7 +112,7 @@ HRESULT CCamera_Follow::Start_LockOn(CGameObject* pTargetObject, const Vec4& vTa
 
 HRESULT CCamera_Follow::Finish_LockOn(CGameObject* pTargetObject, const _float& fLockOnBlendingTime)
 {
-	if (nullptr == pTargetObject || LOCK_PROGRESS::NOT == m_eLockProgress)
+	if (nullptr == pTargetObject || LOCK_PROGRESS::OFF == m_eLockProgress)
 		return E_FAIL;
 
 	Change_LookAtObj(pTargetObject, fLockOnBlendingTime);
@@ -153,15 +153,22 @@ HRESULT CCamera_Follow::Ready_Components()
 
 Vec4 CCamera_Follow::Calculate_WorldPosition(_float fTimeDelta)
 {
-	Vec4 vWorldGoal = Vec4::UnitW;
+	Vec4 vWorldGoal		= Vec4::UnitW;
+	Vec4 vTargetOffset	= Vec4::UnitW;
 
 	CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
 
-	if (LOCK_PROGRESS::NOT != m_eLockProgress)
+	if (LOCK_PROGRESS::OFF != m_eLockProgress)
 	{
+		/* 카메라의 회전 상태를 반영한 오프셋 */
+		vTargetOffset = Calculate_ReleativePosition(m_tTargetOffset.vCurVec, m_pTransformCom->Get_WorldMatrix());
+
+		/* 카메라의 월드 행렬 상태 변환으로 인해 오프셋의 y가 -가 되어 땅을 뚫는 현상 방지*/
+		if (vTargetOffset.y < m_fLockTargetOffsetMinY)
+			vTargetOffset.y = m_fLockTargetOffsetMinY;
+
 		/* 카메라 목표 월드 위치 */
-		vWorldGoal = Vec4(pTargetTransform->Get_Position())
-			+ Calculate_ReleativePosition(m_tTargetOffset.vCurVec, m_pTransformCom->Get_WorldMatrix());	/* 카메라의 회전 상태를 반영한 오프셋 */
+		vWorldGoal = vTargetOffset + (Vec4)pTargetTransform->Get_Position();
 	}
 	else
 	{
@@ -170,11 +177,12 @@ Vec4 CCamera_Follow::Calculate_WorldPosition(_float fTimeDelta)
 	
 		/* 디스턴스 반영 */
 		vLocalSpherical *= m_tLerpDist.fCurValue;
-	
+		
+		/* 타겟의 회전 상태를 반영한 오프셋 */
+		vTargetOffset = Calculate_ReleativePosition(m_tTargetOffset.vCurVec, pTargetTransform->Get_WorldMatrix()); 
+			
 		/* 카메라 목표 월드 위치 */
-		vWorldGoal = vLocalSpherical
-			+ Vec4(pTargetTransform->Get_Position())													 /* 타겟 포지션 */
-			+ Calculate_ReleativePosition(m_tTargetOffset.vCurVec, pTargetTransform->Get_WorldMatrix()); /* 타겟의 회전 상태를 반영한 오프셋 */
+		vWorldGoal = vLocalSpherical + vTargetOffset + (Vec4)pTargetTransform->Get_Position();											
 	}
 	vWorldGoal.w = 1.f;
 
@@ -238,12 +246,12 @@ Vec4 CCamera_Follow::Calculate_LoaclSphericalPosition(_float fTimeDelta)
 
 Vec4 CCamera_Follow::Calculate_Look(_float fTimeDelta)
 {
-	Vec4 vLookAt, vOffSet;
+	Vec4 vLookAt, vLookAtOffset;
 
 	CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
 
 	/* 룩앳 위치 */
-	if (LOCK_PROGRESS::NOT != m_eLockProgress)
+	if (LOCK_PROGRESS::OFF != m_eLockProgress)
 	{
 		/* 룩앳 오브젝트가 현재 블렌딩 중이라면 */
 		if (Is_Blending_LookAtObj()) 
@@ -262,9 +270,9 @@ Vec4 CCamera_Follow::Calculate_Look(_float fTimeDelta)
 		vLookAt = Vec4(pTargetTransform->Get_Position());
 
 	/* 룩앳 오프셋 위치 */
-	vOffSet = Calculate_ReleativePosition(m_tLookAtOffset.vCurVec, m_pTransformCom->Get_WorldMatrix()); /* 카메라의 회전 상태를 반영한 타겟 오프셋 */
+	vLookAtOffset = Calculate_ReleativePosition(m_tLookAtOffset.vCurVec, m_pTransformCom->Get_WorldMatrix()); /* 카메라의 회전 상태를 반영한 타겟 오프셋 */
 
-	return Vec4(vLookAt + vOffSet).OneW();
+	return Vec4(vLookAt + vLookAtOffset).OneW();
 }
 
 Vec4 CCamera_Follow::Calculate_ReleativePosition(Vec4 vPos, Matrix matWorld)
@@ -337,7 +345,7 @@ void CCamera_Follow::Test(_float fTimeDelta)
 		/* Lock On Off */
 		if (KEY_TAP(KEY::DEL))
 		{
-			if (LOCK_PROGRESS::NOT == m_eLockProgress)
+			if (LOCK_PROGRESS::OFF == m_eLockProgress)
 			{
 				const _int iBossCount = 3;
 				wstring strBossNames[iBossCount] = { L"Glanix", L"DreamerMazeWitch", L"Stellia" };

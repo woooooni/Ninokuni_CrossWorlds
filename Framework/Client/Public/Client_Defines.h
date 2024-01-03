@@ -127,7 +127,7 @@ namespace Client
 	static const Vec4	Cam_TargetOffset_Follow_Default		= { 0.7f, 1.3f, 0.f, 1.f };
 	static const Vec4	Cam_LookAtOffset_Follow_Default		= { 0.7f, 1.3f, 0.f, 1.f };
 
-	/* Camera - LockOn */
+	/* Camera - Lock On */
 	static const _float Cam_LockOn_Blending_Time_Default	= 0.f; // 0.5f;
 
 	static const Vec4	Cam_Target_Offset_LockOn_Glanix		= Vec4{ 0.7f, 2.f, -4.f, 1.f };
