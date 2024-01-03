@@ -3,6 +3,7 @@
 #include "Client_Defines.h"
 #include "GameObject.h"
 #include "Model.h"
+#include "Collider.h"
 
 BEGIN(Engine)
 

@@ -14,33 +14,33 @@ class CVIBuffer_Rect;
 END
 
 BEGIN(Client)
-
+// scale 1.320, 
 class CAurora final : public CGameObject
 {
 private:
 	struct VS_AURORA_DESC
 	{
-		_float fWaveScale = 1.6f; // 오로라 웨이브 크기
-		_float fWaveAmplitude = 1.53934f; // 오로라 진폭
-		_float fWaveSpeed = 1.0f; // 오로라 웨이브 스피드
+		_float fWaveScale = 1.1f; // 오로라 웨이브 크기
+		_float fWaveAmplitude = 0.63934f; // 오로라 진폭
+		_float fWaveSpeed = 0.05f; // 오로라 웨이브 스피드
 		_float fPadding = 0.0f;
 
-		Vec3 vScalar = Vec3(1.0f, 1.0f, 1.0f); // 오로라 전체 크기 * Scalar
+		Vec3 vScalar = Vec3(2000.00000f, 130.00000f, 100.00000f); // 오로라 전체 크기 * Scalar
 		_float fPadding2 = 0.0f;
-		Vec3 vPosition = Vec3(0.0f, 0.0f, 0.0f);
+		Vec3 vPosition = Vec3(0.0f, 206.94218f, 190.32748f);
 		//Vec3 vPosition = Vec3(0.0f, 306.942184f, 490.32748f); // 오로라 위치
 		_float fPadding3 = 0.0f;
 	};
 
 	struct PS_AURORA_DESC
 	{
-		_float fGlowPhaseScale = 40.0f; // 타는 듯한 불꽃의 크기단계
-		_float fGlowWaveSpeed = 1.0f; // 타는 듯한 불꽃의 스피드
-		_float fGlowPhaseSpeed = 0.52f; // 타는 듯한 불꽃의
+		_float fGlowPhaseScale = 100.0f; // 타는 듯한 불꽃의 크기단계
+		_float fGlowWaveSpeed = 0.1f; // 타는 듯한 불꽃의 스피드
+		_float fGlowPhaseSpeed = 0.32f; // 타는 듯한 불꽃의
 		_float fGlowPhaseBias = 0.2f; // 편향
 
 		Vec2 vTextureTiling = Vec2(1.0f,1.0f); // 텍스쳐 타일링
-		Vec2 vTextureSpeed = Vec2(1.0f,0.0f); // 텍스쳐 스피드 
+		Vec2 vTextureSpeed = Vec2(0.001f,0.0f); // 텍스쳐 스피드 
 	};
 
 private:

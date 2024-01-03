@@ -14,11 +14,11 @@ public:
 		RENDER_NONBLEND, RENDER_LIGHT, RENDER_SHADOW,
 		RENDER_ALPHABLEND, RENDER_EFFECT,
 		RENDER_UI, RENDER_UI_EFFECT_NONBLEND, RENDER_UI_EFFECT_BLEND,
-		RENDER_CURSOR, RENDER_WATER,
+		RENDER_CURSOR, RENDER_AURORA,
 		RENDER_END
 	};
 
-	enum RENDERER_SHADER_TYPE   { SHADER_DEFERRED, SHADER_OUTLINE, SHADER_BLUR, SHADER_SSAO, SHADER_FINAL, SHADER_END };
+	enum RENDERER_SHADER_TYPE   { SHADER_DEFERRED, SHADER_OUTLINE, SHADER_BLUR, SHADER_SSAO, SHADER_FINAL, SHADER_AURORA, SHADER_END };
 	enum INSTANCING_SHADER_TYPE { ANIM_MODEL, MODEL, RECT, EFFECT_TEXTURE, EFFECT_MODEL, TYPE_END };
 	enum BLUR_PASS              { 
 		BLUR_DOWN, BLUR_UP,
@@ -138,7 +138,10 @@ private:
 
 	// Mix
 	HRESULT Render_AlphaBlendTargetMix(const wstring& strStartTargetTag, const wstring& strFinalTragetTag, _bool bClear);
+	HRESULT Render_OneBlendTargetMix(const wstring& strStartTargetTag, const wstring& strFinalTragetTag, _bool bClear);
 
+	// RenderAurora
+	HRESULT Render_Aurora();
 #ifdef _DEBUG
 private:
 	HRESULT Render_Debug();

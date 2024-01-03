@@ -25,6 +25,7 @@ public:
 
 		GLANIX_TURN,
 		GLANIX_STUN,
+		GLANIX_COUNTER,
 		GLANIX_DEAD,
 		GLANIX_END
 	};
@@ -56,7 +57,7 @@ public:
 	_vector	Get_WavePoint() { return m_vWavePoint; }
 
 	/* Rage2 Stack */
-	_bool	Get_SlowStack() { return m_iSlowStack; }
+	_uint*	Get_SlowStack() { return &m_iSlowStack; }
 	void	Set_SlowStack(_int iAmount) { m_iSlowStack += iAmount; }
 private:
 	virtual HRESULT Ready_Components();

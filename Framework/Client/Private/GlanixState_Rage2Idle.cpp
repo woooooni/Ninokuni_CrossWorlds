@@ -12,7 +12,7 @@ HRESULT CGlanixState_Rage2Idle::Initialize(const list<wstring>& AnimationList)
 {
 	__super::Initialize(AnimationList);
 
-	m_iMaxCount = 6;
+	m_iMaxCount = 3;
 
 	return S_OK;
 }

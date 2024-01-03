@@ -35,6 +35,10 @@ private:
 	HRESULT Ready_Proto_Decal(const wstring& strDecalPath);
 	HRESULT Ready_Proto_Vfx();
 
+private:
+	HRESULT Ready_Proto_Vfx_UI();
+	HRESULT Ready_Proto_Vfx_Player();
+
 public:
 	virtual void Free() override;
 };

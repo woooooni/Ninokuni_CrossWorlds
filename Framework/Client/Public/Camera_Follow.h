@@ -27,6 +27,8 @@ class CCamera_Follow final : public CCamera
 
 	}DAMPING_DESC;
 
+	enum class LOCK_PROGRESS { NOT, START_BLENDING, FINISH_BLEIDING };
+
 private:
 	CCamera_Follow(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
 	CCamera_Follow(const CCamera_Follow& rhs);
@@ -37,7 +39,7 @@ public:
 	virtual HRESULT Initialize(void* pArg) override;
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void LateTick(_float fTimeDelta) override;
-	virtual HRESULT Render() override;
+	virtual HRESULT Render() override { return S_OK; }
 
 public:
 	/* Access */
@@ -59,8 +61,11 @@ public:
 	void Set_MaxRotationLimitDeltaY(const _float& fLimit) { m_fMaxRotLimitDeltaY = fLimit; }
 	void Set_MinRotationLimitDeltaY(const _float& fLimit) { m_fMinRotLimitDeltaY = fLimit; }
 
+	const _bool& Is_LockOn() const { return (LOCK_PROGRESS::NOT == m_eLockProgress) ? false : true; }
+
 public:
-	Vec4 Get_Default_Location();
+	HRESULT Start_LockOn(CGameObject* pTargetObject, const Vec4& vTargetOffset, const Vec4& vLookAtOffset, const _float& fLockOnBlendingTime = Cam_LockOn_Blending_Time_Default);
+	HRESULT Finish_LockOn(CGameObject* pTargetObject, const _float& fLockOnBlendingTime = Cam_LockOn_Blending_Time_Default);
 
 protected:
 	virtual HRESULT Ready_Components() override;
@@ -72,22 +77,28 @@ private:
 	Vec4 Calculate_ReleativePosition(Vec4 vPos, Matrix matWorld);
 	Vec4 Calculate_DampingPosition(Vec4 vGoalPos);
 
-private:
-	Vec2			m_vAngle				= { 0.f, 1.f };
+	void Test(_float fTimeDelta);
 
-	/* 회전량이 너무 많거나 적을경우 카메라가 획 도는 경우를 방지하기 위한 Limit값 */
-	_float			m_fMaxRotLimitDeltaY	= { 0.05f };
-	_float			m_fMinRotLimitDeltaY	= { -0.05f };
+private:
+	/* 구면 좌표계 */
+	Vec2			m_vAngle				= { 0.f, 1.f };
 
 	/* 구면 좌표계에서 카메라의 최대 최소 y 값*/
 	_float			m_fMinLimitY			= { 0.7f };
 	_float			m_fMaxLimitY			= { 3.f };
+
+	/* 회전량이 너무 많거나 적을경우 카메라가 획 도는 경우를 방지하기 위한 Limit값 */
+	_float			m_fMaxRotLimitDeltaY	= { 0.05f };
+	_float			m_fMinRotLimitDeltaY	= { -0.05f };
 
 	/* Damping */
 	DAMPING_DESC	m_tDampingDesc			= {};
 
 	/* PhysX */
 	CPhysX_Controller* m_pControllerCom		= nullptr;
+
+	/* Lock On */
+	LOCK_PROGRESS		m_eLockProgress		= LOCK_PROGRESS::NOT;
 
 public:
 	static CCamera_Follow* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);

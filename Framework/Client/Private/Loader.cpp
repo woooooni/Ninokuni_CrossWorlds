@@ -39,6 +39,7 @@
 #include "Glanix.h"
 #include "Glanix_IcePillar.h"
 #include "Glanix_Phoenix.h"
+#include "Glanix_ShockWave.h"
 #include "Stellia.h"
 #include "DMWitch.h"
 #include "Baobam_Water.h"
@@ -212,8 +213,8 @@ HRESULT CLoader::Loading_For_Level_Logo()
 	if (false == g_bFirstLoading)
 	{
 		m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN] = std::async(&CLoader::Loading_For_Character, this , CHARACTER_TYPE::SWORD_MAN);
-		m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);
-		m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);
+		/*m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);
+		m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);*/
 	}
 
 	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
@@ -486,8 +487,6 @@ HRESULT CLoader::Loading_For_Level_Tool()
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Terrain"),
 		CTerrain::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_TERRAIN)))
 		return E_FAIL;
-
-
 
 	/* Prototype_GameObject_TempSword */
 	{
@@ -834,6 +833,8 @@ HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Aurora"), CAurora::Create(m_pDevice, m_pContext, TEXT("Sky_Aurora"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX, true)))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Aurora_Reverse"), CAurora::Create(m_pDevice, m_pContext, TEXT("Sky_Aurora_Reverse"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX, true)))
+		return E_FAIL;
 
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Cat", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/Animal/", L"Animal_Cat")))
 		return E_FAIL;
@@ -964,6 +965,8 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Glanix_IcePillar", CGlanix_IcePillar::Create(m_pDevice, m_pContext, TEXT("Clanix_IcePillar")), LAYER_PROP, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Glanix_Phoenix", CGlanix_Phoenix::Create(m_pDevice, m_pContext, TEXT("Glanix_Phoenix")), LAYER_PROP, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Glanix_ShockWave", CGlanix_ShockWave::Create(m_pDevice, m_pContext, TEXT("Glanix_ShockWave")), LAYER_PROP, true)))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Spawner_Ice01", CSpawner_Ice01::Create(m_pDevice, m_pContext, TEXT("Spawner_Ice01")), LAYER_MONSTER, true)))

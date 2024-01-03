@@ -169,21 +169,28 @@ public:
 	void Start_Lerp_Distance(const _float& fStartValue, const _float& fTargetValue, const _float& fTime, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
 	void Start_Lerp_Distance(const _float& fTargetValue, const _float& fTime, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
 
-	/* Target, LookAt */
+	/* Target, LookAt - Object */
 	CGameObject* Get_TargetObj() const { return m_pTargetObj; }
 	CGameObject* Get_LookAtObj() const { return m_pLookAtObj; }
-
-	const Vec4 Get_TargetOffset() const { return m_vTargetOffset; }
-	const Vec4 Get_LookAtOffset() const { return m_vLookAtOffset; }
 
 	void Set_TargetObj(CGameObject* pTargetObj) { m_pTargetObj = pTargetObj; }
 	void Set_LookAtObj(CGameObject* pTargetObj) { m_pLookAtObj = pTargetObj; }
 
-	void Set_TargetOffSet(const Vec4& vTargetOffset) { memcpy(&m_vTargetOffset, &vTargetOffset, sizeof(Vec4)); }
-	void Set_LookAtOffSet(const Vec4& vLookAtOffset) { memcpy(&m_vLookAtOffset, &vLookAtOffset, sizeof(Vec4)); }
+	void Change_TargetObj(CGameObject* pTargetObj, const _float& fChangeTime, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
+	void Change_LookAtObj(CGameObject* pLookAtObj, const _float& fChangeTime, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
 
-	void Change_TargetObj(CGameObject* pTargetObj1, CGameObject* pTargetObj2, const _float& fChangeTime, const LERP_MODE& eMode);
-	void Change_LookAtObj(CGameObject* pLookAtObj1, CGameObject* pLookAtObj2, const _float& fChangeTime, const LERP_MODE& eMode);
+	const _bool& Is_Blending_TargetObj() const { return m_tBlendingTargetPosition.bActive; }
+	const _bool& Is_Blending_LookAtObj() const { return m_tBlendingLookAtPosition.bActive; }
+
+	/* Target, LookAt - OffSet */
+	const Vec4 Get_TargetOffset() const { return m_tTargetOffset.vCurVec; }
+	const Vec4 Get_LookAtOffset() const { return m_tLookAtOffset.vCurVec; }
+
+	void Set_TargetOffSet(const Vec4& vTargetOffset) { memcpy(&m_tTargetOffset.vCurVec, &vTargetOffset, sizeof(Vec4)); }
+	void Set_LookAtOffSet(const Vec4& vLookAtOffset) { memcpy(&m_tLookAtOffset.vCurVec, &vLookAtOffset, sizeof(Vec4)); }
+
+	void Change_TargetOffSet(const Vec4& vTargetValue, const _float& fTime, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
+	void Change_LookAtOffSet(const Vec4& vTargetValue, const _float& fTime, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
 
 	/* Input */
 	const Vec2& Get_MouseSensitivity() const { return m_vMouseSensitivity; }
@@ -201,26 +208,29 @@ public:
 protected:
 	/* Default  */
 	_bool				m_bActive		= { false };
+	_int				m_iKey			= { -1 };
 	CTransform*			m_pTransformCom = { nullptr };
-	_int				m_iKey			= -1;
 
 	/* Proj */
 	PROJ_DESC			m_tProjDesc		= {};
 
 	/* Dist */
 	LERP_FLOAT_DESC		m_tLerpDist		= {};
-	_float				m_fPrevDist		= 0.f;
+	_float				m_fPrevDist		= { 0.f };
 
 	/* Target, Look */
-	Vec4				m_vTargetOffset = {};
-	Vec4				m_vLookAtOffset = {};
+	LERP_VEC4_DESC		m_tTargetOffset = {};
+	LERP_VEC4_DESC		m_tLookAtOffset = {};
 
 	CGameObject*		m_pTargetObj	= { nullptr };
 	CGameObject*		m_pLookAtObj	= { nullptr };
 
+	LERP_VEC4_DESC		m_tBlendingTargetPosition	= {}; /* 타겟, 룩앳 오브젝트를 체인지 하는동안의 블렌딩 위치 */
+	LERP_VEC4_DESC		m_tBlendingLookAtPosition	= {};
+
 	/* Input */
+	_bool				m_bCanInput		= { true };
 	Vec2				m_vMouseSensitivity = { 1.f, 1.f };
-	_bool				m_bCanInput		= true;
 
 	/* Shake */
 	SHAKE_DESC			m_tShakeDesc	= {};

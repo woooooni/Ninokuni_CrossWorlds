@@ -12,8 +12,7 @@
 
 #include "Effect.h"
 #include "Decal.h"
-#include "Vfx_MouseClick.h"
-#include "Vfx_SwordMan_Skill_PerfectBlade.h"
+#include "VfxHeaderGroup.h"
 
 IMPLEMENT_SINGLETON(CEffect_Manager)
 
@@ -545,15 +544,33 @@ HRESULT CEffect_Manager::Ready_Proto_Decal(const wstring& strDecalPath)
 
 HRESULT CEffect_Manager::Ready_Proto_Vfx()
 {
-	// Prototype_Vfx_MouseClick
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_MouseClick"),
-		CVfx_MouseClick::Create(m_pDevice, m_pContext, TEXT("Particles_MouseClick")), LAYER_TYPE::LAYER_EFFECT)))
+	if (FAILED(Ready_Proto_Vfx_UI()))
 		return E_FAIL;
 
+	if (FAILED(Ready_Proto_Vfx_Player()))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CEffect_Manager::Ready_Proto_Vfx_UI()
+{
+	// Prototype_Vfx_MouseClick
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_MouseClick"),
+		CVfx_UI_MouseClick::Create(m_pDevice, m_pContext, TEXT("Particles_MouseClick")), LAYER_TYPE::LAYER_EFFECT)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CEffect_Manager::Ready_Proto_Vfx_Player()
+{
 	// Prototype_Vfx_SwordMan_Skill_PerfectBlade
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_SwordMan_Skill_PerfectBlade"),
-		CVfx_SwordMan_Skill_PerfectBlade::Create(m_pDevice, m_pContext, TEXT("Effect_PerfectBlade")), LAYER_TYPE::LAYER_EFFECT)))
+		CVfx_SwordMan_Skill_PerfectBlade::Create(m_pDevice, m_pContext, TEXT("SwordMan_Skill_PerfectBlade")), LAYER_TYPE::LAYER_EFFECT)))
 		return E_FAIL;
+
+	// 
 
 	return S_OK;
 }
