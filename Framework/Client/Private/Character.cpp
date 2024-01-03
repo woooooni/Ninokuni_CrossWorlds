@@ -77,24 +77,24 @@ void CCharacter::Tick(_float fTimeDelta)
 		GI->UnLock_Mouse();
 	}
 
-	if (KEY_TAP(KEY::TAB))
-	{
-		switch (m_eCharacterType)
-		{
-		case CHARACTER_TYPE::SWORD_MAN:
-			CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::ENGINEER);
-			break;
+	//if (KEY_TAP(KEY::TAB))
+	//{
+	//	switch (m_eCharacterType)
+	//	{
+	//	case CHARACTER_TYPE::SWORD_MAN:
+	//		CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::ENGINEER);
+	//		break;
 
-		case CHARACTER_TYPE::ENGINEER:
-			CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::DESTROYER);
-			break;
+	//	case CHARACTER_TYPE::ENGINEER:
+	//		CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::DESTROYER);
+	//		break;
 
-		case CHARACTER_TYPE::DESTROYER:
-			CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN);
-			break;
-		}
-		
-	}
+	//	case CHARACTER_TYPE::DESTROYER:
+	//		CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN);
+	//		break;
+	//	}
+	//	
+	//}
 
 	if (nullptr != m_pWeapon)
 		m_pWeapon->Tick(fTimeDelta);
