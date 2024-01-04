@@ -9,11 +9,7 @@
 
 #include "Camera_Manager.h"
 
-#include "Camera.h"
-#include "Camera_Free.h"
-#include "Camera_Follow.h"
-#include "Camera_CutScene_Map.h"
-#include "Camera_CutScene_Boss.h"
+#include "Camera_Group.h"
 
 CTool_Camera::CTool_Camera(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CTool(pDevice, pContext)

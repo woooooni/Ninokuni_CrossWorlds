@@ -7,6 +7,7 @@
 
 /* Test */
 #include "Camera_CutScene_Map.h"
+#include "Camera_Action.h"
 #include "Game_Manager.h"
 #include "Player.h"
 
@@ -111,22 +112,20 @@ void CCamera_Follow::Set_Default_Position()
 			fRot += 360.f;
 	}
 
-	float result = 0.f;
-
-	if (fRot >= 0 && fRot <= 270) {
-		// 0 ~ 270의 값은 -0.5 pi ~ -2 pi로 변환
-		result = -0.5f * XM_PI - fRot * (1.5f * XM_PI / 270.0f);
-	}
-	else if (fRot > 270 && fRot <= 360) {
-		// 270 ~ 360의 값은 0 ~ -0.5pi로 변환
-		result = 0.0f - (fRot - 270) * (0.5f * XM_PI / 90.0f); //0.0f - fRot * (0.5f * XM_PI / 90.0f);
-	}
-	else {
-		// 범위를 벗어나면 그대로 반환
-		result = fRot;
+	/* 회전 값을 통해 플레이어 룩 반대 방향에 카메라를 위치하기 위한 구면 좌표계 앵글값을 구한다.*/
+	_float result = 0.f;
+	{
+		if (fRot >= 0 && fRot <= 270) 
+			result = -0.5f * XM_PI - fRot * (1.5f * XM_PI / 270.0f);
+	
+		else if (fRot > 270 && fRot <= 360) 
+			result = 0.0f - (fRot - 270) * (0.5f * XM_PI / 90.0f); 
+	
+		else 
+			result = fRot;
 	}
 
-	m_vAngle = { result, 1.f };
+	m_vAngle = { result, m_fDefaultAngleY };
 
 	m_tDampingDesc.bSet = false;
 }
@@ -198,8 +197,8 @@ Vec4 CCamera_Follow::Calculate_WorldPosition(_float fTimeDelta)
 	if (LOCK_PROGRESS::OFF != m_eLockProgress)
 	{
 		/* 카메라의 회전 상태를 반영한 오프셋 */
-		vTargetOffset = Calculate_ReleativePosition(m_tTargetOffset.vCurVec, m_pTransformCom->Get_WorldMatrix());
-
+		vTargetOffset = m_pTransformCom->Get_RelativeOffset(m_tTargetOffset.vCurVec);
+		
 		/* 카메라의 월드 행렬 상태 변환으로 인해 오프셋의 y가 -가 되어 땅을 뚫는 현상 방지*/
 		if (vTargetOffset.y < m_fLockTargetOffsetMinY)
 			vTargetOffset.y = m_fLockTargetOffsetMinY;
@@ -216,8 +215,8 @@ Vec4 CCamera_Follow::Calculate_WorldPosition(_float fTimeDelta)
 		vLocalSpherical *= m_tLerpDist.fCurValue;
 		
 		/* 타겟의 회전 상태를 반영한 오프셋 */
-		vTargetOffset = Calculate_ReleativePosition(m_tTargetOffset.vCurVec, pTargetTransform->Get_WorldMatrix()); 
-			
+		vTargetOffset = pTargetTransform->Get_RelativeOffset(m_tTargetOffset.vCurVec);
+
 		/* 카메라 목표 월드 위치 */
 		vWorldGoal = vLocalSpherical + vTargetOffset + (Vec4)pTargetTransform->Get_Position();											
 	}
@@ -305,28 +304,11 @@ Vec4 CCamera_Follow::Calculate_Look(_float fTimeDelta)
 		vLookAt = Vec4(pTargetTransform->Get_Position());
 
 	/* 룩앳 오프셋 위치 */
-	vLookAtOffset = Calculate_ReleativePosition(m_tLookAtOffset.vCurVec, m_pTransformCom->Get_WorldMatrix()); /* 카메라의 회전 상태를 반영한 타겟 오프셋 */
-
+	vLookAtOffset = m_pTransformCom->Get_RelativeOffset(m_tLookAtOffset.vCurVec); /* 카메라의 회전 상태를 반영한 타겟 오프셋 */
+	
 	return Vec4(vLookAt + vLookAtOffset).OneW();
 }
 
-Vec4 CCamera_Follow::Calculate_ReleativePosition(Vec4 vPos, Matrix matWorld)
-{
-	/* 월드형렬에서 회전상태만을 반영하여 포지션을 적용한다. */
-
-	/* 행렬의 포지션 초기화 */
-	matWorld.Translation(Vec3::Zero);
-
-	/* 행렬의 라업룩 정규화 */
-	matWorld.Right(XMVector3Normalize(matWorld.Right()));
-	matWorld.Up(XMVector3Normalize(matWorld.Up()));
-	matWorld.Backward(XMVector3Normalize(matWorld.Backward()));
-	
-	/* 행렬의 회전 적용된 포지션 값 */
-	Vec3 vRelativePos = XMVector3TransformCoord(vPos, matWorld);
-
-	return Vec4(vRelativePos.x, vRelativePos.y, vRelativePos.z, 1.f);
-}
 
 Vec4 CCamera_Follow::Calculate_DampingPosition(Vec4 vGoalPos)
 {
@@ -396,43 +378,19 @@ void CCamera_Follow::Test(_float fTimeDelta)
 				Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
 		}
 
-		/* Default Position */
 		if (KEY_TAP(KEY::HOME))
 		{
-			Set_Default_Position();
+			/*CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
+			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_CurCamera());
+			if (nullptr != pActionCam)
+			{
+				pActionCam->Start_Action(CCamera_Action::CAMERA_ACTION_TYPE::DOOR);
+			}*/
 		}
 	}
 
 	{
-		CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
-
-		/* 현재 타겟의 Y축 회전 상태를 CW 0 ~ 360로 반환한다. */
-		_float fRot = 0.f;
-		{
-			Vec3 vLook = pTargetTransform->Get_Look();
-
-			_float fAngle = atan2(vLook.x, vLook.z);
-
-			const _float fDegreesPerRadian = 180.0f / DirectX::XM_PI;
-			fRot = fAngle * fDegreesPerRadian;
-			if (fRot < 0)
-				fRot += 360.f;
-		}
-
-		float result = 0.f;// -1.5f * XM_PI + fRot * (0.5f * XM_PI) / 90.0f;
-
-		if (fRot >= 0 && fRot <= 270) {
-			// 0 ~ 270의 값은 -0.5 pi ~ -2 pi로 변환
-			result =  -0.5f * XM_PI - fRot * (1.5f * XM_PI / 270.0f);
-		}
-		else if (fRot > 270 && fRot <= 360) {
-			// 270 ~ 360의 값은 0 ~ -0.5pi로 변환
-			result =  0.0f - fRot * (0.5f * XM_PI / 90.0f);
-		}
-		else {
-			// 범위를 벗어나면 그대로 반환
-			result = fRot;
-		}
+		
 	}
 }
 

@@ -64,6 +64,8 @@ public:
 		return WorldMatrixInverse;
 	}
 
+	Vec4 Get_RelativeOffset(Vec4 vPos);
+
 public:
 	void Set_State(STATE eState, _vector vState);
 

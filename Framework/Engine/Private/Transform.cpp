@@ -74,6 +74,21 @@ void CTransform::Move(_vector vDir, _float fSpeed, _float fTimeDelta, CNavigatio
 	}
 }
 
+Vec4 CTransform::Get_RelativeOffset(Vec4 vPos)
+{
+	Matrix matWorld = m_WorldMatrix;
+
+	matWorld.Translation(Vec3::Zero);
+
+	matWorld.Right(XMVector3Normalize(matWorld.Right()));
+	matWorld.Up(XMVector3Normalize(matWorld.Up()));
+	matWorld.Backward(XMVector3Normalize(matWorld.Backward()));
+
+	Vec3 vRelativePos = XMVector3TransformCoord(vPos, matWorld);
+
+	return Vec4(vRelativePos.x, vRelativePos.y, vRelativePos.z, 1.f);
+}
+
 void CTransform::Set_State(STATE eState, _vector vState)
 {
 	_matrix	WorldMatrix = XMLoadFloat4x4(&m_WorldMatrix);

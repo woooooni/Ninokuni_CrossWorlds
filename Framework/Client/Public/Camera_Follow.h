@@ -78,7 +78,6 @@ private:
 	Vec4 Calculate_WorldPosition(_float fTimeDelta);
 	Vec4 Calculate_LoaclSphericalPosition(_float fTimeDelta);
 	Vec4 Calculate_Look(_float fTimeDelta);
-	Vec4 Calculate_ReleativePosition(Vec4 vPos, Matrix matWorld);
 	Vec4 Calculate_DampingPosition(Vec4 vGoalPos);
 
 private:
@@ -86,7 +85,8 @@ private:
 
 private:
 	/* 구면 좌표계 */
-	Vec2			m_vAngle				= { -1.57f, 1.f }; /* x가 0일 경우 플레이어 라이트에서 시작*/
+	Vec2			m_vAngle				= { -1.57f, 1.3f }; /* x가 0일 경우 플레이어 라이트에서 시작*/
+	const _float	m_fDefaultAngleY		= 1.3f;
 
 	/* 구면 좌표계에서 카메라의 최대 최소 y 값*/
 	_float			m_fMinLimitY			= { 0.7f };
