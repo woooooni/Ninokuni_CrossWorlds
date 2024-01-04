@@ -165,7 +165,7 @@ void CUI_World_Interaction::LateTick(_float fTimeDelta)
 				m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 					XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 
-				if (fDistance < 40.f)
+				if (fDistance < 35.f)
 				{
 					_vector vCameraPos = XMLoadFloat4(&vCamPos);
 					_vector vMonsterToCamera = pTransform->Get_Position() - vCameraPos;

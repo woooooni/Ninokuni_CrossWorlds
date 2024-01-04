@@ -2824,6 +2824,41 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	Safe_AddRef(pSlot);
 
 
+	m_WeaponElemental.reserve(3);
+	fOffset = 85.f;
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 64.f * 0.5f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = 1382.f;
+	UIDesc.fY = 540.f;
+
+	pSlot = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_WeaponSection_WeaponIcon_Elemental_First"), &UIDesc, &pSlot)))
+		return E_FAIL;
+	m_WeaponElemental.push_back(dynamic_cast<CUI_WeaponSection_Weapon*>(pSlot));
+	if (nullptr == pSlot)
+		return E_FAIL;
+	Safe_AddRef(pSlot);
+
+	UIDesc.fX += fOffset;
+	pSlot = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_WeaponSection_WeaponIcon_Elemental_Second"), &UIDesc, &pSlot)))
+		return E_FAIL;
+	m_WeaponElemental.push_back(dynamic_cast<CUI_WeaponSection_Weapon*>(pSlot));
+	if (nullptr == pSlot)
+		return E_FAIL;
+	Safe_AddRef(pSlot);
+
+	UIDesc.fX += fOffset;
+	pSlot = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_WeaponSection_WeaponIcon_Elemental_Third"), &UIDesc, &pSlot)))
+		return E_FAIL;
+	m_WeaponElemental.push_back(dynamic_cast<CUI_WeaponSection_Weapon*>(pSlot));
+	if (nullptr == pSlot)
+		return E_FAIL;
+	Safe_AddRef(pSlot);
+
+
 	return S_OK;
 }
 
@@ -3281,6 +3316,26 @@ void CUI_Manager::Update_SkillSlotState(_uint iSectionType, _uint iSlotIndex)
 	}
 }
 
+void CUI_Manager::Update_SkillSection(_uint iSkillType, _uint iSectionType)
+{
+	/*
+	m_ClassicSkill;
+	m_SpecialSkill;
+	*/
+	switch (iSkillType)
+	{
+	case 0: // CLASSIC
+		if (!m_ClassicSkill[iSectionType]->Is_Clicked())
+			m_ClassicSkill[iSectionType]->Set_Clicked(true);
+		break;
+
+	case 1: // SPECIAL
+		if (!m_SpecialSkill[iSectionType]->Is_Clicked())
+			m_SpecialSkill[iSectionType]->Set_Clicked(true);
+		break;
+	}
+}
+
 void CUI_Manager::Update_ClothSlotState(_uint iSectionType, _uint iSlotIndex)
 {
 	//enum UI_COSTUME_SECTION { COSTUMESECTION_CLOTH, COSTUMESECTION_HAIRACC, COSTUMESECTION_END }; iSectionType
@@ -3694,6 +3749,11 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 			if (nullptr != iter)
 				iter->Set_Active(true);
 		}
+		for (auto& iter : m_WeaponElemental)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(true);
+		}
 
 		m_pImajinnBG->Set_Active(true);
 
@@ -3749,6 +3809,11 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 				iter->Set_Active(false);
 		}
 		for (auto& iter : m_WeaponIcon)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_WeaponElemental)
 		{
 			if (nullptr != iter)
 				iter->Set_Active(false);
@@ -5406,13 +5471,34 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_WeaponSection_WeaponIcon_First"),
-		CUI_WeaponSection_Weapon::Create(m_pDevice, m_pContext, CUI_WeaponSection_Weapon::UI_WEAPONSLOT::WEAPON_FIRST), LAYER_UI)))
+		CUI_WeaponSection_Weapon::Create(m_pDevice, m_pContext,
+			CUI_WeaponSection_Weapon::UI_WEAPONSLOT::WEAPON_FIRST,
+			CUI_WeaponSection_Weapon::UI_WEAPONSLOT_TYPE::SLOT_WEAPON), LAYER_UI)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_WeaponSection_WeaponIcon_Second"),
-		CUI_WeaponSection_Weapon::Create(m_pDevice, m_pContext, CUI_WeaponSection_Weapon::UI_WEAPONSLOT::WEAPON_SECOND), LAYER_UI)))
+		CUI_WeaponSection_Weapon::Create(m_pDevice, m_pContext,
+			CUI_WeaponSection_Weapon::UI_WEAPONSLOT::WEAPON_SECOND,
+			CUI_WeaponSection_Weapon::UI_WEAPONSLOT_TYPE::SLOT_WEAPON), LAYER_UI)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_WeaponSection_WeaponIcon_Third"),
-		CUI_WeaponSection_Weapon::Create(m_pDevice, m_pContext, CUI_WeaponSection_Weapon::UI_WEAPONSLOT::WEAPON_THIRD), LAYER_UI)))
+		CUI_WeaponSection_Weapon::Create(m_pDevice, m_pContext,
+			CUI_WeaponSection_Weapon::UI_WEAPONSLOT::WEAPON_THIRD,
+			CUI_WeaponSection_Weapon::UI_WEAPONSLOT_TYPE::SLOT_WEAPON), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_WeaponSection_WeaponIcon_Elemental_First"),
+		CUI_WeaponSection_Weapon::Create(m_pDevice, m_pContext,
+			CUI_WeaponSection_Weapon::UI_WEAPONSLOT::WEAPON_FIRST,
+			CUI_WeaponSection_Weapon::UI_WEAPONSLOT_TYPE::SLOT_ELEMENTAL), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_WeaponSection_WeaponIcon_Elemental_Second"),
+		CUI_WeaponSection_Weapon::Create(m_pDevice, m_pContext,
+			CUI_WeaponSection_Weapon::UI_WEAPONSLOT::WEAPON_SECOND,
+			CUI_WeaponSection_Weapon::UI_WEAPONSLOT_TYPE::SLOT_ELEMENTAL), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_WeaponSection_WeaponIcon_Elemental_Third"),
+		CUI_WeaponSection_Weapon::Create(m_pDevice, m_pContext,
+			CUI_WeaponSection_Weapon::UI_WEAPONSLOT::WEAPON_THIRD,
+			CUI_WeaponSection_Weapon::UI_WEAPONSLOT_TYPE::SLOT_ELEMENTAL), LAYER_UI)))
 		return E_FAIL;
 
 	return S_OK;
@@ -5614,6 +5700,11 @@ void CUI_Manager::Set_CharacterType()
 			iter->Set_CharacterType(m_eCurPlayer);
 	}
 	for (auto& iter : m_WeaponIcon)
+	{
+		if (nullptr != iter)
+			iter->Set_TextureIndex(m_eCurPlayer);
+	}
+	for (auto& iter : m_WeaponElemental)
 	{
 		if (nullptr != iter)
 			iter->Set_TextureIndex(m_eCurPlayer);
@@ -5852,6 +5943,10 @@ void CUI_Manager::Free()
 	for (auto& pIcon : m_WeaponIcon)
 		Safe_Release(pIcon);
 	m_WeaponIcon.clear();
+
+	for (auto& pIcon : m_WeaponElemental)
+		Safe_Release(pIcon);
+	m_WeaponElemental.clear();
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

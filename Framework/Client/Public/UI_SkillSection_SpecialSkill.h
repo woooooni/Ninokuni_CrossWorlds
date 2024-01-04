@@ -15,6 +15,8 @@ protected:
 
 public:
 	virtual void Set_CharacterType(CHARACTER_TYPE eType) override;
+	void Set_Clicked(_bool bClick) { m_bClicked = bClick; }
+	_bool Is_Clicked() { return m_bClicked; }
 
 public:
 	virtual HRESULT	Initialize_Prototype();

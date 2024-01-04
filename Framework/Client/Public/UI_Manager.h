@@ -78,6 +78,7 @@ public:
 	void	Update_InvenBtnState(_uint iIndex);
 	void	Update_SkillBtnState(class CTransform* pTransform, _uint iIndex);
 	void	Update_SkillSlotState(_uint iSectionType, _uint iSlotIndex);
+	void	Update_SkillSection(_uint iSkillType, _uint iSectionType);
 	void	Update_ClothSlotState(_uint iSectionType, _uint iSlotIndex);
 	void	Update_CostumeBtn();
 
@@ -242,7 +243,9 @@ private:
 
 	vector<class CUI_Minimap_Frame*> m_Minimap;
 	class CUI_World_NameTag* m_pName = { nullptr };
+
 	vector <class CUI_WeaponSection_Weapon*> m_WeaponIcon;
+	vector <class CUI_WeaponSection_Weapon*> m_WeaponElemental;
 
 private:
 	ID3D11Device*			m_pDevice = { nullptr };
