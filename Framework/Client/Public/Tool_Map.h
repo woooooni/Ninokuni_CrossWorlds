@@ -42,6 +42,8 @@ private:
 	void BatchDynamic(LEVELID iLevelID, LAYER_TYPE iLayerType);
 	void DeleteDynamic(LEVELID iLevelID, LAYER_TYPE iLayerType);
 
+	void BatchWater(LEVELID iLevelID, LAYER_TYPE iLayerType);
+
 	void DeleteLight(_uint iLightID);
 
 

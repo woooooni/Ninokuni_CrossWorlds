@@ -41,7 +41,7 @@ void CAurora::LateTick(_float fTimeDelta)
 	Vec4 vCamePos = GI->Get_CamPosition();
 
 	//m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vCamePos);
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDERGROUP::RENDER_AURORA, this);
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDERGROUP::RENDER_EFFECT, this);
 }
 
 HRESULT CAurora::Render()

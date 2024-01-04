@@ -101,6 +101,7 @@ namespace Client
 		OBJ_SPAWNER,
 		OBJ_SKY,
 		OBJ_PORTAL,
+		OBJ_WATER,
 		OBJ_END
 	};
 

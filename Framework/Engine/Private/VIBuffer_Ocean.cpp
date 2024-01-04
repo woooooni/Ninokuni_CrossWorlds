@@ -53,12 +53,6 @@ HRESULT CVIBuffer_Ocean::Initialize_Prototype(_uint width, _uint height, _float 
 			pIndices[iIndex + 1] = (width + 1) * (z + 1) + x; //1
 			pIndices[iIndex + 2] = (width + 1) * z + x + 1; //2 
 
-			_vector vSourDir, vDestDir, vNormal;
-
-			vSourDir = XMLoadFloat3(&pVertices[pIndices[iIndex + 1]].vPosition) - XMLoadFloat3(&pVertices[pIndices[iIndex + 0]].vPosition);
-			vDestDir = XMLoadFloat3(&pVertices[pIndices[iIndex + 2]].vPosition) - XMLoadFloat3(&pVertices[pIndices[iIndex + 1]].vPosition);
-
-
 			pIndices[iIndex + 3] = (width + 1) * z + x + 1; // 2
 			pIndices[iIndex + 4] = (width + 1) * (z + 1) + x; // 1;
 			pIndices[iIndex + 5] = (width + 1) * (z + 1) + x + 1; // 3

@@ -16,6 +16,7 @@
 #include "Camera_Manager.h"
 #include "Game_Manager.h"
 #include "Player.h"
+#include "Water.h"
 
 CTool_Map::CTool_Map(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CTool(pDevice, pContext)
@@ -59,7 +60,7 @@ void CTool_Map::Tick(_float fTimeDelta)
 #pragma endregion MapNPC
 
 #pragma region MapWater
-		//MapWaterSpace();
+		MapWaterSpace();
 #pragma endregion MapWater
 		int a = 0;
 
@@ -229,6 +230,26 @@ void CTool_Map::DeleteDynamic(LEVELID iLevelID, LAYER_TYPE iLayerType)
 		}
 		else
 			++iter;
+
+	}
+}
+
+void CTool_Map::BatchWater(LEVELID iLevelID, LAYER_TYPE iLayerType)
+{
+	list<CGameObject*>& pGameObjects = GI->Find_GameObjects(iLevelID, iLayerType);
+
+	for (auto& pObj : pGameObjects)
+	{
+		if (pObj->Get_ObjectType() != OBJ_TYPE::OBJ_WATER)
+			continue;
+
+		string ObjectID = std::to_string(pObj->Get_ObjectID());
+		string ObjectTag = CUtils::ToString(pObj->Get_ObjectTag());
+
+		string strName = ObjectTag + "_" + ObjectID;
+
+		if (ImGui::Selectable(strName.c_str()))
+			m_pSelectObj = pObj;
 
 	}
 }
@@ -449,6 +470,9 @@ void CTool_Map::MapObjectSpace()
 						break;
 					case OBJ_TYPE::OBJ_SKY:
 						DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_SKYBOX);
+						break;
+					case OBJ_TYPE::OBJ_WATER:
+						DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC);
 						break;
 					}
 
@@ -1032,9 +1056,104 @@ void CTool_Map::MapNPCSpace()
 
 void CTool_Map::MapWaterSpace()
 {
-	if (ImGui::CollapsingHeader("[ Water Tool ]", ImGuiTreeNodeFlags_DefaultOpen))
+	if (ImGui::CollapsingHeader("[ Water Tool ]"))
 	{
-		ImGui::TextColored(ImVec4(0.0f, 0.0f, 1.0f, 1.0f), u8"Water Inspector");
+		ImGui::TextColored(ImVec4(0.05f, 0.2f, 0.8f, 1.f), u8"Ocean");
+
+		if (m_pSelectObj != nullptr && m_pSelectObj->Get_ObjectType() == OBJ_WATER)
+		{
+			ImGui::PushID(m_pSelectObj->Get_ObjectTag().c_str() + m_pSelectObj->Get_ObjectID());
+			ImGui::NextColumn();
+
+			if (ImGui::CollapsingHeader("[ Water Info ]"))
+			{
+				ImGui::Separator();
+
+				ImGui::NextColumn();
+				ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), u8"GerstnerWave Option");
+				ImGui::NextColumn();
+
+				ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), u8"VertexOption");
+				
+				CWater::VS_GerstnerWave& vsWave = static_cast<CWater*>(m_pSelectObj)->Get_VSGerstnerWave();
+				Vec2 A = vsWave.A;
+				Vec2 F = vsWave.F;
+				Vec2 S = vsWave.S;
+				Vec4 D = vsWave.D;
+
+				if (ImGui::DragFloat2("VsWaveAmplitude", &A.x, 0.001f, 0.001f, 10.0f))
+				{
+					vsWave.A.x = A.x;
+					vsWave.A.y = A.y;
+				}
+
+				if (ImGui::DragFloat2("VsWaveFrequency", &F.x, 0.001f, 0.001f, 10.0f))
+				{
+					vsWave.F.x = F.x;
+					vsWave.F.y = F.y;
+				}
+
+				if (ImGui::DragFloat2("VsWaveSteepness", &S.x, 0.001f, 0.001f, 10.0f))
+				{
+					vsWave.S.x = S.x;
+					vsWave.S.y = S.y;
+				}
+
+				if (ImGui::DragFloat4("VsWaveDir", &D.x, 0.001f, 0.001f, 10.0f))
+				{
+					vsWave.D.x = D.x;
+					vsWave.D.y = D.y;
+					vsWave.D.z = D.z;
+					vsWave.D.w = D.w;
+				}
+
+				_float& Damper = static_cast<CWater*>(m_pSelectObj)->Get_Damper();
+
+				if (ImGui::DragFloat("VsDamper", &Damper, 0.001f, 0.001f, 10.0f));
+					
+
+				ImGui::NextColumn();
+
+				ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), u8"PixelOption");
+
+
+				CWater::PS_GerstnerWave& psWave = static_cast<CWater*>(m_pSelectObj)->Get_PSGerstnerWave();
+
+				_float fresnelBias = psWave.fresnelBias;
+				_float fresnelPower = psWave.fresnelPower;
+				_float waterAmount = psWave.waveAmount;
+				_float reflectAmount = psWave.reflectAmount;
+
+				_float bumpScale = psWave.bumpScale;
+
+				Vec4 ShallowWaterColor = psWave.vShallowWaterColor;
+				Vec4 DeepWaterColor = psWave.vDeepWaterColor;
+
+				if (ImGui::DragFloat("PsfresnelBias", &fresnelBias, 0.001f, 0.001f, 10.0f))
+					psWave.fresnelBias = fresnelBias;
+
+				if (ImGui::DragFloat("PsfresnelPower", &fresnelPower, 0.001f, 0.001f, 10.0f))
+					psWave.fresnelPower = fresnelPower;
+
+				if (ImGui::DragFloat("PswaterAmount", &waterAmount, 0.001f, 0.001f, 10.0f))
+					psWave.waveAmount = waterAmount;
+
+				if (ImGui::DragFloat("PsreflectAmount", &reflectAmount, 0.001f, 0.001f, 10.0f))
+					psWave.reflectAmount = reflectAmount;
+
+				if (ImGui::DragFloat("PsbumpScale", &bumpScale, 0.001f, 0.001f, 10.0f))
+					psWave.bumpScale = bumpScale;
+
+				if (ImGui::ColorEdit3("PsShallowWaterColor", &ShallowWaterColor.x, 0.001f))
+					psWave.vShallowWaterColor = ShallowWaterColor;
+
+				if (ImGui::ColorEdit3("PsDeepWaterColor", &DeepWaterColor.x, 0.001f))
+					psWave.vDeepWaterColor = DeepWaterColor;
+			}
+
+			ImGui::PopID();
+		}
+		
 	}
 }
 
@@ -1264,6 +1383,19 @@ HRESULT CTool_Map::Save_Dynamic_Data(const wstring& strMapFileName)
 		File->Write<_float4>(vUp);
 		File->Write<_float4>(vLook);
 		File->Write<_float4>(vPos);
+
+		_uint objectType = Object->Get_ObjectType();
+		File->Write<_uint>(objectType);
+
+		if (Object->Get_ObjectType() == OBJ_TYPE::OBJ_WATER)
+		{
+			CWater::VS_GerstnerWave vsWave = static_cast<CWater*>(Object)->Get_VSGerstnerWave();
+			File->Write<CWater::VS_GerstnerWave>(vsWave);
+			CWater::PS_GerstnerWave psWave = static_cast<CWater*>(Object)->Get_PSGerstnerWave();
+			File->Write<CWater::PS_GerstnerWave>(psWave);
+			_float damp = static_cast<CWater*>(Object)->Get_Damper();
+			File->Write<_float>(damp);
+		}
 	}
 	
 
@@ -1297,6 +1429,9 @@ HRESULT CTool_Map::Load_Dynamic_Data(const wstring& strMapFileName)
 		File->Read<_float4>(vLook);
 		File->Read<_float4>(vPos);
 
+		_uint objectType;
+		File->Read<_uint>(objectType);
+
 
 		OBJECT_INIT_DESC Init_Data = {};
 		Init_Data.vStartPosition = vPos;
@@ -1325,6 +1460,22 @@ HRESULT CTool_Map::Load_Dynamic_Data(const wstring& strMapFileName)
 		pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
 		pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
 		pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
+
+		if (pObj->Get_ObjectType() == OBJ_TYPE::OBJ_WATER)
+		{
+			CWater::VS_GerstnerWave vsWave;
+			File->Read<CWater::VS_GerstnerWave>(vsWave);
+			CWater::PS_GerstnerWave psWave;
+			File->Read<CWater::PS_GerstnerWave>(psWave);
+			_float damp;
+			File->Read<_float>(damp);
+
+			static_cast<CWater*>(pObj)->Set_VSGerstnerWave(vsWave);
+			static_cast<CWater*>(pObj)->Set_PSGerstnerWave(psWave);
+			static_cast<CWater*>(pObj)->Set_Damper(damp);
+		}
+
+
 	}
 
 	
@@ -1375,6 +1526,11 @@ HRESULT CTool_Map::Load_Light_Data(const wstring& strLightFilePath)
 	_uint iLightSize = 0;
 	pFile->Read<_uint>(iLightSize);
 	// 라이트 개수
+	list<CLight*>* pLightlist = GI->Get_LightList();
+	for (auto& pLight : *pLightlist)
+		Safe_Release<CLight*>(pLight);
+
+	pLightlist->clear();
 
 	for (_uint i = 0; i < iLightSize; ++i)
 	{

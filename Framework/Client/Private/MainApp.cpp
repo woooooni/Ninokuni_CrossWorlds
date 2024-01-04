@@ -386,7 +386,7 @@ HRESULT CMainApp::Ready_Prototype_Component()
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Ocean_Terrain"),
-		CVIBuffer_Ocean::Create(m_pDevice, m_pContext, 64, 64, 8.0f))))
+		CVIBuffer_Ocean::Create(m_pDevice, m_pContext, 88, 88, 1.0f))))
 		return E_FAIL;
 
 	/* For.Prototype_Component_VIBuffer_Sky_Plane*/
@@ -609,11 +609,33 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Water_Normal2"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/AnimModel/Map/Water/others_0020_normal_directx_2k.png")))))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Water_Normal3"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/AnimModel/Map/Water/T_WaterNormal2.png")))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Water_Normal4"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/AnimModel/Map/Water/T_WaterNormal_2.png")))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Water_Normal5"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/AnimModel/Map/Water/T_WaterNormal.png")))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Water_Wave_Normal"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/AnimModel/Map/Water/T_SmallWaves_N.png")))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Water_Wave_Normal2"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/AnimModel/Map/Water/waves2.dds")))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Water_Wave_Height"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/AnimModel/Map/Water/T_LargeWaves_H.png")))))
+		return E_FAIL;
+
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Water_Diffuse"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/AnimModel/Map/Water/others_0020_color_2k.png")))))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Water_HeightMap"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/AnimModel/Map/Water/others_0020_height_2k.png")))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Water_CubeMap"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/AnimModel/Map/Water/CloudyHillsCubemap2.dds")))))
 		return E_FAIL;
 
 

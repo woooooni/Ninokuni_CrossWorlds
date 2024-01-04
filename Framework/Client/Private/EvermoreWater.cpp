@@ -1,14 +1,17 @@
 #include "..\Public\EvermoreWater.h"
 #include "GameInstance.h"
+#include "Light.h"
 
 CEvermoreWater::CEvermoreWater(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	: CGameObject(pDevice, pContext, L"Evermore_Water", OBJ_TYPE::OBJ_DYNAMIC)
+	: CWater(pDevice, pContext, m_strObjectTag, OBJ_TYPE::OBJ_WATER)
 {
+	m_strObjectTag = TEXT("Everemore_Water");
 }
 
-CEvermoreWater::CEvermoreWater(const CGameObject& rhs)
-	: CGameObject(rhs)
+CEvermoreWater::CEvermoreWater(const CWater& rhs)
+	: CWater(rhs)
 {
+
 }
 
 HRESULT CEvermoreWater::Initialize_Prototype()
@@ -21,10 +24,6 @@ HRESULT CEvermoreWater::Initialize(void* pArg)
 {
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
-
-
-	m_vDirection.x = GI->RandomFloat(-1.0f, 1.0f);
-	m_vDirection.y = GI->RandomFloat(-1.0f, 1.0f);
 
 	return S_OK;
 }
@@ -61,38 +60,42 @@ HRESULT CEvermoreWater::Ready_Components()
 		return E_FAIL;
 
 	/* Com_Shader */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Water"),
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Ocean"),
 		TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Entire_Water"),
-		TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
-		return E_FAIL;
-
-	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Ocean_Terrain"),
-	//	TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom))))
+	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Everemore_Water"),
+	//	TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 	//	return E_FAIL;
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Terrain"),
+		TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom))))
+		return E_FAIL;
 
 	/* Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"),
 		TEXT("Com_Transform"), reinterpret_cast<CComponent**>(&m_pTransformCom))))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Water_Normal"),
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Water_Wave_Normal"),
 		TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom[TEX_TYPE::TEX_NORMAL]))))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Noise"),
-		TEXT("Com_Texture2"), reinterpret_cast<CComponent**>(&m_pTextureCom[TEX_TYPE::TEX_NOISE1]))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Water_CubeMap"),
+		TEXT("Com_Texture2"), reinterpret_cast<CComponent**>(&m_pTextureCom[TEX_TYPE::TEX_DIFFUSE]))))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Noise"),
-		TEXT("Com_Texture3"), reinterpret_cast<CComponent**>(&m_pTextureCom[TEX_TYPE::TEX_NOISE2]))))
-		return E_FAIL;
+	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Noise"),
+	//	TEXT("Com_Texture2"), reinterpret_cast<CComponent**>(&m_pTextureCom[TEX_TYPE::TEX_NOISE1]))))
+	//	return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Water_Diffuse"),
-		TEXT("Com_Texture4"), reinterpret_cast<CComponent**>(&m_pTextureCom[TEX_TYPE::TEX_DIFFUSE]))))
-		return E_FAIL;
+	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Noise"),
+	//	TEXT("Com_Texture3"), reinterpret_cast<CComponent**>(&m_pTextureCom[TEX_TYPE::TEX_NOISE2]))))
+	//	return E_FAIL;
+
+	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Water_Diffuse"),
+	//	TEXT("Com_Texture4"), reinterpret_cast<CComponent**>(&m_pTextureCom[TEX_TYPE::TEX_DIFFUSE]))))
+	//	return E_FAIL;
 
 	
 	return S_OK;
@@ -100,9 +103,8 @@ HRESULT CEvermoreWater::Ready_Components()
 
 HRESULT CEvermoreWater::Bind_ShaderResources()
 {
-
-	if (nullptr == m_pModelCom)
-		return E_FAIL;
+	//if (nullptr == m_pModelCom)
+	//	return E_FAIL;
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("World", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
 		return E_FAIL;
@@ -113,124 +115,59 @@ HRESULT CEvermoreWater::Bind_ShaderResources()
 
 	Vec4 vCameraPos = GI->Get_CamPosition();
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &vCameraPos, sizeof(Vec4))))
+	list<CLight*>* lightList = GI->Get_LightList();
+	if (nullptr != lightList)
+	{
+		for (auto& pLight : *lightList)
+		{
+			if (pLight->Get_LightDesc()->eType != LIGHTDESC::TYPE_DIRECTIONAL)
+				continue;
+
+			m_PSGerstnerWave.vLightColor = pLight->Get_LightDesc()->vDiffuse;
+			m_PSGerstnerWave.vLightDir = Vec3(
+				pLight->Get_LightDesc()->vDirection.x, 
+				pLight->Get_LightDesc()->vDirection.y, 
+				pLight->Get_LightDesc()->vDirection.z);
+		}
+	}
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("vCameraPosition", &vCameraPos, sizeof(Vec4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("VS_Gerstner", &m_VSGerstnerWave, sizeof(VS_GerstnerWave))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("PS_Gerstner", &m_PSGerstnerWave, sizeof(PS_GerstnerWave))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("time", &m_fTime, sizeof(_float))))
 		return E_FAIL;
 
 	if (FAILED(m_pTextureCom[TEX_TYPE::TEX_NORMAL]->Bind_ShaderResource(m_pShaderCom, "NormalTexture")))
 		return E_FAIL;
-
-	if (FAILED(m_pTextureCom[TEX_TYPE::TEX_NOISE1]->Bind_ShaderResource(m_pShaderCom, "MaskTexture", 69)))
-		return E_FAIL;
-	if (FAILED(m_pTextureCom[TEX_TYPE::TEX_NOISE2]->Bind_ShaderResource(m_pShaderCom, "MaskTexture2", 158)))
+	if (FAILED(m_pTextureCom[TEX_TYPE::TEX_DIFFUSE]->Bind_ShaderResource(m_pShaderCom, "Env")))
 		return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("fWaterTranslationSpeed", &m_fWaterTranslationSpeed, sizeof(_float))))
+	//if (FAILED(m_pTextureCom[TEX_TYPE::TEX_NOISE1]->Bind_ShaderResource(m_pShaderCom, "MaskTexture", 69)))
+	//	return E_FAIL;
+	//if (FAILED(m_pTextureCom[TEX_TYPE::TEX_NOISE2]->Bind_ShaderResource(m_pShaderCom, "MaskTexture2", 158)))
+	//	return E_FAIL;
+
+
+	//_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+	//_uint iPassIndex = 0;
+
+	//for (_uint i = 0; i < iNumMeshes; ++i)
+	//{
+	//	if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "DiffuseTexture")))
+	//		return E_FAIL;
+	//}
+
+	//if (FAILED(m_pModelCom->Render(m_pShaderCom, 0, 1)))
+	//	return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Begin(0)))
+		return E_FAIL;
+	if (FAILED(m_pVIBufferCom->Render()))
 		return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("fWaterTime", &m_fTime, sizeof(_float))))
-		return E_FAIL;
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("fReflectRefractScale", &m_fReflectRefractSacle, sizeof(_float))))
-		return E_FAIL;
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("bFresnel", &m_bFresnel, sizeof(_bool))))
-		return E_FAIL;
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("flowDirection", &m_vDirection, sizeof(Vec2))))
-		return E_FAIL;
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("fBloomTiling", &m_fBloomTiling, sizeof(_float))))
-		return E_FAIL;
-
-
-	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
-	_uint iPassIndex = 0;
-
-	for (_uint i = 0; i < iNumMeshes; ++i)
-	{
-		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "DiffuseTexture")))
-			return E_FAIL;
-	}
-
-	if (FAILED(m_pModelCom->Render(m_pShaderCom, 0, 0)))
-		return E_FAIL;
-
-	//if (FAILED(m_pShaderCom->Begin(0)))
-	//	return E_FAIL;
-	//if (FAILED(m_pVIBufferCom->Render()))
-	//	return E_FAIL;
-
-#pragma region Wave
-	//if (FAILED(m_pTransformCom->Bind_ShaderResources(m_pShaderCom, "World")))
-	//	return E_FAIL;
-	//if (FAILED(GI->Bind_TransformToShader(m_pShaderCom, "View", CPipeLine::D3DTS_VIEW)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Bind_TransformToShader(m_pShaderCom, "Projection", CPipeLine::D3DTS_PROJ)))
-	//	return E_FAIL;
-
-	//Vec4 vCamPos = GI->Get_CamPosition();
-
-	//if (FAILED(m_pShaderCom->Bind_RawValue("vCameraPosition", &vCamPos, sizeof(Vec4))))
-		//return E_FAIL;
-	//if (FAILED(m_pShaderCom->Bind_RawValue("VS_Ocean", &m_vsOceanBuffer, sizeof(VS_OceanBuffer))))
-	//	return E_FAIL;
-	//if (FAILED(m_pShaderCom->Bind_RawValue("PS_Ocean", &m_psOceanBuffer, sizeof(PS_OceanBuffer))))
-	//	return E_FAIL;
-
-#pragma region Vertex
-	//if (FAILED(m_pShaderCom->Bind_RawValue("fWaveFrequency", &m_vsOceanBuffer.fWaveFrequency, sizeof(_float))))
-	//	return E_FAIL;
-	//if (FAILED(m_pShaderCom->Bind_RawValue("fWaveAmplitude", &m_vsOceanBuffer.fWaveFrequency, sizeof(_float))))
-	//	return E_FAIL;
-	//if (FAILED(m_pShaderCom->Bind_RawValue("fBumpHeight", &m_vsOceanBuffer.fWaveFrequency, sizeof(_float))))
-	//	return E_FAIL;
-	//if (FAILED(m_pShaderCom->Bind_RawValue("vBumpSpeed", &m_vsOceanBuffer.fWaveFrequency, sizeof(Vec2))))
-	//	return E_FAIL;
-	//if (FAILED(m_pShaderCom->Bind_RawValue("vBumpSpeed", &m_vsOceanBuffer.fTextureScale, sizeof(Vec2))))
-	//	return E_FAIL;
-#pragma endregion Vertex
-
-
-#pragma region Pixel
-	//if (FAILED(m_pShaderCom->Bind_RawValue("fFresnelBias", &m_psOceanBuffer.fFresnelBias, sizeof(_float))))
-	//	return E_FAIL;
-	//if (FAILED(m_pShaderCom->Bind_RawValue("fFresnelPower", &m_psOceanBuffer.fFresnelPower, sizeof(_float))))
-	//	return E_FAIL;
-	//if (FAILED(m_pShaderCom->Bind_RawValue("fFresnelAmount", &m_psOceanBuffer.fFresnelAmount, sizeof(_float))))
-	//	return E_FAIL;
-	//if (FAILED(m_pShaderCom->Bind_RawValue("fShoreBlend", &m_psOceanBuffer.fShoreBlend, sizeof(_float))))
-	//	return E_FAIL;
-	//if (FAILED(m_pShaderCom->Bind_RawValue("fHeightRatio", &m_psOceanBuffer.fHeightRatio, sizeof(_float))))
-	//	return E_FAIL;
-	//if (FAILED(m_pShaderCom->Bind_RawValue("vOceanSize", &m_psOceanBuffer.vOceanSize, sizeof(Vec2))))
-	//	return E_FAIL;
-	//if (FAILED(m_pShaderCom->Bind_RawValue("vShallowColor", &m_psOceanBuffer.vOceanSize, sizeof(Vec4))))
-	//	return E_FAIL;
-	//if (FAILED(m_pShaderCom->Bind_RawValue("vDeepColor", &m_psOceanBuffer.vOceanSize, sizeof(Vec4))))
-	//	return E_FAIL;
-#pragma endregion Pixel
-
-	//if(FAILED(m_pShaderCom->Bind_RawValue("fTime", &m_fTime, sizeof(_float))))
-	//	return E_FAIL;
-
-	//if (FAILED(m_pTextureCom[TEX_TYPE::TEX_NORMAL]->Bind_ShaderResource(m_pShaderCom, "NormalMap")))
-	//	return E_FAIL;
-	//if (FAILED(m_pTextureCom[TEX_TYPE::TE]->Bind_ShaderResource(m_pShaderCom, "HeightMap", 0)))
-	//	return E_FAIL;
-	//if (FAILED(m_pTextureCom[TEX_TYPE::TEX_DIFFUSE]->Bind_ShaderResource(m_pShaderCom, "DiffuseMap", 0)))
-	//	return E_FAIL;
-
-	//const LIGHTDESC* lightDesc = GI->Get_LightDesc(0);
-	//Vec4 vAmbient = lightDesc->vAmbient;
-
-	//if (FAILED(m_pShaderCom->Bind_RawValue("vSunAmbient", &vAmbient, sizeof(Vec4))))
-	//	return E_FAIL;
-
-	//if (FAILED(m_pShaderCom->Begin(0)))
-	//	return E_FAIL;
-	//if (FAILED(m_pVIBufferCom->Render()))
-	//	return E_FAIL;
-#pragma endregion Wave
 
 	return S_OK;
 }
@@ -272,6 +209,6 @@ void CEvermoreWater::Free()
 	for (_uint i = 0; i < TEX_TYPE::TEX_END; ++i)
 		Safe_Release<CTexture*>(m_pTextureCom[i]);
 
-	Safe_Release<CModel*>(m_pModelCom);
-	//Safe_Release<CVIBuffer_Ocean*>(m_pVIBufferCom);
+	//Safe_Release<CModel*>(m_pModelCom);
+	Safe_Release<CVIBuffer_Terrain*>(m_pVIBufferCom);
 }
