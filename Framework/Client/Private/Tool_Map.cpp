@@ -472,7 +472,7 @@ void CTool_Map::MapObjectSpace()
 						DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_SKYBOX);
 						break;
 					case OBJ_TYPE::OBJ_WATER:
-						DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_WATER);
+						DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC);
 						break;
 					}
 
@@ -1142,7 +1142,7 @@ void CTool_Map::MapWaterSpace()
 					psWave.reflectAmount = reflectAmount;
 
 				if (ImGui::DragFloat("PsbumpScale", &bumpScale, 0.001f, 0.001f, 10.0f))
-					psWave.reflectAmount = bumpScale;
+					psWave.bumpScale = bumpScale;
 
 				if (ImGui::ColorEdit3("PsShallowWaterColor", &ShallowWaterColor.x, 0.001f))
 					psWave.vShallowWaterColor = ShallowWaterColor;

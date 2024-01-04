@@ -4,7 +4,7 @@
 #include "Camera_Manager.h"
 
 CWater::CWater(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType)
-	: CDynamicObject(pDevice, pContext, strObjectTag, eType)
+	: CDynamicObject(pDevice, pContext, strObjectTag, OBJ_TYPE::OBJ_WATER)
 {
 
 }

@@ -149,9 +149,12 @@ PS_OUT PS_MAIN(VS_OUT input)
     finalBump = mul(TBNtoWorld, finalBump);
     finalBump = normalize(finalBump);
    
-
+     
     float DiffuseFactor = saturate(dot(-L, finalBump));
     float4 DiffuseColor = PS_Gerstner.lightColor * DiffuseFactor;
+    
+    if (DiffuseColor.r < 0.1f)
+        DiffuseColor = 0.2f;
     
     float3 V = normalize(input.eyeVec);
     float3 lookup = reflect(-V, finalBump);
@@ -159,10 +162,13 @@ PS_OUT PS_MAIN(VS_OUT input)
     
     float facing = 1 - saturate(dot(V, finalBump));
     float fresnel = PS_Gerstner.fresnelBias + (1 - PS_Gerstner.fresnelBias) * pow(facing, PS_Gerstner.fresnelPower);
-    float4 waterColor = lerp(PS_Gerstner.deepWaterColor, PS_Gerstner.ShallowWaterColor, facing);
+    float4 waterColor = lerp(PS_Gerstner.deepWaterColor, PS_Gerstner.ShallowWaterColor, fresnel);
     
-    output.vColor = (waterColor * PS_Gerstner.waterAmount + PS_Gerstner.reflectAmount *
-    reflectColor * fresnel) * DiffuseColor;
+    output.vColor = (waterColor * PS_Gerstner.waterAmount + PS_Gerstner.reflectAmount
+     * reflectColor * fresnel) * DiffuseColor;
+    if(output.vColor.a < 0.1f)
+        output.vColor.a = 0.05f;
+    
     output.vDepth = float4(input.vProjPos.z / input.vProjPos.w, input.vProjPos.w / 1000.f, 0.0f, 0.0f);
     output.vNormal = float4(finalBump.xyz * 0.5f + 0.5f, 0.0f);
     
