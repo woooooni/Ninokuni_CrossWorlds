@@ -42,8 +42,6 @@ HRESULT CLevel_Manager::Render_Debug()
 		Safe_AddRef(m_pCurrentLevel);
 		m_iCurrentLevelIndex = m_iNextLevelIndex;
 
-		
-
 		Safe_Release(m_pReserveLevel);
 		m_pReserveLevel = nullptr;
 

@@ -456,6 +456,7 @@
     <ClInclude Include="..\Public\State_Destroyer_Damaged_Strong.h" />
     <ClInclude Include="..\Public\State_Destroyer_Damaged_Weak.h" />
     <ClInclude Include="..\Public\State_Destroyer_Dead.h" />
+    <ClInclude Include="..\Public\State_Destroyer_DoorEnter.h" />
     <ClInclude Include="..\Public\State_Destroyer_Neutral_Crouch_Idle.h" />
     <ClInclude Include="..\Public\State_Destroyer_Neutral_Crouch_Move.h" />
     <ClInclude Include="..\Public\State_Destroyer_Neutral_Idle.h" />
@@ -499,6 +500,7 @@
     <ClInclude Include="..\Public\State_Engineer_Damaged_Strong.h" />
     <ClInclude Include="..\Public\State_Engineer_Damaged_Weak.h" />
     <ClInclude Include="..\Public\State_Engineer_Dead.h" />
+    <ClInclude Include="..\Public\State_Engineer_DoorEnter.h" />
     <ClInclude Include="..\Public\State_Engineer_Neutral_Crouch_Idle.h" />
     <ClInclude Include="..\Public\State_Engineer_Neutral_Crouch_Move.h" />
     <ClInclude Include="..\Public\State_Engineer_Neutral_Idle.h" />
@@ -541,6 +543,7 @@
     <ClInclude Include="..\Public\State_SwordMan_Damaged_KnockDown.h" />
     <ClInclude Include="..\Public\State_SwordMan_Damaged_Strong.h" />
     <ClInclude Include="..\Public\State_SwordMan_Damaged_Weak.h" />
+    <ClInclude Include="..\Public\State_SwordMan_DoorEnter.h" />
     <ClInclude Include="..\Public\State_SwordMan_Neutral_Pick_Large_Enter.h" />
     <ClInclude Include="..\Public\State_SwordMan_Neutral_Pick_Large_Finish.h" />
     <ClInclude Include="..\Public\State_SwordMan_Neutral_Pick_Large_Idle.h" />
@@ -1081,6 +1084,7 @@
     <ClCompile Include="..\Private\State_Destroyer_Damaged_Strong.cpp" />
     <ClCompile Include="..\Private\State_Destroyer_Damaged_Weak.cpp" />
     <ClCompile Include="..\Private\State_Destroyer_Dead.cpp" />
+    <ClCompile Include="..\Private\State_Destroyer_DoorEnter.cpp" />
     <ClCompile Include="..\Private\State_Destroyer_Neutral_Crouch_Idle.cpp" />
     <ClCompile Include="..\Private\State_Destroyer_Neutral_Crouch_Move.cpp" />
     <ClCompile Include="..\Private\State_Destroyer_Neutral_Idle.cpp" />
@@ -1124,6 +1128,7 @@
     <ClCompile Include="..\Private\State_Engineer_Damaged_Strong.cpp" />
     <ClCompile Include="..\Private\State_Engineer_Damaged_Weak.cpp" />
     <ClCompile Include="..\Private\State_Engineer_Dead.cpp" />
+    <ClCompile Include="..\Private\State_Engineer_DoorEnter.cpp" />
     <ClCompile Include="..\Private\State_Engineer_Neutral_Crouch_Idle.cpp" />
     <ClCompile Include="..\Private\State_Engineer_Neutral_Crouch_Move.cpp" />
     <ClCompile Include="..\Private\State_Engineer_Neutral_Idle.cpp" />
@@ -1156,6 +1161,7 @@
     <ClCompile Include="..\Private\State_SwordMan_Damaged_KnockDown.cpp" />
     <ClCompile Include="..\Private\State_SwordMan_Damaged_Strong.cpp" />
     <ClCompile Include="..\Private\State_SwordMan_Damaged_Weak.cpp" />
+    <ClCompile Include="..\Private\State_SwordMan_DoorEnter.cpp" />
     <ClCompile Include="..\Private\State_SwordMan_Neutral_Pick_Large_Enter.cpp" />
     <ClCompile Include="..\Private\State_SwordMan_Neutral_Pick_Large_Finish.cpp" />
     <ClCompile Include="..\Private\State_SwordMan_Neutral_Pick_Large_Idle.cpp" />

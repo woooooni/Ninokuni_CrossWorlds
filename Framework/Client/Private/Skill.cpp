@@ -10,7 +10,7 @@ CSkill::CSkill()
 
 
 
-HRESULT CSkill::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CGameObject* pOwner)
+HRESULT CSkill::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CCharacter* pOwner)
 {
 	m_pDevice = pDevice;
 	m_pContext = pContext;
@@ -43,6 +43,12 @@ void CSkill::Tick(_float fTimeDelta)
 void CSkill::LateTick(_float fTimeDelta)
 {
 	
+}
+
+void CSkill::Use_Skill()
+{
+	m_bUseable = false;
+	m_fAccCoolTime = 0.f;
 }
 
 

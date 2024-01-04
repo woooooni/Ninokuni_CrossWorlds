@@ -12,9 +12,12 @@ protected:
 	virtual ~CSkill() = default;
 
 public:
-	virtual HRESULT Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, class CGameObject* pOwner);
+	virtual HRESULT Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, class CCharacter* pOwner);
 	virtual void Tick(_float fTimeDelta);
 	virtual void LateTick(_float fTimeDelta);
+
+public:
+	virtual void Use_Skill();
 
 public:
 	_bool  Is_Useable() { return m_bUseable; }
@@ -22,7 +25,7 @@ public:
 	_float Get_CoolTime() { return m_fCoolTime; }
 
 protected:
-	class CGameObject* m_pOwner = nullptr;
+	class CCharacter* m_pOwner = nullptr;
 	ID3D11Device* m_pDevice = nullptr; 
 	ID3D11DeviceContext* m_pContext = nullptr;
 

@@ -9,7 +9,7 @@ CSkill_SwordMan_SipohoningLunge::CSkill_SwordMan_SipohoningLunge()
 
 
 
-HRESULT CSkill_SwordMan_SipohoningLunge::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CGameObject* pOwner)
+HRESULT CSkill_SwordMan_SipohoningLunge::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CCharacter* pOwner)
 {
 	if (FAILED(__super::Initialize(pDevice, pContext, pOwner)))
 		return E_FAIL;
@@ -28,8 +28,13 @@ void CSkill_SwordMan_SipohoningLunge::LateTick(_float fTimeDelta)
 	__super::LateTick(fTimeDelta);
 }
 
+void CSkill_SwordMan_SipohoningLunge::Use_Skill()
+{
+	__super::Use_Skill();
+}
 
-CSkill_SwordMan_SipohoningLunge* CSkill_SwordMan_SipohoningLunge::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CGameObject* pOwner)
+
+CSkill_SwordMan_SipohoningLunge* CSkill_SwordMan_SipohoningLunge::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CCharacter* pOwner)
 {
 	CSkill_SwordMan_SipohoningLunge* pInstance = new CSkill_SwordMan_SipohoningLunge;
 	if (FAILED(pInstance->Initialize(pDevice, pContext, pOwner)))

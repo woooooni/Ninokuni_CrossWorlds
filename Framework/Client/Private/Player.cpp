@@ -30,7 +30,7 @@ void CPlayer::LateTick(_float fTimeDelta)
 		m_pCharacter->LateTick(fTimeDelta);
 }
 
-HRESULT CPlayer::Set_Character(CHARACTER_TYPE eType)
+HRESULT CPlayer::Set_Character(CHARACTER_TYPE eType, _bool  bEnterScene)
 {
 
 	if (nullptr != m_pCharacter)
@@ -53,6 +53,15 @@ HRESULT CPlayer::Set_Character(CHARACTER_TYPE eType)
 	{
 		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_TargetObj(m_pCharacter);
 		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_LookAtObj(m_pCharacter);
+	}
+
+	if (true == bEnterScene)
+	{
+		CStateMachine* pMachine = m_pCharacter->Get_Component<CStateMachine>(L"Com_StateMachine");
+		if (nullptr == pMachine)
+			return E_FAIL;
+
+		pMachine->Change_State(CCharacter::STATE::NEUTRAL_DOOR_ENTER);
 	}
 
 	return S_OK;

@@ -9,7 +9,7 @@ CSkill_Engineer_BurstCall::CSkill_Engineer_BurstCall()
 
 
 
-HRESULT CSkill_Engineer_BurstCall::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CGameObject* pOwner)
+HRESULT CSkill_Engineer_BurstCall::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CCharacter* pOwner)
 {
 	if (FAILED(__super::Initialize(pDevice, pContext, pOwner)))
 		return E_FAIL;
@@ -28,8 +28,13 @@ void CSkill_Engineer_BurstCall::LateTick(_float fTimeDelta)
 	__super::LateTick(fTimeDelta);
 }
 
+void CSkill_Engineer_BurstCall::Use_Skill()
+{
+	__super::Use_Skill();
+}
 
-CSkill_Engineer_BurstCall* CSkill_Engineer_BurstCall::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CGameObject* pOwner)
+
+CSkill_Engineer_BurstCall* CSkill_Engineer_BurstCall::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CCharacter* pOwner)
 {
 	CSkill_Engineer_BurstCall* pInstance = new CSkill_Engineer_BurstCall;
 	if (FAILED(pInstance->Initialize(pDevice, pContext, pOwner)))

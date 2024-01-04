@@ -8,6 +8,7 @@
 #include "Weapon.h"
 #include "Sword.h"
 
+#include "State_SwordMan_DoorEnter.h"
 #include "State_SwordMan_Neutral_Idle.h"
 #include "State_SwordMan_Neutral_Jump.h"
 #include "State_SwordMan_Neutral_Walk.h"
@@ -237,6 +238,12 @@ HRESULT CCharacter_SwordMan::Ready_States()
 {
 	list<wstring> strAnimationNames;
 
+
+
+	
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_TeleportEnd");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_DOOR_ENTER, CState_SwordMan_DoorEnter::Create(m_pStateCom, strAnimationNames));
 
 	// Neutral
 	strAnimationNames.clear();

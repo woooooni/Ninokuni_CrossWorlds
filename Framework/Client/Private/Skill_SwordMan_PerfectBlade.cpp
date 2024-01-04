@@ -9,7 +9,7 @@ CSkill_SwordMan_PerfectBlade::CSkill_SwordMan_PerfectBlade()
 
 
 
-HRESULT CSkill_SwordMan_PerfectBlade::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CGameObject* pOwner)
+HRESULT CSkill_SwordMan_PerfectBlade::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CCharacter* pOwner)
 {
 	if (FAILED(__super::Initialize(pDevice, pContext, pOwner)))
 		return E_FAIL;
@@ -28,8 +28,13 @@ void CSkill_SwordMan_PerfectBlade::LateTick(_float fTimeDelta)
 	__super::LateTick(fTimeDelta);
 }
 
+void CSkill_SwordMan_PerfectBlade::Use_Skill()
+{
+	__super::Use_Skill();
+}
 
-CSkill_SwordMan_PerfectBlade* CSkill_SwordMan_PerfectBlade::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CGameObject* pOwner)
+
+CSkill_SwordMan_PerfectBlade* CSkill_SwordMan_PerfectBlade::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CCharacter* pOwner)
 {
 	CSkill_SwordMan_PerfectBlade* pInstance = new CSkill_SwordMan_PerfectBlade;
 	if (FAILED(pInstance->Initialize(pDevice, pContext, pOwner)))
