@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Camera_CutScene_Map.h"
 #include "GameInstance.h"
-
+#include "UI_Manager.h"
 #include "Camera_Manager.h"
 
 CCamera_CutScene_Map::CCamera_CutScene_Map(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
@@ -59,6 +59,7 @@ void CCamera_CutScene_Map::Tick(_float fTimeDelta)
 		else /* 없다면 이전 카메라로 체인지 */
 		{
 			CCamera_Manager::GetInstance()->Set_PrevCamera();
+			CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
 			return;
 		}
 	}
@@ -90,9 +91,12 @@ HRESULT CCamera_CutScene_Map::Render()
 
 HRESULT CCamera_CutScene_Map::Start_CutScene(const string& strCutSceneName)
 {
+	
 	m_pCurCutSceneDesc = Find_CutSceneDesc(strCutSceneName);
 	if (nullptr == m_pCurCutSceneDesc)
 		return E_FAIL;
+
+	CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
 
 	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::CUTSCENE_MAP);
 

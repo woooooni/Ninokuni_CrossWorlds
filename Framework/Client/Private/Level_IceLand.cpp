@@ -171,7 +171,7 @@ HRESULT CLevel_IceLand::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 		return E_FAIL;
 
 
-	pCharacterTransform->Set_State(CTransform::STATE_POSITION, Vec4(-44.f, 3.f, 315.f, 1.f));
+	pCharacterTransform->Set_State(CTransform::STATE_POSITION, Vec4(-44.f, 6.f, 315.f, 1.f));
 
 	if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))
 	{
