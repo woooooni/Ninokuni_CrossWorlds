@@ -59,12 +59,17 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 
 	__super::Tick(fTimeDelta); 
 
+	/* Check Exception*/
+	if (LOCK_PROGRESS::OFF != m_eLockProgress)
+		Check_Exception();
+
 	/* Check Lock */
 	if (LOCK_PROGRESS::FINISH_BLEIDING == m_eLockProgress)
 	{
 		if (!m_tBlendingLookAtPosition.bActive)
 			m_eLockProgress = LOCK_PROGRESS::OFF;
 	}
+
 
 	/* Position */
 	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, Calculate_WorldPosition(fTimeDelta));
@@ -343,6 +348,15 @@ Vec4 CCamera_Follow::Calculate_DampingPosition(Vec4 vGoalPos)
 	}
 	
 	return vGoalPos;
+}
+
+void CCamera_Follow::Check_Exception()
+{
+	if (nullptr != m_pTargetObj && m_pTargetObj->Is_ReserveDead())
+		m_pTargetObj = nullptr;
+
+	if (nullptr != m_pLookAtObj && m_pLookAtObj->Is_ReserveDead())
+		m_pLookAtObj = nullptr;
 }
 
 void CCamera_Follow::Test(_float fTimeDelta)

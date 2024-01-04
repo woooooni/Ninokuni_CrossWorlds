@@ -80,6 +80,8 @@ private:
 	Vec4 Calculate_Look(_float fTimeDelta);
 	Vec4 Calculate_DampingPosition(Vec4 vGoalPos);
 
+	void Check_Exception();
+
 private:
 	void Test(_float fTimeDelta);
 

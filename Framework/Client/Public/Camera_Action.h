@@ -10,9 +10,21 @@ BEGIN(Client)
 class CCamera_Action final : public CCamera
 {
 public:
-	enum CAMERA_ACTION_TYPE { DOOR, TALK, CAMERA_ACTION_END };
+	enum CAMERA_ACTION_TYPE { LOBBY, DOOR, TALK, CAMERA_ACTION_END };
 
-private:
+public:
+	typedef struct tagActionLobbyDesc
+	{
+		const _float fLerpTime		= 3.f;
+
+		const Vec4 vCamPosition		= { 3.12f, 2.23f, -16.f, 1.f };
+
+		const Vec4 vCamLookAtStart	= { -0.3f, 0.59f, 0.745f, 1.f };
+		const Vec4 vCamLookAtFinish = { 0.135f, 0.13f, 0.969f, 1.f };
+
+		LERP_VEC4_DESC vLerpCamLookAt;
+
+	}ACTION_LOBBY_DESC;
 
 	typedef struct tagActionDoorDesc
 	{
@@ -56,10 +68,14 @@ public:
 public:
 	HRESULT Start_Action(const CAMERA_ACTION_TYPE& eType, CGameObject* pTarget = nullptr, const _uint& iTag = 0);
 
+	const _bool& Is_Finish_Action() const { return m_bAction; }
+
 private:
+	HRESULT Start_Action_Lobby();
 	HRESULT Start_Action_Door();
 	HRESULT Start_Action_Talk(CGameObject* pTarget, const _uint& iTag = 0);
 
+	void Tick_Lobby(_float fTimeDelta);
 	void Tick_Door(_float fTimeDelta);
 	void Tick_Talk(_float fTimeDelta);
 
@@ -70,6 +86,8 @@ private:
 	_bool				m_bAction = false;
 	CAMERA_ACTION_TYPE	m_eCurActionType = CAMERA_ACTION_TYPE::CAMERA_ACTION_END;
 
+
+	ACTION_LOBBY_DESC	m_tActionLobbyDesc = {};
 	ACTION_DOOR_DESC	m_tActionDoorDesc = {};
 
 	

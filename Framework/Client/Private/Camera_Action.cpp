@@ -36,6 +36,11 @@ HRESULT CCamera_Action::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, m_tActionLobbyDesc.vCamPosition);
+	Vec4 vLookAt = m_tActionLobbyDesc.vCamLookAtStart * 10000.f;
+
+	m_pTransformCom->LookAt(vLookAt.OneW());
+
 	return S_OK;
 }
 
@@ -50,6 +55,9 @@ void CCamera_Action::Tick(_float fTimeDelta)
 	{
 		switch (m_eCurActionType)
 		{
+		case CCamera_Action::LOBBY:
+			Tick_Lobby(fTimeDelta);
+			break;
 		case CCamera_Action::DOOR:
 			Tick_Door(fTimeDelta);
 			break;
@@ -61,6 +69,10 @@ void CCamera_Action::Tick(_float fTimeDelta)
 		}
 	}
 
+	if (KEY_TAP(KEY::INSERT))
+	{
+		Start_Action(CAMERA_ACTION_TYPE::LOBBY);
+	}
 }
 
 void CCamera_Action::LateTick(_float fTimeDelta)
@@ -80,6 +92,14 @@ HRESULT CCamera_Action::Start_Action(const CAMERA_ACTION_TYPE& eType, CGameObjec
 {
 	switch (eType)
 	{
+	case CAMERA_ACTION_TYPE::LOBBY :
+	{
+		if (FAILED(Start_Action_Lobby()))
+			return E_FAIL;
+
+		m_eCurActionType = CAMERA_ACTION_TYPE::LOBBY;
+	}
+	break;
 	case CAMERA_ACTION_TYPE::DOOR:
 	{
 		if (FAILED(Start_Action_Door()))
@@ -101,6 +121,17 @@ HRESULT CCamera_Action::Start_Action(const CAMERA_ACTION_TYPE& eType, CGameObjec
 	}
 
 	m_bAction = true;
+
+	return S_OK;
+}
+
+HRESULT CCamera_Action::Start_Action_Lobby()
+{
+	m_tActionLobbyDesc.vLerpCamLookAt.Start(
+		m_tActionLobbyDesc.vCamLookAtStart, 
+		m_tActionLobbyDesc.vCamLookAtFinish, 
+		m_tActionLobbyDesc.fLerpTime, 
+		LERP_MODE::SMOOTHER_STEP);
 
 	return S_OK;
 }
@@ -149,6 +180,21 @@ HRESULT CCamera_Action::Start_Action_Door()
 HRESULT CCamera_Action::Start_Action_Talk(CGameObject* pTarget, const _uint& iTag)
 {
 	return S_OK;
+}
+
+void CCamera_Action::Tick_Lobby(_float fTimeDelta)
+{
+	if (!m_tActionLobbyDesc.vLerpCamLookAt.bActive)
+	{
+		m_bAction = false;
+	}
+
+	if (m_tActionLobbyDesc.vLerpCamLookAt.bActive)
+		m_tActionLobbyDesc.vLerpCamLookAt.Update_Lerp(fTimeDelta);
+	
+	Vec4 vLookAt = m_tActionLobbyDesc.vLerpCamLookAt.vCurVec * 10000.f;
+
+	m_pTransformCom->LookAt(vLookAt.OneW());
 }
 
 void CCamera_Action::Tick_Door(_float fTimeDelta)

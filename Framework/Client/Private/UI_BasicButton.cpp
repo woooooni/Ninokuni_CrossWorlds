@@ -5,6 +5,9 @@
 #include "UI_Manager.h"
 #include "Game_Manager.h"
 
+#include "Camera_Manager.h"
+#include "Camera_Action.h"
+
 CUI_BasicButton::CUI_BasicButton(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, UIBUTTON_TYPE eType)
 	: CUI(pDevice, pContext, strObjectTag), m_eType(eType)
 {
@@ -162,6 +165,11 @@ void CUI_BasicButton::On_Mouse(_float fTimeDelta)
 							CUI_Manager::GetInstance()->Set_Textable(false);
 							CUI_Manager::GetInstance()->Set_UserName();
 							
+							CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_CurCamera());
+							if (nullptr != pActionCam)
+							{
+								pActionCam->Start_Action(CCamera_Action::CAMERA_ACTION_TYPE::LOBBY);
+							}
 						}
 					}
 				}

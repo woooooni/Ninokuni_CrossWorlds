@@ -268,6 +268,20 @@ void CTool_Camera::Show_Camera_Prop_Free(CCamera* pCurCam)
 				{
 					pFreeCam->Set_RotateSpeed(fCameraRotateSpeed);
 				}
+
+				/* 현재 카메라 포지션 */
+				Vec3 vCamPos = pFreeCam->Get_Transform()->Get_Position();
+				_float fCamPos[3] = { vCamPos.x, vCamPos.y, vCamPos.z };
+				if (ImGui::DragFloat3(u8"카메라 포지션 (로비용)", fCamPos, 0.f))
+				{
+					pFreeCam->Get_Transform()->Set_State(CTransform::STATE::STATE_POSITION, Vec4{ fCamPos[0], fCamPos[1], fCamPos[2], 1.f });
+				}
+
+				/* 현재 카메라 룩벡터*/
+				Vec3 vCamLook = pFreeCam->Get_Transform()->Get_Look();
+				_float fCamLook[3] = { vCamLook.x, vCamLook.y, vCamLook.z };
+				ImGui::DragFloat3(u8"카메라 룩벡터 (로비용)", fCamLook, 0.f);
+
 			}
 			ImGui::PopItemWidth();
 		}
