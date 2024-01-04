@@ -24,6 +24,7 @@ private:
 
 	void Load_InfoParticle();
 	void Store_InfoParticle();
+	void Set_OriginalInfoParticle();
 
 	void Save_Particle(const char* pFileName);
 	void Load_Particle(const char* pFileName);
@@ -128,6 +129,8 @@ private:
 	char   m_cSaveAndLoadName[MAX_PATH] = { "" };
 
 	_float m_fBlack_Discard[3];
+
+	char   m_cPrototypeName[MAX_PATH] = { "Prototype_" };
 
 public:
 	static CTool_Particle* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

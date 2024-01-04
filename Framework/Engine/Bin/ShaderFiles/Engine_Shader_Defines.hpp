@@ -129,4 +129,13 @@ BlendState BS_OneBlend
 
 };
 
+BlendState BS_OneMaxBlend
+{
+	BlendEnable[0] = true;
+	BlendEnable[1] = true;
+
+	SrcBlend = One;
+	DestBlend = One;
+	BlendOp = Max;
+};
 

@@ -224,9 +224,10 @@ HRESULT CEffect_Manager::Ready_Proto_Effects(const wstring& strEffectPath)
 
 		if (0 == lstrcmp(TEXT(".json"), strExt))
 		{
-			Json json = GI->Json_Load(strFullPath);
-
+#pragma region Load
 			CEffect::EFFECT_DESC EffectInfo = {};
+
+			Json json = GI->Json_Load(strFullPath);
 			for (const auto& item : json["EffectInfo"])
 			{
 				// ÀÌÆåÆ® Å¸ÀÔ
@@ -461,6 +462,7 @@ HRESULT CEffect_Manager::Ready_Proto_Effects(const wstring& strEffectPath)
 				EffectInfo.fBlack_Discard.z = item["Black_Discard"]["z"];
 #pragma endregion
 			}
+#pragma endregion
 
 			if (FAILED(GI->Add_Prototype(wstring(L"Prototype_") + strFileName, 
 				CEffect::Create(m_pDevice, m_pContext, strFileName, &EffectInfo), LAYER_TYPE::LAYER_EFFECT)))
@@ -491,9 +493,10 @@ HRESULT CEffect_Manager::Ready_Proto_Decal(const wstring& strDecalPath)
 
 		if (0 == lstrcmp(TEXT(".json"), strExt))
 		{
-			Json json = GI->Json_Load(strFullPath);
-
+#pragma region Load
 			CDecal::DECAL_DESC DecalInfo = {};
+
+			Json json = GI->Json_Load(strFullPath);
 			for (const auto& item : json["DecalInfo"])
 			{
 				DecalInfo.fScale.x = item["Scale"]["x"];
@@ -528,6 +531,7 @@ HRESULT CEffect_Manager::Ready_Proto_Decal(const wstring& strDecalPath)
 				DecalInfo.bAlphaDelete = item["AlphaDelete"];
 				DecalInfo.fAlphaSpeed = item["AlphaSpeed"];
 			}
+#pragma endregion
 
 			if (FAILED(GI->Add_Prototype(wstring(L"Prototype_") + strFileName,
 				CDecal::Create(m_pDevice, m_pContext, strFileName, &DecalInfo), LAYER_TYPE::LAYER_EFFECT)))
@@ -565,12 +569,119 @@ HRESULT CEffect_Manager::Ready_Proto_Vfx_UI()
 
 HRESULT CEffect_Manager::Ready_Proto_Vfx_Player()
 {
-	// Prototype_Vfx_SwordMan_Skill_PerfectBlade
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_SwordMan_Skill_PerfectBlade"),
-		CVfx_SwordMan_Skill_PerfectBlade::Create(m_pDevice, m_pContext, TEXT("SwordMan_Skill_PerfectBlade")), LAYER_TYPE::LAYER_EFFECT)))
-		return E_FAIL;
+	// SwordMan Skill
+	{
+		// Prototype_Vfx_SwordMan_Skill_PerfectBlade
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_SwordMan_Skill_PerfectBlade"),
+			CVfx_SwordMan_Skill_PerfectBlade::Create(m_pDevice, m_pContext, TEXT("SwordMan_Skill_PerfectBlade")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
 
-	// 
+		// Prototype_Vfx_SwordMan_Skill_SpinningAssault
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_SwordMan_Skill_SpinningAssault"),
+			CVfx_SwordMan_Skill_SpinningAssault::Create(m_pDevice, m_pContext, TEXT("SwordMan_Skill_SpinningAssault")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_SwordMan_Skill_SipohoningLunge
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_SwordMan_Skill_SipohoningLunge"),
+			CVfx_SwordMan_Skill_SipohoningLunge::Create(m_pDevice, m_pContext, TEXT("SwordMan_Skill_SipohoningLunge")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_SwordMan_Skill_MegaSlash
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_SwordMan_Skill_MegaSlash"),
+			CVfx_SwordMan_Skill_MegaSlash::Create(m_pDevice, m_pContext, TEXT("SwordMan_Skill_MegaSlash")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_SwordMan_Skill_SwordTempest
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_SwordMan_Skill_SwordTempest"),
+			CVfx_SwordMan_Skill_SwordTempest::Create(m_pDevice, m_pContext, TEXT("SwordMan_Skill_SwordTempest")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_SwordMan_Skill_FrozenStorm
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_SwordMan_Skill_FrozenStorm"),
+			CVfx_SwordMan_Skill_FrozenStorm::Create(m_pDevice, m_pContext, TEXT("SwordMan_Skill_FrozenStorm")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_SwordMan_Skill_AcaneBarrier
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_SwordMan_Skill_AcaneBarrier"),
+			CVfx_SwordMan_Skill_AcaneBarrier::Create(m_pDevice, m_pContext, TEXT("SwordMan_Skill_AcaneBarrier")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+	}
+	
+	// Engineer Skill
+	{
+		// Prototype_Vfx_Engineer_Skill_BurstCall
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Engineer_Skill_BurstCall"),
+			CVfx_Engineer_Skill_BurstCall::Create(m_pDevice, m_pContext, TEXT("Engineer_Skill_BurstCall")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_Engineer_Skill_ElementalBlast
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Engineer_Skill_ElementalBlast"),
+			CVfx_Engineer_Skill_ElementalBlast::Create(m_pDevice, m_pContext, TEXT("Engineer_Skill_ElementalBlast")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_Engineer_Skill_ExplosionShot
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Engineer_Skill_ExplosionShot"),
+			CVfx_Engineer_Skill_ExplosionShot::Create(m_pDevice, m_pContext, TEXT("Engineer_Skill_ExplosionShot")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_Engineer_Skill_Destruction
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Engineer_Skill_Destruction"),
+			CVfx_Engineer_Skill_Destruction::Create(m_pDevice, m_pContext, TEXT("Engineer_Skill_Destruction")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_Engineer_Skill_HealingTree
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Engineer_Skill_HealingTree"),
+			CVfx_Engineer_Skill_HealingTree::Create(m_pDevice, m_pContext, TEXT("Engineer_Skill_HealingTree")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_Engineer_Skill_TimeLab
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Engineer_Skill_TimeLab"),
+			CVfx_Engineer_Skill_TimeLab::Create(m_pDevice, m_pContext, TEXT("Engineer_Skill_TimeLab")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_Engineer_Skill_FlashHeal
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Engineer_Skill_FlashHeal"),
+			CVfx_Engineer_Skill_FlashHeal::Create(m_pDevice, m_pContext, TEXT("Engineer_Skill_FlashHeal")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+	}
+	
+	// Destroyer Skill
+	{
+		// Prototype_Vfx_Destroyer_Skill_WheelWind
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Destroyer_Skill_WheelWind"),
+			CVfx_Destroyer_Skill_WheelWind::Create(m_pDevice, m_pContext, TEXT("Destroyer_Skill_WheelWind")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_Destroyer_Skill_BrutalStrike
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Destroyer_Skill_BrutalStrike"),
+			CVfx_Destroyer_Skill_BrutalStrike::Create(m_pDevice, m_pContext, TEXT("Destroyer_Skill_BrutalStrike")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_Destroyer_Skill_LeafSlam
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Destroyer_Skill_LeafSlam"),
+			CVfx_Destroyer_Skill_LeafSlam::Create(m_pDevice, m_pContext, TEXT("Destroyer_Skill_LeafSlam")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_Destroyer_Skill_HyperStrike
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Destroyer_Skill_HyperStrike"),
+			CVfx_Destroyer_Skill_HyperStrike::Create(m_pDevice, m_pContext, TEXT("Destroyer_Skill_HyperStrike")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_Destroyer_Skill_BattleCry
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Destroyer_Skill_BattleCry"),
+			CVfx_Destroyer_Skill_BattleCry::Create(m_pDevice, m_pContext, TEXT("Destroyer_Skill_BattleCry")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_Destroyer_Skill_IgnorePain
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Destroyer_Skill_IgnorePain"),
+			CVfx_Destroyer_Skill_IgnorePain::Create(m_pDevice, m_pContext, TEXT("Destroyer_Skill_IgnorePain")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_Destroyer_Skill_FrengeCharge
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Destroyer_Skill_FrengeCharge"),
+			CVfx_Destroyer_Skill_FrengeCharge::Create(m_pDevice, m_pContext, TEXT("Destroyer_Skill_FrengeCharge")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+	}
 
 	return S_OK;
 }

@@ -57,7 +57,7 @@ protected:
 	virtual ~CDecal() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(const DECAL_DESC* pDecalDesc, const wstring& strDecalFilePath);
+	virtual HRESULT Initialize_Prototype(const DECAL_DESC* pDecalDesc);
 	virtual HRESULT Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void LateTick(_float fTimeDelta) override;
@@ -102,7 +102,7 @@ protected:
 
 public:
 	static CDecal* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
-		const wstring& strObjectTag, const DECAL_DESC* pDecalDesc = nullptr, const wstring& strDecalFilePath = {});
+		const wstring& strObjectTag, const DECAL_DESC* pDecalDesc);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 

@@ -13,12 +13,12 @@ texture2D g_NormalTarget;
 texture2D g_DepthTarget;
 		  
 texture2D g_ShadeTarget;
-texture2D g_SpecularTarget;
-		  
-texture2D g_SSAOTarget;
 texture2D g_ShadowTarget;
-texture2D g_OutlineTarget;
+texture2D g_SpecularTarget;
+
+texture2D g_SSAOTarget;
 texture2D g_BloomTarget;
+texture2D g_OutlineTarget;
 
 texture2D g_BlendMixTarget;
 

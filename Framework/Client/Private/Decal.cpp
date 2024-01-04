@@ -20,7 +20,7 @@ CDecal::CDecal(const CDecal& rhs)
 {
 }
 
-HRESULT CDecal::Initialize_Prototype(const DECAL_DESC* pDecalDesc, const wstring& strDecalFilePath)
+HRESULT CDecal::Initialize_Prototype(const DECAL_DESC* pDecalDesc)
 {
 	if (pDecalDesc != nullptr)
 		m_tDecalDesc = *pDecalDesc;
@@ -61,7 +61,14 @@ void CDecal::LateTick(_float fTimeDelta)
 
 	__super::LateTick(fTimeDelta);
 
-	//if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_Position(), 3.f))
+	if (m_pOwnerObject != nullptr)
+	{
+		CTransform* pTransform = m_pOwnerObject->Get_Component<CTransform>(L"Com_Transform");
+		if (pTransform != nullptr)
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, pTransform->Get_Position());
+	}
+
+	if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_Position(), 10.f))
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_EFFECT, this);
 }
 
@@ -160,6 +167,9 @@ void CDecal::Set_DecalDesc(const DECAL_DESC& tDesc)
 
 void CDecal::Restart_Decal()
 {
+	if (m_pTransformCom == nullptr)
+		return;
+
 	m_bDecalDie    = false;
 	m_fAccLifeTime = 0.f;
 
@@ -196,11 +206,11 @@ void CDecal::Tick_Alpha(_float fTimeDelta)
 	}
 }
 
-CDecal* CDecal::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const DECAL_DESC* pDecalDesc, const wstring& strDecalFilePath)
+CDecal* CDecal::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const DECAL_DESC* pDecalDesc)
 {
 	CDecal* pInstance = new CDecal(pDevice, pContext, strObjectTag);
 
-	if (FAILED(pInstance->Initialize_Prototype(pDecalDesc, strDecalFilePath)))
+	if (FAILED(pInstance->Initialize_Prototype(pDecalDesc)))
 	{
 		MSG_BOX("Failed to Created : CDecal");
 		Safe_Release(pInstance);

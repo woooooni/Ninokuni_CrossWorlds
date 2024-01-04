@@ -28,18 +28,21 @@ void CTool_Effect::Tick(_float fTimeDelta)
 
 	if (ImGui::BeginTabItem("Effect"))
 	{
+		ImGui::NewLine();
 		Tick_EffectTool();
 		ImGui::EndTabItem();
 	}
 
 	if (ImGui::BeginTabItem("Decal"))
 	{
+		ImGui::NewLine();
 		Tick_DecalTool();
 		ImGui::EndTabItem();
 	}
 
 	if (ImGui::BeginTabItem("VFX"))
 	{
+		ImGui::NewLine();
 		Tick_VfxTool();
 		ImGui::EndTabItem();
 	}
@@ -70,6 +73,7 @@ void CTool_Effect::Tick_EffectTool()
 	ImGui::SameLine();
 	if (ImGui::Button("EffectInfoSelect"))
 		Store_InfoEffect();
+
 	ImGui::NewLine();
 
 	// 저장하기/ 불러오기
@@ -86,6 +90,17 @@ void CTool_Effect::Tick_EffectTool()
 		ImGui::InputText("##FileName", m_cBinaryName, IM_ARRAYSIZE(m_cBinaryName));
 	}
 
+	ImGui::NewLine();
+
+	// 원형에 적용
+	if (ImGui::Button("Set_EffectPrototype"))
+		Set_OriginalInfoEffect();
+	ImGui::SameLine();
+	ImGui::Text("PrototypeEffectName :");
+	ImGui::SameLine();
+	ImGui::InputText("##PrototypeEffectName", m_cPrototypeEffectName, IM_ARRAYSIZE(m_cPrototypeEffectName));
+
+	ImGui::NewLine();
 
 	// 트랜스폼
 	if (ImGui::CollapsingHeader("EffectTransform"))
@@ -100,6 +115,7 @@ void CTool_Effect::Tick_EffectTool()
 		ImGui::InputFloat3("##Scale", m_fScale);
 	}
 
+	ImGui::NewLine();
 
 	// 기본 정보
 	if (ImGui::CollapsingHeader("EffectBasicInfo"))
@@ -513,13 +529,13 @@ void CTool_Effect::Tick_DecalTool()
 	}
 	ImGui::SameLine();
 
-
 	// 확인(적용)
 	if (ImGui::Button("DecalTransformSelect"))
 		Store_TransformDecal();
 	ImGui::SameLine();
 	if (ImGui::Button("DecalInfoSelect"))
 		Store_InfoDecal();
+
 	ImGui::NewLine();
 
 	// 저장하기/ 불러오기
@@ -536,6 +552,17 @@ void CTool_Effect::Tick_DecalTool()
 		ImGui::InputText("##FileName", m_cBinaryName, IM_ARRAYSIZE(m_cBinaryName));
 	}
 
+	ImGui::NewLine();
+
+	// 원형에 적용
+	if (ImGui::Button("Set_DecalPrototype"))
+		Set_OriginalInfoDecal();
+	ImGui::SameLine();
+	ImGui::Text("PrototypeDecalName :");
+	ImGui::SameLine();
+	ImGui::InputText("##PrototypeDecalName", m_cPrototypeDecalName, IM_ARRAYSIZE(m_cPrototypeDecalName));
+
+	ImGui::NewLine();
 
 	// 트랜스폼
 	if (ImGui::CollapsingHeader("DecalTransform"))
@@ -549,6 +576,8 @@ void CTool_Effect::Tick_DecalTool()
 		ImGui::Text("Scale");
 		ImGui::InputFloat3("##Scale", m_fScale);
 	}
+
+	ImGui::NewLine();
 
 	// 데칼 박스 크기
 	if (ImGui::CollapsingHeader("DecalBoxScale"))
@@ -800,31 +829,33 @@ void CTool_Effect::Store_InfoEffect() // Save
 	if (m_pEffect == nullptr)
 		return;
 
-
-	if (m_iEffectTypeIndex == 0)
-		m_tEffectInfo.eType = CEffect::EFFECT_TEXTURE;
-	else if (m_iEffectTypeIndex == 1)
-		m_tEffectInfo.eType = CEffect::EFFECT_MESH;
-	else
-		m_tEffectInfo.eType = CEffect::EFFECT_END;
-
-
-	m_tEffectInfo.fRange         = _float3(m_fEffectRange[0], m_fEffectRange[1], m_fEffectRange[2]);
-	m_tEffectInfo.fRangeDistance = _float2(m_fEffectRangeDistance[0], m_fEffectRangeDistance[1]);
+	{
+		if (m_iEffectTypeIndex == 0)
+			m_tEffectInfo.eType = CEffect::EFFECT_TEXTURE;
+		else if (m_iEffectTypeIndex == 1)
+			m_tEffectInfo.eType = CEffect::EFFECT_MESH;
+		else
+			m_tEffectInfo.eType = CEffect::EFFECT_END;
 
 
-	wstring strModelName(m_cModelName, m_cModelName + strlen(m_cModelName));
-	m_tEffectInfo.strModelName = strModelName;
+		m_tEffectInfo.fRange = _float3(m_fEffectRange[0], m_fEffectRange[1], m_fEffectRange[2]);
+		m_tEffectInfo.fRangeDistance = _float2(m_fEffectRangeDistance[0], m_fEffectRangeDistance[1]);
 
-	m_tEffectInfo.strDiffuseTetextureName = Select_FolderName(m_iDiffuseFolderIndex);
-	m_tEffectInfo.strAlphaTexturName      = Select_FolderName(m_iAlphaFolderIndex);
 
-	m_tEffectInfo.fUVIndex  = _float2(m_ffEffectUVIndex[0], m_ffEffectUVIndex[1]);
-	m_tEffectInfo.fMaxCount = _float2(m_ffEffectUVMaxCount[0], m_ffEffectUVMaxCount[1]);
+		wstring strModelName(m_cModelName, m_cModelName + strlen(m_cModelName));
+		m_tEffectInfo.strModelName = strModelName;
 
-	m_tEffectInfo.fAlphaStart = _float2(m_fAlphaStart[0], m_fAlphaStart[1]);
-	m_tEffectInfo.fAlphaSpeed = _float2(m_fAlphaSpeed[0], m_fAlphaSpeed[1]);
-	m_tEffectInfo.fAlphaChangeStartDelay = _float2(m_fAlphaChangeStartDelay[0], m_fAlphaChangeStartDelay[1]);
+		m_tEffectInfo.strDiffuseTetextureName = Select_FolderName(m_iDiffuseFolderIndex);
+		m_tEffectInfo.strAlphaTexturName = Select_FolderName(m_iAlphaFolderIndex);
+
+		m_tEffectInfo.fUVIndex = _float2(m_ffEffectUVIndex[0], m_ffEffectUVIndex[1]);
+		m_tEffectInfo.fMaxCount = _float2(m_ffEffectUVMaxCount[0], m_ffEffectUVMaxCount[1]);
+
+		m_tEffectInfo.fAlphaStart = _float2(m_fAlphaStart[0], m_fAlphaStart[1]);
+		m_tEffectInfo.fAlphaSpeed = _float2(m_fAlphaSpeed[0], m_fAlphaSpeed[1]);
+		m_tEffectInfo.fAlphaChangeStartDelay = _float2(m_fAlphaChangeStartDelay[0], m_fAlphaChangeStartDelay[1]);
+
+	}
 
 	static_cast<CEffect*>(m_pEffect)->Set_EffectDesc(m_tEffectInfo);
 }
@@ -835,6 +866,62 @@ void CTool_Effect::Store_InfoDecal()
 		return;
 
 	static_cast<CDecal*>(m_pDecal)->Set_DecalDesc(m_tDecalInfo);
+}
+
+void CTool_Effect::Set_OriginalInfoEffect()
+{
+	wstring strPropertyName(m_cPrototypeEffectName, m_cPrototypeEffectName + strlen(m_cPrototypeEffectName));
+
+	CGameObject* pGameObject = GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_EFFECT, strPropertyName);
+	if (pGameObject == nullptr)
+	{
+		MSG_BOX("Prototype_Find_Failed!");
+		return;
+	}
+
+	{
+		if (m_iEffectTypeIndex == 0)
+			m_tEffectInfo.eType = CEffect::EFFECT_TEXTURE;
+		else if (m_iEffectTypeIndex == 1)
+			m_tEffectInfo.eType = CEffect::EFFECT_MESH;
+		else
+			m_tEffectInfo.eType = CEffect::EFFECT_END;
+
+
+		m_tEffectInfo.fRange = _float3(m_fEffectRange[0], m_fEffectRange[1], m_fEffectRange[2]);
+		m_tEffectInfo.fRangeDistance = _float2(m_fEffectRangeDistance[0], m_fEffectRangeDistance[1]);
+
+
+		wstring strModelName(m_cModelName, m_cModelName + strlen(m_cModelName));
+		m_tEffectInfo.strModelName = strModelName;
+
+		m_tEffectInfo.strDiffuseTetextureName = Select_FolderName(m_iDiffuseFolderIndex);
+		m_tEffectInfo.strAlphaTexturName = Select_FolderName(m_iAlphaFolderIndex);
+
+		m_tEffectInfo.fUVIndex = _float2(m_ffEffectUVIndex[0], m_ffEffectUVIndex[1]);
+		m_tEffectInfo.fMaxCount = _float2(m_ffEffectUVMaxCount[0], m_ffEffectUVMaxCount[1]);
+
+		m_tEffectInfo.fAlphaStart = _float2(m_fAlphaStart[0], m_fAlphaStart[1]);
+		m_tEffectInfo.fAlphaSpeed = _float2(m_fAlphaSpeed[0], m_fAlphaSpeed[1]);
+		m_tEffectInfo.fAlphaChangeStartDelay = _float2(m_fAlphaChangeStartDelay[0], m_fAlphaChangeStartDelay[1]);
+
+	}
+
+	static_cast<CEffect*>(pGameObject)->Set_EffectDesc(m_tEffectInfo);
+}
+
+void CTool_Effect::Set_OriginalInfoDecal()
+{
+	wstring strPropertyName(m_cPrototypeDecalName, m_cPrototypeDecalName + strlen(m_cPrototypeDecalName));
+
+	CGameObject* pGameObject = GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_EFFECT, strPropertyName);
+	if (pGameObject == nullptr)
+	{
+		MSG_BOX("Prototype_Find_Failed!");
+		return;
+	}
+
+	static_cast<CDecal*>(pGameObject)->Set_DecalDesc(m_tDecalInfo);
 }
 
 
@@ -1156,7 +1243,7 @@ void CTool_Effect::Save_Effect(const char* pFileName)
 	});
 
 	wstring strFileName(pFileName, pFileName + strlen(pFileName));
-	wstring strFilePath = L"../Bin/DataFiles/Effect/" + strFileName + L".json";
+	wstring strFilePath = L"../Bin/DataFiles/Vfx/Effect/" + strFileName + L".json";
 	GI->Json_Save(strFilePath, json);
 
 	MSG_BOX("Effect_Save_Success!");
@@ -1221,7 +1308,7 @@ void CTool_Effect::Save_Decal(const char* pFileName)
 		});
 
 	wstring strFileName(pFileName, pFileName + strlen(pFileName));
-	wstring strFilePath = L"../Bin/DataFiles/Decal/" + strFileName + L".json";
+	wstring strFilePath = L"../Bin/DataFiles/Vfx/Decal/" + strFileName + L".json";
 	GI->Json_Save(strFilePath, json);
 
 	MSG_BOX("Decal_Save_Success!");
@@ -1235,15 +1322,17 @@ void CTool_Effect::Load_Effect(const char* pFileName)
 		Create_Effect();
 
 	wstring strFileName(pFileName, pFileName + strlen(pFileName));
-	wstring strFilePath = L"../Bin/DataFiles/Effect/" + strFileName + L".json";
-	Json json = GI->Json_Load(strFilePath);
+	wstring strFilePath = L"../Bin/DataFiles/Vfx/Effect/" + strFileName + L".json";
+	
+#pragma region Load
+	CEffect::EFFECT_DESC EffectInfo = {};
 
-	CEffect::EFFECT_DESC EffectInfo = {}; 
+	Json json = GI->Json_Load(strFilePath);
 	for (const auto& item : json["EffectInfo"])
 	{
 		// 이펙트 타입
-		_int iType          = item["Type"];
-		EffectInfo.eType    = (CEffect::EFFECT_TYPE)iType;
+		_int iType = item["Type"];
+		EffectInfo.eType = (CEffect::EFFECT_TYPE)iType;
 
 		// 중력 
 		EffectInfo.bGravity = item["Gravity"];
@@ -1277,7 +1366,7 @@ void CTool_Effect::Load_Effect(const char* pFileName)
 		EffectInfo.fScaleChangeTime.x = item["ScaleChangeTime"]["x"];
 		EffectInfo.fScaleChangeTime.y = item["ScaleChangeTime"]["y"];
 
-		EffectInfo.bScaleAdd  = item["ScaleAdd"];
+		EffectInfo.bScaleAdd = item["ScaleAdd"];
 		EffectInfo.bScaleLoop = item["ScaleLoop"];
 		EffectInfo.bScaleLoopStart = item["ScaleLoopStart"];
 
@@ -1354,12 +1443,12 @@ void CTool_Effect::Load_Effect(const char* pFileName)
 		EffectInfo.fLifeTime.y = item["LifeTime"]["y"];
 
 #pragma region 모델 && 텍스처
-		EffectInfo.strModelName            = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(item["ModelName"]));
+		EffectInfo.strModelName = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(item["ModelName"]));
 		EffectInfo.strDiffuseTetextureName = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(item["DiffuseTetextureName"]));
-		EffectInfo.strAlphaTexturName      = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(item["AlphaTexturName"]));
+		EffectInfo.strAlphaTexturName = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(item["AlphaTexturName"]));
 
 		EffectInfo.iTextureIndexDiffuse = item["TextureIndexDiffuse"];
-		EffectInfo.iTextureIndexAlpha   = item["TextureIndexAlpha"];
+		EffectInfo.iTextureIndexAlpha = item["TextureIndexAlpha"];
 
 		EffectInfo.bRandomStartIndex = item["RandomStartIndex"];
 
@@ -1382,7 +1471,7 @@ void CTool_Effect::Load_Effect(const char* pFileName)
 
 #pragma region 애니메이션
 		EffectInfo.bAnimation = item["Animation"];
-		
+
 		EffectInfo.bAnimationLoop = item["AnimationLoop"];
 
 		EffectInfo.bIncrement = item["Increment"];
@@ -1473,6 +1562,7 @@ void CTool_Effect::Load_Effect(const char* pFileName)
 		EffectInfo.fBlack_Discard.z = item["Black_Discard"]["z"];
 #pragma endregion
 	}
+#pragma endregion
 
 	// 적용
 	static_cast<CEffect*>(m_pEffect)->Set_EffectDesc(EffectInfo);
@@ -1487,10 +1577,12 @@ void CTool_Effect::Load_Decal(const char* pFileName)
 		Create_Decal();
 
 	wstring strFileName(pFileName, pFileName + strlen(pFileName));
-	wstring strFilePath = L"../Bin/DataFiles/Decal/" + strFileName + L".json";
-	Json json = GI->Json_Load(strFilePath);
-
+	wstring strFilePath = L"../Bin/DataFiles/Vfx/Decal/" + strFileName + L".json";
+	
+#pragma region Load
 	CDecal::DECAL_DESC DecalInfo = {};
+
+	Json json = GI->Json_Load(strFilePath);
 	for (const auto& item : json["DecalInfo"])
 	{
 		DecalInfo.fScale.x = item["Scale"]["x"];
@@ -1501,7 +1593,7 @@ void CTool_Effect::Load_Decal(const char* pFileName)
 
 		DecalInfo.iTextureIndexDiffuse = item["TextureIndexDiffuse"];
 
-		DecalInfo.iShaderPass    = item["ShaderPass"];
+		DecalInfo.iShaderPass = item["ShaderPass"];
 		DecalInfo.fAlpha_Discard = item["Alpha_Discard"];
 		DecalInfo.fBlack_Discard.x = item["Black_Discard"]["x"];
 		DecalInfo.fBlack_Discard.y = item["Black_Discard"]["y"];
@@ -1525,6 +1617,7 @@ void CTool_Effect::Load_Decal(const char* pFileName)
 		DecalInfo.bAlphaDelete = item["AlphaDelete"];
 		DecalInfo.fAlphaSpeed = item["AlphaSpeed"];
 	}
+#pragma endregion
 
 	// 적용
 	static_cast<CDecal*>(m_pDecal)->Set_DecalDesc(DecalInfo);
@@ -1532,6 +1625,7 @@ void CTool_Effect::Load_Decal(const char* pFileName)
 
 	MSG_BOX("Decal_Load_Success!");
 }
+
 
 wstring CTool_Effect::Select_FolderName(_uint iFolderIndex)  
 {

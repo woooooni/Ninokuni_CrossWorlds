@@ -19,7 +19,7 @@ private:
 
 public:
 	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strPatriclePath);
-	void	Tick(_float fTimeDelta);
+	void Tick(_float fTimeDelta);
 
 public:
 	HRESULT Generate_Particle(const wstring& strParticleName, _matrix WorldMatrix, _matrix* pRotationMatrix = nullptr, CGameObject* pOwner = nullptr, class CParticle** ppOut = nullptr);

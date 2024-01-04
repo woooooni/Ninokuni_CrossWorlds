@@ -17,6 +17,8 @@ CVfx_SwordMan_Skill_SipohoningLunge::CVfx_SwordMan_Skill_SipohoningLunge(const C
 
 HRESULT CVfx_SwordMan_Skill_SipohoningLunge::Initialize_Prototype()
 {
+	m_bOwnerStateIndex = CCharacter::CLASS_SKILL_1;
+
  	return S_OK;
 }
 
@@ -27,25 +29,42 @@ HRESULT CVfx_SwordMan_Skill_SipohoningLunge::Initialize(void* pArg)
 
 void CVfx_SwordMan_Skill_SipohoningLunge::Tick(_float fTimeDelta)
 {
-	if (m_pOwnerObject != nullptr)
-	{
-		CStateMachine* pMachine = m_pOwnerObject->Get_Component<CStateMachine>(L"Com_StateMachine");
-		if (pMachine != nullptr)
-		{
-			if (pMachine->Get_CurrState() != CCharacter::CLASS_SKILL_2)
-			{
-				Set_Dead(true);
-				return;
-			}
-		}
+	__super::Tick(fTimeDelta);
 
-		m_fTimeAcc += fTimeDelta;
+	if (!m_bOwnerTween)
+	{
 		// 
 		if (m_iCount == 0)
 		{
-			m_fTimeAcc = 0.f;
+			_matrix WorldMatrix = XMLoadFloat4x4(&m_WorldMatrix);
+
+			_vector vPositionOrigin = WorldMatrix.r[CTransform::STATE_POSITION];
+			_vector vPosition = vPositionOrigin + WorldMatrix.r[CTransform::STATE_LOOK];
+			WorldMatrix.r[CTransform::STATE_POSITION] = XMVectorSet(XMVectorGetX(vPosition), XMVectorGetY(vPositionOrigin), XMVectorGetZ(vPosition), 1.f);
+
+			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_SipohoningLunge_Circle"), WorldMatrix, nullptr, nullptr);
+
 			m_iCount++;
 		}
+
+		// 
+		else if (m_iCount == 1 && m_iOwnerFrame >= 16)
+		{
+
+			_matrix WorldMatrix = XMLoadFloat4x4(&m_WorldMatrix);
+
+			_vector vPositionOrigin = WorldMatrix.r[CTransform::STATE_POSITION];
+			_vector vPosition = vPositionOrigin + WorldMatrix.r[CTransform::STATE_LOOK] * 2.f;
+			WorldMatrix.r[CTransform::STATE_POSITION] = XMVectorSet(XMVectorGetX(vPosition), XMVectorGetY(vPositionOrigin), XMVectorGetZ(vPosition), 1.f);
+
+			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_SipohoningLunge_Square"), WorldMatrix, nullptr, nullptr);
+
+			m_iCount++;
+		}
+
+		// Dead
+		else if (m_iCount == 2)
+			m_bFinish = true;
 	}
 }
 

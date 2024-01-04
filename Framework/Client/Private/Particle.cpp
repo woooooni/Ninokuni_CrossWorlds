@@ -65,28 +65,15 @@ void CParticle::Set_Position_Orthographic(_float2 fPosition)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(fPosition.x - g_iWinSizeX * 0.5f, -fPosition.y + g_iWinSizeY * 0.5f, 0.f, 1.f));
 }
 
-HRESULT CParticle::Initialize_Prototype(const PARTICLE_DESC* pParticleDesc, const wstring& strParticleFilePath)
+HRESULT CParticle::Initialize_Prototype(const PARTICLE_DESC* pParticleDesc)
 {
+	if (pParticleDesc == nullptr)
+		return E_FAIL;
+
 	XMStoreFloat4x4(&m_ViewMatrix, XMMatrixIdentity());
 	XMStoreFloat4x4(&m_ProjMatrix, XMMatrixOrthographicLH(g_iWinSizeX, g_iWinSizeY, 0.f, 1.f));
 
-	if (pParticleDesc != nullptr)
-	{
-		m_tParticleDesc = *pParticleDesc;
-		if (m_tParticleDesc.iVelocityUse > 0)
-		{
-			if(m_tParticleDesc.pVelocityMin == nullptr)
-				m_tParticleDesc.pVelocityMin = new _float3[m_tParticleDesc.iVelocityUse];
-
-			if (m_tParticleDesc.pVelocityMax == nullptr)
-				m_tParticleDesc.pVelocityMax = new _float3[m_tParticleDesc.iVelocityUse];
-
-			if (m_tParticleDesc.pVelocityTime == nullptr)
-				m_tParticleDesc.pVelocityTime = new _float2[m_tParticleDesc.iVelocityUse];
-		}
-	}
-	else
-		Load_ParticleData(strParticleFilePath);
+	m_tParticleDesc = *pParticleDesc;
 
  	return S_OK;
 }
@@ -228,194 +215,6 @@ HRESULT CParticle::Ready_Components()
 			return E_FAIL;
 
 	return S_OK;
-}
-
-void CParticle::Load_ParticleData(const wstring& strFileName)
-{
-	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
-	File->Open(strFileName, FileMode::Read);
-
-#pragma region 2023-12-16-ver.1
-
-	// 파티클 타입
-	_uint iParticleType = 0;
-	File->Read<_uint>(iParticleType);
-	m_tParticleDesc.eParticleType = (CParticle::PARTICLEPROJTYPE)iParticleType;
-
-	// 정렬 설정
-	File->Read<_bool>(m_tParticleDesc.bParticleSortZ);
-
-	// 반복 여부
-	File->Read<_bool>(m_tParticleDesc.bParticleLoop);
-
-	// 파티클 개수
-	File->Read<_uint>(m_tParticleDesc.iNumEffectMaxCount);
-	File->Read<_uint>(m_tParticleDesc.iNumEffectCount);
-
-	// 분포 범위
-	File->Read<_float3>(m_tParticleDesc.fRange);
-	File->Read<_float2>(m_tParticleDesc.fRangeDistance);
-
-#pragma region 크기
-	File->Read<_bool>(m_tParticleDesc.bScaleSameRate);
-	File->Read<_float2>(m_tParticleDesc.fScaleStart);
-
-	File->Read<_bool>(m_tParticleDesc.bScaleChange);
-	File->Read<_float2>(m_tParticleDesc.fScaleChangeStartDelay);
-
-	File->Read<_bool>(m_tParticleDesc.bScaleChangeRandom);
-	File->Read<_float2>(m_tParticleDesc.fScaleChangeTime);
-
-	File->Read<_bool>(m_tParticleDesc.bScaleAdd);
-	File->Read<_bool>(m_tParticleDesc.bScaleLoop);
-	File->Read<_bool>(m_tParticleDesc.bScaleLoopStart);
-
-	File->Read<_float2>(m_tParticleDesc.fScaleMin);
-	File->Read<_float2>(m_tParticleDesc.fScaleMax);
-	File->Read<_float2>(m_tParticleDesc.fScaleSpeed);
-#pragma endregion
-
-#pragma region 이동
-	File->Read<_float2>(m_tParticleDesc.fVelocitySpeed);
-
-	File->Read<_float3>(m_tParticleDesc.vVelocityMinStart);
-	File->Read<_float3>(m_tParticleDesc.vVelocityMaxStart);
-
-	File->Read<_bool>(m_tParticleDesc.bVelocityChange);
-	File->Read<_float2>(m_tParticleDesc.fVelocityChangeStartDelay);
-
-	File->Read<_bool>(m_tParticleDesc.bVelocityChangeRandom);
-	File->Read<_float2>(m_tParticleDesc.fVelocityChangeTime);
-
-	File->Read<_bool>(m_tParticleDesc.bVelocityLoop);
-	File->Read<_uint>(m_tParticleDesc.iVelocityCountCur);
-	File->Read<_uint>(m_tParticleDesc.iVelocityCountMax);
-
-	File->Read<_uint>(m_tParticleDesc.iVelocityUse);
-	if (m_tParticleDesc.iVelocityUse > 0)
-	{
-		m_tParticleDesc.pVelocityMin = new _float3[m_tParticleDesc.iVelocityUse];
-		m_tParticleDesc.pVelocityMax = new _float3[m_tParticleDesc.iVelocityUse];
-		m_tParticleDesc.pVelocityTime = new _float2[m_tParticleDesc.iVelocityUse];
-		if (m_tParticleDesc.pVelocityMin != nullptr)
-		{
-			for (size_t i = 0; i < m_tParticleDesc.iVelocityUse; ++i)
-				File->Read<_float3>(m_tParticleDesc.pVelocityMin[i]);
-		}
-
-		if (m_tParticleDesc.pVelocityMax != nullptr)
-		{
-			for (size_t i = 0; i < m_tParticleDesc.iVelocityUse; ++i)
-				File->Read<_float3>(m_tParticleDesc.pVelocityMax[i]);
-		}
-
-		if (m_tParticleDesc.pVelocityTime != nullptr)
-		{
-			for (size_t i = 0; i < m_tParticleDesc.iVelocityUse; ++i)
-				File->Read<_float2>(m_tParticleDesc.pVelocityTime[i]);
-		}
-	}
-#pragma endregion
-
-#pragma region 회전
-	File->Read<_bool>(m_tParticleDesc.bBillboard);
-
-	File->Read<_bool>(m_tParticleDesc.bRandomAxis);
-	File->Read<_vector>(m_tParticleDesc.vAxis);
-
-	File->Read<_bool>(m_tParticleDesc.bRandomAngle);
-	File->Read<_float>(m_tParticleDesc.fAngle);
-
-	File->Read<_bool>(m_tParticleDesc.bRotationChange);
-	File->Read<_float2>(m_tParticleDesc.fRotationChangeStartDelay);
-
-	File->Read<_float2>(m_tParticleDesc.fRotationSpeed);
-
-	File->Read<_bool>(m_tParticleDesc.bRotationChangeRandom);
-	File->Read<_float2>(m_tParticleDesc.fRotationChangeTime);
-
-	File->Read<_bool>(m_tParticleDesc.bRotationAdd);
-#pragma endregion
-
-	// 지속 시간
-	File->Read<_float2>(m_tParticleDesc.fLifeTime);
-
-	// 박스 범위
-	File->Read<_bool>(m_tParticleDesc.bUseBox);
-	File->Read<_float3>(m_tParticleDesc.fBoxMin);
-	File->Read<_float3>(m_tParticleDesc.fBoxMax);
-
-#pragma region 텍스처
-	// 문자열
-	m_tParticleDesc.strDiffuseTetextureName = CUtils::ToWString(File->Read<string>());
-	m_tParticleDesc.strDiffuseTetexturePath = CUtils::ToWString(File->Read<string>());
-	m_tParticleDesc.strAlphaTexturName = CUtils::ToWString(File->Read<string>());
-	m_tParticleDesc.strAlphaTexturPath = CUtils::ToWString(File->Read<string>());
-
-	File->Read<_bool>(m_tParticleDesc.bRandomStartIndex);
-	File->Read<_float2>(m_tParticleDesc.fUVIndex);
-	File->Read<_float2>(m_tParticleDesc.fUVMaxCount);
-
-	File->Read<_uint>(m_tParticleDesc.iTextureIndexDiffuse);
-	File->Read<_uint>(m_tParticleDesc.iTextureIndexAlpha);
-#pragma endregion
-
-#pragma region 애니메이션
-	File->Read<_bool>(m_tParticleDesc.bAnimation);
-	File->Read<_bool>(m_tParticleDesc.bAnimationLoop);
-	File->Read<_float2>(m_tParticleDesc.fAnimationSpeed);
-#pragma endregion
-
-#pragma region 알파
-	File->Read<_float2>(m_tParticleDesc.fStartAlpha);
-
-	File->Read<_bool>(m_tParticleDesc.bFadeCreate);
-	File->Read<_bool>(m_tParticleDesc.bFadeDelete);
-	File->Read<_float2>(m_tParticleDesc.fFadeSpeed);
-
-	File->Read<_bool>(m_tParticleDesc.bFadeChange);
-	File->Read<_bool>(m_tParticleDesc.bFadeIn);
-	File->Read<_float2>(m_tParticleDesc.fFadeChangeStartDelay);
-#pragma endregion
-
-#pragma region 색상
-	File->Read<_bool>(m_tParticleDesc.bColorRandom);
-	File->Read<_float4>(m_tParticleDesc.vColorS);
-
-	File->Read<_bool>(m_tParticleDesc.bColorChange);
-
-	File->Read<_bool>(m_tParticleDesc.bColorChangeRandom);
-	File->Read<_float2>(m_tParticleDesc.fColorChangeRandomTime);
-
-	File->Read<_bool>(m_tParticleDesc.bColorLoop);
-	File->Read<_float2>(m_tParticleDesc.fColorChangeStartDelay);
-
-	File->Read<_float2>(m_tParticleDesc.fColorChangeStartM);
-	File->Read<_float4>(m_tParticleDesc.fColorM);
-
-	File->Read<_float2>(m_tParticleDesc.fColorChangeStartF);
-	File->Read<_float4>(m_tParticleDesc.fColorF);
-
-	File->Read<_float2>(m_tParticleDesc.fColorDuration);
-#pragma endregion
-
-#pragma region 블러
-	File->Read<_bool>(m_tParticleDesc.bBloomPowerRandom);
-	File->Read<_float4>(m_tParticleDesc.fBloomPower);
-	File->Read<_bool>(m_tParticleDesc.bBlurPowerRandom);
-	File->Read<_float>(m_tParticleDesc.fBlurPower);
-#pragma endregion
-
-#pragma region 기타 정보
-	File->Read<_uint>(m_tParticleDesc.iShaderPass);
-	File->Read<_float>(m_tParticleDesc.fAlpha_Discard);
-	File->Read<_float3>(m_tParticleDesc.fBlack_Discard);
-#pragma endregion
-
-	// 이후 추가 시 기존 정보 로드 후 추가 값 셋팅 후 재저장하기
-
-#pragma endregion
-
 }
 
 void* CParticle::Get_ParticleBufferInfo()
@@ -611,10 +410,10 @@ void CParticle::Set_Texture_Alpha()
 		m_tParticleDesc.iTextureIndexAlpha = m_pAlphaTextureCom->Get_TextureCount() - 1;
 }
 
-CParticle* CParticle::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const PARTICLE_DESC* pParticleDesc, const wstring& strParticleFilePath)
+CParticle* CParticle::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const PARTICLE_DESC* pParticleDesc)
 {
 	CParticle* pInstance = new CParticle(pDevice, pContext, strObjectTag);
-	if (FAILED(pInstance->Initialize_Prototype(pParticleDesc, strParticleFilePath)))
+	if (FAILED(pInstance->Initialize_Prototype(pParticleDesc)))
 	{
 		MSG_BOX("Failed to Created : CParticle");
 		Safe_Release(pInstance);

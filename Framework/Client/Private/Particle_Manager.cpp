@@ -1,12 +1,14 @@
 #include "stdafx.h"
 #include "Particle_Manager.h"
+
 #include "GameInstance.h"
 #include "PipeLine.h"
-#include "Transform.h"
-#include "GameObject.h"
 #include <filesystem>
 #include "FileUtils.h"
 #include "Utils.h"
+
+#include "GameObject.h"
+#include "Transform.h"
 #include "Particle.h"
 
 IMPLEMENT_SINGLETON(CParticle_Manager)
@@ -85,9 +87,6 @@ HRESULT CParticle_Manager::Ready_Proto_Particles(const wstring& strParticlePath)
 
 		if (0 == lstrcmp(TEXT(".Particle"), strExt))
 		{
-			shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
-			File->Open(strFullPath, FileMode::Read);
-
 			size_t length = _tcslen(strFileName);
 			wchar_t* wcharFileName = new wchar_t[length + 1];
 			wcscpy_s(wcharFileName, length + 1, strFileName);
@@ -95,8 +94,193 @@ HRESULT CParticle_Manager::Ready_Proto_Particles(const wstring& strParticlePath)
 
 			wstring strParticleName(wcharFileName);
 
+#pragma region Load
+			CParticle::PARTICLE_DESC tParticleDesc = {};
+
+			shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
+			File->Open(strFullPath, FileMode::Read);
+
+			// 파티클 타입
+			_uint iParticleType = 0;
+			File->Read<_uint>(iParticleType);
+			tParticleDesc.eParticleType = (CParticle::PARTICLEPROJTYPE)iParticleType;
+
+			// 정렬 설정
+			File->Read<_bool>(tParticleDesc.bParticleSortZ);
+
+			// 반복 여부
+			File->Read<_bool>(tParticleDesc.bParticleLoop);
+
+			// 파티클 개수
+			File->Read<_uint>(tParticleDesc.iNumEffectMaxCount);
+			File->Read<_uint>(tParticleDesc.iNumEffectCount);
+
+			// 분포 범위
+			File->Read<_float3>(tParticleDesc.fRange);
+			File->Read<_float2>(tParticleDesc.fRangeDistance);
+
+#pragma region 크기
+			File->Read<_bool>(tParticleDesc.bScaleSameRate);
+			File->Read<_float2>(tParticleDesc.fScaleStart);
+
+			File->Read<_bool>(tParticleDesc.bScaleChange);
+			File->Read<_float2>(tParticleDesc.fScaleChangeStartDelay);
+
+			File->Read<_bool>(tParticleDesc.bScaleChangeRandom);
+			File->Read<_float2>(tParticleDesc.fScaleChangeTime);
+
+			File->Read<_bool>(tParticleDesc.bScaleAdd);
+			File->Read<_bool>(tParticleDesc.bScaleLoop);
+			File->Read<_bool>(tParticleDesc.bScaleLoopStart);
+
+			File->Read<_float2>(tParticleDesc.fScaleMin);
+			File->Read<_float2>(tParticleDesc.fScaleMax);
+			File->Read<_float2>(tParticleDesc.fScaleSpeed);
+#pragma endregion
+
+#pragma region 이동
+			File->Read<_float2>(tParticleDesc.fVelocitySpeed);
+
+			File->Read<_float3>(tParticleDesc.vVelocityMinStart);
+			File->Read<_float3>(tParticleDesc.vVelocityMaxStart);
+
+			File->Read<_bool>(tParticleDesc.bVelocityChange);
+			File->Read<_float2>(tParticleDesc.fVelocityChangeStartDelay);
+
+			File->Read<_bool>(tParticleDesc.bVelocityChangeRandom);
+			File->Read<_float2>(tParticleDesc.fVelocityChangeTime);
+
+			File->Read<_bool>(tParticleDesc.bVelocityLoop);
+			File->Read<_uint>(tParticleDesc.iVelocityCountCur);
+			File->Read<_uint>(tParticleDesc.iVelocityCountMax);
+
+			File->Read<_uint>(tParticleDesc.iVelocityUse);
+			if (tParticleDesc.iVelocityUse > 0)
+			{
+				tParticleDesc.pVelocityMin = new _float3[tParticleDesc.iVelocityUse];
+				tParticleDesc.pVelocityMax = new _float3[tParticleDesc.iVelocityUse];
+				tParticleDesc.pVelocityTime = new _float2[tParticleDesc.iVelocityUse];
+				if (tParticleDesc.pVelocityMin != nullptr)
+				{
+					for (size_t i = 0; i < tParticleDesc.iVelocityUse; ++i)
+						File->Read<_float3>(tParticleDesc.pVelocityMin[i]);
+				}
+
+				if (tParticleDesc.pVelocityMax != nullptr)
+				{
+					for (size_t i = 0; i < tParticleDesc.iVelocityUse; ++i)
+						File->Read<_float3>(tParticleDesc.pVelocityMax[i]);
+				}
+
+				if (tParticleDesc.pVelocityTime != nullptr)
+				{
+					for (size_t i = 0; i < tParticleDesc.iVelocityUse; ++i)
+						File->Read<_float2>(tParticleDesc.pVelocityTime[i]);
+				}
+			}
+#pragma endregion
+
+#pragma region 회전
+			File->Read<_bool>(tParticleDesc.bBillboard);
+
+			File->Read<_bool>(tParticleDesc.bRandomAxis);
+			File->Read<_vector>(tParticleDesc.vAxis);
+
+			File->Read<_bool>(tParticleDesc.bRandomAngle);
+			File->Read<_float>(tParticleDesc.fAngle);
+
+			File->Read<_bool>(tParticleDesc.bRotationChange);
+			File->Read<_float2>(tParticleDesc.fRotationChangeStartDelay);
+
+			File->Read<_float2>(tParticleDesc.fRotationSpeed);
+
+			File->Read<_bool>(tParticleDesc.bRotationChangeRandom);
+			File->Read<_float2>(tParticleDesc.fRotationChangeTime);
+
+			File->Read<_bool>(tParticleDesc.bRotationAdd);
+#pragma endregion
+
+			// 지속 시간
+			File->Read<_float2>(tParticleDesc.fLifeTime);
+
+			// 박스 범위
+			File->Read<_bool>(tParticleDesc.bUseBox);
+			File->Read<_float3>(tParticleDesc.fBoxMin);
+			File->Read<_float3>(tParticleDesc.fBoxMax);
+
+#pragma region 텍스처
+			// 문자열
+			tParticleDesc.strDiffuseTetextureName = CUtils::ToWString(File->Read<string>());
+			tParticleDesc.strDiffuseTetexturePath = CUtils::ToWString(File->Read<string>());
+			tParticleDesc.strAlphaTexturName = CUtils::ToWString(File->Read<string>());
+			tParticleDesc.strAlphaTexturPath = CUtils::ToWString(File->Read<string>());
+
+			File->Read<_bool>(tParticleDesc.bRandomStartIndex);
+			File->Read<_float2>(tParticleDesc.fUVIndex);
+			File->Read<_float2>(tParticleDesc.fUVMaxCount);
+
+			File->Read<_uint>(tParticleDesc.iTextureIndexDiffuse);
+			File->Read<_uint>(tParticleDesc.iTextureIndexAlpha);
+#pragma endregion
+
+#pragma region 애니메이션
+			File->Read<_bool>(tParticleDesc.bAnimation);
+			File->Read<_bool>(tParticleDesc.bAnimationLoop);
+			File->Read<_float2>(tParticleDesc.fAnimationSpeed);
+#pragma endregion
+
+#pragma region 알파
+			File->Read<_float2>(tParticleDesc.fStartAlpha);
+
+			File->Read<_bool>(tParticleDesc.bFadeCreate);
+			File->Read<_bool>(tParticleDesc.bFadeDelete);
+			File->Read<_float2>(tParticleDesc.fFadeSpeed);
+
+			File->Read<_bool>(tParticleDesc.bFadeChange);
+			File->Read<_bool>(tParticleDesc.bFadeIn);
+			File->Read<_float2>(tParticleDesc.fFadeChangeStartDelay);
+#pragma endregion
+
+#pragma region 색상
+			File->Read<_bool>(tParticleDesc.bColorRandom);
+			File->Read<_float4>(tParticleDesc.vColorS);
+
+			File->Read<_bool>(tParticleDesc.bColorChange);
+
+			File->Read<_bool>(tParticleDesc.bColorChangeRandom);
+			File->Read<_float2>(tParticleDesc.fColorChangeRandomTime);
+
+			File->Read<_bool>(tParticleDesc.bColorLoop);
+			File->Read<_float2>(tParticleDesc.fColorChangeStartDelay);
+
+			File->Read<_float2>(tParticleDesc.fColorChangeStartM);
+			File->Read<_float4>(tParticleDesc.fColorM);
+
+			File->Read<_float2>(tParticleDesc.fColorChangeStartF);
+			File->Read<_float4>(tParticleDesc.fColorF);
+
+			File->Read<_float2>(tParticleDesc.fColorDuration);
+#pragma endregion
+
+#pragma region 블러
+			File->Read<_bool>(tParticleDesc.bBloomPowerRandom);
+			File->Read<_float4>(tParticleDesc.fBloomPower);
+			File->Read<_bool>(tParticleDesc.bBlurPowerRandom);
+			File->Read<_float>(tParticleDesc.fBlurPower);
+#pragma endregion
+
+#pragma region 기타 정보
+			File->Read<_uint>(tParticleDesc.iShaderPass);
+			File->Read<_float>(tParticleDesc.fAlpha_Discard);
+			File->Read<_float3>(tParticleDesc.fBlack_Discard);
+#pragma endregion
+
+			// 이후 추가 시 기존 정보 로드 후 추가 값 셋팅 후 재저장하기
+
+#pragma endregion
+
 			if (FAILED(GI->Add_Prototype(L"Prototype_" + strParticleName,
-				CParticle::Create(m_pDevice, m_pContext, strParticleName, nullptr, strFullPath), LAYER_TYPE::LAYER_EFFECT)))
+				CParticle::Create(m_pDevice, m_pContext, strParticleName, &tParticleDesc), LAYER_TYPE::LAYER_EFFECT)))
 				return E_FAIL;
 
 			Safe_Delete(wcharFileName);
