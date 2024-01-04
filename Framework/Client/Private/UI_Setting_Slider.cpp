@@ -118,6 +118,10 @@ void CUI_Setting_Slider::On_Mouse(_float fTimeDelta)
 
 void CUI_Setting_Slider::On_MouseExit(_float fTimeDelta)
 {
+	if (m_bActive)
+	{
+		__super::On_MouseExit(fTimeDelta);
+	}
 }
 
 void CUI_Setting_Slider::On_MouseDragEnter(_float fTimeDelta)

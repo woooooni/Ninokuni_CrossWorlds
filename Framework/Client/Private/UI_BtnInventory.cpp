@@ -81,11 +81,20 @@ void CUI_BtnInventory::On_MouseEnter(_float fTimeDelta)
 
 void CUI_BtnInventory::On_Mouse(_float fTimeDelta)
 {
-	Key_Input(fTimeDelta);
+	if (m_bActive)
+	{
+		Key_Input(fTimeDelta);
+
+		__super::On_Mouse(fTimeDelta);
+	}
 }
 
 void CUI_BtnInventory::On_MouseExit(_float fTimeDelta)
 {
+	if (m_bActive)
+	{
+		__super::On_MouseExit(fTimeDelta);
+	}
 }
 
 HRESULT CUI_BtnInventory::Ready_Components()

@@ -25,6 +25,12 @@ void CUI_Milepost::Set_Active(_bool bActive)
 	if (!m_bGoal)
 		return;
 
+	if (false == bActive)
+	{
+		if (m_bEvent)
+			m_bEvent = false;
+	}
+
 	m_bActive = bActive;
 }
 

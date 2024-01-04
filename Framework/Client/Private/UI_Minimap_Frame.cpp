@@ -84,12 +84,19 @@ void CUI_Minimap_Frame::On_MouseEnter(_float fTimeDelta)
 void CUI_Minimap_Frame::On_Mouse(_float fTimeDelta)
 {
 	if (m_bActive)
+	{
 		Key_Input(fTimeDelta);
+
+		__super::On_Mouse(fTimeDelta);
+	}
 }
 
 void CUI_Minimap_Frame::On_MouseExit(_float fTimeDelta)
 {
-
+	if (m_bActive)
+	{
+		__super::On_MouseExit(fTimeDelta);
+	}
 }
 
 HRESULT CUI_Minimap_Frame::Ready_Components()

@@ -158,18 +158,6 @@ HRESULT CUI_WindowQuest::Render()
 	return S_OK;
 }
 
-void CUI_WindowQuest::On_MouseEnter(_float fTimeDelta)
-{
-}
-
-void CUI_WindowQuest::On_Mouse(_float fTimeDelta)
-{
-}
-
-void CUI_WindowQuest::On_MouseExit(_float fTimeDelta)
-{
-}
-
 HRESULT CUI_WindowQuest::Ready_Components()
 {
 	

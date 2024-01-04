@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UI.h"
 #include "GameInstance.h"
+#include "UI_Manager.h"
 
 
 
@@ -311,6 +312,15 @@ void CUI::Delete_AllChild()
 
 void CUI::On_Mouse(_float fTimeDelta)
 {
+	if (KEY_TAP(KEY::LBTN))
+	{
+		if (m_bActive)
+		{
+			m_bEvent = true;
+			CUI_Manager::GetInstance()->Set_UIClicked(m_bEvent);
+		}
+	}
+
 	if (KEY_HOLD(KEY::LBTN) || KEY_HOLD(KEY::RBTN))
 	{
 		if (GI->Get_DIMMoveState(DIMM_X) || GI->Get_DIMMoveState(DIMM_Y))
@@ -318,6 +328,15 @@ void CUI::On_Mouse(_float fTimeDelta)
 			m_eMouseState = UI_MOUSESTATE::MOUSE_DRAG_START;
 			return;
 		}
+	}
+}
+
+void CUI::On_MouseExit(_float fTimeDelta)
+{
+	if (CUI_Manager::GetInstance()->Is_UIClicked())
+	{
+		m_bEvent = false;
+		CUI_Manager::GetInstance()->Set_UIClicked(m_bEvent);
 	}
 }
 

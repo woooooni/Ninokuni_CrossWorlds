@@ -16,7 +16,7 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 
 public:
-	virtual void Use_Skill() override;
+	virtual _bool Use_Skill() override;
 
 public:
 	static CSkill_SwordMan_SipohoningLunge* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, class CCharacter* pOwner);

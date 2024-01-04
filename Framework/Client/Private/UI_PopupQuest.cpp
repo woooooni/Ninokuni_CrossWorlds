@@ -30,7 +30,8 @@ void CUI_PopupQuest::Set_Active(_bool bActive)
 	}
 	else
 	{
-
+		if (m_bEvent)
+			m_bEvent = false;
 	}
 
 	m_bActive = bActive;
@@ -106,11 +107,20 @@ void CUI_PopupQuest::On_MouseEnter(_float fTimeDelta)
 
 void CUI_PopupQuest::On_Mouse(_float fTimeDelta)
 {
-	Key_Input(fTimeDelta);
+	if (m_bActive)
+	{
+		Key_Input(fTimeDelta);
+
+		__super::On_Mouse(fTimeDelta);
+	}
 }
 
 void CUI_PopupQuest::On_MouseExit(_float fTimeDelta)
 {
+	if (m_bActive)
+	{
+		__super::On_MouseExit(fTimeDelta);
+	}
 }
 
 HRESULT CUI_PopupQuest::Ready_Components()

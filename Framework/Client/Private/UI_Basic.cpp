@@ -240,11 +240,17 @@ void CUI_Basic::On_Mouse(_float fTimeDelta)
 			if (KEY_TAP(KEY::LBTN))
 				Set_RandomNickname();
 		}
+
+		__super::On_Mouse(fTimeDelta);
 	}
 }
 
 void CUI_Basic::On_MouseExit(_float fTimeDelta)
 {
+	if (m_bActive)
+	{
+		__super::On_MouseExit(fTimeDelta);
+	}
 }
 
 HRESULT CUI_Basic::Ready_Components()

@@ -2,6 +2,7 @@
 #include "GameInstance.h"
 #include "Character.h"
 #include "State_SwordMan_Neutral_Idle.h"
+#include "UI_Manager.h"
 
 CState_SwordMan_Neutral_Idle::CState_SwordMan_Neutral_Idle(CStateMachine* pMachine)
     : CState_Character(pMachine)
@@ -80,8 +81,11 @@ void CState_SwordMan_Neutral_Idle::Input(_float fTimeDelta)
 
     if (KEY_TAP(KEY::LBTN))
     {
-        m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_0);
-        return;
+        if (false == CUI_Manager::GetInstance()->Is_UIClicked())
+        {
+            m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_0);
+            return;
+        }
     }
     
     if (KEY_TAP(KEY::SPACE))

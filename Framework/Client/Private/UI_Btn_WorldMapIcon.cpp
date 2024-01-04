@@ -56,7 +56,8 @@ void CUI_Btn_WorldMapIcon::Set_Active(_bool bActive)
 	}
 	else
 	{
-		
+		if (m_bEvent)
+			m_bEvent = false;
 	}
 
 	m_bActive = bActive;
@@ -210,12 +211,19 @@ void CUI_Btn_WorldMapIcon::On_MouseEnter(_float fTimeDelta)
 void CUI_Btn_WorldMapIcon::On_Mouse(_float fTimeDelta)
 {
 	if (m_bActive)
+	{
 		Key_Input(fTimeDelta);
+
+		__super::On_Mouse(fTimeDelta);
+	}
 }
 
 void CUI_Btn_WorldMapIcon::On_MouseExit(_float fTimeDelta)
 {
-
+	if (m_bActive)
+	{
+		__super::On_MouseExit(fTimeDelta);
+	}
 }
 
 HRESULT CUI_Btn_WorldMapIcon::Ready_Components()

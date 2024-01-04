@@ -142,11 +142,17 @@ void CUI_WeaponSection_DefaultWeapon::On_Mouse(_float fTimeDelta)
 	{
 		if (m_bResizable)
 			Key_Input(fTimeDelta);
+
+		__super::On_Mouse(fTimeDelta);
 	}
 }
 
 void CUI_WeaponSection_DefaultWeapon::On_MouseExit(_float fTimeDelta)
 {
+	if (m_bActive)
+	{
+		__super::On_MouseExit(fTimeDelta);
+	}
 }
 
 HRESULT CUI_WeaponSection_DefaultWeapon::Ready_Components()

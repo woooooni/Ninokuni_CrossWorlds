@@ -147,11 +147,17 @@ void CUI_SkillSection_SpecialSkill::On_Mouse(_float fTimeDelta)
 	if (m_bActive)
 	{
 		Key_Input(fTimeDelta);
+
+		__super::On_Mouse(fTimeDelta);
 	}
 }
 
 void CUI_SkillSection_SpecialSkill::On_MouseExit(_float fTimeDelta)
 {
+	if (m_bActive)
+	{
+		__super::On_MouseExit(fTimeDelta);
+	}
 }
 
 HRESULT CUI_SkillSection_SpecialSkill::Ready_Components()

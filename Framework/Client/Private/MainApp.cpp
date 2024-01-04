@@ -93,7 +93,6 @@ void CMainApp::Tick(_float fTimeDelta)
 	GI->LateTick(fTimeDelta);
 	CUI_Manager::GetInstance()->LateTick(fTimeDelta);
 	
-	
 	m_fTimeAcc += fTimeDelta;
 }
 

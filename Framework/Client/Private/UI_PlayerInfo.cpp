@@ -32,6 +32,9 @@ void CUI_PlayerInfo::Set_Active(_bool bActive)
 			if (nullptr != pChildUI)
 				pChildUI->Set_Active(false);
 		}
+
+		if (m_bEvent)
+			m_bEvent = false;
 	}
 
 	m_bActive = bActive;

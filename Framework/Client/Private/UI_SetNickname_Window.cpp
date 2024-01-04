@@ -13,11 +13,6 @@ CUI_SetNickname_Window::CUI_SetNickname_Window(const CUI_SetNickname_Window& rhs
 {
 }
 
-void CUI_SetNickname_Window::Set_Active(_bool bActive)
-{
-	m_bActive = bActive;
-}
-
 HRESULT CUI_SetNickname_Window::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))

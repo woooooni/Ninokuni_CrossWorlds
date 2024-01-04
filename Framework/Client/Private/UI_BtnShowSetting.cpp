@@ -93,11 +93,17 @@ void CUI_BtnShowSetting::On_Mouse(_float fTimeDelta)
 			// 닫기 버튼을 활성화한다.
 //			m_bActive = false;
 		}
+
+		__super::On_Mouse(fTimeDelta);
 	}
 }
 
 void CUI_BtnShowSetting::On_MouseExit(_float fTimeDelta)
 {
+	if (m_bActive)
+	{
+		__super::On_MouseExit(fTimeDelta);
+	}
 }
 
 HRESULT CUI_BtnShowSetting::Ready_Components()

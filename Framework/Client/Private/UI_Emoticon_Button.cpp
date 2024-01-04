@@ -82,15 +82,24 @@ void CUI_Emoticon_Button::On_MouseEnter(_float fTimeDelta)
 
 void CUI_Emoticon_Button::On_Mouse(_float fTimeDelta)
 {
-	if (KEY_TAP(KEY::LBTN))
+	if (m_bActive)
 	{
-		CUI_Manager::GetInstance()->Set_EmoticonType(_uint(m_eType));
-		CUI_Manager::GetInstance()->OnOff_EmoticonBalloon(true);
+		if (KEY_TAP(KEY::LBTN))
+		{
+			CUI_Manager::GetInstance()->Set_EmoticonType(_uint(m_eType));
+			CUI_Manager::GetInstance()->OnOff_EmoticonBalloon(true);
+		}
+
+		__super::On_Mouse(fTimeDelta);
 	}
 }
 
 void CUI_Emoticon_Button::On_MouseExit(_float fTimeDelta)
 {
+	if (m_bActive)
+	{
+		__super::On_MouseExit(fTimeDelta);
+	}
 }
 
 HRESULT CUI_Emoticon_Button::Ready_Components()

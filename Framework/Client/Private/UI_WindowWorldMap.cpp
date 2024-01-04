@@ -29,6 +29,9 @@ void CUI_WindowWorldMap::Set_Active(_bool bActive)
 			if (nullptr != pChildUI)
 				pChildUI->Set_Active(false);
 		}
+
+		if (m_bEvent)
+			m_bEvent = false;
 	}
 
 	m_bActive = bActive;
@@ -135,6 +138,10 @@ void CUI_WindowWorldMap::On_Mouse(_float fTimeDelta)
 
 void CUI_WindowWorldMap::On_MouseExit(_float fTimeDelta)
 {
+	if (m_bActive)
+	{
+		__super::On_MouseExit(fTimeDelta);
+	}
 }
 
 void CUI_WindowWorldMap::On_MouseDragEnter(_float fTimeDelta)

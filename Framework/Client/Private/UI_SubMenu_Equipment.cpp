@@ -37,7 +37,8 @@ void CUI_SubMenu_Equipment::Set_Active(_bool bActive)
 	}
 	else
 	{
-
+		if (m_bEvent)
+			m_bEvent = false;
 	}
 
 	m_bActive = bActive;
@@ -173,6 +174,8 @@ void CUI_SubMenu_Equipment::On_Mouse(_float fTimeDelta)
 				// 만약에 이 버튼을 통해서 들어오면 Off할때 SubMenu가 떠있는 상태로 하는 것도 좋을 것 같음.
 			}
 		}
+
+		__super::On_Mouse(fTimeDelta);
 	}
 }
 
@@ -180,6 +183,7 @@ void CUI_SubMenu_Equipment::On_MouseExit(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		__super::On_MouseExit(fTimeDelta);
 	}
 }
 

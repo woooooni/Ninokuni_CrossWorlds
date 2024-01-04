@@ -25,6 +25,8 @@ public: // Get/Set
 	void			Set_MonsterDescForUI(class CMonster* pOwner, void* pArg, _bool bActive = true);
 	_float2			Get_ProjectionPosition(class CTransform* pTransform);
 	_bool			Is_DefaultSettingOn();
+	void			Set_UIClicked(_bool bClicked) { m_bEvent = bClicked; }
+	_bool			Is_UIClicked() { return m_bEvent; }
 
 public:
 	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -129,6 +131,7 @@ private:
 	ELEMENTAL_TYPE m_eElemental = { ELEMENTAL_TYPE::FIRE };
 
 private:
+	_bool m_bEvent = { false };
 	_bool m_bUpdate = { false };
 	wstring m_strNickname;
 	wstring m_strResult;

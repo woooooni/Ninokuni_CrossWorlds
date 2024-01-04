@@ -84,11 +84,17 @@ void CUI_BtnShowMenu::On_Mouse(_float fTimeDelta)
 			CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
 			CUI_Manager::GetInstance()->OnOff_MainMenu(true);
 		}
+
+		__super::On_Mouse(fTimeDelta);
 	}
 }
 
 void CUI_BtnShowMenu::On_MouseExit(_float fTimeDelta)
 {
+	if (m_bActive)
+	{
+		__super::On_MouseExit(fTimeDelta);
+	}
 }
 
 HRESULT CUI_BtnShowMenu::Ready_Components()
