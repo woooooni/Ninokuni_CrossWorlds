@@ -1109,7 +1109,7 @@ void CTool_Map::MapWaterSpace()
 
 				_float& Damper = static_cast<CWater*>(m_pSelectObj)->Get_Damper();
 
-				if (ImGui::DragFloat("VsDamper", &Damper, 0.001f, 0.001f, 10.0f));
+				ImGui::DragFloat("VsDamper", &Damper, 0.001f, 0.001f, 10.0f);
 					
 
 				ImGui::NextColumn();

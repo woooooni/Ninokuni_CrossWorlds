@@ -276,7 +276,7 @@ PS_OUT PS_MAIN(PS_IN In)
 	PS_OUT Out = (PS_OUT)0;
 
     vector vDissoveTexture = g_DissolveTexture.Sample(LinearSampler, In.vTexUV);
-    float fDissolveAlpha   = saturate(1.0 - g_fDissolveWeight / g_DissolveDuration + vDissoveTexture.r);
+    float fDissolveAlpha = saturate(1.0 - g_AnimInstancingDesc[In.iInstanceID].fDissolveWeight / g_AnimInstancingDesc[In.iInstanceID].fDissolveDuration + vDissoveTexture.r);
 	
 	// 픽셀 생략
     if (fDissolveAlpha < 0.3)
@@ -285,7 +285,7 @@ PS_OUT PS_MAIN(PS_IN In)
 	// 픽셀 색상 지정 : 명암 연산 X
     else if (fDissolveAlpha < 0.5)
     {
-        Out.vDiffuse = g_vDissolveColor;
+        Out.vDiffuse = g_AnimInstancingDesc[In.iInstanceID].vDissolveColor;
         Out.vNormal  = float4(1.f, 1.f, 1.f, 0.f);
         Out.vBloom   = float4(Out.vDiffuse.r, Out.vDiffuse.g, Out.vDiffuse.b, 0.5f);
     }
@@ -320,7 +320,7 @@ PS_OUT PS_MAIN_NORMAL(PS_IN In)
 	PS_OUT Out = (PS_OUT)0;
 
     vector vDissoveTexture = g_DissolveTexture.Sample(LinearSampler, In.vTexUV);
-    float fDissolveAlpha = saturate(1.0 - g_fDissolveWeight / g_DissolveDuration + vDissoveTexture.r);
+    float fDissolveAlpha = saturate(1.0 - g_AnimInstancingDesc[In.iInstanceID].fDissolveWeight / g_AnimInstancingDesc[In.iInstanceID].fDissolveDuration + vDissoveTexture.r);
 	
 	// 픽셀 생략
     if (fDissolveAlpha < 0.3)
@@ -329,7 +329,7 @@ PS_OUT PS_MAIN_NORMAL(PS_IN In)
 	// 픽셀 색상 지정 : 명암 연산 X
     else if (fDissolveAlpha < 0.5)
     {
-        Out.vDiffuse = g_vDissolveColor;
+        Out.vDiffuse = g_AnimInstancingDesc[In.iInstanceID].vDissolveColor;
         Out.vNormal = float4(1.f, 1.f, 1.f, 0.f);
         Out.vBloom = float4(Out.vDiffuse.r, Out.vDiffuse.g, Out.vDiffuse.b, 0.5f);
     }
