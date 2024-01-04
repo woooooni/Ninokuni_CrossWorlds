@@ -27,7 +27,7 @@ class CCamera_Follow final : public CCamera
 
 	}DAMPING_DESC;
 
-	enum class LOCK_PROGRESS { NOT, START_BLENDING, FINISH_BLEIDING };
+	enum class LOCK_PROGRESS { OFF, START_BLENDING, FINISH_BLEIDING };
 
 private:
 	CCamera_Follow(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
@@ -61,7 +61,11 @@ public:
 	void Set_MaxRotationLimitDeltaY(const _float& fLimit) { m_fMaxRotLimitDeltaY = fLimit; }
 	void Set_MinRotationLimitDeltaY(const _float& fLimit) { m_fMinRotLimitDeltaY = fLimit; }
 
-	const _bool& Is_LockOn() const { return (LOCK_PROGRESS::NOT == m_eLockProgress) ? false : true; }
+	const _bool& Is_LockOn() const { return (LOCK_PROGRESS::OFF == m_eLockProgress) ? false : true; }
+
+	void Set_Default_Position();
+
+	void Reset_Damping() { m_tDampingDesc.bSet = false; }
 
 public:
 	HRESULT Start_LockOn(CGameObject* pTargetObject, const Vec4& vTargetOffset, const Vec4& vLookAtOffset, const _float& fLockOnBlendingTime = Cam_LockOn_Blending_Time_Default);
@@ -74,18 +78,19 @@ private:
 	Vec4 Calculate_WorldPosition(_float fTimeDelta);
 	Vec4 Calculate_LoaclSphericalPosition(_float fTimeDelta);
 	Vec4 Calculate_Look(_float fTimeDelta);
-	Vec4 Calculate_ReleativePosition(Vec4 vPos, Matrix matWorld);
 	Vec4 Calculate_DampingPosition(Vec4 vGoalPos);
 
+private:
 	void Test(_float fTimeDelta);
 
 private:
 	/* 구면 좌표계 */
-	Vec2			m_vAngle				= { 0.f, 1.f };
+	Vec2			m_vAngle				= { -1.57f, 1.3f }; /* x가 0일 경우 플레이어 라이트에서 시작*/
+	const _float	m_fDefaultAngleY		= 1.3f;
 
 	/* 구면 좌표계에서 카메라의 최대 최소 y 값*/
 	_float			m_fMinLimitY			= { 0.7f };
-	_float			m_fMaxLimitY			= { 3.f };
+	_float			m_fMaxLimitY			= { 2.4f };
 
 	/* 회전량이 너무 많거나 적을경우 카메라가 획 도는 경우를 방지하기 위한 Limit값 */
 	_float			m_fMaxRotLimitDeltaY	= { 0.05f };
@@ -98,7 +103,10 @@ private:
 	CPhysX_Controller* m_pControllerCom		= nullptr;
 
 	/* Lock On */
-	LOCK_PROGRESS		m_eLockProgress		= LOCK_PROGRESS::NOT;
+	LOCK_PROGRESS	m_eLockProgress			= LOCK_PROGRESS::OFF;
+
+	/* 카메라의 월드 행렬 상태 변환으로 인해 오프셋의 y가 -가 되어 땅을 뚫는 현상 방지*/
+	_float			m_fLockTargetOffsetMinY = 0.5f;
 
 public:
 	static CCamera_Follow* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);

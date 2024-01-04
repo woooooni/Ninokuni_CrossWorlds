@@ -37,11 +37,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     /* 콘솔 출력 코드 (주석 해제후 사용 -> 병합 전 다시 주석) */
 
-    //#ifdef UNICODE
-    //#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
-    //#else
-    //#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
-    //#endif
+  /*  #ifdef UNICODE
+    #pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
+    #else
+    #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
+    #endif*/
 
 #endif
 

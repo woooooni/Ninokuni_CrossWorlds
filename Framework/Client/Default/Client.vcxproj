@@ -231,10 +231,12 @@
     <ClInclude Include="..\Public\Body.h" />
     <ClInclude Include="..\Public\Boss.h" />
     <ClInclude Include="..\Public\Building.h" />
+    <ClInclude Include="..\Public\Camera_Action.h" />
     <ClInclude Include="..\Public\Camera_CutScene_Boss.h" />
     <ClInclude Include="..\Public\Camera_CutScene_Map.h" />
     <ClInclude Include="..\Public\CaliaHuman.h" />
     <ClInclude Include="..\Public\Camera_Follow.h" />
+    <ClInclude Include="..\Public\Camera_Group.h" />
     <ClInclude Include="..\Public\Camera_Manager.h" />
     <ClInclude Include="..\Public\Baobam_DarkNode_Skill2.h" />
     <ClInclude Include="..\Public\Character.h" />
@@ -832,6 +834,7 @@
     <ClCompile Include="..\Private\Body.cpp" />
     <ClCompile Include="..\Private\Boss.cpp" />
     <ClCompile Include="..\Private\Building.cpp" />
+    <ClCompile Include="..\Private\Camera_Action.cpp" />
     <ClCompile Include="..\Private\Camera_CutScene_Boss.cpp" />
     <ClCompile Include="..\Private\Camera_CutScene_Map.cpp" />
     <ClCompile Include="..\Private\CaliaHuman.cpp" />

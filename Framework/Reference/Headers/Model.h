@@ -30,7 +30,7 @@ public:
 	void Add_CustomSocketPivotPosition(Vec3 vCustomSocket) { m_SocketCustomPivotPosition.push_back(vCustomSocket); }
 
 	/* HierarchyNode */
-	Matrix Get_SocketLocalMatrix(const _uint iSocketEnumIndex); /* (모델의 Latetick 이후 호출)캐릭터가 갖고 있는 파츠의 소켓 매트릭스를 리턴한다. (캐릭터에 정의된 enum 인덱스 사용, 뼈 번호 아님) */
+	Matrix Get_SocketLocalMatrix(const _uint iSocketEnumIndex = 0); /* (모델의 Latetick 이후 호출)캐릭터가 갖고 있는 파츠의 소켓 매트릭스를 리턴한다. (캐릭터에 정의된 enum 인덱스 사용, 뼈 번호 아님) */
 	wstring Get_HiearachyNodeName(const _uint iIndex);
 	const _int Get_HierarchyNodeIndex(const char* szBonename);
 	const _int Get_HierarchyNodeIndex(wstring strBoneName);

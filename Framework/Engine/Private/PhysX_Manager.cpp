@@ -9,7 +9,7 @@
 physx::PxFilterFlags FilterShader(
 	physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0,
 	physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1,
-	physx::PxPairFlags& retPairFlags, const void* /*constantBlock*/, PxU32 /*constantBlockSize*/)
+	physx::PxPairFlags & retPairFlags, const void* /*constantBlock*/, PxU32 /*constantBlockSize*/)
 {
 	retPairFlags |= PxPairFlag::eTRIGGER_DEFAULT;
 	retPairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
@@ -1250,12 +1250,3 @@ void CPhysX_Manager::onAdvance(const PxRigidBody* const* bodyBuffer, const PxTra
 {
 	int i = 0;
 }
-
-
-
-
-
-
-
-
-
