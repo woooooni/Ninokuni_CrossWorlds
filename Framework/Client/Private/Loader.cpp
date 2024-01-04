@@ -40,6 +40,7 @@
 #include "Glanix_IcePillar.h"
 #include "Glanix_Phoenix.h"
 #include "Glanix_ShockWave.h"
+#include "Glanix_IceBall.h"
 #include "Stellia.h"
 #include "DMWitch.h"
 #include "Baobam_Water.h"
@@ -438,8 +439,8 @@ HRESULT CLoader::Loading_For_Level_Test()
 	m_Threads[LOADING_THREAD::MONSTER_AND_NPC].wait();
 
 
-	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Evermore");
-	//m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Monster_Data, this, L"Evermore");
+	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Winter");
+	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Monster_Data, this, L"Winter");
 
 
 	CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_TEST);
@@ -1058,6 +1059,8 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Glanix_ShockWave", CGlanix_ShockWave::Create(m_pDevice, m_pContext, TEXT("Glanix_ShockWave")), LAYER_PROP, true)))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Glanix_GlanixIceBall", CGlanix_IceBall::Create(m_pDevice, m_pContext, TEXT("Glanix_IceBall")), LAYER_PROP, true)))
+		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Spawner_Ice01", CSpawner_Ice01::Create(m_pDevice, m_pContext, TEXT("Spawner_Ice01")), LAYER_MONSTER, true)))
 		return E_FAIL;
@@ -1175,6 +1178,8 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_GlanixPillar", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Monster/GlanixPillar/", L"GlanixPillar")))
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Phoenix", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Ice/Phoenix/", L"Phoenix")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_GlanixIceBall", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Monster/GlanixIceBall/", L"GlanixIceBall")))
 		return E_FAIL;
 
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_DreamerMazeWitch", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Boss/DreamerMazeWitch/", L"DreamerMazeWitch")))

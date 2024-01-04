@@ -145,10 +145,10 @@ void CIceBearMan::Collision_Enter(const COLLISION_INFO& tInfo)
 
 					On_Damaged(tInfo);
 
-					if (!m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_BLOW] && m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_AIR])
+					if (!m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_BLOW] && !m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_AIR])
 					{
-						if (m_pModelCom->Get_CurrAnimation()->Get_AnimationName() != TEXT("SKM_ShadowThief.ao|ShadowThief_Stun"))
-							m_pModelCom->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Stun"));
+						if (m_pModelCom->Get_CurrAnimation()->Get_AnimationName() != TEXT("SKM_IceBearMan_Water.ao|IceBearMan_Stun"))
+							m_pModelCom->Set_Animation(TEXT("SKM_IceBearMan_Water.ao|IceBearMan_Stun"));
 
 						m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_STUN] = true;
 					}
