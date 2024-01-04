@@ -86,7 +86,7 @@ void CPhysX_Controller::Tick_Controller(_float fTimeDelta)
 
 void CPhysX_Controller::LateTick_Controller(_float fTimeDelta)
 {
-	if (m_bGroundChecked == false)
+	if (m_bGroundChecked == false) 
 	{
 		if (m_eGroundFlag == PxPairFlag::eNOTIFY_TOUCH_FOUND || m_eGroundFlag == PxPairFlag::eNOTIFY_TOUCH_PERSISTS)
 		{

@@ -10,7 +10,8 @@ public:
 	enum UI_WEAPONSLOT { WEAPON_FIRST, WEAPON_SECOND, WEAPON_THIRD, WEAPON_END };
 
 protected:
-	CUI_WeaponSection_Weapon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_WEAPONSLOT eType);
+	CUI_WeaponSection_Weapon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
+		UI_WEAPONSLOT eType, UI_WEAPONSLOT_TYPE eSlotType);
 	CUI_WeaponSection_Weapon(const CUI_WeaponSection_Weapon& rhs);
 	virtual ~CUI_WeaponSection_Weapon() = default;
 	
@@ -31,6 +32,7 @@ public:
 
 private:
 	class CCharacter* m_pCharacter = { nullptr };
+	UI_WEAPONSLOT_TYPE m_eSlotType = { SLOTTYPE_END };
 	UI_WEAPONSLOT m_eType = { WEAPON_END };
 	_int m_iTextureIndex = { 0 };
 	_int m_iElementalIndex = { 0 };
@@ -46,7 +48,8 @@ private:
 	void Key_Input(_float fTimeDelta);
 
 public:
-	static CUI_WeaponSection_Weapon* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, UI_WEAPONSLOT eType);
+	static CUI_WeaponSection_Weapon* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
+		UI_WEAPONSLOT eType, UI_WEAPONSLOT_TYPE eSlotType);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };
