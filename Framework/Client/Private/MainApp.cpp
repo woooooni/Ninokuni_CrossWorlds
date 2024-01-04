@@ -1298,6 +1298,11 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Lobby/NameTag/UI_Lobby_NameTag_FX_%d.png"), 3))))
 		return E_FAIL;
 
+	// Weapons for Slot
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SKillSection_Weapon_Icons"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/WeaponSlot/Weapon/UI_Weapon_%d.png"), 9))))
+		return E_FAIL;
+
 
 	return S_OK;
 }

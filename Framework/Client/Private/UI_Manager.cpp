@@ -88,6 +88,7 @@
 #include "UI_Loading_Information.h"
 #include "UI_MonsterHP_Elemental.h"
 #include "UI_ImajinnSection_Slot.h"
+#include "UI_WeaponSection_Weapon.h"
 #include "UI_SkillSection_BtnRoll.h"
 #include "UI_SkillSection_BtnJump.h"
 #include "UI_MonsterHP_Background.h"
@@ -213,6 +214,13 @@ _float2 CUI_Manager::Get_ProjectionPosition(CTransform* pTransform)
 	_float fScreenY = vWindowPos.y * -(g_iWinSizeY * 0.5f) + (g_iWinSizeY * 0.5f);
 
 	return _float2(fScreenX, fScreenY);
+}
+
+_bool CUI_Manager::Is_DefaultSettingOn()
+{
+	// 게임 기본 세팅이 켜져있는지 확인해준다 -> UI매니저에서 Clone되지 않은 객체의 OnOff를 제어하기 위해서.
+
+	return m_pPlayerStatus->Get_Active();
 }
 
 HRESULT CUI_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -2779,6 +2787,43 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(pMinimap);
 
+
+	m_WeaponIcon.reserve(3);
+
+	fOffset = 85.f;
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 256.f * 0.15f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = 1380.f;
+	UIDesc.fY = 575.f;
+
+	pSlot = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_WeaponSection_WeaponIcon_First"), &UIDesc, &pSlot)))
+		return E_FAIL;
+	m_WeaponIcon.push_back(dynamic_cast<CUI_WeaponSection_Weapon*>(pSlot));
+	if (nullptr == pSlot)
+		return E_FAIL;
+	Safe_AddRef(pSlot);
+
+	UIDesc.fX += fOffset;
+	pSlot = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_WeaponSection_WeaponIcon_Second"), &UIDesc, &pSlot)))
+		return E_FAIL;
+	m_WeaponIcon.push_back(dynamic_cast<CUI_WeaponSection_Weapon*>(pSlot));
+	if (nullptr == pSlot)
+		return E_FAIL;
+	Safe_AddRef(pSlot);
+
+	UIDesc.fX += fOffset;
+	pSlot = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_WeaponSection_WeaponIcon_Third"), &UIDesc, &pSlot)))
+		return E_FAIL;
+	m_WeaponIcon.push_back(dynamic_cast<CUI_WeaponSection_Weapon*>(pSlot));
+	if (nullptr == pSlot)
+		return E_FAIL;
+	Safe_AddRef(pSlot);
+
+
 	return S_OK;
 }
 
@@ -3644,6 +3689,11 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 			if (nullptr != iter)
 				iter->Set_Active(true);
 		}
+		for (auto& iter : m_WeaponIcon)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(true);
+		}
 
 		m_pImajinnBG->Set_Active(true);
 
@@ -3694,6 +3744,11 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 				iter->Set_Active(false);
 		}
 		for (auto& iter : m_SpecialFrame)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_WeaponIcon)
 		{
 			if (nullptr != iter)
 				iter->Set_Active(false);
@@ -5350,6 +5405,16 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		CUI_World_NameTag::Create(m_pDevice, m_pContext, CUI_World_NameTag::UI_NAMETAG::NAMETAG_GAMEPLAY), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_WeaponSection_WeaponIcon_First"),
+		CUI_WeaponSection_Weapon::Create(m_pDevice, m_pContext, CUI_WeaponSection_Weapon::UI_WEAPONSLOT::WEAPON_FIRST), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_WeaponSection_WeaponIcon_Second"),
+		CUI_WeaponSection_Weapon::Create(m_pDevice, m_pContext, CUI_WeaponSection_Weapon::UI_WEAPONSLOT::WEAPON_SECOND), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_WeaponSection_WeaponIcon_Third"),
+		CUI_WeaponSection_Weapon::Create(m_pDevice, m_pContext, CUI_WeaponSection_Weapon::UI_WEAPONSLOT::WEAPON_THIRD), LAYER_UI)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -5520,7 +5585,6 @@ HRESULT CUI_Manager::Ready_UILobbyPrototypes()
 		return E_FAIL;
 
 
-
 	return S_OK;
 }
 
@@ -5548,6 +5612,11 @@ void CUI_Manager::Set_CharacterType()
 	{
 		if (nullptr != iter)
 			iter->Set_CharacterType(m_eCurPlayer);
+	}
+	for (auto& iter : m_WeaponIcon)
+	{
+		if (nullptr != iter)
+			iter->Set_TextureIndex(m_eCurPlayer);
 	}
 	
 	// For Costume Window
@@ -5779,6 +5848,10 @@ void CUI_Manager::Free()
 	for (auto& pMinimap : m_Minimap)
 		Safe_Release(pMinimap);
 	m_Minimap.clear();
+
+	for (auto& pIcon : m_WeaponIcon)
+		Safe_Release(pIcon);
+	m_WeaponIcon.clear();
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

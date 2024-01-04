@@ -24,6 +24,7 @@ public: // Get/Set
 	void			Set_UserName();
 	void			Set_MonsterDescForUI(class CMonster* pOwner, void* pArg, _bool bActive = true);
 	_float2			Get_ProjectionPosition(class CTransform* pTransform);
+	_bool			Is_DefaultSettingOn();
 
 public:
 	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -241,6 +242,7 @@ private:
 
 	vector<class CUI_Minimap_Frame*> m_Minimap;
 	class CUI_World_NameTag* m_pName = { nullptr };
+	vector <class CUI_WeaponSection_Weapon*> m_WeaponIcon;
 
 private:
 	ID3D11Device*			m_pDevice = { nullptr };

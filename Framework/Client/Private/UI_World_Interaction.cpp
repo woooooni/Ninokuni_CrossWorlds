@@ -82,6 +82,11 @@ HRESULT CUI_World_Interaction::Initialize(void* pArg)
 
 void CUI_World_Interaction::Tick(_float fTimeDelta)
 {
+	if (!CUI_Manager::GetInstance()->Is_DefaultSettingOn())
+		m_bActive = false;
+	else
+		m_bActive = true;
+
 	if (m_bActive)
 	{
 		CTransform* pTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");

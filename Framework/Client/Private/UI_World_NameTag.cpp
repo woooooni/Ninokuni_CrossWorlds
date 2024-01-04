@@ -67,6 +67,14 @@ HRESULT CUI_World_NameTag::Initialize(void* pArg)
 
 void CUI_World_NameTag::Tick(_float fTimeDelta)
 {
+	if (UI_NAMETAG::NAMETAG_GAMEPLAY == m_eType)
+	{
+		if (!CUI_Manager::GetInstance()->Is_DefaultSettingOn())
+			m_bActive = false;
+		else
+			m_bActive = true;
+	}
+
 	if (m_bActive)
 	{
 		if (nullptr == m_pOwner)
