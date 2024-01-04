@@ -5,6 +5,7 @@
 
 
 BEGIN(Client)
+class CSkill;
 
 class CSkill_Manager : public CBase
 {	
@@ -19,9 +20,18 @@ public:
 	void Tick(_float fTimeDelta);
 	void LateTick(_float fTimeDelta);
 
+public:
+	_bool Use_Skill(CHARACTER_TYPE eCharacterType, SKILL_TYPE eSkillType);
+	_bool Is_Useable(CHARACTER_TYPE eCharacterType, SKILL_TYPE eSkillType);
+	class CSkill* Get_Skill(CHARACTER_TYPE eCharacterType, SKILL_TYPE eSkillType);
+
 private:
 	ID3D11Device* m_pDevice = nullptr;
 	ID3D11DeviceContext* m_pContext = nullptr;
+
+
+private:
+	map<SKILL_TYPE, class CSkill*> m_Skills[CHARACTER_TYPE::CHARACTER_END];
 
 private:
 	_bool m_bReserved = false;
