@@ -13,7 +13,33 @@ public:
 	enum CAMERA_ACTION_TYPE { DOOR, TALK, CAMERA_ACTION_END };
 
 private:
-	enum ACTION_DOOR_PROGRESS { INTRO, FIX, OUTTRO, PROGRESS_END };
+
+	typedef struct tagActionDoorDesc
+	{
+		enum PROGRESS { INTRO, FIX, OUTTRO, PROGRESS_END };
+
+		PROGRESS		eProgress = PROGRESS::PROGRESS_END;
+
+		LERP_FLOAT_DESC	tLerpRotateSpeed;
+
+		_float fAcc = 0.f;						// FIX
+
+		const _float	fMaxRotateSpeed = XMConvertToRadians(45.f);
+		
+		const _float	fFixedTime		= 0.9f; // FIX
+		const _float	fBlendingTime	= 1.25f;  // INTRO, OUTTRO
+
+		const Vec4		vTargetOffset = { 0.f, 1.5f, 3.5f, 1.f };
+		const Vec4		vLookAtOffset = { 0.f, 1.f, 0.f, 1.f };
+
+		void Clear()
+		{
+			eProgress = PROGRESS::PROGRESS_END;
+
+			fAcc = 0.f;
+		}
+		
+	}ACTION_DOOR_DESC;
 
 private:
 	CCamera_Action(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
@@ -34,12 +60,17 @@ private:
 	HRESULT Start_Action_Door();
 	HRESULT Start_Action_Talk(CGameObject* pTarget, const _uint& iTag = 0);
 
+	void Tick_Door(_float fTimeDelta);
+	void Tick_Talk(_float fTimeDelta);
+
 private:
 	virtual HRESULT Ready_Components() override;
 
 private:
 	_bool				m_bAction = false;
 	CAMERA_ACTION_TYPE	m_eCurActionType = CAMERA_ACTION_TYPE::CAMERA_ACTION_END;
+
+	ACTION_DOOR_DESC	m_tActionDoorDesc = {};
 
 	
 public:

@@ -7,6 +7,8 @@
 #include "Game_Manager.h"
 #include "Player.h"
 
+#include "Camera_Follow.h"
+
 CCamera_Action::CCamera_Action(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
 	: CCamera(pDevice, pContext, strObjTag, OBJ_TYPE::OBJ_CAMERA)
 {
@@ -49,28 +51,11 @@ void CCamera_Action::Tick(_float fTimeDelta)
 		switch (m_eCurActionType)
 		{
 		case CCamera_Action::DOOR:
-		{
-			CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
-
-			/* Rotation */
-
-			const _float fRotPerFrame = XMConvertToRadians(1.f) * fTimeDelta;
-
-			m_pTransformCom->RevolutionRotation(pTargetTransform->Get_Position(), Vec3::Up, fRotPerFrame);
-			
-			
-			Vec4 vPos = m_pTransformCom->Get_Position();
-			vPos.y += 0.1f * fTimeDelta;
-			m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos.OneW());
-			
-		}
+			Tick_Door(fTimeDelta);
 			break;
 		case CCamera_Action::TALK:
-		{
-
-		}
+			Tick_Talk(fTimeDelta);
 			break;
-		
 		default:
 			break;
 		}
@@ -132,13 +117,13 @@ HRESULT CCamera_Action::Start_Action_Door()
 	CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
 
 	/* Cam Positon */
-	m_tTargetOffset.vCurVec = { 0.f, 1.f, 4.f, 1.f };
+	m_tTargetOffset.vCurVec = m_tActionDoorDesc.vTargetOffset;
 
 	const Vec4 vCamTargetPosition = pTargetTransform->Get_RelativeOffset(m_tTargetOffset.vCurVec).ZeroW()
 								+ (Vec4)pTargetTransform->Get_Position();
 
 	/* Cam LookAt */
-	m_tLookAtOffset.vCurVec = { 0.f, 1.f, 0.f, 1.f };
+	m_tLookAtOffset.vCurVec = m_tActionDoorDesc.vLookAtOffset;
 
 	const Vec4 vCamLookAt = pTargetTransform->Get_RelativeOffset(m_tLookAtOffset.vCurVec).ZeroW()
 							+ (Vec4)pTargetTransform->Get_Position();
@@ -147,12 +132,106 @@ HRESULT CCamera_Action::Start_Action_Door()
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCamTargetPosition);
 	m_pTransformCom->LookAt(vCamLookAt);
 
+
+	/* Desc */
+	{
+		m_tActionDoorDesc.eProgress = ACTION_DOOR_DESC::PROGRESS::INTRO;
+
+		m_tActionDoorDesc.tLerpRotateSpeed.Start(
+			0.f, 
+			m_tActionDoorDesc.fMaxRotateSpeed, 
+			m_tActionDoorDesc.fBlendingTime, 
+			LERP_MODE::EASE_IN);
+	}
 	return S_OK;
 }
 
 HRESULT CCamera_Action::Start_Action_Talk(CGameObject* pTarget, const _uint& iTag)
 {
 	return S_OK;
+}
+
+void CCamera_Action::Tick_Door(_float fTimeDelta)
+{
+	/* Progress */
+	{
+		if (m_tActionDoorDesc.tLerpRotateSpeed.bActive)
+			m_tActionDoorDesc.tLerpRotateSpeed.Update(fTimeDelta);
+
+		switch (m_tActionDoorDesc.eProgress)
+		{
+		case tagActionDoorDesc::PROGRESS::INTRO:
+		{
+			/* Check Progress */
+			if (!m_tActionDoorDesc.tLerpRotateSpeed.bActive)
+				m_tActionDoorDesc.eProgress = tagActionDoorDesc::PROGRESS::FIX;
+		}
+		break;
+		case tagActionDoorDesc::PROGRESS::FIX:
+		{
+			/* Check Progress */
+			m_tActionDoorDesc.fAcc += fTimeDelta;
+			if (m_tActionDoorDesc.fFixedTime <= m_tActionDoorDesc.fAcc)
+			{
+				m_tActionDoorDesc.eProgress = tagActionDoorDesc::PROGRESS::OUTTRO;
+
+				m_tActionDoorDesc.tLerpRotateSpeed.Start(
+					m_tActionDoorDesc.fMaxRotateSpeed,
+					0.f,
+					m_tActionDoorDesc.fBlendingTime,
+					LERP_MODE::EASE_OUT);
+			}
+		}
+		break;
+		case tagActionDoorDesc::PROGRESS::OUTTRO:
+		{
+			/* Check Progress */
+			if (!m_tActionDoorDesc.tLerpRotateSpeed.bActive)
+			{
+				m_tActionDoorDesc.Clear();
+
+				m_bAction = false;
+
+				/* 다시 팔로우 카메라로 전환 */
+				CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+				if (nullptr != pFollowCam)
+				{
+					CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
+					
+					pFollowCam->Set_Default_Position();
+				}
+			}
+		}
+		break;
+		default:
+			break;
+		}
+	}
+
+
+	/* Transform */
+	{
+		CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
+
+		/* Rotation */
+		m_pTransformCom->RevolutionRotation(pTargetTransform->Get_Position(), Vec3::Up, m_tActionDoorDesc.tLerpRotateSpeed.fCurValue * fTimeDelta);
+
+		/* Height */
+		Vec4 vPostion = m_pTransformCom->Get_Position();
+		vPostion.y += m_tActionDoorDesc.tLerpRotateSpeed.fCurValue * fTimeDelta * 0.3f;
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPostion);
+
+		/* Look At */
+		const Vec4 vCamLookAt = pTargetTransform->Get_RelativeOffset(m_tLookAtOffset.vCurVec).ZeroW()
+			+ (Vec4)pTargetTransform->Get_Position();
+
+		/* Set */
+		m_pTransformCom->LookAt(vCamLookAt);
+	}
+}
+
+void CCamera_Action::Tick_Talk(_float fTimeDelta)
+{
 }
 
 HRESULT CCamera_Action::Ready_Components()

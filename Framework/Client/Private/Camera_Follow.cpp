@@ -380,12 +380,12 @@ void CCamera_Follow::Test(_float fTimeDelta)
 
 		if (KEY_TAP(KEY::HOME))
 		{
-			/*CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
-			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_CurCamera());
-			if (nullptr != pActionCam)
-			{
-				pActionCam->Start_Action(CCamera_Action::CAMERA_ACTION_TYPE::DOOR);
-			}*/
+			//CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
+			//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_CurCamera());
+			//if (nullptr != pActionCam)
+			//{
+			//	pActionCam->Start_Action(CCamera_Action::CAMERA_ACTION_TYPE::DOOR);
+			//}
 		}
 	}
 
