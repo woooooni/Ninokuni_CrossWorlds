@@ -5,7 +5,7 @@
 #include "Trail.h"
 #include "Character_Manager.h"
 
-
+#include "State_Engineer_DoorEnter.h"
 #include "State_Engineer_Neutral_Idle.h"
 #include "State_Engineer_Neutral_Jump.h"
 #include "State_Engineer_Neutral_Walk.h"
@@ -227,6 +227,13 @@ HRESULT CCharacter_Engineer::Ready_States()
 	list<wstring> strAnimationNames;
 
 	// Neutral
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_TeleportEnd");
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_DOOR_ENTER, CState_Engineer_DoorEnter::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
+
+
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_NeutralStand");
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_NeutralIdle01");

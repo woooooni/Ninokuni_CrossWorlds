@@ -9,7 +9,7 @@ CSkill_Destroyer_LeafSlam::CSkill_Destroyer_LeafSlam()
 
 
 
-HRESULT CSkill_Destroyer_LeafSlam::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CGameObject* pOwner)
+HRESULT CSkill_Destroyer_LeafSlam::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CCharacter* pOwner)
 {
 	if (FAILED(__super::Initialize(pDevice, pContext, pOwner)))
 		return E_FAIL;
@@ -28,8 +28,13 @@ void CSkill_Destroyer_LeafSlam::LateTick(_float fTimeDelta)
 	__super::LateTick(fTimeDelta);
 }
 
+void CSkill_Destroyer_LeafSlam::Use_Skill()
+{
+	__super::Use_Skill();
+}
 
-CSkill_Destroyer_LeafSlam* CSkill_Destroyer_LeafSlam::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CGameObject* pOwner)
+
+CSkill_Destroyer_LeafSlam* CSkill_Destroyer_LeafSlam::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CCharacter* pOwner)
 {
 	CSkill_Destroyer_LeafSlam* pInstance = new CSkill_Destroyer_LeafSlam;
 	if (FAILED(pInstance->Initialize(pDevice, pContext, pOwner)))

@@ -11,12 +11,15 @@ private:
 	virtual ~CSkill_Destroyer_LeafSlam() = default;
 
 public:
-	virtual HRESULT Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, class CGameObject* pOwner);
+	virtual HRESULT Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, class CCharacter* pOwner);
 	virtual void Tick(_float fTimeDelta);
 	virtual void LateTick(_float fTimeDelta);
 
 public:
-	static CSkill_Destroyer_LeafSlam* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, class CGameObject* pOwner);
+	virtual void Use_Skill() override;
+
+public:
+	static CSkill_Destroyer_LeafSlam* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, class CCharacter* pOwner);
 	virtual void Free() override;
 };
 

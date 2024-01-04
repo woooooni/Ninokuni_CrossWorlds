@@ -9,7 +9,7 @@ CSkill_Destroyer_WheelWind::CSkill_Destroyer_WheelWind()
 
 
 
-HRESULT CSkill_Destroyer_WheelWind::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CGameObject* pOwner)
+HRESULT CSkill_Destroyer_WheelWind::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CCharacter* pOwner)
 {
 	if (FAILED(__super::Initialize(pDevice, pContext, pOwner)))
 		return E_FAIL;
@@ -28,8 +28,13 @@ void CSkill_Destroyer_WheelWind::LateTick(_float fTimeDelta)
 	__super::LateTick(fTimeDelta);
 }
 
+void CSkill_Destroyer_WheelWind::Use_Skill()
+{
+	__super::Use_Skill();
+}
 
-CSkill_Destroyer_WheelWind* CSkill_Destroyer_WheelWind::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CGameObject* pOwner)
+
+CSkill_Destroyer_WheelWind* CSkill_Destroyer_WheelWind::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CCharacter* pOwner)
 {
 	CSkill_Destroyer_WheelWind* pInstance = new CSkill_Destroyer_WheelWind;
 	if (FAILED(pInstance->Initialize(pDevice, pContext, pOwner)))

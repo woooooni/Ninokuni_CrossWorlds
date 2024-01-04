@@ -2,7 +2,6 @@
 #include "GameInstance.h"
 #include "Skill_Manager.h"
 #include "Utils.h"
-#include "Player.h"
 #include "Skill.h"
 
 IMPLEMENT_SINGLETON(CSkill_Manager)

@@ -8,6 +8,7 @@
 #include "Weapon.h"
 #include "Sword.h"
 
+#include "State_Destroyer_DoorEnter.h"
 #include "State_Destroyer_Neutral_Idle.h"
 #include "State_Destroyer_Neutral_Jump.h"
 #include "State_Destroyer_Neutral_Walk.h"
@@ -231,6 +232,11 @@ HRESULT CCharacter_Destroyer::Ready_States()
 {
 	list<wstring> strAnimationNames;
 
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_TeleportEnd");
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_DOOR_ENTER, CState_Destroyer_DoorEnter::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 	// Neutral
 	strAnimationNames.clear();

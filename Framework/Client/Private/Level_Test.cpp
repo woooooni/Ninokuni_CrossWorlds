@@ -171,7 +171,7 @@ HRESULT CLevel_Test::Ready_Layer_Player(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Test::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 {	
-	if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN)))
+	if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, true)))
 		return E_FAIL;
 
 

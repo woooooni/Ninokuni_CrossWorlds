@@ -9,7 +9,7 @@ CSkill_SwordMan_SpinningAssault::CSkill_SwordMan_SpinningAssault()
 
 
 
-HRESULT CSkill_SwordMan_SpinningAssault::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CGameObject* pOwner)
+HRESULT CSkill_SwordMan_SpinningAssault::Initialize(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CCharacter* pOwner)
 {
 	if (FAILED(__super::Initialize(pDevice, pContext, pOwner)))
 		return E_FAIL;
@@ -28,8 +28,13 @@ void CSkill_SwordMan_SpinningAssault::LateTick(_float fTimeDelta)
 	__super::LateTick(fTimeDelta);
 }
 
+void CSkill_SwordMan_SpinningAssault::Use_Skill()
+{
+	__super::Use_Skill();
+}
 
-CSkill_SwordMan_SpinningAssault* CSkill_SwordMan_SpinningAssault::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CGameObject* pOwner)
+
+CSkill_SwordMan_SpinningAssault* CSkill_SwordMan_SpinningAssault::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CCharacter* pOwner)
 {
 	CSkill_SwordMan_SpinningAssault* pInstance = new CSkill_SwordMan_SpinningAssault;
 	if (FAILED(pInstance->Initialize(pDevice, pContext, pOwner)))
