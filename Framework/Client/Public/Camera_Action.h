@@ -24,6 +24,8 @@ public:
 
 		LERP_VEC4_DESC vLerpCamLookAt;
 
+		const _float fLookMag = 10000.f;
+
 	}ACTION_LOBBY_DESC;
 
 	typedef struct tagActionDoorDesc
@@ -39,7 +41,7 @@ public:
 		const _float	fMaxRotateSpeed = XMConvertToRadians(45.f);
 		
 		const _float	fFixedTime		= 0.9f; // FIX
-		const _float	fBlendingTime	= 1.25f;  // INTRO, OUTTRO
+		const _float	fBlendingTime	= 1.4f;  // INTRO, OUTTRO
 
 		const Vec4		vTargetOffset = { 0.f, 1.5f, 3.5f, 1.f };
 		const Vec4		vLookAtOffset = { 0.f, 1.f, 0.f, 1.f };
@@ -81,6 +83,7 @@ private:
 
 private:
 	virtual HRESULT Ready_Components() override;
+	virtual void Tick_Blending(const _float fDeltaTime) override;
 
 private:
 	_bool				m_bAction = false;

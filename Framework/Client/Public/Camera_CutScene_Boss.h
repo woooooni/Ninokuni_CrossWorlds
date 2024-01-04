@@ -23,6 +23,7 @@ public:
 
 private:
 	virtual HRESULT Ready_Components() override;
+	virtual void Tick_Blending(const _float fDeltaTime) override;
 
 public:
 	static CCamera_CutScene_Boss* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);

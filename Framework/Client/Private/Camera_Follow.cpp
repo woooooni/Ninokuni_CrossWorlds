@@ -10,6 +10,7 @@
 #include "Camera_Action.h"
 #include "Game_Manager.h"
 #include "Player.h"
+#include "Utils.h"
 
 CCamera_Follow::CCamera_Follow(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
 	: CCamera(pDevice, pContext, strObjTag, OBJ_TYPE::OBJ_CAMERA)
@@ -70,20 +71,30 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 			m_eLockProgress = LOCK_PROGRESS::OFF;
 	}
 
+	/* Check Blending */
+	if (m_bBlending)
+	{
+		Tick_Blending(fTimeDelta);
+		return;
+	}
 
-	/* Position */
-	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, Calculate_WorldPosition(fTimeDelta));
+	/* Trnasform */
+	{
+		/* Position */
+		m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, Calculate_WorldPosition(fTimeDelta));
 	
-	/* Look & Shake */
-	const Vec4 vLookAtPos = Calculate_Look(fTimeDelta);
-	if (Is_Shake())
-		m_pTransformCom->LookAt(Vec4(vLookAtPos + Vec4(Get_ShakeLocalPos())).OneW());
-	else
-		m_pTransformCom->LookAt(vLookAtPos);
+		/* Look & Shake */
+		const Vec4 vLookAtPos = Calculate_Look(fTimeDelta);
+		if (Is_Shake())
+			m_pTransformCom->LookAt(Vec4(vLookAtPos + Vec4(Get_ShakeLocalPos())).OneW());
+		else
+			m_pTransformCom->LookAt(vLookAtPos);
 	
-	/* Collision */
-	if(nullptr != m_pControllerCom)
-		m_pControllerCom->Tick_Controller(fTimeDelta);
+		/* Collision */
+		if(nullptr != m_pControllerCom)
+			m_pControllerCom->Tick_Controller(fTimeDelta);
+	}
+
 
 	/* Test */
 	Test(fTimeDelta);
@@ -190,6 +201,19 @@ HRESULT CCamera_Follow::Ready_Components()
 		m_pControllerCom->Set_Active(true);
 
 	return S_OK;
+}
+
+void CCamera_Follow::Tick_Blending(const _float fDeltaTime)
+{
+	Vec4 vCamPosition = CCamera_Manager::GetInstance()->Get_BlendingPosition();
+
+	Vec4 vCamLookAt = CCamera_Manager::GetInstance()->Get_BlendingLookAt();
+
+	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vCamPosition);
+
+	m_pTransformCom->LookAt(vCamLookAt);
+
+	CUtils::ConsoleOut(vCamLookAt);
 }
 
 Vec4 CCamera_Follow::Calculate_WorldPosition(_float fTimeDelta)
@@ -394,12 +418,12 @@ void CCamera_Follow::Test(_float fTimeDelta)
 
 		if (KEY_TAP(KEY::HOME))
 		{
-			//CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
-			//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_CurCamera());
-			//if (nullptr != pActionCam)
-			//{
-			//	pActionCam->Start_Action(CCamera_Action::CAMERA_ACTION_TYPE::DOOR);
-			//}
+			CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
+			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_CurCamera());
+			if (nullptr != pActionCam)
+			{
+				pActionCam->Start_Action(CCamera_Action::CAMERA_ACTION_TYPE::DOOR);
+			}
 		}
 	}
 

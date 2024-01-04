@@ -44,6 +44,13 @@ void CCamera_CutScene_Map::Tick(_float fTimeDelta)
 
 	__super::Tick(fTimeDelta);
 
+	/* Check Blending */
+	if (m_bBlending)
+	{
+		Tick_Blending(fTimeDelta);
+		return;
+	}
+
 	/* ÄÆ½Å Á¾·á*/
 	if (!m_tTimeDesc.bActive)
 	{
@@ -339,6 +346,10 @@ CAMERA_CUTSCENE_MAP_DESC* CCamera_CutScene_Map::Find_CutSceneDesc(const string& 
 HRESULT CCamera_CutScene_Map::Ready_Components()
 {
 	return S_OK;
+}
+
+void CCamera_CutScene_Map::Tick_Blending(const _float fDeltaTime)
+{
 }
 
 CCamera_CutScene_Map* CCamera_CutScene_Map::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)

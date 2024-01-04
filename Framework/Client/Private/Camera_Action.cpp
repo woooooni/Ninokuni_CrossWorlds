@@ -9,6 +9,8 @@
 
 #include "Camera_Follow.h"
 
+#include "Utils.h"
+
 CCamera_Action::CCamera_Action(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
 	: CCamera(pDevice, pContext, strObjTag, OBJ_TYPE::OBJ_CAMERA)
 {
@@ -36,10 +38,13 @@ HRESULT CCamera_Action::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, m_tActionLobbyDesc.vCamPosition);
-	Vec4 vLookAt = m_tActionLobbyDesc.vCamLookAtStart * 10000.f;
+	/* Set Transform (Action Cam이 Lobby Level에서 가장 먼저 시작된다는 전제) */
+	{
+		m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, m_tActionLobbyDesc.vCamPosition);
 
-	m_pTransformCom->LookAt(vLookAt.OneW());
+		Vec4 vLookAt = m_tActionLobbyDesc.vCamLookAtStart * m_tActionLobbyDesc.fLookMag;
+		m_pTransformCom->LookAt(vLookAt.OneW());
+	}
 
 	return S_OK;
 }
@@ -50,6 +55,13 @@ void CCamera_Action::Tick(_float fTimeDelta)
 		return;
 
 	__super::Tick(fTimeDelta);
+
+	/* Check Blending */
+	if (m_bBlending)
+	{
+		Tick_Blending(fTimeDelta);
+		return;
+	}
 
 	if (m_bAction)
 	{
@@ -67,11 +79,6 @@ void CCamera_Action::Tick(_float fTimeDelta)
 		default:
 			break;
 		}
-	}
-
-	if (KEY_TAP(KEY::INSERT))
-	{
-		Start_Action(CAMERA_ACTION_TYPE::LOBBY);
 	}
 }
 
@@ -185,14 +192,12 @@ HRESULT CCamera_Action::Start_Action_Talk(CGameObject* pTarget, const _uint& iTa
 void CCamera_Action::Tick_Lobby(_float fTimeDelta)
 {
 	if (!m_tActionLobbyDesc.vLerpCamLookAt.bActive)
-	{
 		m_bAction = false;
-	}
 
 	if (m_tActionLobbyDesc.vLerpCamLookAt.bActive)
 		m_tActionLobbyDesc.vLerpCamLookAt.Update_Lerp(fTimeDelta);
 	
-	Vec4 vLookAt = m_tActionLobbyDesc.vLerpCamLookAt.vCurVec * 10000.f;
+	Vec4 vLookAt = m_tActionLobbyDesc.vLerpCamLookAt.vCurVec * m_tActionLobbyDesc.fLookMag;
 
 	m_pTransformCom->LookAt(vLookAt.OneW());
 }
@@ -242,9 +247,14 @@ void CCamera_Action::Tick_Door(_float fTimeDelta)
 				CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
 				if (nullptr != pFollowCam)
 				{
-					CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
-					
 					pFollowCam->Set_Default_Position();
+
+					CCamera_Manager::GetInstance()->Change_Camera(CAMERA_TYPE::FOLLOW);
+
+					CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
+					const Vec4 vCamLookAt = pTargetTransform->Get_RelativeOffset(m_tLookAtOffset.vCurVec).ZeroW()
+						+ (Vec4)pTargetTransform->Get_Position();
+					CUtils::ConsoleOut(vCamLookAt);
 				}
 			}
 		}
@@ -253,7 +263,6 @@ void CCamera_Action::Tick_Door(_float fTimeDelta)
 			break;
 		}
 	}
-
 
 	/* Transform */
 	{
@@ -264,7 +273,7 @@ void CCamera_Action::Tick_Door(_float fTimeDelta)
 
 		/* Height */
 		Vec4 vPostion = m_pTransformCom->Get_Position();
-		vPostion.y += m_tActionDoorDesc.tLerpRotateSpeed.fCurValue * fTimeDelta * 0.3f;
+		vPostion.y += m_tActionDoorDesc.tLerpRotateSpeed.fCurValue * fTimeDelta * 0.7f;
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPostion);
 
 		/* Look At */
@@ -283,6 +292,10 @@ void CCamera_Action::Tick_Talk(_float fTimeDelta)
 HRESULT CCamera_Action::Ready_Components()
 {
 	return S_OK;
+}
+
+void CCamera_Action::Tick_Blending(const _float fDeltaTime)
+{
 }
 
 CCamera_Action* CCamera_Action::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
