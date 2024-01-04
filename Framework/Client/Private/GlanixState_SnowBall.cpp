@@ -1,7 +1,10 @@
 #include "stdafx.h"
 #include "GlanixState_SnowBall.h"
 
+#include "GameInstance.h"
+
 #include "Glanix.h"
+#include "Glanix_IceBall.h"
 
 CGlanixState_SnowBall::CGlanixState_SnowBall(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
@@ -23,6 +26,11 @@ void CGlanixState_SnowBall::Enter_State(void* pArg)
 void CGlanixState_SnowBall::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
+
+	if (m_pModelCom->Get_CurrAnimationFrame() == 45)
+	{
+		GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_GlanixIceBall"), &m_pGlanix);
+	}
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
@@ -52,6 +60,3 @@ void CGlanixState_SnowBall::Free()
 {
 	__super::Free();
 }
-
-#include "stdafx.h"
-#include "GlanixState_SnowBall.h"

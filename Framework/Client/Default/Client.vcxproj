@@ -292,6 +292,7 @@
     <ClInclude Include="..\Public\Glanix_PhoenixState_Out.h" />
     <ClInclude Include="..\Public\Glanix_PhoenixState_Spawn.h" />
     <ClInclude Include="..\Public\Glanix_ShockWave.h" />
+    <ClInclude Include="..\Public\Glanix_IceBall.h" />
     <ClInclude Include="..\Public\Grass.h" />
     <ClInclude Include="..\Public\Gosling.h" />
     <ClInclude Include="..\Public\HumanChild01.h" />
@@ -919,6 +920,7 @@
     <ClCompile Include="..\Private\Glanix_PhoenixState_Out.cpp" />
     <ClCompile Include="..\Private\Glanix_PhoenixState_Spawn.cpp" />
     <ClCompile Include="..\Private\Glanix_ShockWave.cpp" />
+    <ClCompile Include="..\Private\Glanix_IceBall.cpp" />
     <ClCompile Include="..\Private\Grass.cpp" />
     <ClCompile Include="..\Private\Gosling.cpp" />
     <ClCompile Include="..\Private\HumanChild01.cpp" />

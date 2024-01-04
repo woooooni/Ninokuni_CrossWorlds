@@ -146,7 +146,7 @@ void CShadow_Thief::Collision_Enter(const COLLISION_INFO& tInfo)
 
 					On_Damaged(tInfo);
 
-					if (!m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_BLOW] && m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_AIR])
+					if (!m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_BLOW] && !m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_AIR])
 					{
 
 						if (m_pModelCom->Get_CurrAnimation()->Get_AnimationName() != TEXT("SKM_ShadowThief.ao|ShadowThief_Stun"))

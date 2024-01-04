@@ -139,9 +139,9 @@ HRESULT CSpawner_Ice01::Spawn_Monster()
 
 	for (_int i = m_vecThief.size(); i < m_iMaxThiefCount; ++i)
 	{
-		tInfo.vStartPosition.x = vSpawnerPos.x + GI->RandomFloat(-5.f, 5.f);
+		tInfo.vStartPosition.x = vSpawnerPos.x + GI->RandomFloat(-3.f, 3.f);
 		tInfo.vStartPosition.y = vSpawnerPos.y + 1.f;
-		tInfo.vStartPosition.z = vSpawnerPos.z + GI->RandomFloat(-5.f, 5.f);
+		tInfo.vStartPosition.z = vSpawnerPos.z + GI->RandomFloat(-3.f, 3.f);
 		tInfo.vStartPosition.w = 1.f;
 
 		CGameObject* pObj = GI->Clone_GameObject(TEXT("Prorotype_GameObject_Shadow_Thief"), _uint(LAYER_MONSTER), &tInfo);
