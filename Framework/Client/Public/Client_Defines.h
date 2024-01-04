@@ -77,6 +77,7 @@ namespace Client
 
 	enum OBJ_TYPE
 	{
+		OBJ_ANIMAL,
 		OBJ_BACKGROUND,
 		OBJ_BUILDING,
 		OBJ_CAMERA,

@@ -89,6 +89,34 @@ void CState_SwordMan_Neutral_Idle::Input(_float fTimeDelta)
 
     if (KEY_TAP(KEY::C))
         m_pStateMachineCom->Change_State(CCharacter::STATE::NEUTRAL_CROUCH_IDLE);
+
+    if (KEY_TAP(KEY::F))
+    {
+        const list<CGameObject*>& Dynamic_Object = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_DYNAMIC);
+        _float fDistance = 99999999999.f;
+        CGameObject* pTarget = nullptr;
+        for (auto& pObj : Dynamic_Object)
+        {
+            if (OBJ_TYPE::OBJ_ANIMAL != pObj->Get_ObjectType())
+                continue;
+
+            CTransform* pTransform = pObj->Get_Component<CTransform>(L"Com_Transform");
+            if (nullptr == pTransform)
+                continue;
+            Vec3 vDir = pTransform->Get_Position() - m_pTransformCom->Get_Position();
+            if (vDir.Length() <= fDistance)
+            {
+                fDistance = vDir.Length();
+                pTarget = pObj;
+            }
+        }
+
+        if (nullptr != pTarget && fDistance <= 1.f)
+        {
+            m_pStateMachineCom->Change_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_IDLE);
+            m_pCharacter->Set_Target(pTarget);
+        }
+    }
 }
 
 CState_SwordMan_Neutral_Idle* CState_SwordMan_Neutral_Idle::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

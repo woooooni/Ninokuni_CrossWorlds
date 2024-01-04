@@ -887,21 +887,21 @@ HRESULT CLoader::Loading_Proto_Static_Map_Objects(const wstring& strPath)
 HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 {
 #pragma region Animal ProtoType
-	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Cat"), CCat::Create(m_pDevice, m_pContext, TEXT("Animal_Cat"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Cat"), CCat::Create(m_pDevice, m_pContext, TEXT("Animal_Cat"), OBJ_TYPE::OBJ_ANIMAL), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Dochi"), CDochi::Create(m_pDevice, m_pContext, TEXT("Animal_Dochi"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Dochi"), CDochi::Create(m_pDevice, m_pContext, TEXT("Animal_Dochi"), OBJ_TYPE::OBJ_ANIMAL), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_DuckGoo"), CDuckGoo::Create(m_pDevice, m_pContext, TEXT("Animal_DuckGoo"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_DuckGoo"), CDuckGoo::Create(m_pDevice, m_pContext, TEXT("Animal_DuckGoo"), OBJ_TYPE::OBJ_ANIMAL), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Fox"), CFox::Create(m_pDevice, m_pContext, TEXT("Animal_Fox"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Fox"), CFox::Create(m_pDevice, m_pContext, TEXT("Animal_Fox"), OBJ_TYPE::OBJ_ANIMAL), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Rabbit"), CRabbit::Create(m_pDevice, m_pContext, TEXT("Animal_Rabbit"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Rabbit"), CRabbit::Create(m_pDevice, m_pContext, TEXT("Animal_Rabbit"), OBJ_TYPE::OBJ_ANIMAL), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_PolarBear"), CPolarBear::Create(m_pDevice, m_pContext, TEXT("Animal_PolarBear"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_PolarBear"), CPolarBear::Create(m_pDevice, m_pContext, TEXT("Animal_PolarBear"), OBJ_TYPE::OBJ_ANIMAL), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Ermine"), CErmine::Create(m_pDevice, m_pContext, TEXT("Animal_Ermine"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Ermine"), CErmine::Create(m_pDevice, m_pContext, TEXT("Animal_Ermine"), OBJ_TYPE::OBJ_ANIMAL), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Pigeon"), CPigeon::Create(m_pDevice, m_pContext, TEXT("Animal_Pigeon"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Pigeon"), CPigeon::Create(m_pDevice, m_pContext, TEXT("Animal_Pigeon"), OBJ_TYPE::OBJ_ANIMAL), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
 #pragma endregion Animals Prototype
 

@@ -160,8 +160,7 @@ void CUI_BasicButton::On_Mouse(_float fTimeDelta)
 						if (KEY_TAP(KEY::LBTN))
 						{
 							CUI_Manager::GetInstance()->Set_Textable(false);
-							CUI_Manager::GetInstance()->Set_UserName();
-							
+							CUI_Manager::GetInstance()->Set_UserName();	
 						}
 					}
 				}
