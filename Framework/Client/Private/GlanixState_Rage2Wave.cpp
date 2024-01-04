@@ -41,7 +41,7 @@ void CGlanixState_Rage2Wave::Tick_State(_float fTimeDelta)
 		//_float4 vOwnerPos = {};
 		//XMStoreFloat4(&vOwnerPos, m_pGlanix->Get_OriginPos());
 		//_vector vSpritPos = { vOwnerPos.x, vOwnerPos.y, vOwnerPos.z, 1.f };
-		GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_ShockWave"), &m_pGlanix->Get_WavePoint());
+		//GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_ShockWave"), &m_pGlanix->Get_WavePoint());
 
 	}
 

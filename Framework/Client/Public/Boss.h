@@ -9,6 +9,7 @@ class CBoss abstract : public CMonster
 public:
 	enum class BOSS_BOOLTYPE {
 		BOSSBOOL_ATKAROUND, BOSSBOOL_SKILLAROUND, BOSSBOOL_BERSERK, BOSSBOOL_RAGE, BOSSBOOL_RAGE2,
+		BOSSBOOL_COUNTER, 
 		BOSSBOOL_END
 	};
 
@@ -78,6 +79,8 @@ protected:
 
 	// 최초 위치와 최초 look
 	_vector	m_vOriginLook = {};
+	//_float4 m_vCounterRimColor = _float4(0.78f, 0.51f, 0.137f, 0.f);
+	_float4 m_vCounterRimColor = _float4(0.f, 0.f, 1.f, 0.f);
 
 public:
 	virtual void Free() override;

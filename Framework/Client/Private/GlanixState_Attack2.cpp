@@ -4,6 +4,8 @@
 #include "Glanix.h"
 #include "Camera_Manager.h"
 
+#include "Animation.h"
+
 CGlanixState_Attack2::CGlanixState_Attack2(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
 {
@@ -25,6 +27,22 @@ void CGlanixState_Attack2::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
+	//if (m_pModelCom->Get_CurrAnimation()->Get_AnimationName() == TEXT("SKM_Glanix.ao|Glanix_Attack02"))
+	//{
+	//	if (m_pModelCom->Get_CurrAnimationFrame() >= 30 && m_pModelCom->Get_CurrAnimationFrame() <= 55)
+	//		m_pGlanix->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_COUNTER, true);
+	//	else if(m_pModelCom->Get_CurrAnimationFrame() == 56)
+	//		m_pGlanix->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_COUNTER, false);
+	//}
+
+	if (m_pModelCom->Get_CurrAnimation()->Get_AnimationName() == TEXT("SKM_Glanix.ao|Glanix_Attack02"))
+	{
+		if (m_pModelCom->Get_CurrAnimationFrame() >= 15 && m_pModelCom->Get_CurrAnimationFrame() <= 55)
+			m_pGlanix->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_COUNTER, true);
+		else if (m_pModelCom->Get_CurrAnimationFrame() == 56)
+			m_pGlanix->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_COUNTER, false);
+	}
+
 	if (m_pModelCom->Get_CurrAnimationFrame() == 62)
 	{
 		CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
@@ -32,9 +50,8 @@ void CGlanixState_Attack2::Tick_State(_float fTimeDelta)
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
-		//_float fWaitTime = 2.f;
-		//m_pStateMachineCom->Change_State(CGlanix::GLANIX_COMBATIDLE, &fWaitTime);
-		m_pStateMachineCom->Change_State(CGlanix::GLANIX_TURN);
+		_float fWaitTime = 2.5f;
+		m_pStateMachineCom->Change_State(CGlanix::GLANIX_COMBATIDLE, &fWaitTime);
 	}
 }
 

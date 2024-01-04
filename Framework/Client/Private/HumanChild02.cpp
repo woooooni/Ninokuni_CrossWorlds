@@ -3,6 +3,11 @@
 
 #include "GameInstance.h"
 
+#include "NpcState_Idle.h"
+#include "NpcState_Talk.h"
+#include "NpcState_OneWay.h"
+#include "NpcState_TwoWay.h"
+
 CHumanChild02::CHumanChild02(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameNpc(pDevice, pContext, strObjectTag)
 {
@@ -149,6 +154,30 @@ HRESULT CHumanChild02::Ready_Components()
 
 HRESULT CHumanChild02::Ready_States()
 {
+	m_pStateCom->Set_Owner(this);
+
+	list<wstring> strAnimationName;
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_HumanChild02.ao|HumanChild_IdleSleepNofacial");
+	m_pStateCom->Add_State(NPC_IDLE, CNpcState_Idle::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_HumanChild02.ao|HumanChild_IdleSleepNofacial");
+	m_pStateCom->Add_State(NPC_TALK, CNpcState_Talk::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_HumanChild02.ao|HumanChild_WalkSleepNoFacial");
+	m_pStateCom->Add_State(NPC_MOVE_ONEWAY, CNpcState_OneWay::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_HumanChild02.ao|HumanChild_WalkSleepNoFacial");
+	strAnimationName.push_back(L"SKM_HumanChild02.ao|HumanChild_IdleSleepNofacial");
+	m_pStateCom->Add_State(NPC_MOVE_TWOWAY, CNpcState_TwoWay::Create(m_pStateCom, strAnimationName));
+
+
+	m_pStateCom->Change_State(NPC_IDLE);
+
 	return S_OK;
 }
 

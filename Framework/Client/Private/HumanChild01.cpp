@@ -3,6 +3,11 @@
 
 #include "GameInstance.h"
 
+#include "NpcState_Idle.h"
+#include "NpcState_Talk.h"
+#include "NpcState_OneWay.h"
+#include "NpcState_TwoWay.h"
+
 CHumanChild01::CHumanChild01(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameNpc(pDevice, pContext, strObjectTag)
 {
@@ -42,19 +47,6 @@ HRESULT CHumanChild01::Initialize(void* pArg)
 
 void CHumanChild01::Tick(_float fTimeDelta)
 {
-	if (KEY_TAP(KEY::J))
-	{
-		_uint iCurAnimIndex = m_pModelCom->Get_CurrAnimationIndex();
-		m_pModelCom->Set_Animation(iCurAnimIndex + 1);
-	}
-	else if (KEY_TAP(KEY::K))
-	{
-		_int iCurAnimIndex = m_pModelCom->Get_CurrAnimationIndex() - 1;
-		if (iCurAnimIndex < 0)
-			iCurAnimIndex = 0;
-		m_pModelCom->Set_Animation(iCurAnimIndex);
-	}
-
 	m_pStateCom->Tick_State(fTimeDelta);
 
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
@@ -120,6 +112,8 @@ HRESULT CHumanChild01::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_StateMachine"), TEXT("Com_StateMachine"), (CComponent**)&m_pStateCom)))
 		return E_FAIL;
 
+	m_pStateCom->Set_Owner(this);
+
 	CRigidBody::RIGID_BODY_DESC RigidDesc;
 	RigidDesc.pTransform = m_pTransformCom;
 
@@ -149,6 +143,28 @@ HRESULT CHumanChild01::Ready_Components()
 
 HRESULT CHumanChild01::Ready_States()
 {
+	list<wstring> strAnimationName;
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_HumanChild01.ao|HumanChild01_CSWhoTheLittleWitchIs01");
+	m_pStateCom->Add_State(NPC_IDLE, CNpcState_Idle::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_HumanChild01.ao|HumanChild01_CSDreamersMazeWitch02");
+	m_pStateCom->Add_State(NPC_TALK, CNpcState_Talk::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_HumanChild01.ao|HumanChild01_CS1stAnniversary01");
+	m_pStateCom->Add_State(NPC_MOVE_ONEWAY, CNpcState_OneWay::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_HumanChild01.ao|HumanChild01_CS1stAnniversary01");
+	strAnimationName.push_back(L"SKM_HumanChild01.ao|HumanChild01_CSDreamersMazeWitch01");
+	m_pStateCom->Add_State(NPC_MOVE_TWOWAY, CNpcState_TwoWay::Create(m_pStateCom, strAnimationName));
+
+
+	m_pStateCom->Change_State(NPC_IDLE);
+
 	return S_OK;
 }
 

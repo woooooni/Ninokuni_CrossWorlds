@@ -156,7 +156,7 @@ HRESULT CLevel_IceLand::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_IceLand::Ready_Layer_Terrain(const LAYER_TYPE eLayerType)
 {
-	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_TERRAIN, TEXT("Prototype_GameObject_Terrain"))))
+	if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_TERRAIN, TEXT("Prototype_GameObject_Terrain"))))
 		return E_FAIL;
 
 	return S_OK;
@@ -191,7 +191,7 @@ HRESULT CLevel_IceLand::Ready_Layer_Monster(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_IceLand::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 {
-	if (FAILED(CUI_Manager::GetInstance()->Ready_CommonUIs(LEVELID::LEVEL_EVERMORE)))
+	if (FAILED(CUI_Manager::GetInstance()->Ready_CommonUIs(LEVELID::LEVEL_ICELAND)))
 		return E_FAIL;
 
 	CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();

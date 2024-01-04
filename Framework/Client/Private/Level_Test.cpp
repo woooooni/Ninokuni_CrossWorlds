@@ -175,6 +175,7 @@ HRESULT CLevel_Test::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 		return E_FAIL;
 
 	pCharacterTransform->Set_State(CTransform::STATE_POSITION, Vec4(-44.f, 1.6f, 315.f, 1.f));
+	// pCharacterTransform->Set_State(CTransform::STATE_POSITION, Vec4(111.f, 1.6f, 8.6f, 1.f));
 
 	if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))
 	{

@@ -4,6 +4,10 @@
 #include "GameInstance.h"
 #include "NpcWeapon_Halberd.h"
 
+#include "NpcState_Idle.h"
+#include "NpcState_Talk.h"
+#include "NpcState_OneWay.h"
+#include "NpcState_TwoWay.h"
 
 CKingdomGuard::CKingdomGuard(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameNpc(pDevice, pContext, strObjectTag)
@@ -44,19 +48,6 @@ HRESULT CKingdomGuard::Initialize(void* pArg)
 
 void CKingdomGuard::Tick(_float fTimeDelta)
 {
-	if (KEY_TAP(KEY::J))
-	{
-		_uint iCurAnimIndex = m_pModelCom->Get_CurrAnimationIndex();
-		m_pModelCom->Set_Animation(iCurAnimIndex + 1);
-	}
-	else if (KEY_TAP(KEY::K))
-	{
-		_int iCurAnimIndex = m_pModelCom->Get_CurrAnimationIndex() - 1;
-		if (iCurAnimIndex < 0)
-			iCurAnimIndex = 0;
-		m_pModelCom->Set_Animation(iCurAnimIndex);
-	}
-
 	m_pStateCom->Tick_State(fTimeDelta);
 
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
@@ -160,6 +151,30 @@ HRESULT CKingdomGuard::Ready_Components()
 
 HRESULT CKingdomGuard::Ready_States()
 {
+	m_pStateCom->Set_Owner(this);
+
+	list<wstring> strAnimationName;
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_EvermoreGuard02.ao|EvermoreGuard02_NeutralStand");
+	m_pStateCom->Add_State(NPC_IDLE, CNpcState_Idle::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_EvermoreGuard02.ao|EvermoreGuard02_Talk01");
+	m_pStateCom->Add_State(NPC_TALK, CNpcState_Talk::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_EvermoreGuard02.ao|EvermoreGuard02_NeutralWalk");
+	m_pStateCom->Add_State(NPC_MOVE_ONEWAY, CNpcState_OneWay::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_EvermoreGuard02.ao|EvermoreGuard02_NeutralWalk");
+	strAnimationName.push_back(L"SKM_EvermoreGuard02.ao|EvermoreGuard02_NeutralStand");
+	m_pStateCom->Add_State(NPC_MOVE_TWOWAY, CNpcState_TwoWay::Create(m_pStateCom, strAnimationName));
+
+
+	m_pStateCom->Change_State(NPC_IDLE);
+
 	return S_OK;
 }
 

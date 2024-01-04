@@ -53,14 +53,14 @@ void CGlanixState_Turn::Enter_State(void* pArg)
 	_float fDotProduct = XMVectorGetX(XMVector3Dot(vLookNormal, vDestNormal));
 	_float fAngle = XMConvertToDegrees(acosf(fDotProduct));
 
-	/* 만약 회전모션이 필요할 정도가 아닌 각도라면 3초정도의 idle 상태로 전환.*/
-	if (fAngle < 20.f)
-	{
-		_float fWaitTime = 3.f;
-		m_pStateMachineCom->Change_State(CGlanix::GLANIX_COMBATIDLE, &fWaitTime);
-	}
+	///* 만약 회전모션이 필요할 정도가 아닌 각도라면 3초정도의 idle 상태로 전환.*/
+	//if (fAngle < 20.f)
+	//{
+	//	_float fWaitTime = 3.f;
+	//	m_pStateMachineCom->Change_State(CGlanix::GLANIX_COMBATIDLE, &fWaitTime);
+	//}
 	/* 회전이 필요한 각도라면 */
-	else
+	//else
 	{
 		/* 보스의 look을 기준으로 타겟이 왼쪽, 오른쪽에 위치하는지를 판별. */
 		_vector vCrossProduct = XMVector3Cross(vLookNormal, vDestNormal);
@@ -104,7 +104,8 @@ void CGlanixState_Turn::Tick_State(_float fTimeDelta)
 	__super::Tick_State(fTimeDelta);
 
 	_vector vLookNormal = XMVector3Normalize(m_pTransformCom->Get_Look());
-	_vector vDestNormal = XMVector3Normalize(m_vDestPos - m_pTransformCom->Get_Position());
+	//_vector vDestNormal = XMVector3Normalize(m_vDestPos - m_pTransformCom->Get_Position());
+	_vector vDestNormal = XMVector3Normalize(m_pPlayerTransform->Get_Position() - m_pTransformCom->Get_Position());
 
 	/* 보스의 look을 기준으로 플레이어가 왼쪽, 오른쪽에 위치하는지를 판별. */
 	_vector vCrossProduct = XMVector3Cross(vLookNormal, vDestNormal);
@@ -125,9 +126,8 @@ void CGlanixState_Turn::Tick_State(_float fTimeDelta)
 	
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
-		//__super::Start_Pattern();
-		_float fWaitTime = 1.5f;
-		m_pStateMachineCom->Change_State(CGlanix::GLANIX_COMBATIDLE, &fWaitTime);
+		//m_pTransformCom->LookAt_ForLandObject(m_pPlayerTransform->Get_Position());
+		__super::Start_Pattern();
 	}
 }
 

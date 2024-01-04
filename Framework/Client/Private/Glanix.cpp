@@ -56,8 +56,12 @@
 
 #include "GlanixState_Turn.h"
 #include "GlanixState_Stun.h"
-#include "GlanixState_Counter.h"
+#include "GlanixState_CounterStart.h"
+#include "GlanixState_CounterLoop.h"
+#include "GlanixState_CounterEnd.h"
 #include "GlanixState_Dead.h"
+
+#include "Camera_Manager.h"
 
 CGlanix::CGlanix(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
 	: CBoss(pDevice, pContext, strObjectTag, tStat)
@@ -159,20 +163,21 @@ void CGlanix::Collision_Enter(const COLLISION_INFO& tInfo)
 	}
 
 	/* Counter */
-	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER &&
-		tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK &&
-		tInfo.pOtherCollider->Get_AttackType() == CCollider::ATTACK_TYPE::STUN)
+	if (m_bBools[(_uint)BOSS_BOOLTYPE::BOSSBOOL_COUNTER])
 	{
-		if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)			
+		if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER &&
+			tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK &&
+			tInfo.pOtherCollider->Get_AttackType() == CCollider::ATTACK_TYPE::STUN)
 		{
-			if (m_pStateCom->Get_CurrState() == GLANIX_ATTACK1 || m_pStateCom->Get_CurrState() == GLANIX_ATTACK2)
+			if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
 			{
-				m_pStateCom->Change_State(GLANIX_COUNTER);
 				On_Damaged(tInfo);
+				CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
+				m_pStateCom->Change_State(GLANIX_COUNTERSTART);
+				m_bBools[(_uint)BOSS_BOOLTYPE::BOSSBOOL_COUNTER] = false;
 			}
 		}
 	}
-
 }
 
 void CGlanix::Collision_Continue(const COLLISION_INFO& tInfo)
@@ -470,8 +475,16 @@ HRESULT CGlanix::Ready_States()
 	m_pStateCom->Add_State(GLANIX_STUN, CGlanixState_Stun::Create(m_pStateCom, strAnimationName));
 
 	strAnimationName.clear();
-	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_BattleStand");
-	m_pStateCom->Add_State(GLANIX_COUNTER, CGlanixState_Counter::Create(m_pStateCom, strAnimationName));
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_CounterEnter");
+	m_pStateCom->Add_State(GLANIX_COUNTERSTART, CGlanixState_CounterStart::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_CounterLoop");
+	m_pStateCom->Add_State(GLANIX_COUNTERLOOP, CGlanixState_CounterLoop::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_CounterOut");
+	m_pStateCom->Add_State(GLANIX_COUNTEREND, CGlanixState_CounterEnd::Create(m_pStateCom, strAnimationName));
 
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_Death");
