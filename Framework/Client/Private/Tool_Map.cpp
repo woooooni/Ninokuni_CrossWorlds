@@ -773,12 +773,12 @@ void CTool_Map::MapLightSpace()
 			ImGui::Spacing();
 
 			if (ImGui::Button(u8"Save"))
-				Save_Light_Data(TEXT("Evermore Light"));
+				Save_Light_Data(m_strLevelName + TEXT(" Light"));
 
 			ImGui::SameLine();
 
 			if (ImGui::Button(u8"Load"))
-				Load_Light_Data(TEXT("Evermore Light"));
+				Load_Light_Data(m_strLevelName + TEXT(" Light"));
 
 		}
 		ImGui::EndChild();

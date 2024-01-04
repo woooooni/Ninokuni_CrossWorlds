@@ -62,8 +62,8 @@ HRESULT CMainApp::Initialize()
 
 
 	// UI Cursor
-	CUI_Manager::GetInstance()->Ready_Cursor();
-	ShowCursor(false);
+	//CUI_Manager::GetInstance()->Ready_Cursor();
+	//ShowCursor(false);
 
 
 	Json Test;

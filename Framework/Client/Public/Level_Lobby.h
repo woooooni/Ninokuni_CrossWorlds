@@ -24,7 +24,9 @@ public:
 private:
 	HRESULT Ready_Layer_BackGround(const LAYER_TYPE eLayerType);
 	HRESULT Ready_Layer_UI(const LAYER_TYPE eLayerType);
-
+	HRESULT Ready_Layer_Dynamic(const LAYER_TYPE eLayerType, const wstring& strMapFileName);
+	HRESULT Ready_Light(const wstring& strLightFilePath);
+	HRESULT Ready_Layer_Camera(const LAYER_TYPE eLayerType);
 public:
 	static class CLevel_Lobby* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free() override;

@@ -313,11 +313,23 @@ HRESULT CLoader::Loading_For_Level_Lobby()
 		m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);*/
 	}
 
+	m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Static_Map_Objects, this, L"../Bin/Export/NonAnimModel/Map/");
+	m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Dynamic_Map_Objects, this, L"..Bin/Export/AnimModel/Map/");
+	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Loading_Proto_Monster_Npc, this);
+
+	m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE].wait();
+	m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE].wait();
+	m_Threads[LOADING_THREAD::MONSTER_AND_NPC].wait();
+
+	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Lobby");
+
 	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
 	{
 		if(true == m_Threads[i].valid())
 			m_Threads[i].wait();
 	}
+
+
 		
 	if (FAILED(Reserve_Character_Managers()))
 		return E_FAIL;
@@ -357,13 +369,14 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 		m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);*/
 	}
 
-	m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Static_Map_Objects, this, L"../Bin/Export/NonAnimModel/Map/");
-	m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Dynamic_Map_Objects, this, L"..Bin/Export/AnimModel/Map/");
-	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Loading_Proto_Monster_Npc, this);
+	//m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Static_Map_Objects, this, L"../Bin/Export/NonAnimModel/Map/");
+	//m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Dynamic_Map_Objects, this, L"..Bin/Export/AnimModel/Map/");
+	//m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Loading_Proto_Monster_Npc, this);
 
-	m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE].wait();
-	m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE].wait();
-	m_Threads[LOADING_THREAD::MONSTER_AND_NPC].wait();
+	//m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE].wait();
+	//m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE].wait();
+	//m_Threads[LOADING_THREAD::MONSTER_AND_NPC].wait();
+
 	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Evermore");
 //	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Map_Data, this, L"Evermore");
 
