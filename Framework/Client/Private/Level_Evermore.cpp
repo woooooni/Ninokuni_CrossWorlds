@@ -16,6 +16,9 @@
 #include "UI_Manager.h"
 #include "UI_Fade.h"
 
+#include "Water.h"
+#include "Light.h"
+
 
 CLevel_Evermore::CLevel_Evermore(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -47,6 +50,9 @@ HRESULT CLevel_Evermore::Initialize()
 		return E_FAIL;
 
 	if (FAILED(Ready_Layer_Dynamic(LAYER_TYPE::LAYER_DYNAMIC, TEXT("Evermore"))))
+		return E_FAIL;
+
+	if (FAILED(Ready_Light(TEXT("Evermore Light"))))
 		return E_FAIL;
 
 	if (nullptr != CUI_Manager::GetInstance()->Get_Fade())
@@ -241,6 +247,10 @@ HRESULT CLevel_Evermore::Ready_Layer_Dynamic(const LAYER_TYPE eLayerType, const 
 		OBJECT_INIT_DESC Init_Data = {};
 		Init_Data.vStartPosition = vPos;
 
+		_uint objectType;
+		File->Read<_uint>(objectType);
+
+
 		CGameObject* pObj = nullptr;
 		if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, eLayerType, strPrototypeTag, &Init_Data, &pObj)))
 		{
@@ -268,8 +278,72 @@ HRESULT CLevel_Evermore::Ready_Layer_Dynamic(const LAYER_TYPE eLayerType, const 
 		pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
 		pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
 		pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
+
+		if (pObj->Get_ObjectType() == OBJ_TYPE::OBJ_WATER)
+		{
+			CWater::VS_GerstnerWave vsWave;
+			File->Read<CWater::VS_GerstnerWave>(vsWave);
+			CWater::PS_GerstnerWave psWave;
+			File->Read<CWater::PS_GerstnerWave>(psWave);
+			_float damp;
+			File->Read<_float>(damp);
+
+			static_cast<CWater*>(pObj)->Set_VSGerstnerWave(vsWave);
+			static_cast<CWater*>(pObj)->Set_PSGerstnerWave(psWave);
+			static_cast<CWater*>(pObj)->Set_Damper(damp);
+		}
 	}
 
+	return S_OK;
+}
+
+HRESULT CLevel_Evermore::Ready_Light(const wstring& strLightFilePath)
+{
+	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strLightFilePath + L"/" + strLightFilePath + L".light";
+
+	shared_ptr<CFileUtils> pFile = make_shared<CFileUtils>();
+	pFile->Open(strMapFilePath, FileMode::Read);
+
+	_uint iLightSize = 0;
+	pFile->Read<_uint>(iLightSize);
+	// 라이트 개수
+	list<CLight*>* pLightlist = GI->Get_LightList();
+	for (auto& pLight : *pLightlist)
+		Safe_Release<CLight*>(pLight);
+
+	pLightlist->clear();
+
+	for (_uint i = 0; i < iLightSize; ++i)
+	{
+		LIGHTDESC LightDesc;
+		::ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
+
+		// Type
+		_uint iLightType = 0;
+		_uint iLightID = 0;
+
+		pFile->Read<_uint>(iLightType);
+
+		if (LIGHTDESC::TYPE_DIRECTIONAL == iLightType)
+		{
+			// ID
+			pFile->Read<_uint>(iLightID);
+
+			// State
+			Vec4 vDiffuse, vAmbient, vDirection;
+			pFile->Read<Vec4>(vDiffuse);
+			pFile->Read<Vec4>(vAmbient);
+			pFile->Read<Vec4>(vDirection);
+
+			LightDesc.eType = static_cast<LIGHTDESC::TYPE>(iLightType);
+			LightDesc.vDiffuse = vDiffuse;
+			LightDesc.vAmbient = vAmbient;
+			LightDesc.vDirection = vDirection;
+		}
+
+		if (FAILED(GI->Add_Light(m_pDevice, m_pContext, LightDesc)))
+			return E_FAIL;
+	}
 	return S_OK;
 }
 
