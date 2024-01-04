@@ -155,7 +155,6 @@ HRESULT CLevel_IceLand::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_IceLand::Ready_Layer_Terrain(const LAYER_TYPE eLayerType)
 {
-
 	if (FAILED(GI->Add_GameObject(LEVEL_ICELAND,LAYER_TYPE::LAYER_TERRAIN, TEXT("Prototype_GameObject_Terrain"))))
 		return E_FAIL;
 

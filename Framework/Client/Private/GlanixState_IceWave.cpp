@@ -32,9 +32,8 @@ void CGlanixState_IceWave::Tick_State(_float fTimeDelta)
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
-		//_float fWaitTime = 2.f;
-		//m_pStateMachineCom->Change_State(CGlanix::GLANIX_COMBATIDLE, &fWaitTime);
-		m_pStateMachineCom->Change_State(CGlanix::GLANIX_TURN);
+		_float fWaitTime = 2.5f;
+		m_pStateMachineCom->Change_State(CGlanix::GLANIX_COMBATIDLE, &fWaitTime);
 	}
 }
 

@@ -36,7 +36,11 @@ void CGlanixState_JumpStamp::Tick_State(_float fTimeDelta)
 	{
 		m_pTransformCom->LookAt_ForLandObject(vDestPos);
 
-		XMVECTOR vCurVector = XMVectorLerp(m_pTransformCom->Get_Position(), vDestPos, fTimeDelta / 0.35f);
+		Vec4 vFinalPosition = vDestPos;
+		Vec3 vReverseDir = XMVector3Normalize(m_pTransformCom->Get_Position() - vDestPos);
+		vFinalPosition = vFinalPosition + vReverseDir * 1.5f;
+
+		XMVECTOR vCurVector = XMVectorLerp(m_pTransformCom->Get_Position(), vFinalPosition, fTimeDelta / 0.35f);
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCurVector);
 	}
 
@@ -48,7 +52,8 @@ void CGlanixState_JumpStamp::Tick_State(_float fTimeDelta)
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
-		m_pStateMachineCom->Change_State(CGlanix::GLANIX_TURN);
+		_float fWaitTime = 2.5f;
+		m_pStateMachineCom->Change_State(CGlanix::GLANIX_COMBATIDLE, &fWaitTime);
 	}
 }
 

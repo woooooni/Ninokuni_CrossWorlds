@@ -54,6 +54,8 @@ HRESULT CMonster::Initialize(void* pArg)
 	if (m_pDissoveTexture == nullptr)
 		return E_FAIL;
 
+	m_fStunTime = 3.f;
+
 	return S_OK;
 }
 

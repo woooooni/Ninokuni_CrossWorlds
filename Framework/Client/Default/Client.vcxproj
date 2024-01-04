@@ -259,7 +259,9 @@
     <ClInclude Include="..\Public\Ghost1.h" />
     <ClInclude Include="..\Public\Ghost2.h" />
     <ClInclude Include="..\Public\GiftFunyaSnowman.h" />
-    <ClInclude Include="..\Public\GlanixState_Counter.h" />
+    <ClInclude Include="..\Public\GlanixState_CounterEnd.h" />
+    <ClInclude Include="..\Public\GlanixState_CounterLoop.h" />
+    <ClInclude Include="..\Public\GlanixState_CounterStart.h" />
     <ClInclude Include="..\Public\GlanixState_Rage2Idle.h" />
     <ClInclude Include="..\Public\GlanixState_Rage2Rising.h" />
     <ClInclude Include="..\Public\GlanixState_Rage2Stamp.h" />
@@ -314,6 +316,11 @@
     <ClInclude Include="..\Public\LuxerionHuman.h" />
     <ClInclude Include="..\Public\MonsterBT.h" />
     <ClInclude Include="..\Public\Motion_Trail.h" />
+    <ClInclude Include="..\Public\NpcState_Base.h" />
+    <ClInclude Include="..\Public\NpcState_Idle.h" />
+    <ClInclude Include="..\Public\NpcState_OneWay.h" />
+    <ClInclude Include="..\Public\NpcState_Talk.h" />
+    <ClInclude Include="..\Public\NpcState_TwoWay.h" />
     <ClInclude Include="..\Public\NpcWeapon_Halberd.h" />
     <ClInclude Include="..\Public\KingdomGuard.h" />
     <ClInclude Include="..\Public\Pigeon.h" />
@@ -879,7 +886,9 @@
     <ClCompile Include="..\Private\Ghost1.cpp" />
     <ClCompile Include="..\Private\Ghost2.cpp" />
     <ClCompile Include="..\Private\GiftFunyaSnowman.cpp" />
-    <ClCompile Include="..\Private\GlanixState_Counter.cpp" />
+    <ClCompile Include="..\Private\GlanixState_CounterEnd.cpp" />
+    <ClCompile Include="..\Private\GlanixState_CounterLoop.cpp" />
+    <ClCompile Include="..\Private\GlanixState_CounterStart.cpp" />
     <ClCompile Include="..\Private\GlanixState_Rage2Idle.cpp" />
     <ClCompile Include="..\Private\GlanixState_Rage2Rising.cpp" />
     <ClCompile Include="..\Private\GlanixState_Rage2Stamp.cpp" />
@@ -934,6 +943,11 @@
     <ClCompile Include="..\Private\LuxerionHuman.cpp" />
     <ClCompile Include="..\Private\MonsterBT.cpp" />
     <ClCompile Include="..\Private\Motion_Trail.cpp" />
+    <ClCompile Include="..\Private\NpcState_Base.cpp" />
+    <ClCompile Include="..\Private\NpcState_Idle.cpp" />
+    <ClCompile Include="..\Private\NpcState_OneWay.cpp" />
+    <ClCompile Include="..\Private\NpcState_Talk.cpp" />
+    <ClCompile Include="..\Private\NpcState_TwoWay.cpp" />
     <ClCompile Include="..\Private\NpcWeapon_Halberd.cpp" />
     <ClCompile Include="..\Private\KingdomGuard.cpp" />
     <ClCompile Include="..\Private\Pigeon.cpp" />

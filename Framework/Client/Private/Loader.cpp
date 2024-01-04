@@ -364,6 +364,7 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 	m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE].wait();
 	m_Threads[LOADING_THREAD::MONSTER_AND_NPC].wait();
 	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Evermore");
+//	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Map_Data, this, L"Evermore");
 
 
 	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
@@ -656,6 +657,75 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 HRESULT CLoader::Load_Monster_Data(const wstring& strMonsterFileName)
 {
 	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strMonsterFileName + L"/" + strMonsterFileName + L"Monster.map";
+
+	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
+	File->Open(strMapFilePath, FileMode::Read);
+
+	for (_uint i = 0; i < LAYER_TYPE::LAYER_END; ++i)
+	{
+		if (LAYER_TYPE::LAYER_MONSTER != i)
+			continue;
+
+		GI->Clear_Layer(m_eNextLevel, i);
+
+
+		_uint iObjectCount = File->Read<_uint>();
+
+		for (_uint j = 0; j < iObjectCount; ++j)
+		{
+			// 3. Object_Prototype_Tag
+			wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
+			wstring strObjectTag = CUtils::ToWString(File->Read<string>());
+
+			// 6. Obejct States
+			_float4 vRight, vUp, vLook, vPos;
+
+			File->Read<_float4>(vRight);
+			File->Read<_float4>(vUp);
+			File->Read<_float4>(vLook);
+			File->Read<_float4>(vPos);
+
+
+			OBJECT_INIT_DESC Init_Data = {};
+			Init_Data.vStartPosition = vPos;
+			CGameObject* pObj = nullptr;
+
+			if (FAILED(GI->Add_GameObject(m_eNextLevel, i, strPrototypeTag, &Init_Data, &pObj, true)))
+			{
+				MSG_BOX("Load_Objects_Failed.");
+				return E_FAIL;
+			}
+
+			if (nullptr == pObj)
+			{
+				MSG_BOX("Add_Object_Failed.");
+				return E_FAIL;
+			}
+			pObj->Set_ObjectTag(strObjectTag);
+
+			CTransform* pTransform = pObj->Get_Component<CTransform>(L"Com_Transform");
+			if (nullptr == pTransform)
+			{
+				MSG_BOX("Get_Transform_Failed.");
+				return E_FAIL;
+			}
+
+
+
+			pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
+			pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
+			pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
+			pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
+		}
+
+	}
+	//MSG_BOX("Monster_Loaded.");
+	return S_OK;
+}
+
+HRESULT CLoader::Load_Npc_Data(const wstring& strNpcFileName)
+{
+	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strNpcFileName + L"/" + strNpcFileName + L"NPC.map";
 
 	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
 	File->Open(strMapFilePath, FileMode::Read);

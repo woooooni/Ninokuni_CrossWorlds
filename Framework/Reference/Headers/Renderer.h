@@ -192,9 +192,10 @@ private:
 	_bool   m_bBlomDraw    = true;
 
 	// 구현 필요
-
+	_bool   m_bBlomDraw = false;
 	_bool   m_bPbrDraw  = false;
-	_bool	m_bAuroraDraw = false;
+	_bool	m_bShowAurora = false;
+
 private:
 	_float4	m_vFogColor    = { 0.f, 0.635f, 1.f, 1.f };
 	_float2	m_fFogStartEnd = { 300.f, 600.f };

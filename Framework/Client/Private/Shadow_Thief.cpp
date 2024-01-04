@@ -62,22 +62,6 @@ HRESULT CShadow_Thief::Initialize(void* pArg)
 
 void CShadow_Thief::Tick(_float fTimeDelta)
 {
-	// << : Test 
-	if (KEY_TAP(KEY::HOME))
-	{
-		_uint iCurAnimIndex = m_pModelCom->Get_CurrAnimationIndex();
-		m_pModelCom->Set_Animation(iCurAnimIndex + 1);
-	} 
-	else if (KEY_TAP(KEY::DEL))
-	{
-		_int iCurAnimIndex = m_pModelCom->Get_CurrAnimationIndex() - 1;
-		if (iCurAnimIndex < 0)
-			iCurAnimIndex = 0;
-		m_pModelCom->Set_Animation(iCurAnimIndex);
-	}
-	// >> 
-	
-
 	if (nullptr != m_pHPBar)
 		m_pHPBar->Tick(fTimeDelta);
 	
@@ -162,10 +146,15 @@ void CShadow_Thief::Collision_Enter(const COLLISION_INFO& tInfo)
 
 					On_Damaged(tInfo);
 
-					if (m_pModelCom->Get_CurrAnimation()->Get_AnimationName() != TEXT("SKM_ShadowThief.ao|ShadowThief_Stun"))
-						m_pModelCom->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Stun"));
+					if (!m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_BLOW] && m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_AIR])
+					{
 
-					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_STUN] = true;
+						if (m_pModelCom->Get_CurrAnimation()->Get_AnimationName() != TEXT("SKM_ShadowThief.ao|ShadowThief_Stun"))
+							m_pModelCom->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Stun"));
+
+						m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_STUN] = true;
+					}
+
 					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
 				}
 

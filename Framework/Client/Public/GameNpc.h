@@ -22,7 +22,7 @@ BEGIN(Client)
 class CGameNpc abstract : public CGameObject
 {
 public:
-	enum class NPC_BOOLTYPE { NPC_ONEWAY, NPC_TWOWAY, NPC_END };
+	enum NPC_STATE { NPC_IDLE, NPC_TALK, NPC_MOVE_ONEWAY, NPC_MOVE_TWOWAY, NPC_END };
 
 public:
 	typedef struct tagNpcStat
@@ -34,6 +34,8 @@ public:
 
 		_int iHp = 100;
 		_int iMaxHp = 100;
+
+		_float fSpeed = 3.f;
 	}NPC_STAT;
 
 protected:
@@ -67,16 +69,9 @@ public:
 	const NPC_STAT& Get_Stat() { return m_tStat; }
 	void Set_Stat(const NPC_STAT& StatDesc) { m_tStat = StatDesc; }
 
-	/* npc bool */
-	virtual _bool	Get_Bools(NPC_BOOLTYPE eType) { return m_bBools[(_uint)eType]; }
-	virtual void    Set_Bools(NPC_BOOLTYPE eType, _bool bIsBool) { m_bBools[(_uint)eType] = bIsBool; }
-
 	vector<_vector>* Get_RoamingArea() { return &m_vecRoaming; }
+	_vector			 Get_RoamingIndex(_int iIndex) { return m_vecRoaming[iIndex]; }
 	void			 Set_RoamingArea(vector<_vector> vecRoaming) { m_vecRoaming = vecRoaming; }
-
-	///* npc AnimName */
-	//wstring			 Get_MoveAnimName() { m_strMoveName; }
-	//vector<wstring>* Get_IdleAnimNames() { return &m_vecIdleName; }
 
 protected:
 	virtual HRESULT Ready_Components() PURE;
@@ -107,9 +102,7 @@ protected:
 
 	NPC_STAT m_tStat = {};
 
-	_bool   m_bBools[(_uint)NPC_BOOLTYPE::NPC_END] = { false, }; // Npc가 사용하는 bool모음.
 	vector<_vector> m_vecRoaming = {};
-	_int			m_iCurRoamingIdx = 0;
 
 	///* Npc가 사용하는 AnimName 모음. */
 	//wstring m_strMoveName = TEXT();
