@@ -24,7 +24,7 @@ HRESULT CGame_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContex
 
 	m_pPlayer = CPlayer::Create();
 
-	if (nullptr == m_pPlayer)
+	if (nullptr == m_pPlayer && GI->Get_CurrentLevel() != LEVELID::LEVEL_LOADING)
 		return E_FAIL;
 
 	m_bReserved = true;
@@ -35,13 +35,13 @@ HRESULT CGame_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContex
 
 void CGame_Manager::Tick(_float fTimeDelta)
 {
-	if(nullptr != m_pPlayer)
+	if(nullptr != m_pPlayer && GI->Get_CurrentLevel() != LEVELID::LEVEL_LOADING)
 		m_pPlayer->Tick(fTimeDelta);
 }
 
 void CGame_Manager::LateTick(_float fTimeDelta)
 {
-	if (nullptr != m_pPlayer)
+	if (nullptr != m_pPlayer && GI->Get_CurrentLevel() != LEVELID::LEVEL_LOADING)
 		m_pPlayer->LateTick(fTimeDelta);
 }
 
