@@ -16,12 +16,14 @@
 #include "State_Engineer_Neutral_Crouch_Move.h"
 
 
+#include "State_Engineer_Neutral_Pick_Small_Enter.h"
 #include "State_Engineer_Neutral_Pick_Small_Idle.h"
 #include "State_Engineer_Neutral_Pick_Small_Walk.h"
 #include "State_Engineer_Neutral_Pick_Small_Run.h"
 #include "State_Engineer_Neutral_Pick_Small_Throw.h"
 #include "State_Engineer_Neutral_Pick_Small_Finish.h"
 
+#include "State_Engineer_Neutral_Pick_Large_Enter.h"
 #include "State_Engineer_Neutral_Pick_Large_Idle.h"
 #include "State_Engineer_Neutral_Pick_Large_Walk.h"
 #include "State_Engineer_Neutral_Pick_Large_Run.h"
@@ -272,6 +274,11 @@ HRESULT CCharacter_Engineer::Ready_States()
 
 
 	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_PickStartS");
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_ENTER, CState_Engineer_Neutral_Pick_Small_Enter::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
+
+	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_PickStandS");
 	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_IDLE, CState_Engineer_Neutral_Pick_Small_Idle::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
@@ -296,6 +303,10 @@ HRESULT CCharacter_Engineer::Ready_States()
 	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_FINISH, CState_Engineer_Neutral_Pick_Small_Finish::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 	
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_PickStartL");
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_ENTER, CState_Engineer_Neutral_Pick_Large_Enter::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_PickStandL");

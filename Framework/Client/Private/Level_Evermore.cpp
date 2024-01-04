@@ -113,7 +113,6 @@ HRESULT CLevel_Evermore::Ready_Layer_Camera(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Evermore::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 {
-
 	list<CGameObject*> Grounds = GI->Find_GameObjects(LEVEL_EVERMORE, LAYER_TYPE::LAYER_GROUND);
 	for (auto& Ground : Grounds)
 	{
@@ -156,7 +155,6 @@ HRESULT CLevel_Evermore::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 			}
 		}
 	}
-	
 	return S_OK;
 }
 

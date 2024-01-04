@@ -18,12 +18,15 @@
 #include "State_Destroyer_Neutral_Crouch_Move.h"
 
 
+#include "State_Destroyer_Neutral_Pick_Small_Enter.h"
 #include "State_Destroyer_Neutral_Pick_Small_Idle.h"
 #include "State_Destroyer_Neutral_Pick_Small_Walk.h"
 #include "State_Destroyer_Neutral_Pick_Small_Run.h"
 #include "State_Destroyer_Neutral_Pick_Small_Throw.h"
 #include "State_Destroyer_Neutral_Pick_Small_Finish.h"
 
+
+#include "State_Destroyer_Neutral_Pick_Large_Enter.h"
 #include "State_Destroyer_Neutral_Pick_Large_Idle.h"
 #include "State_Destroyer_Neutral_Pick_Large_Walk.h"
 #include "State_Destroyer_Neutral_Pick_Large_Run.h"
@@ -118,12 +121,8 @@ void CCharacter_Destroyer::Tick(_float fTimeDelta)
 	m_pControllerCom->Tick_Controller(fTimeDelta);
 
 	if (m_pWeapon != nullptr)
-	{
-		Matrix matSocketLocal = m_pModelCom->Get_SocketLocalMatrix(0);
-		Matrix matSocketWorld = matSocketLocal * m_pTransformCom->Get_WorldMatrix();
+		m_pWeapon->Set_SocketWorld(m_pModelCom->Get_SocketLocalMatrix(0) * m_pTransformCom->Get_WorldMatrix());
 
-		m_pWeapon->Set_SocketWorld(matSocketWorld);
-	}
 	__super::Tick(fTimeDelta);
 }
 
@@ -272,6 +271,9 @@ HRESULT CCharacter_Destroyer::Ready_States()
 	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_KICK, CState_Destroyer_Neutral_Kick::Create(m_pStateCom, strAnimationNames));
 
 
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickStartS");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_ENTER, CState_Destroyer_Neutral_Pick_Small_Enter::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickStandS");
@@ -292,8 +294,11 @@ HRESULT CCharacter_Destroyer::Ready_States()
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickFinishS");
 	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_FINISH, CState_Destroyer_Neutral_Pick_Small_Finish::Create(m_pStateCom, strAnimationNames));
-	
 
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickStartL");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_ENTER, CState_Destroyer_Neutral_Pick_Large_Enter::Create(m_pStateCom, strAnimationNames));
+	
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickStandL");
 	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_IDLE, CState_Destroyer_Neutral_Pick_Large_Idle::Create(m_pStateCom, strAnimationNames));
@@ -570,9 +575,9 @@ HRESULT CCharacter_Destroyer::Ready_Weapon()
 		return S_OK;
 	
 
-	m_pWeapon->Set_ModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Food02"));
+	m_pWeapon->Set_WeaponModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Food02"));
 
-	if (nullptr == m_pWeapon->Get_ModelCom())
+	if (nullptr == m_pWeapon->Get_WeaponModelCom())
 	{
 		Safe_Release(m_pWeapon);
 		return S_OK;

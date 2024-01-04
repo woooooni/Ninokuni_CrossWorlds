@@ -47,6 +47,9 @@ private:
 	CPhysX_Controller* m_pControllerCom = { nullptr };
 	CStateMachine* m_pStateCom = nullptr;
 
+
+private:
+	ANIMODEL_INSTANCE_DESC m_AnimInstanceDesc = {};
 	_float4 m_pOriginPos = {};
 	_bool m_bIsOut = false;
 	_int* m_pSlowStack = nullptr;

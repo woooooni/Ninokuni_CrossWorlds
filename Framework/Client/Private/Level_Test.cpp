@@ -199,6 +199,7 @@ HRESULT CLevel_Test::Ready_Layer_Npc(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Test::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 {
+
 	list<CGameObject*> Grounds = GI->Find_GameObjects(LEVEL_TEST, LAYER_TYPE::LAYER_GROUND);
 	for (auto& Ground : Grounds)
 	{
@@ -221,8 +222,8 @@ HRESULT CLevel_Test::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 			MSG_BOX("피직스 빌딩 생성에 실패했습니다.");
 		}
 	}
-	
-	
+
+
 
 	list<CGameObject*> Props = GI->Find_GameObjects(LEVEL_TEST, LAYER_TYPE::LAYER_PROP);
 	for (auto& Prop : Props)
@@ -239,7 +240,7 @@ HRESULT CLevel_Test::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 			{
 				MSG_BOX("피직스 계단 생성에 실패했습니다.");
 			}
-		}		
+		}
 	}
 
 	return S_OK;

@@ -32,9 +32,13 @@ public:
 		NEUTRAL_JUMP,
 		NEUTRAL_KICK,
 
+		NEUTRAL_DOOR_ENTER,
+
 		NEUTRAL_CROUCH_IDLE,
 		NEUTRAL_CROUCH_MOVE,
 
+		NEUTRAL_PICK_LARGE_ENTER,
+		NEUTRAL_PICK_SMALL_ENTER,
 		NEUTRAL_PICK_LARGE_IDLE,
 		NEUTRAL_PICK_SMALL_IDLE,
 		NEUTRAL_PICK_LARGE_WALK,
@@ -66,7 +70,6 @@ public:
 		SKILL_SPECIAL_0,
 		SKILL_SPECIAL_1,
 		SKILL_SPECIAL_2,
-
 
 		ABNORMALITY_STUN,
 
@@ -199,7 +202,7 @@ protected: /* 해당 객체가 사용해야할 컴포넌트들을 저장하낟. */
 	class CPhysX_Controller* m_pControllerCom = nullptr;
 	class CTrail* m_pTrails[SOCKET_END];
 	class CWeapon* m_pWeapon = nullptr;
-	class CModel* m_pCharacterPartModels[PART_TYPE::PART_END];
+	class CModel* m_pCharacterPartModels[PART_TYPE::PART_END] = {};
 
 protected:
 	class CGameObject* m_pTarget = nullptr;

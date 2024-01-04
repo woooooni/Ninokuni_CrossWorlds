@@ -17,13 +17,6 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void LateTick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
-	virtual HRESULT Render_ShadowDepth() override;
-
-public:
-	virtual HRESULT Render_Instance_AnimModel(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer,
-		const vector<_float4x4>& WorldMatrices,
-		const vector<TWEEN_DESC>& TweenDesc) override;
-	virtual HRESULT Render_Instance_Shadow(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices);
 
 public:
 	virtual HRESULT Ready_Components(void* pArg);

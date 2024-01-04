@@ -647,6 +647,8 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 
 	}
 
+
+
 	return S_OK;
 
 }

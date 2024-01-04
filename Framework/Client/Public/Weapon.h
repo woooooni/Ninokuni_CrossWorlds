@@ -39,8 +39,8 @@ protected:
 	HRESULT Bind_ShaderResources();
 
 public:
-	void Set_ModelCom(class CModel* pModel) { m_pModelCom = pModel; }
-	class CModel* Get_ModelCom() { return m_pModelCom; }
+	void Set_WeaponModelCom(class CModel* pModel) { m_pModelCom = pModel; }
+	class CModel* Get_WeaponModelCom() { return m_pModelCom; }
 
 public:
 	HRESULT Appear_Weapon();

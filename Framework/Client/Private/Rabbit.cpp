@@ -66,31 +66,6 @@ HRESULT CRabbit::Render()
 	return S_OK;
 }
 
-HRESULT CRabbit::Render_ShadowDepth()
-{
-	if (FAILED(__super::Render_ShadowDepth()))
-		return E_FAIL;
-
-	return S_OK;
-}
-
-HRESULT CRabbit::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc)
-{
-	if (FAILED(__super::Render_Instance_AnimModel(pInstancingShader, pInstancingBuffer, WorldMatrices, TweenDesc)))
-		return E_FAIL;
-
-	return S_OK;
-}
-
-HRESULT CRabbit::Render_Instance_Shadow(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
-{
-
-	if (FAILED(__super::Render_Instance_Shadow(pInstancingShader, pInstancingBuffer, WorldMatrices)))
-		return E_FAIL;
-
-	return S_OK;
-}
-
 HRESULT CRabbit::Ready_Components(void* pArg)
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"),

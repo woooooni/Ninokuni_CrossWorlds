@@ -775,6 +775,20 @@ namespace Engine
 
 	} MOTION_TRAIL_DESC;
 #pragma endregion
+
+#pragma region AnimModelInstance
+	typedef struct tagAnimModelInstanceDesc
+	{
+		Vec4 vRimColor = { 0.f, 0.f, 0.f, 0.f };
+		Vec4	vDissolveColor = { 0.f, 0.f, 0.f, 0.f };
+
+		_float  fDissolveTotal = 10.f;
+		_float  fDissolveDuration = 5.f;
+		_float  fDissolveWeight = 0.f;
+		_float  fDissolveSpeed = 5.f;
+	} ANIMODEL_INSTANCE_DESC;
+
+#pragma endregion
 }
 
 

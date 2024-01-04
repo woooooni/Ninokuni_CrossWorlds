@@ -14,6 +14,7 @@
 #include "Camera_Manager.h"
 #include "Light.h"
 #include "Item_Manager.h"
+#include "Skill_Manager.h"
 #include "UIDamage_Manager.h"
 
 
@@ -1474,6 +1475,7 @@ void Client::CMainApp::Free()
 	CUI_Manager::GetInstance()->DestroyInstance();
 	CItem_Manager::GetInstance()->DestroyInstance();
 	CWeapon_Manager::GetInstance()->DestroyInstance();
+	CSkill_Manager::GetInstance()->DestroyInstance();
 	CCharacter_Manager::GetInstance()->DestroyInstance();
 	CGame_Manager::GetInstance()->DestroyInstance();
 	CGameInstance::Release_Engine();

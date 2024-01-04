@@ -17,13 +17,14 @@
 #include "State_SwordMan_Neutral_Crouch_Idle.h"
 #include "State_SwordMan_Neutral_Crouch_Move.h"
 
-
+#include "State_SwordMan_Neutral_Pick_Small_Enter.h"
 #include "State_SwordMan_Neutral_Pick_Small_Idle.h"
 #include "State_SwordMan_Neutral_Pick_Small_Walk.h"
 #include "State_SwordMan_Neutral_Pick_Small_Run.h"
 #include "State_SwordMan_Neutral_Pick_Small_Throw.h"
 #include "State_SwordMan_Neutral_Pick_Small_Finish.h"
 
+#include "State_SwordMan_Neutral_Pick_Large_Enter.h"
 #include "State_SwordMan_Neutral_Pick_Large_Idle.h"
 #include "State_SwordMan_Neutral_Pick_Large_Walk.h"
 #include "State_SwordMan_Neutral_Pick_Large_Run.h"
@@ -271,6 +272,9 @@ HRESULT CCharacter_SwordMan::Ready_States()
 	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_KICK, CState_SwordMan_Neutral_Kick::Create(m_pStateCom, strAnimationNames));
 
 
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_PickStartS");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_ENTER, CState_SwordMan_Neutral_Pick_Small_Enter::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_PickStandS");
@@ -291,6 +295,11 @@ HRESULT CCharacter_SwordMan::Ready_States()
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_PickFinishS");
 	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_FINISH, CState_SwordMan_Neutral_Pick_Small_Finish::Create(m_pStateCom, strAnimationNames));
+
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_PickStartL");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_ENTER, CState_SwordMan_Neutral_Pick_Large_Enter::Create(m_pStateCom, strAnimationNames));
 	
 
 	strAnimationNames.clear();
@@ -559,14 +568,14 @@ HRESULT CCharacter_SwordMan::Ready_Sockets()
 #pragma region Ready_Weapon
 HRESULT CCharacter_SwordMan::Ready_Weapon()
 {
-	m_pWeapon = CSword::Create(m_pDevice, m_pContext, L"SwordMane_Sword");
+	m_pWeapon = CSword::Create(m_pDevice, m_pContext, L"SwordMan_Sword");
 	if (nullptr == m_pWeapon)
 		return S_OK;
 	
 
-	m_pWeapon->Set_ModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Flower01"));
+	m_pWeapon->Set_WeaponModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Flower01"));
 
-	if (nullptr == m_pWeapon->Get_ModelCom())
+	if (nullptr == m_pWeapon->Get_WeaponModelCom())
 	{
 		Safe_Release(m_pWeapon);
 		return S_OK;
