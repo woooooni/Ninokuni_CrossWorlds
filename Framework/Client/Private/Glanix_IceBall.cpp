@@ -36,8 +36,13 @@ HRESULT CGlanix_IceBall::Initialize(void* pArg)
 	
 	m_pGlanix = (CGlanix*)pArg;
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, m_pGlanix->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_Position());
+	_float4 vTemp = {};
+	XMStoreFloat4(&vTemp, m_pGlanix->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_Position());
+	vTemp.y = 4.f;
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vTemp));
+	// m_pTransformCom->Set_State(CTransform::STATE_POSITION, m_pGlanix->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_Position());
 	m_pTransformCom->Set_State(CTransform::STATE_LOOK, m_pGlanix->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_Look());
+	m_pTransformCom->Set_Scale(_float3(5.f, 5.f, 5.f));
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
@@ -45,7 +50,9 @@ HRESULT CGlanix_IceBall::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
-	m_pRigidBodyCom->Add_Velocity(m_pTransformCom->Get_Look(),30.f, false);
+	m_pRigidBodyCom->Add_Velocity(m_pTransformCom->Get_Look(), 20.f, false);
+
+	m_fTime = 0.f;
 
 	return S_OK;
 }
@@ -63,7 +70,7 @@ void CGlanix_IceBall::Tick(_float fTimeDelta)
 
 	if (m_fTime > 2.f)
 	{
-		this->Reserve_Dead(true);
+		this->Set_Dead(true);
 	}
 }
 
@@ -76,15 +83,46 @@ void CGlanix_IceBall::LateTick(_float fTimeDelta)
 	if (nullptr != m_pModelCom)
 		m_pModelCom->LateTick(fTimeDelta);
 
-	// m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 
-	m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
+	// m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
 }
 
 HRESULT CGlanix_IceBall::Render()
 {
 	if (FAILED(__super::Render()))
 		return E_FAIL;
+
+	if (nullptr == m_pModelCom)
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+		return E_FAIL;
+
+	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+	_uint iPassIndex = 0;
+
+	for (_uint i = 0; i < iNumMeshes; ++i)
+	{
+		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+			return E_FAIL;
+
+		if (m_bReserveDead)
+			iPassIndex = 2;
+		else if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
+			iPassIndex = 0;
+		else
+			iPassIndex++;
+
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i)))
+			return E_FAIL;
+	}
 
 	return S_OK;
 }
@@ -161,16 +199,16 @@ void CGlanix_IceBall::Collision_Enter(const COLLISION_INFO& tInfo)
 
 void CGlanix_IceBall::Collision_Continue(const COLLISION_INFO& tInfo)
 {
-	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER &&
-		tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY &&
-		tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
-	{
-		if (dynamic_cast<CGlanix*>(tInfo.pOther)->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Get_CurrState() == CGlanix::GLANIX_RAGECHARGE)
-		{
-			dynamic_cast<CGlanix*>(tInfo.pOther)->Set_IsCrash(true);
-			Set_Dead(this);
-		}
-	}
+	//if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER &&
+	//	tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY &&
+	//	tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
+	//{
+	//	if (dynamic_cast<CGlanix*>(tInfo.pOther)->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Get_CurrState() == CGlanix::GLANIX_RAGECHARGE)
+	//	{
+	//		dynamic_cast<CGlanix*>(tInfo.pOther)->Set_IsCrash(true);
+	//		Set_Dead(this);
+	//	}
+	//}
 }
 
 void CGlanix_IceBall::Collision_Exit(const COLLISION_INFO& tInfo)
@@ -226,13 +264,13 @@ HRESULT CGlanix_IceBall::Ready_Colliders()
 	ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
 
 	XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
-	OBBBox.Extents = { 200.f, 200.f, 250.f };
+	OBBBox.Extents = { 200.f, 200.f, 200.f };
 
 	OBBDesc.tBox = OBBBox;
 	OBBDesc.pNode = nullptr;
 	OBBDesc.pOwnerTransform = m_pTransformCom;
 	OBBDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
-	OBBDesc.vOffsetPosition = Vec3(0.f, 200.f, 0.f);
+	OBBDesc.vOffsetPosition = Vec3(0.f, 0.f, 0.f);
 
 	/* Body */
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::BODY, &OBBDesc)))

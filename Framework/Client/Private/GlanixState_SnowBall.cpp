@@ -29,7 +29,7 @@ void CGlanixState_SnowBall::Tick_State(_float fTimeDelta)
 
 	if (m_pModelCom->Get_CurrAnimationFrame() == 45)
 	{
-		/*GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_GlanixIceBall"), &m_pGlanix);*/
+		GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_GlanixIceBall"), m_pGlanix);
 	}
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
