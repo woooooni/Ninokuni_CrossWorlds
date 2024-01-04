@@ -36,75 +36,38 @@ void CVfx_SwordMan_Skill_PerfectBlade::Tick(_float fTimeDelta)
 		// Decal 1
 		if (m_iCount == 0)
 		{
-			_matrix WorldMatrix = XMLoadFloat4x4(&m_WorldMatrix);
-
-			_vector vPositionOrigin = WorldMatrix.r[CTransform::STATE_POSITION];
-			_vector vPosition = vPositionOrigin + WorldMatrix.r[CTransform::STATE_LOOK];
-			WorldMatrix.r[CTransform::STATE_POSITION] = XMVectorSet(XMVectorGetX(vPosition), XMVectorGetY(vPositionOrigin), XMVectorGetZ(vPosition), 1.f);
-
-			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_Perfectblade_Circle"), WorldMatrix);
-
+			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_Perfectblade_Circle"), XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.f, 0.2f), _float3(4.f, 1.f, 4.f), _float3(0.f, 0.f, 0.f));
 			m_iCount++;
 		}
 
 		// TrailL 1
-		else if (m_iCount == 1 && m_iOwnerFrame >= 15) // m_pOwnerObject->Get_Component<CModel>(L"Com_Model")->Get_CurrAnimationFrame() == 2
+		else if (m_iCount == 1 && m_iOwnerFrame >= 15)
 		{
-			GET_INSTANCE(CEffect_Manager)->Generate_Effect
-			(
-				TEXT("Effect_Swordman_Skill_Perfectblade_Trail_Basic_Left"),
-				GET_INSTANCE(CEffect_Manager)->Get_WorldMatrixEffect(XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 1.f, 0.f), _float3(5.f, 5.f, 5.f), _float3(0.f, 20.f, 0.f)),
-				nullptr//&GET_INSTANCE(CEffect_Manager)->Get_RotationMatrix(_float3(0.f, 0.f, 45.f))
-			);
-
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_Perfectblade_Trail_Basic_Left"), XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.2f, 0.f), _float3(5.f, 5.f, 5.f), _float3(0.f, 0.f, 45.f));
 			m_iCount++;
 		}
 		// TrailR 2
 		else if (m_iCount == 2 && m_iOwnerFrame >= 22)
 		{
-			GET_INSTANCE(CEffect_Manager)->Generate_Effect
-			(
-				TEXT("Effect_Swordman_Skill_Perfectblade_Trail_Basic_Right"),
-				GET_INSTANCE(CEffect_Manager)->Get_WorldMatrixEffect(XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 1.f, 0.f), _float3(5.f, 5.f, 5.f), _float3(0.f, -20.f, 0.f)),
-				nullptr
-			);
-
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_Perfectblade_Trail_Basic_Right"), XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.2f, 0.f), _float3(5.f, 5.f, 5.f), _float3(0.f, 0.f, -45.f));
 			m_iCount++;
 		}
 		// TrailL 3
 		else if (m_iCount == 3 && m_iOwnerFrame >= 28)
 		{
-			GET_INSTANCE(CEffect_Manager)->Generate_Effect
-			(
-				TEXT("Effect_Swordman_Skill_Perfectblade_Trail_Basic_Left"),
-				GET_INSTANCE(CEffect_Manager)->Get_WorldMatrixEffect(XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 1.f, 0.f), _float3(5.f, 5.f, 5.f), _float3(0.f, 20.f, 0.f)),
-				nullptr
-			);
-
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_Perfectblade_Trail_Basic_Left"), XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.2f, 0.f), _float3(5.f, 5.f, 5.f), _float3(0.f, 0.f, 45.f));
 			m_iCount++;
 		}
 		// TrailR 4
 		else if (m_iCount == 4 && m_iOwnerFrame >= 34)
 		{
-			GET_INSTANCE(CEffect_Manager)->Generate_Effect
-			(
-				TEXT("Effect_Swordman_Skill_Perfectblade_Trail_Basic_Right"),
-				GET_INSTANCE(CEffect_Manager)->Get_WorldMatrixEffect(XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 1.f, 0.f), _float3(5.f, 5.f, 5.f), _float3(0.f, -20.f, 0.f)),
-				nullptr
-			);
-
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_Perfectblade_Trail_Basic_Right"), XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.2f, 0.f), _float3(5.f, 5.f, 5.f), _float3(0.f, 0.f, -45.f));
 			m_iCount++;
 		}
 		// TrailL 5
 		else if (m_iCount == 5 && m_iOwnerFrame >= 39)
 		{
-			GET_INSTANCE(CEffect_Manager)->Generate_Effect
-			(
-				TEXT("Effect_Swordman_Skill_Perfectblade_Trail_Basic_Left"),
-				GET_INSTANCE(CEffect_Manager)->Get_WorldMatrixEffect(XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 1.f, 0.f), _float3(5.f, 5.f, 5.f), _float3(0.f, 20.f, 0.f)),
-				nullptr
-			);
-
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_Perfectblade_Trail_Basic_Left"), XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.2f, 0.f), _float3(5.f, 5.f, 5.f), _float3(0.f, 0.f, 45.f));
 			m_iCount++;
 		}
 
@@ -112,32 +75,17 @@ void CVfx_SwordMan_Skill_PerfectBlade::Tick(_float fTimeDelta)
 		else if (m_iCount == 6 && m_iOwnerFrame >= 45)
 		{
 			// 왼쪽 뒤
-			_matrix WorldMatrix = XMLoadFloat4x4(&m_WorldMatrix);
-			_vector vPositionOrigin = WorldMatrix.r[CTransform::STATE_POSITION];
-			_vector vPosition = vPositionOrigin - (WorldMatrix.r[CTransform::STATE_LOOK] * 0.5f);
-			WorldMatrix.r[CTransform::STATE_POSITION] = XMVectorSet(XMVectorGetX(vPosition), XMVectorGetY(vPositionOrigin) + 0.5f, XMVectorGetZ(vPosition), 1.f);
-			WorldMatrix.r[CTransform::STATE_POSITION] -= WorldMatrix.r[CTransform::STATE_RIGHT] * 0.2f;
-			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_Perfectblade_Trail_Sparkle"), WorldMatrix);
-
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_Perfectblade_Trail_Sparkle"), XMLoadFloat4x4(&m_WorldMatrix), _float3(-0.1f, 0.f, -0.1f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
 			m_iCount++;
 		}
 
 		// TrailR 6 (Special) / Sparkle_Circle
 		else if (m_iCount == 7 && m_iOwnerFrame >= 47)
 		{
-			GET_INSTANCE(CEffect_Manager)->Generate_Effect
-			(
-				TEXT("Effect_Swordman_Skill_Perfectblade_Trail_Basic_Right"),
-				GET_INSTANCE(CEffect_Manager)->Get_WorldMatrixEffect(XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 1.f, 0.f), _float3(5.f, 5.f, 5.f), _float3(0.f, -20.f, 0.f)),
-				nullptr
-			);
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_Perfectblade_Trail_Basic_Right"), XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.2f, 0.f), _float3(5.f, 5.f, 5.f), _float3(0.f, 0.f, -45.f));
 
-			_matrix WorldMatrix = XMLoadFloat4x4(&m_WorldMatrix);
-			_vector vPositionOrigin = WorldMatrix.r[CTransform::STATE_POSITION];
-			_vector vPosition = vPositionOrigin + WorldMatrix.r[CTransform::STATE_LOOK] * 0.5;
-			WorldMatrix.r[CTransform::STATE_POSITION] = XMVectorSet(XMVectorGetX(vPosition), XMVectorGetY(vPositionOrigin) + 1.f, XMVectorGetZ(vPosition), 1.f);
-			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_Perfectblade_Trail_Sparkle_Circle"), WorldMatrix);
-
+			// 앞쪽 위
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_Perfectblade_Trail_Sparkle_Circle"), XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.1f, 0.05f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
 			m_iCount++;
 		}
 
@@ -145,41 +93,21 @@ void CVfx_SwordMan_Skill_PerfectBlade::Tick(_float fTimeDelta)
 		else if (m_iCount == 8 && m_iOwnerFrame >= 48)
 		{
 			// 왼쪽 뒤
-			_matrix WorldMatrix = XMLoadFloat4x4(&m_WorldMatrix);
-			_vector vPositionOrigin = WorldMatrix.r[CTransform::STATE_POSITION];
-			_vector vPosition = vPositionOrigin - WorldMatrix.r[CTransform::STATE_LOOK] * 0.2f;
-			vPosition += WorldMatrix.r[CTransform::STATE_LOOK] * 0.5f;
-			WorldMatrix.r[CTransform::STATE_POSITION] = XMVectorSet(XMVectorGetX(vPosition), XMVectorGetY(vPositionOrigin) + 1.f, XMVectorGetZ(vPosition), 1.f);
-			WorldMatrix.r[CTransform::STATE_POSITION] -= WorldMatrix.r[CTransform::STATE_RIGHT] * 0.5f;
-			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_Perfectblade_Trail_Fire"), WorldMatrix);
-
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_Perfectblade_Trail_Fire"), XMLoadFloat4x4(&m_WorldMatrix), _float3(-0.1f, 0.f, -0.1f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
 			m_iCount++;
 		}
 		// Fire 2
 		else if (m_iCount == 9 && m_iOwnerFrame >= 49)
 		{
 			// 중심
-			_matrix WorldMatrix = XMLoadFloat4x4(&m_WorldMatrix);
-			_vector vPositionOrigin = WorldMatrix.r[CTransform::STATE_POSITION];
-			_vector vPosition = vPositionOrigin + WorldMatrix.r[CTransform::STATE_LOOK] * 0.5f;
-			vPosition += WorldMatrix.r[CTransform::STATE_LOOK] * 0.5f;
-			WorldMatrix.r[CTransform::STATE_POSITION] = XMVectorSet(XMVectorGetX(vPosition), XMVectorGetY(vPositionOrigin) + 1.f, XMVectorGetZ(vPosition), 1.f);
-			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_Perfectblade_Trail_Fire"), WorldMatrix);
-
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_Perfectblade_Trail_Fire"), XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.f, 0.1f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
 			m_iCount++;
 		}
 		// Fire 3
 		else if (m_iCount == 10 && m_iOwnerFrame >= 50)
 		{
 			// 오른쪽 뒤
-			_matrix WorldMatrix = XMLoadFloat4x4(&m_WorldMatrix);
-			_vector vPositionOrigin = WorldMatrix.r[CTransform::STATE_POSITION];
-			_vector  vPosition = vPositionOrigin - WorldMatrix.r[CTransform::STATE_LOOK] * 0.2;
-			vPosition += WorldMatrix.r[CTransform::STATE_LOOK] * 0.5f;
-			WorldMatrix.r[CTransform::STATE_POSITION] = XMVectorSet(XMVectorGetX(vPosition), XMVectorGetY(vPositionOrigin) + 1.f, XMVectorGetZ(vPosition), 1.f);
-			WorldMatrix.r[CTransform::STATE_POSITION] += WorldMatrix.r[CTransform::STATE_RIGHT] * 0.5f;
-			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_Perfectblade_Trail_Fire"), WorldMatrix);
-
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_Perfectblade_Trail_Fire"), XMLoadFloat4x4(&m_WorldMatrix), _float3(0.1f, 0.f, -0.1f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
 			m_iCount++;
 		}
 

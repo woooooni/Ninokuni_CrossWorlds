@@ -163,12 +163,8 @@ public:
 		_float3 fBlack_Discard = _float3(0.5f, 0.5f, 0.5f);
 #pragma endregion
 
-		// 생성 위치 관련
-		_float4x4 OffsetMatrix;
-
 		tagEffectDesc()
 		{
-			XMStoreFloat4x4(&OffsetMatrix, XMMatrixIdentity());
 		}
 
 		tagEffectDesc(const tagEffectDesc& rhs)
@@ -272,8 +268,6 @@ public:
 			iShaderPass  = rhs.iShaderPass;
 			fAlpha_Discard = rhs.fAlpha_Discard;
 			fBlack_Discard = rhs.fBlack_Discard;
-
-		    OffsetMatrix = rhs.OffsetMatrix;
 		}
 
 	} EFFECT_DESC;
@@ -298,8 +292,6 @@ public:
 
 public:
 	void Set_Owner(CGameObject* pGameObject) { m_pOwnerObject = pGameObject; }
-	void Set_OffsetMatrix(_fmatrix fOffsetMatrix) { XMStoreFloat4x4(&m_tEffectDesc.OffsetMatrix, fOffsetMatrix); }
-	const _float4x4& Get_OffsetMatrix() { return  m_tEffectDesc.OffsetMatrix; }
 	void Set_ParentMatrix(_matrix ParentMatrix) { XMStoreFloat4x4(&m_ParentMatrix, ParentMatrix); }
 
 public:

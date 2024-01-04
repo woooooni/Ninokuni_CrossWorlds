@@ -49,6 +49,14 @@ void CParticle::Set_Position_Particle(_float4x4 WorldMatrix)
 		Set_Position_Orthographic(_float2(fX, fY));
 }
 
+void CParticle::Set_Position_Particle(_float3 fPosition)
+{
+	if (m_tParticleDesc.eParticleType == TYPE_PERSPECTIVE)
+		Set_Position_Perspective(_float3(fPosition.x, fPosition.y, fPosition.z));
+	else if (m_tParticleDesc.eParticleType == TYPE_ORTHOGRAPHIC)
+		Set_Position_Orthographic(_float2(fPosition.x, fPosition.y));
+}
+
 void CParticle::Set_Position_Perspective(_float3 fPosition)
 {
 	m_tParticleDesc.eParticleType = TYPE_PERSPECTIVE;

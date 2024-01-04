@@ -27,7 +27,7 @@ void CState_SwordMan_SpecialSkill_AcaneBarrier::Enter_State(void* pArg)
     CTransform* pTransformCom = m_pCharacter->Get_Component<CTransform>(L"Com_Transform");
     if (pTransformCom == nullptr)
         return;
-    GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_SwordMan_Skill_AcaneBarrier"), pTransformCom->Get_WorldMatrix(), nullptr, m_pCharacter);
+    GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_SwordMan_Skill_AcaneBarrier"), pTransformCom->Get_WorldMatrix(), m_pCharacter);
 }
 
 void CState_SwordMan_SpecialSkill_AcaneBarrier::Tick_State(_float fTimeDelta)

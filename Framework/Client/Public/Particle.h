@@ -193,6 +193,7 @@ public:
 	const PARTICLE_DESC& Get_ParticleDesc() { return m_tParticleDesc; }
 	void Set_ParticleDesc(const PARTICLE_DESC& tDesc);
 	void Set_Position_Particle(_float4x4 WorldMatrix);
+	void Set_Position_Particle(_float3 fPosition);
 
 	void Set_Owner(CGameObject* pGameObject) { m_pOwnerObject = pGameObject; }
 	void Set_LoopParticle(_bool bLoop) { m_tParticleDesc.bParticleLoop = bLoop; }

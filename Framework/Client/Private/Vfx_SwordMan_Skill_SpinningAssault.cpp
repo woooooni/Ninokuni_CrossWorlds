@@ -36,14 +36,7 @@ void CVfx_SwordMan_Skill_SpinningAssault::Tick(_float fTimeDelta)
 		// 
 		if (m_iCount == 0)
 		{
-			_matrix WorldMatrix = XMLoadFloat4x4(&m_WorldMatrix);
-
-			_vector vPositionOrigin = WorldMatrix.r[CTransform::STATE_POSITION];
-			_vector vPosition = vPositionOrigin + WorldMatrix.r[CTransform::STATE_LOOK];
-			WorldMatrix.r[CTransform::STATE_POSITION] = XMVectorSet(XMVectorGetX(vPosition), XMVectorGetY(vPositionOrigin), XMVectorGetZ(vPosition), 1.f);
-
-			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_SpinningAssault_Circle"), WorldMatrix, nullptr, m_pOwnerObject);
-
+			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_SpinningAssault_Circle"), XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.f, 0.2f), _float3(4.f, 1.f, 4.f), _float3(0.f, 0.f, 0.f), m_pOwnerObject);
 			m_iCount++;
 		}
 

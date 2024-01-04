@@ -37,7 +37,7 @@ void CParticle_Manager::Tick(_float fTimeDelta)
 
 }
 
-HRESULT CParticle_Manager::Generate_Particle(const wstring& strParticleName, _matrix WorldMatrix, _matrix* pRotationMatrix, CGameObject* pOwner, class CParticle** ppOut)
+HRESULT CParticle_Manager::Generate_Particle(const wstring& strParticleName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner, class CParticle** ppOut)
 {
 	// strParticleName
 	CGameObject* pGameObject = GI->Clone_GameObject(L"Prototype_" + strParticleName, LAYER_TYPE::LAYER_EFFECT);
@@ -49,12 +49,25 @@ HRESULT CParticle_Manager::Generate_Particle(const wstring& strParticleName, _ma
 		return E_FAIL;
 
 	// WorldMatrix
-	_float4x4 World4X4;
-	XMStoreFloat4x4(&World4X4, WorldMatrix);
-	pParticle->Set_Position_Particle(World4X4);
+	CTransform* pTransform = pParticle->Get_Component<CTransform>(L"Com_Transform");
+	if (pTransform == nullptr)
+		return E_FAIL;
+	pTransform->Set_WorldMatrix(WorldMatrix);
 
-	// pRotationMatrix
-	// 
+	// Scale / Rotation
+	Matrix matScale = matScale.CreateScale(vLocalScale);
+	Matrix matRotation = matScale.CreateFromYawPitchRoll(Vec3(vLocalRotation));
+	Matrix matResult = matScale * matRotation * pTransform->Get_WorldFloat4x4();
+	pTransform->Set_WorldMatrix(matResult);
+
+	// Position
+	_vector vCurrentPosition = pTransform->Get_Position();
+
+	_vector vFinalPosition = vCurrentPosition;
+	vFinalPosition += pTransform->Get_State(CTransform::STATE_RIGHT) * vLocalPos.x;
+	vFinalPosition += pTransform->Get_State(CTransform::STATE_UP)    * vLocalPos.y;
+	vFinalPosition += pTransform->Get_State(CTransform::STATE_LOOK)  * vLocalPos.z;
+	pParticle->Set_Position_Particle(_float3(XMVectorGetX(vFinalPosition), XMVectorGetY(vFinalPosition), XMVectorGetZ(vFinalPosition)));
 
 	// pOwner
 	if(pOwner != nullptr)
