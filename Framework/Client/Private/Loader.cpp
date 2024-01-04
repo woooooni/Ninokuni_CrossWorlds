@@ -401,8 +401,8 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 
 HRESULT CLoader::Loading_For_Level_IceLand()
 {
-
 	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Winter");
+	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Monster_Data, this, L"Winter");
 	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
 	{
 		if (true == m_Threads[i].valid())

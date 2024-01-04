@@ -364,5 +364,5 @@ void CLevel_Evermore::Free()
 {
 	__super::Free();
 
-	CUI_Manager::GetInstance()->Free();
+	//CUI_Manager::GetInstance()->Free();
 }
