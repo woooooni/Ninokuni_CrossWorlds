@@ -444,9 +444,9 @@ void CUI_Basic::Ready_Nickname()
 	
 	m_RandomNickname.push_back(TEXT("너네선비형"));
 	m_RandomNickname.push_back(TEXT("욕반장"));
-	m_RandomNickname.push_back(TEXT("아이엠구이"));
-	m_RandomNickname.push_back(TEXT("피직스하고웃었다"));
-	m_RandomNickname.push_back(TEXT("네비잘못찍었어"));
+	m_RandomNickname.push_back(TEXT("게살버거형"));
+	m_RandomNickname.push_back(TEXT("나는김태원"));
+	m_RandomNickname.push_back(TEXT("준엽2"));
 }
 
 void CUI_Basic::Set_RandomNickname()

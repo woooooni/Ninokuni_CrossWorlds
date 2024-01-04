@@ -1157,8 +1157,11 @@ HRESULT CRenderer::Render_Aurora()
 
 	for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_AURORA])
 	{
-		if (FAILED(iter->Render()))
-			return E_FAIL;
+		if (m_bAuroraDraw)
+		{
+			if (FAILED(iter->Render()))
+				return E_FAIL;
+		}
 		Safe_Release(iter);
 	}
 	m_RenderObjects[RENDERGROUP::RENDER_AURORA].clear();
@@ -1166,27 +1169,29 @@ HRESULT CRenderer::Render_Aurora()
 	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
 		return E_FAIL;
 
+	if (m_bAuroraDraw)
+	{
+		if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Aurora_Post"), true)))
+			return E_FAIL;
 
-	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Aurora_Post"), true)))
-		return E_FAIL;
+		if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA]->Bind_Matrix("world", &m_WorldMatrix)))
+			return E_FAIL;
+		if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA]->Bind_Matrix("view", &m_ViewMatrix)))
+			return E_FAIL;
+		if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA]->Bind_Matrix("projection", &m_ProjMatrix)))
+			return E_FAIL;
 
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA]->Bind_Matrix("world", &m_WorldMatrix)))
-		return E_FAIL;
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA]->Bind_Matrix("view", &m_ViewMatrix)))
-		return E_FAIL;
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA]->Bind_Matrix("projection", &m_ProjMatrix)))
-		return E_FAIL;
+		if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA], TEXT("Target_Aurora_Dfifuse"), "DiffuseTexture")))
+			return E_FAIL;
 
-	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA], TEXT("Target_Aurora_Dfifuse"), "DiffuseTexture")))
-		return E_FAIL;
+		if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA]->Begin(0)))
+			return E_FAIL;
+		if (FAILED(m_pVIBuffer->Render()))
+			return E_FAIL;
 
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA]->Begin(0)))
-		return E_FAIL;
-	if (FAILED(m_pVIBuffer->Render()))
-		return E_FAIL;
-
-	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
-		return E_FAIL;
+		if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+			return E_FAIL;
+	}
 
 	return S_OK;
 }

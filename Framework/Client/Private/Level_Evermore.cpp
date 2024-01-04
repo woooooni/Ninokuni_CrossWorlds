@@ -10,6 +10,9 @@
 #include "Game_Manager.h"
 #include "Player.h"
 
+#include "Utils.h"
+#include <FileUtils.h>
+
 #include "UI_Manager.h"
 #include "UI_Fade.h"
 
@@ -41,6 +44,9 @@ HRESULT CLevel_Evermore::Initialize()
 //		return E_FAIL;
 
 	if (FAILED(Ready_Layer_UI(LAYER_TYPE::LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(Ready_Layer_Dynamic(LAYER_TYPE::LAYER_DYNAMIC, TEXT("Evermore"))))
 		return E_FAIL;
 
 	if (nullptr != CUI_Manager::GetInstance()->Get_Fade())
@@ -204,6 +210,67 @@ HRESULT CLevel_Evermore::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 
 	CUI_Manager::GetInstance()->Ready_CharacterTypeForUI(eCharacterType);
 	CUI_Manager::GetInstance()->Ready_ElementalTypeForUI(ELEMENTAL_TYPE::DARK);
+
+	return S_OK;
+}
+
+HRESULT CLevel_Evermore::Ready_Layer_Dynamic(const LAYER_TYPE eLayerType, const wstring& strMapFileName)
+{
+	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strMapFileName + L"/" + strMapFileName + L"Dynamic.map";
+
+	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
+	File->Open(strMapFilePath, FileMode::Read);
+
+
+	GI->Clear_Layer(LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC);
+
+
+	_uint iObjectCount = File->Read<_uint>();
+	for (_uint j = 0; j < iObjectCount; ++j)
+	{
+		// 3. Object_Prototype_Tag
+		wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
+		wstring strObjectTag = CUtils::ToWString(File->Read<string>());
+
+		// 6. Obejct States
+		_float4 vRight, vUp, vLook, vPos;
+
+		File->Read<_float4>(vRight);
+		File->Read<_float4>(vUp);
+		File->Read<_float4>(vLook);
+		File->Read<_float4>(vPos);
+
+		OBJECT_INIT_DESC Init_Data = {};
+		Init_Data.vStartPosition = vPos;
+
+		CGameObject* pObj = nullptr;
+		if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, eLayerType, strPrototypeTag, &Init_Data, &pObj)))
+		{
+			MSG_BOX("Load_Objects_Failed.");
+			return E_FAIL;
+		}
+
+		if (nullptr == pObj)
+		{
+			MSG_BOX("Add_Object_Failed.");
+			return E_FAIL;
+		}
+		pObj->Set_ObjectTag(strObjectTag);
+
+		CTransform* pTransform = pObj->Get_Component<CTransform>(L"Com_Transform");
+		if (nullptr == pTransform)
+		{
+			MSG_BOX("Get_Transform_Failed.");
+			return E_FAIL;
+		}
+
+
+
+		pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
+		pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
+		pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
+		pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
+	}
 
 	return S_OK;
 }

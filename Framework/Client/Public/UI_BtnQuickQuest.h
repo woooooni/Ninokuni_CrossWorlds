@@ -11,6 +11,10 @@ protected:
 	virtual ~CUI_BtnQuickQuest() = default;
 
 public:
+	_uint Get_TextureIndex() { return m_iTextureIndex; }
+	void Set_TextureIndex(_uint iIndex) { m_iTextureIndex = iIndex; }
+
+public:
 	virtual HRESULT	Initialize_Prototype();
 	virtual HRESULT	Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta);

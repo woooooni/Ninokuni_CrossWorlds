@@ -24,6 +24,7 @@ public: // Get/Set
 	void			Set_UserName();
 	void			Set_MonsterDescForUI(class CMonster* pOwner, void* pArg, _bool bActive = true);
 	_float2			Get_ProjectionPosition(class CTransform* pTransform);
+	_bool			Is_DefaultSettingOn();
 
 public:
 	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -105,6 +106,7 @@ public: // Lobby
 	HRESULT OnOff_QuestWindow(_bool bOnOff);
 	HRESULT OnOff_QuestPopup(_bool bOnOff);
 	HRESULT OnOff_WorldMap(_bool bOnOff);
+	HRESULT OnOff_MiniMap(_bool bOnOff);
 
 	HRESULT OnOff_CloseButton(_bool bOnOff);
 
@@ -237,6 +239,10 @@ private:
 	vector<class CUI_SkillWindow_SkillSlot*> m_ClassSkillSlot;
 	vector<class CUI_SkillWindow_SkillSlot*> m_SpecialSkillSlot;
 	class CUI_SkillWindow_LineBox* m_pSkillDesc = { nullptr };
+
+	vector<class CUI_Minimap_Frame*> m_Minimap;
+	class CUI_World_NameTag* m_pName = { nullptr };
+	vector <class CUI_WeaponSection_Weapon*> m_WeaponIcon;
 
 private:
 	ID3D11Device*			m_pDevice = { nullptr };

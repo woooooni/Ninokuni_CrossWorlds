@@ -90,11 +90,11 @@ HRESULT CUI_SkillSection_Background::Initialize(void* pArg)
 	Make_Child(-4.f, -1.f, fBtnSize, fBtnSize, TEXT("Prototype_GameObject_UI_SkillSection_DefaultAttack"));
 
 	// 상호작용 버튼
-	_float2 vInteraction = _float2(-150.f, -70.f);
-	fBtnSize = 102.f * 0.55f;
-	Make_Child(vInteraction.x, vInteraction.y, fBtnSize, fBtnSize, TEXT("Prototype_GameObject_UI_SkillSection_BtnInteraction"));
-	fBtnSize = 128.f * 0.35f;
-	Make_Child(vInteraction.x, vInteraction.y, fBtnSize, fBtnSize, TEXT("Prototype_GameObject_UI_SkillSection_Interaction"));
+//	_float2 vInteraction = _float2(-150.f, -70.f);
+//	fBtnSize = 102.f * 0.55f;
+//	Make_Child(vInteraction.x, vInteraction.y, fBtnSize, fBtnSize, TEXT("Prototype_GameObject_UI_SkillSection_BtnInteraction"));
+//	fBtnSize = 128.f * 0.35f;
+//	Make_Child(vInteraction.x, vInteraction.y, fBtnSize, fBtnSize, TEXT("Prototype_GameObject_UI_SkillSection_Interaction"));
 	
 	return S_OK;
 }

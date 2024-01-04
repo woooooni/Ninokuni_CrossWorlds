@@ -38,10 +38,12 @@
 #include "UI_Text_TabMenu.h"
 #include "UI_BtnInventory.h"
 #include "UI_PlayerEXPBar.h"
+#include "UI_Minimap_Frame.h"
 #include "UI_MonsterHP_Bar.h"
 #include "UI_MenuSeparator.h"
 #include "UI_Dialog_Window.h"
 #include "UI_BtnQuickQuest.h"
+#include "UI_World_NameTag.h"
 #include "UI_Inventory_Slot.h"
 #include "UI_Setting_Slider.h"
 #include "UI_Setting_Window.h"
@@ -63,6 +65,7 @@
 #include "UI_Costume_ItemSlot.h"
 #include "UI_Loading_MainLogo.h"
 #include "UI_Btn_WorldMapIcon.h"
+#include "UI_World_Interaction.h"
 #include "UI_BossHP_Background.h"
 #include "UI_Inventory_LineBox.h"
 #include "UI_Dialog_MiniWindow.h"
@@ -85,6 +88,7 @@
 #include "UI_Loading_Information.h"
 #include "UI_MonsterHP_Elemental.h"
 #include "UI_ImajinnSection_Slot.h"
+#include "UI_WeaponSection_Weapon.h"
 #include "UI_SkillSection_BtnRoll.h"
 #include "UI_SkillSection_BtnJump.h"
 #include "UI_MonsterHP_Background.h"
@@ -210,6 +214,13 @@ _float2 CUI_Manager::Get_ProjectionPosition(CTransform* pTransform)
 	_float fScreenY = vWindowPos.y * -(g_iWinSizeY * 0.5f) + (g_iWinSizeY * 0.5f);
 
 	return _float2(fScreenX, fScreenY);
+}
+
+_bool CUI_Manager::Is_DefaultSettingOn()
+{
+	// 게임 기본 세팅이 켜져있는지 확인해준다 -> UI매니저에서 Clone되지 않은 객체의 OnOff를 제어하기 위해서.
+
+	return m_pPlayerStatus->Get_Active();
 }
 
 HRESULT CUI_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -1875,8 +1886,8 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
-	UIDesc.fCX = 256.f * 0.26f;
-	UIDesc.fCY = 256.f * 0.26f;
+	UIDesc.fCX = 256.f * 0.24f;
+	UIDesc.fCY = 256.f * 0.24f;
 	UIDesc.fX = g_iWinSizeX - 245.5f;
 	UIDesc.fY = g_iWinSizeY - 158.f;
 
@@ -1888,8 +1899,8 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(pClassicSkill);
 
-	UIDesc.fCX = 256.f * 0.25f;
-	UIDesc.fCY = 256.f * 0.25f;
+	UIDesc.fCX = 256.f * 0.23f;
+	UIDesc.fCY = 256.f * 0.23f;
 	CGameObject* pClassicFrame = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_ClassicSKill_Frame"), &UIDesc, &pClassicFrame)))
 		return E_FAIL;
@@ -1898,8 +1909,8 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(pClassicFrame);
 
-	UIDesc.fCX = 256.f * 0.26f;
-	UIDesc.fCY = 256.f * 0.26f;
+	UIDesc.fCX = 256.f * 0.24f;
+	UIDesc.fCY = 256.f * 0.24f;
 	UIDesc.fX = g_iWinSizeX - 220.5f;
 	UIDesc.fY = g_iWinSizeY - 227.f;
 	pClassicSkill = nullptr;
@@ -1910,8 +1921,8 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(pClassicSkill);
 
-	UIDesc.fCX = 256.f * 0.25f;
-	UIDesc.fCY = 256.f * 0.25f;
+	UIDesc.fCX = 256.f * 0.23f;
+	UIDesc.fCY = 256.f * 0.23f;
 	pClassicFrame = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_ClassicSKill_Frame"), &UIDesc, &pClassicFrame)))
 		return E_FAIL;
@@ -1920,8 +1931,8 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(pClassicFrame);
 
-	UIDesc.fCX = 256.f * 0.26f;
-	UIDesc.fCY = 256.f * 0.26f;
+	UIDesc.fCX = 256.f * 0.24f;
+	UIDesc.fCY = 256.f * 0.24f;
 	UIDesc.fX = g_iWinSizeX - 153.f;
 	UIDesc.fY = g_iWinSizeY - 251.f;
 	pClassicSkill = nullptr;
@@ -1932,8 +1943,8 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(pClassicSkill);
 
-	UIDesc.fCX = 256.f * 0.25f;
-	UIDesc.fCY = 256.f * 0.25f;
+	UIDesc.fCX = 256.f * 0.23f;
+	UIDesc.fCY = 256.f * 0.23f;
 	pClassicFrame = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_ClassicSKill_Frame"), &UIDesc, &pClassicFrame)))
 		return E_FAIL;
@@ -2751,6 +2762,68 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(pMilepost);
 
+
+	m_Minimap.reserve(2);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 300.f * 0.6f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = g_iWinSizeX - (UIDesc.fCX - 30.f);
+	UIDesc.fY = UIDesc.fCY - 30.f;
+
+	CGameObject* pMinimap = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Minimap_Frame"), &UIDesc, &pMinimap)))
+		return E_FAIL;
+	m_Minimap.push_back(dynamic_cast<CUI_Minimap_Frame*>(pMinimap));
+	if (nullptr == pMinimap)
+		return E_FAIL;
+	Safe_AddRef(pMinimap);
+
+	pMinimap = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Minimap_FrameArrow"), &UIDesc, &pMinimap)))
+		return E_FAIL;
+	m_Minimap.push_back(dynamic_cast<CUI_Minimap_Frame*>(pMinimap));
+	if (nullptr == pMinimap)
+		return E_FAIL;
+	Safe_AddRef(pMinimap);
+
+
+	m_WeaponIcon.reserve(3);
+
+	fOffset = 85.f;
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 256.f * 0.15f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = 1380.f;
+	UIDesc.fY = 575.f;
+
+	pSlot = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_WeaponSection_WeaponIcon_First"), &UIDesc, &pSlot)))
+		return E_FAIL;
+	m_WeaponIcon.push_back(dynamic_cast<CUI_WeaponSection_Weapon*>(pSlot));
+	if (nullptr == pSlot)
+		return E_FAIL;
+	Safe_AddRef(pSlot);
+
+	UIDesc.fX += fOffset;
+	pSlot = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_WeaponSection_WeaponIcon_Second"), &UIDesc, &pSlot)))
+		return E_FAIL;
+	m_WeaponIcon.push_back(dynamic_cast<CUI_WeaponSection_Weapon*>(pSlot));
+	if (nullptr == pSlot)
+		return E_FAIL;
+	Safe_AddRef(pSlot);
+
+	UIDesc.fX += fOffset;
+	pSlot = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_WeaponSection_WeaponIcon_Third"), &UIDesc, &pSlot)))
+		return E_FAIL;
+	m_WeaponIcon.push_back(dynamic_cast<CUI_WeaponSection_Weapon*>(pSlot));
+	if (nullptr == pSlot)
+		return E_FAIL;
+	Safe_AddRef(pSlot);
+
+
 	return S_OK;
 }
 
@@ -3494,6 +3567,12 @@ HRESULT CUI_Manager::Using_BackButton()
 				OnOff_SkillWindow(false);
 			}
 		}
+
+		if (nullptr != m_pWorldMapBG)
+		{
+			if (m_pWorldMapBG->Get_Active())
+				OnOff_WorldMap(false);
+		}
 	}
 
 	return S_OK;
@@ -3572,6 +3651,11 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 {
 	if (bOnOff) // On
 	{
+		for (auto& iter : m_Milepost)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(true);
+		}
 		m_pPlayerStatus->Set_Active(true);
 		for (auto& iter : m_ItemQuickslot)
 		{
@@ -3605,6 +3689,11 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 			if (nullptr != iter)
 				iter->Set_Active(true);
 		}
+		for (auto& iter : m_WeaponIcon)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(true);
+		}
 
 		m_pImajinnBG->Set_Active(true);
 
@@ -3619,6 +3708,12 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 	}
 	else // Off
 	{
+		for (auto& iter : m_Milepost)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+
 		m_pPlayerStatus->Set_Active(false);
 		for (auto& iter : m_ItemQuickslot)
 		{
@@ -3653,11 +3748,17 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 			if (nullptr != iter)
 				iter->Set_Active(false);
 		}
+		for (auto& iter : m_WeaponIcon)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
 
 		m_pImajinnBG->Set_Active(false);
 		m_pCameraAnnounce->Set_Active(false);
 	
 		OnOff_MonsterHP(false);
+		OnOff_MiniMap(false);
 
 		// EXP Bar를 감춘다
 		for (auto& iter : m_PlayerEXP)
@@ -3764,6 +3865,11 @@ HRESULT CUI_Manager::OnOff_QuestPopup(_bool bOnOff)
 		{
 			if (iter != nullptr)
 				iter->Set_Active(false);
+		}
+
+		if (1 == m_pBtnQuest->Get_TextureIndex())
+		{
+			m_pBtnQuest->Set_TextureIndex(0);
 		}
 	}
 
@@ -4075,6 +4181,31 @@ HRESULT CUI_Manager::OnOff_WorldMap(_bool bOnOff)
 
 			OnOff_GamePlaySetting(true);
 		}
+	}
+
+	return S_OK;
+}
+
+HRESULT CUI_Manager::OnOff_MiniMap(_bool bOnOff)
+{
+	if (bOnOff) // 켠다
+	{
+		for (auto& iter : m_Minimap)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(true);
+		}
+	}
+	else // 끈다
+	{
+		for (auto& iter : m_Minimap)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+
+		if (1 == m_pBtnShowMinimap->Get_TextureIndex())
+			m_pBtnShowMinimap->Set_TextureIndex(0);
 	}
 
 	return S_OK;
@@ -5259,6 +5390,31 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		CUI_Milepost::Create(m_pDevice, m_pContext, CUI_Milepost::UI_MILEPOST::MILEPOST_ARROW), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_World_Interaction_Btn"),
+		CUI_World_Interaction::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minimap_Frame"),
+		CUI_Minimap_Frame::Create(m_pDevice, m_pContext, CUI_Minimap_Frame::UI_MINIMAP::MINIMAP_FRAME), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minimap_FrameArrow"),
+		CUI_Minimap_Frame::Create(m_pDevice, m_pContext, CUI_Minimap_Frame::UI_MINIMAP::MINIMAP_ARROW), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_World_NameTag"),
+		CUI_World_NameTag::Create(m_pDevice, m_pContext, CUI_World_NameTag::UI_NAMETAG::NAMETAG_GAMEPLAY), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_WeaponSection_WeaponIcon_First"),
+		CUI_WeaponSection_Weapon::Create(m_pDevice, m_pContext, CUI_WeaponSection_Weapon::UI_WEAPONSLOT::WEAPON_FIRST), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_WeaponSection_WeaponIcon_Second"),
+		CUI_WeaponSection_Weapon::Create(m_pDevice, m_pContext, CUI_WeaponSection_Weapon::UI_WEAPONSLOT::WEAPON_SECOND), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_WeaponSection_WeaponIcon_Third"),
+		CUI_WeaponSection_Weapon::Create(m_pDevice, m_pContext, CUI_WeaponSection_Weapon::UI_WEAPONSLOT::WEAPON_THIRD), LAYER_UI)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -5429,7 +5585,6 @@ HRESULT CUI_Manager::Ready_UILobbyPrototypes()
 		return E_FAIL;
 
 
-
 	return S_OK;
 }
 
@@ -5457,6 +5612,11 @@ void CUI_Manager::Set_CharacterType()
 	{
 		if (nullptr != iter)
 			iter->Set_CharacterType(m_eCurPlayer);
+	}
+	for (auto& iter : m_WeaponIcon)
+	{
+		if (nullptr != iter)
+			iter->Set_TextureIndex(m_eCurPlayer);
 	}
 	
 	// For Costume Window
@@ -5555,6 +5715,7 @@ void CUI_Manager::Free()
 	Safe_Release(m_pBossHPBar);
 
 	Safe_Release(m_pDummy);
+	Safe_Release(m_pName);
 
 	for (auto& pBasic : m_Basic)
 		Safe_Release(pBasic);
@@ -5683,6 +5844,14 @@ void CUI_Manager::Free()
 	for (auto& pMilepost : m_Milepost)
 		Safe_Release(pMilepost);
 	m_Milepost.clear();
+
+	for (auto& pMinimap : m_Minimap)
+		Safe_Release(pMinimap);
+	m_Minimap.clear();
+
+	for (auto& pIcon : m_WeaponIcon)
+		Safe_Release(pIcon);
+	m_WeaponIcon.clear();
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

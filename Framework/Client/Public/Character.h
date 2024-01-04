@@ -226,8 +226,8 @@ protected:
 private:
 	void Tick_MotionTrail(_float fTimeDelta);
 
-	
-
+private:
+	class CUI_World_NameTag* m_pName = { nullptr };
 
 public:
 	virtual void Free() override;

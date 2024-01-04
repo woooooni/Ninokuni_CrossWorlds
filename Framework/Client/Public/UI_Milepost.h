@@ -14,7 +14,11 @@ protected:
 	virtual ~CUI_Milepost() = default;
 
 public:
-	void Set_TargetPosition(_float4 vPosition) { m_vTargetPos = vPosition; }
+	void Set_TargetPosition(_float4 vPosition) {
+		m_vTargetPos = vPosition;
+		m_bGoal = true;
+	}
+	virtual void Set_Active(_bool bActive) override;
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -25,8 +29,12 @@ public:
 
 private:
 	UI_MILEPOST m_eType = { MILEPOST_END };
+	class CCharacter* m_pPlayer = { nullptr };
+
 	_float4 m_vTargetPos = _float4(0.f, 0.f, 0.f, 0.f);
+	_float2 m_vCurrentPos = _float2(0.f, 0.f);
 	_float m_fDistance = { 0.f };
+	_bool m_bGoal = { false };
 
 private:
 	virtual HRESULT	Ready_Components() override;

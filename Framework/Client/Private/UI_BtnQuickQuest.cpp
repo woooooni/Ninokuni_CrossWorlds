@@ -131,21 +131,18 @@ void CUI_BtnQuickQuest::Key_Input(_float fTimeDelta)
 	if (KEY_TAP(KEY::LBTN))
 	{
 		if (0 == m_iTextureIndex)
+		{
 			m_iTextureIndex = 1;
+			CUI_Manager::GetInstance()->OnOff_QuestPopup(true);
+		}
 		else if (1 == m_iTextureIndex)
+		{
 			m_iTextureIndex = 0;
+			CUI_Manager::GetInstance()->OnOff_QuestPopup(false);
+		}
 		else
 		{
 			return;
-		}
-
-		if (m_iTextureIndex)
-		{
-			CUI_Manager::GetInstance()->OnOff_QuestPopup(true);
-		}
-		else
-		{
-			CUI_Manager::GetInstance()->OnOff_QuestPopup(false);
 		}
 	}
 }
