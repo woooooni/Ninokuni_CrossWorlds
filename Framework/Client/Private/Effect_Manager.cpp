@@ -89,6 +89,44 @@ HRESULT CEffect_Manager::Generate_Effect(const wstring& strEffectName, _matrix W
 	return S_OK;
 }
 
+HRESULT CEffect_Manager::Generate_Effect(const wstring& strEffectName, _matrix WorldMatrix, _vector vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner, CEffect** ppOut)
+{
+	// strEffectName
+	CGameObject* pGameObject = GI->Clone_GameObject(L"Prototype_" + strEffectName, LAYER_EFFECT);
+	if (nullptr == pGameObject)
+		return E_FAIL;
+
+	CEffect* pEffect = dynamic_cast<CEffect*>(pGameObject);
+	if (nullptr == pEffect)
+		return E_FAIL;
+
+	// WorldMatrix
+	CTransform* pTransform = pEffect->Get_Component<CTransform>(L"Com_Transform");
+	if (pTransform == nullptr)
+		return E_FAIL;
+
+	pTransform->Set_State(CTransform::STATE_POSITION, vLocalPos);
+	pTransform->Set_Scale(vLocalScale);
+	pTransform->FixRotation(vLocalRotation.x, vLocalRotation.y, vLocalRotation.z);
+
+	pTransform->Set_WorldMatrix(Calculate_WorldMatrixEffect(WorldMatrix, pTransform->Get_WorldMatrix()));
+
+
+
+	// pOwner
+	if (pOwner != nullptr)
+		pEffect->Set_Owner(pOwner);
+
+	// ppOut
+	if (ppOut != nullptr)
+		*ppOut = pEffect;
+
+	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, pGameObject)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
 HRESULT CEffect_Manager::Generate_Decal(const wstring& strDecalName, _matrix WorldMatrix, _matrix* pRotationMatrix, CGameObject* pOwner, class CDecal** ppOut)
 {
 	// strDecalName
@@ -153,6 +191,15 @@ HRESULT CEffect_Manager::Generate_Vfx(const wstring& strVfxName, _matrix WorldMa
 		return E_FAIL;
 
 	return S_OK;
+}
+
+_matrix CEffect_Manager::Calculate_WorldMatrixEffect(_matrix ParentsWorldMatrix, _matrix ChildWorldMatrix)
+{
+	ParentsWorldMatrix.r[0] = XMVector3Normalize(ParentsWorldMatrix.r[0]);
+	ParentsWorldMatrix.r[1] = XMVector3Normalize(ParentsWorldMatrix.r[1]);
+	ParentsWorldMatrix.r[2] = XMVector3Normalize(ParentsWorldMatrix.r[2]);
+
+	return ChildWorldMatrix * ParentsWorldMatrix;
 }
 
 _matrix CEffect_Manager::Get_WorldMatrixEffect(_matrix OwnerWorldMatrix, _float3 fPositionOffset, _float3 fScaleOffset, _float3 fRotationOffset)
