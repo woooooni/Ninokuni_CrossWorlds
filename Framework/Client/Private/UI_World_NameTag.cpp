@@ -67,7 +67,7 @@ HRESULT CUI_World_NameTag::Initialize(void* pArg)
 
 void CUI_World_NameTag::Tick(_float fTimeDelta)
 {
-	if (UI_NAMETAG::NAMETAG_GAMEPLAY == m_eType)
+	/*if (UI_NAMETAG::NAMETAG_GAMEPLAY == m_eType)
 	{
 		if (!CUI_Manager::GetInstance()->Is_DefaultSettingOn())
 			m_bActive = false;
@@ -87,7 +87,7 @@ void CUI_World_NameTag::Tick(_float fTimeDelta)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, pTransform->Get_Position());
 
 		__super::Tick(fTimeDelta);
-	}
+	}*/
 }
 
 void CUI_World_NameTag::LateTick(_float fTimeDelta)
