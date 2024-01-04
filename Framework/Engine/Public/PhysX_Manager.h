@@ -103,6 +103,7 @@ private:
 
 private:
 	_bool m_bSimulating = false;
+
 private:
 	PxDefaultAllocator			m_Allocator;			// 메모리 관리용..?
 	PxDefaultErrorCallback		m_ErrorCallback;		// 만들때 필요함.
@@ -131,7 +132,6 @@ private:
 	int							m_iPortNumber = 5425;
 	int							m_iTimeOutSeconds = 100;
 
-	
 private:
 	map<_uint, class PxController*> m_Controllers;
 	map<_uint, vector<PHYSX_STATIC_OBJECT_DESC>> m_GroundObjects;

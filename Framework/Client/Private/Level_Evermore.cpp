@@ -363,6 +363,4 @@ CLevel_Evermore* CLevel_Evermore::Create(ID3D11Device* pDevice, ID3D11DeviceCont
 void CLevel_Evermore::Free()
 {
 	__super::Free();
-
-	CUI_Manager::GetInstance()->Free();
 }
