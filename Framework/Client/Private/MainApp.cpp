@@ -59,13 +59,13 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 	/* 1-4. 게임내에서 사용할 레벨(씬)을 생성한다.   */
-	if (FAILED(Open_Level(LEVEL_LOGO, L"Final_Boss")))
+	if (FAILED(Open_Level(LEVEL_TEST, L"Final_Boss")))
 		return E_FAIL;
 
 
 	// UI Cursor
-	//CUI_Manager::GetInstance()->Ready_Cursor();
-	//ShowCursor(false);
+	CUI_Manager::GetInstance()->Ready_Cursor();
+	ShowCursor(false);
 
 
 	Json Test;
@@ -139,10 +139,10 @@ HRESULT CMainApp::Open_Level(LEVELID eLevelID, const wstring& strFolderName)
 
 HRESULT CMainApp::Initialize_Client()
 {
-	if (FAILED(CEffect_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext, L"../Bin/Export/NonAnimModel/Effect/", L"../Bin/DataFiles/Effect/", L"../Bin/DataFiles/Decal/")))
+	if (FAILED(CParticle_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext, L"../Bin/DataFiles/Vfx/Particle/")))
 		return E_FAIL;
 
-	if(FAILED(CParticle_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext, L"../Bin/DataFiles/Particle/")))
+	if (FAILED(CEffect_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext, L"../Bin/Export/NonAnimModel/Effect/", L"../Bin/DataFiles/Vfx/Effect/", L"../Bin/DataFiles/Vfx/Decal/")))
 		return E_FAIL;
 
 	if (FAILED(CItem_Manager::GetInstance()->Reserve_Manager(L"../Bin/DataFiles/Item/")))
