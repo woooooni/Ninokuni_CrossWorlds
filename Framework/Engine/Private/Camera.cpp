@@ -93,6 +93,16 @@ void CCamera::Change_LookAtOffSet(const Vec4& vTargetValue, const _float& fTime,
 	m_tLookAtOffset.Start(m_tLookAtOffset.vCurVec, vTargetValue, fTime, eMode);
 }
 
+void CCamera::Lerp_TargetOffset(const Vec4& vStartValue, const Vec4& vTargetValue, const _float& fTime, const LERP_MODE& eMode)
+{
+	m_tTargetOffset.Start(vStartValue, vTargetValue, fTime, eMode);
+}
+
+void CCamera::Lerp_LookAtOffSet(const Vec4& vStartValue, const Vec4& vTargetValue, const _float& fTime, const LERP_MODE& eMode)
+{
+	m_tLookAtOffset.Start(vStartValue, vTargetValue, fTime, eMode);
+}
+
 void CCamera::Change_TargetObj(CGameObject* pTargetObj, const _float& fChangeTime, const LERP_MODE& eMode)
 {
 	if (nullptr == m_pTargetObj || nullptr == pTargetObj)

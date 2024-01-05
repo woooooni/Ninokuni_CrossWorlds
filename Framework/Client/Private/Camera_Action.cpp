@@ -9,6 +9,8 @@
 
 #include "Camera_Follow.h"
 
+#include "Utils.h"
+
 CCamera_Action::CCamera_Action(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
 	: CCamera(pDevice, pContext, strObjTag, OBJ_TYPE::OBJ_CAMERA)
 {
@@ -36,6 +38,14 @@ HRESULT CCamera_Action::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+	/* Set Transform (Action Cam이 Lobby Level에서 가장 먼저 시작된다는 전제) */
+	{
+		m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, m_tActionLobbyDesc.vCamPosition);
+
+		Vec4 vLookAt = m_tActionLobbyDesc.vCamLookAtStart * m_tActionLobbyDesc.fLookMag;
+		m_pTransformCom->LookAt(vLookAt.OneW());
+	}
+
 	return S_OK;
 }
 
@@ -46,10 +56,20 @@ void CCamera_Action::Tick(_float fTimeDelta)
 
 	__super::Tick(fTimeDelta);
 
+	/* Check Blending */
+	if (m_bBlending)
+	{
+		Tick_Blending(fTimeDelta);
+		return;
+	}
+
 	if (m_bAction)
 	{
 		switch (m_eCurActionType)
 		{
+		case CCamera_Action::LOBBY:
+			Tick_Lobby(fTimeDelta);
+			break;
 		case CCamera_Action::DOOR:
 			Tick_Door(fTimeDelta);
 			break;
@@ -60,7 +80,6 @@ void CCamera_Action::Tick(_float fTimeDelta)
 			break;
 		}
 	}
-
 }
 
 void CCamera_Action::LateTick(_float fTimeDelta)
@@ -80,6 +99,14 @@ HRESULT CCamera_Action::Start_Action(const CAMERA_ACTION_TYPE& eType, CGameObjec
 {
 	switch (eType)
 	{
+	case CAMERA_ACTION_TYPE::LOBBY :
+	{
+		if (FAILED(Start_Action_Lobby()))
+			return E_FAIL;
+
+		m_eCurActionType = CAMERA_ACTION_TYPE::LOBBY;
+	}
+	break;
 	case CAMERA_ACTION_TYPE::DOOR:
 	{
 		if (FAILED(Start_Action_Door()))
@@ -101,6 +128,17 @@ HRESULT CCamera_Action::Start_Action(const CAMERA_ACTION_TYPE& eType, CGameObjec
 	}
 
 	m_bAction = true;
+
+	return S_OK;
+}
+
+HRESULT CCamera_Action::Start_Action_Lobby()
+{
+	m_tActionLobbyDesc.vLerpCamLookAt.Start(
+		m_tActionLobbyDesc.vCamLookAtStart, 
+		m_tActionLobbyDesc.vCamLookAtFinish, 
+		m_tActionLobbyDesc.fLerpTime, 
+		LERP_MODE::SMOOTHER_STEP);
 
 	return S_OK;
 }
@@ -151,6 +189,19 @@ HRESULT CCamera_Action::Start_Action_Talk(CGameObject* pTarget, const _uint& iTa
 	return S_OK;
 }
 
+void CCamera_Action::Tick_Lobby(_float fTimeDelta)
+{
+	if (!m_tActionLobbyDesc.vLerpCamLookAt.bActive)
+		m_bAction = false;
+
+	if (m_tActionLobbyDesc.vLerpCamLookAt.bActive)
+		m_tActionLobbyDesc.vLerpCamLookAt.Update_Lerp(fTimeDelta);
+	
+	Vec4 vLookAt = m_tActionLobbyDesc.vLerpCamLookAt.vCurVec * m_tActionLobbyDesc.fLookMag;
+
+	m_pTransformCom->LookAt(vLookAt.OneW());
+}
+
 void CCamera_Action::Tick_Door(_float fTimeDelta)
 {
 	/* Progress */
@@ -196,9 +247,12 @@ void CCamera_Action::Tick_Door(_float fTimeDelta)
 				CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
 				if (nullptr != pFollowCam)
 				{
-					CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
-					
 					pFollowCam->Set_Default_Position();
+
+					//cout << endl << "##########\n\nChange In Action!" << endl << endl;
+					//CUtils::ConsoleOut(Vec4(pFollowCam->Get_Transform()->Get_Position()));
+
+					CCamera_Manager::GetInstance()->Change_Camera(CAMERA_TYPE::FOLLOW);
 				}
 			}
 		}
@@ -207,7 +261,6 @@ void CCamera_Action::Tick_Door(_float fTimeDelta)
 			break;
 		}
 	}
-
 
 	/* Transform */
 	{
@@ -218,7 +271,7 @@ void CCamera_Action::Tick_Door(_float fTimeDelta)
 
 		/* Height */
 		Vec4 vPostion = m_pTransformCom->Get_Position();
-		vPostion.y += m_tActionDoorDesc.tLerpRotateSpeed.fCurValue * fTimeDelta * 0.3f;
+		vPostion.y += m_tActionDoorDesc.tLerpRotateSpeed.fCurValue * fTimeDelta * 0.7f;
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPostion);
 
 		/* Look At */
@@ -237,6 +290,10 @@ void CCamera_Action::Tick_Talk(_float fTimeDelta)
 HRESULT CCamera_Action::Ready_Components()
 {
 	return S_OK;
+}
+
+void CCamera_Action::Tick_Blending(const _float fDeltaTime)
+{
 }
 
 CCamera_Action* CCamera_Action::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)

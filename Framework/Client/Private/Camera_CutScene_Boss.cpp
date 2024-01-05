@@ -40,6 +40,13 @@ void CCamera_CutScene_Boss::Tick(_float fTimeDelta)
 		return;
 
 	__super::Tick(fTimeDelta);
+
+	/* Check Blending */
+	if (m_bBlending)
+	{
+		Tick_Blending(fTimeDelta);
+		return;
+	}
 }
 
 void CCamera_CutScene_Boss::LateTick(_float fTimeDelta)
@@ -58,6 +65,10 @@ HRESULT CCamera_CutScene_Boss::Render()
 HRESULT CCamera_CutScene_Boss::Ready_Components()
 {
 	return S_OK;
+}
+
+void CCamera_CutScene_Boss::Tick_Blending(const _float fDeltaTime)
+{
 }
 
 CCamera_CutScene_Boss* CCamera_CutScene_Boss::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)

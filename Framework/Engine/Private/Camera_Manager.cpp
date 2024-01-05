@@ -3,6 +3,8 @@
 #include "GameInstance.h"
 #include "Camera.h"
 
+#include "Utils.h"
+
 IMPLEMENT_SINGLETON(CCamera_Manager)
 
 CCamera_Manager::CCamera_Manager()
@@ -29,6 +31,11 @@ void CCamera_Manager::Tick(_float fTimeDelta)
 	if (nullptr == m_pCurCamera)
 		return;
 
+	/* Blending */
+	if (m_bBlending)
+		Tick_Blending(fTimeDelta);
+
+	/* Cur Camera Update */
 	m_pCurCamera->Tick(fTimeDelta);
 
 	/* V(WI) */
@@ -71,6 +78,9 @@ CCamera* CCamera_Manager::Get_Camera(const _uint& iKey)
 
 HRESULT CCamera_Manager::Set_CurCamera(const _uint& iKey)
 {
+	if (m_bBlending)
+		return E_FAIL;
+
 	CCamera* pCamera = Find_Camera(iKey);
 
 	if (nullptr == pCamera)
@@ -131,7 +141,6 @@ HRESULT CCamera_Manager::Add_Camera(const _uint& iKey, CCamera* pCamera)
 	return S_OK;
 }
 
-
 HRESULT CCamera_Manager::Start_Action_Shake_Default()
 {
 	if (nullptr == m_pCurCamera)
@@ -152,6 +161,59 @@ HRESULT CCamera_Manager::Start_Action_Shake(const _float& fAmplitude, const _flo
 	return S_OK;
 }
 
+HRESULT CCamera_Manager::Change_Camera(const _uint& iKey, const _float& fBlendingDuration, const LERP_MODE& eLerpMode)
+{
+	/* 바꿀 카메라를 현재 카메라로 지정하고, 캠포지션과 룩앳을 매니저에서 보간하여 받아 사용한다. 나머지는 카메라 자체 보간 처리 */
+
+	CCamera* pNextCamera = Find_Camera(iKey);
+
+	if (nullptr == pNextCamera || nullptr == m_pCurCamera || fBlendingDuration < 0.f)
+		return E_FAIL;
+
+	/* Set Property */
+	{
+		m_pCurCamera->Set_Blending(true);
+		pNextCamera->Set_Blending(true);
+
+		m_pCurCamera->Set_CanInput(false);
+		pNextCamera->Set_CanInput(false);
+	}
+
+	/* 1. 캠 포지션 */
+	m_tBlendingPosition.Start(m_pCurCamera->Get_Transform()->Get_Position(), 
+								pNextCamera->Get_Transform()->Get_Position(), 
+								fBlendingDuration, eLerpMode);
+	
+	/* 2. 룩앳 */
+	Vec4 vSrc = (Vec4)m_pCurCamera->Get_LookAtObj()->Get_Component<CTransform>(L"Com_Transform")->Get_Position()
+				+ m_pCurCamera->Get_LookAtObj()->Get_Component<CTransform>(L"Com_Transform")->Get_RelativeOffset(m_pCurCamera->Get_LookAtOffset());
+
+	Vec4 vDest = (Vec4)pNextCamera->Get_LookAtObj()->Get_Component<CTransform>(L"Com_Transform")->Get_Position()
+				+ pNextCamera->Get_LookAtObj()->Get_Component<CTransform>(L"Com_Transform")->Get_RelativeOffset(pNextCamera->Get_LookAtOffset());
+
+	m_tBlendingLookAt.Start(vSrc.OneW(), vDest.OneW(), fBlendingDuration, eLerpMode);
+
+	/* 3. 타겟, 룩앳 오프셋 */
+	pNextCamera->Lerp_TargetOffset(m_pCurCamera->Get_TargetOffset(), pNextCamera->Get_TargetOffset(), fBlendingDuration, eLerpMode);
+	pNextCamera->Lerp_LookAtOffSet(m_pCurCamera->Get_LookAtOffset(), pNextCamera->Get_LookAtOffset(), fBlendingDuration, eLerpMode);
+
+
+	/* 4. fov, distance */
+	pNextCamera->Start_Lerp_Fov(m_pCurCamera->Get_Fov(), pNextCamera->Get_Fov(), fBlendingDuration, eLerpMode);
+	pNextCamera->Start_Lerp_Distance(m_pCurCamera->Get_Distance(), pNextCamera->Get_Distance(), fBlendingDuration, eLerpMode);
+
+	if(FAILED(Set_CurCamera(iKey)))
+		return E_FAIL;
+
+	m_bBlending = true; /* Set_CurCamera()는 m_bBlending일 경우 return 되므로*/
+
+
+	//cout << endl << "##########\n\nChange In Manager!" << endl << endl;
+	//CUtils::ConsoleOut(m_tBlendingPosition.vStartVec);
+
+	return S_OK;
+}
+
 CCamera* CCamera_Manager::Find_Camera(const _uint& iKey)
 {
 	auto iter = m_pCameras.find(iKey);
@@ -160,6 +222,25 @@ CCamera* CCamera_Manager::Find_Camera(const _uint& iKey)
 		return nullptr;
 
 	return iter->second;
+}
+
+void CCamera_Manager::Tick_Blending(_float fTimeDelta)
+{
+	if (!m_tBlendingPosition.bActive)
+	{
+		m_bBlending = false;
+
+		m_pPrevCamera->Set_Blending(false);
+		m_pCurCamera->Set_Blending(false);
+
+		m_pPrevCamera->Set_CanInput(true);
+		m_pCurCamera->Set_CanInput(true);
+
+		return;
+	}
+
+	m_tBlendingPosition.Update_Lerp(fTimeDelta);
+	m_tBlendingLookAt.Update_Lerp(fTimeDelta);
 }
 
 void CCamera_Manager::Free()

@@ -10,6 +10,7 @@
 #include "Camera_Action.h"
 #include "Game_Manager.h"
 #include "Player.h"
+#include "Utils.h"
 
 CCamera_Follow::CCamera_Follow(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
 	: CCamera(pDevice, pContext, strObjTag, OBJ_TYPE::OBJ_CAMERA)
@@ -59,6 +60,13 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 
 	__super::Tick(fTimeDelta); 
 
+	cout << "Update\n";
+	CUtils::ConsoleOut(Vec4(m_pTransformCom->Get_Position()));
+
+	/* Check Exception*/
+	if (LOCK_PROGRESS::OFF != m_eLockProgress)
+		Check_Exception();
+
 	/* Check Lock */
 	if (LOCK_PROGRESS::FINISH_BLEIDING == m_eLockProgress)
 	{
@@ -66,19 +74,30 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 			m_eLockProgress = LOCK_PROGRESS::OFF;
 	}
 
-	/* Position */
-	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, Calculate_WorldPosition(fTimeDelta));
+	/* Check Blending */
+	if (m_bBlending)
+	{
+		Tick_Blending(fTimeDelta);
+		return;
+	}
+
+	/* Trnasform */
+	{
+		/* Position */
+		m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, Calculate_WorldPosition(fTimeDelta));
 	
-	/* Look & Shake */
-	const Vec4 vLookAtPos = Calculate_Look(fTimeDelta);
-	if (Is_Shake())
-		m_pTransformCom->LookAt(Vec4(vLookAtPos + Vec4(Get_ShakeLocalPos())).OneW());
-	else
-		m_pTransformCom->LookAt(vLookAtPos);
+		/* Look & Shake */
+		const Vec4 vLookAtPos = Calculate_Look(fTimeDelta);
+		if (Is_Shake())
+			m_pTransformCom->LookAt(Vec4(vLookAtPos + Vec4(Get_ShakeLocalPos())).OneW());
+		else
+			m_pTransformCom->LookAt(vLookAtPos);
 	
-	/* Collision */
-	if(nullptr != m_pControllerCom)
-		m_pControllerCom->Tick_Controller(fTimeDelta);
+		/* Collision */
+		if(nullptr != m_pControllerCom)
+			m_pControllerCom->Tick_Controller(fTimeDelta);
+	}
+
 
 	/* Test */
 	Test(fTimeDelta);
@@ -185,6 +204,25 @@ HRESULT CCamera_Follow::Ready_Components()
 		m_pControllerCom->Set_Active(true);
 
 	return S_OK;
+}
+
+void CCamera_Follow::Tick_Blending(const _float fDeltaTime)
+{
+	const Vec4 vCamPosition = CCamera_Manager::GetInstance()->Get_BlendingPosition();
+
+	//Vec4 vCamLookAt = CCamera_Manager::GetInstance()->Get_BlendingLookAt();
+
+	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vCamPosition);
+
+	//m_pTransformCom->LookAt(vCamLookAt);
+
+	//cout << "\nBlending 0\n";
+	//CUtils::ConsoleOut(Vec4(m_pTransformCom->Get_Position()));
+	//
+	//cout << "Blending 1\n";
+	//CUtils::ConsoleOut(vCamPosition);
+	//
+	//cout << endl << endl;
 }
 
 Vec4 CCamera_Follow::Calculate_WorldPosition(_float fTimeDelta)
@@ -309,7 +347,6 @@ Vec4 CCamera_Follow::Calculate_Look(_float fTimeDelta)
 	return Vec4(vLookAt + vLookAtOffset).OneW();
 }
 
-
 Vec4 CCamera_Follow::Calculate_DampingPosition(Vec4 vGoalPos)
 {
 	if (!m_tDampingDesc.bSet) /* 댐핑이 켜졌지만, 최초 세팅이 안 된 경우 세팅한다. */
@@ -345,6 +382,15 @@ Vec4 CCamera_Follow::Calculate_DampingPosition(Vec4 vGoalPos)
 	return vGoalPos;
 }
 
+void CCamera_Follow::Check_Exception()
+{
+	if (nullptr != m_pTargetObj && m_pTargetObj->Is_ReserveDead())
+		m_pTargetObj = nullptr;
+
+	if (nullptr != m_pLookAtObj && m_pLookAtObj->Is_ReserveDead())
+		m_pLookAtObj = nullptr;
+}
+
 void CCamera_Follow::Test(_float fTimeDelta)
 {
 	/* Test */
@@ -378,15 +424,15 @@ void CCamera_Follow::Test(_float fTimeDelta)
 				Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
 		}
 
-		if (KEY_TAP(KEY::HOME))
-		{
-			//CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
-			//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_CurCamera());
-			//if (nullptr != pActionCam)
-			//{
-			//	pActionCam->Start_Action(CCamera_Action::CAMERA_ACTION_TYPE::DOOR);
-			//}
-		}
+		//if (KEY_TAP(KEY::HOME))
+		//{
+		//	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
+		//	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_CurCamera());
+		//	if (nullptr != pActionCam)
+		//	{
+		//		pActionCam->Start_Action(CCamera_Action::CAMERA_ACTION_TYPE::DOOR);
+		//	}
+		//}
 	}
 
 	{

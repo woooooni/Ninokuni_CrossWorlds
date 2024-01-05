@@ -49,18 +49,28 @@ public:
 	/* Access */
 	CCamera*	Get_Camera(const _uint& iKey);
 	CCamera*	Get_CurCamera() const { return m_pCurCamera; }
+
 	HRESULT		Set_CurCamera(const _uint& iKey);
 	HRESULT		Set_PrevCamera();
+	
 	const _bool Is_Empty_Camera(const _uint& iKey);
+	const _bool Is_Blending_Camera() const { return m_bBlending; }
+	
 	HRESULT		Add_Camera(const _uint& iKey, CCamera* pCamera);
+
+	Vec4		Get_BlendingPosition() const { return m_tBlendingPosition.vCurVec; }
+	Vec4		Get_BlendingLookAt() const { return m_tBlendingLookAt.vCurVec; }
 
 public:
 	/* Action */
 	HRESULT		Start_Action_Shake_Default();
 	HRESULT		Start_Action_Shake(const _float& fAmplitude, const _float& fFrequency, const _float& fDuration);
 
+	HRESULT		Change_Camera(const _uint& iKey, const _float& fBlendingDuration = 1.f, const LERP_MODE& eLerpMode = LERP_MODE::SMOOTHER_STEP);
+
 private:
 	CCamera*	Find_Camera(const _uint& iKey);
+	void		Tick_Blending(_float fTimeDelta);
 
 private:
 	CCamera* m_pPrevCamera	= { nullptr };
@@ -68,6 +78,11 @@ private:
 	CCamera* m_pNextCamera	= { nullptr };
 	
 	map<_uint, CCamera*> m_pCameras;
+
+	_bool	m_bBlending = false;
+
+	LERP_VEC4_DESC m_tBlendingPosition = {};
+	LERP_VEC4_DESC m_tBlendingLookAt = {};
 
 private:
 	ID3D11Device* m_pDevice = { nullptr };

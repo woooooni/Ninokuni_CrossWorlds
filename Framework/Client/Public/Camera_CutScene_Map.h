@@ -60,6 +60,7 @@ public:
 
 private:
 	virtual HRESULT Ready_Components() override;
+	virtual void Tick_Blending(const _float fDeltaTime) override;
 
 private:
 	vector<CAMERA_CUTSCENE_MAP_DESC>	m_CutSceneDescs;

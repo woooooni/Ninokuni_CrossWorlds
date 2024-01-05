@@ -1685,6 +1685,54 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 							}
 						}
 						break;
+						case CAMERA_EVENT_TYPE::DISTANCE:
+						{
+							/* Target Distance */
+							{
+								_float fTargetDistance = CameraEvents[m_iCameraEventIndex].second.fTag1;
+								if (ImGui::DragFloat("Target Distance (Default Distance : 5.f)", &fTargetDistance, 0.5f, 0.f, 100.f))
+								{
+									CameraEvents[m_iCameraEventIndex].second.fTag1 = fTargetDistance;
+									pCurAnim->Change_CameraEvent(m_iCameraEventIndex, CameraEvents[m_iCameraEventIndex].second);
+								}
+
+							}
+
+							/* Time */
+							{
+								_float fLerpTime = CameraEvents[m_iCameraEventIndex].second.fTag2;
+								if (ImGui::DragFloat("Lerp Time", &fLerpTime, 0.05f, 0.f, 1.f))
+								{
+									CameraEvents[m_iCameraEventIndex].second.fTag2 = fLerpTime;
+									pCurAnim->Change_CameraEvent(m_iCameraEventIndex, CameraEvents[m_iCameraEventIndex].second);
+								}
+
+							}
+
+							/* Lerp Mode */
+							{
+								const char* Preview = LerpModeNames[CameraEvents[m_iCameraEventIndex].second.iTag1].c_str();
+
+								if (ImGui::BeginCombo(u8"보간 모드", Preview))
+								{
+									for (int iCurComboIndex = 0; iCurComboIndex < (_uint)LERP_MODE::TYPEEND; iCurComboIndex++)
+									{
+										const bool is_selected = (iCurComboIndex == (_uint)CameraEvents[m_iCameraEventIndex].second.iTag1);
+
+										if (ImGui::Selectable(LerpModeNames[iCurComboIndex].c_str(), is_selected))
+										{
+											CameraEvents[m_iCameraEventIndex].second.iTag1 = iCurComboIndex;
+											pCurAnim->Change_CameraEvent(m_iCameraEventIndex, CameraEvents[m_iCameraEventIndex].second);
+										}
+
+										if (is_selected)
+											ImGui::SetItemDefaultFocus();
+									}
+									ImGui::EndCombo();
+								}
+							}
+						}
+						break;
 						case CAMERA_EVENT_TYPE::SHAKE :
 						{
 							/* fAmplitude */
@@ -1742,6 +1790,22 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 				}
 				IMGUI_SAME_LINE;
 
+				if (ImGui::Button("Add Camera Event (Distnace)"))
+				{
+					CAMERA_EVENT_DESC desc;
+					{
+						desc.iTag2 = CAMERA_EVENT_TYPE::DISTANCE;
+
+						desc.fTag1 = Cam_Dist_Follow_Default;
+						desc.fTag2 = 0.2f;
+
+						desc.iTag1 = (_uint)LERP_MODE::EASE_OUT;
+					}
+					pCurAnim->Add_CameraEvent(m_fCurEventFrame, desc);
+					++m_iCameraEventIndex;
+				}
+				IMGUI_SAME_LINE;
+
 				if (ImGui::Button("Add Camera Event (Shake)"))
 				{
 					CAMERA_EVENT_DESC desc;
@@ -1755,7 +1819,7 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 					pCurAnim->Add_CameraEvent(m_fCurEventFrame, desc);
 					++m_iCameraEventIndex;
 				}
-				IMGUI_SAME_LINE;
+				IMGUI_NEW_LINE;
 
 				if (ImGui::Button("Del Camera Event"))
 				{

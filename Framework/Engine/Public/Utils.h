@@ -55,5 +55,8 @@ public:
 
 	static filesystem::path RemovePrefix(const filesystem::path& fullPath, const filesystem::path& prefix);
 
+	static void ConsoleOut(Vec2 v) { std::cout.precision(2); cout << v.x << "\t" << v.y <<  endl; }
+	static void ConsoleOut(Vec3 v) { std::cout.precision(2); cout << v.x << "\t" << v.y << "\t" << v.z << endl; }
+	static void ConsoleOut(Vec4 v) { std::cout.precision(2); cout << v.x << "\t" << v.y << "\t" << v.z << "\t" << v.w << endl; }
 };
 

@@ -192,6 +192,9 @@ public:
 	void Change_TargetOffSet(const Vec4& vTargetValue, const _float& fTime, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
 	void Change_LookAtOffSet(const Vec4& vTargetValue, const _float& fTime, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
 
+	void Lerp_TargetOffset(const Vec4& vStartValue, const Vec4& vTargetValue, const _float& fTime, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
+	void Lerp_LookAtOffSet(const Vec4& vStartValue, const Vec4& vTargetValue, const _float& fTime, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
+
 	/* Input */
 	const Vec2& Get_MouseSensitivity() const { return m_vMouseSensitivity; }
 
@@ -204,6 +207,10 @@ public:
 	void Start_Shake(const _float& fAmplitude, const _float& fFrequency, const _float& fDuration);
 	const _bool& Is_Shake() const { return m_tShakeDesc.bActive; }
 	Vec3 Get_ShakeLocalPos() { return m_tShakeDesc.Get_ShakeLocalPos(); }
+	
+	/* Blending */
+	const _bool& Is_Blending() const { return m_bBlending; }
+	void Set_Blending(const _bool& bBlending) { m_bBlending = bBlending; }
 
 protected:
 	/* Default  */
@@ -225,7 +232,7 @@ protected:
 	CGameObject*		m_pTargetObj	= { nullptr };
 	CGameObject*		m_pLookAtObj	= { nullptr };
 
-	LERP_VEC4_DESC		m_tBlendingTargetPosition	= {}; /* 타겟, 룩앳 오브젝트를 체인지 하는동안의 블렌딩 위치 */
+	LERP_VEC4_DESC		m_tBlendingTargetPosition	= {}; /* 타겟, 룩앳 오브젝트를 체인지하는 동안의 블렌딩 위치 */
 	LERP_VEC4_DESC		m_tBlendingLookAtPosition	= {};
 
 	/* Input */
@@ -235,8 +242,12 @@ protected:
 	/* Shake */
 	SHAKE_DESC			m_tShakeDesc	= {};
 
+	/* Blendgin */
+	_bool				m_bBlending		= { false };
+
 protected:
 	virtual HRESULT Ready_Components() override;
+	virtual void Tick_Blending(const _float fDeltaTime) {};
 
 private:
 	void Tick_Lerp(const _float fDeltaTime);

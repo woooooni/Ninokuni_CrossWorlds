@@ -71,14 +71,17 @@ public:
 	HRESULT Start_LockOn(CGameObject* pTargetObject, const Vec4& vTargetOffset, const Vec4& vLookAtOffset, const _float& fLockOnBlendingTime = Cam_LockOn_Blending_Time_Default);
 	HRESULT Finish_LockOn(CGameObject* pTargetObject, const _float& fLockOnBlendingTime = Cam_LockOn_Blending_Time_Default);
 
-protected:
+private:
 	virtual HRESULT Ready_Components() override;
+	virtual void Tick_Blending(const _float fDeltaTime) override;
 
 private:
 	Vec4 Calculate_WorldPosition(_float fTimeDelta);
 	Vec4 Calculate_LoaclSphericalPosition(_float fTimeDelta);
 	Vec4 Calculate_Look(_float fTimeDelta);
 	Vec4 Calculate_DampingPosition(Vec4 vGoalPos);
+
+	void Check_Exception();
 
 private:
 	void Test(_float fTimeDelta);

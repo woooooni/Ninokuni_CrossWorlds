@@ -233,7 +233,7 @@ HRESULT CLevel_Lobby::Ready_Light(const wstring& strLightFilePath)
 
 HRESULT CLevel_Lobby::Ready_Layer_Camera(const LAYER_TYPE eLayerType)
 {
-	if (FAILED(CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE)))
+	if (FAILED(CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION)))
 		return E_FAIL;
 
 	return S_OK;
