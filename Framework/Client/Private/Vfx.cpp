@@ -1,14 +1,24 @@
 #include "stdafx.h"
 #include "Vfx.h"
 
+#include "GameInstance.h"
+
 CVfx::CVfx(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameObject(pDevice, pContext, strObjectTag, OBJ_TYPE::OBJ_PARTICLE)
+	, m_isCloned(false)
 {
 }
 
 CVfx::CVfx(const CVfx& rhs)
 	: CGameObject(rhs)
+	, m_isCloned(true)
+
 	, m_bOwnerStateIndex(rhs.m_bOwnerStateIndex)
+	, m_iMaxCount(rhs.m_iMaxCount)
+	, m_pFrameTriger(rhs.m_pFrameTriger)
+	, m_pPositionOffset(rhs.m_pPositionOffset)
+	, m_pScaleOffset(rhs.m_pScaleOffset)
+	, m_pRotationOffset(rhs.m_pRotationOffset)
 {
 }
 

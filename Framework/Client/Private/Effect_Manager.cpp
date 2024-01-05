@@ -67,7 +67,7 @@ HRESULT CEffect_Manager::Generate_Effect(const wstring& strEffectName, _matrix W
 
 	// Scale / Rotation
 	Matrix matScale    = matScale.CreateScale(vLocalScale);
-	Matrix matRotation = matScale.CreateFromYawPitchRoll(Vec3(vLocalRotation));//matRotation.CreateRotationZ(::XMConvertToRadians(25.0f));
+	Matrix matRotation = matScale.CreateFromYawPitchRoll(Vec3(XMConvertToRadians(vLocalRotation.x), XMConvertToRadians(vLocalRotation.y), XMConvertToRadians(vLocalRotation.z)));//matRotation.CreateRotationZ(::XMConvertToRadians(25.0f));
 	Matrix matResult = matScale * matRotation * pTransform->Get_WorldFloat4x4();
 	pTransform->Set_WorldMatrix(matResult);
 
@@ -115,7 +115,7 @@ HRESULT CEffect_Manager::Generate_Decal(const wstring& strDecalName, _matrix Wor
 
     // Scale / Rotation
 	Matrix matScale = matScale.CreateScale(vLocalScale);
-	Matrix matRotation = matScale.CreateFromYawPitchRoll(Vec3(vLocalRotation));
+	Matrix matRotation = matScale.CreateFromYawPitchRoll(Vec3(XMConvertToRadians(vLocalRotation.x), XMConvertToRadians(vLocalRotation.y), XMConvertToRadians(vLocalRotation.z)));
 	Matrix matResult = matScale * matRotation * pTransform->Get_WorldFloat4x4();
 	pTransform->Set_WorldMatrix(matResult);
 	
@@ -153,9 +153,6 @@ HRESULT CEffect_Manager::Generate_Vfx(const wstring& strVfxName, _matrix WorldMa
 
 	// WorldMatrix
 	pVfx->Set_WorldMatrix(WorldMatrix);
-
-	// pRotationMatrix
-	//
 
 	// pOwner
 	if (pOwner != nullptr)

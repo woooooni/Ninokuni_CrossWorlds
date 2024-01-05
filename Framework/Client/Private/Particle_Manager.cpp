@@ -56,7 +56,7 @@ HRESULT CParticle_Manager::Generate_Particle(const wstring& strParticleName, _ma
 
 	// Scale / Rotation
 	Matrix matScale = matScale.CreateScale(vLocalScale);
-	Matrix matRotation = matScale.CreateFromYawPitchRoll(Vec3(vLocalRotation));
+	Matrix matRotation = matScale.CreateFromYawPitchRoll(Vec3(XMConvertToRadians(vLocalRotation.x), XMConvertToRadians(vLocalRotation.y), XMConvertToRadians(vLocalRotation.z)));
 	Matrix matResult = matScale * matRotation * pTransform->Get_WorldFloat4x4();
 	pTransform->Set_WorldMatrix(matResult);
 

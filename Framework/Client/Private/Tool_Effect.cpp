@@ -7,6 +7,7 @@
 #include "filesystem"
 #include "FileUtils.h"
 #include "Utils.h"
+#include <Vfx.h>
 
 CTool_Effect::CTool_Effect(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:CTool(pDevice, pContext)
@@ -672,21 +673,42 @@ void CTool_Effect::Tick_DecalTool()
 
 void CTool_Effect::Tick_VfxTool()
 {
-	// 생성/ 삭제
-	//if (ImGui::Button("VfxCreate"))
-	//{
+	// 원형에 적용
+	if (ImGui::Button("Load_VfxPrototype"))
+		Load_OriginalInfoVfx();
+	//if (ImGui::Button("Store_VfxPrototype"))
+	//	Set_OriginalInfoDecal();
+	ImGui::SameLine();
+	ImGui::Text("PrototypeVfxName :");
+	ImGui::SameLine();
+	ImGui::InputText("##PrototypeVfxName", m_cPrototypeVfxName, IM_ARRAYSIZE(m_cPrototypeVfxName));
 
-	//}
-	//ImGui::SameLine();
+	ImGui::NewLine();
 
+	// VfxInfo
+	if (ImGui::CollapsingHeader("VfxInfo"))
+	{
+		if (m_pFrameTriger != nullptr && m_pPositionOffset != nullptr &&
+			m_pScaleOffset != nullptr && m_pRotationOffset != nullptr)
+		{
+			for(size_t i = 0; i < m_iVfxMaxCount; ++i)
+			{
+				std::string frameTrigerString = "FrameTriger" + std::to_string(i);
+				ImGui::InputInt(frameTrigerString.c_str(), &m_pFrameTriger[i]);
 
-	//// 확인(적용)
-	//if (ImGui::Button("DecalTransformSelect"))
-	//	Store_TransformDecal();
-	//ImGui::SameLine();
-	//if (ImGui::Button("DecalInfoSelect"))
-	//	Store_InfoDecal();
-	//ImGui::NewLine();
+				std::string positionOffsetString = "PositionOffset " + std::to_string(i);
+				ImGui::InputFloat3(positionOffsetString.c_str(), &m_pPositionOffset[i].x);
+
+				std::string scaleOffsetString = "ScaleOffset " + std::to_string(i);
+				ImGui::InputFloat3(scaleOffsetString.c_str(), &m_pScaleOffset[i].x);
+
+				std::string rotationOffsetString = "RotationOffset " + std::to_string(i);
+				ImGui::InputFloat3(rotationOffsetString.c_str(), &m_pRotationOffset[i].x);
+
+				ImGui::NewLine();
+			}
+		}
+	}
 }
 
 void CTool_Effect::Create_Effect()
@@ -922,6 +944,33 @@ void CTool_Effect::Set_OriginalInfoDecal()
 	}
 
 	static_cast<CDecal*>(pGameObject)->Set_DecalDesc(m_tDecalInfo);
+}
+
+void CTool_Effect::Load_OriginalInfoVfx()
+{
+	wstring strPropertyName(m_cPrototypeVfxName, m_cPrototypeVfxName + strlen(m_cPrototypeVfxName));
+
+	CGameObject* pGameObject = GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_EFFECT, strPropertyName);
+	if (pGameObject == nullptr)
+	{
+		MSG_BOX("Prototype_Find_Failed!");
+		return;
+	}
+
+	CVfx* pVfx = static_cast<CVfx*>(pGameObject);
+	if (pVfx == nullptr)
+	{
+		MSG_BOX("Prototype_Vfx_Failed!");
+		return;
+	}
+
+	m_iVfxMaxCount    = pVfx->Get_MaxCount();
+	m_pFrameTriger    = pVfx->Get_FrameTriger();
+	m_pPositionOffset = pVfx->Get_PositionOffset();
+	m_pScaleOffset    = pVfx->Get_ScaleOffset();
+	m_pRotationOffset = pVfx->Get_RotationOffset();
+
+	MSG_BOX("Prototype_Vfx_Loaded!");
 }
 
 

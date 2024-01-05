@@ -102,7 +102,7 @@ void CParticle::Tick(_float fTimeDelta)
 	m_pVIBufferCom->Tick(fTimeDelta);
 	 
 #ifdef _DEBUG
-	if (GI->Get_CurrentLevel() != LEVEL_TOOL && m_pVIBufferCom->Get_Finished())
+	if (/*GI->Get_CurrentLevel() != LEVEL_TOOL &&*/ m_pVIBufferCom->Get_Finished())
 	{
 		Set_Dead(true);
 		return;
