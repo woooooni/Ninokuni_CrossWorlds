@@ -36,29 +36,14 @@ void CVfx_SwordMan_Skill_SipohoningLunge::Tick(_float fTimeDelta)
 		// 
 		if (m_iCount == 0)
 		{
-			_matrix WorldMatrix = XMLoadFloat4x4(&m_WorldMatrix);
-
-			_vector vPositionOrigin = WorldMatrix.r[CTransform::STATE_POSITION];
-			_vector vPosition = vPositionOrigin + WorldMatrix.r[CTransform::STATE_LOOK];
-			WorldMatrix.r[CTransform::STATE_POSITION] = XMVectorSet(XMVectorGetX(vPosition), XMVectorGetY(vPositionOrigin), XMVectorGetZ(vPosition), 1.f);
-
-			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_SipohoningLunge_Circle"), WorldMatrix, nullptr, nullptr);
-
+			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_SipohoningLunge_Circle"), XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.f, 0.2f), _float3(10.f, 1.f, 10.f), _float3(0.f, 0.f, 0.f));
 			m_iCount++;
 		}
 
 		// 
 		else if (m_iCount == 1 && m_iOwnerFrame >= 16)
 		{
-
-			_matrix WorldMatrix = XMLoadFloat4x4(&m_WorldMatrix);
-
-			_vector vPositionOrigin = WorldMatrix.r[CTransform::STATE_POSITION];
-			_vector vPosition = vPositionOrigin + WorldMatrix.r[CTransform::STATE_LOOK] * 2.f;
-			WorldMatrix.r[CTransform::STATE_POSITION] = XMVectorSet(XMVectorGetX(vPosition), XMVectorGetY(vPositionOrigin), XMVectorGetZ(vPosition), 1.f);
-
-			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_SipohoningLunge_Square"), WorldMatrix, nullptr, nullptr);
-
+			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_SipohoningLunge_Square"), XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.f, 0.6f), _float3(4.f, 1.f, 8.f), _float3(0.f, 0.f, 0.f));
 			m_iCount++;
 		}
 

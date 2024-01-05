@@ -48,7 +48,7 @@ void CEffect_Manager::Tick(_float fTimeDelta)
 {
 }
 
-HRESULT CEffect_Manager::Generate_Effect(const wstring& strEffectName, _matrix WorldMatrix, _matrix* pRotationMatrix, CGameObject* pOwner, class CEffect** ppOut)
+HRESULT CEffect_Manager::Generate_Effect(const wstring& strEffectName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner, CEffect** ppOut)
 {
 	// strEffectName
 	CGameObject* pGameObject = GI->Clone_GameObject(L"Prototype_" + strEffectName, LAYER_EFFECT);
@@ -63,55 +63,24 @@ HRESULT CEffect_Manager::Generate_Effect(const wstring& strEffectName, _matrix W
 	CTransform* pTransform = pEffect->Get_Component<CTransform>(L"Com_Transform");
 	if (pTransform == nullptr)
 		return E_FAIL;
-	pTransform->Set_WorldMatrix(WorldMatrix);
+	pTransform->Set_WorldMatrix(WorldMatrix); // 부모 또는 자신의 행렬 셋팅
 
-	// RotationMatrix
-	if (pRotationMatrix != nullptr)
-	{
-		CEffect::EFFECT_DESC EffectDesc = pEffect->Get_EffectDesc();
-		_matrix OffsetMatrix = XMLoadFloat4x4(&EffectDesc.OffsetMatrix);
-		OffsetMatrix *= *pRotationMatrix;
-		XMStoreFloat4x4(&EffectDesc.OffsetMatrix, OffsetMatrix);
-		pEffect->Set_EffectDesc(EffectDesc);
-	}
+	// Scale / Rotation
+	Matrix matScale    = matScale.CreateScale(vLocalScale);
+	Matrix matRotation = matScale.CreateFromYawPitchRoll(Vec3(XMConvertToRadians(vLocalRotation.x), XMConvertToRadians(vLocalRotation.y), XMConvertToRadians(vLocalRotation.z)));//matRotation.CreateRotationZ(::XMConvertToRadians(25.0f));
+	Matrix matResult = matScale * matRotation * pTransform->Get_WorldFloat4x4();
+	pTransform->Set_WorldMatrix(matResult);
 
-	// pOwner
-	if(pOwner != nullptr)
-		pEffect->Set_Owner(pOwner);
+	// Position
+	_vector vCurrentPosition = pTransform->Get_Position();
+	//_vector vOffsetPosition  = pTransform->Get_RelativeOffset(Vec4(vLocalPos.x, vLocalPos.y, vLocalPos.z, 1.f));
+	//_vector vFinalPosition   = vCurrentPosition + vOffsetPosition;
 
-	// ppOut
-	if (ppOut != nullptr)
-		*ppOut = pEffect;
-	
-	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, pGameObject)))
-		return E_FAIL;
-
-	return S_OK;
-}
-
-HRESULT CEffect_Manager::Generate_Effect(const wstring& strEffectName, _matrix WorldMatrix, _vector vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner, CEffect** ppOut)
-{
-	// strEffectName
-	CGameObject* pGameObject = GI->Clone_GameObject(L"Prototype_" + strEffectName, LAYER_EFFECT);
-	if (nullptr == pGameObject)
-		return E_FAIL;
-
-	CEffect* pEffect = dynamic_cast<CEffect*>(pGameObject);
-	if (nullptr == pEffect)
-		return E_FAIL;
-
-	// WorldMatrix
-	CTransform* pTransform = pEffect->Get_Component<CTransform>(L"Com_Transform");
-	if (pTransform == nullptr)
-		return E_FAIL;
-
-	pTransform->Set_State(CTransform::STATE_POSITION, vLocalPos);
-	pTransform->Set_Scale(vLocalScale);
-	pTransform->FixRotation(vLocalRotation.x, vLocalRotation.y, vLocalRotation.z);
-
-	pTransform->Set_WorldMatrix(Calculate_WorldMatrixEffect(WorldMatrix, pTransform->Get_WorldMatrix()));
-
-
+	_vector vFinalPosition = vCurrentPosition;
+	vFinalPosition += pTransform->Get_State(CTransform::STATE_RIGHT) * vLocalPos.x;
+	vFinalPosition += pTransform->Get_State(CTransform::STATE_UP)    * vLocalPos.y;
+	vFinalPosition += pTransform->Get_State(CTransform::STATE_LOOK)  * vLocalPos.z;
+	pTransform->Set_State(CTransform::STATE_POSITION, XMVectorSet(XMVectorGetX(vFinalPosition), XMVectorGetY(vFinalPosition), XMVectorGetZ(vFinalPosition), 1.f));
 
 	// pOwner
 	if (pOwner != nullptr)
@@ -127,7 +96,7 @@ HRESULT CEffect_Manager::Generate_Effect(const wstring& strEffectName, _matrix W
 	return S_OK;
 }
 
-HRESULT CEffect_Manager::Generate_Decal(const wstring& strDecalName, _matrix WorldMatrix, _matrix* pRotationMatrix, CGameObject* pOwner, class CDecal** ppOut)
+HRESULT CEffect_Manager::Generate_Decal(const wstring& strDecalName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner, CDecal** ppOut)
 {
 	// strDecalName
 	CGameObject* pGameObject = GI->Clone_GameObject(L"Prototype_" + strDecalName, LAYER_TYPE::LAYER_EFFECT);
@@ -142,11 +111,20 @@ HRESULT CEffect_Manager::Generate_Decal(const wstring& strDecalName, _matrix Wor
 	CTransform* pTransform = pDecal->Get_Component<CTransform>(L"Com_Transform");
 	if (pTransform == nullptr)
 		return E_FAIL;
-	pTransform->Set_WorldMatrix(WorldMatrix);
-	pTransform->Set_Scale(pDecal->Get_DecalDesc().fScale);
+	pTransform->Set_WorldMatrix(WorldMatrix); // 부모 또는 자신의 행렬 셋팅
 
-	// RotationMatrix
-	//
+    // Scale / Rotation
+	Matrix matScale = matScale.CreateScale(vLocalScale);
+	Matrix matRotation = matScale.CreateFromYawPitchRoll(Vec3(XMConvertToRadians(vLocalRotation.x), XMConvertToRadians(vLocalRotation.y), XMConvertToRadians(vLocalRotation.z)));
+	Matrix matResult = matScale * matRotation * pTransform->Get_WorldFloat4x4();
+	pTransform->Set_WorldMatrix(matResult);
+	
+	// Position
+	_vector vFinalPosition = pTransform->Get_Position();
+	vFinalPosition += pTransform->Get_State(CTransform::STATE_RIGHT) * vLocalPos.x;
+	vFinalPosition += pTransform->Get_State(CTransform::STATE_UP)    * vLocalPos.y;
+	vFinalPosition += pTransform->Get_State(CTransform::STATE_LOOK)  * vLocalPos.z;
+	pTransform->Set_State(CTransform::STATE_POSITION, XMVectorSet(XMVectorGetX(vFinalPosition), XMVectorGetY(vFinalPosition), XMVectorGetZ(vFinalPosition), 1.f));
 
 	// pOwner
 	if (pOwner != nullptr)
@@ -162,7 +140,7 @@ HRESULT CEffect_Manager::Generate_Decal(const wstring& strDecalName, _matrix Wor
 	return S_OK;
 }
 
-HRESULT CEffect_Manager::Generate_Vfx(const wstring& strVfxName, _matrix WorldMatrix, _matrix* pRotationMatrix, CGameObject* pOwner, class CVfx** ppOut)
+HRESULT CEffect_Manager::Generate_Vfx(const wstring& strVfxName, _matrix WorldMatrix, CGameObject* pOwner, class CVfx** ppOut)
 {
 	// strVfxName
 	CGameObject* pGameObject = GI->Clone_GameObject(L"Prototype_" + strVfxName, LAYER_TYPE::LAYER_EFFECT);
@@ -176,9 +154,6 @@ HRESULT CEffect_Manager::Generate_Vfx(const wstring& strVfxName, _matrix WorldMa
 	// WorldMatrix
 	pVfx->Set_WorldMatrix(WorldMatrix);
 
-	// pRotationMatrix
-	//
-
 	// pOwner
 	if (pOwner != nullptr)
 		pVfx->Set_Owner(pOwner);
@@ -191,68 +166,6 @@ HRESULT CEffect_Manager::Generate_Vfx(const wstring& strVfxName, _matrix WorldMa
 		return E_FAIL;
 
 	return S_OK;
-}
-
-_matrix CEffect_Manager::Calculate_WorldMatrixEffect(_matrix ParentsWorldMatrix, _matrix ChildWorldMatrix)
-{
-	ParentsWorldMatrix.r[0] = XMVector3Normalize(ParentsWorldMatrix.r[0]);
-	ParentsWorldMatrix.r[1] = XMVector3Normalize(ParentsWorldMatrix.r[1]);
-	ParentsWorldMatrix.r[2] = XMVector3Normalize(ParentsWorldMatrix.r[2]);
-
-	return ChildWorldMatrix * ParentsWorldMatrix;
-}
-
-_matrix CEffect_Manager::Get_WorldMatrixEffect(_matrix OwnerWorldMatrix, _float3 fPositionOffset, _float3 fScaleOffset, _float3 fRotationOffset)
-{
-	_matrix WorldMatrix = OwnerWorldMatrix;
-
-	XMVECTOR vRight = XMVector3Normalize(WorldMatrix.r[CTransform::STATE_RIGHT]) * fScaleOffset.x;
-	XMVECTOR vUp    = XMVector3Normalize(WorldMatrix.r[CTransform::STATE_UP])    * fScaleOffset.y;
-	XMVECTOR vLook  = XMVector3Normalize(WorldMatrix.r[CTransform::STATE_LOOK])  * fScaleOffset.z;
-
-	Matrix mRotationMatrix = Matrix::Identity;
-	mRotationMatrix *= XMMatrixRotationX(XMConvertToRadians(fRotationOffset.x));
-	mRotationMatrix *= XMMatrixRotationY(XMConvertToRadians(fRotationOffset.y));
-	mRotationMatrix *= XMMatrixRotationZ(XMConvertToRadians(fRotationOffset.z));
-
-	vRight = XMVector4Transform(vRight, mRotationMatrix);
-	vUp    = XMVector4Transform(vUp,    mRotationMatrix);
-	vLook  = XMVector4Transform(vLook,  mRotationMatrix);
-
-	WorldMatrix.r[CTransform::STATE_RIGHT] = vRight;
-	WorldMatrix.r[CTransform::STATE_UP]    = vUp;
-	WorldMatrix.r[CTransform::STATE_LOOK]  = vLook;
-	WorldMatrix.r[CTransform::STATE_POSITION] += XMVectorSet(fPositionOffset.x, fPositionOffset.y, fPositionOffset.z, 0.f);
-
-	return WorldMatrix;
-}
-
-_matrix CEffect_Manager::Get_RotationMatrix(_float3 fRotationOffset)
-{
-	//XMVECTOR vRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
-	//XMVECTOR vUp    = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	//XMVECTOR vLook  = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-
-	//RotationMatrix *= XMMatrixRotationX(XMConvertToRadians(fRotationOffset.x));
-	//RotationMatrix *= XMMatrixRotationY(XMConvertToRadians(fRotationOffset.y));
-	//RotationMatrix *= XMMatrixRotationZ(XMConvertToRadians(fRotationOffset.z));
-
-	//vRight = XMVector4Transform(vRight, RotationMatrix);
-	//vUp    = XMVector4Transform(vUp,    RotationMatrix);
-	//vLook  = XMVector4Transform(vLook,  RotationMatrix);
-
-	//RotationMatrix = XMMatrixIdentity();
-	//RotationMatrix.r[CTransform::STATE_RIGHT] = vRight;
-	//RotationMatrix.r[CTransform::STATE_UP]    = vUp;
-	//RotationMatrix.r[CTransform::STATE_LOOK]  = vLook;
-	
-	// 라디안각도
-	_vector vRotation = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(fRotationOffset.x), XMConvertToRadians(fRotationOffset.y), XMConvertToRadians(fRotationOffset.z));
-	_matrix RotationMatrix = XMMatrixRotationQuaternion(vRotation);
-
-	
-
-	return RotationMatrix;
 }
 
 HRESULT CEffect_Manager::Ready_Proto_Effects(const wstring& strEffectPath)

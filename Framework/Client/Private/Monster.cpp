@@ -110,7 +110,7 @@ void CMonster::Tick(_float fTimeDelta)
 		if (!m_bDissolveEffect)
 		{
 			m_bDissolveEffect = true;
-			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Monster_Dissolve"), m_pTransformCom->Get_WorldMatrix(), nullptr, nullptr, &m_pDissolveObject);
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Monster_Dissolve"), m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &m_pDissolveObject);
 		}
 		else if (m_pDissolveObject != nullptr && m_fDissolveWeight >= (m_fDissolveTotal - 3.f))
 		{

@@ -22,7 +22,7 @@ public:
 	void Tick(_float fTimeDelta);
 
 public:
-	HRESULT Generate_Particle(const wstring& strParticleName, _matrix WorldMatrix, _matrix* pRotationMatrix = nullptr, CGameObject* pOwner = nullptr, class CParticle** ppOut = nullptr);
+	HRESULT Generate_Particle(const wstring& strParticleName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner = nullptr, class CParticle** ppOut = nullptr);
 
 private:
 	ID3D11Device* m_pDevice = nullptr;

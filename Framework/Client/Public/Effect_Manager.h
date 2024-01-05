@@ -19,14 +19,9 @@ public:
 	void	Tick(_float fTimeDelta);
 
 public:
-	HRESULT Generate_Effect(const wstring& strEffectName, _matrix WorldMatrix, _matrix* pRotationMatrix = nullptr, CGameObject* pOwner = nullptr, class CEffect** ppOut = nullptr);
-	HRESULT Generate_Effect(const wstring& strEffectName, _matrix WorldMatrix, _vector vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner = nullptr, class CEffect** ppOut = nullptr);
-	HRESULT Generate_Decal(const wstring& strDecalName, _matrix WorldMatrix, _matrix* pRotationMatrix = nullptr, CGameObject* pOwner = nullptr, class CDecal** ppOut = nullptr);
-	HRESULT Generate_Vfx(const wstring& strVfxName, _matrix WorldMatrix, _matrix* pRotationMatrix = nullptr, CGameObject* pOwner = nullptr, class CVfx** ppOut = nullptr);
-
-	_matrix Calculate_WorldMatrixEffect(_matrix	ParentsWorldMatrix, _matrix	ChildWorldMatrix);
-	_matrix Get_WorldMatrixEffect(_matrix OwnerWorldMatrix, _float3 fPositionOffset, _float3 fScaleOffset, _float3 fRotationOffset);
-	_matrix Get_RotationMatrix(_float3 fRotationOffset);
+	HRESULT Generate_Effect(const wstring& strEffectName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner = nullptr, class CEffect** ppOut = nullptr);
+	HRESULT Generate_Decal(const wstring& strDecalName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner = nullptr, class CDecal** ppOut = nullptr);
+	HRESULT Generate_Vfx(const wstring& strVfxName, _matrix WorldMatrix, CGameObject* pOwner = nullptr, class CVfx** ppOut = nullptr);
 
 private:						  
 	ID3D11Device* m_pDevice = nullptr;
