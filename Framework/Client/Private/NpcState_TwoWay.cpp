@@ -38,7 +38,7 @@ void CNpcState_TwoWay::Tick_State(_float fTimeDelta)
 	if (m_bIsMove)
 	{
 		m_pTransformCom->LookAt_ForLandObject(m_pNpc->Get_RoamingIndex(m_iCurRoamingIndex));
-		m_pTransformCom->Move(m_pTransformCom->Get_Look(), 1.f, fTimeDelta);
+		m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_pNpc->Get_Stat().fSpeed, fTimeDelta);
 
 		if (vPos.x >= vDestPos.x - 0.1f && vPos.x <= vDestPos.x + 0.1f &&
 			vPos.z >= vDestPos.z - 0.1f && vPos.z <= vDestPos.z + 0.1f)
@@ -51,6 +51,7 @@ void CNpcState_TwoWay::Tick_State(_float fTimeDelta)
 					m_bIsMove = false;
 					m_bReverse = true;
 					m_iCurRoamingIndex = m_pNpc->Get_RoamingArea()->size() - 1;
+					m_pModelCom->Set_Animation(m_AnimIndices[1]);
 				}
 			}
 			else
@@ -61,6 +62,7 @@ void CNpcState_TwoWay::Tick_State(_float fTimeDelta)
 					m_bIsMove = false;
 					m_bReverse = false;
 					m_iCurRoamingIndex = 0;
+					m_pModelCom->Set_Animation(m_AnimIndices[1]);
 				}
 			}
 		}

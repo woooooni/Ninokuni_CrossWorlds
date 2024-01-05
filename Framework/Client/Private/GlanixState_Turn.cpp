@@ -12,6 +12,8 @@ HRESULT CGlanixState_Turn::Initialize(const list<wstring>& AnimationList)
 {
 	__super::Initialize(AnimationList);
 
+	m_fWalkSpeed = 4.5f;
+
 	return S_OK;
 }
 
@@ -46,6 +48,8 @@ void CGlanixState_Turn::Enter_State(void* pArg)
 	}
 
 	/* 일반 턴 시작 */ 
+	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_NeutralWalk"));
+
 	_vector vLookNormal = XMVector3Normalize(m_pTransformCom->Get_Look());
 	_vector vDestNormal = XMVector3Normalize(m_pPlayerTransform->Get_Position() - m_pTransformCom->Get_Position());
 
@@ -69,30 +73,12 @@ void CGlanixState_Turn::Enter_State(void* pArg)
 		/* 보스가 바라보는 방향을 기준으로 오른쪽에 위치. */
 		if (fCrossProductY > 0.f)
 		{
-			if (fAngle >= 0.f && fAngle < 90.f)
-			{
-				m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_RightTurn"));
-				m_fTurnSpeed = 2.f;
-			}
-			else if (fAngle >= 90.f && fAngle < 180.f)
-			{
-				m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_RightTurn180"));
-				m_fTurnSpeed = 4.f;
-			}
+			m_fTurnSpeed = 3.f;
 		}
 		/* 보스가 바라보는 방향을 기준으로 왼쪽에 위치. */
 		else if (fCrossProductY < 0.f)
 		{
-			if (fAngle >= 0.f && fAngle < 90.f)
-			{
-				m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_LeftTurn"));
-				m_fTurnSpeed = -2.f;
-			}
-			else if (fAngle >= 90.f && fAngle < 180.f)
-			{
-				m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_LeftTurn180"));
-				m_fTurnSpeed = -4.f;
-			}
+			m_fTurnSpeed = -3.f;
 		}
 	}
 
@@ -116,19 +102,34 @@ void CGlanixState_Turn::Tick_State(_float fTimeDelta)
 	{
 		if (fCrossProductY > 0.f)
 			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), m_fTurnSpeed, fTimeDelta);
+		else
+		{
+			if (m_iAtkIndex >= m_vecAtkState.size())
+				m_iAtkIndex = 0;
+			m_pStateMachineCom->Change_State(CGlanix::GLANIX_CHASE);
+		}
 	}
 	/* 왼쪽으로 턴 */
 	else if (m_fTurnSpeed < 0.f)
 	{
 		if (fCrossProductY < 0.f)
 			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), m_fTurnSpeed, fTimeDelta);
+		else
+		{
+			if (m_iAtkIndex >= m_vecAtkState.size())
+				m_iAtkIndex = 0;
+			m_pStateMachineCom->Change_State(CGlanix::GLANIX_CHASE);
+		}
 	}
+
+	m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fWalkSpeed, fTimeDelta);
 	
-	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
-	{
-		//m_pTransformCom->LookAt_ForLandObject(m_pPlayerTransform->Get_Position());
-		__super::Start_Pattern();
-	}
+
+	//if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
+	//{
+	//	//m_pTransformCom->LookAt_ForLandObject(m_pPlayerTransform->Get_Position());
+	//	__super::Start_Pattern();
+	//}
 }
 
 void CGlanixState_Turn::Exit_State()

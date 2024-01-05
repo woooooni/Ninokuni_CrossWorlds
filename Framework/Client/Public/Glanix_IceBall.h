@@ -42,6 +42,9 @@ private:
 	CGlanix* m_pGlanix = nullptr;
 
 	_float m_fTime = 0.f;
+	_float m_fDelteTime = 0.f;
+
+	_vector m_vInitLook = {};
 
 public:
 	static CGlanix_IceBall* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);

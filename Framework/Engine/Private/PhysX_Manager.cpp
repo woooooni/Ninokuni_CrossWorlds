@@ -55,7 +55,7 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 	SceneDesc.cudaContextManager = m_pCudaContextManager;
 	m_pScene = m_Physics->createScene(SceneDesc);
 	m_pController_Manager = PxCreateControllerManager(*m_pScene);
-	// m_pController_Manager->setOverlapRecoveryModule(true);
+	//m_pController_Manager->setOverlapRecoveryModule(true);
 
 
 	PxPvdSceneClient* pvdClient = m_pScene->getScenePvdClient();

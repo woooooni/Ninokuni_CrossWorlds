@@ -45,11 +45,6 @@ _bool CNpcState_Base::State_Wait(_bool bIsLoop, wstring strAnimName, _float fDes
 	/* 루프 대기 동작 */
 	if (bIsLoop)
 	{
-		if (m_pModelCom->Get_CurrAnimation()->Get_AnimationName() != strAnimName)
-		{
-			m_pModelCom->Set_Animation(strAnimName);
-		}
-
 		m_fTime += fTimeDelta;
 
 		if (m_fTime >= fDestTime)
@@ -62,11 +57,6 @@ _bool CNpcState_Base::State_Wait(_bool bIsLoop, wstring strAnimName, _float fDes
 	/* 루프가 아닌 대기 동작 */
 	else
 	{
-		if (m_pModelCom->Get_CurrAnimation()->Get_AnimationName() != strAnimName)
-		{
-			m_pModelCom->Set_Animation(strAnimName);
-		}
-
 		if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 			return true;
 	}
