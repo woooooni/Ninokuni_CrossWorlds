@@ -738,6 +738,7 @@ HRESULT CUI_Manager::Ready_LobbyUIs()
 		return E_FAIL;
 	Safe_AddRef(m_pNicknamebox);
 
+
 	return S_OK;
 }
 
@@ -6258,6 +6259,12 @@ HRESULT CUI_Manager::Ready_UILobbyPrototypes()
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SetNickname_Dice"),
 		CUI_Basic::Create(m_pDevice, m_pContext, L"UI_Btn_Basic_SetNickname_Dice", CUI_Basic::UI_BASIC::UILOBBY_DICE), LAYER_UI)))
 		return E_FAIL;
+
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Lobby_NameTag"),
+		CUI_World_NameTag::Create(m_pDevice, m_pContext, CUI_World_NameTag::UI_NAMETAG::NAMETAG_LOBBY), LAYER_UI)))
+		return E_FAIL;
+
 
 	return S_OK;
 }

@@ -529,6 +529,8 @@
     <ClInclude Include="..\Public\State_Engineer_SpecialSkill_FlashHeal.h" />
     <ClInclude Include="..\Public\State_Engineer_SpecialSkill_TimeLab.h" />
     <ClInclude Include="..\Public\State_Engineer_SpecialSkill_HealingTree.h" />
+    <ClInclude Include="..\Public\State_Lobby_SwordMan_Neutral_Idle.h" />
+    <ClInclude Include="..\Public\State_Lobby_SwordMan_Sit.h" />
     <ClInclude Include="..\Public\State_SwordMan_AbNormality_Stun.h" />
     <ClInclude Include="..\Public\State_SwordMan_Battle_Attack_0.h" />
     <ClInclude Include="..\Public\State_SwordMan_Battle_Attack_1.h" />
@@ -1162,6 +1164,8 @@
     <ClCompile Include="..\Private\State_Engineer_SpecialSkill_FlashHeal.cpp" />
     <ClCompile Include="..\Private\State_Engineer_SpecialSkill_TimeLab.cpp" />
     <ClCompile Include="..\Private\State_Engineer_SpecialSkill_HealingTree.cpp" />
+    <ClCompile Include="..\Private\State_Lobby_SwordMan_Neutral_Idle.cpp" />
+    <ClCompile Include="..\Private\State_Lobby_SwordMan_Sit.cpp" />
     <ClCompile Include="..\Private\State_SwordMan_AbNormality_Stun.cpp" />
     <ClCompile Include="..\Private\State_SwordMan_BurstSkill_MegaSlash.cpp" />
     <ClCompile Include="..\Private\State_SwordMan_Damaged_Impact.cpp" />

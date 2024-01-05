@@ -10,6 +10,10 @@ private:
 	virtual ~CUI_Dummy_Swordsman() = default;
 
 public:
+	_bool Is_Clicked() { return m_bClicked; }
+	void Set_ClickState(_bool bClicked);
+
+public:
 	virtual HRESULT Initialize_Prototype() override;
 	virtual HRESULT Initialize(void* pArg) override;
 	virtual void Tick(_float fTimeDelta) override;
@@ -20,6 +24,10 @@ protected:
 	virtual HRESULT Ready_Components() override;
 	virtual HRESULT Ready_States() override;
 	virtual HRESULT Ready_Colliders() override;
+
+private:
+	class CUI_World_NameTag* m_pNameTag = { nullptr };
+	_bool m_bClicked = { false };
 
 private:
 	HRESULT Ready_Sockets();

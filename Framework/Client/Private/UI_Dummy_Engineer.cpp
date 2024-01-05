@@ -2,10 +2,12 @@
 #include "UI_Dummy_Engineer.h"
 #include "GameInstance.h"
 #include "HierarchyNode.h"
-#include "Trail.h"
+
 #include "Character_Manager.h"
 #include "Game_Manager.h"
 #include "Player.h"
+
+#include "UI_World_NameTag.h"
 
 CUI_Dummy_Engineer::CUI_Dummy_Engineer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CCharacter(pDevice, pContext, L"UI_Dummy_Engineer", CHARACTER_TYPE::ENGINEER)
@@ -18,24 +20,54 @@ CUI_Dummy_Engineer::CUI_Dummy_Engineer(const CUI_Dummy_Engineer& rhs)
 
 }
 
+void CUI_Dummy_Engineer::Set_ClickState(_bool bClicked)
+{
+	if (bClicked)
+	{
+		if (nullptr != m_pNameTag)
+			m_pNameTag->Set_Pass(7);
+	}
+	else
+	{
+		if (nullptr != m_pNameTag)
+			m_pNameTag->Set_Pass(1);
+	}
+
+	m_bClicked = bClicked;
+}
+
 HRESULT CUI_Dummy_Engineer::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
-
 
 	return S_OK;
 }
 
 HRESULT CUI_Dummy_Engineer::Initialize(void* pArg)
 {
-	if (FAILED(__super::Initialize(pArg)))
-		return E_FAIL;
+//	if (FAILED(__super::Initialize(pArg)))
+//		return E_FAIL;
+
+	if (nullptr != pArg)
+		m_tStat = *((CHARACTER_STAT*)pArg);
+
+
+	for (_uint i = 0; i < SOCKET_END; ++i)
+		m_pTrails[i] = nullptr;
+
+	for (_uint i = 0; i < PART_TYPE::PART_END; ++i)
+		m_pCharacterPartModels[i] = nullptr;
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(1.5f, 1.23f, -11.2f, 1.f));
+	if (FAILED(Ready_States()))
+		return E_FAIL;
+
+	m_pRigidBodyCom->Set_Use_Gravity(false);
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(2.4f, 1.23f, -12.5f, 1.f));
 	m_pTransformCom->LookAt_ForLandObject(Vec4(1.f, 1.23f, -30.f, 1.f));
 
 	return S_OK;
@@ -43,7 +75,10 @@ HRESULT CUI_Dummy_Engineer::Initialize(void* pArg)
 
 void CUI_Dummy_Engineer::Tick(_float fTimeDelta)
 {
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(2.4f, 1.23f, -12.5f, 1.f));
+	m_pStateCom->Tick_State(fTimeDelta);
+
+	if (nullptr != m_pNameTag)
+		m_pNameTag->Tick(fTimeDelta);
 
 	__super::Tick(fTimeDelta);
 }
@@ -52,6 +87,9 @@ void CUI_Dummy_Engineer::LateTick(_float fTimeDelta)
 {
 //	m_pModelCom->LateTick(fTimeDelta);
 //	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
+
+	if (nullptr != m_pNameTag)
+		m_pNameTag->LateTick(fTimeDelta);
 
 	__super::LateTick(fTimeDelta);
 }
@@ -108,26 +146,34 @@ HRESULT CUI_Dummy_Engineer::Render()
 HRESULT CUI_Dummy_Engineer::Ready_Components()
 {
 
-	/* For.Com_Transform */
+	// For Transform Component
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 		return E_FAIL;
 
-	/* For.Com_Renderer */
+	// For Renderer Component
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
 		return E_FAIL;
 
-	/* For.Com_Shader */
+	// For Shader Component
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_AnimModel" ), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
-
+	
+	// For Model Component
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_SwordMan_Dummy"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
-//	
 //	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Engineer_Dummy"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 //		return E_FAIL;
-//
-//	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Destroyer_Dummy"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
-//		return E_FAIL;
+
+	// For State Machine Component
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_StateMachine"), TEXT("Com_StateMachine"), (CComponent**)&m_pStateCom)))
+		return E_FAIL;
+
+	// For RigidBody Component
+	CRigidBody::RIGID_BODY_DESC RigidDesc;
+	RigidDesc.pTransform = m_pTransformCom;
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_RigidBody"), TEXT("Com_RigidBody"), (CComponent**)&m_pRigidBodyCom, &RigidDesc)))
+		return E_FAIL;
 
 	for (_uint i = 0; i < PART_TYPE::PART_END; ++i)
  		m_pCharacterPartModels[i] = CCharacter_Manager::GetInstance()->Get_PartModel(CHARACTER_TYPE::SWORD_MAN, PART_TYPE(i), 0);
@@ -217,5 +263,7 @@ CGameObject* CUI_Dummy_Engineer::Clone(void* pArg)
 void CUI_Dummy_Engineer::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pNameTag);
 }
 

@@ -2,10 +2,15 @@
 #include "UI_Dummy_Swordsman.h"
 #include "GameInstance.h"
 #include "HierarchyNode.h"
-#include "Trail.h"
+
 #include "Character_Manager.h"
 #include "Game_Manager.h"
 #include "Player.h"
+
+#include "UI_World_NameTag.h"
+
+#include "State_Lobby_SwordMan_Neutral_Idle.h"
+#include "State_Lobby_SwordMan_Sit.h"
 
 CUI_Dummy_Swordsman::CUI_Dummy_Swordsman(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CCharacter(pDevice, pContext, L"UI_Lobby_Dummy_Swordsman", CHARACTER_TYPE::SWORD_MAN)
@@ -18,31 +23,72 @@ CUI_Dummy_Swordsman::CUI_Dummy_Swordsman(const CUI_Dummy_Swordsman& rhs)
 
 }
 
+void CUI_Dummy_Swordsman::Set_ClickState(_bool bClicked)
+{
+	if (bClicked)
+	{
+		if (nullptr != m_pNameTag)
+			m_pNameTag->Set_Pass(7);
+	}
+	else
+	{
+		if (nullptr != m_pNameTag)
+			m_pNameTag->Set_Pass(1);
+	}
+
+	m_bClicked = bClicked;
+}
+
 HRESULT CUI_Dummy_Swordsman::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
-
 
 	return S_OK;
 }
 
 HRESULT CUI_Dummy_Swordsman::Initialize(void* pArg)
 {
-	if (FAILED(__super::Initialize(pArg)))
-		return E_FAIL;
+//	if (FAILED(__super::Initialize(pArg)))
+//		return E_FAIL;
+
+	if (nullptr != pArg)
+		m_tStat = *((CHARACTER_STAT*)pArg);
+
+
+	for (_uint i = 0; i < SOCKET_END; ++i)
+		m_pTrails[i] = nullptr;
+
+	for (_uint i = 0; i < PART_TYPE::PART_END; ++i)
+		m_pCharacterPartModels[i] = nullptr;
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(5.f, 1.23f, -13.f, 1.f));
-	m_pTransformCom->LookAt_ForLandObject(Vec4(5.f, 1.23f, -30.f, 1.f));
+	if (FAILED(Ready_States()))
+		return E_FAIL;
+
+	m_pRigidBodyCom->Set_Use_Gravity(false);
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(4.5f, 1.25f, -12.5f, 1.f));
+	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 1.f), XMConvertToRadians(-135));
+
+	CGameObject* pNameTag = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Lobby_NameTag"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pNameTag)
+		return E_FAIL;
+
+	m_pNameTag = dynamic_cast<CUI_World_NameTag*>(pNameTag);
+	m_pNameTag->Set_Owner(this);
 
 	return S_OK;
 }
 
 void CUI_Dummy_Swordsman::Tick(_float fTimeDelta)
 {
+	m_pStateCom->Tick_State(fTimeDelta);
+	
+	if (nullptr != m_pNameTag)
+		m_pNameTag->Tick(fTimeDelta);
 
 	__super::Tick(fTimeDelta);
 }
@@ -52,54 +98,55 @@ void CUI_Dummy_Swordsman::LateTick(_float fTimeDelta)
 //	m_pModelCom->LateTick(fTimeDelta);
 //	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 
+	if (nullptr != m_pNameTag)
+		m_pNameTag->LateTick(fTimeDelta);
+
 	__super::LateTick(fTimeDelta);
 }
 
 HRESULT CUI_Dummy_Swordsman::Render()
 {
 
-		if (nullptr == m_pModelCom || nullptr == m_pShaderCom)
-			return E_FAIL;
+	if (nullptr == m_pModelCom || nullptr == m_pShaderCom)
+		return E_FAIL;
 
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
-			return E_FAIL;
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
-			return E_FAIL;
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
-			return E_FAIL;
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
-			return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+		return E_FAIL;
 
-		_float4 vRimColor = { 0.f, 0.f, 0.f, 0.f };
-		if (m_bInfinite)
+	_float4 vRimColor = { 0.f, 0.f, 0.f, 0.f };
+	if (m_bClicked)
+	{
+		vRimColor = { 0.5f, 0.5f, 0.f, 1.f };
+	}
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float4))))
+		return E_FAIL;
+
+	if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
+		return E_FAIL;
+
+	for (size_t i = 0; i < PART_TYPE::PART_END; i++)
+	{
+		if (nullptr == m_pCharacterPartModels[i])
+			continue;
+
+		const _uint		iNumMeshes = m_pCharacterPartModels[i]->Get_NumMeshes();
+
+		for (_uint j = 0; j < iNumMeshes; ++j)
 		{
-			vRimColor = { 0.f, 0.5f, 1.f, 1.f };
+			if (FAILED(m_pCharacterPartModels[i]->SetUp_OnShader(m_pShaderCom, m_pCharacterPartModels[i]->Get_MaterialIndex(j), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+				return E_FAIL;
+
+			if (FAILED(m_pCharacterPartModels[i]->Render(m_pShaderCom, j)))
+				return E_FAIL;
 		}
-
-
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float4))))
-			return E_FAIL;
-
-		if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
-			return E_FAIL;
-
-
-		for (size_t i = 0; i < PART_TYPE::PART_END; i++)
-		{
-			if (nullptr == m_pCharacterPartModels[i])
-				continue;
-
-			const _uint		iNumMeshes = m_pCharacterPartModels[i]->Get_NumMeshes();
-
-			for (_uint j = 0; j < iNumMeshes; ++j)
-			{
-				if (FAILED(m_pCharacterPartModels[i]->SetUp_OnShader(m_pShaderCom, m_pCharacterPartModels[i]->Get_MaterialIndex(j), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
-					return E_FAIL;
-
-				if (FAILED(m_pCharacterPartModels[i]->Render(m_pShaderCom, j)))
-					return E_FAIL;
-			}
-		}
+	}
 
 	return S_OK;
 }
@@ -107,32 +154,37 @@ HRESULT CUI_Dummy_Swordsman::Render()
 
 HRESULT CUI_Dummy_Swordsman::Ready_Components()
 {
-
-	/* For.Com_Transform */
+	// For Transform Component
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 		return E_FAIL;
 
-	/* For.Com_Renderer */
+	// For Renderer Component
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
 		return E_FAIL;
 
-	/* For.Com_Shader */
+	// For Shader Component
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_AnimModel" ), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
 
+	// For Model Component
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_SwordMan_Dummy"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
-	
-//	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Engineer_Dummy"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
-//		return E_FAIL;
-//
-//	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Destroyer_Dummy"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
-//		return E_FAIL;
+
+	// For State Machine Component
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_StateMachine"), TEXT("Com_StateMachine"), (CComponent**)&m_pStateCom)))
+		return E_FAIL;
+
+	// For RigidBody Component
+	CRigidBody::RIGID_BODY_DESC RigidDesc;
+	RigidDesc.pTransform = m_pTransformCom;
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_RigidBody"), TEXT("Com_RigidBody"), (CComponent**)&m_pRigidBodyCom, &RigidDesc)))
+		return E_FAIL;
 
 	for (_uint i = 0; i < PART_TYPE::PART_END; ++i)
  		m_pCharacterPartModels[i] = CCharacter_Manager::GetInstance()->Get_PartModel(m_eCharacterType, PART_TYPE(i), 0);
 
-	m_pModelCom->Set_Animation(22);
+	m_pModelCom->Set_Animation(0);
 
 	return S_OK;
 }
@@ -140,6 +192,24 @@ HRESULT CUI_Dummy_Swordsman::Ready_Components()
 #pragma region Ready_States
 HRESULT CUI_Dummy_Swordsman::Ready_States()
 {
+	list<wstring> strAnimationNames;
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_NeutralStand");
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_NeutralIdle01");
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_NeutralIdle02");
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_CostumeMotion03");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_IDLE, CState_Lobby_SwordMan_Neutral_Idle::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_ChairSitStart"); // 다시 앉을 때 23
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_SitLoop1"); // 160
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_SitLoop2"); // 161
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_ClassAction01"); // 선택 후 일어날 때 24
+	m_pStateCom->Add_State(CCharacter::STATE::LOBBY_SIT, CState_Lobby_SwordMan_Sit::Create(m_pStateCom, strAnimationNames));
+
+	m_pStateCom->Change_State(CCharacter::LOBBY_SIT);
+
 	return S_OK;
 }
 
@@ -217,5 +287,7 @@ CGameObject* CUI_Dummy_Swordsman::Clone(void* pArg)
 void CUI_Dummy_Swordsman::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pNameTag);
 }
 

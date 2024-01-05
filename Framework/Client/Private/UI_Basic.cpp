@@ -453,6 +453,8 @@ void CUI_Basic::Ready_Nickname()
 	m_RandomNickname.push_back(TEXT("게살버거형"));
 	m_RandomNickname.push_back(TEXT("나는김태원"));
 	m_RandomNickname.push_back(TEXT("준엽2"));
+//	m_RandomNickname.push_back(TEXT("Binary는호남선"));
+//	m_RandomNickname.push_back(TEXT("NumRowColChar"));
 }
 
 void CUI_Basic::Set_RandomNickname()
