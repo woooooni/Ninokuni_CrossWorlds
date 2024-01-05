@@ -208,7 +208,8 @@ HRESULT CCamera_Manager::Change_Camera(const _uint& iKey, const _float& fBlendin
 	m_bBlending = true; /* Set_CurCamera()는 m_bBlending일 경우 return 되므로*/
 
 
-	CUtils::ConsoleOut(m_tBlendingLookAt.vStartVec);
+	//cout << endl << "##########\n\nChange In Manager!" << endl << endl;
+	//CUtils::ConsoleOut(m_tBlendingPosition.vStartVec);
 
 	return S_OK;
 }

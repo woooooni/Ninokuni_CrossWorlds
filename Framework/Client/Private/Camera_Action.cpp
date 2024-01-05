@@ -249,12 +249,10 @@ void CCamera_Action::Tick_Door(_float fTimeDelta)
 				{
 					pFollowCam->Set_Default_Position();
 
-					CCamera_Manager::GetInstance()->Change_Camera(CAMERA_TYPE::FOLLOW);
+					//cout << endl << "##########\n\nChange In Action!" << endl << endl;
+					//CUtils::ConsoleOut(Vec4(pFollowCam->Get_Transform()->Get_Position()));
 
-					CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
-					const Vec4 vCamLookAt = pTargetTransform->Get_RelativeOffset(m_tLookAtOffset.vCurVec).ZeroW()
-						+ (Vec4)pTargetTransform->Get_Position();
-					CUtils::ConsoleOut(vCamLookAt);
+					CCamera_Manager::GetInstance()->Change_Camera(CAMERA_TYPE::FOLLOW);
 				}
 			}
 		}

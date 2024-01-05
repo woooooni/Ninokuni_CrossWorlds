@@ -15,7 +15,7 @@ public:
 public:
 	typedef struct tagActionLobbyDesc
 	{
-		const _float fLerpTime		= 3.f;
+		const _float fLerpTime		= 2.f;
 
 		const Vec4 vCamPosition		= { 3.12f, 2.23f, -16.f, 1.f };
 
@@ -36,12 +36,12 @@ public:
 
 		LERP_FLOAT_DESC	tLerpRotateSpeed;
 
-		_float fAcc = 0.f;						// FIX
+		_float			fAcc = 0.f;				// FIX
 
 		const _float	fMaxRotateSpeed = XMConvertToRadians(45.f);
 		
-		const _float	fFixedTime		= 0.9f; // FIX
-		const _float	fBlendingTime	= 1.4f;  // INTRO, OUTTRO
+		const _float	fFixedTime		= 0.9f;	// FIX
+		const _float	fBlendingTime	= 1.4f; // INTRO, OUTTRO
 
 		const Vec4		vTargetOffset = { 0.f, 1.5f, 3.5f, 1.f };
 		const Vec4		vLookAtOffset = { 0.f, 1.f, 0.f, 1.f };

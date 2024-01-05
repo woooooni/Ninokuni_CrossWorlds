@@ -27,6 +27,7 @@ CAnimation::CAnimation(const CAnimation& rhs)
 	, m_SpeedDescs(rhs.m_SpeedDescs)
 	, m_SoundEvents(rhs.m_SoundEvents)
 	, m_ColliderEvents(rhs.m_ColliderEvents)
+	, m_CameraEvents(rhs.m_CameraEvents)
 {
 	for (auto& pChannel : m_Channels)
 		Safe_AddRef(pChannel);
@@ -565,12 +566,12 @@ void CAnimation::Update_Animation_Event(_float fTickPerSecond, const TWEEN_DESC&
 					CameraEvent.second.fTag1, CameraEvent.second.fTag2, (LERP_MODE)CameraEvent.second.iTag1);
 			}
 				break;
-			/*case CAMERA_EVENT_TYPE::DISTANCE :
+			case CAMERA_EVENT_TYPE::DISTANCE :
 			{
 				CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Lerp_Distance(
 					CameraEvent.second.fTag1, CameraEvent.second.fTag2, (LERP_MODE)CameraEvent.second.iTag1);
 			}
-				break;*/
+				break;
 			case CAMERA_EVENT_TYPE::SHAKE :
 			{
 				CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Shake(

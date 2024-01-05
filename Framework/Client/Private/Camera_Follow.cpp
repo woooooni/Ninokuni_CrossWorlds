@@ -60,6 +60,9 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 
 	__super::Tick(fTimeDelta); 
 
+	cout << "Update\n";
+	CUtils::ConsoleOut(Vec4(m_pTransformCom->Get_Position()));
+
 	/* Check Exception*/
 	if (LOCK_PROGRESS::OFF != m_eLockProgress)
 		Check_Exception();
@@ -205,15 +208,21 @@ HRESULT CCamera_Follow::Ready_Components()
 
 void CCamera_Follow::Tick_Blending(const _float fDeltaTime)
 {
-	Vec4 vCamPosition = CCamera_Manager::GetInstance()->Get_BlendingPosition();
+	const Vec4 vCamPosition = CCamera_Manager::GetInstance()->Get_BlendingPosition();
 
-	Vec4 vCamLookAt = CCamera_Manager::GetInstance()->Get_BlendingLookAt();
+	//Vec4 vCamLookAt = CCamera_Manager::GetInstance()->Get_BlendingLookAt();
 
 	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vCamPosition);
 
-	m_pTransformCom->LookAt(vCamLookAt);
+	//m_pTransformCom->LookAt(vCamLookAt);
 
-	CUtils::ConsoleOut(vCamLookAt);
+	//cout << "\nBlending 0\n";
+	//CUtils::ConsoleOut(Vec4(m_pTransformCom->Get_Position()));
+	//
+	//cout << "Blending 1\n";
+	//CUtils::ConsoleOut(vCamPosition);
+	//
+	//cout << endl << endl;
 }
 
 Vec4 CCamera_Follow::Calculate_WorldPosition(_float fTimeDelta)
@@ -338,7 +347,6 @@ Vec4 CCamera_Follow::Calculate_Look(_float fTimeDelta)
 	return Vec4(vLookAt + vLookAtOffset).OneW();
 }
 
-
 Vec4 CCamera_Follow::Calculate_DampingPosition(Vec4 vGoalPos)
 {
 	if (!m_tDampingDesc.bSet) /* 댐핑이 켜졌지만, 최초 세팅이 안 된 경우 세팅한다. */
@@ -416,15 +424,15 @@ void CCamera_Follow::Test(_float fTimeDelta)
 				Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
 		}
 
-		if (KEY_TAP(KEY::HOME))
-		{
-			CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
-			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_CurCamera());
-			if (nullptr != pActionCam)
-			{
-				pActionCam->Start_Action(CCamera_Action::CAMERA_ACTION_TYPE::DOOR);
-			}
-		}
+		//if (KEY_TAP(KEY::HOME))
+		//{
+		//	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
+		//	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_CurCamera());
+		//	if (nullptr != pActionCam)
+		//	{
+		//		pActionCam->Start_Action(CCamera_Action::CAMERA_ACTION_TYPE::DOOR);
+		//	}
+		//}
 	}
 
 	{
