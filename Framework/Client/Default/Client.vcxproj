@@ -247,6 +247,7 @@
     <ClInclude Include="..\Public\Decal.h" />
     <ClInclude Include="..\Public\Dochi.h" />
     <ClInclude Include="..\Public\DuckGoo.h" />
+    <ClInclude Include="..\Public\DynamicProps.h" />
     <ClInclude Include="..\Public\Edellian.h" />
     <ClInclude Include="..\Public\Enbi.h" />
     <ClInclude Include="..\Public\Engineer_Bullet.h" />
@@ -878,6 +879,7 @@
     <ClCompile Include="..\Private\Decal.cpp" />
     <ClCompile Include="..\Private\Dochi.cpp" />
     <ClCompile Include="..\Private\DuckGoo.cpp" />
+    <ClCompile Include="..\Private\DynamicProps.cpp" />
     <ClCompile Include="..\Private\Edellian.cpp" />
     <ClCompile Include="..\Private\Enbi.cpp" />
     <ClCompile Include="..\Private\Engineer_Bullet.cpp" />

@@ -50,13 +50,13 @@ void CVfx_SwordMan_Skill_PerfectBlade::Tick(_float fTimeDelta)
 		// TrailL 1
 		else if (m_iCount == 1 && m_iOwnerFrame >= 15) // m_pOwnerObject->Get_Component<CModel>(L"Com_Model")->Get_CurrAnimationFrame() == 2
 		{
-			GET_INSTANCE(CEffect_Manager)->Generate_Effect
-			(
-				TEXT("Effect_Swordman_Skill_Perfectblade_Trail_Basic_Left"),
-				GET_INSTANCE(CEffect_Manager)->Get_WorldMatrixEffect(XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 1.f, 0.f), _float3(5.f, 5.f, 5.f), _float3(0.f, 20.f, 0.f)),
-				nullptr//&GET_INSTANCE(CEffect_Manager)->Get_RotationMatrix(_float3(0.f, 0.f, 45.f))
-			);
-
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_Perfectblade_Trail_Basic_Left"),
+				XMLoadFloat4x4(&m_WorldMatrix),
+				::XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f),
+				_float3(5.f, 5.f, 5.f),
+				_float3(0.f, 20.f, 0.f), 
+				m_pOwnerObject);
+			
 			m_iCount++;
 		}
 		// TrailR 2

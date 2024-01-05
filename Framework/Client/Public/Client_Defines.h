@@ -102,6 +102,7 @@ namespace Client
 		OBJ_SKY,
 		OBJ_PORTAL,
 		OBJ_WATER,
+		OBJ_ANIMAL,
 		OBJ_END
 	};
 

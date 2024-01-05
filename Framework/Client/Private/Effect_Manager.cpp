@@ -105,17 +105,26 @@ HRESULT CEffect_Manager::Generate_Effect(const wstring& strEffectName, _matrix W
 	if (pTransform == nullptr)
 		return E_FAIL;
 
-	pTransform->Set_State(CTransform::STATE_POSITION, vLocalPos);
-	pTransform->Set_Scale(vLocalScale);
-	pTransform->FixRotation(vLocalRotation.x, vLocalRotation.y, vLocalRotation.z);
+	// Scale 은 * 5할거야, Position은 PlayerPosition에서 offset줄거야.
+	// Rotation은 45도 돌릴거야
 
-	pTransform->Set_WorldMatrix(Calculate_WorldMatrixEffect(WorldMatrix, pTransform->Get_WorldMatrix()));
+	pTransform->Set_WorldMatrix(WorldMatrix);
+
+	Matrix matScale, matRot;
+	matScale = matScale.CreateScale(3.0f, 5.0f, 3.0f);
+	matRot = matRot.CreateRotationZ(::XMConvertToRadians(25.0f));
 
 
+	Matrix matResult = matScale * matRot * pTransform->Get_WorldFloat4x4();
+	pTransform->Set_WorldMatrix(matResult);
+	Vec4 vPos = pTransform->Get_Position();
+	vPos.y += 1.0f;
+
+	pTransform->Set_State(CTransform::STATE_POSITION, vPos);
 
 	// pOwner
-	if (pOwner != nullptr)
-		pEffect->Set_Owner(pOwner);
+	//if (pOwner != nullptr)
+	//	pEffect->Set_Owner(pOwner);
 
 	// ppOut
 	if (ppOut != nullptr)

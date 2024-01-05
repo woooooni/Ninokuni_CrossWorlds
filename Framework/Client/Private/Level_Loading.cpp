@@ -27,12 +27,7 @@ HRESULT CLevel_Loading::Initialize(LEVELID eNextLevel, const wstring& strFolderN
 
 	/* m_eNextLevel 에 대한 로딩작업을 수행한다. */
 	/* 로딩을 겁나 하고있다. */
-	m_pLoader = CLoader::Create(m_pDevice, m_pContext, m_eNextLevel, strFolderName);
-	if (nullptr == m_pLoader)
-		return E_FAIL;
 
-	if (FAILED(Ready_Layer_UI(LAYER_TYPE::LAYER_UI)))
-		return E_FAIL;
 
 	return S_OK;
 }
@@ -98,6 +93,13 @@ HRESULT CLevel_Loading::LateTick(_float fTimeDelta)
 
 HRESULT CLevel_Loading::Enter_Level()
 {
+	m_pLoader = CLoader::Create(m_pDevice, m_pContext, m_eNextLevel, L"");
+	if (nullptr == m_pLoader)
+		return E_FAIL;
+
+	if (FAILED(Ready_Layer_UI(LAYER_TYPE::LAYER_UI)))
+		return E_FAIL;
+
 	return S_OK;
 }
 

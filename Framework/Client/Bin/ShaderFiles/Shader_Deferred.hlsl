@@ -307,7 +307,7 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
     if (vDepthDesc.w != 1.f) 
     {
         vShade    = ceil(vShade * 5.f) / 5.f;
-        vSpecular = float4(0.f, 0.f, 0.f, 0.f);
+        //vSpecular = float4(0.f, 0.f, 0.f, 0.f);
     }
 
 	// Shadow

@@ -41,7 +41,7 @@ void CAurora::LateTick(_float fTimeDelta)
 	Vec4 vCamePos = GI->Get_CamPosition();
 
 	// m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vCamePos);
-	// m_pRendererCom->Add_RenderGroup(CRenderer::RENDERGROUP::RENDER_AURORA, this);
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDERGROUP::RENDER_AURORA, this);
 }
 
 HRESULT CAurora::Render()
@@ -70,12 +70,26 @@ HRESULT CAurora::Render()
 	//	return E_FAIL;
 
 	_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
+	 
+	//for (_uint i = 0; i < iNumMeshes; ++i)
+	//{
+	//	if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "AuroraTexture")))
+	//		return E_FAIL;
+	//}
 
-	for (_uint i = 0; i < iNumMeshes; ++i)
+	_uint iCur = GI->Get_CurrentLevel();
+
+	if (LEVELID::LEVEL_ICELAND == iCur || LEVELID::LEVEL_TEST)
 	{
-		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "AuroraTexture")))
+		if (FAILED(m_pTextureCom[LEVEL_AURORA::WINTER_AURORA]->Bind_ShaderResource(m_pShaderCom, "AuroraTexture")))
 			return E_FAIL;
 	}
+	else if (LEVELID::LEVEL_WITCHFOREST == iCur)
+	{
+		if (FAILED(m_pTextureCom[LEVEL_AURORA::WITCH_AURORA]->Bind_ShaderResource(m_pShaderCom, "AuroraTexture")))
+			return E_FAIL;
+	}
+
 
 	if (FAILED(m_pModelCom->Render(m_pShaderCom, 0, 0)))
 		return E_FAIL;
@@ -107,13 +121,12 @@ HRESULT CAurora::Ready_Components()
 		TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 		return E_FAIL;
 
-	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Aura"),
-	//	TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom[LEVEL_AURORA::WINTER_AURORA]))))
-	//	return E_FAIL;
-
-	//if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Sky_Aurora"),
-	//	TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom[LEVEL_AURORA::WINTER_AURORA]))))
-	//	return E_FAIL;
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Sky_Aurora2"),
+		TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom[LEVEL_AURORA::WINTER_AURORA]))))
+		return E_FAIL;
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Sky_Aurora"),
+		TEXT("Com_Texture2"), reinterpret_cast<CComponent**>(&m_pTextureCom[LEVEL_AURORA::WITCH_AURORA]))))
+		return E_FAIL;
 
 	return S_OK;
 }
