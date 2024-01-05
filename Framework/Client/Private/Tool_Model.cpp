@@ -380,7 +380,7 @@ HRESULT CTool_Model::Ready_Weapons()
 
 HRESULT CTool_Model::Ready_SoundKey()
 {
-	const map<TCHAR*, FMOD_SOUND*>& mapSound = GI->Get_MapSound();
+	const map<wstring, FMOD_SOUND*>& mapSound = GI->Get_MapSound();
 
 	if (mapSound.empty())
 		return S_OK;
@@ -390,8 +390,7 @@ HRESULT CTool_Model::Ready_SoundKey()
 
 	for (const auto& PrevData : mapSound)
 	{
-		wstring str = std::wstring(PrevData.first, PrevData.first + static_cast<int>(_tcslen(PrevData.first)));
-		strSoundKeyNames.push_back(str);
+		strSoundKeyNames.push_back(PrevData.first);
 	}
 
 	m_arrSoundKeys = new const char* [strSoundKeyNames.size()];
@@ -1337,7 +1336,7 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 				{
 					for (size_t i = 0; i < SoundEvents.size(); ++i)
 					{
-						int iSoundKeyCurIndex = GI->Get_SoundFileIndex(SoundEvents[i].second.pSoundKey);
+						int iSoundKeyCurIndex = GI->Get_SoundFileIndex(CUtils::ToWString(SoundEvents[i].second.strSoundKey));
 					
 						string strFrame = to_string(SoundEvents[i].first);
 						strFrame = strFrame.substr(0, 6);
@@ -1363,7 +1362,7 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 					{	
 						if (0 <= m_iSoundEventIndex)
 						{
-							int iSoundKeyCurIndex = GI->Get_SoundFileIndex(SoundEvents[m_iSoundEventIndex].second.pSoundKey);
+							int iSoundKeyCurIndex = GI->Get_SoundFileIndex(CUtils::ToWString(SoundEvents[m_iSoundEventIndex].second.strSoundKey));
 							if (0 <= iSoundKeyCurIndex)
 							{
 								const char* szSoundPreview = m_arrSoundKeys[iSoundKeyCurIndex];
@@ -1379,7 +1378,7 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 											{
 												iSoundKeyCurIndex = n;
 
-												SoundEvents[m_iSoundEventIndex].second.pSoundKey = GI->Get_SoundFileKey(iSoundKeyCurIndex);
+												SoundEvents[m_iSoundEventIndex].second.strSoundKey = CUtils::ToString(GI->Get_SoundFileKey(iSoundKeyCurIndex));
 
 												pCurAnim->Change_SoundEvent(m_iSoundEventIndex, SoundEvents[m_iSoundEventIndex].second);
 											}
@@ -1461,7 +1460,7 @@ void CTool_Model::Tick_Event(_float fTimeDelta)
 					if (ImGui::Button(u8"Add Sound Event"))
 					{
 						ANIM_EVENT_SOUND_DESC desc;
-						desc.pSoundKey = GI->Get_SoundFileKey(0);
+						desc.strSoundKey = CUtils::ToString(GI->Get_SoundFileKey(0));
 						desc.iChannelID = CHANNELID::SOUND_UI;
 						desc.fVolume = 0.5f;
 						desc.bStop = true;

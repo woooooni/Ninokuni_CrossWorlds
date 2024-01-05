@@ -741,12 +741,12 @@ HRESULT CGameInstance::Json_Save(const wstring& strFilePath, const Json& refJson
 	return CJsonUtils::Json_Save(strFilePath, refJsonFile);
 }
 
-void CGameInstance::Play_Sound(TCHAR* pSoundKey, CHANNELID eID, _float fVolume, _bool bStop)
+void CGameInstance::Play_Sound(const wstring& pSoundKey, CHANNELID eID, _float fVolume, _bool bStop)
 {
 	m_pSound_Manager->Play_Sound(pSoundKey, eID, fVolume, bStop);
 }
 
-void CGameInstance::Play_BGM(TCHAR* pSoundKey, _float fVolume, _bool bStop)
+void CGameInstance::Play_BGM(const wstring& pSoundKey, _float fVolume, _bool bStop)
 {
 	m_pSound_Manager->Play_BGM(pSoundKey, fVolume, bStop);
 }
@@ -771,17 +771,17 @@ FMOD_CHANNEL* CGameInstance::Get_Channel(CHANNELID eID)
 	return m_pSound_Manager->Get_Channel(eID);
 }
 
-const _int CGameInstance::Get_SoundFileIndex(TCHAR* pSoundKey)
+const _int CGameInstance::Get_SoundFileIndex(const wstring& pSoundKey)
 {
 	return m_pSound_Manager->Get_SoundFileIndex(pSoundKey);
 }
 
-TCHAR* CGameInstance::Get_SoundFileKey(const _uint iIndex)
+wstring CGameInstance::Get_SoundFileKey(const _uint iIndex)
 {
 	return m_pSound_Manager->Get_SoundFileKey(iIndex);
 }
 
-const map<TCHAR*, FMOD_SOUND*>& CGameInstance::Get_MapSound()
+const map<wstring, FMOD_SOUND*>& CGameInstance::Get_MapSound()
 {
 	return m_pSound_Manager->Get_MapSound();
 }

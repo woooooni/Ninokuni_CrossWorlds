@@ -278,7 +278,7 @@ void CAnimation::Change_SoundEvent(const _uint iIndex, const ANIM_EVENT_SOUND_DE
 	if (m_SoundEvents.size() <= iIndex)
 		return;
 
-	m_SoundEvents[iIndex].second.pSoundKey = desc.pSoundKey;
+	m_SoundEvents[iIndex].second.strSoundKey = desc.strSoundKey;
 	m_SoundEvents[iIndex].second.iChannelID = desc.iChannelID;
 	m_SoundEvents[iIndex].second.fVolume = desc.fVolume;
 	m_SoundEvents[iIndex].second.bStop = desc.bStop;
@@ -514,7 +514,7 @@ void CAnimation::Update_Animation_Event(_float fTickPerSecond, const TWEEN_DESC&
 		{
 			SoundEvent.second.bExecuted = true;
 			 
-			GI->Play_Sound(SoundEvent.second.pSoundKey, CHANNELID(SoundEvent.second.iChannelID), SoundEvent.second.fVolume, SoundEvent.second.bStop);
+			GI->Play_Sound(CUtils::ToWString(SoundEvent.second.strSoundKey), CHANNELID(SoundEvent.second.iChannelID), SoundEvent.second.fVolume, SoundEvent.second.bStop);
 		}
 	}
 

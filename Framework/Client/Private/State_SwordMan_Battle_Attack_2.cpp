@@ -2,6 +2,7 @@
 #include "GameInstance.h"
 #include "Character.h"
 #include "State_SwordMan_Battle_Attack_2.h"
+#include "Utils.h"
 
 CState_SwordMan_Battle_Attack_2::CState_SwordMan_Battle_Attack_2(CStateMachine* pMachine)
     : CState_Character(pMachine)
@@ -18,6 +19,9 @@ HRESULT CState_SwordMan_Battle_Attack_2::Initialize(const list<wstring>& Animati
 
 void CState_SwordMan_Battle_Attack_2::Enter_State(void* pArg)
 {
+    wstring strVoiceNum = to_wstring(CUtils::Random_Int(1, 3));
+    CSound_Manager::GetInstance()->Play_Sound(L"SwordsMan_V_Atk_Medium_" + strVoiceNum + L".mp3", CHANNELID::SOUND_VOICE_CHARACTER, 0.5f, true);
+
     m_pCharacter->Appear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }
