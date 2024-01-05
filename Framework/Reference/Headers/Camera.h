@@ -144,6 +144,9 @@ public:
 	virtual HRESULT Render() override;
 
 public:
+	virtual void Tick_Blending(const _float fDeltaTime) {};
+
+public:
 	/* Default */
 	const _bool& Is_Active() const { return m_bActive; }
 	void Set_Active(const _bool bActive) { m_bActive = bActive; }
@@ -194,6 +197,8 @@ public:
 
 	void Lerp_TargetOffset(const Vec4& vStartValue, const Vec4& vTargetValue, const _float& fTime, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
 	void Lerp_LookAtOffSet(const Vec4& vStartValue, const Vec4& vTargetValue, const _float& fTime, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
+
+	virtual Vec4 Get_LookAt() { return Vec4(); } /* ·è¾Ü°ú ·è¾Ü ¿ÀÇÁ¼ÂÀÌ ´õÇØÁø ÃÖÁ¾ ·è¾Ü ¹ÝÈ¯ -> Ä«¸Þ¶ó °£ ºí·»µù¿¡¼­ ÁÖ·Î »ç¿ë */
 
 	/* Input */
 	const Vec2& Get_MouseSensitivity() const { return m_vMouseSensitivity; }
@@ -247,7 +252,6 @@ protected:
 
 protected:
 	virtual HRESULT Ready_Components() override;
-	virtual void Tick_Blending(const _float fDeltaTime) {};
 
 private:
 	void Tick_Lerp(const _float fDeltaTime);

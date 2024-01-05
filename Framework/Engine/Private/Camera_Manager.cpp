@@ -63,7 +63,7 @@ void CCamera_Manager::LateTick(_float fTimeDelta)
 	{
 		GI->Set_Transform(CPipeLine::D3DTS_VIEW, m_pCurCamera->Get_Transform()->Get_WorldMatrixInverse());
 	}
-
+	
 	/* P */
 	{
 		const CCamera::PROJ_DESC& tDesc = m_pCurCamera->Get_ProjDesc();
@@ -180,36 +180,45 @@ HRESULT CCamera_Manager::Change_Camera(const _uint& iKey, const _float& fBlendin
 	}
 
 	/* 1. 캠 포지션 */
-	m_tBlendingPosition.Start(m_pCurCamera->Get_Transform()->Get_Position(), 
-								pNextCamera->Get_Transform()->Get_Position(), 
-								fBlendingDuration, eLerpMode);
+	{
+		m_tBlendingPosition.Start(m_pCurCamera->Get_Transform()->Get_Position(), 
+									pNextCamera->Get_Transform()->Get_Position(), 
+									fBlendingDuration, eLerpMode);
+	}
 	
-	/* 2. 룩앳 */
-	Vec4 vSrc = (Vec4)m_pCurCamera->Get_LookAtObj()->Get_Component<CTransform>(L"Com_Transform")->Get_Position()
-				+ m_pCurCamera->Get_LookAtObj()->Get_Component<CTransform>(L"Com_Transform")->Get_RelativeOffset(m_pCurCamera->Get_LookAtOffset());
+	/* 2. 룩앳 포지션 */
+	{
+		Vec4 vSrc = m_pCurCamera->Get_LookAt();
 
-	Vec4 vDest = (Vec4)pNextCamera->Get_LookAtObj()->Get_Component<CTransform>(L"Com_Transform")->Get_Position()
-				+ pNextCamera->Get_LookAtObj()->Get_Component<CTransform>(L"Com_Transform")->Get_RelativeOffset(pNextCamera->Get_LookAtOffset());
+		Vec4 vDest = pNextCamera->Get_LookAt();
 
-	m_tBlendingLookAt.Start(vSrc.OneW(), vDest.OneW(), fBlendingDuration, eLerpMode);
+		m_tBlendingLookAt.Start(vSrc.OneW(), vDest.OneW(), fBlendingDuration, eLerpMode);
+
+		cout << "\nvSrc" << endl <<  endl;
+		CUtils::ConsoleOut(vSrc.OneW());
+		cout << "vDest" << endl << endl;
+		CUtils::ConsoleOut(vDest.OneW());
+	}
 
 	/* 3. 타겟, 룩앳 오프셋 */
-	pNextCamera->Lerp_TargetOffset(m_pCurCamera->Get_TargetOffset(), pNextCamera->Get_TargetOffset(), fBlendingDuration, eLerpMode);
-	pNextCamera->Lerp_LookAtOffSet(m_pCurCamera->Get_LookAtOffset(), pNextCamera->Get_LookAtOffset(), fBlendingDuration, eLerpMode);
-
+	{
+		pNextCamera->Lerp_TargetOffset(m_pCurCamera->Get_TargetOffset(), pNextCamera->Get_TargetOffset(), fBlendingDuration, eLerpMode);
+		pNextCamera->Lerp_LookAtOffSet(m_pCurCamera->Get_LookAtOffset(), pNextCamera->Get_LookAtOffset(), fBlendingDuration, eLerpMode);
+	}
 
 	/* 4. fov, distance */
-	pNextCamera->Start_Lerp_Fov(m_pCurCamera->Get_Fov(), pNextCamera->Get_Fov(), fBlendingDuration, eLerpMode);
-	pNextCamera->Start_Lerp_Distance(m_pCurCamera->Get_Distance(), pNextCamera->Get_Distance(), fBlendingDuration, eLerpMode);
+	{
+		pNextCamera->Start_Lerp_Fov(m_pCurCamera->Get_Fov(), pNextCamera->Get_Fov(), fBlendingDuration, eLerpMode);
+		pNextCamera->Start_Lerp_Distance(m_pCurCamera->Get_Distance(), pNextCamera->Get_Distance(), fBlendingDuration, eLerpMode);
+	}
 
 	if(FAILED(Set_CurCamera(iKey)))
 		return E_FAIL;
 
 	m_bBlending = true; /* Set_CurCamera()는 m_bBlending일 경우 return 되므로*/
 
-
-	//cout << endl << "##########\n\nChange In Manager!" << endl << endl;
-	//CUtils::ConsoleOut(m_tBlendingPosition.vStartVec);
+	/* 파이프라인에 바로 블렌딩 적용된 트랜스폼이 던져질 수 있게 미리 한번 돌림 */
+	m_pCurCamera->Tick_Blending(GI->Compute_TimeDelta(TIMER_TYPE::GAME_PLAY));
 
 	return S_OK;
 }

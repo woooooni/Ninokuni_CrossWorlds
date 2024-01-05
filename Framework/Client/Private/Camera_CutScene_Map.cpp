@@ -295,6 +295,11 @@ Vec4 CCamera_CutScene_Map::Get_Point_In_Bezier(Vec3 vPoints[MAX_BEZIER_POINT], c
 	return Vec3::Lerp(r0, r1, fNormalizedRatio);
 }
 
+Vec4 CCamera_CutScene_Map::Get_LookAt()
+{
+	return Vec4();
+}
+
 HRESULT CCamera_CutScene_Map::Add_CutSceneDesc(const CAMERA_CUTSCENE_MAP_DESC& desc)
 {
 	if (nullptr != Find_CutSceneDesc(desc.strCutSceneName))

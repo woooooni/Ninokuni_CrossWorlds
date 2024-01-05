@@ -40,11 +40,17 @@ public:
 	virtual HRESULT Render() override;
 
 public:
+	virtual void Tick_Blending(const _float fDeltaTime) override;
+
+public:
 	HRESULT Start_CutScene(const string& strCutSceneName); /* 단일 컷신 실행 */
 	HRESULT Start_CutScenes(vector<string> strCutSceneNames); /* 복수 컷신 실행 */
 	const _bool Is_Playing_CutScenc() const { return m_tTimeDesc.bActive; }
+
 public:
 	static Vec4 Get_Point_In_Bezier(Vec3 vPoints[MAX_BEZIER_POINT], const _float& fRatio);
+
+	virtual Vec4 Get_LookAt() override;
 
 public:
 	HRESULT Save_CutSceneDescs();
@@ -60,7 +66,6 @@ public:
 
 private:
 	virtual HRESULT Ready_Components() override;
-	virtual void Tick_Blending(const _float fDeltaTime) override;
 
 private:
 	vector<CAMERA_CUTSCENE_MAP_DESC>	m_CutSceneDescs;

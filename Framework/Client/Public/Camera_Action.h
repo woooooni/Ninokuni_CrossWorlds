@@ -68,9 +68,14 @@ public:
 	virtual HRESULT Render() override;
 
 public:
+	virtual void Tick_Blending(const _float fDeltaTime) override;
+
+public:
 	HRESULT Start_Action(const CAMERA_ACTION_TYPE& eType, CGameObject* pTarget = nullptr, const _uint& iTag = 0);
 
 	const _bool& Is_Finish_Action() const { return m_bAction; }
+
+	virtual Vec4 Get_LookAt() override;
 
 private:
 	HRESULT Start_Action_Lobby();
@@ -83,7 +88,6 @@ private:
 
 private:
 	virtual HRESULT Ready_Components() override;
-	virtual void Tick_Blending(const _float fDeltaTime) override;
 
 private:
 	_bool				m_bAction = false;
@@ -92,7 +96,6 @@ private:
 
 	ACTION_LOBBY_DESC	m_tActionLobbyDesc = {};
 	ACTION_DOOR_DESC	m_tActionDoorDesc = {};
-
 	
 public:
 	static CCamera_Action* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);

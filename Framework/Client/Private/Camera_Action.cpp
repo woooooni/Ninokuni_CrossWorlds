@@ -132,6 +132,36 @@ HRESULT CCamera_Action::Start_Action(const CAMERA_ACTION_TYPE& eType, CGameObjec
 	return S_OK;
 }
 
+Vec4 CCamera_Action::Get_LookAt()
+{
+	switch (m_eCurActionType)
+	{
+	case CAMERA_ACTION_TYPE::LOBBY:
+	{
+	
+	}
+	break;
+	case CAMERA_ACTION_TYPE::DOOR:
+	{
+		CTransform* pTargetTransform = m_pLookAtObj->Get_Component<CTransform>(L"Com_Transform");
+
+		const Vec4 vCamLookAt = pTargetTransform->Get_RelativeOffset(m_tLookAtOffset.vCurVec).ZeroW()
+			+ (Vec4)pTargetTransform->Get_Position();
+
+		return vCamLookAt;
+	}
+	break;
+	case CAMERA_ACTION_TYPE::TALK:
+	{
+	
+	}
+	break;
+	default:
+		break;
+	}
+	return Vec4();
+}
+
 HRESULT CCamera_Action::Start_Action_Lobby()
 {
 	m_tActionLobbyDesc.vLerpCamLookAt.Start(
@@ -169,7 +199,6 @@ HRESULT CCamera_Action::Start_Action_Door()
 	/* Set */
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCamTargetPosition);
 	m_pTransformCom->LookAt(vCamLookAt);
-
 
 	/* Desc */
 	{
@@ -247,12 +276,23 @@ void CCamera_Action::Tick_Door(_float fTimeDelta)
 				CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
 				if (nullptr != pFollowCam)
 				{
+					cout << "\n\n###############################################\n\n";
 					pFollowCam->Set_Default_Position();
 
-					//cout << endl << "##########\n\nChange In Action!" << endl << endl;
-					//CUtils::ConsoleOut(Vec4(pFollowCam->Get_Transform()->Get_Position()));
+					{
+						CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
+
+						const Vec4 vCamLookAt = pTargetTransform->Get_RelativeOffset(m_tLookAtOffset.vCurVec).ZeroW()
+							+ (Vec4)pTargetTransform->Get_Position();
+
+						cout << "Action" << endl;
+						CUtils::ConsoleOut(vCamLookAt);
+					}
 
 					CCamera_Manager::GetInstance()->Change_Camera(CAMERA_TYPE::FOLLOW);
+
+					cout << "\n\n###############################################\n\n";
+					return;
 				}
 			}
 		}
@@ -276,7 +316,7 @@ void CCamera_Action::Tick_Door(_float fTimeDelta)
 
 		/* Look At */
 		const Vec4 vCamLookAt = pTargetTransform->Get_RelativeOffset(m_tLookAtOffset.vCurVec).ZeroW()
-			+ (Vec4)pTargetTransform->Get_Position();
+								+ (Vec4)pTargetTransform->Get_Position();
 
 		/* Set */
 		m_pTransformCom->LookAt(vCamLookAt);

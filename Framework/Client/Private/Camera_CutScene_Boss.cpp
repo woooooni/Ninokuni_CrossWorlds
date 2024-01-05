@@ -62,6 +62,11 @@ HRESULT CCamera_CutScene_Boss::Render()
 	return S_OK;
 }
 
+Vec4 CCamera_CutScene_Boss::Get_LookAt()
+{
+	return Vec4();
+}
+
 HRESULT CCamera_CutScene_Boss::Ready_Components()
 {
 	return S_OK;
