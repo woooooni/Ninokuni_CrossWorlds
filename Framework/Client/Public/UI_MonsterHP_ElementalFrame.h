@@ -18,8 +18,6 @@ public:
 	virtual HRESULT	Render();
 
 private:
-
-private:
 	virtual HRESULT	Ready_Components() override;
 
 private:

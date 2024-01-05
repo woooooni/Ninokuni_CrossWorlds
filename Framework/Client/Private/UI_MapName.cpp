@@ -32,6 +32,7 @@ HRESULT CUI_MapName::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_fAlpha = 0.1f;
+	m_bActive = false;
 
 	return S_OK;
 }

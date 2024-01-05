@@ -15,10 +15,6 @@ class CUIDamage_Manager : public CBase
 
 public:
 	enum UI_DAMAGETYPE { WEAKNESS, NONE, STRENGTH, DAMAGETYPE_END };
-//	enum UI_DAMAGEFONTCOLOR { FONT_BLUE,
-//		FONT_WHITE, FONT_WHITE_AND_GOLD,
-//		FONT_GOLD, FONT_GOLD_AND_RED,
-//		FONT_DAMAGECOLOR_END };
 
 private:
 	CUIDamage_Manager();

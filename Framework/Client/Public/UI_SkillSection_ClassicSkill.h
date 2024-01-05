@@ -36,6 +36,7 @@ private:
 
 	CTexture* m_pMaskTextureCom = { nullptr };
 	CTexture* m_pFXTextureCom = { nullptr }; // 스킬 쿨타임을 위한 Component
+	class CSkill* m_pSkill = { nullptr };
 
 	_int m_iTextureIndex = { -1 };
 	_uint m_iPass = { 5 };
@@ -55,6 +56,7 @@ private:
 private:
 	void Key_Input(_float fTimeDelta);
 	void Set_SkillType();
+	void Update_SkillInfo();
 
 public:
 	static CUI_SkillSection_ClassicSkill* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_CLASSICSKILL eType);

@@ -22,7 +22,13 @@ void CUI_Costume_Btn::Set_Active(_bool bActive)
 	if (COSTUMEBTN_END == m_eUIType)
 		return;
 
-		m_bActive = bActive;
+	if (false == bActive)
+	{
+		if (m_bEvent)
+			m_bEvent = false;
+	}
+
+	m_bActive = bActive;
 }
 
 HRESULT CUI_Costume_Btn::Initialize_Prototype()
@@ -120,6 +126,8 @@ void CUI_Costume_Btn::On_Mouse(_float fTimeDelta)
 				CUI_Manager::GetInstance()->OnOff_CostumeSlot(_uint(m_eUIType), true);
 			}
 		}
+
+		__super::On_Mouse(fTimeDelta);
 	}
 }
 
@@ -127,6 +135,7 @@ void CUI_Costume_Btn::On_MouseExit(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		__super::On_MouseExit(fTimeDelta);
 	}
 }
 

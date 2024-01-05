@@ -188,6 +188,8 @@ void CUI_BtnCharacterSelect::On_Mouse(_float fTimeDelta)
 				}
 			}
 		}
+
+		__super::On_Mouse(fTimeDelta);
 	}
 }
 
@@ -195,6 +197,7 @@ void CUI_BtnCharacterSelect::On_MouseExit(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		__super::On_MouseExit(fTimeDelta);
 	}
 }
 

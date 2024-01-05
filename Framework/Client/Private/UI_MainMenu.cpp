@@ -36,13 +36,17 @@ void CUI_MainMenu::Set_Active(_bool bActive)
 		}
 		else
 		{
-
+			if (m_bEvent)
+				m_bEvent = false;
 		}
 
 		m_bActive = bActive;
 	}
 	else
 	{
+		if (m_bEvent)
+			m_bEvent = false;
+
 		m_bActive = bActive;
 	}
 }
@@ -196,6 +200,8 @@ void CUI_MainMenu::On_Mouse(_float fTimeDelta)
 				break;
 			}
 		}
+
+		__super::On_Mouse(fTimeDelta);
 	}
 }
 
@@ -203,6 +209,7 @@ void CUI_MainMenu::On_MouseExit(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		__super::On_MouseExit(fTimeDelta);
 	}
 }
 

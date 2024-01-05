@@ -190,7 +190,7 @@ HRESULT CLevel_IceLand::Ready_Layer_Monster(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_IceLand::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 {
-	if (FAILED(CUI_Manager::GetInstance()->Ready_CommonUIs(LEVELID::LEVEL_ICELAND)))
+	if (FAILED(CUI_Manager::GetInstance()->Ready_GameObjectToLayer(LEVELID::LEVEL_ICELAND)))
 		return E_FAIL;
 
 	CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
@@ -199,9 +199,9 @@ HRESULT CLevel_IceLand::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 	CCharacter* pCharacter = pPlayer->Get_Character();
 	if (pCharacter == nullptr)
 		return E_FAIL;
-
+	
 	CHARACTER_TYPE eCharacterType = pCharacter->Get_CharacterType();
-
+	
 	CUI_Manager::GetInstance()->Ready_CharacterTypeForUI(eCharacterType);
 	CUI_Manager::GetInstance()->Ready_ElementalTypeForUI(ELEMENTAL_TYPE::DARK);
 

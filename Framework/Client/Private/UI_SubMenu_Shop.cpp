@@ -36,7 +36,8 @@ void CUI_SubMenu_Shop::Set_Active(_bool bActive)
 	}
 	else
 	{
-
+		if (m_bEvent)
+			m_bEvent = false;
 	}
 
 	m_bActive = bActive;
@@ -167,6 +168,8 @@ void CUI_SubMenu_Shop::On_Mouse(_float fTimeDelta)
 		{
 
 		}
+
+		__super::On_Mouse(fTimeDelta);
 	}
 }
 
@@ -174,6 +177,7 @@ void CUI_SubMenu_Shop::On_MouseExit(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		__super::On_MouseExit(fTimeDelta);
 	}
 }
 

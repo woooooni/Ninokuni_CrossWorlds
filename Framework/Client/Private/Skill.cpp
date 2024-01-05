@@ -45,10 +45,19 @@ void CSkill::LateTick(_float fTimeDelta)
 	
 }
 
-void CSkill::Use_Skill()
+_bool CSkill::Use_Skill()
 {
-	m_bUseable = false;
-	m_fAccCoolTime = 0.f;
+	if (true == m_bUseable)
+	{
+		m_bUseable = false;
+		m_fAccCoolTime = 0.f; 
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+	
 }
 
 

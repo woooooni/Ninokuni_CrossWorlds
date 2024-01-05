@@ -111,18 +111,6 @@ HRESULT CUI_Setting_Section::Render()
 	return S_OK;
 }
 
-void CUI_Setting_Section::On_MouseEnter(_float fTimeDelta)
-{
-}
-
-void CUI_Setting_Section::On_Mouse(_float fTimeDelta)
-{
-}
-
-void CUI_Setting_Section::On_MouseExit(_float fTimeDelta)
-{
-}
-
 HRESULT CUI_Setting_Section::Ready_Components()
 {
 	

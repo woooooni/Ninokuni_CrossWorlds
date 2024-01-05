@@ -105,6 +105,8 @@ void CUI_SetNickname_Textbox::On_Mouse(_float fTimeDelta)
 		{
 			CUI_Manager::GetInstance()->Set_Textable(true);
 		}
+
+		__super::On_Mouse(fTimeDelta);
 	}
 }
 
@@ -113,6 +115,8 @@ void CUI_SetNickname_Textbox::On_MouseExit(_float fTimeDelta)
 	if (m_bActive)
 	{
 		CUI_Manager::GetInstance()->Set_MouseCursor(0);
+
+		__super::On_MouseExit(fTimeDelta);
 	}
 }
 

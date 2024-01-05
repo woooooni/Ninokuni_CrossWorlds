@@ -37,7 +37,8 @@ void CUI_SubMenu_Character::Set_Active(_bool bActive)
 	}
 	else
 	{
-
+		if (m_bEvent)
+			m_bEvent = false;
 	}
 
 	m_bActive = bActive;
@@ -183,6 +184,8 @@ void CUI_SubMenu_Character::On_Mouse(_float fTimeDelta)
 				CUI_Manager::GetInstance()->OnOff_SkillWindow(true);
 			}
 		}
+
+		__super::On_Mouse(fTimeDelta);
 	}
 }
 
@@ -190,6 +193,7 @@ void CUI_SubMenu_Character::On_MouseExit(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		__super::On_MouseExit(fTimeDelta);
 	}
 }
 

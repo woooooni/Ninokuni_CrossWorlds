@@ -101,6 +101,10 @@
 
 #include "Weapon_SwordTemp.h"
 
+#include "UI_Dummy_Swordsman.h"
+#include "UI_Dummy_Destroyer.h"
+#include "UI_Dummy_Engineer.h"
+
 _bool CLoader::g_bFirstLoading = false;
 CLoader::CLoader(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: m_pDevice(pDevice)
@@ -299,6 +303,16 @@ HRESULT CLoader::Loading_For_Level_Lobby()
 	m_strLoading = TEXT("객체원형을 로딩 중 입니다.");
 
 	if (FAILED(CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_LOBBY)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Lobby_Dummy_Swordsman"),
+		CUI_Dummy_Swordsman::Create(m_pDevice, m_pContext), LAYER_CHARACTER)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Lobby_Dummy_Destroyer"),
+		CUI_Dummy_Destroyer::Create(m_pDevice, m_pContext), LAYER_CHARACTER)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Lobby_Dummy_Engineer"),
+		CUI_Dummy_Engineer::Create(m_pDevice, m_pContext), LAYER_CHARACTER)))
 		return E_FAIL;
 
 

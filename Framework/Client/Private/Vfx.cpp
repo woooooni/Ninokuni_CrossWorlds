@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Vfx.h"
+#include "GameInstance.h"
 
 #include "GameInstance.h"
 

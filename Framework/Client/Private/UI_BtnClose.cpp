@@ -23,7 +23,8 @@ void CUI_BtnClose::Set_Active(_bool bActive)
 	}
 	else
 	{
-
+		if (m_bEvent)
+			m_bEvent = false;
 	}
 
 	m_bActive = bActive;
@@ -105,11 +106,17 @@ void CUI_BtnClose::On_Mouse(_float fTimeDelta)
 	{
 		if(m_bUsable)
 			Key_Input(fTimeDelta);
+
+		__super::On_Mouse(fTimeDelta);
 	}
 }
 
 void CUI_BtnClose::On_MouseExit(_float fTimeDelta)
 {
+	if (m_bActive)
+	{
+		__super::On_MouseExit(fTimeDelta);
+	}
 }
 
 HRESULT CUI_BtnClose::Ready_Components()

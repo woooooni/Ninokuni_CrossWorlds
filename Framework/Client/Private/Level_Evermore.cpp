@@ -200,7 +200,7 @@ HRESULT CLevel_Evermore::Ready_Layer_Monster(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Evermore::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 {
-	if (FAILED(CUI_Manager::GetInstance()->Ready_CommonUIs(LEVELID::LEVEL_EVERMORE)))
+	if (FAILED(CUI_Manager::GetInstance()->Ready_GameObject(LEVELID::LEVEL_EVERMORE)))
 		return E_FAIL;
 
 	CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();

@@ -15,12 +15,6 @@ protected:
 
 public:
 	virtual void Set_CharacterType(CHARACTER_TYPE eType) override;
-//	void Set_DefaultIconActive(_bool bActive) {
-//		if (nullptr == m_pNoWeapon)
-//			return;
-//
-//		m_pNoWeapon->Set_Active(bActive);
-//	}
 
 public:
 	virtual HRESULT	Initialize_Prototype();

@@ -98,7 +98,11 @@ _bool CSkill_Manager::Use_Skill(CHARACTER_TYPE eCharacterType, SKILL_TYPE eSkill
 	if (CHARACTER_TYPE::CHARACTER_END >= eCharacterType || SKILL_TYPE::SKILL_END >= eSkillType)
 		return false;
 
-	return true;
+	auto iter = m_Skills[eCharacterType].find(eSkillType);
+	if (iter == m_Skills[eCharacterType].end())
+		return false;
+
+	return iter->second->Use_Skill();
 }
 
 _bool CSkill_Manager::Is_Useable(CHARACTER_TYPE eCharacterType, SKILL_TYPE eSkillType)

@@ -37,8 +37,6 @@ private:
 	HRESULT	Ready_State();
 	HRESULT	Bind_ShaderResources();
 
-	void Key_Input(_float fTimeDelta);
-
 public:
 	static CUI_Cursor* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);
 	virtual CGameObject* Clone(void* pArg);

@@ -73,11 +73,20 @@ void CUI_BtnChangeCamera::On_MouseEnter(_float fTimeDelta)
 
 void CUI_BtnChangeCamera::On_Mouse(_float fTimeDelta)
 {
-	Key_Input(fTimeDelta);
+	if (m_bActive)
+	{
+		Key_Input(fTimeDelta);
+
+		__super::On_Mouse(fTimeDelta);
+	}
 }
 
 void CUI_BtnChangeCamera::On_MouseExit(_float fTimeDelta)
 {
+	if (m_bActive)
+	{
+		__super::On_MouseExit(fTimeDelta);
+	}
 }
 
 HRESULT CUI_BtnChangeCamera::Ready_Components()

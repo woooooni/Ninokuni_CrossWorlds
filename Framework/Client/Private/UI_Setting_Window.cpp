@@ -13,31 +13,6 @@ CUI_Setting_Window::CUI_Setting_Window(const CUI_Setting_Window& rhs)
 {
 }
 
-void CUI_Setting_Window::Set_Active(_bool bActive)
-{
-	if (bActive) // 만약 Active상태라면
-	{
-
-	}
-	else // Active가 false로 전환되었다면
-	{
-		// 최초의 사이즈를 MinSize로 설정한다.
-		// _bool변수를 다시 false로 돌려놓는다
-
-//		m_tInfo.fCX = m_vMinSize.x;
-//		m_tInfo.fCY = m_vMinSize.y;
-//
-//		m_bApproach[0] = false;
-//		m_bApproach[1] = false;
-//
-//		__super::Set_ChildActive(false);
-//
-//		m_bResize = false;
-	}
-
-	m_bActive = bActive;
-}
-
 HRESULT CUI_Setting_Window::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))

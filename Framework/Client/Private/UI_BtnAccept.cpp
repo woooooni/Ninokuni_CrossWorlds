@@ -20,6 +20,11 @@ void CUI_BtnAccept::Set_Active(_bool bActive)
 		m_bResizeStart = false;
 		m_bFinish = false;
 	}
+	else
+	{
+		if (m_bEvent)
+			m_bEvent = false;
+	}
 
 	m_bActive = bActive;
 }
@@ -129,15 +134,24 @@ void CUI_BtnAccept::On_MouseEnter(_float fTimeDelta)
 
 void CUI_BtnAccept::On_Mouse(_float fTimeDelta)
 {
-	Key_Input(fTimeDelta);
+	if (m_bActive)
+	{
+		Key_Input(fTimeDelta);
+
+		__super::On_Mouse(fTimeDelta);
+	}
 }
 
 void CUI_BtnAccept::On_MouseExit(_float fTimeDelta)
 {
-	m_tInfo.fCX = m_vOriginSize.x;
-	m_tInfo.fCY = m_vOriginSize.y;
+	if (m_bActive)
+	{
+		m_tInfo.fCX = m_vOriginSize.x;
+		m_tInfo.fCY = m_vOriginSize.y;
 
-	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+		m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+		__super::On_MouseExit(fTimeDelta);
+	}
 }
 
 HRESULT CUI_BtnAccept::Ready_Components()

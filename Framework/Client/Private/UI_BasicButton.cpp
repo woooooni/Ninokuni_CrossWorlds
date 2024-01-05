@@ -144,40 +144,50 @@ void CUI_BasicButton::On_MouseEnter(_float fTimeDelta)
 
 void CUI_BasicButton::On_Mouse(_float fTimeDelta)
 {
-	if (m_bCanClick)
+	if (m_bActive)
 	{
-		if (KEY_TAP(KEY::LBTN))
+		if (m_bCanClick)
 		{
-			if (BUTTON_CHANGESCENE == m_eType || BUTTON_SETNICKNAME == m_eType)
+			if (KEY_TAP(KEY::LBTN))
 			{
-				if (!m_bResizeStart)
-					m_bResizeStart = true;
-
-				if (BUTTON_SETNICKNAME == m_eType)
+				if (BUTTON_CHANGESCENE == m_eType || BUTTON_SETNICKNAME == m_eType)
 				{
-					if (m_bActive)
+					if (!m_bResizeStart)
+						m_bResizeStart = true;
+
+					if (BUTTON_SETNICKNAME == m_eType)
 					{
-						if (KEY_TAP(KEY::LBTN))
+						if (m_bActive)
 						{
-							CUI_Manager::GetInstance()->Set_Textable(false);
-							CUI_Manager::GetInstance()->Set_UserName();
-							
+							if (KEY_TAP(KEY::LBTN))
+							{
+								CUI_Manager::GetInstance()->Set_Textable(false);
+								CUI_Manager::GetInstance()->Set_UserName();
+
+							}
 						}
 					}
 				}
 			}
+
+			__super::On_Mouse(fTimeDelta);
 		}
 	}
 }
 
 void CUI_BasicButton::On_MouseExit(_float fTimeDelta)
 {
-	if (m_bCanClick)
+	if (m_bActive)
 	{
-		m_tInfo.fCX = m_vOriginSize.x;
-		m_tInfo.fCY = m_vOriginSize.y;
+		if (m_bCanClick)
+		{
+			m_tInfo.fCX = m_vOriginSize.x;
+			m_tInfo.fCY = m_vOriginSize.y;
 
-		m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+			m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+		}
+
+		__super::On_MouseExit(fTimeDelta);
 	}
 }
 

@@ -183,6 +183,8 @@ void CUI_Inventory_TabBtn::On_Mouse(_float fTimeDelta)
 			if (m_eButtonType == INVENBTN_UNCLICKED)
 				CUI_Manager::GetInstance()->Update_InvenBtnState(_uint(m_eUIType));
 		}
+
+		__super::On_Mouse(fTimeDelta);
 	}
 }
 
@@ -190,6 +192,7 @@ void CUI_Inventory_TabBtn::On_MouseExit(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		__super::On_MouseExit(fTimeDelta);
 	}
 }
 

@@ -23,6 +23,7 @@ public:
 
 private:
 	HRESULT Ready_Layer_BackGround(const LAYER_TYPE eLayerType);
+	HRESULT Ready_Layer_Character(const LAYER_TYPE eLayerType);
 	HRESULT Ready_Layer_UI(const LAYER_TYPE eLayerType);
 	HRESULT Ready_Layer_Dynamic(const LAYER_TYPE eLayerType, const wstring& strMapFileName);
 	HRESULT Ready_Light(const wstring& strLightFilePath);

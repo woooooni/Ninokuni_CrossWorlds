@@ -2,6 +2,8 @@
 #include "UI_SkillSection_ClassicSkill.h"
 #include "GameInstance.h"
 #include "UI_Manager.h"
+#include "Skill_Manager.h"
+#include "Skill.h"
 
 CUI_SkillSection_ClassicSkill::CUI_SkillSection_ClassicSkill(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_CLASSICSKILL eType)
 	: CUI(pDevice, pContext, L"UI_SkillSection_ClassicSkill")
@@ -146,11 +148,17 @@ void CUI_SkillSection_ClassicSkill::On_Mouse(_float fTimeDelta)
 	if (m_bActive)
 	{
 		Key_Input(fTimeDelta);
+
+		__super::On_Mouse(fTimeDelta);
 	}
 }
 
 void CUI_SkillSection_ClassicSkill::On_MouseExit(_float fTimeDelta)
 {
+	if (m_bActive)
+	{
+		__super::On_MouseExit(fTimeDelta);
+	}
 }
 
 HRESULT CUI_SkillSection_ClassicSkill::Ready_Components()
@@ -260,8 +268,42 @@ void CUI_SkillSection_ClassicSkill::Set_SkillType()
 		break;
 	}
 
+	//Update_SkillInfo();
+
 	m_fOriginCoolTime = 9.f; // Temp
 	m_fCoolTime = m_fOriginCoolTime;
+}
+
+void CUI_SkillSection_ClassicSkill::Update_SkillInfo()
+{
+	switch (m_eCurPlayerType)
+	{
+	case CHARACTER_TYPE::SWORD_MAN:
+		switch (m_eType)
+		{
+		case UI_CLASSICSKILL::SKILL_FIRST:
+			m_pSkill = CSkill_Manager::GetInstance()->Get_Skill(m_eCurPlayerType, SKILL_TYPE::SWORDMAN_SPINNING_ASSAULT);
+			break;
+
+		case UI_CLASSICSKILL::SKILL_SECOND:
+			m_pSkill = CSkill_Manager::GetInstance()->Get_Skill(m_eCurPlayerType, SKILL_TYPE::SWORDMAN_SIPOHONINGLUNGE);
+			break;
+
+		case UI_CLASSICSKILL::SKILL_THIRD:
+			m_pSkill = CSkill_Manager::GetInstance()->Get_Skill(m_eCurPlayerType, SKILL_TYPE::SWORDMAN_PERFECT_BLADE);
+			break;
+		}
+		break;
+
+	case CHARACTER_TYPE::ENGINEER:
+		break;
+
+	case CHARACTER_TYPE::DESTROYER:
+		break;
+	}
+
+	if (nullptr == m_pSkill)
+		return;
 }
 
 CUI_SkillSection_ClassicSkill* CUI_SkillSection_ClassicSkill::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_CLASSICSKILL eType)

@@ -73,11 +73,20 @@ void CUI_Btn_Minimap::On_MouseEnter(_float fTimeDelta)
 
 void CUI_Btn_Minimap::On_Mouse(_float fTimeDelta)
 {
-	Key_Input(fTimeDelta);
+	if (m_bActive)
+	{
+		Key_Input(fTimeDelta);
+
+		__super::On_Mouse(fTimeDelta);
+	}
 }
 
 void CUI_Btn_Minimap::On_MouseExit(_float fTimeDelta)
 {
+	if (m_bActive)
+	{
+		__super::On_MouseExit(fTimeDelta);
+	}
 }
 
 HRESULT CUI_Btn_Minimap::Ready_Components()

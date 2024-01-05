@@ -81,11 +81,17 @@ void CUI_Costume_ChangeBtn::On_Mouse(_float fTimeDelta)
 	if (m_bActive)
 	{
 		Key_Input(fTimeDelta);
+
+		__super::On_Mouse(fTimeDelta);
 	}
 }
 
 void CUI_Costume_ChangeBtn::On_MouseExit(_float fTimeDelta)
 {
+	if (m_bActive)
+	{
+		__super::On_MouseExit(fTimeDelta);
+	}
 }
 
 HRESULT CUI_Costume_ChangeBtn::Ready_Components()

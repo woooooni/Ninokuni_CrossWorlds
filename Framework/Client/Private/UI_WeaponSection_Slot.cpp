@@ -131,11 +131,17 @@ void CUI_WeaponSection_Slot::On_Mouse(_float fTimeDelta)
 	if (m_bActive)
 	{
 		Key_Input(fTimeDelta);
+
+		__super::On_Mouse(fTimeDelta);
 	}
 }
 
 void CUI_WeaponSection_Slot::On_MouseExit(_float fTimeDelta)
 {
+	if (m_bActive)
+	{
+		__super::On_MouseExit(fTimeDelta);
+	}
 }
 
 HRESULT CUI_WeaponSection_Slot::Ready_Components()

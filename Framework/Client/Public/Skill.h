@@ -17,7 +17,7 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 
 public:
-	virtual void Use_Skill();
+	virtual _bool Use_Skill();
 
 public:
 	_bool  Is_Useable() { return m_bUseable; }

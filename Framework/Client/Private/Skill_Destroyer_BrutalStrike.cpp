@@ -28,9 +28,16 @@ void CSkill_Destroyer_BrutalStrike::LateTick(_float fTimeDelta)
 	__super::LateTick(fTimeDelta);
 }
 
-void CSkill_Destroyer_BrutalStrike::Use_Skill()
+_bool CSkill_Destroyer_BrutalStrike::Use_Skill()
 {
-	__super::Use_Skill();
+	if (true == __super::Use_Skill())
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 

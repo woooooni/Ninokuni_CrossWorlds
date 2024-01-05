@@ -17,11 +17,6 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT	Render();
 
-public:
-	virtual void On_MouseEnter(_float fTimeDelta) override;
-	virtual void On_Mouse(_float fTimeDelta) override;
-	virtual void On_MouseExit(_float fTimeDelta) override;
-
 private:
 	class CCharacter* m_pCharacter = { nullptr };
 

@@ -74,21 +74,21 @@ HRESULT CUI_SkillSection_BtnInteraction::Render()
 	return S_OK;
 }
 
-void CUI_SkillSection_BtnInteraction::On_MouseEnter(_float fTimeDelta)
-{
-}
-
-void CUI_SkillSection_BtnInteraction::On_Mouse(_float fTimeDelta)
-{
-	if (m_bActive)
-	{
-		Key_Input(fTimeDelta);
-	}
-}
-
-void CUI_SkillSection_BtnInteraction::On_MouseExit(_float fTimeDelta)
-{
-}
+//void CUI_SkillSection_BtnInteraction::On_MouseEnter(_float fTimeDelta)
+//{
+//}
+//
+//void CUI_SkillSection_BtnInteraction::On_Mouse(_float fTimeDelta)
+//{
+//	if (m_bActive)
+//	{
+//		Key_Input(fTimeDelta);
+//	}
+//}
+//
+//void CUI_SkillSection_BtnInteraction::On_MouseExit(_float fTimeDelta)
+//{
+//}
 
 HRESULT CUI_SkillSection_BtnInteraction::Ready_Components()
 {

@@ -25,6 +25,12 @@ void CUI_Milepost::Set_Active(_bool bActive)
 	if (!m_bGoal)
 		return;
 
+	if (false == bActive)
+	{
+		if (m_bEvent)
+			m_bEvent = false;
+	}
+
 	m_bActive = bActive;
 }
 
@@ -62,7 +68,14 @@ HRESULT CUI_Milepost::Initialize(void* pArg)
 		m_pPlayer = pCharacter;
 	}
 
-	Set_TargetPosition(_float4(-69.5f, -2.7f, -10.f, 1.f));
+	if (LEVELID::LEVEL_EVERMORE == GI->Get_CurrentLevel())
+	{
+		Set_TargetPosition(_float4(-69.5f, -2.7f, -10.f, 1.f));
+	}
+	else
+	{
+		m_bActive = false;
+	}
 
 	return S_OK;
 }

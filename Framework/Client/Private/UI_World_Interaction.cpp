@@ -6,6 +6,8 @@
 #include "Animals.h"
 #include "Camera.h"
 #include "Camera_Manager.h"
+#include "Game_Manager.h"
+#include "Player.h"
 
 CUI_World_Interaction::CUI_World_Interaction(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_World_Interaction")
@@ -77,6 +79,19 @@ HRESULT CUI_World_Interaction::Initialize(void* pArg)
 	m_bActive = true;
 	m_bResize = false;
 
+	if (nullptr == m_pPlayer)
+	{
+		CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+		if (nullptr == pPlayer)
+			return E_FAIL;
+
+		CCharacter* pCharacter = pPlayer->Get_Character();
+		if (nullptr == pCharacter)
+			return E_FAIL;
+
+		m_pPlayer = pCharacter;
+	}
+
 	return S_OK;
 }
 
@@ -140,10 +155,16 @@ void CUI_World_Interaction::LateTick(_float fTimeDelta)
 			_vector vTempForDistance = m_pTransformCom->Get_Position() - XMLoadFloat4(&vCamPos);
 			_float fDistance = XMVectorGetX(XMVector3Length(vTempForDistance));
 
-			if (fDistance > 1.f)
-			{
-				CTransform* pTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");
+			CTransform* pPlayerTransform = m_pPlayer->Get_Component<CTransform>(L"Com_Transform");
+			if (nullptr == pPlayerTransform)
+				return;
+			CTransform* pTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");
 
+			_vector vTemp = (pTransform->Get_Position()) - (pPlayerTransform->Get_Position());
+			_float fTotarget = XMVectorGetX(XMVector3Length(vTemp));
+
+			if (fTotarget > 1.f)
+			{
 				_float4x4 matTargetWorld = pTransform->Get_WorldFloat4x4();
 				matTargetWorld._42 += m_fOffset.y;
 
@@ -165,7 +186,7 @@ void CUI_World_Interaction::LateTick(_float fTimeDelta)
 				m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 					XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 
-				if (fDistance < 35.f)
+				if (fTotarget < 5.f)
 				{
 					_vector vCameraPos = XMLoadFloat4(&vCamPos);
 					_vector vMonsterToCamera = pTransform->Get_Position() - vCameraPos;

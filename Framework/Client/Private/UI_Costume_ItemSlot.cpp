@@ -37,7 +37,8 @@ void CUI_Costume_ItemSlot::Set_Active(_bool bActive)
 	}
 	else
 	{
-
+		if (m_bEvent)
+			m_bEvent = false;
 	}
 
 	m_bActive = bActive;
@@ -173,11 +174,17 @@ void CUI_Costume_ItemSlot::On_Mouse(_float fTimeDelta)
 	if (m_bActive)
 	{
 		Key_Input(fTimeDelta);
+
+		__super::On_Mouse(fTimeDelta);
 	}
 }
 
 void CUI_Costume_ItemSlot::On_MouseExit(_float fTimeDelta)
 {
+	if (m_bActive)
+	{
+		__super::On_MouseExit(fTimeDelta);
+	}
 }
 
 HRESULT CUI_Costume_ItemSlot::Ready_Components()
