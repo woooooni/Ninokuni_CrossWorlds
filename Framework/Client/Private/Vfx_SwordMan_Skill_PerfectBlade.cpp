@@ -123,9 +123,7 @@ void CVfx_SwordMan_Skill_PerfectBlade::Tick(_float fTimeDelta)
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_Perfectblade_Trail_Basic_Left"),
 				XMLoadFloat4x4(&m_WorldMatrix),
-				::XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f),
-				_float3(5.f, 5.f, 5.f),
-				_float3(0.f, 20.f, 0.f), 
+				m_pPositionOffset[1], m_pScaleOffset[1], m_pRotationOffset[1],
 				m_pOwnerObject);
 			
 			m_iCount++;
