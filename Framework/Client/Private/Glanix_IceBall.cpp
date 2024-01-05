@@ -13,6 +13,8 @@ CGlanix_IceBall::CGlanix_IceBall(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
 
 CGlanix_IceBall::CGlanix_IceBall(const CGlanix_IceBall& rhs)
 	: CGameObject(rhs)
+	, m_fTime(0.f)
+	, m_fDelteTime(rhs.m_fDelteTime)
 {
 
 }
@@ -50,7 +52,7 @@ HRESULT CGlanix_IceBall::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
-	m_pRigidBodyCom->Add_Velocity(m_pTransformCom->Get_Look(), 20.f, false);
+	//m_pRigidBodyCom->Set_Use_Gravity(false);
 
 	m_fTime = 0.f;
 
@@ -65,12 +67,14 @@ void CGlanix_IceBall::Tick(_float fTimeDelta)
 
 	GI->Add_CollisionGroup(COLLISION_GROUP::PROP, this);
 
+	m_pRigidBodyCom->Add_Velocity(m_pTransformCom->Get_Look(), 10.f, true);
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 	m_pControllerCom->Tick_Controller(fTimeDelta);
 
-	if (m_fTime > 2.f)
+	if (m_fTime > m_fDelteTime)
 	{
-		this->Set_Dead(true);
+		m_fTime = m_fDelteTime - m_fTime;
+		Reserve_Dead(true);
 	}
 }
 
@@ -264,13 +268,13 @@ HRESULT CGlanix_IceBall::Ready_Colliders()
 	ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
 
 	XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
-	OBBBox.Extents = { 200.f, 200.f, 200.f };
+	OBBBox.Extents = { 100.f, 100.f, 100.f };
 
 	OBBDesc.tBox = OBBBox;
 	OBBDesc.pNode = nullptr;
 	OBBDesc.pOwnerTransform = m_pTransformCom;
 	OBBDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
-	OBBDesc.vOffsetPosition = Vec3(0.f, 0.f, 0.f);
+	OBBDesc.vOffsetPosition = Vec3(0.f, 100.f, 200.f);
 
 	/* Body */
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::BODY, &OBBDesc)))

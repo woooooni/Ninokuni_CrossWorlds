@@ -18,6 +18,12 @@ public:
 	virtual void Tick_State(_float fTimeDelta);
 	virtual void Exit_State();
 
+private:
+	_float m_fIdleTime = 0.f;
+	_float m_fTime = 0.f;
+	_int   m_iIdleIndex = 1;
+	_bool  m_bIsStane = true;
+
 public:
 	static CNpcState_Idle* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

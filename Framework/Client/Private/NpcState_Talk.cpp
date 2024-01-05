@@ -28,12 +28,21 @@ void CNpcState_Talk::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
-	/* 0. Talk / 1. Idle */
-	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
+	if (m_bIsTalk)
 	{
-		if (__super::State_Wait(true, m_pModelCom->Get_Animation(m_AnimIndices[1])->Get_AnimationName(), 5.f, fTimeDelta))
+		if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 		{
-			m_pModelCom->Set_Animation(m_iCurrAnimIndex);
+			/* 0. Talk / 1. Idle */
+			m_pModelCom->Set_Animation(m_AnimIndices[1]);
+			m_bIsTalk = false;
+		}
+	}
+	else
+	{
+		if (__super::State_Wait(m_pModelCom->Get_Animation(m_AnimIndices[1])->Is_Loop(), m_pModelCom->Get_Animation(m_AnimIndices[1])->Get_AnimationName(), 5.f, fTimeDelta))
+		{
+			m_pModelCom->Set_Animation(m_AnimIndices[0]);
+			m_bIsTalk = true;
 		}
 	}
 }

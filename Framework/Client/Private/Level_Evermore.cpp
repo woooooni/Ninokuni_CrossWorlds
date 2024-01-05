@@ -55,6 +55,18 @@ HRESULT CLevel_Evermore::Initialize()
 	if (FAILED(Ready_Light(TEXT("Evermore Light"))))
 		return E_FAIL;
 
+	/* Temp */
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanChild01"), nullptr)))
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanChild02"), nullptr)))
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanFAT01"), nullptr)))
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanFL04"), nullptr)))
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanFL05"), nullptr)))
+		return E_FAIL;
+
 	if (nullptr != CUI_Manager::GetInstance()->Get_Fade())
 		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 3.f);
 

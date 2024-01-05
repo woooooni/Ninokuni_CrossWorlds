@@ -35,7 +35,7 @@ public:
 		_int iHp = 100;
 		_int iMaxHp = 100;
 
-		_float fSpeed = 3.f;
+		_float fSpeed = 0.f;
 	}NPC_STAT;
 
 protected:
@@ -48,8 +48,14 @@ public:
 	virtual HRESULT Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta);
 	virtual void LateTick(_float fTimeDelta);
-	virtual HRESULT Render();
-	virtual HRESULT Render_ShadowDepth();
+
+	virtual HRESULT Render_Instance_AnimModel(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer,
+		const vector<_float4x4>& WorldMatrices,
+		const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc) override;
+
+	virtual HRESULT Render_Instance_AnimModel_Shadow(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer,
+		const vector<_float4x4>& WorldMatrices,
+		const vector<TWEEN_DESC>& TweenDesc) override;
 
 public:
 	virtual void Collision_Enter(const COLLISION_INFO& tInfo) override;
@@ -74,10 +80,14 @@ public:
 	void			 Set_RoamingArea(vector<_vector> vecRoaming) { m_vecRoaming = vecRoaming; }
 
 protected:
-	virtual HRESULT Ready_Components() PURE;
+	virtual HRESULT Ready_Components();
 	virtual HRESULT Ready_States() PURE;
-	virtual HRESULT Ready_Colliders() PURE;
+	virtual HRESULT Ready_Colliders();
 	virtual void On_Damaged(const COLLISION_INFO& tInfo);
+
+private:
+	// 렌더러에 넘겨줄 애니메이션 인스턴싱 정보.
+	ANIMODEL_INSTANCE_DESC m_AnimInstanceDesc = {};
 
 protected: /* 해당 객체가 사용해야할 컴포넌트들을 저장하낟. */
 	class CShader* m_pShaderCom = nullptr;
@@ -103,10 +113,11 @@ protected:
 	NPC_STAT m_tStat = {};
 
 	vector<_vector> m_vecRoaming = {};
+	_vector			m_vInitPos = {};
 
-	///* Npc가 사용하는 AnimName 모음. */
-	//wstring m_strMoveName = TEXT();
-	//vector<wstring> m_vecIdleName = {};
+	// 블룸 효과
+	_float3 m_vBloomPower = _float3(1.f, 1.f, 1.f);
+
 
 public:
 	virtual void Free() override;

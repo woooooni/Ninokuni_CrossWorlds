@@ -30,14 +30,14 @@ HRESULT CGlanixState_Base::Initialize(const list<wstring>& AnimationList)
 	m_fRunSpeed = 6.f;
 
 	/* 공격 패턴만 따로 모아놓기. (후에 순차적 혹은 랜덤으로 전환하기 위해) */
-	//m_vecAtkState.push_back(CGlanix::GLANIX_SNOWBALL);
-	m_vecAtkState.push_back(CGlanix::GLANIX_ATTACK1);
-	m_vecAtkState.push_back(CGlanix::GLANIX_ATTACK2);
-	m_vecAtkState.push_back(CGlanix::GLANIX_ICEWAVE);
-	m_vecAtkState.push_back(CGlanix::GLANIX_QUADBLOW);
-	m_vecAtkState.push_back(CGlanix::GLANIX_ATTACK2);
-	m_vecAtkState.push_back(CGlanix::GLANIX_SPINBOMB);
-	m_vecAtkState.push_back(CGlanix::GLANIX_ATTACK1);
+	m_vecAtkState.push_back(CGlanix::GLANIX_SNOWBALL);
+	//m_vecAtkState.push_back(CGlanix::GLANIX_ATTACK1);
+	//m_vecAtkState.push_back(CGlanix::GLANIX_ATTACK2);
+	//m_vecAtkState.push_back(CGlanix::GLANIX_ICEWAVE);
+	//m_vecAtkState.push_back(CGlanix::GLANIX_QUADBLOW);
+	//m_vecAtkState.push_back(CGlanix::GLANIX_ATTACK2);
+	//m_vecAtkState.push_back(CGlanix::GLANIX_SPINBOMB);
+	//m_vecAtkState.push_back(CGlanix::GLANIX_ATTACK1);
 
 	return S_OK;
 }

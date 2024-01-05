@@ -21,16 +21,18 @@ HRESULT CGlanixState_SnowBall::Initialize(const list<wstring>& AnimationList)
 void CGlanixState_SnowBall::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_Skill08"));
+	m_bIsRoll = false;
 }
 
 void CGlanixState_SnowBall::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
-	if (m_pModelCom->Get_CurrAnimationFrame() == 45)
-	{
-		GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_GlanixIceBall"), m_pGlanix);
-	}
+	//if (m_pModelCom->Get_CurrAnimationFrame() == 45 && !m_bIsRoll)
+	//{
+	//	GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_GlanixIceBall"), m_pGlanix);
+	//	m_bIsRoll = true;
+	//}
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
