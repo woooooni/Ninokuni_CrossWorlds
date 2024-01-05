@@ -328,7 +328,7 @@ HRESULT CLoader::Loading_For_Level_Lobby()
 	}
 
 	m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Static_Map_Objects, this, L"../Bin/Export/NonAnimModel/Map/");
-	m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Dynamic_Map_Objects, this, L"..Bin/Export/AnimModel/Map/");
+	m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Dynamic_Map_Objects, this, L"../Bin/Export/AnimModel/Map/");
 	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Loading_Proto_Monster_Npc, this);
 
 	m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE].wait();
@@ -384,7 +384,7 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 	}
 
 	//m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Static_Map_Objects, this, L"../Bin/Export/NonAnimModel/Map/");
-	//m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Dynamic_Map_Objects, this, L"..Bin/Export/AnimModel/Map/");
+	//m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Dynamic_Map_Objects, this, L"../Bin/Export/AnimModel/Map/");
 	//m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Loading_Proto_Monster_Npc, this);
 
 	//m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE].wait();
@@ -458,7 +458,7 @@ HRESULT CLoader::Loading_For_Level_Test()
 
 	
 	m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Static_Map_Objects, this, L"../Bin/Export/NonAnimModel/Map/");
-	m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Dynamic_Map_Objects, this, L"..Bin/Export/AnimModel/Map/");
+	m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Dynamic_Map_Objects, this, L"../Bin/Export/AnimModel/Map/");
 	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Loading_Proto_Monster_Npc, this);
 
 	m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE].wait();
@@ -558,7 +558,7 @@ HRESULT CLoader::Loading_For_Level_Tool()
 		
 
 	m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Static_Map_Objects, this, L"../Bin/Export/NonAnimModel/Map/");
-	m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Dynamic_Map_Objects, this, L"..Bin/Export/AnimModel/Map/");
+	m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Dynamic_Map_Objects, this, L"../Bin/Export/AnimModel/Map/");
 	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Loading_Proto_Monster_Npc, this);
 
 
@@ -900,22 +900,55 @@ HRESULT CLoader::Loading_Proto_Static_Map_Objects(const wstring& strPath)
 
 HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 {
+#pragma region Dynamic Props
+	//for (auto& p : std::filesystem::directory_iterator(strPath))
+	//{
+	//	if (p.is_directory())
+	//	{
+	//		Loading_Proto_Dynamic_Map_Objects(p.path().wstring());
+	//	}
+
+	//	wstring strFilePath = CUtils::PathToWString(p.path().wstring());
+
+	//	_tchar strFileName[MAX_PATH];
+	//	_tchar strFolderName[MAX_PATH];
+	//	_tchar strExt[MAX_PATH];
+
+	//	_wsplitpath_s(strFilePath.c_str(), nullptr, 0, strFolderName, MAX_PATH, strFileName, MAX_PATH, strExt, MAX_PATH);
+
+	//	if (0 == lstrcmp(TEXT(".fbx"), strExt) || 0 == lstrcmp(TEXT(".mesh"), strExt))
+	//	{
+	//		if (strFilePath.find(L"DynamicProp") != wstring::npos)
+	//		{
+	//			
+	//			if (FAILED(GI->Add_Prototype(wstring(strFileName),
+	//				CDynamicProps::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt, OBJ_TYPE::OBJ_DYNAMIC, CModel::TYPE_ANIM), LAYER_TYPE::LAYER_DYNAMIC, true)))
+	//			{
+	//				return E_FAIL;
+	//			}
+	//		}
+	//	}
+	//}
+	
+#pragma endregion
+
+
 #pragma region Animal ProtoType
-	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Cat"), CCat::Create(m_pDevice, m_pContext, TEXT("Animal_Cat"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Cat"), CCat::Create(m_pDevice, m_pContext, TEXT("Animal_Cat"), OBJ_TYPE::OBJ_ANIMAL), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Dochi"), CDochi::Create(m_pDevice, m_pContext, TEXT("Animal_Dochi"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Dochi"), CDochi::Create(m_pDevice, m_pContext, TEXT("Animal_Dochi"), OBJ_TYPE::OBJ_ANIMAL), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_DuckGoo"), CDuckGoo::Create(m_pDevice, m_pContext, TEXT("Animal_DuckGoo"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_DuckGoo"), CDuckGoo::Create(m_pDevice, m_pContext, TEXT("Animal_DuckGoo"), OBJ_TYPE::OBJ_ANIMAL), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Fox"), CFox::Create(m_pDevice, m_pContext, TEXT("Animal_Fox"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Fox"), CFox::Create(m_pDevice, m_pContext, TEXT("Animal_Fox"), OBJ_TYPE::OBJ_ANIMAL), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Rabbit"), CRabbit::Create(m_pDevice, m_pContext, TEXT("Animal_Rabbit"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Rabbit"), CRabbit::Create(m_pDevice, m_pContext, TEXT("Animal_Rabbit"), OBJ_TYPE::OBJ_ANIMAL), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_PolarBear"), CPolarBear::Create(m_pDevice, m_pContext, TEXT("Animal_PolarBear"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_PolarBear"), CPolarBear::Create(m_pDevice, m_pContext, TEXT("Animal_PolarBear"), OBJ_TYPE::OBJ_ANIMAL), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Ermine"), CErmine::Create(m_pDevice, m_pContext, TEXT("Animal_Ermine"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Ermine"), CErmine::Create(m_pDevice, m_pContext, TEXT("Animal_Ermine"), OBJ_TYPE::OBJ_ANIMAL), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Pigeon"), CPigeon::Create(m_pDevice, m_pContext, TEXT("Animal_Pigeon"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Pigeon"), CPigeon::Create(m_pDevice, m_pContext, TEXT("Animal_Pigeon"), OBJ_TYPE::OBJ_ANIMAL), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
 #pragma endregion Animals Prototype
 
@@ -923,6 +956,8 @@ HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Skydome"), CSkyDome::Create(m_pDevice, m_pContext, TEXT("Sky_dome"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Skydome2"), CSkyDome::Create(m_pDevice, m_pContext, TEXT("Sky_dome2"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Skydome3"), CSkyDome::Create(m_pDevice, m_pContext, TEXT("Sky_dome3"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_SkyPlane"), CSkyPlane::Create(m_pDevice, m_pContext, TEXT("Sky_Plane"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX, true)))
 		return E_FAIL;

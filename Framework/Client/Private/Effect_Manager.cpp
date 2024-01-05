@@ -83,8 +83,8 @@ HRESULT CEffect_Manager::Generate_Effect(const wstring& strEffectName, _matrix W
 	pTransform->Set_State(CTransform::STATE_POSITION, XMVectorSet(XMVectorGetX(vFinalPosition), XMVectorGetY(vFinalPosition), XMVectorGetZ(vFinalPosition), 1.f));
 
 	// pOwner
-	if (pOwner != nullptr)
-		pEffect->Set_Owner(pOwner);
+	//if (pOwner != nullptr)
+	//	pEffect->Set_Owner(pOwner);
 
 	// ppOut
 	if (ppOut != nullptr)

@@ -13,3 +13,4 @@
 #include "WinterWater.h"
 #include "WitchWater.h"
 #include "EvermoreWater.h"
+#include "DynamicProps.h"

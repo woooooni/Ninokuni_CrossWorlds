@@ -89,8 +89,6 @@ HRESULT CLevel_Loading::LateTick(_float fTimeDelta)
 
 HRESULT CLevel_Loading::Enter_Level()
 {
-	/* m_eNextLevel 에 대한 로딩작업을 수행한다. */
-/* 로딩을 겁나 하고있다. */
 	m_pLoader = CLoader::Create(m_pDevice, m_pContext, m_eNextLevel, L"");
 	if (nullptr == m_pLoader)
 		return E_FAIL;

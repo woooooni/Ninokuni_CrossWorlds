@@ -97,59 +97,63 @@ HRESULT CUI_World_Interaction::Initialize(void* pArg)
 
 void CUI_World_Interaction::Tick(_float fTimeDelta)
 {
-	if (!CUI_Manager::GetInstance()->Is_DefaultSettingOn())
-		m_bActive = false;
-	else
-		m_bActive = true;
-
-	if (m_bActive)
+	if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
 	{
-		CTransform* pTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");
-
-		_float4 Temp;
-		XMStoreFloat4(&Temp, pTransform->Get_Position());
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, pTransform->Get_Position());
-
-		if (!m_bResize)
-		{
-			m_tInfo.fCX -= fTimeDelta * 10.f;
-			m_tInfo.fCY -= fTimeDelta * 10.f;
-
-			if (m_tInfo.fCX <= m_vMinSize.x)
-			{
-				m_bResize = true;
-				m_tInfo.fCX = m_vMinSize.x;
-				m_tInfo.fCY = m_vMinSize.y;
-			}
-
-			m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
-
-		}
+		if (!CUI_Manager::GetInstance()->Is_DefaultSettingOn())
+			m_bActive = false;
 		else
-		{
-			m_tInfo.fCX += fTimeDelta * 10.f;
-			m_tInfo.fCY += fTimeDelta * 10.f;
+			m_bActive = true;
 
-			if (m_tInfo.fCX >= m_vOriginSize.x)
+		if (m_bActive)
+		{
+			CTransform* pTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");
+
+			_float4 Temp;
+			XMStoreFloat4(&Temp, pTransform->Get_Position());
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, pTransform->Get_Position());
+
+			if (!m_bResize)
 			{
-				m_bResize = false;
-				m_tInfo.fCX = m_vOriginSize.x;
-				m_tInfo.fCY = m_vOriginSize.y;
+				m_tInfo.fCX -= fTimeDelta * 10.f;
+				m_tInfo.fCY -= fTimeDelta * 10.f;
+
+				if (m_tInfo.fCX <= m_vMinSize.x)
+				{
+					m_bResize = true;
+					m_tInfo.fCX = m_vMinSize.x;
+					m_tInfo.fCY = m_vMinSize.y;
+				}
+
+				m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+
+			}
+			else
+			{
+				m_tInfo.fCX += fTimeDelta * 10.f;
+				m_tInfo.fCY += fTimeDelta * 10.f;
+
+				if (m_tInfo.fCX >= m_vOriginSize.x)
+				{
+					m_bResize = false;
+					m_tInfo.fCX = m_vOriginSize.x;
+					m_tInfo.fCY = m_vOriginSize.y;
+				}
+
+				m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 			}
 
-			m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+			Update_ButtonIcon();
+			__super::Tick(fTimeDelta);
 		}
-
-		Update_ButtonIcon();
-		__super::Tick(fTimeDelta);
 	}
+	
 }
 
 void CUI_World_Interaction::LateTick(_float fTimeDelta)
 {
-	if (m_bActive)
+	if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
 	{
-		if (nullptr != m_pOwner)
+		if (m_bActive)
 		{
 			_float4 vCamPos = GI->Get_CamPosition();
 			_vector vTempForDistance = m_pTransformCom->Get_Position() - XMLoadFloat4(&vCamPos);
@@ -188,31 +192,58 @@ void CUI_World_Interaction::LateTick(_float fTimeDelta)
 
 				if (fTotarget < 5.f)
 				{
-					_vector vCameraPos = XMLoadFloat4(&vCamPos);
-					_vector vMonsterToCamera = pTransform->Get_Position() - vCameraPos;
+					CTransform* pTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");
 
-					vMonsterToCamera = XMVector3Normalize(vMonsterToCamera);
-					CCamera* pCurCamera = CCamera_Manager::GetInstance()->Get_CurCamera();
-					if (nullptr == pCurCamera)
-						return;
+					_float4x4 matTargetWorld = pTransform->Get_WorldFloat4x4();
+					matTargetWorld._42 += m_fOffset.y;
 
-					CTransform* pCameraTrans = pCurCamera->Get_Transform();
-					if (nullptr == pCameraTrans)
-						return;
+					_float4x4 matWorld;
+					matWorld = matTargetWorld;
+					_matrix matView = GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW);
+					_matrix matProj = GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ);
 
-					_vector vCameraForward = pCameraTrans->Get_State(CTransform::STATE_LOOK);
-					vCameraForward = XMVector3Normalize(vCameraForward);
+					_float4x4 matWindow;
+					XMStoreFloat4x4(&matWindow, XMLoadFloat4x4(&matWorld) * matView * matProj);
 
-					_float fAngle = XMVectorGetX(XMVector3Dot(vMonsterToCamera, vCameraForward));
-					if (fAngle >= XMConvertToRadians(0.f) && fAngle <= XMConvertToRadians(180.f))
+					_float3 vWindowPos = *(_float3*)&matWindow.m[3][0];
+					vWindowPos.x /= vWindowPos.z;
+					vWindowPos.y /= vWindowPos.z;
+
+					m_tInfo.fX = vWindowPos.x * g_iWinSizeX * 0.5f + (g_iWinSizeX * 0.5f);
+					m_tInfo.fY = vWindowPos.y * -(g_iWinSizeY * 0.5f) + (g_iWinSizeY * 0.5f);
+
+					m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+						XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
+
+					if (fDistance < 35.f)
 					{
-						m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
-						__super::LateTick(fTimeDelta);
+						_vector vCameraPos = XMLoadFloat4(&vCamPos);
+						_vector vMonsterToCamera = pTransform->Get_Position() - vCameraPos;
+
+						vMonsterToCamera = XMVector3Normalize(vMonsterToCamera);
+						CCamera* pCurCamera = CCamera_Manager::GetInstance()->Get_CurCamera();
+						if (nullptr == pCurCamera)
+							return;
+
+						CTransform* pCameraTrans = pCurCamera->Get_Transform();
+						if (nullptr == pCameraTrans)
+							return;
+
+						_vector vCameraForward = pCameraTrans->Get_State(CTransform::STATE_LOOK);
+						vCameraForward = XMVector3Normalize(vCameraForward);
+
+						_float fAngle = XMVectorGetX(XMVector3Dot(vMonsterToCamera, vCameraForward));
+						if (fAngle >= XMConvertToRadians(0.f) && fAngle <= XMConvertToRadians(180.f))
+						{
+							m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+							__super::LateTick(fTimeDelta);
+						}
 					}
 				}
 			}
 		}
 	}
+	
 }
 
 HRESULT CUI_World_Interaction::Render()
