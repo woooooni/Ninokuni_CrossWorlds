@@ -22,12 +22,35 @@ void CState_SwordMan_Neutral_Pick_Small_Enter::Enter_State(void* pArg)
 {
     m_pCharacter->Disappear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
+
+    
+    if(nullptr == m_pCharacter->Get_Target())
+        m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_IDLE);
 }
 
 void CState_SwordMan_Neutral_Pick_Small_Enter::Tick_State(_float fTimeDelta)
 {
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
         m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_PICK_SMALL_IDLE);
+
+    if (nullptr != m_pCharacter->Get_Target())
+    {
+        CTransform* pTargetTransform = m_pCharacter->Get_Target()->Get_Component<CTransform>(L"Com_Transform");
+        if (nullptr != pTargetTransform)
+        {
+            Vec4 vHandCenterPosition = {};
+            Vec4 vLeftHandPosition = (m_pModelCom->Get_SocketLocalMatrix(0) * m_pTransformCom->Get_WorldMatrix()).Translation();
+            Vec4 vRightHandPosition = (m_pModelCom->Get_SocketLocalMatrix(1) * m_pTransformCom->Get_WorldMatrix()).Translation();
+
+            vHandCenterPosition = (vLeftHandPosition + vRightHandPosition) / 2.f;
+
+            pTargetTransform->Set_State(CTransform::STATE_POSITION, vHandCenterPosition);
+        }
+    }
+    else
+    {
+        m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_IDLE);
+    }
 }
 
 void CState_SwordMan_Neutral_Pick_Small_Enter::Exit_State()

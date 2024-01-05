@@ -27,6 +27,7 @@ CAnimation::CAnimation(const CAnimation& rhs)
 	, m_SpeedDescs(rhs.m_SpeedDescs)
 	, m_SoundEvents(rhs.m_SoundEvents)
 	, m_ColliderEvents(rhs.m_ColliderEvents)
+	, m_CameraEvents(rhs.m_CameraEvents)
 {
 	for (auto& pChannel : m_Channels)
 		Safe_AddRef(pChannel);

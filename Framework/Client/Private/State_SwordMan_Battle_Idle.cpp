@@ -75,6 +75,7 @@ void CState_SwordMan_Battle_Idle::Input(_float fTimeDelta)
     
     if (KEY_TAP(KEY::SPACE))
         m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_JUMP);
+
 }
 
 CState_SwordMan_Battle_Idle* CState_SwordMan_Battle_Idle::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

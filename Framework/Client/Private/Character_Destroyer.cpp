@@ -414,8 +414,7 @@ HRESULT CCharacter_Destroyer::Ready_States()
 	m_pStateCom->Add_State(CCharacter::STATE::SKILL_SPECIAL_1, CState_Destroyer_SpecialSkill_IgnorePain::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillMegaCrushStart");
-	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillMegaCrushFinish");
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillFrenzyCharge");
 	m_pStateCom->Add_State(CCharacter::STATE::SKILL_SPECIAL_2, CState_Destroyer_SpecialSkill_FrengeCharge::Create(m_pStateCom, strAnimationNames));
 
 	
