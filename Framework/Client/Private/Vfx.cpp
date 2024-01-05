@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Vfx.h"
+#include "GameInstance.h"
 
 CVfx::CVfx(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameObject(pDevice, pContext, strObjectTag, OBJ_TYPE::OBJ_PARTICLE)

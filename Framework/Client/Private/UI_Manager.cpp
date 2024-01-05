@@ -51,6 +51,7 @@
 #include "UI_WindowWorldMap.h"
 #include "UI_QuickSlot_Item.h"
 #include "UI_CharacterDummy.h"
+#include "UI_Dummy_Swordsman.h"
 #include "UI_Costume_LineBox.h"
 #include "UI_MonsterHP_World.h"
 #include "UI_Dialog_Portrait.h"
@@ -219,6 +220,8 @@ _float2 CUI_Manager::Get_ProjectionPosition(CTransform* pTransform)
 _bool CUI_Manager::Is_DefaultSettingOn()
 {
 	// 게임 기본 세팅이 켜져있는지 확인해준다 -> UI매니저에서 Clone되지 않은 객체의 OnOff를 제어하기 위해서.
+	if (nullptr == m_pPlayerStatus)
+		return false;
 
 	return m_pPlayerStatus->Get_Active();
 }
@@ -379,20 +382,11 @@ HRESULT CUI_Manager::Ready_Loadings()
 	if (FAILED(GI->Add_GameObject(LEVEL_LOADING, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Loading_Imajinn"), nullptr, &pImajinn)))
 		return E_FAIL;
 
-//	CGameObject* pInform = nullptr;
-//	if (FAILED(GI->Add_GameObject(LEVEL_LOADING, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Loading_Information"), nullptr, &pInform)))
-//		return E_FAIL;
-//	if (nullptr == pInform)
-//		return E_FAIL;
-//	dynamic_cast<CUI_Loading_Logo*>(pInform)->Set_TextureIndex(GI->RandomInt(0, 2));
-
 	//UI_Loading_MainLogo
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
 	UIDesc.fCX = 1024.f * 0.2f;
 	UIDesc.fCY = 512.f * 0.2f;
-//	UIDesc.fX = (g_iWinSizeX * 0.5f);
-//	UIDesc.fY = (UIDesc.fCY * 0.5f) + 25.f;
 	UIDesc.fX = g_iWinSizeX - (UIDesc.fCX * 0.5f) - 25.f;
 	UIDesc.fY = (UIDesc.fCY * 0.5f) + 25.f;
 
@@ -401,20 +395,6 @@ HRESULT CUI_Manager::Ready_Loadings()
 		return E_FAIL;
 	if (nullptr == pMainLogo)
 		return E_FAIL;
-
-//	CUI::UI_INFO NumDesc = {};
-//	ZeroMemory(&NumDesc, sizeof(CUI::UI_INFO));
-//
-//	NumDesc.fCX = 147.f * 0.3f;
-//	NumDesc.fCY = 198.f * 0.3f;
-//	NumDesc.fX = UIDesc.fX - 40.f;
-//	NumDesc.fY = UIDesc.fY - 9.f;
-//
-//	pMainLogo = nullptr;
-//	if (FAILED(GI->Add_GameObject(LEVEL_LOADING, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Loading_MainLogo_Number"), &NumDesc, &pMainLogo)))
-//		return E_FAIL;
-//	if (nullptr == pMainLogo)
-//		return E_FAIL;
 
 	//ProgressBar
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
@@ -711,8 +691,6 @@ HRESULT CUI_Manager::Ready_LobbyUIs()
 	// For Setting Window
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
-//	UIDesc.fCX = 957.f;
-//	UIDesc.fCY = 580.f;
 	UIDesc.fCX = /* _float(g_iWinSizeX); */ 2000.f;
 	UIDesc.fCY = /* _float(g_iWinSizeY); */ 1600.f;
 	UIDesc.fX = g_iWinSizeX * 0.5f;
@@ -763,7 +741,7 @@ HRESULT CUI_Manager::Ready_LobbyUIs()
 	return S_OK;
 }
 
-HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
+HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 {
 	if(FAILED(Ready_Dummy()))
 		return E_FAIL;
@@ -826,11 +804,6 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 	// PlayerStatus 생성
 	CGameObject* pPlayerStat = nullptr;
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
-
-//	UIDesc.fCX = 512.f * 0.6f;
-//	UIDesc.fCY = 175.f * 0.57;
-//	UIDesc.fX = UIDesc.fCX * 0.5f;
-//	UIDesc.fY = UIDesc.fCY * 0.5f;
 
 	UIDesc.fCX = 670.f * 0.55f;
 	UIDesc.fCY = 175.f * 0.52;
@@ -1436,89 +1409,89 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 #pragma region MAP_NAME_TEXT
 
 	// MapText 생성
-	if (LEVELID::LEVEL_EVERMORE == eID)
-	{
-		CGameObject* pMapText = nullptr;
-		ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
-
-		UIDesc.fCX = 193.f * 0.5f;
-		UIDesc.fCY = 93.f * 0.5f;
-		UIDesc.fX = g_iWinSizeX * 0.5f;
-		UIDesc.fY = g_iWinSizeY * 0.15f;
-
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MapName_Evermore"), &UIDesc, &pMapText)))
-			return E_FAIL;
-
-		m_pMapText = nullptr;
-		m_pMapText = dynamic_cast<CUI_Basic*>(pMapText);
-		if (nullptr == m_pMapText)
-			return E_FAIL;
-
-		Safe_AddRef(m_pMapText);
-	}
-	else if (LEVELID::LEVEL_KINGDOMHALL == eID)
-	{
-		CGameObject* pMapText = nullptr;
-		ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
-
-		UIDesc.fCX = 400.f * 0.5f;
-		UIDesc.fCY = 93.f * 0.5f;
-		UIDesc.fX = g_iWinSizeX * 0.5f;
-		UIDesc.fY = g_iWinSizeY * 0.15f;
-
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MapName_KingdomHall"), &UIDesc, &pMapText)))
-			return E_FAIL;
-
-		m_pMapText = nullptr;
-		m_pMapText = dynamic_cast<CUI_Basic*>(pMapText);
-		if (nullptr == m_pMapText)
-			return E_FAIL;
-
-		Safe_AddRef(m_pMapText);
-	}
-	else if (LEVELID::LEVEL_ICELAND == eID)
-	{
-		CGameObject* pMapText = nullptr;
-		ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
-
-		UIDesc.fCX = 300.f * 0.5f;
-		UIDesc.fCY = 93.f * 0.5f;
-		UIDesc.fX = g_iWinSizeX * 0.5f;
-		UIDesc.fY = g_iWinSizeY * 0.15f;
-
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MapName_IceLand"), &UIDesc, &pMapText)))
-			return E_FAIL;
-
-		m_pMapText = nullptr;
-		m_pMapText = dynamic_cast<CUI_Basic*>(pMapText);
-		if (nullptr == m_pMapText)
-			return E_FAIL;
-
-		Safe_AddRef(m_pMapText);
-	}
-	else if (LEVELID::LEVEL_WITCHFOREST == eID)
-	{
-		CGameObject* pMapText = nullptr;
-		ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
-
-		UIDesc.fCX = 193.f * 0.5f;
-		UIDesc.fCY = 93.f * 0.5f;
-		UIDesc.fX = g_iWinSizeX * 0.5f;
-		UIDesc.fY = g_iWinSizeY * 0.15f;
-
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MapName_WitchForest"), &UIDesc, &pMapText)))
-			return E_FAIL;
-
-		m_pMapText = nullptr;
-		m_pMapText = dynamic_cast<CUI_Basic*>(pMapText);
-		if (nullptr == m_pMapText)
-			return E_FAIL;
-
-		Safe_AddRef(m_pMapText);
-	}
-	else
-	{
-	}
+//	if (LEVELID::LEVEL_EVERMORE == eID)
+//	{
+//		CGameObject* pMapText = nullptr;
+//		ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+//
+//		UIDesc.fCX = 193.f * 0.5f;
+//		UIDesc.fCY = 93.f * 0.5f;
+//		UIDesc.fX = g_iWinSizeX * 0.5f;
+//		UIDesc.fY = g_iWinSizeY * 0.15f;
+//
+//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MapName_Evermore"), &UIDesc, &pMapText)))
+//			return E_FAIL;
+//
+//		m_pMapText = nullptr;
+//		m_pMapText = dynamic_cast<CUI_Basic*>(pMapText);
+//		if (nullptr == m_pMapText)
+//			return E_FAIL;
+//
+//		Safe_AddRef(m_pMapText);
+//	}
+//	else if (LEVELID::LEVEL_KINGDOMHALL == eID)
+//	{
+//		CGameObject* pMapText = nullptr;
+//		ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+//
+//		UIDesc.fCX = 400.f * 0.5f;
+//		UIDesc.fCY = 93.f * 0.5f;
+//		UIDesc.fX = g_iWinSizeX * 0.5f;
+//		UIDesc.fY = g_iWinSizeY * 0.15f;
+//
+//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MapName_KingdomHall"), &UIDesc, &pMapText)))
+//			return E_FAIL;
+//
+//		m_pMapText = nullptr;
+//		m_pMapText = dynamic_cast<CUI_Basic*>(pMapText);
+//		if (nullptr == m_pMapText)
+//			return E_FAIL;
+//
+//		Safe_AddRef(m_pMapText);
+//	}
+//	else if (LEVELID::LEVEL_ICELAND == eID)
+//	{
+//		CGameObject* pMapText = nullptr;
+//		ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+//
+//		UIDesc.fCX = 300.f * 0.5f;
+//		UIDesc.fCY = 93.f * 0.5f;
+//		UIDesc.fX = g_iWinSizeX * 0.5f;
+//		UIDesc.fY = g_iWinSizeY * 0.15f;
+//
+//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MapName_IceLand"), &UIDesc, &pMapText)))
+//			return E_FAIL;
+//
+//		m_pMapText = nullptr;
+//		m_pMapText = dynamic_cast<CUI_Basic*>(pMapText);
+//		if (nullptr == m_pMapText)
+//			return E_FAIL;
+//
+//		Safe_AddRef(m_pMapText);
+//	}
+//	else if (LEVELID::LEVEL_WITCHFOREST == eID)
+//	{
+//		CGameObject* pMapText = nullptr;
+//		ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+//
+//		UIDesc.fCX = 193.f * 0.5f;
+//		UIDesc.fCY = 93.f * 0.5f;
+//		UIDesc.fX = g_iWinSizeX * 0.5f;
+//		UIDesc.fY = g_iWinSizeY * 0.15f;
+//
+//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MapName_WitchForest"), &UIDesc, &pMapText)))
+//			return E_FAIL;
+//
+//		m_pMapText = nullptr;
+//		m_pMapText = dynamic_cast<CUI_Basic*>(pMapText);
+//		if (nullptr == m_pMapText)
+//			return E_FAIL;
+//
+//		Safe_AddRef(m_pMapText);
+//	}
+//	else
+//	{
+//	}
 
 #pragma endregion
 
@@ -2858,6 +2831,622 @@ HRESULT CUI_Manager::Ready_CommonUIs(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(pSlot);
 
+
+	return S_OK;
+}
+
+HRESULT CUI_Manager::Ready_GameObjectToLayer(LEVELID eID)
+{
+	if (nullptr == m_pDummy)
+		return E_FAIL;
+	if(FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pDummy)))
+		return E_FAIL;
+	Safe_AddRef(m_pDummy);
+
+	if (nullptr == m_pUIFade)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pUIFade)))
+		return E_FAIL;
+	Safe_AddRef(m_pUIFade);
+
+	if (nullptr == m_pUIMapName)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pUIMapName)))
+		return E_FAIL;
+	Safe_AddRef(m_pUIMapName);
+
+	for (auto& iter : m_LevelUp)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	if (nullptr == m_pPlayerStatus)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pPlayerStatus)))
+		return E_FAIL;
+	Safe_AddRef(m_pPlayerStatus);
+
+	if (nullptr == m_pBtnShowMenu)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pBtnShowMenu)))
+		return E_FAIL;
+	Safe_AddRef(m_pBtnShowMenu);
+
+	if (nullptr == m_pBtnCamera)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pBtnCamera)))
+		return E_FAIL;
+	Safe_AddRef(m_pBtnCamera);
+
+	if (nullptr == m_pBtnShowMinimap)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pBtnShowMinimap)))
+		return E_FAIL;
+	Safe_AddRef(m_pBtnShowMinimap);
+
+	if (nullptr == m_pBtnInven)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pBtnInven)))
+		return E_FAIL;
+	Safe_AddRef(m_pBtnInven);
+
+	if (nullptr == m_pBtnQuest)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pBtnQuest)))
+		return E_FAIL;
+	Safe_AddRef(m_pBtnQuest);
+
+	if (nullptr == m_pWindowQuest)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pWindowQuest)))
+		return E_FAIL;
+	Safe_AddRef(m_pWindowQuest);
+
+	if (nullptr == m_pMainBG)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pMainBG)))
+		return E_FAIL;
+	Safe_AddRef(m_pMainBG);
+
+	for (auto& iter : m_MainMenuBtn)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	if (nullptr == m_pBtnClose)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pBtnClose)))
+		return E_FAIL;
+	Safe_AddRef(m_pBtnClose);
+
+	for (auto& iter : m_SubMenuChar)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	for (auto& iter : m_MenuSeparator)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	for (auto& iter : m_SubMenuEquip)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	for (auto& iter : m_SubMenuPet)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	for (auto& iter : m_SubMenuShop)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	// MAPNAME은 새로 생성함.
+//	CUI::UI_INFO UIDesc = {};
+//	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+//	if (LEVELID::LEVEL_EVERMORE == eID)
+//	{
+//		CGameObject* pMapText = nullptr;
+//		ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+//
+//		UIDesc.fCX = 193.f * 0.5f;
+//		UIDesc.fCY = 93.f * 0.5f;
+//		UIDesc.fX = g_iWinSizeX * 0.5f;
+//		UIDesc.fY = g_iWinSizeY * 0.15f;
+//
+//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MapName_Evermore"), &UIDesc, &pMapText)))
+//			return E_FAIL;
+//
+//		m_pMapText = nullptr;
+//		m_pMapText = dynamic_cast<CUI_Basic*>(pMapText);
+//		if (nullptr == m_pMapText)
+//			return E_FAIL;
+//
+//		Safe_AddRef(m_pMapText);
+//	}
+//	else if (LEVELID::LEVEL_KINGDOMHALL == eID)
+//	{
+//		CGameObject* pMapText = nullptr;
+//		ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+//
+//		UIDesc.fCX = 400.f * 0.5f;
+//		UIDesc.fCY = 93.f * 0.5f;
+//		UIDesc.fX = g_iWinSizeX * 0.5f;
+//		UIDesc.fY = g_iWinSizeY * 0.15f;
+//
+//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MapName_KingdomHall"), &UIDesc, &pMapText)))
+//			return E_FAIL;
+//
+//		m_pMapText = nullptr;
+//		m_pMapText = dynamic_cast<CUI_Basic*>(pMapText);
+//		if (nullptr == m_pMapText)
+//			return E_FAIL;
+//
+//		Safe_AddRef(m_pMapText);
+//	}
+//	else if (LEVELID::LEVEL_ICELAND == eID)
+//	{
+//		CGameObject* pMapText = nullptr;
+//		ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+//
+//		UIDesc.fCX = 300.f * 0.5f;
+//		UIDesc.fCY = 93.f * 0.5f;
+//		UIDesc.fX = g_iWinSizeX * 0.5f;
+//		UIDesc.fY = g_iWinSizeY * 0.15f;
+//
+//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MapName_IceLand"), &UIDesc, &pMapText)))
+//			return E_FAIL;
+//
+//		m_pMapText = nullptr;
+//		m_pMapText = dynamic_cast<CUI_Basic*>(pMapText);
+//		if (nullptr == m_pMapText)
+//			return E_FAIL;
+//
+//		Safe_AddRef(m_pMapText);
+//	}
+//	else if (LEVELID::LEVEL_WITCHFOREST == eID)
+//	{
+//		CGameObject* pMapText = nullptr;
+//		ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+//
+//		UIDesc.fCX = 193.f * 0.5f;
+//		UIDesc.fCY = 93.f * 0.5f;
+//		UIDesc.fX = g_iWinSizeX * 0.5f;
+//		UIDesc.fY = g_iWinSizeY * 0.15f;
+//
+//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MapName_WitchForest"), &UIDesc, &pMapText)))
+//			return E_FAIL;
+//
+//		m_pMapText = nullptr;
+//		m_pMapText = dynamic_cast<CUI_Basic*>(pMapText);
+//		if (nullptr == m_pMapText)
+//			return E_FAIL;
+//
+//		Safe_AddRef(m_pMapText);
+//	}
+//	else
+//	{
+//	}
+
+	if (nullptr == m_pWorldMapBG)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pWorldMapBG)))
+		return E_FAIL;
+	Safe_AddRef(m_pWorldMapBG);
+
+	if (nullptr == m_pSkillBG)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pSkillBG)))
+		return E_FAIL;
+	Safe_AddRef(m_pSkillBG);
+
+	if (nullptr == m_pImajinnBG)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pImajinnBG)))
+		return E_FAIL;
+	Safe_AddRef(m_pImajinnBG);
+
+	if (nullptr == m_pDefaultBG)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pDefaultBG)))
+		return E_FAIL;
+	Safe_AddRef(m_pDefaultBG);
+
+	for (auto& iter : m_PlayerEXP)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	if (nullptr == m_pMonsterHPBack)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pMonsterHPBack)))
+		return E_FAIL;
+	Safe_AddRef(m_pMonsterHPBack);
+
+	if (nullptr == m_pMonsterHPBar)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pMonsterHPBar)))
+		return E_FAIL;
+	Safe_AddRef(m_pMonsterHPBar);
+
+	if (nullptr == m_pMonsterFrame)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pMonsterFrame)))
+		return E_FAIL;
+	Safe_AddRef(m_pMonsterFrame);
+
+	if (nullptr == m_pMonsterElemental)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pMonsterElemental)))
+		return E_FAIL;
+	Safe_AddRef(m_pMonsterElemental);
+
+	if (nullptr == m_pDialogWindow)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pDialogWindow)))
+		return E_FAIL;
+	Safe_AddRef(m_pDialogWindow);
+
+	if (nullptr == m_pDialogMini)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pDialogMini)))
+		return E_FAIL;
+	Safe_AddRef(m_pDialogMini);
+
+	for (auto& iter : m_Portrait)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	if (nullptr == m_pTabMenuTitle)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pTabMenuTitle)))
+		return E_FAIL;
+	Safe_AddRef(m_pTabMenuTitle);
+
+	for (auto& iter : m_Portrait)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	for (auto& iter : m_CostumeBtn)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	for (auto& iter : m_CostumeClickedBtn)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	if (nullptr == m_pCostumeBox)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pCostumeBox)))
+		return E_FAIL;
+	Safe_AddRef(m_pCostumeBox);
+
+	if (nullptr == m_pCostumeChange)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pCostumeChange)))
+		return E_FAIL;
+	Safe_AddRef(m_pCostumeChange);
+
+	for (auto& iter : m_ClassicSkill)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	for (auto& iter : m_ClassicFrame)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	for (auto& iter : m_SpecialSkill)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	for (auto& iter : m_SpecialFrame)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	for (auto& iter : m_ItemQuickslot)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	for (auto& iter : m_CostumeCloth)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	for (auto& iter : m_CostumeHairAcc)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	for (auto& iter : m_QuestPopUp)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	if (nullptr == m_pCameraAnnounce)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pCameraAnnounce)))
+		return E_FAIL;
+	Safe_AddRef(m_pCameraAnnounce);
+
+	if (nullptr == m_pEmoticonWindow)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pEmoticonWindow)))
+		return E_FAIL;
+	Safe_AddRef(m_pEmoticonWindow);
+
+	if (nullptr == m_pBalloon)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pBalloon)))
+		return E_FAIL;
+	Safe_AddRef(m_pBalloon);
+
+	if (nullptr == m_pInvenBox)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pInvenBox)))
+		return E_FAIL;
+	Safe_AddRef(m_pInvenBox);
+
+	for (auto& iter : m_InvenBtn)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	for (auto& iter : m_InvenClickedBtn)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	for (auto& iter : m_InvenSlots)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	for (auto& iter : m_SkillWindow)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	for (auto& iter : m_SkillBtn)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	for (auto& iter : m_SkillClickedBtn)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	for (auto& iter : m_ClassSkillSlot)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	for (auto& iter : m_SpecialSkillSlot)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	if (nullptr == m_pSkillDesc)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pSkillDesc)))
+		return E_FAIL;
+	Safe_AddRef(m_pSkillDesc);
+
+	if (nullptr == m_pCostumeAnnounce)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pCostumeAnnounce)))
+		return E_FAIL;
+	Safe_AddRef(m_pCostumeAnnounce);
+
+	if (nullptr == m_pBossInfo)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pBossInfo)))
+		return E_FAIL;
+	Safe_AddRef(m_pBossInfo);
+
+	if (nullptr == m_pBossHPBack)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pBossHPBack)))
+		return E_FAIL;
+	Safe_AddRef(m_pBossHPBack);
+
+	if (nullptr == m_pBossHPBar)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pBossHPBar)))
+		return E_FAIL;
+	Safe_AddRef(m_pBossHPBar);
+
+	for (auto& iter : m_Milepost)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	for (auto& iter : m_Minimap)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	for (auto& iter : m_WeaponIcon)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	for (auto& iter : m_WeaponElemental)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
 
 	return S_OK;
 }
@@ -5669,7 +6258,6 @@ HRESULT CUI_Manager::Ready_UILobbyPrototypes()
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SetNickname_Dice"),
 		CUI_Basic::Create(m_pDevice, m_pContext, L"UI_Btn_Basic_SetNickname_Dice", CUI_Basic::UI_BASIC::UILOBBY_DICE), LAYER_UI)))
 		return E_FAIL;
-
 
 	return S_OK;
 }

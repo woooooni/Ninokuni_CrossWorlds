@@ -30,6 +30,7 @@ public:
 
 private:
 	class CGameObject* m_pOwner = { nullptr };
+	class CCharacter* m_pPlayer = { nullptr };
 	UI_INTERACTION_TYPE m_eType = { INTERACTION_END };
 
 	_bool m_bRotate = { false };

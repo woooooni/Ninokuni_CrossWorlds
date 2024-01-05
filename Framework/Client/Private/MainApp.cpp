@@ -25,7 +25,7 @@
 #include "Camera_Group.h"
 
 #ifdef _DEBUG
-  // #include <vld.h>
+//#include <vld.h>
 #endif
 
 CMainApp::CMainApp()	
@@ -85,13 +85,13 @@ HRESULT CMainApp::Initialize()
 
 void CMainApp::Tick(_float fTimeDelta)
 {
+	CUI_Manager::GetInstance()->Tick(fTimeDelta);
 	CGame_Manager::GetInstance()->Tick(fTimeDelta);
 	GI->Tick(fTimeDelta);
-	CUI_Manager::GetInstance()->Tick(fTimeDelta);
 	
+	CUI_Manager::GetInstance()->LateTick(fTimeDelta);
 	CGame_Manager::GetInstance()->LateTick(fTimeDelta);
 	GI->LateTick(fTimeDelta);
-	CUI_Manager::GetInstance()->LateTick(fTimeDelta);
 	
 	m_fTimeAcc += fTimeDelta;
 }

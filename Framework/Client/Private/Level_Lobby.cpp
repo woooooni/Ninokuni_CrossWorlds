@@ -28,6 +28,9 @@ HRESULT CLevel_Lobby::Initialize()
 	if (FAILED(Ready_Layer_BackGround(LAYER_TYPE::LAYER_BACKGROUND)))
 		return E_FAIL;
 
+	if (FAILED(Ready_Layer_Character(LAYER_TYPE::LAYER_CHARACTER)))
+		return E_FAIL;
+
 	if (FAILED(Ready_Layer_UI(LAYER_TYPE::LAYER_UI)))
 		return E_FAIL;
 
@@ -75,6 +78,18 @@ HRESULT CLevel_Lobby::Exit_Level()
 
 HRESULT CLevel_Lobby::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 {
+	
+	return S_OK;
+}
+
+HRESULT CLevel_Lobby::Ready_Layer_Character(const LAYER_TYPE eLayerType)
+{
+	if (FAILED(GI->Add_GameObject(LEVEL_LOBBY, eLayerType, TEXT("Prototype_GameObject_UI_Lobby_Dummy_Swordsman"))))
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(LEVEL_LOBBY, eLayerType, TEXT("Prototype_GameObject_UI_Lobby_Dummy_Destroyer"))))
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(LEVEL_LOBBY, eLayerType, TEXT("Prototype_GameObject_UI_Lobby_Dummy_Engineer"))))
+		return E_FAIL;
 	
 	return S_OK;
 }

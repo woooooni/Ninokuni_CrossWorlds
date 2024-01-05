@@ -47,8 +47,6 @@ void CUI_Cursor::Tick(_float fTimeDelta)
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
 
-	Key_Input(fTimeDelta);
-
 	__super::Tick(fTimeDelta);
 }
 
@@ -130,14 +128,6 @@ HRESULT CUI_Cursor::Bind_ShaderResources()
 		return E_FAIL;
 
 	return S_OK;
-}
-
-void CUI_Cursor::Key_Input(_float fTimeDelta)
-{
-	if (KEY_TAP(KEY::LBTN))
-	{
-		// 클릭시 Event발생
-	}
 }
 
 CUI_Cursor* CUI_Cursor::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

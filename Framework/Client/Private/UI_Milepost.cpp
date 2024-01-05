@@ -68,7 +68,14 @@ HRESULT CUI_Milepost::Initialize(void* pArg)
 		m_pPlayer = pCharacter;
 	}
 
-	Set_TargetPosition(_float4(-69.5f, -2.7f, -10.f, 1.f));
+	if (LEVELID::LEVEL_EVERMORE == GI->Get_CurrentLevel())
+	{
+		Set_TargetPosition(_float4(-69.5f, -2.7f, -10.f, 1.f));
+	}
+	else
+	{
+		m_bActive = false;
+	}
 
 	return S_OK;
 }

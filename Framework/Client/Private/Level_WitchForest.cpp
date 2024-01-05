@@ -191,7 +191,7 @@ HRESULT CLevel_WitchForest::Ready_Layer_Monster(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_WitchForest::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 {
-	if (FAILED(CUI_Manager::GetInstance()->Ready_CommonUIs(LEVELID::LEVEL_WITCHFOREST)))
+	if (FAILED(CUI_Manager::GetInstance()->Ready_GameObjectToLayer(LEVELID::LEVEL_WITCHFOREST)))
 		return E_FAIL;
 
 	CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();

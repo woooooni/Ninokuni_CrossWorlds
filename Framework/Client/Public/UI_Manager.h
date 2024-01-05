@@ -42,7 +42,8 @@ public: // For Clone
 	HRESULT Ready_Dummy();
 	HRESULT Ready_Loadings();
 	HRESULT Ready_LobbyUIs();
-	HRESULT Ready_CommonUIs(LEVELID eID); // + Ready_Cursor, Ready_Veil 정리 필요함.
+	HRESULT Ready_GameObject(LEVELID eID); // + Ready_Cursor, Ready_Veil 정리 필요함.
+	HRESULT Ready_GameObjectToLayer(LEVELID eID);
 	HRESULT Ready_BossHPBar(class CBoss* pBoss, void* pArg = nullptr);
 	HRESULT UI_WndProcHandler(UINT message, WPARAM wParam, LPARAM lParam);
 	
