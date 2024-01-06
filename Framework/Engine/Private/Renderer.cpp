@@ -204,7 +204,9 @@ HRESULT CRenderer::Draw()
 			m_bOutlineDraw = m_bOption;
 			m_bBlurDraw = m_bOption;
 			m_bBlomDraw = m_bOption;
-			m_bPbrDraw  = m_bOption;
+			//m_bPbrDraw  = m_bOption;
+
+			Check_Option();
 		}
 	}
 
@@ -348,6 +350,50 @@ HRESULT CRenderer::Draw()
 	if (FAILED(Render_Debug()))
 		return E_FAIL;
 #endif // DEBUG
+
+	return S_OK;
+}
+
+HRESULT CRenderer::Check_Option()
+{
+	if (!m_bNaturalDraw)
+	{
+		if (FAILED(Render_ClearTarget(L"Target_Aurora_Diffuse")))
+			return E_FAIL;
+	}
+	if (!m_bShadowDraw)
+	{
+		if (FAILED(Render_ClearTarget(L"Target_ShadowDepth")))
+			return E_FAIL;
+	}
+	if (!m_bSsaoDraw)
+	{
+		if (FAILED(Render_ClearTarget(L"Target_SSAO_Blur")))
+			return E_FAIL;
+	}
+	if (!m_bOutlineDraw)
+	{
+		if (FAILED(Render_ClearTarget(L"Target_Outline")))
+			return E_FAIL;
+	}
+	if (!m_bBlurDraw)
+	{
+		if (FAILED(Render_ClearTarget(L"Target_SSAO_Blur")))
+			return E_FAIL;
+
+		if (FAILED(Render_ClearTarget(L"Target_SSAO")))
+			return E_FAIL;
+	}
+	if (!m_bBlomDraw)
+	{
+		if (FAILED(Render_ClearTarget(L"Target_Bloom_Blur")))
+			return E_FAIL;
+	}
+	//if (!m_bPbrDraw)
+	//{
+	//	if (FAILED(Render_ClearTarget(L"")))
+	//		return E_FAIL;
+	//}
 
 	return S_OK;
 }
@@ -1274,6 +1320,14 @@ HRESULT CRenderer::Render_AlphaBlendTargetMix(const wstring& strStartTargetTag, 
 		return E_FAIL;
 
 	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CRenderer::Render_ClearTarget(const wstring& strStartTargetTag)
+{
+	if (FAILED(m_pTarget_Manager->Clear_RenderTarget(strStartTargetTag)))
 		return E_FAIL;
 
 	return S_OK;

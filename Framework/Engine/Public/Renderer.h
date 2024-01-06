@@ -109,6 +109,7 @@ public:
 
 public:
 	HRESULT Draw();
+	HRESULT Check_Option();
 
 private:
 	HRESULT Render_Priority();
@@ -145,6 +146,9 @@ private:
 
 	// Mix
 	HRESULT Render_AlphaBlendTargetMix(const wstring& strStartTargetTag, const wstring& strFinalTragetTag, _bool bClear);
+
+	// Clear
+	HRESULT Render_ClearTarget(const wstring& strStartTargetTag);
 
 #ifdef _DEBUG
 private:
