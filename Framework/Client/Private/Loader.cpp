@@ -1156,30 +1156,30 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanFL05", CHumanFL05::Create(m_pDevice, m_pContext, TEXT("HumanFL05")), LAYER_NPC, true)))
 		return E_FAIL;
-	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanFL07", CHumanFL07::Create(m_pDevice, m_pContext, TEXT("HumanFL07")), LAYER_NPC, true)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanFLCapitalMerchant", CHumanFLCapitalMerchant::Create(m_pDevice, m_pContext, TEXT("HumanFLCapitalMerchant")), LAYER_NPC, true)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_KingdomGuard", CKingdomGuard::Create(m_pDevice, m_pContext, TEXT("KingdomGuard")), LAYER_NPC, true)))
-	//	return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanFL07", CHumanFL07::Create(m_pDevice, m_pContext, TEXT("HumanFL07")), LAYER_NPC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanFLCapitalMerchant", CHumanFLCapitalMerchant::Create(m_pDevice, m_pContext, TEXT("HumanFLCapitalMerchant")), LAYER_NPC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_KingdomGuard", CKingdomGuard::Create(m_pDevice, m_pContext, TEXT("KingdomGuard")), LAYER_NPC, true)))
+		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_NpcWeapon_Halberd", CNpcWeapon_Halberd::Create(m_pDevice, m_pContext, TEXT("NpcWeapon_Halberd")), LAYER_WEAPON, true)))
 		return E_FAIL;
-	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanML12", CHumanML12::Create(m_pDevice, m_pContext, TEXT("HumanML12")), LAYER_NPC, true)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanMM03", CHumanMM03::Create(m_pDevice, m_pContext, TEXT("HumanMM03")), LAYER_NPC, true)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_LuxerionHuman", CLuxerionHuman::Create(m_pDevice, m_pContext, TEXT("LuxerionHuman")), LAYER_NPC, true)))
-	//	return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanML12", CHumanML12::Create(m_pDevice, m_pContext, TEXT("HumanML12")), LAYER_NPC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanMM03", CHumanMM03::Create(m_pDevice, m_pContext, TEXT("HumanMM03")), LAYER_NPC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_LuxerionHuman", CLuxerionHuman::Create(m_pDevice, m_pContext, TEXT("LuxerionHuman")), LAYER_NPC, true)))
+		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanChild01", CHumanChild01::Create(m_pDevice, m_pContext, TEXT("HumanChild01")), LAYER_NPC, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanChild02", CHumanChild02::Create(m_pDevice, m_pContext, TEXT("HumanChild02")), LAYER_NPC, true)))
 		return E_FAIL;
-	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_SeekerCat", CSeekerCat::Create(m_pDevice, m_pContext, TEXT("SeekerCat")), LAYER_NPC, true)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_SeekerKing", CSeekerKing::Create(m_pDevice, m_pContext, TEXT("SeekerKing")), LAYER_NPC, true)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_SeekerObserver", CSeekerObserver::Create(m_pDevice, m_pContext, TEXT("SeekerObserver")), LAYER_NPC, true)))
-	//	return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_SeekerCat", CSeekerCat::Create(m_pDevice, m_pContext, TEXT("SeekerCat")), LAYER_NPC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_SeekerKing", CSeekerKing::Create(m_pDevice, m_pContext, TEXT("SeekerKing")), LAYER_NPC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_SeekerObserver", CSeekerObserver::Create(m_pDevice, m_pContext, TEXT("SeekerObserver")), LAYER_NPC, true)))
+		return E_FAIL;
 	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Ruslan", CRuslan::Create(m_pDevice, m_pContext, TEXT("Ruslan")), LAYER_NPC, true)))
 	//	return E_FAIL;
 	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanFS03", CHumanFS03::Create(m_pDevice, m_pContext, TEXT("HumanFS03")), LAYER_NPC, true)))
@@ -1196,23 +1196,23 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 	//	return E_FAIL;
 	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Aren", CAren::Create(m_pDevice, m_pContext, TEXT("Aren")), LAYER_NPC, true)))
 	//	return E_FAIL;
-	//
-	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanChildHalloweenA", CHumanChildHalloweenA::Create(m_pDevice, m_pContext, TEXT("HumanChildHalloweenA")), LAYER_NPC, true)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanChildHalloweenB", CHumanChildHalloweenB::Create(m_pDevice, m_pContext, TEXT("HumanChildHalloweenB")), LAYER_NPC, true)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_CaliaHuman", CCaliaHuman::Create(m_pDevice, m_pContext, TEXT("CaliaHuman")), LAYER_NPC, true)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanMSCrossFieldMerchant", CHumanMSCrossFieldMerchant::Create(m_pDevice, m_pContext, TEXT("HumanMSCrossFieldMerchant")), LAYER_NPC, true)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_RunnerCat", CRunnerCat::Create(m_pDevice, m_pContext, TEXT("RunnerCat")), LAYER_NPC, true)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_ThiefCat", CThiefCat::Create(m_pDevice, m_pContext, TEXT("ThiefCat")), LAYER_NPC, true)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Ghost1", CGhost1::Create(m_pDevice, m_pContext, TEXT("Ghost1")), LAYER_NPC, true)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Ghost2", CGhost2::Create(m_pDevice, m_pContext, TEXT("Ghost2")), LAYER_NPC, true)))
-	//	return E_FAIL;
+	
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanChildHalloweenA", CHumanChildHalloweenA::Create(m_pDevice, m_pContext, TEXT("HumanChildHalloweenA")), LAYER_NPC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanChildHalloweenB", CHumanChildHalloweenB::Create(m_pDevice, m_pContext, TEXT("HumanChildHalloweenB")), LAYER_NPC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_CaliaHuman", CCaliaHuman::Create(m_pDevice, m_pContext, TEXT("CaliaHuman")), LAYER_NPC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanMSCrossFieldMerchant", CHumanMSCrossFieldMerchant::Create(m_pDevice, m_pContext, TEXT("HumanMSCrossFieldMerchant")), LAYER_NPC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_RunnerCat", CRunnerCat::Create(m_pDevice, m_pContext, TEXT("RunnerCat")), LAYER_NPC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_ThiefCat", CThiefCat::Create(m_pDevice, m_pContext, TEXT("ThiefCat")), LAYER_NPC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Ghost1", CGhost1::Create(m_pDevice, m_pContext, TEXT("Ghost1")), LAYER_NPC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Ghost2", CGhost2::Create(m_pDevice, m_pContext, TEXT("Ghost2")), LAYER_NPC, true)))
+		return E_FAIL;
 	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Ruby", CRuby::Create(m_pDevice, m_pContext, TEXT("Ruby")), LAYER_NPC, true)))
 	//	return E_FAIL;
 	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanFSPioneer", CHumanFSPioneer::Create(m_pDevice, m_pContext, TEXT("HumanFSPioneer")), LAYER_NPC, true)))
@@ -1223,11 +1223,11 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 	//	return E_FAIL;
 	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Gosling", CGosling::Create(m_pDevice, m_pContext, TEXT("Gosling")), LAYER_NPC, true)))
 	//	return E_FAIL;
-	//
-	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_FunyaSnowman", CFunyaSnowman::Create(m_pDevice, m_pContext, TEXT("FunyaSnowman")), LAYER_NPC, true)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_GiftFunyaSnowman", CGiftFunyaSnowman::Create(m_pDevice, m_pContext, TEXT("GiftFunyaSnowman")), LAYER_NPC, true)))
-	//	return E_FAIL;
+	
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_FunyaSnowman", CFunyaSnowman::Create(m_pDevice, m_pContext, TEXT("FunyaSnowman")), LAYER_NPC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_GiftFunyaSnowman", CGiftFunyaSnowman::Create(m_pDevice, m_pContext, TEXT("GiftFunyaSnowman")), LAYER_NPC, true)))
+		return E_FAIL;
 	//if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_AquarisBella", CAquarisBella::Create(m_pDevice, m_pContext, TEXT("AquarisBella")), LAYER_NPC, true)))
 	//	return E_FAIL;
 
@@ -1276,30 +1276,30 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanFL05", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/HumanFL05/", L"HumanFL05")))
 		return E_FAIL;
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanFL07", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/HumanFL07/", L"HumanFL07")))
-	//	return E_FAIL;
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanFLCapitalMerchant", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/HumanFLCapitalMerchant/", L"HumanFLCapitalMerchant")))
-	//	return E_FAIL;
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_KingdomGuard", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/KingdomGuard/", L"KingdomGuard")))
-	//	return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanFL07", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/HumanFL07/", L"HumanFL07")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanFLCapitalMerchant", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/HumanFLCapitalMerchant/", L"HumanFLCapitalMerchant")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_KingdomGuard", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/KingdomGuard/", L"KingdomGuard")))
+		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_NpcWeapon_Halberd", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Npc_Weapon/NpcWeapon_Halberd/", L"NpcWeapon_Halberd")))
 		return E_FAIL;
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanML12", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/HumanML12/", L"HumanML12")))
-	//	return E_FAIL;
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanMM03", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/HumanMM03/", L"HumanMM03")))
-	//	return E_FAIL;
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_LuxerionHuman", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/LuxerionHuman/", L"LuxerionHuman")))
-	//	return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanML12", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/HumanML12/", L"HumanML12")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanMM03", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/HumanMM03/", L"HumanMM03")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_LuxerionHuman", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/LuxerionHuman/", L"LuxerionHuman")))
+		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanChild01", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/HumanChild01/", L"HumanChild01")))
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanChild02", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/HumanChild02/", L"HumanChild02")))
 		return E_FAIL;
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SeekerCat", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/SeekerCat/", L"SeekerCat")))
-	//	return E_FAIL;
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SeekerKing", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/SeekerKing/", L"SeekerKing")))
-	//	return E_FAIL;
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SeekerObserver", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/SeekerObserver/", L"SeekerObserver")))
-	//	return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SeekerCat", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/SeekerCat/", L"SeekerCat")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SeekerKing", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/SeekerKing/", L"SeekerKing")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SeekerObserver", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/SeekerObserver/", L"SeekerObserver")))
+		return E_FAIL;
 	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Ruslan", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/Ruslan/", L"Ruslan")))
 	//	return E_FAIL;
 	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanFS03", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/HumanFS03/", L"HumanFS03")))
@@ -1316,25 +1316,25 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 	//	return E_FAIL;
 	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Aren", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/Aren/", L"Aren")))
 	//	return E_FAIL;
-	//
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanChildHalloweenA", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Witch/HumanChildHalloweenA/", L"HumanChildHalloweenA")))
-	//	return E_FAIL;
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanChildHalloweenB", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Witch/HumanChildHalloweenB/", L"HumanChildHalloweenB")))
-	//	return E_FAIL;
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_CaliaHuman", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Witch/CaliaHuman/", L"CaliaHuman")))
-	//	return E_FAIL;
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanMSCrossFieldMerchant", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Witch/HumanMSCrossFieldMerchant/", L"HumanMSCrossFieldMerchant")))
-	//	return E_FAIL;
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_RunnerCat", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Witch/RunnerCat/", L"RunnerCat")))
-	//	return E_FAIL;
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_ThiefCat", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Witch/ThiefCat/", L"ThiefCat")))
-	//	return E_FAIL;
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Ghost1", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Witch/Ghost1/", L"Ghost1")))
-	//	return E_FAIL;
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Ghost2", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Witch/Ghost2/", L"Ghost2")))
-	//	return E_FAIL;
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanFSPioneer", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Witch/HumanFSPioneer/", L"HumanFSPioneer")))
-	//	return E_FAIL;
+	
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanChildHalloweenA", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Witch/HumanChildHalloweenA/", L"HumanChildHalloweenA")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanChildHalloweenB", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Witch/HumanChildHalloweenB/", L"HumanChildHalloweenB")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_CaliaHuman", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Witch/CaliaHuman/", L"CaliaHuman")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanMSCrossFieldMerchant", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Witch/HumanMSCrossFieldMerchant/", L"HumanMSCrossFieldMerchant")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_RunnerCat", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Witch/RunnerCat/", L"RunnerCat")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_ThiefCat", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Witch/ThiefCat/", L"ThiefCat")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Ghost1", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Witch/Ghost1/", L"Ghost1")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Ghost2", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Witch/Ghost2/", L"Ghost2")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanFSPioneer", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Witch/HumanFSPioneer/", L"HumanFSPioneer")))
+		return E_FAIL;
 	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Ruby", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Witch/Ruby/", L"Ruby")))
 	//	return E_FAIL;
 	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_TreeGrandfa", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Witch/TreeGrandfa/", L"TreeGrandfa")))
@@ -1343,11 +1343,11 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 	//	return E_FAIL;
 	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Gosling", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Witch/Gosling/", L"Gosling")))
 	//	return E_FAIL;
-	//
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_FunyaSnowman", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Ice/FunyaSnowman/", L"FunyaSnowman")))
-	//	return E_FAIL;
-	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_GiftFunyaSnowman", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Ice/GiftFunyaSnowman/", L"GiftFunyaSnowman")))
-	//	return E_FAIL;
+	
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_FunyaSnowman", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Ice/FunyaSnowman/", L"FunyaSnowman")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_GiftFunyaSnowman", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Ice/GiftFunyaSnowman/", L"GiftFunyaSnowman")))
+		return E_FAIL;
 	//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_AquarisBella", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Ice/AquarisBella/", L"AquarisBella")))
 	//	return E_FAIL;
 

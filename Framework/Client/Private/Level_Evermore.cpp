@@ -68,6 +68,46 @@ HRESULT CLevel_Evermore::Initialize()
 		return E_FAIL;
 	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanFL05"), nullptr)))
 		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanFL07"), nullptr)))
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanFLCapitalMerchant"), nullptr)))
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_KingdomGuard"), nullptr)))
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanML12"), nullptr)))
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanMM03"), nullptr)))
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_LuxerionHuman"), nullptr)))
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_SeekerCat"), nullptr)))
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_SeekerKing"), nullptr)))
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_SeekerObserver"), nullptr)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanChildHalloweenA"), nullptr)))
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanChildHalloweenB"), nullptr)))
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_CaliaHuman"), nullptr)))
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanMSCrossFieldMerchant"), nullptr)))
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_RunnerCat"), nullptr)))
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_ThiefCat"), nullptr)))
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_Ghost1"), nullptr)))
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_Ghost2"), nullptr)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_FunyaSnowman"), nullptr)))
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_GiftFunyaSnowman"), nullptr)))
+		return E_FAIL;
 
 	if (nullptr != CUI_Manager::GetInstance()->Get_Fade())
 		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 3.f);

@@ -9,7 +9,7 @@ class CBoss abstract : public CMonster
 public:
 	enum class BOSS_BOOLTYPE {
 		BOSSBOOL_ATKAROUND, BOSSBOOL_SKILLAROUND, BOSSBOOL_BERSERK, BOSSBOOL_RAGE, BOSSBOOL_RAGE2,
-		BOSSBOOL_COUNTER, 
+		BOSSBOOL_COUNTER, BOSSBOOL_INTRO,
 		BOSSBOOL_END
 	};
 
@@ -76,6 +76,7 @@ private:
 
 protected:
 	_bool   m_bBools[(_uint)BOSS_BOOLTYPE::BOSSBOOL_END] = { false, }; // 보스가 사용하는 bool모음.
+
 
 	// 최초 위치와 최초 look
 	_vector	m_vOriginLook = {};

@@ -36,6 +36,11 @@ public:
 		_int iMaxHp = 100;
 
 		_float fSpeed = 0.f;
+
+		// 툴에서 헷갈리지 않게.
+		_bool bHasMove = true;
+		_bool bHasTalk = true;
+		_bool bHasIdle = true;
 	}NPC_STAT;
 
 protected:
@@ -118,6 +123,8 @@ protected:
 	// 블룸 효과
 	_float3 m_vBloomPower = _float3(1.f, 1.f, 1.f);
 
+	// 일반, 유니크 구분
+	_bool m_bIsUnique = false;
 
 public:
 	virtual void Free() override;

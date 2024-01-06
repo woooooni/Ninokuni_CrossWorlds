@@ -263,6 +263,9 @@
     <ClInclude Include="..\Public\GlanixState_CounterEnd.h" />
     <ClInclude Include="..\Public\GlanixState_CounterLoop.h" />
     <ClInclude Include="..\Public\GlanixState_CounterStart.h" />
+    <ClInclude Include="..\Public\GlanixState_IntroFinish.h" />
+    <ClInclude Include="..\Public\GlanixState_IntroJump.h" />
+    <ClInclude Include="..\Public\GlanixState_IntroRoar.h" />
     <ClInclude Include="..\Public\GlanixState_Rage2Idle.h" />
     <ClInclude Include="..\Public\GlanixState_Rage2Rising.h" />
     <ClInclude Include="..\Public\GlanixState_Rage2Stamp.h" />
@@ -898,6 +901,9 @@
     <ClCompile Include="..\Private\GlanixState_CounterEnd.cpp" />
     <ClCompile Include="..\Private\GlanixState_CounterLoop.cpp" />
     <ClCompile Include="..\Private\GlanixState_CounterStart.cpp" />
+    <ClCompile Include="..\Private\GlanixState_IntroFinish.cpp" />
+    <ClCompile Include="..\Private\GlanixState_IntroJump.cpp" />
+    <ClCompile Include="..\Private\GlanixState_IntroRoar.cpp" />
     <ClCompile Include="..\Private\GlanixState_Rage2Idle.cpp" />
     <ClCompile Include="..\Private\GlanixState_Rage2Rising.cpp" />
     <ClCompile Include="..\Private\GlanixState_Rage2Stamp.cpp" />
