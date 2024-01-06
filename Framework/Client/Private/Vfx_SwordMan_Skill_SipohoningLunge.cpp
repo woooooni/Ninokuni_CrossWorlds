@@ -69,8 +69,8 @@ HRESULT CVfx_SwordMan_Skill_SipohoningLunge::Initialize_Prototype()
 
 	// 7 :Effect_Swordman_Skill_SipohoningLunge_CirecleLine_Attack_01
 	m_pFrameTriger[7]    = 19;
-	m_pPositionOffset[7] = _float3(0.f, 0.f, 0.f);
-	m_pScaleOffset[7]    = _float3(1.f, 1.f, 1.f);
+	m_pPositionOffset[7] = _float3(0.f, 1.f, 0.f);
+	m_pScaleOffset[7]    = _float3(0.5f, 0.4f, 0.5f);
 	m_pRotationOffset[7] = _float3(0.f, 0.f, 0.f);
 
 	// 8 : Particle_Swordman_Skill_SipohoningLunge_Sparkle_Circle
@@ -93,14 +93,14 @@ HRESULT CVfx_SwordMan_Skill_SipohoningLunge::Initialize_Prototype()
 
 	// 11 : Effect_Swordman_Skill_SipohoningLunge_CirecleLine_Attack_01
 	m_pFrameTriger[11]    = 41;
-	m_pPositionOffset[11] = _float3(0.f, 0.f, 0.f);
-	m_pScaleOffset[11]    = _float3(1.f, 1.f, 1.f);
+	m_pPositionOffset[11] = _float3(0.f, 1.f, 0.f);
+	m_pScaleOffset[11]    = _float3(0.5f, 0.4f, 0.5f);
 	m_pRotationOffset[11] = _float3(0.f, 0.f, 0.f);
 
 	// 12 : Effect_Swordman_Skill_SipohoningLunge_CirecleLine_Attack_02
 	m_pFrameTriger[12]    = 43;
-	m_pPositionOffset[12] = _float3(0.f, 0.f, 0.f);
-	m_pScaleOffset[12]    = _float3(1.f, 1.f, 1.f);
+	m_pPositionOffset[12] = _float3(0.f, 1.f, 0.f);
+	m_pScaleOffset[12]    = _float3(0.5f, 0.2f, 0.5f);
 	m_pRotationOffset[12] = _float3(0.f, 0.f, 0.f);
 
 	// 13 : Particle_Swordman_Skill_SipohoningLunge_Sparkle_Circle
@@ -136,11 +136,11 @@ void CVfx_SwordMan_Skill_SipohoningLunge::Tick(_float fTimeDelta)
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[0], m_pScaleOffset[0], m_pRotationOffset[0]);
 			m_iCount++;
 		}
-		// Particle_Swordman_Skill_SipohoningLunge_Hand_FlashSmall
+		// *Particle_Swordman_Skill_SipohoningLunge_Hand_FlashSmall
 		else if (m_iCount == 1 && m_iOwnerFrame >= m_pFrameTriger[1]) 
 		{
-			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_SipohoningLunge_Hand_FlashSmall"), 
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[1], m_pScaleOffset[1], m_pRotationOffset[1]);
+			//GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_SipohoningLunge_Hand_FlashSmall"), 
+			//	XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[1], m_pScaleOffset[1], m_pRotationOffset[1]);
 			m_iCount++;
 		}
 		// Effect_Swordman_Skill_SipohoningLunge_Trail_In
@@ -160,11 +160,11 @@ void CVfx_SwordMan_Skill_SipohoningLunge::Tick(_float fTimeDelta)
 
 		// -------------------------------------------------------------------------------------------
 
-		// Particle_Swordman_Skill_SipohoningLunge_Hand_FlashBig
+		// *Particle_Swordman_Skill_SipohoningLunge_Hand_FlashBig
 		else if (m_iCount == 4 && m_iOwnerFrame >= m_pFrameTriger[4])
 		{
-			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_SipohoningLunge_Hand_FlashBig"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[4], m_pScaleOffset[4], m_pRotationOffset[4]);
+			//GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_SipohoningLunge_Hand_FlashBig"),
+			//	XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[4], m_pScaleOffset[4], m_pRotationOffset[4]);
 			m_iCount++;
 		}
 		// Effect_Swordman_Skill_SipohoningLunge_CirecleLine_HandSmall
