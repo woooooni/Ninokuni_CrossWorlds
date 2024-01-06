@@ -121,11 +121,7 @@ void CVfx_SwordMan_Skill_PerfectBlade::Tick(_float fTimeDelta)
 		// TrailL 1
 		else if (m_iCount == 1 && m_iOwnerFrame >= m_pFrameTriger[1])
 		{
-			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_Perfectblade_Trail_Basic_Left"),
-				XMLoadFloat4x4(&m_WorldMatrix),
-				m_pPositionOffset[1], m_pScaleOffset[1], m_pRotationOffset[1],
-				m_pOwnerObject);
-			
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_Perfectblade_Trail_Basic_Left"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[1], m_pScaleOffset[1], m_pRotationOffset[1]);
 			m_iCount++;
 		}
 		// TrailR 2
@@ -168,6 +164,7 @@ void CVfx_SwordMan_Skill_PerfectBlade::Tick(_float fTimeDelta)
 			m_iCount++;
 
 		}
+		
 		// Sparkle_Circle
 		else if (m_iCount == 8 && m_iOwnerFrame >= m_pFrameTriger[8])
 		{

@@ -211,7 +211,7 @@ PS_OUT PS_MAIN(PS_IN In)
 
 	if (g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.0f)
 		Out.vDiffuse_None = vDiffuseColor;
-    else if (vDiffuseColor.a >= 0.5f)
+    else
     {
         if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.0f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.3f)
             Out.vDiffuse_Low = vDiffuseColor;
@@ -219,11 +219,11 @@ PS_OUT PS_MAIN(PS_IN In)
             Out.vDiffuse_Middle = vDiffuseColor;
         else
             Out.vDiffuse_High = vDiffuseColor;
-		
-		// Bloom
-        Out.vBloom = Caculation_Brightness(vDiffuseColor, In.iInstanceID);
     }
 
+	// Bloom
+    Out.vBloom = Caculation_Brightness(vDiffuseColor, In.iInstanceID);
+	
 	return Out;
 }
 

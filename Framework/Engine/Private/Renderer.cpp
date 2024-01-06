@@ -199,12 +199,12 @@ HRESULT CRenderer::Draw()
 			m_bOption = !m_bOption;
 
 			m_bNaturalDraw = m_bOption;
-			m_bShadowDraw = m_bOption;
-			m_bSsaoDraw = m_bOption;
+			m_bShadowDraw  = m_bOption;
+			m_bSsaoDraw    = m_bOption;
 			m_bOutlineDraw = m_bOption;
 			m_bBlurDraw = m_bOption;
 			m_bBlomDraw = m_bOption;
-			m_bPbrDraw = m_bOption;
+			m_bPbrDraw  = m_bOption;
 		}
 	}
 
@@ -284,12 +284,12 @@ HRESULT CRenderer::Draw()
 				return E_FAIL;
 			if (FAILED(Render_Blur(L"Target_Effect_Diffuse_High",   L"MRT_Blend", false, BLUR_HOR_HIGH, BLUR_VER_HIGH,     BLUR_UP_ONEMAX)))
 				return E_FAIL;
+		}
 
-			if (m_bBlomDraw)
-			{
-				if (FAILED(Render_Blur(L"Target_Effect_Bloom", L"MRT_Blend", false, BLUR_HOR_MIDDLE, BLUR_VER_MIDDLE, BLUR_UP_ONEADD)))
-					return E_FAIL;
-			}
+		if (m_bBlomDraw)
+		{
+			if (FAILED(Render_Blur(L"Target_Effect_Bloom", L"MRT_Blend", false, BLUR_HOR_MIDDLE, BLUR_VER_MIDDLE, BLUR_UP_ONEADD)))
+				return E_FAIL;
 		}
 	}
 
@@ -324,16 +324,16 @@ HRESULT CRenderer::Draw()
 				return E_FAIL;
 			if (FAILED(Render_Blur(L"Target_Effect_UI_Diffuse_High",   L"MRT_Blend", false, BLUR_HOR_HIGH, BLUR_VER_HIGH,     BLUR_UP_ONEMAX)))
 				return E_FAIL;
-
-			if (m_bBlomDraw)
-			{
-				if (FAILED(Render_Blur(L"Target_Effect_UI_Bloom", L"MRT_Blend", false, BLUR_HOR_MIDDLE, BLUR_VER_MIDDLE, BLUR_UP_ONEADD)))
-					return E_FAIL;
-			}
 		}
 
 		if (FAILED(Render_UIEffectBlend()))
 			return E_FAIL;
+
+		if (m_bBlomDraw)
+		{
+			if (FAILED(Render_Blur(L"Target_Effect_UI_Bloom", L"MRT_Blend", false, BLUR_HOR_MIDDLE, BLUR_VER_MIDDLE, BLUR_UP_ONEADD)))
+				return E_FAIL;
+		}
 	}
 
 	// FinalRender
