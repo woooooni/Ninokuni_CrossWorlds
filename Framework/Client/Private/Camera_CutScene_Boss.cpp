@@ -62,6 +62,11 @@ HRESULT CCamera_CutScene_Boss::Render()
 	return S_OK;
 }
 
+HRESULT CCamera_CutScene_Boss::Start_CutScene(const _uint& iBossType, const _uint& iProgressType)
+{
+	return E_NOTIMPL;
+}
+
 Vec4 CCamera_CutScene_Boss::Get_LookAt()
 {
 	return Vec4();

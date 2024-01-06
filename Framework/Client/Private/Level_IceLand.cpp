@@ -171,9 +171,9 @@ HRESULT CLevel_IceLand::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 	if (nullptr == pCharacterTransform)
 		return E_FAIL;
 
-
 	pCharacterTransform->Set_State(CTransform::STATE_POSITION, Vec4(-44.f, 6.f, 315.f, 1.f));
 
+	/* Set Camera */
 	if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))
 	{
 		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
@@ -183,6 +183,13 @@ HRESULT CLevel_IceLand::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 			pFollowCam->Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
 
 			pFollowCam->Set_Default_Position();
+		}
+
+		CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+		CCamera_Manager::GetInstance()->Set_CurCamera(pActionCam->Get_Key());
+		if (nullptr != pActionCam)
+		{
+			pActionCam->Start_Action(CCamera_Action::CAMERA_ACTION_TYPE::DOOR);
 		}
 	}
 

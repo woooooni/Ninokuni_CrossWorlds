@@ -3,8 +3,6 @@
 #include "Character.h"
 #include "State_Destroyer_DoorEnter.h"
 
-#include "Camera_Action.h"
-
 CState_Destroyer_DoorEnter::CState_Destroyer_DoorEnter(CStateMachine* pMachine)
     : CState_Character(pMachine)
 {
@@ -21,13 +19,6 @@ HRESULT CState_Destroyer_DoorEnter::Initialize(const list<wstring>& AnimationLis
 void CState_Destroyer_DoorEnter::Enter_State(void* pArg)
 {
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
-
-    CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-    CCamera_Manager::GetInstance()->Set_CurCamera(pActionCam->Get_Key());
-    if (nullptr != pActionCam)
-    {
-        pActionCam->Start_Action(CCamera_Action::CAMERA_ACTION_TYPE::DOOR);
-    }
 }
 
 void CState_Destroyer_DoorEnter::Tick_State(_float fTimeDelta)
