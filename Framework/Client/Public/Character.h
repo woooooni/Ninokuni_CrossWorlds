@@ -79,6 +79,7 @@ public:
 		DAMAGED_IMPACT,
 
 
+		LOBBY_SIT,
 		DEAD,
 		REVIVE,
 

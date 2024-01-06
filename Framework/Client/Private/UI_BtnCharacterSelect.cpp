@@ -3,6 +3,10 @@
 #include "GameInstance.h"
 #include "UI_Manager.h"
 
+#include "UI_Dummy_Swordsman.h"
+#include "UI_Dummy_Destroyer.h"
+#include "UI_Dummy_Engineer.h"
+
 CUI_BtnCharacterSelect::CUI_BtnCharacterSelect(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 	const wstring& strObjectTag, UI_SELECTBTN_TYPE eBtnType, UI_SELECTBTN_CHARACTER ePlayerType)
 	: CUI(pDevice, pContext, strObjectTag)
@@ -17,6 +21,47 @@ CUI_BtnCharacterSelect::CUI_BtnCharacterSelect(const CUI_BtnCharacterSelect& rhs
 	, m_eTextureType(rhs.m_eTextureType)
 	, m_iTextureIndex(rhs.m_iTextureIndex)
 {
+}
+
+void CUI_BtnCharacterSelect::Set_Active(_bool bActive)
+{
+	if (BTN_CLICKED == m_eTextureType)
+	{
+		switch (m_ePlayerType)
+		{
+		case UI_SELECTBTN_CHARACTER::BTN_SWORDMAN:
+			if (nullptr != m_pSwordsman)
+				m_pSwordsman->Set_ClickState(true);
+			break;
+
+		case UI_SELECTBTN_CHARACTER::BTN_DESTROYER:
+			break;
+
+		case UI_SELECTBTN_CHARACTER::BTN_ENGINEER:
+			break;
+		}
+	}
+
+	m_bActive = bActive;
+}
+
+void CUI_BtnCharacterSelect::Set_Move(_bool bMove)
+{
+	switch (m_ePlayerType)
+	{
+	case UI_SELECTBTN_CHARACTER::BTN_SWORDMAN:
+		if (nullptr != m_pSwordsman)
+			m_pSwordsman->Set_ClickState(false);
+		break;
+
+	case UI_SELECTBTN_CHARACTER::BTN_DESTROYER:
+		break;
+
+	case UI_SELECTBTN_CHARACTER::BTN_ENGINEER:
+		break;
+	}
+
+	m_bMoveStart = bMove;
 }
 
 HRESULT CUI_BtnCharacterSelect::Initialize_Prototype()
@@ -52,6 +97,27 @@ HRESULT CUI_BtnCharacterSelect::Initialize(void* pArg)
 		m_vOriginPosition.y = m_tInfo.fY;
 
 		m_vGoalPosition.x = m_tInfo.fX + 40.f;
+
+		if (UI_SELECTBTN_CHARACTER::BTN_SWORDMAN == m_ePlayerType)
+		{
+			CGameObject* pSwordsman = GI->Find_GameObject(LEVELID::LEVEL_LOBBY, LAYER_TYPE::LAYER_CHARACTER, L"UI_Lobby_Dummy_Swordsman");
+			if (nullptr == pSwordsman)
+				return E_FAIL;
+
+			m_pSwordsman = dynamic_cast<CUI_Dummy_Swordsman*>(pSwordsman);
+		}
+		else if (UI_SELECTBTN_CHARACTER::BTN_DESTROYER == m_ePlayerType)
+		{
+			m_pDestroyer;
+		}
+		else if (UI_SELECTBTN_CHARACTER::BTN_ENGINEER == m_ePlayerType)
+		{
+			m_pEngineer;
+		}
+		else
+		{
+
+		}
 	}
 
 	return S_OK;

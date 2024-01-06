@@ -10,12 +10,19 @@ private:
 	virtual ~CUI_Dummy_Destroyer() = default;
 
 public:
+	_bool Is_Clicked() { return m_bClicked; }
+	void Set_ClickState(_bool bClicked) { m_bClicked = bClicked; }
+
+public:
 	virtual HRESULT Initialize_Prototype() override;
 	virtual HRESULT Initialize(void* pArg) override;
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void LateTick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 	
+private:
+	_bool m_bClicked = { false };
+
 protected:
 	virtual HRESULT Ready_Components() override;
 	virtual HRESULT Ready_States() override;

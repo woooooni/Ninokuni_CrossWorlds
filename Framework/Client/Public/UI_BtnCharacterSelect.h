@@ -18,13 +18,15 @@ protected:
 	virtual ~CUI_BtnCharacterSelect() = default;
 
 public: // Get/Set ÇÔ¼ö
+	virtual void Set_Active(_bool bActive) override;
+
 	void Set_Clicked(_bool bClick) { m_bClicked = bClick; }
 	_bool Is_Clicked() { return m_bClicked; }
 
 	void Set_Arrive(_bool bArrive) { m_bArrived = bArrive; }
 	_bool Is_Arrived() { return m_bArrived; }
 
-	void Set_Move(_bool bMove) { m_bMoveStart = bMove; }
+	void Set_Move(_bool bMove);
 	_bool Get_IsMoved() { return m_bMoveStart; }
 
 	_bool Get_MoveEnd() { return m_bMoveEnd; }
@@ -61,6 +63,11 @@ private:
 
 	_int m_iTextureIndex = { -1 };
 	_float m_fTimeAcc = { 0.f };
+
+private:
+	class CUI_Dummy_Swordsman* m_pSwordsman = { nullptr };
+	class CUI_Dummy_Engineer* m_pEngineer = { nullptr };
+	class CUI_Dummy_Destroyer* m_pDestroyer = { nullptr };
 
 private:
 	virtual HRESULT	Ready_Components() override;

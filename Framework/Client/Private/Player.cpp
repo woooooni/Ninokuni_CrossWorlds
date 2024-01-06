@@ -84,7 +84,6 @@ CPlayer* CPlayer::Create()
 void CPlayer::Free()
 {
 	__super::Free();
-	Safe_Release(m_pCharacter);
 }
 
 
