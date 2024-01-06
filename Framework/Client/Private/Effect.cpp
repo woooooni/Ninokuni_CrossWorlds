@@ -484,7 +484,7 @@ void CEffect::Increment(_float fTimeDelta)
 				else
 				{
 					m_bAccIndexEnd = true;
-					m_tEffectDesc.fUVIndex = m_tEffectDesc.fMaxCount;
+					m_tEffectDesc.fUVIndex = _float2(m_tEffectDesc.fMaxCount.x - 1, m_tEffectDesc.fMaxCount.y - 1);
 				}
 			}
 		}
