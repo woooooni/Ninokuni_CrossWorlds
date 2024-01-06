@@ -60,9 +60,6 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 
 	__super::Tick(fTimeDelta); 
 
-	cout << "Update\n";
-	CUtils::ConsoleOut(Vec4(m_pTransformCom->Get_Position()));
-
 	/* Check Exception*/
 	if (LOCK_PROGRESS::OFF != m_eLockProgress)
 		Check_Exception();
@@ -82,22 +79,11 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 	}
 
 	/* Trnasform */
-	{
-		/* Position */
-		m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, Calculate_WorldPosition(fTimeDelta));
-	
-		/* Look & Shake */
-		const Vec4 vLookAtPos = Calculate_Look(fTimeDelta);
-		if (Is_Shake())
-			m_pTransformCom->LookAt(Vec4(vLookAtPos + Vec4(Get_ShakeLocalPos())).OneW());
-		else
-			m_pTransformCom->LookAt(vLookAtPos);
-	
-		/* Collision */
-		if(nullptr != m_pControllerCom)
-			m_pControllerCom->Tick_Controller(fTimeDelta);
-	}
+	Tick_Transform(fTimeDelta);
 
+	/* Hot Key */
+	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::CTRL))
+		Set_Default_Position();
 
 	/* Test */
 	Test(fTimeDelta);
@@ -108,45 +94,75 @@ void CCamera_Follow::LateTick(_float fTimeDelta)
 	if (!m_bActive || nullptr == m_pTargetObj || nullptr == m_pLookAtObj)
 		return;
 
-	if (nullptr != m_pControllerCom)
-		m_pControllerCom->LateTick_Controller(fTimeDelta);
+	//if (nullptr != m_pControllerCom && !m_bBlending)
+	//	m_pControllerCom->LateTick_Controller(fTimeDelta);
 
 	__super::LateTick(fTimeDelta);
 }
 
 void CCamera_Follow::Set_Default_Position()
 {
-	CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
-
-	/* 현재 타겟의 Y축 회전 상태를 CW 0 ~ 360로 반환한다. */
-	_float fRot = 0.f;
+	/* 구면 좌표계 앵글 값 계산 */
 	{
-		Vec3 vLook = pTargetTransform->Get_Look();
+		CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
 
-		_float fAngle = atan2(vLook.x, vLook.z);
+		/* 현재 타겟의 Y축 회전 상태를 CW 0 ~ 360로 반환한다. */
+		_float fRot = 0.f;
+		{
+			Vec3 vLook = pTargetTransform->Get_Look();
 
-		const _float fDegreesPerRadian = 180.0f / DirectX::XM_PI;
-		fRot = fAngle * fDegreesPerRadian;
-		if (fRot < 0)
-			fRot += 360.f;
+			_float fAngle = atan2(vLook.x, vLook.z);
+
+			const _float fDegreesPerRadian = 180.0f / DirectX::XM_PI;
+			fRot = fAngle * fDegreesPerRadian;
+			if (fRot < 0)
+				fRot += 360.f;
+		}
+
+		/* 회전 값을 통해 플레이어 룩 반대 방향에 카메라를 위치하기 위한 구면 좌표계 앵글값을 구한다.*/
+		_float result = 0.f;
+		{
+			if (fRot >= 0 && fRot <= 270) 
+				result = -0.5f * XM_PI - fRot * (1.5f * XM_PI / 270.0f);
+	
+			else if (fRot > 270 && fRot <= 360) 
+				result = 0.0f - (fRot - 270) * (0.5f * XM_PI / 90.0f); 
+	
+			else 
+				result = fRot;
+		}
+
+		m_vAngle = { result, m_fDefaultAngleY };
 	}
 
-	/* 회전 값을 통해 플레이어 룩 반대 방향에 카메라를 위치하기 위한 구면 좌표계 앵글값을 구한다.*/
-	_float result = 0.f;
+
+	/* 포지션 갱신 */
 	{
-		if (fRot >= 0 && fRot <= 270) 
-			result = -0.5f * XM_PI - fRot * (1.5f * XM_PI / 270.0f);
-	
-		else if (fRot > 270 && fRot <= 360) 
-			result = 0.0f - (fRot - 270) * (0.5f * XM_PI / 90.0f); 
-	
-		else 
-			result = fRot;
+		/* 세팅된 앵글값으로만 구면좌표를 계산하기 위해 일시적으로 인풋을 끈다. */
+		m_bCanInput = false;
+		{
+			/* 댐핑 리셋 */
+			/* 트랜스폼 틱을 돌려 포지션과 룩을 다시 세팅한다. (델타타임 밀릴 가능성 존재) */
+			m_tDampingDesc.bSet = false;
+			Tick_Transform(GI->Compute_TimeDelta(TIMER_TYPE::GAME_PLAY));
+
+			m_tDampingDesc.bSet = false;
+			Tick_Transform(GI->Compute_TimeDelta(TIMER_TYPE::GAME_PLAY));
+
+			m_tDampingDesc.bSet = false;
+			Tick_Transform(GI->Compute_TimeDelta(TIMER_TYPE::GAME_PLAY));
+
+			/* 이유는 모르겠지만 2번 이상 틱 트랜스폼을 돌려야 카메라의 회전에서 얻는 룩앳 오프셋 위치가 제대로 세팅된다. */
+			/* 현재 팔로우 카메라의 룩앳 오프셋 계산은 팔로우 카메라의 회전행렬에 기반하기 때문이다. */
+			/* 혹시 룩앳 오프셋이 맞지 않는다면 3번까지 돌려보자*/
+		}
+		m_bCanInput = true;
 	}
+}
 
-	m_vAngle = { result, m_fDefaultAngleY };
-
-	m_tDampingDesc.bSet = false;
+Vec4 CCamera_Follow::Get_LookAt()
+{
+	return m_vPrevLookAt;
 }
 
 HRESULT CCamera_Follow::Start_LockOn(CGameObject* pTargetObject, const Vec4& vTargetOffset, const Vec4& vLookAtOffset, const _float& fLockOnBlendingTime)
@@ -206,23 +222,45 @@ HRESULT CCamera_Follow::Ready_Components()
 	return S_OK;
 }
 
+void CCamera_Follow::Tick_Transform(const _float fDeltaTime)
+{
+	/* Position */
+	const Vec4 vCamPos = Calculate_WorldPosition(fDeltaTime);
+	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vCamPos);
+
+	/* Look & Shake */
+	const Vec4 vLookAtPos = Calculate_Look();
+	{
+		if (Is_Shake())
+			m_vPrevLookAt = Vec4(vLookAtPos + Vec4(Get_ShakeLocalPos())).OneW();
+		else
+			m_vPrevLookAt = vLookAtPos;
+
+		m_pTransformCom->LookAt(m_vPrevLookAt);
+	}
+
+	/* PhysX */
+	//if (nullptr != m_pControllerCom && !m_bBlending)
+	//	m_pControllerCom->Tick_Controller(fDeltaTime);
+}
+
 void CCamera_Follow::Tick_Blending(const _float fDeltaTime)
 {
 	const Vec4 vCamPosition = CCamera_Manager::GetInstance()->Get_BlendingPosition();
 
-	//Vec4 vCamLookAt = CCamera_Manager::GetInstance()->Get_BlendingLookAt();
+	m_vPrevLookAt = CCamera_Manager::GetInstance()->Get_BlendingLookAt();
 
 	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vCamPosition);
 
-	//m_pTransformCom->LookAt(vCamLookAt);
+	m_pTransformCom->LookAt(m_vPrevLookAt);
 
-	//cout << "\nBlending 0\n";
-	//CUtils::ConsoleOut(Vec4(m_pTransformCom->Get_Position()));
-	//
-	//cout << "Blending 1\n";
-	//CUtils::ConsoleOut(vCamPosition);
-	//
-	//cout << endl << endl;
+	/* PhysX */
+	/* 블렌딩 동안은 피직스를 돌리지 않는다. */
+	//if (nullptr != m_pControllerCom)
+	//	m_pControllerCom->Tick_Controller(fDeltaTime);
+
+	/* 블렌딩 시작시 댐핑을 리셋하므로 블렌딩이 종료될 때까지 블렌딩 리셋 상태를 유지해야 한다. */
+	m_tDampingDesc.bSet = false;
 }
 
 Vec4 CCamera_Follow::Calculate_WorldPosition(_float fTimeDelta)
@@ -318,11 +356,11 @@ Vec4 CCamera_Follow::Calculate_LoaclSphericalPosition(_float fTimeDelta)
 	return vCamLocal;
 }
 
-Vec4 CCamera_Follow::Calculate_Look(_float fTimeDelta)
+Vec4 CCamera_Follow::Calculate_Look()
 {
 	Vec4 vLookAt, vLookAtOffset;
 
-	CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
+	CTransform* pTargetTransform = m_pLookAtObj->Get_Component<CTransform>(L"Com_Transform");
 
 	/* 룩앳 위치 */
 	if (LOCK_PROGRESS::OFF != m_eLockProgress)
@@ -424,15 +462,14 @@ void CCamera_Follow::Test(_float fTimeDelta)
 				Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
 		}
 
-		//if (KEY_TAP(KEY::HOME))
-		//{
-		//	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
-		//	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_CurCamera());
-		//	if (nullptr != pActionCam)
-		//	{
-		//		pActionCam->Start_Action(CCamera_Action::CAMERA_ACTION_TYPE::DOOR);
-		//	}
-		//}
+		if (KEY_TAP(KEY::HOME))
+		{
+			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_CurCamera());
+			if (nullptr != pActionCam)
+			{
+				pActionCam->Start_Action(CCamera_Action::CAMERA_ACTION_TYPE::DOOR);
+			}
+		}
 	}
 
 	{
@@ -471,5 +508,4 @@ void CCamera_Follow::Free()
 	__super::Free();
 	Safe_Release(m_pControllerCom);
 	Safe_Release(m_pTransformCom);
-	Safe_Release(m_pControllerCom);
 }

@@ -21,9 +21,14 @@ public:
 	virtual void LateTick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 
+public:
+	virtual void Tick_Blending(const _float fDeltaTime) override;
+
+public:
+	virtual Vec4 Get_LookAt() override;
+
 private:
 	virtual HRESULT Ready_Components() override;
-	virtual void Tick_Blending(const _float fDeltaTime) override;
 
 public:
 	static CCamera_CutScene_Boss* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);

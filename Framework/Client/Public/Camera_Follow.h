@@ -42,6 +42,9 @@ public:
 	virtual HRESULT Render() override { return S_OK; }
 
 public:
+	virtual void Tick_Blending(const _float fDeltaTime) override;
+
+public:
 	/* Access */
 	const _float& Get_DampingCoefficient() const { return m_tDampingDesc.fDampingCoefficient; }
 	void Set_DampingCoefficient(const _float& fCoefficient) { m_tDampingDesc.fDampingCoefficient = fCoefficient; }
@@ -67,18 +70,20 @@ public:
 
 	void Reset_Damping() { m_tDampingDesc.bSet = false; }
 
+	virtual Vec4 Get_LookAt() override;
+
 public:
 	HRESULT Start_LockOn(CGameObject* pTargetObject, const Vec4& vTargetOffset, const Vec4& vLookAtOffset, const _float& fLockOnBlendingTime = Cam_LockOn_Blending_Time_Default);
 	HRESULT Finish_LockOn(CGameObject* pTargetObject, const _float& fLockOnBlendingTime = Cam_LockOn_Blending_Time_Default);
 
 private:
 	virtual HRESULT Ready_Components() override;
-	virtual void Tick_Blending(const _float fDeltaTime) override;
+	void Tick_Transform(const _float fDeltaTime);
 
 private:
 	Vec4 Calculate_WorldPosition(_float fTimeDelta);
 	Vec4 Calculate_LoaclSphericalPosition(_float fTimeDelta);
-	Vec4 Calculate_Look(_float fTimeDelta);
+	Vec4 Calculate_Look();
 	Vec4 Calculate_DampingPosition(Vec4 vGoalPos);
 
 	void Check_Exception();
@@ -88,7 +93,7 @@ private:
 
 private:
 	/* 구면 좌표계 */
-	Vec2			m_vAngle				= { -1.57f, 1.3f }; /* x가 0일 경우 플레이어 라이트에서 시작*/
+	Vec2			m_vAngle				= { -1.57f, 1.8f }; /* x가 0일 경우 플레이어 라이트에서 시작*/
 	const _float	m_fDefaultAngleY		= 1.3f;
 
 	/* 구면 좌표계에서 카메라의 최대 최소 y 값*/
@@ -110,6 +115,8 @@ private:
 
 	/* 카메라의 월드 행렬 상태 변환으로 인해 오프셋의 y가 -가 되어 땅을 뚫는 현상 방지*/
 	_float			m_fLockTargetOffsetMinY = 0.5f;
+
+	Vec4			m_vPrevLookAt = {};
 
 public:
 	static CCamera_Follow* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
