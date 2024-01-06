@@ -91,6 +91,7 @@ HRESULT CHumanChild02::Ready_Components()
 	if (FAILED(__super::Ready_Components()))
 		return E_FAIL;
 
+	return S_OK;
 }
 
 HRESULT CHumanChild02::Ready_States()
