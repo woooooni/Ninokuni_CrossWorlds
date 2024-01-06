@@ -28,7 +28,7 @@ HRESULT CVfx_SwordMan_Skill_SipohoningLunge::Initialize_Prototype()
 	// 0 : Decal_Swordman_Skill_SipohoningLunge_Circle
 	m_pFrameTriger[0]    = 0;
 	m_pPositionOffset[0] = _float3(0.f, 0.f, 0.2f);
-	m_pScaleOffset[0]    = _float3(10.f, 1.f, 10.f);
+	m_pScaleOffset[0]    = _float3(10.f, 5.f, 10.f);
 	m_pRotationOffset[0] = _float3(0.f, 0.f, 0.f);
 
 	// 1 : Particle_Swordman_Skill_SipohoningLunge_Hand_FlashSmall
@@ -46,7 +46,7 @@ HRESULT CVfx_SwordMan_Skill_SipohoningLunge::Initialize_Prototype()
 	// 3 : Decal_Swordman_Skill_SipohoningLunge_Square
 	m_pFrameTriger[3]    = 15;
 	m_pPositionOffset[3] = _float3(0.f, 0.f, 0.25f);
-	m_pScaleOffset[3]    = _float3(4.f, 1.f, 8.f);
+	m_pScaleOffset[3]    = _float3(4.f, 5.f, 8.f);
 	m_pRotationOffset[3] = _float3(0.f, 0.f, 0.f);
 
 	// 4 : Particle_Swordman_Skill_SipohoningLunge_Hand_FlashBig
@@ -88,7 +88,7 @@ HRESULT CVfx_SwordMan_Skill_SipohoningLunge::Initialize_Prototype()
 	// 10 : Decal_Swordman_Skill_SipohoningLunge_Crack
 	m_pFrameTriger[10]    = 38;
 	m_pPositionOffset[10] = _float3(0.f, 0.f, 0.f);
-	m_pScaleOffset[10]    = _float3(8.f, 1.f, 8.f);
+	m_pScaleOffset[10]    = _float3(8.f, 5.f, 8.f);
 	m_pRotationOffset[10] = _float3(0.f, 0.f, 0.f);
 
 	// 11 : Effect_Swordman_Skill_SipohoningLunge_CirecleLine_Attack_01

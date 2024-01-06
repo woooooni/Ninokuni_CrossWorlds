@@ -269,6 +269,18 @@ HRESULT CRenderer::Draw()
 	{
 		if (FAILED(Render_Effect()))
 			return E_FAIL;
+		if (FAILED(Render_Decal()))
+			return E_FAIL;
+
+
+		if (FAILED(Render_AlphaBlendTargetMix(L"Target_Decal_Diffuse", L"MRT_Blend", false)))
+			return E_FAIL;
+		if (m_bBlomDraw)
+		{
+			if (FAILED(Render_Blur(L"Target_Decal_Bloom", L"MRT_Blend", false, BLUR_HOR_MIDDLE, BLUR_VER_MIDDLE, BLUR_UP_ONEADD)))
+				return E_FAIL;
+		}
+
 
 		if (!m_bBlurDraw)
 		{
@@ -877,6 +889,26 @@ HRESULT CRenderer::Render_AlphaBlend()
 	return S_OK;
 }
 
+// MRT_Decal
+HRESULT CRenderer::Render_Decal()
+{
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Decal"))))
+		return E_FAIL;
+
+	for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_DECAL])
+	{
+		if (FAILED(iter->Render()))
+			return E_FAIL;
+		Safe_Release(iter);
+	}
+	m_RenderObjects[RENDER_DECAL].clear();
+
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
 // MRT_Effect
 HRESULT CRenderer::Render_Effect()
 {
@@ -1116,7 +1148,8 @@ HRESULT CRenderer::Render_Debug()
 
 	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Aurora"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Aurora_Post"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
+
+	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Decal"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
 		return E_FAIL;
 
 	return S_OK;
@@ -1480,6 +1513,18 @@ HRESULT CRenderer::Create_Target()
 		return E_FAIL;
 #pragma endregion
 
+#pragma region MRT_Effect : Target_Decal_Diffuse / Target_Decal_Bloom
+	/* For.Target_Decal_Diffuse */
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Decal_Diffuse"),
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+
+	/* For.Target_Decal_Bloom */
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Decal_Bloom"),
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+#pragma endregion
+
 #pragma region MRT_Effect : Target_Effect_Diffuse 1 ~ 5 / Target_Effect_Bloom
 	/* For.Target_Effect_Diffuse_All */
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Effect_Diffuse_All"),
@@ -1632,6 +1677,14 @@ HRESULT CRenderer::Set_TargetsMrt()
 			return E_FAIL;
 	}
 
+	// MRT_Decal
+	{
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Decal"), TEXT("Target_Decal_Diffuse"))))
+			return E_FAIL;
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Decal"), TEXT("Target_Decal_Bloom"))))
+			return E_FAIL;
+	}
+
 	// MRT_Effect
 	{
 		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Effect"), TEXT("Target_Effect_Diffuse_All"))))
@@ -1771,6 +1824,12 @@ HRESULT CRenderer::Set_Debug()
 
 	// Aurora
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Aurora_Diffuse"),           (fSizeX / 2.f) + (fSizeX * 0), (fSizeY / 2.f) + (fSizeY * 5), fSizeX, fSizeY)))
+		return E_FAIL;
+
+	// Mrt_Decal
+	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Decal_Diffuse"),            (fSizeX / 2.f) + (fSizeX * 0), (fSizeY / 2.f) + (fSizeY * 6), fSizeX, fSizeY)))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Decal_Bloom"),              (fSizeX / 2.f) + (fSizeX * 1), (fSizeY / 2.f) + (fSizeY * 6), fSizeX, fSizeY)))
 		return E_FAIL;
 
 	// MRT_Blend

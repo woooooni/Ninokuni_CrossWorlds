@@ -73,14 +73,10 @@ PS_OUT PS_MAIN(PS_IN In)
 	return Out;
 }
 
-struct PS_OUT_EFFECT
+struct PS_OUT_DECAL
 {
-    float4 vDiffuse_All    : SV_TARGET0;
-    float4 vDiffuse_None   : SV_TARGET1;
-    float4 vDiffuse_Low    : SV_TARGET2;
-    float4 vDiffuse_Middle : SV_TARGET3;
-    float4 vDiffuse_High   : SV_TARGET4;
-    float4 vBloom          : SV_TARGET5;
+    float4 vDiffuse : SV_TARGET0;
+    float4 vBloom   : SV_TARGET1;
 };
 
 float4 Caculation_Brightness(float4 vColor)
@@ -94,9 +90,9 @@ float4 Caculation_Brightness(float4 vColor)
     return vBrightnessColor;
 }
 
-PS_OUT_EFFECT PS_MAIN_DECAL(PS_IN In)
+PS_OUT_DECAL PS_MAIN_DECAL(PS_IN In)
 {
-    PS_OUT_EFFECT Out = (PS_OUT_EFFECT) 0;
+    PS_OUT_DECAL Out = (PS_OUT_DECAL) 0;
 
 	// Decal Box의 x,y 위치를 UV좌표로 변환.
     float2 vTexUV;
@@ -133,12 +129,8 @@ PS_OUT_EFFECT PS_MAIN_DECAL(PS_IN In)
 		vDiffuseColor.r <= g_fBlack_Discard.r && vDiffuseColor.g <= g_fBlack_Discard.g && vDiffuseColor.b <= g_fBlack_Discard.b)
         discard;
         
-    Out.vDiffuse_All    = float4(0.f, 0.f, 0.f, 0.f);
-    Out.vDiffuse_None   = float4(0.f, 0.f, 0.f, 0.f);
-    Out.vDiffuse_Low    = float4(0.f, 0.f, 0.f, 0.f);
-    Out.vDiffuse_Middle = float4(0.f, 0.f, 0.f, 0.f);
-    Out.vDiffuse_High   = float4(0.f, 0.f, 0.f, 0.f);
-    Out.vBloom          = float4(0.f, 0.f, 0.f, 0.f);
+    Out.vDiffuse = float4(0.f, 0.f, 0.f, 0.f);
+    Out.vBloom   = float4(0.f, 0.f, 0.f, 0.f);
     
     if (vDiffuseColor.a >= g_fColor_Add_01_Alpha)
     {
@@ -148,15 +140,7 @@ PS_OUT_EFFECT PS_MAIN_DECAL(PS_IN In)
     else
         vDiffuseColor.rgb += g_fColor_Add_02;
     
-    Out.vDiffuse_All  = vDiffuseColor;
-    if (g_fBlur_Power <= 0.0f)
-        Out.vDiffuse_None = vDiffuseColor;
-    else if (g_fBlur_Power > 0.0f && g_fBlur_Power <= 0.3f)
-        Out.vDiffuse_Low = vDiffuseColor;
-    else if (g_fBlur_Power > 0.3f && g_fBlur_Power <= 0.7f)
-        Out.vDiffuse_Middle = vDiffuseColor;
-    else
-        Out.vDiffuse_High = vDiffuseColor;
+    Out.vDiffuse = vDiffuseColor;
     
     return Out;
 }

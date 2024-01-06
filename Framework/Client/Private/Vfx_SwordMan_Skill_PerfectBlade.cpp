@@ -28,7 +28,7 @@ HRESULT CVfx_SwordMan_Skill_PerfectBlade::Initialize_Prototype()
 	// 0 : Decal 1
 	m_pFrameTriger[0]    = 0;
 	m_pPositionOffset[0] = _float3(0.f, 0.f, 0.2f);
-	m_pScaleOffset[0]    = _float3(5.f, 1.f, 5.f);
+	m_pScaleOffset[0]    = _float3(5.f, 5.f, 5.f);
 	m_pRotationOffset[0] = _float3(0.f, 0.f, 0.f);
 
 	// 1 : TrailL 1
