@@ -34,8 +34,20 @@ void CState_SwordMan_Battle_Idle::Tick_State(_float fTimeDelta)
         m_pModelCom->Set_Animation(m_iCurrAnimIndex);
     }
 
-    if (m_iCurrAnimIndex == m_AnimIndices[1] && false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
-        m_pStateMachineCom->Change_State(CCharacter::STATE::NEUTRAL_IDLE);
+    if (m_iCurrAnimIndex == m_AnimIndices[1])
+    {
+        if (m_pModelCom->Get_CurrAnimationFrame() >= 18.f)
+        {
+            m_pCharacter->Disappear_Weapon();
+        }
+
+        if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
+        {
+            m_pStateMachineCom->Change_State(CCharacter::STATE::NEUTRAL_IDLE);
+        }
+    }
+    
+        
 
     Input(fTimeDelta);
     
