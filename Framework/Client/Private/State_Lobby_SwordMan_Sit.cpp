@@ -55,7 +55,7 @@ void CState_Lobby_SwordMan_Sit::Tick_State(_float fTimeDelta)
 //
 //            if (m_fSitTimeAcc >= m_fSitMotionTime)
 //            {
-                if (false == m_pModelCom->Is_Tween() && m_pModelCom->Is_Finish());
+                if (false == m_pModelCom->Is_Tween() && m_pModelCom->Is_Finish())
                 {
                     m_fSitTimeAcc = 0.f;
                     m_iCurrAnimIndex = m_AnimIndices[GI->RandomInt(1, 2)];
