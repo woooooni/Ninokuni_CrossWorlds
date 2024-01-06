@@ -87,9 +87,6 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 
 	/* Test */
 	Test(fTimeDelta);
-
-	//cout << "Tick" << endl;
-	//CUtils::ConsoleOut((Vec4)m_pTransformCom->Get_Position());
 }
 
 void CCamera_Follow::LateTick(_float fTimeDelta)
@@ -97,16 +94,14 @@ void CCamera_Follow::LateTick(_float fTimeDelta)
 	if (!m_bActive || nullptr == m_pTargetObj || nullptr == m_pLookAtObj)
 		return;
 
-	if (nullptr != m_pControllerCom)
-		m_pControllerCom->LateTick_Controller(fTimeDelta);
+	//if (nullptr != m_pControllerCom && !m_bBlending)
+	//	m_pControllerCom->LateTick_Controller(fTimeDelta);
 
 	__super::LateTick(fTimeDelta);
 }
 
 void CCamera_Follow::Set_Default_Position()
 {
-	cout << "Set_Default_Position" << endl;
-
 	/* 구면 좌표계 앵글 값 계산 */
 	{
 		CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
@@ -140,16 +135,26 @@ void CCamera_Follow::Set_Default_Position()
 		m_vAngle = { result, m_fDefaultAngleY };
 	}
 
+
 	/* 포지션 갱신 */
 	{
-		/* 댐핑 리셋 */
-		m_tDampingDesc.bSet = false;
-
 		/* 세팅된 앵글값으로만 구면좌표를 계산하기 위해 일시적으로 인풋을 끈다. */
 		m_bCanInput = false;
 		{
+			/* 댐핑 리셋 */
 			/* 트랜스폼 틱을 돌려 포지션과 룩을 다시 세팅한다. (델타타임 밀릴 가능성 존재) */
+			m_tDampingDesc.bSet = false;
 			Tick_Transform(GI->Compute_TimeDelta(TIMER_TYPE::GAME_PLAY));
+
+			m_tDampingDesc.bSet = false;
+			Tick_Transform(GI->Compute_TimeDelta(TIMER_TYPE::GAME_PLAY));
+
+			m_tDampingDesc.bSet = false;
+			Tick_Transform(GI->Compute_TimeDelta(TIMER_TYPE::GAME_PLAY));
+
+			/* 이유는 모르겠지만 2번 이상 틱 트랜스폼을 돌려야 카메라의 회전에서 얻는 룩앳 오프셋 위치가 제대로 세팅된다. */
+			/* 현재 팔로우 카메라의 룩앳 오프셋 계산은 팔로우 카메라의 회전행렬에 기반하기 때문이다. */
+			/* 혹시 룩앳 오프셋이 맞지 않는다면 3번까지 돌려보자*/
 		}
 		m_bCanInput = true;
 	}
@@ -220,7 +225,8 @@ HRESULT CCamera_Follow::Ready_Components()
 void CCamera_Follow::Tick_Transform(const _float fDeltaTime)
 {
 	/* Position */
-	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, Calculate_WorldPosition(fDeltaTime));
+	const Vec4 vCamPos = Calculate_WorldPosition(fDeltaTime);
+	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vCamPos);
 
 	/* Look & Shake */
 	const Vec4 vLookAtPos = Calculate_Look();
@@ -234,32 +240,27 @@ void CCamera_Follow::Tick_Transform(const _float fDeltaTime)
 	}
 
 	/* PhysX */
-	if (nullptr != m_pControllerCom)
-		m_pControllerCom->Tick_Controller(fDeltaTime);
-
-	cout << "Tick_Transform" << endl;
-	CUtils::ConsoleOut(vLookAtPos);
+	//if (nullptr != m_pControllerCom && !m_bBlending)
+	//	m_pControllerCom->Tick_Controller(fDeltaTime);
 }
 
 void CCamera_Follow::Tick_Blending(const _float fDeltaTime)
 {
 	const Vec4 vCamPosition = CCamera_Manager::GetInstance()->Get_BlendingPosition();
 
-	const Vec4 vCamLookAt = CCamera_Manager::GetInstance()->Get_BlendingLookAt();
+	m_vPrevLookAt = CCamera_Manager::GetInstance()->Get_BlendingLookAt();
 
 	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vCamPosition);
 
-	m_pTransformCom->LookAt(vCamLookAt);
+	m_pTransformCom->LookAt(m_vPrevLookAt);
 
 	/* PhysX */
-	if (nullptr != m_pControllerCom)
-		m_pControllerCom->Tick_Controller(fDeltaTime);
+	/* 블렌딩 동안은 피직스를 돌리지 않는다. */
+	//if (nullptr != m_pControllerCom)
+	//	m_pControllerCom->Tick_Controller(fDeltaTime);
 
 	/* 블렌딩 시작시 댐핑을 리셋하므로 블렌딩이 종료될 때까지 블렌딩 리셋 상태를 유지해야 한다. */
 	m_tDampingDesc.bSet = false;
-
-	cout << "Tick_Blending" << endl;
-	CUtils::ConsoleOut(vCamLookAt);
 }
 
 Vec4 CCamera_Follow::Calculate_WorldPosition(_float fTimeDelta)
@@ -463,7 +464,6 @@ void CCamera_Follow::Test(_float fTimeDelta)
 
 		if (KEY_TAP(KEY::HOME))
 		{
-			CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
 			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_CurCamera());
 			if (nullptr != pActionCam)
 			{

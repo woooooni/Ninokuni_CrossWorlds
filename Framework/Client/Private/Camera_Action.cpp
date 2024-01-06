@@ -276,22 +276,10 @@ void CCamera_Action::Tick_Door(_float fTimeDelta)
 				CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
 				if (nullptr != pFollowCam)
 				{
-					cout << "\n\n###############################################\n\n";
 					pFollowCam->Set_Default_Position();
-
-					{
-						CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
-
-						const Vec4 vCamLookAt = pTargetTransform->Get_RelativeOffset(m_tLookAtOffset.vCurVec).ZeroW()
-							+ (Vec4)pTargetTransform->Get_Position();
-
-						cout << "Action" << endl;
-						CUtils::ConsoleOut(vCamLookAt);
-					}
 
 					CCamera_Manager::GetInstance()->Change_Camera(CAMERA_TYPE::FOLLOW);
 
-					cout << "\n\n###############################################\n\n";
 					return;
 				}
 			}

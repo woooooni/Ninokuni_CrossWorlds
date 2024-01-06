@@ -38,16 +38,16 @@ void CCamera_Manager::Tick(_float fTimeDelta)
 	/* Cur Camera Update */
 	m_pCurCamera->Tick(fTimeDelta);
 
-	/* V(WI) */
-	{
-		GI->Set_Transform(CPipeLine::D3DTS_VIEW, m_pCurCamera->Get_Transform()->Get_WorldMatrixInverse());
-	}
-
-	/* P */
-	{
-		const CCamera::PROJ_DESC& tDesc = m_pCurCamera->Get_ProjDesc();
-		GI->Set_Transform(CPipeLine::D3DTS_PROJ, XMMatrixPerspectiveFovLH(tDesc.tLerpFov.fCurValue, tDesc.fAspect, tDesc.fNear, tDesc.fFar));
-	}
+	///* V(WI) */
+	//{
+	//	GI->Set_Transform(CPipeLine::D3DTS_VIEW, m_pCurCamera->Get_Transform()->Get_WorldMatrixInverse());
+	//}
+	//
+	///* P */
+	//{
+	//	const CCamera::PROJ_DESC& tDesc = m_pCurCamera->Get_ProjDesc();
+	//	GI->Set_Transform(CPipeLine::D3DTS_PROJ, XMMatrixPerspectiveFovLH(tDesc.tLerpFov.fCurValue, tDesc.fAspect, tDesc.fNear, tDesc.fFar));
+	//}
 }
 
 void CCamera_Manager::LateTick(_float fTimeDelta)
@@ -193,11 +193,6 @@ HRESULT CCamera_Manager::Change_Camera(const _uint& iKey, const _float& fBlendin
 		Vec4 vDest = pNextCamera->Get_LookAt();
 
 		m_tBlendingLookAt.Start(vSrc.OneW(), vDest.OneW(), fBlendingDuration, eLerpMode);
-
-		cout << "\nvSrc" << endl <<  endl;
-		CUtils::ConsoleOut(vSrc.OneW());
-		cout << "vDest" << endl << endl;
-		CUtils::ConsoleOut(vDest.OneW());
 	}
 
 	/* 3. Å¸°Ù, ·è¾Ü ¿ÀÇÁ¼Â */
