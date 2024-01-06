@@ -189,12 +189,11 @@ private:
 	_bool   m_bSsaoDraw    = false;
 	_bool   m_bOutlineDraw = false;
 	_bool   m_bBlurDraw    = false;
-	_bool   m_bBlomDraw    = true;
+	_bool   m_bBlomDraw    = false;
 
 	// 구현 필요
-
 	_bool   m_bPbrDraw  = false;
-	_bool	m_bAuroraDraw = false;
+
 private:
 	_float4	m_vFogColor    = { 0.f, 0.635f, 1.f, 1.f };
 	_float2	m_fFogStartEnd = { 300.f, 600.f };

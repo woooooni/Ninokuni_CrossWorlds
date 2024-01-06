@@ -202,6 +202,7 @@ public:
 private:
 	_bool m_isCloned = { false };
 	PARTICLE_DESC m_tParticleDesc;
+	_bool m_bParticleDie = false;
 
 	_float4x4 m_ViewMatrix;
 	_float4x4 m_ProjMatrix;

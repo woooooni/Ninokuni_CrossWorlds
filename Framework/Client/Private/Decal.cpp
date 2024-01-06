@@ -56,7 +56,7 @@ void CDecal::Tick(_float fTimeDelta)
 
 void CDecal::LateTick(_float fTimeDelta)
 {
-	if (Is_Dead() == true)
+	if (Is_Dead() == true || m_bDecalDie)
 		return;
 
 	__super::LateTick(fTimeDelta);
@@ -163,6 +163,8 @@ void CDecal::Set_DecalDesc(const DECAL_DESC& tDesc)
 		m_tDecalDesc.iTextureIndexDiffuse = m_pDiffuseTextureCom->Get_TextureCount() - 1;
 
 	Restart_Decal();
+
+	m_bDecalDie = false;
 }
 
 void CDecal::Restart_Decal()

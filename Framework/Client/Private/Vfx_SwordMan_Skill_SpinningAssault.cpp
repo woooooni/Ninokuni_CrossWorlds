@@ -17,13 +17,25 @@ CVfx_SwordMan_Skill_SpinningAssault::CVfx_SwordMan_Skill_SpinningAssault(const C
 
 HRESULT CVfx_SwordMan_Skill_SpinningAssault::Initialize_Prototype()
 {
+	m_bOwnerStateIndex = CCharacter::CLASS_SKILL_2;
+	m_iMaxCount = 10;
+
+	m_pFrameTriger    = new _int[m_iMaxCount];
+	m_pPositionOffset = new _float3[m_iMaxCount];
+	m_pScaleOffset    = new _float3[m_iMaxCount];
+	m_pRotationOffset = new _float3[m_iMaxCount];
+
+	// 0 : Decal 1
+	m_pFrameTriger[0]    = 0;
+	m_pPositionOffset[0] = _float3(0.f, 0.f, 0.2f);
+	m_pScaleOffset[0]    = _float3(4.f, 1.f, 4.f);
+	m_pRotationOffset[0] = _float3(0.f, 0.f, 0.f);
+
  	return S_OK;
 }
 
 HRESULT CVfx_SwordMan_Skill_SpinningAssault::Initialize(void* pArg)
 {
-	m_bOwnerStateIndex = CCharacter::CLASS_SKILL_2;
-
 	return S_OK;
 }
 
@@ -34,14 +46,14 @@ void CVfx_SwordMan_Skill_SpinningAssault::Tick(_float fTimeDelta)
 	if (!m_bOwnerTween)
 	{
 		// 
-		if (m_iCount == 0)
+		if (m_iCount == 0 && m_iOwnerFrame >= m_pFrameTriger[0])
 		{
-			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_SpinningAssault_Circle"), XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.f, 0.2f), _float3(4.f, 1.f, 4.f), _float3(0.f, 0.f, 0.f), m_pOwnerObject);
+			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_SpinningAssault_Circle"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[0], m_pScaleOffset[0], m_pRotationOffset[0], m_pOwnerObject);
 			m_iCount++;
 		}
 
 		// 
-		else if (m_iCount == 1 && m_iOwnerFrame >= 15)
+		else if (m_iCount == 1 && m_iOwnerFrame >= m_pFrameTriger[1])
 		{
 
 			m_iCount++;
@@ -97,4 +109,12 @@ CGameObject* CVfx_SwordMan_Skill_SpinningAssault::Clone(void* pArg)
 void CVfx_SwordMan_Skill_SpinningAssault::Free()
 {
 	__super::Free();
+
+	if (!m_isCloned)
+	{
+		Safe_Delete_Array(m_pFrameTriger);
+		Safe_Delete_Array(m_pPositionOffset);
+		Safe_Delete_Array(m_pScaleOffset);
+		Safe_Delete_Array(m_pRotationOffset);
+	}
 }

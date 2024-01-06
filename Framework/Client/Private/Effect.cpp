@@ -243,6 +243,8 @@ void CEffect::Reset_Effect()
 #pragma endregion
 
 	Reset_UV();
+
+	m_bEffectDie = false;
 }
 
 HRESULT CEffect::Initialize_Prototype(const EFFECT_DESC* pEffectDesc)
@@ -463,7 +465,7 @@ HRESULT CEffect::Bind_ShaderResource_Instance(CShader* pShader)
 
 void CEffect::Increment(_float fTimeDelta)
 {
-	if (m_bAccIndexEnd == true && m_tEffectDesc.bAnimationLoop == false)
+	if (m_bAccIndexEnd == true)
 		return;
 
 	m_fAccIndex += m_fAnimationSpeed * fTimeDelta;
@@ -477,21 +479,21 @@ void CEffect::Increment(_float fTimeDelta)
 			m_tEffectDesc.fUVIndex.y++;
 			if (m_tEffectDesc.fMaxCount.y <= m_tEffectDesc.fUVIndex.y)
 			{
-				m_tEffectDesc.fUVIndex.y = 0;
-				if (m_tEffectDesc.bAnimationLoop == false)
-					m_bAccIndexEnd = true;
+				if(m_tEffectDesc.bAnimationLoop)
+					m_tEffectDesc.fUVIndex = _float2(0.f, 0.f);
 				else
-					m_bAccIndexEnd = false;
+				{
+					m_bAccIndexEnd = true;
+					m_tEffectDesc.fUVIndex = m_tEffectDesc.fMaxCount;
+				}
 			}
 		}
 	}
-
-
 }
 
 void CEffect::Decrement(_float fTimeDelta)
 {
-	if (m_bAccIndexEnd == true && m_tEffectDesc.bAnimationLoop == false)
+	if (m_bAccIndexEnd == true)
 		return;
 
 	m_fAccIndex += m_fAnimationSpeed * fTimeDelta;
@@ -506,11 +508,13 @@ void CEffect::Decrement(_float fTimeDelta)
 			m_tEffectDesc.fUVIndex.y--;
 			if (0 > m_tEffectDesc.fUVIndex.y)
 			{
-				m_tEffectDesc.fUVIndex.y = m_tEffectDesc.fMaxCount.y;
-				if (m_tEffectDesc.bAnimationLoop == false)
-					m_bAccIndexEnd = true;
+				if (m_tEffectDesc.bAnimationLoop)
+					m_tEffectDesc.fUVIndex = m_tEffectDesc.fMaxCount;
 				else
-					m_bAccIndexEnd = false;
+				{
+					m_bAccIndexEnd = true;
+					m_tEffectDesc.fUVIndex = _float2(0.f, 0.f); 
+				}
 			}
 		}
 	}

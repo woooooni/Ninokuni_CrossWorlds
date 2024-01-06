@@ -35,6 +35,8 @@ void CParticle::Set_ParticleDesc(const PARTICLE_DESC& tDesc)
 	// 버퍼 재시작
 	if (m_pVIBufferCom != nullptr)
 		m_pVIBufferCom->Restart_ParticleBufferDesc(m_tParticleDesc.iNumEffectCount);
+
+	m_bParticleDie = false;
 }
 
 void CParticle::Set_Position_Particle(_float4x4 WorldMatrix)
@@ -101,22 +103,18 @@ void CParticle::Tick(_float fTimeDelta)
 
 	m_pVIBufferCom->Tick(fTimeDelta);
 	 
-#ifdef _DEBUG
-	if (/*GI->Get_CurrentLevel() != LEVEL_TOOL &&*/ m_pVIBufferCom->Get_Finished())
-	{
-		Set_Dead(true);
-		return;
-	}
-		
-#else // 릴리즈
+
 	if (m_pVIBufferCom->Get_Finished())
-		Set_Dead(true);
-#endif
+	{
+		m_bParticleDie = true;
+		if (GI->Get_CurrentLevel() != LEVEL_TOOL)
+			Set_Dead(true);
+	}
 }
 
 void CParticle::LateTick(_float fTimeDelta)
 {
-	if (Is_Dead() == true)
+	if (Is_Dead() == true || m_bParticleDie)
 		return;
 
 	__super::LateTick(fTimeDelta);

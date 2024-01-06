@@ -536,14 +536,14 @@ HRESULT CEffect_Manager::Ready_Proto_Vfx_Player()
 			CVfx_SwordMan_Skill_PerfectBlade::Create(m_pDevice, m_pContext, TEXT("SwordMan_Skill_PerfectBlade")), LAYER_TYPE::LAYER_EFFECT)))
 			return E_FAIL;
 
-		// Prototype_Vfx_SwordMan_Skill_SpinningAssault
-		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_SwordMan_Skill_SpinningAssault"),
-			CVfx_SwordMan_Skill_SpinningAssault::Create(m_pDevice, m_pContext, TEXT("SwordMan_Skill_SpinningAssault")), LAYER_TYPE::LAYER_EFFECT)))
-			return E_FAIL;
-
 		// Prototype_Vfx_SwordMan_Skill_SipohoningLunge
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_SwordMan_Skill_SipohoningLunge"),
 			CVfx_SwordMan_Skill_SipohoningLunge::Create(m_pDevice, m_pContext, TEXT("SwordMan_Skill_SipohoningLunge")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_SwordMan_Skill_SpinningAssault
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_SwordMan_Skill_SpinningAssault"),
+			CVfx_SwordMan_Skill_SpinningAssault::Create(m_pDevice, m_pContext, TEXT("SwordMan_Skill_SpinningAssault")), LAYER_TYPE::LAYER_EFFECT)))
 			return E_FAIL;
 
 		// Prototype_Vfx_SwordMan_Skill_MegaSlash
