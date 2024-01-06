@@ -909,7 +909,7 @@ HRESULT CModel_Manager::Export_Animation_Events(const wstring& strFinalPath, CMo
 					{"Animation Name", CUtils::ToString(Anims[i]->Get_AnimationName())},
 					{"KeyFrame", SoundEvent.first},
 					
-					{"Sound Key", CUtils::TCharToString(SoundEvent.second.pSoundKey)},
+					{"Sound Key", SoundEvent.second.strSoundKey},
 					{"Channel ID", (_uint)(SoundEvent.second.iChannelID)},
 					{"Volume", SoundEvent.second.fVolume },
 					{"Stop", SoundEvent.second.bStop}
@@ -1508,8 +1508,8 @@ HRESULT CModel_Manager::Import_Animation_Events(const wstring strFinalPath, CMod
 		desc.bStop = item["Stop"];
 		_float fKeyFrame = item["KeyFrame"];
 
-		desc.pSoundKey = CSound_Manager::GetInstance()->Get_SoundFileKey(strSoundFileKey);
-		if (nullptr != desc.pSoundKey)
+		desc.strSoundKey = CUtils::ToString(CSound_Manager::GetInstance()->Get_SoundFileKey(strSoundFileKey));
+		if ("" != desc.strSoundKey)
 		{
 			CAnimation* pAnim = pModel->Get_Animation(strAnimName);
 			if (nullptr != pAnim)

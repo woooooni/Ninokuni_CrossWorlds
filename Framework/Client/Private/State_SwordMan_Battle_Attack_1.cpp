@@ -24,6 +24,8 @@ void CState_SwordMan_Battle_Attack_1::Enter_State(void* pArg)
 
 void CState_SwordMan_Battle_Attack_1::Tick_State(_float fTimeDelta)
 {
+    
+
     Input(fTimeDelta);
 
     if (m_pModelCom->Get_Progress() >= 0.1f && m_pModelCom->Get_Progress() <= 0.2f)

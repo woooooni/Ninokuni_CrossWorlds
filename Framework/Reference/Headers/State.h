@@ -1,6 +1,6 @@
 #pragma once
 #include "Base.h"
-
+#include "Sound_Manager.h"
 
 
 BEGIN(Engine)

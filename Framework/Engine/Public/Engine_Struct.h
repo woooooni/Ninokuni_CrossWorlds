@@ -1,3 +1,4 @@
+#include <tchar.h>
 #ifndef Engine_Struct_h__
 #define Engine_Struct_h__
 
@@ -707,7 +708,7 @@ namespace Engine
 
 	typedef struct tagAnimEventSoundDesc : public ANIM_EVENT_DESC
 	{
-		TCHAR*		pSoundKey = nullptr;
+		string		strSoundKey = "";
 		_uint		iChannelID = CHANNELID::MAXCHANNEL;
 		_float		fVolume = 0.f;
 		_bool		bStop = false;
@@ -787,6 +788,10 @@ namespace Engine
 		_float  fDissolveWeight = 0.f;
 		_float  fDissolveSpeed = 5.f;
 	} ANIMODEL_INSTANCE_DESC;
+
+#pragma endregion
+
+#pragma region Functor
 
 #pragma endregion
 }

@@ -42,20 +42,21 @@ HRESULT CSound_Manager::Reserve_Manager()
 	Load_SoundFile("../../Client/Bin/Resources/Sound/Slash/");
 	Load_SoundFile("../../Client/Bin/Resources/Sound/UI/");
 	Load_SoundFile("../../Client/Bin/Resources/Sound/Voice/");*/
+	
 
 	return S_OK;
 }
 
 
-void CSound_Manager::Play_Sound(TCHAR* pSoundKey, CHANNELID eID, _float fVolume, _bool bStop)
+void CSound_Manager::Play_Sound(wstring pSoundKey, CHANNELID eID, _float fVolume, _bool bStop)
 {
-	map<TCHAR*, FMOD_SOUND*>::iterator iter;
+	map<wstring, FMOD_SOUND*>::iterator iter;
 
 	// iter = find_if(m_mapSound.begin(), m_mapSound.end(), CTag_Finder(pSoundKey));
 	iter = find_if(m_mapSound.begin(), m_mapSound.end(),
 		[&](auto& iter)->bool
 		{
-			return !lstrcmp(pSoundKey, iter.first);
+			return pSoundKey == iter.first;
 		});
 
 	if (iter == m_mapSound.end())
@@ -72,13 +73,13 @@ void CSound_Manager::Play_Sound(TCHAR* pSoundKey, CHANNELID eID, _float fVolume,
 }
 
 
-void CSound_Manager::Play_BGM(TCHAR* pSoundKey, _float fVolume, _bool bStop)
+void CSound_Manager::Play_BGM(wstring pSoundKey, _float fVolume, _bool bStop)
 {
-	map<TCHAR*, FMOD_SOUND*>::iterator iter;
+	map<wstring, FMOD_SOUND*>::iterator iter;
 
 	iter = find_if(m_mapSound.begin(), m_mapSound.end(), [&](auto& iter)->bool
 		{
-			return !lstrcmp(pSoundKey, iter.first);
+			return pSoundKey == iter.first;
 		});
 
 	if (iter == m_mapSound.end())
@@ -111,12 +112,12 @@ void CSound_Manager::Set_ChannelVolume(CHANNELID eID, float fVolume)
 	FMOD_System_Update(m_pSystem);
 }
 
-const _int CSound_Manager::Get_SoundFileIndex(TCHAR* pSoundKey)
+const _int CSound_Manager::Get_SoundFileIndex(const wstring& pSoundKey)
 {
 	_int iIndex = 0;
 	for (auto& Pair : m_mapSound)
 	{
-		if (!_tcscmp(Pair.first, pSoundKey))
+		if (Pair.first == pSoundKey)
 			return iIndex;
 		else
 			iIndex++;
@@ -125,7 +126,7 @@ const _int CSound_Manager::Get_SoundFileIndex(TCHAR* pSoundKey)
 	return -1;
 }
 
-TCHAR* CSound_Manager::Get_SoundFileKey(const _uint iIndex)
+wstring CSound_Manager::Get_SoundFileKey(const _uint iIndex)
 {
 	_int iKeyIndex = 0;
 	for (auto& Pair : m_mapSound)
@@ -136,17 +137,17 @@ TCHAR* CSound_Manager::Get_SoundFileKey(const _uint iIndex)
 			iKeyIndex++;
 	}
 
-	return nullptr;
+	return L"";
 }
 
-TCHAR* CSound_Manager::Get_SoundFileKey(string strKey)
+wstring CSound_Manager::Get_SoundFileKey(string strKey)
 {
 	for (auto& Pair : m_mapSound)
 	{
-		if (CUtils::TCharToString(Pair.first) == strKey)
+		if (CUtils::ToString(Pair.first) == strKey)
 			return Pair.first;
 	}
-	return nullptr;
+	return L"";
 }
 
 void CSound_Manager::Search_Recursive(const std::string& currentPath)
@@ -172,10 +173,7 @@ void CSound_Manager::Search_Recursive(const std::string& currentPath)
 			{
 				int iLength = fileName.length() + 1;
 
-				TCHAR* pSoundKey = new TCHAR[iLength];
-				ZeroMemory(pSoundKey, sizeof(TCHAR) * iLength);
-
-				MultiByteToWideChar(CP_ACP, 0, fileName.c_str(), iLength, pSoundKey, iLength);
+				wstring pSoundKey = CUtils::ToWString(fileName);
 
 				m_mapSound.emplace(pSoundKey, pSound);
 			}
@@ -219,7 +217,7 @@ void CSound_Manager::Search_Recursive(const std::string& currentPath)
 //		{
 //			int iLength = strlen(fd.name) + 1;
 //
-//			TCHAR* pSoundKey = new TCHAR[iLength];
+//			wstring pSoundKey = new TCHAR[iLength];
 //			ZeroMemory(pSoundKey, sizeof(TCHAR) * iLength);
 //
 //			// 아스키 코드 문자열을 유니코드 문자열로 변환시켜주는 함수
@@ -239,7 +237,6 @@ void CSound_Manager::Free()
 {
 	for (auto& Mypair : m_mapSound)
 	{
-		delete[] Mypair.first;
 		FMOD_Sound_Release(Mypair.second);
 	}
 	m_mapSound.clear();

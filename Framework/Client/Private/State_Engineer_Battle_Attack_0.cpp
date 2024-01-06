@@ -2,6 +2,7 @@
 #include "GameInstance.h"
 #include "Character.h"
 #include "State_Engineer_Battle_Attack_0.h"
+#include "Utils.h"
 
 CState_Engineer_Battle_Attack_0::CState_Engineer_Battle_Attack_0(CStateMachine* pMachine)
     : CState_Character(pMachine)
@@ -24,6 +25,9 @@ void CState_Engineer_Battle_Attack_0::Enter_State(void* pArg)
 
 void CState_Engineer_Battle_Attack_0::Tick_State(_float fTimeDelta)
 {
+    wstring strVoiceNum = to_wstring(CUtils::Random_Int(1, 5));
+    CSound_Manager::GetInstance()->Play_Sound(L"Engineer_V_Atk_Short_" + strVoiceNum + L".mp3", CHANNELID::SOUND_VOICE_CHARACTER, 0.5f, true);
+
     Input(fTimeDelta);
 
     if (m_pModelCom->Get_Progress() >= 0.5f && m_pModelCom->Get_Progress() <= 0.6f)

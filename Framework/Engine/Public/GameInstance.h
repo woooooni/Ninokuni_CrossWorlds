@@ -194,15 +194,15 @@ public:
 //	ServerSessionRef& Get_ServerSession();
 
 public:
-	void Play_Sound(TCHAR* pSoundKey, CHANNELID eID, _float fVolume, _bool bStop = false);
-	void Play_BGM(TCHAR* pSoundKey, _float fVolume, _bool bStop = false);
+	void Play_Sound(const wstring& pSoundKey, CHANNELID eID, _float fVolume, _bool bStop = false);
+	void Play_BGM(const wstring& pSoundKey, _float fVolume, _bool bStop = false);
 	void Stop_Sound(CHANNELID eID);
 	void Stop_All();
 	void Set_ChannelVolume(CHANNELID eID, float fVolume);
 	FMOD_CHANNEL* Get_Channel(CHANNELID eID);
-	const _int Get_SoundFileIndex(TCHAR* pSoundKey);
-	TCHAR* Get_SoundFileKey(const _uint iIndex);
-	const map<TCHAR*, FMOD_SOUND*>& Get_MapSound();
+	const _int Get_SoundFileIndex(const wstring& strSoundFileKey);
+	wstring Get_SoundFileKey(const _uint iIndex);
+	const map<wstring, FMOD_SOUND*>& Get_MapSound();
 
 public:
 	HRESULT Bind_SRV(class CShader* pShader, const wstring& strTargetTag, const _char* pConstantName);

@@ -2,6 +2,7 @@
 #include "GameInstance.h"
 #include "Character.h"
 #include "State_Engineer_Battle_Attack_1.h"
+#include "Utils.h"
 
 CState_Engineer_Battle_Attack_1::CState_Engineer_Battle_Attack_1(CStateMachine* pMachine)
     : CState_Character(pMachine)
@@ -18,6 +19,10 @@ HRESULT CState_Engineer_Battle_Attack_1::Initialize(const list<wstring>& Animati
 
 void CState_Engineer_Battle_Attack_1::Enter_State(void* pArg)
 {
+    wstring strVoiceNum = to_wstring(CUtils::Random_Int(1, 5));
+    CSound_Manager::GetInstance()->Play_Sound(L"Engineer_V_Atk_Short_" + strVoiceNum + L".mp3", CHANNELID::SOUND_VOICE_CHARACTER, 0.5f, true);
+
+    m_iShootCount = 1;
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }
 
@@ -25,11 +30,11 @@ void CState_Engineer_Battle_Attack_1::Tick_State(_float fTimeDelta)
 {
     Input(fTimeDelta);
 
-    if (m_pModelCom->Get_Progress() >= 0.2f && m_pModelCom->Get_Progress() <= 0.3f)
-        m_pTransformCom->Move(-1.f * XMVector3Normalize(m_pTransformCom->Get_Look()), 2.f, fTimeDelta);
-
-    if (m_pModelCom->Get_Progress() >= 0.35f && m_pModelCom->Get_Progress() <= 0.45f)
-        m_pTransformCom->Move(-1.f * XMVector3Normalize(m_pTransformCom->Get_Look()), 2.f, fTimeDelta);
+    if (m_pModelCom->Get_Progress() >= 0.5f && m_pModelCom->Get_Progress() <= 0.6f)
+    {
+        Shoot();
+        m_pTransformCom->Move(XMVector3Normalize(-1.f * XMVector3Normalize(m_pTransformCom->Get_Look())), 2.f, fTimeDelta);
+    }
 
 
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
@@ -38,7 +43,7 @@ void CState_Engineer_Battle_Attack_1::Tick_State(_float fTimeDelta)
 
 void CState_Engineer_Battle_Attack_1::Exit_State()
 {
-    
+    m_iShootCount = 1;
 }
 
 void CState_Engineer_Battle_Attack_1::Input(_float fTimeDelta)
@@ -59,6 +64,11 @@ void CState_Engineer_Battle_Attack_1::Input(_float fTimeDelta)
 
 void CState_Engineer_Battle_Attack_1::Shoot()
 {
+    if (0 == m_iShootCount)
+        return;
+
+    m_iShootCount = 0;
+
     if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_CHARACTER, L"Prototype_GameObject_Engineer_Bullet")))
         MSG_BOX("Generate Bullet Failed.");
 }

@@ -382,7 +382,7 @@ HRESULT CCharacter_Engineer::Ready_States()
 		return E_FAIL;
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_AttackRifle02");
+	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_AttackRifle01");
 	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::BATTLE_ATTACK_1, CState_Engineer_Battle_Attack_1::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
@@ -392,7 +392,7 @@ HRESULT CCharacter_Engineer::Ready_States()
 		return E_FAIL;
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_AttackRifle04");
+	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_SkillExplosionShot");
 	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::BATTLE_ATTACK_3, CState_Engineer_Battle_Attack_3::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
@@ -427,7 +427,7 @@ HRESULT CCharacter_Engineer::Ready_States()
 		return E_FAIL;
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_SkillExplosionShot");
+	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_AttackRifle04");
 	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::CLASS_SKILL_2, CState_Engineer_Skill_ExplosionShot::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 	
