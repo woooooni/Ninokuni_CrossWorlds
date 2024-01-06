@@ -101,8 +101,8 @@ HRESULT CHumanFL04::Ready_States()
 	
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_HumanFL04.ao|HumanFL04_Stand");
-	strAnimationName.push_back(L"SKM_HumanFL04.ao | HumanFL04_Hello");
-	strAnimationName.push_back(L"SKM_HumanFL04.ao | HumanFL04_CSPurifiedForestOfNiall");
+	strAnimationName.push_back(L"SKM_HumanFL04.ao|HumanFL04_Hello");
+	strAnimationName.push_back(L"SKM_HumanFL04.ao|HumanFL04_CSPurifiedForestOfNiall");
 	strAnimationName.push_back(L"SKM_HumanFL04.ao|HumanFL04_Idle01");
 	strAnimationName.push_back(L"SKM_HumanFL04.ao|HumanFL04_Idle02");
 	m_pStateCom->Add_State(NPC_IDLE, CNpcState_Idle::Create(m_pStateCom, strAnimationName));

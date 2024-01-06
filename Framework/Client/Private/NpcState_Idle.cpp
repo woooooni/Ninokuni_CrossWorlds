@@ -15,7 +15,7 @@ HRESULT CNpcState_Idle::Initialize(const list<wstring>& AnimationList)
 	__super::Initialize(AnimationList);
 
 	m_iCurrAnimIndex = m_AnimIndices[0];
-
+	m_iIdleIndex = 1;
 	m_fIdleTime = 5.f;
 
 	return S_OK;
@@ -39,19 +39,22 @@ void CNpcState_Idle::Tick_State(_float fTimeDelta)
 
 			if (m_fTime >= m_fIdleTime)
 			{
+				m_fTime = m_fIdleTime - m_fTime;
 				m_bIsStane = false;
-				m_pModelCom->Set_Animation(m_iIdleIndex++);
-				if (m_iIdleIndex >= m_AnimIndices.size())
-				{
-					/* 0은 Stand, 고로 1부터. */
-					m_iIdleIndex = 1;
-				}
+				m_pModelCom->Set_Animation(m_AnimIndices[m_iIdleIndex]);
 			}
 		}
 		else
 		{
 			if (__super::State_Wait(m_pModelCom->Get_Animation(m_AnimIndices[m_iIdleIndex])->Is_Loop(), m_pModelCom->Get_Animation(m_AnimIndices[m_iIdleIndex])->Get_AnimationName(), 5.f, fTimeDelta))
 			{
+				m_iIdleIndex += 1;
+				if (m_iIdleIndex >= m_AnimIndices.size())
+				{
+					/* 0은 Stand, 고로 1부터. */
+					m_iIdleIndex = 1;
+				}
+
 				m_bIsStane = true;
 				m_pModelCom->Set_Animation(m_AnimIndices[0]); // Stand로 
 			}

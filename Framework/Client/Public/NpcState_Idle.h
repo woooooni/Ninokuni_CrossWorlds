@@ -21,7 +21,7 @@ public:
 private:
 	_float m_fIdleTime = 0.f;
 	_float m_fTime = 0.f;
-	_int   m_iIdleIndex = 1;
+	_int   m_iIdleIndex = 0;
 	_bool  m_bIsStane = true;
 
 public:

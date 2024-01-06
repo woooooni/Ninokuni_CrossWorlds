@@ -5,6 +5,10 @@
 #include "Trail.h"
 #include "UI_Manager.h"
 
+#include "GlanixState_IntroRoar.h"
+#include "GlanixState_IntroJump.h"
+#include "GlanixState_IntroFinish.h"
+
 #include "GlanixState_Spawn.h"
 #include "GlanixState_CombatIdle.h"
 #include "GlanixState_Chase.h"
@@ -91,7 +95,7 @@ HRESULT CGlanix::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	m_pModelCom->Set_Animation(0);
+	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_BattleStand"));
 
 	//if (FAILED(Ready_Sockets()))
 	//	return E_FAIL;
@@ -113,6 +117,17 @@ HRESULT CGlanix::Initialize(void* pArg)
 
 void CGlanix::Tick(_float fTimeDelta)
 {
+	/* 최초 등장 대기 시간 */
+	if (!m_bBools[(_uint)BOSS_BOOLTYPE::BOSSBOOL_INTRO])
+	{
+		m_fIntroTime += fTimeDelta;
+		if (m_fIntroTime > 3.f)
+		{
+			m_bBools[(_uint)BOSS_BOOLTYPE::BOSSBOOL_INTRO] = true;
+			m_pStateCom->Change_State(GLANIX_INTRO_ROAR);
+		}
+	}
+
 	/* 임시 */
 	if (KEY_TAP(KEY::Z))
 		m_tStat.fHp -= 100.f;
@@ -236,11 +251,12 @@ HRESULT CGlanix::Ready_Components()
 		return E_FAIL;
 
 	// m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(0.f, 10.f, 0.f, 1.f));
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-40.f, 1.6, 361.f, 1.f));
+	// m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-40.f, 1.6, 361.f, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-27.f, 25.35f, 425.f, 1.f));
 	m_pTransformCom->FixRotation(0.f, 180.f, 0.f);
 
 	m_vOriginLook = m_pTransformCom->Get_Look();
-	m_vOriginPos = m_pTransformCom->Get_Position();
+	m_vOriginPos = XMVectorSet(-40.f, 1.6, 361.f, 1.f);
 	m_vWavePoint = { -63.f, 1.6f, 393.f, 1.f };
 
 	/* For.Com_Renderer */
@@ -299,6 +315,18 @@ HRESULT CGlanix::Ready_States()
 	
 	list<wstring> strAnimationName;
 	
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_BossSkillRage");
+	m_pStateCom->Add_State(GLANIX_INTRO_ROAR, CGlanixState_IntroRoar::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_IntroJump");
+	m_pStateCom->Add_State(GLANIX_INTRO_JUMP, CGlanixState_IntroJump::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_IntroFinish01");
+	m_pStateCom->Add_State(GLANIX_INTRO_FINISH, CGlanixState_IntroFinish::Create(m_pStateCom, strAnimationName));
+
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_Spawn_New");
 	m_pStateCom->Add_State(GLANIX_SPAWN, CGlanixState_Spawn::Create(m_pStateCom, strAnimationName));
@@ -491,7 +519,7 @@ HRESULT CGlanix::Ready_States()
 	m_pStateCom->Add_State(GLANIX_DEAD, CGlanixState_Dead::Create(m_pStateCom, strAnimationName));
 
 
-	m_pStateCom->Change_State(GLANIX_SPAWN);
+	// m_pStateCom->Change_State(GLANIX_INTRO_ROAR);
 
 	return S_OK;
 }

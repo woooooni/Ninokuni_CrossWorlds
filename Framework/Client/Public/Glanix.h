@@ -6,6 +6,7 @@ class CGlanix final : public CBoss
 {
 public:
 	enum GLANIX_STATE {
+		GLANIX_INTRO_ROAR, GLANIX_INTRO_JUMP, GLANIX_INTRO_FINISH,
 		GLANIX_SPAWN,
 		GLANIX_COMBATIDLE,
 		GLANIX_CHASE,
@@ -69,6 +70,8 @@ private:
 	HRESULT Ready_Parts();
 
 private:
+	_float  m_fIntroTime = 0.f;
+
 	_bool	m_bIsCrash = false;
 	_vector	m_vWavePoint = {};
 

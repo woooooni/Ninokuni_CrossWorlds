@@ -94,6 +94,7 @@ HRESULT CHumanFL05::Ready_Components()
 HRESULT CHumanFL05::Ready_States()
 {
 	m_tStat.fSpeed = 0.5f;
+	m_tStat.bHasMove = false;
 
 	m_pStateCom->Set_Owner(this);
 

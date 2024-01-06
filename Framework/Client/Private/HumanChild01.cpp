@@ -80,6 +80,7 @@ HRESULT CHumanChild01::Ready_Components()
 		return E_FAIL;
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, { 10.f, 0.f, 0.f, 1.f });
 	m_vInitPos = m_pTransformCom->Get_Position();
+	m_vecRoaming.push_back(m_vInitPos);
 
 	/* For.Com_Model */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_HumanChild01"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))

@@ -82,6 +82,7 @@ HRESULT CHumanChild02::Ready_Components()
 		return E_FAIL;
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, { 8.f, 0.f, 8.f, 1.f });
 	m_vInitPos = m_pTransformCom->Get_Position();
+	m_vecRoaming.push_back(m_vInitPos);
 
 	/* For.Com_Model */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_HumanChild02"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
@@ -95,6 +96,7 @@ HRESULT CHumanChild02::Ready_Components()
 HRESULT CHumanChild02::Ready_States()
 {
 	m_tStat.fSpeed = 0.25f;
+	m_tStat.bHasTalk = false;
 
 	m_pStateCom->Set_Owner(this);
 
