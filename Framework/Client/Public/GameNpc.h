@@ -41,6 +41,7 @@ public:
 		_bool bHasMove = true;
 		_bool bHasTalk = true;
 		_bool bHasIdle = true;
+		_bool bIsUnique = false;
 	}NPC_STAT;
 
 protected:
