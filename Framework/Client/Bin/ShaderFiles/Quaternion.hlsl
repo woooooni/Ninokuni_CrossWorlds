@@ -49,9 +49,13 @@ float4 from_to_rotation(float3 v1, float3 v2)
         }
         tmp = normalize(tmp);
         q = rotate_angle_axis(PI, tmp);
-    } else if (d > 0.999999) {
+    }
+    else if (d > 0.999999)
+    {
         q = QUATERNION_IDENTITY;
-    } else {
+    }
+    else
+    {
         q.xyz = cross(v1, v2);
         q.w = 1 + d;
         q = normalize(q);
@@ -78,6 +82,7 @@ float4 q_diff(float4 q1, float4 q2)
 
 float4 q_look_at(float3 forward, float3 up)
 {
+    forward = normalize(forward);
     float3 right = normalize(cross(forward, up));
     up = normalize(cross(forward, right));
 
@@ -166,7 +171,7 @@ float4 q_slerp(in float4 a, in float4 b, float t)
 
     float blendA;
     float blendB;
-    if (cosHalfAngle < 0.9995f)
+    if (cosHalfAngle < 0.99)
     {
         // do proper slerp for big angles
         float halfAngle = acos(cosHalfAngle);
@@ -183,12 +188,13 @@ float4 q_slerp(in float4 a, in float4 b, float t)
     }
 
     float4 result = float4(blendA * a.xyz + blendB * b.xyz, blendA * a.w + blendB * b.w);
-    
     if (length(result) > 0.0)
+    {
         return normalize(result);
-    
+    }
     return QUATERNION_IDENTITY;
 }
+
 
 //float4x4 quaternion_to_matrix(float4 quat)
 //{
