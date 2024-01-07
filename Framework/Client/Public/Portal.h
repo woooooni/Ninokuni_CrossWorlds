@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Client_Defines.h"
 #include "GameObject.h"
 
 BEGIN(Engine)
@@ -19,6 +20,7 @@ public:
 		LEVELID eCurrentLevel = LEVELID::LEVEL_END;
 		LEVELID eNextLevel = LEVELID::LEVEL_END;
 	} PORTAL_DESC;
+
 private:
 	CPortal(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CPortal(const CPortal& rhs);

@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "..\Public\Sun.h"
 #include "GameInstance.h"
 

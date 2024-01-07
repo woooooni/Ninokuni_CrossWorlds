@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Client_Defines.h"
+#include "Character.h"
 #include "Base.h"
 
 BEGIN(Client)
