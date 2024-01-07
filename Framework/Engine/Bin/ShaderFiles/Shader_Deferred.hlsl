@@ -1,6 +1,6 @@
 #include "Engine_Shader_Defines.hpp"
 
-texture2D g_Texture; // 디버그용 텍스쳐
+Texture2D g_Texture; // 디버그용 텍스쳐
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 matrix g_ViewMatrixInv, g_ProjMatrixInv;
@@ -8,19 +8,19 @@ matrix g_ViewMatrixInv, g_ProjMatrixInv;
 matrix g_CamProjMatrix;
 matrix g_LightViewMatrix;
 
-texture2D g_DiffuseTarget;
-texture2D g_NormalTarget;
-texture2D g_DepthTarget;
+Texture2D g_DiffuseTarget;
+Texture2D g_NormalTarget;
+Texture2D g_DepthTarget;
 		  
-texture2D g_ShadeTarget;
-texture2D g_ShadowTarget;
-texture2D g_SpecularTarget;
+Texture2D g_ShadeTarget;
+Texture2D g_ShadowTarget;
+Texture2D g_SpecularTarget;
 
-texture2D g_SSAOTarget;
-texture2D g_BloomTarget;
-texture2D g_OutlineTarget;
+Texture2D g_SSAOTarget;
+Texture2D g_BloomTarget;
+Texture2D g_OutlineTarget;
 
-texture2D g_BlendMixTarget;
+Texture2D g_BlendMixTarget;
 
 // 조명
 vector g_vCamPosition;
@@ -418,6 +418,7 @@ technique11 DefaultTechnique
 		PixelShader = compile ps_5_0 PS_MAIN_ALPHABLENDMIX();
 	}
 
+    // 5
     pass OneBlendMix
     {
         SetRasterizerState(RS_Default);

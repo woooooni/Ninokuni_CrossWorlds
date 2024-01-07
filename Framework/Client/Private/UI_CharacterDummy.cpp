@@ -81,7 +81,7 @@ void CUI_CharacterDummy::LateTick(_float fTimeDelta)
 	if (m_bActive)
 	{
 		m_pModelCom->LateTick(fTimeDelta);
-		//m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND_UI, this);
 	}
 	
 }
