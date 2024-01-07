@@ -203,18 +203,27 @@ void CCharacter::Input_Attack(CCharacter::STATE eCurrentState, _float fTimeDelta
 {
 	if (eCurrentState == CCharacter::STATE::BATTLE_ATTACK_0)
 	{
-		m_pStateCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_1);
-		return;
+		if (KEY_TAP(KEY::LBTN))
+		{
+			m_pStateCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_1);
+			return;
+		}
 	}
 	else if (eCurrentState == CCharacter::STATE::BATTLE_ATTACK_1)
 	{
-		m_pStateCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_2);
-		return;
+		if (KEY_TAP(KEY::LBTN))
+		{
+			m_pStateCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_2);
+			return;
+		}
 	}
 	else if (eCurrentState == CCharacter::STATE::BATTLE_ATTACK_2)
 	{
-		m_pStateCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_3);
-		return;
+		if (KEY_TAP(KEY::LBTN))
+		{
+			m_pStateCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_3);
+			return;
+		}
 	}
 	else if (eCurrentState == CCharacter::STATE::BATTLE_GUARD)
 	{

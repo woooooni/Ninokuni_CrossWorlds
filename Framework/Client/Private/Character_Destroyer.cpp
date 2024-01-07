@@ -116,6 +116,7 @@ HRESULT CCharacter_Destroyer::Initialize(void* pArg)
 
 void CCharacter_Destroyer::Tick(_float fTimeDelta)
 {
+	__super::Input_Character(fTimeDelta);
 	m_pStateCom->Tick_State(fTimeDelta);
 
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
