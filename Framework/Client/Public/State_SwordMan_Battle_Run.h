@@ -30,6 +30,7 @@ private:
 
 private:
 	_float m_fMoveSpeed = 5.f;
+	_float m_fEffectAcc = 0.f;
 
 public:
 	static CState_SwordMan_Battle_Run* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);

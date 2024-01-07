@@ -87,15 +87,17 @@ HRESULT CParticle_Manager::Generate_Particle(const wstring& strParticleName, _ma
 	return S_OK;
 }
 
-HRESULT CParticle_Manager::Tick_Generate_Particle(_float fTimeDelta, _float* fTimeAcc, _float fCreateTime, const wstring& strParticleName, CTransform* pTransform, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner)
+HRESULT CParticle_Manager::Tick_Generate_Particle(_float* fTimeAcc, _float fCreateTime, _float fTimeDelta, const wstring& strParticleName, CGameObject* pOwner, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation)
 {
 	*fTimeAcc += fTimeDelta;
 	if (*fTimeAcc >= fCreateTime)
 	{
 		*fTimeAcc = 0.f;
 
+		CTransform* pTransform = pOwner->Get_Component<CTransform>(L"Com_Transform");
 		if (pTransform == nullptr)
 			return S_OK;
+
 		Generate_Particle(strParticleName, pTransform->Get_WorldMatrix(), vLocalPos, vLocalScale, vLocalRotation, pOwner);
 	}
 

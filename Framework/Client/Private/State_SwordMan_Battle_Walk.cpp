@@ -2,6 +2,8 @@
 #include "GameInstance.h"
 #include "Character.h"
 #include "State_SwordMan_Battle_Walk.h"
+#include "Particle_Manager.h"
+#include "Utils.h"
 
 CState_SwordMan_Battle_Walk::CState_SwordMan_Battle_Walk(CStateMachine* pMachine)
     : CState_Character(pMachine)
@@ -25,6 +27,9 @@ void CState_SwordMan_Battle_Walk::Enter_State(void* pArg)
 void CState_SwordMan_Battle_Walk::Tick_State(_float fTimeDelta)
 {
     Input(fTimeDelta);
+
+	GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fEffectAcc, CUtils::Random_Float(3.f, 4.f), fTimeDelta, TEXT("Particle_Smoke"), m_pCharacter,
+		_float3(0.f, 0.f, -0.1f));
 }
 
 void CState_SwordMan_Battle_Walk::Exit_State()
