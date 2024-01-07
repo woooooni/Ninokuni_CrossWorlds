@@ -51,6 +51,8 @@
 #include "Clown_Wizard.h"
 #include "Baobam_Dark.h"
 
+#include "Kuu.h"
+
 #include "HumanFAT01.h"
 #include "HumanFL04.h"
 #include "HumanFL05.h"
@@ -1150,6 +1152,9 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 		return E_FAIL;
 
 	/* Npc */
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Kuu", CKuu::Create(m_pDevice, m_pContext, TEXT("HumanFAT01")), LAYER_NPC, true)))
+		return E_FAIL;
+	
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanFAT01", CHumanFAT01::Create(m_pDevice, m_pContext, TEXT("HumanFAT01")), LAYER_NPC, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanFL04", CHumanFL04::Create(m_pDevice, m_pContext, TEXT("HumanFL04")), LAYER_NPC, true)))
@@ -1270,6 +1275,9 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 
 
 	/* Npc */
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Kuu", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Public/Kuu/", L"Kuu")))
+		return E_FAIL;
+
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanFAT01", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/HumanFAT01/", L"HumanFAT01")))
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanFL04", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/HumanFL04/", L"HumanFL04")))

@@ -77,8 +77,6 @@ public:
 public:
 	BLACKBOARD& GetBlackBoard() { return m_BlackBoard; }
 
-	CModel* Get_BTModel() { return m_pBTModel; }
-
 public:
 	virtual void     Init_NodeStart() {};
 
@@ -88,8 +86,6 @@ public:
 protected:
 	CBTNode* m_pRootNode = nullptr;
 	CBTNode* m_pCurNode = nullptr;
-
-	CModel* m_pBTModel = nullptr;
 
 	BLACKBOARD			m_BlackBoard;
 
