@@ -25,6 +25,8 @@ public:
 	virtual HRESULT	Render();
 
 public:
+	void Tick_Lobby(_float fTimeDelta);
+
 	void LateTick_GamePlay(_float fTimeDelta);
 	void LateTick_Lobby(_float fTimeDelta);
 
@@ -32,6 +34,7 @@ private:
 	class CCharacter* m_pOwner = { nullptr };
 	CTexture* m_pFXTextureCom = { nullptr };
 	UI_NAMETAG m_eType = { NAMETAG_END };
+	_float2 m_vOwnerPos = _float2(0.f, 0.f);
 	_float2 m_vTextPos = _float2(0.f, 0.f);
 
 	_bool m_bRotate = { false };

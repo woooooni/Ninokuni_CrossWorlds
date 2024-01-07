@@ -84,7 +84,7 @@ HRESULT CUI_SkillSection_CoolTimeFrame::Render()
 		if (FAILED(Bind_ShaderResources()))
 			return E_FAIL;
 
-		m_pShaderCom->Begin(6);
+		m_pShaderCom->Begin(19);
 
 		m_pVIBufferCom->Render();
 	}

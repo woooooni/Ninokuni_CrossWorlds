@@ -497,8 +497,8 @@ PS_OUT PS_SKILLGAUGE_MASK(PS_IN In)
 
 	if (fDotRatio < fDot) // 잔여 쿨타임이 직관적으로 보여지는 픽셀이다
 	{
-		Out.vColor.rgb = lerp(vColor.rgb, float3(0.0f, 0.0f, 0.0f), 0.5f);
-		Out.vColor.a = 1.0f;
+		//Out.vColor.rgb = lerp(vColor.rgb, float3(0.0f, 0.0f, 0.0f), 0.5f);
+		Out.vColor.a = 0.f;
 	}
 
 	// 특정 영역에서만 온전한 원본 이미지가 표시된다.

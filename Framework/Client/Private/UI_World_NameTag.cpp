@@ -4,6 +4,7 @@
 #include "UI_Manager.h"
 
 #include "Player.h"
+#include "HierarchyNode.h"
 #include "Camera.h"
 #include "Camera_Manager.h"
 #include "Game_Manager.h"
@@ -47,16 +48,17 @@ void CUI_World_NameTag::Set_Owner(CGameObject* pOwner)
 		switch (m_pOwner->Get_CharacterType())
 		{
 		case CHARACTER_TYPE::SWORD_MAN:
-			m_fOffsetY = 2.f;
+			m_fOffsetY = 60.f;
 			m_iTextureIndex = 0;
 			break;
 
 		case CHARACTER_TYPE::DESTROYER:
-			m_fOffsetY = 2.2f;
+			m_fOffsetY = 70.f;
 			m_iTextureIndex = 1;
 			break;
 
 		case CHARACTER_TYPE::ENGINEER:
+			m_fOffsetY = 70.f;
 			m_iTextureIndex = 2;
 			break;
 		}
@@ -93,7 +95,6 @@ HRESULT CUI_World_NameTag::Initialize(void* pArg)
 
 void CUI_World_NameTag::Tick(_float fTimeDelta)
 {
-
 	if (GI->Get_CurrentLevel() != LEVELID::LEVEL_TOOL)
 	{
 		if (UI_NAMETAG::NAMETAG_GAMEPLAY == m_eType)
@@ -106,14 +107,21 @@ void CUI_World_NameTag::Tick(_float fTimeDelta)
 
 		if (m_bActive)
 		{
-			if (nullptr == m_pOwner)
-				return;
+			if (UI_NAMETAG::NAMETAG_GAMEPLAY == m_eType)
+			{
+				if (nullptr == m_pOwner)
+					return;
 
-			CTransform* pTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");
+				CTransform* pTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");
 
-			_float4 Temp;
-			XMStoreFloat4(&Temp, pTransform->Get_Position());
-			m_pTransformCom->Set_State(CTransform::STATE_POSITION, pTransform->Get_Position());
+				_float4 Temp;
+				XMStoreFloat4(&Temp, pTransform->Get_Position());
+				m_pTransformCom->Set_State(CTransform::STATE_POSITION, pTransform->Get_Position());
+			}
+			else if (UI_NAMETAG::NAMETAG_LOBBY == m_eType)
+			{
+				Tick_Lobby(fTimeDelta);
+			}
 
 			__super::Tick(fTimeDelta);
 		}
@@ -153,6 +161,29 @@ HRESULT CUI_World_NameTag::Render()
 	}
 
 	return S_OK;
+}
+
+void CUI_World_NameTag::Tick_Lobby(_float fTimeDelta)
+{
+	// Dummy의 머리뼈위치를 구한다.
+
+	CModel* pPlayerModel = m_pOwner->Get_Component<CModel>(L"Com_Model");
+	if (nullptr == pPlayerModel)
+		return;
+
+	_matrix matLocal = pPlayerModel->Get_SocketLocalMatrix(2); // 2번뼈의 LocalMatrix
+
+	CTransform* pPlayerTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr == pPlayerTransform)
+		return;
+
+	_matrix matParentWorld = pPlayerTransform->Get_WorldMatrix();
+
+	_float4x4 matResult;
+	XMStoreFloat4x4(&matResult, XMMatrixMultiply(matLocal, matParentWorld));
+
+	_float4 vWindowPos = *(_float4*)&matResult.m[3][0];
+	m_vOwnerPos = Get_ProjectionPosition(vWindowPos);
 }
 
 void CUI_World_NameTag::LateTick_GamePlay(_float fTimeDelta)
@@ -237,29 +268,8 @@ void CUI_World_NameTag::LateTick_Lobby(_float fTimeDelta)
 {
 	if (nullptr != m_pOwner)
 	{
-		_float4 vCamPos = GI->Get_CamPosition();
-		_vector vTempForDistance = m_pTransformCom->Get_Position() - XMLoadFloat4(&vCamPos);
-		_float fDistance = XMVectorGetX(XMVector3Length(vTempForDistance));
-
-		CTransform* pTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");
-
-		_float4x4 matTargetWorld = pTransform->Get_WorldFloat4x4();
-		matTargetWorld._42 += m_fOffsetY;
-
-		_float4x4 matWorld;
-		matWorld = matTargetWorld;
-		_matrix matView = GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW);
-		_matrix matProj = GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ);
-
-		_float4x4 matWindow;
-		XMStoreFloat4x4(&matWindow, XMLoadFloat4x4(&matWorld) * matView * matProj);
-
-		_float3 vWindowPos = *(_float3*)&matWindow.m[3][0];
-		vWindowPos.x /= vWindowPos.z;
-		vWindowPos.y /= vWindowPos.z;
-
-		m_vTextPos.x = vWindowPos.x * g_iWinSizeX * 0.5f + (g_iWinSizeX * 0.5f);
-		m_vTextPos.y = vWindowPos.y * -(g_iWinSizeY * 0.5f) + (g_iWinSizeY * 0.5f);
+		m_vTextPos.x = m_vOwnerPos.x;
+		m_vTextPos.y = m_vOwnerPos.y - m_fOffsetY;
 
 		m_tInfo.fX = m_vTextPos.x;
 		m_tInfo.fY = m_vTextPos.y;
@@ -287,6 +297,10 @@ void CUI_World_NameTag::LateTick_Lobby(_float fTimeDelta)
 
 		case CHARACTER_TYPE::DESTROYER:
 			vFontPos = _float2(m_vTextPos.x - 40.f - (iLength * 8.f), m_vTextPos.y - 8.f);
+			break;
+
+		case CHARACTER_TYPE::ENGINEER:
+			vFontPos = _float2(m_vTextPos.x - 27.f - (iLength * 8.f), m_vTextPos.y - 8.f);
 			break;
 		}
 

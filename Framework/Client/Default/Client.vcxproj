@@ -541,6 +541,8 @@
     <ClInclude Include="..\Public\State_Engineer_SpecialSkill_HealingTree.h" />
     <ClInclude Include="..\Public\State_Lobby_Destroyer_Neutral_Idle.h" />
     <ClInclude Include="..\Public\State_Lobby_Destroyer_Sit.h" />
+    <ClInclude Include="..\Public\State_Lobby_Engineer_Neutral_Idle.h" />
+    <ClInclude Include="..\Public\State_Lobby_Engineer_Sit.h" />
     <ClInclude Include="..\Public\State_Lobby_SwordMan_Neutral_Idle.h" />
     <ClInclude Include="..\Public\State_Lobby_SwordMan_Sit.h" />
     <ClInclude Include="..\Public\State_SwordMan_AbNormality_Stun.h" />
@@ -1190,6 +1192,8 @@
     <ClCompile Include="..\Private\State_Engineer_SpecialSkill_HealingTree.cpp" />
     <ClCompile Include="..\Private\State_Lobby_Destroyer_Neutral_Idle.cpp" />
     <ClCompile Include="..\Private\State_Lobby_Destroyer_Sit.cpp" />
+    <ClCompile Include="..\Private\State_Lobby_Engineer_Neutral_Idle.cpp" />
+    <ClCompile Include="..\Private\State_Lobby_Engineer_Sit.cpp" />
     <ClCompile Include="..\Private\State_Lobby_SwordMan_Neutral_Idle.cpp" />
     <ClCompile Include="..\Private\State_Lobby_SwordMan_Sit.cpp" />
     <ClCompile Include="..\Private\State_SwordMan_AbNormality_Stun.cpp" />

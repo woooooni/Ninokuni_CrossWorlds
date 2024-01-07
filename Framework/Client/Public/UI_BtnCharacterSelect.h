@@ -18,8 +18,6 @@ protected:
 	virtual ~CUI_BtnCharacterSelect() = default;
 
 public: // Get/Set ÇÔ¼ö
-	virtual void Set_Active(_bool bActive) override;
-
 	void Set_Clicked(_bool bClick) { m_bClicked = bClick; }
 	_bool Is_Clicked() { return m_bClicked; }
 
@@ -45,6 +43,7 @@ public:
 
 public:
 	void Reset_InitializeInfo();
+	void Update_LobbyDummy();
 
 private: 
 	UI_SELECTBTN_CHARACTER m_ePlayerType = { UI_SELECTBTN_CHARACTER::UICHARACTERBTN_END };

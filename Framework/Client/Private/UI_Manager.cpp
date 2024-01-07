@@ -218,6 +218,15 @@ _float2 CUI_Manager::Get_ProjectionPosition(CTransform* pTransform)
 	return _float2(fScreenX, fScreenY);
 }
 
+void CUI_Manager::Set_MainDialogue(_tchar* pszName, _tchar* pszText)
+{
+	if (nullptr == m_pDialogWindow)
+		return;
+
+	m_pDialogWindow->Set_Name(pszName);
+	m_pDialogWindow->Set_Text(pszText);
+}
+
 _bool CUI_Manager::Is_DefaultSettingOn()
 {
 	// 게임 기본 세팅이 켜져있는지 확인해준다 -> UI매니저에서 Clone되지 않은 객체의 OnOff를 제어하기 위해서.
@@ -3584,9 +3593,6 @@ HRESULT CUI_Manager::Tick_LobbyLevel(_float fTimeDelta)
 		}
 	}
 
-	//m_Buttons
-	// 만약 Click된 것이 없다면 회색으로 출력되게 한다.
-//				m_Buttons[0]->Set_UIPass(1); 16
 	if (!m_ClickedPlayer[CUI_BtnCharacterSelect::BTN_ENGINEER]->Get_Active()
 		&& !m_ClickedPlayer[CUI_BtnCharacterSelect::BTN_DESTROYER]->Get_Active()
 		&& !m_ClickedPlayer[CUI_BtnCharacterSelect::BTN_SWORDMAN]->Get_Active())
@@ -3641,20 +3647,25 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 		}
 	}
 
-	//if (KEY_TAP(KEY::O))
-	//{
-	//	if (m_pWorldMapBG->Get_Active()) // 켜져있다면
-	//		OnOff_WorldMap(false); // 끈다
-	//	else // 꺼져있다면
-	//		OnOff_WorldMap(true); // 켠다
-	//}
-
 	if (m_pCostumeBox->Get_Active())
 		Update_CostumeBtn();
 	else
 	{
 		if (m_pCostumeAnnounce->Get_Active())
 			m_pCostumeAnnounce->Set_Active(false);
+	}
+
+	if (KEY_TAP(KEY::P))
+	{
+		if (m_pDialogWindow->Get_Active())
+		{
+			OnOff_DialogWindow(false, 0);
+		}
+		else
+		{
+			Set_MainDialogue(TEXT("클로이"), TEXT("후훗. 장난은 여기까지만 할까? 아쉽지만 여기서 헤어져야겠어. 나도 여기서 할 일이 있었거든. 나중에 또 만나~ 안녕~ 쿠우도 안녕~"));
+			OnOff_DialogWindow(true, 0);
+		}
 	}
 
 
@@ -3752,6 +3763,8 @@ void CUI_Manager::Update_SetNickname(const wstring& strNickname, _bool bUpdate)
 
 void CUI_Manager::Update_LobbyBtnState(_uint iIndex)
 {
+	m_ClickedPlayer[iIndex]->Update_LobbyDummy();
+
 	_uint iBtnIndex = iIndex;
 
 	for (_uint i = 0; i < CUI_BtnCharacterSelect::UI_SELECTBTN_CHARACTER::UICHARACTERBTN_END; i++)

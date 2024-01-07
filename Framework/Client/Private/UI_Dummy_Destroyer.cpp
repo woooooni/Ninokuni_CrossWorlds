@@ -84,8 +84,6 @@ HRESULT CUI_Dummy_Destroyer::Initialize(void* pArg)
 
 void CUI_Dummy_Destroyer::Tick(_float fTimeDelta)
 {
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(3.5f, 1.23f, -11.2f, 1.f));
-
 	m_pStateCom->Tick_State(fTimeDelta);
 
 	if (nullptr != m_pNameTag)
@@ -119,11 +117,11 @@ HRESULT CUI_Dummy_Destroyer::Render()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
 
-	_float4 vRimColor = { 0.f, 0.f, 0.f, 0.f };
+	_float4 vRimColor;
 	if (m_bClicked)
-	{
-		vRimColor = { 0.5f, 0.5f, 0.f, 1.f };
-	}
+		vRimColor = { 1.f, 1.f, 1.f, 1.f };
+	else
+		vRimColor = { 0.f, 0.f, 0.f, 0.f };
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float4))))
 		return E_FAIL;
@@ -195,6 +193,7 @@ HRESULT CUI_Dummy_Destroyer::Ready_States()
 	list<wstring> strAnimationNames;
 
 	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_NeutralStand");
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_NeutralIdle01");
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_NeutralIdle02");
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_NeutralIdle03");

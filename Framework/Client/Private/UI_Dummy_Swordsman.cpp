@@ -118,11 +118,11 @@ HRESULT CUI_Dummy_Swordsman::Render()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
 
-	_float4 vRimColor = { 0.f, 0.f, 0.f, 0.f };
+	_float4 vRimColor;
 	if (m_bClicked)
-	{
-		vRimColor = { 0.5f, 0.5f, 0.f, 1.f };
-	}
+		vRimColor = { 1.f, 1.f, 1.f, 1.f };
+	else
+		vRimColor = { 0.f, 0.f, 0.f, 0.f };
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float4))))
 		return E_FAIL;

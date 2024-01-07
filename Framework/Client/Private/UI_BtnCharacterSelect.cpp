@@ -23,32 +23,6 @@ CUI_BtnCharacterSelect::CUI_BtnCharacterSelect(const CUI_BtnCharacterSelect& rhs
 {
 }
 
-void CUI_BtnCharacterSelect::Set_Active(_bool bActive)
-{
-	if (BTN_CLICKED == m_eTextureType)
-	{
-		switch (m_ePlayerType)
-		{
-		case UI_SELECTBTN_CHARACTER::BTN_SWORDMAN:
-			if (nullptr != m_pSwordsman)
-				m_pSwordsman->Set_ClickState(true);
-			break;
-
-		case UI_SELECTBTN_CHARACTER::BTN_DESTROYER:
-			if (nullptr != m_pDestroyer)
-				m_pDestroyer->Set_ClickState(true);
-			break;
-
-		case UI_SELECTBTN_CHARACTER::BTN_ENGINEER:
-			if (nullptr != m_pEngineer)
-				m_pEngineer->Set_ClickState(true);
-			break;
-		}
-	}
-
-	m_bActive = bActive;
-}
-
 void CUI_BtnCharacterSelect::Set_Move(_bool bMove)
 {
 	switch (m_ePlayerType)
@@ -108,23 +82,27 @@ HRESULT CUI_BtnCharacterSelect::Initialize(void* pArg)
 
 		if (UI_SELECTBTN_CHARACTER::BTN_SWORDMAN == m_ePlayerType)
 		{
-//			CGameObject* pSwordsman = GI->Find_GameObject(LEVELID::LEVEL_LOBBY, LAYER_TYPE::LAYER_CHARACTER, L"UI_Lobby_Dummy_Swordsman");
-//			if (nullptr == pSwordsman)
-//				return E_FAIL;
-//
-//			m_pSwordsman = dynamic_cast<CUI_Dummy_Swordsman*>(pSwordsman);
+			CGameObject* pSwordsman = GI->Find_GameObject(LEVELID::LEVEL_LOBBY, LAYER_TYPE::LAYER_CHARACTER, L"UI_Lobby_Dummy_Swordsman");
+			if (nullptr == pSwordsman)
+				return E_FAIL;
+
+			m_pSwordsman = dynamic_cast<CUI_Dummy_Swordsman*>(pSwordsman);
 		}
 		else if (UI_SELECTBTN_CHARACTER::BTN_DESTROYER == m_ePlayerType)
 		{
-			CGameObject* pDestroyer = GI->Find_GameObject(LEVELID::LEVEL_LOBBY, LAYER_TYPE::LAYER_CHARACTER, L"UI_Lobby_Dummy_Destroyer");
-			if (nullptr == pDestroyer)
-				return E_FAIL;
-
-			m_pDestroyer = dynamic_cast<CUI_Dummy_Destroyer*>(pDestroyer);
+//			CGameObject* pDestroyer = GI->Find_GameObject(LEVELID::LEVEL_LOBBY, LAYER_TYPE::LAYER_CHARACTER, L"UI_Lobby_Dummy_Destroyer");
+//			if (nullptr == pDestroyer)
+//				return E_FAIL;
+//
+//			m_pDestroyer = dynamic_cast<CUI_Dummy_Destroyer*>(pDestroyer);
 		}
 		else if (UI_SELECTBTN_CHARACTER::BTN_ENGINEER == m_ePlayerType)
 		{
-			m_pEngineer;
+//			CGameObject* pEngineer = GI->Find_GameObject(LEVELID::LEVEL_LOBBY, LAYER_TYPE::LAYER_CHARACTER, L"UI_Lobby_Dummy_Engineer");
+//			if (nullptr == pEngineer)
+//				return E_FAIL;
+//
+//			m_pEngineer = dynamic_cast<CUI_Dummy_Engineer*>(pEngineer);
 		}
 		else
 		{
@@ -247,10 +225,6 @@ void CUI_BtnCharacterSelect::On_Mouse(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-		// 클릭 전 텍스처에 마우스 우클릭을 하면 m_bClicked가 true로 전환된다
-		// UIManager에서 Loop를 돌아서 Clicked True가 감지되면 Unclicked Texture Active를 False로 바꾸고
-		// 동일한 플레이어의 Clicked Texture의 Active값을 True로 바꿔준다.
-		// -> True가 되면 움직임이 시작된다.
 		if (KEY_TAP(KEY::LBTN))
 		{
 			if (BTN_UNCLIKED == m_eTextureType)
@@ -288,6 +262,30 @@ void CUI_BtnCharacterSelect::Reset_InitializeInfo()
 		m_bArrived = false;
 		m_bMoveStart = false;
 		m_bMoveEnd = false;
+	}
+}
+
+void CUI_BtnCharacterSelect::Update_LobbyDummy()
+{
+	if (BTN_CLICKED == m_eTextureType)
+	{
+		switch (m_ePlayerType)
+		{
+		case UI_SELECTBTN_CHARACTER::BTN_SWORDMAN:
+			if (nullptr != m_pSwordsman)
+				m_pSwordsman->Set_ClickState(true);
+			break;
+
+		case UI_SELECTBTN_CHARACTER::BTN_DESTROYER:
+			if (nullptr != m_pDestroyer)
+				m_pDestroyer->Set_ClickState(true);
+			break;
+
+		case UI_SELECTBTN_CHARACTER::BTN_ENGINEER:
+			if (nullptr != m_pEngineer)
+				m_pEngineer->Set_ClickState(true);
+			break;
+		}
 	}
 }
 

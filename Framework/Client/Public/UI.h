@@ -31,6 +31,7 @@ protected:
 
 public:
 	_float2 Get_ProjectionPosition(CTransform* pTransfrom);
+	_float2 Get_ProjectionPosition(_float4 vPosition);
 	const UI_INFO& Get_UI_Info() { return m_tInfo; }
 	void Set_UI_Info(const UI_INFO& tInfo) { m_tInfo = tInfo; }
 
