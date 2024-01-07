@@ -112,7 +112,6 @@ HRESULT CFox::Ready_State()
 	list<wstring> strAnimationNames;
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_FennecFox.ao|SKM_FennecFox.ao|SKM_FennecFox.ao|FennecFox_Idle01");
 	strAnimationNames.push_back(L"SKM_FennecFox.ao|SKM_FennecFox.ao|SKM_FennecFox.ao|NightFox_Idle02");
 	m_pStateMachineCom->Add_State(CAnimals::STATE::STATE_IDLE, CState_Animal_Idle::Create(m_pStateMachineCom, strAnimationNames));
 

@@ -188,6 +188,7 @@ struct PS_OUT
 	float4		vNormal : SV_TARGET1;
 	float4		vDepth : SV_TARGET2;
     float4		vBloom : SV_TARGET3;
+    float4		vSunMask : SV_TARGET4;
 };
 
 struct PS_OUT_SHADOW_DEPTH
@@ -237,6 +238,7 @@ PS_OUT PS_MAIN(PS_IN In)
 	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
     Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
+    Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	
 	if (0.5 >= Out.vDiffuse.a)
 		discard;
@@ -258,7 +260,7 @@ PS_OUT PS_MAIN_NORMAL(PS_IN In)
 	Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
     Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
-	
+    Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	
 	if (0.5 >= Out.vDiffuse.a)
 		discard;
@@ -289,7 +291,8 @@ PS_OUT PS_DISSOLVE_DEAD(PS_IN In)
 	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
     Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
-
+    Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	
 	if (0 == Out.vDiffuse.a)
 		discard;
 
@@ -311,6 +314,7 @@ PS_OUT PS_REFRACT_MAIN(PS_REFRACT_IN In)
     Out.vNormal = float4(In.vNormal.xyz * 0.5f + 0.5f, 0.0f);
     Out.vDepth = float4(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.0f, 0.0f, 0.0f);
     Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
+    Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	
     return Out;
 }
@@ -330,6 +334,7 @@ PS_OUT PS_REFLECT_MAIN(PS_REFLECT_IN In)
     Out.vNormal = float4(In.vNormal.xyz * 0.5f + 0.5f, 0.0f);
     Out.vDepth = float4(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.0f, 0.0f, 0.0f);
     Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
+    Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	
     return Out;
 }

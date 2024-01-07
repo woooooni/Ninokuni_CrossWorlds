@@ -599,6 +599,7 @@
     <ClInclude Include="..\Public\StelliaState_SpinTail.h" />
     <ClInclude Include="..\Public\StelliaState_TripleLaser.h" />
     <ClInclude Include="..\Public\StelliaState_Turn.h" />
+    <ClInclude Include="..\Public\Sun.h" />
     <ClInclude Include="..\Public\SwiftSolutionMaster.h" />
     <ClInclude Include="..\Public\ThiefCat.h" />
     <ClInclude Include="..\Public\Tool_Item.h" />
@@ -1243,6 +1244,7 @@
     <ClCompile Include="..\Private\StelliaState_SpinTail.cpp" />
     <ClCompile Include="..\Private\StelliaState_TripleLaser.cpp" />
     <ClCompile Include="..\Private\StelliaState_Turn.cpp" />
+    <ClCompile Include="..\Private\Sun.cpp" />
     <ClCompile Include="..\Private\SwiftSolutionMaster.cpp" />
     <ClCompile Include="..\Private\ThiefCat.cpp" />
     <ClCompile Include="..\Private\Tool_Item.cpp" />
@@ -1498,6 +1500,12 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>
     </FxCompile>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_SkyPlane.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>
+    </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Sun.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
