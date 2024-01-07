@@ -35,9 +35,13 @@ void CUI_BtnCharacterSelect::Set_Active(_bool bActive)
 			break;
 
 		case UI_SELECTBTN_CHARACTER::BTN_DESTROYER:
+			if (nullptr != m_pDestroyer)
+				m_pDestroyer->Set_ClickState(true);
 			break;
 
 		case UI_SELECTBTN_CHARACTER::BTN_ENGINEER:
+			if (nullptr != m_pEngineer)
+				m_pEngineer->Set_ClickState(true);
 			break;
 		}
 	}
@@ -55,9 +59,13 @@ void CUI_BtnCharacterSelect::Set_Move(_bool bMove)
 		break;
 
 	case UI_SELECTBTN_CHARACTER::BTN_DESTROYER:
+		if (nullptr != m_pDestroyer)
+			m_pDestroyer->Set_ClickState(false);
 		break;
 
 	case UI_SELECTBTN_CHARACTER::BTN_ENGINEER:
+		if (nullptr != m_pEngineer)
+			m_pEngineer->Set_ClickState(false);
 		break;
 	}
 
@@ -100,15 +108,19 @@ HRESULT CUI_BtnCharacterSelect::Initialize(void* pArg)
 
 		if (UI_SELECTBTN_CHARACTER::BTN_SWORDMAN == m_ePlayerType)
 		{
-			CGameObject* pSwordsman = GI->Find_GameObject(LEVELID::LEVEL_LOBBY, LAYER_TYPE::LAYER_CHARACTER, L"UI_Lobby_Dummy_Swordsman");
-			if (nullptr == pSwordsman)
-				return E_FAIL;
-
-			m_pSwordsman = dynamic_cast<CUI_Dummy_Swordsman*>(pSwordsman);
+//			CGameObject* pSwordsman = GI->Find_GameObject(LEVELID::LEVEL_LOBBY, LAYER_TYPE::LAYER_CHARACTER, L"UI_Lobby_Dummy_Swordsman");
+//			if (nullptr == pSwordsman)
+//				return E_FAIL;
+//
+//			m_pSwordsman = dynamic_cast<CUI_Dummy_Swordsman*>(pSwordsman);
 		}
 		else if (UI_SELECTBTN_CHARACTER::BTN_DESTROYER == m_ePlayerType)
 		{
-			m_pDestroyer;
+			CGameObject* pDestroyer = GI->Find_GameObject(LEVELID::LEVEL_LOBBY, LAYER_TYPE::LAYER_CHARACTER, L"UI_Lobby_Dummy_Destroyer");
+			if (nullptr == pDestroyer)
+				return E_FAIL;
+
+			m_pDestroyer = dynamic_cast<CUI_Dummy_Destroyer*>(pDestroyer);
 		}
 		else if (UI_SELECTBTN_CHARACTER::BTN_ENGINEER == m_ePlayerType)
 		{

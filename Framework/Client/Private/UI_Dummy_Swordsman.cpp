@@ -55,7 +55,6 @@ HRESULT CUI_Dummy_Swordsman::Initialize(void* pArg)
 	if (nullptr != pArg)
 		m_tStat = *((CHARACTER_STAT*)pArg);
 
-
 	for (_uint i = 0; i < SOCKET_END; ++i)
 		m_pTrails[i] = nullptr;
 

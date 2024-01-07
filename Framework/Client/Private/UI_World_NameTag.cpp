@@ -52,6 +52,7 @@ void CUI_World_NameTag::Set_Owner(CGameObject* pOwner)
 			break;
 
 		case CHARACTER_TYPE::DESTROYER:
+			m_fOffsetY = 2.2f;
 			m_iTextureIndex = 1;
 			break;
 
@@ -274,7 +275,20 @@ void CUI_World_NameTag::LateTick_Lobby(_float fTimeDelta)
 
 		wstring strName = TEXT("Lv.") + to_wstring(StatDesc.iLevel);
 		_int iLength = strName.length() - 1;
-		_float2 vFontPos = _float2(m_vTextPos.x - 15.f - (iLength * 8.f), m_vTextPos.y - 8.f);
+
+		CHARACTER_TYPE eCharacterType = dynamic_cast<CCharacter*>(m_pOwner)->Get_CharacterType();
+		_float2 vFontPos = _float2(0.f, 0.f);
+
+		switch (eCharacterType)
+		{
+		case CHARACTER_TYPE::SWORD_MAN:
+			vFontPos = _float2(m_vTextPos.x - 15.f - (iLength * 8.f), m_vTextPos.y - 8.f);
+			break;
+
+		case CHARACTER_TYPE::DESTROYER:
+			vFontPos = _float2(m_vTextPos.x - 40.f - (iLength * 8.f), m_vTextPos.y - 8.f);
+			break;
+		}
 
 		CRenderer::TEXT_DESC TextDesc = {};
 		TextDesc.strText = strName;

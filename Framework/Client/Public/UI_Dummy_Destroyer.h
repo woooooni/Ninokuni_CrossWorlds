@@ -11,7 +11,7 @@ private:
 
 public:
 	_bool Is_Clicked() { return m_bClicked; }
-	void Set_ClickState(_bool bClicked) { m_bClicked = bClicked; }
+	void Set_ClickState(_bool bClicked);
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -21,6 +21,7 @@ public:
 	virtual HRESULT Render() override;
 	
 private:
+	class CUI_World_NameTag* m_pNameTag = { nullptr };
 	_bool m_bClicked = { false };
 
 protected:

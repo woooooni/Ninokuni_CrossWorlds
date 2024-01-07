@@ -54,6 +54,7 @@ private:
 	_bool m_bArrived = { false }; // 목표 위치까지 도달했다
 	_bool m_bMoveStart = { false }; // 원위치로 돌아가게 제어하는 불변수
 	_bool m_bMoveEnd = { false };
+	_bool m_bUpdateDummy = { false };
 
 	_float2 m_vOriginSize = _float2(0.f, 0.f);
 	_float2 m_vMaxSize = _float2(0.f, 0.f);
