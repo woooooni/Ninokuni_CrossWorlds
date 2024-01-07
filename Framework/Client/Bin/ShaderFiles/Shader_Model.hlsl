@@ -132,6 +132,7 @@ struct PS_OUT
 	float4		vNormal : SV_TARGET1;
 	float4		vDepth : SV_TARGET2;
     float4      vBloom : SV_TARGET3;
+    float4		vSunMask : SV_TARGET4;
 };
 
 struct PS_OUT_SHADOW_DEPTH
@@ -145,7 +146,7 @@ struct WaterPixelToFrame
     float4 vNormal : SV_TARGET1;
     float4 vDepth : SV_TARGET2;
     float4 vBloom : SV_TARGET3;
-    //float4 vSunMask : SV_TARGET3;
+    float4 vSunMask : SV_TARGET4;
 };
 
 PS_OUT PS_MAIN(PS_IN In)
@@ -159,7 +160,7 @@ PS_OUT PS_MAIN(PS_IN In)
 	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
     Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
-	
+    Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	if (0.3 >= Out.vDiffuse.a)
 		discard;
 	
@@ -176,7 +177,8 @@ PS_OUT PS_SKY(PS_IN In)
 	Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
 	Out.vDepth = vector(1.f, 1.f, 0.f, 0.f);
     Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
-
+    Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	
 	if (0.f == Out.vDiffuse.a)
 		discard;
 
@@ -198,6 +200,7 @@ PS_OUT PS_MAIN_NORMAL(PS_IN In)
 	Out.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
     Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
+    Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
 	if (0 == Out.vDiffuse.a)
 		discard;
@@ -279,7 +282,8 @@ WaterPixelToFrame WaterPS(WaterVertexToPixel input)
     
     output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
     output.vDepth = float4(input.vProjPos.z / input.vProjPos.w, input.vProjPos.w / 1000.f, 1.0f, 0.0f);
-    
+    output.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	
     return output;
 }
 
@@ -306,7 +310,7 @@ PS_OUT PS_DISSOVE(PS_IN In)
     Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
     Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
-    
+    Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
     
 	
     return Out;

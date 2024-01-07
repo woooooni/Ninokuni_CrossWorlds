@@ -214,6 +214,8 @@ HRESULT CRenderer::Draw()
 			return E_FAIL;
 		if (FAILED(Render_Aurora()))    // MRT_Aurora / MRT_Blend
 			return E_FAIL;
+	/*	if (FAILED(Render_Sun()))
+			return E_FAIL;*/
 		if (FAILED(Render_NonLight()))  // MRT_Blend
 			return E_FAIL;
 	}
@@ -260,8 +262,21 @@ HRESULT CRenderer::Draw()
 	}
 
 	// DeferredRender
-	if(FAILED(Render_Deferred()))
+	if (FAILED(Render_Deferred()))
 		return E_FAIL;
+
+	if (FAILED(Render_GodRay()))
+		return E_FAIL;
+
+	CLight_Manager* pLightManger = GET_INSTANCE(CLight_Manager);
+	const CGameObject* pLight = pLightManger->Get_Sun();
+
+	if (nullptr != pLight)
+	{
+		if (FAILED(Render_AlphaBlendTargetMix(L"Target_GodRay", L"MRT_Blend", false)))
+			return E_FAIL;
+	}
+
 
 	// *Effect
 	{
@@ -446,6 +461,67 @@ HRESULT CRenderer::Render_Aurora()
 
 	return S_OK;
 }
+
+//HRESULT CRenderer::Render_Sun()
+//{
+//	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_GodRay"), true)))
+//		return E_FAIL;
+//
+//	Vec3 vScreenSunPos = m_pLight_Manager->Get_SunScreenPos();
+//	if (vScreenSunPos.x > 1.05f || vScreenSunPos.x < -0.05f
+//		|| vScreenSunPos.y > 1.05f || vScreenSunPos.y < -0.05f
+//		|| vScreenSunPos.z > 1.f || vScreenSunPos.z < 0.f)
+//	{
+//		if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+//			return E_FAIL;
+//
+//		return S_OK;
+//	}
+//
+//	for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_SUN])
+//	{
+//		if (FAILED(iter->Render()))
+//			return E_FAIL;
+//
+//		Safe_Release(iter);
+//	}
+//
+//	m_RenderObjects[RENDERGROUP::RENDER_SUN].clear();
+//
+//	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+//		return E_FAIL;
+//
+//
+//	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Blend"), false)))
+//		return E_FAIL;
+//
+//	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("world", &m_WorldMatrix)))
+//		return E_FAIL;
+//	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("view", &m_ViewMatrix)))
+//		return E_FAIL;
+//	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("projection", &m_ProjMatrix)))
+//		return E_FAIL;
+//
+//
+//	Vec2 vScreenSunUV(vScreenSunPos.x, vScreenSunPos.y);
+//	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_RawValue("vScreenSunPosition",
+//		&vScreenSunUV, sizeof(Vec2))))
+//		return E_FAIL;
+//
+//	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS], TEXT("Target_SunOccluder"), "SunOccluderTexture")))
+//		return E_FAIL;
+//
+//	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Begin(0)))
+//		return E_FAIL;
+//	if (FAILED(m_pVIBuffer->Render()))
+//		return E_FAIL;
+//
+//	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+//		return E_FAIL;
+//	
+//
+//	return S_OK;
+//}
 
 // MRT_Blend
 HRESULT CRenderer::Render_NonLight()
@@ -785,6 +861,49 @@ HRESULT CRenderer::Render_Deferred()
 	return S_OK;
 }
 
+HRESULT CRenderer::Render_GodRay()
+{
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_GodRay"))))
+		return E_FAIL;
+
+	Vec3 vScreenSunPos = m_pLight_Manager->Get_SunScreenPos();
+	if (vScreenSunPos.x > 1.05f || vScreenSunPos.x < -0.05f
+		|| vScreenSunPos.y > 1.05f || vScreenSunPos.y < -0.05f
+		|| vScreenSunPos.z > 1.f || vScreenSunPos.z < 0.f)
+	{
+		if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+			return E_FAIL;
+
+		return S_OK;
+	}
+
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("world", &m_WorldMatrix)))
+		return E_FAIL;
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("view", &m_ViewMatrix)))
+		return E_FAIL;
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("projection", &m_ProjMatrix)))
+		return E_FAIL;
+
+
+	Vec2 vScreenSunUV(vScreenSunPos.x, vScreenSunPos.y);
+	if(FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_RawValue("vScreenSunPosition",
+		&vScreenSunUV, sizeof(Vec2))))
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS],
+		TEXT("Target_SunOccluder"), "SunOccluderTexture")))
+		return E_FAIL;
+
+	m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Begin(0);
+
+	if (FAILED(m_pVIBuffer->Render()))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
 // MRT_Blend
 HRESULT CRenderer::Render_AlphaBlend()
 {
@@ -1070,7 +1189,9 @@ HRESULT CRenderer::Render_Debug()
 
 	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Aurora"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Aurora_Post"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
+
+
+	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_GodRay"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
 		return E_FAIL;
 
 	return S_OK;
@@ -1325,7 +1446,11 @@ HRESULT CRenderer::Create_Shader()
 	m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA] = CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_PostAurora.hlsl"), VTXPOS_DECLARATION::Elements, VTXPOS_DECLARATION::iNumElements);
 	if (nullptr == m_pShaders[RENDERER_SHADER_TYPE::SHADER_AURORA])
 		return E_FAIL;
-	
+
+	// SHADER_POSTPROCESS
+	m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS] = CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_PostProcess.hlsl"), VTXTEX_DECLARATION::Elements, VTXTEX_DECLARATION::iNumElements);
+	if (nullptr == m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS])
+		return E_FAIL;
 
 	// Shader_Model_Instance
 	m_pIntancingShaders[INSTANCING_SHADER_TYPE::MODEL] = CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Model_Instance.hlsl"), VTXMODELINSTANCE_DECLARATION::Elements, VTXMODELINSTANCE_DECLARATION::iNumElements);
@@ -1385,6 +1510,15 @@ HRESULT CRenderer::Create_Target()
 
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Bloom_Blur"),
 		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+
+	/* For.Target_SunMask*/
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_SunOccluder"),
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_GodRay"),
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
 #pragma endregion
 	
@@ -1516,6 +1650,7 @@ HRESULT CRenderer::Create_Target()
 		return E_FAIL;
 #pragma endregion
 
+
 	XMStoreFloat4x4(&m_WorldMatrix, XMMatrixIdentity());
 	m_WorldMatrix._11 = ViewportDesc.Width;
 	m_WorldMatrix._22 = ViewportDesc.Height;
@@ -1525,7 +1660,7 @@ HRESULT CRenderer::Create_Target()
 	return S_OK;
 }
 
-HRESULT CRenderer::Set_TargetsMrt()
+HRESULT CRenderer::Set_TargetsMrt() 
 {
 	// MRT_GameObjects / MRT_Bloom_Blur
 	{
@@ -1537,6 +1672,9 @@ HRESULT CRenderer::Set_TargetsMrt()
 			return E_FAIL;
 		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Bloom"))))
 			return E_FAIL;
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_SunOccluder"))))
+			return E_FAIL;
+
 
 		// MRT_Bloom_Blur
 		{
@@ -1618,6 +1756,13 @@ HRESULT CRenderer::Set_TargetsMrt()
 			return E_FAIL;
 	}
 
+	// MRT_GodRay
+	{
+
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_GodRay"), TEXT("Target_GodRay"))))
+			return E_FAIL;
+	}
+
 	// MRT_Blend
 	{
 		if (FAILED(m_pTarget_Manager->Add_MRT(L"MRT_Blend", L"Target_Blend")))
@@ -1667,6 +1812,10 @@ HRESULT CRenderer::Set_Debug()
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Bloom"),       (fSizeX / 2.f) + (fSizeX * 3), (fSizeY / 2.f) + (fSizeY * 0), fSizeX, fSizeY)))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Bloom_Blur")      , (fSizeX / 2.f) + (fSizeX * 4), (fSizeY / 2.f) + (fSizeY * 0), fSizeX, fSizeY)))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_SunOccluder"), (fSizeX / 2.f) + (fSizeX * 5), (fSizeY / 2.f) + (fSizeY * 0), fSizeX, fSizeY)))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_GodRay"), (fSizeX / 2.f) + (fSizeX * 6), (fSizeY / 2.f) + (fSizeY * 0), fSizeX, fSizeY)))
 		return E_FAIL;
 
 	// MRT_Lights

@@ -34,7 +34,7 @@ HRESULT CState::Initialize(const list<wstring>& AnimationList)
 	m_AnimIndices.reserve(AnimationList.size());
 	for (auto strAnimName : AnimationList)
 	{
-		_int iAnimIndex = m_pModelCom->Find_AnimationIndex(strAnimName);
+ 		_int iAnimIndex = m_pModelCom->Find_AnimationIndex(strAnimName);
 		if (-1 != iAnimIndex)
 			m_AnimIndices.push_back(iAnimIndex);
 		else

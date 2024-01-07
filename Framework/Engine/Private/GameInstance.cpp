@@ -103,8 +103,8 @@ HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, _uint iNumLayerType,
 	if (FAILED(m_pFrustum->Initialize()))
 		return E_FAIL;
 
-	if (FAILED(m_pSound_Manager->Reserve_Manager()))
-		return E_FAIL;
+	//if (FAILED(m_pSound_Manager->Reserve_Manager()))
+	//	return E_FAIL;
 	
 	if (FAILED(m_pCamera_Manager->Reserve_Manager(*ppDevice, *ppContext)))
 		return E_FAIL;
@@ -400,6 +400,18 @@ HRESULT CGameInstance::Add_Light(ID3D11Device* pDevice, ID3D11DeviceContext* pCo
 HRESULT CGameInstance::Add_ShadowLight(_uint iLevelIndex, _vector vEye, _vector vAt, _vector vUp)
 {
 	return m_pLight_Manager->Add_ShadowLight(iLevelIndex, vEye, vAt, vUp);
+}
+
+HRESULT CGameInstance::Add_Sun(CGameObject* pSun)
+{
+	if (nullptr == m_pLight_Manager)
+		return E_FAIL;
+
+	if(FAILED(m_pLight_Manager->Add_Sun(pSun)))
+		return E_FAIL;
+
+
+	return S_OK;
 }
 
 

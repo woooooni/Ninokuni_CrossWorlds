@@ -94,8 +94,8 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 			m_pTransformCom->LookAt(vLookAtPos);
 	
 		/* Collision */
-		if(nullptr != m_pControllerCom)
-			m_pControllerCom->Tick_Controller(fTimeDelta);
+		//if(nullptr != m_pControllerCom)
+		//	m_pControllerCom->Tick_Controller(fTimeDelta);
 	}
 
 
@@ -108,8 +108,8 @@ void CCamera_Follow::LateTick(_float fTimeDelta)
 	if (!m_bActive || nullptr == m_pTargetObj || nullptr == m_pLookAtObj)
 		return;
 
-	if (nullptr != m_pControllerCom)
-		m_pControllerCom->LateTick_Controller(fTimeDelta);
+	//if (nullptr != m_pControllerCom)
+	//	m_pControllerCom->LateTick_Controller(fTimeDelta);
 
 	__super::LateTick(fTimeDelta);
 }

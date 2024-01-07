@@ -148,22 +148,22 @@ HRESULT CCat::Ready_State()
 	list<wstring> strAnimationNames;
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Cat.ao|SKM_Cat.ao|SKM_Cat.ao|Cat_Idle01");
+	strAnimationNames.push_back(L"SKM_Cat.ao|Cat_Idle01");
 	m_pStateMachineCom->Add_State(CAnimals::STATE::STATE_IDLE, CState_Animal_Idle::Create(m_pStateMachineCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Cat.ao|SKM_Cat.ao|SKM_Cat.ao|Cat_Run");
+	strAnimationNames.push_back(L"SKM_Cat.ao|Cat_Run");
 	m_pStateMachineCom->Add_State(CAnimals:: STATE::STATE_RUN, CState_Animal_Run::Create(m_pStateMachineCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Cat.ao|SKM_Cat.ao|SKM_Cat.ao|Cat_Walk");
+	strAnimationNames.push_back(L"SKM_Cat.ao|Cat_Walk");
 	m_pStateMachineCom->Add_State(CAnimals::STATE::STATE_WALK, CState_Animal_Walk::Create(m_pStateMachineCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Cat.ao|SKM_Cat.ao|SKM_Cat.ao|Cat_Lifted");
-	strAnimationNames.push_back(L"SKM_Cat.ao|SKM_Cat.ao|SKM_Cat.ao|Cat_LiftedLoop");
-	strAnimationNames.push_back(L"SKM_Cat.ao|SKM_Cat.ao|SKM_Cat.ao|Cat_LiftedLoop2");
-	strAnimationNames.push_back(L"SKM_Cat.ao|SKM_Cat.ao|SKM_Cat.ao|Cat_LiftedFinish");
+	strAnimationNames.push_back(L"SKM_Cat.ao|Cat_Lifted");
+	strAnimationNames.push_back(L"SKM_Cat.ao|Cat_LiftedLoop");
+	strAnimationNames.push_back(L"SKM_Cat.ao|Cat_LiftedLoop2");
+	strAnimationNames.push_back(L"SKM_Cat.ao|Cat_LiftedFinish");
 	m_pStateMachineCom->Add_State(CAnimals::STATE::STATE_LIFT, CState_Animal_Lift::Create(m_pStateMachineCom, strAnimationNames));
 
 

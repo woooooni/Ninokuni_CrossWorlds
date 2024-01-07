@@ -31,11 +31,16 @@ public:
 
 public:
 	HRESULT Reset_Lights();
+	HRESULT	Add_Sun(class CGameObject* pSun);
+	
+	Vec3 Get_SunScreenPos();
+	const class CGameObject* Get_Sun() const { return m_pSun; }
+
 
 private:
 	list<class CLight*>			m_Lights;
 	typedef list<class CLight*>	LIGHTS;
-
+	class  CGameObject* m_pSun = nullptr;
 
 private:
 	map<_uint, _float4x4> m_ShadowWorldMatrix;

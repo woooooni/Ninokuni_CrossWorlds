@@ -160,7 +160,7 @@ PS_OUT PS_MAIN(VS_OUT input)
     float3 lookup = reflect(-V, finalBump);
     float4 reflectColor = Env.Sample(LinearSampler, lookup);
     
-    float facing = 1 - saturate(dot(V, finalBump));
+    float facing = 1 - saturate(dot(-V, finalBump));
     float fresnel = PS_Gerstner.fresnelBias + (1 - PS_Gerstner.fresnelBias) * pow(facing, PS_Gerstner.fresnelPower);
     float4 waterColor = lerp(PS_Gerstner.deepWaterColor, PS_Gerstner.ShallowWaterColor, fresnel);
     

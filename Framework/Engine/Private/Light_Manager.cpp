@@ -1,6 +1,7 @@
 #include "..\Public\Light_Manager.h"
 #include "Light.h"
-
+#include "GameObject.h"
+#include "GameInstance.h"
 IMPLEMENT_SINGLETON(CLight_Manager)
 
 CLight_Manager::CLight_Manager()
@@ -81,6 +82,36 @@ HRESULT CLight_Manager::Reset_Lights()
 {
 	Free();
 	return S_OK;
+}
+
+HRESULT CLight_Manager::Add_Sun(CGameObject* pSun)
+{
+	if (nullptr != m_pSun)
+		return E_FAIL;
+
+	m_pSun = pSun;
+}
+
+Vec3 CLight_Manager::Get_SunScreenPos()
+{
+	if (nullptr == m_pSun)
+		return Vec3(FLT_MAX, FLT_MAX, FLT_MAX);
+
+	CTransform* pTransform = m_pSun->Get_Component<CTransform>(TEXT("Com_Transform"));
+	Vec3 vSunWorldPos = pTransform->Get_Position();
+
+	CPipeLine* pPipeLine = GET_INSTANCE(CPipeLine);
+
+	Vec3 vSunPosProjection(vSunWorldPos.x, vSunWorldPos.y, vSunWorldPos.z);
+
+	vSunPosProjection = ::XMVector3TransformCoord(::XMVector3TransformCoord(vSunWorldPos, pPipeLine->Get_TransformMatrix(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW)),
+		pPipeLine->Get_TransformMatrix(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ));
+
+	vSunPosProjection.x = (vSunPosProjection.x + 1.0f) * 0.5f;
+	vSunPosProjection.y = (vSunPosProjection.y - 1.0f) * -0.5f;
+
+
+	return vSunPosProjection;
 }
 
 void CLight_Manager::Free()
