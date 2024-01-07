@@ -87,6 +87,21 @@ HRESULT CParticle_Manager::Generate_Particle(const wstring& strParticleName, _ma
 	return S_OK;
 }
 
+HRESULT CParticle_Manager::Tick_Generate_Particle(_float fTimeDelta, _float* fTimeAcc, _float fCreateTime, const wstring& strParticleName, CTransform* pTransform, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner)
+{
+	*fTimeAcc += fTimeDelta;
+	if (*fTimeAcc >= fCreateTime)
+	{
+		*fTimeAcc = 0.f;
+
+		if (pTransform == nullptr)
+			return S_OK;
+		Generate_Particle(strParticleName, pTransform->Get_WorldMatrix(), vLocalPos, vLocalScale, vLocalRotation, pOwner);
+	}
+
+	return S_OK;
+}
+
 HRESULT CParticle_Manager::Ready_Proto_Particles(const wstring& strParticlePath)
 {
 	for (auto& p : std::filesystem::directory_iterator(strParticlePath))

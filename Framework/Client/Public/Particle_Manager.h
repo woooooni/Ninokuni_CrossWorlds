@@ -23,6 +23,8 @@ public:
 
 public:
 	HRESULT Generate_Particle(const wstring& strParticleName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner = nullptr, class CParticle** ppOut = nullptr);
+	HRESULT Tick_Generate_Particle(_float fTimeDelta, _float* fTimeAcc, _float fCreateTime, const wstring& strParticleName,
+		class CTransform* pTransform, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner = nullptr);
 
 private:
 	ID3D11Device* m_pDevice = nullptr;
