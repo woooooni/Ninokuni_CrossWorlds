@@ -26,8 +26,8 @@ public:
 	virtual void Exit_State() override;
 
 private:
-	void Input(_float fTimeDelta);
 	void Shoot();
+
 private:
 	_int m_iShootCount = 3;
 

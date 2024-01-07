@@ -28,7 +28,6 @@ void CState_Engineer_Battle_Attack_0::Tick_State(_float fTimeDelta)
     wstring strVoiceNum = to_wstring(CUtils::Random_Int(1, 5));
     CSound_Manager::GetInstance()->Play_Sound(L"Engineer_V_Atk_Short_" + strVoiceNum + L".mp3", CHANNELID::SOUND_VOICE_CHARACTER, 0.5f, true);
 
-    Input(fTimeDelta);
 
     if (m_pModelCom->Get_Progress() >= 0.5f && m_pModelCom->Get_Progress() <= 0.6f)
     {
@@ -43,25 +42,6 @@ void CState_Engineer_Battle_Attack_0::Tick_State(_float fTimeDelta)
 
 void CState_Engineer_Battle_Attack_0::Exit_State()
 {
-}
-
-void CState_Engineer_Battle_Attack_0::Input(_float fTimeDelta)
-{
-    if (true == Skill_Input(fTimeDelta))
-        return;
-
-    if (KEY_TAP(KEY::CTRL))
-    {
-        m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_DASH);
-        return;
-    }
-        
-    if (KEY_TAP(KEY::LBTN))
-    {
-        m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_1);
-        return;
-    }
-        
 }
 
 void CState_Engineer_Battle_Attack_0::Shoot()

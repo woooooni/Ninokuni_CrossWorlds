@@ -105,6 +105,8 @@ public:
 		_int iHp = 100;
 		_int iMaxHp = 100;
 
+		_float fSpeedWeight = 1.f;
+
 		_int iExp = 0;
 		_int iMaxExp = 100;
 	}CHARACTER_STAT;
@@ -148,6 +150,51 @@ public:
 public:
 	const CHARACTER_STAT& Get_Stat() { return m_tStat; }
 	void Set_Stat(const CHARACTER_STAT& StatDesc) { m_tStat = StatDesc; }
+
+	void Set_Speed_Weight(_float fSpeedWeight) { m_tStat.fSpeedWeight = fSpeedWeight; }
+	_float Get_Speed_Weight() { return m_tStat.fSpeedWeight; }
+
+	void Set_Hp(_int iHp) { m_tStat.iHp = iHp; }
+	_int Get_Hp() { return m_tStat.iHp; }
+
+	void Set_MaxHp(_int iMaxHp) { m_tStat.iMaxHp = iMaxHp; }
+	_int Get_MaxHp() { return m_tStat.iMaxHp; }
+
+	void Set_Exp(_int iExp) { m_tStat.iExp = iExp; }
+	_int Get_Exp() { return m_tStat.iExp; }
+
+	void Set_Att(_int iAtt) { 
+		if (iAtt < 0)
+		{
+			iAtt = 0;
+		}
+		m_tStat.iAtt = iAtt;
+	}
+
+	_uint Get_Att() { return m_tStat.iAtt; }
+
+	void Set_Def(_int iDef) {
+		if (iDef < 0)
+		{
+			iDef = 0;
+		}
+		m_tStat.iDef = iDef;
+	}
+
+	_uint Get_Def() { return m_tStat.iDef; }
+
+	void Decrease_HP(_int iDecrease)
+	{ 
+		m_tStat.iHp = max(0, m_tStat.iHp - iDecrease);
+	}
+
+	void Increase_HP(_int iIncrease)
+	{
+		m_tStat.iHp = min(m_tStat.iMaxHp, m_tStat.iHp + iIncrease);
+	}
+
+
+
 
 public:
 	CHARACTER_TYPE Get_CharacterType() { return m_eCharacterType; }
@@ -227,8 +274,21 @@ protected:
 	_bool m_bMotionTrail = false;
 	MOTION_TRAIL_DESC m_MotionTrailDesc = {};
 
+protected:
+	_float m_fDefaultWalkSpeed = 2.f;
+	_float m_fDefaultRunSpeed = 5.f;
+
+protected:
+	void Input_Character(_float fTimeDelta);
+
+private:
+	void Input_Default(CCharacter::STATE eCurrentState, _float fTimeDelta);
+	void Input_Attack(CCharacter::STATE eCurrentState, _float fTimeDelta);
+
 private:
 	void Tick_MotionTrail(_float fTimeDelta);
+	void Tick_Target(_float fTimeDelta);
+	void Decide_Target(COLLISION_INFO tInfo);
 
 private:
 	class CUI_World_NameTag* m_pName = { nullptr };

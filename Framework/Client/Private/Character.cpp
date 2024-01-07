@@ -112,6 +112,9 @@ void CCharacter::Tick(_float fTimeDelta)
 
 	if(true == m_bMotionTrail)
 		Tick_MotionTrail(fTimeDelta);
+
+	if (nullptr == m_pTarget)
+		Tick_Target(fTimeDelta);
 #pragma region Deprecated.
 
 	//if (m_bInfinite)
@@ -144,6 +147,85 @@ void CCharacter::Tick(_float fTimeDelta)
 	//}
 #pragma endregion
 }
+
+
+void CCharacter::Input_Character(_float fTimeDelta)
+{
+	CCharacter::STATE eCurrentState = CCharacter::STATE(m_pStateCom->Get_CurrState());
+
+	switch (eCurrentState)
+	{
+	case CCharacter::STATE::ABNORMALITY_STUN :
+	case CCharacter::STATE::DAMAGED_WEAK :
+	case CCharacter::STATE::DAMAGED_STRONG :
+	case CCharacter::STATE::DAMAGED_IMPACT :
+	case CCharacter::STATE::DAMAGED_KNOCKDOWN :
+	case CCharacter::STATE::NEUTRAL_DOOR_ENTER :
+	case CCharacter::STATE::NEUTRAL_JUMP :
+	case CCharacter::STATE::BATTLE_JUMP :
+	case CCharacter::STATE::BATTLE_DASH :
+	case CCharacter::STATE::CLASS_SKILL_0 :
+	case CCharacter::STATE::CLASS_SKILL_1 :
+	case CCharacter::STATE::CLASS_SKILL_2 :
+	case CCharacter::STATE::SKILL_BURST :
+	case CCharacter::STATE::SKILL_SPECIAL_0 :
+	case CCharacter::STATE::SKILL_SPECIAL_1 :
+	case CCharacter::STATE::SKILL_SPECIAL_2 :
+	case CCharacter::STATE::REVIVE :
+		break;
+
+	case CCharacter::STATE::BATTLE_ATTACK_0:
+	case CCharacter::STATE::BATTLE_ATTACK_1:
+	case CCharacter::STATE::BATTLE_ATTACK_2:
+	case CCharacter::STATE::BATTLE_GUARD:
+		Input_Attack(eCurrentState, fTimeDelta);
+		break;
+
+	default:
+		Input_Default(eCurrentState, fTimeDelta);
+		break;
+
+	
+
+	}
+
+}
+
+void CCharacter::Input_Default(CCharacter::STATE eCurrentState, _float fTimeDelta)
+{
+	/*switch (eCurrentState)
+	{
+	case CCharacter::STATE::BATTLE_GUARD:
+	}*/
+}
+
+void CCharacter::Input_Attack(CCharacter::STATE eCurrentState, _float fTimeDelta)
+{
+	if (eCurrentState == CCharacter::STATE::BATTLE_ATTACK_0)
+	{
+		m_pStateCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_1);
+		return;
+	}
+	else if (eCurrentState == CCharacter::STATE::BATTLE_ATTACK_1)
+	{
+		m_pStateCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_2);
+		return;
+	}
+	else if (eCurrentState == CCharacter::STATE::BATTLE_ATTACK_2)
+	{
+		m_pStateCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_3);
+		return;
+	}
+	else if (eCurrentState == CCharacter::STATE::BATTLE_GUARD)
+	{
+		if (KEY_NONE(KEY::RBTN))
+		{
+			m_pStateCom->Change_State(CCharacter::STATE::BATTLE_IDLE);
+			return;
+		}
+	}
+}
+
 
 
 void CCharacter::Tick_MotionTrail(_float fTimeDelta)
@@ -190,6 +272,29 @@ void CCharacter::Tick_MotionTrail(_float fTimeDelta)
 		}
 	}
 }
+
+void CCharacter::Tick_Target(_float fTimeDelta)
+{
+	if (nullptr == m_pTarget)
+		return;
+
+	if (m_pTarget->Is_ReserveDead() || m_pTarget->Is_Dead())
+	{
+		m_pTarget = nullptr;
+		return;
+	}
+		
+
+	CTransform* pTargetTransform = m_pTarget->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr != pTargetTransform)
+	{
+		Vec3 vDir = pTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
+		if (vDir.Length() > 10.f)
+			m_pTarget = nullptr;
+	}
+}
+
+
 
 void CCharacter::LateTick(_float fTimeDelta)
 {
@@ -336,6 +441,13 @@ void CCharacter::Collision_Enter(const COLLISION_INFO& tInfo)
 void CCharacter::Collision_Continue(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Continue(tInfo);
+	if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BOUNDARY)
+	{
+		if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_DYNAMIC || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER)
+		{
+			Decide_Target(tInfo);
+		}
+	}
 }
 
 void CCharacter::Collision_Exit(const COLLISION_INFO& tInfo)
@@ -400,6 +512,29 @@ void CCharacter::Stop_Trail(SOCKET_TYPE eSocketType)
 	if (nullptr != m_pTrails[eSocketType])
 		m_pTrails[eSocketType]->Stop_Trail();
 
+}
+
+void CCharacter::Decide_Target(COLLISION_INFO tInfo)
+{
+	if (nullptr == m_pTarget)
+	{
+		m_pTarget = tInfo.pOther;
+	}
+	else
+	{
+		CTransform* pTargetTransform = m_pTarget->Get_Component<CTransform>(L"Com_Transform");
+		CTransform* pNewTargetTransform = tInfo.pOther->Get_Component<CTransform>(L"Com_Transform");
+
+		if (nullptr != pTargetTransform)
+		{
+			Vec3 vTargetDir = pTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
+			Vec3 vNewTargetDir = pNewTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
+			if (vNewTargetDir.Length() < vTargetDir.Length())
+			{
+				m_pTarget = tInfo.pOther;
+			}
+		}
+	}
 }
 
 

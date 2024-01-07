@@ -25,9 +25,6 @@ public:
 	virtual void Tick_State(_float fTimeDelta) override;
 	virtual void Exit_State() override;
 
-private:
-	void Input(_float fTimeDelta);
-
 public:
 	static CState_SwordMan_Battle_Attack_2* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
