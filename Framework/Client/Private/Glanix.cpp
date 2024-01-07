@@ -5,6 +5,7 @@
 #include "Trail.h"
 #include "UI_Manager.h"
 
+#include "GlanixState_IntroIdle.h"
 #include "GlanixState_IntroRoar.h"
 #include "GlanixState_IntroJump.h"
 #include "GlanixState_IntroFinish.h"
@@ -95,7 +96,7 @@ HRESULT CGlanix::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_BattleStand"));
+	// m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_BattleStand"));
 
 	//if (FAILED(Ready_Sockets()))
 	//	return E_FAIL;
@@ -109,8 +110,8 @@ HRESULT CGlanix::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
-	if (FAILED(CUI_Manager::GetInstance()->Ready_BossHPBar(this)))
-		return E_FAIL;
+	//if (FAILED(CUI_Manager::GetInstance()->Ready_BossHPBar(this)))
+	//	return E_FAIL;
 
 	return S_OK;
 }
@@ -316,6 +317,10 @@ HRESULT CGlanix::Ready_States()
 	list<wstring> strAnimationName;
 	
 	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_BattleStand");
+	m_pStateCom->Add_State(GLANIX_INTRO_IDLE, CGlanixState_IntroIdle::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_BossSkillRage");
 	m_pStateCom->Add_State(GLANIX_INTRO_ROAR, CGlanixState_IntroRoar::Create(m_pStateCom, strAnimationName));
 
@@ -518,8 +523,7 @@ HRESULT CGlanix::Ready_States()
 	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_Death");
 	m_pStateCom->Add_State(GLANIX_DEAD, CGlanixState_Dead::Create(m_pStateCom, strAnimationName));
 
-
-	// m_pStateCom->Change_State(GLANIX_INTRO_ROAR);
+	m_pStateCom->Change_State(GLANIX_INTRO_IDLE);
 
 	return S_OK;
 }
