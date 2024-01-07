@@ -13,7 +13,7 @@ public:
 	enum RENDERGROUP {
 		RENDER_PRIORITY, RENDER_AURORA, RENDER_NONLIGHT,
 		RENDER_SHADOW, RENDER_NONBLEND, RENDER_LIGHT,
-		RENDER_ALPHABLEND, RENDER_EFFECT,
+		RENDER_ALPHABLEND, RENDER_DECAL, RENDER_EFFECT,
 		RENDER_UI, RENDER_UI_EFFECT_NONBLEND, RENDER_UI_EFFECT_BLEND,
 		RENDER_CURSOR, 
 		RENDER_END
@@ -109,6 +109,7 @@ public:
 
 public:
 	HRESULT Draw();
+	HRESULT Check_Option();
 
 private:
 	HRESULT Render_Priority();
@@ -127,6 +128,7 @@ private:
 	HRESULT	Render_GodRay();
 
 	HRESULT Render_AlphaBlend();
+	HRESULT Render_Decal();
 	HRESULT Render_Effect();
 
 	HRESULT Render_UI();
@@ -147,6 +149,9 @@ private:
 
 	// Mix
 	HRESULT Render_AlphaBlendTargetMix(const wstring& strStartTargetTag, const wstring& strFinalTragetTag, _bool bClear);
+
+	// Clear
+	HRESULT Render_ClearTarget(const wstring& strStartTargetTag);
 
 #ifdef _DEBUG
 private:

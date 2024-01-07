@@ -24,6 +24,13 @@ CParticle::CParticle(const CParticle& rhs)
 {
 }
 
+void CParticle::Set_LoacalTransformInfo(_float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation)
+{
+	m_vLocalPos = vLocalPos;
+	m_vLocalScale = vLocalScale;
+	m_vLocalRotation = vLocalRotation;
+}
+
 void CParticle::Set_ParticleDesc(const PARTICLE_DESC& tDesc)
 {
 	m_tParticleDesc = tDesc;
@@ -118,6 +125,31 @@ void CParticle::LateTick(_float fTimeDelta)
 		return;
 
 	__super::LateTick(fTimeDelta);
+
+	// pOwnerObject
+	if (nullptr != m_pOwnerObject)
+	{
+		CTransform* pOwnerTransform = m_pOwnerObject->Get_Component<CTransform>(L"Com_Transform");
+		if (nullptr != pOwnerTransform)
+		{
+			// WorldMatrix
+			m_pTransformCom->Set_WorldMatrix(pOwnerTransform->Get_WorldMatrix());
+
+			// Scale / Rotation
+			Matrix matScale = matScale.CreateScale(m_vLocalScale);
+			Matrix matRotation = matScale.CreateFromYawPitchRoll(Vec3(XMConvertToRadians(m_vLocalRotation.x), XMConvertToRadians(m_vLocalRotation.y), XMConvertToRadians(m_vLocalRotation.z)));
+			Matrix matResult = matScale * matRotation * m_pTransformCom->Get_WorldFloat4x4();
+			m_pTransformCom->Set_WorldMatrix(matResult);
+
+			// Position
+			_vector vCurrentPosition = m_pTransformCom->Get_Position();
+			_vector vFinalPosition = vCurrentPosition;
+			vFinalPosition += m_pTransformCom->Get_State(CTransform::STATE_RIGHT) * m_vLocalPos.x;
+			vFinalPosition += m_pTransformCom->Get_State(CTransform::STATE_UP) * m_vLocalPos.y;
+			vFinalPosition += m_pTransformCom->Get_State(CTransform::STATE_LOOK) * m_vLocalPos.z;
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(XMVectorGetX(vFinalPosition), XMVectorGetY(vFinalPosition), XMVectorGetZ(vFinalPosition), 1.f));
+		}
+	}
 
 	if(m_tParticleDesc.bParticleSortZ)
 		m_pVIBufferCom->Sort_Z(m_tParticleDesc.iNumEffectCount);

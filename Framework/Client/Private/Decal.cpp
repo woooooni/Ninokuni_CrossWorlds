@@ -69,7 +69,7 @@ void CDecal::LateTick(_float fTimeDelta)
 	}
 
 	if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_Position(), 10.f))
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_EFFECT, this);
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_DECAL, this);
 }
 
 HRESULT CDecal::Render()

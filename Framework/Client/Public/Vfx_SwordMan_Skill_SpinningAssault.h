@@ -25,6 +25,10 @@ public:
 protected:
 	virtual HRESULT Ready_Components() override;
 
+private:
+	class CEffect* m_pEffect_Trail0 = nullptr; // 특정 조각 생성할 때 해당 uv 반복 끄기
+	class CEffect* m_pEffect_Trail1 = nullptr;
+
 public:
 	static CVfx_SwordMan_Skill_SpinningAssault* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 		const wstring& strObjectTag);

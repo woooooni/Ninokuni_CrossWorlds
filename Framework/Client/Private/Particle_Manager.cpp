@@ -70,8 +70,12 @@ HRESULT CParticle_Manager::Generate_Particle(const wstring& strParticleName, _ma
 	pParticle->Set_Position_Particle(_float3(XMVectorGetX(vFinalPosition), XMVectorGetY(vFinalPosition), XMVectorGetZ(vFinalPosition)));
 
 	// pOwner
-	if(pOwner != nullptr)
+	if (pOwner != nullptr)
+	{
 		pParticle->Set_Owner(pOwner);
+		pParticle->Set_LoacalTransformInfo(vLocalPos, vLocalScale, vLocalRotation);
+	}
+		
 
 	// ppOut
 	if (ppOut != nullptr)
@@ -79,6 +83,21 @@ HRESULT CParticle_Manager::Generate_Particle(const wstring& strParticleName, _ma
 
 	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, pGameObject)))
 		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CParticle_Manager::Tick_Generate_Particle(_float fTimeDelta, _float* fTimeAcc, _float fCreateTime, const wstring& strParticleName, CTransform* pTransform, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner)
+{
+	*fTimeAcc += fTimeDelta;
+	if (*fTimeAcc >= fCreateTime)
+	{
+		*fTimeAcc = 0.f;
+
+		if (pTransform == nullptr)
+			return S_OK;
+		Generate_Particle(strParticleName, pTransform->Get_WorldMatrix(), vLocalPos, vLocalScale, vLocalRotation, pOwner);
+	}
 
 	return S_OK;
 }
