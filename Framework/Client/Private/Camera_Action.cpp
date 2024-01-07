@@ -334,7 +334,7 @@ void CCamera_Action::Tick_Door(_float fTimeDelta)
 
 		/* Height */
 		Vec4 vPostion = m_pTransformCom->Get_Position();
-		vPostion.y += m_tActionDoorDesc.tLerpRotateSpeed.fCurValue * fTimeDelta * 0.85f;
+		vPostion.y += m_tActionDoorDesc.tLerpRotateSpeed.fCurValue * fTimeDelta * 1.25f;
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPostion);
 
 		/* Look At */

@@ -155,6 +155,17 @@ void CCamera_CutScene_Boss::Tick_CutScene_Granix(const _float fDeltaTime)
 		{
 			CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
 
+			/* Cam Position */
+			{
+				m_tTargetOffset.vCurVec.z += fDeltaTime;
+
+				Vec4 vCamPos =
+					(Vec4)pTargetTransform->Get_Position() +
+					pTargetTransform->Get_RelativeOffset(m_tTargetOffset.vCurVec);
+
+				m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCamPos.OneW());
+			}
+
 			if (m_bSignal)
 			{
 				m_bSignal = false;
@@ -183,6 +194,9 @@ void CCamera_CutScene_Boss::Tick_CutScene_Granix(const _float fDeltaTime)
 				memcpy(&vLookPos, &matLookWorld.m[3], sizeof(Vec4));
 
 				vLookPos += pTargetTransform->Get_RelativeOffset(m_tLookAtOffset.vCurVec);
+
+				if (Is_Shake())
+					vLookPos += Vec4(Get_ShakeLocalPos());
 
 				m_pTransformCom->LookAt(vLookPos.OneW());
 			}
@@ -221,6 +235,9 @@ void CCamera_CutScene_Boss::Tick_CutScene_Granix(const _float fDeltaTime)
 
 				vLookPos += pTargetTransform->Get_RelativeOffset(m_tLookAtOffset.vCurVec);
 
+				if (Is_Shake())
+					vLookPos += Vec4(Get_ShakeLocalPos());
+
 				m_pTransformCom->LookAt(vLookPos.OneW());
 			}
 		}
@@ -258,6 +275,9 @@ void CCamera_CutScene_Boss::Tick_CutScene_Granix(const _float fDeltaTime)
 
 				vLookPos += pTargetTransform->Get_RelativeOffset(m_tLookAtOffset.vCurVec);
 
+				if (Is_Shake())
+					vLookPos += Vec4(Get_ShakeLocalPos());
+
 				m_pTransformCom->LookAt(vLookPos.OneW());
 			}
 		}
@@ -286,6 +306,7 @@ void CCamera_CutScene_Boss::Tick_CutScene_Granix(const _float fDeltaTime)
 			}
 
 			/* Look At Position */
+
 			Vec4 vLookPos = Vec4::UnitW;
 			{
 				Matrix matLookWorld = m_pLookAtObj->Get_Component<CModel>(L"Com_Model")->Get_SocketLocalMatrix(0)
@@ -294,6 +315,9 @@ void CCamera_CutScene_Boss::Tick_CutScene_Granix(const _float fDeltaTime)
 				memcpy(&vLookPos, &matLookWorld.m[3], sizeof(Vec4));
 
 				vLookPos += pTargetTransform->Get_RelativeOffset(m_tLookAtOffset.vCurVec);
+
+				if(Is_Shake())
+					vLookPos += Vec4(Get_ShakeLocalPos());
 
 				m_pTransformCom->LookAt(vLookPos.OneW());
 			}

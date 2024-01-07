@@ -22,7 +22,7 @@ HRESULT CGlanixState_IntroFinish::Initialize(const list<wstring>& AnimationList)
 
 void CGlanixState_IntroFinish::Enter_State(void* pArg)
 {
-	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_IntroFinish01"));
+	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_IntroFinish01"), 0.3f);
 }
 
 void CGlanixState_IntroFinish::Tick_State(_float fTimeDelta)

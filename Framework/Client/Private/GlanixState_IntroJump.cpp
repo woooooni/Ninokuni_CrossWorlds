@@ -42,18 +42,15 @@ void CGlanixState_IntroJump::Tick_State(_float fTimeDelta)
 	{
 		if (m_pModelCom->Get_CurrAnimationFrame() == 50)
 		{
-			/*m_pGlanix->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(
-				{0.f, 1.f, 0.f}, 7.5f, false);*/
-
 			Vec4 vDir = m_pTransformCom->Get_RelativeOffset(Vec4{ 0.f, 1.f, 3.f, 1.f });
 			vDir.w = 0.f;
 			vDir.Normalize();
-			m_pRigidBodyCom->Add_Velocity(vDir, 50.f, true);
+			m_pRigidBodyCom->Add_Velocity(vDir.ZeroW().Normalized(), 30.f, true);
 		} 
 
 		m_fTime += fTimeDelta;
 
-		if (m_fTime >= 0.75f)
+		if (m_fTime >= 0.4f)
 		{
 			m_fTime = 0.f;
 			m_pStateMachineCom->Change_State(CGlanix::GLANIX_INTRO_FINISH);
