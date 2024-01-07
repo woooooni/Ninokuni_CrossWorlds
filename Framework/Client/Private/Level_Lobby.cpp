@@ -7,6 +7,7 @@
 #include "Terrain.h"
 #include "Camera_Manager.h"
 #include "Level_Loading.h"
+#include "Light.h"
 
 #include "UI_Manager.h"
 #include "Water.h"

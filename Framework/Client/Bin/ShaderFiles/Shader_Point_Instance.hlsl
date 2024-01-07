@@ -2,7 +2,7 @@
 #include "Engine_Shader_Defines.hpp"
 
 matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
-texture2D	g_DiffuseTexture;
+Texture2D	g_DiffuseTexture;
 Texture2D	g_AlphaTexture;
 
 vector		g_vCamPosition;
@@ -106,8 +106,8 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> OutStream)
 			fAxis.x * fAxis.y * (1.0 - cos(fAngle)) - fAxis.z * sin(fAngle), fAxis.y * fAxis.y * (1.0 - cos(fAngle)) + cos(fAngle), fAxis.y * fAxis.z * (1.0 - cos(fAngle)) + fAxis.x * sin(fAngle),
 			fAxis.x * fAxis.z * (1.0 - cos(fAngle)) + fAxis.y * sin(fAngle), fAxis.y * fAxis.z * (1.0 - cos(fAngle)) - fAxis.x * sin(fAngle), fAxis.z * fAxis.z * (1.0 - cos(fAngle)) + cos(fAngle));
 
-		vRight = mul(float4(float3(1.0f, 0.0f, 0.0f), 0), RotationMatrix).xyz * In[0].vPSize.x;
-		vUp    = mul(float4(float3(0.0f, 1.0f, 0.0f), 0), RotationMatrix).xyz * In[0].vPSize.y;
+        vRight = mul(float3(1.0f, 0.0f, 0.0f), RotationMatrix).xyz * In[0].vPSize.x;
+		vUp    = mul(float3(0.0f, 1.0f, 0.0f), RotationMatrix).xyz * In[0].vPSize.y;
 	}
 
 

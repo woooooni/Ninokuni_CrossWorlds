@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "..\Public\Aurora.h"
 #include "Aurora.h"
 #include "GameInstance.h"

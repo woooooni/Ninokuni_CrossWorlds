@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "..\Public\EvermoreWater.h"
 #include "GameInstance.h"
 #include "Light.h"

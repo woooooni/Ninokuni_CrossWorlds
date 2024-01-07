@@ -90,6 +90,8 @@ HRESULT CLight_Manager::Add_Sun(CGameObject* pSun)
 		return E_FAIL;
 
 	m_pSun = pSun;
+
+	return S_OK;
 }
 
 Vec3 CLight_Manager::Get_SunScreenPos()
