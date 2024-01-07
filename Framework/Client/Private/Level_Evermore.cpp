@@ -116,6 +116,16 @@ HRESULT CLevel_Evermore::Initialize()
 	if (nullptr != CUI_Manager::GetInstance()->Get_Fade())
 		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 3.f);
 
+	/* Camera Action */
+	{
+		CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+		CCamera_Manager::GetInstance()->Set_CurCamera(pActionCam->Get_Key());
+		if (nullptr != pActionCam)
+		{
+			pActionCam->Start_Action(CCamera_Action::CAMERA_ACTION_TYPE::DOOR);
+		}
+	}
+
 	return S_OK;
 }
 
@@ -251,13 +261,6 @@ HRESULT CLevel_Evermore::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 			pFollowCam->Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
 
 			pFollowCam->Set_Default_Position();
-		}
-
-		CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-		CCamera_Manager::GetInstance()->Set_CurCamera(pActionCam->Get_Key());
-		if (nullptr != pActionCam)
-		{
-			pActionCam->Start_Action(CCamera_Action::CAMERA_ACTION_TYPE::DOOR);
 		}
 	}
 

@@ -5,6 +5,8 @@
 
 #include "Camera_Manager.h"
 
+#include "UI_Manager.h"
+
 /* Test */
 #include "Camera_CutScene_Map.h"
 #include "Camera_Action.h"
@@ -162,6 +164,18 @@ void CCamera_Follow::Set_Default_Position()
 Vec4 CCamera_Follow::Get_LookAt()
 {
 	return m_vPrevLookAt;
+}
+
+void CCamera_Follow::Set_Blending(const _bool& bBlending)
+{
+	__super::Set_Blending(bBlending);
+
+	if (!bBlending && !CUI_Manager::GetInstance()->Is_DefaultSettingOn())
+	{
+		/* Ui On */
+		if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
+			CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
+	}
 }
 
 HRESULT CCamera_Follow::Start_LockOn(CGameObject* pTargetObject, const Vec4& vTargetOffset, const Vec4& vLookAtOffset, const _float& fLockOnBlendingTime)

@@ -67,7 +67,10 @@ void CCamera_CutScene_Map::Tick(_float fTimeDelta)
 		}
 		else /* 없다면 이전 카메라로 체인지 */
 		{
-			CCamera_Manager::GetInstance()->Set_PrevCamera();
+			if (m_bWillBlending)
+				CCamera_Manager::GetInstance()->Change_Camera(m_iBlendingCamKey, m_fBlendingDuration, m_eBlendingMode);
+			else
+				CCamera_Manager::GetInstance()->Set_PrevCamera();
 	
 			if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
 				CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
@@ -101,7 +104,11 @@ HRESULT CCamera_CutScene_Map::Render()
 	return S_OK;
 }
 
-HRESULT CCamera_CutScene_Map::Start_CutScene(const string& strCutSceneName)
+HRESULT CCamera_CutScene_Map::Start_CutScene(const string& strCutSceneName,
+	const _bool& bWillBlending,
+	const _uint& iBlendingCamKey,
+	const _float& fBlendingDuration,
+	const LERP_MODE& eBlendingMode)
 {
 	m_pCurCutSceneDesc = Find_CutSceneDesc(strCutSceneName);
 	if (nullptr == m_pCurCutSceneDesc)
@@ -114,10 +121,23 @@ HRESULT CCamera_CutScene_Map::Start_CutScene(const string& strCutSceneName)
 
 	m_tTimeDesc.Start(m_pCurCutSceneDesc->fDuration, m_pCurCutSceneDesc->eLerpMode);
 
+	/* 다음 체인지할 카메라 예약 */
+	m_bWillBlending = bWillBlending;
+	if (m_bWillBlending)
+	{
+		m_iBlendingCamKey = iBlendingCamKey;
+		m_fBlendingDuration = fBlendingDuration;
+		m_eBlendingMode = eBlendingMode;
+	}
+
 	return S_OK;
 }
 
-HRESULT CCamera_CutScene_Map::Start_CutScenes(vector<string> strCutSceneNames)
+HRESULT CCamera_CutScene_Map::Start_CutScenes(vector<string> strCutSceneNames,
+	const _bool& bWillBlending,
+	const _uint& iBlendingCamKey,
+	const _float& fBlendingDuration,
+	const LERP_MODE& eBlendingMode)
 {
 	if (Is_Playing_CutScenc())
 		return E_FAIL;
@@ -137,6 +157,15 @@ HRESULT CCamera_CutScene_Map::Start_CutScenes(vector<string> strCutSceneNames)
 		Start_CutScene(strCutSceneName);
 
 		m_CutSceneNamesReserved.pop();
+	}
+
+	/* 다음 체인지할 카메라 예약 */
+	m_bWillBlending = bWillBlending;
+	if (m_bWillBlending)
+	{
+		m_iBlendingCamKey = iBlendingCamKey;
+		m_fBlendingDuration = fBlendingDuration;
+		m_eBlendingMode = eBlendingMode;
 	}
 
 	return S_OK;

@@ -4,6 +4,7 @@
 
 #include "Camera_Manager.h"
 #include "Camera_Follow.h"
+#include "Camera_CutScene_Map.h"
 
 #include "Glanix.h"
 
@@ -189,7 +190,7 @@ void CCamera_CutScene_Boss::Tick_CutScene_Granix(const _float fDeltaTime)
 		break;
 		case GLANIX_CUTSCENE_APPEAR_PROGRESS::ROAR :
 		{
-				CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
+			CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
 
 			if (m_bSignal)
 			{

@@ -42,38 +42,23 @@ void CGlanixState_IntroJump::Tick_State(_float fTimeDelta)
 	{
 		if (m_pModelCom->Get_CurrAnimationFrame() == 50)
 		{
-			m_pGlanix->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(
-				{0.f, 1.f, 0.f}, 7.5f, false);
+			/*m_pGlanix->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(
+				{0.f, 1.f, 0.f}, 7.5f, false);*/
+
+			Vec4 vDir = m_pTransformCom->Get_RelativeOffset(Vec4{ 0.f, 1.f, 3.f, 1.f });
+			vDir.w = 0.f;
+			vDir.Normalize();
+			m_pRigidBodyCom->Add_Velocity(vDir, 50.f, true);
 		} 
 
 		m_fTime += fTimeDelta;
 
-		/* y 보존하기 위함. */
-		_float4 vCurGlanixPos = {};
-		XMStoreFloat4(&vCurGlanixPos, m_pTransformCom->Get_Position());
-		_float fY = vCurGlanixPos.y;
-
-		/* 위치 보간. */
-		_float4 vCurPos = {};
-		XMVECTOR vCurVector = XMVectorLerp(m_pTransformCom->Get_Position(), m_pGlanix->Get_OriginPos(), fTimeDelta / 0.5f);
-		XMStoreFloat4(&vCurPos, vCurVector);
-		vCurPos.y = fY;
-		
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vCurPos));
-
-		if (m_fTime >= 2.f)
-		{
-			m_pGlanix->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(
-				{ 0.f, 1.f, 0.f }, -1.5f, false);
-		}
-
-		if (m_fTime >= 2.5f)
+		if (m_fTime >= 0.75f)
 		{
 			m_fTime = 0.f;
 			m_pStateMachineCom->Change_State(CGlanix::GLANIX_INTRO_FINISH);
 		}
 	}
-
 
 }
 

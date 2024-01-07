@@ -43,8 +43,18 @@ public:
 	virtual void Tick_Blending(const _float fDeltaTime) override;
 
 public:
-	HRESULT Start_CutScene(const string& strCutSceneName); /* 단일 컷신 실행 */
-	HRESULT Start_CutScenes(vector<string> strCutSceneNames); /* 복수 컷신 실행 */
+	HRESULT Start_CutScene(const string& strCutSceneName, 
+							const _bool& bWillBlending = false, 
+							const _uint& iBlendingCamKey = 0,
+							const _float& fBlendingDuration = 1.f, 
+							const LERP_MODE& eBlendingMode = LERP_MODE::SMOOTHER_STEP); /* 단일 컷신 실행 */
+
+	HRESULT Start_CutScenes(vector<string> strCutSceneNames,
+							const _bool& bWillBlending = false,
+							const _uint& iBlendingCamKey = 0,
+							const _float& fBlendingDuration = 1.f,
+							const LERP_MODE& eBlendingMode = LERP_MODE::SMOOTHER_STEP); /* 복수 컷신 실행 */
+
 	const _bool Is_Playing_CutScenc() const { return m_tTimeDesc.bActive; }
 
 public:
@@ -75,6 +85,13 @@ private:
 	queue<string>						m_CutSceneNamesReserved;
 
 	LERP_TIME_DESC						m_tTimeDesc;
+	
+	/* 컷신 이후 체인지 예약 데이터 */
+	_bool								m_bWillBlending = false;
+	_uint								m_iBlendingCamKey = 0;
+	_float								m_fBlendingDuration = 0.f;
+	LERP_MODE							m_eBlendingMode = LERP_MODE::SMOOTHER_STEP;
+
 	
 public:
 	static CCamera_CutScene_Map* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);

@@ -30,20 +30,23 @@ public:
 
 	typedef struct tagActionDoorDesc
 	{
-		enum PROGRESS { INTRO, FIX, OUTTRO, PROGRESS_END };
+		enum PROGRESS { DELAY, INTRO, FIX, OUTTRO, PROGRESS_END };
 
 		PROGRESS		eProgress = PROGRESS::PROGRESS_END;
 
 		LERP_FLOAT_DESC	tLerpRotateSpeed;
+		LERP_FLOAT_DESC	tLerpDistance;			// DELAY, FIX
+		const _float	fDistanceLerpTime		= 1.f;
 
-		_float			fAcc = 0.f;				// FIX
+		_float			fAcc = 0.f;				// DELAY, FIX
 
 		const _float	fMaxRotateSpeed = XMConvertToRadians(45.f);
 		
+		const _float	fDelayTime		= 0.75f;	// DELAY
 		const _float	fFixedTime		= 0.9f;	// FIX
 		const _float	fBlendingTime	= 1.4f; // INTRO, OUTTRO
 
-		const Vec4		vTargetOffset = { 0.f, 1.5f, 3.5f, 1.f };
+		Vec4			vTargetOffset = { 0.f, 1.5f, 3.5f, 1.f };
 		const Vec4		vLookAtOffset = { 0.f, 1.f, 0.f, 1.f };
 
 		void Clear()
