@@ -167,7 +167,7 @@ void CUI_World_Interaction::LateTick(_float fTimeDelta)
 			_vector vTemp = (pTransform->Get_Position()) - (pPlayerTransform->Get_Position());
 			_float fTotarget = XMVectorGetX(XMVector3Length(vTemp));
 
-			if (fTotarget > 1.f)
+			if (fTotarget > 0.001f)
 			{
 				_float4x4 matTargetWorld = pTransform->Get_WorldFloat4x4();
 				matTargetWorld._42 += m_fOffset.y;

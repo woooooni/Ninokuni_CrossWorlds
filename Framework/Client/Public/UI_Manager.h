@@ -176,6 +176,7 @@ private:
 	vector<class CUI_SkillSection_Frame*> m_ClassicFrame;
 	vector<class CUI_SkillSection_SpecialSkill*> m_SpecialSkill;
 	vector<class CUI_SkillSection_Frame*> m_SpecialFrame;
+	vector<class CUI_SkillSection_CoolTimeFrame*> m_CoolTimeFrame;
 	vector<class CUI_QuickSlot_Item*> m_ItemQuickslot;
 
 	// MonsterHP (단일 HPBar -> UIManager에서 관리함)

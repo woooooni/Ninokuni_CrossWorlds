@@ -936,8 +936,12 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/WeaponSlot/UI_DefaultAttack_Icon_%d.png"), 3))))
 		return E_FAIL;
 
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_WeaponSection_Elemental_Frame"), // 속성에 따른 Frame Texture 작업 전
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_WeaponSection_Elemental_Frame"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/WeaponSlot/UI_Weapon_Frame_%d.png"), 5))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_WeaponSection_Elemental_Frame_Mask"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/WeaponSlot/UI_Weapon_Frame_Mask.png")))))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_WeaponSection_Slot"), // 무기 슬롯

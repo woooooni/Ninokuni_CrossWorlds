@@ -639,6 +639,7 @@
     <ClInclude Include="..\Public\UI_SetNickname_Textbox.h" />
     <ClInclude Include="..\Public\UI_SetNickname_Window.h" />
     <ClInclude Include="..\Public\UI_SkillSection_ClassicSkill.h" />
+    <ClInclude Include="..\Public\UI_SkillSection_CoolTimeFrame.h" />
     <ClInclude Include="..\Public\UI_SkillSection_Frame.h" />
     <ClInclude Include="..\Public\UI_SkillSection_SpecialSkill.h" />
     <ClInclude Include="..\Public\UI_SkillWindow_Btn.h" />
@@ -1285,6 +1286,7 @@
     <ClCompile Include="..\Private\UI_SetNickname_Textbox.cpp" />
     <ClCompile Include="..\Private\UI_SetNickname_Window.cpp" />
     <ClCompile Include="..\Private\UI_SkillSection_ClassicSkill.cpp" />
+    <ClCompile Include="..\Private\UI_SkillSection_CoolTimeFrame.cpp" />
     <ClCompile Include="..\Private\UI_SkillSection_Frame.cpp" />
     <ClCompile Include="..\Private\UI_SkillSection_SpecialSkill.cpp" />
     <ClCompile Include="..\Private\UI_SkillWindow_Btn.cpp" />
