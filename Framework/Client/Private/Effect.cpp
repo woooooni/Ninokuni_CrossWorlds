@@ -14,6 +14,13 @@ CEffect::CEffect(const CEffect& rhs)
 {
 }
 
+void CEffect::Set_LoacalTransformInfo(_float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation)
+{
+	m_vLocalPos = vLocalPos;
+	m_vLocalScale = vLocalScale;
+	m_vLocalRotation = vLocalRotation;
+}
+
 void CEffect::Set_EffectDesc(const EFFECT_DESC& tDesc)
 {
 	m_tEffectDesc = tDesc;
@@ -47,6 +54,11 @@ void CEffect::Reset_UV()
 
 	m_fAccIndex  = 0.f;
 	m_fAccUVFlow = _float2(0.f, 0.f);
+}
+
+void CEffect::Set_UVLoop(_int iLoop)
+{
+	m_tEffectDesc.iUVFlowLoop = iLoop;
 }
 
 void CEffect::Reset_Effect()
@@ -263,7 +275,6 @@ HRESULT CEffect::Initialize(void* pArg)
 	if (nullptr != pArg)
 		m_pOwnerObject = (CGameObject*)pArg;
 
-	XMStoreFloat4x4(&m_ParentMatrix, XMMatrixIdentity());
 	Reset_Effect();
 
 	return S_OK;
@@ -316,14 +327,6 @@ void CEffect::Tick(_float fTimeDelta)
 
 	// »ö»ó
 	Change_Color(fTimeDelta);
-
-	// m_ParentMatrix
-	if (nullptr != m_pOwnerObject)
-	{
-		CTransform* pOwnerTransform = m_pOwnerObject->Get_Component<CTransform>(L"Com_Transform");
-		if (nullptr != pOwnerTransform)
-			XMStoreFloat4x4(&m_ParentMatrix, pOwnerTransform->Get_WorldMatrix());
-	}
 }
 
 void CEffect::LateTick(_float fTimeDelta)
@@ -332,6 +335,31 @@ void CEffect::LateTick(_float fTimeDelta)
 		return;
 
 	__super::LateTick(fTimeDelta);
+
+	// pOwnerObject
+	if (nullptr != m_pOwnerObject)
+	{
+		CTransform* pOwnerTransform = m_pOwnerObject->Get_Component<CTransform>(L"Com_Transform");
+		if (nullptr != pOwnerTransform)
+		{
+			// WorldMatrix
+			m_pTransformCom->Set_WorldMatrix(pOwnerTransform->Get_WorldMatrix());
+
+			// Scale / Rotation
+			Matrix matScale    = matScale.CreateScale(m_vLocalScale);
+			Matrix matRotation = matScale.CreateFromYawPitchRoll(Vec3(XMConvertToRadians(m_vLocalRotation.x), XMConvertToRadians(m_vLocalRotation.y), XMConvertToRadians(m_vLocalRotation.z)));
+			Matrix matResult   = matScale * matRotation * m_pTransformCom->Get_WorldFloat4x4();
+			m_pTransformCom->Set_WorldMatrix(matResult);
+
+			// Position
+			_vector vCurrentPosition = m_pTransformCom->Get_Position();
+			_vector vFinalPosition = vCurrentPosition;
+			vFinalPosition += m_pTransformCom->Get_State(CTransform::STATE_RIGHT) * m_vLocalPos.x;
+			vFinalPosition += m_pTransformCom->Get_State(CTransform::STATE_UP) * m_vLocalPos.y;
+			vFinalPosition += m_pTransformCom->Get_State(CTransform::STATE_LOOK) * m_vLocalPos.z;
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(XMVectorGetX(vFinalPosition), XMVectorGetY(vFinalPosition), XMVectorGetZ(vFinalPosition), 1.f));
+		}
+	}
 
 	_float4x4 WorldMatrix;
 	XMStoreFloat4x4(&WorldMatrix, m_pTransformCom->Get_WorldMatrix());// m_pTransformCom->Get_WorldMatrix()* XMLoadFloat4x4(&m_ParentMatrix));

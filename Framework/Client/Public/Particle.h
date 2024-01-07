@@ -190,6 +190,7 @@ public:
 	virtual HRESULT Render() override;
 
 public:
+	void Set_LoacalTransformInfo(_float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation);
 	const PARTICLE_DESC& Get_ParticleDesc() { return m_tParticleDesc; }
 	void Set_ParticleDesc(const PARTICLE_DESC& tDesc);
 	void Set_Position_Particle(_float4x4 WorldMatrix);
@@ -208,6 +209,9 @@ private:
 	_float4x4 m_ProjMatrix;
 
 	class CGameObject* m_pOwnerObject = nullptr;
+	_float3 m_vLocalPos = _float3(0.f, 0.f, 0.f);
+	_float3 m_vLocalScale = _float3(0.f, 0.f, 0.f);
+	_float3 m_vLocalRotation = _float3(0.f, 0.f, 0.f);
 
 private:
 	class CRenderer*  m_pRendererCom = nullptr;

@@ -70,8 +70,12 @@ HRESULT CParticle_Manager::Generate_Particle(const wstring& strParticleName, _ma
 	pParticle->Set_Position_Particle(_float3(XMVectorGetX(vFinalPosition), XMVectorGetY(vFinalPosition), XMVectorGetZ(vFinalPosition)));
 
 	// pOwner
-	if(pOwner != nullptr)
+	if (pOwner != nullptr)
+	{
 		pParticle->Set_Owner(pOwner);
+		pParticle->Set_LoacalTransformInfo(vLocalPos, vLocalScale, vLocalRotation);
+	}
+		
 
 	// ppOut
 	if (ppOut != nullptr)

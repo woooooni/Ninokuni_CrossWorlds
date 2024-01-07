@@ -285,14 +285,15 @@ public:
 	virtual HRESULT Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices) override;
 
 public:
+	void Set_LoacalTransformInfo(_float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation);
 	const EFFECT_DESC& Get_EffectDesc() { return m_tEffectDesc; }
 	void Set_EffectDesc(const EFFECT_DESC& tDesc);
 	void Reset_Effect();
 	void Reset_UV();
+	void Set_UVLoop(_int iLoop);
 
 public:
 	void Set_Owner(CGameObject* pGameObject) { m_pOwnerObject = pGameObject; }
-	void Set_ParentMatrix(_matrix ParentMatrix) { XMStoreFloat4x4(&m_ParentMatrix, ParentMatrix); }
 
 public:
 	_bool Is_End() { return m_bAccIndexEnd; };
@@ -310,7 +311,9 @@ private:
 
 private:
 	CGameObject* m_pOwnerObject = nullptr;
-	_float4x4    m_ParentMatrix = {};
+	_float3 m_vLocalPos      = _float3(0.f, 0.f, 0.f);
+	_float3 m_vLocalScale    = _float3(0.f, 0.f, 0.f);
+	_float3 m_vLocalRotation = _float3(0.f, 0.f, 0.f);
 
 private:
 	_bool   m_bEffectDie = false;

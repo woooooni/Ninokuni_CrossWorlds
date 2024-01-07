@@ -56,6 +56,9 @@ HRESULT CLevel_Tool::Initialize()
 	//if (FAILED(Ready_Layer_Skydome(LAYER_TYPE::LAYER_SKYBOX)))
 	//	return E_FAIL;
 
+	//if (FAILED(GI->Add_ShadowLight(LEVEL_TOOL, XMVectorSet(0.f, 10.f, 0.f, 1.f), XMVectorSet(10.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f))))
+	//	return E_FAIL;
+
 	return S_OK;
 }
 
