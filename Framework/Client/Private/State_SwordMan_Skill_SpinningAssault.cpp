@@ -22,7 +22,7 @@ HRESULT CState_SwordMan_Skill_SpinningAssault::Initialize(const list<wstring>& A
 void CState_SwordMan_Skill_SpinningAssault::Enter_State(void* pArg)
 {
     wstring strNumVoice = to_wstring(CUtils::Random_Int(1, 5));
-    CSound_Manager::GetInstance()->Play_Sound(L"SwordsMan_V_Atk_Long_" + strNumVoice + L".mp3", CHANNELID::SOUND_VOICE_CHARACTER, 0.5f, true);
+    CSound_Manager::GetInstance()->Play_Sound(L"Swordsman_V_Atk_Long_" + strNumVoice + L".mp3", CHANNELID::SOUND_VOICE_CHARACTER, 0.5f, true);
 
     m_pCharacter->Appear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);

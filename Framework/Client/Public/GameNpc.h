@@ -121,7 +121,7 @@ protected:
 	_vector			m_vInitPos = {};
 
 	// 블룸 효과
-	_float3 m_vBloomPower = _float3(1.f, 1.f, 1.f);
+	_float3 m_vBloomPower = _float3(0.1f, 0.1f, 0.1f);
 
 	// 일반, 유니크 구분
 	_bool m_bIsUnique = false;
