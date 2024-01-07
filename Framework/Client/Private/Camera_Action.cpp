@@ -3,11 +3,11 @@
 #include "GameInstance.h"
 
 #include "Camera_Manager.h"
+#include "Camera_Follow.h"
 
 #include "Game_Manager.h"
 #include "Player.h"
-
-#include "Camera_Follow.h"
+#include "UI_Manager.h"
 
 #include "Utils.h"
 
@@ -210,6 +210,11 @@ HRESULT CCamera_Action::Start_Action_Door()
 			m_tActionDoorDesc.fBlendingTime, 
 			LERP_MODE::EASE_IN);
 	}
+
+	/* Ui Off */
+	//if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
+	//	CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
+
 	return S_OK;
 }
 
@@ -279,6 +284,10 @@ void CCamera_Action::Tick_Door(_float fTimeDelta)
 					pFollowCam->Set_Default_Position();
 
 					CCamera_Manager::GetInstance()->Change_Camera(CAMERA_TYPE::FOLLOW);
+
+					/* Ui On */
+					//if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
+					//	CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
 
 					return;
 				}

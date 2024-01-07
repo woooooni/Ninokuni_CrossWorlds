@@ -5,7 +5,7 @@
 
 #include "Animation.h"
 #include "Camera_Manager.h"
-
+#include "Camera_CutScene_Boss.h"
 
 CGlanixState_IntroJump::CGlanixState_IntroJump(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
@@ -23,6 +23,13 @@ void CGlanixState_IntroJump::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_IntroJump"));
 	// m_pTransformCom->LookAt_ForLandObject(m_pGlanix->Get_OriginPos());
+
+	/* Camera */
+	{
+		CCamera_CutScene_Boss* pCutSceneCam = dynamic_cast<CCamera_CutScene_Boss*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_BOSS));
+		if (nullptr != pCutSceneCam)
+			pCutSceneCam->Send_Signal();
+	}
 }
 
 void CGlanixState_IntroJump::Tick_State(_float fTimeDelta)

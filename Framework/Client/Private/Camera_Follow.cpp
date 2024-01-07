@@ -152,9 +152,8 @@ void CCamera_Follow::Set_Default_Position()
 			m_tDampingDesc.bSet = false;
 			Tick_Transform(GI->Compute_TimeDelta(TIMER_TYPE::GAME_PLAY));
 
-			/* 이유는 모르겠지만 2번 이상 틱 트랜스폼을 돌려야 카메라의 회전에서 얻는 룩앳 오프셋 위치가 제대로 세팅된다. */
 			/* 현재 팔로우 카메라의 룩앳 오프셋 계산은 팔로우 카메라의 회전행렬에 기반하기 때문이다. */
-			/* 혹시 룩앳 오프셋이 맞지 않는다면 3번까지 돌려보자*/
+			/* 틱 트랜스폼을 2번이상 돌려줘야 카메라의 회전행렬에서 얻는 룩앳 오프셋의 위치가 제대로 세팅된다. */
 		}
 		m_bCanInput = true;
 	}
@@ -255,8 +254,8 @@ void CCamera_Follow::Tick_Blending(const _float fDeltaTime)
 	m_pTransformCom->LookAt(m_vPrevLookAt);
 
 	/* PhysX */
-	/* 블렌딩 동안은 피직스를 돌리지 않는다. */
-	//if (nullptr != m_pControllerCom)
+	/* 블렌딩 동안 피직스를 돌린다 */
+	//if (nullptr != m_pControllerCom && !m_bBlending)
 	//	m_pControllerCom->Tick_Controller(fDeltaTime);
 
 	/* 블렌딩 시작시 댐핑을 리셋하므로 블렌딩이 종료될 때까지 블렌딩 리셋 상태를 유지해야 한다. */
@@ -464,7 +463,8 @@ void CCamera_Follow::Test(_float fTimeDelta)
 
 		if (KEY_TAP(KEY::HOME))
 		{
-			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_CurCamera());
+			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+			CCamera_Manager::GetInstance()->Set_CurCamera(pActionCam->Get_Key());
 			if (nullptr != pActionCam)
 			{
 				pActionCam->Start_Action(CCamera_Action::CAMERA_ACTION_TYPE::DOOR);
