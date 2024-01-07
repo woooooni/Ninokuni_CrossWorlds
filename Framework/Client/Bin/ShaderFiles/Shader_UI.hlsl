@@ -461,6 +461,50 @@ PS_OUT PS_MAIN_DISSOLVE(PS_IN In)
 	return Out;
 }
 
+PS_OUT PS_SKILLGAUGE_MASK(PS_IN In)
+{
+	PS_OUT		Out = (PS_OUT)0; // 초기화
+
+	float4 vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV); // Diffuse Tex Sampling
+	float4 vMaskColor = g_MaskTexture.Sample(LinearSampler, In.vTexUV); // Mask Tex Sampling
+
+	if (vMaskColor.r > 0.9f && vMaskColor.g > 0.9f && vMaskColor.b > 0.9f)
+	{
+		Out.vColor = saturate(vColor);
+		if (Out.vColor.a < 0.1f)
+			discard;
+	}
+	else
+		discard;
+
+	// 여기까지 마스크를 씌운 상태
+
+	float2 vDir = In.vTexUV - float2(0.5f, 0.5f); // float2(0.5f, 0.5f)는 중점이다.
+	vDir = normalize(vDir); // 방향벡터 Normalize
+	float2 vUpDir = float2(0.0f, sign(vDir.x));
+	vUpDir = normalize(vUpDir);
+
+	float fDot = dot(vUpDir, vDir); // 두 벡터를 내적한다.
+	float fDotRatio = g_Ratio;
+
+	// 방향벡터가 음수인 경우, 비교할 기준 벡터의 방향은 위
+	if (vDir.x < 0.f)
+	{
+		fDotRatio -= 0.5f;
+	}
+
+	fDotRatio = fDotRatio * 4.f - 1.f;
+
+	if (fDotRatio < fDot) // 잔여 쿨타임이 직관적으로 보여지는 픽셀이다
+	{
+		Out.vColor.rgb = lerp(vColor.rgb, float3(0.0f, 0.0f, 0.0f), 0.5f);
+		Out.vColor.a = 1.0f;
+	}
+
+	// 특정 영역에서만 온전한 원본 이미지가 표시된다.
+	return Out;
+}
+
 technique11 DefaultTechnique
 {
 	pass DefaultPass // 0
@@ -661,7 +705,7 @@ technique11 DefaultTechnique
 		PixelShader = compile ps_5_0 PS_MAIN_HPBAR_LERP_AND_GLOW();
 	}
 
-	pass HPBar_Dissolve // 18
+	pass HPBar_Dissolve // 18 사용 안함
 	{
 		SetRasterizerState(RS_Default);
 		SetDepthStencilState(DSS_None, 0);
@@ -670,6 +714,17 @@ technique11 DefaultTechnique
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_DISSOLVE();
+	}
+
+	pass SkillGaugeMaskTexture // 19
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_None, 0);
+		SetBlendState(BS_AlphaBlend, float4(1.f, 1.f, 1.f, 1.f), 0xffffffff);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		PixelShader = compile ps_5_0 PS_SKILLGAUGE_MASK();
 	}
 }
 

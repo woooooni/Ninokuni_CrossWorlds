@@ -3,6 +3,7 @@
 #include "GameInstance.h"
 #include "UI_Manager.h"
 #include "UI_WeaponSection_DefaultWeapon.h"
+#include "UI_SkillSection_CoolTimeFrame.h"
 
 CUI_WeaponSection_Slot::CUI_WeaponSection_Slot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_WEAPONSLOT eSlotType)
 	: CUI(pDevice, pContext, L"UI_WeaponSection_Slot")
@@ -47,31 +48,65 @@ HRESULT CUI_WeaponSection_Slot::Initialize(void* pArg)
 	m_bActive = true;
 
 	// No Weapon Texture를 생성한다.
-//	_float fSize = 128.f * 0.2f;
-//
-//	UI_INFO ParentDesc;
-//	ZeroMemory(&ParentDesc, sizeof(CUI::UI_INFO));
-//
-//	ParentDesc.fCX = 400.f * 0.75f;
-//	ParentDesc.fCY = 400.f * 0.75f;
-//	ParentDesc.fX = g_iWinSizeX - ParentDesc.fCX * 0.5f;
-//	ParentDesc.fY = g_iWinSizeY - ParentDesc.fCY * 0.5f - 5.f;
-//
-//	UI_INFO	UIDesc;
-//	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
-//
-//	UIDesc.fCX = fSize;
-//	UIDesc.fCY = fSize;
-//	UIDesc.fX = ParentDesc.fX + m_tInfo.fX;
-//	UIDesc.fY = ParentDesc.fY + m_tInfo.fY;
-//
-//	CGameObject* pNoWeapon = nullptr;
-//	pNoWeapon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_SkillSection_DefaultAttack"), LAYER_TYPE::LAYER_UI, &UIDesc);
-//	if (nullptr == pNoWeapon)
-//		return E_FAIL;
-//
-//	m_pNoWeapon = dynamic_cast<CUI_WeaponSection_DefaultWeapon*>(pNoWeapon);
-//	m_pNoWeapon->Set_Resizable(false);
+	_float fSize = 128.f * 0.2f;
+
+	UI_INFO ParentDesc;
+	ZeroMemory(&ParentDesc, sizeof(CUI::UI_INFO));
+
+	ParentDesc.fCX = 400.f * 0.75f;
+	ParentDesc.fCY = 400.f * 0.75f;
+	ParentDesc.fX = g_iWinSizeX - ParentDesc.fCX * 0.5f;
+	ParentDesc.fY = g_iWinSizeY - ParentDesc.fCY * 0.5f - 5.f;
+
+	UI_INFO	UIDesc;
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+
+	UIDesc.fCX = fSize;
+	UIDesc.fCY = fSize;
+	UIDesc.fX = ParentDesc.fX + m_tInfo.fX;
+	UIDesc.fY = ParentDesc.fY + m_tInfo.fY;
+
+	CGameObject* pNoWeapon = nullptr;
+	pNoWeapon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_SkillSection_DefaultAttack"), LAYER_TYPE::LAYER_UI, &UIDesc);
+	if (nullptr == pNoWeapon)
+		return E_FAIL;
+
+	m_pNoWeapon = dynamic_cast<CUI_WeaponSection_DefaultWeapon*>(pNoWeapon);
+	m_pNoWeapon->Set_Resizable(false);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = m_tInfo.fCX;
+	UIDesc.fCY = m_tInfo.fCY;
+	UIDesc.fX = ParentDesc.fX + m_tInfo.fX;
+	UIDesc.fY = ParentDesc.fY + m_tInfo.fY;
+	CGameObject* pFrame = nullptr;
+
+	switch (m_eSlotType)
+	{
+	case UI_WEAPONSLOT::WEAPONSLOT_FIRST:
+		pFrame = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_SkillSection_CoolTimeFrame_First"), LAYER_TYPE::LAYER_UI, &UIDesc);
+		if (nullptr == pFrame)
+			return E_FAIL;
+		m_pFrame = dynamic_cast<CUI_SkillSection_CoolTimeFrame*>(pFrame);
+		m_pFrame->Set_CharacterType(m_eCurPlayerType);
+		break;
+
+	case UI_WEAPONSLOT::WEAPONSLOT_SECOND:
+		pFrame = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_SkillSection_CoolTimeFrame_Second"), LAYER_TYPE::LAYER_UI, &UIDesc);
+		if (nullptr == pFrame)
+			return E_FAIL;
+		m_pFrame = dynamic_cast<CUI_SkillSection_CoolTimeFrame*>(pFrame);
+		m_pFrame->Set_CharacterType(m_eCurPlayerType);
+		break;
+
+	case UI_WEAPONSLOT::WEAPONSLOT_THIRD:
+		pFrame = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_SkillSection_CoolTimeFrame_Third"), LAYER_TYPE::LAYER_UI, &UIDesc);
+		if (nullptr == pFrame)
+			return E_FAIL;
+		m_pFrame = dynamic_cast<CUI_SkillSection_CoolTimeFrame*>(pFrame);
+		m_pFrame->Set_CharacterType(m_eCurPlayerType);
+		break;
+	}
 
 	return S_OK;
 }
@@ -80,9 +115,13 @@ void CUI_WeaponSection_Slot::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-		if (!m_bWear) // 무기를 착용하지 않은상태라면
+		if (nullptr != m_pFrame)
+			m_pFrame->Tick(fTimeDelta);
+
+		if (m_bWear) // 무기를 착용하지 않은상태라면
 		{
-			//m_pNoWeapon->Tick(fTimeDelta);
+			if (nullptr != m_pNoWeapon)
+				m_pNoWeapon->Tick(fTimeDelta);
 		}
 
 		__super::Tick(fTimeDelta);
@@ -93,12 +132,16 @@ void CUI_WeaponSection_Slot::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+		if (nullptr != m_pFrame)
+			m_pFrame->LateTick(fTimeDelta);
 
-		if (!m_bWear) // 무기를 착용하지 않은상태라면
+		if (m_bWear) // 무기를 착용하지 않은상태라면
 		{
-			//m_pNoWeapon->LateTick(fTimeDelta);
+			if (nullptr != m_pNoWeapon)
+				m_pNoWeapon->LateTick(fTimeDelta);
 		}
+
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
 }
 
@@ -106,9 +149,13 @@ HRESULT CUI_WeaponSection_Slot::Render()
 {
 	if (m_bActive)
 	{
-		if (!m_bWear) // 무기를 착용하지 않은상태라면
+		if (nullptr != m_pFrame)
+			m_pFrame->Render();
+
+		if (m_bWear)
 		{
-			//m_pNoWeapon->Render();
+			if (nullptr != m_pNoWeapon)
+				m_pNoWeapon->Render();
 		}
 
 		if (FAILED(Bind_ShaderResources()))
@@ -223,6 +270,7 @@ void CUI_WeaponSection_Slot::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pFrame);
 	Safe_Release(m_pNoWeapon);
 	Safe_Release(m_pTextureCom);
 }

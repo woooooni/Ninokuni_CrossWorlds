@@ -105,6 +105,7 @@
 #include "UI_SkillSection_ClassicSkill.h"
 #include "UI_ImajinnSection_Background.h"
 #include "UI_SkillSection_SpecialSkill.h"
+#include "UI_SkillSection_CoolTimeFrame.h"
 #include "UI_WeaponSection_DefaultWeapon.h"
 #include "UI_SkillSection_BtnInteraction.h"
 
@@ -6091,6 +6092,20 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 			CUI_WeaponSection_Weapon::UI_WEAPONSLOT_TYPE::SLOT_ELEMENTAL), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillSection_CoolTimeFrame_First"),
+		CUI_SkillSection_CoolTimeFrame::Create(m_pDevice, m_pContext,
+			CUI_SkillSection_CoolTimeFrame::UI_COOLFRAME_TYPE::FRAME_FIRST), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillSection_CoolTimeFrame_Second"),
+		CUI_SkillSection_CoolTimeFrame::Create(m_pDevice, m_pContext,
+			CUI_SkillSection_CoolTimeFrame::UI_COOLFRAME_TYPE::FRAME_SECOND), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_SkillSection_CoolTimeFrame_Third"),
+		CUI_SkillSection_CoolTimeFrame::Create(m_pDevice, m_pContext,
+			CUI_SkillSection_CoolTimeFrame::UI_COOLFRAME_TYPE::FRAME_THIRD), LAYER_UI)))
+		return E_FAIL;
+
+
 	return S_OK;
 }
 
@@ -6402,6 +6417,10 @@ void CUI_Manager::Free()
 
 	Safe_Release(m_pDummy);
 	Safe_Release(m_pName);
+
+	for (auto& pFrame : m_CoolTimeFrame)
+		Safe_Release(pFrame);
+	m_CoolTimeFrame.clear();
 
 	for (auto& pBasic : m_Basic)
 		Safe_Release(pBasic);
