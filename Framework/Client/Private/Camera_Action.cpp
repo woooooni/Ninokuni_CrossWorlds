@@ -185,6 +185,9 @@ HRESULT CCamera_Action::Start_Action_Door()
 	CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
 
 	/* Cam Positon */
+	m_tActionDoorDesc.tLerpDistance.Start(3.5f, 4.25f, m_tActionDoorDesc.fDistanceLerpTime, LERP_MODE::EASE_OUT);
+	m_tActionDoorDesc.vTargetOffset.z = m_tActionDoorDesc.tLerpDistance.fCurValue;
+
 	m_tTargetOffset.vCurVec = m_tActionDoorDesc.vTargetOffset;
 
 	const Vec4 vCamTargetPosition = pTargetTransform->Get_RelativeOffset(m_tTargetOffset.vCurVec).ZeroW()
@@ -200,20 +203,12 @@ HRESULT CCamera_Action::Start_Action_Door()
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCamTargetPosition);
 	m_pTransformCom->LookAt(vCamLookAt);
 
-	/* Desc */
-	{
-		m_tActionDoorDesc.eProgress = ACTION_DOOR_DESC::PROGRESS::INTRO;
-
-		m_tActionDoorDesc.tLerpRotateSpeed.Start(
-			0.f, 
-			m_tActionDoorDesc.fMaxRotateSpeed, 
-			m_tActionDoorDesc.fBlendingTime, 
-			LERP_MODE::EASE_IN);
-	}
+	/* Progress */
+	m_tActionDoorDesc.eProgress = ACTION_DOOR_DESC::PROGRESS::DELAY;
 
 	/* Ui Off */
-	//if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
-	//	CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
+	if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
+		CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
 
 	return S_OK;
 }
@@ -245,6 +240,25 @@ void CCamera_Action::Tick_Door(_float fTimeDelta)
 
 		switch (m_tActionDoorDesc.eProgress)
 		{
+		case tagActionDoorDesc::PROGRESS::DELAY:
+		{
+			/* Check Progress */
+			m_tActionDoorDesc.fAcc += fTimeDelta;
+			
+			if (m_tActionDoorDesc.fDelayTime <= m_tActionDoorDesc.fAcc)
+			{
+				m_tActionDoorDesc.fAcc = 0.f;
+
+				m_tActionDoorDesc.tLerpRotateSpeed.Start(
+					0.f,
+					m_tActionDoorDesc.fMaxRotateSpeed,
+					m_tActionDoorDesc.fBlendingTime,
+					LERP_MODE::EASE_IN);
+
+				m_tActionDoorDesc.eProgress = tagActionDoorDesc::PROGRESS::INTRO;
+			}
+		}
+		break;
 		case tagActionDoorDesc::PROGRESS::INTRO:
 		{
 			/* Check Progress */
@@ -285,10 +299,6 @@ void CCamera_Action::Tick_Door(_float fTimeDelta)
 
 					CCamera_Manager::GetInstance()->Change_Camera(CAMERA_TYPE::FOLLOW);
 
-					/* Ui On */
-					//if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
-					//	CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
-
 					return;
 				}
 			}
@@ -303,12 +313,28 @@ void CCamera_Action::Tick_Door(_float fTimeDelta)
 	{
 		CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
 
+		if (m_tActionDoorDesc.tLerpDistance.bActive)
+		{
+			m_tActionDoorDesc.tLerpDistance.Update(fTimeDelta);
+
+			/* Cam Positon */
+
+			m_tActionDoorDesc.vTargetOffset.z = m_tActionDoorDesc.tLerpDistance.fCurValue;
+
+			m_tTargetOffset.vCurVec = m_tActionDoorDesc.vTargetOffset;
+
+			const Vec4 vCamTargetPosition = pTargetTransform->Get_RelativeOffset(m_tTargetOffset.vCurVec).ZeroW()
+				+ (Vec4)pTargetTransform->Get_Position();
+
+			m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vCamTargetPosition);
+		}
+
 		/* Rotation */
 		m_pTransformCom->RevolutionRotation(pTargetTransform->Get_Position(), Vec3::Up, m_tActionDoorDesc.tLerpRotateSpeed.fCurValue * fTimeDelta);
 
 		/* Height */
 		Vec4 vPostion = m_pTransformCom->Get_Position();
-		vPostion.y += m_tActionDoorDesc.tLerpRotateSpeed.fCurValue * fTimeDelta * 0.7f;
+		vPostion.y += m_tActionDoorDesc.tLerpRotateSpeed.fCurValue * fTimeDelta * 1.25f;
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPostion);
 
 		/* Look At */

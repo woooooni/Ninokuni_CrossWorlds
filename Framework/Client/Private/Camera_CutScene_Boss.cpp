@@ -4,6 +4,9 @@
 
 #include "Camera_Manager.h"
 #include "Camera_Follow.h"
+#include "Camera_CutScene_Map.h"
+
+#include "UI_Manager.h"
 
 #include "Glanix.h"
 
@@ -44,19 +47,10 @@ void CCamera_CutScene_Boss::Tick(_float fTimeDelta)
 
 	__super::Tick(fTimeDelta);
 
-	/* Check Blending */
-	if (m_bBlending)
-	{
-		Tick_Blending(fTimeDelta);
-		return;
-	}
-
 	switch (m_iCurBossType)
 	{
 	case BOSS_TYPE::GLANIX :
-	{
 		Tick_CutScene_Granix(fTimeDelta);
-	}
 	break;
 	case BOSS_TYPE::WITCH:
 	{
@@ -104,16 +98,16 @@ HRESULT CCamera_CutScene_Boss::Start_CutScene_Granix(const _uint& iCutSceneType,
 
 		/* Cam Position */
 		{
-			Vec4 vCamPos =
-				(Vec4)pTargetTransform->Get_Position() +
-				pTargetTransform->Get_RelativeOffset(m_tTargetOffset.vCurVec);
+			Vec4 vCamPos = (Vec4)pTargetTransform->Get_Position() +
+							pTargetTransform->Get_RelativeOffset(m_tTargetOffset.vCurVec);
 
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCamPos.OneW());
 		}
 
 		/* Look At Position */
-		Vec4 vLookPos = Vec4::UnitW;
 		{
+			Vec4 vLookPos = Vec4::UnitW;
+
 			Matrix matLookWorld = m_pLookAtObj->Get_Component<CModel>(L"Com_Model")->Get_SocketLocalMatrix(0)
 				* pTargetTransform->Get_WorldMatrix();
 
@@ -148,158 +142,56 @@ void CCamera_CutScene_Boss::Tick_CutScene_Granix(const _float fDeltaTime)
 	{
 	case GLANIX_CUTSCENE_TYPE::APPEAR:
 	{
-		switch (m_iCurProgressType)
+		CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
+
+		if (m_bSignal)
 		{
-		case GLANIX_CUTSCENE_APPEAR_PROGRESS::IDEL :
-		{
-			CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
+			m_bSignal = false;
 
-			if (m_bSignal)
+			if(m_iCurProgressType < GLANIX_CUTSCENE_APPEAR_PROGRESS::GLANIX_CUTSCENE_APPEAR_PROGRESSEND - 1)
+				m_iCurProgressType++;
+
+			memcpy(&m_tTargetOffset.vCurVec, &m_tGlanixCutSceneAppearDesc.Offsets[m_iCurProgressType].first, sizeof(Vec4));
+			memcpy(&m_tLookAtOffset.vCurVec, &m_tGlanixCutSceneAppearDesc.Offsets[m_iCurProgressType].second, sizeof(Vec4));
+
+			/* Cam Position */
 			{
-				m_bSignal = false;
+				if (GLANIX_CUTSCENE_APPEAR_PROGRESS::IDEL == m_iCurProgressType)
+					m_tTargetOffset.vCurVec.z += fDeltaTime; /* 줌인 */
 
-				m_iCurProgressType = GLANIX_CUTSCENE_APPEAR_PROGRESS::ROAR;
+				Vec4 vCamPos = (Vec4)pTargetTransform->Get_Position() +
+								pTargetTransform->Get_RelativeOffset(m_tTargetOffset.vCurVec);
 
-				memcpy(&m_tTargetOffset.vCurVec, &m_tGlanixCutSceneAppearDesc.Offsets[m_iCurProgressType].first, sizeof(Vec4));
-				memcpy(&m_tLookAtOffset.vCurVec, &m_tGlanixCutSceneAppearDesc.Offsets[m_iCurProgressType].second, sizeof(Vec4));
-
-				/* Cam Position */
-				{
-					Vec4 vCamPos =
-						(Vec4)pTargetTransform->Get_Position() +
-						pTargetTransform->Get_RelativeOffset(m_tTargetOffset.vCurVec);
-
-					m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCamPos.OneW());
-				}
-			}
-
-			/* Look At Position */
-			Vec4 vLookPos = Vec4::UnitW;
-			{
-				Matrix matLookWorld = m_pLookAtObj->Get_Component<CModel>(L"Com_Model")->Get_SocketLocalMatrix(0)
-					* pTargetTransform->Get_WorldMatrix();
-
-				memcpy(&vLookPos, &matLookWorld.m[3], sizeof(Vec4));
-
-				vLookPos += pTargetTransform->Get_RelativeOffset(m_tLookAtOffset.vCurVec);
-
-				m_pTransformCom->LookAt(vLookPos.OneW());
+				m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCamPos.OneW());
 			}
 		}
-		break;
-		case GLANIX_CUTSCENE_APPEAR_PROGRESS::ROAR :
+
+		/* Look At Position */
+		Vec4 vLookPos = Vec4::UnitW;
 		{
-				CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
+			Matrix matLookWorld = m_pLookAtObj->Get_Component<CModel>(L"Com_Model")->Get_SocketLocalMatrix(0)
+				* pTargetTransform->Get_WorldMatrix();
 
-			if (m_bSignal)
-			{
-				m_bSignal = false;
+			memcpy(&vLookPos, &matLookWorld.m[3], sizeof(Vec4));
 
-				m_iCurProgressType = GLANIX_CUTSCENE_APPEAR_PROGRESS::JUMP;
+			vLookPos += pTargetTransform->Get_RelativeOffset(m_tLookAtOffset.vCurVec);
 
-				memcpy(&m_tTargetOffset.vCurVec, &m_tGlanixCutSceneAppearDesc.Offsets[m_iCurProgressType].first, sizeof(Vec4));
-				memcpy(&m_tLookAtOffset.vCurVec, &m_tGlanixCutSceneAppearDesc.Offsets[m_iCurProgressType].second, sizeof(Vec4));
+			if (Is_Shake())
+				vLookPos += Vec4(Get_ShakeLocalPos());
 
-				/* Cam Position */
-				{
-					Vec4 vCamPos =
-						(Vec4)pTargetTransform->Get_Position() +
-						pTargetTransform->Get_RelativeOffset(m_tTargetOffset.vCurVec);
-
-					m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCamPos.OneW());
-				}
-			}
-
-			/* Look At Position */
-			Vec4 vLookPos = Vec4::UnitW;
-			{
-				Matrix matLookWorld = m_pLookAtObj->Get_Component<CModel>(L"Com_Model")->Get_SocketLocalMatrix(0)
-					* pTargetTransform->Get_WorldMatrix();
-
-				memcpy(&vLookPos, &matLookWorld.m[3], sizeof(Vec4));
-
-				vLookPos += pTargetTransform->Get_RelativeOffset(m_tLookAtOffset.vCurVec);
-
-				m_pTransformCom->LookAt(vLookPos.OneW());
-			}
+			m_pTransformCom->LookAt(vLookPos.OneW());
 		}
-		break;
-		case GLANIX_CUTSCENE_APPEAR_PROGRESS::JUMP:
+
+		/* 아이들 상태일 때 줌인 효과 구현 */
+		if (GLANIX_CUTSCENE_APPEAR_PROGRESS::IDEL == m_iCurProgressType)
 		{
-			CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
+			m_tTargetOffset.vCurVec.z += fDeltaTime; 
 
-			if (m_bSignal)
-			{
-				m_bSignal = false;
+			Vec4 vCamPos =
+				(Vec4)pTargetTransform->Get_Position() +
+				pTargetTransform->Get_RelativeOffset(m_tTargetOffset.vCurVec);
 
-				m_iCurProgressType = GLANIX_CUTSCENE_APPEAR_PROGRESS::LAND;
-
-				memcpy(&m_tTargetOffset.vCurVec, &m_tGlanixCutSceneAppearDesc.Offsets[m_iCurProgressType].first, sizeof(Vec4));
-				memcpy(&m_tLookAtOffset.vCurVec, &m_tGlanixCutSceneAppearDesc.Offsets[m_iCurProgressType].second, sizeof(Vec4));
-
-				/* Cam Position */
-				{
-					Vec4 vCamPos =
-						(Vec4)pTargetTransform->Get_Position() +
-						pTargetTransform->Get_RelativeOffset(m_tTargetOffset.vCurVec);
-
-					m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCamPos.OneW());
-				}
-			}
-
-			/* Look At Position */
-			Vec4 vLookPos = Vec4::UnitW;
-			{
-				Matrix matLookWorld = m_pLookAtObj->Get_Component<CModel>(L"Com_Model")->Get_SocketLocalMatrix(0)
-					* pTargetTransform->Get_WorldMatrix();
-
-				memcpy(&vLookPos, &matLookWorld.m[3], sizeof(Vec4));
-
-				vLookPos += pTargetTransform->Get_RelativeOffset(m_tLookAtOffset.vCurVec);
-
-				m_pTransformCom->LookAt(vLookPos.OneW());
-			}
-		}
-		break;
-		case GLANIX_CUTSCENE_APPEAR_PROGRESS::LAND :
-		{
-			CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
-
-			if (m_bSignal)
-			{
-				m_bSignal = false;
-
-				m_iCurProgressType = GLANIX_CUTSCENE_APPEAR_PROGRESS::LAND;
-
-				memcpy(&m_tTargetOffset.vCurVec, &m_tGlanixCutSceneAppearDesc.Offsets[m_iCurProgressType].first, sizeof(Vec4));
-				memcpy(&m_tLookAtOffset.vCurVec, &m_tGlanixCutSceneAppearDesc.Offsets[m_iCurProgressType].second, sizeof(Vec4));
-
-				/* Cam Position */
-				{
-					Vec4 vCamPos =
-						(Vec4)pTargetTransform->Get_Position() +
-						pTargetTransform->Get_RelativeOffset(m_tTargetOffset.vCurVec);
-
-					m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCamPos.OneW());
-				}
-			}
-
-			/* Look At Position */
-			Vec4 vLookPos = Vec4::UnitW;
-			{
-				Matrix matLookWorld = m_pLookAtObj->Get_Component<CModel>(L"Com_Model")->Get_SocketLocalMatrix(0)
-					* pTargetTransform->Get_WorldMatrix();
-
-				memcpy(&vLookPos, &matLookWorld.m[3], sizeof(Vec4));
-
-				vLookPos += pTargetTransform->Get_RelativeOffset(m_tLookAtOffset.vCurVec);
-
-				m_pTransformCom->LookAt(vLookPos.OneW());
-			}
-		}
-		break;
-		default:
-			break;
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCamPos.OneW());
 		}
 	}
 	break;
@@ -328,24 +220,20 @@ void CCamera_CutScene_Boss::Clear_Data()
 	m_pLookAtObj = nullptr;
 }
 
-void CCamera_CutScene_Boss::Tick_Blending(const _float fDeltaTime)
-{
-}
-
 HRESULT CCamera_CutScene_Boss::Start_CutScene(const _uint& iBossType, const _uint& iCutSceneType, CGameObject* pBoss)
 {
 	if (nullptr == pBoss)
 		return E_FAIL;
 
-	switch (iBossType)
+	m_iCurBossType = iBossType;
+
+	switch (m_iCurBossType)
 	{
 	case BOSS_TYPE::GLANIX :
 	{
 		if (FAILED(Start_CutScene_Granix(iCutSceneType, pBoss)))
 			return E_FAIL;
 
-		m_iCurBossType = iBossType;
-		
 	}
 	break;
 	case BOSS_TYPE::WITCH:
@@ -378,7 +266,7 @@ HRESULT CCamera_CutScene_Boss::Finish_CutScene()
 			if (nullptr != pFollowCam)
 			{
 				pFollowCam->Set_Default_Position();
-				CCamera_Manager::GetInstance()->Change_Camera(CAMERA_TYPE::FOLLOW);
+				CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
 			}
 		}
 		break;

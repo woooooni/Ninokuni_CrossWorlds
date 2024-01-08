@@ -215,7 +215,7 @@ public:
 	
 	/* Blending */
 	const _bool& Is_Blending() const { return m_bBlending; }
-	void Set_Blending(const _bool& bBlending) { m_bBlending = bBlending; }
+	virtual void Set_Blending(const _bool& bBlending) { m_bBlending = bBlending; }
 
 protected:
 	/* Default  */

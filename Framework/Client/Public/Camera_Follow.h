@@ -71,6 +71,7 @@ public:
 	void Reset_Damping() { m_tDampingDesc.bSet = false; }
 
 	virtual Vec4 Get_LookAt() override;
+	virtual void Set_Blending(const _bool& bBlending) override;
 
 public:
 	HRESULT Start_LockOn(CGameObject* pTargetObject, const Vec4& vTargetOffset, const Vec4& vLookAtOffset, const _float& fLockOnBlendingTime = Cam_LockOn_Blending_Time_Default);

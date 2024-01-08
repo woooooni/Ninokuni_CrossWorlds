@@ -19,8 +19,13 @@ public:
 	virtual void Exit_State();
 
 private:
-	_float m_fTime = 0.f;
-	_float m_fWaitTime = 0.f;
+	_float	m_fTime = 0.f;
+	_float	m_fWaitTime = 0.f;
+
+	_float	m_fFadeInTime = 0.f;
+	_float	m_fFadeOutTime = 0.f;
+
+	_bool	m_bFadeIn = false;
 
 public:
 	static CGlanixState_IntroIdle* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);

@@ -9,6 +9,11 @@
 #include "Camera_CutScene_Boss.h"
 #include "UI_Manager.h"
 
+#include "UI_Manager.h"
+#include "UI_Fade.h"
+
+#include "GameInstance.h"
+
 CGlanixState_IntroFinish::CGlanixState_IntroFinish(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
 {
@@ -18,12 +23,17 @@ HRESULT CGlanixState_IntroFinish::Initialize(const list<wstring>& AnimationList)
 {
 	__super::Initialize(AnimationList);
 
+	m_fFadeOutTime = 0.75f;
+	m_fFadeInTime = 0.75f;
+
+	m_bFadeOut = false;
+
 	return S_OK;
 }
 
 void CGlanixState_IntroFinish::Enter_State(void* pArg)
 {
-	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_IntroFinish01"));
+	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_IntroFinish01"), 0.3f);
 }
 
 void CGlanixState_IntroFinish::Tick_State(_float fTimeDelta)
@@ -35,7 +45,6 @@ void CGlanixState_IntroFinish::Tick_State(_float fTimeDelta)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, m_pGlanix->Get_OriginPos());
 		m_pGlanix->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Set_Velocity({ 0.f, 0.f, 0.f });
 
-
 		/* Camera */
 		{
 			CCamera_CutScene_Boss* pCutSceneCam = dynamic_cast<CCamera_CutScene_Boss*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_BOSS));
@@ -46,6 +55,15 @@ void CGlanixState_IntroFinish::Tick_State(_float fTimeDelta)
 
 	if (m_pModelCom->Get_CurrAnimationFrame() == 50)
 		CUI_Manager::GetInstance()->OnOff_BossNameTag(true);
+
+	if (!m_pModelCom->Is_Tween() && m_pModelCom->Get_Progress() >= 0.95f && !m_bFadeOut)
+	{
+		/* Start Fade Out */
+		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, m_fFadeOutTime, false);
+
+		m_bFadeOut = true;
+	}
+
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
@@ -59,6 +77,14 @@ void CGlanixState_IntroFinish::Exit_State()
 	CCamera_CutScene_Boss* pCutSceneCam = dynamic_cast<CCamera_CutScene_Boss*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_BOSS));
 	if (nullptr != pCutSceneCam)
 	{
+		/* Start Fade In */
+		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, m_fFadeInTime, false);
+
+		/* On UI */
+		if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
+			CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
+
+		/* Finish CutScene */
 		if (FAILED(pCutSceneCam->Finish_CutScene()))
 			return;
 	}

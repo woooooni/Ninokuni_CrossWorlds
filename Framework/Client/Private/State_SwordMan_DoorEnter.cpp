@@ -19,6 +19,8 @@ HRESULT CState_SwordMan_DoorEnter::Initialize(const list<wstring>& AnimationList
 void CState_SwordMan_DoorEnter::Enter_State(void* pArg)
 {
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
+    
+    m_pModelCom->Set_KeyFrame_By_Progress(0.7f);
 }
 
 void CState_SwordMan_DoorEnter::Tick_State(_float fTimeDelta)
