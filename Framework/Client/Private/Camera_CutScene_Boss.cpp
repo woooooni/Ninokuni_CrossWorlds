@@ -267,6 +267,10 @@ HRESULT CCamera_CutScene_Boss::Finish_CutScene()
 			{
 				pFollowCam->Set_Default_Position();
 				CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
+
+				CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_MONSTER, L"Glanix");
+				if (nullptr != pTarget)
+					pFollowCam->Start_LockOn(pTarget, Cam_Target_Offset_LockOn_Glanix, Cam_LookAt_Offset_LockOn_Glanix);
 			}
 		}
 		break;
