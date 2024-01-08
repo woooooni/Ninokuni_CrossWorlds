@@ -62,8 +62,8 @@ public:
 	{
 		const _float fPlayerNpcDistance = 4.f;
 
-		const Vec4 vTargetOffset = { 0.f, 1.5f, 3.f, 1.f };
-		const Vec4 vLookAtOffset = { 0.f, 1.5f, 0.f, 1.f };
+		const Vec4 vTargetOffset = { 0.5f, 1.f, 2.5f, 1.f };
+		const Vec4 vLookAtOffset = { 0.f, 1.f, 0.f, 1.f };
 
 		Vec4 vPrevLookAt; /* ºí·»µù¿ë */
 		vector<CGameObject*> Targets;

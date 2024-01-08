@@ -487,6 +487,9 @@ void CCamera_Follow::Test(_float fTimeDelta)
 
 		if (KEY_TAP(KEY::V))
 		{
+			if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
+				CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
+
 			CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"HumanFL04");
 			CGameObject* pPlayer = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
 
