@@ -19,6 +19,7 @@ public:
 		_uint iDamage = 0;
 		_float2 vTargetPosition = _float2(g_iWinSizeX * 0.5f, g_iWinSizeY * 0.5f);
 		_bool bIsPlayer = false;
+		_bool bIsBoss = false;
 
 	}DAMAGE_DESC;
 

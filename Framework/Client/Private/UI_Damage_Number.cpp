@@ -49,7 +49,16 @@ HRESULT CUI_Damage_Number::Initialize(void* pArg)
 	if (m_FontDesc.bIsPlayer)
 		fNumSize = 112.f * 0.15f;
 	else
-		fNumSize = 112.f * 0.25f; // CamDistance를 받아서 사이즈 조절하는 것도 필요함.
+	{
+		if (m_FontDesc.bIsBoss)
+		{
+			fNumSize = 112.f * 0.5f;
+		}
+		else
+		{
+			fNumSize = 112.f * 0.25f;
+		}
+	}
 
 	m_pTransformCom->Set_Scale(XMVectorSet(fNumSize, fNumSize, 1.f, 0.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
@@ -70,7 +79,6 @@ HRESULT CUI_Damage_Number::Initialize(void* pArg)
 
 	m_bFadeOut = false;
 	m_fAlpha = 1.f;
-//	m_bSetPosition = false;
 
 	return S_OK;
 }

@@ -110,6 +110,22 @@ _float2 CUI::Get_ProjectionPosition(CTransform* pTransfrom)
 	return _float2(fScreenX, fScreenY);
 }
 
+_float2 CUI::Get_ProjectionPosition(_float4 vPosition)
+{
+	_vector vPos;
+
+	_matrix ViewMatrix = GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW);
+	_matrix ProjMatrix = GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ);
+
+	vPos = XMVector3TransformCoord(XMLoadFloat4(&vPosition), ViewMatrix);
+	vPos = XMVector3TransformCoord(vPos, ProjMatrix);
+
+	_float fScreenX = XMVectorGetX(vPos) * (g_iWinSizeX * 0.5f) + (g_iWinSizeX * 0.5f);
+	_float fScreenY = -1.f * XMVectorGetY(vPos) * (g_iWinSizeY * 0.5f) + (g_iWinSizeY* 0.5f);
+
+	return _float2(fScreenX, fScreenY);
+}
+
 HRESULT CUI::Initialize(void* pArg)
 {
 	if (nullptr != pArg)

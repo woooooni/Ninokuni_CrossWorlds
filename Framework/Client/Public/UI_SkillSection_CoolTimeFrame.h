@@ -29,6 +29,7 @@ private:
 	CTexture* m_pMaskTextureCom = { nullptr };
 	UI_COOLFRAME_TYPE m_eFrameType = { FRAME_END };
 
+	_int m_iPass = { 1 };
 	_bool m_bUsable = { false };
 	_float m_fMaxGauge = { 0.f };
 	_float m_fCurGauge = { 0.f };

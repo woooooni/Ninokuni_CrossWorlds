@@ -51,7 +51,6 @@ HRESULT CLevel_WitchForest::Initialize()
 
 HRESULT CLevel_WitchForest::Tick(_float fTimeDelta)
 {
-	CUI_Manager::GetInstance()->Tick_Fade(fTimeDelta);
 	CUI_Manager::GetInstance()->Tick_UIs(LEVELID::LEVEL_WITCHFOREST, fTimeDelta);
 
 	if (KEY_TAP(KEY::PAGE_UP))
@@ -74,7 +73,6 @@ HRESULT CLevel_WitchForest::Tick(_float fTimeDelta)
 
 HRESULT CLevel_WitchForest::LateTick(_float fTimeDelta)
 {
-	CUI_Manager::GetInstance()->LateTick_Fade(fTimeDelta);
 	CUI_Manager::GetInstance()->LateTick_EvermoreLevel(fTimeDelta);
 
 	return S_OK;

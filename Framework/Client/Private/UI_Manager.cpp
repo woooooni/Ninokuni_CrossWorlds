@@ -33,6 +33,7 @@
 #include "UI_BtnShowMenu.h"
 #include "UI_Costume_Btn.h"
 #include "UI_Btn_Minimap.h"
+#include "UI_Boss_NameTag.h"
 #include "UI_Setting_Icon.h"
 #include "UI_SubMenu_Shop.h"
 #include "UI_Text_TabMenu.h"
@@ -95,6 +96,7 @@
 #include "UI_MonsterHP_Background.h"
 #include "UI_SkillWindow_SkillSlot.h"
 #include "UI_Loading_CharacterLogo.h"
+#include "UI_WeaponSection_Selected.h"
 #include "UI_ImajinnSection_Vehicle.h"
 #include "UI_Emoticon_SpeechBalloon.h"
 #include "UI_SkillSection_Background.h"
@@ -218,6 +220,15 @@ _float2 CUI_Manager::Get_ProjectionPosition(CTransform* pTransform)
 	return _float2(fScreenX, fScreenY);
 }
 
+void CUI_Manager::Set_MainDialogue(_tchar* pszName, _tchar* pszText)
+{
+	if (nullptr == m_pDialogWindow)
+		return;
+
+	m_pDialogWindow->Set_Name(pszName);
+	m_pDialogWindow->Set_Text(pszText);
+}
+
 _bool CUI_Manager::Is_DefaultSettingOn()
 {
 	// 게임 기본 세팅이 켜져있는지 확인해준다 -> UI매니저에서 Clone되지 않은 객체의 OnOff를 제어하기 위해서.
@@ -246,6 +257,9 @@ void CUI_Manager::Tick(_float fTimeDelta)
 {
 	if (nullptr != m_pUICursor)
 		m_pUICursor->Tick(fTimeDelta);
+
+	if (nullptr != m_pUIVeil)
+		m_pUIVeil->Tick(fTimeDelta);
 }
 
 void CUI_Manager::LateTick(_float fTimeDelta)
@@ -254,6 +268,12 @@ void CUI_Manager::LateTick(_float fTimeDelta)
 	{
 		m_pUICursor->LateTick(fTimeDelta);
 		m_pUICursor->Render(); // Temp
+	}
+
+	if (nullptr != m_pUIVeil)
+	{
+		m_pUIVeil->LateTick(fTimeDelta);
+		m_pUIVeil->Render();
 	}
 }
 
@@ -422,11 +442,11 @@ HRESULT CUI_Manager::Ready_Loadings()
 
 HRESULT CUI_Manager::Ready_LobbyUIs()
 {
-	if (nullptr == m_pUIVeil)
-	{
-		if (FAILED(Ready_Veils()))
-			return E_FAIL;
-	}
+//	if (nullptr == m_pUIVeil)
+//	{
+//		if (FAILED(Ready_Veils()))
+//			return E_FAIL;
+//	}
 
 	m_Basic.reserve(4);
 
@@ -748,8 +768,8 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 	if(FAILED(Ready_Dummy()))
 		return E_FAIL;
 
-	if (FAILED(Ready_Veils()))
-		return E_FAIL;
+//	if (FAILED(Ready_Veils()))
+//		return E_FAIL;
 
 	// MapName 생성
 	CGameObject* pMapName = nullptr;
@@ -2834,6 +2854,20 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 	Safe_AddRef(pSlot);
 
 
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 600.f * 0.5f;
+	UIDesc.fCY = 250.f * 0.5f;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = 200.f;
+
+	CGameObject* pNameTag = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Boss_NameTag"), &UIDesc, &pNameTag)))
+		return E_FAIL;
+	m_pBossNameTag = dynamic_cast<CUI_Boss_NameTag*>(pNameTag);
+	if (nullptr == m_pBossNameTag)
+		return E_FAIL;
+	Safe_AddRef(m_pBossNameTag);
+
 	return S_OK;
 }
 
@@ -3450,6 +3484,12 @@ HRESULT CUI_Manager::Ready_GameObjectToLayer(LEVELID eID)
 		Safe_AddRef(iter);
 	}
 
+	if (nullptr == m_pBossNameTag)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pBossNameTag)))
+		return E_FAIL;
+	Safe_AddRef(m_pBossNameTag);
+
 	return S_OK;
 }
 
@@ -3461,9 +3501,11 @@ HRESULT CUI_Manager::Ready_BossHPBar(CBoss* pBoss, void* pArg)
 	m_pBossInfo->Set_Owner(pBoss);
 	m_pBossHPBar->Set_Owner(pBoss);
 
-	m_pBossInfo->Set_Active(true);
-	m_pBossHPBack->Set_Active(true);
-	m_pBossHPBar->Set_Active(true);
+	m_bBossActive = true;
+
+//	m_pBossInfo->Set_Active(true);
+//	m_pBossHPBack->Set_Active(true);
+//	m_pBossHPBar->Set_Active(true);
 
 	return S_OK;
 }
@@ -3563,16 +3605,16 @@ HRESULT CUI_Manager::Tick_LobbyLevel(_float fTimeDelta)
 			m_ClickedPlayer[i]->Set_Active(true);
 
 			// i를 제외한 나머지 것들을 제어한다.
-			for (_uint j = 0; j < CUI_BtnCharacterSelect::UI_SELECTBTN_CHARACTER::UICHARACTERBTN_END; j++)
-			{
-				if (j == i)
-					continue;
+for (_uint j = 0; j < CUI_BtnCharacterSelect::UI_SELECTBTN_CHARACTER::UICHARACTERBTN_END; j++)
+{
+	if (j == i)
+		continue;
 
-				if (!m_ClickedPlayer[i]->Is_Arrived()) // Arrived가 false인 경우에는 
-				{
-					m_UnclickedPlayer[j]->Set_Clicked(false); // 클릭 이벤트가 발생하지 않도록 한다.
-				}
-			}
+	if (!m_ClickedPlayer[i]->Is_Arrived()) // Arrived가 false인 경우에는 
+	{
+		m_UnclickedPlayer[j]->Set_Clicked(false); // 클릭 이벤트가 발생하지 않도록 한다.
+	}
+}
 		}
 
 		if (!m_ClickedPlayer[i]->Get_Active()) // Active가 False인데, unclicked도 false라면 unclicked를 true로 바꿔준다.
@@ -3584,9 +3626,6 @@ HRESULT CUI_Manager::Tick_LobbyLevel(_float fTimeDelta)
 		}
 	}
 
-	//m_Buttons
-	// 만약 Click된 것이 없다면 회색으로 출력되게 한다.
-//				m_Buttons[0]->Set_UIPass(1); 16
 	if (!m_ClickedPlayer[CUI_BtnCharacterSelect::BTN_ENGINEER]->Get_Active()
 		&& !m_ClickedPlayer[CUI_BtnCharacterSelect::BTN_DESTROYER]->Get_Active()
 		&& !m_ClickedPlayer[CUI_BtnCharacterSelect::BTN_SWORDMAN]->Get_Active())
@@ -3641,20 +3680,38 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 		}
 	}
 
-	//if (KEY_TAP(KEY::O))
-	//{
-	//	if (m_pWorldMapBG->Get_Active()) // 켜져있다면
-	//		OnOff_WorldMap(false); // 끈다
-	//	else // 꺼져있다면
-	//		OnOff_WorldMap(true); // 켠다
-	//}
-
 	if (m_pCostumeBox->Get_Active())
 		Update_CostumeBtn();
 	else
 	{
 		if (m_pCostumeAnnounce->Get_Active())
 			m_pCostumeAnnounce->Set_Active(false);
+	}
+
+	// Temp
+	if (KEY_TAP(KEY::P))
+	{
+		if (m_pDialogWindow->Get_Active())
+		{
+			OnOff_DialogWindow(false, 0);
+		}
+		else
+		{
+			Set_MainDialogue(TEXT("클로이"), TEXT("후훗. 장난은 여기까지만 할까? 아쉽지만 여기서 헤어져야겠어. 나도 여기서 할 일이 있었거든. 나중에 또 만나~ 안녕~ 쿠우도 안녕~"));
+			OnOff_DialogWindow(true, 0);
+		}
+	}
+
+	if (KEY_TAP(KEY::O))
+	{
+		if (m_pBossNameTag->Get_Active())
+		{
+			m_pBossNameTag->Set_Active(false);
+		}
+		else
+		{
+			m_pBossNameTag->Set_Active(true);
+		}
 	}
 
 
@@ -3752,6 +3809,8 @@ void CUI_Manager::Update_SetNickname(const wstring& strNickname, _bool bUpdate)
 
 void CUI_Manager::Update_LobbyBtnState(_uint iIndex)
 {
+	m_ClickedPlayer[iIndex]->Update_LobbyDummy();
+
 	_uint iBtnIndex = iIndex;
 
 	for (_uint i = 0; i < CUI_BtnCharacterSelect::UI_SELECTBTN_CHARACTER::UICHARACTERBTN_END; i++)
@@ -4061,6 +4120,14 @@ void CUI_Manager::Update_CostumeBtn()
 //		const PART_TYPE & ePartType, const wstring & strPartTag);
 }
 
+void CUI_Manager::Update_WeaponSelectionIcon(_uint iSlotNum)
+{
+	if (2 < iSlotNum)
+		return;
+
+	m_pSkillBG->Update_SelectionIcon(iSlotNum);
+}
+
 void CUI_Manager::Update_CostumeModel(const CHARACTER_TYPE& eCharacterType, const PART_TYPE& ePartType, const wstring& strPartTag)
 {
 	CModel* pParts = CCharacter_Manager::GetInstance()->Get_PartModel(eCharacterType, ePartType, strPartTag);
@@ -4349,6 +4416,7 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 		m_pImajinnBG->Set_Active(true);
 
 		OnOff_MonsterHP(true);
+		OnOff_BossHP(true);
 
 		// EXP Bar를 보여준다.
 		for (auto& iter : m_PlayerEXP)
@@ -4425,6 +4493,7 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 
 		// MiniQuestPopup이 켜져있다면 끈다
 		OnOff_QuestPopup(false);
+		OnOff_BossHP(false);
 	}
 
 	return S_OK;
@@ -4566,7 +4635,7 @@ HRESULT CUI_Manager::OnOff_BossHP(_bool bOnOff)
 {
 	if (bOnOff)
 	{
-		//if (!m_pBossHPBack->Get_Active())
+		if (m_bBossActive)
 		{
 			m_pBossInfo->Set_Active(true);
 			m_pBossHPBack->Set_Active(true);
@@ -4584,6 +4653,27 @@ HRESULT CUI_Manager::OnOff_BossHP(_bool bOnOff)
 	}
 
 	return S_OK;
+}
+
+void CUI_Manager::OnOff_BossNameTag(_bool bOnOff)
+{
+	if (m_pBossNameTag == nullptr)
+		return;
+
+	if (bOnOff)
+	{
+		if (!m_pBossNameTag->Get_Active())
+		{
+			m_pBossNameTag->Set_Active(true);
+		}
+	}
+	else
+	{
+		if (m_pBossNameTag->Get_Active())
+		{
+			m_pBossNameTag->Set_Active(false);
+		}
+	}
 }
 
 HRESULT CUI_Manager::OnOff_CloseButton(_bool bOnOff)
@@ -6105,6 +6195,14 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 			CUI_SkillSection_CoolTimeFrame::UI_COOLFRAME_TYPE::FRAME_THIRD), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_WeaponSection_Selected"),
+		CUI_WeaponSection_Selected::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Boss_NameTag"),
+		CUI_Boss_NameTag::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
 
 	return S_OK;
 }
@@ -6417,6 +6515,7 @@ void CUI_Manager::Free()
 
 	Safe_Release(m_pDummy);
 	Safe_Release(m_pName);
+	Safe_Release(m_pBossNameTag);
 
 	for (auto& pFrame : m_CoolTimeFrame)
 		Safe_Release(pFrame);

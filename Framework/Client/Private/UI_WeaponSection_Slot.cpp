@@ -177,7 +177,7 @@ void CUI_WeaponSection_Slot::On_Mouse(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-		Key_Input(fTimeDelta);
+		//Key_Input(fTimeDelta);
 
 		__super::On_Mouse(fTimeDelta);
 	}
@@ -237,6 +237,8 @@ void CUI_WeaponSection_Slot::Key_Input(_float fTimeDelta)
 {
 	if (KEY_TAP(KEY::LBTN))
 	{
+		m_bClick = true;
+		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(m_eSlotType);
 	}
 }
 

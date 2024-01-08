@@ -9,8 +9,11 @@
 
 #include "UI_World_NameTag.h"
 
+#include "State_Lobby_Engineer_Neutral_Idle.h"
+#include "State_Lobby_Engineer_Sit.h"
+
 CUI_Dummy_Engineer::CUI_Dummy_Engineer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	: CCharacter(pDevice, pContext, L"UI_Dummy_Engineer", CHARACTER_TYPE::ENGINEER)
+	: CCharacter(pDevice, pContext, L"UI_Lobby_Dummy_Engineer", CHARACTER_TYPE::ENGINEER)
 {
 }
 
@@ -67,8 +70,15 @@ HRESULT CUI_Dummy_Engineer::Initialize(void* pArg)
 
 	m_pRigidBodyCom->Set_Use_Gravity(false);
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(2.4f, 1.23f, -12.5f, 1.f));
-	m_pTransformCom->LookAt_ForLandObject(Vec4(1.f, 1.23f, -30.f, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(2.6f, 1.25f, -12.5f, 1.f));
+	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 1.f), XMConvertToRadians(135));
+
+	CGameObject* pNameTag = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Lobby_NameTag"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pNameTag)
+		return E_FAIL;
+
+	m_pNameTag = dynamic_cast<CUI_World_NameTag*>(pNameTag);
+	m_pNameTag->Set_Owner(this);
 
 	return S_OK;
 }
@@ -85,9 +95,6 @@ void CUI_Dummy_Engineer::Tick(_float fTimeDelta)
 
 void CUI_Dummy_Engineer::LateTick(_float fTimeDelta)
 {
-//	m_pModelCom->LateTick(fTimeDelta);
-//	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
-
 	if (nullptr != m_pNameTag)
 		m_pNameTag->LateTick(fTimeDelta);
 
@@ -108,11 +115,11 @@ HRESULT CUI_Dummy_Engineer::Render()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
 
-	_float4 vRimColor = { 0.f, 0.f, 0.f, 0.f };
-	if (m_bInfinite)
-	{
-		vRimColor = { 0.f, 0.5f, 1.f, 1.f };
-	}
+	_float4 vRimColor;
+	if (m_bClicked)
+		vRimColor = { 1.f, 1.f, 1.f, 1.f };
+	else
+		vRimColor = { 0.f, 0.f, 0.f, 0.f };
 
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float4))))
@@ -159,10 +166,8 @@ HRESULT CUI_Dummy_Engineer::Ready_Components()
 		return E_FAIL;
 	
 	// For Model Component
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_SwordMan_Dummy"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Engineer_Dummy"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
-//	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Engineer_Dummy"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
-//		return E_FAIL;
 
 	// For State Machine Component
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_StateMachine"), TEXT("Com_StateMachine"), (CComponent**)&m_pStateCom)))
@@ -176,9 +181,9 @@ HRESULT CUI_Dummy_Engineer::Ready_Components()
 		return E_FAIL;
 
 	for (_uint i = 0; i < PART_TYPE::PART_END; ++i)
- 		m_pCharacterPartModels[i] = CCharacter_Manager::GetInstance()->Get_PartModel(CHARACTER_TYPE::SWORD_MAN, PART_TYPE(i), 0);
+ 		m_pCharacterPartModels[i] = CCharacter_Manager::GetInstance()->Get_PartModel(CHARACTER_TYPE::ENGINEER, PART_TYPE(i), 0);
 
-	m_pModelCom->Set_Animation(22);
+	m_pModelCom->Set_Animation(0);
 
 	return S_OK;
 }
@@ -186,6 +191,24 @@ HRESULT CUI_Dummy_Engineer::Ready_Components()
 #pragma region Ready_States
 HRESULT CUI_Dummy_Engineer::Ready_States()
 {
+	list<wstring> strAnimationNames;
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_NeutralStand");
+	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_NeutralIdle01");
+	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_NeutralIdle02");
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_IDLE, CState_Lobby_Engineer_Neutral_Idle::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_ChairSitStart");
+	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_ChairSitIdle01");
+	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_ChairSitIdle02");
+	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_ChairSitLoop");
+	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_ClassAction01");
+	m_pStateCom->Add_State(CCharacter::STATE::LOBBY_SIT, CState_Lobby_Engineer_Sit::Create(m_pStateCom, strAnimationNames));
+
+	m_pStateCom->Change_State(CCharacter::LOBBY_SIT);
+
 	return S_OK;
 }
 

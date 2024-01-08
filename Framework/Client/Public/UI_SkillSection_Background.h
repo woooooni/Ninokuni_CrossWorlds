@@ -22,6 +22,12 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT	Render();
 
+public:
+	void Update_SelectionIcon(_uint iSlotNum);
+
+private:
+	class CUI_WeaponSection_Selected* m_pSelected = { nullptr };
+
 private:
 	virtual HRESULT	Ready_Components() override;
 

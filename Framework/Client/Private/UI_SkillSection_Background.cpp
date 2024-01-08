@@ -2,6 +2,7 @@
 #include "UI_SkillSection_Background.h"
 #include "GameInstance.h"
 #include "UI_Manager.h"
+#include "UI_WeaponSection_Selected.h"
 
 CUI_SkillSection_Background::CUI_SkillSection_Background(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_SkillSection_Background")
@@ -95,7 +96,13 @@ HRESULT CUI_SkillSection_Background::Initialize(void* pArg)
 //	Make_Child(vInteraction.x, vInteraction.y, fBtnSize, fBtnSize, TEXT("Prototype_GameObject_UI_SkillSection_BtnInteraction"));
 //	fBtnSize = 128.f * 0.35f;
 //	Make_Child(vInteraction.x, vInteraction.y, fBtnSize, fBtnSize, TEXT("Prototype_GameObject_UI_SkillSection_Interaction"));
-	
+
+	// 무기 선택
+//	CGameObject* pIcon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_WeaponSection_Selected"), LAYER_TYPE::LAYER_UI);
+//	if (nullptr == pIcon)
+//		return E_FAIL;
+//	m_pSelected = dynamic_cast<CUI_WeaponSection_Selected*>(pIcon);
+//
 	return S_OK;
 }
 
@@ -103,7 +110,9 @@ void CUI_SkillSection_Background::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-
+//		if (nullptr != m_pSelected)
+//			m_pSelected->Tick(fTimeDelta);
+//
 		__super::Tick(fTimeDelta);
 	}
 }
@@ -112,6 +121,9 @@ void CUI_SkillSection_Background::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+//		if (nullptr != m_pSelected)
+//			m_pSelected->LateTick(fTimeDelta);
+
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 
 		__super::LateTick(fTimeDelta); // ChilUI가 있으면 LateTick도 돌려야함.
@@ -130,9 +142,24 @@ HRESULT CUI_SkillSection_Background::Render()
 		m_pVIBufferCom->Render();
 
 		__super::Render();
+
+//		if (nullptr != m_pSelected)
+//			m_pSelected->Render();
 	}
 
 	return S_OK;
+}
+
+void CUI_SkillSection_Background::Update_SelectionIcon(_uint iSlotNum)
+{
+	if (2 < iSlotNum)
+		return;
+
+	if (nullptr == m_pSelected)
+		return;
+
+	m_pSelected->Update_Position(iSlotNum);
+
 }
 
 HRESULT CUI_SkillSection_Background::Ready_Components()
@@ -207,5 +234,6 @@ void CUI_SkillSection_Background::Free()
 {
 	__super::Free();
 
+//	Safe_Release(m_pSelected);
 	Safe_Release(m_pTextureCom);
 }

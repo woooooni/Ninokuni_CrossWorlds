@@ -6,12 +6,16 @@
 CUI_Dialog_Window::CUI_Dialog_Window(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_Dialog_MiniWindow")
 {
+	ZeroMemory(m_szName, sizeof(TCHAR) * MAX_PATH);
+	ZeroMemory(m_szInfoText, sizeof(TCHAR) * MAX_PATH);
 }
 
 CUI_Dialog_Window::CUI_Dialog_Window(const CUI_Dialog_Window& rhs)
 	: CUI(rhs)
 	, m_eType(rhs.m_eType)
 {
+	lstrcpy(m_szName, rhs.m_szName);
+	lstrcpy(m_szInfoText, rhs.m_szInfoText);
 }
 
 HRESULT CUI_Dialog_Window::Initialize_Prototype()
@@ -51,6 +55,7 @@ void CUI_Dialog_Window::Tick(_float fTimeDelta)
 
 	if (m_bActive)
 	{
+		Tick_Text(fTimeDelta);
 
 		__super::Tick(fTimeDelta);
 	}
@@ -63,6 +68,7 @@ void CUI_Dialog_Window::LateTick(_float fTimeDelta)
 
 	if (m_bActive)
 	{
+		Add_Text();
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 
@@ -85,6 +91,29 @@ HRESULT CUI_Dialog_Window::Render()
 	}
 
 	return S_OK;
+}
+
+void CUI_Dialog_Window::Set_Name(_tchar* pszName)
+{
+	if (!lstrcmp(m_szName, pszName))
+		return;
+
+	ZeroMemory(m_szName, sizeof(TCHAR) * MAX_PATH);
+	lstrcpy(m_szName, pszName);
+}
+
+void CUI_Dialog_Window::Set_Text(_tchar* pszText)
+{
+	if (!lstrcmp(m_szInfoText, pszText))
+		return;
+
+	ZeroMemory(m_szInfoText, sizeof(TCHAR) * MAX_PATH);
+	lstrcpy(m_szInfoText, pszText);
+
+	wstring sTemp = pszText;
+	m_iMaxCount = sTemp.size();
+	m_iTextCount = 0;
+	m_fTimeAcc = 0.f;
 }
 
 HRESULT CUI_Dialog_Window::Ready_Components()
@@ -128,6 +157,79 @@ HRESULT CUI_Dialog_Window::Bind_ShaderResources()
 		return E_FAIL;
 
 	return S_OK;
+}
+
+void CUI_Dialog_Window::Tick_Text(_float fTimeDelta)
+{
+	if (m_bActive)
+	{
+		m_fTimeAcc += fTimeDelta;
+
+		if (0.01f < m_fTimeAcc)
+		{
+			++m_iTextCount;
+			if (MAX_PATH <= m_iTextCount)
+				m_iTextCount = MAX_PATH - 1;
+
+			m_fTimeAcc = 0.f;
+		}
+	}
+	else
+	{
+		m_iTextCount = 0.f;
+		m_fTimeAcc = 0.f;
+	}
+}
+
+void CUI_Dialog_Window::Add_Text()
+{
+	// Name
+
+	CRenderer::TEXT_DESC NameDesc = {};
+	_int iLength = wcslen(m_szName);
+	_int iOffset = (iLength - 1) * 10;
+
+	NameDesc.strText = m_szName;
+	NameDesc.strFontTag = L"Default_Bold";
+	NameDesc.vScale = { 0.6f, 0.6f };
+	NameDesc.vColor = _float4(0.812f, 0.796f, 0.569f, 1.f);
+	NameDesc.vPosition = _float2(m_tInfo.fX - (m_tInfo.fCX * 0.5f) + 100.f - iOffset,
+		m_tInfo.fY - (m_tInfo.fCY * 0.5) + 25.f);
+	m_pRendererCom->Add_Text(NameDesc);
+
+	//Contents
+	_int iTotalLength = m_iTextCount + 4;
+	_int iMaxLength = 46;
+	_uint iDestIndex = 0;
+
+	TCHAR sTempText[MAX_PATH];
+	ZeroMemory(sTempText, sizeof(TCHAR) * MAX_PATH);
+
+	for (_uint i = 0; i < iTotalLength; i++)
+	{
+		if (iDestIndex > m_iMaxCount)
+		{
+			break;
+		}
+
+		//sTempText[i] = m_szInfoText[i];
+		sTempText[iDestIndex++] = m_szInfoText[i];
+
+		if ((i + 1) % iMaxLength == 0)
+		{
+			//sTempText[i + 1] = '\n';
+			sTempText[iDestIndex++] = '\n';
+		}
+	}
+
+	CRenderer::TEXT_DESC TextDesc = {};
+	TextDesc.strText = sTempText;
+	TextDesc.strFontTag = L"Default_Bold";
+	TextDesc.vScale = { 0.6f, 0.6f };
+	TextDesc.vColor = _float4(0.133f, 0.345f, 0.337f, 1.f);
+	TextDesc.vPosition = _float2(m_tInfo.fX - (m_tInfo.fCX * 0.5f) + 70.f,
+		m_tInfo.fY - (m_tInfo.fCY * 0.5) + 80.f);
+	m_pRendererCom->Add_Text(TextDesc);
 }
 
 CUI_Dialog_Window* CUI_Dialog_Window::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

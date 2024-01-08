@@ -110,8 +110,8 @@ HRESULT CGlanix::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
-	//if (FAILED(CUI_Manager::GetInstance()->Ready_BossHPBar(this)))
-	//	return E_FAIL;
+	if (FAILED(CUI_Manager::GetInstance()->Ready_BossHPBar(this)))
+		return E_FAIL;
 
 	return S_OK;
 }

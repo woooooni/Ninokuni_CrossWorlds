@@ -360,7 +360,14 @@ void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 {
 	m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ISHIT] = true;
 
-	CUIDamage_Manager::GetInstance()->Create_MonsterDamageNumber(m_pTransformCom, CUIDamage_Manager::UI_DAMAGETYPE::NONE, dynamic_cast<CCharacter*>(tInfo.pOther)->Get_Stat().iAtt);
+	_bool bIsBoss = false;
+
+	if (TEXT("Glanix") == Get_ObjectTag() ||
+		TEXT("Stellia") == Get_ObjectTag() ||
+		TEXT("DreamerMazeWitch") == Get_ObjectTag())
+		bIsBoss = true;
+
+	CUIDamage_Manager::GetInstance()->Create_MonsterDamageNumber(m_pTransformCom, bIsBoss, CUIDamage_Manager::UI_DAMAGETYPE::NONE, dynamic_cast<CCharacter*>(tInfo.pOther)->Get_Stat().iAtt);
 	m_tStat.fHp -= dynamic_cast<CCharacter*>(tInfo.pOther)->Get_Stat().iAtt;
 
 	Start_RimLight();
