@@ -81,7 +81,7 @@ void CUI_BasicButton::LateTick(_float fTimeDelta)
 		{
 			Set_ChildActive(false);
 
-			if (0.5f < m_fTimeAcc) // 누적한 시간이 기준치 이상이되면
+			if (1.f < m_fTimeAcc) // 누적한 시간이 기준치 이상이되면
 			{
 				m_fTimeAcc = 0.f; // 0.f로 초기화하고,
 				m_bFinish = true; // Finish를 true로 변경해준다
@@ -153,28 +153,92 @@ void CUI_BasicButton::On_Mouse(_float fTimeDelta)
 		{
 			if (KEY_TAP(KEY::LBTN))
 			{
-				if (BUTTON_CHANGESCENE == m_eType || BUTTON_SETNICKNAME == m_eType)
+				if (!m_bResizeStart)
+					m_bResizeStart = true;
+
+				if (BUTTON_CHANGESCENE == m_eType)
 				{
-					if (!m_bResizeStart)
-						m_bResizeStart = true;
+					GI->Stop_Sound(CHANNELID::SOUND_UI);
+					GI->Play_Sound(TEXT("UI_Fx_Comm_Btn_1.mp3"), CHANNELID::SOUND_UI, GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 
-					if (BUTTON_SETNICKNAME == m_eType)
+					// 선택된 Player의 음성을 재생한다.
+					_int iIndex = CUI_Manager::GetInstance()->Get_SelectedCharacter();
+
+					if (iIndex == -1)
+						return;
+
+					switch (iIndex)
 					{
-						if (m_bActive)
+					case 1: // 디스트로이어
+						GI->Stop_Sound(CHANNELID::SOUND_VOICE_CHARACTER);
+						switch (GI->RandomInt(0, 3))
 						{
-							if (KEY_TAP(KEY::LBTN))
-							{
-								CUI_Manager::GetInstance()->Set_Textable(false);
-								CUI_Manager::GetInstance()->Set_UserName();
+						case 0:
+							GI->Play_Sound(TEXT("Destroyer_System_Character_Start_1_Short.mp3"), CHANNELID::SOUND_VOICE_CHARACTER, GI->Get_ChannelVolume(CHANNELID::SOUND_VOICE_CHARACTER));
+							break;
 
-								CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_CurCamera());
-								if (nullptr != pActionCam)
-								{
-									pActionCam->Start_Action(CCamera_Action::CAMERA_ACTION_TYPE::LOBBY);
-								}
-							}
-							
-							
+						case 1:
+							GI->Play_Sound(TEXT("Destroyer_System_Character_Start_2_Short.mp3"), CHANNELID::SOUND_VOICE_CHARACTER, GI->Get_ChannelVolume(CHANNELID::SOUND_VOICE_CHARACTER));
+							break;
+
+						case 2:
+							GI->Play_Sound(TEXT("Destroyer_System_Character_Start_3_Short.mp3"), CHANNELID::SOUND_VOICE_CHARACTER, GI->Get_ChannelVolume(CHANNELID::SOUND_VOICE_CHARACTER));
+							break;
+						}
+						break;
+
+					case 3: // 엔지니어
+						GI->Stop_Sound(CHANNELID::SOUND_VOICE_CHARACTER);
+						switch (GI->RandomInt(0, 3))
+						{
+						case 0:
+							GI->Play_Sound(TEXT("Engineer_System_Character_Start_1_Short.mp3"), CHANNELID::SOUND_VOICE_CHARACTER, GI->Get_ChannelVolume(CHANNELID::SOUND_VOICE_CHARACTER));
+							break;
+
+						case 1:
+							GI->Play_Sound(TEXT("Engineer_System_Character_Start_2_Short.mp3"), CHANNELID::SOUND_VOICE_CHARACTER, GI->Get_ChannelVolume(CHANNELID::SOUND_VOICE_CHARACTER));
+							break;
+
+						case 2:
+							GI->Play_Sound(TEXT("Engineer_System_Character_Start_3_Short.mp3"), CHANNELID::SOUND_VOICE_CHARACTER, GI->Get_ChannelVolume(CHANNELID::SOUND_VOICE_CHARACTER));
+							break;
+						}
+						break;
+
+					case 4: // 소드맨
+						GI->Stop_Sound(CHANNELID::SOUND_VOICE_CHARACTER);
+						switch (GI->RandomInt(0, 3))
+						{
+						case 0:
+							GI->Play_Sound(TEXT("Swordsman_System_Character_Start_1_Short.mp3"), CHANNELID::SOUND_VOICE_CHARACTER, GI->Get_ChannelVolume(CHANNELID::SOUND_VOICE_CHARACTER));
+							break;
+
+						case 1:
+							GI->Play_Sound(TEXT("Swordsman_System_Character_Start_2_Short.mp3"), CHANNELID::SOUND_VOICE_CHARACTER, GI->Get_ChannelVolume(CHANNELID::SOUND_VOICE_CHARACTER));
+							break;
+
+						case 2:
+							GI->Play_Sound(TEXT("Swordsman_System_Character_Start_3_Short.mp3"), CHANNELID::SOUND_VOICE_CHARACTER, GI->Get_ChannelVolume(CHANNELID::SOUND_VOICE_CHARACTER));
+							break;
+						}
+						break;
+					}
+				}
+
+				else if (BUTTON_SETNICKNAME == m_eType)
+				{
+					//if (KEY_TAP(KEY::LBTN))
+					{
+						CUI_Manager::GetInstance()->Set_Textable(false);
+						CUI_Manager::GetInstance()->Set_UserName();
+
+						GI->Stop_Sound(CHANNELID::SOUND_UI);
+						GI->Play_Sound(TEXT("UI_Fx_Comm_Btn_1.mp3"), CHANNELID::SOUND_UI, GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+
+						CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_CurCamera());
+						if (nullptr != pActionCam)
+						{
+							pActionCam->Start_Action(CCamera_Action::CAMERA_ACTION_TYPE::LOBBY);
 						}
 					}
 				}

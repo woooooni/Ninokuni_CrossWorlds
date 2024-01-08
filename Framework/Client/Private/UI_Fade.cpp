@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UI_Fade.h"
 #include "GameInstance.h"
+#include "UI_Manager.h"
 
 CUI_Fade::CUI_Fade(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_Fade")
@@ -10,6 +11,31 @@ CUI_Fade::CUI_Fade(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 CUI_Fade::CUI_Fade(const CUI_Fade& rhs)
 	: CUI(rhs)
 {
+}
+
+void CUI_Fade::Set_Fade(const _bool& pIsFadeOut, const _float& pFadeTime, const _bool& bIsWhite)
+{
+	CUI_Manager::GetInstance()->OnOff_TextUI(false);
+
+	Set_White(bIsWhite);
+
+	m_bIsFadeOut = pIsFadeOut;
+	m_fAlpha = !(float)pIsFadeOut;
+	m_fFadeTime = pFadeTime;
+	m_bIsComplete = false;
+}
+
+void CUI_Fade::Set_Finish()
+{
+	m_bIsComplete = true;
+	m_fFadeTime = 0.f;
+	if (m_bIsFadeOut)
+		m_fAlpha = 1.f;
+	else
+		m_fAlpha = 0.f;
+
+	// 글자 그려지도록 함.
+	CUI_Manager::GetInstance()->OnOff_TextUI(true);
 }
 
 HRESULT CUI_Fade::Initialize_Prototype()

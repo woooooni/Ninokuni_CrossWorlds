@@ -177,6 +177,7 @@ public:
 
 
 public:
+	class CWeapon* Get_Weapon() { return m_pWeapon; }
 	HRESULT Disappear_Weapon();
 	HRESULT Appear_Weapon();
 

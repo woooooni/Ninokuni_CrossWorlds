@@ -76,81 +76,82 @@ void CUI_PlayerInfo::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-		// Todo : Player구조가 정리되면 Set_Level로 빼서 UIManager로 연동하자.
+		//if (CUI_Manager::GetInstance()->Is_FadeFinished())
+		//{
+			if (m_bAddText)
+			{
+				CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+				if (nullptr == pPlayer)
+					return;
 
-		if (CUI_Manager::GetInstance()->Is_FadeFinished())
-		{
-			CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
-			if (nullptr == pPlayer)
-				return;
+				CCharacter* pCurCharacter = pPlayer->Get_Character();
+				if (nullptr == pCurCharacter)
+					return;
 
-			CCharacter* pCurCharacter = pPlayer->Get_Character();
-			if (nullptr == pCurCharacter)
-				return;
-			
-			CCharacter::CHARACTER_STAT StatDesc = pCurCharacter->Get_Stat();
-			wstring strLevel = to_wstring(StatDesc.iLevel);
-			_int iOffsetX = (strLevel.length() - 1) * 10.f;
-			CRenderer::TEXT_DESC LevelDesc;
-			LevelDesc.strText = strLevel;
-			LevelDesc.strFontTag = L"Default_Bold";
-			LevelDesc.vPosition = _float2(m_vDefaultPosition.x - iOffsetX, m_vDefaultPosition.y);
-			LevelDesc.vColor = m_vShadowColor;
-			LevelDesc.vScale = { 0.8f, 0.8f };
-			m_pRendererCom->Add_Text(LevelDesc); // 그림자
+				CCharacter::CHARACTER_STAT StatDesc = pCurCharacter->Get_Stat();
+				wstring strLevel = to_wstring(StatDesc.iLevel);
+				_int iOffsetX = (strLevel.length() - 1) * 10.f;
+				CRenderer::TEXT_DESC LevelDesc;
+				LevelDesc.strText = strLevel;
+				LevelDesc.strFontTag = L"Default_Bold";
+				LevelDesc.vPosition = _float2(m_vDefaultPosition.x - iOffsetX, m_vDefaultPosition.y);
+				LevelDesc.vColor = m_vShadowColor;
+				LevelDesc.vScale = { 0.8f, 0.8f };
+				m_pRendererCom->Add_Text(LevelDesc); // 그림자
 
-			LevelDesc.vPosition = _float2(m_vDefaultPosition.x - (iOffsetX + 3.f), m_vDefaultPosition.y - 3.f);
-			LevelDesc.vColor = m_vLevelColor;
-			m_pRendererCom->Add_Text(LevelDesc); // Real Text
+				LevelDesc.vPosition = _float2(m_vDefaultPosition.x - (iOffsetX + 3.f), m_vDefaultPosition.y - 3.f);
+				LevelDesc.vColor = m_vLevelColor;
+				m_pRendererCom->Add_Text(LevelDesc); // Real Text
 
-			// 전투력 외곽선
-			CRenderer::TEXT_DESC  TextDesc;
-			TextDesc.strText = L"전투력"; // Temp
-			TextDesc.strFontTag = L"Default_Medium";
-			TextDesc.vPosition = _float2(m_vTextPosition.x - 1.f, m_vTextPosition.y);
-			TextDesc.vColor = _float4(0.f, 0.f, 0.f, 1.f);
-			TextDesc.vScale = { 0.38f, 0.38f };
-			m_pRendererCom->Add_Text(TextDesc);
-			TextDesc.vPosition = _float2(m_vTextPosition.x + 1.f, m_vTextPosition.y);
-			m_pRendererCom->Add_Text(TextDesc);
-			TextDesc.vPosition = _float2(m_vTextPosition.x, m_vTextPosition.y - 1.f);
-			m_pRendererCom->Add_Text(TextDesc);
-			TextDesc.vPosition = _float2(m_vTextPosition.x, m_vTextPosition.y + 1.f);
-			m_pRendererCom->Add_Text(TextDesc);
+				// 전투력 외곽선
+				CRenderer::TEXT_DESC  TextDesc;
+				TextDesc.strText = L"전투력"; // Temp
+				TextDesc.strFontTag = L"Default_Medium";
+				TextDesc.vPosition = _float2(m_vTextPosition.x - 1.f, m_vTextPosition.y);
+				TextDesc.vColor = _float4(0.f, 0.f, 0.f, 1.f);
+				TextDesc.vScale = { 0.38f, 0.38f };
+				m_pRendererCom->Add_Text(TextDesc);
+				TextDesc.vPosition = _float2(m_vTextPosition.x + 1.f, m_vTextPosition.y);
+				m_pRendererCom->Add_Text(TextDesc);
+				TextDesc.vPosition = _float2(m_vTextPosition.x, m_vTextPosition.y - 1.f);
+				m_pRendererCom->Add_Text(TextDesc);
+				TextDesc.vPosition = _float2(m_vTextPosition.x, m_vTextPosition.y + 1.f);
+				m_pRendererCom->Add_Text(TextDesc);
 
-			// 전투력
-			TextDesc.vPosition = m_vTextPosition;
-			TextDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
-			m_pRendererCom->Add_Text(TextDesc);
+				// 전투력
+				TextDesc.vPosition = m_vTextPosition;
+				TextDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+				m_pRendererCom->Add_Text(TextDesc);
 
-			// Todo : 전투력을 받아오게끔 구조 변경 필요함.
-			// 전투력 숫자 외곽선
-			CRenderer::TEXT_DESC Power;
-			wstring strAttack = to_wstring(StatDesc.iAtt);
-			iOffsetX = (strAttack.length() - 1) * 2.f;
+				// Todo : 전투력을 받아오게끔 구조 변경 필요함.
+				// 전투력 숫자 외곽선
+				CRenderer::TEXT_DESC Power;
+				wstring strAttack = to_wstring(StatDesc.iAtt);
+				iOffsetX = (strAttack.length() - 1) * 2.f;
 
-			Power.strText = strAttack;
-			Power.strFontTag = L"Default_Medium";
-			Power.vPosition = _float2((m_vNumPosition.x + iOffsetX) - 2.f, m_vNumPosition.y);
-			Power.vColor = _float4(0.f, 0.f, 0.f, 1.f);
-			Power.vScale = { 0.38f, 0.38f };
-			m_pRendererCom->Add_Text(Power);
-			Power.vPosition = _float2((m_vNumPosition.x + iOffsetX) + 2.f, m_vNumPosition.y);
-			m_pRendererCom->Add_Text(Power);
-			Power.vPosition = _float2((m_vNumPosition.x + iOffsetX), m_vNumPosition.y - 2.f);
-			m_pRendererCom->Add_Text(Power);
-			Power.vPosition = _float2((m_vNumPosition.x + iOffsetX), m_vNumPosition.y + 2.f);
-			m_pRendererCom->Add_Text(Power);
+				Power.strText = strAttack;
+				Power.strFontTag = L"Default_Medium";
+				Power.vPosition = _float2((m_vNumPosition.x + iOffsetX) - 2.f, m_vNumPosition.y);
+				Power.vColor = _float4(0.f, 0.f, 0.f, 1.f);
+				Power.vScale = { 0.38f, 0.38f };
+				m_pRendererCom->Add_Text(Power);
+				Power.vPosition = _float2((m_vNumPosition.x + iOffsetX) + 2.f, m_vNumPosition.y);
+				m_pRendererCom->Add_Text(Power);
+				Power.vPosition = _float2((m_vNumPosition.x + iOffsetX), m_vNumPosition.y - 2.f);
+				m_pRendererCom->Add_Text(Power);
+				Power.vPosition = _float2((m_vNumPosition.x + iOffsetX), m_vNumPosition.y + 2.f);
+				m_pRendererCom->Add_Text(Power);
 
-			//
-			Power.vPosition = _float2((m_vNumPosition.x + iOffsetX), m_vNumPosition.y);
-			Power.vColor = m_vPowerColor;
-			m_pRendererCom->Add_Text(Power);
-		}
+				//
+				Power.vPosition = _float2((m_vNumPosition.x + iOffsetX), m_vNumPosition.y);
+				Power.vColor = m_vPowerColor;
+				m_pRendererCom->Add_Text(Power);
+
+				__super::LateTick(fTimeDelta);
+			}
+		//}
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
-
-		__super::LateTick(fTimeDelta);
 	}
 }
 

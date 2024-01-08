@@ -13,6 +13,17 @@ CUI_SetNickname_Window::CUI_SetNickname_Window(const CUI_SetNickname_Window& rhs
 {
 }
 
+void CUI_SetNickname_Window::Set_Active(_bool bActive)
+{
+	if (true == bActive)
+	{
+		GI->Stop_Sound(CHANNELID::SOUND_UI);
+		GI->Play_Sound(TEXT("UI_Fx_Comm_Popup_1.mp3"), CHANNELID::SOUND_UI, GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+	}
+
+	m_bActive = bActive;
+}
+
 HRESULT CUI_SetNickname_Window::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
@@ -32,7 +43,7 @@ HRESULT CUI_SetNickname_Window::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	m_bActive = true;
+	Set_Active(true);
 	m_fAlpha = 0.9f;
 
 	_float2 vSize = _float2(567.f, 55.f);

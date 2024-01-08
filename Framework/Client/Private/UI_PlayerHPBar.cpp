@@ -59,8 +59,8 @@ void CUI_PlayerHPBar::LateTick(_float fTimeDelta)
 
 		CCharacter::CHARACTER_STAT StatDesc = pCurCharacter->Get_Stat();
 
-		if (CUI_Manager::GetInstance()->Is_FadeFinished())
-		{
+		//if (CUI_Manager::GetInstance()->Is_FadeFinished())
+		//{
 			CRenderer::TEXT_DESC  DefaultDesc;
 			DefaultDesc.strText = L"/";
 			DefaultDesc.strFontTag = L"Default_Bold";
@@ -89,7 +89,7 @@ void CUI_PlayerHPBar::LateTick(_float fTimeDelta)
 			MaxHPDesc.vPosition = m_vMaxHPPosition;
 			MaxHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
 			m_pRendererCom->Add_Text(MaxHPDesc);
-		}
+		//}
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}

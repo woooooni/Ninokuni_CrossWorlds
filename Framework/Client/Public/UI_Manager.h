@@ -35,6 +35,8 @@ public: // Get/Set
 
 	void			Set_MainDialogue(_tchar* pszName, _tchar* pszText);
 
+	_int			Get_SelectedCharacter();
+
 public:
 	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	void	Tick(_float fTimeDelta);
@@ -45,7 +47,7 @@ public: // For Ready Prototypes
 
 public: // For Clone
 	HRESULT Ready_Cursor();
-	HRESULT Ready_Veils();
+	HRESULT Ready_Veils(LEVELID eID);
 	HRESULT Ready_Dummy();
 	HRESULT Ready_Loadings();
 	HRESULT Ready_LobbyUIs();
@@ -136,6 +138,8 @@ public: // Lobby
 	HRESULT OnOff_EmoticonWindow(_bool bOnOff);
 	HRESULT OnOff_EmoticonBalloon(_bool bOnOff);
 
+	void OnOff_TextUI(_bool bOnOff);
+
 private:
 	CHARACTER_TYPE m_eCurPlayer = { CHARACTER_TYPE::SWORD_MAN };
 	ELEMENTAL_TYPE m_eElemental = { ELEMENTAL_TYPE::FIRE };
@@ -144,6 +148,7 @@ private:
 	_bool m_bEvent = { false };
 	_bool m_bUpdate = { false };
 	_bool m_bBossActive = { false };
+	_bool m_bAddText = { false };
 	wstring m_strNickname;
 	wstring m_strResult;
 	class CUI_CharacterDummy* m_pDummy = { nullptr };
@@ -257,7 +262,6 @@ private:
 	class CUI_SkillWindow_LineBox* m_pSkillDesc = { nullptr };
 
 	vector<class CUI_Minimap_Frame*> m_Minimap;
-	class CUI_World_NameTag* m_pName = { nullptr };
 
 	vector <class CUI_WeaponSection_Weapon*> m_WeaponIcon;
 	vector <class CUI_WeaponSection_Weapon*> m_WeaponElemental;

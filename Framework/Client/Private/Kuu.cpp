@@ -8,6 +8,8 @@
 #include "NpcState_OneWay.h"
 #include "NpcState_TwoWay.h"
 
+#include "UI_World_NPCTag.h"
+
 CKuu::CKuu(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameNpc(pDevice, pContext, strObjectTag)
 {
@@ -42,12 +44,22 @@ HRESULT CKuu::Initialize(void* pArg)
 
 	m_pModelCom->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_NeutralStand"));
 
+	CGameObject* pTag = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_NPC_Tag"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pTag)
+		return E_FAIL;
+
+	m_pTag = dynamic_cast<CUI_World_NPCTag*>(pTag);
+	m_pTag->Set_Owner(this, TEXT("Äí¿ì"), 2.f);
+
 	return S_OK;
 }
 
 void CKuu::Tick(_float fTimeDelta)
 {
 	// __super::Tick(fTimeDelta);
+	if (nullptr != m_pTag)
+		m_pTag->Tick(fTimeDelta);
+
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 	m_pControllerCom->Tick_Controller(fTimeDelta);
 
@@ -57,6 +69,9 @@ void CKuu::Tick(_float fTimeDelta)
 
 void CKuu::LateTick(_float fTimeDelta)
 {
+	if (nullptr != m_pTag)
+		m_pTag->LateTick(fTimeDelta);
+
 	__super::LateTick(fTimeDelta);
 
 #ifdef DEBUG
@@ -154,4 +169,6 @@ CGameObject* CKuu::Clone(void* pArg)
 void CKuu::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pTag);
 }

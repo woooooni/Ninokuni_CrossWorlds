@@ -204,6 +204,7 @@ public:
 	const _int Get_SoundFileIndex(const wstring& strSoundFileKey);
 	wstring Get_SoundFileKey(const _uint iIndex);
 	const map<wstring, FMOD_SOUND*>& Get_MapSound();
+	_float Get_ChannelVolume(CHANNELID eID);
 
 public:
 	HRESULT Bind_SRV(class CShader* pShader, const wstring& strTargetTag, const _char* pConstantName);

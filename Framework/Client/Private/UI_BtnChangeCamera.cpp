@@ -157,6 +157,9 @@ void CUI_BtnChangeCamera::Key_Input(_float fTimeDelta)
 			CUI_Manager::GetInstance()->OnOff_Announce(m_iTextureIndex, true);
 			break;
 		}
+
+		GI->Stop_Sound(CHANNELID::SOUND_UI);
+		GI->Play_Sound(TEXT("UI_Fx_MainHud_Btn_Camera_1.mp3"), CHANNELID::SOUND_UI, GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 	}
 }
 

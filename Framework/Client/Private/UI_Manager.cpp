@@ -39,6 +39,7 @@
 #include "UI_Text_TabMenu.h"
 #include "UI_BtnInventory.h"
 #include "UI_PlayerEXPBar.h"
+#include "UI_World_NPCTag.h"
 #include "UI_Minimap_Frame.h"
 #include "UI_MonsterHP_Bar.h"
 #include "UI_MenuSeparator.h"
@@ -229,6 +230,20 @@ void CUI_Manager::Set_MainDialogue(_tchar* pszName, _tchar* pszText)
 	m_pDialogWindow->Set_Text(pszText);
 }
 
+_int CUI_Manager::Get_SelectedCharacter()
+{
+	if (_uint(LEVELID::LEVEL_LOBBY) != GI->Get_CurrentLevel())
+		return -1;
+
+	for (_uint i = 0; i < CUI_BtnCharacterSelect::UI_SELECTBTN_CHARACTER::UICHARACTERBTN_END; i++)
+	{
+		if (m_ClickedPlayer[i]->Get_Active())
+			return i;
+	}
+
+	return -1;
+}
+
 _bool CUI_Manager::Is_DefaultSettingOn()
 {
 	// 게임 기본 세팅이 켜져있는지 확인해준다 -> UI매니저에서 Clone되지 않은 객체의 OnOff를 제어하기 위해서.
@@ -327,7 +342,7 @@ HRESULT CUI_Manager::Ready_Cursor()
 	return S_OK;
 }
 
-HRESULT CUI_Manager::Ready_Veils()
+HRESULT CUI_Manager::Ready_Veils(LEVELID eID)
 {
 	if (nullptr == m_pUIFade)
 	{
@@ -341,13 +356,19 @@ HRESULT CUI_Manager::Ready_Veils()
 		UIDesc.fX = g_iWinSizeX * 0.5f;
 		UIDesc.fY = g_iWinSizeY * 0.5f;
 
-		if (FAILED(GI->Add_GameObject(LEVELID::LEVEL_STATIC, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Fade"), &UIDesc, &pVeil)))
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Fade"), &UIDesc, &pVeil)))
 			return E_FAIL;
 
 		m_pUIFade = dynamic_cast<CUI_Fade*>(pVeil);
 		if (nullptr == m_pUIFade)
 			return E_FAIL;
 
+		Safe_AddRef(m_pUIFade);
+	}
+	else
+	{
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pUIFade)))
+			return E_FAIL;
 		Safe_AddRef(m_pUIFade);
 	}
 
@@ -442,12 +463,6 @@ HRESULT CUI_Manager::Ready_Loadings()
 
 HRESULT CUI_Manager::Ready_LobbyUIs()
 {
-//	if (nullptr == m_pUIVeil)
-//	{
-//		if (FAILED(Ready_Veils()))
-//			return E_FAIL;
-//	}
-
 	m_Basic.reserve(4);
 
 	CGameObject* pNameTag = nullptr;
@@ -768,8 +783,8 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 	if(FAILED(Ready_Dummy()))
 		return E_FAIL;
 
-//	if (FAILED(Ready_Veils()))
-//		return E_FAIL;
+	if (FAILED(Ready_Veils(eID)))
+		return E_FAIL;
 
 	// MapName 생성
 	CGameObject* pMapName = nullptr;
@@ -3768,10 +3783,11 @@ void CUI_Manager::Render_Fade()
 
 _bool CUI_Manager::Is_FadeFinished()
 {
-	if (nullptr == m_pUIFade)
-		return false;
-
-	return m_pUIFade->Get_Finish();
+//	if (nullptr == m_pUIFade)
+//		return false;
+//
+//	return m_pUIFade->Get_Finish();
+	return m_bAddText;
 }
 
 void CUI_Manager::Update_SetNickname(const wstring& strNickname, _bool bUpdate)
@@ -4506,6 +4522,9 @@ HRESULT CUI_Manager::OnOff_MainMenu(_bool bOnOff)
 
 	if (bOnOff) // On
 	{
+		GI->Stop_Sound(CHANNELID::SOUND_UI);
+		GI->Play_Sound(TEXT("UI_Fx_Comm_Slide_Open_MainMenu_1.mp3"), CHANNELID::SOUND_UI, GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+
 		m_pMainBG->Set_Active(true);
 		for (auto& pUI : m_MainMenuBtn)
 		{
@@ -4700,6 +4719,9 @@ HRESULT CUI_Manager::OnOff_SubMenu(_bool bOnOff, _uint iMagicNum)
 
 	if (bOnOff) // true -> On
 	{
+		GI->Stop_Sound(CHANNELID::SOUND_UI);
+		GI->Play_Sound(TEXT("UI_Fx_Comm_Slide_Open_SubMenu_1.mp3"), CHANNELID::SOUND_UI, GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+
 		switch (iMagicNum)
 		{
 		case 0: // 캐릭터창을 선택했다.
@@ -5185,10 +5207,14 @@ HRESULT CUI_Manager::OnOff_Inventory(_bool bOnOff)
 
 			m_pTabMenuTitle->Set_TextType(CUI_Text_TabMenu::UI_MENUTITLE::TITLE_INVEN);
 			m_pTabMenuTitle->Set_Active(true);
+
+			m_pDummy->Set_Active(true);
 		}
 	}
 	else
 	{
+		m_pDummy->Set_Active(false);
+
 		m_pTabMenuTitle->Set_Active(false);
 
 		for (auto& iter : m_InvenBtn)
@@ -5323,6 +5349,17 @@ HRESULT CUI_Manager::OnOff_EmoticonBalloon(_bool bOnOff)
 	}
 
 	return S_OK;
+}
+
+void CUI_Manager::OnOff_TextUI(_bool bOnOff)
+{
+	// Text가 있는 UI들에게 _bool값을 전달한다.
+	if (nullptr == m_pPlayerStatus)
+		return;
+
+	m_pPlayerStatus->Set_TextOnOff(bOnOff);
+
+	m_bAddText = bOnOff;
 }
 
 void CUI_Manager::Set_EmoticonType(_uint iIndex)
@@ -6203,6 +6240,10 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		CUI_Boss_NameTag::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_NPC_Tag"),
+		CUI_World_NPCTag::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
 
 	return S_OK;
 }
@@ -6514,7 +6555,6 @@ void CUI_Manager::Free()
 	Safe_Release(m_pBossHPBar);
 
 	Safe_Release(m_pDummy);
-	Safe_Release(m_pName);
 	Safe_Release(m_pBossNameTag);
 
 	for (auto& pFrame : m_CoolTimeFrame)

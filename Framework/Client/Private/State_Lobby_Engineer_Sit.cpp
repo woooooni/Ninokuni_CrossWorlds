@@ -36,6 +36,21 @@ void CState_Lobby_Engineer_Sit::Tick_State(_float fTimeDelta)
         if (m_iCurrAnimIndex != m_AnimIndices[4])
         {
             m_iCurrAnimIndex = m_AnimIndices[4];
+
+            GI->Stop_Sound(CHANNELID::SOUND_VOICE_CHARACTER);
+
+            switch (GI->RandomInt(0, 1))
+            {
+            case 0:
+                GI->Play_Sound(TEXT("Engineer_System_Character_Choice_1.mp3"), CHANNELID::SOUND_VOICE_CHARACTER, GI->Get_ChannelVolume(CHANNELID::SOUND_VOICE_CHARACTER));
+                break;
+
+            case 1:
+                GI->Play_Sound(TEXT("Engineer_System_Character_Choice_2.mp3"), CHANNELID::SOUND_VOICE_CHARACTER, GI->Get_ChannelVolume(CHANNELID::SOUND_VOICE_CHARACTER));
+                break;
+            }
+
+
             m_pModelCom->Set_Animation(m_iCurrAnimIndex);
         }
 

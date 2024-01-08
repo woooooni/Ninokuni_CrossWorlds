@@ -238,7 +238,12 @@ void CUI_Basic::On_Mouse(_float fTimeDelta)
 		if (UILOBBY_DICE == m_eType)
 		{
 			if (KEY_TAP(KEY::LBTN))
+			{
+				GI->Stop_Sound(CHANNELID::SOUND_UI);
+				GI->Play_Sound(TEXT("UI_Fx_Comm_ItemLooting_Appear_1.mp3"), CHANNELID::SOUND_UI, GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+
 				Set_RandomNickname();
+			}
 		}
 
 		__super::On_Mouse(fTimeDelta);

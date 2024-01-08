@@ -167,6 +167,9 @@ void CUI_BtnClose::Key_Input(_float fTimeDelta)
 	{
 		if (KEY_TAP(KEY::LBTN))
 		{
+			GI->Stop_Sound(CHANNELID::SOUND_UI2);
+			GI->Play_Sound(TEXT("UI_Fx_MainHud_Btn_Inventory_1.mp3"), CHANNELID::SOUND_UI2, GI->Get_ChannelVolume(CHANNELID::SOUND_UI2));
+
 			CUI_Manager::GetInstance()->Using_CloseButton();
 		}
 	}

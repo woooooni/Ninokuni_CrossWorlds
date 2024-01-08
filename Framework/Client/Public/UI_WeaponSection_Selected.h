@@ -19,6 +19,7 @@ public:
 
 public:
 	void Update_Position(_uint iSlotNum);
+	void Change_Weapon(_uint iSlotNum);
 
 private:
 	virtual HRESULT	Ready_Components() override;
@@ -33,7 +34,7 @@ private:
 	_float2 m_vOriginSize = _float2(0.f, 0.f);
 	_float2 m_vMaxSize = _float2(0.f, 0.f);
 
-	_float2 m_vPosition[2];
+	_float2 m_vPosition[3];
 
 public:
 	static CUI_WeaponSection_Selected* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);

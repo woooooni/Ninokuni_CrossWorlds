@@ -37,6 +37,7 @@ HRESULT CUI_Setting_Slider::Initialize(void* pArg)
 	Set_SliderRange();
 
 	m_bActive = true;
+	m_iPercent = 100;
 	
 	return S_OK;
 }
@@ -45,6 +46,9 @@ void CUI_Setting_Slider::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (m_eType >= UI_SETTING_SLIDERTYPE::SLIDERTYPE_END)
+			return;
+
 		// 타입별로 Slider BG의 총Width를 1로두고,
 		// 슬라이더 커서의 현재 위치의 값을 SoundManager의 변수에 보내준다.
 
@@ -53,6 +57,19 @@ void CUI_Setting_Slider::Tick(_float fTimeDelta)
 
 		_float fCurPosX = m_fLength - fabs(m_fMaxX - m_tInfo.fX); // 슬라이더 시작 기준 현재 내가 있는 상대적 위치
 		m_iPercent = _int((fCurPosX / m_fLength) * 100.f);
+
+		switch (m_eType)
+		{
+		case UI_SETTING_SLIDERTYPE::FIRST_SLIDER:
+			break;
+
+		case UI_SETTING_SLIDERTYPE::SECOND_SLIDER:
+			break;
+
+		case UI_SETTING_SLIDERTYPE::THIRD_SLIDER:
+			break;
+		}
+		//GI->Set_ChannelVolume(CHANNELID::);
 
 		__super::Tick(fTimeDelta);
 	}

@@ -239,27 +239,30 @@ void CUI_World_NameTag::LateTick_GamePlay(_float fTimeDelta)
 
 		if (fAngle >= XMConvertToRadians(0.f) && fAngle <= XMConvertToRadians(180.f))
 		{
-			wstring strName = CGame_Manager::GetInstance()->Get_UserName();
-			_int iLength = strName.length() - 1;
-			_float2 vFontPos = _float2(m_vTextPos.x - (iLength * 8.f), m_vTextPos.y);
+			if (CUI_Manager::GetInstance()->Is_FadeFinished())
+			{
+				wstring strName = CGame_Manager::GetInstance()->Get_UserName();
+				_int iLength = strName.length() - 1;
+				_float2 vFontPos = _float2(m_vTextPos.x - (iLength * 8.f), m_vTextPos.y);
 
-			CRenderer::TEXT_DESC TextDesc = {};
-			TextDesc.strText = strName;
-			TextDesc.strFontTag = L"Default_Bold";
-			TextDesc.vScale = { 0.4f, 0.4f };
-			TextDesc.vColor = _float4(0.22f, 0.427f, 0.301f, 1.f);
-			TextDesc.vPosition = _float2(vFontPos.x - 1.f, vFontPos.y);
-			m_pRendererCom->Add_Text(TextDesc);
-			TextDesc.vPosition = _float2(vFontPos.x + 1.f, vFontPos.y);
-			m_pRendererCom->Add_Text(TextDesc);
-			TextDesc.vPosition = _float2(vFontPos.x, vFontPos.y - 1.f);
-			m_pRendererCom->Add_Text(TextDesc);
-			TextDesc.vPosition = _float2(vFontPos.x, vFontPos.y + 1.f);
-			m_pRendererCom->Add_Text(TextDesc);
+				CRenderer::TEXT_DESC TextDesc = {};
+				TextDesc.strText = strName;
+				TextDesc.strFontTag = L"Default_Bold";
+				TextDesc.vScale = { 0.4f, 0.4f };
+				TextDesc.vColor = _float4(0.22f, 0.427f, 0.301f, 1.f);
+				TextDesc.vPosition = _float2(vFontPos.x - 1.f, vFontPos.y);
+				m_pRendererCom->Add_Text(TextDesc);
+				TextDesc.vPosition = _float2(vFontPos.x + 1.f, vFontPos.y);
+				m_pRendererCom->Add_Text(TextDesc);
+				TextDesc.vPosition = _float2(vFontPos.x, vFontPos.y - 1.f);
+				m_pRendererCom->Add_Text(TextDesc);
+				TextDesc.vPosition = _float2(vFontPos.x, vFontPos.y + 1.f);
+				m_pRendererCom->Add_Text(TextDesc);
 
-			TextDesc.vColor = _float4(0.788f, 0.839f, 0.741f, 1.f);
-			TextDesc.vPosition = vFontPos;
-			m_pRendererCom->Add_Text(TextDesc);
+				TextDesc.vColor = _float4(0.788f, 0.839f, 0.741f, 1.f);
+				TextDesc.vPosition = vFontPos;
+				m_pRendererCom->Add_Text(TextDesc);
+			}
 		}
 	}
 }

@@ -16,6 +16,7 @@ protected:
 public:
 	void Set_Owner(class CGameObject* pOwner);
 	void Set_Pass(_uint iPass) { m_iPass = iPass; }
+//	void Set_TextOnOff(_bool bOnOff) { m_bAddText = bOnOff; }
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -43,6 +44,8 @@ private:
 
 	_int m_iTextureIndex = { -1 };
 	_uint m_iPass = { 1 };
+
+//	_bool m_bAddText = { false };
 
 private:
 	virtual HRESULT	Ready_Components() override;

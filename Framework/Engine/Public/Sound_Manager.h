@@ -25,6 +25,7 @@ public:
 	void Stop_Sound(CHANNELID eID);
 	void Stop_All();
 	void Set_ChannelVolume(CHANNELID eID, float fVolume);
+	_float Get_ChannelVolume(CHANNELID eID);
 
 	FMOD_CHANNEL* Get_Channel(CHANNELID eID){ return m_pChannelArr[eID]; }
 	const map<wstring, FMOD_SOUND*>& Get_MapSound() const { return m_mapSound; }

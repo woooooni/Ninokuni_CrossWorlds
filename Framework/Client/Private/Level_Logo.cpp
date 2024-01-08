@@ -32,6 +32,9 @@ HRESULT CLevel_Logo::Initialize()
 	if (nullptr != CUI_Manager::GetInstance()->Get_Fade())
 		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 3.f, true);
 
+	GI->Stop_Sound(CHANNELID::SOUND_BGM);
+	GI->Play_BGM(TEXT("BGM_Scene_Title_1.mp3"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM));
+
 	return S_OK;
 }
 
@@ -88,7 +91,7 @@ HRESULT CLevel_Logo::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Logo::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 {
-	if (FAILED(CUI_Manager::GetInstance()->Ready_Veils()))
+	if (FAILED(CUI_Manager::GetInstance()->Ready_Veils(LEVEL_LOGO)))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_GameObject(LEVEL_LOGO, _uint(eLayerType), TEXT("Prototype_GameObject_UI_Logo_Background"))))

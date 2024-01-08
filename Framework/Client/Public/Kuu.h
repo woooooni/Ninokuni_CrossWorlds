@@ -26,6 +26,9 @@ public:
 	virtual void On_Damaged(const COLLISION_INFO& tInfo) override;
 
 private:
+	class CUI_World_NPCTag* m_pTag = { nullptr };
+
+private:
 	virtual HRESULT Ready_Components() override;
 	virtual HRESULT Ready_States() override;
 	virtual HRESULT Ready_Colliders() override;

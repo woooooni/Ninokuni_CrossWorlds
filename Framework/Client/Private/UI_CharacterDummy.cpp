@@ -70,8 +70,16 @@ void CUI_CharacterDummy::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
+		//m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
+		if (GI->Mouse_Pressing(DIMK_WHEEL))
+		{
+			_long	MouseMove = 0;
 
+			if (MouseMove = GI->Get_DIMMoveState(DIMM_X))
+			{
+				m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), MouseMove * -0.1f, fTimeDelta);
+			}
+		}
 		__super::Tick(fTimeDelta);
 	}
 }
