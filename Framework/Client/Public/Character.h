@@ -194,10 +194,18 @@ public:
 	}
 
 
+	ELEMENTAL_TYPE Get_ElementalType() { return m_eElemental; }
+	void Set_ElementalType(ELEMENTAL_TYPE eElemental) { m_eElemental = eElemental; }
+
+
+public:
+	_float Get_Default_WalkSpeed() { return m_fDefaultWalkSpeed; }
+	_float Get_Default_RunSpeed() { return m_fDefaultRunSpeed; }
 
 
 public:
 	CHARACTER_TYPE Get_CharacterType() { return m_eCharacterType; }
+	
 
 public:
 	HRESULT Set_PartModel(PART_TYPE ePartType, class CModel* pModel)
@@ -224,6 +232,7 @@ public:
 
 
 public:
+	class CWeapon* Get_Weapon() { return m_pWeapon; }
 	HRESULT Disappear_Weapon();
 	HRESULT Appear_Weapon();
 
@@ -237,6 +246,8 @@ protected:
 	virtual HRESULT Ready_Colliders() PURE;
 	virtual void On_Damaged(const COLLISION_INFO& tInfo);
 
+protected:
+	ELEMENTAL_TYPE m_eElemental = ELEMENTAL_TYPE::BASIC;
 
 
 protected: /* 해당 객체가 사용해야할 컴포넌트들을 저장하낟. */
@@ -268,27 +279,19 @@ protected:
 	CHARACTER_STAT m_tStat = {};
 	CHARACTER_TYPE m_eCharacterType = CHARACTER_TYPE::CHARACTER_END;
 
-
-
-
 	_bool m_bMotionTrail = false;
 	MOTION_TRAIL_DESC m_MotionTrailDesc = {};
 
 protected:
-	_float m_fDefaultWalkSpeed = 2.f;
-	_float m_fDefaultRunSpeed = 5.f;
+	_float m_fDefaultWalkSpeed = 3.f;
+	_float m_fDefaultRunSpeed = 6.f;
 
-protected:
-	void Input_Character(_float fTimeDelta);
-
-private:
-	void Input_Default(CCharacter::STATE eCurrentState, _float fTimeDelta);
-	void Input_Attack(CCharacter::STATE eCurrentState, _float fTimeDelta);
 
 private:
 	void Tick_MotionTrail(_float fTimeDelta);
 	void Tick_Target(_float fTimeDelta);
 	void Decide_Target(COLLISION_INFO tInfo);
+	
 
 private:
 	class CUI_World_NameTag* m_pName = { nullptr };

@@ -23,8 +23,9 @@ HRESULT CState_Character_Neutral_Crouch_Idle::Initialize(const list<wstring>& An
 
 void CState_Character_Neutral_Crouch_Idle::Enter_State(void* pArg)
 {
+    m_iCurrAnimIndex = m_AnimIndices[0];
     m_pCharacter->Disappear_Weapon();
-    m_pModelCom->Set_Animation(m_AnimIndices[0]);
+    m_pModelCom->Set_Animation(m_iCurrAnimIndex);
 }
 
 void CState_Character_Neutral_Crouch_Idle::Tick_State(_float fTimeDelta)
@@ -33,13 +34,24 @@ void CState_Character_Neutral_Crouch_Idle::Tick_State(_float fTimeDelta)
     if (m_fAccIdleMotion >= m_fIdleMotionTime)
     {
         m_fAccIdleMotion = 0.f;
-        m_pModelCom->Set_Animation(m_AnimIndices[1]);
+        m_iCurrAnimIndex = m_AnimIndices[1];
+        m_pModelCom->Set_Animation(m_iCurrAnimIndex);
     }
+
+    if (m_iCurrAnimIndex == m_AnimIndices[1] && false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
+    {
+        m_fAccIdleMotion = 0.f;
+        m_iCurrAnimIndex = m_AnimIndices[0];
+        m_pModelCom->Set_Animation(m_iCurrAnimIndex);
+    }
+
+    __super::Crouch_Idle_Input(fTimeDelta);
 }
+
 
 void CState_Character_Neutral_Crouch_Idle::Exit_State()
 {
-
+    
 }
 
 

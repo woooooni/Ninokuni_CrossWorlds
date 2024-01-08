@@ -29,6 +29,7 @@ void CState_Character_Neutral_Run::Enter_State(void* pArg)
 
 void CState_Character_Neutral_Run::Tick_State(_float fTimeDelta)
 {
+    __super::Neutral_Run_Input(fTimeDelta);
 	
 }
 

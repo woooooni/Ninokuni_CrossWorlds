@@ -26,9 +26,6 @@ public:
 	virtual void Exit_State() override;
 
 private:
-	void Input(_float fTimeDelta);
-
-private:
 	_float m_fMoveSpeed = 2.f;
 
 public:

@@ -47,6 +47,8 @@ void CState_Character_Neutral_Idle::Tick_State(_float fTimeDelta)
         m_iCurrAnimIndex = m_AnimIndices[0];
         m_pModelCom->Set_Animation(m_iCurrAnimIndex);
     }
+
+     __super::Neutral_Idle_Input(fTimeDelta);
 }
 
 void CState_Character_Neutral_Idle::Exit_State()
@@ -54,6 +56,8 @@ void CState_Character_Neutral_Idle::Exit_State()
     m_fAccIdleMotion = 0.f;
     m_iCurrAnimIndex = 0;
 }
+
+
 
 CState_Character_Neutral_Idle* CState_Character_Neutral_Idle::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
 {

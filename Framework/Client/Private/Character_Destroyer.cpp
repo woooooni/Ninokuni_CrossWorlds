@@ -116,7 +116,6 @@ HRESULT CCharacter_Destroyer::Initialize(void* pArg)
 
 void CCharacter_Destroyer::Tick(_float fTimeDelta)
 {
-	__super::Input_Character(fTimeDelta);
 	m_pStateCom->Tick_State(fTimeDelta);
 
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
@@ -380,7 +379,7 @@ HRESULT CCharacter_Destroyer::Ready_States()
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillDash");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_DASH, CState_Character_Battle_Guard::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_DASH, CState_Character_Battle_Dash::Create(m_pStateCom, strAnimationNames));
 	
 	
 

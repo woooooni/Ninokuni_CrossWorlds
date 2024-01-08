@@ -25,6 +25,7 @@ public:
 	virtual void Tick_State(_float fTimeDelta) override;
 	virtual void Exit_State() override;
 
+
 private:
 	_float m_fIdleMotionTime = 5.f;
 	_float m_fAccIdleMotion = 0.f;

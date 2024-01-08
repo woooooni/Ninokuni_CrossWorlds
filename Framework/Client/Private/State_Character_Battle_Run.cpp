@@ -24,7 +24,7 @@ void CState_Character_Battle_Run::Enter_State(void* pArg)
 
 void CState_Character_Battle_Run::Tick_State(_float fTimeDelta)
 {
-	
+    __super::Battle_Run_Input(fTimeDelta);
 }
 
 void CState_Character_Battle_Run::Exit_State()

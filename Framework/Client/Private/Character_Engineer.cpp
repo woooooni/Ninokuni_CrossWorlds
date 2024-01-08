@@ -111,8 +111,6 @@ HRESULT CCharacter_Engineer::Initialize(void* pArg)
 
 void CCharacter_Engineer::Tick(_float fTimeDelta)
 {
-	__super::Input_Character(fTimeDelta);
-
 	m_pStateCom->Tick_State(fTimeDelta);
 
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);

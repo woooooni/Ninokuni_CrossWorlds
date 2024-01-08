@@ -149,91 +149,6 @@ void CCharacter::Tick(_float fTimeDelta)
 }
 
 
-void CCharacter::Input_Character(_float fTimeDelta)
-{
-	CCharacter::STATE eCurrentState = CCharacter::STATE(m_pStateCom->Get_CurrState());
-
-	switch (eCurrentState)
-	{
-	case CCharacter::STATE::ABNORMALITY_STUN :
-	case CCharacter::STATE::DAMAGED_WEAK :
-	case CCharacter::STATE::DAMAGED_STRONG :
-	case CCharacter::STATE::DAMAGED_IMPACT :
-	case CCharacter::STATE::DAMAGED_KNOCKDOWN :
-	case CCharacter::STATE::NEUTRAL_DOOR_ENTER :
-	case CCharacter::STATE::NEUTRAL_JUMP :
-	case CCharacter::STATE::BATTLE_JUMP :
-	case CCharacter::STATE::BATTLE_DASH :
-	case CCharacter::STATE::CLASS_SKILL_0 :
-	case CCharacter::STATE::CLASS_SKILL_1 :
-	case CCharacter::STATE::CLASS_SKILL_2 :
-	case CCharacter::STATE::SKILL_BURST :
-	case CCharacter::STATE::SKILL_SPECIAL_0 :
-	case CCharacter::STATE::SKILL_SPECIAL_1 :
-	case CCharacter::STATE::SKILL_SPECIAL_2 :
-	case CCharacter::STATE::REVIVE :
-		break;
-
-	case CCharacter::STATE::BATTLE_ATTACK_0:
-	case CCharacter::STATE::BATTLE_ATTACK_1:
-	case CCharacter::STATE::BATTLE_ATTACK_2:
-	case CCharacter::STATE::BATTLE_GUARD:
-		Input_Attack(eCurrentState, fTimeDelta);
-		break;
-
-	default:
-		Input_Default(eCurrentState, fTimeDelta);
-		break;
-
-	
-
-	}
-
-}
-
-void CCharacter::Input_Default(CCharacter::STATE eCurrentState, _float fTimeDelta)
-{
-	/*switch (eCurrentState)
-	{
-	case CCharacter::STATE::BATTLE_GUARD:
-	}*/
-}
-
-void CCharacter::Input_Attack(CCharacter::STATE eCurrentState, _float fTimeDelta)
-{
-	if (eCurrentState == CCharacter::STATE::BATTLE_ATTACK_0)
-	{
-		if (KEY_TAP(KEY::LBTN))
-		{
-			m_pStateCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_1);
-			return;
-		}
-	}
-	else if (eCurrentState == CCharacter::STATE::BATTLE_ATTACK_1)
-	{
-		if (KEY_TAP(KEY::LBTN))
-		{
-			m_pStateCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_2);
-			return;
-		}
-	}
-	else if (eCurrentState == CCharacter::STATE::BATTLE_ATTACK_2)
-	{
-		if (KEY_TAP(KEY::LBTN))
-		{
-			m_pStateCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_3);
-			return;
-		}
-	}
-	else if (eCurrentState == CCharacter::STATE::BATTLE_GUARD)
-	{
-		if (KEY_NONE(KEY::RBTN))
-		{
-			m_pStateCom->Change_State(CCharacter::STATE::BATTLE_IDLE);
-			return;
-		}
-	}
-}
 
 
 
@@ -545,6 +460,11 @@ void CCharacter::Decide_Target(COLLISION_INFO tInfo)
 		}
 	}
 }
+
+
+
+
+
 
 
 void CCharacter::Set_Infinite(_float fInfiniteTime, _bool bInfinite)

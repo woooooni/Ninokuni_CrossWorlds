@@ -113,7 +113,6 @@ HRESULT CCharacter_SwordMan::Initialize(void* pArg)
 
 void CCharacter_SwordMan::Tick(_float fTimeDelta)
 {
-	__super::Input_Character(fTimeDelta);
 	m_pStateCom->Tick_State(fTimeDelta);
 
 	if (KEY_TAP(KEY::NUM_6))

@@ -45,7 +45,9 @@ void CState_Character_Battle_Idle::Tick_State(_float fTimeDelta)
         {
             m_pStateMachineCom->Change_State(CCharacter::STATE::NEUTRAL_IDLE);
         }
-    } 
+    }
+
+    __super::Battle_Idle_Input(fTimeDelta);
 }
 
 void CState_Character_Battle_Idle::Exit_State()

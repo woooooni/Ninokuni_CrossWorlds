@@ -18,12 +18,17 @@ HRESULT CState_Character_Battle_Guard::Initialize(const list<wstring>& Animation
 
 void CState_Character_Battle_Guard::Enter_State(void* pArg)
 {
+    m_pCharacter->Appear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }
 
 void CState_Character_Battle_Guard::Tick_State(_float fTimeDelta)
 {
-    m_pCharacter->Appear_Weapon();
+    if (KEY_NONE(KEY::RBTN))
+    {
+        m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_IDLE);
+        return;
+    }
 }
 
 void CState_Character_Battle_Guard::Exit_State()
