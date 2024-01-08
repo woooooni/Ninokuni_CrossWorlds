@@ -219,7 +219,6 @@ void CGameNpc::Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo)
 
 void CGameNpc::Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo)
 {
-
 	__super::Ground_Collision_Exit(tInfo);
 	m_pRigidBodyCom->Set_Ground(false);
 	m_pRigidBodyCom->Set_Use_Gravity(true);
@@ -232,6 +231,27 @@ void CGameNpc::Set_Infinite(_float fInfiniteTime, _bool bInfinite)
 	m_fAccInfinite = 0.f;
 }
 
+
+void CGameNpc::Set_NpcState(NPC_STATE eState)
+{
+	if (eState == NPC_STATE::NPC_MOVE_ONEWAY || eState == NPC_STATE::NPC_MOVE_TWOWAY)
+	{
+
+		if (m_vecRoaming.size() > 1)
+		{
+			m_eState = eState;
+			m_pStateCom->Change_State(m_eState);
+		}
+
+
+		return;
+	}
+	else
+	{
+		m_eState = eState;
+		m_pStateCom->Change_State(m_eState);
+	}
+}
 
 HRESULT CGameNpc::Ready_Components()
 {

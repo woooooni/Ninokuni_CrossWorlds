@@ -78,7 +78,7 @@ HRESULT CHumanChild01::Ready_Components()
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 		return E_FAIL;
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, { 10.f, 0.f, 0.f, 1.f });
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, { 15.f, 0.f, 5.f, 1.f });
 	m_vInitPos = m_pTransformCom->Get_Position();
 	m_vecRoaming.push_back(m_vInitPos);
 
@@ -118,9 +118,9 @@ HRESULT CHumanChild01::Ready_States()
 	m_pStateCom->Add_State(NPC_MOVE_TWOWAY, CNpcState_TwoWay::Create(m_pStateCom, strAnimationName));
 
 
-	m_vecRoaming.push_back({ 0.f, 0.f, 10.f });
-	m_vecRoaming.push_back({ -10.f, 0.f, 0.f });
-	m_vecRoaming.push_back({ 0.f, 0.f, -10.f });
+	m_vecRoaming.push_back({ 0.f, 0.f, 10.f ,1.0f});
+	m_vecRoaming.push_back({ -10.f, 0.f, 0.f, 1.0f });
+	m_vecRoaming.push_back({ 0.f, 0.f, -10.f, 1.0f });
 
 	// m_pStateCom->Change_State(NPC_IDLE);
 	m_pStateCom->Change_State(NPC_MOVE_ONEWAY);

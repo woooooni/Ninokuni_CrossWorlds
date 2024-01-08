@@ -36,7 +36,6 @@ public:
 	Vec3 Get_SunScreenPos();
 	const class CGameObject* Get_Sun() const { return m_pSun; }
 
-
 private:
 	list<class CLight*>			m_Lights;
 	typedef list<class CLight*>	LIGHTS;

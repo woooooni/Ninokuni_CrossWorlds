@@ -19,7 +19,6 @@ public:
 	virtual void Exit_State();
 
 private:
-	_int m_iCurRoamingIndex = 0;
 	_bool m_bIsMove = true;
 	_bool m_bReverse = false;
 public:

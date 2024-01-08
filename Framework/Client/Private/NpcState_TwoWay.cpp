@@ -32,12 +32,12 @@ void CNpcState_TwoWay::Tick_State(_float fTimeDelta)
 	_float4 vDestPos;
 
 	XMStoreFloat4(&vPos, m_pTransformCom->Get_Position());
-	XMStoreFloat4(&vDestPos, m_pNpc->Get_RoamingIndex(m_iCurRoamingIndex));
+	XMStoreFloat4(&vDestPos, m_pNpc->Get_RoamingIndex(m_pNpc->Get_CurRoamingIndex()));
 
 
 	if (m_bIsMove)
 	{
-		m_pTransformCom->LookAt_ForLandObject(m_pNpc->Get_RoamingIndex(m_iCurRoamingIndex));
+		m_pTransformCom->LookAt_ForLandObject(m_pNpc->Get_RoamingIndex(m_pNpc->Get_CurRoamingIndex()));
 		m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_pNpc->Get_Stat().fSpeed, fTimeDelta);
 
 		if (vPos.x >= vDestPos.x - 0.1f && vPos.x <= vDestPos.x + 0.1f &&
@@ -45,23 +45,23 @@ void CNpcState_TwoWay::Tick_State(_float fTimeDelta)
 		{
 			if (!m_bReverse)
 			{
-				m_iCurRoamingIndex += 1;
-				if (m_iCurRoamingIndex == m_pNpc->Get_RoamingArea()->size())
+				m_pNpc->Set_CurRoamingIndex(m_pNpc->Get_CurRoamingIndex() + 1);
+				if (m_pNpc->Get_CurRoamingIndex() == m_pNpc->Get_RoamingArea()->size())
 				{
 					m_bIsMove = false;
 					m_bReverse = true;
-					m_iCurRoamingIndex = m_pNpc->Get_RoamingArea()->size() - 1;
+					m_pNpc->Set_CurRoamingIndex(m_pNpc->Get_RoamingArea()->size() - 1);
 					m_pModelCom->Set_Animation(m_AnimIndices[1]);
 				}
 			}
 			else
 			{
-				m_iCurRoamingIndex -= 1;
-				if (m_iCurRoamingIndex == -1)
+				m_pNpc->Set_CurRoamingIndex(m_pNpc->Get_CurRoamingIndex() - 1);
+				if (m_pNpc->Get_CurRoamingIndex() == -1)
 				{
 					m_bIsMove = false;
 					m_bReverse = false;
-					m_iCurRoamingIndex = 0;
+					m_pNpc->Set_CurRoamingIndex(0);
 					m_pModelCom->Set_Animation(m_AnimIndices[1]);
 				}
 			}
