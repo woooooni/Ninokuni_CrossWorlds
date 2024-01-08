@@ -96,6 +96,8 @@ HRESULT CHumanChild02::Ready_Components()
 
 HRESULT CHumanChild02::Ready_States()
 {
+	m_strObjectTag = TEXT("HumanChild02");
+
 	m_tStat.fSpeed = 0.25f;
 	m_tStat.bHasTalk = false;
 

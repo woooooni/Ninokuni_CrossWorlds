@@ -94,6 +94,8 @@ HRESULT CHumanMSCrossFieldMerchant::Ready_Components()
 
 HRESULT CHumanMSCrossFieldMerchant::Ready_States()
 {
+	m_strObjectTag = TEXT("HumanMSCrossFieldMerchant");
+
 	m_tStat.fSpeed = 0.5f;
 	m_tStat.bHasTalk = false;
 

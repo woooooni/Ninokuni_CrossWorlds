@@ -16,6 +16,7 @@
 #include "Item_Manager.h"
 #include "Skill_Manager.h"
 #include "UIDamage_Manager.h"
+#include "Quest_Manager.h"
 
 
 #include "Game_Manager.h"
@@ -60,7 +61,6 @@ HRESULT CMainApp::Initialize()
 	if (FAILED(Open_Level(LEVEL_LOGO, L"Final_Boss")))
 		return E_FAIL;
 
-
 	// UI Cursor
 	/*CUI_Manager::GetInstance()->Ready_Cursor();
 	ShowCursor(false);*/
@@ -85,10 +85,12 @@ HRESULT CMainApp::Initialize()
 
 void CMainApp::Tick(_float fTimeDelta)
 {
+	CQuest_Manager::GetInstance()->Tick(fTimeDelta);
 	CUI_Manager::GetInstance()->Tick(fTimeDelta);
 	CGame_Manager::GetInstance()->Tick(fTimeDelta);
 	GI->Tick(fTimeDelta);
 	
+	CQuest_Manager::GetInstance()->LateTick(fTimeDelta);
 	CUI_Manager::GetInstance()->LateTick(fTimeDelta);
 	CGame_Manager::GetInstance()->LateTick(fTimeDelta);
 	GI->LateTick(fTimeDelta);
@@ -143,6 +145,9 @@ HRESULT CMainApp::Initialize_Client()
 		return E_FAIL;
 
 	if (FAILED(CItem_Manager::GetInstance()->Reserve_Manager(L"../Bin/DataFiles/Item/")))
+		return E_FAIL;
+
+	if (FAILED(CQuest_Manager::GetInstance()->Reserve_Manager()))
 		return E_FAIL;
 
 	// Add Fonts
@@ -1492,6 +1497,7 @@ void Client::CMainApp::Free()
 	__super::Free();
 	Safe_Release(m_pRenderer_Com);
 
+	CQuest_Manager::GetInstance()->DestroyInstance();
 	CEffect_Manager::GetInstance()->DestroyInstance();
 	CParticle_Manager::GetInstance()->DestroyInstance();
 	CImGui_Manager::GetInstance()->DestroyInstance();

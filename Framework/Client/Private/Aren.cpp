@@ -149,6 +149,8 @@ HRESULT CAren::Ready_Components()
 
 HRESULT CAren::Ready_States()
 {
+	m_strObjectTag = TEXT("Aren");
+
 	return S_OK;
 }
 

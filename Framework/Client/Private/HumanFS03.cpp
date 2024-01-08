@@ -149,6 +149,8 @@ HRESULT CHumanFS03::Ready_Components()
 
 HRESULT CHumanFS03::Ready_States()
 {
+	m_strObjectTag = TEXT("HumanFS03");
+
 	return S_OK;
 }
 

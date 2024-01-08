@@ -95,6 +95,8 @@
 #include "GiftFunyaSnowman.h"
 #include "AquarisBella.h"
 
+#include "Quest_DestSpot.h"
+
 #include "Particle.h"
 #include "Effect.h"
 #include "Decal.h"
@@ -1118,7 +1120,12 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 	statDesc.fMp = 100;
 	statDesc.fMaxMp = 100;
 
+	/* Quest */
+	// 임시로 몬스터에 담는다. 충돌 처리 그룹 추가 될 때까지.
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Quest_DestSpot", CQuest_DestSpot::Create(m_pDevice, m_pContext, TEXT("Quest_DestSpot")), LAYER_MONSTER, true)))
+		return E_FAIL;
 
+	/* Monster */
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Glanix", CGlanix::Create(m_pDevice, m_pContext, TEXT("Glanix"), statDesc), LAYER_MONSTER, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Glanix_IcePillar", CGlanix_IcePillar::Create(m_pDevice, m_pContext, TEXT("Clanix_IcePillar")), LAYER_PROP, true)))

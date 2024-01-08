@@ -94,6 +94,8 @@ HRESULT CHumanChildHalloweenA::Ready_Components()
 
 HRESULT CHumanChildHalloweenA::Ready_States()
 {
+	m_strObjectTag = TEXT("HumanChildHalloweenA");
+
 	m_tStat.fSpeed = 4.f;
 	m_tStat.bHasTalk = false;
 

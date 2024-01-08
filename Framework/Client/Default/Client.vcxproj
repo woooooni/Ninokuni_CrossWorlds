@@ -321,7 +321,10 @@
     <ClInclude Include="..\Public\Level_IceLand.h" />
     <ClInclude Include="..\Public\Level_WitchForest.h" />
     <ClInclude Include="..\Public\LuxerionHuman.h" />
+    <ClInclude Include="..\Public\MainQuest.h" />
     <ClInclude Include="..\Public\MainQuest01.h" />
+    <ClInclude Include="..\Public\MainQuestNode01_02.h" />
+    <ClInclude Include="..\Public\MainQuestNode01_03.h" />
     <ClInclude Include="..\Public\MainQuestNode01_01.h" />
     <ClInclude Include="..\Public\MonsterBT.h" />
     <ClInclude Include="..\Public\Motion_Trail.h" />
@@ -339,6 +342,7 @@
     <ClInclude Include="..\Public\Portal.h" />
     <ClInclude Include="..\Public\QuestNode_Base.h" />
     <ClInclude Include="..\Public\QuestTree.h" />
+    <ClInclude Include="..\Public\Quest_DestSpot.h" />
     <ClInclude Include="..\Public\Quest_Manager.h" />
     <ClInclude Include="..\Public\Rabbit.h" />
     <ClInclude Include="..\Public\Shadow_ThiefNode_Air.h" />
@@ -970,7 +974,10 @@
     <ClCompile Include="..\Private\Level_IceLand.cpp" />
     <ClCompile Include="..\Private\Level_WitchForest.cpp" />
     <ClCompile Include="..\Private\LuxerionHuman.cpp" />
+    <ClCompile Include="..\Private\MainQuest.cpp" />
     <ClCompile Include="..\Private\MainQuest01.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode01_02.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode01_03.cpp" />
     <ClCompile Include="..\Private\MainQuestNode01_01.cpp" />
     <ClCompile Include="..\Private\MonsterBT.cpp" />
     <ClCompile Include="..\Private\Motion_Trail.cpp" />
@@ -988,6 +995,7 @@
     <ClCompile Include="..\Private\Portal.cpp" />
     <ClCompile Include="..\Private\QuestNode_Base.cpp" />
     <ClCompile Include="..\Private\QuestTree.cpp" />
+    <ClCompile Include="..\Private\Quest_DestSpot.cpp" />
     <ClCompile Include="..\Private\Quest_Manager.cpp" />
     <ClCompile Include="..\Private\Rabbit.cpp" />
     <ClCompile Include="..\Private\Shadow_ThiefNode_Air.cpp" />

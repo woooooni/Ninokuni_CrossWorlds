@@ -93,6 +93,8 @@ HRESULT CSeekerKing::Ready_Components()
 
 HRESULT CSeekerKing::Ready_States()
 {
+	m_strObjectTag = TEXT("SeekerKing");
+
 	m_tStat.fSpeed = 2.5f;
 
 	m_pStateCom->Set_Owner(this);

@@ -149,6 +149,8 @@ HRESULT CTreeGrandfa::Ready_Components()
 
 HRESULT CTreeGrandfa::Ready_States()
 {
+	m_strObjectTag = TEXT("TreeGrandfa");
+
 	return S_OK;
 }
 

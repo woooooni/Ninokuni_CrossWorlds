@@ -93,6 +93,8 @@ HRESULT CHumanMM03::Ready_Components()
 
 HRESULT CHumanMM03::Ready_States()
 {
+	m_strObjectTag = TEXT("HumanMM03");
+
 	m_tStat.fSpeed = 0.5f;
 	m_tStat.bHasMove = false;
 	m_tStat.bHasTalk = false;

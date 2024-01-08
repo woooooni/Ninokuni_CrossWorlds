@@ -94,6 +94,8 @@ HRESULT CFunyaSnowman::Ready_Components()
 
 HRESULT CFunyaSnowman::Ready_States()
 {
+	m_strObjectTag = TEXT("FunyaSnowman");
+
 	m_tStat.fSpeed = 0.5f;
 
 	m_pStateCom->Set_Owner(this);

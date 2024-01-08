@@ -149,6 +149,8 @@ HRESULT CGosling::Ready_Components()
 
 HRESULT CGosling::Ready_States()
 {
+	m_strObjectTag = TEXT("Gosling");
+
 	return S_OK;
 }
 

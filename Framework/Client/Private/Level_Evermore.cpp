@@ -21,6 +21,8 @@
 
 #include "Camera_Group.h"
 
+#include "Quest_Manager.h"
+
 
 CLevel_Evermore::CLevel_Evermore(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -115,6 +117,8 @@ HRESULT CLevel_Evermore::Initialize()
 
 	if (nullptr != CUI_Manager::GetInstance()->Get_Fade())
 		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 3.f);
+
+	CQuest_Manager::GetInstance()->Set_Running(true);
 
 	return S_OK;
 }

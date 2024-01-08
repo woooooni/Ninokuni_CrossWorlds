@@ -100,6 +100,8 @@ HRESULT CKuu::Ready_Components()
 
 HRESULT CKuu::Ready_States()
 {
+	m_strObjectTag = TEXT("Kuu");
+
 	m_tStat.fSpeed = 1.f;
 	m_tStat.bIsUnique = true;
 
