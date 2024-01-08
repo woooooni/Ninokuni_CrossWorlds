@@ -49,9 +49,9 @@ PS_OUT PS_LIGHTSHAFT(VS_OUT input)
 {
     PS_OUT output = (PS_OUT) 0;
     
-    #define NUM_SAMPLERS 128
+    #define NUM_SAMPLERS 192
     
-    float4 vMaskColor = SunOccluderTexture.Sample(LinearSampler, input.vTexcoord);
+    float4 vMaskColor = SunOccluderTexture.Sample(PointSampler, input.vTexcoord);
     
     float2 vTexcoord = input.vTexcoord;
     
@@ -65,7 +65,7 @@ PS_OUT PS_LIGHTSHAFT(VS_OUT input)
     {
         vTexcoord -= vDeltaTexcoord;
         
-        float4 vNewPixel = SunOccluderTexture.Sample(LinearSampler, vTexcoord);
+        float4 vNewPixel = SunOccluderTexture.Sample(PointSampler, vTexcoord);
         vNewPixel *= fIlluminationDecay * vLightShaftValue.z;
 
         vMaskColor += vNewPixel;

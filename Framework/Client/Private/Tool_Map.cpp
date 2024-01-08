@@ -28,6 +28,12 @@ HRESULT CTool_Map::Initialize()
 	if (FAILED(__super::Initialize()))
 		return E_FAIL;
 
+#ifdef _DEBUG
+	if (FAILED(Ready_DebugDraw()))
+		return E_FAIL;
+#endif // _DEBUG
+
+
 	return S_OK;
 }
 
@@ -67,7 +73,19 @@ void CTool_Map::Tick(_float fTimeDelta)
 		Picking();
 	}
 	
+
+
+
+
 	ImGui::End();
+}
+
+HRESULT CTool_Map::Render()
+{
+#ifdef _DEBUG
+	if(FAILED(Render_DebugDraw()))
+		return E_FAIL;
+#endif // _DEBUG
 }
 
 void CTool_Map::AddMapObject(LEVELID iLevelID, LAYER_TYPE iLayerType)
@@ -254,6 +272,29 @@ void CTool_Map::BatchWater(LEVELID iLevelID, LAYER_TYPE iLayerType)
 	}
 }
 
+void CTool_Map::RomingClear()
+{
+	if (nullptr == m_pSelectObj)
+		return;
+
+	CGameNpc* pNpc = static_cast<CGameNpc*>(m_pSelectObj);
+
+	pNpc->Set_NpcState(CGameNpc::NPC_STATE::NPC_IDLE);
+
+	vector<Vec4>* pPoints = pNpc->Get_RoamingArea();
+	pPoints->clear();
+
+	pNpc->Set_CurRoamingIndex(pPoints->size());
+}
+
+void CTool_Map::RomingPointDelete()
+{
+	if (nullptr == m_pSelectObj)
+		return;
+
+
+}
+
 void CTool_Map::Picking()
 {
 	if (KEY_HOLD(KEY::CTRL) && KEY_TAP(KEY::LBTN))
@@ -295,66 +336,130 @@ void CTool_Map::Picking()
 			}
 		}
 	}
-
-	if (KEY_HOLD(KEY::CTRL) && KEY_TAP(KEY::RBTN))
+#pragma region Npc Not Roming
+	if (m_iNPCState != 1)
 	{
-		if (nullptr == m_pSelectObj)
-			return;
-
-		for (_uint i = 0; i < LAYER_TYPE::LAYER_END; ++i)
+		if (KEY_HOLD(KEY::CTRL) && KEY_TAP(KEY::RBTN))
 		{
-			if (i == LAYER_TYPE::LAYER_CAMERA
-				|| i == LAYER_TYPE::LAYER_TERRAIN
-				|| i == LAYER_TYPE::LAYER_BACKGROUND
-				|| i == LAYER_TYPE::LAYER_SKYBOX
-				|| i == LAYER_TYPE::LAYER_UI
-				|| i == LAYER_TYPE::LAYER_EFFECT)
-				continue;
+			if (nullptr == m_pSelectObj)
+				return;
 
-			list<CGameObject*>& GameObjects = GI->Find_GameObjects(LEVEL_TOOL, i);
-
-			for (auto& Object : GameObjects)
+			for (_uint i = 0; i < LAYER_TYPE::LAYER_END; ++i)
 			{
-				CTransform* pTransform = Object->Get_Component<CTransform>(L"Com_Transform");
-				CModel* pModel = Object->Get_Component<CModel>(L"Com_Model");
-				if (pTransform == nullptr)
+				if (i == LAYER_TYPE::LAYER_CAMERA
+					|| i == LAYER_TYPE::LAYER_TERRAIN
+					|| i == LAYER_TYPE::LAYER_BACKGROUND
+					|| i == LAYER_TYPE::LAYER_SKYBOX
+					|| i == LAYER_TYPE::LAYER_UI
+					|| i == LAYER_TYPE::LAYER_EFFECT)
 					continue;
 
-				if (pModel == nullptr)
-					continue;
+				list<CGameObject*>& GameObjects = GI->Find_GameObjects(LEVEL_TOOL, i);
 
-				for (auto& pMesh : pModel->Get_Meshes())
+				for (auto& Object : GameObjects)
 				{
-					Vec4 vPosition;
+					CTransform* pTransform = Object->Get_Component<CTransform>(L"Com_Transform");
+					CModel* pModel = Object->Get_Component<CModel>(L"Com_Model");
+					if (pTransform == nullptr)
+						continue;
 
-					if (true == m_bPlantMode)
+					if (pModel == nullptr)
+						continue;
+
+					for (auto& pMesh : pModel->Get_Meshes())
 					{
-						if (CPicking_Manager::GetInstance()->Is_Picking(pTransform, pMesh, false, &vPosition))
+						Vec4 vPosition;
+
+						if (true == m_bPlantMode)
 						{
-							CGameObject* pPlant = GI->Clone_GameObject(m_pSelectObj->Get_PrototypeTag(), LAYER_TYPE::LAYER_GRASS);
+							if (CPicking_Manager::GetInstance()->Is_Picking(pTransform, pMesh, false, &vPosition))
+							{
+								CGameObject* pPlant = GI->Clone_GameObject(m_pSelectObj->Get_PrototypeTag(), LAYER_TYPE::LAYER_GRASS);
 
-							CTransform* pPlantTransform = pPlant->Get_Component<CTransform>(L"Com_Transform");
-							pPlantTransform->Set_State(CTransform::STATE::STATE_POSITION, ::XMLoadFloat4(&vPosition));
-							GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_GRASS, pPlant);
+								CTransform* pPlantTransform = pPlant->Get_Component<CTransform>(L"Com_Transform");
+								pPlantTransform->Set_State(CTransform::STATE::STATE_POSITION, ::XMLoadFloat4(&vPosition));
+								GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_GRASS, pPlant);
 
-							return;
+								return;
+							}
 						}
-					}
-					else
-					{
-						if (CPicking_Manager::GetInstance()->Is_Picking(pTransform, pMesh, false, &vPosition))
+						else
 						{
-							CTransform* pTargetTransform = m_pSelectObj->Get_Component<CTransform>(L"Com_Transform");
-							pTargetTransform->Set_State(CTransform::STATE::STATE_POSITION, ::XMLoadFloat4(&vPosition));
+							if (CPicking_Manager::GetInstance()->Is_Picking(pTransform, pMesh, false, &vPosition))
+							{
+								CTransform* pTargetTransform = m_pSelectObj->Get_Component<CTransform>(L"Com_Transform");
+								pTargetTransform->Set_State(CTransform::STATE::STATE_POSITION, ::XMLoadFloat4(&vPosition));
 
-							break;
+								break;
+							}
 						}
 					}
 				}
 			}
 		}
 	}
+#pragma endregion Npc Not Roming
 
+#pragma region Npc Roming
+	else if (m_iNPCState == 1)
+	{
+		if (KEY_HOLD(KEY::CTRL) && KEY_TAP(KEY::RBTN))
+		{
+			if (nullptr != m_pSelectObj)
+			{
+				for (_uint i = 0; i < LAYER_TYPE::LAYER_END; ++i)
+				{
+					if (i == LAYER_TYPE::LAYER_CAMERA
+						|| i == LAYER_TYPE::LAYER_TERRAIN
+						|| i == LAYER_TYPE::LAYER_BACKGROUND
+						|| i == LAYER_TYPE::LAYER_SKYBOX
+						|| i == LAYER_TYPE::LAYER_UI
+						|| i == LAYER_TYPE::LAYER_EFFECT)
+						continue;
+
+					list<CGameObject*>& GameObjects = GI->Find_GameObjects(LEVEL_TOOL, i);
+
+					for (auto& Object : GameObjects)
+					{
+						CTransform* pTransform = Object->Get_Component<CTransform>(L"Com_Transform");
+						CModel* pModel = Object->Get_Component<CModel>(L"Com_Model");
+						if (pTransform == nullptr)
+							continue;
+
+						if (pModel == nullptr)
+							continue;
+
+						for (auto& pMesh : pModel->Get_Meshes())
+						{
+							Vec4 vPosition;
+
+							if (CPicking_Manager::GetInstance()->Is_Picking(pTransform, pMesh, false, &vPosition))
+							{
+								CTransform* pTargetTransform = m_pSelectObj->Get_Component<CTransform>(L"Com_Transform");
+								vector<Vec4>* pPoints = static_cast<CGameNpc*>(m_pSelectObj)->Get_RoamingArea();
+								if (false == static_cast<CGameNpc*>(m_pSelectObj)->Get_TurnOnPoint())
+								{
+									pPoints->push_back(vPosition);
+									pTargetTransform->Set_State(CTransform::STATE::STATE_POSITION, ::XMLoadFloat4(&vPosition));
+									static_cast<CGameNpc*>(m_pSelectObj)->Set_Point(true);
+									return;
+								}
+								else
+								{
+									pPoints->push_back(vPosition);
+									return;
+								}
+
+
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+#pragma endregion Npc Roming
 }
 
 void CTool_Map::MapObjectSpace()
@@ -931,6 +1036,8 @@ void CTool_Map::MapNPCSpace()
 				ChangeState();
 				m_iNPCState = 0;
 			} ImGui::SameLine();
+			if (ImGui::RadioButton("Patrol Setting", (1 == m_iNPCState)))
+				m_iNPCState = 1;
 
 			ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.f), u8"NPC 오브젝트");
 			if (nullptr != m_pSelectObj)
@@ -985,70 +1092,162 @@ void CTool_Map::MapNPCSpace()
 
 			ImGui::SameLine();
 
-			ImGui::PushItemWidth(110.f);
+		
 
-			static const char* szLevelType = nullptr;
-
-			if (ImGui::BeginCombo(u8"Level_Type", szLevelType))
+			if (m_iNPCState == 0)
 			{
-				for (_uint i = 0; i < LEVEL_LIST_END; ++i)
-				{
-					_bool IsSelected = (szLevelType == m_ImguiSelectableNPCNameList[i]);
+				ImGui::PushItemWidth(110.f);
 
-					if (ImGui::Selectable(m_ImguiSelectableNPCNameList[i], IsSelected))
+				static const char* szLevelType = nullptr;
+
+				if (ImGui::BeginCombo(u8"Level_Type", szLevelType))
+				{
+					for (_uint i = 0; i < LEVEL_LIST_END; ++i)
 					{
-						szLevelType = m_ImguiSelectableNPCNameList[i];
-						m_iMonsterLevel = i;
-						m_strLevelNPCName = CUtils::ToWString(m_ImguiSelectableNPCNameList[i]);
+						_bool IsSelected = (szLevelType == m_ImguiSelectableNPCNameList[i]);
+
+						if (ImGui::Selectable(m_ImguiSelectableNPCNameList[i], IsSelected))
+						{
+							szLevelType = m_ImguiSelectableNPCNameList[i];
+							m_iMonsterLevel = i;
+							m_strLevelNPCName = CUtils::ToWString(m_ImguiSelectableNPCNameList[i]);
+						}
 					}
+					ImGui::EndCombo();
 				}
-				ImGui::EndCombo();
-			}
 
-			ImGui::PopItemWidth();
+				ImGui::PopItemWidth();
 
-			ImGui::Dummy(ImVec2(0.0f, 5.0f));
+				ImGui::Dummy(ImVec2(0.0f, 5.0f));
 
-			if (ImGui::Button(u8"NPC 추가"))
-			{
-				m_pSelectObj = nullptr;
-				m_bAddNPC = true;
-
-			}ImGui::SameLine();
-
-			if (ImGui::Button(u8"배치된 NPC"))
-				m_bAddNPC = false;
-
-			if (true == m_bAddNPC)
-			{
-				ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), u8"추가할 NPC 선택");
-
-				if (ImGui::ListBoxHeader("##ASSETLIST", ImVec2(300.0f, 0.0f)))
-					AddMapNPC(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_NPC);
-
-				ImGui::ListBoxFooter();
-			}
-			else
-			{
-				ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), u8"맵에 배치된 NPC 리스트");
-				if (ImGui::ListBoxHeader("##OBJECTLIST", ImVec2(300.0f, 0.0f)))
+				if (ImGui::Button(u8"NPC 추가"))
 				{
-					if (0 == m_iNPCState)
-						BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_NPC);
+					m_pSelectObj = nullptr;
+					m_bAddNPC = true;
+
+				}ImGui::SameLine();
+
+				if (ImGui::Button(u8"배치된 NPC"))
+					m_bAddNPC = false;
+
+				if (true == m_bAddNPC)
+				{
+					ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), u8"추가할 NPC 선택");
+
+					if (ImGui::ListBoxHeader("##ASSETLIST", ImVec2(300.0f, 0.0f)))
+						AddMapNPC(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_NPC);
+
+					ImGui::ListBoxFooter();
+				}
+				else
+				{
+					ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), u8"맵에 배치된 NPC 리스트");
+					if (ImGui::ListBoxHeader("##OBJECTLIST", ImVec2(300.0f, 0.0f)))
+					{
+						if (0 == m_iNPCState)
+							BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_NPC);
+					}
+
+					ImGui::ListBoxFooter();
 				}
 
-				ImGui::ListBoxFooter();
+				ImGui::Spacing();
+
+				if (ImGui::Button(u8"Save"))
+					Save_NPC_Data(m_strLevelNPCName);
+
+				ImGui::SameLine();
+
+				if (ImGui::Button(u8"Load"))
+					Load_NPC_Data(m_strLevelNPCName);
 			}
+			else if (m_iNPCState == 1)
+			{
+				ImGuiStyle& imguiStyle = ImGui::GetStyle();
 
-			ImGui::Spacing();
+				const _float splitterButton = 10.0f;
+				ImGui::Dummy(ImVec2(0.0f, splitterButton * 0.5f));
+				ImGui::Indent(5.0f);
+				ImGui::Text("NPC State Setting");
+				ImGui::Unindent(5.0f);
+				ImGui::Dummy(ImVec2(0.0f, splitterButton * 0.5f));
 
-			if (ImGui::Button(u8"Save"))
-				Save_NPC_Data(m_strLevelNPCName);
+				ImGui::BeginChild("Settings", ImVec2(ImGui::GetWindowSize().x - (imguiStyle.ScrollbarSize / 1.5f),
+					275.0f), true);
+				ImGui::PushItemWidth(150.0f);
 
-			ImGui::SameLine();
+				if (ImGui::CollapsingHeader("Setting Panel", ImGuiTreeNodeFlags_DefaultOpen))
+				{
+					ImGui::Text("Setting Option");	ImGui::SameLine(ImGui::GetWindowWidth() - 90.0f);
+					ImGui::Text("State");			ImGui::SameLine(ImGui::GetWindowWidth() - 123.0f);
 
-			if (ImGui::Button(u8"Load"))
-				Load_NPC_Data(m_strLevelNPCName);
+					static const char* szLevelType = nullptr;
+
+					if (ImGui::BeginCombo("##Set State", szLevelType))
+					{
+						for (_uint i = 0; i < CGameNpc::NPC_STATE::NPC_END; ++i)
+						{
+							_bool IsSelected = (szLevelType == m_NpcStateSelectableName[i]);
+
+							if (ImGui::Selectable(m_NpcStateSelectableName[i], IsSelected))
+							{
+								if (nullptr == m_pSelectObj)
+									break;
+
+								// TODO NpcState
+								// 세팅 해놓고 나중에 Get으로 저장할 때 불러오면 됨.
+
+								if (m_NpcStateSelectableName[i] == "IDLE")
+									static_cast<CGameNpc*>(m_pSelectObj)->Set_NpcState(CGameNpc::NPC_STATE::NPC_IDLE);
+								else if (m_NpcStateSelectableName[i] == "TALK")
+									static_cast<CGameNpc*>(m_pSelectObj)->Set_NpcState(CGameNpc::NPC_STATE::NPC_TALK);
+								else if (m_NpcStateSelectableName[i] == "MOVE_ONEWAY")
+									static_cast<CGameNpc*>(m_pSelectObj)->Set_NpcState(CGameNpc::NPC_STATE::NPC_MOVE_ONEWAY);
+								else if (m_NpcStateSelectableName[i] == "MOVE_TWOWAY")
+									static_cast<CGameNpc*>(m_pSelectObj)->Set_NpcState(CGameNpc::NPC_STATE::NPC_MOVE_TWOWAY);
+
+							}
+						}
+						ImGui::EndCombo();
+					}
+					ImGui::Separator();
+
+					ImGui::PushStyleColor(ImGuiCol_Separator, ImVec4(0.4f, 0.4f, 0.5f, 1.0f));
+
+					if (ImGui::CollapsingHeader("Points", ImGuiTreeNodeFlags_DefaultOpen))
+					{
+						ImGui::Separator();
+						
+						if (nullptr != m_pSelectObj)
+						{
+							vector<Vec4>* romingPoints = static_cast<CGameNpc*>(m_pSelectObj)->Get_RoamingArea();
+							_uint iSize = romingPoints->size();
+
+							for (_uint i = 0; i < iSize; ++i)
+							{
+								ImGui::DragFloat3(("Points_" + std::to_string(i)).c_str(), &(*romingPoints)[i].x); 
+								ImGui::Spacing();
+							}
+
+							if (ImGui::Button("Undo", ImVec2(80.0f, 20.0f)))
+							{
+								romingPoints->pop_back();
+								if (static_cast<CGameNpc*>(m_pSelectObj)->Get_CurRoamingIndex() >= romingPoints->size())
+									static_cast<CGameNpc*>(m_pSelectObj)->Set_CurRoamingIndex(static_cast<CGameNpc*>(m_pSelectObj)->Get_CurRoamingIndex() - 1);
+							} ImGui::SameLine();
+
+							if (ImGui::Button("All Romove", ImVec2(150.0f, 20.0f))) { RomingClear(); } ImGui::SameLine();
+							
+						}
+					}
+
+					ImGui::PopItemWidth();
+					ImGui::PopStyleColor();
+				}
+
+
+				ImGui::EndChild();
+			}
 		}
 		ImGui::EndChild();
 	}
@@ -1169,6 +1368,7 @@ void CTool_Map::ChangeState()
 	m_pSelectLight = nullptr;
 	m_bAddLight = false;
 }
+
 HRESULT CTool_Map::Save_Map_Data(const wstring& strMapFileName)
 {
 	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strMapFileName + L"/" + strMapFileName + L".map";
@@ -1228,6 +1428,8 @@ HRESULT CTool_Map::Save_Map_Data(const wstring& strMapFileName)
 				File->Write<_float4>(vUp);
 				File->Write<_float4>(vLook);
 				File->Write<_float4>(vPos);
+
+				// 6. Object Type
 			}
 		}
 	}
@@ -1736,6 +1938,27 @@ HRESULT CTool_Map::Save_NPC_Data(const wstring& strNPCFileName)
 			File->Write<_float4>(vUp);
 			File->Write<_float4>(vLook);
 			File->Write<_float4>(vPos);
+
+			_uint ObjectType = Object->Get_ObjectType();
+			File->Write<_uint>(ObjectType);
+
+			if (OBJ_TYPE::OBJ_NPC == ObjectType)
+			{
+				CGameNpc* pNpc = static_cast<CGameNpc*>(Object);
+				vector<Vec4>* pPoints = pNpc->Get_RoamingArea();
+
+				_uint iSize = pPoints->size();
+				File->Write<_uint>(iSize);
+
+				_uint eState = pNpc->Get_State();
+				File->Write<_uint>(eState);
+
+				if (pPoints->size() != 0)
+				{
+					for (auto& iter : *pPoints)
+						File->Write<Vec4>(iter);
+				}
+			}
 		}
 	}
 
@@ -1745,6 +1968,8 @@ HRESULT CTool_Map::Save_NPC_Data(const wstring& strNPCFileName)
 
 HRESULT CTool_Map::Load_NPC_Data(const wstring& strNPCFileName)
 {
+	m_pSelectObj = nullptr;
+
 	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strNPCFileName + L"/" + strNPCFileName + L"NPC.map";
 
 	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
@@ -1752,7 +1977,7 @@ HRESULT CTool_Map::Load_NPC_Data(const wstring& strNPCFileName)
 
 	for (_uint i = 0; i < LAYER_TYPE::LAYER_END; ++i)
 	{
-		if (LAYER_TYPE::LAYER_MONSTER != i)
+		if (LAYER_TYPE::LAYER_NPC != i)
 			continue;
 
 		GI->Clear_Layer(LEVEL_TOOL, i);
@@ -1774,7 +1999,7 @@ HRESULT CTool_Map::Load_NPC_Data(const wstring& strNPCFileName)
 			File->Read<_float4>(vLook);
 			File->Read<_float4>(vPos);
 
-			
+			 
 			OBJECT_INIT_DESC Init_Data = {};
 			Init_Data.vStartPosition = vPos;
 			CGameObject* pObj = nullptr;
@@ -1798,6 +2023,46 @@ HRESULT CTool_Map::Load_NPC_Data(const wstring& strNPCFileName)
 				return E_FAIL;
 			}
 
+			_uint ObjectType;
+			File->Read<_uint>(ObjectType);
+
+			if (OBJ_TYPE::OBJ_NPC == ObjectType)
+			{
+				CGameNpc* pNpc = static_cast<CGameNpc*>(pObj);
+				
+				_uint iSize;
+				File->Read<_uint>(iSize);
+
+				_uint eState;
+				File->Read<_uint>(eState);
+
+
+				if (iSize != 0)
+				{
+					vector<Vec4> Points;
+					Points.reserve(iSize);
+
+					for (_uint i = 0; i < iSize; ++i)
+					{
+						Vec4 vPoint;
+						File->Read<Vec4>(vPoint);
+						Points.push_back(vPoint);
+					}
+
+					pNpc->Set_RoamingArea(Points);
+
+					if (Points.size() != 0)
+					{
+						vPos = Points.front();
+						pNpc->Set_Point(true);
+					}
+				}
+
+				pNpc->Set_NpcState(static_cast<CGameNpc::NPC_STATE>(eState));
+				pNpc->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(eState);
+
+			}
+
 
 			pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
 			pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
@@ -1806,10 +2071,71 @@ HRESULT CTool_Map::Load_NPC_Data(const wstring& strNPCFileName)
 		}
 
 	}
-	MSG_BOX("Monster_Loaded.");
+	MSG_BOX("Npc_Loaded.");
 	return S_OK;
 }
 
+
+HRESULT CTool_Map::Ready_DebugDraw()
+{
+	m_pBatch = new PrimitiveBatch<VertexPositionColor>(GI->Get_Context());
+	m_pEffect = new BasicEffect(GI->Get_Device());
+
+	m_pEffect->SetVertexColorEnabled(true);
+
+	const void* pShaderByteCodes = nullptr;
+	size_t			iLength = 0;
+
+	m_pEffect->GetVertexShaderBytecode(&pShaderByteCodes, &iLength);
+
+	if (FAILED(GI->Get_Device()->CreateInputLayout(VertexPositionColor::InputElements, VertexPositionColor::InputElementCount, pShaderByteCodes, iLength, &m_pInputLayout)))
+		return E_FAIL;
+
+	_float	fRadius = 0.5f;
+	Vec3	vOrigin = { 0.f, fRadius * 0.5f, 0.f };
+	m_pSphere = new BoundingSphere(vOrigin, fRadius);
+
+	if (nullptr == m_pSphere)
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CTool_Map::Render_DebugDraw()
+{
+	if (nullptr == m_pSelectObj)
+		return S_OK;
+
+	if (OBJ_TYPE::OBJ_NPC != m_pSelectObj->Get_ObjectType())
+		return S_OK;
+
+	m_pEffect->SetWorld(XMMatrixIdentity());
+	m_pEffect->SetView(GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
+	m_pEffect->SetProjection(GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ));
+
+	m_pEffect->Apply(m_pContext);
+
+	m_pContext->IASetInputLayout(m_pInputLayout);
+
+	m_pBatch->Begin();
+
+	CGameNpc* pNpc = static_cast<CGameNpc*>(m_pSelectObj);
+
+	vector<Vec4>* pPoints = pNpc->Get_RoamingArea();
+
+	if (pPoints->size() != 0)
+	{
+		for (auto& iter : *pPoints)
+		{
+			m_pSphere->Center = Vec3(iter.x, iter.y, iter.z);
+			DX::Draw(m_pBatch, *m_pSphere, Colors::LightCyan);
+		}
+	}
+
+	m_pBatch->End();
+
+	return S_OK;
+}
 
 CTool_Map* CTool_Map::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
@@ -1826,4 +2152,9 @@ CTool_Map* CTool_Map::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContex
 void CTool_Map::Free()
 {
 	__super::Free();
+
+	Safe_Delete(m_pBatch);
+	Safe_Delete(m_pEffect);
+	Safe_Delete(m_pSphere);
+	Safe_Release(m_pInputLayout);
 }

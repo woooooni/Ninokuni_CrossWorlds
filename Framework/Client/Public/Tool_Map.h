@@ -1,5 +1,6 @@
 #pragma once
 #include "Tool.h"
+#include "GameNpc.h"
 
 BEGIN(Engine)
 class CGameObject;
@@ -28,6 +29,7 @@ private:
 public:
 	virtual HRESULT Initialize() override;
 	virtual void Tick(_float fTimeDelta) override;
+	virtual HRESULT Render() override;
 
 private:
 	void AddMapObject(LEVELID iLevelID, LAYER_TYPE iLayerType);
@@ -46,6 +48,9 @@ private:
 
 	void DeleteLight(_uint iLightID);
 
+	// NPC Roming Clear
+	void RomingClear();
+	void RomingPointDelete();
 
 	void Picking();
 private:
@@ -128,9 +133,23 @@ private:
 	USE_SPACE m_eUseSpace = SPACE_END;
 
 	// OBJECT_INIT_DATA
-	vector<Vec4> m_vRomingPoints;
+	const char* m_NpcStateSelectableName[CGameNpc::NPC_STATE::NPC_END] =
+	{
+		"IDLE", "TALK", "MOVE_ONEWAY", "MOVE_TWOWAY"
+	};
 
+#pragma region Debug
+#ifdef _DEBUG
 
+	BasicEffect* m_pEffect = nullptr;
+	BoundingSphere* m_pSphere = nullptr;
+	ID3D11InputLayout* m_pInputLayout = nullptr;
+	PrimitiveBatch<VertexPositionColor>* m_pBatch = nullptr;
+
+	HRESULT Ready_DebugDraw();
+	HRESULT Render_DebugDraw();
+#endif // _DEBUG
+#pragma endregion Debug
 
 public:
 	static CTool_Map* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

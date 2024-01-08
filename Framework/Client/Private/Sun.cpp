@@ -43,9 +43,11 @@ HRESULT CSun::Render()
 {
 	const LIGHTDESC* pLightDesc = GI->Get_LightDesc(0);
 	Vec4 vCamPos = GI->Get_CamPosition();
+	vCamPos.y += 150.0f;
 	Vec4 vLightDir = pLightDesc->vDirection;
+	Vec4 vResult = vCamPos - (vLightDir * 150.0f);
 
-	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vCamPos - vLightDir);
+	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vResult);
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("worldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
 		return E_FAIL;

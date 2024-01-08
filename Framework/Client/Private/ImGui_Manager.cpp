@@ -231,6 +231,9 @@ void CImGui_Manager::Render_ImGui()
     if (true == m_bShowCamera_Tool)
         m_pCamera_Tool->Render();
 
+    if (true == m_bShowMap_Tool)
+        m_pMap_Tool->Render();
+
 
     ImGui::Render();
     ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());

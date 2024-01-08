@@ -273,11 +273,14 @@ HRESULT CRenderer::Draw()
 	//CLight_Manager* pLightManger = GET_INSTANCE(CLight_Manager);
 	//const CGameObject* pLight = pLightManger->Get_Sun();
 
-	//if (nullptr != pLight)
-	//{
-	//	if (FAILED(Render_AlphaBlendTargetMix(L"Target_GodRay", L"MRT_Blend", false)))
-	//		return E_FAIL;
-	//}
+	if (nullptr != pLight)
+	{
+		if (FAILED(Render_GodRay()))
+			return E_FAIL;
+
+		if (FAILED(Render_AlphaBlendTargetMix(L"Target_GodRay", L"MRT_Blend", false)))
+			return E_FAIL;
+	}
 
 
 	// *Effect

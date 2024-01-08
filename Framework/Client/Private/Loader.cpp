@@ -1009,6 +1009,8 @@ HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Entire_Water", CModel::TYPE_NONANIM, L"../Bin/Export/AnimModel/Map/Water/", L"Entire_Water")))
 		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Evermore_CircleWater", CModel::TYPE_NONANIM, L"../Bin/Export/AnimModel/Map/Water/", L"Evermore_WaterA_01")))
+		return E_FAIL;
 #pragma endregion Water
 
 #pragma region Sky

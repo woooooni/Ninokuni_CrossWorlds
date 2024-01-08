@@ -81,9 +81,18 @@ public:
 	const NPC_STAT& Get_Stat() { return m_tStat; }
 	void Set_Stat(const NPC_STAT& StatDesc) { m_tStat = StatDesc; }
 
-	vector<_vector>* Get_RoamingArea() { return &m_vecRoaming; }
-	_vector			 Get_RoamingIndex(_int iIndex) { return m_vecRoaming[iIndex]; }
-	void			 Set_RoamingArea(vector<_vector> vecRoaming) { m_vecRoaming = vecRoaming; }
+	vector<Vec4>* Get_RoamingArea() { return &m_vecRoaming; }
+	Vec4			 Get_RoamingIndex(_int iIndex) { return m_vecRoaming[iIndex]; }
+	void			 Set_RoamingArea(vector<Vec4> vecRoaming) { m_vecRoaming = vecRoaming; }
+	_int		  Get_CurRoamingIndex() { return m_iCurRoamingIndex; }
+	void		  Set_CurRoamingIndex(_int iIndex) { m_iCurRoamingIndex = iIndex; }
+
+
+	const NPC_STATE& Get_State() const { return m_eState; }
+	void Set_NpcState(NPC_STATE eState);
+
+	const _bool& Get_TurnOnPoint() const { return m_bTurnOnFirstPoint; }
+	void Set_Point(_bool point) { m_bTurnOnFirstPoint = point; }
 
 protected:
 	virtual HRESULT Ready_Components();
@@ -118,14 +127,19 @@ protected:
 
 	NPC_STAT m_tStat = {};
 
-	vector<_vector> m_vecRoaming = {};
+	// ImGui Tool
+	NPC_STATE m_eState = CGameNpc::NPC_STATE::NPC_END;
+	vector<Vec4> m_vecRoaming = {};
 	_vector			m_vInitPos = {};
+	_bool	m_bTurnOnFirstPoint = false;
 
 	// 블룸 효과
 	_float3 m_vBloomPower = _float3(0.1f, 0.1f, 0.1f);
 
 	// 일반, 유니크 구분
 	_bool m_bIsUnique = false;
+	_int  m_iCurRoamingIndex = 0;
+
 
 public:
 	virtual void Free() override;

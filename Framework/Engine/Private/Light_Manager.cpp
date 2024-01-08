@@ -104,16 +104,17 @@ Vec3 CLight_Manager::Get_SunScreenPos()
 
 	CPipeLine* pPipeLine = GET_INSTANCE(CPipeLine);
 
-	Vec3 vSunPosProjection(vSunWorldPos.x, vSunWorldPos.y, vSunWorldPos.z);
+	Matrix view = pPipeLine->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
+	Matrix proj = pPipeLine->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ);
+	Matrix viewProj = view * proj;
 
-	vSunPosProjection = ::XMVector3TransformCoord(::XMVector3TransformCoord(vSunWorldPos, pPipeLine->Get_TransformMatrix(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW)),
-		pPipeLine->Get_TransformMatrix(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ));
+	Vec3 ProjPos;
+	ProjPos = ::XMVector3TransformCoord(vSunWorldPos, viewProj);
 
-	vSunPosProjection.x = (vSunPosProjection.x + 1.0f) * 0.5f;
-	vSunPosProjection.y = (vSunPosProjection.y - 1.0f) * -0.5f;
+	ProjPos.x = (ProjPos.x + 1.0f) * 0.5f;
+	ProjPos.y = (ProjPos.y - 1.0f) * -0.5f;
 
-
-	return vSunPosProjection;
+	return ProjPos;
 }
 
 void CLight_Manager::Free()
