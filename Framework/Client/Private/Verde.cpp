@@ -149,6 +149,8 @@ HRESULT CVerde::Ready_Components()
 
 HRESULT CVerde::Ready_States()
 {
+	m_strObjectTag = TEXT("Verde");
+
 	return S_OK;
 }
 

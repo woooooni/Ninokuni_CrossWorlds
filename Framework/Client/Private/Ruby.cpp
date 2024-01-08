@@ -149,6 +149,8 @@ HRESULT CRuby::Ready_Components()
 
 HRESULT CRuby::Ready_States()
 {
+	m_strObjectTag = TEXT("Ruby");
+
 	return S_OK;
 }
 

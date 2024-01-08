@@ -149,6 +149,8 @@ HRESULT CHumanFSPioneer::Ready_Components()
 
 HRESULT CHumanFSPioneer::Ready_States()
 {
+	m_strObjectTag = TEXT("HumanFSPioneer");
+
 	return S_OK;
 }
 

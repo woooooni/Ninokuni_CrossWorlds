@@ -93,6 +93,8 @@ HRESULT CLuxerionHuman::Ready_Components()
 
 HRESULT CLuxerionHuman::Ready_States()
 {
+	m_strObjectTag = TEXT("LuxerionHuman");
+
 	m_tStat.fSpeed = 0.5f;
 	m_tStat.bHasMove = false;
 

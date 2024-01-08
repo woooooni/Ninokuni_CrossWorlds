@@ -94,6 +94,8 @@ HRESULT CThiefCat::Ready_Components()
 
 HRESULT CThiefCat::Ready_States()
 {
+	m_strObjectTag = TEXT("ThiefCat");
+
 	m_tStat.fSpeed = 2.f;
 
 	m_pStateCom->Set_Owner(this);

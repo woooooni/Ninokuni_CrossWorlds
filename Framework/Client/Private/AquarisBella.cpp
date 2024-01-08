@@ -149,6 +149,8 @@ HRESULT CAquarisBella::Ready_Components()
 
 HRESULT CAquarisBella::Ready_States()
 {
+	m_strObjectTag = TEXT("AquarisBella");
+
 	return S_OK;
 }
 

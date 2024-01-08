@@ -149,6 +149,8 @@ HRESULT CChloe::Ready_Components()
 
 HRESULT CChloe::Ready_States()
 {
+	m_strObjectTag = TEXT("Chloe");
+
 	return S_OK;
 }
 

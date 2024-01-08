@@ -15,6 +15,7 @@ protected:
 public:
 	virtual HRESULT Initialize();
 	virtual _bool   Tick(const _float& fTimeDelta);
+	virtual void    LateTick(const _float& fTimeDelta);
 
 protected:
 	CBTNode* m_pRootNode = nullptr;

@@ -149,6 +149,8 @@ HRESULT CEdellian::Ready_Components()
 
 HRESULT CEdellian::Ready_States()
 {
+	m_strObjectTag = TEXT("Edellian");
+
 	return S_OK;
 }
 

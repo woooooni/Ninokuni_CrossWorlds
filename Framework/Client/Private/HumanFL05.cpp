@@ -93,6 +93,8 @@ HRESULT CHumanFL05::Ready_Components()
 
 HRESULT CHumanFL05::Ready_States()
 {
+	m_strObjectTag = TEXT("HumanFL05");
+
 	m_tStat.fSpeed = 0.5f;
 	m_tStat.bHasMove = false;
 

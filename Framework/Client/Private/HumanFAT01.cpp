@@ -94,6 +94,8 @@ HRESULT CHumanFAT01::Ready_Components()
 
 HRESULT CHumanFAT01::Ready_States()
 {
+	m_strObjectTag = TEXT("HumanFAT01");
+
 	m_tStat.fSpeed = 0.5f;
 
 	m_pStateCom->Set_Owner(this);

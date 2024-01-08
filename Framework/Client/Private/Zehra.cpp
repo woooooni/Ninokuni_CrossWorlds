@@ -149,6 +149,8 @@ HRESULT CZehra::Ready_Components()
 
 HRESULT CZehra::Ready_States()
 {
+	m_strObjectTag = TEXT("Zehra");
+
 	return S_OK;
 }
 

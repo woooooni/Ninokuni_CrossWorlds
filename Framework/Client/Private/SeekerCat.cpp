@@ -93,6 +93,8 @@ HRESULT CSeekerCat::Ready_Components()
 
 HRESULT CSeekerCat::Ready_States()
 {
+	m_strObjectTag = TEXT("SeekerCat");
+
 	m_tStat.fSpeed = 2.5f;
 
 	m_pStateCom->Set_Owner(this);

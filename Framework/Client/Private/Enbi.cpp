@@ -149,6 +149,8 @@ HRESULT CEnbi::Ready_Components()
 
 HRESULT CEnbi::Ready_States()
 {
+	m_strObjectTag = TEXT("Enbi");
+
 	return S_OK;
 }
 

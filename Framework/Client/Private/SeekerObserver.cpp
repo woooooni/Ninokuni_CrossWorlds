@@ -93,6 +93,8 @@ HRESULT CSeekerObserver::Ready_Components()
 
 HRESULT CSeekerObserver::Ready_States()
 {
+	m_strObjectTag = TEXT("SeekerObserver");
+
 	m_tStat.fSpeed = 2.5f;
 	m_tStat.bHasMove = false;
 	m_tStat.bHasTalk = false;

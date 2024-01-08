@@ -93,6 +93,8 @@ HRESULT CHumanML12::Ready_Components()
 
 HRESULT CHumanML12::Ready_States()
 {
+	m_strObjectTag = TEXT("HumanML12");
+
 	m_tStat.fSpeed = 0.5f;
 	m_tStat.bHasMove = false;
 	m_tStat.bHasTalk = false;

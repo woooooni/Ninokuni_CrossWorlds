@@ -149,6 +149,8 @@ HRESULT CSwiftSolutionMaster::Ready_Components()
 
 HRESULT CSwiftSolutionMaster::Ready_States()
 {
+	m_strObjectTag = TEXT("SwiftSolutionMaster");
+
 	return S_OK;
 }
 

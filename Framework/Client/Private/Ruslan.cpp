@@ -149,6 +149,8 @@ HRESULT CRuslan::Ready_Components()
 
 HRESULT CRuslan::Ready_States()
 {
+	m_strObjectTag = TEXT("Ruslan");
+
 	return S_OK;
 }
 

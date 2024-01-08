@@ -117,6 +117,8 @@ HRESULT CKingdomGuard::Ready_Components()
 
 HRESULT CKingdomGuard::Ready_States()
 {
+	m_strObjectTag = TEXT("KingdomGuard");
+
 	m_tStat.fSpeed = 0.5f;
 
 	m_pStateCom->Set_Owner(this);

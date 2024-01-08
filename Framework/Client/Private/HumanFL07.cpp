@@ -93,6 +93,8 @@ HRESULT CHumanFL07::Ready_Components()
 
 HRESULT CHumanFL07::Ready_States()
 {
+	m_strObjectTag = TEXT("HumanFL07");
+
 	m_tStat.fSpeed = 0.5f;
 
 	m_pStateCom->Set_Owner(this);

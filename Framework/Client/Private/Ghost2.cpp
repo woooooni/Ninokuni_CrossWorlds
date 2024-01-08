@@ -94,6 +94,8 @@ HRESULT CGhost2::Ready_Components()
 
 HRESULT CGhost2::Ready_States()
 {
+	m_strObjectTag = TEXT("Ghost2");
+
 	m_tStat.fSpeed = 1.f;
 
 	m_pStateCom->Set_Owner(this);

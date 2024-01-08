@@ -95,6 +95,8 @@ HRESULT CHumanChild01::Ready_Components()
 
 HRESULT CHumanChild01::Ready_States()
 {
+	m_strObjectTag = TEXT("HumanChild01");
+
 	m_tStat.fSpeed = 5.f;
 
 	list<wstring> strAnimationName;
