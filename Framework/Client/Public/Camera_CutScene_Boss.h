@@ -25,8 +25,8 @@ public:
 		pair<Vec4, Vec4> Offsets[GLANIX_CUTSCENE_APPEAR_PROGRESSEND]
 		{
 			{Vec4{-4.5f, 6.f, -6.f, 1.f}, Vec4{0.f, 1.f, 0.f, 1.f}}, //	IDEL : 뒷 모습 
-			{Vec4{0.f, 2.0f, 7.f, 1.f}, Vec4{0.f, 0.75f, 0.f, 1.f}}, //	ROAR : 앞모습 
-			{Vec4{0.f, 2.0f, 7.f, 1.f}, Vec4{0.f, 0.75f, 0.f, 1.f}}, //	JUMP : 뒷모습 
+			{Vec4{-3.f, 2.0f, 7.f, 1.f}, Vec4{0.f, 0.75f, 0.f, 1.f}}, //	ROAR : 앞모습 
+			{Vec4{-3.f, 2.0f, 7.f, 1.f}, Vec4{0.f, 0.75f, 0.f, 1.f}}, //	JUMP : 뒷모습 
 			{Vec4{0.f, 2.f, 7.f, 1.f}, Vec4{-0.5f, 0.5f, 0.f, 1.f}}	 //	LAND : 착륙 지점에서 앞 모습 (위에서 아래로 뷰)
 		};
 

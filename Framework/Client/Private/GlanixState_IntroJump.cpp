@@ -36,21 +36,20 @@ void CGlanixState_IntroJump::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
-
 	if (m_pModelCom->Get_CurrAnimationFrame() >= 50 && 
 		m_pModelCom->Get_CurrAnimation()->Get_AnimationName() == TEXT("SKM_Glanix.ao|Glanix_IntroJump"))
 	{
 		if (m_pModelCom->Get_CurrAnimationFrame() == 50)
 		{
-			Vec4 vDir = m_pTransformCom->Get_RelativeOffset(Vec4{ 0.f, 1.f, 3.f, 1.f });
+			Vec4 vDir = m_pTransformCom->Get_RelativeOffset(Vec4{ 0.f, 1.f, 10.f, 1.f });
 			vDir.w = 0.f;
 			vDir.Normalize();
-			m_pRigidBodyCom->Add_Velocity(vDir.ZeroW().Normalized(), 30.f, true);
+			m_pRigidBodyCom->Add_Velocity(vDir.ZeroW().Normalized(), 25.f, true);
 		} 
 
 		m_fTime += fTimeDelta;
 
-		if (m_fTime >= 0.4f)
+		if (m_fTime >= 0.3f)
 		{
 			m_fTime = 0.f;
 			m_pStateMachineCom->Change_State(CGlanix::GLANIX_INTRO_FINISH);

@@ -6,6 +6,8 @@
 #include "Camera_Follow.h"
 #include "Camera_CutScene_Map.h"
 
+#include "UI_Manager.h"
+
 #include "Glanix.h"
 
 CCamera_CutScene_Boss::CCamera_CutScene_Boss(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
@@ -403,7 +405,7 @@ HRESULT CCamera_CutScene_Boss::Finish_CutScene()
 			if (nullptr != pFollowCam)
 			{
 				pFollowCam->Set_Default_Position();
-				CCamera_Manager::GetInstance()->Change_Camera(CAMERA_TYPE::FOLLOW);
+				CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
 			}
 		}
 		break;
