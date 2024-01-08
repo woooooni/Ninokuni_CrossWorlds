@@ -98,11 +98,11 @@ HRESULT CUI_SkillSection_Background::Initialize(void* pArg)
 //	Make_Child(vInteraction.x, vInteraction.y, fBtnSize, fBtnSize, TEXT("Prototype_GameObject_UI_SkillSection_Interaction"));
 
 	// 무기 선택
-	CGameObject* pIcon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_WeaponSection_Selected"), LAYER_TYPE::LAYER_UI);
-	if (nullptr == pIcon)
-		return E_FAIL;
-	m_pSelected = dynamic_cast<CUI_WeaponSection_Selected*>(pIcon);
-
+//	CGameObject* pIcon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_WeaponSection_Selected"), LAYER_TYPE::LAYER_UI);
+//	if (nullptr == pIcon)
+//		return E_FAIL;
+//	m_pSelected = dynamic_cast<CUI_WeaponSection_Selected*>(pIcon);
+//
 	return S_OK;
 }
 
@@ -110,9 +110,9 @@ void CUI_SkillSection_Background::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-		if (nullptr != m_pSelected)
-			m_pSelected->Tick(fTimeDelta);
-
+//		if (nullptr != m_pSelected)
+//			m_pSelected->Tick(fTimeDelta);
+//
 		__super::Tick(fTimeDelta);
 	}
 }
@@ -121,8 +121,8 @@ void CUI_SkillSection_Background::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-		if (nullptr != m_pSelected)
-			m_pSelected->LateTick(fTimeDelta);
+//		if (nullptr != m_pSelected)
+//			m_pSelected->LateTick(fTimeDelta);
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 
@@ -143,8 +143,8 @@ HRESULT CUI_SkillSection_Background::Render()
 
 		__super::Render();
 
-		if (nullptr != m_pSelected)
-			m_pSelected->Render();
+//		if (nullptr != m_pSelected)
+//			m_pSelected->Render();
 	}
 
 	return S_OK;
@@ -234,6 +234,6 @@ void CUI_SkillSection_Background::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pSelected);
+//	Safe_Release(m_pSelected);
 	Safe_Release(m_pTextureCom);
 }
