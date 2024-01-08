@@ -3,7 +3,7 @@
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 float4 g_LineColor = float4(0.631f, 0.353f, 0.094f, 1.f);
 
-texture2D g_DepthTarget;
+Texture2D g_DepthTarget;
 
 float  g_fMask[9] = {
 	-1, -1, -1,

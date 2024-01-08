@@ -236,6 +236,10 @@ HRESULT CRenderer::Check_Option()
 #pragma region Draw
 HRESULT CRenderer::Draw()
 {
+#ifdef _DEBUG
+	Input_Key();
+#endif // DEBUG
+
 	if (FAILED(Draw_BackGround()))
 		return E_FAIL;
 
@@ -259,6 +263,11 @@ HRESULT CRenderer::Draw()
 	if (FAILED(Draw_UI()))
 		return E_FAIL;
 
+#ifdef _DEBUG
+	if (FAILED(Render_Debug()))
+		return E_FAIL;
+#endif // DEBUG
+
 	if (FAILED(Render_Final()))
 		return E_FAIL;
 
@@ -266,9 +275,7 @@ HRESULT CRenderer::Draw()
 		return E_FAIL;
 
 #ifdef _DEBUG
-	Input_Key();
-
-	if (FAILED(Render_Debug()))
+	if (FAILED(Render_Debug_Target()))
 		return E_FAIL;
 #endif // DEBUG
 
@@ -488,10 +495,6 @@ HRESULT CRenderer::Input_Key()
 	if (KEY_TAP(KEY::F2))
 	{
 		m_bDebugDraw = !m_bDebugDraw;
-		//if (m_eNonBlendType == BLEND_WORLDMESH)
-		//	m_eNonBlendType = BLEND_UIMESH;
-		//else
-		//	m_eNonBlendType = BLEND_WORLDMESH;
 	}
 	else if (KEY_TAP(KEY::F3))
 	{
@@ -1559,6 +1562,9 @@ HRESULT CRenderer::Render_Cursor()
 #ifdef _DEBUG
 HRESULT CRenderer::Render_Debug()
 {
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Blend"), false)))
+		return E_FAIL;
+
 	for (auto& pDebugCom : m_RenderDebug)
 	{
 		if (true == m_bDebugDraw)
@@ -1568,6 +1574,14 @@ HRESULT CRenderer::Render_Debug()
 	}
 	m_RenderDebug.clear();
 
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CRenderer::Render_Debug_Target()
+{
 	if (false == m_bDebugDraw)
 		return S_OK;
 
@@ -1583,7 +1597,6 @@ HRESULT CRenderer::Render_Debug()
 	strPlayerPosition += L'\n';
 	strPlayerPosition += L"W : ";
 	strPlayerPosition += to_wstring(m_vPlayerPosition.w);
-
 
 	GI->Render_Fonts(L"Basic", strPlayerPosition.c_str(), _float2(1600.f / 2.f, 0.f));
 

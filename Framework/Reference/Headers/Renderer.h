@@ -176,6 +176,7 @@ private:
 #ifdef _DEBUG
 private:
 	HRESULT Render_Debug();
+	HRESULT Render_Debug_Target();
 	HRESULT Input_Key();
 #endif // DEBUG
 
