@@ -59,7 +59,7 @@ void CUI_Costume_LineBox::LateTick(_float fTimeDelta)
 
 		__super::LateTick(fTimeDelta);
 
-		CUI_Manager::GetInstance()->LateTick_Dummy(fTimeDelta);
+		//CUI_Manager::GetInstance()->LateTick_Dummy(fTimeDelta);
 	}
 }
 
@@ -76,7 +76,7 @@ HRESULT CUI_Costume_LineBox::Render()
 
 		__super::Render();
 
-		CUI_Manager::GetInstance()->Render_Dummy();
+		//CUI_Manager::GetInstance()->Render_Dummy();
 	}
 
 	return S_OK;

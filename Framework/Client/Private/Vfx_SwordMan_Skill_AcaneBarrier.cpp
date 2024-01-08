@@ -17,6 +17,19 @@ CVfx_SwordMan_Skill_AcaneBarrier::CVfx_SwordMan_Skill_AcaneBarrier(const CVfx_Sw
 
 HRESULT CVfx_SwordMan_Skill_AcaneBarrier::Initialize_Prototype()
 {
+	m_bOwnerStateIndex = CCharacter::CLASS_SKILL_0;
+	m_iMaxCount = 12;
+
+	m_pFrameTriger = new _int[m_iMaxCount];
+	m_pPositionOffset = new _float3[m_iMaxCount];
+	m_pScaleOffset = new _float3[m_iMaxCount];
+	m_pRotationOffset = new _float3[m_iMaxCount];
+
+	m_pFrameTriger[0] = 0;
+	m_pPositionOffset[0] = _float3(0.f, 0.f, 0.2f);
+	m_pScaleOffset[0] = _float3(5.f, 5.f, 5.f);
+	m_pRotationOffset[0] = _float3(0.f, 0.f, 0.f);
+
  	return S_OK;
 }
 
@@ -27,25 +40,20 @@ HRESULT CVfx_SwordMan_Skill_AcaneBarrier::Initialize(void* pArg)
 
 void CVfx_SwordMan_Skill_AcaneBarrier::Tick(_float fTimeDelta)
 {
-	if (m_pOwnerObject != nullptr)
-	{
-		CStateMachine* pMachine = m_pOwnerObject->Get_Component<CStateMachine>(L"Com_StateMachine");
-		if (pMachine != nullptr)
-		{
-			if (pMachine->Get_CurrState() != CCharacter::CLASS_SKILL_1)
-			{
-				Set_Dead(true);
-				return;
-			}
-		}
+	__super::Tick(fTimeDelta);
 
-		m_fTimeAcc += fTimeDelta;
+	if (!m_bOwnerTween)
+	{
 		// 
-		if (m_iCount == 0)
+		if (m_iCount == 0 && m_iOwnerFrame >= m_pFrameTriger[0])
 		{
-			m_fTimeAcc = 0.f;
+			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT(""), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[0], m_pScaleOffset[0], m_pRotationOffset[0]);
 			m_iCount++;
 		}
+
+		// Dead
+		else if (m_iCount == 1)
+			m_bFinish = true;
 	}
 }
 
@@ -93,4 +101,12 @@ CGameObject* CVfx_SwordMan_Skill_AcaneBarrier::Clone(void* pArg)
 void CVfx_SwordMan_Skill_AcaneBarrier::Free()
 {
 	__super::Free();
+
+	if (!m_isCloned)
+	{
+		Safe_Delete_Array(m_pFrameTriger);
+		Safe_Delete_Array(m_pPositionOffset);
+		Safe_Delete_Array(m_pScaleOffset);
+		Safe_Delete_Array(m_pRotationOffset);
+	}
 }

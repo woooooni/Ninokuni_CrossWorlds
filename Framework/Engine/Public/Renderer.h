@@ -12,13 +12,16 @@ class ENGINE_DLL CRenderer final : public CComponent
 public:
 	enum RENDERGROUP {
 		RENDER_PRIORITY, RENDER_AURORA, RENDER_NONLIGHT,
-		RENDER_SHADOW, RENDER_NONBLEND, RENDER_LIGHT,
-		RENDER_ALPHABLEND, RENDER_DECAL, RENDER_EFFECT,
-		RENDER_UI, RENDER_UI_EFFECT_NONBLEND, RENDER_UI_EFFECT_BLEND,
-		RENDER_CURSOR, 
+		RENDER_SHADOW, RENDER_NONBLEND,
+        RENDER_DECAL, RENDER_EFFECT, RENDER_ALPHABLEND,
+
+		RENDER_UI, 
+		RENDER_SHADOW_UI, RENDER_NONBLEND_UI,
+		RENDER_UI_EFFECT_NONBLEND, RENDER_UI_EFFECT_BLEND,
+		RENDER_CURSOR,
+
 		RENDER_END
 	};
-
 	enum RENDERER_SHADER_TYPE   { SHADER_DEFERRED, SHADER_OUTLINE, SHADER_BLUR, SHADER_SSAO, SHADER_FINAL, SHADER_AURORA, SHADER_POSTPROCESS, SHADER_END };
 	enum INSTANCING_SHADER_TYPE { ANIM_MODEL, MODEL, RECT, EFFECT_TEXTURE, EFFECT_MODEL, TYPE_END };
 	enum BLUR_PASS              { 
@@ -92,6 +95,9 @@ public:
 	HRESULT Add_RenderGroup_AnimInstancing(RENDERGROUP eRenderGroup, class CGameObject* pGameObject, _float4x4 WorldMatrix, const TweenDesc& TweenInstanceDesc, const ANIMODEL_INSTANCE_DESC& AnimModelInstanceDesc);
 	HRESULT Add_RenderGroup_Instancing_Effect(RENDERGROUP eRenderGroup, INSTANCING_SHADER_TYPE eShaderType, class CGameObject* pGameObject, _float4x4 WorldMatrix, const EFFECT_INSTANCE_DESC& EffectInstanceDesc);
 	HRESULT Add_Text(const TEXT_DESC& TextDesc);
+
+	HRESULT Check_Option();
+
 #ifdef _DEBUG
 public:
 	HRESULT Add_Debug(class CComponent* pDebug) {
@@ -109,7 +115,13 @@ public:
 
 public:
 	HRESULT Draw();
-	HRESULT Check_Option();
+
+private:
+	HRESULT Draw_BackGround();
+	HRESULT Draw_World();
+	HRESULT Draw_WorldEffect();
+	HRESULT Draw_UI();
+	HRESULT Draw_UIEffect();
 
 private:
 	HRESULT Render_Priority();
@@ -118,21 +130,29 @@ private:
 	HRESULT Render_NonLight();
 
 	HRESULT Render_Shadow();
-	HRESULT Render_NonAlphaBlend();
+	HRESULT Render_NonBlend();
 	HRESULT Render_Lights();
 
 	HRESULT Render_Ssao();
 	HRESULT Render_OutLine();
 
 	HRESULT Render_Deferred();
-	HRESULT	Render_GodRay();
-
-	HRESULT Render_AlphaBlend();
-	HRESULT Render_Decal();
 	HRESULT Render_Effect();
+	HRESULT Render_Decal();
+	HRESULT Render_AlphaBlend();
+
+	HRESULT	Render_GodRay();
 
 	HRESULT Render_UI();
 	HRESULT Render_Text();
+
+	HRESULT Render_Shadow_UI();
+	HRESULT Render_NonBlend_UI();
+	HRESULT Render_Lights_UI();
+
+	HRESULT Render_OutLine_UI();
+
+	HRESULT Render_Deferred_UI();
 	HRESULT Render_UIEffectNonBlend();
 	HRESULT Render_UIEffectBlend();
 
@@ -156,6 +176,8 @@ private:
 #ifdef _DEBUG
 private:
 	HRESULT Render_Debug();
+	HRESULT Render_Debug_Target();
+	HRESULT Input_Key();
 #endif // DEBUG
 
 private:
@@ -187,6 +209,13 @@ private:
 	class CTarget_Manager* m_pTarget_Manager = { nullptr };
 	class CLight_Manager*  m_pLight_Manager = { nullptr };
 
+private:
+	//_bool m_bWorldMeshRender = true;
+	//_bool m_bUIMeshRender    = true;
+
+	_float4	m_vFogColor    = { 0.f, 0.635f, 1.f, 1.f };
+	_float2	m_fFogStartEnd = { 300.f, 600.f };
+
 private: 
 	_bool	m_bDebugDraw   = false;
 	_bool   m_bOption      = false;
@@ -202,13 +231,8 @@ private:
 	_bool   m_bPbrDraw  = false;
 
 private:
-	_float4	m_vFogColor    = { 0.f, 0.635f, 1.f, 1.f };
-	_float2	m_fFogStartEnd = { 300.f, 600.f };
-
-
 	_float	m_fBias = 0.2f;
 	_float4	m_vPlayerPosition = {0.f, 0.f, 0.f, 1.f};
-
 	
 public:
 	static CRenderer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

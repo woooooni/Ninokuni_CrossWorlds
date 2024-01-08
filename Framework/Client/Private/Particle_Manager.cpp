@@ -37,6 +37,55 @@ void CParticle_Manager::Tick(_float fTimeDelta)
 
 }
 
+HRESULT CParticle_Manager::AddLevel_Particle(_uint iLevelIndex, const wstring& strParticleName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner, CParticle** ppOut)
+{
+	// strParticleName
+	CGameObject* pGameObject = GI->Clone_GameObject(L"Prototype_" + strParticleName, LAYER_TYPE::LAYER_EFFECT);
+	if (nullptr == pGameObject)
+		return E_FAIL;
+
+	CParticle* pParticle = dynamic_cast<CParticle*>(pGameObject);
+	if (nullptr == pParticle)
+		return E_FAIL;
+
+	// WorldMatrix
+	CTransform* pTransform = pParticle->Get_Component<CTransform>(L"Com_Transform");
+	if (pTransform == nullptr)
+		return E_FAIL;
+	pTransform->Set_WorldMatrix(WorldMatrix);
+
+	// Scale / Rotation
+	Matrix matScale = matScale.CreateScale(vLocalScale);
+	Matrix matRotation = matScale.CreateFromYawPitchRoll(Vec3(XMConvertToRadians(vLocalRotation.x), XMConvertToRadians(vLocalRotation.y), XMConvertToRadians(vLocalRotation.z)));
+	Matrix matResult = matScale * matRotation * pTransform->Get_WorldFloat4x4();
+	pTransform->Set_WorldMatrix(matResult);
+
+	// Position
+	_vector vCurrentPosition = pTransform->Get_Position();
+
+	_vector vFinalPosition = vCurrentPosition;
+	vFinalPosition += pTransform->Get_State(CTransform::STATE_RIGHT) * vLocalPos.x;
+	vFinalPosition += pTransform->Get_State(CTransform::STATE_UP) * vLocalPos.y;
+	vFinalPosition += pTransform->Get_State(CTransform::STATE_LOOK) * vLocalPos.z;
+	pParticle->Set_Position_Particle(_float3(XMVectorGetX(vFinalPosition), XMVectorGetY(vFinalPosition), XMVectorGetZ(vFinalPosition)));
+
+	// pOwner
+	if (pOwner != nullptr)
+	{
+		pParticle->Set_Owner(pOwner);
+		pParticle->Set_LoacalTransformInfo(vLocalPos, vLocalScale, vLocalRotation);
+	}
+
+	// ppOut
+	if (ppOut != nullptr)
+		*ppOut = pParticle;
+
+	if (FAILED(GI->Add_GameObject(iLevelIndex, LAYER_TYPE::LAYER_EFFECT, pGameObject)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
 HRESULT CParticle_Manager::Generate_Particle(const wstring& strParticleName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner, class CParticle** ppOut)
 {
 	// strParticleName
@@ -76,7 +125,6 @@ HRESULT CParticle_Manager::Generate_Particle(const wstring& strParticleName, _ma
 		pParticle->Set_LoacalTransformInfo(vLocalPos, vLocalScale, vLocalRotation);
 	}
 		
-
 	// ppOut
 	if (ppOut != nullptr)
 		*ppOut = pParticle;
@@ -87,15 +135,17 @@ HRESULT CParticle_Manager::Generate_Particle(const wstring& strParticleName, _ma
 	return S_OK;
 }
 
-HRESULT CParticle_Manager::Tick_Generate_Particle(_float fTimeDelta, _float* fTimeAcc, _float fCreateTime, const wstring& strParticleName, CTransform* pTransform, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner)
+HRESULT CParticle_Manager::Tick_Generate_Particle(_float* fTimeAcc, _float fCreateTime, _float fTimeDelta, const wstring& strParticleName, CGameObject* pOwner, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation)
 {
 	*fTimeAcc += fTimeDelta;
 	if (*fTimeAcc >= fCreateTime)
 	{
 		*fTimeAcc = 0.f;
 
+		CTransform* pTransform = pOwner->Get_Component<CTransform>(L"Com_Transform");
 		if (pTransform == nullptr)
 			return S_OK;
+
 		Generate_Particle(strParticleName, pTransform->Get_WorldMatrix(), vLocalPos, vLocalScale, vLocalRotation, pOwner);
 	}
 

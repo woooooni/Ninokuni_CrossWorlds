@@ -33,9 +33,8 @@ void CState_SwordMan_Neutral_Walk::Tick_State(_float fTimeDelta)
 {
     Input(fTimeDelta);
 
-	GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(fTimeDelta, &m_fEffectAcc, CUtils::Random_Float(0.5f, 1.f),
-		TEXT("Particle_Smoke"), m_pCharacter->Get_Component<CTransform>(L"Com_Transform"),
-		_float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f));
+	GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fEffectAcc, CUtils::Random_Float(3.f, 4.f), fTimeDelta, TEXT("Particle_Smoke"), m_pCharacter,
+		_float3(0.f, 0.f, -0.1f));
 }
 
 void CState_SwordMan_Neutral_Walk::Exit_State()
