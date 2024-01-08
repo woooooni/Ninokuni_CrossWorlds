@@ -652,6 +652,14 @@ struct PS_OUT
     float4      vSunMask : SV_TARGET4;
 };
 
+struct PS_OUT_UI
+{
+    float4 vDiffuse : SV_TARGET0;
+    float4 vNormal : SV_TARGET1;
+    float4 vDepth : SV_TARGET2;
+    float4 vBloom : SV_TARGET3;
+};
+
 float4 Caculation_Brightness(float4 vColor)
 {
     float4 vBrightnessColor = float4(0.f, 0.f, 0.f, 0.f);
@@ -677,6 +685,26 @@ PS_OUT PS_MAIN(PS_IN In)
 	Out.vDiffuse += vRimColor;
     Out.vBloom = Caculation_Brightness(Out.vDiffuse) + vRimColor;
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+    if (0.f == Out.vDiffuse.a)
+        discard;
+
+    return Out;
+}
+
+PS_OUT_UI PS_MAIN_UI(PS_IN In)
+{
+    PS_OUT_UI Out = (PS_OUT_UI) 0;
+
+    Out.vDiffuse = g_DiffuseTexture.Sample(ModelSampler, In.vTexUV);
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
+
+    float fRimPower = 1.f - saturate(dot(In.vNormal.xyz, normalize((-1.f * (In.vWorldPosition - g_vCamPosition)))));
+    fRimPower = pow(fRimPower, 5.f);
+    vector vRimColor = g_vRimColor * fRimPower;
+    Out.vDiffuse += vRimColor;
+    Out.vBloom = Caculation_Brightness(Out.vDiffuse) + vRimColor;
 
     if (0.f == Out.vDiffuse.a)
         discard;
@@ -958,6 +986,6 @@ technique11 DefaultTechnique
 
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN();
+        PixelShader = compile ps_5_0 PS_MAIN_UI();
     }
 };

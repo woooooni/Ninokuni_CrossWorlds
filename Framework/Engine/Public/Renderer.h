@@ -12,16 +12,16 @@ class ENGINE_DLL CRenderer final : public CComponent
 public:
 	enum RENDERGROUP {
 		RENDER_PRIORITY, RENDER_AURORA, RENDER_NONLIGHT,
-		RENDER_SHADOW, RENDER_SHADOW_UI, RENDER_NONBLEND, RENDER_NONBLEND_UI,
-		RENDER_LIGHT, RENDER_ALPHABLEND, RENDER_DECAL, RENDER_EFFECT,
+		RENDER_SHADOW, RENDER_NONBLEND,
+        RENDER_DECAL, RENDER_EFFECT, RENDER_ALPHABLEND,
 
-		RENDER_UI, RENDER_UI_EFFECT_NONBLEND, RENDER_UI_EFFECT_BLEND,
+		RENDER_UI, 
+		RENDER_SHADOW_UI, RENDER_NONBLEND_UI,
+		RENDER_UI_EFFECT_NONBLEND, RENDER_UI_EFFECT_BLEND,
 		RENDER_CURSOR,
 
 		RENDER_END
 	};
-	enum NONBLENDTYPE { BLEND_WORLDMESH, BLEND_UIMESH, BLEND_END };
-
 	enum RENDERER_SHADER_TYPE   { SHADER_DEFERRED, SHADER_OUTLINE, SHADER_BLUR, SHADER_SSAO, SHADER_FINAL, SHADER_AURORA, SHADER_POSTPROCESS, SHADER_END };
 	enum INSTANCING_SHADER_TYPE { ANIM_MODEL, MODEL, RECT, EFFECT_TEXTURE, EFFECT_MODEL, TYPE_END };
 	enum BLUR_PASS              { 
@@ -82,12 +82,7 @@ public:
 	virtual HRESULT Initialize_Prototype() override;
 	virtual HRESULT Initialize(void* pArg) override;
 
-public: // Mesh Render Type Set
-	void Set_RenderNonBlendType(NONBLENDTYPE eType)
-	{
-		m_eNonBlendType = eType;
-	}
-		
+public:
 	void Set_Fog(_float4 vFogColor, _float fFogStart, _float fFogEnd)
 	{
 		m_vFogColor    = vFogColor;
@@ -122,7 +117,10 @@ public:
 	HRESULT Draw();
 
 private:
-	HRESULT Draw_Effect();
+	HRESULT Draw_BackGround();
+	HRESULT Draw_World();
+	HRESULT Draw_WorldEffect();
+	HRESULT Draw_UI();
 	HRESULT Draw_UIEffect();
 
 private:
@@ -139,15 +137,22 @@ private:
 	HRESULT Render_OutLine();
 
 	HRESULT Render_Deferred();
-	HRESULT	Render_GodRay();
-
-	HRESULT Render_AlphaBlend();
-	HRESULT Render_Decal();
 	HRESULT Render_Effect();
+	HRESULT Render_Decal();
+	HRESULT Render_AlphaBlend();
+
+	HRESULT	Render_GodRay();
 
 	HRESULT Render_UI();
 	HRESULT Render_Text();
 
+	HRESULT Render_Shadow_UI();
+	HRESULT Render_NonBlend_UI();
+	HRESULT Render_Lights_UI();
+
+	HRESULT Render_OutLine_UI();
+
+	HRESULT Render_Deferred_UI();
 	HRESULT Render_UIEffectNonBlend();
 	HRESULT Render_UIEffectBlend();
 
@@ -204,7 +209,9 @@ private:
 	class CLight_Manager*  m_pLight_Manager = { nullptr };
 
 private:
-	NONBLENDTYPE m_eNonBlendType = BLEND_WORLDMESH;
+	//_bool m_bWorldMeshRender = true;
+	//_bool m_bUIMeshRender    = true;
+
 	_float4	m_vFogColor    = { 0.f, 0.635f, 1.f, 1.f };
 	_float2	m_fFogStartEnd = { 300.f, 600.f };
 

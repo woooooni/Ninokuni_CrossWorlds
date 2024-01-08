@@ -13,7 +13,9 @@ private:
 	virtual ~CTarget_Manager() = default;
 
 public:
+	HRESULT Reserve_Manager(ID3D11Device* pDevice, _uint iWinSizeX, _uint iWinSizeY);
 	HRESULT Ready_Shadow_DSV(ID3D11Device* pDevice, _uint iWinSizeX, _uint iWinSizeY);
+	HRESULT Ready_UI_DSV(ID3D11Device* pDevice, _uint iWinSizeX, _uint iWinSizeY);
 
 	HRESULT Add_RenderTarget(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strTargetTag, _uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4& vColor);
 	HRESULT Add_MRT(const wstring& strMRTTag, const wstring& strTargetTag);
@@ -23,7 +25,7 @@ public:
 	/* strMRTTag에 해당하는 list에 담겨있는 타겟들을 장치에 바인딩한다. */
 	HRESULT Begin_MRT(ID3D11DeviceContext* pContext, const wstring& strMRTTag, _bool bClear = true);
 	HRESULT Begin_Shadow_MRT(ID3D11DeviceContext* pContext, const wstring& strMRTTag);
-
+	HRESULT Begin_UI_MRT(ID3D11DeviceContext* pContext, const wstring& strMRTTag, _bool bClear = true);
 
 
 	HRESULT Clear_RenderTarget(const wstring& strTargetTag);
@@ -50,6 +52,7 @@ private:
 	ID3D11RenderTargetView*					m_pPrevRTVs[8];
 	ID3D11DepthStencilView*					m_pDSV = { nullptr };
 	ID3D11DepthStencilView*					m_pShadowDSV = { nullptr };
+	ID3D11DepthStencilView*                 m_pUIDSV = { nullptr };
 
 private:
 	class CRenderTarget* Find_RenderTarget(const wstring& strTargetTag);

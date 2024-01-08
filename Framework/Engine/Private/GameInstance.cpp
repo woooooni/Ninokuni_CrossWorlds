@@ -97,7 +97,7 @@ HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, _uint iNumLayerType,
 	if (FAILED(m_pPhysXManager->Reserve_Manager(*ppDevice, *ppContext)))
 		return E_FAIL;
 
-	if (FAILED(m_pTarget_Manager->Ready_Shadow_DSV(*ppDevice, GraphicDesc.iWinSizeX, GraphicDesc.iWinSizeY)))
+	if (FAILED(m_pTarget_Manager->Reserve_Manager(*ppDevice, GraphicDesc.iWinSizeX, GraphicDesc.iWinSizeY)))
 		return E_FAIL;
 
 	if (FAILED(m_pFrustum->Initialize()))
