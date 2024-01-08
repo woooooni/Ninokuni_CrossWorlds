@@ -286,11 +286,15 @@ public:
 
 public:
 	void Set_LoacalTransformInfo(_float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation);
+
 	const EFFECT_DESC& Get_EffectDesc() { return m_tEffectDesc; }
 	void Set_EffectDesc(const EFFECT_DESC& tDesc);
+
 	void Reset_Effect();
 	void Reset_UV();
+
 	void Set_UVLoop(_int iLoop);
+	void Set_UVFlow(_int iLoop, _float2 fDir, _float2 fSpeed);
 
 public:
 	void Set_Owner(CGameObject* pGameObject) { m_pOwnerObject = pGameObject; }

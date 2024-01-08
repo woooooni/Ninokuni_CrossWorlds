@@ -61,6 +61,15 @@ void CEffect::Set_UVLoop(_int iLoop)
 	m_tEffectDesc.iUVFlowLoop = iLoop;
 }
 
+void CEffect::Set_UVFlow(_int iLoop, _float2 fDir, _float2 fSpeed)
+{
+	Set_UVLoop(iLoop);
+	m_tEffectDesc.fUVFlowDir   = fDir;
+	m_tEffectDesc.fUVFlowSpeed = fSpeed;
+
+	Reset_UV();
+}
+
 void CEffect::Reset_Effect()
 {
 	if (m_pTransformCom == nullptr)

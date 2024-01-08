@@ -25,6 +25,9 @@ public:
 protected:
 	virtual HRESULT Ready_Components() override;
 
+private:
+	class CEffect* m_pEffect = nullptr;
+
 public:
 	static CVfx_SwordMan_Skill_AcaneBarrier* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 		const wstring& strObjectTag);

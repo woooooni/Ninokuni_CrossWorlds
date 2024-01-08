@@ -119,12 +119,14 @@ void CVfx_SwordMan_Skill_SpinningAssault::Tick(_float fTimeDelta)
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_SpinningAssault_Trail_01"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[1], m_pScaleOffset[1], m_pRotationOffset[1], m_pOwnerObject, &m_pEffect_Trail0);
+			Safe_AddRef(m_pEffect_Trail0);
 			m_iCount++;
 		}
 		else if (m_iCount == 2 && m_iOwnerFrame >= m_pFrameTriger[2])
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_SpinningAssault_Trail_02"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[2], m_pScaleOffset[2], m_pRotationOffset[2], m_pOwnerObject, &m_pEffect_Trail1);
+			Safe_AddRef(m_pEffect_Trail1);
 			m_iCount++;
 		}
 
@@ -132,13 +134,13 @@ void CVfx_SwordMan_Skill_SpinningAssault::Tick(_float fTimeDelta)
 		else if (m_iCount == 3 && m_iOwnerFrame >= m_pFrameTriger[3])
 		{
 			m_pEffect_Trail1->Set_UVLoop(1);
-			m_pEffect_Trail1 = nullptr;
+			Safe_Release(m_pEffect_Trail1);
 			m_iCount++;
 		}
 		else if (m_iCount == 4 && m_iOwnerFrame >= m_pFrameTriger[4])
 		{
 			m_pEffect_Trail0->Set_UVLoop(1);
-			m_pEffect_Trail0 = nullptr;
+			Safe_Release(m_pEffect_Trail0);
 			m_iCount++;
 		}
 
@@ -239,4 +241,10 @@ void CVfx_SwordMan_Skill_SpinningAssault::Free()
 		Safe_Delete_Array(m_pScaleOffset);
 		Safe_Delete_Array(m_pRotationOffset);
 	}
+
+	if (m_pEffect_Trail0 != nullptr)
+		Safe_Release(m_pEffect_Trail0);
+
+	if (m_pEffect_Trail1 != nullptr)
+		Safe_Release(m_pEffect_Trail1);
 }
