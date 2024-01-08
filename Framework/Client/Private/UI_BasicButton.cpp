@@ -170,7 +170,7 @@ void CUI_BasicButton::On_Mouse(_float fTimeDelta)
 								CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_CurCamera());
 								if (nullptr != pActionCam)
 								{
-									pActionCam->Start_Action(CCamera_Action::CAMERA_ACTION_TYPE::LOBBY);
+									pActionCam->Start_Action_Lobby();
 								}
 							}
 							

@@ -481,13 +481,29 @@ void CCamera_Follow::Test(_float fTimeDelta)
 			CCamera_Manager::GetInstance()->Set_CurCamera(pActionCam->Get_Key());
 			if (nullptr != pActionCam)
 			{
-				pActionCam->Start_Action(CCamera_Action::CAMERA_ACTION_TYPE::DOOR);
+				pActionCam->Start_Action_Door();
 			}
 		}
-	}
 
-	{
-		
+		if (KEY_TAP(KEY::V))
+		{
+			CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"HumanFL04");
+			CGameObject* pPlayer = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+
+			if (nullptr != pTarget && nullptr != pPlayer)
+			{
+				vector<CGameObject*> pTargets;
+				pTargets.push_back(pTarget);
+				pTargets.push_back(pPlayer);
+
+				CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+				if (nullptr != pActionCam)
+				{
+					CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
+					pActionCam->Start_Action_Talk(pTargets);
+				}
+			}
+		}
 	}
 }
 
