@@ -38,7 +38,6 @@ public:
 
 #pragma endregion
 
-
 private:
 	CCamera_CutScene_Boss(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
 	CCamera_CutScene_Boss(const CCamera_CutScene_Boss& rhs);
@@ -52,16 +51,11 @@ public:
 	virtual HRESULT Render() override { return S_OK; }
 
 public:
-	virtual void Tick_Blending(const _float fDeltaTime) override;
-
-public:
 	HRESULT Start_CutScene(const _uint& iBossType, const _uint& iCutSceneType, CGameObject* pBoss);
 	HRESULT Finish_CutScene();
 	void	Send_Signal() { m_bSignal = true; }
 	
 	const _bool& Is_Playing() const { return m_bPlaying; }
-	virtual Vec4 Get_LookAt() override { return Vec4(); }
-
 
 private:
 	virtual HRESULT Ready_Components() override;
