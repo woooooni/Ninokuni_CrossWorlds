@@ -86,6 +86,8 @@ HRESULT CTool_Map::Render()
 	if(FAILED(Render_DebugDraw()))
 		return E_FAIL;
 #endif // _DEBUG
+
+	return S_OK;
 }
 
 void CTool_Map::AddMapObject(LEVELID iLevelID, LAYER_TYPE iLayerType)
@@ -2075,7 +2077,7 @@ HRESULT CTool_Map::Load_NPC_Data(const wstring& strNPCFileName)
 	return S_OK;
 }
 
-
+#ifdef _DEBUG
 HRESULT CTool_Map::Ready_DebugDraw()
 {
 	m_pBatch = new PrimitiveBatch<VertexPositionColor>(GI->Get_Context());
@@ -2136,6 +2138,9 @@ HRESULT CTool_Map::Render_DebugDraw()
 
 	return S_OK;
 }
+#endif // !_DEBUG
+
+
 
 CTool_Map* CTool_Map::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
@@ -2153,8 +2158,11 @@ void CTool_Map::Free()
 {
 	__super::Free();
 
+#ifdef _DEBUG
 	Safe_Delete(m_pBatch);
 	Safe_Delete(m_pEffect);
 	Safe_Delete(m_pSphere);
 	Safe_Release(m_pInputLayout);
+#endif // _DEBUG
+
 }
