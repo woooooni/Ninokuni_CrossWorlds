@@ -22,6 +22,12 @@ void CUI_SkillSection_CoolTimeFrame::Set_CharacterType(CHARACTER_TYPE eType)
 	SetUp_FrameColor();
 }
 
+void CUI_SkillSection_CoolTimeFrame::Use_Skill(_float fCoolTime)
+{
+	m_bUsable = false;
+	m_fCurGauge = 0.f;
+}
+
 HRESULT CUI_SkillSection_CoolTimeFrame::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
@@ -43,7 +49,7 @@ HRESULT CUI_SkillSection_CoolTimeFrame::Initialize(void* pArg)
 
 	m_bActive = true; 
 
-	m_fMaxGauge = 20.f;
+	m_fMaxGauge = 50.f;
 	m_fCurGauge = 0.f;
 
 	return S_OK;
@@ -55,6 +61,8 @@ void CUI_SkillSection_CoolTimeFrame::Tick(_float fTimeDelta)
 	{
 		if (!m_bUsable)
 		{
+			m_iPass = 19;
+
 			m_fCurGauge += fTimeDelta;
 
 			if (m_fMaxGauge <= m_fCurGauge)
@@ -62,6 +70,10 @@ void CUI_SkillSection_CoolTimeFrame::Tick(_float fTimeDelta)
 				m_bUsable = true;
 				m_fCurGauge = m_fMaxGauge;
 			}
+		}
+		else
+		{
+			m_iPass = 1;
 		}
 
 		__super::Tick(fTimeDelta);
@@ -84,7 +96,7 @@ HRESULT CUI_SkillSection_CoolTimeFrame::Render()
 		if (FAILED(Bind_ShaderResources()))
 			return E_FAIL;
 
-		m_pShaderCom->Begin(19);
+		m_pShaderCom->Begin(m_iPass);
 
 		m_pVIBufferCom->Render();
 	}
@@ -135,7 +147,7 @@ HRESULT CUI_SkillSection_CoolTimeFrame::Bind_ShaderResources()
 	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", _uint(m_eElementalType))))
 		return E_FAIL;
 
-	if (!m_bUsable)
+	if (!m_bUsable && m_iPass == 19)
 	{
 		// 아직 스킬을 사용하지 않은 상태 -> 게이지가 오른다.
 		_float fRatio = 1 - ((m_fMaxGauge - m_fCurGauge) / m_fMaxGauge); // 값이 0이면 원 전체가 그려진다.

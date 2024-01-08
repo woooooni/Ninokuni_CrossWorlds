@@ -31,6 +31,7 @@ public:
 private:
 	UI_WEAPONSLOT m_eSlotType = { WEAPONSLOT_END };
 	_bool m_bWear = { false }; // 무기를 착용한 상태인가
+	_bool m_bClick = { false };
 
 	class CUI_WeaponSection_DefaultWeapon* m_pNoWeapon = { nullptr };
 	class CUI_SkillSection_CoolTimeFrame* m_pFrame = { nullptr };

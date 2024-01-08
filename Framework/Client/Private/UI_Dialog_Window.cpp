@@ -198,21 +198,30 @@ void CUI_Dialog_Window::Add_Text()
 	m_pRendererCom->Add_Text(NameDesc);
 
 	//Contents
+	_int iTotalLength = m_iTextCount + 4;
+	_int iMaxLength = 46;
+	_uint iDestIndex = 0;
+
 	TCHAR sTempText[MAX_PATH];
 	ZeroMemory(sTempText, sizeof(TCHAR) * MAX_PATH);
 
-//	_int iTextLength = _tcslen(m_szInfoText);
-//	_int iMaxLength = 20;
-//	for (_int i = 0; i < iTextLength; i += iMaxLength) {
-//		TCHAR buffer[iMaxLength + 1];
-//		_tcsncpy_s(buffer, tcharString + i, iMaxLength);
-//		buffer[maxLength] = _T('\0');
-//	}
-
-	for (_uint i = 0; i < m_iTextCount; ++i)
+	for (_uint i = 0; i < iTotalLength; i++)
 	{
-		sTempText[i] = m_szInfoText[i];
+		if (iDestIndex > m_iMaxCount)
+		{
+			break;
+		}
+
+		//sTempText[i] = m_szInfoText[i];
+		sTempText[iDestIndex++] = m_szInfoText[i];
+
+		if ((i + 1) % iMaxLength == 0)
+		{
+			//sTempText[i + 1] = '\n';
+			sTempText[iDestIndex++] = '\n';
+		}
 	}
+
 	CRenderer::TEXT_DESC TextDesc = {};
 	TextDesc.strText = sTempText;
 	TextDesc.strFontTag = L"Default_Bold";

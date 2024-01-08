@@ -24,6 +24,7 @@ public: // Get/Set
 	void			Set_RandomNick(const wstring& strRandom);
 	void			Set_UserName();
 	void			Set_MonsterDescForUI(class CMonster* pOwner, void* pArg, _bool bActive = true);
+	void			Set_BossActive(_bool bBossActive) { m_bBossActive = bBossActive; }
 
 	_bool			Is_DefaultSettingOn();
 
@@ -90,6 +91,7 @@ public:
 	void	Update_SkillSection(_uint iSkillType, _uint iSectionType);
 	void	Update_ClothSlotState(_uint iSectionType, _uint iSlotIndex);
 	void	Update_CostumeBtn();
+	void	Update_WeaponSelectionIcon(_uint iSlotNum);
 
 	void	Update_CostumeModel(const CHARACTER_TYPE& eCharacterType, const PART_TYPE& ePartType, const wstring& strPartTag);
 	void	Set_CostumeModel();
@@ -122,6 +124,7 @@ public: // Lobby
 
 	HRESULT OnOff_MonsterHP(_bool bOnOff, ELEMENTAL_TYPE eType = ELEMENTAL_TYPE::ELEMENTAL_END);
 	HRESULT OnOff_BossHP(_bool bOnOff);
+	void OnOff_BossNameTag(_bool bOnOff);
 
 	HRESULT OnOff_CostumeWindow(_bool bOnOff);
 	HRESULT OnOff_CostumeSlot(_uint iSection, _bool bOnOff);
@@ -140,6 +143,7 @@ private:
 private:
 	_bool m_bEvent = { false };
 	_bool m_bUpdate = { false };
+	_bool m_bBossActive = { false };
 	wstring m_strNickname;
 	wstring m_strResult;
 	class CUI_CharacterDummy* m_pDummy = { nullptr };
@@ -257,6 +261,8 @@ private:
 
 	vector <class CUI_WeaponSection_Weapon*> m_WeaponIcon;
 	vector <class CUI_WeaponSection_Weapon*> m_WeaponElemental;
+
+	class CUI_Boss_NameTag* m_pBossNameTag = { nullptr };
 
 private:
 	ID3D11Device*			m_pDevice = { nullptr };

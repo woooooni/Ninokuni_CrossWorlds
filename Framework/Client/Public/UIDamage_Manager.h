@@ -29,11 +29,11 @@ public:
 
 public:
 	HRESULT Create_PlayerDamageNumber(class CTransform* pTransformCom, _int iDamage); // ColorRed
-	HRESULT Create_MonsterDamageNumber(class CTransform* pTransformCom, UI_DAMAGETYPE eType, _int iDamage);
+	HRESULT Create_MonsterDamageNumber(class CTransform* pTransformCom, _bool bIsBoss, UI_DAMAGETYPE eType, _int iDamage);
 
 private:
-	_float2 Designate_RandomPosition(_float2 vTargetPosition);
-	HRESULT Create_Miss(class CTransform* pTransformCom);
+	_float2 Designate_RandomPosition(_float2 vTargetPosition, _bool bIsBoss);
+	HRESULT Create_Miss(class CTransform* pTransformCom, _bool bIsBoss);
 	HRESULT Create_Critical(UI_DAMAGETYPE eType, _float2 vPosition);
 
 private:

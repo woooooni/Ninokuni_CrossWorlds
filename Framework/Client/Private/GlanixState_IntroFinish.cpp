@@ -7,6 +7,7 @@
 
 #include "Camera_Manager.h"
 #include "Camera_CutScene_Boss.h"
+#include "UI_Manager.h"
 
 CGlanixState_IntroFinish::CGlanixState_IntroFinish(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
@@ -42,6 +43,9 @@ void CGlanixState_IntroFinish::Tick_State(_float fTimeDelta)
 				pCutSceneCam->Send_Signal();
 		}
 	}
+
+	if (m_pModelCom->Get_CurrAnimationFrame() == 50)
+		CUI_Manager::GetInstance()->OnOff_BossNameTag(true);
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{

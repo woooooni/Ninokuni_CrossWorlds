@@ -237,6 +237,8 @@ void CUI_WeaponSection_Slot::Key_Input(_float fTimeDelta)
 {
 	if (KEY_TAP(KEY::LBTN))
 	{
+		m_bClick = true;
+		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(m_eSlotType);
 	}
 }
 

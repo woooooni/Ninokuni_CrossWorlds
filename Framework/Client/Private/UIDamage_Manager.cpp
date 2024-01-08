@@ -113,7 +113,7 @@ HRESULT CUIDamage_Manager::Create_PlayerDamageNumber(CTransform* pTransformCom, 
 	return S_OK;
 }
 
-HRESULT CUIDamage_Manager::Create_MonsterDamageNumber(CTransform* pTransformCom, UI_DAMAGETYPE eType, _int iDamage)
+HRESULT CUIDamage_Manager::Create_MonsterDamageNumber(CTransform* pTransformCom, _bool bIsBoss, UI_DAMAGETYPE eType, _int iDamage)
 {
 	if (UI_DAMAGETYPE::DAMAGETYPE_END <= eType)
 		return E_FAIL;
@@ -127,14 +127,15 @@ HRESULT CUIDamage_Manager::Create_MonsterDamageNumber(CTransform* pTransformCom,
 
 	DamageDesc.pTargetTransform = pTransformCom;
 	DamageDesc.iDamage = iDamage;
-	_float2 vRandomPosition = Designate_RandomPosition(CUI_Manager::GetInstance()->Get_ProjectionPosition(pTransformCom));
+	_float2 vRandomPosition = Designate_RandomPosition(CUI_Manager::GetInstance()->Get_ProjectionPosition(pTransformCom), bIsBoss);
 	if (vRandomPosition.x == -9999.f)
 		return E_FAIL;
 	DamageDesc.vTargetPosition = vRandomPosition;
+	DamageDesc.bIsBoss = bIsBoss;
 
 	if (0 == iDamage)
 	{
-		if (FAILED(Create_Miss(pTransformCom)))
+		if (FAILED(Create_Miss(pTransformCom, bIsBoss)))
 			return E_FAIL;
 
 		return S_OK;
@@ -223,14 +224,22 @@ HRESULT CUIDamage_Manager::Create_Critical(UI_DAMAGETYPE eType, _float2 vPositio
 	return S_OK;
 }
 
-_float2 CUIDamage_Manager::Designate_RandomPosition(_float2 vTargetPosition)
+_float2 CUIDamage_Manager::Designate_RandomPosition(_float2 vTargetPosition, _bool bIsBoss)
 {
 	if (0.f > vTargetPosition.x || 1600.f < vTargetPosition.x ||
 		0.f > vTargetPosition.y || 900.f < vTargetPosition.y)
 		return _float2(-9999.f, -9999.f);
 
 	_float2 vResultPosition;
-	_float2 fRandomOffset = _float2(GI->RandomFloat(-100.f, 100.f), GI->RandomFloat(-200.f, 0.f));
+	_float2 fRandomOffset = _float2(0.f, 0.f);
+	if (bIsBoss)
+	{
+		fRandomOffset = _float2(GI->RandomFloat(-200.f, 200.f), GI->RandomFloat(-400.f, 0.f));
+	}
+	else
+	{
+		fRandomOffset = _float2(GI->RandomFloat(-100.f, 100.f), GI->RandomFloat(-200.f, 0.f));
+	}
 
 	vTargetPosition.x += fRandomOffset.x;
 	vTargetPosition.y += fRandomOffset.y;
@@ -241,14 +250,14 @@ _float2 CUIDamage_Manager::Designate_RandomPosition(_float2 vTargetPosition)
 	return vResultPosition;
 }
 
-HRESULT CUIDamage_Manager::Create_Miss(CTransform* pTransformCom)
+HRESULT CUIDamage_Manager::Create_Miss(CTransform* pTransformCom, _bool bIsBoss)
 {
 	CGameObject* pMiss = nullptr;
 
 	CUI_Damage_General::GENERAL_DESC MissDesc = {};
 	ZeroMemory(&MissDesc, sizeof(CUI_Damage_General::GENERAL_DESC));
 
-	_float2 vRandomPosition = Designate_RandomPosition(CUI_Manager::GetInstance()->Get_ProjectionPosition(pTransformCom));
+	_float2 vRandomPosition = Designate_RandomPosition(CUI_Manager::GetInstance()->Get_ProjectionPosition(pTransformCom), bIsBoss);
 	if (vRandomPosition.x == -9999.f)
 		return E_FAIL;
 	MissDesc.vPosition = vRandomPosition;

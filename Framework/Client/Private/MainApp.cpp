@@ -64,7 +64,7 @@ HRESULT CMainApp::Initialize()
 	// UI Cursor
 	/*CUI_Manager::GetInstance()->Ready_Cursor();
 	ShowCursor(false);*/
-
+	CUI_Manager::GetInstance()->Ready_Veils();
 
 	Json Test;
 	Test["Name"] = "±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø";
@@ -944,12 +944,12 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/WeaponSlot/UI_Weapon_Frame_Mask.png")))))
 		return E_FAIL;
 
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_WeaponSection_Slot"), // ¹«±â ½½·Ô
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_WeaponSection_Slot"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/WeaponSlot/Weapon_Slot_BG.png")))))
 		return E_FAIL;
 
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_WeaponSection_Selected"), // if Selected ÀÛ¾÷ Àü
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/WeaponSlot/UI_Weapon_Selected.png")))))
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_WeaponSection_Selected"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/WeaponSlot/UI_Weapon_Frame_Usable.png")))))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_WeaponSection_Focused"), // ½ºÅ³ ÄðÅ¸ÀÓÀÌ ´Ù Ã¡À» °æ¿ì »ç¿ëµÊ(¿ëµµ º¯°æµÉ ¼ö ÀÖÀ½)
@@ -1352,6 +1352,11 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 	// Weapons for Slot
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SKillSection_Weapon_Icons"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/WeaponSlot/Weapon/UI_Weapon_%d.png"), 9))))
+		return E_FAIL;
+
+	// Boss NameTag
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Boss_NameTag"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/MonsterStatus/Boss/UI_Boss_NameTag_%d.png"), 7))))
 		return E_FAIL;
 
 
