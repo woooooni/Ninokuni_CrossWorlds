@@ -491,7 +491,7 @@ void CUI_Costume_ItemSlot::Update_Costume(_float fTimeDelta)
 		break;
 
 	case COSTUMESECTION_WEAPON:
-		//
+		CUI_Manager::GetInstance()->Update_CostumeWeaponModel(m_eCurPlayerType, m_strPartTag);
 		break;
 	}
 

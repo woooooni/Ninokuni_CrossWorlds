@@ -69,6 +69,7 @@ public:
 public:
 	HRESULT Make_Child(_float fX, _float fY, _float fCX, _float fCY, const wstring& strPrototypeTag,
 		const wstring& strObjectTag = TEXT(""), void* pChildArg = nullptr);
+	CUI* Get_Child(const wstring& strPrototypeTag);
 	void Delete_AllChild();
 
 public:

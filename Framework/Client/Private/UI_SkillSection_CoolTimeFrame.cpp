@@ -2,6 +2,8 @@
 #include "UI_SkillSection_CoolTimeFrame.h"
 #include "GameInstance.h"
 #include "UI_Manager.h"
+#include "SKill_Manager.h"
+#include "Skill.h"
 
 CUI_SkillSection_CoolTimeFrame::CUI_SkillSection_CoolTimeFrame(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 	UI_COOLFRAME_TYPE eType)
@@ -22,7 +24,7 @@ void CUI_SkillSection_CoolTimeFrame::Set_CharacterType(CHARACTER_TYPE eType)
 	SetUp_FrameColor();
 }
 
-void CUI_SkillSection_CoolTimeFrame::Use_Skill(_float fCoolTime)
+void CUI_SkillSection_CoolTimeFrame::Use_Skill()
 {
 	m_bUsable = false;
 	m_fCurGauge = 0.f;
@@ -47,9 +49,10 @@ HRESULT CUI_SkillSection_CoolTimeFrame::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	m_bActive = true; 
+	if (FAILED(Ready_Skill()))
+		return E_FAIL;
 
-	m_fMaxGauge = 50.f;
+	m_bActive = true; 
 	m_fCurGauge = 0.f;
 
 	return S_OK;
@@ -126,6 +129,40 @@ HRESULT CUI_SkillSection_CoolTimeFrame::Ready_State()
 	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
+
+	return S_OK;
+}
+
+HRESULT CUI_SkillSection_CoolTimeFrame::Ready_Skill()
+{
+	// CurPlayerType 잘 들어오는지 확인해야함.
+	CSkill* pTemp = nullptr;
+
+	switch (m_eCurPlayerType)
+	{
+	case CHARACTER_TYPE::SWORD_MAN:
+		pTemp = CSkill_Manager::GetInstance()->Get_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::SWORDMAN_BURST_MEGA_SLASH);
+		if (nullptr == pTemp)
+			return E_FAIL;
+		m_pSkill = pTemp;
+		break;
+
+	case CHARACTER_TYPE::DESTROYER:
+		pTemp = CSkill_Manager::GetInstance()->Get_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::DESTROYER_BURST_HYPERSTRIKE);
+		if (nullptr == pTemp)
+			return E_FAIL;
+		m_pSkill = pTemp;
+		break;
+
+	case CHARACTER_TYPE::ENGINEER:
+		pTemp = CSkill_Manager::GetInstance()->Get_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::ENGINNER_BURST_DESTRUCTION);
+		if (nullptr == pTemp)
+			return E_FAIL;
+		m_pSkill = pTemp;
+		break;
+	}
+
+	m_fMaxGauge = m_pSkill->Get_CoolTime();
 
 	return S_OK;
 }

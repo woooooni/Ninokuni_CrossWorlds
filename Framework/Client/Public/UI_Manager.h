@@ -96,12 +96,22 @@ public:
 	void	Update_WeaponSelectionIcon(_uint iSlotNum);
 
 	void	Update_CostumeModel(const CHARACTER_TYPE& eCharacterType, const PART_TYPE& ePartType, const wstring& strPartTag);
+	void	Update_CostumeWeaponModel(const CHARACTER_TYPE& eCharacterType, const wstring& strPartTag);
 	void	Set_CostumeModel();
+	void	TakeOff_CostumeModel();
+
 	void	Set_MouseCursor(_uint iIndex);
 
 public:
 	HRESULT		Using_CloseButton();
 	HRESULT		Using_BackButton();
+
+	void		Use_JumpBtn();
+	void		Use_RollBtn();
+	void		Use_AttackBtn();
+	void		Use_ClassSkillSlot(_uint iSlotNum);
+	void		Use_ActiveSkillSlot(_uint iSlotNum);
+	void		Use_BurstSkillSlot(_uint iSlotNum);
 
 public:
 	HRESULT OnOff_Veil(_bool bOnOff);

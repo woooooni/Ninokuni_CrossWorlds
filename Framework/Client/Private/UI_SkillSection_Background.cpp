@@ -3,6 +3,7 @@
 #include "GameInstance.h"
 #include "UI_Manager.h"
 #include "UI_WeaponSection_Selected.h"
+#include "UI_WeaponSection_Slot.h"
 
 CUI_SkillSection_Background::CUI_SkillSection_Background(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_SkillSection_Background")
@@ -46,6 +47,34 @@ void CUI_SkillSection_Background::Set_Active(_bool bActive)
 	}
 
 	m_bActive = bActive;
+}
+
+void CUI_SkillSection_Background::Use_BurstSkill(_uint iSlotNum)
+{
+	if (0 > iSlotNum || 2 < iSlotNum)
+		return;
+
+	CUI* pTemp = nullptr;
+
+	switch (iSlotNum)
+	{
+	case 0:
+		pTemp = Get_Child(TEXT("Prototype_GameObject_UI_WeaponSection_Slot_First"));
+		break;
+
+	case 1:
+		pTemp = Get_Child(TEXT("Prototype_GameObject_UI_WeaponSection_Slot_Second"));
+		break;
+
+	case 2:
+		pTemp = Get_Child(TEXT("Prototype_GameObject_UI_WeaponSection_Slot_Third"));
+		break;
+	}
+
+	if (nullptr == pTemp)
+		return;
+
+	dynamic_cast<CUI_WeaponSection_Slot*>(pTemp)->Use_BurstSkill();
 }
 
 HRESULT CUI_SkillSection_Background::Initialize_Prototype()

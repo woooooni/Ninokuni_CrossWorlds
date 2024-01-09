@@ -11,6 +11,10 @@ protected:
 	virtual ~CUI_SkillSection_BtnJump() = default;
 
 public:
+	_bool Get_Resizable() { return m_bResizable; }
+	void Set_Resizable(_bool bResize) { m_bResizable = bResize; }
+
+public:
 	virtual HRESULT	Initialize_Prototype();
 	virtual HRESULT	Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta);
@@ -22,7 +26,7 @@ private:
 
 	_float m_fTimeAcc = { 0.f };
 	_bool m_bFinish = { false };
-	_bool m_bResizeStart = { false };
+	_bool m_bResizable = { false };
 
 	_float2 m_vOriginSize = _float2(0.f, 0.f);
 	_float2 m_vMinSize = _float2(0.f, 0.f);

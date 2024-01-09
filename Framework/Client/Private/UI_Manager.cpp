@@ -15,6 +15,8 @@
 #include "Player.h"
 #include "Monster.h"
 #include "Weapon.h"
+#include "Weapon_Manager.h"
+#include "UI_Dummy_Weapon.h"
 
 #include "UI_Fade.h"
 #include "UI_Veil.h"
@@ -4176,7 +4178,7 @@ void CUI_Manager::Update_CostumeBtn()
 		}
 		break;
 
-	case 3: //m_CostumeWeapon
+	case 5: //m_CostumeWeapon
 		pWeapon = pCharacter->Get_Weapon(); // 현재 착용하고 있는 무기
 		if (nullptr == pWeapon)
 			return;
@@ -4244,10 +4246,27 @@ void CUI_Manager::Update_CostumeModel(const CHARACTER_TYPE& eCharacterType, cons
 
 }
 
+void CUI_Manager::Update_CostumeWeaponModel(const CHARACTER_TYPE& eCharacterType, const wstring& strPartTag)
+{
+	// 장착 해제를 눌러도 계속 코스튬이 착용되는 오류가 발생함.
+
+	CModel* pWeaponModel = nullptr;
+	pWeaponModel = CWeapon_Manager::GetInstance()->Get_WeaponModel(eCharacterType, strPartTag);
+	if (nullptr == pWeaponModel)
+		return;
+
+	// UI Dummy의 Weapon을 교체한다.
+	CUI_Dummy_Weapon* pWeapon = m_pDummy->Get_Weapon();
+	if (nullptr == pWeapon)
+		return;
+	pWeapon->Set_WeaponModelCom(pWeaponModel);
+}
+
 void CUI_Manager::Set_CostumeModel()
 {
 	// 현재 Active되어있는 CostumeButton.. 혹은 Slot을 찾아내서
 	// PartType을 파악하고
+	CModel* pWeaponModel = nullptr;
 
 	CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
 	if (pPlayer == nullptr)
@@ -4266,8 +4285,6 @@ void CUI_Manager::Set_CostumeModel()
 		}
 	}
 
-	PART_TYPE eType = PART_TYPE::PART_END;
-	//_int iSlotIndex = -1;
 	wstring strPartTag;
 
 	if (iIndex == CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_CLOTH)
@@ -4280,7 +4297,8 @@ void CUI_Manager::Set_CostumeModel()
 				strPartTag = iter->Get_PartTag();
 			}
 		}
-		eType = PART_TYPE::BODY;
+		pCharacter->Set_PartModel(PART_TYPE::BODY,
+			CCharacter_Manager::GetInstance()->Get_PartModel(pCharacter->Get_CharacterType(), PART_TYPE::BODY, strPartTag));
 	}
 	else if (iIndex == CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_HAIRACC)
 	{
@@ -4292,17 +4310,126 @@ void CUI_Manager::Set_CostumeModel()
 				strPartTag = iter->Get_PartTag();
 			}
 		}
-		eType = PART_TYPE::HEAD;
+		pCharacter->Set_PartModel(PART_TYPE::HEAD,
+			CCharacter_Manager::GetInstance()->Get_PartModel(pCharacter->Get_CharacterType(), PART_TYPE::HEAD, strPartTag));
+	}
+	else if (iIndex == CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_WEAPON)
+	{
+		for (auto& iter : m_CostumeWeapon)
+		{
+			if (iter->Get_Clicked())
+			{
+				strPartTag = iter->Get_PartTag();
+			}
+		}
+		// Weapon
+		pWeaponModel = CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCurPlayer, strPartTag);
+		if (nullptr == pWeaponModel)
+			return;
+
+		// UI Dummy의 Weapon을 교체한다.
+		CUI_Dummy_Weapon* pWeapon = m_pDummy->Get_Weapon();
+		if (nullptr == pWeapon)
+			return;
+		pWeapon->Set_WeaponModelCom(pWeaponModel);
+
+		// Character의 Weapon을 교체한다.
+		CWeapon* pRealWeapon = pCharacter->Get_Weapon();
+		if (nullptr == pRealWeapon)
+			return;
+		pRealWeapon->Set_WeaponModelCom(pWeaponModel);
 	}
 
-	if (PART_TYPE::PART_END == eType)
-		return;
-
-//	if (-1 == iSlotIndex)
+//	if (PART_TYPE::PART_END == eType)
 //		return;
 
-	pCharacter->Set_PartModel(eType,
-		CCharacter_Manager::GetInstance()->Get_PartModel(pCharacter->Get_CharacterType(), eType, strPartTag));
+	// 머리와 의상에 해당됨
+//	pCharacter->Set_PartModel(eType,
+//		CCharacter_Manager::GetInstance()->Get_PartModel(pCharacter->Get_CharacterType(), eType, strPartTag));
+}
+
+void CUI_Manager::TakeOff_CostumeModel()
+{
+	_uint iIndex;
+	wstring strModelTag;
+	ELEMENTAL_TYPE eElementalType = ELEMENTAL_TYPE::ELEMENTAL_END;
+
+	for (auto& iter : m_CostumeClickedBtn)
+	{
+		if (iter->Get_Active()) // 선택이 되었으면 활성화 되어있다.
+		{
+			iIndex = iter->Get_CostumeType();
+		}
+	}
+
+	if (iIndex != CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_WEAPON)
+		return;
+
+	CModel* pWeaponModel = nullptr;
+
+	CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+	if (pPlayer == nullptr)
+		return;
+	CCharacter* pCharacter = pPlayer->Get_Character();
+	if (pCharacter == nullptr)
+		return;
+
+	eElementalType = pCharacter->Get_ElementalType();
+	if (eElementalType >= ELEMENTAL_TYPE::ELEMENTAL_END)
+		return;
+
+	switch (m_eCurPlayer)
+	{
+	case CHARACTER_TYPE::SWORD_MAN:
+		if (eElementalType == FIRE)
+			strModelTag = TEXT("Sword_Fire02");
+		else if (eElementalType == WATER)
+			strModelTag = TEXT("Sword_Water02");
+		else if (eElementalType == WOOD)
+			strModelTag = TEXT("Sword_Wood02");
+		else
+			return;
+		break;
+
+	case CHARACTER_TYPE::DESTROYER:
+		if (eElementalType == FIRE)
+			strModelTag = TEXT("Hammer_Fire02");
+		else if (eElementalType == WATER)
+			strModelTag = TEXT("Hammer_Water02");
+		else if (eElementalType == WOOD)
+			strModelTag = TEXT("Hammer_Wood02");
+		else
+			return;
+		break;
+
+	case CHARACTER_TYPE::ENGINEER:
+		break;
+	}
+
+	for (auto& iter : m_CostumeWeapon)
+	{
+		iter->Set_Clicked(false);
+	}
+
+	// Weapon
+	pWeaponModel = CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCurPlayer, strModelTag);
+	if (nullptr == pWeaponModel)
+		return;
+
+	// UI Dummy의 Weapon을 교체한다.
+	CUI_Dummy_Weapon* pWeapon = m_pDummy->Get_Weapon();
+	if (nullptr == pWeapon)
+		return;
+	pWeapon->Set_WeaponModelCom(pWeaponModel);
+
+	// Character의 Weapon을 교체한다.
+	CWeapon* pRealWeapon = pCharacter->Get_Weapon();
+	if (nullptr == pRealWeapon)
+		return;
+	pRealWeapon->Set_WeaponModelCom(pWeaponModel);
+
+	// 장착해제버튼을 장착으로 바꾼다.
+	m_pCostumeChange->Set_TextureIndex(0);
 }
 
 void CUI_Manager::Set_MouseCursor(_uint iIndex)
@@ -4394,6 +4521,66 @@ HRESULT CUI_Manager::Using_BackButton()
 	}
 
 	return S_OK;
+}
+
+void CUI_Manager::Use_JumpBtn()
+{
+	if (nullptr == m_pSkillBG)
+		return;
+
+	CUI* pBtnJump = m_pSkillBG->Get_Child(TEXT("Prototype_GameObject_UI_SkillSection_BtnJump"));
+	if (nullptr == pBtnJump)
+		return;
+
+	dynamic_cast<CUI_SkillSection_BtnJump*>(pBtnJump)->Set_Resizable(true);
+}
+
+void CUI_Manager::Use_RollBtn()
+{
+	if (nullptr == m_pSkillBG)
+		return;
+
+	CUI* pBtnRoll = m_pSkillBG->Get_Child(TEXT("Prototype_GameObject_UI_SkillSection_BtnRoll"));
+	if (nullptr == pBtnRoll)
+		return;
+
+	dynamic_cast<CUI_SkillSection_BtnRoll*>(pBtnRoll)->Set_Resizable(true);
+}
+
+void CUI_Manager::Use_AttackBtn()
+{
+	if (nullptr == m_pSkillBG)
+		return;
+
+	CUI* pAttack = m_pSkillBG->Get_Child(TEXT("Prototype_GameObject_UI_SkillSection_DefaultAttack"));
+	if (nullptr == pAttack)
+		return;
+
+	dynamic_cast<CUI_WeaponSection_DefaultWeapon*>(pAttack)->Set_ResizeStart(true);
+}
+
+void CUI_Manager::Use_ClassSkillSlot(_uint iSlotNum)
+{
+	if (0 > iSlotNum || 2 < iSlotNum)
+		return;
+
+	m_ClassicSkill[iSlotNum]->Set_Clicked(true);
+}
+
+void CUI_Manager::Use_ActiveSkillSlot(_uint iSlotNum)
+{
+	if (0 > iSlotNum || 2 < iSlotNum)
+		return;
+
+	m_SpecialSkill[iSlotNum]->Set_Clicked(true);
+}
+
+void CUI_Manager::Use_BurstSkillSlot(_uint iSlotNum)
+{
+	if (nullptr == m_pSkillBG)
+		return;
+
+	m_pSkillBG->Use_BurstSkill(iSlotNum);
 }
 
 HRESULT CUI_Manager::OnOff_Veil(_bool bOnOff)

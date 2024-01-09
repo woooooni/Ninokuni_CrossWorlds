@@ -235,42 +235,94 @@ void CUI_SkillSection_ClassicSkill::Key_Input(_float fTimeDelta)
 
 void CUI_SkillSection_ClassicSkill::Set_SkillType()
 {
-	//	if (m_ePlayerType == eType)
-	//		return;
+	CSkill* pTemp = nullptr;
 
 	switch (m_eCurPlayerType)
 	{
 	case CHARACTER_TYPE::SWORD_MAN: // 0, 1, 2
 		if (UI_CLASSICSKILL::SKILL_FIRST == m_eType)
+		{
 			m_iTextureIndex = 0;
+			pTemp = CSkill_Manager::GetInstance()->Get_Skill(m_eCurPlayerType, SKILL_TYPE::SWORDMAN_PERFECT_BLADE);
+			if (nullptr == pTemp)
+				return;
+			m_pSkill = pTemp;
+		}
 		if (UI_CLASSICSKILL::SKILL_SECOND == m_eType)
+		{
 			m_iTextureIndex = 1;
+			pTemp = CSkill_Manager::GetInstance()->Get_Skill(m_eCurPlayerType, SKILL_TYPE::SWORDMAN_SIPOHONINGLUNGE);
+			if (nullptr == pTemp)
+				return;
+			m_pSkill = pTemp;
+		}
 		if (UI_CLASSICSKILL::SKILL_THIRD == m_eType)
+		{
 			m_iTextureIndex = 2;
+			pTemp = CSkill_Manager::GetInstance()->Get_Skill(m_eCurPlayerType, SKILL_TYPE::SWORDMAN_SPINNING_ASSAULT);
+			if (nullptr == pTemp)
+				return;
+			m_pSkill = pTemp;
+		}
 		break;
 
 	case CHARACTER_TYPE::DESTROYER: // 3, 4, 5
 		if (UI_CLASSICSKILL::SKILL_FIRST == m_eType)
+		{
 			m_iTextureIndex = 3;
+			pTemp = CSkill_Manager::GetInstance()->Get_Skill(m_eCurPlayerType, SKILL_TYPE::DESTROYER_WHEELWIND);
+			if (nullptr == pTemp)
+				return;
+			m_pSkill = pTemp;
+		}
 		if (UI_CLASSICSKILL::SKILL_SECOND == m_eType)
+		{
 			m_iTextureIndex = 4;
+			pTemp = CSkill_Manager::GetInstance()->Get_Skill(m_eCurPlayerType, SKILL_TYPE::DESTROYER_BRUTALSTRIKE);
+			if (nullptr == pTemp)
+				return;
+			m_pSkill = pTemp;
+		}
 		if (UI_CLASSICSKILL::SKILL_THIRD == m_eType)
+		{
 			m_iTextureIndex = 5;
+			pTemp = CSkill_Manager::GetInstance()->Get_Skill(m_eCurPlayerType, SKILL_TYPE::DESTROYER_LEAFSLAM);
+			if (nullptr == pTemp)
+				return;
+			m_pSkill = pTemp;
+		}
 		break;
 
 	case CHARACTER_TYPE::ENGINEER: // 6, 7, 8
 		if (UI_CLASSICSKILL::SKILL_FIRST == m_eType)
+		{
 			m_iTextureIndex = 6;
+			pTemp = CSkill_Manager::GetInstance()->Get_Skill(m_eCurPlayerType, SKILL_TYPE::ENGINEER_BURSTCALL);
+			if (nullptr == pTemp)
+				return;
+			m_pSkill = pTemp;
+		}
 		if (UI_CLASSICSKILL::SKILL_SECOND == m_eType)
+		{
 			m_iTextureIndex = 7;
+			pTemp = CSkill_Manager::GetInstance()->Get_Skill(m_eCurPlayerType, SKILL_TYPE::ENGINEER_ELEMENTAL_BLAST);
+			if (nullptr == pTemp)
+				return;
+			m_pSkill = pTemp;
+		}
 		if (UI_CLASSICSKILL::SKILL_THIRD == m_eType)
+		{
 			m_iTextureIndex = 8;
+			pTemp = CSkill_Manager::GetInstance()->Get_Skill(m_eCurPlayerType, SKILL_TYPE::ENGINEER_EXPLOSIONSHOT);
+			if (nullptr == pTemp)
+				return;
+			m_pSkill = pTemp;
+		}
 		break;
 	}
 
-	//Update_SkillInfo();
-
-	m_fOriginCoolTime = 9.f; // Temp
+	m_fOriginCoolTime = m_pSkill->Get_CoolTime();
+	//m_fOriginCoolTime = 9.f;
 	m_fCoolTime = m_fOriginCoolTime;
 }
 

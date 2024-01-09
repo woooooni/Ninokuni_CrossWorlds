@@ -20,6 +20,7 @@ public:
 public:
 	void Update_Position(_uint iSlotNum);
 	void Change_Weapon(_uint iSlotNum);
+	_bool Isit_PossibleToChange(const wstring& strModelTag);
 
 private:
 	virtual HRESULT	Ready_Components() override;

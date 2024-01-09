@@ -137,7 +137,29 @@ void CUI_WeaponSection_Selected::Change_Weapon(_uint iSlotNum)
 	if (2 < iSlotNum)
 		return;
 
+	CModel* pCurrentModel = nullptr;
 	CModel* pWeaponModel = nullptr;
+	ELEMENTAL_TYPE eElementalType = ELEMENTAL_TYPE::ELEMENTAL_END;
+
+	_bool bChange = true;
+
+	CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+	if (nullptr == pPlayer)
+		return;
+	CCharacter* pCharacter = pPlayer->Get_Character();
+	if (nullptr == pCharacter)
+		return;
+	CWeapon* pWeapon = pCharacter->Get_Weapon();
+	if (nullptr == pWeapon)
+		return;
+
+	pCurrentModel = pWeapon->Get_WeaponModelCom();
+	if (pCurrentModel == nullptr)
+		return;
+	wstring strCurWeapon = pCurrentModel->Get_Name();
+
+	bChange = Isit_PossibleToChange(strCurWeapon);
+	// 가능하면 Set_WeaponModelCom을 수행한다.
 
 	switch (m_eCurPlayerType)
 	{
@@ -146,12 +168,15 @@ void CUI_WeaponSection_Selected::Change_Weapon(_uint iSlotNum)
 		{
 		case 0:
 			pWeaponModel = CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCurPlayerType, TEXT("Sword_Fire02"));
+			eElementalType = ELEMENTAL_TYPE::FIRE;
 			break;
 		case 1:
 			pWeaponModel = CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCurPlayerType, TEXT("Sword_Water02"));
+			eElementalType = ELEMENTAL_TYPE::WATER;
 			break;
 		case 2:
 			pWeaponModel = CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCurPlayerType, TEXT("Sword_Wood02"));
+			eElementalType = ELEMENTAL_TYPE::WOOD;
 			break;
 		}
 		break;
@@ -161,12 +186,15 @@ void CUI_WeaponSection_Selected::Change_Weapon(_uint iSlotNum)
 		{
 		case 0:
 			pWeaponModel = CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCurPlayerType, TEXT("Hammer_Fire02"));
+			eElementalType = ELEMENTAL_TYPE::FIRE;
 			break;
 		case 1:
 			pWeaponModel = CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCurPlayerType, TEXT("Hammer_Water02"));
+			eElementalType = ELEMENTAL_TYPE::WATER;
 			break;
 		case 2:
 			pWeaponModel = CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCurPlayerType, TEXT("Hammer_Wood02"));
+			eElementalType = ELEMENTAL_TYPE::WOOD;
 			break;
 		}
 		break;
@@ -175,22 +203,38 @@ void CUI_WeaponSection_Selected::Change_Weapon(_uint iSlotNum)
 		break;
 	}
 
-	if (nullptr == pWeaponModel)
-		return;
+	if (bChange)
+	{
+		if (nullptr == pWeaponModel)
+			return;
 
-	CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
-	if (nullptr == pPlayer)
-		return;
+		pWeapon->Set_WeaponModelCom(pWeaponModel);
+	}
 
-	CCharacter* pCharacter = pPlayer->Get_Character();
-	if (nullptr == pCharacter)
+	if (ELEMENTAL_TYPE::ELEMENTAL_END <= eElementalType)
 		return;
-	
-	CWeapon* pWeapon = pCharacter->Get_Weapon();
-	if (nullptr == pWeapon)
-		return;
+	pCharacter->Set_ElementalType(eElementalType);
+}
 
-	pWeapon->Set_WeaponModelCom(pWeaponModel);
+_bool CUI_WeaponSection_Selected::Isit_PossibleToChange(const wstring& strModelTag)
+{
+	_bool bCanChange = true;
+
+	switch (m_eCurPlayerType)
+	{
+	case CHARACTER_TYPE::SWORD_MAN:
+		if (TEXT("Sword_Flower01") == strModelTag || TEXT("Sword_QQSuits") == strModelTag)
+			bCanChange = false;
+		break;
+
+	case CHARACTER_TYPE::DESTROYER:
+		break;
+
+	case CHARACTER_TYPE::ENGINEER:
+		break;
+	}
+
+	return bCanChange;
 }
 
 HRESULT CUI_WeaponSection_Selected::Ready_Components()

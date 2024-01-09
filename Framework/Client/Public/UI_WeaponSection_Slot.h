@@ -15,6 +15,7 @@ protected:
 
 public:
 	virtual void Set_CharacterType(CHARACTER_TYPE eType) override;
+	void Use_BurstSkill();
 
 public:
 	virtual HRESULT	Initialize_Prototype();

@@ -16,7 +16,7 @@ protected:
 
 public:
 	virtual void Set_CharacterType(CHARACTER_TYPE eType) override;
-	void Use_Skill(_float fCoolTime);
+	void Use_Skill();
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -28,6 +28,7 @@ public:
 private:
 	CTexture* m_pMaskTextureCom = { nullptr };
 	UI_COOLFRAME_TYPE m_eFrameType = { FRAME_END };
+	class CSkill* m_pSkill = { nullptr };
 
 	_int m_iPass = { 1 };
 	_bool m_bUsable = { false };
@@ -40,6 +41,7 @@ private:
 
 private:
 	HRESULT	Ready_State();
+	HRESULT Ready_Skill();
 	HRESULT	Bind_ShaderResources();
 	void SetUp_FrameColor();
 

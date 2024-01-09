@@ -34,7 +34,7 @@ protected:
 protected:
 	_bool m_bUseable = true;
 	_float m_fAccCoolTime = 2.f;
-	_float m_fCoolTime = 1.f;
+	_float m_fCoolTime = 10.f;
 
 public:
 	virtual void Free() override;
