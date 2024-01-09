@@ -54,21 +54,21 @@ HRESULT CKuu::Initialize(void* pArg)
 		m_pPlayerTransform = m_pPlayer->Get_Component<CTransform>(TEXT("Com_Transform"));
 
 	// 쿠우 네임태그 생성
-	CGameObject* pTag = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_NPC_Tag"), LAYER_TYPE::LAYER_UI);
-	if (nullptr == pTag)
-		return E_FAIL;
-
-	m_pTag = dynamic_cast<CUI_World_NPCTag*>(pTag);
-	m_pTag->Set_Owner(this, TEXT("쿠우"), 1.f);
-
-	// NPC 말풍선 생성
-	CGameObject* pBalloon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_NPC_SpeechBalloon"), LAYER_TYPE::LAYER_UI);
-	if (nullptr == pBalloon)
-		return E_FAIL;
-
-	m_pBalloon = dynamic_cast<CUI_World_NPCSpeechBalloon*>(pBalloon);
-	m_pBalloon->Set_Owner(this, 1.3f);
-	m_pBalloon->Set_Balloon(TEXT("나는 테스트용 쿠우다."));
+//	CGameObject* pTag = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_NPC_Tag"), LAYER_TYPE::LAYER_UI);
+//	if (nullptr == pTag)
+//		return E_FAIL;
+//
+//	m_pTag = dynamic_cast<CUI_World_NPCTag*>(pTag);
+//	m_pTag->Set_Owner(this, TEXT("쿠우"), 1.f);
+//
+//	// NPC 말풍선 생성
+//	CGameObject* pBalloon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_NPC_SpeechBalloon"), LAYER_TYPE::LAYER_UI);
+//	if (nullptr == pBalloon)
+//		return E_FAIL;
+//
+//	m_pBalloon = dynamic_cast<CUI_World_NPCSpeechBalloon*>(pBalloon);
+//	m_pBalloon->Set_Owner(this, 1.3f);
+//	m_pBalloon->Set_Balloon(TEXT("나는 테스트용 쿠우다."));
 
 
 	return S_OK;
@@ -91,10 +91,10 @@ void CKuu::Tick(_float fTimeDelta)
 	// __super::Tick(fTimeDelta);
 	// m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 
-	if (nullptr != m_pTag)
-		m_pTag->Tick(fTimeDelta);
-	if (nullptr != m_pBalloon)
-		m_pBalloon->Tick(fTimeDelta);
+//	if (nullptr != m_pTag)
+//		m_pTag->Tick(fTimeDelta);
+//	if (nullptr != m_pBalloon)
+//		m_pBalloon->Tick(fTimeDelta);
 
 	m_pControllerCom->Tick_Controller(fTimeDelta);
 
@@ -104,10 +104,10 @@ void CKuu::Tick(_float fTimeDelta)
 
 void CKuu::LateTick(_float fTimeDelta)
 {
-	if (nullptr != m_pTag)
-		m_pTag->LateTick(fTimeDelta);
-	if (nullptr != m_pBalloon)
-		m_pBalloon->LateTick(fTimeDelta);
+//	if (nullptr != m_pTag)
+//		m_pTag->LateTick(fTimeDelta);
+//	if (nullptr != m_pBalloon)
+//		m_pBalloon->LateTick(fTimeDelta);
 
 	__super::LateTick(fTimeDelta);
 
@@ -206,6 +206,6 @@ void CKuu::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pBalloon);
-	Safe_Release(m_pTag);
+//	Safe_Release(m_pBalloon);
+//	Safe_Release(m_pTag);
 }

@@ -40,8 +40,8 @@ private:
 	CTransform* m_pPlayerTransform = nullptr;
 
 private:
-	class CUI_World_NPCTag* m_pTag = { nullptr };
-	class CUI_World_NPCSpeechBalloon* m_pBalloon = { nullptr };
+//	class CUI_World_NPCTag* m_pTag = { nullptr };
+//	class CUI_World_NPCSpeechBalloon* m_pBalloon = { nullptr };
 
 public:
 	static CKuu* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
