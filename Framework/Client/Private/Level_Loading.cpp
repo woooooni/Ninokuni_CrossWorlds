@@ -24,6 +24,8 @@ HRESULT CLevel_Loading::Initialize(LEVELID eNextLevel, const wstring& strFolderN
 {
 	m_eNextLevel = eNextLevel;
 
+	GI->Stop_Sound(CHANNELID::SOUND_BGM);
+//	GI->Play_BGM(TEXT("BGM_Town_Evermore_Sanrio_1.mp3"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM));
 
 	return S_OK;
 }

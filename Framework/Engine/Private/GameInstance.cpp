@@ -103,8 +103,8 @@ HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, _uint iNumLayerType,
 	if (FAILED(m_pFrustum->Initialize()))
 		return E_FAIL;
 
-	//if (FAILED(m_pSound_Manager->Reserve_Manager()))
-	//	return E_FAIL;
+	if (FAILED(m_pSound_Manager->Reserve_Manager()))
+		return E_FAIL;
 	
 	if (FAILED(m_pCamera_Manager->Reserve_Manager(*ppDevice, *ppContext)))
 		return E_FAIL;
@@ -796,6 +796,12 @@ wstring CGameInstance::Get_SoundFileKey(const _uint iIndex)
 const map<wstring, FMOD_SOUND*>& CGameInstance::Get_MapSound()
 {
 	return m_pSound_Manager->Get_MapSound();
+}
+
+_float CGameInstance::Get_ChannelVolume(CHANNELID eID)
+{
+
+	return m_pSound_Manager->Get_ChannelVolume(eID);
 }
 
 HRESULT CGameInstance::Bind_SRV(CShader* pShader, const wstring& strTargetTag, const _char* pConstantName)

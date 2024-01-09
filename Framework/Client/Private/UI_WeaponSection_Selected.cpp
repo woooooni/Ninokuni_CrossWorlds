@@ -2,6 +2,10 @@
 #include "UI_WeaponSection_Selected.h"
 #include "GameInstance.h"
 #include "UI_Manager.h"
+#include "Game_Manager.h"
+#include "Weapon_Manager.h"
+#include "Player.h"
+#include "Weapon.h"
 
 CUI_WeaponSection_Selected::CUI_WeaponSection_Selected(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_SkillSection_Selected")
@@ -126,6 +130,67 @@ void CUI_WeaponSection_Selected::Update_Position(_uint iSlotNum)
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
+}
+
+void CUI_WeaponSection_Selected::Change_Weapon(_uint iSlotNum)
+{
+	if (2 < iSlotNum)
+		return;
+
+	CModel* pWeaponModel = nullptr;
+
+	switch (m_eCurPlayerType)
+	{
+	case CHARACTER_TYPE::SWORD_MAN:
+		switch (iSlotNum)
+		{
+		case 0:
+			pWeaponModel = CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCurPlayerType, TEXT("Sword_Fire02"));
+			break;
+		case 1:
+			pWeaponModel = CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCurPlayerType, TEXT("Sword_Water02"));
+			break;
+		case 2:
+			pWeaponModel = CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCurPlayerType, TEXT("Sword_Wood02"));
+			break;
+		}
+		break;
+
+	case CHARACTER_TYPE::DESTROYER:
+		switch (iSlotNum)
+		{
+		case 0:
+			pWeaponModel = CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCurPlayerType, TEXT("Hammer_Fire02"));
+			break;
+		case 1:
+			pWeaponModel = CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCurPlayerType, TEXT("Hammer_Water02"));
+			break;
+		case 2:
+			pWeaponModel = CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCurPlayerType, TEXT("Hammer_Wood02"));
+			break;
+		}
+		break;
+
+	case CHARACTER_TYPE::ENGINEER:
+		break;
+	}
+
+	if (nullptr == pWeaponModel)
+		return;
+
+	CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+	if (nullptr == pPlayer)
+		return;
+
+	CCharacter* pCharacter = pPlayer->Get_Character();
+	if (nullptr == pCharacter)
+		return;
+	
+	CWeapon* pWeapon = pCharacter->Get_Weapon();
+	if (nullptr == pWeapon)
+		return;
+
+	pWeapon->Set_WeaponModelCom(pWeaponModel);
 }
 
 HRESULT CUI_WeaponSection_Selected::Ready_Components()

@@ -25,7 +25,10 @@ public:
 public:
 	virtual void On_Damaged(const COLLISION_INFO& tInfo) override;
 
+
+
 private:
+	virtual HRESULT Ready_Components() override;
 	virtual HRESULT Ready_States() override;
 	virtual HRESULT Ready_Colliders() override;
 
@@ -35,6 +38,10 @@ private:
 private:
 	class CCharacter* m_pPlayer = nullptr;
 	CTransform* m_pPlayerTransform = nullptr;
+
+private:
+	class CUI_World_NPCTag* m_pTag = { nullptr };
+	class CUI_World_NPCSpeechBalloon* m_pBalloon = { nullptr };
 
 public:
 	static CKuu* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);

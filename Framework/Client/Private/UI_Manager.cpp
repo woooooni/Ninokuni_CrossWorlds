@@ -1,11 +1,15 @@
 #include "stdafx.h"
-#include "..\Public\UI_Manager.h"
+#include "UI_Manager.h"
 #include "GameInstance.h"
 #include "GameObject.h"
 #include "Effect.h"
+
 #include <filesystem>
 #include "FileUtils.h"
 #include "Utils.h"
+
+#include "Camera_Manager.h"
+#include "Camera_Follow.h"
 #include "Character_Manager.h"
 #include "Game_Manager.h"
 #include "Player.h"
@@ -39,6 +43,7 @@
 #include "UI_Text_TabMenu.h"
 #include "UI_BtnInventory.h"
 #include "UI_PlayerEXPBar.h"
+#include "UI_World_NPCTag.h"
 #include "UI_Minimap_Frame.h"
 #include "UI_MonsterHP_Bar.h"
 #include "UI_MenuSeparator.h"
@@ -96,6 +101,7 @@
 #include "UI_MonsterHP_Background.h"
 #include "UI_SkillWindow_SkillSlot.h"
 #include "UI_Loading_CharacterLogo.h"
+#include "UI_World_NPCSpeechBalloon.h"
 #include "UI_WeaponSection_Selected.h"
 #include "UI_ImajinnSection_Vehicle.h"
 #include "UI_Emoticon_SpeechBalloon.h"
@@ -225,8 +231,25 @@ void CUI_Manager::Set_MainDialogue(_tchar* pszName, _tchar* pszText)
 	if (nullptr == m_pDialogWindow)
 		return;
 
+//	if (Is_DefaultSettingOn())
+//		OnOff_GamePlaySetting(false);
+
 	m_pDialogWindow->Set_Name(pszName);
 	m_pDialogWindow->Set_Text(pszText);
+}
+
+_int CUI_Manager::Get_SelectedCharacter()
+{
+	if (_uint(LEVELID::LEVEL_LOBBY) != GI->Get_CurrentLevel())
+		return -1;
+
+	for (_uint i = 0; i < CUI_BtnCharacterSelect::UI_SELECTBTN_CHARACTER::UICHARACTERBTN_END; i++)
+	{
+		if (m_ClickedPlayer[i]->Get_Active())
+			return i;
+	}
+
+	return -1;
 }
 
 _bool CUI_Manager::Is_DefaultSettingOn()
@@ -327,7 +350,7 @@ HRESULT CUI_Manager::Ready_Cursor()
 	return S_OK;
 }
 
-HRESULT CUI_Manager::Ready_Veils()
+HRESULT CUI_Manager::Ready_Veils(LEVELID eID)
 {
 	if (nullptr == m_pUIFade)
 	{
@@ -341,13 +364,19 @@ HRESULT CUI_Manager::Ready_Veils()
 		UIDesc.fX = g_iWinSizeX * 0.5f;
 		UIDesc.fY = g_iWinSizeY * 0.5f;
 
-		if (FAILED(GI->Add_GameObject(LEVELID::LEVEL_STATIC, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Fade"), &UIDesc, &pVeil)))
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Fade"), &UIDesc, &pVeil)))
 			return E_FAIL;
 
 		m_pUIFade = dynamic_cast<CUI_Fade*>(pVeil);
 		if (nullptr == m_pUIFade)
 			return E_FAIL;
 
+		Safe_AddRef(m_pUIFade);
+	}
+	else
+	{
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pUIFade)))
+			return E_FAIL;
 		Safe_AddRef(m_pUIFade);
 	}
 
@@ -442,12 +471,6 @@ HRESULT CUI_Manager::Ready_Loadings()
 
 HRESULT CUI_Manager::Ready_LobbyUIs()
 {
-//	if (nullptr == m_pUIVeil)
-//	{
-//		if (FAILED(Ready_Veils()))
-//			return E_FAIL;
-//	}
-
 	m_Basic.reserve(4);
 
 	CGameObject* pNameTag = nullptr;
@@ -768,8 +791,8 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 	if(FAILED(Ready_Dummy()))
 		return E_FAIL;
 
-//	if (FAILED(Ready_Veils()))
-//		return E_FAIL;
+	if (FAILED(Ready_Veils(eID)))
+		return E_FAIL;
 
 	// MapName 생성
 	CGameObject* pMapName = nullptr;
@@ -3768,10 +3791,11 @@ void CUI_Manager::Render_Fade()
 
 _bool CUI_Manager::Is_FadeFinished()
 {
-	if (nullptr == m_pUIFade)
-		return false;
-
-	return m_pUIFade->Get_Finish();
+//	if (nullptr == m_pUIFade)
+//		return false;
+//
+//	return m_pUIFade->Get_Finish();
+	return m_bAddText;
 }
 
 void CUI_Manager::Update_SetNickname(const wstring& strNickname, _bool bUpdate)
@@ -4364,6 +4388,8 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 {
 	if (bOnOff) // On
 	{
+		OnOff_TextUI(true);
+
 		for (auto& iter : m_Milepost)
 		{
 			if (nullptr != iter)
@@ -4427,6 +4453,8 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 	}
 	else // Off
 	{
+		OnOff_TextUI(false);
+
 		for (auto& iter : m_Milepost)
 		{
 			if (nullptr != iter)
@@ -4506,6 +4534,17 @@ HRESULT CUI_Manager::OnOff_MainMenu(_bool bOnOff)
 
 	if (bOnOff) // On
 	{
+		GI->Stop_Sound(CHANNELID::SOUND_UI);
+		GI->Play_Sound(TEXT("UI_Fx_Comm_Slide_Open_MainMenu_1.mp3"), CHANNELID::SOUND_UI, GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+
+		// 텍스트 관련 제어
+		OnOff_TextUI(false); // Off
+
+		// 카메라 제어
+		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+		if (nullptr != pFollowCam)
+			pFollowCam->Set_CanInput(false);
+
 		m_pMainBG->Set_Active(true);
 		for (auto& pUI : m_MainMenuBtn)
 		{
@@ -4519,6 +4558,14 @@ HRESULT CUI_Manager::OnOff_MainMenu(_bool bOnOff)
 	}
 	else // Off : 모든 Menu관련 창을 꺼야한다.
 	{
+		// 텍스트 관련 제어
+		OnOff_TextUI(true); // On
+
+		// 카메라 제어
+		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+		if (nullptr != pFollowCam)
+			pFollowCam->Set_CanInput(true);
+
 		OnOff_CloseButton(false);
 
 		m_pMainBG->Set_Active(false);
@@ -4700,6 +4747,9 @@ HRESULT CUI_Manager::OnOff_SubMenu(_bool bOnOff, _uint iMagicNum)
 
 	if (bOnOff) // true -> On
 	{
+		GI->Stop_Sound(CHANNELID::SOUND_UI);
+		GI->Play_Sound(TEXT("UI_Fx_Comm_Slide_Open_SubMenu_1.mp3"), CHANNELID::SOUND_UI, GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+
 		switch (iMagicNum)
 		{
 		case 0: // 캐릭터창을 선택했다.
@@ -4854,22 +4904,24 @@ HRESULT CUI_Manager::OnOff_DialogWindow(_bool bOnOff, _uint iMagicNum)
 
 		if (bOnOff) // On
 		{
-			if (!m_pDialogWindow->Get_Active())
-			{
-				m_pDialogWindow->Set_Active(true);
+			if (Is_DefaultSettingOn())
 				OnOff_GamePlaySetting(false);
-			}
+
+			if (!m_pDialogWindow->Get_Active())
+				m_pDialogWindow->Set_Active(true);
 
 		}
 		else // Off
 		{
+			// 카메라 전환 후 직접 켜주어야함.
+//			if (!Is_DefaultSettingOn())
+//				OnOff_GamePlaySetting(true);
+
 			if (m_pDialogWindow->Get_Active())
-			{
 				m_pDialogWindow->Set_Active(false);
-				OnOff_GamePlaySetting(true);
-			}
 		}
 	}
+
 	else if (iMagicNum == 1) // Mini
 	{
 		if (nullptr == m_pDialogMini)
@@ -5185,10 +5237,14 @@ HRESULT CUI_Manager::OnOff_Inventory(_bool bOnOff)
 
 			m_pTabMenuTitle->Set_TextType(CUI_Text_TabMenu::UI_MENUTITLE::TITLE_INVEN);
 			m_pTabMenuTitle->Set_Active(true);
+
+			m_pDummy->Set_Active(true);
 		}
 	}
 	else
 	{
+		m_pDummy->Set_Active(false);
+
 		m_pTabMenuTitle->Set_Active(false);
 
 		for (auto& iter : m_InvenBtn)
@@ -5323,6 +5379,17 @@ HRESULT CUI_Manager::OnOff_EmoticonBalloon(_bool bOnOff)
 	}
 
 	return S_OK;
+}
+
+void CUI_Manager::OnOff_TextUI(_bool bOnOff)
+{
+	// Text가 있는 UI들에게 _bool값을 전달한다.
+	if (nullptr == m_pPlayerStatus)
+		return;
+
+	m_pPlayerStatus->Set_TextOnOff(bOnOff);
+
+	m_bAddText = bOnOff;
 }
 
 void CUI_Manager::Set_EmoticonType(_uint iIndex)
@@ -6203,6 +6270,13 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		CUI_Boss_NameTag::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_NPC_Tag"),
+		CUI_World_NPCTag::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_NPC_SpeechBalloon"),
+		CUI_World_NPCSpeechBalloon::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
 
 	return S_OK;
 }
@@ -6514,7 +6588,6 @@ void CUI_Manager::Free()
 	Safe_Release(m_pBossHPBar);
 
 	Safe_Release(m_pDummy);
-	Safe_Release(m_pName);
 	Safe_Release(m_pBossNameTag);
 
 	for (auto& pFrame : m_CoolTimeFrame)

@@ -143,6 +143,9 @@ void CUI_BtnInventory::Key_Input(_float fTimeDelta)
 {
 	if (KEY_TAP(KEY::LBTN))
 	{
+		GI->Stop_Sound(CHANNELID::SOUND_UI);
+		GI->Play_Sound(TEXT("UI_Fx_MainHud_Btn_Inventory_1.mp3"), CHANNELID::SOUND_UI, GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+
 		CUI_Manager::GetInstance()->OnOff_Inventory(true);
 	}
 }

@@ -15,29 +15,13 @@ protected:
 	virtual ~CUI_Fade() = default;
 
 public:
-	void	Set_Fade(const _bool& pIsFadeOut, const _float& pFadeTime, const _bool& bIsWhite = false)
-	{
-		Set_White(bIsWhite);
-
-		m_bIsFadeOut = pIsFadeOut;
-		m_fAlpha = !(float)pIsFadeOut;
-		m_fFadeTime = pFadeTime;
-		m_bIsComplete = false;
-	}
+	void	Set_Fade(const _bool& pIsFadeOut, const _float& pFadeTime, const _bool& bIsWhite = false);
 	const	_bool&		Get_Fade() { return m_bIsFadeOut; }
 	void	Set_White(const _bool& pIsWhite)
 	{
 		m_bIsWhite = pIsWhite;
 	}
-	void	Set_Finish()
-	{
-		m_bIsComplete = true;
-		m_fFadeTime = 0.f;
-		if (m_bIsFadeOut)
-			m_fAlpha = 1.f;
-		else
-			m_fAlpha = 0.f;
-	}
+	void	Set_Finish();
 
 	const	_bool& Get_Finish() { return m_bIsComplete; }
 

@@ -12,7 +12,12 @@ private:
 
 public:
 	_bool Get_Active() { return m_bActive; }
-	void Set_Active(_bool bActive) { m_bActive = bActive; }
+	void Set_Active(_bool bActive) {
+		m_bActive = bActive;
+
+		if (bActive)
+			m_pTransformCom->LookAt_ForLandObject(m_vCamPosition);
+	}
 
 public:
 	virtual HRESULT Initialize_Prototype() override;

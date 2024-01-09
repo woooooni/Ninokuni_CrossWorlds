@@ -73,6 +73,7 @@ namespace Engine
 	enum CHANNELID /* enum 수정시 아래 문자열도 순서에 맞게 교체 필요 */
 	{
 		SOUND_UI,
+		SOUND_UI2,
 		SOUND_VOICE_CHARACTER,
 		SOUND_VOICE_MONSTER1,
 		SOUND_VOICE_MONSTER2,
@@ -93,6 +94,7 @@ namespace Engine
 	static const char* szChannelIDNames[CHANNELID::MAXCHANNEL]
 	{
 		"SOUND_UI",
+		"SOUND_UI2",
 		"SOUND_VOICE_CHARACTER",
 		"SOUND_VOICE_MONSTER1",
 		"SOUND_VOICE_MONSTER2",

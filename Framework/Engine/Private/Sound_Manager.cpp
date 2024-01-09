@@ -112,6 +112,14 @@ void CSound_Manager::Set_ChannelVolume(CHANNELID eID, float fVolume)
 	FMOD_System_Update(m_pSystem);
 }
 
+_float CSound_Manager::Get_ChannelVolume(CHANNELID eID)
+{
+	if (CHANNELID::MAXCHANNEL < eID)
+		return 0.f;
+
+	return 	m_fSoundVolumeArr[eID];;
+}
+
 const _int CSound_Manager::Get_SoundFileIndex(const wstring& pSoundKey)
 {
 	_int iIndex = 0;

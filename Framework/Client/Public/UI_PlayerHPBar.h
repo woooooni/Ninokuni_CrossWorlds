@@ -29,6 +29,8 @@ private:
 	_float2 m_vCurHPPosition = _float2(210.f, 27.f);
 	_float2 m_vMaxHPPosition = _float2(235.f, 27.f);
 
+	_bool m_bAddText = { false };
+
 private:
 	virtual HRESULT	Ready_Components() override;
 

@@ -2,6 +2,7 @@
 #include "UI_Default_Background.h"
 #include "UI_Default_BackStars.h"
 #include "GameInstance.h"
+#include "UI_Manager.h"
 
 CUI_Default_Background::CUI_Default_Background(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CUI(pDevice, pContext, L"UI_Default_Background")
@@ -11,6 +12,20 @@ CUI_Default_Background::CUI_Default_Background(ID3D11Device * pDevice, ID3D11Dev
 CUI_Default_Background::CUI_Default_Background(const CUI_Default_Background& rhs)
 	: CUI(rhs)
 {
+}
+
+void CUI_Default_Background::Set_Active(_bool bActive)
+{
+	if (true == bActive)
+	{
+		CUI_Manager::GetInstance()->OnOff_TextUI(false);
+	}
+	else
+	{
+		CUI_Manager::GetInstance()->OnOff_TextUI(true);
+	}
+
+	m_bActive = bActive;
 }
 
 HRESULT CUI_Default_Background::Initialize_Prototype()
