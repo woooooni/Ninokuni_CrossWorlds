@@ -231,6 +231,9 @@ void CUI_Manager::Set_MainDialogue(_tchar* pszName, _tchar* pszText)
 	if (nullptr == m_pDialogWindow)
 		return;
 
+//	if (Is_DefaultSettingOn())
+//		OnOff_GamePlaySetting(false);
+
 	m_pDialogWindow->Set_Name(pszName);
 	m_pDialogWindow->Set_Text(pszText);
 }
@@ -4901,22 +4904,24 @@ HRESULT CUI_Manager::OnOff_DialogWindow(_bool bOnOff, _uint iMagicNum)
 
 		if (bOnOff) // On
 		{
-			if (!m_pDialogWindow->Get_Active())
-			{
-				m_pDialogWindow->Set_Active(true);
+			if (Is_DefaultSettingOn())
 				OnOff_GamePlaySetting(false);
-			}
+
+			if (!m_pDialogWindow->Get_Active())
+				m_pDialogWindow->Set_Active(true);
 
 		}
 		else // Off
 		{
+			// 카메라 전환 후 직접 켜주어야함.
+//			if (!Is_DefaultSettingOn())
+//				OnOff_GamePlaySetting(true);
+
 			if (m_pDialogWindow->Get_Active())
-			{
 				m_pDialogWindow->Set_Active(false);
-				OnOff_GamePlaySetting(true);
-			}
 		}
 	}
+
 	else if (iMagicNum == 1) // Mini
 	{
 		if (nullptr == m_pDialogMini)
