@@ -556,6 +556,7 @@
     <ClInclude Include="..\Public\StelliaState_Turn.h" />
     <ClInclude Include="..\Public\Sun.h" />
     <ClInclude Include="..\Public\SwiftSolutionMaster.h" />
+    <ClInclude Include="..\Public\SwordMan_AuraBlade.h" />
     <ClInclude Include="..\Public\ThiefCat.h" />
     <ClInclude Include="..\Public\Tool_Item.h" />
     <ClInclude Include="..\Public\TreeGrandfa.h" />
@@ -1162,6 +1163,7 @@
     <ClCompile Include="..\Private\StelliaState_Turn.cpp" />
     <ClCompile Include="..\Private\Sun.cpp" />
     <ClCompile Include="..\Private\SwiftSolutionMaster.cpp" />
+    <ClCompile Include="..\Private\SwordMan_AuraBlade.cpp" />
     <ClCompile Include="..\Private\ThiefCat.cpp" />
     <ClCompile Include="..\Private\Tool_Item.cpp" />
     <ClCompile Include="..\Private\TreeGrandfa.cpp" />
