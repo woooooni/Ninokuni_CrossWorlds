@@ -37,6 +37,17 @@ void CCamera_Manager::Tick(_float fTimeDelta)
 
 	/* Cur Camera Update */
 	m_pCurCamera->Tick(fTimeDelta);
+
+	/* V(WI) */
+	{
+		GI->Set_Transform(CPipeLine::D3DTS_VIEW, m_pCurCamera->Get_Transform()->Get_WorldMatrixInverse());
+	}
+
+	/* P */
+	{
+		const CCamera::PROJ_DESC& tDesc = m_pCurCamera->Get_ProjDesc();
+		GI->Set_Transform(CPipeLine::D3DTS_PROJ, XMMatrixPerspectiveFovLH(tDesc.tLerpFov.fCurValue, tDesc.fAspect, tDesc.fNear, tDesc.fFar));
+	}
 }
 
 void CCamera_Manager::LateTick(_float fTimeDelta)
@@ -45,19 +56,6 @@ void CCamera_Manager::LateTick(_float fTimeDelta)
 		return;
 
 	m_pCurCamera->LateTick(fTimeDelta);
-
-	/* 아직 보간 처리 X 기본 싱글 카메라만 파이프라인에 전달 */
-
-	/* V(WI) */
-	{
-		GI->Set_Transform(CPipeLine::D3DTS_VIEW, m_pCurCamera->Get_Transform()->Get_WorldMatrixInverse());
-	}
-	
-	/* P */
-	{
-		const CCamera::PROJ_DESC& tDesc = m_pCurCamera->Get_ProjDesc();
-		GI->Set_Transform(CPipeLine::D3DTS_PROJ, XMMatrixPerspectiveFovLH(tDesc.tLerpFov.fCurValue, tDesc.fAspect, tDesc.fNear, tDesc.fFar));
-	}
 }
 
 CCamera* CCamera_Manager::Get_Camera(const _uint& iKey)
