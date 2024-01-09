@@ -18,6 +18,11 @@ public:
 	virtual void Tick_State(_float fTimeDelta);
 	virtual void Exit_State();
 
+private:
+	_bool  m_bIsSlow = false;
+	_float m_fTime = 0.f;
+	_float m_fSlowTime = 0.f;
+
 public:
 	static CGlanixState_CounterStart* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

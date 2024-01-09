@@ -32,11 +32,11 @@ void CGlanixState_RageRising::Tick_State(_float fTimeDelta)
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
-		m_fTime += fTimeDelta;
-		if (m_fTime >= m_fFlyTime)
-		{
+		//m_fTime += fTimeDelta;
+		//if (m_fTime >= m_fFlyTime)
+		//{
 			m_pStateMachineCom->Change_State(CGlanix::GLANIX_RAGESTAMP);
-		}
+		//}
 	}
 }
 
