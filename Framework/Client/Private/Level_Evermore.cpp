@@ -70,10 +70,10 @@ HRESULT CLevel_Evermore::Initialize()
 	//	return E_FAIL;
 	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanFAT01"), nullptr)))
 	//	return E_FAIL;
-	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanFL04"), nullptr)))
-		return E_FAIL;
-	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanFL05"), nullptr)))
-		return E_FAIL;
+	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanFL04"), nullptr)))
+	//	return E_FAIL;
+	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanFL05"), nullptr)))
+	//	return E_FAIL;
 	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanFL07"), nullptr)))
 	//	return E_FAIL;
 	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanFLCapitalMerchant"), nullptr)))

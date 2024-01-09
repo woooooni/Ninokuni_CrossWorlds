@@ -184,65 +184,79 @@ HRESULT CCamera_Action::Start_Action_Door()
 	return S_OK;
 }
 
-HRESULT CCamera_Action::Start_Action_Talk(vector<CGameObject*> pTargets)
+HRESULT CCamera_Action::Start_Action_Talk(CGameObject* pNpc1, CGameObject* pNpc2)
 {
-	/* 첫 대화 시작시, 대화에 참여하는 모든 게임 오브젝트들을 넘겨준다. */
-
-	if (pTargets.empty())
-		return E_FAIL;
-
 	m_eCurActionType = CAMERA_ACTION_TYPE::TALK;
 
 	m_bAction = true;
 
-	m_tActionTalkDesc.Targets = pTargets;
-
 	m_tTargetOffset.vCurVec = m_tActionTalkDesc.vTargetOffset;
 	m_tLookAtOffset.vCurVec = m_tActionTalkDesc.vLookAtOffset;
 
-	/* 1명 대화 (ex 쿠우) */
-
-	/* 2명 이상 대화 (타겟들의 첫번째가 주 NPC)*/
-	if (2 <= m_tActionTalkDesc.Targets.size())
+	/* 대화 타겟들 설정 */
+	if (nullptr == pNpc1 && nullptr == pNpc2)
 	{
-		CTransform* pNpcTransform = m_tActionTalkDesc.Targets.front()->Get_Component<CTransform>(L"Com_Transform");
-		CTransform* pPlayerTransform = CGame_Manager::GetInstance()->Get_Player()->Get_Character()
-			->Get_Component<CTransform>(L"Com_Transform");
+		/* 쿠우 혼자 말하는 경우*/
+		return E_FAIL;
+	}
+	else if (nullptr != pNpc1)
+	{
+		m_tActionTalkDesc.pNpc1 = pNpc1;
+		m_tActionTalkDesc.iTalker = 3;
 
-		/* 플레이어 포지션 세팅 */
-		if (nullptr != pNpcTransform && nullptr != pPlayerTransform)
+		if (nullptr != pNpc2)
 		{
-			/* 플레이어 포지션 세팅 */
-			Vec4 vplayerPos = pNpcTransform->Get_RelativeOffset(Vec4{ 0.f, 0.f, m_tActionTalkDesc.fPlayerNpcDistance, 1.f });
-			vplayerPos += pNpcTransform->Get_Position();
-			
-			pPlayerTransform->Set_State(CTransform::STATE_POSITION, vplayerPos);
-
-			/* 플레이어가 Npc 바라보게 */
-			pPlayerTransform->LookAt_ForLandObject(pNpcTransform->Get_Position());
+			m_tActionTalkDesc.pNpc2 = pNpc2;
+			m_tActionTalkDesc.iTalker = 4;
 		}
+
+		m_tActionTalkDesc.pPlayer = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+		if (nullptr == m_tActionTalkDesc.pPlayer)
+			return E_FAIL;
+	}
+	
+	CTransform* pNpcTransform		= m_tActionTalkDesc.pNpc1->Get_Component<CTransform>(L"Com_Transform");
+	CTransform* pPlayerTransform	= m_tActionTalkDesc.pPlayer->Get_Component<CTransform>(L"Com_Transform");
+
+	/* 대화 참여자들의 트랜스폼 세팅 */
+	if (nullptr != pNpcTransform && nullptr != pPlayerTransform)
+	{
+		/* 플레이어 포지션 세팅 */
+		Vec4 vplayerPos = pNpcTransform->Get_RelativeOffset(Vec4{ 0.f, 0.f, m_tActionTalkDesc.fPlayerNpcDistance, 1.f });
+		vplayerPos += pNpcTransform->Get_Position();
+
+		pPlayerTransform->Set_State(CTransform::STATE_POSITION, vplayerPos);
+
+		/* 플레이어가 Npc 바라보게 */
+		pPlayerTransform->LookAt_ForLandObject(pNpcTransform->Get_Position());
 	}
 
 	/* 카메라 세팅 */
-	return Set_Action_Talk_Target(pTargets.front());
+	return Set_Action_Talk_Target(m_tActionTalkDesc.pNpc1);
 }
 
-HRESULT CCamera_Action::Set_Action_Talk_Target(CGameObject* pTarget)
+HRESULT CCamera_Action::Set_Action_Talk_Target(CGameObject* pTalker)
 {
-	/* 다이얼로그 오너가 변경될 때마다 해당 오너를 타겟으로 하여 호출 */
-	
-	if (nullptr == pTarget)
+	if (nullptr == pTalker)
 		return E_FAIL;
 
-	CTransform* pTargetTransform = pTarget->Get_Component<CTransform>(L"Com_Transform");
+	m_tActionTalkDesc.pCurTalker = pTalker;
 
-	if (nullptr == pTargetTransform)
+	CTransform* pTalkerTransform = m_tActionTalkDesc.pCurTalker->Get_Component<CTransform>(L"Com_Transform");
+
+	if (nullptr == pTalkerTransform)
 		return E_FAIL;
+
+
+	/* 타겟별 오프셋 설정 */
+	{
+		m_tTargetOffset.vCurVec.x *= -1.f;
+	}
 
 	/* Cam Position */
 	{
-		const Vec4 vCamPosition = (Vec4)pTargetTransform->Get_Position() + 
-									pTargetTransform->Get_RelativeOffset(m_tTargetOffset.vCurVec).ZeroW();
+		const Vec4 vCamPosition = (Vec4)pTalkerTransform->Get_Position() +
+			pTalkerTransform->Get_RelativeOffset(m_tTargetOffset.vCurVec).ZeroW();
 
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCamPosition);
 
@@ -250,8 +264,8 @@ HRESULT CCamera_Action::Set_Action_Talk_Target(CGameObject* pTarget)
 
 	/* Cam LookAt */
 	{
-		m_tActionTalkDesc.vPrevLookAt  = (Vec4)pTargetTransform->Get_Position() +
-									pTargetTransform->Get_RelativeOffset(m_tLookAtOffset.vCurVec).ZeroW();
+		m_tActionTalkDesc.vPrevLookAt  = (Vec4)pTalkerTransform->Get_Position() +
+			pTalkerTransform->Get_RelativeOffset(m_tLookAtOffset.vCurVec).ZeroW();
 
 		m_pTransformCom->LookAt(m_tActionTalkDesc.vPrevLookAt);
 	}
@@ -262,10 +276,11 @@ HRESULT CCamera_Action::Set_Action_Talk_Target(CGameObject* pTarget)
 
 HRESULT CCamera_Action::Finish_Action_Talk()
 {
-	/* 마지막 대화(플레이어)가 나오고 다이얼로그 사라질 때 호출 */
+	/* 현재 토커가 플레이어, 쿠우라면 바로 리턴 (마지막 대화는 Npc에서 끝나야 한다.) */
+	if (m_tActionTalkDesc.pCurTalker == m_tActionTalkDesc.pPlayer) 
+		return E_FAIL;
 
-
-	/* 다시 팔로우 카메라로 전환 */
+	/* 팔로우 카메라로 블렌딩 */
 	CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
 	if (nullptr != pFollowCam)
 	{
@@ -273,12 +288,13 @@ HRESULT CCamera_Action::Finish_Action_Talk()
 
 		CCamera_Manager::GetInstance()->Change_Camera(CAMERA_TYPE::FOLLOW);
 
+		/* 기존 데이터 삭제 */
+		m_tActionTalkDesc.Clear();
+
+		m_bAction = false;
+
 		return S_OK;
 	}
-
-	m_tActionTalkDesc.Clear();
-
-	m_bAction = false;
 
 	return E_FAIL;
 }
@@ -413,28 +429,28 @@ void CCamera_Action::Tick_Door(_float fTimeDelta)
 
 void CCamera_Action::Tick_Talk(_float fTimeDelta)
 {
-	if (KEY_TAP(KEY::B))
-	{
-		CGameObject* pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
-
-		if (nullptr != pTarget)
-		{
-			Set_Action_Talk_Target(pTarget);
-		}
-	}
-	if (KEY_TAP(KEY::N))
-	{
-		CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"HumanFL04");
-
-		if (nullptr != pTarget)
-		{
-			Set_Action_Talk_Target(pTarget);
-		}
-	}
-	if (KEY_TAP(KEY::M))
-	{
-		Finish_Action_Talk();
-	}
+	//if (KEY_TAP(KEY::B))
+	//{
+	//	CGameObject* pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+	//
+	//	if (nullptr != pTarget && nullptr != m_tActionTalkDesc.pNpc1)
+	//	{
+	//		Set_Action_Talk_Target(pTarget);
+	//	}
+	//}
+	//if (KEY_TAP(KEY::N))
+	//{
+	//	CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"HumanFL04");
+	//
+	//	if (nullptr != pTarget)
+	//	{
+	//		Set_Action_Talk_Target(pTarget);
+	//	}
+	//}
+	//if (KEY_TAP(KEY::M))
+	//{
+	//	Finish_Action_Talk();
+	//}
 }
 
 HRESULT CCamera_Action::Ready_Components()

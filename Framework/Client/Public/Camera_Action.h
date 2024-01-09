@@ -60,18 +60,31 @@ public:
 
 	typedef struct tagActionTalkDesc
 	{
-		const _float fPlayerNpcDistance = 4.f;
+		const _float	fPlayerNpcDistance = 4.f;
 
-		const Vec4 vTargetOffset = { 0.5f, 1.f, 2.5f, 1.f };
-		const Vec4 vLookAtOffset = { 0.f, 1.f, 0.f, 1.f };
+		const Vec4		vTargetOffset = { 0.7f, 1.f, 2.5f, 1.f };
+		const Vec4		vLookAtOffset = { 0.f, 1.f, 0.f, 1.f };
 
-		Vec4 vPrevLookAt; /* 블렌딩용 */
-		vector<CGameObject*> Targets;
+		Vec4			vPrevLookAt; /* 블렌딩용 */
+		
+		CGameObject*	pNpc1	= nullptr;
+		CGameObject*	pNpc2	= nullptr;
+
+		CGameObject*	pPlayer = nullptr;
+		CGameObject*	pPet	= nullptr;
+
+		CGameObject*	pCurTalker = nullptr;
+
+		_uint			iTalker = 0; /* 대화에 참여하는 모든 인원 수 (플레이어, 쿠우 포함)*/
 
 		void Clear()
 		{
-			Targets.clear();
-			Targets.shrink_to_fit();
+			pNpc1		= nullptr;
+			pNpc2		= nullptr;
+			pPlayer		= nullptr;
+			pPet		= nullptr;
+			pCurTalker	= nullptr;
+			iTalker = 0;
 		}
 
 	}ACTION_TALK_DESC;
@@ -95,9 +108,16 @@ public:
 	HRESULT Start_Action_Lobby();
 	HRESULT Start_Action_Door();
 
-	HRESULT Start_Action_Talk(vector<CGameObject*> pTargets);
-	HRESULT Set_Action_Talk_Target(CGameObject* pTarget);
-	HRESULT Finish_Action_Talk();
+	/* 첫 대화 시작시, 대화에 참여하는 Npc를 모두 넘겨준다. (플레이어, 쿠우 제외) */
+	/* pNpc1는 대화를 처음 시작하게 되는 Npc이다. pNpc2는 두명 이상의 Npc가 필요한 경우 넘겨준다. */
+	HRESULT Start_Action_Talk(CGameObject* pNpc1, CGameObject* pNpc2 = nullptr); 
+
+	/* 대화 도중 말하는 사람이 바뀔 때 호출 */
+	HRESULT Set_Action_Talk_Target(CGameObject* pTalker);
+	
+	/* 마지막 다이얼로그(Npc)가 사라질 때 호출 */
+	HRESULT Finish_Action_Talk();	
+
 	
 	const _bool& Is_Finish_Action() const { return m_bAction; }
 	virtual Vec4 Get_LookAt() override;
