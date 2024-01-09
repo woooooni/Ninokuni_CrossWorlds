@@ -295,6 +295,7 @@ public:
 
 	void Set_UVLoop(_int iLoop);
 	void Set_UVFlow(_int iLoop, _float2 fDir, _float2 fSpeed);
+	HRESULT Start_Dissolve(_uint iDissolveTexIndex, _float4 vDissolveColor, _float fDissolveSpeed, _float  fDissolveTotal);
 
 public:
 	void Set_Owner(CGameObject* pGameObject) { m_pOwnerObject = pGameObject; }
@@ -383,6 +384,15 @@ private:
 
 	_float3 m_fBlurColor = _float3(0.f, 0.f, 0.f);
 	_float  m_fBlurPower = 0.f;
+
+	// Dissolve
+	class CTexture* m_pDissolveTextureCom = nullptr;
+	_bool   m_bDissolve = false;
+	_uint   m_iDissolveTexIndex = 0;
+	_float4 m_vDissolveColor  = _float4(0.427f, 0.894f, 1.f, 1.f);
+	_float  m_fDissolveTotal  = 10.f;
+	_float  m_fDissolveSpeed  = 5.f;
+	_float  m_fDissolveWeight = 0.f;
 
 private:
 	class CRenderer*  m_pRendererCom  = nullptr;

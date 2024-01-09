@@ -474,10 +474,34 @@ void CTool_Particle::Tick(_float fTimeDelta)
 		ImGui::SameLine();
 		ImGui::InputText("DiffuseTexturePath", m_cDiffuseTexturePath, IM_ARRAYSIZE(m_cDiffuseTexturePath));
 
-		ImGui::Text("DiffuseTextureIndex");
-		if (ImGui::InputInt("##DiffuseTextureIndex", &(_int)m_tParticleInfo.iTextureIndexDiffuse))
-			Store_InfoParticle();
-		ImGui::NewLine();
+		if (m_pParticle != nullptr)
+		{
+			ImGui::Text("DiffuseTextureIndex");
+			if (ImGui::InputInt("##DiffuseTextureIndex", &(_int)m_tParticleInfo.iTextureIndexDiffuse))
+				Store_InfoParticle();
+			ImGui::NewLine();
+
+			CTexture* pDiffuseTexture = static_cast<CParticle*>(m_pParticle)->Get_DiffuseTexture();
+			if (pDiffuseTexture != nullptr)
+			{
+				ImGui::Text("Diffuse Texture");
+				if (ImGui::BeginListBox("##Effect_DiffuseTexture_List", ImVec2(450.f, 200.f)))
+				{
+					for (size_t i = 0; i < pDiffuseTexture->Get_TextureCount(); ++i)
+					{
+						if (i % 5 != 0)
+							IMGUI_SAME_LINE;
+
+						if (ImGui::ImageButton(pDiffuseTexture->Get_Srv(i), ImVec2(50.f, 50.f)))
+						{
+							m_tParticleInfo.iTextureIndexDiffuse = i;
+							//Store_InfoParticle();
+						}
+					}
+					ImGui::EndListBox();
+				}
+			}
+		}
 
 		// 알파 텍스처 지정
 		ImGui::Text("AlphaTextureName :");
@@ -487,10 +511,34 @@ void CTool_Particle::Tick(_float fTimeDelta)
 		ImGui::SameLine();
 		ImGui::InputText("AlphaTexturePath", m_cAlphaTexturePath, IM_ARRAYSIZE(m_cAlphaTexturePath));
 
-		ImGui::Text("AlphaTextureIndex");
-		if (ImGui::InputInt("##AlphaTextureIndex", &(_int)m_tParticleInfo.iTextureIndexAlpha))
-			Store_InfoParticle();
-		ImGui::NewLine();
+		if (m_pParticle != nullptr)
+		{
+			ImGui::Text("AlphaTextureIndex");
+			if (ImGui::InputInt("##AlphaTextureIndex", &(_int)m_tParticleInfo.iTextureIndexAlpha))
+				Store_InfoParticle();
+			ImGui::NewLine();
+
+			CTexture* pAlphaTexture = static_cast<CParticle*>(m_pParticle)->Get_AlphaTexture();
+			if (pAlphaTexture != nullptr)
+			{
+				ImGui::Text("Alpha Texture");
+				if (ImGui::BeginListBox("##Effect_AlphaTexture_List", ImVec2(450.f, 200.f)))
+				{
+					for (size_t i = 0; i < pAlphaTexture->Get_TextureCount(); ++i)
+					{
+						if (i % 5 != 0)
+							IMGUI_SAME_LINE;
+
+						if (ImGui::ImageButton(pAlphaTexture->Get_Srv(i), ImVec2(50.f, 50.f)))
+						{
+							m_tParticleInfo.iTextureIndexAlpha = i;
+							//Store_InfoParticle();
+						}
+					}
+					ImGui::EndListBox();
+				}
+			}
+		}
 
 		// 디퓨즈 텍스처 시작 텍스처 인덱스
 		ImGui::Checkbox("RandomStartTextureIndex", &m_tParticleInfo.bRandomStartIndex);

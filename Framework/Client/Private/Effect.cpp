@@ -70,6 +70,19 @@ void CEffect::Set_UVFlow(_int iLoop, _float2 fDir, _float2 fSpeed)
 	Reset_UV();
 }
 
+HRESULT CEffect::Start_Dissolve(_uint iDissolveTexIndex, _float4 vDissolveColor, _float fDissolveSpeed,	_float fDissolveTotal)
+{
+	m_iDissolveTexIndex = iDissolveTexIndex;
+	m_vDissolveColor = vDissolveColor;
+	m_fDissolveSpeed = fDissolveSpeed;
+	m_fDissolveTotal = fDissolveTotal;
+
+	m_fDissolveWeight = 0.f;
+	m_bDissolve = true;
+
+	return S_OK;
+}
+
 void CEffect::Reset_Effect()
 {
 	if (m_pTransformCom == nullptr)
@@ -294,14 +307,29 @@ void CEffect::Tick(_float fTimeDelta)
 	if (m_bDead)
 		return;
 
-	// 지속 시간
-	m_fAccDeletionTime += fTimeDelta;
-	if (m_bEffectDie || m_fAccDeletionTime >= m_fLifeTime)
+	// Dissolve
+	if (m_bDissolve)
 	{
-		m_bEffectDie = true;
-		if (GI->Get_CurrentLevel() != LEVEL_TOOL)
-			Set_Dead(true);
-    }
+		if (m_fDissolveWeight >= m_fDissolveTotal)
+		{
+			m_bEffectDie = true;
+			if (GI->Get_CurrentLevel() != LEVEL_TOOL)
+				Set_Dead(true);
+		}
+		else
+			m_fDissolveWeight += m_fDissolveSpeed * fTimeDelta;
+	}
+	else
+	{
+		// 지속 시간
+		m_fAccDeletionTime += fTimeDelta;
+		if (m_bEffectDie || m_fAccDeletionTime >= m_fLifeTime)
+		{
+			m_bEffectDie = true;
+			if (GI->Get_CurrentLevel() != LEVEL_TOOL)
+				Set_Dead(true);
+		}
+	}
 
 	if (m_bDead || m_bEffectDie)
 		return;
@@ -422,7 +450,6 @@ void CEffect::LateTick(_float fTimeDelta)
 	}
 }
 
-
 HRESULT CEffect::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
 {
 	if (m_bDead && GI->Get_CurrentLevel() != LEVEL_TOOL || m_tEffectDesc.eType == EFFECT_TYPE::EFFECT_END)
@@ -471,14 +498,24 @@ HRESULT CEffect::Bind_ShaderResource_Instance(CShader* pShader)
 	if (FAILED(pShader->Bind_RawValue("g_fBlurPower", &m_tEffectDesc.fBlurPower, sizeof(_float))))
 		return E_FAIL;
 
-	if (m_pDiffuseTextureCom != nullptr && -1 < m_tEffectDesc.iTextureIndexDiffuse) {
+	if (m_pDiffuseTextureCom  != nullptr && -1 < m_tEffectDesc.iTextureIndexDiffuse) {
 		if (FAILED(m_pDiffuseTextureCom->Bind_ShaderResource(pShader, "g_DiffuseTexture", m_tEffectDesc.iTextureIndexDiffuse)))
 			return E_FAIL;
 	}
-	if (m_pAlphaTextureCom != nullptr && -1 < m_tEffectDesc.iTextureIndexAlpha) {
+	if (m_pAlphaTextureCom    != nullptr && -1 < m_tEffectDesc.iTextureIndexAlpha) {
 		if (FAILED(m_pAlphaTextureCom->Bind_ShaderResource(pShader, "g_AlphaTexture", m_tEffectDesc.iTextureIndexAlpha)))
 			return E_FAIL;
 	}
+	if (m_pDissolveTextureCom != nullptr)
+	{
+		if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(pShader, "g_DissolveTexture", m_iDissolveTexIndex)))
+			return E_FAIL;
+	}
+
+	if (FAILED(pShader->Bind_RawValue("g_vDissolveColor", &m_vDissolveColor, sizeof(_float4))))
+		return E_FAIL;
+	if (FAILED(pShader->Bind_RawValue("g_fDissolveWeight", &m_fDissolveWeight, sizeof(_float))))
+		return E_FAIL;
 
 	if (m_tEffectDesc.iShaderPass <= 3)
 	{
@@ -992,6 +1029,10 @@ HRESULT CEffect::Ready_Components()
 	Set_Texture_Diffuse();
 	Set_Texture_Alpha();
 
+	m_pDissolveTextureCom = static_cast<CTexture*>(GI->Clone_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Noise")));
+	if (m_pDissolveTextureCom == nullptr)
+		return E_FAIL;
+
 	/* For.Com_Model */
 	if (m_tEffectDesc.eType == EFFECT_TYPE::EFFECT_MESH)
 		Set_Model();
@@ -1044,6 +1085,7 @@ void CEffect::Free()
 	Safe_Release(m_pTransformCom);
 	Safe_Release(m_pRigidBodyCom);
 	Safe_Release(m_pVIBufferCom);
+	Safe_Release(m_pDissolveTextureCom);
 }
 
 

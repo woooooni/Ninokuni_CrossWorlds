@@ -200,6 +200,9 @@ public:
 	void Set_LoopParticle(_bool bLoop) { m_tParticleDesc.bParticleLoop = bLoop; }
 	class CTransform* Get_TransformCom() { return m_pTransformCom; }
 
+	class CTexture* Get_DiffuseTexture() { return m_pDiffuseTextureCom; }
+	class CTexture* Get_AlphaTexture() { return m_pAlphaTextureCom; }
+
 private:
 	_bool m_isCloned = { false };
 	PARTICLE_DESC m_tParticleDesc;

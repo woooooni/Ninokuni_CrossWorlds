@@ -333,7 +333,10 @@ void CTool_Effect::Tick_EffectTool()
 							IMGUI_SAME_LINE;
 
 						if (ImGui::ImageButton(pDiffuseTexture->Get_Srv(i), ImVec2(50.f, 50.f)))
+						{
 							m_tEffectInfo.iTextureIndexDiffuse = i;
+							//Store_InfoEffect();
+						}
 					}
 					ImGui::EndListBox();
 				}
@@ -366,7 +369,10 @@ void CTool_Effect::Tick_EffectTool()
 							IMGUI_SAME_LINE;
 
 						if (ImGui::ImageButton(pAlphaTexture->Get_Srv(i), ImVec2(50.f, 50.f)))
+						{
 							m_tEffectInfo.iTextureIndexAlpha = i;
+							//Store_InfoEffect();
+						}
 					}
 					ImGui::EndListBox();
 				}
