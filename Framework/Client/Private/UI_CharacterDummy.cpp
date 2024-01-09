@@ -6,6 +6,9 @@
 #include "Character_Manager.h"
 #include "Game_Manager.h"
 #include "Player.h"
+#include "Sword.h"
+#include "UI_Dummy_Weapon.h"
+#include "Weapon_Manager.h"
 
 
 CUI_CharacterDummy::CUI_CharacterDummy(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
@@ -36,6 +39,9 @@ HRESULT CUI_CharacterDummy::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+	if (FAILED(Ready_Weapon()))
+		return E_FAIL;
+
 	_float3 vCamPos, vLook, vUp;
 
 	switch (m_eCurCharacter)
@@ -63,6 +69,8 @@ HRESULT CUI_CharacterDummy::Initialize(void* pArg)
 
 	m_bActive = false;
 
+	m_pWeapon->Set_Owner(this, m_eCurCharacter);
+
 	return S_OK;
 }
 
@@ -80,8 +88,27 @@ void CUI_CharacterDummy::Tick(_float fTimeDelta)
 				m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), MouseMove * -0.1f, fTimeDelta);
 			}
 		}
+
+		if (m_pWeapon != nullptr)
+		{ 
+//			if (!m_pWeapon->Get_Active())
+//				m_pWeapon->Set_Active(true);
+//
+			Matrix matSocketLocal = m_pModelCom->Get_SocketLocalMatrix(0);
+			Matrix matSocketWorld = matSocketLocal * m_pTransformCom->Get_WorldMatrix();
+
+			m_pWeapon->Set_SocketWorld(matSocketWorld);
+			m_pWeapon->Tick(fTimeDelta);
+		}
+
 		__super::Tick(fTimeDelta);
 	}
+
+//	if (m_pWeapon != nullptr)
+//	{
+//		if (m_pWeapon->Get_Active())
+//			m_pWeapon->Set_Active(false);
+//	}
 }
 
 void CUI_CharacterDummy::LateTick(_float fTimeDelta)
@@ -89,6 +116,10 @@ void CUI_CharacterDummy::LateTick(_float fTimeDelta)
 	if (m_bActive)
 	{
 		m_pModelCom->LateTick(fTimeDelta);
+
+		if (nullptr != m_pWeapon)
+			m_pWeapon->LateTick(fTimeDelta);
+
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND_UI, this);
 	}
 	
@@ -175,6 +206,7 @@ HRESULT CUI_CharacterDummy::Ready_Components()
 	case CHARACTER_TYPE::SWORD_MAN:
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_SwordMan_Dummy"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 			return E_FAIL;
+		m_iAnimIndex = 54;
 		break;
 
 	case CHARACTER_TYPE::ENGINEER:
@@ -192,7 +224,7 @@ HRESULT CUI_CharacterDummy::Ready_Components()
 	for (_uint i = 0; i < PART_TYPE::PART_END; ++i)
  		m_pCharacterPartModels[i] = CCharacter_Manager::GetInstance()->Get_PartModel(m_eCharacterType, PART_TYPE(i), 0);
 
-	m_pModelCom->Set_Animation(140);
+	m_pModelCom->Set_Animation(m_iAnimIndex);
 
 	return S_OK;
 }
@@ -224,6 +256,56 @@ HRESULT CUI_CharacterDummy::Ready_Sockets()
 #pragma region Ready_Parts
 HRESULT CUI_CharacterDummy::Ready_Parts()
 {
+	return S_OK;
+}
+HRESULT CUI_CharacterDummy::Ready_Weapon()
+{
+	CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+	if (pPlayer == nullptr)
+		return E_FAIL;
+	CCharacter* pCharacter = pPlayer->Get_Character();
+	if (pCharacter == nullptr)
+		return E_FAIL;
+
+	CHARACTER_TYPE eCharacterType = pCharacter->Get_CharacterType();
+
+	m_eCurCharacter = eCharacterType;
+
+	switch (m_eCurCharacter)
+	{
+	case CHARACTER_TYPE::SWORD_MAN:
+		m_pWeapon = CUI_Dummy_Weapon::Create(m_pDevice, m_pContext, L"SwordMan_Sword");
+		if (nullptr == m_pWeapon)
+			return S_OK;
+
+		m_pWeapon->Set_WeaponModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Flower01"));
+
+		if (nullptr == m_pWeapon->Get_WeaponModelCom())
+		{
+			Safe_Release(m_pWeapon);
+			return S_OK;
+		}
+		break;
+
+	case CHARACTER_TYPE::DESTROYER:
+		m_pWeapon = CUI_Dummy_Weapon::Create(m_pDevice, m_pContext, L"Destroyer_Hammer");
+		if (nullptr == m_pWeapon)
+			return S_OK;
+
+
+		m_pWeapon->Set_WeaponModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Food02"));
+
+		if (nullptr == m_pWeapon->Get_WeaponModelCom())
+		{
+			Safe_Release(m_pWeapon);
+			return S_OK;
+		}
+		break;
+
+	case CHARACTER_TYPE::ENGINEER:
+		break;
+	}
+
 	return S_OK;
 }
 #pragma endregion
@@ -280,5 +362,7 @@ CGameObject* CUI_CharacterDummy::Clone(void* pArg)
 void CUI_CharacterDummy::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pWeapon);
 }
 

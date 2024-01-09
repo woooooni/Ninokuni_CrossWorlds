@@ -580,6 +580,7 @@
     <ClInclude Include="..\Public\UI_Dummy_Destroyer.h" />
     <ClInclude Include="..\Public\UI_Dummy_Engineer.h" />
     <ClInclude Include="..\Public\UI_Dummy_Swordsman.h" />
+    <ClInclude Include="..\Public\UI_Dummy_Weapon.h" />
     <ClInclude Include="..\Public\UI_Emoticon_BalloonEmoticon.h" />
     <ClInclude Include="..\Public\UI_Emoticon_Button.h" />
     <ClInclude Include="..\Public\UI_Emoticon_SpeechBalloon.h" />
@@ -1185,6 +1186,7 @@
     <ClCompile Include="..\Private\UI_Dummy_Destroyer.cpp" />
     <ClCompile Include="..\Private\UI_Dummy_Engineer.cpp" />
     <ClCompile Include="..\Private\UI_Dummy_Swordsman.cpp" />
+    <ClCompile Include="..\Private\UI_Dummy_Weapon.cpp" />
     <ClCompile Include="..\Private\UI_Emoticon_BalloonEmoticon.cpp" />
     <ClCompile Include="..\Private\UI_Emoticon_Button.cpp" />
     <ClCompile Include="..\Private\UI_Emoticon_SpeechBalloon.cpp" />

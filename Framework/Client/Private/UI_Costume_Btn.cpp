@@ -84,6 +84,10 @@ void CUI_Costume_Btn::LateTick(_float fTimeDelta)
 			{
 				m_fAlpha = 1.f;
 			}
+			else if (COSTUME_WEAPON == m_eUIType)
+			{
+				m_fAlpha = 1.f;
+			}
 			else
 				m_fAlpha = 0.3f;
 		}
@@ -120,7 +124,7 @@ void CUI_Costume_Btn::On_Mouse(_float fTimeDelta)
 	{
 		if (KEY_TAP(KEY::LBTN))
 		{
-			if (COSTUME_CLOTH == m_eUIType || COSTUME_HAIRACC == m_eUIType)
+			if (COSTUME_CLOTH == m_eUIType || COSTUME_HAIRACC == m_eUIType || COSTUME_WEAPON == m_eUIType)
 			{
 				CUI_Manager::GetInstance()->Update_CostumeBtnState(_uint(m_eUIType));
 				CUI_Manager::GetInstance()->OnOff_CostumeSlot(_uint(m_eUIType), true);

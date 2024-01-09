@@ -32,7 +32,10 @@ protected:
 	virtual HRESULT Ready_Colliders() override;
 
 private:
+	class CUI_Dummy_Weapon* m_pWeapon = { nullptr };
+
 	_bool m_bActive = { false };
+	_uint m_iAnimIndex = { 0 };
 	_vector m_vCamPosition = XMVectorSet(0.f, 0.f, 0.f, 0.f);
 	_matrix m_vCamMatrix = XMMatrixIdentity();
 	_float4x4 m_ViewMatrix;
@@ -41,6 +44,7 @@ private:
 private:
 	HRESULT Ready_Sockets();
 	HRESULT Ready_Parts();
+	HRESULT Ready_Weapon();
 
 private:
 	_float2 Transpose_ProjectionPosition();

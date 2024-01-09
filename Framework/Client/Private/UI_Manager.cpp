@@ -14,6 +14,7 @@
 #include "Game_Manager.h"
 #include "Player.h"
 #include "Monster.h"
+#include "Weapon.h"
 
 #include "UI_Fade.h"
 #include "UI_Veil.h"
@@ -236,6 +237,8 @@ void CUI_Manager::Set_MainDialogue(_tchar* pszName, _tchar* pszText)
 
 	m_pDialogWindow->Set_Name(pszName);
 	m_pDialogWindow->Set_Text(pszText);
+
+	m_pDialogWindow->Set_Active(true);
 }
 
 _int CUI_Manager::Get_SelectedCharacter()
@@ -2081,6 +2084,7 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 
 	m_CostumeCloth.reserve(3);
 	m_CostumeHairAcc.reserve(3);
+	m_CostumeWeapon.reserve(2);
 
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
@@ -2105,6 +2109,13 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 	if (nullptr == pSlot)
 		return E_FAIL;
 	Safe_AddRef(pSlot);
+	pSlot = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Costume_WeaponSection_First"), &UIDesc, &pSlot)))
+		return E_FAIL;
+	m_CostumeWeapon.push_back(dynamic_cast<CUI_Costume_ItemSlot*>(pSlot));
+	if (nullptr == pSlot)
+		return E_FAIL;
+	Safe_AddRef(pSlot);
 
 	UIDesc.fY += fOffset;
 	pSlot = nullptr;
@@ -2118,6 +2129,13 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Costume_HairAccSection_Second"), &UIDesc, &pSlot)))
 		return E_FAIL;
 	m_CostumeHairAcc.push_back(dynamic_cast<CUI_Costume_ItemSlot*>(pSlot));
+	if (nullptr == pSlot)
+		return E_FAIL;
+	Safe_AddRef(pSlot);
+	pSlot = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Costume_WeaponSection_Second"), &UIDesc, &pSlot)))
+		return E_FAIL;
+	m_CostumeWeapon.push_back(dynamic_cast<CUI_Costume_ItemSlot*>(pSlot));
 	if (nullptr == pSlot)
 		return E_FAIL;
 	Safe_AddRef(pSlot);
@@ -3323,6 +3341,16 @@ HRESULT CUI_Manager::Ready_GameObjectToLayer(LEVELID eID)
 		Safe_AddRef(iter);
 	}
 
+	for (auto& iter : m_CostumeWeapon)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
 	for (auto& iter : m_QuestPopUp)
 	{
 		if (nullptr == iter)
@@ -3711,20 +3739,6 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 			m_pCostumeAnnounce->Set_Active(false);
 	}
 
-	// Temp
-	if (KEY_TAP(KEY::P))
-	{
-		if (m_pDialogWindow->Get_Active())
-		{
-			OnOff_DialogWindow(false, 0);
-		}
-		else
-		{
-			Set_MainDialogue(TEXT("클로이"), TEXT("후훗. 장난은 여기까지만 할까? 아쉽지만 여기서 헤어져야겠어. 나도 여기서 할 일이 있었거든. 나중에 또 만나~ 안녕~ 쿠우도 안녕~"));
-			OnOff_DialogWindow(true, 0);
-		}
-	}
-
 	if (KEY_TAP(KEY::O))
 	{
 		if (m_pBossNameTag->Get_Active())
@@ -3856,11 +3870,22 @@ void CUI_Manager::Update_CostumeBtnState(_uint iIndex)
 	{
 		if (m_CostumeClickedBtn[CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_HAIRACC]->Get_Active())
 			m_CostumeClickedBtn[CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_HAIRACC]->Set_Active(false);
+		if (m_CostumeClickedBtn[CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_WEAPON]->Get_Active())
+			m_CostumeClickedBtn[CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_WEAPON]->Set_Active(false);
 	}
 	else if (iIndex == _uint(CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_HAIRACC))
 	{
 		if (m_CostumeClickedBtn[CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_CLOTH]->Get_Active())
 			m_CostumeClickedBtn[CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_CLOTH]->Set_Active(false);
+		if (m_CostumeClickedBtn[CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_WEAPON]->Get_Active())
+			m_CostumeClickedBtn[CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_WEAPON]->Set_Active(false);
+	}
+	else if (iIndex == _uint(CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_WEAPON))
+	{
+		if (m_CostumeClickedBtn[CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_CLOTH]->Get_Active())
+			m_CostumeClickedBtn[CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_CLOTH]->Set_Active(false);
+		if (m_CostumeClickedBtn[CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_HAIRACC]->Get_Active())
+			m_CostumeClickedBtn[CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_HAIRACC]->Set_Active(false);
 	}
 }
 
@@ -4012,9 +4037,6 @@ void CUI_Manager::Update_SkillSection(_uint iSkillType, _uint iSectionType)
 
 void CUI_Manager::Update_ClothSlotState(_uint iSectionType, _uint iSlotIndex)
 {
-	//enum UI_COSTUME_SECTION { COSTUMESECTION_CLOTH, COSTUMESECTION_HAIRACC, COSTUMESECTION_END }; iSectionType
-	//enum UI_COSTUME_SLOT { COSTUMESLOT_FIRST, COSTUMESLOT_SECOND, COSTUMESLOT_THIRD, COSTUMESLOT_END }; iSlotIndex
-
 	switch (iSectionType)
 	{
 	case 0: // Cloth
@@ -4039,6 +4061,19 @@ void CUI_Manager::Update_ClothSlotState(_uint iSectionType, _uint iSlotIndex)
 
 			m_CostumeHairAcc[i]->Set_Clicked(false);
 		}
+		break;
+
+	case 2: // Weapon
+		m_CostumeWeapon[iSlotIndex]->Set_Clicked(true); // 선택되었다.
+
+		for (_uint i = 0; i < m_CostumeWeapon.size(); ++i)
+		{
+			if (i == iSlotIndex)
+				continue;
+
+			m_CostumeWeapon[i]->Set_Clicked(false);
+		}
+
 		break;
 	}
 }
@@ -4065,6 +4100,8 @@ void CUI_Manager::Update_CostumeBtn()
 		return;
 
 	CModel* pPart = nullptr;
+	CWeapon* pWeapon = nullptr;
+
 	_int iSlotIndex = -1;
 
 	switch (iIndex)
@@ -4136,6 +4173,50 @@ void CUI_Manager::Update_CostumeBtn()
 					}
 				}
 			}
+		}
+		break;
+
+	case 3: //m_CostumeWeapon
+		pWeapon = pCharacter->Get_Weapon(); // 현재 착용하고 있는 무기
+		if (nullptr == pWeapon)
+			return;
+
+		pPart = pWeapon->Get_WeaponModelCom();
+		if (nullptr == pPart)
+			return;
+
+		for (auto& iter : m_CostumeWeapon)
+		{
+			if (pPart->Get_Name() == iter->Get_PartTag())
+				iSlotIndex = iter->Get_SlotIndex(); // 현재 장착중인 아이템이 있는 슬롯 인덱스. 없으면 -1.
+		}
+		if (0 <= iSlotIndex && m_CostumeWeapon.size() >= iSlotIndex)
+		{
+			CUI::UI_INFO UIDesc = {};
+			UIDesc = m_CostumeWeapon[iSlotIndex]->Get_UI_Info();
+			m_pCostumeAnnounce->Set_AnnouncePosition(_float2(UIDesc.fX + 100.f, UIDesc.fY + 15.f));
+
+			for (auto& iter : m_CostumeWeapon)
+			{
+				if (iter->Get_Clicked())
+				{
+					if (iSlotIndex == iter->Get_SlotIndex())
+					{
+						// 현재 장착하고있는 것과 코스튬 태그가 같은 슬롯이 Clicked되면 버튼의 인덱스를 변경한다.
+						m_pCostumeChange->Set_TextureIndex(1);
+					}
+					else
+					{
+						// 그렇지 않으면 기존 '장착'버튼이 선택된다.
+						m_pCostumeChange->Set_TextureIndex(0);
+					}
+				}
+			}
+		}
+		else if (iSlotIndex == -1)
+		{
+			// 착용된 무기 스킨이 없다.
+			m_pCostumeAnnounce->Set_AnnouncePosition(_float2(9999.f, 9999.f));
 		}
 		break;
 	}
@@ -5079,16 +5160,13 @@ HRESULT CUI_Manager::OnOff_CostumeWindow(_bool bOnOff)
 
 HRESULT CUI_Manager::OnOff_CostumeSlot(_uint iSection, _bool bOnOff)
 {
-	// enum UI_COSTUMEBTN_TYPE { COSTUMEBTN_UNCLICKED, COSTUMEBTN_CLICKED, SKILLBTNTYPE_END };
 	m_pCostumeChange->Set_TextureIndex(0);
 
 	if (bOnOff)
 	{
-
-		// 옷을 켠거면 ,,
 		switch (iSection)
 		{
-		case 0:
+		case 0: // Cloth
 			for (auto& iter : m_CostumeCloth)
 			{
 				if (nullptr != iter)
@@ -5099,15 +5177,43 @@ HRESULT CUI_Manager::OnOff_CostumeSlot(_uint iSection, _bool bOnOff)
 				if (nullptr != iter)
 					iter->Set_Active(false);
 			}
+			for (auto& iter : m_CostumeWeapon)
+			{
+				if (nullptr != iter)
+					iter->Set_Active(false);
+			}
 			break;
 
-		case 2:
+		case 2: // HairAcc
 			for (auto& iter : m_CostumeCloth)
 			{
 				if (nullptr != iter)
 					iter->Set_Active(false);
 			}
 			for (auto& iter : m_CostumeHairAcc)
+			{
+				if (nullptr != iter)
+					iter->Set_Active(true);
+			}
+			for (auto& iter : m_CostumeWeapon)
+			{
+				if (nullptr != iter)
+					iter->Set_Active(false);
+			}
+			break;
+
+		case 5: // Weapon
+			for (auto& iter : m_CostumeCloth)
+			{
+				if (nullptr != iter)
+					iter->Set_Active(false);
+			}
+			for (auto& iter : m_CostumeHairAcc)
+			{
+				if (nullptr != iter)
+					iter->Set_Active(false);
+			}
+			for (auto& iter : m_CostumeWeapon)
 			{
 				if (nullptr != iter)
 					iter->Set_Active(true);
@@ -5123,6 +5229,11 @@ HRESULT CUI_Manager::OnOff_CostumeSlot(_uint iSection, _bool bOnOff)
 				iter->Set_Active(false);
 		}
 		for (auto& iter : m_CostumeHairAcc)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_CostumeWeapon)
 		{
 			if (nullptr != iter)
 				iter->Set_Active(false);
@@ -5931,6 +6042,14 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		CUI_Costume_ItemSlot::Create(m_pDevice, m_pContext, CUI_Costume_ItemSlot::UI_COSTUME_SECTION::COSTUMESECTION_HAIRACC,
 			CUI_Costume_ItemSlot::UI_COSTUME_SLOT::COSTUMESLOT_THIRD), LAYER_UI)))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Costume_WeaponSection_First"),
+		CUI_Costume_ItemSlot::Create(m_pDevice, m_pContext, CUI_Costume_ItemSlot::UI_COSTUME_SECTION::COSTUMESECTION_WEAPON,
+			CUI_Costume_ItemSlot::UI_COSTUME_SLOT::COSTUMESLOT_FIRST), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Costume_WeaponSection_Second"),
+		CUI_Costume_ItemSlot::Create(m_pDevice, m_pContext, CUI_Costume_ItemSlot::UI_COSTUME_SECTION::COSTUMESECTION_WEAPON,
+			CUI_Costume_ItemSlot::UI_COSTUME_SLOT::COSTUMESLOT_SECOND), LAYER_UI)))
+		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_QuestPopup_Frame_Top"),
 		CUI_PopupQuest::Create(m_pDevice, m_pContext, CUI_PopupQuest::UI_QUESTPOPUP::POPUPFRAME_TOP), LAYER_UI)))
@@ -6673,6 +6792,10 @@ void CUI_Manager::Free()
 	for (auto& pItemSlot : m_CostumeHairAcc)
 		Safe_Release(pItemSlot);
 	m_CostumeHairAcc.clear();
+
+	for (auto& pItemSlot : m_CostumeWeapon)
+		Safe_Release(pItemSlot);
+	m_CostumeWeapon.clear();
 
 	for (auto& pPopup : m_QuestPopUp)
 		Safe_Release(pPopup);

@@ -246,6 +246,7 @@ private:
 	class CUI_Costume_LineBox* m_pCostumeBox = { nullptr };
 	vector<class CUI_Costume_ItemSlot*> m_CostumeCloth;
 	vector<class CUI_Costume_ItemSlot*> m_CostumeHairAcc;
+	vector<class CUI_Costume_ItemSlot*> m_CostumeWeapon;
 	class CUI_Basic* m_pCostumeAnnounce = { nullptr };
 	class CUI_Costume_ChangeBtn* m_pCostumeChange = { nullptr };
 	// For Inven

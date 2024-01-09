@@ -6,7 +6,7 @@ BEGIN(Client)
 class CUI_Costume_ItemSlot final : public CUI
 {
 public:
-	enum UI_COSTUME_SECTION { COSTUMESECTION_CLOTH, COSTUMESECTION_HAIRACC, COSTUMESECTION_END };
+	enum UI_COSTUME_SECTION { COSTUMESECTION_CLOTH, COSTUMESECTION_HAIRACC, COSTUMESECTION_WEAPON, COSTUMESECTION_END };
 	enum UI_COSTUME_SLOT { COSTUMESLOT_FIRST, COSTUMESLOT_SECOND, COSTUMESLOT_THIRD, COSTUMESLOT_END };
 
 protected:
@@ -42,6 +42,7 @@ private:
 
 	// m_pTextureCom은 SwordsMan 의상 Texture을 사용한다.
 	CTexture* m_pTexCom_SMAcc = { nullptr };
+	CTexture* m_pTexCom_SMWeapon = { nullptr };
 	CTexture* m_pTexCom_EGCostume = { nullptr };
 	CTexture* m_pTexCom_EGAcc = { nullptr };
 	CTexture* m_pTexCom_DTCostume = { nullptr };
