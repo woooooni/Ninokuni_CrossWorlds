@@ -99,7 +99,7 @@ private:
 
 	/* 구면 좌표계에서 카메라의 최대 최소 y 값*/
 	_float			m_fMinLimitY			= { 0.7f };
-	_float			m_fMaxLimitY			= { 2.4f };
+	_float			m_fMaxLimitY			= { 1.8f };
 
 	/* 회전량이 너무 많거나 적을경우 카메라가 획 도는 경우를 방지하기 위한 Limit값 */
 	_float			m_fMaxRotLimitDeltaY	= { 0.05f };

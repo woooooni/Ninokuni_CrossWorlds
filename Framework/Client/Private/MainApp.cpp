@@ -62,8 +62,8 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 	// UI Cursor
-	//CUI_Manager::GetInstance()->Ready_Cursor();
-	//ShowCursor(false);
+	CUI_Manager::GetInstance()->Ready_Cursor();
+	ShowCursor(false);
 
 	CUI_Manager::GetInstance()->Ready_Veils();
 
@@ -88,8 +88,8 @@ void CMainApp::Tick(_float fTimeDelta)
 {
 	CQuest_Manager::GetInstance()->Tick(fTimeDelta);
 	CUI_Manager::GetInstance()->Tick(fTimeDelta);
+	GI->Tick(fTimeDelta); /* 카메라에서 플레이어 포지션 세팅하기 위해, 틱에서만 GI를 게임매니저보다 먼저 업데이트*/
 	CGame_Manager::GetInstance()->Tick(fTimeDelta);
-	GI->Tick(fTimeDelta);
 	
 	CQuest_Manager::GetInstance()->LateTick(fTimeDelta);
 	CUI_Manager::GetInstance()->LateTick(fTimeDelta);
@@ -284,7 +284,7 @@ HRESULT CMainApp::Initialize_Client()
 		CAMERA_TYPE eType = CAMERA_TYPE::ACTION;
 		CCamera::PROJ_DESC tDesc;
 		{
-			tDesc.tLerpFov.fCurValue = Cam_Fov_Default;
+			tDesc.tLerpFov.fCurValue = Cam_Fov_Action_Lobby;
 			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
 			tDesc.fNear = 0.2f;
 			tDesc.fFar = 1000.f;

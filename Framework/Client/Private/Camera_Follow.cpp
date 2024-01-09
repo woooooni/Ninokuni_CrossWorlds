@@ -481,13 +481,28 @@ void CCamera_Follow::Test(_float fTimeDelta)
 			CCamera_Manager::GetInstance()->Set_CurCamera(pActionCam->Get_Key());
 			if (nullptr != pActionCam)
 			{
-				pActionCam->Start_Action(CCamera_Action::CAMERA_ACTION_TYPE::DOOR);
+				pActionCam->Start_Action_Door();
 			}
 		}
-	}
 
-	{
-		
+		//if (KEY_TAP(KEY::V))
+		//{
+		//	if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
+		//		CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
+		//
+		//	CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"HumanFL04");
+		//
+		//	if (nullptr != pTarget)
+		//	{
+		//	
+		//		CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+		//		if (nullptr != pActionCam)
+		//		{
+		//			CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
+		//			pActionCam->Start_Action_Talk(pTarget);
+		//		}
+		//	}
+		//}
 	}
 }
 

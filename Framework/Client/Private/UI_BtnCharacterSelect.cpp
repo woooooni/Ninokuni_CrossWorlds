@@ -90,19 +90,19 @@ HRESULT CUI_BtnCharacterSelect::Initialize(void* pArg)
 		}
 		else if (UI_SELECTBTN_CHARACTER::BTN_DESTROYER == m_ePlayerType)
 		{
-//			CGameObject* pDestroyer = GI->Find_GameObject(LEVELID::LEVEL_LOBBY, LAYER_TYPE::LAYER_CHARACTER, L"UI_Lobby_Dummy_Destroyer");
-//			if (nullptr == pDestroyer)
-//				return E_FAIL;
-//
-//			m_pDestroyer = dynamic_cast<CUI_Dummy_Destroyer*>(pDestroyer);
+			//CGameObject* pDestroyer = GI->Find_GameObject(LEVELID::LEVEL_LOBBY, LAYER_TYPE::LAYER_CHARACTER, L"UI_Lobby_Dummy_Destroyer");
+			//if (nullptr == pDestroyer)
+			//	return E_FAIL;
+			//
+			//m_pDestroyer = dynamic_cast<CUI_Dummy_Destroyer*>(pDestroyer);
 		}
 		else if (UI_SELECTBTN_CHARACTER::BTN_ENGINEER == m_ePlayerType)
 		{
-//			CGameObject* pEngineer = GI->Find_GameObject(LEVELID::LEVEL_LOBBY, LAYER_TYPE::LAYER_CHARACTER, L"UI_Lobby_Dummy_Engineer");
-//			if (nullptr == pEngineer)
-//				return E_FAIL;
-//
-//			m_pEngineer = dynamic_cast<CUI_Dummy_Engineer*>(pEngineer);
+			//CGameObject* pEngineer = GI->Find_GameObject(LEVELID::LEVEL_LOBBY, LAYER_TYPE::LAYER_CHARACTER, L"UI_Lobby_Dummy_Engineer");
+			//if (nullptr == pEngineer)
+			//	return E_FAIL;
+			//
+			//m_pEngineer = dynamic_cast<CUI_Dummy_Engineer*>(pEngineer);
 		}
 		else
 		{

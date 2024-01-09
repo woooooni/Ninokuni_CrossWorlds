@@ -3,6 +3,12 @@
 
 #include "Glanix.h"
 
+#include "Game_Manager.h"
+#include "Player.h"
+
+#include "Camera_Manager.h"
+#include "Camera_Follow.h"
+
 CGlanixState_Dead::CGlanixState_Dead(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
 {
@@ -25,6 +31,12 @@ void CGlanixState_Dead::Tick_State(_float fTimeDelta)
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
 		m_pGlanix->Reserve_Dead(true);
+
+		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+		if (nullptr != pFollowCam)
+		{
+			pFollowCam->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+		}	
 	}
 }
 

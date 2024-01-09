@@ -126,7 +126,7 @@ HRESULT CLevel_Evermore::Initialize()
 		CCamera_Manager::GetInstance()->Set_CurCamera(pActionCam->Get_Key());
 		if (nullptr != pActionCam)
 		{
-			pActionCam->Start_Action(CCamera_Action::CAMERA_ACTION_TYPE::DOOR);
+			pActionCam->Start_Action_Door();
 		}
 	}
 
