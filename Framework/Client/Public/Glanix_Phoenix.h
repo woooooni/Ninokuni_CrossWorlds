@@ -21,9 +21,6 @@ public:
 	virtual HRESULT Render() override;
 	virtual HRESULT Render_ShadowDepth() override;
 
-public:
-	virtual HRESULT Render_Instance_AnimModel(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc);
-	virtual HRESULT Render_Instance_Shadow(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices);
 
 public:
 	virtual void Collision_Enter(const COLLISION_INFO& tInfo) override;
@@ -49,7 +46,6 @@ private:
 
 
 private:
-	ANIMODEL_INSTANCE_DESC m_AnimInstanceDesc = {};
 	_float4 m_pOriginPos = {};
 	_bool m_bIsOut = false;
 	_int* m_pSlowStack = nullptr;

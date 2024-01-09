@@ -41,14 +41,14 @@ HRESULT CPhysX_Controller::Initialize(void* pArg)
 
 	if (m_eType == CONTROLLER_TYPE::BOX)
 	{
-		m_pPhysXController = GI->Add_BoxController(pControllerDesc->pOwner, WorldMatrix, pControllerDesc->vExtents, pControllerDesc->fMaxJumpHeight, this);
+		m_pPhysXController = GI->Add_BoxController(pControllerDesc->pOwner, WorldMatrix, pControllerDesc->vExtents, pControllerDesc->vOffset, pControllerDesc->fMaxJumpHeight, this);
 		
 		if (nullptr == m_pPhysXController)
 			return E_FAIL;
 	}
 	else if (m_eType == CONTROLLER_TYPE::CAPSULE)
 	{
-		m_pPhysXController = GI->Add_CapsuleController(pControllerDesc->pOwner, WorldMatrix, pControllerDesc->fHeight, pControllerDesc->fRaidus, pControllerDesc->fMaxJumpHeight, this);
+		m_pPhysXController = GI->Add_CapsuleController(pControllerDesc->pOwner, WorldMatrix, pControllerDesc->fHeight, pControllerDesc->fRaidus, pControllerDesc->vOffset, pControllerDesc->fMaxJumpHeight, this);
 
 		if (nullptr == m_pPhysXController)
 			return E_FAIL;
@@ -68,8 +68,11 @@ HRESULT CPhysX_Controller::Initialize(void* pArg)
 
 void CPhysX_Controller::Tick_Controller(_float fTimeDelta)
 {	
-	
+	if (m_pOwner->Is_Dead() || m_pOwner->Is_ReserveDead())
+		return;
+
 	m_bGroundChecked = false;
+
 
 	Vec3 vPosition = m_pTransformCom->Get_Position(); // 피직스 기준으로는 발 끝이다.
 	PxExtendedVec3 vPhysPosition = m_pPhysXController->getPosition();
@@ -86,6 +89,14 @@ void CPhysX_Controller::Tick_Controller(_float fTimeDelta)
 
 void CPhysX_Controller::LateTick_Controller(_float fTimeDelta)
 {
+	if (m_pOwner->Is_Dead() || m_pOwner->Is_ReserveDead())
+	{
+		GI->Remove_Controller(m_pPhysXController);
+		return;
+	}
+		
+
+
 	if (m_bGroundChecked == false) 
 	{
 		if (m_eGroundFlag == PxPairFlag::eNOTIFY_TOUCH_FOUND || m_eGroundFlag == PxPairFlag::eNOTIFY_TOUCH_PERSISTS)

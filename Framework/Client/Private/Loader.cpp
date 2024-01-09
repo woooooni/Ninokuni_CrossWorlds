@@ -528,9 +528,10 @@ HRESULT CLoader::Loading_For_Level_Tool()
 			CWeapon_SwordTemp::Create(m_pDevice, m_pContext, TEXT("TempSword")), LAYER_WEAPON)))
 			return E_FAIL;
 
-		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_TempSword", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Weapon/", L"TempSword")))
+		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_TempSword", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Weapon/Rifle/", L"Rifle_Fire")))
 			return E_FAIL;
 	}
+
 		
 	// 툴 파티클
 	CParticle::PARTICLE_DESC ParticleInfo = {};

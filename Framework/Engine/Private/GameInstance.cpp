@@ -607,6 +607,11 @@ HRESULT CGameInstance::Remove_Actor(class CGameObject* pGameObject)
 	return m_pPhysXManager->Remove_Actor(pGameObject);
 }
 
+HRESULT CGameInstance::Remove_Controller(PxController* pController)
+{
+	return m_pPhysXManager->Remove_Controller(pController);
+}
+
 //HRESULT CGameInstance::Convert_Transform(CGameObject* pObj, PxTransform& PxTransform)
 //{
 //	return m_pPhysXManager->Convert_Transform(pObj, PxTransform);
@@ -619,14 +624,14 @@ HRESULT CGameInstance::Remove_Actor(class CGameObject* pGameObject)
 //	return m_pPhysXManager->Create_Material(fStaticFriction, fDynamicFriction, fRestitution);
 //}
 
-PxController* CGameInstance::Add_CapsuleController(CGameObject* pGameObject, Matrix WorldMatrix, _float fHeight, _float fRadius, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack)
+PxController* CGameInstance::Add_CapsuleController(CGameObject* pGameObject, Matrix WorldMatrix, _float fHeight, _float fRadius, _float3 vOffsetPos, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack)
 {
-	return m_pPhysXManager->Add_CapsuleController(pGameObject, WorldMatrix, fHeight, fRadius, fMaxJumpHeight, pCallBack);
+	return m_pPhysXManager->Add_CapsuleController(pGameObject, WorldMatrix, fHeight, fRadius, vOffsetPos, fMaxJumpHeight, pCallBack);
 }
 
-PxController* CGameInstance::Add_BoxController(CGameObject* pGameObject, Matrix WorldMatrix, _float3 fExtents, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack)
+PxController* CGameInstance::Add_BoxController(CGameObject* pGameObject, Matrix WorldMatrix, _float3 fExtents, _float3 vOffsetPos, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack)
 {
-	return m_pPhysXManager->Add_BoxController(pGameObject, WorldMatrix, fExtents, fMaxJumpHeight, pCallBack);
+	return m_pPhysXManager->Add_BoxController(pGameObject, WorldMatrix, fExtents, vOffsetPos, fMaxJumpHeight, pCallBack);
 }
 
 HRESULT CGameInstance::Clear_PhysX_Ground()

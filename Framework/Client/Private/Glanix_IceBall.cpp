@@ -38,13 +38,12 @@ HRESULT CGlanix_IceBall::Initialize(void* pArg)
 	
 	m_pGlanix = (CGlanix*)pArg;
 
-	_float4 vTemp = {};
-	XMStoreFloat4(&vTemp, m_pGlanix->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_Position());
-	vTemp.y = 4.f;
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vTemp));
-	// m_pTransformCom->Set_State(CTransform::STATE_POSITION, m_pGlanix->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_Position());
-	m_pTransformCom->Set_State(CTransform::STATE_LOOK, m_pGlanix->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_Look());
-	m_pTransformCom->Set_Scale(_float3(5.f, 5.f, 5.f));
+	
+	m_pTransformCom->Set_WorldMatrix(m_pGlanix->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_WorldMatrix());
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, m_pTransformCom->Get_Position());
+	m_pTransformCom->Set_Scale(Vec3(5.f, 5.f, 5.f));
+
+	m_vInitLook = XMVector3Normalize(m_pTransformCom->Get_Look());
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
@@ -52,9 +51,9 @@ HRESULT CGlanix_IceBall::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
-	//m_pRigidBodyCom->Set_Use_Gravity(false);
 
 	m_fTime = 0.f;
+	m_fDelteTime = 5.f;
 
 	return S_OK;
 }
@@ -65,9 +64,11 @@ void CGlanix_IceBall::Tick(_float fTimeDelta)
 
 	m_fTime += fTimeDelta;
 
-	GI->Add_CollisionGroup(COLLISION_GROUP::PROP, this);
+	GI->Add_CollisionGroup(COLLISION_GROUP::MONSTER, this);
 
-	m_pRigidBodyCom->Add_Velocity(m_pTransformCom->Get_Look(), 10.f, true);
+	m_pTransformCom->Move(XMVector3Normalize(m_vInitLook), 20.f, fTimeDelta);
+	m_pTransformCom->Rotation_Acc(XMVector3Normalize(m_pTransformCom->Get_Right()), XMConvertToRadians(180.f) * 4.f * fTimeDelta);
+
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 	m_pControllerCom->Tick_Controller(fTimeDelta);
 
@@ -75,7 +76,9 @@ void CGlanix_IceBall::Tick(_float fTimeDelta)
 	{
 		m_fTime = m_fDelteTime - m_fTime;
 		Reserve_Dead(true);
+		Set_Dead(true);
 	}
+
 }
 
 void CGlanix_IceBall::LateTick(_float fTimeDelta)
@@ -88,8 +91,17 @@ void CGlanix_IceBall::LateTick(_float fTimeDelta)
 		m_pModelCom->LateTick(fTimeDelta);
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
 
-	// m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
+#ifdef _DEBUG
+	m_pRendererCom->Set_PlayerPosition(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
+	{
+		for (auto& pCollider : m_Colliders[i])
+			m_pRendererCom->Add_Debug(pCollider);
+	}
+#endif
+
 }
 
 HRESULT CGlanix_IceBall::Render()
@@ -97,7 +109,7 @@ HRESULT CGlanix_IceBall::Render()
 	if (FAILED(__super::Render()))
 		return E_FAIL;
 
-	if (nullptr == m_pModelCom)
+	if (nullptr == m_pShaderCom || nullptr == m_pModelCom)
 		return E_FAIL;
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
@@ -133,68 +145,41 @@ HRESULT CGlanix_IceBall::Render()
 
 HRESULT CGlanix_IceBall::Render_ShadowDepth()
 {
+	if (nullptr == m_pShaderCom || nullptr == m_pTransformCom)
+		return E_FAIL;
+
 	if (FAILED(__super::Render_ShadowDepth()))
 		return E_FAIL;
 
-	return S_OK;
-}
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
+		return E_FAIL;
 
-HRESULT CGlanix_IceBall::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
-{
-	__super::Render();
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &GI->Get_ShadowViewMatrix(GI->Get_CurrentLevel()))))
+		return E_FAIL;
 
-	if (nullptr == m_pModelCom || nullptr == pInstancingShader)
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
-	if (FAILED(pInstancingShader->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
-		return E_FAIL;
-	if (FAILED(pInstancingShader->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
-		return E_FAIL;
-	if (FAILED(pInstancingShader->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
-		return E_FAIL;
-	if (FAILED(pInstancingShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
-		return E_FAIL;
+
+
+	_uint iPassIndex = 0;
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{
-		_uint iPassIndex = 0;
-		if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
-		//if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
-		//	iPassIndex = 0;
-		//else
-		//	iPassIndex++;
-		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, i, pInstancingBuffer, WorldMatrices, iPassIndex)))
-			return E_FAIL;
-	}
-	return S_OK;
-}
 
-HRESULT CGlanix_IceBall::Render_Instance_Shadow(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
-{
-	if (nullptr == m_pModelCom || nullptr == pInstancingShader)
-		return E_FAIL;
-	_float4 vCamPosition = GI->Get_CamPosition();
-	if (FAILED(pInstancingShader->Bind_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4))))
-		return E_FAIL;
-	if (FAILED(pInstancingShader->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
-		return E_FAIL;
-	if (FAILED(pInstancingShader->Bind_Matrix("g_ViewMatrix", &GI->Get_ShadowViewMatrix(GI->Get_CurrentLevel()))))
-		return E_FAIL;
-	if (FAILED(pInstancingShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
-		return E_FAIL;
-	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
-	for (_uint i = 0; i < iNumMeshes; ++i)
-	{
-		if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
-			return E_FAIL;
-		/*if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
-			return E_FAIL;*/
-		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, i, pInstancingBuffer, WorldMatrices, 10)))
+		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
+			iPassIndex = 0;
+		else
+			iPassIndex++;
+
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, 10)))
 			return E_FAIL;
 	}
 
 	return S_OK;
 }
+
 
 void CGlanix_IceBall::Collision_Enter(const COLLISION_INFO& tInfo)
 {
@@ -220,6 +205,29 @@ void CGlanix_IceBall::Collision_Exit(const COLLISION_INFO& tInfo)
 	int i = 0;
 }
 
+void CGlanix_IceBall::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
+{
+	__super::Ground_Collision_Enter(tInfo);
+	if (m_pRigidBodyCom->Get_Velocity().y <= 0.f)
+	{
+		m_pRigidBodyCom->Set_Ground(true);
+		m_pRigidBodyCom->Set_Use_Gravity(false);
+	}
+
+}
+
+void CGlanix_IceBall::Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo)
+{
+	__super::Ground_Collision_Continue(tInfo);
+}
+
+void CGlanix_IceBall::Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo)
+{
+	__super::Ground_Collision_Exit(tInfo);
+	m_pRigidBodyCom->Set_Ground(false);
+	m_pRigidBodyCom->Set_Use_Gravity(true);
+}
+
 HRESULT CGlanix_IceBall::Ready_Components()
 {
 	/* For.Com_Renderer */
@@ -239,10 +247,10 @@ HRESULT CGlanix_IceBall::Ready_Components()
 
 	ControllerDesc.eType = CPhysX_Controller::CAPSULE;
 	ControllerDesc.pTransform = m_pTransformCom;
-	ControllerDesc.vOffset = { 0.f, 1.125f, 0.f };
-	ControllerDesc.fHeight = 1.f;
+	ControllerDesc.vOffset = { 0.f, 5.f, 0.f };
+	ControllerDesc.fRaidus = 2.f;
+	ControllerDesc.fHeight = 5.f;
 	ControllerDesc.fMaxJumpHeight = 10.f;
-	ControllerDesc.fRaidus = 1.f;
 	ControllerDesc.pOwner = this;
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_PhysXController"), TEXT("Com_Controller"), (CComponent**)&m_pControllerCom, &ControllerDesc)))
@@ -261,23 +269,20 @@ HRESULT CGlanix_IceBall::Ready_Components()
 #pragma region Ready_Colliders
 HRESULT CGlanix_IceBall::Ready_Colliders()
 {
-	CCollider_OBB::OBB_COLLIDER_DESC OBBDesc;
-	ZeroMemory(&OBBDesc, sizeof OBBDesc);
+	CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
+	ZeroMemory(&SphereDesc, sizeof SphereDesc);
 
-	BoundingOrientedBox OBBBox;
-	ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
+	BoundingSphere tSphere;
+	ZeroMemory(&tSphere, sizeof(BoundingSphere));
+	tSphere.Radius = 10.f;
+	SphereDesc.tSphere = tSphere;
 
-	XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
-	OBBBox.Extents = { 100.f, 100.f, 100.f };
+	SphereDesc.pNode = nullptr;
+	SphereDesc.pOwnerTransform = m_pTransformCom;
+	SphereDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
+	SphereDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
 
-	OBBDesc.tBox = OBBBox;
-	OBBDesc.pNode = nullptr;
-	OBBDesc.pOwnerTransform = m_pTransformCom;
-	OBBDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
-	OBBDesc.vOffsetPosition = Vec3(0.f, 100.f, 200.f);
-
-	/* Body */
-	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::BODY, &OBBDesc)))
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::ATTACK, &SphereDesc)))
 		return E_FAIL;
 
 	return S_OK;

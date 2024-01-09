@@ -615,7 +615,7 @@ HRESULT CCharacter_Engineer::Ready_Weapon()
 		return S_OK;
 
 
-	m_pWeapon->Set_WeaponModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Fish"));
+	m_pWeapon->Set_WeaponModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Fire"));
 
 	if (nullptr == m_pWeapon->Get_WeaponModelCom())
 	{

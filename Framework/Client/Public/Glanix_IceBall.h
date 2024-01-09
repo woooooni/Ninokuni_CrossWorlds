@@ -19,13 +19,14 @@ public:
 	virtual HRESULT Render_ShadowDepth() override;
 
 public:
-	virtual HRESULT Render_Instance(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices);
-	virtual HRESULT Render_Instance_Shadow(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices);
-
-public:
 	virtual void Collision_Enter(const COLLISION_INFO& tInfo) override;
 	virtual void Collision_Continue(const COLLISION_INFO& tInfo) override;
 	virtual void Collision_Exit(const COLLISION_INFO& tInfo) override;
+
+public:
+	virtual void Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo) override;
+	virtual void Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo) override;
+	virtual void Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo) override;
 
 private:
 	virtual HRESULT Ready_Components();
@@ -44,7 +45,9 @@ private:
 	_float m_fTime = 0.f;
 	_float m_fDelteTime = 0.f;
 
-	_vector m_vInitLook = {};
+	Vec3 m_vInitLook = {};
+
+	_bool m_bFirst = true;
 
 public:
 	static CGlanix_IceBall* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);

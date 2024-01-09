@@ -256,10 +256,6 @@ void CCharacter::LateTick(_float fTimeDelta)
 
 HRESULT CCharacter::Render()
 {
-
-	//if(FAILED(__super::Render()))
-	//	return E_FAIL;
-
 	if (nullptr == m_pModelCom || nullptr == m_pShaderCom)
 		return E_FAIL;
 
@@ -547,7 +543,7 @@ void CCharacter::Look_For_Target()
 	if (nullptr == pTargetTransform)
 		return;
 
-	m_pTransformCom->LookAt_ForLandObject(XMVectorSetW(pTargetTransform->Get_Position() * 2.f, 1.f));
+	m_pTransformCom->LookAt_ForLandObject(XMVectorSetW(pTargetTransform->Get_Position(), 1.f));
 }
 
 HRESULT CCharacter::Enter_Character()

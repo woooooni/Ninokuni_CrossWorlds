@@ -27,7 +27,7 @@ void CState_Engineer_Battle_Attack_0::Tick_State(_float fTimeDelta)
 {
     wstring strVoiceNum = to_wstring(CUtils::Random_Int(1, 5));
     CSound_Manager::GetInstance()->Play_Sound(L"Engineer_V_Atk_Short_" + strVoiceNum + L".mp3", CHANNELID::SOUND_VOICE_CHARACTER, 0.5f, true);
-
+    m_pCharacter->Appear_Weapon();
 
     if (false == m_pModelCom->Is_Tween() && m_pModelCom->Get_Progress() >= 0.5f && m_pModelCom->Get_Progress() <= 0.6f)
     {
@@ -68,7 +68,7 @@ void CState_Engineer_Battle_Attack_0::Shoot()
 
         Vec4 vStartPosition = pBulletTransform->Get_Position();
         vStartPosition += XMVector3Normalize(pBulletTransform->Get_Look()) * 0.5f;
-        vStartPosition.y += 0.9f;
+        vStartPosition.y += 1.1f;
         pBulletTransform->Set_State(CTransform::STATE_POSITION, vStartPosition);
 
         pBulletTransform->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(i * 10.f));

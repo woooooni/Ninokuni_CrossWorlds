@@ -53,6 +53,15 @@ void CSwordMan_AuraBlade::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
 	GI->Add_CollisionGroup(COLLISION_GROUP::CHARACTER, this);
+
+#ifdef _DEBUG
+	m_pRendererCom->Set_PlayerPosition(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
+	{
+		for (auto& pCollider : m_Colliders[i])
+			m_pRendererCom->Add_Debug(pCollider);
+	}
+#endif
 }
 
 
@@ -66,8 +75,6 @@ HRESULT CSwordMan_AuraBlade::Ready_Components()
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), reinterpret_cast<CComponent**>(&m_pTransformCom))))
 		return E_FAIL;
-
-
 
 	CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
 	ZeroMemory(&SphereDesc, sizeof SphereDesc);

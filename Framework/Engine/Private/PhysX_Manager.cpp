@@ -29,10 +29,10 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 	m_Foundation = PxCreateFoundation(PX_PHYSICS_VERSION, m_Allocator, m_ErrorCallback);
 	PxCudaContextManagerDesc CudaDesc;
 	m_pCudaContextManager = PxCreateCudaContextManager(*m_Foundation, CudaDesc);
-	//m_pPvd = PxCreatePvd(*m_Foundation);
-	//m_pTransport = PxDefaultPvdSocketTransportCreate("127.0.0.1", m_iPortNumber, m_iTimeOutSeconds);
-	//m_pPvd->connect(*m_pTransport, PxPvdInstrumentationFlag::eALL);
-	//_bool bConntected = m_pPvd->isConnected();
+	m_pPvd = PxCreatePvd(*m_Foundation);
+	m_pTransport = PxDefaultPvdSocketTransportCreate("127.0.0.1", m_iPortNumber, m_iTimeOutSeconds);
+	m_pPvd->connect(*m_pTransport, PxPvdInstrumentationFlag::eALL);
+	_bool bConntected = m_pPvd->isConnected();
 	m_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_Foundation, PxTolerancesScale(), true, m_pPvd);
 	PxInitExtensions(*m_Physics, m_pPvd);
 
@@ -189,6 +189,15 @@ HRESULT CPhysX_Manager::Add_Dynamic_Mesh_Actor(const PHYSX_INIT_DESC& Desc, __ou
 	return Create_Dynamic_Mesh(Desc, refOut);
 }*/
 #pragma endregion
+
+HRESULT CPhysX_Manager::Remove_Controller(PxController* pController)
+{
+	while (true == m_bSimulating) {}
+	m_pScene->removeActor(*pController->getActor());
+	pController->release();
+	return S_OK;
+}
+
 HRESULT CPhysX_Manager::Remove_Actor(class CGameObject* pGameObject)
 {
 	if (nullptr == pGameObject)
@@ -205,19 +214,17 @@ HRESULT CPhysX_Manager::Remove_Actor(class CGameObject* pGameObject)
 	iterGround->second.clear();
 	return S_OK;
 }
-PxController* CPhysX_Manager::Add_CapsuleController(CGameObject* pGameObject, Matrix WorldMatrix, _float fHeight, _float fRadius, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack)
+PxController* CPhysX_Manager::Add_CapsuleController(CGameObject* pGameObject, Matrix WorldMatrix, _float fHeight, _float fRadius, _float3 vOffsetPos, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack)
 {
 	// 컨트롤러는 하나만 가질 수 있다.
 	if (nullptr == pGameObject)
 		return nullptr;
-	auto iter = m_Controllers.find(pGameObject->Get_ObjectID());
-	if (iter != m_Controllers.end())
-		return nullptr;
+	
 	PxCapsuleControllerDesc CapsuleDesc;
 	PxTransform pxTransform = GI->To_PxTransform(WorldMatrix);
 	CapsuleDesc.setToDefault();
 	CapsuleDesc.material = m_WorldMaterial;
-	CapsuleDesc.position = PxExtendedVec3(pxTransform.p.x, pxTransform.p.y, pxTransform.p.z);
+	CapsuleDesc.position = PxExtendedVec3(pxTransform.p.x, pxTransform.p.y, pxTransform.p.z) + PxExtendedVec3(vOffsetPos.x, vOffsetPos.y, vOffsetPos.z);
 	CapsuleDesc.height = fHeight;
 	CapsuleDesc.radius = fRadius;
 	CapsuleDesc.maxJumpHeight = fMaxJumpHeight;
@@ -234,31 +241,31 @@ PxController* CPhysX_Manager::Add_CapsuleController(CGameObject* pGameObject, Ma
 
 	return pController;
 }
-PxController* CPhysX_Manager::Add_BoxController(CGameObject* pGameObject, Matrix WorldMatrix, _float3 fExtents, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack)
+PxController* CPhysX_Manager::Add_BoxController(CGameObject* pGameObject, Matrix WorldMatrix, _float3 fExtents, _float3 vOffsetPos, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack)
 {
 	// 컨트롤러는 하나만 가질 수 있다.
 	if (nullptr == pGameObject)
 		return nullptr;
-	auto iter = m_Controllers.find(pGameObject->Get_ObjectID());
-	if (iter != m_Controllers.end())
-		return nullptr;
+	
 	PxBoxControllerDesc BoxDesc;
 	PxTransform pxTransform = GI->To_PxTransform(WorldMatrix);
 	BoxDesc.setToDefault();
 	BoxDesc.material = m_WorldMaterial;
-	BoxDesc.position = PxExtendedVec3(pxTransform.p.x, pxTransform.p.y, pxTransform.p.z);
+	BoxDesc.position = PxExtendedVec3(pxTransform.p.x, pxTransform.p.y, pxTransform.p.z) + PxExtendedVec3(vOffsetPos.x, vOffsetPos.y, vOffsetPos.z);
 	BoxDesc.halfSideExtent = fExtents.x / 2.f;
 	BoxDesc.halfHeight = fExtents.y / 2.f;
 	BoxDesc.halfForwardExtent = fExtents.z / 2.f;
 	BoxDesc.maxJumpHeight = fMaxJumpHeight;
+	BoxDesc.contactOffset = 0.0001f;
 	BoxDesc.userData = pGameObject;
 	BoxDesc.reportCallback = pCallBack;
 
 	while (true == m_bSimulating) {}
 
 	PxController* pController = m_pController_Manager->createController(BoxDesc);
-	pController->getActor()->setActorFlag(PxActorFlag::eVISUALIZATION, true);
+	pController->getActor()->userData = pGameObject;
 	pController->getActor()->setName("Controller");
+
 	return pController;
 }
 #pragma region Deprecated.
@@ -668,6 +675,7 @@ PxController* CPhysX_Manager::Add_BoxController(CGameObject* pGameObject, Matrix
 //	return S_OK;
 //}
 #pragma endregion
+
 HRESULT CPhysX_Manager::Add_Ground(CGameObject* pGameObject, CModel* pModel, Matrix WorldMatrix, const wstring& strCollisionTag)
 {
 	if (nullptr == pModel)
@@ -1166,8 +1174,10 @@ void CPhysX_Manager::Free()
 		iter.second.clear();
 	}
 	m_GroundObjects.clear();
-	for (auto iter : m_Controllers)
-		iter.second->release();
+	
+	
+	
+	
 	m_pController_Manager->release();
 
 	// m_pParticleSystem->removeParticleBuffer(m_pClothBuffer);
@@ -1199,6 +1209,8 @@ void CPhysX_Manager::Free()
 	Safe_Release(m_pInputLayout);
 #endif
 }
+
+// ControllerFilterCallBack
 bool CPhysX_Manager::filter(const PxController& a, const PxController& b)
 {
 	return false;
