@@ -99,7 +99,7 @@ private:
 
 	wstring m_strLevelName = L"Evermore";
 	wstring m_strLevelMonsterName = L"Winter";
-	wstring m_strLevelNPCName = L"";
+	wstring m_strLevelNPCName = L"Evermore";
 	wstring m_strPrevLevelName = L"";
 	_uint m_iCurrentLevel = 0;
 	_uint m_iMonsterLevel = 0;

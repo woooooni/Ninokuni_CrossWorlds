@@ -27,7 +27,6 @@ public:
 	virtual void On_Damaged(const COLLISION_INFO& tInfo) override;
 
 private:
-	virtual HRESULT Ready_Components() override;
 	virtual HRESULT Ready_States() override;
 	virtual HRESULT Ready_Colliders() override;
 

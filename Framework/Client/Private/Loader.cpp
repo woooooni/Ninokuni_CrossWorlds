@@ -396,7 +396,7 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 	//m_Threads[LOADING_THREAD::MONSTER_AND_NPC].wait();
 
 	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Evermore");
-//	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Map_Data, this, L"Evermore");
+	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Npc_Data, this, L"Evermore");
 
 
 	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
@@ -764,7 +764,7 @@ HRESULT CLoader::Load_Npc_Data(const wstring& strNpcFileName)
 
 	for (_uint i = 0; i < LAYER_TYPE::LAYER_END; ++i)
 	{
-		if (LAYER_TYPE::LAYER_MONSTER != i)
+		if (LAYER_TYPE::LAYER_NPC != i)
 			continue;
 
 		GI->Clear_Layer(m_eNextLevel, i);
@@ -790,8 +790,7 @@ HRESULT CLoader::Load_Npc_Data(const wstring& strNpcFileName)
 			OBJECT_INIT_DESC Init_Data = {};
 			Init_Data.vStartPosition = vPos;
 			CGameObject* pObj = nullptr;
-
-			if (FAILED(GI->Add_GameObject(m_eNextLevel, i, strPrototypeTag, &Init_Data, &pObj, true)))
+			if (FAILED(GI->Add_GameObject(m_eNextLevel, i, strPrototypeTag, &Init_Data, &pObj)))
 			{
 				MSG_BOX("Load_Objects_Failed.");
 				return E_FAIL;
@@ -811,6 +810,48 @@ HRESULT CLoader::Load_Npc_Data(const wstring& strNpcFileName)
 				return E_FAIL;
 			}
 
+			_uint ObjectType;
+			File->Read<_uint>(ObjectType);
+
+			if (OBJ_TYPE::OBJ_NPC == ObjectType)
+			{
+				CGameNpc* pNpc = static_cast<CGameNpc*>(pObj);
+
+				_uint iSize;
+				File->Read<_uint>(iSize);
+
+				_uint eState;
+				File->Read<_uint>(eState);
+
+
+				if (iSize != 0)
+				{
+					vector<Vec4> Points;
+					Points.reserve(iSize);
+
+					for (_uint i = 0; i < iSize; ++i)
+					{
+						Vec4 vPoint;
+						File->Read<Vec4>(vPoint);
+						Points.push_back(vPoint);
+					}
+
+					pNpc->Set_RoamingArea(Points);
+
+					if (Points.size() != 0)
+					{
+						vPos = Points.front();
+						pNpc->Set_Point(true);
+					}
+				}
+
+				CGameNpc::NPC_STAT eStat;
+				File->Read<CGameNpc::NPC_STAT>(eStat);
+
+				pNpc->Set_NpcState(static_cast<CGameNpc::NPC_STATE>(eState));
+				pNpc->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(eState);
+				pNpc->Set_Stat(eStat);
+			}
 
 
 			pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
@@ -820,7 +861,7 @@ HRESULT CLoader::Load_Npc_Data(const wstring& strNpcFileName)
 		}
 
 	}
-	//MSG_BOX("Monster_Loaded.");
+	//MSG_BOX("Npc_Loaded.");
 	return S_OK;
 }
 
@@ -1165,7 +1206,7 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 		return E_FAIL;
 
 	/* Npc */
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Kuu", CKuu::Create(m_pDevice, m_pContext, TEXT("HumanFAT01")), LAYER_NPC, true)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Kuu", CKuu::Create(m_pDevice, m_pContext, TEXT("Kuu")), LAYER_NPC, true)))
 		return E_FAIL;
 	
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanFAT01", CHumanFAT01::Create(m_pDevice, m_pContext, TEXT("HumanFAT01")), LAYER_NPC, true)))

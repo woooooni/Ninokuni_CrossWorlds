@@ -31,7 +31,7 @@ HRESULT CHumanFL04::Initialize(void* pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
-	if (FAILED(Ready_Components()))
+	if (FAILED(__super::Ready_Components(pArg)))
 		return E_FAIL;
 
 	if (FAILED(Ready_States()))
@@ -73,28 +73,8 @@ void CHumanFL04::On_Damaged(const COLLISION_INFO& tInfo)
 {
 }
 
-HRESULT CHumanFL04::Ready_Components()
-{
-	/* For.Com_Transform */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
-		return E_FAIL;
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, { 12.f, 0.f, 0.f, 1.f });
-	m_vInitPos = m_pTransformCom->Get_Position();
-
-	/* For.Com_Model */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_HumanFL04"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
-		return E_FAIL;
-
-	if (FAILED(__super::Ready_Components()))
-		return E_FAIL;
-
-	return S_OK;
-}
-
 HRESULT CHumanFL04::Ready_States()
 {
-	m_strObjectTag = TEXT("HumanFL04");
-
 	m_tStat.fSpeed = 1.f;
 
 	m_pStateCom->Set_Owner(this);

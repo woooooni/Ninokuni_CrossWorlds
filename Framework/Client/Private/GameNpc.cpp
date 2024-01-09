@@ -253,11 +253,22 @@ void CGameNpc::Set_NpcState(NPC_STATE eState)
 	}
 }
 
-HRESULT CGameNpc::Ready_Components()
+HRESULT CGameNpc::Ready_Components(void* pArg)
 {
 	/* For.Com_Renderer */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
 		return E_FAIL;
+
+	OBJECT_INIT_DESC Init_Data = {};
+
+	if (pArg != nullptr)
+		Init_Data.vStartPosition = static_cast<OBJECT_INIT_DESC*>(pArg)->vStartPosition;
+
+	/* For.Com_Transform */
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
+		return E_FAIL;
+
+	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, Init_Data.vStartPosition);
 
 	/* For.Com_Shader */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_AnimModel"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
@@ -265,6 +276,10 @@ HRESULT CGameNpc::Ready_Components()
 
 	/* For.Com_StateMachine */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_StateMachine"), TEXT("Com_StateMachine"), (CComponent**)&m_pStateCom)))
+		return E_FAIL;
+
+	/* For.Com_Model */
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_") + m_strObjectTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 
 	CRigidBody::RIGID_BODY_DESC RigidDesc;
