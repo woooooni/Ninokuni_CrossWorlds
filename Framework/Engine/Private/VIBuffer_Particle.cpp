@@ -918,7 +918,7 @@ void CVIBuffer_Particle::Tick(_float fTimeDelta)
 								{
 									//m_vecParticleInfoDesc[i].bAmimationFinish = true;
 									m_bFinished = true;
-									m_vecParticleShaderDesc[i].fUVIndex = m_vecParticleShaderDesc[i].fMaxCount;
+									m_vecParticleShaderDesc[i].fUVIndex = _float2(m_vecParticleShaderDesc[i].fMaxCount.x - 1, m_vecParticleShaderDesc[i].fMaxCount.y - 1);
 								}
 							}
 						}
