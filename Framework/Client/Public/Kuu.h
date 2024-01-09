@@ -27,6 +27,7 @@ public:
 
 private:
 	class CUI_World_NPCTag* m_pTag = { nullptr };
+	class CUI_World_NPCSpeechBalloon* m_pBalloon = { nullptr };
 
 private:
 	virtual HRESULT Ready_Components() override;

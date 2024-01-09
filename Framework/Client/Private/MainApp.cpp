@@ -1365,6 +1365,11 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/MonsterStatus/Boss/UI_Boss_NameTag_%d.png"), 7))))
 		return E_FAIL;
 
+	// NPC SpeechBalloon
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_NPC_Default_SpeechBalloon"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Contents/SpeechBalloon/UI_NPC_SpeechBalloon.png")))))
+		return E_FAIL;
+
 
 	return S_OK;
 }

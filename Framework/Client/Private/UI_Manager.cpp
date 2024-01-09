@@ -1,11 +1,15 @@
 #include "stdafx.h"
-#include "..\Public\UI_Manager.h"
+#include "UI_Manager.h"
 #include "GameInstance.h"
 #include "GameObject.h"
 #include "Effect.h"
+
 #include <filesystem>
 #include "FileUtils.h"
 #include "Utils.h"
+
+#include "Camera_Manager.h"
+#include "Camera_Follow.h"
 #include "Character_Manager.h"
 #include "Game_Manager.h"
 #include "Player.h"
@@ -97,6 +101,7 @@
 #include "UI_MonsterHP_Background.h"
 #include "UI_SkillWindow_SkillSlot.h"
 #include "UI_Loading_CharacterLogo.h"
+#include "UI_World_NPCSpeechBalloon.h"
 #include "UI_WeaponSection_Selected.h"
 #include "UI_ImajinnSection_Vehicle.h"
 #include "UI_Emoticon_SpeechBalloon.h"
@@ -4380,6 +4385,8 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 {
 	if (bOnOff) // On
 	{
+		OnOff_TextUI(true);
+
 		for (auto& iter : m_Milepost)
 		{
 			if (nullptr != iter)
@@ -4443,6 +4450,8 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 	}
 	else // Off
 	{
+		OnOff_TextUI(false);
+
 		for (auto& iter : m_Milepost)
 		{
 			if (nullptr != iter)
@@ -4525,6 +4534,14 @@ HRESULT CUI_Manager::OnOff_MainMenu(_bool bOnOff)
 		GI->Stop_Sound(CHANNELID::SOUND_UI);
 		GI->Play_Sound(TEXT("UI_Fx_Comm_Slide_Open_MainMenu_1.mp3"), CHANNELID::SOUND_UI, GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 
+		// 텍스트 관련 제어
+		OnOff_TextUI(false); // Off
+
+		// 카메라 제어
+		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+		if (nullptr != pFollowCam)
+			pFollowCam->Set_CanInput(false);
+
 		m_pMainBG->Set_Active(true);
 		for (auto& pUI : m_MainMenuBtn)
 		{
@@ -4538,6 +4555,14 @@ HRESULT CUI_Manager::OnOff_MainMenu(_bool bOnOff)
 	}
 	else // Off : 모든 Menu관련 창을 꺼야한다.
 	{
+		// 텍스트 관련 제어
+		OnOff_TextUI(true); // On
+
+		// 카메라 제어
+		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+		if (nullptr != pFollowCam)
+			pFollowCam->Set_CanInput(true);
+
 		OnOff_CloseButton(false);
 
 		m_pMainBG->Set_Active(false);
@@ -6242,6 +6267,9 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_NPC_Tag"),
 		CUI_World_NPCTag::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_NPC_SpeechBalloon"),
+		CUI_World_NPCSpeechBalloon::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
 

@@ -9,6 +9,7 @@
 #include "NpcState_TwoWay.h"
 
 #include "UI_World_NPCTag.h"
+#include "UI_World_NPCSpeechBalloon.h"
 
 CKuu::CKuu(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameNpc(pDevice, pContext, strObjectTag)
@@ -44,12 +45,22 @@ HRESULT CKuu::Initialize(void* pArg)
 
 	m_pModelCom->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_NeutralStand"));
 
+	// Äí¿ì ³×ÀÓÅÂ±× »ý¼º
 	CGameObject* pTag = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_NPC_Tag"), LAYER_TYPE::LAYER_UI);
 	if (nullptr == pTag)
 		return E_FAIL;
 
 	m_pTag = dynamic_cast<CUI_World_NPCTag*>(pTag);
-	m_pTag->Set_Owner(this, TEXT("Äí¿ì"), 2.f);
+	m_pTag->Set_Owner(this, TEXT("Äí¿ì"), 1.f);
+
+	// NPC ¸»Ç³¼± »ý¼º
+	CGameObject* pBalloon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_NPC_SpeechBalloon"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pBalloon)
+		return E_FAIL;
+
+	m_pBalloon = dynamic_cast<CUI_World_NPCSpeechBalloon*>(pBalloon);
+	m_pBalloon->Set_Owner(this, 1.3f);
+	m_pBalloon->Set_Balloon(TEXT("³ª´Â Å×½ºÆ®¿ë Äí¿ì´Ù."));
 
 	return S_OK;
 }
@@ -59,6 +70,8 @@ void CKuu::Tick(_float fTimeDelta)
 	// __super::Tick(fTimeDelta);
 	if (nullptr != m_pTag)
 		m_pTag->Tick(fTimeDelta);
+	if (nullptr != m_pBalloon)
+		m_pBalloon->Tick(fTimeDelta);
 
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 	m_pControllerCom->Tick_Controller(fTimeDelta);
@@ -71,6 +84,8 @@ void CKuu::LateTick(_float fTimeDelta)
 {
 	if (nullptr != m_pTag)
 		m_pTag->LateTick(fTimeDelta);
+	if (nullptr != m_pBalloon)
+		m_pBalloon->LateTick(fTimeDelta);
 
 	__super::LateTick(fTimeDelta);
 
@@ -170,5 +185,6 @@ void CKuu::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pBalloon);
 	Safe_Release(m_pTag);
 }
