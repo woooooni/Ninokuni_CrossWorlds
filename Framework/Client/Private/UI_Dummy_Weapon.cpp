@@ -12,6 +12,7 @@ CUI_Dummy_Weapon::CUI_Dummy_Weapon(ID3D11Device* pDevice, ID3D11DeviceContext* p
 
 HRESULT CUI_Dummy_Weapon::Set_Owner(CGameObject* pOwner, CHARACTER_TYPE eType)
 {
+
 	if (nullptr == pOwner)
 		return E_FAIL;
 

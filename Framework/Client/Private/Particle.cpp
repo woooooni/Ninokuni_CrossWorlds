@@ -108,6 +108,15 @@ void CParticle::Tick(_float fTimeDelta)
 	if (Is_Dead() == true)
 		return;
 
+	if (nullptr != m_pOwnerObject)
+	{
+		if (true == m_pOwnerObject->Is_Dead())
+		{
+			Set_Dead(true);
+			return;
+		}
+	}
+
 	m_pVIBufferCom->Tick(fTimeDelta);
 	 
 

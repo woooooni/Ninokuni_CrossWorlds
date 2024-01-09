@@ -69,7 +69,8 @@ HRESULT CUI_CharacterDummy::Initialize(void* pArg)
 
 	m_bActive = false;
 
-	m_pWeapon->Set_Owner(this, m_eCurCharacter);
+	if(nullptr != m_pWeapon)
+		m_pWeapon->Set_Owner(this, m_eCurCharacter);
 
 	return S_OK;
 }
