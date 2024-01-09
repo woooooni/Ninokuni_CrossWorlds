@@ -3,7 +3,9 @@
 #include "GameInstance.h"
 #include "HierarchyNode.h"
 #include "Trail.h"
+#include "Sword.h"
 #include "Character_Manager.h"
+#include "Weapon_Manager.h"
 
 #include "State_Character_DoorEnter.h"
 #include "State_Character_Neutral_Idle.h"
@@ -97,8 +99,8 @@ HRESULT CCharacter_Engineer::Initialize(void* pArg)
 	//if (FAILED(Ready_Sockets()))
 	//	return E_FAIL;
 
-	//if (FAILED(Ready_Parts()))
-	//	return E_FAIL;
+	if (FAILED(Ready_Weapon()))
+		return E_FAIL;
 
 	if (FAILED(Ready_States()))
 		return E_FAIL;
@@ -115,6 +117,10 @@ void CCharacter_Engineer::Tick(_float fTimeDelta)
 
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 	m_pControllerCom->Tick_Controller(fTimeDelta);
+
+	if (m_pWeapon != nullptr)
+		m_pWeapon->Set_SocketWorld(m_pModelCom->Get_SocketLocalMatrix(0) * m_pTransformCom->Get_WorldMatrix());
+
 	__super::Tick(fTimeDelta);
 }
 
@@ -601,54 +607,23 @@ HRESULT CCharacter_Engineer::Ready_Sockets()
 }
 #pragma endregion
 
-#pragma region Ready_Parts
-HRESULT CCharacter_Engineer::Ready_Parts()
+#pragma region Ready_Weapon
+HRESULT CCharacter_Engineer::Ready_Weapon()
 {
-	//m_Parts.resize(PARTTYPE::PART_END);
-
-	//CSweath::SWEATH_DESC			SweathDesc;
-
-	//SweathDesc.eType = CSweath::SWEATH_TYPE::TANJIRO;
-	//SweathDesc.pOwner = this;
-	//SweathDesc.pParentTransform = m_pTransformCom;
-	//SweathDesc.pSocketBone = m_Sockets[SOCKET_SWEATH];
-	//XMStoreFloat3(&SweathDesc.vRotationDegree, 
-	//	XMVectorSet(XMConvertToRadians(-90.f), 
-	//	XMConvertToRadians(180.f), 
-	//	XMConvertToRadians(0.f), 
-	//	XMConvertToRadians(0.f)));
-	//XMStoreFloat4x4(&SweathDesc.SocketPivot, m_pModelCom->Get_PivotMatrix());
-
-	//CGameObject* pGameObject = GI->Clone_GameObject(TEXT("Prototype_GameObject_Sweath_Tanjiro"), LAYER_TYPE::LAYER_CHARACTER, &SweathDesc);
-	//if (nullptr == pGameObject)
-	//	return E_FAIL;
-
-	//Safe_AddRef(pGameObject);
-	//m_Parts[PART_SWEATH] = (pGameObject);
+	m_pWeapon = CSword::Create(m_pDevice, m_pContext, L"Engineer_Rifle");
+	if (nullptr == m_pWeapon)
+		return S_OK;
 
 
-	//CSword::SWORD_DESC			SwordDesc;
+	m_pWeapon->Set_WeaponModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Fish"));
 
-	//SwordDesc.eType = CSword::SWORD_TYPE::TANJIRO;
-	//SwordDesc.pOwner = this;
-	//SwordDesc.pParentTransform = m_pTransformCom;
-	//SwordDesc.pSocketBone = m_Sockets[SOCKET_SWEATH];
-	//XMStoreFloat3(&SwordDesc.vRotationDegree,
-	//	XMVectorSet(XMConvertToRadians(-90.f),
-	//		XMConvertToRadians(180.f),
-	//		XMConvertToRadians(0.f),
-	//		XMConvertToRadians(0.f)));
-
-	//XMStoreFloat4x4(&SwordDesc.SocketPivot, m_pModelCom->Get_PivotMatrix());
+	if (nullptr == m_pWeapon->Get_WeaponModelCom())
+	{
+		Safe_Release(m_pWeapon);
+		return S_OK;
+	}
 
 
-	//pGameObject = GI->Clone_GameObject(TEXT("Prototype_GameObject_Sword_Tanjiro"), LAYER_TYPE::LAYER_CHARACTER, &SwordDesc);
-	//
-	//if (nullptr == pGameObject)
-	//	return E_FAIL;
-
-	//Safe_AddRef(pGameObject);
-	//m_Parts[PART_SWORD] = pGameObject;
 
 
 	return S_OK;

@@ -538,6 +538,18 @@ HRESULT CCharacter::Appear_Weapon()
 	return S_OK;
 }
 
+void CCharacter::Look_For_Target()
+{
+	if (nullptr == m_pTarget)
+		return;
+
+	CTransform* pTargetTransform = m_pTarget->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr == pTargetTransform)
+		return;
+
+	m_pTransformCom->LookAt_ForLandObject(XMVectorSetW(pTargetTransform->Get_Position() * 2.f, 1.f));
+}
+
 HRESULT CCharacter::Enter_Character()
 {
 	if (nullptr != m_pControllerCom)

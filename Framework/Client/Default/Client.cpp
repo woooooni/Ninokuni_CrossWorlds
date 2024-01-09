@@ -33,7 +33,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 #ifdef _DEBUG
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
     _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
-    //_CrtSetBreakAlloc(1690);
+    // _CrtSetBreakAlloc(7088364);
 
     /* 콘솔 출력 코드 (주석 해제후 사용 -> 병합 전 다시 주석) */
 
