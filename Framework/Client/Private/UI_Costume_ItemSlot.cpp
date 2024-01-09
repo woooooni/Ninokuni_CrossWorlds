@@ -200,23 +200,27 @@ HRESULT CUI_Costume_ItemSlot::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Costume_Swordsman_HairAcc"),
 		TEXT("Com_Texture2"), (CComponent**)&m_pTexCom_SMAcc)))
 		return E_FAIL;
+	// Swordsman_Weapon
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Costume_Swordsman_Weapon"),
+		TEXT("Com_Texture3"), (CComponent**)&m_pTexCom_SMWeapon)))
+		return E_FAIL;
 
 	// Engineer_Clothes
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Costume_Engineer_Clothes"),
-		TEXT("Com_Texture3"), (CComponent**)&m_pTexCom_EGCostume)))
+		TEXT("Com_Texture4"), (CComponent**)&m_pTexCom_EGCostume)))
 		return E_FAIL;
 	// Engineer_HairAcc
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Costume_Engineer_HairAcc"),
-		TEXT("Com_Texture4"), (CComponent**)&m_pTexCom_EGAcc)))
+		TEXT("Com_Texture5"), (CComponent**)&m_pTexCom_EGAcc)))
 		return E_FAIL;
 
 	// Destroyer_Clothes
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Costume_Destroyer_Clothes"),
-		TEXT("Com_Texture5"), (CComponent**)&m_pTexCom_DTCostume)))
+		TEXT("Com_Texture7"), (CComponent**)&m_pTexCom_DTCostume)))
 		return E_FAIL;
 	// Destroyer_HairAcc
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Costume_Destroyer_HairAcc"),
-		TEXT("Com_Texture6"), (CComponent**)&m_pTexCom_DTAcc)))
+		TEXT("Com_Texture8"), (CComponent**)&m_pTexCom_DTAcc)))
 		return E_FAIL;
 
 
@@ -274,6 +278,11 @@ HRESULT CUI_Costume_ItemSlot::Bind_ShaderResources()
 		else if (COSTUMESECTION_HAIRACC == m_eSectionType)
 		{
 			if (FAILED(m_pTexCom_SMAcc->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextureIndex)))
+				return E_FAIL;
+		}
+		else if (COSTUMESECTION_WEAPON == m_eSectionType)
+		{
+			if (FAILED(m_pTexCom_SMWeapon->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextureIndex)))
 				return E_FAIL;
 		}
 		break;
@@ -346,6 +355,26 @@ HRESULT CUI_Costume_ItemSlot::Ready_PartTag()
 
 			case COSTUMESLOT_SECOND: // 용의 기사단 모자
 				m_strPartTag = TEXT("SwordMan_Head_DragonKnight");
+				break;
+
+			case COSTUMESLOT_THIRD: // X
+				m_strPartTag = TEXT("");
+				break;
+			}
+		}
+		else if (COSTUMESECTION_WEAPON == m_eSectionType)
+		{
+			if (COSTUMESLOT_END <= m_eType)
+				return E_FAIL;
+
+			switch (m_eType)
+			{
+			case COSTUMESLOT_FIRST: // 블룸 블룸 소드
+				m_strPartTag = TEXT("Sword_Flower01");
+				break;
+
+			case COSTUMESLOT_SECOND: // 이것 좀 썰어도
+				m_strPartTag = TEXT("Sword_QQSuits");
 				break;
 
 			case COSTUMESLOT_THIRD: // X
@@ -460,6 +489,10 @@ void CUI_Costume_ItemSlot::Update_Costume(_float fTimeDelta)
 	case COSTUMESECTION_HAIRACC:
 		CUI_Manager::GetInstance()->Update_CostumeModel(m_eCurPlayerType, PART_TYPE::HEAD, m_strPartTag);
 		break;
+
+	case COSTUMESECTION_WEAPON:
+		//
+		break;
 	}
 
 }
@@ -509,6 +542,7 @@ void CUI_Costume_ItemSlot::Free()
 	Safe_Release(m_pTexCom_DTAcc);
 	Safe_Release(m_pTexCom_DTCostume);
 	Safe_Release(m_pTexCom_SMAcc);
+	Safe_Release(m_pTexCom_SMWeapon);
 	Safe_Release(m_pTexCom_EGCostume);
 	Safe_Release(m_pTexCom_EGAcc);
 	Safe_Release(m_pTextureCom);
