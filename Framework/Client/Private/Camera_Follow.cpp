@@ -490,16 +490,22 @@ void CCamera_Follow::Test(_float fTimeDelta)
 		//	if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
 		//		CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
 		//
-		//	CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"HumanFL04");
+		//	CGameObject* pPlayer = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+		//	CGameObject* pPet = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"Kuu");
+		//	CGameObject* pTarget1 = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"HumanFL04");
+		//	CGameObject* pTarget2 = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"HumanFL05");
 		//
-		//	if (nullptr != pTarget)
+		//	if (nullptr != pPlayer && nullptr != pPet && nullptr != pTarget1 && nullptr != pTarget2)
 		//	{
-		//	
+		//
 		//		CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
 		//		if (nullptr != pActionCam)
 		//		{
 		//			CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
-		//			pActionCam->Start_Action_Talk(pTarget);
+		//
+		//			pActionCam->Start_Action_Talk(pPlayer, pPet);
+		//			//pActionCam->Start_Action_Talk(pPlayer, pPet, pTarget1, nullptr);
+		//			//pActionCam->Start_Action_Talk(pPlayer, pPet, pTarget1, pTarget2);
 		//		}
 		//	}
 		//}

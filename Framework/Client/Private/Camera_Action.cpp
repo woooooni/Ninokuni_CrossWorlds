@@ -184,55 +184,55 @@ HRESULT CCamera_Action::Start_Action_Door()
 	return S_OK;
 }
 
-HRESULT CCamera_Action::Start_Action_Talk(CGameObject* pNpc1, CGameObject* pNpc2)
+HRESULT CCamera_Action::Start_Action_Talk(CGameObject* pPlayer, CGameObject* pPet, CGameObject* pNpc1, CGameObject* pNpc2)
 {
-	m_eCurActionType = CAMERA_ACTION_TYPE::TALK;
-
-	m_bAction = true;
-
-	m_tTargetOffset.vCurVec = m_tActionTalkDesc.vTargetOffset;
-	m_tLookAtOffset.vCurVec = m_tActionTalkDesc.vLookAtOffset;
-
-	/* 대화 타겟들 설정 */
-	if (nullptr == pNpc1 && nullptr == pNpc2)
-	{
-		/* 쿠우 혼자 말하는 경우*/
+	if (nullptr == pPlayer || nullptr == pPet || nullptr == pNpc1)
 		return E_FAIL;
-	}
-	else if (nullptr != pNpc1)
+
+	/* Default Setting */
 	{
+		m_eCurActionType = CAMERA_ACTION_TYPE::TALK;
+
+		m_bAction = true;
+	}
+
+	/* Talker Setting */
+	{
+		m_tActionTalkDesc.pPlayer = pPlayer;
+		m_tActionTalkDesc.pPet = pPet;
 		m_tActionTalkDesc.pNpc1 = pNpc1;
-		m_tActionTalkDesc.iTalker = 3;
+		
+		m_tActionTalkDesc.iTalker++;
 
 		if (nullptr != pNpc2)
 		{
 			m_tActionTalkDesc.pNpc2 = pNpc2;
-			m_tActionTalkDesc.iTalker = 4;
+			m_tActionTalkDesc.iTalker++;
 		}
-
-		m_tActionTalkDesc.pPlayer = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
-		if (nullptr == m_tActionTalkDesc.pPlayer)
-			return E_FAIL;
 	}
-	
-	CTransform* pNpcTransform		= m_tActionTalkDesc.pNpc1->Get_Component<CTransform>(L"Com_Transform");
-	CTransform* pPlayerTransform	= m_tActionTalkDesc.pPlayer->Get_Component<CTransform>(L"Com_Transform");
 
-	/* 대화 참여자들의 트랜스폼 세팅 */
-	if (nullptr != pNpcTransform && nullptr != pPlayerTransform)
+	return Set_TalkCharacterPosition();
+}
+
+HRESULT CCamera_Action::Start_Action_Talk(CGameObject* pPlayer, CGameObject* pPet)
+{
+	if (nullptr == pPlayer || nullptr == pPet)
+		return E_FAIL;
+
+	/* Default Setting */
 	{
-		/* 플레이어 포지션 세팅 */
-		Vec4 vplayerPos = pNpcTransform->Get_RelativeOffset(Vec4{ 0.f, 0.f, m_tActionTalkDesc.fPlayerNpcDistance, 1.f });
-		vplayerPos += pNpcTransform->Get_Position();
+		m_eCurActionType = CAMERA_ACTION_TYPE::TALK;
 
-		pPlayerTransform->Set_State(CTransform::STATE_POSITION, vplayerPos);
-
-		/* 플레이어가 Npc 바라보게 */
-		pPlayerTransform->LookAt_ForLandObject(pNpcTransform->Get_Position());
+		m_bAction = true;
 	}
 
-	/* 카메라 세팅 */
-	return Set_Action_Talk_Target(m_tActionTalkDesc.pNpc1);
+	/* Talker Setting */
+	{
+		m_tActionTalkDesc.pPlayer = pPlayer;	
+		m_tActionTalkDesc.pPet = pPet;
+	}
+
+	return Set_TalkCharacterPosition();
 }
 
 HRESULT CCamera_Action::Set_Action_Talk_Target(CGameObject* pTalker)
@@ -246,7 +246,6 @@ HRESULT CCamera_Action::Set_Action_Talk_Target(CGameObject* pTalker)
 
 	if (nullptr == pTalkerTransform)
 		return E_FAIL;
-
 
 	/* 타겟별 오프셋 설정 */
 	{
@@ -273,10 +272,8 @@ HRESULT CCamera_Action::Set_Action_Talk_Target(CGameObject* pTalker)
 	return S_OK;
 }
 
-
 HRESULT CCamera_Action::Finish_Action_Talk()
 {
-	/* 현재 토커가 플레이어, 쿠우라면 바로 리턴 (마지막 대화는 Npc에서 끝나야 한다.) */
 	if (m_tActionTalkDesc.pCurTalker == m_tActionTalkDesc.pPlayer) 
 		return E_FAIL;
 
@@ -453,13 +450,71 @@ void CCamera_Action::Tick_Talk(_float fTimeDelta)
 	//}
 }
 
-HRESULT CCamera_Action::Ready_Components()
+HRESULT CCamera_Action::Set_TalkCharacterPosition()
 {
-	return S_OK;
+	switch (m_tActionTalkDesc.iTalker)
+	{
+	case 2:
+	{
+		/* OffSet Setting */
+		{
+			m_tTargetOffset.vCurVec = m_tActionTalkDesc.vTargetOffset;
+			m_tLookAtOffset.vCurVec = m_tActionTalkDesc.vLookAtOffset;
+		}
+
+
+		return Set_Action_Talk_Target(m_tActionTalkDesc.pPet);
+	}
+		break;
+	case 3 :
+	{
+
+		/* OffSet Setting */
+		{
+			m_tTargetOffset.vCurVec = m_tActionTalkDesc.vTargetOffset;
+			m_tLookAtOffset.vCurVec = m_tActionTalkDesc.vLookAtOffset;
+		}
+
+		CTransform* pNpcTransform = m_tActionTalkDesc.pNpc1->Get_Component<CTransform>(L"Com_Transform");
+		CTransform* pPlayerTransform = m_tActionTalkDesc.pPlayer->Get_Component<CTransform>(L"Com_Transform");
+
+		/* 대화 참여자들의 트랜스폼 세팅 */
+		if (nullptr != pNpcTransform && nullptr != pPlayerTransform)
+		{
+			/* 플레이어 포지션 세팅 */
+			Vec4 vPlayerPos = pNpcTransform->Get_RelativeOffset(Vec4{ 0.f, 0.f, m_tActionTalkDesc.fPlayerNpcDistance, 1.f });
+			vPlayerPos += pNpcTransform->Get_Position();
+
+			pPlayerTransform->Set_State(CTransform::STATE_POSITION, vPlayerPos);
+
+			/* 플레이어가 Npc 바라보게 */
+			pPlayerTransform->LookAt_ForLandObject(pNpcTransform->Get_Position());
+		}
+		return Set_Action_Talk_Target(m_tActionTalkDesc.pNpc1);
+	}
+		break;
+	case 4:
+	{
+
+
+
+		return Set_Action_Talk_Target(m_tActionTalkDesc.pNpc1);
+	}
+		break;
+	default:
+		break;
+	}
+
+	return E_FAIL;
 }
 
 void CCamera_Action::Tick_Blending(const _float fDeltaTime)
 {
+}
+
+HRESULT CCamera_Action::Ready_Components()
+{
+	return S_OK;
 }
 
 CCamera_Action* CCamera_Action::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
