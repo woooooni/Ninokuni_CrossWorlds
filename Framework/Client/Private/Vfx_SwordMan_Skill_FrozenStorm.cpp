@@ -18,18 +18,52 @@ CVfx_SwordMan_Skill_FrozenStorm::CVfx_SwordMan_Skill_FrozenStorm(const CVfx_Swor
 HRESULT CVfx_SwordMan_Skill_FrozenStorm::Initialize_Prototype()
 {
 	m_bOwnerStateIndex = CCharacter::SKILL_SPECIAL_1;
-	m_iMaxCount = 2;
+	m_iMaxCount = TYPE_END;
 
 	m_pFrameTriger = new _int[m_iMaxCount];
 	m_pPositionOffset = new _float3[m_iMaxCount];
 	m_pScaleOffset = new _float3[m_iMaxCount];
 	m_pRotationOffset = new _float3[m_iMaxCount];
 
-	// 0 : Decal 1
-	m_pFrameTriger[0]    = 0;
-	m_pPositionOffset[0] = _float3(0.f, 0.f, 0.f);
-	m_pScaleOffset[0]    = _float3(7.f, 5.f, 7.f);
-	m_pRotationOffset[0] = _float3(0.f, 0.f, 0.f);
+	m_pFrameTriger[TYPE_D_CIRCLE]    = 0;
+	m_pPositionOffset[TYPE_D_CIRCLE] = _float3(0.f, 0.f, 0.f);
+	m_pScaleOffset[TYPE_D_CIRCLE]    = _float3(7.f, 5.f, 7.f);
+	m_pRotationOffset[TYPE_D_CIRCLE] = _float3(0.f, 0.f, 0.f);
+
+	m_pFrameTriger[TYPE_P_SMOKE]    = 18;
+	m_pPositionOffset[TYPE_P_SMOKE] = _float3(0.f, 1.f, 0.f);
+	m_pScaleOffset[TYPE_P_SMOKE]    = _float3(1.f, 1.f, 1.f);
+	m_pRotationOffset[TYPE_P_SMOKE] = _float3(0.f, 0.f, 0.f);
+
+	m_pFrameTriger[TYPE_P_XSPARKLE]    = 18;
+	m_pPositionOffset[TYPE_P_XSPARKLE] = _float3(0.f, 1.f, 0.f);
+	m_pScaleOffset[TYPE_P_XSPARKLE]    = _float3(1.f, 1.f, 1.f);
+	m_pRotationOffset[TYPE_P_XSPARKLE] = _float3(0.f, 0.f, 0.f);
+
+	m_pFrameTriger[TYPE_P_SPARKLE_01]    = 20;
+	m_pPositionOffset[TYPE_P_SPARKLE_01] = _float3(0.f, 0.f, 0.f);
+	m_pScaleOffset[TYPE_P_SPARKLE_01]    = _float3(1.f, 1.f, 1.f);
+	m_pRotationOffset[TYPE_P_SPARKLE_01] = _float3(0.f, 0.f, 0.f);
+
+	m_pFrameTriger[TYPE_E_TRAILBASIC]    = 20;
+	m_pPositionOffset[TYPE_E_TRAILBASIC] = _float3(0.f, 0.2f, 0.f);
+	m_pScaleOffset[TYPE_E_TRAILBASIC]    = _float3(4.f, 4.f, 4.f);
+	m_pRotationOffset[TYPE_E_TRAILBASIC] = _float3(0.f, 0.f, 0.f);
+
+	m_pFrameTriger[TYPE_P_SNOW]    = 25;
+	m_pPositionOffset[TYPE_P_SNOW] = _float3(0.f, 1.f, 0.f);
+	m_pScaleOffset[TYPE_P_SNOW]    = _float3(1.f, 1.f, 1.f);
+	m_pRotationOffset[TYPE_P_SNOW] = _float3(0.f, 0.f, 0.f);
+
+	m_pFrameTriger[TYPE_E_TRAILLINE]    = 30;
+	m_pPositionOffset[TYPE_E_TRAILLINE] = _float3(0.f, 0.5f, 0.f);
+	m_pScaleOffset[TYPE_E_TRAILLINE]    = _float3(2.f, 2.f, 2.f);
+	m_pRotationOffset[TYPE_E_TRAILLINE] = _float3(0.f, 0.f, 0.f);
+
+	m_pFrameTriger[TYPE_P_SPARKLE_02]    = 35;
+	m_pPositionOffset[TYPE_P_SPARKLE_02] = _float3(0.f, 0.f, 0.f);
+	m_pScaleOffset[TYPE_P_SPARKLE_02]    = _float3(1.f, 1.f, 1.f);
+	m_pRotationOffset[TYPE_P_SPARKLE_02] = _float3(0.f, 0.f, 0.f);
 
  	return S_OK;
 }
@@ -45,16 +79,63 @@ void CVfx_SwordMan_Skill_FrozenStorm::Tick(_float fTimeDelta)
 
 	if (!m_bOwnerTween)
 	{
-		// 1. Decal
-		if (m_iCount == 0 && m_iOwnerFrame >= m_pFrameTriger[0])
+		if (m_iCount == TYPE_D_CIRCLE && m_iOwnerFrame >= m_pFrameTriger[TYPE_D_CIRCLE])
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_FrozenStorm_Circle"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[0], m_pScaleOffset[0], m_pRotationOffset[0]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_D_CIRCLE], m_pScaleOffset[TYPE_D_CIRCLE], m_pRotationOffset[TYPE_D_CIRCLE]);
 			m_iCount++;
 		}
 
-		// Dead
-		else if (m_iCount == 1)
+		else if (m_iCount == TYPE_P_SMOKE && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_SMOKE])
+		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_FrozenStorm_Smoke"), 
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_SMOKE], m_pScaleOffset[TYPE_P_SMOKE], m_pRotationOffset[TYPE_P_SMOKE]);
+			m_iCount++;
+		}
+
+		else if (m_iCount == TYPE_P_XSPARKLE && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_XSPARKLE])
+		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_FrozenStorm_Sparkle"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_XSPARKLE], m_pScaleOffset[TYPE_P_XSPARKLE], m_pRotationOffset[TYPE_P_XSPARKLE]);
+			m_iCount++;
+		}
+
+		else if (m_iCount == TYPE_P_SPARKLE_01 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_SPARKLE_01])
+		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_FrozenStorm_Sparkle_Circle"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_SPARKLE_01], m_pScaleOffset[TYPE_P_SPARKLE_01], m_pRotationOffset[TYPE_P_SPARKLE_01]);
+			m_iCount++;
+		}
+
+		else if (m_iCount == TYPE_E_TRAILBASIC && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_TRAILBASIC])
+		{
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_FrozenStorm_Trail"), 
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_TRAILBASIC], m_pScaleOffset[TYPE_E_TRAILBASIC], m_pRotationOffset[TYPE_E_TRAILBASIC]);
+			m_iCount++;
+		}
+
+		else if (m_iCount == TYPE_P_SNOW && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_SNOW])
+		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_FrozenStorm_Snow"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_SNOW], m_pScaleOffset[TYPE_P_SNOW], m_pRotationOffset[TYPE_P_SNOW]);
+			m_iCount++;
+		}
+
+		else if (m_iCount == TYPE_E_TRAILLINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_TRAILLINE])
+		{
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_FrozenStorm_TrailLine"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_TRAILLINE], m_pScaleOffset[TYPE_E_TRAILLINE], m_pRotationOffset[TYPE_E_TRAILLINE]);
+			m_iCount++;
+		}
+
+		else if (m_iCount == TYPE_P_SPARKLE_02 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_SPARKLE_02])
+		{
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Particle_Swordman_Skill_FrozenStorm_Sparkle_Circle"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_SPARKLE_02], m_pScaleOffset[TYPE_P_SPARKLE_02], m_pRotationOffset[TYPE_P_SPARKLE_02]);
+			m_iCount++;
+		}
+
+		else if (m_iCount == TYPE_END)
 			m_bFinish = true;
 	}
 }
