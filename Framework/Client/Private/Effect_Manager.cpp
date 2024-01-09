@@ -73,8 +73,6 @@ HRESULT CEffect_Manager::Generate_Effect(const wstring& strEffectName, _matrix W
 
 	// Position
 	_vector vCurrentPosition = pTransform->Get_Position();
-	//_vector vOffsetPosition  = pTransform->Get_RelativeOffset(Vec4(vLocalPos.x, vLocalPos.y, vLocalPos.z, 1.f));
-	//_vector vFinalPosition   = vCurrentPosition + vOffsetPosition;
 
 	_vector vFinalPosition = vCurrentPosition;
 	vFinalPosition += pTransform->Get_State(CTransform::STATE_RIGHT) * vLocalPos.x;

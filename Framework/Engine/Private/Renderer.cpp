@@ -236,8 +236,8 @@ HRESULT CRenderer::Check_Option()
 #pragma region Draw
 HRESULT CRenderer::Draw()
 {
-#ifdef _DEBUG
 	Input_Key();
+#ifdef _DEBUG
 #endif // DEBUG
 
 	if (FAILED(Draw_BackGround()))

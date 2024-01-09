@@ -313,11 +313,35 @@ void CTool_Effect::Tick_EffectTool()
 		if (ImGui::Combo("##DiffuseFolderName", &m_iDiffuseFolderIndex, m_cFolderName, IM_ARRAYSIZE(m_cFolderName)))
 			Store_InfoEffect();
 
-		ImGui::Text("DiffuseTextureIndex");
-		ImGui::SameLine();
-		if (ImGui::InputInt("##DiffuseTextureIndex", &(_int)m_tEffectInfo.iTextureIndexDiffuse))
-			Store_InfoEffect();
-		ImGui::NewLine();
+		if (m_pEffect != nullptr)
+		{
+			ImGui::Text("DiffuseTextureIndex");
+			ImGui::SameLine();
+			if (ImGui::InputInt("##DiffuseTextureIndex", &(_int)m_tEffectInfo.iTextureIndexDiffuse))
+				Store_InfoEffect();
+			ImGui::NewLine();
+
+			CTexture* pDiffuseTexture = static_cast<CEffect*>(m_pEffect)->Get_DiffuseTexture();
+			if (pDiffuseTexture != nullptr)
+			{
+				ImGui::Text("Diffuse Texture");
+				if (ImGui::BeginListBox("##Effect_DiffuseTexture_List", ImVec2(450.f, 200.f)))
+				{
+					for (size_t i = 0; i < pDiffuseTexture->Get_TextureCount(); ++i)
+					{
+						if (i % 5 != 0)
+							IMGUI_SAME_LINE;
+
+						if (ImGui::ImageButton(pDiffuseTexture->Get_Srv(i), ImVec2(50.f, 50.f)))
+						{
+							m_tEffectInfo.iTextureIndexDiffuse = i;
+							//Store_InfoEffect();
+						}
+					}
+					ImGui::EndListBox();
+				}
+			}
+		}
 
 		// 알파 텍스처
 		ImGui::Text("AlphaFolderName :");
@@ -325,11 +349,35 @@ void CTool_Effect::Tick_EffectTool()
 		if (ImGui::Combo("##AlphaFolderName", &m_iAlphaFolderIndex, m_cFolderName, IM_ARRAYSIZE(m_cFolderName)))
 			Store_InfoEffect();
 
-		ImGui::Text("AlphaTextureIndex");
-		ImGui::SameLine();
-		if (ImGui::InputInt("##AlphaTextureIndex", &(_int)m_tEffectInfo.iTextureIndexAlpha))
-			Store_InfoEffect();
-		ImGui::NewLine();
+		if (m_pEffect != nullptr)
+		{
+			ImGui::Text("AlphaTextureIndex");
+			ImGui::SameLine();
+			if (ImGui::InputInt("##AlphaTextureIndex", &(_int)m_tEffectInfo.iTextureIndexAlpha))
+				Store_InfoEffect();
+			ImGui::NewLine();
+
+			CTexture* pAlphaTexture = static_cast<CEffect*>(m_pEffect)->Get_AlphaTexture();
+			if (pAlphaTexture != nullptr)
+			{
+				ImGui::Text("Alpha Texture");
+				if (ImGui::BeginListBox("##Effect_AlphaTexture_List", ImVec2(450.f, 200.f)))
+				{
+					for (size_t i = 0; i < pAlphaTexture->Get_TextureCount(); ++i)
+					{
+						if (i % 5 != 0)
+							IMGUI_SAME_LINE;
+
+						if (ImGui::ImageButton(pAlphaTexture->Get_Srv(i), ImVec2(50.f, 50.f)))
+						{
+							m_tEffectInfo.iTextureIndexAlpha = i;
+							//Store_InfoEffect();
+						}
+					}
+					ImGui::EndListBox();
+				}
+			}
+		}
 
 		// 디퓨즈 && 알파 UVIndex && UVMaxCount
 		ImGui::Checkbox("UVIndexRandomStart", &m_tEffectInfo.bRandomStartIndex);
