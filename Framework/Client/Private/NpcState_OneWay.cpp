@@ -38,7 +38,7 @@ void CNpcState_OneWay::Tick_State(_float fTimeDelta)
 	//if (m_bIsMove)
 	//{
 		m_pTransformCom->LookAt_ForLandObject(m_pNpc->Get_RoamingIndex(m_pNpc->Get_CurRoamingIndex()));
-		m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_pNpc->Get_Stat().fSpeed, fTimeDelta);
+		m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_pNpc->Get_Stat()->fSpeed, fTimeDelta);
 
 		if (vPos.x >= vDestPos.x - 0.1f && vPos.x <= vDestPos.x + 0.1f &&
 			vPos.z >= vDestPos.z - 0.1f && vPos.z <= vDestPos.z + 0.1f)

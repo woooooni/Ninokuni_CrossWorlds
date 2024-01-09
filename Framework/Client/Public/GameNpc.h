@@ -27,6 +27,12 @@ public:
 public:
 	typedef struct tagNpcStat
 	{
+		// 툴에서 헷갈리지 않게.
+		_bool bHasMove = true;
+		_bool bHasTalk = true;
+		_bool bHasIdle = true;
+		_bool bIsUnique = false;
+
 		_uint iLevel = 1;
 
 		_uint iAtt = 1;
@@ -37,11 +43,7 @@ public:
 
 		_float fSpeed = 0.f;
 
-		// 툴에서 헷갈리지 않게.
-		_bool bHasMove = true;
-		_bool bHasTalk = true;
-		_bool bHasIdle = true;
-		_bool bIsUnique = false;
+
 	}NPC_STAT;
 
 protected:
@@ -78,7 +80,7 @@ public:
 	_bool Is_Infinite() { return m_bInfinite; }
 
 public:
-	const NPC_STAT& Get_Stat() { return m_tStat; }
+	NPC_STAT* Get_Stat() { return &m_tStat; }
 	void Set_Stat(const NPC_STAT& StatDesc) { m_tStat = StatDesc; }
 
 	vector<Vec4>* Get_RoamingArea() { return &m_vecRoaming; }
@@ -95,7 +97,8 @@ public:
 	void Set_Point(_bool point) { m_bTurnOnFirstPoint = point; }
 
 protected:
-	virtual HRESULT Ready_Components();
+	virtual HRESULT Ready_Components(void* pArg);
+	virtual HRESULT Ready_Components() { return S_OK; }
 	virtual HRESULT Ready_States() PURE;
 	virtual HRESULT Ready_Colliders();
 	virtual void On_Damaged(const COLLISION_INFO& tInfo);

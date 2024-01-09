@@ -1095,7 +1095,6 @@ void CTool_Map::MapNPCSpace()
 			ImGui::SameLine();
 
 		
-
 			if (m_iNPCState == 0)
 			{
 				ImGui::PushItemWidth(110.f);
@@ -1230,6 +1229,9 @@ void CTool_Map::MapNPCSpace()
 								ImGui::DragFloat3(("Points_" + std::to_string(i)).c_str(), &(*romingPoints)[i].x); 
 								ImGui::Spacing();
 							}
+
+							CGameNpc::NPC_STAT* eStat = static_cast<CGameNpc*>(m_pSelectObj)->Get_Stat();
+							ImGui::DragFloat("Speed", &(eStat->fSpeed), 0.1f, 0.1f, 20.0f);
 
 							if (ImGui::Button("Undo", ImVec2(80.0f, 20.0f)))
 							{
@@ -1911,9 +1913,9 @@ HRESULT CTool_Map::Save_NPC_Data(const wstring& strNPCFileName)
 
 		// 2. ObjectCount
 		list<CGameObject*>& GameObjects = GI->Find_GameObjects(LEVEL_TOOL, i);
-		File->Write<_uint>(GameObjects.size());
+		File->Write<_uint>(GameObjects.size()); // O
 
-		for (auto& Object : GameObjects)
+ 		for (auto& Object : GameObjects)
 		{
 			CTransform* pTransform = Object->Get_Component<CTransform>(L"Com_Transform");
 			if (nullptr == pTransform)
@@ -1923,10 +1925,10 @@ HRESULT CTool_Map::Save_NPC_Data(const wstring& strNPCFileName)
 			}
 
 			// 3. Object_Prototype_Tag
-			File->Write<string>(CUtils::ToString(Object->Get_PrototypeTag()));
-
+			File->Write<string>(CUtils::ToString(Object->Get_PrototypeTag())); // O
+			 
 			// 4. Object_Tag
-			File->Write<string>(CUtils::ToString(Object->Get_ObjectTag()));
+			File->Write<string>(CUtils::ToString(Object->Get_ObjectTag())); // 0 
 
 			// 5. Obejct States
 			_float4 vRight, vUp, vLook, vPos;
@@ -1936,13 +1938,13 @@ HRESULT CTool_Map::Save_NPC_Data(const wstring& strNPCFileName)
 			XMStoreFloat4(&vLook, pTransform->Get_State(CTransform::STATE_LOOK));
 			XMStoreFloat4(&vPos, pTransform->Get_State(CTransform::STATE_POSITION));
 
-			File->Write<_float4>(vRight);
-			File->Write<_float4>(vUp);
-			File->Write<_float4>(vLook);
-			File->Write<_float4>(vPos);
+			File->Write<_float4>(vRight); // 0 
+			File->Write<_float4>(vUp); // 0 
+			File->Write<_float4>(vLook); // 0 
+			File->Write<_float4>(vPos); // 0 
 
 			_uint ObjectType = Object->Get_ObjectType();
-			File->Write<_uint>(ObjectType);
+			File->Write<_uint>(ObjectType); // 0 
 
 			if (OBJ_TYPE::OBJ_NPC == ObjectType)
 			{
@@ -1950,16 +1952,19 @@ HRESULT CTool_Map::Save_NPC_Data(const wstring& strNPCFileName)
 				vector<Vec4>* pPoints = pNpc->Get_RoamingArea();
 
 				_uint iSize = pPoints->size();
-				File->Write<_uint>(iSize);
+				File->Write<_uint>(iSize); // 0 
 
 				_uint eState = pNpc->Get_State();
-				File->Write<_uint>(eState);
+				File->Write<_uint>(eState); // 0 
 
 				if (pPoints->size() != 0)
 				{
 					for (auto& iter : *pPoints)
-						File->Write<Vec4>(iter);
+						File->Write<Vec4>(iter); // 0 
 				}
+
+				CGameNpc::NPC_STAT* eStat = pNpc->Get_Stat();
+				File->Write<CGameNpc::NPC_STAT>(*eStat); // 0 
 			}
 		}
 	}
@@ -1985,21 +1990,21 @@ HRESULT CTool_Map::Load_NPC_Data(const wstring& strNPCFileName)
 		GI->Clear_Layer(LEVEL_TOOL, i);
 
 
-		_uint iObjectCount = File->Read<_uint>();
+		_uint iObjectCount = File->Read<_uint>(); // 0 
 
 		for (_uint j = 0; j < iObjectCount; ++j)
 		{
 			// 3. Object_Prototype_Tag
-			wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
-			wstring strObjectTag = CUtils::ToWString(File->Read<string>());
+			wstring strPrototypeTag = CUtils::ToWString(File->Read<string>()); // 0 
+			wstring strObjectTag = CUtils::ToWString(File->Read<string>()); // 0 
 
 			// 6. Obejct States
 			_float4 vRight, vUp, vLook, vPos;
 
-			File->Read<_float4>(vRight);
-			File->Read<_float4>(vUp);
-			File->Read<_float4>(vLook);
-			File->Read<_float4>(vPos);
+			File->Read<_float4>(vRight); // 0 
+			File->Read<_float4>(vUp); // 0 
+			File->Read<_float4>(vLook); // 0 
+			File->Read<_float4>(vPos); // 0 
 
 			 
 			OBJECT_INIT_DESC Init_Data = {};
@@ -2026,17 +2031,17 @@ HRESULT CTool_Map::Load_NPC_Data(const wstring& strNPCFileName)
 			}
 
 			_uint ObjectType;
-			File->Read<_uint>(ObjectType);
+			File->Read<_uint>(ObjectType); // 0 
 
 			if (OBJ_TYPE::OBJ_NPC == ObjectType)
 			{
 				CGameNpc* pNpc = static_cast<CGameNpc*>(pObj);
 				
 				_uint iSize;
-				File->Read<_uint>(iSize);
+				File->Read<_uint>(iSize); // 0 
 
 				_uint eState;
-				File->Read<_uint>(eState);
+				File->Read<_uint>(eState); // 0 
 
 
 				if (iSize != 0)
@@ -2047,7 +2052,7 @@ HRESULT CTool_Map::Load_NPC_Data(const wstring& strNPCFileName)
 					for (_uint i = 0; i < iSize; ++i)
 					{
 						Vec4 vPoint;
-						File->Read<Vec4>(vPoint);
+						File->Read<Vec4>(vPoint); // 0 
 						Points.push_back(vPoint);
 					}
 
@@ -2060,8 +2065,13 @@ HRESULT CTool_Map::Load_NPC_Data(const wstring& strNPCFileName)
 					}
 				}
 
+				CGameNpc::NPC_STAT eStat;
+				File->Read<CGameNpc::NPC_STAT>(eStat); // 0 
+
 				pNpc->Set_NpcState(static_cast<CGameNpc::NPC_STATE>(eState));
 				pNpc->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(eState);
+				pNpc->Set_Stat(eStat);
+			
 
 			}
 
