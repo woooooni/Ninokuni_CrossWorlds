@@ -27,7 +27,6 @@ void CQuestNode_Base::LateTick(const _float& fTimeDelta)
 void CQuestNode_Base::Free()
 {
 	__super::Free();
-
 	Safe_Release(m_pQuestDestSpot);
 }
 

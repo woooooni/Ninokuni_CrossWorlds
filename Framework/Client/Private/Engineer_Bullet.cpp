@@ -32,6 +32,7 @@ HRESULT CEngineer_Bullet::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+	m_pTransformCom->Set_Scale(Vec3(2.f, 2.f, 2.f));
 
 	return S_OK;
 }
@@ -118,7 +119,7 @@ HRESULT CEngineer_Bullet::Ready_Components()
 
 	BoundingSphere tSphere;
 	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 0.1f;
+	tSphere.Radius = 0.2f;
 	SphereDesc.tSphere = tSphere;
 
 	SphereDesc.pNode = nullptr;

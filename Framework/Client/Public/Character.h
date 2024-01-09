@@ -237,6 +237,9 @@ public:
 	HRESULT Appear_Weapon();
 
 public:
+	void Look_For_Target();
+
+public:
 	virtual HRESULT Enter_Character();
 	virtual HRESULT Exit_Character();
 

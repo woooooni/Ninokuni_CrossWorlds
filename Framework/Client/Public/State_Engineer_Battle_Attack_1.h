@@ -26,7 +26,6 @@ public:
 	virtual void Exit_State() override;
 
 private:
-	void Input(_float fTimeDelta);
 	void Shoot();
 
 private:

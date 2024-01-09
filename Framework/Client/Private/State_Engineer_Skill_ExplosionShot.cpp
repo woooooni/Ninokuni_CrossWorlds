@@ -27,9 +27,9 @@ void CState_Engineer_Skill_ExplosionShot::Enter_State(void* pArg)
 
 void CState_Engineer_Skill_ExplosionShot::Tick_State(_float fTimeDelta)
 {
-    if (false == m_pModelCom->Is_Tween() && m_pModelCom->Get_Progress() >= 0.35f && m_pModelCom->Get_Progress() <= 0.5f)
+    if (false == m_pModelCom->Is_Tween() && (m_pModelCom->Get_CurrAnimationFrame() >= 50.f && m_pModelCom->Get_CurrAnimationFrame() <= 55.f))
     {
-        m_pTransformCom->Move(-1.f * XMVector3Normalize(m_pTransformCom->Get_Look()), 3.f - (m_pModelCom->Get_Progress()), fTimeDelta);
+        m_pTransformCom->Move(-1.f * XMVector3Normalize(m_pTransformCom->Get_Look()), 5.f - (m_pModelCom->Get_Progress()), fTimeDelta);
     }
 
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())

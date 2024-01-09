@@ -34,7 +34,7 @@ protected:
 
 private:
 	HRESULT Ready_Sockets();
-	HRESULT Ready_Parts();
+	HRESULT Ready_Weapon();
 	
 
 private:

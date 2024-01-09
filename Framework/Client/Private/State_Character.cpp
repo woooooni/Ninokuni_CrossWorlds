@@ -996,13 +996,37 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 		switch (eCharacterType)
 		{
 		case CHARACTER_TYPE::SWORD_MAN:
-			bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::SWORDMAN_PERFECT_BLADE);
+			if (KEY_HOLD(KEY::SHIFT))
+			{
+				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::SWORDMAN_ACANE_BARRIER);
+			}
+			else
+			{
+				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::SWORDMAN_PERFECT_BLADE);
+			}
+			
 			break;
 		case CHARACTER_TYPE::ENGINEER:
-			bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::ENGINEER_BURSTCALL);
+			if (KEY_HOLD(KEY::SHIFT)) 
+			{
+				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::ENGINEER_BURSTCALL);
+			}
+			else
+			{
+				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::ENGINEER_FLASH_HEAL);
+			}
+			
 			break;
 		case CHARACTER_TYPE::DESTROYER:
-			bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_WHEELWIND);
+			if (KEY_HOLD(KEY::SHIFT))
+			{
+				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_WHEELWIND);
+			}
+			else
+			{
+				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_BATTLE_CRY);
+			}
+			
 			break;
 		}
 
@@ -1017,13 +1041,35 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 		switch (eCharacterType)
 		{
 		case CHARACTER_TYPE::SWORD_MAN:
-			bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::SWORDMAN_SIPOHONINGLUNGE);
+			if (KEY_HOLD(KEY::SHIFT))
+			{
+				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::SWORDMAN_FROZEN_STORM);
+			}
+			else
+			{
+				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::SWORDMAN_SIPOHONINGLUNGE);
+			}
 			break;
 		case CHARACTER_TYPE::ENGINEER:
-			bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::ENGINEER_ELEMENTAL_BLAST);
+			if (KEY_HOLD(KEY::SHIFT))
+			{
+				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::ENGINEER_TIMELAB);
+			}
+			else
+			{
+				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::ENGINEER_ELEMENTAL_BLAST);
+			}
 			break;
 		case CHARACTER_TYPE::DESTROYER:
-			bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_BRUTALSTRIKE);
+			if (KEY_HOLD(KEY::SHIFT))
+			{
+				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_IGNORE_PAIN);
+				
+			}
+			else
+			{
+				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_BRUTALSTRIKE);
+			}
 			break;
 		}
 
@@ -1038,13 +1084,37 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 		switch (eCharacterType)
 		{
 		case CHARACTER_TYPE::SWORD_MAN:
-			bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::SWORDMAN_SPINNING_ASSAULT);
+			if (KEY_HOLD(KEY::SHIFT))
+			{
+				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::SWORDMAN_SWORD_TEMPEST);
+			}
+			else
+			{
+				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::SWORDMAN_SPINNING_ASSAULT);
+			}
+			
 			break;
 		case CHARACTER_TYPE::ENGINEER:
-			bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::ENGINEER_EXPLOSIONSHOT);
+			if (KEY_HOLD(KEY::SHIFT))
+			{
+				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::ENGINEER_HEALINGTREE);
+			}
+			else
+			{
+				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::ENGINEER_EXPLOSIONSHOT);
+			}
+			
 			break;
 		case CHARACTER_TYPE::DESTROYER:
-			bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_LEAFSLAM);
+			if (KEY_HOLD(KEY::SHIFT))
+			{
+				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_FRENGE_CHARGE);
+			}
+			else
+			{
+				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_LEAFSLAM);
+			}
+			
 			break;
 		}
 

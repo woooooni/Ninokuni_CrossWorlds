@@ -26,8 +26,10 @@ public:
 	virtual void Exit_State() override;
 
 private:
-	void Input(_float fTimeDelta);
 	void Shoot();
+
+private:
+	_uint m_iShootCount = 1;
 
 public:
 	static CState_Engineer_Battle_Attack_3* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);

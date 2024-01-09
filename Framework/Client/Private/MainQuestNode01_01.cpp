@@ -35,9 +35,7 @@ void CMainQuestNode01_01::Start()
 	// Vec4 vSpotPos = { 5.f, 2.5f, 10.f, 1.f };
 
 	// 임시로 monster에 
-	m_pQuestDestSpot = 
-		dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_MONSTER), &vSpotPos));
-
+	m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_MONSTER), &vSpotPos));
 }
 
 CBTNode::NODE_STATE CMainQuestNode01_01::Tick(const _float& fTimeDelta)
@@ -84,4 +82,5 @@ CMainQuestNode01_01* CMainQuestNode01_01::Create()
 void CMainQuestNode01_01::Free()
 {
 	__super::Free();
+	Safe_Release(m_pQuestDestSpot);
 }

@@ -30,8 +30,8 @@ HRESULT CWeapon_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceCont
 	if (FAILED(Loading_Weapon_Models(L"../Bin/Export/NonAnimModel/Weapon/Hammer/")))
 		return E_FAIL;
 
-	/*if (FAILED(Loading_Weapon_Models(L"../Bin/Export/NonAnimModel/Weapon/Rifle/")))
-		return E_FAIL;*/
+	if (FAILED(Loading_Weapon_Models(L"../Bin/Export/NonAnimModel/Weapon/Rifle/")))
+		return E_FAIL;
 
 
 	m_bReserved = true;
