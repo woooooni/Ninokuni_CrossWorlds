@@ -41,7 +41,7 @@ void CGlanixState_Rage2Start::Exit_State()
 	//_float4 vOwnerPos = {};
 	//XMStoreFloat4(&vOwnerPos, m_pGlanix->Get_OriginPos());
 	//_vector vSpritPos = { vOwnerPos.x, vOwnerPos.y, vOwnerPos.z, 1.f };
-	GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_Phoenix"));
+	GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_Phoenix"));
 }
 
 CGlanixState_Rage2Start* CGlanixState_Rage2Start::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

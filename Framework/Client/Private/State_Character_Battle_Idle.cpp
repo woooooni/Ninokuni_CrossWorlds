@@ -48,6 +48,7 @@ void CState_Character_Battle_Idle::Tick_State(_float fTimeDelta)
     }
 
     __super::Battle_Idle_Input(fTimeDelta);
+    __super::Skill_Input(fTimeDelta);
 }
 
 void CState_Character_Battle_Idle::Exit_State()

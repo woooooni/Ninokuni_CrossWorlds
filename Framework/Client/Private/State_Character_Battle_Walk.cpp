@@ -25,6 +25,7 @@ void CState_Character_Battle_Walk::Enter_State(void* pArg)
 void CState_Character_Battle_Walk::Tick_State(_float fTimeDelta)
 {
     __super::Battle_Walk_Input(fTimeDelta);
+    __super::Skill_Input(fTimeDelta);
 }
 
 void CState_Character_Battle_Walk::Exit_State()

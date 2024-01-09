@@ -32,6 +32,7 @@ _bool CSkill_Destroyer_WheelWind::Use_Skill()
 {
 	if (true == __super::Use_Skill())
 	{
+		m_pCharacterStateMachine->Change_State(CCharacter::CLASS_SKILL_0);
 		return true;
 	}
 	else
@@ -57,7 +58,4 @@ CSkill_Destroyer_WheelWind* CSkill_Destroyer_WheelWind::Create(ID3D11Device* pDe
 void CSkill_Destroyer_WheelWind::Free()
 {
 	__super::Free();
-	Safe_Release(m_pDevice);
-	Safe_Release(m_pContext);
-	Safe_Release(m_pOwner);
 }

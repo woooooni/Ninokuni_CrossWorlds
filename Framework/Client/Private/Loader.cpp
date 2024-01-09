@@ -28,6 +28,7 @@
 #include "Weapon_Manager.h"
 #include "Character_Manager.h"
 #include "Game_Manager.h"
+#include "Skill_Manager.h"
 
 #include "UI_Logo_Background.h"
 #include "UI_Flare.h"
@@ -452,8 +453,8 @@ HRESULT CLoader::Loading_For_Level_Test()
 
 	if (false == g_bFirstLoading)
 	{
-		// m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::SWORD_MAN);
-		m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);
+		 m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::SWORD_MAN);
+		/*m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);*/
 		// m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);
 	}
 		

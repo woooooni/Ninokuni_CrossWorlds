@@ -32,6 +32,7 @@ _bool CSkill_Engineer_BurstCall::Use_Skill()
 {
 	if (true == __super::Use_Skill())
 	{
+		m_pCharacterStateMachine->Change_State(CCharacter::CLASS_SKILL_0);
 		return true;
 	}
 	else
@@ -57,7 +58,4 @@ CSkill_Engineer_BurstCall* CSkill_Engineer_BurstCall::Create(ID3D11Device* pDevi
 void CSkill_Engineer_BurstCall::Free()
 {
 	__super::Free();
-	Safe_Release(m_pDevice);
-	Safe_Release(m_pContext);
-	Safe_Release(m_pOwner);
 }

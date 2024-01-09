@@ -36,6 +36,7 @@ void CState_Character_Neutral_Walk::Tick_State(_float fTimeDelta)
 		_float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f), _float3(0.f, 0.f, 0.f));
 
     __super::Neutral_Walk_Input(fTimeDelta);
+    __super::Skill_Input(fTimeDelta);
 }
 
 void CState_Character_Neutral_Walk::Exit_State()

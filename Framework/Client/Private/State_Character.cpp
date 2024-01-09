@@ -46,6 +46,12 @@ void CState_Character::Neutral_Idle_Input(_float fTimeDelta)
 		return;
 	}
 
+	if (KEY_HOLD(KEY::RBTN))
+	{
+		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_GUARD);
+		return;
+	}
+
 	if (KEY_TAP(KEY::CTRL))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::BATTLE_DASH);
@@ -70,6 +76,12 @@ void CState_Character::Battle_Idle_Input(_float fTimeDelta)
 	if (KEY_TAP(KEY::LBTN))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::BATTLE_ATTACK_0);
+		return;
+	}
+
+	if (KEY_HOLD(KEY::RBTN))
+	{
+		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_GUARD);
 		return;
 	}
 
@@ -1060,6 +1072,7 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 		if (true == bUseSkill)
 			return;
 	}
+
 }
 
 void CState_Character::Attack_Input(_float fTimeDelta)
@@ -1084,7 +1097,7 @@ void CState_Character::Attack_Input(_float fTimeDelta)
 			break;
 
 		case CCharacter::STATE::BATTLE_ATTACK_1:
-			if (m_pModelCom->Get_Progress() >= 0.5f && false == m_pModelCom->Is_Tween())
+			if (m_pModelCom->Get_Progress() >= 0.3f && false == m_pModelCom->Is_Tween())
 			{
 				m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_2);
 				return;

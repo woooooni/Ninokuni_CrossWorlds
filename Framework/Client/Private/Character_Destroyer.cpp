@@ -378,7 +378,7 @@ HRESULT CCharacter_Destroyer::Ready_States()
 	
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillDash");
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillScrewBlow");
 	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_DASH, CState_Character_Battle_Dash::Create(m_pStateCom, strAnimationNames));
 	
 	

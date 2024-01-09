@@ -38,12 +38,9 @@ void CState_Character_Battle_Dash::Enter_State(void* pArg)
 
 void CState_Character_Battle_Dash::Tick_State(_float fTimeDelta)
 {
-    if (CHARACTER_TYPE::DESTROYER != m_pCharacter->Get_CharacterType())
+    if (m_pModelCom->Get_Progress() <= 0.5f)
     {
-        if (m_pModelCom->Get_Progress() <= 0.5f)
-        {
-            m_pTransformCom->Move(m_pTransformCom->Get_Look(), 8.f, fTimeDelta);
-        }
+        m_pTransformCom->Move(m_pTransformCom->Get_Look(), 8.f, fTimeDelta);
     }
     
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
