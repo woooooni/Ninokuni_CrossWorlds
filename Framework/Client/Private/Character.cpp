@@ -112,6 +112,9 @@ void CCharacter::Tick(_float fTimeDelta)
 
 	if(true == m_bMotionTrail)
 		Tick_MotionTrail(fTimeDelta);
+
+	if (nullptr == m_pTarget)
+		Tick_Target(fTimeDelta);
 #pragma region Deprecated.
 
 	//if (m_bInfinite)
@@ -144,6 +147,9 @@ void CCharacter::Tick(_float fTimeDelta)
 	//}
 #pragma endregion
 }
+
+
+
 
 
 void CCharacter::Tick_MotionTrail(_float fTimeDelta)
@@ -190,6 +196,29 @@ void CCharacter::Tick_MotionTrail(_float fTimeDelta)
 		}
 	}
 }
+
+void CCharacter::Tick_Target(_float fTimeDelta)
+{
+	if (nullptr == m_pTarget)
+		return;
+
+	if (m_pTarget->Is_ReserveDead() || m_pTarget->Is_Dead())
+	{
+		m_pTarget = nullptr;
+		return;
+	}
+		
+
+	CTransform* pTargetTransform = m_pTarget->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr != pTargetTransform)
+	{
+		Vec3 vDir = pTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
+		if (vDir.Length() > 10.f)
+			m_pTarget = nullptr;
+	}
+}
+
+
 
 void CCharacter::LateTick(_float fTimeDelta)
 {
@@ -336,6 +365,13 @@ void CCharacter::Collision_Enter(const COLLISION_INFO& tInfo)
 void CCharacter::Collision_Continue(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Continue(tInfo);
+	if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BOUNDARY)
+	{
+		if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_DYNAMIC || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER)
+		{
+			Decide_Target(tInfo);
+		}
+	}
 }
 
 void CCharacter::Collision_Exit(const COLLISION_INFO& tInfo)
@@ -401,6 +437,34 @@ void CCharacter::Stop_Trail(SOCKET_TYPE eSocketType)
 		m_pTrails[eSocketType]->Stop_Trail();
 
 }
+
+void CCharacter::Decide_Target(COLLISION_INFO tInfo)
+{
+	if (nullptr == m_pTarget)
+	{
+		m_pTarget = tInfo.pOther;
+	}
+	else
+	{
+		CTransform* pTargetTransform = m_pTarget->Get_Component<CTransform>(L"Com_Transform");
+		CTransform* pNewTargetTransform = tInfo.pOther->Get_Component<CTransform>(L"Com_Transform");
+
+		if (nullptr != pTargetTransform)
+		{
+			Vec3 vTargetDir = pTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
+			Vec3 vNewTargetDir = pNewTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
+			if (vNewTargetDir.Length() < vTargetDir.Length())
+			{
+				m_pTarget = tInfo.pOther;
+			}
+		}
+	}
+}
+
+
+
+
+
 
 
 void CCharacter::Set_Infinite(_float fInfiniteTime, _bool bInfinite)

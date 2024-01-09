@@ -8,41 +8,41 @@
 #include "Weapon.h"
 #include "Sword.h"
 
-#include "State_Destroyer_DoorEnter.h"
-#include "State_Destroyer_Neutral_Idle.h"
-#include "State_Destroyer_Neutral_Jump.h"
-#include "State_Destroyer_Neutral_Walk.h"
-#include "State_Destroyer_Neutral_Run.h"
-#include "State_Destroyer_Neutral_Kick.h"
+#include "State_Character_DoorEnter.h"
+#include "State_Character_Neutral_Idle.h"
+#include "State_Character_Neutral_Jump.h"
+#include "State_Character_Neutral_Walk.h"
+#include "State_Character_Neutral_Run.h"
+#include "State_Character_Neutral_Kick.h"
 
-#include "State_Destroyer_Neutral_Crouch_Idle.h"
-#include "State_Destroyer_Neutral_Crouch_Move.h"
-
-
-#include "State_Destroyer_Neutral_Pick_Small_Enter.h"
-#include "State_Destroyer_Neutral_Pick_Small_Idle.h"
-#include "State_Destroyer_Neutral_Pick_Small_Walk.h"
-#include "State_Destroyer_Neutral_Pick_Small_Run.h"
-#include "State_Destroyer_Neutral_Pick_Small_Throw.h"
-#include "State_Destroyer_Neutral_Pick_Small_Finish.h"
+#include "State_Character_Neutral_Crouch_Idle.h"
+#include "State_Character_Neutral_Crouch_Move.h"
 
 
-#include "State_Destroyer_Neutral_Pick_Large_Enter.h"
-#include "State_Destroyer_Neutral_Pick_Large_Idle.h"
-#include "State_Destroyer_Neutral_Pick_Large_Walk.h"
-#include "State_Destroyer_Neutral_Pick_Large_Run.h"
-#include "State_Destroyer_Neutral_Pick_Large_Throw.h"
-#include "State_Destroyer_Neutral_Pick_Large_Finish.h"
+#include "State_Character_Neutral_Pick_Small_Enter.h"
+#include "State_Character_Neutral_Pick_Small_Idle.h"
+#include "State_Character_Neutral_Pick_Small_Walk.h"
+#include "State_Character_Neutral_Pick_Small_Run.h"
+#include "State_Character_Neutral_Pick_Small_Throw.h"
+#include "State_Character_Neutral_Pick_Small_Finish.h"
 
 
-#include "State_Destroyer_AbNormality_Stun.h"
+#include "State_Character_Neutral_Pick_Large_Enter.h"
+#include "State_Character_Neutral_Pick_Large_Idle.h"
+#include "State_Character_Neutral_Pick_Large_Walk.h"
+#include "State_Character_Neutral_Pick_Large_Run.h"
+#include "State_Character_Neutral_Pick_Large_Throw.h"
+#include "State_Character_Neutral_Pick_Large_Finish.h"
 
-#include "State_Destroyer_Battle_Guard.h"
-#include "State_Destroyer_Battle_Idle.h"
-#include "State_Destroyer_Battle_Jump.h"
-#include "State_Destroyer_Battle_Walk.h"
-#include "State_Destroyer_Battle_Run.h"
-#include "State_Destroyer_Battle_Dash.h"
+
+#include "State_Character_AbNormality_Stun.h"
+
+#include "State_Character_Battle_Guard.h"
+#include "State_Character_Battle_Idle.h"
+#include "State_Character_Battle_Jump.h"
+#include "State_Character_Battle_Walk.h"
+#include "State_Character_Battle_Run.h"
+#include "State_Character_Battle_Dash.h"
 
 #include "State_Destroyer_Battle_Attack_0.h"
 #include "State_Destroyer_Battle_Attack_1.h"
@@ -60,14 +60,14 @@
 #include "State_Destroyer_SpecialSkill_FrengeCharge.h"
 #include "State_Destroyer_SpecialSkill_IgnorePain.h"
 
-#include "State_Destroyer_Damaged_Impact.h"
-#include "State_Destroyer_Damaged_KnockDown.h"
-#include "State_Destroyer_Damaged_Strong.h"
-#include "State_Destroyer_Damaged_Weak.h"
+#include "State_Character_Damaged_Impact.h"
+#include "State_Character_Damaged_KnockDown.h"
+#include "State_Character_Damaged_Strong.h"
+#include "State_Character_Damaged_Weak.h"
 
 
-#include "State_Destroyer_Dead.h"
-#include "State_Destroyer_Revive.h"
+#include "State_Character_Dead.h"
+#include "State_Character_Revive.h"
 
 
 
@@ -235,7 +235,7 @@ HRESULT CCharacter_Destroyer::Ready_States()
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_TeleportEnd");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_DOOR_ENTER, CState_Destroyer_DoorEnter::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_DOOR_ENTER, CState_Character_DoorEnter::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 	// Neutral
@@ -243,93 +243,93 @@ HRESULT CCharacter_Destroyer::Ready_States()
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_NeutralStand");
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_NeutralIdle01");
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_NeutralIdle02");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_IDLE, CState_Destroyer_Neutral_Idle::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_IDLE, CState_Character_Neutral_Idle::Create(m_pStateCom, strAnimationNames));
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_NeutralWalk");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_WALK, CState_Destroyer_Neutral_Walk::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_WALK, CState_Character_Neutral_Walk::Create(m_pStateCom, strAnimationNames));
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_NeutralRun");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_RUN, CState_Destroyer_Neutral_Run::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_RUN, CState_Character_Neutral_Run::Create(m_pStateCom, strAnimationNames));
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_JumpUpLoop");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_JUMP, CState_Destroyer_Neutral_Jump::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_JUMP, CState_Character_Neutral_Jump::Create(m_pStateCom, strAnimationNames));
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_DSCrouchStand");
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_DSCrouchLookAround");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_CROUCH_IDLE, CState_Destroyer_Neutral_Crouch_Idle::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_CROUCH_IDLE, CState_Character_Neutral_Crouch_Idle::Create(m_pStateCom, strAnimationNames));
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_DSCrouchWalk");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_CROUCH_MOVE, CState_Destroyer_Neutral_Crouch_Move::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_CROUCH_MOVE, CState_Character_Neutral_Crouch_Move::Create(m_pStateCom, strAnimationNames));
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_Kick");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_KICK, CState_Destroyer_Neutral_Kick::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_KICK, CState_Character_Neutral_Kick::Create(m_pStateCom, strAnimationNames));
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickStartS");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_ENTER, CState_Destroyer_Neutral_Pick_Small_Enter::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_ENTER, CState_Character_Neutral_Pick_Small_Enter::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickStandS");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_IDLE, CState_Destroyer_Neutral_Pick_Small_Idle::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_IDLE, CState_Character_Neutral_Pick_Small_Idle::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickWalkS");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_WALK, CState_Destroyer_Neutral_Pick_Small_Walk::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_WALK, CState_Character_Neutral_Pick_Small_Walk::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickRunS");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_RUN, CState_Destroyer_Neutral_Pick_Small_Run::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_RUN, CState_Character_Neutral_Pick_Small_Run::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickThrowS");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_THROW, CState_Destroyer_Neutral_Pick_Small_Throw::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_THROW, CState_Character_Neutral_Pick_Small_Throw::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickFinishS");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_FINISH, CState_Destroyer_Neutral_Pick_Small_Finish::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_FINISH, CState_Character_Neutral_Pick_Small_Finish::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickStartL");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_ENTER, CState_Destroyer_Neutral_Pick_Large_Enter::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_ENTER, CState_Character_Neutral_Pick_Large_Enter::Create(m_pStateCom, strAnimationNames));
 	
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickStandL");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_IDLE, CState_Destroyer_Neutral_Pick_Large_Idle::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_IDLE, CState_Character_Neutral_Pick_Large_Idle::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickWalkL");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_WALK, CState_Destroyer_Neutral_Pick_Large_Walk::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_WALK, CState_Character_Neutral_Pick_Large_Walk::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickRunL");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_RUN, CState_Destroyer_Neutral_Pick_Large_Run::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_RUN, CState_Character_Neutral_Pick_Large_Run::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickThrowL");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_THROW, CState_Destroyer_Neutral_Pick_Large_Throw::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_THROW, CState_Character_Neutral_Pick_Large_Throw::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickFinishL");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_FINISH, CState_Destroyer_Neutral_Pick_Large_Finish::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_FINISH, CState_Character_Neutral_Pick_Large_Finish::Create(m_pStateCom, strAnimationNames));
 	
 	
 	// AbNormality
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_StunLoop");
-	m_pStateCom->Add_State(CCharacter::STATE::ABNORMALITY_STUN, CState_Destroyer_AbNormality_Stun::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::ABNORMALITY_STUN, CState_Character_AbNormality_Stun::Create(m_pStateCom, strAnimationNames));
 
 
 
@@ -338,22 +338,22 @@ HRESULT CCharacter_Destroyer::Ready_States()
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_BattleStand");
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_FinishCombat");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_IDLE, CState_Destroyer_Battle_Idle::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_IDLE, CState_Character_Battle_Idle::Create(m_pStateCom, strAnimationNames));
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_BattleWalk");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_WALK, CState_Destroyer_Battle_Walk::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_WALK, CState_Character_Battle_Walk::Create(m_pStateCom, strAnimationNames));
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_Dash");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_RUN, CState_Destroyer_Battle_Run::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_RUN, CState_Character_Battle_Run::Create(m_pStateCom, strAnimationNames));
 
 
 	strAnimationNames.clear();	
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_JumpUpLoop");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_JUMP, CState_Destroyer_Battle_Jump::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_JUMP, CState_Character_Battle_Jump::Create(m_pStateCom, strAnimationNames));
 
 
 	strAnimationNames.clear();
@@ -374,12 +374,12 @@ HRESULT CCharacter_Destroyer::Ready_States()
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_CSGuardLoop");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_GUARD, CState_Destroyer_Battle_Guard::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_GUARD, CState_Character_Battle_Guard::Create(m_pStateCom, strAnimationNames));
 	
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillDash");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_DASH, CState_Destroyer_Battle_Dash::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillScrewBlow");
+	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_DASH, CState_Character_Battle_Dash::Create(m_pStateCom, strAnimationNames));
 	
 	
 
@@ -424,31 +424,31 @@ HRESULT CCharacter_Destroyer::Ready_States()
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_ImpactStart");
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_ImpactLoop");
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_ImpactFinish");
-	m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_IMPACT, CState_Destroyer_Damaged_Impact::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_IMPACT, CState_Character_Damaged_Impact::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_KnockUpStart");
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_KnockDownLoop");
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_KnockDownFinish");
 
-	m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_KNOCKDOWN, CState_Destroyer_Damaged_KnockDown::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_KNOCKDOWN, CState_Character_Damaged_KnockDown::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_DamageStrong");
-	m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_STRONG, CState_Destroyer_Damaged_Strong::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_STRONG, CState_Character_Damaged_Strong::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_DamageWeak");
-	m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_WEAK, CState_Destroyer_Damaged_Weak::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_WEAK, CState_Character_Damaged_Weak::Create(m_pStateCom, strAnimationNames));
 
 	// Dead & Revive
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_Death");
-	m_pStateCom->Add_State(CCharacter::STATE::DEAD, CState_Destroyer_Dead::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::DEAD, CState_Character_Dead::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_Revive");
-	m_pStateCom->Add_State(CCharacter::STATE::REVIVE, CState_Destroyer_Revive::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::REVIVE, CState_Character_Revive::Create(m_pStateCom, strAnimationNames));
 
 
 	m_pStateCom->Change_State(CCharacter::NEUTRAL_IDLE);
@@ -463,28 +463,21 @@ HRESULT CCharacter_Destroyer::Ready_Colliders()
 {
 
 
-	//CCollider_Sphere::SPHERE_COLLIDER_DESC ColliderDesc;
-	//ZeroMemory(&ColliderDesc, sizeof ColliderDesc);
+	CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
+	ZeroMemory(&SphereDesc, sizeof SphereDesc);
 
-	//BoundingSphere tSphere;
-	//ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	//tSphere.Radius = 1.f;
-	//ColliderDesc.tSphere = tSphere;
+	BoundingSphere tSphere;
+	ZeroMemory(&tSphere, sizeof(BoundingSphere));
+	tSphere.Radius = 7.f;
+	SphereDesc.tSphere = tSphere;
 
-	//ColliderDesc.pOwner = this;
-	//ColliderDesc.pNode = nullptr;
-	//ColliderDesc.pOwnerTransform = m_pTransformCom;
-	//ColliderDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
-	//ColliderDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
-	//ColliderDesc.bLockAngle_X = false;
-	//ColliderDesc.bLockAngle_Y = false;
-	//ColliderDesc.bLockAngle_Z = false;
+	SphereDesc.pNode = nullptr;
+	SphereDesc.pOwnerTransform = m_pTransformCom;
+	SphereDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
+	SphereDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
 
-	//ColliderDesc.fAngularDamping = 0.f;
-	//ColliderDesc.fDensity = 1.f;
-
-	//if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BODY, &ColliderDesc)))
-	//	return E_FAIL;
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BOUNDARY, &SphereDesc)))
+		return E_FAIL;
 
 
 	CCollider_OBB::OBB_COLLIDER_DESC OBBDesc;

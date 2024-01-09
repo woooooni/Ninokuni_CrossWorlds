@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "GameInstance.h"
 #include "Character.h"
+#include "Camera_Manager.h"
 #include "State_Destroyer_Skill_LeafSlam.h"
 
 CState_Destroyer_Skill_LeafSlam::CState_Destroyer_Skill_LeafSlam(CStateMachine* pMachine)
@@ -12,6 +13,7 @@ HRESULT CState_Destroyer_Skill_LeafSlam::Initialize(const list<wstring>& Animati
 {
     if (FAILED(__super::Initialize(AnimationList)))
         return E_FAIL;
+
     
     return S_OK;
 }
@@ -19,14 +21,39 @@ HRESULT CState_Destroyer_Skill_LeafSlam::Initialize(const list<wstring>& Animati
 void CState_Destroyer_Skill_LeafSlam::Enter_State(void* pArg)
 {
     m_pCharacter->Appear_Weapon();
-    m_pModelCom->Set_Animation(m_AnimIndices[0]);
+    m_iCurrAnimIndex = m_AnimIndices[0];
+    m_pModelCom->Set_Animation(m_iCurrAnimIndex);
+
+    if (m_pCharacter->Get_Target() != nullptr)
+    {
+        CTransform* pTargetTransform = m_pCharacter->Get_Target()->Get_Component<CTransform>(L"Com_Transform");
+        if(nullptr != pTargetTransform)
+            m_pTransformCom->LookAt_ForLandObject(pTargetTransform->Get_Position() * 2.f);
+    }
 }
 
 void CState_Destroyer_Skill_LeafSlam::Tick_State(_float fTimeDelta)
 {
+    if (m_iCurrAnimIndex == m_AnimIndices[0])
+    {
+        m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), 15.f, fTimeDelta);
+    }
+    
 
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
-        m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_IDLE);
+    {
+        if (m_iCurrAnimIndex == m_AnimIndices[0])
+        {
+            m_iCurrAnimIndex = m_AnimIndices[1];
+            m_pModelCom->Set_Animation(m_iCurrAnimIndex);
+            CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
+            
+        }
+        else
+        {
+            m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_IDLE);
+        }
+    }
 }
 
 void CState_Destroyer_Skill_LeafSlam::Exit_State()

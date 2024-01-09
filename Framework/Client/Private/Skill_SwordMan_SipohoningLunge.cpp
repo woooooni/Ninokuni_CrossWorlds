@@ -32,6 +32,7 @@ _bool CSkill_SwordMan_SipohoningLunge::Use_Skill()
 {
 	if (true == __super::Use_Skill())
 	{
+		m_pCharacterStateMachine->Change_State(CCharacter::CLASS_SKILL_1);
 		return true;
 	}
 	else
@@ -57,7 +58,5 @@ CSkill_SwordMan_SipohoningLunge* CSkill_SwordMan_SipohoningLunge::Create(ID3D11D
 void CSkill_SwordMan_SipohoningLunge::Free()
 {
 	__super::Free();
-	Safe_Release(m_pDevice);
-	Safe_Release(m_pContext);
-	Safe_Release(m_pOwner);
+	
 }

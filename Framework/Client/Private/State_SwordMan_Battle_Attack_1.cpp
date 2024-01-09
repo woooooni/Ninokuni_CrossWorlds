@@ -24,9 +24,7 @@ void CState_SwordMan_Battle_Attack_1::Enter_State(void* pArg)
 
 void CState_SwordMan_Battle_Attack_1::Tick_State(_float fTimeDelta)
 {
-    
 
-    Input(fTimeDelta);
 
     if (m_pModelCom->Get_Progress() >= 0.1f && m_pModelCom->Get_Progress() <= 0.2f)
         m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), 2.f, fTimeDelta);
@@ -34,6 +32,8 @@ void CState_SwordMan_Battle_Attack_1::Tick_State(_float fTimeDelta)
 
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
         m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_IDLE);
+
+    __super::Attack_Input(fTimeDelta);
 }
 
 void CState_SwordMan_Battle_Attack_1::Exit_State()
@@ -41,21 +41,6 @@ void CState_SwordMan_Battle_Attack_1::Exit_State()
     
 }
 
-void CState_SwordMan_Battle_Attack_1::Input(_float fTimeDelta)
-{
-    if (KEY_TAP(KEY::CTRL))
-    {
-        m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_DASH);
-        return;
-    }
-
-    if (KEY_TAP(KEY::LBTN))
-    {
-        m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_2);
-        return;
-    }
-        
-}
 
 CState_SwordMan_Battle_Attack_1* CState_SwordMan_Battle_Attack_1::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
 {

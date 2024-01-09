@@ -30,7 +30,8 @@ void CState_Destroyer_Battle_Attack_3::Tick_State(_float fTimeDelta)
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
         m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_IDLE);
 
-    Input(fTimeDelta);
+    __super::Attack_Input(fTimeDelta);
+
 }
 
 void CState_Destroyer_Battle_Attack_3::Exit_State()
@@ -38,14 +39,6 @@ void CState_Destroyer_Battle_Attack_3::Exit_State()
     
 }
 
-void CState_Destroyer_Battle_Attack_3::Input(_float fTimeDelta)
-{
-    if (KEY_TAP(KEY::CTRL))
-    {
-        m_pStateMachineCom->Change_State(CCharacter::BATTLE_DASH);
-        return;
-    }
-}
 
 CState_Destroyer_Battle_Attack_3* CState_Destroyer_Battle_Attack_3::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
 {

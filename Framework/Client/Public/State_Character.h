@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Client_Defines.h"
+#include "Skill_Manager.h"
 #include "State.h"
+
 
 BEGIN(Client)
 
@@ -21,8 +23,27 @@ public:
 	virtual void Exit_State() PURE;
 
 protected:
-	_bool Skill_Input(_float fTimeDelta);
+	virtual void Neutral_Idle_Input(_float fTimeDelta);
+	virtual void Battle_Idle_Input(_float fTimeDelta);
+	virtual void Pick_Idle_Input(_float fTimeDelta);
+	virtual void Crouch_Idle_Input(_float fTimeDelta);
 
+	virtual void Neutral_Walk_Input(_float fTimeDelta);
+	virtual void Battle_Walk_Input(_float fTimeDelta);
+	virtual void Pick_Walk_Input(_float fTimeDelta);
+	virtual void Crouch_Walk_Input(_float fTimeDelta);
+
+	virtual void Neutral_Run_Input(_float fTimeDelta);
+	virtual void Battle_Run_Input(_float fTimeDelta);
+	virtual void Pick_Run_Input(_float fTimeDelta);
+
+	virtual void Skill_Input(_float fTimeDelta);
+	virtual void Attack_Input(_float fTimeDelta);
+
+	virtual void Interaction_Input(_float fTimeDelta);
+
+	virtual void Dead_Input(_float fTimeDelta);
+	
 
 protected:
 	class CCharacter* m_pCharacter = nullptr;

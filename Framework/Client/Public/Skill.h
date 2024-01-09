@@ -26,7 +26,8 @@ public:
 	_float Get_CoolTime() { return m_fCoolTime; }
 
 protected:
-	class CCharacter* m_pOwner = nullptr;
+	class CCharacter* m_pCharacter = nullptr;
+	class CStateMachine* m_pCharacterStateMachine = nullptr;
 	ID3D11Device* m_pDevice = nullptr; 
 	ID3D11DeviceContext* m_pContext = nullptr;
 

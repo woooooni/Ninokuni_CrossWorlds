@@ -142,6 +142,9 @@ protected:
 	_bool m_bNaviObject = false;
 
 
+protected:
+	Matrix m_ServerMatrix = Matrix::Identity;
+
 
 protected:
 	CComponent* Find_Component(const wstring & strComponentTag);

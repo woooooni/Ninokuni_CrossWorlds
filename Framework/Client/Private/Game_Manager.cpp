@@ -3,6 +3,7 @@
 #include "Game_Manager.h"
 #include "Utils.h"
 #include "Player.h"
+#include "Skill_Manager.h"
 
 IMPLEMENT_SINGLETON(CGame_Manager)
 
@@ -35,14 +36,20 @@ HRESULT CGame_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContex
 
 void CGame_Manager::Tick(_float fTimeDelta)
 {
-	if(nullptr != m_pPlayer && GI->Get_CurrentLevel() != LEVELID::LEVEL_LOADING)
+	if (nullptr != m_pPlayer && GI->Get_CurrentLevel() != LEVELID::LEVEL_LOADING)
+	{
 		m_pPlayer->Tick(fTimeDelta);
+	}
+	CSkill_Manager::GetInstance()->Tick(fTimeDelta);
 }
 
 void CGame_Manager::LateTick(_float fTimeDelta)
 {
 	if (nullptr != m_pPlayer && GI->Get_CurrentLevel() != LEVELID::LEVEL_LOADING)
+	{
 		m_pPlayer->LateTick(fTimeDelta);
+	}
+	CSkill_Manager::GetInstance()->Tick(fTimeDelta);
 }
 
 

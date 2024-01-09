@@ -24,13 +24,13 @@ void CState_Destroyer_Battle_Attack_0::Enter_State(void* pArg)
 
 void CState_Destroyer_Battle_Attack_0::Tick_State(_float fTimeDelta)
 {
-    Input(fTimeDelta);
-
     if (m_pModelCom->Get_Progress() >= 0.3f && m_pModelCom->Get_Progress() <= 0.4f)    
         m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), 3.f, fTimeDelta);
 
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
         m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_IDLE);
+
+    __super::Attack_Input(fTimeDelta);
 }
 
 void CState_Destroyer_Battle_Attack_0::Exit_State()
@@ -38,24 +38,6 @@ void CState_Destroyer_Battle_Attack_0::Exit_State()
     
 }
 
-void CState_Destroyer_Battle_Attack_0::Input(_float fTimeDelta)
-{
-    if (true == Skill_Input(fTimeDelta))
-        return;
-
-    if (KEY_TAP(KEY::CTRL))
-    {
-        m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_DASH);
-        return;
-    }
-        
-    if (KEY_TAP(KEY::LBTN))
-    {
-        m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_1);
-        return;
-    }
-        
-}
 
 CState_Destroyer_Battle_Attack_0* CState_Destroyer_Battle_Attack_0::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
 {

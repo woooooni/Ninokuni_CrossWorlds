@@ -20,7 +20,6 @@ HRESULT CSkill_SwordMan_PerfectBlade::Initialize(ID3D11Device* pDevice, ID3D11De
 void CSkill_SwordMan_PerfectBlade::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
-
 }
 
 void CSkill_SwordMan_PerfectBlade::LateTick(_float fTimeDelta)
@@ -32,6 +31,7 @@ _bool CSkill_SwordMan_PerfectBlade::Use_Skill()
 {
 	if (true == __super::Use_Skill())
 	{
+		m_pCharacterStateMachine->Change_State(CCharacter::CLASS_SKILL_0);
 		return true;
 	}
 	else
@@ -57,7 +57,4 @@ CSkill_SwordMan_PerfectBlade* CSkill_SwordMan_PerfectBlade::Create(ID3D11Device*
 void CSkill_SwordMan_PerfectBlade::Free()
 {
 	__super::Free();
-	Safe_Release(m_pDevice);
-	Safe_Release(m_pContext);
-	Safe_Release(m_pOwner);
 }

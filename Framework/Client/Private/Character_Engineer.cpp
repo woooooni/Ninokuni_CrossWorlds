@@ -5,40 +5,40 @@
 #include "Trail.h"
 #include "Character_Manager.h"
 
-#include "State_Engineer_DoorEnter.h"
-#include "State_Engineer_Neutral_Idle.h"
-#include "State_Engineer_Neutral_Jump.h"
-#include "State_Engineer_Neutral_Walk.h"
-#include "State_Engineer_Neutral_Run.h"
-#include "State_Engineer_Neutral_Kick.h"
+#include "State_Character_DoorEnter.h"
+#include "State_Character_Neutral_Idle.h"
+#include "State_Character_Neutral_Jump.h"
+#include "State_Character_Neutral_Walk.h"
+#include "State_Character_Neutral_Run.h"
+#include "State_Character_Neutral_Kick.h"
 
-#include "State_Engineer_Neutral_Crouch_Idle.h"
-#include "State_Engineer_Neutral_Crouch_Move.h"
-
-
-#include "State_Engineer_Neutral_Pick_Small_Enter.h"
-#include "State_Engineer_Neutral_Pick_Small_Idle.h"
-#include "State_Engineer_Neutral_Pick_Small_Walk.h"
-#include "State_Engineer_Neutral_Pick_Small_Run.h"
-#include "State_Engineer_Neutral_Pick_Small_Throw.h"
-#include "State_Engineer_Neutral_Pick_Small_Finish.h"
-
-#include "State_Engineer_Neutral_Pick_Large_Enter.h"
-#include "State_Engineer_Neutral_Pick_Large_Idle.h"
-#include "State_Engineer_Neutral_Pick_Large_Walk.h"
-#include "State_Engineer_Neutral_Pick_Large_Run.h"
-#include "State_Engineer_Neutral_Pick_Large_Throw.h"
-#include "State_Engineer_Neutral_Pick_Large_Finish.h"
+#include "State_Character_Neutral_Crouch_Idle.h"
+#include "State_Character_Neutral_Crouch_Move.h"
 
 
-#include "State_Engineer_AbNormality_Stun.h"
+#include "State_Character_Neutral_Pick_Small_Enter.h"
+#include "State_Character_Neutral_Pick_Small_Idle.h"
+#include "State_Character_Neutral_Pick_Small_Walk.h"
+#include "State_Character_Neutral_Pick_Small_Run.h"
+#include "State_Character_Neutral_Pick_Small_Throw.h"
+#include "State_Character_Neutral_Pick_Small_Finish.h"
 
-#include "State_Engineer_Battle_Guard.h"
-#include "State_Engineer_Battle_Idle.h"
-#include "State_Engineer_Battle_Jump.h"
-#include "State_Engineer_Battle_Walk.h"
-#include "State_Engineer_Battle_Run.h"
-#include "State_Engineer_Battle_Dash.h"
+#include "State_Character_Neutral_Pick_Large_Enter.h"
+#include "State_Character_Neutral_Pick_Large_Idle.h"
+#include "State_Character_Neutral_Pick_Large_Walk.h"
+#include "State_Character_Neutral_Pick_Large_Run.h"
+#include "State_Character_Neutral_Pick_Large_Throw.h"
+#include "State_Character_Neutral_Pick_Large_Finish.h"
+
+
+#include "State_Character_AbNormality_Stun.h"
+
+#include "State_Character_Battle_Guard.h"
+#include "State_Character_Battle_Idle.h"
+#include "State_Character_Battle_Jump.h"
+#include "State_Character_Battle_Walk.h"
+#include "State_Character_Battle_Run.h"
+#include "State_Character_Battle_Dash.h"
 
 #include "State_Engineer_Battle_Attack_0.h"
 #include "State_Engineer_Battle_Attack_1.h"
@@ -55,14 +55,14 @@
 #include "State_Engineer_SpecialSkill_HealingTree.h"
 #include "State_Engineer_SpecialSkill_TimeLab.h"
 
-#include "State_Engineer_Damaged_Impact.h"
-#include "State_Engineer_Damaged_KnockDown.h"
-#include "State_Engineer_Damaged_Strong.h"
-#include "State_Engineer_Damaged_Weak.h"
+#include "State_Character_Damaged_Impact.h"
+#include "State_Character_Damaged_KnockDown.h"
+#include "State_Character_Damaged_Strong.h"
+#include "State_Character_Damaged_Weak.h"
 
 
-#include "State_Engineer_Dead.h"
-#include "State_Engineer_Revive.h"
+#include "State_Character_Dead.h"
+#include "State_Character_Revive.h"
 
 
 
@@ -230,7 +230,7 @@ HRESULT CCharacter_Engineer::Ready_States()
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_TeleportEnd");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_DOOR_ENTER, CState_Engineer_DoorEnter::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_DOOR_ENTER, CState_Character_DoorEnter::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 
@@ -238,113 +238,113 @@ HRESULT CCharacter_Engineer::Ready_States()
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_NeutralStand");
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_NeutralIdle01");
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_NeutralIdle02");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_IDLE, CState_Engineer_Neutral_Idle::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_IDLE, CState_Character_Neutral_Idle::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_NeutralWalk");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_WALK, CState_Engineer_Neutral_Walk::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_WALK, CState_Character_Neutral_Walk::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_NeutralRun");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_RUN, CState_Engineer_Neutral_Run::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_RUN, CState_Character_Neutral_Run::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_JumpUpLoop");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_JUMP, CState_Engineer_Neutral_Jump::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_JUMP, CState_Character_Neutral_Jump::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_DSCrouchStand");
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_DSCrouchLookAround");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_CROUCH_IDLE, CState_Engineer_Neutral_Crouch_Idle::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_CROUCH_IDLE, CState_Character_Neutral_Crouch_Idle::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_DSCrouchWalk");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_CROUCH_MOVE, CState_Engineer_Neutral_Crouch_Move::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_CROUCH_MOVE, CState_Character_Neutral_Crouch_Move::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_Kick");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_KICK, CState_Engineer_Neutral_Kick::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_KICK, CState_Character_Neutral_Kick::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_PickStartS");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_ENTER, CState_Engineer_Neutral_Pick_Small_Enter::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_ENTER, CState_Character_Neutral_Pick_Small_Enter::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_PickStandS");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_IDLE, CState_Engineer_Neutral_Pick_Small_Idle::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_IDLE, CState_Character_Neutral_Pick_Small_Idle::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_PickWalkS");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_WALK, CState_Engineer_Neutral_Pick_Small_Walk::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_WALK, CState_Character_Neutral_Pick_Small_Walk::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_PickRunS");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_RUN, CState_Engineer_Neutral_Pick_Small_Run::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_RUN, CState_Character_Neutral_Pick_Small_Run::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_PickThrowS");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_THROW, CState_Engineer_Neutral_Pick_Small_Throw::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_THROW, CState_Character_Neutral_Pick_Small_Throw::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_PickFinishS");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_FINISH, CState_Engineer_Neutral_Pick_Small_Finish::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_FINISH, CState_Character_Neutral_Pick_Small_Finish::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 	
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_PickStartL");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_ENTER, CState_Engineer_Neutral_Pick_Large_Enter::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_ENTER, CState_Character_Neutral_Pick_Large_Enter::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_PickStandL");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_IDLE, CState_Engineer_Neutral_Pick_Large_Idle::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_IDLE, CState_Character_Neutral_Pick_Large_Idle::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_PickWalkL");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_WALK, CState_Engineer_Neutral_Pick_Large_Walk::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_WALK, CState_Character_Neutral_Pick_Large_Walk::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_PickRunL");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_RUN, CState_Engineer_Neutral_Pick_Large_Run::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_RUN, CState_Character_Neutral_Pick_Large_Run::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_PickThrowL");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_THROW, CState_Engineer_Neutral_Pick_Large_Throw::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_THROW, CState_Character_Neutral_Pick_Large_Throw::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Swordsman_SoulDiver.ao|Swordsman_PickFinishL");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_FINISH, CState_Engineer_Neutral_Pick_Large_Finish::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_FINISH, CState_Character_Neutral_Pick_Large_Finish::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 	
 	
 	// AbNormality
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_StunLoop");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::ABNORMALITY_STUN, CState_Engineer_AbNormality_Stun::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::ABNORMALITY_STUN, CState_Character_AbNormality_Stun::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 
@@ -354,25 +354,25 @@ HRESULT CCharacter_Engineer::Ready_States()
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_CSBattleStand");
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_FinishCombat");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::BATTLE_IDLE, CState_Engineer_Battle_Idle::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::BATTLE_IDLE, CState_Character_Battle_Idle::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_BattleRun");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::BATTLE_WALK, CState_Engineer_Battle_Walk::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::BATTLE_WALK, CState_Character_Battle_Walk::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_BattleRun");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::BATTLE_RUN, CState_Engineer_Battle_Run::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::BATTLE_RUN, CState_Character_Battle_Run::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 
 	strAnimationNames.clear();	
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_JumpUpLoop");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::BATTLE_JUMP, CState_Engineer_Battle_Jump::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::BATTLE_JUMP, CState_Character_Battle_Jump::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 
@@ -398,13 +398,13 @@ HRESULT CCharacter_Engineer::Ready_States()
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_CSGuardLoop");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::BATTLE_GUARD, CState_Engineer_Battle_Guard::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::BATTLE_GUARD, CState_Character_Battle_Guard::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 	
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_SkillDash");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::BATTLE_DASH, CState_Engineer_Battle_Dash::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::BATTLE_DASH, CState_Character_Battle_Dash::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 	
 	
@@ -453,7 +453,7 @@ HRESULT CCharacter_Engineer::Ready_States()
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_ImpactStart");
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_ImpactLoop");
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_ImpactFinish");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_IMPACT, CState_Engineer_Damaged_Impact::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_IMPACT, CState_Character_Damaged_Impact::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 	strAnimationNames.clear();
@@ -461,28 +461,28 @@ HRESULT CCharacter_Engineer::Ready_States()
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_KnockDownLoop");
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_KnockDownFinish");
 
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_KNOCKDOWN, CState_Engineer_Damaged_KnockDown::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_KNOCKDOWN, CState_Character_Damaged_KnockDown::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_DamageStrong");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_STRONG, CState_Engineer_Damaged_Strong::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_STRONG, CState_Character_Damaged_Strong::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_DamageWeak");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_WEAK, CState_Engineer_Damaged_Weak::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_WEAK, CState_Character_Damaged_Weak::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 	// Dead & Revive
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_Death");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::DEAD, CState_Engineer_Dead::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::DEAD, CState_Character_Dead::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_Revive");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::REVIVE, CState_Engineer_Revive::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::REVIVE, CState_Character_Revive::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 
@@ -498,28 +498,21 @@ HRESULT CCharacter_Engineer::Ready_Colliders()
 {
 
 
-	//CCollider_Sphere::SPHERE_COLLIDER_DESC ColliderDesc;
-	//ZeroMemory(&ColliderDesc, sizeof ColliderDesc);
+	CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
+	ZeroMemory(&SphereDesc, sizeof SphereDesc);
 
-	//BoundingSphere tSphere;
-	//ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	//tSphere.Radius = 1.f;
-	//ColliderDesc.tSphere = tSphere;
+	BoundingSphere tSphere;
+	ZeroMemory(&tSphere, sizeof(BoundingSphere));
+	tSphere.Radius = 7.f;
+	SphereDesc.tSphere = tSphere;
 
-	//ColliderDesc.pOwner = this;
-	//ColliderDesc.pNode = nullptr;
-	//ColliderDesc.pOwnerTransform = m_pTransformCom;
-	//ColliderDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
-	//ColliderDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
-	//ColliderDesc.bLockAngle_X = false;
-	//ColliderDesc.bLockAngle_Y = false;
-	//ColliderDesc.bLockAngle_Z = false;
+	SphereDesc.pNode = nullptr;
+	SphereDesc.pOwnerTransform = m_pTransformCom;
+	SphereDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
+	SphereDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
 
-	//ColliderDesc.fAngularDamping = 0.f;
-	//ColliderDesc.fDensity = 1.f;
-
-	//if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BODY, &ColliderDesc)))
-	//	return E_FAIL;
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BOUNDARY, &SphereDesc)))
+		return E_FAIL;
 
 
 	CCollider_OBB::OBB_COLLIDER_DESC OBBDesc;
