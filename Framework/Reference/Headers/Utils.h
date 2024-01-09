@@ -39,6 +39,8 @@ public:
 	static PxTransform To_PxTransform(Matrix matrix);
 	static Matrix To_Matrix(PxTransform pxTransform);
 
+	static TCHAR* WStringToTChar(const wstring& wstr);
+
 	static wstring TCharToWString(TCHAR* value);
 	static string TCharToString(TCHAR* value);
 

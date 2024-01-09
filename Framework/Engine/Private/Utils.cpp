@@ -122,6 +122,26 @@ Matrix CUtils::To_Matrix(PxTransform pxTransform)
 	return result;
 }
 
+TCHAR* CUtils::WStringToTChar(const wstring& wstr)
+{
+	if (wstr.empty())
+		return _tcsdup(_T("")); // 빈 문자열을 처리하기 위한 더미 데이터 반환
+
+	int size = WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), -1, NULL, 0, NULL, NULL);
+
+	// TCHAR를 사용하여 동적으로 할당된 문자열 생성
+	TCHAR* tstr = new TCHAR[size];
+
+	// 문자열 변환
+#ifdef UNICODE
+	wcscpy_s(tstr, size, wstr.c_str());
+#else
+	WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), -1, tstr, size, NULL, NULL);
+#endif
+
+	return tstr;
+}
+
 wstring CUtils::TCharToWString(TCHAR* value)
 {
 	if (nullptr == value)

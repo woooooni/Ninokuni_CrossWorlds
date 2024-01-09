@@ -4,6 +4,8 @@
 #include "GameInstance.h"
 #include "Utils.h"
 
+#include "UI_Manager.h"
+
 CMainQuestNode01_02::CMainQuestNode01_02()
 {
 }
@@ -28,6 +30,10 @@ HRESULT CMainQuestNode01_02::Initialize()
 
 void CMainQuestNode01_02::Start()
 {
+	szOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+	szTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+	CUI_Manager::GetInstance()->Set_MainDialogue(szOwner, szTalk);
 }
 
 CBTNode::NODE_STATE CMainQuestNode01_02::Tick(const _float& fTimeDelta)
@@ -35,18 +41,24 @@ CBTNode::NODE_STATE CMainQuestNode01_02::Tick(const _float& fTimeDelta)
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 
-	if (m_iTalkIndex >= m_vecTalkDesc.size())
-	{
-		m_bIsClear = true;
-		return NODE_STATE::NODE_FAIL;
-	}
-
-	wstring temp = m_vecTalkDesc[m_iTalkIndex].strOwner;
-	wstring temp2 = m_vecTalkDesc[m_iTalkIndex].strTalk;
-
 	if (KEY_TAP(KEY::LBTN))
 	{
+		Safe_Delete_Array(szOwner);
+		Safe_Delete_Array(szTalk);
+
 		m_iTalkIndex += 1;
+
+		if (m_iTalkIndex >= m_vecTalkDesc.size())
+		{
+			m_bIsClear = true;
+			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
+			return NODE_STATE::NODE_FAIL;
+		}
+
+		szOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+		szTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+		CUI_Manager::GetInstance()->Set_MainDialogue(szOwner, szTalk);
 	}
 
 	return NODE_STATE::NODE_RUNNING;

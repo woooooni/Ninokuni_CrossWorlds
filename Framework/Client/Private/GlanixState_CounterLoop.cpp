@@ -3,6 +3,8 @@
 
 #include "Glanix.h"
 
+#include "GameInstance.h"
+
 CGlanixState_CounterLoop::CGlanixState_CounterLoop(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
 {

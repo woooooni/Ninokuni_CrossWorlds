@@ -32,6 +32,11 @@ protected:
 
 	CQuest_DestSpot* m_pQuestDestSpot = nullptr;
 
+	TCHAR* szQuestName = L"";
+	TCHAR* szQuestContent = L"";
+	TCHAR* szOwner = L"";
+	TCHAR* szTalk = L"";
+
 public:
 	virtual void Free() override; 
 };

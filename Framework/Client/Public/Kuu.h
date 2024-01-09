@@ -32,6 +32,10 @@ private:
 private:
 	HRESULT Ready_Sockets();
 
+private:
+	class CCharacter* m_pPlayer = nullptr;
+	CTransform* m_pPlayerTransform = nullptr;
+
 public:
 	static CKuu* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;

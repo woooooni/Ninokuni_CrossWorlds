@@ -14,14 +14,14 @@ HRESULT CMainQuestNode01_01::Initialize()
 {
 	__super::Initialize();
 
-	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest01/MainQuest01_01.json");
-
-	for (const auto& talkDesc : Load) {
-		TALK_DELS sTalkDesc;
-		sTalkDesc.strOwner = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(talkDesc["Owner"]));
-		sTalkDesc.strTalk = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(talkDesc["Talk"]));
-		m_vecTalkDesc.push_back(sTalkDesc);
-	}
+	//Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest01/MainQuest01_01.json");
+	//
+	//for (const auto& talkDesc : Load) {
+	//	TALK_DELS sTalkDesc;
+	//	sTalkDesc.strOwner = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(talkDesc["Owner"]));
+	//	sTalkDesc.strTalk = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(talkDesc["Talk"]));
+	//	m_vecTalkDesc.push_back(sTalkDesc);
+	//}
 
 	return S_OK;
 }
@@ -30,9 +30,9 @@ void CMainQuestNode01_01::Start()
 {
 	m_pKuu = dynamic_cast<CKuu*>(GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Kuu")));
 
-	//Vec4 vSpotPos = m_pKuu->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_Position() +
-	//	m_pKuu->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_Look() * 1.5f;
-	Vec4 vSpotPos = { 5.f, 2.5f, 10.f, 1.f };
+	Vec4 vSpotPos = m_pKuu->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_Position() +
+		m_pKuu->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_Look() * 1.5f;
+	// Vec4 vSpotPos = { 5.f, 2.5f, 10.f, 1.f };
 
 	// 임시로 monster에 
 	m_pQuestDestSpot = 
