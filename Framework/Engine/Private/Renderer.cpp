@@ -489,7 +489,6 @@ HRESULT CRenderer::Draw_UIEffect()
 	return S_OK;
 }
 
-#ifdef _DEBUG
 HRESULT CRenderer::Input_Key()
 {
 	if (KEY_TAP(KEY::F2))
@@ -506,13 +505,15 @@ HRESULT CRenderer::Input_Key()
 		m_bOutlineDraw = m_bOption;
 		m_bBlurDraw = m_bOption;
 		m_bBlomDraw = m_bOption;
-		m_bPbrDraw  = m_bOption;
+		m_bPbrDraw = m_bOption;
 
 		Check_Option();
 	}
 
 	return S_OK;
 }
+
+#ifdef _DEBUG
 #endif // DEBUG
 #pragma endregion
 
