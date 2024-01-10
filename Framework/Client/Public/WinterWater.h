@@ -3,6 +3,10 @@
 #include "Client_Defines.h"
 #include "Water.h"
 
+BEGIN(Engine)
+class CVIBuffer_Terrain;
+END
+
 BEGIN(Client)
 
 class CWinterWater final : public CWater
