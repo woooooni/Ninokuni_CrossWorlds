@@ -23,6 +23,7 @@
 
 #include "Quest_Manager.h"
 
+#include "GameNpc.h"
 
 CLevel_Evermore::CLevel_Evermore(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -47,8 +48,8 @@ HRESULT CLevel_Evermore::Initialize()
 	if (FAILED(Ready_Layer_Character(LAYER_TYPE::LAYER_CHARACTER)))
 		return E_FAIL;
 
-//	if (FAILED(Ready_Layer_Monster(LAYER_TYPE::LAYER_MONSTER)))
-//		return E_FAIL;
+	if (FAILED(Ready_Layer_Monster(LAYER_TYPE::LAYER_NPC)))
+		return E_FAIL;
 
 	if (FAILED(Ready_Layer_UI(LAYER_TYPE::LAYER_UI)))
 		return E_FAIL;
@@ -59,61 +60,9 @@ HRESULT CLevel_Evermore::Initialize()
 	if (FAILED(Ready_Light(TEXT("Evermore Light"))))
 		return E_FAIL;
 
-	/* Temp */
+	/* Kuu */
 	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_Kuu"), nullptr)))
 		return E_FAIL;
-
-
-	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanChild01"), nullptr)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanChild02"), nullptr)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanFAT01"), nullptr)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanFL04"), nullptr)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanFL05"), nullptr)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanFL07"), nullptr)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanFLCapitalMerchant"), nullptr)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_KingdomGuard"), nullptr)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanML12"), nullptr)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanMM03"), nullptr)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_LuxerionHuman"), nullptr)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_SeekerCat"), nullptr)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_SeekerKing"), nullptr)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_SeekerObserver"), nullptr)))
-	//	return E_FAIL;
-	//
-	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanChildHalloweenA"), nullptr)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanChildHalloweenB"), nullptr)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_CaliaHuman"), nullptr)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_HumanMSCrossFieldMerchant"), nullptr)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_RunnerCat"), nullptr)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_ThiefCat"), nullptr)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_Ghost1"), nullptr)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_Ghost2"), nullptr)))
-	//	return E_FAIL;
-	//
-	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_FunyaSnowman"), nullptr)))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_GiftFunyaSnowman"), nullptr)))
-	//	return E_FAIL;
 
 	if (nullptr != CUI_Manager::GetInstance()->Get_Fade())
 		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 3.f);
@@ -276,6 +225,128 @@ HRESULT CLevel_Evermore::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Evermore::Ready_Layer_Monster(const LAYER_TYPE eLayerType)
 {
+	wstring strNpcFileName = L"Evermore";
+	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strNpcFileName + L"/" + strNpcFileName + L"NPC.map";
+
+	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
+	File->Open(strMapFilePath, FileMode::Read);
+
+	for (_uint i = 0; i < LAYER_TYPE::LAYER_END; ++i)
+	{
+		if (LAYER_TYPE::LAYER_NPC != i)
+			continue;
+
+		GI->Clear_Layer(LEVELID::LEVEL_EVERMORE, i);
+
+
+		_uint iObjectCount = File->Read<_uint>();
+
+		for (_uint j = 0; j < iObjectCount; ++j)
+		{
+			// 3. Object_Prototype_Tag
+			wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
+			wstring strObjectTag = CUtils::ToWString(File->Read<string>());
+
+			// 6. Obejct States
+			_float4 vRight, vUp, vLook, vPos;
+
+			File->Read<_float4>(vRight);
+			File->Read<_float4>(vUp);
+			File->Read<_float4>(vLook);
+			File->Read<_float4>(vPos);
+
+
+			OBJECT_INIT_DESC Init_Data = {};
+			Init_Data.vStartPosition = vPos;
+			CGameObject* pObj = nullptr;
+			if (FAILED(GI->Add_GameObject(LEVELID::LEVEL_EVERMORE, i, strPrototypeTag, &Init_Data, &pObj)))
+			{
+				MSG_BOX("Load_Objects_Failed.");
+				return E_FAIL;
+			}
+
+			if (nullptr == pObj)
+			{
+				MSG_BOX("Add_Object_Failed.");
+				return E_FAIL;
+			}
+			pObj->Set_ObjectTag(strObjectTag);
+
+			CTransform* pTransform = pObj->Get_Component<CTransform>(L"Com_Transform");
+			if (nullptr == pTransform)
+			{
+				MSG_BOX("Get_Transform_Failed.");
+				return E_FAIL;
+			}
+
+			_uint ObjectType;
+			File->Read<_uint>(ObjectType);
+
+			if (OBJ_TYPE::OBJ_NPC == ObjectType)
+			{
+				CGameNpc* pNpc = dynamic_cast<CGameNpc*>(pObj);
+
+				if (pNpc == nullptr)
+				{
+					MSG_BOX("Fail Load : NPC");
+					return E_FAIL;
+				}
+
+				_uint iSize;
+				File->Read<_uint>(iSize);
+
+				_uint eState;
+				File->Read<_uint>(eState);
+
+
+				if (iSize != 0)
+				{
+					vector<Vec4> Points;
+					Points.reserve(iSize);
+
+					for (_uint i = 0; i < iSize; ++i)
+					{
+						Vec4 vPoint;
+						File->Read<Vec4>(vPoint);
+						Points.push_back(vPoint);
+					}
+
+					pNpc->Set_RoamingArea(Points);
+
+					if (Points.size() != 0)
+					{
+						vPos = Points.front();
+						pNpc->Set_Point(true);
+					}
+				}
+
+				CGameNpc::NPC_STAT eStat;
+				File->Read<CGameNpc::NPC_STAT>(eStat);
+
+				pNpc->Set_NpcState(static_cast<CGameNpc::NPC_STATE>(eState));
+				CStateMachine* pStateMachine = pNpc->Get_Component<CStateMachine>(TEXT("Com_StateMachine"));
+				if (pStateMachine != nullptr)
+				{
+					pStateMachine->Change_State(eState);
+				}
+				else
+				{
+					MSG_BOX("Fail Get : NPC_StateMachine");
+					return E_FAIL;
+				}
+				pNpc->Set_Stat(eStat);
+			}
+
+
+			pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
+			pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
+			pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
+			pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
+		}
+
+	}
+	//MSG_BOX("Npc_Loaded.");
+	return S_OK;
 
 	return S_OK;
 }
