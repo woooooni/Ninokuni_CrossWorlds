@@ -280,9 +280,7 @@ HRESULT CMonster::Render_Instance_AnimModel_Shadow(CShader* pInstancingShader, C
 void CMonster::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	/* АјАн */
-	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER &&
-		tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY &&
-		tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BOUNDARY)
+	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER && tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY && tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BOUNDARY)
 	{
 		if (m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT])
 		{
@@ -367,8 +365,10 @@ void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 		TEXT("DreamerMazeWitch") == Get_ObjectTag())
 		bIsBoss = true;
 
-	CUIDamage_Manager::GetInstance()->Create_MonsterDamageNumber(m_pTransformCom, bIsBoss, CUIDamage_Manager::UI_DAMAGETYPE::NONE, dynamic_cast<CCharacter*>(tInfo.pOther)->Get_Stat().iAtt);
-	m_tStat.fHp -= dynamic_cast<CCharacter*>(tInfo.pOther)->Get_Stat().iAtt;
+
+	_int iDamage = (dynamic_cast<CCharacter*>(tInfo.pOther)->Get_Stat().iAtt * CUtils::Random_Float(0.5f, 1.5f)) - (m_tStat.iDef * 0.2f);
+	CUIDamage_Manager::GetInstance()->Create_MonsterDamageNumber(m_pTransformCom, bIsBoss, CUIDamage_Manager::UI_DAMAGETYPE::NONE, iDamage);
+	m_tStat.fHp -= iDamage;
 
 	Start_RimLight();
 }

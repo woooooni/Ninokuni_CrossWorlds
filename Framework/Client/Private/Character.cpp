@@ -163,36 +163,48 @@ void CCharacter::Tick_MotionTrail(_float fTimeDelta)
 		TrailDesc.WorldMatrix = m_pTransformCom->Get_WorldMatrix();
 		TrailDesc.fAlphaSpeed = 1.f;
 		TrailDesc.pModel = m_pModelCom;
-		TrailDesc.pRenderModel = m_pCharacterPartModels[PART_TYPE::HEAD];
 		TrailDesc.TweenDesc = m_pModelCom->Get_TweenDesc();
 		TrailDesc.vBloomPower = m_MotionTrailDesc.vBloomPower;
 		TrailDesc.vRimColor = { 0.f, 1.f, 1.f, 1.f };
 		TrailDesc.fBlurPower = m_MotionTrailDesc.fBlurPower;
 
-		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, L"Prototype_GameObject_MotionTrail", &TrailDesc)))
+
+		TrailDesc.pRenderModel = m_pCharacterPartModels[PART_TYPE::HEAD];
+		if (nullptr != TrailDesc.pRenderModel)
 		{
-			MSG_BOX("MotionTrail_Failed");
+			if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, L"Prototype_GameObject_MotionTrail", &TrailDesc)))
+			{
+				MSG_BOX("MotionTrail_Failed");
+			}
 		}
+		
 
 		TrailDesc.pRenderModel = m_pCharacterPartModels[PART_TYPE::HAIR];
-
-		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, L"Prototype_GameObject_MotionTrail", &TrailDesc)))
+		if (nullptr != TrailDesc.pRenderModel)
 		{
-			MSG_BOX("MotionTrail_Failed");
+			if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, L"Prototype_GameObject_MotionTrail", &TrailDesc)))
+			{
+				MSG_BOX("MotionTrail_Failed");
+			}
 		}
+		
 
 		TrailDesc.pRenderModel = m_pCharacterPartModels[PART_TYPE::FACE];
-
-		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, L"Prototype_GameObject_MotionTrail", &TrailDesc)))
+		if (nullptr != TrailDesc.pRenderModel)
 		{
-			MSG_BOX("MotionTrail_Failed");
+			if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, L"Prototype_GameObject_MotionTrail", &TrailDesc)))
+			{
+				MSG_BOX("MotionTrail_Failed");
+			}
 		}
 
 		TrailDesc.pRenderModel = m_pCharacterPartModels[PART_TYPE::BODY];
-
-		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, L"Prototype_GameObject_MotionTrail", &TrailDesc)))
+		if (nullptr != TrailDesc.pRenderModel)
 		{
-			MSG_BOX("MotionTrail_Failed");
+			if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, L"Prototype_GameObject_MotionTrail", &TrailDesc)))
+			{
+				MSG_BOX("MotionTrail_Failed");
+			}
 		}
 	}
 }

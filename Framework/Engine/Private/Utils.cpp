@@ -107,8 +107,7 @@ PxTransform CUtils::To_PxTransform(Matrix matrix)
 
 	matrix.Decompose(vScale, vQuat, vPos);
 
-
-	return PxTransform(PxVec3(vPos.x, vPos.y, vPos.z), PxQuat(vQuat.x, vQuat.y, vQuat.z, vQuat.w));
+	return PxTransform(PxVec3(vPos.x, vPos.y, vPos.z), PxQuat(vQuat.x * vScale.x, vQuat.y * vScale.y, vQuat.z * vScale.z, vQuat.w));
 }
 
 Matrix CUtils::To_Matrix(PxTransform pxTransform)
