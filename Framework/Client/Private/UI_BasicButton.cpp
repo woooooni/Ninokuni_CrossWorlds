@@ -230,6 +230,7 @@ void CUI_BasicButton::On_Mouse(_float fTimeDelta)
 					{
 						CUI_Manager::GetInstance()->Set_Textable(false);
 						CUI_Manager::GetInstance()->Set_UserName();
+						CUI_Manager::GetInstance()->OnOff_TextUI(true);
 
 						GI->Stop_Sound(CHANNELID::SOUND_UI);
 						GI->Play_Sound(TEXT("UI_Fx_Comm_Btn_1.mp3"), CHANNELID::SOUND_UI, GI->Get_ChannelVolume(CHANNELID::SOUND_UI));

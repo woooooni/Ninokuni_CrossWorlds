@@ -13,6 +13,20 @@ CUI_Setting_Window::CUI_Setting_Window(const CUI_Setting_Window& rhs)
 {
 }
 
+void CUI_Setting_Window::Set_Active(_bool bActive)
+{
+	if (true == bActive)
+	{
+		CUI_Manager::GetInstance()->OnOff_TextUI(false);
+	}
+	else
+	{
+		CUI_Manager::GetInstance()->OnOff_TextUI(true);
+	}
+
+	m_bActive = bActive;
+}
+
 HRESULT CUI_Setting_Window::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))

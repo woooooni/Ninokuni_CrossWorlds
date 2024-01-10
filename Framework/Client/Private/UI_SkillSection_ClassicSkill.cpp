@@ -229,7 +229,7 @@ void CUI_SkillSection_ClassicSkill::Key_Input(_float fTimeDelta)
 {
 	if (KEY_TAP(KEY::LBTN))
 	{
-		m_bClicked = true;
+		//m_bClicked = true;
 	}
 }
 

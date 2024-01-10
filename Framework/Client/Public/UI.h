@@ -38,16 +38,8 @@ public:
 	_bool Has_EventOccurred() { return m_bEvent; }
 
 	_bool Get_Active() { return m_bActive; }
-	virtual void Set_Active(_bool bActive)
-	{
-		m_bActive = bActive;
-	
-		if (false == m_bActive)
-		{
-			if (m_bEvent)
-				m_bEvent = false;
-		}
-	}
+	virtual void Set_Active(_bool bActive);
+
 	virtual void Set_ChildAlpha(float fAlpha) { m_fAlpha = fAlpha; } // 구분을 위해서 Child를 붙임
 	virtual void Set_ParentsAlpha(_float fAlpha); // 자식에게 부모의 Alpha값을 입힌다.
 

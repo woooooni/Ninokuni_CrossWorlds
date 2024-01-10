@@ -40,7 +40,7 @@ private:
 	CTransform* m_pPlayerTransform = nullptr;
 
 private:
-//	class CUI_World_NPCTag* m_pTag = { nullptr };
+	class CUI_World_NPCTag* m_pTag = { nullptr };
 //	class CUI_World_NPCSpeechBalloon* m_pBalloon = { nullptr };
 
 public:
