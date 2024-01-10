@@ -2,6 +2,8 @@
 #include "GameInstance.h"
 #include "SwordMan_AuraBlade.h"
 
+#include "Effect_Manager.h"
+
 CSwordMan_AuraBlade::CSwordMan_AuraBlade(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:CGameObject(pDevice, pContext, L"SwordMan_AuraBlade", OBJ_TYPE::OBJ_CHARACTER_PROJECTILE)
 {
@@ -53,11 +55,17 @@ void CSwordMan_AuraBlade::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
 	GI->Add_CollisionGroup(COLLISION_GROUP::CHARACTER, this);
+
+#ifdef _DEBUG
+	m_pRendererCom->Set_PlayerPosition(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
+	{
+		for (auto& pCollider : m_Colliders[i])
+			m_pRendererCom->Add_Debug(pCollider);
+	}
+
+#endif
 }
-
-
-
-
 
 HRESULT CSwordMan_AuraBlade::Ready_Components()
 {

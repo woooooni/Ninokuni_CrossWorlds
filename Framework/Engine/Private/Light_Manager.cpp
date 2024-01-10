@@ -45,6 +45,23 @@ HRESULT CLight_Manager::Add_ShadowLight(_uint iLevelIndex, _vector vEye, _vector
 	return S_OK;
 }
 
+HRESULT CLight_Manager::Set_ShadowLight(_uint iLevelIndex, _vector vEye, _vector vAt, _vector vUp)
+{
+	auto iter = m_ShadowWorldMatrix.find(iLevelIndex);
+
+	if (iter == m_ShadowWorldMatrix.end())
+		Add_ShadowLight(iLevelIndex, vEye, vAt, vUp);
+	else
+	{
+		_float4x4 LightViewMatrix;
+		XMStoreFloat4x4(&LightViewMatrix, XMMatrixLookAtLH(vEye, vAt, vUp));
+
+		iter->second = LightViewMatrix;
+	}
+
+	return S_OK;
+}
+
 HRESULT CLight_Manager::Render(CShader * pShader, CVIBuffer_Rect * pVIBuffer)
 {
 	for (auto& pLight : m_Lights)

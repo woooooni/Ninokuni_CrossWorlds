@@ -315,37 +315,63 @@ HRESULT CMainApp::Initialize_Client()
 	if (FAILED(GI->Add_Light(m_pDevice, m_pContext, LightDesc)))
 		return E_FAIL;
 
-	//_vector vEye = XMVectorSet(-135.f, 100.f, -135.f, 1.f);
-	//_vector vAt = XMVectorSet(0.f, -2.f, 52.f, 1.f);
-	//_vector vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
-	//if (FAILED(GI->Add_ShadowLight(LEVEL_TOOL, vEye, vAt, vUp)))
-	//	return E_FAIL;
+	// ShadowLight
+	{
+		// ShadowLightView
+		{
+			_vector vEye = XMVectorSet(30.f, 50.f, 0.f, 1.f);
+			_vector vAt = XMVectorSet(3.f, 0.f, 0.f, 1.f);
+			_vector vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+			if (FAILED(GI->Add_ShadowLight(LEVEL_LOBBY, vEye, vAt, vUp)))
+				return E_FAIL;
 
-	//vEye = XMVectorSet(-135.f, 100.f, -135.f, 1.f);
-	//vAt = XMVectorSet(0.f, -2.f, 52.f, 1.f);
-	//vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
-	//if (FAILED(GI->Add_ShadowLight(LEVEL_TRAIN_STATION, vEye, vAt, vUp)))
-	//	return E_FAIL;
+			vEye = XMVectorSet(30.f, 250.f, 0.f, 1.f);
+			vAt = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+			vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+			if (FAILED(GI->Add_ShadowLight(LEVEL_EVERMORE, vEye, vAt, vUp)))
+				return E_FAIL;
 
+			vEye = XMVectorSet(1.f, 150.f, 0.f, 1.f);
+			vAt = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+			vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+			if (FAILED(GI->Add_ShadowLight(LEVEL_KINGDOMHALL, vEye, vAt, vUp)))
+				return E_FAIL;
 
-	//vEye = XMVectorSet(-100.f, 50.f, 400.f, 1.f);
-	//vAt = XMVectorSet(100.f, -10.f, 0.f, 1.f);
-	//vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+			vEye = XMVectorSet(1.f, 300.f, 0.f, 1.f);
+			vAt = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+			vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+			if (FAILED(GI->Add_ShadowLight(LEVEL_ICELAND, vEye, vAt, vUp)))
+				return E_FAIL;
 
-	//if (FAILED(GI->Add_ShadowLight(LEVEL_TRAIN, vEye, vAt, vUp)))
-	//	return E_FAIL;
+			vEye = XMVectorSet(1.f, 300.f, 0.f, 1.f);
+			vAt = XMVectorSet(3.f, 0.f, 0.f, 1.f);
+			vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+			if (FAILED(GI->Add_ShadowLight(LEVEL_WITCHFOREST, vEye, vAt, vUp)))
+				return E_FAIL;
+		}
 
-	//vEye = XMVectorSet(-100.f, 50.f, 400.f, 1.f);
-	//vAt = XMVectorSet(100.f, -10.f, 0.f, 1.f);
-	//vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
-	//if (FAILED(GI->Add_ShadowLight(LEVEL_TRAIN_BOSS, vEye, vAt, vUp)))
-	//	return E_FAIL;
+		// ShadowLightProj
+		//{
+		//	_float fFovAngleY   = Cam_Fov_Default;
+		//	_float fAspectRatio = (_float)g_iWinSizeX / g_iWinSizeY;
+		//	_float fNearZ       = 0.2f;
+		//	_float fFarZ        = 1000.f;
+		//	if (FAILED(GI->Add_ShadowProj(LEVEL_LOBBY, fFovAngleY, fAspectRatio, fNearZ, fFarZ)))
+		//		return E_FAIL;
 
-	//vEye = XMVectorSet(0.f, 100.f, -100.f, 1.f);
-	//vAt = XMVectorSet(60.f, -10.f, 115.f, 1.f);
-	//vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
-	//if (FAILED(GI->Add_ShadowLight(LEVEL_FINAL_BOSS, vEye, vAt, vUp)))
-	//	return E_FAIL;
+		//	if (FAILED(GI->Add_ShadowProj(LEVEL_EVERMORE, fFovAngleY, fAspectRatio, fNearZ, fFarZ)))
+		//		return E_FAIL;
+
+		//	if (FAILED(GI->Add_ShadowProj(LEVEL_KINGDOMHALL, fFovAngleY, fAspectRatio, fNearZ, fFarZ)))
+		//		return E_FAIL;
+
+		//	if (FAILED(GI->Add_ShadowProj(LEVEL_ICELAND, fFovAngleY, fAspectRatio, fNearZ, fFarZ)))
+		//		return E_FAIL;
+
+		//	if (FAILED(GI->Add_ShadowProj(LEVEL_WITCHFOREST, fFovAngleY, fAspectRatio, fNearZ, fFarZ)))
+		//		return E_FAIL;
+		//}
+	}
 
 	return S_OK;
 }

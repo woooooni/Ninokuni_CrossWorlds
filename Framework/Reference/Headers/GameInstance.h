@@ -89,6 +89,7 @@ public: /* For.Light_Manager */
 	_float4x4 Get_ShadowViewMatrix(_uint iLevelIndex);
 	_float4x4 Get_ShadowLightViewMatrix_Inverse(_uint iLevelIndex);
 	HRESULT Reset_Lights();
+	HRESULT Set_ShadowLight(_uint iLevelIndex, _vector vEye, _vector vAt, _vector vUp);
 
 
 public: /* For.PipeLine */

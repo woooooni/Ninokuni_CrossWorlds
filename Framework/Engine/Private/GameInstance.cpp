@@ -431,6 +431,11 @@ HRESULT CGameInstance::Reset_Lights()
 	return m_pLight_Manager->Reset_Lights();
 }
 
+HRESULT CGameInstance::Set_ShadowLight(_uint iLevelIndex, _vector vEye, _vector vAt, _vector vUp)
+{
+	return m_pLight_Manager->Set_ShadowLight(iLevelIndex, vEye, vAt, vUp);
+}
+
 void CGameInstance::Set_Transform(CPipeLine::TRANSFORMSTATE eTransformState, _fmatrix TransformMatrix)
 {
 	if (nullptr == m_pPipeLine)
