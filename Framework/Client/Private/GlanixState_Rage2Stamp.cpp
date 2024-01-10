@@ -40,8 +40,6 @@ void CGlanixState_Rage2Stamp::Tick_State(_float fTimeDelta)
 				iter->Set_Dead(true);
 			}
 		}
-
-		CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
 	}
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())

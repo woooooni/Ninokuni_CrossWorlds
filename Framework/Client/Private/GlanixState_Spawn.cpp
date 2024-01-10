@@ -32,12 +32,6 @@ void CGlanixState_Spawn::Tick_State(_float fTimeDelta)
 	// player가 없으면 그냥 굳어버리게.
 	if (m_pPlayer != nullptr)
 	{
-		if (m_pModelCom->Get_CurrAnimationFrame() >= 80 && m_pModelCom->Get_CurrAnimationFrame() <= 100 ||
-			m_pModelCom->Get_CurrAnimationFrame() == 15)
-		{
-			CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
-		}
-
 		if (m_pModelCom->Is_Finish())
 		{
 			//_float fWaitTime = 1.f;

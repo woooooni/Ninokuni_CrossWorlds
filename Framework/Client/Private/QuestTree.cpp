@@ -24,4 +24,7 @@ void CQuestTree::LateTick(const _float& fTimeDelta)
 void CQuestTree::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pRootNode);
+	Safe_Release(m_pCurNode);
 }

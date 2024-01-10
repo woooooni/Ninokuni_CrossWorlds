@@ -36,11 +36,6 @@ void CGlanixState_RageCharge::Enter_State(void* pArg)
 
 void CGlanixState_RageCharge::Tick_State(_float fTimeDelta)
 {
-	if (m_pModelCom->Get_CurrAnimationFrame() >= 48 && m_pModelCom->Get_CurrAnimationFrame() <= 180)
-	{
-		CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
-	}
-
 	if (m_pModelCom->Get_CurrAnimationFrame() <= 45)
 		m_pTransformCom->LookAt_ForLandObject(m_pPlayerTransform->Get_Position());
 

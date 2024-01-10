@@ -27,11 +27,6 @@ void CGlanixState_Charge::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
-	if (m_pModelCom->Get_CurrAnimationFrame() >= 48 && m_pModelCom->Get_CurrAnimationFrame() <= 95)
-	{
-		CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
-	}
-
 	if(m_pModelCom->Get_CurrAnimationFrame() >= 48 && m_pModelCom->Get_CurrAnimationFrame() <= 78)
 		m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fChargeSpeed, fTimeDelta);
 	else if(m_pModelCom->Get_CurrAnimationFrame() >= 78 && m_pModelCom->Get_CurrAnimationFrame() <= 95)

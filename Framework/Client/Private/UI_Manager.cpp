@@ -236,6 +236,8 @@ void CUI_Manager::Set_MainDialogue(_tchar* pszName, _tchar* pszText)
 
 	m_pDialogWindow->Set_Name(pszName);
 	m_pDialogWindow->Set_Text(pszText);
+
+	m_pDialogWindow->Set_Active(true);
 }
 
 _int CUI_Manager::Get_SelectedCharacter()

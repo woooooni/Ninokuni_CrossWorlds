@@ -22,7 +22,8 @@ BEGIN(Client)
 class CGameNpc abstract : public CGameObject
 {
 public:
-	enum NPC_STATE { NPC_IDLE, NPC_TALK, NPC_MOVE_ONEWAY, NPC_MOVE_TWOWAY, NPC_END };
+	enum NPC_STATE { NPC_IDLE, NPC_TALK, NPC_MOVE_ONEWAY, NPC_MOVE_TWOWAY,
+		NPC_UNIQUENPC_WALK, NPC_UNIQUENPC_RUN, NPC_UNIQUENPC_TALK, NPC_END };
 
 public:
 	typedef struct tagNpcStat

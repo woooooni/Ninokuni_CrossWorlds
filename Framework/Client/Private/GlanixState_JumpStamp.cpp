@@ -44,12 +44,6 @@ void CGlanixState_JumpStamp::Tick_State(_float fTimeDelta)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCurVector);
 	}
 
-	if (m_pModelCom->Get_CurrAnimationFrame() == 76)
-	{
-		CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
-	}
-
-
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
 		_float fWaitTime = 2.5f;

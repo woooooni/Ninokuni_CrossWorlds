@@ -37,11 +37,6 @@ void CGlanixState_Rage2StartJump::Tick_State(_float fTimeDelta)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCurVector);
 	}
 
-	//if (m_pModelCom->Get_CurrAnimationFrame() == 76)
-	//{
-	//	CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
-	//}
-
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
 		m_pStateMachineCom->Change_State(CGlanix::GLANIX_RAGE2START_TURN_OL);

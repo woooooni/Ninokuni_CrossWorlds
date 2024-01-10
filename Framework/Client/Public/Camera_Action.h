@@ -110,7 +110,7 @@ public:
 
 	/* 첫 대화 시작시, 대화에 참여하는 Npc를 모두 넘겨준다. (플레이어, 쿠우 제외) */
 	/* pNpc1는 대화를 처음 시작하게 되는 Npc이다. pNpc2는 두명 이상의 Npc가 필요한 경우 넘겨준다. */
-	HRESULT Start_Action_Talk(CGameObject* pNpc1, CGameObject* pNpc2 = nullptr); 
+	HRESULT Start_Action_Talk(CGameObject* pNpc1 = nullptr, CGameObject* pNpc2 = nullptr); 
 
 	/* 대화 도중 말하는 사람이 바뀔 때 호출 */
 	HRESULT Set_Action_Talk_Target(CGameObject* pTalker);
