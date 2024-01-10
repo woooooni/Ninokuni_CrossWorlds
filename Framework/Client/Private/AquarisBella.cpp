@@ -3,6 +3,11 @@
 
 #include "GameInstance.h"
 
+#include "NpcState_Idle.h"
+#include "UniqueNpcState_Walk.h"
+#include "UniqueNpcState_Run.h"
+#include "UniqueNpcState_Talk.h"
+
 CAquarisBella::CAquarisBella(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameNpc(pDevice, pContext, strObjectTag)
 {
@@ -29,36 +34,19 @@ HRESULT CAquarisBella::Initialize(void* pArg)
 	if (FAILED(__super::Ready_Components(pArg)))
 		return E_FAIL;
 
+	m_pModelCom->Set_Animation(TEXT("SKM_AquarisBella.ao|AquarisBella_NeutralStand"));
+
 	if (FAILED(Ready_States()))
 		return E_FAIL;
 
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
-	m_pModelCom->Set_Animation(TEXT("SKM_AquarisBella.ao|AquarisBella_NeutralStand"));
-
 	return S_OK;
 }
 
 void CAquarisBella::Tick(_float fTimeDelta)
 {
-	if (KEY_TAP(KEY::J))
-	{
-		_uint iCurAnimIndex = m_pModelCom->Get_CurrAnimationIndex();
-		m_pModelCom->Set_Animation(iCurAnimIndex + 1);
-	}
-	else if (KEY_TAP(KEY::K))
-	{
-		_int iCurAnimIndex = m_pModelCom->Get_CurrAnimationIndex() - 1;
-		if (iCurAnimIndex < 0)
-			iCurAnimIndex = 0;
-		m_pModelCom->Set_Animation(iCurAnimIndex);
-	}
-
-	m_pStateCom->Tick_State(fTimeDelta);
-
-	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
-	m_pControllerCom->Tick_Controller(fTimeDelta);
 	__super::Tick(fTimeDelta);
 }
 
@@ -97,6 +85,30 @@ void CAquarisBella::On_Damaged(const COLLISION_INFO& tInfo)
 
 HRESULT CAquarisBella::Ready_States()
 {
+	m_tStat.fSpeed = 0.5f;
+
+	m_pStateCom->Set_Owner(this);
+
+	list<wstring> strAnimationName;
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_AquarisBella.ao|AquarisBella_NeutralStand");
+	m_pStateCom->Add_State(NPC_IDLE, CNpcState_Idle::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_AquarisBella.ao|AquarisBella_talk");
+	m_pStateCom->Add_State(NPC_UNIQUENPC_TALK, CUniqueNpcState_Talk::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_AquarisBella.ao|AquarisBella_walk");
+	m_pStateCom->Add_State(NPC_UNIQUENPC_WALK, CUniqueNpcState_Walk::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_AquarisBella.ao|AquarisBella_run");
+	m_pStateCom->Add_State(NPC_UNIQUENPC_RUN, CUniqueNpcState_Run::Create(m_pStateCom, strAnimationName));
+
+	m_pStateCom->Change_State(NPC_IDLE);
+
 	return S_OK;
 }
 

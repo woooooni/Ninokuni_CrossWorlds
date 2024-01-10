@@ -334,6 +334,11 @@ HRESULT CLoader::Loading_For_Level_Lobby()
 		CUI_Dummy_Engineer::Create(m_pDevice, m_pContext), LAYER_CHARACTER)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Common_ColliderWall"),
+		CColliderWall::Create(m_pDevice, m_pContext, TEXT("Common_ColliderWall"), OBJ_TYPE::OBJ_BUILDING),
+		LAYER_TYPE::LAYER_BUILDING)))
+		return E_FAIL;
+
 
 	/* For.Model */
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
@@ -411,7 +416,7 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 	//m_Threads[LOADING_THREAD::MONSTER_AND_NPC].wait();
 
 	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Evermore");
-	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Npc_Data, this, L"Evermore");
+	// m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Npc_Data, this, L"Evermore");
 
 
 	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
@@ -526,7 +531,10 @@ HRESULT CLoader::Loading_For_Level_Tool()
 
 	m_strLoading = TEXT("객체 원형을 로딩 중 입니다.");
 
-
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Common_ColliderWall"),
+		CColliderWall::Create(m_pDevice, m_pContext, TEXT("Common_ColliderWall"), OBJ_TYPE::OBJ_BUILDING),
+		LAYER_TYPE::LAYER_BUILDING)))
+		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Dummy"),
 		CDummy::Create(m_pDevice, m_pContext, TEXT("Dummy")), LAYER_TYPE::LAYER_PLAYER)))
@@ -830,7 +838,13 @@ HRESULT CLoader::Load_Npc_Data(const wstring& strNpcFileName)
 
 			if (OBJ_TYPE::OBJ_NPC == ObjectType)
 			{
-				CGameNpc* pNpc = static_cast<CGameNpc*>(pObj);
+				CGameNpc* pNpc = dynamic_cast<CGameNpc*>(pObj);
+
+				if (pNpc == nullptr)
+				{
+					MSG_BOX("Fail Load : NPC");
+					return E_FAIL;
+				}
 
 				_uint iSize;
 				File->Read<_uint>(iSize);
@@ -864,7 +878,16 @@ HRESULT CLoader::Load_Npc_Data(const wstring& strNpcFileName)
 				File->Read<CGameNpc::NPC_STAT>(eStat);
 
 				pNpc->Set_NpcState(static_cast<CGameNpc::NPC_STATE>(eState));
-				pNpc->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(eState);
+				CStateMachine* pStateMachine = pNpc->Get_Component<CStateMachine>(TEXT("Com_StateMachine"));
+				if (pStateMachine != nullptr)
+				{
+					pStateMachine->Change_State(eState);
+				}
+				else
+				{
+					MSG_BOX("Fail Get : NPC_StateMachine");
+					return E_FAIL;
+				}
 				pNpc->Set_Stat(eStat);
 			}
 
@@ -889,8 +912,8 @@ HRESULT CLoader::Loading_Proto_Static_Map_Objects(const wstring& strPath)
 			Loading_Proto_Static_Map_Objects(p.path().wstring());
 		}
 
- 		wstring strFilePath = CUtils::PathToWString(p.path().wstring());
-		
+		wstring strFilePath = CUtils::PathToWString(p.path().wstring());
+
 		_tchar strFileName[MAX_PATH];
 		_tchar strFolderName[MAX_PATH];
 		_tchar strExt[MAX_PATH];
@@ -936,12 +959,6 @@ HRESULT CLoader::Loading_Proto_Static_Map_Objects(const wstring& strPath)
 		}
 
 	}
-
-
-	if(FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Common_ColliderWall"),
-		CColliderWall::Create(m_pDevice, m_pContext, TEXT("Common_ColliderWall"), OBJ_TYPE::OBJ_BUILDING),
-		LAYER_TYPE::LAYER_BUILDING)))
-		return E_FAIL;
 
 	return S_OK;
 }
@@ -1090,8 +1107,8 @@ HRESULT CLoader::Loading_For_Character(CHARACTER_TYPE eCharacterType)
 
 	else if (eCharacterType == CHARACTER_TYPE::ENGINEER)
 	{
-		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Engineer_Bullet", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Bullet/", L"Engineer_Bullet")))
-			return E_FAIL;
+		//if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Engineer_Bullet", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Bullet/", L"Engineer_Bullet")))
+		//	return E_FAIL;
 
 		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Engineer_Dummy", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Engineer/Dummy/", L"Engineer_Dummy")))
 			return E_FAIL;

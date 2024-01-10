@@ -3,6 +3,11 @@
 
 #include "GameInstance.h"
 
+#include "NpcState_Idle.h"
+#include "UniqueNpcState_Walk.h"
+#include "UniqueNpcState_Run.h"
+#include "UniqueNpcState_Talk.h"
+
 CZehra::CZehra(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameNpc(pDevice, pContext, strObjectTag)
 {
@@ -29,36 +34,19 @@ HRESULT CZehra::Initialize(void* pArg)
 	if (FAILED(__super::Ready_Components(pArg)))
 		return E_FAIL;
 
+	m_pModelCom->Set_Animation(TEXT("SKM_TreeGrandfa.ao|TreeGrandfa_Stand"));
+
 	if (FAILED(Ready_States()))
 		return E_FAIL;
 
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
-	m_pModelCom->Set_Animation(TEXT("SKM_TreeGrandfa.ao|TreeGrandfa_Stand"));
-
 	return S_OK;
 }
 
 void CZehra::Tick(_float fTimeDelta)
 {
-	if (KEY_TAP(KEY::J))
-	{
-		_uint iCurAnimIndex = m_pModelCom->Get_CurrAnimationIndex();
-		m_pModelCom->Set_Animation(iCurAnimIndex + 1);
-	}
-	else if (KEY_TAP(KEY::K))
-	{
-		_int iCurAnimIndex = m_pModelCom->Get_CurrAnimationIndex() - 1;
-		if (iCurAnimIndex < 0)
-			iCurAnimIndex = 0;
-		m_pModelCom->Set_Animation(iCurAnimIndex);
-	}
-
-	m_pStateCom->Tick_State(fTimeDelta);
-
-	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
-	m_pControllerCom->Tick_Controller(fTimeDelta);
 	__super::Tick(fTimeDelta);
 }
 
@@ -97,33 +85,36 @@ void CZehra::On_Damaged(const COLLISION_INFO& tInfo)
 
 HRESULT CZehra::Ready_States()
 {
+	m_tStat.fSpeed = 0.5f;
+
+	m_pStateCom->Set_Owner(this);
+
+	list<wstring> strAnimationName;
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Zehra.ao|Zehra_Stand");
+	m_pStateCom->Add_State(NPC_IDLE, CNpcState_Idle::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Zehra.ao|Zehra_Talk");
+	m_pStateCom->Add_State(NPC_UNIQUENPC_TALK, CUniqueNpcState_Talk::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Zehra.ao|Zehra_Walk");
+	m_pStateCom->Add_State(NPC_UNIQUENPC_WALK, CUniqueNpcState_Walk::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Zehra.ao|Zehra_Run");
+	m_pStateCom->Add_State(NPC_UNIQUENPC_RUN, CUniqueNpcState_Run::Create(m_pStateCom, strAnimationName));
+
+	m_pStateCom->Change_State(NPC_IDLE);
+
 	return S_OK;
 }
 
 HRESULT CZehra::Ready_Colliders()
 {
-	CCollider_OBB::OBB_COLLIDER_DESC OBBDesc;
-	ZeroMemory(&OBBDesc, sizeof OBBDesc);
-
-	BoundingOrientedBox OBBBox;
-	ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
-
-	XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
-	OBBBox.Extents = { 50.f, 70.f, 50.f };
-
-	OBBDesc.tBox = OBBBox;
-	OBBDesc.tBox = OBBBox;
-	OBBDesc.pNode = nullptr;
-	OBBDesc.pOwnerTransform = m_pTransformCom;
-	OBBDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
-	OBBDesc.vOffsetPosition = Vec3(0.f, 70.f, 0.f);
-
-	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::BODY, &OBBDesc)))
-		return E_FAIL;
-
-	OBBBox.Extents = { 100.f, 100.f, 50.f };
-	OBBDesc.vOffsetPosition = Vec3(0.f, 70.f, -100.f);
-	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::ATTACK, &OBBDesc)))
+	if (FAILED(__super::Ready_Colliders()))
 		return E_FAIL;
 
 	return S_OK;
