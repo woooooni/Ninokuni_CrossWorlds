@@ -300,14 +300,13 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 	//vSpecular
     vector vSpecular = g_SpecularTarget.Sample(LinearSampler, In.vTexcoord);
     vSpecular = saturate(vSpecular);
-	//vSpecular = ceil(vSpecular * 5.f) / 5.f;
 	
 	// 물 픽셀 제외 후 기타 처리
     vector vDepthDesc = g_DepthTarget.Sample(PointSampler, In.vTexcoord);
     if (vDepthDesc.w != 1.f) 
     {
-        vShade    = ceil(vShade * 5.f) / 5.f;
-        //vSpecular = float4(0.f, 0.f, 0.f, 0.f);
+        vShade    = (ceil(vShade * 2.f) / 2.f);
+        vSpecular = float4(0.f, 0.f, 0.f, 0.f);
     }
 
 	// Shadow
@@ -317,7 +316,7 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 
     // SSAO
 	vector vSSAO = float4(1.f, 1.f, 1.f, 1.f);
-	if(g_bSsaoDraw)
+	if(g_bSsaoDraw) 
 		vSSAO = g_SSAOTarget.Sample(LinearSampler, In.vTexcoord);
 
 	// Outline

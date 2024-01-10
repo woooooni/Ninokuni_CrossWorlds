@@ -892,7 +892,7 @@ HRESULT CRenderer::Render_OutLine()
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_OUTLINE]->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
 		return E_FAIL;
 
-	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_OUTLINE], TEXT("Target_Depth"), "g_DepthTarget")))
+	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_OUTLINE], TEXT("Target_Normal"), "g_NormalTarget")))
 		return E_FAIL;
 
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_OUTLINE]->Begin(0)))
@@ -1366,7 +1366,7 @@ HRESULT CRenderer::Render_OutLine_UI()
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_OUTLINE]->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
 		return E_FAIL;
 
-	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_OUTLINE], TEXT("Target_Depth_UI"), "g_DepthTarget")))
+	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_OUTLINE], TEXT("Target_Normal_UI"), "g_NormalTarget")))
 		return E_FAIL;
 
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_OUTLINE]->Begin(0)))

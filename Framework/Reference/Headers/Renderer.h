@@ -224,7 +224,7 @@ private:
 	_bool   m_bNaturalDraw = false;
 	_bool   m_bShadowDraw  = false;
 	_bool   m_bSsaoDraw    = false;
-	_bool   m_bOutlineDraw = false;
+	_bool   m_bOutlineDraw = true;
 	_bool   m_bBlurDraw    = false;
 	_bool   m_bBlomDraw    = false;
 
