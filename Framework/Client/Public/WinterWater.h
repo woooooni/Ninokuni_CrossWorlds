@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Client_Defines.h"
 #include "Water.h"
 
 BEGIN(Client)
@@ -27,10 +28,10 @@ public:
 	virtual HRESULT Bind_ShaderResources();
 
 private:
-	CShader* m_pShaderCom = { nullptr };
-	CTexture* m_pTextureCom[TEX_TYPE::TEX_END] = {};
-	CModel* m_pModelCom = nullptr;
-	CVIBuffer_Terrain* m_pVIBufferCom = { nullptr };
+	class CShader* m_pShaderCom = { nullptr };
+	class CTexture* m_pTextureCom[TEX_TYPE::TEX_END] = {};
+	class CModel* m_pModelCom = nullptr;
+	class CVIBuffer_Terrain* m_pVIBufferCom = { nullptr };
 
 public:
 	static CWinterWater* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eObjType);
