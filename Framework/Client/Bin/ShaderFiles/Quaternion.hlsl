@@ -82,7 +82,6 @@ float4 q_diff(float4 q1, float4 q2)
 
 float4 q_look_at(float3 forward, float3 up)
 {
-    forward = normalize(forward);
     float3 right = normalize(cross(forward, up));
     up = normalize(cross(forward, right));
 
@@ -194,7 +193,6 @@ float4 q_slerp(in float4 a, in float4 b, float t)
     }
     return QUATERNION_IDENTITY;
 }
-
 
 //float4x4 quaternion_to_matrix(float4 quat)
 //{
