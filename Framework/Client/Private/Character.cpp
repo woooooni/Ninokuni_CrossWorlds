@@ -77,6 +77,9 @@ void CCharacter::Tick(_float fTimeDelta)
 	__super::Tick(fTimeDelta);
 	GI->Add_CollisionGroup(COLLISION_GROUP::CHARACTER, this);
 
+	if (nullptr == m_pTarget)
+		Tick_Target(fTimeDelta);
+
 	if (KEY_TAP(KEY::L))
 	{
 		GI->Lock_Mouse();
@@ -114,8 +117,7 @@ void CCharacter::Tick(_float fTimeDelta)
 	if(true == m_bMotionTrail)
 		Tick_MotionTrail(fTimeDelta);
 
-	if (nullptr == m_pTarget)
-		Tick_Target(fTimeDelta);
+	
 #pragma region Deprecated.
 
 	//if (m_bInfinite)
@@ -455,6 +457,9 @@ void CCharacter::Decide_Target(COLLISION_INFO tInfo)
 	}
 	else
 	{
+		if (m_pTarget->Is_Dead() || m_pTarget->Is_ReserveDead())
+			return;
+
 		CTransform* pTargetTransform = m_pTarget->Get_Component<CTransform>(L"Com_Transform");
 		CTransform* pNewTargetTransform = tInfo.pOther->Get_Component<CTransform>(L"Com_Transform");
 

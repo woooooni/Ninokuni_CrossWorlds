@@ -6,7 +6,7 @@
 #include "Character_Manager.h"
 #include "Weapon_Manager.h"
 #include "Weapon.h"
-#include "Sword.h"
+#include "Hammer.h"
 
 #include "State_Character_DoorEnter.h"
 #include "State_Character_Neutral_Idle.h"
@@ -569,7 +569,7 @@ HRESULT CCharacter_Destroyer::Ready_Sockets()
 #pragma region Ready_Weapon
 HRESULT CCharacter_Destroyer::Ready_Weapon()
 {
-	m_pWeapon = CSword::Create(m_pDevice, m_pContext, L"Destroyer_Hammer");
+	m_pWeapon = CHammer::Create(m_pDevice, m_pContext, L"Destroyer_Hammer");
 	if (nullptr == m_pWeapon)
 		return S_OK;
 	

@@ -83,15 +83,21 @@ void CPhysX_Controller::Tick_Controller(_float fTimeDelta)
 	
 	PxVec3 vDisp = PxVec3(vNewCenterPosition.x, vNewCenterPosition.y, vNewCenterPosition.z) - PxVec3(m_pPhysXController->getPosition().x, m_pPhysXController->getPosition().y, m_pPhysXController->getPosition().z);
 
+	while (false == GI->Is_PhysX_Valid()) {}
 	m_pPhysXController->move(vDisp, 0.00001f, fTimeDelta, m_Filters);
 		
 }
 
 void CPhysX_Controller::LateTick_Controller(_float fTimeDelta)
 {
-	if (m_pOwner->Is_Dead() || m_pOwner->Is_ReserveDead())
+	if (m_pOwner->Is_Dead())
 	{
-		GI->Remove_Controller(m_pPhysXController);
+		if (false == m_bRemoved)
+		{
+			GI->Remove_Controller(m_pPhysXController);
+			m_bRemoved = true;
+		}
+			
 		return;
 	}
 		

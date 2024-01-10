@@ -3,7 +3,7 @@
 #include "GameInstance.h"
 #include "HierarchyNode.h"
 #include "Trail.h"
-#include "Sword.h"
+#include "Rifle.h"
 #include "Character_Manager.h"
 #include "Weapon_Manager.h"
 
@@ -611,7 +611,7 @@ HRESULT CCharacter_Engineer::Ready_Sockets()
 #pragma region Ready_Weapon
 HRESULT CCharacter_Engineer::Ready_Weapon()
 {
-	m_pWeapon = CSword::Create(m_pDevice, m_pContext, L"Engineer_Rifle");
+	m_pWeapon = CRifle::Create(m_pDevice, m_pContext, L"Engineer_Rifle");
 	if (nullptr == m_pWeapon)
 		return S_OK;
 

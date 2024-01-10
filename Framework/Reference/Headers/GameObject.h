@@ -145,6 +145,9 @@ protected:
 protected:
 	Matrix m_ServerMatrix = Matrix::Identity;
 
+protected:
+	_float3 m_vBloomPower = { 0.f, 0.f, 0.f };
+
 
 protected:
 	CComponent* Find_Component(const wstring & strComponentTag);
