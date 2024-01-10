@@ -34,6 +34,7 @@ public: // Get/Set
 	_float2			Get_ProjectionPosition(class CTransform* pTransform);
 
 	void			Set_MainDialogue(_tchar* pszName, _tchar* pszText);
+	void			Set_QuestPopup(const wstring& strQuestType, const wstring& strTitle, const wstring& strContents);
 
 	_int			Get_SelectedCharacter();
 
@@ -96,12 +97,24 @@ public:
 	void	Update_WeaponSelectionIcon(_uint iSlotNum);
 
 	void	Update_CostumeModel(const CHARACTER_TYPE& eCharacterType, const PART_TYPE& ePartType, const wstring& strPartTag);
+	void	Update_CostumeWeaponModel(const CHARACTER_TYPE& eCharacterType, const wstring& strPartTag);
 	void	Set_CostumeModel();
+	void	TakeOff_CostumeModel();
+
 	void	Set_MouseCursor(_uint iIndex);
 
 public:
 	HRESULT		Using_CloseButton();
 	HRESULT		Using_BackButton();
+
+	void		Use_JumpBtn();
+	void		Use_RollBtn();
+	void		Use_AttackBtn();
+	void		Use_ClassSkillSlot(_uint iSlotNum);
+	void		Use_ActiveSkillSlot(_uint iSlotNum);
+	void		Use_BurstSkillSlot(_uint iSlotNum);
+	
+	void		Change_ElementalType(ELEMENTAL_TYPE eElementalType);
 
 public:
 	HRESULT OnOff_Veil(_bool bOnOff);
@@ -182,6 +195,7 @@ private:
 	class CUI_WindowQuest* m_pWindowQuest = { nullptr };
 
 	vector<class CUI_PopupQuest*> m_QuestPopUp;
+	vector<class CUI_Quest_Reward*> m_QuestReward;
 
 	class CUI_Text_TabMenu* m_pTabMenuTitle = { nullptr };
 

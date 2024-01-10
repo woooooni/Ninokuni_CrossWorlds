@@ -2,6 +2,7 @@
 #include "GameInstance.h"
 #include "Character.h"
 #include "State_Character.h"
+#include "UI_Manager.h"
 
 
 CState_Character::CState_Character(CStateMachine* pStateMachine)
@@ -37,12 +38,14 @@ void CState_Character::Neutral_Idle_Input(_float fTimeDelta)
 	if (KEY_TAP(KEY::SPACE))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_JUMP);
+		CUI_Manager::GetInstance()->Use_JumpBtn();
 		return;
 	}
 
 	if (KEY_TAP(KEY::LBTN))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::BATTLE_ATTACK_0);
+		CUI_Manager::GetInstance()->Use_AttackBtn();
 		return;
 	}
 
@@ -55,6 +58,7 @@ void CState_Character::Neutral_Idle_Input(_float fTimeDelta)
 	if (KEY_TAP(KEY::CTRL))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::BATTLE_DASH);
+		CUI_Manager::GetInstance()->Use_RollBtn();
 		return;
 	}
 
@@ -70,12 +74,14 @@ void CState_Character::Battle_Idle_Input(_float fTimeDelta)
 	if (KEY_TAP(KEY::SPACE))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::BATTLE_JUMP);
+		CUI_Manager::GetInstance()->Use_JumpBtn();
 		return;
 	}
 
 	if (KEY_TAP(KEY::LBTN))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::BATTLE_ATTACK_0);
+		CUI_Manager::GetInstance()->Use_AttackBtn();
 		return;
 	}
 
@@ -88,6 +94,7 @@ void CState_Character::Battle_Idle_Input(_float fTimeDelta)
 	if (KEY_TAP(KEY::CTRL))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::BATTLE_DASH);
+		CUI_Manager::GetInstance()->Use_RollBtn();
 		return;
 	}
 }
@@ -123,6 +130,7 @@ void CState_Character::Neutral_Walk_Input(_float fTimeDelta)
 	if (KEY_TAP(KEY::CTRL))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_DASH);
+		CUI_Manager::GetInstance()->Use_RollBtn();
 		return;
 	}
 
@@ -216,6 +224,7 @@ void CState_Character::Neutral_Walk_Input(_float fTimeDelta)
 	{
 		bMove = true;
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_JUMP);
+		CUI_Manager::GetInstance()->Use_JumpBtn();
 	}
 
 
@@ -235,6 +244,7 @@ void CState_Character::Neutral_Walk_Input(_float fTimeDelta)
 	if (KEY_TAP(KEY::LBTN))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_0);
+		CUI_Manager::GetInstance()->Use_AttackBtn();
 		return;
 	}
 
@@ -253,6 +263,7 @@ void CState_Character::Battle_Walk_Input(_float fTimeDelta)
 	if (KEY_TAP(KEY::CTRL))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_DASH);
+		CUI_Manager::GetInstance()->Use_RollBtn();
 		return;
 	}
 
@@ -346,6 +357,7 @@ void CState_Character::Battle_Walk_Input(_float fTimeDelta)
 	{
 		bMove = true;
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_JUMP);
+		CUI_Manager::GetInstance()->Use_JumpBtn();
 	}
 
 
@@ -365,6 +377,7 @@ void CState_Character::Battle_Walk_Input(_float fTimeDelta)
 	if (KEY_TAP(KEY::LBTN))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_0);
+		CUI_Manager::GetInstance()->Use_AttackBtn();
 		return;
 	}
 
@@ -608,6 +621,7 @@ void CState_Character::Neutral_Run_Input(_float fTimeDelta)
 	if (KEY_TAP(KEY::CTRL))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_DASH);
+		CUI_Manager::GetInstance()->Use_RollBtn();
 		return;
 	}
 
@@ -701,6 +715,7 @@ void CState_Character::Neutral_Run_Input(_float fTimeDelta)
 	{
 		bMove = true;
 		m_pStateMachineCom->Change_State(CCharacter::STATE::NEUTRAL_JUMP);
+		CUI_Manager::GetInstance()->Use_JumpBtn();
 	}
 
 
@@ -720,6 +735,7 @@ void CState_Character::Neutral_Run_Input(_float fTimeDelta)
 	if (KEY_TAP(KEY::LBTN))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_0);
+		CUI_Manager::GetInstance()->Use_AttackBtn();
 		return;
 	}
 
@@ -738,6 +754,7 @@ void CState_Character::Battle_Run_Input(_float fTimeDelta)
 	if (KEY_TAP(KEY::CTRL))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_DASH);
+		CUI_Manager::GetInstance()->Use_RollBtn();
 		return;
 	}
 
@@ -831,6 +848,7 @@ void CState_Character::Battle_Run_Input(_float fTimeDelta)
 	{
 		bMove = true;
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_JUMP);
+		CUI_Manager::GetInstance()->Use_JumpBtn();
 	}
 
 
@@ -850,6 +868,7 @@ void CState_Character::Battle_Run_Input(_float fTimeDelta)
 	if (KEY_TAP(KEY::LBTN))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_0);
+		CUI_Manager::GetInstance()->Use_AttackBtn();
 		return;
 	}
 
@@ -999,10 +1018,14 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 			if (KEY_HOLD(KEY::SHIFT))
 			{
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::SWORDMAN_ACANE_BARRIER);
+				if (true == bUseSkill)
+					CUI_Manager::GetInstance()->Use_ActiveSkillSlot(0);
 			}
 			else
 			{
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::SWORDMAN_PERFECT_BLADE);
+				if (true == bUseSkill)
+					CUI_Manager::GetInstance()->Use_ClassSkillSlot(0);
 			}
 			
 			break;
@@ -1010,10 +1033,14 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 			if (KEY_HOLD(KEY::SHIFT)) 
 			{
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::ENGINEER_BURSTCALL);
+				if (true == bUseSkill)
+					CUI_Manager::GetInstance()->Use_ActiveSkillSlot(0);
 			}
 			else
 			{
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::ENGINEER_FLASH_HEAL);
+				if (true == bUseSkill)
+					CUI_Manager::GetInstance()->Use_ClassSkillSlot(0);
 			}
 			
 			break;
@@ -1021,10 +1048,14 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 			if (KEY_HOLD(KEY::SHIFT))
 			{
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_WHEELWIND);
+				if (true == bUseSkill)
+					CUI_Manager::GetInstance()->Use_ActiveSkillSlot(0);
 			}
 			else
 			{
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_BATTLE_CRY);
+				if (true == bUseSkill)
+					CUI_Manager::GetInstance()->Use_ClassSkillSlot(0);
 			}
 			
 			break;
@@ -1044,31 +1075,43 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 			if (KEY_HOLD(KEY::SHIFT))
 			{
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::SWORDMAN_FROZEN_STORM);
+				if (true == bUseSkill)
+					CUI_Manager::GetInstance()->Use_ActiveSkillSlot(1);
 			}
 			else
 			{
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::SWORDMAN_SIPOHONINGLUNGE);
+				if (true == bUseSkill)
+					CUI_Manager::GetInstance()->Use_ClassSkillSlot(1);
 			}
 			break;
 		case CHARACTER_TYPE::ENGINEER:
 			if (KEY_HOLD(KEY::SHIFT))
 			{
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::ENGINEER_TIMELAB);
+				if (true == bUseSkill)
+					CUI_Manager::GetInstance()->Use_ActiveSkillSlot(1);
 			}
 			else
 			{
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::ENGINEER_ELEMENTAL_BLAST);
+				if (true == bUseSkill)
+					CUI_Manager::GetInstance()->Use_ClassSkillSlot(1);
 			}
 			break;
 		case CHARACTER_TYPE::DESTROYER:
 			if (KEY_HOLD(KEY::SHIFT))
 			{
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_IGNORE_PAIN);
+				if (true == bUseSkill)
+					CUI_Manager::GetInstance()->Use_ActiveSkillSlot(1);
 				
 			}
 			else
 			{
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_BRUTALSTRIKE);
+				if (true == bUseSkill)
+					CUI_Manager::GetInstance()->Use_ClassSkillSlot(1);
 			}
 			break;
 		}
@@ -1087,10 +1130,14 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 			if (KEY_HOLD(KEY::SHIFT))
 			{
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::SWORDMAN_SWORD_TEMPEST);
+				if (true == bUseSkill)
+					CUI_Manager::GetInstance()->Use_ActiveSkillSlot(2);
 			}
 			else
 			{
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::SWORDMAN_SPINNING_ASSAULT);
+				if (true == bUseSkill)
+					CUI_Manager::GetInstance()->Use_ClassSkillSlot(2);
 			}
 			
 			break;
@@ -1098,10 +1145,14 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 			if (KEY_HOLD(KEY::SHIFT))
 			{
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::ENGINEER_HEALINGTREE);
+				if (true == bUseSkill)
+					CUI_Manager::GetInstance()->Use_ActiveSkillSlot(2);
 			}
 			else
 			{
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::ENGINEER_EXPLOSIONSHOT);
+				if (true == bUseSkill)
+					CUI_Manager::GetInstance()->Use_ClassSkillSlot(2);
 			}
 			
 			break;
@@ -1109,10 +1160,14 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 			if (KEY_HOLD(KEY::SHIFT))
 			{
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_FRENGE_CHARGE);
+				if (true == bUseSkill)
+					CUI_Manager::GetInstance()->Use_ActiveSkillSlot(2);
 			}
 			else
 			{
 				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_LEAFSLAM);
+				if (true == bUseSkill)
+					CUI_Manager::GetInstance()->Use_ClassSkillSlot(2);
 			}
 			
 			break;
@@ -1126,16 +1181,49 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 	{
 		CHARACTER_TYPE eCharacterType = m_pCharacter->Get_CharacterType();
 		_bool bUseSkill = false;
+
+		ELEMENTAL_TYPE eElementalType = m_pCharacter->Get_ElementalType();
+		_int iSlotNum = -1;
+		if (ELEMENTAL_TYPE::FIRE == eElementalType)
+			iSlotNum = 0;
+		else if (ELEMENTAL_TYPE::WATER == eElementalType)
+			iSlotNum = 1;
+		else if (ELEMENTAL_TYPE::WOOD == eElementalType)
+			iSlotNum = 2;
+		else
+			iSlotNum = -1;
+
 		switch (eCharacterType)
 		{
 		case CHARACTER_TYPE::SWORD_MAN:
 			bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::SWORDMAN_BURST_MEGA_SLASH);
+			if (true == bUseSkill)
+			{
+				if (0 > iSlotNum || 2 < iSlotNum)
+					return;
+
+				CUI_Manager::GetInstance()->Use_BurstSkillSlot(iSlotNum);
+			}
 			break;
 		case CHARACTER_TYPE::ENGINEER:
 			bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::ENGINNER_BURST_DESTRUCTION);
+			if (true == bUseSkill)
+			{
+				if (0 > iSlotNum || 2 < iSlotNum)
+					return;
+
+				CUI_Manager::GetInstance()->Use_BurstSkillSlot(iSlotNum);
+			}
 			break;
 		case CHARACTER_TYPE::DESTROYER:
 			bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_BURST_HYPERSTRIKE);
+			if (true == bUseSkill)
+			{
+				if (0 > iSlotNum || 2 < iSlotNum)
+					return;
+
+				CUI_Manager::GetInstance()->Use_BurstSkillSlot(iSlotNum);
+			}
 			break;
 		}
 
@@ -1150,12 +1238,14 @@ void CState_Character::Attack_Input(_float fTimeDelta)
 	if (KEY_TAP(KEY::CTRL))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::BATTLE_DASH);
+		CUI_Manager::GetInstance()->Use_RollBtn();
 		return;
 	}
 
 	if (KEY_TAP(KEY::LBTN))
 	{
 		CCharacter::STATE eCurrState = CCharacter::STATE(m_pStateMachineCom->Get_CurrState());
+		CUI_Manager::GetInstance()->Use_AttackBtn();
 		switch (eCurrState)
 		{
 		case CCharacter::STATE::BATTLE_ATTACK_0:

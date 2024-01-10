@@ -13,6 +13,7 @@ protected:
 public:
 	_bool Get_Resizable() { return m_bResizable; }
 	void Set_Resizable(_bool bResize) { m_bResizable = bResize; }
+	void Set_ResizeStart(_bool bResize) { m_bResizeStart = bResize; }
 
 public:
 	virtual HRESULT	Initialize_Prototype();

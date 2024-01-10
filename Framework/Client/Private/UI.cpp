@@ -313,6 +313,17 @@ HRESULT CUI::Make_Child(_float fX, _float fY, _float fCX, _float fCY, const wstr
 	return S_OK;
 }
 
+CUI* CUI::Get_Child(const wstring& strPrototypeTag)
+{
+	for (auto& pChildUI : m_pChild)
+	{
+		if (strPrototypeTag == pChildUI->Get_PrototypeTag())
+			return pChildUI;
+	}
+
+	return nullptr;
+}
+
 void CUI::Delete_AllChild()
 {
 	for (auto& pChildUI : m_pChild)

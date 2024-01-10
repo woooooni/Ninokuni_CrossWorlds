@@ -250,7 +250,7 @@ protected:
 	virtual void On_Damaged(const COLLISION_INFO& tInfo);
 
 protected:
-	ELEMENTAL_TYPE m_eElemental = ELEMENTAL_TYPE::BASIC;
+	ELEMENTAL_TYPE m_eElemental = ELEMENTAL_TYPE::FIRE;
 
 
 protected: /* 해당 객체가 사용해야할 컴포넌트들을 저장하낟. */

@@ -42,15 +42,19 @@ void CUI_World_Interaction::Set_Owner(CGameObject* pOwner)
 
 	m_pOwner = pOwner;
 
-	_uint iType = m_pOwner->Get_ObjectType();
-
-	if (iType == OBJ_TYPE::OBJ_DYNAMIC)
+	if (TEXT("Animal_Cat") == m_pOwner->Get_ObjectTag() ||
+		TEXT("Animal_Dochi") == m_pOwner->Get_ObjectTag() ||
+		TEXT("Animal_PolarBear") == m_pOwner->Get_ObjectTag())
 	{
-		if (TEXT("Animal_Cat") == m_pOwner->Get_ObjectTag())
-		{
-			m_eType = UI_INTERACTION_TYPE::INTERACTION_PICKUP;
-			m_fOffset = _float2(0.f, 0.8f);
-		}
+		m_eType = UI_INTERACTION_TYPE::INTERACTION_PICKUP;
+		m_vOffset = _float2(0.f, 0.8f);
+		m_vOriginOffset = m_vOffset;
+	}
+	else if (TEXT("Animal_DuckGoo") == m_pOwner->Get_ObjectTag())
+	{
+		m_eType = UI_INTERACTION_TYPE::INTERACTION_PICKUP;
+		m_vOffset = _float2(0.f, 1.2f);
+		m_vOriginOffset = m_vOffset;
 	}
 }
 
@@ -170,7 +174,7 @@ void CUI_World_Interaction::LateTick(_float fTimeDelta)
 			if (fTotarget > 0.001f)
 			{
 				_float4x4 matTargetWorld = pTransform->Get_WorldFloat4x4();
-				matTargetWorld._42 += m_fOffset.y;
+ 				matTargetWorld._42 += m_vOffset.y;
 
 				_float4x4 matWorld;
 				matWorld = matTargetWorld;
@@ -195,7 +199,7 @@ void CUI_World_Interaction::LateTick(_float fTimeDelta)
 					CTransform* pTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");
 
 					_float4x4 matTargetWorld = pTransform->Get_WorldFloat4x4();
-					matTargetWorld._42 += m_fOffset.y;
+					matTargetWorld._42 += m_vOffset.y;
 
 					_float4x4 matWorld;
 					matWorld = matTargetWorld;
@@ -250,6 +254,9 @@ HRESULT CUI_World_Interaction::Render()
 {
 	if (m_bActive)
 	{
+		if (UI_INTERACTION_TYPE::INTERACTION_END <= m_eType)
+			return E_FAIL;
+
 		if (FAILED(Bind_ShaderResources()))
 			return E_FAIL;
 
@@ -312,17 +319,20 @@ HRESULT CUI_World_Interaction::Bind_ShaderResources()
 
 void CUI_World_Interaction::Update_ButtonIcon()
 {
-	if (TEXT("Animal_Cat") == m_pOwner->Get_ObjectTag())
+	if (TEXT("Animal_Cat") == m_pOwner->Get_ObjectTag() ||
+		TEXT("Animal_Dochi") == m_pOwner->Get_ObjectTag() ||
+		TEXT("Animal_DuckGoo") == m_pOwner->Get_ObjectTag() ||
+		TEXT("Animal_PolarBear") == m_pOwner->Get_ObjectTag())
 	{
 		if (dynamic_cast<CAnimals*>(m_pOwner)->Lifting())
 		{
 			m_eType = UI_INTERACTION_TYPE::INTERACTION_PICKDOWN;
-			m_fOffset = _float2(0.f, 0.f);
+			m_vOffset = _float2(0.f, 0.f);
 		}
 		else
 		{
 			m_eType = UI_INTERACTION_TYPE::INTERACTION_PICKUP;
-			m_fOffset = _float2(0.f, 0.8f);
+			m_vOffset = m_vOriginOffset;
 		}
 	}
 }

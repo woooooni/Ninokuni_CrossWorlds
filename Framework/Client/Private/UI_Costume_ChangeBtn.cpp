@@ -142,6 +142,8 @@ void CUI_Costume_ChangeBtn::Key_Input(_float fTimeDelta)
 	{
 		if (0 == m_iTextureIndex)
 			CUI_Manager::GetInstance()->Set_CostumeModel();
+		else if (1 == m_iTextureIndex)
+			CUI_Manager::GetInstance()->TakeOff_CostumeModel();
 	}
 }
 

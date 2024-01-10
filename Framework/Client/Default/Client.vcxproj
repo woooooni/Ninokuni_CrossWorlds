@@ -607,6 +607,7 @@
     <ClInclude Include="..\Public\UI_Milepost.h" />
     <ClInclude Include="..\Public\UI_Minimap_Frame.h" />
     <ClInclude Include="..\Public\UI_MonsterHP_World.h" />
+    <ClInclude Include="..\Public\UI_Quest_Reward.h" />
     <ClInclude Include="..\Public\UI_QuickSlot_Item.h" />
     <ClInclude Include="..\Public\UI_SetNickname_Textbox.h" />
     <ClInclude Include="..\Public\UI_SetNickname_Window.h" />
@@ -1233,6 +1234,7 @@
     <ClCompile Include="..\Private\UI_Milepost.cpp" />
     <ClCompile Include="..\Private\UI_Minimap_Frame.cpp" />
     <ClCompile Include="..\Private\UI_MonsterHP_World.cpp" />
+    <ClCompile Include="..\Private\UI_Quest_Reward.cpp" />
     <ClCompile Include="..\Private\UI_QuickSlot_Item.cpp" />
     <ClCompile Include="..\Private\UI_SetNickname_Textbox.cpp" />
     <ClCompile Include="..\Private\UI_SetNickname_Window.cpp" />

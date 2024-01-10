@@ -14,6 +14,7 @@ public:
 	virtual void Set_CharacterType(CHARACTER_TYPE eType) override;
 	virtual void Set_ElementalType(ELEMENTAL_TYPE eType) override;
 	virtual void Set_Active(_bool bActive) override;
+	void Use_BurstSkill(_uint iSlotNum);
 
 public:
 	virtual HRESULT	Initialize_Prototype();

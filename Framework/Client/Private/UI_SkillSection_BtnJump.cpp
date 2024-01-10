@@ -61,7 +61,7 @@ void CUI_SkillSection_BtnJump::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-		if (m_bResizeStart)
+		if (m_bResizable)
 		{
 			// 시간을 누적한다.
 			m_fTimeAcc += fTimeDelta;
@@ -71,14 +71,14 @@ void CUI_SkillSection_BtnJump::Tick(_float fTimeDelta)
 			m_tInfo.fCY = m_vMinSize.y;
 			m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 		}
-		else
-		{
-			CStateMachine* pStateMachine = m_pCharacter->Get_Component<CStateMachine>(TEXT("Com_StateMachine"));
-
-			if (CCharacter::STATE::NEUTRAL_JUMP == pStateMachine->Get_CurrState()
-				|| CCharacter::STATE::BATTLE_JUMP == pStateMachine->Get_CurrState())
-				m_bResizeStart = true;
-		}
+//		else
+//		{
+//			CStateMachine* pStateMachine = m_pCharacter->Get_Component<CStateMachine>(TEXT("Com_StateMachine"));
+//
+//			if (CCharacter::STATE::NEUTRAL_JUMP == pStateMachine->Get_CurrState()
+//				|| CCharacter::STATE::BATTLE_JUMP == pStateMachine->Get_CurrState())
+//				m_bResizeStart = true;
+//		}
 
 		__super::Tick(fTimeDelta);
 	}
@@ -101,7 +101,7 @@ void CUI_SkillSection_BtnJump::LateTick(_float fTimeDelta)
 
 			m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 
-			m_bResizeStart = false;
+			m_bResizable = false;
 			m_bFinish = false;
 		}
 
@@ -188,8 +188,8 @@ void CUI_SkillSection_BtnJump::Key_Input(_float fTimeDelta)
 	{
 		// 캐릭터가 점프 상태가 아니라면
 		// Jump State를 던진다.
-		if (!m_bResizeStart)
-			m_bResizeStart = true;
+		if (!m_bResizable)
+			m_bResizable = true;
 	}
 }
 

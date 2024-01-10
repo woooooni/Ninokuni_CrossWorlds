@@ -19,6 +19,8 @@ public:
 			m_pTransformCom->LookAt_ForLandObject(m_vCamPosition);
 	}
 
+	class CUI_Dummy_Weapon* Get_Weapon() { return m_pWeapon; }
+
 public:
 	virtual HRESULT Initialize_Prototype() override;
 	virtual HRESULT Initialize(void* pArg) override;

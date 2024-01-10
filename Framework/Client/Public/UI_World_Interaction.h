@@ -35,7 +35,8 @@ private:
 
 	_bool m_bRotate = { false };
 	_float m_fTimeAcc = { 0.f };
-	_float2 m_fOffset = _float2(0.f, 0.f);
+	_float2 m_vOffset = _float2(0.f, 0.f);
+	_float2 m_vOriginOffset = _float2(0.f, 0.f);
 
 	_bool m_bResize = { false };
 	_float2 m_vOriginSize = _float2(0.f, 0.f);

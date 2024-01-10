@@ -75,13 +75,13 @@ void CUI_WeaponSection_DefaultWeapon::Tick(_float fTimeDelta)
 				m_tInfo.fCY = m_vMinSize.y;
 				m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 			}
-			else
-			{
-				CStateMachine* pStateMachine = m_pCharacter->Get_Component<CStateMachine>(TEXT("Com_StateMachine"));
-		
-				if (CCharacter::STATE::BATTLE_ATTACK_0 == pStateMachine->Get_CurrState())
-					m_bResizeStart = true;
-			}
+//			else
+//			{
+//				CStateMachine* pStateMachine = m_pCharacter->Get_Component<CStateMachine>(TEXT("Com_StateMachine"));
+//		
+//				if (CCharacter::STATE::BATTLE_ATTACK_0 == pStateMachine->Get_CurrState())
+//					m_bResizeStart = true;
+//			}
 
 		}
 

@@ -52,7 +52,7 @@ HRESULT CUI_Damage_Number::Initialize(void* pArg)
 	{
 		if (m_FontDesc.bIsBoss)
 		{
-			fNumSize = 112.f * 0.5f;
+			fNumSize = 112.f * 0.4f;
 		}
 		else
 		{

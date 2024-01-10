@@ -58,7 +58,7 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 	/* 1-4. 게임내에서 사용할 레벨(씬)을 생성한다.   */
-	if (FAILED(Open_Level(LEVEL_TOOL, L"Final_Boss")))
+	if (FAILED(Open_Level(LEVEL_LOGO, L"Final_Boss")))
 		return E_FAIL;
 
 	// UI Cursor
@@ -1103,8 +1103,11 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 		return E_FAIL;
 
 	// Quest Frame
+//	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_QuestPopUp_Frame"),
+//		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Quest/UI_Quest_MiniFrame_%d.png"), 2))))
+//		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_QuestPopUp_Frame"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Quest/UI_Quest_MiniFrame_%d.png"), 2))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Quest/UI_Quest_MiniFrame_Resize_%d.png"), 2))))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_QuestPopUp_Finished"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Quest/UI_Quest_Finish_%d.png"), 3))))
@@ -1373,6 +1376,10 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Contents/SpeechBalloon/UI_NPC_SpeechBalloon.png")))))
 		return E_FAIL;
 
+	// 퀘스트 완료창
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Quest_Finish_Popup"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Quest/UI_Quest_Finish_%d.png"), 3))))
+		return E_FAIL;
 
 	return S_OK;
 }

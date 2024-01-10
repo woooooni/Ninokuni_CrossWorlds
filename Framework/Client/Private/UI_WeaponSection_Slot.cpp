@@ -26,6 +26,14 @@ void CUI_WeaponSection_Slot::Set_CharacterType(CHARACTER_TYPE eType)
 		m_pNoWeapon->Set_CharacterType(m_eCurPlayerType);
 }
 
+void CUI_WeaponSection_Slot::Use_BurstSkill()
+{
+	if (nullptr == m_pFrame)
+		return;
+
+	m_pFrame->Use_Skill();
+}
+
 HRESULT CUI_WeaponSection_Slot::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))

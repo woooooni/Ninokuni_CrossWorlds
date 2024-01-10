@@ -32,11 +32,10 @@ public:
 
 private:
 	UI_CLASSICSKILL m_eType = { UICLASSICSKILL_END };
-	CHARACTER_TYPE m_ePlayerType = { SWORD_MAN };
+	class CSkill* m_pSkill = { nullptr };
 
 	CTexture* m_pMaskTextureCom = { nullptr };
 	CTexture* m_pFXTextureCom = { nullptr }; // 스킬 쿨타임을 위한 Component
-	class CSkill* m_pSkill = { nullptr };
 
 	_int m_iTextureIndex = { -1 };
 	_uint m_iPass = { 5 };
