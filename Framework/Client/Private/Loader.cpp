@@ -919,28 +919,16 @@ HRESULT CLoader::Loading_Proto_Static_Map_Objects(const wstring& strPath)
 					CTreeRock::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt, OBJ_TYPE::OBJ_TREEROCK, CModel::TYPE_NONANIM), LAYER_TYPE::LAYER_TREEROCK, true)))
 					return E_FAIL;
 			}
-			//else if (strFilePath.find(L"Water") != wstring::npos)
-			//{
-			//	if (FAILED(GI->Add_Prototype(wstring(strFileName),
-			//		CWater::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt, OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_WATER)))
-			//		return E_FAIL;
-			//}
-			//else if (strFilePath.find(L"Road") != wstring::npos)
-			//{
-			//	if (FAILED(GI->Add_Prototype(wstring(strFileName),
-			//		CProp::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt), LAYER_TYPE::LAYER_ROAD)))
-			//		return E_FAIL;
-			//}
-
-			//else if (strFilePath.find(L"Mountain") != wstring::npos)
-			//{
-			//	if (FAILED(GI->Add_Prototype(wstring(strFileName),
-			//		CProp::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt), LAYER_TYPE::LAYER_MOUNTAIN)))
-			//		return E_FAIL;
-			//}
 		}
 
 	}
+
+
+	if(FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Common_ColliderWall"),
+		CColliderWall::Create(m_pDevice, m_pContext, TEXT("Common_ColliderWall"), OBJ_TYPE::OBJ_BUILDING),
+		LAYER_TYPE::LAYER_BUILDING)))
+		return E_FAIL;
+
 	return S_OK;
 }
 

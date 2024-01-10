@@ -54,6 +54,7 @@ CBTNode::NODE_STATE CMainQuestNode01_01::Tick(const _float& fTimeDelta)
 			// 이거 왜 바로 걸림?
 			m_bIsClear = true;
 			m_pQuestDestSpot->Set_Dead(true);
+			//Safe_Release<CQuest_DestSpot*>(m_pQuestDestSpot);
 			return NODE_STATE::NODE_FAIL;
 		}
 	}

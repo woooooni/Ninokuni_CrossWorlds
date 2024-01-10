@@ -80,6 +80,15 @@ PS_OUT PS_MAIN(PS_IN In)
 	return Out;	
 }
 
+PS_OUT PS_COLLIDER(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    Out.vColor = float4(0.5f, 0.5f, 0.5f, 0.5f);
+
+    return Out;
+}
+
 PS_OUT PS_MAIN_ALPHA(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
@@ -226,4 +235,15 @@ technique11 DefaultTechnique
 		GeometryShader = NULL;
 		PixelShader = compile ps_5_0 PS_USING_MASK();
 	}
+
+    pass ColliderPass // 6
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_COLLIDER();
+    }
 }

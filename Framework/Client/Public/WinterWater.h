@@ -1,13 +1,13 @@
 #pragma once
 
-#include "DynamicObject.h"
+#include "Water.h"
 
 BEGIN(Client)
 
-class CWinterWater final : public CDynamicObject
+class CWinterWater final : public CWater
 {
 private:
-	enum TEX_TYPE { TEX_DIFFUSE, TEX_NORMAL, TEX_MASK1, TEX_MASK2, TEX_END };
+	enum TEX_TYPE { TEX_DIFFUSE, TEX_NOISE1, TEX_NOISE2, TEX_NORMAL, TEX_END };
 private:
 	explicit CWinterWater(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType);
 	explicit CWinterWater(const CWinterWater& rhs);
@@ -27,13 +27,10 @@ public:
 	virtual HRESULT Bind_ShaderResources();
 
 private:
-	CShader* m_pWaterShaderCom = nullptr;
-	CTexture* m_pTextureCom[TEX_END] = {};
-
-private:
-	_float m_fWaterTranslationSpeed = 0.015f;
-	_float m_fTime = 0.0f;
-	Vec2 m_vDirection;
+	CShader* m_pShaderCom = { nullptr };
+	CTexture* m_pTextureCom[TEX_TYPE::TEX_END] = {};
+	CModel* m_pModelCom = nullptr;
+	CVIBuffer_Terrain* m_pVIBufferCom = { nullptr };
 
 public:
 	static CWinterWater* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eObjType);

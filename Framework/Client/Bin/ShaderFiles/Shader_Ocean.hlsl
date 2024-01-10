@@ -175,6 +175,67 @@ PS_OUT PS_MAIN(VS_OUT input)
     return output;
 }
 
+// Winter Mask Texture
+
+Texture2D NoiseTexture : register(t2);
+Texture2D NoiseTexture2 : register(t3);
+
+PS_OUT PS_WINTER_MAIN(VS_OUT input)
+{
+    PS_OUT output = (PS_OUT) 0;
+    
+    float3x3 TBNtoWorld;
+    float3 L = normalize(PS_Gerstner.lightDir);
+
+    TBNtoWorld[0] = input.vTangent[0];
+    TBNtoWorld[1] = input.vTangent[1];
+    TBNtoWorld[2] = input.vTangent[2];
+    
+    float3 bump0 = NormalTexture.Sample(LinearSampler, input.wave0);
+    float3 bump1 = NormalTexture.Sample(LinearSampler, input.wave1);
+    float3 bump2 = NormalTexture.Sample(LinearSampler, input.wave2);
+    
+    float3 finalBump = 2 * (bump0 + bump1 + bump2) - 3.0f;
+    finalBump.xy *= PS_Gerstner.bumpScale;
+    finalBump = mul(TBNtoWorld, finalBump);
+    finalBump = normalize(finalBump);
+   
+     
+    float DiffuseFactor = saturate(dot(-L, finalBump));
+    float4 DiffuseColor = PS_Gerstner.lightColor * DiffuseFactor;
+    
+    if (DiffuseColor.r < 0.1f)
+        DiffuseColor = 0.2f;
+    
+    float3 V = normalize(input.eyeVec);
+    float3 lookup = reflect(-V, finalBump);
+    float4 reflectColor = Env.Sample(LinearSampler, lookup);
+    
+    float facing = 1 - saturate(dot(-V, finalBump));
+    float fresnel = PS_Gerstner.fresnelBias + (1 - PS_Gerstner.fresnelBias) * pow(facing, PS_Gerstner.fresnelPower);
+    float4 waterColor = lerp(PS_Gerstner.deepWaterColor, PS_Gerstner.ShallowWaterColor, fresnel);
+    
+    output.vColor = (waterColor * PS_Gerstner.waterAmount + PS_Gerstner.reflectAmount
+     * reflectColor * fresnel) * DiffuseColor;
+    if (output.vColor.a < 0.1f)
+        output.vColor.a = 0.05f;
+    
+    float4 noise1 = NoiseTexture.Sample(LinearSampler, input.wave0 * 2.0f);
+    float4 noise2 = NoiseTexture.Sample(LinearSampler, input.wave1 * 4.0f);
+    float4 noise3 = NoiseTexture2.Sample(LinearSampler, input.wave2 * 8.0f);
+    
+    float4 noiseResult = noise1 + noise2 + noise3;
+    noiseResult /= 3.0f;
+    
+    if (noiseResult.r >= 0.5f && noiseResult.g >= 0.5f && noiseResult.b >= 0.5f)
+        output.vColor += 0.3f;
+    
+    output.vDepth = float4(input.vProjPos.z / input.vProjPos.w, input.vProjPos.w / 1000.f, 0.0f, 0.0f);
+    output.vNormal = float4(finalBump.xyz * 0.5f + 0.5f, 0.0f);
+    
+    return output;
+}
+
 technique11 Water
 {
     pass Evermore_Water
@@ -186,5 +247,16 @@ technique11 Water
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN();
+    }
+
+    pass Winter_Water
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        PixelShader = compile ps_5_0 PS_WINTER_MAIN();
     }
 }
