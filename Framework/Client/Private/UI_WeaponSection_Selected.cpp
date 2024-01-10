@@ -214,6 +214,7 @@ void CUI_WeaponSection_Selected::Change_Weapon(_uint iSlotNum)
 	if (ELEMENTAL_TYPE::ELEMENTAL_END <= eElementalType)
 		return;
 	pCharacter->Set_ElementalType(eElementalType);
+	CUI_Manager::GetInstance()->Change_ElementalType(eElementalType);
 }
 
 _bool CUI_WeaponSection_Selected::Isit_PossibleToChange(const wstring& strModelTag)

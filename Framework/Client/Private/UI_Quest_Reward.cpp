@@ -51,13 +51,12 @@ HRESULT CUI_Quest_Reward::Initialize(void* pArg)
 	{
 		m_vOriginPosition = _float2(m_tInfo.fX, m_tInfo.fY);
 		m_vTargetPosition = _float2(m_tInfo.fX, m_tInfo.fY + (82.f * 0.65f));
-		// 원래의 fY에서 Window의 Y사이즈를 더해야한다.
 	}
 
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	m_bActive = true;
+	m_bActive = false;
 
 	return S_OK;
 }

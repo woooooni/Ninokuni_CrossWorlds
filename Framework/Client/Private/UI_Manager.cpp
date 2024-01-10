@@ -244,7 +244,10 @@ void CUI_Manager::Set_MainDialogue(_tchar* pszName, _tchar* pszText)
 
 void CUI_Manager::Set_QuestPopup(const wstring& strQuestType, const wstring& strTitle, const wstring& strContents)
 {
+	if (m_QuestPopUp[0] == nullptr)
+		return;
 
+	m_QuestPopUp[0]->Set_Contents(strQuestType, strTitle, strContents);
 }
 
 _int CUI_Manager::Get_SelectedCharacter()
@@ -4648,6 +4651,15 @@ void CUI_Manager::Use_BurstSkillSlot(_uint iSlotNum)
 		return;
 
 	m_pSkillBG->Use_BurstSkill(iSlotNum);
+}
+
+void CUI_Manager::Change_ElementalType(ELEMENTAL_TYPE eElementalType)
+{
+	if (ELEMENTAL_TYPE::ELEMENTAL_END <= eElementalType)
+		return;
+
+	m_eElemental = eElementalType;
+	Set_ElementalType();
 }
 
 HRESULT CUI_Manager::OnOff_Veil(_bool bOnOff)

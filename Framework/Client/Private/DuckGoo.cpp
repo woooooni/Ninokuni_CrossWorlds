@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "DuckGoo.h"
 #include "GameInstance.h"
+#include "UI_World_Interaction.h"
 
 #include "State_Animal_Idle.h"
 #include "State_Animal_Run.h"
@@ -41,6 +42,13 @@ HRESULT CDuckGoo::Initialize(void* pArg)
 
 	m_vCenter = m_pTransformCom->Get_Position();
 
+	CGameObject* pBtn = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_World_Interaction_Btn"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pBtn)
+		return E_FAIL;
+	m_pInteractionBtn = dynamic_cast<CUI_World_Interaction*>(pBtn);
+	m_pInteractionBtn->Set_Owner(this);
+	m_pInteractionBtn->Set_Active(true);
+
 	return S_OK;
 }
 
@@ -48,20 +56,27 @@ void CDuckGoo::Tick(_float fTimeDelta)
 {
 	m_pStateMachineCom->Tick_State(fTimeDelta);
 
-
 	__super::Tick(fTimeDelta);
+
+	if (nullptr != m_pInteractionBtn)
+		m_pInteractionBtn->Tick(fTimeDelta);
 }
 
 void CDuckGoo::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
 
+	if (nullptr != m_pInteractionBtn)
+		m_pInteractionBtn->LateTick(fTimeDelta);
 }
 
 HRESULT CDuckGoo::Render()
 {
 	if (FAILED(__super::Render()))
 		return E_FAIL;
+
+	if (nullptr != m_pInteractionBtn)
+		m_pInteractionBtn->Render();
 
 	return S_OK;
 }
@@ -221,4 +236,5 @@ void CDuckGoo::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pInteractionBtn);
 }

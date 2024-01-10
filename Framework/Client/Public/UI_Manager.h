@@ -113,6 +113,8 @@ public:
 	void		Use_ClassSkillSlot(_uint iSlotNum);
 	void		Use_ActiveSkillSlot(_uint iSlotNum);
 	void		Use_BurstSkillSlot(_uint iSlotNum);
+	
+	void		Change_ElementalType(ELEMENTAL_TYPE eElementalType);
 
 public:
 	HRESULT OnOff_Veil(_bool bOnOff);
