@@ -135,6 +135,7 @@ private:
 	HRESULT Render_NonLight();
 
 	HRESULT Render_Shadow();
+	HRESULT Render_Shadow_Caculation();
 	HRESULT Render_NonBlend();
 	HRESULT Render_Lights();
 

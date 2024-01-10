@@ -312,7 +312,7 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 	// Shadow
 	vector vShadow = float4(1.f, 1.f, 1.f, 1.f);
 	if(g_bShadowDraw)
-        vShadow = Shadow_Caculation(In, vDepthDesc.x, vDepthDesc.y);
+        vShadow = g_ShadowTarget.Sample(PointSampler, In.vTexcoord);
 
     // SSAO
 	vector vSSAO = float4(1.f, 1.f, 1.f, 1.f);
@@ -345,6 +345,18 @@ PS_OUT PS_MAIN_ALPHABLENDMIX(PS_IN In)
 	Out.vColor = g_BlendMixTarget.Sample(PointSampler, In.vTexcoord);
 
 	return Out;
+}
+
+PS_OUT PS_MAIN_SHADOW(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    vector vDepthDesc = g_DepthTarget.Sample(PointSampler, In.vTexcoord);
+    vector vShadow = Shadow_Caculation(In, vDepthDesc.x, vDepthDesc.y);
+	
+    Out.vColor = vShadow;
+
+    return Out;
 }
 
 technique11 DefaultTechnique
@@ -428,5 +440,18 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_ALPHABLENDMIX();
+    }
+
+    // 6
+    pass Shadow
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_SHADOW();
     }
 }

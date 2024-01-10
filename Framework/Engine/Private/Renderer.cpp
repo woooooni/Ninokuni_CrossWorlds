@@ -303,13 +303,21 @@ HRESULT CRenderer::Draw_World()
 {
 	// Target : Object
 	{
-		if (FAILED(Render_Shadow()))        // MRT_Shadow      -> ShadowDepth
+		if (FAILED(Render_NonBlend())) // MRT_GameObjects -> Diffuse / Normal / Depth / Bloom
 			return E_FAIL;
 
-		if (FAILED(Render_NonBlend()))      // MRT_GameObjects -> Diffuse / Normal / Depth / Bloom
+
+		if (FAILED(Render_Shadow())) // MRT_Shadow -> ShadowDepth
 			return E_FAIL;
 
-		if (FAILED(Render_Lights()))        // MRT_Lights      -> Shade / Specular
+		if (FAILED(Render_Shadow_Caculation()))
+			return E_FAIL;
+
+		if (FAILED(Render_Blur(L"Target_ShadowDepth_Caculation", L"MRT_Shadow_Caculation_Blur", true, BLUR_HOR_MIDDLE, BLUR_VER_MIDDLE, BLUR_UP_ONEADD)))
+			return E_FAIL;
+
+
+		if (FAILED(Render_Lights())) // MRT_Lights -> Shade / Specular
 			return E_FAIL;
 	}
 
@@ -767,6 +775,35 @@ HRESULT CRenderer::Render_Shadow()
 	return S_OK;
 }
 
+// MRT_Shadow_Caculation
+HRESULT CRenderer::Render_Shadow_Caculation()
+{
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Shadow_Caculation"))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
+		return E_FAIL;
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
+		return E_FAIL;
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_Depth"), "g_DepthTarget")))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_ShadowDepth"), "g_ShadowTarget")))
+		return E_FAIL;
+
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Begin(6)))
+		return E_FAIL;
+	if (FAILED(m_pVIBuffer->Render()))
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
 // MRT_GameObjects
 HRESULT CRenderer::Render_NonBlend()
 {
@@ -980,7 +1017,7 @@ HRESULT CRenderer::Render_Deferred()
 
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_Depth"), "g_DepthTarget")))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_ShadowDepth"), "g_ShadowTarget")))
+	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_ShadowDepth_Caculation_Blur"), "g_ShadowTarget")))
 		return E_FAIL;
 
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_SSAO_Blur"), "g_SSAOTarget")))
@@ -1652,6 +1689,9 @@ HRESULT CRenderer::Render_Debug_Target()
 	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_GodRay"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
 		return E_FAIL;
 
+	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Shadow_Caculation_Blur"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
+		return E_FAIL;
+
 	return S_OK;
 }
 #endif // DEBUG
@@ -2197,6 +2237,19 @@ HRESULT CRenderer::Create_Target()
 		return E_FAIL;
 #pragma endregion
 
+#pragma region MRT_Shadow_Caculation : Target_ShadowDepth_Caculation
+	/* For.Target_ShadowDepth */
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_ShadowDepth_Caculation"),
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 0.f))))
+		return E_FAIL;
+#pragma endregion
+
+#pragma region MRT_Shadow_Caculation_Blur : Target_ShadowDepth_Caculation_Blur
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_ShadowDepth_Caculation_Blur"),
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+#pragma endregion
+
 	XMStoreFloat4x4(&m_WorldMatrix, XMMatrixIdentity());
 	m_WorldMatrix._11 = ViewportDesc.Width;
 	m_WorldMatrix._22 = ViewportDesc.Height;
@@ -2363,6 +2416,18 @@ HRESULT CRenderer::Set_TargetsMrt()
 			return E_FAIL;
 	}
 
+	// MRT_Shadow_Caculation
+	{
+		if (FAILED(m_pTarget_Manager->Add_MRT(L"MRT_Shadow_Caculation", L"Target_ShadowDepth_Caculation")))
+			return E_FAIL;
+	}
+
+	// MRT_Shadow_Caculation_Blur
+	{
+		if (FAILED(m_pTarget_Manager->Add_MRT(L"MRT_Shadow_Caculation_Blur", L"Target_ShadowDepth_Caculation_Blur")))
+			return E_FAIL;
+	}
+
 	// Blur
 	{
 		/* For.MRT_BlurDownSampling */
@@ -2410,12 +2475,14 @@ HRESULT CRenderer::Set_Debug()
 
 
 	// MRT_Lights
-	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Shade"), (fSizeX / 2.f) + (fSizeX * 0), (fSizeY / 2.f) + (fSizeY * 1), fSizeX, fSizeY)))
+	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Shade"),                  (fSizeX / 2.f) + (fSizeX * 0), (fSizeY / 2.f) + (fSizeY * 1), fSizeX, fSizeY)))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Specular"), (fSizeX / 2.f) + (fSizeX * 1), (fSizeY / 2.f) + (fSizeY * 1), fSizeX, fSizeY)))
+	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Specular"),               (fSizeX / 2.f) + (fSizeX * 1), (fSizeY / 2.f) + (fSizeY * 1), fSizeX, fSizeY)))
 		return E_FAIL;
 	// MRT_Shadow
-	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_ShadowDepth"), (fSizeX / 2.f) + (fSizeX * 3), (fSizeY / 2.f) + (fSizeY * 1), fSizeX, fSizeY)))
+	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_ShadowDepth"),                 (fSizeX / 2.f) + (fSizeX * 3), (fSizeY / 2.f) + (fSizeY * 1), fSizeX, fSizeY)))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_ShadowDepth_Caculation_Blur"), (fSizeX / 2.f) + (fSizeX * 4), (fSizeY / 2.f) + (fSizeY * 1), fSizeX, fSizeY)))
 		return E_FAIL;
 
 
