@@ -501,7 +501,7 @@ HRESULT CRenderer::Input_Key()
 
 		m_bNaturalDraw = m_bOption;
 		m_bShadowDraw = m_bOption;
-		m_bSsaoDraw = m_bOption;
+		//m_bSsaoDraw = m_bOption;
 		m_bOutlineDraw = m_bOption;
 		m_bBlurDraw = m_bOption;
 		m_bBlomDraw = m_bOption;
@@ -933,7 +933,7 @@ HRESULT CRenderer::Render_Deferred()
 		return E_FAIL;
 
 	// Bias
-	/*
+	
 	if (KEY_TAP(KEY::OPEN_SQUARE_BRACKET))
 	{
 		if (KEY_HOLD(KEY::SHIFT))
@@ -960,7 +960,7 @@ HRESULT CRenderer::Render_Deferred()
 	}
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("g_fBias", &m_fBias, sizeof(_float))))
 		return E_FAIL;
-	*/
+	
 
 	// Fog
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("g_vFogColor", &m_vFogColor, sizeof(_float4))))
@@ -2000,7 +2000,7 @@ HRESULT CRenderer::Create_Target()
 #pragma region MRT_Shadow : Target_ShadowDepth
 	/* For.Target_ShadowDepth */
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_ShadowDepth"),
-		ViewportDesc.Width * 3.f, ViewportDesc.Height * 3.f, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 0.f))))
+		ViewportDesc.Width * 5.f, ViewportDesc.Height * 5.f, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 0.f))))
 		return E_FAIL;
 #pragma endregion
 
