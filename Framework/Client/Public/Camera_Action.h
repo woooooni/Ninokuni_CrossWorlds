@@ -65,6 +65,7 @@ public:
 		const Vec4		vTargetOffset = { 0.7f, 1.f, 2.5f, 1.f };
 		const Vec4		vLookAtOffset = { 0.f, 1.f, 0.f, 1.f };
 
+
 		Vec4			vPrevLookAt; /* 블렌딩용 */
 		
 		CGameObject*	pNpc1	= nullptr;
@@ -75,7 +76,7 @@ public:
 
 		CGameObject*	pCurTalker = nullptr;
 
-		_uint			iTalker = 0; /* 대화에 참여하는 모든 인원 수 (플레이어, 쿠우 포함)*/
+		_uint			iTalker = 2; /* 대화에 참여하는 모든 인원 수 (플레이어, 쿠우 포함)*/
 
 		void Clear()
 		{
@@ -83,8 +84,10 @@ public:
 			pNpc2		= nullptr;
 			pPlayer		= nullptr;
 			pPet		= nullptr;
+			
 			pCurTalker	= nullptr;
-			iTalker = 0;
+
+			iTalker = 2;
 		}
 
 	}ACTION_TALK_DESC;
@@ -107,25 +110,30 @@ public:
 public:
 	HRESULT Start_Action_Lobby();
 	HRESULT Start_Action_Door();
-
-	/* 첫 대화 시작시, 대화에 참여하는 Npc를 모두 넘겨준다. (플레이어, 쿠우 제외) */
-	/* pNpc1는 대화를 처음 시작하게 되는 Npc이다. pNpc2는 두명 이상의 Npc가 필요한 경우 넘겨준다. */
-	HRESULT Start_Action_Talk(CGameObject* pNpc1 = nullptr, CGameObject* pNpc2 = nullptr); 
+	
+	/* 쿠우가 아닌 NPC가 대화에 참여*/
+	HRESULT Start_Action_Talk(CGameObject* pPlayer, CGameObject* pPet, CGameObject* pNpc1, CGameObject* pNpc2); 
+	/* 쿠우 혼자 말하는 경우 */
+	HRESULT Start_Action_Talk(CGameObject* pPlayer, CGameObject* pPet);
 
 	/* 대화 도중 말하는 사람이 바뀔 때 호출 */
 	HRESULT Set_Action_Talk_Target(CGameObject* pTalker);
 	
 	/* 마지막 다이얼로그(Npc)가 사라질 때 호출 */
+	/* 현재 토커가 플레이어 바로 리턴 (마지막 대화는 Npc에서 끝나야 한다.) */
 	HRESULT Finish_Action_Talk();	
 
-	
+public:
 	const _bool& Is_Finish_Action() const { return m_bAction; }
 	virtual Vec4 Get_LookAt() override;
+	const CAMERA_ACTION_TYPE& Get_Camera_ActionType() const { return m_eCurActionType; }
 
 private:
 	void Tick_Lobby(_float fTimeDelta);
 	void Tick_Door(_float fTimeDelta);
 	void Tick_Talk(_float fTimeDelta);
+
+	HRESULT Set_TalkCharacterPosition();
 
 private:
 	virtual HRESULT Ready_Components() override;
