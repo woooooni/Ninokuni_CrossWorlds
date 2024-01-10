@@ -38,14 +38,8 @@ void CAnimals::Tick(_float fTimeDelta)
 {
 	if (m_pRigidBodyCom != nullptr && m_pControllerCom != nullptr)
 	{
-		if (false == m_bLift)
-		{
-			m_pControllerCom->Tick_Controller(fTimeDelta);
-			m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
-		}
-			
-
-		
+		m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
+		m_pControllerCom->Tick_Controller(fTimeDelta);
 	}
 
 	__super::Tick(fTimeDelta);
@@ -58,7 +52,7 @@ void CAnimals::LateTick(_float fTimeDelta)
 	if (nullptr != m_pModelCom)
 		m_pModelCom->LateTick(fTimeDelta);
 
-	if(nullptr != m_pControllerCom && false == m_bLift)
+	if(nullptr != m_pControllerCom)
 		m_pControllerCom->LateTick_Controller(fTimeDelta);
 
 	__super::LateTick(fTimeDelta);
