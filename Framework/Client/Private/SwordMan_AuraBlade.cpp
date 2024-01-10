@@ -63,7 +63,6 @@ void CSwordMan_AuraBlade::LateTick(_float fTimeDelta)
 		for (auto& pCollider : m_Colliders[i])
 			m_pRendererCom->Add_Debug(pCollider);
 	}
-
 #endif
 }
 
@@ -74,8 +73,6 @@ HRESULT CSwordMan_AuraBlade::Ready_Components()
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), reinterpret_cast<CComponent**>(&m_pTransformCom))))
 		return E_FAIL;
-
-
 
 	CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
 	ZeroMemory(&SphereDesc, sizeof SphereDesc);

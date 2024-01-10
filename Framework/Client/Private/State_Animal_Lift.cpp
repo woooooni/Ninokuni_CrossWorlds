@@ -30,16 +30,6 @@ void CState_Animal_Lift::Enter_State(void* pArg)
 
 void CState_Animal_Lift::Tick_State(_float fTimeDelta)
 {
-	CPlayer* pObj = CGame_Manager::GetInstance()->Get_Player();
-	if (nullptr == pObj)
-		return;
-
-	CTransform* pTransform = pObj->Get_Character()->Get_Component<CTransform>(L"Com_Transform");
-	if (nullptr == pTransform)
-		return;
-
-	Matrix mPlayerWorld = pTransform->Get_WorldFloat4x4();
-	m_pTransformCom->Set_WorldMatrix(mPlayerWorld);
 
 	m_fNextTime += fTimeDelta;
 

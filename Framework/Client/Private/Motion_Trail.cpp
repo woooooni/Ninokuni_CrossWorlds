@@ -34,6 +34,9 @@ HRESULT CMotion_Trail::Initialize(void* pArg)
 
 	MOTION_TRAIL_DESC* Desc = static_cast<MOTION_TRAIL_DESC*>(pArg);
 
+	if (nullptr == Desc->pModel || nullptr == Desc->pRenderModel)
+		return E_FAIL;
+
 	m_WorldMatrix = Desc->WorldMatrix;
 	m_vRimColor = Desc->vRimColor;
 	m_vBloomPower = Desc->vBloomPower;

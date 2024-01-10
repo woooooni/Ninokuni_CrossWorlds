@@ -65,6 +65,13 @@ void CEngineer_Bullet::LateTick(_float fTimeDelta)
 	}
 
 	GI->Add_CollisionGroup(COLLISION_GROUP::CHARACTER, this);
+#ifdef _DEBUG
+	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
+	{
+		for (auto& pCollider : m_Colliders[i])
+			m_pRendererCom->Add_Debug(pCollider);
+	}
+#endif
 }
 
 HRESULT CEngineer_Bullet::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)

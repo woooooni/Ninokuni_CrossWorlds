@@ -33,8 +33,8 @@ public:
 	//HRESULT Add_Dynamic_Mesh_Actor(const PHYSX_INIT_DESC& Desc, __out vector<PxRigidDynamic*>& refOut);
 	HRESULT Add_Ground(class CGameObject* pGameObject, class CModel* pModel, Matrix WorldMatrix, const wstring& strCollisionTag);
 	HRESULT Add_Building(class CGameObject* pGameObject, class CModel* pModel, Matrix WorldMatrix, const wstring& strCollisionTag);
-	PxController* Add_CapsuleController(class CGameObject* pGameObject, Matrix WorldMatrix, _float fHeight, _float fRadius, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack);
-	PxController* Add_BoxController(CGameObject* pGameObject, Matrix WorldMatrix, _float3 fExtents, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack);
+	PxController* Add_CapsuleController(class CGameObject* pGameObject, Matrix WorldMatrix, _float fHeight, _float fRadius, _float3 vOffsetPos, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack);
+	PxController* Add_BoxController(CGameObject* pGameObject, Matrix WorldMatrix, _float3 fExtents, _float3 vOffsetPos, _float fMaxJumpHeight,  PxUserControllerHitReport* pCallBack);
 
 
 	HRESULT Clear_PhysX_Ground();
@@ -43,6 +43,7 @@ public:
 	HRESULT Reset_PhysX();
 
 public:
+	HRESULT Remove_Controller(PxController* pController);
 	HRESULT Remove_Actor(class CGameObject* pGameObject);
 	
 
@@ -133,7 +134,6 @@ private:
 	int							m_iTimeOutSeconds = 100;
 
 private:
-	map<_uint, class PxController*> m_Controllers;
 	map<_uint, vector<PHYSX_STATIC_OBJECT_DESC>> m_GroundObjects;
 	/*map<_uint, vector<PHYSX_STATIC_OBJECT_DESC>> m_StaticObjects;
 	map<_uint, vector<PHYSX_DYNAMIC_OBJECT_DESC>> m_DynamicObjects;
