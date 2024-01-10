@@ -34,6 +34,7 @@ public: // Get/Set
 	_float2			Get_ProjectionPosition(class CTransform* pTransform);
 
 	void			Set_MainDialogue(_tchar* pszName, _tchar* pszText);
+	void			Set_QuestPopup(const wstring& strQuestType, const wstring& strTitle, const wstring& strContents);
 
 	_int			Get_SelectedCharacter();
 
@@ -192,6 +193,7 @@ private:
 	class CUI_WindowQuest* m_pWindowQuest = { nullptr };
 
 	vector<class CUI_PopupQuest*> m_QuestPopUp;
+	vector<class CUI_Quest_Reward*> m_QuestReward;
 
 	class CUI_Text_TabMenu* m_pTabMenuTitle = { nullptr };
 

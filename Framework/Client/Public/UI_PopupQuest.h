@@ -17,6 +17,7 @@ protected:
 
 public:
 	virtual void Set_Active(_bool bActive);
+	void Set_Contents(const wstring& strQuestType, const wstring& strTitle, const wstring& strContents);
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -33,6 +34,14 @@ public:
 private:
 	UI_QUESTPOPUP m_eType = { QUESTPOPUP_END };
 	_float m_fAppearProg = { 0.f };
+	_bool m_bProgressing = { false };
+
+	wstring m_strType;
+	wstring m_strTitle;
+	wstring m_strContents;
+
+	_float4 m_vTypeColor = _float4(0.f, 0.f, 0.f, 1.f);
+	_float4 m_vTextColor = _float4(0.f, 0.f, 0.f, 1.f);
 
 private:
 	virtual HRESULT	Ready_Components() override;

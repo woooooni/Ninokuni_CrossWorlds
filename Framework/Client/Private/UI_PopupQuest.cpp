@@ -37,6 +37,31 @@ void CUI_PopupQuest::Set_Active(_bool bActive)
 	m_bActive = bActive;
 }
 
+void CUI_PopupQuest::Set_Contents(const wstring& strQuestType, const wstring& strTitle, const wstring& strContents)
+{
+	if (CUI_PopupQuest::POPUPWINDOW != m_eType)
+		return;
+
+	/*
+	_float4(0.957f, 0.784f, 0.067f, 1.f) 메인
+	_float4(0.165f, 0.984f, 0.957f, 1.f) 명성
+	_float4(0.373f, 0.863f, 0.647f, 1.f) 제비
+	_float4(0.898f, 0.624f, 0.333f, 1.f) 토벌
+	_float4(0.914f, 0.443f, 0.392f, 1.f) 수배
+
+	_float4(0.804f, 0.843f, 0.741f, 1.f) 내용
+	*/
+
+	m_bProgressing = true; // 퀘스트가 완료되면 false로 전환할 수 있는 매개가 필요함.
+
+	m_strType = strQuestType;
+	m_vTypeColor = _float4(0.957f, 0.784f, 0.067f, 1.f);
+
+	m_strTitle = strTitle;
+	m_strContents = strContents;
+	m_vTextColor = _float4(0.804f, 0.843f, 0.741f, 1.f);
+}
+
 HRESULT CUI_PopupQuest::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
@@ -57,6 +82,8 @@ HRESULT CUI_PopupQuest::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_bActive = false;
+
+	Set_Contents(TEXT("[메인]"), TEXT("쿠우를 찾아라"), TEXT("네가 쿠우냐? 나도 쿠우다"));
 
 	return S_OK;
 }
@@ -81,6 +108,43 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 	{
 		if (QUESTPOPUP_END == m_eType)
 			return;
+
+		if (POPUPWINDOW == m_eType)
+		{
+			//AddText
+			if (m_bProgressing)
+			{
+				CRenderer::TEXT_DESC TypeDesc;
+
+				TypeDesc.strText = m_strType;
+				TypeDesc.strFontTag = L"Default_Bold";
+				TypeDesc.vScale = { 0.4f, 0.4f };
+				TypeDesc.vColor = m_vTypeColor;
+				TypeDesc.vPosition = _float2(m_tInfo.fX - 100.f, m_tInfo.fY - 20.f);
+
+				m_pRendererCom->Add_Text(TypeDesc);
+
+				CRenderer::TEXT_DESC TitleDesc;
+
+				TitleDesc.strText = m_strTitle;
+				TitleDesc.strFontTag = L"Default_Bold";
+				TitleDesc.vScale = { 0.4f, 0.4f };
+				TitleDesc.vColor = m_vTextColor;
+				TitleDesc.vPosition = _float2(m_tInfo.fX - 50.f, m_tInfo.fY - 20.f);
+
+				m_pRendererCom->Add_Text(TitleDesc);
+
+				CRenderer::TEXT_DESC ContentsDesc;
+
+				ContentsDesc.strText = m_strContents;
+				ContentsDesc.strFontTag = L"Default_Bold";
+				ContentsDesc.vScale = { 0.4f, 0.4f };
+				ContentsDesc.vColor = m_vTextColor;
+				ContentsDesc.vPosition = _float2(m_tInfo.fX - 100.f, m_tInfo.fY);
+
+				m_pRendererCom->Add_Text(ContentsDesc);
+			}
+		}
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}

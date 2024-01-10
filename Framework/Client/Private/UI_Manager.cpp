@@ -40,6 +40,7 @@
 #include "UI_BtnShowMenu.h"
 #include "UI_Costume_Btn.h"
 #include "UI_Btn_Minimap.h"
+#include "UI_Quest_Reward.h"
 #include "UI_Boss_NameTag.h"
 #include "UI_Setting_Icon.h"
 #include "UI_SubMenu_Shop.h"
@@ -234,13 +235,16 @@ void CUI_Manager::Set_MainDialogue(_tchar* pszName, _tchar* pszText)
 	if (nullptr == m_pDialogWindow)
 		return;
 
-//	if (Is_DefaultSettingOn())
-//		OnOff_GamePlaySetting(false);
-
 	m_pDialogWindow->Set_Name(pszName);
 	m_pDialogWindow->Set_Text(pszText);
 
-	m_pDialogWindow->Set_Active(true);
+	if (false == m_pDialogWindow->Get_Active())
+		m_pDialogWindow->Set_Active(true);
+}
+
+void CUI_Manager::Set_QuestPopup(const wstring& strQuestType, const wstring& strTitle, const wstring& strContents)
+{
+
 }
 
 _int CUI_Manager::Get_SelectedCharacter()
@@ -2164,9 +2168,10 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 	m_QuestPopUp.reserve(3);
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
-	UIDesc.fCX = 300.f * 0.65f;
-	UIDesc.fCY = 120.f * 0.6f;
-	UIDesc.fX = 175.f;
+	//UIDesc.fCX = 300.f * 0.65f;
+	UIDesc.fCX = 400.f * 0.7f;
+	UIDesc.fCY = 120.f * 0.65f;
+	UIDesc.fX = 210.f;
 	UIDesc.fY = 171.f;
 
 	pWindow = nullptr;
@@ -2179,9 +2184,10 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
-	UIDesc.fCX = 300.f * 0.65f;
+	//UIDesc.fCX = 300.f * 0.65f;
+	UIDesc.fCX = 400.f * 0.65f;
 	UIDesc.fCY = 32.f * 0.65f;
-	UIDesc.fX = 175.f;
+	UIDesc.fX = 210.f;
 	UIDesc.fY = 135.f;
 	fOffset = 70.f;
 
@@ -2911,6 +2917,57 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(m_pBossNameTag);
 
+
+	m_QuestReward.reserve(3);
+
+	CUI::UI_INFO TitleDesc = {};
+	ZeroMemory(&TitleDesc, sizeof(CUI::UI_INFO));
+	TitleDesc.fCX = 1400.f * 0.65f;
+	TitleDesc.fCY = 296.f * 0.65f;
+	TitleDesc.fX = g_iWinSizeX * 0.5f;
+	TitleDesc.fY = 200.f;
+
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Quest_Reward_Title"), &TitleDesc, &pWindow)))
+		return E_FAIL;
+	m_QuestReward.push_back(dynamic_cast<CUI_Quest_Reward*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+
+	CUI::UI_INFO WindowDesc = {};
+	ZeroMemory(&WindowDesc, sizeof(CUI::UI_INFO));
+	WindowDesc.fCX = 1400.f * 0.65f;
+	WindowDesc.fCY = 82.f * 0.65f;
+	WindowDesc.fX = g_iWinSizeX * 0.5f;
+	WindowDesc.fY = TitleDesc.fY + (TitleDesc.fCY * 0.5f);
+
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Quest_Reward_Window"), &WindowDesc, &pWindow)))
+		return E_FAIL;
+	m_QuestReward.push_back(dynamic_cast<CUI_Quest_Reward*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+
+	CUI::UI_INFO BottomDesc = {};
+	ZeroMemory(&BottomDesc, sizeof(CUI::UI_INFO));
+	BottomDesc.fCX = 1400.f * 0.65f;
+	BottomDesc.fCY = 296.f * 0.65f;
+	BottomDesc.fX = g_iWinSizeX * 0.5f;
+	BottomDesc.fY = 200.f;
+
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Quest_Reward_Bottom"), &BottomDesc, &pWindow)))
+		return E_FAIL;
+	m_QuestReward.push_back(dynamic_cast<CUI_Quest_Reward*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+
 	return S_OK;
 }
 
@@ -3542,6 +3599,16 @@ HRESULT CUI_Manager::Ready_GameObjectToLayer(LEVELID eID)
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pBossNameTag)))
 		return E_FAIL;
 	Safe_AddRef(m_pBossNameTag);
+
+	for (auto& iter : m_QuestReward)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
 
 	return S_OK;
 }
@@ -6583,6 +6650,16 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		CUI_World_NPCSpeechBalloon::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Quest_Reward_Title"),
+		CUI_Quest_Reward::Create(m_pDevice, m_pContext, CUI_Quest_Reward::UI_QUESTREWARD::REWARD_TOP), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Quest_Reward_Window"),
+		CUI_Quest_Reward::Create(m_pDevice, m_pContext, CUI_Quest_Reward::UI_QUESTREWARD::REWARD_WINDOW), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Quest_Reward_Bottom"),
+		CUI_Quest_Reward::Create(m_pDevice, m_pContext, CUI_Quest_Reward::UI_QUESTREWARD::REWARD_BOTTOM), LAYER_UI)))
+		return E_FAIL;
+
 
 	return S_OK;
 }
@@ -7043,6 +7120,10 @@ void CUI_Manager::Free()
 	for (auto& pIcon : m_WeaponElemental)
 		Safe_Release(pIcon);
 	m_WeaponElemental.clear();
+
+	for (auto& pWindow : m_QuestReward)
+		Safe_Release(pWindow);
+	m_QuestReward.clear();
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

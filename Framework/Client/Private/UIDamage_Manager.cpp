@@ -234,7 +234,7 @@ _float2 CUIDamage_Manager::Designate_RandomPosition(_float2 vTargetPosition, _bo
 	_float2 fRandomOffset = _float2(0.f, 0.f);
 	if (bIsBoss)
 	{
-		fRandomOffset = _float2(GI->RandomFloat(-200.f, 200.f), GI->RandomFloat(-400.f, 0.f));
+		fRandomOffset = _float2(GI->RandomFloat(-150.f, 150.f), GI->RandomFloat(-400.f, 0.f));
 	}
 	else
 	{
