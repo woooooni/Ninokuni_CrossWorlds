@@ -376,6 +376,12 @@ void CEffect::LateTick(_float fTimeDelta)
 	// pOwnerObject
 	if (nullptr != m_pOwnerObject)
 	{
+		if (m_pOwnerObject->Is_Dead())
+		{
+			Set_Dead(true);
+			return;
+		}
+
 		CTransform* pOwnerTransform = m_pOwnerObject->Get_Component<CTransform>(L"Com_Transform");
 		if (nullptr != pOwnerTransform)
 		{

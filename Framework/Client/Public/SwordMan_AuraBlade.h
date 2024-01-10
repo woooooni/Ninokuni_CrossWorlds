@@ -21,7 +21,6 @@ public:
 public:
 	virtual HRESULT Ready_Components() override;
 
-
 private:
 	class CRenderer* m_pRendererCom = nullptr;
 	class CTransform* m_pTransformCom = nullptr;

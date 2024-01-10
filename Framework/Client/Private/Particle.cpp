@@ -108,17 +108,16 @@ void CParticle::Tick(_float fTimeDelta)
 	if (Is_Dead() == true)
 		return;
 
-	if (nullptr != m_pOwnerObject)
-	{
-		if (true == m_pOwnerObject->Is_Dead())
-		{
-			Set_Dead(true);
-			return;
-		}
-	}
+	//if (nullptr != m_pOwnerObject)
+	//{
+	//	if (true == m_pOwnerObject->Is_Dead())
+	//	{
+	//		Set_Dead(true);
+	//		return;
+	//	}
+	//}
 
 	m_pVIBufferCom->Tick(fTimeDelta);
-	 
 
 	if (m_pVIBufferCom->Get_Finished())
 	{
@@ -138,6 +137,12 @@ void CParticle::LateTick(_float fTimeDelta)
 	// pOwnerObject
 	if (nullptr != m_pOwnerObject)
 	{
+		if (m_pOwnerObject->Is_Dead())
+		{
+			Set_Dead(true);
+			return;
+		}
+
 		CTransform* pOwnerTransform = m_pOwnerObject->Get_Component<CTransform>(L"Com_Transform");
 		if (nullptr != pOwnerTransform)
 		{

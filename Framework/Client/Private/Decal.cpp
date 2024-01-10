@@ -63,6 +63,12 @@ void CDecal::LateTick(_float fTimeDelta)
 
 	if (m_pOwnerObject != nullptr)
 	{
+		if (m_pOwnerObject->Is_Dead())
+		{
+			Set_Dead(true);
+			return;
+		}
+
 		CTransform* pTransform = m_pOwnerObject->Get_Component<CTransform>(L"Com_Transform");
 		if (pTransform != nullptr)
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION, pTransform->Get_Position());
