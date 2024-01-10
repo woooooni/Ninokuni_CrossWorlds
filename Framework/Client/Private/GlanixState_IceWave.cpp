@@ -25,11 +25,6 @@ void CGlanixState_IceWave::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
-	if (m_pModelCom->Get_CurrAnimationFrame() == 50)
-	{
-		CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
-	}
-
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
 		_float fWaitTime = 2.5f;

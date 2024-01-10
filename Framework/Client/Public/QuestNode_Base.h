@@ -3,6 +3,7 @@
 #include "Client_Defines.h"
 #include "BTNode_Leaf.h"
 
+#include "GameNpc.h"
 #include "Quest_DestSpot.h"
 
 class CQuestNode_Base abstract : public CBTNode_Leaf
@@ -25,6 +26,9 @@ public:
 	virtual void	LateTick(const _float& fTimeDelta);
 
 protected:
+	virtual void    TalkEvent() {};
+
+protected:
 	vector<TALK_DELS> m_vecTalkDesc;
 	_bool m_bIsClear = false;
 
@@ -32,10 +36,10 @@ protected:
 
 	CQuest_DestSpot* m_pQuestDestSpot = nullptr;
 
-	TCHAR* szQuestName = L"";
-	TCHAR* szQuestContent = L"";
-	TCHAR* szOwner = L"";
-	TCHAR* szTalk = L"";
+	TCHAR* m_szQuestName = nullptr;
+	TCHAR* m_szQuestContent = nullptr;
+	TCHAR* m_szpOwner = nullptr;
+	TCHAR* m_szpTalk = nullptr;
 
 public:
 	virtual void Free() override; 

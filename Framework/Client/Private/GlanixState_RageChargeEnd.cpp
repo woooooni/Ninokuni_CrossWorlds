@@ -25,11 +25,6 @@ void CGlanixState_RageChargeEnd::Enter_State(void* pArg)
 
 void CGlanixState_RageChargeEnd::Tick_State(_float fTimeDelta)
 {
-	if (m_pModelCom->Get_CurrAnimationFrame() == 10)
-	{
-		CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
-	}
-
 	if (m_pModelCom->Get_CurrAnimationFrame() <= 20)
 		m_pTransformCom->Move(m_pTransformCom->Get_Look(), 10.f, fTimeDelta);
 

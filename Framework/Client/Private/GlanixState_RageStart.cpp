@@ -25,11 +25,6 @@ void CGlanixState_RageStart::Enter_State(void* pArg)
 
 void CGlanixState_RageStart::Tick_State(_float fTimeDelta)
 {
-	if (m_pModelCom->Get_CurrAnimationFrame() >= 75 && m_pModelCom->Get_CurrAnimationFrame() <= 95)
-	{
-		CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
-	}
-
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
 		m_pStateMachineCom->Change_State(CGlanix::GLANIX_RAGETURN);

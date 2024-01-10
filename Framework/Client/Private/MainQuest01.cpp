@@ -58,7 +58,5 @@ CMainQuest01* CMainQuest01::Create()
 void CMainQuest01::Free()
 {
 	__super::Free();
-
-	Safe_Release(m_pRootNode);
 }
 

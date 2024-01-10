@@ -135,7 +135,7 @@ private:
 	// OBJECT_INIT_DATA
 	const char* m_NpcStateSelectableName[CGameNpc::NPC_STATE::NPC_END] =
 	{
-		"IDLE", "TALK", "MOVE_ONEWAY", "MOVE_TWOWAY"
+		"IDLE", "TALK", "MOVE_ONEWAY", "MOVE_TWOWAY", "NPC_UNIQUENPC_WALK", "NPC_UNIQUENPC_RUN", "NPC_UNIQUENPC_TALK"
 	};
 
 #pragma region Debug

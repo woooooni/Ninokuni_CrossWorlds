@@ -28,5 +28,8 @@ void CQuestNode_Base::Free()
 {
 	__super::Free();
 	Safe_Release(m_pQuestDestSpot);
+
+	Safe_Delete_Array(m_szpOwner);
+	Safe_Delete_Array(m_szpTalk);
 }
 

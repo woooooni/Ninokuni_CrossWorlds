@@ -47,13 +47,6 @@ void CGlanixState_SpinBomb::Tick_State(_float fTimeDelta)
 			m_pGlanix->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_COUNTER, false);
 	}
 
-
-
-	if (m_pModelCom->Get_CurrAnimationFrame() == 110)
-	{
-		CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
-	}
-
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
 		_float fWaitTime = 2.5f;

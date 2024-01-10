@@ -1206,6 +1206,12 @@ void CTool_Map::MapNPCSpace()
 									static_cast<CGameNpc*>(m_pSelectObj)->Set_NpcState(CGameNpc::NPC_STATE::NPC_MOVE_ONEWAY);
 								else if (m_NpcStateSelectableName[i] == "MOVE_TWOWAY")
 									static_cast<CGameNpc*>(m_pSelectObj)->Set_NpcState(CGameNpc::NPC_STATE::NPC_MOVE_TWOWAY);
+								else if (m_NpcStateSelectableName[i] == "NPC_UNIQUENPC_WALK")
+									static_cast<CGameNpc*>(m_pSelectObj)->Set_NpcState(CGameNpc::NPC_STATE::NPC_UNIQUENPC_WALK);
+								else if (m_NpcStateSelectableName[i] == "NPC_UNIQUENPC_RUN")
+									static_cast<CGameNpc*>(m_pSelectObj)->Set_NpcState(CGameNpc::NPC_STATE::NPC_UNIQUENPC_RUN);
+								else if (m_NpcStateSelectableName[i] == "NPC_UNIQUENPC_TALK")
+									static_cast<CGameNpc*>(m_pSelectObj)->Set_NpcState(CGameNpc::NPC_STATE::NPC_UNIQUENPC_TALK);
 
 							}
 						}

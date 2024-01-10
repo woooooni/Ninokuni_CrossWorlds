@@ -12,8 +12,8 @@ HRESULT CMainQuestNode01_03::Initialize()
 {
 	__super::Initialize();
 
-	szQuestName = L"에스타바니아 둘러보기.";
-	szQuestContent = L"OO에게 가기.";
+	m_szQuestName = L"에스타바니아 둘러보기.";
+	m_szQuestContent = L"OO에게 가기.";
 
 	return S_OK;
 }

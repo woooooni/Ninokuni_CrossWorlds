@@ -4,9 +4,9 @@
 #include "GameInstance.h"
 
 #include "NpcState_Idle.h"
-#include "NpcState_Talk.h"
-#include "NpcState_OneWay.h"
-#include "NpcState_TwoWay.h"
+#include "UniqueNpcState_Walk.h"
+#include "UniqueNpcState_Run.h"
+#include "UniqueNpcState_Talk.h"
 
 #include "Game_Manager.h"
 #include "Player.h"
@@ -39,14 +39,13 @@ HRESULT CKuu::Initialize(void* pArg)
 	if (FAILED(__super::Ready_Components(pArg)))
 		return E_FAIL;
 
+	m_pModelCom->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_NeutralStand"));
+
 	if (FAILED(Ready_States()))
 		return E_FAIL;
 
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
-
-	m_pModelCom->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_NeutralStand"));
-
 
 	m_pPlayer = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
 
@@ -87,14 +86,8 @@ void CKuu::Tick(_float fTimeDelta)
 		m_pTransformCom->Set_State(CTransform::STATE_LOOK, m_pPlayerTransform->Get_Look());
 	}
 
-
-	// __super::Tick(fTimeDelta);
-	// m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
-
-//	if (nullptr != m_pTag)
-//		m_pTag->Tick(fTimeDelta);
-//	if (nullptr != m_pBalloon)
-//		m_pBalloon->Tick(fTimeDelta);
+	/* Äí¿ì´Â rigidbody X */
+	m_pStateCom->Tick_State(fTimeDelta);
 
 	m_pControllerCom->Tick_Controller(fTimeDelta);
 
@@ -159,6 +152,28 @@ HRESULT CKuu::Ready_States()
 	m_pStateCom->Set_Owner(this);
 
 	list<wstring> strAnimationName;
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Kuu.ao|Kuu_NeutralStand");
+	strAnimationName.push_back(L"SKM_Kuu.ao|Kuu_NeutralStand05");
+	m_pStateCom->Add_State(NPC_IDLE, CNpcState_Idle::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Kuu.ao|Kuu_NeutralWalk");
+	m_pStateCom->Add_State(NPC_UNIQUENPC_WALK, CUniqueNpcState_Walk::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Kuu.ao|Kuu_NeutralWalk");
+	m_pStateCom->Add_State(NPC_UNIQUENPC_RUN, CUniqueNpcState_Run::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Kuu.ao|Kuu_talk01");
+	m_pStateCom->Add_State(NPC_UNIQUENPC_TALK, CUniqueNpcState_Talk::Create(m_pStateCom, strAnimationName));
+
+	m_pStateCom->Change_State(NPC_IDLE);
+
+	return S_OK;
+
 
 	return S_OK;
 }
