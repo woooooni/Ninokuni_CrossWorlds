@@ -794,7 +794,6 @@ HRESULT CUI_Manager::Ready_LobbyUIs()
 		return E_FAIL;
 	Safe_AddRef(m_pNicknamebox);
 
-
 	return S_OK;
 }
 
@@ -4874,6 +4873,18 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 	return S_OK;
 }
 
+void CUI_Manager::Hide_GamePlaySetting(_bool bHide)
+{
+	if (bHide) // 아이콘을 숨긴다
+	{
+		// Active false를 해야하는 UI
+	}
+	else // 아이콘을 드러낸다
+	{
+		// Active true를 해야하는 UI
+	}
+}
+
 HRESULT CUI_Manager::OnOff_MainMenu(_bool bOnOff)
 {
 	if (nullptr == m_pMainBG)
@@ -5761,10 +5772,13 @@ HRESULT CUI_Manager::OnOff_EmoticonBalloon(_bool bOnOff)
 void CUI_Manager::OnOff_TextUI(_bool bOnOff)
 {
 	// Text가 있는 UI들에게 _bool값을 전달한다.
-	if (nullptr == m_pPlayerStatus)
-		return;
+	if (GI->Get_CurrentLevel() != LEVELID::LEVEL_LOBBY)
+	{
+		if (nullptr == m_pPlayerStatus)
+			return;
 
-	m_pPlayerStatus->Set_TextOnOff(bOnOff);
+		m_pPlayerStatus->Set_TextOnOff(bOnOff);
+	}
 
 	m_bAddText = bOnOff;
 }
@@ -5809,9 +5823,6 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_MainLogo_Text"),
 		CUI_Loading_MainLogo::Create(m_pDevice, m_pContext, CUI_Loading_MainLogo::MAINLOGO_TEXT), LAYER_UI)))
 		return E_FAIL;
-//	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_MainLogo_Number"),
-//		CUI_Loading_MainLogo::Create(m_pDevice, m_pContext, CUI_Loading_MainLogo::MAINLOGO_NUM), LAYER_UI)))
-//		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_Imajinn"),
 		CUI_Loading_Imajinn::Create(m_pDevice, m_pContext), LAYER_UI)))

@@ -18,6 +18,20 @@ CUI::CUI(const CUI& rhs)
 {
 }
 
+void CUI::Set_Active(_bool bActive)
+{
+	m_bActive = bActive;
+
+	if (false == m_bActive)
+	{
+		if (m_bEvent)
+		{
+			m_bEvent = false;
+			CUI_Manager::GetInstance()->Set_UIClicked(m_bEvent);
+		}
+	}
+}
+
 void CUI::Set_ParentsAlpha(_float fAlpha)
 {
 	// 자식에게 부모의 알파값을 입힌다.

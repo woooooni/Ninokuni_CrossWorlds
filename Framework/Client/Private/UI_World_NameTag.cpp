@@ -307,23 +307,26 @@ void CUI_World_NameTag::LateTick_Lobby(_float fTimeDelta)
 			break;
 		}
 
-		CRenderer::TEXT_DESC TextDesc = {};
-		TextDesc.strText = strName;
-		TextDesc.strFontTag = L"Default_Bold";
-		TextDesc.vScale = { 0.35f, 0.35f };
-		TextDesc.vColor = _float4(0.133f, 0.345f, 0.337f, 1.f);
-		TextDesc.vPosition = _float2(vFontPos.x - 1.f, vFontPos.y);
-		m_pRendererCom->Add_Text(TextDesc);
-		TextDesc.vPosition = _float2(vFontPos.x + 1.f, vFontPos.y);
-		m_pRendererCom->Add_Text(TextDesc);
-		TextDesc.vPosition = _float2(vFontPos.x, vFontPos.y - 1.f);
-		m_pRendererCom->Add_Text(TextDesc);
-		TextDesc.vPosition = _float2(vFontPos.x, vFontPos.y + 1.f);
-		m_pRendererCom->Add_Text(TextDesc);
+		if (CUI_Manager::GetInstance()->Is_FadeFinished())
+		{
+			CRenderer::TEXT_DESC TextDesc = {};
+			TextDesc.strText = strName;
+			TextDesc.strFontTag = L"Default_Bold";
+			TextDesc.vScale = { 0.35f, 0.35f };
+			TextDesc.vColor = _float4(0.133f, 0.345f, 0.337f, 1.f);
+			TextDesc.vPosition = _float2(vFontPos.x - 1.f, vFontPos.y);
+			m_pRendererCom->Add_Text(TextDesc);
+			TextDesc.vPosition = _float2(vFontPos.x + 1.f, vFontPos.y);
+			m_pRendererCom->Add_Text(TextDesc);
+			TextDesc.vPosition = _float2(vFontPos.x, vFontPos.y - 1.f);
+			m_pRendererCom->Add_Text(TextDesc);
+			TextDesc.vPosition = _float2(vFontPos.x, vFontPos.y + 1.f);
+			m_pRendererCom->Add_Text(TextDesc);
 
-		TextDesc.vColor = _float4(1.f, 0.969f, 0.6f, 1.f);
-		TextDesc.vPosition = vFontPos;
-		m_pRendererCom->Add_Text(TextDesc);
+			TextDesc.vColor = _float4(1.f, 0.969f, 0.6f, 1.f);
+			TextDesc.vPosition = vFontPos;
+			m_pRendererCom->Add_Text(TextDesc);
+		}
 	}
 }
 

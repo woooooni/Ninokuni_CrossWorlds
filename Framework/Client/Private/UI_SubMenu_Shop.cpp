@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UI_SubMenu_Shop.h"
 #include "GameInstance.h"
+#include "UI_Manager.h"
 
 CUI_SubMenu_Shop::CUI_SubMenu_Shop(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 	const wstring& strObjectTag, UI_SUBSHOP_TYPE eUIType)
@@ -37,7 +38,10 @@ void CUI_SubMenu_Shop::Set_Active(_bool bActive)
 	else
 	{
 		if (m_bEvent)
+		{
 			m_bEvent = false;
+			CUI_Manager::GetInstance()->Set_UIClicked(m_bEvent);
+		}
 	}
 
 	m_bActive = bActive;

@@ -124,6 +124,7 @@ public: // Lobby
 	HRESULT OnOff_NickNameWindow(_bool bOnOff);
 
 	HRESULT OnOff_GamePlaySetting(_bool bOnOff);
+	void Hide_GamePlaySetting(_bool bHide);
 	HRESULT OnOff_MainMenu(_bool bOnOff);
 	HRESULT OnOff_SubMenu(_bool bOnOff, _uint iMagicNum);
 	HRESULT Off_OtherSubBtn(_uint iMagicNum);
@@ -143,6 +144,7 @@ public: // Lobby
 
 	HRESULT OnOff_CostumeWindow(_bool bOnOff);
 	HRESULT OnOff_CostumeSlot(_uint iSection, _bool bOnOff);
+
 	HRESULT OnOff_SkillWindow(_bool bOnOff);
 	HRESULT OnOff_SkillWindowSlot(_uint iMenuType, _bool bOnOff);
 	HRESULT OnOff_Inventory(_bool bOnOff);

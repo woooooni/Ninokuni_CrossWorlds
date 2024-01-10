@@ -38,7 +38,10 @@ void CUI_SubMenu_Character::Set_Active(_bool bActive)
 	else
 	{
 		if (m_bEvent)
+		{
 			m_bEvent = false;
+			CUI_Manager::GetInstance()->Set_UIClicked(m_bEvent);
+		}
 	}
 
 	m_bActive = bActive;

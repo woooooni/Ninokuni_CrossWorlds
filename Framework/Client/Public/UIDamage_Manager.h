@@ -42,7 +42,7 @@ private:
 
 private:
 	_uint m_iStandard = { 8 };
-	_uint m_iMaxStandard = { 9 };
+	_uint m_iMaxStandard = { 10 };
 
 public:
 	virtual void Free() override;

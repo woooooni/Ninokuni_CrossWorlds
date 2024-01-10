@@ -25,7 +25,10 @@ void CUI_Costume_Btn::Set_Active(_bool bActive)
 	if (false == bActive)
 	{
 		if (m_bEvent)
+		{
 			m_bEvent = false;
+			CUI_Manager::GetInstance()->Set_UIClicked(m_bEvent);
+		}
 	}
 
 	m_bActive = bActive;
