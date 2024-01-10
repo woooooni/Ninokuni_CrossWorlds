@@ -237,6 +237,9 @@ public:
 	HRESULT Appear_Weapon();
 
 public:
+	void PickUp_Target();
+	void PickDown_Target();
+
 	void Look_For_Target();
 
 public:

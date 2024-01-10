@@ -58,6 +58,12 @@ void CState_Character::Neutral_Idle_Input(_float fTimeDelta)
 		return;
 	}
 
+	if (KEY_TAP(KEY::F))
+	{
+		m_pCharacter->PickUp_Target();
+		return;
+	}
+
 }
 
 void CState_Character::Battle_Idle_Input(_float fTimeDelta)
@@ -90,6 +96,12 @@ void CState_Character::Battle_Idle_Input(_float fTimeDelta)
 		m_pStateMachineCom->Change_State(CCharacter::BATTLE_DASH);
 		return;
 	}
+
+	if (KEY_TAP(KEY::F))
+	{
+		m_pCharacter->PickUp_Target();
+		return;
+	}
 }
 
 void CState_Character::Pick_Idle_Input(_float fTimDelta)
@@ -106,6 +118,12 @@ void CState_Character::Pick_Idle_Input(_float fTimDelta)
 			m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_PICK_SMALL_WALK);
 			return;
 		}
+	}
+
+	if (KEY_TAP(KEY::F))
+	{
+		m_pCharacter->PickDown_Target();
+		return;
 	}
 }
 
@@ -238,6 +256,13 @@ void CState_Character::Neutral_Walk_Input(_float fTimeDelta)
 		return;
 	}
 
+
+	if (KEY_TAP(KEY::F))
+	{
+		m_pCharacter->PickUp_Target();
+		return;
+	}
+
 	if (!bMove)
 	{
 		if (KEY_NONE(KEY::W) && KEY_NONE(KEY::A) && KEY_NONE(KEY::S) && KEY_NONE(KEY::D))
@@ -246,6 +271,7 @@ void CState_Character::Neutral_Walk_Input(_float fTimeDelta)
 			return;
 		}
 	}
+
 }
 
 void CState_Character::Battle_Walk_Input(_float fTimeDelta)
@@ -368,6 +394,13 @@ void CState_Character::Battle_Walk_Input(_float fTimeDelta)
 		return;
 	}
 
+
+	if (KEY_TAP(KEY::F))
+	{
+		m_pCharacter->PickUp_Target();
+		return;
+	}
+
 	if (!bMove)
 	{
 		if (KEY_NONE(KEY::W) && KEY_NONE(KEY::A) && KEY_NONE(KEY::S) && KEY_NONE(KEY::D))
@@ -376,6 +409,7 @@ void CState_Character::Battle_Walk_Input(_float fTimeDelta)
 			return;
 		}
 	}
+
 
 }
 

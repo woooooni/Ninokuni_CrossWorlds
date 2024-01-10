@@ -38,8 +38,14 @@ void CAnimals::Tick(_float fTimeDelta)
 {
 	if (m_pRigidBodyCom != nullptr && m_pControllerCom != nullptr)
 	{
-		m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
-		m_pControllerCom->Tick_Controller(fTimeDelta);
+		if (false == m_bLift)
+		{
+			m_pControllerCom->Tick_Controller(fTimeDelta);
+			m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
+		}
+			
+
+		
 	}
 
 	__super::Tick(fTimeDelta);
@@ -52,7 +58,7 @@ void CAnimals::LateTick(_float fTimeDelta)
 	if (nullptr != m_pModelCom)
 		m_pModelCom->LateTick(fTimeDelta);
 
-	if(nullptr != m_pControllerCom)
+	if(nullptr != m_pControllerCom && false == m_bLift)
 		m_pControllerCom->LateTick_Controller(fTimeDelta);
 
 	__super::LateTick(fTimeDelta);
@@ -169,61 +175,10 @@ void CAnimals::Collision_Enter(const COLLISION_INFO& tInfo)
 void CAnimals::Collision_Continue(const COLLISION_INFO& tInfo)
 {
 
-	if (OBJ_TYPE::OBJ_CHARACTER == tInfo.pOther->Get_ObjectType() && tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
-	{
-		if (KEY_TAP(KEY::E))
-		{
-			if (true == m_bLift)
-			{
-				m_bLift = false;
-				return;
-			}
-
-			Find_MinObject();
-		}
-	}
 }
 	
 void CAnimals::Collision_Exit(const COLLISION_INFO& tInfo)
 {
-}
-
-void CAnimals::Find_MinObject()
-{
-	CPlayer* pPlayerObj = CGame_Manager::GetInstance()->Get_Player();
-	if (nullptr == pPlayerObj)
-		return;
-
-	CTransform* pTransform = pPlayerObj->Get_Character()->Get_Component<CTransform>(TEXT("Com_Transform"));
-
-	const _uint iCurrenLevel = GI->Get_CurrentLevel();
-	list<CGameObject*>& GameObjList = GI->Find_GameObjects(iCurrenLevel, LAYER_TYPE::LAYER_DYNAMIC);
-
-	_float fMaxDistance = FLT_MAX;
-
-	CGameObject* pMinObj = nullptr;
-
-	for (auto& pObj : GameObjList)
-	{
-		DYNAMIC_TYPE eType = static_cast<CDynamicObject*>(pObj)->Get_DynamicType();
-
-		if (DYNAMIC_TYPE::DYNAMIC_ANIMAL == eType)
-		{
-			Vec4 vPlayerPos = pTransform->Get_Position();
-			Vec4 vThisPos = pObj->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_Position();
-
-			Vec4 vDir = vPlayerPos - vThisPos;
-			_float vDist = vDir.Length();
-
-			if (vDist < fMaxDistance)
-			{
-				fMaxDistance = vDist;
-				pMinObj = pObj;
-			}
-		}
-	}
-
-	static_cast<CAnimals*>(pMinObj)->m_bLift = true;
 }
 
 HRESULT CAnimals::Ready_Components()

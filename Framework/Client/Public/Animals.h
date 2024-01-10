@@ -32,11 +32,12 @@ public:
 	virtual void Collision_Continue(const COLLISION_INFO& tInfo) override;
 	virtual void Collision_Exit(const COLLISION_INFO& tInfo) override;
 
-public:
-	void Find_MinObject();
+//public:
+//	void Find_MinObject();
 
 public:
 	const Vec4& Get_Center() const { return m_vCenter; }
+	void Set_Lift(_bool bLift) { m_bLift = bLift; }
 	const _bool& Lifting() const { return m_bLift; }
 
 protected:

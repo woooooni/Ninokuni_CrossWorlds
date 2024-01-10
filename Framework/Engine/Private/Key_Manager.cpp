@@ -13,7 +13,7 @@ int g_arrVK[(int)KEY::TYPE_END] =
 	VK_TAB,
 	VK_OEM_4,
 	VK_OEM_6,
-	VK_F1, VK_F2, VK_F3, VK_F4, VK_F5, VK_F6, VK_F7, VK_F8, VK_F9,
+	VK_F1, VK_F2, VK_F3, VK_F4, VK_F5, VK_F6, VK_F7, VK_F8, VK_F9, VK_F10, VK_F11, VK_F12,
 	VK_INSERT, VK_DELETE, VK_HOME, VK_END, VK_PRIOR, VK_NEXT,
 	'1', '2', '3', '4', '5', '6', '7', '8', '9',
 	'Q','W','E','R','T','Y','U','I','O','P',
@@ -114,12 +114,6 @@ void CKey_Manager::Tick(_float fTimeDelta)
 
 	GetCursorPos(&m_tMousePos);
 	ScreenToClient(m_hWnd, &m_tMousePos);
-
-	if (KEY_TAP(KEY::F1))
-	{
-		m_bLockMouse = !m_bLockMouse;
-	}
-
 }
 
 

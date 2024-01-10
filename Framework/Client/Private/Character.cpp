@@ -13,6 +13,7 @@
 #include "Camera.h"
 #include "Utils.h"
 #include "Weapon.h"
+#include "Animals.h"
 #include <future>
 
 #include "Game_Manager.h"
@@ -375,7 +376,7 @@ void CCharacter::Collision_Continue(const COLLISION_INFO& tInfo)
 	__super::Collision_Continue(tInfo);
 	if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BOUNDARY)
 	{
-		if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_DYNAMIC || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER)
+		if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_ANIMAL || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER)
 		{
 			Decide_Target(tInfo);
 		}
@@ -544,6 +545,78 @@ HRESULT CCharacter::Appear_Weapon()
 		m_pWeapon->Appear_Weapon();
 
 	return S_OK;
+}
+
+void CCharacter::PickUp_Target()
+{
+	if (nullptr == m_pTarget)
+		return;
+
+	if (m_pTarget->Is_Dead() || m_pTarget->Is_ReserveDead())
+		return;
+
+	CTransform* pTargetTransform = m_pTarget->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr == pTargetTransform)
+		return;
+	
+	Vec3 vDir = pTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
+
+	if (OBJ_TYPE::OBJ_ANIMAL == m_pTarget->Get_ObjectType())
+	{
+		CAnimals* pAnimal = dynamic_cast<CAnimals*>(m_pTarget);
+
+		if (nullptr == pAnimal)
+		{
+			MSG_BOX("Animal Cast Failed.");
+			return;
+		}
+
+		pAnimal->Set_Lift(true);
+		m_pStateCom->Change_State(CCharacter::NEUTRAL_PICK_SMALL_ENTER);
+		return;
+	}
+}
+
+void CCharacter::PickDown_Target()
+{
+	if (nullptr == m_pTarget)
+		return;
+
+
+	CTransform* pTargetTransform = m_pTarget->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr == pTargetTransform)
+		return;
+
+	if (OBJ_TYPE::OBJ_ANIMAL == m_pTarget->Get_ObjectType())
+	{
+		CAnimals* pAnimal = dynamic_cast<CAnimals*>(m_pTarget);
+
+		if (nullptr == pAnimal)
+		{
+			MSG_BOX("Animal Cast Failed.");
+			return;
+		}
+
+		
+
+		if (CCharacter::STATE::NEUTRAL_PICK_SMALL_IDLE == m_pStateCom->Get_CurrState())
+		{
+			pTargetTransform->Set_State(CTransform::STATE_POSITION, m_pTransformCom->Get_Position());
+			pAnimal->Set_Lift(false);
+			m_pStateCom->Change_State(CCharacter::NEUTRAL_PICK_SMALL_FINISH);
+			return;
+		}
+		else if (CCharacter::STATE::NEUTRAL_PICK_LARGE_IDLE == m_pStateCom->Get_CurrState())
+		{
+			pTargetTransform->Set_State(CTransform::STATE_POSITION, m_pTransformCom->Get_Position());
+			pAnimal->Set_Lift(false);
+			m_pStateCom->Change_State(CCharacter::NEUTRAL_PICK_LARGE_FINISH);
+			return;
+		}
+		
+		return;
+	}
+
 }
 
 void CCharacter::Look_For_Target()
