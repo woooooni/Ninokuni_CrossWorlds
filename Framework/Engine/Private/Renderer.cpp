@@ -895,6 +895,9 @@ HRESULT CRenderer::Render_OutLine()
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_OUTLINE], TEXT("Target_Normal"), "g_NormalTarget")))
 		return E_FAIL;
 
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_OUTLINE]->Bind_RawValue("g_vLineColor", &m_vLineColor, sizeof(_float4))))
+		return E_FAIL;
+
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_OUTLINE]->Begin(0)))
 		return E_FAIL;
 	if (FAILED(m_pVIBuffer->Render()))
@@ -1367,6 +1370,9 @@ HRESULT CRenderer::Render_OutLine_UI()
 		return E_FAIL;
 
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_OUTLINE], TEXT("Target_Normal_UI"), "g_NormalTarget")))
+		return E_FAIL;
+
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_OUTLINE]->Bind_RawValue("g_vLineColor", &m_vLineColor, sizeof(_float4))))
 		return E_FAIL;
 
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_OUTLINE]->Begin(0)))

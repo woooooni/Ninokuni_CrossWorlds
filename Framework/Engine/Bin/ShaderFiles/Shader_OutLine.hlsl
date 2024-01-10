@@ -1,7 +1,7 @@
 #include "Engine_Shader_Defines.hpp"
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
-float4 g_LineColor = float4(0.631f, 0.353f, 0.094f, 1.f);
+float4 g_vLineColor;
 
 Texture2D g_NormalTarget;
 
@@ -70,8 +70,11 @@ PS_OUT PS_OUTLINE(PS_IN In)
     }
 	
     float gray = 1 - (Color.r * 0.3 + Color.g * 0.59 + Color.b * 0.11);
-    Out.vColor = float4(gray, gray, gray, 1.f) / g_fDivier;
+    //Out.vColor = float4(gray, gray, gray, 1.f) / g_fDivier;
 	
+    float4 lineColor = g_vLineColor;
+    Out.vColor = float4(lerp(lineColor.rgb, float3(gray, gray, gray), saturate(gray)), 1.0) / g_fDivier;
+
     return Out;
 }
 	/*
