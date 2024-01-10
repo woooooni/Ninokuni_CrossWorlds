@@ -164,7 +164,10 @@ HRESULT CGameNpc::Render_Instance_AnimModel_Shadow(CShader* pInstancingShader, C
 	if (FAILED(pInstancingShader->Bind_RawValue("g_TweenFrames_Array", TweenDesc.data(), sizeof(TWEEN_DESC) * TweenDesc.size())))
 		return E_FAIL;
 
-	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+	if (FAILED(m_pModelCom->SetUp_VTF(pInstancingShader)))
+		return E_FAIL;
+
+	_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 	_uint iPassIndex = 0;
 
 	for (_uint i = 0; i < iNumMeshes; ++i)

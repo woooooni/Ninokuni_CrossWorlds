@@ -23,28 +23,28 @@ void CTool_Terrain::Tick(_float fTimeDelta)
 	ImGui::Text("m_vEye");
 	if (ImGui::DragFloat4("##m_vEye", &m_vEye.x))
 	{
-		//GI->Set_ShadowView(LEVEL_TOOL,
-		//	XMVectorSet(m_vEye.x, m_vEye.y, m_vEye.z, m_vEye.w),
-		//	XMVectorSet(m_vAt.x, m_vAt.y, m_vAt.z, m_vAt.w),
-		//	XMVectorSet(m_vUp.x, m_vUp.y, m_vUp.z, m_vUp.w));
+		GI->Set_ShadowLight(LEVEL_TOOL,
+			XMVectorSet(m_vEye.x, m_vEye.y, m_vEye.z, m_vEye.w),
+			XMVectorSet(m_vAt.x, m_vAt.y, m_vAt.z, m_vAt.w),
+			XMVectorSet(m_vUp.x, m_vUp.y, m_vUp.z, m_vUp.w));
 	}
 
 	ImGui::Text("m_vAt");
 	if (ImGui::DragFloat4("##m_vAt", &m_vAt.x))
 	{
-		//GI->Set_ShadowView(LEVEL_TOOL,
-		//	XMVectorSet(m_vEye.x, m_vEye.y, m_vEye.z, m_vEye.w),
-		//	XMVectorSet(m_vAt.x, m_vAt.y, m_vAt.z, m_vAt.w),
-		//	XMVectorSet(m_vUp.x, m_vUp.y, m_vUp.z, m_vUp.w));
+		GI->Set_ShadowLight(LEVEL_TOOL,
+			XMVectorSet(m_vEye.x, m_vEye.y, m_vEye.z, m_vEye.w),
+			XMVectorSet(m_vAt.x, m_vAt.y, m_vAt.z, m_vAt.w),
+			XMVectorSet(m_vUp.x, m_vUp.y, m_vUp.z, m_vUp.w));
 	}
 
 	ImGui::Text("m_vUp");
 	if (ImGui::DragFloat4("##m_vUp", &m_vUp.x))
 	{
-		//GI->Set_ShadowView(LEVEL_TOOL,
-		//	XMVectorSet(m_vEye.x, m_vEye.y, m_vEye.z, m_vEye.w),
-		//	XMVectorSet(m_vAt.x, m_vAt.y, m_vAt.z, m_vAt.w),
-		//	XMVectorSet(m_vUp.x, m_vUp.y, m_vUp.z, m_vUp.w));
+		GI->Set_ShadowLight(LEVEL_TOOL,
+			XMVectorSet(m_vEye.x, m_vEye.y, m_vEye.z, m_vEye.w),
+			XMVectorSet(m_vAt.x, m_vAt.y, m_vAt.z, m_vAt.w),
+			XMVectorSet(m_vUp.x, m_vUp.y, m_vUp.z, m_vUp.w));
 	}
 
 	ImGui::End();
