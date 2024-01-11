@@ -86,6 +86,7 @@ void CGosling::On_Damaged(const COLLISION_INFO& tInfo)
 
 HRESULT CGosling::Ready_States()
 {
+	m_strKorName = TEXT("°í½½¸µ");
 	m_tStat.fSpeed = 0.5f;
 
 	m_pStateCom->Set_Owner(this);

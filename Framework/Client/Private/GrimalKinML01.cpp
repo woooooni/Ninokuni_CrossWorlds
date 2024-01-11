@@ -75,6 +75,8 @@ void CGrimalKinML01::On_Damaged(const COLLISION_INFO& tInfo)
 
 HRESULT CGrimalKinML01::Ready_States()
 {
+	m_strKorName = TEXT("Àè½¼");
+
 	m_tStat.fSpeed = 1.f;
 
 	m_pStateCom->Set_Owner(this);

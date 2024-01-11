@@ -1,22 +1,23 @@
 #include "stdafx.h"
-#include "MainQuestNode01_02.h"
+#include "MainQuestNode_IntroTour02.h"
 
 #include "GameInstance.h"
 #include "Utils.h"
 
+#include "Quest_Manager.h"
 #include "UI_Manager.h"
 #include "Sound_Manager.h"
 #include "Camera_Action.h"
 
-CMainQuestNode01_02::CMainQuestNode01_02()
+CMainQuestNode_IntroTour02::CMainQuestNode_IntroTour02()
 {
 }
 
-HRESULT CMainQuestNode01_02::Initialize()
+HRESULT CMainQuestNode_IntroTour02::Initialize()
 {
 	__super::Initialize();
 
-	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest01/MainQuest01_02.json");
+	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/01.MainQuest_IntroTour/MainQuest_IntroTour02.json");
 
 	for (const auto& talkDesc : Load) {
 		TALK_DELS sTalkDesc;
@@ -30,7 +31,7 @@ HRESULT CMainQuestNode01_02::Initialize()
 	return S_OK;
 }
 
-void CMainQuestNode01_02::Start()
+void CMainQuestNode_IntroTour02::Start()
 {
 	/* 현재 퀘스트에 연관있는 객체들 */
 	m_pKuu = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"Kuu");
@@ -61,7 +62,7 @@ void CMainQuestNode01_02::Start()
 	TalkEvent();
 }
 
-CBTNode::NODE_STATE CMainQuestNode01_02::Tick(const _float& fTimeDelta)
+CBTNode::NODE_STATE CMainQuestNode_IntroTour02::Tick(const _float& fTimeDelta)
 {
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
@@ -82,6 +83,8 @@ CBTNode::NODE_STATE CMainQuestNode01_02::Tick(const _float& fTimeDelta)
 			//if (nullptr != pActionCam)
 			//	pActionCam->Finish_Action_Talk();
 
+			CQuest_Manager::GetInstance()->Set_SubQuestRunning(CSubQuest::SUBQUEST_CHLOE_FINDCAT, true);
+			CQuest_Manager::GetInstance()->Set_SubQuestRunning(CSubQuest::SUBQUEST_VERDE_WINDMILL, true);
 			return NODE_STATE::NODE_FAIL;
 		}
 
@@ -96,11 +99,11 @@ CBTNode::NODE_STATE CMainQuestNode01_02::Tick(const _float& fTimeDelta)
 	return NODE_STATE::NODE_RUNNING;
 }
 
-void CMainQuestNode01_02::LateTick(const _float& fTimeDelta)
+void CMainQuestNode_IntroTour02::LateTick(const _float& fTimeDelta)
 {
 }
 
-void CMainQuestNode01_02::TalkEvent()
+void CMainQuestNode_IntroTour02::TalkEvent()
 {
 	wstring strAnimName = TEXT("");
 
@@ -109,47 +112,42 @@ void CMainQuestNode01_02::TalkEvent()
 		// 대화 상태로 만들어서 매개로 애니메이션 이름 던지자. 답이 없다.
 		// Talk, Idle, Run, Walk. 
 	case 0:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("KuuSay_Hello.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("KuuSay_Intro.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk02"));
 		break;
 	case 1:
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("KuuSay_Hu.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK, TEXT("SKM_Kuu.ao|Kuu_EmotionDepressed"));
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_EmotionDepressed"));
 		break;
-	case 2: 
-		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK, TEXT("SKM_Kuu.ao|Kuu_EmotionPositive"));
-		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_EmotionPositive"));
-		break;
-	case 3:
-		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK, TEXT("SKM_Kuu.ao|MTG_Kuu_EmotionWorry"));
-		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|MTG_Kuu_EmotionWorry"));
-		break;
-	case 4:
+	case 2:
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("KuuSay_HurryGo!.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK, TEXT("SKM_Kuu.ao|Kuu_talk01"));
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk01"));
 		break;
-	case 5:
+	case 3:
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("KuuSay_Happy!.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK, TEXT("SKM_Kuu.ao|Kuu_Idle02"));
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_Idle02"));
 		break;
 	}
 }
 
-CMainQuestNode01_02* CMainQuestNode01_02::Create()
+CMainQuestNode_IntroTour02* CMainQuestNode_IntroTour02::Create()
 {
-	CMainQuestNode01_02* pInstance = new CMainQuestNode01_02();
+	CMainQuestNode_IntroTour02* pInstance = new CMainQuestNode_IntroTour02();
 
 	if (FAILED(pInstance->Initialize()))
 	{
-		MSG_BOX("Fail Create : CMainQuestNode01_02");
+		MSG_BOX("Fail Create : CMainQuestNode_IntroTour02");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CMainQuestNode01_02::Free()
+void CMainQuestNode_IntroTour02::Free()
 {
 	__super::Free();
 }

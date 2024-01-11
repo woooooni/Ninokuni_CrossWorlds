@@ -4,11 +4,11 @@
 
 BEGIN(Client)
 
-class CMainQuest01 final : public CQuestTree
+class CSubQuest_Windmill final : public CQuestTree
 {
 private:
-	CMainQuest01();
-	virtual ~CMainQuest01() = default;
+	CSubQuest_Windmill();
+	virtual ~CSubQuest_Windmill() = default;
 
 public:
 	virtual HRESULT Initialize();
@@ -16,7 +16,7 @@ public:
 	virtual void    LateTick(const _float& fTimeDelta);
 
 public:
-	static CMainQuest01* Create();
+	static CSubQuest_Windmill* Create();
 	virtual void Free() override;
 };
 

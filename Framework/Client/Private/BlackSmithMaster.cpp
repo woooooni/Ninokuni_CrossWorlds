@@ -75,6 +75,7 @@ void CBlackSmithMaster::On_Damaged(const COLLISION_INFO& tInfo)
 
 HRESULT CBlackSmithMaster::Ready_States()
 {
+	m_strKorName = TEXT("Åù¹Ù");
 	m_tStat.fSpeed = 1.f;
 
 	m_pStateCom->Set_Owner(this);

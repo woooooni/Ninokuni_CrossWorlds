@@ -26,6 +26,7 @@ public:
 	virtual void	LateTick(const _float& fTimeDelta);
 
 protected:
+	virtual Vec4    Set_DestSpot(CGameObject* pGameObject);
 	virtual void    TalkEvent() {};
 
 protected:
@@ -36,10 +37,13 @@ protected:
 
 	CQuest_DestSpot* m_pQuestDestSpot = nullptr;
 
-	TCHAR* m_szQuestName = nullptr;
-	TCHAR* m_szQuestContent = nullptr;
+	wstring m_strQuestTag = TEXT("");
+	wstring m_strQuestName = TEXT("");
+	wstring m_strQuestContent = TEXT("");
 	TCHAR* m_szpOwner = nullptr;
 	TCHAR* m_szpTalk = nullptr;
+
+	vector<CGameObject*> m_vecTalker;
 
 public:
 	virtual void Free() override; 

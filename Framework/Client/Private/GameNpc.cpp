@@ -55,7 +55,7 @@ void CGameNpc::Tick(_float fTimeDelta)
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 	m_pControllerCom->Tick_Controller(fTimeDelta);
 
-	GI->Add_CollisionGroup(COLLISION_GROUP::NPC, this);
+	// GI->Add_CollisionGroup(COLLISION_GROUP::NPC, this);
 }
 
 void CGameNpc::LateTick(_float fTimeDelta)
@@ -74,20 +74,20 @@ void CGameNpc::LateTick(_float fTimeDelta)
 	if (nullptr != m_pWeapon)
 		m_pWeapon->LateTick(fTimeDelta);
 
-	if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_Position(), 120.f))
+	if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_Position(), 5.f))
 	{
 		m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_SHADOW, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);
 		m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_NONBLEND, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);
 	}
 
 #ifdef _DEBUG
-	m_pRendererCom->Set_PlayerPosition(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
-	{
-		for (auto& pCollider : m_Colliders[i])
-			m_pRendererCom->Add_Debug(pCollider);
-	}
-	m_pRendererCom->Add_Debug(m_pControllerCom);
+	//m_pRendererCom->Set_PlayerPosition(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+	//for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
+	//{
+	//	for (auto& pCollider : m_Colliders[i])
+	//		m_pRendererCom->Add_Debug(pCollider);
+	//}
+	//m_pRendererCom->Add_Debug(m_pControllerCom);
 #endif // DEBUG
 }
 
@@ -313,21 +313,21 @@ HRESULT CGameNpc::Ready_Components(void* pArg)
 
 HRESULT CGameNpc::Ready_Colliders()
 {
-	CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
-	ZeroMemory(&SphereDesc, sizeof SphereDesc);
-
-	BoundingSphere tSphere;
-	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 4.f;
-	SphereDesc.tSphere = tSphere;
-
-	SphereDesc.pNode = nullptr;
-	SphereDesc.pOwnerTransform = m_pTransformCom;
-	SphereDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
-	SphereDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
-
-	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BOUNDARY, &SphereDesc)))
-		return E_FAIL;
+	//CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
+	//ZeroMemory(&SphereDesc, sizeof SphereDesc);
+	//
+	//BoundingSphere tSphere;
+	//ZeroMemory(&tSphere, sizeof(BoundingSphere));
+	//tSphere.Radius = 4.f;
+	//SphereDesc.tSphere = tSphere;
+	//
+	//SphereDesc.pNode = nullptr;
+	//SphereDesc.pOwnerTransform = m_pTransformCom;
+	//SphereDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
+	//SphereDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
+	//
+	//if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BOUNDARY, &SphereDesc)))
+	//	return E_FAIL;
 
 	return S_OK;
 }

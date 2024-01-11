@@ -2,6 +2,8 @@
 #include "QuestNode_Base.h"
 #include "..\Public\QuestNode_Base.h"
 
+#include "GameInstance.h"
+
 CQuestNode_Base::CQuestNode_Base()
 {
 }
@@ -22,6 +24,14 @@ CBTNode::NODE_STATE CQuestNode_Base::Tick(const _float& fTimeDelta)
 
 void CQuestNode_Base::LateTick(const _float& fTimeDelta)
 {
+}
+
+Vec4 CQuestNode_Base::Set_DestSpot(CGameObject* pGameObject)
+{
+	CTransform* pTransform = pGameObject->Get_Component<CTransform>(TEXT("Com_Transform"));
+	Vec4 vSpotPos = pTransform->Get_Position() + pTransform->Get_Look() * 2.5f;
+
+	return vSpotPos;
 }
 
 void CQuestNode_Base::Free()

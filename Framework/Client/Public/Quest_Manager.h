@@ -4,6 +4,7 @@
 #include "Base.h"
 
 #include "MainQuest.h"
+#include "SubQuest.h"
 
 BEGIN(Client)
 
@@ -20,15 +21,26 @@ public:
 	void    LateTick(_float fTimeDelta);
 
 public:
+	void	Set_SubQuestRunning(CSubQuest::SUBQUEST_NAME eSQName, _bool bIsRunning);
+
 	void	Set_Running(_bool bIsRunning) { m_bIsRunning = bIsRunning; }
 
 	void			Set_Target(CGameObject* pTarget) { m_pTarget = pTarget; }
 	CGameObject*	Get_Target() { return m_pTarget; }
+
+	// 퀘스트 완료 스택.
+	_int	Get_QuestClearStack() { return m_iQuestClearStack; }
+	void    Set_QuestClearStack(_int iStack) { m_iQuestClearStack += iStack; }
+	void    Clear_QuestClearStack() { m_iQuestClearStack = 0; }
 private:
 	CMainQuest*  m_pMainQuest = nullptr;
+	CSubQuest*   m_pSubQuest = nullptr;
+
 	CGameObject* m_pTarget = nullptr;
 	
 	_bool		m_bIsRunning = false;
+
+	_int		m_iQuestClearStack = 0;
 
 public:
 	virtual void Free() override;

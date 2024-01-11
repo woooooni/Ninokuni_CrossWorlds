@@ -86,6 +86,7 @@ void CRuslan::On_Damaged(const COLLISION_INFO& tInfo)
 
 HRESULT CRuslan::Ready_States()
 {
+	m_strKorName = TEXT("·ç½½¶õ");
 	m_tStat.fSpeed = 0.5f;
 
 	m_pStateCom->Set_Owner(this);

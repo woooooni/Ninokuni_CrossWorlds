@@ -84,6 +84,8 @@ public:
 	NPC_STAT* Get_Stat() { return &m_tStat; }
 	void Set_Stat(const NPC_STAT& StatDesc) { m_tStat = StatDesc; }
 
+	const wstring& Get_NpcKorName() { return m_strKorName; }
+
 	vector<Vec4>* Get_RoamingArea() { return &m_vecRoaming; }
 	Vec4			 Get_RoamingIndex(_int iIndex) { return m_vecRoaming[iIndex]; }
 	void			 Set_RoamingArea(vector<Vec4> vecRoaming) { m_vecRoaming = vecRoaming; }
@@ -144,6 +146,8 @@ protected:
 	_bool m_bIsUnique = false;
 	_int  m_iCurRoamingIndex = 0;
 
+	// 한글 이름.
+	wstring m_strKorName = TEXT("마을 주민");
 
 public:
 	virtual void Free() override;

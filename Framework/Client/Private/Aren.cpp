@@ -86,6 +86,7 @@ void CAren::On_Damaged(const COLLISION_INFO& tInfo)
 
 HRESULT CAren::Ready_States()
 {
+	m_strKorName = TEXT("¾Æ·»");
 	m_tStat.fSpeed = 0.5f;
 
 	m_pStateCom->Set_Owner(this);
