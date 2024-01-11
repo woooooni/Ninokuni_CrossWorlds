@@ -215,3 +215,8 @@ HRESULT CAnimals::Ready_Components()
 
 	return S_OK;
 }
+
+void CAnimals::Free()
+{
+	__super::Free();
+}
