@@ -49,6 +49,9 @@ protected:
 
 public:
 	virtual HRESULT Ready_Components() override;
+
+public:
+	virtual void Free() override;
 };
 
 END
