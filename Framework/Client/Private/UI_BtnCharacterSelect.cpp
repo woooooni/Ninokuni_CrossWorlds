@@ -108,6 +108,7 @@ HRESULT CUI_BtnCharacterSelect::Initialize(void* pArg)
 //		{
 //
 //		}
+
 	}
 
 	return S_OK;

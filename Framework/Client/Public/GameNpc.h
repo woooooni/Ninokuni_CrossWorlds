@@ -90,7 +90,13 @@ public:
 	Vec4			 Get_RoamingIndex(_int iIndex) { return m_vecRoaming[iIndex]; }
 	void			 Set_RoamingArea(vector<Vec4> vecRoaming) { m_vecRoaming = vecRoaming; }
 	_int		  Get_CurRoamingIndex() { return m_iCurRoamingIndex; }
-	void		  Set_CurRoamingIndex(_int iIndex) { m_iCurRoamingIndex = iIndex; }
+	void		  Set_CurRoamingIndex(_int iIndex) 
+	{ 
+		if (iIndex < 0)
+			m_iCurRoamingIndex = 0;
+		else
+			m_iCurRoamingIndex = iIndex; 
+	}
 
 
 	const NPC_STATE& Get_State() const { return m_eState; }

@@ -1241,9 +1241,13 @@ void CTool_Map::MapNPCSpace()
 
 							if (ImGui::Button("Undo", ImVec2(80.0f, 20.0f)))
 							{
-								romingPoints->pop_back();
-								if (static_cast<CGameNpc*>(m_pSelectObj)->Get_CurRoamingIndex() >= romingPoints->size())
-									static_cast<CGameNpc*>(m_pSelectObj)->Set_CurRoamingIndex(static_cast<CGameNpc*>(m_pSelectObj)->Get_CurRoamingIndex() - 1);
+								if (romingPoints->size() > 0)
+								{
+									romingPoints->pop_back();
+									if (static_cast<CGameNpc*>(m_pSelectObj)->Get_CurRoamingIndex() >= romingPoints->size())
+										static_cast<CGameNpc*>(m_pSelectObj)->Set_CurRoamingIndex(static_cast<CGameNpc*>(m_pSelectObj)->Get_CurRoamingIndex() - 1);
+								}
+
 							} ImGui::SameLine();
 
 							if (ImGui::Button("All Romove", ImVec2(150.0f, 20.0f))) { RomingClear(); } ImGui::SameLine();
