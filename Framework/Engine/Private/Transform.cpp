@@ -44,11 +44,7 @@ HRESULT CTransform::Bind_ShaderResources(CShader* pShader, const char* pConstant
 
 void CTransform::Move(_vector vDir, _float fSpeed, _float fTimeDelta, CNavigation* pNavigation)
 {
-	if (XMVectorGetX(XMVector3Length(vDir)) < .99f)
-		return;
-
-
-	_vector	vPosition = Get_State(CTransform::STATE_POSITION);
+ 	_vector	vPosition = Get_State(CTransform::STATE_POSITION);
 	vPosition += XMVector3Normalize(vDir) * fSpeed * fTimeDelta;
 
 	_vector vSlidingDir = XMVectorSet(0.f, 0.f, 0.f, 0.f);
