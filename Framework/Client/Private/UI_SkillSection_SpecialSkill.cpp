@@ -289,7 +289,14 @@ void CUI_SkillSection_SpecialSkill::Movement_BasedOnHiding(_float fTimeDelta)
 			if (CUI_Manager::GetInstance()->Get_MovementComplete_SkillBG())
 				m_bHideFinish = true;
 			else
+			{
 				m_tInfo.fX += (CUI_Manager::GetInstance()->Get_DistanceofMovement_SkillBG());
+
+				if (m_fAlpha <= 0.f)
+					m_fAlpha = 0.f;
+				else
+					m_fAlpha -= fTimeDelta;
+			}
 		}
 		else // 드러낸다
 		{
@@ -303,6 +310,11 @@ void CUI_SkillSection_SpecialSkill::Movement_BasedOnHiding(_float fTimeDelta)
 				else
 				{
 					m_tInfo.fX -= fTimeDelta * m_fHideSpeed;
+
+					if (m_fAlpha >= 1.f)
+						m_fAlpha = 1.f;
+					else
+						m_fAlpha += fTimeDelta;
 				}
 			}
 			else
@@ -315,6 +327,11 @@ void CUI_SkillSection_SpecialSkill::Movement_BasedOnHiding(_float fTimeDelta)
 				else
 				{
 					m_tInfo.fX -= (CUI_Manager::GetInstance()->Get_DistanceofMovement_SkillBG());
+
+					if (m_fAlpha >= 1.f)
+						m_fAlpha = 1.f;
+					else
+						m_fAlpha += fTimeDelta;
 				}
 			}
 		}

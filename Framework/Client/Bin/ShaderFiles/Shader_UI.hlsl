@@ -186,6 +186,8 @@ PS_OUT PS_CIRCLE_MASK(PS_IN In)
 	if (vMaskColor.r > 0.9f && vMaskColor.g > 0.9f && vMaskColor.b > 0.9f)
 	{
 		Out.vColor = saturate(vColor);
+		Out.vColor.a *= g_Alpha;
+
 		if (Out.vColor.a < 0.1f)
 			discard;
 	}

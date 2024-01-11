@@ -89,6 +89,11 @@ void CCharacter::Tick(_float fTimeDelta)
 		GI->UnLock_Mouse();
 	}
 
+	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::INSERT))
+	{
+		m_pStateCom->Change_State(CCharacter::STATE::NEUTRAL_IDLE);
+	}
+
 	//if (KEY_TAP(KEY::TAB))
 	//{
 	//	switch (m_eCharacterType)

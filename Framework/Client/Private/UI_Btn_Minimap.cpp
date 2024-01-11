@@ -46,6 +46,7 @@ void CUI_Btn_Minimap::Tick(_float fTimeDelta)
 	if (m_bActive)
 	{
 		Movement_BasedOnHiding(fTimeDelta);
+
 		__super::Tick(fTimeDelta);
 	}
 }
@@ -168,6 +169,11 @@ void CUI_Btn_Minimap::Movement_BasedOnHiding(_float fTimeDelta)
 			else
 			{
 				m_tInfo.fX += fTimeDelta * m_fHideSpeed;
+
+				if (m_fAlpha <= 0.f)
+					m_fAlpha = 0.f;
+				else
+					m_fAlpha -= fTimeDelta;
 			}
 		}
 		else // 드러낸다
@@ -180,6 +186,11 @@ void CUI_Btn_Minimap::Movement_BasedOnHiding(_float fTimeDelta)
 			else
 			{
 				m_tInfo.fX -= fTimeDelta * m_fHideSpeed;
+
+				if (m_fAlpha >= 1.f)
+					m_fAlpha = 1.f;
+				else
+					m_fAlpha += fTimeDelta;
 			}
 		}
 

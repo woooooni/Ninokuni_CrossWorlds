@@ -8,6 +8,8 @@
 #include "UniqueNpcState_Run.h"
 #include "UniqueNpcState_Talk.h"
 
+#include "UI_World_NPCTag.h"
+
 CRuslan::CRuslan(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameNpc(pDevice, pContext, strObjectTag)
 {
@@ -42,6 +44,13 @@ HRESULT CRuslan::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
+	// UI NameTag
+	CGameObject* pTag = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_NPC_Tag"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pTag)
+		return E_FAIL;
+
+	m_pTag = dynamic_cast<CUI_World_NPCTag*>(pTag);
+	m_pTag->Set_Owner(this, m_strKorName, 2.2f);
 
 	return S_OK;
 }
@@ -49,11 +58,17 @@ HRESULT CRuslan::Initialize(void* pArg)
 void CRuslan::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+
+	if (nullptr != m_pTag)
+		m_pTag->Tick(fTimeDelta);
 }
 
 void CRuslan::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
+
+	if (nullptr != m_pTag)
+		m_pTag->LateTick(fTimeDelta);
 
 #ifdef DEBUG
 	m_pRendererCom->Add_Debug(m_pControllerCom);
@@ -156,4 +171,6 @@ CGameObject* CRuslan::Clone(void* pArg)
 void CRuslan::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pTag);
 }

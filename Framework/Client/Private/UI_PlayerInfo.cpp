@@ -235,7 +235,7 @@ void CUI_PlayerInfo::Movement_BasedOnHiding(_float fTimeDelta)
 {
 	if (false == m_bHideFinish)
 	{
-		if (m_bHide) // 숨긴다
+		if (m_bHide)
 		{
 			if (m_tInfo.fX <= m_vHidePosition.x)
 			{
@@ -245,9 +245,20 @@ void CUI_PlayerInfo::Movement_BasedOnHiding(_float fTimeDelta)
 			else
 			{
 				m_tInfo.fX -= fTimeDelta * m_fHideSpeed;
+
+				if (m_fAlpha <= 0.f)
+				{
+					m_fAlpha = 0.f;
+					Set_ParentsAlpha(m_fAlpha);
+				}
+				else
+				{
+					m_fAlpha -= fTimeDelta;
+					Set_ParentsAlpha(m_fAlpha);
+				}
 			}
 		}
-		else // 드러낸다
+		else
 		{
 			if (m_tInfo.fX >= m_vOriginPosition.x)
 			{
@@ -258,6 +269,17 @@ void CUI_PlayerInfo::Movement_BasedOnHiding(_float fTimeDelta)
 			else
 			{
 				m_tInfo.fX += fTimeDelta * m_fHideSpeed;
+
+				if (m_fAlpha >= 1.f)
+				{
+					m_fAlpha = 1.f;
+					Set_ParentsAlpha(m_fAlpha);
+				}
+				else
+				{
+					m_fAlpha += fTimeDelta;
+					Set_ParentsAlpha(m_fAlpha);
+				}
 			}
 		}
 

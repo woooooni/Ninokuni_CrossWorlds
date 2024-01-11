@@ -86,8 +86,6 @@ HRESULT CUI_PopupQuest::Initialize(void* pArg)
 
 	m_bActive = false;
 
-	Set_Contents(TEXT("[메인]"), TEXT("쿠우를 찾아라"), TEXT("네가 쿠우냐? 나도 쿠우다"));
-
 	return S_OK;
 }
 

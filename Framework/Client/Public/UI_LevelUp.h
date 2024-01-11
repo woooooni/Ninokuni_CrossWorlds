@@ -5,8 +5,6 @@
 BEGIN(Client)
 class CUI_LevelUp final : public CUI
 {
-	// Todo. 코드 수정 필요함
-
 public:
 	enum UILEVELUP_TYPE { UILEVELUP_FRAME, UILEVELUP_BG, UILEVELUP_END };
 
