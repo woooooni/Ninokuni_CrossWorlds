@@ -90,7 +90,8 @@ public: /* For.Light_Manager */
 	_float4x4 Get_ShadowLightViewMatrix_Inverse(_uint iLevelIndex);
 	HRESULT Reset_Lights();
 	HRESULT Set_ShadowLight(_uint iLevelIndex, _vector vEye, _vector vAt, _vector vUp);
-
+	HRESULT Add_ShadowProj(_uint iLevelIndex, _float fFovAngleY, _float fAspectRatio, _float fNearZ, _float fFarZ);
+	_float4x4 Get_ShadowProjMatrix(_uint iLevelIndex);
 
 public: /* For.PipeLine */
 	void Set_Transform(CPipeLine::TRANSFORMSTATE eTransformState, _fmatrix TransformMatrix);

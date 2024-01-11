@@ -89,6 +89,11 @@ public:
 		m_fFogStartEnd = _float2(fFogStart, fFogEnd);
 	}
 
+	void Set_LineColor(_float4 vLineColor)
+	{
+		m_vLineColor = vLineColor;
+	}
+
 public:
 	HRESULT Add_RenderGroup(RENDERGROUP eRenderGroup, class CGameObject* pGameObject);
 	HRESULT Add_RenderGroup_Instancing(RENDERGROUP eRenderGroup, INSTANCING_SHADER_TYPE eShaderType, class CGameObject* pGameObject, _float4x4 WorldMatrix);
@@ -130,6 +135,7 @@ private:
 	HRESULT Render_NonLight();
 
 	HRESULT Render_Shadow();
+	HRESULT Render_Shadow_Caculation();
 	HRESULT Render_NonBlend();
 	HRESULT Render_Lights();
 
@@ -214,8 +220,10 @@ private:
 	//_bool m_bWorldMeshRender = true;
 	//_bool m_bUIMeshRender    = true;
 
-	_float4	m_vFogColor    = { 0.f, 0.635f, 1.f, 1.f };
-	_float2	m_fFogStartEnd = { 300.f, 600.f };
+	_float4	m_vFogColor    = _float4(0.f, 0.635f, 1.f, 1.f);
+	_float2	m_fFogStartEnd = _float2(300.f, 600.f);
+
+	_float4 m_vLineColor = _float4(0.5f, 0.4f, 0.2f, 1.f);
 
 private: 
 	_bool	m_bDebugDraw   = false;
@@ -224,7 +232,7 @@ private:
 	_bool   m_bNaturalDraw = false;
 	_bool   m_bShadowDraw  = false;
 	_bool   m_bSsaoDraw    = false;
-	_bool   m_bOutlineDraw = false;
+	_bool   m_bOutlineDraw = true;
 	_bool   m_bBlurDraw    = false;
 	_bool   m_bBlomDraw    = false;
 

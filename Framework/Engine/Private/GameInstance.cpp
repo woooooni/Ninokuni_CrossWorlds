@@ -414,8 +414,6 @@ HRESULT CGameInstance::Add_Sun(CGameObject* pSun)
 	return S_OK;
 }
 
-
-
 _float4x4 CGameInstance::Get_ShadowViewMatrix(_uint iLevelIndex)
 {
 	return m_pLight_Manager->Get_ShadowLightViewMatrix(iLevelIndex);
@@ -434,6 +432,16 @@ HRESULT CGameInstance::Reset_Lights()
 HRESULT CGameInstance::Set_ShadowLight(_uint iLevelIndex, _vector vEye, _vector vAt, _vector vUp)
 {
 	return m_pLight_Manager->Set_ShadowLight(iLevelIndex, vEye, vAt, vUp);
+}
+
+HRESULT CGameInstance::Add_ShadowProj(_uint iLevelIndex, _float fFovAngleY, _float fAspectRatio, _float fNearZ, _float fFarZ)
+{
+	return m_pLight_Manager->Add_ShadowProj(iLevelIndex, fFovAngleY, fAspectRatio, fNearZ, fFarZ);;
+}
+
+_float4x4 CGameInstance::Get_ShadowProjMatrix(_uint iLevelIndex)
+{
+	return m_pLight_Manager->Get_ShadowLightProjMatrix(iLevelIndex);
 }
 
 void CGameInstance::Set_Transform(CPipeLine::TRANSFORMSTATE eTransformState, _fmatrix TransformMatrix)

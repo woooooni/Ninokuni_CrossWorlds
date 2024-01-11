@@ -2,6 +2,8 @@
 #include "GameInstance.h"
 #include "Character.h"
 #include "State_Character_Neutral_Run.h"
+#include "Particle_Manager.h"
+#include "Utils.h"
 
 CState_Character_Neutral_Run::CState_Character_Neutral_Run(CStateMachine* pMachine)
     : CState_Character(pMachine)
@@ -29,6 +31,8 @@ void CState_Character_Neutral_Run::Enter_State(void* pArg)
 
 void CState_Character_Neutral_Run::Tick_State(_float fTimeDelta)
 {
+    GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fEffectAcc, CUtils::Random_Float(0.2f, 0.4f), fTimeDelta, TEXT("Particle_Smoke"), m_pCharacter, _float3(CUtils::Random_Float(-0.1f, 0.1f), CUtils::Random_Float(0.2f, 0.4f), CUtils::Random_Float(-0.1f, 0.1f)));
+
     __super::Neutral_Run_Input(fTimeDelta);
     __super::Skill_Input(fTimeDelta);
 	

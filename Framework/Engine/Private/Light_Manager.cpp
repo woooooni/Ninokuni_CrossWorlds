@@ -32,24 +32,24 @@ HRESULT CLight_Manager::Add_Light(ID3D11Device * pDevice, ID3D11DeviceContext * 
 
 HRESULT CLight_Manager::Add_ShadowLight(_uint iLevelIndex, _vector vEye, _vector vAt, _vector vUp)
 {
-	auto iter = m_ShadowWorldMatrix.find(iLevelIndex);
+	auto iter = m_ShadowViewMatrix.find(iLevelIndex);
 
-	if (iter != m_ShadowWorldMatrix.end())
+	if (iter != m_ShadowViewMatrix.end())
 		return E_FAIL;
 
 	_float4x4 LightViewMatrix; 
 	XMStoreFloat4x4(&LightViewMatrix, XMMatrixLookAtLH(vEye, vAt, vUp));
 
-	m_ShadowWorldMatrix.emplace(iLevelIndex, LightViewMatrix);
+	m_ShadowViewMatrix.emplace(iLevelIndex, LightViewMatrix);
 
 	return S_OK;
 }
 
 HRESULT CLight_Manager::Set_ShadowLight(_uint iLevelIndex, _vector vEye, _vector vAt, _vector vUp)
 {
-	auto iter = m_ShadowWorldMatrix.find(iLevelIndex);
+	auto iter = m_ShadowViewMatrix.find(iLevelIndex);
 
-	if (iter == m_ShadowWorldMatrix.end())
+	if (iter == m_ShadowViewMatrix.end())
 		Add_ShadowLight(iLevelIndex, vEye, vAt, vUp);
 	else
 	{
@@ -58,6 +58,21 @@ HRESULT CLight_Manager::Set_ShadowLight(_uint iLevelIndex, _vector vEye, _vector
 
 		iter->second = LightViewMatrix;
 	}
+
+	return S_OK;
+}
+
+HRESULT CLight_Manager::Add_ShadowProj(_uint iLevelIndex, _float fFovAngleY, _float fAspectRatio, _float fNearZ, _float fFarZ)
+{
+	auto iter = m_ShadowProjMatrix.find(iLevelIndex);
+
+	if (iter != m_ShadowProjMatrix.end())
+		return E_FAIL;
+
+	_float4x4 LightProjMatrix;
+	XMStoreFloat4x4(&LightProjMatrix, XMMatrixPerspectiveFovLH(XMConvertToRadians(fFovAngleY), fAspectRatio, fNearZ, fFarZ));
+
+	m_ShadowProjMatrix.emplace(iLevelIndex, LightProjMatrix);
 
 	return S_OK;
 }
@@ -74,9 +89,9 @@ _float4x4 CLight_Manager::Get_ShadowLightViewMatrix(_uint iLevelIndex)
 {	
 	_float4x4 IdentityMatrix;  
 	XMStoreFloat4x4(&IdentityMatrix, XMMatrixIdentity());
-	auto iter = m_ShadowWorldMatrix.find(iLevelIndex);
+	auto iter = m_ShadowViewMatrix.find(iLevelIndex);
 
-	if (iter == m_ShadowWorldMatrix.end())
+	if (iter == m_ShadowViewMatrix.end())
 		return IdentityMatrix;
 
 	return iter->second;
@@ -86,13 +101,25 @@ _float4x4 CLight_Manager::Get_ShadowLightViewMatrix_Inverse(_uint iLevelIndex)
 {
 	_float4x4 LightViewMatrix;
 	XMStoreFloat4x4(&LightViewMatrix, XMMatrixIdentity());
-	auto iter = m_ShadowWorldMatrix.find(iLevelIndex);
+	auto iter = m_ShadowViewMatrix.find(iLevelIndex);
 
-	if (iter == m_ShadowWorldMatrix.end())
+	if (iter == m_ShadowViewMatrix.end())
 		return LightViewMatrix;
 
 	XMStoreFloat4x4(&LightViewMatrix, XMMatrixInverse(nullptr, XMLoadFloat4x4(&iter->second)));
 	return LightViewMatrix;
+}
+
+_float4x4 CLight_Manager::Get_ShadowLightProjMatrix(_uint iLevelIndex)
+{
+	_float4x4 IdentityMatrix;
+	XMStoreFloat4x4(&IdentityMatrix, XMMatrixIdentity());
+	auto iter = m_ShadowProjMatrix.find(iLevelIndex);
+
+	if (iter == m_ShadowProjMatrix.end())
+		return IdentityMatrix;
+
+	return iter->second;
 }
 
 HRESULT CLight_Manager::Reset_Lights()

@@ -300,24 +300,23 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 	//vSpecular
     vector vSpecular = g_SpecularTarget.Sample(LinearSampler, In.vTexcoord);
     vSpecular = saturate(vSpecular);
-	//vSpecular = ceil(vSpecular * 5.f) / 5.f;
 	
 	// 물 픽셀 제외 후 기타 처리
     vector vDepthDesc = g_DepthTarget.Sample(PointSampler, In.vTexcoord);
     if (vDepthDesc.w != 1.f) 
     {
-        vShade    = ceil(vShade * 5.f) / 5.f;
-        //vSpecular = float4(0.f, 0.f, 0.f, 0.f);
+        vShade    = (ceil(vShade * 2.f) / 2.f);
+        vSpecular = float4(0.f, 0.f, 0.f, 0.f);
     }
 
 	// Shadow
 	vector vShadow = float4(1.f, 1.f, 1.f, 1.f);
 	if(g_bShadowDraw)
-        vShadow = Shadow_Caculation(In, vDepthDesc.x, vDepthDesc.y);
+        vShadow = g_ShadowTarget.Sample(PointSampler, In.vTexcoord);
 
     // SSAO
 	vector vSSAO = float4(1.f, 1.f, 1.f, 1.f);
-	if(g_bSsaoDraw)
+	if(g_bSsaoDraw) 
 		vSSAO = g_SSAOTarget.Sample(LinearSampler, In.vTexcoord);
 
 	// Outline
@@ -346,6 +345,18 @@ PS_OUT PS_MAIN_ALPHABLENDMIX(PS_IN In)
 	Out.vColor = g_BlendMixTarget.Sample(PointSampler, In.vTexcoord);
 
 	return Out;
+}
+
+PS_OUT PS_MAIN_SHADOW(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    vector vDepthDesc = g_DepthTarget.Sample(PointSampler, In.vTexcoord);
+    vector vShadow = Shadow_Caculation(In, vDepthDesc.x, vDepthDesc.y);
+	
+    Out.vColor = vShadow;
+
+    return Out;
 }
 
 technique11 DefaultTechnique
@@ -429,5 +440,18 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_ALPHABLENDMIX();
+    }
+
+    // 6
+    pass Shadow
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN_SHADOW();
     }
 }

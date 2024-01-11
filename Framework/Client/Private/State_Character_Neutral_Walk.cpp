@@ -31,7 +31,7 @@ void CState_Character_Neutral_Walk::Enter_State(void* pArg)
 
 void CState_Character_Neutral_Walk::Tick_State(_float fTimeDelta)
 {
-	GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fEffectAcc, CUtils::Random_Float(0.5f, 1.f), fTimeDelta, TEXT("Particle_Smoke"), m_pCharacter);
+    GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fEffectAcc, CUtils::Random_Float(0.5f, 1.f), fTimeDelta, TEXT("Particle_Smoke"), m_pCharacter, _float3(0.f, 0.2f, 0.f));
 
     __super::Neutral_Walk_Input(fTimeDelta);
     __super::Skill_Input(fTimeDelta);
