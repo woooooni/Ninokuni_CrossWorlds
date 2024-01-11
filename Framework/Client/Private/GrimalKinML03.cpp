@@ -75,6 +75,7 @@ void CGrimalKinML03::On_Damaged(const COLLISION_INFO& tInfo)
 
 HRESULT CGrimalKinML03::Ready_States()
 {
+	m_strKorName = TEXT("경비 장교");
 	m_tStat.fSpeed = 1.f;
 
 	m_pStateCom->Set_Owner(this);

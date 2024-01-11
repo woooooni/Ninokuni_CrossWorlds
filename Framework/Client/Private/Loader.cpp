@@ -67,8 +67,6 @@
 #include "NpcWeapon_Halberd.h"
 #include "HumanML04.h"
 #include "HumanML12.h"
-#include "GrimalKinML01.h"
-#include "GrimalKinML02.h"
 #include "GrimalKinML03.h"
 #include "GrimalKinML04.h"
 #include "HumanMM03.h"
@@ -90,6 +88,8 @@
 #include "Chloe.h"
 #include "Aren.h"
 #include "BlackSmithMaster.h"
+#include "GrimalKinML01.h"
+#include "GrimalKinML02.h"
 
 #include "HumanChildHalloweenA.h"
 #include "HumanChildHalloweenB.h"
@@ -189,6 +189,10 @@ _int CLoader::Loading()
 		hr = Loading_For_Level_Evermore();
 		break;
 
+	case LEVEL_KINGDOMHALL:
+		hr = Loading_For_Level_Kingdom();
+		break;
+
 	case LEVEL_ICELAND:
 		hr = Loading_For_Level_IceLand();
 		break;
@@ -237,8 +241,8 @@ HRESULT CLoader::Loading_For_Level_Logo()
 	if (false == g_bFirstLoading)
 	{
 		m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN] = std::async(&CLoader::Loading_For_Character, this , CHARACTER_TYPE::SWORD_MAN);
-		/*m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);
-		m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);*/
+		m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);
+		m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);
 	}
 
 	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
@@ -433,6 +437,23 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 	m_isFinished = true;
 	g_bFirstLoading = true;
 
+
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Level_Kingdom()
+{
+	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Kingdom");
+	// m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Monster_Data, this, L"Kingdom");
+	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
+	{
+		if (true == m_Threads[i].valid())
+			m_Threads[i].wait();
+	}
+
+	m_strLoading = TEXT("·Îµù ³¡.");
+	m_isFinished = true;
+	g_bFirstLoading = true;
 
 	return S_OK;
 }
@@ -1256,10 +1277,6 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanML12", CHumanML12::Create(m_pDevice, m_pContext, TEXT("HumanML12")), LAYER_NPC, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_GrimalKinML01", CGrimalKinML01::Create(m_pDevice, m_pContext, TEXT("GrimalKinML01")), LAYER_NPC, true)))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_GrimalKinML02", CGrimalKinML02::Create(m_pDevice, m_pContext, TEXT("GrimalKinML02")), LAYER_NPC, true)))
-		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_GrimalKinML03", CGrimalKinML03::Create(m_pDevice, m_pContext, TEXT("GrimalKinML03")), LAYER_NPC, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_GrimalKinML04", CGrimalKinML04::Create(m_pDevice, m_pContext, TEXT("GrimalKinML04")), LAYER_NPC, true)))
@@ -1301,6 +1318,10 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Aren", CAren::Create(m_pDevice, m_pContext, TEXT("Aren")), LAYER_NPC, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_BlackSmithMaster", CBlackSmithMaster::Create(m_pDevice, m_pContext, TEXT("BlackSmithMaster")), LAYER_NPC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_GrimalKinML01", CGrimalKinML01::Create(m_pDevice, m_pContext, TEXT("GrimalKinML01")), LAYER_NPC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_GrimalKinML02", CGrimalKinML02::Create(m_pDevice, m_pContext, TEXT("GrimalKinML02")), LAYER_NPC, true)))
 		return E_FAIL;
 	
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanChildHalloweenA", CHumanChildHalloweenA::Create(m_pDevice, m_pContext, TEXT("HumanChildHalloweenA")), LAYER_NPC, true)))
@@ -1407,10 +1428,6 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanML12", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/HumanML12/", L"HumanML12")))
 		return E_FAIL;
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_GrimalKinML01", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/GrimalKinML01/", L"GrimalKinML01")))
-		return E_FAIL;
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_GrimalKinML02", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/GrimalKinML02/", L"GrimalKinML02")))
-		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_GrimalKinML03", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/GrimalKinML03/", L"GrimalKinML03")))
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_GrimalKinML04", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/GrimalKinML04/", L"GrimalKinML04")))
@@ -1452,6 +1469,10 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Aren", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/Aren/", L"Aren")))
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_BlackSmithMaster", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/BlackSmithMaster/", L"BlackSmithMaster")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_GrimalKinML01", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/GrimalKinML01/", L"GrimalKinML01")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_GrimalKinML02", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/GrimalKinML02/", L"GrimalKinML02")))
 		return E_FAIL;
 
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanChildHalloweenA", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Witch/HumanChildHalloweenA/", L"HumanChildHalloweenA")))

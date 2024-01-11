@@ -75,6 +75,8 @@ void CGrimalKinML02::On_Damaged(const COLLISION_INFO& tInfo)
 
 HRESULT CGrimalKinML02::Ready_States()
 {
+	m_strKorName = TEXT("»÷½¼");
+
 	m_tStat.fSpeed = 1.f;
 
 	m_pStateCom->Set_Owner(this);

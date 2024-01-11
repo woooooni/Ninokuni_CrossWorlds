@@ -91,6 +91,7 @@ HRESULT CChloe::Ready_States()
 
 HRESULT CChloe::Ready_Colliders()
 {
+	m_strKorName = TEXT("Å¬·ÎÀÌ");
 	m_tStat.fSpeed = 0.5f;
 
 	m_pStateCom->Set_Owner(this);

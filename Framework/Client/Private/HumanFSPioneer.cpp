@@ -87,6 +87,7 @@ void CHumanFSPioneer::On_Damaged(const COLLISION_INFO& tInfo)
 
 HRESULT CHumanFSPioneer::Ready_States()
 {
+	m_strKorName = TEXT("¹æ¶û »óÀÎ");
 	m_tStat.fSpeed = 0.5f;
 
 	m_pStateCom->Set_Owner(this);

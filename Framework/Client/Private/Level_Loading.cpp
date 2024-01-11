@@ -9,6 +9,7 @@
 #include "Level_Test.h"
 #include "Level_Lobby.h"
 #include "Level_Evermore.h"
+#include "Level_Kingdom.h"
 #include "Level_IceLand.h"
 #include "UI_Manager.h"
 #include "ImGui_Manager.h"
@@ -69,6 +70,10 @@ HRESULT CLevel_Loading::LateTick(_float fTimeDelta)
 
 			case LEVEL_EVERMORE:
 				pNewLevel = CLevel_Evermore::Create(m_pDevice, m_pContext);
+				break;
+
+			case LEVEL_KINGDOMHALL:
+				pNewLevel = CLevel_Kingdom::Create(m_pDevice, m_pContext);
 				break;
 
 			case LEVEL_ICELAND:

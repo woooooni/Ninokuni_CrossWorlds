@@ -61,6 +61,7 @@ private:
 	HRESULT Loading_For_Level_Logo();
 	HRESULT Loading_For_Level_Lobby();
 	HRESULT Loading_For_Level_Evermore();
+	HRESULT Loading_For_Level_Kingdom();
 	HRESULT Loading_For_Level_IceLand();
 	HRESULT Loading_For_Level_Test();
 	HRESULT Loading_For_Level_Tool();

@@ -2,13 +2,11 @@
 
 #include "QuestNode_Base.h"
 
-BEGIN(Client)
-
-class CMainQuestNode01_01 final : public CQuestNode_Base
+class CSubQuestNode_FindCat06 final : public CQuestNode_Base
 {
 private:
-	CMainQuestNode01_01();
-	virtual ~CMainQuestNode01_01() = default;
+	CSubQuestNode_FindCat06();
+	virtual ~CSubQuestNode_FindCat06() = default;
 
 public:
 	virtual HRESULT Initialize();
@@ -17,11 +15,13 @@ public:
 	virtual void	LateTick(const _float& fTimeDelta);
 
 private:
-	class CKuu* m_pKuu = nullptr;
+	virtual void    TalkEvent();
+
+private:
+	CGameObject* m_pKuu = nullptr;
 
 public:
-	static CMainQuestNode01_01* Create();
+	static CSubQuestNode_FindCat06* Create();
 	virtual void Free() override;
 };
 
-END

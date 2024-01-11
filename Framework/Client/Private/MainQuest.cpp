@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "MainQuest.h"
 
-#include "MainQuest01.h"
+#include "MainQuest_IntroTour.h"
+#include "MainQuest_KingCall.h"
 
 #include "GameInstance.h"
 
@@ -11,7 +12,8 @@ CMainQuest::CMainQuest()
 
 HRESULT CMainQuest::Initialize()
 {
-	m_vecMQ.push_back(CMainQuest01::Create());
+	m_vecMQ.push_back(CMainQuest_IntroTour::Create());
+	m_vecMQ.push_back(CMainQuest_KingCall::Create());
 
 	return S_OK;
 }

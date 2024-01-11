@@ -2,11 +2,11 @@
 
 #include "QuestNode_Base.h"
 
-class CMainQuestNode01_02 final : public CQuestNode_Base
+class CSubQuestNode_Windmill10 final : public CQuestNode_Base
 {
 private:
-	CMainQuestNode01_02();
-	virtual ~CMainQuestNode01_02() = default;
+	CSubQuestNode_Windmill10();
+	virtual ~CSubQuestNode_Windmill10() = default;
 
 public:
 	virtual HRESULT Initialize();
@@ -14,14 +14,8 @@ public:
 	virtual CBTNode::NODE_STATE	Tick(const _float& fTimeDelta);
 	virtual void	LateTick(const _float& fTimeDelta);
 
-private:
-	virtual void    TalkEvent();
-
-private:
-	CGameObject* m_pKuu = nullptr;
-
 public:
-	static CMainQuestNode01_02* Create();
+	static CSubQuestNode_Windmill10* Create();
 	virtual void Free() override;
 };
 

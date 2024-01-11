@@ -48,7 +48,10 @@ HRESULT CLevel_Evermore::Initialize()
 	if (FAILED(Ready_Layer_Character(LAYER_TYPE::LAYER_CHARACTER)))
 		return E_FAIL;
 
-	if (FAILED(Ready_Layer_Monster(LAYER_TYPE::LAYER_NPC)))
+	if (FAILED(Ready_Layer_Monster(LAYER_TYPE::LAYER_MONSTER)))
+		return E_FAIL;
+
+	if (FAILED(Ready_Layer_Npc(LAYER_TYPE::LAYER_NPC)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Layer_UI(LAYER_TYPE::LAYER_UI)))
@@ -103,6 +106,11 @@ HRESULT CLevel_Evermore::Tick(_float fTimeDelta)
 	if (KEY_TAP(KEY::CLOSE_SQUARE_BRACKET))
 	{
 		GI->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_ICELAND, L"Winter"));
+	}
+
+	if (KEY_TAP(KEY::OPEN_SQUARE_BRACKET))
+	{
+		GI->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_KINGDOMHALL, L"Kingdom"));
 	}
 
 	return S_OK;
@@ -225,6 +233,11 @@ HRESULT CLevel_Evermore::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Evermore::Ready_Layer_Monster(const LAYER_TYPE eLayerType)
 {
+	return S_OK;
+}
+
+HRESULT CLevel_Evermore::Ready_Layer_Npc(const LAYER_TYPE eLayerType)
+{
 	wstring strNpcFileName = L"Evermore";
 	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strNpcFileName + L"/" + strNpcFileName + L"NPC.map";
 
@@ -345,8 +358,6 @@ HRESULT CLevel_Evermore::Ready_Layer_Monster(const LAYER_TYPE eLayerType)
 		}
 
 	}
-	//MSG_BOX("Npc_Loaded.");
-	return S_OK;
 
 	return S_OK;
 }
