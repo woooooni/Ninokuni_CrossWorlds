@@ -238,7 +238,7 @@ HRESULT CMonster::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffe
 	return S_OK;
 }
 
-HRESULT CMonster::Render_Instance_AnimModel_Shadow(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc)
+HRESULT CMonster::Render_Instance_AnimModel_Shadow(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc)
 {
 	if (nullptr == pInstancingShader || nullptr == m_pTransformCom)
 		return E_FAIL;
@@ -254,6 +254,12 @@ HRESULT CMonster::Render_Instance_AnimModel_Shadow(CShader* pInstancingShader, C
 		return E_FAIL;
 
 	if (FAILED(pInstancingShader->Bind_RawValue("g_TweenFrames_Array", TweenDesc.data(), sizeof(TWEEN_DESC) * TweenDesc.size())))
+		return E_FAIL;
+
+	if (FAILED(pInstancingShader->Bind_RawValue("g_AnimInstancingDesc", AnimModelDesc.data(), sizeof(ANIMODEL_INSTANCE_DESC) * AnimModelDesc.size())))
+		return E_FAIL;
+
+	if (FAILED(m_pModelCom->SetUp_VTF(pInstancingShader)))
 		return E_FAIL;
 
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
