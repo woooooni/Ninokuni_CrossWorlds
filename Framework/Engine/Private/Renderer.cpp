@@ -1953,7 +1953,7 @@ HRESULT CRenderer::Create_Target()
 	_uint iNumViewports = 1;
 	m_pContext->RSGetViewports(&iNumViewports, &ViewportDesc);
 
-#pragma region MRT_GameObjects : Target_Diffuse / Target_Normal / Target_Depth / Target_Bloom / Target_SunOccluder // Target_Bloom_Blur
+#pragma region MRT_GameObjects : Target_Diffuse / Target_Normal / Target_Depth / Target_Bloom / Target_SunOccluder / Target_MiniMap // Target_Bloom_Blur
 	/* For.Target_Diffuse */
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Diffuse"),
 		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(1.f, 1.f, 1.f, 0.f))))
@@ -1977,6 +1977,11 @@ HRESULT CRenderer::Create_Target()
 	/* For.Target_SunMask*/
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_SunOccluder"),
 		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+
+	/* For.Target_MiniMap */
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_MiniMap"),
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(1.f, 1.f, 1.f, 0.f))))
 		return E_FAIL;
 
 	// MRT_Bloom_Blur
@@ -2230,7 +2235,9 @@ HRESULT CRenderer::Set_TargetsMrt()
 			return E_FAIL;
 		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_SunOccluder"))))
 			return E_FAIL;
-
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_MiniMap"))))
+			return E_FAIL;
+		
 		// MRT_Bloom_Blur
 		{
 			if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Bloom_Blur"), TEXT("Target_Bloom_Blur"))))
@@ -2430,6 +2437,8 @@ HRESULT CRenderer::Set_Debug()
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_SunOccluder"), (fSizeX / 2.f) + (fSizeX * 4), (fSizeY / 2.f) + (fSizeY * 0), fSizeX, fSizeY)))
 		return E_FAIL;
 
+	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_MiniMap"),     (fSizeX / 2.f) + (fSizeX * 6), (fSizeY / 2.f) + (fSizeY * 0), fSizeX, fSizeY)))
+		return E_FAIL;
 
 	// MRT_Lights
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Shade"),                  (fSizeX / 2.f) + (fSizeX * 0), (fSizeY / 2.f) + (fSizeY * 1), fSizeX, fSizeY)))
