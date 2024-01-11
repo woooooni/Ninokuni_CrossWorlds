@@ -28,7 +28,7 @@ HRESULT CVfx_SwordMan_Skill_AcaneBarrier::Initialize_Prototype()
 
 	// 1. 방어막 생성 시작1 / Effect_Swordman_Skill_AcaneBarrier_Barrier_Start
 	m_pFrameTriger[0]    = 6;
-	m_pPositionOffset[0] = _float3(0.f, 0.f, 0.f);
+	m_pPositionOffset[0] = _float3(0.f, 0.2f, 0.f);
 	m_pScaleOffset[0]    = _float3(4.f, 4.f, 4.f);
 	m_pRotationOffset[0] = _float3(0.f, 0.f, 0.f);
 
@@ -45,13 +45,13 @@ HRESULT CVfx_SwordMan_Skill_AcaneBarrier::Initialize_Prototype()
 	m_pRotationOffset[2] = _float3(0.f, 0.f, 0.f);
 
 	// 4. 방어막 해제 시작 (이벤트)
-	m_pFrameTriger[3]    = 50;
+	m_pFrameTriger[3]    = 60;
 	m_pPositionOffset[3] = _float3(0.f, 0.f, 0.f);
 	m_pScaleOffset[3]    = _float3(0.f, 0.f, 0.f);
 	m_pRotationOffset[3] = _float3(0.f, 0.f, 0.f);
 
 	// 5. 라인 효과 / Effect_Swordman_Skill_AcaneBarrier_Barrier_LineEffect
-	m_pFrameTriger[4]    = 62;
+	m_pFrameTriger[4]    = 70;
 	m_pPositionOffset[4] = _float3(0.f, 0.1f, 0.f);
 	m_pScaleOffset[4]    = _float3(6.f, 6.f, 6.f);
 	m_pRotationOffset[4] = _float3(0.f, 0.f, 0.f);

@@ -337,8 +337,8 @@ HRESULT CMainApp::Initialize_Client()
 			if (FAILED(GI->Add_ShadowLight(LEVEL_KINGDOMHALL, vEye, vAt, vUp)))
 				return E_FAIL;
 
-			vEye = XMVectorSet(1.f, 300.f, 0.f, 1.f);
-			vAt = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+			vEye = XMVectorSet(-215.f, 400.f, 200.f, 1.f);
+			vAt = XMVectorSet(590.f, -1200.f, 3.f, 1.f);
 			vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
 			if (FAILED(GI->Add_ShadowLight(LEVEL_ICELAND, vEye, vAt, vUp)))
 				return E_FAIL;
@@ -352,10 +352,11 @@ HRESULT CMainApp::Initialize_Client()
 
 		// ShadowLightProj
 		//{
-		//	_float fFovAngleY   = Cam_Fov_Default;
+		//	_float fFovAngleY   = Cam_Fov_Follow_Default;
 		//	_float fAspectRatio = (_float)g_iWinSizeX / g_iWinSizeY;
 		//	_float fNearZ       = 0.2f;
 		//	_float fFarZ        = 1000.f;
+
 		//	if (FAILED(GI->Add_ShadowProj(LEVEL_LOBBY, fFovAngleY, fAspectRatio, fNearZ, fFarZ)))
 		//		return E_FAIL;
 

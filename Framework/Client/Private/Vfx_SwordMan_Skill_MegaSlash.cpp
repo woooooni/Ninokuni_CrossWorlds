@@ -48,7 +48,7 @@ HRESULT CVfx_SwordMan_Skill_MegaSlash::Initialize_Prototype()
 
 	// Event Sword_Dissolve
 	m_pFrameTriger[3]    = 25;
-	m_pPositionOffset[3] = _float3(51.f, 4.f, 10.f);
+	m_pPositionOffset[3] = _float3(52.f, 4.f, 10.f);
 	m_pScaleOffset[3]    = _float3(1.f, 0.2f, 0.f);
 	m_pRotationOffset[3] = _float3(0.f, 0.f, 0.f);
 
@@ -56,7 +56,7 @@ HRESULT CVfx_SwordMan_Skill_MegaSlash::Initialize_Prototype()
 	m_pFrameTriger[4]    = 45;
 	m_pPositionOffset[4] = _float3(0.f, 0.1f, 0.f);
 	m_pScaleOffset[4]    = _float3(10.f, 10.f, 10.f);
-	m_pRotationOffset[4] = _float3(0.f, 0.f, 0.f);
+	m_pRotationOffset[4] = _float3(0.f, 20.f, 0.f);
 
 	// ----------------------------------------------
 
