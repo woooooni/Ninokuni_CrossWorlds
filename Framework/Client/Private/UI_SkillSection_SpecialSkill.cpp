@@ -57,6 +57,10 @@ HRESULT CUI_SkillSection_SpecialSkill::Initialize(void* pArg)
 		break;
 	}
 
+	m_bHide = false;
+	m_bHideFinish = false;
+	m_vOriginPosition = _float2(m_tInfo.fX, m_tInfo.fY);
+
 	return S_OK;
 }
 
@@ -66,6 +70,8 @@ void CUI_SkillSection_SpecialSkill::Tick(_float fTimeDelta)
 	{
 		if (UICLASSICSKILL_END == m_eType)
 			return;
+
+		Movement_BasedOnHiding(fTimeDelta);
 
 		if (m_bClicked)
 		{
@@ -272,6 +278,50 @@ void CUI_SkillSection_SpecialSkill::Set_SkillType()
 
 	m_fOriginCoolTime = 10.f; // Temp
 	m_fCoolTime = m_fOriginCoolTime;
+}
+
+void CUI_SkillSection_SpecialSkill::Movement_BasedOnHiding(_float fTimeDelta)
+{
+	if (false == m_bHideFinish)
+	{
+		if (m_bHide) // 숨긴다
+		{
+			if (CUI_Manager::GetInstance()->Get_MovementComplete_SkillBG())
+				m_bHideFinish = true;
+			else
+				m_tInfo.fX += (CUI_Manager::GetInstance()->Get_DistanceofMovement_SkillBG());
+		}
+		else // 드러낸다
+		{
+			if (CUI_Manager::GetInstance()->Get_MovementComplete_SkillBG())
+			{
+				if (m_tInfo.fX <= m_vOriginPosition.x)
+				{
+					m_bHideFinish = true;
+					m_tInfo.fX = m_vOriginPosition.x;
+				}
+				else
+				{
+					m_tInfo.fX -= fTimeDelta * m_fHideSpeed;
+				}
+			}
+			else
+			{
+				if (m_tInfo.fX <= m_vOriginPosition.x)
+				{
+					m_bHideFinish = true;
+					m_tInfo.fX = m_vOriginPosition.x;
+				}
+				else
+				{
+					m_tInfo.fX -= (CUI_Manager::GetInstance()->Get_DistanceofMovement_SkillBG());
+				}
+			}
+		}
+
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
+	}
 }
 
 CUI_SkillSection_SpecialSkill* CUI_SkillSection_SpecialSkill::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_SPECIALSKILL eType)

@@ -17,6 +17,7 @@ protected:
 	
 public:
 	void Set_TextureIndex(CHARACTER_TYPE eType);
+	void Hide_UI(_bool bHide) { m_bHide = bHide; m_bHideFinish = false; }
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -37,6 +38,11 @@ private:
 	_int m_iTextureIndex = { 0 };
 	_int m_iElementalIndex = { 0 };
 
+	_bool m_bHide = { false };
+	_bool m_bHideFinish = { false };
+	_float m_fHideSpeed = { 500.f };
+	_float2 m_vOriginPosition = _float2(0.f, 0.f);
+
 private:
 	virtual HRESULT	Ready_Components() override;
 
@@ -46,6 +52,7 @@ private:
 
 private:
 	void Key_Input(_float fTimeDelta);
+	void Movement_BasedOnHiding(_float fTimeDelta);
 
 public:
 	static CUI_WeaponSection_Weapon* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,

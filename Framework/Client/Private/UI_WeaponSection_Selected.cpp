@@ -41,6 +41,10 @@ HRESULT CUI_WeaponSection_Selected::Initialize(void* pArg)
 
 	m_bActive = true; 
 
+	m_bHide = false;
+	m_bHideFinish = false;
+	m_vOriginPosition = _float2(m_tInfo.fX, m_tInfo.fY);
+
 	return S_OK;
 }
 
@@ -48,6 +52,8 @@ void CUI_WeaponSection_Selected::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		Movement_BasedOnHiding(fTimeDelta);
+
 		if (!m_bResize)
 		{
 			m_tInfo.fCX += fTimeDelta * m_fSpeed;
@@ -297,6 +303,50 @@ HRESULT CUI_WeaponSection_Selected::Bind_ShaderResources()
 		return E_FAIL;
 
 	return S_OK;
+}
+
+void CUI_WeaponSection_Selected::Movement_BasedOnHiding(_float fTimeDelta)
+{
+	if (false == m_bHideFinish)
+	{
+		if (m_bHide) // 숨긴다
+		{
+			if (CUI_Manager::GetInstance()->Get_MovementComplete_SkillBG())
+				m_bHideFinish = true;
+			else
+				m_tInfo.fX += (CUI_Manager::GetInstance()->Get_DistanceofMovement_SkillBG() * 1.2f);
+		}
+		else // 드러낸다
+		{
+			if (CUI_Manager::GetInstance()->Get_MovementComplete_SkillBG())
+			{
+				if (m_tInfo.fX <= m_vOriginPosition.x)
+				{
+					m_bHideFinish = true;
+					m_tInfo.fX = m_vOriginPosition.x;
+				}
+				else
+				{
+					m_tInfo.fX -= fTimeDelta * m_fHideSpeed;
+				}
+			}
+			else
+			{
+				if (m_tInfo.fX <= m_vOriginPosition.x)
+				{
+					m_bHideFinish = true;
+					m_tInfo.fX = m_vOriginPosition.x;
+				}
+				else
+				{
+					m_tInfo.fX -= (CUI_Manager::GetInstance()->Get_DistanceofMovement_SkillBG() * 1.2f);
+				}
+			}
+		}
+
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
+	}
 }
 
 CUI_WeaponSection_Selected* CUI_WeaponSection_Selected::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

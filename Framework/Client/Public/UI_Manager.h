@@ -37,6 +37,8 @@ public: // Get/Set
 	void			Set_QuestPopup(const wstring& strQuestType, const wstring& strTitle, const wstring& strContents);
 
 	_int			Get_SelectedCharacter();
+	_float			Get_DistanceofMovement_SkillBG();
+	_bool			Get_MovementComplete_SkillBG();
 
 public:
 	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -124,7 +126,7 @@ public: // Lobby
 	HRESULT OnOff_NickNameWindow(_bool bOnOff);
 
 	HRESULT OnOff_GamePlaySetting(_bool bOnOff);
-	void Hide_GamePlaySetting(_bool bHide);
+	HRESULT Hide_GamePlaySetting(_bool bHide);
 	HRESULT OnOff_MainMenu(_bool bOnOff);
 	HRESULT OnOff_SubMenu(_bool bOnOff, _uint iMagicNum);
 	HRESULT Off_OtherSubBtn(_uint iMagicNum);

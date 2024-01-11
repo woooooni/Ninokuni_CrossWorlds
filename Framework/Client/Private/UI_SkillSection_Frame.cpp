@@ -52,6 +52,10 @@ HRESULT CUI_SkillSection_Frame::Initialize(void* pArg)
 
 	m_bActive = true; 
 
+	m_bHide = false;
+	m_bHideFinish = false;
+	m_vOriginPosition = _float2(m_tInfo.fX, m_tInfo.fY);
+
 	return S_OK;
 }
 
@@ -61,6 +65,8 @@ void CUI_SkillSection_Frame::Tick(_float fTimeDelta)
 	{
 		if (m_vColor.x == 1.f && m_vColor.y == 1.f && m_vColor.z == 1.f && m_vColor.w == 1.f)
 			return;
+
+		Movement_BasedOnHiding(fTimeDelta);
 
 		__super::Tick(fTimeDelta);
 	}
@@ -217,6 +223,50 @@ void CUI_SkillSection_Frame::Set_SpecialFrameColor()
 		else if (UI_SPECIALSKILL_TYPE::FRAME_THIRD == m_eNumType)
 			m_vColor = _float4(0.294f, 0.965f, 0.263f, 1.f);
 		break;
+	}
+}
+
+void CUI_SkillSection_Frame::Movement_BasedOnHiding(_float fTimeDelta)
+{
+	if (false == m_bHideFinish)
+	{
+		if (m_bHide) // 숨긴다
+		{
+			if (CUI_Manager::GetInstance()->Get_MovementComplete_SkillBG())
+				m_bHideFinish = true;
+			else
+				m_tInfo.fX += (CUI_Manager::GetInstance()->Get_DistanceofMovement_SkillBG());
+		}
+		else // 드러낸다
+		{
+			if (CUI_Manager::GetInstance()->Get_MovementComplete_SkillBG())
+			{
+				if (m_tInfo.fX <= m_vOriginPosition.x)
+				{
+					m_bHideFinish = true;
+					m_tInfo.fX = m_vOriginPosition.x;
+				}
+				else
+				{
+					m_tInfo.fX -= fTimeDelta * m_fHideSpeed;
+				}
+			}
+			else
+			{
+				if (m_tInfo.fX <= m_vOriginPosition.x)
+				{
+					m_bHideFinish = true;
+					m_tInfo.fX = m_vOriginPosition.x;
+				}
+				else
+				{
+					m_tInfo.fX -= (CUI_Manager::GetInstance()->Get_DistanceofMovement_SkillBG());
+				}
+			}
+		}
+
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 	}
 }
 

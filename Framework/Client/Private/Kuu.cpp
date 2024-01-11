@@ -53,12 +53,12 @@ HRESULT CKuu::Initialize(void* pArg)
 		m_pPlayerTransform = m_pPlayer->Get_Component<CTransform>(TEXT("Com_Transform"));
 
 	// 捻快 匙烙怕弊 积己
-//	CGameObject* pTag = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_NPC_Tag"), LAYER_TYPE::LAYER_UI);
-//	if (nullptr == pTag)
-//		return E_FAIL;
-//
-//	m_pTag = dynamic_cast<CUI_World_NPCTag*>(pTag);
-//	m_pTag->Set_Owner(this, TEXT("捻快"), 2.f);
+	CGameObject* pTag = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_NPC_Tag"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pTag)
+		return E_FAIL;
+
+	m_pTag = dynamic_cast<CUI_World_NPCTag*>(pTag);
+	m_pTag->Set_Owner(this, TEXT("捻快"), 1.f);
 
 //	// NPC 富浅急 积己
 //	CGameObject* pBalloon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_NPC_SpeechBalloon"), LAYER_TYPE::LAYER_UI);
@@ -91,18 +91,22 @@ void CKuu::Tick(_float fTimeDelta)
 
 	m_pControllerCom->Tick_Controller(fTimeDelta);
 
+	if (nullptr != m_pTag)
+		m_pTag->Tick(fTimeDelta);
+
 	GI->Add_CollisionGroup(COLLISION_GROUP::NPC, this);
 
 }
 
 void CKuu::LateTick(_float fTimeDelta)
 {
-//	if (nullptr != m_pTag)
-//		m_pTag->LateTick(fTimeDelta);
 //	if (nullptr != m_pBalloon)
 //		m_pBalloon->LateTick(fTimeDelta);
 
 	__super::LateTick(fTimeDelta);
+
+	if (nullptr != m_pTag)
+		m_pTag->LateTick(fTimeDelta);
 
 #ifdef DEBUG
 	m_pRendererCom->Add_Debug(m_pControllerCom);
@@ -222,5 +226,5 @@ void CKuu::Free()
 	__super::Free();
 
 //	Safe_Release(m_pBalloon);
-//	Safe_Release(m_pTag);
+	Safe_Release(m_pTag);
 }

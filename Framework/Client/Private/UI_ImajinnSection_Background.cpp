@@ -69,6 +69,12 @@ HRESULT CUI_ImajinnSection_Background::Initialize(void* pArg)
 	Make_Child(-1.f * vOffset.x, vOffset.y, fSize, fSize, TEXT("Prototype_GameObject_UI_ImajinnSection_Emoticon")); // 이모티콘 Button
 	Make_Child(vOffset.x, vOffset.y, fSize, fSize, TEXT("Prototype_GameObject_UI_ImajinnSection_Vehicle")); // 탈 것 Button
 
+	m_bHide = false;
+	m_bHideFinish = false;
+	m_vOriginPosition = _float2(m_tInfo.fX, m_tInfo.fY);
+	m_vHidePosition.x = m_tInfo.fX;
+	m_vHidePosition.y = g_iWinSizeY + m_tInfo.fCY * 0.5f;
+
 	return S_OK;
 }
 
@@ -76,6 +82,7 @@ void CUI_ImajinnSection_Background::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		Movement_BasedOnHiding(fTimeDelta);
 
 		__super::Tick(fTimeDelta);
 	}
@@ -148,6 +155,40 @@ HRESULT CUI_ImajinnSection_Background::Bind_ShaderResources()
 		return E_FAIL;
 
 	return S_OK;
+}
+
+void CUI_ImajinnSection_Background::Movement_BasedOnHiding(_float fTimeDelta)
+{
+	if (false == m_bHideFinish)
+	{
+		if (m_bHide) // 숨긴다
+		{
+			if (m_tInfo.fY >= m_vHidePosition.y)
+			{
+				m_bHideFinish = true;
+				m_tInfo.fY = m_vHidePosition.y;
+			}
+			else
+			{
+				m_tInfo.fY += fTimeDelta * m_fHideSpeed * 2.f;
+			}
+		}
+		else // 드러낸다
+		{
+			if (m_tInfo.fY <= m_vOriginPosition.y)
+			{
+				m_bHideFinish = true;
+				m_tInfo.fY = m_vOriginPosition.y;
+			}
+			else
+			{
+				m_tInfo.fY -= fTimeDelta * m_fHideSpeed * 2.f;
+			}
+		}
+
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
+	}
 }
 
 CUI_ImajinnSection_Background* CUI_ImajinnSection_Background::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

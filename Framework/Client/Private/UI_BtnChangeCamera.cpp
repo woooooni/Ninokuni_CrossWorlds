@@ -32,6 +32,12 @@ HRESULT CUI_BtnChangeCamera::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
+	m_bHide = false;
+	m_bHideFinish = false;
+	m_vOriginPosition = _float2(m_tInfo.fX, m_tInfo.fY);
+	m_vHidePosition.x = -1.f * m_tInfo.fCX * 0.5f;
+	m_vHidePosition.y = m_tInfo.fY;
+
 	return S_OK;
 }
 
@@ -39,6 +45,8 @@ void CUI_BtnChangeCamera::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		Movement_BasedOnHiding(fTimeDelta);
+
 		__super::Tick(fTimeDelta);
 	}
 }
@@ -160,6 +168,40 @@ void CUI_BtnChangeCamera::Key_Input(_float fTimeDelta)
 
 		GI->Stop_Sound(CHANNELID::SOUND_UI);
 		GI->Play_Sound(TEXT("UI_Fx_MainHud_Btn_Camera_1.mp3"), CHANNELID::SOUND_UI, GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+	}
+}
+
+void CUI_BtnChangeCamera::Movement_BasedOnHiding(_float fTimeDelta)
+{
+	if (false == m_bHideFinish)
+	{
+		if (m_bHide) // 숨긴다
+		{
+			if (m_tInfo.fX <= m_vHidePosition.x)
+			{
+				m_bHideFinish = true;
+				m_tInfo.fX = m_vHidePosition.x;
+			}
+			else
+			{
+				m_tInfo.fX -= fTimeDelta * m_fHideSpeed;
+			}
+		}
+		else // 드러낸다
+		{
+			if (m_tInfo.fX >= m_vOriginPosition.x)
+			{
+				m_bHideFinish = true;
+				m_tInfo.fX = m_vOriginPosition.x;
+			}
+			else
+			{
+				m_tInfo.fX += fTimeDelta * m_fHideSpeed;
+			}
+		}
+
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 	}
 }
 

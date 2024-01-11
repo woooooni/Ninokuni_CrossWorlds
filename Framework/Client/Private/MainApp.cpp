@@ -62,8 +62,8 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 	// UI Cursor
-	CUI_Manager::GetInstance()->Ready_Cursor();
-	ShowCursor(false);
+	//CUI_Manager::GetInstance()->Ready_Cursor();
+	//ShowCursor(false);
 
 	//CUI_Manager::GetInstance()->Ready_Veils();
 

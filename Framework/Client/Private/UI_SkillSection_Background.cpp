@@ -77,6 +77,41 @@ void CUI_SkillSection_Background::Use_BurstSkill(_uint iSlotNum)
 	dynamic_cast<CUI_WeaponSection_Slot*>(pTemp)->Use_BurstSkill();
 }
 
+void CUI_SkillSection_Background::Hide_UI(_bool bHide)
+{
+	m_bHide = bHide; m_bHideFinish = false; m_fDistance = 0.f;
+
+	// WeaponSelected랑 Slot에게도 전해주어야한다.
+	CUI* pTemp = nullptr;
+	pTemp = Get_Child(TEXT("Prototype_GameObject_UI_WeaponSection_Slot_First"));
+	if (nullptr == pTemp)
+		return;
+	if (nullptr == dynamic_cast<CUI_WeaponSection_Slot*>(pTemp))
+		return;
+	dynamic_cast<CUI_WeaponSection_Slot*>(pTemp)->Hide_UI(bHide);
+
+	pTemp = nullptr;
+	pTemp = Get_Child(TEXT("Prototype_GameObject_UI_WeaponSection_Slot_Second"));
+	if (nullptr == pTemp)
+		return;
+	if (nullptr == dynamic_cast<CUI_WeaponSection_Slot*>(pTemp))
+		return;
+	dynamic_cast<CUI_WeaponSection_Slot*>(pTemp)->Hide_UI(bHide);
+
+	pTemp = nullptr;
+	pTemp = Get_Child(TEXT("Prototype_GameObject_UI_WeaponSection_Slot_Third"));
+	if (nullptr == pTemp)
+		return;
+	if (nullptr == dynamic_cast<CUI_WeaponSection_Slot*>(pTemp))
+		return;
+	dynamic_cast<CUI_WeaponSection_Slot*>(pTemp)->Hide_UI(bHide);
+
+	if (nullptr == m_pSelected)
+		return;
+
+	m_pSelected->Hide_UI(bHide);
+}
+
 HRESULT CUI_SkillSection_Background::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
@@ -132,6 +167,12 @@ HRESULT CUI_SkillSection_Background::Initialize(void* pArg)
 		return E_FAIL;
 	m_pSelected = dynamic_cast<CUI_WeaponSection_Selected*>(pIcon);
 
+	m_bHide = false;
+	m_bHideFinish = false;
+	m_vOriginPosition = _float2(m_tInfo.fX, m_tInfo.fY);
+	m_vHidePosition.x = g_iWinSizeX + m_tInfo.fCX * 0.5f;
+	m_vHidePosition.y = m_tInfo.fY;
+
 	return S_OK;
 }
 
@@ -141,6 +182,8 @@ void CUI_SkillSection_Background::Tick(_float fTimeDelta)
 	{
 		if (nullptr != m_pSelected)
 			m_pSelected->Tick(fTimeDelta);
+
+		Movement_BasedOnHiding(fTimeDelta);
 
 		__super::Tick(fTimeDelta);
 	}
@@ -232,6 +275,43 @@ HRESULT CUI_SkillSection_Background::Bind_ShaderResources()
 		return E_FAIL;
 
 	return S_OK;
+}
+
+void CUI_SkillSection_Background::Movement_BasedOnHiding(_float fTimeDelta)
+{
+	if (false == m_bHideFinish)
+	{
+		if (m_bHide) // 숨긴다
+		{
+			if (m_tInfo.fX >= m_vHidePosition.x)
+			{
+				m_bHideFinish = true;
+				m_tInfo.fX = m_vHidePosition.x;
+			}
+			else
+			{
+				m_fDistance = fTimeDelta * m_fHideSpeed;
+				m_tInfo.fX += m_fDistance;
+			}
+		}
+		else // 드러낸다
+		{
+			if (m_tInfo.fX <= m_vOriginPosition.x)
+			{
+				m_bHideFinish = true;
+				m_pSelected->Set_Active(true);
+				m_tInfo.fX = m_vOriginPosition.x;
+			}
+			else
+			{
+				m_fDistance = fTimeDelta * m_fHideSpeed;
+				m_tInfo.fX -= m_fDistance;
+			}
+		}
+
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
+	}
 }
 
 CUI_SkillSection_Background* CUI_SkillSection_Background::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

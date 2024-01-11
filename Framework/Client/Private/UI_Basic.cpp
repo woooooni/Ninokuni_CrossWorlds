@@ -229,6 +229,13 @@ HRESULT CUI_Basic::Render()
 
 void CUI_Basic::On_MouseEnter(_float fTimeDelta)
 {
+	if (m_bActive)
+	{
+		if (UILOBBY_DICE == m_eType)
+		{
+			CUI_Manager::GetInstance()->Set_MouseCursor(0);
+		}
+	}
 }
 
 void CUI_Basic::On_Mouse(_float fTimeDelta)
@@ -254,6 +261,11 @@ void CUI_Basic::On_MouseExit(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (UILOBBY_DICE == m_eType)
+		{
+			CUI_Manager::GetInstance()->Set_MouseCursor(1);
+		}
+
 		__super::On_MouseExit(fTimeDelta);
 	}
 }

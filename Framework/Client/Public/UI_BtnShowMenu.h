@@ -11,6 +11,9 @@ protected:
 	virtual ~CUI_BtnShowMenu() = default;
 
 public:
+	void Hide_UI(_bool bHide) { m_bHide = bHide; m_bHideFinish = false; }
+
+public:
 	virtual HRESULT	Initialize_Prototype();
 	virtual HRESULT	Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta);
@@ -23,9 +26,11 @@ public:
 	virtual void On_MouseExit(_float fTimeDelta) override;
 
 private:
-	_bool m_bHide = { false }; // 숨겨졌는가? -> 다른 창이 활성화 되었을때 사용할 예정
-
-	// 움직일 포지션 필요함.
+	_bool m_bHide = { false };
+	_bool m_bHideFinish = { false };
+	_float m_fHideSpeed = { 100.f };
+	_float2 m_vOriginPosition = _float2(0.f, 0.f);
+	_float2 m_vHidePosition = _float2(0.f, 0.f);
 
 private:
 	virtual HRESULT	Ready_Components() override;
@@ -33,6 +38,7 @@ private:
 private:
 	HRESULT	Ready_State();
 	HRESULT	Bind_ShaderResources();
+	void Movement_BasedOnHiding(_float fTimeDelta);
 
 public:
 	static CUI_BtnShowMenu* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);

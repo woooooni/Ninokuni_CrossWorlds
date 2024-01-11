@@ -34,6 +34,13 @@ void CUI_WeaponSection_Slot::Use_BurstSkill()
 	m_pFrame->Use_Skill();
 }
 
+void CUI_WeaponSection_Slot::Hide_UI(_bool bHide)
+{
+	m_bHide = bHide; m_bHideFinish = false;
+
+	m_pFrame->Hide_UI(bHide);
+}
+
 HRESULT CUI_WeaponSection_Slot::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
@@ -116,6 +123,10 @@ HRESULT CUI_WeaponSection_Slot::Initialize(void* pArg)
 		break;
 	}
 
+	m_bHide = false;
+	m_bHideFinish = false;
+	m_vOriginPosition = _float2(m_tInfo.fX, m_tInfo.fY);
+
 	return S_OK;
 }
 
@@ -123,6 +134,8 @@ void CUI_WeaponSection_Slot::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		Movement_BasedOnHiding(fTimeDelta);
+
 		if (nullptr != m_pFrame)
 			m_pFrame->Tick(fTimeDelta);
 
@@ -247,6 +260,50 @@ void CUI_WeaponSection_Slot::Key_Input(_float fTimeDelta)
 	{
 		m_bClick = true;
 		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(m_eSlotType);
+	}
+}
+
+void CUI_WeaponSection_Slot::Movement_BasedOnHiding(_float fTimeDelta)
+{
+	if (false == m_bHideFinish)
+	{
+		if (m_bHide) // 숨긴다
+		{
+			if (CUI_Manager::GetInstance()->Get_MovementComplete_SkillBG())
+				m_bHideFinish = true;
+			else
+				m_tInfo.fX += (CUI_Manager::GetInstance()->Get_DistanceofMovement_SkillBG() * 0.05f);
+		}
+		else // 드러낸다
+		{
+			if (CUI_Manager::GetInstance()->Get_MovementComplete_SkillBG())
+			{
+				if (m_tInfo.fX <= m_vOriginPosition.x)
+				{
+					m_bHideFinish = true;
+					m_tInfo.fX = m_vOriginPosition.x;
+				}
+				else
+				{
+					m_tInfo.fX -= fTimeDelta * m_fHideSpeed;
+				}
+			}
+			else
+			{
+				if (m_tInfo.fX <= m_vOriginPosition.x)
+				{
+					m_bHideFinish = true;
+					m_tInfo.fX = m_vOriginPosition.x;
+				}
+				else
+				{
+					m_tInfo.fX -= (CUI_Manager::GetInstance()->Get_DistanceofMovement_SkillBG() * 0.05f);
+				}
+			}
+		}
+
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 	}
 }
 
