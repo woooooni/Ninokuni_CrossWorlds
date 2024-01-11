@@ -18,6 +18,7 @@ HRESULT CState_Destroyer_BurstSkill_HyperStrike::Initialize(const list<wstring>&
 
 void CState_Destroyer_BurstSkill_HyperStrike::Enter_State(void* pArg)
 {
+    m_pCharacter->Look_For_Target();
     m_pCharacter->Appear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }

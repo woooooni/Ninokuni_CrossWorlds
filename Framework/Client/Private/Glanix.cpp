@@ -113,6 +113,8 @@ HRESULT CGlanix::Initialize(void* pArg)
 	if (FAILED(CUI_Manager::GetInstance()->Ready_BossHPBar(this)))
 		return E_FAIL;
 
+	m_iObjectType = OBJ_TYPE::OBJ_BOSS;
+
 	return S_OK;
 }
 

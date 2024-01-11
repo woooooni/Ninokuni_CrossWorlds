@@ -21,6 +21,7 @@ void CState_Destroyer_SpecialSkill_FrengeCharge::Enter_State(void* pArg)
     wstring strVoiceNum = to_wstring(CUtils::Random_Int(1, 3));
     CSound_Manager::GetInstance()->Play_Sound(L"Destroyer_V_Atk_Cast_Long_" + strVoiceNum + L".mp3", CHANNELID::SOUND_VOICE_CHARACTER, 0.5f, true);
 
+    m_pCharacter->Look_For_Target();
     m_pCharacter->Appear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }

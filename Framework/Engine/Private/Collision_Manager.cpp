@@ -13,6 +13,7 @@ HRESULT CCollision_Manager::Reserve_Manager()
 {
 	Reset();
 	Reserve_CheckGroup(COLLISION_GROUP::CHARACTER, COLLISION_GROUP::MONSTER);
+	Reserve_CheckGroup(COLLISION_GROUP::CHARACTER, COLLISION_GROUP::TRIGGER);
 	Reserve_CheckGroup(COLLISION_GROUP::CHARACTER, COLLISION_GROUP::ANIMAL);
 
 	for (_uint i = 0; i < COLLISION_GROUP::GROUP_END; ++i)
@@ -66,7 +67,6 @@ void CCollision_Manager::LateTick(_float fTimeDelta)
 HRESULT CCollision_Manager::Add_CollisionGroup(COLLISION_GROUP eGroup, CGameObject* pGameObject)
 {
 	m_CollisionObjects[eGroup].push_back(pGameObject);
-
 	return S_OK;
 }
 

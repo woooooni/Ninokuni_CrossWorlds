@@ -3,6 +3,7 @@
 #include "Character.h"
 #include "State_Character.h"
 #include "UI_Manager.h"
+#include "UI_Dialog_Window.h"
 
 
 CState_Character::CState_Character(CStateMachine* pStateMachine)
@@ -30,6 +31,9 @@ void CState_Character::Free()
 
 void CState_Character::Neutral_Idle_Input(_float fTimeDelta)
 {
+	if (true == CUI_Manager::GetInstance()->Is_Dialog_Active())
+		return;
+
 	if (KEY_HOLD(KEY::W) || KEY_HOLD(KEY::A) || KEY_HOLD(KEY::S) || KEY_HOLD(KEY::D))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_WALK);
@@ -75,6 +79,9 @@ void CState_Character::Neutral_Idle_Input(_float fTimeDelta)
 
 void CState_Character::Battle_Idle_Input(_float fTimeDelta)
 {
+	if (true == CUI_Manager::GetInstance()->Is_Dialog_Active())
+		return;
+
 	if (KEY_HOLD(KEY::W) || KEY_HOLD(KEY::A) || KEY_HOLD(KEY::S) || KEY_HOLD(KEY::D))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::BATTLE_WALK);
@@ -1338,8 +1345,6 @@ void CState_Character::Dead_Input(_float fTimeDelta)
 		m_pStateMachineCom->Change_State(CCharacter::REVIVE);
 	}
 }
-
-
 
 void CState_Character::Interaction_Input(_float fTimeDelta)
 {

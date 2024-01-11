@@ -40,6 +40,8 @@ public: // Get/Set
 	_float			Get_DistanceofMovement_SkillBG();
 	_bool			Get_MovementComplete_SkillBG();
 
+	_bool			Is_Dialog_Active();
+
 public:
 	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	void	Tick(_float fTimeDelta);

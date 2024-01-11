@@ -23,6 +23,7 @@ void CState_SwordMan_Battle_Attack_2::Enter_State(void* pArg)
     CSound_Manager::GetInstance()->Play_Sound(L"SwordsMan_V_Atk_Medium_" + strVoiceNum + L".mp3", CHANNELID::SOUND_VOICE_CHARACTER, 0.5f, true);
 
     m_pCharacter->Appear_Weapon();
+    m_pCharacter->Look_For_Target();
     m_pModelCom->Set_Animation(m_AnimIndices[0], 0.05f);
 }
 

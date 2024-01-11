@@ -79,7 +79,7 @@ void CCharacter::Tick(_float fTimeDelta)
 
 	m_eElemental;
 
-	if (nullptr == m_pTarget)
+	if (nullptr != m_pTarget)
 		Tick_Target(fTimeDelta);
 
 	if (KEY_TAP(KEY::L))
@@ -89,6 +89,11 @@ void CCharacter::Tick(_float fTimeDelta)
 	if (KEY_TAP(KEY::U))
 	{
 		GI->UnLock_Mouse();
+	}
+
+	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::INSERT))
+	{
+		m_pStateCom->Change_State(CCharacter::STATE::NEUTRAL_IDLE);
 	}
 
 	//if (KEY_TAP(KEY::TAB))
@@ -221,7 +226,7 @@ void CCharacter::Tick_Target(_float fTimeDelta)
 
 	if (m_pTarget->Is_ReserveDead() || m_pTarget->Is_Dead())
 	{
-		m_pTarget = nullptr;
+		Safe_Release(m_pTarget);
 		return;
 	}
 		
@@ -229,8 +234,12 @@ void CCharacter::Tick_Target(_float fTimeDelta)
 	if (nullptr != pTargetTransform)
 	{
 		Vec3 vDir = pTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
-		if (vDir.Length() > 10.f)
+		if (vDir.Length() > 6.f)
+		{
+			Safe_Release(m_pTarget);
 			m_pTarget = nullptr;
+		}
+			
 	}
 }
 
@@ -470,11 +479,17 @@ void CCharacter::Decide_Target(COLLISION_INFO tInfo)
 	if (nullptr == m_pTarget)
 	{
 		m_pTarget = tInfo.pOther;
+		Safe_AddRef(m_pTarget);
 	}
 	else
 	{
 		if (m_pTarget->Is_Dead() || m_pTarget->Is_ReserveDead())
+		{
+			Safe_Release(m_pTarget);
 			return;
+		}
+			
+			
 
 		CTransform* pTargetTransform = m_pTarget->Get_Component<CTransform>(L"Com_Transform");
 		CTransform* pNewTargetTransform = tInfo.pOther->Get_Component<CTransform>(L"Com_Transform");
@@ -485,7 +500,11 @@ void CCharacter::Decide_Target(COLLISION_INFO tInfo)
 			Vec3 vNewTargetDir = pNewTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
 			if (vNewTargetDir.Length() < vTargetDir.Length())
 			{
+				if (nullptr != m_pTarget)
+					Safe_Release(m_pTarget);
+
 				m_pTarget = tInfo.pOther;
+				Safe_AddRef(m_pTarget);
 			}
 		}
 	}
@@ -551,6 +570,16 @@ void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 	}
 }
 
+
+void CCharacter::Set_EnterLevelPosition(Vec4 vPosition)
+{
+	
+	m_pStateCom->Change_State(CCharacter::STATE::NEUTRAL_DOOR_ENTER);
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vPosition, 1.f));
+	vPosition.z += 1.f;
+	m_pTransformCom->LookAt_ForLandObject(XMVectorSetW(vPosition, 1.f));
+	m_pControllerCom->Set_EnterLevel_Position(vPosition);
+}
 
 HRESULT CCharacter::Disappear_Weapon()
 {
@@ -649,6 +678,23 @@ void CCharacter::Look_For_Target()
 	if (nullptr == pTargetTransform)
 		return;
 
+	Vec3 vDir = pTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
+	if (m_eCharacterType != CHARACTER_TYPE::ENGINEER)
+	{
+		if (vDir.Length() <= 3.f)
+		{
+			m_pTransformCom->LookAt_ForLandObject(pTargetTransform->Get_Position());
+		}
+	}
+	else
+	{
+		if (vDir.Length() <= 5.f)
+		{
+			m_pTransformCom->LookAt_ForLandObject(pTargetTransform->Get_Position());
+		}
+	}
+	
+
 	m_pTransformCom->LookAt_ForLandObject(XMVectorSetW(pTargetTransform->Get_Position(), 1.f));
 }
 
@@ -698,4 +744,5 @@ void CCharacter::Free()
 	Safe_Release(m_pControllerCom);
 	Safe_Release(m_pStateCom);
 	Safe_Release(m_pNavigationCom);
+	Safe_Release(m_pTarget);
 }

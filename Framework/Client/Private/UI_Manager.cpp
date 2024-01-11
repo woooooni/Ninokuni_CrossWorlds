@@ -267,10 +267,12 @@ _int CUI_Manager::Get_SelectedCharacter()
 _float CUI_Manager::Get_DistanceofMovement_SkillBG()
 {
 	if (nullptr == m_pSkillBG)
-		return -0.f;
+		return 0.f;
 
 	if (true == m_pSkillBG->Get_Active())
 		return m_pSkillBG->Get_Distance();
+
+	return 0.f;
 }
 
 _bool CUI_Manager::Get_MovementComplete_SkillBG()
@@ -279,6 +281,14 @@ _bool CUI_Manager::Get_MovementComplete_SkillBG()
 		return false;
 
 	return m_pSkillBG->Get_MovementComplete();
+}
+
+_bool CUI_Manager::Is_Dialog_Active()
+{
+	if (nullptr == m_pDialogWindow)
+		return false;
+
+	return m_pDialogWindow->Get_Active();
 }
 
 _bool CUI_Manager::Is_DefaultSettingOn()

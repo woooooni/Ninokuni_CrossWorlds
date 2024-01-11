@@ -188,14 +188,8 @@ HRESULT CLevel_Kingdom::Ready_Layer_Terrain(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Kingdom::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 {
-	if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, true)))
+	if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, Vec4(0.f, 0.8f, -5.f, 1.f), true)))
 		return E_FAIL;
-
-	CTransform* pCharacterTransform = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform");
-	if (nullptr == pCharacterTransform)
-		return E_FAIL;
-
-	pCharacterTransform->Set_State(CTransform::STATE_POSITION, Vec4(0.f, 1.f, -5.f, 1.f));
 
 	/* Set Camera */
 	if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))

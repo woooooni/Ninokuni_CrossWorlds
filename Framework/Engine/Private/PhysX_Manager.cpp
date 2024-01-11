@@ -57,7 +57,7 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 	SceneDesc.cudaContextManager = m_pCudaContextManager;
 	m_pScene = m_Physics->createScene(SceneDesc);
 	m_pController_Manager = PxCreateControllerManager(*m_pScene);
-	//m_pController_Manager->setOverlapRecoveryModule(true);
+	m_pController_Manager->setOverlapRecoveryModule(true);
 
 
 	PxPvdSceneClient* pvdClient = m_pScene->getScenePvdClient();
@@ -1212,10 +1212,22 @@ void CPhysX_Manager::Free()
 #endif
 }
 
+_bool CPhysX_Manager::Check_Push(_uint iLeftObjType, _uint iRightObjType)
+{
+	_bool bPush = false;
+	bPush = ((iLeftObjType == OBJ_MONSTER && iRightObjType == OBJ_CHARACTER) || (iLeftObjType == OBJ_CHARACTER && iRightObjType == OBJ_MONSTER));
+
+
+	return bPush;
+}
+
 // ControllerFilterCallBack
 bool CPhysX_Manager::filter(const PxController& a, const PxController& b)
 {
-	return false;
+	CGameObject* pLeftObj = static_cast<CGameObject*>(a.getActor()->userData);
+	CGameObject* pRightObj = static_cast<CGameObject*>(b.getActor()->userData);
+
+	return Check_Push(pLeftObj->Get_ObjectType(), pRightObj->Get_ObjectType());
 }
 void CPhysX_Manager::onConstraintBreak(PxConstraintInfo* constraints, PxU32 count)
 {
@@ -1231,36 +1243,7 @@ void CPhysX_Manager::onSleep(PxActor** actors, PxU32 count)
 void CPhysX_Manager::onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs)
 {
 
-	/*vector<PxContactPairPoint> PairPoints;
-	PairPoints.resize(pairs->contactCount);
-	pairs->extractContacts(PairPoints.data(), pairs->contactCount);
-	if (nullptr == pairHeader.actors[0] || nullptr == pairHeader.actors[1])
-		return;
-	PxActor* pLeftActor = pairHeader.actors[0];
-	PxActor* pRightActor = pairHeader.actors[1];
-	if (true == GI->Is_Compare(pLeftActor->getName(), "Collider"))
-	{
-		if (true == GI->Is_Compare(pRightActor->getName(), "Collider"))
-		{
-			CCollider* pLeftCollider = static_cast<CCollider*>(pLeftActor->userData);
-			CCollider* pRightCollider = static_cast<CCollider*>(pRightActor->userData);
-			if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_FOUND))
-			{
-				pLeftCollider->Collision_Enter(pRightCollider);
-				pRightCollider->Collision_Enter(pLeftCollider);
-			}
-			else if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_PERSISTS))
-			{
-				pLeftCollider->Collision_Continue(pRightCollider);
-				pRightCollider->Collision_Continue(pLeftCollider);
-			}
-			else if (true == pairs->events.isSet(PxPairFlag::eNOTIFY_TOUCH_LOST))
-			{
-				pLeftCollider->Collision_Exit(pRightCollider);
-				pRightCollider->Collision_Exit(pLeftCollider);
-			}
-		}
-	}*/
+	
 }
 void CPhysX_Manager::onTrigger(PxTriggerPair* pairs, PxU32 count)
 {

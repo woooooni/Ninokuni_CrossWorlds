@@ -142,6 +142,12 @@ _bool CPhysX_Controller::Is_Active()
 	return m_bActive;
 }
 
+void CPhysX_Controller::Set_EnterLevel_Position(Vec4 vPosition)
+{
+	m_pPhysXController->setFootPosition(PxExtendedVec3(vPosition.x, vPosition.y, vPosition.z));
+	m_vPrevPosition = Vec3(vPosition.x, vPosition.y, vPosition.z);
+}
+
 
 CPhysX_Controller* CPhysX_Controller::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
@@ -171,6 +177,9 @@ CComponent* CPhysX_Controller::Clone(void* pArg)
 void CPhysX_Controller::Free()
 {
 	__super::Free();
+	while (false == GI->Is_PhysX_Valid()) {}
+	//여기 고쳐야함.
+	GI->Remove_Controller(m_pPhysXController);
 	Safe_Release(m_pTransformCom);
 }
 

@@ -19,6 +19,8 @@ public:
 	{
 		LEVELID eCurrentLevel = LEVELID::LEVEL_END;
 		LEVELID eNextLevel = LEVELID::LEVEL_END;
+
+		Vec4 vNextPos = { 0.f, 0.f, 0.f, 1.f };
 	} PORTAL_DESC;
 
 private:
@@ -48,7 +50,7 @@ private:
 private:
 	LEVELID m_eCurrentLevel = LEVELID::LEVEL_END;
 	LEVELID m_eNextLevel = LEVELID::LEVEL_END;
-
+	Vec4 m_vNextPos = { 0.f, 0.f, 0.f, 1.f };
 private:
 	class CTransform* m_pTransformCom = nullptr;
 	class CModel* m_pModelCom = nullptr;
