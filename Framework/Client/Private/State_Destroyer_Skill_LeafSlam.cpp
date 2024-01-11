@@ -20,6 +20,9 @@ HRESULT CState_Destroyer_Skill_LeafSlam::Initialize(const list<wstring>& Animati
 
 void CState_Destroyer_Skill_LeafSlam::Enter_State(void* pArg)
 {
+    wstring strVoiceNum = to_wstring(CUtils::Random_Int(1, 3));
+    CSound_Manager::GetInstance()->Play_Sound(L"Destroyer_V_Atk_Medium_" + strVoiceNum + L".mp3", CHANNELID::SOUND_VOICE_CHARACTER, 0.5f, true);
+
     m_pCharacter->Appear_Weapon();
     m_iCurrAnimIndex = m_AnimIndices[0];
     m_pModelCom->Set_Animation(m_iCurrAnimIndex);
@@ -28,7 +31,7 @@ void CState_Destroyer_Skill_LeafSlam::Enter_State(void* pArg)
     {
         CTransform* pTargetTransform = m_pCharacter->Get_Target()->Get_Component<CTransform>(L"Com_Transform");
         if(nullptr != pTargetTransform)
-            m_pTransformCom->LookAt_ForLandObject(pTargetTransform->Get_Position() * 2.f);
+            m_pTransformCom->LookAt_ForLandObject(pTargetTransform->Get_Position());
     }
 }
 

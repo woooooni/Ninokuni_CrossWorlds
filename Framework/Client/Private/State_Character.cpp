@@ -1099,15 +1099,16 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 		case CHARACTER_TYPE::DESTROYER:
 			if (KEY_HOLD(KEY::SHIFT))
 			{
-				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_WHEELWIND);
+				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_FRENGE_CHARGE);
 				if (true == bUseSkill)
 					CUI_Manager::GetInstance()->Use_ActiveSkillSlot(0);
 			}
 			else
 			{
-				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_BATTLE_CRY);
+				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_WHEELWIND);
 				if (true == bUseSkill)
 					CUI_Manager::GetInstance()->Use_ClassSkillSlot(0);
+				
 			}
 			
 			break;
@@ -1154,7 +1155,7 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 		case CHARACTER_TYPE::DESTROYER:
 			if (KEY_HOLD(KEY::SHIFT))
 			{
-				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_IGNORE_PAIN);
+				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_BATTLE_CRY);
 				if (true == bUseSkill)
 					CUI_Manager::GetInstance()->Use_ActiveSkillSlot(1);
 				
@@ -1211,7 +1212,7 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 		case CHARACTER_TYPE::DESTROYER:
 			if (KEY_HOLD(KEY::SHIFT))
 			{
-				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_FRENGE_CHARGE);
+				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::DESTROYER_IGNORE_PAIN);
 				if (true == bUseSkill)
 					CUI_Manager::GetInstance()->Use_ActiveSkillSlot(2);
 			}
