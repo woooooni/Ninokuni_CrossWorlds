@@ -422,8 +422,8 @@ HRESULT CRenderer::Draw_UI()
 
 	// Target : Object
 	{
-		if (FAILED(Render_Shadow_UI()))
-			return E_FAIL;
+		//if (FAILED(Render_Shadow_UI()))
+		//	return E_FAIL;
 
 		if (FAILED(Render_NonBlend_UI()))
 			return E_FAIL;
@@ -788,6 +788,19 @@ HRESULT CRenderer::Render_Shadow_Caculation()
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
 		return E_FAIL;
 
+	_float4x4 LightMatix = GI->Get_ShadowViewMatrix(GI->Get_CurrentLevel());
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_LightViewMatrix", &LightMatix)))
+		return E_FAIL;
+	_float4x4 CamProjMatrix = GI->Get_TransformFloat4x4(CPipeLine::D3DTS_PROJ);
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_CamProjMatrix", &CamProjMatrix)))
+		return E_FAIL;
+	_float4x4 ViewMatrixInv = GI->Get_TransformMatrixInverse_Float4x4(CPipeLine::D3DTS_VIEW);
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_ViewMatrixInv", &ViewMatrixInv)))
+		return E_FAIL;
+	_float4x4 ProjMatrixInv = GI->Get_TransformMatrixInverse_Float4x4(CPipeLine::D3DTS_PROJ);
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_ProjMatrixInv", &ProjMatrixInv)))
+		return E_FAIL;
+
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_Depth"), "g_DepthTarget")))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_ShadowDepth"), "g_ShadowTarget")))
@@ -959,21 +972,7 @@ HRESULT CRenderer::Render_Deferred()
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
 		return E_FAIL;
 
-	_float4x4 LightMatix = GI->Get_ShadowViewMatrix(GI->Get_CurrentLevel());
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_LightViewMatrix", &LightMatix)))
-		return E_FAIL;
-	_float4x4 CamProjMatrix = GI->Get_TransformFloat4x4(CPipeLine::D3DTS_PROJ);
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_CamProjMatrix", &CamProjMatrix)))
-		return E_FAIL;
-	_float4x4 ViewMatrixInv = GI->Get_TransformMatrixInverse_Float4x4(CPipeLine::D3DTS_VIEW);
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_ViewMatrixInv", &ViewMatrixInv)))
-		return E_FAIL;
-	_float4x4 ProjMatrixInv = GI->Get_TransformMatrixInverse_Float4x4(CPipeLine::D3DTS_PROJ);
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_ProjMatrixInv", &ProjMatrixInv)))
-		return E_FAIL;
-
 	// Bias
-	
 	if (KEY_TAP(KEY::OPEN_SQUARE_BRACKET))
 	{
 		if (KEY_HOLD(KEY::SHIFT))
@@ -1259,57 +1258,57 @@ HRESULT CRenderer::Render_Text()
 
 
 // MRT_Shadow_UI
-HRESULT CRenderer::Render_Shadow_UI()
-{
+//HRESULT CRenderer::Render_Shadow_UI()
+//{
 	// Begin_Shadow_UI_MRT
-	if (FAILED(m_pTarget_Manager->Begin_Shadow_MRT(m_pContext, TEXT("MRT_Shadow_UI"))))
-		return E_FAIL;
+	//if (FAILED(m_pTarget_Manager->Begin_Shadow_MRT(m_pContext, TEXT("MRT_Shadow_UI"))))
+	//	return E_FAIL;
 
-	for (auto& iter : m_RenderObjects[RENDER_SHADOW_UI])
-	{
-		if (m_bShadowDraw)
-		{
-			if (FAILED(iter->Render_ShadowDepth()))
-				return E_FAIL;
-		}
-		Safe_Release(iter);
-	}
-	m_RenderObjects[RENDER_SHADOW_UI].clear();
+	//for (auto& iter : m_RenderObjects[RENDER_SHADOW_UI])
+	//{
+	//	if (m_bShadowDraw)
+	//	{
+	//		if (FAILED(iter->Render_ShadowDepth()))
+	//			return E_FAIL;
+	//	}
+	//	Safe_Release(iter);
+	//}
+	//m_RenderObjects[RENDER_SHADOW_UI].clear();
 
-	for (auto& Pair : m_Render_Instancing_Objects[RENDER_SHADOW_UI])
-	{
-		if (nullptr == Pair.second.pGameObject)
-			continue;
+	//for (auto& Pair : m_Render_Instancing_Objects[RENDER_SHADOW_UI])
+	//{
+	//	if (nullptr == Pair.second.pGameObject)
+	//		continue;
 
-		if (m_bShadowDraw)
-		{
-			if (Pair.second.eShaderType == INSTANCING_SHADER_TYPE::ANIM_MODEL)
-			{
-				if (FAILED(m_pIntancingShaders[Pair.second.eShaderType]->Bind_RawValue("g_AnimInstancingDesc", Pair.second.AnimInstanceDesc.data(), sizeof(ANIMODEL_INSTANCE_DESC) * Pair.second.AnimInstanceDesc.size())))
-					return E_FAIL;
-			}
+	//	if (m_bShadowDraw)
+	//	{
+	//		if (Pair.second.eShaderType == INSTANCING_SHADER_TYPE::ANIM_MODEL)
+	//		{
+	//			if (FAILED(m_pIntancingShaders[Pair.second.eShaderType]->Bind_RawValue("g_AnimInstancingDesc", Pair.second.AnimInstanceDesc.data(), sizeof(ANIMODEL_INSTANCE_DESC) * Pair.second.AnimInstanceDesc.size())))
+	//				return E_FAIL;
+	//		}
 
-			if (FAILED(Pair.second.pGameObject->Render_Instance_Shadow(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices)))
-				return E_FAIL;
+	//		if (FAILED(Pair.second.pGameObject->Render_Instance_Shadow(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices)))
+	//			return E_FAIL;
 
-			if (FAILED(Pair.second.pGameObject->Render_Instance_AnimModel_Shadow(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices, Pair.second.TweenDesc, Pair.second.AnimInstanceDesc)))
-				return E_FAIL;
-		}
+	//		if (FAILED(Pair.second.pGameObject->Render_Instance_AnimModel_Shadow(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices, Pair.second.TweenDesc, Pair.second.AnimInstanceDesc)))
+	//			return E_FAIL;
+	//	}
 
-		Pair.second.TweenDesc.clear();
-		Pair.second.WorldMatrices.clear();
-		Pair.second.AnimInstanceDesc.clear();
-		Pair.second.EffectInstancingDesc.clear();
-		
-		Safe_Release(Pair.second.pGameObject);
-		Pair.second.pGameObject = nullptr;
-	}
+	//	Pair.second.TweenDesc.clear();
+	//	Pair.second.WorldMatrices.clear();
+	//	Pair.second.AnimInstanceDesc.clear();
+	//	Pair.second.EffectInstancingDesc.clear();
+	//	
+	//	Safe_Release(Pair.second.pGameObject);
+	//	Pair.second.pGameObject = nullptr;
+	//}
 
-	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
-		return E_FAIL;
+	//if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+	//	return E_FAIL;
 
-	return S_OK;
-}
+	//return S_OK;
+//}
 
 // MRT_GameObjects_UI
 HRESULT CRenderer::Render_NonBlend_UI()
@@ -1436,49 +1435,6 @@ HRESULT CRenderer::Render_Deferred_UI()
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
 		return E_FAIL;
 
-	_float4x4 LightMatix = GI->Get_ShadowViewMatrix(GI->Get_CurrentLevel());
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_LightViewMatrix", &LightMatix)))
-		return E_FAIL;
-	_float4x4 CamProjMatrix = GI->Get_TransformFloat4x4(CPipeLine::D3DTS_PROJ);
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_CamProjMatrix", &CamProjMatrix)))
-		return E_FAIL;
-	_float4x4 ViewMatrixInv = GI->Get_TransformMatrixInverse_Float4x4(CPipeLine::D3DTS_VIEW);
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_ViewMatrixInv", &ViewMatrixInv)))
-		return E_FAIL;
-	_float4x4 ProjMatrixInv = GI->Get_TransformMatrixInverse_Float4x4(CPipeLine::D3DTS_PROJ);
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_ProjMatrixInv", &ProjMatrixInv)))
-		return E_FAIL;
-
-	// Bias
-	/*
-	if (KEY_TAP(KEY::OPEN_SQUARE_BRACKET))
-	{
-		if (KEY_HOLD(KEY::SHIFT))
-		{
-			m_fBias += 0.0001f;
-		}
-		else
-		{
-			m_fBias += 0.001f;
-		}
-
-	}
-	if (KEY_TAP(KEY::CLOSE_SQUARE_BRACKET))
-	{
-		if (KEY_HOLD(KEY::SHIFT))
-		{
-			m_fBias -= 0.0001f;
-		}
-		else
-		{
-			m_fBias -= 0.001f;
-		}
-
-	}
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("g_fBias", &m_fBias, sizeof(_float))))
-		return E_FAIL;
-	*/
-
 	// Fog
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("g_vFogColor", &m_vFogColor, sizeof(_float4))))
 		return E_FAIL;
@@ -1494,8 +1450,8 @@ HRESULT CRenderer::Render_Deferred_UI()
 
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_Depth_UI"), "g_DepthTarget")))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_ShadowDepth_UI"), "g_ShadowTarget")))
-		return E_FAIL;
+	//if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_ShadowDepth_UI"), "g_ShadowTarget")))
+	//	return E_FAIL;
 
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_Bloom_Blur_UI"), "g_BloomTarget")))
 		return E_FAIL;
@@ -1503,7 +1459,8 @@ HRESULT CRenderer::Render_Deferred_UI()
 		return E_FAIL;
 
 	// 옵션 셋팅
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("g_bShadowDraw", &m_bShadowDraw, sizeof(_bool))))
+	_bool bShadowDraw = false;
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("g_bShadowDraw", &bShadowDraw, sizeof(_bool))))
 		return E_FAIL;
 
 	_bool bSsaoDraw = false;

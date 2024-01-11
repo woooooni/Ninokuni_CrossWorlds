@@ -350,11 +350,12 @@ PS_OUT PS_MAIN_ALPHABLENDMIX(PS_IN In)
 PS_OUT PS_MAIN_SHADOW(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
-
-    vector vDepthDesc = g_DepthTarget.Sample(PointSampler, In.vTexcoord);
-    vector vShadow = Shadow_Caculation(In, vDepthDesc.x, vDepthDesc.y);
 	
-    Out.vColor = vShadow;
+    vector vDepthDesc = g_DepthTarget.Sample(PointSampler, In.vTexcoord);
+    if (vDepthDesc.z == 1.f)
+        Out.vColor = float4(1.f, 1.f, 1.f, 1.f);
+	else 
+        Out.vColor = Shadow_Caculation(In, vDepthDesc.x, vDepthDesc.y);
 
     return Out;
 }
