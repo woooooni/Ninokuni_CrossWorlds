@@ -131,19 +131,30 @@ HRESULT CAnimals::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffe
 	return S_OK;
 }
 
-HRESULT CAnimals::Render_Instance_Shadow(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
+HRESULT CAnimals::Render_Instance_AnimModel_Shadow(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc)
 {
 	if (nullptr == m_pModelCom || nullptr == pInstancingShader)
 		return E_FAIL;
+
 	_float4 vCamPosition = GI->Get_CamPosition();
 	if (FAILED(pInstancingShader->Bind_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4))))
 		return E_FAIL;
+
 	if (FAILED(pInstancingShader->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
 		return E_FAIL;
+
 	if (FAILED(pInstancingShader->Bind_Matrix("g_ViewMatrix", &GI->Get_ShadowViewMatrix(GI->Get_CurrentLevel()))))
 		return E_FAIL;
+
 	if (FAILED(pInstancingShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
+
+	if (FAILED(pInstancingShader->Bind_RawValue("g_TweenFrames_Array", TweenDesc.data(), sizeof(TWEEN_DESC) * TweenDesc.size())))
+		return E_FAIL;
+
+	if (FAILED(pInstancingShader->Bind_RawValue("g_AnimInstancingDesc", AnimModelDesc.data(), sizeof(ANIMODEL_INSTANCE_DESC) * AnimModelDesc.size())))
+		return E_FAIL;
+
 
 	if (FAILED(m_pModelCom->SetUp_VTF(pInstancingShader)))
 		return E_FAIL;
@@ -160,6 +171,7 @@ HRESULT CAnimals::Render_Instance_Shadow(CShader* pInstancingShader, CVIBuffer_I
 	}
 	return S_OK;
 }
+
 
 void CAnimals::Collision_Enter(const COLLISION_INFO& tInfo)
 {

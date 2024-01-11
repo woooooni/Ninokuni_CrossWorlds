@@ -45,4 +45,5 @@ void CQuest_Manager::Set_SubQuestRunning(CSubQuest::SUBQUEST_NAME eSQName, _bool
 void CQuest_Manager::Free()
 {
 	Safe_Release(m_pMainQuest);
+	Safe_Release(m_pSubQuest);
 }

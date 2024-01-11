@@ -151,12 +151,12 @@ HRESULT CBoss::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffer_I
 	return S_OK;
 }
 
-HRESULT CBoss::Render_Instance_AnimModel_Shadow(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc)
+HRESULT CBoss::Render_Instance_AnimModel_Shadow(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc)
 {
-	__super::Render_Instance_AnimModel_Shadow(pInstancingShader, pInstancingBuffer, WorldMatrices, TweenDesc);
-
 	return S_OK;
 }
+
+
 
 void CBoss::Collision_Enter(const COLLISION_INFO& tInfo)
 {
