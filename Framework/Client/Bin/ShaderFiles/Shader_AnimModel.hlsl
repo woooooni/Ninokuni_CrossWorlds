@@ -68,127 +68,8 @@ struct VS_OUT
     float4 vWorldPosition : TEXCOORD2;
 };
 
-Matrix GetAffineTransformMatrix(float3 trans, float4 quat, float3 scale)
+float4x4 Create_AffineTransform(float3 trans, float4 quat, float3 scale)
 {
-    matrix scaleMatrix = 0;
-			{
-        scaleMatrix[0][0] = scale.x;
-        scaleMatrix[1][1] = scale.y;
-        scaleMatrix[2][2] = scale.z;
-        scaleMatrix[3][3] = 1.f;
-    }
-    matrix translationToOrigin = 0;
-			{			
-        translationToOrigin[0][0] = 1.f;
-        translationToOrigin[1][1] = 1.f;
-        translationToOrigin[2][2] = 1.f;
-        translationToOrigin[3][3] = 1.f;
-    }
-    matrix translationBack = translationToOrigin;
-	{
-				//translationBack[3][0] = 1.f;
-				//translationBack[3][1] = 1.f;
-				//translationBack[3][2] = 1.f;
-				//translationBack[3][3] = 1.f;
-    }
-    matrix rotationMatrix = 0;
-			{
-        float x = quat.x;
-        float y = quat.y;
-        float z = quat.z;
-        float w = quat.w;
-
-        float xx = x * x;
-        float yy = y * y;
-        float zz = z * z;
-        float xy = x * y;
-        float xz = x * z;
-        float yz = y * z;
-        float wx = w * x;
-        float wy = w * y;
-        float wz = w * z;
-
-        rotationMatrix[0][0] = 1.0f - 2.0f * (yy + zz);
-        rotationMatrix[1][0] = 2.0f * (xy + wz);
-        rotationMatrix[2][0] = 2.0f * (xz - wy);
-        rotationMatrix[3][0] = 0.f;
-
-        rotationMatrix[0][1] = 2.0f * (xy - wz);
-        rotationMatrix[1][1] = 1.0f - 2.0f * (xx + zz);
-        rotationMatrix[2][1] = 2.0f * (yz + wx);
-        rotationMatrix[3][1] = 0.f;
-
-        rotationMatrix[0][2] = 2.0f * (xz + wy);
-        rotationMatrix[1][2] = 2.0f * (yz - wx);
-        rotationMatrix[2][2] = 1.0f - 2.0f * (xx + yy);
-        rotationMatrix[3][2] = 0.f;
-
-        rotationMatrix[0][3] = 0.f;
-        rotationMatrix[1][3] = 0.f;
-        rotationMatrix[2][3] = 0.f;
-        rotationMatrix[3][3] = 1.f;
-    }
-    matrix translationMatrix = 0;
-			{
-        translationMatrix[0][0] = 1.f;
-        translationMatrix[1][1] = 1.f;
-        translationMatrix[2][2] = 1.f;
-				
-        translationMatrix[0][3] = trans.x;
-        translationMatrix[1][3] = trans.y;
-        translationMatrix[2][3] = trans.z;
-        translationMatrix[3][3] = 1.f;
-    }
-
-    matrix affine = scaleMatrix * translationBack * rotationMatrix * translationToOrigin * translationMatrix;
-    
-    return affine;
-}
-
-float4x4 CreateAffineTransformMatrix(float3 translation, float4 rotation, float3 scale)
-{
-    float4x4 scaleMatrix = float4x4(
-        scale.x, 0, 0, 0,
-        0, scale.y, 0, 0,
-        0, 0, scale.z, 0,
-        0, 0, 0, 1
-    );
-
-    float x = rotation.x;
-    float y = rotation.y;
-    float z = rotation.z;
-    float w = rotation.w;
-
-    float xx = x * x;
-    float yy = y * y;
-    float zz = z * z;
-    float xy = x * y;
-    float xz = x * z;
-    float yz = y * z;
-    float wx = w * x;
-    float wy = w * y;
-    float wz = w * z;
-
-    float4x4 rotationMatrix = float4x4(
-        1.0f - 2.0f * (yy + zz) , 2.0f * (xy + wz)          , 2.0f * (xz - wy)          , 0.0f,
-        2.0f * (xy - wz)        , 1.0f - 2.0f * (xx + zz)   , 2.0f * (yz + wx)          , 0.0f,
-        2.0f * (xz + wy)        , 2.0f * (yz - wx)          , 1.0f - 2.0f * (xx + yy)   , 0.0f,
-        0.0f                    , 0.0f                      , 0.0f                      , 1.0f
-    );
-
-    float4x4 translationMatrix = float4x4(
-        1, 0, 0, 0,
-        0, 1, 0, 0,
-        0, 0, 1, 0,
-        translation.x, translation.y, translation.z, 1
-    );
-
-    return scaleMatrix * rotationMatrix * translationMatrix;
-}
-
-float4x4 AffineTransform(float3 trans, float4 quat, float3 scale)
-{
-      // 이동 행렬
     float4x4 translationMatrix =
     {
         { 1.0f, 0.0f, 0.0f, 0.0f },
@@ -197,7 +78,6 @@ float4x4 AffineTransform(float3 trans, float4 quat, float3 scale)
         { trans.x, trans.y, trans.z, 1.0f }
     };
 
-    // 회전 행렬
     float4x4 rotationMatrix =
     {
         { 1.0f - 2.0f * (quat.y * quat.y + quat.z * quat.z), 2.0f * (quat.x * quat.y - quat.w * quat.z), 2.0f * (quat.x * quat.z + quat.w * quat.y), 0.0f },
@@ -206,7 +86,6 @@ float4x4 AffineTransform(float3 trans, float4 quat, float3 scale)
         { 0.0f, 0.0f, 0.0f, 1.0f }
     };
 
-    // 스케일 행렬
     float4x4 scaleMatrix =
     {
         { scale.x, 0.0f, 0.0f, 0.0f },
@@ -215,14 +94,10 @@ float4x4 AffineTransform(float3 trans, float4 quat, float3 scale)
         { 0.0f, 0.0f, 0.0f, 1.0f }
     };
 
-    // 아핀 변환 행렬 계산    
-    
-    //return mul(translationMatrix, mul(rotationMatrix, scaleMatrix));
     return mul(scaleMatrix, mul(rotationMatrix, translationMatrix));
-    
 }
 
-matrix GetAnimationMatrix_0(VS_IN input)
+matrix Create_BoneMatrix_By_Lerp(VS_IN input)
 {
     float indices[4] = { input.vBlendIndex.x, input.vBlendIndex.y, input.vBlendIndex.z, input.vBlendIndex.w };
     float weights[4] = { input.vBlendWeight.x, input.vBlendWeight.y, input.vBlendWeight.z, input.vBlendWeight.w };
@@ -285,25 +160,7 @@ matrix GetAnimationMatrix_0(VS_IN input)
             next = float4x4(n0, n1, n2, n3);
 
             matrix nextResult = lerp(curr, next, ratio[1]);
-            // << : 
-            {
-                
-                //float3 fCurPos,     fNextPos;
-                //float4 fCurRot,     fNextRot;
-                //float3 fCurScale,   fNextScale;
-                //
-                //decompose(result, fCurPos, fCurRot, fCurScale);
-                //decompose(nextResult, fNextPos, fNextRot, fNextScale);
-                //
-                //float3 fTweenPos = lerp(fCurPos, fNextPos, g_TweenFrames.fTweenRatio);
-                //float4 fTweenRot = q_slerp(fCurRot, fNextRot, g_TweenFrames.fTweenRatio);
-                //float3 fTweenScale = lerp(fCurScale, fNextScale, g_TweenFrames.fTweenRatio);
-                //
-                //result = compose(fCurPos, fCurRot, fCurScale);
-                //result = GetAffineTransformMatrix(fTweenPos, fTweenRot, fTweenScale);
-            }
-            // >> : 
-                       
+                          
             result = lerp(result, nextResult, g_TweenFrames.fTweenRatio);
         }
         transform += result;
@@ -312,7 +169,7 @@ matrix GetAnimationMatrix_0(VS_IN input)
     return transform;
 }
 
-matrix GetAnimationMatrix_1(VS_IN input)
+matrix Create_BoneMatrix_By_Affine(VS_IN input)
 {
     float indices[4] = { input.vBlendIndex.x, input.vBlendIndex.y, input.vBlendIndex.z, input.vBlendIndex.w };
     float weights[4] = { input.vBlendWeight.x, input.vBlendWeight.y, input.vBlendWeight.z, input.vBlendWeight.w };
@@ -425,15 +282,13 @@ matrix GetAnimationMatrix_1(VS_IN input)
                 float3 fTweenPos = lerp(fCurAnimLerpPos, fNextAnimLerpPos, g_TweenFrames.fTweenRatio);
             
                 //result = compose(fTweenPos, fTweenRot, fTweenScale);
-                //result = GetAffineTransformMatrix(fTweenPos, fTweenRot, fTweenScale);
-                result = AffineTransform(fTweenPos, fTweenRot, fTweenScale);
+                result = Create_AffineTransform(fTweenPos, fTweenRot, fTweenScale);
             }
         }
         else
         {
             //result = compose(fCurAnimLerpPos, fCurAnimLerpRot, fCurAnimLerpScale);
-            //result = GetAffineTransformMatrix(fCurAnimLerpPos, fCurAnimLerpRot, fCurAnimLerpScale);
-            result = AffineTransform(fCurAnimLerpPos, fCurAnimLerpRot, fCurAnimLerpScale);
+            result = Create_AffineTransform(fCurAnimLerpPos, fCurAnimLerpRot, fCurAnimLerpScale);
         }
 
         transform += mul(result, weights[i]);
@@ -451,8 +306,8 @@ VS_OUT VS_MAIN(VS_IN In)
     matWV = mul(g_WorldMatrix, g_ViewMatrix);
     matWVP = mul(matWV, g_ProjMatrix);
 
-    //float4x4 BoneMatrix = GetAnimationMatrix_0(In);
-    float4x4 BoneMatrix = GetAnimationMatrix_1(In);
+    //float4x4 BoneMatrix = Create_BoneMatrix_By_Lerp(In);
+    float4x4 BoneMatrix = Create_BoneMatrix_By_Affine(In);
 
     vector vPosition = mul(vector(In.vPosition, 1.f), BoneMatrix);
     vector vNormal = mul(vector(In.vNormal, 0.f), BoneMatrix);
