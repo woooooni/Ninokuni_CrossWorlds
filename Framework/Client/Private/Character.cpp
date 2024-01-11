@@ -77,6 +77,8 @@ void CCharacter::Tick(_float fTimeDelta)
 	__super::Tick(fTimeDelta);
 	GI->Add_CollisionGroup(COLLISION_GROUP::CHARACTER, this);
 
+	m_eElemental;
+
 	if (nullptr == m_pTarget)
 		Tick_Target(fTimeDelta);
 
@@ -223,7 +225,6 @@ void CCharacter::Tick_Target(_float fTimeDelta)
 		return;
 	}
 		
-
 	CTransform* pTargetTransform = m_pTarget->Get_Component<CTransform>(L"Com_Transform");
 	if (nullptr != pTargetTransform)
 	{
@@ -380,6 +381,21 @@ void CCharacter::Collision_Continue(const COLLISION_INFO& tInfo)
 	{
 		if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_ANIMAL || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER)
 		{
+
+			if (m_pStateCom->Get_CurrState() == CCharacter::STATE::NEUTRAL_PICK_LARGE_ENTER
+				|| m_pStateCom->Get_CurrState() == CCharacter::STATE::NEUTRAL_PICK_LARGE_IDLE
+				|| m_pStateCom->Get_CurrState() == CCharacter::STATE::NEUTRAL_PICK_LARGE_WALK
+				|| m_pStateCom->Get_CurrState() == CCharacter::STATE::NEUTRAL_PICK_LARGE_RUN
+				|| m_pStateCom->Get_CurrState() == CCharacter::STATE::NEUTRAL_PICK_LARGE_THROW
+				|| m_pStateCom->Get_CurrState() == CCharacter::STATE::NEUTRAL_PICK_LARGE_FINISH
+				|| m_pStateCom->Get_CurrState() == CCharacter::STATE::NEUTRAL_PICK_SMALL_ENTER
+				|| m_pStateCom->Get_CurrState() == CCharacter::STATE::NEUTRAL_PICK_SMALL_IDLE
+				|| m_pStateCom->Get_CurrState() == CCharacter::STATE::NEUTRAL_PICK_SMALL_WALK
+				|| m_pStateCom->Get_CurrState() == CCharacter::STATE::NEUTRAL_PICK_SMALL_RUN
+				|| m_pStateCom->Get_CurrState() == CCharacter::STATE::NEUTRAL_PICK_SMALL_THROW
+				|| m_pStateCom->Get_CurrState() == CCharacter::STATE::NEUTRAL_PICK_SMALL_FINISH)
+				return;
+
 			Decide_Target(tInfo);
 		}
 	}
