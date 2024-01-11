@@ -12,12 +12,7 @@ private:
 
 public:
 	_bool Get_Active() { return m_bActive; }
-	void Set_Active(_bool bActive) {
-		m_bActive = bActive;
-
-		if (bActive)
-			m_pTransformCom->LookAt_ForLandObject(m_vCamPosition);
-	}
+	void Set_Active(_bool bActive);
 
 	class CUI_Dummy_Weapon* Get_Weapon() { return m_pWeapon; }
 

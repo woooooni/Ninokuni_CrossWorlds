@@ -11,6 +11,7 @@ CCollision_Manager::CCollision_Manager()
 
 HRESULT CCollision_Manager::Reserve_Manager()
 {
+	Reset();
 	Reserve_CheckGroup(COLLISION_GROUP::CHARACTER, COLLISION_GROUP::MONSTER);
 	Reserve_CheckGroup(COLLISION_GROUP::CHARACTER, COLLISION_GROUP::ANIMAL);
 

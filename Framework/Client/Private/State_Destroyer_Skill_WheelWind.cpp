@@ -20,6 +20,9 @@ HRESULT CState_Destroyer_Skill_WheelWind::Initialize(const list<wstring>& Animat
 
 void CState_Destroyer_Skill_WheelWind::Enter_State(void* pArg)
 {
+	wstring strVoiceNum = to_wstring(CUtils::Random_Int(1, 3));
+	CSound_Manager::GetInstance()->Play_Sound(L"Destroyer_V_Atk_Cast_Long_" + strVoiceNum + L".mp3", CHANNELID::SOUND_VOICE_CHARACTER, 0.5f, true);
+
     m_iCurrAnimIndex = m_AnimIndices[0];
 	m_fAccFinish = 0.f;
     m_pCharacter->Appear_Weapon();

@@ -617,6 +617,14 @@ HRESULT CGameInstance::Remove_Controller(PxController* pController)
 	return m_pPhysXManager->Remove_Controller(pController);
 }
 
+_bool CGameInstance::Is_PhysX_Valid()
+{
+	return m_pPhysXManager->Is_PhysX_Valid();
+}
+
+
+
+
 //HRESULT CGameInstance::Convert_Transform(CGameObject* pObj, PxTransform& PxTransform)
 //{
 //	return m_pPhysXManager->Convert_Transform(pObj, PxTransform);

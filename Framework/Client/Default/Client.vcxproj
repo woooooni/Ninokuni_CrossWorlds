@@ -248,6 +248,7 @@
     <ClInclude Include="..\Public\ColliderWall.h" />
     <ClInclude Include="..\Public\Decal.h" />
     <ClInclude Include="..\Public\Dochi.h" />
+    <ClInclude Include="..\Public\Door_Enter_FX.h" />
     <ClInclude Include="..\Public\DuckGoo.h" />
     <ClInclude Include="..\Public\DynamicProps.h" />
     <ClInclude Include="..\Public\Edellian.h" />
@@ -307,6 +308,7 @@
     <ClInclude Include="..\Public\GrimalKinML03.h" />
     <ClInclude Include="..\Public\GrimalKinML04.h" />
     <ClInclude Include="..\Public\GrimalkinOld01.h" />
+    <ClInclude Include="..\Public\Hammer.h" />
     <ClInclude Include="..\Public\HumanChild01.h" />
     <ClInclude Include="..\Public\HumanChild02.h" />
     <ClInclude Include="..\Public\HumanChildHalloweenA.h" />
@@ -387,6 +389,7 @@
     <ClInclude Include="..\Public\Quest_DestSpot.h" />
     <ClInclude Include="..\Public\Quest_Manager.h" />
     <ClInclude Include="..\Public\Rabbit.h" />
+    <ClInclude Include="..\Public\Rifle.h" />
     <ClInclude Include="..\Public\Shadow_ThiefNode_Air.h" />
     <ClInclude Include="..\Public\Shadow_ThiefNode_Blow.h" />
     <ClInclude Include="..\Public\Skill.h" />
@@ -907,6 +910,7 @@
     <ClCompile Include="..\Private\ColliderWall.cpp" />
     <ClCompile Include="..\Private\Decal.cpp" />
     <ClCompile Include="..\Private\Dochi.cpp" />
+    <ClCompile Include="..\Private\Door_Enter_FX.cpp" />
     <ClCompile Include="..\Private\DuckGoo.cpp" />
     <ClCompile Include="..\Private\DynamicProps.cpp" />
     <ClCompile Include="..\Private\Edellian.cpp" />
@@ -966,6 +970,7 @@
     <ClCompile Include="..\Private\GrimalKinML03.cpp" />
     <ClCompile Include="..\Private\GrimalKinML04.cpp" />
     <ClCompile Include="..\Private\GrimalkinOld01.cpp" />
+    <ClCompile Include="..\Private\Hammer.cpp" />
     <ClCompile Include="..\Private\HumanChild01.cpp" />
     <ClCompile Include="..\Private\HumanChild02.cpp" />
     <ClCompile Include="..\Private\HumanChildHalloweenA.cpp" />
@@ -1046,6 +1051,7 @@
     <ClCompile Include="..\Private\Quest_DestSpot.cpp" />
     <ClCompile Include="..\Private\Quest_Manager.cpp" />
     <ClCompile Include="..\Private\Rabbit.cpp" />
+    <ClCompile Include="..\Private\Rifle.cpp" />
     <ClCompile Include="..\Private\Shadow_ThiefNode_Air.cpp" />
     <ClCompile Include="..\Private\Shadow_ThiefNode_Blow.cpp" />
     <ClCompile Include="..\Private\Skill.cpp" />

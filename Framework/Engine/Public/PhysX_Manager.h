@@ -40,6 +40,7 @@ public:
 	HRESULT Clear_PhysX_Ground();
 
 public:
+	_bool Is_PhysX_Valid() { return m_bSimulating == false; }
 	HRESULT Reset_PhysX();
 
 public:

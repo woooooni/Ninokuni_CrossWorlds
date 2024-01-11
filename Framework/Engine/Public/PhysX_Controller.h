@@ -75,6 +75,7 @@ private:
 
 private:
     _bool m_bActive = true;
+    _bool m_bRemoved = false;
 
 
 public:
