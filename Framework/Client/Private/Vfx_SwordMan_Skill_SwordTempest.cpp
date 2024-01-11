@@ -31,8 +31,8 @@ HRESULT CVfx_SwordMan_Skill_SwordTempest::Initialize_Prototype()
 	m_pRotationOffset[TYPE_D_SQUARE] = _float3(0.f, 0.f, 0.f);
 
 	m_pFrameTriger[TYPE_E_ATTACK_01]    = 9;
-	m_pPositionOffset[TYPE_E_ATTACK_01] = _float3(0.f, 0.f, -0.5f);
-	m_pScaleOffset[TYPE_E_ATTACK_01]    = _float3(3.f, 3.f, 3.f);
+	m_pPositionOffset[TYPE_E_ATTACK_01] = _float3(0.f, 0.1f, -0.5f);
+	m_pScaleOffset[TYPE_E_ATTACK_01]    = _float3(6.f, 6.f, 6.f);
 	m_pRotationOffset[TYPE_E_ATTACK_01] = _float3(0.f, 0.f, 45.f);
 
 	m_pFrameTriger[TYPE_P_SPARKLE_01]    = 12;
@@ -41,8 +41,8 @@ HRESULT CVfx_SwordMan_Skill_SwordTempest::Initialize_Prototype()
 	m_pRotationOffset[TYPE_P_SPARKLE_01] = _float3(0.f, 0.f, 0.f);
 
 	m_pFrameTriger[TYPE_E_ATTACK_02]    = 16;
-	m_pPositionOffset[TYPE_E_ATTACK_02] = _float3(0.f, 0.f, -0.5f);
-	m_pScaleOffset[TYPE_E_ATTACK_02]    = _float3(3.f, 3.f, 3.f);
+	m_pPositionOffset[TYPE_E_ATTACK_02] = _float3(0.f, 0.1f, -0.5f);
+	m_pScaleOffset[TYPE_E_ATTACK_02]    = _float3(6.f, 6.f, 6.f);
 	m_pRotationOffset[TYPE_E_ATTACK_02] = _float3(0.f, 0.f, 0.f);
 
 	m_pFrameTriger[TYPE_P_XSPARKLE_01]    = 20;
@@ -51,8 +51,8 @@ HRESULT CVfx_SwordMan_Skill_SwordTempest::Initialize_Prototype()
 	m_pRotationOffset[TYPE_P_XSPARKLE_01] = _float3(0.f, 0.f, 0.f);
 
 	m_pFrameTriger[TYPE_E_ATTACK_03]    = 25;
-	m_pPositionOffset[TYPE_E_ATTACK_03] = _float3(0.f, 0.f, -0.5f);
-	m_pScaleOffset[TYPE_E_ATTACK_03]    = _float3(3.f, 3.f, 3.f);
+	m_pPositionOffset[TYPE_E_ATTACK_03] = _float3(0.f, 0.1f, -0.5f);
+	m_pScaleOffset[TYPE_E_ATTACK_03]    = _float3(6.f, 6.f, 6.f);
 	m_pRotationOffset[TYPE_E_ATTACK_03] = _float3(0.f, 0.f, -45.f);
 
 	m_pFrameTriger[TYPE_P_SPARKLE_02]    = 29;
@@ -61,8 +61,8 @@ HRESULT CVfx_SwordMan_Skill_SwordTempest::Initialize_Prototype()
 	m_pRotationOffset[TYPE_P_SPARKLE_02] = _float3(0.f, 0.f, 0.f);
 
 	m_pFrameTriger[TYPE_E_ATTACK_04]    = 33;
-	m_pPositionOffset[TYPE_E_ATTACK_04] = _float3(0.f, 0.f, -0.5f);
-	m_pScaleOffset[TYPE_E_ATTACK_04]    = _float3(3.f, 3.f, 3.f);
+	m_pPositionOffset[TYPE_E_ATTACK_04] = _float3(0.f, 0.1f, -0.5f);
+	m_pScaleOffset[TYPE_E_ATTACK_04]    = _float3(6.f, 6.f, 6.f);
 	m_pRotationOffset[TYPE_E_ATTACK_04] = _float3(0.f, 0.f, -70.f);
 
 	m_pFrameTriger[TYPE_P_XSPARKLE_02]    = 37;
@@ -71,8 +71,8 @@ HRESULT CVfx_SwordMan_Skill_SwordTempest::Initialize_Prototype()
 	m_pRotationOffset[TYPE_P_XSPARKLE_02] = _float3(0.f, 0.f, 0.f);
 
 	m_pFrameTriger[TYPE_E_ATTACK_05]    = 45;
-	m_pPositionOffset[TYPE_E_ATTACK_05] = _float3(0.f, 0.f, -0.5f);
-	m_pScaleOffset[TYPE_E_ATTACK_05]    = _float3(3.f, 3.f, 3.f);
+	m_pPositionOffset[TYPE_E_ATTACK_05] = _float3(0.f, 0.1f, -0.5f);
+	m_pScaleOffset[TYPE_E_ATTACK_05]    = _float3(6.f, 6.f, 6.f);
 	m_pRotationOffset[TYPE_E_ATTACK_05] = _float3(0.f, 0.f, 30.f);
 
  	return S_OK;

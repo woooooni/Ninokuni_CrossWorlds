@@ -24,9 +24,9 @@ public:
 public:
 	HRESULT AddLevel_Particle(_uint iLevelIndex, const wstring& strParticleName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner = nullptr, class CParticle** ppOut = nullptr);
 	HRESULT Generate_Particle(const wstring& strParticleName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner = nullptr, class CParticle** ppOut = nullptr);
-	HRESULT Tick_Generate_Particle(_float* fTimeAcc, _float fCreateTime, _float fTimeDelta, 
+	HRESULT Tick_Generate_Particle(_float* fTimeAcc, _float fCreateTime, _float fTimeDelta,
 		const wstring& strParticleName, CGameObject* pOwner,
-		_float3 vLocalPos = _float3(0.f, 0.f, 0.f), _float3 vLocalScale = _float3(1.f, 1.f, 1.f), _float3 vLocalRotation = _float3(0.f, 0.f, 0.f));
+		_float3 vLocalPos = _float3(0.f, 0.f, 0.f), _float3 vLocalScale = _float3(1.f, 1.f, 1.f), _float3 vLocalRotation = _float3(0.f, 0.f, 0.f), _bool bOwnerSet = false);
 
 private:
 	ID3D11Device* m_pDevice = nullptr;

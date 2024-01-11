@@ -135,7 +135,7 @@ HRESULT CParticle_Manager::Generate_Particle(const wstring& strParticleName, _ma
 	return S_OK;
 }
 
-HRESULT CParticle_Manager::Tick_Generate_Particle(_float* fTimeAcc, _float fCreateTime, _float fTimeDelta, const wstring& strParticleName, CGameObject* pOwner, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation)
+HRESULT CParticle_Manager::Tick_Generate_Particle(_float* fTimeAcc, _float fCreateTime, _float fTimeDelta, const wstring& strParticleName, CGameObject* pOwner, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, _bool bOwnerSet)
 {
 	*fTimeAcc += fTimeDelta;
 	if (*fTimeAcc >= fCreateTime)
@@ -146,7 +146,10 @@ HRESULT CParticle_Manager::Tick_Generate_Particle(_float* fTimeAcc, _float fCrea
 		if (pTransform == nullptr)
 			return S_OK;
 
-		Generate_Particle(strParticleName, pTransform->Get_WorldMatrix(), vLocalPos, vLocalScale, vLocalRotation, pOwner);
+		if(!bOwnerSet)
+			Generate_Particle(strParticleName, pTransform->Get_WorldMatrix(), vLocalPos, vLocalScale, vLocalRotation);
+		else
+			Generate_Particle(strParticleName, pTransform->Get_WorldMatrix(), vLocalPos, vLocalScale, vLocalRotation, pOwner);
 	}
 
 	return S_OK;
