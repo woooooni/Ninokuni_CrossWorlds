@@ -158,10 +158,33 @@ matrix Create_BoneMatrix_By_Lerp(VS_IN input)
             n2 = g_TransformMap.Load(int4(indices[i] * 4 + 2, nextFrame[1], animIndex[1], 0)) * weights[i];
             n3 = g_TransformMap.Load(int4(indices[i] * 4 + 3, nextFrame[1], animIndex[1], 0)) * weights[i];
             next = float4x4(n0, n1, n2, n3);
-
-            matrix nextResult = lerp(curr, next, ratio[1]);
-                          
-            result = lerp(result, nextResult, g_TweenFrames.fTweenRatio);
+            
+            // Test         
+            {
+                //matrix nextResult = lerp(curr, next, ratio[1]);
+                //
+                //float3 fCurAnimScale, fNextAnimScale, fBlendingScale;
+                //float4 fCurAnimQuat, fNextAnimQuat, fBlendingQuat;
+                //float3 fCurAnimTrans, fNextAnimTrans, fBlendingTrans;
+                //
+                //
+                //decompose(result, fCurAnimTrans, fCurAnimQuat, fCurAnimScale);
+                //decompose(nextResult, fNextAnimTrans, fNextAnimQuat, fNextAnimScale);
+                //
+                //fBlendingTrans = lerp(fCurAnimTrans, fNextAnimTrans, g_TweenFrames.fTweenRatio);
+                //fBlendingQuat = q_slerp(fCurAnimQuat, fNextAnimQuat, g_TweenFrames.fTweenRatio);
+                //fBlendingScale = lerp(fCurAnimScale, fNextAnimScale, g_TweenFrames.fTweenRatio);
+                //
+                //result = Create_AffineTransform(fBlendingTrans, fBlendingQuat, fBlendingScale);
+            }
+            
+            // Origin 
+            {
+               matrix nextResult = lerp(curr, next, ratio[1]);
+                         
+               result = lerp(result, nextResult, g_TweenFrames.fTweenRatio);
+            }
+            
         }
         transform += result;
     }
@@ -306,8 +329,8 @@ VS_OUT VS_MAIN(VS_IN In)
     matWV = mul(g_WorldMatrix, g_ViewMatrix);
     matWVP = mul(matWV, g_ProjMatrix);
 
-    //float4x4 BoneMatrix = Create_BoneMatrix_By_Lerp(In);
-    float4x4 BoneMatrix = Create_BoneMatrix_By_Affine(In);
+    float4x4 BoneMatrix = Create_BoneMatrix_By_Lerp(In);
+    //float4x4 BoneMatrix = Create_BoneMatrix_By_Affine(In);
 
     vector vPosition = mul(vector(In.vPosition, 1.f), BoneMatrix);
     vector vNormal = mul(vector(In.vNormal, 0.f), BoneMatrix);
