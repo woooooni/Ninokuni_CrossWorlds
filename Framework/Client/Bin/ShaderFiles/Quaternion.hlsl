@@ -194,6 +194,13 @@ float4 q_slerp(in float4 a, in float4 b, float t)
     return QUATERNION_IDENTITY;
 }
 
+float4 q_normalize(float4 q)
+{
+    float norm = length(q); // 쿼터니언의 크기 계산
+    return q / norm; // 크기로 나누어 정규화
+}
+
+
 //float4x4 quaternion_to_matrix(float4 quat)
 //{
 //    float4x4 m = float4x4(float4(0, 0, 0, 0), float4(0, 0, 0, 0), float4(0, 0, 0, 0), float4(0, 0, 0, 0));
