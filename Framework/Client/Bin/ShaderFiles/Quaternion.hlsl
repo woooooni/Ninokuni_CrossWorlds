@@ -141,52 +141,60 @@ float4 q_look_at(float3 forward, float3 up)
 
 float4 q_slerp(in float4 a, in float4 b, float t)
 {
-    // if either input is zero, return the other.
-    if (length(a) == 0.0)
+    // 매개변수 예외 처리
     {
-        if (length(b) == 0.0)
+        // quaternion 'a'가 유효한지 확인하고, 그렇지 않으면 'b'를 반환합니다.
+        if (length(a) == 0.0)
         {
-            return QUATERNION_IDENTITY;
+            // 만약 'a'와 'b' 모두 유효하지 않으면 항등 쿼터니언을 반환합니다.
+            if (length(b) == 0.0)
+            {
+                return QUATERNION_IDENTITY;
+            }
+            return b;
         }
-        return b;
-    }
-    else if (length(b) == 0.0)
-    {
-        return a;
+        else if (length(b) == 0.0) // quaternion 'b'가 유효한지 확인하고, 그렇지 않으면 'a'를 반환합니다.
+        {
+            return a;
+        }
     }
 
+    // 'a'와 'b' 사이의 반각 코사인 값(두 벡터 A, B 사이의 각도 세타에 대한 코사인 값 = 내적)을 계산합니다.
     float cosHalfAngle = a.w * b.w + dot(a.xyz, b.xyz);
 
+    // 코사인 값이 유효한 범위를 벗어나면 'a'를 반환합니다.
     if (cosHalfAngle >= 1.0 || cosHalfAngle <= -1.0)
     {
         return a;
     }
-    else if (cosHalfAngle < 0.0)
+    else if (cosHalfAngle < 0.0) // 코사인 값이 음수이면 'b'를 뒤집습니다.
     {
         b.xyz = -b.xyz;
         b.w = -b.w;
         cosHalfAngle = -cosHalfAngle;
     }
 
+    // 코사인 값이 0.99보다 작으면 (큰 각도), 구면 선형 보간 (Slerp)을 수행합니다.
     float blendA;
     float blendB;
     if (cosHalfAngle < 0.99)
     {
-        // do proper slerp for big angles
         float halfAngle = acos(cosHalfAngle);
         float sinHalfAngle = sin(halfAngle);
         float oneOverSinHalfAngle = 1.0 / sinHalfAngle;
         blendA = sin(halfAngle * (1.0 - t)) * oneOverSinHalfAngle;
         blendB = sin(halfAngle * t) * oneOverSinHalfAngle;
     }
-    else
+    else // 그렇지 않으면 (작은 각도), 선형 보간 (Lerp)을 수행합니다.
     {
-        // do lerp if angle is really small.
         blendA = 1.0 - t;
         blendB = t;
     }
 
+    // 계산된 blendA와 blendB를 사용하여 Slerp 또는 Lerp를 적용하여 결과 quaternion을 계산합니다.
     float4 result = float4(blendA * a.xyz + blendB * b.xyz, blendA * a.w + blendB * b.w);
+    
+    // 결과 quaternion이 유효한지 확인하고, 맞다면 정규화하여 반환합니다. 그렇지 않으면 항등 쿼터니언을 반환합니다.
     if (length(result) > 0.0)
     {
         return normalize(result);
