@@ -39,7 +39,7 @@ void CUI_MainMenu::Set_Active(_bool bActive)
 			if (m_bEvent)
 			{
 				m_bEvent = false;
-				CUI_Manager::GetInstance()->Set_UIClicked(m_bEvent);
+				//CUI_Manager::GetInstance()->Set_UIClicked(m_bEvent);
 			}
 		}
 
@@ -50,7 +50,7 @@ void CUI_MainMenu::Set_Active(_bool bActive)
 		if (m_bEvent)
 		{
 			m_bEvent = false;
-			CUI_Manager::GetInstance()->Set_UIClicked(m_bEvent);
+			//CUI_Manager::GetInstance()->Set_UIClicked(m_bEvent);
 		}
 
 		m_bActive = bActive;

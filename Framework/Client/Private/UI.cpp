@@ -164,6 +164,23 @@ HRESULT CUI::Initialize(void* pArg)
 
 void CUI::Tick(_float fTimeDelta)
 {
+	if (m_bEvent)
+	{
+		if (m_eMouseState != UI_MOUSESTATE::MOUSE_ON)
+		{
+			m_fEventTimeAcc += fTimeDelta;
+
+			if (m_fEventTimeAcc > 0.01f)
+			{
+				m_fEventTimeAcc = 0.f;
+
+				m_bEvent = false;
+				CUI_Manager::GetInstance()->Set_UIClicked(m_bEvent);
+			}
+		}
+	}
+
+
 	POINT pt = GI->GetMousePos();
 	RECT MouseRect;
 	MouseRect.left = pt.x - 1.f;
@@ -374,10 +391,13 @@ void CUI::On_Mouse(_float fTimeDelta)
 
 void CUI::On_MouseExit(_float fTimeDelta)
 {
-	if (CUI_Manager::GetInstance()->Is_UIClicked())
+	if (m_bActive)
 	{
-		m_bEvent = false;
-		CUI_Manager::GetInstance()->Set_UIClicked(m_bEvent);
+		if (CUI_Manager::GetInstance()->Is_UIClicked())
+		{
+			m_bEvent = false;
+			CUI_Manager::GetInstance()->Set_UIClicked(m_bEvent);
+		}
 	}
 }
 

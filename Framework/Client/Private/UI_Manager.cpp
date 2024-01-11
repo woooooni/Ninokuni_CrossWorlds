@@ -264,6 +264,23 @@ _int CUI_Manager::Get_SelectedCharacter()
 	return -1;
 }
 
+_float CUI_Manager::Get_DistanceofMovement_SkillBG()
+{
+	if (nullptr == m_pSkillBG)
+		return -0.f;
+
+	if (true == m_pSkillBG->Get_Active())
+		return m_pSkillBG->Get_Distance();
+}
+
+_bool CUI_Manager::Get_MovementComplete_SkillBG()
+{
+	if (nullptr == m_pSkillBG)
+		return false;
+
+	return m_pSkillBG->Get_MovementComplete();
+}
+
 _bool CUI_Manager::Is_DefaultSettingOn()
 {
 	// 게임 기본 세팅이 켜져있는지 확인해준다 -> UI매니저에서 Clone되지 않은 객체의 OnOff를 제어하기 위해서.
@@ -3810,16 +3827,15 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 			m_pCostumeAnnounce->Set_Active(false);
 	}
 
+	//Test Code
+	if (KEY_TAP(KEY::P))
+	{
+		Hide_GamePlaySetting(true);
+	}
+
 	if (KEY_TAP(KEY::O))
 	{
-		if (m_pBossNameTag->Get_Active())
-		{
-			m_pBossNameTag->Set_Active(false);
-		}
-		else
-		{
-			m_pBossNameTag->Set_Active(true);
-		}
+		Hide_GamePlaySetting(false);
 	}
 
 
@@ -4873,15 +4889,142 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 	return S_OK;
 }
 
-void CUI_Manager::Hide_GamePlaySetting(_bool bHide)
+HRESULT CUI_Manager::Hide_GamePlaySetting(_bool bHide)
 {
 	if (bHide) // 아이콘을 숨긴다
 	{
 		// Active false를 해야하는 UI
+		OnOff_TextUI(false);
+		OnOff_MonsterHP(false);
+		OnOff_BossHP(false);
+		for (auto& iter : m_Milepost)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+
+		// Hide false를 해야하는 UI
+		// 좌측
+		m_pPlayerStatus->Hide_UI(true);
+		for (auto& iter : m_ItemQuickslot)
+		{
+			if (nullptr != iter)
+				iter->Hide_UI(true);
+		}
+		m_pBtnCamera->Hide_UI(true);
+		m_pBtnQuest->Hide_UI(true);
+		// 우측
+		m_pBtnShowMenu->Hide_UI(true);
+		m_pBtnInven->Hide_UI(true);
+		m_pBtnShowMinimap->Hide_UI(true);
+		m_pSkillBG->Hide_UI(true);
+		for (auto& iter : m_ClassicSkill) // SkillBG랑 같이가도록 한다
+		{
+			if (nullptr != iter)
+				iter->Hide_UI(true);
+		}
+		for (auto& iter : m_ClassicFrame) // SkillBG랑 같이가도록 한다
+		{
+			if (nullptr != iter)
+				iter->Hide_UI(true);
+		}
+		for (auto& iter : m_SpecialSkill) // SkillBG랑 같이가도록 한다
+		{
+			if (nullptr != iter)
+				iter->Hide_UI(true);
+		}
+		for (auto& iter : m_SpecialFrame) // SkillBG랑 같이가도록 한다
+		{
+			if (nullptr != iter)
+				iter->Hide_UI(true);
+		}
+		for (auto& iter : m_WeaponIcon) // SkillBG랑 같이가도록 한다
+		{
+			if (nullptr != iter)
+				iter->Hide_UI(true);
+		}
+		for (auto& iter : m_WeaponElemental) // SkillBG랑 같이가도록 한다
+		{
+			if (nullptr != iter)
+				iter->Hide_UI(true);
+		}
+		//아래
+		m_pImajinnBG->Hide_UI(true);
+		for (auto& iter : m_PlayerEXP)
+		{
+			if (nullptr != iter)
+				iter->Hide_UI(true);
+		}
+
+		if (m_pSkillBG->Get_MovementComplete())
+			return S_OK;
 	}
 	else // 아이콘을 드러낸다
 	{
 		// Active true를 해야하는 UI
+		//OnOff_TextUI(true); Player Status로 이동
+		OnOff_MonsterHP(true);
+		OnOff_BossHP(true);
+		for (auto& iter : m_Milepost)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(true);
+		}
+
+		// Hide false를 해야하는 UI -> 숨기지 않는다
+		// 좌측
+		m_pPlayerStatus->Hide_UI(false);
+		for (auto& iter : m_ItemQuickslot)
+		{
+			if (nullptr != iter)
+				iter->Hide_UI(false);
+		}
+		m_pBtnCamera->Hide_UI(false);
+		m_pBtnQuest->Hide_UI(false);
+		// 우측
+		m_pBtnShowMenu->Hide_UI(false);
+		m_pBtnInven->Hide_UI(false);
+		m_pBtnShowMinimap->Hide_UI(false);
+		m_pSkillBG->Hide_UI(false);
+		for (auto& iter : m_ClassicSkill) // SkillBG랑 같이가도록 한다
+		{
+			if (nullptr != iter)
+				iter->Hide_UI(false);
+		}
+		for (auto& iter : m_ClassicFrame) // SkillBG랑 같이가도록 한다
+		{
+			if (nullptr != iter)
+				iter->Hide_UI(false);
+		}
+		for (auto& iter : m_SpecialSkill) // SkillBG랑 같이가도록 한다
+		{
+			if (nullptr != iter)
+				iter->Hide_UI(false);
+		}
+		for (auto& iter : m_SpecialFrame) // SkillBG랑 같이가도록 한다
+		{
+			if (nullptr != iter)
+				iter->Hide_UI(false);
+		}
+		for (auto& iter : m_WeaponIcon) // SkillBG랑 같이가도록 한다
+		{
+			if (nullptr != iter)
+				iter->Hide_UI(false);
+		}
+		for (auto& iter : m_WeaponElemental) // SkillBG랑 같이가도록 한다
+		{
+			if (nullptr != iter)
+				iter->Hide_UI(false);
+		}
+		//아래
+		m_pImajinnBG->Hide_UI(false);
+		for (auto& iter : m_PlayerEXP)
+		{
+			if (nullptr != iter)
+				iter->Hide_UI(false);
+		}
+
+		return S_OK;
 	}
 }
 

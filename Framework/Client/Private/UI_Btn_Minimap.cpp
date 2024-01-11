@@ -32,6 +32,12 @@ HRESULT CUI_Btn_Minimap::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
+	m_bHide = false;
+	m_bHideFinish = false;
+	m_vOriginPosition = _float2(m_tInfo.fX, m_tInfo.fY);
+	m_vHidePosition.x = g_iWinSizeX + m_tInfo.fCX * 0.5f;
+	m_vHidePosition.y = m_tInfo.fY;
+
 	return S_OK;
 }
 
@@ -39,7 +45,7 @@ void CUI_Btn_Minimap::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-
+		Movement_BasedOnHiding(fTimeDelta);
 		__super::Tick(fTimeDelta);
 	}
 }
@@ -145,6 +151,40 @@ void CUI_Btn_Minimap::Key_Input(_float fTimeDelta)
 			m_iTextureIndex = 0;
 			CUI_Manager::GetInstance()->OnOff_MiniMap(false);
 		}
+	}
+}
+
+void CUI_Btn_Minimap::Movement_BasedOnHiding(_float fTimeDelta)
+{
+	if (false == m_bHideFinish)
+	{
+		if (m_bHide) // 숨긴다
+		{
+			if (m_tInfo.fX >= m_vHidePosition.x)
+			{
+				m_bHideFinish = true;
+				m_tInfo.fX = m_vHidePosition.x;
+			}
+			else
+			{
+				m_tInfo.fX += fTimeDelta * m_fHideSpeed;
+			}
+		}
+		else // 드러낸다
+		{
+			if (m_tInfo.fX <= m_vOriginPosition.x)
+			{
+				m_bHideFinish = true;
+				m_tInfo.fX = m_vOriginPosition.x;
+			}
+			else
+			{
+				m_tInfo.fX -= fTimeDelta * m_fHideSpeed;
+			}
+		}
+
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 	}
 }
 

@@ -239,7 +239,9 @@ void CUI_World_Interaction::LateTick(_float fTimeDelta)
 						_float fAngle = XMVectorGetX(XMVector3Dot(vMonsterToCamera, vCameraForward));
 						if (fAngle >= XMConvertToRadians(0.f) && fAngle <= XMConvertToRadians(180.f))
 						{
-							m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+							if (CUI_Manager::GetInstance()->Is_FadeFinished())
+								m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+
 							__super::LateTick(fTimeDelta);
 						}
 					}

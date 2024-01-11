@@ -40,6 +40,15 @@ void CUI_PlayerInfo::Set_Active(_bool bActive)
 	m_bActive = bActive;
 }
 
+void CUI_PlayerInfo::Hide_UI(_bool bHide)
+{
+	m_bHide = bHide;
+	m_bHideFinish = false;
+
+//	if (bHide)
+//		CUI_Manager::GetInstance()->OnOff_TextUI(false);
+}
+
 HRESULT CUI_PlayerInfo::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
@@ -61,6 +70,12 @@ HRESULT CUI_PlayerInfo::Initialize(void* pArg)
 
 	Make_Child(41.5f, -10.f, 192.f, 15.f, TEXT("Prototype_GameObject_UI_Player_HPBar"));
 
+	m_bHide = false;
+	m_bHideFinish = false;
+	m_vOriginPosition = _float2(m_tInfo.fX, m_tInfo.fY);
+	m_vHidePosition.x = -1.f * m_tInfo.fCX * 0.5f;
+	m_vHidePosition.y = m_tInfo.fY;
+
 	return S_OK;
 }
 
@@ -68,6 +83,8 @@ void CUI_PlayerInfo::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		Movement_BasedOnHiding(fTimeDelta);
+
 		__super::Tick(fTimeDelta);
 	}
 }
@@ -212,6 +229,41 @@ HRESULT CUI_PlayerInfo::Bind_ShaderResources()
 		return E_FAIL;
 
 	return S_OK;
+}
+
+void CUI_PlayerInfo::Movement_BasedOnHiding(_float fTimeDelta)
+{
+	if (false == m_bHideFinish)
+	{
+		if (m_bHide) // 숨긴다
+		{
+			if (m_tInfo.fX <= m_vHidePosition.x)
+			{
+				m_bHideFinish = true;
+				m_tInfo.fX = m_vHidePosition.x;
+			}
+			else
+			{
+				m_tInfo.fX -= fTimeDelta * m_fHideSpeed;
+			}
+		}
+		else // 드러낸다
+		{
+			if (m_tInfo.fX >= m_vOriginPosition.x)
+			{
+				m_bHideFinish = true;
+				CUI_Manager::GetInstance()->OnOff_TextUI(true);
+				m_tInfo.fX = m_vOriginPosition.x;
+			}
+			else
+			{
+				m_tInfo.fX += fTimeDelta * m_fHideSpeed;
+			}
+		}
+
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
+	}
 }
 
 CUI_PlayerInfo* CUI_PlayerInfo::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

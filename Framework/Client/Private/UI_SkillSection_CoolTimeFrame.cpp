@@ -55,6 +55,10 @@ HRESULT CUI_SkillSection_CoolTimeFrame::Initialize(void* pArg)
 	m_bActive = true; 
 	m_fCurGauge = 0.f;
 
+	m_bHide = false;
+	m_bHideFinish = false;
+	m_vOriginPosition = _float2(m_tInfo.fX, m_tInfo.fY);
+
 	return S_OK;
 }
 
@@ -62,6 +66,8 @@ void CUI_SkillSection_CoolTimeFrame::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		Movement_BasedOnHiding(fTimeDelta);
+
 		if (!m_bUsable)
 		{
 			m_iPass = 19;
@@ -256,6 +262,50 @@ void CUI_SkillSection_CoolTimeFrame::SetUp_FrameColor()
 			break;
 		}
 		break;
+	}
+}
+
+void CUI_SkillSection_CoolTimeFrame::Movement_BasedOnHiding(_float fTimeDelta)
+{
+	if (false == m_bHideFinish)
+	{
+		if (m_bHide) // 숨긴다
+		{
+			if (CUI_Manager::GetInstance()->Get_MovementComplete_SkillBG())
+				m_bHideFinish = true;
+			else
+				m_tInfo.fX += (CUI_Manager::GetInstance()->Get_DistanceofMovement_SkillBG());
+		}
+		else // 드러낸다
+		{
+			if (CUI_Manager::GetInstance()->Get_MovementComplete_SkillBG())
+			{
+				if (m_tInfo.fX <= m_vOriginPosition.x)
+				{
+					m_bHideFinish = true;
+					m_tInfo.fX = m_vOriginPosition.x;
+				}
+				else
+				{
+					m_tInfo.fX -= fTimeDelta * m_fHideSpeed;
+				}
+			}
+			else
+			{
+				if (m_tInfo.fX <= m_vOriginPosition.x)
+				{
+					m_bHideFinish = true;
+					m_tInfo.fX = m_vOriginPosition.x;
+				}
+				else
+				{
+					m_tInfo.fX -= (CUI_Manager::GetInstance()->Get_DistanceofMovement_SkillBG());
+				}
+			}
+		}
+
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 	}
 }
 

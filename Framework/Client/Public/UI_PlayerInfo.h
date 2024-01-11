@@ -14,6 +14,7 @@ protected:
 
 public:
 	virtual void Set_Active(_bool bActive) override;
+	void Hide_UI(_bool bHide);
 	void Set_TextOnOff(_bool bOnOff) { m_bAddText = bOnOff; }
 
 public:
@@ -25,6 +26,12 @@ public:
 
 private:
 	_bool m_bAddText = { false };
+
+	_bool m_bHide = { false };
+	_bool m_bHideFinish = { false };
+	_float m_fHideSpeed = { 500.f };
+	_float2 m_vOriginPosition = _float2(0.f, 0.f);
+	_float2 m_vHidePosition = _float2(0.f, 0.f);
 
 	_float2 m_vDefaultPosition = _float2(68.f, 31.f); // LevelText
 	_float2 m_vTextPosition = _float2(145.f, 51.f);
@@ -40,6 +47,8 @@ private:
 private:
 	HRESULT	Ready_State();
 	HRESULT	Bind_ShaderResources();
+	void Movement_BasedOnHiding(_float fTimeDelta);
+	
 
 public:
 	static CUI_PlayerInfo* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);

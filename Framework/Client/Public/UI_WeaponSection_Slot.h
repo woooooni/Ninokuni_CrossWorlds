@@ -16,6 +16,7 @@ protected:
 public:
 	virtual void Set_CharacterType(CHARACTER_TYPE eType) override;
 	void Use_BurstSkill();
+	void Hide_UI(_bool bHide);
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -34,6 +35,11 @@ private:
 	_bool m_bWear = { false }; // 무기를 착용한 상태인가
 	_bool m_bClick = { false };
 
+	_bool m_bHide = { false };
+	_bool m_bHideFinish = { false };
+	_float m_fHideSpeed = { 500.f };
+	_float2 m_vOriginPosition = _float2(0.f, 0.f);
+
 	class CUI_WeaponSection_DefaultWeapon* m_pNoWeapon = { nullptr };
 	class CUI_SkillSection_CoolTimeFrame* m_pFrame = { nullptr };
 
@@ -46,6 +52,7 @@ private:
 
 private:
 	void Key_Input(_float fTimeDelta);
+	void Movement_BasedOnHiding(_float fTimeDelta);
 
 public:
 	static CUI_WeaponSection_Slot* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, UI_WEAPONSLOT eSlotType);

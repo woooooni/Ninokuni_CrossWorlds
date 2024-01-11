@@ -11,6 +11,14 @@ protected:
 	virtual ~CUI_WeaponSection_Selected() = default;
 
 public:
+	void Hide_UI(_bool bHide) {
+		m_bHide = bHide; m_bHideFinish = false;
+		// TestCode
+		if (bHide)
+			m_bActive = false;
+	}
+
+public:
 	virtual HRESULT	Initialize_Prototype();
 	virtual HRESULT	Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta);
@@ -28,6 +36,7 @@ private:
 private:
 	HRESULT	Ready_State();
 	HRESULT	Bind_ShaderResources();
+	void Movement_BasedOnHiding(_float fTimeDelta);
 
 private:
 	_bool m_bResize = { false };
@@ -37,6 +46,10 @@ private:
 
 	_float2 m_vPosition[3];
 
+	_bool m_bHide = { false };
+	_bool m_bHideFinish = { false };
+	_float m_fHideSpeed = { 500.f };
+	_float2 m_vOriginPosition = _float2(0.f, 0.f);
 public:
 	static CUI_WeaponSection_Selected* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);
 	virtual CGameObject* Clone(void* pArg);
