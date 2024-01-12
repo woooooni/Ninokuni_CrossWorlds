@@ -194,8 +194,10 @@ HRESULT CPhysX_Manager::Add_Dynamic_Mesh_Actor(const PHYSX_INIT_DESC& Desc, __ou
 
 HRESULT CPhysX_Manager::Remove_Controller(PxController* pController)
 {
+	if (nullptr == pController)
+		return S_OK;
+
 	while (true == m_bSimulating) {}
-	m_pScene->removeActor(*pController->getActor());
 	pController->release();
 	return S_OK;
 }
@@ -237,7 +239,7 @@ PxController* CPhysX_Manager::Add_CapsuleController(CGameObject* pGameObject, Ma
 
 	while (true == m_bSimulating) {}
 	PxController* pController = m_pController_Manager->createController(CapsuleDesc);
-	pController->getActor()->userData = pGameObject;
+	pController->setUserData(pGameObject);
 	pController->getActor()->setName("Controller");
 
 
@@ -265,7 +267,7 @@ PxController* CPhysX_Manager::Add_BoxController(CGameObject* pGameObject, Matrix
 	while (true == m_bSimulating) {}
 
 	PxController* pController = m_pController_Manager->createController(BoxDesc);
-	pController->getActor()->userData = pGameObject;
+	pController->setUserData(pGameObject);
 	pController->getActor()->setName("Controller");
 
 	return pController;
@@ -1215,6 +1217,7 @@ void CPhysX_Manager::Free()
 _bool CPhysX_Manager::Check_Push(_uint iLeftObjType, _uint iRightObjType)
 {
 	_bool bPush = false;
+	bPush = (iLeftObjType == OBJ_MONSTER) && (iRightObjType == OBJ_MONSTER);
 	bPush = ((iLeftObjType == OBJ_MONSTER && iRightObjType == OBJ_CHARACTER) || (iLeftObjType == OBJ_CHARACTER && iRightObjType == OBJ_MONSTER));
 
 
@@ -1224,11 +1227,12 @@ _bool CPhysX_Manager::Check_Push(_uint iLeftObjType, _uint iRightObjType)
 // ControllerFilterCallBack
 bool CPhysX_Manager::filter(const PxController& a, const PxController& b)
 {
-	CGameObject* pLeftObj = static_cast<CGameObject*>(a.getActor()->userData);
-	CGameObject* pRightObj = static_cast<CGameObject*>(b.getActor()->userData);
-
-	return Check_Push(pLeftObj->Get_ObjectType(), pRightObj->Get_ObjectType());
+	/*CGameObject* pLeftObj = static_cast<CGameObject*>(a.getUserData());
+	CGameObject* pRightObj = static_cast<CGameObject*>(b.getUserData());
+	Check_Push(pLeftObj->Get_ObjectType(), pRightObj->Get_ObjectType());*/
+	return false;
 }
+
 void CPhysX_Manager::onConstraintBreak(PxConstraintInfo* constraints, PxU32 count)
 {
 }

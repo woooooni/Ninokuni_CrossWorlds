@@ -97,7 +97,6 @@ void CPhysX_Controller::LateTick_Controller(_float fTimeDelta)
 			GI->Remove_Controller(m_pPhysXController);
 			m_bRemoved = true;
 		}
-			
 		return;
 	}
 		
@@ -177,16 +176,68 @@ CComponent* CPhysX_Controller::Clone(void* pArg)
 void CPhysX_Controller::Free()
 {
 	__super::Free();
-	while (false == GI->Is_PhysX_Valid()) {}
-	//여기 고쳐야함.
-	GI->Remove_Controller(m_pPhysXController);
+
+	if(nullptr != m_pPhysXController)
+		Set_Active(false);
+	/*GI->Remove_Controller(m_pPhysXController);
+	m_pPhysXController = nullptr;*/
+		
+
 	Safe_Release(m_pTransformCom);
 }
 
 
 void CPhysX_Controller::onShapeHit(const PxControllerShapeHit& hit)
 {
-	if (GI->Is_Compare(hit.actor->getName(), "Ground"))
+	if (GI->Is_Compare(hit.actor->getName(), "Building"))
+	{
+		Vec3 vNormal = Vec3(hit.worldNormal.x, hit.worldNormal.y, hit.worldNormal.z);
+		if (vNormal.y > 0.f)
+		{
+			m_bGroundChecked = true;
+			if (m_eGroundFlag == PxPairFlag::eNOTIFY_TOUCH_FOUND)
+			{
+				m_eGroundFlag = PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+				PHYSX_GROUND_COLLISION_INFO Info;
+				Info.pCollideObject = m_pOwner;
+				Info.flag = m_eGroundFlag;
+
+				m_pOwner->Ground_Collision_Enter(Info);
+			}
+
+			else if (m_eGroundFlag == PxPairFlag::eNOTIFY_TOUCH_PERSISTS)
+			{
+				m_eGroundFlag = PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+				PHYSX_GROUND_COLLISION_INFO Info;
+				Info.pCollideObject = m_pOwner;
+				Info.flag = m_eGroundFlag;
+
+				m_pOwner->Ground_Collision_Continue(Info);
+			}
+
+			else if (m_eGroundFlag == PxPairFlag::eNOTIFY_TOUCH_LOST)
+			{
+				m_eGroundFlag = PxPairFlag::eNOTIFY_TOUCH_FOUND;
+				PHYSX_GROUND_COLLISION_INFO Info;
+				Info.pCollideObject = m_pOwner;
+				Info.flag = m_eGroundFlag;
+
+				m_pOwner->Ground_Collision_Enter(Info);
+			}
+
+			else if (m_eGroundFlag == PxPairFlag::eCONTACT_DEFAULT)
+			{
+				m_eGroundFlag = PxPairFlag::eNOTIFY_TOUCH_FOUND;
+				PHYSX_GROUND_COLLISION_INFO Info;
+				Info.pCollideObject = m_pOwner;
+				Info.flag = m_eGroundFlag;
+
+				m_pOwner->Ground_Collision_Enter(Info);
+			}
+		}
+
+	}
+	else if (GI->Is_Compare(hit.actor->getName(), "Ground"))
 	{
 		m_bGroundChecked = true;
 		if (m_eGroundFlag == PxPairFlag::eNOTIFY_TOUCH_FOUND)
@@ -233,6 +284,7 @@ void CPhysX_Controller::onShapeHit(const PxControllerShapeHit& hit)
 
 void CPhysX_Controller::onControllerHit(const PxControllersHit& hit)
 {
+	
 }
 
 void CPhysX_Controller::onObstacleHit(const PxControllerObstacleHit& hit)

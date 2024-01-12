@@ -10,6 +10,7 @@
 #include "Effect_Manager.h"
 #include "Particle_Manager.h"
 #include "Camera_Manager.h"
+#include "UIDamage_Manager.h"
 #include "Camera.h"
 #include "Utils.h"
 #include "Weapon.h"
@@ -227,6 +228,7 @@ void CCharacter::Tick_Target(_float fTimeDelta)
 	if (m_pTarget->Is_ReserveDead() || m_pTarget->Is_Dead())
 	{
 		Safe_Release(m_pTarget);
+		m_pTarget = nullptr;
 		return;
 	}
 		
@@ -388,7 +390,7 @@ void CCharacter::Collision_Continue(const COLLISION_INFO& tInfo)
 	__super::Collision_Continue(tInfo);
 	if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BOUNDARY)
 	{
-		if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_ANIMAL || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER)
+		if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_ANIMAL || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_BOSS)
 		{
 
 			if (m_pStateCom->Get_CurrState() == CCharacter::STATE::NEUTRAL_PICK_LARGE_ENTER
@@ -405,7 +407,7 @@ void CCharacter::Collision_Continue(const COLLISION_INFO& tInfo)
 				|| m_pStateCom->Get_CurrState() == CCharacter::STATE::NEUTRAL_PICK_SMALL_FINISH)
 				return;
 
-			Decide_Target(tInfo);
+			// Decide_Target(tInfo);
 		}
 	}
 }
@@ -534,6 +536,10 @@ void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 	CTransform* pOtherTransform = pMonster->Get_Component<CTransform>(L"Com_Transform");
 	if (nullptr != pOtherTransform)
 		m_pTransformCom->LookAt_ForLandObject(pOtherTransform->Get_Position());
+
+
+	_int iDamage = max(0, pMonster->Get_Stat().iAtk - (m_tStat.iDef * 0.2f));
+	CUIDamage_Manager::GetInstance()->Create_PlayerDamageNumber(m_pTransformCom, iDamage);
 
 	if (CCollider::ATTACK_TYPE::AIR_BORNE == tInfo.pOtherCollider->Get_AttackType())
 	{

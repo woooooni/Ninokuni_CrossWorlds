@@ -879,12 +879,12 @@ void CGameInstance::Release_Engine()
 	CLight_Manager::GetInstance()->DestroyInstance();
 	CFont_Manager::GetInstance()->DestroyInstance();
 	CModel_Manager::GetInstance()->DestroyInstance();
-	CPhysX_Manager::GetInstance()->DestroyInstance();
 	CCollision_Manager::GetInstance()->DestroyInstance();
+	CCamera_Manager::GetInstance()->DestroyInstance();
 	CObject_Manager::GetInstance()->DestroyInstance();
 	CComponent_Manager::GetInstance()->DestroyInstance();
+	CPhysX_Manager::GetInstance()->DestroyInstance();
 	CGraphic_Device::GetInstance()->DestroyInstance();
-	CCamera_Manager::GetInstance()->DestroyInstance();
 }
 
 void CGameInstance::Free()

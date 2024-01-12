@@ -208,6 +208,24 @@ PS_OUT PS_MAIN_NORMAL(PS_IN In)
 	return Out;
 }
 
+PS_OUT PS_WEAPON(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    Out.vDiffuse = (vector) 1.f;
+
+
+    Out.vDiffuse = g_DiffuseTexture.Sample(PointSampler, In.vTexUV);
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
+    Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
+    Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    if (0.3 >= Out.vDiffuse.a)
+        discard;
+	
+    return Out;
+}
+
 WaterPixelToFrame WaterPS(WaterVertexToPixel input)
 {
     WaterPixelToFrame output = (WaterPixelToFrame) 0;
@@ -293,7 +311,6 @@ PS_OUT PS_DISSOVE(PS_IN In)
 	
 	
     vector vDissoveSample = g_DissolveTexture.Sample(LinearSampler, In.vTexUV);
-    
     float fInterval = saturate(vDissoveSample.r - g_fDissolveWeight);
 
     Out.vDiffuse = (vector) 1.f;
@@ -308,7 +325,7 @@ PS_OUT PS_DISSOVE(PS_IN In)
         Out.vDiffuse = g_DiffuseTexture.Sample(PointSampler, In.vTexUV);
 	
     Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
-    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
     Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
     
@@ -384,7 +401,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 WaterPS();
     }
 
-	pass Weapon_Dissove
+	pass Weapon
 	{
 		// 4
 		SetRasterizerState(RS_Default);
@@ -393,11 +410,11 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
-		PixelShader = compile ps_5_0 PS_DISSOVE();
-	}
+        PixelShader = compile ps_5_0 PS_WEAPON();
+    }
 
-	pass Temp5
-	{
+    pass Weapon_Dissove
+    {
 		// 5
 		SetRasterizerState(RS_Default);
 		SetDepthStencilState(DSS_Default, 0);
@@ -405,8 +422,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
-		PixelShader = compile ps_5_0 PS_MAIN();
-	}
+        PixelShader = compile ps_5_0 PS_DISSOVE();
+    }
 
 	pass Temp6
 	{

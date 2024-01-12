@@ -75,7 +75,7 @@ HRESULT CWeapon::Render()
 
 
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
-	_uint		iPassIndex = 0;
+	_uint		iPassIndex = 4;
 
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{
@@ -83,7 +83,7 @@ HRESULT CWeapon::Render()
 			return E_FAIL;
 
 		if (true == m_bDisappear)
-			iPassIndex = 4;
+			iPassIndex = 5;
 
 
 		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, iPassIndex)))
