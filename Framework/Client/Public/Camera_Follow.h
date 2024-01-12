@@ -21,8 +21,8 @@ class CCamera_Follow final : public CCamera
 
 		Vec4	vCurPos;									/* 현재 카메라 포지션 */
 		Vec4	vTargetPos;									/* 목표 카메라 포지션 */
-		_float	fDampingCoefficient			= 0.02f;		/* 0 ~ 1 (값이 클수록 빨리 따라감)*/
-		_float	fDampingCoefficientBackMag	= 2.75f;		/* 타겟의 룩과 카메라의 룩이 역방향일 경우 DampingCoeff에 곱해짐 (더 빨리 쫓아감) */
+		_float	fDampingCoefficient			= 0.025f;		/* 0 ~ 1 (값이 클수록 빨리 따라감)*/
+		_float	fDampingCoefficientBackMag	= 3.f;			/* 타겟의 룩과 카메라의 룩이 역방향일 경우 DampingCoeff에 곱해짐 (더 빨리 쫓아감) */
 		_float	fDampingBackLimitRad		= 1.57f;		/* 역방향임을 판단할 기준 각도 */
 
 	}DAMPING_DESC;
@@ -74,14 +74,12 @@ public:
 	virtual void Set_Blending(const _bool& bBlending) override;
 
 public:
+	/* Lock On */
 	HRESULT Start_LockOn(CGameObject* pTargetObject, const Vec4& vTargetOffset, const Vec4& vLookAtOffset, const _float& fLockOnBlendingTime = Cam_LockOn_Blending_Time_Default);
 	HRESULT Finish_LockOn(CGameObject* pTargetObject, const _float& fLockOnBlendingTime = Cam_LockOn_Blending_Time_Default);
 
 private:
-	virtual HRESULT Ready_Components() override;
-	void Tick_Transform(const _float fDeltaTime);
-
-private:
+	/* Calculation */
 	Vec4 Calculate_WorldPosition(_float fTimeDelta);
 	Vec4 Calculate_LoaclSphericalPosition(_float fTimeDelta);
 	Vec4 Calculate_Look();
@@ -89,8 +87,11 @@ private:
 
 	void Check_Exception();
 
-private:
 	void Test(_float fTimeDelta);
+
+private:
+	virtual HRESULT Ready_Components() override;
+	void Tick_Transform(const _float fDeltaTime);
 
 private:
 	/* 구면 좌표계 */

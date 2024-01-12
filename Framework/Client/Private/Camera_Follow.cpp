@@ -475,16 +475,6 @@ void CCamera_Follow::Test(_float fTimeDelta)
 				Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
 		}
 
-		if (KEY_TAP(KEY::HOME))
-		{
-			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-			CCamera_Manager::GetInstance()->Set_CurCamera(pActionCam->Get_Key());
-			if (nullptr != pActionCam)
-			{
-				pActionCam->Start_Action_Door();
-			}
-		}
-
 		//if (KEY_TAP(KEY::V))
 		//{
 		//	if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
