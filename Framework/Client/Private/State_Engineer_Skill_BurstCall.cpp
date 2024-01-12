@@ -18,7 +18,7 @@ HRESULT CState_Engineer_Skill_BurstCall::Initialize(const list<wstring>& Animati
 
 void CState_Engineer_Skill_BurstCall::Enter_State(void* pArg)
 {
-    m_pModelCom->Set_Animation(m_AnimIndices[0]);
+    m_pModelCom->Set_Animation(m_AnimIndices[0], MIN_TWEEN_DURATION);
 }
 
 void CState_Engineer_Skill_BurstCall::Tick_State(_float fTimeDelta)

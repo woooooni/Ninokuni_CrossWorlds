@@ -27,7 +27,7 @@ public:
 
 private:
 	_float m_fAccRecovery = 0.f;
-	_float m_fRecoveryTime = 3.f;
+	_float m_fRecoveryTime = 1.f;
 
 public:
 	static CState_Character_Damaged_KnockDown* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);

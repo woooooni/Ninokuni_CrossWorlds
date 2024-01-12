@@ -77,7 +77,7 @@ void CKuu::Tick(_float fTimeDelta)
 {
 	if (m_pPlayer != nullptr)
 	{
-		Vec4 vReleativePos = m_pPlayerTransform->Get_RelativeOffset({ 1.f, 1.f, -1.f, 1.f });
+		Vec4 vReleativePos = m_pPlayerTransform->Get_RelativeOffset({ 1.f, 1.f, -0.3f, 1.f });
 		Vec4 vPlayerPos = m_pPlayerTransform->Get_Position();
 
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPlayerPos + vReleativePos);

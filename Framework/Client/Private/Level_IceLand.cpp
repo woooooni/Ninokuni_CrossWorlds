@@ -234,25 +234,25 @@ HRESULT CLevel_IceLand::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_IceLand::Ready_Layer_Effect(const LAYER_TYPE eLayerType)
 {
-	_matrix WorldMatrix = XMMatrixIdentity();
-
-	WorldMatrix.r[3] = XMVectorSet(-60.f, 50.f, 150.f, 1.f);
-	if (FAILED(GET_INSTANCE(CParticle_Manager)->AddLevel_Particle(LEVEL_ICELAND, TEXT("Particle_Snow_01"), WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f))))
-		return E_FAIL;
-	if (FAILED(GET_INSTANCE(CParticle_Manager)->AddLevel_Particle(LEVEL_ICELAND, TEXT("Particle_Snow_02"), WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f))))
-		return E_FAIL;
-
-	WorldMatrix.r[3] = XMVectorSet(-60.f, 50.f, 350.f, 1.f);
-	if (FAILED(GET_INSTANCE(CParticle_Manager)->AddLevel_Particle(LEVEL_ICELAND, TEXT("Particle_Snow_01"), WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f))))
-		return E_FAIL;
-	if (FAILED(GET_INSTANCE(CParticle_Manager)->AddLevel_Particle(LEVEL_ICELAND, TEXT("Particle_Snow_02"), WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f))))
-		return E_FAIL;
-
-	WorldMatrix.r[3] = XMVectorSet(100.f, 50.f, 0.f, 1.f);
-	if (FAILED(GET_INSTANCE(CParticle_Manager)->AddLevel_Particle(LEVEL_ICELAND, TEXT("Particle_Snow_01"), WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f))))
-		return E_FAIL;
-	if (FAILED(GET_INSTANCE(CParticle_Manager)->AddLevel_Particle(LEVEL_ICELAND, TEXT("Particle_Snow_02"), WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f))))
-		return E_FAIL;
+	//_matrix WorldMatrix = XMMatrixIdentity();
+	//
+	//WorldMatrix.r[3] = XMVectorSet(-60.f, 50.f, 150.f, 1.f);
+	//if (FAILED(GET_INSTANCE(CParticle_Manager)->AddLevel_Particle(LEVEL_ICELAND, TEXT("Particle_Snow_01"), WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f))))
+	//	return E_FAIL;
+	//if (FAILED(GET_INSTANCE(CParticle_Manager)->AddLevel_Particle(LEVEL_ICELAND, TEXT("Particle_Snow_02"), WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f))))
+	//	return E_FAIL;
+	//
+	//WorldMatrix.r[3] = XMVectorSet(-60.f, 50.f, 350.f, 1.f);
+	//if (FAILED(GET_INSTANCE(CParticle_Manager)->AddLevel_Particle(LEVEL_ICELAND, TEXT("Particle_Snow_01"), WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f))))
+	//	return E_FAIL;
+	//if (FAILED(GET_INSTANCE(CParticle_Manager)->AddLevel_Particle(LEVEL_ICELAND, TEXT("Particle_Snow_02"), WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f))))
+	//	return E_FAIL;
+	//
+	//WorldMatrix.r[3] = XMVectorSet(100.f, 50.f, 0.f, 1.f);
+	//if (FAILED(GET_INSTANCE(CParticle_Manager)->AddLevel_Particle(LEVEL_ICELAND, TEXT("Particle_Snow_01"), WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f))))
+	//	return E_FAIL;
+	//if (FAILED(GET_INSTANCE(CParticle_Manager)->AddLevel_Particle(LEVEL_ICELAND, TEXT("Particle_Snow_02"), WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f))))
+	//	return E_FAIL;
 
 	return S_OK;
 }

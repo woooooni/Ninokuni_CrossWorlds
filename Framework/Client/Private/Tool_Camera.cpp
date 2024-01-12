@@ -124,10 +124,28 @@ void CTool_Camera::Show_Camera_Prop_Default(CCamera* pCurCam)
 	IMGUI_NEW_LINE;
 	ImGui::Text("Camera Public Option (카메라 공통 옵션)");
 
-	if (ImGui::BeginChild("Public Camera Option", ImVec2(0, 450.f), true))
+	if (ImGui::BeginChild("Public Camera Option", ImVec2(0, 500.f), true))
 	{
 		ImGui::PushItemWidth(150.f);
 		{
+			/* 카메라 트랜스폼  */
+			{
+				/* Position */
+				{
+					Vec3	vPos = pCurCam->Get_Transform()->Get_Position();
+					_float	fPos[3] = { vPos.x, vPos.y, vPos.z };
+					ImGui::DragFloat3(u8"Cam Pos", fPos);
+				}
+
+				/* Look */
+				{
+					Vec3	vLook = pCurCam->Get_Transform()->Get_Look();
+					_float	fLook[3] = { vLook.x, vLook.y, vLook.z };
+					ImGui::DragFloat3(u8"Cam Look", fLook);
+				}
+			}
+			IMGUI_NEW_LINE;
+
 			/* 투영 관련 */
 			{
 				CCamera::PROJ_DESC tProjDesc = pCurCam->Get_ProjDesc();

@@ -130,7 +130,7 @@ HRESULT CBoss::Render()
 		else
 			iPassIndex++;
 
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, i)))
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, iPassIndex)))
 			return E_FAIL;
 	}
 
