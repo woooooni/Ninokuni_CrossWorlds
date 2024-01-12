@@ -160,6 +160,11 @@ void CUI_BtnShowMenu::Movement_BasedOnHiding(_float fTimeDelta)
 			else
 			{
 				m_tInfo.fX += fTimeDelta * m_fHideSpeed;
+
+				if (m_fAlpha <= 0.f)
+					m_fAlpha = 0.f;
+				else
+					m_fAlpha -= fTimeDelta;
 			}
 		}
 		else // 드러낸다
@@ -172,6 +177,11 @@ void CUI_BtnShowMenu::Movement_BasedOnHiding(_float fTimeDelta)
 			else
 			{
 				m_tInfo.fX -= fTimeDelta * m_fHideSpeed;
+
+				if (m_fAlpha >= 1.f)
+					m_fAlpha = 1.f;
+				else
+					m_fAlpha += fTimeDelta;
 			}
 		}
 

@@ -39,15 +39,15 @@ HRESULT CUI_QuickSlot_Item::Initialize(void* pArg)
 	switch (m_eType)
 	{
 	case QUICKITEM_FIRST:
-		m_fHideSpeed = 600.f;
-		break;
-
-	case QUICKITEM_SECOND:
 		m_fHideSpeed = 650.f;
 		break;
 
-	case QUICKITEM_THIRD:
+	case QUICKITEM_SECOND:
 		m_fHideSpeed = 700.f;
+		break;
+
+	case QUICKITEM_THIRD:
+		m_fHideSpeed = 750.f;
 		break;
 	}
 
@@ -66,18 +66,6 @@ void CUI_QuickSlot_Item::Tick(_float fTimeDelta)
 	{
 		if (QUICKITEM_END == m_eType)
 			return;
-
-//		if (SKILL_THIRD == m_eType)
-//		{
-//			m_tInfo.fCX = 256.f * 0.26f;
-//			m_tInfo.fCY = 256.f * 0.26f;
-//			m_tInfo.fX = g_iWinSizeX - 154.f;
-//			m_tInfo.fY = g_iWinSizeY - 253.f;
-//
-//			m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
-//			m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-//				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
-//		}
 
 		Movement_BasedOnHiding(fTimeDelta);
 
@@ -195,6 +183,11 @@ void CUI_QuickSlot_Item::Movement_BasedOnHiding(_float fTimeDelta)
 			else
 			{
 				m_tInfo.fX -= fTimeDelta * m_fHideSpeed;
+
+				if (m_fAlpha <= 0.f)
+					m_fAlpha = 0.f;
+				else
+					m_fAlpha -= fTimeDelta;
 			}
 		}
 		else // 드러낸다
@@ -207,6 +200,11 @@ void CUI_QuickSlot_Item::Movement_BasedOnHiding(_float fTimeDelta)
 			else
 			{
 				m_tInfo.fX += fTimeDelta * m_fHideSpeed;
+
+				if (m_fAlpha >= 1.f)
+					m_fAlpha = 1.f;
+				else
+					m_fAlpha += fTimeDelta;
 			}
 		}
 

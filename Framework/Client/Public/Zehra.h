@@ -33,6 +33,9 @@ private:
 private:
 	HRESULT Ready_Sockets();
 
+private:
+	class CUI_World_NPCTag* m_pTag = { nullptr };
+
 public:
 	static CZehra* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;

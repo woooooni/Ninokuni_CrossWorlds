@@ -154,13 +154,6 @@ HRESULT CUI_SkillSection_Background::Initialize(void* pArg)
 	_float fBtnSize = 128.f * 0.35f;
 	Make_Child(-4.f, -1.f, fBtnSize, fBtnSize, TEXT("Prototype_GameObject_UI_SkillSection_DefaultAttack"));
 
-	// 상호작용 버튼
-//	_float2 vInteraction = _float2(-150.f, -70.f);
-//	fBtnSize = 102.f * 0.55f;
-//	Make_Child(vInteraction.x, vInteraction.y, fBtnSize, fBtnSize, TEXT("Prototype_GameObject_UI_SkillSection_BtnInteraction"));
-//	fBtnSize = 128.f * 0.35f;
-//	Make_Child(vInteraction.x, vInteraction.y, fBtnSize, fBtnSize, TEXT("Prototype_GameObject_UI_SkillSection_Interaction"));
-
 	// 무기 선택
 	CGameObject* pIcon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_WeaponSection_Selected"), LAYER_TYPE::LAYER_UI);
 	if (nullptr == pIcon)
@@ -292,6 +285,17 @@ void CUI_SkillSection_Background::Movement_BasedOnHiding(_float fTimeDelta)
 			{
 				m_fDistance = fTimeDelta * m_fHideSpeed;
 				m_tInfo.fX += m_fDistance;
+
+				if (m_fAlpha <= 0.f)
+				{
+					m_fAlpha = 0.f;
+					Set_ParentsAlpha(m_fAlpha);
+				}
+				else
+				{
+					m_fAlpha -= fTimeDelta;
+					Set_ParentsAlpha(m_fAlpha);
+				}
 			}
 		}
 		else // 드러낸다
@@ -306,6 +310,17 @@ void CUI_SkillSection_Background::Movement_BasedOnHiding(_float fTimeDelta)
 			{
 				m_fDistance = fTimeDelta * m_fHideSpeed;
 				m_tInfo.fX -= m_fDistance;
+
+				if (m_fAlpha >= 1.f)
+				{
+					m_fAlpha = 1.f;
+					Set_ParentsAlpha(m_fAlpha);
+				}
+				else
+				{
+					m_fAlpha += fTimeDelta;
+					Set_ParentsAlpha(m_fAlpha);
+				}
 			}
 		}
 

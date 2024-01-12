@@ -49,7 +49,13 @@ void CUI_BtnBack::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+		if (GI->Get_CurrentLevel() == LEVELID::LEVEL_LOBBY)
+		{
+			if (CUI_Manager::GetInstance()->Is_NicknameSettingComplete())
+				m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+		}
+		else
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
 }
 

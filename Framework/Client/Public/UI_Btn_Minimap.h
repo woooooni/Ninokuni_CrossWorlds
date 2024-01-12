@@ -33,7 +33,7 @@ private:
 
 	_bool m_bHide = { false };
 	_bool m_bHideFinish = { false };
-	_float m_fHideSpeed = { 100.f };
+	_float m_fHideSpeed = { 200.f };
 	_float2 m_vOriginPosition = _float2(0.f, 0.f);
 	_float2 m_vHidePosition = _float2(0.f, 0.f);
 

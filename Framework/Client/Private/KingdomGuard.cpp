@@ -9,6 +9,8 @@
 #include "NpcState_OneWay.h"
 #include "NpcState_TwoWay.h"
 
+#include "UI_World_NPCTag.h"
+
 CKingdomGuard::CKingdomGuard(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameNpc(pDevice, pContext, strObjectTag)
 {
@@ -43,12 +45,23 @@ HRESULT CKingdomGuard::Initialize(void* pArg)
 
 	m_pWeapon = dynamic_cast<CWeapon*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_NpcWeapon_Halberd"), LAYER_WEAPON));
 
+	// UI NameTag
+	CGameObject* pTag = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_NPC_Tag"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pTag)
+		return E_FAIL;
+
+	m_pTag = dynamic_cast<CUI_World_NPCTag*>(pTag);
+	m_pTag->Set_Owner(this, m_strKorName, 2.2f);
+
 	return S_OK;
 }
 
 void CKingdomGuard::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+
+	if (nullptr != m_pTag)
+		m_pTag->Tick(fTimeDelta);
 }
 
 void CKingdomGuard::LateTick(_float fTimeDelta)
@@ -62,6 +75,9 @@ void CKingdomGuard::LateTick(_float fTimeDelta)
 
 		m_pWeapon->Set_SocketWorld(matSocketWorld);
 	}
+
+	if (nullptr != m_pTag)
+		m_pTag->LateTick(fTimeDelta);
 
 
 #ifdef DEBUG
@@ -159,4 +175,6 @@ CGameObject* CKingdomGuard::Clone(void* pArg)
 void CKingdomGuard::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pTag);
 }

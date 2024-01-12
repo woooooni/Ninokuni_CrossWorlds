@@ -171,6 +171,17 @@ void CUI_ImajinnSection_Background::Movement_BasedOnHiding(_float fTimeDelta)
 			else
 			{
 				m_tInfo.fY += fTimeDelta * m_fHideSpeed * 2.f;
+
+				if (m_fAlpha <= 0.f)
+				{
+					m_fAlpha = 0.f;
+					Set_ParentsAlpha(m_fAlpha);
+				}
+				else
+				{
+					m_fAlpha -= fTimeDelta;
+					Set_ParentsAlpha(m_fAlpha);
+				}
 			}
 		}
 		else // 드러낸다
@@ -183,6 +194,17 @@ void CUI_ImajinnSection_Background::Movement_BasedOnHiding(_float fTimeDelta)
 			else
 			{
 				m_tInfo.fY -= fTimeDelta * m_fHideSpeed * 2.f;
+
+				if (m_fAlpha >= 1.f)
+				{
+					m_fAlpha = 1.f;
+					Set_ParentsAlpha(m_fAlpha);
+				}
+				else
+				{
+					m_fAlpha += fTimeDelta;
+					Set_ParentsAlpha(m_fAlpha);
+				}
 			}
 		}
 

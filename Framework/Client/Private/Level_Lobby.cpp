@@ -106,6 +106,8 @@ HRESULT CLevel_Lobby::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 	if (FAILED(CUI_Manager::GetInstance()->Ready_LobbyUIs()))
 		return E_FAIL;
 
+	CUI_Manager::GetInstance()->OnOff_LobbyUIs(false);
+
 	return S_OK;
 }
 
