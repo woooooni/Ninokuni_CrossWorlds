@@ -43,7 +43,8 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill01::Tick(const _float& fTimeDelta)
 				if (m_pQuestDestSpot->Get_IsCol())
 				{
 					m_bIsClear = true;
-					m_pQuestDestSpot->Set_Dead(true);
+					m_pQuestDestSpot->Set_ReadyDelete(true);
+					Safe_Release(m_pQuestDestSpot);
 					return NODE_STATE::NODE_FAIL;
 				}
 			}

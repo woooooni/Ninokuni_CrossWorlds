@@ -34,7 +34,6 @@ CBTNode::NODE_STATE CMainQuestNode_IntroTour01::Tick(const _float& fTimeDelta)
 	{
 		if (m_pQuestDestSpot != nullptr)
 		{
-			// 콜라이더 생기는지 확인하자. Tick을 안돌려줘서 안돌았다 여태.
 			m_pQuestDestSpot->Tick(fTimeDelta);
 			m_pQuestDestSpot->LateTick(fTimeDelta);
 
@@ -43,7 +42,8 @@ CBTNode::NODE_STATE CMainQuestNode_IntroTour01::Tick(const _float& fTimeDelta)
 				if (m_pQuestDestSpot->Get_IsCol())
 				{
 					m_bIsClear = true;
-					m_pQuestDestSpot->Set_Dead(true);
+					m_pQuestDestSpot->Set_ReadyDelete(true);
+					Safe_Release(m_pQuestDestSpot);
 					return NODE_STATE::NODE_FAIL;
 				}
 			}

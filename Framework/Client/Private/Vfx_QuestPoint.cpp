@@ -113,14 +113,26 @@ void CVfx_QuestPoint::Free()
 	__super::Free();
 
 	if (nullptr != pDecalObject)
+	{
+		pDecalObject->Set_Dead(true);
 		Safe_Release(pDecalObject);
+	}
 
 	if (nullptr != pLeafObject)
+	{
+		pLeafObject->Set_Dead(true);
 		Safe_Release(pLeafObject);
+	}
 
 	if (nullptr != pCircle01Object)
+	{
+		pCircle01Object->Set_Dead(true);
 		Safe_Release(pCircle01Object);
+	}
 
 	if (nullptr != pCircle02Object)
+	{
+		pCircle02Object->Set_Dead(true);
 		Safe_Release(pCircle02Object);
+	}
 }

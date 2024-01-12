@@ -61,12 +61,19 @@ void CCollision_Manager::LateTick(_float fTimeDelta)
 	}
 
 	for (_uint i = 0; i < (_uint)COLLISION_GROUP::GROUP_END; ++i)
+	{
+		for (auto& iter : m_CollisionObjects[i])
+		{
+			Safe_Release(iter);
+		}
 		m_CollisionObjects[i].clear();
+	}
 }
 
 HRESULT CCollision_Manager::Add_CollisionGroup(COLLISION_GROUP eGroup, CGameObject* pGameObject)
 {
 	m_CollisionObjects[eGroup].push_back(pGameObject);
+	Safe_AddRef(pGameObject);
 	return S_OK;
 }
 
