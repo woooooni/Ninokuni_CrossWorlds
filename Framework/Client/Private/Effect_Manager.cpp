@@ -53,11 +53,20 @@ HRESULT CEffect_Manager::Generate_Effect(const wstring& strEffectName, _matrix W
 	// strEffectName
 	CGameObject* pGameObject = GI->Clone_GameObject(L"Prototype_" + strEffectName, LAYER_EFFECT);
 	if (nullptr == pGameObject)
+	{
+		MSG_BOX("Effect_Clone_Failde");
 		return E_FAIL;
+	}
 
 	CEffect* pEffect = dynamic_cast<CEffect*>(pGameObject);
 	if (nullptr == pEffect)
+	{
+		if (nullptr != pGameObject)
+			Safe_Release(pGameObject);
+
+		MSG_BOX("Effect_Casting_Failde");
 		return E_FAIL;
+	}
 
 	// WorldMatrix
 	CTransform* pTransform = pEffect->Get_Component<CTransform>(L"Com_Transform");
@@ -105,11 +114,20 @@ HRESULT CEffect_Manager::Generate_Decal(const wstring& strDecalName, _matrix Wor
 	// strDecalName
 	CGameObject* pGameObject = GI->Clone_GameObject(L"Prototype_" + strDecalName, LAYER_TYPE::LAYER_EFFECT);
 	if (nullptr == pGameObject)
+	{
+		MSG_BOX("Decal_Clone_Failde");
 		return E_FAIL;
+	}
 
 	CDecal* pDecal = dynamic_cast<CDecal*>(pGameObject);
 	if (nullptr == pDecal)
+	{
+		if (nullptr != pGameObject)
+			Safe_Release(pGameObject);
+
+		MSG_BOX("Decal_Casting_Failde");
 		return E_FAIL;
+	}
 
 	// WorldMatrix
 	CTransform* pTransform = pDecal->Get_Component<CTransform>(L"Com_Transform");
@@ -152,11 +170,20 @@ HRESULT CEffect_Manager::Generate_Vfx(const wstring& strVfxName, _matrix WorldMa
 	// strVfxName
 	CGameObject* pGameObject = GI->Clone_GameObject(L"Prototype_" + strVfxName, LAYER_TYPE::LAYER_EFFECT);
 	if (nullptr == pGameObject)
+	{
+		MSG_BOX("Vfx_Clone_Failde");
 		return E_FAIL;
+	}
 
 	CVfx* pVfx = dynamic_cast<CVfx*>(pGameObject);
 	if (nullptr == pVfx)
+	{
+		if (nullptr != pGameObject)
+			Safe_Release(pGameObject);
+
+		MSG_BOX("Vfx_Casting_Failde");
 		return E_FAIL;
+	}
 
 	// WorldMatrix
 	pVfx->Set_WorldMatrix(WorldMatrix);

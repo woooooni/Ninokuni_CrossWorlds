@@ -42,11 +42,20 @@ HRESULT CParticle_Manager::AddLevel_Particle(_uint iLevelIndex, const wstring& s
 	// strParticleName
 	CGameObject* pGameObject = GI->Clone_GameObject(L"Prototype_" + strParticleName, LAYER_TYPE::LAYER_EFFECT);
 	if (nullptr == pGameObject)
+	{
+		MSG_BOX("Particle_Clone_Failde");
 		return E_FAIL;
+	}
 
 	CParticle* pParticle = dynamic_cast<CParticle*>(pGameObject);
 	if (nullptr == pParticle)
+	{
+		if (nullptr != pGameObject)
+			Safe_Release(pGameObject);
+
+		MSG_BOX("Particle_Casting_Failde");
 		return E_FAIL;
+	}
 
 	// WorldMatrix
 	CTransform* pTransform = pParticle->Get_Component<CTransform>(L"Com_Transform");
@@ -91,11 +100,20 @@ HRESULT CParticle_Manager::Generate_Particle(const wstring& strParticleName, _ma
 	// strParticleName
 	CGameObject* pGameObject = GI->Clone_GameObject(L"Prototype_" + strParticleName, LAYER_TYPE::LAYER_EFFECT);
 	if (nullptr == pGameObject)
+	{
+		MSG_BOX("Particle_Clone_Failde");
 		return E_FAIL;
+	}
 
 	CParticle* pParticle = dynamic_cast<CParticle*>(pGameObject);
 	if (nullptr == pParticle)
+	{
+		if (nullptr != pGameObject)
+			Safe_Release(pGameObject);
+
+		MSG_BOX("Particle_Casting_Failde");
 		return E_FAIL;
+	}
 
 	// WorldMatrix
 	CTransform* pTransform = pParticle->Get_Component<CTransform>(L"Com_Transform");
