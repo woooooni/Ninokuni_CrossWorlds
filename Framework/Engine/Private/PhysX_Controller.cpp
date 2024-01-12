@@ -95,6 +95,7 @@ void CPhysX_Controller::LateTick_Controller(_float fTimeDelta)
 		if (false == m_bRemoved)
 		{
 			GI->Remove_Controller(m_pPhysXController);
+			m_pPhysXController = nullptr;
 			m_bRemoved = true;
 		}
 		return;
@@ -177,8 +178,12 @@ void CPhysX_Controller::Free()
 {
 	__super::Free();
 
-	if(nullptr != m_pPhysXController)
+	if (false == m_bRemoved && nullptr != m_pPhysXController)
+	{
 		Set_Active(false);
+		m_pPhysXController = nullptr;
+	}
+		
 	/*GI->Remove_Controller(m_pPhysXController);
 	m_pPhysXController = nullptr;*/
 		

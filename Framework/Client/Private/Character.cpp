@@ -485,9 +485,10 @@ void CCharacter::Decide_Target(COLLISION_INFO tInfo)
 	}
 	else
 	{
-		if (m_pTarget->Is_Dead() || m_pTarget->Is_ReserveDead())
+		if (m_pTarget->Is_ReserveDead() || m_pTarget->Is_Dead())
 		{
 			Safe_Release(m_pTarget);
+			m_pTarget = nullptr;
 			return;
 		}
 			
@@ -503,8 +504,10 @@ void CCharacter::Decide_Target(COLLISION_INFO tInfo)
 			if (vNewTargetDir.Length() < vTargetDir.Length())
 			{
 				if (nullptr != m_pTarget)
+				{
 					Safe_Release(m_pTarget);
-
+					m_pTarget = nullptr;
+				}
 				m_pTarget = tInfo.pOther;
 				Safe_AddRef(m_pTarget);
 			}

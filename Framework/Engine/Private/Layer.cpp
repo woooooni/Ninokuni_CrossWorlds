@@ -42,8 +42,6 @@ void CLayer::Priority_Tick(_float fTimeDelta)
 			iter++;
 		}
 	}
-
-	
 }
 
 void CLayer::Tick(_float fTimeDelta)
