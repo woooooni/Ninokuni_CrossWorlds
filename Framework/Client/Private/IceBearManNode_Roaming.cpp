@@ -10,7 +10,7 @@ CIceBearManNode_Roaming::CIceBearManNode_Roaming()
 {
 }
 
-HRESULT CIceBearManNode_Roaming::Initialize_Prototype(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT, vector<_vector>* vecRoamingArea)
+HRESULT CIceBearManNode_Roaming::Initialize_Prototype(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT, vector<Vec4>* vecRoamingArea)
 {
 	__super::Initialize_Prototype(pDesc, pBT);
 
@@ -54,7 +54,7 @@ CBTNode::NODE_STATE CIceBearManNode_Roaming::Tick(const _float& fTimeDelta)
 	return NODE_STATE::NODE_RUNNING;
 }
 
-CIceBearManNode_Roaming* CIceBearManNode_Roaming::Create(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT, vector<_vector>* vecRoamingArea)
+CIceBearManNode_Roaming* CIceBearManNode_Roaming::Create(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT, vector<Vec4>* vecRoamingArea)
 {
 	CIceBearManNode_Roaming* pInstance = new CIceBearManNode_Roaming();
 

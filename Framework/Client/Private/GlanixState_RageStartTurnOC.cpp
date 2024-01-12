@@ -18,7 +18,9 @@ HRESULT CGlanixState_RageStartTurnOC::Initialize(const list<wstring>& AnimationL
 void CGlanixState_RageStartTurnOC::Enter_State(void* pArg)
 {
 	_vector vLookNormal = XMVector3Normalize(m_pTransformCom->Get_Look());
-	_vector vDestNormal = XMVector3Normalize(m_pGlanix->Get_OriginPos() - m_pTransformCom->Get_Position());
+	Vec4 vDest = m_pGlanix->Get_OriginPos();
+	vDest -= m_pTransformCom->Get_Position();
+	_vector vDestNormal = XMVector3Normalize(vDest);
 
 	_float fDotProduct = XMVectorGetX(XMVector3Dot(vLookNormal, vDestNormal));
 	_float fAngle = XMConvertToDegrees(acosf(fDotProduct));
@@ -65,7 +67,9 @@ void CGlanixState_RageStartTurnOC::Tick_State(_float fTimeDelta)
 	__super::Tick_State(fTimeDelta);
 
 	_vector vLookNormal = XMVector3Normalize(m_pTransformCom->Get_Look());
-	_vector vDestNormal = XMVector3Normalize(m_vDestPos - m_pTransformCom->Get_Position());
+
+	Vec4 vPosition = m_pTransformCom->Get_Position();
+	_vector vDestNormal = XMVector3Normalize(m_vDestPos - vPosition);
 
 	/* 보스의 look을 기준으로 센터가 왼쪽, 오른쪽에 위치하는지를 판별. */
 	_vector vCrossProduct = XMVector3Cross(vLookNormal, vDestNormal);

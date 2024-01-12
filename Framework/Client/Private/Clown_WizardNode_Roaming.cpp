@@ -8,7 +8,7 @@ CClown_WizardNode_Roaming::CClown_WizardNode_Roaming()
 {
 }
 
-HRESULT CClown_WizardNode_Roaming::Initialize_Prototype(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT, vector<_vector>* vecRoamingArea)
+HRESULT CClown_WizardNode_Roaming::Initialize_Prototype(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT, vector<Vec4>* vecRoamingArea)
 {
 	__super::Initialize_Prototype(pDesc, pBT);
 
@@ -52,7 +52,7 @@ CBTNode::NODE_STATE CClown_WizardNode_Roaming::Tick(const _float& fTimeDelta)
 	return NODE_STATE::NODE_RUNNING;
 }
 
-CClown_WizardNode_Roaming* CClown_WizardNode_Roaming::Create(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT, vector<_vector>* vecRoamingArea)
+CClown_WizardNode_Roaming* CClown_WizardNode_Roaming::Create(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT, vector<Vec4>* vecRoamingArea)
 {
 	CClown_WizardNode_Roaming* pInstance = new CClown_WizardNode_Roaming();
 

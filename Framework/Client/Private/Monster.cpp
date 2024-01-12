@@ -475,13 +475,13 @@ void CMonster::Free()
 	Safe_Release(m_pBTCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
-	Safe_Release(m_pTransformCom);
-	Safe_Release(m_pModelCom);
-	Safe_Release(m_pRigidBodyCom);
+	Safe_Release(m_pControllerCom);
 	Safe_Release(m_pStateCom);
+	Safe_Release(m_pRigidBodyCom);
+	Safe_Release(m_pModelCom);
 	Safe_Release(m_pNavigationCom);
 	Safe_Release(m_pDissoveTexture);
-	Safe_Release(m_pControllerCom);
 	Safe_Release(m_pDissolveObject);
+	Safe_Release(m_pTransformCom);
 		
 }

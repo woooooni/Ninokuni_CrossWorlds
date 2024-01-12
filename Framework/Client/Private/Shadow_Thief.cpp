@@ -324,6 +324,6 @@ CGameObject* CShadow_Thief::Clone(void* pArg)
 
 void CShadow_Thief::Free()
 {
-	__super::Free();
 	Safe_Release(m_pHPBar);
+	__super::Free();
 }

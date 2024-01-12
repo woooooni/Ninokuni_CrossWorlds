@@ -32,7 +32,6 @@ protected:
 protected:
 	CRenderer* m_pRendererCom = nullptr;
 	CTransform* m_pTransformCom = nullptr;
-	CCollider* m_pColliderCom = nullptr;
 
 	_float m_fCurTime = 0.f;
 	_float m_fSpawnTime = 0.f;

@@ -702,6 +702,12 @@ HRESULT CCharacter::Enter_Character()
 	if (nullptr != m_pControllerCom)
 		m_pControllerCom->Set_Active(true);
 
+	if (nullptr != m_pTarget)
+	{
+		Safe_Release(m_pTarget);
+		m_pTarget = nullptr;
+	}
+
 	return S_OK;
 }
 
@@ -709,6 +715,12 @@ HRESULT CCharacter::Exit_Character()
 {
 	if (nullptr != m_pControllerCom)
 		m_pControllerCom->Set_Active(true);
+	if (nullptr != m_pTarget)
+	{
+		Safe_Release(m_pTarget);
+		m_pTarget = nullptr;
+	}
+		
 
 	return S_OK;
 }

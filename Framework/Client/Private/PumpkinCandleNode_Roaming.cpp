@@ -10,7 +10,7 @@ CPumpkinCandleNode_Roaming::CPumpkinCandleNode_Roaming()
 {
 }
 
-HRESULT CPumpkinCandleNode_Roaming::Initialize_Prototype(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT, vector<_vector>* vecRoamingArea)
+HRESULT CPumpkinCandleNode_Roaming::Initialize_Prototype(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT, vector<Vec4>* vecRoamingArea)
 {
 	__super::Initialize_Prototype(pDesc, pBT);
 
@@ -54,7 +54,7 @@ CBTNode::NODE_STATE CPumpkinCandleNode_Roaming::Tick(const _float& fTimeDelta)
 	return NODE_STATE::NODE_RUNNING;
 }
 
-CPumpkinCandleNode_Roaming* CPumpkinCandleNode_Roaming::Create(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT, vector<_vector>* vecRoamingArea)
+CPumpkinCandleNode_Roaming* CPumpkinCandleNode_Roaming::Create(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT, vector<Vec4>* vecRoamingArea)
 {
 	CPumpkinCandleNode_Roaming* pInstance = new CPumpkinCandleNode_Roaming();
 

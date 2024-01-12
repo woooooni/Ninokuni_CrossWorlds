@@ -9,7 +9,7 @@ CShadow_ThiefNode_Roaming::CShadow_ThiefNode_Roaming()
 {
 }
 
-HRESULT CShadow_ThiefNode_Roaming::Initialize_Prototype(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT, vector<_vector>* vecRoamingArea)
+HRESULT CShadow_ThiefNode_Roaming::Initialize_Prototype(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT, vector<Vec4>* vecRoamingArea)
 {
 	__super::Initialize_Prototype(pDesc, pBT);
 
@@ -53,7 +53,7 @@ CBTNode::NODE_STATE CShadow_ThiefNode_Roaming::Tick(const _float& fTimeDelta)
 	return NODE_STATE::NODE_RUNNING;
 }
 
-CShadow_ThiefNode_Roaming* CShadow_ThiefNode_Roaming::Create(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT, vector<_vector>* vecRoamingArea)
+CShadow_ThiefNode_Roaming* CShadow_ThiefNode_Roaming::Create(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT, vector<Vec4>* vecRoamingArea)
 {
 	CShadow_ThiefNode_Roaming* pInstance = new CShadow_ThiefNode_Roaming();
 
