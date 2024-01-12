@@ -74,6 +74,7 @@ HRESULT CUI_World_NPCSpeechBalloon::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_bActive = false;
+	m_bResizeDone = false;
 
 	return S_OK;
 }
@@ -99,7 +100,7 @@ void CUI_World_NPCSpeechBalloon::Tick(_float fTimeDelta)
 		{
 			if (false == m_bResizeDone)
 			{
-				if (m_vOriginSize.x <= m_tInfo.fCX)
+				if (m_vOriginSize.y <= m_tInfo.fCY)
 				{
 					m_bResizeDone = true;
 					m_tInfo.fCX = m_vOriginSize.x;
@@ -107,8 +108,8 @@ void CUI_World_NPCSpeechBalloon::Tick(_float fTimeDelta)
 				}
 				else
 				{
-					m_tInfo.fCX += fTimeDelta * 50.f;
-					m_tInfo.fCY += fTimeDelta * 50.f;
+					m_tInfo.fCX += fTimeDelta * m_fSpeed.x;
+					m_tInfo.fCY += fTimeDelta * m_fSpeed.y;
 				}
 
 				m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
@@ -202,16 +203,19 @@ void CUI_World_NPCSpeechBalloon::LateTick(_float fTimeDelta)
 			{
 				if ((fAngle >= XMConvertToRadians(0.f) && fAngle <= XMConvertToRadians(180.f)))
 				{
-					_int iLength = m_strContents.length() - 1;
-					_float2 vFontPos = _float2(m_vTextPos.x - (iLength * 6.f), m_vTextPos.y - 10.f);
+					if (m_bResizeDone)
+					{
+						_int iLength = m_strContents.length() - 1;
+						_float2 vFontPos = _float2(m_vTextPos.x - (iLength * 6.f), m_vTextPos.y - 10.f);
 
-					CRenderer::TEXT_DESC TextDesc = {};
-					TextDesc.strText = m_strContents;
-					TextDesc.strFontTag = L"Default_Bold";
-					TextDesc.vScale = { 0.35f, 0.35f };
-					TextDesc.vColor = _float4(0.047f, 0.024f, 0.004f, 1.f);
-					TextDesc.vPosition = vFontPos;
-					m_pRendererCom->Add_Text(TextDesc);
+						CRenderer::TEXT_DESC TextDesc = {};
+						TextDesc.strText = m_strContents;
+						TextDesc.strFontTag = L"Default_Bold";
+						TextDesc.vScale = { 0.35f, 0.35f };
+						TextDesc.vColor = _float4(0.047f, 0.024f, 0.004f, 1.f);
+						TextDesc.vPosition = vFontPos;
+						m_pRendererCom->Add_Text(TextDesc);
+					}
 
 					m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 				}
@@ -249,12 +253,18 @@ HRESULT CUI_World_NPCSpeechBalloon::Ready_Components()
 
 HRESULT CUI_World_NPCSpeechBalloon::Ready_State()
 {
-	m_tInfo.fCX = 270.f * 0.5f;
+	m_tInfo.fCX = 400.f * 0.5f;
 	m_tInfo.fCY = 108.f * 0.5f;
 
-	m_vOriginSize = _float2(m_tInfo.fCX, m_tInfo.fCY);
-	m_vMinSize = _float2(m_tInfo.fCX * 0.5f, m_tInfo.fCY * 0.5f);
+	m_fSpeed.x = m_tInfo.fCX * 0.5f;
+	m_fSpeed.y = m_tInfo.fCY * 0.5f;
 
+	m_vOriginSize = _float2(m_tInfo.fCX, m_tInfo.fCY);
+	m_vMinSize = _float2(m_tInfo.fCX * 0.4f, m_tInfo.fCY * 0.4f);
+	
+	m_tInfo.fCX = m_vMinSize.x;
+	m_tInfo.fCY = m_vMinSize.y;
+	
 	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
