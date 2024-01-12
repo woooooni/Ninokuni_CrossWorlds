@@ -83,10 +83,6 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 	/* Trnasform */
 	Tick_Transform(fTimeDelta);
 
-	/* Hot Key */
-	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::CTRL))
-		Set_Default_Position();
-
 	/* Test */
 	Test(fTimeDelta);
 }
@@ -474,6 +470,10 @@ void CCamera_Follow::Test(_float fTimeDelta)
 			else
 				Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
 		}
+
+		/* Hot Key */
+		if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::CTRL))
+			Set_Default_Position();
 
 		//if (KEY_TAP(KEY::V))
 		//{
