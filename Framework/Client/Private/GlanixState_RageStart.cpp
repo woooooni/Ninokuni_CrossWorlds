@@ -45,19 +45,19 @@ void CGlanixState_RageStart::Exit_State()
 	//vPillarPos = { vGlanixPos.x + -11.f, 1.6f, vGlanixPos.z + 13.f, 1.f };
 	//GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
 
-	_vector vPillarPos = { -64.f, 1.6f, 360.f, 1.f };
+	_vector vPillarPos = { -64.f, 10.f, 360.f, 1.f };
 	GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
-	vPillarPos = { -34.f, 1.6f, 350.f, 1.f };
+	vPillarPos = { -34.f, 10.f, 350.f, 1.f };
 	GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
-	vPillarPos = { -60.f, 1.6f, 334.f, 1.f };
+	vPillarPos = { -60.f, 10.f, 334.f, 1.f };
 	GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
-	vPillarPos = { -36.f, 1.6f, 378.f, 1.f };
+	vPillarPos = { -36.f, 10.f, 378.f, 1.f };
 	GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
-	vPillarPos = { -63.f, 1.6f, 378.f, 1.f };
+	vPillarPos = { -63.f, 10.f, 378.f, 1.f };
 	GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
-	vPillarPos = { -44.f, 1.6f, 391.f, 1.f };
+	vPillarPos = { -44.f, 10.f, 391.f, 1.f };
 	GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
-	vPillarPos = { -23.f, 1.6f, 363.f, 1.f };
+	vPillarPos = { -23.f, 10.f, 363.f, 1.f };
 	GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
 }
 

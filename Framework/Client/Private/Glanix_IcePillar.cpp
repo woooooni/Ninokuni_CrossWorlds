@@ -52,6 +52,7 @@ void CGlanix_IcePillar::Tick(_float fTimeDelta)
 
 	GI->Add_CollisionGroup(COLLISION_GROUP::PROP, this);
 
+	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 	m_pControllerCom->Tick_Controller(fTimeDelta);
 
 }
@@ -167,6 +168,28 @@ void CGlanix_IcePillar::Collision_Exit(const COLLISION_INFO& tInfo)
 	int i = 0;
 }
 
+void CGlanix_IcePillar::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
+{
+	__super::Ground_Collision_Enter(tInfo);
+	if (m_pRigidBodyCom->Get_Velocity().y <= 0.f)
+	{
+		m_pRigidBodyCom->Set_Ground(true);
+		m_pRigidBodyCom->Set_Use_Gravity(false);
+	}
+}
+
+void CGlanix_IcePillar::Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo)
+{
+	__super::Ground_Collision_Continue(tInfo);
+}
+
+void CGlanix_IcePillar::Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo)
+{
+	__super::Ground_Collision_Exit(tInfo);
+	m_pRigidBodyCom->Set_Ground(false);
+	m_pRigidBodyCom->Set_Use_Gravity(true);
+}
+
 HRESULT CGlanix_IcePillar::Ready_Components()
 {
 	/* For.Com_Renderer */
@@ -193,6 +216,13 @@ HRESULT CGlanix_IcePillar::Ready_Components()
 	ControllerDesc.pOwner = this;
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_PhysXController"), TEXT("Com_Controller"), (CComponent**)&m_pControllerCom, &ControllerDesc)))
+		return E_FAIL;
+
+	CRigidBody::RIGID_BODY_DESC RigidDesc;
+	RigidDesc.pTransform = m_pTransformCom;
+
+	/* For. Com_RigidBody*/
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_RigidBody"), TEXT("Com_RigidBody"), (CComponent**)&m_pRigidBodyCom, &RigidDesc)))
 		return E_FAIL;
 
 	return S_OK;

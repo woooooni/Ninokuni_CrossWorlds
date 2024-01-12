@@ -1,24 +1,25 @@
 #include "stdafx.h"
-#include "SubQuestNode_Windmill07.h"
+#include "MainQuestNode_SnowField04.h"
 
 #include "GameInstance.h"
 #include "Utils.h"
 
 #include "UI_Manager.h"
 
-CSubQuestNode_Windmill07::CSubQuestNode_Windmill07()
+
+CMainQuestNode_SnowField04::CMainQuestNode_SnowField04()
 {
 }
 
-HRESULT CSubQuestNode_Windmill07::Initialize()
+HRESULT CMainQuestNode_SnowField04::Initialize()
 {
 	__super::Initialize();
 
-	m_strQuestTag = TEXT("[서브]");
-	m_strQuestName = TEXT("풍차 수리");
-	m_strQuestContent = TEXT("비어드에게 가기");
+	m_strQuestTag = TEXT("[메인]");
+	m_strQuestName = TEXT("조사대장을 찾기");
+	m_strQuestContent = TEXT("조사대장을 찾아보자");
 
-	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/SubQuest/02. SubQuest02_Verde_WindmillRepair/SubQuest_Windmill07.json");
+	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/03.MainQuest_SnowField/MainQuest_SnowField04.json");
 
 	for (const auto& talkDesc : Load) {
 		TALK_DELS sTalkDesc;
@@ -30,14 +31,16 @@ HRESULT CSubQuestNode_Windmill07::Initialize()
 	return S_OK;
 }
 
-void CSubQuestNode_Windmill07::Start()
+void CMainQuestNode_SnowField04::Start()
 {
+	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+
 	/* 현재 퀘스트에 연관있는 객체들 */
 	m_pKuu = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"Kuu");
-	m_pBeard = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"SwiftSolutionMaster");
+	m_pJackson= GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("GrimalKinML01"));
 
 	m_vecTalker.push_back(m_pKuu);
-	m_vecTalker.push_back(m_pBeard);
+	m_vecTalker.push_back(m_pJackson);
 
 	/* 카메라 타겟 세팅 */
 	// CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"Kuu");
@@ -65,7 +68,7 @@ void CSubQuestNode_Windmill07::Start()
 	TalkEvent();
 }
 
-CBTNode::NODE_STATE CSubQuestNode_Windmill07::Tick(const _float& fTimeDelta)
+CBTNode::NODE_STATE CMainQuestNode_SnowField04::Tick(const _float& fTimeDelta)
 {
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
@@ -100,11 +103,11 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill07::Tick(const _float& fTimeDelta)
 	return NODE_STATE::NODE_RUNNING;
 }
 
-void CSubQuestNode_Windmill07::LateTick(const _float& fTimeDelta)
+void CMainQuestNode_SnowField04::LateTick(const _float& fTimeDelta)
 {
 }
 
-void CSubQuestNode_Windmill07::TalkEvent()
+void CMainQuestNode_SnowField04::TalkEvent()
 {
 	wstring strAnimName = TEXT("");
 
@@ -117,32 +120,52 @@ void CSubQuestNode_Windmill07::TalkEvent()
 		break;
 	case 1:
 		//CSound_Manager::GetInstance()->Play_Sound(TEXT("01_ChloeSay_Pet.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pBeard->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pBeard->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("c31106000_p200_970011_std"));
+		m_pJackson->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
+		m_pJackson->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Chloe.ao|Chloe_EmotionPositive"));
 		break;
 	case 2:
 		//CSound_Manager::GetInstance()->Play_Sound(TEXT("02_KuuSay_I_No_Pet.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Chloe.ao|Chloe_EmotionTalk"));
+		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_EmotionAngry"));
+		break;
+	case 3:
+		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_KuuSay_ImKuu.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		m_pJackson->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
+		m_pJackson->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|MTG_Kuu_EmotionAnnoyed"));
+		break;
+	case 4:
+		//CSound_Manager::GetInstance()->Play_Sound(TEXT("04_ChloeSay_101010_70_030.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		m_pJackson->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
+		m_pJackson->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Chloe.ao|Chloe_EmotionEmbarrassed"));
+		break;
+	case 5:
+		//CSound_Manager::GetInstance()->Play_Sound(TEXT("04_ChloeSay_101010_70_030.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
+		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Chloe.ao|Chloe_EmotionEmbarrassed"));
+		break;
+	case 6:
+		//CSound_Manager::GetInstance()->Play_Sound(TEXT("04_ChloeSay_101010_70_030.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		m_pJackson->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
+		m_pJackson->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Chloe.ao|Chloe_EmotionEmbarrassed"));
 		break;
 	}
 
 }
 
-CSubQuestNode_Windmill07* CSubQuestNode_Windmill07::Create()
+CMainQuestNode_SnowField04* CMainQuestNode_SnowField04::Create()
 {
-	CSubQuestNode_Windmill07* pInstance = new CSubQuestNode_Windmill07();
+	CMainQuestNode_SnowField04* pInstance = new CMainQuestNode_SnowField04();
 
 	if (FAILED(pInstance->Initialize()))
 	{
-		MSG_BOX("Fail Create : CSubQuestNode_Windmill07");
+		MSG_BOX("Fail Create : CMainQuestNode_SnowField04");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CSubQuestNode_Windmill07::Free()
+void CMainQuestNode_SnowField04::Free()
 {
 	__super::Free();
 }
