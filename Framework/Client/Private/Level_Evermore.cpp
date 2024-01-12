@@ -25,6 +25,8 @@
 
 #include "GameNpc.h"
 
+#include "Portal.h"
+
 CLevel_Evermore::CLevel_Evermore(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
 {
@@ -55,6 +57,9 @@ HRESULT CLevel_Evermore::Initialize()
 		return E_FAIL;
 
 	if (FAILED(Ready_Layer_UI(LAYER_TYPE::LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(Ready_Layer_Prop(LAYER_TYPE::LAYER_PROP)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Layer_Dynamic(LAYER_TYPE::LAYER_DYNAMIC, TEXT("Evermore"))))
@@ -372,6 +377,15 @@ HRESULT CLevel_Evermore::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 
 	CUI_Manager::GetInstance()->Ready_CharacterTypeForUI(eCharacterType);
 	CUI_Manager::GetInstance()->Ready_ElementalTypeForUI(ELEMENTAL_TYPE::DARK);
+
+	return S_OK;
+}
+
+HRESULT CLevel_Evermore::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
+{
+	//CPortal::PORTAL_DESC PortalInfo = {};
+	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Portal"), &PortalInfo)))
+	//	return E_FAIL;
 
 	return S_OK;
 }
