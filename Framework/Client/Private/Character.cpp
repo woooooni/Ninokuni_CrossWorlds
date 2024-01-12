@@ -407,7 +407,7 @@ void CCharacter::Collision_Continue(const COLLISION_INFO& tInfo)
 				|| m_pStateCom->Get_CurrState() == CCharacter::STATE::NEUTRAL_PICK_SMALL_FINISH)
 				return;
 
-			// Decide_Target(tInfo);
+			Decide_Target(tInfo);
 		}
 	}
 }

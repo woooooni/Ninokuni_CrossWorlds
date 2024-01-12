@@ -24,6 +24,7 @@ public:
 
 public:
 	_bool	Get_IsCol() { return m_bIsCol; }
+	void	Set_ReadyDelete(_bool bIsDelete) { m_bIsDelete = bIsDelete; }
 
 private:
 	virtual HRESULT Ready_Components();
@@ -37,6 +38,7 @@ private:
 	class CVfx* pEffectObject = nullptr;
 
 	_bool m_bIsCol = false;
+	_bool m_bIsDelete = false;
 
 public:
 	static CQuest_DestSpot* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);

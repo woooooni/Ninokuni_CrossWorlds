@@ -34,6 +34,11 @@ Vec4 CQuestNode_Base::Set_DestSpot(CGameObject* pGameObject)
 	return vSpotPos;
 }
 
+void CQuestNode_Base::Delete_QuestDestSpot()
+{
+	Safe_Release(m_pQuestDestSpot);
+}
+
 void CQuestNode_Base::Free()
 {
 	__super::Free();

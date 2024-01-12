@@ -19,6 +19,7 @@ _bool CQuestTree::Tick(const _float& fTimeDelta)
 
 void CQuestTree::LateTick(const _float& fTimeDelta)
 {
+
 }
 
 void CQuestTree::Free()

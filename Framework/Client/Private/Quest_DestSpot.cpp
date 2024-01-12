@@ -53,31 +53,36 @@ HRESULT CQuest_DestSpot::Initialize(void* pArg)
 
 void CQuest_DestSpot::Tick(_float fTimeDelta)
 {
-	__super::Tick(fTimeDelta);
+	if (!m_bIsDelete)
+	{
+		__super::Tick(fTimeDelta);
 
-	// 임시로 몬스터에 담는다. 충돌 처리 그룹 추가 될 때까지.
-	GI->Add_CollisionGroup(COLLISION_GROUP::MONSTER, this);
+		// 임시로 몬스터에 담는다. 충돌 처리 그룹 추가 될 때까지.
+		GI->Add_CollisionGroup(COLLISION_GROUP::MONSTER, this);
 
-	m_pControllerCom->Tick_Controller(fTimeDelta);
-
+		m_pControllerCom->Tick_Controller(fTimeDelta);
+	}
 }
 
 void CQuest_DestSpot::LateTick(_float fTimeDelta)
 {
-	__super::LateTick(fTimeDelta);
+	if (!m_bIsDelete)
+	{
+		__super::LateTick(fTimeDelta);
 
-	m_pControllerCom->LateTick_Controller(fTimeDelta);
+		m_pControllerCom->LateTick_Controller(fTimeDelta);
 
 #ifdef _DEBUG
-	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
-	{
-		for (auto& pCollider : m_Colliders[i])
-			m_pRendererCom->Add_Debug(pCollider);
-	}
-	m_pRendererCom->Add_Debug(m_pControllerCom);
+		for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
+		{
+			for (auto& pCollider : m_Colliders[i])
+				m_pRendererCom->Add_Debug(pCollider);
+		}
+		m_pRendererCom->Add_Debug(m_pControllerCom);
 
-	m_pRendererCom->Set_PlayerPosition(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+		m_pRendererCom->Set_PlayerPosition(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 #endif // DEBUG
+	}
 }
 
 HRESULT CQuest_DestSpot::Render()
@@ -89,33 +94,41 @@ HRESULT CQuest_DestSpot::Render()
 
 HRESULT CQuest_DestSpot::Render_ShadowDepth()
 {
-	if (FAILED(__super::Render_ShadowDepth()))
-		return E_FAIL;
+	if (!m_bIsDelete)
+	{
+		if (FAILED(__super::Render_ShadowDepth()))
+			return E_FAIL;
+	}
 
 	return S_OK;
 }
 
 void CQuest_DestSpot::Collision_Enter(const COLLISION_INFO& tInfo)
 {
-	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER &&
-		tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
+	if (!m_bIsDelete)
 	{
-		m_bIsCol = true;
+		if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER &&
+			tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
+		{
+			m_bIsCol = true;
+		}
 	}
 }
 
 void CQuest_DestSpot::Collision_Continue(const COLLISION_INFO& tInfo)
 {
-	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER &&
-		tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
+	if (!m_bIsDelete)
 	{
-		m_bIsCol = true;
+		if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER &&
+			tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
+		{
+			m_bIsCol = true;
+		}
 	}
 }
 
 void CQuest_DestSpot::Collision_Exit(const COLLISION_INFO& tInfo)
 {
-	int i = 0;
 }
 
 HRESULT CQuest_DestSpot::Ready_Components()
@@ -202,7 +215,11 @@ void CQuest_DestSpot::Free()
 	Safe_Release(m_pTransformCom);
 	Safe_Release(m_pControllerCom);
 
-	if(nullptr != pEffectObject)
+	if (nullptr != pEffectObject)
+	{
+		pEffectObject->Set_Dead(true);
 		Safe_Release(pEffectObject);
+	}
+		
 }
 

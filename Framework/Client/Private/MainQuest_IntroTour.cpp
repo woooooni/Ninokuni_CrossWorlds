@@ -44,6 +44,7 @@ _bool CMainQuest_IntroTour::Tick(const _float& fTimeDelta)
 
 void CMainQuest_IntroTour::LateTick(const _float& fTimeDelta)
 {
+	__super::LateTick(fTimeDelta);
 }
 
 CMainQuest_IntroTour* CMainQuest_IntroTour::Create()

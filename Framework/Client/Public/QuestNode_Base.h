@@ -29,6 +29,9 @@ protected:
 	virtual Vec4    Set_DestSpot(CGameObject* pGameObject);
 	virtual void    TalkEvent() {};
 
+	virtual CQuest_DestSpot* Get_QuestDestSpot() { return m_pQuestDestSpot; }
+	virtual void			 Delete_QuestDestSpot();
+
 protected:
 	vector<TALK_DELS> m_vecTalkDesc;
 	_bool m_bIsClear = false;

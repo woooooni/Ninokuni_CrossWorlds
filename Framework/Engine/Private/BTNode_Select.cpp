@@ -26,6 +26,7 @@ CBTNode::NODE_STATE CBTNode_Select::Tick(const _float& fTimeDelta)
 			iter->Set_IsStart(true);
 		}
 
+		//
 		switch (iter->Tick(fTimeDelta))
 		{
 		case NODE_STATE::NODE_RUNNING:
