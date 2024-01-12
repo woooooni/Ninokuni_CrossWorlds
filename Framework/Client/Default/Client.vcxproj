@@ -622,6 +622,7 @@
     <ClInclude Include="..\Public\ThiefCat.h" />
     <ClInclude Include="..\Public\Tool_Item.h" />
     <ClInclude Include="..\Public\TreeGrandfa.h" />
+    <ClInclude Include="..\Public\Trigger.h" />
     <ClInclude Include="..\Public\UIDamage_Manager.h" />
     <ClInclude Include="..\Public\UI_Announced.h" />
     <ClInclude Include="..\Public\UI_BossHP_Background.h" />
@@ -1298,6 +1299,7 @@
     <ClCompile Include="..\Private\ThiefCat.cpp" />
     <ClCompile Include="..\Private\Tool_Item.cpp" />
     <ClCompile Include="..\Private\TreeGrandfa.cpp" />
+    <ClCompile Include="..\Private\Trigger.cpp" />
     <ClCompile Include="..\Private\UIDamage_Manager.cpp" />
     <ClCompile Include="..\Private\UI_Announced.cpp" />
     <ClCompile Include="..\Private\UI_BossHP_Background.cpp" />

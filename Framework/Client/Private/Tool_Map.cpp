@@ -1542,7 +1542,7 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 		}
 	}
 
-	if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, false)))
+	if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, Vec4(0.f, 0.f, 0.f, 1.f), false)))
 		return E_FAIL;
 
 	if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))

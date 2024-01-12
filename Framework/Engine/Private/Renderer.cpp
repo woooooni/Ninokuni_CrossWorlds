@@ -1586,20 +1586,7 @@ HRESULT CRenderer::Render_Debug_Target()
 	if (false == m_bDebugDraw)
 		return S_OK;
 
-	wstring strPlayerPosition = L"";
-	strPlayerPosition += L"X : ";
-	strPlayerPosition += to_wstring(m_vPlayerPosition.x);
-	strPlayerPosition += L'\n';
-	strPlayerPosition += L"Y : ";
-	strPlayerPosition += to_wstring(m_vPlayerPosition.y);
-	strPlayerPosition += L'\n';
-	strPlayerPosition += L"Z : ";
-	strPlayerPosition += to_wstring(m_vPlayerPosition.z);
-	strPlayerPosition += L'\n';
-	strPlayerPosition += L"W : ";
-	strPlayerPosition += to_wstring(m_vPlayerPosition.w);
 
-	GI->Render_Fonts(L"Basic", strPlayerPosition.c_str(), _float2(1600.f / 2.f, 0.f));
 
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
 		return E_FAIL;
@@ -1648,6 +1635,21 @@ HRESULT CRenderer::Render_Debug_Target()
 
 	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Shadow_Caculation_Blur"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
 		return E_FAIL;
+
+	wstring strPlayerPosition = L"";
+	strPlayerPosition += L"X : ";
+	strPlayerPosition += to_wstring(m_vPlayerPosition.x);
+	strPlayerPosition += L'\n';
+	strPlayerPosition += L"Y : ";
+	strPlayerPosition += to_wstring(m_vPlayerPosition.y);
+	strPlayerPosition += L'\n';
+	strPlayerPosition += L"Z : ";
+	strPlayerPosition += to_wstring(m_vPlayerPosition.z);
+	strPlayerPosition += L'\n';
+	strPlayerPosition += L"W : ";
+	strPlayerPosition += to_wstring(m_vPlayerPosition.w);
+
+	GI->Render_Fonts(L"Basic", strPlayerPosition.c_str(), _float2(1600.f / 2.f, 0.f));
 
 	return S_OK;
 }

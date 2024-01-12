@@ -25,7 +25,7 @@ public:
 
 public:
 	class CCharacter* Get_Character() { return m_pCharacter; }
-	HRESULT Set_Character(CHARACTER_TYPE eType, _bool  bEnterScene);
+	HRESULT Set_Character(CHARACTER_TYPE eType, Vec4 vEnterPosition, _bool bEnterScene);
 
 private:
 	class CCharacter* m_pCharacter = nullptr;

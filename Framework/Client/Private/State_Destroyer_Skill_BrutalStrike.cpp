@@ -18,6 +18,7 @@ HRESULT CState_Destroyer_Skill_BrutalStrike::Initialize(const list<wstring>& Ani
 
 void CState_Destroyer_Skill_BrutalStrike::Enter_State(void* pArg)
 {
+    m_pCharacter->Look_For_Target();
     m_pCharacter->Appear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }

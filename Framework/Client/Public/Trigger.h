@@ -12,21 +12,29 @@ END
 
 BEGIN(Client)
 
-class CPortal final : public CGameObject
+class CTrigger final : public CGameObject
 {
 public:
-	typedef struct tagPortalDesc : OBJECT_INIT_DESC
+	typedef struct tagTriggerDesc
 	{
-		LEVELID eCurrentLevel = LEVELID::LEVEL_END;
-		LEVELID eNextLevel = LEVELID::LEVEL_END;
+		TRIGGER_TYPE eTriggerType = TRIGGER_TYPE::TRIGGER_END;
 
-		Vec4 vNextPos = { 0.f, 0.f, 0.f, 1.f };
-	} PORTAL_DESC;
+		// Default
+		Vec4 vStartPosition = { 0.f, 0.f, 0.f, 1.f };
+		Vec3 vExtents = { 100.f, 100.f, 100.f };
+
+		// For.Trigger ChangeBGM
+		string strBGM = "";
+
+		// For.Trigger MapName
+		string strMapName = "";
+
+	} TRIGGER_DESC;
 
 private:
-	CPortal(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CPortal(const CPortal& rhs);
-	virtual ~CPortal() = default;
+	CTrigger(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CTrigger(const CTrigger& rhs);
+	virtual ~CTrigger() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -45,17 +53,21 @@ private:
 	HRESULT Ready_Collider();
 
 private:
-	LEVELID m_eCurrentLevel = LEVELID::LEVEL_END;
-	LEVELID m_eNextLevel = LEVELID::LEVEL_END;
-	Vec4 m_vNextPos = { 0.f, 0.f, 0.f, 1.f };
+	TRIGGER_TYPE m_eTriggerType = TRIGGER_TYPE::TRIGGER_END;
+	Vec3 m_vExtents = { 100.f, 100.f, 100.f };
+	
 private:
-	class CVfx* pEffectObject = nullptr;
-
-	class CTransform* m_pTransformCom = nullptr;
 	class CRenderer* m_pRendererCom = nullptr;
+	class CTransform* m_pTransformCom = nullptr;
+
+
+private:
+	string m_strBGM = "";
+
+	
 
 public:
-	static CPortal* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CTrigger* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

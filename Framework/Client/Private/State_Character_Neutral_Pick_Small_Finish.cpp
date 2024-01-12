@@ -21,7 +21,12 @@ void CState_Character_Neutral_Pick_Small_Finish::Enter_State(void* pArg)
     m_pCharacter->Disappear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 
-    if (nullptr != m_pCharacter->Get_Target())
+    
+}
+
+void CState_Character_Neutral_Pick_Small_Finish::Tick_State(_float fTimeDelta)
+{
+    if (m_pModelCom->Get_Progress() <= 0.6f)
     {
         CTransform* pTargetTransform = m_pCharacter->Get_Target()->Get_Component<CTransform>(L"Com_Transform");
         if (nullptr != pTargetTransform)
@@ -37,16 +42,11 @@ void CState_Character_Neutral_Pick_Small_Finish::Enter_State(void* pArg)
             pTargetTransform->Set_State(CTransform::STATE_POSITION, vHandCenterPosition);
         }
     }
-    else
-    {
-        m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_IDLE);
-    }
-}
 
-void CState_Character_Neutral_Pick_Small_Finish::Tick_State(_float fTimeDelta)
-{
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
         m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_IDLE);
+
+    
 }
 
 void CState_Character_Neutral_Pick_Small_Finish::Exit_State()

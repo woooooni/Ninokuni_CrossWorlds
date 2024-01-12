@@ -25,6 +25,7 @@ public: /* For.GameInstance */
 		_In_ HWND hWnd,
 		_In_ HINSTANCE hInst);
 
+	void Priority_Tick(_float fTimeDelta);
 	void Tick(_float fTimeDelta);
 	void LateTick(_float fTimeDelta);
 	void Clear(_uint iLevelIndex);

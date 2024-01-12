@@ -29,7 +29,8 @@ HRESULT CPortal::Initialize(void* pArg)
 	PORTAL_DESC* pPortalDesc = (PORTAL_DESC*)pArg;
 
 	m_eCurrentLevel = pPortalDesc->eCurrentLevel;
-	m_eNextLevel    = pPortalDesc->eNextLevel;
+	m_eNextLevel = pPortalDesc->eNextLevel;
+	m_vNextPos = pPortalDesc->vNextPos;
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;

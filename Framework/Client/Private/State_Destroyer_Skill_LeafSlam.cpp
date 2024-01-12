@@ -26,13 +26,7 @@ void CState_Destroyer_Skill_LeafSlam::Enter_State(void* pArg)
     m_pCharacter->Appear_Weapon();
     m_iCurrAnimIndex = m_AnimIndices[0];
     m_pModelCom->Set_Animation(m_iCurrAnimIndex);
-
-    if (m_pCharacter->Get_Target() != nullptr)
-    {
-        CTransform* pTargetTransform = m_pCharacter->Get_Target()->Get_Component<CTransform>(L"Com_Transform");
-        if(nullptr != pTargetTransform)
-            m_pTransformCom->LookAt_ForLandObject(pTargetTransform->Get_Position());
-    }
+    m_pCharacter->Look_For_Target();
 }
 
 void CState_Destroyer_Skill_LeafSlam::Tick_State(_float fTimeDelta)

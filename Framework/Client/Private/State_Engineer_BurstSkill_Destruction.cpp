@@ -19,6 +19,7 @@ HRESULT CState_Engineer_BurstSkill_Destruction::Initialize(const list<wstring>& 
 void CState_Engineer_BurstSkill_Destruction::Enter_State(void* pArg)
 {
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
+    m_pCharacter->Look_For_Target();
 }
 
 void CState_Engineer_BurstSkill_Destruction::Tick_State(_float fTimeDelta)

@@ -413,7 +413,7 @@ PS_OUT PS_MOTION_TRAIL(PS_IN In)
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
 
     float fRimPower = 1.f - saturate(dot(In.vNormal.xyz, normalize((-1.f * (In.vWorldPosition - g_vCamPosition)))));
-    fRimPower = pow(fRimPower, 5.f);
+    fRimPower = pow(fRimPower, 1.f);
 	
     vector vRimColor = g_AnimInstancingDesc[In.iInstanceID].vRimColor * fRimPower;
     Out.vDiffuse = vRimColor;

@@ -48,6 +48,8 @@ public:
     void Set_Active(_bool bActive); 
     _bool Is_Active();
     
+public:
+    void Set_EnterLevel_Position(Vec4 vPosition);
 
 private:
     class PxController* m_pPhysXController = nullptr;
@@ -62,7 +64,6 @@ private:
     Vec3 m_vPrevPosition = {};
     _bool m_bInitialize = true;
     _bool m_bGroundChecked = false;
-
 
 public:
     static CPhysX_Controller* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

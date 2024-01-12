@@ -23,6 +23,8 @@ void CState_Engineer_Battle_Attack_1::Enter_State(void* pArg)
     CSound_Manager::GetInstance()->Play_Sound(L"Engineer_V_Atk_Short_" + strVoiceNum + L".mp3", CHANNELID::SOUND_VOICE_CHARACTER, 0.5f, true);
     m_pCharacter->Appear_Weapon();
 
+    m_pCharacter->Look_For_Target();
+
     m_iShootCount = 1;
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }

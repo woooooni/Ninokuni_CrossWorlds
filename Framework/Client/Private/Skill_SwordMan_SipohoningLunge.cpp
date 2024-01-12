@@ -14,6 +14,8 @@ HRESULT CSkill_SwordMan_SipohoningLunge::Initialize(ID3D11Device* pDevice, ID3D1
 	if (FAILED(__super::Initialize(pDevice, pContext, pOwner)))
 		return E_FAIL;
 
+	m_fCoolTime = 5.f;
+
 	return S_OK;
 }
 

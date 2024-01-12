@@ -30,7 +30,8 @@ void CPlayer::LateTick(_float fTimeDelta)
 		m_pCharacter->LateTick(fTimeDelta);
 }
 
-HRESULT CPlayer::Set_Character(CHARACTER_TYPE eType, _bool  bEnterScene)
+
+HRESULT CPlayer::Set_Character(CHARACTER_TYPE eType, Vec4 vEnterPosition, _bool  bEnterScene)
 {
 
 	if (nullptr != m_pCharacter)
@@ -39,8 +40,6 @@ HRESULT CPlayer::Set_Character(CHARACTER_TYPE eType, _bool  bEnterScene)
 			return E_FAIL;
 	}
 		
-
-
 	m_pCharacter = CCharacter_Manager::GetInstance()->Get_Character(eType);
 
 	if (nullptr == m_pCharacter)
@@ -57,15 +56,12 @@ HRESULT CPlayer::Set_Character(CHARACTER_TYPE eType, _bool  bEnterScene)
 
 	if (true == bEnterScene)
 	{
-		CStateMachine* pMachine = m_pCharacter->Get_Component<CStateMachine>(L"Com_StateMachine");
-		if (nullptr == pMachine)
-			return E_FAIL;
-
-		pMachine->Change_State(CCharacter::STATE::NEUTRAL_DOOR_ENTER);
+		m_pCharacter->Set_EnterLevelPosition(XMVectorSetW(vEnterPosition, 1.f));
 	}
 
 	return S_OK;
 }
+
 
 
 

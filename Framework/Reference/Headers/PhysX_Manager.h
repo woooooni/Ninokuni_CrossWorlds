@@ -65,6 +65,7 @@ public:
 
 public:
 	// PxControllerFilterCallback을(를) 통해 상속됨
+	_bool Check_Push(_uint iLeftObjType, _uint iRightObjType);
 	virtual bool filter(const PxController& a, const PxController& b) override;
 	  //PxParticleSystem* Get_ParticleSystem()			{ return m_pParticleSystem; }
 	  //PxParticleClothBuffer* Get_ClothBuffer()			{ return m_pClothBuffer; }
