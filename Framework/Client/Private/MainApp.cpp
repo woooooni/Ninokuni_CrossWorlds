@@ -88,10 +88,10 @@ void CMainApp::Tick(_float fTimeDelta)
 {
 	CQuest_Manager::GetInstance()->Tick(fTimeDelta);
 	CUI_Manager::GetInstance()->Tick(fTimeDelta);
-	GI->Priority_Tick(fTimeDelta);
+	GI->Priority_Tick(fTimeDelta); /* 카메라에서 플레이어 포지션 세팅하기 위해, 틱에서만 GI를 게임매니저보다 먼저 업데이트*/
+
 	CGame_Manager::GetInstance()->Tick(fTimeDelta);
-	GI->Tick(fTimeDelta); /* 카메라에서 플레이어 포지션 세팅하기 위해, 틱에서만 GI를 게임매니저보다 먼저 업데이트*/
-	
+	GI->Tick(fTimeDelta); 
 	
 	CQuest_Manager::GetInstance()->LateTick(fTimeDelta);
 	CUI_Manager::GetInstance()->LateTick(fTimeDelta);

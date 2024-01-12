@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "GameInstance.h"
 #include "Character.h"
+#include "Animals.h"
 #include "State_Character_Neutral_Pick_Small_Finish.h"
 
 CState_Character_Neutral_Pick_Small_Finish::CState_Character_Neutral_Pick_Small_Finish(CStateMachine* pMachine)
@@ -20,7 +21,7 @@ void CState_Character_Neutral_Pick_Small_Finish::Enter_State(void* pArg)
 {
     m_pCharacter->Disappear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
-
+    m_bLiftAway = false;
     
 }
 
@@ -42,6 +43,20 @@ void CState_Character_Neutral_Pick_Small_Finish::Tick_State(_float fTimeDelta)
             pTargetTransform->Set_State(CTransform::STATE_POSITION, vHandCenterPosition);
         }
     }
+    else
+    {
+        if (true == m_bLiftAway)
+            return;
+
+        CAnimals* pAnimal = dynamic_cast<CAnimals*>(m_pCharacter->Get_Target());
+
+        if (nullptr == pAnimal)
+        {
+            MSG_BOX("Animal Cast Failed.");
+            return;
+        }
+        pAnimal->Set_Lift(false);
+    }
 
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
         m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_IDLE);
@@ -51,7 +66,7 @@ void CState_Character_Neutral_Pick_Small_Finish::Tick_State(_float fTimeDelta)
 
 void CState_Character_Neutral_Pick_Small_Finish::Exit_State()
 {
-
+    m_bLiftAway = false;
 }
 
 

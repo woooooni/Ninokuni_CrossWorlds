@@ -541,7 +541,8 @@ void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 		m_pTransformCom->LookAt_ForLandObject(pOtherTransform->Get_Position());
 
 
-	_int iDamage = max(0, pMonster->Get_Stat().iAtk - (m_tStat.iDef * 0.2f));
+	_int iDamage = max(0, pMonster->Get_Stat().iAtk - (m_tStat.iDef * 0.2f)) * CGame_Manager::GetInstance()->Calculate_Elemental(pMonster->Get_ElementalType(), m_eElemental);
+
 	CUIDamage_Manager::GetInstance()->Create_PlayerDamageNumber(m_pTransformCom, iDamage);
 
 	if (CCollider::ATTACK_TYPE::AIR_BORNE == tInfo.pOtherCollider->Get_AttackType())
@@ -569,7 +570,7 @@ void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 
 	else if (CCollider::ATTACK_TYPE::STRONG == tInfo.pOtherCollider->Get_AttackType())
 	{
-		m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(m_pTransformCom->Get_Look()), 2.f, true);
+		m_pRigidBodyCom->Add_Velocity(-1.f * XMVector3Normalize(m_pTransformCom->Get_Look()), 2.f, true);
 		m_pStateCom->Change_State(CCharacter::DAMAGED_STRONG);
 	}
 
@@ -648,27 +649,16 @@ void CCharacter::PickDown_Target()
 
 	if (OBJ_TYPE::OBJ_ANIMAL == m_pTarget->Get_ObjectType())
 	{
-		CAnimals* pAnimal = dynamic_cast<CAnimals*>(m_pTarget);
-
-		if (nullptr == pAnimal)
-		{
-			MSG_BOX("Animal Cast Failed.");
-			return;
-		}
-
-		
 
 		if (CCharacter::STATE::NEUTRAL_PICK_SMALL_IDLE == m_pStateCom->Get_CurrState())
 		{
 			pTargetTransform->Set_State(CTransform::STATE_POSITION, m_pTransformCom->Get_Position());
-			pAnimal->Set_Lift(false);
 			m_pStateCom->Change_State(CCharacter::NEUTRAL_PICK_SMALL_FINISH);
 			return;
 		}
 		else if (CCharacter::STATE::NEUTRAL_PICK_LARGE_IDLE == m_pStateCom->Get_CurrState())
 		{
 			pTargetTransform->Set_State(CTransform::STATE_POSITION, m_pTransformCom->Get_Position());
-			pAnimal->Set_Lift(false);
 			m_pStateCom->Change_State(CCharacter::NEUTRAL_PICK_LARGE_FINISH);
 			return;
 		}

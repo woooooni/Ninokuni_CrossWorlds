@@ -373,9 +373,22 @@ void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 		TEXT("DreamerMazeWitch") == Get_ObjectTag())
 		bIsBoss = true;
 
+	CCharacter* pCharacter = dynamic_cast<CCharacter*>(tInfo.pOther);
+	if (nullptr == pCharacter)
+		return;
 
-	_int iDamage = (dynamic_cast<CCharacter*>(tInfo.pOther)->Get_Stat().iAtt * CUtils::Random_Float(0.5f, 1.5f)) - (m_tStat.iDef * 0.2f);
+	_int iDamage = (pCharacter->Get_Stat().iAtt * CUtils::Random_Float(0.5f, 1.5f)) - (m_tStat.iDef * 0.2f) * CGame_Manager::GetInstance()->Calculate_Elemental(pCharacter->Get_ElementalType(), m_eDamagedElemental);
+
+
+	if (m_eDamagedElemental == ELEMENTAL_TYPE::BASIC)
+		m_eDamagedElemental = pCharacter->Get_ElementalType();
+	else
+		m_eDamagedElemental = ELEMENTAL_TYPE::BASIC;
+
+
+
 	CUIDamage_Manager::GetInstance()->Create_MonsterDamageNumber(m_pTransformCom, bIsBoss, CUIDamage_Manager::UI_DAMAGETYPE::NONE, iDamage);
+
 	m_tStat.fHp -= iDamage;
 
 	Start_RimLight();

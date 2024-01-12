@@ -20,7 +20,8 @@ CCollider_AABB::CCollider_AABB(CCollider_AABB& rhs)
 
 HRESULT CCollider_AABB::Initialize_Prototype()
 {
-
+	if (FAILED(__super::Initialize_Prototype()))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -79,7 +80,7 @@ void CCollider_AABB::LateTick_Collider(_float fTimeDelta)
 #ifdef _DEBUG
 HRESULT CCollider_AABB::Render()
 {
-
+	__super::Render();
 	m_pEffect->SetWorld(XMMatrixIdentity());
 	m_pEffect->SetView(GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
 	m_pEffect->SetProjection(GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ));

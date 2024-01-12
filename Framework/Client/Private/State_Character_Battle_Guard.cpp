@@ -19,7 +19,7 @@ HRESULT CState_Character_Battle_Guard::Initialize(const list<wstring>& Animation
 void CState_Character_Battle_Guard::Enter_State(void* pArg)
 {
     m_pCharacter->Appear_Weapon();
-    m_pModelCom->Set_Animation(m_AnimIndices[0]);
+    m_pModelCom->Set_Animation(m_AnimIndices[0], MIN_TWEEN_DURATION);
 }
 
 void CState_Character_Battle_Guard::Tick_State(_float fTimeDelta)
