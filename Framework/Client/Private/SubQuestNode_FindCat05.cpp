@@ -5,6 +5,7 @@
 #include "Utils.h"
 
 #include "UI_Manager.h"
+#include "Game_Manager.h"
 
 CSubQuestNode_FindCat05::CSubQuestNode_FindCat05()
 {
@@ -35,7 +36,8 @@ void CSubQuestNode_FindCat05::Start()
 	// CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
 	/* 현재 퀘스트에 연관있는 객체들 */
-	m_pKuu = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"Kuu");
+	//m_pKuu = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Kuu"));
+	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
 	m_pChloe = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"Chloe");
 
 	m_vecTalker.push_back(m_pKuu);

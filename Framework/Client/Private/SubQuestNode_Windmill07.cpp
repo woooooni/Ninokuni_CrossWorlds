@@ -5,6 +5,7 @@
 #include "Utils.h"
 
 #include "UI_Manager.h"
+#include "Game_Manager.h"
 
 CSubQuestNode_Windmill07::CSubQuestNode_Windmill07()
 {
@@ -33,7 +34,8 @@ HRESULT CSubQuestNode_Windmill07::Initialize()
 void CSubQuestNode_Windmill07::Start()
 {
 	/* 현재 퀘스트에 연관있는 객체들 */
-	m_pKuu = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"Kuu");
+	//m_pKuu = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Kuu"));
+	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
 	m_pBeard = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"SwiftSolutionMaster");
 
 	m_vecTalker.push_back(m_pKuu);

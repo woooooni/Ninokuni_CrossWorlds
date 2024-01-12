@@ -189,7 +189,9 @@ HRESULT CLevel_IceLand::Ready_Layer_Terrain(const LAYER_TYPE eLayerType)
 HRESULT CLevel_IceLand::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 {
 	// 111.f, 1.5f, 8.f, 1.f ㄹㅇ 시작위치
-	if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, Vec4(-44.f, 1.5f, 315.f, 1.f), true)))
+	//if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, Vec4(-44.f, 1.5f, 315.f, 1.f), true)))
+	//	return E_FAIL;
+	if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, Vec4(111.f, 1.5f, 8.f, 1.f), true)))
 		return E_FAIL;
 
 	/* Set Camera */

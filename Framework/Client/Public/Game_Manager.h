@@ -26,6 +26,7 @@ public:
 
 public:
 	class CPlayer* Get_Player() { return m_pPlayer; }
+	class CKuu*	   Get_Kuu() { return m_pKuu; }
 
 public:
 	_float Calculate_Elemental(ELEMENTAL_TYPE eAttackerElemental, ELEMENTAL_TYPE eHitElemental)
@@ -67,12 +68,14 @@ public:
 
 		return 1.f;
 	}
+	void Set_KuuTarget_Player();
 
 private:
 	ID3D11Device* m_pDevice = nullptr;
 	ID3D11DeviceContext* m_pContext = nullptr;
 
 	class CPlayer* m_pPlayer = nullptr;
+	class CKuu*	   m_pKuu = nullptr;
 
 private:
 	wstring m_strUserName = L"";

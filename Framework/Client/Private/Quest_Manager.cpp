@@ -16,6 +16,8 @@ HRESULT CQuest_Manager::Reserve_Manager()
 	m_pMainQuest = CMainQuest::Create();
 	m_pSubQuest = CSubQuest::Create();
 
+	m_bIsReserve = true;
+
 	return S_OK;
 }
 
