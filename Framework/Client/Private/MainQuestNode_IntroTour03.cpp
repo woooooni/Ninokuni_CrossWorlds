@@ -31,11 +31,11 @@ CBTNode::NODE_STATE CMainQuestNode_IntroTour03::Tick(const _float& fTimeDelta)
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 
-	m_strQuestContent = L"Äù½ºÆ® " + to_wstring(CQuest_Manager::GetInstance()->Get_QuestClearStack());
+	m_strQuestContent = L"¼­ºê Äù½ºÆ® " + to_wstring(CQuest_Manager::GetInstance()->Get_QuestClearStack());
 	m_strQuestContent = m_strQuestContent + L" / 3 ¿Ï·á";
 	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
-	if (CQuest_Manager::GetInstance()->Get_QuestClearStack() >= 2)
+	if (CQuest_Manager::GetInstance()->Get_QuestClearStack() >= 3)
 	{
 		m_bIsClear = true;
 		return NODE_STATE::NODE_FAIL;

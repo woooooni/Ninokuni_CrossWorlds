@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "SubQuestNode_Windmill12.h"
+#include "SubQuestNode_Wanted08.h"
 
 #include "GameInstance.h"
 #include "Utils.h"
@@ -9,19 +9,19 @@
 #include "Sound_Manager.h"
 #include "Camera_Action.h"
 
-CSubQuestNode_Windmill12::CSubQuestNode_Windmill12()
+CSubQuestNode_Wanted08::CSubQuestNode_Wanted08()
 {
 }
 
-HRESULT CSubQuestNode_Windmill12::Initialize()
+HRESULT CSubQuestNode_Wanted08::Initialize()
 {
 	__super::Initialize();
 
 	m_strQuestTag = TEXT("[서브]");
-	m_strQuestName = TEXT("풍차 수리");
-	m_strQuestContent = TEXT("베르디에게 가기");
-	
-	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/SubQuest/02. SubQuest02_Verde_WindmillRepair/SubQuest_Windmill12.json");
+	m_strQuestName = TEXT("툼바에게 돌아가기");
+	m_strQuestContent = TEXT("툼바에게 보고하자");
+
+	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/SubQuest/03. SubQuest03_Tumba_Wanted/SubQuest_Wanted08.json");
 
 	for (const auto& talkDesc : Load) {
 		TALK_DELS sTalkDesc;
@@ -33,9 +33,9 @@ HRESULT CSubQuestNode_Windmill12::Initialize()
 	return S_OK;
 }
 
-void CSubQuestNode_Windmill12::Start()
+void CSubQuestNode_Wanted08::Start()
 {
-	// CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+	//CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 	/* 현재 퀘스트에 연관있는 객체들 */
 	m_pKuu = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"Kuu");
 
@@ -65,7 +65,7 @@ void CSubQuestNode_Windmill12::Start()
 	TalkEvent();
 }
 
-CBTNode::NODE_STATE CSubQuestNode_Windmill12::Tick(const _float& fTimeDelta)
+CBTNode::NODE_STATE CSubQuestNode_Wanted08::Tick(const _float& fTimeDelta)
 {
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
@@ -102,11 +102,11 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill12::Tick(const _float& fTimeDelta)
 	return NODE_STATE::NODE_RUNNING;
 }
 
-void CSubQuestNode_Windmill12::LateTick(const _float& fTimeDelta)
+void CSubQuestNode_Wanted08::LateTick(const _float& fTimeDelta)
 {
 }
 
-void CSubQuestNode_Windmill12::TalkEvent()
+void CSubQuestNode_Wanted08::TalkEvent()
 {
 	wstring strAnimName = TEXT("");
 
@@ -127,20 +127,20 @@ void CSubQuestNode_Windmill12::TalkEvent()
 	}
 }
 
-CSubQuestNode_Windmill12* CSubQuestNode_Windmill12::Create()
+CSubQuestNode_Wanted08* CSubQuestNode_Wanted08::Create()
 {
-	CSubQuestNode_Windmill12* pInstance = new CSubQuestNode_Windmill12();
+	CSubQuestNode_Wanted08* pInstance = new CSubQuestNode_Wanted08();
 
 	if (FAILED(pInstance->Initialize()))
 	{
-		MSG_BOX("Fail Create : CSubQuestNode_Windmill12");
+		MSG_BOX("Fail Create : CSubQuestNode_Wanted08");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CSubQuestNode_Windmill12::Free()
+void CSubQuestNode_Wanted08::Free()
 {
 	__super::Free();
 }

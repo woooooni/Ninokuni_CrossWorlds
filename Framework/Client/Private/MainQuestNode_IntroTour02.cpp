@@ -85,6 +85,7 @@ CBTNode::NODE_STATE CMainQuestNode_IntroTour02::Tick(const _float& fTimeDelta)
 
 			CQuest_Manager::GetInstance()->Set_SubQuestRunning(CSubQuest::SUBQUEST_CHLOE_FINDCAT, true);
 			CQuest_Manager::GetInstance()->Set_SubQuestRunning(CSubQuest::SUBQUEST_VERDE_WINDMILL, true);
+			CQuest_Manager::GetInstance()->Set_SubQuestRunning(CSubQuest::SUBQUEST_VERDE_WANTED, true);
 			return NODE_STATE::NODE_FAIL;
 		}
 

@@ -9,6 +9,10 @@
 #include "Level_Loading.h"
 #include "Game_Manager.h"
 #include "Player.h"
+#include "GameNpc.h"
+
+#include "Utils.h"
+#include <FileUtils.h>
 
 #include "UI_Manager.h"
 #include "UI_Fade.h"
@@ -42,6 +46,9 @@ HRESULT CLevel_IceLand::Initialize()
 	if (FAILED(Ready_Layer_Effect(LAYER_TYPE::LAYER_EFFECT)))
 		return E_FAIL;
 
+	if (FAILED(Ready_Layer_NPC(LAYER_TYPE::LAYER_NPC)))
+		return E_FAIL;
+ 
 //	if (FAILED(Ready_Layer_Monster(LAYER_TYPE::LAYER_MONSTER)))
 //		return E_FAIL;
 
@@ -188,7 +195,8 @@ HRESULT CLevel_IceLand::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 	if (nullptr == pCharacterTransform)
 		return E_FAIL;
 
-	pCharacterTransform->Set_State(CTransform::STATE_POSITION, Vec4(-44.f, 1.5f, 315.f, 1.f));
+	// pCharacterTransform->Set_State(CTransform::STATE_POSITION, Vec4(-44.f, 1.5f, 315.f, 1.f));
+	pCharacterTransform->Set_State(CTransform::STATE_POSITION, Vec4(111.f, 1.5f, 8.f, 1.f));
 
 	/* Set Camera */
 	if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))
@@ -208,6 +216,131 @@ HRESULT CLevel_IceLand::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_IceLand::Ready_Layer_Monster(const LAYER_TYPE eLayerType)
 {
+	return S_OK;
+}
+
+HRESULT CLevel_IceLand::Ready_Layer_NPC(const LAYER_TYPE eLayerType)
+{
+	wstring strNpcFileName = L"Winter";
+	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strNpcFileName + L"/" + strNpcFileName + L"NPC.map";
+
+	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
+	File->Open(strMapFilePath, FileMode::Read);
+
+	for (_uint i = 0; i < LAYER_TYPE::LAYER_END; ++i)
+	{
+		if (LAYER_TYPE::LAYER_NPC != i)
+			continue;
+
+		GI->Clear_Layer(LEVELID::LEVEL_ICELAND, i);
+
+
+		_uint iObjectCount = File->Read<_uint>();
+
+		for (_uint j = 0; j < iObjectCount; ++j)
+		{
+			// 3. Object_Prototype_Tag
+			wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
+			wstring strObjectTag = CUtils::ToWString(File->Read<string>());
+
+			// 6. Obejct States
+			_float4 vRight, vUp, vLook, vPos;
+
+			File->Read<_float4>(vRight);
+			File->Read<_float4>(vUp);
+			File->Read<_float4>(vLook);
+			File->Read<_float4>(vPos);
+
+
+			OBJECT_INIT_DESC Init_Data = {};
+			Init_Data.vStartPosition = vPos;
+			CGameObject* pObj = nullptr;
+			if (FAILED(GI->Add_GameObject(LEVELID::LEVEL_ICELAND, i, strPrototypeTag, &Init_Data, &pObj)))
+			{
+				MSG_BOX("Load_Objects_Failed.");
+				return E_FAIL;
+			}
+
+			if (nullptr == pObj)
+			{
+				MSG_BOX("Add_Object_Failed.");
+				return E_FAIL;
+			}
+			pObj->Set_ObjectTag(strObjectTag);
+
+			CTransform* pTransform = pObj->Get_Component<CTransform>(L"Com_Transform");
+			if (nullptr == pTransform)
+			{
+				MSG_BOX("Get_Transform_Failed.");
+				return E_FAIL;
+			}
+
+			_uint ObjectType;
+			File->Read<_uint>(ObjectType);
+
+			if (OBJ_TYPE::OBJ_NPC == ObjectType)
+			{
+				CGameNpc* pNpc = dynamic_cast<CGameNpc*>(pObj);
+
+				if (pNpc == nullptr)
+				{
+					MSG_BOX("Fail Load : NPC");
+					return E_FAIL;
+				}
+
+				_uint iSize;
+				File->Read<_uint>(iSize);
+
+				_uint eState;
+				File->Read<_uint>(eState);
+
+
+				if (iSize != 0)
+				{
+					vector<Vec4> Points;
+					Points.reserve(iSize);
+
+					for (_uint i = 0; i < iSize; ++i)
+					{
+						Vec4 vPoint;
+						File->Read<Vec4>(vPoint);
+						Points.push_back(vPoint);
+					}
+
+					pNpc->Set_RoamingArea(Points);
+
+					if (Points.size() != 0)
+					{
+						vPos = Points.front();
+						pNpc->Set_Point(true);
+					}
+				}
+
+				CGameNpc::NPC_STAT eStat;
+				File->Read<CGameNpc::NPC_STAT>(eStat);
+
+				pNpc->Set_NpcState(static_cast<CGameNpc::NPC_STATE>(eState));
+				CStateMachine* pStateMachine = pNpc->Get_Component<CStateMachine>(TEXT("Com_StateMachine"));
+				if (pStateMachine != nullptr)
+				{
+					pStateMachine->Change_State(eState);
+				}
+				else
+				{
+					MSG_BOX("Fail Get : NPC_StateMachine");
+					return E_FAIL;
+				}
+				pNpc->Set_Stat(eStat);
+			}
+
+
+			pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
+			pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
+			pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
+			pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
+		}
+
+	}
 
 	return S_OK;
 }

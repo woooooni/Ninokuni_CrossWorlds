@@ -1,38 +1,38 @@
 #include "stdafx.h"
-#include "MainQuestNode_KingCall01.h"
+#include "SubQuestNode_Wanted06.h"
 
 #include "GameInstance.h"
 #include "Utils.h"
 
 #include "UI_Manager.h"
 
-CMainQuestNode_KingCall01::CMainQuestNode_KingCall01()
+CSubQuestNode_Wanted06::CSubQuestNode_Wanted06()
 {
 }
 
-HRESULT CMainQuestNode_KingCall01::Initialize()
+HRESULT CSubQuestNode_Wanted06::Initialize()
 {
 	__super::Initialize();
 
-	m_strQuestTag = TEXT("[메인]");
-	m_strQuestName = TEXT("장교의 시선");
-	m_strQuestContent = TEXT("아까부터 나를 지켜본다");
+	m_strQuestTag = TEXT("[서브]");
+	m_strQuestName = TEXT("툼바에게 돌아가기");
+	m_strQuestContent = TEXT("툼바에게 보고하자");
 
 	return S_OK;
 }
 
-void CMainQuestNode_KingCall01::Start()
+void CSubQuestNode_Wanted06::Start()
 {
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+	// CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
-	m_pSanson = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("GrimalKinML02"));
-	Vec4 vSpotPos = Set_DestSpot(m_pSanson);
+	m_pTumba = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("BlackSmithMaster"));
+	Vec4 vSpotPos = Set_DestSpot(m_pTumba);
 
 	// 임시로 monster에 
 	m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_MONSTER), &vSpotPos));
 }
 
-CBTNode::NODE_STATE CMainQuestNode_KingCall01::Tick(const _float& fTimeDelta)
+CBTNode::NODE_STATE CSubQuestNode_Wanted06::Tick(const _float& fTimeDelta)
 {
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
@@ -59,24 +59,24 @@ CBTNode::NODE_STATE CMainQuestNode_KingCall01::Tick(const _float& fTimeDelta)
 	return NODE_STATE::NODE_RUNNING;
 }
 
-void CMainQuestNode_KingCall01::LateTick(const _float& fTimeDelta)
+void CSubQuestNode_Wanted06::LateTick(const _float& fTimeDelta)
 {
 }
 
-CMainQuestNode_KingCall01* CMainQuestNode_KingCall01::Create()
+CSubQuestNode_Wanted06* CSubQuestNode_Wanted06::Create()
 {
-	CMainQuestNode_KingCall01* pInstance = new CMainQuestNode_KingCall01();
+	CSubQuestNode_Wanted06* pInstance = new CSubQuestNode_Wanted06();
 
 	if (FAILED(pInstance->Initialize()))
 	{
-		MSG_BOX("Fail Create : CMainQuestNode_KingCall01");
+		MSG_BOX("Fail Create : CSubQuestNode_Wanted06");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CMainQuestNode_KingCall01::Free()
+void CSubQuestNode_Wanted06::Free()
 {
 	__super::Free();
 }

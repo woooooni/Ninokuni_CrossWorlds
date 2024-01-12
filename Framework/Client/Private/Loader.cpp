@@ -744,7 +744,7 @@ HRESULT CLoader::Load_Monster_Data(const wstring& strMonsterFileName)
 			continue;
 
 		GI->Clear_Layer(m_eNextLevel, i);
-
+		 
 
 		_uint iObjectCount = File->Read<_uint>();
 
