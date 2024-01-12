@@ -60,6 +60,14 @@ void CPortal::Tick(_float fTimeDelta)
 void CPortal::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
+
+#ifdef _DEBUG
+	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
+	{
+		for (auto& pCollider : m_Colliders[i])
+			m_pRendererCom->Add_Debug(pCollider);
+	}
+#endif // DEBUG
 }
 
 HRESULT CPortal::Render()
