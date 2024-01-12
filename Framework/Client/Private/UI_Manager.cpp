@@ -4668,7 +4668,7 @@ void CUI_Manager::Use_AttackBtn()
 
 void CUI_Manager::Use_ClassSkillSlot(_uint iSlotNum)
 {
-	if (0 > iSlotNum || 2 < iSlotNum)
+	if (0 == m_ClassicSkill.size() || 0 > iSlotNum || 2 < iSlotNum)
 		return;
 
 	m_ClassicSkill[iSlotNum]->Set_Clicked(true);
@@ -4676,7 +4676,7 @@ void CUI_Manager::Use_ClassSkillSlot(_uint iSlotNum)
 
 void CUI_Manager::Use_ActiveSkillSlot(_uint iSlotNum)
 {
-	if (0 > iSlotNum || 2 < iSlotNum)
+	if (0 == m_SpecialSkill.size() || 0 > iSlotNum || 2 < iSlotNum)
 		return;
 
 	m_SpecialSkill[iSlotNum]->Set_Clicked(true);

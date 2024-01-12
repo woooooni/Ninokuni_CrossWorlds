@@ -43,16 +43,17 @@ HRESULT CPortal::Initialize(void* pArg)
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(pPortalDesc->vStartPosition));
 
-	// 위치가 셋팅되고 이펙트를 생성해야 함. //
-	if (FAILED(GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_PortalPoint"), m_pTransformCom->Get_WorldMatrix(), nullptr, &pEffectObject)))
-		return E_FAIL;
-	Safe_AddRef(pEffectObject);
-
 	return S_OK;
 }
 
 void CPortal::Tick(_float fTimeDelta)
 {
+	if (nullptr == pEffectObject)
+	{
+		GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_PortalPoint"), m_pTransformCom->Get_WorldMatrix(), nullptr, &pEffectObject);
+		Safe_AddRef(pEffectObject);
+	}
+
 	GI->Add_CollisionGroup(COLLISION_GROUP::PORTAL, this);
 	__super::Tick(fTimeDelta);
 }
@@ -78,7 +79,7 @@ HRESULT CPortal::Render()
 void CPortal::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
-	if (OBJ_TYPE::OBJ_CHARACTER == tInfo.pOther->Get_ObjectType())
+	if (OBJ_TYPE::OBJ_CHARACTER == tInfo.pOther->Get_ObjectType() && tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
 	{
 		if (FAILED(GI->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, m_eNextLevel, L""))))
 			MSG_BOX("Portal Failde Activate");
@@ -112,7 +113,7 @@ HRESULT CPortal::Ready_Collider()
 {
 	CCollider_AABB::AABB_COLLIDER_DESC AABBDesc;
 	BoundingBox AABBBox;
-	AABBBox.Extents = { 500.f, 100.f, 100.f};
+	AABBBox.Extents = { 2.f, 1.f, 1.f};
 	AABBDesc.tBox = AABBBox;
 	AABBDesc.pNode = nullptr;
 	AABBDesc.pOwnerTransform = m_pTransformCom;
@@ -160,5 +161,8 @@ void CPortal::Free()
 	Safe_Release(m_pTransformCom);
 	
 	if (nullptr != pEffectObject)
+	{
+		pEffectObject->Set_Dead(true);
 		Safe_Release(pEffectObject);
+	}
 }

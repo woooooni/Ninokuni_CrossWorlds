@@ -305,6 +305,9 @@ HRESULT CCharacter::Render()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float4))))
 		return E_FAIL;
 
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vBloomPower", &m_vBloomPower, sizeof(_float3))))
+		return E_FAIL;
+
 	if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
 		return E_FAIL;
 

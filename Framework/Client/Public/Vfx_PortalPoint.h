@@ -26,7 +26,8 @@ protected:
 	virtual HRESULT Ready_Components() override;
 
 private:
-	class CEffect* pLineObject = nullptr;
+	class CEffect* pEffectObject = nullptr;
+	class CParticle* pParticleObject = nullptr;
 
 public:
 	static CVfx_PortalPoint* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,

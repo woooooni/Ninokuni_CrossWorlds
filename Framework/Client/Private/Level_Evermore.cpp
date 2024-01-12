@@ -383,9 +383,13 @@ HRESULT CLevel_Evermore::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Evermore::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 {
-	//CPortal::PORTAL_DESC PortalInfo = {};
-	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Portal"), &PortalInfo)))
-	//	return E_FAIL;
+	// Portal Test
+	CPortal::PORTAL_DESC PortalInfo = {};
+	PortalInfo.vStartPosition = XMVectorSet(10.f, 0.f, 10.f, 1.f);
+	PortalInfo.eCurrentLevel = LEVEL_EVERMORE;
+	PortalInfo.eNextLevel = LEVEL_ICELAND;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Portal"), &PortalInfo)))
+		return E_FAIL;
 
 	return S_OK;
 }
