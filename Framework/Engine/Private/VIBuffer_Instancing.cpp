@@ -25,15 +25,15 @@ HRESULT CVIBuffer_Instancing::Initialize_Prototype()
 	/* 정점버퍼와 인덱스 버퍼를 만드낟. */
 	ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc);
 
-	m_BufferDesc.ByteWidth = m_iStrideInstance * 20000;
+	m_BufferDesc.ByteWidth = m_iStrideInstance * 5000;
 	m_BufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	m_BufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	m_BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	m_BufferDesc.MiscFlags = 0;
 	m_BufferDesc.StructureByteStride = m_iStrideInstance;
 
-	m_pVertices = new VTXINSTANCE[20000];
-	ZeroMemory(m_pVertices, sizeof(VTXINSTANCE) * 20000);
+	m_pVertices = new VTXINSTANCE[5000];
+	ZeroMemory(m_pVertices, sizeof(VTXINSTANCE) * 5000);
 
 
 	ZeroMemory(&m_SubResourceData, sizeof m_SubResourceData);
@@ -55,9 +55,6 @@ HRESULT CVIBuffer_Instancing::Initialize(void* pArg)
 HRESULT CVIBuffer_Instancing::Render(const vector<_float4x4>& WorldMatrices, CVIBuffer* pVIBuffer)
 {
 	D3D11_MAPPED_SUBRESOURCE		SubResource = {};
-
-	
-
 
 	m_iStride = pVIBuffer->Get_Stride();
 	m_eIndexFormat = pVIBuffer->Get_IndexFormat();
