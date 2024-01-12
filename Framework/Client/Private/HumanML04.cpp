@@ -52,14 +52,14 @@ HRESULT CHumanML04::Initialize(void* pArg)
 	m_pTag->Set_Owner(this, m_strKorName, 2.3f);
 
 	// UI SpeechBalloon
-//	CGameObject* pBalloon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_NPC_SpeechBalloon"), LAYER_TYPE::LAYER_UI);
-//	if (nullptr == pBalloon)
-//		return E_FAIL;
-//	if (nullptr == dynamic_cast<CUI_World_NPCSpeechBalloon*>(pBalloon))
-//		return E_FAIL;
-//	m_pBalloon = dynamic_cast<CUI_World_NPCSpeechBalloon*>(pBalloon);
-//	m_pBalloon->Set_Owner(this, 2.5f);
-//	m_pBalloon->Set_Balloon(TEXT("나는 마을 주민이다."));
+	CGameObject* pBalloon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_NPC_SpeechBalloon"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pBalloon)
+		return E_FAIL;
+	if (nullptr == dynamic_cast<CUI_World_NPCSpeechBalloon*>(pBalloon))
+		return E_FAIL;
+	m_pBalloon = dynamic_cast<CUI_World_NPCSpeechBalloon*>(pBalloon);
+	m_pBalloon->Set_Owner(this, 2.5f);
+	m_pBalloon->Set_Balloon(TEXT("나는 마을 주민이다."));
 
 	return S_OK;
 }
@@ -70,8 +70,8 @@ void CHumanML04::Tick(_float fTimeDelta)
 
 	if (nullptr != m_pTag)
 		m_pTag->Tick(fTimeDelta);
-//	if (nullptr != m_pBalloon)
-//		m_pBalloon->Tick(fTimeDelta);
+	if (nullptr != m_pBalloon)
+		m_pBalloon->Tick(fTimeDelta);
 }
 
 void CHumanML04::LateTick(_float fTimeDelta)
@@ -182,5 +182,5 @@ void CHumanML04::Free()
 	__super::Free();
 
 	Safe_Release(m_pTag);
-//	Safe_Release(m_pBalloon);
+	Safe_Release(m_pBalloon);
 }
