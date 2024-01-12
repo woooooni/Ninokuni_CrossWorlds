@@ -48,7 +48,7 @@ void CEffect_Manager::Tick(_float fTimeDelta)
 {
 }
 
-HRESULT CEffect_Manager::Generate_Effect(const wstring& strEffectName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner, CEffect** ppOut)
+HRESULT CEffect_Manager::Generate_Effect(const wstring& strEffectName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner, CEffect** ppOut, _bool bDelet)
 {
 	// strEffectName
 	CGameObject* pGameObject = GI->Clone_GameObject(L"Prototype_" + strEffectName, LAYER_EFFECT);
@@ -90,6 +90,9 @@ HRESULT CEffect_Manager::Generate_Effect(const wstring& strEffectName, _matrix W
 	// ppOut
 	if (ppOut != nullptr)
 		*ppOut = pEffect;
+
+	// bDelet
+	pEffect->Set_DeleteEffect(bDelet);
 
 	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, pGameObject)))
 		return E_FAIL;
@@ -521,6 +524,11 @@ HRESULT CEffect_Manager::Ready_Proto_Vfx()
 	// Prototype_Vfx_QuestPoint
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_QuestPoint"),
 		CVfx_QuestPoint::Create(m_pDevice, m_pContext, TEXT("QuestPoint")), LAYER_TYPE::LAYER_EFFECT)))
+		return E_FAIL;
+
+	// Prototype_Vfx_PortalPoint
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_PortalPoint"),
+		CVfx_PortalPoint::Create(m_pDevice, m_pContext, TEXT("PortalPoint")), LAYER_TYPE::LAYER_EFFECT)))
 		return E_FAIL;
 
 	return S_OK;

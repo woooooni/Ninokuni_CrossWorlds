@@ -321,13 +321,16 @@ void CEffect::Tick(_float fTimeDelta)
 	}
 	else
 	{
-		// 지속 시간
-		m_fAccDeletionTime += fTimeDelta;
-		if (m_bEffectDie || m_fAccDeletionTime >= m_fLifeTime)
+		if (m_bEffectDelete)
 		{
-			m_bEffectDie = true;
-			if (GI->Get_CurrentLevel() != LEVEL_TOOL)
-				Set_Dead(true);
+			// 지속 시간
+			m_fAccDeletionTime += fTimeDelta;
+			if (m_bEffectDie || m_fAccDeletionTime >= m_fLifeTime)
+			{
+				m_bEffectDie = true;
+				if (GI->Get_CurrentLevel() != LEVEL_TOOL)
+					Set_Dead(true);
+			}
 		}
 	}
 

@@ -2,6 +2,8 @@
 #include "GameInstance.h"
 #include "Portal.h"
 #include "Level_Loading.h"
+#include "Effect_Manager.h"
+#include "Vfx.h"
 
 CPortal::CPortal(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CGameObject(pDevice, pContext, L"Portal", OBJ_TYPE::OBJ_PORTAL)
@@ -27,7 +29,7 @@ HRESULT CPortal::Initialize(void* pArg)
 	PORTAL_DESC* pPortalDesc = (PORTAL_DESC*)pArg;
 
 	m_eCurrentLevel = pPortalDesc->eCurrentLevel;
-	m_eNextLevel = pPortalDesc->eNextLevel;
+	m_eNextLevel    = pPortalDesc->eNextLevel;
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -39,6 +41,11 @@ HRESULT CPortal::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(pPortalDesc->vStartPosition));
+
+	// 위치가 셋팅되고 이펙트를 생성해야 함. //
+	if (FAILED(GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_PortalPoint"), m_pTransformCom->Get_WorldMatrix(), nullptr, &pEffectObject)))
+		return E_FAIL;
+	Safe_AddRef(pEffectObject);
 
 	return S_OK;
 }
@@ -56,41 +63,6 @@ void CPortal::LateTick(_float fTimeDelta)
 
 HRESULT CPortal::Render()
 {
-	if (FAILED(__super::Render()))
-		return E_FAIL;
-
-	return S_OK;
-}
-
-
-HRESULT CPortal::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
-{
-	if (true == m_bEnable)
-		return S_OK;
-
-	if (nullptr == m_pModelCom || nullptr == pInstancingShader)
-		return E_FAIL;
-	if (FAILED(pInstancingShader->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
-		return E_FAIL;
-	if (FAILED(pInstancingShader->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
-		return E_FAIL;
-	if (FAILED(pInstancingShader->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
-		return E_FAIL;
-	if (FAILED(pInstancingShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
-		return E_FAIL;
-	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
-	for (_uint i = 0; i < iNumMeshes; ++i)
-	{
-		_uint iPassIndex = 0;
-		if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
-			return E_FAIL;
-		//if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
-		//	iPassIndex = 0;
-		//else
-		//	iPassIndex++;
-		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, i, pInstancingBuffer, WorldMatrices, iPassIndex)))
-			return E_FAIL;
-	}
 	return S_OK;
 }
 
@@ -165,9 +137,9 @@ void CPortal::Free()
 {
 	__super::Free();
 	
-	Safe_Release(m_pModelCom);
-	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pTransformCom);
 	
+	if (nullptr != pEffectObject)
+		Safe_Release(pEffectObject);
 }

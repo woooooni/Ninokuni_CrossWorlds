@@ -100,7 +100,7 @@ CGameObject* CVfx_QuestPoint::Clone(void* pArg)
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Failed to Cloned : CVfx_SwordMan_Skill_SwordTempest");
+		MSG_BOX("Failed to Cloned : CVfx_QuestPoint");
 		Safe_Release(pInstance);
 		return nullptr;
 	}

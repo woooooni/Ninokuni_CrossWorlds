@@ -34,9 +34,6 @@ public:
 	virtual HRESULT Render() override;
 
 public:
-	virtual HRESULT Render_Instance(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices);
-
-public:
 	virtual void Collision_Enter(const COLLISION_INFO& tInfo);
 	virtual void Collision_Continue(const COLLISION_INFO& tInfo);
 	virtual void Collision_Exit(const COLLISION_INFO& tInfo);
@@ -50,10 +47,10 @@ private:
 	LEVELID m_eNextLevel = LEVELID::LEVEL_END;
 
 private:
+	class CVfx* pEffectObject = nullptr;
+
 	class CTransform* m_pTransformCom = nullptr;
-	class CModel* m_pModelCom = nullptr;
 	class CRenderer* m_pRendererCom = nullptr;
-	class CShader* m_pShaderCom = nullptr;
 
 public:
 	static CPortal* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

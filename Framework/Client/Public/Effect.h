@@ -304,6 +304,7 @@ public:
 	_bool Is_End() { return m_bAccIndexEnd; };
 	void Set_End(_bool bEnd) { m_bAccIndexEnd = bEnd; }
 	void Set_Gravity(_bool bGravity);
+	void Set_DeleteEffect(_bool bEffectDelete) { m_bEffectDelete = bEffectDelete; }
 
 public:
 	class CTexture* Get_DiffuseTexture() { return m_pDiffuseTextureCom; }
@@ -313,6 +314,7 @@ public:
 
 private:
 	EFFECT_DESC m_tEffectDesc = {};
+	_bool m_bEffectDelete = true;
 
 private:
 	CGameObject* m_pOwnerObject = nullptr;

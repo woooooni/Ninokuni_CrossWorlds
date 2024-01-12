@@ -499,11 +499,11 @@ HRESULT CRenderer::Draw_UIEffect()
 
 HRESULT CRenderer::Input_Key()
 {
-	if (KEY_TAP(KEY::F2))
+	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::F2))
 	{
 		m_bDebugDraw = !m_bDebugDraw;
 	}
-	else if (KEY_TAP(KEY::F3))
+	else if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::F3))
 	{
 		m_bOption = !m_bOption;
 

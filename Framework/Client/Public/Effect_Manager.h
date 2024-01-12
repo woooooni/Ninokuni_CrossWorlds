@@ -19,7 +19,7 @@ public:
 	void	Tick(_float fTimeDelta);
 
 public:
-	HRESULT Generate_Effect(const wstring& strEffectName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner = nullptr, class CEffect** ppOut = nullptr);
+	HRESULT Generate_Effect(const wstring& strEffectName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner = nullptr, class CEffect** ppOut = nullptr, _bool bDelet = true);
 	HRESULT Generate_Decal(const wstring& strDecalName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner = nullptr, class CDecal** ppOut = nullptr, _bool bDelet = true);
 	HRESULT Generate_Vfx(const wstring& strVfxName, _matrix WorldMatrix, CGameObject* pOwner = nullptr, class CVfx** ppOut = nullptr);
 

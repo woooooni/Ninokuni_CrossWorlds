@@ -10,7 +10,7 @@
 #include "Game_Manager.h"
 #include "Player.h"
 #include "Weapon_SwordTemp.h"
-
+#include "Portal.h"
 
 CLevel_Tool::CLevel_Tool(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -193,6 +193,10 @@ HRESULT CLevel_Tool::Ready_Layer_Effect(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Tool::Ready_Layer_Weapon(const LAYER_TYPE eLayerType)
 {
+	//CPortal::PORTAL_DESC Info = {};
+	//if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Portal"), &Info)))
+	//	return E_FAIL;
+
 	return S_OK;
 }
 
