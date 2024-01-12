@@ -25,6 +25,9 @@ public:
 	HRESULT Render_Debug();
 
 public:
+	HRESULT Check_NextLevel();
+
+public:
 	HRESULT Open_Level(_uint iLevelIndex, class CLevel* pNewLevel);
 	_uint Get_CurrentLevel();
 

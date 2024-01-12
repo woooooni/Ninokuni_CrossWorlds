@@ -127,7 +127,6 @@ public:
 
 
 public:
-	CHierarchyNode* Get_Socket(const wstring& strSocketName);
 	const MONSTER_STAT& Get_Stat() { return m_tStat; }
 	const wstring& Get_KorName() { return strKorName; }
 	const wstring& Get_SubName() { return strSubName; }
@@ -175,15 +174,8 @@ protected: /* 해당 객체가 사용해야할 컴포넌트들을 저장하낟. */
 	CNavigation* m_pNavigationCom = nullptr;
 	CBehaviorTree* m_pBTCom = nullptr;
 	CPhysX_Controller* m_pControllerCom = { nullptr };
-
 	CTexture* m_pDissoveTexture = nullptr;
 
-protected:
-	vector<CGameObject*>				m_Parts;
-	typedef vector<CGameObject*>		PARTS;
-
-	vector<class CHierarchyNode*>		m_Sockets;
-	typedef vector<CGameObject*>		Sockets;
 
 protected:
 	MONSTER_STAT m_tStat = {};

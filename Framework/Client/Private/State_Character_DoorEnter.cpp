@@ -18,6 +18,7 @@ HRESULT CState_Character_DoorEnter::Initialize(const list<wstring>& AnimationLis
 
 void CState_Character_DoorEnter::Enter_State(void* pArg)
 {
+    m_pCharacter->Disappear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
     m_pModelCom->Set_KeyFrame_By_Progress(0.7f);
 }

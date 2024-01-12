@@ -31,6 +31,9 @@ void CState_Character::Free()
 
 void CState_Character::Neutral_Idle_Input(_float fTimeDelta)
 {
+	if (false == m_pCharacter->Is_Input())
+		return;
+
 	if (true == CUI_Manager::GetInstance()->Is_Dialog_Active())
 		return;
 
@@ -79,6 +82,9 @@ void CState_Character::Neutral_Idle_Input(_float fTimeDelta)
 
 void CState_Character::Battle_Idle_Input(_float fTimeDelta)
 {
+	if (false == m_pCharacter->Is_Input())
+		return;
+
 	if (true == CUI_Manager::GetInstance()->Is_Dialog_Active())
 		return;
 
@@ -126,6 +132,7 @@ void CState_Character::Battle_Idle_Input(_float fTimeDelta)
 
 void CState_Character::Pick_Idle_Input(_float fTimDelta)
 {
+
 	if (KEY_HOLD(KEY::W) || KEY_HOLD(KEY::A) || KEY_HOLD(KEY::S) || KEY_HOLD(KEY::D))
 	{
 		if (CCharacter::STATE::NEUTRAL_PICK_LARGE_IDLE == m_pStateMachineCom->Get_CurrState())

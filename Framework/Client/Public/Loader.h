@@ -41,7 +41,7 @@ public:
 
 public:
 	static _bool g_bFirstLoading;
-
+	static _bool g_bLevelFirst[LEVELID::LEVEL_WITCHFOREST + 1];
 
 private:
 	ID3D11Device*			m_pDevice = { nullptr };
@@ -54,6 +54,8 @@ private:
 private:
 	HANDLE					m_hThread = { 0 };
 	CRITICAL_SECTION		m_Critical_Section;
+
+	
 
 
 

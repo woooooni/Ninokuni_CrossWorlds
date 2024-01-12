@@ -26,7 +26,7 @@
 #include "Camera_Group.h"
 
 #ifdef _DEBUG
-//#include <vld.h>
+#include <vld.h>
 #endif
 
 CMainApp::CMainApp()	
@@ -542,94 +542,6 @@ HRESULT CMainApp::Ready_Prototype_Component()
 
 
 	// Texture
-	/* For.Prototype_Component_Texture_Effect*/
-	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Texture/"), 0, true))))
-	//	return E_FAIL;
-
-	///* For.Prototype_Component_Texture_Trail*/
-	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Trail"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Trail/"), 0, true))))
-	//	return E_FAIL;
-
-	///* For.Prototype_Component_Texture_Dissolve*/
-	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Dissolve"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Effect/Dissolve/"), 0, true))))
-	//	return E_FAIL;
-
-	///* For.Prototype_Component_Texture_NextFog*/
-	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_NextFog"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/NextFog/"), 0, true))))
-	//	return E_FAIL;
-
-	///* For.Prototype_Component_Texture_Loading_BackGround*/
-	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Loading_BackGround"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/Loading_Background/"), 0, true))))
-	//	return E_FAIL;
-
-	///* For.Prototype_Component_Texture_Loading_Anim*/
-	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Loading_Anim"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/Loading_Anim/"), 0, true))))
-	//	return E_FAIL;
-
-	///* For.Prototype_Component_Texture_Loading_Icon*/
-	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Loading_Icon"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/Loading_Icon/"), 0, true))))
-	//	return E_FAIL;
-
-	///* For.Prototype_Component_Texture_Cursor */
-	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Cursor"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Cursor/"), 0, true))))
-	//	return E_FAIL;
-
-	///* For.Prototype_Component_Texture_GaugeBar */
-	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_GaugeBar"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Gauge_Bar/Gauge/"), 0, true))))
-	//	return E_FAIL;
-
-	///* For.Prototype_Component_Texture_Gauge_BackGround */
-	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Gauge_BackGround"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Gauge_Bar/BackGround/"), 0, true))))
-	//	return E_FAIL;
-
-	///* For.Prototype_Component_Texture_Character_Icon */
-	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Character_Icon"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Character_Icon/"), 0, true))))
-	//	return E_FAIL;
-
-	///* For.Prototype_Component_Texture_BattleStart */
-	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_BattleStart"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Battle_Start/"), 0, true))))
-	//	return E_FAIL;
-
-	///* For.Prototype_Component_Texture_BattleEnd */
-	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_BattleEnd"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Battle_End/"), 0, true))))
-	//	return E_FAIL;
-
-	///* For.Prototype_Component_Texture_Sky */
-	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Sky"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Sky/"), 0, true))))
-	//	return E_FAIL;
-
-	///* For.Prototype_Component_Texture_WorldQuest */
-	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_WorldQuest"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Quest/"), 0, true))))
-	//	return E_FAIL;
-
-
-	///* For.Prototype_Component_Enmu_Sleep_Break */
-	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Enmu_Sleep_Break"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Enmu_Sleep_Break/"), 0, true))))
-	//	return E_FAIL;
-
-	///* For.Prototype_Component_Enmu_Sleep_ToolTip */
-	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Enmu_Sleep_ToolTip"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Enmu_Sleep_ToolTip/"), 0, true))))
-	//	return E_FAIL;
-
-
-
 	/* For.Prototype_Component_WaterNormal */
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Water_Normal"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/AnimModel/Map/Water/Water_normal1.png")))))

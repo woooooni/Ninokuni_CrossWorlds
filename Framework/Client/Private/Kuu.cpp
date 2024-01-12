@@ -75,16 +75,16 @@ void CKuu::Tick(_float fTimeDelta)
 		Vec4 vReleativePos = m_pPlayerTransform->Get_RelativeOffset({ 1.f, 1.f, -0.3f, 1.f });
 		Vec4 vPlayerPos = m_pPlayerTransform->Get_Position();
 
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPlayerPos + vReleativePos);
-		m_pTransformCom->Set_State(CTransform::STATE_RIGHT, m_pPlayerTransform->Get_Right());
-		m_pTransformCom->Set_State(CTransform::STATE_UP, m_pPlayerTransform->Get_Up());
-		m_pTransformCom->Set_State(CTransform::STATE_LOOK, m_pPlayerTransform->Get_Look());
+		m_pTransformCom->Set_WorldMatrix(m_pPlayerTransform->Get_WorldMatrix());
+
+		Vec4 vNewPos = vReleativePos + vPlayerPos;
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vNewPos, 1.f));
 	}
 
 	/* Äí¿ì´Â rigidbody X */
 	m_pStateCom->Tick_State(fTimeDelta);
 
-	m_pControllerCom->Tick_Controller(fTimeDelta);
+	// m_pControllerCom->Tick_Controller(fTimeDelta);
 
 	if (nullptr != m_pTag)
 		m_pTag->Tick(fTimeDelta);
@@ -98,10 +98,19 @@ void CKuu::LateTick(_float fTimeDelta)
 //	if (nullptr != m_pBalloon)
 //		m_pBalloon->LateTick(fTimeDelta);
 
-	__super::LateTick(fTimeDelta);
+	
 
 	if (nullptr != m_pTag)
 		m_pTag->LateTick(fTimeDelta);
+
+	if (nullptr != m_pModelCom)
+		m_pModelCom->LateTick(fTimeDelta);
+
+	if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_Position(), 5.f))
+	{
+		m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_SHADOW, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);
+		m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_NONBLEND, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);
+	}
 
 #ifdef DEBUG
 	m_pRendererCom->Add_Debug(m_pControllerCom);
@@ -135,19 +144,6 @@ void CKuu::Set_KuuTarget_Player()
 
 HRESULT CKuu::Ready_Components()
 {
-	/* For.Com_Transform */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
-		return E_FAIL;
-	//m_pTransformCom->Set_State(CTransform::STATE_POSITION, { 0.f, 0.f, 12.f, 1.f });
-	//m_vInitPos = m_pTransformCom->Get_Position();
-
-	/* For.Com_Model */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Kuu"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
-		return E_FAIL;
-
-	if (FAILED(__super::Ready_Components()))
-		return E_FAIL;
-
 	return S_OK;
 }
 

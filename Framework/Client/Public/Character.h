@@ -147,6 +147,9 @@ public:
 	virtual void Set_Infinite(_float fInfiniteTime, _bool bInfinite);
 	_bool Is_Infinite() { return m_bInfinite; }
 
+	void Set_Input(_bool bInput) { m_bInputable = bInput; }
+	_bool Is_Input() { return m_bInputable; }
+
 public:
 	const CHARACTER_STAT& Get_Stat() { return m_tStat; }
 	void Set_Stat(const CHARACTER_STAT& StatDesc) { m_tStat = StatDesc; }
@@ -283,6 +286,7 @@ protected:
 	_float m_fAccInfinite = 0.f;
 	_float m_fInfiniteTime = 5.f;
 	_bool m_bInfinite = false;
+	_bool m_bInputable = true;
 
 	CHARACTER_STAT m_tStat = {};
 	CHARACTER_TYPE m_eCharacterType = CHARACTER_TYPE::CHARACTER_END;

@@ -317,6 +317,5 @@ CGameObject* CBaobam_Water::Clone(void* pArg)
 void CBaobam_Water::Free()
 {
 	__super::Free();
-
 	Safe_Release(m_pHPBar);
 }

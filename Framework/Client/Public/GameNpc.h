@@ -111,7 +111,7 @@ protected:
 	virtual HRESULT Ready_Colliders();
 	virtual void On_Damaged(const COLLISION_INFO& tInfo);
 
-private:
+protected:
 	// 렌더러에 넘겨줄 애니메이션 인스턴싱 정보.
 	ANIMODEL_INSTANCE_DESC m_AnimInstanceDesc = {};
 

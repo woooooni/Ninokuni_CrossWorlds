@@ -45,7 +45,6 @@ HRESULT CShadow_Thief::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
-	m_pModelCom->Set_Animation(12);
 
 	if (FAILED(Ready_States()))
 		return E_FAIL;
@@ -56,6 +55,7 @@ HRESULT CShadow_Thief::Initialize(void* pArg)
 
 	m_pHPBar = dynamic_cast<CUI_MonsterHP_World*>(pHPBar);
 	m_pHPBar->Set_Owner(this, m_tStat.eElementType, 1.5f);
+	m_pModelCom->Set_Animation(12);
 
 	return S_OK;
 }
@@ -325,6 +325,5 @@ CGameObject* CShadow_Thief::Clone(void* pArg)
 void CShadow_Thief::Free()
 {
 	__super::Free();
-
 	Safe_Release(m_pHPBar);
 }

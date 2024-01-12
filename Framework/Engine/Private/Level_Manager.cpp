@@ -18,17 +18,20 @@ void CLevel_Manager::LateTick(_float fTimeDelta)
 {
 	if (nullptr != m_pCurrentLevel)
 		m_pCurrentLevel->LateTick(fTimeDelta);
-
-	
 }
 
 HRESULT CLevel_Manager::Render_Debug()
 {
-	
 	if (nullptr != m_pCurrentLevel)
 		m_pCurrentLevel->Render_Debug();
 
+	return S_OK;
+}
 
+
+
+HRESULT CLevel_Manager::Check_NextLevel()
+{
 	if (nullptr != m_pReserveLevel)
 	{
 		if (nullptr != m_pCurrentLevel)
@@ -37,7 +40,7 @@ HRESULT CLevel_Manager::Render_Debug()
 			GI->Clear(m_iCurrentLevelIndex);
 			Safe_Release(m_pCurrentLevel);
 		}
-		
+
 		m_pCurrentLevel = m_pReserveLevel;
 		Safe_AddRef(m_pCurrentLevel);
 		m_iCurrentLevelIndex = m_iNextLevelIndex;
@@ -48,8 +51,11 @@ HRESULT CLevel_Manager::Render_Debug()
 		m_iNextLevelIndex = -1;
 		m_pCurrentLevel->Enter_Level();
 	}
+
 	return S_OK;
 }
+
+
 
 HRESULT CLevel_Manager::Open_Level(_uint iLevelIndex, CLevel* pNewLevel)
 {		
