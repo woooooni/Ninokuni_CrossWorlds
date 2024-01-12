@@ -203,9 +203,14 @@ public:
 	class CTexture* Get_DiffuseTexture() { return m_pDiffuseTextureCom; }
 	class CTexture* Get_AlphaTexture() { return m_pAlphaTextureCom; }
 
+	void Set_DeleteParticle(_bool bParticleDelete) { m_bParticleDelete = bParticleDelete; }
+
 private:
 	_bool m_isCloned = { false };
 	PARTICLE_DESC m_tParticleDesc;
+
+	_bool m_bParticleDelete = true;
+
 	_bool m_bParticleDie = false;
 
 	_float4x4 m_ViewMatrix;

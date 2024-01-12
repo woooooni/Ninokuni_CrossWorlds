@@ -86,7 +86,7 @@ HRESULT CParticle_Manager::AddLevel_Particle(_uint iLevelIndex, const wstring& s
 	return S_OK;
 }
 
-HRESULT CParticle_Manager::Generate_Particle(const wstring& strParticleName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner, class CParticle** ppOut)
+HRESULT CParticle_Manager::Generate_Particle(const wstring& strParticleName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner, class CParticle** ppOut, _bool bDelet)
 {
 	// strParticleName
 	CGameObject* pGameObject = GI->Clone_GameObject(L"Prototype_" + strParticleName, LAYER_TYPE::LAYER_EFFECT);
@@ -128,6 +128,9 @@ HRESULT CParticle_Manager::Generate_Particle(const wstring& strParticleName, _ma
 	// ppOut
 	if (ppOut != nullptr)
 		*ppOut = pParticle;
+
+	// bDelet
+	pParticle->Set_DeleteParticle(bDelet);
 
 	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, pGameObject)))
 		return E_FAIL;

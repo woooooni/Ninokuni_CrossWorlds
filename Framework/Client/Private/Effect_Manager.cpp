@@ -97,7 +97,7 @@ HRESULT CEffect_Manager::Generate_Effect(const wstring& strEffectName, _matrix W
 	return S_OK;
 }
 
-HRESULT CEffect_Manager::Generate_Decal(const wstring& strDecalName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner, CDecal** ppOut)
+HRESULT CEffect_Manager::Generate_Decal(const wstring& strDecalName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner, CDecal** ppOut, _bool bDelet)
 {
 	// strDecalName
 	CGameObject* pGameObject = GI->Clone_GameObject(L"Prototype_" + strDecalName, LAYER_TYPE::LAYER_EFFECT);
@@ -134,6 +134,9 @@ HRESULT CEffect_Manager::Generate_Decal(const wstring& strDecalName, _matrix Wor
 	// ppOut
 	if (ppOut != nullptr)
 		*ppOut = pDecal;
+
+	// bDelet
+	pDecal->Set_DeleteDecal(bDelet);
 
 	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, pGameObject)))
 		return E_FAIL;
@@ -513,6 +516,11 @@ HRESULT CEffect_Manager::Ready_Proto_Vfx()
 		return E_FAIL;
 
 	if (FAILED(Ready_Proto_Vfx_Player()))
+		return E_FAIL;
+
+	// Prototype_Vfx_QuestPoint
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_QuestPoint"),
+		CVfx_QuestPoint::Create(m_pDevice, m_pContext, TEXT("QuestPoint")), LAYER_TYPE::LAYER_EFFECT)))
 		return E_FAIL;
 
 	return S_OK;

@@ -3,6 +3,8 @@
 #include "GameInstance.h"
 #include "HierarchyNode.h"
 #include "Trail.h"
+#include "Effect_Manager.h"
+#include "Vfx.h"
 
 // 임시로 몬스터에 담는다. 충돌 처리 그룹 추가 될 때까지.
 CQuest_DestSpot::CQuest_DestSpot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
@@ -41,6 +43,11 @@ HRESULT CQuest_DestSpot::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
+	// 위치가 셋팅되고 이펙트를 생성해야 함. //
+	if (FAILED(GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_QuestPoint"), m_pTransformCom->Get_WorldMatrix(), nullptr, &pEffectObject)))
+		return E_FAIL;
+	Safe_AddRef(pEffectObject);
+
 	return S_OK;
 }
 
@@ -60,12 +67,6 @@ void CQuest_DestSpot::LateTick(_float fTimeDelta)
 	__super::LateTick(fTimeDelta);
 
 	m_pControllerCom->LateTick_Controller(fTimeDelta);
-
-	if (nullptr != m_pModelCom)
-		m_pModelCom->LateTick(fTimeDelta);
-
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
 
 #ifdef _DEBUG
 	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
@@ -121,10 +122,6 @@ HRESULT CQuest_DestSpot::Ready_Components()
 {
 	/* For.Com_Renderer */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
-		return E_FAIL;
-
-	/* For.Com_Model */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_GlanixPillar"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 
 	/* For.Com_PhysXBody */
@@ -202,9 +199,10 @@ void CQuest_DestSpot::Free()
 	__super::Free();
 
 	Safe_Release(m_pRendererCom);
-	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pTransformCom);
-	Safe_Release(m_pModelCom);
 	Safe_Release(m_pControllerCom);
+
+	if(nullptr != pEffectObject)
+		Safe_Release(pEffectObject);
 }
 

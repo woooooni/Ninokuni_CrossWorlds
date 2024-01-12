@@ -43,12 +43,15 @@ void CDecal::Tick(_float fTimeDelta)
 	if (Is_Dead() == true)
 		return;
 
-	m_fAccLifeTime += fTimeDelta;
-	if (m_bDecalDie || m_fAccLifeTime >= m_tDecalDesc.fLifeTime)
+	if (m_bDecalDelete)
 	{
-		m_bDecalDie = true;
-		if (GI->Get_CurrentLevel() != LEVEL_TOOL)
-			Set_Dead(true);
+		m_fAccLifeTime += fTimeDelta;
+		if (m_bDecalDie || m_fAccLifeTime >= m_tDecalDesc.fLifeTime)
+		{
+			m_bDecalDie = true;
+			if (GI->Get_CurrentLevel() != LEVEL_TOOL)
+				Set_Dead(true);
+		}
 	}
 
 	Tick_Alpha(fTimeDelta);

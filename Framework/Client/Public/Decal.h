@@ -71,12 +71,16 @@ public:
 	void Set_Owner(CGameObject* pGameObject) { m_pOwnerObject = pGameObject; }
 	class CTransform* Get_TransformCom() { return m_pTransformCom; }
 
+	void Set_DeleteDecal(_bool bDecalDelete) { m_bDecalDelete = bDecalDelete; }
+
 private:
 	void Tick_Alpha(_float fTimeDelta);
 
 private:
 	_bool      m_isCloned = { false };
 	DECAL_DESC m_tDecalDesc;
+
+	_bool m_bDecalDelete = true;
 
 private:
 	_bool  m_bDecalDie        = false;

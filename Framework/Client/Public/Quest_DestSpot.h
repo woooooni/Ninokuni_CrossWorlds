@@ -30,13 +30,14 @@ private:
 	virtual HRESULT Ready_Colliders();
 
 private:
-	CShader* m_pShaderCom = nullptr;
 	CRenderer* m_pRendererCom = nullptr;
 	CTransform* m_pTransformCom = nullptr;
-	CModel* m_pModelCom = nullptr;
 	CPhysX_Controller* m_pControllerCom = { nullptr };
 
-	_bool		m_bIsCol = false;
+	class CVfx* pEffectObject = nullptr;
+
+	_bool m_bIsCol = false;
+
 public:
 	static CQuest_DestSpot* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;
