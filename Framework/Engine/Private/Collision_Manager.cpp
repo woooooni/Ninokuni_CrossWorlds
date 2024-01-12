@@ -184,12 +184,12 @@ _bool CCollision_Manager::Is_Collision(CCollider* pLeft, CCollider* pRight)
 void CCollision_Manager::Free()
 {
 	__super::Free();
-	/*for (_uint i = 0; i < (_uint)COLLISION_GROUP::GROUP_END; ++i)
+	for (_uint i = 0; i < (_uint)COLLISION_GROUP::GROUP_END; ++i)
 	{
 		for (auto& pObject : m_CollisionObjects[(_uint)i])
 			Safe_Release(pObject);
 
 		m_CollisionObjects[(_uint)i].clear();
-	}*/
+	}
 	
 }
