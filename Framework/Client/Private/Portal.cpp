@@ -53,8 +53,8 @@ HRESULT CPortal::Initialize(void* pArg)
 
 void CPortal::Tick(_float fTimeDelta)
 {
+	GI->Add_CollisionGroup(COLLISION_GROUP::PORTAL, this);
 	__super::Tick(fTimeDelta);
-
 }
 
 void CPortal::LateTick(_float fTimeDelta)
@@ -74,7 +74,6 @@ void CPortal::Collision_Enter(const COLLISION_INFO& tInfo)
 	{
 		if (FAILED(GI->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, m_eNextLevel, L""))))
 			MSG_BOX("Portal Failde Activate");
-		
 	}
 }
 
@@ -103,6 +102,17 @@ HRESULT CPortal::Ready_Components()
 
 HRESULT CPortal::Ready_Collider()
 {
+	CCollider_AABB::AABB_COLLIDER_DESC AABBDesc;
+	BoundingBox AABBBox;
+	AABBBox.Extents = { 500.f, 100.f, 100.f};
+	AABBDesc.tBox = AABBBox;
+	AABBDesc.pNode = nullptr;
+	AABBDesc.pOwnerTransform = m_pTransformCom;
+	AABBDesc.ModelPivotMatrix = XMMatrixRotationY(XMConvertToRadians(180.f));
+	AABBDesc.vOffsetPosition = { 0.f, AABBBox.Extents.y, 0.f };
+
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::AABB, CCollider::DETECTION_TYPE::BODY, &AABBDesc)))
+		return E_FAIL;
 
 	return S_OK;
 }
