@@ -31,6 +31,17 @@
 // MONSTER //
 
 
+// BOSS //
+#include "Vfx_Glanix_Skill_HandDown.h"
+#include "Vfx_Glanix_Skill_JumpDown.h"
+#include "Vfx_Glanix_Skill_FootDown.h"
+#include "Vfx_Glanix_Skill_TwoHandSwing.h"
+#include "Vfx_Glanix_Skill_FourHandSwing.h"
+#include "Vfx_Glanix_Skill_SwingDown.h"
+#include "Vfx_Glanix_Skill_SwingDownDown.h"
+#include "Vfx_Glanix_Skill_Rush.h"
+#include "Vfx_Glanix_Skill_IceThrow.h"
+
 // ETC //
 #include "Vfx_QuestPoint.h"
 #include "Vfx_PortalPoint.h"

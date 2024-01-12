@@ -548,6 +548,9 @@ HRESULT CEffect_Manager::Ready_Proto_Vfx()
 	if (FAILED(Ready_Proto_Vfx_Player()))
 		return E_FAIL;
 
+	if (FAILED(Ready_Proto_Vfx_Monster()))
+		return E_FAIL;
+
 	// Prototype_Vfx_QuestPoint
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_QuestPoint"),
 		CVfx_QuestPoint::Create(m_pDevice, m_pContext, TEXT("QuestPoint")), LAYER_TYPE::LAYER_EFFECT)))
@@ -684,6 +687,59 @@ HRESULT CEffect_Manager::Ready_Proto_Vfx_Player()
 		// Prototype_Vfx_Destroyer_Skill_FrengeCharge
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Destroyer_Skill_FrengeCharge"),
 			CVfx_Destroyer_Skill_FrengeCharge::Create(m_pDevice, m_pContext, TEXT("Destroyer_Skill_FrengeCharge")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CEffect_Manager::Ready_Proto_Vfx_Monster()
+{
+	// Glanix
+	{
+		// Prototype_Vfx_Glanix_Skill_HandDown
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Glanix_Skill_HandDown"),
+			CVfx_Glanix_Skill_HandDown::Create(m_pDevice, m_pContext, TEXT("Glanix_Skill_HandDown")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_Glanix_Skill_JumpDown
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Glanix_Skill_JumpDown"),
+			CVfx_Glanix_Skill_JumpDown::Create(m_pDevice, m_pContext, TEXT("Glanix_Skill_JumpDown")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_Glanix_Skill_FootDown
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Glanix_Skill_FootDown"),
+			CVfx_Glanix_Skill_FootDown::Create(m_pDevice, m_pContext, TEXT("Glanix_Skill_FootDown")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_Glanix_Skill_TwoHandSwing
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Glanix_Skill_TwoHandSwing"),
+			CVfx_Glanix_Skill_TwoHandSwing::Create(m_pDevice, m_pContext, TEXT("Glanix_Skill_TwoHandSwing")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_Glanix_Skill_FourHandSwing
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Glanix_Skill_FourHandSwing"),
+			CVfx_Glanix_Skill_FourHandSwing::Create(m_pDevice, m_pContext, TEXT("Glanix_Skill_FourHandSwing")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_Glanix_Skill_SwingDown
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Glanix_Skill_SwingDown"),
+			CVfx_Glanix_Skill_SwingDown::Create(m_pDevice, m_pContext, TEXT("Glanix_Skill_SwingDown")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_Glanix_Skill_SwingDownDown
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Glanix_Skill_SwingDownDown"),
+			CVfx_Glanix_Skill_SwingDownDown::Create(m_pDevice, m_pContext, TEXT("Glanix_Skill_SwingDownDown")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_Glanix_Skill_Rush
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Glanix_Skill_Rush"),
+			CVfx_Glanix_Skill_Rush::Create(m_pDevice, m_pContext, TEXT("Glanix_Skill_Rush")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_Glanix_Skill_IceThrow
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Glanix_Skill_IceThrow"),
+			CVfx_Glanix_Skill_IceThrow::Create(m_pDevice, m_pContext, TEXT("Glanix_Skill_IceThrow")), LAYER_TYPE::LAYER_EFFECT)))
 			return E_FAIL;
 	}
 

@@ -5,7 +5,7 @@
 
 #include "Animation.h"
 #include "Camera_Manager.h"
-
+#include "Effect_Manager.h"
 
 CGlanixState_JumpStamp::CGlanixState_JumpStamp(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
@@ -23,6 +23,11 @@ void CGlanixState_JumpStamp::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_Skill03"));
 
+	// Effect Create
+	CTransform* pTransformCom = m_pGlanix->Get_Component<CTransform>(L"Com_Transform");
+	if (pTransformCom == nullptr)
+		return;
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Glanix_Skill_JumpDown"), pTransformCom->Get_WorldMatrix(), m_pGlanix);
 }
 
 void CGlanixState_JumpStamp::Tick_State(_float fTimeDelta)

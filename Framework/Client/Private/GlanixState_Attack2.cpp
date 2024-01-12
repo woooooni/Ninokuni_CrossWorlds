@@ -3,7 +3,7 @@
 
 #include "Glanix.h"
 #include "Camera_Manager.h"
-
+#include "Effect_Manager.h"
 #include "Animation.h"
 
 CGlanixState_Attack2::CGlanixState_Attack2(CStateMachine* pStateMachine)
@@ -21,6 +21,12 @@ HRESULT CGlanixState_Attack2::Initialize(const list<wstring>& AnimationList)
 void CGlanixState_Attack2::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_Attack02"));
+
+	// Effect Create
+	CTransform* pTransformCom = m_pGlanix->Get_Component<CTransform>(L"Com_Transform");
+	if (pTransformCom == nullptr)
+		return;
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Glanix_Skill_FootDown"), pTransformCom->Get_WorldMatrix(), m_pGlanix);
 }
 
 void CGlanixState_Attack2::Tick_State(_float fTimeDelta)
