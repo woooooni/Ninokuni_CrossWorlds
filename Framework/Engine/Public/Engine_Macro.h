@@ -100,7 +100,7 @@
 //#define MAX_MODEL_KEYFRAMES	500 /* 애니메이션의 최대 프레임 카운트 수 (행) */
 
 #define DEFAULT_TWEEN_DURATION	0.2f /* 애니메이션 기본 트위닝 시간*/
-
+#define MIN_TWEEN_DURATION		0.05f /* 애니메이션 최소 트위닝 시간*/
 
 
 //

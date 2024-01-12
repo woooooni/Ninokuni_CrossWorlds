@@ -641,12 +641,14 @@ HRESULT CModel::Clear_NotUsedData()
 	return S_OK;
 }
 
-HRESULT CModel::Set_Animation(const _uint& iAnimationIndex, const _float& fTweenDuration)
+HRESULT CModel::Set_Animation(const _uint& iAnimationIndex, const _float fTweenDuration)
 {
 	if (TYPE::TYPE_NONANIM == m_eModelType || m_Animations.empty())
 		return E_FAIL;
 
 	_uint iIndex = iAnimationIndex % m_Animations.size();
+
+	std::clamp(fTweenDuration, MIN_TWEEN_DURATION, 0.3f);
 
 	if (m_Animations.size() <= iIndex)
 		return E_FAIL;

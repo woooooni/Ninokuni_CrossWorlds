@@ -291,7 +291,7 @@ protected:
 	MOTION_TRAIL_DESC m_MotionTrailDesc = {};
 
 protected:
-	_float m_fDefaultWalkSpeed = 4.f;
+	_float m_fDefaultWalkSpeed = 3.f;
 	_float m_fDefaultRunSpeed = 6.f;
 
 

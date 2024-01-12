@@ -24,7 +24,7 @@ void CState_SwordMan_Battle_Attack_3::Enter_State(void* pArg)
 
     m_pCharacter->Appear_Weapon();
     m_pCharacter->Look_For_Target();
-    m_pModelCom->Set_Animation(m_AnimIndices[0], 0.1f);
+    m_pModelCom->Set_Animation(m_AnimIndices[0], MIN_TWEEN_DURATION);
 }
 
 void CState_SwordMan_Battle_Attack_3::Tick_State(_float fTimeDelta)

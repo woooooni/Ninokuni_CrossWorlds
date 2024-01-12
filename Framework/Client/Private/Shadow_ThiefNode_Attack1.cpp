@@ -18,7 +18,7 @@ HRESULT CShadow_ThiefNode_Attack1::Initialize_Prototype(CMonsterBT::BT_MONSTERDE
 void CShadow_ThiefNode_Attack1::Start()
 {
 	m_tBTMonsterDesc.pOwnerTransform->LookAt_ForLandObject(m_tBTMonsterDesc.pOwner->Get_TargetDesc().pTragetTransform->Get_Position());
-	m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Attack01"));
+	m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Attack01"), MIN_TWEEN_DURATION);
 	dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK, true);
 }
 

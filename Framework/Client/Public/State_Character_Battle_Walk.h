@@ -26,7 +26,6 @@ public:
 	virtual void Exit_State() override;
 
 private:
-	_float m_fMoveSpeed = 2.f;
 	_float m_fEffectAcc = 0.f;
 
 public:
