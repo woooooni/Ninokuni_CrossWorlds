@@ -25,7 +25,8 @@ public:
 public:
 	virtual void On_Damaged(const COLLISION_INFO& tInfo) override;
 
-
+public:
+	void Set_KuuTarget_Player();
 
 private:
 	virtual HRESULT Ready_Components() override;

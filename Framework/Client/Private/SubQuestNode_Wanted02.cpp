@@ -6,6 +6,7 @@
 
 #include "UI_Manager.h"
 
+#include "Game_Manager.h"
 
 CSubQuestNode_Wanted02::CSubQuestNode_Wanted02()
 {
@@ -30,7 +31,8 @@ HRESULT CSubQuestNode_Wanted02::Initialize()
 void CSubQuestNode_Wanted02::Start()
 {
 	/* 현재 퀘스트에 연관있는 객체들 */
-	m_pKuu = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"Kuu");
+	//m_pKuu = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Kuu"));
+	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
 	m_pTumba = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"BlackSmithMaster");
 
 	m_vecTalker.push_back(m_pKuu);

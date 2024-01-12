@@ -17,8 +17,6 @@ HRESULT CMainQuestNode_IntroTour01::Initialize()
 
 void CMainQuestNode_IntroTour01::Start()
 {
-	m_pKuu = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Kuu"));
-
 	Vec4 vSpotPos = { 0.f, 0.f, 5.f, 1.f };
 
 	// 임시로 monster에 

@@ -47,11 +47,6 @@ HRESULT CKuu::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
-	m_pPlayer = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
-
-	if (m_pPlayer != nullptr)
-		m_pPlayerTransform = m_pPlayer->Get_Component<CTransform>(TEXT("Com_Transform"));
-
 	// 쿠우 네임태그 생성
 	CGameObject* pTag = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_NPC_Tag"), LAYER_TYPE::LAYER_UI);
 	if (nullptr == pTag)
@@ -127,6 +122,14 @@ void CKuu::Collision_Exit(const COLLISION_INFO& tInfo)
 
 void CKuu::On_Damaged(const COLLISION_INFO& tInfo)
 {
+}
+
+void CKuu::Set_KuuTarget_Player()
+{
+	m_pPlayer = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+
+	if (m_pPlayer != nullptr)
+		m_pPlayerTransform = m_pPlayer->Get_Component<CTransform>(TEXT("Com_Transform"));
 }
 
 

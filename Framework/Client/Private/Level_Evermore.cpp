@@ -63,14 +63,19 @@ HRESULT CLevel_Evermore::Initialize()
 	if (FAILED(Ready_Light(TEXT("Evermore Light"))))
 		return E_FAIL;
 
-	/* Kuu */
-	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_Kuu"), nullptr)))
-		return E_FAIL;
+	/* Äí¿ì Å¸°Ù ¼³Á¤ */
+	CGame_Manager::GetInstance()->Set_KuuTarget_Player();
 
 	if (nullptr != CUI_Manager::GetInstance()->Get_Fade())
 		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 3.f);
 
-	CQuest_Manager::GetInstance()->Set_Running(true);
+	/* Äù½ºÆ® ¼¼ÆÃ */
+	if (CQuest_Manager::GetInstance()->Get_IsReserve() == false)
+	{
+		if (FAILED(CQuest_Manager::GetInstance()->Reserve_Manager()))
+			return E_FAIL;
+		CQuest_Manager::GetInstance()->Set_Running(true);
+	}
 
 	/* Camera Action */
 	{

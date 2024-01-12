@@ -9,6 +9,8 @@
 #include "Sound_Manager.h"
 #include "Camera_Action.h"
 
+#include "Game_Manager.h"
+
 CMainQuestNode_IntroTour04::CMainQuestNode_IntroTour04()
 {
 }
@@ -37,7 +39,8 @@ void CMainQuestNode_IntroTour04::Start()
 {
 	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 	/* 현재 퀘스트에 연관있는 객체들 */
-	m_pKuu = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"Kuu");
+	//m_pKuu = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Kuu"));
+	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
 
 	/* 카메라 타겟 세팅 */
 	// CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"Kuu");

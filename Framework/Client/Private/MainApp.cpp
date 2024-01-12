@@ -150,9 +150,6 @@ HRESULT CMainApp::Initialize_Client()
 	if (FAILED(CItem_Manager::GetInstance()->Reserve_Manager(L"../Bin/DataFiles/Item/")))
 		return E_FAIL;
 
-	if (FAILED(CQuest_Manager::GetInstance()->Reserve_Manager()))
-		return E_FAIL;
-
 	// Add Fonts
 	if (FAILED(GI->Add_Fonts(m_pDevice, m_pContext, L"Default_Bold", L"../Bin/Resources/Font/NiNoKuni_Bold.spritefont")))
 		return E_FAIL;
