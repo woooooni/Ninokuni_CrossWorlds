@@ -203,6 +203,28 @@ HRESULT CCamera_Follow::Finish_LockOn(CGameObject* pTargetObject, const _float& 
 
 	m_eLockProgress = LOCK_PROGRESS::FINISH_BLEIDING;
 
+	m_bLockLookHeight = false;
+
+	m_fLockLookHeight = 0.f;
+
+	return S_OK;
+}
+
+HRESULT CCamera_Follow::Lock_LookHeight()
+{
+	/* 기안티처럼 타겟이 높게 점프할 때 플레이어가 화면 밖으로 나가지 않게 룩 높이를 고정시킨다. */
+	/* 현재 타겟의 높이가 밑 변수보다 낮아지면 다시 자동으로 해제한다. */
+
+	if (nullptr == m_pLookAtObj)
+		return E_FAIL;
+
+	m_bLockLookHeight = true;
+
+	const Matrix matLookWorld = m_pLookAtObj->Get_Component<CModel>(L"Com_Model")->Get_SocketLocalMatrix(0)
+						* m_pLookAtObj->Get_Component<CTransform>(L"Com_Transform")->Get_WorldMatrix();
+
+	m_fLockLookHeight = matLookWorld.m[3][1];
+
 	return S_OK;
 }
 
@@ -372,7 +394,7 @@ Vec4 CCamera_Follow::Calculate_Look()
 	CTransform* pTargetTransform = m_pLookAtObj->Get_Component<CTransform>(L"Com_Transform");
 
 	/* 룩앳 위치 */
-	if (LOCK_PROGRESS::OFF != m_eLockProgress)
+	if (LOCK_PROGRESS::OFF != m_eLockProgress) /* Lock On, Lock Blending */
 	{
 		/* 룩앳 오브젝트가 현재 블렌딩 중이라면 */
 		if (Is_Blending_LookAtObj()) 
@@ -383,9 +405,18 @@ Vec4 CCamera_Follow::Calculate_Look()
 								* m_pLookAtObj->Get_Component<CTransform>(L"Com_Transform")->Get_WorldMatrix();
 
 			memcpy(&vLookAt, &matLookWorld.m[3], sizeof(Vec4));
+			
+			/* 높이 락이 걸린 경우 (기안티) */
+			if (m_bLockLookHeight)
+			{
+				if (vLookAt.y <= m_fLockLookHeight)
+					m_bLockLookHeight = false;
+				else
+					vLookAt.y = m_fLockLookHeight;
+			}
 		}
 	}
-	else
+	else /* Lock Off */
 		vLookAt = Vec4(pTargetTransform->Get_Position());
 
 	/* 룩앳 오프셋 위치 */
@@ -453,23 +484,23 @@ void CCamera_Follow::Test(_float fTimeDelta)
 		}
 
 		/* Lock On Off */
-		if (KEY_TAP(KEY::DEL))
-		{
-			if (LOCK_PROGRESS::OFF == m_eLockProgress)
-			{
-				const _int iBossCount = 3;
-				wstring strBossNames[iBossCount] = { L"Glanix", L"DreamerMazeWitch", L"Stellia" };
-
-				for (size_t i = 0; i < iBossCount; i++)
-				{
-					CGameObject * pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_MONSTER, strBossNames[i]);
-					if (nullptr != pTarget)
-						Start_LockOn(pTarget, Cam_Target_Offset_LockOn_Glanix, Cam_LookAt_Offset_LockOn_Glanix);
-				}
-			}
-			else
-				Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
-		}
+		//if (KEY_TAP(KEY::DEL))
+		//{
+		//	if (LOCK_PROGRESS::OFF == m_eLockProgress)
+		//	{
+		//		const _int iBossCount = 3;
+		//		wstring strBossNames[iBossCount] = { L"Glanix", L"DreamerMazeWitch", L"Stellia" };
+		//
+		//		for (size_t i = 0; i < iBossCount; i++)
+		//		{
+		//			CGameObject * pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_MONSTER, strBossNames[i]);
+		//			if (nullptr != pTarget)
+		//				Start_LockOn(pTarget, Cam_Target_Offset_LockOn_Glanix, Cam_LookAt_Offset_LockOn_Glanix);
+		//		}
+		//	}
+		//	else
+		//		Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+		//}
 
 		/* Hot Key */
 		if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::CTRL))

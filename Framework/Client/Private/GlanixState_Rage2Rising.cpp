@@ -5,6 +5,9 @@
 
 #include "Animation.h"
 
+#include "Camera_Follow.h"
+#include "Camera_Manager.h"
+
 CGlanixState_Rage2Rising::CGlanixState_Rage2Rising(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
 {
@@ -24,19 +27,46 @@ void CGlanixState_Rage2Rising::Enter_State(void* pArg)
 	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_RageFinalJump"));
 
 	m_fTime = 0.f;
+
+	/* Camera */
+	CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_CurCamera());
+	if (nullptr != pFollowCam)
+	{
+		/* 락온 + 와이드뷰 Off */
+
+		pFollowCam->Start_Lerp_Fov(Cam_Fov_Follow_Default,
+			Cam_LerpTime_LockOn_Glanix_ItemPattern * 0.5f,
+			LERP_MODE::SMOOTHER_STEP);
+
+		pFollowCam->Lerp_TargetOffset(pFollowCam->Get_TargetOffset(),
+			Cam_Target_Offset_LockOn_Glanix,
+			Cam_LerpTime_LockOn_Glanix_ItemPattern * 0.5f,
+			LERP_MODE::SMOOTHER_STEP);
+
+		// 플레이어 공격 인풋 열기
+	}
 }
 
 void CGlanixState_Rage2Rising::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
+	if(!m_pModelCom->Is_Tween() && 24 <= m_pModelCom->Get_CurrAnimationFrame())
+		m_pTransformCom->Move(m_pTransformCom->Get_Look(), 40.f, fTimeDelta);
+
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
-		//m_fTime += fTimeDelta;
-		//if (m_fTime >= m_fFlyTime)
-		//{
-			m_pStateMachineCom->Change_State(CGlanix::GLANIX_RAGE2STAMP);
-		//}
+		m_pStateMachineCom->Change_State(CGlanix::GLANIX_RAGE2STAMP);
+	}
+
+	/* Camera */
+	if (20 == m_pModelCom->Get_CurrAnimationFrame())
+	{
+		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_CurCamera());
+		if (nullptr != pFollowCam && !pFollowCam->Is_Lock_LookHeight())
+		{
+			pFollowCam->Lock_LookHeight();
+		}
 	}
 }
 

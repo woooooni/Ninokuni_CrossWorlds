@@ -77,6 +77,8 @@ public:
 	/* Lock On */
 	HRESULT Start_LockOn(CGameObject* pTargetObject, const Vec4& vTargetOffset, const Vec4& vLookAtOffset, const _float& fLockOnBlendingTime = Cam_LockOn_Blending_Time_Default);
 	HRESULT Finish_LockOn(CGameObject* pTargetObject, const _float& fLockOnBlendingTime = Cam_LockOn_Blending_Time_Default);
+	HRESULT Lock_LookHeight();
+	const _bool Is_Lock_LookHeight() const { return m_bLockLookHeight; }
 
 private:
 	/* Calculation */
@@ -114,6 +116,8 @@ private:
 
 	/* Lock On */
 	LOCK_PROGRESS	m_eLockProgress			= LOCK_PROGRESS::OFF;
+	_bool			m_bLockLookHeight		= false;
+	_float			m_fLockLookHeight		= 0.f;
 
 	/* 카메라의 월드 행렬 상태 변환으로 인해 오프셋의 y가 -가 되어 땅을 뚫는 현상 방지*/
 	_float			m_fLockTargetOffsetMinY = 0.5f;

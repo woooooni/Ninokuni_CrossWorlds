@@ -125,8 +125,12 @@ namespace Client
 	/* Camera - Lock On */
 	static const _float Cam_LockOn_Blending_Time_Default	= 0.f; 
 
-	static const Vec4	Cam_Target_Offset_LockOn_Glanix		= Vec4{ 0.7f, 2.f, -4.f, 1.f };
+	static const Vec4	Cam_Target_Offset_LockOn_Glanix		= Vec4{ 0.7f, 2.f, -5.f, 1.f };
 	static const Vec4	Cam_LookAt_Offset_LockOn_Glanix		= Vec4{ 0.f, 0.5f, 0.f, 1.f };
+
+	static const _float Cam_LerpTime_LockOn_Glanix_ItemPattern = 1.f;
+	static const _float Cam_Fov_LockOn_Glanix_ItemPattern = XMConvertToRadians(75.0f);
+	static const Vec4	Cam_Target_Offset_LockOn_Glanix_ItemPattern = Vec4{ 0.f, 4.5f, -10.f, 1.f };
 
 #define MAX_BEZIER_POINT 4
 }

@@ -4,8 +4,9 @@
 #include "Glanix.h"
 
 #include "Animation.h"
-#include "Camera_Manager.h"
 
+#include "Camera_Follow.h"
+#include "Camera_Manager.h"
 
 CGlanixState_JumpStamp::CGlanixState_JumpStamp(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
@@ -48,6 +49,16 @@ void CGlanixState_JumpStamp::Tick_State(_float fTimeDelta)
 	{
 		_float fWaitTime = 2.5f;
 		m_pStateMachineCom->Change_State(CGlanix::GLANIX_COMBATIDLE, &fWaitTime);
+	}
+
+	/* Camera */
+	if (45 == m_pModelCom->Get_CurrAnimationFrame())
+	{
+		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_CurCamera());
+		if (nullptr != pFollowCam && !pFollowCam->Is_Lock_LookHeight())
+		{
+			pFollowCam->Lock_LookHeight();
+		}
 	}
 }
 
