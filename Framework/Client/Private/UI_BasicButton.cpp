@@ -97,6 +97,9 @@ void CUI_BasicButton::LateTick(_float fTimeDelta)
 		}
 
 		__super::LateTick(fTimeDelta);
+
+		if (CUI_Manager::GetInstance()->Is_NicknameSettingComplete())
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
 	
 	if (BUTTON_SETNICKNAME == m_eType)
@@ -112,9 +115,9 @@ void CUI_BasicButton::LateTick(_float fTimeDelta)
 			if (m_bFinish)
 				CUI_Manager::GetInstance()->OnOff_NickNameWindow(false);
 		}
-	}
 
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+	}
 }
 
 HRESULT CUI_BasicButton::Render()

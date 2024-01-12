@@ -50,7 +50,7 @@ HRESULT CRuslan::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_pTag = dynamic_cast<CUI_World_NPCTag*>(pTag);
-	m_pTag->Set_Owner(this, m_strKorName, 2.2f);
+	m_pTag->Set_Owner(this, m_strKorName, 2.2f, true);
 
 	return S_OK;
 }

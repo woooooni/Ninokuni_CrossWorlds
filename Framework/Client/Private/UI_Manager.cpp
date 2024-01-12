@@ -267,10 +267,12 @@ _int CUI_Manager::Get_SelectedCharacter()
 _float CUI_Manager::Get_DistanceofMovement_SkillBG()
 {
 	if (nullptr == m_pSkillBG)
-		return -0.f;
+		return 0.f;
 
 	if (true == m_pSkillBG->Get_Active())
 		return m_pSkillBG->Get_Distance();
+
+	return 0.f;
 }
 
 _bool CUI_Manager::Get_MovementComplete_SkillBG()
@@ -288,6 +290,16 @@ _bool CUI_Manager::Is_DefaultSettingOn()
 		return false;
 
 	return m_pPlayerStatus->Get_Active();
+}
+
+_bool CUI_Manager::Is_NicknameSettingComplete()
+{
+	// 닉네임 세팅창이 켜져있다면 false를 return한다.
+
+	if (m_pSetNickBG->Get_Active())
+		return false;
+	else
+		return true;
 }
 
 HRESULT CUI_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -3735,59 +3747,61 @@ HRESULT CUI_Manager::Tick_UIs(LEVELID eID, _float fTimeDelta)
 
 HRESULT CUI_Manager::Tick_LobbyLevel(_float fTimeDelta)
 {
-	// Player Btn에 대한 상태를 제어한다.
-	for (_uint i = 0; i < CUI_BtnCharacterSelect::UI_SELECTBTN_CHARACTER::UICHARACTERBTN_END; i++)
+	if (false == m_pSetNickBG->Get_Active())
 	{
-		if (m_UnclickedPlayer[i]->Is_Clicked()) // Click상태로 확인되면
+		// Player Btn에 대한 상태를 제어한다.
+		for (_uint i = 0; i < CUI_BtnCharacterSelect::UI_SELECTBTN_CHARACTER::UICHARACTERBTN_END; i++)
 		{
-			m_UnclickedPlayer[i]->Set_Active(false); // Unclicked를 false로, Clicked를 true로 전환한다.
-			m_ClickedPlayer[i]->Set_Active(true);
+			if (m_UnclickedPlayer[i]->Is_Clicked()) // Click상태로 확인되면
+			{
+				m_UnclickedPlayer[i]->Set_Active(false); // Unclicked를 false로, Clicked를 true로 전환한다.
+				m_ClickedPlayer[i]->Set_Active(true);
 
-			// i를 제외한 나머지 것들을 제어한다.
-for (_uint j = 0; j < CUI_BtnCharacterSelect::UI_SELECTBTN_CHARACTER::UICHARACTERBTN_END; j++)
-{
-	if (j == i)
-		continue;
+				// i를 제외한 나머지 것들을 제어한다.
+				for (_uint j = 0; j < CUI_BtnCharacterSelect::UI_SELECTBTN_CHARACTER::UICHARACTERBTN_END; j++)
+				{
+					if (j == i)
+						continue;
 
-	if (!m_ClickedPlayer[i]->Is_Arrived()) // Arrived가 false인 경우에는 
-	{
-		m_UnclickedPlayer[j]->Set_Clicked(false); // 클릭 이벤트가 발생하지 않도록 한다.
-	}
-}
+					if (!m_ClickedPlayer[i]->Is_Arrived()) // Arrived가 false인 경우에는 
+					{
+						m_UnclickedPlayer[j]->Set_Clicked(false); // 클릭 이벤트가 발생하지 않도록 한다.
+					}
+				}
+			}
+
+			if (!m_ClickedPlayer[i]->Get_Active()) // Active가 False인데, unclicked도 false라면 unclicked를 true로 바꿔준다.
+			{
+				if (!m_UnclickedPlayer[i]->Get_Active())
+				{
+					m_UnclickedPlayer[i]->Set_Active(true);
+				}
+			}
 		}
 
-		if (!m_ClickedPlayer[i]->Get_Active()) // Active가 False인데, unclicked도 false라면 unclicked를 true로 바꿔준다.
+		if (!m_ClickedPlayer[CUI_BtnCharacterSelect::BTN_ENGINEER]->Get_Active()
+			&& !m_ClickedPlayer[CUI_BtnCharacterSelect::BTN_DESTROYER]->Get_Active()
+			&& !m_ClickedPlayer[CUI_BtnCharacterSelect::BTN_SWORDMAN]->Get_Active())
 		{
-			if (!m_UnclickedPlayer[i]->Get_Active())
+			m_Buttons[CUI_BasicButton::BUTTON_CHANGESCENE]->Set_UIPass(16);
+			m_Buttons[CUI_BasicButton::BUTTON_CHANGESCENE]->Set_AllowClick(false);
+			for (auto& iter : m_Basic)
 			{
-				m_UnclickedPlayer[i]->Set_Active(true);
+				if (TEXT("UI_Lobby_BtnText") == iter->Get_ObjectTag())
+					iter->Set_UIPass(16);
+			}
+		}
+		else
+		{
+			m_Buttons[CUI_BasicButton::BUTTON_CHANGESCENE]->Set_UIPass(1);
+			m_Buttons[CUI_BasicButton::BUTTON_CHANGESCENE]->Set_AllowClick(true);
+			for (auto& iter : m_Basic)
+			{
+				if (TEXT("UI_Lobby_BtnText") == iter->Get_ObjectTag())
+					iter->Set_UIPass(1);
 			}
 		}
 	}
-
-	if (!m_ClickedPlayer[CUI_BtnCharacterSelect::BTN_ENGINEER]->Get_Active()
-		&& !m_ClickedPlayer[CUI_BtnCharacterSelect::BTN_DESTROYER]->Get_Active()
-		&& !m_ClickedPlayer[CUI_BtnCharacterSelect::BTN_SWORDMAN]->Get_Active())
-	{
-		m_Buttons[CUI_BasicButton::BUTTON_CHANGESCENE]->Set_UIPass(16);
-		m_Buttons[CUI_BasicButton::BUTTON_CHANGESCENE]->Set_AllowClick(false);
-		for (auto& iter : m_Basic)
-		{
-			if (TEXT("UI_Lobby_BtnText") == iter->Get_ObjectTag())
-				iter->Set_UIPass(16);
-		}
-	}
-	else
-	{
-		m_Buttons[CUI_BasicButton::BUTTON_CHANGESCENE]->Set_UIPass(1);
-		m_Buttons[CUI_BasicButton::BUTTON_CHANGESCENE]->Set_AllowClick(true);
-		for (auto& iter : m_Basic)
-		{
-			if (TEXT("UI_Lobby_BtnText") == iter->Get_ObjectTag())
-				iter->Set_UIPass(1);
-		}
-	}
-
 
 	return S_OK;
 }
@@ -3828,15 +3842,15 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 	}
 
 	//Test Code
-	if (KEY_TAP(KEY::P))
-	{
-		Hide_GamePlaySetting(true);
-	}
-
-	if (KEY_TAP(KEY::O))
-	{
-		Hide_GamePlaySetting(false);
-	}
+//	if (KEY_TAP(KEY::P))
+//	{
+//		Hide_GamePlaySetting(true);
+//	}
+//
+//	if (KEY_TAP(KEY::O))
+//	{
+//		Hide_GamePlaySetting(false);
+//	}
 
 
 	return S_OK;
@@ -4741,9 +4755,35 @@ HRESULT CUI_Manager::OnOff_NickNameWindow(_bool bOnOff)
 	{
 		m_pSetNickBG->Set_Active(false);
 		m_pNicknamebox->Set_Active(false);
+
+		OnOff_LobbyUIs(true);
 	}
 
 	return S_OK;
+}
+
+void CUI_Manager::OnOff_LobbyUIs(_bool bOnOff)
+{
+	if (bOnOff)
+	{
+		for (auto& iter : m_Basic)
+			iter->Set_Active(true);
+		for (auto& iter : m_Buttons)
+			iter->Set_Active(true);
+		for (auto& iter : m_UnclickedPlayer)
+			iter->Set_Active(true);
+		m_pBtnShowSetting->Set_Active(true);
+	}
+	else
+	{
+		for (auto& iter : m_Basic)
+			iter->Set_Active(false);
+		for (auto& iter : m_Buttons)
+			iter->Set_Active(false);
+		for (auto& iter : m_UnclickedPlayer)
+			iter->Set_Active(false);
+		m_pBtnShowSetting->Set_Active(false);
+	}
 }
 
 HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)

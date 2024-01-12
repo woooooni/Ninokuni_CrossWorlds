@@ -11,6 +11,7 @@ protected:
 	virtual ~CUI_World_NPCSpeechBalloon() = default;
 
 public:
+	virtual void Set_Active(_bool bActive) override;
 	void Set_Owner(class CGameObject* pOwner, _float fOffsetY);
 	void Set_Balloon(const wstring& pText);
 
@@ -28,7 +29,11 @@ private:
 	_float2 m_vOwnerPos = _float2(0.f, 0.f);
 	_float2 m_vTextPos = _float2(0.f, 0.f);
 
-	_float m_fTimeAcc = { 0.f };
+	_float2 m_vOriginSize = _float2(0.f, 0.f);
+	_float2 m_vMinSize = _float2(0.f, 0.f);
+	_bool m_bResizeDone = { false };
+
+	_float m_fActiveTimeAcc = { 0.f };
 	_float m_fOffsetY = { 0.f };
 
 private:

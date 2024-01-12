@@ -27,6 +27,7 @@ public: // Get/Set
 	void			Set_BossActive(_bool bBossActive) { m_bBossActive = bBossActive; }
 
 	_bool			Is_DefaultSettingOn();
+	_bool			Is_NicknameSettingComplete();
 
 	void			Set_UIClicked(_bool bClicked) { m_bEvent = bClicked; }
 	_bool			Is_UIClicked() { return m_bEvent; }
@@ -124,6 +125,7 @@ public:
 public: // Lobby
 	HRESULT OnOff_SettingWindow(_bool bOnOff);
 	HRESULT OnOff_NickNameWindow(_bool bOnOff);
+	void	OnOff_LobbyUIs(_bool bOnOff);
 
 	HRESULT OnOff_GamePlaySetting(_bool bOnOff);
 	HRESULT Hide_GamePlaySetting(_bool bHide);

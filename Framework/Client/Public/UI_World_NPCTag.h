@@ -11,7 +11,7 @@ protected:
 	virtual ~CUI_World_NPCTag() = default;
 
 public:
-	void Set_Owner(class CGameObject* pOwner, const wstring& strNameTag, _float fOffsetY);
+	void Set_Owner(class CGameObject* pOwner, const wstring& strNameTag, _float fOffsetY, _bool bIsUnique = false);
 	void Set_TextOnOff(_bool bOnOff) { m_bAddText = bOnOff; }
 
 public:
@@ -35,6 +35,8 @@ private:
 	_uint m_iPass = { 1 };
 
 	_bool m_bAddText = { false };
+	_bool m_bIsUnique = { false };
+	_float4 m_vColor = _float4(0.f, 0.f, 0.f, 0.f);
 
 private:
 	virtual HRESULT	Ready_Components() override;

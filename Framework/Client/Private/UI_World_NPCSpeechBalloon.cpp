@@ -20,6 +20,25 @@ CUI_World_NPCSpeechBalloon::CUI_World_NPCSpeechBalloon(const CUI_World_NPCSpeech
 {
 }
 
+void CUI_World_NPCSpeechBalloon::Set_Active(_bool bActive)
+{
+	if (bActive)
+	{
+
+	}
+	else
+	{
+		m_bResizeDone = false;
+
+		m_tInfo.fCX = m_vMinSize.x;
+		m_tInfo.fCY = m_vMinSize.y;
+
+		m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+	}
+
+	m_bActive = bActive;
+}
+
 void CUI_World_NPCSpeechBalloon::Set_Owner(CGameObject* pOwner, _float fOffsetY)
 {
 	if (nullptr == pOwner)
@@ -34,11 +53,8 @@ void CUI_World_NPCSpeechBalloon::Set_Owner(CGameObject* pOwner, _float fOffsetY)
 
 void CUI_World_NPCSpeechBalloon::Set_Balloon(const wstring& pText)
 {
-	// TEXT를 세팅하고 Active를 true로 전환한다
-	// Active가 true인 상태에서 일정 시간이 지나면 Active flase로 전환된다. (+ 알파값 조절)
-
 	m_strContents = pText;
-	m_bActive = true;
+//	m_bActive = false;
 }
 
 HRESULT CUI_World_NPCSpeechBalloon::Initialize_Prototype()
@@ -69,8 +85,37 @@ void CUI_World_NPCSpeechBalloon::Tick(_float fTimeDelta)
 		if (nullptr == m_pOwner)
 			return;
 
-		CTransform* pTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, pTransform->Get_Position());
+//		CTransform* pTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");
+//		m_pTransformCom->Set_State(CTransform::STATE_POSITION, pTransform->Get_Position());
+
+		m_fActiveTimeAcc += fTimeDelta;
+
+		if (5.f < m_fActiveTimeAcc)
+		{
+			m_fActiveTimeAcc = 0.f;
+			Set_Active(false);
+		}
+		else
+		{
+			if (false == m_bResizeDone)
+			{
+				if (m_vOriginSize.x <= m_tInfo.fCX)
+				{
+					m_bResizeDone = true;
+					m_tInfo.fCX = m_vOriginSize.x;
+					m_tInfo.fCY = m_vOriginSize.y;
+				}
+				else
+				{
+					m_tInfo.fCX += fTimeDelta * 50.f;
+					m_tInfo.fCY += fTimeDelta * 50.f;
+				}
+
+				m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+//				m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+//					XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
+			}
+		}
 
 		__super::Tick(fTimeDelta);
 	}
@@ -79,7 +124,7 @@ void CUI_World_NPCSpeechBalloon::Tick(_float fTimeDelta)
 
 void CUI_World_NPCSpeechBalloon::LateTick(_float fTimeDelta)
 {
-	if (m_bActive)
+	//if (m_bActive)
 	{
 		if (nullptr != m_pOwner)
 		{
@@ -114,9 +159,9 @@ void CUI_World_NPCSpeechBalloon::LateTick(_float fTimeDelta)
 				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 
 			_vector vCameraPos = XMLoadFloat4(&vCamPos);
-			_vector vMonsterToCamera = pTransform->Get_Position() - vCameraPos;
+			_vector vNPCToCamera = pTransform->Get_Position() - vCameraPos;
 
-			vMonsterToCamera = XMVector3Normalize(vMonsterToCamera);
+			vNPCToCamera = XMVector3Normalize(vNPCToCamera);
 			CCamera* pCurCamera = CCamera_Manager::GetInstance()->Get_CurCamera();
 			if (nullptr == pCurCamera)
 				return;
@@ -127,7 +172,7 @@ void CUI_World_NPCSpeechBalloon::LateTick(_float fTimeDelta)
 
 			_vector vCameraForward = pCameraTrans->Get_State(CTransform::STATE_LOOK);
 			vCameraForward = XMVector3Normalize(vCameraForward);
-			_float fAngle = XMVectorGetX(XMVector3Dot(vMonsterToCamera, vCameraForward));
+			_float fAngle = XMVectorGetX(XMVector3Dot(vNPCToCamera, vCameraForward));
 
 			// 플레이어와의 거리를 구한다.
 			CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
@@ -145,8 +190,17 @@ void CUI_World_NPCSpeechBalloon::LateTick(_float fTimeDelta)
 
 			if (CUI_Manager::GetInstance()->Is_FadeFinished())
 			{
-				if ((fAngle >= XMConvertToRadians(0.f) && fAngle <= XMConvertToRadians(180.f))
-					&& ((0.001 < fToTarget) && (fToTarget < 5.f)))
+				if ((0.001 < fToTarget) && (fToTarget < 5.f))
+				{
+					if(false == m_bActive)
+						Set_Active(true);
+				}
+			}
+
+			// Active == true면
+			if (true == m_bActive)
+			{
+				if ((fAngle >= XMConvertToRadians(0.f) && fAngle <= XMConvertToRadians(180.f)))
 				{
 					_int iLength = m_strContents.length() - 1;
 					_float2 vFontPos = _float2(m_vTextPos.x - (iLength * 6.f), m_vTextPos.y - 10.f);
@@ -197,6 +251,9 @@ HRESULT CUI_World_NPCSpeechBalloon::Ready_State()
 {
 	m_tInfo.fCX = 270.f * 0.5f;
 	m_tInfo.fCY = 108.f * 0.5f;
+
+	m_vOriginSize = _float2(m_tInfo.fCX, m_tInfo.fCY);
+	m_vMinSize = _float2(m_tInfo.fCX * 0.5f, m_tInfo.fCY * 0.5f);
 
 	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,

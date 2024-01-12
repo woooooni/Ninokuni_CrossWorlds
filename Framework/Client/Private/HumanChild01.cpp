@@ -48,7 +48,7 @@ HRESULT CHumanChild01::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_pTag = dynamic_cast<CUI_World_NPCTag*>(pTag);
-	m_pTag->Set_Owner(this, m_strKorName, 1.8f);
+	m_pTag->Set_Owner(this, m_strKorName, 1.f);
 
 	return S_OK;
 }

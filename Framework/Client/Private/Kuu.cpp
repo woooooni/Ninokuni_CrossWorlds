@@ -58,7 +58,7 @@ HRESULT CKuu::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_pTag = dynamic_cast<CUI_World_NPCTag*>(pTag);
-	m_pTag->Set_Owner(this, TEXT("捻快"), 1.f);
+	m_pTag->Set_Owner(this, TEXT("捻快"), 1.f, true);
 
 //	// NPC 富浅急 积己
 //	CGameObject* pBalloon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_NPC_SpeechBalloon"), LAYER_TYPE::LAYER_UI);

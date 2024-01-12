@@ -20,7 +20,7 @@ CUI_World_NPCTag::CUI_World_NPCTag(const CUI_World_NPCTag& rhs)
 {
 }
 
-void CUI_World_NPCTag::Set_Owner(CGameObject* pOwner, const wstring& strNameTag, _float fOffsetY)
+void CUI_World_NPCTag::Set_Owner(CGameObject* pOwner, const wstring& strNameTag, _float fOffsetY, _bool bIsUnique)
 {
 	if (nullptr == pOwner)
 		return;
@@ -28,6 +28,12 @@ void CUI_World_NPCTag::Set_Owner(CGameObject* pOwner, const wstring& strNameTag,
 	m_pOwner = dynamic_cast<CGameNpc*>(pOwner);
 	m_fOffsetY = fOffsetY;
 	m_strName = strNameTag;
+	m_bIsUnique = bIsUnique;
+
+	if (false == m_bIsUnique)
+		m_vColor = _float4(1.f, 0.969f, 0.6f, 1.f);
+	else
+		m_vColor = _float4(0.365f, 0.863f, 0.82f, 1.f);
 }
 
 HRESULT CUI_World_NPCTag::Initialize_Prototype()
@@ -149,16 +155,30 @@ void CUI_World_NPCTag::LateTick(_float fTimeDelta)
 					TextDesc.strFontTag = L"Default_Bold";
 					TextDesc.vScale = { 0.4f, 0.4f };
 					TextDesc.vColor = _float4(0.216f, 0.373f, 0.408f, 1.f);
-					TextDesc.vPosition = _float2(vFontPos.x - 1.f, vFontPos.y);
-					m_pRendererCom->Add_Text(TextDesc);
-					TextDesc.vPosition = _float2(vFontPos.x + 1.f, vFontPos.y);
-					m_pRendererCom->Add_Text(TextDesc);
-					TextDesc.vPosition = _float2(vFontPos.x, vFontPos.y - 1.f);
-					m_pRendererCom->Add_Text(TextDesc);
-					TextDesc.vPosition = _float2(vFontPos.x, vFontPos.y + 1.f);
-					m_pRendererCom->Add_Text(TextDesc);
+					if (true == m_bIsUnique)
+					{
+						TextDesc.vPosition = _float2(vFontPos.x - 1.f, vFontPos.y);
+						m_pRendererCom->Add_Text(TextDesc);
+						TextDesc.vPosition = _float2(vFontPos.x + 1.f, vFontPos.y);
+						m_pRendererCom->Add_Text(TextDesc);
+						TextDesc.vPosition = _float2(vFontPos.x, vFontPos.y - 1.f);
+						m_pRendererCom->Add_Text(TextDesc);
+						TextDesc.vPosition = _float2(vFontPos.x, vFontPos.y + 1.f);
+						m_pRendererCom->Add_Text(TextDesc);
+					}
+					else
+					{
+						TextDesc.vPosition = _float2(vFontPos.x - 0.5f, vFontPos.y);
+						m_pRendererCom->Add_Text(TextDesc);
+						TextDesc.vPosition = _float2(vFontPos.x + 0.5f, vFontPos.y);
+						m_pRendererCom->Add_Text(TextDesc);
+						TextDesc.vPosition = _float2(vFontPos.x, vFontPos.y - 0.5f);
+						m_pRendererCom->Add_Text(TextDesc);
+						TextDesc.vPosition = _float2(vFontPos.x, vFontPos.y + 0.5f);
+						m_pRendererCom->Add_Text(TextDesc);
+					}
 
-					TextDesc.vColor = _float4(0.365f, 0.863f, 0.82f, 1.f);
+					TextDesc.vColor = m_vColor;
 					TextDesc.vPosition = vFontPos;
 					m_pRendererCom->Add_Text(TextDesc);
 				}

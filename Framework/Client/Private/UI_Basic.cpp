@@ -173,7 +173,15 @@ void CUI_Basic::LateTick(_float fTimeDelta)
 			LateTick_FadeObject(fTimeDelta);
 		}
 		else
-			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+		{
+			if (UILOBBY_ANNOUNCE == m_eType)
+			{
+				if(CUI_Manager::GetInstance()->Is_NicknameSettingComplete())
+					m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+			}
+			else
+				m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+		}
 
 		if (UILOBBY_NICKFRAME == m_eType)
 		{
