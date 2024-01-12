@@ -27,6 +27,46 @@ public:
 public:
 	class CPlayer* Get_Player() { return m_pPlayer; }
 
+public:
+	_float Calculate_Elemental(ELEMENTAL_TYPE eAttackerElemental, ELEMENTAL_TYPE eHitElemental)
+	{
+		switch (eAttackerElemental)
+		{
+		case ELEMENTAL_TYPE::FIRE :
+			if (eHitElemental == ELEMENTAL_TYPE::WOOD)
+				return 1.2f;
+			else if (eHitElemental == ELEMENTAL_TYPE::FIRE)
+				return 1.f;
+			else if (eHitElemental == ELEMENTAL_TYPE::WATER)
+				return 0.8f;
+			else
+				return 0;
+			break;
+		case ELEMENTAL_TYPE::WATER:
+			if (eHitElemental == ELEMENTAL_TYPE::FIRE)
+				return 1.2f;
+			else if (eHitElemental == ELEMENTAL_TYPE::WATER)
+				return 1.f;
+			else if (eHitElemental == ELEMENTAL_TYPE::WOOD)
+				return 0.8f;
+			else
+				return 0;
+
+			break;
+		case ELEMENTAL_TYPE::WOOD:
+			if (eHitElemental == ELEMENTAL_TYPE::WATER)
+				return 1.2f;
+			else if (eHitElemental == ELEMENTAL_TYPE::WOOD)
+				return 1.f;
+			else if (eHitElemental == ELEMENTAL_TYPE::FIRE)
+				return 0.8f;
+			else
+				return 1.f;
+			break;
+		}
+
+		return 1.f;
+	}
 
 private:
 	ID3D11Device* m_pDevice = nullptr;

@@ -155,6 +155,10 @@ public:
 public:
 	MONSTER_TYPE Get_Monster_Type() { return m_eMonsterType; }
 
+public:
+	ELEMENTAL_TYPE Get_ElementalType() { return m_eElementalType; }
+	void Set_ElementalType(ELEMENTAL_TYPE eElementalType) { m_eElementalType = eElementalType; }
+
 protected:
 	virtual HRESULT Ready_Components() PURE;
 	virtual HRESULT Ready_States() PURE;
@@ -204,6 +208,8 @@ protected:
 
 protected:
 	MONSTER_TYPE m_eMonsterType = MONSTER_TYPE::TYPE_END;
+	ELEMENTAL_TYPE m_eElementalType = ELEMENTAL_TYPE::BASIC;
+	ELEMENTAL_TYPE m_eDamagedElemental = ELEMENTAL_TYPE::BASIC;
 
 	// ¸², µðÁ¹ºê, ºí·ë È¿°ú
 protected:

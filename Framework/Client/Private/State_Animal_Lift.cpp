@@ -34,20 +34,19 @@ void CState_Animal_Lift::Enter_State(void* pArg)
 
 void CState_Animal_Lift::Tick_State(_float fTimeDelta)
 {
+	_bool bLift = static_cast<CAnimals*>(m_pOwner)->Lifting();
+	if (false == bLift)
+	{
+		m_pStateMachineCom->Change_State(CAnimals::STATE::STATE_IDLE);
+		m_pRigidBodyCom->Set_Use_Gravity(true);
+		m_pRigidBodyCom->Set_Ground(false);
+		return;
+	}
 
 	m_fNextTime += fTimeDelta;
 
-	_bool bLift = static_cast<CAnimals*>(m_pOwner)->Lifting();
-	if (m_iCurrAnimIndex != m_AnimIndices[3] && false == bLift && false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
-	{
-		m_fNextTime = 0.0f;
-		m_iCurrAnimIndex = m_AnimIndices[3];
-
-		m_pModelCom->Set_Animation(m_iCurrAnimIndex);
-		m_pRigidBodyCom->Set_Use_Gravity(true);
-		m_pRigidBodyCom->Set_Ground(false);
-	}
-	else if (m_iCurrAnimIndex != m_AnimIndices[3] && m_fNextTime >= m_fChangeMotionTime)
+	
+	if (m_fNextTime >= m_fChangeMotionTime)
 	{
 		m_fNextTime = 0.0f;
 		m_iCurrAnimIndex = m_AnimIndices[GI->RandomInt(1, 2)];
@@ -55,9 +54,7 @@ void CState_Animal_Lift::Tick_State(_float fTimeDelta)
 		m_pModelCom->Set_Animation(m_iCurrAnimIndex);
 	}
 
-
-	if (m_iCurrAnimIndex == m_AnimIndices[3] && true == m_pModelCom->Is_Finish() && false == m_pModelCom->Is_Tween())
-		m_pStateMachineCom->Change_State(CAnimals::STATE::STATE_IDLE);
+	
 }
 
 void CState_Animal_Lift::Exit_State()
