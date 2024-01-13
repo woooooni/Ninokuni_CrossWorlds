@@ -8,16 +8,29 @@ BEGIN(Client)
 class CUI_PopupQuest final : public CUI
 {
 public:
-	enum UI_QUESTPOPUP { POPUPFRAME_TOP, POPUPFRAME_BOTTOM, POPUPWINDOW, QUESTPOPUP_END };
+	enum UI_QUESTPOPUP { POPUPFRAME_TOP, POPUPFRAME_BOTTOM, POPUP_SEPARATOR, POPUP_WINDOW, QUESTPOPUP_END };
+	enum UI_POPUP_SEPARATOR { SEPARATOR_FIRST, SEPARATOR_SECOND, SEPARATOR_END };
+
+public:
+	typedef struct tagQuestInformation
+	{
+		wstring strType;
+		wstring strTitle;
+		wstring strContents;
+
+	} QUEST_INFO;
 
 protected:
-	CUI_PopupQuest(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_QUESTPOPUP eType);
+	CUI_PopupQuest(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_QUESTPOPUP eType, UI_POPUP_SEPARATOR eSeparatorType = SEPARATOR_END);
 	CUI_PopupQuest(const CUI_PopupQuest& rhs);
 	virtual ~CUI_PopupQuest() = default;
 
 public:
 	virtual void Set_Active(_bool bActive);
 	void Set_Contents(const wstring& strQuestType, const wstring& strTitle, const wstring& strContents);
+	void Clear_Quest(const wstring& strTitle);
+
+	_int Get_NumOfQuest();
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -30,18 +43,18 @@ public:
 	virtual void On_MouseEnter(_float fTimeDelta) override;
 	virtual void On_Mouse(_float fTimeDelta) override;
 	virtual void On_MouseExit(_float fTimeDelta) override;
+	void Move_BottomFrame(_int iNumOfQuest);
 
 private:
 	UI_QUESTPOPUP m_eType = { QUESTPOPUP_END };
+	UI_POPUP_SEPARATOR m_eSeparator = { SEPARATOR_END };
 	_float m_fAppearProg = { 0.f };
 	_bool m_bProgressing = { false };
 
-	wstring m_strType;
-	wstring m_strTitle;
-	wstring m_strContents;
-
 	_float4 m_vTypeColor = _float4(0.f, 0.f, 0.f, 1.f);
 	_float4 m_vTextColor = _float4(0.f, 0.f, 0.f, 1.f);
+
+	vector<QUEST_INFO> m_Quest;
 
 private:
 	virtual HRESULT	Ready_Components() override;
@@ -52,7 +65,7 @@ private:
 	void Key_Input(_float fTimeDelta);
 
 public:
-	static CUI_PopupQuest* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, UI_QUESTPOPUP eType);
+	static CUI_PopupQuest* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, UI_QUESTPOPUP eType, UI_POPUP_SEPARATOR eSeparatorType = SEPARATOR_END);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

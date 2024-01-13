@@ -9,6 +9,7 @@
 #include "NpcState_TwoWay.h"
 
 #include "UI_World_NPCTag.h"
+#include "UI_World_NPCSpeechBalloon.h"
 
 CHumanChild02::CHumanChild02(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameNpc(pDevice, pContext, strObjectTag)

@@ -14,6 +14,25 @@ CUI_Dialog_MiniWindow::CUI_Dialog_MiniWindow(const CUI_Dialog_MiniWindow& rhs)
 {
 }
 
+void CUI_Dialog_MiniWindow::Set_Name(const wstring& strName)
+{
+	if (m_strName == strName)
+		return;
+
+	m_strName = strName;
+}
+
+void CUI_Dialog_MiniWindow::Set_Contents(const wstring& strText)
+{
+	if (m_strContents == strText)
+		return;
+
+	m_strContents = strText;
+
+	if (false == Get_Active())
+		Set_Active(true);
+}
+
 HRESULT CUI_Dialog_MiniWindow::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
@@ -57,6 +76,51 @@ void CUI_Dialog_MiniWindow::LateTick(_float fTimeDelta)
 
 	if (m_bActive)
 	{
+		CRenderer::TEXT_DESC NameDesc = {};
+		_int iLength = m_strName.length();
+		_int iOffset = (iLength - 1) * 10;
+
+		NameDesc.strText = m_strName;
+		NameDesc.strFontTag = L"Default_Bold";
+		NameDesc.vScale = { 0.45f, 0.45f };
+		NameDesc.vColor = _float4(0.812f, 0.796f, 0.569f, 1.f);
+		NameDesc.vPosition = _float2(m_tInfo.fX - (m_tInfo.fCX * 0.5f) + 64.f - iOffset,
+			m_tInfo.fY - (m_tInfo.fCY * 0.5) + 10.f);
+		m_pRendererCom->Add_Text(NameDesc);
+
+		//Contents
+		_int iTotalLength = m_strContents.length() + 4;
+		_int iMaxLength = 23;
+		_uint iDestIndex = 0;
+		_int iOffsetY = 0;
+
+		TCHAR sTempText[MAX_PATH];
+		ZeroMemory(sTempText, sizeof(TCHAR) * MAX_PATH);
+
+		for (_uint i = 0; i < iTotalLength; i++)
+		{
+			if (iDestIndex > m_strContents.length())
+			{
+				break;
+			}
+
+			sTempText[iDestIndex++] = m_strContents[i];
+
+			if ((i + 1) % iMaxLength == 0)
+			{
+				sTempText[iDestIndex++] = L'\n';
+				iOffsetY++;
+			}
+		}
+
+		CRenderer::TEXT_DESC TextDesc = {};
+		TextDesc.strText = sTempText;
+		TextDesc.strFontTag = L"Default_Bold";
+		TextDesc.vScale = { 0.45f, 0.45f };
+		TextDesc.vColor = _float4(0.133f, 0.345f, 0.337f, 1.f);
+		TextDesc.vPosition = _float2(m_tInfo.fX - (m_tInfo.fCX * 0.5f) + 50.f,
+			m_tInfo.fY - (m_tInfo.fCY * 0.5) + 80.f - iOffsetY * 10.f);
+		m_pRendererCom->Add_Text(TextDesc);
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}

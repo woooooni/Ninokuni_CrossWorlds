@@ -242,12 +242,82 @@ void CUI_Manager::Set_MainDialogue(_tchar* pszName, _tchar* pszText)
 		m_pDialogWindow->Set_Active(true);
 }
 
+void CUI_Manager::Set_MiniDialogue(wstring strName, wstring strContents)
+{
+	if (nullptr == m_pDialogMini)
+		return;
+
+	m_pDialogMini->Set_Name(strName);
+	m_pDialogMini->Set_Contents(strContents);
+}
+
 void CUI_Manager::Set_QuestPopup(const wstring& strQuestType, const wstring& strTitle, const wstring& strContents)
 {
 	if (m_QuestPopUp[0] == nullptr)
 		return;
 
+	if (-1 == m_QuestPopUp[0]->Get_NumOfQuest() || 3 <= m_QuestPopUp[0]->Get_NumOfQuest())
+		return;
+
 	m_QuestPopUp[0]->Set_Contents(strQuestType, strTitle, strContents);
+
+	// 개수에 따라서 Frame_Bottm의 위치 변경이 필요하다.
+	// First Separator는 Quest가 2개이상일때만 active된다.
+	// Second Separator는 Quest가 3개이상일때만 active된다.
+	// 퀘스트의 최대 개수는 3개이다.
+	/*
+	*	m_QuestPopUp[0] FrameWindow1
+		m_QuestPopUp[1] FrameWindow2
+		m_QuestPopUp[2] FrameWindow3
+		m_QuestPopUp[3] Frame_Top
+		m_QuestPopUp[4] Separator_First
+		m_QuestPopUp[5] Separator_Second
+		m_QuestPopUp[6] Frame_Bottom
+	*/
+	if (1 == m_QuestPopUp[0]->Get_NumOfQuest())
+	{
+		if (m_QuestPopUp[1]->Get_Active())
+			m_QuestPopUp[1]->Set_Active(false);
+		if (m_QuestPopUp[4]->Get_Active())
+			m_QuestPopUp[4]->Set_Active(false);
+
+		if (m_QuestPopUp[2]->Get_Active())
+			m_QuestPopUp[2]->Set_Active(false);
+		if (m_QuestPopUp[5]->Get_Active())
+			m_QuestPopUp[5]->Set_Active(false);
+	}
+
+	if (2 <= m_QuestPopUp[0]->Get_NumOfQuest())
+	{
+		if (!m_QuestPopUp[4]->Get_Active())
+			m_QuestPopUp[4]->Set_Active(true);
+		if (m_QuestPopUp[5]->Get_Active())
+			m_QuestPopUp[5]->Set_Active(false);
+
+		if (!m_QuestPopUp[1]->Get_Active())
+			m_QuestPopUp[1]->Set_Active(true);
+		if (m_QuestPopUp[2]->Get_Active())
+			m_QuestPopUp[2]->Set_Active(false);
+
+		if (3 <= m_QuestPopUp[0]->Get_NumOfQuest())
+		{
+			if (!m_QuestPopUp[5]->Get_Active())
+				m_QuestPopUp[5]->Set_Active(true);
+
+			if (!m_QuestPopUp[2]->Get_Active())
+				m_QuestPopUp[2]->Set_Active(true);
+		}
+	}
+
+	m_QuestPopUp[6]->Move_BottomFrame(m_QuestPopUp[0]->Get_NumOfQuest());
+}
+
+_int CUI_Manager::Get_QuestNum()
+{
+	if (nullptr == m_QuestPopUp[0])
+		return -1;
+
+	return m_QuestPopUp[0]->Get_NumOfQuest();
 }
 
 _int CUI_Manager::Get_SelectedCharacter()
@@ -1754,9 +1824,11 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 	fOffset = 115.f;
-	UIDesc.fCX = 820.f * 0.35f;
-	UIDesc.fCY = 348.f * 0.4f;
-	UIDesc.fX = g_iWinSizeX * 0.5f + 90.f;
+//	UIDesc.fCX = 820.f * 0.35f;
+//	UIDesc.fCY = 348.f * 0.4f;
+	UIDesc.fCX = 1000.f * 0.4f;
+	UIDesc.fCY = 348.f * 0.45f;
+	UIDesc.fX = g_iWinSizeX * 0.5f + 50.f;
 	UIDesc.fY = g_iWinSizeY - (UIDesc.fCY * 0.5f + fOffset);
 
 	pBackground = nullptr;
@@ -1772,11 +1844,26 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 	fOffset = 83.f;
 	UIDesc.fCX = 256.f * 0.8f;
 	UIDesc.fCY = 256.f * 0.8f;
-	UIDesc.fX = g_iWinSizeX * 0.5f - 130.f;
+	UIDesc.fX = g_iWinSizeX * 0.5f - 225.f;
 	UIDesc.fY = g_iWinSizeY - (UIDesc.fCY * 0.5f + fOffset);
 
 	CGameObject* pPortrait = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Dialog_PortraitFrame"), &UIDesc, &pPortrait)))
+		return E_FAIL;
+	m_Portrait.push_back(dynamic_cast<CUI_Dialog_Portrait*>(pPortrait));
+	if (nullptr == pPortrait)
+		return E_FAIL;
+	Safe_AddRef(pPortrait);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	fOffset = 83.f;
+	UIDesc.fCX = 256.f * 0.8f;
+	UIDesc.fCY = 256.f * 0.8f;
+	UIDesc.fX = g_iWinSizeX * 0.5f - 225.f;
+	UIDesc.fY = g_iWinSizeY - (UIDesc.fCY * 0.5f + fOffset);
+
+	pPortrait = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Dialog_PortraitCharacter"), &UIDesc, &pPortrait)))
 		return E_FAIL;
 	m_Portrait.push_back(dynamic_cast<CUI_Dialog_Portrait*>(pPortrait));
 	if (nullptr == pPortrait)
@@ -2203,17 +2290,32 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 
 #pragma endregion
 
-	//m_QuestPopUp
-	m_QuestPopUp.reserve(3);
+	m_QuestPopUp.reserve(7);
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
-	//UIDesc.fCX = 300.f * 0.65f;
 	UIDesc.fCX = 400.f * 0.7f;
 	UIDesc.fCY = 120.f * 0.65f;
 	UIDesc.fX = 210.f;
 	UIDesc.fY = 171.f;
+	fOffset = 70.f;
 
 	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_QuestPopup_Frame_Window"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_QuestPopUp.push_back(dynamic_cast<CUI_PopupQuest*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+	UIDesc.fY += fOffset;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_QuestPopup_Frame_Window"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_QuestPopUp.push_back(dynamic_cast<CUI_PopupQuest*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+	UIDesc.fY += fOffset;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_QuestPopup_Frame_Window"), &UIDesc, &pWindow)))
 		return E_FAIL;
 	m_QuestPopUp.push_back(dynamic_cast<CUI_PopupQuest*>(pWindow));
@@ -2228,7 +2330,6 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 	UIDesc.fCY = 32.f * 0.65f;
 	UIDesc.fX = 210.f;
 	UIDesc.fY = 135.f;
-	fOffset = 70.f;
 
 	CGameObject* pFrame = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_QuestPopup_Frame_Top"), &UIDesc, &pFrame)))
@@ -2238,8 +2339,27 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(pFrame);
 
+	UIDesc.fX += 5.f;
 	UIDesc.fY += fOffset;
+	pFrame = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_QuestPopup_Frame_Separator_First"), &UIDesc, &pFrame)))
+		return E_FAIL;
+	m_QuestPopUp.push_back(dynamic_cast<CUI_PopupQuest*>(pFrame));
+	if (nullptr == pFrame)
+		return E_FAIL;
+	Safe_AddRef(pFrame);
 
+	UIDesc.fY += fOffset;
+	pFrame = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_QuestPopup_Frame_Separator_Second"), &UIDesc, &pFrame)))
+		return E_FAIL;
+	m_QuestPopUp.push_back(dynamic_cast<CUI_PopupQuest*>(pFrame));
+	if (nullptr == pFrame)
+		return E_FAIL;
+	Safe_AddRef(pFrame);
+
+	UIDesc.fX -= 5.f;
+	UIDesc.fY += fOffset;
 	pFrame = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_QuestPopup_Frame_Bottom"), &UIDesc, &pFrame)))
 		return E_FAIL;
@@ -2247,8 +2367,6 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 	if (nullptr == pFrame)
 		return E_FAIL;
 	Safe_AddRef(pFrame);
-
-	//Prototype_GameObject_UI_Announced_Camera
 
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
@@ -3860,6 +3978,20 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 //		Hide_GamePlaySetting(false);
 //	}
 
+//	if (KEY_TAP(KEY::P))
+//	{
+//		OnOff_DialogWindow(true, 1);
+//		Set_MiniDialogue(TEXT("쿠우"), TEXT("나는 테스트용이다. 나는 테스트용이다. 나는 테스트용이다. 나는 테스트용이다. 나는 테스트용이다. 나는 테스트용이다."));
+//	}
+//	if (KEY_TAP(KEY::O))
+//	{
+//		OnOff_DialogWindow(false, 1);
+//	}
+
+//	if (KEY_TAP(KEY::P))
+//	{
+//		Set_QuestPopup(TEXT("[명성]"), TEXT("테스트 중입니다"), TEXT("피할 수 없는 퀘스트의 늪"));
+//	}
 
 	return S_OK;
 }
@@ -4937,7 +5069,7 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 	return S_OK;
 }
 
-HRESULT CUI_Manager::Hide_GamePlaySetting(_bool bHide)
+void CUI_Manager::Hide_GamePlaySetting(_bool bHide)
 {
 	if (bHide) // 아이콘을 숨긴다
 	{
@@ -5003,9 +5135,6 @@ HRESULT CUI_Manager::Hide_GamePlaySetting(_bool bHide)
 			if (nullptr != iter)
 				iter->Hide_UI(true);
 		}
-
-		if (m_pSkillBG->Get_MovementComplete())
-			return S_OK;
 	}
 	else // 아이콘을 드러낸다
 	{
@@ -5071,8 +5200,6 @@ HRESULT CUI_Manager::Hide_GamePlaySetting(_bool bHide)
 			if (nullptr != iter)
 				iter->Hide_UI(false);
 		}
-
-		return S_OK;
 	}
 }
 
@@ -5174,10 +5301,27 @@ HRESULT CUI_Manager::OnOff_QuestPopup(_bool bOnOff)
 {
 	if (bOnOff)
 	{
-		for (auto iter : m_QuestPopUp)
+		_int iNum = m_QuestPopUp[0]->Get_NumOfQuest();
+
+		if (1 <= iNum)
 		{
-			if (iter != nullptr)
-				iter->Set_Active(true);
+			m_QuestPopUp[0]->Set_Active(true);
+			m_QuestPopUp[3]->Set_Active(true);
+			m_QuestPopUp[6]->Set_Active(true);
+
+			if (2 <= iNum)
+			{
+				m_QuestPopUp[1]->Set_Active(true);
+				m_QuestPopUp[4]->Set_Active(true);
+
+				if (3 <= iNum)
+				{
+					m_QuestPopUp[2]->Set_Active(true);
+					m_QuestPopUp[5]->Set_Active(true);
+				}
+			}
+
+			m_QuestPopUp[6]->Move_BottomFrame(iNum);
 		}
 	}
 	else
@@ -6391,6 +6535,9 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Dialog_PortraitFrame"),
 		CUI_Dialog_Portrait::Create(m_pDevice, m_pContext, CUI_Dialog_Portrait::UI_PORTRAIT::PORTRAIT_FRAME), LAYER_UI)))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Dialog_PortraitCharacter"),
+		CUI_Dialog_Portrait::Create(m_pDevice, m_pContext, CUI_Dialog_Portrait::UI_PORTRAIT::PORTRAIT_CHARACTER), LAYER_UI)))
+		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Costume_LineBox"),
 		CUI_Costume_LineBox::Create(m_pDevice, m_pContext), LAYER_UI)))
@@ -6526,7 +6673,17 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		CUI_PopupQuest::Create(m_pDevice, m_pContext, CUI_PopupQuest::UI_QUESTPOPUP::POPUPFRAME_BOTTOM), LAYER_UI)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_QuestPopup_Frame_Window"),
-		CUI_PopupQuest::Create(m_pDevice, m_pContext, CUI_PopupQuest::UI_QUESTPOPUP::POPUPWINDOW), LAYER_UI)))
+		CUI_PopupQuest::Create(m_pDevice, m_pContext, CUI_PopupQuest::UI_QUESTPOPUP::POPUP_WINDOW), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_QuestPopup_Frame_Separator_First"),
+		CUI_PopupQuest::Create(m_pDevice, m_pContext,
+			CUI_PopupQuest::UI_QUESTPOPUP::POPUP_SEPARATOR,
+			CUI_PopupQuest::UI_POPUP_SEPARATOR::SEPARATOR_FIRST), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_QuestPopup_Frame_Separator_Second"),
+		CUI_PopupQuest::Create(m_pDevice, m_pContext,
+			CUI_PopupQuest::UI_QUESTPOPUP::POPUP_SEPARATOR,
+			CUI_PopupQuest::UI_POPUP_SEPARATOR::SEPARATOR_SECOND), LAYER_UI)))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_ClassicSKill_Frame"),

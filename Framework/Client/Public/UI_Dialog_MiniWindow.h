@@ -14,6 +14,10 @@ protected:
 	virtual ~CUI_Dialog_MiniWindow() = default;
 
 public:
+	void Set_Name(const wstring& strName);
+	void Set_Contents(const wstring & strText);
+
+public:
 	virtual HRESULT	Initialize_Prototype();
 	virtual HRESULT	Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta);
@@ -27,6 +31,11 @@ public:
 
 private:
 	UI_MINI_DIALOG m_eType = { MINIDIALOG_NORMAL };
+
+	wstring m_strName;
+	wstring m_strContents;
+	_float2 m_vNamePosition = _float2(0.f, 0.f);
+	_float2 m_vContentsPosition = _float2(0.f, 0.f);
 
 private:
 	virtual HRESULT	Ready_Components() override;

@@ -1076,7 +1076,7 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Contents/Dialogue/UI_Dialogue_%d.png"), 3))))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Dialogue_MiniWindow"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Contents/Dialogue/UI_miniDialogue_%d.png"), 3))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Contents/Dialogue/UI_miniDialogue_Resize_%d.png"), 3))))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Dialogue_FlipArrow"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Contents/Dialogue/UI_Arrow_DialogFlip.png")))))
@@ -1091,6 +1091,9 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Dialogue_PortraitFrame"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Contents/Dialogue/UI_MIniDialog_Portrait.png")))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Dialogue_PortraitCharacter"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Contents/Dialogue/UI_MiniDialog_Portrait_0.png")))))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Costume_LineBox"),
@@ -1136,7 +1139,7 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 //		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Quest/UI_Quest_MiniFrame_%d.png"), 2))))
 //		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_QuestPopUp_Frame"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Quest/UI_Quest_MiniFrame_Resize_%d.png"), 2))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Quest/UI_Quest_MiniFrame_Resize_%d.png"), 3))))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_QuestPopUp_Finished"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Quest/UI_Quest_Finish_%d.png"), 3))))
@@ -1402,7 +1405,7 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 
 	// NPC SpeechBalloon
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_NPC_Default_SpeechBalloon"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Contents/SpeechBalloon/UI_NPC_SpeechBalloon.png")))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Contents/SpeechBalloon/UI_SpeechBalloon_Resize.png")))))
 		return E_FAIL;
 
 	// 퀘스트 완료창

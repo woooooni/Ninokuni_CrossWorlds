@@ -35,7 +35,9 @@ public: // Get/Set
 	_float2			Get_ProjectionPosition(class CTransform* pTransform);
 
 	void			Set_MainDialogue(_tchar* pszName, _tchar* pszText);
+	void			Set_MiniDialogue(wstring strName, wstring strContents);
 	void			Set_QuestPopup(const wstring& strQuestType, const wstring& strTitle, const wstring& strContents);
+	_int			Get_QuestNum();
 
 	_int			Get_SelectedCharacter();
 	_float			Get_DistanceofMovement_SkillBG();
@@ -130,7 +132,7 @@ public: // Lobby
 	void	OnOff_LobbyUIs(_bool bOnOff);
 
 	HRESULT OnOff_GamePlaySetting(_bool bOnOff);
-	HRESULT Hide_GamePlaySetting(_bool bHide);
+	void	Hide_GamePlaySetting(_bool bHide);
 	HRESULT OnOff_MainMenu(_bool bOnOff);
 	HRESULT OnOff_SubMenu(_bool bOnOff, _uint iMagicNum);
 	HRESULT Off_OtherSubBtn(_uint iMagicNum);

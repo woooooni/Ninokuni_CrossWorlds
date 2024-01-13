@@ -75,6 +75,24 @@ void CState_Character::Neutral_Idle_Input(_float fTimeDelta)
 		return;
 	}
 
+	if (KEY_TAP(KEY::F1))
+	{
+		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(0);
+		return;
+	}
+
+	if (KEY_TAP(KEY::F2))
+	{
+		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(1);
+		return;
+	}
+
+	if (KEY_TAP(KEY::F3))
+	{
+		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(2);
+		return;
+	}
+
 }
 
 void CState_Character::Battle_Idle_Input(_float fTimeDelta)
@@ -122,6 +140,24 @@ void CState_Character::Battle_Idle_Input(_float fTimeDelta)
 		m_pCharacter->PickUp_Target();
 		return;
 	}
+
+	if (KEY_TAP(KEY::F1))
+	{
+		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(0);
+		return;
+	}
+
+	if (KEY_TAP(KEY::F2))
+	{
+		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(1);
+		return;
+	}
+
+	if (KEY_TAP(KEY::F3))
+	{
+		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(2);
+		return;
+	}
 }
 
 void CState_Character::Pick_Idle_Input(_float fTimDelta)
@@ -162,6 +198,24 @@ void CState_Character::Neutral_Walk_Input(_float fTimeDelta)
 	{
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_DASH);
 		CUI_Manager::GetInstance()->Use_RollBtn();
+		return;
+	}
+
+	if (KEY_TAP(KEY::F1))
+	{
+		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(0);
+		return;
+	}
+
+	if (KEY_TAP(KEY::F2))
+	{
+		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(1);
+		return;
+	}
+
+	if (KEY_TAP(KEY::F3))
+	{
+		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(2);
 		return;
 	}
 
@@ -297,7 +351,6 @@ void CState_Character::Neutral_Walk_Input(_float fTimeDelta)
 			return;
 		}
 	}
-
 }
 
 void CState_Character::Battle_Walk_Input(_float fTimeDelta)
@@ -306,6 +359,24 @@ void CState_Character::Battle_Walk_Input(_float fTimeDelta)
 	{
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_DASH);
 		CUI_Manager::GetInstance()->Use_RollBtn();
+		return;
+	}
+
+	if (KEY_TAP(KEY::F1))
+	{
+		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(0);
+		return;
+	}
+
+	if (KEY_TAP(KEY::F2))
+	{
+		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(1);
+		return;
+	}
+
+	if (KEY_TAP(KEY::F3))
+	{
+		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(2);
 		return;
 	}
 
@@ -681,6 +752,24 @@ void CState_Character::Neutral_Run_Input(_float fTimeDelta)
 		return;
 	}
 
+	if (KEY_TAP(KEY::F1))
+	{
+		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(0);
+		return;
+	}
+
+	if (KEY_TAP(KEY::F2))
+	{
+		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(1);
+		return;
+	}
+
+	if (KEY_TAP(KEY::F3))
+	{
+		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(2);
+		return;
+	}
+
 	_bool bMove = false;
 	if (KEY_HOLD(KEY::W))
 	{
@@ -814,6 +903,24 @@ void CState_Character::Battle_Run_Input(_float fTimeDelta)
 	{
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_DASH);
 		CUI_Manager::GetInstance()->Use_RollBtn();
+		return;
+	}
+
+	if (KEY_TAP(KEY::F1))
+	{
+		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(0);
+		return;
+	}
+
+	if (KEY_TAP(KEY::F2))
+	{
+		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(1);
+		return;
+	}
+
+	if (KEY_TAP(KEY::F3))
+	{
+		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(2);
 		return;
 	}
 
