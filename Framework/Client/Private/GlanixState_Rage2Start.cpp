@@ -32,12 +32,12 @@ void CGlanixState_Rage2Start::Enter_State(void* pArg)
 		/* 락온 + 와이드뷰 Start */
 
 		pFollowCam->Start_Lerp_Fov(Cam_Fov_LockOn_Glanix_ItemPattern, 
-									Cam_LerpTime_LockOn_Glanix_ItemPattern,
+									Cam_LerpTime_LockOn_Glanix_ItemPattern_Blending_In,
 									LERP_MODE::SMOOTHER_STEP);
 
 		pFollowCam->Lerp_TargetOffset(pFollowCam->Get_TargetOffset(), 
 										Cam_Target_Offset_LockOn_Glanix_ItemPattern, 
-										Cam_LerpTime_LockOn_Glanix_ItemPattern,
+										Cam_LerpTime_LockOn_Glanix_ItemPattern_Blending_In,
 										LERP_MODE::SMOOTHER_STEP);
 
 		// 플레이어 공격 인풋 막기

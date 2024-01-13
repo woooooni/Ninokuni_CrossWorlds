@@ -122,17 +122,27 @@ namespace Client
 	static const Vec4	Cam_TargetOffset_Follow_Default		= { 0.7f, 1.3f, 0.f, 1.f };
 	static const Vec4	Cam_LookAtOffset_Follow_Default		= { 0.7f, 1.3f, 0.f, 1.f };
 
-	/* Camera - Lock On */
+#define MAX_BEZIER_POINT 4
+
+	/* Lock On - Glanix */
+
+	/* Default */
 	static const _float Cam_LockOn_Blending_Time_Default	= 0.f; 
 
 	static const Vec4	Cam_Target_Offset_LockOn_Glanix		= Vec4{ 0.7f, 2.f, -5.f, 1.f };
 	static const Vec4	Cam_LookAt_Offset_LockOn_Glanix		= Vec4{ 0.f, 0.5f, 0.f, 1.f };
 
-	static const _float Cam_LerpTime_LockOn_Glanix_ItemPattern = 1.f;
+	/* Item Pattern */
+	static const _float Cam_LerpTime_LockOn_Glanix_ItemPattern_Blending_In = 0.8f;
+	static const _float Cam_LerpTime_LockOn_Glanix_ItemPattern_Blending_Out = 0.3f;
 	static const _float Cam_Fov_LockOn_Glanix_ItemPattern = XMConvertToRadians(75.0f);
 	static const Vec4	Cam_Target_Offset_LockOn_Glanix_ItemPattern = Vec4{ 0.f, 4.5f, -10.f, 1.f };
 
-#define MAX_BEZIER_POINT 4
+	/* Pillar Pattern */
+	static const _float Cam_LerpTime_LockOn_Glanix_PillarPattern = 0.5f;
+	static const _float Cam_Fov_LockOn_Glanix_PillarPattern = XMConvertToRadians(70.0f);
+	static const Vec4	Cam_Target_Offset_LockOn_Glanix_PillarPattern = Vec4{ 0.7f, 4.f, -15.f, 1.f };
+
 }
 
 extern HWND g_hWnd;

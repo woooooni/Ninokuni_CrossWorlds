@@ -35,12 +35,12 @@ void CGlanixState_Rage2Rising::Enter_State(void* pArg)
 		/* 락온 + 와이드뷰 Off */
 
 		pFollowCam->Start_Lerp_Fov(Cam_Fov_Follow_Default,
-			Cam_LerpTime_LockOn_Glanix_ItemPattern * 0.5f,
+			Cam_LerpTime_LockOn_Glanix_ItemPattern_Blending_Out,
 			LERP_MODE::SMOOTHER_STEP);
 
 		pFollowCam->Lerp_TargetOffset(pFollowCam->Get_TargetOffset(),
 			Cam_Target_Offset_LockOn_Glanix,
-			Cam_LerpTime_LockOn_Glanix_ItemPattern * 0.5f,
+			Cam_LerpTime_LockOn_Glanix_ItemPattern_Blending_Out,
 			LERP_MODE::SMOOTHER_STEP);
 
 		// 플레이어 공격 인풋 열기
