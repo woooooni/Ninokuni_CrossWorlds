@@ -82,7 +82,6 @@ void CSpawner_Ice03::LateTick(_float fTimeDelta)
 HRESULT CSpawner_Ice03::Render()
 {
 	__super::Render();
-
 	return S_OK;
 }
 

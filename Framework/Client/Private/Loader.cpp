@@ -125,6 +125,8 @@
 #include "UI_Dummy_Engineer.h"
 
 _bool CLoader::g_bFirstLoading = false;
+_bool CLoader::g_bLevelFirst[LEVELID::LEVEL_WITCHFOREST + 1] = {};
+
 CLoader::CLoader(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: m_pDevice(pDevice)
 	, m_pContext(pContext)
@@ -202,6 +204,9 @@ _int CLoader::Loading()
 		break;
 	}
 
+	m_strLoading = TEXT("로딩 끝.");
+	m_isFinished = true;
+
 	if (FAILED(hr))
 		return -1;	
 
@@ -237,13 +242,16 @@ HRESULT CLoader::Loading_For_Level_Logo()
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Portal"), CPortal::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_PROP)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Kuu", CKuu::Create(m_pDevice, m_pContext, TEXT("Kuu")), LAYER_NPC, true)))
+		return E_FAIL;
 
-	if (false == g_bFirstLoading)
-	{
-		m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN] = std::async(&CLoader::Loading_For_Character, this , CHARACTER_TYPE::SWORD_MAN);
-		/*m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);
-		m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);*/
-	}
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Kuu", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Public/Kuu/", L"Kuu")))
+		return E_FAIL;
+
+
+	m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::SWORD_MAN);
+	m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);
+	m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);
 
 	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
 	{
@@ -254,9 +262,6 @@ HRESULT CLoader::Loading_For_Level_Logo()
 	if (FAILED(Reserve_Character_Managers()))
 		return E_FAIL;
 
-
-	m_strLoading = TEXT("로딩 끝.");
-	m_isFinished = true;
 	g_bFirstLoading = true;
 
 	return S_OK;
@@ -325,38 +330,41 @@ HRESULT CLoader::Loading_For_Level_Lobby()
 	/* For.GameObject */
 	m_strLoading = TEXT("객체원형을 로딩 중 입니다.");
 
-	if (FAILED(CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_LOBBY)))
-		return E_FAIL;
+	if (false == g_bLevelFirst[LEVEL_LOBBY])
+	{
+		if (FAILED(CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_LOBBY)))
+			return E_FAIL;
 
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Lobby_Dummy_Swordsman"),
-		CUI_Dummy_Swordsman::Create(m_pDevice, m_pContext), LAYER_CHARACTER)))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Lobby_Dummy_Destroyer"),
-		CUI_Dummy_Destroyer::Create(m_pDevice, m_pContext), LAYER_CHARACTER)))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Lobby_Dummy_Engineer"),
-		CUI_Dummy_Engineer::Create(m_pDevice, m_pContext), LAYER_CHARACTER)))
-		return E_FAIL;
+		if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_UI_CharacterDummy",
+			CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy")), LAYER_CHARACTER)))
+			return E_FAIL;
 
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Common_ColliderWall"),
-		CColliderWall::Create(m_pDevice, m_pContext, TEXT("Common_ColliderWall"), OBJ_TYPE::OBJ_BUILDING),
-		LAYER_TYPE::LAYER_BUILDING)))
-		return E_FAIL;
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Lobby_Dummy_Swordsman"),
+			CUI_Dummy_Swordsman::Create(m_pDevice, m_pContext), LAYER_CHARACTER)))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Lobby_Dummy_Destroyer"),
+			CUI_Dummy_Destroyer::Create(m_pDevice, m_pContext), LAYER_CHARACTER)))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Lobby_Dummy_Engineer"),
+			CUI_Dummy_Engineer::Create(m_pDevice, m_pContext), LAYER_CHARACTER)))
+			return E_FAIL;
+
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Common_ColliderWall"),
+			CColliderWall::Create(m_pDevice, m_pContext, TEXT("Common_ColliderWall"), OBJ_TYPE::OBJ_BUILDING),
+			LAYER_TYPE::LAYER_BUILDING)))
+			return E_FAIL;
+
+		m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Static_Map_Objects, this, L"../Bin/Export/NonAnimModel/Map/");
+		m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Dynamic_Map_Objects, this, L"../Bin/Export/AnimModel/Map/");
+
+		g_bLevelFirst[LEVEL_LOBBY] = true;
+	}
+
+	
 
 
 	/* For.Model */
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
-
-
-	if (false == g_bFirstLoading)
-	{
-		m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::SWORD_MAN);
-		/*m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);
-		m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);*/
-	}
-
-	m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Static_Map_Objects, this, L"../Bin/Export/NonAnimModel/Map/");
-	m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Dynamic_Map_Objects, this, L"../Bin/Export/AnimModel/Map/");
 	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Loading_Proto_Monster_Npc, this);
 
 	m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE].wait();
@@ -376,8 +384,6 @@ HRESULT CLoader::Loading_For_Level_Lobby()
 	if (FAILED(Reserve_Character_Managers()))
 		return E_FAIL;
 
-	m_strLoading = TEXT("로딩 끝.");
-	m_isFinished = true;
 	g_bFirstLoading = true;
 
 	return S_OK;
@@ -394,33 +400,10 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 	/* For.GameObject */
 	m_strLoading = TEXT("객체원형을 로딩 중 입니다.");
 
-//	if (FAILED(CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_EVERMORE)))
-//		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_UI_CharacterDummy",
-		CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy")), LAYER_CHARACTER)))
-		return E_FAIL;
-
 	/* For.Model */
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
-
-	if (false == g_bFirstLoading)
-	{
-		m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::SWORD_MAN);
-		/*m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);
-		m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);*/
-	}
-
-	//m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Static_Map_Objects, this, L"../Bin/Export/NonAnimModel/Map/");
-	//m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Dynamic_Map_Objects, this, L"../Bin/Export/AnimModel/Map/");
-	//m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Loading_Proto_Monster_Npc, this);
-
-	//m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE].wait();
-	//m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE].wait();
-	//m_Threads[LOADING_THREAD::MONSTER_AND_NPC].wait();
-
 	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Evermore");
-	// m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Npc_Data, this, L"Evermore");
+	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Npc_Data, this, L"Evermore");
 
 
 	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
@@ -429,12 +412,7 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 			m_Threads[i].wait();
 	}
 
-	if (FAILED(Reserve_Character_Managers()))
-		return E_FAIL;
 		
-
-	m_strLoading = TEXT("로딩 끝.");
-	m_isFinished = true;
 	g_bFirstLoading = true;
 
 
@@ -451,8 +429,6 @@ HRESULT CLoader::Loading_For_Level_Kingdom()
 			m_Threads[i].wait();
 	}
 
-	m_strLoading = TEXT("로딩 끝.");
-	m_isFinished = true;
 	g_bFirstLoading = true;
 
 	return S_OK;
@@ -468,8 +444,6 @@ HRESULT CLoader::Loading_For_Level_IceLand()
 			m_Threads[i].wait();
 	}
 
-	m_strLoading = TEXT("로딩 끝.");
-	m_isFinished = true;
 	g_bFirstLoading = true;
 
 	return S_OK;
@@ -527,8 +501,6 @@ HRESULT CLoader::Loading_For_Level_Test()
 	if (FAILED(Reserve_Character_Managers()))
 		return E_FAIL;
 
-	m_strLoading = TEXT("로딩 끝.");
-	m_isFinished = true;
 	g_bFirstLoading = true;
 
 	return S_OK;
@@ -650,8 +622,6 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 
 	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
 	File->Open(strMapFilePath, FileMode::Read);
-
-	GI->Clear_PhysX_Ground();
 
 	for (_uint i = 0; i < LAYER_TYPE::LAYER_END; ++i)
 	{
@@ -1223,10 +1193,8 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Baobam_Dark", CBaobam_Dark::Create(m_pDevice, m_pContext, TEXT("Clown"), statDesc), LAYER_MONSTER, true)))
 		return E_FAIL;
 
-	/* Npc */
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Kuu", CKuu::Create(m_pDevice, m_pContext, TEXT("Kuu")), LAYER_NPC, true)))
-		return E_FAIL;
-	
+
+	// NPC
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanFAT01", CHumanFAT01::Create(m_pDevice, m_pContext, TEXT("HumanFAT01")), LAYER_NPC, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_MouseFolkFat01", CMouseFolkFat01::Create(m_pDevice, m_pContext, TEXT("MouseFolkFat01")), LAYER_NPC, true)))
@@ -1375,9 +1343,6 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 
 
 	/* Npc */
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Kuu", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Public/Kuu/", L"Kuu")))
-		return E_FAIL;
-
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanFAT01", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/HumanFAT01/", L"HumanFAT01")))
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_MouseFolkFat01", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/MouseFolkFat01/", L"MouseFolkFat01")))

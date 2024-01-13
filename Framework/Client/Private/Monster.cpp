@@ -70,9 +70,6 @@ void CMonster::Tick(_float fTimeDelta)
 		m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component<CTransform>(L"Com_Transform");
 	}
 
-	for (auto& pPart : m_Parts)
-		pPart->Tick(fTimeDelta);
-
 	if (m_bInfinite)
 	{
 		m_fAccInfinite += fTimeDelta;
@@ -111,16 +108,18 @@ void CMonster::Tick(_float fTimeDelta)
 		{
 			m_bDissolveEffect = true;
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Monster_Dissolve"), m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &m_pDissolveObject);
-		}
-		else if (m_pDissolveObject != nullptr && m_fDissolveWeight >= (m_fDissolveTotal - 3.f))
-		{
-			m_pDissolveObject->Set_Dead(true);
-			m_pDissolveObject = nullptr;
+
+			Safe_AddRef(m_pDissolveObject);
 		}
 		else if (m_fDissolveWeight >= m_fDissolveTotal)
 		{
 			Set_ActiveColliders(CCollider::DETECTION_TYPE::BODY, false);
 			Set_Dead(true);
+			if (nullptr != m_pDissolveObject)
+			{
+				m_pDissolveObject->Set_Dead(true);
+				m_pDissolveObject = nullptr;
+			}
 			return;
 		}
 		else
@@ -352,16 +351,6 @@ void CMonster::Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo)
 }
 
 
-CHierarchyNode* CMonster::Get_Socket(const wstring& strSocketName)
-{
-	for (auto& pSocket : m_Sockets)
-	{
-		if (pSocket->Get_Name() == strSocketName)
-			return pSocket;
-	}
-	return nullptr;
-}
-
 void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 {
 	m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ISHIT] = true;
@@ -377,11 +366,11 @@ void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 	if (nullptr == pCharacter)
 		return;
 
-	_int iDamage = (pCharacter->Get_Stat().iAtt * CUtils::Random_Float(0.5f, 1.5f)) - (m_tStat.iDef * 0.2f) * CGame_Manager::GetInstance()->Calculate_Elemental(pCharacter->Get_ElementalType(), m_eDamagedElemental);
+	_int iDamage = (pCharacter->Get_Stat().iAtt * CUtils::Random_Float(0.5f, 1.5f)) - (m_tStat.iDef * 0.2f) * CGame_Manager::GetInstance()->Calculate_Elemental(tInfo.pOtherCollider->Get_ElementalType(), m_eDamagedElemental);
 
 
 	if (m_eDamagedElemental == ELEMENTAL_TYPE::BASIC)
-		m_eDamagedElemental = pCharacter->Get_ElementalType();
+		m_eDamagedElemental = tInfo.pOtherCollider->Get_ElementalType();
 	else
 		m_eDamagedElemental = ELEMENTAL_TYPE::BASIC;
 
@@ -483,24 +472,16 @@ void CMonster::Free()
 {
 	__super::Free();
 
-	for (auto& pSocket : m_Sockets)
-		Safe_Release(pSocket);
-
-	for (auto& pPart : m_Parts)
-		Safe_Release(pPart);
-
-	m_Parts.clear();
-
 	Safe_Release(m_pBTCom);
-	
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pShaderCom);
-	Safe_Release(m_pTransformCom);
-	Safe_Release(m_pModelCom);
-	Safe_Release(m_pRigidBodyCom);
+	Safe_Release(m_pControllerCom);
 	Safe_Release(m_pStateCom);
+	Safe_Release(m_pRigidBodyCom);
+	Safe_Release(m_pModelCom);
 	Safe_Release(m_pNavigationCom);
 	Safe_Release(m_pDissoveTexture);
-	Safe_Release(m_pControllerCom);
-
+	Safe_Release(m_pDissolveObject);
+	Safe_Release(m_pTransformCom);
+		
 }

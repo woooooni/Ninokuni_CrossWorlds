@@ -76,9 +76,7 @@ HRESULT CCharacter::Initialize(void* pArg)
 void CCharacter::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
-	GI->Add_CollisionGroup(COLLISION_GROUP::CHARACTER, this);
-
-	m_eElemental;
+	GI->Add_CollisionGroup(COLLISION_GROUP::CHARACTER, this);	
 
 	if (nullptr != m_pTarget)
 		Tick_Target(fTimeDelta);
@@ -95,6 +93,26 @@ void CCharacter::Tick(_float fTimeDelta)
 	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::INSERT))
 	{
 		m_pStateCom->Change_State(CCharacter::STATE::NEUTRAL_IDLE);
+	}
+
+	if (true == m_bInfinite)
+	{
+		m_fAccInfinite += fTimeDelta;
+		if (m_fAccInfinite >= m_fInfiniteTime)
+		{
+			m_fAccInfinite = 0.f;
+			m_bInfinite = false;
+		}
+	}
+
+	if (true == m_bSuperArmor)
+	{
+		m_fAccSuperArmor += fTimeDelta;
+		if (m_fAccSuperArmor >= m_fSuperArmorTime)
+		{
+			m_fAccSuperArmor = 0.f;
+			m_bSuperArmor = false;
+		}
 	}
 
 	//if (KEY_TAP(KEY::TAB))
@@ -225,6 +243,7 @@ void CCharacter::Tick_Target(_float fTimeDelta)
 	if (nullptr == m_pTarget)
 		return;
 
+
 	if (m_pTarget->Is_ReserveDead() || m_pTarget->Is_Dead())
 	{
 		Safe_Release(m_pTarget);
@@ -296,10 +315,17 @@ HRESULT CCharacter::Render()
 		return E_FAIL;
 
 	_float4 vRimColor = { 0.f, 0.f, 0.f, 0.f };
+	if (m_bSuperArmor)
+	{
+		vRimColor = { 1.f, 1.f, 0.f, 1.f };
+	}
+
 	if (m_bInfinite)
 	{
 		vRimColor = { 0.f, 0.5f, 1.f, 1.f };
 	}
+
+
 		
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float4))))
@@ -524,16 +550,15 @@ void CCharacter::Decide_Target(COLLISION_INFO tInfo)
 
 
 
-void CCharacter::Set_Infinite(_float fInfiniteTime, _bool bInfinite)
-{
-	m_bInfinite = bInfinite;
-	m_fInfiniteTime = fInfiniteTime;
-	m_fAccInfinite = 0.f;
-}
 
 
 void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 {
+	if (true == m_bInfinite)
+		return;
+
+	
+
 	CMonster* pMonster = dynamic_cast<CMonster*>(tInfo.pOther);
 	if (nullptr == pMonster)
 		return;
@@ -544,9 +569,23 @@ void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 		m_pTransformCom->LookAt_ForLandObject(pOtherTransform->Get_Position());
 
 
-	_int iDamage = max(0, pMonster->Get_Stat().iAtk - (m_tStat.iDef * 0.2f)) * CGame_Manager::GetInstance()->Calculate_Elemental(pMonster->Get_ElementalType(), m_eElemental);
+	_int iDamage = max(0, pMonster->Get_Stat().iAtk - (m_tStat.iDef * 0.2f)) * CGame_Manager::GetInstance()->Calculate_Elemental(tInfo.pOtherCollider->Get_ElementalType(), m_eDamagedElemental);
+
+	if (m_eDamagedElemental != ELEMENTAL_TYPE::BASIC)
+	{
+		m_eDamagedElemental = ELEMENTAL_TYPE::BASIC;
+	}
+	else
+	{
+		m_eDamagedElemental = tInfo.pOtherCollider->Get_ElementalType();
+	}
 
 	CUIDamage_Manager::GetInstance()->Create_PlayerDamageNumber(m_pTransformCom, iDamage);
+
+
+	if (true == m_bSuperArmor)	
+		return;
+
 
 	if (CCollider::ATTACK_TYPE::AIR_BORNE == tInfo.pOtherCollider->Get_AttackType())
 	{
@@ -705,6 +744,12 @@ HRESULT CCharacter::Enter_Character()
 	if (nullptr != m_pControllerCom)
 		m_pControllerCom->Set_Active(true);
 
+	if (nullptr != m_pTarget)
+	{
+		Safe_Release(m_pTarget);
+		m_pTarget = nullptr;
+	}
+
 	return S_OK;
 }
 
@@ -712,6 +757,12 @@ HRESULT CCharacter::Exit_Character()
 {
 	if (nullptr != m_pControllerCom)
 		m_pControllerCom->Set_Active(true);
+	if (nullptr != m_pTarget)
+	{
+		Safe_Release(m_pTarget);
+		m_pTarget = nullptr;
+	}
+		
 
 	return S_OK;
 }

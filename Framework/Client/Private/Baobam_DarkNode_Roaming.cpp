@@ -8,7 +8,7 @@ CBaobam_DarkNode_Roaming::CBaobam_DarkNode_Roaming()
 {
 }
 
-HRESULT CBaobam_DarkNode_Roaming::Initialize_Prototype(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT, vector<_vector>* vecRoamingArea)
+HRESULT CBaobam_DarkNode_Roaming::Initialize_Prototype(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT, vector<Vec4>* vecRoamingArea)
 {
 	__super::Initialize_Prototype(pDesc, pBT);
 
@@ -52,7 +52,7 @@ CBTNode::NODE_STATE CBaobam_DarkNode_Roaming::Tick(const _float& fTimeDelta)
 	return NODE_STATE::NODE_RUNNING;
 }
 
-CBaobam_DarkNode_Roaming* CBaobam_DarkNode_Roaming::Create(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT, vector<_vector>* vecRoamingArea)
+CBaobam_DarkNode_Roaming* CBaobam_DarkNode_Roaming::Create(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT, vector<Vec4>* vecRoamingArea)
 {
 	CBaobam_DarkNode_Roaming* pInstance = new CBaobam_DarkNode_Roaming();
 

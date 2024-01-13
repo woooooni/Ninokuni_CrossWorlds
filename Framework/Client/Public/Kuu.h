@@ -38,7 +38,7 @@ private:
 
 private:
 	class CCharacter* m_pPlayer = nullptr;
-	CTransform* m_pPlayerTransform = nullptr;
+	class CTransform* m_pPlayerTransform = nullptr;
 
 private:
 	class CUI_World_NPCTag* m_pTag = { nullptr };

@@ -19,7 +19,7 @@ public:
 	virtual void Exit_State();
 
 private:
-	_vector m_vDestPos = {};
+	Vec4 m_vDestPos = {};
 	_float  m_fTurnSpeed = 0.f;
 
 public:

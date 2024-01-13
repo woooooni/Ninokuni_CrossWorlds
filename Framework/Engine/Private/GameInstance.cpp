@@ -115,6 +115,7 @@ HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, _uint iNumLayerType,
 
 void CGameInstance::Priority_Tick(_float fTimeDelta)
 {
+	m_pLevel_Manager->Check_NextLevel();
 	m_pInput_Device->Update();
 	m_pKey_Manager->Tick(fTimeDelta);
 	m_pCamera_Manager->Tick(fTimeDelta);

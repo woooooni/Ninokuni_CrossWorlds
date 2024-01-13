@@ -25,7 +25,10 @@ HRESULT CGame_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContex
 	Safe_AddRef(m_pContext);
 
 	m_pPlayer = CPlayer::Create();
-	m_pKuu =	dynamic_cast<CKuu*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Kuu"), LAYER_NPC));
+	m_pKuu = dynamic_cast<CKuu*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Kuu"), LAYER_NPC));
+
+	if (nullptr == m_pKuu)
+		return E_FAIL;
 
 	if (nullptr == m_pPlayer && GI->Get_CurrentLevel() != LEVELID::LEVEL_LOADING)
 		return E_FAIL;
@@ -80,7 +83,6 @@ void CGame_Manager::Free()
 	Safe_Release(m_pKuu);
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
-	
 }
 
 

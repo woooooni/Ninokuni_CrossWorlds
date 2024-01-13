@@ -44,12 +44,10 @@ HRESULT CLevel_Loading::LateTick(_float fTimeDelta)
 
 	if (true == m_pLoader->Get_Finished())
 	{
-
 		if (KEY_TAP(KEY::SPACE))
 		{
-
 			CLevel* pNewLevel = nullptr;
-
+			GI->Clear_PhysX_Ground();
 			switch (m_eNextLevel)
 			{
 			case LEVEL_LOGO:

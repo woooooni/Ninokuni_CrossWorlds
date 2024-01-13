@@ -127,7 +127,6 @@ public:
 
 
 public:
-	CHierarchyNode* Get_Socket(const wstring& strSocketName);
 	const MONSTER_STAT& Get_Stat() { return m_tStat; }
 	const wstring& Get_KorName() { return strKorName; }
 	const wstring& Get_SubName() { return strSubName; }
@@ -135,15 +134,15 @@ public:
 public:
 	virtual void On_Damaged(const COLLISION_INFO& tInfo);
 
-	virtual _vector Get_OriginPos() { return m_vOriginPos; }
+	virtual Vec4 Get_OriginPos() { return m_vOriginPos; }
 
 	/* Bool 정보들 */
 	virtual _bool  Get_Bools(MONSTER_BOOLTYPE eType) { return m_bBools[(_uint)eType]; }
 	virtual void   Set_Bools(MONSTER_BOOLTYPE eType, _bool bIsBool) { m_bBools[(_uint)eType] = bIsBool; }
 
 	/* 주변 순회 */
-	virtual vector<_vector>* Get_RoamingArea() { return &m_vecRoamingArea; }
-	virtual void Add_RoamingPoint(_vector vPos) { m_vecRoamingArea.push_back(vPos); }
+	virtual vector<Vec4>* Get_RoamingArea() { return &m_vecRoamingArea; }
+	virtual void Add_RoamingPoint(Vec4 vPos) { m_vecRoamingArea.push_back(vPos); }
 
 	/* 스턴 시간 */
 	virtual _float Get_StunTime() { return m_fStunTime; }
@@ -154,10 +153,6 @@ public:
 
 public:
 	MONSTER_TYPE Get_Monster_Type() { return m_eMonsterType; }
-
-public:
-	ELEMENTAL_TYPE Get_ElementalType() { return m_eElementalType; }
-	void Set_ElementalType(ELEMENTAL_TYPE eElementalType) { m_eElementalType = eElementalType; }
 
 protected:
 	virtual HRESULT Ready_Components() PURE;
@@ -175,15 +170,8 @@ protected: /* 해당 객체가 사용해야할 컴포넌트들을 저장하낟. */
 	CNavigation* m_pNavigationCom = nullptr;
 	CBehaviorTree* m_pBTCom = nullptr;
 	CPhysX_Controller* m_pControllerCom = { nullptr };
-
 	CTexture* m_pDissoveTexture = nullptr;
 
-protected:
-	vector<CGameObject*>				m_Parts;
-	typedef vector<CGameObject*>		PARTS;
-
-	vector<class CHierarchyNode*>		m_Sockets;
-	typedef vector<CGameObject*>		Sockets;
 
 protected:
 	MONSTER_STAT m_tStat = {};
@@ -194,10 +182,10 @@ protected:
 	_float m_fInfiniteTime = 0.2f;
 	_bool m_bInfinite = false;
 
-	_vector	m_vOriginPos = {}; // 최초 위치, 돌아갈 위치.
+	Vec4	m_vOriginPos = {}; // 최초 위치, 돌아갈 위치.
 	_bool   m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_END] = { false, }; // 몬스터가 사용하는 bool모음.
 
-	vector<_vector> m_vecRoamingArea; // 순회 포인트 배열
+	vector<Vec4> m_vecRoamingArea; // 순회 포인트 배열
 
 	_float	m_fStunTime = 0.f; // 스턴 시간
 
@@ -208,7 +196,6 @@ protected:
 
 protected:
 	MONSTER_TYPE m_eMonsterType = MONSTER_TYPE::TYPE_END;
-	ELEMENTAL_TYPE m_eElementalType = ELEMENTAL_TYPE::BASIC;
 	ELEMENTAL_TYPE m_eDamagedElemental = ELEMENTAL_TYPE::BASIC;
 
 	// 림, 디졸브, 블룸 효과

@@ -36,9 +36,6 @@ void CSpawner::Tick(_float fTimeDelta)
 
 void CSpawner::LateTick(_float fTimeDelta)
 {
-	// 랜더 그룹 추가하기.
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
-
 #ifdef _DEBUG
 	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
 	{
@@ -98,5 +95,4 @@ void CSpawner::Free()
 
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pTransformCom);
-	Safe_Release(m_pColliderCom);
 }
