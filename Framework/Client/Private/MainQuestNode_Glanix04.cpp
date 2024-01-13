@@ -6,6 +6,7 @@
 
 #include "UI_Manager.h"
 #include "Game_Manager.h"
+#include "Quest_Manager.h"
 
 CMainQuestNode_Glanix04::CMainQuestNode_Glanix04()
 {
@@ -33,6 +34,8 @@ HRESULT CMainQuestNode_Glanix04::Initialize()
 
 void CMainQuestNode_Glanix04::Start()
 {
+	CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_BOSS_KILL);
+
 	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
 	/* 현재 퀘스트에 연관있는 객체들 */
@@ -78,9 +81,11 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix04::Tick(const _float& fTimeDelta)
 		m_fTime = m_fTalkChangeTime - m_fTime;
 	}
 
-	// 임시로 ( 나중엔 기안티 잡으러 )
-	if (KEY_TAP(KEY::N))
+
+	if (CQuest_Manager::GetInstance()->Get_IsBossKill())
 	{
+		CQuest_Manager::GetInstance()->Set_IsBossKill(false);
+
 		m_bIsClear = true;
 		CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
 

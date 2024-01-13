@@ -25,7 +25,7 @@ void CMainQuestNode_SnowField03::Start()
 {
 	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
-	m_pJackson = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("GrimalKinML01"));
+	m_pJackson = GI->Find_GameObject(LEVELID::LEVEL_ICELAND, LAYER_NPC, TEXT("GrimalKinML01"));
 	Vec4 vSpotPos = Set_DestSpot(m_pJackson);
 
 	// 임시로 monster에 

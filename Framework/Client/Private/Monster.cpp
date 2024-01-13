@@ -18,7 +18,10 @@
 
 #include "Player.h"
 
+#include "Quest_Manager.h"
+
 USING(Client)
+
 CMonster::CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
 	: CGameObject(pDevice, pContext, strObjectTag, OBJ_TYPE::OBJ_MONSTER)
 {
@@ -115,6 +118,9 @@ void CMonster::Tick(_float fTimeDelta)
 			Set_Dead(true);
 			if (nullptr != m_pDissolveObject)
 			{
+				if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::QUESTEVENT_MONSTER_KILL)
+					CQuest_Manager::GetInstance()->Set_MonsterKillCount(1);
+
 				m_pDissolveObject->Set_Dead(true);
 				m_pDissolveObject = nullptr;
 			}

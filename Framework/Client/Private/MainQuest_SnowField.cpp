@@ -23,13 +23,13 @@ HRESULT CMainQuest_SnowField::Initialize()
 	m_pRootNode = CBTNode_Select::Create();
 
 	CMainQuestNode_SnowField01* pMainQuestSnowField01 = CMainQuestNode_SnowField01::Create();
-	CMainQuestNode_SnowField01* pMainQuestSnowField02 = CMainQuestNode_SnowField01::Create();
-	CMainQuestNode_SnowField01* pMainQuestSnowField02_2 = CMainQuestNode_SnowField01::Create();
-	CMainQuestNode_SnowField01* pMainQuestSnowField03 = CMainQuestNode_SnowField01::Create();
-	CMainQuestNode_SnowField01* pMainQuestSnowField04 = CMainQuestNode_SnowField01::Create();
-	CMainQuestNode_SnowField01* pMainQuestSnowField05 = CMainQuestNode_SnowField01::Create();
-	CMainQuestNode_SnowField01* pMainQuestSnowField06 = CMainQuestNode_SnowField01::Create();
-	CMainQuestNode_SnowField01* pMainQuestSnowField07 = CMainQuestNode_SnowField01::Create();
+	CMainQuestNode_SnowField02* pMainQuestSnowField02 = CMainQuestNode_SnowField02::Create();
+	CMainQuestNode_SnowField02_2* pMainQuestSnowField02_2 = CMainQuestNode_SnowField02_2::Create();
+	CMainQuestNode_SnowField03* pMainQuestSnowField03 = CMainQuestNode_SnowField03::Create();
+	CMainQuestNode_SnowField04* pMainQuestSnowField04 = CMainQuestNode_SnowField04::Create();
+	CMainQuestNode_SnowField05* pMainQuestSnowField05 = CMainQuestNode_SnowField05::Create();
+	CMainQuestNode_SnowField06* pMainQuestSnowField06 = CMainQuestNode_SnowField06::Create();
+	CMainQuestNode_SnowField07* pMainQuestSnowField07 = CMainQuestNode_SnowField07::Create();
 
 	m_pRootNode->Add_ChildNode(pMainQuestSnowField01);
 	m_pRootNode->Add_ChildNode(pMainQuestSnowField02);

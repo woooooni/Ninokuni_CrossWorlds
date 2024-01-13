@@ -39,7 +39,7 @@ void CMainQuestNode_Glanix06::Start()
 	/* 현재 퀘스트에 연관있는 객체들 */
 	//m_pKuu = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Kuu"));
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
-	m_pJackson = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("GrimalKinML01"));
+	m_pJackson = GI->Find_GameObject(LEVELID::LEVEL_ICELAND, LAYER_NPC, TEXT("GrimalKinML01"));
 
 	m_vecTalker.push_back(m_pKuu);
 	m_vecTalker.push_back(m_pJackson);
@@ -91,7 +91,7 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix06::Tick(const _float& fTimeDelta)
 			//if (nullptr != pActionCam)
 			//	pActionCam->Finish_Action_Talk();
 
-			return NODE_STATE::NODE_SUCCESS;
+			return NODE_STATE::NODE_FAIL;
 		}
 
 		m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);

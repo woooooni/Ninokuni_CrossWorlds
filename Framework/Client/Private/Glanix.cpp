@@ -67,6 +67,7 @@
 #include "GlanixState_Dead.h"
 
 #include "Camera_Manager.h"
+#include "Quest_Manager.h"
 
 CGlanix::CGlanix(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
 	: CBoss(pDevice, pContext, strObjectTag, tStat)

@@ -52,8 +52,8 @@ void CMainQuestNode_Glanix05::Start()
 
 	TalkEvent();
 
-
-	Vec4 vSpotPos = { -44.f, 1.5f, 330.f, 1.f };
+	m_pJackson = GI->Find_GameObject(LEVELID::LEVEL_ICELAND, LAYER_NPC, TEXT("GrimalKinML01"));
+	Vec4 vSpotPos = Set_DestSpot(m_pJackson);
 	m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_MONSTER), &vSpotPos));
 }
 

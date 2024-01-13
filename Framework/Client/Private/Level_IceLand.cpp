@@ -102,6 +102,11 @@ HRESULT CLevel_IceLand::Tick(_float fTimeDelta)
 		GI->Add_GameObject(LEVEL_ICELAND, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Glanix"));
 	}
 
+	if (KEY_TAP(KEY::CLOSE_SQUARE_BRACKET))
+	{
+		GI->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_EVERMORE, L"Evermore"));
+	}
+
 	return S_OK; 
 }
 
@@ -197,10 +202,10 @@ HRESULT CLevel_IceLand::Ready_Layer_Terrain(const LAYER_TYPE eLayerType)
 HRESULT CLevel_IceLand::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 {
 	// 111.f, 1.5f, 8.f, 1.f ㄹㅇ 시작위치
-	if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, Vec4(-44.f, 1.5f, 315.f, 1.f), true)))
-		return E_FAIL;
-	//if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, Vec4(111.f, 1.5f, 8.f, 1.f), true)))
+	//if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, Vec4(-44.f, 1.5f, 315.f, 1.f), true)))
 	//	return E_FAIL;
+	if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, Vec4(111.f, 1.5f, 8.f, 1.f), true)))
+		return E_FAIL;
 
 	/* Set Camera */
 	if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))
@@ -220,13 +225,16 @@ HRESULT CLevel_IceLand::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_IceLand::Ready_Layer_Monster(const LAYER_TYPE eLayerType)
 {
-	//Vec4 tempPos = Vec4(111.f, 1.5f, 8.f, 1.f);
+	//Vec4 tempPos = Vec4(-108.f, -4.14f, 234.f, 1.f);
 	//if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_MONSTER, TEXT("Prorotype_GameObject_Shadow_Thief"), &tempPos)))
 	//	return E_FAIL;
+	//tempPos = Vec4(-105.f, -4.14f, 234.f, 1.f);
 	//if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_MONSTER, TEXT("Prorotype_GameObject_Shadow_Thief"), &tempPos)))
 	//	return E_FAIL;
+	//tempPos = Vec4(-102.f, -4.14f, 234.f, 1.f);
 	//if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_MONSTER, TEXT("Prorotype_GameObject_Shadow_Thief"), &tempPos)))
 	//	return E_FAIL;
+	//tempPos = Vec4(-99.f, -4.14f, 234.f, 1.f);
 	//if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_MONSTER, TEXT("Prorotype_GameObject_Shadow_Thief"), &tempPos)))
 	//	return E_FAIL;
 	//if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_MONSTER, TEXT("Prorotype_GameObject_Shadow_Thief"), &tempPos)))
