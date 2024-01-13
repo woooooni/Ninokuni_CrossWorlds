@@ -12,7 +12,10 @@ class CVfx_Glanix_Skill_FootDown final : public CVfx
 {
 private:
 	enum TYPE {
-		TYPE_START,
+		TYPE_D_CRACK,
+		TYPE_P_SMOKE,
+		TYPE_P_CIRCLE,
+		TYPE_E_CIRCLE_LINE,
 		TYPE_END
 	};
 

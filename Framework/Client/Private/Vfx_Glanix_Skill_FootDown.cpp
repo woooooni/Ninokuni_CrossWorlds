@@ -3,7 +3,7 @@
 
 #include "Particle_Manager.h"
 #include "Effect_Manager.h"
-#include "Character.h"
+#include "Glanix.h"
 
 CVfx_Glanix_Skill_FootDown::CVfx_Glanix_Skill_FootDown(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
@@ -17,7 +17,7 @@ CVfx_Glanix_Skill_FootDown::CVfx_Glanix_Skill_FootDown(const CVfx_Glanix_Skill_F
 
 HRESULT CVfx_Glanix_Skill_FootDown::Initialize_Prototype()
 {
-	m_bOwnerStateIndex = CCharacter::SKILL_SPECIAL_2;
+	m_bOwnerStateIndex = CGlanix::GLANIX_ATTACK2;
 
 	m_iMaxCount = TYPE_END;
 	m_pFrameTriger    = new _int[m_iMaxCount];
@@ -25,11 +25,29 @@ HRESULT CVfx_Glanix_Skill_FootDown::Initialize_Prototype()
 	m_pScaleOffset    = new _float3[m_iMaxCount];
 	m_pRotationOffset = new _float3[m_iMaxCount];
 
-	// 0
-	m_pFrameTriger[TYPE_START]    = 0;
-	m_pPositionOffset[TYPE_START] = _float3(0.f, 0.f, 0.f);
-	m_pScaleOffset[TYPE_START]    = _float3(1.f, 1.f, 1.f);
-	m_pRotationOffset[TYPE_START] = _float3(0.f, 0.f, 0.f);
+	// 1
+	m_pFrameTriger[TYPE_D_CRACK]    = 61;
+	m_pPositionOffset[TYPE_D_CRACK] = _float3(-0.15f, 0.f, 0.4f);
+	m_pScaleOffset[TYPE_D_CRACK]    = _float3(5.f, 5.f, 5.f);
+	m_pRotationOffset[TYPE_D_CRACK] = _float3(0.f, 0.f, 0.f);
+
+	// 2
+	m_pFrameTriger[TYPE_P_SMOKE]    = 61;
+	m_pPositionOffset[TYPE_P_SMOKE] = _float3(-0.8f, 0.5f, 2.f);
+	m_pScaleOffset[TYPE_P_SMOKE]    = _float3(1.f, 1.f, 1.f);
+	m_pRotationOffset[TYPE_P_SMOKE] = _float3(0.f, 0.f, 0.f);
+
+	// 3
+	m_pFrameTriger[TYPE_P_CIRCLE]    = 61;
+	m_pPositionOffset[TYPE_P_CIRCLE] = _float3(-0.8f, 0.5f, 2.f);
+	m_pScaleOffset[TYPE_P_CIRCLE]    = _float3(1.f, 1.f, 1.f);
+	m_pRotationOffset[TYPE_P_CIRCLE] = _float3(0.f, 0.f, 0.f);
+
+	// 4
+	m_pFrameTriger[TYPE_E_CIRCLE_LINE]    = 63;
+	m_pPositionOffset[TYPE_E_CIRCLE_LINE] = _float3(-0.8f, 0.2f, 2.f);
+	m_pScaleOffset[TYPE_E_CIRCLE_LINE]    = _float3(1.f, 1.f, 1.f);
+	m_pRotationOffset[TYPE_E_CIRCLE_LINE] = _float3(0.f, 0.f, 0.f);
 
  	return S_OK;
 }
@@ -45,10 +63,28 @@ void CVfx_Glanix_Skill_FootDown::Tick(_float fTimeDelta)
 
 	if (!m_bOwnerTween)
 	{
-		if (m_iCount == TYPE_START && m_iOwnerFrame >= m_pFrameTriger[TYPE_START])
+		if (m_iCount == TYPE_D_CRACK && m_iOwnerFrame >= m_pFrameTriger[TYPE_D_CRACK])
 		{
-			//GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT(""),
-			//	XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_START], m_pScaleOffset[TYPE_START], m_pRotationOffset[TYPE_START]);
+			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Glanix_Skill_FootDown_Crack"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_D_CRACK], m_pScaleOffset[TYPE_D_CRACK], m_pRotationOffset[TYPE_D_CRACK]);
+			m_iCount++;
+		}
+		else if (m_iCount == TYPE_P_SMOKE && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_SMOKE])
+		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Skill_FootDown_Smoke"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_SMOKE], m_pScaleOffset[TYPE_P_SMOKE], m_pRotationOffset[TYPE_P_SMOKE]);
+			m_iCount++;
+		}
+		else if (m_iCount == TYPE_P_CIRCLE && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_CIRCLE])
+		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Skill_FootDown_Circle"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_CIRCLE], m_pScaleOffset[TYPE_P_CIRCLE], m_pRotationOffset[TYPE_P_CIRCLE]);
+			m_iCount++;
+		}
+		else if (m_iCount == TYPE_E_CIRCLE_LINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_CIRCLE_LINE])
+		{
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Glanix_Skill_FootDown_TrailLine"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_CIRCLE_LINE], m_pScaleOffset[TYPE_E_CIRCLE_LINE], m_pRotationOffset[TYPE_E_CIRCLE_LINE]);
 			m_iCount++;
 		}
 
