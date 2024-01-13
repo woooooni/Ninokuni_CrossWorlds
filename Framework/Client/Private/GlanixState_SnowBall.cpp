@@ -5,6 +5,7 @@
 
 #include "Glanix.h"
 #include "Glanix_IceBall.h"
+#include "Effect_Manager.h"
 
 CGlanixState_SnowBall::CGlanixState_SnowBall(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
@@ -22,6 +23,12 @@ void CGlanixState_SnowBall::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_Skill08"));
 	m_bIsRoll = false;
+
+	// Effect Create
+	CTransform* pTransformCom = m_pGlanix->Get_Component<CTransform>(L"Com_Transform");
+	if (pTransformCom == nullptr)
+		return;
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Glanix_Skill_IceThrow"), pTransformCom->Get_WorldMatrix(), m_pGlanix);
 }
 
 void CGlanixState_SnowBall::Tick_State(_float fTimeDelta)

@@ -8,12 +8,18 @@ END
 
 BEGIN(Client)
 
-class CVfx_PortalPoint final : public CVfx
+class CVfx_Glanix_Skill_HandDown final : public CVfx
 {
+private:
+	enum TYPE {
+		TYPE_START,
+		TYPE_END
+	};
+
 protected:
-	CVfx_PortalPoint(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
-	CVfx_PortalPoint(const CVfx_PortalPoint& rhs);
-	virtual ~CVfx_PortalPoint() = default;
+	CVfx_Glanix_Skill_HandDown(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	CVfx_Glanix_Skill_HandDown(const CVfx_Glanix_Skill_HandDown& rhs);
+	virtual ~CVfx_Glanix_Skill_HandDown() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -25,12 +31,8 @@ public:
 protected:
 	virtual HRESULT Ready_Components() override;
 
-private:
-	class CEffect* pEffectObject = nullptr;
-	class CParticle* pParticleObject = nullptr;
-
 public:
-	static CVfx_PortalPoint* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
+	static CVfx_Glanix_Skill_HandDown* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 		const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;

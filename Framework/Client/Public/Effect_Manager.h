@@ -35,6 +35,7 @@ private:
 private:
 	HRESULT Ready_Proto_Vfx_UI();
 	HRESULT Ready_Proto_Vfx_Player();
+	HRESULT Ready_Proto_Vfx_Monster();
 
 public:
 	virtual void Free() override;

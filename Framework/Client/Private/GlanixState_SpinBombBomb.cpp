@@ -3,6 +3,7 @@
 
 #include "Glanix.h"
 #include "Camera_Manager.h"
+#include "Effect_Manager.h"
 
 CGlanixState_SpinBombBomb::CGlanixState_SpinBombBomb(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
@@ -19,6 +20,12 @@ HRESULT CGlanixState_SpinBombBomb::Initialize(const list<wstring>& AnimationList
 void CGlanixState_SpinBombBomb::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_Skill09"));
+
+	// Effect Create
+	CTransform* pTransformCom = m_pGlanix->Get_Component<CTransform>(L"Com_Transform");
+	if (pTransformCom == nullptr)
+		return;
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Glanix_Skill_SwingDownDown"), pTransformCom->Get_WorldMatrix(), m_pGlanix);
 }
 
 void CGlanixState_SpinBombBomb::Tick_State(_float fTimeDelta)

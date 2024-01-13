@@ -3,6 +3,7 @@
 
 #include "Glanix.h"
 #include "Camera_Manager.h"
+#include "Effect_Manager.h"
 
 CGlanixState_Charge::CGlanixState_Charge(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
@@ -21,6 +22,12 @@ HRESULT CGlanixState_Charge::Initialize(const list<wstring>& AnimationList)
 void CGlanixState_Charge::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_Skill07_RootMotion"));
+
+	// Effect Create
+	CTransform* pTransformCom = m_pGlanix->Get_Component<CTransform>(L"Com_Transform");
+	if (pTransformCom == nullptr)
+		return;
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Glanix_Skill_Rush"), pTransformCom->Get_WorldMatrix(), m_pGlanix);
 }
 
 void CGlanixState_Charge::Tick_State(_float fTimeDelta)
