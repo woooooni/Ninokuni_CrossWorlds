@@ -110,6 +110,7 @@ public:
 	void	TakeOff_CostumeModel();
 
 	void	Set_MouseCursor(_uint iIndex);
+	void	Hide_MouseCursor(_bool bHide);
 
 public:
 	HRESULT		Using_CloseButton();

@@ -4644,6 +4644,23 @@ void CUI_Manager::Set_MouseCursor(_uint iIndex)
 	m_pUICursor->Set_TextureIndex(iIndex);
 }
 
+void CUI_Manager::Hide_MouseCursor(_bool bHide)
+{
+	if (nullptr == m_pUICursor)
+		return;
+
+	if (bHide)
+	{
+		GI->Lock_Mouse();
+		m_pUICursor->Set_Active(false);
+	}
+	else
+	{
+		GI->UnLock_Mouse();
+		m_pUICursor->Set_Active(true);
+	}
+}
+
 HRESULT CUI_Manager::Using_CloseButton()
 {
 	if (nullptr != m_pMainBG)
