@@ -366,11 +366,11 @@ void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 	if (nullptr == pCharacter)
 		return;
 
-	_int iDamage = (pCharacter->Get_Stat().iAtt * CUtils::Random_Float(0.5f, 1.5f)) - (m_tStat.iDef * 0.2f) * CGame_Manager::GetInstance()->Calculate_Elemental(pCharacter->Get_ElementalType(), m_eDamagedElemental);
+	_int iDamage = (pCharacter->Get_Stat().iAtt * CUtils::Random_Float(0.5f, 1.5f)) - (m_tStat.iDef * 0.2f) * CGame_Manager::GetInstance()->Calculate_Elemental(tInfo.pOtherCollider->Get_ElementalType(), m_eDamagedElemental);
 
 
 	if (m_eDamagedElemental == ELEMENTAL_TYPE::BASIC)
-		m_eDamagedElemental = pCharacter->Get_ElementalType();
+		m_eDamagedElemental = tInfo.pOtherCollider->Get_ElementalType();
 	else
 		m_eDamagedElemental = ELEMENTAL_TYPE::BASIC;
 

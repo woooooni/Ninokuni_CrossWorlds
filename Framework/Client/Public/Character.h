@@ -144,8 +144,21 @@ public:
 	void Stop_Trail(SOCKET_TYPE eSocketType);
 
 public:
-	virtual void Set_Infinite(_float fInfiniteTime, _bool bInfinite);
+	virtual void Set_Infinite(_float fInfiniteTime, _bool bInfinite) {
+		m_bInfinite = bInfinite;
+		m_fInfiniteTime = fInfiniteTime;
+		m_fAccInfinite = 0.f;
+	};
 	_bool Is_Infinite() { return m_bInfinite; }
+
+	void Set_SuperArmor(_float fSuperArmorTime, _bool bSuperArmor)
+	{
+		m_bSuperArmor = bSuperArmor;
+		m_fSuperArmorTime = fSuperArmorTime;
+		m_fAccSuperArmor = 0.f;
+	}
+
+	_bool Is_SuperArmor() { return m_bSuperArmor; }
 
 	void Set_Input(_bool bInput) { m_bInputable = bInput; }
 	_bool Is_Input() { return m_bInputable; }
@@ -198,7 +211,11 @@ public:
 
 
 	ELEMENTAL_TYPE Get_ElementalType() { return m_eElemental; }
-	void Set_ElementalType(ELEMENTAL_TYPE eElemental) { m_eElemental = eElemental; }
+	void Set_ElementalType(ELEMENTAL_TYPE eElemental) 
+	{ 
+		Set_Collider_Elemental(eElemental);
+		m_eElemental = eElemental; 
+	}
 
 
 public:
@@ -259,6 +276,7 @@ protected:
 
 protected:
 	ELEMENTAL_TYPE m_eElemental = ELEMENTAL_TYPE::FIRE;
+	ELEMENTAL_TYPE m_eDamagedElemental = ELEMENTAL_TYPE::BASIC;
 
 
 protected: /* 해당 객체가 사용해야할 컴포넌트들을 저장하낟. */
@@ -285,6 +303,11 @@ protected:
 protected:
 	_float m_fAccInfinite = 0.f;
 	_float m_fInfiniteTime = 5.f;
+
+	_float m_fSuperArmorTime = 5.f;
+	_float m_fAccSuperArmor = 0.f;
+
+	_bool m_bSuperArmor = false;
 	_bool m_bInfinite = false;
 	_bool m_bInputable = true;
 
@@ -293,6 +316,7 @@ protected:
 
 	_bool m_bMotionTrail = false;
 	MOTION_TRAIL_DESC m_MotionTrailDesc = {};
+
 
 protected:
 	_float m_fDefaultWalkSpeed = 3.f;

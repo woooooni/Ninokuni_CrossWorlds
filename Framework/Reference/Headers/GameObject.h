@@ -99,7 +99,7 @@ public:
 
 
 	virtual HRESULT Set_Collider_AttackMode(_uint eAttackMode, _float fAirBornPower, _float fPushPower, _float fDamage, _bool bHitLag = true);
-	virtual HRESULT Set_Collider_Elemental(_uint eColliderType, ELEMENTAL_TYPE eElementalType);
+	virtual HRESULT Set_Collider_Elemental(ELEMENTAL_TYPE eElementalType);
 
 protected:
 	void LateUpdate_Collider(_float fTimedelta);
