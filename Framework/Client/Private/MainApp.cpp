@@ -26,7 +26,7 @@
 #include "Camera_Group.h"
 
 #ifdef _DEBUG
-#include <vld.h>
+//#include <vld.h>
 #endif
 
 CMainApp::CMainApp()	
