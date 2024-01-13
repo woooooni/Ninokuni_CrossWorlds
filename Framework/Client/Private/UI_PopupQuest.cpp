@@ -62,7 +62,13 @@ void CUI_PopupQuest::Set_Contents(const wstring& strQuestType, const wstring& st
 
 	m_bProgressing = true; // 퀘스트가 완료되면 false로 전환할 수 있는 매개가 필요함.
 
-	m_vTypeColor = _float4(0.957f, 0.784f, 0.067f, 1.f);
+	if (TEXT("[메인]") == strQuestType)
+		m_vTypeColor = _float4(0.957f, 0.784f, 0.067f, 1.f);
+	else if (TEXT("[서브]") == strQuestType)
+		m_vTypeColor = _float4(0.165f, 0.984f, 0.957f, 1.f);
+	else
+		m_vTypeColor = _float4(0.373f, 0.863f, 0.647f, 1.f);
+
 	m_vTextColor = _float4(0.804f, 0.843f, 0.741f, 1.f);
 
 	QUEST_INFO QuestDesc = {};

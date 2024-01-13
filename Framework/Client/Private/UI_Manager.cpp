@@ -260,56 +260,18 @@ void CUI_Manager::Set_QuestPopup(const wstring& strQuestType, const wstring& str
 		return;
 
 	m_QuestPopUp[0]->Set_Contents(strQuestType, strTitle, strContents);
-
-	// 개수에 따라서 Frame_Bottm의 위치 변경이 필요하다.
-	// First Separator는 Quest가 2개이상일때만 active된다.
-	// Second Separator는 Quest가 3개이상일때만 active된다.
-	// 퀘스트의 최대 개수는 3개이다.
-	/*
-	*	m_QuestPopUp[0] FrameWindow1
-		m_QuestPopUp[1] FrameWindow2
-		m_QuestPopUp[2] FrameWindow3
-		m_QuestPopUp[3] Frame_Top
-		m_QuestPopUp[4] Separator_First
-		m_QuestPopUp[5] Separator_Second
-		m_QuestPopUp[6] Frame_Bottom
-	*/
-//	if (1 == m_QuestPopUp[0]->Get_NumOfQuest())
-//	{
-//		if (m_QuestPopUp[1]->Get_Active())
-//			m_QuestPopUp[1]->Set_Active(false);
-//		if (m_QuestPopUp[4]->Get_Active())
-//			m_QuestPopUp[4]->Set_Active(false);
-//
-//		if (m_QuestPopUp[2]->Get_Active())
-//			m_QuestPopUp[2]->Set_Active(false);
-//		if (m_QuestPopUp[5]->Get_Active())
-//			m_QuestPopUp[5]->Set_Active(false);
-//	}
-//
-//	if (2 <= m_QuestPopUp[0]->Get_NumOfQuest())
-//	{
-//		if (!m_QuestPopUp[4]->Get_Active())
-//			m_QuestPopUp[4]->Set_Active(true);
-//		if (m_QuestPopUp[5]->Get_Active())
-//			m_QuestPopUp[5]->Set_Active(false);
-//
-//		if (!m_QuestPopUp[1]->Get_Active())
-//			m_QuestPopUp[1]->Set_Active(true);
-//		if (m_QuestPopUp[2]->Get_Active())
-//			m_QuestPopUp[2]->Set_Active(false);
-//
-//		if (3 <= m_QuestPopUp[0]->Get_NumOfQuest())
-//		{
-//			if (!m_QuestPopUp[5]->Get_Active())
-//				m_QuestPopUp[5]->Set_Active(true);
-//
-//			if (!m_QuestPopUp[2]->Get_Active())
-//				m_QuestPopUp[2]->Set_Active(true);
-//		}
-//	}
-
 	m_QuestPopUp[6]->Move_BottomFrame(m_QuestPopUp[0]->Get_NumOfQuest());
+}
+
+void CUI_Manager::Clear_QuestPopup(const wstring& strTitle)
+{
+	if (m_QuestPopUp[0] == nullptr)
+		return;
+
+	if (0 >= m_QuestPopUp[0]->Get_NumOfQuest())
+		return;
+
+	m_QuestPopUp[0]->Clear_Quest(strTitle);
 }
 
 _int CUI_Manager::Get_QuestNum()
