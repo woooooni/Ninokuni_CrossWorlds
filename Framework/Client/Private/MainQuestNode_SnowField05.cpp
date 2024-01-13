@@ -62,7 +62,10 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField05::Tick(const _float& fTimeDelta)
 	/* 5마리 처치 */
 	if (CQuest_Manager::GetInstance()->Get_MonsterKillCount() >= 5)
 	{
+		CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+
 		CQuest_Manager::GetInstance()->Clear_MonsterKillCount();
+		CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_END);
 		m_bIsClear = true;
 		return NODE_STATE::NODE_FAIL;
 	}
