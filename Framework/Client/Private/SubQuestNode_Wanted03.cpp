@@ -24,7 +24,7 @@ HRESULT CSubQuestNode_Wanted03::Initialize()
 void CSubQuestNode_Wanted03::Start()
 {
 	// 서브 퀘스트 생기면 서브 퀘스트에 
-	// CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
 	/* 추후 현상범 추가되면 수정. */
 	//m_pTumba = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("BlackSmithMaster"));
@@ -42,8 +42,10 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted03::Tick(const _float& fTimeDelta)
 	/* 임시 */
 	if (KEY_TAP(KEY::N))
 	{
-			m_bIsClear = true;
-			return NODE_STATE::NODE_FAIL;
+		CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+
+		m_bIsClear = true;
+		return NODE_STATE::NODE_FAIL;
 	}
 
 	/* 추후 현상범 추가되면 수정. */

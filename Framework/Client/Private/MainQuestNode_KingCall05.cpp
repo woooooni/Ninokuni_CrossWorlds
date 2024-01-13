@@ -84,6 +84,8 @@ CBTNode::NODE_STATE CMainQuestNode_KingCall05::Tick(const _float& fTimeDelta)
 
 		if (m_iTalkIndex >= m_vecTalkDesc.size())
 		{
+			CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+
 			m_bIsClear = true;
 			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
 

@@ -33,6 +33,8 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField01::Tick(const _float& fTimeDelta)
 
 	if (GI->Get_CurrentLevel() == LEVEL_EVERMORE)
 	{
+		CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+
 		m_bIsClear = true;
 		return NODE_STATE::NODE_FAIL;
 	}

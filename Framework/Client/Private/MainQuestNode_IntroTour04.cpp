@@ -94,6 +94,7 @@ CBTNode::NODE_STATE CMainQuestNode_IntroTour04::Tick(const _float& fTimeDelta)
 			//	pActionCam->Finish_Action_Talk();
 
 			/* 마지막 퀘스트 노드이므로 Success 반환.*/
+			CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
 			CQuest_Manager::GetInstance()->Clear_QuestClearStack();
 
 			return NODE_STATE::NODE_SUCCESS;

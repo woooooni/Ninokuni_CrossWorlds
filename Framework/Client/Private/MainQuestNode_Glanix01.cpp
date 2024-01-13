@@ -48,6 +48,8 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix01::Tick(const _float& fTimeDelta)
 			{
 				if (m_pQuestDestSpot->Get_IsCol())
 				{
+					CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+
 					m_bIsClear = true;
 					m_pQuestDestSpot->Set_ReadyDelete(true);
 					Safe_Release(m_pQuestDestSpot);

@@ -23,7 +23,7 @@ HRESULT CSubQuestNode_Wanted06::Initialize()
 
 void CSubQuestNode_Wanted06::Start()
 {
-	// CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
 	m_pTumba = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("BlackSmithMaster"));
 	Vec4 vSpotPos = Set_DestSpot(m_pTumba);
@@ -48,6 +48,8 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted06::Tick(const _float& fTimeDelta)
 			{
 				if (m_pQuestDestSpot->Get_IsCol())
 				{
+					CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+
 					m_bIsClear = true;
 					m_pQuestDestSpot->Set_ReadyDelete(true);
 					Safe_Release(m_pQuestDestSpot);

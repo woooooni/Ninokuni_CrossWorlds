@@ -23,7 +23,7 @@ HRESULT CSubQuestNode_Wanted05::Initialize()
 
 void CSubQuestNode_Wanted05::Start()
 {
-	// CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
 	/* 추후 현상범 잡고나면 뭐 할까? 경비병에게 인계? */
 }
@@ -37,6 +37,8 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted05::Tick(const _float& fTimeDelta)
 	/* 임시 */
 	if (KEY_TAP(KEY::N))
 	{
+		CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+
 		m_bIsClear = true;
 		return NODE_STATE::NODE_FAIL;
 	}

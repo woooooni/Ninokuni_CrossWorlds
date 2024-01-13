@@ -24,7 +24,7 @@ HRESULT CSubQuestNode_FindCat03::Initialize()
 void CSubQuestNode_FindCat03::Start()
 {
 	// 이거 나중에 서브 퀘스트 팝업 생기면 거기다가 투척.
-	// CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 }
 
 CBTNode::NODE_STATE CSubQuestNode_FindCat03::Tick(const _float& fTimeDelta)
@@ -35,6 +35,8 @@ CBTNode::NODE_STATE CSubQuestNode_FindCat03::Tick(const _float& fTimeDelta)
 	// 고양이를 찾아야 하나 임시로 일단 키 입력으로 넘어가자.
 	if (KEY_TAP(KEY::N))
 	{
+		CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+
 		m_bIsClear = true;
 		return NODE_STATE::NODE_FAIL;
 	}

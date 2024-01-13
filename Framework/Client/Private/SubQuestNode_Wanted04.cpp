@@ -23,7 +23,7 @@ HRESULT CSubQuestNode_Wanted04::Initialize()
 
 void CSubQuestNode_Wanted04::Start()
 {	
-	// CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
 	/* 추후 현상범 생성 */
 }
@@ -36,6 +36,8 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted04::Tick(const _float& fTimeDelta)
 	/* 임시 */
 	if (KEY_TAP(KEY::N))
 	{
+		CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+
 		m_bIsClear = true;
 		return NODE_STATE::NODE_FAIL;
 	}

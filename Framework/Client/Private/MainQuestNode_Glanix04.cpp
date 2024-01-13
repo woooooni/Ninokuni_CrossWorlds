@@ -84,6 +84,9 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix04::Tick(const _float& fTimeDelta)
 
 	if (CQuest_Manager::GetInstance()->Get_IsBossKill())
 	{
+		CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+
+		CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_END);
 		CQuest_Manager::GetInstance()->Set_IsBossKill(false);
 
 		m_bIsClear = true;
