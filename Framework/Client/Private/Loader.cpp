@@ -51,6 +51,7 @@
 #include "Clown.h"
 #include "Clown_Wizard.h"
 #include "Baobam_Dark.h"
+#include "Player.h"
 
 #include "Kuu.h"
 
@@ -391,6 +392,8 @@ HRESULT CLoader::Loading_For_Level_Lobby()
 
 HRESULT CLoader::Loading_For_Level_Evermore()
 {
+	
+
 	/* For.Texture */
 	m_strLoading = TEXT("텍스쳐를 로딩 중 입니다.");
 
@@ -414,6 +417,11 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 
 		
 	g_bFirstLoading = true;
+	if (false == g_bLevelFirst[LEVEL_EVERMORE])
+	{
+		CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, XMVectorSet(0.f, 0.f, 0.f, 1.f), true);
+		g_bLevelFirst[LEVEL_EVERMORE] = true;
+	}
 
 
 	return S_OK;

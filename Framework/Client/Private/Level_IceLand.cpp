@@ -25,6 +25,8 @@
 #include "GameNpc.h"
 #include "Animals.h"
 
+#include "Portal.h"
+
 CLevel_IceLand::CLevel_IceLand(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
 {
@@ -46,6 +48,9 @@ HRESULT CLevel_IceLand::Initialize()
 //		return E_FAIL;
 //	
 	if (FAILED(Ready_Layer_Character(LAYER_TYPE::LAYER_CHARACTER)))
+		return E_FAIL;
+
+	if(FAILED(Ready_Layer_Prop(LAYER_TYPE::LAYER_PROP)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Layer_Effect(LAYER_TYPE::LAYER_EFFECT)))
@@ -197,8 +202,7 @@ HRESULT CLevel_IceLand::Ready_Layer_Terrain(const LAYER_TYPE eLayerType)
 HRESULT CLevel_IceLand::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 {
 	// 111.f, 1.5f, 8.f, 1.f ㄹㅇ 시작위치
-	if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, Vec4(-44.f, 1.5f, 315.f, 1.f), true)))
-		return E_FAIL;
+	
 	//if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, Vec4(111.f, 1.5f, 8.f, 1.f), true)))
 	//	return E_FAIL;
 
@@ -214,6 +218,51 @@ HRESULT CLevel_IceLand::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 			pFollowCam->Set_Default_Position();
 		}
 	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_IceLand::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
+{
+
+	CGameObject* pPortal = nullptr;
+
+	CPortal::PORTAL_DESC PortalInfo = {};
+	PortalInfo.vStartPosition = XMVectorSet(143.f, 0.11316f, 12.f, 1.f);
+	PortalInfo.vNextPosition = XMVectorSet(-48.5f, 9.9f,  159.f, 1.f);
+	PortalInfo.eCurrentLevel = LEVEL_ICELAND;
+	PortalInfo.eNextLevel = LEVEL_EVERMORE;
+
+	if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Portal"), &PortalInfo, &pPortal)))
+		return E_FAIL;
+
+	if (nullptr == pPortal)
+		return E_FAIL;
+
+	CTransform* pPortalTransform = pPortal->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr == pPortalTransform)
+		return E_FAIL;
+	pPortalTransform->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(-100.f));
+
+
+
+
+	PortalInfo.vStartPosition = XMVectorSet(143.f, 0.11316f, 20.f, 1.f);
+	PortalInfo.vNextPosition = XMVectorSet(-48.5f, 9.9f, 159.f, 1.f);
+	PortalInfo.eCurrentLevel = LEVEL_ICELAND;
+	PortalInfo.eNextLevel = LEVEL_EVERMORE;
+
+	if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Portal"), &PortalInfo, &pPortal)))
+		return E_FAIL;
+
+	if (nullptr == pPortal)
+		return E_FAIL;
+
+	pPortalTransform = pPortal->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr == pPortalTransform)
+		return E_FAIL;
+	pPortalTransform->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(-100.f));
+
 
 	return S_OK;
 }

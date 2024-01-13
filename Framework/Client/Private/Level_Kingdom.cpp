@@ -10,6 +10,7 @@
 #include "Game_Manager.h"
 #include "Player.h"
 #include "GameNpc.h"
+#include "Portal.h"
 
 #include "Utils.h"
 #include <FileUtils.h>
@@ -44,6 +45,9 @@ HRESULT CLevel_Kingdom::Initialize()
 		return E_FAIL;
 
 	if (FAILED(Ready_Layer_Effect(LAYER_TYPE::LAYER_EFFECT)))
+		return E_FAIL;
+
+	if (FAILED(Ready_Layer_Prop(LAYER_TYPE::LAYER_PROP)))
 		return E_FAIL;
 
 	//	if (FAILED(Ready_Layer_Monster(LAYER_TYPE::LAYER_MONSTER)))
@@ -188,9 +192,6 @@ HRESULT CLevel_Kingdom::Ready_Layer_Terrain(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Kingdom::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 {
-	if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, Vec4(0.f, 0.8f, -5.f, 1.f), true)))
-		return E_FAIL;
-
 	/* Set Camera */
 	if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))
 	{
@@ -203,6 +204,21 @@ HRESULT CLevel_Kingdom::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 			pFollowCam->Set_Default_Position();
 		}
 	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_Kingdom::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
+{
+	CPortal::PORTAL_DESC PortalInfo = {};
+	PortalInfo.vStartPosition = XMVectorSet(0.f, 0.f, -9.f, 1.f);
+	PortalInfo.vNextPosition = XMVectorSet(-0.35f, 9.9f, 140.f, 1.f);
+
+	PortalInfo.eCurrentLevel = LEVEL_KINGDOMHALL;
+	PortalInfo.eNextLevel = LEVEL_EVERMORE;
+
+	if (FAILED(GI->Add_GameObject(LEVEL_KINGDOMHALL, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Portal"), &PortalInfo)))
+		return E_FAIL;
 
 	return S_OK;
 }

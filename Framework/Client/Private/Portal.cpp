@@ -5,6 +5,10 @@
 #include "Effect_Manager.h"
 #include "Vfx.h"
 
+#include "Game_Manager.h"
+#include "Player.h"
+
+
 CPortal::CPortal(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CGameObject(pDevice, pContext, L"Portal", OBJ_TYPE::OBJ_PORTAL)
 {
@@ -30,7 +34,7 @@ HRESULT CPortal::Initialize(void* pArg)
 
 	m_eCurrentLevel = pPortalDesc->eCurrentLevel;
 	m_eNextLevel = pPortalDesc->eNextLevel;
-	m_vNextPos = pPortalDesc->vNextPos;
+	m_vNextPos = pPortalDesc->vNextPosition;
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -83,6 +87,10 @@ void CPortal::Collision_Enter(const COLLISION_INFO& tInfo)
 	{
 		if (FAILED(GI->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, m_eNextLevel, L""))))
 			MSG_BOX("Portal Failde Activate");
+
+		if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character_Initial_Position(m_vNextPos)))
+			MSG_BOX("Portal Failed Set Character Position");
+
 	}
 }
 

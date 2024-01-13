@@ -20,7 +20,7 @@ public:
 		LEVELID eCurrentLevel = LEVELID::LEVEL_END;
 		LEVELID eNextLevel = LEVELID::LEVEL_END;
 
-		Vec4 vNextPos = { 0.f, 0.f, 0.f, 1.f };
+		Vec4 vNextPosition = { 0.f, 0.f, 0.f, 1.f };
 	} PORTAL_DESC;
 
 private:

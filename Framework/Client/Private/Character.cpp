@@ -78,6 +78,7 @@ void CCharacter::Tick(_float fTimeDelta)
 	__super::Tick(fTimeDelta);
 	GI->Add_CollisionGroup(COLLISION_GROUP::CHARACTER, this);	
 
+	Vec4 vPosition = m_pTransformCom->Get_Position();
 	if (nullptr != m_pTarget)
 		Tick_Target(fTimeDelta);
 
@@ -127,7 +128,7 @@ void CCharacter::Tick(_float fTimeDelta)
 	//		CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::DESTROYER);
 	//		break;
 
-	//	case CHARACTER_TYPE::DESTROYER:
+	//	case CHARACTER_TYPE::DESTawwwwwwwROYER:
 	//		CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN);
 	//		break;
 	//	}
@@ -631,6 +632,12 @@ void CCharacter::Set_EnterLevelPosition(Vec4 vPosition)
 	vPosition.z += 1.f;
 	m_pTransformCom->LookAt_ForLandObject(XMVectorSetW(vPosition, 1.f));
 	m_pControllerCom->Set_EnterLevel_Position(vPosition);
+}
+
+void CCharacter::Set_InitialPosition(Vec4 vPosition)
+{
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vPosition, 1.f));
+	m_pControllerCom->Set_EnterLevel_Position(XMVectorSetW(vPosition, 1.f));
 }
 
 HRESULT CCharacter::Disappear_Weapon()

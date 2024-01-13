@@ -41,7 +41,7 @@ void CTreeRock::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
 
-	if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 20.0f))
+	if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 30.f))
 	{
 		// Shadow 필요하면 ShadowRender 추가?
 	//m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
