@@ -26,14 +26,6 @@ void CState_Character_Battle_Dash::Enter_State(void* pArg)
     m_bFirstRootConvert = true;
     m_pCharacter->Appear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
-
-    m_MotionTrailDesc.fAlphaSpeed = 2.f;
-    m_MotionTrailDesc.fBlurPower = 0.f;
-    m_MotionTrailDesc.vBloomPower = { 0.f ,0.7f, 1.f };
-    m_MotionTrailDesc.vRimColor = { 0.f, 0.7f, 1.f, 1.f };
-    m_MotionTrailDesc.fMotionTrailTime = 0.1f;
-
-    m_pCharacter->Generate_MotionTrail(m_MotionTrailDesc);
 }
 
 void CState_Character_Battle_Dash::Tick_State(_float fTimeDelta)
@@ -50,7 +42,6 @@ void CState_Character_Battle_Dash::Tick_State(_float fTimeDelta)
 void CState_Character_Battle_Dash::Exit_State()
 {
     m_iCurrAnimIndex = 0;
-    m_pCharacter->Stop_MotionTrail();
     m_bFirstRootConvert = true;
 }
 

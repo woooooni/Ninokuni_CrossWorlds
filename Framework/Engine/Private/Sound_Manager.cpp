@@ -65,6 +65,12 @@ void CSound_Manager::Play_Sound(wstring pSoundKey, CHANNELID eID, _float fVolume
 	if (true == bStop)
 		Stop_Sound(eID);
 
+	if (eID == CHANNELID::SOUND_VOICE_MONSTER1 || eID == CHANNELID::SOUND_VOICE_MONSTER2 || eID == CHANNELID::SOUND_VOICE_MONSTER3)
+	{
+		// 3D À½Çâ..
+		
+	}
+
 	FMOD_BOOL bPlay = FALSE;
 
 	FMOD_System_PlaySound(m_pSystem, FMOD_CHANNEL_FREE, iter->second, FALSE, &m_pChannelArr[eID]);
