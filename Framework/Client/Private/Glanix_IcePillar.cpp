@@ -151,7 +151,7 @@ void CGlanix_IcePillar::Collision_Enter(const COLLISION_INFO& tInfo)
 
 void CGlanix_IcePillar::Collision_Continue(const COLLISION_INFO& tInfo)
 {
-	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER && 
+	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_BOSS && 
 		tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY &&
 		tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
 	{

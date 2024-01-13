@@ -43,22 +43,22 @@ void CGlanixState_RageStamp::Tick_State(_float fTimeDelta)
 		}
 
 		/* Camera */
-		//CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_CurCamera());
-		//if (nullptr != pFollowCam)
-		//{
-		//	/* 락온 + 와이드뷰 Off */
-		//
-		//	pFollowCam->Start_Lerp_Fov(Cam_Fov_Follow_Default,
-		//		Cam_LerpTime_LockOn_Glanix_PillarPattern,
-		//		LERP_MODE::SMOOTHER_STEP);
-		//
-		//	pFollowCam->Lerp_TargetOffset(pFollowCam->Get_TargetOffset(),
-		//		Cam_Target_Offset_LockOn_Glanix,
-		//		Cam_LerpTime_LockOn_Glanix_PillarPattern,
-		//		LERP_MODE::SMOOTHER_STEP);
-		//
-		//	// 플레이어 공격 인풋 열기
-		//}
+		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_CurCamera());
+		if (nullptr != pFollowCam)
+		{
+			/* 락온 + 와이드뷰 Off */
+		
+			pFollowCam->Start_Lerp_Fov(Cam_Fov_Follow_Default,
+				Cam_LerpTime_LockOn_Glanix_PillarPattern,
+				LERP_MODE::SMOOTHER_STEP);
+		
+			pFollowCam->Lerp_TargetOffset(pFollowCam->Get_TargetOffset(),
+				Cam_Target_Offset_LockOn_Glanix,
+				Cam_LerpTime_LockOn_Glanix_PillarPattern,
+				LERP_MODE::SMOOTHER_STEP);
+		
+			// 플레이어 공격 인풋 열기
+		}
 	}
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())

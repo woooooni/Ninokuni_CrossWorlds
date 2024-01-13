@@ -20,7 +20,7 @@ HRESULT CGlanixState_RageChargeEnd::Initialize(const list<wstring>& AnimationLis
 
 void CGlanixState_RageChargeEnd::Enter_State(void* pArg)
 {
-	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_Skill07_Finish"));
+	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_Skill07_Finish"), MIN_TWEEN_DURATION);
 }
 
 void CGlanixState_RageChargeEnd::Tick_State(_float fTimeDelta)
