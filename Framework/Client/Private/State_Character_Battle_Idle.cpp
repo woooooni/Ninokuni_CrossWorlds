@@ -22,6 +22,7 @@ void CState_Character_Battle_Idle::Enter_State(void* pArg)
     m_fAccReturnNuetral = 0.f;
     m_iCurrAnimIndex = m_AnimIndices[0];
     m_pModelCom->Set_Animation(m_iCurrAnimIndex);
+    CUI_Manager::GetInstance()->Hide_MouseCursor(true);
 }
 
 void CState_Character_Battle_Idle::Tick_State(_float fTimeDelta)
@@ -54,6 +55,7 @@ void CState_Character_Battle_Idle::Tick_State(_float fTimeDelta)
 void CState_Character_Battle_Idle::Exit_State()
 {
     m_fAccReturnNuetral = 0.f;
+    CUI_Manager::GetInstance()->Hide_MouseCursor(false);
 }
 
 

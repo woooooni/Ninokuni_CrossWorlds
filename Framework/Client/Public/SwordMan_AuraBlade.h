@@ -7,6 +7,7 @@ BEGIN(Client)
 
 class CSwordMan_AuraBlade final : public CGameObject
 {
+	
 private:
 	explicit CSwordMan_AuraBlade(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	explicit CSwordMan_AuraBlade(const CSwordMan_AuraBlade& rhs);
