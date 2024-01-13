@@ -2,11 +2,11 @@
 
 #include "QuestNode_Base.h"
 
-class CMainQuestNode_KingCall06 final : public CQuestNode_Base
+class CMainQuestNode_SnowField05 final : public CQuestNode_Base
 {
 private:
-	CMainQuestNode_KingCall06();
-	virtual ~CMainQuestNode_KingCall06() = default;
+	CMainQuestNode_SnowField05();
+	virtual ~CMainQuestNode_SnowField05() = default;
 
 public:
 	virtual HRESULT Initialize();
@@ -20,11 +20,8 @@ private:
 private:
 	CGameObject* m_pKuu = nullptr;
 
-	_float m_fTalkChangeTime = 0.f;
-	_float m_fTime = 0.f;
-
 public:
-	static CMainQuestNode_KingCall06* Create();
+	static CMainQuestNode_SnowField05* Create();
 	virtual void Free() override;
 };
 

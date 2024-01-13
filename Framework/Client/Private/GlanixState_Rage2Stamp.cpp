@@ -33,7 +33,7 @@ void CGlanixState_Rage2Stamp::Tick_State(_float fTimeDelta)
 	if (m_pModelCom->Get_CurrAnimationFrame() == 15)
 	{
 		/* 남아있는 화염정령 제거 */
-		for (auto iter : GI->Find_GameObjects(LEVEL_TEST, LAYER_PROP))
+		for (auto iter : GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_PROP))
 		{
 			if (iter->Get_PrototypeTag() == TEXT("Prorotype_GameObject_Glanix_Phoenix"))
 			{

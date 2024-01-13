@@ -1,38 +1,38 @@
 #include "stdafx.h"
-#include "MainQuestNode_SnowField03.h"
+#include "MainQuestNode_Glanix01.h"
 
 #include "GameInstance.h"
 #include "Utils.h"
 
 #include "UI_Manager.h"
 
-CMainQuestNode_SnowField03::CMainQuestNode_SnowField03()
+CMainQuestNode_Glanix01::CMainQuestNode_Glanix01()
 {
 }
 
-HRESULT CMainQuestNode_SnowField03::Initialize()
+HRESULT CMainQuestNode_Glanix01::Initialize()
 {
 	__super::Initialize();
 
 	m_strQuestTag = TEXT("[메인]");
-	m_strQuestName = TEXT("주둔지의 지휘관 찾기");
-	m_strQuestContent = TEXT("주둔지에서 지휘관 찾아보자");
+	m_strQuestName = TEXT("더 깊숙히 조사하기");
+	m_strQuestContent = TEXT("코에루크 설원 깊은 곳 까지 들어가보자");
 
 	return S_OK;
 }
 
-void CMainQuestNode_SnowField03::Start()
+void CMainQuestNode_Glanix01::Start()
 {
 	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
-	m_pJackson = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("GrimalKinML01"));
-	Vec4 vSpotPos = Set_DestSpot(m_pJackson);
+	m_pAren = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Aren"));
+	Vec4 vSpotPos = Set_DestSpot(m_pAren);
 
 	// 임시로 monster에 
 	m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_MONSTER), &vSpotPos));
 }
 
-CBTNode::NODE_STATE CMainQuestNode_SnowField03::Tick(const _float& fTimeDelta)
+CBTNode::NODE_STATE CMainQuestNode_Glanix01::Tick(const _float& fTimeDelta)
 {
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
@@ -60,24 +60,24 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField03::Tick(const _float& fTimeDelta)
 	return NODE_STATE::NODE_RUNNING;
 }
 
-void CMainQuestNode_SnowField03::LateTick(const _float& fTimeDelta)
+void CMainQuestNode_Glanix01::LateTick(const _float& fTimeDelta)
 {
 }
 
-CMainQuestNode_SnowField03* CMainQuestNode_SnowField03::Create()
+CMainQuestNode_Glanix01* CMainQuestNode_Glanix01::Create()
 {
-	CMainQuestNode_SnowField03* pInstance = new CMainQuestNode_SnowField03();
+	CMainQuestNode_Glanix01* pInstance = new CMainQuestNode_Glanix01();
 
 	if (FAILED(pInstance->Initialize()))
 	{
-		MSG_BOX("Fail Create : CMainQuestNode_SnowField03");
+		MSG_BOX("Fail Create : CMainQuestNode_Glanix01");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CMainQuestNode_SnowField03::Free()
+void CMainQuestNode_Glanix01::Free()
 {
 	__super::Free();
 }

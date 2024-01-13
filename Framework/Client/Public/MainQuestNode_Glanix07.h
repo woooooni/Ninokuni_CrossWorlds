@@ -2,11 +2,11 @@
 
 #include "QuestNode_Base.h"
 
-class CMainQuestNode_KingCall03 final : public CQuestNode_Base
+class CMainQuestNode_Glanix07 final : public CQuestNode_Base
 {
 private:
-	CMainQuestNode_KingCall03();
-	virtual ~CMainQuestNode_KingCall03() = default;
+	CMainQuestNode_Glanix07();
+	virtual ~CMainQuestNode_Glanix07() = default;
 
 public:
 	virtual HRESULT Initialize();
@@ -15,7 +15,7 @@ public:
 	virtual void	LateTick(const _float& fTimeDelta);
 
 public:
-	static CMainQuestNode_KingCall03* Create();
+	static CMainQuestNode_Glanix07* Create();
 	virtual void Free() override;
 };
 

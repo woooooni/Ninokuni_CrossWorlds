@@ -27,8 +27,7 @@ void CGlanix_PhoenixState_Out::Tick_State(_float fTimeDelta)
 {
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
-		GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_Phoenix"), &m_pPhoenix->Get_OriginPos());
-
+		GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_Phoenix"), &m_pPhoenix->Get_OriginPos());
 		m_pPhoenix->Set_Dead(true);
 	}
 }

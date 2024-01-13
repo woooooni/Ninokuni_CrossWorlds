@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "SubQuestNode_Wanted07.h"
+#include "MainQuestNode_SnowField07.h"
 
 #include "GameInstance.h"
 #include "Utils.h"
@@ -8,19 +8,19 @@
 
 #include "Game_Manager.h"
 
-CSubQuestNode_Wanted07::CSubQuestNode_Wanted07()
+CMainQuestNode_SnowField07::CMainQuestNode_SnowField07()
 {
 }
 
-HRESULT CSubQuestNode_Wanted07::Initialize()
+HRESULT CMainQuestNode_SnowField07::Initialize()
 {
 	__super::Initialize();
 
-	m_strQuestTag = TEXT("[서브]");
-	m_strQuestName = TEXT("툼바에게 돌아가기");
-	m_strQuestContent = TEXT("툼바에게 보고하자");
+	m_strQuestTag = TEXT("[메인]");
+	m_strQuestName = TEXT("장교 잭슨에게 보고하기");
+	m_strQuestContent = TEXT("잭슨에게 보고하자");
 
-	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/SubQuest/03. SubQuest03_Tumba_Wanted/SubQuest_Wanted07.json");
+	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/03.MainQuest_SnowField/MainQuest_SnowField07.json");
 
 	for (const auto& talkDesc : Load) {
 		TALK_DELS sTalkDesc;
@@ -32,17 +32,17 @@ HRESULT CSubQuestNode_Wanted07::Initialize()
 	return S_OK;
 }
 
-void CSubQuestNode_Wanted07::Start()
+void CMainQuestNode_SnowField07::Start()
 {
-	// CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
 	/* 현재 퀘스트에 연관있는 객체들 */
 	//m_pKuu = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Kuu"));
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
-	m_pTumba = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"BlackSmithMaster");
+	m_pJackson = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("GrimalKinML01"));
 
 	m_vecTalker.push_back(m_pKuu);
-	m_vecTalker.push_back(m_pTumba);
+	m_vecTalker.push_back(m_pJackson);
 
 	/* 카메라 타겟 세팅 */
 	// CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"Kuu");
@@ -70,7 +70,7 @@ void CSubQuestNode_Wanted07::Start()
 	TalkEvent();
 }
 
-CBTNode::NODE_STATE CSubQuestNode_Wanted07::Tick(const _float& fTimeDelta)
+CBTNode::NODE_STATE CMainQuestNode_SnowField07::Tick(const _float& fTimeDelta)
 {
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
@@ -91,7 +91,7 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted07::Tick(const _float& fTimeDelta)
 			//if (nullptr != pActionCam)
 			//	pActionCam->Finish_Action_Talk();
 
-			return NODE_STATE::NODE_FAIL;
+			return NODE_STATE::NODE_SUCCESS;
 		}
 
 		m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
@@ -105,11 +105,11 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted07::Tick(const _float& fTimeDelta)
 	return NODE_STATE::NODE_RUNNING;
 }
 
-void CSubQuestNode_Wanted07::LateTick(const _float& fTimeDelta)
+void CMainQuestNode_SnowField07::LateTick(const _float& fTimeDelta)
 {
 }
 
-void CSubQuestNode_Wanted07::TalkEvent()
+void CMainQuestNode_SnowField07::TalkEvent()
 {
 	wstring strAnimName = TEXT("");
 
@@ -118,20 +118,23 @@ void CSubQuestNode_Wanted07::TalkEvent()
 	case 0:
 		//CSound_Manager::GetInstance()->Play_Sound(TEXT("00_ChloeSay_Introduce.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk01"));
+		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk02"));
 		break;
 	case 1:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("01_TumbaSay_Thankyou.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pTumba->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pTumba->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("Stand01Idle01"));
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("01_JacksonSay_Thankyou.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		break;
 	case 2:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("02_TumbaSay_Reward.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pTumba->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pTumba->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("Stand04Idle01"));
+		//CSound_Manager::GetInstance()->Play_Sound(TEXT("02_KuuSay_I_No_Pet.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
+		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_EmotionPositive02"));
 		break;
 	case 3:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_KuuSay_ImKuu.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("01_JacksonSay_Thankyou.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		m_pJackson->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
+		m_pJackson->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("Stand02Idle01"));
+		break;
+	case 4:
+		//CSound_Manager::GetInstance()->Play_Sound(TEXT("04_ChloeSay_101010_70_030.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk01"));
 		break;
@@ -139,20 +142,20 @@ void CSubQuestNode_Wanted07::TalkEvent()
 
 }
 
-CSubQuestNode_Wanted07* CSubQuestNode_Wanted07::Create()
+CMainQuestNode_SnowField07* CMainQuestNode_SnowField07::Create()
 {
-	CSubQuestNode_Wanted07* pInstance = new CSubQuestNode_Wanted07();
+	CMainQuestNode_SnowField07* pInstance = new CMainQuestNode_SnowField07();
 
 	if (FAILED(pInstance->Initialize()))
 	{
-		MSG_BOX("Fail Create : CSubQuestNode_Wanted07");
+		MSG_BOX("Fail Create : CMainQuestNode_SnowField07");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CSubQuestNode_Wanted07::Free()
+void CMainQuestNode_SnowField07::Free()
 {
 	__super::Free();
 }

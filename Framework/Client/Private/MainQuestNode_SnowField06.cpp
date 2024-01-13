@@ -1,27 +1,27 @@
 #include "stdafx.h"
-#include "MainQuestNode_SnowField03.h"
+#include "MainQuestNode_SnowField06.h"
 
 #include "GameInstance.h"
 #include "Utils.h"
 
 #include "UI_Manager.h"
 
-CMainQuestNode_SnowField03::CMainQuestNode_SnowField03()
+CMainQuestNode_SnowField06::CMainQuestNode_SnowField06()
 {
 }
 
-HRESULT CMainQuestNode_SnowField03::Initialize()
+HRESULT CMainQuestNode_SnowField06::Initialize()
 {
 	__super::Initialize();
 
 	m_strQuestTag = TEXT("[¸ÞÀÎ]");
-	m_strQuestName = TEXT("ÁÖµÐÁöÀÇ ÁöÈÖ°ü Ã£±â");
-	m_strQuestContent = TEXT("ÁÖµÐÁö¿¡¼­ ÁöÈÖ°ü Ã£¾Æº¸ÀÚ");
+	m_strQuestName = TEXT("Àå±³ Àè½¼¿¡°Ô º¸°íÇÏ±â");
+	m_strQuestContent = TEXT("Àè½¼¿¡°Ô º¸°íÇÏÀÚ");
 
 	return S_OK;
 }
 
-void CMainQuestNode_SnowField03::Start()
+void CMainQuestNode_SnowField06::Start()
 {
 	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
@@ -32,7 +32,7 @@ void CMainQuestNode_SnowField03::Start()
 	m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_MONSTER), &vSpotPos));
 }
 
-CBTNode::NODE_STATE CMainQuestNode_SnowField03::Tick(const _float& fTimeDelta)
+CBTNode::NODE_STATE CMainQuestNode_SnowField06::Tick(const _float& fTimeDelta)
 {
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
@@ -60,24 +60,24 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField03::Tick(const _float& fTimeDelta)
 	return NODE_STATE::NODE_RUNNING;
 }
 
-void CMainQuestNode_SnowField03::LateTick(const _float& fTimeDelta)
+void CMainQuestNode_SnowField06::LateTick(const _float& fTimeDelta)
 {
 }
 
-CMainQuestNode_SnowField03* CMainQuestNode_SnowField03::Create()
+CMainQuestNode_SnowField06* CMainQuestNode_SnowField06::Create()
 {
-	CMainQuestNode_SnowField03* pInstance = new CMainQuestNode_SnowField03();
+	CMainQuestNode_SnowField06* pInstance = new CMainQuestNode_SnowField06();
 
 	if (FAILED(pInstance->Initialize()))
 	{
-		MSG_BOX("Fail Create : CMainQuestNode_SnowField03");
+		MSG_BOX("Fail Create : CMainQuestNode_SnowField06");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CMainQuestNode_SnowField03::Free()
+void CMainQuestNode_SnowField06::Free()
 {
 	__super::Free();
 }

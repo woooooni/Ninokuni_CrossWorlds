@@ -18,8 +18,6 @@ HRESULT CMainQuest_KingCall::Initialize()
 {
 	__super::Initialize();
 
-	/* 그렴 여기서도 노드로 하는게 아니라 그냥 배열로 가지고 bool로 처리를 해야한다.*/
-
 	m_pRootNode = CBTNode_Select::Create();
 
 	CMainQuestNode_KingCall01* pMainQuestKingCall01 = CMainQuestNode_KingCall01::Create();
