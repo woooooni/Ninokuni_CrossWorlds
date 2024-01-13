@@ -247,7 +247,7 @@ HRESULT CLevel_IceLand::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 
 
 
-	PortalInfo.vStartPosition = XMVectorSet(143.f, 0.11316f, 20.f, 1.f);
+	PortalInfo.vStartPosition = XMVectorSet(141.75f, 0.11316f, 20.f, 1.f);
 	PortalInfo.vNextPosition = XMVectorSet(-48.5f, 9.9f, 159.f, 1.f);
 	PortalInfo.eCurrentLevel = LEVEL_ICELAND;
 	PortalInfo.eNextLevel = LEVEL_EVERMORE;

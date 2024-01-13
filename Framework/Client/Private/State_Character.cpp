@@ -31,7 +31,7 @@ void CState_Character::Free()
 
 void CState_Character::Neutral_Idle_Input(_float fTimeDelta)
 {
-	if (false == m_pCharacter->Is_Input())
+	if (false == m_pCharacter->Is_Move_Input())
 		return;
 
 	if (true == CUI_Manager::GetInstance()->Is_Dialog_Active())
@@ -49,29 +49,6 @@ void CState_Character::Neutral_Idle_Input(_float fTimeDelta)
 		return;
 	}
 
-	if (KEY_TAP(KEY::LBTN))
-	{
-		if (CUI_Manager::GetInstance()->Is_UIClicked())
-			return;
-
-		m_pStateMachineCom->Change_State(CCharacter::BATTLE_ATTACK_0);
-		CUI_Manager::GetInstance()->Use_AttackBtn();
-		return;
-	}
-
-	if (KEY_HOLD(KEY::RBTN))
-	{
-		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_GUARD);
-		return;
-	}
-
-	if (KEY_TAP(KEY::CTRL))
-	{
-		m_pStateMachineCom->Change_State(CCharacter::BATTLE_DASH);
-		CUI_Manager::GetInstance()->Use_RollBtn();
-		return;
-	}
-
 	if (KEY_TAP(KEY::F))
 	{
 		m_pCharacter->PickUp_Target();
@@ -96,11 +73,37 @@ void CState_Character::Neutral_Idle_Input(_float fTimeDelta)
 		return;
 	}
 
+	if (false == m_pCharacter->Is_Attack_Input())
+		return;
+
+	if (KEY_TAP(KEY::LBTN))
+	{
+		if (CUI_Manager::GetInstance()->Is_UIClicked())
+			return;
+
+		m_pStateMachineCom->Change_State(CCharacter::BATTLE_ATTACK_0);
+		CUI_Manager::GetInstance()->Use_AttackBtn();
+		return;
+	}
+
+	if (KEY_HOLD(KEY::RBTN))
+	{
+		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_GUARD);
+		return;
+	}
+
+	if (KEY_TAP(KEY::CTRL))
+	{
+		m_pStateMachineCom->Change_State(CCharacter::BATTLE_DASH);
+		CUI_Manager::GetInstance()->Use_RollBtn();
+		return;
+	}
+
 }
 
 void CState_Character::Battle_Idle_Input(_float fTimeDelta)
 {
-	if (false == m_pCharacter->Is_Input())
+	if (false == m_pCharacter->Is_Move_Input())
 		return;
 
 	if (true == CUI_Manager::GetInstance()->Is_Dialog_Active())
@@ -118,28 +121,7 @@ void CState_Character::Battle_Idle_Input(_float fTimeDelta)
 		return;
 	}
 
-	if (KEY_TAP(KEY::LBTN))
-	{
-		if (CUI_Manager::GetInstance()->Is_UIClicked())
-			return;
 
-		m_pStateMachineCom->Change_State(CCharacter::BATTLE_ATTACK_0);
-		CUI_Manager::GetInstance()->Use_AttackBtn();
-		return;
-	}
-
-	if (KEY_HOLD(KEY::RBTN))
-	{
-		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_GUARD);
-		return;
-	}
-
-	if (KEY_TAP(KEY::CTRL))
-	{
-		m_pStateMachineCom->Change_State(CCharacter::BATTLE_DASH);
-		CUI_Manager::GetInstance()->Use_RollBtn();
-		return;
-	}
 
 	if (KEY_TAP(KEY::F))
 	{
@@ -162,6 +144,32 @@ void CState_Character::Battle_Idle_Input(_float fTimeDelta)
 	if (KEY_TAP(KEY::F3))
 	{
 		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(2);
+		return;
+	}
+
+	if (false == m_pCharacter->Is_Attack_Input())
+		return;
+
+	if (KEY_TAP(KEY::LBTN))
+	{
+		if (CUI_Manager::GetInstance()->Is_UIClicked())
+			return;
+
+		m_pStateMachineCom->Change_State(CCharacter::BATTLE_ATTACK_0);
+		CUI_Manager::GetInstance()->Use_AttackBtn();
+		return;
+	}
+
+	if (KEY_HOLD(KEY::RBTN))
+	{
+		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_GUARD);
+		return;
+	}
+
+	if (KEY_TAP(KEY::CTRL))
+	{
+		m_pStateMachineCom->Change_State(CCharacter::BATTLE_DASH);
+		CUI_Manager::GetInstance()->Use_RollBtn();
 		return;
 	}
 }
@@ -195,6 +203,12 @@ void CState_Character::Crouch_Idle_Input(_float fTimeDelta)
 	if (KEY_HOLD(KEY::W) || KEY_HOLD(KEY::A) || KEY_HOLD(KEY::S) || KEY_HOLD(KEY::D))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_CROUCH_MOVE);
+		return;
+	}
+
+	if (KEY_TAP(KEY::C))
+	{
+		m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_IDLE);
 		return;
 	}
 }
@@ -327,6 +341,24 @@ void CState_Character::Neutral_Walk_Input(_float fTimeDelta)
 	}
 
 
+	if (KEY_TAP(KEY::F))
+	{
+		m_pCharacter->PickUp_Target();
+		return;
+	}
+
+	if (!bMove)
+	{
+		if (KEY_NONE(KEY::W) && KEY_NONE(KEY::A) && KEY_NONE(KEY::S) && KEY_NONE(KEY::D))
+		{
+			m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_IDLE);
+			return;
+		}
+	}
+
+	if (false == m_pCharacter->Is_Attack_Input())
+		return;
+
 	if (KEY_HOLD(KEY::RBTN))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_GUARD);
@@ -342,32 +374,11 @@ void CState_Character::Neutral_Walk_Input(_float fTimeDelta)
 		CUI_Manager::GetInstance()->Use_AttackBtn();
 		return;
 	}
-
-
-	if (KEY_TAP(KEY::F))
-	{
-		m_pCharacter->PickUp_Target();
-		return;
-	}
-
-	if (!bMove)
-	{
-		if (KEY_NONE(KEY::W) && KEY_NONE(KEY::A) && KEY_NONE(KEY::S) && KEY_NONE(KEY::D))
-		{
-			m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_IDLE);
-			return;
-		}
-	}
 }
 
 void CState_Character::Battle_Walk_Input(_float fTimeDelta)
 {
-	if (KEY_TAP(KEY::CTRL))
-	{
-		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_DASH);
-		CUI_Manager::GetInstance()->Use_RollBtn();
-		return;
-	}
+
 
 	if (KEY_TAP(KEY::F1))
 	{
@@ -491,22 +502,6 @@ void CState_Character::Battle_Walk_Input(_float fTimeDelta)
 	}
 		
 
-	if (KEY_HOLD(KEY::RBTN))
-	{
-		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_GUARD);
-		return;
-	}
-
-	if (KEY_TAP(KEY::LBTN))
-	{
-		if (CUI_Manager::GetInstance()->Is_UIClicked())
-			return;
-
-		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_0);
-		CUI_Manager::GetInstance()->Use_AttackBtn();
-		return;
-	}
-
 
 	if (KEY_TAP(KEY::F))
 	{
@@ -521,6 +516,32 @@ void CState_Character::Battle_Walk_Input(_float fTimeDelta)
 			m_pStateMachineCom->Change_State(CCharacter::BATTLE_IDLE);
 			return;
 		}
+	}
+
+	if (false == m_pCharacter->Is_Attack_Input())
+		return;
+
+	if (KEY_TAP(KEY::CTRL))
+	{
+		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_DASH);
+		CUI_Manager::GetInstance()->Use_RollBtn();
+		return;
+	}
+
+	if (KEY_HOLD(KEY::RBTN))
+	{
+		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_GUARD);
+		return;
+	}
+
+	if (KEY_TAP(KEY::LBTN))
+	{
+		if (CUI_Manager::GetInstance()->Is_UIClicked())
+			return;
+
+		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_0);
+		CUI_Manager::GetInstance()->Use_AttackBtn();
+		return;
 	}
 
 
@@ -739,6 +760,7 @@ void CState_Character::Crouch_Walk_Input(_float fTimeDelta)
 		bMove = true;
 	}
 
+
 	if (!bMove)
 	{
 		if (KEY_NONE(KEY::W) && KEY_NONE(KEY::A) && KEY_NONE(KEY::S) && KEY_NONE(KEY::D))
@@ -877,7 +899,18 @@ void CState_Character::Neutral_Run_Input(_float fTimeDelta)
 		return;
 	}
 
+	if (!bMove)
+	{
+		if (KEY_NONE(KEY::W) && KEY_NONE(KEY::A) && KEY_NONE(KEY::S) && KEY_NONE(KEY::D))
+		{
+			m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_IDLE);
+			return;
+		}
+	}
 
+
+	if (false == m_pCharacter->Is_Attack_Input())
+		return;
 	if (KEY_HOLD(KEY::RBTN))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_GUARD);
@@ -892,15 +925,6 @@ void CState_Character::Neutral_Run_Input(_float fTimeDelta)
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_0);
 		CUI_Manager::GetInstance()->Use_AttackBtn();
 		return;
-	}
-
-	if (!bMove)
-	{
-		if (KEY_NONE(KEY::W) && KEY_NONE(KEY::A) && KEY_NONE(KEY::S) && KEY_NONE(KEY::D))
-		{
-			m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_IDLE);
-			return;
-		}
 	}
 }
 
@@ -1034,6 +1058,18 @@ void CState_Character::Battle_Run_Input(_float fTimeDelta)
 		return;
 	}
 
+	if (!bMove)
+	{
+		if (KEY_NONE(KEY::W) && KEY_NONE(KEY::A) && KEY_NONE(KEY::S) && KEY_NONE(KEY::D))
+		{
+			m_pStateMachineCom->Change_State(CCharacter::BATTLE_IDLE);
+			return;
+		}
+	}
+
+	if (false == m_pCharacter->Is_Attack_Input())
+		return;
+
 
 	if (KEY_HOLD(KEY::RBTN))
 	{
@@ -1049,15 +1085,6 @@ void CState_Character::Battle_Run_Input(_float fTimeDelta)
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_0);
 		CUI_Manager::GetInstance()->Use_AttackBtn();
 		return;
-	}
-
-	if (!bMove)
-	{
-		if (KEY_NONE(KEY::W) && KEY_NONE(KEY::A) && KEY_NONE(KEY::S) && KEY_NONE(KEY::D))
-		{
-			m_pStateMachineCom->Change_State(CCharacter::BATTLE_IDLE);
-			return;
-		}
 	}
 }
 
@@ -1187,6 +1214,10 @@ void CState_Character::Pick_Run_Input(_float fTimeDelta)
 
 void CState_Character::Skill_Input(_float fTimeDelta)
 {
+
+	if (false == m_pCharacter->Is_Skill_Input())
+		return;
+
 	if (KEY_TAP(KEY::NUM_1))
 	{
 		CHARACTER_TYPE eCharacterType = m_pCharacter->Get_CharacterType();
@@ -1415,6 +1446,9 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 
 void CState_Character::Attack_Input(_float fTimeDelta)
 {
+	if (false == m_pCharacter->Is_Attack_Input())
+		return;
+
 	if (KEY_TAP(KEY::CTRL))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::BATTLE_DASH);

@@ -160,8 +160,14 @@ public:
 
 	_bool Is_SuperArmor() { return m_bSuperArmor; }
 
-	void Set_Input(_bool bInput) { m_bInputable = bInput; }
-	_bool Is_Input() { return m_bInputable; }
+	void Set_Skill_Input(_bool bInput) { m_bSkillInputable = bInput; }
+	void Set_Attack_Input(_bool bInput) { m_bAttackInputable = bInput; }
+	void Set_Move_Input(_bool bInput) { m_bMoveInputable = bInput; }
+
+	_bool Is_Skill_Input() { return m_bSkillInputable; }
+	_bool Is_Attack_Input() { return m_bAttackInputable; }
+	_bool Is_Move_Input() { return m_bMoveInputable; }
+	
 
 public:
 	const CHARACTER_STAT& Get_Stat() { return m_tStat; }
@@ -311,7 +317,12 @@ protected:
 
 	_bool m_bSuperArmor = false;
 	_bool m_bInfinite = false;
-	_bool m_bInputable = true;
+
+	_bool m_bMoveInputable = true;
+	_bool m_bSkillInputable = true;
+	_bool m_bAttackInputable = true;
+	
+
 
 	CHARACTER_STAT m_tStat = {};
 	CHARACTER_TYPE m_eCharacterType = CHARACTER_TYPE::CHARACTER_END;
