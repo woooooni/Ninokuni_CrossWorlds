@@ -274,40 +274,40 @@ void CUI_Manager::Set_QuestPopup(const wstring& strQuestType, const wstring& str
 		m_QuestPopUp[5] Separator_Second
 		m_QuestPopUp[6] Frame_Bottom
 	*/
-	if (1 == m_QuestPopUp[0]->Get_NumOfQuest())
-	{
-		if (m_QuestPopUp[1]->Get_Active())
-			m_QuestPopUp[1]->Set_Active(false);
-		if (m_QuestPopUp[4]->Get_Active())
-			m_QuestPopUp[4]->Set_Active(false);
-
-		if (m_QuestPopUp[2]->Get_Active())
-			m_QuestPopUp[2]->Set_Active(false);
-		if (m_QuestPopUp[5]->Get_Active())
-			m_QuestPopUp[5]->Set_Active(false);
-	}
-
-	if (2 <= m_QuestPopUp[0]->Get_NumOfQuest())
-	{
-		if (!m_QuestPopUp[4]->Get_Active())
-			m_QuestPopUp[4]->Set_Active(true);
-		if (m_QuestPopUp[5]->Get_Active())
-			m_QuestPopUp[5]->Set_Active(false);
-
-		if (!m_QuestPopUp[1]->Get_Active())
-			m_QuestPopUp[1]->Set_Active(true);
-		if (m_QuestPopUp[2]->Get_Active())
-			m_QuestPopUp[2]->Set_Active(false);
-
-		if (3 <= m_QuestPopUp[0]->Get_NumOfQuest())
-		{
-			if (!m_QuestPopUp[5]->Get_Active())
-				m_QuestPopUp[5]->Set_Active(true);
-
-			if (!m_QuestPopUp[2]->Get_Active())
-				m_QuestPopUp[2]->Set_Active(true);
-		}
-	}
+//	if (1 == m_QuestPopUp[0]->Get_NumOfQuest())
+//	{
+//		if (m_QuestPopUp[1]->Get_Active())
+//			m_QuestPopUp[1]->Set_Active(false);
+//		if (m_QuestPopUp[4]->Get_Active())
+//			m_QuestPopUp[4]->Set_Active(false);
+//
+//		if (m_QuestPopUp[2]->Get_Active())
+//			m_QuestPopUp[2]->Set_Active(false);
+//		if (m_QuestPopUp[5]->Get_Active())
+//			m_QuestPopUp[5]->Set_Active(false);
+//	}
+//
+//	if (2 <= m_QuestPopUp[0]->Get_NumOfQuest())
+//	{
+//		if (!m_QuestPopUp[4]->Get_Active())
+//			m_QuestPopUp[4]->Set_Active(true);
+//		if (m_QuestPopUp[5]->Get_Active())
+//			m_QuestPopUp[5]->Set_Active(false);
+//
+//		if (!m_QuestPopUp[1]->Get_Active())
+//			m_QuestPopUp[1]->Set_Active(true);
+//		if (m_QuestPopUp[2]->Get_Active())
+//			m_QuestPopUp[2]->Set_Active(false);
+//
+//		if (3 <= m_QuestPopUp[0]->Get_NumOfQuest())
+//		{
+//			if (!m_QuestPopUp[5]->Get_Active())
+//				m_QuestPopUp[5]->Set_Active(true);
+//
+//			if (!m_QuestPopUp[2]->Get_Active())
+//				m_QuestPopUp[2]->Set_Active(true);
+//		}
+//	}
 
 	m_QuestPopUp[6]->Move_BottomFrame(m_QuestPopUp[0]->Get_NumOfQuest());
 }
@@ -4800,26 +4800,35 @@ void CUI_Manager::Use_AttackBtn()
 
 void CUI_Manager::Use_ClassSkillSlot(_uint iSlotNum)
 {
-	if (0 == m_ClassicSkill.size() || 0 > iSlotNum || 2 < iSlotNum)
+	if (GI->Get_CurrentLevel() == LEVELID::LEVEL_TOOL)
 		return;
 
-	//m_ClassicSkill[iSlotNum]->Set_Clicked(true);
+	if (0 > iSlotNum || 2 < iSlotNum)
+		return;
+
+	m_ClassicSkill[iSlotNum]->Set_Clicked(true);
 }
 
 void CUI_Manager::Use_ActiveSkillSlot(_uint iSlotNum)
 {
-	if (0 == m_SpecialSkill.size() || 0 > iSlotNum || 2 < iSlotNum)
+	if (GI->Get_CurrentLevel() == LEVELID::LEVEL_TOOL)
 		return;
 
-	//m_SpecialSkill[iSlotNum]->Set_Clicked(true);
+	if (0 > iSlotNum || 2 < iSlotNum)
+		return;
+
+	m_SpecialSkill[iSlotNum]->Set_Clicked(true);
 }
 
 void CUI_Manager::Use_BurstSkillSlot(_uint iSlotNum)
 {
+	if (GI->Get_CurrentLevel() == LEVELID::LEVEL_TOOL)
+		return;
+
 	if (nullptr == m_pSkillBG)
 		return;
 
-	//m_pSkillBG->Use_BurstSkill(iSlotNum);
+	m_pSkillBG->Use_BurstSkill(iSlotNum);
 }
 
 void CUI_Manager::Change_ElementalType(ELEMENTAL_TYPE eElementalType)
