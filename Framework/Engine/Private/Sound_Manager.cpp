@@ -74,7 +74,7 @@ void CSound_Manager::Play_Sound(wstring pSoundKey, CHANNELID eID, _float fVolume
 	FMOD_BOOL bPlay = FALSE;
 
 	FMOD_System_PlaySound(m_pSystem, FMOD_CHANNEL_FREE, iter->second, FALSE, &m_pChannelArr[eID]);
-	FMOD_Channel_SetVolume(m_pChannelArr[eID], fVolume);
+	FMOD_Channel_SetVolume(m_pChannelArr[eID], fVolume * m_fSoundVolumeArr[eID]);
 	FMOD_System_Update(m_pSystem);
 }
 
