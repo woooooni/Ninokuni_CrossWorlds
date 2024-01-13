@@ -719,6 +719,10 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 				pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
 				pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
 				pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
+
+				_bool IsQuest;
+				File->Read<_bool>(IsQuest);
+				pObj->Set_QuestItem(IsQuest);
 			}
 		}
 
