@@ -4,6 +4,8 @@
 #include "UI_Manager.h"
 #include "UI_WeaponSection_DefaultWeapon.h"
 #include "UI_SkillSection_CoolTimeFrame.h"
+#include "Game_Manager.h"
+#include "Player.h"
 
 CUI_WeaponSection_Slot::CUI_WeaponSection_Slot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_WEAPONSLOT eSlotType)
 	: CUI(pDevice, pContext, L"UI_WeaponSection_Slot")
@@ -95,6 +97,19 @@ HRESULT CUI_WeaponSection_Slot::Initialize(void* pArg)
 	UIDesc.fX = ParentDesc.fX + m_tInfo.fX;
 	UIDesc.fY = ParentDesc.fY + m_tInfo.fY;
 	CGameObject* pFrame = nullptr;
+
+	CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+	if (pPlayer == nullptr)
+		return E_FAIL;
+	CCharacter* pCharacter = pPlayer->Get_Character();
+	if (pCharacter == nullptr)
+		return E_FAIL;
+
+	CHARACTER_TYPE eCharacterType = pCharacter->Get_CharacterType();
+	if (CHARACTER_TYPE::CHARACTER_END == eCharacterType)
+		return E_FAIL;
+
+	m_eCurPlayerType = eCharacterType;
 
 	switch (m_eSlotType)
 	{

@@ -49,6 +49,8 @@ void CUI_World_NPCSpeechBalloon::Set_Owner(CGameObject* pOwner, _float fOffsetY)
 
 	if (FAILED(Ready_State()))
 		return;
+
+	Set_Active(false);
 }
 
 void CUI_World_NPCSpeechBalloon::Set_Balloon(const wstring& pText)
@@ -262,8 +264,8 @@ HRESULT CUI_World_NPCSpeechBalloon::Ready_State()
 	m_vOriginSize = _float2(m_tInfo.fCX, m_tInfo.fCY);
 	m_vMinSize = _float2(m_tInfo.fCX * 0.4f, m_tInfo.fCY * 0.4f);
 	
-	m_tInfo.fCX = m_vMinSize.x;
-	m_tInfo.fCY = m_vMinSize.y;
+	m_tInfo.fCX = m_vMinSize.x * 100.f;
+	m_tInfo.fCY = m_vMinSize.y * 100.f;
 	
 	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,

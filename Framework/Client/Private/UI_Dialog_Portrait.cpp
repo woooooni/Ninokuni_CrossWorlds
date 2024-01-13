@@ -17,7 +17,7 @@ CUI_Dialog_Portrait::CUI_Dialog_Portrait(const CUI_Dialog_Portrait& rhs)
 
 void CUI_Dialog_Portrait::Set_Active(_bool bActive)
 {
-	if (PORTRAIT_FRAME == m_eType)
+	//if (PORTRAIT_FRAME == m_eType)
 	{
 		if (bActive) // true 켜진다
 		{
@@ -64,7 +64,7 @@ HRESULT CUI_Dialog_Portrait::Initialize(void* pArg)
 
 	m_bActive = false;
 
-	if (PORTRAIT_FRAME == m_eType)
+	//if (PORTRAIT_FRAME == m_eType)
 	{
 		m_vOriginPosition = _float2(m_tInfo.fX, m_tInfo.fY);
 		m_vStartPosition = _float2(m_tInfo.fX - 100.f, m_tInfo.fY + 100.f);
@@ -83,7 +83,7 @@ void CUI_Dialog_Portrait::Tick(_float fTimeDelta)
 
 	if (m_bActive)
 	{
-		if (PORTRAIT_FRAME == m_eType)
+		//if (PORTRAIT_FRAME == m_eType)
 			Tick_Frame(fTimeDelta);
 
 		__super::Tick(fTimeDelta);
@@ -97,7 +97,7 @@ void CUI_Dialog_Portrait::LateTick(_float fTimeDelta)
 
 	if (m_bActive)
 	{
-		if (PORTRAIT_FRAME == m_eType)
+		//if (PORTRAIT_FRAME == m_eType)
 			LateTick_Frame(fTimeDelta);
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
@@ -134,6 +134,7 @@ void CUI_Dialog_Portrait::Tick_Frame(_float fTimeDelta)
 			m_bAlpha = true;
 			m_fAlpha = 1.f;
 		}
+
 	}
 
 	if (!m_bResize) // 아직 Resize가 완료되지 않았다.
@@ -199,11 +200,13 @@ HRESULT CUI_Dialog_Portrait::Ready_Components()
 		m_iTextureIndex = 0;
 		break;
 
-//	case UI_PORTRAIT::PORTRAIT_CHARACTER:
-//		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Dialogue_Window"),
-//			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
-//			return E_FAIL;
-//		break;
+	case UI_PORTRAIT::PORTRAIT_CHARACTER:
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Dialogue_PortraitCharacter"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+
+		m_iTextureIndex = 0;//쿠우
+		break;
 	}
 
 	

@@ -193,9 +193,10 @@ HRESULT CLevel_WitchForest::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 		return E_FAIL;
 
 	CHARACTER_TYPE eCharacterType = pCharacter->Get_CharacterType();
+	ELEMENTAL_TYPE eElementalType = pCharacter->Get_ElementalType();
 
 	CUI_Manager::GetInstance()->Ready_CharacterTypeForUI(eCharacterType);
-	CUI_Manager::GetInstance()->Ready_ElementalTypeForUI(ELEMENTAL_TYPE::DARK);
+	CUI_Manager::GetInstance()->Ready_ElementalTypeForUI(eElementalType);
 
 	return S_OK;
 }

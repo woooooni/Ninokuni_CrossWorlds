@@ -4,6 +4,8 @@
 #include "UI_Manager.h"
 #include "SKill_Manager.h"
 #include "Skill.h"
+#include "Game_Manager.h"
+#include "Player.h"
 
 CUI_SkillSection_CoolTimeFrame::CUI_SkillSection_CoolTimeFrame(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 	UI_COOLFRAME_TYPE eType)
@@ -143,6 +145,19 @@ HRESULT CUI_SkillSection_CoolTimeFrame::Ready_Skill()
 {
 	// CurPlayerType 잘 들어오는지 확인해야함.
 	CSkill* pTemp = nullptr;
+
+	CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+	if (pPlayer == nullptr)
+		return E_FAIL;
+	CCharacter* pCharacter = pPlayer->Get_Character();
+	if (pCharacter == nullptr)
+		return E_FAIL;
+
+	CHARACTER_TYPE eCharacterType = pCharacter->Get_CharacterType();
+	if (CHARACTER_TYPE::CHARACTER_END == eCharacterType)
+		return E_FAIL;
+
+	m_eCurPlayerType = eCharacterType;
 
 	switch (m_eCurPlayerType)
 	{
