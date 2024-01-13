@@ -102,7 +102,7 @@ HRESULT CLevel_IceLand::Tick(_float fTimeDelta)
 		GI->Add_GameObject(LEVEL_ICELAND, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Glanix"));
 	}
 
-	return S_OK;
+	return S_OK; 
 }
 
 HRESULT CLevel_IceLand::LateTick(_float fTimeDelta)

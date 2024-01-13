@@ -4,6 +4,8 @@
 #include "Glanix.h"
 
 #include "GameInstance.h"
+
+#include "Camera_Follow.h"
 #include "Camera_Manager.h"
 
 CGlanixState_RageStart::CGlanixState_RageStart(CStateMachine* pStateMachine)
@@ -59,6 +61,24 @@ void CGlanixState_RageStart::Exit_State()
 	GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
 	vPillarPos = { -23.f, 10.f, 363.f, 1.f };
 	GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
+
+	/* Camera */
+	//CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_CurCamera());
+	//if (nullptr != pFollowCam)
+	//{
+	//	/* 락온 + 와이드뷰 Start */
+	//
+	//	pFollowCam->Start_Lerp_Fov(Cam_Fov_LockOn_Glanix_PillarPattern,
+	//		Cam_LerpTime_LockOn_Glanix_PillarPattern,
+	//		LERP_MODE::SMOOTHER_STEP);
+	//
+	//	pFollowCam->Lerp_TargetOffset(pFollowCam->Get_TargetOffset(),
+	//		Cam_Target_Offset_LockOn_Glanix_PillarPattern,
+	//		Cam_LerpTime_LockOn_Glanix_PillarPattern,
+	//		LERP_MODE::SMOOTHER_STEP);
+	//
+	//	// 플레이어 공격 인풋 막기
+	//}
 }
 
 CGlanixState_RageStart* CGlanixState_RageStart::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

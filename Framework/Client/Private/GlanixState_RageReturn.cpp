@@ -4,6 +4,8 @@
 #include "Glanix.h"
 
 #include "Animation.h"
+
+#include "Camera_Follow.h"
 #include "Camera_Manager.h"
 
 CGlanixState_RageReturn::CGlanixState_RageReturn(CStateMachine* pStateMachine)
@@ -40,6 +42,16 @@ void CGlanixState_RageReturn::Tick_State(_float fTimeDelta)
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
 		m_pStateMachineCom->Change_State(CGlanix::GLANIX_FINISHTURN_OL);
+	}
+
+	/* Camera */
+	if (45 == m_pModelCom->Get_CurrAnimationFrame())
+	{
+		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_CurCamera());
+		if (nullptr != pFollowCam && !pFollowCam->Is_Lock_LookHeight())
+		{
+			pFollowCam->Lock_LookHeight();
+		}
 	}
 }
 

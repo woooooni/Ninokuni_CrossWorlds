@@ -4,8 +4,10 @@
 #include "Glanix.h"
 
 #include "Animation.h"
-#include "Camera_Manager.h"
 #include "GameInstance.h"
+
+#include "Camera_Follow.h"
+#include "Camera_Manager.h"
 
 CGlanixState_Rage2Stamp::CGlanixState_Rage2Stamp(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
@@ -22,13 +24,14 @@ HRESULT CGlanixState_Rage2Stamp::Initialize(const list<wstring>& AnimationList)
 void CGlanixState_Rage2Stamp::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_RageFinalStamp"));
-
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, m_pGlanix->Get_OriginPos());
 }
 
 void CGlanixState_Rage2Stamp::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
+
+	if (m_pModelCom->Get_CurrAnimationFrame() <= 13)
+		m_pTransformCom->Move(m_pTransformCom->Get_Look(), 40.f, fTimeDelta);
 
 	if (m_pModelCom->Get_CurrAnimationFrame() == 15)
 	{
