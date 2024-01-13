@@ -3,6 +3,15 @@
 
 #include "BTNode_Select.h"
 
+#include "MainQuestNode_SnowField01.h"
+#include "MainQuestNode_SnowField02.h"
+#include "MainQuestNode_SnowField02_2.h"
+#include "MainQuestNode_SnowField03.h"
+#include "MainQuestNode_SnowField04.h"
+#include "MainQuestNode_SnowField05.h"
+#include "MainQuestNode_SnowField06.h"
+#include "MainQuestNode_SnowField07.h"
+
 CMainQuest_SnowField::CMainQuest_SnowField()
 {
 }
@@ -11,9 +20,25 @@ HRESULT CMainQuest_SnowField::Initialize()
 {
 	__super::Initialize();
 
-	/* 그렴 여기서도 노드로 하는게 아니라 그냥 배열로 가지고 bool로 처리를 해야한다.*/
-
 	m_pRootNode = CBTNode_Select::Create();
+
+	CMainQuestNode_SnowField01* pMainQuestSnowField01 = CMainQuestNode_SnowField01::Create();
+	CMainQuestNode_SnowField01* pMainQuestSnowField02 = CMainQuestNode_SnowField01::Create();
+	CMainQuestNode_SnowField01* pMainQuestSnowField02_2 = CMainQuestNode_SnowField01::Create();
+	CMainQuestNode_SnowField01* pMainQuestSnowField03 = CMainQuestNode_SnowField01::Create();
+	CMainQuestNode_SnowField01* pMainQuestSnowField04 = CMainQuestNode_SnowField01::Create();
+	CMainQuestNode_SnowField01* pMainQuestSnowField05 = CMainQuestNode_SnowField01::Create();
+	CMainQuestNode_SnowField01* pMainQuestSnowField06 = CMainQuestNode_SnowField01::Create();
+	CMainQuestNode_SnowField01* pMainQuestSnowField07 = CMainQuestNode_SnowField01::Create();
+
+	m_pRootNode->Add_ChildNode(pMainQuestSnowField01);
+	m_pRootNode->Add_ChildNode(pMainQuestSnowField02);
+	m_pRootNode->Add_ChildNode(pMainQuestSnowField02_2);
+	m_pRootNode->Add_ChildNode(pMainQuestSnowField03);
+	m_pRootNode->Add_ChildNode(pMainQuestSnowField04);
+	m_pRootNode->Add_ChildNode(pMainQuestSnowField05);
+	m_pRootNode->Add_ChildNode(pMainQuestSnowField06);
+	m_pRootNode->Add_ChildNode(pMainQuestSnowField07);
 
 	return S_OK;
 }

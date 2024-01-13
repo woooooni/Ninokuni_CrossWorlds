@@ -49,8 +49,8 @@ HRESULT CLevel_IceLand::Initialize()
 	if (FAILED(Ready_Layer_NPC(LAYER_TYPE::LAYER_NPC)))
 		return E_FAIL;
  
-//	if (FAILED(Ready_Layer_Monster(LAYER_TYPE::LAYER_MONSTER)))
-//		return E_FAIL;
+	if (FAILED(Ready_Layer_Monster(LAYER_TYPE::LAYER_MONSTER)))
+		return E_FAIL;
 
 	if (FAILED(Ready_Layer_UI(LAYER_TYPE::LAYER_UI)))
 		return E_FAIL;
@@ -189,10 +189,10 @@ HRESULT CLevel_IceLand::Ready_Layer_Terrain(const LAYER_TYPE eLayerType)
 HRESULT CLevel_IceLand::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 {
 	// 111.f, 1.5f, 8.f, 1.f ㄹㅇ 시작위치
-	//if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, Vec4(-44.f, 1.5f, 315.f, 1.f), true)))
-	//	return E_FAIL;
-	if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, Vec4(111.f, 1.5f, 8.f, 1.f), true)))
+	if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, Vec4(-44.f, 1.5f, 315.f, 1.f), true)))
 		return E_FAIL;
+	//if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, Vec4(111.f, 1.5f, 8.f, 1.f), true)))
+	//	return E_FAIL;
 
 	/* Set Camera */
 	if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))
@@ -212,6 +212,53 @@ HRESULT CLevel_IceLand::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_IceLand::Ready_Layer_Monster(const LAYER_TYPE eLayerType)
 {
+	//Vec4 tempPos = Vec4(111.f, 1.5f, 8.f, 1.f);
+	//if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_MONSTER, TEXT("Prorotype_GameObject_Shadow_Thief"), &tempPos)))
+	//	return E_FAIL;
+	//if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_MONSTER, TEXT("Prorotype_GameObject_Shadow_Thief"), &tempPos)))
+	//	return E_FAIL;
+	//if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_MONSTER, TEXT("Prorotype_GameObject_Shadow_Thief"), &tempPos)))
+	//	return E_FAIL;
+	//if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_MONSTER, TEXT("Prorotype_GameObject_Shadow_Thief"), &tempPos)))
+	//	return E_FAIL;
+	//if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_MONSTER, TEXT("Prorotype_GameObject_Shadow_Thief"), &tempPos)))
+	//	return E_FAIL;
+	//if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_MONSTER, TEXT("Prorotype_GameObject_Shadow_Thief"), &tempPos)))
+	//	return E_FAIL;
+	//if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_MONSTER, TEXT("Prorotype_GameObject_Shadow_Thief"), &tempPos)))
+	//	return E_FAIL;
+	//if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_MONSTER, TEXT("Prorotype_GameObject_Shadow_Thief"), &tempPos)))
+	//	return E_FAIL;
+	//if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_MONSTER, TEXT("Prorotype_GameObject_Shadow_Thief"), &tempPos)))
+	//	return E_FAIL;
+	//if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_MONSTER, TEXT("Prorotype_GameObject_Shadow_Thief"), &tempPos)))
+	//	return E_FAIL;
+	//
+	//tempPos = Vec4(113.f, 1.5f, 8.f, 1.f);
+	//if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_MONSTER, TEXT("Prorotype_GameObject_IceBearMan"), &tempPos)))
+	//	return E_FAIL;
+	//if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_MONSTER, TEXT("Prorotype_GameObject_IceBearMan"), &tempPos)))
+	//	return E_FAIL;
+	//if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_MONSTER, TEXT("Prorotype_GameObject_IceBearMan"), &tempPos)))
+	//	return E_FAIL;
+	//if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_MONSTER, TEXT("Prorotype_GameObject_IceBearMan"), &tempPos)))
+	//	return E_FAIL;
+	//if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_MONSTER, TEXT("Prorotype_GameObject_IceBearMan"), &tempPos)))
+	//	return E_FAIL;
+	//
+	//tempPos = Vec4(115.f, 1.5f, 8.f, 1.f);
+	//if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_MONSTER, TEXT("Prorotype_GameObject_Baobam_Water"), &tempPos)))
+	//	return E_FAIL;
+	//if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_MONSTER, TEXT("Prorotype_GameObject_Baobam_Water"), &tempPos)))
+	//	return E_FAIL;
+	//if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_MONSTER, TEXT("Prorotype_GameObject_Baobam_Water"), &tempPos)))
+	//	return E_FAIL;
+	//if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_MONSTER, TEXT("Prorotype_GameObject_Baobam_Water"), &tempPos)))
+	//	return E_FAIL;
+	//if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_MONSTER, TEXT("Prorotype_GameObject_Baobam_Water"), &tempPos)))
+	//	return E_FAIL;
+
+
 	return S_OK;
 }
 

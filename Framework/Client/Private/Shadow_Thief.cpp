@@ -53,7 +53,7 @@ HRESULT CShadow_Thief::Initialize(void* pArg)
 	CGameObject* pHPBar = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Monster_WorldHPBar"), LAYER_TYPE::LAYER_UI);
 	if (nullptr == pHPBar)
 		return E_FAIL;
-
+	
 	m_pHPBar = dynamic_cast<CUI_MonsterHP_World*>(pHPBar);
 	m_pHPBar->Set_Owner(this, m_tStat.eElementType, 1.5f);
 

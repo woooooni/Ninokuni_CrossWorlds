@@ -130,7 +130,7 @@ void CVfx_SwordMan_Skill_FrozenStorm::Tick(_float fTimeDelta)
 
 		else if (m_iCount == TYPE_P_SPARKLE_02 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_SPARKLE_02])
 		{
-			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Particle_Swordman_Skill_FrozenStorm_Sparkle_Circle"),
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_FrozenStorm_Sparkle_Circle"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_SPARKLE_02], m_pScaleOffset[TYPE_P_SPARKLE_02], m_pRotationOffset[TYPE_P_SPARKLE_02]);
 			m_iCount++;
 		}

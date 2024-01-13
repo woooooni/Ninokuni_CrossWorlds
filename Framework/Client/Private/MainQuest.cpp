@@ -3,6 +3,8 @@
 
 #include "MainQuest_IntroTour.h"
 #include "MainQuest_KingCall.h"
+#include "MainQuest_SnowField.h"
+#include "MainQuest_Glanix.h"
 
 #include "GameInstance.h"
 
@@ -14,6 +16,8 @@ HRESULT CMainQuest::Initialize()
 {
 	m_vecMQ.push_back(CMainQuest_IntroTour::Create());
 	m_vecMQ.push_back(CMainQuest_KingCall::Create());
+	m_vecMQ.push_back(CMainQuest_SnowField::Create());
+	m_vecMQ.push_back(CMainQuest_Glanix::Create());
 
 	return S_OK;
 }

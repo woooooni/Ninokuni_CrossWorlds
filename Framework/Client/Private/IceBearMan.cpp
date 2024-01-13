@@ -45,17 +45,18 @@ HRESULT CIceBearMan::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
+	m_pModelCom->Set_Animation(0);
+
 	if (FAILED(Ready_States()))
 		return E_FAIL;
 
 	CGameObject* pHPBar = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Monster_WorldHPBar"), LAYER_TYPE::LAYER_UI);
 	if (nullptr == pHPBar)
 		return E_FAIL;
-
+	
 	m_pHPBar = dynamic_cast<CUI_MonsterHP_World*>(pHPBar);
 	m_pHPBar->Set_Owner(this, m_tStat.eElementType, 2.5f);
 
-	m_pModelCom->Set_Animation(0);
 
 	return S_OK;
 }
