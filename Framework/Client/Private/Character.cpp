@@ -10,8 +10,8 @@
 #include "Effect_Manager.h"
 #include "Particle_Manager.h"
 #include "Camera_Manager.h"
-#include "UIDamage_Manager.h"
 #include "Camera.h"
+#include "UIDamage_Manager.h"
 #include "Utils.h"
 #include "Weapon.h"
 #include "Animals.h"
@@ -20,6 +20,7 @@
 #include "Game_Manager.h"
 #include "Player.h"
 #include "UI_World_NameTag.h"
+
 
 USING(Client)
 CCharacter::CCharacter(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eCharacterType)
@@ -195,7 +196,7 @@ void CCharacter::Tick_MotionTrail(_float fTimeDelta)
 		TrailDesc.pModel = m_pModelCom;
 		TrailDesc.TweenDesc = m_pModelCom->Get_TweenDesc();
 		TrailDesc.vBloomPower = m_MotionTrailDesc.vBloomPower;
-		TrailDesc.vRimColor = { 0.f, 1.f, 1.f, 1.f };
+		TrailDesc.vRimColor = m_MotionTrailDesc.vRimColor;
 		TrailDesc.fBlurPower = m_MotionTrailDesc.fBlurPower;
 
 
@@ -570,7 +571,10 @@ void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 		m_pTransformCom->LookAt_ForLandObject(pOtherTransform->Get_Position());
 
 
-	_int iDamage = max(0, pMonster->Get_Stat().iAtk - (m_tStat.iDef * 0.2f)) * CGame_Manager::GetInstance()->Calculate_Elemental(tInfo.pOtherCollider->Get_ElementalType(), m_eDamagedElemental);
+	_float fElemental = CGame_Manager::GetInstance()->Calculate_Elemental(tInfo.pOtherCollider->Get_ElementalType(), m_eDamagedElemental);
+	_int iDamage = max(0, pMonster->Get_Stat().iAtk - (m_tStat.iDef * 0.2f) * fElemental);
+
+	
 
 	if (m_eDamagedElemental != ELEMENTAL_TYPE::BASIC)
 	{
@@ -590,6 +594,7 @@ void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 
 	if (CCollider::ATTACK_TYPE::AIR_BORNE == tInfo.pOtherCollider->Get_AttackType())
 	{
+		CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
 		m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(XMVectorSet(0.f, 1.f, 0.f, 0.f)), 7.f, true);
 		m_pStateCom->Change_State(CCharacter::DAMAGED_KNOCKDOWN);
 	}
@@ -601,12 +606,14 @@ void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 
 	else if (CCollider::ATTACK_TYPE::BLOW == tInfo.pOtherCollider->Get_AttackType())
 	{
+		CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
 		m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(XMVectorSet(0.f, 1.f, 0.f, 0.f)), 7.f, true);
 		m_pStateCom->Change_State(CCharacter::DAMAGED_IMPACT);
 	}
 
 	else if (CCollider::ATTACK_TYPE::BOUND == tInfo.pOtherCollider->Get_AttackType())
 	{
+		CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
 		m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(XMVectorSet(0.f, 1.f, 0.f, 0.f)), 2.f, true);
 		m_pStateCom->Change_State(CCharacter::DAMAGED_KNOCKDOWN);
 	}

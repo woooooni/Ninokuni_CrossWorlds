@@ -4,6 +4,8 @@
 #include "State_SwordMan_SpecialSkill_FrozenStorm.h"
 
 #include "Effect_Manager.h"
+#include "Camera_Manager.h"
+#include "Camera.h"
 
 CState_SwordMan_SpecialSkill_FrozenStorm::CState_SwordMan_SpecialSkill_FrozenStorm(CStateMachine* pMachine)
     : CState_Character(pMachine)
@@ -38,7 +40,7 @@ void CState_SwordMan_SpecialSkill_FrozenStorm::Tick_State(_float fTimeDelta)
 
 void CState_SwordMan_SpecialSkill_FrozenStorm::Exit_State()
 {
-    
+    CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(60.f);
 }
 
 CState_SwordMan_SpecialSkill_FrozenStorm* CState_SwordMan_SpecialSkill_FrozenStorm::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

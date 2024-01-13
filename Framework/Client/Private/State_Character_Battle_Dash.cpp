@@ -28,9 +28,9 @@ void CState_Character_Battle_Dash::Enter_State(void* pArg)
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 
     m_MotionTrailDesc.fAlphaSpeed = 2.f;
-    m_MotionTrailDesc.fBlurPower = 0.1f;
-    m_MotionTrailDesc.vBloomPower = { 0.f ,0.f, 0.f };
-    m_MotionTrailDesc.vRimColor = { 1.f, 1.f, 0.f, 1.f };
+    m_MotionTrailDesc.fBlurPower = 0.f;
+    m_MotionTrailDesc.vBloomPower = { 0.f ,0.7f, 1.f };
+    m_MotionTrailDesc.vRimColor = { 0.f, 0.7f, 1.f, 1.f };
     m_MotionTrailDesc.fMotionTrailTime = 0.1f;
 
     m_pCharacter->Generate_MotionTrail(m_MotionTrailDesc);

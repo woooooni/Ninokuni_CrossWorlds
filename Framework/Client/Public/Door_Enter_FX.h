@@ -42,6 +42,11 @@ private:
 private:
 	_bool m_bDissolve = true;
 
+private:
+	_bool m_bPlayAnimation = false;
+	_float m_fWaitTime = 2.f;
+	_float m_fAccWait = 0.f;
+
 
 private:
 	_float4 m_vDissolveColor = _float4(0.427f, 0.894f, 1.f, 1.f);

@@ -4,6 +4,8 @@
 #include "State_SwordMan_Skill_SipohoningLunge.h"
 
 #include "Effect_Manager.h"
+#include "Camera.h"
+#include "Camera_Manager.h"
 
 CState_SwordMan_Skill_SipohoningLunge::CState_SwordMan_Skill_SipohoningLunge(CStateMachine* pMachine)
     : CState_Character(pMachine)
@@ -40,7 +42,7 @@ void CState_SwordMan_Skill_SipohoningLunge::Tick_State(_float fTimeDelta)
 
 void CState_SwordMan_Skill_SipohoningLunge::Exit_State()
 {
-    
+    CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(60.f);
 }
 
 

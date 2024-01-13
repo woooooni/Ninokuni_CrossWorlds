@@ -2,7 +2,8 @@
 #include "GameInstance.h"
 #include "Character.h"
 #include "State_SwordMan_SpecialSkill_SwordTempest.h"
-
+#include "Camera_Manager.h"
+#include "Camera.h"
 #include "Effect_Manager.h"
 
 CState_SwordMan_SpecialSkill_SwordTempest::CState_SwordMan_SpecialSkill_SwordTempest(CStateMachine* pMachine)
@@ -39,7 +40,7 @@ void CState_SwordMan_SpecialSkill_SwordTempest::Tick_State(_float fTimeDelta)
 
 void CState_SwordMan_SpecialSkill_SwordTempest::Exit_State()
 {
-    
+    CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(60.f);
 }
 
 CState_SwordMan_SpecialSkill_SwordTempest* CState_SwordMan_SpecialSkill_SwordTempest::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

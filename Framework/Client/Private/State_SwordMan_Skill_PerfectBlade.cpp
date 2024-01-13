@@ -4,6 +4,8 @@
 #include "State_SwordMan_Skill_PerfectBlade.h"
 
 #include "Effect_Manager.h"
+#include "Camera.h"
+#include "Camera_Manager.h"
 
 CState_SwordMan_Skill_PerfectBlade::CState_SwordMan_Skill_PerfectBlade(CStateMachine* pMachine)
     : CState_Character(pMachine)
@@ -42,7 +44,7 @@ void CState_SwordMan_Skill_PerfectBlade::Tick_State(_float fTimeDelta)
 
 void CState_SwordMan_Skill_PerfectBlade::Exit_State()
 {
-    
+    CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(60.f);
 }
 
 CState_SwordMan_Skill_PerfectBlade* CState_SwordMan_Skill_PerfectBlade::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

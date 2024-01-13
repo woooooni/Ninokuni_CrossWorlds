@@ -55,6 +55,7 @@
 
 #include "Kuu.h"
 
+#include "Door_Enter_FX.h"
 #include "HumanFAT01.h"
 #include "MouseFolkFat01.h"
 #include "HumanFL04.h"
@@ -243,10 +244,17 @@ HRESULT CLoader::Loading_For_Level_Logo()
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Portal"), CPortal::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_PROP)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Door_Enter"), CDoor_Enter_FX::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_PROP)))
+		return E_FAIL;
+
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Kuu", CKuu::Create(m_pDevice, m_pContext, TEXT("Kuu")), LAYER_NPC, true)))
 		return E_FAIL;
 
+
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Kuu", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Public/Kuu/", L"Kuu")))
+		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_DoorEnter", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Door/", L"Door")))
 		return E_FAIL;
 
 

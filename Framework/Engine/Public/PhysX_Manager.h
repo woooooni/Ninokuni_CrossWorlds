@@ -140,7 +140,7 @@ private:
 	/*map<_uint, vector<PHYSX_STATIC_OBJECT_DESC>> m_StaticObjects;
 	map<_uint, vector<PHYSX_DYNAMIC_OBJECT_DESC>> m_DynamicObjects;
 	*/
-	
+	vector<OBJ_TYPE> m_eObjectTypes;
 	
 	
 

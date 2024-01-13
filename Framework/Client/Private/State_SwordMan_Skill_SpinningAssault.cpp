@@ -6,6 +6,9 @@
 #include "Effect_Manager.h"
 #include "Utils.h"
 
+#include "Camera_Manager.h"
+#include "Camera.h"
+
 CState_SwordMan_Skill_SpinningAssault::CState_SwordMan_Skill_SpinningAssault(CStateMachine* pMachine)
     : CState_Character(pMachine)
 {
@@ -48,7 +51,7 @@ void CState_SwordMan_Skill_SpinningAssault::Tick_State(_float fTimeDelta)
 
 void CState_SwordMan_Skill_SpinningAssault::Exit_State()
 {
-    
+    CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(60.f);
 }
 
 CState_SwordMan_Skill_SpinningAssault* CState_SwordMan_Skill_SpinningAssault::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

@@ -88,9 +88,7 @@ void CPortal::Collision_Enter(const COLLISION_INFO& tInfo)
 		if (FAILED(GI->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, m_eNextLevel, L""))))
 			MSG_BOX("Portal Failde Activate");
 
-		if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character_Initial_Position(m_vNextPos)))
-			MSG_BOX("Portal Failed Set Character Position");
-
+		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_EnterLevelPosition(m_vNextPos);
 	}
 }
 

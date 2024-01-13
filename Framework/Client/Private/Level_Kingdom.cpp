@@ -205,6 +205,27 @@ HRESULT CLevel_Kingdom::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 		}
 	}
 
+	CGameObject* pDoor = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_KINGDOMHALL, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Door_Enter"), nullptr, &pDoor)))
+		return E_FAIL;
+
+	if (nullptr == pDoor)
+		return E_FAIL;
+
+	CTransform* pDoorTransform = pDoor->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr == pDoorTransform)
+		return E_FAIL;
+
+	CTransform* pCharacterTransform = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr == pCharacterTransform)
+		return E_FAIL;
+
+	Vec3 vScale = pDoorTransform->Get_Scale();
+	pDoorTransform->Set_WorldMatrix(pCharacterTransform->Get_WorldMatrix());
+	Vec4 vPosition = pDoorTransform->Get_Position() + (pDoorTransform->Get_Look() * -1.f);
+	pDoorTransform->Set_State(CTransform::STATE_POSITION, vPosition);
+	pDoorTransform->Set_Scale(vScale);
+
 	return S_OK;
 }
 

@@ -230,6 +230,28 @@ HRESULT CLevel_Evermore::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 		}
 	}
 
+
+	CGameObject* pDoor = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Door_Enter"), nullptr, &pDoor)))
+		return E_FAIL;
+
+	if (nullptr == pDoor)
+		return E_FAIL;
+
+	CTransform* pDoorTransform = pDoor->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr == pDoorTransform)
+		return E_FAIL;
+
+	CTransform* pCharacterTransform = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr == pCharacterTransform)
+		return E_FAIL;
+
+	Vec3 vScale = pDoorTransform->Get_Scale();
+	pDoorTransform->Set_WorldMatrix(pCharacterTransform->Get_WorldMatrix());
+	Vec4 vPosition = pDoorTransform->Get_Position() + (pDoorTransform->Get_Look() * -1.f);
+	pDoorTransform->Set_State(CTransform::STATE_POSITION, vPosition);
+	pDoorTransform->Set_Scale(vScale);
+
 	return S_OK;
 }
 
@@ -391,7 +413,7 @@ HRESULT CLevel_Evermore::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 	// Evermore -> KINGDOM
 	CPortal::PORTAL_DESC PortalInfo = {};
 	PortalInfo.vStartPosition = XMVectorSet(-0.35f, 9.9f, 145.f, 1.f);
-	PortalInfo.vNextPosition = XMVectorSet(0.f, 0.8f, -5.f, 1.f);
+	PortalInfo.vNextPosition = XMVectorSet(0.f, 0.05f, -5.f, 1.f);
 	PortalInfo.eCurrentLevel = LEVEL_EVERMORE;
 	PortalInfo.eNextLevel = LEVEL_KINGDOMHALL;
 
@@ -403,7 +425,7 @@ HRESULT CLevel_Evermore::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 	// Evermore -> IceLand
 	CGameObject* pPortal = nullptr;
 	PortalInfo.vStartPosition = XMVectorSet(-50.5f, 9.9f, 162.f, 1.f);
-	PortalInfo.vNextPosition = XMVectorSet(111.f, 1.5f, 8.f, 1.f);
+	PortalInfo.vNextPosition = XMVectorSet(111.f, -0.785f, 8.f, 1.f);
 
 	PortalInfo.eCurrentLevel = LEVEL_EVERMORE;
 	PortalInfo.eNextLevel = LEVEL_ICELAND;
@@ -417,6 +439,11 @@ HRESULT CLevel_Evermore::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 	if (nullptr == pPortalTransform)
 		return E_FAIL;
 	pPortalTransform->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(-45.f));
+
+
+
+	
+
 
 	return S_OK;
 }
