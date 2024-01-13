@@ -18,6 +18,7 @@ private:
 	virtual void    TalkEvent();
 
 private:
+	CGameObject* m_pJackson = nullptr;
 	CGameObject* m_pKuu = nullptr;
 
 	_float m_fTalkChangeTime = 0.f;

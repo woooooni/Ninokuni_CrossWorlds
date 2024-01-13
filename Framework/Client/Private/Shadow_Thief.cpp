@@ -7,6 +7,8 @@
 #include "UI_MonsterHP_World.h"
 #include "UIDamage_Manager.h"
 
+#include "Quest_Manager.h"
+
 CShadow_Thief::CShadow_Thief(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
 	: CMonster(pDevice, pContext, strObjectTag, tStat)
 {
@@ -45,6 +47,7 @@ HRESULT CShadow_Thief::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
+	m_pModelCom->Set_Animation(12);
 
 	if (FAILED(Ready_States()))
 		return E_FAIL;
@@ -55,7 +58,8 @@ HRESULT CShadow_Thief::Initialize(void* pArg)
 	
 	m_pHPBar = dynamic_cast<CUI_MonsterHP_World*>(pHPBar);
 	m_pHPBar->Set_Owner(this, m_tStat.eElementType, 1.5f);
-	m_pModelCom->Set_Animation(12);
+
+	m_vBloomPower = _float3(0.5f, 0.5f, 0.5f);
 
 	return S_OK;
 }
@@ -324,6 +328,7 @@ CGameObject* CShadow_Thief::Clone(void* pArg)
 
 void CShadow_Thief::Free()
 {
-	Safe_Release(m_pHPBar);
 	__super::Free();
+
+	Safe_Release(m_pHPBar);
 }

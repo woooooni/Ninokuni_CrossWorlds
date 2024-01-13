@@ -16,6 +16,9 @@ public:
 	virtual CBTNode::NODE_STATE	Tick(const _float& fTimeDelta);
 	virtual void	LateTick(const _float& fTimeDelta);
 
+private:
+	_int	m_iPrevClearCount = 0;
+
 public:
 	static CMainQuestNode_IntroTour03* Create();
 	virtual void Free() override;

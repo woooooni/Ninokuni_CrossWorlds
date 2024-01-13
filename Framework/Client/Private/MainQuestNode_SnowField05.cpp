@@ -7,6 +7,7 @@
 #include "UI_Manager.h"
 
 #include "Game_Manager.h"
+#include "Quest_Manager.h"
 
 CMainQuestNode_SnowField05::CMainQuestNode_SnowField05()
 {
@@ -34,6 +35,8 @@ HRESULT CMainQuestNode_SnowField05::Initialize()
 
 void CMainQuestNode_SnowField05::Start()
 {
+	CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_MONSTER_KILL);
+
 	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
 	/* 현재 퀘스트에 연관있는 객체들 */
@@ -56,9 +59,10 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField05::Tick(const _float& fTimeDelta)
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 
-	// Temp
-	if (KEY_TAP(KEY::N))
+	/* 5마리 처치 */
+	if (CQuest_Manager::GetInstance()->Get_MonsterKillCount() >= 5)
 	{
+		CQuest_Manager::GetInstance()->Clear_MonsterKillCount();
 		m_bIsClear = true;
 		return NODE_STATE::NODE_FAIL;
 	}

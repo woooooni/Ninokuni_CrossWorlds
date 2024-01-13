@@ -25,7 +25,7 @@ void CMainQuestNode_Glanix01::Start()
 {
 	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
-	m_pAren = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Aren"));
+	m_pAren = GI->Find_GameObject(LEVELID::LEVEL_ICELAND, LAYER_NPC, TEXT("Aren"));
 	Vec4 vSpotPos = Set_DestSpot(m_pAren);
 
 	// 임시로 monster에 

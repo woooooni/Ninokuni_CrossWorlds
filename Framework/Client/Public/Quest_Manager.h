@@ -11,6 +11,9 @@ BEGIN(Client)
 class CQuest_Manager final : public CBase
 {
 	DECLARE_SINGLETON(CQuest_Manager)
+public:
+	enum QUESTEVENT_TYPE { QUESTEVENT_MONSTER_KILL, QUESTEVENT_BOSS_KILL, QUESTEVENT_END };
+
 private:
 	CQuest_Manager();
 	virtual ~CQuest_Manager() = default;
@@ -34,6 +37,19 @@ public:
 	void    Set_QuestClearStack(_int iStack) { m_iQuestClearStack += iStack; }
 	void    Clear_QuestClearStack() { m_iQuestClearStack = 0; }
 
+	// 퀘스트 이벤트 타입
+	QUESTEVENT_TYPE Get_CurQuestEvent() { return m_eCurQuestType; }
+	void			Set_CurQuestEvent(QUESTEVENT_TYPE eType) { m_eCurQuestType = eType; }
+
+	// 몬스터 처치 관련
+	_int	Get_MonsterKillCount() { return m_iMonsterKillCount; }
+	void	Set_MonsterKillCount(_int iCount) { m_iMonsterKillCount += iCount; }
+	void	Clear_MonsterKillCount() { m_iMonsterKillCount = 0; }
+
+	// 보스 처치 관련
+	_bool	Get_IsBossKill() { return m_bIsBossKill; }
+	void	Set_IsBossKill(_bool IsBossKill) { m_bIsBossKill = IsBossKill; }
+
 private:
 	CMainQuest*  m_pMainQuest = nullptr;
 	CSubQuest*   m_pSubQuest = nullptr;
@@ -44,6 +60,10 @@ private:
 	_bool		m_bIsReserve = false;
 
 	_int		m_iQuestClearStack = 0;
+
+	QUESTEVENT_TYPE m_eCurQuestType = QUESTEVENT_END;
+	_int		m_iMonsterKillCount = 0;
+	_bool		m_bIsBossKill = false;
 
 public:
 	virtual void Free() override;

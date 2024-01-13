@@ -9,6 +9,8 @@
 #include "Camera_Manager.h"
 #include "Camera_Follow.h"
 
+#include "Quest_Manager.h"
+
 CGlanixState_Dead::CGlanixState_Dead(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
 {
@@ -30,6 +32,9 @@ void CGlanixState_Dead::Tick_State(_float fTimeDelta)
 {
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
+		if(CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::QUESTEVENT_BOSS_KILL)
+			CQuest_Manager::GetInstance()->Set_IsBossKill(true);
+
 		m_pGlanix->Reserve_Dead(true);
 
 		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));

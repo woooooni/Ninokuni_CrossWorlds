@@ -91,7 +91,7 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix10::Tick(const _float& fTimeDelta)
 			//if (nullptr != pActionCam)
 			//	pActionCam->Finish_Action_Talk();
 
-			return NODE_STATE::NODE_FAIL;
+			return NODE_STATE::NODE_SUCCESS;
 		}
 
 		m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);

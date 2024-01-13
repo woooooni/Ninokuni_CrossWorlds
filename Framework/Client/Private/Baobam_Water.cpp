@@ -7,6 +7,8 @@
 #include "UI_MonsterHP_World.h"
 #include "UIDamage_Manager.h"
 
+#include "Quest_Manager.h"
+
 CBaobam_Water::CBaobam_Water(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
 	: CMonster(pDevice, pContext, strObjectTag, tStat)
 {
@@ -318,5 +320,6 @@ CGameObject* CBaobam_Water::Clone(void* pArg)
 void CBaobam_Water::Free()
 {
 	__super::Free();
+
 	Safe_Release(m_pHPBar);
 }
