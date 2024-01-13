@@ -52,10 +52,18 @@ _bool CState_Animals::ReturnToCenter(_float fTimeDelta, Vec4& vDir)
 		m_pTransformCom->Set_State(CTransform::STATE::STATE_UP, vUp);
 
 		vDir = vCenterDir;
+
 		return true;
 	}
 
 	return false;
+}
+
+Vec4 CState_Animals::Get_Point_In_Bezier(const vector<Vec4>* points, const _float& fRatio)
+{
+
+
+	return Vec4();
 }
 
 void CState_Animals::Free()

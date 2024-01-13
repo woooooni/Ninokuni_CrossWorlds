@@ -45,7 +45,7 @@ public:
 	}
 
 	_float4x4 Get_WorldFloat4x4() const {
-		return m_WorldMatrix;
+ 		return m_WorldMatrix;
 	}
 
 	_float4x4 Get_WorldFloat4x4_TransPose() const {
@@ -93,6 +93,8 @@ public:
 
 	void FixRotation(_float x, _float y, _float z);
 	void RevolutionRotation(const Vec3& vPoint, const Vec3 vAxis, const _float& fAngle);
+	void ParabolicFormula(const Vec3& startPos, const Vec3& endPos, const _float fTimeDelta,
+		const _float& maxHeight = 150.0f, const _float& maxTime = 3.6f);
 	XMVECTOR Get_WorldRotation() { return m_vRotation; }
 
 
@@ -100,6 +102,7 @@ private:
 	_float4x4				m_WorldMatrix;
 	XMVECTOR m_vRotation = ::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 
+	_float m_fTime = 0.0f;
 
 public:
 	static CTransform* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

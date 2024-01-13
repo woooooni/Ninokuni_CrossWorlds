@@ -230,7 +230,6 @@ void CWinterWater::Free()
 {
 	__super::Free();
 
-	Safe_Release<CRenderer*>(m_pRendererCom);
 	Safe_Release<CTransform*>(m_pTransformCom);
 	Safe_Release<CShader*>(m_pShaderCom);
 

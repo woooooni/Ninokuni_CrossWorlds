@@ -4649,7 +4649,7 @@ void CUI_Manager::Use_ClassSkillSlot(_uint iSlotNum)
 	if (0 > iSlotNum || 2 < iSlotNum)
 		return;
 
-	m_ClassicSkill[iSlotNum]->Set_Clicked(true);
+	//m_ClassicSkill[iSlotNum]->Set_Clicked(true);
 }
 
 void CUI_Manager::Use_ActiveSkillSlot(_uint iSlotNum)
@@ -4657,7 +4657,7 @@ void CUI_Manager::Use_ActiveSkillSlot(_uint iSlotNum)
 	if (0 > iSlotNum || 2 < iSlotNum)
 		return;
 
-	m_SpecialSkill[iSlotNum]->Set_Clicked(true);
+	//m_SpecialSkill[iSlotNum]->Set_Clicked(true);
 }
 
 void CUI_Manager::Use_BurstSkillSlot(_uint iSlotNum)
@@ -4665,7 +4665,7 @@ void CUI_Manager::Use_BurstSkillSlot(_uint iSlotNum)
 	if (nullptr == m_pSkillBG)
 		return;
 
-	m_pSkillBG->Use_BurstSkill(iSlotNum);
+	//m_pSkillBG->Use_BurstSkill(iSlotNum);
 }
 
 void CUI_Manager::Change_ElementalType(ELEMENTAL_TYPE eElementalType)

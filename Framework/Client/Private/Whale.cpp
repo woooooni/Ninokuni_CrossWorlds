@@ -1,23 +1,23 @@
 #include "stdafx.h"
-#include "Rabbit.h"
+#include "Whale.h"
 #include "GameInstance.h"
+#include "UI_World_Interaction.h"
 
-#include "State_Animal_Idle.h"
-#include "State_Animal_Run.h"
-#include "State_Animal_Walk.h"
-#include "State_Animal_Lift.h"
+#include "State_Animal_Swimming.h"
+#include "State_BackFlip_01.h"
+#include "State_BackFlip_02.h"
 
-CRabbit::CRabbit(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType)
+CWhale::CWhale(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType)
 	: CAnimals(pDevice, pContext, strObjectTag, eType)
 {
 }
 
-CRabbit::CRabbit(const CRabbit& rhs)
+CWhale::CWhale(const CWhale& rhs)
 	: CAnimals(rhs)
 {
 }
 
-HRESULT CRabbit::Initialize_Prototype()
+HRESULT CWhale::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
@@ -25,7 +25,7 @@ HRESULT CRabbit::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CRabbit::Initialize(void* pArg)
+HRESULT CWhale::Initialize(void* pArg)
 {
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -36,29 +36,26 @@ HRESULT CRabbit::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	if (FAILED(Ready_Collider()))
-		return E_FAIL;
-
+	m_iObjectType == OBJ_TYPE::OBJ_ANIMAL;
+	
 	m_vCenter = m_pTransformCom->Get_Position();
 
 	return S_OK;
 }
 
-void CRabbit::Tick(_float fTimeDelta)
+void CWhale::Tick(_float fTimeDelta)
 {
 	m_pStateMachineCom->Tick_State(fTimeDelta);
-
 
 	__super::Tick(fTimeDelta);
 }
 
-void CRabbit::LateTick(_float fTimeDelta)
+void CWhale::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
-
 }
 
-HRESULT CRabbit::Render()
+HRESULT CWhale::Render()
 {
 	if (FAILED(__super::Render()))
 		return E_FAIL;
@@ -66,24 +63,30 @@ HRESULT CRabbit::Render()
 	return S_OK;
 }
 
-HRESULT CRabbit::Ready_Components(void* pArg)
+
+HRESULT CWhale::Ready_Components(void* pArg)
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"),
 		TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 		return E_FAIL;
 
+	OBJECT_INIT_DESC Init_Data = {};
+
+	if (pArg != nullptr)
+		Init_Data.vStartPosition = static_cast<OBJECT_INIT_DESC*>(pArg)->vStartPosition;
+
+
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"),
-		TEXT("Com_Transform"), reinterpret_cast<CComponent**>(&m_pTransformCom))))
+		TEXT("Com_Transform"), reinterpret_cast<CComponent**>(&m_pTransformCom), &Init_Data)))
 		return E_FAIL;
 
-	if (nullptr != pArg)
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, static_cast<OBJECT_INIT_DESC*>(pArg)->vStartPosition);
+	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, Init_Data.vStartPosition);
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_AnimModel"),
 		TEXT("Com_AnimShader"), reinterpret_cast<CComponent**>(&m_pAnimShaderCom))))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Animal_Rabbit"),
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Animal_Whale"),
 		TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 		return E_FAIL;
 
@@ -105,36 +108,28 @@ HRESULT CRabbit::Ready_Components(void* pArg)
 	return S_OK;
 }
 
-HRESULT CRabbit::Ready_State()
+HRESULT CWhale::Ready_State()
 {
 	list<wstring> strAnimationNames;
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Rabbit.ao|Rabbit_Idle01");
-	m_pStateMachineCom->Add_State(CAnimals::STATE::STATE_IDLE, CState_Animal_Idle::Create(m_pStateMachineCom, strAnimationNames));
+	strAnimationNames.push_back(L"Armature|Armature|Animation_Whale|BaseLayer");
+	m_pStateMachineCom->Add_State(CAnimals::STATE::STATE_SWIM, CState_Animal_Swimming::Create(m_pStateMachineCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Rabbit.ao|Rabbit_Run");
-	m_pStateMachineCom->Add_State(CAnimals::STATE::STATE_RUN, CState_Animal_Run::Create(m_pStateMachineCom, strAnimationNames));
+	strAnimationNames.push_back(L"Armature|Armature|Animation_Whale|BaseLayer");
+	m_pStateMachineCom->Add_State(CAnimals::STATE::STATE_BACKFILP01, CState_BackFlip_01::Create(m_pStateMachineCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Rabbit.ao|Rabbit_Walk");
-	m_pStateMachineCom->Add_State(CAnimals::STATE::STATE_WALK, CState_Animal_Walk::Create(m_pStateMachineCom, strAnimationNames));
+	strAnimationNames.push_back(L"Armature|Armature|Animation_Whale|BaseLayer");
+	m_pStateMachineCom->Add_State(CAnimals::STATE::STATE_BACKFILP02, CState_BackFlip_02::Create(m_pStateMachineCom, strAnimationNames));
 
-	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Rabbit.ao|Rabbit_LiftedStart");
-	strAnimationNames.push_back(L"SKM_Rabbit.ao|Rabbit_LiftedLoop");
-	strAnimationNames.push_back(L"SKM_Rabbit.ao|Rabbit_LiftedLoop2");
-	strAnimationNames.push_back(L"SKM_Rabbit.ao|Rabbit_LiftedFinish");
-	m_pStateMachineCom->Add_State(CAnimals::STATE::STATE_LIFT, CState_Animal_Lift::Create(m_pStateMachineCom, strAnimationNames));
-
-
-	m_pStateMachineCom->Change_State(CAnimals::STATE::STATE_IDLE);
+	m_pStateMachineCom->Change_State(CAnimals::STATE::STATE_SWIM);
 
 	return S_OK;
 }
 
-HRESULT CRabbit::Ready_Collider()
+HRESULT CWhale::Ready_Collider()
 {
 	CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
 	::ZeroMemory(&SphereDesc, sizeof(SphereDesc));
@@ -158,49 +153,48 @@ HRESULT CRabbit::Ready_Collider()
 	return S_OK;
 }
 
-void CRabbit::Collision_Enter(const COLLISION_INFO& tInfo)
+void CWhale::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
 }
 
-void CRabbit::Collision_Continue(const COLLISION_INFO& tInfo)
+void CWhale::Collision_Continue(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Continue(tInfo);
 }
 
-void CRabbit::Collision_Exit(const COLLISION_INFO& tInfo)
+void CWhale::Collision_Exit(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Exit(tInfo);
 }
 
-CRabbit* CRabbit::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eObjType)
+CWhale* CWhale::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eObjType)
 {
-	CRabbit* pInstance = new CRabbit(pDevice, pContext, strObjectTag, eObjType);
+	CWhale* pInstance = new CWhale(pDevice, pContext, strObjectTag, eObjType);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX("Create Failed to ProtoType : CRabbit");
-		Safe_Release<CRabbit*>(pInstance);
+		MSG_BOX("Create Failed to ProtoType : CWhale");
+		Safe_Release<CWhale*>(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CRabbit::Clone(void* pArg)
+CGameObject* CWhale::Clone(void* pArg)
 {
-	CRabbit* pInstance = new CRabbit(*this);
+	CWhale* pInstance = new CWhale(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Create Failed to Cloned : CRabbit");
-		Safe_Release<CRabbit*>(pInstance);
+		MSG_BOX("Create Failed to Cloned : CWhale");
+		Safe_Release<CWhale*>(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CRabbit::Free()
+void CWhale::Free()
 {
 	__super::Free();
-
 }

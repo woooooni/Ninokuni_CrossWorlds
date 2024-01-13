@@ -347,6 +347,9 @@
     <ClInclude Include="..\Public\MainQuestNode_KingCall06.h" />
     <ClInclude Include="..\Public\MainQuest_IntroTour.h" />
     <ClInclude Include="..\Public\MainQuest_KingCall.h" />
+    <ClInclude Include="..\Public\State_Animal_Swimming.h" />
+    <ClInclude Include="..\Public\State_BackFlip_01.h" />
+    <ClInclude Include="..\Public\State_BackFlip_02.h" />
     <ClInclude Include="..\Public\SubQuest_Windmill.h" />
     <ClInclude Include="..\Public\MainQuestNode_IntroTour03.h" />
     <ClInclude Include="..\Public\MainQuestNode_IntroTour04.h" />
@@ -824,6 +827,7 @@
     <ClInclude Include="..\Public\VIBuffer_Trail.h" />
     <ClInclude Include="..\Public\UI.h" />
     <ClInclude Include="..\Public\Sword.h" />
+    <ClInclude Include="..\Public\Whale.h" />
     <ClInclude Include="..\Public\WinterWater.h" />
     <ClInclude Include="..\Public\WitchWater.h" />
     <ClInclude Include="..\Public\Zehra.h" />
@@ -1009,6 +1013,9 @@
     <ClCompile Include="..\Private\MainQuestNode_KingCall06.cpp" />
     <ClCompile Include="..\Private\MainQuest_IntroTour.cpp" />
     <ClCompile Include="..\Private\MainQuest_KingCall.cpp" />
+    <ClCompile Include="..\Private\State_Animal_Swimming.cpp" />
+    <ClCompile Include="..\Private\State_BackFlip_01.cpp" />
+    <ClCompile Include="..\Private\State_BackFlip_02.cpp" />
     <ClCompile Include="..\Private\SubQuest_Windmill.cpp" />
     <ClCompile Include="..\Private\MainQuestNode_IntroTour03.cpp" />
     <ClCompile Include="..\Private\MainQuestNode_IntroTour04.cpp" />
@@ -1487,6 +1494,7 @@
     <ClCompile Include="..\Private\UI_WindowWorldMap.cpp" />
     <ClCompile Include="..\Private\Vfx.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Trail.cpp" />
+    <ClCompile Include="..\Private\Whale.cpp" />
     <ClCompile Include="..\Private\WinterWater.cpp" />
     <ClCompile Include="..\Private\WitchWater.cpp" />
     <ClCompile Include="..\Private\Zehra.cpp" />
@@ -1515,6 +1523,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Effect</ShaderType>
     </FxCompile>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Cell.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_MeshEffect_Instance.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_Ocean.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Effect</ShaderType>

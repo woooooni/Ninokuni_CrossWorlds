@@ -29,6 +29,8 @@ HRESULT CBuilding::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+
+
 	return S_OK;
 }
 
@@ -36,8 +38,10 @@ void CBuilding::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
-	if (m_strMapObjName == TEXT("Evermore_Wind_WindMillaA_02"))
+	if (m_strMapObjName == TEXT("Evermore_Wind_WindMillaA_02")) // ID 859
+	{
 		XRotation(2.0f, fTimeDelta);
+	}
 
 }
 

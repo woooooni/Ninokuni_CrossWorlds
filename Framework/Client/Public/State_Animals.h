@@ -21,10 +21,10 @@ public:
 
 protected:
 	_bool ReturnToCenter(_float fTimeDelta, Vec4& vDir);
+	Vec4 Get_Point_In_Bezier(const vector<Vec4>* points, const _float& fRatio);
 
 protected:
 	class CAnimals* m_pAnimal = nullptr;
-
 public:
 	virtual void Free() override;
 };
