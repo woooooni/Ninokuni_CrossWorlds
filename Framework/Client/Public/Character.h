@@ -220,6 +220,8 @@ public:
 
 public:
 	void Set_EnterLevelPosition(Vec4 vPosition);
+	void Set_InitialPosition(Vec4 vPosition);
+
 public:
 	_float Get_Default_WalkSpeed() { return m_fDefaultWalkSpeed; }
 	_float Get_Default_RunSpeed() { return m_fDefaultRunSpeed; }

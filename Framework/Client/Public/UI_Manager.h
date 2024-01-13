@@ -37,6 +37,7 @@ public: // Get/Set
 	void			Set_MainDialogue(_tchar* pszName, _tchar* pszText);
 	void			Set_MiniDialogue(wstring strName, wstring strContents);
 	void			Set_QuestPopup(const wstring& strQuestType, const wstring& strTitle, const wstring& strContents);
+	void			Clear_QuestPopup(const wstring& strTitle);
 	_int			Get_QuestNum();
 
 	_int			Get_SelectedCharacter();

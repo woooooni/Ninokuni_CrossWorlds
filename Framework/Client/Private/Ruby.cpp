@@ -8,6 +8,8 @@
 #include "UniqueNpcState_Run.h"
 #include "UniqueNpcState_Talk.h"
 
+#include "UI_World_NPCTag.h"
+
 CRuby::CRuby(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameNpc(pDevice, pContext, strObjectTag)
 {
@@ -42,17 +44,31 @@ HRESULT CRuby::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
+	// UI NameTag
+	CGameObject* pTag = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_NPC_Tag"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pTag)
+		return E_FAIL;
+
+	m_pTag = dynamic_cast<CUI_World_NPCTag*>(pTag);
+	m_pTag->Set_Owner(this, m_strKorName, 2.f, true);
+
 	return S_OK;
 }
 
 void CRuby::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+
+	if (nullptr != m_pTag)
+		m_pTag->Tick(fTimeDelta);
 }
 
 void CRuby::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
+
+	if (nullptr != m_pTag)
+		m_pTag->LateTick(fTimeDelta);
 
 #ifdef DEBUG
 	m_pRendererCom->Add_Debug(m_pControllerCom);
@@ -156,4 +172,6 @@ CGameObject* CRuby::Clone(void* pArg)
 void CRuby::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pTag);
 }

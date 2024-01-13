@@ -62,6 +62,17 @@ HRESULT CPlayer::Set_Character(CHARACTER_TYPE eType, Vec4 vEnterPosition, _bool 
 	return S_OK;
 }
 
+HRESULT CPlayer::Set_Character_Initial_Position(Vec4 vEnterPosition)
+{
+	if (nullptr == m_pCharacter)
+		return E_FAIL;
+
+	m_pCharacter->Set_InitialPosition(XMVectorSetW(vEnterPosition, 1.f));
+
+
+	return S_OK;
+}
+
 
 
 
