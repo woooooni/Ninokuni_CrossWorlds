@@ -26,10 +26,6 @@ void CState_Animal_Fly::Enter_State(void* pArg)
 
 void CState_Animal_Fly::Tick_State(_float fTimeDelta)
 {
-	Quaternion quat;
-	Matrix MatRot;
-	Vec4 vOut;
-
 	Vec3 vPoint = Vec3(-0.724f, 10.430f, 111.816f);
 
 	m_pTransformCom->RevolutionRotation(vPoint, Vec3(0.0f, 1.0f, 0.0f), ::XMConvertToRadians(m_fAngle));

@@ -987,39 +987,6 @@ HRESULT CLoader::Loading_Proto_Static_Map_Objects(const wstring& strPath)
 
 HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 {
-#pragma region Dynamic Props
-	//for (auto& p : std::filesystem::directory_iterator(strPath))
-	//{
-	//	if (p.is_directory())
-	//	{
-	//		Loading_Proto_Dynamic_Map_Objects(p.path().wstring());
-	//	}
-
-	//	wstring strFilePath = CUtils::PathToWString(p.path().wstring());
-
-	//	_tchar strFileName[MAX_PATH];
-	//	_tchar strFolderName[MAX_PATH];
-	//	_tchar strExt[MAX_PATH];
-
-	//	_wsplitpath_s(strFilePath.c_str(), nullptr, 0, strFolderName, MAX_PATH, strFileName, MAX_PATH, strExt, MAX_PATH);
-
-	//	if (0 == lstrcmp(TEXT(".fbx"), strExt) || 0 == lstrcmp(TEXT(".mesh"), strExt))
-	//	{
-	//		if (strFilePath.find(L"DynamicProp") != wstring::npos)
-	//		{
-	//			
-	//			if (FAILED(GI->Add_Prototype(wstring(strFileName),
-	//				CDynamicProps::Create(m_pDevice, m_pContext, wstring(strFileName), strFolderName, wstring(strFileName) + strExt, OBJ_TYPE::OBJ_DYNAMIC, CModel::TYPE_ANIM), LAYER_TYPE::LAYER_DYNAMIC, true)))
-	//			{
-	//				return E_FAIL;
-	//			}
-	//		}
-	//	}
-	//}
-	
-#pragma endregion
-
-
 #pragma region Animal ProtoType
 	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Cat"), CCat::Create(m_pDevice, m_pContext, TEXT("Animal_Cat"), OBJ_TYPE::OBJ_ANIMAL), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
@@ -1037,6 +1004,9 @@ HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Pigeon"), CPigeon::Create(m_pDevice, m_pContext, TEXT("Animal_Pigeon"), OBJ_TYPE::OBJ_ANIMAL), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Whale"), CWhale::Create(m_pDevice, m_pContext, TEXT("Animal_Whale"), OBJ_TYPE::OBJ_ANIMAL), LAYER_TYPE::LAYER_DYNAMIC, true)))
+		return E_FAIL;
+
 #pragma endregion Animals Prototype
 
 #pragma region Sky
@@ -1086,6 +1056,8 @@ HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Animal_Ermine", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/Animal/Ermine/", L"Animal_Ermine")))
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Animal_Pigeon", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/Animal/Pigeon/", L"Animal_Pigeon")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Animal_Whale", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/Animal/Whale/", L"Animal_Whale")))
 		return E_FAIL;
 #pragma endregion Animal
 

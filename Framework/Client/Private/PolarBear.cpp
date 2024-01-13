@@ -111,22 +111,22 @@ HRESULT CPolarBear::Ready_State()
 	list<wstring> strAnimationNames;
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Dochi.ao|SKM_Dochi.ao|SKM_PolarBear.ao|PolarBear_Idle01");
+	strAnimationNames.push_back(L"SKM_PolarBear.ao|SKM_PolarBear.ao|SKM_PolarBear.ao|PolarBear_Idle01");
 	m_pStateMachineCom->Add_State(CAnimals::STATE::STATE_IDLE, CState_Animal_Idle::Create(m_pStateMachineCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Dochi.ao|SKM_Dochi.ao|SKM_PolarBear.ao|PolarBear_Run");
+	strAnimationNames.push_back(L"SKM_PolarBear.ao|SKM_PolarBear.ao|SKM_PolarBear.ao|PolarBear_Run");
 	m_pStateMachineCom->Add_State(CAnimals::STATE::STATE_RUN, CState_Animal_Run::Create(m_pStateMachineCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Dochi.ao|SKM_Dochi.ao|SKM_PolarBear.ao|PolarBear_Walk");
+	strAnimationNames.push_back(L"SKM_PolarBear.ao|SKM_PolarBear.ao|SKM_PolarBear.ao|PolarBear_Walk");
 	m_pStateMachineCom->Add_State(CAnimals::STATE::STATE_WALK, CState_Animal_Walk::Create(m_pStateMachineCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Dochi.ao|SKM_Dochi.ao|SKM_PolarBear.ao|PolarBear_LiftedStart");
-	strAnimationNames.push_back(L"SKM_Dochi.ao|SKM_Dochi.ao|SKM_PolarBear.ao|PolarBear_LiftedLoop");
-	strAnimationNames.push_back(L"SKM_Dochi.ao|SKM_Dochi.ao|SKM_PolarBear.ao|PolarBear_LiftedLoop02");
-	strAnimationNames.push_back(L"SKM_Dochi.ao|SKM_Dochi.ao|SKM_PolarBear.ao|PolarBear_LiftedFinish");
+	strAnimationNames.push_back(L"SKM_PolarBear.ao|SKM_PolarBear.ao|SKM_PolarBear.ao|PolarBear_LiftedStart");
+	strAnimationNames.push_back(L"SKM_PolarBear.ao|SKM_PolarBear.ao|SKM_PolarBear.ao|PolarBear_LiftedLoop");
+	strAnimationNames.push_back(L"SKM_PolarBear.ao|SKM_PolarBear.ao|SKM_PolarBear.ao|PolarBear_LiftedLoop02");
+	strAnimationNames.push_back(L"SKM_PolarBear.ao|SKM_PolarBear.ao|SKM_PolarBear.ao|PolarBear_LiftedFinish");
 	m_pStateMachineCom->Add_State(CAnimals::STATE::STATE_LIFT, CState_Animal_Lift::Create(m_pStateMachineCom, strAnimationNames));
 
 

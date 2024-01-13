@@ -45,12 +45,17 @@ private:
 	void DeleteDynamic(LEVELID iLevelID, LAYER_TYPE iLayerType);
 
 	void BatchWater(LEVELID iLevelID, LAYER_TYPE iLayerType);
+	void BatchAnimal(LEVELID iLevelID, LAYER_TYPE iLayerType);
 
 	void DeleteLight(_uint iLightID);
 
 	// NPC Roming Clear
 	void RomingClear();
 	void RomingPointDelete();
+
+
+	// Animals
+	void Animals_PointsClear();
 
 	void Picking();
 private:
@@ -59,6 +64,7 @@ private:
 	void MapMonsterSpace();
 	void MapNPCSpace();
 	void MapWaterSpace();
+	void MapAnimalPatrol();
 private:
 	void ChangeState();
 
@@ -96,6 +102,7 @@ private:
 	_int m_iDynamicState = 0;
 	_int m_iMonsterState = 0;
 	_int m_iNPCState = 0;
+	_bool m_bAnimalPointPick = false;
 
 	wstring m_strLevelName = L"Evermore";
 	wstring m_strLevelMonsterName = L"Winter";

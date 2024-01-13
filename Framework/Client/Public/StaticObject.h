@@ -50,6 +50,7 @@ public:
 	virtual HRESULT Ready_Components() PURE;
 	virtual HRESULT Ready_ModelCom(_uint eType, const wstring& strFilePath, const wstring& strFileName);
 
+
 protected:
 	void YRotation(_float fSpeed, _float fTimeDelta);
 	void XRotation(_float fSpeed, _float fTimeDelta);

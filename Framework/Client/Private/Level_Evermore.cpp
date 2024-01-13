@@ -24,6 +24,7 @@
 #include "Quest_Manager.h"
 
 #include "GameNpc.h"
+#include "Animals.h"
 
 #include "Portal.h"
 
@@ -403,8 +404,7 @@ HRESULT CLevel_Evermore::Ready_Layer_Dynamic(const LAYER_TYPE eLayerType, const 
 	File->Open(strMapFilePath, FileMode::Read);
 
 
-	GI->Clear_Layer(LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC);
-
+	GI->Clear_Layer(LEVELID::LEVEL_EVERMORE, LAYER_TYPE::LAYER_DYNAMIC);
 
 	_uint iObjectCount = File->Read<_uint>();
 	for (_uint j = 0; j < iObjectCount; ++j)
@@ -421,15 +421,14 @@ HRESULT CLevel_Evermore::Ready_Layer_Dynamic(const LAYER_TYPE eLayerType, const 
 		File->Read<_float4>(vLook);
 		File->Read<_float4>(vPos);
 
-		OBJECT_INIT_DESC Init_Data = {};
-		Init_Data.vStartPosition = vPos;
-
 		_uint objectType;
 		File->Read<_uint>(objectType);
 
 
+		OBJECT_INIT_DESC Init_Data = {};
+		Init_Data.vStartPosition = vPos;
 		CGameObject* pObj = nullptr;
-		if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, eLayerType, strPrototypeTag, &Init_Data, &pObj)))
+		if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC, strPrototypeTag, &Init_Data, &pObj)))
 		{
 			MSG_BOX("Load_Objects_Failed.");
 			return E_FAIL;
@@ -449,13 +448,6 @@ HRESULT CLevel_Evermore::Ready_Layer_Dynamic(const LAYER_TYPE eLayerType, const 
 			return E_FAIL;
 		}
 
-
-
-		pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
-		pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
-		pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
-		pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
-
 		if (pObj->Get_ObjectType() == OBJ_TYPE::OBJ_WATER)
 		{
 			CWater::VS_GerstnerWave vsWave;
@@ -469,8 +461,40 @@ HRESULT CLevel_Evermore::Ready_Layer_Dynamic(const LAYER_TYPE eLayerType, const 
 			static_cast<CWater*>(pObj)->Set_PSGerstnerWave(psWave);
 			static_cast<CWater*>(pObj)->Set_Damper(damp);
 		}
+		else if (pObj->Get_ObjectType() == OBJ_TYPE::OBJ_ANIMAL)
+		{
+			_uint iSize;
+			File->Read<_uint>(iSize);
+
+			if (iSize != 0)
+			{
+				CAnimals* pAnimals = static_cast<CAnimals*>(pObj);
+				vector<Vec4> Points;
+				Points.reserve(iSize);
+
+				for (_uint i = 0; i < iSize; ++i)
+				{
+					Vec4 vPoint;
+					File->Read<Vec4>(vPoint);
+					Points.push_back(vPoint);
+				}
+
+				pAnimals->Set_RomingPoints(Points);
+
+				_float* pSpeed = pAnimals->Get_Speed();
+				File->Read<_float>(*pSpeed); // 0
+
+				vPos = Points.front();
+			}
+		}
+
+		pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
+		pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
+		pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
+		pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
 	}
 
+	//MSG_BOX("Dynamic_Loaded.");
 	return S_OK;
 }
 

@@ -17,6 +17,7 @@
 #include "Game_Manager.h"
 #include "Player.h"
 #include "Water.h"
+#include "Animals.h"
 
 CTool_Map::CTool_Map(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CTool(pDevice, pContext)
@@ -68,7 +69,11 @@ void CTool_Map::Tick(_float fTimeDelta)
 #pragma region MapWater
 		MapWaterSpace();
 #pragma endregion MapWater
-		int a = 0;
+
+#pragma region AnimalPatrol
+		MapAnimalPatrol();
+#pragma endregion AnimalPatrol
+
 
 		Picking();
 	}
@@ -274,6 +279,26 @@ void CTool_Map::BatchWater(LEVELID iLevelID, LAYER_TYPE iLayerType)
 	}
 }
 
+void CTool_Map::BatchAnimal(LEVELID iLevelID, LAYER_TYPE iLayerType)
+{
+	list<CGameObject*>& pGameObjects = GI->Find_GameObjects(iLevelID, iLayerType);
+
+	for (auto& pObj : pGameObjects)
+	{
+		if (pObj->Get_ObjectType() != OBJ_TYPE::OBJ_ANIMAL)
+			continue;
+
+		string ObjectID = std::to_string(pObj->Get_ObjectID());
+		string ObjectTag = CUtils::ToString(pObj->Get_ObjectTag());
+
+		string strName = ObjectTag + "_" + ObjectID;
+
+		if (ImGui::Selectable(strName.c_str()))
+			m_pSelectObj = pObj;
+
+	}
+}
+
 void CTool_Map::RomingClear()
 {
 	if (nullptr == m_pSelectObj)
@@ -293,9 +318,20 @@ void CTool_Map::RomingPointDelete()
 {
 	if (nullptr == m_pSelectObj)
 		return;
-
-
 }
+
+void CTool_Map::Animals_PointsClear()
+{
+	if (nullptr == m_pSelectObj)
+		return;
+
+	CAnimals* pAnimal = static_cast<CAnimals*>(m_pSelectObj);
+	vector<Vec4>* pPoints = pAnimal->Get_RomingPoints();
+	pPoints->clear();
+
+	pAnimal->Set_CurRomingPoint(pPoints->size());
+}
+
 
 void CTool_Map::Picking()
 {
@@ -339,7 +375,7 @@ void CTool_Map::Picking()
 		}
 	}
 #pragma region Npc Not Roming
-	if (m_iNPCState != 1)
+	if (m_iNPCState != 1 && m_iControlState != 7 && false == m_bAnimalPointPick)
 	{
 		if (KEY_HOLD(KEY::CTRL) && KEY_TAP(KEY::RBTN))
 		{
@@ -462,6 +498,63 @@ void CTool_Map::Picking()
 		}
 	}
 #pragma endregion Npc Roming
+	else if (true == m_bAnimalPointPick)
+	{
+		if (KEY_HOLD(KEY::CTRL) && KEY_TAP(KEY::RBTN))
+		{
+			if (nullptr != m_pSelectObj)
+			{
+				for (_uint i = 0; i < LAYER_TYPE::LAYER_END; ++i)
+				{
+					if (i == LAYER_TYPE::LAYER_CAMERA
+						|| i == LAYER_TYPE::LAYER_TERRAIN
+						|| i == LAYER_TYPE::LAYER_BACKGROUND
+						|| i == LAYER_TYPE::LAYER_SKYBOX
+						|| i == LAYER_TYPE::LAYER_UI
+						|| i == LAYER_TYPE::LAYER_EFFECT)
+						continue;
+
+					list<CGameObject*>& GameObjects = GI->Find_GameObjects(LEVEL_TOOL, i);
+
+					for (auto& Object : GameObjects)
+					{
+						CTransform* pTransform = Object->Get_Component<CTransform>(L"Com_Transform");
+						CModel* pModel = Object->Get_Component<CModel>(L"Com_Model");
+						if (pTransform == nullptr)
+							continue;
+
+						if (pModel == nullptr)
+							continue;
+
+						for (auto& pMesh : pModel->Get_Meshes())
+						{
+							Vec4 vPosition;
+
+							if (CPicking_Manager::GetInstance()->Is_Picking(pTransform, pMesh, false, &vPosition))
+							{
+								CTransform* pTargetTransform = m_pSelectObj->Get_Component<CTransform>(L"Com_Transform");
+								vector<Vec4>* pPoints = static_cast<CAnimals*>(m_pSelectObj)->Get_RomingPoints();
+								if (false == static_cast<CAnimals*>(m_pSelectObj)->Get_TurnOnPoint())
+								{
+									pPoints->push_back(vPosition);
+									pTargetTransform->Set_State(CTransform::STATE::STATE_POSITION, vPosition);
+									static_cast<CAnimals*>(m_pSelectObj)->Set_TurnOnPoint(true);
+									return;
+								}
+								else
+								{
+									pPoints->push_back(vPosition);
+									return;
+								}
+
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 void CTool_Map::MapObjectSpace()
@@ -505,7 +598,7 @@ void CTool_Map::MapObjectSpace()
 			{
 				ChangeState();
 				m_iControlState = 6;
-			}
+			} ImGui::SameLine();
 
 			ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.f), u8"오브젝트");
 			if (nullptr != m_pSelectObj)
@@ -581,137 +674,149 @@ void CTool_Map::MapObjectSpace()
 					case OBJ_TYPE::OBJ_WATER:
 						DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC);
 						break;
+					case OBJ_TYPE::OBJ_ANIMAL:
+						DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC);
+						break;
 					}
 
 				}
 				ImGui::PopItemWidth();
-
-				ImGui::SameLine();
-
-				_bool bEnable = false;
-
-				if(nullptr != m_pSelectObj)
-					bEnable = m_pSelectObj->Get_Enable();
-				
-				if (ImGui::Checkbox("Enable", &bEnable))
-				{
-					m_pSelectObj->Set_Enable(bEnable);
-				}
 			}
 			else
 				ImGui::TextColored(ImVec4(1.0f, 0.0f, 1.0f, 1.0f), u8"[ 현재 선택된 오브젝트가 없습니다.]");
 
 			ImGui::SameLine();
 
-			ImGui::PushItemWidth(110.f);
-
-			static const char* szLevelType = nullptr;
-
-			if (ImGui::BeginCombo(u8"Level_Type", szLevelType))
+			if (m_iControlState != 7)
 			{
-				for (_uint i = 0; i < LEVEL_LIST_END; ++i)
-				{
-					_bool IsSelected = (szLevelType == m_ImguiSelectableNameList[i]);
 
-					if (ImGui::Selectable(m_ImguiSelectableNameList[i], IsSelected))
+				ImGui::PushItemWidth(110.f);
+
+				static const char* szLevelType = nullptr;
+
+				if (ImGui::BeginCombo(u8"Level_Type", szLevelType))
+				{
+					for (_uint i = 0; i < LEVEL_LIST_END; ++i)
 					{
-						szLevelType = m_ImguiSelectableNameList[i];
-						m_iCurrentLevel = i;
-						m_strLevelName = CUtils::ToWString(m_ImguiSelectableNameList[i]);
+						_bool IsSelected = (szLevelType == m_ImguiSelectableNameList[i]);
+
+						if (ImGui::Selectable(m_ImguiSelectableNameList[i], IsSelected))
+						{
+							szLevelType = m_ImguiSelectableNameList[i];
+							m_iCurrentLevel = i;
+							m_strLevelName = CUtils::ToWString(m_ImguiSelectableNameList[i]);
+						}
+					}
+					ImGui::EndCombo();
+				}
+
+				_bool bEnable = false;
+
+				if (nullptr != m_pSelectObj)
+					bEnable = m_pSelectObj->Get_Enable();
+
+				if (ImGui::Checkbox("Enable", &bEnable))
+					m_pSelectObj->Set_Enable(bEnable);
+
+				ImGui::SameLine();
+
+				_bool bIsQuest = false;
+
+				if (nullptr != m_pSelectObj)
+					bIsQuest = m_pSelectObj->IsQuestItem();
+
+				if (ImGui::Checkbox("IsQuest", &bIsQuest))
+					m_pSelectObj->Set_QuestItem(bIsQuest);
+
+				ImGui::PopItemWidth();
+
+				ImGui::Dummy(ImVec2(0.0f, 5.0f));
+
+				if (ImGui::Button(u8"오브젝트 추가"))
+				{
+					m_pSelectObj = nullptr;
+					m_bAddObject = true;
+
+				}ImGui::SameLine();
+
+				if (ImGui::Button(u8"배치된 오브젝트"))
+					m_bAddObject = false;
+
+				ImGui::SameLine();
+
+				if (3 == m_iControlState)
+				{
+					if (ImGui::Checkbox(u8"다중 심기 모드", &m_bPlantMode))
+					{
 					}
 				}
-				ImGui::EndCombo();
-			}
 
-			ImGui::PopItemWidth();
-
-			ImGui::Dummy(ImVec2(0.0f, 5.0f));
-
-			if (ImGui::Button(u8"오브젝트 추가"))
-			{
-				m_pSelectObj = nullptr;
-				m_bAddObject = true;
-
-			}ImGui::SameLine();
-
-			if (ImGui::Button(u8"배치된 오브젝트"))
-				m_bAddObject = false;
-
-			ImGui::SameLine();
-
-			if (3 == m_iControlState)
-			{
-				if (ImGui::Checkbox(u8"다중 심기 모드", &m_bPlantMode))
+				if (true == m_bAddObject)
 				{
+					ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), u8"추가할 오브젝트 선택");
+
+					if (ImGui::ListBoxHeader("##ASSETLIST", ImVec2(300.0f, 0.0f)))
+					{
+						if (0 == m_iControlState)
+							AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_BUILDING);
+						else if (1 == m_iControlState)
+							AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_PROP);
+						else if (2 == m_iControlState)
+							AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_GROUND);
+						else if (3 == m_iControlState)
+							AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_GRASS);
+						else if (4 == m_iControlState)
+							AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_TREEROCK);
+						else if (5 == m_iControlState)
+							AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC);
+						else if (6 == m_iControlState)
+							AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_SKYBOX);
+					}
+
+					ImGui::ListBoxFooter();
 				}
-			}
-
-			if (true == m_bAddObject)
-			{
-				ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), u8"추가할 오브젝트 선택");
-
-				if (ImGui::ListBoxHeader("##ASSETLIST", ImVec2(300.0f, 0.0f)))
+				else
 				{
-					if (0 == m_iControlState)
-						AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_BUILDING);
-					else if (1 == m_iControlState)
-						AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_PROP);
-					else if (2 == m_iControlState)
-						AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_GROUND);
-					else if (3 == m_iControlState)
-						AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_GRASS);
-					else if (4 == m_iControlState)
-						AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_TREEROCK);
-					else if (5 == m_iControlState)
-						AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC);
-					else if (6 == m_iControlState)
-						AddMapObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_SKYBOX);
-				}
+					ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), u8"맵에 배치된 오브젝트 리스트");
+					if (ImGui::ListBoxHeader("##OBJECTLIST", ImVec2(300.0f, 0.0f)))
+					{
+						if (0 == m_iControlState)
+							BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_BUILDING);
+						else if (1 == m_iControlState)
+							BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_PROP);
+						else if (2 == m_iControlState)
+							BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_GROUND);
+						else if (3 == m_iControlState)
+							BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_GRASS);
+						else if (4 == m_iControlState)
+							BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_TREEROCK);
+						else if (5 == m_iControlState)
+							BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC);
+						else if (6 == m_iControlState)
+							BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_SKYBOX);
+					}
 
-				ImGui::ListBoxFooter();
-			}
-			else
-			{
-				ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), u8"맵에 배치된 오브젝트 리스트");
-				if (ImGui::ListBoxHeader("##OBJECTLIST", ImVec2(300.0f, 0.0f)))
-				{
-					if (0 == m_iControlState)
-						BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_BUILDING);
-					else if (1 == m_iControlState)
-						BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_PROP);
-					else if (2 == m_iControlState)
-						BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_GROUND);
-					else if (3 == m_iControlState)
-						BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_GRASS);
-					else if (4 == m_iControlState)
-						BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_TREEROCK);
-					else if (5 == m_iControlState)
-						BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC);
-					else if(6 == m_iControlState)
-						BatchObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_SKYBOX);
+					ImGui::ListBoxFooter();
 				}
 
-				ImGui::ListBoxFooter();
+				ImGui::Spacing();
+
+				if (ImGui::Button(u8"Save"))
+					Save_Map_Data(m_strLevelName);
+
+				ImGui::SameLine();
+
+				if (ImGui::Button(u8"Load"))
+					Load_Map_Data(m_strLevelName);
+
+				if (ImGui::Button(u8"Dynamic_Save"))
+					Save_Dynamic_Data(m_strLevelName);
+
+				ImGui::SameLine();
+
+				if (ImGui::Button(u8"Dynamic_Load"))
+					Load_Dynamic_Data(m_strLevelName);
 			}
-
-			ImGui::Spacing();
-
-			if (ImGui::Button(u8"Save"))
-				Save_Map_Data(m_strLevelName);
-
-			ImGui::SameLine();
-
-			if (ImGui::Button(u8"Load"))
-				Load_Map_Data(m_strLevelName);
-
-			if (ImGui::Button(u8"Dynamic_Save"))
-				Save_Dynamic_Data(m_strLevelName);
-
-			ImGui::SameLine();
-
-			if (ImGui::Button(u8"Dynamic_Load"))
-				Load_Dynamic_Data(m_strLevelName);
-
 		}
 		ImGui::EndChild();
 	}
@@ -1370,6 +1475,70 @@ void CTool_Map::MapWaterSpace()
 	}
 }
 
+void CTool_Map::MapAnimalPatrol()
+{
+	m_bAnimalPointPick = false;
+
+	if (ImGui::CollapsingHeader("[ Animals Patrol ]"))
+	{
+		ImGuiStyle& imguiStyle = ImGui::GetStyle();
+		m_bAnimalPointPick = true;
+
+		const _float splitterButton = 10.0f;
+		ImGui::Dummy(ImVec2(0.0f, splitterButton * 0.5f));
+		ImGui::Indent(5.0f);
+		ImGui::Text("Animals Patrol Setting");
+		ImGui::Unindent(5.0f);
+		ImGui::Dummy(ImVec2(0.0f, splitterButton * 0.5f));
+
+		if (ImGui::BeginChild("Child_Animals", ImVec2(0.0f, 600.0f), true))
+		{
+			if (ImGui::ListBoxHeader("##Animals List", ImVec2(300.0f, 0.0f)))
+				BatchAnimal(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC);
+
+			ImGui::ListBoxFooter();
+		}
+
+		ImGui::PushItemWidth(150.0f);
+		if (ImGui::CollapsingHeader("Points", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ImGui::Separator();
+
+			if (nullptr != m_pSelectObj)
+			{
+				vector<Vec4>* romingPoints = static_cast<CAnimals*>(m_pSelectObj)->Get_RomingPoints();
+				_uint iSize = romingPoints->size();
+
+				for (_uint i = 0; i < iSize; ++i)
+				{
+					ImGui::DragFloat3(("Points_" + std::to_string(i)).c_str(), &(*romingPoints)[i].x);
+					ImGui::Spacing();
+				}
+
+				_float* fSpeed = static_cast<CAnimals*>(m_pSelectObj)->Get_Speed();
+				ImGui::DragFloat("Speed", fSpeed, 0.1f, 0.1f, 20.0f);
+
+				if (ImGui::Button("Undo", ImVec2(80.0f, 20.0f)))
+				{
+					if (romingPoints->size() > 0)
+					{
+						romingPoints->pop_back();
+						if (static_cast<CAnimals*>(m_pSelectObj)->Get_CurRomingPoint() >= romingPoints->size())
+							static_cast<CGameNpc*>(m_pSelectObj)->Set_CurRoamingIndex(static_cast<CAnimals*>(m_pSelectObj)->Get_CurRomingPoint() - 1);
+					}
+
+				} ImGui::SameLine();
+
+				if (ImGui::Button("All Romove", ImVec2(150.0f, 20.0f))) { Animals_PointsClear(); } ImGui::SameLine();
+
+			}
+		}
+		ImGui::PopItemWidth();
+
+		ImGui::EndChild();
+	}
+}
+
 void CTool_Map::ChangeState()
 {
 	m_bAddObject = false;
@@ -1443,7 +1612,9 @@ HRESULT CTool_Map::Save_Map_Data(const wstring& strMapFileName)
 				File->Write<_float4>(vLook);
 				File->Write<_float4>(vPos);
 
-				// 6. Object Type
+				// 6. Quest Item
+				_bool IsQuest = Object->IsQuestItem();
+				File->Write<_bool>(IsQuest);
 			}
 		}
 	}
@@ -1527,6 +1698,10 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 				pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
 				pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
 				pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
+
+				_bool IsQuest;
+				File->Read<_bool>(IsQuest);  
+				pObj->Set_QuestItem(IsQuest);
 			}
 		}
 	}
@@ -1612,9 +1787,24 @@ HRESULT CTool_Map::Save_Dynamic_Data(const wstring& strMapFileName)
 			_float damp = static_cast<CWater*>(Object)->Get_Damper();
 			File->Write<_float>(damp);
 		}
+		else if (Object->Get_ObjectType() == OBJ_TYPE::OBJ_ANIMAL)
+		{
+			vector<Vec4>* pPoints = static_cast<CAnimals*>(Object)->Get_RomingPoints();
+			File->Write<_uint>(pPoints->size());
+
+			if (pPoints->size() != 0)
+			{
+				CAnimals* pAnimals = static_cast<CAnimals*>(Object);
+
+				for (auto& iter : *pPoints)
+					File->Write<Vec4>(iter); // 0 
+				
+				_float* pSpeed = pAnimals->Get_Speed();
+				File->Write<_float>(*pSpeed); // 0 
+			}
+		}
 	}
 	
-
 	MSG_BOX("Dynamic_Saved.");
 	return S_OK;
 }
@@ -1629,6 +1819,7 @@ HRESULT CTool_Map::Load_Dynamic_Data(const wstring& strMapFileName)
 	
 	GI->Clear_Layer(LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC);
 
+	m_pSelectObj = nullptr;
 
 	_uint iObjectCount = File->Read<_uint>();
 	for (_uint j = 0; j < iObjectCount; ++j)
@@ -1672,11 +1863,6 @@ HRESULT CTool_Map::Load_Dynamic_Data(const wstring& strMapFileName)
 			return E_FAIL;
 		}
 
-		pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
-		pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
-		pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
-		pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
-
 		if (pObj->Get_ObjectType() == OBJ_TYPE::OBJ_WATER)
 		{
 			CWater::VS_GerstnerWave vsWave;
@@ -1690,11 +1876,39 @@ HRESULT CTool_Map::Load_Dynamic_Data(const wstring& strMapFileName)
 			static_cast<CWater*>(pObj)->Set_PSGerstnerWave(psWave);
 			static_cast<CWater*>(pObj)->Set_Damper(damp);
 		}
+		else if (pObj->Get_ObjectType() == OBJ_TYPE::OBJ_ANIMAL)
+		{
+			_uint iSize;
+			File->Read<_uint>(iSize);
 
+			if (iSize != 0)
+			{
+				CAnimals* pAnimals = static_cast<CAnimals*>(pObj);
+				vector<Vec4> Points;
+				Points.reserve(iSize);
 
+				for (_uint i = 0; i < iSize; ++i)
+				{
+					Vec4 vPoint;
+					File->Read<Vec4>(vPoint);
+					Points.push_back(vPoint);
+				}
+
+				pAnimals->Set_RomingPoints(Points);
+		
+				_float* pSpeed = pAnimals->Get_Speed();
+				File->Read<_float>(*pSpeed); // 0
+
+				vPos = Points.front();
+			}
+		}
+
+		pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
+		pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
+		pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
+		pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
 	}
 
-	
 	MSG_BOX("Dynamic_Loaded.");
 	return S_OK;
 }
@@ -2081,8 +2295,6 @@ HRESULT CTool_Map::Load_NPC_Data(const wstring& strNPCFileName)
 				pNpc->Set_NpcState(static_cast<CGameNpc::NPC_STATE>(eState));
 				pNpc->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(eState);
 				pNpc->Set_Stat(eStat);
-			
-
 			}
 
 
@@ -2128,7 +2340,7 @@ HRESULT CTool_Map::Render_DebugDraw()
 	if (nullptr == m_pSelectObj)
 		return S_OK;
 
-	if (OBJ_TYPE::OBJ_NPC != m_pSelectObj->Get_ObjectType())
+	if (OBJ_TYPE::OBJ_NPC != m_pSelectObj->Get_ObjectType() && OBJ_TYPE::OBJ_ANIMAL != m_pSelectObj->Get_ObjectType())
 		return S_OK;
 
 	m_pEffect->SetWorld(XMMatrixIdentity());
@@ -2141,18 +2353,36 @@ HRESULT CTool_Map::Render_DebugDraw()
 
 	m_pBatch->Begin();
 
-	CGameNpc* pNpc = static_cast<CGameNpc*>(m_pSelectObj);
-
-	vector<Vec4>* pPoints = pNpc->Get_RoamingArea();
-
-	if (pPoints->size() != 0)
+	if (OBJ_TYPE::OBJ_NPC == m_pSelectObj->Get_ObjectType())
 	{
-		for (auto& iter : *pPoints)
+		CGameNpc* pNpc = static_cast<CGameNpc*>(m_pSelectObj);
+		vector<Vec4>* pPoints = pNpc->Get_RoamingArea();
+
+		if (pPoints->size() != 0)
 		{
-			m_pSphere->Center = Vec3(iter.x, iter.y, iter.z);
-			DX::Draw(m_pBatch, *m_pSphere, Colors::LightCyan);
+			for (auto& iter : *pPoints)
+			{
+				m_pSphere->Center = Vec3(iter.x, iter.y, iter.z);
+				DX::Draw(m_pBatch, *m_pSphere, Colors::LightCyan);
+			}
 		}
 	}
+	else if (OBJ_TYPE::OBJ_ANIMAL == m_pSelectObj->Get_ObjectType())
+	{
+		CAnimals* pAnimals = static_cast<CAnimals*>(m_pSelectObj);
+		vector<Vec4>* pPoints = pAnimals->Get_RomingPoints();
+
+		if (pPoints->size() != 0)
+		{
+			for (auto& iter : *pPoints)
+			{
+				m_pSphere->Center = Vec3(iter.x, iter.y, iter.z);
+				DX::Draw(m_pBatch, *m_pSphere, Colors::LightCyan);
+			}
+		}
+	}
+
+
 
 	m_pBatch->End();
 

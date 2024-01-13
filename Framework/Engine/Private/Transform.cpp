@@ -15,6 +15,8 @@ CTransform::CTransform(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 CTransform::CTransform(const CTransform & rhs)
 	: CComponent(rhs)
 	, m_WorldMatrix(rhs.m_WorldMatrix)
+	, m_vRotation(rhs.m_vRotation)
+	, m_fTime(rhs.m_fTime)
 {
 
 }
@@ -161,17 +163,20 @@ void CTransform::Rotation_Acc(_fvector vAxis, _float fRadian)
 
 void CTransform::LookAt(_vector vAt)
 {
-	_vector		vLook = vAt - Get_State(CTransform::STATE_POSITION);
+	Vec4		vLook = vAt - Get_State(CTransform::STATE_POSITION);
+	vLook.Normalize();
+	
+	Vec4		vRight = XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vLook);
+	vRight.Normalize();
 
-	_vector		vRight = XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vLook);
-
-	_vector		vUp = XMVector3Cross(vLook, vRight);
+	Vec4		vUp = XMVector3Cross(vLook, vRight);
+	vUp.Normalize();
 
 	_float3		vScale = Get_Scale();
 
-	Set_State(CTransform::STATE_RIGHT, XMVector3Normalize(vRight) * vScale.x);
-	Set_State(CTransform::STATE_UP, XMVector3Normalize(vUp) * vScale.y);
-	Set_State(CTransform::STATE_LOOK, XMVector3Normalize(vLook) * vScale.z);
+ 	Set_State(CTransform::STATE_RIGHT, vRight * vScale.x);
+	Set_State(CTransform::STATE_UP, vUp * vScale.y);
+	Set_State(CTransform::STATE_LOOK, vLook * vScale.z);
 }
 
 void CTransform::LookAt_ForLandObject(_vector vAt)
@@ -234,6 +239,46 @@ void CTransform::RevolutionRotation(const Vec3& vPoint, const Vec3 vAxis, const 
 	Vec3 vResultPos = vOut + vPoint;
 	Vec4 vFinalPos = Vec4(vResultPos.x, vResultPos.y, vResultPos.z, 1.0f);
 	Set_State(CTransform::STATE_POSITION, vFinalPos);
+}
+
+void CTransform::ParabolicFormula(const Vec3& startPos, const Vec3& endPos, const _float fTimeDelta, const _float& maxHeight, const _float& maxTime)
+{
+	Vec3 vStarPos = startPos; // 시작할 위치
+	Vec3 vEndPos = endPos; // 끝날 위치
+
+	_float fVelocityX, fVelocityY, fVelocityZ;
+
+	_float fMaxHeight = maxHeight; // 최대 높이
+	_float fTimeToMaxHeight = maxTime; // 최대 높이까지 가는 시간 
+
+	_float fEndHeight = vEndPos.y - vStarPos.y;
+	_float fHeight = fMaxHeight - vStarPos.y;
+	_float fGravity = 2.0f * fHeight / (fTimeToMaxHeight * fTimeToMaxHeight);
+
+	fVelocityY = ::sqrtf(2 * fGravity * fHeight);
+
+	_float a = fGravity;
+	_float b = -2.0f * fVelocityY;
+	_float c = 2.0f * fEndHeight;
+
+	
+	_float fEndTime = (-b + ::sqrtf(b * b - 4 * a * c)) / (2.0f * a);
+	if (true == std::isnan(fEndTime))
+		fEndTime = 3.0f;
+	
+
+	fVelocityX = -(vStarPos.x - vEndPos.x) / fEndTime;
+	fVelocityZ = -(vStarPos.z - vEndPos.z) / fEndTime;
+
+	m_fTime += fTimeDelta;
+
+	Vec4 vPos;
+	vPos.x = vStarPos.x + fVelocityX * m_fTime;
+	vPos.y = vStarPos.y + (fVelocityY * m_fTime) - (0.5f * fGravity * m_fTime * m_fTime);
+	vPos.z = vStarPos.z + fVelocityZ * m_fTime;
+	vPos.w = 1.0f;
+
+	Set_State(CTransform::STATE_POSITION, vPos);
 }
 
 

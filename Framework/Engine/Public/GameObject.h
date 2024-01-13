@@ -92,6 +92,9 @@ public:
 	void Set_NaviObject(_bool bNaviGation) { m_bNaviObject = bNaviGation; }
 	_bool Is_NaviObject() { return m_bNaviObject; }
 
+	const _bool& IsQuestItem() const { return m_bIsQuestObject; }
+	void Set_QuestItem(_bool quest) { m_bIsQuestObject = quest; }
+
 public:
 	vector<class CCollider*>& Get_Collider(_uint eDetectionType) { return m_Colliders[eDetectionType]; }
 	HRESULT Add_Collider(_uint iLevelIndex, _uint eColliderType, _uint eDetectionType, void* pArg);
@@ -136,7 +139,7 @@ protected:
 	_bool				m_bDead = false;
 
 	_bool				m_bEnable = false;
-
+	_bool				m_bIsQuestObject = false;
 protected:
 	_bool m_bNaviObject = false;
 

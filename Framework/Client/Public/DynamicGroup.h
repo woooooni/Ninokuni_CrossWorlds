@@ -14,3 +14,4 @@
 #include "WitchWater.h"
 #include "EvermoreWater.h"
 #include "DynamicProps.h"
+#include "Whale.h"

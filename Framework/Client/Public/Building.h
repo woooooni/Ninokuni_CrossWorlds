@@ -27,6 +27,13 @@ public:
 	virtual HRESULT Ready_Components() override;
 
 public:
+	const _bool& Get_QuestState() const { return m_bQuestClear; }
+	void Set_QuestClear(_bool clear) { m_bQuestClear = clear; }
+
+private:
+	_bool m_bQuestClear = false;
+
+public:
 	static CBuilding* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, 
 		const wstring& strFilePath, const wstring& strFileName, _int eObjType, _uint eModelType);
 	virtual CGameObject* Clone(void* pArg);

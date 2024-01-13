@@ -19,6 +19,11 @@
 
 #include "Camera_Group.h"
 #include "Particle_Manager.h"
+#include <Utils.h>
+#include <FileUtils.h>
+#include "Water.h"
+#include "GameNpc.h"
+#include "Animals.h"
 
 CLevel_IceLand::CLevel_IceLand(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -46,9 +51,12 @@ HRESULT CLevel_IceLand::Initialize()
 	if (FAILED(Ready_Layer_Effect(LAYER_TYPE::LAYER_EFFECT)))
 		return E_FAIL;
 
-	if (FAILED(Ready_Layer_NPC(LAYER_TYPE::LAYER_NPC)))
+	if (FAILED(Ready_Layer_Dynamic(LAYER_TYPE::LAYER_DYNAMIC, L"Winter")))
 		return E_FAIL;
- 
+
+	if (FAILED(Ready_Layer_Npc(LAYER_TYPE::LAYER_NPC)))
+		return E_FAIL;
+
 //	if (FAILED(Ready_Layer_Monster(LAYER_TYPE::LAYER_MONSTER)))
 //		return E_FAIL;
 
@@ -382,6 +390,234 @@ HRESULT CLevel_IceLand::Ready_Layer_Effect(const LAYER_TYPE eLayerType)
 		return E_FAIL;
 	if (FAILED(GET_INSTANCE(CParticle_Manager)->AddLevel_Particle(LEVEL_ICELAND, TEXT("Particle_Snow_02"), WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f))))
 		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CLevel_IceLand::Ready_Layer_Dynamic(const LAYER_TYPE eLayerType, const wstring& strMapFileName)
+{
+	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strMapFileName + L"/" + strMapFileName + L"Dynamic.map";
+
+	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
+	File->Open(strMapFilePath, FileMode::Read);
+
+
+	GI->Clear_Layer(LEVELID::LEVEL_ICELAND, LAYER_TYPE::LAYER_DYNAMIC);
+
+
+	_uint iObjectCount = File->Read<_uint>();
+	for (_uint j = 0; j < iObjectCount; ++j)
+	{
+		// 3. Object_Prototype_Tag
+		wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
+		wstring strObjectTag = CUtils::ToWString(File->Read<string>());
+
+		// 6. Obejct States
+		_float4 vRight, vUp, vLook, vPos;
+
+		File->Read<_float4>(vRight);
+		File->Read<_float4>(vUp);
+		File->Read<_float4>(vLook);
+		File->Read<_float4>(vPos);
+
+		_uint objectType;
+		File->Read<_uint>(objectType);
+
+
+		OBJECT_INIT_DESC Init_Data = {};
+		Init_Data.vStartPosition = vPos;
+		CGameObject* pObj = nullptr;
+		if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC, strPrototypeTag, &Init_Data, &pObj)))
+		{
+			MSG_BOX("Load_Objects_Failed.");
+			return E_FAIL;
+		}
+
+		if (nullptr == pObj)
+		{
+			MSG_BOX("Add_Object_Failed.");
+			return E_FAIL;
+		}
+		pObj->Set_ObjectTag(strObjectTag);
+
+		CTransform* pTransform = pObj->Get_Component<CTransform>(L"Com_Transform");
+		if (nullptr == pTransform)
+		{
+			MSG_BOX("Get_Transform_Failed.");
+			return E_FAIL;
+		}
+
+		if (pObj->Get_ObjectType() == OBJ_TYPE::OBJ_WATER)
+		{
+			CWater::VS_GerstnerWave vsWave;
+			File->Read<CWater::VS_GerstnerWave>(vsWave);
+			CWater::PS_GerstnerWave psWave;
+			File->Read<CWater::PS_GerstnerWave>(psWave);
+			_float damp;
+			File->Read<_float>(damp);
+
+			static_cast<CWater*>(pObj)->Set_VSGerstnerWave(vsWave);
+			static_cast<CWater*>(pObj)->Set_PSGerstnerWave(psWave);
+			static_cast<CWater*>(pObj)->Set_Damper(damp);
+		}
+		else if (pObj->Get_ObjectType() == OBJ_TYPE::OBJ_ANIMAL)
+		{
+			_uint iSize;
+			File->Read<_uint>(iSize);
+
+			if (iSize != 0)
+			{
+				CAnimals* pAnimals = static_cast<CAnimals*>(pObj);
+				vector<Vec4> Points;
+				Points.reserve(iSize);
+
+				for (_uint i = 0; i < iSize; ++i)
+				{
+					Vec4 vPoint;
+					File->Read<Vec4>(vPoint);
+					Points.push_back(vPoint);
+				}
+
+				pAnimals->Set_RomingPoints(Points);
+
+				_float* pSpeed = pAnimals->Get_Speed();
+				File->Read<_float>(*pSpeed); // 0
+
+				vPos = Points.front();
+			}
+		}
+
+		pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
+		pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
+		pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
+		pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_IceLand::Ready_Layer_Npc(const LAYER_TYPE eLayerType)
+{
+	wstring strNpcFileName = L"Winter";
+	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strNpcFileName + L"/" + strNpcFileName + L"NPC.map";
+
+	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
+	File->Open(strMapFilePath, FileMode::Read);
+
+	for (_uint i = 0; i < LAYER_TYPE::LAYER_END; ++i)
+	{
+		if (LAYER_TYPE::LAYER_NPC != i)
+			continue;
+
+		GI->Clear_Layer(LEVELID::LEVEL_ICELAND, i);
+
+
+		_uint iObjectCount = File->Read<_uint>();
+
+		for (_uint j = 0; j < iObjectCount; ++j)
+		{
+			// 3. Object_Prototype_Tag
+			wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
+			wstring strObjectTag = CUtils::ToWString(File->Read<string>());
+
+			// 6. Obejct States
+			_float4 vRight, vUp, vLook, vPos;
+
+			File->Read<_float4>(vRight);
+			File->Read<_float4>(vUp);
+			File->Read<_float4>(vLook);
+			File->Read<_float4>(vPos);
+
+
+			OBJECT_INIT_DESC Init_Data = {};
+			Init_Data.vStartPosition = vPos;
+			CGameObject* pObj = nullptr;
+			if (FAILED(GI->Add_GameObject(LEVELID::LEVEL_ICELAND, i, strPrototypeTag, &Init_Data, &pObj)))
+			{
+				MSG_BOX("Load_Objects_Failed.");
+				return E_FAIL;
+			}
+
+			if (nullptr == pObj)
+			{
+				MSG_BOX("Add_Object_Failed.");
+				return E_FAIL;
+			}
+			pObj->Set_ObjectTag(strObjectTag);
+
+			CTransform* pTransform = pObj->Get_Component<CTransform>(L"Com_Transform");
+			if (nullptr == pTransform)
+			{
+				MSG_BOX("Get_Transform_Failed.");
+				return E_FAIL;
+			}
+
+			_uint ObjectType;
+			File->Read<_uint>(ObjectType);
+
+			if (OBJ_TYPE::OBJ_NPC == ObjectType)
+			{
+				CGameNpc* pNpc = dynamic_cast<CGameNpc*>(pObj);
+
+				if (pNpc == nullptr)
+				{
+					MSG_BOX("Fail Load : NPC");
+					return E_FAIL;
+				}
+
+				_uint iSize;
+				File->Read<_uint>(iSize);
+
+				_uint eState;
+				File->Read<_uint>(eState);
+
+
+				if (iSize != 0)
+				{
+					vector<Vec4> Points;
+					Points.reserve(iSize);
+
+					for (_uint i = 0; i < iSize; ++i)
+					{
+						Vec4 vPoint;
+						File->Read<Vec4>(vPoint);
+						Points.push_back(vPoint);
+					}
+
+					pNpc->Set_RoamingArea(Points);
+
+					if (Points.size() != 0)
+					{
+						vPos = Points.front();
+						pNpc->Set_Point(true);
+					}
+				}
+
+				CGameNpc::NPC_STAT eStat;
+				File->Read<CGameNpc::NPC_STAT>(eStat);
+
+				pNpc->Set_NpcState(static_cast<CGameNpc::NPC_STATE>(eState));
+				CStateMachine* pStateMachine = pNpc->Get_Component<CStateMachine>(TEXT("Com_StateMachine"));
+				if (pStateMachine != nullptr)
+				{
+					pStateMachine->Change_State(eState);
+				}
+				else
+				{
+					MSG_BOX("Fail Get : NPC_StateMachine");
+					return E_FAIL;
+				}
+				pNpc->Set_Stat(eStat);
+			}
+
+
+			pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
+			pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
+			pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
+			pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
+		}
+
+	}
 
 	return S_OK;
 }

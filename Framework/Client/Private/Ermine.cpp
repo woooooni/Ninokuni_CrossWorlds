@@ -119,7 +119,7 @@ HRESULT CErmine::Ready_State()
 	m_pStateMachineCom->Add_State(CAnimals::STATE::STATE_RUN, CState_Animal_Run::Create(m_pStateMachineCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Ermine.ao|SKM_Ermine.ao|SKM_Ermine.ao|SKM_Ermine.ao|Ermine_Walk");
+	strAnimationNames.push_back(L"SKM_Ermine.ao|SKM_Ermine.ao|SKM_Ermine.ao|Ermine_Walk");
 	m_pStateMachineCom->Add_State(CAnimals::STATE::STATE_WALK, CState_Animal_Walk::Create(m_pStateMachineCom, strAnimationNames));
 
 	strAnimationNames.clear();
@@ -203,5 +203,4 @@ CGameObject* CErmine::Clone(void* pArg)
 void CErmine::Free()
 {
 	__super::Free();
-
 }
