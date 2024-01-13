@@ -47,7 +47,7 @@ HRESULT CUI_Damage_Number::Initialize(void* pArg)
 	_float fNumSize;
 
 	if (m_FontDesc.bIsPlayer)
-		fNumSize = 112.f * 0.15f;
+		fNumSize = 112.f * 0.23f;
 	else
 	{
 		if (m_FontDesc.bIsBoss)
