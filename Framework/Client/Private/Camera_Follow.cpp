@@ -200,6 +200,16 @@ void CCamera_Follow::Set_Blending(const _bool& bBlending)
 		if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
 			CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
 	}
+
+	if (!bBlending)
+	{
+		if (CAMERA_TYPE::CUTSCENE_MAP == CCamera_Manager::GetInstance()->Get_PrevCamera()->Get_Key())
+		{
+			/* ¸Ê ÄÆ½Å¿¡¼­ ºí·»µùÀÌ ³¡³µ´Ù¸é ¸ðµç ÀÎÇ² ¿­¾îÁØ´Ù. */
+			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
+		}
+	}
+
 }
 
 HRESULT CCamera_Follow::Start_LockOn(CGameObject* pTargetObject, const Vec4& vTargetOffset, const Vec4& vLookAtOffset, const _float& fLockOnBlendingTime)

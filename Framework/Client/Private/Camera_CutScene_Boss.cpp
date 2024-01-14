@@ -10,6 +10,10 @@
 
 #include "Glanix.h"
 
+#include "Game_Manager.h"
+#include "Character.h"
+#include "Player.h"
+
 CCamera_CutScene_Boss::CCamera_CutScene_Boss(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
 	: CCamera(pDevice, pContext, strObjTag, OBJ_TYPE::OBJ_CAMERA)
 {
@@ -116,6 +120,11 @@ HRESULT CCamera_CutScene_Boss::Start_CutScene_Granix(const _uint& iCutSceneType,
 			vLookPos += pTargetTransform->Get_RelativeOffset(m_tLookAtOffset.vCurVec);
 
 			m_pTransformCom->LookAt(vLookPos.OneW());
+		}
+
+		/* Player Input Off */
+		{
+			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
 		}
 	}
 	break;
@@ -271,6 +280,9 @@ HRESULT CCamera_CutScene_Boss::Finish_CutScene()
 				CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_MONSTER, L"Glanix");
 				if (nullptr != pTarget)
 					pFollowCam->Start_LockOn(pTarget, Cam_Target_Offset_LockOn_Glanix, Cam_LookAt_Offset_LockOn_Glanix);
+
+				/* Player Input On */
+				CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
 			}
 		}
 		break;

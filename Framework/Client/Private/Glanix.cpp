@@ -69,6 +69,10 @@
 #include "Camera_Manager.h"
 #include "Quest_Manager.h"
 
+#include "Glanix_IcePillar.h"
+
+#include "Glanix_IcePillar_Controller.h"
+
 CGlanix::CGlanix(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
 	: CBoss(pDevice, pContext, strObjectTag, tStat)
 {
@@ -149,6 +153,9 @@ void CGlanix::Tick(_float fTimeDelta)
 	m_pStateCom->Tick_State(fTimeDelta);
 
 	__super::Tick(fTimeDelta);
+
+	if (nullptr != m_pPillarController)
+		m_pPillarController->Tick(fTimeDelta);
 }
 
 void CGlanix::LateTick(_float fTimeDelta)
@@ -258,6 +265,40 @@ void CGlanix::Set_SkillTree()
 	}
 }
 
+HRESULT CGlanix::Create_Pillars()
+{
+	m_pPillarController = new CGlanix_IcePillar_Controller();
+	if (nullptr == m_pPillarController)
+		return E_FAIL;
+
+	if (FAILED(m_pPillarController->Create_Pillars(6, 20.f, m_vOriginPos, this)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CGlanix::Delete_Pillar(const _int& iKey)
+{
+	if (nullptr == m_pPillarController)
+		return E_FAIL;
+
+	m_pPillarController->Delete_Pillar(iKey);
+}
+
+HRESULT CGlanix::Clear_Pillars()
+{
+	if (nullptr == m_pPillarController)
+		return E_FAIL;
+
+	m_pPillarController->Clear_Pillars();
+
+	delete m_pPillarController;
+
+	m_pPillarController = nullptr;
+
+	return E_NOTIMPL;
+}
+
 HRESULT CGlanix::Ready_Components()
 {
 	/* For.Com_Transform */
@@ -270,7 +311,8 @@ HRESULT CGlanix::Ready_Components()
 	m_pTransformCom->FixRotation(0.f, 180.f, 0.f);
 
 	m_vOriginLook = m_pTransformCom->Get_Look();
-	m_vOriginPos = XMVectorSet(-40.f, 1.6, 361.f, 1.f);
+	//m_vOriginPos = XMVectorSet(-40.f, 1.6, 361.f, 1.f);
+	m_vOriginPos = XMVectorSet(-55.f, 1.6, 363.f, 1.f);
 	m_vWavePoint = { -63.f, 1.6f, 393.f, 1.f };
 
 	/* For.Com_Renderer */

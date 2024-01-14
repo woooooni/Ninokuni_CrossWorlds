@@ -21,7 +21,7 @@ HRESULT CGlanixState_RageCharge::Initialize(const list<wstring>& AnimationList)
 
 void CGlanixState_RageCharge::Enter_State(void* pArg)
 {
-	if (m_iChargeCount >= 4)
+	if (m_iChargeCount >= m_iMaxChargeCount)
 	{
 		m_iChargeCount = 0;
 		m_pStateMachineCom->Change_State(CGlanix::GLANIX_RAGERETURN);
