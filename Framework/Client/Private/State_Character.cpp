@@ -148,7 +148,7 @@ void CState_Character::Battle_Idle_Input(_float fTimeDelta)
 		return;
 
 	if (KEY_TAP(KEY::LBTN))
-	{		
+	{
 		m_pStateMachineCom->Change_State(CCharacter::BATTLE_ATTACK_0);
 		CUI_Manager::GetInstance()->Use_AttackBtn();
 		return;

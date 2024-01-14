@@ -40,6 +40,7 @@
 #include "UI_BtnShowMenu.h"
 #include "UI_Costume_Btn.h"
 #include "UI_Btn_Minimap.h"
+#include "UI_MapName_Text.h"
 #include "UI_Quest_Reward.h"
 #include "UI_Boss_NameTag.h"
 #include "UI_Setting_Icon.h"
@@ -268,36 +269,7 @@ void CUI_Manager::Set_QuestPopup(const wstring& strQuestType, const wstring& str
 	m_QuestPopUp[0]->Set_Contents(strQuestType, strTitle, strContents);
 
 	// 퀘스트 개수를 알아낸 다음 그에 맞게 상태 갱신을 해준다.
-	_int iNum = m_QuestPopUp[0]->Get_NumOfQuest();
-
-	if (1 <= iNum)
-	{
-		m_QuestPopUp[0]->Set_Active(true);
-		m_QuestPopUp[4]->Set_Active(true);
-		m_QuestPopUp[8]->Set_Active(true);
-
-		if (2 <= iNum)
-		{
-			m_QuestPopUp[1]->Set_Active(true);
-			m_QuestPopUp[5]->Set_Active(true);
-
-			if (3 <= iNum)
-			{
-				m_QuestPopUp[2]->Set_Active(true);
-				m_QuestPopUp[6]->Set_Active(true);
-
-				if (4 <= iNum)
-				{
-					m_QuestPopUp[3]->Set_Active(true);
-					m_QuestPopUp[7]->Set_Active(true);
-				}
-			}
-		}
-
-		m_pBtnQuest->Set_TextureIndex(1);
-		m_QuestPopUp[8]->Move_BottomFrame(iNum);
-	}
-
+	Resize_QuestPopup();
 }
 
 void CUI_Manager::Update_QuestPopup(const wstring& strPreTitle, const wstring& strQuestType, const wstring& strTitle, const wstring& strContents)
@@ -310,6 +282,7 @@ void CUI_Manager::Update_QuestPopup(const wstring& strPreTitle, const wstring& s
 		return;
 
 	m_QuestPopUp[0]->Update_QuestContents(strPreTitle, strQuestType, strTitle, strContents);
+	Resize_QuestPopup();
 }
 
 void CUI_Manager::Clear_QuestPopup(const wstring& strTitle)
@@ -317,10 +290,92 @@ void CUI_Manager::Clear_QuestPopup(const wstring& strTitle)
 	if (m_QuestPopUp[0] == nullptr)
 		return;
 
-	if (0 >= m_QuestPopUp[0]->Get_NumOfQuest())
+	if (0 > m_QuestPopUp[0]->Get_NumOfQuest())
 		return;
 
 	m_QuestPopUp[0]->Clear_Quest(strTitle);
+
+	Resize_QuestPopup();
+}
+
+void CUI_Manager::Resize_QuestPopup()
+{
+	// 퀘스트 개수를 알아낸 다음 그에 맞게 상태 갱신을 해준다.
+	_int iNum = m_QuestPopUp[0]->Get_NumOfQuest();
+
+	if (0 > iNum || 4 < iNum)
+		return;
+
+	if (0 == m_QuestPopUp[0]->Get_NumOfQuest())
+	{
+		m_pBtnQuest->Set_TextureIndex(0); // 텍스처 인덱스를 0으로 바꾸고
+		for (auto& iter : m_QuestPopUp)
+			iter->Set_Active(false);
+
+		return;
+	}
+
+	switch (iNum)
+	{
+	case 1:
+		// 켜야될 것
+		m_QuestPopUp[0]->Set_Active(true);
+		m_QuestPopUp[4]->Set_Active(true);
+		m_QuestPopUp[8]->Set_Active(true);
+
+		//꺼야될 것
+		m_QuestPopUp[1]->Set_Active(false);
+		m_QuestPopUp[5]->Set_Active(false);
+		m_QuestPopUp[2]->Set_Active(false);
+		m_QuestPopUp[6]->Set_Active(false);
+		m_QuestPopUp[3]->Set_Active(false);
+		m_QuestPopUp[7]->Set_Active(false);
+		break;
+
+	case 2:
+		//켜야될 것
+		m_QuestPopUp[0]->Set_Active(true);
+		m_QuestPopUp[4]->Set_Active(true);
+		m_QuestPopUp[8]->Set_Active(true);
+		m_QuestPopUp[1]->Set_Active(true);
+		m_QuestPopUp[5]->Set_Active(true);
+
+		//꺼야될 것
+		m_QuestPopUp[6]->Set_Active(false);
+		m_QuestPopUp[3]->Set_Active(false);
+		m_QuestPopUp[7]->Set_Active(false);
+		break;
+
+	case 3:
+		//켜야될 것
+		m_QuestPopUp[0]->Set_Active(true);
+		m_QuestPopUp[4]->Set_Active(true);
+		m_QuestPopUp[8]->Set_Active(true);
+		m_QuestPopUp[1]->Set_Active(true);
+		m_QuestPopUp[5]->Set_Active(true);
+		m_QuestPopUp[2]->Set_Active(true);
+		m_QuestPopUp[6]->Set_Active(true);
+
+		//꺼야될 것
+		m_QuestPopUp[7]->Set_Active(false);
+		break;
+
+	case 4:
+		//켜야될 것
+		m_QuestPopUp[0]->Set_Active(true);
+		m_QuestPopUp[4]->Set_Active(true);
+		m_QuestPopUp[8]->Set_Active(true);
+		m_QuestPopUp[1]->Set_Active(true);
+		m_QuestPopUp[5]->Set_Active(true);
+		m_QuestPopUp[2]->Set_Active(true);
+		m_QuestPopUp[6]->Set_Active(true);
+		m_QuestPopUp[3]->Set_Active(true);
+		m_QuestPopUp[7]->Set_Active(true);
+		break;
+	}
+
+	m_pBtnQuest->Set_TextureIndex(1);
+	m_QuestPopUp[8]->Move_BottomFrame(iNum);
 }
 
 _int CUI_Manager::Get_QuestNum()
@@ -3204,6 +3259,19 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 	pItem->Set_ObjectTag(TEXT("UI_Quest_Reward_Item_Second"));
 	m_QuestItems[1]->Set_Type(CUI_Quest_Reward_Item::UI_QUESTREWARD_ITEM::REWARD_COIN); // Gara
 
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 400.f * 0.5f;
+	UIDesc.fCY = 93.f * 0.5f;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY * 0.15f;
+	CGameObject* pText = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_MapName_Text_Renewal"), &UIDesc, &pText)))
+		return E_FAIL;
+	m_pMapNameText = dynamic_cast<CUI_MapName_Text*>(pText);
+	if (nullptr == m_pMapNameText)
+		return E_FAIL;
+	Safe_AddRef(m_pMapNameText);
+
 	return S_OK;
 }
 
@@ -3861,6 +3929,12 @@ HRESULT CUI_Manager::Ready_GameObjectToLayer(LEVELID eID)
 			return E_FAIL;
 		Safe_AddRef(iter);
 	}
+
+	if (nullptr == m_pMapNameText)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pMapNameText)))
+		return E_FAIL;
+	Safe_AddRef(m_pMapNameText);
 
 	return S_OK;
 }
@@ -5720,6 +5794,33 @@ HRESULT CUI_Manager::Off_OtherSubBtn(_uint iMagicNum)
 	return S_OK;
 }
 
+void CUI_Manager::OnOff_MapName(_bool bOnOff, const wstring& strMapName)
+{
+	if (nullptr == m_pUIMapName)
+		return;
+
+	if (nullptr == m_pMapNameText)
+		return;
+
+	if (TEXT("남문 광장") == strMapName)
+	{
+
+	}
+	else if (TEXT("동문 광장") == strMapName)
+	{
+
+	}
+
+	if (bOnOff) // On
+	{
+		// 작업중입니다람쥐
+	}
+	else // Off
+	{
+
+	}
+}
+
 HRESULT CUI_Manager::OnOff_DialogWindow(_bool bOnOff, _uint iMagicNum)
 {
 	if (iMagicNum == 0) // Normal
@@ -7217,6 +7318,10 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		CUI_Quest_Reward_Item::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_MapName_Text_Renewal"),
+		CUI_MapName_Text::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -7529,6 +7634,8 @@ void CUI_Manager::Free()
 
 	Safe_Release(m_pDummy);
 	Safe_Release(m_pBossNameTag);
+
+	Safe_Release(m_pMapNameText);
 
 	for (auto& pFrame : m_CoolTimeFrame)
 		Safe_Release(pFrame);

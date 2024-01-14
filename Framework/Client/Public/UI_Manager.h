@@ -40,6 +40,7 @@ public: // Get/Set
 	void			Set_QuestPopup(const wstring& strQuestType, const wstring& strTitle, const wstring& strContents);
 	void			Update_QuestPopup(const wstring& strPreTitle, const wstring& strQuestType, const wstring& strTitle, const wstring& strContents);
 	void			Clear_QuestPopup(const wstring& strTitle);
+	void			Resize_QuestPopup();
 	_int			Get_QuestNum();
 
 	_int			Get_SelectedCharacter();
@@ -140,6 +141,7 @@ public: // Lobby
 	HRESULT OnOff_MainMenu(_bool bOnOff);
 	HRESULT OnOff_SubMenu(_bool bOnOff, _uint iMagicNum);
 	HRESULT Off_OtherSubBtn(_uint iMagicNum);
+	void	OnOff_MapName(_bool bOnOff, const wstring& strMapName = TEXT(""));
 
 	HRESULT OnOff_Announce(_int iMagicNum, _bool bOnOff);
 	HRESULT OnOff_DialogWindow(_bool bOnOff, _uint iMagicNum);
@@ -193,6 +195,7 @@ private:
 	class CUI_MapName* m_pUIMapName = { nullptr };
 	class CUI_Tutorial_Window* m_pTutorial = { nullptr };
 	class CUI_Basic* m_pMapText = { nullptr };
+	class CUI_MapName_Text* m_pMapNameText = { nullptr };
 
 	// For Setting Window
 	class CUI_Setting_Window* m_pSettingBG = { nullptr };
