@@ -548,7 +548,7 @@ HRESULT CLevel_IceLand::Ready_Layer_Dynamic(const LAYER_TYPE eLayerType, const w
 		OBJECT_INIT_DESC Init_Data = {};
 		Init_Data.vStartPosition = vPos;
 		CGameObject* pObj = nullptr;
-		if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC, strPrototypeTag, &Init_Data, &pObj)))
+		if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_DYNAMIC, strPrototypeTag, &Init_Data, &pObj)))
 		{
 			MSG_BOX("Load_Objects_Failed.");
 			return E_FAIL;
