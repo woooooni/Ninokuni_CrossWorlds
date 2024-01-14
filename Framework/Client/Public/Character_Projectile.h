@@ -11,7 +11,7 @@ class CCharacter_Projectile abstract : public CGameObject
 public:
 	typedef struct tagCharacterProjectileDesc
 	{
-		CGameObject* pOwner = nullptr;
+		class CCharacter* pOwner = nullptr;
 	} CHARACTER_PROJECTILE_DESC;
 
 protected:
@@ -26,6 +26,8 @@ public:
 	virtual void LateTick(_float fTimeDelta) override;
 	virtual HRESULT Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices) override;
 
+public:
+	class CCharacter* Get_Owner() { return m_pOwner; }
 
 protected:
 	class CModel* m_pModelCom = nullptr;
@@ -33,7 +35,7 @@ protected:
 	class CTransform* m_pTransformCom = nullptr;
 
 protected:
-	class CGameObject* m_pOwner = nullptr;
+	class CCharacter* m_pOwner = nullptr;
 
 protected:
 	_float m_fAccDeletionTime = 0.f;

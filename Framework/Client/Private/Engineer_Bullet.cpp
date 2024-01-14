@@ -4,6 +4,7 @@
 #include "Utils.h"
 #include "Effect_Manager.h"
 #include "Particle_Manager.h"
+#include "Character.h"
 
 CEngineer_Bullet::CEngineer_Bullet(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:CCharacter_Projectile(pDevice, pContext, L"Engineer_Bullet")
@@ -34,6 +35,7 @@ HRESULT CEngineer_Bullet::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_pTransformCom->Set_Scale(Vec3(2.f, 2.f, 2.f));
+	Set_Collider_Elemental(m_pOwner->Get_ElementalType());
 
 	return S_OK;
 }
@@ -90,7 +92,7 @@ HRESULT CEngineer_Bullet::Ready_Components()
 	SphereDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
 	SphereDesc.vOffsetPosition = Vec3(0.f, 0.f, 0.f);
 
-	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::BODY, &SphereDesc)))
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::ATTACK, &SphereDesc)))
 		return E_FAIL;
 
 

@@ -3,6 +3,7 @@
 #include "SwordMan_AuraBlade.h"
 
 #include "Effect_Manager.h"
+#include "Character.h"
 
 CSwordMan_AuraBlade::CSwordMan_AuraBlade(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:CCharacter_Projectile(pDevice, pContext, L"SwordMan_AuraBlade")
@@ -39,6 +40,8 @@ HRESULT CSwordMan_AuraBlade::Initialize(void* pArg)
 	m_fDeletionTime = 1.f;
 	m_fAccDeletionTime = 0.f;
 
+	Set_Collider_Elemental(m_pOwner->Get_ElementalType());
+
 	
 
 	return S_OK;
@@ -74,13 +77,13 @@ HRESULT CSwordMan_AuraBlade::Ready_Components()
 
 	BoundingSphere tSphere;
 	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 0.2f;
+	tSphere.Radius = 1.f;
 	SphereDesc.tSphere = tSphere;
 
 	SphereDesc.pNode = nullptr;
 	SphereDesc.pOwnerTransform = m_pTransformCom;
 	SphereDesc.ModelPivotMatrix = XMMatrixRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f));
-	SphereDesc.vOffsetPosition = Vec3(0.f, 0.f, 0.f);
+	SphereDesc.vOffsetPosition = Vec3(0.f, 1.f, 0.f);
 
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::ATTACK, &SphereDesc)))
 		return E_FAIL;
