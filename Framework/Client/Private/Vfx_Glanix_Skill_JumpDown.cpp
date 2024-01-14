@@ -3,7 +3,7 @@
 
 #include "Particle_Manager.h"
 #include "Effect_Manager.h"
-#include "Character.h"
+#include "Glanix.h"
 
 CVfx_Glanix_Skill_JumpDown::CVfx_Glanix_Skill_JumpDown(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
@@ -17,7 +17,7 @@ CVfx_Glanix_Skill_JumpDown::CVfx_Glanix_Skill_JumpDown(const CVfx_Glanix_Skill_J
 
 HRESULT CVfx_Glanix_Skill_JumpDown::Initialize_Prototype()
 {
-	m_bOwnerStateIndex = CCharacter::SKILL_SPECIAL_2;
+	m_bOwnerStateIndex = CGlanix::GLANIX_JUMPSTAMP;
 
 	m_iMaxCount = TYPE_END;
 	m_pFrameTriger    = new _int[m_iMaxCount];
@@ -25,11 +25,56 @@ HRESULT CVfx_Glanix_Skill_JumpDown::Initialize_Prototype()
 	m_pScaleOffset    = new _float3[m_iMaxCount];
 	m_pRotationOffset = new _float3[m_iMaxCount];
 
-	// 0
-	m_pFrameTriger[TYPE_START]    = 0;
-	m_pPositionOffset[TYPE_START] = _float3(0.f, 0.f, 0.f);
-	m_pScaleOffset[TYPE_START]    = _float3(1.f, 1.f, 1.f);
-	m_pRotationOffset[TYPE_START] = _float3(0.f, 0.f, 0.f);
+	{
+		m_pFrameTriger[TYPE_D_START_WARNING]    = 0;
+		m_pPositionOffset[TYPE_D_START_WARNING] = _float3(0.f, 0.f, 0.f);
+		m_pScaleOffset[TYPE_D_START_WARNING]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_D_START_WARNING] = _float3(0.f, 0.f, 0.f);
+	}
+
+	{
+		m_pFrameTriger[TYPE_D_PREACT_HANDCRACK_LEFT]    = 0;
+		m_pPositionOffset[TYPE_D_PREACT_HANDCRACK_LEFT] = _float3(0.f, 0.f, 0.f);
+		m_pScaleOffset[TYPE_D_PREACT_HANDCRACK_LEFT]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_D_PREACT_HANDCRACK_LEFT] = _float3(0.f, 0.f, 0.f);
+
+		m_pFrameTriger[TYPE_D_PREACT_HANDCRACK_RIGHT]    = 0;
+		m_pPositionOffset[TYPE_D_PREACT_HANDCRACK_RIGHT] = _float3(0.f, 0.f, 0.f);
+		m_pScaleOffset[TYPE_D_PREACT_HANDCRACK_RIGHT]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_D_PREACT_HANDCRACK_RIGHT] = _float3(0.f, 0.f, 0.f);
+
+		m_pFrameTriger[TYPE_P_PREACT_SMOKE]    = 0;
+		m_pPositionOffset[TYPE_P_PREACT_SMOKE] = _float3(0.f, 0.f, 0.f);
+		m_pScaleOffset[TYPE_P_PREACT_SMOKE]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_P_PREACT_SMOKE] = _float3(0.f, 0.f, 0.f);
+
+		m_pFrameTriger[TYPE_P_PREACT_CIRCLES]    = 0;
+		m_pPositionOffset[TYPE_P_PREACT_CIRCLES] = _float3(0.f, 0.f, 0.f);
+		m_pScaleOffset[TYPE_P_PREACT_CIRCLES]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_P_PREACT_CIRCLES] = _float3(0.f, 0.f, 0.f);
+	}
+
+	{
+		m_pFrameTriger[TYPE_D_ATTACK_DOWNCRACK]    = 0;
+		m_pPositionOffset[TYPE_D_ATTACK_DOWNCRACK] = _float3(0.f, 0.f, 0.f);
+		m_pScaleOffset[TYPE_D_ATTACK_DOWNCRACK]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_D_ATTACK_DOWNCRACK] = _float3(0.f, 0.f, 0.f);
+
+		m_pFrameTriger[TYPE_E_ATTACK_SPRINGUP]    = 0;
+		m_pPositionOffset[TYPE_E_ATTACK_SPRINGUP] = _float3(0.f, 0.f, 0.f);
+		m_pScaleOffset[TYPE_E_ATTACK_SPRINGUP]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_E_ATTACK_SPRINGUP] = _float3(0.f, 0.f, 0.f);
+
+		m_pFrameTriger[TYPE_P_ATTACK_SMOKE]    = 0;
+		m_pPositionOffset[TYPE_P_ATTACK_SMOKE] = _float3(0.f, 0.f, 0.f);
+		m_pScaleOffset[TYPE_P_ATTACK_SMOKE]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_P_ATTACK_SMOKE] = _float3(0.f, 0.f, 0.f);
+
+		m_pFrameTriger[TYPE_E_ATTACK_CIRCLELINE]    = 0;
+		m_pPositionOffset[TYPE_E_ATTACK_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
+		m_pScaleOffset[TYPE_E_ATTACK_CIRCLELINE]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_E_ATTACK_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
+	}
 
  	return S_OK;
 }
@@ -45,10 +90,42 @@ void CVfx_Glanix_Skill_JumpDown::Tick(_float fTimeDelta)
 
 	if (!m_bOwnerTween)
 	{
-		if (m_iCount == TYPE_START && m_iOwnerFrame >= m_pFrameTriger[TYPE_START])
+		if (m_iCount == TYPE_D_START_WARNING && m_iOwnerFrame >= m_pFrameTriger[TYPE_D_START_WARNING])
 		{
-			//GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT(""),
-			//	XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_START], m_pScaleOffset[TYPE_START], m_pRotationOffset[TYPE_START]);
+			m_iCount++;
+		}
+
+		else if (m_iCount == TYPE_D_PREACT_HANDCRACK_LEFT && m_iOwnerFrame >= m_pFrameTriger[TYPE_D_PREACT_HANDCRACK_LEFT])
+		{
+			m_iCount++;
+		}
+		else if (m_iCount == TYPE_D_PREACT_HANDCRACK_RIGHT && m_iOwnerFrame >= m_pFrameTriger[TYPE_D_PREACT_HANDCRACK_RIGHT])
+		{
+			m_iCount++;
+		}
+		else if (m_iCount == TYPE_P_PREACT_SMOKE && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_PREACT_SMOKE])
+		{
+			m_iCount++;
+		}
+		else if (m_iCount == TYPE_P_PREACT_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_PREACT_CIRCLES])
+		{
+			m_iCount++;
+		}
+
+		else if (m_iCount == TYPE_D_ATTACK_DOWNCRACK && m_iOwnerFrame >= m_pFrameTriger[TYPE_D_ATTACK_DOWNCRACK])
+		{
+			m_iCount++;
+		}
+		else if (m_iCount == TYPE_E_ATTACK_SPRINGUP && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_ATTACK_SPRINGUP])
+		{
+			m_iCount++;
+		}
+		else if (m_iCount == TYPE_P_ATTACK_SMOKE && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_ATTACK_SMOKE])
+		{
+			m_iCount++;
+		}
+		else if (m_iCount == TYPE_E_ATTACK_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_ATTACK_CIRCLELINE])
+		{
 			m_iCount++;
 		}
 
