@@ -3,7 +3,7 @@
 
 #include "Particle_Manager.h"
 #include "Effect_Manager.h"
-#include "Character.h"
+#include "Glanix.h"
 
 CVfx_Glanix_Skill_SwingDownDown::CVfx_Glanix_Skill_SwingDownDown(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
@@ -17,7 +17,7 @@ CVfx_Glanix_Skill_SwingDownDown::CVfx_Glanix_Skill_SwingDownDown(const CVfx_Glan
 
 HRESULT CVfx_Glanix_Skill_SwingDownDown::Initialize_Prototype()
 {
-	m_bOwnerStateIndex = CCharacter::SKILL_SPECIAL_2;
+	m_bOwnerStateIndex = CGlanix::GLANIX_SPINBOMBBOMB;
 
 	m_iMaxCount = TYPE_END;
 	m_pFrameTriger    = new _int[m_iMaxCount];
@@ -26,10 +26,10 @@ HRESULT CVfx_Glanix_Skill_SwingDownDown::Initialize_Prototype()
 	m_pRotationOffset = new _float3[m_iMaxCount];
 
 	// 0
-	m_pFrameTriger[TYPE_START]    = 0;
-	m_pPositionOffset[TYPE_START] = _float3(0.f, 0.f, 0.f);
-	m_pScaleOffset[TYPE_START]    = _float3(1.f, 1.f, 1.f);
-	m_pRotationOffset[TYPE_START] = _float3(0.f, 0.f, 0.f);
+	m_pFrameTriger[TYPE_D_START_WARNING]    = 0;
+	m_pPositionOffset[TYPE_D_START_WARNING] = _float3(0.f, 0.f, 0.f);
+	m_pScaleOffset[TYPE_D_START_WARNING]    = _float3(1.f, 1.f, 1.f);
+	m_pRotationOffset[TYPE_D_START_WARNING] = _float3(0.f, 0.f, 0.f);
 
  	return S_OK;
 }
@@ -45,14 +45,12 @@ void CVfx_Glanix_Skill_SwingDownDown::Tick(_float fTimeDelta)
 
 	if (!m_bOwnerTween)
 	{
-		if (m_iCount == TYPE_START && m_iOwnerFrame >= m_pFrameTriger[TYPE_START])
+		if (m_iCount == TYPE_D_START_WARNING && m_iOwnerFrame >= m_pFrameTriger[TYPE_D_START_WARNING])
 		{
-			//GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT(""),
-			//	XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_START], m_pScaleOffset[TYPE_START], m_pRotationOffset[TYPE_START]);
 			m_iCount++;
 		}
 
-		else if (m_iCount == TYPE_END)
+		//else if (m_iCount == TYPE_END)
 			m_bFinish = true;
 	}
 }

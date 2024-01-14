@@ -12,7 +12,66 @@ class CVfx_Glanix_Skill_SwingDownDown final : public CVfx
 {
 private:
 	enum TYPE {
-		TYPE_START,
+		// ------------------------------
+		// ------------------------------
+		// CVfx_Glanix_Skill_SwingDown
+	    // ------------------------------
+		// ------------------------------
+		TYPE_D_START_WARNING,
+		// ------------------------------
+		TYPE_E_SWING_HANDCIRCLE_RIGHT,
+
+		TYPE_P_SWING_SMOKE_01,
+		TYPE_P_SWING_CIRCLES_01,
+
+		TYPE_P_SWING_SMOKE_02,
+		TYPE_P_SWING_CIRCLES_02,
+
+		TYPE_P_SWING_SMOKE_03,
+		TYPE_P_SWING_CIRCLES_03,
+
+		TYPE_P_SWING_SMOKE_04,
+		TYPE_P_SWING_CIRCLES_04,
+
+		TYPE_P_SWING_SMOKE_05,
+		TYPE_P_SWING_CIRCLES_05,
+
+		TYPE_P_SWING_SMOKE_06,
+		TYPE_P_SWING_CIRCLES_06,
+
+		TYPE_P_SWING_SMOKE_07,
+		TYPE_P_SWING_CIRCLES_07,
+
+		TYPE_P_SWING_SMOKE_08,
+		TYPE_P_SWING_CIRCLES_08,
+		// ------------------------------
+		TYPE_D_ATTACK_WARNING,
+		TYPE_E_ATTACK_HANDCIRCLE_LEFT,
+		TYPE_D_ATTACK_CRACK,
+		TYPE_E_ATTACK_SPRINGUP,
+		TYPE_P_ATTACK_SMOKE,
+		TYPE_P_ATTACK_CIRCLES,
+		TYPE_E_ATTACK_CIRCLELINE,
+
+		// ------------------------------
+		// ------------------------------
+		// CVfx_Glanix_Skill_HandDown
+		// ------------------------------
+		// ------------------------------
+		TYPE_D_HANDDOWN_START_WARNING,
+
+		TYPE_P_HANDDOWN_PREACT_BIGSCIRCLE,
+		TYPE_P_HANDDOWN_PREACT_BIGSMOKE,
+		TYPE_E_HANDDOWN_PREACT_CIRCLELINE,
+		TYPE_P_HANDDOWN_PREACT_CIRCLES,
+		TYPE_E_HANDDOWN_PREACT_HANDCIRCLELEFT,
+		TYPE_E_HANDDOWN_PREACT_HANDCIRCLERIGHT,
+
+		TYPE_D_HANDDOWN_ATTACK_CRACK,
+		TYPE_E_HANDDOWN_ATTACK_SPRINGUP,
+		TTPE_P_HANDDOWN_ATTACK_SMOKE,
+		TYPE_P_HANDDOWN_ATTACK_CIRCLES,
+
 		TYPE_END
 	};
 
