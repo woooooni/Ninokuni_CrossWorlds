@@ -14,7 +14,6 @@ private:
 	enum TYPE {
 		TYPE_D_START_WARNING,
 
-		TYPE_P_PREACT_BIGSCIRCLE,
 		TYPE_P_PREACT_BIGSMOKE,
 		TYPE_E_PREACT_CIRCLELINE,
 		TYPE_P_PREACT_CIRCLES,
@@ -43,6 +42,13 @@ public:
 
 protected:
 	virtual HRESULT Ready_Components() override;
+
+private:
+	class CEffect* m_pHand01Effect = nullptr;
+	class CEffect* m_pHand02Effect = nullptr;
+
+	class CDecal* m_pWarningDecal = nullptr;
+	class CEffect* m_SpringUpEffect = nullptr;
 
 public:
 	static CVfx_Glanix_Skill_HandDown* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
