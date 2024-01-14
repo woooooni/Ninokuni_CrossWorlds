@@ -374,6 +374,9 @@ HRESULT CLoader::Loading_For_Level_Lobby()
 			LAYER_TYPE::LAYER_BUILDING)))
 			return E_FAIL;
 
+		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Collider_Wall", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/ColliderWall/", L"Common_ColliderWall")))
+			return E_FAIL;
+
 		m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Static_Map_Objects, this, L"../Bin/Export/NonAnimModel/Map/");
 		m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Dynamic_Map_Objects, this, L"../Bin/Export/AnimModel/Map/");
 
@@ -551,11 +554,6 @@ HRESULT CLoader::Loading_For_Level_Tool()
 
 	m_strLoading = TEXT("객체 원형을 로딩 중 입니다.");
 
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Common_ColliderWall"),
-		CColliderWall::Create(m_pDevice, m_pContext, TEXT("Common_ColliderWall"), OBJ_TYPE::OBJ_BUILDING),
-		LAYER_TYPE::LAYER_BUILDING)))
-		return E_FAIL;
-
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Dummy"),
 		CDummy::Create(m_pDevice, m_pContext, TEXT("Dummy")), LAYER_TYPE::LAYER_PLAYER)))
 		return E_FAIL;
@@ -601,6 +599,19 @@ HRESULT CLoader::Loading_For_Level_Tool()
 		return E_FAIL;
 
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
+
+
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Common_ColliderWall"),
+		CColliderWall::Create(m_pDevice, m_pContext, TEXT("Common_ColliderWall"), OBJ_TYPE::OBJ_BUILDING),
+		LAYER_TYPE::LAYER_BUILDING)))
+		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Collider_Wall", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/ColliderWall/", L"Common_ColliderWall")))
+		return E_FAIL;
+
+
+
 	if (false == g_bFirstLoading)
 	{
 		m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::SWORD_MAN);

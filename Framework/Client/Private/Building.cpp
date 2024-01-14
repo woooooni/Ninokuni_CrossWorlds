@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "..\Public\Building.h"
 #include "GameInstance.h"
+#include "Effect_Manager.h"
 
 CBuilding::CBuilding(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType)
 	: CStaticObject(pDevice, pContext, strObjectTag, eType)
@@ -41,6 +42,16 @@ void CBuilding::Tick(_float fTimeDelta)
 	if (m_strMapObjName == TEXT("Evermore_Wind_WindMillaA_02")) // ID 859
 	{
 		XRotation(2.0f, fTimeDelta);
+	}
+
+
+	if (true == m_bFirst)
+	{
+		if (TEXT("Winter_JackFrost_Tent_01") == m_strMapObjName)
+		{
+			CEffect_Manager::GetInstance()->Generate_Vfx(TEXT("Vfx_Smoke"), m_pTransformCom->Get_WorldMatrix());
+			m_bFirst = false;
+		}
 	}
 
 }

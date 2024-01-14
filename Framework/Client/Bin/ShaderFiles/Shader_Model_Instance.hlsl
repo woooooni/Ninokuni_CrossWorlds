@@ -124,7 +124,7 @@ VS_OUT VS_GRASS_MAIN(VS_IN In)
     matrix matWV, matWVP, matVP;
     float4x4 InstanceWorld = float4x4(In.vRight, In.vUp, In.vLook, In.vTranslation);
 	
-	if(In.vTexUV.y <= 0.95f)
+	if(In.vTexUV.y <= 0.5f)
     {
         In.vPosition.z += fGrassAngle * 0.5f;
     }
@@ -271,10 +271,30 @@ PS_OUT PS_MAIN(PS_IN In)
     Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	
-	if (0.5 >= Out.vDiffuse.a)
+	if (0.1 >= Out.vDiffuse.a)
 		discard;
 
 	return Out;	
+}
+
+PS_OUT PS_NoneRight_GRASS_MAIN(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    Out.vDiffuse = (vector) 1.f;
+
+    Out.vDiffuse = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
+
+
+    Out.vNormal = vector(1.0f,1.0f,1.0f,1.0f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
+    Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
+    Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	
+    if (0.5 >= Out.vDiffuse.a)
+        discard;
+
+    return Out;
 }
 
 PS_OUT PS_MAIN_NORMAL(PS_IN In)
@@ -468,22 +488,22 @@ technique11 DefaultTechnique
 		GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-		PixelShader = compile ps_5_0 PS_MAIN();
-	}
+        PixelShader = compile ps_5_0 PS_NoneRight_GRASS_MAIN();
+    }
 
-	pass Temp6
+	pass RealTimeGrass2
 	{
 		// 6
-		SetRasterizerState(RS_Default);
-		SetDepthStencilState(DSS_Default, 0);
-		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetRasterizerState(RS_NoneCull);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
-		VertexShader = compile vs_5_0 VS_MAIN();
-		GeometryShader = NULL;
+        VertexShader = compile vs_5_0 VS_GRASS_MAIN();
+        GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-		PixelShader = compile ps_5_0 PS_MAIN();
-	}
+        PixelShader = compile ps_5_0 PS_MAIN();
+    }
 
 	pass Temp7
 	{

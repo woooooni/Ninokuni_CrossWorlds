@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "..\Public\Probs.h"
 #include "GameInstance.h"
+#include "Particle_Manager.h"
 
 CProbs::CProbs(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType)
 	: CStaticObject(pDevice, pContext, strObjectTag, eType)
@@ -35,13 +36,26 @@ HRESULT CProbs::Initialize(void* pArg)
 		m_iRandomCase = GI->RandomInt(0, 1);
 	}
 
-	
+
 
 	return S_OK;
 }
 
 void CProbs::Tick(_float fTimeDelta)
 {
+	if (nullptr == m_pParticle && TEXT("Common_PropA_00") == m_strObjectTag)
+	{
+		CParticle_Manager::GetInstance()->Generate_Particle_To_Position(TEXT("CampFire"), m_pTransformCom->Get_WorldMatrix(),
+			Vec3(0.0f, 1.0f, 0.0f), Vec3(0.0f, 0.0f, 0.0f), Vec3(0.0f, 0.0f, 0.0f), this, &m_pParticle, false);
+	}
+
+	if (TEXT("Winter_Plants_02") == m_strObjectTag || TEXT("Winter_Plants_01") == m_strObjectTag)
+	{
+		m_fTime += fTimeDelta;
+
+		m_fAngle = 0.2 * cos(m_fTime);
+	}
+
 	__super::Tick(fTimeDelta);
 
 	MoveProps(fTimeDelta);
@@ -96,18 +110,33 @@ HRESULT CProbs::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing
 		return E_FAIL;
 	if (FAILED(pInstancingShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
-	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
-	for (_uint i = 0; i < iNumMeshes; ++i)
+
+
+	if (TEXT("Winter_Plants_02") == m_strObjectTag || TEXT("Winter_Plants_01") == m_strObjectTag)
 	{
-		_uint iPassIndex = 0;
-		if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+		if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(0), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
-		//if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
-		//	iPassIndex = 0;
-		//else
-		//	iPassIndex++;
-		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, i, pInstancingBuffer, WorldMatrices, iPassIndex)))
+		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, 0, pInstancingBuffer, WorldMatrices, 6)))
 			return E_FAIL;
+		if (FAILED(pInstancingShader->Bind_RawValue("fGrassAngle", &m_fAngle, sizeof(_float))))
+			return E_FAIL;
+	}
+	else
+	{
+		_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+		for (_uint i = 0; i < iNumMeshes; ++i)
+		{
+			_uint iPassIndex = 0;
+
+			if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+				return E_FAIL;
+			//if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
+			//	iPassIndex = 0;
+			//else
+			//	iPassIndex++;
+			if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, i, pInstancingBuffer, WorldMatrices, iPassIndex)))
+				return E_FAIL;
+		}
 	}
 	return S_OK;
 }

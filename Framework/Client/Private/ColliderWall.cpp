@@ -29,6 +29,8 @@ HRESULT CColliderWall::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+	m_iObjectType = OBJ_TYPE::OBJ_BUILDING;
+
 	return S_OK;
 }
 
@@ -41,11 +43,10 @@ void CColliderWall::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
 
-	//if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 5.0f))
-	//{
-		// Shadow 필요하면 ShadowRender 추가?
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
-	//}
+#ifdef _DEBUG
+	if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 20.0f))
+		m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
+#endif // _DEBUG
 }
 
 HRESULT CColliderWall::Render()
@@ -63,11 +64,6 @@ HRESULT CColliderWall::Render()
 	if (FAILED(m_pNonAnimShaderCom->Begin(0)))
 		return E_FAIL;
 
-	if (FAILED(m_pVIBufferCom->Render()))
-		return E_FAIL;
-
-	return S_OK;
-
 	return S_OK;
 }
 
@@ -76,22 +72,29 @@ HRESULT CColliderWall::Render_Instance(CShader* pInstancingShader, CVIBuffer_Ins
 	if (true == m_bEnable)
 		return S_OK;
 
-	if (nullptr == pInstancingShader)
+	if (nullptr == m_pModelCom || nullptr == pInstancingShader)
 		return E_FAIL;
-
+	if (FAILED(pInstancingShader->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
+		return E_FAIL;
 	if (FAILED(pInstancingShader->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
 		return E_FAIL;
 	if (FAILED(pInstancingShader->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
 		return E_FAIL;
 	if (FAILED(pInstancingShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
-
-	if(FAILED(m_pNonAnimShaderCom->Begin(0)))
-		return E_FAIL;
-
-	if (FAILED(m_pVIBufferCom->Render()))
-		return E_FAIL;
-
+	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+	for (_uint i = 0; i < iNumMeshes; ++i)
+	{
+		_uint iPassIndex = 0;
+		if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+			return E_FAIL;
+		//if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
+		//	iPassIndex = 0;
+		//else
+		//	iPassIndex++;
+		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, i, pInstancingBuffer, WorldMatrices, iPassIndex)))
+			return E_FAIL;
+	}
 	return S_OK;
 }
 
@@ -121,8 +124,8 @@ HRESULT CColliderWall::Ready_Components()
 		TEXT("Com_NonAnim_Shader"), reinterpret_cast<CComponent**>(&m_pNonAnimShaderCom))))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Rect"),
-		TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Collider_Wall"),
+		TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 		return E_FAIL;
 
 	return S_OK;
@@ -157,6 +160,4 @@ CGameObject* CColliderWall::Clone(void* pArg)
 void CColliderWall::Free()
 {
 	__super::Free();
-
-	Safe_Release<CVIBuffer_Rect*>(m_pVIBufferCom);
 }

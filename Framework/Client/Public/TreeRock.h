@@ -26,6 +26,10 @@ public:
 public:
 	virtual HRESULT Ready_Components() override;
 
+private:
+	class CDecal* m_pDecalCom = nullptr;
+	_bool m_bFirst = true;
+
 public:
 	static CTreeRock* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag,
 		const wstring& strFilePath, const wstring& strFileName, _int eObjType, _uint eModelType);
