@@ -81,6 +81,7 @@ HRESULT CUI_SubMenu_Equipment::Initialize(void* pArg)
 	m_vGoalPosition.y = m_tInfo.fY; // Y값만 사용함
 
 	m_bActive = false;
+	m_bUseMouse = true;
 
 	return S_OK;
 }

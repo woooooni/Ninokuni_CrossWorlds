@@ -71,6 +71,8 @@ HRESULT CUI_Setting_Section::Initialize(void* pArg)
 			TEXT("Prototype_GameObject_UI_Setting_BtnVolume_Plus"), TEXT("UI_Setting_Audio_ThirdPlusBtn"));
 	}
 
+	m_bUseMouse = true;
+
 	return S_OK;
 }
 

@@ -22,21 +22,12 @@ void CUI_PopupQuest::Set_Active(_bool bActive)
 	if (POPUPFRAME_TOP == m_eType || POPUPFRAME_BOTTOM == m_eType || POPUP_SEPARATOR == m_eType)
 	{
 		if (bActive)
-		{
-			m_fAppearProg = 0.f; // 초기화해준다.
-		}
-		else
-		{
-
-		}
+			m_fAppearProg = 0.f;
 	}
 	else
 	{
 		if (m_bEvent)
-		{
 			m_bEvent = false;
-			//CUI_Manager::GetInstance()->Set_UIClicked(m_bEvent);
-		}
 	}
 
 	m_bActive = bActive;
@@ -47,7 +38,7 @@ void CUI_PopupQuest::Set_Contents(const wstring& strQuestType, const wstring& st
 	if (CUI_PopupQuest::POPUP_WINDOW != m_eType)
 		return;
 
-	if (3 <= m_Quest.size())
+	if (4 <= m_Quest.size())
 		return;
 
 	/*B
@@ -76,6 +67,26 @@ void CUI_PopupQuest::Set_Contents(const wstring& strQuestType, const wstring& st
 	QuestDesc.strTitle = strTitle;
 	QuestDesc.strContents = strContents;
 	m_Quest.push_back(QuestDesc);
+}
+
+void CUI_PopupQuest::Update_QuestContents(const wstring& strPreTitle, const wstring& strQuestType, const wstring& strTitle, const wstring& strContents)
+{
+	if (CUI_PopupQuest::POPUP_WINDOW != m_eType)
+		return;
+
+	if (0 >= m_Quest.size())
+		return;
+
+	for (auto iter = m_Quest.begin(); iter != m_Quest.end(); ++iter)
+	{
+		if (strPreTitle == iter->strTitle)
+		{
+			iter->strType = strQuestType;
+			iter->strTitle = strTitle;
+			iter->strContents = strContents;
+			break;
+		}
+	}
 }
 
 void CUI_PopupQuest::Clear_Quest(const wstring& strTitle)
@@ -127,7 +138,7 @@ HRESULT CUI_PopupQuest::Initialize(void* pArg)
 
 	if (m_eType == POPUP_WINDOW)
 	{
-		m_Quest.reserve(3);
+		m_Quest.reserve(4);
 	}
 
 	return S_OK;
@@ -160,8 +171,15 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 
 			if (m_bProgressing)
 			{
-				if (0 < m_Quest.size() && 3 >= m_Quest.size())
+				if (0 < m_Quest.size() && 4 >= m_Quest.size())
 				{
+					if (TEXT("[메인]") == m_Quest[0].strType)
+						m_vTypeColor = _float4(0.957f, 0.784f, 0.067f, 1.f);
+					else if (TEXT("[서브]") == m_Quest[0].strType)
+						m_vTypeColor = _float4(0.165f, 0.984f, 0.957f, 1.f);
+					else
+						m_vTypeColor = _float4(0.373f, 0.863f, 0.647f, 1.f);
+
 					CRenderer::TEXT_DESC TypeDesc;
 					TypeDesc.strText = m_Quest[0].strType;
 					TypeDesc.strFontTag = L"Default_Bold";
@@ -188,6 +206,13 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 
 					if (2 <= m_Quest.size())
 					{
+						if (TEXT("[메인]") == m_Quest[1].strType)
+							m_vTypeColor = _float4(0.957f, 0.784f, 0.067f, 1.f);
+						else if (TEXT("[서브]") == m_Quest[1].strType)
+							m_vTypeColor = _float4(0.165f, 0.984f, 0.957f, 1.f);
+						else
+							m_vTypeColor = _float4(0.373f, 0.863f, 0.647f, 1.f);
+
 						// 두번째 퀘스트 Text추가함.
 						CRenderer::TEXT_DESC TypeDesc;
 						TypeDesc.strText = m_Quest[1].strType;
@@ -215,6 +240,13 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 
 						if (3 <= m_Quest.size())
 						{
+							if (TEXT("[메인]") == m_Quest[2].strType)
+								m_vTypeColor = _float4(0.957f, 0.784f, 0.067f, 1.f);
+							else if (TEXT("[서브]") == m_Quest[2].strType)
+								m_vTypeColor = _float4(0.165f, 0.984f, 0.957f, 1.f);
+							else
+								m_vTypeColor = _float4(0.373f, 0.863f, 0.647f, 1.f);
+
 							// 세번째 퀘스트 Text추가함.
 							CRenderer::TEXT_DESC TypeDesc;
 							TypeDesc.strText = m_Quest[2].strType;
@@ -239,6 +271,40 @@ void CUI_PopupQuest::LateTick(_float fTimeDelta)
 							ContentsDesc.vColor = m_vTextColor;
 							ContentsDesc.vPosition = _float2(m_tInfo.fX - 100.f, m_tInfo.fY + (fOffsetY * 2.f));
 							m_pRendererCom->Add_Text(ContentsDesc);
+
+							if (4 <= m_Quest.size())
+							{
+								if (TEXT("[메인]") == m_Quest[3].strType)
+									m_vTypeColor = _float4(0.957f, 0.784f, 0.067f, 1.f);
+								else if (TEXT("[서브]") == m_Quest[3].strType)
+									m_vTypeColor = _float4(0.165f, 0.984f, 0.957f, 1.f);
+								else
+									m_vTypeColor = _float4(0.373f, 0.863f, 0.647f, 1.f);
+
+								CRenderer::TEXT_DESC TypeDesc;
+								TypeDesc.strText = m_Quest[3].strType;
+								TypeDesc.strFontTag = L"Default_Bold";
+								TypeDesc.vScale = { 0.4f, 0.4f };
+								TypeDesc.vColor = m_vTypeColor;
+								TypeDesc.vPosition = _float2(m_tInfo.fX - 100.f, m_tInfo.fY - 20.f + (fOffsetY * 3.f));
+								m_pRendererCom->Add_Text(TypeDesc);
+
+								CRenderer::TEXT_DESC TitleDesc;
+								TitleDesc.strText = m_Quest[3].strTitle;
+								TitleDesc.strFontTag = L"Default_Bold";
+								TitleDesc.vScale = { 0.4f, 0.4f };
+								TitleDesc.vColor = m_vTextColor;
+								TitleDesc.vPosition = _float2(m_tInfo.fX - 50.f, m_tInfo.fY - 20.f + (fOffsetY * 3.f));
+								m_pRendererCom->Add_Text(TitleDesc);
+
+								CRenderer::TEXT_DESC ContentsDesc;
+								ContentsDesc.strText = m_Quest[3].strContents;
+								ContentsDesc.strFontTag = L"Default_Bold";
+								ContentsDesc.vScale = { 0.4f, 0.4f };
+								ContentsDesc.vColor = m_vTextColor;
+								ContentsDesc.vPosition = _float2(m_tInfo.fX - 100.f, m_tInfo.fY + (fOffsetY * 3.f));
+								m_pRendererCom->Add_Text(ContentsDesc);
+							}
 						}
 					}
 				}
@@ -289,7 +355,7 @@ void CUI_PopupQuest::On_MouseExit(_float fTimeDelta)
 void CUI_PopupQuest::Move_BottomFrame(_int iNumOfQuest)
 {
 	// 퀘스트 개수에 따른 BottomFrame 위치 변경
-	if (0 >= iNumOfQuest || 3 < iNumOfQuest)
+	if (0 >= iNumOfQuest || 4 < iNumOfQuest)
 		return;
 
 	_float2 m_vPoisition = _float2(0.f, 0.f);
@@ -304,6 +370,9 @@ void CUI_PopupQuest::Move_BottomFrame(_int iNumOfQuest)
 		break;
 	case 3:
 		m_vPoisition = _float2(210.f, 345.f);
+		break;
+	case 4:
+		m_vPoisition = _float2(210.f, 415.f);
 		break;
 	}
 

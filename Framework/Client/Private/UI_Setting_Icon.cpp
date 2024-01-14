@@ -49,6 +49,8 @@ HRESULT CUI_Setting_Icon::Initialize(void* pArg)
 //		Make_Child(vDefaultPos.x, vDefaultPos.y + fOffset, vSize.x, vSize.y, TEXT("Prototype_GameObject_UI_Icon_Setting_Graphic"));
 //		Make_Child(vDefaultPos.x, vDefaultPos.y + (fOffset * 2.f), vSize.x, vSize.y, TEXT("Prototype_GameObject_UI_Icon_Setting_Audio"));
 	}
+
+	m_bUseMouse = true;
 	
 	return S_OK;
 }

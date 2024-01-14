@@ -33,6 +33,7 @@ HRESULT CUI_Costume_ChangeBtn::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_bActive = false;
+	m_bUseMouse = true;
 	
 	return S_OK;
 }

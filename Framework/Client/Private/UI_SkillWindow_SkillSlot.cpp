@@ -103,6 +103,7 @@ HRESULT CUI_SkillWindow_SkillSlot::Initialize(void* pArg)
 		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
 
 	m_bActive = false;
+	m_bUseMouse = true;
 
 	return S_OK;
 }

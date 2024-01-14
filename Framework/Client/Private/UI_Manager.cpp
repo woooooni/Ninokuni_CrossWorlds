@@ -72,10 +72,12 @@
 #include "UI_SkillWindow_Btn.h"
 #include "UI_Emoticon_Button.h"
 #include "UI_BtnChangeCamera.h"
+#include "UI_Tutorial_Window.h"
 #include "UI_Inventory_TabBtn.h"
 #include "UI_Costume_ItemSlot.h"
 #include "UI_Loading_MainLogo.h"
 #include "UI_Btn_WorldMapIcon.h"
+#include "UI_Quest_Reward_Item.h"
 #include "UI_World_Interaction.h"
 #include "UI_BossHP_Background.h"
 #include "UI_Inventory_LineBox.h"
@@ -239,7 +241,10 @@ void CUI_Manager::Set_MainDialogue(_tchar* pszName, _tchar* pszText)
 	m_pDialogWindow->Set_Text(pszText);
 
 	if (false == m_pDialogWindow->Get_Active())
+	{
 		m_pDialogWindow->Set_Active(true);
+		OnOff_GamePlaySetting(false);
+	}
 }
 
 void CUI_Manager::Set_MiniDialogue(wstring strName, wstring strContents)
@@ -256,11 +261,54 @@ void CUI_Manager::Set_QuestPopup(const wstring& strQuestType, const wstring& str
 	if (m_QuestPopUp[0] == nullptr)
 		return;
 
-	if (-1 == m_QuestPopUp[0]->Get_NumOfQuest() || 3 <= m_QuestPopUp[0]->Get_NumOfQuest())
+	if (-1 == m_QuestPopUp[0]->Get_NumOfQuest() || 5 <= m_QuestPopUp[0]->Get_NumOfQuest())
 		return;
 
 	m_QuestPopUp[0]->Set_Contents(strQuestType, strTitle, strContents);
-	m_QuestPopUp[6]->Move_BottomFrame(m_QuestPopUp[0]->Get_NumOfQuest());
+
+	// 퀘스트 개수를 알아낸 다음 그에 맞게 상태 갱신을 해준다.
+	_int iNum = m_QuestPopUp[0]->Get_NumOfQuest();
+
+	if (1 <= iNum)
+	{
+		m_QuestPopUp[0]->Set_Active(true);
+		m_QuestPopUp[4]->Set_Active(true);
+		m_QuestPopUp[8]->Set_Active(true);
+
+		if (2 <= iNum)
+		{
+			m_QuestPopUp[1]->Set_Active(true);
+			m_QuestPopUp[5]->Set_Active(true);
+
+			if (3 <= iNum)
+			{
+				m_QuestPopUp[2]->Set_Active(true);
+				m_QuestPopUp[6]->Set_Active(true);
+
+				if (4 <= iNum)
+				{
+					m_QuestPopUp[3]->Set_Active(true);
+					m_QuestPopUp[7]->Set_Active(true);
+				}
+			}
+		}
+
+		m_pBtnQuest->Set_TextureIndex(1);
+		m_QuestPopUp[8]->Move_BottomFrame(iNum);
+	}
+
+}
+
+void CUI_Manager::Update_QuestPopup(const wstring& strPreTitle, const wstring& strQuestType, const wstring& strTitle, const wstring& strContents)
+{
+	// 퀘스트를 찾아서 그 퀘스트의 내용을 수정한다.
+	if (m_QuestPopUp[0] == nullptr)
+		return;
+
+	if (0 >= m_QuestPopUp[0]->Get_NumOfQuest())
+		return;
+
+	m_QuestPopUp[0]->Update_QuestContents(strPreTitle, strQuestType, strTitle, strContents);
 }
 
 void CUI_Manager::Clear_QuestPopup(const wstring& strTitle)
@@ -340,6 +388,14 @@ _bool CUI_Manager::Is_NicknameSettingComplete()
 		return false;
 	else
 		return true;
+}
+
+_bool CUI_Manager::Is_QuestRewardWindowOff()
+{
+	if (nullptr == m_QuestReward[0])
+		return false;
+
+	return m_QuestReward[0]->Get_Active();
 }
 
 HRESULT CUI_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -2252,7 +2308,7 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 
 #pragma endregion
 
-	m_QuestPopUp.reserve(7);
+	m_QuestPopUp.reserve(9);
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
 	UIDesc.fCX = 400.f * 0.7f;
@@ -2262,6 +2318,14 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 	fOffset = 70.f;
 
 	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_QuestPopup_Frame_Window"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_QuestPopUp.push_back(dynamic_cast<CUI_PopupQuest*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+	UIDesc.fY += fOffset;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_QuestPopup_Frame_Window"), &UIDesc, &pWindow)))
 		return E_FAIL;
 	m_QuestPopUp.push_back(dynamic_cast<CUI_PopupQuest*>(pWindow));
@@ -2314,6 +2378,15 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 	UIDesc.fY += fOffset;
 	pFrame = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_QuestPopup_Frame_Separator_Second"), &UIDesc, &pFrame)))
+		return E_FAIL;
+	m_QuestPopUp.push_back(dynamic_cast<CUI_PopupQuest*>(pFrame));
+	if (nullptr == pFrame)
+		return E_FAIL;
+	Safe_AddRef(pFrame);
+
+	UIDesc.fY += fOffset;
+	pFrame = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_QuestPopup_Frame_Separator_Third"), &UIDesc, &pFrame)))
 		return E_FAIL;
 	m_QuestPopUp.push_back(dynamic_cast<CUI_PopupQuest*>(pFrame));
 	if (nullptr == pFrame)
@@ -3086,6 +3159,49 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(pWindow);
 
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = g_iWinSizeX;
+	UIDesc.fCY = g_iWinSizeY;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY * 0.5f;
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Default_TutorialWindow"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_pTutorial = dynamic_cast<CUI_Tutorial_Window*>(pWindow);
+	if (nullptr == m_pTutorial)
+		return E_FAIL;
+	Safe_AddRef(m_pTutorial);
+
+	m_QuestItems.reserve(4);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 64.f * 0.5f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = g_iWinSizeX * 0.5f - (UIDesc.fCX * 0.5f + 5.f);
+	UIDesc.fY = 285.f;
+	CGameObject* pItem = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Quest_Reward_Item"), &UIDesc, &pItem)))
+		return E_FAIL;
+	m_QuestItems.push_back(dynamic_cast<CUI_Quest_Reward_Item*>(pItem));
+	if (nullptr == pItem)
+		return E_FAIL;
+	Safe_AddRef(pItem);
+	pItem->Set_ObjectTag(TEXT("UI_Quest_Reward_Item_First"));
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 64.f * 0.5f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = g_iWinSizeX * 0.5f + (UIDesc.fCX * 0.5f + 5.f);
+	UIDesc.fY = 285.f;
+	pItem = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Quest_Reward_Item"), &UIDesc, &pItem)))
+		return E_FAIL;
+	m_QuestItems.push_back(dynamic_cast<CUI_Quest_Reward_Item*>(pItem));
+	if (nullptr == pItem)
+		return E_FAIL;
+	Safe_AddRef(pItem);
+	pItem->Set_ObjectTag(TEXT("UI_Quest_Reward_Item_Second"));
+	m_QuestItems[1]->Set_Type(CUI_Quest_Reward_Item::UI_QUESTREWARD_ITEM::REWARD_COIN); // Gara
 
 	return S_OK;
 }
@@ -3729,6 +3845,22 @@ HRESULT CUI_Manager::Ready_GameObjectToLayer(LEVELID eID)
 		Safe_AddRef(iter);
 	}
 
+	if (nullptr == m_pTutorial)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pTutorial)))
+		return E_FAIL;
+	Safe_AddRef(m_pTutorial);
+
+	for (auto& iter : m_QuestItems)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
 	return S_OK;
 }
 
@@ -3827,6 +3959,7 @@ HRESULT CUI_Manager::Tick_UIs(LEVELID eID, _float fTimeDelta)
 		break;
 
 	default:
+		Tick_EvermoreLevel(fTimeDelta);
 		break;
 	}
 
@@ -3923,37 +4056,35 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 
 	if (m_pCostumeBox->Get_Active())
 		Update_CostumeBtn();
+
 	else
 	{
 		if (m_pCostumeAnnounce->Get_Active())
 			m_pCostumeAnnounce->Set_Active(false);
 	}
 
-	//Test Code
-//	if (KEY_TAP(KEY::P))
-//	{
-//		Hide_GamePlaySetting(true);
-//	}
-//
-//	if (KEY_TAP(KEY::O))
-//	{
-//		Hide_GamePlaySetting(false);
-//	}
+	if (KEY_TAP(KEY::F9))
+	{
+		if (nullptr != m_pTutorial)
+		{
+			if(true == m_pTutorial->Get_Active())
+				m_pTutorial->Set_Active(false);
+			else
+				m_pTutorial->Set_Active(true);
+		}
+	}
 
-//	if (KEY_TAP(KEY::P))
-//	{
-//		OnOff_DialogWindow(true, 1);
-//		Set_MiniDialogue(TEXT("쿠우"), TEXT("나는 테스트용이다. 나는 테스트용이다. 나는 테스트용이다. 나는 테스트용이다. 나는 테스트용이다. 나는 테스트용이다."));
-//	}
-//	if (KEY_TAP(KEY::O))
-//	{
-//		OnOff_DialogWindow(false, 1);
-//	}
-
-//	if (KEY_TAP(KEY::P))
-//	{
-//		Set_QuestPopup(TEXT("[명성]"), TEXT("테스트 중입니다"), TEXT("피할 수 없는 퀘스트의 늪"));
-//	}
+	// 퀘스트 팝업창 켜지도록 함. Gara
+	if (!m_QuestPopUp[0]->Get_Active())
+	{
+		if (Is_FadeFinished() && Is_DefaultSettingOn())
+		{
+			if (1 <= Get_QuestNum())
+			{
+				OnOff_QuestPopup(true);
+			}
+		}
+	}
 
 	return S_OK;
 }
@@ -4485,6 +4616,9 @@ void CUI_Manager::Set_CostumeModel()
 			iIndex = iter->Get_CostumeType();
 		}
 	}
+
+	if (0 > iIndex || 5 < iIndex)
+		return;
 
 	wstring strPartTag;
 
@@ -5293,23 +5427,32 @@ HRESULT CUI_Manager::OnOff_QuestPopup(_bool bOnOff)
 
 		if (1 <= iNum)
 		{
+			if (0 == m_pBtnQuest->Get_TextureIndex())
+				m_pBtnQuest->Set_TextureIndex(1);
+
 			m_QuestPopUp[0]->Set_Active(true);
-			m_QuestPopUp[3]->Set_Active(true);
-			m_QuestPopUp[6]->Set_Active(true);
+			m_QuestPopUp[4]->Set_Active(true);
+			m_QuestPopUp[8]->Set_Active(true);
 
 			if (2 <= iNum)
 			{
 				m_QuestPopUp[1]->Set_Active(true);
-				m_QuestPopUp[4]->Set_Active(true);
+				m_QuestPopUp[5]->Set_Active(true);
 
 				if (3 <= iNum)
 				{
 					m_QuestPopUp[2]->Set_Active(true);
-					m_QuestPopUp[5]->Set_Active(true);
+					m_QuestPopUp[6]->Set_Active(true);
+
+					if (4 <= iNum)
+					{
+						m_QuestPopUp[3]->Set_Active(true);
+						m_QuestPopUp[7]->Set_Active(true);
+					}
 				}
 			}
 
-			m_QuestPopUp[6]->Move_BottomFrame(iNum);
+			m_QuestPopUp[8]->Move_BottomFrame(iNum);
 		}
 	}
 	else
@@ -5595,9 +5738,9 @@ HRESULT CUI_Manager::OnOff_DialogWindow(_bool bOnOff, _uint iMagicNum)
 		else // Off
 		{
 			// 카메라 전환 후 직접 켜주어야함.
-//			if (!Is_DefaultSettingOn())
-//				OnOff_GamePlaySetting(true);
-
+			if (!Is_DefaultSettingOn())
+				OnOff_GamePlaySetting(true);
+			
 			if (m_pDialogWindow->Get_Active())
 				m_pDialogWindow->Set_Active(false);
 		}
@@ -6104,6 +6247,44 @@ void CUI_Manager::OnOff_TextUI(_bool bOnOff)
 	}
 
 	m_bAddText = bOnOff;
+}
+
+void CUI_Manager::OnOff_QuestRewards(_bool bOnOff, const wstring& strTitle)
+{
+	if (bOnOff)
+	{
+		m_QuestReward[0]->Set_Text(strTitle);
+
+		for (auto& iter : m_QuestReward)
+			iter->Set_Active(true);
+	}
+	else
+	{
+		for (auto& iter : m_QuestReward)
+			iter->Set_Active(false);
+		for (auto& iter : m_QuestItems)
+			iter->Set_Active(false);
+	}
+}
+
+void CUI_Manager::Set_AlphaToItems()
+{
+	if (!m_QuestReward[0]->Get_Active())
+		return;
+
+	_float fAlpha = m_QuestReward[0]->Get_Alpha();
+
+	for (auto& iter : m_QuestItems)
+	{
+		iter->Set_Alpha(fAlpha);
+	}
+
+}
+
+void CUI_Manager::Show_RewardItems()
+{
+	for (auto& iter : m_QuestItems)
+		iter->Set_Active(true);
 }
 
 void CUI_Manager::Set_EmoticonType(_uint iIndex)
@@ -6673,6 +6854,11 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 			CUI_PopupQuest::UI_QUESTPOPUP::POPUP_SEPARATOR,
 			CUI_PopupQuest::UI_POPUP_SEPARATOR::SEPARATOR_SECOND), LAYER_UI)))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_QuestPopup_Frame_Separator_Third"),
+		CUI_PopupQuest::Create(m_pDevice, m_pContext,
+			CUI_PopupQuest::UI_QUESTPOPUP::POPUP_SEPARATOR,
+			CUI_PopupQuest::UI_POPUP_SEPARATOR::SEPARATOR_THIRD), LAYER_UI)))
+		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_ClassicSKill_Frame"),
 		CUI_SkillSection_Frame::Create(m_pDevice, m_pContext, CUI_SkillSection_Frame::UI_SKILLFRAME_TYPE::FRAME_CLASSIC), LAYER_UI)))
@@ -7019,6 +7205,13 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		CUI_Quest_Reward::Create(m_pDevice, m_pContext, CUI_Quest_Reward::UI_QUESTREWARD::REWARD_BOTTOM), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Default_TutorialWindow"),
+		CUI_Tutorial_Window::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Quest_Reward_Item"),
+		CUI_Quest_Reward_Item::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -7280,6 +7473,7 @@ void CUI_Manager::Free()
 	Safe_Release(m_pUIVeil);
 	Safe_Release(m_pUIFade);
 	Safe_Release(m_pUIMapName);
+	Safe_Release(m_pTutorial);
 	Safe_Release(m_pMapText);
 
 	Safe_Release(m_pSettingBG);
@@ -7483,6 +7677,10 @@ void CUI_Manager::Free()
 	for (auto& pWindow : m_QuestReward)
 		Safe_Release(pWindow);
 	m_QuestReward.clear();
+
+	for (auto& pItem : m_QuestItems)
+		Safe_Release(pItem);
+	m_QuestItems.clear();
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

@@ -54,6 +54,8 @@ HRESULT CUI_SkillSection_BtnRoll::Initialize(void* pArg)
 			return E_FAIL;
 	}
 
+	m_bUseMouse = true;
+
 	return S_OK;
 }
 

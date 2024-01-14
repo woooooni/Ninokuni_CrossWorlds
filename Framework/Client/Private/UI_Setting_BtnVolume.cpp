@@ -45,6 +45,8 @@ HRESULT CUI_Setting_BtnVolume::Initialize(void* pArg)
 
 	if (BTNTYPE_END == m_eType)
 		return E_FAIL;
+
+	m_bUseMouse = true;
 	
 	return S_OK;
 }

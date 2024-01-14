@@ -104,6 +104,7 @@ protected:
 	_float m_fAlpha = { 1.f };
 	_bool m_bActive = { true };
 	_bool m_bEvent = { false };
+	_bool m_bUseMouse = { false };
 	_float m_fEventTimeAcc = { 0.f };
 
 public:

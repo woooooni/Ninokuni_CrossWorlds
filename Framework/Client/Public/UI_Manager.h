@@ -28,6 +28,7 @@ public: // Get/Set
 
 	_bool			Is_DefaultSettingOn();
 	_bool			Is_NicknameSettingComplete();
+	_bool			Is_QuestRewardWindowOff();
 
 	void			Set_UIClicked(_bool bClicked) { m_bEvent = bClicked; }
 	_bool			Is_UIClicked() { return m_bEvent; }
@@ -37,6 +38,7 @@ public: // Get/Set
 	void			Set_MainDialogue(_tchar* pszName, _tchar* pszText);
 	void			Set_MiniDialogue(wstring strName, wstring strContents);
 	void			Set_QuestPopup(const wstring& strQuestType, const wstring& strTitle, const wstring& strContents);
+	void			Update_QuestPopup(const wstring& strPreTitle, const wstring& strQuestType, const wstring& strTitle, const wstring& strContents);
 	void			Clear_QuestPopup(const wstring& strTitle);
 	_int			Get_QuestNum();
 
@@ -165,6 +167,10 @@ public: // Lobby
 
 	void OnOff_TextUI(_bool bOnOff);
 
+	void OnOff_QuestRewards(_bool bOnOff, const wstring& strTitle = TEXT(""));
+	void Set_AlphaToItems();
+	void Show_RewardItems();
+
 private:
 	CHARACTER_TYPE m_eCurPlayer = { CHARACTER_TYPE::SWORD_MAN };
 	ELEMENTAL_TYPE m_eElemental = { ELEMENTAL_TYPE::FIRE };
@@ -185,6 +191,7 @@ private:
 	class CUI_Veil* m_pUIVeil = { nullptr };
 	class CUI_Fade* m_pUIFade = { nullptr };
 	class CUI_MapName* m_pUIMapName = { nullptr };
+	class CUI_Tutorial_Window* m_pTutorial = { nullptr };
 	class CUI_Basic* m_pMapText = { nullptr };
 
 	// For Setting Window
@@ -208,6 +215,7 @@ private:
 
 	vector<class CUI_PopupQuest*> m_QuestPopUp;
 	vector<class CUI_Quest_Reward*> m_QuestReward;
+	vector<class CUI_Quest_Reward_Item*> m_QuestItems;
 
 	class CUI_Text_TabMenu* m_pTabMenuTitle = { nullptr };
 

@@ -54,6 +54,8 @@ HRESULT CUI_BasicButton::Initialize(void* pArg)
 		m_bCanClick = true;
 	}
 
+	m_bUseMouse = true;
+
 	return S_OK;
 }
 

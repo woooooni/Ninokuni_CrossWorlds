@@ -70,6 +70,7 @@ HRESULT CUI_WindowWorldMap::Initialize(void* pArg)
 	// m_vOffsetMax
 
 	m_bActive = false;
+	m_bUseMouse = true;
 
 	return S_OK;
 }

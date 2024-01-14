@@ -56,6 +56,8 @@ HRESULT CUI_BtnAccept::Initialize(void* pArg)
 	m_vMinSize.x = m_vOriginSize.x * 0.95f;
 	m_vMinSize.y = m_vOriginSize.y * 0.95f;
 
+	m_bUseMouse = true;
+
 	return S_OK;
 }
 

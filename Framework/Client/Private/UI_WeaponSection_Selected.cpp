@@ -45,6 +45,19 @@ HRESULT CUI_WeaponSection_Selected::Initialize(void* pArg)
 	m_bHideFinish = false;
 	m_vOriginPosition = _float2(m_tInfo.fX, m_tInfo.fY);
 
+	CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+	if (nullptr == pPlayer)
+		return E_FAIL;
+	CCharacter* pCharacter = pPlayer->Get_Character();
+	if (nullptr == pCharacter)
+		return E_FAIL;
+	ELEMENTAL_TYPE eElemental = pCharacter->Get_ElementalType();
+	m_eElementalType = eElemental;
+	if (ELEMENTAL_TYPE::LIGHT <= eElemental)
+		return E_FAIL;
+
+	Update_Position(_uint(m_eElementalType));
+
 	return S_OK;
 }
 

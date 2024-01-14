@@ -98,6 +98,8 @@ HRESULT CUI_Btn_WorldMapIcon::Initialize(void* pArg)
 		return E_FAIL;
 	m_pIcon = dynamic_cast<CUI_Basic*>(pTemp);
 
+	m_bUseMouse = true;
+
 	return S_OK;
 }
 

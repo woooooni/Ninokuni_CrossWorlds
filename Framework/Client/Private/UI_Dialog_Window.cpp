@@ -39,11 +39,12 @@ HRESULT CUI_Dialog_Window::Initialize(void* pArg)
 
 	m_bActive = false;
 
-
 	_float2 vButtonSize = _float2(192.f, 61.f);
 	Make_Child(355.f, -103.f, vButtonSize.x * 0.8f, vButtonSize.y * 0.8f, TEXT("Prototype_GameObject_UI_Dialog_FlipButton"));
 	_float2 vArrowSize = _float2(64.f, 64.f);
 	Make_Child(0.f, 100.f, vArrowSize.x * 0.5f, vArrowSize.y * 0.5f, TEXT("Prototype_GameObject_UI_Dialog_FlipArrow"));
+
+	m_bUseMouse = true;
 
 	return S_OK;
 }

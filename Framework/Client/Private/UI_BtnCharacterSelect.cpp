@@ -104,12 +104,9 @@ HRESULT CUI_BtnCharacterSelect::Initialize(void* pArg)
 //			
 //			m_pEngineer = dynamic_cast<CUI_Dummy_Engineer*>(pEngineer);
 //		}
-//		else
-//		{
-//
-//		}
-
 	}
+
+	m_bUseMouse = true;
 
 	return S_OK;
 }

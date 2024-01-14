@@ -42,6 +42,8 @@ HRESULT CUI_ImajinnSection_Emoticon::Initialize(void* pArg)
 //
 //	m_pEmoticonWindow = dynamic_cast<CUI_Emoticon_Window*>(pEmoticonWindow);
 
+	m_bUseMouse = true;
+
 	return S_OK;
 }
 

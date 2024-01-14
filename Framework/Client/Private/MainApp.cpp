@@ -1054,9 +1054,6 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 		return E_FAIL;
 
 	// Quest Frame
-//	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_QuestPopUp_Frame"),
-//		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Quest/UI_Quest_MiniFrame_%d.png"), 2))))
-//		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_QuestPopUp_Frame"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Quest/UI_Quest_MiniFrame_Resize_%d.png"), 3))))
 		return E_FAIL;
@@ -1327,9 +1324,19 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Contents/SpeechBalloon/UI_SpeechBalloon_Resize.png")))))
 		return E_FAIL;
 
-	// 퀘스트 완료창
+	// 퀘스트 완료창(보상)
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Quest_Finish_Popup"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Quest/UI_Quest_Finish_%d.png"), 3))))
+		return E_FAIL;
+
+	// KeyInput Tutorial Window
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_KeyInput_TutorialWindow"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Default/UI_Default_KeyInput_Tutorial.png")))))
+		return E_FAIL;
+
+	// QuestRewards Icon
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Quest_Rewards_Icons"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Quest/UI_QuestRewards_%d.png"), 4))))
 		return E_FAIL;
 
 	return S_OK;

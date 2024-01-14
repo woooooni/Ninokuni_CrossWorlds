@@ -54,7 +54,8 @@ HRESULT CUI_BtnClose::Initialize(void* pArg)
 
 	m_bActive = true;
 	m_bUsable = false;
-	
+	m_bUseMouse = true;
+
 	return S_OK;
 }
 

@@ -37,6 +37,8 @@ HRESULT CUI_Emoticon_Button::Initialize(void* pArg)
 	m_bActive = true;
 	m_fAlpha = 0.9f;
 
+	m_bUseMouse = true;
+
 	return S_OK;
 }
 
