@@ -22,6 +22,10 @@ HRESULT CMainQuestNode_SnowField05::Initialize()
 	m_strQuestContent = to_wstring(CQuest_Manager::GetInstance()->Get_MonsterKillCount());
 	m_strQuestContent = m_strQuestContent + L" / 7";
 
+	m_strNextQuestTag = TEXT("[메인]");
+	m_strNextQuestName = TEXT("장교 잭슨에게 보고하기");
+	m_strNextQuestContent = TEXT("잭슨에게 보고하자");
+
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/03.MainQuest_SnowField/MainQuest_SnowField05.json");
 
 	for (const auto& talkDesc : Load) {
@@ -38,8 +42,6 @@ void CMainQuestNode_SnowField05::Start()
 {
 	CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_MONSTER_KILL);
 
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
-
 	/* 현재 퀘스트에 연관있는 객체들 */
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
 }
@@ -51,10 +53,9 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField05::Tick(const _float& fTimeDelta)
 
 	if (m_iPrevKillCount != CQuest_Manager::GetInstance()->Get_MonsterKillCount())
 	{
-		CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
 		m_strQuestContent = to_wstring(CQuest_Manager::GetInstance()->Get_MonsterKillCount());
 		m_strQuestContent = m_strQuestContent + L" / 7";
-		CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strQuestTag, m_strQuestName, m_strQuestContent);
 		m_iPrevKillCount = CQuest_Manager::GetInstance()->Get_QuestClearStack();
 	}
 
@@ -130,8 +131,7 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField05::Tick(const _float& fTimeDelta)
 				Safe_Delete_Array(m_szpOwner);
 				Safe_Delete_Array(m_szpTalk);
 
-				CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
-				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+				CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 				CQuest_Manager::GetInstance()->Clear_MonsterKillCount();
 				CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_END);

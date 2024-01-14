@@ -6,6 +6,7 @@
 
 #include "UI_Manager.h"
 
+#include "Quest_Manager.h"
 #include "Game_Manager.h"
 
 CMainQuestNode_SnowField04::CMainQuestNode_SnowField04()
@@ -19,6 +20,11 @@ HRESULT CMainQuestNode_SnowField04::Initialize()
 	m_strQuestTag = TEXT("[메인]");
 	m_strQuestName = TEXT("주둔지의 지휘관 찾기");
 	m_strQuestContent = TEXT("주둔지에서 지휘관 찾아보자");
+
+	m_strQuestTag = TEXT("[메인]");
+	m_strQuestName = TEXT("주변 몬스터 정리");
+	m_strQuestContent = to_wstring(CQuest_Manager::GetInstance()->Get_MonsterKillCount());
+	m_strQuestContent = m_strQuestContent + L" / 7";
 
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/03.MainQuest_SnowField/MainQuest_SnowField04.json");
 
@@ -34,8 +40,6 @@ HRESULT CMainQuestNode_SnowField04::Initialize()
 
 void CMainQuestNode_SnowField04::Start()
 {
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
-
 	/* 현재 퀘스트에 연관있는 객체들 */
 	//m_pKuu = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Kuu"));
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
@@ -84,7 +88,7 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField04::Tick(const _float& fTimeDelta)
 
 		if (m_iTalkIndex >= m_vecTalkDesc.size())
 		{
-			CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 			m_bIsClear = true;
 			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);

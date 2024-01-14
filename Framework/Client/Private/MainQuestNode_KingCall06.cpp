@@ -20,8 +20,8 @@ HRESULT CMainQuestNode_KingCall06::Initialize()
 	__super::Initialize();
 
 	m_strQuestTag = TEXT("[메인]");
-	m_strQuestName = TEXT("국왕 루슬란");
-	m_strQuestContent = TEXT("루슬란과 대화하기");
+	m_strQuestName = TEXT("코에루크 설원으로");
+	m_strQuestContent = TEXT("성 밖으로 나가기");
 
 	// 여태 만든거 확인하기.
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/02.MainQuest_KingCall/MainQuest_KingCall06.json");
@@ -38,8 +38,6 @@ HRESULT CMainQuestNode_KingCall06::Initialize()
 
 void CMainQuestNode_KingCall06::Start()
 {
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
-
 	/* 현재 퀘스트에 연관있는 객체들 */
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
 

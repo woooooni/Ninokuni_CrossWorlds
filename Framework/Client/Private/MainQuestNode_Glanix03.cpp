@@ -19,6 +19,10 @@ HRESULT CMainQuestNode_Glanix03::Initialize()
 	m_strQuestName = TEXT("더욱 더 깊게");
 	m_strQuestContent = TEXT("코에루크 설원의 끝 지점까지 가기");
 
+	m_strNextQuestTag = TEXT("[메인]");
+	m_strNextQuestName = TEXT("고대의 설인");
+	m_strNextQuestContent = TEXT("기안티 처치하기");
+
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/04.MainQuest_Glanix/MainQuest_Glanix03.json");
 
 	for (const auto& talkDesc : Load) {
@@ -33,8 +37,6 @@ HRESULT CMainQuestNode_Glanix03::Initialize()
 
 void CMainQuestNode_Glanix03::Start()
 {
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
-
 	Vec4 vSpotPos = { -44.f, 1.5f, 330.f, 1.f };
 	m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_MONSTER), &vSpotPos));
 
@@ -121,8 +123,6 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix03::Tick(const _float& fTimeDelta)
 			{
 				if (m_pQuestDestSpot->Get_IsCol())
 				{
-					CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
-
 					m_bIsClear = true;
 					m_pQuestDestSpot->Set_ReadyDelete(true);
 					Safe_Release(m_pQuestDestSpot);

@@ -18,13 +18,15 @@ HRESULT CSubQuestNode_Windmill05::Initialize()
 	m_strQuestName = TEXT("풍차 수리");
 	m_strQuestContent = TEXT("미정(뭔가하겠지)");
 
+	m_strNextQuestTag = TEXT("[서브]");
+	m_strNextQuestName = TEXT("풍차 수리");
+	m_strNextQuestContent = TEXT("비어드에게 돌아가기");
+
 	return S_OK;
 }
 
 void CSubQuestNode_Windmill05::Start()
 {
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
-
 	//m_pChloe = dynamic_cast<CChloe*>(GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Chloe")));
 	//Vec4 vSpotPos = Set_DestSpot(m_pChloe);
 	//
@@ -40,7 +42,7 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill05::Tick(const _float& fTimeDelta)
 	// 미정 퀘스트 완료해야 하나 임시로 일단 키 입력으로 넘어가자.
 	if (KEY_TAP(KEY::N))
 	{
-		CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 		m_bIsClear = true;
 		return NODE_STATE::NODE_FAIL;

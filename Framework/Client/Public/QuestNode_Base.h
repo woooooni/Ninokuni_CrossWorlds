@@ -35,6 +35,7 @@ protected:
 protected:
 	vector<TALK_DELS> m_vecTalkDesc;
 	_bool m_bIsClear = false;
+	_bool m_bIsRewarding = false;
 
 	_int m_iTalkIndex = 0;
 
@@ -43,6 +44,11 @@ protected:
 	wstring m_strQuestTag = TEXT("");
 	wstring m_strQuestName = TEXT("");
 	wstring m_strQuestContent = TEXT("");
+
+	wstring m_strNextQuestTag = TEXT("");
+	wstring m_strNextQuestName = TEXT("");
+	wstring m_strNextQuestContent = TEXT("");
+
 	TCHAR* m_szpOwner = nullptr;
 	TCHAR* m_szpTalk = nullptr;
 

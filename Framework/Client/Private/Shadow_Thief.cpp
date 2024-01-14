@@ -243,10 +243,10 @@ HRESULT CShadow_Thief::Ready_States()
 	m_tStat.eElementType = ELEMENTAL_TYPE::WATER;
 
 	m_tStat.iLv = 3;
-	m_tStat.fMaxHp = 80;
-	m_tStat.fHp = 80;
-	m_tStat.iAtk = 5;
-	m_tStat.iDef = 0;
+	m_tStat.fMaxHp = 10000;
+	m_tStat.fHp = 10000;
+	m_tStat.iAtk = 25;
+	m_tStat.iDef = 50;
 	
 	m_tStat.fAirVelocity = 10.f;
 	m_tStat.fAirDeadVelocity = 20.f;

@@ -19,6 +19,10 @@ HRESULT CMainQuestNode_KingCall03::Initialize()
 	m_strQuestName = TEXT("성으로");
 	m_strQuestContent = TEXT("성으로 가기");
 
+	m_strNextQuestTag = TEXT("[메인]");
+	m_strNextQuestName = TEXT("국왕 루슬란");
+	m_strNextQuestContent = TEXT("루슬란과 대화하기");
+
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/02.MainQuest_KingCall/MainQuest_KingCall03.json");
 
 	for (const auto& talkDesc : Load) {
@@ -33,8 +37,6 @@ HRESULT CMainQuestNode_KingCall03::Initialize()
 
 void CMainQuestNode_KingCall03::Start()
 {
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
-
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
 
 	/* 대화 */
@@ -83,7 +85,7 @@ CBTNode::NODE_STATE CMainQuestNode_KingCall03::Tick(const _float& fTimeDelta)
 
 	if (GI->Get_CurrentLevel() == LEVEL_KINGDOMHALL)
 	{
-		CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 		m_bIsClear = true;
 		return NODE_STATE::NODE_FAIL;

@@ -18,12 +18,16 @@ HRESULT CMainQuestNode_Glanix08::Initialize()
 	m_strQuestName = TEXT("성으로");
 	m_strQuestContent = TEXT("성으로 가기");
 
+	m_strNextQuestTag = TEXT("[메인]");
+	m_strNextQuestName = TEXT("루슬란에게 보고하기");
+	m_strNextQuestContent = TEXT("루슬란과 대화하기");
+
 	return S_OK;
 }
 
 void CMainQuestNode_Glanix08::Start()
 {
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
 }
 
 CBTNode::NODE_STATE CMainQuestNode_Glanix08::Tick(const _float& fTimeDelta)
@@ -33,7 +37,7 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix08::Tick(const _float& fTimeDelta)
 
 	if (GI->Get_CurrentLevel() == LEVEL_KINGDOMHALL)
 	{
-		CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 		m_bIsClear = true;
 		return NODE_STATE::NODE_FAIL;

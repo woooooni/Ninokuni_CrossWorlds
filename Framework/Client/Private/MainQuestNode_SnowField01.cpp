@@ -18,11 +18,16 @@ HRESULT CMainQuestNode_SnowField01::Initialize()
 	m_strQuestName = TEXT("코에루크 설원으로");
 	m_strQuestContent = TEXT("성 밖으로 나가기");
 
+	m_strNextQuestTag = TEXT("[메인]");
+	m_strNextQuestName = TEXT("코에루크 설원으로");
+	m_strNextQuestContent = TEXT("동쪽 문을 통해 설원으로 향하기");
+
 	return S_OK;
 }
 
 void CMainQuestNode_SnowField01::Start()
 {
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
 	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 }
 
@@ -33,7 +38,7 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField01::Tick(const _float& fTimeDelta)
 
 	if (GI->Get_CurrentLevel() == LEVEL_EVERMORE)
 	{
-		CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 		m_bIsClear = true;
 		return NODE_STATE::NODE_FAIL;

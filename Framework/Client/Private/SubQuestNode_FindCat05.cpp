@@ -33,10 +33,9 @@ HRESULT CSubQuestNode_FindCat05::Initialize()
 
 void CSubQuestNode_FindCat05::Start()
 {
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
 
 	/* 현재 퀘스트에 연관있는 객체들 */
-	//m_pKuu = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Kuu"));
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
 	m_pChloe = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"Chloe");
 
@@ -74,34 +73,48 @@ CBTNode::NODE_STATE CSubQuestNode_FindCat05::Tick(const _float& fTimeDelta)
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 
-	if (KEY_TAP(KEY::LBTN))
+	if (!m_bIsRewarding)
 	{
-		Safe_Delete_Array(m_szpOwner);
-		Safe_Delete_Array(m_szpTalk);
-
-		m_iTalkIndex += 1;
-
-		if (m_iTalkIndex >= m_vecTalkDesc.size())
+		if (KEY_TAP(KEY::LBTN))
 		{
-			CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+			Safe_Delete_Array(m_szpOwner);
+			Safe_Delete_Array(m_szpTalk);
 
+			m_iTalkIndex += 1;
+
+			if (m_iTalkIndex >= m_vecTalkDesc.size())
+			{
+				CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
+
+				//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+				//if (nullptr != pActionCam)
+				//	pActionCam->Finish_Action_Talk();
+
+				/* 여기서 퀘스트 보상 받기.(퀘스트 보상 다 받으면 return하기.*/
+				CUI_Manager::GetInstance()->OnOff_QuestRewards(true, TEXT("클로이의 고양이 찾기"));
+				m_bIsRewarding = true;
+			}
+
+			if (!m_bIsRewarding)
+			{
+				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+				CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
+
+				TalkEvent();
+			}
+		}
+	}
+
+	else if (m_bIsRewarding)
+	{
+		if (CUI_Manager::GetInstance()->Is_QuestRewardWindowOff())
+		{
 			m_bIsClear = true;
-			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
-
-			//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-			//if (nullptr != pActionCam)
-			//	pActionCam->Finish_Action_Talk();
-
-			/* 여기서 퀘스트 보상 받기.(퀘스트 보상 다 받으면 return하기.*/
 			return NODE_STATE::NODE_FAIL;
 		}
-
-		m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-		m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
-
-		CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
-
-		TalkEvent();
 	}
 
 	return NODE_STATE::NODE_RUNNING;

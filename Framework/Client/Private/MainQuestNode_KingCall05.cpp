@@ -20,6 +20,11 @@ HRESULT CMainQuestNode_KingCall05::Initialize()
 	m_strQuestName = TEXT("국왕 루슬란");
 	m_strQuestContent = TEXT("루슬란과 대화하기");
 
+	m_strNextQuestTag = TEXT("[메인]");
+	m_strNextQuestName = TEXT("코에루크 설원으로");
+	m_strNextQuestContent = TEXT("성 밖으로 나가기");
+
+
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/02.MainQuest_KingCall/MainQuest_KingCall05.json");
 
 	for (const auto& talkDesc : Load) {
@@ -34,8 +39,6 @@ HRESULT CMainQuestNode_KingCall05::Initialize()
 
 void CMainQuestNode_KingCall05::Start()
 {
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
-
 	/* 현재 퀘스트에 연관있는 객체들 */
 	//m_pKuu = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Kuu"));
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
@@ -84,7 +87,7 @@ CBTNode::NODE_STATE CMainQuestNode_KingCall05::Tick(const _float& fTimeDelta)
 
 		if (m_iTalkIndex >= m_vecTalkDesc.size())
 		{
-			CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 			m_bIsClear = true;
 			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);

@@ -16,15 +16,17 @@ HRESULT CSubQuestNode_Windmill06::Initialize()
 
 	m_strQuestTag = TEXT("[서브]");
 	m_strQuestName = TEXT("풍차 수리");
-	m_strQuestContent = TEXT("비어드에게 가기");
+	m_strQuestContent = TEXT("비어드에게 돌아가기");
+
+	m_strNextQuestTag = TEXT("[서브]");
+	m_strNextQuestName = TEXT("풍차 수리");
+	m_strNextQuestContent = TEXT("비어드에게 돌아가기");
 
 	return S_OK;
 }
 
 void CSubQuestNode_Windmill06::Start()
 {
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
-
 	m_pBeard = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("SwiftSolutionMaster"));
 	Vec4 vSpotPos = Set_DestSpot(m_pBeard);
 
@@ -48,6 +50,8 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill06::Tick(const _float& fTimeDelta)
 			{
 				if (m_pQuestDestSpot->Get_IsCol())
 				{
+					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+
 					m_bIsClear = true;
 					m_pQuestDestSpot->Set_ReadyDelete(true);
 					Safe_Release(m_pQuestDestSpot);

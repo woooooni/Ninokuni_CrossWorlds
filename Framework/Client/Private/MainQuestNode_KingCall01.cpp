@@ -18,6 +18,11 @@ HRESULT CMainQuestNode_KingCall01::Initialize()
 	m_strQuestName = TEXT("장교의 시선");
 	m_strQuestContent = TEXT("아까부터 나를 지켜본다");
 
+	m_strNextQuestTag = TEXT("[메인]");
+	m_strNextQuestName = TEXT("장교의 시선");
+	m_strNextQuestContent = TEXT("지나갈 때마다 시선이 느껴진다");
+
+
 	return S_OK;
 }
 
@@ -48,7 +53,7 @@ CBTNode::NODE_STATE CMainQuestNode_KingCall01::Tick(const _float& fTimeDelta)
 			{
 				if (m_pQuestDestSpot->Get_IsCol())
 				{
-					CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 					m_bIsClear = true;
 					m_pQuestDestSpot->Set_ReadyDelete(true);

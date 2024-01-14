@@ -19,10 +19,6 @@ HRESULT CMainQuestNode_IntroTour04::Initialize()
 {
 	__super::Initialize();
 
-	m_strQuestTag = TEXT("[메인]");
-	m_strQuestName = TEXT("에스타바니아 둘러보기.");
-	// m_strQuestContent = TEXT("에스타바니아를 둘러보자.");
-
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/01.MainQuest_IntroTour/MainQuest_IntroTour04.json");
 
 	for (const auto& talkDesc : Load) {

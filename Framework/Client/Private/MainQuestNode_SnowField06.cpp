@@ -18,13 +18,15 @@ HRESULT CMainQuestNode_SnowField06::Initialize()
 	m_strQuestName = TEXT("Àå±³ Àè½¼¿¡°Ô º¸°íÇÏ±â");
 	m_strQuestContent = TEXT("Àè½¼¿¡°Ô º¸°íÇÏÀÚ");
 
+	m_strNextQuestTag = TEXT("[¸ÞÀÎ]");
+	m_strNextQuestName = TEXT("Àå±³ Àè½¼¿¡°Ô º¸°íÇÏ±â");
+	m_strNextQuestContent = TEXT("Àè½¼¿¡°Ô º¸°íÇÏÀÚ");
+
 	return S_OK;
 }
 
 void CMainQuestNode_SnowField06::Start()
 {
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
-
 	m_pJackson = GI->Find_GameObject(LEVELID::LEVEL_ICELAND, LAYER_NPC, TEXT("GrimalKinML01"));
 	Vec4 vSpotPos = Set_DestSpot(m_pJackson);
 
@@ -48,7 +50,7 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField06::Tick(const _float& fTimeDelta)
 			{
 				if (m_pQuestDestSpot->Get_IsCol())
 				{
-					CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 					m_bIsClear = true;
 					m_pQuestDestSpot->Set_ReadyDelete(true);
