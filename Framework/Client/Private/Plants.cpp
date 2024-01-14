@@ -95,7 +95,7 @@ HRESULT CPlants::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancin
 
 	if (TEXT("Common_grass_01") == m_strObjectTag || TEXT("Common_grass_Small_01") == m_strObjectTag)
 	{
-		if (m_pTextureCom->Bind_ShaderResource(pInstancingShader, "GrassMaskTexture"))
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(pInstancingShader, "GrassMaskTexture")))
 			return E_FAIL;
 		if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(0), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
@@ -111,6 +111,8 @@ HRESULT CPlants::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancin
 		{
 			_uint iPassIndex = 0;
 
+			if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+				return E_FAIL;
 			//if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
 			//	iPassIndex = 0;
 			//else
