@@ -233,6 +233,10 @@ void CUI_BtnCharacterSelect::On_Mouse(_float fTimeDelta)
 						UI_SELECTBTN_CHARACTER::BTN_WITCH == m_ePlayerType)
 						return;
 
+					GI->Stop_Sound(CHANNELID::SOUND_UI);
+					GI->Play_Sound(TEXT("UI_Fx_Comm_Btn_1.mp3"), CHANNELID::SOUND_UI,
+						GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+
 					m_bClicked = true;
 					CUI_Manager::GetInstance()->Update_LobbyBtnState(_uint(m_ePlayerType));
 				}

@@ -48,6 +48,13 @@ void CUI_Quest_Reward::Set_Active(_bool bActive)
 //				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
 //		}
 
+		if (REWARD_TOP == m_eType)
+		{
+			GI->Stop_Sound(CHANNELID::SOUND_UI);
+			GI->Play_Sound(TEXT("UI_Fx_Quest_Complete_Popup_1_St.mp3"), CHANNELID::SOUND_UI,
+				GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+		}
+
 		m_bActive = bActive;
 	}
 	else

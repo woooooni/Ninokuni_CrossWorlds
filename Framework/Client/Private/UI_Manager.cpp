@@ -6421,11 +6421,20 @@ HRESULT CUI_Manager::OnOff_EmoticonWindow(_bool bOnOff)
 	{
 		if (!m_pEmoticonWindow->Get_Active())
 			m_pEmoticonWindow->Set_Active(true);
+
+		GI->Stop_Sound(CHANNELID::SOUND_UI);
+		GI->Play_Sound(TEXT("UI_Fx_Comm_Btn_1.mp3"), CHANNELID::SOUND_UI,
+			GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 	}
 	else
 	{
 		if (m_pEmoticonWindow->Get_Active())
 			m_pEmoticonWindow->Set_Active(false);
+
+		GI->Stop_Sound(CHANNELID::SOUND_UI);
+		GI->Play_Sound(TEXT("UI_Fx_Comm_Close_1.mp3"), CHANNELID::SOUND_UI,
+			GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+
 	}
 
 	return S_OK;
