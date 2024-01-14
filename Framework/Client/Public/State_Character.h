@@ -3,6 +3,9 @@
 #include "Client_Defines.h"
 #include "Skill_Manager.h"
 #include "UI_Manager.h"
+#include "Camera_Manager.h"
+#include "Camera_Action.h"
+#include "Camera_Follow.h"
 #include "State.h"
 
 
