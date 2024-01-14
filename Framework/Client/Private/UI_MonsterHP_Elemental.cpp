@@ -52,7 +52,7 @@ void CUI_MonsterHP_Elemental::LateTick(_float fTimeDelta)
 	{
 		// Temp m_vTextPosition = _float2(g_iWinSizeX * 0.5f - 152.f, 75.f);
 		CRenderer::TEXT_DESC LevelDesc;
-		LevelDesc.strText = L"Lv.20";
+		LevelDesc.strText = TEXT("Lv.") + to_wstring(m_iLevel);
 		LevelDesc.strFontTag = L"Default_Medium";
 		LevelDesc.vScale = { 0.3f, 0.3f };
 		LevelDesc.vPosition = m_vTextPosition;
@@ -60,8 +60,6 @@ void CUI_MonsterHP_Elemental::LateTick(_float fTimeDelta)
 		m_pRendererCom->Add_Text(LevelDesc);
 
 		// 보스는 Level이 없음.
-
-
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
 }

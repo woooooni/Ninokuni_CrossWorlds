@@ -571,6 +571,11 @@ HRESULT CEffect_Manager::Ready_Proto_Vfx_UI()
 		CVfx_UI_MouseClick::Create(m_pDevice, m_pContext, TEXT("Particles_MouseClick")), LAYER_TYPE::LAYER_EFFECT)))
 		return E_FAIL;
 
+	// Prototype_Vfx_TargetPoint(For Monster)
+//	if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_TargetMonsterPoint"),
+//		CVfx_TargetPoint::Create(m_pDevice, m_pContext, TEXT("Decal_TargetPoint")), LAYER_TYPE::LAYER_EFFECT)))
+//		return E_FAIL;
+
 	return S_OK;
 }
 

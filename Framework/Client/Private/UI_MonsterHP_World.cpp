@@ -5,6 +5,9 @@
 #include "UI_Basic.h"
 #include "Camera_Manager.h"
 #include "Camera.h"
+#include "Game_Manager.h"
+#include "Player.h"
+#include "UI_Manager.h"
 
 CUI_MonsterHP_World::CUI_MonsterHP_World(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_MonsterHP_World")
@@ -145,6 +148,8 @@ void CUI_MonsterHP_World::LateTick(_float fTimeDelta)
 	{
 		if (Is_Dead())
 			return;
+
+		Distinguish_Target();
 
 		if (nullptr != m_pOwner)
 		{
@@ -365,6 +370,44 @@ void CUI_MonsterHP_World::Set_Text(_float2 ScreenPos)
 	MonsterDesc.vPosition = _float2(fNameX, vTextPosition.y);
 	MonsterDesc.vColor = m_vNameColor;
 	m_pRendererCom->Add_Text(MonsterDesc);
+
+}
+
+void CUI_MonsterHP_World::Distinguish_Target()
+{
+	CPlayer* pPlayer = nullptr;
+	pPlayer = CGame_Manager::GetInstance()->Get_Player();
+	if (nullptr == pPlayer)
+		return;
+	CCharacter* pCharacter = nullptr;
+	pCharacter = pPlayer->Get_Character();
+	if (nullptr == pCharacter)
+		return;
+
+	CGameObject* pGameObject = nullptr;
+	pGameObject = pCharacter->Get_Target();
+	if (nullptr == pGameObject)
+		return;
+
+	if (OBJ_TYPE::OBJ_MONSTER != pGameObject->Get_ObjectType())
+		return;
+
+	if (pGameObject->Get_ObjectID() == m_pOwner->Get_ObjectID())
+	{
+		if (false == m_bIsTarget)
+		{
+			m_bIsTarget = true;
+
+
+			CMonster::MONSTER_STAT StatDesc = {};
+			ZeroMemory(&StatDesc, sizeof(CMonster::MONSTER_STAT));
+
+			memcpy(&StatDesc, &(m_pOwner->Get_Stat()), sizeof(CMonster::MONSTER_STAT));
+			CUI_Manager::GetInstance()->Set_MonsterDescForUI(m_pOwner, &StatDesc);
+		}
+	}
+	else
+		m_bIsTarget = false;
 
 }
 

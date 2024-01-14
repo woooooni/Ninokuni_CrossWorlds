@@ -91,6 +91,12 @@ void CUI_PlayerHPBar::LateTick(_float fTimeDelta)
 		CCharacter::CHARACTER_STAT StatDesc = m_pPlayer->Get_Stat();
 
 		m_fCurHP = _float(StatDesc.iHp);
+		if (StatDesc.iHp == StatDesc.iMaxHp)
+		{
+			m_fMaxHP = _float(StatDesc.iMaxHp);
+			m_fPreHP = _float(StatDesc.iHp);
+			m_fCurHP = m_fPreHP;
+		}
 
 		//if (CUI_Manager::GetInstance()->Is_FadeFinished())
 		//{

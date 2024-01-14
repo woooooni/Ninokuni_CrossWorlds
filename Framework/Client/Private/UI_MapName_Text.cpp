@@ -70,10 +70,9 @@ HRESULT CUI_MapName_Text::Render()
 		m_pShaderCom->Begin(1);
 
 		m_pVIBufferCom->Render();
-
-		return S_OK;
-
 	}
+
+	return S_OK;
 }
 
 HRESULT CUI_MapName_Text::Ready_Components()

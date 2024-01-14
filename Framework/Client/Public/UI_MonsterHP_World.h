@@ -50,6 +50,7 @@ private:
 	HRESULT	Ready_State();
 	HRESULT	Bind_ShaderResources();
 	void Set_Text(_float2 ScreenPos);
+	void Distinguish_Target();
 
 public:
 	static CUI_MonsterHP_World* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);

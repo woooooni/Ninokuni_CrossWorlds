@@ -11,6 +11,9 @@ protected:
 	virtual ~CUI_MonsterHP_Bar() = default;
 
 public:
+	void Set_MonsterInfo(CMonster* pOwne);
+
+public:
 	virtual HRESULT	Initialize_Prototype();
 	virtual HRESULT	Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta);
@@ -33,6 +36,9 @@ private:
 	_float2 m_vDefaultPosition = _float2(250.f, 39.f); // "/"
 	_float2 m_vCurHPPosition = _float2(200.f, 39.f); // 최대 체력
 	_float2 m_vMaxHPPosition = _float2(265.f, 39.f); // 현재 체력
+
+	ELEMENTAL_TYPE m_eElementalType = { ELEMENTAL_TYPE::FIRE };
+	class CMonster* m_pTarget = { nullptr };
 
 private:
 	virtual HRESULT	Ready_Components() override;

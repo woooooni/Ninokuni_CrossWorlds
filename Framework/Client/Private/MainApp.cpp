@@ -58,7 +58,7 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 	// Set Start Level 
-	const LEVELID eStartLevel = LEVELID::LEVEL_TOOL;
+	const LEVELID eStartLevel = LEVELID::LEVEL_LOGO;
 
 	// Open Level
 	if (FAILED(Open_Level(eStartLevel, L"Final_Boss")))
@@ -835,7 +835,7 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/MonsterStatus/UI_Monster_HP_Background.png")))))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MonsterHP_Bar"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/MonsterStatus/UI_Monster_HPBar.png")))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/MonsterStatus/UI_Monster_HPBar_%d.png"), 5))))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MonsterHP_WhiteBar"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/MonsterStatus/UI_Monster_Back_HPBar.png")))))
