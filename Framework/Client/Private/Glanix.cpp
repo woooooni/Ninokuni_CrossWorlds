@@ -189,7 +189,7 @@ void CGlanix::Collision_Enter(const COLLISION_INFO& tInfo)
 	}
 
 	/* ÇÇ°Ý */
-	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER &&
+	if ((tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER_PROJECTILE) &&
 		tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK)
 	{
 		if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
@@ -283,6 +283,7 @@ HRESULT CGlanix::Delete_Pillar(const _int& iKey)
 		return E_FAIL;
 
 	m_pPillarController->Delete_Pillar(iKey);
+	return S_OK;
 }
 
 HRESULT CGlanix::Clear_Pillars()
@@ -360,8 +361,8 @@ HRESULT CGlanix::Ready_Components()
 #pragma region Ready_States
 HRESULT CGlanix::Ready_States()
 {
-	m_tStat.fMaxHp = 300000;
-	m_tStat.fHp = 300000;
+	m_tStat.fMaxHp = 500000;
+	m_tStat.fHp = 500000;
 	m_tStat.iAtk = 250;
 	m_tStat.iDef = 150;
 

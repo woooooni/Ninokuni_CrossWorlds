@@ -41,8 +41,7 @@ HRESULT CSwordMan_AuraBlade::Initialize(void* pArg)
 	m_fAccDeletionTime = 0.f;
 
 	Set_Collider_Elemental(m_pOwner->Get_ElementalType());
-
-	
+	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
 
 	return S_OK;
 }
@@ -82,8 +81,8 @@ HRESULT CSwordMan_AuraBlade::Ready_Components()
 
 	SphereDesc.pNode = nullptr;
 	SphereDesc.pOwnerTransform = m_pTransformCom;
-	SphereDesc.ModelPivotMatrix = XMMatrixRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f));
-	SphereDesc.vOffsetPosition = Vec3(0.f, 1.f, 0.f);
+	SphereDesc.ModelPivotMatrix = XMMatrixRotationY(XMConvertToRadians(180.f));
+	SphereDesc.vOffsetPosition = Vec3(0.f, 0.f, 0.f);
 
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::ATTACK, &SphereDesc)))
 		return E_FAIL;

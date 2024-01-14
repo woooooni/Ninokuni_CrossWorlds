@@ -63,15 +63,24 @@ void CUI_Setting_Slider::Tick(_float fTimeDelta)
 		switch (m_eType)
 		{
 		case UI_SETTING_SLIDERTYPE::FIRST_SLIDER:
+			GI->Set_AllChannelVolume(fCurPosX / m_fLength);
 			break;
 
 		case UI_SETTING_SLIDERTYPE::SECOND_SLIDER:
+			GI->Set_ChannelVolume(CHANNELID::SOUND_BGM, fCurPosX / m_fLength);
 			break;
 
 		case UI_SETTING_SLIDERTYPE::THIRD_SLIDER:
+			for (_uint i = 0; i < CHANNELID::MAXCHANNEL; ++i)
+			{
+				if (i == CHANNELID::SOUND_BGM)
+					continue;
+
+				GI->Set_ChannelVolume(CHANNELID(i), fCurPosX / m_fLength);
+			}
 			break;
 		}
-		//GI->Set_ChannelVolume(CHANNELID::);
+		//
 
 		__super::Tick(fTimeDelta);
 	}

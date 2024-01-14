@@ -117,6 +117,8 @@ void CVfx_SwordMan_Skill_SwordTempest::Tick(_float fTimeDelta)
 			ProjectileDesc.pOwner = CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::SWORD_MAN);
 
 			CGameObject* pAuraBlade = GI->Clone_GameObject(TEXT("Prototype_GameObject_SwordMan_AuraBlade"), LAYER_CHARACTER, &ProjectileDesc);
+			pAuraBlade->Set_Collider_AttackMode(CCollider::ATTACK_TYPE::WEAK, 0.f, 0.f, 0.f, false);
+
 			CTransform* pAuraBladeTransform = pAuraBlade->Get_Component<CTransform>(L"Com_Transform");
 
 			_matrix	WorldMatrix = XMLoadFloat4x4(&m_WorldMatrix);
@@ -147,6 +149,7 @@ void CVfx_SwordMan_Skill_SwordTempest::Tick(_float fTimeDelta)
 			CCharacter_Projectile::CHARACTER_PROJECTILE_DESC ProjectileDesc;
 			ProjectileDesc.pOwner = CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::SWORD_MAN);
 			CGameObject* pAuraBlade = GI->Clone_GameObject(TEXT("Prototype_GameObject_SwordMan_AuraBlade"), LAYER_CHARACTER, &ProjectileDesc);
+			pAuraBlade->Set_Collider_AttackMode(CCollider::ATTACK_TYPE::WEAK, 0.f, 0.f, 0.f, false);
 			CTransform* pAuraBladeTransform = pAuraBlade->Get_Component<CTransform>(L"Com_Transform");
 
 			_matrix	WorldMatrix = XMLoadFloat4x4(&m_WorldMatrix);
@@ -177,6 +180,7 @@ void CVfx_SwordMan_Skill_SwordTempest::Tick(_float fTimeDelta)
 			CCharacter_Projectile::CHARACTER_PROJECTILE_DESC ProjectileDesc;
 			ProjectileDesc.pOwner = CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::SWORD_MAN);
 			CGameObject* pAuraBlade = GI->Clone_GameObject(TEXT("Prototype_GameObject_SwordMan_AuraBlade"), LAYER_CHARACTER, &ProjectileDesc);
+			pAuraBlade->Set_Collider_AttackMode(CCollider::ATTACK_TYPE::WEAK, 0.f, 0.f, 0.f, false);
 			CTransform* pAuraBladeTransform = pAuraBlade->Get_Component<CTransform>(L"Com_Transform");
 
 			_matrix	WorldMatrix = XMLoadFloat4x4(&m_WorldMatrix);
@@ -207,6 +211,7 @@ void CVfx_SwordMan_Skill_SwordTempest::Tick(_float fTimeDelta)
 			CCharacter_Projectile::CHARACTER_PROJECTILE_DESC ProjectileDesc;
 			ProjectileDesc.pOwner = CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::SWORD_MAN);
 			CGameObject* pAuraBlade = GI->Clone_GameObject(TEXT("Prototype_GameObject_SwordMan_AuraBlade"), LAYER_CHARACTER, &ProjectileDesc);
+			pAuraBlade->Set_Collider_AttackMode(CCollider::ATTACK_TYPE::WEAK, 0.f, 0.f, 0.f, false);
 			CTransform* pAuraBladeTransform = pAuraBlade->Get_Component<CTransform>(L"Com_Transform");
 
 			_matrix	WorldMatrix = XMLoadFloat4x4(&m_WorldMatrix);
@@ -237,6 +242,7 @@ void CVfx_SwordMan_Skill_SwordTempest::Tick(_float fTimeDelta)
 			CCharacter_Projectile::CHARACTER_PROJECTILE_DESC ProjectileDesc;
 			ProjectileDesc.pOwner = CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::SWORD_MAN);
 			CGameObject* pAuraBlade = GI->Clone_GameObject(TEXT("Prototype_GameObject_SwordMan_AuraBlade"), LAYER_CHARACTER, &ProjectileDesc);
+			pAuraBlade->Set_Collider_AttackMode(CCollider::ATTACK_TYPE::BLOW, 0.f, 0.f, 0.f, false);
 			CTransform* pAuraBladeTransform = pAuraBlade->Get_Component<CTransform>(L"Com_Transform");
 
 			_matrix	WorldMatrix = XMLoadFloat4x4(&m_WorldMatrix);

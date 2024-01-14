@@ -55,7 +55,7 @@ void CGlanixState_Rage2Idle::Tick_State(_float fTimeDelta)
 	if (m_fAccIcicleGen >= m_fGenTime)
 	{
 		m_fAccIcicleGen = 0.f;
-		Generate_Icicle(2);
+		Generate_Icicle(1);
 	}
 
 }
@@ -81,11 +81,19 @@ void CGlanixState_Rage2Idle::Generate_Icicle(_uint iCount)
 		vInitPos.y += 10.f + GI->RandomFloat(0.f, 5.f);
 		vInitPos.z += GI->RandomFloat(-5.f, 5.f);
 
-		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_PROP, L"Prorotype_GameObject_Glanix_GlanixIcicle", &vInitPos)))
+		CGameObject* pIcicle = nullptr;
+
+		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_PROP, L"Prorotype_GameObject_Glanix_GlanixIcicle", m_pGlanix, &pIcicle)))
 		{
 			MSG_BOX("Add Icicle Failed.");
 			return;
 		}
+
+		CTransform* pIcicleTransform = pIcicle->Get_Component<CTransform>(L"Com_Transform");
+		CPhysX_Controller* pPhysXController = pIcicle->Get_Component<CPhysX_Controller>(L"Com_Controller");
+
+		pIcicleTransform->Set_State(CTransform::STATE_POSITION, vInitPos);
+		pPhysXController->Set_EnterLevel_Position(vInitPos);
 	}
 }
 

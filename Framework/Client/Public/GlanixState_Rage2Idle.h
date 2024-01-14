@@ -26,7 +26,7 @@ private:
 	_int   m_iMaxCount = 0;
 
 	_float m_fAccIcicleGen = 0.f;
-	_float m_fGenTime = 1.f;
+	_float m_fGenTime = 0.5f;
 
 private:
 	void Generate_Icicle(_uint iCount);

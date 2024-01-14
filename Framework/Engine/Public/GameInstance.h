@@ -204,7 +204,9 @@ public:
 	void Play_BGM(const wstring& pSoundKey, _float fVolume, _bool bStop = false);
 	void Stop_Sound(CHANNELID eID);
 	void Stop_All();
+	void Set_AllChannelVolume(_float fVolume);
 	void Set_ChannelVolume(CHANNELID eID, float fVolume);
+	_float Get_AllChannelVolume();
 	FMOD_CHANNEL* Get_Channel(CHANNELID eID);
 	const _int Get_SoundFileIndex(const wstring& strSoundFileKey);
 	wstring Get_SoundFileKey(const _uint iIndex);

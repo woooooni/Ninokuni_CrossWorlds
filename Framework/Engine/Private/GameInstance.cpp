@@ -801,9 +801,19 @@ void CGameInstance::Stop_All()
 	m_pSound_Manager->Stop_All();
 }
 
+void CGameInstance::Set_AllChannelVolume(_float fVolume)
+{
+	m_pSound_Manager->Set_AllChannelVolume(fVolume);
+}
+
 void CGameInstance::Set_ChannelVolume(CHANNELID eID, float fVolume)
 {
 	m_pSound_Manager->Set_ChannelVolume(eID, fVolume);
+}
+
+_float CGameInstance::Get_AllChannelVolume()
+{
+	return m_pSound_Manager->Get_AllChannelVolume();
 }
 
 FMOD_CHANNEL* CGameInstance::Get_Channel(CHANNELID eID)

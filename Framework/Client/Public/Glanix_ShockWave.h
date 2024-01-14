@@ -31,7 +31,6 @@ protected:
 protected:
 	CRenderer* m_pRendererCom = nullptr;
 	CTransform* m_pTransformCom = nullptr;
-	CCollider* m_pColliderCom = nullptr;
 
 public:
 	static CGlanix_ShockWave* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);

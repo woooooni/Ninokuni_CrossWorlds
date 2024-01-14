@@ -25,8 +25,14 @@ public:
 	void Stop_Sound(CHANNELID eID);
 	void Stop_All();
 	void Set_ChannelVolume(CHANNELID eID, float fVolume);
-	_float Get_ChannelVolume(CHANNELID eID);
+	void Set_AllChannelVolume(_float fVolume) 
+	{ 
+		m_fAllChannelVolume = min(1.f, fVolume);
+		m_fAllChannelVolume = max(0.f, m_fAllChannelVolume);
+	}
+	_float Get_AllChannelVolume() { return m_fAllChannelVolume; }
 
+	_float Get_ChannelVolume(CHANNELID eID);
 	FMOD_CHANNEL* Get_Channel(CHANNELID eID){ return m_pChannelArr[eID]; }
 	const map<wstring, FMOD_SOUND*>& Get_MapSound() const { return m_mapSound; }
 
@@ -46,6 +52,7 @@ private:
 	// FMOD_CHANNEL : 재생하고 있는 사운드를 관리할 객체 
 	FMOD_CHANNEL* m_pChannelArr[MAXCHANNEL];
 	_float m_fSoundVolumeArr[MAXCHANNEL];
+	_float m_fAllChannelVolume = 1.f;
 
 	// 사운드 ,채널 객체 및 장치를 관리하는 객체 
 	FMOD_SYSTEM* m_pSystem;

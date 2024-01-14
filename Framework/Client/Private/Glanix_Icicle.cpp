@@ -9,12 +9,12 @@
 #include "Camera_Manager.h"
 
 CGlanix_Icicle::CGlanix_Icicle(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
-	: CGameObject(pDevice, pContext, strObjectTag, LAYER_TYPE::LAYER_PROP)
+	: CMonsterProjectile(pDevice, pContext, strObjectTag)
 {
 }
 
 CGlanix_Icicle::CGlanix_Icicle(const CGlanix_Icicle& rhs)
-	: CGameObject(rhs)
+	: CMonsterProjectile(rhs)
 {
 
 }
@@ -30,14 +30,13 @@ HRESULT CGlanix_Icicle::Initialize_Prototype()
 
 HRESULT CGlanix_Icicle::Initialize(void* pArg)
 {
+
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 		return E_FAIL;
-
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(*(Vec4*)pArg, 1.f));
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
@@ -46,13 +45,15 @@ HRESULT CGlanix_Icicle::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
+	Set_Collider_Elemental(m_pOwner->Get_Stat().eElementType);
+	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::STUN, 0.f, 0.f, 0.f, true);
+	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
+
 	return S_OK;
 }
 
 void CGlanix_Icicle::Tick(_float fTimeDelta)
 {
-	__super::Tick(fTimeDelta);
-
 	m_fAccDeletionTime += fTimeDelta;
 	if (m_fAccDeletionTime >= m_fDeletionTime)
 	{
@@ -61,43 +62,28 @@ void CGlanix_Icicle::Tick(_float fTimeDelta)
 		return;
 	}
 
-	GI->Add_CollisionGroup(COLLISION_GROUP::PROP, this);
-
-	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
-	m_pControllerCom->Tick_Controller(fTimeDelta);
-	m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(90.f) * fTimeDelta);
-
+	m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(90.f)* fTimeDelta);
+	__super::Tick(fTimeDelta);
 }
 
 void CGlanix_Icicle::LateTick(_float fTimeDelta)
 {
-	__super::LateTick(fTimeDelta);
-
+	LateUpdate_Collider(fTimeDelta);
 	m_pControllerCom->LateTick_Controller(fTimeDelta);
-
 	m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
+
+#ifdef _DEBUG
+	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
+	{
+		for (auto& pCollider : m_Colliders[i])
+			m_pRendererCom->Add_Debug(pCollider);
+	}
+#endif
 }
 
-HRESULT CGlanix_Icicle::Render()
-{
-	if (FAILED(__super::Render()))
-		return E_FAIL;
-
-	return S_OK;
-}
-
-HRESULT CGlanix_Icicle::Render_ShadowDepth()
-{
-	if (FAILED(__super::Render_ShadowDepth()))
-		return E_FAIL;
-
-	return S_OK;
-}
 
 HRESULT CGlanix_Icicle::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
 {
-	__super::Render();
-
 	if (nullptr == m_pModelCom || nullptr == pInstancingShader)
 		return E_FAIL;
 	if (FAILED(pInstancingShader->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
@@ -154,11 +140,15 @@ HRESULT CGlanix_Icicle::Render_Instance_Shadow(CShader* pInstancingShader, CVIBu
 
 void CGlanix_Icicle::Collision_Enter(const COLLISION_INFO& tInfo)
 {
-	
+	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER && tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
+	{
+		Set_Dead(true);
+	}
 }
 
 void CGlanix_Icicle::Collision_Continue(const COLLISION_INFO& tInfo)
 {
+	
 }
 
 void CGlanix_Icicle::Collision_Exit(const COLLISION_INFO& tInfo)
@@ -179,6 +169,7 @@ void CGlanix_Icicle::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
 	{
 		m_pRigidBodyCom->Set_Ground(true);
 		m_pRigidBodyCom->Set_Use_Gravity(false);
+		Set_Dead(true);
 	}
 }
 
@@ -239,23 +230,20 @@ HRESULT CGlanix_Icicle::Ready_Components()
 #pragma region Ready_Colliders
 HRESULT CGlanix_Icicle::Ready_Colliders()
 {
-	CCollider_OBB::OBB_COLLIDER_DESC OBBDesc;
-	ZeroMemory(&OBBDesc, sizeof OBBDesc);
+	CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
+	ZeroMemory(&SphereDesc, sizeof SphereDesc);
 
-	BoundingOrientedBox OBBBox;
-	ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
+	BoundingSphere tSphere;
+	ZeroMemory(&tSphere, sizeof(BoundingSphere));
+	tSphere.Radius = 1.f;
+	SphereDesc.tSphere = tSphere;
 
-	XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
-	OBBBox.Extents = { 200.f, 200.f, 250.f };
+	SphereDesc.pNode = nullptr;
+	SphereDesc.pOwnerTransform = m_pTransformCom;
+	SphereDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
+	SphereDesc.vOffsetPosition = Vec3(0.f, 0.f, 0.f);
 
-	OBBDesc.tBox = OBBBox;
-	OBBDesc.pNode = nullptr;
-	OBBDesc.pOwnerTransform = m_pTransformCom;
-	OBBDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
-	OBBDesc.vOffsetPosition = Vec3(0.f, 200.f, 0.f);
-
-	/* Body */
-	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::BODY, &OBBDesc)))
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::ATTACK, &SphereDesc)))
 		return E_FAIL;
 
 	return S_OK;
@@ -291,12 +279,5 @@ CGameObject* CGlanix_Icicle::Clone(void* pArg)
 void CGlanix_Icicle::Free()
 {
 	__super::Free();
-
-	Safe_Release(m_pRendererCom);
-	Safe_Release(m_pShaderCom);
-	Safe_Release(m_pTransformCom);
-	Safe_Release(m_pModelCom);
-	Safe_Release(m_pRigidBodyCom);
-	Safe_Release(m_pControllerCom);
 }
 

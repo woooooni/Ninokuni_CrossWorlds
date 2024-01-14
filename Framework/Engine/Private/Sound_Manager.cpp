@@ -65,7 +65,7 @@ void CSound_Manager::Play_Sound(wstring pSoundKey, CHANNELID eID, _float fVolume
 	if (true == bStop)
 		Stop_Sound(eID);
 
-	_float fFinalVolume = fVolume * m_fSoundVolumeArr[eID];
+	_float fFinalVolume = fVolume * m_fSoundVolumeArr[eID] * m_fAllChannelVolume;
 	if (eID == CHANNELID::SOUND_VOICE_NPC || eID == CHANNELID::SOUND_VOICE_MONSTER1 || eID == CHANNELID::SOUND_VOICE_MONSTER2 || eID == CHANNELID::SOUND_VOICE_MONSTER3)
 	{
 		if (fCamDistance > 10.f)		
@@ -100,7 +100,7 @@ void CSound_Manager::Play_BGM(wstring pSoundKey, _float fVolume, _bool bStop)
 
 	FMOD_System_PlaySound(m_pSystem, FMOD_CHANNEL_FREE, iter->second, FALSE, &m_pChannelArr[SOUND_BGM]);
 	FMOD_Channel_SetMode(m_pChannelArr[SOUND_BGM], FMOD_LOOP_NORMAL);
-	FMOD_Channel_SetVolume(m_pChannelArr[SOUND_BGM], fVolume);
+	FMOD_Channel_SetVolume(m_pChannelArr[SOUND_BGM], fVolume * m_fSoundVolumeArr[SOUND_BGM] * m_fAllChannelVolume);
 	FMOD_System_Update(m_pSystem);
 }
 
@@ -118,7 +118,7 @@ void CSound_Manager::Stop_All()
 void CSound_Manager::Set_ChannelVolume(CHANNELID eID, float fVolume)
 {
 	m_fSoundVolumeArr[eID] = fVolume;
-	FMOD_Channel_SetVolume(m_pChannelArr[eID], m_fSoundVolumeArr[eID]);
+	FMOD_Channel_SetVolume(m_pChannelArr[eID], m_fSoundVolumeArr[eID] * m_fAllChannelVolume);
 	FMOD_System_Update(m_pSystem);
 }
 

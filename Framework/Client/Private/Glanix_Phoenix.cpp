@@ -9,6 +9,7 @@
 #include "Glanix_PhoenixState_Out.h"
 
 #include "Glanix.h"
+#include "Character_Manager.h"
 
 CGlanix_Phoenix::CGlanix_Phoenix(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameObject(pDevice, pContext, strObjectTag, LAYER_TYPE::LAYER_PROP)
@@ -32,6 +33,9 @@ HRESULT CGlanix_Phoenix::Initialize_Prototype()
 
 HRESULT CGlanix_Phoenix::Initialize(void* pArg)
 {
+	if (nullptr == pArg)
+		return E_FAIL;
+
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
@@ -39,12 +43,10 @@ HRESULT CGlanix_Phoenix::Initialize(void* pArg)
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 		return E_FAIL;
 
-	_float fX = GI->RandomFloat(-30.f, 18.f);
-	_float fZ = GI->RandomFloat(-31.f, 0.f);
-
-	_vector vFireSpiritPos = { -40.f + fX, 3.f, 361.f + fZ, 1.f };
-
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vFireSpiritPos);
+	
+	Vec4* pInitializePosition = (Vec4*)pArg;
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(*pInitializePosition, 1.f));
+	m_pTransformCom->RevolutionRotation(Vec3(pInitializePosition->x, pInitializePosition->y, pInitializePosition->z), XMVectorSet(0.f, 1.f, 0.f, 0.f), GI->RandomFloat(-90.f, 90.f));
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
@@ -181,9 +183,22 @@ HRESULT CGlanix_Phoenix::Render_ShadowDepth()
 void CGlanix_Phoenix::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER &&
-		tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY &&
-		tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BOUNDARY)
+		tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY && tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BOUNDARY)
 	{
+		if (nullptr != CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::SWORD_MAN))
+		{
+			CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::SWORD_MAN)->Set_Speed_Weight(CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::SWORD_MAN)->Get_Speed_Weight() + 0.1f);
+		}
+
+		if (nullptr != CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::DESTROYER))
+		{
+			CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::DESTROYER)->Set_Speed_Weight(CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::DESTROYER)->Get_Speed_Weight() + 0.1f);
+		}
+
+		if (nullptr != CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::ENGINEER))
+		{
+			CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::ENGINEER)->Set_Speed_Weight(CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::ENGINEER)->Get_Speed_Weight() + 0.1f);
+		}
 		m_bIsOut = true;
 	}
 }

@@ -9,6 +9,10 @@
 #include "Camera_Follow.h"
 #include "Camera_Manager.h"
 
+#include "Character_Manager.h"
+#include "Character.h"
+#include "Player.h"
+
 CGlanixState_Rage2Stamp::CGlanixState_Rage2Stamp(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
 {
@@ -53,6 +57,20 @@ void CGlanixState_Rage2Stamp::Tick_State(_float fTimeDelta)
 
 void CGlanixState_Rage2Stamp::Exit_State()
 {
+	if (nullptr != CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::SWORD_MAN))
+	{
+		CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::SWORD_MAN)->Set_Speed_Weight(1.f);
+	}
+
+	if (nullptr != CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::DESTROYER))
+	{
+		CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::DESTROYER)->Set_Speed_Weight(1.f);
+	}
+
+	if (nullptr != CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::ENGINEER))
+	{
+		CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::ENGINEER)->Set_Speed_Weight(1.f);
+	}
 }
 
 CGlanixState_Rage2Stamp* CGlanixState_Rage2Stamp::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
