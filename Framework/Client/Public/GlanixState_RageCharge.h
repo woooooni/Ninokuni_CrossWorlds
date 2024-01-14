@@ -23,6 +23,10 @@ private:
 	_float m_fChargeTime = 0.f;
 	_float m_fTime = 0.f;
 
+	Vec4	m_vCurPos = {};
+	_float	m_fCurDist = 0.f;
+	_float	m_fPrevDist = 0.f;
+
 	_int   m_iChargeCount = 0;
 
 	const _uint m_iMaxChargeCount = 8;

@@ -22,6 +22,8 @@ private:
 	_vector m_vDestPos = {};
 	_float  m_fTurnSpeed = 0.f;
 
+	_bool   m_bIsOffsetJump = false;
+
 public:
 	static CGlanixState_RageTurn* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
