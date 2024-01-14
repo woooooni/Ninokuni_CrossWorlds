@@ -66,18 +66,18 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 	if (LOCK_PROGRESS::OFF != m_eLockProgress)
 		Check_Exception();
 
-	/* Check Lock */
-	if (LOCK_PROGRESS::FINISH_BLEIDING == m_eLockProgress)
-	{
-		if (!m_tBlendingLookAtPosition.bActive)
-			m_eLockProgress = LOCK_PROGRESS::OFF;
-	}
-
 	/* Check Blending */
 	if (m_bBlending)
 	{
 		Tick_Blending(fTimeDelta);
 		return;
+	}
+
+	/* Check Lock */
+	if (LOCK_PROGRESS::FINISH_BLEIDING == m_eLockProgress)
+	{
+		if (!m_tBlendingLookAtPosition.bActive)
+			m_eLockProgress = LOCK_PROGRESS::OFF;
 	}
 
 	/* Trnasform */
@@ -100,60 +100,88 @@ void CCamera_Follow::LateTick(_float fTimeDelta)
 
 void CCamera_Follow::Set_Default_Position()
 {
-	/* 구면 좌표계 앵글 값 계산 */
+	/* 락온 상태라면 */
+	if (LOCK_PROGRESS::OFF != m_eLockProgress)
 	{
-		CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
-
-		/* 현재 타겟의 Y축 회전 상태를 CW 0 ~ 360로 반환한다. */
-		_float fRot = 0.f;
+		/* 포지션 갱신 */
 		{
-			Vec3 vLook = pTargetTransform->Get_Look();
+			/* 세팅된 앵글값으로만 구면좌표를 계산하기 위해 일시적으로 인풋을 끈다. */
+			m_bCanInput = false;
+			{
+				/* 댐핑 리셋 */
+				/* 트랜스폼 틱을 돌려 포지션과 룩을 다시 세팅한다. (델타타임 밀릴 가능성 존재) */
+				m_tDampingDesc.bSet = false;
+				Tick_Transform(GI->Compute_TimeDelta(TIMER_TYPE::GAME_PLAY));
 
-			_float fAngle = atan2(vLook.x, vLook.z);
+				m_tDampingDesc.bSet = false;
+				Tick_Transform(GI->Compute_TimeDelta(TIMER_TYPE::GAME_PLAY));
 
-			const _float fDegreesPerRadian = 180.0f / DirectX::XM_PI;
-			fRot = fAngle * fDegreesPerRadian;
-			if (fRot < 0)
-				fRot += 360.f;
+				m_tDampingDesc.bSet = false;
+				Tick_Transform(GI->Compute_TimeDelta(TIMER_TYPE::GAME_PLAY));
+
+				/* 현재 팔로우 카메라의 룩앳 오프셋 계산은 팔로우 카메라의 회전행렬에 기반하기 때문이다. */
+				/* 틱 트랜스폼을 2번이상 돌려줘야 카메라의 회전행렬에서 얻는 룩앳 오프셋의 위치가 제대로 세팅된다. */
+			}
+			m_bCanInput = true;
 		}
-
-		/* 회전 값을 통해 플레이어 룩 반대 방향에 카메라를 위치하기 위한 구면 좌표계 앵글값을 구한다.*/
-		_float result = 0.f;
-		{
-			if (fRot >= 0 && fRot <= 270) 
-				result = -0.5f * XM_PI - fRot * (1.5f * XM_PI / 270.0f);
-	
-			else if (fRot > 270 && fRot <= 360) 
-				result = 0.0f - (fRot - 270) * (0.5f * XM_PI / 90.0f); 
-	
-			else 
-				result = fRot;
-		}
-
-		m_vAngle = { result, m_fDefaultAngleY };
 	}
-
-
-	/* 포지션 갱신 */
+	else
 	{
-		/* 세팅된 앵글값으로만 구면좌표를 계산하기 위해 일시적으로 인풋을 끈다. */
-		m_bCanInput = false;
+		/* 구면 좌표계 앵글 값 계산 */
 		{
-			/* 댐핑 리셋 */
-			/* 트랜스폼 틱을 돌려 포지션과 룩을 다시 세팅한다. (델타타임 밀릴 가능성 존재) */
-			m_tDampingDesc.bSet = false;
-			Tick_Transform(GI->Compute_TimeDelta(TIMER_TYPE::GAME_PLAY));
+			CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
 
-			m_tDampingDesc.bSet = false;
-			Tick_Transform(GI->Compute_TimeDelta(TIMER_TYPE::GAME_PLAY));
+			/* 현재 타겟의 Y축 회전 상태를 CW 0 ~ 360로 반환한다. */
+			_float fRot = 0.f;
+			{
+				Vec3 vLook = pTargetTransform->Get_Look();
 
-			m_tDampingDesc.bSet = false;
-			Tick_Transform(GI->Compute_TimeDelta(TIMER_TYPE::GAME_PLAY));
+				_float fAngle = atan2(vLook.x, vLook.z);
 
-			/* 현재 팔로우 카메라의 룩앳 오프셋 계산은 팔로우 카메라의 회전행렬에 기반하기 때문이다. */
-			/* 틱 트랜스폼을 2번이상 돌려줘야 카메라의 회전행렬에서 얻는 룩앳 오프셋의 위치가 제대로 세팅된다. */
+				const _float fDegreesPerRadian = 180.0f / DirectX::XM_PI;
+				fRot = fAngle * fDegreesPerRadian;
+				if (fRot < 0)
+					fRot += 360.f;
+			}
+
+			/* 회전 값을 통해 플레이어 룩 반대 방향에 카메라를 위치하기 위한 구면 좌표계 앵글값을 구한다.*/
+			_float result = 0.f;
+			{
+				if (fRot >= 0 && fRot <= 270) 
+					result = -0.5f * XM_PI - fRot * (1.5f * XM_PI / 270.0f);
+	
+				else if (fRot > 270 && fRot <= 360) 
+					result = 0.0f - (fRot - 270) * (0.5f * XM_PI / 90.0f); 
+	
+				else 
+					result = fRot;
+			}
+
+			m_vAngle = { result, m_fDefaultAngleY };
 		}
-		m_bCanInput = true;
+
+
+		/* 포지션 갱신 */
+		{
+			/* 세팅된 앵글값으로만 구면좌표를 계산하기 위해 일시적으로 인풋을 끈다. */
+			m_bCanInput = false;
+			{
+				/* 댐핑 리셋 */
+				/* 트랜스폼 틱을 돌려 포지션과 룩을 다시 세팅한다. (델타타임 밀릴 가능성 존재) */
+				m_tDampingDesc.bSet = false;
+				Tick_Transform(GI->Compute_TimeDelta(TIMER_TYPE::GAME_PLAY));
+
+				m_tDampingDesc.bSet = false;
+				Tick_Transform(GI->Compute_TimeDelta(TIMER_TYPE::GAME_PLAY));
+
+				m_tDampingDesc.bSet = false;
+				Tick_Transform(GI->Compute_TimeDelta(TIMER_TYPE::GAME_PLAY));
+
+				/* 현재 팔로우 카메라의 룩앳 오프셋 계산은 팔로우 카메라의 회전행렬에 기반하기 때문이다. */
+				/* 틱 트랜스폼을 2번이상 돌려줘야 카메라의 회전행렬에서 얻는 룩앳 오프셋의 위치가 제대로 세팅된다. */
+			}
+			m_bCanInput = true;
+		}
 	}
 }
 
@@ -279,9 +307,9 @@ void CCamera_Follow::Tick_Blending(const _float fDeltaTime)
 {
 	const Vec4 vCamPosition = CCamera_Manager::GetInstance()->Get_BlendingPosition();
 
-	m_vPrevLookAt = CCamera_Manager::GetInstance()->Get_BlendingLookAt();
-
 	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vCamPosition);
+
+	m_vPrevLookAt = CCamera_Manager::GetInstance()->Get_BlendingLookAt();
 
 	m_pTransformCom->LookAt(m_vPrevLookAt);
 

@@ -75,6 +75,7 @@ private:
 	HRESULT Ready_Prototype_Component();
 	HRESULT Ready_UI_TextureComponent();
 	HRESULT Ready_Effect_TextureComponent();
+	HRESULT Ready_CameraObject();
 
 public:
 	static CMainApp* Create();

@@ -5,8 +5,10 @@
 
 #include "GameInstance.h"
 
-#include "Camera_Follow.h"
+#include "Camera_Group.h"
 #include "Camera_Manager.h"
+#include "Game_Manager.h"
+#include "Player.h"
 
 CGlanixState_RageStart::CGlanixState_RageStart(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
@@ -47,37 +49,29 @@ void CGlanixState_RageStart::Exit_State()
 	//vPillarPos = { vGlanixPos.x + -11.f, 1.6f, vGlanixPos.z + 13.f, 1.f };
 	//GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
 
-	_vector vPillarPos = { -64.f, 10.f, 360.f, 1.f };
+	_vector vPillarPos = { -64.f, 15.f, 360.f, 1.f };
 	GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
-	vPillarPos = { -34.f, 10.f, 350.f, 1.f };
+	vPillarPos = { -34.f, 15.f, 350.f, 1.f };
 	GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
-	vPillarPos = { -60.f, 10.f, 334.f, 1.f };
+	vPillarPos = { -60.f, 15.f, 334.f, 1.f };
 	GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
-	vPillarPos = { -36.f, 10.f, 378.f, 1.f };
+	vPillarPos = { -36.f, 15.f, 378.f, 1.f };
 	GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
-	vPillarPos = { -63.f, 10.f, 378.f, 1.f };
+	vPillarPos = { -63.f, 15.f, 378.f, 1.f };
 	GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
-	vPillarPos = { -44.f, 10.f, 391.f, 1.f };
+	vPillarPos = { -44.f, 15.f, 391.f, 1.f };
 	GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
-	vPillarPos = { -23.f, 10.f, 363.f, 1.f };
+	vPillarPos = { -23.f, 15.f, 363.f, 1.f };
 	GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
 
-	/* Camera */
-	CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_CurCamera());
-	if (nullptr != pFollowCam)
+	/* Camera - 탑뷰 전환 */
+	CCamera_Top* pCamTop = dynamic_cast<CCamera_Top*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::TOP));
+	if (nullptr != pCamTop)
 	{
-		/* 락온 + 와이드뷰 Start */
-	
-		pFollowCam->Start_Lerp_Fov(Cam_Fov_LockOn_Glanix_PillarPattern,
-			Cam_LerpTime_LockOn_Glanix_PillarPattern,
-			LERP_MODE::SMOOTHER_STEP);
-	
-		pFollowCam->Lerp_TargetOffset(pFollowCam->Get_TargetOffset(),
-			Cam_Target_Offset_LockOn_Glanix_PillarPattern,
-			Cam_LerpTime_LockOn_Glanix_PillarPattern,
-			LERP_MODE::SMOOTHER_STEP);
-	
-		// 플레이어 공격 인풋 막기
+		if (S_OK == pCamTop->Start_TopView(CCamera_Top::VIEW_TYPE::GLANIX_PILLAR_PATTERN))
+		{
+			CCamera_Manager::GetInstance()->Change_Camera(pCamTop->Get_Key(), 1.25f, LERP_MODE::SMOOTHER_STEP);
+		}
 	}
 }
 

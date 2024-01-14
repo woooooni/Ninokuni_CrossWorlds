@@ -43,6 +43,7 @@ private:
 	CRigidBody* m_pRigidBodyCom = nullptr;
 	CPhysX_Controller* m_pControllerCom = { nullptr };
 
+	_bool		m_bShake = false;
 public:
 	static CGlanix_IcePillar* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;

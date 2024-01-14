@@ -104,7 +104,7 @@ namespace Client
 
 	/* Camera - Default */
 
-	enum CAMERA_TYPE { FREE, FOLLOW, CUTSCENE_MAP, CUTSCENE_BOSS, ACTION, CAMERA_TYPE_END };
+	enum CAMERA_TYPE { FREE, FOLLOW, CUTSCENE_MAP, CUTSCENE_BOSS, ACTION, TOP, CAMERA_TYPE_END };
 
 	static const char*	CameraCharNames[CAMERA_TYPE::CAMERA_TYPE_END]{ "Camera_Free", "Camera_Follow", "Camera_CutScene_Map", "Camera_CutScene_Boss", "Camera_Action" };
 	
@@ -118,30 +118,30 @@ namespace Client
 	static const _float Cam_Fov_Action_Lobby				= XMConvertToRadians(52.5f);
 	static const _float Cam_Fov_CutScene_Map_Default		= XMConvertToRadians(70.0f);
 	static const _float Cam_Fov_CutScene_Boss_Default		= XMConvertToRadians(70.0f);
+	static const _float Cam_Fov_Top_Glanix					= XMConvertToRadians(75.0f);
 
 	static const Vec4	Cam_TargetOffset_Follow_Default		= { 0.7f, 1.3f, 0.f, 1.f };
 	static const Vec4	Cam_LookAtOffset_Follow_Default		= { 0.7f, 1.3f, 0.f, 1.f };
+
+	static const Vec4	Cam_TargetOffset_Top_Glanix = { -20.f, 15.f, 0.f, 1.f };
+	static const Vec4	Cam_LookAtOffset_Top_Glanix = { 0.f, 0.f, 0.f, 1.f };
 
 #define MAX_BEZIER_POINT 4
 
 	/* Lock On - Glanix */
 
 	/* Default */
-	static const _float Cam_LockOn_Blending_Time_Default	= 0.f; 
+	static const _float Cam_LockOn_Time_BlendingIn	= 0.f; 
+	static const _float Cam_LockOn_Time_BlendingOut = 0.f;
 
 	static const Vec4	Cam_Target_Offset_LockOn_Glanix		= Vec4{ 0.7f, 2.f, -5.f, 1.f };
 	static const Vec4	Cam_LookAt_Offset_LockOn_Glanix		= Vec4{ 0.f, 0.5f, 0.f, 1.f };
 
 	/* Item Pattern */
 	static const _float Cam_LerpTime_LockOn_Glanix_ItemPattern_Blending_In = 0.8f;
-	static const _float Cam_LerpTime_LockOn_Glanix_ItemPattern_Blending_Out = 0.3f;
+	static const _float Cam_LerpTime_LockOn_Glanix_ItemPattern_Blending_Out = 0.5f;
 	static const _float Cam_Fov_LockOn_Glanix_ItemPattern = XMConvertToRadians(75.0f);
 	static const Vec4	Cam_Target_Offset_LockOn_Glanix_ItemPattern = Vec4{ 0.f, 4.5f, -10.f, 1.f };
-
-	/* Pillar Pattern */
-	static const _float Cam_LerpTime_LockOn_Glanix_PillarPattern = 0.5f;
-	static const _float Cam_Fov_LockOn_Glanix_PillarPattern = XMConvertToRadians(70.0f);
-	static const Vec4	Cam_Target_Offset_LockOn_Glanix_PillarPattern = Vec4{ 0.7f, 4.f, -15.f, 1.f };
 
 }
 

@@ -6,6 +6,8 @@
 
 #include "Glanix.h"
 
+#include "Camera_Manager.h"
+
 CGlanix_IcePillar::CGlanix_IcePillar(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameObject(pDevice, pContext, strObjectTag, LAYER_TYPE::LAYER_PROP)
 {
@@ -170,6 +172,12 @@ void CGlanix_IcePillar::Collision_Exit(const COLLISION_INFO& tInfo)
 
 void CGlanix_IcePillar::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
 {
+	if (!m_bShake)
+	{
+		CCamera_Manager::GetInstance()->Start_Action_Shake(0.15f, 17.f, 0.4f);
+		m_bShake = true;
+	}
+
 	__super::Ground_Collision_Enter(tInfo);
 	if (m_pRigidBodyCom->Get_Velocity().y <= 0.f)
 	{

@@ -163,7 +163,7 @@ public:
 	void Set_ProjDesc(const PROJ_DESC& tDesc) { memcpy(&m_tProjDesc, &tDesc, sizeof(PROJ_DESC)); }
 	void Set_Fov(const _float& fFov) { memcpy(&m_tProjDesc.tLerpFov, &fFov, sizeof(_float)); }
 	void Start_Lerp_Fov(const _float& fStartValue, const _float& fTargetValue, const _float& fTime, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
-	void Start_Lerp_Fov(const _float& fTargetValue, const _float& fTime, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
+	void Start_Lerp_Fov(const _float& fTargetValue, const _float& fTime = 0.5f, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
 	
 	/* Distance */
 	void Set_Distance(const _float& fDistance) { memcpy(&m_tLerpDist.fCurValue, &fDistance, sizeof(_float)); }

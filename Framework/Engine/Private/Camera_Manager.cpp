@@ -138,6 +138,18 @@ HRESULT CCamera_Manager::Start_Action_Shake_Default()
 	return S_OK;
 }
 
+HRESULT CCamera_Manager::Start_Action_Shake_Default_Attack()
+{
+	if (nullptr == m_pCurCamera)
+		return E_FAIL;
+
+	m_pCurCamera->Start_Shake(0.065f, 12.5f, 0.2f);
+
+	return S_OK;
+}
+
+
+
 HRESULT CCamera_Manager::Start_Action_Shake(const _float& fAmplitude, const _float& fFrequency, const _float& fDuration)
 {
 	if (nullptr == m_pCurCamera)
