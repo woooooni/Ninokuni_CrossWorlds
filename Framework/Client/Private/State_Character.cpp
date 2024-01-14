@@ -78,9 +78,6 @@ void CState_Character::Neutral_Idle_Input(_float fTimeDelta)
 
 	if (KEY_TAP(KEY::LBTN))
 	{
-		if (CUI_Manager::GetInstance()->Is_UIClicked())
-			return;
-
 		m_pStateMachineCom->Change_State(CCharacter::BATTLE_ATTACK_0);
 		CUI_Manager::GetInstance()->Use_AttackBtn();
 		return;
@@ -152,9 +149,6 @@ void CState_Character::Battle_Idle_Input(_float fTimeDelta)
 
 	if (KEY_TAP(KEY::LBTN))
 	{
-		if (CUI_Manager::GetInstance()->Is_UIClicked())
-			return;
-
 		m_pStateMachineCom->Change_State(CCharacter::BATTLE_ATTACK_0);
 		CUI_Manager::GetInstance()->Use_AttackBtn();
 		return;
@@ -367,9 +361,6 @@ void CState_Character::Neutral_Walk_Input(_float fTimeDelta)
 
 	if (KEY_TAP(KEY::LBTN))
 	{
-		if (CUI_Manager::GetInstance()->Is_UIClicked())
-			return;
-
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_0);
 		CUI_Manager::GetInstance()->Use_AttackBtn();
 		return;
@@ -536,9 +527,6 @@ void CState_Character::Battle_Walk_Input(_float fTimeDelta)
 
 	if (KEY_TAP(KEY::LBTN))
 	{
-		if (CUI_Manager::GetInstance()->Is_UIClicked())
-			return;
-
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_0);
 		CUI_Manager::GetInstance()->Use_AttackBtn();
 		return;
@@ -919,9 +907,6 @@ void CState_Character::Neutral_Run_Input(_float fTimeDelta)
 
 	if (KEY_TAP(KEY::LBTN))
 	{
-		if (CUI_Manager::GetInstance()->Is_UIClicked())
-			return;
-
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_0);
 		CUI_Manager::GetInstance()->Use_AttackBtn();
 		return;
@@ -1079,9 +1064,6 @@ void CState_Character::Battle_Run_Input(_float fTimeDelta)
 
 	if (KEY_TAP(KEY::LBTN))
 	{
-		if (CUI_Manager::GetInstance()->Is_UIClicked())
-			return;
-
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_0);
 		CUI_Manager::GetInstance()->Use_AttackBtn();
 		return;
@@ -1458,9 +1440,6 @@ void CState_Character::Attack_Input(_float fTimeDelta)
 
 	if (KEY_TAP(KEY::LBTN))
 	{
-		if (CUI_Manager::GetInstance()->Is_UIClicked())
-			return;
-
 		CCharacter::STATE eCurrState = CCharacter::STATE(m_pStateMachineCom->Get_CurrState());
 		CUI_Manager::GetInstance()->Use_AttackBtn();
 		switch (eCurrState)

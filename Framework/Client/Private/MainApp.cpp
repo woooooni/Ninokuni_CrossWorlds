@@ -71,8 +71,6 @@ HRESULT CMainApp::Initialize()
 		ShowCursor(false);
 	}
 
-	//CUI_Manager::GetInstance()->Ready_Veils();
-
 	Json Test;
 	Test["Name"] = "±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø±èÅÂ¿ø";
 	Test["Test"] = "Å×½ºÆ®Å×½ºÆ®Å×½ºÆ®Å×½ºÆ®";
@@ -552,7 +550,6 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/UI_LoadingWindow_Temp.png")))))
 		return E_FAIL;
 
-	// Todo 2023.12.18
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Loading_Window"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/UI_LoadingWindow_%d.png"), 5))))
 		return E_FAIL;
@@ -562,7 +559,6 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Loading_Imajinn"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/Imajinn/UI_Loading_Imajinn_%d.png"), 10))))
 		return E_FAIL;
-	//
 
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Loading_Characters"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/UI_Loading_Character_%d.png"), 5))))
@@ -576,9 +572,6 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/UI_Loading_Info_%d.png"), 3))))
 		return E_FAIL;
 
-//	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Loading_Logos"),
-//		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/UI_Loading_Logo_%d.png"), 2))))
-//		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Loading_Logos"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/UI_Loading_Logo.png")))))
 		return E_FAIL;
@@ -763,11 +756,11 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Default/UI_Default_Background_Star_%d.png"), 3))))
 		return E_FAIL;
 
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_WeaponSection_Elemental"), // ¹«±â ¼Ó¼º Texture ÀÛ¾÷ Àü
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_WeaponSection_Elemental"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/WeaponSlot/UI_Icon_Weapon_Elemental_%d.png"), 5))))
 		return E_FAIL;
 
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SkillSection_DefaultAttack"), // ±âº» °ø°Ý¿ë Texture
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SkillSection_DefaultAttack"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/WeaponSlot/UI_DefaultAttack_Icon_%d.png"), 3))))
 		return E_FAIL;
 
@@ -1218,6 +1211,11 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 	// QuestRewards Icon
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Quest_Rewards_Icons"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Quest/UI_QuestRewards_%d.png"), 4))))
+		return E_FAIL;
+
+	// MapName Text(Renewal)
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MapName_Text_Renewal"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/MapName/Text_Rework/UI_MapName_Text_%d.png"), 19))))
 		return E_FAIL;
 
 	return S_OK;
