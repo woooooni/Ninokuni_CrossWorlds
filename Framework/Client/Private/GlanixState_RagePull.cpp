@@ -5,6 +5,9 @@
 
 #include "Animation.h"
 
+#include "Camera_Manager.h"
+#include "Camera.h"
+
 CGlanixState_RagePull::CGlanixState_RagePull(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
 {
@@ -23,6 +26,13 @@ void CGlanixState_RagePull::Enter_State(void* pArg)
 
 	/* 남아있는 얼음기둥 제거 */
 	m_pGlanix->Clear_Pillars();
+
+	/* 카메라 줌 */
+	CCamera* pCurCam = CCamera_Manager::GetInstance()->Get_CurCamera();
+	if (nullptr != pCurCam)
+	{
+		pCurCam->Lerp_TargetOffset(pCurCam->Get_TargetOffset(), Cam_TargetOffset_Top_Glanix_Zoom, 1.f, LERP_MODE::SMOOTHER_STEP);
+	}
 }
 
 void CGlanixState_RagePull::Tick_State(_float fTimeDelta)

@@ -124,6 +124,7 @@ namespace Client
 	static const Vec4	Cam_LookAtOffset_Follow_Default		= { 0.7f, 1.3f, 0.f, 1.f };
 
 	static const Vec4	Cam_TargetOffset_Top_Glanix = { -20.f, 15.f, 0.f, 1.f };
+	static const Vec4	Cam_TargetOffset_Top_Glanix_Zoom = { -12.f, 3.f, 0.f, 1.f };
 	static const Vec4	Cam_LookAtOffset_Top_Glanix = { 0.f, 0.f, 0.f, 1.f };
 
 #define MAX_BEZIER_POINT 4

@@ -292,10 +292,6 @@ HRESULT CGlanix::Clear_Pillars()
 
 	m_pPillarController->Clear_Pillars();
 
-	delete m_pPillarController;
-
-	m_pPillarController = nullptr;
-
 	return E_NOTIMPL;
 }
 

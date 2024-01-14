@@ -45,8 +45,8 @@ void CGlanixState_Rage2Start::Enter_State(void* pArg)
 										LERP_MODE::SMOOTHER_STEP);
 
 		// 플레이어 공격 인풋 막기
-		//CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_Attack_Input(false);
-		//CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_Skill_Input(false);
+		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_Attack_Input(false);
+		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_Skill_Input(false);
 	}
 }
 
