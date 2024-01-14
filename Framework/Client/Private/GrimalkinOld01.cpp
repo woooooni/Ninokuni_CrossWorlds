@@ -9,6 +9,7 @@
 #include "NpcState_TwoWay.h"
 
 #include "UI_World_NPCTag.h"
+#include "UI_World_NPCSpeechBalloon.h"
 
 CGrimalkinOld01::CGrimalkinOld01(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameNpc(pDevice, pContext, strObjectTag)
@@ -50,12 +51,36 @@ HRESULT CGrimalkinOld01::Initialize(void* pArg)
 	m_pTag = dynamic_cast<CUI_World_NPCTag*>(pTag);
 	m_pTag->Set_Owner(this, m_strKorName, 1.5f);
 
+	CGameObject* pBalloon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_NPC_SpeechBalloon"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pBalloon)
+		return E_FAIL;
+	if (nullptr == dynamic_cast<CUI_World_NPCSpeechBalloon*>(pBalloon))
+		return E_FAIL;
+	m_pBalloon = dynamic_cast<CUI_World_NPCSpeechBalloon*>(pBalloon);
+	m_pBalloon->Set_Owner(this, 1.7f);
+	_int iRandom = GI->RandomInt(0, 1);
+	switch (iRandom)
+	{
+	case 0:
+		m_pBalloon->Set_Balloon(TEXT("¿À´Ã ÇÏ´ÃÀÌ ¸¼³×"));
+		break;
+
+	case 1:
+		m_pBalloon->Set_Balloon(TEXT("¾ÆÀÌ°í Çã¸®¾ß."));
+		break;
+	}
+
 	return S_OK;
 }
 
 void CGrimalkinOld01::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+
+	if (nullptr != m_pTag)
+		m_pTag->Tick(fTimeDelta);
+	if (nullptr != m_pBalloon)
+		m_pBalloon->Tick(fTimeDelta);
 }
 
 void CGrimalkinOld01::LateTick(_float fTimeDelta)
@@ -64,6 +89,8 @@ void CGrimalkinOld01::LateTick(_float fTimeDelta)
 
 	if (nullptr != m_pTag)
 		m_pTag->LateTick(fTimeDelta);
+	if (nullptr != m_pBalloon)
+		m_pBalloon->LateTick(fTimeDelta);
 
 #ifdef DEBUG
 	m_pRendererCom->Add_Debug(m_pControllerCom);
@@ -164,4 +191,5 @@ void CGrimalkinOld01::Free()
 	__super::Free();
 
 	Safe_Release(m_pTag);
+	Safe_Release(m_pBalloon);
 }

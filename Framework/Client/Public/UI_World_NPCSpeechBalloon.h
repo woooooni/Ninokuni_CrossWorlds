@@ -31,11 +31,14 @@ private:
 
 	_float2 m_vOriginSize = _float2(0.f, 0.f);
 	_float2 m_vMinSize = _float2(0.f, 0.f);
+	_float m_fOffsetY = { 0.f };
 	_bool m_bResizeDone = { false };
 
 	_float2 m_fSpeed = _float2(0.f, 0.f);
 	_float m_fActiveTimeAcc = { 0.f };
-	_float m_fOffsetY = { 0.f };
+
+	_bool m_bHide = { true }; // 숨겨야할때 -> 시간 누적을 위함
+	_float m_fHideTimeAcc = { 0.f };
 
 private:
 	virtual HRESULT	Ready_Components() override;

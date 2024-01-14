@@ -18,6 +18,7 @@ protected:
 	virtual ~CUI_MapName_Text() = default;
 
 public:
+	void Set_Type(UI_MAPNAME_TEXT eType) { m_eType = eType; }
 	void Set_Alpha(_float fAlpha) { m_fAlpha = fAlpha; }
 
 public:

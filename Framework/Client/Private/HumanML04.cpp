@@ -9,7 +9,6 @@
 #include "NpcState_TwoWay.h"
 
 #include "UI_World_NPCTag.h"
-#include "UI_World_NPCSpeechBalloon.h"
 
 CHumanML04::CHumanML04(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameNpc(pDevice, pContext, strObjectTag)
@@ -51,16 +50,6 @@ HRESULT CHumanML04::Initialize(void* pArg)
 	m_pTag = dynamic_cast<CUI_World_NPCTag*>(pTag);
 	m_pTag->Set_Owner(this, m_strKorName, 2.3f);
 
-	// UI SpeechBalloon
-	CGameObject* pBalloon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_NPC_SpeechBalloon"), LAYER_TYPE::LAYER_UI);
-	if (nullptr == pBalloon)
-		return E_FAIL;
-	if (nullptr == dynamic_cast<CUI_World_NPCSpeechBalloon*>(pBalloon))
-		return E_FAIL;
-	m_pBalloon = dynamic_cast<CUI_World_NPCSpeechBalloon*>(pBalloon);
-	m_pBalloon->Set_Owner(this, 2.6f);
-	m_pBalloon->Set_Balloon(TEXT("나는 마을 주민이다."));
-
 	return S_OK;
 }
 
@@ -70,8 +59,6 @@ void CHumanML04::Tick(_float fTimeDelta)
 
 	if (nullptr != m_pTag)
 		m_pTag->Tick(fTimeDelta);
-	if (nullptr != m_pBalloon)
-		m_pBalloon->Tick(fTimeDelta);
 }
 
 void CHumanML04::LateTick(_float fTimeDelta)
@@ -80,8 +67,6 @@ void CHumanML04::LateTick(_float fTimeDelta)
 
 	if (nullptr != m_pTag)
 		m_pTag->LateTick(fTimeDelta);
-	if (nullptr != m_pBalloon)
-		m_pBalloon->LateTick(fTimeDelta);
 
 #ifdef DEBUG
 	m_pRendererCom->Add_Debug(m_pControllerCom);
@@ -182,5 +167,4 @@ void CHumanML04::Free()
 	__super::Free();
 
 	Safe_Release(m_pTag);
-	Safe_Release(m_pBalloon);
 }

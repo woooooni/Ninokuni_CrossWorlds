@@ -27,6 +27,8 @@
 
 #include "Portal.h"
 
+_bool CLevel_IceLand::g_bFirstEnter = false;
+
 CLevel_IceLand::CLevel_IceLand(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
 {
@@ -83,6 +85,12 @@ HRESULT CLevel_IceLand::Initialize()
 
 	GI->Stop_Sound(CHANNELID::SOUND_BGM);
 	GI->Play_BGM(TEXT("BGM_Field_Village_Winter_Po_1.mp3"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM));
+
+	if (false == g_bFirstEnter)
+	{
+		g_bFirstEnter = true;
+		CUI_Manager::GetInstance()->OnOff_MapName(true, TEXT("코에루코 설원"));
+	}
 
 	return S_OK;
 }

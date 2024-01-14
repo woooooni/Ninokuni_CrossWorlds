@@ -144,7 +144,6 @@ void CCharacter::Tick(_float fTimeDelta)
 
 	if(true == m_bMotionTrail)
 		Tick_MotionTrail(fTimeDelta);
-
 	
 #pragma region Deprecated.
 
@@ -584,6 +583,7 @@ void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 		m_eDamagedElemental = tInfo.pOtherCollider->Get_ElementalType();
 	}
 
+	Decrease_HP(iDamage);
 	CUIDamage_Manager::GetInstance()->Create_PlayerDamageNumber(m_pTransformCom, iDamage);
 	
 

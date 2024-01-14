@@ -8,6 +8,8 @@
 #include "UniqueNpcState_Run.h"
 #include "UniqueNpcState_Talk.h"
 
+#include "UI_World_NPCTag.h"
+
 CAquarisBella::CAquarisBella(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameNpc(pDevice, pContext, strObjectTag)
 {
@@ -42,17 +44,31 @@ HRESULT CAquarisBella::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
+	// UI NameTag
+	CGameObject* pTag = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_NPC_Tag"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pTag)
+		return E_FAIL;
+
+	m_pTag = dynamic_cast<CUI_World_NPCTag*>(pTag);
+	m_pTag->Set_Owner(this, m_strKorName, 1.8f);
+
 	return S_OK;
 }
 
 void CAquarisBella::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+
+	if (nullptr != m_pTag)
+		m_pTag->Tick(fTimeDelta);
 }
 
 void CAquarisBella::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
+
+	if (nullptr != m_pTag)
+		m_pTag->LateTick(fTimeDelta);
 
 #ifdef DEBUG
 	m_pRendererCom->Add_Debug(m_pControllerCom);
@@ -176,4 +192,6 @@ CGameObject* CAquarisBella::Clone(void* pArg)
 void CAquarisBella::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pTag);
 }

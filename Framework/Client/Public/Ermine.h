@@ -28,6 +28,9 @@ public:
 	virtual void Collision_Continue(const COLLISION_INFO& tInfo) override;
 	virtual void Collision_Exit(const COLLISION_INFO& tInfo) override;
 
+private:
+	class CUI_World_Interaction* m_pInteractionBtn = { nullptr };
+
 public:
 	static CErmine* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eObjType);
 	virtual CGameObject* Clone(void* pArg);

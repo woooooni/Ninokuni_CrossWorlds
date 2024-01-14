@@ -29,6 +29,8 @@
 #include "Portal.h"
 #include "Trigger.h"
 
+_bool CLevel_Evermore::g_bFirstEnter = false;
+
 CLevel_Evermore::CLevel_Evermore(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
 {
@@ -96,6 +98,12 @@ HRESULT CLevel_Evermore::Initialize()
 
 	GI->Stop_Sound(CHANNELID::SOUND_BGM);
 	GI->Play_BGM(TEXT("BGM_Town_Evermore_Normal_Castle_1.mp3"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM));
+
+	if (false == g_bFirstEnter)
+	{
+		g_bFirstEnter = true;
+		CUI_Manager::GetInstance()->OnOff_MapName(true, TEXT("³²¹® ±¤Àå"));
+	}
 
 	return S_OK;
 }
@@ -389,8 +397,16 @@ HRESULT CLevel_Evermore::Ready_Layer_Npc(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_Evermore::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 {
-	if (FAILED(CUI_Manager::GetInstance()->Ready_GameObject(LEVELID::LEVEL_EVERMORE)))
-		return E_FAIL;
+	if (false == g_bFirstEnter)
+	{
+		if (FAILED(CUI_Manager::GetInstance()->Ready_GameObject(LEVELID::LEVEL_EVERMORE)))
+			return E_FAIL;
+	}
+	else
+	{
+		if (FAILED(CUI_Manager::GetInstance()->Ready_GameObjectToLayer(LEVELID::LEVEL_EVERMORE)))
+			return E_FAIL;
+	}
 
 	CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
 	if (pPlayer == nullptr)
@@ -447,14 +463,14 @@ HRESULT CLevel_Evermore::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 	// Triggers.
 	CTrigger::TRIGGER_DESC TriggerDesc;
 	TriggerDesc.eTriggerType = TRIGGER_TYPE::TRIGGER_MAP_NAME;
-	TriggerDesc.strMapName = "³²¹® ±¤Àå";
+	TriggerDesc.strMapName = TEXT("³²¹® ±¤Àå");
 	TriggerDesc.vStartPosition = { 0.f, -20.f, 0.f, 1.f };
 	TriggerDesc.vExtents = { 50.f, 50.f, 150.f };
 
 	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
 		return E_FAIL;
 
-	TriggerDesc.strMapName = "¼­¹® ±¤Àå";
+	TriggerDesc.strMapName = TEXT("¼­¹® ±¤Àå");
 	TriggerDesc.vStartPosition = { -85.5f, -20.f, 60.6f, 1.f };
 	TriggerDesc.vExtents = { 50.f, 50.f, 150.f };
 	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
@@ -462,7 +478,7 @@ HRESULT CLevel_Evermore::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 
 	
 
-	TriggerDesc.strMapName = "µ¿¹® ±¤Àå";
+	TriggerDesc.strMapName = TEXT("µ¿¹® ±¤Àå");
 	TriggerDesc.vStartPosition = { 88.85f, -20.f, 60.6f, 1.f };
 	TriggerDesc.vExtents = { 50.f, 50.f, 150.f };
 	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))

@@ -322,8 +322,8 @@ HRESULT CGlanix::Ready_Components()
 #pragma region Ready_States
 HRESULT CGlanix::Ready_States()
 {
-	m_tStat.fMaxHp = 1000000;
-	m_tStat.fHp = 1000000;
+	m_tStat.fMaxHp = 300000;
+	m_tStat.fHp = 300000;
 	m_tStat.iAtk = 250;
 	m_tStat.iDef = 200;
 

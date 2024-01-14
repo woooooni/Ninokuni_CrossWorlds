@@ -3,6 +3,7 @@
 #include "Trigger.h"
 #include "Utils.h"
 #include "Level_Loading.h"
+#include "UI_Manager.h"
 
 CTrigger::CTrigger(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CGameObject(pDevice, pContext, L"Trigger", OBJ_TYPE::OBJ_TRIGGER)
@@ -30,7 +31,7 @@ HRESULT CTrigger::Initialize(void* pArg)
 	m_eTriggerType = pTriggerDesc->eTriggerType;
 	m_vExtents = pTriggerDesc->vExtents;
 	m_strBGM = pTriggerDesc->strBGM;
-	
+	m_strMapName = pTriggerDesc->strMapName;
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -84,6 +85,9 @@ void CTrigger::Collision_Enter(const COLLISION_INFO& tInfo)
 		switch (m_eTriggerType)
 		{
 		case TRIGGER_TYPE::TRIGGER_MAP_NAME:
+			if (m_strMapName == TEXT(""))
+				return;
+			CUI_Manager::GetInstance()->OnOff_MapName(true, m_strMapName);
 			break;
 
 		case TRIGGER_TYPE::TRIGGER_CHANGE_BGM:

@@ -31,7 +31,6 @@ void CState_Character_DoorEnter::Tick_State(_float fTimeDelta)
 
 void CState_Character_DoorEnter::Exit_State()
 {
-    
 }
 
 CState_Character_DoorEnter* CState_Character_DoorEnter::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

@@ -34,6 +34,8 @@ HRESULT CUI_PlayerHPBar::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
+	m_bLerp = false;
+
 	return S_OK;
 }
 
@@ -41,6 +43,40 @@ void CUI_PlayerHPBar::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (nullptr == m_pPlayer)
+		{
+			CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+			if (nullptr == pPlayer)
+				return;
+
+			CCharacter* pCurCharacter = pPlayer->Get_Character();
+			if (nullptr == pCurCharacter)
+				return;
+
+			m_pPlayer = pCurCharacter;
+
+			CCharacter::CHARACTER_STAT StatDesc = m_pPlayer->Get_Stat();
+			m_fMaxHP = _float(StatDesc.iMaxHp);
+			m_fPreHP = _float(StatDesc.iHp);
+			m_fCurHP = m_fPreHP;
+		}
+
+		m_fTimeAcc += fTimeDelta * 0.1f;
+
+		if (m_fCurHP < m_fPreHP)
+			m_bLerp = false;
+
+		if (!m_bLerp && m_fPreHP > m_fCurHP)
+		{
+			m_fPreHP -= fTimeDelta * 500.f;
+
+			if (m_fPreHP <= m_fCurHP)
+			{
+				m_fPreHP = m_fCurHP;
+				m_bLerp = true;
+			}
+		}
+
 		__super::Tick(fTimeDelta);
 	}
 }
@@ -49,15 +85,12 @@ void CUI_PlayerHPBar::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-		CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
-		if (nullptr == pPlayer)
+		if (nullptr == m_pPlayer)
 			return;
 
-		CCharacter* pCurCharacter = pPlayer->Get_Character();
-		if (nullptr == pCurCharacter)
-			return;
+		CCharacter::CHARACTER_STAT StatDesc = m_pPlayer->Get_Stat();
 
-		CCharacter::CHARACTER_STAT StatDesc = pCurCharacter->Get_Stat();
+		m_fCurHP = _float(StatDesc.iHp);
 
 		//if (CUI_Manager::GetInstance()->Is_FadeFinished())
 		//{
@@ -100,7 +133,7 @@ HRESULT CUI_PlayerHPBar::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	m_pShaderCom->Begin(1);
+	m_pShaderCom->Begin(11);
 
 	m_pVIBufferCom->Render();
 
@@ -147,8 +180,21 @@ HRESULT CUI_PlayerHPBar::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_fAlpha, sizeof(_float))))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", 0)))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_LerpHP", &m_fPreHP, sizeof(_float))))
 		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_CurrentHP", &m_fCurHP, sizeof(_float))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_MaxHP", &m_fMaxHP, sizeof(_float))))
+		return E_FAIL;
+
+	if (FAILED(m_pFXTextureCom->Bind_ShaderResource(m_pShaderCom, "g_LerpTexture")))
+		return E_FAIL;
+
+	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture")))
+		return E_FAIL;
+
+//	if (FAILED(m_pShaderCom->Bind_RawValue("g_Time", &m_fTimeAcc, sizeof(_float))))
+//		return E_FAIL;
 
 	return S_OK;
 }

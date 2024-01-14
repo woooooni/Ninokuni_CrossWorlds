@@ -96,6 +96,7 @@
 #include "UI_SetNickname_Window.h"
 #include "UI_Loading_Background.h"
 #include "UI_WeaponSection_Slot.h"
+#include "UI_Dialog_BattleWindow.h"
 #include "UI_SetNickname_Textbox.h"
 #include "UI_SkillWindow_LineBox.h"
 #include "UI_Loading_ProgressBar.h"
@@ -256,6 +257,14 @@ void CUI_Manager::Set_MiniDialogue(wstring strName, wstring strContents)
 
 	m_pDialogMini->Set_Name(strName);
 	m_pDialogMini->Set_Contents(strContents);
+}
+
+void CUI_Manager::Set_BattleDialogue(wstring strContents)
+{
+	if (nullptr == m_pDialogBattle)
+		return;
+
+	m_pDialogBattle->Set_Contents(strContents);
 }
 
 void CUI_Manager::Set_QuestPopup(const wstring& strQuestType, const wstring& strTitle, const wstring& strContents)
@@ -2989,8 +2998,8 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(m_pCostumeAnnounce);
 
-	// Gara
 	_float fY = 755.f;
+	//_float fY = 55.f;
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 
 	UIDesc.fCX = 689.f * 0.8f;
@@ -3271,6 +3280,20 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 	if (nullptr == m_pMapNameText)
 		return E_FAIL;
 	Safe_AddRef(m_pMapNameText);
+
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 325.f;
+	UIDesc.fCY = 163.f;
+	UIDesc.fX = UIDesc.fCX * 0.5f + 10.f;
+	UIDesc.fY = 250.f;
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Dialog_BattleWindow"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_pDialogBattle = dynamic_cast<CUI_Dialog_BattleWindow*>(pWindow);
+	if (nullptr == m_pDialogBattle)
+		return E_FAIL;
+	Safe_AddRef(m_pDialogBattle);
 
 	return S_OK;
 }
@@ -3936,6 +3959,12 @@ HRESULT CUI_Manager::Ready_GameObjectToLayer(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(m_pMapNameText);
 
+	if (nullptr == m_pDialogBattle)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pDialogBattle)))
+		return E_FAIL;
+	Safe_AddRef(m_pDialogBattle);
+
 	return S_OK;
 }
 
@@ -4111,20 +4140,20 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 		if (m_pUIMapName->Get_Active())
 		{
 			// MapName이 Active상태라면
-			if (nullptr != m_pMapText)
+			if (nullptr != m_pMapNameText)
 			{
-				if (!m_pMapText->Get_Active())
-					m_pMapText->Set_Active(true);
+				if (!m_pMapNameText->Get_Active())
+					m_pMapNameText->Set_Active(true);
 				else
-					m_pMapText->Set_Alpha(m_pUIMapName->Get_Alpha());
+					m_pMapNameText->Set_Alpha(m_pUIMapName->Get_Alpha());
 			}
 		}
 		else
 		{
-			if (nullptr != m_pMapText)
+			if (nullptr != m_pMapNameText)
 			{
-				if (m_pMapText->Get_Active())
-					m_pMapText->Set_Active(false);
+				if (m_pMapNameText->Get_Active())
+					m_pMapNameText->Set_Active(false);
 			}
 		}
 	}
@@ -4150,16 +4179,16 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 	}
 
 	// 퀘스트 팝업창 켜지도록 함. Gara
-	if (!m_QuestPopUp[0]->Get_Active())
-	{
-		if (Is_FadeFinished() && Is_DefaultSettingOn())
-		{
-			if (1 <= Get_QuestNum())
-			{
-				OnOff_QuestPopup(true);
-			}
-		}
-	}
+//	if (!m_QuestPopUp[0]->Get_Active())
+//	{
+//		if (Is_FadeFinished() && Is_DefaultSettingOn())
+//		{
+//			if (1 <= Get_QuestNum())
+//			{
+//				OnOff_QuestPopup(true);
+//			}
+//		}
+//	}
 
 	return S_OK;
 }
@@ -4582,6 +4611,11 @@ void CUI_Manager::Update_CostumeBtn()
 					}
 				}
 			}
+		}
+		else if (iSlotIndex == -1)
+		{
+			// 착용된 무기 스킨이 없다.
+			m_pCostumeAnnounce->Set_AnnouncePosition(_float2(9999.f, 9999.f));
 		}
 		break;
 
@@ -5128,6 +5162,7 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 	if (bOnOff) // On
 	{
 		OnOff_TextUI(true);
+		OnOff_QuestPopup(true);
 
 		for (auto& iter : m_Milepost)
 		{
@@ -5500,29 +5535,47 @@ HRESULT CUI_Manager::OnOff_QuestPopup(_bool bOnOff)
 	{
 		_int iNum = m_QuestPopUp[0]->Get_NumOfQuest();
 
+		if (0 == iNum)
+		{
+			OnOff_QuestPopup(false);
+			return S_OK;
+		}
+
 		if (1 <= iNum)
 		{
 			if (0 == m_pBtnQuest->Get_TextureIndex())
-				m_pBtnQuest->Set_TextureIndex(1);
+				m_pBtnQuest->Set_Click(true);
 
-			m_QuestPopUp[0]->Set_Active(true);
-			m_QuestPopUp[4]->Set_Active(true);
-			m_QuestPopUp[8]->Set_Active(true);
+			if (m_QuestPopUp[0]->Get_Active())
+				return S_OK;
+
+			if(!m_QuestPopUp[0]->Get_Active())
+				m_QuestPopUp[0]->Set_Active(true);
+			if (!m_QuestPopUp[4]->Get_Active())
+				m_QuestPopUp[4]->Set_Active(true);
+			if (!m_QuestPopUp[8]->Get_Active())
+				m_QuestPopUp[8]->Set_Active(true);
 
 			if (2 <= iNum)
 			{
-				m_QuestPopUp[1]->Set_Active(true);
-				m_QuestPopUp[5]->Set_Active(true);
+				//if (!m_QuestPopUp[1]->Get_Active())
+					m_QuestPopUp[1]->Set_Active(true);
+				//if (!m_QuestPopUp[5]->Get_Active())
+					m_QuestPopUp[5]->Set_Active(true);
 
 				if (3 <= iNum)
 				{
-					m_QuestPopUp[2]->Set_Active(true);
-					m_QuestPopUp[6]->Set_Active(true);
+					//if (!m_QuestPopUp[2]->Get_Active())
+						m_QuestPopUp[2]->Set_Active(true);
+					//if (!m_QuestPopUp[6]->Get_Active())
+						m_QuestPopUp[6]->Set_Active(true);
 
 					if (4 <= iNum)
 					{
-						m_QuestPopUp[3]->Set_Active(true);
-						m_QuestPopUp[7]->Set_Active(true);
+						//if (!m_QuestPopUp[3]->Get_Active())
+							m_QuestPopUp[3]->Set_Active(true);
+						//if (!m_QuestPopUp[7]->Get_Active())
+							m_QuestPopUp[7]->Set_Active(true);
 					}
 				}
 			}
@@ -5539,9 +5592,7 @@ HRESULT CUI_Manager::OnOff_QuestPopup(_bool bOnOff)
 		}
 
 		if (1 == m_pBtnQuest->Get_TextureIndex())
-		{
-			m_pBtnQuest->Set_TextureIndex(0);
-		}
+			m_pBtnQuest->Set_Click(false);
 	}
 
 	return S_OK;
@@ -5798,26 +5849,57 @@ void CUI_Manager::OnOff_MapName(_bool bOnOff, const wstring& strMapName)
 {
 	if (nullptr == m_pUIMapName)
 		return;
-
 	if (nullptr == m_pMapNameText)
 		return;
-
-	if (TEXT("남문 광장") == strMapName)
-	{
-
-	}
-	else if (TEXT("동문 광장") == strMapName)
-	{
-
-	}
+	if (true == bOnOff && m_pUIMapName->Get_Active()) // MapName이 보여지는 중이라면 return한다.
+		return;
 
 	if (bOnOff) // On
 	{
-		// 작업중입니다람쥐
+		// 맵네임 Type을 세팅하는 곳
+		if (TEXT("남문 광장") == strMapName)
+		{
+			m_pMapNameText->Set_Type(CUI_MapName_Text::UI_MAPNAME_TEXT::EVERMORE_SOUTH);
+		}
+		else if (TEXT("동문 광장") == strMapName)
+		{
+			m_pMapNameText->Set_Type(CUI_MapName_Text::UI_MAPNAME_TEXT::EVERMORE_EARTH);
+		}
+		else if (TEXT("서문 광장") == strMapName)
+		{
+			m_pMapNameText->Set_Type(CUI_MapName_Text::UI_MAPNAME_TEXT::EVERMORE_WEST);
+		}
+		else if (TEXT("에스타바니아 왕성") == strMapName)
+		{
+			m_pMapNameText->Set_Type(CUI_MapName_Text::UI_MAPNAME_TEXT::KINGDOM);
+		}
+		else if (TEXT("코에루코 설원") == strMapName)
+		{
+			m_pMapNameText->Set_Type(CUI_MapName_Text::UI_MAPNAME_TEXT::ICELAND_DEFAULT);
+		}
+		else if (TEXT("만남의 나무") == strMapName)
+		{
+			m_pMapNameText->Set_Type(CUI_MapName_Text::UI_MAPNAME_TEXT::ICELAND_MEETINGTREE);
+		}
+		else if (TEXT("사무라 마을") == strMapName)
+		{
+			m_pMapNameText->Set_Type(CUI_MapName_Text::UI_MAPNAME_TEXT::ICELAND_SAMURAVILLAGE);
+		}
+		else if (TEXT("최후의 쉼터") == strMapName)
+		{
+			m_pMapNameText->Set_Type(CUI_MapName_Text::UI_MAPNAME_TEXT::ICELAND_SHELTER);
+		}
+		else
+		{
+			// Temp
+			m_pMapNameText->Set_Type(CUI_MapName_Text::UI_MAPNAME_TEXT::ICELAND_ICEVILLAGE);
+		}
+
+		m_pUIMapName->Set_Active(true);
 	}
 	else // Off
 	{
-
+		// 사용 안할수도있음.
 	}
 }
 
@@ -5839,7 +5921,6 @@ HRESULT CUI_Manager::OnOff_DialogWindow(_bool bOnOff, _uint iMagicNum)
 		}
 		else // Off
 		{
-			// 카메라 전환 후 직접 켜주어야함.
 			if (!Is_DefaultSettingOn())
 			{
 				OnOff_GamePlaySetting(true);
@@ -5875,6 +5956,23 @@ HRESULT CUI_Manager::OnOff_DialogWindow(_bool bOnOff, _uint iMagicNum)
 				for (auto& pPortrait : m_Portrait)
 					pPortrait->Set_Active(false);
 			}
+		}
+	}
+
+	else if (iMagicNum == 2)
+	{
+		if (nullptr == m_pDialogBattle)
+			return E_FAIL;
+
+		if (bOnOff) // On
+		{
+			if (!m_pDialogBattle->Get_Active())
+				m_pDialogBattle->Set_Active(true);
+		}
+		else
+		{
+			if (m_pDialogBattle->Get_Active())
+				m_pDialogBattle->Set_Active(false);
 		}
 	}
 
@@ -7322,6 +7420,10 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		CUI_MapName_Text::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Dialog_BattleWindow"),
+		CUI_Dialog_BattleWindow::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -7636,6 +7738,7 @@ void CUI_Manager::Free()
 	Safe_Release(m_pBossNameTag);
 
 	Safe_Release(m_pMapNameText);
+	Safe_Release(m_pDialogBattle);
 
 	for (auto& pFrame : m_CoolTimeFrame)
 		Safe_Release(pFrame);

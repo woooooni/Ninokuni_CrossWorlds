@@ -19,8 +19,6 @@ void CUI_Tutorial_Window::Set_Active(_bool bActive)
 {
 	if (bActive)
 	{
-		CUI_Manager::GetInstance()->OnOff_TextUI(false);
-
 		CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
 		if (nullptr == pPlayer)
 			return;
@@ -80,8 +78,6 @@ void CUI_Tutorial_Window::Tick(_float fTimeDelta)
 				m_bFadeOut = false;
 				m_bActive = false;
 
-				CUI_Manager::GetInstance()->OnOff_TextUI(true);
-
 				CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
 				if (nullptr == pPlayer)
 					return;
@@ -99,7 +95,7 @@ void CUI_Tutorial_Window::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI_EFFECT_BLEND, this);
 	}
 }
 
