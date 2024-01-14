@@ -28,8 +28,6 @@ HRESULT CMainQuestNode_Glanix05::Initialize()
 		m_vecTalkDesc.push_back(sTalkDesc);
 	}
 
-	m_fTalkChangeTime = 5.f;
-
 	return S_OK;
 }
 
@@ -38,23 +36,21 @@ void CMainQuestNode_Glanix05::Start()
 	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
 	/* 현재 퀘스트에 연관있는 객체들 */
-	//m_pKuu = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Kuu"));
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
+	m_pJackson = GI->Find_GameObject(LEVELID::LEVEL_ICELAND, LAYER_NPC, TEXT("GrimalKinML01"));
 
-	m_vecTalker.push_back(m_pKuu);
-
+	Vec4 vSpotPos = Set_DestSpot(m_pJackson);
+	m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_MONSTER), &vSpotPos));
 
 	/* 대화 */
 	m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 	m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-	// CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
+	CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
 
 	TalkEvent();
 
-	m_pJackson = GI->Find_GameObject(LEVELID::LEVEL_ICELAND, LAYER_NPC, TEXT("GrimalKinML01"));
-	Vec4 vSpotPos = Set_DestSpot(m_pJackson);
-	m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_MONSTER), &vSpotPos));
 }
 
 CBTNode::NODE_STATE CMainQuestNode_Glanix05::Tick(const _float& fTimeDelta)
@@ -64,7 +60,9 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix05::Tick(const _float& fTimeDelta)
 
 	if (GI->Get_CurrentLevel() == LEVEL_ICELAND)
 	{
-		if (m_fTime >= 5.f)
+		m_fTime += fTimeDelta;
+
+		if (m_fTime >= 3.f)
 		{
 			if (m_iTalkIndex < m_vecTalkDesc.size())
 			{
@@ -73,22 +71,22 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix05::Tick(const _float& fTimeDelta)
 
 				m_iTalkIndex += 1;
 
-				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+				if (m_iTalkIndex >= m_vecTalkDesc.size())
+					CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
 
-				// CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
+				if (m_iTalkIndex < m_vecTalkDesc.size())
+				{
+					m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+					m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-				TalkEvent();
+					CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+
+					TalkEvent();
+				}
+
+				m_fTime = m_fTalkChangeTime - m_fTime;
 			}
-
-			if (m_iTalkIndex >= m_vecTalkDesc.size())
-				//CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
-
-			m_fTime = m_fTalkChangeTime - m_fTime;
 		}
-
-
-
 
 		if (m_pQuestDestSpot != nullptr)
 		{
@@ -119,6 +117,19 @@ void CMainQuestNode_Glanix05::LateTick(const _float& fTimeDelta)
 
 void CMainQuestNode_Glanix05::TalkEvent()
 {
+	switch (m_iTalkIndex)
+	{
+	case 0:
+		//CSound_Manager::GetInstance()->Play_Sound(TEXT("KuuSay_Intro.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
+		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk02"));
+		break;
+	case 1:
+		//CSound_Manager::GetInstance()->Play_Sound(TEXT("KuuSay_Hu.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK, TEXT("SKM_Kuu.ao|Kuu_EmotionDepressed"));
+		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_EmotionDepressed"));
+		break;
+	}
 }
 
 CMainQuestNode_Glanix05* CMainQuestNode_Glanix05::Create()

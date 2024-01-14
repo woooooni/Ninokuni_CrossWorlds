@@ -46,6 +46,10 @@ void CMainQuestNode_Glanix08::LateTick(const _float& fTimeDelta)
 {
 }
 
+void CMainQuestNode_Glanix08::TalkEvent()
+{
+}
+
 CMainQuestNode_Glanix08* CMainQuestNode_Glanix08::Create()
 {
 	CMainQuestNode_Glanix08* pInstance = new CMainQuestNode_Glanix08();

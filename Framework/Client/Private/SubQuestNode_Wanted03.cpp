@@ -23,7 +23,6 @@ HRESULT CSubQuestNode_Wanted03::Initialize()
 
 void CSubQuestNode_Wanted03::Start()
 {
-	// 서브 퀘스트 생기면 서브 퀘스트에 
 	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
 	/* 추후 현상범 추가되면 수정. */

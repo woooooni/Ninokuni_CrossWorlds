@@ -8,6 +8,8 @@
 #include "Game_Manager.h"
 #include "Quest_Manager.h"
 
+#include "Glanix.h"
+
 CMainQuestNode_Glanix04::CMainQuestNode_Glanix04()
 {
 }
@@ -34,23 +36,16 @@ HRESULT CMainQuestNode_Glanix04::Initialize()
 
 void CMainQuestNode_Glanix04::Start()
 {
-	CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_BOSS_KILL);
+	if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Glanix"), nullptr, &m_pGlanix)))
+	{
+		MSG_BOX("Fail AddGameObj : Quest Glanix");
+	}
 
+	CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_BOSS_KILL);
 	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
 	/* 현재 퀘스트에 연관있는 객체들 */
-	//m_pKuu = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Kuu"));
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
-
-	m_vecTalker.push_back(m_pKuu);
-
-	/* 대화 */
-	m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-	m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
-
-	// CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
-
-	TalkEvent();
 }
 
 CBTNode::NODE_STATE CMainQuestNode_Glanix04::Tick(const _float& fTimeDelta)
@@ -58,49 +53,208 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix04::Tick(const _float& fTimeDelta)
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 
-	if (m_fTime >= 5.f)
+	if (m_pGlanix != nullptr)
 	{
-		if (m_iTalkIndex < m_vecTalkDesc.size())
+		// 최초 chase 시 발동
+		if (!m_bIsIntroTalk && m_pGlanix->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Get_CurrState() == CGlanix::GLANIX_TURN)
+			m_bIsIntroTalk = true;
+
+		if (!m_bIsRage1Talk && m_pGlanix->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Get_CurrState() == CGlanix::GLANIX_RAGE2WAVE)
+			m_bIsRage1Talk = true;
+
+		if (!m_bIsRage2Talk && m_pGlanix->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Get_CurrState() == CGlanix::GLANIX_RAGETURN)
+			m_bIsRage2Talk = true;
+
+		if (m_bIsTalk)
 		{
-			Safe_Delete_Array(m_szpOwner);
-			Safe_Delete_Array(m_szpTalk);
+			m_fTime += fTimeDelta;
 
-			m_iTalkIndex += 1;
-
-			m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-			m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
-
-			// CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
-
-			TalkEvent();
+			if (m_fTime >= m_fTalkChangeTime)
+			{
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+				m_fTime = m_fTalkChangeTime - m_fTime;
+				m_iTalkIndex += 1;
+				m_bIsTalk = false;
+			}
 		}
 
-		if (m_iTalkIndex >= m_vecTalkDesc.size())
+		BossBattle_TalkEvent(fTimeDelta);
+
+		if (CQuest_Manager::GetInstance()->Get_IsBossKill())
+		{
+			CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+
+			CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_END);
+			CQuest_Manager::GetInstance()->Set_IsBossKill(false);
+
+			m_bIsClear = true;
 			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
 
-		m_fTime = m_fTalkChangeTime - m_fTime;
+			return NODE_STATE::NODE_FAIL;
+		}
 	}
-
-
-	if (CQuest_Manager::GetInstance()->Get_IsBossKill())
-	{
-		CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
-
-		CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_END);
-		CQuest_Manager::GetInstance()->Set_IsBossKill(false);
-
-		m_bIsClear = true;
-		CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
-
-		return NODE_STATE::NODE_FAIL;
-	}
-
 
 	return NODE_STATE::NODE_RUNNING;
 }
 
 void CMainQuestNode_Glanix04::LateTick(const _float& fTimeDelta)
 {
+}
+
+void CMainQuestNode_Glanix04::BossBattle_TalkEvent(const _float& fTimeDelta)
+{
+	switch (m_iTalkIndex)
+	{
+	case 0:
+		if (m_bIsIntroTalk)
+		{
+			if (!m_bIsTalk)
+			{
+				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
+				CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+
+				TalkEvent();
+
+				m_bIsTalk = true;
+			}
+		}
+		break;
+
+	case 1:
+		if (m_bIsIntroTalk)
+		{
+			if (!m_bIsTalk)
+			{
+				Safe_Delete_Array(m_szpOwner);
+				Safe_Delete_Array(m_szpTalk);
+
+				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
+				CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+
+				TalkEvent();
+
+				m_bIsIntroTalk = false;
+				m_bIsTalk = true;
+			}
+		}
+		break;
+
+	case 2:
+		if (m_bIsRage1Talk)
+		{
+			if (!m_bIsTalk)
+			{
+				Safe_Delete_Array(m_szpOwner);
+				Safe_Delete_Array(m_szpTalk);
+
+				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
+				CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+
+				TalkEvent();
+
+				m_bIsIntroTalk = false;		
+				m_bIsTalk = true;
+			}
+		}
+		break;
+
+	case 3:
+		if (m_bIsRage1Talk)
+		{
+			if (!m_bIsTalk)
+			{
+				Safe_Delete_Array(m_szpOwner);
+				Safe_Delete_Array(m_szpTalk);
+
+				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
+				CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+
+				TalkEvent();
+
+				m_bIsIntroTalk = false;
+				m_bIsTalk = true;
+			}
+		}
+		break;
+
+	case 4:
+		if (m_bIsRage1Talk)
+		{
+			if (!m_bIsTalk)
+			{
+				Safe_Delete_Array(m_szpOwner);
+				Safe_Delete_Array(m_szpTalk);
+
+				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
+				CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+
+				TalkEvent();
+
+				m_bIsIntroTalk = false;
+				m_bIsTalk = true;
+			}
+		}
+		break;
+
+	case 5:
+		if (m_bIsRage2Talk)
+		{
+			if (!m_bIsTalk)
+			{
+				Safe_Delete_Array(m_szpOwner);
+				Safe_Delete_Array(m_szpTalk);
+
+				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
+				CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+
+				TalkEvent();
+
+				m_bIsIntroTalk = false;
+				m_bIsTalk = true;
+			}
+		}
+		break;
+
+	case 6:
+		if (m_bIsRage2Talk)
+		{
+			if (!m_bIsTalk)
+			{
+				Safe_Delete_Array(m_szpOwner);
+				Safe_Delete_Array(m_szpTalk);
+
+				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
+				CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+
+				TalkEvent();
+
+				m_bIsIntroTalk = false;
+				m_bIsTalk = true;
+			}
+		}
+		break;
+	}
 }
 
 void CMainQuestNode_Glanix04::TalkEvent()
@@ -115,6 +269,31 @@ void CMainQuestNode_Glanix04::TalkEvent()
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Chloe.ao|Chloe_EmotionTalk"));
 		break;
 	case 1:
+		//CSound_Manager::GetInstance()->Play_Sound(TEXT("01_ChloeSay_Pet.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
+		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Chloe.ao|Chloe_EmotionPositive"));
+		break;
+	case 2:
+		//CSound_Manager::GetInstance()->Play_Sound(TEXT("01_ChloeSay_Pet.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
+		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Chloe.ao|Chloe_EmotionPositive"));
+		break;
+	case 3:
+		//CSound_Manager::GetInstance()->Play_Sound(TEXT("01_ChloeSay_Pet.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
+		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Chloe.ao|Chloe_EmotionPositive"));
+		break;
+	case 4:
+		//CSound_Manager::GetInstance()->Play_Sound(TEXT("01_ChloeSay_Pet.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
+		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Chloe.ao|Chloe_EmotionPositive"));
+		break;
+	case 5:
+		//CSound_Manager::GetInstance()->Play_Sound(TEXT("01_ChloeSay_Pet.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
+		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Chloe.ao|Chloe_EmotionPositive"));
+		break;
+	case 6:
 		//CSound_Manager::GetInstance()->Play_Sound(TEXT("01_ChloeSay_Pet.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Chloe.ao|Chloe_EmotionPositive"));

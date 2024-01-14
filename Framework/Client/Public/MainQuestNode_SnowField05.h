@@ -20,6 +20,14 @@ private:
 private:
 	CGameObject* m_pKuu = nullptr;
 
+	_float m_fTalkChangeTime = 0.f;
+	_float m_fTime = 0.f;
+
+	_bool m_bIsShowDialog = false;
+
+	_int	m_iPrevKillCount = 0;
+	_int	m_iDestKillCount = 7;
+
 public:
 	static CMainQuestNode_SnowField05* Create();
 	virtual void Free() override;

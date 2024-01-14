@@ -12,7 +12,8 @@ class CQuest_Manager final : public CBase
 {
 	DECLARE_SINGLETON(CQuest_Manager)
 public:
-	enum QUESTEVENT_TYPE { QUESTEVENT_MONSTER_KILL, QUESTEVENT_BOSS_KILL, QUESTEVENT_END };
+	enum QUESTEVENT_TYPE { QUESTEVENT_MONSTER_KILL, QUESTEVENT_BOSS_KILL,
+		QUESTEVENT_END };
 
 private:
 	CQuest_Manager();
@@ -35,7 +36,7 @@ public:
 	// 퀘스트 완료 스택.
 	_int	Get_QuestClearStack() { return m_iQuestClearStack; }
 	void    Set_QuestClearStack(_int iStack) { m_iQuestClearStack += iStack; }
-	void    Clear_QuestClearStack() { m_iQuestClearStack = 0; }
+	void    Clear_QuestClearStack() { m_iQuestClearStack = 0; }	
 
 	// 퀘스트 이벤트 타입
 	QUESTEVENT_TYPE Get_CurQuestEvent() { return m_eCurQuestType; }

@@ -59,7 +59,7 @@ HRESULT CShadow_Thief::Initialize(void* pArg)
 	m_pHPBar = dynamic_cast<CUI_MonsterHP_World*>(pHPBar);
 	m_pHPBar->Set_Owner(this, m_tStat.eElementType, 1.5f);
 
-	m_vBloomPower = _float3(0.5f, 0.5f, 0.5f);
+	m_vBloomPower = _float3(0.8f, 0.8f, 0.8f);
 
 	return S_OK;
 }

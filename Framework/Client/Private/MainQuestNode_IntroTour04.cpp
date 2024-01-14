@@ -37,33 +37,15 @@ HRESULT CMainQuestNode_IntroTour04::Initialize()
 
 void CMainQuestNode_IntroTour04::Start()
 {
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 	/* 현재 퀘스트에 연관있는 객체들 */
-	//m_pKuu = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Kuu"));
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
-
-	/* 카메라 타겟 세팅 */
-	// CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"Kuu");
-
-	//if (nullptr != pTarget)
-	//{
-
-		// 임시 주석
-		//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-		//if (nullptr != pActionCam)
-		//{
-		//	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
-		//	pActionCam->Start_Action_Talk(); //쿠우 혼자면 null
-		//}
-
-
-	//}
 
 	/* 대화 */
 	m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 	m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-	CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
+	CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
 
 	TalkEvent();
 }
@@ -73,39 +55,32 @@ CBTNode::NODE_STATE CMainQuestNode_IntroTour04::Tick(const _float& fTimeDelta)
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 
-	m_strQuestContent = L"퀘스트 " + to_wstring(CQuest_Manager::GetInstance()->Get_QuestClearStack());
-	m_strQuestContent = m_strQuestContent + L" / 3 완료";
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+	m_fTime += fTimeDelta;
 
-	if (KEY_TAP(KEY::LBTN))
+	if (m_fTime >= m_fTalkChangeTime)
 	{
-		Safe_Delete_Array(m_szpOwner);
-		Safe_Delete_Array(m_szpTalk);
-
-		m_iTalkIndex += 1;
-
-		if (m_iTalkIndex >= m_vecTalkDesc.size())
+		if (m_iTalkIndex < m_vecTalkDesc.size())
 		{
-			m_bIsClear = true;
-			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
+			Safe_Delete_Array(m_szpOwner);
+			Safe_Delete_Array(m_szpTalk);
 
-			//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-			//if (nullptr != pActionCam)
-			//	pActionCam->Finish_Action_Talk();
+			m_iTalkIndex += 1;
 
-			/* 마지막 퀘스트 노드이므로 Success 반환.*/
-			CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
-			CQuest_Manager::GetInstance()->Clear_QuestClearStack();
+			if (m_iTalkIndex >= m_vecTalkDesc.size())
+			{
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+				return NODE_STATE::NODE_SUCCESS;
+			}
 
-			return NODE_STATE::NODE_SUCCESS;
+			m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+			m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+			CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+
+			TalkEvent();
+
+			m_fTime = m_fTalkChangeTime - m_fTime;
 		}
-
-		m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-		m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
-
-		CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
-
-		TalkEvent();
 	}
 
 	return NODE_STATE::NODE_RUNNING;
@@ -117,12 +92,8 @@ void CMainQuestNode_IntroTour04::LateTick(const _float& fTimeDelta)
 
 void CMainQuestNode_IntroTour04::TalkEvent()
 {
-	wstring strAnimName = TEXT("");
-
 	switch (m_iTalkIndex)
 	{
-		// 대화 상태로 만들어서 매개로 애니메이션 이름 던지자. 답이 없다.
-		// Talk, Idle, Run, Walk. 
 	case 0:
 		//CSound_Manager::GetInstance()->Play_Sound(TEXT("KuuSay_Intro.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
