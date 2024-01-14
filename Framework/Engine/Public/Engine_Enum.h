@@ -121,6 +121,7 @@ namespace Engine
 		SOUND_SHAKE,
 		SOUND_JUMP,
 		SOUND_BOSS,
+		SOUND_VOICE_NPC,
 		MAXCHANNEL
 	};
 

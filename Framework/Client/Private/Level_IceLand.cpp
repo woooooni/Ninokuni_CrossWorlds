@@ -219,6 +219,27 @@ HRESULT CLevel_IceLand::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 		}
 	}
 
+	CGameObject* pDoor = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Door_Enter"), nullptr, &pDoor)))
+		return E_FAIL;
+
+	if (nullptr == pDoor)
+		return E_FAIL;
+
+	CTransform* pDoorTransform = pDoor->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr == pDoorTransform)
+		return E_FAIL;
+
+	CTransform* pCharacterTransform = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr == pCharacterTransform)
+		return E_FAIL;
+
+	Vec3 vScale = pDoorTransform->Get_Scale();
+	pDoorTransform->Set_WorldMatrix(pCharacterTransform->Get_WorldMatrix());
+	Vec4 vPosition = pDoorTransform->Get_Position() + (pDoorTransform->Get_Look() * -1.f);
+	pDoorTransform->Set_State(CTransform::STATE_POSITION, vPosition);
+	pDoorTransform->Set_Scale(vScale);
+
 	return S_OK;
 }
 
@@ -229,7 +250,7 @@ HRESULT CLevel_IceLand::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 
 	CPortal::PORTAL_DESC PortalInfo = {};
 	PortalInfo.vStartPosition = XMVectorSet(143.f, 0.11316f, 12.f, 1.f);
-	PortalInfo.vNextPosition = XMVectorSet(-48.5f, 9.9f,  159.f, 1.f);
+	PortalInfo.vNextPosition = XMVectorSet(-20.f, 9.9f, 133.f, 1.f);
 	PortalInfo.eCurrentLevel = LEVEL_ICELAND;
 	PortalInfo.eNextLevel = LEVEL_EVERMORE;
 
@@ -248,7 +269,7 @@ HRESULT CLevel_IceLand::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 
 
 	PortalInfo.vStartPosition = XMVectorSet(141.75f, 0.11316f, 20.f, 1.f);
-	PortalInfo.vNextPosition = XMVectorSet(-48.5f, 9.9f, 159.f, 1.f);
+	PortalInfo.vNextPosition = XMVectorSet(-20.f, 9.9f, 133.f, 1.f);
 	PortalInfo.eCurrentLevel = LEVEL_ICELAND;
 	PortalInfo.eNextLevel = LEVEL_EVERMORE;
 

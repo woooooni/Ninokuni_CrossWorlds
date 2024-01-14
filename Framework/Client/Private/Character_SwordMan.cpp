@@ -108,6 +108,8 @@ HRESULT CCharacter_SwordMan::Initialize(void* pArg)
  	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
+	m_vBloomPower = { 0.f, 0.5f, 1.f };
+
 	return S_OK;
 }
 
@@ -135,7 +137,7 @@ void CCharacter_SwordMan::Tick(_float fTimeDelta)
 
 void CCharacter_SwordMan::LateTick(_float fTimeDelta)
 {
-
+	m_vBloomPower = { 0.0f, 0.0f, 0.7f };
 	__super::LateTick(fTimeDelta);
 
 #ifdef DEBUG
@@ -215,7 +217,7 @@ HRESULT CCharacter_SwordMan::Ready_Components()
 	ControllerDesc.vOffset = { 0.f, 1.125f, 0.f };
 	ControllerDesc.fHeight = 1.f;
 	ControllerDesc.fMaxJumpHeight = 10.f;
-	ControllerDesc.fRaidus = 1.f;
+	ControllerDesc.fRaidus = 0.5f;
 	ControllerDesc.pOwner = this;
 
 

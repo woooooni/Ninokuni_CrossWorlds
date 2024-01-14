@@ -98,6 +98,11 @@ HRESULT CPhysX_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceConte
 	//	return E_FAIL;
 	/*PxRigidStatic* groundPlane = PxCreatePlane(*m_Physics, PxPlane(0, 1, 0, 0), *m_WorldMaterial);
 	m_pScene->addActor(*groundPlane);*/
+
+	for (_uint i = 0; i < OBJ_TYPE::OBJ_END; ++i)
+	{
+		m_eObjectTypes.push_back(OBJ_TYPE(i));
+	}
 	return S_OK;
 }
 void CPhysX_Manager::Tick(_float fTimeDelta)
@@ -234,12 +239,11 @@ PxController* CPhysX_Manager::Add_CapsuleController(CGameObject* pGameObject, Ma
 	CapsuleDesc.maxJumpHeight = fMaxJumpHeight;
 	CapsuleDesc.stepOffset = 0.1f;
 	CapsuleDesc.contactOffset = 0.0001f;
-	CapsuleDesc.userData = pGameObject;
+	CapsuleDesc.userData = &m_eObjectTypes[pGameObject->Get_ObjectType()];
 	CapsuleDesc.reportCallback = pCallBack;
 
 	while (true == m_bSimulating) {}
 	PxController* pController = m_pController_Manager->createController(CapsuleDesc);
-	pController->setUserData(pGameObject);
 	pController->getActor()->setName("Controller");
 
 
@@ -261,13 +265,12 @@ PxController* CPhysX_Manager::Add_BoxController(CGameObject* pGameObject, Matrix
 	BoxDesc.halfForwardExtent = fExtents.z / 2.f;
 	BoxDesc.maxJumpHeight = fMaxJumpHeight;
 	BoxDesc.contactOffset = 0.0001f;
-	BoxDesc.userData = pGameObject;
+	BoxDesc.userData = &m_eObjectTypes[pGameObject->Get_ObjectType()];
 	BoxDesc.reportCallback = pCallBack;
 
 	while (true == m_bSimulating) {}
 
 	PxController* pController = m_pController_Manager->createController(BoxDesc);
-	pController->setUserData(pGameObject);
 	pController->getActor()->setName("Controller");
 
 	return pController;
@@ -1217,7 +1220,7 @@ void CPhysX_Manager::Free()
 _bool CPhysX_Manager::Check_Push(_uint iLeftObjType, _uint iRightObjType)
 {
 	_bool bPush = false;
-	bPush = (iLeftObjType == OBJ_MONSTER) && (iRightObjType == OBJ_MONSTER);
+	bPush = ((iLeftObjType == OBJ_MONSTER) && (iRightObjType == OBJ_MONSTER));
 	bPush = ((iLeftObjType == OBJ_MONSTER && iRightObjType == OBJ_CHARACTER) || (iLeftObjType == OBJ_CHARACTER && iRightObjType == OBJ_MONSTER));
 
 
@@ -1227,10 +1230,11 @@ _bool CPhysX_Manager::Check_Push(_uint iLeftObjType, _uint iRightObjType)
 // ControllerFilterCallBack
 bool CPhysX_Manager::filter(const PxController& a, const PxController& b)
 {
-	/*CGameObject* pLeftObj = static_cast<CGameObject*>(a.getUserData());
-	CGameObject* pRightObj = static_cast<CGameObject*>(b.getUserData());
-	Check_Push(pLeftObj->Get_ObjectType(), pRightObj->Get_ObjectType());*/
-	return false;
+	OBJ_TYPE* pLeftObjType = static_cast<OBJ_TYPE*>(a.getUserData());
+	OBJ_TYPE* pRightObjType = static_cast<OBJ_TYPE*>(b.getUserData());
+	
+	
+	return Check_Push(*pLeftObjType, *pRightObjType);;
 }
 
 void CPhysX_Manager::onConstraintBreak(PxConstraintInfo* constraints, PxU32 count)

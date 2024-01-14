@@ -4,7 +4,6 @@
 #include "GameObject.h"
 
 BEGIN(Engine)
-class CModel;
 class CShader;
 class CRenderer;
 class CTransform;

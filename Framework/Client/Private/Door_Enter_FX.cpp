@@ -26,18 +26,41 @@ HRESULT CDoor_Enter_FX::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+	m_pModelCom->Set_Animation(0);
+	m_pTransformCom->Set_Scale(_float3(0.03f, 0.03f, 0.03f));
+
+	m_fWaitTime = 0.7f;
 	return S_OK;
 }
 
 void CDoor_Enter_FX::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+
+
+	if (false == m_bPlayAnimation)
+	{
+		if(fTimeDelta <= 0.07f)
+			m_fAccWait += fTimeDelta;
+
+		if (m_fAccWait >= m_fWaitTime)
+		{
+			m_bPlayAnimation = true;
+			m_fAccWait = 0.f;
+		}
+	}
+	
+
+
+	if (false == m_bReserveDead && true == m_pModelCom->Is_Finish())
+		Reserve_Dead(true);
+
+
 	if (true == m_bReserveDead)
 	{
 		m_fDissolveWeight += m_fDissolveSpeed * fTimeDelta;
 		if (m_fDissolveWeight >= m_fDissolveTotal)
 		{
-			m_fDissolveWeight = 0.f;
 			Set_Dead(true);
 			return;
 		}
@@ -48,7 +71,11 @@ void CDoor_Enter_FX::Tick(_float fTimeDelta)
 void CDoor_Enter_FX::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
-	m_pModelCom->LateTick(fTimeDelta);
+
+	if(true == m_bPlayAnimation)
+		m_pModelCom->LateTick(fTimeDelta);
+
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 }
 
 HRESULT CDoor_Enter_FX::Render()
@@ -81,7 +108,7 @@ HRESULT CDoor_Enter_FX::Render()
 	// ----------------- RimLight
 
 	// Dissolve -----------------
-	if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture", 1)))
+	if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture", 51)))
 		return E_FAIL;
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_DissolveDuration", &m_fDissolveDuration, sizeof(_float))))
@@ -112,7 +139,7 @@ HRESULT CDoor_Enter_FX::Render()
 		else
 			iPassIndex++;
 
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, i)))
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, iPassIndex)))
 			return E_FAIL;
 	}
 
@@ -140,7 +167,7 @@ HRESULT CDoor_Enter_FX::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_DissolveTexture */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_DissolveWeapon"), TEXT("Com_DissolveTexture"), (CComponent**)&m_pDissolveTextureCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Noise"), TEXT("Com_DissolveTexture"), (CComponent**)&m_pDissolveTextureCom)))
 		return E_FAIL;
 
 	return S_OK;
@@ -187,5 +214,5 @@ void CDoor_Enter_FX::Free()
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pTransformCom);
-	
+	Safe_Release(m_pDissolveTextureCom);
 }

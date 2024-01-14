@@ -509,7 +509,7 @@ PS_OUT_MOTIONTRAIL PS_MOTION_TRAIL(PS_IN In)
     PS_OUT_MOTIONTRAIL Out = (PS_OUT_MOTIONTRAIL) 0;
     
     float fRimPower = 1.f - saturate(dot(In.vNormal.xyz, normalize((-1.f * (In.vWorldPosition - g_vCamPosition)))));
-    fRimPower = pow(fRimPower, 5.f);
+    fRimPower = pow(fRimPower, 1.f);
 	
     vector vRimColor = g_vRimColor * fRimPower;
     vRimColor.a = g_fMotionTrailAlpha;

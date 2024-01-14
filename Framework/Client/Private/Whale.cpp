@@ -36,7 +36,7 @@ HRESULT CWhale::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	m_iObjectType == OBJ_TYPE::OBJ_ANIMAL;
+	m_iObjectType = OBJ_TYPE::OBJ_ANIMAL;
 	
 	m_vCenter = m_pTransformCom->Get_Position();
 

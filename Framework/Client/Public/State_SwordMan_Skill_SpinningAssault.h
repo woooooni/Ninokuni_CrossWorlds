@@ -25,6 +25,10 @@ public:
 	virtual void Tick_State(_float fTimeDelta) override;
 	virtual void Exit_State() override;
 
+private:
+	MOTION_TRAIL_DESC m_MotionTrailDesc = {};
+	_bool m_bTrailStart = false;
+
 public:
 	static CState_SwordMan_Skill_SpinningAssault* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

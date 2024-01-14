@@ -4,6 +4,8 @@
 #include "State_SwordMan_SpecialSkill_AcaneBarrier.h"
 
 #include "Effect_Manager.h"
+#include "Camera.h"
+#include "Camera_Manager.h"
 
 CState_SwordMan_SpecialSkill_AcaneBarrier::CState_SwordMan_SpecialSkill_AcaneBarrier(CStateMachine* pMachine)
     : CState_Character(pMachine)
@@ -39,7 +41,7 @@ void CState_SwordMan_SpecialSkill_AcaneBarrier::Tick_State(_float fTimeDelta)
 
 void CState_SwordMan_SpecialSkill_AcaneBarrier::Exit_State()
 {
-    
+    CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(60.f);
 }
 
 CState_SwordMan_SpecialSkill_AcaneBarrier* CState_SwordMan_SpecialSkill_AcaneBarrier::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

@@ -2,6 +2,7 @@
 
 #include "Client_Defines.h"
 #include "Skill_Manager.h"
+#include "UI_Manager.h"
 #include "State.h"
 
 

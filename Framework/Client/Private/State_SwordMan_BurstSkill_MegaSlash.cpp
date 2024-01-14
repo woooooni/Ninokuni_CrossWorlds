@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "GameInstance.h"
 #include "Character.h"
+#include "Camera.h"
+#include "Camera_Manager.h"
 #include "State_SwordMan_BurstSkill_MegaSlash.h"
 
 #include "Effect_Manager.h"
@@ -20,6 +22,7 @@ HRESULT CState_SwordMan_BurstSkill_MegaSlash::Initialize(const list<wstring>& An
 
 void CState_SwordMan_BurstSkill_MegaSlash::Enter_State(void* pArg)
 {
+    m_pCharacter->Set_Infinite(999.f, true);
     m_pCharacter->Appear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
     m_pCharacter->Look_For_Target();
@@ -39,7 +42,8 @@ void CState_SwordMan_BurstSkill_MegaSlash::Tick_State(_float fTimeDelta)
 
 void CState_SwordMan_BurstSkill_MegaSlash::Exit_State()
 {
-    
+    m_pCharacter->Set_Infinite(0.f, false);
+    CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(60.f);
 }
 CState_SwordMan_BurstSkill_MegaSlash* CState_SwordMan_BurstSkill_MegaSlash::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
 {

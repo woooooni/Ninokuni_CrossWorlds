@@ -20,7 +20,7 @@ public:
 	HRESULT Reserve_Manager();
 
 public:
-	void Play_Sound(wstring pSoundKey, CHANNELID eID, _float fVolume, _bool bStop = false);
+	void Play_Sound(wstring pSoundKey, CHANNELID eID, _float fVolume, _bool bStop = false, _float fCamDistance = 0.f);
 	void Play_BGM(wstring pSoundKey, _float fVolume, _bool bStop = false);
 	void Stop_Sound(CHANNELID eID);
 	void Stop_All();

@@ -25,6 +25,9 @@ public:
 	virtual void Tick_State(_float fTimeDelta) override;
 	virtual void Exit_State() override;
 
+private:
+	MOTION_TRAIL_DESC m_MotionTrailDesc = {};
+
 public:
 	static CState_SwordMan_SpecialSkill_SwordTempest* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

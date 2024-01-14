@@ -99,11 +99,11 @@ public:
 	{
 		_uint iLevel = 1;
 
-		_uint iAtt = 1;
+		_uint iAtt = 1200;
 		_uint iDef = 1;
 
-		_int iHp = 100;
-		_int iMaxHp = 100;
+		_int iHp = 500;
+		_int iMaxHp = 500;
 
 		_float fSpeedWeight = 1.f;
 
@@ -205,10 +205,7 @@ public:
 
 	_uint Get_Def() { return m_tStat.iDef; }
 
-	void Decrease_HP(_int iDecrease)
-	{ 
-		m_tStat.iHp = max(0, m_tStat.iHp - iDecrease);
-	}
+	void Decrease_HP(_int iDecrease);
 
 	void Increase_HP(_int iIncrease)
 	{

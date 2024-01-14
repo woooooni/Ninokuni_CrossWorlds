@@ -24,6 +24,7 @@ HRESULT CState_Character_Neutral_Idle::Initialize(const list<wstring>& Animation
 
 void CState_Character_Neutral_Idle::Enter_State(void* pArg)
 {
+    CUI_Manager::GetInstance()->Hide_MouseCursor(false);
     m_pCharacter->Disappear_Weapon();
     m_fAccIdleMotion = 0.f;
     m_iCurrAnimIndex = m_AnimIndices[0];
@@ -54,6 +55,7 @@ void CState_Character_Neutral_Idle::Tick_State(_float fTimeDelta)
 
 void CState_Character_Neutral_Idle::Exit_State()
 {
+    CUI_Manager::GetInstance()->Hide_MouseCursor(true);
     m_fAccIdleMotion = 0.f;
     m_iCurrAnimIndex = 0;
 }
