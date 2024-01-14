@@ -36,7 +36,8 @@ void CGlanixState_IntroIdle::Enter_State(void* pArg)
 	m_bFadeIn = false;
 
 	/* Start Fade Out */
-	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, m_fFadeOutTime, false);
+	if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
+		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, m_fFadeOutTime, false);
 }
 
 void CGlanixState_IntroIdle::Tick_State(_float fTimeDelta)
@@ -65,7 +66,8 @@ void CGlanixState_IntroIdle::Tick_State(_float fTimeDelta)
 		}
 
 		/* Start Fade In */
-		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, m_fFadeInTime, false);
+		if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
+			CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, m_fFadeInTime, false);
 
 		/* Ui Off */
 		if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
