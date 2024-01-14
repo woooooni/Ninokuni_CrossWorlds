@@ -242,6 +242,7 @@ void CUI_Manager::Set_MainDialogue(_tchar* pszName, _tchar* pszText)
 
 	if (false == m_pDialogWindow->Get_Active())
 	{
+		//CCamera_Manager::GetInstance()->Get_CurCamera()->Set_CanInput(false);
 		m_pDialogWindow->Set_Active(true);
 		OnOff_GamePlaySetting(false);
 	}
@@ -5739,7 +5740,10 @@ HRESULT CUI_Manager::OnOff_DialogWindow(_bool bOnOff, _uint iMagicNum)
 		{
 			// 카메라 전환 후 직접 켜주어야함.
 			if (!Is_DefaultSettingOn())
+			{
 				OnOff_GamePlaySetting(true);
+				//CCamera_Manager::GetInstance()->Get_CurCamera()->Set_CanInput(true);
+			}
 			
 			if (m_pDialogWindow->Get_Active())
 				m_pDialogWindow->Set_Active(false);
