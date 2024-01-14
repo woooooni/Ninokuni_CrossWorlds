@@ -245,6 +245,7 @@
     <ClInclude Include="..\Public\Character_Destroyer.h" />
     <ClInclude Include="..\Public\Character_Dummy.h" />
     <ClInclude Include="..\Public\Character_Engineer.h" />
+    <ClInclude Include="..\Public\Character_Projectile.h" />
     <ClInclude Include="..\Public\Chloe.h" />
     <ClInclude Include="..\Public\ColliderWall.h" />
     <ClInclude Include="..\Public\Decal.h" />
@@ -295,6 +296,7 @@
     <ClInclude Include="..\Public\GlanixState_RageStartTurnOL.h" />
     <ClInclude Include="..\Public\GlanixState_Stun.h" />
     <ClInclude Include="..\Public\Glanix_IcePillar_Controller.h" />
+    <ClInclude Include="..\Public\Glanix_Icicle.h" />
     <ClInclude Include="..\Public\Glanix_Phoenix.h" />
     <ClInclude Include="..\Public\Glanix_IcePillar.h" />
     <ClInclude Include="..\Public\Glanix_PhoenixState_Base.h" />
@@ -959,6 +961,7 @@
     <ClCompile Include="..\Private\Character_Destroyer.cpp" />
     <ClCompile Include="..\Private\Character_Dummy.cpp" />
     <ClCompile Include="..\Private\Character_Engineer.cpp" />
+    <ClCompile Include="..\Private\Character_Projectile.cpp" />
     <ClCompile Include="..\Private\Chloe.cpp" />
     <ClCompile Include="..\Private\ColliderWall.cpp" />
     <ClCompile Include="..\Private\Decal.cpp" />
@@ -1009,6 +1012,7 @@
     <ClCompile Include="..\Private\GlanixState_RageStartTurnOL.cpp" />
     <ClCompile Include="..\Private\GlanixState_Stun.cpp" />
     <ClCompile Include="..\Private\Glanix_IcePillar_Controller.cpp" />
+    <ClCompile Include="..\Private\Glanix_Icicle.cpp" />
     <ClCompile Include="..\Private\Glanix_Phoenix.cpp" />
     <ClCompile Include="..\Private\Glanix_IcePillar.cpp" />
     <ClCompile Include="..\Private\Glanix_PhoenixState_Base.cpp" />

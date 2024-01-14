@@ -40,6 +40,7 @@ private:
 	_float m_fDelteTime = 0.f;
 
 	Vec3 m_vInitLook = {};
+	Matrix m_RotationMatrix = Matrix::Identity;
 
 	_bool m_bFirst = true;
 

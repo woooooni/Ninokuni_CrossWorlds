@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "GameInstance.h"
 #include "Character.h"
+#include "Character_Projectile.h"
 #include "State_Engineer_Battle_Attack_1.h"
 #include "Utils.h"
 
@@ -62,7 +63,10 @@ void CState_Engineer_Battle_Attack_1::Shoot()
     m_iShootCount = 0;
     for (_int i = -1; i <= 1; ++i)
     {
-        CGameObject* pBullet = GI->Clone_GameObject(L"Prototype_GameObject_Engineer_Bullet", LAYER_TYPE::LAYER_CHARACTER);
+        CCharacter_Projectile::CHARACTER_PROJECTILE_DESC ProjectileDesc;
+        ProjectileDesc.pOwner = m_pCharacter;
+
+        CGameObject* pBullet = GI->Clone_GameObject(L"Prototype_GameObject_Engineer_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
         if (nullptr == pBullet)
             return;
 

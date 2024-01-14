@@ -26,6 +26,7 @@
 #include "Animals.h"
 
 #include "Portal.h"
+#include "Trigger.h"
 
 _bool CLevel_IceLand::g_bFirstEnter = false;
 
@@ -291,6 +292,32 @@ HRESULT CLevel_IceLand::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 	if (nullptr == pPortalTransform)
 		return E_FAIL;
 	pPortalTransform->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(-100.f));
+
+
+
+	CTrigger::TRIGGER_DESC TriggerDesc;
+	TriggerDesc.eTriggerType = TRIGGER_TYPE::TRIGGER_MAP_NAME;
+	TriggerDesc.strMapName = "코에루크 설원";
+	TriggerDesc.vStartPosition = { 107.93f, -10.f, 5.067f, 1.f };
+	TriggerDesc.vExtents = { 100.f, 100.f, 100.f };
+
+	if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
+		return E_FAIL;
+
+	TriggerDesc.strMapName = "그늘진 저지대";
+	TriggerDesc.vStartPosition = { -79.747f, -10.f, 70.857f, 1.f };
+	TriggerDesc.vExtents = { 100.f, 100.f, 100.f };
+
+	if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
+		return E_FAIL;
+
+	TriggerDesc.strMapName = "얼어붙은 유령숲";
+	TriggerDesc.vStartPosition = { -124.5f, -10.f, 290.2f, 1.f };
+	TriggerDesc.vExtents = { 200.f, 100.f, 150.f };
+
+	if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
+		return E_FAIL;
+
 
 
 	return S_OK;

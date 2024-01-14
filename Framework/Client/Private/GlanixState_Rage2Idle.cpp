@@ -1,7 +1,12 @@
 #include "stdafx.h"
 #include "GlanixState_Rage2Idle.h"
 
+#include "GameInstance.h"
 #include "Glanix.h"
+
+#include "Game_Manager.h"
+#include "Player.h"
+#include "Character.h"
 
 CGlanixState_Rage2Idle::CGlanixState_Rage2Idle(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
@@ -46,10 +51,42 @@ void CGlanixState_Rage2Idle::Tick_State(_float fTimeDelta)
 	if (m_fTime >= m_fWaitTime)
 		m_pStateMachineCom->Change_State(CGlanix::GLANIX_RAGE2WAVE);
 
+	m_fAccIcicleGen += fTimeDelta;
+	if (m_fAccIcicleGen >= m_fGenTime)
+	{
+		m_fAccIcicleGen = 0.f;
+		Generate_Icicle(2);
+	}
+
 }
 
 void CGlanixState_Rage2Idle::Exit_State()
 {
+}
+
+void CGlanixState_Rage2Idle::Generate_Icicle(_uint iCount)
+{
+	CTransform* pTransform = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr == pTransform)
+	{
+		MSG_BOX("Transform Get Failed.");
+		return;
+	}
+
+
+	for (_uint i = 0; i < iCount; ++i)
+	{
+		Vec4 vInitPos = pTransform->Get_Position();
+		vInitPos.x += GI->RandomFloat(-5.f, 5.f);
+		vInitPos.y += 10.f + GI->RandomFloat(0.f, 5.f);
+		vInitPos.z += GI->RandomFloat(-5.f, 5.f);
+
+		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_PROP, L"Prorotype_GameObject_Glanix_GlanixIcicle", &vInitPos)))
+		{
+			MSG_BOX("Add Icicle Failed.");
+			return;
+		}
+	}
 }
 
 CGlanixState_Rage2Idle* CGlanixState_Rage2Idle::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

@@ -19,7 +19,7 @@
 #include "Player.h"
 
 #include "Quest_Manager.h"
-
+#include "Character_Projectile.h"
 USING(Client)
 
 CMonster::CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
@@ -291,7 +291,9 @@ HRESULT CMonster::Render_Instance_AnimModel_Shadow(CShader* pInstancingShader, C
 void CMonster::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	/* АјАн */
-	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER && tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY && tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BOUNDARY)
+	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER 
+		&& tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY 
+		&& tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BOUNDARY)
 	{
 		if (m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT])
 		{
@@ -361,12 +363,24 @@ void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 
 	_bool bIsBoss = false;
 
-	if (TEXT("Glanix") == Get_ObjectTag() ||
-		TEXT("Stellia") == Get_ObjectTag() ||
-		TEXT("DreamerMazeWitch") == Get_ObjectTag())
+	if (TEXT("Glanix") == Get_ObjectTag() || TEXT("Stellia") == Get_ObjectTag() || TEXT("DreamerMazeWitch") == Get_ObjectTag())
 		bIsBoss = true;
 
-	CCharacter* pCharacter = dynamic_cast<CCharacter*>(tInfo.pOther);
+	CCharacter* pCharacter = nullptr;
+	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER_PROJECTILE)
+	{
+		CCharacter_Projectile* pProjectile = dynamic_cast<CCharacter_Projectile*>(tInfo.pOther);
+		if (nullptr == pProjectile)
+		{
+			MSG_BOX("CCharacter_Projectile Cast Failed.");
+			return;
+		}
+		pCharacter = pProjectile->Get_Owner();
+	}
+	else
+	{
+		pCharacter = dynamic_cast<CCharacter*>(tInfo.pOther);
+	}
 	if (nullptr == pCharacter)
 		return;
 

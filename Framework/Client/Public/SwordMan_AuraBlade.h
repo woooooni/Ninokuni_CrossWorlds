@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Client_Defines.h"
-#include "GameObject.h"
+#include "Character_Projectile.h"
 
 BEGIN(Client)
 
-class CSwordMan_AuraBlade final : public CGameObject
+class CSwordMan_AuraBlade final : public CCharacter_Projectile
 {
 	
 private:
@@ -18,17 +18,13 @@ public:
 	virtual HRESULT Initialize(void* pArg) override;
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void LateTick(_float fTimeDelta) override;
+	virtual HRESULT Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices) override;
 
 public:
 	virtual HRESULT Ready_Components() override;
 
-private:
-	class CRenderer* m_pRendererCom = nullptr;
-	class CTransform* m_pTransformCom = nullptr;
 
 private:
-	_float m_fAccDeletionTime = 0.f;
-	_float m_fDeletionTime = 1.f;
 	_float m_fMoveSpeed = 20.f;
 
 

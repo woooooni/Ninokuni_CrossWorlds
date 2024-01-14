@@ -24,7 +24,11 @@ void CState_Character_Dead::Enter_State(void* pArg)
 
 void CState_Character_Dead::Tick_State(_float fTimeDelta)
 {
-    
+    if (KEY_TAP(KEY::R))
+    {
+        m_pStateMachineCom->Change_State(CCharacter::REVIVE);
+        return;
+    }
 }
 
 void CState_Character_Dead::Exit_State()

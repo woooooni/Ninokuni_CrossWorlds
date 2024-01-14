@@ -217,7 +217,7 @@ HRESULT CCharacter_SwordMan::Ready_Components()
 	ControllerDesc.vOffset = { 0.f, 1.125f, 0.f };
 	ControllerDesc.fHeight = 1.f;
 	ControllerDesc.fMaxJumpHeight = 10.f;
-	ControllerDesc.fRaidus = 0.5f;
+	ControllerDesc.fRaidus = 0.8f;
 	ControllerDesc.pOwner = this;
 
 
@@ -348,7 +348,7 @@ HRESULT CCharacter_SwordMan::Ready_States()
 
 	// Battle
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_CSBattleStand");
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_BattleStand");
 	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_FinishCombat");
 	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_IDLE, CState_Character_Battle_Idle::Create(m_pStateCom, strAnimationNames));
 

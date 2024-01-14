@@ -3,17 +3,16 @@
 #include "SwordMan_AuraBlade.h"
 
 #include "Effect_Manager.h"
+#include "Character.h"
 
 CSwordMan_AuraBlade::CSwordMan_AuraBlade(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	:CGameObject(pDevice, pContext, L"SwordMan_AuraBlade", OBJ_TYPE::OBJ_CHARACTER_PROJECTILE)
+	:CCharacter_Projectile(pDevice, pContext, L"SwordMan_AuraBlade")
 {
 
 }
 
 CSwordMan_AuraBlade::CSwordMan_AuraBlade(const CSwordMan_AuraBlade& rhs)
-	: CGameObject(rhs)
-	, m_fAccDeletionTime(0.f)
-	, m_fDeletionTime(rhs.m_fDeletionTime)
+	: CCharacter_Projectile(rhs)
 {
 }
 
@@ -23,7 +22,10 @@ HRESULT CSwordMan_AuraBlade::Initialize_Prototype()
 	if (FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
 
+	
+
 	return S_OK;
+
 }
 
 HRESULT CSwordMan_AuraBlade::Initialize(void* pArg)
@@ -34,7 +36,11 @@ HRESULT CSwordMan_AuraBlade::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	// Set_Collider_Elemental();
+
+	m_fDeletionTime = 1.f;
+	m_fAccDeletionTime = 0.f;
+
+	Set_Collider_Elemental(m_pOwner->Get_ElementalType());
 
 	
 
@@ -44,30 +50,18 @@ HRESULT CSwordMan_AuraBlade::Initialize(void* pArg)
 void CSwordMan_AuraBlade::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
-
 	m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fMoveSpeed, fTimeDelta);
-
-	m_fAccDeletionTime += fTimeDelta;
-	if (m_fAccDeletionTime >= m_fDeletionTime)
-	{
-		Set_Dead(true);
-		m_fAccDeletionTime = 0.f;
-	}
 }
 
 void CSwordMan_AuraBlade::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
-	GI->Add_CollisionGroup(COLLISION_GROUP::CHARACTER, this);
+}
 
-#ifdef _DEBUG
-	m_pRendererCom->Set_PlayerPosition(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
-	{
-		for (auto& pCollider : m_Colliders[i])
-			m_pRendererCom->Add_Debug(pCollider);
-	}
-#endif
+HRESULT CSwordMan_AuraBlade::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
+{
+	// 그리지 않는다.
+	return S_OK;
 }
 
 HRESULT CSwordMan_AuraBlade::Ready_Components()
@@ -83,13 +77,13 @@ HRESULT CSwordMan_AuraBlade::Ready_Components()
 
 	BoundingSphere tSphere;
 	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 0.2f;
+	tSphere.Radius = 1.f;
 	SphereDesc.tSphere = tSphere;
 
 	SphereDesc.pNode = nullptr;
 	SphereDesc.pOwnerTransform = m_pTransformCom;
 	SphereDesc.ModelPivotMatrix = XMMatrixRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f));
-	SphereDesc.vOffsetPosition = Vec3(0.f, 0.f, 0.f);
+	SphereDesc.vOffsetPosition = Vec3(0.f, 1.f, 0.f);
 
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::ATTACK, &SphereDesc)))
 		return E_FAIL;
@@ -130,6 +124,4 @@ CGameObject* CSwordMan_AuraBlade::Clone(void* pArg)
 void CSwordMan_AuraBlade::Free()
 {
 	__super::Free();
-	Safe_Release(m_pRendererCom);
-	Safe_Release(m_pTransformCom);
 }

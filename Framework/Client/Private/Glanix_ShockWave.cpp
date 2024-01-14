@@ -4,7 +4,7 @@
 #include "GameInstance.h"
 
 CGlanix_ShockWave::CGlanix_ShockWave(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
-	: CGameObject(pDevice, pContext, strObjectTag, OBJ_TYPE::OBJ_SPAWNER)
+	: CGameObject(pDevice, pContext, strObjectTag, OBJ_TYPE::OBJ_PROP)
 {
 }
 
@@ -43,6 +43,8 @@ HRESULT CGlanix_ShockWave::Initialize(void* pArg)
 void CGlanix_ShockWave::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+
+	GI->Add_CollisionGroup(COLLISION_GROUP::PROP, this);
 
 	m_pTransformCom->Move(m_pTransformCom->Get_Look(), 10.f, fTimeDelta);
 	Vec4 vPosition = m_pTransformCom->Get_Position();

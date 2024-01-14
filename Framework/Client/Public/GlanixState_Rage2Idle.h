@@ -25,6 +25,12 @@ private:
 	_int   m_iWaveCount = 0;
 	_int   m_iMaxCount = 0;
 
+	_float m_fAccIcicleGen = 0.f;
+	_float m_fGenTime = 1.f;
+
+private:
+	void Generate_Icicle(_uint iCount);
+
 public:
 	static CGlanixState_Rage2Idle* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
