@@ -5,6 +5,9 @@
 #include "Particle_Manager.h"
 #include "Utils.h"
 
+#include "Game_Manager.h"
+#include "Kuu.h"
+
 CState_Character_Neutral_Run::CState_Character_Neutral_Run(CStateMachine* pMachine)
     : CState_Character(pMachine)
 {
@@ -27,6 +30,9 @@ void CState_Character_Neutral_Run::Enter_State(void* pArg)
 {
 	m_pCharacter->Disappear_Weapon();
 	m_pModelCom->Set_Animation(m_AnimIndices[0]);
+
+    if (CGame_Manager::GetInstance()->Get_Kuu() != nullptr)
+        CGame_Manager::GetInstance()->Get_Kuu()->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CKuu::NPC_UNIQUENPC_RUN);
 }
 
 void CState_Character_Neutral_Run::Tick_State(_float fTimeDelta)

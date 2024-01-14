@@ -100,6 +100,15 @@ void CMainQuestNode_SnowField02::LateTick(const _float& fTimeDelta)
 
 void CMainQuestNode_SnowField02::TalkEvent()
 {
+	switch (m_iTalkIndex)
+	{
+	case 0:
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("02_02_00_KuuSay_AhHa!.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		break;
+	case 1:
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("02_02_01_KuuSay_Heong!.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		break;
+	}
 }
 
 CMainQuestNode_SnowField02* CMainQuestNode_SnowField02::Create()

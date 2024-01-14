@@ -1,15 +1,26 @@
 #pragma once
 
-#include "MonsterProjectile.h"
+#include "GameObject.h"
+#include "Client_Defines.h"
+
+#include "Monster.h"
+
+BEGIN(Engine)
+class CShader;
+class CRenderer;
+class CTransform;
+class CModel;
+class CPhysX_Controller;
+class CRigidBody;
+END
 
 BEGIN(Client)
-
-class CGlanix_IceBall final : public CMonsterProjectile
+class CMonsterProjectile abstract : public CGameObject
 {
-private:
-	CGlanix_IceBall(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
-	CGlanix_IceBall(const CGlanix_IceBall& rhs);
-	virtual ~CGlanix_IceBall() = default;
+protected:
+	CMonsterProjectile(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	CMonsterProjectile(const CMonsterProjectile& rhs);
+	virtual ~CMonsterProjectile() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -29,23 +40,23 @@ public:
 	virtual void Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo) override;
 	virtual void Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo) override;
 
-private:
+public:
+	virtual CMonster* Get_Owner() { return m_pOwner; }
+
+protected:
 	virtual HRESULT Ready_Components();
-	virtual HRESULT Ready_Colliders();
 
-private:
-	CGlanix* m_pGlanix = nullptr;
+protected:
+	CShader* m_pShaderCom = nullptr;
+	CRenderer* m_pRendererCom = nullptr;
+	CTransform* m_pTransformCom = nullptr;
+	CModel* m_pModelCom = nullptr;
+	CPhysX_Controller* m_pControllerCom = nullptr;
+	CRigidBody* m_pRigidBodyCom = nullptr;
 
-	_float m_fTime = 0.f;
-	_float m_fDelteTime = 0.f;
-
-	Vec3 m_vInitLook = {};
-
-	_bool m_bFirst = true;
+	CMonster* m_pOwner = nullptr;
 
 public:
-	static CGlanix_IceBall* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
-	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };
 

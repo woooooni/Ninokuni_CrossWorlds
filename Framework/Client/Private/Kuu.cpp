@@ -72,7 +72,9 @@ void CKuu::Tick(_float fTimeDelta)
 {
 	if (m_pPlayer != nullptr)
 	{
-		Vec4 vReleativePos = m_pPlayerTransform->Get_RelativeOffset({ 1.f, 1.f, -0.3f, 1.f });
+		Kuu_Flying(fTimeDelta);
+
+		Vec4 vReleativePos = m_pPlayerTransform->Get_RelativeOffset({ 1.f, m_fY, -0.3f, 1.f });
 		Vec4 vPlayerPos = m_pPlayerTransform->Get_Position();
 
 		m_pTransformCom->Set_WorldMatrix(m_pPlayerTransform->Get_WorldMatrix());
@@ -187,6 +189,57 @@ HRESULT CKuu::Ready_Colliders()
 		return E_FAIL;
 
 	return S_OK;
+}
+
+void CKuu::Kuu_Flying(const _float& fTimeDelta)
+{
+	if (m_pStateCom->Get_CurrState() == NPC_IDLE)
+	{
+		// m_fY = 1.f;
+	}
+	else if (m_pStateCom->Get_CurrState() == NPC_UNIQUENPC_WALK)
+	{
+		m_fDuration = 2.f;
+
+		if (m_tLerpDesc.bActive)
+		{
+			m_fY = m_tLerpDesc.Update(fTimeDelta);
+		}
+		else
+		{
+			m_bIsUp = !m_bIsUp;
+			if (m_bIsUp)
+			{
+				m_tLerpDesc.Start(m_fMinDestY, m_fMaxDestY, m_fDuration, LERP_MODE::SMOOTHER_STEP);
+			}
+			else
+			{
+				m_tLerpDesc.Start(m_fMaxDestY, m_fMinDestY, m_fDuration, LERP_MODE::SMOOTHER_STEP);
+			}
+		}
+	}
+	else if (m_pStateCom->Get_CurrState() == NPC_UNIQUENPC_RUN)
+	{
+		m_fDuration = 1.f;
+
+		if (m_tLerpDesc.bActive)
+		{
+			m_fY = m_tLerpDesc.Update(fTimeDelta);
+		}
+		else
+		{
+			m_bIsUp = !m_bIsUp;
+			if (m_bIsUp)
+			{
+				m_tLerpDesc.Start(m_fMinDestY, m_fMaxDestY, m_fDuration, LERP_MODE::SMOOTHER_STEP);
+			}
+			else
+			{
+				m_tLerpDesc.Start(m_fMaxDestY, m_fMinDestY, m_fDuration, LERP_MODE::SMOOTHER_STEP);
+			}
+		}
+	}
+
 }
 
 HRESULT CKuu::Ready_Sockets()

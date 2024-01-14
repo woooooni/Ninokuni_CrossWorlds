@@ -5,6 +5,9 @@
 #include "Camera_Follow.h"
 #include "State_Character_Battle_Idle.h"
 
+#include "Game_Manager.h"
+#include "Kuu.h"
+
 CState_Character_Battle_Idle::CState_Character_Battle_Idle(CStateMachine* pMachine)
     : CState_Character(pMachine)
 {
@@ -25,6 +28,9 @@ void CState_Character_Battle_Idle::Enter_State(void* pArg)
     m_iCurrAnimIndex = m_AnimIndices[0];
     m_pModelCom->Set_Animation(m_iCurrAnimIndex);
     CUI_Manager::GetInstance()->Hide_MouseCursor(false);
+
+    if (CGame_Manager::GetInstance()->Get_Kuu() != nullptr)
+        CGame_Manager::GetInstance()->Get_Kuu()->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CKuu::NPC_IDLE);
 
     CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
     if (nullptr != pFollowCam)

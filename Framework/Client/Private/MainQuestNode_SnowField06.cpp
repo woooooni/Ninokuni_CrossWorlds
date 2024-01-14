@@ -27,6 +27,8 @@ HRESULT CMainQuestNode_SnowField06::Initialize()
 
 void CMainQuestNode_SnowField06::Start()
 {
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+
 	m_pJackson = GI->Find_GameObject(LEVELID::LEVEL_ICELAND, LAYER_NPC, TEXT("GrimalKinML01"));
 	Vec4 vSpotPos = Set_DestSpot(m_pJackson);
 
