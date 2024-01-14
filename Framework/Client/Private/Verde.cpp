@@ -50,7 +50,7 @@ HRESULT CVerde::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_pTag = dynamic_cast<CUI_World_NPCTag*>(pTag);
-	m_pTag->Set_Owner(this, m_strKorName, 2.f, true);
+	m_pTag->Set_Owner(this, m_strKorName, 1.6f, true);
 
 	return S_OK;
 }

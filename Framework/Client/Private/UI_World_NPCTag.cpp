@@ -34,6 +34,8 @@ void CUI_World_NPCTag::Set_Owner(CGameObject* pOwner, const wstring& strNameTag,
 		m_vColor = _float4(1.f, 0.969f, 0.6f, 1.f);
 	else
 		m_vColor = _float4(0.365f, 0.863f, 0.82f, 1.f);
+
+	m_bActive = true;
 }
 
 HRESULT CUI_World_NPCTag::Initialize_Prototype()
@@ -55,7 +57,7 @@ HRESULT CUI_World_NPCTag::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	m_bActive = true;
+	m_fTimeAcc = 0.f;
 
 	return S_OK;
 }
@@ -72,13 +74,18 @@ void CUI_World_NPCTag::Tick(_float fTimeDelta)
 
 		__super::Tick(fTimeDelta);
 	}
-
 }
 
 void CUI_World_NPCTag::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (TEXT("Kuu") == m_pOwner->Get_ObjectTag())
+		{
+			if (false == CUI_Manager::GetInstance()->Is_DefaultSettingOn())
+				return;
+		}
+
 		if (nullptr != m_pOwner)
 		{
 			_float4 vCamPos = GI->Get_CamPosition();

@@ -69,11 +69,6 @@ HRESULT CUI_BossHP_Bar::Initialize(void* pArg)
 	m_bActive = false;
 	m_bLerp = false;
 
-	// TestCode
-	m_fMaxHP = 1000.f;
-	m_fCurHP = 1000.f;
-	m_fPreHP = 1000.f;
-
 	return S_OK;
 }
 
@@ -83,19 +78,12 @@ void CUI_BossHP_Bar::Tick(_float fTimeDelta)
 	{
 		m_fTimeAcc += fTimeDelta * 0.1f;
 
-		// TestCode
-		if (KEY_TAP(KEY::G))
-		{
-			m_fCurHP -= 100.f;
-			//m_bLerp = false;
-		}
-
 		if (m_fCurHP < m_fPreHP)
 			m_bLerp = false;
 
 		if (!m_bLerp && m_fPreHP > m_fCurHP)
 		{
-			m_fPreHP -= fTimeDelta * 100.f;
+			m_fPreHP -= fTimeDelta * 3000.f;
 		
 			if (m_fPreHP <= m_fCurHP)
 			{
@@ -164,6 +152,10 @@ void CUI_BossHP_Bar::LateTick(_float fTimeDelta)
 			CurHPDesc.strText = strCurHP;
 			CurHPDesc.strFontTag = L"Default_Bold";
 			CurHPDesc.vScale = { 0.4f, 0.4f };
+
+			_int iLength = (CurHPDesc.strText.length() - 1) * 10.f;
+			m_vCurHPPos = _float2(g_iWinSizeX * 0.5f - 60.f - iLength, 768.f);
+
 			// OutLine
 			CurHPDesc.vPosition = _float2(m_vCurHPPos.x - 1.f, m_vCurHPPos.y);
 			CurHPDesc.vColor = { 0.f, 0.f, 0.f, 1.f };

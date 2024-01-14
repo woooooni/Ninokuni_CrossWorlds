@@ -75,6 +75,8 @@ HRESULT CLevel_Kingdom::Initialize()
 	GI->Stop_Sound(CHANNELID::SOUND_BGM);
 	GI->Play_BGM(TEXT("BGM_Town_Evermore_Normal_Castle_1.mp3"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM));
 
+	CUI_Manager::GetInstance()->OnOff_MapName(true, TEXT("에스타바니아 왕성"));
+
 	return S_OK;
 }
 

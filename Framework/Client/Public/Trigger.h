@@ -26,7 +26,7 @@ public:
 		string strBGM = "";
 
 		// For.Trigger MapName
-		string strMapName = "";
+		wstring strMapName = TEXT("");
 
 	} TRIGGER_DESC;
 
@@ -62,7 +62,7 @@ private:
 
 private:
 	string m_strBGM = "";
-
+	wstring m_strMapName = TEXT("");
 	
 
 public:

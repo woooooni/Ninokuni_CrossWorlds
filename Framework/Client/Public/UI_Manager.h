@@ -37,6 +37,7 @@ public: // Get/Set
 
 	void			Set_MainDialogue(_tchar* pszName, _tchar* pszText);
 	void			Set_MiniDialogue(wstring strName, wstring strContents);
+	void			Set_BattleDialogue(wstring strContents);
 	void			Set_QuestPopup(const wstring& strQuestType, const wstring& strTitle, const wstring& strContents);
 	void			Update_QuestPopup(const wstring& strPreTitle, const wstring& strQuestType, const wstring& strTitle, const wstring& strContents);
 	void			Clear_QuestPopup(const wstring& strTitle);
@@ -277,6 +278,7 @@ private:
 	class CUI_Dialog_Window* m_pDialogWindow = { nullptr };
 	class CUI_Dialog_MiniWindow* m_pDialogMini = { nullptr };
 	vector<class CUI_Dialog_Portrait*> m_Portrait;
+	class CUI_Dialog_BattleWindow* m_pDialogBattle = { nullptr };
 	// For Costume
 	vector<class CUI_Costume_Btn*> m_CostumeBtn;
 	vector<class CUI_Costume_Btn*> m_CostumeClickedBtn;

@@ -96,7 +96,7 @@ void CUI_Fade::LateTick(_float fTimeDelta)
 //	if (m_bIsComplete)
 //		return;
 
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI_EFFECT_BLEND, this);
 }
 
 HRESULT CUI_Fade::Render()

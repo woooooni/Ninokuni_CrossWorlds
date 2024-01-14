@@ -57,8 +57,8 @@ HRESULT CHumanChild01::Initialize(void* pArg)
 	if (nullptr == dynamic_cast<CUI_World_NPCSpeechBalloon*>(pBalloon))
 		return E_FAIL;
 	m_pBalloon = dynamic_cast<CUI_World_NPCSpeechBalloon*>(pBalloon);
-	m_pBalloon->Set_Owner(this, 1.3f);
-	m_pBalloon->Set_Balloon(TEXT("³ª´Â ¸¶À» ÁÖ¹ÎÀÌ´Ù."));
+	m_pBalloon->Set_Owner(this, 1.2f);
+	m_pBalloon->Set_Balloon(TEXT("¾ö¸¾ ¸¾¸¾¸¾¸¾¸¾¸¶¹ò¹ò "));
 
 	return S_OK;
 }

@@ -14,6 +14,9 @@ public:
 	_uint Get_TextureIndex() { return m_iTextureIndex; }
 	void Set_TextureIndex(_uint iIndex) { m_iTextureIndex = iIndex; }
 
+	_bool Get_IsClicked() { return m_bClick; }
+	void Set_Click(_bool bClick);
+
 	void Hide_UI(_bool bHide) { m_bHide = bHide; m_bHideFinish = false; }
 
 public:
@@ -36,6 +39,7 @@ private:
 	_float2 m_vHidePosition = _float2(0.f, 0.f);
 
 	_bool m_bUpdate = { false };
+	_bool m_bClick = { false };
 	_uint m_iTextureIndex = { 0 };
 
 private:

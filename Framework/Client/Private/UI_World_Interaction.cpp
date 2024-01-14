@@ -56,6 +56,12 @@ void CUI_World_Interaction::Set_Owner(CGameObject* pOwner)
 		m_vOffset = _float2(0.f, 1.2f);
 		m_vOriginOffset = m_vOffset;
 	}
+	else
+	{
+		m_eType = UI_INTERACTION_TYPE::INTERACTION_PICKUP;
+		m_vOffset = _float2(0.f, 0.8f);
+		m_vOriginOffset = m_vOffset;
+	}
 }
 
 HRESULT CUI_World_Interaction::Initialize_Prototype()
@@ -324,7 +330,10 @@ void CUI_World_Interaction::Update_ButtonIcon()
 	if (TEXT("Animal_Cat") == m_pOwner->Get_ObjectTag() ||
 		TEXT("Animal_Dochi") == m_pOwner->Get_ObjectTag() ||
 		TEXT("Animal_DuckGoo") == m_pOwner->Get_ObjectTag() ||
-		TEXT("Animal_PolarBear") == m_pOwner->Get_ObjectTag())
+		TEXT("Animal_PolarBear") == m_pOwner->Get_ObjectTag() ||
+		TEXT("Animal_Fox") == m_pOwner->Get_ObjectTag() ||
+		TEXT("Animal_Rabbit") == m_pOwner->Get_ObjectTag() ||
+		TEXT("Animal_Ermine") == m_pOwner->Get_ObjectTag())
 	{
 		if (dynamic_cast<CAnimals*>(m_pOwner)->Lifting())
 		{

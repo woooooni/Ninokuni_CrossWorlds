@@ -9,6 +9,7 @@
 #include "NpcState_TwoWay.h"
 
 #include "UI_World_NPCTag.h"
+#include "UI_World_NPCSpeechBalloon.h"
 
 CHumanML12::CHumanML12(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameNpc(pDevice, pContext, strObjectTag)
@@ -50,6 +51,29 @@ HRESULT CHumanML12::Initialize(void* pArg)
 	m_pTag = dynamic_cast<CUI_World_NPCTag*>(pTag);
 	m_pTag->Set_Owner(this, m_strKorName, 2.2f);
 
+	CGameObject* pBalloon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_NPC_SpeechBalloon"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pBalloon)
+		return E_FAIL;
+	if (nullptr == dynamic_cast<CUI_World_NPCSpeechBalloon*>(pBalloon))
+		return E_FAIL;
+	m_pBalloon = dynamic_cast<CUI_World_NPCSpeechBalloon*>(pBalloon);
+	m_pBalloon->Set_Owner(this, 2.35f);
+	_int iRandom = GI->RandomInt(0, 2);
+	switch (iRandom)
+	{
+	case 0:
+		m_pBalloon->Set_Balloon(TEXT("오늘 장터 반찬이 뭐랬지?"));
+		break;
+
+	case 1:
+		m_pBalloon->Set_Balloon(TEXT("뭘 하려고 했더라?"));
+		break;
+
+	case 2:
+		m_pBalloon->Set_Balloon(TEXT("될 대로 되라지."));
+		break;
+	}
+
 	return S_OK;
 }
 
@@ -59,6 +83,8 @@ void CHumanML12::Tick(_float fTimeDelta)
 
 	if (nullptr != m_pTag)
 		m_pTag->Tick(fTimeDelta);
+	if (nullptr != m_pBalloon)
+		m_pBalloon->Tick(fTimeDelta);
 }
 
 void CHumanML12::LateTick(_float fTimeDelta)
@@ -67,6 +93,8 @@ void CHumanML12::LateTick(_float fTimeDelta)
 
 	if (nullptr != m_pTag)
 		m_pTag->LateTick(fTimeDelta);
+	if (nullptr != m_pBalloon)
+		m_pBalloon->LateTick(fTimeDelta);
 
 #ifdef DEBUG
 	m_pRendererCom->Add_Debug(m_pControllerCom);
@@ -166,4 +194,5 @@ void CHumanML12::Free()
 	__super::Free();
 
 	Safe_Release(m_pTag);
+	Safe_Release(m_pBalloon);
 }

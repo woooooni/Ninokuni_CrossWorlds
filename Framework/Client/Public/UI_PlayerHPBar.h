@@ -21,6 +21,7 @@ public:
 
 private:
 	CTexture* m_pFXTextureCom = { nullptr };
+	class CCharacter* m_pPlayer = { nullptr };
 
 	wstring m_strPlayerMaxHP = L"";
 	wstring m_strPlayerCurHP = L"";
@@ -30,6 +31,12 @@ private:
 	_float2 m_vMaxHPPosition = _float2(235.f, 27.f);
 
 	_bool m_bAddText = { false };
+
+	_bool m_bLerp = { false };
+	_float m_fTimeAcc = { 0.f };
+	_float m_fMaxHP = { 0 };
+	_float m_fPreHP = { 0 };
+	_float m_fCurHP = { 0 };
 
 private:
 	virtual HRESULT	Ready_Components() override;

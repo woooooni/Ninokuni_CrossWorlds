@@ -13,6 +13,22 @@ CUI_BtnQuickQuest::CUI_BtnQuickQuest(const CUI_BtnQuickQuest& rhs)
 {
 }
 
+void CUI_BtnQuickQuest::Set_Click(_bool bClick)
+{
+	if (bClick)
+	{
+		m_iTextureIndex = 1;
+		CUI_Manager::GetInstance()->OnOff_QuestPopup(true);
+	}
+	else
+	{
+		m_iTextureIndex = 0;
+		CUI_Manager::GetInstance()->OnOff_QuestPopup(false);
+	}
+
+	m_bClick = bClick;
+}
+
 HRESULT CUI_BtnQuickQuest::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
@@ -147,14 +163,12 @@ void CUI_BtnQuickQuest::Key_Input(_float fTimeDelta)
 		{
 			if (0 < CUI_Manager::GetInstance()->Get_QuestNum())
 			{
-				m_iTextureIndex = 1;
-				CUI_Manager::GetInstance()->OnOff_QuestPopup(true);
+				Set_Click(true);
 			}
 		}
 		else if (1 == m_iTextureIndex)
 		{
-			m_iTextureIndex = 0;
-			CUI_Manager::GetInstance()->OnOff_QuestPopup(false);
+			Set_Click(false);
 		}
 		else
 		{

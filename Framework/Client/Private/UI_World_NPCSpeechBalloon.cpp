@@ -28,6 +28,8 @@ void CUI_World_NPCSpeechBalloon::Set_Active(_bool bActive)
 	}
 	else
 	{
+		m_bHide = true;
+		m_fHideTimeAcc = 0.f;
 		m_bResizeDone = false;
 
 		m_tInfo.fCX = m_vMinSize.x;
@@ -56,7 +58,6 @@ void CUI_World_NPCSpeechBalloon::Set_Owner(CGameObject* pOwner, _float fOffsetY)
 void CUI_World_NPCSpeechBalloon::Set_Balloon(const wstring& pText)
 {
 	m_strContents = pText;
-//	m_bActive = false;
 }
 
 HRESULT CUI_World_NPCSpeechBalloon::Initialize_Prototype()
@@ -88,9 +89,6 @@ void CUI_World_NPCSpeechBalloon::Tick(_float fTimeDelta)
 		if (nullptr == m_pOwner)
 			return;
 
-//		CTransform* pTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");
-//		m_pTransformCom->Set_State(CTransform::STATE_POSITION, pTransform->Get_Position());
-
 		m_fActiveTimeAcc += fTimeDelta;
 
 		if (5.f < m_fActiveTimeAcc)
@@ -115,12 +113,23 @@ void CUI_World_NPCSpeechBalloon::Tick(_float fTimeDelta)
 				}
 
 				m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
-//				m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-//					XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 			}
 		}
 
 		__super::Tick(fTimeDelta);
+	}
+	else
+	{
+		if (true == m_bHide)
+		{
+			m_fHideTimeAcc += fTimeDelta;
+
+			if (5.f < m_fHideTimeAcc)
+			{
+				m_bHide = false;
+				m_fHideTimeAcc = 0.f;
+			}
+		}
 	}
 
 }
@@ -129,7 +138,7 @@ void CUI_World_NPCSpeechBalloon::LateTick(_float fTimeDelta)
 {
 	//if (m_bActive)
 	{
-		if (nullptr != m_pOwner)
+		if (nullptr != m_pOwner && m_bHide == false)
 		{
 			_float4 vCamPos = GI->Get_CamPosition();
 			_vector vTempForDistance = m_pTransformCom->Get_Position() - XMLoadFloat4(&vCamPos);
@@ -258,8 +267,8 @@ HRESULT CUI_World_NPCSpeechBalloon::Ready_State()
 	m_tInfo.fCX = 400.f * 0.5f;
 	m_tInfo.fCY = 108.f * 0.5f;
 
-	m_fSpeed.x = m_tInfo.fCX * 0.5f;
-	m_fSpeed.y = m_tInfo.fCY * 0.5f;
+	m_fSpeed.x = m_tInfo.fCX * 5.f;
+	m_fSpeed.y = m_tInfo.fCY * 5.f;
 
 	m_vOriginSize = _float2(m_tInfo.fCX, m_tInfo.fCY);
 	m_vMinSize = _float2(m_tInfo.fCX * 0.4f, m_tInfo.fCY * 0.4f);
