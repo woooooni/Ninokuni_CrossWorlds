@@ -7,12 +7,12 @@
 #include "Glanix.h"
 
 CGlanix_IceBall::CGlanix_IceBall(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
-	: CGameObject(pDevice, pContext, strObjectTag, LAYER_TYPE::LAYER_PROP)
+	: CMonsterProjectile(pDevice, pContext, strObjectTag)
 {
 }
 
 CGlanix_IceBall::CGlanix_IceBall(const CGlanix_IceBall& rhs)
-	: CGameObject(rhs)
+	: CMonsterProjectile(rhs)
 	, m_fTime(0.f)
 	, m_fDelteTime(rhs.m_fDelteTime)
 {
@@ -32,19 +32,6 @@ HRESULT CGlanix_IceBall::Initialize(void* pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
-	/* For.Com_Transform */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
-		return E_FAIL;
-	
-	m_pGlanix = (CGlanix*)pArg;
-
-	
-	m_pTransformCom->Set_WorldMatrix(m_pGlanix->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_WorldMatrix());
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, m_pTransformCom->Get_Position());
-	m_pTransformCom->Set_Scale(Vec3(5.f, 5.f, 5.f));
-
-	m_vInitLook = XMVector3Normalize(m_pTransformCom->Get_Look());
-
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
@@ -60,17 +47,12 @@ HRESULT CGlanix_IceBall::Initialize(void* pArg)
 
 void CGlanix_IceBall::Tick(_float fTimeDelta)
 {
-	__super::Tick(fTimeDelta);
-
 	m_fTime += fTimeDelta;
-
-	GI->Add_CollisionGroup(COLLISION_GROUP::MONSTER, this);
 
 	m_pTransformCom->Move(XMVector3Normalize(m_vInitLook), 20.f, fTimeDelta);
 	m_pTransformCom->Rotation_Acc(XMVector3Normalize(m_pTransformCom->Get_Right()), XMConvertToRadians(180.f) * 4.f * fTimeDelta);
 
-	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
-	m_pControllerCom->Tick_Controller(fTimeDelta);
+	__super::Tick(fTimeDelta);
 
 	if (m_fTime > m_fDelteTime)
 	{
@@ -84,24 +66,6 @@ void CGlanix_IceBall::Tick(_float fTimeDelta)
 void CGlanix_IceBall::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
-
-	m_pControllerCom->LateTick_Controller(fTimeDelta);
-
-	if (nullptr != m_pModelCom)
-		m_pModelCom->LateTick(fTimeDelta);
-
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
-
-#ifdef _DEBUG
-	m_pRendererCom->Set_PlayerPosition(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
-	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
-	{
-		for (auto& pCollider : m_Colliders[i])
-			m_pRendererCom->Add_Debug(pCollider);
-	}
-#endif
-
 }
 
 HRESULT CGlanix_IceBall::Render()
@@ -109,73 +73,13 @@ HRESULT CGlanix_IceBall::Render()
 	if (FAILED(__super::Render()))
 		return E_FAIL;
 
-	if (nullptr == m_pShaderCom || nullptr == m_pModelCom)
-		return E_FAIL;
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
-		return E_FAIL;
-
-	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
-	_uint iPassIndex = 0;
-
-	for (_uint i = 0; i < iNumMeshes; ++i)
-	{
-		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
-			return E_FAIL;
-
-		if (m_bReserveDead)
-			iPassIndex = 2;
-		else if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
-			iPassIndex = 0;
-		else
-			iPassIndex++;
-
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, i)))
-			return E_FAIL;
-	}
-
 	return S_OK;
 }
 
 HRESULT CGlanix_IceBall::Render_ShadowDepth()
 {
-	if (nullptr == m_pShaderCom || nullptr == m_pTransformCom)
-		return E_FAIL;
-
 	if (FAILED(__super::Render_ShadowDepth()))
 		return E_FAIL;
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
-		return E_FAIL;
-
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &GI->Get_ShadowViewMatrix(GI->Get_CurrentLevel()))))
-		return E_FAIL;
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
-		return E_FAIL;
-
-
-	_uint iPassIndex = 0;
-	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
-	for (_uint i = 0; i < iNumMeshes; ++i)
-	{
-		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
-			return E_FAIL;
-
-		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
-			iPassIndex = 0;
-		else
-			iPassIndex++;
-
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, 10)))
-			return E_FAIL;
-	}
 
 	return S_OK;
 }
@@ -183,11 +87,22 @@ HRESULT CGlanix_IceBall::Render_ShadowDepth()
 
 void CGlanix_IceBall::Collision_Enter(const COLLISION_INFO& tInfo)
 {
-	int i = 0;
+	__super::Collision_Enter(tInfo);
+	//if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER &&
+	//	tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY &&
+	//	tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
+	//{
+	//	if (dynamic_cast<CGlanix*>(tInfo.pOther)->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Get_CurrState() == CGlanix::GLANIX_RAGECHARGE)
+	//	{
+	//		dynamic_cast<CGlanix*>(tInfo.pOther)->Set_IsCrash(true);
+	//		Set_Dead(this);
+	//	}
+	//}
 }
 
 void CGlanix_IceBall::Collision_Continue(const COLLISION_INFO& tInfo)
 {
+	__super::Collision_Continue(tInfo);
 	//if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER &&
 	//	tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY &&
 	//	tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
@@ -202,7 +117,7 @@ void CGlanix_IceBall::Collision_Continue(const COLLISION_INFO& tInfo)
 
 void CGlanix_IceBall::Collision_Exit(const COLLISION_INFO& tInfo)
 {
-	int i = 0;
+	__super::Collision_Exit(tInfo);
 }
 
 void CGlanix_IceBall::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
@@ -213,7 +128,6 @@ void CGlanix_IceBall::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
 		m_pRigidBodyCom->Set_Ground(true);
 		m_pRigidBodyCom->Set_Use_Gravity(false);
 	}
-
 }
 
 void CGlanix_IceBall::Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo)
@@ -230,13 +144,29 @@ void CGlanix_IceBall::Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo)
 
 HRESULT CGlanix_IceBall::Ready_Components()
 {
-	/* For.Com_Renderer */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
+	if (FAILED(__super::Ready_Components()))
 		return E_FAIL;
 
-	/* For.Com_Shader */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Model"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
+	if (m_pOwner != nullptr)
+	{
+		/* For.Com_Transform */
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
+			return E_FAIL;
+
+		m_pGlanix = dynamic_cast<CGlanix*>(m_pOwner);
+
+		m_pTransformCom->Set_WorldMatrix(m_pGlanix->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_WorldMatrix());
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, m_pTransformCom->Get_Position());
+		m_pTransformCom->Set_Scale(Vec3(5.f, 5.f, 5.f));
+
+		m_vInitLook = XMVector3Normalize(m_pTransformCom->Get_Look());
+	}
+	else
+	{
+		MSG_BOX("Fail Create : Glanix IceBall, m_pOwner == nullptr");
 		return E_FAIL;
+	}
+
 
 	/* For.Com_Model */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_GlanixIceBall"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
@@ -318,12 +248,5 @@ CGameObject* CGlanix_IceBall::Clone(void* pArg)
 void CGlanix_IceBall::Free()
 {
 	__super::Free();
-
-	Safe_Release(m_pRendererCom);
-	Safe_Release(m_pShaderCom);
-	Safe_Release(m_pTransformCom);
-	Safe_Release(m_pModelCom);
-	Safe_Release(m_pControllerCom);
-	Safe_Release(m_pRigidBodyCom);
 }
 

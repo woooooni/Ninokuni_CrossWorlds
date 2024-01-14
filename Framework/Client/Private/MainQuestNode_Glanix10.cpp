@@ -75,33 +75,51 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix10::Tick(const _float& fTimeDelta)
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 
-	if (KEY_TAP(KEY::LBTN))
+	if (m_bIsClear)
+		return NODE_STATE::NODE_FAIL;
+
+	if (!m_bIsRewarding)
 	{
-		Safe_Delete_Array(m_szpOwner);
-		Safe_Delete_Array(m_szpTalk);
-
-		m_iTalkIndex += 1;
-
-		if (m_iTalkIndex >= m_vecTalkDesc.size())
+		if (KEY_TAP(KEY::LBTN))
 		{
-			CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+			Safe_Delete_Array(m_szpOwner);
+			Safe_Delete_Array(m_szpTalk);
 
-			m_bIsClear = true;
-			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
+			m_iTalkIndex += 1;
 
-			//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-			//if (nullptr != pActionCam)
-			//	pActionCam->Finish_Action_Talk();
+			if (m_iTalkIndex >= m_vecTalkDesc.size())
+			{
+				CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
 
-			return NODE_STATE::NODE_SUCCESS;
+				//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+				//if (nullptr != pActionCam)
+				//	pActionCam->Finish_Action_Talk();
+
+				/* 여기서 퀘스트 보상 받기.(퀘스트 보상 다 받으면 return하기.*/
+				CUI_Manager::GetInstance()->OnOff_QuestRewards(true, TEXT("코에루크 설원의 문제 해결하기"));
+				m_bIsRewarding = true;
+			}
+
+			if (!m_bIsRewarding)
+			{
+				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+				CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
+
+				TalkEvent();
+			}
 		}
+	}
 
-		m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-		m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
-
-		CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
-
-		TalkEvent();
+	else if (m_bIsRewarding)
+	{
+		if (CUI_Manager::GetInstance()->Is_QuestRewardWindowOff())
+		{
+			m_bIsClear = true;
+			return NODE_STATE::NODE_FAIL;
+		}
 	}
 
 	return NODE_STATE::NODE_RUNNING;
@@ -118,12 +136,12 @@ void CMainQuestNode_Glanix10::TalkEvent()
 	switch (m_iTalkIndex)
 	{
 	case 0:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("00_ChloeSay_Introduce.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("03_10_00_RuslanSay_Comeback!.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pRuslan->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pRuslan->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Ruslan.ao|Ruslan_CSShowedTrueColors01"));
 		break;
 	case 1:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("01_ChloeSay_Pet.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("03_10_01_KuuSay_EHem.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk01"));
 		break;
@@ -133,13 +151,13 @@ void CMainQuestNode_Glanix10::TalkEvent()
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_EmotionAngry"));
 		break;
 	case 3:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_KuuSay_ImKuu.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("03_10_03_RuslanSay_ItsThis....ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		break;
 	case 4:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_KuuSay_ImKuu.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("03_10_04_RuslanSay_Reward.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		break;
 	case 5:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_KuuSay_ImKuu.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("03_10_05_KuuSay_Happy.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_Idle02"));
 		break;

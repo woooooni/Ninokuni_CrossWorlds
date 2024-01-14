@@ -52,6 +52,19 @@ void CMainQuestNode_Glanix08::LateTick(const _float& fTimeDelta)
 
 void CMainQuestNode_Glanix08::TalkEvent()
 {
+	switch (m_iTalkIndex)
+	{
+	case 0:
+		//CSound_Manager::GetInstance()->Play_Sound(TEXT("00_KuuSay_Suprise.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
+		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk02"));
+		break;
+	case 1:
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("03_08_03_08_01_KuuSay_LetsGo!.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK, TEXT("SKM_Kuu.ao|Kuu_EmotionDepressed"));
+		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_EmotionDepressed"));
+		break;
+	}
 }
 
 CMainQuestNode_Glanix08* CMainQuestNode_Glanix08::Create()

@@ -96,17 +96,13 @@ void CMainQuestNode_KingCall06::LateTick(const _float& fTimeDelta)
 
 void CMainQuestNode_KingCall06::TalkEvent()
 {
-	wstring strAnimName = TEXT("");
-
 	switch (m_iTalkIndex)
 	{
-		// 대화 상태로 만들어서 매개로 애니메이션 이름 던지자. 답이 없다.
-		// Talk, Idle, Run, Walk. 
 	case 0:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("KuuSay_Intro.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("01_06_00_KuuSay_AhHa!.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		break;
 	case 1:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("KuuSay_Intro.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("01_06_01_KuuSay_OK!.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		break;
 	}
 }

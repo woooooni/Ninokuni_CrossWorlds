@@ -21,7 +21,6 @@ public:
 	virtual void Collision_Continue(const COLLISION_INFO& tInfo) override;
 	virtual void Collision_Exit(const COLLISION_INFO& tInfo) override;
 
-
 public:
 	virtual void On_Damaged(const COLLISION_INFO& tInfo) override;
 
@@ -34,6 +33,9 @@ private:
 	virtual HRESULT Ready_Colliders() override;
 
 private:
+	void Kuu_Flying(const _float& fTimeDelta);
+
+private:
 	HRESULT Ready_Sockets();
 
 private:
@@ -43,6 +45,16 @@ private:
 private:
 	class CUI_World_NPCTag* m_pTag = { nullptr };
 //	class CUI_World_NPCSpeechBalloon* m_pBalloon = { nullptr };
+
+private:
+	LERP_FLOAT_DESC m_tLerpDesc = {};
+
+	_float m_fDuration = 1.f;
+	_float m_fMinDestY = 0.8f;
+	_float m_fMaxDestY = 1.2f;
+
+	_float m_fY = 0.8f;
+	_bool  m_bIsUp = false;
 
 public:
 	static CKuu* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);

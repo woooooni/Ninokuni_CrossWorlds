@@ -369,6 +369,7 @@
     <ClInclude Include="..\Public\MainQuest_SnowField.h" />
     <ClInclude Include="..\Public\MainQuestNode_SnowField01.h" />
     <ClInclude Include="..\Public\MainQuestNode_SnowField02.h" />
+    <ClInclude Include="..\Public\MonsterProjectile.h" />
     <ClInclude Include="..\Public\SubQuestNode_Wanted01.h" />
     <ClInclude Include="..\Public\SubQuestNode_Wanted02.h" />
     <ClInclude Include="..\Public\SubQuestNode_Wanted03.h" />
@@ -1081,6 +1082,7 @@
     <ClCompile Include="..\Private\MainQuest_SnowField.cpp" />
     <ClCompile Include="..\Private\MainQuestNode_SnowField01.cpp" />
     <ClCompile Include="..\Private\MainQuestNode_SnowField02.cpp" />
+    <ClCompile Include="..\Private\MonsterProjectile.cpp" />
     <ClCompile Include="..\Private\SubQuestNode_Wanted01.cpp" />
     <ClCompile Include="..\Private\SubQuestNode_Wanted02.cpp" />
     <ClCompile Include="..\Private\SubQuestNode_Wanted03.cpp" />

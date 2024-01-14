@@ -75,34 +75,50 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted07::Tick(const _float& fTimeDelta)
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 
-	if (KEY_TAP(KEY::LBTN))
+	if (!m_bIsRewarding)
 	{
-		Safe_Delete_Array(m_szpOwner);
-		Safe_Delete_Array(m_szpTalk);
-
-		m_iTalkIndex += 1;
-
-		if (m_iTalkIndex >= m_vecTalkDesc.size())
+		if (KEY_TAP(KEY::LBTN))
 		{
-			CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+			Safe_Delete_Array(m_szpOwner);
+			Safe_Delete_Array(m_szpTalk);
 
+			m_iTalkIndex += 1;
+
+			if (m_iTalkIndex >= m_vecTalkDesc.size())
+			{
+				CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
+
+				//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+				//if (nullptr != pActionCam)
+				//	pActionCam->Finish_Action_Talk();
+
+				/* 여기서 퀘스트 보상 받기.(퀘스트 보상 다 받으면 return하기.*/
+				CUI_Manager::GetInstance()->OnOff_QuestRewards(true, TEXT("현상범 잡기"));
+				m_bIsRewarding = true;
+			}
+
+			if (!m_bIsRewarding)
+			{
+				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+				CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
+
+				TalkEvent();
+			}
+		}
+	}
+
+	else if (m_bIsRewarding)
+	{
+		if (CUI_Manager::GetInstance()->Is_QuestRewardWindowOff())
+		{
 			m_bIsClear = true;
-			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
-
-			//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-			//if (nullptr != pActionCam)
-			//	pActionCam->Finish_Action_Talk();
-
 			return NODE_STATE::NODE_FAIL;
 		}
-
-		m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-		m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
-
-		CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
-
-		TalkEvent();
 	}
+
 
 	return NODE_STATE::NODE_RUNNING;
 }
@@ -118,7 +134,7 @@ void CSubQuestNode_Wanted07::TalkEvent()
 	switch (m_iTalkIndex)
 	{
 	case 0:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("00_ChloeSay_Introduce.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("00_KuuSay_Hey~.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk01"));
 		break;
@@ -133,7 +149,7 @@ void CSubQuestNode_Wanted07::TalkEvent()
 		m_pTumba->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("Stand04Idle01"));
 		break;
 	case 3:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_KuuSay_ImKuu.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		CSound_Manager::GetInstance()->Play_Sound(TEXT("03_KuuSay_Thankyou.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk01"));
 		break;
