@@ -48,7 +48,7 @@ HRESULT CSound_Manager::Reserve_Manager()
 }
 
 
-void CSound_Manager::Play_Sound(wstring pSoundKey, CHANNELID eID, _float fVolume, _bool bStop)
+void CSound_Manager::Play_Sound(wstring pSoundKey, CHANNELID eID, _float fVolume, _bool bStop, _float fCamDistance)
 {
 	map<wstring, FMOD_SOUND*>::iterator iter;
 
@@ -65,16 +65,20 @@ void CSound_Manager::Play_Sound(wstring pSoundKey, CHANNELID eID, _float fVolume
 	if (true == bStop)
 		Stop_Sound(eID);
 
-	if (eID == CHANNELID::SOUND_VOICE_MONSTER1 || eID == CHANNELID::SOUND_VOICE_MONSTER2 || eID == CHANNELID::SOUND_VOICE_MONSTER3)
+	_float fFinalVolume = fVolume * m_fSoundVolumeArr[eID];
+	if (eID == CHANNELID::SOUND_VOICE_NPC || eID == CHANNELID::SOUND_VOICE_MONSTER1 || eID == CHANNELID::SOUND_VOICE_MONSTER2 || eID == CHANNELID::SOUND_VOICE_MONSTER3)
 	{
-		// 3D À½Çâ..
-		
+		if (fCamDistance > 10.f)		
+			fFinalVolume = 0.f;
+		else
+			fFinalVolume *= 1.f - (fCamDistance / 10.f);
 	}
 
+	fFinalVolume = min(fFinalVolume, 1.f);
 	FMOD_BOOL bPlay = FALSE;
 
 	FMOD_System_PlaySound(m_pSystem, FMOD_CHANNEL_FREE, iter->second, FALSE, &m_pChannelArr[eID]);
-	FMOD_Channel_SetVolume(m_pChannelArr[eID], fVolume * m_fSoundVolumeArr[eID]);
+	FMOD_Channel_SetVolume(m_pChannelArr[eID], fFinalVolume);
 	FMOD_System_Update(m_pSystem);
 }
 
@@ -131,7 +135,7 @@ const _int CSound_Manager::Get_SoundFileIndex(const wstring& pSoundKey)
 	_int iIndex = 0;
 	for (auto& Pair : m_mapSound)
 	{
-		if (Pair.first == pSoundKey)
+		if (Pair.first.find(pSoundKey) != wstring::npos)
 			return iIndex;
 		else
 			iIndex++;

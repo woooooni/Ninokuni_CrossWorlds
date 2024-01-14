@@ -27,6 +27,7 @@
 #include "Animals.h"
 
 #include "Portal.h"
+#include "Trigger.h"
 
 CLevel_Evermore::CLevel_Evermore(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -442,7 +443,31 @@ HRESULT CLevel_Evermore::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 
 
 
+
+	// Triggers.
+	CTrigger::TRIGGER_DESC TriggerDesc;
+	TriggerDesc.eTriggerType = TRIGGER_TYPE::TRIGGER_MAP_NAME;
+	TriggerDesc.strMapName = "³²¹® ±¤Àå";
+	TriggerDesc.vStartPosition = { 0.f, -20.f, 0.f, 1.f };
+	TriggerDesc.vExtents = { 50.f, 50.f, 150.f };
+
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
+		return E_FAIL;
+
+	TriggerDesc.strMapName = "¼­¹® ±¤Àå";
+	TriggerDesc.vStartPosition = { -85.5f, -20.f, 60.6f, 1.f };
+	TriggerDesc.vExtents = { 50.f, 50.f, 150.f };
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
+		return E_FAIL;
+
 	
+
+	TriggerDesc.strMapName = "µ¿¹® ±¤Àå";
+	TriggerDesc.vStartPosition = { 88.85f, -20.f, 60.6f, 1.f };
+	TriggerDesc.vExtents = { 50.f, 50.f, 150.f };
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
+		return E_FAIL;
+
 
 
 	return S_OK;

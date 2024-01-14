@@ -55,7 +55,7 @@ void CState_Character_Neutral_Idle::Tick_State(_float fTimeDelta)
 
 void CState_Character_Neutral_Idle::Exit_State()
 {
-    // CUI_Manager::GetInstance()->Hide_MouseCursor(true);
+    CUI_Manager::GetInstance()->Hide_MouseCursor(true);
     m_fAccIdleMotion = 0.f;
     m_iCurrAnimIndex = 0;
 }

@@ -43,23 +43,10 @@ void CState_SwordMan_Skill_SpinningAssault::Enter_State(void* pArg)
 
     m_MotionTrailDesc.fAlphaSpeed = 0.05f;
     m_MotionTrailDesc.fBlurPower = 0.f;
-
-    if (ELEMENTAL_TYPE::FIRE == m_pCharacter->Get_ElementalType())
-    {
-        m_MotionTrailDesc.vRimColor = { 1.f, 0.2f, 0.2f, 1.f };
-        m_MotionTrailDesc.vBloomPower = { 1.f, 0.2f, 0.2f };
-    }
-    else if (ELEMENTAL_TYPE::WATER == m_pCharacter->Get_ElementalType())
-    {
-        m_MotionTrailDesc.vRimColor = { 0.2f, 0.8f, 1.f, 1.f };
-        m_MotionTrailDesc.vBloomPower = { 0.2f, 0.8f, 1.f };
-    }
-    else if (ELEMENTAL_TYPE::WOOD == m_pCharacter->Get_ElementalType())
-    {
-        m_MotionTrailDesc.vRimColor = { 0.2f, 1.f, 0.2f, 1.f };
-        m_MotionTrailDesc.vBloomPower = { 0.2f, 1.f, 0.2f };
-    }
+    m_MotionTrailDesc.vRimColor = { 0.2f, 0.8f, 1.f, 1.f };
+    m_MotionTrailDesc.vBloomPower = { 0.2f, 0.8f, 1.f };
     m_MotionTrailDesc.fMotionTrailTime = 0.1f;
+
     m_bTrailStart = false;
 }
 

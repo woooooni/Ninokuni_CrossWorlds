@@ -118,7 +118,9 @@
 #include "Effect.h"
 #include "Decal.h"
 #include "Motion_Trail.h"
+
 #include "Portal.h"
+#include "Trigger.h"
 
 #include "Weapon_SwordTemp.h"
 
@@ -242,6 +244,9 @@ HRESULT CLoader::Loading_For_Level_Logo()
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Portal"), CPortal::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_PROP)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Trigger"), CTrigger::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_PROP)))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Door_Enter"), CDoor_Enter_FX::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_PROP)))

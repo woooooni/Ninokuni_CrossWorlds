@@ -55,7 +55,7 @@ void CState_Character_Battle_Idle::Tick_State(_float fTimeDelta)
 void CState_Character_Battle_Idle::Exit_State()
 {
     m_fAccReturnNuetral = 0.f;
-    // CUI_Manager::GetInstance()->Hide_MouseCursor(true);
+    CUI_Manager::GetInstance()->Hide_MouseCursor(true);
 }
 
 

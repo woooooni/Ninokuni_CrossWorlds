@@ -79,7 +79,7 @@ HRESULT CTrigger::Render()
 void CTrigger::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
-	if (OBJ_TYPE::OBJ_CHARACTER == tInfo.pOther->Get_ObjectType())
+	if (OBJ_TYPE::OBJ_CHARACTER == tInfo.pOther->Get_ObjectType() && tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
 	{
 		switch (m_eTriggerType)
 		{
@@ -91,7 +91,7 @@ void CTrigger::Collision_Enter(const COLLISION_INFO& tInfo)
 			break;
 
 		case TRIGGER_TYPE::TRIGGER_BOSS_GIANTY_ENTER:
-			// TODO
+			GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Glanix"));
 			Set_Dead(true);
 			break;
 
@@ -154,7 +154,7 @@ CTrigger* CTrigger::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
 		MSG_BOX("Create Failed to ProtoType : CTrigger");
-		Safe_Release<CTrigger*>(pInstance);
+		Safe_Release(pInstance);
 	}
 
 	return pInstance;
@@ -167,7 +167,7 @@ CGameObject* CTrigger::Clone(void* pArg)
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
 		MSG_BOX("Create Failed to Cloned : CTrigger");
-		Safe_Release<CTrigger*>(pInstance);
+		Safe_Release(pInstance);
 	}
 
 	return pInstance;

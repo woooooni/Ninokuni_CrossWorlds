@@ -112,13 +112,16 @@ HRESULT CCharacter_Manager::Ready_Characters()
 
 
 	CCharacter::CHARACTER_STAT StatDesc;
-	StatDesc.iAtt = 10;
+	StatDesc.iLevel = 1;
+	StatDesc.iAtt = 1200;
 	StatDesc.iDef = 1;
+	StatDesc.iHp = 800;
+	StatDesc.iMaxHp = 800;
 	StatDesc.iExp = 0;
-	StatDesc.iMaxExp = 1000;
-	StatDesc.iMaxHp = 123456;
-	StatDesc.iHp = 123456;
-	StatDesc.iLevel = 10;
+	StatDesc.iMaxExp = 100;
+	
+	
+	
 
 #pragma region SwordMan
 	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_SwordMan_AuraBlade", CSwordMan_AuraBlade::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
@@ -137,6 +140,13 @@ HRESULT CCharacter_Manager::Ready_Characters()
 #pragma endregion
 
 #pragma region Engineer
+
+	StatDesc.iAtt = 800;
+	StatDesc.iDef = 1;
+	StatDesc.iHp = 500;
+	StatDesc.iMaxHp = 500;
+
+
 	///* Engineer */
 	//if(FAILED(GI->Add_Prototype(L"Prototype_GameObject_Engineer_Bullet", CEngineer_Bullet::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
 	//	return E_FAIL;
@@ -154,6 +164,11 @@ HRESULT CCharacter_Manager::Ready_Characters()
 #pragma endregion
 
 #pragma region Destroyer
+	StatDesc.iAtt = 1200;
+	StatDesc.iDef = 1;
+	StatDesc.iHp = 1000;
+	StatDesc.iMaxHp = 1000;
+
 	//if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_Destroyer", CCharacter_Destroyer::Create(m_pDevice, m_pContext, L"Destroyer"), LAYER_CHARACTER, true)))
 	//	return E_FAIL;
 

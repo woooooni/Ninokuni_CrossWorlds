@@ -214,5 +214,5 @@ void CDoor_Enter_FX::Free()
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pTransformCom);
-	
+	Safe_Release(m_pDissolveTextureCom);
 }

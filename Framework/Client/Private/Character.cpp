@@ -325,10 +325,7 @@ HRESULT CCharacter::Render()
 	if (m_bInfinite)
 	{
 		vRimColor = { 0.f, 0.5f, 1.f, 1.f };
-	}
-
-
-		
+	}		
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float4))))
 		return E_FAIL;
@@ -559,6 +556,8 @@ void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 	if (true == m_bInfinite)
 		return;
 
+	if (m_pStateCom->Get_CurrState() == CCharacter::STATE::DEAD || m_pStateCom->Get_CurrState() == CCharacter::STATE::REVIVE)
+		return;
 	
 
 	CMonster* pMonster = dynamic_cast<CMonster*>(tInfo.pOther);
@@ -586,7 +585,7 @@ void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 	}
 
 	CUIDamage_Manager::GetInstance()->Create_PlayerDamageNumber(m_pTransformCom, iDamage);
-
+	
 
 	if (true == m_bSuperArmor)	
 		return;
@@ -630,6 +629,16 @@ void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 	}
 }
 
+
+void CCharacter::Decrease_HP(_int iDecrease)
+{
+	m_tStat.iHp = max(0, m_tStat.iHp - iDecrease);
+	if (0 == m_tStat.iHp)
+	{
+		m_pStateCom->Change_State(CCharacter::DEAD);
+		return;
+	}
+}
 
 void CCharacter::Set_EnterLevelPosition(Vec4 vPosition)
 {
