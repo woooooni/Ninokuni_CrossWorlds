@@ -44,6 +44,7 @@
 #include "GlanixState_RageRising.h"
 #include "GlanixState_RageStamp.h"
 #include "GlanixState_RageCrash.h"
+#include "GlanixState_RageOffsetJump.h"
 #pragma endregion
 
 #pragma region Rage2
@@ -507,6 +508,10 @@ HRESULT CGlanix::Ready_States()
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_Crash");
 	m_pStateCom->Add_State(GLANIX_RAGECRASH, CGlanixState_RageCrash::Create(m_pStateCom, strAnimationName));
+	
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Glanix.ao|Glanix_Skill05");
+	m_pStateCom->Add_State(GLANIX_RAGEJUMP_OFFSET, CGlanixState_RageOffsetJump::Create(m_pStateCom, strAnimationName));
 
 #pragma endregion 
 
@@ -678,5 +683,7 @@ CGameObject* CGlanix::Clone(void* pArg)
 void CGlanix::Free()
 {
 	__super::Free();
+
+	Safe_Delete(m_pPillarController);
 }
 

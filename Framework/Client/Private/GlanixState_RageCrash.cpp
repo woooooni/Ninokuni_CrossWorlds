@@ -25,6 +25,11 @@ void CGlanixState_RageCrash::Enter_State(void* pArg)
 
 void CGlanixState_RageCrash::Tick_State(_float fTimeDelta)
 {
+	if (m_pModelCom->Get_CurrAnimationFrame() < 10)
+	{
+		m_pTransformCom->Move(m_pTransformCom->Get_Look(), -10.f, fTimeDelta);
+	}
+
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
 		m_pStateMachineCom->Change_State(CGlanix::GLANIX_RAGETURN);
