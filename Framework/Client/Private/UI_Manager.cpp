@@ -4582,7 +4582,11 @@ void CUI_Manager::Update_CostumeBtn()
 	case 2: // m_CostumeHairAcc
 		pPart = pCharacter->Get_PartModel(PART_TYPE::HEAD);
 		if (nullptr == pPart)
+		{
+			// 착용된 무기 스킨이 없다.
+			m_pCostumeAnnounce->Set_AnnouncePosition(_float2(9999.f, 9999.f));
 			return;
+		}
 
 		for (auto& iter : m_CostumeHairAcc)
 		{
@@ -4729,7 +4733,7 @@ void CUI_Manager::Set_CostumeModel()
 	if (0 > iIndex || 5 < iIndex)
 		return;
 
-	wstring strPartTag;
+	wstring strPartTag = TEXT("");
 
 	if (iIndex == CUI_Costume_Btn::UI_COSTUMEBTN::COSTUME_CLOTH)
 	{
@@ -4766,6 +4770,10 @@ void CUI_Manager::Set_CostumeModel()
 				strPartTag = iter->Get_PartTag();
 			}
 		}
+
+		if (strPartTag == TEXT(""))
+			return;
+
 		// Weapon
 		pWeaponModel = CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCurPlayer, strPartTag);
 		if (nullptr == pWeaponModel)
