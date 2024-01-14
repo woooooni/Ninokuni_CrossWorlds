@@ -59,6 +59,8 @@ technique11 DefaultSun
 
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN();
     }
 }

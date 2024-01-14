@@ -18,6 +18,7 @@
 #include "Game_Manager.h"
 #include "Player.h"
 #include "Light.h"
+#include "Animals.h"
 
 CLevel_Test::CLevel_Test(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -57,10 +58,10 @@ HRESULT CLevel_Test::Initialize()
 	if (FAILED(Ready_Layer_UI(LAYER_TYPE::LAYER_UI)))
 		return E_FAIL;
 
-	if (FAILED(Ready_Layer_Dynamic(LAYER_TYPE::LAYER_DYNAMIC, TEXT("Evermore"))))
+	if (FAILED(Ready_Layer_Dynamic(LAYER_TYPE::LAYER_DYNAMIC, TEXT("Winter"))))
 		return E_FAIL;
 
-	if (FAILED(Ready_Light(TEXT("Evermore Light"))))
+	if (FAILED(Ready_Light(TEXT("Winter Light"))))
 		return E_FAIL;
 
 	if (nullptr != CUI_Manager::GetInstance()->Get_Fade())
@@ -363,13 +364,6 @@ HRESULT CLevel_Test::Ready_Layer_Dynamic(const LAYER_TYPE eLayerType, const wstr
 			return E_FAIL;
 		}
 
-
-
-		pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
-		pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
-		pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
-		pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
-
 		if (pObj->Get_ObjectType() == OBJ_TYPE::OBJ_WATER)
 		{
 			CWater::VS_GerstnerWave vsWave;
@@ -383,6 +377,37 @@ HRESULT CLevel_Test::Ready_Layer_Dynamic(const LAYER_TYPE eLayerType, const wstr
 			static_cast<CWater*>(pObj)->Set_PSGerstnerWave(psWave);
 			static_cast<CWater*>(pObj)->Set_Damper(damp);
 		}
+		else if (pObj->Get_ObjectType() == OBJ_TYPE::OBJ_ANIMAL)
+		{
+			_uint iSize;
+			File->Read<_uint>(iSize);
+
+			if (iSize != 0)
+			{
+				CAnimals* pAnimals = static_cast<CAnimals*>(pObj);
+				vector<Vec4> Points;
+				Points.reserve(iSize);
+
+				for (_uint i = 0; i < iSize; ++i)
+				{
+					Vec4 vPoint;
+					File->Read<Vec4>(vPoint);
+					Points.push_back(vPoint);
+				}
+
+				pAnimals->Set_RomingPoints(Points);
+
+				_float* pSpeed = pAnimals->Get_Speed();
+				File->Read<_float>(*pSpeed); // 0
+
+				vPos = Points.front();
+			}
+		}
+
+		pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
+		pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
+		pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
+		pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
 	}
 
 	return S_OK;

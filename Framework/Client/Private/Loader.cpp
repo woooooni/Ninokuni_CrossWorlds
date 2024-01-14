@@ -233,6 +233,10 @@ HRESULT CLoader::Loading_For_Level_Logo()
 
 	/* For.GameObject */
 	m_strLoading = TEXT("객체원형을 로딩 중 입니다.");
+	if(GI->Add_Prototype(TEXT("Prototype_GameObject_Common_Grass"), 
+		CGrass::Create(m_pDevice, m_pContext, TEXT("Common_RealTime_Grass")), LAYER_TYPE::LAYER_GRASS, true))
+		return E_FAIL;
+
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Logo_Background"), CUI_Logo_Background::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
@@ -535,6 +539,10 @@ HRESULT CLoader::Loading_For_Level_Tool()
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Terrain"),
 		CTerrain::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_TERRAIN)))
+		return E_FAIL;
+
+	if (GI->Add_Prototype(TEXT("Prototype_GameObject_Common_Grass"),
+		CGrass::Create(m_pDevice, m_pContext, TEXT("Common_RealTime_Grass")), LAYER_TYPE::LAYER_GRASS, true))
 		return E_FAIL;
 
 	/* Prototype_GameObject_TempSword */

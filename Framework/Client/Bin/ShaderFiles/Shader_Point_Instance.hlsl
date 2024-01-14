@@ -11,6 +11,8 @@ bool        g_bBillboard;
 float       g_fAlpha_Discard;
 float3      g_fBlack_Discard;
 
+
+
 struct EffectDesc //16 ¹è¼ö·Î ³ª´²¶³¾îÁ®¾ßÇÔ.
 {
 	float2   g_fUVIndex;  // 8
@@ -60,6 +62,8 @@ VS_OUT VS_MAIN(VS_IN In)
 	Out.vPSize    = float2(In.vPSize.x * length(In.vRight), In.vPSize.y * length(In.vUp));
 
 	Out.iInstanceID = In.iInstanceID;
+	
+    
 
 	return Out;	
 }

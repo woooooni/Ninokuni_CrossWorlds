@@ -149,6 +149,8 @@ technique11 CloudDefault
 
         VertexShader = compile vs_5_0 SkyPlaneVertexShader();
         GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
         PixelShader = compile ps_5_0 SkyPlanePixelShader();
     }
 
@@ -160,6 +162,8 @@ technique11 CloudDefault
 
         VertexShader = compile vs_5_0 SkyPlaneVertexShader();
         GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
         PixelShader = compile ps_5_0 WinterSkyPlanePixelShader();
     }
 }

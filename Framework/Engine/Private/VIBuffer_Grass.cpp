@@ -14,10 +14,10 @@ CVIBuffer_Grass::CVIBuffer_Grass(const CVIBuffer_Grass& rhs)
 HRESULT CVIBuffer_Grass::Initialize_Prototype()
 {
 #pragma region VERTEXBUFFER
-	m_iNumVertexBuffers = 2;
+	m_iNumVertexBuffers = 1;
+	m_iNumVertices = 3;
 
-	m_iStride = sizeof(VTXPOINT);
-	m_iNumVertices = 1;
+	m_iStride = sizeof(VTXCOL);
 
 	ZeroMemory(&m_BufferDesc, sizeof(D3D11_BUFFER_DESC));
 	m_BufferDesc.ByteWidth = m_iNumVertices * m_iStride;
@@ -27,11 +27,17 @@ HRESULT CVIBuffer_Grass::Initialize_Prototype()
 	m_BufferDesc.MiscFlags = 0;
 	m_BufferDesc.StructureByteStride = m_iStride;
 
-	VTXPOINT* pVertices = new VTXPOINT;
-	ZeroMemory(pVertices, sizeof(VTXPOINT));
+	VTXCOL* pVertices = new VTXCOL[m_iNumVertices];
+	ZeroMemory(pVertices, sizeof(VTXCOL) * m_iNumVertices);
 
-	pVertices->vPosition = _float3(0.0f, 0.0f, 0.f);
-	pVertices->vSize = _float2(1.f, 1.f);
+	pVertices[0].vPosition = Vec3(-1.0f, -1.0f, 0.0f);
+	pVertices[0].vColor = Vec4(0.0f, 1.0f, 0.0f, 1.0f);
+
+	pVertices[1].vPosition = Vec3(0.0f, 1.0f, 0.0f);
+	pVertices[1].vColor = Vec4(0.0f, 1.0f, 0.0f, 1.0f);
+
+	pVertices[2].vPosition = Vec3(1.0f, -1.0f, 0.0f);
+	pVertices[2].vColor = Vec4(0.0f, 1.0f, 0.0f, 1.0f);
 
 	ZeroMemory(&m_SubResourceData, sizeof(D3D11_SUBRESOURCE_DATA));
 	m_SubResourceData.pSysMem = pVertices;
@@ -40,15 +46,16 @@ HRESULT CVIBuffer_Grass::Initialize_Prototype()
 		return E_FAIL;
 
 	Safe_Delete_Array(pVertices);
+
 #pragma endregion
 
 #pragma region INDEXBUFFER
-	m_iNumPrimitives = 1;
-
-	m_iIndexSizeofPrimitive = sizeof(_ushort);
+	m_iNumPrimitives = 3;
+	m_iIndexSizeofPrimitive = sizeof(FACEINDICES16);
 	m_iNumIndicesofPrimitive = 1;
-	m_eIndexFormat = DXGI_FORMAT_R16_UINT;
-	m_eTopology = D3D11_PRIMITIVE_TOPOLOGY_POINTLIST;
+	m_eIndexFormat = DXGI_FORMAT_R32_UINT;
+	m_eTopology = D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST;
+	// TOPOLOGY_4 -> RECT 
 
 	ZeroMemory(&m_BufferDesc, sizeof(D3D11_BUFFER_DESC));
 	m_BufferDesc.ByteWidth = m_iNumPrimitives * m_iIndexSizeofPrimitive;
@@ -58,8 +65,17 @@ HRESULT CVIBuffer_Grass::Initialize_Prototype()
 	m_BufferDesc.MiscFlags = 0;
 	m_BufferDesc.StructureByteStride = 0;
 
-	_ushort* pIndices = new _ushort[m_iNumPrimitives];
-	ZeroMemory(pIndices, sizeof(_ushort) * m_iNumPrimitives);
+
+	FACEINDICES16* pIndices = new FACEINDICES16[m_iNumPrimitives];
+	ZeroMemory(pIndices, sizeof(FACEINDICES16) * m_iNumPrimitives);
+
+	pIndices[0]._0 = 0;
+	pIndices[0]._1 = 1;
+	pIndices[0]._2 = 2;
+
+	/*pIndices[1]._0 = 0;
+	pIndices[1]._1 = 2;
+	pIndices[1]._2 = 3;*/
 
 	ZeroMemory(&m_SubResourceData, sizeof(D3D11_SUBRESOURCE_DATA));
 	m_SubResourceData.pSysMem = pIndices;
@@ -68,44 +84,15 @@ HRESULT CVIBuffer_Grass::Initialize_Prototype()
 		return E_FAIL;
 
 	Safe_Delete_Array(pIndices);
+
 #pragma endregion
+
 
 	return S_OK;
 }
 
 HRESULT CVIBuffer_Grass::Initialize(void* pArg)
 {
-	if (pArg == nullptr)
-		return E_FAIL;
-
-	const _uint iMaxCount = 1000;
-
-	m_iStrideInstance = sizeof(VTXINSTANCE);
-	ZeroMemory(&m_BufferDesc, sizeof m_BufferDesc);
-	m_BufferDesc.ByteWidth = m_iStrideInstance * iMaxCount;
-	m_BufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	m_BufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	m_BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	m_BufferDesc.MiscFlags = 0;
-	m_BufferDesc.StructureByteStride = m_iStrideInstance;
-
-	m_pVertices = new VTXINSTANCE[iMaxCount];
-	ZeroMemory(m_pVertices, sizeof(VTXINSTANCE) * iMaxCount);
-
-	for (size_t i = 0; i < iMaxCount; ++i)
-	{
-		m_pVertices[i].vRight = Vec4(1.0f, 0.0f, 0.0f, 0.0f);
-		m_pVertices[i].vUp = Vec4(0.0f, 1.0f, 0.0f, 0.0f);
-		m_pVertices[i].vLook = Vec4(0.0f, 0.0f, 1.0f, 0.0f);
-		m_pVertices[i].vPosition = Vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	}
-
-	::ZeroMemory(&m_SubResourceData, sizeof(m_SubResourceData));
-	m_SubResourceData.pSysMem = m_pVertices;
-
-	if (FAILED(__super::Create_Buffer(&m_pVBInstance)))
-		return E_FAIL;
-
 	return S_OK;
 }
 
@@ -113,44 +100,9 @@ void CVIBuffer_Grass::Tick(_float fTImeDelta)
 {
 }
 
-HRESULT CVIBuffer_Grass::Render(_uint iCount)
+HRESULT CVIBuffer_Grass::Render()
 {
-	m_iNumInstance = iCount;
-
-	const _uint iMaxCount = 1000;
-
-	if (m_iNumInstance > iMaxCount)
-		m_iNumInstance = iMaxCount;
-
-	ID3D11Buffer* pVertexBuffers[] = {
-	m_pVB,
-	m_pVBInstance
-	};
-
-	_uint			iStrides[] = {
-		m_iStride,
-		m_iStrideInstance,
-
-	};
-
-	_uint			iOffsets[] = {
-		0,
-		0,
-	};
-
-	/* 버텍스 버퍼들을 할당한다. */
-	/* 그리기용 정점버퍼 + 상태변환용 정점버퍼 */
-	m_pContext->IASetVertexBuffers(0, m_iNumVertexBuffers, pVertexBuffers, iStrides, iOffsets);
-
-	/* 인덱스 버퍼를 할당한다. */
-	/* 그리고자 하는 인스턴스의 갯수만큼 확대되어있는 인덱스 버퍼. */
-	m_pContext->IASetIndexBuffer(m_pIB, m_eIndexFormat, 0);
-
-	/* 해당 정점들을 어떤 방식으로 그릴꺼야. */
-	m_pContext->IASetPrimitiveTopology(m_eTopology);
-
-	/* 인덱스가 가르키는 정점을 활용하여 그린다. */
-	m_pContext->DrawIndexedInstanced(m_iNumPrimitives * m_iNumIndicesofPrimitive, m_iNumInstance, 0, 0, 0);
+	__super::Render();
 
 	return S_OK;
 }
@@ -184,7 +136,4 @@ CComponent* CVIBuffer_Grass::Clone(void* pArg)
 void CVIBuffer_Grass::Free()
 {
 	__super::Free();
-
-	Safe_Delete_Array<VTXINSTANCE*>(m_pVertices);
-	Safe_Release<ID3D11Buffer*>(m_pVBInstance);
 }

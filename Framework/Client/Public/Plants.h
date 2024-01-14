@@ -2,6 +2,10 @@
 
 #include "StaticObject.h"
 
+BEGIN(Engine)
+class CTexture;
+END
+
 BEGIN(Client)
 
 class CPlants final : public CStaticObject
@@ -26,10 +30,16 @@ public:
 public:
 	virtual HRESULT Ready_Components() override;
 
+private:
+	CTexture* m_pTextureCom = nullptr;
+	_float m_fAngle = 0.0f;
+	_float m_fTime = 0.0f;
+
 public:
 	static CPlants* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag,
 		const wstring& strFilePath, const wstring& strFileName, _int eObjType, _uint eModelType);
 	virtual CGameObject* Clone(void* pArg);
+	virtual void Free() override;
 };
 
 END

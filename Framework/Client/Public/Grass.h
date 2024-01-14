@@ -44,6 +44,10 @@ private:
 
 	class CTexture* m_pTextureCom = nullptr;
 
+private:
+	_float m_fTessellationAmount = 12.0f;
+
+public:
 	static CGrass* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;

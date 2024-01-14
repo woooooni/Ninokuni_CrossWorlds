@@ -45,6 +45,10 @@ private:
 
 	_int		m_iQuestClearStack = 0;
 
+private:
+	// Quest Object
+	
+
 public:
 	virtual void Free() override;
 };

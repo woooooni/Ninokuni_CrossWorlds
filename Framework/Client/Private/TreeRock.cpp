@@ -80,6 +80,7 @@ HRESULT CTreeRock::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instanc
 		return E_FAIL;
 	if (FAILED(pInstancingShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
+
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{

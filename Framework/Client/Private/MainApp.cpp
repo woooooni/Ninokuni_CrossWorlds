@@ -58,7 +58,7 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 	// Set Start Level 
-	const LEVELID eStartLevel = LEVELID::LEVEL_LOGO;
+	const LEVELID eStartLevel = LEVELID::LEVEL_TOOL;
 
 	// Open Level
 	if (FAILED(Open_Level(eStartLevel, L"Final_Boss")))
@@ -440,6 +440,16 @@ HRESULT CMainApp::Ready_Prototype_Component()
 		CVIBuffer_Particle::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Grass"),
+		CVIBuffer_Grass::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
+	/* For.Prototype_Component_Shader_UI*/
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Grass"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Grass.hlsl"), VTXCOL_DECLARATION::Elements, VTXCOL_DECLARATION::iNumElements))))
+		return E_FAIL;
+
+
 	/* For.Prototype_Component_Shader_UI*/
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_UI"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_UI.hlsl"), VTXTEX_DECLARATION::Elements, VTXTEX_DECLARATION::iNumElements))))
@@ -621,6 +631,12 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Sky_DomeTex2"),
 	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/SkyDom/T_SkyBox_RoxanneBlueSkyAndCloud.png")))))
 	//	return E_FAIL;
+
+	// Grass Mask Test
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_GrassMask"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/Common/Plants/SM_Common_grass_01_Mask.png")))))
+		return E_FAIL;
+
 
 	/* For.Prototype_Component_Transform */
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Transform"),

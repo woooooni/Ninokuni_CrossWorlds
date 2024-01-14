@@ -9,7 +9,12 @@ Texture2D		g_DissolveTexture;
 float			g_fDissolveWeight;
 float4			g_vDissolveColor = { 0.6f, 0.039f, 0.039f, 1.f };
 
+//
+Texture2D GrassMaskTexture;
+
 float4 g_vClipPlane;
+
+float fGrassAngle;
 
 void ComputeNormalMapping(inout float3 normal, float3 tangent, float2 texcoord)
 {
@@ -109,9 +114,35 @@ VS_OUT VS_MAIN(VS_IN In)
 	Out.vProjPos = Out.vPosition;
 	Out.iInstanceID = In.iInstanceID;
 
-
-	
 	return Out;
+}
+
+VS_OUT VS_GRASS_MAIN(VS_IN In)
+{
+    VS_OUT Out = (VS_OUT) 0;
+
+    matrix matWV, matWVP, matVP;
+    float4x4 InstanceWorld = float4x4(In.vRight, In.vUp, In.vLook, In.vTranslation);
+	
+	if(In.vTexUV.y <= 0.95f)
+    {
+        In.vPosition.z += fGrassAngle * 0.5f;
+    }
+	
+    matWV = mul(InstanceWorld, g_ViewMatrix);
+    matWVP = mul(matWV, g_ProjMatrix);
+	
+    Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
+    Out.vWorldPosition = mul(float4(In.vPosition, 1.0f), g_WorldMatrix);
+	
+    Out.vNormal = normalize(mul(float4(In.vNormal, 0.f), InstanceWorld)).xyz;
+    Out.vTangent = normalize(mul(float4(In.vTangent, 0.f), InstanceWorld)).xyz;
+    Out.vBinormal = normalize(cross(Out.vNormal, Out.vTangent));
+    Out.vTexUV = In.vTexUV;
+    Out.vProjPos = Out.vPosition;
+    Out.iInstanceID = In.iInstanceID;
+
+    return Out;
 }
 
 // ±¼Àý
@@ -366,6 +397,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN();
 	}
 
@@ -377,6 +410,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_NORMAL();
 	}
 
@@ -389,6 +424,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_DISSOLVE_DEAD();
 	}
 
@@ -401,6 +438,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN();
 	}
 
@@ -413,18 +452,22 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN();
 	}
 
-	pass Temp5
+	pass RealTimeGrass // Grass
 	{
 		// 5
-		SetRasterizerState(RS_Default);
+		SetRasterizerState(RS_NoneCull);
 		SetDepthStencilState(DSS_Default, 0);
 		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
-		VertexShader = compile vs_5_0 VS_MAIN();
+        VertexShader = compile vs_5_0 VS_GRASS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN();
 	}
 
@@ -437,6 +480,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN();
 	}
 
@@ -449,6 +494,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN();
 	}
 
@@ -461,6 +508,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN();
 	}
 
@@ -473,6 +522,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN();
 	}
 
@@ -485,6 +536,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_SHADOW_DEPTH();
 	}
 }

@@ -15,15 +15,9 @@ public:
 	virtual HRESULT Initialize_Prototype() ;
 	virtual HRESULT Initialize(void* pArg);
 	void Tick(_float fTImeDelta);
-	virtual HRESULT Render(_uint iCount);
+	virtual HRESULT Render() override;
 
 private:
-	VTXINSTANCE* m_pVertices = nullptr;
-	ID3D11Buffer* m_pVBInstance = nullptr;
-
-private:
-	_uint m_iNumInstance = 0;
-	_uint m_iStrideInstance = 0;
 
 public:
 	static CVIBuffer_Grass* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);

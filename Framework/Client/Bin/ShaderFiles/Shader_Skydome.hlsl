@@ -97,6 +97,8 @@ technique11 Sky
 
         VertexShader = compile vs_5_0 SkyDomeVertexShader();
         GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
         PixelShader = compile ps_5_0 SkyDomePixelShader();
     }
 }
