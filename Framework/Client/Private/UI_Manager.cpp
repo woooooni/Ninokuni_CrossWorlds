@@ -4468,7 +4468,7 @@ void CUI_Manager::Update_CostumeBtn()
 
 void CUI_Manager::Update_WeaponSelectionIcon(_uint iSlotNum)
 {
-	if (2 < iSlotNum)
+	if (2 < iSlotNum || nullptr == m_pSkillBG)
 		return;
 
 	m_pSkillBG->Update_SelectionIcon(iSlotNum);

@@ -43,16 +43,17 @@ HRESULT CQuest_DestSpot::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
-	// 위치가 셋팅되고 이펙트를 생성해야 함. //
-	if (FAILED(GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_QuestPoint"), m_pTransformCom->Get_WorldMatrix(), nullptr, &pEffectObject)))
-		return E_FAIL;
-	Safe_AddRef(pEffectObject);
-
 	return S_OK;
 }
 
 void CQuest_DestSpot::Tick(_float fTimeDelta)
 {
+	if (pEffectObject == nullptr)
+	{
+		GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_QuestPoint"), m_pTransformCom->Get_WorldMatrix(), nullptr, &pEffectObject);
+		Safe_AddRef(pEffectObject);
+	}
+
 	if (!m_bIsDelete)
 	{
 		__super::Tick(fTimeDelta);

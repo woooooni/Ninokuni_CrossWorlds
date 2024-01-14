@@ -1355,7 +1355,7 @@ void CTool_Effect::Save_Decal(const char* pFileName)
 		return;
 	}
 
-	m_tDecalInfo = static_cast<CDecal*>(m_pDecal)->Get_DecalDesc();
+	//m_tDecalInfo = static_cast<CDecal*>(m_pDecal)->Get_DecalDesc();
 
 	Json json;
 	json["DecalInfo"].push_back({

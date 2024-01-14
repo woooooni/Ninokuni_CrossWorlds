@@ -12,7 +12,16 @@ class CVfx_Glanix_Skill_TwoHandSwing final : public CVfx
 {
 private:
 	enum TYPE {
-		TYPE_START,
+		TYPE_E_TRAIL_01,
+		TYPE_P_SMOKE_01_01,
+		TYPE_P_SMOKE_01_02,
+		TYPE_P_SMOKE_01_03,
+		TYPE_P_CIRCLE_01,
+		TYPE_E_TRAIL_02,
+		TYPE_P_SMOKE_02_01,
+		TYPE_P_SMOKE_02_02,
+		TYPE_P_SMOKE_02_03,
+		TYPE_P_CIRCLE_02,
 		TYPE_END
 	};
 
