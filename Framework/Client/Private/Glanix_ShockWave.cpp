@@ -100,8 +100,6 @@ HRESULT CGlanix_ShockWave::Ready_Colliders()
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::ATTACK, &OBBDesc)))
 		return E_FAIL;
 
-	// 그려지긴 하는데 터짐. 일단 나중에
-	m_pColliderCom->Set_AttackType(CCollider::ATTACK_TYPE::BLOW);
 
 	return S_OK;
 }
@@ -138,5 +136,4 @@ void CGlanix_ShockWave::Free()
 
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pTransformCom);
-	Safe_Release(m_pColliderCom);
 }

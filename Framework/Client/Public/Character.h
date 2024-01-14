@@ -174,7 +174,7 @@ public:
 	const CHARACTER_STAT& Get_Stat() { return m_tStat; }
 	void Set_Stat(const CHARACTER_STAT& StatDesc) { m_tStat = StatDesc; }
 
-	void Set_Speed_Weight(_float fSpeedWeight) { m_tStat.fSpeedWeight = fSpeedWeight; }
+	void Set_Speed_Weight(_float fSpeedWeight) { m_tStat.fSpeedWeight = min(fSpeedWeight, 1.f); }
 	_float Get_Speed_Weight() { return m_tStat.fSpeedWeight; }
 
 	void Set_Hp(_int iHp) { m_tStat.iHp = iHp; }

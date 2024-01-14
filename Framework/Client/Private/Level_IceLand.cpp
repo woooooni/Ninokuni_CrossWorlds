@@ -298,22 +298,22 @@ HRESULT CLevel_IceLand::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 	CTrigger::TRIGGER_DESC TriggerDesc;
 	TriggerDesc.eTriggerType = TRIGGER_TYPE::TRIGGER_MAP_NAME;
 	TriggerDesc.strMapName = L"코에루크 설원";
-	TriggerDesc.vStartPosition = { 107.93f, -10.f, 5.067f, 1.f };
-	TriggerDesc.vExtents = { 100.f, 100.f, 100.f };
+	TriggerDesc.vStartPosition = { 107.93f, -50.f, 5.067f, 1.f };
+	TriggerDesc.vExtents = { 100.f, 200.f, 100.f };
 
 	if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
 		return E_FAIL;
 
 	TriggerDesc.strMapName = L"그늘진 저지대";
-	TriggerDesc.vStartPosition = { -79.747f, -10.f, 70.857f, 1.f };
-	TriggerDesc.vExtents = { 100.f, 100.f, 100.f };
+	TriggerDesc.vStartPosition = { -79.747f, -50.f, 70.857f, 1.f };
+	TriggerDesc.vExtents = { 100.f, 200.f, 100.f };
 
 	if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
 		return E_FAIL;
 
 	TriggerDesc.strMapName = L"얼어붙은 유령숲";
-	TriggerDesc.vStartPosition = { -124.5f, -10.f, 290.2f, 1.f };
-	TriggerDesc.vExtents = { 200.f, 100.f, 150.f };
+	TriggerDesc.vStartPosition = { -124.5f, -50.f, 290.2f, 1.f };
+	TriggerDesc.vExtents = { 200.f, 200.f, 150.f };
 
 	if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
 		return E_FAIL;

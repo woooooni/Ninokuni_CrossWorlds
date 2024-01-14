@@ -385,7 +385,6 @@ void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 		return;
 
 	_float fElementalWeight = CGame_Manager::GetInstance()->Calculate_Elemental(tInfo.pOtherCollider->Get_ElementalType(), m_tStat.eElementType);
-
 	_int iDamage = (pCharacter->Get_Stat().iAtt * CUtils::Random_Float(0.5f, 1.5f)) - (m_tStat.iDef * 0.2f) * fElementalWeight;
 
 
@@ -409,7 +408,7 @@ void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 
 	
 
-	m_tStat.fHp -= iDamage;
+	m_tStat.fHp = max(0, m_tStat.fHp - iDamage);
 
 	Start_RimLight();
 

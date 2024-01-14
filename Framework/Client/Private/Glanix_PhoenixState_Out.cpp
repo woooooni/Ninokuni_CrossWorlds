@@ -6,6 +6,10 @@
 #include "GameInstance.h"
 #include "Camera_Manager.h"
 
+#include "Game_Manager.h"
+#include "Player.h"
+#include "Character.h"
+
 CGlanix_PhoenixState_Out::CGlanix_PhoenixState_Out(CStateMachine* pStateMachine)
 	: CGlanixPhoenixState_Base(pStateMachine)
 {
@@ -27,7 +31,20 @@ void CGlanix_PhoenixState_Out::Tick_State(_float fTimeDelta)
 {
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
-		GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_Phoenix"), &m_pPhoenix->Get_OriginPos());
+
+		Vec4 vGlanixOriginPos = XMVectorSet(-55.f, 1.6f, 363.f, 1.f);
+		Vec4 vCharacterPos = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
+		Vec4 vCenterPos = (vGlanixOriginPos + vCharacterPos) / 2.f;
+		vCenterPos.y = vCharacterPos.y + 0.5f;
+
+		vCenterPos.x = GI->RandomFloat(vCenterPos.x - 5.f, vCenterPos.x + 5.f);
+		vCenterPos.z = GI->RandomFloat(vCenterPos.z - 5.f, vCenterPos.z + 5.f);
+
+		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_Phoenix"), &vCenterPos)))
+		{
+			MSG_BOX("Add Glanix_Phoenix Failed.");
+			return;
+		}
 		m_pPhoenix->Set_Dead(true);
 	}
 }

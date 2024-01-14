@@ -23,6 +23,20 @@ void CState_Character_Neutral_Pick_Small_Finish::Enter_State(void* pArg)
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
     m_bLiftAway = false;
     
+
+    CTransform* pTargetTransform = m_pCharacter->Get_Target()->Get_Component<CTransform>(L"Com_Transform");
+    if (nullptr != pTargetTransform)
+    {
+        pTargetTransform->Set_WorldMatrix(m_pTransformCom->Get_WorldMatrix());
+
+        Vec4 vHandCenterPosition = {};
+        Vec4 vLeftHandPosition = (m_pModelCom->Get_SocketLocalMatrix(0) * m_pTransformCom->Get_WorldMatrix()).Translation();
+        Vec4 vRightHandPosition = (m_pModelCom->Get_SocketLocalMatrix(1) * m_pTransformCom->Get_WorldMatrix()).Translation();
+
+        vHandCenterPosition = XMVectorSetW((vLeftHandPosition + vRightHandPosition) / 2.f, 1.f);
+        vHandCenterPosition.y -= 0.1f;
+        pTargetTransform->Set_State(CTransform::STATE_POSITION, vHandCenterPosition);
+    }
 }
 
 void CState_Character_Neutral_Pick_Small_Finish::Tick_State(_float fTimeDelta)
@@ -45,17 +59,21 @@ void CState_Character_Neutral_Pick_Small_Finish::Tick_State(_float fTimeDelta)
     }
     else
     {
-        if (true == m_bLiftAway)
-            return;
-
-        CAnimals* pAnimal = dynamic_cast<CAnimals*>(m_pCharacter->Get_Target());
-
-        if (nullptr == pAnimal)
+        if (false == m_pModelCom->Is_Tween() && m_pModelCom->Get_Progress() > 0.6f)
         {
-            MSG_BOX("Animal Cast Failed.");
-            return;
+            if (false == m_bLiftAway)
+            {
+                CAnimals* pAnimal = dynamic_cast<CAnimals*>(m_pCharacter->Get_Target());
+                if (nullptr == pAnimal)
+                {
+                    MSG_BOX("Animal Cast Failed.");
+                    return;
+                }
+
+                pAnimal->Set_Lift(false);
+                m_bLiftAway = true;
+            }
         }
-        pAnimal->Set_Lift(false);
     }
 
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())

@@ -1,8 +1,8 @@
 #pragma once
-#include "Boss.h"
 
+#include "MonsterProjectile.h"
 BEGIN(Client)
-class CGlanix_Icicle final : public CGameObject
+class CGlanix_Icicle final : public CMonsterProjectile
 {
 private:
 	CGlanix_Icicle(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
@@ -14,8 +14,6 @@ public:
 	virtual HRESULT Initialize(void* pArg) override;
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void LateTick(_float fTimeDelta) override;
-	virtual HRESULT Render() override;
-	virtual HRESULT Render_ShadowDepth() override;
 
 public:
 	virtual HRESULT Render_Instance(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices);
@@ -35,19 +33,12 @@ private:
 	virtual HRESULT Ready_Components();
 	virtual HRESULT Ready_Colliders();
 
-private:
-	CShader* m_pShaderCom = nullptr;
-	CRenderer* m_pRendererCom = nullptr;
-	CTransform* m_pTransformCom = nullptr;
-	CModel* m_pModelCom = nullptr;
-	CRigidBody* m_pRigidBodyCom = nullptr;
-	CPhysX_Controller* m_pControllerCom = { nullptr };
-
 	_bool		m_bShake = false;
 
 private:
 	_float m_fAccDeletionTime = 0.f;
 	_float m_fDeletionTime = 10.f;
+
 public:
 	static CGlanix_Icicle* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;

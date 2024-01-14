@@ -12,6 +12,7 @@
 #include "Game_Manager.h"
 #include "Character.h"
 #include "Player.h"
+#include "Character_Manager.h"
 
 CGlanixState_Rage2Start::CGlanixState_Rage2Start(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
@@ -47,6 +48,22 @@ void CGlanixState_Rage2Start::Enter_State(void* pArg)
 		// 플레이어 공격 인풋 막기
 		//CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_Attack_Input(false);
 		//CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_Skill_Input(false);
+
+
+		if (nullptr != CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::SWORD_MAN))
+		{
+			CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::SWORD_MAN)->Set_Speed_Weight(0.4f);
+		}
+
+		if (nullptr != CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::DESTROYER))
+		{
+			CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::DESTROYER)->Set_Speed_Weight(0.4f);
+		}
+
+		if (nullptr != CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::ENGINEER))
+		{
+			CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::ENGINEER)->Set_Speed_Weight(0.4f);
+		}
 	}
 }
 
@@ -63,7 +80,18 @@ void CGlanixState_Rage2Start::Exit_State()
 	//_float4 vOwnerPos = {};
 	//XMStoreFloat4(&vOwnerPos, m_pGlanix->Get_OriginPos());
 	//_vector vSpritPos = { vOwnerPos.x, vOwnerPos.y, vOwnerPos.z, 1.f };
-	GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_Phoenix"));
+	Vec4 vGlanixOriginPos = XMVectorSet(-55.f, 1.6f, 363.f, 1.f);
+	Vec4 vCharacterPos = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
+
+	Vec4 vCenterPos = (vGlanixOriginPos + vCharacterPos) / 2.f;
+	vCenterPos.y = vCharacterPos.y + 0.5f;
+
+	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_Phoenix"), &vCenterPos)))
+	{
+		MSG_BOX("Generate Glanix_Phoenix Failed.");
+		return;
+	}
+		
 }
 
 CGlanixState_Rage2Start* CGlanixState_Rage2Start::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

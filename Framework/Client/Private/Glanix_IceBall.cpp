@@ -38,7 +38,9 @@ HRESULT CGlanix_IceBall::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
-
+	Set_Collider_Elemental(m_pOwner->Get_Stat().eElementType);
+	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::BLOW, 0.f, 0.f, 0.f, true);
+	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
 	m_fTime = 0.f;
 	m_fDelteTime = 5.f;
 
@@ -70,8 +72,42 @@ void CGlanix_IceBall::LateTick(_float fTimeDelta)
 
 HRESULT CGlanix_IceBall::Render()
 {
-	if (FAILED(__super::Render()))
+	if (nullptr == m_pShaderCom || nullptr == m_pModelCom)
 		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
+		return E_FAIL;
+
+	Matrix RenderMatrix = m_pTransformCom->Get_WorldMatrix();
+	Vec3 vPosition = RenderMatrix.Translation();
+	vPosition.y += 2.f;
+	RenderMatrix.Translation(vPosition);
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &RenderMatrix.Transpose(), sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+		return E_FAIL;
+
+	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+	_uint iPassIndex = 0;
+
+	for (_uint i = 0; i < iNumMeshes; ++i)
+	{
+		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+			return E_FAIL;
+
+		if (m_bReserveDead)
+			iPassIndex = 2;
+		else if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
+			iPassIndex = 0;
+		else
+			iPassIndex++;
+
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i)))
+			return E_FAIL;
+	}
 
 	return S_OK;
 }
@@ -177,7 +213,7 @@ HRESULT CGlanix_IceBall::Ready_Components()
 
 	ControllerDesc.eType = CPhysX_Controller::CAPSULE;
 	ControllerDesc.pTransform = m_pTransformCom;
-	ControllerDesc.vOffset = { 0.f, 5.f, 0.f };
+	ControllerDesc.vOffset = { 0.f, 2.f, 0.f };
 	ControllerDesc.fRaidus = 2.f;
 	ControllerDesc.fHeight = 5.f;
 	ControllerDesc.fMaxJumpHeight = 10.f;
@@ -204,13 +240,13 @@ HRESULT CGlanix_IceBall::Ready_Colliders()
 
 	BoundingSphere tSphere;
 	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 10.f;
+	tSphere.Radius = 3.f;
 	SphereDesc.tSphere = tSphere;
 
 	SphereDesc.pNode = nullptr;
 	SphereDesc.pOwnerTransform = m_pTransformCom;
 	SphereDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
-	SphereDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
+	SphereDesc.vOffsetPosition = Vec3(0.f, 0.f, 0.f);
 
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::ATTACK, &SphereDesc)))
 		return E_FAIL;

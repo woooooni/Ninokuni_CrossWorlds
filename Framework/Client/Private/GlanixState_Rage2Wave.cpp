@@ -30,10 +30,6 @@ HRESULT CGlanixState_Rage2Wave::Initialize(const list<wstring>& AnimationList)
 void CGlanixState_Rage2Wave::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_Skill06"));
-
-	Generate_Icicle(10);
-
-	
 }
 
 void CGlanixState_Rage2Wave::Tick_State(_float fTimeDelta)
@@ -46,16 +42,16 @@ void CGlanixState_Rage2Wave::Tick_State(_float fTimeDelta)
 	if (m_fAccIcicleGen >= m_fGenTime)
 	{
 		m_fAccIcicleGen = 0.f;
-		Generate_Icicle(2);
+		Generate_Icicle(1);
 	}
 
 	if (m_pModelCom->Get_CurrAnimationFrame() == 50)
 	{
 		CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
-		//_float4 vOwnerPos = {};
-		//XMStoreFloat4(&vOwnerPos, m_pGlanix->Get_OriginPos());
-		//_vector vSpritPos = { vOwnerPos.x, vOwnerPos.y, vOwnerPos.z, 1.f };
-		//GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_ShockWave"), &m_pGlanix->Get_WavePoint());
+		_float4 vOwnerPos = {};
+		XMStoreFloat4(&vOwnerPos, m_pGlanix->Get_OriginPos());
+		_vector vSpritPos = { vOwnerPos.x, vOwnerPos.y, vOwnerPos.z, 1.f };
+		// GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_ShockWave"), &m_pGlanix->Get_WavePoint());
 	}
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
@@ -90,15 +86,22 @@ void CGlanixState_Rage2Wave::Generate_Icicle(_uint iCount)
 	for (_uint i = 0; i < iCount; ++i)
 	{
 		Vec4 vInitPos = pTransform->Get_Position();
-		vInitPos.x += GI->RandomFloat(-5.f, 5.f);
+		vInitPos.x += GI->RandomFloat(-1.f, 1.f);
 		vInitPos.y += 10.f + GI->RandomFloat(0.f, 5.f);
-		vInitPos.z += GI->RandomFloat(-5.f, 5.f);
+		vInitPos.z += GI->RandomFloat(-1.f, 1.f);
+		CGameObject* pIcicle = nullptr;
 
-		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_PROP, L"Prorotype_GameObject_Glanix_GlanixIcicle", &vInitPos)))
+		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_PROP, L"Prorotype_GameObject_Glanix_GlanixIcicle", m_pGlanix, &pIcicle)))
 		{
 			MSG_BOX("Add Icicle Failed.");
 			return;
 		}
+
+		CTransform* pIcicleTransform = pIcicle->Get_Component<CTransform>(L"Com_Transform");
+		CPhysX_Controller* pPhysXController = pIcicle->Get_Component<CPhysX_Controller>(L"Com_Controller");
+
+		pIcicleTransform->Set_State(CTransform::STATE_POSITION, vInitPos);
+		pPhysXController->Set_EnterLevel_Position(vInitPos);
 	}
 }
 

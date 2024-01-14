@@ -20,7 +20,7 @@
 #include "Game_Manager.h"
 #include "Player.h"
 #include "UI_World_NameTag.h"
-
+#include "MonsterProjectile.h"
 
 USING(Client)
 CCharacter::CCharacter(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eCharacterType)
@@ -578,7 +578,13 @@ void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 	CMonster* pMonster = nullptr;
 	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER_PROJECTILE)
 	{
-		// TODO:: CAST -> GetOwner;
+		CMonsterProjectile* pProjectile = dynamic_cast<CMonsterProjectile*>(tInfo.pOther);
+		if (nullptr == pProjectile)
+		{
+			MSG_BOX("CMonsterProjectile Cast Failed.");
+			return;
+		}
+		pMonster = pProjectile->Get_Owner();
 	}
 	else
 	{
@@ -663,7 +669,6 @@ void CCharacter::Add_Exp(_int iExp)
 	{
 		LevelUp();
 	}
-
 }
 
 _bool CCharacter::Decrease_HP(_int iDecrease)
