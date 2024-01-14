@@ -23,7 +23,7 @@ public: // Get/Set
 	void			Set_Textable(_bool bTextable) { m_bUpdate = bTextable; }
 	void			Set_RandomNick(const wstring& strRandom);
 	void			Set_UserName();
-	void			Set_MonsterDescForUI(class CMonster* pOwner, void* pArg, _bool bActive = true);
+	void			Set_MonsterDescForUI(class CMonster* pOwner, _bool bActive = true);
 	void			Set_BossActive(_bool bBossActive) { m_bBossActive = bBossActive; }
 
 	_bool			Is_DefaultSettingOn();

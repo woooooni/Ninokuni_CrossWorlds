@@ -13,6 +13,9 @@ protected:
 	virtual ~CUI_MonsterHP_Background() = default;
 
 public:
+	void Set_MonsterName(const wstring& strName) { m_strName = strName; }
+
+public:
 	virtual HRESULT	Initialize_Prototype();
 	virtual HRESULT	Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta);

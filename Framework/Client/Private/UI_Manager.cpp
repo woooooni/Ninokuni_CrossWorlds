@@ -162,33 +162,27 @@ void CUI_Manager::Set_UserName()
 	CGame_Manager::GetInstance()->Set_UserName(m_strNickname);
 }
 
-void CUI_Manager::Set_MonsterDescForUI(CMonster* pOwner, void* pArg, _bool bActive)
+void CUI_Manager::Set_MonsterDescForUI(CMonster* pOwner, _bool bActive)
 {
 	// 몬스터의 정보를 받아 상단 HPBar UI를 세팅한다.
 	// 플레이어의 타겟이 있는지 확인하고 nullptr이면 Active False 후 return;
 
-	if (nullptr == pArg || nullptr == pOwner)
+	if (nullptr == pOwner)
+		return;
+	if (pOwner->Is_Dead() || pOwner->Is_ReserveDead())
 		return;
 
 	m_pHPBarOwner = pOwner;
 
-	CMonster::MONSTER_STAT StatDesc = {};
-	ZeroMemory(&StatDesc, sizeof(CMonster::MONSTER_STAT));
-
-	memcpy(&StatDesc, &(m_pHPBarOwner->Get_Stat()), sizeof(CMonster::MONSTER_STAT));
-
-//	m_fCurHP = StatDesc.fHp;
-//	m_fMaxHP = StatDesc.fMaxHp;
+//	CMonster::MONSTER_STAT StatDesc = {};
+//	ZeroMemory(&StatDesc, sizeof(CMonster::MONSTER_STAT));
 //
-//	m_strName = m_pOwner->Get_KorName();
+//	memcpy(&StatDesc, &(m_pHPBarOwner->Get_Stat()), sizeof(CMonster::MONSTER_STAT));
 
-
-	// 몬스터가 Target이 되면 true를 던진다.
-	// Frame Active true
-
-	// 이전에, 몬스터의 레벨 정보와 속성은 Elemental에 세팅한다.
-	// 몬스터의 이름은 HPBar Background에 세팅한다.
-	// Tick에 MonsterHPBar의 Active가 true면 현재의 체력을 계속 받아올 수 있도록 설정한다.
+	m_pMonsterElemental->Set_MonsterLevel(m_pHPBarOwner->Get_Stat().iLv);
+	m_pMonsterHPBack->Set_MonsterName(m_pHPBarOwner->Get_KorName());
+	m_pMonsterHPBar->Set_MonsterInfo(m_pHPBarOwner);
+	m_pMonsterElemental->Set_ElementalType(m_pHPBarOwner->Get_Stat().eElementType);
 
 	if (bActive)
 	{
@@ -5896,6 +5890,14 @@ void CUI_Manager::OnOff_MapName(_bool bOnOff, const wstring& strMapName)
 		else if (TEXT("최후의 쉼터") == strMapName)
 		{
 			m_pMapNameText->Set_Type(CUI_MapName_Text::UI_MAPNAME_TEXT::ICELAND_SHELTER);
+		}
+		else if (TEXT("얼어붙은 유령 숲") == strMapName)
+		{
+			m_pMapNameText->Set_Type(CUI_MapName_Text::UI_MAPNAME_TEXT::ICELAND_GHOSTFOREST);
+		}
+		else if (TEXT("그늘진 저지대") == strMapName)
+		{
+			m_pMapNameText->Set_Type(CUI_MapName_Text::UI_MAPNAME_TEXT::ICELAND_SHADOW);
 		}
 		else
 		{

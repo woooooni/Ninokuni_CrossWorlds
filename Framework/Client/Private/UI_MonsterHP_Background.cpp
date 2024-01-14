@@ -41,7 +41,7 @@ void CUI_MonsterHP_Background::Tick(_float fTimeDelta)
 	if (m_bActive)
 	{
 		CRenderer::TEXT_DESC MaxHPDesc;
-		MaxHPDesc.strText = L"¹ã¹Ù¿À¹ã";
+		MaxHPDesc.strText = m_strName;
 		MaxHPDesc.strFontTag = L"Default_Medium";
 		MaxHPDesc.vScale = { 0.4f, 0.4f };
 		MaxHPDesc.vPosition = m_vNamePosition;

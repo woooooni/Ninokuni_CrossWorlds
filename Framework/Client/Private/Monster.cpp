@@ -408,7 +408,7 @@ void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 	}
 
 	
-
+	m_tStat.fHp = max(0, m_tStat.fHp - iDamage);
 	m_tStat.fHp -= iDamage;
 
 	Start_RimLight();

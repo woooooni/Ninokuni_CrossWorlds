@@ -297,7 +297,7 @@ HRESULT CLevel_IceLand::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 
 	CTrigger::TRIGGER_DESC TriggerDesc;
 	TriggerDesc.eTriggerType = TRIGGER_TYPE::TRIGGER_MAP_NAME;
-	TriggerDesc.strMapName = L"코에루크 설원";
+	TriggerDesc.strMapName = L"코에루코 설원";
 	TriggerDesc.vStartPosition = { 107.93f, -10.f, 5.067f, 1.f };
 	TriggerDesc.vExtents = { 100.f, 100.f, 100.f };
 
@@ -311,7 +311,7 @@ HRESULT CLevel_IceLand::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 	if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
 		return E_FAIL;
 
-	TriggerDesc.strMapName = L"얼어붙은 유령숲";
+	TriggerDesc.strMapName = L"얼어붙은 유령 숲";
 	TriggerDesc.vStartPosition = { -124.5f, -10.f, 290.2f, 1.f };
 	TriggerDesc.vExtents = { 200.f, 100.f, 150.f };
 

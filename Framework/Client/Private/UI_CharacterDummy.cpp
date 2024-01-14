@@ -44,6 +44,17 @@ HRESULT CUI_CharacterDummy::Initialize(void* pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
+	CPlayer* pPlayer = nullptr;
+	pPlayer = CGame_Manager::GetInstance()->Get_Player();
+	if (nullptr == pPlayer)
+		return E_FAIL;
+	CCharacter* pCharacter = nullptr;
+	pCharacter = pPlayer->Get_Character();
+	if (nullptr == pCharacter)
+		return E_FAIL;
+
+	m_eCurCharacter = pCharacter->Get_CharacterType();
+
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
@@ -86,6 +97,11 @@ HRESULT CUI_CharacterDummy::Initialize(void* pArg)
 	if(nullptr != m_pWeapon)
 		m_pWeapon->Set_Owner(this, m_eCurCharacter);
 
+	if (m_eCurCharacter == CHARACTER_TYPE::SWORD_MAN)
+	{
+		m_pModelCom->Set_Animation(TEXT("SKM_Swordsman_Merge.ao|Swordsman_BattleStand"));
+	}
+
 	return S_OK;
 }
 
@@ -93,7 +109,6 @@ void CUI_CharacterDummy::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-		//m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta);
 		if (GI->Mouse_Pressing(DIMK_WHEEL))
 		{
 			_long	MouseMove = 0;
@@ -106,9 +121,6 @@ void CUI_CharacterDummy::Tick(_float fTimeDelta)
 
 		if (m_pWeapon != nullptr)
 		{ 
-//			if (!m_pWeapon->Get_Active())
-//				m_pWeapon->Set_Active(true);
-//
 			Matrix matSocketLocal = m_pModelCom->Get_SocketLocalMatrix(0);
 			Matrix matSocketWorld = matSocketLocal * m_pTransformCom->Get_WorldMatrix();
 
@@ -118,12 +130,6 @@ void CUI_CharacterDummy::Tick(_float fTimeDelta)
 
 		__super::Tick(fTimeDelta);
 	}
-
-//	if (m_pWeapon != nullptr)
-//	{
-//		if (m_pWeapon->Get_Active())
-//			m_pWeapon->Set_Active(false);
-//	}
 }
 
 void CUI_CharacterDummy::LateTick(_float fTimeDelta)

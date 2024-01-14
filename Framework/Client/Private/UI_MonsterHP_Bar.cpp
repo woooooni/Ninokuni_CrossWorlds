@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "UI_MonsterHP_Bar.h"
 #include "GameInstance.h"
+#include "Monster.h"
+#include "UI_Manager.h"
+#include "Game_Manager.h"
+#include "Player.h"
 
 CUI_MonsterHP_Bar::CUI_MonsterHP_Bar(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_MonsterHPBar")
@@ -10,6 +14,24 @@ CUI_MonsterHP_Bar::CUI_MonsterHP_Bar(ID3D11Device* pDevice, ID3D11DeviceContext*
 CUI_MonsterHP_Bar::CUI_MonsterHP_Bar(const CUI_MonsterHP_Bar& rhs)
 	: CUI(rhs)
 {
+}
+
+void CUI_MonsterHP_Bar::Set_MonsterInfo(CMonster* pOwner)
+{
+	if (nullptr == pOwner)
+		return;
+
+	m_pTarget = pOwner;
+
+	CMonster::MONSTER_STAT StatDesc = {};
+	ZeroMemory(&StatDesc, sizeof(CMonster::MONSTER_STAT));
+
+	memcpy(&StatDesc, &(m_pTarget->Get_Stat()), sizeof(CMonster::MONSTER_STAT));
+
+	m_eElementalType = StatDesc.eElementType;
+	m_fMaxHP = StatDesc.fMaxHp;
+	m_fCurHP = StatDesc.fHp;
+	m_fPreHP = m_fCurHP;
 }
 
 HRESULT CUI_MonsterHP_Bar::Initialize_Prototype()
@@ -32,13 +54,7 @@ HRESULT CUI_MonsterHP_Bar::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_bActive = false;
-	//m_bActive = true;
 	m_bLerp = false;
-
-	// TestCode
-	m_fMaxHP = 1000.f;
-	m_fCurHP = 1000.f;
-	m_fPreHP = 1000.f;
 
 	return S_OK;
 }
@@ -47,17 +63,53 @@ void CUI_MonsterHP_Bar::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-
-		// TestCode
-		if (KEY_TAP(KEY::G))
+		if (ELEMENTAL_TYPE::BASIC <= m_eElementalType)
+			return;
+		
+		if (m_pTarget->Is_Dead() || m_pTarget->Is_ReserveDead() || m_fCurHP <= 0.f)
 		{
-			m_fCurHP -= 100.f;
-			m_bLerp = false;
+			m_pTarget = nullptr;
+			CUI_Manager::GetInstance()->OnOff_MonsterHP(false);
+			return;
 		}
+
+		// 타겟과 일정거리 이상 멀어지면 끈다
+		if (nullptr != m_pTarget)
+		{
+			CPlayer* pPlayer = nullptr;
+			pPlayer = CGame_Manager::GetInstance()->Get_Player();
+			if (nullptr == pPlayer)
+				return;
+
+			CCharacter* pCharacter = nullptr;
+			pCharacter = pPlayer->Get_Character();
+			if (nullptr == pCharacter)
+				return;
+
+			CTransform* pPlayerTransform = pCharacter->Get_Component<CTransform>(L"Com_Transform");
+			if (nullptr == pPlayerTransform)
+				return;
+			CTransform* pTransform = m_pTarget->Get_Component<CTransform>(L"Com_Transform");
+
+			_vector vTemp = (pTransform->Get_Position()) - (pPlayerTransform->Get_Position());
+			_float fTotarget = XMVectorGetX(XMVector3Length(vTemp));
+
+			if (fTotarget > 10.f)
+			{
+				m_pTarget = nullptr;
+				CUI_Manager::GetInstance()->OnOff_MonsterHP(false);
+				return;
+			}
+		}
+
+		m_fCurHP = m_pTarget->Get_Stat().fHp;
+
+		if (m_fCurHP < m_fPreHP)
+			m_bLerp = false;
 
 		if (!m_bLerp && m_fPreHP > m_fCurHP)
 		{
-			m_fPreHP -= fTimeDelta * 100.f;
+			m_fPreHP -= fTimeDelta * 5000.f;
 		
 			if (m_fPreHP <= m_fCurHP)
 			{
@@ -74,33 +126,47 @@ void CUI_MonsterHP_Bar::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (ELEMENTAL_TYPE::BASIC <= m_eElementalType)
+			return;
+
+		if (m_pTarget->Is_Dead() || m_pTarget->Is_ReserveDead())
+		{
+			m_pTarget = nullptr;
+			CUI_Manager::GetInstance()->OnOff_MonsterHP(false);
+			return;
+		}
+
+		_float fX = g_iWinSizeX * 0.5f + 5.f;
 		// 기준점
-//		CRenderer::TEXT_DESC  MAXHPDesc;
-//		MAXHPDesc.strText = L"/";
-//		MAXHPDesc.strFontTag = L"Default_Medium";
-//		MAXHPDesc.vScale = { 0.4f, 0.4f };
-//		MAXHPDesc.vPosition = m_vDefaultPosition;
-//		MAXHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
-//		m_pRendererCom->Add_Text(MAXHPDesc);
-//
-//		// Todo : 체력을 받아오게끔 구조 변경 필요함.
-//		// 현재 체력 숫자 외곽선
-//		CRenderer::TEXT_DESC CurHPDesc;
-//		CurHPDesc.strText = L"1234";
-//		CurHPDesc.strFontTag = L"Default_Medium";
-//		CurHPDesc.vScale = { 0.4f, 0.4f };
-//		CurHPDesc.vPosition = m_vCurHPPosition;
-//		CurHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
-//		m_pRendererCom->Add_Text(CurHPDesc);
-//
-//		// 최대 체력 숫자 외곽선
-//		CRenderer::TEXT_DESC MaxHPDesc;
-//		MaxHPDesc.strText = L"1235";
-//		MaxHPDesc.strFontTag = L"Default_Medium";
-//		MaxHPDesc.vScale = { 0.4f, 0.4f };
-//		MaxHPDesc.vPosition = m_vMaxHPPosition;
-//		MaxHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
-//		m_pRendererCom->Add_Text(MaxHPDesc);
+		CRenderer::TEXT_DESC  MAXHPDesc;
+		MAXHPDesc.strText = L"/";
+		MAXHPDesc.strFontTag = L"Default_Medium";
+		MAXHPDesc.vScale = { 0.4f, 0.4f };
+		MAXHPDesc.vPosition = _float2(fX, 32.f); // "/"
+		MAXHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+		m_pRendererCom->Add_Text(MAXHPDesc);
+
+		CRenderer::TEXT_DESC CurHPDesc;
+		wstring strCurTemp = to_wstring(_int(m_fCurHP));
+		_int iLength = (strCurTemp.length() - 1.f) * 10.f;
+
+		CurHPDesc.strText = strCurTemp;
+		CurHPDesc.strFontTag = L"Default_Medium";
+		CurHPDesc.vScale = { 0.35f, 0.35f };
+		CurHPDesc.vPosition = _float2(fX - 10.f - iLength, 33.f); // 현재 체력
+		CurHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+		m_pRendererCom->Add_Text(CurHPDesc);
+
+		CRenderer::TEXT_DESC MaxHPDesc;
+		wstring strMaxTemp = to_wstring(_int(m_fMaxHP));
+		iLength = strMaxTemp.length() - 1.f;
+
+		MaxHPDesc.strText = strMaxTemp;
+		MaxHPDesc.strFontTag = L"Default_Medium";
+		MaxHPDesc.vScale = { 0.35f, 0.35f };
+		MaxHPDesc.vPosition = _float2(fX + 13.f, 33.f); // 최대 체력
+		MaxHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+		m_pRendererCom->Add_Text(MaxHPDesc);
 
 		// AddText ( Monster Max HP, Monster Cur HP , 몬스터 이름 )
 
@@ -169,7 +235,7 @@ HRESULT CUI_MonsterHP_Bar::Bind_ShaderResources()
 	if (FAILED(m_pFXTextureCom->Bind_ShaderResource(m_pShaderCom, "g_LerpTexture")))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", 0)))
+	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", _uint(m_eElementalType))))
 		return E_FAIL;
 
 	return S_OK;
