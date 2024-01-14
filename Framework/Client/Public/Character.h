@@ -163,6 +163,7 @@ public:
 	void Set_Skill_Input(_bool bInput) { m_bSkillInputable = bInput; }
 	void Set_Attack_Input(_bool bInput) { m_bAttackInputable = bInput; }
 	void Set_Move_Input(_bool bInput) { m_bMoveInputable = bInput; }
+	void Set_All_Input(_bool bInput) { m_bSkillInputable = m_bAttackInputable = m_bMoveInputable = bInput; }
 
 	_bool Is_Skill_Input() { return m_bSkillInputable; }
 	_bool Is_Attack_Input() { return m_bAttackInputable; }

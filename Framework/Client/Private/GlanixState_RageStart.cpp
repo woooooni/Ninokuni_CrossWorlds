@@ -37,32 +37,8 @@ void CGlanixState_RageStart::Tick_State(_float fTimeDelta)
 
 void CGlanixState_RageStart::Exit_State()
 {
-	//_float4 vGlanixPos = {};
-	//XMStoreFloat4(&vGlanixPos, m_pTransformCom->Get_Position());
-	//
-	//_vector vPillarPos = { vGlanixPos.x + 8.f, 1.6f, vGlanixPos.z + -8.f, 1.f };
-	//GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
-	//vPillarPos = { vGlanixPos.x + -15.f, 1.6f, vGlanixPos.z + -8.f, 1.f };
-	//GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
-	//vPillarPos = { vGlanixPos.x + 12.f, 1.6f, vGlanixPos.z + 11.f, 1.f };
-	//GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
-	//vPillarPos = { vGlanixPos.x + -11.f, 1.6f, vGlanixPos.z + 13.f, 1.f };
-	//GI->Add_GameObject(LEVEL_TEST, _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
-
-	_vector vPillarPos = { -64.f, 15.f, 360.f, 1.f };
-	GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
-	vPillarPos = { -34.f, 15.f, 350.f, 1.f };
-	GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
-	vPillarPos = { -60.f, 15.f, 334.f, 1.f };
-	GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
-	vPillarPos = { -36.f, 15.f, 378.f, 1.f };
-	GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
-	vPillarPos = { -63.f, 15.f, 378.f, 1.f };
-	GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
-	vPillarPos = { -44.f, 15.f, 391.f, 1.f };
-	GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
-	vPillarPos = { -23.f, 15.f, 363.f, 1.f };
-	GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_IcePillar"), &vPillarPos);
+	/* 얼음 기둥 생성 */
+	m_pGlanix->Create_Pillars();
 
 	/* Camera - 탑뷰 전환 */
 	CCamera_Top* pCamTop = dynamic_cast<CCamera_Top*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::TOP));

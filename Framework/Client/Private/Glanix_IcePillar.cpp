@@ -36,11 +36,11 @@ HRESULT CGlanix_IcePillar::Initialize(void* pArg)
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 		return E_FAIL;
+
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, *(_vector*)pArg);
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
-
 
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
@@ -54,9 +54,13 @@ void CGlanix_IcePillar::Tick(_float fTimeDelta)
 
 	GI->Add_CollisionGroup(COLLISION_GROUP::PROP, this);
 
+	if (m_tSpeedDesc.bActive)
+		m_tSpeedDesc.Update(fTimeDelta);
+
+	m_pTransformCom->RevolutionRotation(m_vRotateOriginPos.xyz(), Vec3::Up, m_tSpeedDesc.fCurValue * fTimeDelta);
+
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 	m_pControllerCom->Tick_Controller(fTimeDelta);
-
 }
 
 void CGlanix_IcePillar::LateTick(_float fTimeDelta)
@@ -160,7 +164,11 @@ void CGlanix_IcePillar::Collision_Continue(const COLLISION_INFO& tInfo)
 		if (dynamic_cast<CGlanix*>(tInfo.pOther)->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Get_CurrState() == CGlanix::GLANIX_RAGECHARGE)
 		{
 			dynamic_cast<CGlanix*>(tInfo.pOther)->Set_IsCrash(true);
-			Set_Dead(this);
+
+
+			if (nullptr != m_pGlanix)
+				m_pGlanix->Delete_Pillar(m_iKey);
+			//Set_Dead(this);
 		}
 	}
 }

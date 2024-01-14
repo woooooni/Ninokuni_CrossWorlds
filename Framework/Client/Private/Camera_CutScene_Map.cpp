@@ -6,6 +6,10 @@
 
 #include "UI_Manager.h"
 
+#include "Game_Manager.h"
+#include "Character.h"
+#include "Player.h"
+
 CCamera_CutScene_Map::CCamera_CutScene_Map(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
 	: CCamera(pDevice, pContext, strObjTag, OBJ_TYPE::OBJ_CAMERA)
 {
@@ -74,6 +78,11 @@ void CCamera_CutScene_Map::Tick(_float fTimeDelta)
 	
 			if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
 				CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
+
+			/* Player Input On */
+			{
+				CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
+			}
 			
 			return;
 		}
@@ -130,6 +139,10 @@ HRESULT CCamera_CutScene_Map::Start_CutScene(const string& strCutSceneName,
 		m_eBlendingMode = eBlendingMode;
 	}
 
+	/* Player Input Off */
+	{
+		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
+	}
 	return S_OK;
 }
 

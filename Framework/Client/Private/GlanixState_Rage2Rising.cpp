@@ -8,6 +8,10 @@
 #include "Camera_Follow.h"
 #include "Camera_Manager.h"
 
+#include "Game_Manager.h"
+#include "Character.h"
+#include "Player.h"
+
 CGlanixState_Rage2Rising::CGlanixState_Rage2Rising(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
 {
@@ -44,6 +48,8 @@ void CGlanixState_Rage2Rising::Enter_State(void* pArg)
 			LERP_MODE::SMOOTHER_STEP);
 
 		// 플레이어 공격 인풋 열기
+		//CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_Attack_Input(true);
+		//CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_Skill_Input(true);
 	}
 }
 

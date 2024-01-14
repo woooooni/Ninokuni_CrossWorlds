@@ -2,6 +2,10 @@
 #include "Boss.h"
 
 BEGIN(Client)
+
+class CGlanix;
+class CGlanix_IcePillar_Controller;
+
 class CGlanix_IcePillar final : public CGameObject
 {
 private:
@@ -44,10 +48,19 @@ private:
 	CPhysX_Controller* m_pControllerCom = { nullptr };
 
 	_bool		m_bShake = false;
+
+private:
+	_int		m_iKey;
+	Vec4		m_vRotateOriginPos;
+	LERP_FLOAT_DESC m_tSpeedDesc;
+	CGlanix*	m_pGlanix = nullptr;
+
 public:
 	static CGlanix_IcePillar* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
+
+	friend class CGlanix_IcePillar_Controller;
 };
 
 END

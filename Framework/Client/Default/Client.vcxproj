@@ -294,6 +294,7 @@
     <ClInclude Include="..\Public\GlanixState_RageStartTurnOC.h" />
     <ClInclude Include="..\Public\GlanixState_RageStartTurnOL.h" />
     <ClInclude Include="..\Public\GlanixState_Stun.h" />
+    <ClInclude Include="..\Public\Glanix_IcePillar_Controller.h" />
     <ClInclude Include="..\Public\Glanix_Phoenix.h" />
     <ClInclude Include="..\Public\Glanix_IcePillar.h" />
     <ClInclude Include="..\Public\Glanix_PhoenixState_Base.h" />
@@ -1005,6 +1006,7 @@
     <ClCompile Include="..\Private\GlanixState_RageStartTurnOC.cpp" />
     <ClCompile Include="..\Private\GlanixState_RageStartTurnOL.cpp" />
     <ClCompile Include="..\Private\GlanixState_Stun.cpp" />
+    <ClCompile Include="..\Private\Glanix_IcePillar_Controller.cpp" />
     <ClCompile Include="..\Private\Glanix_Phoenix.cpp" />
     <ClCompile Include="..\Private\Glanix_IcePillar.cpp" />
     <ClCompile Include="..\Private\Glanix_PhoenixState_Base.cpp" />

@@ -32,15 +32,6 @@ void CGlanixState_RageStamp::Tick_State(_float fTimeDelta)
 
 	if (m_pModelCom->Get_CurrAnimationFrame() == 15)
 	{
-		/* 남아있는 얼음기둥 제거 */
-		for (auto iter : GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_PROP))
-		{
-			if (iter->Get_PrototypeTag() == TEXT("Prorotype_GameObject_Glanix_IcePillar"))
-			{
-				iter->Set_Dead(true);
-			}
-		}
-
 		/* Camera - 팔로우 카메라 전환 */
 		const CAMERA_TYPE eCamType = CAMERA_TYPE::FOLLOW;
 		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(eCamType));

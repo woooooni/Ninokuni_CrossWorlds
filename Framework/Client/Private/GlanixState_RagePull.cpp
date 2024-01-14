@@ -21,6 +21,8 @@ void CGlanixState_RagePull::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_RageSkillPull"));
 
+	/* 남아있는 얼음기둥 제거 */
+	m_pGlanix->Clear_Pillars();
 }
 
 void CGlanixState_RagePull::Tick_State(_float fTimeDelta)

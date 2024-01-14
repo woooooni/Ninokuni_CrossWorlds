@@ -25,6 +25,8 @@ private:
 
 	_int   m_iChargeCount = 0;
 
+	const _uint m_iMaxChargeCount = 7;
+
 public:
 	static CGlanixState_RageCharge* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
