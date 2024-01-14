@@ -429,14 +429,6 @@ void CVfx_Glanix_Skill_FourHandSwing::Free()
 {
 	__super::Free();
 
-	if (!m_isCloned)
-	{
-		Safe_Delete_Array(m_pFrameTriger);
-		Safe_Delete_Array(m_pPositionOffset);
-		Safe_Delete_Array(m_pScaleOffset);
-		Safe_Delete_Array(m_pRotationOffset);
-	}
-
 	if (nullptr != m_pHand01Effect)
 	{
 		m_pHand01Effect->Set_Dead(true);
@@ -447,5 +439,13 @@ void CVfx_Glanix_Skill_FourHandSwing::Free()
 	{
 		m_pHand02Effect->Set_Dead(true);
 		Safe_Release(m_pHand02Effect);
+	}
+
+	if (!m_isCloned)
+	{
+		Safe_Delete_Array(m_pFrameTriger);
+		Safe_Delete_Array(m_pPositionOffset);
+		Safe_Delete_Array(m_pScaleOffset);
+		Safe_Delete_Array(m_pRotationOffset);
 	}
 }

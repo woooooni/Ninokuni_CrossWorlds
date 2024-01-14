@@ -61,7 +61,6 @@ private:
 		TYPE_D_HANDDOWN_START_WARNING,
 
 		TYPE_P_HANDDOWN_PREACT_BIGSCIRCLE,
-		TYPE_P_HANDDOWN_PREACT_BIGSMOKE,
 		TYPE_E_HANDDOWN_PREACT_CIRCLELINE,
 		TYPE_P_HANDDOWN_PREACT_CIRCLES,
 		TYPE_E_HANDDOWN_PREACT_HANDCIRCLELEFT,
@@ -89,6 +88,13 @@ public:
 
 protected:
 	virtual HRESULT Ready_Components() override;
+
+private:
+	class CEffect* m_pHand01Effect = nullptr;
+	class CEffect* m_pHand02Effect = nullptr;
+
+	class CDecal* m_pWarningDecal = nullptr;
+	class CEffect* m_SpringUpEffect = nullptr;
 
 public:
 	static CVfx_Glanix_Skill_SwingDownDown* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
