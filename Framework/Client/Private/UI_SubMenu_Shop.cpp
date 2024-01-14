@@ -82,6 +82,8 @@ HRESULT CUI_SubMenu_Shop::Initialize(void* pArg)
 
 	m_bActive = false;
 
+	m_bUseMouse = true;
+
 	return S_OK;
 }
 

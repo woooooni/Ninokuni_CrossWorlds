@@ -36,6 +36,7 @@ HRESULT CUI_Inventory_Slot::Initialize(void* pArg)
 
 	m_bActive = false;
 	m_fAlpha = 0.9f;
+	m_bUseMouse = true;
 
 	return S_OK;
 }

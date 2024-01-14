@@ -15,6 +15,7 @@ protected:
 
 public:
 	virtual void Set_Active(_bool bActive);
+	_float Get_Alpha() { return m_fAlpha; }
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -31,13 +32,15 @@ private:
 
 	_float2 m_vOriginSize = _float2(0.f, 0.f);
 	_float2 m_vMaxSize = _float2(0.f, 0.f);
+	_float2 m_vTextPosition = _float2(0.f, 0.f);
 
 	_float m_fSpeed = { 50.f };
 
-	_bool m_bTest = { false };
+	_bool m_bAlpha = { false };
 	_bool m_bFinish = { false };
 
 	_float m_fIncrement = { 0.f };
+	_float m_fActiveTimeAcc = { 0.f };
 
 private:
 	virtual HRESULT	Ready_Components() override;

@@ -2,6 +2,7 @@
 #include "UI_Cursor.h"
 #include "GameInstance.h"
 #include "Effect_Manager.h"
+#include "UI_Manager.h"
 
 CUI_Cursor::CUI_Cursor(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_Cursor")
@@ -33,27 +34,42 @@ HRESULT CUI_Cursor::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_ptOffset = { 14, 13 };
+	m_bUseMouse = true;
 
 	return S_OK;
 }
 
 void CUI_Cursor::Tick(_float fTimeDelta)
 {
-	// 마우스 포지션을 실시간으로 받아서 m_tInfo.fX, m_tInfo.fY에 저장한다.
-	m_ptMouse = GI->GetMousePos();
+	if (m_bActive)
+	{
+		// 마우스 포지션을 실시간으로 받아서 m_tInfo.fX, m_tInfo.fY에 저장한다.
+		m_ptMouse = GI->GetMousePos();
 
-	m_tInfo.fX = m_ptMouse.x + m_ptOffset.x;
-	m_tInfo.fY = m_ptMouse.y + m_ptOffset.y;
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+		m_tInfo.fX = m_ptMouse.x + m_ptOffset.x;
+		m_tInfo.fY = m_ptMouse.y + m_ptOffset.y;
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
 
-	__super::Tick(fTimeDelta);
+		if (LEVELID::LEVEL_LOBBY == GI->Get_CurrentLevel())
+		{
+			if (CUI_Manager::GetInstance()->Is_NicknameSettingComplete())
+			{
+				if (m_iTextureIndex == 1)
+					m_iTextureIndex = 0;
+			}
+		}
+
+		__super::Tick(fTimeDelta);
+	}
 }
 
 void CUI_Cursor::LateTick(_float fTimeDelta)
 {
-
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_CURSOR, this);
+	if (m_bActive)
+	{
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_CURSOR, this);
+	}
 }
 
 HRESULT CUI_Cursor::Render()

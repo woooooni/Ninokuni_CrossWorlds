@@ -114,6 +114,10 @@ HRESULT CUI_Basic::Initialize(void* pArg)
 	else if (UILOBBY_DICE == m_eType)
 		Ready_Nickname();
 
+	// UI Click Event
+	if (UILOBBY_DICE == m_eType || UIQUEST_ACCEPT == m_eType || UIQUEST_FINISH == m_eType)
+		m_bUseMouse = true;
+
 	return S_OK;
 }
 

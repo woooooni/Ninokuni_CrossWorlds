@@ -68,6 +68,8 @@ HRESULT CUI_Inventory_TabBtn::Initialize(void* pArg)
 		m_fMaxfY = m_tInfo.fY - (m_fMaxfCY - m_fOriginfCY) * 0.5f;
 	}
 
+	m_bUseMouse = true;
+
 	return S_OK;
 }
 

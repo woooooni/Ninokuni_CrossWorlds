@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UI_Quest_Reward.h"
 #include "GameInstance.h"
+#include "UI_Manager.h"
 
 CUI_Quest_Reward::CUI_Quest_Reward(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_QUESTREWARD eType)
 	: CUI(pDevice, pContext, L"UI_Quest_Reward")
@@ -16,7 +17,72 @@ CUI_Quest_Reward::CUI_Quest_Reward(const CUI_Quest_Reward& rhs)
 
 void CUI_Quest_Reward::Set_Active(_bool bActive)
 {
-	m_bActive = bActive;
+	if (bActive)
+	{
+//		m_fAlpha = 1.f;
+//
+//		m_bAlpha = false;
+//		m_fIncrement = 0.f;
+//
+//		if (REWARD_BOTTOM == m_eType)
+//		{
+//			m_bFinish = false;
+//
+//			m_tInfo.fX = m_vOriginPosition.x;
+//			m_tInfo.fY = m_vOriginPosition.y;
+//
+//			m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+//				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+//		}
+//		if (REWARD_WINDOW == m_eType)
+//		{
+//			m_bFinish = false;
+//
+//			m_tInfo.fCX = m_vOriginSize.x;
+//			m_tInfo.fCY = m_vOriginSize.y;
+//			m_tInfo.fX = m_vOriginPosition.x;
+//			m_tInfo.fY = m_vOriginPosition.y;
+//
+//			m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+//			m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+//				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+//		}
+
+		m_bActive = bActive;
+	}
+	else
+	{
+		m_bActive = bActive;
+
+		m_fAlpha = 1.f;
+
+		m_bAlpha = false;
+		m_fIncrement = 0.f;
+
+		if (REWARD_BOTTOM == m_eType)
+		{
+			m_bFinish = false;
+
+			m_tInfo.fX = m_vOriginPosition.x;
+			m_tInfo.fY = m_vOriginPosition.y;
+
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+		}
+		if (REWARD_WINDOW == m_eType)
+		{
+			m_bFinish = false;
+
+			m_tInfo.fCX = m_vOriginSize.x;
+			m_tInfo.fCY = m_vOriginSize.y;
+			m_tInfo.fX = m_vOriginPosition.x;
+			m_tInfo.fY = m_vOriginPosition.y;
+
+			m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+		}
+	}
 }
 
 HRESULT CUI_Quest_Reward::Initialize_Prototype()
@@ -52,6 +118,10 @@ HRESULT CUI_Quest_Reward::Initialize(void* pArg)
 		m_vOriginPosition = _float2(m_tInfo.fX, m_tInfo.fY);
 		m_vTargetPosition = _float2(m_tInfo.fX, m_tInfo.fY + (82.f * 0.65f));
 	}
+	else if (REWARD_TOP == m_eType)
+	{
+		m_vTextPosition = _float2(m_tInfo.fX - 10.f, m_tInfo.fY + 40.f);
+	}
 
 	if (FAILED(Ready_State()))
 		return E_FAIL;
@@ -68,15 +138,9 @@ void CUI_Quest_Reward::Tick(_float fTimeDelta)
 		if (REWARD_END == m_eType)
 			return;
 
-		if (KEY_TAP(KEY::P))
-		{
-			if (false == m_bTest)
-				m_bTest = true;
-			else
-				m_bTest = false;
-		}
+		m_fActiveTimeAcc += fTimeDelta;
 
-		if (m_bTest)
+		if (!m_bAlpha)
 		{
 			if (REWARD_WINDOW == m_eType)
 			{
@@ -90,6 +154,8 @@ void CUI_Quest_Reward::Tick(_float fTimeDelta)
 					{
 						m_bFinish = true;
 						m_tInfo.fCY = m_vMaxSize.y;
+
+						CUI_Manager::GetInstance()->Show_RewardItems();
 					}
 					else
 					{
@@ -122,25 +188,25 @@ void CUI_Quest_Reward::Tick(_float fTimeDelta)
 		}
 		else
 		{
-			m_fIncrement = 0.f;
-			m_bFinish = false;
-
-			if (REWARD_WINDOW == m_eType)
-			{
-				m_tInfo.fCX = m_vOriginSize.x;
-				m_tInfo.fCY = m_vOriginSize.y;
-				m_tInfo.fX = m_vOriginPosition.x;
-				m_tInfo.fY = m_vOriginPosition.y;
-			}
-			else if (REWARD_BOTTOM == m_eType)
-			{
-				m_tInfo.fX = m_vOriginPosition.x;
-				m_tInfo.fY = m_vOriginPosition.y;
-			}
-
-			m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
-			m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+//			m_fIncrement = 0.f;
+//			m_bFinish = false;
+//
+//			if (REWARD_WINDOW == m_eType)
+//			{
+//				m_tInfo.fCX = m_vOriginSize.x;
+//				m_tInfo.fCY = m_vOriginSize.y;
+//				m_tInfo.fX = m_vOriginPosition.x;
+//				m_tInfo.fY = m_vOriginPosition.y;
+//			}
+//			else if (REWARD_BOTTOM == m_eType)
+//			{
+//				m_tInfo.fX = m_vOriginPosition.x;
+//				m_tInfo.fY = m_vOriginPosition.y;
+//			}
+//
+//			m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+//			m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+//				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
 		}
 
 		__super::Tick(fTimeDelta);
@@ -153,6 +219,45 @@ void CUI_Quest_Reward::LateTick(_float fTimeDelta)
 	{
 		if (REWARD_END == m_eType)
 			return;
+
+		if (REWARD_TOP == m_eType)
+		{
+			CRenderer::TEXT_DESC TextDesc;
+
+			_int iLength = m_strText.length();
+
+			TextDesc.strText = m_strText;
+			TextDesc.strFontTag = L"Default_Bold";
+			TextDesc.vScale = { 0.5f, 0.5f };
+			TextDesc.vColor = _float4(0.478f, 0.541f, 0.549f, 1.f);
+			TextDesc.vPosition = _float2(m_vTextPosition.x - iLength * 7.f, m_vTextPosition.y);
+
+			if (0.4f <= m_fAlpha)
+				m_pRendererCom->Add_Text(TextDesc);
+		}
+
+		if (3.5f < m_fActiveTimeAcc)
+		{
+			m_bAlpha = true;
+			m_fActiveTimeAcc = 0.f;
+		}
+
+		if (m_bAlpha)
+		{
+			m_fAlpha -= fTimeDelta;
+
+			if (REWARD_TOP == m_eType)
+			{
+				CUI_Manager::GetInstance()->Set_AlphaToItems();
+			}
+
+			if (m_fAlpha <= 0.f)
+			{
+				m_fAlpha = 0.f;
+				//Set_Active(false);
+				CUI_Manager::GetInstance()->OnOff_QuestRewards(false);
+			}
+		}
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}

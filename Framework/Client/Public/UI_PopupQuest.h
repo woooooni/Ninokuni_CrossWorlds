@@ -9,7 +9,7 @@ class CUI_PopupQuest final : public CUI
 {
 public:
 	enum UI_QUESTPOPUP { POPUPFRAME_TOP, POPUPFRAME_BOTTOM, POPUP_SEPARATOR, POPUP_WINDOW, QUESTPOPUP_END };
-	enum UI_POPUP_SEPARATOR { SEPARATOR_FIRST, SEPARATOR_SECOND, SEPARATOR_END };
+	enum UI_POPUP_SEPARATOR { SEPARATOR_FIRST, SEPARATOR_SECOND, SEPARATOR_THIRD, SEPARATOR_END };
 
 public:
 	typedef struct tagQuestInformation
@@ -28,6 +28,7 @@ protected:
 public:
 	virtual void Set_Active(_bool bActive);
 	void Set_Contents(const wstring& strQuestType, const wstring& strTitle, const wstring& strContents);
+	void Update_QuestContents(const wstring& strPreTitle, const wstring& strQuestType, const wstring& strTitle, const wstring& strContents);
 	void Clear_Quest(const wstring& strTitle);
 
 	_int Get_NumOfQuest();

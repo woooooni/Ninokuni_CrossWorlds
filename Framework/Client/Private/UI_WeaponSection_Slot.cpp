@@ -142,6 +142,8 @@ HRESULT CUI_WeaponSection_Slot::Initialize(void* pArg)
 	m_bHideFinish = false;
 	m_vOriginPosition = _float2(m_tInfo.fX, m_tInfo.fY);
 
+	m_bUseMouse = true;
+
 	return S_OK;
 }
 

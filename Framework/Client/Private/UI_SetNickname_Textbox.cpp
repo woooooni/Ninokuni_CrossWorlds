@@ -40,6 +40,8 @@ HRESULT CUI_SetNickname_Textbox::Initialize(void* pArg)
 	_float fOffset = 180.f;
 	Make_Child(fOffset, 0.f, fSize, fSize, TEXT("Prototype_GameObject_UI_SetNickname_Dice"));
 
+	m_bUseMouse = true;
+
 	return S_OK;
 }
 

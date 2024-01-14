@@ -33,6 +33,7 @@ HRESULT CUI_BtnBack::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_bActive = true;
+	m_bUseMouse = true;
 	
 	return S_OK;
 }

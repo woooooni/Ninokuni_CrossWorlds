@@ -2,7 +2,8 @@
 #include "UI.h"
 #include "GameInstance.h"
 #include "UI_Manager.h"
-
+#include "Game_Manager.h"
+#include "Player.h"
 
 
 CUI::CUI(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
@@ -204,89 +205,89 @@ void CUI::Tick(_float fTimeDelta)
 		UIRect.bottom = m_tInfo.pParent->Get_UI_Info().fY + m_tInfo.fY + m_tInfo.fCY / 2.f;
 	}
 
-	RECT Result;
-	if (IntersectRect(&Result, &MouseRect, &UIRect))
+	if (m_bUseMouse)
 	{
-		// 들어와 있다.
-		switch(m_eMouseState)
+		RECT Result;
+		if (IntersectRect(&Result, &MouseRect, &UIRect))
 		{
-		case UI_MOUSESTATE::MOUSE_ENTER:
-			m_eMouseState = UI_MOUSESTATE::MOUSE_ON;
-			On_Mouse(fTimeDelta);
-			break;
-		case UI_MOUSESTATE::MOUSE_ON:
-			On_Mouse(fTimeDelta);
-			break;
-		case UI_MOUSESTATE::MOUSE_EXIT:
-			m_eMouseState = UI_MOUSESTATE::MOUSE_ENTER;
-			On_MouseEnter(fTimeDelta);
-			break;
+			// 들어와 있다.
+			switch (m_eMouseState)
+			{
+			case UI_MOUSESTATE::MOUSE_ENTER:
+				m_eMouseState = UI_MOUSESTATE::MOUSE_ON;
+				On_Mouse(fTimeDelta);
+				break;
+			case UI_MOUSESTATE::MOUSE_ON:
+				On_Mouse(fTimeDelta);
+				break;
+			case UI_MOUSESTATE::MOUSE_EXIT:
+				m_eMouseState = UI_MOUSESTATE::MOUSE_ENTER;
+				On_MouseEnter(fTimeDelta);
+				break;
 
-		case UI_MOUSESTATE::MOUSE_DRAG_START:
-			m_eMouseState = UI_MOUSESTATE::MOUSE_DRAG;
-			On_MouseDrag(fTimeDelta);
-			break;
+			case UI_MOUSESTATE::MOUSE_DRAG_START:
+				m_eMouseState = UI_MOUSESTATE::MOUSE_DRAG;
+				On_MouseDrag(fTimeDelta);
+				break;
 
-		case UI_MOUSESTATE::MOUSE_DRAG:
-			On_MouseDrag(fTimeDelta);
-			break;
+			case UI_MOUSESTATE::MOUSE_DRAG:
+				On_MouseDrag(fTimeDelta);
+				break;
 
-		case UI_MOUSESTATE::MOUSE_DRAG_END:
-			m_eMouseState = UI_MOUSESTATE::MOUSE_ON;
-			On_Mouse(fTimeDelta);
-			break;
+			case UI_MOUSESTATE::MOUSE_DRAG_END:
+				m_eMouseState = UI_MOUSESTATE::MOUSE_ON;
+				On_Mouse(fTimeDelta);
+				break;
 
 
-		default:
-			m_eMouseState = UI_MOUSESTATE::MOUSE_ENTER;
-			On_MouseEnter(fTimeDelta);
-			break;
+			default:
+				m_eMouseState = UI_MOUSESTATE::MOUSE_ENTER;
+				On_MouseEnter(fTimeDelta);
+				break;
 
+			}
 		}
-	}
-	else
-	{
-		// 안들어와 있다.
-		switch (m_eMouseState)
+		else
 		{
-		case UI_MOUSESTATE::MOUSE_ENTER:
-			m_eMouseState = UI_MOUSESTATE::MOUSE_EXIT;
-			On_MouseExit(fTimeDelta);
-			break;
-		case UI_MOUSESTATE::MOUSE_ON:
-			m_eMouseState = UI_MOUSESTATE::MOUSE_EXIT;
-			On_MouseExit(fTimeDelta);
-			break;
+			// 안들어와 있다.
+			switch (m_eMouseState)
+			{
+			case UI_MOUSESTATE::MOUSE_ENTER:
+				m_eMouseState = UI_MOUSESTATE::MOUSE_EXIT;
+				On_MouseExit(fTimeDelta);
+				break;
+			case UI_MOUSESTATE::MOUSE_ON:
+				m_eMouseState = UI_MOUSESTATE::MOUSE_EXIT;
+				On_MouseExit(fTimeDelta);
+				break;
 
-		case UI_MOUSESTATE::MOUSE_EXIT:
-			m_eMouseState = UI_MOUSESTATE::MOUSE_END;
-			break;
+			case UI_MOUSESTATE::MOUSE_EXIT:
+				m_eMouseState = UI_MOUSESTATE::MOUSE_END;
+				break;
 
-		case UI_MOUSESTATE::MOUSE_DRAG_START:
-			m_eMouseState = UI_MOUSESTATE::MOUSE_EXIT;
-			On_MouseDragExit(fTimeDelta);
-			break;
+			case UI_MOUSESTATE::MOUSE_DRAG_START:
+				m_eMouseState = UI_MOUSESTATE::MOUSE_EXIT;
+				On_MouseDragExit(fTimeDelta);
+				break;
 
-		case UI_MOUSESTATE::MOUSE_DRAG:
-			m_eMouseState = UI_MOUSESTATE::MOUSE_EXIT;
-			On_MouseDragExit(fTimeDelta);
-			break;
+			case UI_MOUSESTATE::MOUSE_DRAG:
+				m_eMouseState = UI_MOUSESTATE::MOUSE_EXIT;
+				On_MouseDragExit(fTimeDelta);
+				break;
 
-		case UI_MOUSESTATE::MOUSE_DRAG_END:
-			m_eMouseState = UI_MOUSESTATE::MOUSE_EXIT;
-			On_MouseExit(fTimeDelta);
-			break;
+			case UI_MOUSESTATE::MOUSE_DRAG_END:
+				m_eMouseState = UI_MOUSESTATE::MOUSE_EXIT;
+				On_MouseExit(fTimeDelta);
+				break;
 
-		default:
-			break;
+			default:
+				break;
+			}
 		}
 	}
 
 	if (nullptr != m_tInfo.pParent) // 부모가 있는 UI라면
 	{
-		//m_tInfo.fX = m_tInfo.pParent->Get_UI_Info().fX + m_tInfo.fX;
-		//m_tInfo.fY = m_tInfo.pParent->Get_UI_Info().fY + m_tInfo.fY;
-
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 			XMVectorSet((m_tInfo.pParent->Get_UI_Info().fX + m_tInfo.fX) - (g_iWinSizeX * 0.5f),
 				-(m_tInfo.pParent->Get_UI_Info().fY + m_tInfo.fY) + (g_iWinSizeY * 0.5f), 0.0f, 1.f));
@@ -370,22 +371,41 @@ void CUI::Delete_AllChild()
 
 void CUI::On_Mouse(_float fTimeDelta)
 {
-	if (KEY_TAP(KEY::LBTN))
+	if (m_bActive)
 	{
-		if (m_bActive)
+		if (KEY_TAP(KEY::LBTN))
 		{
 			m_bEvent = true;
 			CUI_Manager::GetInstance()->Set_UIClicked(m_bEvent);
 		}
-	}
 
-	if (KEY_HOLD(KEY::LBTN) || KEY_HOLD(KEY::RBTN))
-	{
-		if (GI->Get_DIMMoveState(DIMM_X) || GI->Get_DIMMoveState(DIMM_Y))
+		if (KEY_HOLD(KEY::LBTN) || KEY_HOLD(KEY::RBTN))
 		{
-			m_eMouseState = UI_MOUSESTATE::MOUSE_DRAG_START;
-			return;
+			if (GI->Get_DIMMoveState(DIMM_X) || GI->Get_DIMMoveState(DIMM_Y))
+			{
+				m_eMouseState = UI_MOUSESTATE::MOUSE_DRAG_START;
+				return;
+			}
 		}
+
+		CPlayer* pPlayer = nullptr;
+		pPlayer = CGame_Manager::GetInstance()->Get_Player();
+		if (nullptr == pPlayer)
+			return;
+
+		CCharacter* pCharacter = nullptr;
+		pCharacter = pPlayer->Get_Character();
+		if (nullptr == pCharacter)
+			return;
+
+		if (TEXT("UI_Cursor" == m_strObjectTag))
+			return;
+		if (TEXT("UI_Btn_Basic_GameStart") == m_strObjectTag)
+			return;
+
+		pCharacter->Set_Skill_Input(false);
+		pCharacter->Set_Attack_Input(false);
+		pCharacter->Set_Move_Input(false);
 	}
 }
 
@@ -398,6 +418,28 @@ void CUI::On_MouseExit(_float fTimeDelta)
 			m_bEvent = false;
 			CUI_Manager::GetInstance()->Set_UIClicked(m_bEvent);
 		}
+
+		CPlayer* pPlayer = nullptr;
+		pPlayer = CGame_Manager::GetInstance()->Get_Player();
+		if (nullptr == pPlayer)
+			return;
+
+		CCharacter* pCharacter = nullptr;
+		pCharacter = pPlayer->Get_Character();
+		if (nullptr == pCharacter)
+			return;
+
+		if (TEXT("UI_Cursor" == m_strObjectTag))
+			return;
+		if (TEXT("UI_Btn_Basic_GameStart") == m_strObjectTag)
+			return;
+
+		if (!pCharacter->Is_Skill_Input())
+			pCharacter->Set_Skill_Input(true);
+		if (!pCharacter->Is_Attack_Input())
+			pCharacter->Set_Attack_Input(true);
+		if (!pCharacter->Is_Move_Input())
+			pCharacter->Set_Move_Input(true);
 	}
 }
 

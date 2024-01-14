@@ -35,6 +35,7 @@ HRESULT CUI_ImajinnSection_Slot::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_bActive = true;
+	m_bUseMouse = true;
 	
 	return S_OK;
 }

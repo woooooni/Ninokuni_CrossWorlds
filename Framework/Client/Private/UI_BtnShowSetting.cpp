@@ -35,6 +35,8 @@ HRESULT CUI_BtnShowSetting::Initialize(void* pArg)
 	m_bActive = true;
 	m_fAlpha = 1.f;
 
+	m_bUseMouse = true;
+
 	return S_OK;
 }
 

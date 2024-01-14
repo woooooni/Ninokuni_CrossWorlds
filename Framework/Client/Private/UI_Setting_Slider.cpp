@@ -38,6 +38,8 @@ HRESULT CUI_Setting_Slider::Initialize(void* pArg)
 
 	m_bActive = true;
 	m_iPercent = 100;
+
+	m_bUseMouse = true;
 	
 	return S_OK;
 }

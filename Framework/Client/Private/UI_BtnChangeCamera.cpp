@@ -38,6 +38,8 @@ HRESULT CUI_BtnChangeCamera::Initialize(void* pArg)
 	m_vHidePosition.x = -1.f * m_tInfo.fCX * 0.5f;
 	m_vHidePosition.y = m_tInfo.fY;
 
+	m_bUseMouse = true;
+
 	return S_OK;
 }
 
