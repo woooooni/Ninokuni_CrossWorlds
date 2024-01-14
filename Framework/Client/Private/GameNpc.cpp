@@ -132,19 +132,41 @@ HRESULT CGameNpc::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffe
 	_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 	_uint iPassIndex = 0;
 
-	for (_uint i = 0; i < iNumMeshes; ++i)
+	if (m_strObjectTag == TEXT("TreeGrandfa"))
 	{
-		if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
-			return E_FAIL;
+		for (_uint i = 0; i < iNumMeshes; ++i)
+		{
+			if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+				return E_FAIL;
 
-		if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
-			iPassIndex = 0;
-		else
-			iPassIndex++;
+			if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
+				iPassIndex = 0;
+			else
+				iPassIndex++;
 
-		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, i, pInstancingBuffer, WorldMatrices, iPassIndex)))
-			return E_FAIL;
+			iPassIndex = iPassIndex == 1 ? iPassIndex = 1 : iPassIndex = 4;
+
+			if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, i, pInstancingBuffer, WorldMatrices, iPassIndex)))
+				return E_FAIL;
+		}
 	}
+	else
+	{
+		for (_uint i = 0; i < iNumMeshes; ++i)
+		{
+			if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+				return E_FAIL;
+
+			if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
+				iPassIndex = 0;
+			else
+				iPassIndex++;
+
+			if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, i, pInstancingBuffer, WorldMatrices, iPassIndex)))
+				return E_FAIL;
+		}
+	}
+
 
 
 	return S_OK;

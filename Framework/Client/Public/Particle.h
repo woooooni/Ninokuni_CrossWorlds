@@ -204,7 +204,7 @@ public:
 	class CTexture* Get_AlphaTexture() { return m_pAlphaTextureCom; }
 
 	void Set_DeleteParticle(_bool bParticleDelete) { m_bParticleDelete = bParticleDelete; }
-
+	void Set_OffsetPosition(Vec4 offset) { m_vOffsetPos = offset; }
 private:
 	_bool m_isCloned = { false };
 	PARTICLE_DESC m_tParticleDesc;
@@ -220,6 +220,8 @@ private:
 	_float3 m_vLocalPos = _float3(0.f, 0.f, 0.f);
 	_float3 m_vLocalScale = _float3(0.f, 0.f, 0.f);
 	_float3 m_vLocalRotation = _float3(0.f, 0.f, 0.f);
+
+	Vec4 m_vOffsetPos = Vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
 private:
 	class CRenderer*  m_pRendererCom = nullptr;

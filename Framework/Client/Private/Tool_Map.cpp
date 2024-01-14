@@ -375,7 +375,7 @@ void CTool_Map::Picking()
 		}
 	}
 #pragma region Npc Not Roming
-	if (m_iNPCState != 1 && m_iControlState != 7 && false == m_bAnimalPointPick)
+	if (m_iNPCState != 1 && m_iControlState != 7 && false == m_bAnimalPointPick && false == m_bPlantMode)
 	{
 		if (KEY_HOLD(KEY::CTRL) && KEY_TAP(KEY::RBTN))
 		{
@@ -430,6 +430,54 @@ void CTool_Map::Picking()
 
 								break;
 							}
+						}
+					}
+				}
+			}
+		}
+	}
+	else if (true == m_bPlantMode)
+	{
+		if (KEY_HOLD(KEY::CTRL) && KEY_TAP(KEY::RBTN))
+		{
+			if (nullptr == m_pSelectObj)
+				return;
+
+			for (_uint i = 0; i < LAYER_TYPE::LAYER_END; ++i)
+			{
+				if (i == LAYER_TYPE::LAYER_CAMERA
+					|| i == LAYER_TYPE::LAYER_TERRAIN
+					|| i == LAYER_TYPE::LAYER_BACKGROUND
+					|| i == LAYER_TYPE::LAYER_SKYBOX
+					|| i == LAYER_TYPE::LAYER_UI
+					|| i == LAYER_TYPE::LAYER_EFFECT)
+					continue;
+
+				list<CGameObject*>& GameObjects = GI->Find_GameObjects(LEVEL_TOOL, i);
+
+				for (auto& Object : GameObjects)
+				{
+					CTransform* pTransform = Object->Get_Component<CTransform>(L"Com_Transform");
+					CModel* pModel = Object->Get_Component<CModel>(L"Com_Model");
+					if (pTransform == nullptr)
+						continue;
+
+					if (pModel == nullptr)
+						continue;
+
+					for (auto& pMesh : pModel->Get_Meshes())
+					{
+						Vec4 vPosition;
+
+						if (CPicking_Manager::GetInstance()->Is_Picking(pTransform, pMesh, false, &vPosition))
+						{
+							CGameObject* pPlant = GI->Clone_GameObject(m_pSelectObj->Get_PrototypeTag(), LAYER_TYPE::LAYER_GRASS);
+
+							CTransform* pPlantTransform = pPlant->Get_Component<CTransform>(L"Com_Transform");
+							pPlantTransform->Set_State(CTransform::STATE::STATE_POSITION, ::XMLoadFloat4(&vPosition));
+							GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_GRASS, pPlant);
+
+							return;
 						}
 					}
 				}
@@ -1630,9 +1678,11 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
 	File->Open(strMapFilePath, FileMode::Read);
 
+	m_pSelectObj = nullptr;
+
 	GI->Clear_PhysX_Ground();
 	GI->Clear_Layer(LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC);
-	m_pSelectObj = nullptr;
+
 
 	for (_uint i = 0; i < LAYER_TYPE::LAYER_END; ++i)
 	{
@@ -1717,6 +1767,17 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 		}
 	}
 
+	list<CGameObject*> Buildings = GI->Find_GameObjects(LEVEL_TOOL, LAYER_TYPE::LAYER_BUILDING);
+	for (auto& Building : Buildings)
+	{
+		if (FAILED(GI->Add_Building(Building,
+			Building->Get_Component<CModel>(L"Com_Model"),
+			Building->Get_Component<CTransform>(L"Com_Transform")->Get_WorldMatrix())))
+		{
+			MSG_BOX("피직스 빌딩 생성에 실패했습니다.");
+		}
+	}
+
 	if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, Vec4(0.f, 0.f, 0.f, 1.f), false)))
 		return E_FAIL;
 
@@ -1725,6 +1786,8 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
 		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
 	}
+
+
 
 
 	MSG_BOX("Map_Loaded.");
@@ -1816,10 +1879,10 @@ HRESULT CTool_Map::Load_Dynamic_Data(const wstring& strMapFileName)
 	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
 	File->Open(strMapFilePath, FileMode::Read);
 
-	
+	m_pSelectObj = nullptr;
+
 	GI->Clear_Layer(LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC);
 
-	m_pSelectObj = nullptr;
 
 	_uint iObjectCount = File->Read<_uint>();
 	for (_uint j = 0; j < iObjectCount; ++j)

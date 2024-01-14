@@ -30,6 +30,14 @@ public:
 private:
 	void MoveProps(_float fTimeDelta);
 
+private:
+	_float m_fTime = 0.0f;
+	_float m_fAngle = 0.0f;
+
+	_bool m_bFirst = true;
+
+	class CParticle* m_pParticle = nullptr;
+
 public:
 	static CProbs* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag,
 		const wstring& strFilePath, const wstring& strFileName, _int eObjType, _uint eModelType);

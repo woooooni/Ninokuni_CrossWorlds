@@ -72,7 +72,7 @@ public:
 	class CTransform* Get_TransformCom() { return m_pTransformCom; }
 
 	void Set_DeleteDecal(_bool bDecalDelete) { m_bDecalDelete = bDecalDelete; }
-
+	void Set_OffsetPosition(Vec4 vPos) { m_vOffsetPos = vPos; }
 private:
 	void Tick_Alpha(_float fTimeDelta);
 
@@ -81,6 +81,8 @@ private:
 	DECAL_DESC m_tDecalDesc;
 
 	_bool m_bDecalDelete = true;
+
+	Vec4 m_vOffsetPos;
 
 private:
 	_bool  m_bDecalDie        = false;

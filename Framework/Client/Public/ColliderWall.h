@@ -2,10 +2,6 @@
 
 #include "StaticObject.h"
 
-BEGIN(Engine)
-class CVIBuffer_Rect;
-END
-
 BEGIN(Client)
 
 class CColliderWall final : public CStaticObject
@@ -30,9 +26,6 @@ public:
 	virtual void Collision_Exit(const COLLISION_INFO& tInfo) override;
 
 	virtual HRESULT Ready_Components();
-
-private:
-	CVIBuffer_Rect* m_pVIBufferCom = nullptr;
 
 public:
 	static CColliderWall* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag,

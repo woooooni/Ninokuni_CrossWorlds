@@ -45,3 +45,4 @@
 // ETC //
 #include "Vfx_QuestPoint.h"
 #include "Vfx_PortalPoint.h"
+#include "Vfx_Smoke.h"

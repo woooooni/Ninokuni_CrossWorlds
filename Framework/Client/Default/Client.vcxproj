@@ -726,6 +726,7 @@
     <ClInclude Include="..\Public\Vfx_Glanix_Skill_TwoHandSwing.h" />
     <ClInclude Include="..\Public\Vfx_PortalPoint.h" />
     <ClInclude Include="..\Public\Vfx_QuestPoint.h" />
+    <ClInclude Include="..\Public\Vfx_Smoke.h" />
     <ClInclude Include="..\Public\Vfx_UI_MouseClick.h" />
     <ClInclude Include="..\Public\Face.h" />
     <ClInclude Include="..\Public\Hair.h" />
@@ -1433,6 +1434,7 @@
     <ClCompile Include="..\Private\Vfx_Glanix_Skill_TwoHandSwing.cpp" />
     <ClCompile Include="..\Private\Vfx_PortalPoint.cpp" />
     <ClCompile Include="..\Private\Vfx_QuestPoint.cpp" />
+    <ClCompile Include="..\Private\Vfx_Smoke.cpp" />
     <ClCompile Include="..\Private\Vfx_UI_MouseClick.cpp" />
     <ClCompile Include="..\Private\Face.cpp" />
     <ClCompile Include="..\Private\Hair.cpp" />

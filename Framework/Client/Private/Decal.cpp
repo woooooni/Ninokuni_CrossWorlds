@@ -74,7 +74,7 @@ void CDecal::LateTick(_float fTimeDelta)
 
 		CTransform* pTransform = m_pOwnerObject->Get_Component<CTransform>(L"Com_Transform");
 		if (pTransform != nullptr)
-			m_pTransformCom->Set_State(CTransform::STATE_POSITION, pTransform->Get_Position());
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, pTransform->Get_Position() + ::XMLoadFloat4(&m_vOffsetPos));
 	}
 
 	if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_Position(), 10.f))

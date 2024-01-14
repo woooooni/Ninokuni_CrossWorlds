@@ -156,6 +156,65 @@ HRESULT CParticle_Manager::Generate_Particle(const wstring& strParticleName, _ma
 	return S_OK;
 }
 
+HRESULT CParticle_Manager::Generate_Particle_To_Position(const wstring& strParticleName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner, CParticle** ppOut, _bool bDelet)
+{
+	// strDecalName
+	CGameObject* pGameObject = GI->Clone_GameObject(L"Prototype_" + strParticleName, LAYER_TYPE::LAYER_EFFECT);
+	if (nullptr == pGameObject)
+	{
+		MSG_BOX("Decal_Clone_Failde");
+		return E_FAIL;
+	}
+
+	CParticle* pParticle = dynamic_cast<CParticle*>(pGameObject);
+	if (nullptr == pParticle)
+	{
+		if (nullptr != pGameObject)
+			Safe_Release(pGameObject);
+
+		MSG_BOX("Decal_Casting_Failde");
+		return E_FAIL;
+	}
+
+	// WorldMatrix
+	CTransform* pTransform = pParticle->Get_Component<CTransform>(L"Com_Transform");
+	if (pTransform == nullptr)
+		return E_FAIL;
+	pTransform->Set_WorldMatrix(WorldMatrix); // 부모 또는 자신의 행렬 셋팅
+
+	// Scale / Rotation
+	Matrix matScale = matScale.CreateScale(vLocalScale);
+	Matrix matRotation = matScale.CreateFromYawPitchRoll(Vec3(XMConvertToRadians(vLocalRotation.x), XMConvertToRadians(vLocalRotation.y), XMConvertToRadians(vLocalRotation.z)));
+	Matrix matResult = matScale * matRotation * pTransform->Get_WorldFloat4x4();
+	pTransform->Set_WorldMatrix(matResult);
+
+	// Position
+	_vector vFinalPosition = pTransform->Get_Position();
+	vFinalPosition.m128_f32[0] += vLocalPos.x;
+	vFinalPosition.m128_f32[1] += vLocalPos.y;
+	vFinalPosition.m128_f32[2] += vLocalPos.z;
+	pTransform->Set_State(CTransform::STATE_POSITION, XMVectorSet(XMVectorGetX(vFinalPosition), XMVectorGetY(vFinalPosition), XMVectorGetZ(vFinalPosition), 1.f));
+
+	// pOwner
+	if (pOwner != nullptr)
+		pParticle->Set_Owner(pOwner);
+
+	// ppOut
+	if (ppOut != nullptr)
+		*ppOut = pParticle;
+
+	// bDelet
+	pParticle->Set_DeleteParticle(bDelet);
+
+	Vec4 vOffsetPos = Vec4(vLocalPos.x, vLocalPos.y, vLocalPos.z, 0.0f);
+	pParticle->Set_OffsetPosition(vOffsetPos);
+
+	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, pGameObject)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
 HRESULT CParticle_Manager::Tick_Generate_Particle(_float* fTimeAcc, _float fCreateTime, _float fTimeDelta, const wstring& strParticleName, CGameObject* pOwner, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, _bool bOwnerSet)
 {
 	*fTimeAcc += fTimeDelta;

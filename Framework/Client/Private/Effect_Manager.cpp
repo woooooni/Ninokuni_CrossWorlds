@@ -165,6 +165,65 @@ HRESULT CEffect_Manager::Generate_Decal(const wstring& strDecalName, _matrix Wor
 	return S_OK;
 }
 
+HRESULT CEffect_Manager::Generate_Decal_To_Position(const wstring& strDecalName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner, CDecal** ppOut, _bool bDelet)
+{
+	// strDecalName
+	CGameObject* pGameObject = GI->Clone_GameObject(L"Prototype_" + strDecalName, LAYER_TYPE::LAYER_EFFECT);
+	if (nullptr == pGameObject)
+	{
+		MSG_BOX("Decal_Clone_Failde");
+		return E_FAIL;
+	}
+
+	CDecal* pDecal = dynamic_cast<CDecal*>(pGameObject);
+	if (nullptr == pDecal)
+	{
+		if (nullptr != pGameObject)
+			Safe_Release(pGameObject);
+
+		MSG_BOX("Decal_Casting_Failde");
+		return E_FAIL;
+	}
+
+	// WorldMatrix
+	CTransform* pTransform = pDecal->Get_Component<CTransform>(L"Com_Transform");
+	if (pTransform == nullptr)
+		return E_FAIL;
+	pTransform->Set_WorldMatrix(WorldMatrix); // 부모 또는 자신의 행렬 셋팅
+
+	// Scale / Rotation
+	Matrix matScale = matScale.CreateScale(vLocalScale);
+	Matrix matRotation = matScale.CreateFromYawPitchRoll(Vec3(XMConvertToRadians(vLocalRotation.x), XMConvertToRadians(vLocalRotation.y), XMConvertToRadians(vLocalRotation.z)));
+	Matrix matResult = matScale * matRotation * pTransform->Get_WorldFloat4x4();
+	pTransform->Set_WorldMatrix(matResult);
+
+	// Position
+	_vector vFinalPosition = pTransform->Get_Position();
+	vFinalPosition.m128_f32[0] += vLocalPos.x;
+	vFinalPosition.m128_f32[1] += vLocalPos.y;
+	vFinalPosition.m128_f32[2] += vLocalPos.z;
+	pTransform->Set_State(CTransform::STATE_POSITION, XMVectorSet(XMVectorGetX(vFinalPosition), XMVectorGetY(vFinalPosition), XMVectorGetZ(vFinalPosition), 1.f));
+
+	// pOwner
+	if (pOwner != nullptr)
+		pDecal->Set_Owner(pOwner);
+
+	// ppOut
+	if (ppOut != nullptr)
+		*ppOut = pDecal;
+
+	// bDelet
+	pDecal->Set_DeleteDecal(bDelet);
+
+	Vec4 vOffsetPos = Vec4(vLocalPos.x, vLocalPos.y, vLocalPos.z, 0.0f);
+	pDecal->Set_OffsetPosition(vOffsetPos);
+
+	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, pGameObject)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
 HRESULT CEffect_Manager::Generate_Vfx(const wstring& strVfxName, _matrix WorldMatrix, CGameObject* pOwner, class CVfx** ppOut)
 {
 	// strVfxName
@@ -560,6 +619,12 @@ HRESULT CEffect_Manager::Ready_Proto_Vfx()
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_PortalPoint"),
 		CVfx_PortalPoint::Create(m_pDevice, m_pContext, TEXT("PortalPoint")), LAYER_TYPE::LAYER_EFFECT)))
 		return E_FAIL;
+
+	// Prototype_Vfx_PortalPoint
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Smoke"),
+		CVfx_Smoke::Create(m_pDevice, m_pContext, TEXT("TentSmoke")), LAYER_TYPE::LAYER_EFFECT)))
+		return E_FAIL;
+
 
 	return S_OK;
 }

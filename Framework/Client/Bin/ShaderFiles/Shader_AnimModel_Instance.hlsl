@@ -317,6 +317,51 @@ PS_OUT PS_MAIN(PS_IN In)
 	return Out;
 }
 
+PS_OUT PS_GRANDFA_MAIN(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    vector vDissoveTexture = g_DissolveTexture.Sample(LinearSampler, In.vTexUV);
+    float fDissolveAlpha = saturate(1.0 - g_AnimInstancingDesc[In.iInstanceID].fDissolveWeight / g_AnimInstancingDesc[In.iInstanceID].fDissolveDuration + vDissoveTexture.r);
+	
+	// ÇÈ¼¿ »ý·«
+    if (fDissolveAlpha < 0.3)
+        discard;
+	
+	// ÇÈ¼¿ »ö»ó ÁöÁ¤ : ¸í¾Ï ¿¬»ê X
+    else if (fDissolveAlpha < 0.5)
+    {
+        Out.vDiffuse = g_AnimInstancingDesc[In.iInstanceID].vDissolveColor;
+        Out.vNormal = float4(1.f, 1.f, 1.f, 0.f);
+        Out.vBloom = float4(Out.vDiffuse.r, Out.vDiffuse.g, Out.vDiffuse.b, 0.5f);
+    }
+	
+	// ±âº» ÇÈ¼¿ ·»´õ¸µ
+    else
+    {
+        Out.vDiffuse = g_DiffuseTexture.Sample(PointSampler, In.vTexUV);
+        Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+
+
+        float fRimPower = 1.f - saturate(dot(In.vNormal.xyz, normalize((-1.f * (In.vWorldPosition - g_vCamPosition)))));
+        fRimPower = pow(fRimPower, 5.f);
+        vector vRimColor = g_AnimInstancingDesc[In.iInstanceID].vRimColor * fRimPower;
+        Out.vDiffuse += vRimColor;
+        Out.vBloom = Caculation_Brightness(Out.vDiffuse) + vRimColor;
+
+        if (0.5f >= Out.vDiffuse.a)
+            discard;
+
+		
+	
+    }
+	
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
+    Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	
+    return Out;
+}
+
 PS_OUT PS_MAIN_NORMAL(PS_IN In)
 {
 	PS_OUT Out = (PS_OUT)0;
@@ -504,19 +549,19 @@ technique11 DefaultTechnique
 		PixelShader = compile ps_5_0 PS_MOTION_TRAIL();
 	}
 
-	pass Temp1
-	{
+    pass WoodNpc
+    {
 		// 4
-		SetRasterizerState(RS_NoneCull);
-		SetDepthStencilState(DSS_Default, 0);
-		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetRasterizerState(RS_NoneCull);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
-		VertexShader = compile vs_5_0 VS_MAIN();
-		GeometryShader = NULL;
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-		PixelShader = compile ps_5_0 PS_MAIN();
-	}
+        PixelShader = compile ps_5_0 PS_GRANDFA_MAIN();
+    }
 
 	pass Temp2
 	{

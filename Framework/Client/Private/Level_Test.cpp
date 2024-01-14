@@ -49,8 +49,8 @@ HRESULT CLevel_Test::Initialize()
 	//if (FAILED(Ready_Layer_Npc(LAYER_TYPE::LAYER_NPC)))
 	//	return E_FAIL;
 
- 	if (FAILED(Ready_Layer_Monster(LAYER_TYPE::LAYER_MONSTER)))
-		return E_FAIL;
+ /*	if (FAILED(Ready_Layer_Monster(LAYER_TYPE::LAYER_MONSTER)))
+		return E_FAIL;*/
 
 	if (FAILED(Ready_Layer_Effect(LAYER_TYPE::LAYER_EFFECT)))
 		return E_FAIL;

@@ -36,11 +36,11 @@ void CPlants::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
-	if (TEXT("Common_grass_01") == m_strObjectTag || TEXT("Common_grass_Small_01") == m_strObjectTag)
+	if (TEXT("Common_grass_01") == m_strObjectTag || TEXT("Common_grass_Small_01") == m_strObjectTag || TEXT("Common_BushA_01") == m_strObjectTag)
 	{
 		m_fTime += fTimeDelta;
 
-		m_fAngle = 0.05 * -sin(m_fTime);
+		m_fAngle = 0.2 * -sin(m_fTime);
 	}
 }
 
@@ -100,6 +100,17 @@ HRESULT CPlants::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancin
 		if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(0), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
 		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, 0, pInstancingBuffer, WorldMatrices, 5)))
+			return E_FAIL;
+		if (FAILED(pInstancingShader->Bind_RawValue("fGrassAngle", &m_fAngle, sizeof(_float))))
+			return E_FAIL;
+	}
+	else if (TEXT("Common_BushA_01") == m_strObjectTag)
+	{
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(pInstancingShader, "GrassMaskTexture")))
+			return E_FAIL;
+		if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(0), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+			return E_FAIL;
+		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, 0, pInstancingBuffer, WorldMatrices, 6)))
 			return E_FAIL;
 		if (FAILED(pInstancingShader->Bind_RawValue("fGrassAngle", &m_fAngle, sizeof(_float))))
 			return E_FAIL;

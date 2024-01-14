@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "..\Public\TreeRock.h"
 #include "GameInstance.h"
+#include "Effect_Manager.h"
 
 CTreeRock::CTreeRock(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType)
 	: CStaticObject(pDevice, pContext, strObjectTag, eType)
@@ -29,11 +30,19 @@ HRESULT CTreeRock::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+	// Transform은 알아서 해야됨
+
 	return S_OK;
 }
 
 void CTreeRock::Tick(_float fTimeDelta)
 {
+	if (true == m_bFirst && TEXT("Common_TreeB_02a") == m_strObjectTag)
+	{
+		CEffect_Manager::GetInstance()->Generate_Decal_To_Position(TEXT("TreeSnowu"), m_pTransformCom->Get_WorldMatrix(), Vec3(0.0f, 12.0f, 0.0f), Vec3(5.0f, 7.0f, 5.0f), Vec3(0.0f, 0.0f, 0.0f), this, &m_pDecalCom, false);	
+		m_bFirst = false;
+	}
+
 	__super::Tick(fTimeDelta);
 }
 
@@ -144,6 +153,7 @@ HRESULT CTreeRock::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_") + m_strMapObjName,
 		TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 		return E_FAIL;
+
 
 	return S_OK;
 }
