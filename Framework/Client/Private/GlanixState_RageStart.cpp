@@ -47,6 +47,10 @@ void CGlanixState_RageStart::Exit_State()
 		if (S_OK == pCamTop->Start_TopView(CCamera_Top::VIEW_TYPE::GLANIX_PILLAR_PATTERN))
 		{
 			CCamera_Manager::GetInstance()->Change_Camera(pCamTop->Get_Key(), 1.25f, LERP_MODE::SMOOTHER_STEP);
+
+			// 플레이어 공격 인풋 막기
+			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_Attack_Input(false);
+			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_Skill_Input(false);
 		}
 	}
 }

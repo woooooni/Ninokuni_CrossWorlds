@@ -20,7 +20,7 @@ CGlanix_IcePillar_Controller::~CGlanix_IcePillar_Controller()
 
 void CGlanix_IcePillar_Controller::Tick(const _float fTimeDelta)
 {
-	if (nullptr == m_pGlanix)
+	if (nullptr == m_pGlanix || m_pPillars.empty())
 		return;
 
 	/* 콜라이더 On Off */
@@ -63,18 +63,62 @@ void CGlanix_IcePillar_Controller::Tick(const _float fTimeDelta)
 			Accelerate_PillarsSpeed();
 		}
 	}
-
-	/* 킬 카운트가 2 넘으면 시간 패턴 추가*/
-	/*if (2 <= m_iKillCount)
+	else /* 킬 카운트가 2 넘으면 시간 패턴 추가 */
 	{
+		if (2 <= m_iKillCount)
+		{
+			if (m_bAcceleration && !m_pPillars[0]->m_tSpeedDesc.bActive)
+			{
+				m_fAcc += fTimeDelta;
 
-	}*/
+				if (m_fNormalSpeedDuration <= m_fAcc) /* 빠르게 변환! */
+				{
+					m_fAcc = 0.f;
+
+					m_bAcceleration = false;
+
+					const _float fTargetSpeed = (2 <= m_iKillCount) ? m_fDefaultRotSpeed * -4.f : m_fDefaultRotSpeed * 4.f;
+
+					for (auto& pPillar : m_pPillars)
+					{
+						pPillar->m_tSpeedDesc.Start(
+							pPillar->m_tSpeedDesc.fCurValue,
+							fTargetSpeed,
+							0.75f,
+							LERP_MODE::EASE_OUT);
+					}
+				}
+				else /* 일시적 역방향 스윙 */
+				{
+					for (auto& pPillar : m_pPillars)
+					{
+						pPillar->m_tSpeedDesc.fCurValue += (2 <= m_iKillCount) ? +fTimeDelta * 0.5f : -fTimeDelta * 0.5f;
+					}
+				}
+			}
+			else if(!m_bAcceleration && !m_pPillars[0]->m_tSpeedDesc.bActive) /* 느리게 변환! */
+			{
+				m_bAcceleration = true;
+
+				const _float fTargetSpeed = (2 <= m_iKillCount) ? m_fDefaultRotSpeed * -1.2f : m_fDefaultRotSpeed * 1.2f;
+
+				for (auto& pPillar : m_pPillars)
+				{
+					pPillar->m_tSpeedDesc.Start(
+						pPillar->m_tSpeedDesc.fCurValue,
+						fTargetSpeed,
+						0.5f,
+						LERP_MODE::EASE_OUT);
+				}
+			}
+		}
+	}
 }
 
 HRESULT CGlanix_IcePillar_Controller::Create_Pillars(const _int& iNum, const _float& fRadius, const Vec4& vOriginPos, CGlanix* pGlanix)
 {
 	/* 얼음 기둥 생성 */
-	
+	m_fDeathDistance = m_fRadius = fRadius;
 	m_vOriginPos = vOriginPos;
 	m_pGlanix	 = pGlanix;
 	if (nullptr == m_pGlanix)
@@ -120,6 +164,12 @@ HRESULT CGlanix_IcePillar_Controller::Create_Pillars(const _int& iNum, const _fl
 HRESULT CGlanix_IcePillar_Controller::Delete_Pillar(const _int iIndex)
 {
 	++m_iKillCount;
+	m_fAcc = 0.f;
+	m_bAcceleration = true;
+
+	m_fDeathDistance -= 3.f;
+	if (m_fDeathDistance < 0.f)
+		m_fDeathDistance = 0.f;
 
 	for (vector<CGlanix_IcePillar*>::iterator iter = m_pPillars.begin(); iter != m_pPillars.end(); ++iter)
 	{
@@ -155,12 +205,12 @@ void CGlanix_IcePillar_Controller::Accelerate_PillarsSpeed()
 	for (auto& pPillar : m_pPillars)
 	{
 		/* 회전 방향 전환 */
-		const _float fTargetSpeed = (m_iKillCount % 2 == 0) ? m_fDefaultRotSpeed * -1.2f : m_fDefaultRotSpeed * 1.2f;
+		const _float fTargetSpeed = (2 <= m_iKillCount) ? m_fDefaultRotSpeed * -1.2f : m_fDefaultRotSpeed * 1.2f;
 
 		pPillar->m_tSpeedDesc.Start(
 			0.f, 
 			fTargetSpeed,
-			m_fLerptime, 
+			0.75f, 
 			LERP_MODE::EASE_OUT);
 	}
 }
@@ -172,7 +222,7 @@ void CGlanix_IcePillar_Controller::Decelerate_PillarsSpeed()
 		pPillar->m_tSpeedDesc.Start(
 			pPillar->m_tSpeedDesc.fCurValue, 
 			0.f, 
-			m_fLerptime, 
+			1.3f, 
 			LERP_MODE::EASE_OUT);
 	}
 }

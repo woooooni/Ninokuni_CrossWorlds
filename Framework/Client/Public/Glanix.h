@@ -66,6 +66,8 @@ public:
 	HRESULT Delete_Pillar(const _int& iKey);
 	HRESULT Clear_Pillars();
 
+	class CGlanix_IcePillar_Controller* Get_PillarsController() const { return m_pPillarController; }
+
 private:
 	virtual HRESULT Ready_Components();
 	virtual HRESULT Ready_States();

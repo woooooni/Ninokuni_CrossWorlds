@@ -9,6 +9,12 @@
 #include "Camera_Manager.h"
 #include "Camera_Follow.h"
 
+#include "Game_Manager.h"
+#include "Character.h"
+#include "Player.h"
+
+#include "Glanix_IcePillar_Controller.h"
+
 CGlanixState_RageStamp::CGlanixState_RageStamp(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
 {
@@ -41,6 +47,23 @@ void CGlanixState_RageStamp::Tick_State(_float fTimeDelta)
 
 			/* 너무 느리게 하면 룩앳 위치 많이 달라짐 */
 			CCamera_Manager::GetInstance()->Change_Camera(pFollowCam->Get_Key(), 0.5f, LERP_MODE::SMOOTHER_STEP);
+
+			// 플레이어 공격 인풋 열기
+			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_Attack_Input(true);
+			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_Skill_Input(true);
+		}
+
+
+		/* 즉사 여부 결정 */
+		{
+			const Vec4 vOrigin = m_pGlanix->Get_OriginPos();
+
+			const Vec4 vPlayerPos = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
+
+			const _float fDist = Vec4(vPlayerPos - vOrigin).xyz().Length();
+
+			if (fDist <= m_pGlanix->Get_PillarsController()->Get_DeathDistnace())
+				CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Decrease_HP(999);
 		}
 	}
 
