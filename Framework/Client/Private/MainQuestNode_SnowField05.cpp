@@ -18,8 +18,9 @@ HRESULT CMainQuestNode_SnowField05::Initialize()
 	__super::Initialize();
 
 	m_strQuestTag = TEXT("[메인]");
-	m_strQuestName = TEXT("몬스터 정리");
-	m_strQuestContent = TEXT("주변 몬스터의 수를 줄이자.");
+	m_strQuestName = TEXT("주변 몬스터 정리");
+	m_strQuestContent = to_wstring(CQuest_Manager::GetInstance()->Get_MonsterKillCount());
+	m_strQuestContent = m_strQuestContent + L" / 7";
 
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/03.MainQuest_SnowField/MainQuest_SnowField05.json");
 
@@ -41,17 +42,6 @@ void CMainQuestNode_SnowField05::Start()
 
 	/* 현재 퀘스트에 연관있는 객체들 */
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
-
-	m_vecTalker.push_back(m_pKuu);
-
-	/* 대화 */
-	// m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-	// m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
-
-	// 미니 다이얼로그로
-	// CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
-
-	// TalkEvent();
 }
 
 CBTNode::NODE_STATE CMainQuestNode_SnowField05::Tick(const _float& fTimeDelta)
@@ -59,45 +49,102 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField05::Tick(const _float& fTimeDelta)
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 
-	/* 5마리 처치 */
-	if (CQuest_Manager::GetInstance()->Get_MonsterKillCount() >= 5)
+	if (m_iPrevKillCount != CQuest_Manager::GetInstance()->Get_MonsterKillCount())
 	{
 		CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
-
-		CQuest_Manager::GetInstance()->Clear_MonsterKillCount();
-		CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_END);
-		m_bIsClear = true;
-		return NODE_STATE::NODE_FAIL;
+		m_strQuestContent = to_wstring(CQuest_Manager::GetInstance()->Get_MonsterKillCount());
+		m_strQuestContent = m_strQuestContent + L" / 7";
+		CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+		m_iPrevKillCount = CQuest_Manager::GetInstance()->Get_QuestClearStack();
 	}
 
-	// 미니 다이얼로그 연동되면 ㄱㄱ
-	//if (KEY_TAP(KEY::LBTN))
-	//{
-	//	Safe_Delete_Array(m_szpOwner);
-	//	Safe_Delete_Array(m_szpTalk);
-	//
-	//	m_iTalkIndex += 1;
-	//
-	//	if (m_iTalkIndex >= m_vecTalkDesc.size())
-	//	{
-	//		m_bIsClear = true;
-	//		CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
-	//
-	//		//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-	//		//if (nullptr != pActionCam)
-	//		//	pActionCam->Finish_Action_Talk();
-	//
-	//		return NODE_STATE::NODE_FAIL;
-	//	}
-	//
-	//	m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-	//	m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
-	//
-	//	// 미니 다이얼로그로
-	//	// CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
-	//
-	//	TalkEvent();
-	//}
+
+	switch (CQuest_Manager::GetInstance()->Get_MonsterKillCount())
+	{
+	case 1:
+		if (m_iTalkIndex == 0)
+		{
+			m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+			m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+			CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
+			CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+
+			m_bIsShowDialog = true;
+
+			TalkEvent();
+
+			m_iTalkIndex += 1;
+		}
+		break;
+
+	case 4:
+		if (m_iTalkIndex == 1)
+		{
+			Safe_Delete_Array(m_szpOwner);
+			Safe_Delete_Array(m_szpTalk);
+
+			m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+			m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+			CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
+			CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+
+			m_bIsShowDialog = true;
+
+			TalkEvent();
+
+			m_iTalkIndex += 1;
+		}
+		break;
+
+	case 7:
+		if (m_iTalkIndex == 2)
+		{
+			Safe_Delete_Array(m_szpOwner);
+			Safe_Delete_Array(m_szpTalk);
+
+			m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+			m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+			CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
+			CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+
+			m_bIsShowDialog = true;
+
+			TalkEvent();
+
+			m_iTalkIndex += 1;
+		}
+		break;
+	}
+
+	if (m_bIsShowDialog)
+	{
+		m_fTime += fTimeDelta;
+
+		if (m_fTime >= 3.f)
+		{
+			if (CQuest_Manager::GetInstance()->Get_MonsterKillCount() >= 7)
+			{
+				Safe_Delete_Array(m_szpOwner);
+				Safe_Delete_Array(m_szpTalk);
+
+				CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+
+				CQuest_Manager::GetInstance()->Clear_MonsterKillCount();
+				CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_END);
+				
+				m_bIsClear = true;
+				return NODE_STATE::NODE_FAIL;
+			}
+
+			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+			m_fTime = m_fTalkChangeTime - m_fTime;
+			m_bIsShowDialog = false;
+		}
+	}
 
 	return NODE_STATE::NODE_RUNNING;
 }

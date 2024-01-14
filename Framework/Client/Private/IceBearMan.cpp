@@ -59,7 +59,7 @@ HRESULT CIceBearMan::Initialize(void* pArg)
 	m_pHPBar = dynamic_cast<CUI_MonsterHP_World*>(pHPBar);
 	m_pHPBar->Set_Owner(this, m_tStat.eElementType, 2.5f);
 
-	m_vBloomPower = _float3(0.25f, 0.25f, 0.25f);
+	m_vBloomPower = _float3(0.7f, 0.7f, 0.7f);
 
 	return S_OK;
 }

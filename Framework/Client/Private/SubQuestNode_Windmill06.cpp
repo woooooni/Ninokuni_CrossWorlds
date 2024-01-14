@@ -23,7 +23,7 @@ HRESULT CSubQuestNode_Windmill06::Initialize()
 
 void CSubQuestNode_Windmill06::Start()
 {
-	// CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
 	m_pBeard = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("SwiftSolutionMaster"));
 	Vec4 vSpotPos = Set_DestSpot(m_pBeard);

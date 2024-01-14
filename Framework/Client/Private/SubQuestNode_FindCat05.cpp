@@ -93,7 +93,6 @@ CBTNode::NODE_STATE CSubQuestNode_FindCat05::Tick(const _float& fTimeDelta)
 			//	pActionCam->Finish_Action_Talk();
 
 			/* 여기서 퀘스트 보상 받기.(퀘스트 보상 다 받으면 return하기.*/
-
 			return NODE_STATE::NODE_FAIL;
 		}
 

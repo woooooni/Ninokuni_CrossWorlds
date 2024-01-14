@@ -20,6 +20,9 @@ private:
 private:
 	CGameObject* m_pKuu = nullptr;
 
+	_float m_fTalkChangeTime = 3.f;
+	_float m_fTime = 0.f;
+
 public:
 	static CMainQuestNode_IntroTour04* Create();
 	virtual void Free() override;

@@ -2,6 +2,8 @@
 
 #include "QuestNode_Base.h"
 
+#include "Glanix.h"
+
 class CMainQuestNode_Glanix04 final : public CQuestNode_Base
 {
 private:
@@ -15,13 +17,21 @@ public:
 	virtual void	LateTick(const _float& fTimeDelta);
 
 private:
+	void			BossBattle_TalkEvent(const _float& fTimeDelta);
 	virtual void    TalkEvent();
 
 private:
 	CGameObject* m_pKuu = nullptr;
+	CGameObject* m_pGlanix = nullptr;
 
-	_float m_fTalkChangeTime = 0.f;
+	_float m_fTalkChangeTime = 3.f;
 	_float m_fTime = 0.f;
+
+	_bool m_bIsIntroTalk = false;
+	_bool m_bIsRage1Talk = false;
+	_bool m_bIsRage2Talk = false;
+
+	_bool m_bIsTalk = false;
 
 public:
 	static CMainQuestNode_Glanix04* Create();

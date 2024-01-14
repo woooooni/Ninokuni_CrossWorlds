@@ -23,6 +23,9 @@ private:
 	_float m_fTalkChangeTime = 0.f;
 	_float m_fTime = 0.f;
 
+	CQuest_DestSpot* m_pTalkSpot = nullptr;
+	_bool  m_bIsTalkEvent = false;
+
 public:
 	static CMainQuestNode_Glanix03* Create();
 	virtual void Free() override;
