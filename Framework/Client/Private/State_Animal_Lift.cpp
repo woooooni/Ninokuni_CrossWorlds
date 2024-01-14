@@ -26,10 +26,10 @@ void CState_Animal_Lift::Enter_State(void* pArg)
 	m_fNextTime = 0.0f;
 	m_iCurrAnimIndex = m_AnimIndices[0];
 	m_pModelCom->Set_Animation(m_iCurrAnimIndex);
+
 	m_pRigidBodyCom->Set_Use_Gravity(false);
 	m_pRigidBodyCom->Set_Velocity({ 0.f, 0.f, 0.f });
 	m_pRigidBodyCom->Set_Ground(true);
-
 }
 
 void CState_Animal_Lift::Tick_State(_float fTimeDelta)
