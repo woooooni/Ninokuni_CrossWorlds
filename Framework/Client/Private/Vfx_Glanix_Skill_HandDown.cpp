@@ -320,8 +320,8 @@ void CVfx_Glanix_Skill_HandDown::Free()
 
 	if (nullptr != m_SpringUpEffect)
 	{
-		m_SpringUpEffect->Start_Dissolve(73,    // Index
-			_float4(1.f, 1.f, 1.f, 1.f), // Color
+		m_SpringUpEffect->Start_Dissolve(73, // Index
+			_float4(1.f, 1.f, 1.f, 1.f),     // Color
 			4.f,   // Speed
 			10.f); // Total
 

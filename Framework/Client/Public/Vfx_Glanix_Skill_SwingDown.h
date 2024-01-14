@@ -44,6 +44,7 @@ private:
 		TYPE_E_ATTACK_HANDCIRCLE_LEFT,
 		TYPE_D_ATTACK_CRACK,
 		TYPE_E_ATTACK_SPRINGUP,
+
 		TYPE_P_ATTACK_SMOKE,
 		TYPE_P_ATTACK_CIRCLES,
 		TYPE_E_ATTACK_CIRCLELINE,
@@ -65,6 +66,10 @@ public:
 
 protected:
 	virtual HRESULT Ready_Components() override;
+
+private:
+	class CEffect* m_pHand01Effect = nullptr;
+	class CEffect* m_pHand02Effect = nullptr;
 
 public:
 	static CVfx_Glanix_Skill_SwingDown* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
