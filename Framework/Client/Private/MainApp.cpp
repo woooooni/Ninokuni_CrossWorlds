@@ -171,143 +171,8 @@ HRESULT CMainApp::Initialize_Client()
 	if (FAILED(CUIDamage_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
 		return E_FAIL;
 
-
-	// << : Camera
-	/* Free */
-	{
-		CCamera* pCamera = nullptr;
-		CAMERA_TYPE eType = CAMERA_TYPE::FREE;
-		CCamera::PROJ_DESC tDesc;
-		{
-			tDesc.tLerpFov.fCurValue = Cam_Fov_Free_Default;
-			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
-			tDesc.fNear = 0.2f;
-			tDesc.fFar = 1000.f;
-
-			pCamera = CCamera_Free::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
-			if (nullptr == pCamera)
-				return E_FAIL;
-
-			CCamera_Manager::GetInstance()->Add_Camera(eType, pCamera);
-
-			if (FAILED(pCamera->Initialize(&tDesc)))
-			{
-				return E_FAIL;
-			}
-		}
-		pCamera->Set_Key(eType);
-		pCamera->Get_Transform()->Set_State(CTransform::STATE::STATE_POSITION, Vec4(0.f, 10.f, -10.f, 1.f));
-		pCamera->Get_Transform()->LookAt(Vec4{ 0.f, 0.f, 0.f, 1.f });
-	}
-
-	/* Follow */
-	{
-		CCamera* pCamera = nullptr;
-		CAMERA_TYPE eType = CAMERA_TYPE::FOLLOW;
-		CCamera::PROJ_DESC tDesc;
-		{
-			tDesc.tLerpFov.fCurValue = Cam_Fov_Follow_Default;
-			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
-			tDesc.fNear = 0.2f;
-			tDesc.fFar = 1000.f;
-
-			pCamera = CCamera_Follow::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
-			if (nullptr == pCamera)
-				return E_FAIL;
-
-			CCamera_Manager::GetInstance()->Add_Camera(eType, pCamera);
-
-			if (FAILED(pCamera->Initialize(&tDesc)))
-			{
-				return E_FAIL;
-			}
-		}
-		pCamera->Set_Key(eType);
-		pCamera->Get_Transform()->Set_State(CTransform::STATE::STATE_POSITION, Vec4(0.f, 10.f, -10.f, 1.f));
-		pCamera->Get_Transform()->LookAt(Vec4{ 0.f, 0.f, 0.f, 1.f });
-	}
-
-	/* CutScene Map */
-	{
-		CCamera* pCamera = nullptr;
-		CAMERA_TYPE eType = CAMERA_TYPE::CUTSCENE_MAP;
-		CCamera::PROJ_DESC tDesc;
-		{
-			tDesc.tLerpFov.fCurValue = Cam_Fov_CutScene_Map_Default;
-			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
-			tDesc.fNear = 0.2f;
-			tDesc.fFar = 1000.f;
-
-			pCamera = CCamera_CutScene_Map::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
-
-			if (nullptr == pCamera)
-				return E_FAIL;
-
-			CCamera_Manager::GetInstance()->Add_Camera(eType, pCamera);
-
-			if (FAILED(pCamera->Initialize(&tDesc)))
-			{
-				return E_FAIL;
-			}
-		}
-		pCamera->Set_Key(eType);
-		pCamera->Get_Transform()->Set_State(CTransform::STATE::STATE_POSITION, Vec4(0.f, 10.f, -10.f, 1.f));
-		pCamera->Get_Transform()->LookAt(Vec4{ 0.f, 0.f, 0.f, 1.f });
-	}
-
-	/* CutScene Boss */
-	{
-		CCamera* pCamera = nullptr;
-		CAMERA_TYPE eType = CAMERA_TYPE::CUTSCENE_BOSS;
-		CCamera::PROJ_DESC tDesc;
-		{
-			tDesc.tLerpFov.fCurValue = Cam_Fov_CutScene_Boss_Default;
-			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
-			tDesc.fNear = 0.2f;
-			tDesc.fFar = 1000.f;
-
-			pCamera = CCamera_CutScene_Boss::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
-
-			if (nullptr == pCamera)
-				return E_FAIL;
-
-			CCamera_Manager::GetInstance()->Add_Camera(eType, pCamera);
-
-			if (FAILED(pCamera->Initialize(&tDesc)))
-			{
-				return E_FAIL;
-			}
-		}
-		pCamera->Set_Key(eType);
-		pCamera->Get_Transform()->Set_State(CTransform::STATE::STATE_POSITION, Vec4(0.f, 10.f, -10.f, 1.f));
-		pCamera->Get_Transform()->LookAt(Vec4{ 0.f, 0.f, 0.f, 1.f });
-	}
-
-	/* Action */
-	{
-		CCamera* pCamera = nullptr;
-		CAMERA_TYPE eType = CAMERA_TYPE::ACTION;
-		CCamera::PROJ_DESC tDesc;
-		{
-			tDesc.tLerpFov.fCurValue = Cam_Fov_Action_Lobby;
-			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
-			tDesc.fNear = 0.2f;
-			tDesc.fFar = 1000.f;
-
-			pCamera = CCamera_Action::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
-
-			if (nullptr == pCamera)
-				return E_FAIL;
-
-			CCamera_Manager::GetInstance()->Add_Camera(eType, pCamera);
-
-			if (FAILED(pCamera->Initialize(&tDesc)))
-			{
-				return E_FAIL;
-			}
-		}
-		pCamera->Set_Key(eType);
-	}
+	if (FAILED(Ready_CameraObject()))
+		return E_FAIL;	
 
 	LIGHTDESC LightDesc;
 	ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
@@ -1470,6 +1335,173 @@ HRESULT CMainApp::Ready_Effect_TextureComponent()
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Wind"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/Wind/"), 0, true))))
 		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CMainApp::Ready_CameraObject()
+{
+	/* Free */
+	{
+		CCamera* pCamera = nullptr;
+		CAMERA_TYPE eType = CAMERA_TYPE::FREE;
+		CCamera::PROJ_DESC tDesc;
+		{
+			tDesc.tLerpFov.fCurValue = Cam_Fov_Free_Default;
+			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
+			tDesc.fNear = 0.2f;
+			tDesc.fFar = 1000.f;
+
+			pCamera = CCamera_Free::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
+			if (nullptr == pCamera)
+				return E_FAIL;
+
+			CCamera_Manager::GetInstance()->Add_Camera(eType, pCamera);
+
+			if (FAILED(pCamera->Initialize(&tDesc)))
+			{
+				return E_FAIL;
+			}
+		}
+		pCamera->Set_Key(eType);
+		pCamera->Get_Transform()->Set_State(CTransform::STATE::STATE_POSITION, Vec4(0.f, 10.f, -10.f, 1.f));
+		pCamera->Get_Transform()->LookAt(Vec4{ 0.f, 0.f, 0.f, 1.f });
+	}
+
+	/* Follow */
+	{
+		CCamera* pCamera = nullptr;
+		CAMERA_TYPE eType = CAMERA_TYPE::FOLLOW;
+		CCamera::PROJ_DESC tDesc;
+		{
+			tDesc.tLerpFov.fCurValue = Cam_Fov_Follow_Default;
+			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
+			tDesc.fNear = 0.2f;
+			tDesc.fFar = 1000.f;
+
+			pCamera = CCamera_Follow::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
+			if (nullptr == pCamera)
+				return E_FAIL;
+
+			CCamera_Manager::GetInstance()->Add_Camera(eType, pCamera);
+
+			if (FAILED(pCamera->Initialize(&tDesc)))
+			{
+				return E_FAIL;
+			}
+		}
+		pCamera->Set_Key(eType);
+		pCamera->Get_Transform()->Set_State(CTransform::STATE::STATE_POSITION, Vec4(0.f, 10.f, -10.f, 1.f));
+		pCamera->Get_Transform()->LookAt(Vec4{ 0.f, 0.f, 0.f, 1.f });
+	}
+
+	/* CutScene Map */
+	{
+		CCamera* pCamera = nullptr;
+		CAMERA_TYPE eType = CAMERA_TYPE::CUTSCENE_MAP;
+		CCamera::PROJ_DESC tDesc;
+		{
+			tDesc.tLerpFov.fCurValue = Cam_Fov_CutScene_Map_Default;
+			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
+			tDesc.fNear = 0.2f;
+			tDesc.fFar = 1000.f;
+
+			pCamera = CCamera_CutScene_Map::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
+
+			if (nullptr == pCamera)
+				return E_FAIL;
+
+			CCamera_Manager::GetInstance()->Add_Camera(eType, pCamera);
+
+			if (FAILED(pCamera->Initialize(&tDesc)))
+			{
+				return E_FAIL;
+			}
+		}
+		pCamera->Set_Key(eType);
+		pCamera->Get_Transform()->Set_State(CTransform::STATE::STATE_POSITION, Vec4(0.f, 10.f, -10.f, 1.f));
+		pCamera->Get_Transform()->LookAt(Vec4{ 0.f, 0.f, 0.f, 1.f });
+	}
+
+	/* CutScene Boss */
+	{
+		CCamera* pCamera = nullptr;
+		CAMERA_TYPE eType = CAMERA_TYPE::CUTSCENE_BOSS;
+		CCamera::PROJ_DESC tDesc;
+		{
+			tDesc.tLerpFov.fCurValue = Cam_Fov_CutScene_Boss_Default;
+			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
+			tDesc.fNear = 0.2f;
+			tDesc.fFar = 1000.f;
+
+			pCamera = CCamera_CutScene_Boss::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
+
+			if (nullptr == pCamera)
+				return E_FAIL;
+
+			CCamera_Manager::GetInstance()->Add_Camera(eType, pCamera);
+
+			if (FAILED(pCamera->Initialize(&tDesc)))
+			{
+				return E_FAIL;
+			}
+		}
+		pCamera->Set_Key(eType);
+		pCamera->Get_Transform()->Set_State(CTransform::STATE::STATE_POSITION, Vec4(0.f, 10.f, -10.f, 1.f));
+		pCamera->Get_Transform()->LookAt(Vec4{ 0.f, 0.f, 0.f, 1.f });
+	}
+
+	/* Action */
+	{
+		CCamera* pCamera = nullptr;
+		CAMERA_TYPE eType = CAMERA_TYPE::ACTION;
+		CCamera::PROJ_DESC tDesc;
+		{
+			tDesc.tLerpFov.fCurValue = Cam_Fov_Action_Lobby;
+			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
+			tDesc.fNear = 0.2f;
+			tDesc.fFar = 1000.f;
+
+			pCamera = CCamera_Action::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
+
+			if (nullptr == pCamera)
+				return E_FAIL;
+
+			CCamera_Manager::GetInstance()->Add_Camera(eType, pCamera);
+
+			if (FAILED(pCamera->Initialize(&tDesc)))
+			{
+				return E_FAIL;
+			}
+		}
+		pCamera->Set_Key(eType);
+	}
+
+	/* Top */
+	{
+		CCamera* pCamera = nullptr;
+		CAMERA_TYPE eType = CAMERA_TYPE::TOP;
+		CCamera::PROJ_DESC tDesc;
+		{
+			tDesc.tLerpFov.fCurValue = Cam_Fov_Default;
+			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
+			tDesc.fNear = 0.2f;
+			tDesc.fFar = 1000.f;
+
+			pCamera = CCamera_Top::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
+
+			if (nullptr == pCamera)
+				return E_FAIL;
+
+			CCamera_Manager::GetInstance()->Add_Camera(eType, pCamera);
+
+			if (FAILED(pCamera->Initialize(&tDesc)))
+			{
+				return E_FAIL;
+			}
+		}
+		pCamera->Set_Key(eType);
+	}
 
 	return S_OK;
 }

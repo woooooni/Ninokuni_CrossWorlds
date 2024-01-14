@@ -64,6 +64,7 @@ public:
 public:
 	/* Action */
 	HRESULT		Start_Action_Shake_Default();
+	HRESULT		Start_Action_Shake_Default_Attack();
 	HRESULT		Start_Action_Shake(const _float& fAmplitude, const _float& fFrequency, const _float& fDuration);
 
 	HRESULT		Change_Camera(const _uint& iKey, const _float& fBlendingDuration = 1.f, const LERP_MODE& eLerpMode = LERP_MODE::SMOOTHER_STEP);

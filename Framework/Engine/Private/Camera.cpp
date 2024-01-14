@@ -57,6 +57,9 @@ HRESULT CCamera::Render()
 
 void CCamera::Start_Lerp_Fov(const _float& fStartValue, const _float& fTargetValue, const _float& fTime, const LERP_MODE& eMode)
 {
+	if (fTargetValue <= XMConvertToRadians(30.0f))
+		return;
+
 	m_tProjDesc.fPrevFov = m_tProjDesc.tLerpFov.fCurValue;
 
 	m_tProjDesc.tLerpFov.Start(fStartValue, fTargetValue, fTime, eMode);
@@ -64,6 +67,9 @@ void CCamera::Start_Lerp_Fov(const _float& fStartValue, const _float& fTargetVal
 
 void CCamera::Start_Lerp_Fov(const _float& fTargetValue, const _float& fTime, const LERP_MODE& eMode)
 {
+	if (fTargetValue <= XMConvertToRadians(30.0f))
+		return;
+
 	m_tProjDesc.fPrevFov = m_tProjDesc.tLerpFov.fCurValue;
 
 	m_tProjDesc.tLerpFov.Start(m_tProjDesc.tLerpFov.fCurValue, fTargetValue, fTime, eMode);
@@ -71,6 +77,9 @@ void CCamera::Start_Lerp_Fov(const _float& fTargetValue, const _float& fTime, co
 
 void CCamera::Start_Lerp_Distance(const _float& fStartValue, const _float& fTargetValue, const _float& fTime, const LERP_MODE& eMode)
 {
+	if (fTargetValue <= 0.f)
+		return;
+
 	m_fPrevDist = m_tLerpDist.fCurValue;
 
 	m_tLerpDist.Start(fStartValue, fTargetValue, fTime, eMode);
@@ -78,6 +87,9 @@ void CCamera::Start_Lerp_Distance(const _float& fStartValue, const _float& fTarg
 
 void CCamera::Start_Lerp_Distance(const _float& fTargetValue, const _float& fTime, const LERP_MODE& eMode)
 {
+	if (fTargetValue <= 0.f)
+		return;
+
 	m_fPrevDist = m_tLerpDist.fCurValue;
 
 	m_tLerpDist.Start(m_tLerpDist.fCurValue, fTargetValue, fTime, eMode);

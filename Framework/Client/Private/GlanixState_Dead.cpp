@@ -10,6 +10,8 @@
 #include "Camera_Follow.h"
 
 #include "Quest_Manager.h"
+#include "UI_Manager.h"
+#include "UI_Fade.h"
 
 CGlanixState_Dead::CGlanixState_Dead(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
@@ -38,11 +40,46 @@ void CGlanixState_Dead::Tick_State(_float fTimeDelta)
 		m_pGlanix->Reserve_Dead(true);
 
 		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
-		if (nullptr != pFollowCam)
+		if (nullptr != pFollowCam && pFollowCam->Is_LockOn())
 		{
+			pFollowCam->Set_Default_Position();
 			pFollowCam->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
-		}	
+
+			m_pGlanix->Reserve_Dead(true);
+		}
 	}
+
+	//if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
+	//{
+	//	/* Start Fade Out */
+	//	if (!m_bStartFadeOut)
+	//	{
+	//		m_bStartFadeOut = true;
+	//		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, m_fFadeInOutTime, false);
+	//	}
+	//}
+
+	//if (m_bStartFadeOut && CUI_Manager::GetInstance()->Is_FadeFinished())
+	//{
+	//	/* Reset Camera */
+	//	CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+	//	if (nullptr != pFollowCam && pFollowCam->Is_LockOn())
+	//	{
+	//		pFollowCam->Set_Default_Position();
+	//		pFollowCam->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+	//	}
+
+	//	m_fAcc += fTimeDelta;
+	//		
+	//	/* Start Fade In */
+	//	if (!m_bStartFadeIn && m_fFadeInOutTime <= m_fAcc)
+	//	{
+	//		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, m_fFadeInOutTime, false);
+	//		m_bStartFadeIn = true;
+
+	//		m_pGlanix->Reserve_Dead(true);
+	//	}
+	//}
 }
 
 void CGlanixState_Dead::Exit_State()

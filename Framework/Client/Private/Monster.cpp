@@ -385,6 +385,8 @@ void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 	m_tStat.fHp -= iDamage;
 
 	Start_RimLight();
+
+	Start_MonsterHittedEvent(tInfo.pOther);
 }
 
 HRESULT CMonster::Ready_RoamingPoint()
@@ -405,7 +407,35 @@ HRESULT CMonster::Ready_RoamingPoint()
 	return S_OK;
 }
 
+void CMonster::Start_MonsterHittedEvent(CGameObject* pPlayer)
+{
+	/* 몬스터가 플레이어에게 피격 당했을시 타격감을 발생시키기 위한 요소들 */
 
+	if (nullptr == pPlayer)
+		return;
+
+	/* Camera */
+	{
+		CCamera_Manager::GetInstance()->Start_Action_Shake_Default_Attack();
+	}
+
+	/* Animation */
+	{
+		CModel* pModelCom = pPlayer->Get_Component<CModel>(L"Com_Model");
+		if (nullptr != pModelCom)
+		{
+
+		}
+	}
+
+	/* Sound */
+	{
+		/* 몬스터의 피격 사운드는 플레이어의 공격 종류에 따라 달라진다. -> 플레이어 쪽에서 결정 */
+		/* 일단 디폴트로 하나 박아둔다. */
+
+		GI->Play_Sound(L"Hit_PC_Combo_Slash_Flesh_1.mp3", SOUND_MONSTERL_HIT, 0.3f, false);
+	}
+}
 
 
 void CMonster::LookAt_DamagedObject(CGameObject* pAttacker)

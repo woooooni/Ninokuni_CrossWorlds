@@ -20,6 +20,7 @@ HRESULT CGlanixState_RagePull::Initialize(const list<wstring>& AnimationList)
 void CGlanixState_RagePull::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_RageSkillPull"));
+
 }
 
 void CGlanixState_RagePull::Tick_State(_float fTimeDelta)

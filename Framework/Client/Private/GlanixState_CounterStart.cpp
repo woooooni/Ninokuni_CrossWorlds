@@ -21,7 +21,7 @@ HRESULT CGlanixState_CounterStart::Initialize(const list<wstring>& AnimationList
 
 void CGlanixState_CounterStart::Enter_State(void* pArg)
 {
-	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_CounterEnter"));
+	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_CounterEnter"), MIN_TWEEN_DURATION);
 	GI->Set_TimeScale(TIMER_TYPE::GAME_PLAY, 0.1f);
 	m_fTime = 0.f;
 	m_bIsSlow = true;

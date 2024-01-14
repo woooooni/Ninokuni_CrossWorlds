@@ -18,6 +18,7 @@ HRESULT CCollision_Manager::Reserve_Manager()
 	Reserve_CheckGroup(COLLISION_GROUP::CHARACTER, COLLISION_GROUP::ANIMAL);
 	Reserve_CheckGroup(COLLISION_GROUP::CHARACTER, COLLISION_GROUP::NPC);
 	Reserve_CheckGroup(COLLISION_GROUP::CHARACTER, COLLISION_GROUP::PROP);
+	Reserve_CheckGroup(COLLISION_GROUP::MONSTER, COLLISION_GROUP::PROP);
 
 	for (_uint i = 0; i < COLLISION_GROUP::GROUP_END; ++i)
 		m_CollisionObjects[i].reserve(300);
