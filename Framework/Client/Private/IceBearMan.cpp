@@ -237,10 +237,10 @@ HRESULT CIceBearMan::Ready_States()
 	m_tStat.eElementType = ELEMENTAL_TYPE::WATER;
 
 	m_tStat.iLv = 7;
-	m_tStat.fMaxHp = 250;
-	m_tStat.fHp = 250;
-	m_tStat.iAtk = 15;
-	m_tStat.iDef = 3;
+	m_tStat.fMaxHp = 20000;
+	m_tStat.fHp = 20000;
+	m_tStat.iAtk = 100;
+	m_tStat.iDef = 100;
 
 	m_tStat.fAirVelocity = 7.5f;
 	m_tStat.fAirDeadVelocity = 12.f;

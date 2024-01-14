@@ -18,12 +18,16 @@ HRESULT CMainQuestNode_KingCall04::Initialize()
 	m_strQuestName = TEXT("국왕 루슬란");
 	m_strQuestContent = TEXT("루슬란과 대화하기");
 
+	m_strNextQuestTag = TEXT("[메인]");
+	m_strNextQuestName = TEXT("국왕 루슬란");
+	m_strNextQuestContent = TEXT("루슬란과 대화하기");
+
 	return S_OK;
 }
 
 void CMainQuestNode_KingCall04::Start()
 {
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
 
 	m_pRuslan = GI->Find_GameObject(LEVELID::LEVEL_KINGDOMHALL, LAYER_NPC, TEXT("Ruslan"));
 	Vec4 vSpotPos = Set_DestSpot(m_pRuslan);
@@ -48,7 +52,7 @@ CBTNode::NODE_STATE CMainQuestNode_KingCall04::Tick(const _float& fTimeDelta)
 			{
 				if (m_pQuestDestSpot->Get_IsCol())
 				{
-					CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 					m_bIsClear = true;
 					m_pQuestDestSpot->Set_ReadyDelete(true);

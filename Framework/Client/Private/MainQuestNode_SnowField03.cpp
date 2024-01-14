@@ -18,13 +18,16 @@ HRESULT CMainQuestNode_SnowField03::Initialize()
 	m_strQuestName = TEXT("주둔지의 지휘관 찾기");
 	m_strQuestContent = TEXT("주둔지에서 지휘관 찾아보자");
 
+	m_strNextQuestTag = TEXT("[메인]");
+	m_strNextQuestName = TEXT("주둔지의 지휘관 찾기");
+	m_strNextQuestContent = TEXT("주둔지에서 지휘관 찾아보자");
+
+
 	return S_OK;
 }
 
 void CMainQuestNode_SnowField03::Start()
 {
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
-
 	m_pJackson = GI->Find_GameObject(LEVELID::LEVEL_ICELAND, LAYER_NPC, TEXT("GrimalKinML01"));
 	Vec4 vSpotPos = Set_DestSpot(m_pJackson);
 
@@ -48,7 +51,7 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField03::Tick(const _float& fTimeDelta)
 			{
 				if (m_pQuestDestSpot->Get_IsCol())
 				{
-					CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 					m_bIsClear = true;
 					m_pQuestDestSpot->Set_ReadyDelete(true);

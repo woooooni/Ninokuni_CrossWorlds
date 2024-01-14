@@ -30,6 +30,8 @@ HRESULT CSubQuestNode_FindCat02::Initialize()
 
 void CSubQuestNode_FindCat02::Start()
 {
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+
 	/* 현재 퀘스트에 연관있는 객체들 */
 	//m_pKuu = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Kuu"));
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());

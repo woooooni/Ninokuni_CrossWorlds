@@ -22,6 +22,10 @@ HRESULT CMainQuestNode_Glanix04::Initialize()
 	m_strQuestName = TEXT("고대의 설인");
 	m_strQuestContent = TEXT("기안티 처치하기");
 
+	m_strNextQuestTag = TEXT("[메인]");
+	m_strNextQuestName = TEXT("장교 잭슨에게 보고하기");
+	m_strNextQuestContent = TEXT("잭슨에게 보고하자");
+
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/04.MainQuest_Glanix/MainQuest_Glanix04.json");
 
 	for (const auto& talkDesc : Load) {
@@ -36,6 +40,8 @@ HRESULT CMainQuestNode_Glanix04::Initialize()
 
 void CMainQuestNode_Glanix04::Start()
 {
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+
 	if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Glanix"), nullptr, &m_pGlanix)))
 	{
 		MSG_BOX("Fail AddGameObj : Quest Glanix");
@@ -55,9 +61,12 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix04::Tick(const _float& fTimeDelta)
 
 	if (m_pGlanix != nullptr)
 	{
-		// 최초 chase 시 발동
+		// 최초 Turn~Chase 시 발동
 		if (!m_bIsIntroTalk && m_pGlanix->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Get_CurrState() == CGlanix::GLANIX_TURN)
+		{
+			CUI_Manager::GetInstance()->Update_QuestPopup(TEXT("더욱 더 깊게"), m_strQuestTag, m_strQuestName, m_strQuestContent);
 			m_bIsIntroTalk = true;
+		}
 
 		if (!m_bIsRage1Talk && m_pGlanix->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Get_CurrState() == CGlanix::GLANIX_RAGE2WAVE)
 			m_bIsRage1Talk = true;
@@ -82,7 +91,7 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix04::Tick(const _float& fTimeDelta)
 
 		if (CQuest_Manager::GetInstance()->Get_IsBossKill())
 		{
-			CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 			CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_END);
 			CQuest_Manager::GetInstance()->Set_IsBossKill(false);

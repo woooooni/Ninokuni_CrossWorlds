@@ -18,6 +18,10 @@ HRESULT CMainQuestNode_Glanix09::Initialize()
 	m_strQuestName = TEXT("루슬란에게 보고하기");
 	m_strQuestContent = TEXT("루슬란과 대화하기");
 
+	m_strNextQuestTag = TEXT("[메인]");
+	m_strNextQuestName = TEXT("국왕 루슬란");
+	m_strNextQuestContent = TEXT("루슬란과 대화하기");
+
 	return S_OK;
 }
 
@@ -48,7 +52,7 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix09::Tick(const _float& fTimeDelta)
 			{
 				if (m_pQuestDestSpot->Get_IsCol())
 				{
-					CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 					m_bIsClear = true;
 					m_pQuestDestSpot->Set_ReadyDelete(true);

@@ -19,6 +19,10 @@ HRESULT CSubQuestNode_Windmill09::Initialize()
 	m_strQuestName = TEXT("풍차 수리");
 	m_strQuestContent = TEXT("베르디에게 가기");
 
+	m_strNextQuestTag = TEXT("[서브]");
+	m_strNextQuestName = TEXT("풍차 수리");
+	m_strNextQuestContent = TEXT("베르디에게 돌아가기");
+
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/SubQuest/02. SubQuest02_Verde_WindmillRepair/SubQuest_Windmill09.json");
 
 	for (const auto& talkDesc : Load) {
@@ -33,7 +37,7 @@ HRESULT CSubQuestNode_Windmill09::Initialize()
 
 void CSubQuestNode_Windmill09::Start()
 {
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
 
 	/* 현재 퀘스트에 연관있는 객체들 */
 	//m_pKuu = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Kuu"));
@@ -83,7 +87,7 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill09::Tick(const _float& fTimeDelta)
 
 		if (m_iTalkIndex >= m_vecTalkDesc.size())
 		{
-			CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 			m_bIsClear = true;
 			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);

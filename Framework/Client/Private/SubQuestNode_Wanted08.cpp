@@ -19,10 +19,6 @@ HRESULT CSubQuestNode_Wanted08::Initialize()
 {
 	__super::Initialize();
 
-	m_strQuestTag = TEXT("[서브]");
-	m_strQuestName = TEXT("툼바에게 돌아가기");
-	m_strQuestContent = TEXT("툼바에게 보고하자");
-
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/SubQuest/03. SubQuest03_Tumba_Wanted/SubQuest_Wanted08.json");
 
 	for (const auto& talkDesc : Load) {

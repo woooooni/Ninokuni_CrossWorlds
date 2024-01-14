@@ -16,7 +16,6 @@ HRESULT CMainQuestNode_IntroTour03::Initialize()
 
 	m_strQuestTag = TEXT("[메인]");
 	m_strQuestName = TEXT("에스타바니아 둘러보기");
-	//m_strQuestContent = TEXT("퀘스트 0 / 3 완료");
 
 	return S_OK;
 }
@@ -26,8 +25,6 @@ void CMainQuestNode_IntroTour03::Start()
 	m_strQuestContent = L"서브 퀘스트 " + to_wstring(CQuest_Manager::GetInstance()->Get_QuestClearStack());
 	m_strQuestContent = m_strQuestContent + L" / 3 완료";
 	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
-
-	//CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 }
 
 CBTNode::NODE_STATE CMainQuestNode_IntroTour03::Tick(const _float& fTimeDelta)
@@ -37,10 +34,9 @@ CBTNode::NODE_STATE CMainQuestNode_IntroTour03::Tick(const _float& fTimeDelta)
 
 	if (m_iPrevClearCount != CQuest_Manager::GetInstance()->Get_QuestClearStack())
 	{
-		CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
 		m_strQuestContent = L"서브 퀘스트 " + to_wstring(CQuest_Manager::GetInstance()->Get_QuestClearStack());
 		m_strQuestContent = m_strQuestContent + L" / 3 완료";
-		CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strQuestTag, m_strQuestName, m_strQuestContent);
 		m_iPrevClearCount += CQuest_Manager::GetInstance()->Get_QuestClearStack();
 	}
 

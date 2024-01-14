@@ -19,6 +19,10 @@ HRESULT CMainQuestNode_SnowField02::Initialize()
 	m_strQuestName = TEXT("코에루크 설원으로");
 	m_strQuestContent = TEXT("동쪽 문을 통해 설원으로 향하기");
 
+	m_strNextQuestTag = TEXT("[메인]");
+	m_strNextQuestName = TEXT("코에루크 설원으로");
+	m_strNextQuestContent = TEXT("동쪽 문을 통해 설원으로 향하기");
+
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/03.MainQuest_SnowField/MainQuest_SnowField02.json");
 
 	for (const auto& talkDesc : Load) {
@@ -81,7 +85,7 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField02::Tick(const _float& fTimeDelta)
 
 	if (GI->Get_CurrentLevel() == LEVEL_ICELAND)
 	{
-		CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 		m_bIsClear = true;
 		return NODE_STATE::NODE_FAIL;

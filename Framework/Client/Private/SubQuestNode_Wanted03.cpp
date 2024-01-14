@@ -18,6 +18,10 @@ HRESULT CSubQuestNode_Wanted03::Initialize()
 	m_strQuestName = TEXT("µµµÏ Àâ±â");
 	m_strQuestContent = TEXT("¿Õ±¹ÀÇ µµµÏ³ðÀ» Àâ¾Æ¶ó.");
 
+	m_strNextQuestTag = TEXT("[¼­ºê]");
+	m_strNextQuestName = TEXT("µµµÏ Àâ±â");
+	m_strNextQuestContent = TEXT("¿Õ±¹ÀÇ µµµÏ³ðÀ» Àâ¾Æ¶ó.");
+
 	return S_OK;
 }
 
@@ -41,8 +45,7 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted03::Tick(const _float& fTimeDelta)
 	/* ÀÓ½Ã */
 	if (KEY_TAP(KEY::N))
 	{
-		CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
-
+		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 		m_bIsClear = true;
 		return NODE_STATE::NODE_FAIL;
 	}

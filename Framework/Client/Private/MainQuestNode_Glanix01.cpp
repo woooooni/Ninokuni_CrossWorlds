@@ -19,6 +19,11 @@ HRESULT CMainQuestNode_Glanix01::Initialize()
 	m_strQuestName = TEXT("더 깊숙히 조사하기");
 	m_strQuestContent = TEXT("코에루크 설원 깊은 곳 까지 들어가보자");
 
+	m_strNextQuestTag = TEXT("[메인]");
+	m_strNextQuestName = TEXT("더 깊숙히 조사하기");
+	m_strNextQuestContent = TEXT("코에루크 설원 깊은 곳 까지 들어가보자");
+
+
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/04.MainQuest_Glanix/MainQuest_Glanix01.json");
 
 	for (const auto& talkDesc : Load) {
@@ -101,7 +106,7 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix01::Tick(const _float& fTimeDelta)
 			{
 				if (m_pQuestDestSpot->Get_IsCol())
 				{
-					CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 					m_bIsClear = true;
 					m_pQuestDestSpot->Set_ReadyDelete(true);

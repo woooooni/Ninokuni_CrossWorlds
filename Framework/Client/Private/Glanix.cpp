@@ -139,7 +139,7 @@ void CGlanix::Tick(_float fTimeDelta)
 
 	/* юс╫ц */
 	if (KEY_TAP(KEY::Z))
-		m_tStat.fHp -= 100.f;
+		m_tStat.fHp -= m_tStat.fMaxHp * 0.1f;
 
 #ifdef _DEBUG
 	if (LEVELID::LEVEL_TOOL == GI->Get_CurrentLevel() && KEY_TAP(KEY::B))
@@ -322,11 +322,11 @@ HRESULT CGlanix::Ready_Components()
 #pragma region Ready_States
 HRESULT CGlanix::Ready_States()
 {
-	m_tStat.fMaxHp = 1000;
-	m_tStat.fHp = 1000;
-	m_tStat.iAtk = 25;
-	m_tStat.iDef = 5;
-	
+	m_tStat.fMaxHp = 1000000;
+	m_tStat.fHp = 1000000;
+	m_tStat.iAtk = 250;
+	m_tStat.iDef = 200;
+
 	list<wstring> strAnimationName;
 	
 	strAnimationName.clear();

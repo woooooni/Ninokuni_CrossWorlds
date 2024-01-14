@@ -23,6 +23,11 @@ HRESULT CMainQuestNode_SnowField02_2::Initialize()
 	m_strQuestName = TEXT("코에루크 설원으로");
 	m_strQuestContent = TEXT("동쪽 문을 통해 설원으로 향하기");
 
+	m_strNextQuestTag = TEXT("[메인]");
+	m_strNextQuestName = TEXT("주둔지의 지휘관 찾기");
+	m_strNextQuestContent = TEXT("주둔지에서 지휘관 찾아보자");
+
+
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/03.MainQuest_SnowField/MainQuest_SnowField02_2.json");
 
 	for (const auto& talkDesc : Load) {
@@ -37,9 +42,9 @@ HRESULT CMainQuestNode_SnowField02_2::Initialize()
 
 void CMainQuestNode_SnowField02_2::Start()
 {
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+
 	/* 현재 퀘스트에 연관있는 객체들 */
-	//m_pKuu = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Kuu"));
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
 
 	/* 카메라 타겟 세팅 */
@@ -82,7 +87,7 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField02_2::Tick(const _float& fTimeDelta)
 
 		if (m_iTalkIndex >= m_vecTalkDesc.size())
 		{
-			CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 			m_bIsClear = true;
 			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);

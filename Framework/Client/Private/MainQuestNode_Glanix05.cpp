@@ -19,6 +19,10 @@ HRESULT CMainQuestNode_Glanix05::Initialize()
 	m_strQuestName = TEXT("Àå±³ Àè½¼¿¡°Ô º¸°íÇÏ±â");
 	m_strQuestContent = TEXT("Àè½¼¿¡°Ô º¸°íÇÏÀÚ");
 
+	m_strNextQuestTag = TEXT("[¸ÞÀÎ]");
+	m_strNextQuestName = TEXT("Àå±³ Àè½¼¿¡°Ô º¸°íÇÏ±â");
+	m_strNextQuestContent = TEXT("Àè½¼¿¡°Ô º¸°íÇÏÀÚ");
+
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/04.MainQuest_Glanix/MainQuest_Glanix05.json");
 
 	for (const auto& talkDesc : Load) {
@@ -33,8 +37,6 @@ HRESULT CMainQuestNode_Glanix05::Initialize()
 
 void CMainQuestNode_Glanix05::Start()
 {
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
-
 	/* ÇöÀç Äù½ºÆ®¿¡ ¿¬°üÀÖ´Â °´Ã¼µé */
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
 	m_pJackson = GI->Find_GameObject(LEVELID::LEVEL_ICELAND, LAYER_NPC, TEXT("GrimalKinML01"));
@@ -97,7 +99,7 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix05::Tick(const _float& fTimeDelta)
 			{
 				if (m_pQuestDestSpot->Get_IsCol())
 				{
-					CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 					m_bIsClear = true;
 					m_pQuestDestSpot->Set_ReadyDelete(true);
