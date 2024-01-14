@@ -156,6 +156,8 @@ technique11 AuroraDefault
 
         VertexShader = compile vs_5_0 VS_AURORA();
         GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_AURORA();
     }
 }

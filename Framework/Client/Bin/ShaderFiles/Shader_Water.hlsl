@@ -194,6 +194,8 @@ technique11 Water
 
         VertexShader = compile vs_5_0 WaterVertexShader();
         GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
         PixelShader = compile ps_5_0 WaterPS();
     }
 }

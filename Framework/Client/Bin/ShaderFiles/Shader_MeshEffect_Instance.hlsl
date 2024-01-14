@@ -421,6 +421,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_DEFAULT();
 	}
 
@@ -433,6 +435,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_NO_ALPHA_WITH_DIFFUSE();
 	}
 
@@ -444,6 +448,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_NO_DIFFUSE_WITH_ALPHA();
 	}
 
@@ -456,6 +462,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_BOTH();
 	}
 

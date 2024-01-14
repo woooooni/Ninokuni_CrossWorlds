@@ -27,10 +27,14 @@ HRESULT CGrass::Initialize(void* pArg)
 
 void CGrass::Tick(_float fTimeDelta)
 {
+	__super::Tick(fTimeDelta);
 }
 
 void CGrass::LateTick(_float fTimeDelta)
 {
+	__super::LateTick(fTimeDelta);
+
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 }
 
 HRESULT CGrass::Render()
@@ -38,8 +42,11 @@ HRESULT CGrass::Render()
 	if (FAILED(Bind_ShaderResource()))
 		return E_FAIL;
 
-	m_pShaderCom->Begin(0);
-	m_pVIBufferCom->Render(5);
+	if(FAILED(m_pShaderCom->Begin(0)))
+		return E_FAIL;
+
+	if (FAILED(m_pVIBufferCom->Render()))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -51,11 +58,15 @@ HRESULT CGrass::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Shader */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Point_Instance"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Grass"), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
 
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
+		return E_FAIL;
+
+	/* For.Com_VIBuffer */
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Grass"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom)))
 		return E_FAIL;
 
 	return S_OK;
@@ -63,6 +74,15 @@ HRESULT CGrass::Ready_Components()
 
 HRESULT CGrass::Bind_ShaderResource()
 {
+	if (FAILED(m_pShaderCom->Bind_RawValue("fTessellationAmount", &m_fTessellationAmount, sizeof(_float))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("worldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("viewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("projectionMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+		return E_FAIL;
+
 	return S_OK;
 }
 

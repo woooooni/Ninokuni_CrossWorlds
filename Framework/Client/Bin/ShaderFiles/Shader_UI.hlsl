@@ -517,6 +517,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN();
 	}
 
@@ -528,6 +530,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_ALPHA();
 	}
 
@@ -539,6 +543,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_FADE();
 	}
 
@@ -550,6 +556,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN_CLOUD();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_CLOUD();
 	}
 
@@ -561,6 +569,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_LOADING();
 	}
 
@@ -572,6 +582,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_USING_MASK();
 	}
 
@@ -583,6 +595,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_CIRCLE_MASK();
 	}
 
@@ -594,6 +608,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_USING_FX();
 	}
 
@@ -605,6 +621,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_APPEAR();
 	}
 
@@ -616,6 +634,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_LIMITED_APPEAR();
 	}
 
@@ -627,6 +647,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_FILL_COLOR();
 	}
 
@@ -638,6 +660,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_HPBAR_GAUGE_LERP();
 	}
 
@@ -649,6 +673,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_LIMITED_VERTICAL();
 	}
 
@@ -660,6 +686,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_USING_FX_ALPHA();
 	}
 
@@ -671,6 +699,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_HPBAR_GAUGE();
 	}
 
@@ -682,6 +712,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_ALPHA();
 	}
 
@@ -693,6 +725,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_GRAY();
 	}
 
@@ -704,6 +738,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_HPBAR_LERP_AND_GLOW();
 	}
 
@@ -715,6 +751,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN_DISSOLVE();
 	}
 
@@ -726,6 +764,8 @@ technique11 DefaultTechnique
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_SKILLGAUGE_MASK();
 	}
 }

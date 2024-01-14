@@ -35,6 +35,13 @@ HRESULT CPlants::Initialize(void* pArg)
 void CPlants::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+
+	if (TEXT("Common_grass_01") == m_strObjectTag || TEXT("Common_grass_Small_01") == m_strObjectTag)
+	{
+		m_fTime += fTimeDelta;
+
+		m_fAngle = 0.05 * -sin(m_fTime);
+	}
 }
 
 void CPlants::LateTick(_float fTimeDelta)
@@ -84,19 +91,35 @@ HRESULT CPlants::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancin
 		return E_FAIL;
 	if (FAILED(pInstancingShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
-	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
-	for (_uint i = 0; i < iNumMeshes; ++i)
+
+
+	if (TEXT("Common_grass_01") == m_strObjectTag || TEXT("Common_grass_Small_01") == m_strObjectTag)
 	{
-		_uint iPassIndex = 0;
-		if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+		if (m_pTextureCom->Bind_ShaderResource(pInstancingShader, "GrassMaskTexture"))
 			return E_FAIL;
-		//if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
-		//	iPassIndex = 0;
-		//else
-		//	iPassIndex++;
-		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, i, pInstancingBuffer, WorldMatrices, iPassIndex)))
+		if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(0), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+			return E_FAIL;
+		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, 0, pInstancingBuffer, WorldMatrices, 5)))
+			return E_FAIL;
+		if (FAILED(pInstancingShader->Bind_RawValue("fGrassAngle", &m_fAngle, sizeof(_float))))
 			return E_FAIL;
 	}
+	else
+	{
+		_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+		for (_uint i = 0; i < iNumMeshes; ++i)
+		{
+			_uint iPassIndex = 0;
+
+			//if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
+			//	iPassIndex = 0;
+			//else
+			//	iPassIndex++;
+			if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, i, pInstancingBuffer, WorldMatrices, iPassIndex)))
+				return E_FAIL;
+		}
+	}
+
 	return S_OK;
 }
 
@@ -139,16 +162,12 @@ HRESULT CPlants::Ready_Components()
 		TEXT("Com_Transform"), reinterpret_cast<CComponent**>(&m_pTransformCom))))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Model"),
-		TEXT("Com_NonAnim_Shader"), reinterpret_cast<CComponent**>(&m_pNonAnimShaderCom))))
-		return E_FAIL;
-
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_AnimModel"),
-		TEXT("Com_AnimShader"), reinterpret_cast<CComponent**>(&m_pAnimShaderCom))))
-		return E_FAIL;
-
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_") + m_strMapObjName,
 		TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+		return E_FAIL;
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_GrassMask"),
+		TEXT("Com_Texture"), reinterpret_cast<CComponent**>(&m_pTextureCom))))
 		return E_FAIL;
 
 	return S_OK;
@@ -179,4 +198,11 @@ CGameObject* CPlants::Clone(void* pArg)
 	}
 
 	return pInstance;
+}
+
+void CPlants::Free()
+{
+	__super::Free();
+
+	Safe_Release<CTexture*>(m_pTextureCom);
 }
