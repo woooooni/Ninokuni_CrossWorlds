@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Client_Defines.h"
-#include "GameObject.h"
+#include "Character_Projectile.h"
 
 BEGIN(Client)
 
-class CEngineer_Bullet final : public CGameObject
+class CEngineer_Bullet final : public CCharacter_Projectile
 {
 private:
 	explicit CEngineer_Bullet(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -21,17 +21,6 @@ public:
 
 public:
 	virtual HRESULT Ready_Components() override;
-
-
-private:
-	class CModel* m_pModelCom = nullptr;
-	class CRenderer* m_pRendererCom = nullptr;
-	class CTransform* m_pTransformCom = nullptr;
-
-private:
-	_float m_fAccDeletionTime = 0.f;
-	_float m_fDeletionTime = 1.f;
-	_float m_fMoveSpeed = 20.f;
 
 private:
 	_float m_fAccEffect = 0.f;

@@ -6,15 +6,13 @@
 #include "Particle_Manager.h"
 
 CEngineer_Bullet::CEngineer_Bullet(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	:CGameObject(pDevice, pContext, L"Engineer_Bullet", OBJ_TYPE::OBJ_CHARACTER_PROJECTILE)
+	:CCharacter_Projectile(pDevice, pContext, L"Engineer_Bullet")
 {
 
 }
 
 CEngineer_Bullet::CEngineer_Bullet(const CEngineer_Bullet& rhs)
-	: CGameObject(rhs)
-	, m_fAccDeletionTime(0.f)
-	, m_fDeletionTime(rhs.m_fDeletionTime)
+	: CCharacter_Projectile(rhs)
 {
 }
 
@@ -46,66 +44,20 @@ void CEngineer_Bullet::Tick(_float fTimeDelta)
 
 	GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fAccEffect, CUtils::Random_Float(0.1f, 0.1f), fTimeDelta, TEXT("Particle_Smoke"), this);
 	m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fMoveSpeed, fTimeDelta);
-
-	m_fAccDeletionTime += fTimeDelta;
-	if (m_fAccDeletionTime >= m_fDeletionTime)
-	{
-		Set_Dead(true);
-		m_fAccDeletionTime = 0.f;
-	}
 }
 
 void CEngineer_Bullet::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
-
-	if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 120.f))
-	{
-		m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
-	}
-
-	GI->Add_CollisionGroup(COLLISION_GROUP::CHARACTER, this);
-#ifdef _DEBUG
-	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
-	{
-		for (auto& pCollider : m_Colliders[i])
-			m_pRendererCom->Add_Debug(pCollider);
-	}
-#endif
 }
 
 HRESULT CEngineer_Bullet::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
 {
 	__super::Render();
 
-	if (nullptr == m_pModelCom || nullptr == pInstancingShader)
+	if (FAILED(__super::Render_Instance(pInstancingShader, pInstancingBuffer, WorldMatrices)))
 		return E_FAIL;
 
-	if (FAILED(pInstancingShader->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
-		return E_FAIL;
-
-	if (FAILED(pInstancingShader->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
-		return E_FAIL;
-
-	if (FAILED(pInstancingShader->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
-		return E_FAIL;
-
-	if (FAILED(pInstancingShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
-		return E_FAIL;
-
-	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
-	for (_uint i = 0; i < iNumMeshes; ++i)
-	{
-		_uint iPassIndex = 0;
-		if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
-			return E_FAIL;
-		if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
-			iPassIndex = 0;
-		else
-			iPassIndex++;
-		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, i, pInstancingBuffer, WorldMatrices, iPassIndex)))
-			return E_FAIL;
-	}
 	return S_OK;
 }
 

@@ -30,7 +30,7 @@ void CState_Character_Revive::Tick_State(_float fTimeDelta)
 
 void CState_Character_Revive::Exit_State()
 {
-
+    m_pCharacter->Increase_HP(1000000);
 }
 
 

@@ -4,6 +4,10 @@
 #include "Particle_Manager.h"
 #include "Effect_Manager.h"
 #include "Character.h"
+#include "Character_Projectile.h"
+#include "Game_Manager.h"
+#include "Player.h"
+#include "Character_Manager.h"
 
 CVfx_SwordMan_Skill_SwordTempest::CVfx_SwordMan_Skill_SwordTempest(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
@@ -109,7 +113,10 @@ void CVfx_SwordMan_Skill_SwordTempest::Tick(_float fTimeDelta)
 
 		else if (m_iCount == TYPE_E_ATTACK_01 && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_ATTACK_01])
 		{
-			CGameObject* pAuraBlade = GI->Clone_GameObject(TEXT("Prototype_GameObject_SwordMan_AuraBlade"), LAYER_CHARACTER);
+			CCharacter_Projectile::CHARACTER_PROJECTILE_DESC ProjectileDesc;
+			ProjectileDesc.pOwner = CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::SWORD_MAN);
+
+			CGameObject* pAuraBlade = GI->Clone_GameObject(TEXT("Prototype_GameObject_SwordMan_AuraBlade"), LAYER_CHARACTER, &ProjectileDesc);
 			CTransform* pAuraBladeTransform = pAuraBlade->Get_Component<CTransform>(L"Com_Transform");
 
 			_matrix	WorldMatrix = XMLoadFloat4x4(&m_WorldMatrix);
@@ -137,7 +144,9 @@ void CVfx_SwordMan_Skill_SwordTempest::Tick(_float fTimeDelta)
 
 		else if (m_iCount == TYPE_E_ATTACK_02 && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_ATTACK_02])
 		{
-			CGameObject* pAuraBlade = GI->Clone_GameObject(TEXT("Prototype_GameObject_SwordMan_AuraBlade"), LAYER_CHARACTER);
+			CCharacter_Projectile::CHARACTER_PROJECTILE_DESC ProjectileDesc;
+			ProjectileDesc.pOwner = CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::SWORD_MAN);
+			CGameObject* pAuraBlade = GI->Clone_GameObject(TEXT("Prototype_GameObject_SwordMan_AuraBlade"), LAYER_CHARACTER, &ProjectileDesc);
 			CTransform* pAuraBladeTransform = pAuraBlade->Get_Component<CTransform>(L"Com_Transform");
 
 			_matrix	WorldMatrix = XMLoadFloat4x4(&m_WorldMatrix);
@@ -165,7 +174,9 @@ void CVfx_SwordMan_Skill_SwordTempest::Tick(_float fTimeDelta)
 
 		else if (m_iCount == TYPE_E_ATTACK_03 && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_ATTACK_03])
 		{
-			CGameObject* pAuraBlade = GI->Clone_GameObject(TEXT("Prototype_GameObject_SwordMan_AuraBlade"), LAYER_CHARACTER);
+			CCharacter_Projectile::CHARACTER_PROJECTILE_DESC ProjectileDesc;
+			ProjectileDesc.pOwner = CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::SWORD_MAN);
+			CGameObject* pAuraBlade = GI->Clone_GameObject(TEXT("Prototype_GameObject_SwordMan_AuraBlade"), LAYER_CHARACTER, &ProjectileDesc);
 			CTransform* pAuraBladeTransform = pAuraBlade->Get_Component<CTransform>(L"Com_Transform");
 
 			_matrix	WorldMatrix = XMLoadFloat4x4(&m_WorldMatrix);
@@ -193,7 +204,9 @@ void CVfx_SwordMan_Skill_SwordTempest::Tick(_float fTimeDelta)
 
 		else if (m_iCount == TYPE_E_ATTACK_04 && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_ATTACK_04])
 		{
-			CGameObject* pAuraBlade = GI->Clone_GameObject(TEXT("Prototype_GameObject_SwordMan_AuraBlade"), LAYER_CHARACTER);
+			CCharacter_Projectile::CHARACTER_PROJECTILE_DESC ProjectileDesc;
+			ProjectileDesc.pOwner = CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::SWORD_MAN);
+			CGameObject* pAuraBlade = GI->Clone_GameObject(TEXT("Prototype_GameObject_SwordMan_AuraBlade"), LAYER_CHARACTER, &ProjectileDesc);
 			CTransform* pAuraBladeTransform = pAuraBlade->Get_Component<CTransform>(L"Com_Transform");
 
 			_matrix	WorldMatrix = XMLoadFloat4x4(&m_WorldMatrix);
@@ -221,7 +234,9 @@ void CVfx_SwordMan_Skill_SwordTempest::Tick(_float fTimeDelta)
 
 		else if (m_iCount == TYPE_E_ATTACK_05 && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_ATTACK_05])
 		{
-			CGameObject* pAuraBlade = GI->Clone_GameObject(TEXT("Prototype_GameObject_SwordMan_AuraBlade"), LAYER_CHARACTER);
+			CCharacter_Projectile::CHARACTER_PROJECTILE_DESC ProjectileDesc;
+			ProjectileDesc.pOwner = CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::SWORD_MAN);
+			CGameObject* pAuraBlade = GI->Clone_GameObject(TEXT("Prototype_GameObject_SwordMan_AuraBlade"), LAYER_CHARACTER, &ProjectileDesc);
 			CTransform* pAuraBladeTransform = pAuraBlade->Get_Component<CTransform>(L"Com_Transform");
 
 			_matrix	WorldMatrix = XMLoadFloat4x4(&m_WorldMatrix);

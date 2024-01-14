@@ -825,6 +825,9 @@ HRESULT CRenderer::Render_NonBlend()
 
 	for (auto& iter : m_RenderObjects[RENDER_NONBLEND])
 	{
+		if (nullptr == iter)
+			continue;
+
 		if (FAILED(iter->Render()))
 			return E_FAIL;
 		Safe_Release(iter);

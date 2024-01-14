@@ -42,6 +42,8 @@
 #include "Glanix_Phoenix.h"
 #include "Glanix_ShockWave.h"
 #include "Glanix_IceBall.h"
+#include "Glanix_Icicle.h"
+
 #include "Stellia.h"
 #include "DMWitch.h"
 #include "Baobam_Water.h"
@@ -1197,6 +1199,9 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Glanix_GlanixIceBall", CGlanix_IceBall::Create(m_pDevice, m_pContext, TEXT("Glanix_IceBall")), LAYER_PROP, true)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Glanix_GlanixIcicle", CGlanix_Icicle::Create(m_pDevice, m_pContext, TEXT("Glanix_Icicle")), LAYER_PROP, true)))
+		return E_FAIL;
+
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Spawner_Ice01", CSpawner_Ice01::Create(m_pDevice, m_pContext, TEXT("Spawner_Ice01")), LAYER_MONSTER, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Spawner_Ice02", CSpawner_Ice02::Create(m_pDevice, m_pContext, TEXT("Spawner_Ice02")), LAYER_MONSTER, true)))
@@ -1344,6 +1349,12 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Phoenix", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Ice/Phoenix/", L"Phoenix")))
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_GlanixIceBall", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Monster/GlanixIceBall/", L"GlanixIceBall")))
+		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_GlanixIcicle_0", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Monster/GlanixIcicle/", L"Glanix_Icicle_0")))
+		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_GlanixIcicle_1", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Monster/GlanixIcicle/", L"Glanix_Icicle_1")))
 		return E_FAIL;
 
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_DreamerMazeWitch", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Boss/DreamerMazeWitch/", L"DreamerMazeWitch")))

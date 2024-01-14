@@ -217,7 +217,7 @@ HRESULT CCharacter_SwordMan::Ready_Components()
 	ControllerDesc.vOffset = { 0.f, 1.125f, 0.f };
 	ControllerDesc.fHeight = 1.f;
 	ControllerDesc.fMaxJumpHeight = 10.f;
-	ControllerDesc.fRaidus = 0.5f;
+	ControllerDesc.fRaidus = 0.8f;
 	ControllerDesc.pOwner = this;
 
 

@@ -182,7 +182,7 @@ public:
 	void Set_MaxHp(_int iMaxHp) { m_tStat.iMaxHp = iMaxHp; }
 	_int Get_MaxHp() { return m_tStat.iMaxHp; }
 
-	void Set_Exp(_int iExp) { m_tStat.iExp = iExp; }
+	void Add_Exp(_int iExp);
 	_int Get_Exp() { return m_tStat.iExp; }
 
 	void Set_Att(_int iAtt) { 
@@ -205,7 +205,7 @@ public:
 
 	_uint Get_Def() { return m_tStat.iDef; }
 
-	void Decrease_HP(_int iDecrease);
+	_bool Decrease_HP(_int iDecrease);
 
 	void Increase_HP(_int iIncrease)
 	{
@@ -338,6 +338,8 @@ private:
 	void Tick_Target(_float fTimeDelta);
 	void Decide_Target(COLLISION_INFO tInfo);
 	
+private:
+	void LevelUp();
 
 private:
 	class CUI_World_NameTag* m_pName = { nullptr };

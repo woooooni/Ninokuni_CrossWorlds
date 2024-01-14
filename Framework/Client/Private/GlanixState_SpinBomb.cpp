@@ -62,6 +62,7 @@ void CGlanixState_SpinBomb::Tick_State(_float fTimeDelta)
 
 void CGlanixState_SpinBomb::Exit_State()
 {
+	m_pGlanix->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_COUNTER, false);
 }
 
 CGlanixState_SpinBomb* CGlanixState_SpinBomb::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

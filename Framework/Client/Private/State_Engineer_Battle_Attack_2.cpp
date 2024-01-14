@@ -3,6 +3,7 @@
 #include "Character.h"
 #include "State_Engineer_Battle_Attack_2.h"
 #include "Utils.h"
+#include "Character_Projectile.h"
 
 CState_Engineer_Battle_Attack_2::CState_Engineer_Battle_Attack_2(CStateMachine* pMachine)
     : CState_Character(pMachine)
@@ -66,6 +67,9 @@ void CState_Engineer_Battle_Attack_2::Shoot()
     m_iShootCount--;
     for (_int i = -1; i <= 1; ++i)
     {
+        CCharacter_Projectile::CHARACTER_PROJECTILE_DESC ProjectileDesc;
+        ProjectileDesc.pOwner = m_pCharacter;
+
         CGameObject* pBullet = GI->Clone_GameObject(L"Prototype_GameObject_Engineer_Bullet", LAYER_TYPE::LAYER_CHARACTER);
         if (nullptr == pBullet)
             return;

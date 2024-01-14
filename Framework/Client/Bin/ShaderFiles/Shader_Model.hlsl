@@ -10,6 +10,11 @@ Texture2D   g_DissolveTexture;
 float4		g_vCamPosition;
 float		g_fDissolveWeight;
 
+
+
+// ´«µ¢ÀÌ ±¼¸®±â..
+matrix g_SnowRotationMatrix;
+
 cbuffer WaterOption
 {
     float fWaterTranslationSpeed;
@@ -81,6 +86,27 @@ VS_OUT VS_MAIN(VS_IN In)
 	
     
 	return Out;
+}
+
+VS_OUT VS_SNOWBALL(VS_IN In)
+{
+    VS_OUT Out = (VS_OUT) 0;
+
+    matrix matWV, matWVP;
+
+    matWV = mul(g_WorldMatrix, g_ViewMatrix);
+    matWVP = mul(matWV, g_ProjMatrix);
+
+    Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
+    Out.vWorldPosition = mul(float4(In.vPosition, 1.f), g_WorldMatrix);
+    Out.vNormal = normalize(mul(float4(In.vNormal, 0.f), g_WorldMatrix)).xyz;
+    Out.vTangent = normalize(mul(float4(In.vTangent, 0.f), g_WorldMatrix)).xyz;
+    Out.vBinormal = normalize(cross(Out.vNormal, Out.vTangent));
+    Out.vTexUV = In.vTexUV;
+    Out.vProjPos = Out.vPosition;
+	
+    
+    return Out;
 }
 
 WaterVertexToPixel WaterVertexShader(VS_IN input)
@@ -225,6 +251,28 @@ PS_OUT PS_WEAPON(PS_IN In)
 	
     return Out;
 }
+
+
+PS_OUT PS_SNOWBALL(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    Out.vDiffuse = (vector) 1.f;
+
+
+    Out.vDiffuse = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
+    Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
+    Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    if (0.3 >= Out.vDiffuse.a)
+        discard;
+	
+	
+
+    return Out;
+}
+
 
 WaterPixelToFrame WaterPS(WaterVertexToPixel input)
 {
@@ -437,18 +485,18 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_DISSOVE();
     }
 
-	pass Temp6
+	pass SnowBall
 	{
 		// 6
 		SetRasterizerState(RS_Default);
 		SetDepthStencilState(DSS_Default, 0);
 		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
-		VertexShader = compile vs_5_0 VS_MAIN();
+		VertexShader = compile vs_5_0 VS_SNOWBALL();
 		GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-		PixelShader = compile ps_5_0 PS_MAIN();
+		PixelShader = compile ps_5_0 PS_SNOWBALL();
 	}
 
 	pass Temp7

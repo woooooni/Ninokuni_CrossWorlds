@@ -92,6 +92,19 @@ void CCharacter::Tick(_float fTimeDelta)
 		GI->UnLock_Mouse();
 	}
 
+	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::G))
+	{
+		if (m_tStat.fSpeedWeight >= 10.f)
+			m_tStat.fSpeedWeight = 1.f;
+		else
+			m_tStat.fSpeedWeight = 10.f;
+	}
+
+	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::END_KEY))
+	{
+		Set_InitialPosition(Vec4(111.f, -0.785f, 8.f, 1.f));
+	}
+
 	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::INSERT))
 	{
 		m_pStateCom->Change_State(CCharacter::STATE::NEUTRAL_IDLE);
@@ -543,6 +556,16 @@ void CCharacter::Decide_Target(COLLISION_INFO tInfo)
 	}
 }
 
+void CCharacter::LevelUp()
+{
+	m_tStat.iMaxExp += (m_tStat.iMaxExp) * 0.5f;
+	m_tStat.iExp = 0;
+	
+	m_tStat.iLevel++;
+
+	// TODO :: UI
+}
+
 
 
 
@@ -584,7 +607,11 @@ void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 		m_eDamagedElemental = tInfo.pOtherCollider->Get_ElementalType();
 	}
 
+
+	
 	CUIDamage_Manager::GetInstance()->Create_PlayerDamageNumber(m_pTransformCom, iDamage);
+	if (true == Decrease_HP(iDamage))
+		return;
 	
 
 	if (true == m_bSuperArmor)	
@@ -630,14 +657,25 @@ void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 }
 
 
-void CCharacter::Decrease_HP(_int iDecrease)
+void CCharacter::Add_Exp(_int iExp)
+{
+	m_tStat.iExp += iExp;
+	if (m_tStat.iExp >= m_tStat.iMaxExp)
+	{
+		LevelUp();
+	}
+
+}
+
+_bool CCharacter::Decrease_HP(_int iDecrease)
 {
 	m_tStat.iHp = max(0, m_tStat.iHp - iDecrease);
 	if (0 == m_tStat.iHp)
 	{
 		m_pStateCom->Change_State(CCharacter::DEAD);
-		return;
+		return true;
 	}
+	return false;
 }
 
 void CCharacter::Set_EnterLevelPosition(Vec4 vPosition)
