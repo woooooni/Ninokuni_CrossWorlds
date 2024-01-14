@@ -522,13 +522,11 @@ const POINT& CGameInstance::GetMousePos()
 
 void CGameInstance::Lock_Mouse()
 {
-	ShowCursor(false);
 	m_pKey_Manager->Lock_Mouse();
 }
 
 void CGameInstance::UnLock_Mouse()
 {
-	ShowCursor(true);
 	m_pKey_Manager->UnLock_Mouse();
 }
 
