@@ -110,10 +110,15 @@ HRESULT CGlanix::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
-	if (FAILED(CUI_Manager::GetInstance()->Ready_BossHPBar(this)))
-		return E_FAIL;
+	if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
+	{
+		if (FAILED(CUI_Manager::GetInstance()->Ready_BossHPBar(this)))
+			return E_FAIL;
+	}
 
 	m_iObjectType = OBJ_TYPE::OBJ_BOSS;
+
+	m_vBloomPower = _float3(0.4f, 0.4f, 0.4f);
 
 	return S_OK;
 }
@@ -134,6 +139,11 @@ void CGlanix::Tick(_float fTimeDelta)
 	/* юс╫ц */
 	if (KEY_TAP(KEY::Z))
 		m_tStat.fHp -= 100.f;
+
+#ifdef _DEBUG
+	if (LEVELID::LEVEL_TOOL == GI->Get_CurrentLevel() && KEY_TAP(KEY::B))
+		m_pStateCom->Change_State(GLANIX_QUADBLOW);
+#endif // DEBUG
 
 	m_pStateCom->Tick_State(fTimeDelta);
 

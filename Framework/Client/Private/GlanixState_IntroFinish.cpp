@@ -59,7 +59,8 @@ void CGlanixState_IntroFinish::Tick_State(_float fTimeDelta)
 	if (!m_pModelCom->Is_Tween() && m_pModelCom->Get_Progress() >= 0.95f && !m_bFadeOut)
 	{
 		/* Start Fade Out */
-		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, m_fFadeOutTime, false);
+		if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
+			CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, m_fFadeOutTime, false);
 
 		m_bFadeOut = true;
 	}
@@ -78,7 +79,8 @@ void CGlanixState_IntroFinish::Exit_State()
 	if (nullptr != pCutSceneCam)
 	{
 		/* Start Fade In */
-		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, m_fFadeInTime, false);
+		if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
+			CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, m_fFadeInTime, false);
 
 		/* On UI */
 		if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
