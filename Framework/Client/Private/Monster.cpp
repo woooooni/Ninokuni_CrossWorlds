@@ -370,7 +370,9 @@ void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 	if (nullptr == pCharacter)
 		return;
 
-	_int iDamage = (pCharacter->Get_Stat().iAtt * CUtils::Random_Float(0.5f, 1.5f)) - (m_tStat.iDef * 0.2f) * CGame_Manager::GetInstance()->Calculate_Elemental(tInfo.pOtherCollider->Get_ElementalType(), m_eDamagedElemental);
+	_float fElementalWeight = CGame_Manager::GetInstance()->Calculate_Elemental(tInfo.pOtherCollider->Get_ElementalType(), m_tStat.eElementType);
+
+	_int iDamage = (pCharacter->Get_Stat().iAtt * CUtils::Random_Float(0.5f, 1.5f)) - (m_tStat.iDef * 0.2f) * fElementalWeight;
 
 
 	if (m_eDamagedElemental == ELEMENTAL_TYPE::BASIC)
@@ -378,9 +380,20 @@ void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 	else
 		m_eDamagedElemental = ELEMENTAL_TYPE::BASIC;
 
+	if (fElementalWeight > 1.f)
+	{
+		CUIDamage_Manager::GetInstance()->Create_MonsterDamageNumber(m_pTransformCom, bIsBoss, CUIDamage_Manager::UI_DAMAGETYPE::STRENGTH, iDamage);
+	}
+	else if (fElementalWeight < 1.f)
+	{
+		CUIDamage_Manager::GetInstance()->Create_MonsterDamageNumber(m_pTransformCom, bIsBoss, CUIDamage_Manager::UI_DAMAGETYPE::WEAKNESS, iDamage);
+	}
+	else
+	{
+		CUIDamage_Manager::GetInstance()->Create_MonsterDamageNumber(m_pTransformCom, bIsBoss, CUIDamage_Manager::UI_DAMAGETYPE::NONE, iDamage);
+	}
 
-
-	CUIDamage_Manager::GetInstance()->Create_MonsterDamageNumber(m_pTransformCom, bIsBoss, CUIDamage_Manager::UI_DAMAGETYPE::NONE, iDamage);
+	
 
 	m_tStat.fHp -= iDamage;
 

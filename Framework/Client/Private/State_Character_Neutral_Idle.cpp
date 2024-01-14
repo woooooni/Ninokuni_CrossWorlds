@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "GameInstance.h"
 #include "Character.h"
+#include "Camera_Manager.h"
+#include "Camera.h"
 #include "State_Character_Neutral_Idle.h"
 #include "UI_Manager.h"
 
@@ -29,6 +31,10 @@ void CState_Character_Neutral_Idle::Enter_State(void* pArg)
     m_fAccIdleMotion = 0.f;
     m_iCurrAnimIndex = m_AnimIndices[0];
     m_pModelCom->Set_Animation(m_iCurrAnimIndex);
+
+    CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+    if (nullptr != pFollowCam)
+        pFollowCam->Set_CanInput(false);
 }
 
 void CState_Character_Neutral_Idle::Tick_State(_float fTimeDelta)
@@ -58,6 +64,10 @@ void CState_Character_Neutral_Idle::Exit_State()
     CUI_Manager::GetInstance()->Hide_MouseCursor(true);
     m_fAccIdleMotion = 0.f;
     m_iCurrAnimIndex = 0;
+
+    CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+    if (nullptr != pFollowCam)
+        pFollowCam->Set_CanInput(true);
 }
 
 
