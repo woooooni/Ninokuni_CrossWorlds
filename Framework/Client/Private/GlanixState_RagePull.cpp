@@ -32,6 +32,7 @@ void CGlanixState_RagePull::Enter_State(void* pArg)
 	if (nullptr != pCurCam)
 	{
 		pCurCam->Lerp_TargetOffset(pCurCam->Get_TargetOffset(), Cam_TargetOffset_Top_Glanix_Zoom, 1.f, LERP_MODE::SMOOTHER_STEP);
+		pCurCam->Lerp_LookAtOffSet(pCurCam->Get_LookAtOffset(), Cam_LookAtOffset_Top_Glanix_Zoom, 1.f, LERP_MODE::SMOOTHER_STEP);
 	}
 }
 

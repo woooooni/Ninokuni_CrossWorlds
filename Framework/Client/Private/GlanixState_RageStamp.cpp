@@ -12,7 +12,7 @@
 #include "Game_Manager.h"
 #include "Character.h"
 #include "Player.h"
-
+#include "StateMachine.h"
 #include "Glanix_IcePillar_Controller.h"
 
 CGlanixState_RageStamp::CGlanixState_RageStamp(CStateMachine* pStateMachine)
@@ -38,7 +38,7 @@ void CGlanixState_RageStamp::Tick_State(_float fTimeDelta)
 
 	if (m_pModelCom->Get_CurrAnimationFrame() == 15)
 	{
-		/* Camera - ÆÈ·Î¿ì Ä«¸Þ¶ó ÀüÈ¯ */
+		/* Camera - Å¾ºä -> ÆÈ·Î¿ì */
 		const CAMERA_TYPE eCamType = CAMERA_TYPE::FOLLOW;
 		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(eCamType));
 		if (nullptr != pFollowCam && eCamType != CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key())
@@ -48,9 +48,9 @@ void CGlanixState_RageStamp::Tick_State(_float fTimeDelta)
 			/* ³Ê¹« ´À¸®°Ô ÇÏ¸é ·è¾Ü À§Ä¡ ¸¹ÀÌ ´Þ¶óÁü */
 			CCamera_Manager::GetInstance()->Change_Camera(pFollowCam->Get_Key(), 0.5f, LERP_MODE::SMOOTHER_STEP);
 
-			// ÇÃ·¹ÀÌ¾î °ø°Ý ÀÎÇ² ¿­±â
-			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_Attack_Input(true);
-			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_Skill_Input(true);
+			/* ¹«ºê ÀÎÇ²¸¸ ´Ý¾ÆÁØ´Ù..*/
+			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CCharacter::STATE::NEUTRAL_IDLE);
+			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_Move_Input(false);
 		}
 
 

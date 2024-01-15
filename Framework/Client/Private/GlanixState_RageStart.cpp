@@ -40,7 +40,7 @@ void CGlanixState_RageStart::Exit_State()
 	/* 얼음 기둥 생성 */
 	m_pGlanix->Create_Pillars();
 
-	/* Camera - 탑뷰 전환 */
+	/* Camera - 팔로우 -> 탑뷰 */
 	CCamera_Top* pCamTop = dynamic_cast<CCamera_Top*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::TOP));
 	if (nullptr != pCamTop)
 	{
@@ -48,9 +48,9 @@ void CGlanixState_RageStart::Exit_State()
 		{
 			CCamera_Manager::GetInstance()->Change_Camera(pCamTop->Get_Key(), 1.25f, LERP_MODE::SMOOTHER_STEP);
 
-			// 플레이어 공격 인풋 막기
-			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_Attack_Input(false);
-			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_Skill_Input(false);
+			// 플레이어 인풋 막기
+			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CCharacter::STATE::NEUTRAL_IDLE);
+			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
 		}
 	}
 }
