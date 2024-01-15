@@ -23,7 +23,6 @@ public:
 		const Vec4 vCamLookAtFinish = { 0.13f, 0.1f, 0.969f, 1.f };
 
 		LERP_VEC4_DESC vLerpCamLookAt;
-
 		const _float fLookMag = 10000.f;
 
 	}ACTION_LOBBY_DESC;

@@ -195,7 +195,7 @@ public:
 	void Change_TargetOffSet(const Vec4& vTargetValue, const _float& fTime, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
 	void Change_LookAtOffSet(const Vec4& vTargetValue, const _float& fTime, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
 
-	void Lerp_TargetOffset(const Vec4& vStartValue, const Vec4& vTargetValue, const _float& fTime, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
+	virtual void Lerp_TargetOffset(const Vec4& vStartValue, const Vec4& vTargetValue, const _float& fTime, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
 	void Lerp_LookAtOffSet(const Vec4& vStartValue, const Vec4& vTargetValue, const _float& fTime, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
 
 	virtual Vec4 Get_LookAt() { return Vec4(); } /* 룩앳과 룩앳 오프셋이 더해진 최종 룩앳 반환 -> 카메라 간 블렌딩에서 주로 사용 */

@@ -143,6 +143,27 @@ void CCamera_Top::Tick_Blending(const _float fDeltaTime)
 	m_pTransformCom->LookAt(vLook);
 }
 
+void CCamera_Top::Set_Blending(const _bool& bBlending)
+{
+	__super::Set_Blending(bBlending);
+
+	if (!bBlending && CAMERA_TYPE::FOLLOW == CCamera_Manager::GetInstance()->Get_PrevCamera()->Get_Key()) /* 팔로우 -> 탑 */
+	{
+		/* 무브 인풋만 열어준다.*/
+		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_Move_Input(true);
+	}
+}
+
+void CCamera_Top::Lerp_TargetOffset(const Vec4& vStartValue, const Vec4& vTargetValue, const _float& fTime, const LERP_MODE& eMode)
+{
+	__super::Lerp_TargetOffset(vStartValue, vTargetValue, fTime, eMode);
+
+	if (!m_bInitLerp)
+		m_bInitLerp = true;
+	else if (m_bInitLerp)
+		m_tLerpHeight.Start(m_fPosOriginHeight, m_fPosOriginHeight - 7.f, fTime, eMode);
+}
+
 HRESULT CCamera_Top::Ready_Components()
 {
 	return S_OK;
@@ -154,6 +175,13 @@ void CCamera_Top::Tick_Glanix_PillarPattern(_float fTimeDelta)
 	{
 		Vec4 vGoalPos = m_tTargetOffset.vCurVec +
 							Vec4(m_pTargetObj->Get_Component<CTransform>(L"Com_Transform")->Get_Position()).ZeroW();
+
+		if (m_tLerpHeight.bActive)
+		{
+			m_tLerpHeight.Update(fTimeDelta);
+
+			m_fPosOriginHeight = m_tLerpHeight.fCurValue;
+		}
 
 		vGoalPos.y = m_fPosOriginHeight;
 

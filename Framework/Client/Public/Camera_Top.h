@@ -29,6 +29,9 @@ public:
 
 	virtual Vec4 Get_LookAt() override;
 	virtual void Tick_Blending(const _float fDeltaTime) override;
+	virtual void Set_Blending(const _bool& bBlending) override;
+
+	virtual void Lerp_TargetOffset(const Vec4& vStartValue, const Vec4& vTargetValue, const _float& fTime, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
 
 private:
 	virtual HRESULT Ready_Components() override;
@@ -45,6 +48,9 @@ private:
 	Vec4		m_vPrevLookAt = {};
 	Vec4		m_vCurPos = {};
 	_float		m_fDampingCoefficient = 0.025f;
+
+	LERP_FLOAT_DESC m_tLerpHeight = {};
+	_bool			m_bInitLerp = false;
 
 public:
 	static CCamera_Top* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);

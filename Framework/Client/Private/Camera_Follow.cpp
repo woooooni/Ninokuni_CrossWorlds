@@ -208,6 +208,12 @@ void CCamera_Follow::Set_Blending(const _bool& bBlending)
 			/* ¸Ê ÄÆ½Å¿¡¼­ ºí·»µùÀÌ ³¡³µ´Ù¸é ¸ðµç ÀÎÇ² ¿­¾îÁØ´Ù. */
 			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
 		}
+
+		if (CAMERA_TYPE::TOP == CCamera_Manager::GetInstance()->Get_PrevCamera()->Get_Key())
+		{
+			/* Å¾ºä¿¡¼­ ºí·»µùÀÌ ³¡³µ´Ù¸é ¸ðµç ÀÎÇ²À» ¿­¾îÁØ´Ù. */
+			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
+		}
 	}
 
 }

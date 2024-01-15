@@ -303,10 +303,37 @@ void CCamera_Action::Tick_Lobby(_float fTimeDelta)
 
 	if (m_tActionLobbyDesc.vLerpCamLookAt.bActive)
 		m_tActionLobbyDesc.vLerpCamLookAt.Update_Lerp(fTimeDelta);
+
+	//if (m_tTargetOffset.bActive)
+	//{
+	//	m_tTargetOffset.Update_Lerp(fTimeDelta);
+	//	if(!m_tTargetOffset.bActive)
+	//		m_bAction = false;
+	//}
 	
 	Vec4 vLookAt = m_tActionLobbyDesc.vLerpCamLookAt.vCurVec * m_tActionLobbyDesc.fLookMag;
 
 	m_pTransformCom->LookAt(vLookAt.OneW());
+
+	Vec4 vPos = m_tActionLobbyDesc.vCamPosition + Vec4(m_tTargetOffset.vCurVec);
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos.OneW());
+
+	//if (KEY_TAP(KEY::J))
+	//{
+	//	const _float fHeight = 6.f;
+	//	const _float fLerpTime = 5.f;
+	//
+	//	Vec4 vTargetLook = m_tActionLobbyDesc.vLerpCamLookAt.vCurVec;
+	//	vTargetLook.y += fHeight * 0.5f;
+	//
+	//	m_tActionLobbyDesc.vLerpCamLookAt.Start(m_tActionLobbyDesc.vLerpCamLookAt.vCurVec, vTargetLook, fLerpTime, LERP_MODE::EASE_OUT);
+	//
+	//	Vec4 vTargetOffSet = m_tTargetOffset.vCurVec;
+	//	vTargetOffSet.y += fHeight;
+	//
+	//	m_tTargetOffset.Start(m_tTargetOffset.vCurVec, vTargetOffSet, fLerpTime, LERP_MODE::EASE_IN);
+	//}
 }
 
 void CCamera_Action::Tick_Door(_float fTimeDelta)
