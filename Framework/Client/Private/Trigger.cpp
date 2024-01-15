@@ -4,6 +4,7 @@
 #include "Utils.h"
 #include "Level_Loading.h"
 #include "UI_Manager.h"
+#include "Whale.h"
 
 CTrigger::CTrigger(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CGameObject(pDevice, pContext, L"Trigger", OBJ_TYPE::OBJ_TRIGGER)
@@ -101,8 +102,18 @@ void CTrigger::Collision_Enter(const COLLISION_INFO& tInfo)
 
 		case TRIGGER_TYPE::TRIGGER_BOSS_STELLIA_ENTER:
 			// TODO
-			Set_Dead(true);
+			Set_Dead(true); 
 			break;
+		case TRIGGER_TYPE::TRIGER_WHALE_ENTER:
+			{
+			_uint iCutLevel = GI->Get_CurrentLevel();
+			CGameObject* pObject = GI->Find_GameObject(iCutLevel, LAYER_TYPE::LAYER_DYNAMIC, TEXT("Animal_Whale"));
+			if (nullptr == pObject)
+				break;
+
+			static_cast<CWhale*>(pObject)->Set_Flip(true);
+			break;
+			}
 		}
 		
 	}

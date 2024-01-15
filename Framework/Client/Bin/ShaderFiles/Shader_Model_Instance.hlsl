@@ -271,7 +271,7 @@ PS_OUT PS_MAIN(PS_IN In)
     Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	
-	if (0.1 >= Out.vDiffuse.a)
+	if (0.3 >= Out.vDiffuse.a)
 		discard;
 
 	return Out;	
@@ -291,7 +291,7 @@ PS_OUT PS_NoneRight_GRASS_MAIN(PS_IN In)
     Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	
-    if (0.5 >= Out.vDiffuse.a)
+    if (0.8 >= Out.vDiffuse.a)
         discard;
 
     return Out;

@@ -45,7 +45,8 @@ HRESULT CWhale::Initialize(void* pArg)
 
 void CWhale::Tick(_float fTimeDelta)
 {
-	m_pStateMachineCom->Tick_State(fTimeDelta);
+	if(true == m_bIsFlip)
+		m_pStateMachineCom->Tick_State(fTimeDelta);
 
 	__super::Tick(fTimeDelta);
 }
