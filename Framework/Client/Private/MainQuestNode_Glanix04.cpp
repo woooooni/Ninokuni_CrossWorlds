@@ -79,7 +79,7 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix04::Tick(const _float& fTimeDelta)
 
 			if (m_fTime >= m_fTalkChangeTime)
 			{
-				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 2);
 				m_fTime = m_fTalkChangeTime - m_fTime;
 				m_iTalkIndex += 1;
 				m_bIsTalk = false;
@@ -121,8 +121,8 @@ void CMainQuestNode_Glanix04::BossBattle_TalkEvent(const _float& fTimeDelta)
 				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
-				CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 2);
+				CUI_Manager::GetInstance()->Set_BattleDialogue(m_szpTalk);
 
 				TalkEvent();
 
@@ -142,8 +142,8 @@ void CMainQuestNode_Glanix04::BossBattle_TalkEvent(const _float& fTimeDelta)
 				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
-				CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 2);
+				CUI_Manager::GetInstance()->Set_BattleDialogue(m_szpTalk);
 
 				TalkEvent();
 
@@ -164,8 +164,8 @@ void CMainQuestNode_Glanix04::BossBattle_TalkEvent(const _float& fTimeDelta)
 				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
-				CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 2);
+				CUI_Manager::GetInstance()->Set_BattleDialogue(m_szpTalk);
 
 				TalkEvent();
 
@@ -186,8 +186,8 @@ void CMainQuestNode_Glanix04::BossBattle_TalkEvent(const _float& fTimeDelta)
 				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
-				CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 2);
+				CUI_Manager::GetInstance()->Set_BattleDialogue(m_szpTalk);
 
 				TalkEvent();
 
@@ -208,8 +208,8 @@ void CMainQuestNode_Glanix04::BossBattle_TalkEvent(const _float& fTimeDelta)
 				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
-				CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 2);
+				CUI_Manager::GetInstance()->Set_BattleDialogue(m_szpTalk);
 
 				TalkEvent();
 
@@ -230,8 +230,8 @@ void CMainQuestNode_Glanix04::BossBattle_TalkEvent(const _float& fTimeDelta)
 				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
-				CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 2);
+				CUI_Manager::GetInstance()->Set_BattleDialogue(m_szpTalk);
 
 				TalkEvent();
 
@@ -252,8 +252,8 @@ void CMainQuestNode_Glanix04::BossBattle_TalkEvent(const _float& fTimeDelta)
 				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
 
-				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
-				CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+				CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 2);
+				CUI_Manager::GetInstance()->Set_BattleDialogue(m_szpTalk);
 
 				TalkEvent();
 

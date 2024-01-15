@@ -34,6 +34,11 @@ void CGlanixState_RageCharge::Enter_State(void* pArg)
 		return;
 	}
 
+	//if (!m_bIsOut && fabs(m_fCurDist) >= 25.f)
+	//{
+	//
+	//}
+
 	// m_fPrevDist = m_fCurDist; 
 
 	m_fTime = 0.f;
@@ -72,7 +77,7 @@ void CGlanixState_RageCharge::Tick_State(_float fTimeDelta)
 		m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fChargeSpeed, fTimeDelta);
 		m_fCurDist = Vec4(m_vCurPos - m_pGlanix->Get_OriginPos()).Length();
 
-		if (m_bIsOut && fabs(m_fCurDist) < 25.f)
+		if (m_bIsOut && fabs(m_fCurDist) < 22.f)
 			m_bIsOut = false;
 
 		// m_fTime += fTimeDelta;
