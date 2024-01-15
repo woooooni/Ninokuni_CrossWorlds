@@ -37,7 +37,9 @@ HRESULT CTreeRock::Initialize(void* pArg)
 
 void CTreeRock::Tick(_float fTimeDelta)
 {
-	if (true == m_bFirst && TEXT("Common_TreeB_02a") == m_strObjectTag)
+	_uint iCurLevel = GI->Get_CurrentLevel();
+
+	if (true == m_bFirst && TEXT("Common_TreeB_02a") == m_strObjectTag && LEVELID::LEVEL_ICELAND == iCurLevel)
 	{
 		CEffect_Manager::GetInstance()->Generate_Decal_To_Position(TEXT("TreeSnowu"), m_pTransformCom->Get_WorldMatrix(), Vec3(0.0f, 12.0f, 0.0f), Vec3(5.0f, 7.0f, 5.0f), Vec3(0.0f, 0.0f, 0.0f), this, &m_pDecalCom, false);	
 		m_bFirst = false;
