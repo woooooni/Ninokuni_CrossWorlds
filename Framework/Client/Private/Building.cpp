@@ -19,6 +19,8 @@ HRESULT CBuilding::Initialize_Prototype(_uint eType, const wstring& strFilePath,
 		return E_FAIL;
 
 
+
+
 	return S_OK;
 }
 

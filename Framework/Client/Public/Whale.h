@@ -24,6 +24,13 @@ public:
 	HRESULT Ready_Collider();
 
 public:
+	const _bool& IsFlip() const { return m_bIsFlip; }
+	void Set_Flip(_bool Flip) { m_bIsFlip = Flip; }
+
+private:
+	_bool m_bIsFlip = false;
+
+public:
 	virtual void Collision_Enter(const COLLISION_INFO& tInfo) override;
 	virtual void Collision_Continue(const COLLISION_INFO& tInfo) override;
 	virtual void Collision_Exit(const COLLISION_INFO& tInfo) override;

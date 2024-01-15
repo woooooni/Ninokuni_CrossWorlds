@@ -35,8 +35,8 @@ void CVfx_Smoke::Tick(_float fTimeDelta)
 
 	if (m_fTimeAcc > 0.5f)
 	{
-		GET_INSTANCE(CParticle_Manager)->Generate_Particle_To_Position(TEXT("TentSmoke"),
-			XMLoadFloat4x4(&m_WorldMatrix), _float3(-3.0f, 8.0f, -1.0f), _float3(1.0f, 1.0f, 1.f), _float3(0.f, 0.f, 0.f));
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("TentSmoke"),
+			XMLoadFloat4x4(&m_WorldMatrix), _float3(2.5f, 8.0f, -2.75f), _float3(1.0f, 1.0f, 1.f), _float3(0.f, 0.f, 0.f));
 
 		m_fTimeAcc = 0.0f;
 	}
