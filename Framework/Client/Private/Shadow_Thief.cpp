@@ -286,7 +286,7 @@ HRESULT CShadow_Thief::Ready_Colliders()
 	
 	BoundingSphere tSphere;
 	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 0.65f;
+	tSphere.Radius = 0.8f;
 	SphereDesc.tSphere = tSphere;
 	
 	SphereDesc.pNode = nullptr;
