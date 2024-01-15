@@ -410,7 +410,6 @@ void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 	m_tStat.fHp = max(0, m_tStat.fHp - iDamage);
 
 	Start_RimLight();
-
 	Start_MonsterHittedEvent(tInfo.pOther);
 }
 
@@ -458,7 +457,8 @@ void CMonster::Start_MonsterHittedEvent(CGameObject* pPlayer)
 		/* 몬스터의 피격 사운드는 플레이어의 공격 종류에 따라 달라진다. -> 플레이어 쪽에서 결정 */
 		/* 일단 디폴트로 하나 박아둔다. */
 
-		GI->Play_Sound(L"Hit_PC_Combo_Slash_Flesh_1.mp3", SOUND_MONSTERL_HIT, 0.3f, false);
+		wstring strSoundKey = L"Hit_PC_Combo_Slash_Flesh_" + to_wstring(GI->RandomInt(1, 4)) + L".mp3";
+		GI->Play_Sound(strSoundKey, SOUND_MONSTERL_HIT, 0.3f, false);
 	}
 }
 
