@@ -21,6 +21,8 @@
 #include "Camera_Group.h"
 #include "Particle_Manager.h"
 
+_bool CLevel_Kingdom::g_bFirstEnter = false;
+
 CLevel_Kingdom::CLevel_Kingdom(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
 {

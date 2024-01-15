@@ -319,13 +319,19 @@ void CUI_Manager::Resize_QuestPopup()
 		return;
 	}
 
+	if (0 < m_QuestPopUp[0]->Get_NumOfQuest() && false == m_pBtnQuest->Get_Active())
+		return;
+
 	switch (iNum)
 	{
 	case 1:
 		// 켜야될 것
-		m_QuestPopUp[0]->Set_Active(true);
-		m_QuestPopUp[4]->Set_Active(true);
-		m_QuestPopUp[8]->Set_Active(true);
+		if (!m_QuestPopUp[0]->Get_Active())
+			m_QuestPopUp[0]->Set_Active(true);
+		if (!m_QuestPopUp[4]->Get_Active())
+			m_QuestPopUp[4]->Set_Active(true);
+		if (!m_QuestPopUp[8]->Get_Active())
+			m_QuestPopUp[8]->Set_Active(true);
 
 		//꺼야될 것
 		m_QuestPopUp[1]->Set_Active(false);
@@ -338,11 +344,16 @@ void CUI_Manager::Resize_QuestPopup()
 
 	case 2:
 		//켜야될 것
-		m_QuestPopUp[0]->Set_Active(true);
-		m_QuestPopUp[4]->Set_Active(true);
-		m_QuestPopUp[8]->Set_Active(true);
-		m_QuestPopUp[1]->Set_Active(true);
-		m_QuestPopUp[5]->Set_Active(true);
+		if (!m_QuestPopUp[0]->Get_Active())
+			m_QuestPopUp[0]->Set_Active(true);
+		if (!m_QuestPopUp[4]->Get_Active())
+			m_QuestPopUp[4]->Set_Active(true);
+		if (!m_QuestPopUp[8]->Get_Active())
+			m_QuestPopUp[8]->Set_Active(true);
+		if (!m_QuestPopUp[1]->Get_Active())
+			m_QuestPopUp[1]->Set_Active(true);
+		if (!m_QuestPopUp[5]->Get_Active())
+			m_QuestPopUp[5]->Set_Active(true);
 
 		//꺼야될 것
 		m_QuestPopUp[6]->Set_Active(false);
@@ -352,13 +363,20 @@ void CUI_Manager::Resize_QuestPopup()
 
 	case 3:
 		//켜야될 것
-		m_QuestPopUp[0]->Set_Active(true);
-		m_QuestPopUp[4]->Set_Active(true);
-		m_QuestPopUp[8]->Set_Active(true);
-		m_QuestPopUp[1]->Set_Active(true);
-		m_QuestPopUp[5]->Set_Active(true);
-		m_QuestPopUp[2]->Set_Active(true);
-		m_QuestPopUp[6]->Set_Active(true);
+		if (!m_QuestPopUp[0]->Get_Active())
+			m_QuestPopUp[0]->Set_Active(true);
+		if (!m_QuestPopUp[4]->Get_Active())
+			m_QuestPopUp[4]->Set_Active(true);
+		if (!m_QuestPopUp[8]->Get_Active())
+			m_QuestPopUp[8]->Set_Active(true);
+		if (!m_QuestPopUp[1]->Get_Active())
+			m_QuestPopUp[1]->Set_Active(true);
+		if (!m_QuestPopUp[5]->Get_Active())
+			m_QuestPopUp[5]->Set_Active(true);
+		if (!m_QuestPopUp[6]->Get_Active())
+			m_QuestPopUp[6]->Set_Active(false);
+		if (!m_QuestPopUp[3]->Get_Active())
+			m_QuestPopUp[3]->Set_Active(false);
 
 		//꺼야될 것
 		m_QuestPopUp[7]->Set_Active(false);
@@ -366,15 +384,22 @@ void CUI_Manager::Resize_QuestPopup()
 
 	case 4:
 		//켜야될 것
-		m_QuestPopUp[0]->Set_Active(true);
-		m_QuestPopUp[4]->Set_Active(true);
-		m_QuestPopUp[8]->Set_Active(true);
-		m_QuestPopUp[1]->Set_Active(true);
-		m_QuestPopUp[5]->Set_Active(true);
-		m_QuestPopUp[2]->Set_Active(true);
-		m_QuestPopUp[6]->Set_Active(true);
-		m_QuestPopUp[3]->Set_Active(true);
-		m_QuestPopUp[7]->Set_Active(true);
+		if (!m_QuestPopUp[0]->Get_Active())
+			m_QuestPopUp[0]->Set_Active(true);
+		if (!m_QuestPopUp[4]->Get_Active())
+			m_QuestPopUp[4]->Set_Active(true);
+		if (!m_QuestPopUp[8]->Get_Active())
+			m_QuestPopUp[8]->Set_Active(true);
+		if (!m_QuestPopUp[1]->Get_Active())
+			m_QuestPopUp[1]->Set_Active(true);
+		if (!m_QuestPopUp[5]->Get_Active())
+			m_QuestPopUp[5]->Set_Active(true);
+		if (!m_QuestPopUp[6]->Get_Active())
+			m_QuestPopUp[6]->Set_Active(false);
+		if (!m_QuestPopUp[3]->Get_Active())
+			m_QuestPopUp[3]->Set_Active(false);
+		if (!m_QuestPopUp[7]->Get_Active())
+			m_QuestPopUp[7]->Set_Active(false);
 		break;
 	}
 
@@ -4049,6 +4074,10 @@ HRESULT CUI_Manager::Tick_UIs(LEVELID eID, _float fTimeDelta)
 		Tick_LobbyLevel(fTimeDelta);
 		break;
 
+	case LEVELID::LEVEL_KINGDOMHALL:
+		Tick_EvermoreLevel(fTimeDelta);
+		break;
+
 	case LEVELID::LEVEL_EVERMORE:
 		Tick_EvermoreLevel(fTimeDelta);
 		break;
@@ -5536,54 +5565,57 @@ HRESULT CUI_Manager::OnOff_QuestPopup(_bool bOnOff)
 {
 	if (bOnOff)
 	{
-		_int iNum = m_QuestPopUp[0]->Get_NumOfQuest();
-
-		if (0 == iNum)
+		if (!Is_DefaultSettingOn())
 		{
-			OnOff_QuestPopup(false);
-			return S_OK;
-		}
+			_int iNum = m_QuestPopUp[0]->Get_NumOfQuest();
 
-		if (1 <= iNum)
-		{
-			if (0 == m_pBtnQuest->Get_TextureIndex())
-				m_pBtnQuest->Set_Click(true);
-
-			if (m_QuestPopUp[0]->Get_Active())
-				return S_OK;
-
-			if(!m_QuestPopUp[0]->Get_Active())
-				m_QuestPopUp[0]->Set_Active(true);
-			if (!m_QuestPopUp[4]->Get_Active())
-				m_QuestPopUp[4]->Set_Active(true);
-			if (!m_QuestPopUp[8]->Get_Active())
-				m_QuestPopUp[8]->Set_Active(true);
-
-			if (2 <= iNum)
+			if (0 == iNum)
 			{
-				//if (!m_QuestPopUp[1]->Get_Active())
-					m_QuestPopUp[1]->Set_Active(true);
-				//if (!m_QuestPopUp[5]->Get_Active())
-					m_QuestPopUp[5]->Set_Active(true);
-
-				if (3 <= iNum)
-				{
-					//if (!m_QuestPopUp[2]->Get_Active())
-						m_QuestPopUp[2]->Set_Active(true);
-					//if (!m_QuestPopUp[6]->Get_Active())
-						m_QuestPopUp[6]->Set_Active(true);
-
-					if (4 <= iNum)
-					{
-						//if (!m_QuestPopUp[3]->Get_Active())
-							m_QuestPopUp[3]->Set_Active(true);
-						//if (!m_QuestPopUp[7]->Get_Active())
-							m_QuestPopUp[7]->Set_Active(true);
-					}
-				}
+				OnOff_QuestPopup(false);
+				return S_OK;
 			}
 
-			m_QuestPopUp[8]->Move_BottomFrame(iNum);
+			if (1 <= iNum)
+			{
+				if (0 == m_pBtnQuest->Get_TextureIndex())
+					m_pBtnQuest->Set_Click(true);
+
+				if (m_QuestPopUp[0]->Get_Active())
+					return S_OK;
+
+				if (!m_QuestPopUp[0]->Get_Active())
+					m_QuestPopUp[0]->Set_Active(true);
+				if (!m_QuestPopUp[4]->Get_Active())
+					m_QuestPopUp[4]->Set_Active(true);
+				if (!m_QuestPopUp[8]->Get_Active())
+					m_QuestPopUp[8]->Set_Active(true);
+
+				if (2 <= iNum)
+				{
+					if (!m_QuestPopUp[1]->Get_Active())
+						m_QuestPopUp[1]->Set_Active(true);
+					if (!m_QuestPopUp[5]->Get_Active())
+						m_QuestPopUp[5]->Set_Active(true);
+
+					if (3 <= iNum)
+					{
+						if (!m_QuestPopUp[2]->Get_Active())
+							m_QuestPopUp[2]->Set_Active(true);
+						if (!m_QuestPopUp[6]->Get_Active())
+							m_QuestPopUp[6]->Set_Active(true);
+
+						if (4 <= iNum)
+						{
+							if (!m_QuestPopUp[3]->Get_Active())
+								m_QuestPopUp[3]->Set_Active(true);
+							if (!m_QuestPopUp[7]->Get_Active())
+								m_QuestPopUp[7]->Set_Active(true);
+						}
+					}
+				}
+
+				m_QuestPopUp[8]->Move_BottomFrame(iNum);
+			}
 		}
 	}
 	else

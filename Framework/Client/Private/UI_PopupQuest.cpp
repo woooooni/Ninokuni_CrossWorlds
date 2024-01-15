@@ -22,7 +22,7 @@ void CUI_PopupQuest::Set_Active(_bool bActive)
 	if (POPUPFRAME_TOP == m_eType || POPUPFRAME_BOTTOM == m_eType || POPUP_SEPARATOR == m_eType)
 	{
 		if (bActive)
-			m_fAppearProg = 0.f;
+			m_fAppearProg = 1.f;
 	}
 	else
 	{
@@ -81,6 +81,9 @@ void CUI_PopupQuest::Update_QuestContents(const wstring& strPreTitle, const wstr
 	{
 		if (strPreTitle == iter->strTitle)
 		{
+			if (iter->strContents == strContents)
+				return; // Ãß°¡
+
 			iter->strType = strQuestType;
 			iter->strTitle = strTitle;
 			iter->strContents = strContents;
