@@ -581,7 +581,7 @@ HRESULT CCharacter_SwordMan::Ready_Weapon()
 		return S_OK;
 	
 
-	m_pWeapon->Set_WeaponModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Flower01"));
+	m_pWeapon->Set_WeaponModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Sword_Fire02"));
 
 	if (nullptr == m_pWeapon->Get_WeaponModelCom())
 	{
