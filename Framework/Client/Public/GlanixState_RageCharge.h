@@ -31,7 +31,7 @@ private:
 
 	_int   m_iChargeCount = 0;
 
-	const _uint m_iMaxChargeCount = 8;
+	const _uint m_iMaxChargeCount = 4;
 
 public:
 	static CGlanixState_RageCharge* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
