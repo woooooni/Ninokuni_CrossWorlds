@@ -78,7 +78,7 @@ void CGlanixState_Rage2Idle::Generate_Icicle(_uint iCount)
 	{
 		Vec4 vInitPos = pTransform->Get_Position();
 		vInitPos.x += GI->RandomFloat(-5.f, 5.f);
-		vInitPos.y += 10.f + GI->RandomFloat(0.f, 5.f);
+		vInitPos.y += 20.f + GI->RandomFloat(0.f, 10.f);
 		vInitPos.z += GI->RandomFloat(-5.f, 5.f);
 
 		CGameObject* pIcicle = nullptr;

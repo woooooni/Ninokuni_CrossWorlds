@@ -148,19 +148,19 @@ HRESULT CCharacter_Manager::Ready_Characters()
 
 
 	///* Engineer */
-	//if(FAILED(GI->Add_Prototype(L"Prototype_GameObject_Engineer_Bullet", CEngineer_Bullet::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
-	//	return E_FAIL;
+	if(FAILED(GI->Add_Prototype(L"Prototype_GameObject_Engineer_Bullet", CEngineer_Bullet::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
+		return E_FAIL;
 
-	//if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_Engineer", CCharacter_Engineer::Create(m_pDevice, m_pContext, L"Engineer"), LAYER_CHARACTER, true)))
-	//	return E_FAIL;
-	//
-	//CCharacter* pCharacterEngineer = dynamic_cast<CCharacter*>(GI->Find_Prototype_GameObject(LAYER_CHARACTER, L"Prototype_GameObject_Character_Engineer"));
-	//if (nullptr == pCharacterEngineer)
-	//	return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_Engineer", CCharacter_Engineer::Create(m_pDevice, m_pContext, L"Engineer"), LAYER_CHARACTER, true)))
+		return E_FAIL;
+	
+	CCharacter* pCharacterEngineer = dynamic_cast<CCharacter*>(GI->Find_Prototype_GameObject(LAYER_CHARACTER, L"Prototype_GameObject_Character_Engineer"));
+	if (nullptr == pCharacterEngineer)
+		return E_FAIL;
 
-	//m_pCharacters[CHARACTER_TYPE::ENGINEER] = dynamic_cast<CCharacter*>(pCharacterEngineer->Clone(&StatDesc));
-	//if (nullptr == m_pCharacters[CHARACTER_TYPE::ENGINEER])
-	//	return E_FAIL;
+	m_pCharacters[CHARACTER_TYPE::ENGINEER] = dynamic_cast<CCharacter*>(pCharacterEngineer->Clone(&StatDesc));
+	if (nullptr == m_pCharacters[CHARACTER_TYPE::ENGINEER])
+		return E_FAIL;
 #pragma endregion
 
 #pragma region Destroyer
@@ -169,18 +169,18 @@ HRESULT CCharacter_Manager::Ready_Characters()
 	StatDesc.iHp = 1000;
 	StatDesc.iMaxHp = 1000;
 
-	//if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_Destroyer", CCharacter_Destroyer::Create(m_pDevice, m_pContext, L"Destroyer"), LAYER_CHARACTER, true)))
-	//	return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_Destroyer", CCharacter_Destroyer::Create(m_pDevice, m_pContext, L"Destroyer"), LAYER_CHARACTER, true)))
+		return E_FAIL;
 
-	//
-	//CCharacter* pCharacterDestroyer = dynamic_cast<CCharacter*>(GI->Find_Prototype_GameObject(LAYER_CHARACTER, L"Prototype_GameObject_Character_Destroyer"));
-	//if (nullptr == pCharacterDestroyer)
-	//	return E_FAIL;
-	//
+	
+	CCharacter* pCharacterDestroyer = dynamic_cast<CCharacter*>(GI->Find_Prototype_GameObject(LAYER_CHARACTER, L"Prototype_GameObject_Character_Destroyer"));
+	if (nullptr == pCharacterDestroyer)
+		return E_FAIL;
+	
 
-	//m_pCharacters[CHARACTER_TYPE::DESTROYER] = dynamic_cast<CCharacter*>(pCharacterDestroyer->Clone(&StatDesc));
-	//if (nullptr == m_pCharacters[CHARACTER_TYPE::DESTROYER])
-	//	return E_FAIL;
+	m_pCharacters[CHARACTER_TYPE::DESTROYER] = dynamic_cast<CCharacter*>(pCharacterDestroyer->Clone(&StatDesc));
+	if (nullptr == m_pCharacters[CHARACTER_TYPE::DESTROYER])
+		return E_FAIL;
 #pragma endregion
 
 	return S_OK;
