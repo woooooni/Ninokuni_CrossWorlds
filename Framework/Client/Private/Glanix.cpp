@@ -124,7 +124,8 @@ HRESULT CGlanix::Initialize(void* pArg)
 
 	m_iObjectType = OBJ_TYPE::OBJ_BOSS;
 
-	m_vBloomPower = _float3(0.4f, 0.4f, 0.4f);
+	//m_vBloomPower = _float3(0.4f, 0.4f, 0.4f);
+	m_vBloomPower = _float3(0.f, 0.f, 0.f);
 
 	return S_OK;
 }

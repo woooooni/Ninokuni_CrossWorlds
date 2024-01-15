@@ -229,12 +229,12 @@ private:
 	_bool	m_bDebugDraw   = false;
 	_bool   m_bOption      = false;
 	// On/Off_Option
-	_bool   m_bNaturalDraw = false;
-	_bool   m_bShadowDraw  = false;
+	_bool   m_bNaturalDraw = true;
+	_bool   m_bShadowDraw  = true;
 	_bool   m_bSsaoDraw    = false;
 	_bool   m_bOutlineDraw = true;
-	_bool   m_bBlurDraw    = false;
-	_bool   m_bBlomDraw    = false;
+	_bool   m_bBlurDraw    = true;
+	_bool   m_bBlomDraw    = true;
 
 	// 구현 필요
 	_bool   m_bPbrDraw  = false;
