@@ -280,7 +280,7 @@ HRESULT CIceBearMan::Ready_Colliders()
 
 	BoundingSphere tSphere;
 	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 1.6f;
+	tSphere.Radius = 1.8f;
 	SphereDesc.tSphere = tSphere;
 
 	SphereDesc.pNode = nullptr;
