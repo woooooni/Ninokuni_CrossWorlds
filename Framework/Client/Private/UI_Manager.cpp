@@ -326,11 +326,14 @@ void CUI_Manager::Resize_QuestPopup()
 	{
 	case 1:
 		// 켜야될 것
-		if (!m_QuestPopUp[0]->Get_Active())
+		if (!m_pBtnQuest->Get_Active())
+			return;
+
+		//if (!m_QuestPopUp[0]->Get_Active())
 			m_QuestPopUp[0]->Set_Active(true);
-		if (!m_QuestPopUp[4]->Get_Active())
+		//if (!m_QuestPopUp[4]->Get_Active())
 			m_QuestPopUp[4]->Set_Active(true);
-		if (!m_QuestPopUp[8]->Get_Active())
+		//if (!m_QuestPopUp[8]->Get_Active())
 			m_QuestPopUp[8]->Set_Active(true);
 
 		//꺼야될 것
@@ -343,16 +346,18 @@ void CUI_Manager::Resize_QuestPopup()
 		break;
 
 	case 2:
+		if (!m_pBtnQuest->Get_Active())
+			return;
 		//켜야될 것
-		if (!m_QuestPopUp[0]->Get_Active())
+		//if (!m_QuestPopUp[0]->Get_Active())
 			m_QuestPopUp[0]->Set_Active(true);
-		if (!m_QuestPopUp[4]->Get_Active())
+		//if (!m_QuestPopUp[4]->Get_Active())
 			m_QuestPopUp[4]->Set_Active(true);
-		if (!m_QuestPopUp[8]->Get_Active())
+		//if (!m_QuestPopUp[8]->Get_Active())
 			m_QuestPopUp[8]->Set_Active(true);
-		if (!m_QuestPopUp[1]->Get_Active())
+		//if (!m_QuestPopUp[1]->Get_Active())
 			m_QuestPopUp[1]->Set_Active(true);
-		if (!m_QuestPopUp[5]->Get_Active())
+		//if (!m_QuestPopUp[5]->Get_Active())
 			m_QuestPopUp[5]->Set_Active(true);
 
 		//꺼야될 것
@@ -362,20 +367,22 @@ void CUI_Manager::Resize_QuestPopup()
 		break;
 
 	case 3:
+		if (!m_pBtnQuest->Get_Active())
+			return;
 		//켜야될 것
-		if (!m_QuestPopUp[0]->Get_Active())
+		//if (!m_QuestPopUp[0]->Get_Active())
 			m_QuestPopUp[0]->Set_Active(true);
-		if (!m_QuestPopUp[4]->Get_Active())
+		//if (!m_QuestPopUp[4]->Get_Active())
 			m_QuestPopUp[4]->Set_Active(true);
-		if (!m_QuestPopUp[8]->Get_Active())
+		//if (!m_QuestPopUp[8]->Get_Active())
 			m_QuestPopUp[8]->Set_Active(true);
-		if (!m_QuestPopUp[1]->Get_Active())
+		//if (!m_QuestPopUp[1]->Get_Active())
 			m_QuestPopUp[1]->Set_Active(true);
-		if (!m_QuestPopUp[5]->Get_Active())
+		//if (!m_QuestPopUp[5]->Get_Active())
 			m_QuestPopUp[5]->Set_Active(true);
-		if (!m_QuestPopUp[6]->Get_Active())
+		//if (!m_QuestPopUp[6]->Get_Active())
 			m_QuestPopUp[6]->Set_Active(false);
-		if (!m_QuestPopUp[3]->Get_Active())
+		//if (!m_QuestPopUp[3]->Get_Active())
 			m_QuestPopUp[3]->Set_Active(false);
 
 		//꺼야될 것
@@ -383,22 +390,24 @@ void CUI_Manager::Resize_QuestPopup()
 		break;
 
 	case 4:
+		if (!m_pBtnQuest->Get_Active())
+			return;
 		//켜야될 것
-		if (!m_QuestPopUp[0]->Get_Active())
+		//if (!m_QuestPopUp[0]->Get_Active())
 			m_QuestPopUp[0]->Set_Active(true);
-		if (!m_QuestPopUp[4]->Get_Active())
+		//if (!m_QuestPopUp[4]->Get_Active())
 			m_QuestPopUp[4]->Set_Active(true);
-		if (!m_QuestPopUp[8]->Get_Active())
+		//if (!m_QuestPopUp[8]->Get_Active())
 			m_QuestPopUp[8]->Set_Active(true);
-		if (!m_QuestPopUp[1]->Get_Active())
+		//if (!m_QuestPopUp[1]->Get_Active())
 			m_QuestPopUp[1]->Set_Active(true);
-		if (!m_QuestPopUp[5]->Get_Active())
+		//if (!m_QuestPopUp[5]->Get_Active())
 			m_QuestPopUp[5]->Set_Active(true);
-		if (!m_QuestPopUp[6]->Get_Active())
+		//if (!m_QuestPopUp[6]->Get_Active())
 			m_QuestPopUp[6]->Set_Active(false);
-		if (!m_QuestPopUp[3]->Get_Active())
+		//if (!m_QuestPopUp[3]->Get_Active())
 			m_QuestPopUp[3]->Set_Active(false);
-		if (!m_QuestPopUp[7]->Get_Active())
+		//if (!m_QuestPopUp[7]->Get_Active())
 			m_QuestPopUp[7]->Set_Active(false);
 		break;
 	}
@@ -5583,32 +5592,32 @@ HRESULT CUI_Manager::OnOff_QuestPopup(_bool bOnOff)
 				if (m_QuestPopUp[0]->Get_Active())
 					return S_OK;
 
-				if (!m_QuestPopUp[0]->Get_Active())
+				//if (!m_QuestPopUp[0]->Get_Active())
 					m_QuestPopUp[0]->Set_Active(true);
-				if (!m_QuestPopUp[4]->Get_Active())
+				//if (!m_QuestPopUp[4]->Get_Active())
 					m_QuestPopUp[4]->Set_Active(true);
-				if (!m_QuestPopUp[8]->Get_Active())
+				//if (!m_QuestPopUp[8]->Get_Active())
 					m_QuestPopUp[8]->Set_Active(true);
 
 				if (2 <= iNum)
 				{
-					if (!m_QuestPopUp[1]->Get_Active())
+					//if (!m_QuestPopUp[1]->Get_Active())
 						m_QuestPopUp[1]->Set_Active(true);
-					if (!m_QuestPopUp[5]->Get_Active())
+					//if (!m_QuestPopUp[5]->Get_Active())
 						m_QuestPopUp[5]->Set_Active(true);
 
 					if (3 <= iNum)
 					{
-						if (!m_QuestPopUp[2]->Get_Active())
+						//if (!m_QuestPopUp[2]->Get_Active())
 							m_QuestPopUp[2]->Set_Active(true);
-						if (!m_QuestPopUp[6]->Get_Active())
+						//if (!m_QuestPopUp[6]->Get_Active())
 							m_QuestPopUp[6]->Set_Active(true);
 
 						if (4 <= iNum)
 						{
-							if (!m_QuestPopUp[3]->Get_Active())
+							//if (!m_QuestPopUp[3]->Get_Active())
 								m_QuestPopUp[3]->Set_Active(true);
-							if (!m_QuestPopUp[7]->Get_Active())
+							//if (!m_QuestPopUp[7]->Get_Active())
 								m_QuestPopUp[7]->Set_Active(true);
 						}
 					}
