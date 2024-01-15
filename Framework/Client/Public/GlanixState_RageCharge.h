@@ -26,6 +26,8 @@ private:
 	Vec4	m_vCurPos = {};
 	_float	m_fCurDist = 0.f;
 	_float	m_fPrevDist = 0.f;
+	_bool   m_bIsOut = false;
+
 
 	_int   m_iChargeCount = 0;
 
