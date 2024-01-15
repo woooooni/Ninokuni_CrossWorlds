@@ -381,9 +381,9 @@ void CUI_Manager::Resize_QuestPopup()
 		//if (!m_QuestPopUp[5]->Get_Active())
 			m_QuestPopUp[5]->Set_Active(true);
 		//if (!m_QuestPopUp[6]->Get_Active())
-			m_QuestPopUp[6]->Set_Active(false);
+			m_QuestPopUp[6]->Set_Active(true);
 		//if (!m_QuestPopUp[3]->Get_Active())
-			m_QuestPopUp[3]->Set_Active(false);
+			m_QuestPopUp[3]->Set_Active(true);
 
 		//²¨¾ßµÉ °Í
 		m_QuestPopUp[7]->Set_Active(false);
@@ -404,11 +404,11 @@ void CUI_Manager::Resize_QuestPopup()
 		//if (!m_QuestPopUp[5]->Get_Active())
 			m_QuestPopUp[5]->Set_Active(true);
 		//if (!m_QuestPopUp[6]->Get_Active())
-			m_QuestPopUp[6]->Set_Active(false);
+			m_QuestPopUp[6]->Set_Active(true);
 		//if (!m_QuestPopUp[3]->Get_Active())
-			m_QuestPopUp[3]->Set_Active(false);
+			m_QuestPopUp[3]->Set_Active(true);
 		//if (!m_QuestPopUp[7]->Get_Active())
-			m_QuestPopUp[7]->Set_Active(false);
+			m_QuestPopUp[7]->Set_Active(true);
 		break;
 	}
 
