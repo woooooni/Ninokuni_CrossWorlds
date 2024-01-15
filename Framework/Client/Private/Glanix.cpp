@@ -146,10 +146,10 @@ void CGlanix::Tick(_float fTimeDelta)
 	if (KEY_TAP(KEY::Z))
 		m_tStat.fHp -= m_tStat.fMaxHp * 0.1f;
 
-#ifdef _DEBUG
-	if (LEVELID::LEVEL_TOOL == GI->Get_CurrentLevel() && KEY_TAP(KEY::L))
-		m_pStateCom->Change_State(GLANIX_SPINBOMB);
-#endif // DEBUG
+//#ifdef _DEBUG
+//	if (LEVELID::LEVEL_TOOL == GI->Get_CurrentLevel() && KEY_TAP(KEY::L))
+//		m_pStateCom->Change_State(GLANIX_SPINBOMBBOMB);
+//#endif // DEBUG
 
 	m_pStateCom->Tick_State(fTimeDelta);
 
@@ -313,13 +313,13 @@ HRESULT CGlanix::Ready_Components()
 	m_vOriginPos = XMVectorSet(-55.f, 1.6, 363.f, 1.f);
 	m_vWavePoint = { -63.f, 1.6f, 393.f, 1.f };
 
-#ifdef _DEBUG
-	if (LEVELID::LEVEL_TOOL == GI->Get_CurrentLevel())
-	{
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(5.f, 2.f, 5.f, 1.f));
-		m_vOriginPos = XMVectorSet(0.f, 2.f, 0.f, 1.f);
-	}
-#endif // DEBUG
+//#ifdef _DEBUG
+//	if (LEVELID::LEVEL_TOOL == GI->Get_CurrentLevel())
+//	{
+//		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(5.f, 2.f, 5.f, 1.f));
+//		m_vOriginPos = XMVectorSet(0.f, 2.f, 0.f, 1.f);
+//	}
+//#endif // DEBUG
 
 	/* For.Com_Renderer */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))

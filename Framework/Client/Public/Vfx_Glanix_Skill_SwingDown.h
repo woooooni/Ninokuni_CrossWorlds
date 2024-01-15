@@ -71,6 +71,8 @@ private:
 	class CEffect* m_pHand01Effect = nullptr;
 	class CEffect* m_pHand02Effect = nullptr;
 
+	class CEffect* m_SpringUpEffect = nullptr;
+
 public:
 	static CVfx_Glanix_Skill_SwingDown* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 		const wstring& strObjectTag);

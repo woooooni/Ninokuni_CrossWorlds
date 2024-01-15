@@ -114,45 +114,48 @@ HRESULT CVfx_Glanix_Skill_SwingDown::Initialize_Prototype()
 		m_pScaleOffset[TYPE_P_SWING_SMOKE_08] = _float3(1.f, 1.f, 1.f);
 		m_pRotationOffset[TYPE_P_SWING_SMOKE_08] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_P_SWING_CIRCLES_08] = 60;
+		m_pFrameTriger[TYPE_P_SWING_CIRCLES_08] = 30;
 		m_pPositionOffset[TYPE_P_SWING_CIRCLES_08] = _float3(0.f, 0.f, 0.f);
 		m_pScaleOffset[TYPE_P_SWING_CIRCLES_08] = _float3(1.f, 1.f, 1.f);
 		m_pRotationOffset[TYPE_P_SWING_CIRCLES_08] = _float3(0.f, 0.f, 0.f);
 	}
 
 	{
-		m_pFrameTriger[TYPE_D_ATTACK_WARNING]    = 70;
-		m_pPositionOffset[TYPE_D_ATTACK_WARNING] = _float3(0.f, 0.f, 0.5f);
+		m_pFrameTriger[TYPE_D_ATTACK_WARNING]    = 30;
+		m_pPositionOffset[TYPE_D_ATTACK_WARNING] = _float3(0.f, 0.f, 0.3f);
 		m_pScaleOffset[TYPE_D_ATTACK_WARNING]    = _float3(7.f, 5.f, 7.f);
 		m_pRotationOffset[TYPE_D_ATTACK_WARNING] = _float3(0.f, 0.f, 0.f);
 
+		// Smoke
+		// 
+		
 		m_pFrameTriger[TYPE_E_ATTACK_HANDCIRCLE_LEFT]    = 102;
 		m_pPositionOffset[TYPE_E_ATTACK_HANDCIRCLE_LEFT] = _float3(0.f, 0.f, 0.f);
 		m_pScaleOffset[TYPE_E_ATTACK_HANDCIRCLE_LEFT]    = _float3(0.2f, 0.2f, 0.2f);
 		m_pRotationOffset[TYPE_E_ATTACK_HANDCIRCLE_LEFT] = _float3(0.f, 0.f, 0.f);
 
 		m_pFrameTriger[TYPE_D_ATTACK_CRACK]    = 108;
-		m_pPositionOffset[TYPE_D_ATTACK_CRACK] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_D_ATTACK_CRACK]    = _float3(8.f, 5.f, 8.f);
+		m_pPositionOffset[TYPE_D_ATTACK_CRACK] = _float3(0.17f, 0.f, 0.85f);
+		m_pScaleOffset[TYPE_D_ATTACK_CRACK]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_D_ATTACK_CRACK] = _float3(0.f, 0.f, 0.f);
 
 		m_pFrameTriger[TYPE_E_ATTACK_SPRINGUP]    = 110;
-		m_pPositionOffset[TYPE_E_ATTACK_SPRINGUP] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_E_ATTACK_SPRINGUP]    = _float3(0.2f, 0.2f, 0.2f);
+		m_pPositionOffset[TYPE_E_ATTACK_SPRINGUP] = _float3(7.f, 0.f, 20.f);
+		m_pScaleOffset[TYPE_E_ATTACK_SPRINGUP]    = _float3(0.13f, 0.15f, 0.13f);
 		m_pRotationOffset[TYPE_E_ATTACK_SPRINGUP] = _float3(0.f, 0.f, 0.f);
 
 		m_pFrameTriger[TYPE_P_ATTACK_SMOKE]    = 111;
-		m_pPositionOffset[TYPE_P_ATTACK_SMOKE] = _float3(0.f, 0.f, 0.f);
+		m_pPositionOffset[TYPE_P_ATTACK_SMOKE] = _float3(1.f, 0.2f, 3.f);
 		m_pScaleOffset[TYPE_P_ATTACK_SMOKE]    = _float3(1.f, 1.f, 1.f);
 		m_pRotationOffset[TYPE_P_ATTACK_SMOKE] = _float3(0.f, 0.f, 0.f);
 
 		m_pFrameTriger[TYPE_P_ATTACK_CIRCLES]    = 112;
-		m_pPositionOffset[TYPE_P_ATTACK_CIRCLES] = _float3(0.f, 0.f, 0.f);
+		m_pPositionOffset[TYPE_P_ATTACK_CIRCLES] = _float3(1.f, 0.2f, 3.f);
 		m_pScaleOffset[TYPE_P_ATTACK_CIRCLES]    = _float3(1.f, 1.f, 1.f);
 		m_pRotationOffset[TYPE_P_ATTACK_CIRCLES] = _float3(0.f, 0.f, 0.f);
 
 		m_pFrameTriger[TYPE_E_ATTACK_CIRCLELINE]    = 114;
-		m_pPositionOffset[TYPE_E_ATTACK_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
+		m_pPositionOffset[TYPE_E_ATTACK_CIRCLELINE] = _float3(1.f, 0.2f, 3.f);
 		m_pScaleOffset[TYPE_E_ATTACK_CIRCLELINE]    = _float3(1.f, 1.f, 1.f);
 		m_pRotationOffset[TYPE_E_ATTACK_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
     }
@@ -310,8 +313,9 @@ void CVfx_Glanix_Skill_SwingDown::Tick(_float fTimeDelta)
 		}
 		else if (m_iCount == TYPE_E_ATTACK_SPRINGUP && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_ATTACK_SPRINGUP])
 		{
-		    GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Glanix_Skill_SwingDown_SpringUp"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_ATTACK_SPRINGUP], m_pScaleOffset[TYPE_E_ATTACK_SPRINGUP], m_pRotationOffset[TYPE_E_ATTACK_SPRINGUP]);
+		GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Glanix_Skill_SwingDown_SpringUp"),
+			XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_ATTACK_SPRINGUP], m_pScaleOffset[TYPE_E_ATTACK_SPRINGUP], m_pRotationOffset[TYPE_E_ATTACK_SPRINGUP], nullptr, &m_SpringUpEffect, false);
+			Safe_AddRef(m_SpringUpEffect);
 			m_iCount++;
         }
 #pragma region CVfx_Glanix_Skill_FootDown
@@ -325,7 +329,7 @@ void CVfx_Glanix_Skill_SwingDown::Tick(_float fTimeDelta)
 		{
 		    GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Skill_FootDown_Circle"),
 		    	XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_ATTACK_CIRCLES], m_pScaleOffset[TYPE_P_ATTACK_CIRCLES], m_pRotationOffset[TYPE_P_ATTACK_CIRCLES]);
-		    m_iCount++;
+			m_iCount++;
 		}
 		else if (m_iCount == TYPE_E_ATTACK_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_ATTACK_CIRCLELINE])
 		{
@@ -455,6 +459,16 @@ void CVfx_Glanix_Skill_SwingDown::Free()
 	{
 		m_pHand02Effect->Set_Dead(true);
 		Safe_Release(m_pHand02Effect);
+	}
+
+	if (nullptr != m_SpringUpEffect)
+	{
+		m_SpringUpEffect->Start_Dissolve(73, // Index
+			_float4(1.f, 1.f, 1.f, 1.f),     // Color
+			4.f,   // Speed
+			10.f); // Total
+
+		Safe_Release(m_SpringUpEffect);
 	}
 
 	if (!m_isCloned)
