@@ -15,6 +15,44 @@ CUI_Setting_Slider::CUI_Setting_Slider(const CUI_Setting_Slider& rhs)
 {
 }
 
+void CUI_Setting_Slider::Set_Active(_bool bActive)
+{
+	if (bActive)
+	{
+		if (m_fMaxX == 0 || m_fMinX == 0)
+			return;
+
+		m_fLength = fabs(m_fMaxX - m_fMinX);
+		_int iVolume = 0;
+
+		switch (m_eType)
+		{
+		case FIRST_SLIDER:
+			iVolume = GI->Get_AllChannelVolume();
+			m_tInfo.fX = m_fMinX + (m_fLength * iVolume);
+			m_iPercent = iVolume * 100.f;
+			break;
+
+		case SECOND_SLIDER:
+			iVolume = GI->Get_ChannelVolume(CHANNELID::SOUND_BGM);
+			m_tInfo.fX = m_fMinX + (m_fLength * iVolume);
+			m_iPercent = iVolume * 100.f;
+			break;
+
+		case THIRD_SLIDER:
+			iVolume = GI->Get_ChannelVolume(CHANNELID::SOUND_UI);
+			m_tInfo.fX = m_fMinX + (m_fLength * iVolume);
+			m_iPercent = iVolume * 100.f;
+			break;
+		}
+	}
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
+
+	m_bActive = bActive;
+}
+
 HRESULT CUI_Setting_Slider::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))

@@ -15,6 +15,16 @@ CUI_Setting_Section::CUI_Setting_Section(const CUI_Setting_Section& rhs)
 {
 }
 
+void CUI_Setting_Section::Set_Active(_bool bActive)
+{
+	if (bActive)
+	{
+		Set_ChildActive(true);
+	}
+
+	m_bActive = bActive;
+}
+
 HRESULT CUI_Setting_Section::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))

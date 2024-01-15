@@ -62,6 +62,7 @@
 #include "UI_WindowWorldMap.h"
 #include "UI_QuickSlot_Item.h"
 #include "UI_CharacterDummy.h"
+#include "UI_World_AnimalTag.h"
 #include "UI_Dummy_Swordsman.h"
 #include "UI_Costume_LineBox.h"
 #include "UI_MonsterHP_World.h"
@@ -7412,6 +7413,9 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_NPC_Tag"),
 		CUI_World_NPCTag::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Animal_Tag"),
+		CUI_World_AnimalTag::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_NPC_SpeechBalloon"),
 		CUI_World_NPCSpeechBalloon::Create(m_pDevice, m_pContext), LAYER_UI)))
