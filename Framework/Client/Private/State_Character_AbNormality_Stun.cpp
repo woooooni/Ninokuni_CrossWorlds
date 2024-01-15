@@ -20,7 +20,7 @@ HRESULT CState_Character_AbNormality_Stun::Initialize(const list<wstring>& Anima
 void CState_Character_AbNormality_Stun::Enter_State(void* pArg)
 {
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
-    m_pCharacter->Set_SuperArmor(999.f, true);
+    m_pCharacter->Set_Infinite(999.f, true);
 }
 
 void CState_Character_AbNormality_Stun::Tick_State(_float fTimeDelta)
@@ -36,7 +36,8 @@ void CState_Character_AbNormality_Stun::Tick_State(_float fTimeDelta)
 void CState_Character_AbNormality_Stun::Exit_State()
 {
     m_fAccRecovery = 0.f;
-    m_pCharacter->Set_SuperArmor(0.f, false);
+    
+    m_pCharacter->Set_Infinite(1.f, true);
 }
 
 
