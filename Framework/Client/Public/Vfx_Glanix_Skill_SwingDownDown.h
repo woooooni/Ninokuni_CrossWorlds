@@ -90,10 +90,15 @@ protected:
 	virtual HRESULT Ready_Components() override;
 
 private:
+	class CEffect* m_pHand00Effect = nullptr;
+
 	class CEffect* m_pHand01Effect = nullptr;
 	class CEffect* m_pHand02Effect = nullptr;
 
-	class CDecal* m_pWarningDecal = nullptr;
+	class CDecal*  m_pWarningDecal = nullptr;
+
+	class CEffect* m_SpringUpSmallEffect = nullptr;
+
 	class CEffect* m_SpringUpEffect = nullptr;
 
 public:
