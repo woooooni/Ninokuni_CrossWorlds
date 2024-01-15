@@ -16,6 +16,9 @@ HRESULT CGlanixState_RageCharge::Initialize(const list<wstring>& AnimationList)
 	m_fChargeSpeed = 20.f;
 	// m_fChargeTime = 1.5f;
 
+	m_fCurDist = 0.f; // 26
+	m_fPrevDist = 0.f; // 25
+
 	return S_OK;
 }
 
@@ -31,44 +34,48 @@ void CGlanixState_RageCharge::Enter_State(void* pArg)
 		return;
 	}
 
+	// m_fPrevDist = m_fCurDist; 
+
 	m_fTime = 0.f;
-
-	m_fCurDist = 0.f;
-	m_fPrevDist = 0.f;
-
 }
 
 void CGlanixState_RageCharge::Tick_State(_float fTimeDelta)
 {
 	if (m_pModelCom->Get_CurrAnimationFrame() <= 45)
+	{
 		m_pTransformCom->LookAt_ForLandObject(m_pPlayerTransform->Get_Position());
+	}
 
 	else if (m_pModelCom->Get_CurrAnimationFrame() >= 50)
 	{
-		if (fabs(m_fCurDist) > fabs(m_fPrevDist) && fabs(m_fCurDist) >= 25.f)
-		{
-			m_iChargeCount += 1;
-			m_pStateMachineCom->Change_State(CGlanix::GLANIX_RAGECHARGE_END);
-		}
-
-		m_fPrevDist = m_fCurDist;
-	
 		/* 여기서 충돌 했을 때 Crash로 전환하면서 Crash 카운트 추가. */
 		if (m_pGlanix->Get_IsCrash())
 		{
 			m_pGlanix->Set_IsCrash(false);
 			m_iChargeCount += 1;
 			m_pStateMachineCom->Change_State(CGlanix::GLANIX_RAGECRASH);
+			return;
 		}
 
-		// m_fTime += fTimeDelta;
-		m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fChargeSpeed, fTimeDelta);
+		/* 계산 */
+		if (!m_bIsOut && fabs(m_fCurDist) >= 25.f)
+		{
+			m_bIsOut = true;
+			m_iChargeCount += 1;
+			m_pStateMachineCom->Change_State(CGlanix::GLANIX_RAGECHARGE_END);
+			return;
+		}
+
 		m_vCurPos = m_pTransformCom->Get_Position();
 
+		// m_fPrevDist = m_fCurDist;
+		m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fChargeSpeed, fTimeDelta);
 		m_fCurDist = Vec4(m_vCurPos - m_pGlanix->Get_OriginPos()).Length();
 
-		m_pTransformCom->Get_Position();
-		m_pGlanix->Get_OriginPos();
+		if (m_bIsOut && fabs(m_fCurDist) < 25.f)
+			m_bIsOut = false;
+
+		// m_fTime += fTimeDelta;
 
 		//if (m_fTime >= m_fChargeTime)
 		//{
