@@ -37,6 +37,22 @@ void CState_Character::Neutral_Idle_Input(_float fTimeDelta)
 	if (true == CUI_Manager::GetInstance()->Is_Dialog_Active())
 		return;
 
+	if (true == GI->Mouse_Down(DIMK_WHEEL))
+	{
+		CUI_Manager::GetInstance()->Hide_MouseCursor(true);
+		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+		if (nullptr != pFollowCam)
+			pFollowCam->Set_CanInput(true);
+	}
+
+	if (true == GI->Mouse_Up(DIMK_WHEEL))
+	{
+		CUI_Manager::GetInstance()->Hide_MouseCursor(false);
+		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+		if (nullptr != pFollowCam)
+			pFollowCam->Set_CanInput(false);
+	}
+
 	if (KEY_HOLD(KEY::W) || KEY_HOLD(KEY::A) || KEY_HOLD(KEY::S) || KEY_HOLD(KEY::D))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_WALK);
@@ -106,11 +122,28 @@ void CState_Character::Battle_Idle_Input(_float fTimeDelta)
 	if (true == CUI_Manager::GetInstance()->Is_Dialog_Active())
 		return;
 
+	if (true == GI->Mouse_Down(DIMK_WHEEL))
+	{
+		CUI_Manager::GetInstance()->Hide_MouseCursor(true);
+		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+		if (nullptr != pFollowCam)
+			pFollowCam->Set_CanInput(true);
+	}
+
+	if (true == GI->Mouse_Up(DIMK_WHEEL))
+	{
+		CUI_Manager::GetInstance()->Hide_MouseCursor(false);
+		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+		if (nullptr != pFollowCam)
+			pFollowCam->Set_CanInput(false);
+	}
+
 	if (KEY_HOLD(KEY::W) || KEY_HOLD(KEY::A) || KEY_HOLD(KEY::S) || KEY_HOLD(KEY::D))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::BATTLE_WALK);
 		return;
 	}
+
 	if (KEY_TAP(KEY::SPACE))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::BATTLE_JUMP);

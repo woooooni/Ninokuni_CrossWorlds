@@ -18,6 +18,22 @@ HRESULT CState_Character_Damaged_KnockDown::Initialize(const list<wstring>& Anim
 
 void CState_Character_Damaged_KnockDown::Enter_State(void* pArg)
 {
+    CHARACTER_TYPE eCharacterType = m_pCharacter->Get_CharacterType();
+    wstring strSoundKey = L"";
+    switch (eCharacterType)
+    {
+    case CHARACTER_TYPE::SWORD_MAN:
+        strSoundKey = L"Swordsman_V_Dmg_Long_" + to_wstring(GI->RandomInt(1, 3));
+        CSound_Manager::GetInstance()->Play_Sound(strSoundKey, CHANNELID::SOUND_VOICE_CHARACTER, 0.5f, true);
+        break;
+    case CHARACTER_TYPE::ENGINEER:
+        CSound_Manager::GetInstance()->Play_Sound(strSoundKey, CHANNELID::SOUND_VOICE_CHARACTER, 0.5f, true);
+        break;
+    case CHARACTER_TYPE::DESTROYER:
+        CSound_Manager::GetInstance()->Play_Sound(strSoundKey, CHANNELID::SOUND_VOICE_CHARACTER, 0.5f, true);
+        break;
+    }
+
     m_iCurrAnimIndex = m_AnimIndices[0];
     m_fAccRecovery = 0.f;
     m_pModelCom->Set_Animation(m_iCurrAnimIndex);

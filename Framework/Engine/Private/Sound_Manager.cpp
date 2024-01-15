@@ -2,7 +2,7 @@
 #include <io.h>
 #include <tchar.h>
 #include <filesystem>
-
+#include "GameInstance.h"
 #include "Utils.h"
 
 namespace fs = std::filesystem;
@@ -66,7 +66,11 @@ void CSound_Manager::Play_Sound(wstring pSoundKey, CHANNELID eID, _float fVolume
 		Stop_Sound(eID);
 
 	_float fFinalVolume = fVolume * m_fSoundVolumeArr[eID] * m_fAllChannelVolume;
-	if (eID == CHANNELID::SOUND_VOICE_NPC || eID == CHANNELID::SOUND_VOICE_MONSTER1 || eID == CHANNELID::SOUND_VOICE_MONSTER2 || eID == CHANNELID::SOUND_VOICE_MONSTER3)
+	if (eID == CHANNELID::SOUND_VOICE_NPC 
+		|| eID == CHANNELID::SOUND_VOICE_MONSTER1 
+		|| eID == CHANNELID::SOUND_VOICE_MONSTER2 
+		|| eID == CHANNELID::SOUND_VOICE_MONSTER3 
+		|| eID == CHANNELID::SOUND_FOOT_MONSTER)
 	{
 		if (fCamDistance > 10.f)		
 			fFinalVolume = 0.f;
@@ -76,6 +80,15 @@ void CSound_Manager::Play_Sound(wstring pSoundKey, CHANNELID eID, _float fVolume
 
 	fFinalVolume = min(fFinalVolume, 1.f);
 	FMOD_BOOL bPlay = FALSE;
+
+	if (eID == CHANNELID::SOUND_FOOT_CHARACTER || eID == CHANNELID::SOUND_FOOT_MONSTER)
+	{
+		if (GI->Get_CurrentLevel() != 99)
+		{
+			Play_Foot(eID, fFinalVolume);
+			return;
+		}
+	}
 
 	FMOD_System_PlaySound(m_pSystem, FMOD_CHANNEL_FREE, iter->second, FALSE, &m_pChannelArr[eID]);
 	FMOD_Channel_SetVolume(m_pChannelArr[eID], fFinalVolume);
@@ -197,6 +210,45 @@ void CSound_Manager::Search_Recursive(const std::string& currentPath)
 			}
 		}
 	}
+}
+
+void CSound_Manager::Play_Foot(CHANNELID eID, _float fVolume)
+{
+	map<wstring, FMOD_SOUND*>::iterator iter;
+
+	wstring strSoundKey = L"";
+
+	if (GI->Get_CurrentLevel() == 5)
+	{
+		strSoundKey = L"PC_FootPrint_Dirt_1_5.mp3";
+	}
+
+	else if (GI->Get_CurrentLevel() == 6)
+	{
+		strSoundKey = L"PC_FootPrint_Dirt_1_5.mp3";
+	}
+
+	else if (GI->Get_CurrentLevel() == 7)
+	{
+		strSoundKey = L"PC_FootPrint_Dirt_1_5.mp3";
+	}
+
+	else if (GI->Get_CurrentLevel() == 8)
+	{
+		strSoundKey = L"PC_FootPrint_Dirt_1_5.mp3";
+	}
+
+	iter = find_if(m_mapSound.begin(), m_mapSound.end(), [&](auto& iter)->bool
+		{
+			return strSoundKey == iter.first;
+		});
+
+	if (iter == m_mapSound.end())
+		return;
+
+	FMOD_System_PlaySound(m_pSystem, FMOD_CHANNEL_FREE, iter->second, FALSE, &m_pChannelArr[eID]);
+	FMOD_Channel_SetVolume(m_pChannelArr[eID], fVolume);
+	FMOD_System_Update(m_pSystem);
 }
 
 //void CSound_Manager::Load_SoundFile(const char* szSoundFilePath)

@@ -43,6 +43,7 @@ public:
 private:
 	void Search_Recursive(const std::string& currentPath);
 	//void Load_SoundFile(const char* szSoundFilePath);
+	void Play_Foot(CHANNELID eID, _float fVolume);
 	
 
 private:
