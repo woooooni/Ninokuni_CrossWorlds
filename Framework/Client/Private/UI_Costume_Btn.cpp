@@ -133,6 +133,10 @@ void CUI_Costume_Btn::On_Mouse(_float fTimeDelta)
 				CUI_Manager::GetInstance()->Update_CostumeBtnState(_uint(m_eUIType));
 				CUI_Manager::GetInstance()->OnOff_CostumeSlot(_uint(m_eUIType), true);
 			}
+
+			GI->Stop_Sound(CHANNELID::SOUND_UI);
+			GI->Play_Sound(TEXT("UI_Fx_Comm_Btn_1.mp3"), CHANNELID::SOUND_UI,
+				GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 		}
 
 		__super::On_Mouse(fTimeDelta);

@@ -12,18 +12,7 @@ protected:
 
 public:
 	_bool Get_Active() { return m_bActive; }
-	void Set_Active(_bool bActive)
-	{
-		if (bActive)
-		{
-			m_bSetAlpha = false;
-			m_iTextureIndex = 0;
-			m_fTimeAcc = 0.f;
-			m_fAlpha = 0.1f;
-		}
-
-		m_bActive = bActive;
-	}
+	virtual void Set_Active(_bool bActive) override;
 
 	_float Get_Alpha() { return m_fAlpha; }
 

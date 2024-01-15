@@ -40,12 +40,29 @@ void CUI_MonsterHP_Background::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		_int iOffsetX = 0;
+		if (3 < m_strName.length())
+		{
+			iOffsetX = (m_strName.length() - 3.f) * 6.f;
+		}
+
 		CRenderer::TEXT_DESC MaxHPDesc;
 		MaxHPDesc.strText = m_strName;
-		MaxHPDesc.strFontTag = L"Default_Medium";
+		MaxHPDesc.strFontTag = L"Default_Bold";
 		MaxHPDesc.vScale = { 0.4f, 0.4f };
-		MaxHPDesc.vPosition = m_vNamePosition;
-		MaxHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+		MaxHPDesc.vColor = m_vOutlineColor;
+		// Outline
+		MaxHPDesc.vPosition = _float2(m_vNamePosition.x - iOffsetX - 1.f, m_vNamePosition.y);
+		m_pRendererCom->Add_Text(MaxHPDesc);
+		MaxHPDesc.vPosition = _float2(m_vNamePosition.x - iOffsetX + 1.f, m_vNamePosition.y);
+		m_pRendererCom->Add_Text(MaxHPDesc);
+		MaxHPDesc.vPosition = _float2(m_vNamePosition.x - iOffsetX, m_vNamePosition.y - 1.f);
+		m_pRendererCom->Add_Text(MaxHPDesc);
+		MaxHPDesc.vPosition = _float2(m_vNamePosition.x - iOffsetX, m_vNamePosition.y + 1.f);
+		m_pRendererCom->Add_Text(MaxHPDesc);
+		// Font
+		MaxHPDesc.vColor = m_vFontColor;
+		MaxHPDesc.vPosition = _float2((m_vNamePosition.x - iOffsetX), m_vNamePosition.y);
 		m_pRendererCom->Add_Text(MaxHPDesc);
 
 		__super::Tick(fTimeDelta);

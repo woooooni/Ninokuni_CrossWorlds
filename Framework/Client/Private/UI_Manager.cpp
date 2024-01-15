@@ -62,6 +62,7 @@
 #include "UI_WindowWorldMap.h"
 #include "UI_QuickSlot_Item.h"
 #include "UI_CharacterDummy.h"
+#include "UI_World_AnimalTag.h"
 #include "UI_Dummy_Swordsman.h"
 #include "UI_Costume_LineBox.h"
 #include "UI_MonsterHP_World.h"
@@ -6421,11 +6422,20 @@ HRESULT CUI_Manager::OnOff_EmoticonWindow(_bool bOnOff)
 	{
 		if (!m_pEmoticonWindow->Get_Active())
 			m_pEmoticonWindow->Set_Active(true);
+
+		GI->Stop_Sound(CHANNELID::SOUND_UI);
+		GI->Play_Sound(TEXT("UI_Fx_Comm_Btn_1.mp3"), CHANNELID::SOUND_UI,
+			GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 	}
 	else
 	{
 		if (m_pEmoticonWindow->Get_Active())
 			m_pEmoticonWindow->Set_Active(false);
+
+		GI->Stop_Sound(CHANNELID::SOUND_UI);
+		GI->Play_Sound(TEXT("UI_Fx_Comm_Close_1.mp3"), CHANNELID::SOUND_UI,
+			GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+
 	}
 
 	return S_OK;
@@ -7403,6 +7413,9 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_NPC_Tag"),
 		CUI_World_NPCTag::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Animal_Tag"),
+		CUI_World_AnimalTag::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_NPC_SpeechBalloon"),
 		CUI_World_NPCSpeechBalloon::Create(m_pDevice, m_pContext), LAYER_UI)))

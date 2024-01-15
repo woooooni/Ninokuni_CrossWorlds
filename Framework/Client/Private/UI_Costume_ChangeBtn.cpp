@@ -142,9 +142,17 @@ void CUI_Costume_ChangeBtn::Key_Input(_float fTimeDelta)
 	if (KEY_TAP(KEY::LBTN))
 	{
 		if (0 == m_iTextureIndex)
+		{
 			CUI_Manager::GetInstance()->Set_CostumeModel();
+		}
 		else if (1 == m_iTextureIndex)
+		{
 			CUI_Manager::GetInstance()->TakeOff_CostumeModel();
+		}
+
+		GI->Stop_Sound(CHANNELID::SOUND_UI);
+		GI->Play_Sound(TEXT("UI_Fx_Comm_Btn_1.mp3"), CHANNELID::SOUND_UI,
+			GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 	}
 }
 

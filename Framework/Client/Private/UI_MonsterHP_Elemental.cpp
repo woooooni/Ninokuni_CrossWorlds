@@ -50,16 +50,26 @@ void CUI_MonsterHP_Elemental::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-		// Temp m_vTextPosition = _float2(g_iWinSizeX * 0.5f - 152.f, 75.f);
+
 		CRenderer::TEXT_DESC LevelDesc;
 		LevelDesc.strText = TEXT("Lv.") + to_wstring(m_iLevel);
 		LevelDesc.strFontTag = L"Default_Medium";
 		LevelDesc.vScale = { 0.3f, 0.3f };
+		LevelDesc.vColor = m_vOutlineColor;
+		// Outline
+		LevelDesc.vPosition = _float2(m_vTextPosition.x - 1.f, m_vTextPosition.y);
+		m_pRendererCom->Add_Text(LevelDesc);
+		LevelDesc.vPosition = _float2(m_vTextPosition.x + 1.f, m_vTextPosition.y);
+		m_pRendererCom->Add_Text(LevelDesc);
+		LevelDesc.vPosition = _float2(m_vTextPosition.x, m_vTextPosition.y - 1.f);
+		m_pRendererCom->Add_Text(LevelDesc);
+		LevelDesc.vPosition = _float2(m_vTextPosition.x, m_vTextPosition.y + 1.f);
+		m_pRendererCom->Add_Text(LevelDesc);
+		// Text
 		LevelDesc.vPosition = m_vTextPosition;
-		LevelDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+		LevelDesc.vColor = m_vFontColor;
 		m_pRendererCom->Add_Text(LevelDesc);
 
-		// 보스는 Level이 없음.
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
 }

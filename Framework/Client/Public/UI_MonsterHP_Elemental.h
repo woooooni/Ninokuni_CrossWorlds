@@ -29,6 +29,9 @@ private:
 
 	_float2 m_vTextPosition = _float2(g_iWinSizeX * 0.5f - 135.f, 60.f);
 
+	_float4 m_vFontColor = _float4(0.965f, 1.f, 0.878f, 1.f);
+	_float4 m_vOutlineColor = _float4(0.075f, 0.2f, 0.314f, 1.f);
+
 private:
 	virtual HRESULT	Ready_Components() override;
 

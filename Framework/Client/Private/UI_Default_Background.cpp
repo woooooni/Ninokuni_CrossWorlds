@@ -3,6 +3,8 @@
 #include "UI_Default_BackStars.h"
 #include "GameInstance.h"
 #include "UI_Manager.h"
+#include "Game_Manager.h"
+#include "Player.h"
 
 CUI_Default_Background::CUI_Default_Background(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CUI(pDevice, pContext, L"UI_Default_Background")
@@ -19,10 +21,38 @@ void CUI_Default_Background::Set_Active(_bool bActive)
 	if (true == bActive)
 	{
 		CUI_Manager::GetInstance()->OnOff_TextUI(false);
+
+		CPlayer* pPlayer = nullptr;
+		pPlayer = CGame_Manager::GetInstance()->Get_Player();
+		if (nullptr == pPlayer)
+			return;
+
+		CCharacter* pCharacter = nullptr;
+		pCharacter = pPlayer->Get_Character();
+		if (nullptr == pCharacter)
+			return;
+
+		pCharacter->Set_Skill_Input(false);
+		pCharacter->Set_Attack_Input(false);
+		pCharacter->Set_Move_Input(false);
 	}
 	else
 	{
 		CUI_Manager::GetInstance()->OnOff_TextUI(true);
+
+		CPlayer* pPlayer = nullptr;
+		pPlayer = CGame_Manager::GetInstance()->Get_Player();
+		if (nullptr == pPlayer)
+			return;
+
+		CCharacter* pCharacter = nullptr;
+		pCharacter = pPlayer->Get_Character();
+		if (nullptr == pCharacter)
+			return;
+
+		pCharacter->Set_Skill_Input(true);
+		pCharacter->Set_Attack_Input(true);
+		pCharacter->Set_Move_Input(true);
 	}
 
 	m_bActive = bActive;

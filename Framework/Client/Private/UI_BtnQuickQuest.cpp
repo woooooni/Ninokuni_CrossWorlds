@@ -26,6 +26,10 @@ void CUI_BtnQuickQuest::Set_Click(_bool bClick)
 		CUI_Manager::GetInstance()->OnOff_QuestPopup(false);
 	}
 
+	GI->Stop_Sound(CHANNELID::SOUND_UI);
+	GI->Play_Sound(TEXT("UI_Fx_MainHud_Btn_Switch_1.mp3"), CHANNELID::SOUND_UI,
+		GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+
 	m_bClick = bClick;
 }
 

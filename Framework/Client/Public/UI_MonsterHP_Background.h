@@ -24,6 +24,8 @@ public:
 
 private:
 	wstring m_strName = L"";
+	_float4 m_vFontColor = _float4(0.965f, 1.f, 0.878f, 1.f);
+	_float4 m_vOutlineColor = _float4(0.075f, 0.2f, 0.314f, 1.f);
 	_float2 m_vNamePosition = _float2(g_iWinSizeX * 0.5f - 24.f, 58.f);
 
 private:

@@ -30,6 +30,10 @@ void CUI_LevelUp::Set_Active(_bool bActive)
 		m_bSetAlpha = false;
 		m_fAlpha = 0.1f;
 
+		GI->Stop_Sound(CHANNELID::SOUND_UI);
+		GI->Play_Sound(TEXT("UI_Fx_Comm_LevelUp_1_St.mp3"), CHANNELID::SOUND_UI,
+			GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
+
 		m_bActive = bActive;
 	}
 	else

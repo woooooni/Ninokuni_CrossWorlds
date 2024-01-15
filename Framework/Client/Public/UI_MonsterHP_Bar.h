@@ -33,9 +33,12 @@ private:
 	_float m_fCurHP = { 0.f };
 
 	// For Text
-	_float2 m_vDefaultPosition = _float2(250.f, 39.f); // "/"
-	_float2 m_vCurHPPosition = _float2(200.f, 39.f); // 최대 체력
-	_float2 m_vMaxHPPosition = _float2(265.f, 39.f); // 현재 체력
+	_float2 m_vDefaultPosition = _float2(g_iWinSizeX * 0.5f + 5.f, 32.f); // "/"
+	_float2 m_vCurHPPosition = _float2(g_iWinSizeX * 0.5f - 5.f, 33.f); // 최대 체력
+	_float2 m_vMaxHPPosition = _float2(g_iWinSizeX * 0.5f + 18.f, 33.f); // 현재 체력
+
+	_float4 m_vFontColor = _float4(0.965f, 1.f, 0.878f, 1.f);
+	_float4 m_vOutlineColor = _float4(0.525f, 0.557f, 0.561f, 1.f);
 
 	ELEMENTAL_TYPE m_eElementalType = { ELEMENTAL_TYPE::FIRE };
 	class CMonster* m_pTarget = { nullptr };

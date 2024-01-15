@@ -14,6 +14,9 @@ protected:
 	virtual ~CUI_Setting_Section() = default;
 
 public:
+	virtual void Set_Active(_bool bActive) override;
+
+public:
 	virtual HRESULT	Initialize_Prototype();
 	virtual HRESULT	Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta);

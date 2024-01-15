@@ -8,6 +8,8 @@
 #include "State_Animal_Walk.h"
 #include "State_Animal_Lift.h"
 
+#include "UI_World_AnimalTag.h"
+
 CRabbit::CRabbit(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType)
 	: CAnimals(pDevice, pContext, strObjectTag, eType)
 {
@@ -49,6 +51,14 @@ HRESULT CRabbit::Initialize(void* pArg)
 	m_pInteractionBtn->Set_Owner(this);
 	m_pInteractionBtn->Set_Active(true);
 
+	// UI NameTag
+	CGameObject* pTag = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Animal_Tag"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pTag)
+		return E_FAIL;
+
+	m_pTag = dynamic_cast<CUI_World_AnimalTag*>(pTag);
+	m_pTag->Set_Owner(this, TEXT("Åä³¢"), 0.65f);
+
 	return S_OK;
 }
 
@@ -61,6 +71,8 @@ void CRabbit::Tick(_float fTimeDelta)
 
 	if (nullptr != m_pInteractionBtn)
 		m_pInteractionBtn->Tick(fTimeDelta);
+	if (nullptr != m_pTag)
+		m_pTag->Tick(fTimeDelta);
 }
 
 void CRabbit::LateTick(_float fTimeDelta)
@@ -69,6 +81,8 @@ void CRabbit::LateTick(_float fTimeDelta)
 
 	if (nullptr != m_pInteractionBtn)
 		m_pInteractionBtn->LateTick(fTimeDelta);
+	if (nullptr != m_pTag)
+		m_pTag->LateTick(fTimeDelta);
 }
 
 HRESULT CRabbit::Render()
@@ -235,5 +249,6 @@ void CRabbit::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pTag);
 	Safe_Release(m_pInteractionBtn);
 }

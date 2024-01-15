@@ -142,33 +142,62 @@ void CUI_MonsterHP_Bar::LateTick(_float fTimeDelta)
 		MAXHPDesc.strText = L"/";
 		MAXHPDesc.strFontTag = L"Default_Medium";
 		MAXHPDesc.vScale = { 0.4f, 0.4f };
-		MAXHPDesc.vPosition = _float2(fX, 32.f); // "/"
-		MAXHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+		MAXHPDesc.vColor = m_vOutlineColor;
+		// Outline
+		MAXHPDesc.vPosition = _float2(m_vDefaultPosition.x - 1.f, m_vDefaultPosition.y);
+		m_pRendererCom->Add_Text(MAXHPDesc);
+		MAXHPDesc.vPosition = _float2(m_vDefaultPosition.x + 1.f, m_vDefaultPosition.y);
+		m_pRendererCom->Add_Text(MAXHPDesc);
+		MAXHPDesc.vPosition = _float2(m_vDefaultPosition.x, m_vDefaultPosition.y - 1.f);
+		m_pRendererCom->Add_Text(MAXHPDesc);
+		MAXHPDesc.vPosition = _float2(m_vDefaultPosition.x, m_vDefaultPosition.y + 1.f);
+		m_pRendererCom->Add_Text(MAXHPDesc);
+		// Font
+		MAXHPDesc.vColor = m_vFontColor;
+		MAXHPDesc.vPosition = m_vDefaultPosition;
 		m_pRendererCom->Add_Text(MAXHPDesc);
 
 		CRenderer::TEXT_DESC CurHPDesc;
 		wstring strCurTemp = to_wstring(_int(m_fCurHP));
 		_int iLength = (strCurTemp.length() - 1.f) * 10.f;
-
 		CurHPDesc.strText = strCurTemp;
 		CurHPDesc.strFontTag = L"Default_Medium";
 		CurHPDesc.vScale = { 0.35f, 0.35f };
-		CurHPDesc.vPosition = _float2(fX - 10.f - iLength, 33.f); // 현재 체력
-		CurHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+		CurHPDesc.vColor = m_vOutlineColor;
+		// Outline
+		CurHPDesc.vPosition = _float2(m_vCurHPPosition.x - 1.f - iLength, m_vCurHPPosition.y);
+		m_pRendererCom->Add_Text(CurHPDesc);
+		CurHPDesc.vPosition = _float2(m_vCurHPPosition.x + 1.f - iLength, m_vCurHPPosition.y);
+		m_pRendererCom->Add_Text(CurHPDesc);
+		CurHPDesc.vPosition = _float2(m_vCurHPPosition.x - iLength, m_vCurHPPosition.y - 1.f);
+		m_pRendererCom->Add_Text(CurHPDesc);
+		CurHPDesc.vPosition = _float2(m_vCurHPPosition.x - iLength, m_vCurHPPosition.y + 1.f);
+		m_pRendererCom->Add_Text(CurHPDesc);
+		// Font
+		CurHPDesc.vColor = m_vFontColor;
+		CurHPDesc.vPosition = _float2(m_vCurHPPosition.x - iLength, m_vCurHPPosition.y);
 		m_pRendererCom->Add_Text(CurHPDesc);
 
 		CRenderer::TEXT_DESC MaxHPDesc;
 		wstring strMaxTemp = to_wstring(_int(m_fMaxHP));
 		iLength = strMaxTemp.length() - 1.f;
-
 		MaxHPDesc.strText = strMaxTemp;
 		MaxHPDesc.strFontTag = L"Default_Medium";
 		MaxHPDesc.vScale = { 0.35f, 0.35f };
-		MaxHPDesc.vPosition = _float2(fX + 13.f, 33.f); // 최대 체력
-		MaxHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+		MaxHPDesc.vColor = m_vOutlineColor;
+		// Outline
+		MaxHPDesc.vPosition = _float2(m_vMaxHPPosition.x - 1.f, m_vMaxHPPosition.y);
 		m_pRendererCom->Add_Text(MaxHPDesc);
-
-		// AddText ( Monster Max HP, Monster Cur HP , 몬스터 이름 )
+		MaxHPDesc.vPosition = _float2(m_vMaxHPPosition.x + 1.f, m_vMaxHPPosition.y);
+		m_pRendererCom->Add_Text(MaxHPDesc);
+		MaxHPDesc.vPosition = _float2(m_vMaxHPPosition.x, m_vMaxHPPosition.y - 1.f);
+		m_pRendererCom->Add_Text(MaxHPDesc);
+		MaxHPDesc.vPosition = _float2(m_vMaxHPPosition.x, m_vMaxHPPosition.y + 1.f);
+		m_pRendererCom->Add_Text(MaxHPDesc);
+		// Font
+		MaxHPDesc.vColor = m_vFontColor;
+		MaxHPDesc.vPosition = m_vMaxHPPosition;
+		m_pRendererCom->Add_Text(MaxHPDesc);
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}

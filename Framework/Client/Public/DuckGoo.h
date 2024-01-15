@@ -29,6 +29,7 @@ public:
 	virtual void Collision_Exit(const COLLISION_INFO& tInfo) override;
 
 private:
+	class CUI_World_AnimalTag* m_pTag = { nullptr };
 	class CUI_World_Interaction* m_pInteractionBtn = { nullptr };
 
 public:

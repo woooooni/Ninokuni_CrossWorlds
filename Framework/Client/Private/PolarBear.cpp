@@ -2,6 +2,7 @@
 #include "PolarBear.h"
 #include "GameInstance.h"
 #include "UI_World_Interaction.h"
+#include "UI_World_AnimalTag.h"
 
 #include "State_Animal_Idle.h"
 #include "State_Animal_Run.h"
@@ -49,6 +50,14 @@ HRESULT CPolarBear::Initialize(void* pArg)
 	m_pInteractionBtn->Set_Owner(this);
 	m_pInteractionBtn->Set_Active(true);
 
+	// UI NameTag
+	CGameObject* pTag = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Animal_Tag"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pTag)
+		return E_FAIL;
+
+	m_pTag = dynamic_cast<CUI_World_AnimalTag*>(pTag);
+	m_pTag->Set_Owner(this, TEXT("폴라베어"), 0.65f);
+
 	return S_OK;
 }
 
@@ -61,6 +70,8 @@ void CPolarBear::Tick(_float fTimeDelta)
 
 	if (nullptr != m_pInteractionBtn)
 		m_pInteractionBtn->Tick(fTimeDelta);
+	if (nullptr != m_pTag)
+		m_pTag->Tick(fTimeDelta);
 }
 
 void CPolarBear::LateTick(_float fTimeDelta)
@@ -69,6 +80,8 @@ void CPolarBear::LateTick(_float fTimeDelta)
 
 	if (nullptr != m_pInteractionBtn)
 		m_pInteractionBtn->LateTick(fTimeDelta);
+	if (nullptr != m_pTag)
+		m_pTag->LateTick(fTimeDelta);
 }
 
 HRESULT CPolarBear::Render()
@@ -233,5 +246,6 @@ void CPolarBear::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pTag);
 	Safe_Release(m_pInteractionBtn);
 }
