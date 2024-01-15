@@ -165,7 +165,7 @@ void CUI_World_AnimalTag::LateTick(_float fTimeDelta)
 				if (CUI_Manager::GetInstance()->Is_FadeFinished())
 				{
 					_int iLength = m_strName.length() - 1;
-					_float2 vFontPos = _float2(m_vTextPos.x - (iLength * 8.f), m_vTextPos.y);
+					_float2 vFontPos = _float2(m_vTextPos.x - 8.f - (iLength * 8.f), m_vTextPos.y);
 
 					CRenderer::TEXT_DESC TextDesc = {};
 					TextDesc.strText = m_strName;

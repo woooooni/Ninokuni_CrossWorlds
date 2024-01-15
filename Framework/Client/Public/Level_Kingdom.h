@@ -21,6 +21,9 @@ public:
 	virtual HRESULT Enter_Level() override;
 	virtual HRESULT Exit_Level() override;
 
+public:
+	static _bool g_bFirstEnter;
+
 private:
 	HRESULT Ready_Layer_Camera(const LAYER_TYPE eLayerType);
 	HRESULT Ready_Layer_BackGround(const LAYER_TYPE eLayerType);
