@@ -48,6 +48,9 @@ protected:
 	vector<_uint> m_vecAtkState;
 	static _uint  m_iAtkIndex;
 
+protected:
+	MOTION_TRAIL_DESC m_MotionTrailDesc = {};
+
 private:
 	_float m_fTime = 0.f;
 

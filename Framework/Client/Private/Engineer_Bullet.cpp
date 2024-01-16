@@ -34,8 +34,10 @@ HRESULT CEngineer_Bullet::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	m_pTransformCom->Set_Scale(Vec3(2.f, 2.f, 2.f));
+	m_pTransformCom->Set_Scale(Vec3(5.f, 5.f, 5.f));
 	Set_Collider_Elemental(m_pOwner->Get_ElementalType());
+	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::WEAK, 0.f, 0.f, 0.f, false);
+	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
 
 	return S_OK;
 }

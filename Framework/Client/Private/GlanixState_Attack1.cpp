@@ -26,6 +26,9 @@ void CGlanixState_Attack1::Enter_State(void* pArg)
 	if (pTransformCom == nullptr)
 		return;
 	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Glanix_Skill_TwoHandSwing"), pTransformCom->Get_WorldMatrix(), m_pGlanix);
+
+	m_pGlanix->Generate_MotionTrail(m_MotionTrailDesc);
+	
 }
 
 void CGlanixState_Attack1::Tick_State(_float fTimeDelta)
@@ -61,6 +64,7 @@ void CGlanixState_Attack1::Tick_State(_float fTimeDelta)
 
 void CGlanixState_Attack1::Exit_State()
 {
+	m_pGlanix->Stop_MotionTrail();
 }
 
 CGlanixState_Attack1* CGlanixState_Attack1::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

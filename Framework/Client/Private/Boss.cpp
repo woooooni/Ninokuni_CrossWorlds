@@ -30,6 +30,9 @@ HRESULT CBoss::Initialize(void* pArg)
 void CBoss::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+	if (true == m_bMotionTrail)
+		Tick_MotionTrail(fTimeDelta);
+
 }
 
 void CBoss::LateTick(_float fTimeDelta)
@@ -193,6 +196,17 @@ void CBoss::Collision_Exit(const COLLISION_INFO& tInfo)
 {
 }
 
+void CBoss::Generate_MotionTrail(const MOTION_TRAIL_DESC& MotionTrailDesc)
+{
+	m_bMotionTrail = true;
+	m_MotionTrailDesc = MotionTrailDesc;
+}
+
+void CBoss::Stop_MotionTrail()
+{
+	m_bMotionTrail = false;
+}
+
 CHierarchyNode* CBoss::Get_Socket(const wstring& strSocketName)
 {
 	return nullptr;
@@ -224,6 +238,34 @@ void CBoss::LookAt_DamagedObject(CGameObject* pAttacker)
 
 void CBoss::Play_DamagedSound()
 {
+}
+
+void CBoss::Tick_MotionTrail(_float fTimeDelta)
+{
+	m_MotionTrailDesc.fAccMotionTrail += fTimeDelta;
+	if (m_MotionTrailDesc.fAccMotionTrail >= m_MotionTrailDesc.fMotionTrailTime)
+	{
+		m_MotionTrailDesc.fAccMotionTrail = 0.f;
+
+		MOTION_TRAIL_DESC TrailDesc;
+		TrailDesc.WorldMatrix = m_pTransformCom->Get_WorldMatrix();
+		TrailDesc.fAlphaSpeed = 1.f;
+		TrailDesc.pModel = m_pModelCom;
+		TrailDesc.TweenDesc = m_pModelCom->Get_TweenDesc();
+		TrailDesc.vBloomPower = m_MotionTrailDesc.vBloomPower;
+		TrailDesc.vRimColor = m_MotionTrailDesc.vRimColor;
+		TrailDesc.fBlurPower = m_MotionTrailDesc.fBlurPower;
+
+
+		TrailDesc.pRenderModel = m_pModelCom;
+		if (nullptr != TrailDesc.pRenderModel)
+		{
+			if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, L"Prototype_GameObject_MotionTrail", &TrailDesc)))
+			{
+				MSG_BOX("MotionTrail_Failed");
+			}
+		}
+	}
 }
 
 void CBoss::Free()

@@ -22,6 +22,7 @@
 #include "UI_Manager.h"
 #include "UI_World_NameTag.h"
 #include "MonsterProjectile.h"
+#include "Camera_Follow.h"
 
 USING(Client)
 CCharacter::CCharacter(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eCharacterType)
@@ -669,7 +670,7 @@ void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 	else if (CCollider::ATTACK_TYPE::BLOW == tInfo.pOtherCollider->Get_AttackType())
 	{
 		CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
-		m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(XMVectorSet(0.f, 1.f, 0.f, 0.f)), 7.f, true);
+		m_pRigidBodyCom->Add_Velocity(-1.f * XMVector3Normalize(m_pTransformCom->Get_Look()), 7.f, true);
 		m_pStateCom->Change_State(CCharacter::DAMAGED_IMPACT);
 	}
 
@@ -864,13 +865,33 @@ HRESULT CCharacter::Exit_Character()
 	return S_OK;
 }
 
-HRESULT CCharacter::Tag_In()
+HRESULT CCharacter::Tag_In(Vec4 vInitializePosition)
 {
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vInitializePosition, 1.f));
+	m_pControllerCom->Set_Active(true);
+	m_pControllerCom->Set_EnterLevel_Position(XMVectorSetW(vInitializePosition, 1.f));
+	if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))
+	{
+		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+		if (nullptr != pFollowCam)
+		{
+			pFollowCam->Set_TargetObj(this);
+			pFollowCam->Set_LookAtObj(this);
+		}
+	}
+
 	return S_OK;
 }
 
 HRESULT CCharacter::Tag_Out()
 {
+	m_pControllerCom->Set_Active(false);
+	if (nullptr != m_pTarget)
+	{
+		Safe_Release(m_pTarget);
+		m_pTarget = nullptr;
+	}
+
 	return S_OK;
 }
 

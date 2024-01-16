@@ -39,6 +39,12 @@ HRESULT CGlanixState_Base::Initialize(const list<wstring>& AnimationList)
 	m_vecAtkState.push_back(CGlanix::GLANIX_SPINBOMB);
 	//m_vecAtkState.push_back(CGlanix::GLANIX_ATTACK1);
 
+	m_MotionTrailDesc.vRimColor = { 1.f, 1.f, 1.f, 1.f };
+	m_MotionTrailDesc.fMotionTrailTime = 0.5f;
+	m_MotionTrailDesc.vBloomPower = { 1.f, 1.f, 1.f, };
+	m_MotionTrailDesc.fBlurPower = 0.f;
+	m_MotionTrailDesc.fAlphaSpeed = 1.f;
+
 	return S_OK;
 }
 

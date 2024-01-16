@@ -569,8 +569,7 @@ void CAnimation::Update_Animation_Event(_float fTickPerSecond, const TWEEN_DESC&
 			{
 			case CAMERA_EVENT_TYPE::FOV :
 			{
-				CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Lerp_Fov(
-					CameraEvent.second.fTag1, CameraEvent.second.fTag2, (LERP_MODE)CameraEvent.second.iTag1);
+				CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Lerp_Fov(CameraEvent.second.fTag1, CameraEvent.second.fTag2, (LERP_MODE)CameraEvent.second.iTag1);
 			}
 				break;
 			case CAMERA_EVENT_TYPE::DISTANCE :
@@ -581,8 +580,7 @@ void CAnimation::Update_Animation_Event(_float fTickPerSecond, const TWEEN_DESC&
 				break;
 			case CAMERA_EVENT_TYPE::SHAKE :
 			{
-				CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Shake(
-					CameraEvent.second.fTag1, CameraEvent.second.fTag2, CameraEvent.second.fTag3);
+				CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Shake(CameraEvent.second.fTag1, CameraEvent.second.fTag2, CameraEvent.second.fTag3);
 			}
 				break;
 			default:

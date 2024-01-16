@@ -47,6 +47,10 @@ public:
 	}
 	_bool Is_Infinite() { return m_bInfinite; }
 
+	void Generate_MotionTrail(const MOTION_TRAIL_DESC& MotionTrailDesc);
+	void Stop_MotionTrail();
+
+
 public:
 	CHierarchyNode* Get_Socket(const wstring& strSocketName);
 	const MONSTER_STAT& Get_Stat() { return m_tStat; }
@@ -71,7 +75,7 @@ private:
 private:
 	void LookAt_DamagedObject(CGameObject* pAttacker);
 	void Play_DamagedSound();
-
+	
 protected:
 	_bool   m_bBools[(_uint)BOSS_BOOLTYPE::BOSSBOOL_END] = { false, }; // 보스가 사용하는 bool모음.
 
@@ -80,6 +84,14 @@ protected:
 	_vector	m_vOriginLook = {};
 	//_float4 m_vCounterRimColor = _float4(0.78f, 0.51f, 0.137f, 0.f);
 	_float4 m_vCounterRimColor = _float4(0.f, 0.f, 1.f, 0.f);
+
+
+protected:
+	MOTION_TRAIL_DESC m_MotionTrailDesc = {};
+	_bool m_bMotionTrail = false;
+
+private:
+	void Tick_MotionTrail(_float fTimeDelta);
 
 public:
 	virtual void Free() override;
