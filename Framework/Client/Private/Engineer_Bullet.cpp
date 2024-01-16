@@ -99,6 +99,12 @@ HRESULT CEngineer_Bullet::Ready_Components()
 	return S_OK;
 }
 
+void CEngineer_Bullet::Collision_Enter(const COLLISION_INFO& tInfo)
+{
+	wstring strSoundKey = L"Hit_PC_Damage_Dummy_" + to_wstring(GI->RandomInt(1, 2)) + L".mp3";
+	GI->Play_Sound(strSoundKey, SOUND_MONSTERL_HIT, 0.3f, false);
+}
+
 
 CEngineer_Bullet* CEngineer_Bullet::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {

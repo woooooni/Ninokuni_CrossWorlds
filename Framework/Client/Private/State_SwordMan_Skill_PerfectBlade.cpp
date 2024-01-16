@@ -34,12 +34,15 @@ void CState_SwordMan_Skill_PerfectBlade::Enter_State(void* pArg)
     if (pTransformCom == nullptr)
         return;
     GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_SwordMan_Skill_PerfectBlade"), pTransformCom->Get_WorldMatrix(), m_pCharacter);
+
 }
 
 void CState_SwordMan_Skill_PerfectBlade::Tick_State(_float fTimeDelta)
 {
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
         m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_IDLE);
+
+    __super::Attack_Input(fTimeDelta);
 }
 
 void CState_SwordMan_Skill_PerfectBlade::Exit_State()

@@ -34,7 +34,7 @@ void CUI_Setting_Slider::Set_Active(_bool bActive)
 			break;
 
 		case SECOND_SLIDER:
-			iVolume = GI->Get_ChannelVolume(CHANNELID::SOUND_BGM);
+			iVolume = GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR);
 			m_tInfo.fX = m_fMinX + (m_fLength * iVolume);
 			m_iPercent = iVolume * 100.f;
 			break;
@@ -105,13 +105,13 @@ void CUI_Setting_Slider::Tick(_float fTimeDelta)
 			break;
 
 		case UI_SETTING_SLIDERTYPE::SECOND_SLIDER:
-			GI->Set_ChannelVolume(CHANNELID::SOUND_BGM, fCurPosX / m_fLength);
+			GI->Set_ChannelVolume(CHANNELID::SOUND_BGM_CURR, fCurPosX / m_fLength);
 			break;
 
 		case UI_SETTING_SLIDERTYPE::THIRD_SLIDER:
 			for (_uint i = 0; i < CHANNELID::MAXCHANNEL; ++i)
 			{
-				if (i == CHANNELID::SOUND_BGM)
+				if (i == CHANNELID::SOUND_BGM_CURR)
 					continue;
 
 				GI->Set_ChannelVolume(CHANNELID(i), fCurPosX / m_fLength);

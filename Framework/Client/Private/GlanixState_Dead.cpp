@@ -48,7 +48,7 @@ void CGlanixState_Dead::Tick_State(_float fTimeDelta)
 			pFollowCam->Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
 
 			m_pGlanix->Reserve_Dead(true);
-			GI->Play_BGM(TEXT("BGM_Field_Village_Winter_Po_1.mp3"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM),true);
+			GI->Play_BGM(TEXT("BGM_Field_Village_Winter_Po_1.mp3"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR),true);
 		}
 	}
 

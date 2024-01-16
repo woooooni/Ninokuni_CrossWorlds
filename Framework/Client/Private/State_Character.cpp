@@ -281,7 +281,7 @@ void CState_Character::Neutral_Walk_Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamLook = XMVector3Normalize(vCamLook);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 4.f * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 10.f * fTimeDelta;
 
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
@@ -300,7 +300,7 @@ void CState_Character::Neutral_Walk_Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamLook = -1.f * XMVector3Normalize(vCamLook);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 4.f * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 10.f * fTimeDelta;
 
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
@@ -318,7 +318,7 @@ void CState_Character::Neutral_Walk_Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamRight = -1.f * XMVector3Normalize(vCamRight);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 4.f * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 10.f * fTimeDelta;
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
 
@@ -342,7 +342,7 @@ void CState_Character::Neutral_Walk_Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamRight = XMVector3Normalize(vCamRight);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 4.f * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 10.f * fTimeDelta;
 
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
@@ -439,7 +439,7 @@ void CState_Character::Battle_Walk_Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamLook = XMVector3Normalize(vCamLook);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 4.f * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 10.f * fTimeDelta;
 
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
@@ -458,7 +458,7 @@ void CState_Character::Battle_Walk_Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamLook = -1.f * XMVector3Normalize(vCamLook);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 4.f * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 10.f * fTimeDelta;
 
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
@@ -476,7 +476,7 @@ void CState_Character::Battle_Walk_Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamRight = -1.f * XMVector3Normalize(vCamRight);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 4.f * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 10.f * fTimeDelta;
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
 
@@ -500,7 +500,7 @@ void CState_Character::Battle_Walk_Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamRight = XMVector3Normalize(vCamRight);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 4.f * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 10.f * fTimeDelta;
 
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
@@ -585,7 +585,7 @@ void CState_Character::Pick_Walk_Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamLook = XMVector3Normalize(vCamLook);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 4.f * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 10.f * fTimeDelta;
 
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
@@ -604,7 +604,7 @@ void CState_Character::Pick_Walk_Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamLook = -1.f * XMVector3Normalize(vCamLook);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 4.f * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 10.f * fTimeDelta;
 
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
@@ -622,7 +622,7 @@ void CState_Character::Pick_Walk_Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamRight = -1.f * XMVector3Normalize(vCamRight);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 4.f * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 10.f * fTimeDelta;
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
 
@@ -646,7 +646,7 @@ void CState_Character::Pick_Walk_Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamRight = XMVector3Normalize(vCamRight);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 4.f * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 10.f * fTimeDelta;
 
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
@@ -709,7 +709,7 @@ void CState_Character::Crouch_Walk_Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamLook = XMVector3Normalize(vCamLook);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 4.f * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 10.f * fTimeDelta;
 
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
@@ -728,7 +728,7 @@ void CState_Character::Crouch_Walk_Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamLook = -1.f * XMVector3Normalize(vCamLook);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 4.f * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 10.f * fTimeDelta;
 
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
@@ -746,7 +746,7 @@ void CState_Character::Crouch_Walk_Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamRight = -1.f * XMVector3Normalize(vCamRight);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 4.f * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 10.f * fTimeDelta;
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
 
@@ -770,7 +770,7 @@ void CState_Character::Crouch_Walk_Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamRight = XMVector3Normalize(vCamRight);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 4.f * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 10.f * fTimeDelta;
 
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
@@ -834,7 +834,7 @@ void CState_Character::Neutral_Run_Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamLook = XMVector3Normalize(vCamLook);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 4.f * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 10.f * fTimeDelta;
 
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
@@ -853,7 +853,7 @@ void CState_Character::Neutral_Run_Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamLook = -1.f * XMVector3Normalize(vCamLook);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 4.f * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 10.f * fTimeDelta;
 
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
@@ -871,7 +871,7 @@ void CState_Character::Neutral_Run_Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamRight = -1.f * XMVector3Normalize(vCamRight);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 4.f * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 10.f * fTimeDelta;
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
 
@@ -895,7 +895,7 @@ void CState_Character::Neutral_Run_Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamRight = XMVector3Normalize(vCamRight);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 4.f * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 10.f * fTimeDelta;
 
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
@@ -990,7 +990,7 @@ void CState_Character::Battle_Run_Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamLook = XMVector3Normalize(vCamLook);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 4.f * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 10.f * fTimeDelta;
 
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
@@ -1009,7 +1009,7 @@ void CState_Character::Battle_Run_Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamLook = -1.f * XMVector3Normalize(vCamLook);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 4.f * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 10.f * fTimeDelta;
 
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
@@ -1027,7 +1027,7 @@ void CState_Character::Battle_Run_Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamRight = -1.f * XMVector3Normalize(vCamRight);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 4.f * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 10.f * fTimeDelta;
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
 
@@ -1051,7 +1051,7 @@ void CState_Character::Battle_Run_Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamRight = XMVector3Normalize(vCamRight);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 4.f * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 10.f * fTimeDelta;
 
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
@@ -1119,7 +1119,7 @@ void CState_Character::Pick_Run_Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamLook = XMVector3Normalize(vCamLook);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 4.f * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 10.f * fTimeDelta;
 
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
@@ -1138,7 +1138,7 @@ void CState_Character::Pick_Run_Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamLook = -1.f * XMVector3Normalize(vCamLook);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 4.f * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 10.f * fTimeDelta;
 
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
@@ -1156,7 +1156,7 @@ void CState_Character::Pick_Run_Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamRight = -1.f * XMVector3Normalize(vCamRight);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 4.f * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 10.f * fTimeDelta;
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
 
@@ -1180,7 +1180,7 @@ void CState_Character::Pick_Run_Input(_float fTimeDelta)
 		vRight = XMVector3Normalize(vRight);
 		vCamRight = XMVector3Normalize(vCamRight);
 
-		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 4.f * fTimeDelta;
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamRight)) * 10.f * fTimeDelta;
 
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
@@ -1461,15 +1461,15 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 
 void CState_Character::Attack_Input(_float fTimeDelta)
 {
-	if (false == m_pCharacter->Is_Attack_Input())
-		return;
-
 	if (KEY_TAP(KEY::CTRL))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::BATTLE_DASH);
 		CUI_Manager::GetInstance()->Use_RollBtn();
 		return;
 	}
+
+	if (false == m_pCharacter->Is_Attack_Input())
+		return;
 
 	if (KEY_TAP(KEY::LBTN))
 	{

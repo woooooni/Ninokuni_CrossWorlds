@@ -96,8 +96,8 @@ HRESULT CLevel_Evermore::Initialize()
 		}
 	}
 
-	GI->Stop_Sound(CHANNELID::SOUND_BGM);
-	GI->Play_BGM(TEXT("BGM_Town_Evermore_Normal_Castle_1.mp3"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM));
+	GI->Stop_Sound(CHANNELID::SOUND_BGM_CURR);
+	GI->Play_BGM(TEXT("BGM_Town_Evermore_Normal_Castle_1.mp3"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR));
 
 	if (false == g_bFirstEnter)
 	{

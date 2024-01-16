@@ -83,32 +83,32 @@ void CCharacter::Tick(_float fTimeDelta)
 	if (nullptr != m_pTarget)
 		Tick_Target(fTimeDelta);
 
-	if (KEY_TAP(KEY::L))
-	{
-		GI->Lock_Mouse();
-	}
-	if (KEY_TAP(KEY::U))
-	{
-		GI->UnLock_Mouse();
-	}
+	//if (KEY_TAP(KEY::L))
+	//{
+	//	GI->Lock_Mouse();
+	//}
+	//if (KEY_TAP(KEY::U))
+	//{
+	//	GI->UnLock_Mouse();
+	//}
 
-	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::G))
-	{
-		if (m_tStat.fSpeedWeight >= 10.f)
-			m_tStat.fSpeedWeight = 1.f;
-		else
-			m_tStat.fSpeedWeight = 10.f;
-	}
+	//if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::G))
+	//{
+	//	if (m_tStat.fSpeedWeight >= 10.f)
+	//		m_tStat.fSpeedWeight = 1.f;
+	//	else
+	//		m_tStat.fSpeedWeight = 10.f;
+	//}
 
 	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::END_KEY))
 	{
 		Set_InitialPosition(Vec4(111.f, -0.785f, 8.f, 1.f));
 	}
 
-	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::INSERT))
-	{
-		m_pStateCom->Change_State(CCharacter::STATE::NEUTRAL_IDLE);
-	}
+	//if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::INSERT))
+	//{
+	//	m_pStateCom->Change_State(CCharacter::STATE::NEUTRAL_IDLE);
+	//}
 
 	if (true == m_bInfinite)
 	{
@@ -423,6 +423,31 @@ void CCharacter::Collision_Enter(const COLLISION_INFO& tInfo)
 			On_Damaged(tInfo);
 		}
 	}
+
+	if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK)
+	{
+		wstring strSoundKey = L"";
+		switch (m_eCharacterType)
+		{
+		case CHARACTER_TYPE::SWORD_MAN:
+			strSoundKey = L"Hit_PC_Combo_Slash_Flesh_" + to_wstring(GI->RandomInt(1, 4)) + L".mp3";
+			GI->Play_Sound(strSoundKey, SOUND_MONSTERL_HIT, 0.3f, false);
+			break;
+
+		case CHARACTER_TYPE::ENGINEER:
+			strSoundKey = L"Hit_PC_Damage_Dummy_" + to_wstring(GI->RandomInt(1, 2)) + L".mp3";
+			GI->Play_Sound(strSoundKey, SOUND_MONSTERL_HIT, 0.3f, false);
+			break;
+
+		case CHARACTER_TYPE::DESTROYER:
+			strSoundKey = L"Hit_Obj_Stone_Large_1_" + to_wstring(GI->RandomInt(1, 3)) + L".mp3";
+			GI->Play_Sound(strSoundKey, SOUND_MONSTERL_HIT, 0.3f, false);
+			break;
+
+		}
+			
+		
+	}
 }
 
 void CCharacter::Collision_Continue(const COLLISION_INFO& tInfo)
@@ -557,8 +582,9 @@ void CCharacter::Decide_Target(COLLISION_INFO tInfo)
 
 void CCharacter::LevelUp()
 {
+	m_tStat.iExp = max(0, m_tStat.iExp - m_tStat.iMaxExp);
 	m_tStat.iMaxExp += (m_tStat.iMaxExp) * 0.5f;
-	m_tStat.iExp = 0;
+	
 	
 	m_tStat.iLevel++;
 
@@ -822,6 +848,7 @@ HRESULT CCharacter::Exit_Character()
 {
 	if (nullptr != m_pControllerCom)
 		m_pControllerCom->Set_Active(true);
+
 	if (nullptr != m_pTarget)
 	{
 		Safe_Release(m_pTarget);
@@ -829,6 +856,16 @@ HRESULT CCharacter::Exit_Character()
 	}
 		
 
+	return S_OK;
+}
+
+HRESULT CCharacter::Tag_In()
+{
+	return S_OK;
+}
+
+HRESULT CCharacter::Tag_Out()
+{
 	return S_OK;
 }
 

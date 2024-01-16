@@ -38,6 +38,8 @@ void CState_SwordMan_Skill_SipohoningLunge::Tick_State(_float fTimeDelta)
 
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
         m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_IDLE);
+
+    __super::Attack_Input(fTimeDelta);
 }
 
 void CState_SwordMan_Skill_SipohoningLunge::Exit_State()

@@ -58,7 +58,7 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 	// Set Start Level 
-	const LEVELID eStartLevel = LEVELID::LEVEL_LOGO;
+	const LEVELID eStartLevel = LEVELID::LEVEL_TOOL;
 
 	// Open Level
 	if (FAILED(Open_Level(eStartLevel, L"Final_Boss")))

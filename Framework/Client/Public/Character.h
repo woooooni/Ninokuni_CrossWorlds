@@ -221,6 +221,9 @@ public:
 		m_eElemental = eElemental; 
 	}
 
+public:
+	class CTransform* Get_CharacterTransformCom() { return m_pTransformCom; }
+
 
 public:
 	void Set_EnterLevelPosition(Vec4 vPosition);
@@ -234,6 +237,8 @@ public:
 public:
 	CHARACTER_TYPE Get_CharacterType() { return m_eCharacterType; }
 	
+
+
 
 public:
 	HRESULT Set_PartModel(PART_TYPE ePartType, class CModel* pModel)
@@ -273,6 +278,8 @@ public:
 public:
 	virtual HRESULT Enter_Character();
 	virtual HRESULT Exit_Character();
+	virtual HRESULT Tag_In();
+	virtual HRESULT Tag_Out();
 
 protected:
 	virtual HRESULT Ready_Components() PURE;
@@ -319,7 +326,8 @@ protected:
 	_bool m_bMoveInputable = true;
 	_bool m_bSkillInputable = true;
 	_bool m_bAttackInputable = true;
-	
+
+	_bool m_bControllCharacter = false;
 
 
 	CHARACTER_STAT m_tStat = {};
