@@ -654,6 +654,7 @@
     <ClInclude Include="..\Public\UI_Boss_NameTag.h" />
     <ClInclude Include="..\Public\UI_Btn_Minimap.h" />
     <ClInclude Include="..\Public\UI_CharacterDummy.h" />
+    <ClInclude Include="..\Public\UI_CostumeTab_Map.h" />
     <ClInclude Include="..\Public\UI_Costume_Btn.h" />
     <ClInclude Include="..\Public\UI_Costume_ChangeBtn.h" />
     <ClInclude Include="..\Public\UI_Costume_ItemSlot.h" />
@@ -695,6 +696,8 @@
     <ClInclude Include="..\Public\UI_SkillWindow_SkillSlot.h" />
     <ClInclude Include="..\Public\UI_Text_TabMenu.h" />
     <ClInclude Include="..\Public\UI_Tutorial_Window.h" />
+    <ClInclude Include="..\Public\UI_Vignette_Fire.h" />
+    <ClInclude Include="..\Public\UI_Vignette_Ice.h" />
     <ClInclude Include="..\Public\UI_WeaponSection_Selected.h" />
     <ClInclude Include="..\Public\UI_WeaponSection_Weapon.h" />
     <ClInclude Include="..\Public\UI_World_AnimalTag.h" />
@@ -1372,6 +1375,7 @@
     <ClCompile Include="..\Private\UI_Boss_NameTag.cpp" />
     <ClCompile Include="..\Private\UI_Btn_Minimap.cpp" />
     <ClCompile Include="..\Private\UI_CharacterDummy.cpp" />
+    <ClCompile Include="..\Private\UI_CostumeTab_Map.cpp" />
     <ClCompile Include="..\Private\UI_Costume_Btn.cpp" />
     <ClCompile Include="..\Private\UI_Costume_ChangeBtn.cpp" />
     <ClCompile Include="..\Private\UI_Costume_ItemSlot.cpp" />
@@ -1413,6 +1417,8 @@
     <ClCompile Include="..\Private\UI_SkillWindow_SkillSlot.cpp" />
     <ClCompile Include="..\Private\UI_Text_TabMenu.cpp" />
     <ClCompile Include="..\Private\UI_Tutorial_Window.cpp" />
+    <ClCompile Include="..\Private\UI_Vignette_Fire.cpp" />
+    <ClCompile Include="..\Private\UI_Vignette_Ice.cpp" />
     <ClCompile Include="..\Private\UI_WeaponSection_Selected.cpp" />
     <ClCompile Include="..\Private\UI_WeaponSection_Weapon.cpp" />
     <ClCompile Include="..\Private\UI_World_AnimalTag.cpp" />

@@ -19,6 +19,7 @@
 
 #include "Game_Manager.h"
 #include "Player.h"
+#include "UI_Manager.h"
 #include "UI_World_NameTag.h"
 #include "MonsterProjectile.h"
 
@@ -90,6 +91,11 @@ void CCharacter::Tick(_float fTimeDelta)
 	if (KEY_TAP(KEY::U))
 	{
 		GI->UnLock_Mouse();
+	}
+
+	if (KEY_TAP(KEY::P))
+	{
+		Add_Exp(10);
 	}
 
 	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::G))
@@ -557,10 +563,11 @@ void CCharacter::Decide_Target(COLLISION_INFO tInfo)
 
 void CCharacter::LevelUp()
 {
+	m_tStat.iExp = max(0, m_tStat.iExp - m_tStat.iMaxExp);
 	m_tStat.iMaxExp += (m_tStat.iMaxExp) * 0.5f;
-	m_tStat.iExp = 0;
 	
 	m_tStat.iLevel++;
+	CUI_Manager::GetInstance()->OnOff_LevelUp(true, m_tStat.iLevel);
 
 	// TODO :: UI
 }

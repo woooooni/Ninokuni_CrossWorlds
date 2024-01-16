@@ -19,6 +19,7 @@ private:
 public: // Get/Set
 	class CUI_Fade* Get_Fade();
 	_bool			Get_MainMenuActive();
+	class CCharacter* Get_Character();
 
 	void			Set_Textable(_bool bTextable) { m_bUpdate = bTextable; }
 	void			Set_RandomNick(const wstring& strRandom);
@@ -107,6 +108,7 @@ public:
 	void	Update_ClothSlotState(_uint iSectionType, _uint iSlotIndex);
 	void	Update_CostumeBtn();
 	void	Update_WeaponSelectionIcon(_uint iSlotNum);
+	void	Update_IceVignette();
 
 	void	Update_CostumeModel(const CHARACTER_TYPE& eCharacterType, const PART_TYPE& ePartType, const wstring& strPartTag);
 	void	Update_CostumeWeaponModel(const CHARACTER_TYPE& eCharacterType, const wstring& strPartTag);
@@ -151,7 +153,11 @@ public: // Lobby
 	HRESULT OnOff_WorldMap(_bool bOnOff);
 	HRESULT OnOff_MiniMap(_bool bOnOff);
 
+	void	OnOff_IceVignette(_bool bOnOff);
+	void	On_FireVignette();
+
 	HRESULT OnOff_CloseButton(_bool bOnOff);
+	void	OnOff_LevelUp(_bool bOnOff, _uint iLevel = 0);
 
 	HRESULT OnOff_MonsterHP(_bool bOnOff, ELEMENTAL_TYPE eType = ELEMENTAL_TYPE::ELEMENTAL_END);
 	HRESULT OnOff_BossHP(_bool bOnOff);
@@ -183,130 +189,137 @@ private:
 	_bool m_bUpdate = { false };
 	_bool m_bBossActive = { false };
 	_bool m_bAddText = { false };
+
 	wstring m_strNickname;
 	wstring m_strResult;
-	class CUI_CharacterDummy* m_pDummy = { nullptr };
-	class CMonster* m_pHPBarOwner = { nullptr };
+
+	class CUI_CharacterDummy*	m_pDummy = { nullptr };
+	class CUI_CostumeTab_Map*	m_pCustomMap = { nullptr };
+	class CMonster*				m_pHPBarOwner = { nullptr };
 
 private:
-	class CUI_Default_Background* m_pDefaultBG = { nullptr };
-	class CUI_Cursor* m_pUICursor = { nullptr };
-	class CUI_Veil* m_pUIVeil = { nullptr };
-	class CUI_Fade* m_pUIFade = { nullptr };
-	class CUI_MapName* m_pUIMapName = { nullptr };
-	class CUI_Tutorial_Window* m_pTutorial = { nullptr };
-	class CUI_Basic* m_pMapText = { nullptr };
-	class CUI_MapName_Text* m_pMapNameText = { nullptr };
+	class CUI_Default_Background*	m_pDefaultBG = { nullptr };
+	class CUI_Cursor*				m_pUICursor = { nullptr };
+	class CUI_Veil*					m_pUIVeil = { nullptr };
+	class CUI_Fade*					m_pUIFade = { nullptr };
+	class CUI_MapName*				m_pUIMapName = { nullptr };
+	class CUI_Tutorial_Window*		m_pTutorial = { nullptr };
+	class CUI_Basic*				m_pMapText = { nullptr };
+	class CUI_MapName_Text*			m_pMapNameText = { nullptr };
 
 	// For Setting Window
-	class CUI_Setting_Window* m_pSettingBG = { nullptr };
+	class CUI_Setting_Window*		m_pSettingBG = { nullptr };
 	// For Set Nickname
-	class CUI_SetNickname_Window* m_pSetNickBG = { nullptr };
-	class CUI_SetNickname_Textbox* m_pNicknamebox = { nullptr };
+	class CUI_SetNickname_Window*	m_pSetNickBG = { nullptr };
+	class CUI_SetNickname_Textbox*	m_pNicknamebox = { nullptr };
 
-	class CUI_PlayerInfo* m_pPlayerStatus = { nullptr };
+	class CUI_PlayerInfo*			m_pPlayerStatus = { nullptr };
 
-	class CUI_BtnShowMenu* m_pBtnShowMenu = { nullptr };
-	class CUI_Btn_Minimap* m_pBtnShowMinimap = { nullptr };
-	class CUI_BtnChangeCamera* m_pBtnCamera = { nullptr };
-	class CUI_BtnInventory* m_pBtnInven = { nullptr };
-	class CUI_BtnQuickQuest* m_pBtnQuest = { nullptr };
-	class CUI_BtnClose* m_pBtnClose = { nullptr };
-	class CUI_BtnShowSetting* m_pBtnShowSetting = { nullptr };
+	class CUI_BtnShowMenu*			m_pBtnShowMenu = { nullptr };
+	class CUI_Btn_Minimap*			m_pBtnShowMinimap = { nullptr };
+	class CUI_BtnChangeCamera*		m_pBtnCamera = { nullptr };
+	class CUI_BtnInventory*			m_pBtnInven = { nullptr };
+	class CUI_BtnQuickQuest*		m_pBtnQuest = { nullptr };
+	class CUI_BtnClose*				m_pBtnClose = { nullptr };
+	class CUI_BtnShowSetting*		m_pBtnShowSetting = { nullptr };
 
-	class CUI_MainMenu* m_pMainBG = { nullptr }; // MainMenu Background (버튼과 따로 관리된다)
-	class CUI_WindowQuest* m_pWindowQuest = { nullptr };
+	class CUI_MainMenu*				m_pMainBG = { nullptr }; // MainMenu Background (버튼과 따로 관리된다)
+	class CUI_WindowQuest*			m_pWindowQuest = { nullptr };
 
-	vector<class CUI_PopupQuest*> m_QuestPopUp;
-	vector<class CUI_Quest_Reward*> m_QuestReward;
-	vector<class CUI_Quest_Reward_Item*> m_QuestItems;
+	vector<class CUI_PopupQuest*>			m_QuestPopUp;
+	vector<class CUI_Quest_Reward*>			m_QuestReward;
+	vector<class CUI_Quest_Reward_Item*>	m_QuestItems;
 
-	class CUI_Text_TabMenu* m_pTabMenuTitle = { nullptr };
+	class CUI_Text_TabMenu*			m_pTabMenuTitle = { nullptr };
 
 	// PlayerStatus
-	vector<class CUI_PlayerEXPBar*> m_PlayerEXP;
-	vector<class CUI_SkillSection_ClassicSkill*> m_ClassicSkill;
-	vector<class CUI_SkillSection_Frame*> m_ClassicFrame;
-	vector<class CUI_SkillSection_SpecialSkill*> m_SpecialSkill;
-	vector<class CUI_SkillSection_Frame*> m_SpecialFrame;
-	vector<class CUI_SkillSection_CoolTimeFrame*> m_CoolTimeFrame;
-	vector<class CUI_QuickSlot_Item*> m_ItemQuickslot;
+	vector<class CUI_PlayerEXPBar*>					m_PlayerEXP;
+	vector<class CUI_SkillSection_ClassicSkill*>	m_ClassicSkill;
+	vector<class CUI_SkillSection_Frame*>			m_ClassicFrame;
+	vector<class CUI_SkillSection_SpecialSkill*>	m_SpecialSkill;
+	vector<class CUI_SkillSection_Frame*>			m_SpecialFrame;
+	vector<class CUI_SkillSection_CoolTimeFrame*>	m_CoolTimeFrame;
+	vector<class CUI_QuickSlot_Item*>				m_ItemQuickslot;
 
 	// MonsterHP (단일 HPBar -> UIManager에서 관리함)
-	class CUI_MonsterHP_Background* m_pMonsterHPBack = { nullptr };
-	class CUI_MonsterHP_Bar* m_pMonsterHPBar = { nullptr };
-	class CUI_MonsterHP_ElementalFrame* m_pMonsterFrame = { nullptr };
-	class CUI_MonsterHP_Elemental* m_pMonsterElemental = { nullptr };
+	class CUI_MonsterHP_Background*			m_pMonsterHPBack = { nullptr };
+	class CUI_MonsterHP_Bar*				m_pMonsterHPBar = { nullptr };
+	class CUI_MonsterHP_ElementalFrame*		m_pMonsterFrame = { nullptr };
+	class CUI_MonsterHP_Elemental*			m_pMonsterElemental = { nullptr };
 
 	// BossHP (단일 HPBar -> UIManager에서 관리함)
-	class CUI_BossHP_Background* m_pBossInfo = { nullptr };
-	class CUI_BossHP_Background* m_pBossHPBack = { nullptr };
-	class CUI_BossHP_Bar* m_pBossHPBar = { nullptr };
+	class CUI_BossHP_Background*			m_pBossInfo = { nullptr };
+	class CUI_BossHP_Background*			m_pBossHPBack = { nullptr };
+	class CUI_BossHP_Bar*					m_pBossHPBar = { nullptr };
 
-	class CUI_Announced* m_pCameraAnnounce = { nullptr };
+	class CUI_Announced*					m_pCameraAnnounce = { nullptr };
 
-	class CUI_Emoticon_Window* m_pEmoticonWindow = { nullptr };
-	class CUI_Emoticon_SpeechBalloon* m_pBalloon = { nullptr };
+	class CUI_Emoticon_Window*				m_pEmoticonWindow = { nullptr };
+	class CUI_Emoticon_SpeechBalloon*		m_pBalloon = { nullptr };
 
 	// MilePost
-	vector<class CUI_Milepost*> m_Milepost;
+	vector<class CUI_Milepost*>				m_Milepost;
 
 private:
-	vector<class CUI_Basic*> m_Basic;
-	vector<class CUI_BasicButton*> m_Buttons;
+	vector<class CUI_Basic*>				m_Basic;
+	vector<class CUI_BasicButton*>			m_Buttons;
 
-	vector<class CUI_LevelUp*> m_LevelUp;
+	vector<class CUI_LevelUp*>				m_LevelUp;
 
-	vector<class CUI_BtnCharacterSelect*> m_UnclickedPlayer;
-	vector<class CUI_BtnCharacterSelect*> m_ClickedPlayer;
+	vector<class CUI_BtnCharacterSelect*>	m_UnclickedPlayer;
+	vector<class CUI_BtnCharacterSelect*>	m_ClickedPlayer;
 
 	// Main + Sub Menu Btns
-	vector<class CUI_MainMenu*> m_MainMenuBtn;
-	vector<class CUI_MenuSeparator*> m_MenuSeparator;
-	vector<class CUI_SubMenu_Character*> m_SubMenuChar;
-	vector<class CUI_SubMenu_Equipment*> m_SubMenuEquip;
-	vector<class CUI_SubMenu_Imajinn*> m_SubMenuPet;
-	vector<class CUI_SubMenu_Shop*> m_SubMenuShop;
+	vector<class CUI_MainMenu*>				m_MainMenuBtn;
+	vector<class CUI_MenuSeparator*>		m_MenuSeparator;
+	vector<class CUI_SubMenu_Character*>	m_SubMenuChar;
+	vector<class CUI_SubMenu_Equipment*>	m_SubMenuEquip;
+	vector<class CUI_SubMenu_Imajinn*>		m_SubMenuPet;
+	vector<class CUI_SubMenu_Shop*>			m_SubMenuShop;
 
 	// For World Map
-	class CUI_WindowWorldMap* m_pWorldMapBG = { nullptr };
+	class CUI_WindowWorldMap*				m_pWorldMapBG = { nullptr };
 	// For Skill Section
-	class CUI_SkillSection_Background* m_pSkillBG = { nullptr };
+	class CUI_SkillSection_Background*		m_pSkillBG = { nullptr };
 	// For Imajinn Section
-	class CUI_ImajinnSection_Background* m_pImajinnBG = { nullptr };
+	class CUI_ImajinnSection_Background*	m_pImajinnBG = { nullptr };
 	// For Dialog
-	class CUI_Dialog_Window* m_pDialogWindow = { nullptr };
-	class CUI_Dialog_MiniWindow* m_pDialogMini = { nullptr };
-	vector<class CUI_Dialog_Portrait*> m_Portrait;
-	class CUI_Dialog_BattleWindow* m_pDialogBattle = { nullptr };
+	class CUI_Dialog_Window*				m_pDialogWindow = { nullptr };
+	class CUI_Dialog_MiniWindow*			m_pDialogMini = { nullptr };
+	vector<class CUI_Dialog_Portrait*>		m_Portrait;
+	class CUI_Dialog_BattleWindow*			m_pDialogBattle = { nullptr };
 	// For Costume
-	vector<class CUI_Costume_Btn*> m_CostumeBtn;
-	vector<class CUI_Costume_Btn*> m_CostumeClickedBtn;
-	class CUI_Costume_LineBox* m_pCostumeBox = { nullptr };
-	vector<class CUI_Costume_ItemSlot*> m_CostumeCloth;
-	vector<class CUI_Costume_ItemSlot*> m_CostumeHairAcc;
-	vector<class CUI_Costume_ItemSlot*> m_CostumeWeapon;
-	class CUI_Basic* m_pCostumeAnnounce = { nullptr };
-	class CUI_Costume_ChangeBtn* m_pCostumeChange = { nullptr };
+	vector<class CUI_Costume_Btn*>			m_CostumeBtn;
+	vector<class CUI_Costume_Btn*>			m_CostumeClickedBtn;
+	class CUI_Costume_LineBox*				m_pCostumeBox = { nullptr };
+	vector<class CUI_Costume_ItemSlot*>		m_CostumeCloth;
+	vector<class CUI_Costume_ItemSlot*>		m_CostumeHairAcc;
+	vector<class CUI_Costume_ItemSlot*>		m_CostumeWeapon;
+	class CUI_Basic*						m_pCostumeAnnounce = { nullptr };
+	class CUI_Costume_ChangeBtn*			m_pCostumeChange = { nullptr };
 	// For Inven
-	class CUI_Inventory_LineBox* m_pInvenBox = { nullptr };
-	vector<class CUI_Inventory_TabBtn*> m_InvenBtn;
-	vector<class CUI_Inventory_TabBtn*> m_InvenClickedBtn;
-	vector<class CUI_Inventory_Slot*> m_InvenSlots;
+	class CUI_Inventory_LineBox*			m_pInvenBox = { nullptr };
+	vector<class CUI_Inventory_TabBtn*>		m_InvenBtn;
+	vector<class CUI_Inventory_TabBtn*>		m_InvenClickedBtn;
+	vector<class CUI_Inventory_Slot*>		m_InvenSlots;
 	// For Skill
-	vector<class CUI_SkillWindow_LineBox*> m_SkillWindow;
-	vector<class CUI_SkillWindow_Btn*> m_SkillBtn;
-	vector<class CUI_SkillWindow_Btn*> m_SkillClickedBtn;
-	vector<class CUI_SkillWindow_SkillSlot*> m_ClassSkillSlot;
-	vector<class CUI_SkillWindow_SkillSlot*> m_SpecialSkillSlot;
-	class CUI_SkillWindow_LineBox* m_pSkillDesc = { nullptr };
+	vector<class CUI_SkillWindow_LineBox*>		m_SkillWindow;
+	vector<class CUI_SkillWindow_Btn*>			m_SkillBtn;
+	vector<class CUI_SkillWindow_Btn*>			m_SkillClickedBtn;
+	vector<class CUI_SkillWindow_SkillSlot*>	m_ClassSkillSlot;
+	vector<class CUI_SkillWindow_SkillSlot*>	m_SpecialSkillSlot;
+	class CUI_SkillWindow_LineBox*				m_pSkillDesc = { nullptr };
 
-	vector<class CUI_Minimap_Frame*> m_Minimap;
+	vector<class CUI_Minimap_Frame*>			m_Minimap;
 
-	vector <class CUI_WeaponSection_Weapon*> m_WeaponIcon;
-	vector <class CUI_WeaponSection_Weapon*> m_WeaponElemental;
+	vector <class CUI_WeaponSection_Weapon*>	m_WeaponIcon;
+	vector <class CUI_WeaponSection_Weapon*>	m_WeaponElemental;
 
-	class CUI_Boss_NameTag* m_pBossNameTag = { nullptr };
+	class CUI_Boss_NameTag*				m_pBossNameTag = { nullptr };
+
+	// Vignette
+	class CUI_Vignette_Ice*				m_pIceVignette = { nullptr };
+	class CUI_Vignette_Fire*			m_pFireVignette = { nullptr };
 
 private:
 	ID3D11Device*			m_pDevice = { nullptr };

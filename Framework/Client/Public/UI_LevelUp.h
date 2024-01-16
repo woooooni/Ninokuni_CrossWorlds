@@ -15,6 +15,7 @@ protected:
 
 public:
 	virtual void Set_Active(_bool bActive);
+	void SetUp_Level(_uint iLevel);
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -28,6 +29,7 @@ private:
 
 	_bool m_bSetAlpha = { false };
 	_bool m_bUpdate = { false };
+	_bool m_bHideText = { false };
 
 	_float2 m_vOriginSize = _float2(0.f, 0.f);
 	_float m_fMaxWidth = { 0.f };

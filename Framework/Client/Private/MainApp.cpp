@@ -1222,6 +1222,14 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Contents/Dialogue/UI_Battle_Dialogue.png")))))
 		return E_FAIL;
 
+	// Vignette
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Vignette_Ice"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Default/Vignette/UI_Vignette_Icy_Blur_%d.png"), 5))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Vignette_Fire"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Default/Vignette/UI_Vignette_Icy_Blur_%d.png")))))
+		return E_FAIL;
+
 	return S_OK;
 }
 
