@@ -1,14 +1,14 @@
 #pragma once
 
-#include "GlanixState_Base.h"
+#include "StelliaState_Base.h"
 
 BEGIN(Client)
 
-class CGlanixState_CounterStart final : public CGlanixState_Base
+class CStelliaState_CounterStart final : public CStelliaState_Base
 {
 private:
-	CGlanixState_CounterStart(CStateMachine* pStateMachine);
-	virtual ~CGlanixState_CounterStart() = default;
+	CStelliaState_CounterStart(CStateMachine* pStateMachine);
+	virtual ~CStelliaState_CounterStart() = default;
 
 public:
 	virtual HRESULT Initialize(const list<wstring>& AnimationList);
@@ -26,7 +26,7 @@ private:
 	_bool m_bIsTimeSlep = false;
 
 public:
-	static CGlanixState_CounterStart* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
+	static CStelliaState_CounterStart* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
 };
 

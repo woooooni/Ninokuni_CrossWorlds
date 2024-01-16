@@ -25,10 +25,11 @@ HRESULT CSpawner_Witch01::Initialize_Prototype()
 HRESULT CSpawner_Witch01::Initialize(void* pArg)
 {
 	m_fSpawnTime = 30.f;
+	m_fCurTime = 30.f;
 
-	m_iMaxPumpkinCount = 1;
-	m_iMaxClownCount = 1;
-	m_iMaxWizardCount = 1;
+	m_iMaxPumpkinCount = 2;
+	m_iMaxClownCount = 2;
+	m_iMaxWizardCount = 2;
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -36,14 +37,8 @@ HRESULT CSpawner_Witch01::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, { 5.f, 0.f, 5.f, 1.f });
-
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
-
-	if (FAILED(Spawn_Monster()))
-		return E_FAIL;
-
 
 	return S_OK;
 }
@@ -52,37 +47,40 @@ void CSpawner_Witch01::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
-	m_fCurTime += fTimeDelta;
-
-	if (m_fCurTime >= m_fSpawnTime)
+	if (GI->Get_CurrentLevel() != LEVELID::LEVEL_TOOL)
 	{
-		Spawn_Monster();
+		m_fCurTime += fTimeDelta;
 
-		m_fCurTime = m_fSpawnTime - m_fCurTime;
-	}
+		if (m_fCurTime >= m_fSpawnTime)
+		{
+			Spawn_Monster();
 
-	for (_int i = 0; i < m_vecPumpkin.size();)
-	{
-		if (m_vecPumpkin[i]->Is_Dead())
-			m_vecPumpkin.erase(m_vecPumpkin.begin() + i);
-		else
-			++i;
-	}
+			m_fCurTime = m_fSpawnTime - m_fCurTime;
+		}
 
-	for (_int i = 0; i < m_vecClown.size();)
-	{
-		if (m_vecClown[i]->Is_Dead())
-			m_vecClown.erase(m_vecClown.begin() + i);
-		else
-			++i;
-	}
+		for (_int i = 0; i < m_vecPumpkin.size();)
+		{
+			if (m_vecPumpkin[i]->Is_Dead())
+				m_vecPumpkin.erase(m_vecPumpkin.begin() + i);
+			else
+				++i;
+		}
 
-	for (_int i = 0; i < m_vecWizard.size();)
-	{
-		if (m_vecWizard[i]->Is_Dead())
-			m_vecWizard.erase(m_vecWizard.begin() + i);
-		else
-			++i;
+		for (_int i = 0; i < m_vecClown.size();)
+		{
+			if (m_vecClown[i]->Is_Dead())
+				m_vecClown.erase(m_vecClown.begin() + i);
+			else
+				++i;
+		}
+
+		for (_int i = 0; i < m_vecWizard.size();)
+		{
+			if (m_vecWizard[i]->Is_Dead())
+				m_vecWizard.erase(m_vecWizard.begin() + i);
+			else
+				++i;
+		}
 	}
 }
 
@@ -129,21 +127,21 @@ HRESULT CSpawner_Witch01::Spawn_Monster()
 		tInfo.vStartPosition.y = vSpawnerPos.y;
 		tInfo.vStartPosition.z = vSpawnerPos.z + GI->RandomFloat(-5.f, 5.f);
 		tInfo.vStartPosition.w = 1.f;
-
+	
 		CGameObject* pObj = GI->Clone_GameObject(TEXT("Prorotype_GameObject_PumpkinCandle"), _uint(LAYER_MONSTER), &tInfo);
-
+	
 		if (pObj == nullptr)
 			return E_FAIL;
-
+	
 		GI->Add_GameObject(iCurLevel, (_uint)LAYER_MONSTER, pObj);
 		m_vecPumpkin.push_back(pObj);
 	}
 
 	for (_int i = m_vecClown.size(); i < m_iMaxClownCount; ++i)
 	{
-		tInfo.vStartPosition.x = vSpawnerPos.x + GI->RandomFloat(-5.f, 5.f);
-		tInfo.vStartPosition.y = vSpawnerPos.y;
-		tInfo.vStartPosition.z = vSpawnerPos.z + GI->RandomFloat(-5.f, 5.f);
+		tInfo.vStartPosition.x = vSpawnerPos.x + GI->RandomFloat(-3.f, 3.f);
+		tInfo.vStartPosition.y = vSpawnerPos.y + 1.f;
+		tInfo.vStartPosition.z = vSpawnerPos.z + GI->RandomFloat(-3.f, 3.f);
 		tInfo.vStartPosition.w = 1.f;
 
 		CGameObject* pObj = GI->Clone_GameObject(TEXT("Prorotype_GameObject_Clown"), _uint(LAYER_MONSTER), &tInfo);
@@ -161,12 +159,12 @@ HRESULT CSpawner_Witch01::Spawn_Monster()
 		tInfo.vStartPosition.y = vSpawnerPos.y;
 		tInfo.vStartPosition.z = vSpawnerPos.z + GI->RandomFloat(-5.f, 5.f);
 		tInfo.vStartPosition.w = 1.f;
-
+	
 		CGameObject* pObj = GI->Clone_GameObject(TEXT("Prorotype_GameObject_Clown_Wizard"), _uint(LAYER_MONSTER), &tInfo);
-
+	
 		if (pObj == nullptr)
 			return E_FAIL;
-
+	
 		GI->Add_GameObject(iCurLevel, (_uint)LAYER_MONSTER, pObj);
 		m_vecWizard.push_back(pObj);
 	}

@@ -373,6 +373,10 @@
     <ClInclude Include="..\Public\MainQuestNode_SnowField01.h" />
     <ClInclude Include="..\Public\MainQuestNode_SnowField02.h" />
     <ClInclude Include="..\Public\MonsterProjectile.h" />
+    <ClInclude Include="..\Public\StelliaState_ChaseJumpStamp.h" />
+    <ClInclude Include="..\Public\StelliaState_CounterEnd.h" />
+    <ClInclude Include="..\Public\StelliaState_CounterLoop.h" />
+    <ClInclude Include="..\Public\StelliaState_CounterStart.h" />
     <ClInclude Include="..\Public\SubQuestNode_Wanted01.h" />
     <ClInclude Include="..\Public\SubQuestNode_Wanted02.h" />
     <ClInclude Include="..\Public\SubQuestNode_Wanted03.h" />
@@ -632,7 +636,7 @@
     <ClInclude Include="..\Public\StelliaState_Dead.h" />
     <ClInclude Include="..\Public\StelliaState_JumpStamp.h" />
     <ClInclude Include="..\Public\StelliaState_Laser.h" />
-    <ClInclude Include="..\Public\StelliaState_Rage.h" />
+    <ClInclude Include="..\Public\StelliaState_Berserk.h" />
     <ClInclude Include="..\Public\StelliaState_Spawn.h" />
     <ClInclude Include="..\Public\StelliaState_SpinTail.h" />
     <ClInclude Include="..\Public\StelliaState_TripleLaser.h" />
@@ -1093,6 +1097,10 @@
     <ClCompile Include="..\Private\MainQuestNode_SnowField01.cpp" />
     <ClCompile Include="..\Private\MainQuestNode_SnowField02.cpp" />
     <ClCompile Include="..\Private\MonsterProjectile.cpp" />
+    <ClCompile Include="..\Private\StelliaState_ChaseJumpStamp.cpp" />
+    <ClCompile Include="..\Private\StelliaState_CounterEnd.cpp" />
+    <ClCompile Include="..\Private\StelliaState_CounterLoop.cpp" />
+    <ClCompile Include="..\Private\StelliaState_CounterStart.cpp" />
     <ClCompile Include="..\Private\SubQuestNode_Wanted01.cpp" />
     <ClCompile Include="..\Private\SubQuestNode_Wanted02.cpp" />
     <ClCompile Include="..\Private\SubQuestNode_Wanted03.cpp" />
@@ -1350,7 +1358,7 @@
     <ClCompile Include="..\Private\StelliaState_Dead.cpp" />
     <ClCompile Include="..\Private\StelliaState_JumpStamp.cpp" />
     <ClCompile Include="..\Private\StelliaState_Laser.cpp" />
-    <ClCompile Include="..\Private\StelliaState_Rage.cpp" />
+    <ClCompile Include="..\Private\StelliaState_Berserk.cpp" />
     <ClCompile Include="..\Private\StelliaState_Spawn.cpp" />
     <ClCompile Include="..\Private\StelliaState_SpinTail.cpp" />
     <ClCompile Include="..\Private\StelliaState_TripleLaser.cpp" />

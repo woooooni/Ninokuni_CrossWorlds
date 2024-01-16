@@ -72,7 +72,6 @@ void CGlanixState_Chase::Tick_State(_float fTimeDelta)
 			m_pStateMachineCom->Change_State(m_vecAtkState[m_iAtkIndex++]);
 		}
 	}
-
 }
 
 void CGlanixState_Chase::Exit_State()

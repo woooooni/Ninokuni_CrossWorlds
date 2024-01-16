@@ -2,6 +2,7 @@
 #include "StelliaState_Attack2.h"
 
 #include "Stellia.h"
+#include "Animation.h"
 
 CStelliaState_Attack2::CStelliaState_Attack2(CStateMachine* pStateMachine)
 	: CStelliaState_Base(pStateMachine)
@@ -24,9 +25,21 @@ void CStelliaState_Attack2::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
+	if (m_pModelCom->Get_CurrAnimation()->Get_AnimationName() == TEXT("SKM_Stellia.ao|Stellia_Attack02"))
+	{
+		if (m_pModelCom->Get_CurrAnimationFrame() >= 10 && m_pModelCom->Get_CurrAnimationFrame() <= 22)
+			m_pStellia->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_COUNTER, true);
+
+		else if (m_pModelCom->Get_CurrAnimationFrame() >= 46 && m_pModelCom->Get_CurrAnimationFrame() <= 58)
+			m_pStellia->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_COUNTER, true);
+
+		else
+			m_pStellia->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_COUNTER, false);
+	}
+
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
-		m_pStateMachineCom->Change_State(CStellia::STELLIA_TURN);
+		m_pStateMachineCom->Change_State(CStellia::STELLIA_COMBATIDLE);
 	}
 }
 

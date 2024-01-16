@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "StelliaState_SpinTail.h"
 
+#include "Animation.h"
 #include "Stellia.h"
 
 CStelliaState_SpinTail::CStelliaState_SpinTail(CStateMachine* pStateMachine)
@@ -24,9 +25,19 @@ void CStelliaState_SpinTail::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
+	if (m_pModelCom->Get_CurrAnimation()->Get_AnimationName() == TEXT("SKM_Stellia.ao|Stellia_BossSkill01"))
+	{
+		if (m_pModelCom->Get_CurrAnimationFrame() <= 50)
+			m_pStellia->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_COUNTER, true);
+
+		else
+			m_pStellia->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_COUNTER, false);
+	}
+
+
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
-		m_pStateMachineCom->Change_State(CStellia::STELLIA_TURN);
+		m_pStateMachineCom->Change_State(CStellia::STELLIA_COMBATIDLE);
 	}
 }
 

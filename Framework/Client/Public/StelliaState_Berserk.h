@@ -4,11 +4,11 @@
 
 BEGIN(Client)
 
-class CStelliaState_Chase final : public CStelliaState_Base
+class CStelliaState_Berserk final : public CStelliaState_Base
 {
 private:
-	CStelliaState_Chase(CStateMachine* pStateMachine);
-	virtual ~CStelliaState_Chase() = default;
+	CStelliaState_Berserk(CStateMachine* pStateMachine);
+	virtual ~CStelliaState_Berserk() = default;
 
 public:
 	virtual HRESULT Initialize(const list<wstring>& AnimationList);
@@ -18,12 +18,8 @@ public:
 	virtual void Tick_State(_float fTimeDelta);
 	virtual void Exit_State();
 
-private:
-	_float m_fChaseTime = 0.f;
-	_float m_fTime = 0.f;
-
 public:
-	static CStelliaState_Chase* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
+	static CStelliaState_Berserk* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
 };
 

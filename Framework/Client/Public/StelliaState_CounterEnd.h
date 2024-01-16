@@ -4,11 +4,11 @@
 
 BEGIN(Client)
 
-class CStelliaState_Rage final : public CStelliaState_Base
+class CStelliaState_CounterEnd final : public CStelliaState_Base
 {
 private:
-	CStelliaState_Rage(CStateMachine* pStateMachine);
-	virtual ~CStelliaState_Rage() = default;
+	CStelliaState_CounterEnd(CStateMachine* pStateMachine);
+	virtual ~CStelliaState_CounterEnd() = default;
 
 public:
 	virtual HRESULT Initialize(const list<wstring>& AnimationList);
@@ -19,7 +19,7 @@ public:
 	virtual void Exit_State();
 
 public:
-	static CStelliaState_Rage* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
+	static CStelliaState_CounterEnd* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
 };
 

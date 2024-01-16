@@ -39,7 +39,7 @@ void CGlanixState_Turn::Enter_State(void* pArg)
 	}
 
 	// 레이지1 패턴
-	if (!m_bIsRageInit && m_pGlanix->Get_Stat().fHp <= m_pGlanix->Get_Stat().fMaxHp * 0.45f && 
+	if (!m_bIsRageInit && m_pGlanix->Get_Stat().fHp <= m_pGlanix->Get_Stat().fMaxHp * 0.15f && 
 		m_pGlanix->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK))
 	{
 		m_bIsRageInit = true;
