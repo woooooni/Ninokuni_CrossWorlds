@@ -5,6 +5,7 @@
 #include "Trail.h"
 #include "Effect_Manager.h"
 #include "Vfx.h"
+#include "UI_Manager.h"
 
 // 임시로 몬스터에 담는다. 충돌 처리 그룹 추가 될 때까지.
 CQuest_DestSpot::CQuest_DestSpot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)

@@ -10,6 +10,7 @@
 
 #include "Glanix.h"
 #include "Character_Manager.h"
+#include "UI_Manager.h"
 
 CGlanix_Phoenix::CGlanix_Phoenix(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameObject(pDevice, pContext, strObjectTag, LAYER_TYPE::LAYER_PROP)
@@ -188,16 +189,19 @@ void CGlanix_Phoenix::Collision_Enter(const COLLISION_INFO& tInfo)
 		if (nullptr != CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::SWORD_MAN))
 		{
 			CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::SWORD_MAN)->Set_Speed_Weight(CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::SWORD_MAN)->Get_Speed_Weight() + 0.1f);
+			CUI_Manager::GetInstance()->On_FireVignette();
 		}
 
 		if (nullptr != CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::DESTROYER))
 		{
 			CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::DESTROYER)->Set_Speed_Weight(CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::DESTROYER)->Get_Speed_Weight() + 0.1f);
+			CUI_Manager::GetInstance()->On_FireVignette();
 		}
 
 		if (nullptr != CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::ENGINEER))
 		{
 			CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::ENGINEER)->Set_Speed_Weight(CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::ENGINEER)->Get_Speed_Weight() + 0.1f);
+			CUI_Manager::GetInstance()->On_FireVignette();
 		}
 		m_bIsOut = true;
 	}

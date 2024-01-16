@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UI_LevelUp.h"
 #include "GameInstance.h"
+#include "UI_Manager.h"
 
 CUI_LevelUp::CUI_LevelUp(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UILEVELUP_TYPE eType)
 	: CUI(pDevice, pContext, L"UI_LevelUp")
@@ -35,13 +36,21 @@ void CUI_LevelUp::Set_Active(_bool bActive)
 			GI->Get_ChannelVolume(CHANNELID::SOUND_UI));
 
 		m_bActive = bActive;
+		m_bHideText = false;
 	}
 	else
 	{
 		m_bSetAlpha = true;
-
 		// 알파값이 줄어들다가 Active false로 전환된다.
 	}
+}
+
+void CUI_LevelUp::SetUp_Level(_uint iLevel)
+{
+	if (m_eType != UILEVELUP_FRAME)
+		return;
+
+	m_strText = to_wstring(iLevel);
 }
 
 HRESULT CUI_LevelUp::Initialize_Prototype()
@@ -82,23 +91,30 @@ void CUI_LevelUp::Tick(_float fTimeDelta)
 	{
 		if (m_bSetAlpha)
 		{
-			if (m_fAlpha < 0.1f)
+			m_fTimeAcc += fTimeDelta;
+
+			if (1.f < m_fTimeAcc)
 			{
-				m_bActive = false;
-				m_fAlpha = 0.f;
+				if (m_fAlpha < 0.1f)
+				{
+					m_bActive = false;
+					m_fAlpha = 0.f;
+				}
+				else
+					m_fAlpha -= fTimeDelta * 2.f;
 			}
-			else
-				m_fAlpha -= fTimeDelta * 2.f;
 		}
 		else
 		{
-			if (m_fTimeAcc > 0.1f) // 프레임을 돌린다.
+			if (m_fTimeAcc > 0.1f)
+				m_fTimeAcc = 0.f;
+			
+			if (m_fAlpha >= 1.f)
 			{
 				m_fTimeAcc = 0.f;
-			}
-			
-			if (m_fAlpha > 1.f)
 				m_fAlpha = 1.f;
+				CUI_Manager::GetInstance()->OnOff_LevelUp(false);
+			}
 			else
 				m_fAlpha += fTimeDelta;
 		}
@@ -111,6 +127,22 @@ void CUI_LevelUp::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (m_eType == UILEVELUP_FRAME)
+		{
+			if (0.4f < m_fAlpha)
+			{
+				_int iLength = m_strText.length();
+
+				CRenderer::TEXT_DESC  TextDesc;
+				TextDesc.strText = m_strText;
+				TextDesc.strFontTag = L"Default_Bold";
+				TextDesc.vScale = { 0.65f, 0.65f };
+				TextDesc.vPosition = _float2(m_tInfo.fX - 4.5f - (iLength * 5.f), m_tInfo.fY - 40.f);
+				TextDesc.vColor = { 0.82f, 0.773f, 0.627f, 1.f };
+				m_pRendererCom->Add_Text(TextDesc);
+			}
+		}
+
 		if (UILEVELUP_BG == m_eType)
 		{
 			if (!m_bUpdate)

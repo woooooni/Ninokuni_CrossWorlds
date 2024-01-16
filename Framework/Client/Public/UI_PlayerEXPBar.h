@@ -26,6 +26,7 @@ public:
 	virtual HRESULT	Render();
 
 private:
+	class CCharacter* m_pPlayer = { nullptr };
 	UI_EXPTYPE m_eType = { UIEXP_END };
 	_uint m_iPlayerMaxEXP = { 0 }; // UIEXP_BAR만 가진다.
 	_uint m_iPlayerCurEXP = { 0 }; // UIEXP_BAR만 가진다.
@@ -35,6 +36,16 @@ private:
 	_float m_fHideSpeed = { 100.f };
 	_float2 m_vOriginPosition = _float2(0.f, 0.f);
 	_float2 m_vHidePosition = _float2(0.f, 0.f);
+
+	_float m_fMaxEXP = { 0.f };
+	_float m_fCurEXP = { 0.f };
+	_float m_fPreEXP = { 0.f };
+	_float m_fTimeAcc = { 0.f };
+	_uint m_iPreLevel = { 0 };
+	_bool m_bLerp = { false };
+
+	_uint m_iPass = { 1 };
+	_float m_fProgress = { 0.f };
 
 private:
 	virtual HRESULT	Ready_Components() override;

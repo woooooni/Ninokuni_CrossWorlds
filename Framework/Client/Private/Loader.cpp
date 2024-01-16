@@ -33,6 +33,7 @@
 #include "UI_Logo_Background.h"
 #include "UI_Flare.h"
 #include "UI_CharacterDummy.h"
+#include "UI_CostumeTab_Map.h"
 
 #include "Spawner_Ice01.h"
 #include "Spawner_Ice02.h"
@@ -270,8 +271,8 @@ HRESULT CLoader::Loading_For_Level_Logo()
 
 
 	m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::SWORD_MAN);
-	m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);
-	m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);
+//	m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);
+//	m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);
 
 	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
 	{
@@ -359,6 +360,10 @@ HRESULT CLoader::Loading_For_Level_Lobby()
 			CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy")), LAYER_CHARACTER)))
 			return E_FAIL;
 
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Map_CostumRoom"),
+			CUI_CostumeTab_Map::Create(m_pDevice, m_pContext), LAYER_PROP)))
+			return E_FAIL;
+
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Lobby_Dummy_Swordsman"),
 			CUI_Dummy_Swordsman::Create(m_pDevice, m_pContext), LAYER_CHARACTER)))
 			return E_FAIL;
@@ -439,7 +444,6 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
 	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Evermore");
 	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Npc_Data, this, L"Evermore");
-
 
 	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
 	{
