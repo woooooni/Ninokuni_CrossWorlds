@@ -380,6 +380,16 @@ HRESULT CLoader::Loading_For_Level_Lobby()
 		m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Static_Map_Objects, this, L"../Bin/Export/NonAnimModel/Map/");
 		m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Dynamic_Map_Objects, this, L"../Bin/Export/AnimModel/Map/");
 
+		// Mirror
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Common_Mirror"),
+			CMirror::Create(m_pDevice, m_pContext, TEXT("Common_Mirror"), OBJ_TYPE::OBJ_PROP),
+			LAYER_TYPE::LAYER_PROP)))
+			return E_FAIL;
+		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Mirror", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/CustomRoom", L"CustumRoomMirror")))
+			return E_FAIL;
+		// Mirror
+
+
 		g_bLevelFirst[LEVEL_LOBBY] = true;
 	}
 
@@ -608,6 +618,13 @@ HRESULT CLoader::Loading_For_Level_Tool()
 		return E_FAIL;
 
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Collider_Wall", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/ColliderWall/", L"Common_ColliderWall")))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Common_Mirror"),
+		CMirror::Create(m_pDevice, m_pContext, TEXT("Common_Mirror"), OBJ_TYPE::OBJ_PROP),
+		LAYER_TYPE::LAYER_PROP)))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Mirror", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/CustomRoom/", L"CustomRoomMirror")))
 		return E_FAIL;
 
 

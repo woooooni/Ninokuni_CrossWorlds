@@ -456,8 +456,12 @@ HRESULT CRenderer::Draw_UI()
 	if (FAILED(Render_Deferred_UI()))
 		return E_FAIL;
 
+
+
 	if (FAILED(Draw_UIEffect()))
 		return E_FAIL;
+	
+
 
 	return S_OK;
 }

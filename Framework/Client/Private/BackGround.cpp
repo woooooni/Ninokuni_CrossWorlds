@@ -28,12 +28,12 @@ HRESULT CBackGround::Initialize(void* pArg)
 
 void CBackGround::Tick(_float fTimeDelta)
 {
-	int a = 10;
+
 }
 
 void CBackGround::LateTick(_float fTimeDelta)
 {
-	int a = 10;
+
 }
 
 HRESULT CBackGround::Render()

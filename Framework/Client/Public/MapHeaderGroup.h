@@ -8,3 +8,4 @@
 #include "Sun.h"
 #include "ColliderWall.h"
 #include "Grass.h"
+#include "Mirror.h"
