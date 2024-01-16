@@ -22,6 +22,7 @@ private:
 	_float	m_fFadeOutTime = 0.f;
 
 	_bool	m_bFadeOut = false;
+	_bool   m_bEffectCreate = false;
 
 public:
 	static CGlanixState_IntroFinish* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);

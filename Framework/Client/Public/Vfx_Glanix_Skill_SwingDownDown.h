@@ -90,16 +90,20 @@ protected:
 	virtual HRESULT Ready_Components() override;
 
 private:
-	class CEffect* m_pHand00Effect = nullptr;
+	_bool m_bSwing     = false;
+	_bool m_bOneAttack = false;
+	_bool m_bTwoAttack = false;
 
-	class CEffect* m_pHand01Effect = nullptr;
-	class CEffect* m_pHand02Effect = nullptr;
+private:
+	class CEffect* m_pSwing_HandEffect = nullptr;
 
-	class CDecal*  m_pWarningDecal = nullptr;
+	class CEffect* m_pOneAttack_HandEffect = nullptr;
+	class CEffect* m_pOneAttack_SpringUp   = nullptr;
 
-	class CEffect* m_SpringUpSmallEffect = nullptr;
-
-	class CEffect* m_SpringUpEffect = nullptr;
+	class CDecal*  m_pTwoAttack_WarningDecal    = nullptr;
+	class CEffect* m_pTwoAttack_LeftHandEffect  = nullptr;
+	class CEffect* m_pTwoAttack_RightHandEffect = nullptr;
+	class CEffect* m_pTwoAttack_SpringUp        = nullptr;
 
 public:
 	static CVfx_Glanix_Skill_SwingDownDown* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
