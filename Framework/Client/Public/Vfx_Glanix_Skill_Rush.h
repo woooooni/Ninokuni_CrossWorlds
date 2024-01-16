@@ -12,7 +12,53 @@ class CVfx_Glanix_Skill_Rush final : public CVfx
 {
 private:
 	enum TYPE {
-		TYPE_START,
+		// ---------------------------
+		TYPE_ET1_1_D_RECTWARNING,
+		// ---------------------------
+		TYPE_ET2_1_D_CRACK_R,
+		TYPE_ET2_1_P_SMOKE_R,
+		TYPE_ET2_1_P_CIRCLES_R,
+
+		TYPE_ET2_2_D_CRACK_L,
+		TYPE_ET2_2_P_SMOKE_L,
+		TYPE_ET2_2_P_CIRCLES_L,
+
+		TYPE_ET2_3_D_CRACK_R,
+		TYPE_ET2_3_P_SMOKE_R,
+		TYPE_ET2_3_P_CIRCLES_R,
+		// ---------------------------
+		TYPE_ET3_1_E_SPRINGUP,
+		TYPE_ET3_1_P_SMOKE,
+		TYPE_ET3_1_P_CIRCLES,
+		
+		TYPE_ET3_2_E_SPRINGUP,
+		TYPE_ET3_2_P_SMOKE,
+		TYPE_ET3_2_P_CIRCLES,
+
+		TYPE_ET3_3_E_SPRINGUP,
+		TYPE_ET3_3_P_SMOKE,
+		TYPE_ET3_3_P_CIRCLES,
+
+		TYPE_ET3_4_E_SPRINGUP,
+		TYPE_ET3_4_P_SMOKE,
+		TYPE_ET3_4_P_CIRCLES,
+
+		TYPE_ET3_5_E_SPRINGUP,
+		TYPE_ET3_5_P_SMOKE,
+		TYPE_ET3_5_P_CIRCLES,
+
+		TYPE_ET3_6_E_SPRINGUP,
+		TYPE_ET3_6_P_SMOKE,
+		TYPE_ET3_6_P_CIRCLES,
+
+		TYPE_ET3_7_E_SPRINGUP,
+		TYPE_ET3_7_P_SMOKE,
+		TYPE_ET3_7_P_CIRCLES,
+
+		TYPE_ET3_8_E_SPRINGUP,
+		TYPE_ET3_8_P_SMOKE,
+		TYPE_ET3_8_P_CIRCLES,
+
 		TYPE_END
 	};
 
@@ -30,6 +76,11 @@ public:
 
 protected:
 	virtual HRESULT Ready_Components() override;
+
+private:
+	_bool m_bEvent_1 = false;
+	_bool m_bEvent_2 = false;
+	_bool m_bEvent_3 = false;
 
 public:
 	static CVfx_Glanix_Skill_Rush* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
