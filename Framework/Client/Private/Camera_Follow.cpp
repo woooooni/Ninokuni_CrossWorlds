@@ -214,6 +214,17 @@ void CCamera_Follow::Set_Blending(const _bool& bBlending)
 			/* 탑뷰에서 블렌딩이 끝났다면 모든 인풋을 열어준다. */
 			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
 		}
+		
+		if (CAMERA_TYPE::ACTION == CCamera_Manager::GetInstance()->Get_PrevCamera()->Get_Key())
+		{
+			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_PrevCamera());
+
+			if (CCamera_Action::CAMERA_ACTION_TYPE::DOOR == pActionCam->Get_Camera_ActionType())
+			{
+				/* 이전 카메라가 도어 액션이었다면 모든 인풋을 열어준다. */
+				CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
+			}
+		}
 	}
 
 }

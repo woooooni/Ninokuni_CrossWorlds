@@ -181,6 +181,9 @@ HRESULT CCamera_Action::Start_Action_Door()
 	if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
 		CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
 
+	/* 플레이어 모든 인풋을 막는다. */
+	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
+
 	return S_OK;
 }
 

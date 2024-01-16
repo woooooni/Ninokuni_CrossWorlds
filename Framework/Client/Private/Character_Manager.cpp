@@ -111,77 +111,153 @@ HRESULT CCharacter_Manager::Ready_Characters()
 		return E_FAIL;
 
 
+
 	CCharacter::CHARACTER_STAT StatDesc;
-	StatDesc.iLevel = 1;
-	StatDesc.iAtt = 1200;
-	StatDesc.iDef = 1;
-	StatDesc.iHp = 800;
-	StatDesc.iMaxHp = 800;
-	StatDesc.iExp = 0;
-	StatDesc.iMaxExp = 100;
-	
-	
-	
 
-#pragma region SwordMan
-	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_SwordMan_AuraBlade", CSwordMan_AuraBlade::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
-		return E_FAIL;
+	switch (g_eLoadCharacter)
+	{
+	case Client::SWORDMAN_CH:
+	{
+		StatDesc.iLevel = 1;
+		StatDesc.iAtt = 1200;
+		StatDesc.iDef = 1;
+		StatDesc.iHp = 800;
+		StatDesc.iMaxHp = 800;
+		StatDesc.iExp = 0;
+		StatDesc.iMaxExp = 100;
 
-	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_SwordMan", CCharacter_SwordMan::Create(m_pDevice, m_pContext, L"SwordMan"), LAYER_CHARACTER, true)))
-		return E_FAIL;
+		if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_SwordMan_AuraBlade", CSwordMan_AuraBlade::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
+			return E_FAIL;
 
-	CCharacter* pCharacterSwordMan = dynamic_cast<CCharacter*>(GI->Find_Prototype_GameObject(LAYER_CHARACTER, L"Prototype_GameObject_Character_SwordMan"));
-	if (nullptr == pCharacterSwordMan)
-		return E_FAIL;
+		if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_SwordMan", CCharacter_SwordMan::Create(m_pDevice, m_pContext, L"SwordMan"), LAYER_CHARACTER, true)))
+			return E_FAIL;
 
-	m_pCharacters[CHARACTER_TYPE::SWORD_MAN] = dynamic_cast<CCharacter*>(pCharacterSwordMan->Clone(&StatDesc));
-	if (nullptr == m_pCharacters[CHARACTER_TYPE::SWORD_MAN])
-		return E_FAIL;
-#pragma endregion
+		CCharacter* pCharacterSwordMan = dynamic_cast<CCharacter*>(GI->Find_Prototype_GameObject(LAYER_CHARACTER, L"Prototype_GameObject_Character_SwordMan"));
+		if (nullptr == pCharacterSwordMan)
+			return E_FAIL;
 
-#pragma region Engineer
+		m_pCharacters[CHARACTER_TYPE::SWORD_MAN] = dynamic_cast<CCharacter*>(pCharacterSwordMan->Clone(&StatDesc));
+		if (nullptr == m_pCharacters[CHARACTER_TYPE::SWORD_MAN])
+			return E_FAIL;
+	}
+		break;
+	case Client::DESTROYER_CH:
+	{
+		StatDesc.iAtt = 1500;
+		StatDesc.iDef = 1;
+		StatDesc.iHp = 1000;
+		StatDesc.iMaxHp = 1000;
 
-	StatDesc.iAtt = 400;
-	StatDesc.iDef = 1;
-	StatDesc.iHp = 500;
-	StatDesc.iMaxHp = 500;
+		if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_Destroyer", CCharacter_Destroyer::Create(m_pDevice, m_pContext, L"Destroyer"), LAYER_CHARACTER, true)))
+			return E_FAIL;
 
 
-	///* Engineer */
-	/*if(FAILED(GI->Add_Prototype(L"Prototype_GameObject_Engineer_Bullet", CEngineer_Bullet::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
-		return E_FAIL;
+		CCharacter* pCharacterDestroyer = dynamic_cast<CCharacter*>(GI->Find_Prototype_GameObject(LAYER_CHARACTER, L"Prototype_GameObject_Character_Destroyer"));
+		if (nullptr == pCharacterDestroyer)
+			return E_FAIL;
 
-	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_Engineer", CCharacter_Engineer::Create(m_pDevice, m_pContext, L"Engineer"), LAYER_CHARACTER, true)))
-		return E_FAIL;
-	
-	CCharacter* pCharacterEngineer = dynamic_cast<CCharacter*>(GI->Find_Prototype_GameObject(LAYER_CHARACTER, L"Prototype_GameObject_Character_Engineer"));
-	if (nullptr == pCharacterEngineer)
-		return E_FAIL;
 
-	m_pCharacters[CHARACTER_TYPE::ENGINEER] = dynamic_cast<CCharacter*>(pCharacterEngineer->Clone(&StatDesc));
-	if (nullptr == m_pCharacters[CHARACTER_TYPE::ENGINEER])
-		return E_FAIL;*/
-#pragma endregion
+		m_pCharacters[CHARACTER_TYPE::DESTROYER] = dynamic_cast<CCharacter*>(pCharacterDestroyer->Clone(&StatDesc));
+		if (nullptr == m_pCharacters[CHARACTER_TYPE::DESTROYER])
+			return E_FAIL;
+	}
+		break;
+	case Client::ENGINEER_CH:
+	{
+		StatDesc.iAtt = 400;
+		StatDesc.iDef = 1;
+		StatDesc.iHp = 500;
+		StatDesc.iMaxHp = 500;
 
-#pragma region Destroyer
-	StatDesc.iAtt = 1500;
-	StatDesc.iDef = 1;
-	StatDesc.iHp = 1000;
-	StatDesc.iMaxHp = 1000;
+		if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Engineer_Bullet", CEngineer_Bullet::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
+			return E_FAIL;
 
-	/*if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_Destroyer", CCharacter_Destroyer::Create(m_pDevice, m_pContext, L"Destroyer"), LAYER_CHARACTER, true)))
-		return E_FAIL;
+		if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_Engineer", CCharacter_Engineer::Create(m_pDevice, m_pContext, L"Engineer"), LAYER_CHARACTER, true)))
+			return E_FAIL;
 
-	
-	CCharacter* pCharacterDestroyer = dynamic_cast<CCharacter*>(GI->Find_Prototype_GameObject(LAYER_CHARACTER, L"Prototype_GameObject_Character_Destroyer"));
-	if (nullptr == pCharacterDestroyer)
-		return E_FAIL;
-	
+		CCharacter* pCharacterEngineer = dynamic_cast<CCharacter*>(GI->Find_Prototype_GameObject(LAYER_CHARACTER, L"Prototype_GameObject_Character_Engineer"));
+		if (nullptr == pCharacterEngineer)
+			return E_FAIL;
 
-	m_pCharacters[CHARACTER_TYPE::DESTROYER] = dynamic_cast<CCharacter*>(pCharacterDestroyer->Clone(&StatDesc));
-	if (nullptr == m_pCharacters[CHARACTER_TYPE::DESTROYER])
-		return E_FAIL;*/
-#pragma endregion
+		m_pCharacters[CHARACTER_TYPE::ENGINEER] = dynamic_cast<CCharacter*>(pCharacterEngineer->Clone(&StatDesc));
+		if (nullptr == m_pCharacters[CHARACTER_TYPE::ENGINEER])
+			return E_FAIL;
+	}
+		break;
+	case Client::ALL_CH:
+	{
+		// SwordMan
+		{
+			StatDesc.iLevel = 1;
+			StatDesc.iAtt = 1200;
+			StatDesc.iDef = 1;
+			StatDesc.iHp = 800;
+			StatDesc.iMaxHp = 800;
+			StatDesc.iExp = 0;
+			StatDesc.iMaxExp = 100;
+
+			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_SwordMan_AuraBlade", CSwordMan_AuraBlade::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
+				return E_FAIL;
+
+			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_SwordMan", CCharacter_SwordMan::Create(m_pDevice, m_pContext, L"SwordMan"), LAYER_CHARACTER, true)))
+				return E_FAIL;
+
+			CCharacter* pCharacterSwordMan = dynamic_cast<CCharacter*>(GI->Find_Prototype_GameObject(LAYER_CHARACTER, L"Prototype_GameObject_Character_SwordMan"));
+			if (nullptr == pCharacterSwordMan)
+				return E_FAIL;
+
+			m_pCharacters[CHARACTER_TYPE::SWORD_MAN] = dynamic_cast<CCharacter*>(pCharacterSwordMan->Clone(&StatDesc));
+			if (nullptr == m_pCharacters[CHARACTER_TYPE::SWORD_MAN])
+				return E_FAIL;
+		}
+
+		// Engineer
+		{
+			StatDesc.iAtt = 400;
+			StatDesc.iDef = 1;
+			StatDesc.iHp = 500;
+			StatDesc.iMaxHp = 500;
+
+			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Engineer_Bullet", CEngineer_Bullet::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
+				return E_FAIL;
+
+			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_Engineer", CCharacter_Engineer::Create(m_pDevice, m_pContext, L"Engineer"), LAYER_CHARACTER, true)))
+				return E_FAIL;
+
+			CCharacter* pCharacterEngineer = dynamic_cast<CCharacter*>(GI->Find_Prototype_GameObject(LAYER_CHARACTER, L"Prototype_GameObject_Character_Engineer"));
+			if (nullptr == pCharacterEngineer)
+				return E_FAIL;
+
+			m_pCharacters[CHARACTER_TYPE::ENGINEER] = dynamic_cast<CCharacter*>(pCharacterEngineer->Clone(&StatDesc));
+			if (nullptr == m_pCharacters[CHARACTER_TYPE::ENGINEER])
+				return E_FAIL;
+		}
+
+		// Destroyer
+		{
+			StatDesc.iAtt = 1500;
+			StatDesc.iDef = 1;
+			StatDesc.iHp = 1000;
+			StatDesc.iMaxHp = 1000;
+
+			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_Destroyer", CCharacter_Destroyer::Create(m_pDevice, m_pContext, L"Destroyer"), LAYER_CHARACTER, true)))
+				return E_FAIL;
+
+
+			CCharacter* pCharacterDestroyer = dynamic_cast<CCharacter*>(GI->Find_Prototype_GameObject(LAYER_CHARACTER, L"Prototype_GameObject_Character_Destroyer"));
+			if (nullptr == pCharacterDestroyer)
+				return E_FAIL;
+
+
+			m_pCharacters[CHARACTER_TYPE::DESTROYER] = dynamic_cast<CCharacter*>(pCharacterDestroyer->Clone(&StatDesc));
+			if (nullptr == m_pCharacters[CHARACTER_TYPE::DESTROYER])
+				return E_FAIL;
+		}
+	}
+		break;
+	default:
+		break;
+	}
 
 	return S_OK;
 }

@@ -57,15 +57,23 @@ HRESULT CMainApp::Initialize()
 	if (FAILED(Initialize_Client()))
 		return E_FAIL;
 
-	// Set Start Level 
-	const LEVELID eStartLevel = LEVELID::LEVEL_LOGO;
+	// Set Start Level and Character
+	{
+		g_eStartLevel = LEVELID::LEVEL_LOGO; /* 시작할 레벨 타입 */
+
+		g_eLoadCharacter = LOAD_CHARACTER_TYPE::ALL_CH;			/* 모델 로드할 캐릭터 타입 */
+		g_ePlayCharacter = LOAD_CHARACTER_TYPE::ENGINEER_CH;	/* 게임 플레이할 캐릭터 타입 */
+
+		if (LOAD_CHARACTER_TYPE::ALL_CH != g_eLoadCharacter && g_eLoadCharacter != g_ePlayCharacter)
+			g_eLoadCharacter = g_ePlayCharacter;
+	}
 
 	// Open Level
-	if (FAILED(Open_Level(eStartLevel, L"Final_Boss")))
+	if (FAILED(Open_Level((LEVELID)g_eStartLevel, L"Final_Boss")))
 		return E_FAIL;
 
 	// Set UI Cursor
-	if (LEVELID::LEVEL_TOOL != eStartLevel)
+	if (LEVELID::LEVEL_TOOL != (LEVELID)g_eStartLevel)
 	{
 		CUI_Manager::GetInstance()->Ready_Cursor();
 		ShowCursor(false);

@@ -61,8 +61,8 @@ namespace Client
 	enum WITCH_FACE_MODEL_TYPE { };
 	enum WITCH_BODY_MODEL_TYPE { };
 
+	enum LOAD_CHARACTER_TYPE { SWORDMAN_CH, DESTROYER_CH, ENGINEER_CH, ALL_CH };
 
-	
 	enum LAYER_TYPE
 	{
 		LAYER_TERRAIN,
@@ -155,6 +155,9 @@ namespace Client
 
 extern HWND g_hWnd;
 extern HINSTANCE g_hInstance;
+extern _uint g_eLoadCharacter;
+extern _uint g_ePlayCharacter;
+extern _uint g_eStartLevel;
 
 #define SERVER_IP		L"192.168.1.33"
 #define SERVER_PORT		7777

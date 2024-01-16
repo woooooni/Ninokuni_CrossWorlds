@@ -169,14 +169,14 @@ HRESULT CUI_SkillSection_CoolTimeFrame::Ready_Skill()
 		break;
 
 	case CHARACTER_TYPE::DESTROYER:
-		pTemp = CSkill_Manager::GetInstance()->Get_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::DESTROYER_BURST_HYPERSTRIKE);
+		pTemp = CSkill_Manager::GetInstance()->Get_Skill(CHARACTER_TYPE::DESTROYER, SKILL_TYPE::DESTROYER_BURST_HYPERSTRIKE);
 		if (nullptr == pTemp)
 			return E_FAIL;
 		m_pSkill = pTemp;
 		break;
 
 	case CHARACTER_TYPE::ENGINEER:
-		pTemp = CSkill_Manager::GetInstance()->Get_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::ENGINNER_BURST_DESTRUCTION);
+		pTemp = CSkill_Manager::GetInstance()->Get_Skill(CHARACTER_TYPE::ENGINEER, SKILL_TYPE::ENGINNER_BURST_DESTRUCTION);
 		if (nullptr == pTemp)
 			return E_FAIL;
 		m_pSkill = pTemp;

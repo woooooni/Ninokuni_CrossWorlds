@@ -65,6 +65,8 @@ HRESULT CKuu::Initialize(void* pArg)
 //	m_pBalloon->Set_Balloon(TEXT("나는 테스트용 쿠우다."));
 
 
+	m_pTransformCom->Set_Scale(Vec3(0.7f));
+
 	return S_OK;
 }
 
