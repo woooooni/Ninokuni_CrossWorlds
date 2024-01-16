@@ -258,7 +258,7 @@ public:
 		return m_pCharacterPartModels[ePartType];
 
 	}
-
+	
 public:
 	void Set_Target(class CGameObject* pTarget) { m_pTarget = pTarget; }
 	class CGameObject* Get_Target() { return m_pTarget; }
@@ -278,7 +278,8 @@ public:
 public:
 	virtual HRESULT Enter_Character();
 	virtual HRESULT Exit_Character();
-	virtual HRESULT Tag_In();
+
+	virtual HRESULT Tag_In(Vec4 vInitializePosition);
 	virtual HRESULT Tag_Out();
 
 protected:

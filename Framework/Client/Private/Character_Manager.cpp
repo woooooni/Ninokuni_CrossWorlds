@@ -141,7 +141,7 @@ HRESULT CCharacter_Manager::Ready_Characters()
 
 #pragma region Engineer
 
-	StatDesc.iAtt = 800;
+	StatDesc.iAtt = 400;
 	StatDesc.iDef = 1;
 	StatDesc.iHp = 500;
 	StatDesc.iMaxHp = 500;
@@ -164,7 +164,7 @@ HRESULT CCharacter_Manager::Ready_Characters()
 #pragma endregion
 
 #pragma region Destroyer
-	StatDesc.iAtt = 1200;
+	StatDesc.iAtt = 1500;
 	StatDesc.iDef = 1;
 	StatDesc.iHp = 1000;
 	StatDesc.iMaxHp = 1000;

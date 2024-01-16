@@ -27,6 +27,8 @@ void CGlanixState_SpinBomb::Enter_State(void* pArg)
 	if (pTransformCom == nullptr)
 		return;
 	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Glanix_Skill_SwingDown"), pTransformCom->Get_WorldMatrix(), m_pGlanix);
+	m_pGlanix->Generate_MotionTrail(m_MotionTrailDesc);
+
 }
 
 void CGlanixState_SpinBomb::Tick_State(_float fTimeDelta)
@@ -63,6 +65,7 @@ void CGlanixState_SpinBomb::Tick_State(_float fTimeDelta)
 void CGlanixState_SpinBomb::Exit_State()
 {
 	m_pGlanix->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_COUNTER, false);
+	m_pGlanix->Stop_MotionTrail();
 }
 
 CGlanixState_SpinBomb* CGlanixState_SpinBomb::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

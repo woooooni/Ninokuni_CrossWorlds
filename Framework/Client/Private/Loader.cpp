@@ -268,6 +268,8 @@ HRESULT CLoader::Loading_For_Level_Logo()
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_DoorEnter", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Door/", L"Door")))
 		return E_FAIL;
 
+	
+
 
 	m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::SWORD_MAN);
 	m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);
@@ -1117,6 +1119,9 @@ HRESULT CLoader::Loading_For_Character(CHARACTER_TYPE eCharacterType)
 
 	else if (eCharacterType == CHARACTER_TYPE::ENGINEER)
 	{
+		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Engineer_Bullet", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Bullet/", L"Engineer_Bullet")))
+			return E_FAIL;
+		
 		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Engineer_Dummy", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Engineer/Dummy/", L"Engineer_Dummy")))
 			return E_FAIL;
 

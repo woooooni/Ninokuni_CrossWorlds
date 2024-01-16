@@ -26,7 +26,7 @@ void CState_Destroyer_Skill_WheelWind::Enter_State(void* pArg)
     m_iCurrAnimIndex = m_AnimIndices[0];
 	m_fAccFinish = 0.f;
     m_pCharacter->Appear_Weapon();
-    m_pModelCom->Set_Animation(m_iCurrAnimIndex);
+    m_pModelCom->Set_Animation(m_iCurrAnimIndex, MIN_TWEEN_DURATION);
 
     // Effect Create
     CTransform* pTransformCom = m_pCharacter->Get_Component<CTransform>(L"Com_Transform");
@@ -44,7 +44,7 @@ void CState_Destroyer_Skill_WheelWind::Tick_State(_float fTimeDelta)
             if (KEY_HOLD(KEY::NUM_1))
             {
                 m_iCurrAnimIndex = m_AnimIndices[1];
-                m_pModelCom->Set_Animation(m_iCurrAnimIndex);
+                m_pModelCom->Set_Animation(m_iCurrAnimIndex, MIN_TWEEN_DURATION);
             }
             else
             {
@@ -69,7 +69,7 @@ void CState_Destroyer_Skill_WheelWind::Tick_State(_float fTimeDelta)
 		{
 			m_fAccFinish = 0.f;
 			m_iCurrAnimIndex = m_AnimIndices[2];
-			m_pModelCom->Set_Animation(m_iCurrAnimIndex);
+			m_pModelCom->Set_Animation(m_iCurrAnimIndex, MIN_TWEEN_DURATION);
 		}
     }
 	else if (m_iCurrAnimIndex == m_AnimIndices[2])

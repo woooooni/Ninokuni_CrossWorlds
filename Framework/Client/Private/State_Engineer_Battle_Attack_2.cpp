@@ -70,7 +70,7 @@ void CState_Engineer_Battle_Attack_2::Shoot()
         CCharacter_Projectile::CHARACTER_PROJECTILE_DESC ProjectileDesc;
         ProjectileDesc.pOwner = m_pCharacter;
 
-        CGameObject* pBullet = GI->Clone_GameObject(L"Prototype_GameObject_Engineer_Bullet", LAYER_TYPE::LAYER_CHARACTER);
+        CGameObject* pBullet = GI->Clone_GameObject(L"Prototype_GameObject_Engineer_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
         if (nullptr == pBullet)
             return;
 

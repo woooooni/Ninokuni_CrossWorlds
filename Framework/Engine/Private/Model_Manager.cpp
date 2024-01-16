@@ -552,7 +552,10 @@ HRESULT CModel_Manager::Import_Model_Data_From_Bin_In_Game(_uint iLevelIndex, co
 	if (CModel::TYPE::TYPE_ANIM == pModel->Get_ModelType())
 	{
 		if (FAILED(Create_Model_Vtf(pModel, strFinalFolderPath)))
+		{
+			MSG_BOX("CModelManager : Create_Model_Vtf Failed.");
 			return E_FAIL;
+		}
 
 		/*if (FAILED(Load_Model_Vtf(pModel, strFinalFolderPath)))
 			return E_FAIL;*/
@@ -564,13 +567,24 @@ HRESULT CModel_Manager::Import_Model_Data_From_Bin_In_Game(_uint iLevelIndex, co
 			// 이 클래스에 Save_Model_Vtf도 내부 필터 제거
 
 		if (FAILED(Import_Socket(strFinalFolderPath, pModel)))
+		{
+			MSG_BOX("CModelManager : ImportSocket Failed.");
 			return E_FAIL;
+		}
+			
 
 		if (FAILED(Import_Animation_KeyFrameSpeed(strFinalFolderPath, pModel)))
+		{
+			MSG_BOX("CModelManager : Import_Animation_KeyFrameSpeed Failed.");
 			return E_FAIL;
+		}
+	
 
 		if (FAILED(Import_Animation_Events(strFinalFolderPath, pModel)))
+		{
+			MSG_BOX("CModelManager : Import_Animation_Events Failed.");
 			return E_FAIL;
+		}
 	}
 
 	if (ppOut != nullptr)

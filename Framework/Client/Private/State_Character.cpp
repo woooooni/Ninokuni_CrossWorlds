@@ -4,6 +4,9 @@
 #include "State_Character.h"
 #include "UI_Manager.h"
 #include "UI_Dialog_Window.h"
+#include "Game_Manager.h"
+#include "Player.h"
+#include "Character.h"
 
 
 CState_Character::CState_Character(CStateMachine* pStateMachine)
@@ -31,8 +34,27 @@ void CState_Character::Free()
 
 void CState_Character::Neutral_Idle_Input(_float fTimeDelta)
 {
+	
 	if (false == m_pCharacter->Is_Move_Input())
 		return;
+
+	if (KEY_HOLD(KEY::TAB) && KEY_TAP(KEY::NUM_1))
+	{
+		CGame_Manager::GetInstance()->Get_Player()->Tag_Character(CHARACTER_TYPE::SWORD_MAN);
+		return;
+	}
+
+	if (KEY_HOLD(KEY::TAB) && KEY_TAP(KEY::NUM_2))
+	{
+		CGame_Manager::GetInstance()->Get_Player()->Tag_Character(CHARACTER_TYPE::ENGINEER);
+		return;
+	}
+
+	if (KEY_HOLD(KEY::TAB) && KEY_TAP(KEY::NUM_3))
+	{
+		CGame_Manager::GetInstance()->Get_Player()->Tag_Character(CHARACTER_TYPE::DESTROYER);
+		return;
+	}
 
 	if (true == CUI_Manager::GetInstance()->Is_Dialog_Active())
 		return;
@@ -118,6 +140,24 @@ void CState_Character::Battle_Idle_Input(_float fTimeDelta)
 {
 	if (false == m_pCharacter->Is_Move_Input())
 		return;
+
+	if (KEY_HOLD(KEY::TAB) && KEY_TAP(KEY::NUM_1))
+	{
+		CGame_Manager::GetInstance()->Get_Player()->Tag_Character(CHARACTER_TYPE::SWORD_MAN);
+		return;
+	}
+
+	if (KEY_HOLD(KEY::TAB) && KEY_TAP(KEY::NUM_2))
+	{
+		CGame_Manager::GetInstance()->Get_Player()->Tag_Character(CHARACTER_TYPE::ENGINEER);
+		return;
+	}
+
+	if (KEY_HOLD(KEY::TAB) && KEY_TAP(KEY::NUM_3))
+	{
+		CGame_Manager::GetInstance()->Get_Player()->Tag_Character(CHARACTER_TYPE::DESTROYER);
+		return;
+	}
 
 	if (true == CUI_Manager::GetInstance()->Is_Dialog_Active())
 		return;
