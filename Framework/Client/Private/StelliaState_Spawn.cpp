@@ -18,7 +18,7 @@ HRESULT CStelliaState_Spawn::Initialize(const list<wstring>& AnimationList)
 void CStelliaState_Spawn::Enter_State(void* pArg)
 {
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(1.f, 0.f, 10.f, 1.f));
+	// m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(1.f, 0.f, 10.f, 1.f));
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_Spawn"));
 
 	if (m_pPlayer != nullptr)

@@ -26,7 +26,7 @@ void CStelliaState_TripleLaser::Tick_State(_float fTimeDelta)
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
-		m_pStateMachineCom->Change_State(CStellia::STELLIA_TURN);
+		m_pStateMachineCom->Change_State(CStellia::STELLIA_COMBATIDLE);
 	}
 }
 

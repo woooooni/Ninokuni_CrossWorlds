@@ -69,7 +69,6 @@ void CShadow_Thief::Tick(_float fTimeDelta)
 	if (nullptr != m_pHPBar)
 		m_pHPBar->Tick(fTimeDelta);
 	
-	
 	__super::Tick(fTimeDelta);
 }
 

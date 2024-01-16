@@ -18,6 +18,9 @@ public:
 	virtual void Tick_State(_float fTimeDelta);
 	virtual void Exit_State();
 
+private:
+	_vector vDestPos = {};
+
 public:
 	static CStelliaState_JumpStamp* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

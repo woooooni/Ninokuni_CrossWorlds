@@ -19,9 +19,6 @@ public:
 	virtual void Exit_State();
 
 private:
-	_float m_fTime = 0.f;
-	_float m_fWaitTime = 0.f;
-
 	_vector m_vDestPos = {};
 	_float  m_fTurnSpeed = 0.f;
 
