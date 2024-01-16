@@ -200,7 +200,7 @@ public:
 //	ServerSessionRef& Get_ServerSession();
 
 public:
-	void Play_Sound(const wstring& pSoundKey, CHANNELID eID, _float fVolume, _bool bStop = false);
+	void Play_Sound(const wstring& pSoundKey, CHANNELID eID, _float fVolume, _bool bStop = false, const _float fCamDist = 0.f);
 	void Play_BGM(const wstring& pSoundKey, _float fVolume, _bool bStop = false);
 	void Stop_Sound(CHANNELID eID);
 	void Stop_All();

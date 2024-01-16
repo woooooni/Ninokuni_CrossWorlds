@@ -54,7 +54,6 @@ void CGameObject::Tick(_float fTimeDelta)
 void CGameObject::LateTick(_float fTimeDelta)
 {
 	LateUpdate_Collider(fTimeDelta);
-
 }
 
 HRESULT CGameObject::Render()

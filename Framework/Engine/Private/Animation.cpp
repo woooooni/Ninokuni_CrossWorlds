@@ -504,48 +504,55 @@ void CAnimation::Update_Animation_Speed(_float fTickPerSecond, const TWEEN_DESC&
 
 void CAnimation::Update_Animation_Event(_float fTickPerSecond, const TWEEN_DESC& tDesc)
 {
+	if (nullptr != m_pModel && nullptr != m_pModel->Get_Owner())
+		return;
+
 	/* 트윈중이라면 다음 애니메이션 키프레임 기준으로 동작하도록 한다. */
 	const _float fCurFrame = (0 <= tDesc.next.iAnimIndex) ? tDesc.next.iCurFrame : tDesc.cur.iCurFrame;
 
 	/* 사운드 이벤트 */
+	
+	const _float fCamDist = m_pModel->Get_Owner()->Get_CamDistance();
+
 	for (auto& SoundEvent : m_SoundEvents)
 	{
 		if (SoundEvent.first <= fCurFrame && !SoundEvent.second.bExecuted)
 		{
 			SoundEvent.second.bExecuted = true;
 			 
-			GI->Play_Sound(CUtils::ToWString(SoundEvent.second.strSoundKey), CHANNELID(SoundEvent.second.iChannelID), SoundEvent.second.fVolume, SoundEvent.second.bStop);
+			GI->Play_Sound(CUtils::ToWString(SoundEvent.second.strSoundKey), 
+				CHANNELID(SoundEvent.second.iChannelID), 
+				SoundEvent.second.fVolume, 
+				SoundEvent.second.bStop,
+				fCamDist);
 		}
 	}
 
 	/* 콜라이더 이벤트 */
-	if (nullptr != m_pModel && nullptr != m_pModel->Get_Owner())
+	for (auto& ColliderEvent : m_ColliderEvents)
 	{
-		for (auto& ColliderEvent : m_ColliderEvents)
+		if (ColliderEvent.first <= fCurFrame && !ColliderEvent.second.bExecuted)
 		{
-			if (ColliderEvent.first <= fCurFrame && !ColliderEvent.second.bExecuted)
+			ColliderEvent.second.bExecuted = true;
+
+			if (ColliderEvent.second.bOnOff)
 			{
-				ColliderEvent.second.bExecuted = true;
-
-				if (ColliderEvent.second.bOnOff)
+				if (!m_pModel->Get_Owner()->Get_Collider(ColliderEvent.second.iDetectionType).empty())
 				{
-					if (!m_pModel->Get_Owner()->Get_Collider(ColliderEvent.second.iDetectionType).empty())
-					{
-						CCollider* pCollider = m_pModel->Get_Owner()->Get_Collider(ColliderEvent.second.iDetectionType).front();
+					CCollider* pCollider = m_pModel->Get_Owner()->Get_Collider(ColliderEvent.second.iDetectionType).front();
 
-						pCollider->Set_Active(ColliderEvent.second.bOnOff);
-						pCollider->Set_Offset(ColliderEvent.second.vOffset);
-						pCollider->Set_Radius(ColliderEvent.second.vExtents.x);
-						pCollider->Set_Extents(ColliderEvent.second.vExtents);
-						pCollider->Set_AttackType(CCollider::ATTACK_TYPE(ColliderEvent.second.iAttackType));
-					}
+					pCollider->Set_Active(ColliderEvent.second.bOnOff);
+					pCollider->Set_Offset(ColliderEvent.second.vOffset);
+					pCollider->Set_Radius(ColliderEvent.second.vExtents.x);
+					pCollider->Set_Extents(ColliderEvent.second.vExtents);
+					pCollider->Set_AttackType(CCollider::ATTACK_TYPE(ColliderEvent.second.iAttackType));
 				}
-				else
+			}
+			else
+			{
+				if (!m_pModel->Get_Owner()->Get_Collider(ColliderEvent.second.iDetectionType).empty())
 				{
-					if (!m_pModel->Get_Owner()->Get_Collider(ColliderEvent.second.iDetectionType).empty())
-					{
-						m_pModel->Get_Owner()->Get_Collider(ColliderEvent.second.iDetectionType).front()->Set_Active(ColliderEvent.second.bOnOff);
-					}
+					m_pModel->Get_Owner()->Get_Collider(ColliderEvent.second.iDetectionType).front()->Set_Active(ColliderEvent.second.bOnOff);
 				}
 			}
 		}
