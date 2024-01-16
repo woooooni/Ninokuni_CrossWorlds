@@ -54,11 +54,28 @@ HRESULT CPlayer::Set_Character(CHARACTER_TYPE eType, Vec4 vEnterPosition, _bool 
 		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_LookAtObj(m_pCharacter);
 	}
 
-	if (true == bEnterScene)
-	{
-		m_pCharacter->Set_EnterLevelPosition(XMVectorSetW(vEnterPosition, 1.f));
-	}
+	
 
+	if (true == bEnterScene)
+		m_pCharacter->Set_EnterLevelPosition(XMVectorSetW(vEnterPosition, 1.f));
+
+	return S_OK;
+}
+
+HRESULT CPlayer::Tag_Character(CHARACTER_TYPE eType)
+{
+	if (nullptr == m_pCharacter)
+		return E_FAIL;
+
+	if (eType >= CHARACTER_TYPE::CHARACTER_END)
+		return E_FAIL;
+
+	if (FAILED(m_pCharacter->Tag_Out()))
+		return E_FAIL;
+
+
+	if (FAILED(m_pCharacter->Tag_In()))
+		return E_FAIL;
 	return S_OK;
 }
 

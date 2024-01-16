@@ -21,7 +21,12 @@ public:
 	virtual HRESULT Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices) override;
 
 public:
+	virtual void Collision_Enter(const COLLISION_INFO& tInfo) override;
+
+private:
 	virtual HRESULT Ready_Components() override;
+
+
 
 
 private:

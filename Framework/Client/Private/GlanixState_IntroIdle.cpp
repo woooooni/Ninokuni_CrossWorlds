@@ -40,7 +40,7 @@ void CGlanixState_IntroIdle::Enter_State(void* pArg)
 		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, m_fFadeOutTime, false);
 
 	/* Change Bgm */
-	GI->Play_BGM(L"BGM_Field_BridgeCave_Ne_1.ogg", GI->Get_ChannelVolume(CHANNELID::SOUND_BGM), true);
+	GI->Play_BGM(L"BGM_Field_BridgeCave_Ne_1.ogg", GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR), true);
 }
 
 void CGlanixState_IntroIdle::Tick_State(_float fTimeDelta)

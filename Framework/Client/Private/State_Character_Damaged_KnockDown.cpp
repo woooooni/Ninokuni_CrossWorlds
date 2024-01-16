@@ -27,9 +27,11 @@ void CState_Character_Damaged_KnockDown::Enter_State(void* pArg)
         CSound_Manager::GetInstance()->Play_Sound(strSoundKey, CHANNELID::SOUND_VOICE_CHARACTER, 0.5f, true);
         break;
     case CHARACTER_TYPE::ENGINEER:
+        strSoundKey = L"Engineer_V_Dmg_Long_" + to_wstring(GI->RandomInt(1, 3));
         CSound_Manager::GetInstance()->Play_Sound(strSoundKey, CHANNELID::SOUND_VOICE_CHARACTER, 0.5f, true);
         break;
     case CHARACTER_TYPE::DESTROYER:
+        strSoundKey = L"Destroyer_V_Dmg_Long_" + to_wstring(GI->RandomInt(1, 3));
         CSound_Manager::GetInstance()->Play_Sound(strSoundKey, CHANNELID::SOUND_VOICE_CHARACTER, 0.5f, true);
         break;
     }

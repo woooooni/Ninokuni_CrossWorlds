@@ -20,6 +20,8 @@ HRESULT CState_Character_Battle_Jump::Initialize(const list<wstring>& AnimationL
 
 void CState_Character_Battle_Jump::Enter_State(void* pArg)
 {
+    wstring strSoundKey = L"Foley_Cloth_" + to_wstring(GI->RandomInt(1, 8)) + L".ogg";
+    GI->Play_Sound(strSoundKey, CHANNELID::SOUND_CLOTH, 0.5f, true);
     m_pCharacter->Appear_Weapon();
 
     m_pRigidBodyCom->Set_Ground(false);
@@ -43,7 +45,10 @@ void CState_Character_Battle_Jump::Tick_State(_float fTimeDelta)
 {
     if (true == m_pRigidBodyCom->Is_Ground())
     {
+        wstring strSoundKey = L"Foley_Cloth_" + to_wstring(GI->RandomInt(10, 12)) + L".ogg";
+        GI->Play_Sound(strSoundKey, CHANNELID::SOUND_CLOTH, 0.5f, true);
         m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_IDLE);
+        return;
     }
 }
 

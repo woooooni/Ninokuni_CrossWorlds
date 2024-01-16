@@ -63,6 +63,12 @@ HRESULT CSwordMan_AuraBlade::Render_Instance(CShader* pInstancingShader, CVIBuff
 	return S_OK;
 }
 
+void CSwordMan_AuraBlade::Collision_Enter(const COLLISION_INFO& tInfo)
+{
+	wstring strSoundKey = L"Hit_PC_Combo_Slash_Flesh_" + to_wstring(GI->RandomInt(1, 4)) + L".mp3";
+	GI->Play_Sound(strSoundKey, SOUND_MONSTERL_HIT, 0.3f, false);
+}
+
 HRESULT CSwordMan_AuraBlade::Ready_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))

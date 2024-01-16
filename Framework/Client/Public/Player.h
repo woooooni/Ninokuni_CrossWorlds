@@ -26,6 +26,7 @@ public:
 public:
 	class CCharacter* Get_Character() { return m_pCharacter; }
 	HRESULT Set_Character(CHARACTER_TYPE eType, Vec4 vEnterPosition, _bool bEnterScene);
+	HRESULT Tag_Character(CHARACTER_TYPE eType);
 	HRESULT Set_Character_Initial_Position(Vec4 vEnterPosition, _bool bEnterDoor = false);
 
 private:

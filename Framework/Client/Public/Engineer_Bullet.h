@@ -22,6 +22,9 @@ public:
 public:
 	virtual HRESULT Ready_Components() override;
 
+public:
+	virtual void Collision_Enter(const COLLISION_INFO& tInfo) override;
+
 private:
 	_float m_fAccEffect = 0.f;
 	_float m_fGenEffectTime = 0.5f;

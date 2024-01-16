@@ -109,11 +109,11 @@ void CSound_Manager::Play_BGM(wstring pSoundKey, _float fVolume, _bool bStop)
 		return;
 
 	if (true == bStop)
-		Stop_Sound(SOUND_BGM);
+		Stop_Sound(SOUND_BGM_CURR);
 
-	FMOD_System_PlaySound(m_pSystem, FMOD_CHANNEL_FREE, iter->second, FALSE, &m_pChannelArr[SOUND_BGM]);
-	FMOD_Channel_SetMode(m_pChannelArr[SOUND_BGM], FMOD_LOOP_NORMAL);
-	FMOD_Channel_SetVolume(m_pChannelArr[SOUND_BGM], fVolume * m_fSoundVolumeArr[SOUND_BGM] * m_fAllChannelVolume);
+	FMOD_System_PlaySound(m_pSystem, FMOD_CHANNEL_FREE, iter->second, FALSE, &m_pChannelArr[SOUND_BGM_CURR]);
+	FMOD_Channel_SetMode(m_pChannelArr[SOUND_BGM_CURR], FMOD_LOOP_NORMAL);
+	FMOD_Channel_SetVolume(m_pChannelArr[SOUND_BGM_CURR], fVolume * m_fSoundVolumeArr[SOUND_BGM_CURR] * m_fAllChannelVolume);
 	FMOD_System_Update(m_pSystem);
 }
 

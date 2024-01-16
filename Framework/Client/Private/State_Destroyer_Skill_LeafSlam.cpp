@@ -51,6 +51,8 @@ void CState_Destroyer_Skill_LeafSlam::Tick_State(_float fTimeDelta)
             m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_IDLE);
         }
     }
+
+    __super::Attack_Input(fTimeDelta);
 }
 
 void CState_Destroyer_Skill_LeafSlam::Exit_State()
