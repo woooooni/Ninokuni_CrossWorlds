@@ -27,101 +27,105 @@ HRESULT CVfx_Glanix_Skill_SwingDown::Initialize_Prototype()
 	m_pRotationOffset = new _float3[m_iMaxCount];
 
 	{
-		m_pFrameTriger[TYPE_D_START_WARNING]    = 0;
+		m_pFrameTriger[TYPE_D_START_WARNING]    = 15;
 		m_pPositionOffset[TYPE_D_START_WARNING] = _float3(0.f, 0.f, 0.f);
 		m_pScaleOffset[TYPE_D_START_WARNING]    = _float3(7.f, 5.f, 7.f);
 		m_pRotationOffset[TYPE_D_START_WARNING] = _float3(0.f, 0.f, 0.f);
 	}
 
 	{
-		m_pFrameTriger[TYPE_E_SWING_HANDCIRCLE_RIGHT] = 20;
+		m_pFrameTriger[TYPE_E_SWING_HANDCIRCLE_RIGHT]    = 25;
 		m_pPositionOffset[TYPE_E_SWING_HANDCIRCLE_RIGHT] = _float3(0.f, 0.f, 0.f);
 		m_pScaleOffset[TYPE_E_SWING_HANDCIRCLE_RIGHT]    = _float3(0.2f, 0.2f, 0.2f);
 		m_pRotationOffset[TYPE_E_SWING_HANDCIRCLE_RIGHT] = _float3(0.f, 0.f, 0.f);
-		//
-		m_pFrameTriger[TYPE_P_SWING_SMOKE_01] = 0;
-		m_pPositionOffset[TYPE_P_SWING_SMOKE_01] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_P_SWING_SMOKE_01] = _float3(1.f, 1.f, 1.f);
-		m_pRotationOffset[TYPE_P_SWING_SMOKE_01] = _float3(0.f, 0.f, 0.f);
-
-		m_pFrameTriger[TYPE_P_SWING_CIRCLES_01] = 0;
-		m_pPositionOffset[TYPE_P_SWING_CIRCLES_01] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_P_SWING_CIRCLES_01] = _float3(1.f, 1.f, 1.f);
-		m_pRotationOffset[TYPE_P_SWING_CIRCLES_01] = _float3(0.f, 0.f, 0.f);
-		//
-		m_pFrameTriger[TYPE_P_SWING_SMOKE_02] = 0;
-		m_pPositionOffset[TYPE_P_SWING_SMOKE_02] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_P_SWING_SMOKE_02] = _float3(1.f, 1.f, 1.f);
-		m_pRotationOffset[TYPE_P_SWING_SMOKE_02] = _float3(0.f, 0.f, 0.f);
-
-		m_pFrameTriger[TYPE_P_SWING_CIRCLES_02] = 0;
-		m_pPositionOffset[TYPE_P_SWING_CIRCLES_02] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_P_SWING_CIRCLES_02] = _float3(1.f, 1.f, 1.f);
-		m_pRotationOffset[TYPE_P_SWING_CIRCLES_02] = _float3(0.f, 0.f, 0.f);
-		//
-		m_pFrameTriger[TYPE_P_SWING_SMOKE_03] = 0;
-		m_pPositionOffset[TYPE_P_SWING_SMOKE_03] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_P_SWING_SMOKE_03] = _float3(1.f, 1.f, 1.f);
-		m_pRotationOffset[TYPE_P_SWING_SMOKE_03] = _float3(0.f, 0.f, 0.f);
-
-		m_pFrameTriger[TYPE_P_SWING_CIRCLES_03] = 0;
-		m_pPositionOffset[TYPE_P_SWING_CIRCLES_03] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_P_SWING_CIRCLES_03] = _float3(1.f, 1.f, 1.f);
-		m_pRotationOffset[TYPE_P_SWING_CIRCLES_03] = _float3(0.f, 0.f, 0.f);
-		//
-		m_pFrameTriger[TYPE_P_SWING_SMOKE_04] = 0;
-		m_pPositionOffset[TYPE_P_SWING_SMOKE_04] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_P_SWING_SMOKE_04] = _float3(1.f, 1.f, 1.f);
-		m_pRotationOffset[TYPE_P_SWING_SMOKE_04] = _float3(0.f, 0.f, 0.f);
-
-		m_pFrameTriger[TYPE_P_SWING_CIRCLES_04] = 0;
-		m_pPositionOffset[TYPE_P_SWING_CIRCLES_04] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_P_SWING_CIRCLES_04] = _float3(1.f, 1.f, 1.f);
-		m_pRotationOffset[TYPE_P_SWING_CIRCLES_04] = _float3(0.f, 0.f, 0.f);
-		//
-		m_pFrameTriger[TYPE_P_SWING_SMOKE_05] = 0;
-		m_pPositionOffset[TYPE_P_SWING_SMOKE_05] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_P_SWING_SMOKE_05] = _float3(1.f, 1.f, 1.f);
-		m_pRotationOffset[TYPE_P_SWING_SMOKE_05] = _float3(0.f, 0.f, 0.f);
-
-		m_pFrameTriger[TYPE_P_SWING_CIRCLES_05] = 0;
-		m_pPositionOffset[TYPE_P_SWING_CIRCLES_05] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_P_SWING_CIRCLES_05] = _float3(1.f, 1.f, 1.f);
-		m_pRotationOffset[TYPE_P_SWING_CIRCLES_05] = _float3(0.f, 0.f, 0.f);
-		//
-		m_pFrameTriger[TYPE_P_SWING_SMOKE_06] = 0;
-		m_pPositionOffset[TYPE_P_SWING_SMOKE_06] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_P_SWING_SMOKE_06] = _float3(1.f, 1.f, 1.f);
-		m_pRotationOffset[TYPE_P_SWING_SMOKE_06] = _float3(0.f, 0.f, 0.f);
-
-		m_pFrameTriger[TYPE_P_SWING_CIRCLES_06] = 0;
-		m_pPositionOffset[TYPE_P_SWING_CIRCLES_06] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_P_SWING_CIRCLES_06] = _float3(1.f, 1.f, 1.f);
-		m_pRotationOffset[TYPE_P_SWING_CIRCLES_06] = _float3(0.f, 0.f, 0.f);
-		//
-		m_pFrameTriger[TYPE_P_SWING_SMOKE_07] = 0;
-		m_pPositionOffset[TYPE_P_SWING_SMOKE_07] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_P_SWING_SMOKE_07] = _float3(1.f, 1.f, 1.f);
-		m_pRotationOffset[TYPE_P_SWING_SMOKE_07] = _float3(0.f, 0.f, 0.f);
-
-		m_pFrameTriger[TYPE_P_SWING_CIRCLES_07] = 0;
-		m_pPositionOffset[TYPE_P_SWING_CIRCLES_07] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_P_SWING_CIRCLES_07] = _float3(1.f, 1.f, 1.f);
-		m_pRotationOffset[TYPE_P_SWING_CIRCLES_07] = _float3(0.f, 0.f, 0.f);
-		//
-		m_pFrameTriger[TYPE_P_SWING_SMOKE_08] = 0;
-		m_pPositionOffset[TYPE_P_SWING_SMOKE_08] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_P_SWING_SMOKE_08] = _float3(1.f, 1.f, 1.f);
-		m_pRotationOffset[TYPE_P_SWING_SMOKE_08] = _float3(0.f, 0.f, 0.f);
-
-		m_pFrameTriger[TYPE_P_SWING_CIRCLES_08] = 30;
-		m_pPositionOffset[TYPE_P_SWING_CIRCLES_08] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_P_SWING_CIRCLES_08] = _float3(1.f, 1.f, 1.f);
-		m_pRotationOffset[TYPE_P_SWING_CIRCLES_08] = _float3(0.f, 0.f, 0.f);
 	}
 
 	{
-		m_pFrameTriger[TYPE_D_ATTACK_WARNING]    = 30;
+		// ------------------------------------------------------------------------
+		m_pFrameTriger[TYPE_P_SWING_SMOKE_01]    = 45;
+		m_pPositionOffset[TYPE_P_SWING_SMOKE_01] = _float3(0.f, 1.f, 3.f);
+		m_pScaleOffset[TYPE_P_SWING_SMOKE_01]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_P_SWING_SMOKE_01] = _float3(0.f, 0.f, 0.f);
+
+		m_pFrameTriger[TYPE_P_SWING_CIRCLES_01]    = 45;
+		m_pPositionOffset[TYPE_P_SWING_CIRCLES_01] = _float3(0.f, 1.f, 3.f);
+		m_pScaleOffset[TYPE_P_SWING_CIRCLES_01]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_P_SWING_CIRCLES_01] = _float3(0.f, 0.f, 0.f);
+		// ------------------------------------------------------------------------
+		m_pFrameTriger[TYPE_P_SWING_SMOKE_02]    = 47;
+		m_pPositionOffset[TYPE_P_SWING_SMOKE_02] = _float3(-1.5f, 1.f, 1.7f);
+		m_pScaleOffset[TYPE_P_SWING_SMOKE_02]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_P_SWING_SMOKE_02] = _float3(0.f, 0.f, 0.f);
+
+		m_pFrameTriger[TYPE_P_SWING_CIRCLES_02]    = 47;
+		m_pPositionOffset[TYPE_P_SWING_CIRCLES_02] = _float3(-1.5f, 1.f, 1.7f);
+		m_pScaleOffset[TYPE_P_SWING_CIRCLES_02]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_P_SWING_CIRCLES_02] = _float3(0.f, 0.f, 0.f);
+		// ------------------------------------------------------------------------
+		m_pFrameTriger[TYPE_P_SWING_SMOKE_03]    = 49;
+		m_pPositionOffset[TYPE_P_SWING_SMOKE_03] = _float3(-3.f, 1.f, 0.f);
+		m_pScaleOffset[TYPE_P_SWING_SMOKE_03]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_P_SWING_SMOKE_03] = _float3(0.f, 0.f, 0.f);
+
+		m_pFrameTriger[TYPE_P_SWING_CIRCLES_03]    = 49;
+		m_pPositionOffset[TYPE_P_SWING_CIRCLES_03] = _float3(-3.f, 1.f, 0.f);
+		m_pScaleOffset[TYPE_P_SWING_CIRCLES_03]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_P_SWING_CIRCLES_03] = _float3(0.f, 0.f, 0.f);
+		// ------------------------------------------------------------------------
+		m_pFrameTriger[TYPE_P_SWING_SMOKE_04]    = 51;
+		m_pPositionOffset[TYPE_P_SWING_SMOKE_04] = _float3(-1.5f, 1.f, -1.7f);
+		m_pScaleOffset[TYPE_P_SWING_SMOKE_04]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_P_SWING_SMOKE_04] = _float3(0.f, 0.f, 0.f);
+
+		m_pFrameTriger[TYPE_P_SWING_CIRCLES_04]    = 51;
+		m_pPositionOffset[TYPE_P_SWING_CIRCLES_04] = _float3(-1.5f, 1.f, -1.7f);
+		m_pScaleOffset[TYPE_P_SWING_CIRCLES_04]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_P_SWING_CIRCLES_04] = _float3(0.f, 0.f, 0.f);
+		// ------------------------------------------------------------------------
+		m_pFrameTriger[TYPE_P_SWING_SMOKE_05]    = 53;
+		m_pPositionOffset[TYPE_P_SWING_SMOKE_05] = _float3(0.f, 1.f, -3.f);
+		m_pScaleOffset[TYPE_P_SWING_SMOKE_05]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_P_SWING_SMOKE_05] = _float3(0.f, 0.f, 0.f);
+
+		m_pFrameTriger[TYPE_P_SWING_CIRCLES_05]    = 53;
+		m_pPositionOffset[TYPE_P_SWING_CIRCLES_05] = _float3(0.f, 1.f, -3.f);
+		m_pScaleOffset[TYPE_P_SWING_CIRCLES_05]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_P_SWING_CIRCLES_05] = _float3(0.f, 0.f, 0.f);
+		// ------------------------------------------------------------------------
+		m_pFrameTriger[TYPE_P_SWING_SMOKE_06]    = 55;
+		m_pPositionOffset[TYPE_P_SWING_SMOKE_06] = _float3(1.5f, 1.f, -1.7f);
+		m_pScaleOffset[TYPE_P_SWING_SMOKE_06]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_P_SWING_SMOKE_06] = _float3(0.f, 0.f, 0.f);
+
+		m_pFrameTriger[TYPE_P_SWING_CIRCLES_06]    = 55;
+		m_pPositionOffset[TYPE_P_SWING_CIRCLES_06] = _float3(1.5f, 1.f, -1.7f);
+		m_pScaleOffset[TYPE_P_SWING_CIRCLES_06]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_P_SWING_CIRCLES_06] = _float3(0.f, 0.f, 0.f);
+		// ------------------------------------------------------------------------
+		m_pFrameTriger[TYPE_P_SWING_SMOKE_07]    = 57;
+		m_pPositionOffset[TYPE_P_SWING_SMOKE_07] = _float3(3.f, 1.f, 0.f);
+		m_pScaleOffset[TYPE_P_SWING_SMOKE_07]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_P_SWING_SMOKE_07] = _float3(0.f, 0.f, 0.f);
+
+		m_pFrameTriger[TYPE_P_SWING_CIRCLES_07]    = 57;
+		m_pPositionOffset[TYPE_P_SWING_CIRCLES_07] = _float3(3.f, 1.f, 0.f);
+		m_pScaleOffset[TYPE_P_SWING_CIRCLES_07]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_P_SWING_CIRCLES_07] = _float3(0.f, 0.f, 0.f);
+		// ------------------------------------------------------------------------
+		m_pFrameTriger[TYPE_P_SWING_SMOKE_08]    = 59;
+		m_pPositionOffset[TYPE_P_SWING_SMOKE_08] = _float3(1.5f, 1.f, 1.7f);
+		m_pScaleOffset[TYPE_P_SWING_SMOKE_08]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_P_SWING_SMOKE_08] = _float3(0.f, 0.f, 0.f);
+
+		m_pFrameTriger[TYPE_P_SWING_CIRCLES_08]    = 59;
+		m_pPositionOffset[TYPE_P_SWING_CIRCLES_08] = _float3(1.5f, 1.f, 1.7f);
+		m_pScaleOffset[TYPE_P_SWING_CIRCLES_08]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_P_SWING_CIRCLES_08] = _float3(0.f, 0.f, 0.f);
+		// ------------------------------------------------------------------------
+	}
+
+	{
+		m_pFrameTriger[TYPE_D_ATTACK_WARNING]    = 75;
 		m_pPositionOffset[TYPE_D_ATTACK_WARNING] = _float3(0.f, 0.f, 0.3f);
 		m_pScaleOffset[TYPE_D_ATTACK_WARNING]    = _float3(7.f, 5.f, 7.f);
 		m_pRotationOffset[TYPE_D_ATTACK_WARNING] = _float3(0.f, 0.f, 0.f);
@@ -197,69 +201,99 @@ void CVfx_Glanix_Skill_SwingDown::Tick(_float fTimeDelta)
 		
 		else if (m_iCount == TYPE_P_SWING_SMOKE_01 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_SWING_SMOKE_01])
 		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Skill_TwoHandSwing_Smoke"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_SWING_SMOKE_01], m_pScaleOffset[TYPE_P_SWING_SMOKE_01], m_pRotationOffset[TYPE_P_SWING_SMOKE_01]);
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_P_SWING_CIRCLES_01 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_SWING_CIRCLES_01])
 		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Skill_HandDown_Circle"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_SWING_CIRCLES_01], m_pScaleOffset[TYPE_P_SWING_CIRCLES_01], m_pRotationOffset[TYPE_P_SWING_CIRCLES_01]);
 			m_iCount++;
 		}
 
 		else if (m_iCount == TYPE_P_SWING_SMOKE_02 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_SWING_SMOKE_02])
 		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Skill_TwoHandSwing_Smoke"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_SWING_SMOKE_02], m_pScaleOffset[TYPE_P_SWING_SMOKE_02], m_pRotationOffset[TYPE_P_SWING_SMOKE_02]);
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_P_SWING_CIRCLES_02 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_SWING_CIRCLES_02])
 		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Skill_HandDown_Circle"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_SWING_CIRCLES_02], m_pScaleOffset[TYPE_P_SWING_CIRCLES_02], m_pRotationOffset[TYPE_P_SWING_CIRCLES_02]);
 			m_iCount++;
 		}
 
 		else if (m_iCount == TYPE_P_SWING_SMOKE_03 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_SWING_SMOKE_03])
 		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Skill_TwoHandSwing_Smoke"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_SWING_SMOKE_03], m_pScaleOffset[TYPE_P_SWING_SMOKE_03], m_pRotationOffset[TYPE_P_SWING_SMOKE_03]);
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_P_SWING_CIRCLES_03 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_SWING_CIRCLES_03])
 		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Skill_HandDown_Circle"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_SWING_CIRCLES_03], m_pScaleOffset[TYPE_P_SWING_CIRCLES_03], m_pRotationOffset[TYPE_P_SWING_CIRCLES_03]);
 			m_iCount++;
 		}
 
 		else if (m_iCount == TYPE_P_SWING_SMOKE_04 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_SWING_SMOKE_04])
 		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Skill_TwoHandSwing_Smoke"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_SWING_SMOKE_04], m_pScaleOffset[TYPE_P_SWING_SMOKE_04], m_pRotationOffset[TYPE_P_SWING_SMOKE_04]);
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_P_SWING_CIRCLES_04 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_SWING_CIRCLES_04])
 		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Skill_HandDown_Circle"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_SWING_CIRCLES_04], m_pScaleOffset[TYPE_P_SWING_CIRCLES_04], m_pRotationOffset[TYPE_P_SWING_CIRCLES_04]);
 			m_iCount++;
 		}
 
 		else if (m_iCount == TYPE_P_SWING_SMOKE_05 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_SWING_SMOKE_05])
 		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Skill_TwoHandSwing_Smoke"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_SWING_SMOKE_05], m_pScaleOffset[TYPE_P_SWING_SMOKE_05], m_pRotationOffset[TYPE_P_SWING_SMOKE_05]);
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_P_SWING_CIRCLES_05 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_SWING_CIRCLES_05])
 		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Skill_HandDown_Circle"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_SWING_CIRCLES_05], m_pScaleOffset[TYPE_P_SWING_CIRCLES_05], m_pRotationOffset[TYPE_P_SWING_CIRCLES_05]);
 			m_iCount++;
 		}
 
 		else if (m_iCount == TYPE_P_SWING_SMOKE_06 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_SWING_SMOKE_06])
 		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Skill_TwoHandSwing_Smoke"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_SWING_SMOKE_06], m_pScaleOffset[TYPE_P_SWING_SMOKE_06], m_pRotationOffset[TYPE_P_SWING_SMOKE_06]);
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_P_SWING_CIRCLES_06 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_SWING_CIRCLES_06])
 		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Skill_HandDown_Circle"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_SWING_CIRCLES_06], m_pScaleOffset[TYPE_P_SWING_CIRCLES_06], m_pRotationOffset[TYPE_P_SWING_CIRCLES_06]);
 			m_iCount++;
 		}
 
 		else if (m_iCount == TYPE_P_SWING_SMOKE_07 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_SWING_SMOKE_07])
 		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Skill_TwoHandSwing_Smoke"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_SWING_SMOKE_07], m_pScaleOffset[TYPE_P_SWING_SMOKE_07], m_pRotationOffset[TYPE_P_SWING_SMOKE_07]);
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_P_SWING_CIRCLES_07 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_SWING_CIRCLES_07])
 		{
-			m_iCount++;
+		    GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Skill_HandDown_Circle"),
+		    	XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_SWING_CIRCLES_07], m_pScaleOffset[TYPE_P_SWING_CIRCLES_07], m_pRotationOffset[TYPE_P_SWING_CIRCLES_07]);
+		    m_iCount++;
 		}
 
 		else if (m_iCount == TYPE_P_SWING_SMOKE_08 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_SWING_SMOKE_08])
 		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Skill_TwoHandSwing_Smoke"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_SWING_SMOKE_08], m_pScaleOffset[TYPE_P_SWING_SMOKE_08], m_pRotationOffset[TYPE_P_SWING_SMOKE_08]);
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_P_SWING_CIRCLES_08 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_SWING_CIRCLES_08])
@@ -271,6 +305,8 @@ void CVfx_Glanix_Skill_SwingDown::Tick(_float fTimeDelta)
 			//	Safe_Release(m_pHand02Effect);
 			//}
 
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Skill_HandDown_Circle"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_SWING_CIRCLES_08], m_pScaleOffset[TYPE_P_SWING_CIRCLES_08], m_pRotationOffset[TYPE_P_SWING_CIRCLES_08]);
 			m_iCount++;
 		}
 		//
@@ -313,10 +349,10 @@ void CVfx_Glanix_Skill_SwingDown::Tick(_float fTimeDelta)
 		}
 		else if (m_iCount == TYPE_E_ATTACK_SPRINGUP && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_ATTACK_SPRINGUP])
 		{
-		GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Glanix_Skill_SwingDown_SpringUp"),
-			XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_ATTACK_SPRINGUP], m_pScaleOffset[TYPE_E_ATTACK_SPRINGUP], m_pRotationOffset[TYPE_E_ATTACK_SPRINGUP], nullptr, &m_SpringUpEffect, false);
-			Safe_AddRef(m_SpringUpEffect);
-			m_iCount++;
+		    GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Glanix_Skill_SwingDown_SpringUp"),
+		    	XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_ATTACK_SPRINGUP], m_pScaleOffset[TYPE_E_ATTACK_SPRINGUP], m_pRotationOffset[TYPE_E_ATTACK_SPRINGUP], nullptr, &m_SpringUpEffect, false);
+		    Safe_AddRef(m_SpringUpEffect);
+		    m_iCount++;
         }
 #pragma region CVfx_Glanix_Skill_FootDown
 		else if (m_iCount == TYPE_P_ATTACK_SMOKE && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_ATTACK_SMOKE])
