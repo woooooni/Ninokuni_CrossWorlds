@@ -338,7 +338,6 @@ VS_OUT VS_MAIN(VS_IN In)
 
     Out.vPosition = mul(vPosition, matWVP);
     Out.vWorldPosition = mul(vPosition, g_WorldMatrix);
-    Out.vWorldPosition = mul(vPosition, g_WorldMatrix);
     Out.vNormal = normalize(mul(vNormal, g_WorldMatrix));
     Out.vTangent = normalize(mul(vTangent, g_WorldMatrix)).xyz;
     Out.vBinormal = normalize(cross(Out.vNormal, Out.vTangent));
