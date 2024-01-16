@@ -13,6 +13,7 @@
 #include "UI_Fade.h"
 
 #include "GameInstance.h"
+#include "Particle_Manager.h"
 
 CGlanixState_IntroFinish::CGlanixState_IntroFinish(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
@@ -56,6 +57,17 @@ void CGlanixState_IntroFinish::Tick_State(_float fTimeDelta)
 	if (m_pModelCom->Get_CurrAnimationFrame() == 50)
 		CUI_Manager::GetInstance()->OnOff_BossNameTag(true);
 
+	// Effect Create
+	if (!m_bEffectCreate && m_pModelCom->Get_CurrAnimationFrame() >= 84)
+	{
+		m_bEffectCreate = true;
+
+		CTransform* pTransformCom = m_pGlanix->Get_Component<CTransform>(L"Com_Transform");
+		if (pTransformCom == nullptr)
+			return;
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_Atchi"), pTransformCom->Get_WorldMatrix(), _float3(1.f, 3.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
+	}
+
 	if (!m_pModelCom->Is_Tween() && m_pModelCom->Get_Progress() >= 0.95f && !m_bFadeOut)
 	{
 		/* Start Fade Out */
@@ -64,7 +76,6 @@ void CGlanixState_IntroFinish::Tick_State(_float fTimeDelta)
 
 		m_bFadeOut = true;
 	}
-
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
