@@ -92,13 +92,13 @@ void CCharacter::Tick(_float fTimeDelta)
 	//	GI->UnLock_Mouse();
 	//}
 
-	//if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::G))
-	//{
-	//	if (m_tStat.fSpeedWeight >= 10.f)
-	//		m_tStat.fSpeedWeight = 1.f;
-	//	else
-	//		m_tStat.fSpeedWeight = 10.f;
-	//}
+	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::G))
+	{
+		if (m_tStat.fSpeedWeight >= 10.f)
+			m_tStat.fSpeedWeight = 1.f;
+		else
+			m_tStat.fSpeedWeight = 10.f;
+	}
 
 	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::END_KEY))
 	{

@@ -84,8 +84,7 @@ HRESULT CLevel_IceLand::Initialize()
 		}
 	}
 
-	GI->Stop_Sound(CHANNELID::SOUND_BGM_CURR);
-	GI->Play_BGM(TEXT("BGM_Field_Village_Winter_Po_1.mp3"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR));
+	GI->Play_BGM(TEXT("BGM_Field_Village_Winter_Po_1.mp3"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR), false, BGM_START_FADEIN_DURATION);
 
 	if (false == g_bFirstEnter)
 	{

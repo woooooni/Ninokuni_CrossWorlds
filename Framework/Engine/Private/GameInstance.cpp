@@ -115,6 +115,7 @@ HRESULT CGameInstance::Initialize_Engine(_uint iNumLevels, _uint iNumLayerType,
 
 void CGameInstance::Priority_Tick(_float fTimeDelta)
 {
+	m_pSound_Manager->Tick(fTimeDelta);
 	m_pLevel_Manager->Check_NextLevel();
 	m_pInput_Device->Update();
 	m_pKey_Manager->Tick(fTimeDelta);
@@ -786,14 +787,14 @@ void CGameInstance::Play_Sound(const wstring& pSoundKey, CHANNELID eID, _float f
 	m_pSound_Manager->Play_Sound(pSoundKey, eID, fVolume, bStop, fCamDist);
 }
 
-void CGameInstance::Play_BGM(const wstring& pSoundKey, _float fVolume, _bool bStop)
+void CGameInstance::Play_BGM(const wstring& pSoundKey, _float fVolume, _bool bStop, _float fFadeDuration)
 {
-	m_pSound_Manager->Play_BGM(pSoundKey, fVolume, bStop);
+	m_pSound_Manager->Play_BGM(pSoundKey, fVolume, bStop, fFadeDuration);
 }
 
-void CGameInstance::Stop_Sound(CHANNELID eID)
+void CGameInstance::Stop_Sound(CHANNELID eID, const _float fFadeOutDuration)
 {
-	m_pSound_Manager->Stop_Sound(eID);
+	m_pSound_Manager->Stop_Sound(eID, fFadeOutDuration);
 }
 
 void CGameInstance::Stop_All()

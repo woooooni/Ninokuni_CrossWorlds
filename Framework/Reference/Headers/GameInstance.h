@@ -201,8 +201,8 @@ public:
 
 public:
 	void Play_Sound(const wstring& pSoundKey, CHANNELID eID, _float fVolume, _bool bStop = false, const _float fCamDist = 0.f);
-	void Play_BGM(const wstring& pSoundKey, _float fVolume, _bool bStop = false);
-	void Stop_Sound(CHANNELID eID);
+	void Play_BGM(const wstring& pSoundKey, _float fVolume, _bool bStop = false, _float fFadeDuration = 0.5f);
+	void Stop_Sound(CHANNELID eID, const _float fFadeOutDuration = 1.f);
 	void Stop_All();
 	void Set_AllChannelVolume(_float fVolume);
 	void Set_ChannelVolume(CHANNELID eID, float fVolume);

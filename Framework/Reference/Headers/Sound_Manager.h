@@ -10,8 +10,6 @@ class ENGINE_DLL CSound_Manager : public CBase
 {
 	DECLARE_SINGLETON(CSound_Manager)	
 
-
-
 private:
 	explicit CSound_Manager();
 	virtual  ~CSound_Manager();
@@ -19,10 +17,12 @@ private:
 public:
 	HRESULT Reserve_Manager();
 
+	void Tick(_float fTimeDelta);
+
 public:
 	void Play_Sound(wstring pSoundKey, CHANNELID eID, _float fVolume, _bool bStop = false, _float fCamDistance = 0.f);
-	void Play_BGM(wstring pSoundKey, _float fVolume, _bool bStop = false);
-	void Stop_Sound(CHANNELID eID);
+	void Play_BGM(wstring pSoundKey, _float fVolume, _bool bStop = false, _float fFadeDuration = 0.5f);
+	void Stop_Sound(CHANNELID eID, const _float fFadeOutDuration = 1.f);
 	void Stop_All();
 	void Set_ChannelVolume(CHANNELID eID, float fVolume);
 	void Set_AllChannelVolume(_float fVolume) 
@@ -44,6 +44,8 @@ private:
 	void Search_Recursive(const std::string& currentPath);
 	//void Load_SoundFile(const char* szSoundFilePath);
 	void Play_Foot(CHANNELID eID, _float fVolume);
+
+	void Tick_BgmBlending(_float fTimeDelta);
 	
 
 private:
@@ -57,6 +59,16 @@ private:
 
 	// 사운드 ,채널 객체 및 장치를 관리하는 객체 
 	FMOD_SYSTEM* m_pSystem;
+
+
+	// BGM 
+	_bool m_bInitBgm = false;
+	_bool m_bStopBgm = false;
+	_float m_fBgmFadeDuration = 0.5f; /* 0.5초동안 현재 브금의 볼륨을 줄인다. 다시 0.5초 동안 브금의 볼륨을 높인다.*/
+	_float m_fNextBgmVolume = 0.f;
+	FMOD_SOUND* m_pNextBgmKey = nullptr;
+	LERP_FLOAT_DESC m_tBgmVloumeDesc;
+
 
 public:
 	virtual void Free() override;
