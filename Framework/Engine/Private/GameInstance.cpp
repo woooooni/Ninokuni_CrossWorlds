@@ -781,9 +781,9 @@ HRESULT CGameInstance::Json_Save(const wstring& strFilePath, const Json& refJson
 	return CJsonUtils::Json_Save(strFilePath, refJsonFile);
 }
 
-void CGameInstance::Play_Sound(const wstring& pSoundKey, CHANNELID eID, _float fVolume, _bool bStop)
+void CGameInstance::Play_Sound(const wstring& pSoundKey, CHANNELID eID, _float fVolume, _bool bStop, const _float fCamDist)
 {
-	m_pSound_Manager->Play_Sound(pSoundKey, eID, fVolume, bStop);
+	m_pSound_Manager->Play_Sound(pSoundKey, eID, fVolume, bStop, fCamDist);
 }
 
 void CGameInstance::Play_BGM(const wstring& pSoundKey, _float fVolume, _bool bStop)

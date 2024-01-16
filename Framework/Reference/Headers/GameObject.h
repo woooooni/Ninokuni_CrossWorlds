@@ -95,6 +95,8 @@ public:
 	const _bool& IsQuestItem() const { return m_bIsQuestObject; }
 	void Set_QuestItem(_bool quest) { m_bIsQuestObject = quest; }
 
+	const _float& Get_CamDistance() const { return m_fCamDistance; }
+
 public:
 	vector<class CCollider*>& Get_Collider(_uint eDetectionType) { return m_Colliders[eDetectionType]; }
 	HRESULT Add_Collider(_uint iLevelIndex, _uint eColliderType, _uint eDetectionType, void* pArg);
