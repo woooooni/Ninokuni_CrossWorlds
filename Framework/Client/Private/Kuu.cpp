@@ -77,10 +77,26 @@ void CKuu::Tick(_float fTimeDelta)
 		Vec4 vReleativePos = m_pPlayerTransform->Get_RelativeOffset({ 1.f, m_fY, -0.3f, 1.f });
 		Vec4 vPlayerPos = m_pPlayerTransform->Get_Position();
 
+		/* Rotation */
 		m_pTransformCom->Set_WorldMatrix(m_pPlayerTransform->Get_WorldMatrix());
 
-		Vec4 vNewPos = vReleativePos + vPlayerPos;
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vNewPos, 1.f));
+		/* Damping */
+		{
+			Vec4 vGoalPos = vReleativePos + vPlayerPos;
+
+			if (Vec4::Zero == m_vCurPos || 5.f < Vec4::Distance(vGoalPos, m_vCurPos))
+			{
+				m_vCurPos = vGoalPos;
+			}
+			else
+			{
+				const Vec4 vDist = (vGoalPos.ZeroW() - m_vCurPos.ZeroW()) * m_fDampingCoefficient;
+				m_vCurPos += vDist;
+				m_vCurPos.y = vGoalPos.y;
+			}
+
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(m_vCurPos, 1.f));
+		}
 	}
 
 	/* Äí¿ì´Â rigidbody X */

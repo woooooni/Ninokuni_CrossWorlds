@@ -21,7 +21,7 @@ class CCamera_Follow final : public CCamera
 
 		Vec4	vCurPos;									/* 현재 카메라 포지션 */
 		Vec4	vTargetPos;									/* 목표 카메라 포지션 */
-		_float	fDampingCoefficient			= 0.025f;		/* 0 ~ 1 (값이 클수록 빨리 따라감)*/
+		_float	fDampingCoefficient			= 0.025f;		/* 144 프레임 기준 댐핑 계수 0 ~ 1 (값이 클수록 빨리 따라감)*/
 		_float	fDampingCoefficientBackMag	= 3.f;			/* 타겟의 룩과 카메라의 룩이 역방향일 경우 DampingCoeff에 곱해짐 (더 빨리 쫓아감) */
 		_float	fDampingBackLimitRad		= 1.57f;		/* 역방향임을 판단할 기준 각도 */
 

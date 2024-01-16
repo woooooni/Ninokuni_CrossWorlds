@@ -15,11 +15,11 @@ public:
 public:
 	typedef struct tagActionLobbyDesc
 	{
-		const _float fLerpTime		= 2.f;
+		const _float fLerpTime		= 1.7f;
 
 		const Vec4 vCamPosition		= { 3.12f, 2.23f, -16.f, 1.f };
 
-		const Vec4 vCamLookAtStart	= { -0.3f, 0.59f, 0.745f, 1.f };
+		const Vec4 vCamLookAtStart	= { -0.3f, 0.9f, 0.745f, 1.f };
 		const Vec4 vCamLookAtFinish = { 0.13f, 0.1f, 0.969f, 1.f };
 
 		LERP_VEC4_DESC vLerpCamLookAt;

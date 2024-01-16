@@ -56,6 +56,10 @@ private:
 	_float m_fY = 0.8f;
 	_bool  m_bIsUp = false;
 
+	/* Damping */
+	Vec4		 m_vCurPos = Vec4::Zero;
+	const _float m_fDampingCoefficient = 0.0275f; /* (144 프레임 기준 댐핑 계수 - 0과 1사이 범위를 갖으며, 값이 클수록 빨리 따라감)*/
+
 public:
 	static CKuu* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;
