@@ -400,6 +400,21 @@ namespace Engine
 
 			eMode = _eMode;
 		}
+		void Start(const _float _fTargetValue, const _float _fTime, const LERP_MODE _eMode = LERP_MODE::DEFAULT)
+		{
+			if (_fTime < 0)
+				return;
+
+			bActive = TRUE;
+
+			fCurTime = 0.f;
+			fEndTime = _fTime;
+
+			fStartValue = fCurValue;
+			fTargetValue = _fTargetValue;
+
+			eMode = _eMode;
+		}
 
 		void Clear()
 		{

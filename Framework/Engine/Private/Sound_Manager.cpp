@@ -47,6 +47,12 @@ HRESULT CSound_Manager::Reserve_Manager()
 	return S_OK;
 }
 
+void CSound_Manager::Tick(_float fTimeDelta)
+{
+	if (m_tBgmVloumeDesc.bActive)
+		Tick_BgmBlending(fTimeDelta);
+}
+
 
 void CSound_Manager::Play_Sound(wstring pSoundKey, CHANNELID eID, _float fVolume, _bool bStop, _float fCamDistance)
 {
@@ -96,30 +102,84 @@ void CSound_Manager::Play_Sound(wstring pSoundKey, CHANNELID eID, _float fVolume
 }
 
 
-void CSound_Manager::Play_BGM(wstring pSoundKey, _float fVolume, _bool bStop)
+void CSound_Manager::Play_BGM(wstring pSoundKey, _float fVolume, _bool bStop, _float fFadeDuration)
 {
-	map<wstring, FMOD_SOUND*>::iterator iter;
+	/* 만약 사운드 스탑 페이드가 진행되고 있다면 false */
+	if (m_bStopBgm)
+		m_bStopBgm = false;
 
-	iter = find_if(m_mapSound.begin(), m_mapSound.end(), [&](auto& iter)->bool
+	/* Set File */
+	{
+		map<wstring, FMOD_SOUND*>::iterator iter;
+
+		iter = find_if(m_mapSound.begin(), m_mapSound.end(), [&](auto& iter)->bool
+			{
+				return pSoundKey == iter.first;
+			});
+
+		if (iter == m_mapSound.end())
+			return;
+
+		m_pNextBgmKey = iter->second;
+	}
+
+	/* Set Volume */
+	{
+		m_fBgmFadeDuration = fFadeDuration;
+
+		_float fTargetVolume = 0.f;
+
+		if (!m_bInitBgm) /* 최초 실행 (페이드 인 시작) */
 		{
-			return pSoundKey == iter.first;
-		});
+			m_bInitBgm = true;
 
-	if (iter == m_mapSound.end())
-		return;
+			fTargetVolume = fVolume * m_fSoundVolumeArr[SOUND_BGM_CURR] * m_fAllChannelVolume;
 
-	if (true == bStop)
-		Stop_Sound(SOUND_BGM_CURR);
+			m_tBgmVloumeDesc.Start(fTargetVolume, m_fBgmFadeDuration, LERP_MODE::EASE_IN);
 
-	FMOD_System_PlaySound(m_pSystem, FMOD_CHANNEL_FREE, iter->second, FALSE, &m_pChannelArr[SOUND_BGM_CURR]);
+			fTargetVolume = 0.f;
+			FMOD_System_PlaySound(m_pSystem, FMOD_CHANNEL_FREE, m_pNextBgmKey, FALSE, &m_pChannelArr[SOUND_BGM_CURR]);
+		}
+		else /* 브금 체인지 */
+		{
+			m_fNextBgmVolume = fVolume * m_fSoundVolumeArr[SOUND_BGM_CURR] * m_fAllChannelVolume;
+
+			if (bStop || fFadeDuration <= 0.001f) /* 페이드 없이 바로 변경*/
+			{
+				FMOD_System_PlaySound(m_pSystem, FMOD_CHANNEL_FREE, m_pNextBgmKey, FALSE, &m_pChannelArr[SOUND_BGM_CURR]);
+				fTargetVolume = m_fNextBgmVolume;
+			}
+			else if (m_tBgmVloumeDesc.fCurValue < 0.01f) /* (페이드 아웃) 이전에 아무 브금이 없는 상태*/
+			{
+				m_tBgmVloumeDesc.Start(m_fNextBgmVolume, m_fBgmFadeDuration, LERP_MODE::EASE_IN);
+				fTargetVolume = 0.f;
+
+				FMOD_System_PlaySound(m_pSystem, FMOD_CHANNEL_FREE, m_pNextBgmKey, FALSE, &m_pChannelArr[SOUND_BGM_CURR]); /* 바로 브금 변경 */
+				m_pNextBgmKey = nullptr;
+			}
+			else /* (페이드 아웃) 이전에 브금이 있던 상태*/
+			{
+				m_tBgmVloumeDesc.Start(0.f, m_fBgmFadeDuration, LERP_MODE::EASE_IN);
+				fTargetVolume = m_tBgmVloumeDesc.fCurValue;
+			}
+		}
+		FMOD_Channel_SetVolume(m_pChannelArr[SOUND_BGM_CURR], fTargetVolume);
+	}
+
 	FMOD_Channel_SetMode(m_pChannelArr[SOUND_BGM_CURR], FMOD_LOOP_NORMAL);
-	FMOD_Channel_SetVolume(m_pChannelArr[SOUND_BGM_CURR], fVolume * m_fSoundVolumeArr[SOUND_BGM_CURR] * m_fAllChannelVolume);
 	FMOD_System_Update(m_pSystem);
 }
 
-void CSound_Manager::Stop_Sound(CHANNELID eID)
+void CSound_Manager::Stop_Sound(CHANNELID eID, const _float fFadeOutDuration)
 {
-	FMOD_Channel_Stop(m_pChannelArr[eID]);
+	if (SOUND_BGM_CURR == eID && 0.01f < fFadeOutDuration)
+	{
+		/* 페이드 아웃 시작*/
+		m_tBgmVloumeDesc.Start(0.f, fFadeOutDuration, LERP_MODE::SMOOTHER_STEP);
+		m_bStopBgm = true;
+	}
+	else
+		FMOD_Channel_Stop(m_pChannelArr[eID]);
 }
 
 void CSound_Manager::Stop_All()
@@ -249,6 +309,33 @@ void CSound_Manager::Play_Foot(CHANNELID eID, _float fVolume)
 	FMOD_System_PlaySound(m_pSystem, FMOD_CHANNEL_FREE, iter->second, FALSE, &m_pChannelArr[eID]);
 	FMOD_Channel_SetVolume(m_pChannelArr[eID], fVolume);
 	FMOD_System_Update(m_pSystem);
+}
+
+void CSound_Manager::Tick_BgmBlending(_float fTimeDelta)
+{		
+	m_tBgmVloumeDesc.Update(fTimeDelta);
+
+	if (!m_tBgmVloumeDesc.bActive)
+	{
+		if (m_bStopBgm) /* Bgm Stop의 경우 */
+			m_bStopBgm = false;
+		else if (m_tBgmVloumeDesc.fCurValue < 0.1f) /* Bgm Change 페이드 아웃 종료*/
+		{
+			if (nullptr != m_pNextBgmKey)
+			{
+				/* 페이드 인 시작 */
+				m_tBgmVloumeDesc.Start(m_fNextBgmVolume, m_fBgmFadeDuration, LERP_MODE::EASE_IN);
+
+				/* 다음 bgm 세팅 */
+				FMOD_System_PlaySound(m_pSystem, FMOD_CHANNEL_FREE, m_pNextBgmKey, FALSE, &m_pChannelArr[SOUND_BGM_CURR]);
+				FMOD_System_Update(m_pSystem);
+
+				m_pNextBgmKey = nullptr;
+			}
+		}
+	}
+
+	FMOD_Channel_SetVolume(m_pChannelArr[SOUND_BGM_CURR], m_tBgmVloumeDesc.fCurValue);
 }
 
 //void CSound_Manager::Load_SoundFile(const char* szSoundFilePath)

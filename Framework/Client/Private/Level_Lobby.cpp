@@ -44,8 +44,7 @@ HRESULT CLevel_Lobby::Initialize()
 	if (FAILED(Ready_Light(TEXT("Lobby Light"))))
 		return E_FAIL;
 
-	GI->Stop_Sound(CHANNELID::SOUND_BGM_CURR);
-	GI->Play_BGM(TEXT("BGM_Scene_CharacterSelect_1.mp3"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR));
+	GI->Play_BGM(TEXT("BGM_Scene_CharacterSelect_1.mp3"), GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR), false, BGM_START_FADEIN_DURATION);
 
 	return S_OK;
 }

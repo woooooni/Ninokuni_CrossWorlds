@@ -504,7 +504,7 @@ void CAnimation::Update_Animation_Speed(_float fTickPerSecond, const TWEEN_DESC&
 
 void CAnimation::Update_Animation_Event(_float fTickPerSecond, const TWEEN_DESC& tDesc)
 {
-	if (nullptr != m_pModel && nullptr != m_pModel->Get_Owner())
+	if (nullptr == m_pModel || nullptr == m_pModel->Get_Owner())
 		return;
 
 	/* 트윈중이라면 다음 애니메이션 키프레임 기준으로 동작하도록 한다. */
