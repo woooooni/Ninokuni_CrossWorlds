@@ -196,6 +196,7 @@ private:
 
 	class CUI_CharacterDummy*	m_pDummy = { nullptr };
 	class CUI_CostumeTab_Map*	m_pCustomMap = { nullptr };
+	class CMirror*				m_pCostumeMirror = { nullptr };
 	class CMonster*				m_pHPBarOwner = { nullptr };
 
 private:

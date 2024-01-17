@@ -1,5 +1,4 @@
 #include "Engine_Shader_Defines.hpp"
-
 Texture2D ShaderTexture : register(t0);
 
 cbuffer MatrixBuffer : register(b0)
