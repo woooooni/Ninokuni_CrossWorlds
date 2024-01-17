@@ -24,10 +24,9 @@ private:
 		// ---------------------------------
 		TYPE_ET3_1_D_CRACK,
 		TYPE_ET3_1_P_SMOKE,
-		TYPE_ET3_1_P_CIRCLES, 
+		TYPE_ET3_1_P_CIRCLES,
 
 		TYPE_ET3_2_E_SPRINGUP,
-		TYPE_ET3_2_P_SMOKE,
 		TYPE_ET3_2_P_CIRCLES,
 
 		TYPE_END
@@ -52,6 +51,8 @@ private:
 	_bool m_bEvent_1 = false;
 	_bool m_bEvent_2 = false;
 	_bool m_bEvent_3 = false;
+
+	class CEffect* m_pEv3_SpringUp = nullptr;
 
 public:
 	static CVfx_Glanix_Skill_IceThrow* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,

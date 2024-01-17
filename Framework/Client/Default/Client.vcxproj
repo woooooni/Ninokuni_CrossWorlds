@@ -736,6 +736,7 @@
     <ClInclude Include="..\Public\Vfx_Glanix_Skill_FootDown.h" />
     <ClInclude Include="..\Public\Vfx_Glanix_Skill_FourHandSwing.h" />
     <ClInclude Include="..\Public\Vfx_Glanix_Skill_HandDown.h" />
+    <ClInclude Include="..\Public\Vfx_Glanix_Skill_IceBall.h" />
     <ClInclude Include="..\Public\Vfx_Glanix_Skill_IceThrow.h" />
     <ClInclude Include="..\Public\Vfx_Glanix_Skill_JumpDown.h" />
     <ClInclude Include="..\Public\Vfx_Glanix_Skill_Rush.h" />
@@ -1463,6 +1464,7 @@
     <ClCompile Include="..\Private\Vfx_Glanix_Skill_FootDown.cpp" />
     <ClCompile Include="..\Private\Vfx_Glanix_Skill_FourHandSwing.cpp" />
     <ClCompile Include="..\Private\Vfx_Glanix_Skill_HandDown.cpp" />
+    <ClCompile Include="..\Private\Vfx_Glanix_Skill_IceBall.cpp" />
     <ClCompile Include="..\Private\Vfx_Glanix_Skill_IceThrow.cpp" />
     <ClCompile Include="..\Private\Vfx_Glanix_Skill_JumpDown.cpp" />
     <ClCompile Include="..\Private\Vfx_Glanix_Skill_Rush.cpp" />

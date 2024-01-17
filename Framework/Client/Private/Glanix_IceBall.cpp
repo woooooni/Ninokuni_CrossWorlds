@@ -5,6 +5,8 @@
 #include "Trail.h"
 
 #include "Glanix.h"
+#include "Particle_Manager.h"
+#include "Utils.h"
 
 CGlanix_IceBall::CGlanix_IceBall(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CMonsterProjectile(pDevice, pContext, strObjectTag)
@@ -63,6 +65,9 @@ void CGlanix_IceBall::Tick(_float fTimeDelta)
 		Set_Dead(true);
 	}
 
+	// EffectCreate
+	GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fEffectAcc, CUtils::Random_Float(0.2f, 0.4f), fTimeDelta,
+		TEXT("Particle_Glanix_Skill_IceBall_Circle"), this, _float3(0.f, 0.f, -0.2f));
 }
 
 void CGlanix_IceBall::LateTick(_float fTimeDelta)

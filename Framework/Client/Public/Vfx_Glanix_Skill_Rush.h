@@ -27,37 +27,35 @@ private:
 		TYPE_ET2_3_P_SMOKE_R,
 		TYPE_ET2_3_P_CIRCLES_R,
 		// ---------------------------
-		TYPE_ET3_1_E_SPRINGUP,
 		TYPE_ET3_1_P_SMOKE,
 		TYPE_ET3_1_P_CIRCLES,
 		
-		TYPE_ET3_2_E_SPRINGUP,
 		TYPE_ET3_2_P_SMOKE,
 		TYPE_ET3_2_P_CIRCLES,
 
-		TYPE_ET3_3_E_SPRINGUP,
 		TYPE_ET3_3_P_SMOKE,
 		TYPE_ET3_3_P_CIRCLES,
 
-		TYPE_ET3_4_E_SPRINGUP,
 		TYPE_ET3_4_P_SMOKE,
 		TYPE_ET3_4_P_CIRCLES,
 
-		TYPE_ET3_5_E_SPRINGUP,
 		TYPE_ET3_5_P_SMOKE,
 		TYPE_ET3_5_P_CIRCLES,
 
-		TYPE_ET3_6_E_SPRINGUP,
 		TYPE_ET3_6_P_SMOKE,
 		TYPE_ET3_6_P_CIRCLES,
 
-		TYPE_ET3_7_E_SPRINGUP,
 		TYPE_ET3_7_P_SMOKE,
 		TYPE_ET3_7_P_CIRCLES,
 
-		TYPE_ET3_8_E_SPRINGUP,
 		TYPE_ET3_8_P_SMOKE,
 		TYPE_ET3_8_P_CIRCLES,
+
+		TYPE_ET3_9_P_SMOKE,
+		TYPE_ET3_9_P_CIRCLES,
+
+		TYPE_ET3_10_P_SMOKE,
+		TYPE_ET3_10_P_CIRCLES,
 
 		TYPE_END
 	};
@@ -76,6 +74,10 @@ public:
 
 protected:
 	virtual HRESULT Ready_Components() override;
+
+private:
+	void Set_Et3_SmokeParticle(TYPE eType);
+	void Set_Et3_CirclesParticle(TYPE eType);
 
 private:
 	_bool m_bEvent_1 = false;

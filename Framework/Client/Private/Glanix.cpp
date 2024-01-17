@@ -148,8 +148,8 @@ void CGlanix::Tick(_float fTimeDelta)
 		m_tStat.fHp -= m_tStat.fMaxHp * 0.1f;
 
 #ifdef _DEBUG
-	if (LEVELID::LEVEL_TOOL == GI->Get_CurrentLevel() && KEY_TAP(KEY::L))
-		m_pStateCom->Change_State(GLANIX_SPINBOMBBOMB);
+	if (LEVELID::LEVEL_TOOL == GI->Get_CurrentLevel() && KEY_TAP(KEY::M))
+		m_pStateCom->Change_State(GLANIX_SNOWBALL);
 #endif // DEBUG
 
 	m_pStateCom->Tick_State(fTimeDelta);
