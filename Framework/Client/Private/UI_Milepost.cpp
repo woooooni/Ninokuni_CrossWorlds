@@ -291,7 +291,7 @@ HRESULT CUI_Milepost::Bind_ShaderResources()
 
 void CUI_Milepost::Rotation_Arrow()
 {
-	// 카메라의 룩과 플레이어와 목적지의 방향벡터를 내적
+	// 카메라의 룩과 카메라와 목적지의 방향벡터를 내적
 	CCamera* pCurCamera = CCamera_Manager::GetInstance()->Get_CurCamera();
 	if (nullptr == pCurCamera)
 		return;
@@ -299,48 +299,33 @@ void CUI_Milepost::Rotation_Arrow()
 	if (nullptr == pCameraTrans)
 		return;
 	_vector vCameraForward = pCameraTrans->Get_State(CTransform::STATE_LOOK);
-	vCameraForward = XMVector3Normalize(vCameraForward);
+	vCameraForward = XMVector3Normalize(XMVectorSetY(vCameraForward, 0.f));
 
 	CTransform* pPlayerTransform = m_pPlayer->Get_Component<CTransform>(L"Com_Transform");
 	if (nullptr == pPlayerTransform)
 		return;
 
-//	_vector vPlayerLook = pPlayerTransform->Get_State(CTransform::STATE_LOOK);
-//	vPlayerLook = XMVector3Normalize(vPlayerLook);
-
-	/*
 	_vector vTargetPosition = XMLoadFloat4(&m_vTargetPos);
 
-	_vector vTemp = XMVector3Normalize(XMVectorSetY(vTargetPosition, 0.f) - XMVectorSetY(pPlayerTransform->Get_Position(), 0.f));
-	vTemp = XMVector3Normalize(vTemp);
+	_vector vDir = XMVector3Normalize(vTargetPosition - pCameraTrans->Get_Position());
+	vDir = XMVector3Normalize(vDir);
 	
-	_float fDot = XMVectorGetX(XMVector3Dot(XMVectorSetY(vCameraForward, 0.f), vTemp));
+	_float fDot = XMVectorGetX(XMVector3Dot(vCameraForward, vDir));
 	_float fRadian = acos(fDot);
-	_float fDegree = fRadian * 180.f / XM_PI;
-
+	_float fDegree = XMConvertToDegrees(fRadian);
+//
+//	if (fDot < 0.f)
+//	{
+//		fDegree = 360.f - fDegree;
+//	}
+	_float fAxis = 1.f;
 	if (fRadian < 0.f)
-	{
-		fDegree *= -1.f;
-	}
+		fAxis *= 1.f;
 
-	m_pTransformCom->Rotation(XMVectorSet(0.f, 0.f, 1.f, 0.f), XMConvertToRadians(fDegree));
-	*/
+//	if (0.f >= fDegree)
+//		fDegree += 360.f;
 
-	_vector vTargetPosition = XMLoadFloat4(&m_vTargetPos);
-
-	_vector vTemp = XMVector3Normalize(XMVectorSetY(vTargetPosition, 0.f) - XMVectorSetY(pPlayerTransform->Get_Position(), 0.f));
-	vTemp = XMVector3Normalize(vTemp);
-	
-	_float fDot = XMVectorGetX(XMVector3Dot(XMVectorSet(0.f, 0.f, 1.f, 0.f), vTemp));
-	_float fRadian = acos(fDot);
-	_float fDegree = fRadian * 180.f / XM_PI;
-
-	if (fRadian < 0.f)
-	{
-		fDegree *= -1.f;
-	}
-
-	m_pTransformCom->Rotation(XMVectorSet(0.f, 0.f, 1.f, 0.f), fDot);
+	m_pTransformCom->Rotation(XMVectorSet(0.f, 0.f, fAxis, 0.f), XMConvertToRadians(fDegree));
 }
 
 CUI_Milepost* CUI_Milepost::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_MILEPOST eType)

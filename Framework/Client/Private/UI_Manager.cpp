@@ -491,6 +491,11 @@ _bool CUI_Manager::Is_QuestRewardWindowOff()
 	return m_QuestReward[0]->Get_Active();
 }
 
+_bool CUI_Manager::Is_LoadingDone()
+{
+	return _bool();
+}
+
 HRESULT CUI_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	m_pDevice = pDevice;
