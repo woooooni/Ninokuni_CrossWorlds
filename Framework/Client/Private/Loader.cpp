@@ -62,6 +62,7 @@
 #include "Player.h"
 
 #include "Kuu.h"
+#include "Engineer_Npc.h"
 
 #include "Door_Enter_FX.h"
 #include "HumanFAT01.h"
@@ -692,11 +693,32 @@ HRESULT CLoader::Loading_For_Level_Tool()
 
 
 
-	if (false == g_bFirstLoading)
+	switch (g_eLoadCharacter)
+	{
+	case Client::SWORDMAN_CH:
 	{
 		m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::SWORD_MAN);
-		/*m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);
-		m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);*/
+	}
+	break;
+	case Client::DESTROYER_CH:
+	{
+		m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);
+	}
+	break;
+	case Client::ENGINEER_CH:
+	{
+		m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);
+	}
+	break;
+	case Client::ALL_CH:
+	{
+		m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::SWORD_MAN);
+		m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);
+		m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);
+	}
+	break;
+	default:
+		break;
 	}
 		
 
@@ -1329,6 +1351,9 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 
 
 	// NPC
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Engineer_Npc", CEngineer_Npc::Create(m_pDevice, m_pContext, TEXT("Engineer_Npc")), LAYER_NPC, true)))
+		return E_FAIL;
+
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanFAT01", CHumanFAT01::Create(m_pDevice, m_pContext, TEXT("HumanFAT01")), LAYER_NPC, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_MouseFolkFat01", CMouseFolkFat01::Create(m_pDevice, m_pContext, TEXT("MouseFolkFat01")), LAYER_NPC, true)))

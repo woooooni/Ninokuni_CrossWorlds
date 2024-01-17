@@ -15,6 +15,7 @@
 #include "SubQuestNode_Windmill10.h"
 #include "SubQuestNode_Windmill11.h"
 #include "SubQuestNode_Windmill12.h"
+#include "SubQuestNode_Windmill13.h"
 
 CSubQuest_Windmill::CSubQuest_Windmill()
 {
@@ -40,6 +41,7 @@ HRESULT CSubQuest_Windmill::Initialize()
 	CSubQuestNode_Windmill10* pSubQuest_Windmill10 = CSubQuestNode_Windmill10::Create();
 	CSubQuestNode_Windmill11* pSubQuest_Windmill11 = CSubQuestNode_Windmill11::Create();
 	CSubQuestNode_Windmill12* pSubQuest_Windmill12 = CSubQuestNode_Windmill12::Create();
+	CSubQuestNode_Windmill13* pSubQuest_Windmill13 = CSubQuestNode_Windmill13::Create();
 
 	m_pRootNode->Add_ChildNode(pSubQuest_Windmill01);
 	m_pRootNode->Add_ChildNode(pSubQuest_Windmill02);
@@ -53,6 +55,7 @@ HRESULT CSubQuest_Windmill::Initialize()
 	m_pRootNode->Add_ChildNode(pSubQuest_Windmill10);
 	m_pRootNode->Add_ChildNode(pSubQuest_Windmill11);
 	m_pRootNode->Add_ChildNode(pSubQuest_Windmill12);
+	m_pRootNode->Add_ChildNode(pSubQuest_Windmill13);
 
 	return S_OK;
 }

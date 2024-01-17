@@ -16,22 +16,21 @@ HRESULT CSubQuestNode_Windmill05::Initialize()
 
 	m_strQuestTag = TEXT("[서브]");
 	m_strQuestName = TEXT("풍차 수리");
-	m_strQuestContent = TEXT("미정(뭔가하겠지)");
+	m_strQuestContent = TEXT("괴짜 소녀를 찾기");
 
 	m_strNextQuestTag = TEXT("[서브]");
 	m_strNextQuestName = TEXT("풍차 수리");
-	m_strNextQuestContent = TEXT("비어드에게 돌아가기");
+	m_strNextQuestContent = TEXT("괴짜 소녀를 찾기");
 
 	return S_OK;
 }
 
 void CSubQuestNode_Windmill05::Start()
 {
-	//m_pChloe = dynamic_cast<CChloe*>(GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Chloe")));
-	//Vec4 vSpotPos = Set_DestSpot(m_pChloe);
-	//
-	//// 임시로 monster에 
-	//m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_MONSTER), &vSpotPos));
+	m_pGeekGirl = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Engineer_Dummy"));
+	Vec4 vSpotPos = Set_DestSpot(m_pGeekGirl);
+
+	m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_MONSTER), &vSpotPos));
 }
 
 CBTNode::NODE_STATE CSubQuestNode_Windmill05::Tick(const _float& fTimeDelta)
@@ -39,13 +38,26 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill05::Tick(const _float& fTimeDelta)
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 
-	// 미정 퀘스트 완료해야 하나 임시로 일단 키 입력으로 넘어가자.
-	if (KEY_TAP(KEY::N))
+	if (GI->Get_CurrentLevel() == LEVEL_EVERMORE)
 	{
-		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+		if (m_pQuestDestSpot != nullptr)
+		{
+			m_pQuestDestSpot->Tick(fTimeDelta);
+			m_pQuestDestSpot->LateTick(fTimeDelta);
 
-		m_bIsClear = true;
-		return NODE_STATE::NODE_FAIL;
+			if (m_pQuestDestSpot != nullptr)
+			{
+				if (m_pQuestDestSpot->Get_IsCol())
+				{
+					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+
+					m_bIsClear = true;
+					m_pQuestDestSpot->Set_ReadyDelete(true);
+					Safe_Release(m_pQuestDestSpot);
+					return NODE_STATE::NODE_FAIL;
+				}
+			}
+		}
 	}
 
 	return NODE_STATE::NODE_RUNNING;

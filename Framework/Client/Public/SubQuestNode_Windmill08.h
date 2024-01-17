@@ -15,7 +15,11 @@ public:
 	virtual void	LateTick(const _float& fTimeDelta);
 
 private:
-	CGameObject* m_pVerde = nullptr;
+	virtual void    TalkEvent();
+
+private:
+	CGameObject* m_pEngineer = nullptr;
+	CGameObject* m_pKuu = nullptr;
 
 public:
 	static CSubQuestNode_Windmill08* Create();
