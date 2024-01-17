@@ -138,6 +138,8 @@ public:
 		_float*  pBlurPower = nullptr;
 #pragma endregion
 
+		_bool* pRigidbody = nullptr;
+
 	} PARTICLE_BUFFER_DESC;
 
 public:
@@ -221,46 +223,65 @@ public:
 
 	} PARTICLE_SHADER_DESC;
 
+	typedef struct tagParticleRigidbodyDesc
+	{
+
+		_vector m_vForce    = {}; // 크기, 방향
+		_vector m_vAccel    = {}; // 가속도
+		_vector m_vVelocity = {}; // 속도(크기:속력,방향)
+
+		_vector m_vMaxVelocity = XMVectorSet(10.f, 30.f, 10.f, 0.f); // 최대 속력 = 트랜스폼 이동 속도
+		_float  m_fMass        = { 1.f }; // 질량
+		_float  m_fFricCoeff   = { 5.f }; // 마찰 계수
+
+		_vector m_vForceA    = {}; // 크기, 방향
+		_vector m_vAccelA    = {}; // 추가 가속도
+		_vector m_vVelocityA = {}; // 속도(크기:속력,방향)
+
+	} PARTICLE_RIGIDBODY_DESC;
+
 private:
 	CVIBuffer_Particle(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CVIBuffer_Particle(const CVIBuffer_Particle& rhs);
 	virtual ~CVIBuffer_Particle() = default;
 
 public:
+	vector<PARTICLE_SHADER_DESC>& Get_ParticleShaderInfo() { return m_vecParticleShaderDesc; }
+	_bool Get_Finished() { return m_bFinished; }
+
+public:
+	void Restart_ParticleBufferDesc(_uint iCount);
+	void Sort_Z(_uint iCount);
+
+public:
 	virtual HRESULT Initialize_Prototype();
 	virtual HRESULT Initialize(void* pArg);
 	void Tick(_float fTimeDelta);
 	virtual HRESULT Render(_uint iCount);
-	
-	void Sort_Z(_uint iCount);
 
-public:
-	void Restart_ParticleBufferDesc(_uint iCount);
-	vector<PARTICLE_SHADER_DESC>& Get_ParticleShaderInfo() { return m_vecParticleShaderDesc; }
+private:
+	ID3D11Buffer* m_pVBInstance = { nullptr };
+	VTXINSTANCE* m_pVertices = { nullptr };
 
-	_bool Get_Finished() { return m_bFinished; }
-
-protected:
 	class CPipeLine* m_pPipeLine = { nullptr };
+
+private:
+	_bool m_bFinished = { false };
 
 	_uint m_iStrideInstance = { 0 };
 	_uint m_iNumInstance    = { 0 }; // 파티클 개수
-
-	ID3D11Buffer* m_pVBInstance = { nullptr };
-	VTXINSTANCE*  m_pVertices = { nullptr };
-
-protected:
-	PARTICLE_BUFFER_DESC m_tParticleDesc;
-
 	_uint m_iMaxCount = 1000;
+
+	PARTICLE_BUFFER_DESC m_tParticleDesc;
 	vector<PARTICLE_INFO_DESC>   m_vecParticleInfoDesc;
 	vector<PARTICLE_SHADER_DESC> m_vecParticleShaderDesc;
 
-	_bool m_bFinished = { false };
+	vector<PARTICLE_RIGIDBODY_DESC> m_vecParticleRigidbodyDesc;
 
 private:
 	_float4 Get_NewPosition_Particle();
 	_float4 Get_NewVelocity_Particle();
+	void Tick_Rigidbody(_float fTimeDelta, _uint iParticleID);
 
 public:
 	static CVIBuffer_Particle* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

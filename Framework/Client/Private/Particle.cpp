@@ -155,7 +155,7 @@ void CParticle::LateTick(_float fTimeDelta)
 			vFinalPosition += m_pTransformCom->Get_State(CTransform::STATE_RIGHT) * m_vLocalPos.x;
 			vFinalPosition += m_pTransformCom->Get_State(CTransform::STATE_UP) * m_vLocalPos.y;
 			vFinalPosition += m_pTransformCom->Get_State(CTransform::STATE_LOOK) * m_vLocalPos.z;
-			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(XMVectorGetX(vFinalPosition) + m_vOffsetPos.x, XMVectorGetY(vFinalPosition) + m_vOffsetPos.y, XMVectorGetZ(vFinalPosition) + m_vOffsetPos.z, 1.f));
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(XMVectorGetX(vFinalPosition) + m_vAddOffsetPos.x, XMVectorGetY(vFinalPosition) + m_vAddOffsetPos.y, XMVectorGetZ(vFinalPosition) + m_vAddOffsetPos.z, 1.f));
 		}
 	}
 
@@ -378,6 +378,7 @@ void* CParticle::Get_ParticleBufferInfo()
 	tBufferInfo.pBlurPowerRandom  = &m_tParticleDesc.bBlurPowerRandom;
 	tBufferInfo.pBlurPower        = &m_tParticleDesc.fBlurPower;
 
+	tBufferInfo.pRigidbody = &m_bRigidbody;
 
 	return &tBufferInfo;
 }

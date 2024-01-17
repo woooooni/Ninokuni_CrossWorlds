@@ -1,21 +1,21 @@
 #include "stdafx.h"
-#include "Vfx_Glanix_Skill_IceBall.h"
+#include "Vfx_Glanix_Skill_IcePillar.h"
 
 #include "Particle_Manager.h"
 #include "Effect_Manager.h"
 #include "Glanix.h"
 
-CVfx_Glanix_Skill_IceBall::CVfx_Glanix_Skill_IceBall(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
+CVfx_Glanix_Skill_IcePillar::CVfx_Glanix_Skill_IcePillar(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
 {
 }
 
-CVfx_Glanix_Skill_IceBall::CVfx_Glanix_Skill_IceBall(const CVfx_Glanix_Skill_IceBall& rhs)
+CVfx_Glanix_Skill_IcePillar::CVfx_Glanix_Skill_IcePillar(const CVfx_Glanix_Skill_IcePillar& rhs)
 	: CVfx(rhs)
 {
 }
 
-HRESULT CVfx_Glanix_Skill_IceBall::Initialize_Prototype()
+HRESULT CVfx_Glanix_Skill_IcePillar::Initialize_Prototype()
 {
 	m_bOwnerStateIndex = CGlanix::GLANIX_ATTACK2;
 
@@ -33,12 +33,12 @@ HRESULT CVfx_Glanix_Skill_IceBall::Initialize_Prototype()
  	return S_OK;
 }
 
-HRESULT CVfx_Glanix_Skill_IceBall::Initialize(void* pArg)
+HRESULT CVfx_Glanix_Skill_IcePillar::Initialize(void* pArg)
 {
 	return S_OK;
 }
 
-void CVfx_Glanix_Skill_IceBall::Tick(_float fTimeDelta)
+void CVfx_Glanix_Skill_IcePillar::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
@@ -56,40 +56,40 @@ void CVfx_Glanix_Skill_IceBall::Tick(_float fTimeDelta)
 	}
 }
 
-void CVfx_Glanix_Skill_IceBall::LateTick(_float fTimeDelta)
+void CVfx_Glanix_Skill_IcePillar::LateTick(_float fTimeDelta)
 {
 }
 
-HRESULT CVfx_Glanix_Skill_IceBall::Render()
+HRESULT CVfx_Glanix_Skill_IcePillar::Render()
 {
 	return S_OK;
 }
 
-HRESULT CVfx_Glanix_Skill_IceBall::Ready_Components()
+HRESULT CVfx_Glanix_Skill_IcePillar::Ready_Components()
 {
 	return S_OK;
 }
 
-CVfx_Glanix_Skill_IceBall* CVfx_Glanix_Skill_IceBall::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
+CVfx_Glanix_Skill_IcePillar* CVfx_Glanix_Skill_IcePillar::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 {
-	CVfx_Glanix_Skill_IceBall* pInstance = new CVfx_Glanix_Skill_IceBall(pDevice, pContext, strObjectTag);
+	CVfx_Glanix_Skill_IcePillar* pInstance = new CVfx_Glanix_Skill_IcePillar(pDevice, pContext, strObjectTag);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX("Failed to Created : CVfx_Glanix_Skill_IceBall");
+		MSG_BOX("Failed to Created : CVfx_Glanix_Skill_IcePillar");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CVfx_Glanix_Skill_IceBall::Clone(void* pArg)
+CGameObject* CVfx_Glanix_Skill_IcePillar::Clone(void* pArg)
 {
-	CVfx_Glanix_Skill_IceBall* pInstance = new CVfx_Glanix_Skill_IceBall(*this);
+	CVfx_Glanix_Skill_IcePillar* pInstance = new CVfx_Glanix_Skill_IcePillar(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Failed to Cloned : CVfx_Glanix_Skill_IceBall");
+		MSG_BOX("Failed to Cloned : CVfx_Glanix_Skill_IcePillar");
 		Safe_Release(pInstance);
 		return nullptr;
 	}
@@ -97,7 +97,7 @@ CGameObject* CVfx_Glanix_Skill_IceBall::Clone(void* pArg)
 	return pInstance;
 }
 
-void CVfx_Glanix_Skill_IceBall::Free()
+void CVfx_Glanix_Skill_IcePillar::Free()
 {
 	__super::Free();
 

@@ -13,6 +13,7 @@ CVIBuffer_Particle::CVIBuffer_Particle(const CVIBuffer_Particle& rhs)
 	Safe_AddRef(m_pPipeLine);
 }
 
+
 void CVIBuffer_Particle::Restart_ParticleBufferDesc(_uint iCount)
 {
 	m_iNumInstance = iCount;
@@ -243,6 +244,54 @@ void CVIBuffer_Particle::Restart_ParticleBufferDesc(_uint iCount)
 
 	m_pContext->Unmap(m_pVBInstance, 0);
 }
+
+void CVIBuffer_Particle::Sort_Z(_uint iCount)
+{
+	D3D11_MAPPED_SUBRESOURCE SubResource;
+	m_pContext->Map(m_pVBInstance, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource);
+
+	vector<VTXINSTANCE> instanceData;
+	instanceData.resize(iCount);
+	memcpy(instanceData.data(), SubResource.pData, iCount * sizeof(VTXINSTANCE));
+
+
+	_float4 fCamPos = m_pPipeLine->Get_CamPosition();
+	_vector vCampos = XMVectorSet(fCamPos.x, fCamPos.y, fCamPos.z, fCamPos.w);
+
+	// 현재 순서 그대로 해당 위치의 값 뷰Z를 구함.
+	vector<_float> vecViewZ;
+	for (size_t i = 0; i < iCount; i++) {
+		_vector vPosition = XMVectorSet(instanceData[i].vPosition.x, instanceData[i].vPosition.y, instanceData[i].vPosition.z, instanceData[i].vPosition.w);
+		vecViewZ.push_back(XMVectorGetX(XMVector3Length(vCampos - vPosition)));
+	}
+
+	// m_vecViewZ를 기준으로 정렬된 인덱스 구함.
+	vector<size_t> sortedIndices(vecViewZ.size());
+	iota(sortedIndices.begin(), sortedIndices.end(), 0);
+	sort(sortedIndices.begin(), sortedIndices.end(), [&](size_t a, size_t b) {
+		return vecViewZ[a] > vecViewZ[b]; }
+	);
+
+	// 정렬된 인덱스를 기반으로 다른 컨테이너들도 정렬
+	vector<VTXINSTANCE>          sortedInstanceData(instanceData.size());
+	vector<PARTICLE_INFO_DESC>   sortedParticleInfoDesc(m_vecParticleInfoDesc.size());
+	vector<PARTICLE_SHADER_DESC> sortedParticleShaderDesc(m_vecParticleShaderDesc.size());
+	for (size_t i = 0; i < sortedIndices.size(); ++i) {
+		size_t index = sortedIndices[i];
+		sortedInstanceData[i] = instanceData[index];
+		sortedParticleInfoDesc[i] = m_vecParticleInfoDesc[index];
+		sortedParticleShaderDesc[i] = m_vecParticleShaderDesc[index];
+	}
+
+	// 정렬된 결과 다시 할당
+	m_vecParticleInfoDesc = sortedParticleInfoDesc;
+	m_vecParticleShaderDesc = sortedParticleShaderDesc;
+	memcpy(SubResource.pData, sortedInstanceData.data(), iCount * sizeof(VTXINSTANCE));
+
+
+	m_pContext->Unmap(m_pVBInstance, 0);
+}
+
 
 HRESULT CVIBuffer_Particle::Initialize_Prototype()
 {
@@ -693,10 +742,17 @@ void CVIBuffer_Particle::Tick(_float fTimeDelta)
 			if (!(*m_tParticleDesc.pVelocityChange))
 			{
 				// 위치 기본 변경
-				((VTXINSTANCE*)SubResource.pData)[i].vPosition.x += m_vecParticleInfoDesc[i].vVelocity.x * m_vecParticleInfoDesc[i].fVelocitySpeeds * fTimeDelta;
-				((VTXINSTANCE*)SubResource.pData)[i].vPosition.y += m_vecParticleInfoDesc[i].vVelocity.y * m_vecParticleInfoDesc[i].fVelocitySpeeds * fTimeDelta;
-				((VTXINSTANCE*)SubResource.pData)[i].vPosition.z += m_vecParticleInfoDesc[i].vVelocity.z * m_vecParticleInfoDesc[i].fVelocitySpeeds * fTimeDelta;
+				if (true == (*m_tParticleDesc.pRigidbody))
+				{
+					Tick_Rigidbody(fTimeDelta, i);
 
+				}
+				else
+				{
+					((VTXINSTANCE*)SubResource.pData)[i].vPosition.x += m_vecParticleInfoDesc[i].vVelocity.x * m_vecParticleInfoDesc[i].fVelocitySpeeds * fTimeDelta;
+					((VTXINSTANCE*)SubResource.pData)[i].vPosition.y += m_vecParticleInfoDesc[i].vVelocity.y * m_vecParticleInfoDesc[i].fVelocitySpeeds * fTimeDelta;
+					((VTXINSTANCE*)SubResource.pData)[i].vPosition.z += m_vecParticleInfoDesc[i].vVelocity.z * m_vecParticleInfoDesc[i].fVelocitySpeeds * fTimeDelta;
+				}
 			}
 			else
 			{
@@ -707,9 +763,17 @@ void CVIBuffer_Particle::Tick(_float fTimeDelta)
 					if ((*m_tParticleDesc.pVelocityChangeRandom))
 					{
 						// 자동
-						((VTXINSTANCE*)SubResource.pData)[i].vPosition.x += m_vecParticleInfoDesc[i].vVelocity.x * m_vecParticleInfoDesc[i].fVelocitySpeeds * fTimeDelta;
-						((VTXINSTANCE*)SubResource.pData)[i].vPosition.y += m_vecParticleInfoDesc[i].vVelocity.y * m_vecParticleInfoDesc[i].fVelocitySpeeds * fTimeDelta;
-						((VTXINSTANCE*)SubResource.pData)[i].vPosition.z += m_vecParticleInfoDesc[i].vVelocity.z * m_vecParticleInfoDesc[i].fVelocitySpeeds * fTimeDelta;
+						if (true == (*m_tParticleDesc.pRigidbody))
+						{
+							Tick_Rigidbody(fTimeDelta, i);
+
+						}
+						else
+						{
+							((VTXINSTANCE*)SubResource.pData)[i].vPosition.x += m_vecParticleInfoDesc[i].vVelocity.x * m_vecParticleInfoDesc[i].fVelocitySpeeds * fTimeDelta;
+							((VTXINSTANCE*)SubResource.pData)[i].vPosition.y += m_vecParticleInfoDesc[i].vVelocity.y * m_vecParticleInfoDesc[i].fVelocitySpeeds * fTimeDelta;
+							((VTXINSTANCE*)SubResource.pData)[i].vPosition.z += m_vecParticleInfoDesc[i].vVelocity.z * m_vecParticleInfoDesc[i].fVelocitySpeeds * fTimeDelta;
+						}
 
 						m_vecParticleInfoDesc[i].fVelocityRanTimeAccs += m_vecParticleInfoDesc[i].fVelocitySpeeds * fTimeDelta;
 						if (m_vecParticleInfoDesc[i].fVelocityRanTimeAccs >= m_vecParticleInfoDesc[i].fVelocityRanChange)
@@ -1076,52 +1140,6 @@ HRESULT CVIBuffer_Particle::Render(_uint iCount)
 	return S_OK;
 }
 
-void CVIBuffer_Particle::Sort_Z(_uint iCount)
-{
-	D3D11_MAPPED_SUBRESOURCE SubResource;
-	m_pContext->Map(m_pVBInstance, 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &SubResource);
-
-	vector<VTXINSTANCE> instanceData;
-	instanceData.resize(iCount);
-	memcpy(instanceData.data(), SubResource.pData, iCount * sizeof(VTXINSTANCE));
-
-
-	_float4 fCamPos = m_pPipeLine->Get_CamPosition();
-	_vector vCampos = XMVectorSet(fCamPos.x, fCamPos.y, fCamPos.z, fCamPos.w);
-
-	// 현재 순서 그대로 해당 위치의 값 뷰Z를 구함.
-	vector<_float> vecViewZ;
-	for (size_t i = 0; i < iCount; i++) {
-		_vector vPosition = XMVectorSet(instanceData[i].vPosition.x, instanceData[i].vPosition.y, instanceData[i].vPosition.z, instanceData[i].vPosition.w);
-		vecViewZ.push_back(XMVectorGetX(XMVector3Length(vCampos - vPosition)));
-	}
-
-	// m_vecViewZ를 기준으로 정렬된 인덱스 구함.
-	vector<size_t> sortedIndices(vecViewZ.size());
-	iota(sortedIndices.begin(), sortedIndices.end(), 0);
-	sort(sortedIndices.begin(), sortedIndices.end(), [&](size_t a, size_t b) {
-		return vecViewZ[a] > vecViewZ[b]; }
-	);
-
-	// 정렬된 인덱스를 기반으로 다른 컨테이너들도 정렬
-	vector<VTXINSTANCE>          sortedInstanceData(instanceData.size());
-	vector<PARTICLE_INFO_DESC>   sortedParticleInfoDesc(m_vecParticleInfoDesc.size());
-	vector<PARTICLE_SHADER_DESC> sortedParticleShaderDesc(m_vecParticleShaderDesc.size());
-	for (size_t i = 0; i < sortedIndices.size(); ++i) {
-		size_t index = sortedIndices[i];
-		sortedInstanceData[i] = instanceData[index];
-		sortedParticleInfoDesc[i] = m_vecParticleInfoDesc[index];
-		sortedParticleShaderDesc[i] = m_vecParticleShaderDesc[index];
-	}
-
-	// 정렬된 결과 다시 할당
-	m_vecParticleInfoDesc = sortedParticleInfoDesc;
-	m_vecParticleShaderDesc = sortedParticleShaderDesc;
-	memcpy(SubResource.pData, sortedInstanceData.data(), iCount * sizeof(VTXINSTANCE));
-
-
-	m_pContext->Unmap(m_pVBInstance, 0);
-}
 
 _float4 CVIBuffer_Particle::Get_NewPosition_Particle()
 {
@@ -1142,6 +1160,62 @@ _float4 CVIBuffer_Particle::Get_NewVelocity_Particle()
 
 	return _float4(XMVectorGetX(vVelocity), XMVectorGetY(vVelocity), XMVectorGetZ(vVelocity), XMVectorGetW(vVelocity));
 }
+
+void CVIBuffer_Particle::Tick_Rigidbody(_float fTimeDelta, _uint iParticleID)
+{
+	//// 속도에 따른 이동 (중력)
+	//if (m_bJump || !m_bCurrentGround)
+	//{
+	//	// 추가 가속도 중력 추가
+	//	Set_AccelA(XMVectorSet(0.f, -10.f, 0.f, 0.f));
+
+	//	_vector vCurrentPosition = m_pOwnerTransform->Get_State(CTransform::STATE_POSITION);
+	//	_vector vNewPosition = vCurrentPosition + m_vVelocity * fTimeDelta;
+
+	//	_bool bMove = m_pOwnerTransform->Set_Position(vNewPosition, m_pOwnerNavigition);
+	//	if (!bMove) // 못가는 위치일 시 아래로만 중력 적용해 이동
+	//		m_pOwnerTransform->Set_Position(XMVectorSetY(vCurrentPosition, XMVectorGetY(vNewPosition)), m_pOwnerNavigition);
+	//}
+
+	//// 힘의 크기
+	//_float fForce = XMVectorGetX(XMVector3Length(m_vForce));
+	//if (fForce != 0.f) {
+	//	// 힘의 방향
+	//	m_vForce = XMVector3Normalize(m_vForce);
+	//	// 가속도의 크기
+	//	_float fAccel = fForce / m_fMass;
+	//	// 가속도
+	//	m_vAccel = m_vForce * fAccel;
+	//}
+
+	//// 추가 가속도 누적 (중력)
+	//m_vAccel += m_vAccelA;
+
+	//// 속도
+	//m_vVelocity += m_vAccel * fTimeDelta;
+
+	//// 마찰력에 의한 반대 방향의 가속도
+	//if (XMVectorGetX(XMVector3Length(m_vVelocity)) != 0.f)
+	//{
+	//	_vector vFricDir = -m_vVelocity;
+	//	vFricDir = XMVector3Normalize(vFricDir);
+	//	_vector vFriction = vFricDir * m_fFricCoeff * fTimeDelta;
+	//	if (XMVectorGetX(XMVector3Length(m_vVelocity)) <= XMVectorGetX(XMVector3Length(vFriction)))
+	//		m_vVelocity = XMVectorSet(0.f, 0.f, 0.f, 0.f); // 마찰 가속도가 본래 속도보다 더 큰 경우
+	//	else
+	//		m_vVelocity += vFriction;
+	//}
+
+	//// 속도 제한 검사
+	//Limit_MaxSpeed();
+
+	//// 힘 초기화
+	//m_vForce = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+	//// 가속도 초기화
+	//m_vAccel = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+	//m_vAccelA = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+}
+
 
 CVIBuffer_Particle* CVIBuffer_Particle::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {

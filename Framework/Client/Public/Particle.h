@@ -190,27 +190,32 @@ public:
 	virtual HRESULT Render() override;
 
 public:
-	void Set_LoacalTransformInfo(_float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation);
 	const PARTICLE_DESC& Get_ParticleDesc() { return m_tParticleDesc; }
+
+	class CTransform* Get_TransformCom() { return m_pTransformCom; }
+	class CTexture* Get_DiffuseTexture() { return m_pDiffuseTextureCom; }
+	class CTexture* Get_AlphaTexture() { return m_pAlphaTextureCom; }
+
+	_bool Get_Rigidbody() { return m_bRigidbody; }
+
+public:
 	void Set_ParticleDesc(const PARTICLE_DESC& tDesc);
 	void Set_Position_Particle(_float4x4 WorldMatrix);
 	void Set_Position_Particle(_float3 fPosition);
 
 	void Set_Owner(CGameObject* pGameObject) { m_pOwnerObject = pGameObject; }
-	void Set_LoopParticle(_bool bLoop) { m_tParticleDesc.bParticleLoop = bLoop; }
-	class CTransform* Get_TransformCom() { return m_pTransformCom; }
-
-	class CTexture* Get_DiffuseTexture() { return m_pDiffuseTextureCom; }
-	class CTexture* Get_AlphaTexture() { return m_pAlphaTextureCom; }
-
+	void Set_LoacalTransformInfo(_float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation);
+	void Set_OffsetPosition(Vec4 offset) { m_vAddOffsetPos = offset; }
 	void Set_DeleteParticle(_bool bParticleDelete) { m_bParticleDelete = bParticleDelete; }
-	void Set_OffsetPosition(Vec4 offset) { m_vOffsetPos = offset; }
+
+	void Set_LoopParticle(_bool bLoop)   { m_tParticleDesc.bParticleLoop = bLoop; }
+	void Set_Rigidbody(_bool bRigidbody) { m_bRigidbody = bRigidbody; }
+
 private:
 	_bool m_isCloned = { false };
+
 	PARTICLE_DESC m_tParticleDesc;
-
 	_bool m_bParticleDelete = true;
-
 	_bool m_bParticleDie = false;
 
 	_float4x4 m_ViewMatrix;
@@ -220,8 +225,9 @@ private:
 	_float3 m_vLocalPos = _float3(0.f, 0.f, 0.f);
 	_float3 m_vLocalScale = _float3(0.f, 0.f, 0.f);
 	_float3 m_vLocalRotation = _float3(0.f, 0.f, 0.f);
+	Vec4 m_vAddOffsetPos = Vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
-	Vec4 m_vOffsetPos = Vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	_bool m_bRigidbody = false;
 
 private:
 	class CRenderer*  m_pRendererCom = nullptr;
@@ -243,7 +249,6 @@ private:
 	void Set_Texture_Alpha();
 
 protected:
-	// CGameObject을(를) 통해 상속됨
 	virtual HRESULT Ready_Components() override;
 
 public:

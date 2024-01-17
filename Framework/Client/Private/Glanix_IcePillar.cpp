@@ -7,6 +7,7 @@
 #include "Glanix.h"
 
 #include "Camera_Manager.h"
+#include "Effect_Manager.h"
 
 CGlanix_IcePillar::CGlanix_IcePillar(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameObject(pDevice, pContext, strObjectTag, LAYER_TYPE::LAYER_PROP)
@@ -165,6 +166,8 @@ void CGlanix_IcePillar::Collision_Continue(const COLLISION_INFO& tInfo)
 		{
 			dynamic_cast<CGlanix*>(tInfo.pOther)->Set_IsCrash(true);
 
+			// Effect Create
+			GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Glanix_Skill_IcePillar"), m_pTransformCom->Get_WorldMatrix(), this);
 
 			if (nullptr != m_pGlanix)
 				m_pGlanix->Delete_Pillar(m_iKey);
