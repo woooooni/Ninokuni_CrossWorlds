@@ -106,6 +106,8 @@ namespace Client
 
 	enum CAMERA_TYPE { FREE, FOLLOW, CUTSCENE_MAP, CUTSCENE_BOSS, ACTION, TOP, CAMERA_TYPE_END };
 
+	enum CAMERA_VIEW_TYPE { BACK, SHOLDER };
+
 	static const char*	CameraCharNames[CAMERA_TYPE::CAMERA_TYPE_END]{ "Camera_Free", "Camera_Follow", "Camera_CutScene_Map", "Camera_CutScene_Boss", "Camera_Action" };
 	
 	const wstring		CameraWstringNames[CAMERA_TYPE::CAMERA_TYPE_END]{ L"Camera_Free", L"Camera_Follow", L"Camera_CutScene_Map", L"Camera_CutScene_Boss", L"Camera_Action" };
@@ -122,8 +124,11 @@ namespace Client
 	static const _float Cam_Fov_CutScene_Boss_Default		= XMConvertToRadians(70.0f);
 	static const _float Cam_Fov_Top_Glanix					= XMConvertToRadians(75.0f);
 
-	static const Vec4	Cam_TargetOffset_Follow_Default		= { 0.7f, 1.3f, 0.f, 1.f };
-	static const Vec4	Cam_LookAtOffset_Follow_Default		= { 0.7f, 1.3f, 0.f, 1.f };
+	static const Vec4	Cam_TargetOffset_Follow_SholderView_Default		= { 0.7f, 1.3f, 0.f, 1.f };
+	static const Vec4	Cam_LookAtOffset_Follow_SholderView_Default		= { 0.7f, 1.3f, 0.f, 1.f };
+
+	static const Vec4	Cam_TargetOffset_Follow_BackView_Default = { 0.f, 1.3f, 0.f, 1.f };
+	static const Vec4	Cam_LookAtOffset_Follow_BackView_Default = { 0.f, 1.3f, 0.f, 1.f };
 
 	static const Vec4	Cam_TargetOffset_Top_Glanix = { -20.f, 15.f, 0.f, 1.f };
 	static const Vec4	Cam_TargetOffset_Top_Glanix_Zoom = { -13.f, 8.f, 0.f, 1.f };

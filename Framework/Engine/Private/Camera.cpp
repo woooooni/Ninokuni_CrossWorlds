@@ -150,7 +150,7 @@ void CCamera::Start_Shake(const _float& fAmplitude, const _float& fFrequency, co
 
 	m_tShakeDesc.bActive = true;
 
-	m_tShakeDesc.fAmplitude = fAmplitude;
+	m_tShakeDesc.fAmplitude = fAmplitude * m_tShakeDesc.fAmplitudeMag;
 	m_tShakeDesc.fFrequency = fFrequency;
 	m_tShakeDesc.fDuration = fDuration;
 

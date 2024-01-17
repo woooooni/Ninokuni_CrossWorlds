@@ -46,8 +46,16 @@ HRESULT CCamera_Follow::Initialize(void * pArg)
 		m_tLerpDist.fCurValue = Cam_Dist_Follow_Default;
 
 		/* 팔로우 카메라에서 룩앳 오프셋을 사용하는 일은 없다. 타겟 오프셋만을 사용한다.*/
-		m_tTargetOffset.vCurVec = Cam_TargetOffset_Follow_Default;
-		m_tLookAtOffset.vCurVec = Cam_LookAtOffset_Follow_Default;
+		if (CAMERA_VIEW_TYPE::SHOLDER == m_eViewType)
+		{
+			m_tTargetOffset.vCurVec = Cam_LookAtOffset_Follow_SholderView_Default;
+			m_tLookAtOffset.vCurVec = Cam_TargetOffset_Follow_SholderView_Default;
+		}
+		else if (CAMERA_VIEW_TYPE::BACK == m_eViewType)
+		{
+			m_tTargetOffset.vCurVec = Cam_LookAtOffset_Follow_BackView_Default;
+			m_tLookAtOffset.vCurVec = Cam_TargetOffset_Follow_BackView_Default;
+		}
 
 		m_vMouseSensitivity = Vec2{ 0.18f, 0.5f };
 	}
@@ -246,6 +254,42 @@ void CCamera_Follow::Reset_WideView_To_DefaultView()
 	m_tProjDesc.tLerpFov.fStartValue = m_tProjDesc.tLerpFov.fCurValue = m_tProjDesc.tLerpFov.fTargetValue = Cam_Fov_Follow_Default;
 }
 
+void CCamera_Follow::Set_ViewType(const CAMERA_VIEW_TYPE& eType)
+{
+	m_eViewType = eType; 
+
+	if (CAMERA_VIEW_TYPE::SHOLDER == m_eViewType)
+	{
+		m_tTargetOffset.vCurVec = Cam_LookAtOffset_Follow_SholderView_Default;
+		m_tLookAtOffset.vCurVec = Cam_TargetOffset_Follow_SholderView_Default;
+	}
+	else if (CAMERA_VIEW_TYPE::BACK == m_eViewType)
+	{
+		m_tTargetOffset.vCurVec = Cam_LookAtOffset_Follow_BackView_Default;
+		m_tLookAtOffset.vCurVec = Cam_TargetOffset_Follow_BackView_Default;
+	}
+}
+
+void CCamera_Follow::Set_Defualt_Settig()
+{
+	/* 회전 축 방향 설정 */
+	m_vMouseInputInvert = { 1.f, 1.f };
+
+	/* 흔들림 배율 지정 */
+	m_tShakeDesc.fAmplitudeMag = 1.f;
+
+	/* 마우스 민감도 설정 */
+	m_vMouseSensitivity = Vec2{ 0.18f, 0.5f };
+
+	/* 댐핑 민감도 설정 */
+	m_tDampingDesc.fDampingCoefficient = 0.025f;
+
+	/* 숄더뷰 설정 */
+	m_eViewType = CAMERA_VIEW_TYPE::SHOLDER;
+	m_tTargetOffset.vCurVec = Cam_TargetOffset_Follow_SholderView_Default;
+	m_tLookAtOffset.vCurVec = Cam_LookAtOffset_Follow_SholderView_Default;
+}
+
 HRESULT CCamera_Follow::Start_LockOn(CGameObject* pTargetObject, const Vec4& vTargetOffset, const Vec4& vLookAtOffset, const _float& fLockOnBlendingTime)
 {
 	if (nullptr == pTargetObject || LOCK_PROGRESS::OFF != m_eLockProgress)
@@ -269,9 +313,16 @@ HRESULT CCamera_Follow::Finish_LockOn(CGameObject* pTargetObject, const _float& 
 
 	Change_LookAtObj(pTargetObject, fLockOnBlendingTime);
 
-	Change_LookAtOffSet(Cam_LookAtOffset_Follow_Default, fLockOnBlendingTime);
-
-	Change_TargetOffSet(Cam_TargetOffset_Follow_Default, fLockOnBlendingTime);
+	if (CAMERA_VIEW_TYPE::SHOLDER == m_eViewType)
+	{
+		Change_LookAtOffSet(Cam_LookAtOffset_Follow_SholderView_Default, fLockOnBlendingTime);
+		Change_TargetOffSet(Cam_TargetOffset_Follow_SholderView_Default, fLockOnBlendingTime);
+	}
+	else if (CAMERA_VIEW_TYPE::BACK == m_eViewType)
+	{
+		Change_LookAtOffSet(Cam_LookAtOffset_Follow_BackView_Default, fLockOnBlendingTime);
+		Change_TargetOffSet(Cam_TargetOffset_Follow_BackView_Default, fLockOnBlendingTime);
+	}
 
 	m_eLockProgress = LOCK_PROGRESS::FINISH_BLEIDING;
 
@@ -416,7 +467,7 @@ Vec4 CCamera_Follow::Calculate_LoaclSphericalPosition(_float fTimeDelta)
 
 		if (MouseMove = GI->Get_DIMMoveState(DIMM_X))
 		{
-			_float fDelta = MouseMove * m_vMouseSensitivity.y * fTimeDelta * -1.f;
+			_float fDelta = MouseMove * m_vMouseSensitivity.y * fTimeDelta * -1.f * m_vMouseInputInvert.x;
 		
 			/* y축 회전량이 너무 많을 경우 카메라가 획 도는 현상 방지 하기 위한 제한 */
 			{
@@ -432,7 +483,7 @@ Vec4 CCamera_Follow::Calculate_LoaclSphericalPosition(_float fTimeDelta)
 
 		if (MouseMove = GI->Get_DIMMoveState(DIMM_Y))
 		{
-			m_vAngle.y += MouseMove * m_vMouseSensitivity.x * fTimeDelta;
+			m_vAngle.y += MouseMove * m_vMouseSensitivity.x * fTimeDelta * m_vMouseInputInvert.y;
 
 			if (m_vAngle.y <= m_fMinLimitY) /* Min : 0.f */
 			{
@@ -634,8 +685,8 @@ void CCamera_Follow::Test(_float fTimeDelta)
 	//
 	//	Start_Lerp_Distance(40.f, fLerpTime, eLerpMode);
 	//	Start_Lerp_Fov(XMConvertToRadians(85.f), fLerpTime, eLerpMode);
-	//	Lerp_TargetOffset(Cam_TargetOffset_Follow_Default, Vec4{ 0.7f, 20.f, 0.f, 1.f }, fLerpTime, eLerpMode);
-	//	Lerp_LookAtOffSet(Cam_LookAtOffset_Follow_Default, Vec4{ 0.7f, 30.f, 0.f, 1.f }, fLerpTime, eLerpMode);
+	//	Lerp_TargetOffset(Cam_TargetOffset_Follow_SholderView_Default, Vec4{ 0.7f, 20.f, 0.f, 1.f }, fLerpTime, eLerpMode);
+	//	Lerp_LookAtOffSet(Cam_LookAtOffset_Follow_SholderView_Default, Vec4{ 0.7f, 30.f, 0.f, 1.f }, fLerpTime, eLerpMode);
 	//}
 
 	/*if (KEY_TAP(KEY::END_KEY))
@@ -645,8 +696,8 @@ void CCamera_Follow::Test(_float fTimeDelta)
 
 		Start_Lerp_Distance(Cam_Dist_Follow_Default, fLerpTime, eLerpMode);
 		Start_Lerp_Fov(Cam_Fov_Follow_Default, fLerpTime, eLerpMode);
-		Lerp_TargetOffset(Vec4{ 0.7f, 15.f, 0.f, 1.f }, Cam_TargetOffset_Follow_Default, fLerpTime, eLerpMode);
-		Lerp_LookAtOffSet(Vec4{ 0.7f, 15.f, 0.f, 1.f }, Cam_LookAtOffset_Follow_Default, fLerpTime, eLerpMode);
+		Lerp_TargetOffset(Vec4{ 0.7f, 15.f, 0.f, 1.f }, Cam_TargetOffset_Follow_SholderView_Default, fLerpTime, eLerpMode);
+		Lerp_LookAtOffSet(Vec4{ 0.7f, 15.f, 0.f, 1.f }, Cam_LookAtOffset_Follow_SholderView_Default, fLerpTime, eLerpMode);
 	}*/
 }
 

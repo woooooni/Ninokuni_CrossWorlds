@@ -112,6 +112,9 @@ public:
 		_float fFreqDelta = 0.f;
 
 		LERP_VEC3_DESC tLerpShakeUnitPos;	/* 선형 보간되는 쉐이크 포지션 (fFrequency만큼의 길이)*/
+
+		/* Ui Option */
+		_float fAmplitudeMag = 1.f;
 		
 		void Clear()
 		{
@@ -221,6 +224,9 @@ public:
 	void Start_Shake(const _float& fAmplitude, const _float& fFrequency, const _float& fDuration);
 	const _bool& Is_Shake() const { return m_tShakeDesc.bActive; }
 	Vec3 Get_ShakeLocalPos() { return m_tShakeDesc.Get_ShakeLocalPos(); }
+
+	const _float& Get_ShakeAmplitudeMag() const { return m_tShakeDesc.fAmplitudeMag; }
+	void Set_ShakeAmplitudeMag(const _float& fMag) { m_tShakeDesc.fAmplitudeMag = fMag; }
 	
 	/* Blending */
 	const _bool& Is_Blending() const { return m_bBlending; }

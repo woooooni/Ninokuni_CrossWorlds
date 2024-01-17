@@ -76,6 +76,11 @@ public:
 	void Reset_WideView_To_DefaultView();
 	const _bool& Is_WideView() const { return m_bWideView; }
 
+	const CAMERA_VIEW_TYPE& Get_ViewType() const { return m_eViewType; }
+	void Set_ViewType(const CAMERA_VIEW_TYPE& eType);
+
+	void Set_Defualt_Settig();
+
 public:
 	/* Lock On */
 	HRESULT Start_LockOn(CGameObject* pTargetObject, const Vec4& vTargetOffset, const Vec4& vLookAtOffset, const _float& fLockOnBlendingTime = Cam_LockOn_Time_BlendingIn);
@@ -135,6 +140,9 @@ private:
 	const _float	m_fDefaultViewCheckTime = 3.f;
 	const _float	m_fWideViewLerpTime = 1.f;
 	const LERP_MODE	m_eWideViewLerpMode = LERP_MODE::SMOOTHER_STEP;
+
+	/* View */
+	CAMERA_VIEW_TYPE m_eViewType = CAMERA_VIEW_TYPE::SHOLDER;
 	
 public:
 	static CCamera_Follow* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
