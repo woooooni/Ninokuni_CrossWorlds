@@ -59,42 +59,16 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion03::Tick(const _float& fTimeDelta)
 	//	m_iPrevKillCount = CQuest_Manager::GetInstance()->Get_QuestClearStack();
 	//}
 
-	ProgressTalk();
+	
 
-	if (m_bIsShowDialog)
-	{
-		m_fTime += fTimeDelta;
-
-		if (m_fTime >= 3.f)
-		{
-			if (CQuest_Manager::GetInstance()->Get_MonsterKillCount() >= 7)
-			{
-				Safe_Delete_Array(m_szpOwner);
-				Safe_Delete_Array(m_szpTalk);
-
-				CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
-
-				CQuest_Manager::GetInstance()->Clear_MonsterKillCount();
-				CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_END);
-
-				m_bIsClear = true;
-				return NODE_STATE::NODE_FAIL;
-			}
-
-			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
-			m_fTime = m_fTalkChangeTime - m_fTime;
-			m_bIsShowDialog = false;
-		}
-	}
-
-	return NODE_STATE::NODE_RUNNING;
+	return ProgressTalk(fTimeDelta);
 }
 
 void CMainQuestNode_Invasion03::LateTick(const _float& fTimeDelta)
 {
 }
 
-void CMainQuestNode_Invasion03::ProgressTalk()
+CBTNode::NODE_STATE CMainQuestNode_Invasion03::ProgressTalk(const _float& fTimeDelta)
 {
 	switch (CQuest_Manager::GetInstance()->Get_MonsterKillCount())
 	{
@@ -155,6 +129,34 @@ void CMainQuestNode_Invasion03::ProgressTalk()
 		}
 		break;
 	}
+
+	if (m_bIsShowDialog)
+	{
+		m_fTime += fTimeDelta;
+
+		if (m_fTime >= 3.f)
+		{
+			if (CQuest_Manager::GetInstance()->Get_MonsterKillCount() >= 7)
+			{
+				Safe_Delete_Array(m_szpOwner);
+				Safe_Delete_Array(m_szpTalk);
+
+				CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+
+				CQuest_Manager::GetInstance()->Clear_MonsterKillCount();
+				CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_END);
+
+				m_bIsClear = true;
+				return NODE_STATE::NODE_FAIL;
+			}
+
+			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+			m_fTime = m_fTalkChangeTime - m_fTime;
+			m_bIsShowDialog = false;
+		}
+	}
+
+	return NODE_STATE::NODE_RUNNING;
 }
 
 void CMainQuestNode_Invasion03::TalkEvent()

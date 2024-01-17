@@ -15,7 +15,7 @@ public:
 	virtual void	LateTick(const _float& fTimeDelta);
 
 private:
-	virtual void	ProgressTalk();
+	CBTNode::NODE_STATE	ProgressTalk(const _float& fTimeDelta);
 	virtual void    TalkEvent();
 
 private:

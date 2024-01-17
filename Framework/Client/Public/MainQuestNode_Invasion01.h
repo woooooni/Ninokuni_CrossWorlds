@@ -21,6 +21,8 @@ private:
 	CGameObject* m_pRuslan = nullptr;
 	CGameObject* m_pKuu = nullptr;
 
+	_bool		m_bIsStart = false;
+
 public:
 	static CMainQuestNode_Invasion01* Create();
 	virtual void Free() override;

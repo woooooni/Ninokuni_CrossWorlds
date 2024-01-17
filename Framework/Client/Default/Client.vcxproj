@@ -263,6 +263,7 @@
     <ClInclude Include="..\Public\Enbi.h" />
     <ClInclude Include="..\Public\Engineer_Bullet.h" />
     <ClInclude Include="..\Public\Engineer_Bullet_Bomb.h" />
+    <ClInclude Include="..\Public\Engineer_Npc.h" />
     <ClInclude Include="..\Public\Ermine.h" />
     <ClInclude Include="..\Public\EvermoreWater.h" />
     <ClInclude Include="..\Public\Fox.h" />
@@ -1006,6 +1007,7 @@
     <ClCompile Include="..\Private\Enbi.cpp" />
     <ClCompile Include="..\Private\Engineer_Bullet.cpp" />
     <ClCompile Include="..\Private\Engineer_Bullet_Bomb.cpp" />
+    <ClCompile Include="..\Private\Engineer_Npc.cpp" />
     <ClCompile Include="..\Private\Ermine.cpp" />
     <ClCompile Include="..\Private\EvermoreWater.cpp" />
     <ClCompile Include="..\Private\Fox.cpp" />
