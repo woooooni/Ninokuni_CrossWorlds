@@ -42,7 +42,7 @@ private:
 private:
 	HRESULT	Ready_State();
 	HRESULT	Bind_ShaderResources();
-	void Calculate_Distance();
+	void Rotation_Arrow();
 
 public:
 	static CUI_Milepost* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, UI_MILEPOST eType);

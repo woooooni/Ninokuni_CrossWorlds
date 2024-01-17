@@ -491,6 +491,11 @@ _bool CUI_Manager::Is_QuestRewardWindowOff()
 	return m_QuestReward[0]->Get_Active();
 }
 
+_bool CUI_Manager::Is_LoadingDone()
+{
+	return _bool();
+}
+
 HRESULT CUI_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
 	m_pDevice = pDevice;
@@ -4039,6 +4044,7 @@ HRESULT CUI_Manager::Tick_LobbyLevel(_float fTimeDelta)
 HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 {
 	m_pDummy->Tick(fTimeDelta);
+	m_pCustomMap->Tick(fTimeDelta);
 
 	if (nullptr != m_pUIMapName)
 	{
@@ -4093,15 +4099,6 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 //				OnOff_QuestPopup(true);
 //			}
 //		}
-//	}
-
-//	if (KEY_TAP(KEY::O))
-//	{
-//		m_pCustomMap->Set_Active(true);
-//	}
-//	if (KEY_TAP(KEY::P))
-//	{
-//		m_pCustomMap->Set_Active(false);
 //	}
 
 	return S_OK;
@@ -6050,12 +6047,14 @@ HRESULT CUI_Manager::OnOff_CostumeWindow(_bool bOnOff)
 			m_pTabMenuTitle->Set_Active(true);
 
 			m_pDummy->Set_Active(true);
+			m_pCustomMap->Set_Active(true);
 
 			//OnOff_CloseButton(true);
 		}
 	}
 	else
 	{
+		m_pCustomMap->Set_Active(false);
 		m_pDummy->Set_Active(false);
 		m_pTabMenuTitle->Set_Active(false);
 

@@ -30,6 +30,7 @@ public: // Get/Set
 	_bool			Is_DefaultSettingOn();
 	_bool			Is_NicknameSettingComplete();
 	_bool			Is_QuestRewardWindowOff();
+	_bool			Is_LoadingDone();
 
 	void			Set_UIClicked(_bool bClicked) { m_bEvent = bClicked; }
 	_bool			Is_UIClicked() { return m_bEvent; }

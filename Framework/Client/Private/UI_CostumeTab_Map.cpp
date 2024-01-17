@@ -20,8 +20,8 @@ CUI_CostumeTab_Map::CUI_CostumeTab_Map(const CUI_CostumeTab_Map& rhs)
 
 void CUI_CostumeTab_Map::Set_Active(_bool bActive)
 {
-	if (true == bActive)
-		m_pTransformCom->LookAt_ForLandObject(m_vCamPosition);
+	//if (true == bActive)
+		//m_pTransformCom->LookAt_ForLandObject(m_vCamPosition);
 
 	m_bActive = bActive;
 }
@@ -82,9 +82,9 @@ HRESULT CUI_CostumeTab_Map::Initialize(void* pArg)
 
 	XMStoreFloat4x4(&m_ViewMatrix, XMMatrixTranspose(m_vCamMatrix)); // 카메라 행렬을 전치시킴
 
-	m_pTransformCom->Set_Scale(_float3(1.2f, 1.f, 1.2f));
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-0.3f, 0.f, 0.f, 1.f));
-	m_pTransformCom->LookAt_ForLandObject(m_vCamPosition);
+	m_pTransformCom->Set_Scale(_float3(1.f, 1.1f, 1.f));
+	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(190.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-0.3f, 0.f, 0.3f, 1.f));
 
 	return S_OK;
 }
@@ -93,6 +93,7 @@ void CUI_CostumeTab_Map::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+
 		__super::Tick(fTimeDelta);
 	}
 
