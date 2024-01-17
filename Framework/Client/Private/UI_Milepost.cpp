@@ -298,34 +298,18 @@ void CUI_Milepost::Rotation_Arrow()
 	CTransform* pCameraTrans = pCurCamera->Get_Transform();
 	if (nullptr == pCameraTrans)
 		return;
-	_vector vCameraForward = pCameraTrans->Get_State(CTransform::STATE_LOOK);
-	vCameraForward = XMVector3Normalize(XMVectorSetY(vCameraForward, 0.f));
 
 	CTransform* pPlayerTransform = m_pPlayer->Get_Component<CTransform>(L"Com_Transform");
 	if (nullptr == pPlayerTransform)
 		return;
 
+	Vec3 vScale = m_pTransformCom->Get_Scale();
 	_vector vTargetPosition = XMLoadFloat4(&m_vTargetPos);
 
-	_vector vDir = XMVector3Normalize(vTargetPosition - pCameraTrans->Get_Position());
-	vDir = XMVector3Normalize(vDir);
-	
-	_float fDot = XMVectorGetX(XMVector3Dot(vCameraForward, vDir));
-	_float fRadian = acos(fDot);
-	_float fDegree = XMConvertToDegrees(fRadian);
-//
-//	if (fDot < 0.f)
-//	{
-//		fDegree = 360.f - fDegree;
-//	}
-	_float fAxis = 1.f;
-	if (fRadian < 0.f)
-		fAxis *= 1.f;
+	Vec3 vDir = pCameraTrans->Get_Position() - vTargetPosition;
+	_float fAngle = XMConvertToDegrees(atan2(vDir.z, vDir.x));
 
-//	if (0.f >= fDegree)
-//		fDegree += 360.f;
-
-	m_pTransformCom->Rotation(XMVectorSet(0.f, 0.f, fAxis, 0.f), XMConvertToRadians(fDegree));
+	m_pTransformCom->Rotation(XMVector3Normalize(m_pTransformCom->Get_Look()), XMConvertToRadians(fAngle));
 }
 
 CUI_Milepost* CUI_Milepost::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_MILEPOST eType)
