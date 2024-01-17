@@ -2,8 +2,8 @@
 #include "UI_Loading_ProgressBar.h"
 #include "GameInstance.h"
 
-CUI_Loading_ProgressBar::CUI_Loading_ProgressBar(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_PROGRESSBAR eType)
-	: CUI(pDevice, pContext, L"UI_Loading_ProgressBar")
+CUI_Loading_ProgressBar::CUI_Loading_ProgressBar(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, UI_PROGRESSBAR eType)
+	: CUI(pDevice, pContext, strObjectTag)
 	, m_eType(eType)
 {
 }
@@ -12,6 +12,14 @@ CUI_Loading_ProgressBar::CUI_Loading_ProgressBar(const CUI_Loading_ProgressBar& 
 	: CUI(rhs)
 	, m_eType(rhs.m_eType)
 {
+}
+
+_bool CUI_Loading_ProgressBar::Is_LoadingDone()
+{
+	if (UIPROG_BAR != m_eType)
+		return false;
+
+	return m_bFinish;
 }
 
 HRESULT CUI_Loading_ProgressBar::Initialize_Prototype()
@@ -154,9 +162,9 @@ HRESULT CUI_Loading_ProgressBar::Bind_ShaderResources()
 	return S_OK;
 }
 
-CUI_Loading_ProgressBar* CUI_Loading_ProgressBar::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_PROGRESSBAR eType)
+CUI_Loading_ProgressBar* CUI_Loading_ProgressBar::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, UI_PROGRESSBAR eType)
 {
-	CUI_Loading_ProgressBar* pInstance = new CUI_Loading_ProgressBar(pDevice, pContext, eType);
+	CUI_Loading_ProgressBar* pInstance = new CUI_Loading_ProgressBar(pDevice, pContext, strObjectTag, eType);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{

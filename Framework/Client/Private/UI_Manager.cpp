@@ -493,7 +493,15 @@ _bool CUI_Manager::Is_QuestRewardWindowOff()
 
 _bool CUI_Manager::Is_LoadingDone()
 {
-	return _bool();
+	CGameObject* pProgressBar = nullptr;
+	pProgressBar = GI->Find_GameObject(LEVELID::LEVEL_LOADING, LAYER_TYPE::LAYER_UI, TEXT("UI_Loading_Progress_Bar"));
+	if (nullptr == pProgressBar)
+		return false;
+
+	if (nullptr == dynamic_cast<CUI_Loading_ProgressBar*>(pProgressBar))
+		return false;
+
+	return dynamic_cast<CUI_Loading_ProgressBar*>(pProgressBar)->Is_LoadingDone();
 }
 
 HRESULT CUI_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -4497,7 +4505,6 @@ void CUI_Manager::Update_CostumeBtn()
 		pPart = pCharacter->Get_PartModel(PART_TYPE::HEAD);
 		if (nullptr == pPart)
 		{
-			// 착용된 무기 스킨이 없다.
 			m_pCostumeAnnounce->Set_AnnouncePosition(_float2(9999.f, 9999.f));
 			return;
 		}
@@ -4532,7 +4539,6 @@ void CUI_Manager::Update_CostumeBtn()
 		}
 		else if (iSlotIndex == -1)
 		{
-			// 착용된 무기 스킨이 없다.
 			m_pCostumeAnnounce->Set_AnnouncePosition(_float2(9999.f, 9999.f));
 		}
 		break;
@@ -6502,10 +6508,10 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_Progress_Back"),
-		CUI_Loading_ProgressBar::Create(m_pDevice, m_pContext, CUI_Loading_ProgressBar::UIPROG_BACK), LAYER_UI)))
+		CUI_Loading_ProgressBar::Create(m_pDevice, m_pContext, L"UI_Loading_Progress_Back", CUI_Loading_ProgressBar::UIPROG_BACK), LAYER_UI)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_Progress_Bar"),
-		CUI_Loading_ProgressBar::Create(m_pDevice, m_pContext, CUI_Loading_ProgressBar::UIPROG_BAR), LAYER_UI)))
+		CUI_Loading_ProgressBar::Create(m_pDevice, m_pContext, L"UI_Loading_Progress_Bar", CUI_Loading_ProgressBar::UIPROG_BAR), LAYER_UI)))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_Information"),

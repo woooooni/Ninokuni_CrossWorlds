@@ -9,9 +9,12 @@ public:
 	enum UI_PROGRESSBAR { UIPROG_BACK, UIPROG_BAR, UIPROG_END };
 
 protected:
-	CUI_Loading_ProgressBar(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_PROGRESSBAR eType);
+	CUI_Loading_ProgressBar(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, UI_PROGRESSBAR eType);
 	CUI_Loading_ProgressBar(const CUI_Loading_ProgressBar& rhs);
 	virtual ~CUI_Loading_ProgressBar() = default;
+
+public:
+	_bool Is_LoadingDone();
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -37,7 +40,7 @@ private:
 	HRESULT	Bind_ShaderResources();
 
 public:
-	static CUI_Loading_ProgressBar* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, UI_PROGRESSBAR eType);
+	static CUI_Loading_ProgressBar* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const wstring& strObjectTag, UI_PROGRESSBAR eType);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

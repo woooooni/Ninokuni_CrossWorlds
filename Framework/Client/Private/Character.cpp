@@ -890,6 +890,9 @@ HRESULT CCharacter::Tag_In(Vec4 vInitializePosition)
 		}
 	}
 
+	CUI_Manager::GetInstance()->Ready_CharacterTypeForUI(Get_CharacterType());
+	CUI_Manager::GetInstance()->Ready_ElementalTypeForUI(Get_ElementalType());
+
 	return S_OK;
 }
 

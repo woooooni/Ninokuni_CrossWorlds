@@ -13,6 +13,7 @@
 #include "Level_IceLand.h"
 #include "UI_Manager.h"
 #include "ImGui_Manager.h"
+#include "UI_Manager.h"
 
 
 CLevel_Loading::CLevel_Loading(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
@@ -42,52 +43,53 @@ HRESULT CLevel_Loading::LateTick(_float fTimeDelta)
 
 	SetWindowText(g_hWnd, strLoadingText.c_str());
 
-	if (true == m_pLoader->Get_Finished())
+	if (true == CUI_Manager::GetInstance()->Is_LoadingDone())
 	{
-		if (KEY_TAP(KEY::SPACE))
+		if (true == m_pLoader->Get_Finished())
 		{
-			CLevel* pNewLevel = nullptr;
-			GI->Clear_PhysX_Ground();
-			switch (m_eNextLevel)
+			if (KEY_TAP(KEY::SPACE))
 			{
-			case LEVEL_LOGO:
-				pNewLevel = CLevel_Logo::Create(m_pDevice, m_pContext);
-				break;
+				CLevel* pNewLevel = nullptr;
+				GI->Clear_PhysX_Ground();
+				switch (m_eNextLevel)
+				{
+				case LEVEL_LOGO:
+					pNewLevel = CLevel_Logo::Create(m_pDevice, m_pContext);
+					break;
 
-			case LEVEL_TOOL:
-				pNewLevel = CLevel_Tool::Create(m_pDevice, m_pContext);
-				break;
+				case LEVEL_TOOL:
+					pNewLevel = CLevel_Tool::Create(m_pDevice, m_pContext);
+					break;
 
-			case LEVEL_TEST:
-				pNewLevel = CLevel_Test::Create(m_pDevice, m_pContext);
-				break;
+				case LEVEL_TEST:
+					pNewLevel = CLevel_Test::Create(m_pDevice, m_pContext);
+					break;
 
-			case LEVEL_LOBBY:
-				pNewLevel = CLevel_Lobby::Create(m_pDevice, m_pContext);
-				break;
+				case LEVEL_LOBBY:
+					pNewLevel = CLevel_Lobby::Create(m_pDevice, m_pContext);
+					break;
 
-			case LEVEL_EVERMORE:
-				pNewLevel = CLevel_Evermore::Create(m_pDevice, m_pContext);
-				break;
+				case LEVEL_EVERMORE:
+					pNewLevel = CLevel_Evermore::Create(m_pDevice, m_pContext);
+					break;
 
-			case LEVEL_KINGDOMHALL:
-				pNewLevel = CLevel_Kingdom::Create(m_pDevice, m_pContext);
-				break;
+				case LEVEL_KINGDOMHALL:
+					pNewLevel = CLevel_Kingdom::Create(m_pDevice, m_pContext);
+					break;
 
-			case LEVEL_ICELAND:
-				pNewLevel = CLevel_IceLand::Create(m_pDevice, m_pContext);
-				break;
+				case LEVEL_ICELAND:
+					pNewLevel = CLevel_IceLand::Create(m_pDevice, m_pContext);
+					break;
+				}
+
+				if (nullptr == pNewLevel)
+					return E_FAIL;
+
+				if (FAILED(GI->Open_Level(m_eNextLevel, pNewLevel)))
+					return E_FAIL;
 			}
-
-			if (nullptr == pNewLevel)
-				return E_FAIL;
-
-			if (FAILED(GI->Open_Level(m_eNextLevel, pNewLevel)))
-				return E_FAIL;
 		}
-
 	}
-
 
 	return S_OK;
 }
