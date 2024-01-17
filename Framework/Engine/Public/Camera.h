@@ -112,6 +112,9 @@ public:
 		_float fFreqDelta = 0.f;
 
 		LERP_VEC3_DESC tLerpShakeUnitPos;	/* 선형 보간되는 쉐이크 포지션 (fFrequency만큼의 길이)*/
+
+		/* Ui Option */
+		_float fAmplitudeMag = 1.f;
 		
 		void Clear()
 		{
@@ -210,12 +213,20 @@ public:
 	void Set_MouseSensitivity_X(const _float& fX) { m_vMouseSensitivity.x = fX; }
 	void Set_MouseSensitivity_Y(const _float& fY) { m_vMouseSensitivity.y = fY; }
 
+	void Set_MouseInputInvert_X(const _bool& bInvert) { m_vMouseInputInvert.x = (bInvert) ? -1.f : 1.f; }
+	void Set_MouseInputInvert_Y(const _bool& bInvert) { m_vMouseInputInvert.y = (bInvert) ? -1.f : 1.f; }
+
+	const Vec2& Get_MouseInputInvert() const { return m_vMouseInputInvert; }
+
 	void Set_CanInput(const _bool& bInput) { m_bCanInput = bInput; }
 
 	/* Shake */
 	void Start_Shake(const _float& fAmplitude, const _float& fFrequency, const _float& fDuration);
 	const _bool& Is_Shake() const { return m_tShakeDesc.bActive; }
 	Vec3 Get_ShakeLocalPos() { return m_tShakeDesc.Get_ShakeLocalPos(); }
+
+	const _float& Get_ShakeAmplitudeMag() const { return m_tShakeDesc.fAmplitudeMag; }
+	void Set_ShakeAmplitudeMag(const _float& fMag) { m_tShakeDesc.fAmplitudeMag = fMag; }
 	
 	/* Blending */
 	const _bool& Is_Blending() const { return m_bBlending; }
@@ -235,6 +246,7 @@ protected:
 	LERP_FLOAT_DESC		m_tLerpDist		= {};
 	_float				m_fPrevDist		= { 0.f };
 	_bool				m_bLockDist		= { false };
+
 	/* Target, Look */
 	LERP_VEC4_DESC		m_tTargetOffset = {};
 	LERP_VEC4_DESC		m_tLookAtOffset = {};
@@ -248,6 +260,7 @@ protected:
 	/* Input */
 	_bool				m_bCanInput		= { true };
 	Vec2				m_vMouseSensitivity = { 1.f, 1.f };
+	Vec2				m_vMouseInputInvert = { 1.f, 1.f };
 
 	/* Shake */
 	SHAKE_DESC			m_tShakeDesc	= {};

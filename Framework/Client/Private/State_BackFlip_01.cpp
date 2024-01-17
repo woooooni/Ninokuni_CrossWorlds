@@ -64,7 +64,7 @@ void CState_BackFlip_01::Tick_State(_float fTimeDelta)
 
 void CState_BackFlip_01::Exit_State()
 {
-
+	m_pTransformCom->ResetTime();
 }
 
 CState_BackFlip_01* CState_BackFlip_01::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
