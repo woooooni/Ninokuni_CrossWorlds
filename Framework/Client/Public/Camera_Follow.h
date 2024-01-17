@@ -73,6 +73,9 @@ public:
 	virtual Vec4 Get_LookAt() override;
 	virtual void Set_Blending(const _bool& bBlending) override;
 
+	void Reset_WideView_To_DefaultView();
+	const _bool& Is_WideView() const { return m_bWideView; }
+
 public:
 	/* Lock On */
 	HRESULT Start_LockOn(CGameObject* pTargetObject, const Vec4& vTargetOffset, const Vec4& vLookAtOffset, const _float& fLockOnBlendingTime = Cam_LockOn_Time_BlendingIn);
@@ -88,6 +91,7 @@ private:
 	Vec4 Calculate_DampingPosition(Vec4 vGoalPos);
 
 	void Check_Exception();
+	void Check_WideView(_float fTimeDelta);
 
 	void Test(_float fTimeDelta);
 
@@ -122,8 +126,16 @@ private:
 	/* 카메라의 월드 행렬 상태 변환으로 인해 오프셋의 y가 -가 되어 땅을 뚫는 현상 방지*/
 	_float			m_fLockTargetOffsetMinY = 0.5f;
 
-	Vec4			m_vPrevLookAt = {};
+	Vec4			m_vPrevLookAt			= {};
 
+	/* Wide Follow */
+	_bool			m_bWideView				= false;
+	_float			m_fAccForWideView = 0.f;
+	const _float	m_fWideViewCheckTime = 4.f;
+	const _float	m_fDefaultViewCheckTime = 3.f;
+	const _float	m_fWideViewLerpTime = 1.f;
+	const LERP_MODE	m_eWideViewLerpMode = LERP_MODE::SMOOTHER_STEP;
+	
 public:
 	static CCamera_Follow* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
 	virtual CGameObject* Clone(void* pArg);

@@ -559,6 +559,10 @@ void CAnimation::Update_Animation_Event(_float fTickPerSecond, const TWEEN_DESC&
 	}
 
 	/* 카메라 이벤트 */
+	CCamera* pCurCam = CCamera_Manager::GetInstance()->Get_CurCamera();
+	if (nullptr == pCurCam)
+		return;
+
 	for (auto& CameraEvent : m_CameraEvents)
 	{
 		if (CameraEvent.first <= fCurFrame && !CameraEvent.second.bTag1)
@@ -569,11 +573,16 @@ void CAnimation::Update_Animation_Event(_float fTickPerSecond, const TWEEN_DESC&
 			{
 			case CAMERA_EVENT_TYPE::FOV :
 			{
-				CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Lerp_Fov(CameraEvent.second.fTag1, CameraEvent.second.fTag2, (LERP_MODE)CameraEvent.second.iTag1);
+				if (!pCurCam->Is_Lock_Fov())
+					pCurCam->Start_Lerp_Fov(CameraEvent.second.fTag1, CameraEvent.second.fTag2, (LERP_MODE)CameraEvent.second.iTag1);
 			}
 				break;
 			case CAMERA_EVENT_TYPE::DISTANCE :
 			{
+				if (!pCurCam->Is_Lock_Fov())
+				{
+
+				}
 				//CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Lerp_Distance(
 				//	CameraEvent.second.fTag1, CameraEvent.second.fTag2, (LERP_MODE)CameraEvent.second.iTag1);
 			}

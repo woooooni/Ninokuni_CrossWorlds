@@ -64,7 +64,6 @@ HRESULT CKuu::Initialize(void* pArg)
 //	m_pBalloon->Set_Owner(this, 1.3f);
 //	m_pBalloon->Set_Balloon(TEXT("나는 테스트용 쿠우다."));
 
-
 	return S_OK;
 }
 
@@ -77,9 +76,10 @@ void CKuu::Tick(_float fTimeDelta)
 		Vec4 vReleativePos = m_pPlayerTransform->Get_RelativeOffset({ 1.f, m_fY, -0.3f, 1.f });
 		Vec4 vPlayerPos = m_pPlayerTransform->Get_Position();
 
-		/* Rotation */
+		/* Rotation, Scale */
 		m_pTransformCom->Set_WorldMatrix(m_pPlayerTransform->Get_WorldMatrix());
-
+		m_pTransformCom->Set_Scale(Vec3{ 0.7f });
+		
 		/* Damping */
 		{
 			Vec4 vGoalPos = vReleativePos + vPlayerPos;

@@ -274,11 +274,33 @@ HRESULT CLoader::Loading_For_Level_Logo()
 		return E_FAIL;
 
 	
-
-
-	m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::SWORD_MAN);
-	m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);
-	m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);
+	switch (g_eLoadCharacter)
+	{
+	case Client::SWORDMAN_CH:
+	{
+		m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::SWORD_MAN);
+	}
+		break;
+	case Client::DESTROYER_CH:
+	{
+		m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);
+	}
+		break;
+	case Client::ENGINEER_CH:
+	{
+		m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);
+	}
+		break;
+	case Client::ALL_CH:
+	{
+		m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::SWORD_MAN);
+		m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);
+		m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);
+	}
+		break;
+	default:
+		break;
+	}
 
 	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
 	{
@@ -461,7 +483,21 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 	g_bFirstLoading = true;
 	if (false == g_bLevelFirst[LEVEL_EVERMORE])
 	{
-		CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, XMVectorSet(0.f, 0.f, 0.f, 1.f), true);
+		switch (g_ePlayCharacter)
+		{
+		case Client::SWORDMAN_CH:
+			CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, XMVectorSet(0.f, 0.f, 0.f, 1.f), true);
+			break;
+		case Client::DESTROYER_CH:
+			CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::DESTROYER, XMVectorSet(0.f, 0.f, 0.f, 1.f), true);
+			break;
+		case Client::ENGINEER_CH:
+			CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::ENGINEER, XMVectorSet(0.f, 0.f, 0.f, 1.f), true);
+			break;
+		default:
+			CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, XMVectorSet(0.f, 0.f, 0.f, 1.f), true);
+			break;
+		}
 		g_bLevelFirst[LEVEL_EVERMORE] = true;
 	}
 
@@ -519,9 +555,21 @@ HRESULT CLoader::Loading_For_Level_Test()
 
 	if (false == g_bFirstLoading)
 	{
-		 m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::SWORD_MAN);
-		/*m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);*/
-		 /*m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);*/
+		switch (g_ePlayCharacter)
+		{
+		case Client::SWORDMAN_CH:
+			m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::SWORD_MAN);
+			break;
+		case Client::DESTROYER_CH:
+			m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);
+			break;
+		case Client::ENGINEER_CH:
+			m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);
+			break;
+		default:
+			CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, XMVectorSet(0.f, 0.f, 0.f, 1.f), true);
+			break;
+		}
 	}
 		
 

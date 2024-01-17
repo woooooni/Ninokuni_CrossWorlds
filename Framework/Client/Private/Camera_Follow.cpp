@@ -80,8 +80,11 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 			m_eLockProgress = LOCK_PROGRESS::OFF;
 	}
 
-	/* Trnasform */
+	/* Transform */
 	Tick_Transform(fTimeDelta);
+
+	/* Wide View */
+	Check_WideView(fTimeDelta);
 
 	/* Test */
 	Test(fTimeDelta);
@@ -214,8 +217,33 @@ void CCamera_Follow::Set_Blending(const _bool& bBlending)
 			/* 탑뷰에서 블렌딩이 끝났다면 모든 인풋을 열어준다. */
 			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
 		}
-	}
+		
+		if (CAMERA_TYPE::ACTION == CCamera_Manager::GetInstance()->Get_PrevCamera()->Get_Key())
+		{
+			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_PrevCamera());
 
+			if (CCamera_Action::CAMERA_ACTION_TYPE::DOOR == pActionCam->Get_Camera_ActionType())
+			{
+				/* 이전 카메라가 도어 액션이었다면 모든 인풋을 열어준다. */
+				CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
+			}
+		}
+	}
+}
+
+void CCamera_Follow::Reset_WideView_To_DefaultView()
+{
+	/* Check Variable */
+	m_fAccForWideView = 0.f;
+	m_bWideView = false;
+
+	/* Distance */
+	m_tLerpDist.Clear();
+	m_tLerpDist.fStartValue = m_tLerpDist.fCurValue = m_tLerpDist.fTargetValue = Cam_Dist_Follow_Default;
+	
+	/* Fov */
+	m_tProjDesc.tLerpFov.Clear();
+	m_tProjDesc.tLerpFov.fStartValue = m_tProjDesc.tLerpFov.fCurValue = m_tProjDesc.tLerpFov.fTargetValue = Cam_Fov_Follow_Default;
 }
 
 HRESULT CCamera_Follow::Start_LockOn(CGameObject* pTargetObject, const Vec4& vTargetOffset, const Vec4& vLookAtOffset, const _float& fLockOnBlendingTime)
@@ -513,67 +541,90 @@ void CCamera_Follow::Check_Exception()
 		m_pLookAtObj = nullptr;
 }
 
+void CCamera_Follow::Check_WideView(_float fTimeDelta)
+{
+	/* Check Exception */
+	{
+		/* 마을(에버모어, 궁전)에서만 체크한다. (공격, 컷신, 블렌딩 잡기 까다롭다.) */
+		if (LEVELID::LEVEL_EVERMORE != GI->Get_CurrentLevel() && LEVELID::LEVEL_KINGDOMHALL != GI->Get_CurrentLevel())
+			return;
+
+		/* 락온 상태 혹은 블렌딩 상태에서는 체크하지 않는다. -> 이전에 디폴트 fov, dist로 세팅 되어 있어야 한다. */
+		if (!m_bBlending && LOCK_PROGRESS::FINISH_BLEIDING == m_eLockProgress)
+			return;
+
+		/* fov, distance가 보간 중이라면 체크하지 않는다.*/
+		if (Is_Lerp_Fov() || Is_Lerp_Distance())
+			return;
+	}
+
+	CStateMachine* pStateMachine = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CStateMachine>(L"Com_StateMachine");
+	if (nullptr == pStateMachine)
+		return;
+
+	CCharacter::STATE eCurState = (CCharacter::STATE)pStateMachine->Get_CurrState();
+
+	if (m_bWideView) 
+	{
+		/* Check For Transition Default View */
+		if (CCharacter::STATE::NEUTRAL_RUN != eCurState && CCharacter::STATE::BATTLE_WALK != eCurState && CCharacter::STATE::BATTLE_RUN != eCurState)
+		{
+			m_fAccForWideView += fTimeDelta;
+
+			if (m_fDefaultViewCheckTime <= m_fAccForWideView)
+			{
+				Start_Lerp_Fov(Cam_Fov_Follow_Default, m_fWideViewLerpTime, m_eWideViewLerpMode);
+				Start_Lerp_Distance(Cam_Dist_Follow_Default, m_fWideViewLerpTime, m_eWideViewLerpMode);
+
+				m_bWideView = false;
+				m_fAccForWideView = 0.f;
+			}
+		}
+		else
+			m_fAccForWideView = 0.f;
+	}
+	else
+	{
+		/* Check For Transition Wide View */
+		if (CCharacter::STATE::NEUTRAL_RUN == eCurState || CCharacter::STATE::BATTLE_WALK == eCurState || CCharacter::STATE::BATTLE_RUN == eCurState) 
+		{
+			m_fAccForWideView += fTimeDelta;
+
+			if (m_fWideViewCheckTime <= m_fAccForWideView)
+			{
+				m_bWideView = true;
+				m_fAccForWideView = 0.f;
+
+				Start_Lerp_Fov(Cam_Fov_Follow_Wide, m_fWideViewLerpTime * 1.25f, m_eWideViewLerpMode);
+				Start_Lerp_Distance(Cam_Dist_Follow_Wide, m_fWideViewLerpTime * 1.25f, m_eWideViewLerpMode);
+
+				Lock_Fov(true);
+				Lock_Dist(true);
+			}
+		}
+		else
+		{
+			m_fAccForWideView = 0.f;
+
+			if (Is_Lock_Fov())
+				Lock_Fov(false);
+
+			if (Is_Lock_Dist())
+				Lock_Dist(false);
+		}
+	}
+}
+
 void CCamera_Follow::Test(_float fTimeDelta)
 {
-	/* Test */
+	/* CutScene - Evermore */
+	if (KEY_TAP(KEY::INSERT))
 	{
-		/* CutScene - Evermore */
-		if (KEY_TAP(KEY::INSERT))
-		{
-			vector<string> CutSceneNames;
-			CutSceneNames.push_back("Evermore_Street_00");
-			CutSceneNames.push_back("Evermore_Street_01");
+		vector<string> CutSceneNames;
+		CutSceneNames.push_back("Evermore_Street_00");
+		CutSceneNames.push_back("Evermore_Street_01");
 
-			dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP))->Start_CutScenes(CutSceneNames);
-		}
-
-		/* Lock On Off */
-		//if (KEY_TAP(KEY::DEL))
-		//{
-		//	if (LOCK_PROGRESS::OFF == m_eLockProgress)
-		//	{
-		//		const _int iBossCount = 3;
-		//		wstring strBossNames[iBossCount] = { L"Glanix", L"DreamerMazeWitch", L"Stellia" };
-		//
-		//		for (size_t i = 0; i < iBossCount; i++)
-		//		{
-		//			CGameObject * pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_MONSTER, strBossNames[i]);
-		//			if (nullptr != pTarget)
-		//				Start_LockOn(pTarget, Cam_Target_Offset_LockOn_Glanix, Cam_LookAt_Offset_LockOn_Glanix);
-		//		}
-		//	}
-		//	else
-		//		Finish_LockOn(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
-		//}
-
-		/* Hot Key */
-		if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::CTRL))
-			Set_Default_Position();
-
-		//if (KEY_TAP(KEY::V))
-		//{
-		//	if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
-		//		CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
-		//
-		//	CGameObject* pPlayer = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
-		//	CGameObject* pPet = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"Kuu");
-		//	CGameObject* pTarget1 = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"HumanFL04");
-		//	CGameObject* pTarget2 = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"HumanFL05");
-		//
-		//	if (nullptr != pPlayer && nullptr != pPet && nullptr != pTarget1 && nullptr != pTarget2)
-		//	{
-		//
-		//		CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-		//		if (nullptr != pActionCam)
-		//		{
-		//			CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
-		//
-		//			pActionCam->Start_Action_Talk(pPlayer, pPet);
-		//			//pActionCam->Start_Action_Talk(pPlayer, pPet, pTarget1, nullptr);
-		//			//pActionCam->Start_Action_Talk(pPlayer, pPet, pTarget1, pTarget2);
-		//		}
-		//	}
-		//}
+		dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP))->Start_CutScenes(CutSceneNames);
 	}
 }
 
