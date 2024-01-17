@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Camera_Manager.h"
 #include "Camera.h"
+#include "UI_Manager.h"
 
 CUI_Milepost::CUI_Milepost(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_MILEPOST eType)
 	: CUI(pDevice, pContext, L"UI_Milepost")
@@ -53,8 +54,6 @@ HRESULT CUI_Milepost::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	m_bActive = true;
-
 	if (nullptr == m_pPlayer)
 	{
 		CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
@@ -68,14 +67,16 @@ HRESULT CUI_Milepost::Initialize(void* pArg)
 		m_pPlayer = pCharacter;
 	}
 
-	if (LEVELID::LEVEL_EVERMORE == GI->Get_CurrentLevel())
-	{
+//	if (LEVELID::LEVEL_EVERMORE == GI->Get_CurrentLevel())
+//	{
 		Set_TargetPosition(_float4(-69.5f, -2.7f, -10.f, 1.f));
-	}
-	else
-	{
-		m_bActive = false;
-	}
+//	}
+//	else
+//	{
+//		m_bActive = false;
+//	}
+
+	m_bActive = true;
 
 	return S_OK;
 }
@@ -84,6 +85,9 @@ void CUI_Milepost::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (MILEPOST_ARROW == m_eType)
+			Rotation_Arrow();
+
 		__super::Tick(fTimeDelta);
 	}
 }
@@ -184,14 +188,14 @@ void CUI_Milepost::LateTick(_float fTimeDelta)
 						_vector vTemp = XMLoadFloat4(&m_vTargetPos) - (pPlayerTransform->Get_Position());
 						_float fTotarget = XMVectorGetX(XMVector3Length(vTemp));
 
-						wstring strDistance = to_wstring(_uint(fTotarget));
+						wstring strDistance = to_wstring(_uint(fTotarget)) + TEXT("M");
 						_int iLength = strDistance.length() - 1;
 						_float2 vFontPos = _float2(m_vCurrentPos.x - 6.8f - (iLength * (6.8f - iLength)), m_vCurrentPos.y + 4.f);
 
 						CRenderer::TEXT_DESC TextDesc = {};
 						TextDesc.strText = strDistance;
 						TextDesc.strFontTag = L"Default_Bold";
-						TextDesc.vScale = { 0.35f, 0.35f };
+						TextDesc.vScale = { 0.25f, 0.25f };
 						TextDesc.vColor = _float4(0.655f, 0.475f, 0.325f, 1.f);
 						TextDesc.vPosition = _float2(vFontPos.x - 1.f, vFontPos.y);
 						m_pRendererCom->Add_Text(TextDesc);
@@ -285,9 +289,58 @@ HRESULT CUI_Milepost::Bind_ShaderResources()
 	return S_OK;
 }
 
-void CUI_Milepost::Calculate_Distance()
+void CUI_Milepost::Rotation_Arrow()
 {
-	// m_fDistance를 채워준다. 거리계산 -> Add_Text하게될 변수
+	// 카메라의 룩과 플레이어와 목적지의 방향벡터를 내적
+	CCamera* pCurCamera = CCamera_Manager::GetInstance()->Get_CurCamera();
+	if (nullptr == pCurCamera)
+		return;
+	CTransform* pCameraTrans = pCurCamera->Get_Transform();
+	if (nullptr == pCameraTrans)
+		return;
+	_vector vCameraForward = pCameraTrans->Get_State(CTransform::STATE_LOOK);
+	vCameraForward = XMVector3Normalize(vCameraForward);
+
+	CTransform* pPlayerTransform = m_pPlayer->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr == pPlayerTransform)
+		return;
+
+//	_vector vPlayerLook = pPlayerTransform->Get_State(CTransform::STATE_LOOK);
+//	vPlayerLook = XMVector3Normalize(vPlayerLook);
+
+	/*
+	_vector vTargetPosition = XMLoadFloat4(&m_vTargetPos);
+
+	_vector vTemp = XMVector3Normalize(XMVectorSetY(vTargetPosition, 0.f) - XMVectorSetY(pPlayerTransform->Get_Position(), 0.f));
+	vTemp = XMVector3Normalize(vTemp);
+	
+	_float fDot = XMVectorGetX(XMVector3Dot(XMVectorSetY(vCameraForward, 0.f), vTemp));
+	_float fRadian = acos(fDot);
+	_float fDegree = fRadian * 180.f / XM_PI;
+
+	if (fRadian < 0.f)
+	{
+		fDegree *= -1.f;
+	}
+
+	m_pTransformCom->Rotation(XMVectorSet(0.f, 0.f, 1.f, 0.f), XMConvertToRadians(fDegree));
+	*/
+
+	_vector vTargetPosition = XMLoadFloat4(&m_vTargetPos);
+
+	_vector vTemp = XMVector3Normalize(XMVectorSetY(vTargetPosition, 0.f) - XMVectorSetY(pPlayerTransform->Get_Position(), 0.f));
+	vTemp = XMVector3Normalize(vTemp);
+	
+	_float fDot = XMVectorGetX(XMVector3Dot(XMVectorSet(0.f, 0.f, 1.f, 0.f), vTemp));
+	_float fRadian = acos(fDot);
+	_float fDegree = fRadian * 180.f / XM_PI;
+
+	if (fRadian < 0.f)
+	{
+		fDegree *= -1.f;
+	}
+
+	m_pTransformCom->Rotation(XMVectorSet(0.f, 0.f, 1.f, 0.f), fDot);
 }
 
 CUI_Milepost* CUI_Milepost::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_MILEPOST eType)
@@ -320,6 +373,6 @@ void CUI_Milepost::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pPlayer);
+//	Safe_Release(m_pPlayer);
 	Safe_Release(m_pTextureCom);
 }
