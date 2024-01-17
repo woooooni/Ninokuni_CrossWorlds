@@ -16,6 +16,7 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void LateTick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
+	virtual HRESULT Render_Reflect() override;
 
 public:
 	virtual void Collision_Enter(const COLLISION_INFO& tInfo) override;
@@ -35,7 +36,6 @@ protected:
 private:
 	HRESULT Ready_Sockets();
 	HRESULT Ready_Weapon();
-	
 
 private:
 	static CCharacter_SwordMan* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);

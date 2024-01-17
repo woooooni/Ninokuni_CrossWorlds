@@ -12,7 +12,7 @@ class ENGINE_DLL CRenderer final : public CComponent
 public:
 	enum RENDERGROUP {
 		RENDER_PRIORITY, RENDER_AURORA, RENDER_NONLIGHT,
-		RENDER_SHADOW, RENDER_NONBLEND,
+		RENDER_SHADOW, RENDER_NONBLEND,	RENDER_DEPTH_MIRROR, RENDER_MIRROR, RENDER_REFLECT,
         RENDER_DECAL, RENDER_EFFECT, RENDER_ALPHABLEND,
 
 		RENDER_UI, 
@@ -133,6 +133,10 @@ private:
 	HRESULT Render_Aurora();
 	//HRESULT Render_Sun();
 	HRESULT Render_NonLight();
+
+	HRESULT Render_Depth_Mirror();
+	HRESULT Render_Reflect_Object();
+	HRESULT Render_StencilMirror();
 
 	HRESULT Render_Shadow();
 	HRESULT Render_Shadow_Caculation();

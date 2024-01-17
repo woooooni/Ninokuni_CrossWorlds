@@ -140,6 +140,7 @@ void CCharacter_SwordMan::LateTick(_float fTimeDelta)
 	m_vBloomPower = { 0.0f, 0.0f, 0.7f };
 	__super::LateTick(fTimeDelta);
 
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDERGROUP::RENDER_REFLECT, this);
 #ifdef DEBUG
 	m_pRendererCom->Add_Debug(m_pControllerCom);
 #endif // DEBUG
@@ -154,6 +155,72 @@ HRESULT CCharacter_SwordMan::Render()
 
 
 	return S_OK;
+}
+
+HRESULT CCharacter_SwordMan::Render_Reflect()
+{
+	if (nullptr == m_pModelCom || nullptr == m_pShaderCom)
+		return E_FAIL;
+
+	XMVECTOR ReflectPlane = XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
+	XMMATRIX ReflecMatrix = XMMatrixReflect(ReflectPlane);
+
+	XMMATRIX world = m_pTransformCom->Get_WorldMatrix();
+	Matrix result = world * ReflecMatrix;
+
+	XMMATRIX worldInv = m_pTransformCom->Get_WorldMatrixInverse();
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &::XMMatrixTranspose(result), sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldInv", &::XMMatrixTranspose(worldInv), sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+		return E_FAIL;
+
+	_float4 vRimColor = { 0.f, 0.f, 0.f, 0.f };
+	if (m_bSuperArmor)
+	{
+		vRimColor = { 1.f, 1.f, 0.f, 1.f };
+	}
+
+	if (m_bInfinite)
+	{
+		vRimColor = { 0.f, 0.5f, 1.f, 1.f };
+	}
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float4))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vBloomPower", &m_vBloomPower, sizeof(_float3))))
+		return E_FAIL;
+
+	if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
+		return E_FAIL;
+
+
+	for (size_t i = 0; i < PART_TYPE::PART_END; i++)
+	{
+		if (nullptr == m_pCharacterPartModels[i])
+			continue;
+
+		const _uint		iNumMeshes = m_pCharacterPartModels[i]->Get_NumMeshes();
+
+		for (_uint j = 0; j < iNumMeshes; ++j)
+		{
+			if (FAILED(m_pCharacterPartModels[i]->SetUp_OnShader(m_pShaderCom, m_pCharacterPartModels[i]->Get_MaterialIndex(j), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+				return E_FAIL;
+
+			if (FAILED(m_pCharacterPartModels[i]->Render(m_pShaderCom, j, 4)))
+				return E_FAIL;
+		}
+	}
+
+	return S_OK;
+
 }
 
 void CCharacter_SwordMan::Collision_Enter(const COLLISION_INFO& tInfo)

@@ -67,6 +67,13 @@ HRESULT CGameObject::Render_ShadowDepth()
 	return S_OK;
 }
 
+HRESULT CGameObject::Render_Reflect()
+{
+
+
+	return S_OK;
+}
+
 
 HRESULT CGameObject::Add_Component(const wstring& strComponentTag, CComponent* pComponent)
 {

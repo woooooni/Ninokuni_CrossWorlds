@@ -356,6 +356,21 @@ HRESULT CRenderer::Draw_World()
 
 	if (FAILED(Render_Deferred()))
 		return E_FAIL;
+//#pragma region TEMP REFLECT
+//	if (FAILED(Render_Depth_Mirror()))
+//		return E_FAIL;
+//
+//	if (FAILED(Render_Reflect_Object()))
+//		return E_FAIL;
+//
+//	if (FAILED(Render_StencilMirror()))
+//		return E_FAIL;
+//
+//	if(FAILED(Render_AlphaBlendTargetMix(TEXT("Target_Default_Mirror"), TEXT("MRT_Blend"), false)))
+//		return E_FAIL;
+//#pragma endregion
+
+
 
 	if (FAILED(Draw_WorldEffect()))
 		return E_FAIL;
@@ -724,6 +739,123 @@ HRESULT CRenderer::Render_NonLight()
 		return E_FAIL;
 
 	return S_OK;
+}
+
+HRESULT CRenderer::Render_Depth_Mirror()
+{
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Depth_Mirror"))))
+		return E_FAIL;
+
+	for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_DEPTH_MIRROR])
+	{
+		if (FAILED(iter->Render()))
+			return E_FAIL;
+		Safe_Release(iter);
+	}
+	m_RenderObjects[RENDER_DEPTH_MIRROR].clear();
+
+	//for (auto& Pair : m_Render_Instancing_Objects[RENDER_DEPTH_MIRROR])
+	//{
+	//	if (nullptr == Pair.second.pGameObject)
+	//		continue;
+
+	//	if (FAILED(Pair.second.pGameObject->Render_Instance(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices)))
+	//		return E_FAIL;
+
+	//	if (FAILED(Pair.second.pGameObject->Render_Instance_AnimModel(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices, Pair.second.TweenDesc, Pair.second.AnimInstanceDesc)))
+	//		return E_FAIL;
+
+	//	Pair.second.TweenDesc.clear();
+	//	Pair.second.WorldMatrices.clear();
+	//	Pair.second.AnimInstanceDesc.clear();
+	//	Pair.second.EffectInstancingDesc.clear();
+
+	//	Safe_Release(Pair.second.pGameObject);
+	//	Pair.second.pGameObject = nullptr;
+	//}
+
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CRenderer::Render_Reflect_Object()
+{
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Reflect_Object"))))
+		return E_FAIL;
+
+	for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_REFLECT])
+	{
+		if (FAILED(iter->Render_Reflect()))
+			return E_FAIL;
+		Safe_Release(iter);
+	}
+	m_RenderObjects[RENDER_REFLECT].clear();
+
+	//for (auto& Pair : m_Render_Instancing_Objects[RENDER_REFLECT])
+	//{
+	//	if (nullptr == Pair.second.pGameObject)
+	//		continue;
+
+	//	if (FAILED(Pair.second.pGameObject->Render_Instance(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices)))
+	//		return E_FAIL;
+
+	//	if (FAILED(Pair.second.pGameObject->Render_Instance_AnimModel(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices, Pair.second.TweenDesc, Pair.second.AnimInstanceDesc)))
+	//		return E_FAIL;
+
+	//	Pair.second.TweenDesc.clear();
+	//	Pair.second.WorldMatrices.clear();
+	//	Pair.second.AnimInstanceDesc.clear();
+	//	Pair.second.EffectInstancingDesc.clear();
+
+	//	Safe_Release(Pair.second.pGameObject);
+	//	Pair.second.pGameObject = nullptr;
+	//}
+
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CRenderer::Render_StencilMirror()
+{
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Default_Mirror"))))
+		return E_FAIL;
+
+	for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_MIRROR])
+	{
+		if (FAILED(iter->Render_Reflect()))
+			return E_FAIL;
+		Safe_Release(iter);
+	}
+	m_RenderObjects[RENDER_MIRROR].clear();
+
+	//for (auto& Pair : m_Render_Instancing_Objects[RENDER_MIRROR])
+	//{
+	//	if (nullptr == Pair.second.pGameObject)
+	//		continue;
+
+	//	if (FAILED(Pair.second.pGameObject->Render_Instance(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices)))
+	//		return E_FAIL;
+
+	//	if (FAILED(Pair.second.pGameObject->Render_Instance_AnimModel(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices, Pair.second.TweenDesc, Pair.second.AnimInstanceDesc)))
+	//		return E_FAIL;
+
+	//	Pair.second.TweenDesc.clear();
+	//	Pair.second.WorldMatrices.clear();
+	//	Pair.second.AnimInstanceDesc.clear();
+	//	Pair.second.EffectInstancingDesc.clear();
+
+	//	Safe_Release(Pair.second.pGameObject);
+	//	Pair.second.pGameObject = nullptr;
+	//}
+
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
+
+	return S_OK;;
 }
 
 
@@ -1643,6 +1775,17 @@ HRESULT CRenderer::Render_Debug_Target()
 	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Shadow_Caculation_Blur"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
 		return E_FAIL;
 
+#pragma region TEMP_MIRROR
+	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Depth_Mirror"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Reflect_Object"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Default_Mirror"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
+		return E_FAIL;
+#pragma endregion
+
+
+
 	wstring strPlayerPosition = L"";
 	strPlayerPosition += L"X : ";
 	strPlayerPosition += to_wstring(m_vPlayerPosition.x);
@@ -2221,6 +2364,20 @@ HRESULT CRenderer::Create_Target()
 		return E_FAIL;
 #pragma endregion
 
+
+#pragma region MIRROR TEMP
+	// NonLight에 있어야 되고
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Depth_Mirror"),
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Reflect_Object"),
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(1.f, 1.f, 1.f, 0.f))))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Default_Mirror"),
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(1.f, 1.f, 1.f, 0.f))))
+		return E_FAIL;
+#pragma endregion MIRROR TEMP
+
 	XMStoreFloat4x4(&m_WorldMatrix, XMMatrixIdentity());
 	m_WorldMatrix._11 = ViewportDesc.Width;
 	m_WorldMatrix._22 = ViewportDesc.Height;
@@ -2420,6 +2577,21 @@ HRESULT CRenderer::Set_TargetsMrt()
 			return E_FAIL;
 	}
 
+	// TEMP Mirror
+	{
+		/* For.MRT_Depth_Mirror */
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Depth_Mirror"), TEXT("Target_Depth_Mirror"))))
+			return E_FAIL;
+
+		/* For.MRT_Blur_Horizontal */
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Reflect_Object"), TEXT("Target_Reflect_Object"))))
+			return E_FAIL;
+
+		/* For.MRT_Blur_Vertical */
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Default_Mirror"), TEXT("Target_Default_Mirror"))))
+			return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -2510,6 +2682,14 @@ HRESULT CRenderer::Set_Debug()
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Decal_Diffuse"), (fSizeX / 2.f) + (fSizeX * 0), (fSizeY / 2.f) + (fSizeY * 6), fSizeX, fSizeY)))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Decal_Bloom"), (fSizeX / 2.f) + (fSizeX * 1), (fSizeY / 2.f) + (fSizeY * 6), fSizeX, fSizeY)))
+		return E_FAIL;
+
+	// Mirror Temp
+	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Depth_Mirror"), (fSizeX / 2.f) + (fSizeX * 0), (fSizeY / 2.f) + (fSizeY * 7), fSizeX, fSizeY)))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Reflect_Object"), (fSizeX / 2.f) + (fSizeX * 1), (fSizeY / 2.f) + (fSizeY * 7), fSizeX, fSizeY)))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Default_Mirror"), (fSizeX / 2.f) + (fSizeX * 2), (fSizeY / 2.f) + (fSizeY * 7), fSizeX, fSizeY)))
 		return E_FAIL;
 
 	// MRT_Blend
