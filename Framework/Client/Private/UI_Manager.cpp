@@ -246,6 +246,8 @@ _float2 CUI_Manager::Get_ProjectionPosition(CTransform* pTransform)
 	return _float2(fScreenX, fScreenY);
 }
 
+
+
 void CUI_Manager::Set_MainDialogue(_tchar* pszName, _tchar* pszText)
 {
 	if (nullptr == m_pDialogWindow)

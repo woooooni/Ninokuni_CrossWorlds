@@ -122,8 +122,7 @@ void CUI_Milepost::LateTick(_float fTimeDelta)
 				if (5.f < fDistance)
 				{
 					// Degree는 -180 ~ 180
-					if (fAngle >= XMConvertToRadians(40.f) && fAngle <= XMConvertToRadians(140.f) ||
-						fAngle <= XMConvertToRadians(-40.f) && fAngle >= XMConvertToRadians(-140.f))
+					if (fAngle >= XMConvertToRadians(40.f) && fAngle <= XMConvertToRadians(140.f))
 					{
 						_matrix matTemp = XMMatrixIdentity();
 						matTemp.r[3] = XMLoadFloat4(&m_vTargetPos);
@@ -295,6 +294,7 @@ void CUI_Milepost::Rotation_Arrow()
 	CCamera* pCurCamera = CCamera_Manager::GetInstance()->Get_CurCamera();
 	if (nullptr == pCurCamera)
 		return;
+
 	CTransform* pCameraTrans = pCurCamera->Get_Transform();
 	if (nullptr == pCameraTrans)
 		return;
@@ -303,13 +303,37 @@ void CUI_Milepost::Rotation_Arrow()
 	if (nullptr == pPlayerTransform)
 		return;
 
-	Vec3 vScale = m_pTransformCom->Get_Scale();
-	_vector vTargetPosition = XMLoadFloat4(&m_vTargetPos);
+	
+	Vec3 vScale = m_pTransformCom->Get_Scale();							// 1. MilePost의 스케일을 저장해놓는다.
 
-	Vec3 vDir = pCameraTrans->Get_Position() - vTargetPosition;
-	_float fAngle = XMConvertToDegrees(atan2(vDir.z, vDir.x));
+	Vec2 vProjTargetPos = Get_ProjectionPosition(m_vTargetPos);			// 2. 타겟포지션의 윈도우 좌표를 구한다.
+	Vec2 vProjPlayerPos = Get_ProjectionPosition(pPlayerTransform);		// 3. 플레이어포지션의 윈도우 좌표를 구한다.
+	Vec2 vProjCameraPos = Get_ProjectionPosition(pCameraTrans);			// 4. 카메라 포지션의 윈도우 좌표를 구한다.
 
-	m_pTransformCom->Rotation(XMVector3Normalize(m_pTransformCom->Get_Look()), XMConvertToRadians(fAngle));
+	Vec2 vDir = XMVector2Normalize(vProjTargetPos - vProjPlayerPos);	// 5. 윈도우 상의 좌표에서 플레이어 포지션에서 타겟포지션으로 향하는 방향을 구한다.
+
+
+	// 6. (1)월드상의 플레이어 포지션에서 타겟포지션으로 향하는 방향벡터와, (2) 카메라의 룩벡터를 내적한다. 만약 -값이 나오면, vDir의 Y값을 역으로 만든다.
+	_float fDot = XMVectorGetX(XMVector3Dot(XMVector3Normalize(XMLoadFloat4(&m_vTargetPos) - pPlayerTransform->Get_Position()), XMVector3Normalize(pCameraTrans->Get_Look())));
+
+	
+	
+	Vec3 vRight, vUp, vLook;
+
+	vUp = XMVector3Normalize(XMVectorSet(vDir.x, vDir.y, 0.f, 0.f));
+	if (fDot < 0.f)
+		vUp.y *= -1.f;
+
+	vLook = XMVector3Normalize(XMVectorSet(0.f, 0.f, 1.f, 0.f));
+	vRight = XMVector3Normalize(XMVector3Cross(vUp, vLook));
+
+	
+
+	m_pTransformCom->Set_State(CTransform::STATE_RIGHT, vRight * vScale.x);
+	m_pTransformCom->Set_State(CTransform::STATE_UP, vUp * vScale.y);
+	m_pTransformCom->Set_State(CTransform::STATE_LOOK, vLook * vScale.z);
+	
+	
 }
 
 CUI_Milepost* CUI_Milepost::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_MILEPOST eType)
