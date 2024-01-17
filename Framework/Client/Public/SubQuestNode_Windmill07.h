@@ -14,13 +14,6 @@ public:
 	virtual CBTNode::NODE_STATE	Tick(const _float& fTimeDelta);
 	virtual void	LateTick(const _float& fTimeDelta);
 
-private:
-	virtual void    TalkEvent();
-
-private:
-	CGameObject* m_pBeard = nullptr;
-	CGameObject* m_pKuu = nullptr;
-
 public:
 	static CSubQuestNode_Windmill07* Create();
 	virtual void Free() override;

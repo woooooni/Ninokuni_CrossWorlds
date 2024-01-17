@@ -402,6 +402,7 @@
     <ClInclude Include="..\Public\SubQuestNode_Wanted06.h" />
     <ClInclude Include="..\Public\SubQuestNode_Wanted07.h" />
     <ClInclude Include="..\Public\SubQuestNode_Wanted08.h" />
+    <ClInclude Include="..\Public\SubQuestNode_Windmill08.h" />
     <ClInclude Include="..\Public\SubQuest_Wanted.h" />
     <ClInclude Include="..\Public\State_Animal_Swimming.h" />
     <ClInclude Include="..\Public\State_BackFlip_01.h" />
@@ -423,11 +424,11 @@
     <ClInclude Include="..\Public\SubQuestNode_Windmill05.h" />
     <ClInclude Include="..\Public\SubQuestNode_Windmill06.h" />
     <ClInclude Include="..\Public\SubQuestNode_Windmill07.h" />
-    <ClInclude Include="..\Public\SubQuestNode_Windmill08.h" />
     <ClInclude Include="..\Public\SubQuestNode_Windmill09.h" />
     <ClInclude Include="..\Public\SubQuestNode_Windmill10.h" />
     <ClInclude Include="..\Public\SubQuestNode_Windmill11.h" />
     <ClInclude Include="..\Public\SubQuestNode_Windmill12.h" />
+    <ClInclude Include="..\Public\SubQuestNode_Windmill13.h" />
     <ClInclude Include="..\Public\MonsterBT.h" />
     <ClInclude Include="..\Public\Motion_Trail.h" />
     <ClInclude Include="..\Public\MouseFolkFat01.h" />
@@ -1146,6 +1147,7 @@
     <ClCompile Include="..\Private\SubQuestNode_Wanted06.cpp" />
     <ClCompile Include="..\Private\SubQuestNode_Wanted07.cpp" />
     <ClCompile Include="..\Private\SubQuestNode_Wanted08.cpp" />
+    <ClCompile Include="..\Private\SubQuestNode_Windmill08.cpp" />
     <ClCompile Include="..\Private\SubQuest_Wanted.cpp" />
     <ClCompile Include="..\Private\State_Animal_Swimming.cpp" />
     <ClCompile Include="..\Private\State_BackFlip_01.cpp" />
@@ -1167,11 +1169,11 @@
     <ClCompile Include="..\Private\SubQuestNode_Windmill05.cpp" />
     <ClCompile Include="..\Private\SubQuestNode_Windmill06.cpp" />
     <ClCompile Include="..\Private\SubQuestNode_Windmill07.cpp" />
-    <ClCompile Include="..\Private\SubQuestNode_Windmill08.cpp" />
     <ClCompile Include="..\Private\SubQuestNode_Windmill09.cpp" />
     <ClCompile Include="..\Private\SubQuestNode_Windmill10.cpp" />
     <ClCompile Include="..\Private\SubQuestNode_Windmill11.cpp" />
     <ClCompile Include="..\Private\SubQuestNode_Windmill12.cpp" />
+    <ClCompile Include="..\Private\SubQuestNode_Windmill13.cpp" />
     <ClCompile Include="..\Private\MonsterBT.cpp" />
     <ClCompile Include="..\Private\Motion_Trail.cpp" />
     <ClCompile Include="..\Private\MouseFolkFat01.cpp" />

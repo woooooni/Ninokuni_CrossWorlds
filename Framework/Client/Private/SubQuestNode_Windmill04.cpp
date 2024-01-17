@@ -21,8 +21,7 @@ HRESULT CSubQuestNode_Windmill04::Initialize()
 
 	m_strNextQuestTag = TEXT("[¼­ºê]");
 	m_strNextQuestName = TEXT("Ç³Â÷ ¼ö¸®");
-	m_strNextQuestContent = TEXT("¹ÌÁ¤(¹º°¡ÇÏ°ÚÁö)");
-
+	m_strNextQuestContent = TEXT("±«Â¥ ¼Ò³à¸¦ Ã£±â");
 
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/SubQuest/02. SubQuest02_Verde_WindmillRepair/SubQuest_Windmill04.json");
 
@@ -117,8 +116,6 @@ void CSubQuestNode_Windmill04::LateTick(const _float& fTimeDelta)
 
 void CSubQuestNode_Windmill04::TalkEvent()
 {
-	wstring strAnimName = TEXT("");
-
 	switch (m_iTalkIndex)
 	{
 	case 0:
@@ -162,7 +159,6 @@ void CSubQuestNode_Windmill04::TalkEvent()
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_EmotionPositive02"));
 		break;
 	}
-
 }
 
 CSubQuestNode_Windmill04* CSubQuestNode_Windmill04::Create()

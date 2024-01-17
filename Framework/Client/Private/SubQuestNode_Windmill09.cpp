@@ -5,7 +5,6 @@
 #include "Utils.h"
 
 #include "UI_Manager.h"
-#include "Game_Manager.h"
 
 CSubQuestNode_Windmill09::CSubQuestNode_Windmill09()
 {
@@ -17,60 +16,23 @@ HRESULT CSubQuestNode_Windmill09::Initialize()
 
 	m_strQuestTag = TEXT("[서브]");
 	m_strQuestName = TEXT("풍차 수리");
-	m_strQuestContent = TEXT("베르디에게 가기");
+	m_strQuestContent = TEXT("베르디에게 돌아가기");
 
 	m_strNextQuestTag = TEXT("[서브]");
 	m_strNextQuestName = TEXT("풍차 수리");
 	m_strNextQuestContent = TEXT("베르디에게 돌아가기");
 
-	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/SubQuest/02. SubQuest02_Verde_WindmillRepair/SubQuest_Windmill09.json");
-
-	for (const auto& talkDesc : Load) {
-		TALK_DELS sTalkDesc;
-		sTalkDesc.strOwner = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(talkDesc["Owner"]));
-		sTalkDesc.strTalk = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(talkDesc["Talk"]));
-		m_vecTalkDesc.push_back(sTalkDesc);
-	}
 
 	return S_OK;
 }
 
 void CSubQuestNode_Windmill09::Start()
 {
-	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+	m_pVerde = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Verde"));
+	Vec4 vSpotPos = Set_DestSpot(m_pVerde);
 
-	/* 현재 퀘스트에 연관있는 객체들 */
-	//m_pKuu = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Kuu"));
-	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
-	m_pVerde = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"Verde");
-
-	m_vecTalker.push_back(m_pKuu);
-	m_vecTalker.push_back(m_pVerde);
-
-	/* 카메라 타겟 세팅 */
-	// CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"Kuu");
-
-	//if (nullptr != pTarget)
-	//{
-
-		// 임시 주석
-		//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-		//if (nullptr != pActionCam)
-		//{
-		//	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
-		//	pActionCam->Start_Action_Talk(); //쿠우 혼자면 null
-		//}
-
-
-	//}
-
-	/* 대화 */
-	m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-	m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
-
-	CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
-
-	TalkEvent();
+	// 임시로 monster에 
+	m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_MONSTER), &vSpotPos));
 }
 
 CBTNode::NODE_STATE CSubQuestNode_Windmill09::Tick(const _float& fTimeDelta)
@@ -78,33 +40,26 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill09::Tick(const _float& fTimeDelta)
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 
-	if (KEY_TAP(KEY::LBTN))
+	if (GI->Get_CurrentLevel() == LEVEL_EVERMORE)
 	{
-		Safe_Delete_Array(m_szpOwner);
-		Safe_Delete_Array(m_szpTalk);
-
-		m_iTalkIndex += 1;
-
-		if (m_iTalkIndex >= m_vecTalkDesc.size())
+		if (m_pQuestDestSpot != nullptr)
 		{
-			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+			m_pQuestDestSpot->Tick(fTimeDelta);
+			m_pQuestDestSpot->LateTick(fTimeDelta);
 
-			m_bIsClear = true;
-			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
+			if (m_pQuestDestSpot != nullptr)
+			{
+				if (m_pQuestDestSpot->Get_IsCol())
+				{
+					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
-			//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-			//if (nullptr != pActionCam)
-			//	pActionCam->Finish_Action_Talk();
-
-			return NODE_STATE::NODE_FAIL;
+					m_bIsClear = true;
+					m_pQuestDestSpot->Set_ReadyDelete(true);
+					Safe_Release(m_pQuestDestSpot);
+					return NODE_STATE::NODE_FAIL;
+				}
+			}
 		}
-
-		m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-		m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
-
-		CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
-
-		TalkEvent();
 	}
 
 	return NODE_STATE::NODE_RUNNING;
@@ -112,26 +67,6 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill09::Tick(const _float& fTimeDelta)
 
 void CSubQuestNode_Windmill09::LateTick(const _float& fTimeDelta)
 {
-}
-
-void CSubQuestNode_Windmill09::TalkEvent()
-{
-	wstring strAnimName = TEXT("");
-
-	switch (m_iTalkIndex)
-	{
-	case 0:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("00_KuuSay_Hey.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk01"));
-		break;
-	case 1:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("01_VerdeSay_haha comback.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pVerde->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pVerde->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Verde.ao|Verde_tlk"));
-		break;
-	}
-
 }
 
 CSubQuestNode_Windmill09* CSubQuestNode_Windmill09::Create()

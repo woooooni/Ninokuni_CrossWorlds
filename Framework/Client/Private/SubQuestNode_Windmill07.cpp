@@ -16,22 +16,12 @@ HRESULT CSubQuestNode_Windmill07::Initialize()
 	__super::Initialize();
 
 	m_strQuestTag = TEXT("[서브]");
-	m_strQuestName = TEXT("풍차 수리");
-	m_strQuestContent = TEXT("비어드에게 가기");
+	m_strQuestName = TEXT("비행기 배틀!");
+	m_strQuestContent = TEXT("비행기 배틀로 소녀를 혼내주자");
 
 	m_strNextQuestTag = TEXT("[서브]");
-	m_strNextQuestName = TEXT("풍차 수리");
-	m_strNextQuestContent = TEXT("베르디에게 돌아가기");
-
-
-	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/SubQuest/02. SubQuest02_Verde_WindmillRepair/SubQuest_Windmill07.json");
-
-	for (const auto& talkDesc : Load) {
-		TALK_DELS sTalkDesc;
-		sTalkDesc.strOwner = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(talkDesc["Owner"]));
-		sTalkDesc.strTalk = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(talkDesc["Talk"]));
-		m_vecTalkDesc.push_back(sTalkDesc);
-	}
+	m_strNextQuestName = TEXT("비행기 배틀!");
+	m_strNextQuestContent = TEXT("비행기 배틀로 소녀를 혼내주자");
 
 	return S_OK;
 }
@@ -39,39 +29,6 @@ HRESULT CSubQuestNode_Windmill07::Initialize()
 void CSubQuestNode_Windmill07::Start()
 {
 	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
-
-	/* 현재 퀘스트에 연관있는 객체들 */
-	//m_pKuu = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Kuu"));
-	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
-	m_pBeard = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"SwiftSolutionMaster");
-
-	m_vecTalker.push_back(m_pKuu);
-	m_vecTalker.push_back(m_pBeard);
-
-	/* 카메라 타겟 세팅 */
-	// CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"Kuu");
-
-	//if (nullptr != pTarget)
-	//{
-
-		// 임시 주석
-		//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-		//if (nullptr != pActionCam)
-		//{
-		//	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
-		//	pActionCam->Start_Action_Talk(); //쿠우 혼자면 null
-		//}
-
-
-	//}
-
-	/* 대화 */
-	m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-	m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
-
-	CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
-
-	TalkEvent();
 }
 
 CBTNode::NODE_STATE CSubQuestNode_Windmill07::Tick(const _float& fTimeDelta)
@@ -79,33 +36,13 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill07::Tick(const _float& fTimeDelta)
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 
-	if (KEY_TAP(KEY::LBTN))
+	// 여기서 게임 로직.
+	if (KEY_TAP(KEY::N))
 	{
-		Safe_Delete_Array(m_szpOwner);
-		Safe_Delete_Array(m_szpTalk);
+		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+		m_bIsClear = true;
 
-		m_iTalkIndex += 1;
-
-		if (m_iTalkIndex >= m_vecTalkDesc.size())
-		{
-			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
-
-			m_bIsClear = true;
-			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
-
-			//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-			//if (nullptr != pActionCam)
-			//	pActionCam->Finish_Action_Talk();
-
-			return NODE_STATE::NODE_FAIL;
-		}
-
-		m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-		m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
-
-		CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
-
-		TalkEvent();
+		return NODE_STATE::NODE_FAIL;
 	}
 
 	return NODE_STATE::NODE_RUNNING;
@@ -113,31 +50,6 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill07::Tick(const _float& fTimeDelta)
 
 void CSubQuestNode_Windmill07::LateTick(const _float& fTimeDelta)
 {
-}
-
-void CSubQuestNode_Windmill07::TalkEvent()
-{
-	wstring strAnimName = TEXT("");
-
-	switch (m_iTalkIndex)
-	{
-	case 0:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("00_KuuSay_Hey!.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Chloe.ao|Chloe_EmotionTalk"));
-		break;
-	case 1:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("01_BeardSay_ohh.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pBeard->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pBeard->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("c31106000_p200_970011_std"));
-		break;
-	case 2:
-		CSound_Manager::GetInstance()->Play_Sound(TEXT("02_KuuSay_OK.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Chloe.ao|Chloe_EmotionTalk"));
-		break;
-	}
-
 }
 
 CSubQuestNode_Windmill07* CSubQuestNode_Windmill07::Create()
