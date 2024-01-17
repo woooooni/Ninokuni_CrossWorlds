@@ -20,6 +20,8 @@ private:
 private:
 	CGameObject* m_pKuu = nullptr;
 
+	_bool		m_bIsStart = false;
+
 public:
 	static CMainQuestNode_Invasion02* Create();
 	virtual void Free() override;
