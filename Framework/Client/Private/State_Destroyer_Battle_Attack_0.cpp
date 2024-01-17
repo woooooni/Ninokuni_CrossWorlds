@@ -21,6 +21,7 @@ void CState_Destroyer_Battle_Attack_0::Enter_State(void* pArg)
     wstring strVoiceNum = to_wstring(CUtils::Random_Int(1, 5));
     CSound_Manager::GetInstance()->Play_Sound(L"Destroyer_V_Atk_Short_" + strVoiceNum + L".mp3", CHANNELID::SOUND_VOICE_CHARACTER, 0.5f, true);
 
+    m_pCharacter->Look_For_Target();
     m_pCharacter->Appear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }

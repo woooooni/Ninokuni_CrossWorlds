@@ -273,7 +273,7 @@ public:
 	void PickUp_Target();
 	void PickDown_Target();
 
-	void Look_For_Target();
+	void Look_For_Target(_bool bEnemy = true);
 
 public:
 	virtual HRESULT Enter_Character();

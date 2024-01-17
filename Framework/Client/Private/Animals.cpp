@@ -57,9 +57,11 @@ void CAnimals::LateTick(_float fTimeDelta)
 
 	__super::LateTick(fTimeDelta);
 
+	Compute_CamZ(m_pTransformCom->Get_Position());
+
 	if (TEXT("Animal_Whale") != m_strObjectTag)
 	{
-		if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 20.0f))
+		if (m_fCamDistance <= 30.f && true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 20.0f))
 		{
 
 			m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_SHADOW, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);

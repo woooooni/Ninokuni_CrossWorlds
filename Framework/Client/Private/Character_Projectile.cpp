@@ -63,7 +63,7 @@ void CCharacter_Projectile::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
 
-	if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 5.f))
+	if (false == m_bReserveDead && true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 5.f))
 	{
 		m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
 	}

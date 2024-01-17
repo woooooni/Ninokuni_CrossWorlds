@@ -14,6 +14,11 @@ HRESULT CState_Destroyer_Skill_LeafSlam::Initialize(const list<wstring>& Animati
     if (FAILED(__super::Initialize(AnimationList)))
         return E_FAIL;
 
+    m_MotionTrailDesc.fAlphaSpeed = 0.05f;
+    m_MotionTrailDesc.fBlurPower = 0.f;
+    m_MotionTrailDesc.vRimColor = { 0.2f, 0.8f, 1.f, 1.f };
+    m_MotionTrailDesc.vBloomPower = { 0.2f, 0.8f, 1.f };
+    m_MotionTrailDesc.fMotionTrailTime = 0.1f;
     
     return S_OK;
 }
@@ -27,6 +32,14 @@ void CState_Destroyer_Skill_LeafSlam::Enter_State(void* pArg)
     m_iCurrAnimIndex = m_AnimIndices[0];
     m_pModelCom->Set_Animation(m_iCurrAnimIndex);
     m_pCharacter->Look_For_Target();
+
+    m_bTrailStart = false;
+
+    if (false == m_bTrailStart)
+    {
+        m_bTrailStart = true;
+        m_pCharacter->Generate_MotionTrail(m_MotionTrailDesc);
+    }
 }
 
 void CState_Destroyer_Skill_LeafSlam::Tick_State(_float fTimeDelta)
@@ -44,6 +57,7 @@ void CState_Destroyer_Skill_LeafSlam::Tick_State(_float fTimeDelta)
             m_iCurrAnimIndex = m_AnimIndices[1];
             m_pModelCom->Set_Animation(m_iCurrAnimIndex);
             CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
+            m_pCharacter->Stop_MotionTrail();
             
         }
         else
@@ -57,7 +71,7 @@ void CState_Destroyer_Skill_LeafSlam::Tick_State(_float fTimeDelta)
 
 void CState_Destroyer_Skill_LeafSlam::Exit_State()
 {
-    
+    m_bTrailStart = false;
 }
 
 

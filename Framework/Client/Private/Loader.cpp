@@ -273,8 +273,8 @@ HRESULT CLoader::Loading_For_Level_Logo()
 
 
 	m_Threads[LOADING_THREAD::CHARACTER_MODEL_SWORDMAN] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::SWORD_MAN);
-//	m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);
-//	m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);
+	m_Threads[LOADING_THREAD::CHARACTER_MODEL_DESTROYER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::DESTROYER);
+	m_Threads[LOADING_THREAD::CHARACTER_MODEL_ENGINEER] = std::async(&CLoader::Loading_For_Character, this, CHARACTER_TYPE::ENGINEER);
 
 	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
 	{
@@ -392,7 +392,7 @@ HRESULT CLoader::Loading_For_Level_Lobby()
 			CMirror::Create(m_pDevice, m_pContext, TEXT("Common_Mirror"), OBJ_TYPE::OBJ_PROP),
 			LAYER_TYPE::LAYER_PROP)))
 			return E_FAIL;
-		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Mirror", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/CustomRoom", L"CustumRoomMirror")))
+		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Mirror", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/CustomRoom/", L"CustomRoomMirror")))
 			return E_FAIL;
 		// Mirror
 
@@ -630,6 +630,7 @@ HRESULT CLoader::Loading_For_Level_Tool()
 		CMirror::Create(m_pDevice, m_pContext, TEXT("Common_Mirror"), OBJ_TYPE::OBJ_PROP),
 		LAYER_TYPE::LAYER_PROP)))
 		return E_FAIL;
+
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Mirror", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/CustomRoom/", L"CustomRoomMirror")))
 		return E_FAIL;
 

@@ -103,8 +103,13 @@ HRESULT CEngineer_Bullet::Ready_Components()
 
 void CEngineer_Bullet::Collision_Enter(const COLLISION_INFO& tInfo)
 {
-	wstring strSoundKey = L"Hit_PC_Damage_Dummy_" + to_wstring(GI->RandomInt(1, 2)) + L".mp3";
-	GI->Play_Sound(strSoundKey, SOUND_MONSTERL_HIT, 0.3f, false);
+	__super::Collision_Enter(tInfo);
+	if ((tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_BOSS)
+		&& tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
+	{
+		wstring strSoundKey = L"Hit_PC_Damage_Dummy_" + to_wstring(GI->RandomInt(1, 2)) + L".mp3";
+		GI->Play_Sound(strSoundKey, SOUND_MONSTERL_HIT, 0.3f, false);
+	}
 }
 
 
@@ -138,7 +143,4 @@ CGameObject* CEngineer_Bullet::Clone(void* pArg)
 void CEngineer_Bullet::Free()
 {
 	__super::Free();
-	Safe_Release(m_pModelCom);
-	Safe_Release(m_pRendererCom);
-	Safe_Release(m_pTransformCom);
 }
