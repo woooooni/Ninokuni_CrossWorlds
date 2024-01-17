@@ -34,6 +34,7 @@
 #include "UI_Flare.h"
 #include "UI_CharacterDummy.h"
 #include "UI_CostumeTab_Map.h"
+#include "Mirror.h"
 
 #include "Spawner_Ice01.h"
 #include "Spawner_Ice02.h"
@@ -387,9 +388,12 @@ HRESULT CLoader::Loading_For_Level_Lobby()
 		if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_UI_CharacterDummy",
 			CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy")), LAYER_CHARACTER)))
 			return E_FAIL;
-
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Map_CostumRoom"),
 			CUI_CostumeTab_Map::Create(m_pDevice, m_pContext), LAYER_PROP)))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Map_Mirror"),
+			CMirror::Create(m_pDevice, m_pContext, TEXT("Map_Common_Mirror"), OBJ_TYPE::OBJ_PROP),
+			LAYER_TYPE::LAYER_PROP)))
 			return E_FAIL;
 
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Lobby_Dummy_Swordsman"),

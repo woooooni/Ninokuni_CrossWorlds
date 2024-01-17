@@ -18,6 +18,7 @@
 #include "Weapon_Manager.h"
 #include "UI_Dummy_Weapon.h"
 
+#include "Mirror.h"
 #include "UI_Fade.h"
 #include "UI_Veil.h"
 #include "UI_Basic.h"
@@ -638,6 +639,11 @@ HRESULT CUI_Manager::Ready_Dummy()
 	if (nullptr == pMap)
 		return E_FAIL;
 	m_pCustomMap = dynamic_cast<CUI_CostumeTab_Map*>(pMap);
+
+	CGameObject* pMirror = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Map_Mirror"), LAYER_TYPE::LAYER_PROP);
+	if (nullptr == pMirror)
+		return E_FAIL;
+	m_pCostumeMirror = dynamic_cast<CMirror*>(pMirror);
 
 	return S_OK;
 }
@@ -3295,6 +3301,12 @@ HRESULT CUI_Manager::Ready_GameObjectToLayer(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(m_pCustomMap);
 
+	if (nullptr == m_pCostumeMirror)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pCostumeMirror)))
+		return E_FAIL;
+	Safe_AddRef(m_pCostumeMirror);
+
 	if (nullptr == m_pUIFade)
 		return E_FAIL;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pUIFade)))
@@ -4053,6 +4065,7 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 {
 	m_pDummy->Tick(fTimeDelta);
 	m_pCustomMap->Tick(fTimeDelta);
+	m_pCostumeMirror->Tick(fTimeDelta);
 
 	if (nullptr != m_pUIMapName)
 	{
@@ -4116,6 +4129,7 @@ HRESULT CUI_Manager::LateTick_EvermoreLevel(_float fTimeDelta)
 {
 	m_pDummy->LateTick(fTimeDelta);
 	m_pCustomMap->LateTick(fTimeDelta);
+	m_pCostumeMirror->LateTick(fTimeDelta);
 
 	return S_OK;
 }
@@ -4124,6 +4138,7 @@ void CUI_Manager::LateTick_Dummy(_float fTimeDelta)
 {
 	m_pDummy->LateTick(fTimeDelta);
 	m_pCustomMap->LateTick(fTimeDelta);
+	m_pCostumeMirror->LateTick(fTimeDelta);
 }
 
 HRESULT CUI_Manager::Render_EvermoreLevel()
@@ -4137,6 +4152,8 @@ void CUI_Manager::Render_Dummy()
 {
 	m_pDummy->Render();
 	m_pCustomMap->Render();
+	m_pCostumeMirror->Render();
+	m_pCostumeMirror->Render_Reflect();
 }
 
 void CUI_Manager::Tick_Fade(_float fTimeDelta)
@@ -6054,12 +6071,14 @@ HRESULT CUI_Manager::OnOff_CostumeWindow(_bool bOnOff)
 
 			m_pDummy->Set_Active(true);
 			m_pCustomMap->Set_Active(true);
+			m_pCostumeMirror->Set_Active(true);
 
 			//OnOff_CloseButton(true);
 		}
 	}
 	else
 	{
+		m_pCostumeMirror->Set_Active(false);
 		m_pCustomMap->Set_Active(false);
 		m_pDummy->Set_Active(false);
 		m_pTabMenuTitle->Set_Active(false);
@@ -7738,6 +7757,7 @@ void CUI_Manager::Free()
 
 	Safe_Release(m_pDummy);
 	Safe_Release(m_pCustomMap);
+	Safe_Release(m_pCostumeMirror);
 	Safe_Release(m_pBossNameTag);
 
 	Safe_Release(m_pMapNameText);

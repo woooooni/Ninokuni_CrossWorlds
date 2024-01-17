@@ -32,11 +32,20 @@ public:
 public:
 	virtual HRESULT Ready_Components();
 
+public: // UI
+	void Set_Active(_bool bActive) { m_bActive = bActive; }
+
 private:
 	CShader* m_pShaderCom = nullptr;
 	CRenderer* m_pRendererCom = nullptr;
 	CTransform* m_pTransformCom = nullptr;
 	CModel* m_pModelCom = nullptr;
+
+private: // UI
+	_bool m_bActive = { false };
+	_vector m_vCamPosition = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+	_matrix m_vCamMatrix = XMMatrixIdentity();
+	_float4x4 m_ViewMatrix;
 
 public:
 	static CMirror* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eObjType);
