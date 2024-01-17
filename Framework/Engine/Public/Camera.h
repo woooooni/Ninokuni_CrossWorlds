@@ -164,13 +164,17 @@ public:
 	void Set_Fov(const _float& fFov) { memcpy(&m_tProjDesc.tLerpFov, &fFov, sizeof(_float)); }
 	void Start_Lerp_Fov(const _float& fStartValue, const _float& fTargetValue, const _float& fTime, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
 	void Start_Lerp_Fov(const _float& fTargetValue, const _float& fTime = 0.5f, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
-	
+	void Lock_Fov(const _bool& bLock) { m_bLockFov = bLock; }
+	const _bool& Is_Lock_Fov() const { return m_bLockFov; } /* 애니메이션 카메라 이벤트 호출 방지용 */
+
 	/* Distance */
 	void Set_Distance(const _float& fDistance) { memcpy(&m_tLerpDist.fCurValue, &fDistance, sizeof(_float)); }
 	const _float& Get_Distance() const { return m_tLerpDist.fCurValue; }
 	const _bool& Is_Lerp_Distance() const { return m_tLerpDist.bActive; }
 	void Start_Lerp_Distance(const _float& fStartValue, const _float& fTargetValue, const _float& fTime, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
 	void Start_Lerp_Distance(const _float& fTargetValue, const _float& fTime, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
+	void Lock_Dist(const _bool& bLock) { m_bLockDist = bLock; }
+	const _bool& Is_Lock_Dist() const { return m_bLockDist; }
 
 	/* Target, LookAt - Object */
 	CGameObject* Get_TargetObj() const { return m_pTargetObj; }
@@ -225,11 +229,12 @@ protected:
 
 	/* Proj */
 	PROJ_DESC			m_tProjDesc		= {};
+	_bool				m_bLockFov		= { false };
 
 	/* Dist */
 	LERP_FLOAT_DESC		m_tLerpDist		= {};
 	_float				m_fPrevDist		= { 0.f };
-
+	_bool				m_bLockDist		= { false };
 	/* Target, Look */
 	LERP_VEC4_DESC		m_tTargetOffset = {};
 	LERP_VEC4_DESC		m_tLookAtOffset = {};
@@ -249,6 +254,10 @@ protected:
 
 	/* Blendgin */
 	_bool				m_bBlending		= { false };
+
+
+
+	
 
 protected:
 	virtual HRESULT Ready_Components() override;

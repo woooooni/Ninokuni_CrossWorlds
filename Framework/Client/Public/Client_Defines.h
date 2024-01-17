@@ -111,10 +111,12 @@ namespace Client
 	const wstring		CameraWstringNames[CAMERA_TYPE::CAMERA_TYPE_END]{ L"Camera_Free", L"Camera_Follow", L"Camera_CutScene_Map", L"Camera_CutScene_Boss", L"Camera_Action" };
 	
 	static const _float Cam_Dist_Follow_Default				= 4.5f;
+	static const _float Cam_Dist_Follow_Wide				 = 6.f;
 
 	static const _float Cam_Fov_Default						= XMConvertToRadians(60.0f);
 	static const _float Cam_Fov_Free_Default				= XMConvertToRadians(60.0f);
 	static const _float Cam_Fov_Follow_Default				= XMConvertToRadians(60.0f);
+	static const _float Cam_Fov_Follow_Wide					= XMConvertToRadians(75.0f);
 	static const _float Cam_Fov_Action_Lobby				= XMConvertToRadians(52.5f);
 	static const _float Cam_Fov_CutScene_Map_Default		= XMConvertToRadians(70.0f);
 	static const _float Cam_Fov_CutScene_Boss_Default		= XMConvertToRadians(70.0f);
@@ -127,7 +129,6 @@ namespace Client
 	static const Vec4	Cam_TargetOffset_Top_Glanix_Zoom = { -13.f, 8.f, 0.f, 1.f };
 	static const Vec4	Cam_LookAtOffset_Top_Glanix = { 0.f, 0.f, 0.f, 1.f };
 	static const Vec4	Cam_LookAtOffset_Top_Glanix_Zoom = { 5.f, 0.f, 0.f, 1.f };
-
 
 #define MAX_BEZIER_POINT 4
 

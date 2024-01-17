@@ -145,6 +145,11 @@ HRESULT CCamera_Action::Start_Action_Door()
 	if (nullptr == pPlayer)
 		return E_FAIL;
 
+	/* 팔로우 카메라 와이드 뷰 세팅 풀어주기 */
+	CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+	if (nullptr != pFollowCam)
+		pFollowCam->Reset_WideView_To_DefaultView();
+
 	m_eCurActionType = CAMERA_ACTION_TYPE::DOOR;
 
 	m_bAction = true;
