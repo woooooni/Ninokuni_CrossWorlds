@@ -886,7 +886,8 @@ HRESULT CCharacter::Tag_In(Vec4 vInitializePosition)
 		if (nullptr != pFollowCam)
 		{
 			pFollowCam->Set_TargetObj(this);
-			pFollowCam->Set_LookAtObj(this);
+			if(!pFollowCam->Is_LockOn())
+				pFollowCam->Set_LookAtObj(this);
 		}
 	}
 

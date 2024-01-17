@@ -210,6 +210,11 @@ public:
 	void Set_MouseSensitivity_X(const _float& fX) { m_vMouseSensitivity.x = fX; }
 	void Set_MouseSensitivity_Y(const _float& fY) { m_vMouseSensitivity.y = fY; }
 
+	void Set_MouseInputInvert_X(const _bool& bInvert) { m_vMouseInputInvert.x = (bInvert) ? -1.f : 1.f; }
+	void Set_MouseInputInvert_Y(const _bool& bInvert) { m_vMouseInputInvert.y = (bInvert) ? -1.f : 1.f; }
+
+	const Vec2& Get_MouseInputInvert() const { return m_vMouseInputInvert; }
+
 	void Set_CanInput(const _bool& bInput) { m_bCanInput = bInput; }
 
 	/* Shake */
@@ -235,6 +240,7 @@ protected:
 	LERP_FLOAT_DESC		m_tLerpDist		= {};
 	_float				m_fPrevDist		= { 0.f };
 	_bool				m_bLockDist		= { false };
+
 	/* Target, Look */
 	LERP_VEC4_DESC		m_tTargetOffset = {};
 	LERP_VEC4_DESC		m_tLookAtOffset = {};
@@ -248,6 +254,7 @@ protected:
 	/* Input */
 	_bool				m_bCanInput		= { true };
 	Vec2				m_vMouseSensitivity = { 1.f, 1.f };
+	Vec2				m_vMouseInputInvert = { 1.f, 1.f };
 
 	/* Shake */
 	SHAKE_DESC			m_tShakeDesc	= {};

@@ -96,8 +96,8 @@ public:
 	void ParabolicFormula(const Vec3& startPos, const Vec3& endPos, const _float fTimeDelta,
 		const _float& maxHeight = 150.0f, const _float& maxTime = 3.6f);
 	XMVECTOR Get_WorldRotation() { return m_vRotation; }
-
-
+	
+	void ResetTime() { m_fTime = 0.0f; }
 private:
 	_float4x4				m_WorldMatrix;
 	XMVECTOR m_vRotation = ::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);

@@ -110,8 +110,8 @@ namespace Client
 	
 	const wstring		CameraWstringNames[CAMERA_TYPE::CAMERA_TYPE_END]{ L"Camera_Free", L"Camera_Follow", L"Camera_CutScene_Map", L"Camera_CutScene_Boss", L"Camera_Action" };
 	
-	static const _float Cam_Dist_Follow_Default				= 4.5f;
-	static const _float Cam_Dist_Follow_Wide				 = 6.f;
+	static const _float Cam_Dist_Follow_Default					= 4.5f;
+	static const _float Cam_Dist_Follow_Wide					= 6.f;
 
 	static const _float Cam_Fov_Default						= XMConvertToRadians(60.0f);
 	static const _float Cam_Fov_Free_Default				= XMConvertToRadians(60.0f);

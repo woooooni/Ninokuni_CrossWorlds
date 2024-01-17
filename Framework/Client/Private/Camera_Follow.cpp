@@ -618,14 +618,36 @@ void CCamera_Follow::Check_WideView(_float fTimeDelta)
 void CCamera_Follow::Test(_float fTimeDelta)
 {
 	/* CutScene - Evermore */
-	if (KEY_TAP(KEY::INSERT))
-	{
-		vector<string> CutSceneNames;
-		CutSceneNames.push_back("Evermore_Street_00");
-		CutSceneNames.push_back("Evermore_Street_01");
+	//if (KEY_TAP(KEY::INSERT))
+	//{
+	//	vector<string> CutSceneNames;
+	//	CutSceneNames.push_back("Evermore_Street_00");
+	//	CutSceneNames.push_back("Evermore_Street_01");
+	//
+	//	dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP))->Start_CutScenes(CutSceneNames);
+	//}
+	
+	//if (KEY_TAP(KEY::HOME))
+	//{
+	//	const _float fLerpTime = 1.f;
+	//	const LERP_MODE eLerpMode = LERP_MODE::SMOOTHER_STEP;
+	//
+	//	Start_Lerp_Distance(40.f, fLerpTime, eLerpMode);
+	//	Start_Lerp_Fov(XMConvertToRadians(85.f), fLerpTime, eLerpMode);
+	//	Lerp_TargetOffset(Cam_TargetOffset_Follow_Default, Vec4{ 0.7f, 20.f, 0.f, 1.f }, fLerpTime, eLerpMode);
+	//	Lerp_LookAtOffSet(Cam_LookAtOffset_Follow_Default, Vec4{ 0.7f, 30.f, 0.f, 1.f }, fLerpTime, eLerpMode);
+	//}
 
-		dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP))->Start_CutScenes(CutSceneNames);
-	}
+	/*if (KEY_TAP(KEY::END_KEY))
+	{
+		const _float fLerpTime = 1.f;
+		const LERP_MODE eLerpMode = LERP_MODE::SMOOTHER_STEP;
+
+		Start_Lerp_Distance(Cam_Dist_Follow_Default, fLerpTime, eLerpMode);
+		Start_Lerp_Fov(Cam_Fov_Follow_Default, fLerpTime, eLerpMode);
+		Lerp_TargetOffset(Vec4{ 0.7f, 15.f, 0.f, 1.f }, Cam_TargetOffset_Follow_Default, fLerpTime, eLerpMode);
+		Lerp_LookAtOffSet(Vec4{ 0.7f, 15.f, 0.f, 1.f }, Cam_LookAtOffset_Follow_Default, fLerpTime, eLerpMode);
+	}*/
 }
 
 CCamera_Follow * CCamera_Follow::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
