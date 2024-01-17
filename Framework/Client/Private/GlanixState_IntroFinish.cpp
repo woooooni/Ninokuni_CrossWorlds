@@ -35,6 +35,7 @@ HRESULT CGlanixState_IntroFinish::Initialize(const list<wstring>& AnimationList)
 void CGlanixState_IntroFinish::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_IntroFinish01"), 0.3f);
+	m_bEffectCreate = false;
 }
 
 void CGlanixState_IntroFinish::Tick_State(_float fTimeDelta)
@@ -58,14 +59,14 @@ void CGlanixState_IntroFinish::Tick_State(_float fTimeDelta)
 		CUI_Manager::GetInstance()->OnOff_BossNameTag(true);
 
 	// Effect Create
-	if (!m_bEffectCreate && m_pModelCom->Get_CurrAnimationFrame() >= 84)
+	if (!m_bEffectCreate && !m_pModelCom->Is_Tween() && m_pModelCom->Get_CurrAnimationFrame() >= 84)
 	{
 		m_bEffectCreate = true;
 
 		CTransform* pTransformCom = m_pGlanix->Get_Component<CTransform>(L"Com_Transform");
 		if (pTransformCom == nullptr)
 			return;
-		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Atchi"), pTransformCom->Get_WorldMatrix(), _float3(1.f, 3.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Atchi_03"), pTransformCom->Get_WorldMatrix(), _float3(1.f, 3.f, 1.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
 	}
 
 	if (!m_pModelCom->Is_Tween() && m_pModelCom->Get_Progress() >= 0.95f && !m_bFadeOut)
