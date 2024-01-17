@@ -387,7 +387,7 @@ HRESULT CLoader::Loading_For_Level_Lobby()
 			return E_FAIL;
 
 		if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_UI_CharacterDummy",
-			CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy")), LAYER_CHARACTER)))
+			CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy"), CHARACTER_TYPE::SWORD_MAN), LAYER_CHARACTER)))
 			return E_FAIL;
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Map_CostumRoom"),
 			CUI_CostumeTab_Map::Create(m_pDevice, m_pContext), LAYER_PROP)))
@@ -552,7 +552,7 @@ HRESULT CLoader::Loading_For_Level_Test()
 	m_strLoading = TEXT("객체원형을 로딩 중 입니다.");
 
 	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_UI_CharacterDummy",
-		CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy")), LAYER_CHARACTER)))
+		CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy"), CHARACTER_TYPE::SWORD_MAN), LAYER_CHARACTER)))
 		return E_FAIL;
 
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
