@@ -44,6 +44,8 @@ private:
 
 	_bool m_bFirst = true;
 
+	_float m_fEffectAcc = 0.f;
+
 public:
 	static CGlanix_IceBall* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;
