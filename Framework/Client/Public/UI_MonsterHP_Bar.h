@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Client_Defines.h"
 #include "UI.h"
 
 BEGIN(Client)
@@ -11,7 +12,7 @@ protected:
 	virtual ~CUI_MonsterHP_Bar() = default;
 
 public:
-	void Set_MonsterInfo(CMonster* pOwne);
+	void Set_MonsterInfo(class CMonster* pOwner);
 
 public:
 	virtual HRESULT	Initialize_Prototype();
