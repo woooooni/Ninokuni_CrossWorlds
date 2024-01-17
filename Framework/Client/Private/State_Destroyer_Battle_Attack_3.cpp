@@ -18,6 +18,7 @@ HRESULT CState_Destroyer_Battle_Attack_3::Initialize(const list<wstring>& Animat
 
 void CState_Destroyer_Battle_Attack_3::Enter_State(void* pArg)
 {
+    m_pCharacter->Look_For_Target();
     wstring strVoiceNum = to_wstring(CUtils::Random_Int(1, 3));
     CSound_Manager::GetInstance()->Play_Sound(L"Destroyer_V_Atk_Long_" + strVoiceNum + L".mp3", CHANNELID::SOUND_VOICE_CHARACTER, 0.5f, true);
 

@@ -10,6 +10,7 @@
 
 #include "SwordMan_AuraBlade.h"
 #include "Engineer_Bullet.h"
+#include "Engineer_Bullet_Bomb.h"
 
 #include "Skill_Manager.h"
 
@@ -111,6 +112,12 @@ HRESULT CCharacter_Manager::Ready_Characters()
 		return E_FAIL;
 
 
+
+	
+	
+	
+
+#pragma region SwordMan
 	CCharacter::CHARACTER_STAT StatDesc;
 	StatDesc.iLevel = 1;
 	StatDesc.iAtt = 1200;
@@ -119,11 +126,7 @@ HRESULT CCharacter_Manager::Ready_Characters()
 	StatDesc.iMaxHp = 800;
 	StatDesc.iExp = 0;
 	StatDesc.iMaxExp = 100;
-	
-	
-	
 
-#pragma region SwordMan
 	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_SwordMan_AuraBlade", CSwordMan_AuraBlade::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
 		return E_FAIL;
 
@@ -148,7 +151,10 @@ HRESULT CCharacter_Manager::Ready_Characters()
 
 
 	///* Engineer */
-	/*if(FAILED(GI->Add_Prototype(L"Prototype_GameObject_Engineer_Bullet", CEngineer_Bullet::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
+	if(FAILED(GI->Add_Prototype(L"Prototype_GameObject_Engineer_Bullet", CEngineer_Bullet::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Engineer_Bullet_Bomb", CEngineer_Bullet_Bomb::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_Engineer", CCharacter_Engineer::Create(m_pDevice, m_pContext, L"Engineer"), LAYER_CHARACTER, true)))
@@ -160,7 +166,7 @@ HRESULT CCharacter_Manager::Ready_Characters()
 
 	m_pCharacters[CHARACTER_TYPE::ENGINEER] = dynamic_cast<CCharacter*>(pCharacterEngineer->Clone(&StatDesc));
 	if (nullptr == m_pCharacters[CHARACTER_TYPE::ENGINEER])
-		return E_FAIL;*/
+		return E_FAIL;
 #pragma endregion
 
 #pragma region Destroyer
@@ -169,7 +175,7 @@ HRESULT CCharacter_Manager::Ready_Characters()
 	StatDesc.iHp = 1000;
 	StatDesc.iMaxHp = 1000;
 
-	/*if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_Destroyer", CCharacter_Destroyer::Create(m_pDevice, m_pContext, L"Destroyer"), LAYER_CHARACTER, true)))
+	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_Destroyer", CCharacter_Destroyer::Create(m_pDevice, m_pContext, L"Destroyer"), LAYER_CHARACTER, true)))
 		return E_FAIL;
 
 	
@@ -180,7 +186,7 @@ HRESULT CCharacter_Manager::Ready_Characters()
 
 	m_pCharacters[CHARACTER_TYPE::DESTROYER] = dynamic_cast<CCharacter*>(pCharacterDestroyer->Clone(&StatDesc));
 	if (nullptr == m_pCharacters[CHARACTER_TYPE::DESTROYER])
-		return E_FAIL;*/
+		return E_FAIL;
 #pragma endregion
 
 	return S_OK;

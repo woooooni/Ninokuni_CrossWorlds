@@ -792,6 +792,28 @@ namespace Engine
 	} MOTION_TRAIL_DESC;
 #pragma endregion
 
+#pragma region COUNTER_FX
+	typedef struct tagCounterFXDesc
+	{
+		class CModel* pModel = nullptr;
+		class CModel* pRenderModel = nullptr;
+		TWEEN_DESC TweenDesc = {};
+
+		Matrix WorldMatrix = Matrix::Identity;
+
+		_float fBlurPower = 0.f;
+		_float3 vBloomPower = {};
+		_float4 vRimColor = {};
+
+
+		_float fAlphaSpeed = 1.f;
+
+		_float fAccMotionTrail = 0.f;
+		_float fMotionTrailTime = 0.05f;
+
+	} COUNTER_FX_DESC;
+#pragma endregion
+
 #pragma region AnimModelInstance
 	typedef struct tagAnimModelInstanceDesc
 	{

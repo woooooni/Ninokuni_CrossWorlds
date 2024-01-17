@@ -21,6 +21,12 @@ HRESULT CState_SwordMan_Skill_SpinningAssault::Initialize(const list<wstring>& A
 {
     if (FAILED(__super::Initialize(AnimationList)))
         return E_FAIL;
+
+    m_MotionTrailDesc.fAlphaSpeed = 0.05f;
+    m_MotionTrailDesc.fBlurPower = 0.f;
+    m_MotionTrailDesc.vRimColor = { 0.2f, 0.8f, 1.f, 1.f };
+    m_MotionTrailDesc.vBloomPower = { 0.2f, 0.8f, 1.f };
+    m_MotionTrailDesc.fMotionTrailTime = 0.1f;
     
     return S_OK;
 }
@@ -39,13 +45,6 @@ void CState_SwordMan_Skill_SpinningAssault::Enter_State(void* pArg)
     if (pTransformCom == nullptr)
         return;
     GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_SwordMan_Skill_SpinningAssault"), pTransformCom->Get_WorldMatrix(), m_pCharacter);
-
-
-    m_MotionTrailDesc.fAlphaSpeed = 0.05f;
-    m_MotionTrailDesc.fBlurPower = 0.f;
-    m_MotionTrailDesc.vRimColor = { 0.2f, 0.8f, 1.f, 1.f };
-    m_MotionTrailDesc.vBloomPower = { 0.2f, 0.8f, 1.f };
-    m_MotionTrailDesc.fMotionTrailTime = 0.1f;
 
     m_bTrailStart = false;
 }

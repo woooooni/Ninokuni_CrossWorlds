@@ -248,6 +248,7 @@
     <ClInclude Include="..\Public\Character_Projectile.h" />
     <ClInclude Include="..\Public\Chloe.h" />
     <ClInclude Include="..\Public\ColliderWall.h" />
+    <ClInclude Include="..\Public\Counter_FX.h" />
     <ClInclude Include="..\Public\Decal.h" />
     <ClInclude Include="..\Public\Dochi.h" />
     <ClInclude Include="..\Public\Door_Enter_FX.h" />
@@ -256,6 +257,7 @@
     <ClInclude Include="..\Public\Edellian.h" />
     <ClInclude Include="..\Public\Enbi.h" />
     <ClInclude Include="..\Public\Engineer_Bullet.h" />
+    <ClInclude Include="..\Public\Engineer_Bullet_Bomb.h" />
     <ClInclude Include="..\Public\Ermine.h" />
     <ClInclude Include="..\Public\EvermoreWater.h" />
     <ClInclude Include="..\Public\Fox.h" />
@@ -976,6 +978,7 @@
     <ClCompile Include="..\Private\Character_Projectile.cpp" />
     <ClCompile Include="..\Private\Chloe.cpp" />
     <ClCompile Include="..\Private\ColliderWall.cpp" />
+    <ClCompile Include="..\Private\Counter_FX.cpp" />
     <ClCompile Include="..\Private\Decal.cpp" />
     <ClCompile Include="..\Private\Dochi.cpp" />
     <ClCompile Include="..\Private\Door_Enter_FX.cpp" />
@@ -984,6 +987,7 @@
     <ClCompile Include="..\Private\Edellian.cpp" />
     <ClCompile Include="..\Private\Enbi.cpp" />
     <ClCompile Include="..\Private\Engineer_Bullet.cpp" />
+    <ClCompile Include="..\Private\Engineer_Bullet_Bomb.cpp" />
     <ClCompile Include="..\Private\Ermine.cpp" />
     <ClCompile Include="..\Private\EvermoreWater.cpp" />
     <ClCompile Include="..\Private\Fox.cpp" />

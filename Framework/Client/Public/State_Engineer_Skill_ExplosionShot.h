@@ -25,6 +25,12 @@ public:
 	virtual void Tick_State(_float fTimeDelta) override;
 	virtual void Exit_State() override;
 
+private:
+	_bool m_bShoot = false;
+
+private:
+	void Shoot();
+
 public:
 	static CState_Engineer_Skill_ExplosionShot* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

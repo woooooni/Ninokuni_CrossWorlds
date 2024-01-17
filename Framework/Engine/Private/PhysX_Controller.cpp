@@ -131,9 +131,12 @@ void CPhysX_Controller::LateTick_Controller(_float fTimeDelta)
 
 void CPhysX_Controller::Set_Active(_bool bActive)
 {
+	while (false == GI->Is_PhysX_Valid()) {}
+
 	m_pPhysXController->getActor()->setActorFlag(PxActorFlag::eVISUALIZATION, bActive);
 	m_pPhysXController->getActor()->setActorFlag(PxActorFlag::eDISABLE_SIMULATION, !bActive);
-
+	m_pPhysXController->invalidateCache();
+	
 	m_bActive = bActive;
 }
 

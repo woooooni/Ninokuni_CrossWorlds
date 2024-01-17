@@ -23,6 +23,7 @@
 #include "UI_World_NameTag.h"
 #include "MonsterProjectile.h"
 #include "Camera_Follow.h"
+#include "Kuu.h"
 
 USING(Client)
 CCharacter::CCharacter(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eCharacterType)
@@ -431,7 +432,8 @@ void CCharacter::Collision_Enter(const COLLISION_INFO& tInfo)
 		}
 	}
 
-	if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK)
+	if ((tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_BOSS )
+		&& tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK)
 	{
 		wstring strSoundKey = L"";
 		switch (m_eCharacterType)
@@ -807,10 +809,16 @@ void CCharacter::PickDown_Target()
 
 }
 
-void CCharacter::Look_For_Target()
+void CCharacter::Look_For_Target(_bool bEnemy)
 {
 	if (nullptr == m_pTarget)
 		return;
+
+	if (true == bEnemy)
+	{
+		if (m_pTarget->Get_ObjectType() != OBJ_TYPE::OBJ_MONSTER && m_pTarget->Get_ObjectType() != OBJ_TYPE::OBJ_BOSS)
+			return;
+	}
 
 	CTransform* pTargetTransform = m_pTarget->Get_Component<CTransform>(L"Com_Transform");
 	if (nullptr == pTargetTransform)
@@ -870,6 +878,8 @@ HRESULT CCharacter::Tag_In(Vec4 vInitializePosition)
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vInitializePosition, 1.f));
 	m_pControllerCom->Set_Active(true);
 	m_pControllerCom->Set_EnterLevel_Position(XMVectorSetW(vInitializePosition, 1.f));
+
+	CGame_Manager::GetInstance()->Get_Kuu()->Set_KuuTarget_Player();
 	if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))
 	{
 		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
