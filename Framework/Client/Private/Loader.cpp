@@ -45,14 +45,18 @@
 #include "Glanix_IceBall.h"
 #include "Glanix_Icicle.h"
 
-#include "Stellia.h"
-#include "DMWitch.h"
 #include "Baobam_Water.h"
 #include "Shadow_Thief.h"
 #include "IceBearMan.h"
+
+#include "Stellia.h"
+#include "DMWitch.h"
+
+#include "Spawner_Witch01.h"
 #include "PumpkinCandle.h"
 #include "Clown.h"
 #include "Clown_Wizard.h"
+#include "Clown_Wizard_DarkBall.h"
 #include "Baobam_Dark.h"
 #include "Player.h"
 
@@ -392,7 +396,7 @@ HRESULT CLoader::Loading_For_Level_Lobby()
 			CMirror::Create(m_pDevice, m_pContext, TEXT("Common_Mirror"), OBJ_TYPE::OBJ_PROP),
 			LAYER_TYPE::LAYER_PROP)))
 			return E_FAIL;
-		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Mirror", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/CustomRoom", L"CustumRoomMirror")))
+		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Mirror", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/CustomRoom/", L"CustomRoomMirror")))
 			return E_FAIL;
 		// Mirror
 
@@ -1245,23 +1249,29 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Spawner_Ice03", CSpawner_Ice03::Create(m_pDevice, m_pContext, TEXT("Spawner_Ice03")), LAYER_MONSTER, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Stellia", CStellia::Create(m_pDevice, m_pContext, TEXT("Stellia"), statDesc), LAYER_MONSTER, true)))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_DreamerMazeWitch", CDMWitch::Create(m_pDevice, m_pContext, TEXT("DreamerMazeWitch"), statDesc), LAYER_MONSTER, true)))
-		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Baobam_Water", CBaobam_Water::Create(m_pDevice, m_pContext, TEXT("Baobam_Water"), statDesc), LAYER_MONSTER, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Shadow_Thief", CShadow_Thief::Create(m_pDevice, m_pContext, TEXT("Shadow_Thief"), statDesc), LAYER_MONSTER, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_IceBearMan", CIceBearMan::Create(m_pDevice, m_pContext, TEXT("IceBearMan"), statDesc), LAYER_MONSTER, true)))
 		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Stellia", CStellia::Create(m_pDevice, m_pContext, TEXT("Stellia"), statDesc), LAYER_MONSTER, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_DreamerMazeWitch", CDMWitch::Create(m_pDevice, m_pContext, TEXT("DreamerMazeWitch"), statDesc), LAYER_MONSTER, true)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Spawner_Witch01", CSpawner_Witch01::Create(m_pDevice, m_pContext, TEXT("Spawner_Witch01")), LAYER_MONSTER, true)))
+		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_PumpkinCandle", CPumpkinCandle::Create(m_pDevice, m_pContext, TEXT("PumpkinCandle"), statDesc), LAYER_MONSTER, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Clown", CClown::Create(m_pDevice, m_pContext, TEXT("Clown"), statDesc), LAYER_MONSTER, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Clown_Wizard", CClown_Wizard::Create(m_pDevice, m_pContext, TEXT("Clown"), statDesc), LAYER_MONSTER, true)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Clown_Wizard", CClown_Wizard::Create(m_pDevice, m_pContext, TEXT("Clown_Wizard"), statDesc), LAYER_MONSTER, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Baobam_Dark", CBaobam_Dark::Create(m_pDevice, m_pContext, TEXT("Clown"), statDesc), LAYER_MONSTER, true)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Clown_Wizard_DarkBall", CClown_Wizard_DarkBall::Create(m_pDevice, m_pContext, TEXT("Clown_Wizard_DarkBall")), LAYER_PROP, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Baobam_Dark", CBaobam_Dark::Create(m_pDevice, m_pContext, TEXT("Baobam_Dark"), statDesc), LAYER_MONSTER, true)))
 		return E_FAIL;
 
 

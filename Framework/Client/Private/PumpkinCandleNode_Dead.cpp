@@ -2,9 +2,8 @@
 #include "PumpkinCandleNode_Dead.h"
 
 #include "BehaviorTree.h"
-
-
 #include "Model.h"
+#include "RigidBody.h"
 
 CPumpkinCandleNode_Dead::CPumpkinCandleNode_Dead()
 {
@@ -14,19 +13,43 @@ HRESULT CPumpkinCandleNode_Dead::Initialize_Prototype(CMonsterBT::BT_MONSTERDESC
 {
 	__super::Initialize_Prototype(pDesc, pBT);
 
+	m_fBlowDeadTime = 1.5f;
+
 	return S_OK;
 }
 
 void CPumpkinCandleNode_Dead::Start()
 {
-	m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_PumpkinCandle.ao|PumpkinCandle_Death"));
+	if (dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_BLOWDEAD))
+	{
+		m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_PumpkinCandle.ao|PumpkinCandle_KnockUp_Start"));
+		m_tBTMonsterDesc.pOwner->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Add_Velocity(
+			-m_tBTMonsterDesc.pOwnerTransform->Get_Look()
+			, dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_Stat().fAirDeadVelocity, false);
+	}
+	else
+	{
+		m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_PumpkinCandle.ao|PumpkinCandle_Death"));
+	}
 }
 
 CBTNode::NODE_STATE CPumpkinCandleNode_Dead::Tick(const _float& fTimeDelta)
 {
 	if (m_tBTMonsterDesc.pOwnerModel->Is_Finish() && !m_tBTMonsterDesc.pOwnerModel->Is_Tween())
 	{
-		m_tBTMonsterDesc.pOwner->Reserve_Dead(true);
+		if (dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_BLOWDEAD))
+		{
+			if (m_tBTMonsterDesc.pOwner->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Is_Ground())
+			{
+				m_fTime += fTimeDelta;
+				if (m_fTime > m_fBlowDeadTime)
+				{
+					m_tBTMonsterDesc.pOwner->Reserve_Dead(true);
+				}
+			}
+		}
+		else
+			m_tBTMonsterDesc.pOwner->Reserve_Dead(true);
 	}
 
 	return NODE_STATE::NODE_RUNNING;

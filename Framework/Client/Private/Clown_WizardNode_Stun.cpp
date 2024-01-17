@@ -26,13 +26,6 @@ CBTNode::NODE_STATE CClown_WizardNode_Stun::Tick(const _float& fTimeDelta)
 	if (!dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_STUN))
 		return NODE_STATE::NODE_FAIL;
 
-	// 스턴 시 피격
-	if (dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_WEAK))
-	{
-		GI->Play_Sound(TEXT("../Bin/Resources/Sound/Monster/ClownWizard/ClownWizard_V_Dmg_1_2.ogg"), CHANNELID::SOUND_VOICE_MONSTER3, 0.4f, true);
-		dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_WEAK, false);
-	}
-
 	m_fTime += fTimeDelta;
 
 	if (m_fTime >= dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_StunTime())

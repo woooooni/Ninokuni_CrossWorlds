@@ -17,14 +17,27 @@ HRESULT CClown_WizardNode_Attack2::Initialize_Prototype(CMonsterBT::BT_MONSTERDE
 
 void CClown_WizardNode_Attack2::Start()
 {
-	m_tBTMonsterDesc.pOwnerTransform->LookAt_ForLandObject(m_tBTMonsterDesc.pOwner->Get_TargetDesc().pTragetTransform->Get_Position());
-	m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_ClownWizard.ao|ClownWizard_Attack02"));
-	dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK, true);
+	m_bIsAtk = false;
+
+	m_fLength = Vec4(m_tBTMonsterDesc.pOwner->Get_TargetDesc().pTragetTransform->Get_Position()
+		- m_tBTMonsterDesc.pOwnerTransform->Get_Position()).Length();
+
+	if (m_fLength < 2.f)
+	{
+		m_bIsAtk = true;
+
+		m_tBTMonsterDesc.pOwnerTransform->LookAt_ForLandObject(m_tBTMonsterDesc.pOwner->Get_TargetDesc().pTragetTransform->Get_Position());
+		m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_ClownWizard.ao|ClownWizard_Attack02"));
+		dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK, true);
+	}
 }
 
 CBTNode::NODE_STATE CClown_WizardNode_Attack2::Tick(const _float& fTimeDelta)
 {
-	return __super::Atk_BehaviorTick(TEXT("SKM_ClownWizard.ao|ClownWizard_Attack02"), 1.f, fTimeDelta);
+	if (!m_bIsAtk)
+		return NODE_STATE::NODE_SUCCESS;
+	else
+		return __super::Atk_BehaviorTick(1.f, fTimeDelta);
 }
 
 CClown_WizardNode_Attack2* CClown_WizardNode_Attack2::Create(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT)

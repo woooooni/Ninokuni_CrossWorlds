@@ -24,7 +24,7 @@ void CClownNode_Attack2::Start()
 
 CBTNode::NODE_STATE CClownNode_Attack2::Tick(const _float& fTimeDelta)
 {
-	return __super::Atk_BehaviorTick(TEXT("SKM_Clown.ao|Clown_Attack02"), 1.f, fTimeDelta);
+	return __super::Atk_BehaviorTick(1.f, fTimeDelta);
 }
 
 CClownNode_Attack2* CClownNode_Attack2::Create(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT)

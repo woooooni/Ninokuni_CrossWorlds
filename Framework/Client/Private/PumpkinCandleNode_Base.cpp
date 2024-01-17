@@ -23,13 +23,12 @@ CBTNode::NODE_STATE CPumpkinCandleNode_Base::Tick(const _float& fTimeDelta)
 	return NODE_STATE::NODE_RUNNING;
 }
 
-CBTNode::NODE_STATE CPumpkinCandleNode_Base::Atk_BehaviorTick(const wstring& strAnimName, _float fDestWaitTime, const _float& fTimeDelta)
+CBTNode::NODE_STATE CPumpkinCandleNode_Base::Atk_BehaviorTick(_float fDestWaitTime, const _float& fTimeDelta)
 {
 	if (m_bIsSucces)
 		return NODE_STATE::NODE_SUCCESS;
 
-	if (m_tBTMonsterDesc.pOwnerModel->Is_Fix() && m_tBTMonsterDesc.pOwnerModel->Is_Finish() &&
-		!m_bWait && m_tBTMonsterDesc.pOwnerModel->Get_CurrAnimation()->Get_AnimationName() == strAnimName)
+	if (m_tBTMonsterDesc.pOwnerModel->Is_Finish() && !m_tBTMonsterDesc.pOwnerModel->Is_Tween() && !m_bWait)
 	{
 		m_bWait = true;
 		m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_PumpkinCandle.ao|PumpkinCandle_BattleStand"));
@@ -44,11 +43,10 @@ CBTNode::NODE_STATE CPumpkinCandleNode_Base::Atk_BehaviorTick(const wstring& str
 			m_bIsSucces = true;
 			m_bWait = false;
 
-			if (!dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATKAROUND))
-			{
-				dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBATIDLE, false);
-				return NODE_STATE::NODE_FAIL;
-			}
+			dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATKAROUND, false);
+			dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK, false);
+			dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBATIDLE, false);
+			return NODE_STATE::NODE_FAIL;
 		}
 	}
 

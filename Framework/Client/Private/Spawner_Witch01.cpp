@@ -73,7 +73,7 @@ void CSpawner_Witch01::Tick(_float fTimeDelta)
 			else
 				++i;
 		}
-
+		
 		for (_int i = 0; i < m_vecWizard.size();)
 		{
 			if (m_vecWizard[i]->Is_Dead())
@@ -143,16 +143,16 @@ HRESULT CSpawner_Witch01::Spawn_Monster()
 		tInfo.vStartPosition.y = vSpawnerPos.y + 1.f;
 		tInfo.vStartPosition.z = vSpawnerPos.z + GI->RandomFloat(-3.f, 3.f);
 		tInfo.vStartPosition.w = 1.f;
-
+	
 		CGameObject* pObj = GI->Clone_GameObject(TEXT("Prorotype_GameObject_Clown"), _uint(LAYER_MONSTER), &tInfo);
-
+	
 		if (pObj == nullptr)
 			return E_FAIL;
-
+	
 		GI->Add_GameObject(iCurLevel, (_uint)LAYER_MONSTER, pObj);
 		m_vecClown.push_back(pObj);
 	}
-
+	
 	for (_int i = m_vecWizard.size(); i < m_iMaxWizardCount; ++i)
 	{
 		tInfo.vStartPosition.x = vSpawnerPos.x + GI->RandomFloat(-5.f, 5.f);

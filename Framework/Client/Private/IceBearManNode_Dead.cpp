@@ -39,10 +39,13 @@ CBTNode::NODE_STATE CIceBearManNode_Dead::Tick(const _float& fTimeDelta)
 	{
 		if (dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_BLOWDEAD))
 		{
-			m_fTime += fTimeDelta;
-			if (m_fTime > m_fBlowDeadTime)
+			if (m_tBTMonsterDesc.pOwner->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Is_Ground())
 			{
-				m_tBTMonsterDesc.pOwner->Reserve_Dead(true);
+				m_fTime += fTimeDelta;
+				if (m_fTime > m_fBlowDeadTime)
+				{
+					m_tBTMonsterDesc.pOwner->Reserve_Dead(true);
+				}
 			}
 		}
 		else

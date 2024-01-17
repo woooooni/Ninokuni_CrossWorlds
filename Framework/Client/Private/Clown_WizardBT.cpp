@@ -14,6 +14,8 @@
 
 #include "Clown_WizardNode_Dead.h"
 
+#include "Clown_WizardNode_Blow.h"
+#include "Clown_WizardNode_Air.h"
 #include "Clown_WizardNode_Stun.h"
 #include "Clown_WizardNode_Hit.h"
 
@@ -58,12 +60,14 @@ HRESULT CClown_WizardBT::Initialize_Prototype(CMonster* pOwner)
 
 	/* Hit 관련 */
 	CBTNode_Select* pSel_Hit = CBTNode_Select::Create(this);
+	CClown_WizardNode_Blow* pBlowNode = CClown_WizardNode_Blow::Create(&m_tBTMonsterDesc, this);
+	CClown_WizardNode_Air* pAirNode = CClown_WizardNode_Air::Create(&m_tBTMonsterDesc, this);
 	CClown_WizardNode_Stun* pStunNode = CClown_WizardNode_Stun::Create(&m_tBTMonsterDesc, this);
 	CClown_WizardNode_Hit* pHitNode = CClown_WizardNode_Hit::Create(&m_tBTMonsterDesc, this);
 
 	/* Combat 관련 */
 	CBTNode_Sequence* pSeq_Pattern = CBTNode_Sequence::Create(this);
-	CClown_WizardNode_Attack1* pAtk1Node = CClown_WizardNode_Attack1::Create(&m_tBTMonsterDesc, this);
+	CClown_WizardNode_Attack1* pAtk1Node = CClown_WizardNode_Attack1::Create(&m_tBTMonsterDesc, this); // 원거리
 	CClown_WizardNode_Attack2* pAtk2Node = CClown_WizardNode_Attack2::Create(&m_tBTMonsterDesc, this);
 
 	/* Chase 관련 */
@@ -83,7 +87,7 @@ HRESULT CClown_WizardBT::Initialize_Prototype(CMonster* pOwner)
 	/* Condition 관련*/
 	/* function<_bool()>을 받는 CBTNode_Condition::Create 함수에서는 멤버 함수를 사용하고 있기 때문에 추가적인 처리가 필요 */
 	CBTNode_Condition* pCon_IsDead = CBTNode_Condition::Create(bind(&CClown_WizardBT::IsZeroHp, this), pDeadNode, pHitNode);
-	CBTNode_Condition* pCon_IsWeak = CBTNode_Condition::Create(bind(&CClown_WizardBT::IsWeak, this), pHitNode, pChaseNode);
+	CBTNode_Condition* pCon_IsHit = CBTNode_Condition::Create(bind(&CClown_WizardBT::IsHit, this), pHitNode, pChaseNode);
 	CBTNode_Condition* pCon_IsCombat = CBTNode_Condition::Create(bind(&CClown_WizardBT::IsAtk, this), nullptr, pChaseNode);
 	CBTNode_Condition* pCon_IsChase = CBTNode_Condition::Create(bind(&CClown_WizardBT::IsChase, this), pChaseNode, nullptr);
 	//CBTNode_Condition* pCon_IsReturn = CBTNode_Condition::Create(bind(&CClown_WizardBT::IsReturn, this), pReturnNode, pIdleNode);
@@ -94,8 +98,10 @@ HRESULT CClown_WizardBT::Initialize_Prototype(CMonster* pOwner)
 	pSeq_Dead->Add_ChildNode(pDeadNode);
 
 	m_pRootNode->Add_ChildNode(pSeq_Hit);
-	pSeq_Hit->Add_ChildNode(pCon_IsWeak);
+	pSeq_Hit->Add_ChildNode(pCon_IsHit);
 	pSeq_Hit->Add_ChildNode(pSel_Hit);
+	pSel_Hit->Add_ChildNode(pBlowNode);
+	pSel_Hit->Add_ChildNode(pAirNode);
 	pSel_Hit->Add_ChildNode(pStunNode);
 	pSel_Hit->Add_ChildNode(pHitNode);
 
@@ -133,14 +139,6 @@ void CClown_WizardBT::Tick(const _float& fTimeDelta)
 
 void CClown_WizardBT::LateTick(const _float& fTimeDelta)
 {
-	if (KEY_TAP(KEY::F4))
-	{
-		m_pRootNode->Init_Start();
-		m_pClown_Wizard->Set_StunTime(3.f);
-		m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_ClownWizard.ao|ClownWizard_Stun"));
-		m_pClown_Wizard->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_STUN, true);
-		m_pClown_Wizard->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT, true);
-	}
 }
 
 void CClown_WizardBT::Init_NodeStart()
@@ -156,10 +154,9 @@ _bool CClown_WizardBT::IsZeroHp()
 	return false;
 }
 
-_bool CClown_WizardBT::IsWeak()
+_bool CClown_WizardBT::IsHit()
 {
-	if (m_pClown_Wizard->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ISHIT) ||
-		m_pClown_Wizard->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_STUN))
+	if (m_pClown_Wizard->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ISHIT))
 		return true;
 
 	return false;
@@ -167,12 +164,14 @@ _bool CClown_WizardBT::IsWeak()
 
 _bool CClown_WizardBT::IsAtk()
 {
-	if (m_pClown_Wizard->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT) &&
-		m_pClown_Wizard->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATKAROUND) ||
-		m_pClown_Wizard->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK) ||
-		m_pClown_Wizard->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBATIDLE))
+	if (m_pClown_Wizard->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT))
 	{
-		return true;
+		if (m_pClown_Wizard->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATKAROUND) ||
+			m_pClown_Wizard->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK) ||
+			m_pClown_Wizard->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBATIDLE))
+		{
+			return true;
+		}
 	}
 
 	return false;
