@@ -31,6 +31,14 @@ void CParticle::Set_LoacalTransformInfo(_float3 vLocalPos, _float3 vLocalScale, 
 	m_vLocalRotation = vLocalRotation;
 }
 
+void CParticle::Add_Velocity(Vec4 _vMinVelocity, Vec4 _vMaxVelocity)
+{
+	if (nullptr == m_pVIBufferCom)
+		return;
+
+	m_pVIBufferCom->Add_Velocity(_vMinVelocity, _vMaxVelocity);
+}
+
 void CParticle::Set_ParticleDesc(const PARTICLE_DESC& tDesc)
 {
 	m_tParticleDesc = tDesc;

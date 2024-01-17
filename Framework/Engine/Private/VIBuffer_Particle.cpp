@@ -240,6 +240,23 @@ void CVIBuffer_Particle::Restart_ParticleBufferDesc(_uint iCount)
 			m_vecParticleShaderDesc[i].fBlurPower = (*m_tParticleDesc.pBlurPower);
 #pragma endregion
 
+#pragma region 리지드바디
+		if (true == (*m_tParticleDesc.pRigidbody))
+		{
+			if (m_vecParticleRigidbodyDesc.size() < m_iNumInstance)
+			{
+				PARTICLE_RIGIDBODY_DESC ParticleRigidbody = {};
+				m_vecParticleRigidbodyDesc.push_back(ParticleRigidbody);
+			}
+
+			m_vecParticleRigidbodyDesc[i].bGravity = true;
+			m_vecParticleRigidbodyDesc[i].vMaxVelocity = Vec4(10.f, 30.f, 10.f, 0.f);
+			m_vecParticleRigidbodyDesc[i].fMass      = 1.f;
+			m_vecParticleRigidbodyDesc[i].fFricCoeff = 5.f;
+
+			m_vecParticleRigidbodyDesc[i].vVelocity = Vec4(0.f, 0.f, 0.f, 0.f);
+		}
+#pragma endregion
 	}
 
 	m_pContext->Unmap(m_pVBInstance, 0);
@@ -292,6 +309,21 @@ void CVIBuffer_Particle::Sort_Z(_uint iCount)
 	m_pContext->Unmap(m_pVBInstance, 0);
 }
 
+
+void CVIBuffer_Particle::Add_Velocity(Vec4 _vMinVelocity, Vec4 _vMaxVelocity)
+{
+	if (m_iNumInstance > m_vecParticleRigidbodyDesc.size())
+		return;
+
+	for (size_t i = 0; i < m_iNumInstance; i++)
+	{
+		m_vecParticleRigidbodyDesc[i].bGravity = true;
+
+		m_vecParticleRigidbodyDesc[i].vVelocity.x += CUtils::Random_Float(_vMinVelocity.x, _vMaxVelocity.x);
+		m_vecParticleRigidbodyDesc[i].vVelocity.y += CUtils::Random_Float(_vMinVelocity.y, _vMaxVelocity.y);
+		m_vecParticleRigidbodyDesc[i].vVelocity.z += CUtils::Random_Float(_vMinVelocity.z, _vMaxVelocity.z);
+	}
+}
 
 HRESULT CVIBuffer_Particle::Initialize_Prototype()
 {
@@ -385,6 +417,7 @@ HRESULT CVIBuffer_Particle::Initialize(void* pArg)
 	{
 		PARTICLE_INFO_DESC   ParticleInfo       = {};
 		PARTICLE_SHADER_DESC ParticleShaderInfo = {};
+		PARTICLE_RIGIDBODY_DESC ParticleRigidbody = {};
 
 		// 위치 (분포 범위)
 		m_pVertices[i].vPosition = Get_NewPosition_Particle();
@@ -603,6 +636,18 @@ HRESULT CVIBuffer_Particle::Initialize(void* pArg)
 
 		m_vecParticleInfoDesc.push_back(ParticleInfo);
 		m_vecParticleShaderDesc.push_back(ParticleShaderInfo);
+
+#pragma region 리지드바디
+		if (true == (*m_tParticleDesc.pRigidbody))
+		{
+			ParticleRigidbody.bGravity = true;
+			ParticleRigidbody.vMaxVelocity = Vec4(10.f, 30.f, 10.f, 0.f);
+			ParticleRigidbody.fMass      = 1.f;
+			ParticleRigidbody.fFricCoeff = 5.f;
+
+			m_vecParticleRigidbodyDesc.push_back(ParticleRigidbody);
+		}
+#pragma endregion
 	}
 
 	ZeroMemory(&m_SubResourceData, sizeof m_SubResourceData);
@@ -744,8 +789,35 @@ void CVIBuffer_Particle::Tick(_float fTimeDelta)
 				// 위치 기본 변경
 				if (true == (*m_tParticleDesc.pRigidbody))
 				{
-					Tick_Rigidbody(fTimeDelta, i);
+					if (0 != m_vecParticleRigidbodyDesc.size())
+					{
+						// 속도에 따른 이동 (중력)
+						if (m_vecParticleRigidbodyDesc[i].bGravity)
+						{
+							// 추가 가속도 중력 추가
+							m_vecParticleRigidbodyDesc[i].vAccelA = Vec4(0.f, -10.f, 0.f, 0.f);
 
+							Vec4 vNewVelocity = m_vecParticleRigidbodyDesc[i].vVelocity * fTimeDelta;
+							((VTXINSTANCE*)SubResource.pData)[i].vPosition.x += vNewVelocity.x;
+							((VTXINSTANCE*)SubResource.pData)[i].vPosition.y += vNewVelocity.y;
+							((VTXINSTANCE*)SubResource.pData)[i].vPosition.z += vNewVelocity.z;
+						}
+
+						m_vecParticleRigidbodyDesc[i].vForce.x += m_vecParticleInfoDesc[i].vVelocity.x * m_vecParticleInfoDesc[i].fVelocitySpeeds;
+						m_vecParticleRigidbodyDesc[i].vForce.y += m_vecParticleInfoDesc[i].vVelocity.y * m_vecParticleInfoDesc[i].fVelocitySpeeds;
+						m_vecParticleRigidbodyDesc[i].vForce.z += m_vecParticleInfoDesc[i].vVelocity.z * m_vecParticleInfoDesc[i].fVelocitySpeeds;
+
+						Vec4 vNewVelocity = m_vecParticleRigidbodyDesc[i].vVelocity * fTimeDelta;
+						((VTXINSTANCE*)SubResource.pData)[i].vPosition.x += vNewVelocity.x;
+						((VTXINSTANCE*)SubResource.pData)[i].vPosition.y += vNewVelocity.y;
+						((VTXINSTANCE*)SubResource.pData)[i].vPosition.z += vNewVelocity.z;
+
+						Tick_Rigidbody(fTimeDelta, i);
+
+						// Test
+						if(0 > ((VTXINSTANCE*)SubResource.pData)[i].vPosition.y)
+							((VTXINSTANCE*)SubResource.pData)[i].vPosition.y = 0.f;
+					}
 				}
 				else
 				{
@@ -763,17 +835,9 @@ void CVIBuffer_Particle::Tick(_float fTimeDelta)
 					if ((*m_tParticleDesc.pVelocityChangeRandom))
 					{
 						// 자동
-						if (true == (*m_tParticleDesc.pRigidbody))
-						{
-							Tick_Rigidbody(fTimeDelta, i);
-
-						}
-						else
-						{
-							((VTXINSTANCE*)SubResource.pData)[i].vPosition.x += m_vecParticleInfoDesc[i].vVelocity.x * m_vecParticleInfoDesc[i].fVelocitySpeeds * fTimeDelta;
-							((VTXINSTANCE*)SubResource.pData)[i].vPosition.y += m_vecParticleInfoDesc[i].vVelocity.y * m_vecParticleInfoDesc[i].fVelocitySpeeds * fTimeDelta;
-							((VTXINSTANCE*)SubResource.pData)[i].vPosition.z += m_vecParticleInfoDesc[i].vVelocity.z * m_vecParticleInfoDesc[i].fVelocitySpeeds * fTimeDelta;
-						}
+						((VTXINSTANCE*)SubResource.pData)[i].vPosition.x += m_vecParticleInfoDesc[i].vVelocity.x * m_vecParticleInfoDesc[i].fVelocitySpeeds * fTimeDelta;
+						((VTXINSTANCE*)SubResource.pData)[i].vPosition.y += m_vecParticleInfoDesc[i].vVelocity.y * m_vecParticleInfoDesc[i].fVelocitySpeeds * fTimeDelta;
+						((VTXINSTANCE*)SubResource.pData)[i].vPosition.z += m_vecParticleInfoDesc[i].vVelocity.z * m_vecParticleInfoDesc[i].fVelocitySpeeds * fTimeDelta;
 
 						m_vecParticleInfoDesc[i].fVelocityRanTimeAccs += m_vecParticleInfoDesc[i].fVelocitySpeeds * fTimeDelta;
 						if (m_vecParticleInfoDesc[i].fVelocityRanTimeAccs >= m_vecParticleInfoDesc[i].fVelocityRanChange)
@@ -1163,57 +1227,48 @@ _float4 CVIBuffer_Particle::Get_NewVelocity_Particle()
 
 void CVIBuffer_Particle::Tick_Rigidbody(_float fTimeDelta, _uint iParticleID)
 {
-	//// 속도에 따른 이동 (중력)
-	//if (m_bJump || !m_bCurrentGround)
-	//{
-	//	// 추가 가속도 중력 추가
-	//	Set_AccelA(XMVectorSet(0.f, -10.f, 0.f, 0.f));
+	// 힘의 크기
+	_float fForce = XMVectorGetX(XMVector3Length(m_vecParticleRigidbodyDesc[iParticleID].vForce));
+	if (fForce != 0.f) {
+		// 힘의 방향
+		m_vecParticleRigidbodyDesc[iParticleID].vForce = XMVector3Normalize(m_vecParticleRigidbodyDesc[iParticleID].vForce);
+		// 가속도의 크기
+		_float fAccel = fForce / m_vecParticleRigidbodyDesc[iParticleID].fMass;
+		// 가속도
+		m_vecParticleRigidbodyDesc[iParticleID].vAccel = m_vecParticleRigidbodyDesc[iParticleID].vForce * fAccel;
+	}
 
-	//	_vector vCurrentPosition = m_pOwnerTransform->Get_State(CTransform::STATE_POSITION);
-	//	_vector vNewPosition = vCurrentPosition + m_vVelocity * fTimeDelta;
+	// 추가 가속도 누적 (중력)
+	m_vecParticleRigidbodyDesc[iParticleID].vAccel += m_vecParticleRigidbodyDesc[iParticleID].vAccelA;
 
-	//	_bool bMove = m_pOwnerTransform->Set_Position(vNewPosition, m_pOwnerNavigition);
-	//	if (!bMove) // 못가는 위치일 시 아래로만 중력 적용해 이동
-	//		m_pOwnerTransform->Set_Position(XMVectorSetY(vCurrentPosition, XMVectorGetY(vNewPosition)), m_pOwnerNavigition);
-	//}
+	// 속도
+	m_vecParticleRigidbodyDesc[iParticleID].vVelocity += m_vecParticleRigidbodyDesc[iParticleID].vAccel * fTimeDelta;
 
-	//// 힘의 크기
-	//_float fForce = XMVectorGetX(XMVector3Length(m_vForce));
-	//if (fForce != 0.f) {
-	//	// 힘의 방향
-	//	m_vForce = XMVector3Normalize(m_vForce);
-	//	// 가속도의 크기
-	//	_float fAccel = fForce / m_fMass;
-	//	// 가속도
-	//	m_vAccel = m_vForce * fAccel;
-	//}
+	// 마찰력에 의한 반대 방향의 가속도
+	if (XMVectorGetX(XMVector3Length(m_vecParticleRigidbodyDesc[iParticleID].vVelocity)) != 0.f)
+	{
+		_vector vFricDir = -m_vecParticleRigidbodyDesc[iParticleID].vVelocity;
+		vFricDir = XMVector3Normalize(vFricDir);
+		_vector vFriction = vFricDir * m_vecParticleRigidbodyDesc[iParticleID].fFricCoeff * fTimeDelta;
+		if (XMVectorGetX(XMVector3Length(m_vecParticleRigidbodyDesc[iParticleID].vVelocity)) <= XMVectorGetX(XMVector3Length(vFriction)))
+			m_vecParticleRigidbodyDesc[iParticleID].vVelocity = XMVectorSet(0.f, 0.f, 0.f, 0.f); // 마찰 가속도가 본래 속도보다 더 큰 경우
+		else
+			m_vecParticleRigidbodyDesc[iParticleID].vVelocity += vFriction;
+	}
 
-	//// 추가 가속도 누적 (중력)
-	//m_vAccel += m_vAccelA;
+	// 속도 제한 검사
+	if (abs(XMVectorGetX(m_vecParticleRigidbodyDesc[iParticleID].vMaxVelocity)) < abs(XMVectorGetX(m_vecParticleRigidbodyDesc[iParticleID].vVelocity)))
+		m_vecParticleRigidbodyDesc[iParticleID].vVelocity = XMVectorSetX(m_vecParticleRigidbodyDesc[iParticleID].vVelocity, XMVectorGetX(m_vecParticleRigidbodyDesc[iParticleID].vVelocity) / abs(XMVectorGetX(m_vecParticleRigidbodyDesc[iParticleID].vVelocity)) * abs(XMVectorGetX(m_vecParticleRigidbodyDesc[iParticleID].vMaxVelocity)));
+	if (abs(XMVectorGetY(m_vecParticleRigidbodyDesc[iParticleID].vMaxVelocity)) < abs(XMVectorGetY(m_vecParticleRigidbodyDesc[iParticleID].vVelocity)))
+		m_vecParticleRigidbodyDesc[iParticleID].vVelocity = XMVectorSetY(m_vecParticleRigidbodyDesc[iParticleID].vVelocity, XMVectorGetY(m_vecParticleRigidbodyDesc[iParticleID].vVelocity) / abs(XMVectorGetY(m_vecParticleRigidbodyDesc[iParticleID].vVelocity)) * abs(XMVectorGetY(m_vecParticleRigidbodyDesc[iParticleID].vMaxVelocity)));
+	if (abs(XMVectorGetZ(m_vecParticleRigidbodyDesc[iParticleID].vMaxVelocity)) < abs(XMVectorGetZ(m_vecParticleRigidbodyDesc[iParticleID].vVelocity)))
+		m_vecParticleRigidbodyDesc[iParticleID].vVelocity = XMVectorSetZ(m_vecParticleRigidbodyDesc[iParticleID].vVelocity, XMVectorGetZ(m_vecParticleRigidbodyDesc[iParticleID].vVelocity) / abs(XMVectorGetZ(m_vecParticleRigidbodyDesc[iParticleID].vVelocity)) * abs(XMVectorGetZ(m_vecParticleRigidbodyDesc[iParticleID].vMaxVelocity)));
 
-	//// 속도
-	//m_vVelocity += m_vAccel * fTimeDelta;
-
-	//// 마찰력에 의한 반대 방향의 가속도
-	//if (XMVectorGetX(XMVector3Length(m_vVelocity)) != 0.f)
-	//{
-	//	_vector vFricDir = -m_vVelocity;
-	//	vFricDir = XMVector3Normalize(vFricDir);
-	//	_vector vFriction = vFricDir * m_fFricCoeff * fTimeDelta;
-	//	if (XMVectorGetX(XMVector3Length(m_vVelocity)) <= XMVectorGetX(XMVector3Length(vFriction)))
-	//		m_vVelocity = XMVectorSet(0.f, 0.f, 0.f, 0.f); // 마찰 가속도가 본래 속도보다 더 큰 경우
-	//	else
-	//		m_vVelocity += vFriction;
-	//}
-
-	//// 속도 제한 검사
-	//Limit_MaxSpeed();
-
-	//// 힘 초기화
-	//m_vForce = XMVectorSet(0.f, 0.f, 0.f, 0.f);
-	//// 가속도 초기화
-	//m_vAccel = XMVectorSet(0.f, 0.f, 0.f, 0.f);
-	//m_vAccelA = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+	// 힘 초기화
+	m_vecParticleRigidbodyDesc[iParticleID].vForce = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+	// 가속도 초기화
+	m_vecParticleRigidbodyDesc[iParticleID].vAccel = XMVectorSet(0.f, 0.f, 0.f, 0.f);
+	m_vecParticleRigidbodyDesc[iParticleID].vAccelA = XMVectorSet(0.f, 0.f, 0.f, 0.f);
 }
 
 

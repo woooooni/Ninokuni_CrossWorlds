@@ -101,39 +101,58 @@ void CTool_Particle::Tick(_float fTimeDelta)
 		ImGui::Text("Scale");
 		ImGui::InputFloat3("##Scale", m_fScale);
 	}
-
 	ImGui::NewLine();
 
 	// 기본 정보
 	if (ImGui::CollapsingHeader("ParticleBasicInfo"))
 	{
 		// 투영 타입
-		ImGui::Checkbox("PersParticles", &m_bParticleType_Pers);
+		ImGui::Checkbox("PersType", &m_bParticleType_Pers);
 		ImGui::NewLine();
 		if (m_bParticleType_Pers == true)
 			m_bParticleType_Orth = false;
-
-		ImGui::Checkbox("OrthParticles", &m_bParticleType_Orth);
+		ImGui::Checkbox("OrthType", &m_bParticleType_Orth);
 		ImGui::NewLine();
 		if (m_bParticleType_Orth == true)
 			m_bParticleType_Pers = false;
 
-		// 파티클 정렬
-		if(ImGui::Checkbox("SortZParticles", &m_tParticleInfo.bParticleSortZ))
-			Store_InfoParticle();
+		// 반복 여부
+		ImGui::Checkbox("ParticleLoop", &m_tParticleInfo.bParticleLoop);
 		ImGui::NewLine();
 
-		// 반복 여부
-		ImGui::Checkbox("LoopParticles", &m_tParticleInfo.bParticleLoop);
+		// 파티클 정렬
+		if(ImGui::Checkbox("ParticleSortZ", &m_tParticleInfo.bParticleSortZ))
+			Store_InfoParticle();
 		ImGui::NewLine();
 
 		// 파티클 개수
-		ImGui::Text("MaxParticles");
-		ImGui::InputInt("##MaxParticles", &(_int)m_tParticleInfo.iNumEffectMaxCount);
-		ImGui::Text("CurrentParticles");
-		if(ImGui::InputInt("##CurrentParticles", &(_int)m_tParticleInfo.iNumEffectCount))
+		//ImGui::Text("MaxParticles");
+		//ImGui::InputInt("##MaxParticles", &(_int)m_tParticleInfo.iNumEffectMaxCount);
+		ImGui::Text("ParticlesCount");
+		if(ImGui::InputInt("##ParticlesCount", &(_int)m_tParticleInfo.iNumEffectCount))
 			Store_InfoParticle();
 		ImGui::NewLine();
+	}
+
+	// 리지드바디
+	if (ImGui::CollapsingHeader("ParticleRigidbody"))
+	{
+		// 리지드바디 여부
+		if (ImGui::Checkbox("RigidbodyParticle", &m_bRigidBody))
+			Store_InfoParticle();
+		ImGui::NewLine();
+
+		ImGui::Text("RigidMinVelocity");
+		ImGui::InputFloat4("##RigidMinVelocity", &m_vMinVelocity.x);
+		ImGui::Text("RigidMaxVelocity");
+		ImGui::InputFloat4("##RigidMaxVelocity", &m_vMaxVelocity.x);
+		if (ImGui::Button("AddVelocity"))
+		{
+			if (nullptr != m_pParticle && m_bRigidBody)
+				static_cast<CParticle*>(m_pParticle)->Add_Velocity(m_vMinVelocity, m_vMaxVelocity);
+		}
+		ImGui::NewLine();
+
 	}
 
 	// 위치 (분포 범위)
@@ -1006,6 +1025,8 @@ void CTool_Particle::Load_InfoParticle()
 	m_fBlack_Discard[0] = m_tParticleInfo.fBlack_Discard.x;
 	m_fBlack_Discard[1] = m_tParticleInfo.fBlack_Discard.y;
 	m_fBlack_Discard[2] = m_tParticleInfo.fBlack_Discard.z;
+
+	m_bRigidBody = static_cast<CParticle*>(m_pParticle)->Get_Rigidbody();
 #pragma endregion
 }
 
@@ -1030,7 +1051,8 @@ void CTool_Particle::Store_InfoParticle()
 		m_tParticleInfo.fScaleSpeed = _float2(m_fParticleScaleSpeed[0], m_fParticleScaleSpeed[1]);
 
 		m_tParticleInfo.vVelocityMinStart = _float3(m_fParticleVelocityMin[0], m_fParticleVelocityMin[1], m_fParticleVelocityMin[2]);
-		m_tParticleInfo.vVelocityMaxStart = _float3(m_fParticleVelocityMax[0], m_fParticleVelocityMax[1], m_fParticleVelocityMax[2]);
+		//m_tParticleInfo.vVelocityMaxStart = _float3(m_fParticleVelocityMax[0], m_fParticleVelocityMax[1], m_fParticleVelocityMax[2]);
+		m_tParticleInfo.vVelocityMaxStart = m_tParticleInfo.vVelocityMinStart;
 
 		m_tParticleInfo.fVelocityChangeStartDelay = _float2(m_fParticleVelocityChangeStartDelay[0], m_fParticleVelocityChangeStartDelay[1]);
 		m_tParticleInfo.fVelocityChangeTime = _float2(m_fParticleVelocityChangeTime[0], m_fParticleVelocityChangeTime[1]);
@@ -1145,6 +1167,7 @@ void CTool_Particle::Store_InfoParticle()
 		m_tParticleInfo.fBlack_Discard = _float3(m_fBlack_Discard[0], m_fBlack_Discard[1], m_fBlack_Discard[2]);
 
 		static_cast<CParticle*>(m_pParticle)->Set_ParticleDesc(m_tParticleInfo);
+		static_cast<CParticle*>(m_pParticle)->Set_Rigidbody(m_bRigidBody);
 	}
 }
 

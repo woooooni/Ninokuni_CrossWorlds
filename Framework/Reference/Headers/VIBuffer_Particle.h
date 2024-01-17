@@ -225,18 +225,19 @@ public:
 
 	typedef struct tagParticleRigidbodyDesc
 	{
+		_bool bGravity = false;
+		
+		Vec4 vForce    = {}; // 크기, 방향
+		Vec4 vAccel    = {}; // 가속도
+		Vec4 vVelocity = {}; // 속도(크기:속력,방향)
 
-		_vector m_vForce    = {}; // 크기, 방향
-		_vector m_vAccel    = {}; // 가속도
-		_vector m_vVelocity = {}; // 속도(크기:속력,방향)
+		Vec4 vMaxVelocity = Vec4(10.f, 30.f, 10.f, 0.f); // 최대 속력 = 트랜스폼 이동 속도
+		_float fMass        = { 1.f }; // 질량
+		_float fFricCoeff   = { 5.f }; // 마찰 계수
 
-		_vector m_vMaxVelocity = XMVectorSet(10.f, 30.f, 10.f, 0.f); // 최대 속력 = 트랜스폼 이동 속도
-		_float  m_fMass        = { 1.f }; // 질량
-		_float  m_fFricCoeff   = { 5.f }; // 마찰 계수
-
-		_vector m_vForceA    = {}; // 크기, 방향
-		_vector m_vAccelA    = {}; // 추가 가속도
-		_vector m_vVelocityA = {}; // 속도(크기:속력,방향)
+		Vec4 vForceA    = {}; // 크기, 방향
+		Vec4 vAccelA    = {}; // 추가 가속도
+		Vec4 vVelocityA = {}; // 속도(크기:속력,방향)
 
 	} PARTICLE_RIGIDBODY_DESC;
 
@@ -252,6 +253,7 @@ public:
 public:
 	void Restart_ParticleBufferDesc(_uint iCount);
 	void Sort_Z(_uint iCount);
+	void Add_Velocity(Vec4 _vMinVelocity, Vec4 _vMaxVelocity);
 
 public:
 	virtual HRESULT Initialize_Prototype();

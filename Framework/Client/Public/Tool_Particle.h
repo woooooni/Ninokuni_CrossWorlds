@@ -132,6 +132,10 @@ private:
 
 	char   m_cPrototypeName[MAX_PATH] = { "Prototype_" };
 
+	_bool m_bRigidBody = false;
+	Vec4 m_vMinVelocity = {};
+	Vec4 m_vMaxVelocity = {};
+
 public:
 	static CTool_Particle* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual void Free() override;

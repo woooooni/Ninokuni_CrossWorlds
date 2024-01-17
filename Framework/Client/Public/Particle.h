@@ -210,6 +210,7 @@ public:
 
 	void Set_LoopParticle(_bool bLoop)   { m_tParticleDesc.bParticleLoop = bLoop; }
 	void Set_Rigidbody(_bool bRigidbody) { m_bRigidbody = bRigidbody; }
+	void Add_Velocity(Vec4 _vMinVelocity, Vec4 _vMaxVelocity);
 
 private:
 	_bool m_isCloned = { false };
