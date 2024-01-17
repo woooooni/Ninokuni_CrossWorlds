@@ -140,7 +140,7 @@ void CCharacter_SwordMan::LateTick(_float fTimeDelta)
 	m_vBloomPower = { 0.0f, 0.0f, 0.7f };
 	__super::LateTick(fTimeDelta);
 
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDERGROUP::RENDER_REFLECT, this);
+	//m_pRendererCom->Add_RenderGroup(CRenderer::RENDERGROUP::RENDER_REFLECT, this);
 #ifdef DEBUG
 	m_pRendererCom->Add_Debug(m_pControllerCom);
 #endif // DEBUG
