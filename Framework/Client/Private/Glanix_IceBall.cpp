@@ -66,8 +66,15 @@ void CGlanix_IceBall::Tick(_float fTimeDelta)
 	}
 
 	// EffectCreate
-	GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fEffectAcc, CUtils::Random_Float(0.2f, 0.4f), fTimeDelta,
-		TEXT("Particle_Glanix_Skill_IceBall_Circle"), this, _float3(0.f, 0.f, -0.2f));
+	if (!m_bStartBallMove)
+	{
+		m_bStartBallMove = true;
+		m_fStartBallMatrix = m_pTransformCom->Get_WorldMatrix();
+	}
+
+	m_fStartBallMatrix.r[CTransform::STATE_POSITION] = m_pTransformCom->Get_Position();
+	GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle_To_Matrix(&m_fEffectAcc, CUtils::Random_Float(0.2f, 0.4f), fTimeDelta,
+		TEXT("Particle_Glanix_Skill_IceBall_Circle"), m_fStartBallMatrix, _float3(0.f, 0.f, -0.2f));
 }
 
 void CGlanix_IceBall::LateTick(_float fTimeDelta)
