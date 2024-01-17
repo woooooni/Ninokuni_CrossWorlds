@@ -65,14 +65,17 @@ public:
 
 public:
 	const DECAL_DESC& Get_DecalDesc() { return m_tDecalDesc; }
-	void Set_DecalDesc(const DECAL_DESC& tDesc);
-	void Restart_Decal();
- 
-	void Set_Owner(CGameObject* pGameObject) { m_pOwnerObject = pGameObject; }
+	class CTexture* Get_DiffuseTexture() { return m_pDiffuseTextureCom; }
 	class CTransform* Get_TransformCom() { return m_pTransformCom; }
 
+public:
+	void Restart_Decal();
+
+	void Set_DecalDesc(const DECAL_DESC& tDesc);
+	void Set_Owner(CGameObject* pGameObject) { m_pOwnerObject = pGameObject; }
 	void Set_DeleteDecal(_bool bDecalDelete) { m_bDecalDelete = bDecalDelete; }
 	void Set_OffsetPosition(Vec4 vPos) { m_vOffsetPos = vPos; }
+
 private:
 	void Tick_Alpha(_float fTimeDelta);
 
@@ -80,14 +83,14 @@ private:
 	_bool      m_isCloned = { false };
 	DECAL_DESC m_tDecalDesc;
 
-	_bool m_bDecalDelete = true;
-
-	Vec4 m_vOffsetPos;
-
 private:
-	_bool  m_bDecalDie        = false;
+	_bool m_bDecalDelete = true;
+	_bool  m_bDecalDie = false;
+
 	_float m_fAccLifeTime     = 0.f;
 	_bool  m_bAlphaCreateSucc = false;
+
+	Vec4 m_vOffsetPos;
 
 private:
 	class CGameObject* m_pOwnerObject = nullptr;

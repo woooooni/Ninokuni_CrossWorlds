@@ -184,7 +184,7 @@ void CDecal::Restart_Decal()
 	m_bDecalDie    = false;
 	m_fAccLifeTime = 0.f;
 
-	m_pTransformCom->Set_Scale(m_tDecalDesc.fScale);
+	//m_pTransformCom->Set_Scale(m_tDecalDesc.fScale);
 
 	if (m_tDecalDesc.bAlphaCreate)
 	{
