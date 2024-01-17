@@ -631,10 +631,57 @@ HRESULT CUI_Manager::Ready_Veils(LEVELID eID)
 
 HRESULT CUI_Manager::Ready_Dummy()
 {
-	CGameObject* pDummy = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_CharacterDummy"), LAYER_TYPE::LAYER_CHARACTER);
-	if (nullptr == pDummy)
-		return E_FAIL;
-	m_pDummy = dynamic_cast<CUI_CharacterDummy*>(pDummy);
+	CGameObject* pDummy = nullptr;
+
+	switch (g_eLoadCharacter)
+	{
+	case Client::SWORDMAN_CH:
+	{
+		pDummy = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_CharacterDummy_Swordman"), LAYER_TYPE::LAYER_CHARACTER);
+		if (nullptr == pDummy)
+			return E_FAIL;
+		m_pDummy_Swordman = dynamic_cast<CUI_CharacterDummy*>(pDummy);
+	}
+	break;
+	case Client::DESTROYER_CH:
+	{
+		pDummy = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_CharacterDummy_Destroyer"), LAYER_TYPE::LAYER_CHARACTER);
+		if (nullptr == pDummy)
+			return E_FAIL;
+		m_pDummy_Destroyer = dynamic_cast<CUI_CharacterDummy*>(pDummy);
+	}
+	break;
+	case Client::ENGINEER_CH:
+	{
+		pDummy = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_CharacterDummy_Engineer"), LAYER_TYPE::LAYER_CHARACTER);
+		if (nullptr == pDummy)
+			return E_FAIL;
+		m_pDummy_Engineer = dynamic_cast<CUI_CharacterDummy*>(pDummy);
+	}
+	break;
+	case Client::ALL_CH:
+	{
+		pDummy = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_CharacterDummy_Swordman"), LAYER_TYPE::LAYER_CHARACTER);
+		if (nullptr == pDummy)
+			return E_FAIL;
+		m_pDummy_Swordman = dynamic_cast<CUI_CharacterDummy*>(pDummy);
+
+		pDummy = nullptr;
+		pDummy = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_CharacterDummy_Destroyer"), LAYER_TYPE::LAYER_CHARACTER);
+		if (nullptr == pDummy)
+			return E_FAIL;
+		m_pDummy_Destroyer = dynamic_cast<CUI_CharacterDummy*>(pDummy);
+
+		pDummy = nullptr;
+		pDummy = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_CharacterDummy_Engineer"), LAYER_TYPE::LAYER_CHARACTER);
+		if (nullptr == pDummy)
+			return E_FAIL;
+		m_pDummy_Engineer = dynamic_cast<CUI_CharacterDummy*>(pDummy);
+	}
+	break;
+	default:
+		break;
+	}
 
 	CGameObject* pMap = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Map_CostumRoom"), LAYER_TYPE::LAYER_PROP);
 	if (nullptr == pMap)
@@ -3290,11 +3337,59 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 
 HRESULT CUI_Manager::Ready_GameObjectToLayer(LEVELID eID)
 {
-	if (nullptr == m_pDummy)
-		return E_FAIL;
-	if(FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pDummy)))
-		return E_FAIL;
-	Safe_AddRef(m_pDummy);
+	switch (g_eLoadCharacter)
+	{
+	case Client::SWORDMAN_CH:
+	{
+		if (nullptr == m_pDummy_Swordman)
+			return E_FAIL;
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pDummy_Swordman)))
+			return E_FAIL;
+		Safe_AddRef(m_pDummy_Swordman);
+	}
+	break;
+	case Client::DESTROYER_CH:
+	{
+		if (nullptr == m_pDummy_Destroyer)
+			return E_FAIL;
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pDummy_Destroyer)))
+			return E_FAIL;
+		Safe_AddRef(m_pDummy_Destroyer);
+	}
+	break;
+	case Client::ENGINEER_CH:
+	{
+		if (nullptr == m_pDummy_Engineer)
+			return E_FAIL;
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pDummy_Engineer)))
+			return E_FAIL;
+		Safe_AddRef(m_pDummy_Engineer);
+	}
+	break;
+	case Client::ALL_CH:
+	{
+		if (nullptr == m_pDummy_Swordman)
+			return E_FAIL;
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pDummy_Swordman)))
+			return E_FAIL;
+		Safe_AddRef(m_pDummy_Swordman);
+
+		if (nullptr == m_pDummy_Destroyer)
+			return E_FAIL;
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pDummy_Destroyer)))
+			return E_FAIL;
+		Safe_AddRef(m_pDummy_Destroyer);
+
+		if (nullptr == m_pDummy_Engineer)
+			return E_FAIL;
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pDummy_Engineer)))
+			return E_FAIL;
+		Safe_AddRef(m_pDummy_Engineer);
+	}
+	break;
+	default:
+		break;
+	}
 
 	if (nullptr == m_pCustomMap)
 		return E_FAIL;
@@ -4064,7 +4159,23 @@ HRESULT CUI_Manager::Tick_LobbyLevel(_float fTimeDelta)
 
 HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 {
-	m_pDummy->Tick(fTimeDelta);
+	switch (m_eCurPlayer)
+	{
+	case CHARACTER_TYPE::SWORD_MAN:
+		if (nullptr != m_pDummy_Swordman)
+			m_pDummy_Swordman->Tick(fTimeDelta);
+		break;
+	case CHARACTER_TYPE::DESTROYER:
+		if (nullptr != m_pDummy_Destroyer)
+			m_pDummy_Destroyer->Tick(fTimeDelta);
+		break;
+	case CHARACTER_TYPE::ENGINEER:
+		if (nullptr != m_pDummy_Engineer)
+			m_pDummy_Engineer->Tick(fTimeDelta);
+		break;
+	default:
+		break;
+	}
 	m_pCustomMap->Tick(fTimeDelta);
 	m_pCostumeMirror->Tick(fTimeDelta);
 
@@ -4128,7 +4239,24 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 
 HRESULT CUI_Manager::LateTick_EvermoreLevel(_float fTimeDelta)
 {
-	m_pDummy->LateTick(fTimeDelta);
+	switch (m_eCurPlayer)
+	{
+	case CHARACTER_TYPE::SWORD_MAN:
+		if (nullptr != m_pDummy_Swordman)
+			m_pDummy_Swordman->LateTick(fTimeDelta);
+		break;
+	case CHARACTER_TYPE::DESTROYER:
+		if (nullptr != m_pDummy_Destroyer)
+			m_pDummy_Destroyer->LateTick(fTimeDelta);
+		break;
+	case CHARACTER_TYPE::ENGINEER:
+		if (nullptr != m_pDummy_Engineer)
+			m_pDummy_Engineer->LateTick(fTimeDelta);
+		break;
+	default:
+		break;
+	}
+
 	m_pCustomMap->LateTick(fTimeDelta);
 	m_pCostumeMirror->LateTick(fTimeDelta);
 
@@ -4137,21 +4265,53 @@ HRESULT CUI_Manager::LateTick_EvermoreLevel(_float fTimeDelta)
 
 void CUI_Manager::LateTick_Dummy(_float fTimeDelta)
 {
-	m_pDummy->LateTick(fTimeDelta);
+	switch (m_eCurPlayer)
+	{
+	case CHARACTER_TYPE::SWORD_MAN:
+		if (nullptr != m_pDummy_Swordman)
+			m_pDummy_Swordman->LateTick(fTimeDelta);
+		break;
+	case CHARACTER_TYPE::DESTROYER:
+		if (nullptr != m_pDummy_Destroyer)
+			m_pDummy_Destroyer->LateTick(fTimeDelta);
+		break;
+	case CHARACTER_TYPE::ENGINEER:
+		if (nullptr != m_pDummy_Engineer)
+			m_pDummy_Engineer->LateTick(fTimeDelta);
+		break;
+	default:
+		break;
+	}
 	m_pCustomMap->LateTick(fTimeDelta);
 	m_pCostumeMirror->LateTick(fTimeDelta);
 }
 
 HRESULT CUI_Manager::Render_EvermoreLevel()
 {
-	//m_pDummy->Render();
+	//m_pDummy_Swordman->Render();
 
 	return S_OK;
 }
 
 void CUI_Manager::Render_Dummy()
 {
-	m_pDummy->Render();
+	switch (m_eCurPlayer)
+	{
+	case CHARACTER_TYPE::SWORD_MAN:
+		if (nullptr != m_pDummy_Swordman)
+			m_pDummy_Swordman->Render();
+		break;
+	case CHARACTER_TYPE::DESTROYER:
+		if (nullptr != m_pDummy_Destroyer)
+			m_pDummy_Destroyer->Render();
+		break;
+	case CHARACTER_TYPE::ENGINEER:
+		if (nullptr != m_pDummy_Engineer)
+			m_pDummy_Engineer->Render();
+		break;
+	default:
+		break;
+	}
 	m_pCustomMap->Render();
 	m_pCostumeMirror->Render();
 	m_pCostumeMirror->Render_Reflect();
@@ -4633,8 +4793,23 @@ void CUI_Manager::Update_CostumeModel(const CHARACTER_TYPE& eCharacterType, cons
 	if (nullptr == pParts)
 		return;
 
-	m_pDummy->Set_PartModel(ePartType, pParts);
-
+	switch (m_eCurPlayer)
+	{
+	case CHARACTER_TYPE::SWORD_MAN:
+		if (nullptr != m_pDummy_Swordman)
+			m_pDummy_Swordman->Set_PartModel(ePartType, pParts);
+		break;
+	case CHARACTER_TYPE::DESTROYER:
+		if (nullptr != m_pDummy_Destroyer)
+			m_pDummy_Destroyer->Set_PartModel(ePartType, pParts);
+		break;
+	case CHARACTER_TYPE::ENGINEER:
+		if (nullptr != m_pDummy_Engineer)
+			m_pDummy_Engineer->Set_PartModel(ePartType, pParts);
+		break;
+	default:
+		break;
+	}
 }
 
 void CUI_Manager::Update_CostumeWeaponModel(const CHARACTER_TYPE& eCharacterType, const wstring& strPartTag)
@@ -4645,9 +4820,26 @@ void CUI_Manager::Update_CostumeWeaponModel(const CHARACTER_TYPE& eCharacterType
 	pWeaponModel = CWeapon_Manager::GetInstance()->Get_WeaponModel(eCharacterType, strPartTag);
 	if (nullptr == pWeaponModel)
 		return;
-
+	
 	// UI Dummy의 Weapon을 교체한다.
-	CUI_Dummy_Weapon* pWeapon = m_pDummy->Get_Weapon();
+	CUI_Dummy_Weapon* pWeapon = nullptr;
+	switch (m_eCurPlayer)
+	{
+	case CHARACTER_TYPE::SWORD_MAN:
+		if (nullptr != m_pDummy_Swordman)
+			pWeapon = m_pDummy_Swordman->Get_Weapon();
+		break;
+	case CHARACTER_TYPE::DESTROYER:
+		if (nullptr != m_pDummy_Destroyer)
+			pWeapon = m_pDummy_Destroyer->Get_Weapon();
+		break;
+	case CHARACTER_TYPE::ENGINEER:
+		if (nullptr != m_pDummy_Engineer)
+			pWeapon = m_pDummy_Engineer->Get_Weapon();
+		break;
+	default:
+		break;
+	}
 	if (nullptr == pWeapon)
 		return;
 	pWeapon->Set_WeaponModelCom(pWeaponModel);
@@ -4726,7 +4918,24 @@ void CUI_Manager::Set_CostumeModel()
 			return;
 
 		// UI Dummy의 Weapon을 교체한다.
-		CUI_Dummy_Weapon* pWeapon = m_pDummy->Get_Weapon();
+		CUI_Dummy_Weapon* pWeapon = nullptr;
+		switch (m_eCurPlayer)
+		{
+		case CHARACTER_TYPE::SWORD_MAN:
+			if (nullptr != m_pDummy_Swordman)
+				pWeapon = m_pDummy_Swordman->Get_Weapon();
+			break;
+		case CHARACTER_TYPE::DESTROYER:
+			if (nullptr != m_pDummy_Destroyer)
+				pWeapon = m_pDummy_Destroyer->Get_Weapon();
+			break;
+		case CHARACTER_TYPE::ENGINEER:
+			if (nullptr != m_pDummy_Engineer)
+				pWeapon = m_pDummy_Engineer->Get_Weapon();
+			break;
+		default:
+			break;
+		}
 		if (nullptr == pWeapon)
 			return;
 		pWeapon->Set_WeaponModelCom(pWeaponModel);
@@ -4815,7 +5024,24 @@ void CUI_Manager::TakeOff_CostumeModel()
 		return;
 
 	// UI Dummy의 Weapon을 교체한다.
-	CUI_Dummy_Weapon* pWeapon = m_pDummy->Get_Weapon();
+	CUI_Dummy_Weapon* pWeapon = nullptr;
+	switch (m_eCurPlayer)
+	{
+	case CHARACTER_TYPE::SWORD_MAN:
+		if (nullptr != m_pDummy_Swordman)
+			pWeapon = m_pDummy_Swordman->Get_Weapon();
+		break;
+	case CHARACTER_TYPE::DESTROYER:
+		if (nullptr != m_pDummy_Destroyer)
+			pWeapon = m_pDummy_Destroyer->Get_Weapon();
+		break;
+	case CHARACTER_TYPE::ENGINEER:
+		if (nullptr != m_pDummy_Engineer)
+			pWeapon = m_pDummy_Engineer->Get_Weapon();
+		break;
+	default:
+		break;
+	}
 	if (nullptr == pWeapon)
 		return;
 	pWeapon->Set_WeaponModelCom(pWeaponModel);
@@ -6042,6 +6268,22 @@ HRESULT CUI_Manager::OnOff_CostumeWindow(_bool bOnOff)
 		{
 			OnOff_MainMenu(false);
 
+			for (auto& iter : m_CostumeCloth)
+			{
+				if (nullptr != iter)
+					iter->Update_PartsTag();
+			}
+			for (auto& iter : m_CostumeHairAcc)
+			{
+				if (nullptr != iter)
+					iter->Update_PartsTag();
+			}
+			for (auto& iter : m_CostumeWeapon)
+			{
+				if (nullptr != iter)
+					iter->Update_PartsTag();
+			}
+
 			// 시작할때 더미 캐릭터가 지금 플레이어와 같은 의상을 착용하도록 세팅 해주어야 한다.
 			CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
 			if (pPlayer == nullptr)
@@ -6049,8 +6291,70 @@ HRESULT CUI_Manager::OnOff_CostumeWindow(_bool bOnOff)
 			CCharacter* pCharacter = pPlayer->Get_Character();
 			if (pCharacter == nullptr)
 				return E_FAIL;
-			m_pDummy->Set_PartModel(PART_TYPE::BODY, pCharacter->Get_PartModel(PART_TYPE::BODY));
-			m_pDummy->Set_PartModel(PART_TYPE::HEAD, pCharacter->Get_PartModel(PART_TYPE::HEAD));
+
+			CWeapon* pWeapon = nullptr;
+			CModel* pPart = nullptr;
+			CUI_Dummy_Weapon* pDummyWeapon = nullptr;
+
+			switch (pCharacter->Get_CharacterType())
+			{
+			case CHARACTER_TYPE::SWORD_MAN:
+				if (nullptr != m_pDummy_Swordman)
+				{
+					m_pDummy_Swordman->Set_PartModel(PART_TYPE::BODY, pCharacter->Get_PartModel(PART_TYPE::BODY));
+					m_pDummy_Swordman->Set_PartModel(PART_TYPE::HEAD, pCharacter->Get_PartModel(PART_TYPE::HEAD));
+					// 무기도
+					pWeapon = pCharacter->Get_Weapon(); // 현재 착용하고 있는 무기
+					if (nullptr == pWeapon)
+						return E_FAIL;
+					pPart = pWeapon->Get_WeaponModelCom();
+					if (nullptr == pPart)
+						return E_FAIL;
+					pDummyWeapon = m_pDummy_Swordman->Get_Weapon();
+					if (nullptr == pDummyWeapon)
+						return E_FAIL;
+					pDummyWeapon->Set_WeaponModelCom(pPart);
+				}
+				break;
+			case CHARACTER_TYPE::DESTROYER:
+				if (nullptr != m_pDummy_Destroyer)
+				{
+					m_pDummy_Destroyer->Set_PartModel(PART_TYPE::BODY, pCharacter->Get_PartModel(PART_TYPE::BODY));
+					m_pDummy_Destroyer->Set_PartModel(PART_TYPE::HEAD, pCharacter->Get_PartModel(PART_TYPE::HEAD));
+					// 무기도
+					pWeapon = pCharacter->Get_Weapon(); // 현재 착용하고 있는 무기
+					if (nullptr == pWeapon)
+						return E_FAIL;
+					pPart = pWeapon->Get_WeaponModelCom();
+					if (nullptr == pPart)
+						return E_FAIL;
+					pDummyWeapon = m_pDummy_Destroyer->Get_Weapon();
+					if (nullptr == pDummyWeapon)
+						return E_FAIL;
+					pDummyWeapon->Set_WeaponModelCom(pPart);
+				}
+				break;
+			case CHARACTER_TYPE::ENGINEER:
+				if (nullptr != m_pDummy_Engineer)
+				{
+					m_pDummy_Engineer->Set_PartModel(PART_TYPE::BODY, pCharacter->Get_PartModel(PART_TYPE::BODY));
+					m_pDummy_Engineer->Set_PartModel(PART_TYPE::HEAD, pCharacter->Get_PartModel(PART_TYPE::HEAD));
+					// 무기도
+					pWeapon = pCharacter->Get_Weapon(); // 현재 착용하고 있는 무기
+					if (nullptr == pWeapon)
+						return E_FAIL;
+					pPart = pWeapon->Get_WeaponModelCom();
+					if (nullptr == pPart)
+						return E_FAIL;
+					pDummyWeapon = m_pDummy_Engineer->Get_Weapon();
+					if (nullptr == pDummyWeapon)
+						return E_FAIL;
+					pDummyWeapon->Set_WeaponModelCom(pPart);
+				}
+				break;
+			default:
+				break;
+			}
 
 			m_pDefaultBG->Set_Active(true);
 			for (auto& iter : m_CostumeBtn)
@@ -6070,18 +6374,55 @@ HRESULT CUI_Manager::OnOff_CostumeWindow(_bool bOnOff)
 			m_pTabMenuTitle->Set_TextType(CUI_Text_TabMenu::UI_MENUTITLE::TITLE_COSTUME);
 			m_pTabMenuTitle->Set_Active(true);
 
-			m_pDummy->Set_Active(true);
+			switch (pCharacter->Get_CharacterType())
+			{
+			case CHARACTER_TYPE::SWORD_MAN:
+				if (nullptr != m_pDummy_Swordman)
+					m_pDummy_Swordman->Set_Active(true);
+				break;
+			case CHARACTER_TYPE::DESTROYER:
+				if (nullptr != m_pDummy_Destroyer)
+					m_pDummy_Destroyer->Set_Active(true);
+				break;
+			case CHARACTER_TYPE::ENGINEER:
+				if (nullptr != m_pDummy_Engineer)
+					m_pDummy_Engineer->Set_Active(true);
+				break;
+			default:
+				break;
+			}
 			m_pCustomMap->Set_Active(true);
 			m_pCostumeMirror->Set_Active(true);
-
-			//OnOff_CloseButton(true);
 		}
 	}
 	else
 	{
+		CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+		if (pPlayer == nullptr)
+			return E_FAIL;
+		CCharacter* pCharacter = pPlayer->Get_Character();
+		if (pCharacter == nullptr)
+			return E_FAIL;
+
+		switch (pCharacter->Get_CharacterType())
+		{
+		case CHARACTER_TYPE::SWORD_MAN:
+			if (nullptr != m_pDummy_Swordman)
+				m_pDummy_Swordman->Set_Active(false);
+			break;
+		case CHARACTER_TYPE::DESTROYER:
+			if (nullptr != m_pDummy_Destroyer)
+				m_pDummy_Destroyer->Set_Active(false);
+			break;
+		case CHARACTER_TYPE::ENGINEER:
+			if (nullptr != m_pDummy_Engineer)
+				m_pDummy_Engineer->Set_Active(false);
+			break;
+		default:
+			break;
+		}
 		m_pCostumeMirror->Set_Active(false);
 		m_pCustomMap->Set_Active(false);
-		m_pDummy->Set_Active(false);
 		m_pTabMenuTitle->Set_Active(false);
 
 		OnOff_CostumeSlot(0, false); // false에는 숫자가 영향을 미치지않음. 함수 인자 순서 수정 필요함.
@@ -6118,7 +6459,9 @@ HRESULT CUI_Manager::OnOff_CostumeSlot(_uint iSection, _bool bOnOff)
 			for (auto& iter : m_CostumeCloth)
 			{
 				if (nullptr != iter)
+				{
 					iter->Set_Active(true);
+				}
 			}
 			for (auto& iter : m_CostumeHairAcc)
 			{
@@ -6297,12 +6640,58 @@ HRESULT CUI_Manager::OnOff_Inventory(_bool bOnOff)
 			m_pTabMenuTitle->Set_TextType(CUI_Text_TabMenu::UI_MENUTITLE::TITLE_INVEN);
 			m_pTabMenuTitle->Set_Active(true);
 
-			m_pDummy->Set_Active(true);
+			CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+			if (pPlayer == nullptr)
+				return E_FAIL;
+			CCharacter* pCharacter = pPlayer->Get_Character();
+			if (pCharacter == nullptr)
+				return E_FAIL;
+
+			switch (pCharacter->Get_CharacterType())
+			{
+			case CHARACTER_TYPE::SWORD_MAN:
+				if (nullptr != m_pDummy_Swordman)
+					m_pDummy_Swordman->Set_Active(true);
+				break;
+			case CHARACTER_TYPE::DESTROYER:
+				if (nullptr != m_pDummy_Destroyer)
+					m_pDummy_Destroyer->Set_Active(true);
+				break;
+			case CHARACTER_TYPE::ENGINEER:
+				if (nullptr != m_pDummy_Engineer)
+					m_pDummy_Engineer->Set_Active(true);
+				break;
+			default:
+				break;
+			}
 		}
 	}
 	else
 	{
-		m_pDummy->Set_Active(false);
+		CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+		if (pPlayer == nullptr)
+			return E_FAIL;
+		CCharacter* pCharacter = pPlayer->Get_Character();
+		if (pCharacter == nullptr)
+			return E_FAIL;
+
+		switch (pCharacter->Get_CharacterType())
+		{
+		case CHARACTER_TYPE::SWORD_MAN:
+			if (nullptr != m_pDummy_Swordman)
+				m_pDummy_Swordman->Set_Active(false);
+			break;
+		case CHARACTER_TYPE::DESTROYER:
+			if (nullptr != m_pDummy_Destroyer)
+				m_pDummy_Destroyer->Set_Active(false);
+			break;
+		case CHARACTER_TYPE::ENGINEER:
+			if (nullptr != m_pDummy_Engineer)
+				m_pDummy_Engineer->Set_Active(false);
+			break;
+		default:
+			break;
+		}
 
 		m_pTabMenuTitle->Set_Active(false);
 
@@ -7756,7 +8145,9 @@ void CUI_Manager::Free()
 	Safe_Release(m_pBossHPBack);
 	Safe_Release(m_pBossHPBar);
 
-	Safe_Release(m_pDummy);
+	Safe_Release(m_pDummy_Swordman);
+	Safe_Release(m_pDummy_Destroyer);
+	Safe_Release(m_pDummy_Engineer);
 	Safe_Release(m_pCustomMap);
 	Safe_Release(m_pCostumeMirror);
 	Safe_Release(m_pBossNameTag);

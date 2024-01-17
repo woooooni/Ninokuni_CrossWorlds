@@ -194,7 +194,9 @@ private:
 	wstring m_strNickname;
 	wstring m_strResult;
 
-	class CUI_CharacterDummy*	m_pDummy = { nullptr };
+	class CUI_CharacterDummy*	m_pDummy_Swordman = { nullptr };
+	class CUI_CharacterDummy*	m_pDummy_Destroyer = { nullptr };
+	class CUI_CharacterDummy*	m_pDummy_Engineer = { nullptr };
 	class CUI_CostumeTab_Map*	m_pCustomMap = { nullptr };
 	class CMirror*				m_pCostumeMirror = { nullptr };
 	class CMonster*				m_pHPBarOwner = { nullptr };

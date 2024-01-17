@@ -13,11 +13,13 @@
 
 CUI_CharacterDummy::CUI_CharacterDummy(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eType)
 	: CCharacter(pDevice, pContext, strObjectTag, eType)
+	, m_eCharacterType(eType)
 {
 }
 
 CUI_CharacterDummy::CUI_CharacterDummy(const CUI_CharacterDummy& rhs)
 	: CCharacter(rhs)
+	, m_eCharacterType(rhs.m_eCharacterType)
 {
 
 }
@@ -44,17 +46,6 @@ HRESULT CUI_CharacterDummy::Initialize(void* pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
-	CPlayer* pPlayer = nullptr;
-	pPlayer = CGame_Manager::GetInstance()->Get_Player();
-	if (nullptr == pPlayer)
-		return E_FAIL;
-	CCharacter* pCharacter = nullptr;
-	pCharacter = pPlayer->Get_Character();
-	if (nullptr == pCharacter)
-		return E_FAIL;
-
-	m_eCurCharacter = pCharacter->Get_CharacterType();
-
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
@@ -63,7 +54,7 @@ HRESULT CUI_CharacterDummy::Initialize(void* pArg)
 
 	_float3 vCamPos, vLook, vUp;
 
-	switch (m_eCurCharacter)
+	switch (m_eCharacterType)
 	{
 	case CHARACTER_TYPE::SWORD_MAN:
 		vCamPos = _float3(0.f, 0.9f, -3.f);
@@ -95,11 +86,19 @@ HRESULT CUI_CharacterDummy::Initialize(void* pArg)
 	m_bActive = false;
 
 	if(nullptr != m_pWeapon)
-		m_pWeapon->Set_Owner(this, m_eCurCharacter);
+		m_pWeapon->Set_Owner(this, m_eCharacterType);
 
-	if (m_eCurCharacter == CHARACTER_TYPE::SWORD_MAN)
+	switch (m_eCharacterType)
 	{
+	case CHARACTER_TYPE::SWORD_MAN:
 		m_pModelCom->Set_Animation(TEXT("SKM_Swordsman_Merge.ao|Swordsman_BattleStand"));
+		break;
+	case CHARACTER_TYPE::DESTROYER:
+		m_pModelCom->Set_Animation(TEXT("SKM_Destroyer_Merge.ao|Destroyer_BattleStand"));
+		break;
+	case CHARACTER_TYPE::ENGINEER:
+		m_pModelCom->Set_Animation(TEXT("SKM_Engineer_SoulDiver.ao|Engineer_BattleStand"));
+		break;
 	}
 
 	return S_OK;
@@ -213,16 +212,7 @@ HRESULT CUI_CharacterDummy::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_AnimModel" ), TEXT("Com_Shader"), (CComponent**)&m_pShaderCom)))
 		return E_FAIL;
 
-	CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
-	if (pPlayer == nullptr)
-		return E_FAIL;
-	CCharacter* pCharacter = pPlayer->Get_Character();
-	if (pCharacter == nullptr)
-		return E_FAIL;
-
-	CHARACTER_TYPE eCharacterType = pCharacter->Get_CharacterType();
-
-	switch (eCharacterType)
+	switch (m_eCharacterType)
 	{
 	case CHARACTER_TYPE::SWORD_MAN:
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_SwordMan_Dummy"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
@@ -245,7 +235,7 @@ HRESULT CUI_CharacterDummy::Ready_Components()
 	for (_uint i = 0; i < PART_TYPE::PART_END; ++i)
  		m_pCharacterPartModels[i] = CCharacter_Manager::GetInstance()->Get_PartModel(m_eCharacterType, PART_TYPE(i), 0);
 
-	m_pModelCom->Set_Animation(m_iAnimIndex);
+	//m_pModelCom->Set_Animation(m_iAnimIndex);
 
 	return S_OK;
 }
@@ -281,26 +271,25 @@ HRESULT CUI_CharacterDummy::Ready_Parts()
 }
 HRESULT CUI_CharacterDummy::Ready_Weapon()
 {
-	CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
-	if (pPlayer == nullptr)
-		return E_FAIL;
-	CCharacter* pCharacter = pPlayer->Get_Character();
-	if (pCharacter == nullptr)
-		return E_FAIL;
+//	CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+//	if (pPlayer == nullptr)
+//		return E_FAIL;
+//	CCharacter* pCharacter = pPlayer->Get_Character();
+//	if (pCharacter == nullptr)
+//		return E_FAIL;
+//
+//	CHARACTER_TYPE eCharacterType = pCharacter->Get_CharacterType();
+//
+//	m_eCurCharacter = eCharacterType;
 
-	CHARACTER_TYPE eCharacterType = pCharacter->Get_CharacterType();
-
-	m_eCurCharacter = eCharacterType;
-
-	switch (m_eCurCharacter)
+	switch (m_eCharacterType)
 	{
 	case CHARACTER_TYPE::SWORD_MAN:
 		m_pWeapon = CUI_Dummy_Weapon::Create(m_pDevice, m_pContext, L"SwordMan_Sword");
 		if (nullptr == m_pWeapon)
 			return S_OK;
 
-		m_pWeapon->Set_WeaponModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Flower01"));
-
+		m_pWeapon->Set_WeaponModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Sword_Fire02"));
 		if (nullptr == m_pWeapon->Get_WeaponModelCom())
 		{
 			Safe_Release(m_pWeapon);
@@ -313,8 +302,7 @@ HRESULT CUI_CharacterDummy::Ready_Weapon()
 		if (nullptr == m_pWeapon)
 			return S_OK;
 
-
-		m_pWeapon->Set_WeaponModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Food02"));
+		m_pWeapon->Set_WeaponModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Fire02"));
 
 		if (nullptr == m_pWeapon->Get_WeaponModelCom())
 		{
@@ -324,6 +312,17 @@ HRESULT CUI_CharacterDummy::Ready_Weapon()
 		break;
 
 	case CHARACTER_TYPE::ENGINEER:
+		m_pWeapon = CUI_Dummy_Weapon::Create(m_pDevice, m_pContext, L"Engineer_Rifle");
+		if (nullptr == m_pWeapon)
+			return S_OK;
+
+		m_pWeapon->Set_WeaponModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Fire"));
+
+		if (nullptr == m_pWeapon->Get_WeaponModelCom())
+		{
+			Safe_Release(m_pWeapon);
+			return S_OK;
+		}
 		break;
 	}
 

@@ -30,13 +30,13 @@ protected:
 
 private:
 	class CUI_Dummy_Weapon* m_pWeapon = { nullptr };
+	CHARACTER_TYPE m_eCharacterType = { CHARACTER_TYPE::SWORD_MAN };
 
 	_bool m_bActive = { false };
 	_uint m_iAnimIndex = { 0 };
 	_vector m_vCamPosition = XMVectorSet(0.f, 0.f, 0.f, 0.f);
 	_matrix m_vCamMatrix = XMMatrixIdentity();
 	_float4x4 m_ViewMatrix;
-	CHARACTER_TYPE m_eCurCharacter = { CHARACTER_TYPE::SWORD_MAN };
 
 private:
 	HRESULT Ready_Sockets();

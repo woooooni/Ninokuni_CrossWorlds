@@ -386,9 +386,46 @@ HRESULT CLoader::Loading_For_Level_Lobby()
 		if (FAILED(CUI_Manager::GetInstance()->Ready_UIPrototypes(LEVELID::LEVEL_LOBBY)))
 			return E_FAIL;
 
-		if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_UI_CharacterDummy",
-			CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy"), CHARACTER_TYPE::SWORD_MAN), LAYER_CHARACTER)))
-			return E_FAIL;
+		switch (g_eLoadCharacter)
+		{
+		case Client::SWORDMAN_CH:
+		{
+			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_UI_CharacterDummy_Swordman",
+				CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy_Swordman"), CHARACTER_TYPE::SWORD_MAN), LAYER_CHARACTER)))
+				return E_FAIL;
+		}
+		break;
+		case Client::DESTROYER_CH:
+		{
+			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_UI_CharacterDummy_Destroyer",
+				CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy_Destroyer"), CHARACTER_TYPE::DESTROYER), LAYER_CHARACTER)))
+				return E_FAIL;
+		}
+		break;
+		case Client::ENGINEER_CH:
+		{
+			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_UI_CharacterDummy_Engineer",
+				CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy_Engineer"), CHARACTER_TYPE::ENGINEER), LAYER_CHARACTER)))
+				return E_FAIL;
+		}
+		break;
+		case Client::ALL_CH:
+		{
+			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_UI_CharacterDummy_Swordman",
+				CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy_Swordman"), CHARACTER_TYPE::SWORD_MAN), LAYER_CHARACTER)))
+				return E_FAIL;
+			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_UI_CharacterDummy_Destroyer",
+				CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy_Destroyer"), CHARACTER_TYPE::DESTROYER), LAYER_CHARACTER)))
+				return E_FAIL;
+			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_UI_CharacterDummy_Engineer",
+				CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy_Engineer"), CHARACTER_TYPE::ENGINEER), LAYER_CHARACTER)))
+				return E_FAIL;
+		}
+		break;
+		default:
+			break;
+		}
+
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Map_CostumRoom"),
 			CUI_CostumeTab_Map::Create(m_pDevice, m_pContext), LAYER_PROP)))
 			return E_FAIL;
@@ -551,7 +588,7 @@ HRESULT CLoader::Loading_For_Level_Test()
 	/* For.GameObject */
 	m_strLoading = TEXT("객체원형을 로딩 중 입니다.");
 
-	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_UI_CharacterDummy",
+	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_UI_CharacterDummy_Swordman",
 		CUI_CharacterDummy::Create(m_pDevice, m_pContext, TEXT("UI_Dummy"), CHARACTER_TYPE::SWORD_MAN), LAYER_CHARACTER)))
 		return E_FAIL;
 
