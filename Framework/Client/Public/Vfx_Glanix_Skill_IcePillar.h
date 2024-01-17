@@ -8,7 +8,7 @@ END
 
 BEGIN(Client)
 
-class CVfx_Glanix_Skill_IceBall final : public CVfx
+class CVfx_Glanix_Skill_IcePillar final : public CVfx
 {
 private:
 	enum TYPE {
@@ -17,9 +17,9 @@ private:
 	};
 
 protected:
-	CVfx_Glanix_Skill_IceBall(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
-	CVfx_Glanix_Skill_IceBall(const CVfx_Glanix_Skill_IceBall& rhs);
-	virtual ~CVfx_Glanix_Skill_IceBall() = default;
+	CVfx_Glanix_Skill_IcePillar(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	CVfx_Glanix_Skill_IcePillar(const CVfx_Glanix_Skill_IcePillar& rhs);
+	virtual ~CVfx_Glanix_Skill_IcePillar() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -32,7 +32,7 @@ protected:
 	virtual HRESULT Ready_Components() override;
 
 public:
-	static CVfx_Glanix_Skill_IceBall* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
+	static CVfx_Glanix_Skill_IcePillar* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 		const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;

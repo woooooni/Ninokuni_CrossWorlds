@@ -812,9 +812,9 @@ HRESULT CEffect_Manager::Ready_Proto_Vfx_Monster()
 			CVfx_Glanix_Skill_IceThrow::Create(m_pDevice, m_pContext, TEXT("Glanix_Skill_IceThrow")), LAYER_TYPE::LAYER_EFFECT)))
 			return E_FAIL;
 
-		// Prototype_Vfx_Glanix_Skill_IceBall
-		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Glanix_Skill_IceBall"),
-			CVfx_Glanix_Skill_IceBall::Create(m_pDevice, m_pContext, TEXT("Glanix_Skill_IceBall")), LAYER_TYPE::LAYER_EFFECT)))
+		// Prototype_Vfx_Glanix_Skill_IcePillar
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Glanix_Skill_IcePillar"),
+			CVfx_Glanix_Skill_IcePillar::Create(m_pDevice, m_pContext, TEXT("Glanix_Skill_IcePillar")), LAYER_TYPE::LAYER_EFFECT)))
 			return E_FAIL;
 	}
 

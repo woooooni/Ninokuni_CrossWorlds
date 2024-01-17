@@ -119,10 +119,7 @@ void CCharacter_SwordMan::Tick(_float fTimeDelta)
 
 	if (KEY_TAP(KEY::NUM_6))
 	{
-		if (LEVELID::LEVEL_TOOL == GI->Get_CurrentLevel())
-			m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(0.f, 2.f, 0.f, 1.f));
-		else
-			m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(-44.f, 1.6f, 315.f, 1.f));
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(-44.f, 1.6f, 315.f, 1.f));
 	}
 
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);

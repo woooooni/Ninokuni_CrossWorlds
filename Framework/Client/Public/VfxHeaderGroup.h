@@ -41,7 +41,7 @@
 #include "Vfx_Glanix_Skill_SwingDownDown.h"
 #include "Vfx_Glanix_Skill_Rush.h"
 #include "Vfx_Glanix_Skill_IceThrow.h"
-#include "Vfx_Glanix_Skill_IceBall.h"
+#include "Vfx_Glanix_Skill_IcePillar.h"
 
 // ETC //
 #include "Vfx_QuestPoint.h"
