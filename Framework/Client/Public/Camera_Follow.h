@@ -134,12 +134,13 @@ private:
 	Vec4			m_vPrevLookAt			= {};
 
 	/* Wide Follow */
+	_bool			m_bCanWideView			= true;
 	_bool			m_bWideView				= false;
-	_float			m_fAccForWideView = 0.f;
-	const _float	m_fWideViewCheckTime = 4.f;
+	_float			m_fAccForWideView		= 0.f;
+	const _float	m_fWideViewCheckTime	= 4.f;
 	const _float	m_fDefaultViewCheckTime = 3.f;
-	const _float	m_fWideViewLerpTime = 1.f;
-	const LERP_MODE	m_eWideViewLerpMode = LERP_MODE::SMOOTHER_STEP;
+	const _float	m_fWideViewLerpTime		= 1.f;
+	const LERP_MODE	m_eWideViewLerpMode		= LERP_MODE::SMOOTHER_STEP;
 
 	/* View */
 	CAMERA_VIEW_TYPE m_eViewType = CAMERA_VIEW_TYPE::SHOLDER;
