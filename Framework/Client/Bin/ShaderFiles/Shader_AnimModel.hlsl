@@ -3,6 +3,7 @@
 #include "Matrix.hlsl"
 #include "Quaternion.hlsl"
 matrix          g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
+matrix          g_WorldInv;
 
 Texture2D       g_DiffuseTexture;
 Texture2D       g_NormalTexture;
@@ -347,6 +348,33 @@ VS_OUT VS_MAIN(VS_IN In)
     return Out;
 }
 
+VS_OUT VS_REFLECT(VS_IN In)
+{
+    VS_OUT Out = (VS_OUT) 0;
+
+    matrix matWV, matWVP;
+
+    matWV = mul(g_WorldMatrix, g_ViewMatrix);
+    matWVP = mul(matWV, g_ProjMatrix);
+
+    float4x4 BoneMatrix = Create_BoneMatrix_By_Lerp(In);
+    //float4x4 BoneMatrix = Create_BoneMatrix_By_Affine(In);
+
+    vector vPosition = mul(vector(In.vPosition, 1.f), BoneMatrix);
+    vector vNormal = mul(vector(In.vNormal, 0.f), BoneMatrix);
+    vector vTangent = mul(vector(In.vTangent, 0.f), BoneMatrix);
+
+    Out.vPosition = mul(vPosition, matWVP);
+    Out.vWorldPosition = mul(vPosition, g_WorldMatrix);
+    Out.vNormal = normalize(mul(vNormal, g_WorldInv));
+    Out.vTangent = normalize(mul(vTangent, g_WorldMatrix)).xyz;
+    Out.vBinormal = normalize(cross(Out.vNormal, Out.vTangent));
+    Out.vTexUV = In.vTexUV;
+    Out.vProjPos = Out.vPosition;
+
+    return Out;
+}
+
 struct PS_IN
 {
     float4 vPosition : SV_POSITION;
@@ -406,6 +434,28 @@ PS_OUT PS_MAIN(PS_IN In)
 
     return Out;
 }
+
+PS_OUT PS_MAIN_REFLECT(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    Out.vDiffuse = g_DiffuseTexture.Sample(ModelSampler, In.vTexUV);
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
+
+    float fRimPower = 1.f - saturate(dot(In.vNormal.xyz, normalize((-1.f * (In.vWorldPosition - g_vCamPosition)))));
+    fRimPower = pow(fRimPower, 5.f);
+    vector vRimColor = g_vRimColor * fRimPower;
+    Out.vDiffuse += vRimColor;
+    Out.vBloom = Caculation_Brightness(Out.vDiffuse) + vRimColor;
+    Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+    if (0.f == Out.vDiffuse.a)
+        discard;
+
+    return Out;
+}
+
 
 PS_OUT_UI PS_MAIN_UI(PS_IN In)
 {
@@ -557,6 +607,55 @@ PS_OUT_SHADOW_DEPTH PS_SHADOW_DEPTH(PS_IN In)
     return Out;
 }
 
+RasterizerState RS_Reflect
+{
+    AntialiasedLineEnable = false;
+    CullMode = BACK;
+    DepthBias = 0;
+    DepthBiasClamp = 0.0f;
+    DepthClipEnable = true;
+    FillMode = SOLID;
+    FrontCounterClockwise = true;
+    MultisampleEnable = false;
+    ScissorEnable = false;
+    SlopeScaledDepthBias = 0.0f;
+};
+
+DepthStencilState DS_Model_Reflect
+{
+    DepthEnable = true;
+    DepthWriteMask = ALL;
+    DepthFunc = LESS;
+    StencilEnable = true;
+    StencilReadMask = 0xff;
+    StencilWriteMask = 0xff;
+
+    // Front
+    FrontFaceStencilFail = KEEP;
+    FrontFaceStencilDepthFail = KEEP;
+    FrontFaceStencilPass = KEEP;
+    FrontFaceStencilFunc = EQUAL;
+
+    //Back
+    FrontFaceStencilFail = KEEP;
+    FrontFaceStencilDepthFail = KEEP;
+    FrontFaceStencilPass = KEEP;
+    FrontFaceStencilFunc = EQUAL;
+};
+
+BlendState BS_Model_NoneWrite
+{
+    AlphaToCoverageEnable = false;
+    BlendEnable[0] = false;
+    SrcBlend[0] = ONE;
+    DestBlend[0] = ZERO;
+    BlendOp[0] = ADD;
+    SrcBlendAlpha[0] = ONE;
+    DestBlendAlpha[0] = ZERO;
+    BlendOpAlpha[0] = ADD;
+    RenderTargetWriteMask[0] = 0;
+};
+
 technique11 DefaultTechnique
 {
     pass DefaultPass
@@ -616,18 +715,18 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MOTION_TRAIL();
     }
 
-    pass Temp1
+    pass ReflectPass // 미러할 때 이 렌더 사용.
     {
 		// 4
-        SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetRasterizerState(RS_Reflect);
+        SetDepthStencilState(DS_Model_Reflect, 0);
+        SetBlendState(BS_Model_NoneWrite, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
-        VertexShader = compile vs_5_0 VS_MAIN();
+        VertexShader = compile vs_5_0 VS_REFLECT();
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN();
+        PixelShader = compile ps_5_0 PS_MAIN_REFLECT();
     }
 
     pass Temp2

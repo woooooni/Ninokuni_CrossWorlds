@@ -26,6 +26,7 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 	virtual HRESULT Render_ShadowDepth();
+	virtual HRESULT Render_Reflect();
 
 	virtual HRESULT Render_Instance(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices) { return S_OK; }
 	virtual HRESULT Render_Instance_AnimModel(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer, 
