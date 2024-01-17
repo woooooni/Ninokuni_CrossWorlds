@@ -633,7 +633,6 @@ HRESULT CUI_Manager::Ready_Dummy()
 	if (nullptr == pDummy)
 		return E_FAIL;
 	m_pDummy = dynamic_cast<CUI_CharacterDummy*>(pDummy);
-	//Safe_AddRef(m_pDummy);
 
 	CGameObject* pMap = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Map_CostumRoom"), LAYER_TYPE::LAYER_PROP);
 	if (nullptr == pMap)

@@ -291,25 +291,41 @@ HRESULT CUI_Milepost::Bind_ShaderResources()
 
 void CUI_Milepost::Rotation_Arrow()
 {
-	// 카메라의 룩과 카메라와 목적지의 방향벡터를 내적
-	CCamera* pCurCamera = CCamera_Manager::GetInstance()->Get_CurCamera();
-	if (nullptr == pCurCamera)
-		return;
-	CTransform* pCameraTrans = pCurCamera->Get_Transform();
-	if (nullptr == pCameraTrans)
-		return;
+//	// 카메라의 룩과 카메라와 목적지의 방향벡터를 내적
+//	CCamera* pCurCamera = CCamera_Manager::GetInstance()->Get_CurCamera();
+//	if (nullptr == pCurCamera)
+//		return;
+//	CTransform* pCameraTrans = pCurCamera->Get_Transform();
+//	if (nullptr == pCameraTrans)
+//		return;
+//
+//	CTransform* pPlayerTransform = m_pPlayer->Get_Component<CTransform>(L"Com_Transform");
+//	if (nullptr == pPlayerTransform)
+//		return;
+//
+//	Vec3 vScale = m_pTransformCom->Get_Scale();
+//	_vector vTargetPosition = XMLoadFloat4(&m_vTargetPos);
+//
+//	Vec3 vDir = pCameraTrans->Get_Position() - vTargetPosition;
+//	_float fAngle = XMConvertToDegrees(atan2(vDir.z, vDir.x));
+//
+//	m_pTransformCom->Rotation(XMVector3Normalize(m_pTransformCom->Get_Look()), XMConvertToRadians(fAngle));
 
 	CTransform* pPlayerTransform = m_pPlayer->Get_Component<CTransform>(L"Com_Transform");
 	if (nullptr == pPlayerTransform)
 		return;
 
-	Vec3 vScale = m_pTransformCom->Get_Scale();
-	_vector vTargetPosition = XMLoadFloat4(&m_vTargetPos);
+	_float4 vTemp;
+	XMStoreFloat4(&vTemp, pPlayerTransform->Get_Position());
 
-	Vec3 vDir = pCameraTrans->Get_Position() - vTargetPosition;
-	_float fAngle = XMConvertToDegrees(atan2(vDir.z, vDir.x));
+	_float2 vPlayerPos = Get_ProjectionPosition(vTemp);
+	_float2 vTargetPos = Get_ProjectionPosition(m_vTargetPos);
 
-	m_pTransformCom->Rotation(XMVector3Normalize(m_pTransformCom->Get_Look()), XMConvertToRadians(fAngle));
+	_float fX = vTargetPos.x - m_tInfo.fX;
+	_float fY = vTargetPos.y - m_tInfo.fY;
+
+	m_pTransformCom->Rotation(XMVectorSet(0.f, 0.f, 1.f, 0.f), atan2(fY, fX) - XMConvertToRadians(90.f));
+
 }
 
 CUI_Milepost* CUI_Milepost::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_MILEPOST eType)
