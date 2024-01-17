@@ -184,6 +184,21 @@ void CBaobam_Water::Collision_Exit(const COLLISION_INFO& tInfo)
 	__super::Collision_Exit(tInfo);
 }
 
+void CBaobam_Water::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
+{
+	__super::Ground_Collision_Enter(tInfo);
+}
+
+void CBaobam_Water::Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo)
+{
+	__super::Ground_Collision_Continue(tInfo);
+}
+
+void CBaobam_Water::Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo)
+{
+	__super::Ground_Collision_Exit(tInfo);
+}
+
 HRESULT CBaobam_Water::Ready_Components()
 {
 	/* For.Com_Transform */

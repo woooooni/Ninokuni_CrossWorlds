@@ -14,6 +14,8 @@
 
 #include "ClownNode_Dead.h"
 
+#include "ClownNode_Blow.h"
+#include "ClownNode_Air.h"
 #include "ClownNode_Stun.h"
 #include "ClownNode_Hit.h"
 
@@ -59,6 +61,8 @@ HRESULT CClownBT::Initialize_Prototype(CMonster* pOwner)
 
 	/* Hit 관련 */
 	CBTNode_Select* pSel_Hit = CBTNode_Select::Create(this);
+	CClownNode_Blow* pBlowNode = CClownNode_Blow::Create(&m_tBTMonsterDesc, this);
+	CClownNode_Air* pAirNode = CClownNode_Air::Create(&m_tBTMonsterDesc, this);
 	CClownNode_Stun* pStunNode = CClownNode_Stun::Create(&m_tBTMonsterDesc, this);
 	CClownNode_Hit* pHitNode = CClownNode_Hit::Create(&m_tBTMonsterDesc, this);
 
@@ -85,7 +89,7 @@ HRESULT CClownBT::Initialize_Prototype(CMonster* pOwner)
 	/* Condition 관련*/
 	/* function<_bool()>을 받는 CBTNode_Condition::Create 함수에서는 멤버 함수를 사용하고 있기 때문에 추가적인 처리가 필요 */
 	CBTNode_Condition* pCon_IsDead = CBTNode_Condition::Create(bind(&CClownBT::IsZeroHp, this), pDeadNode, pHitNode);
-	CBTNode_Condition* pCon_IsWeak = CBTNode_Condition::Create(bind(&CClownBT::IsWeak, this), pHitNode, pChaseNode);
+	CBTNode_Condition* pCon_IsHit = CBTNode_Condition::Create(bind(&CClownBT::IsHit, this), pHitNode, pChaseNode);
 	CBTNode_Condition* pCon_IsCombat = CBTNode_Condition::Create(bind(&CClownBT::IsAtk, this), nullptr, pChaseNode);
 	CBTNode_Condition* pCon_IsChase = CBTNode_Condition::Create(bind(&CClownBT::IsChase, this), pChaseNode, nullptr);
 	//CBTNode_Condition* pCon_IsReturn = CBTNode_Condition::Create(bind(&CClownBT::IsReturn, this), pReturnNode, pIdleNode);
@@ -96,8 +100,10 @@ HRESULT CClownBT::Initialize_Prototype(CMonster* pOwner)
 	pSeq_Dead->Add_ChildNode(pDeadNode);
 
 	m_pRootNode->Add_ChildNode(pSeq_Hit);
-	pSeq_Hit->Add_ChildNode(pCon_IsWeak);
+	pSeq_Hit->Add_ChildNode(pCon_IsHit);
 	pSeq_Hit->Add_ChildNode(pSel_Hit);
+	pSel_Hit->Add_ChildNode(pBlowNode);
+	pSel_Hit->Add_ChildNode(pAirNode);
 	pSel_Hit->Add_ChildNode(pStunNode);
 	pSel_Hit->Add_ChildNode(pHitNode);
 
@@ -136,14 +142,6 @@ void CClownBT::Tick(const _float& fTimeDelta)
 
 void CClownBT::LateTick(const _float& fTimeDelta)
 {
-	if (KEY_TAP(KEY::I))
-	{
-		m_pRootNode->Init_Start();
-		m_pClown->Set_StunTime(3.f);
-		m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_Clown.ao|Clown_Stun"));
-		m_pClown->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_STUN, true);
-		m_pClown->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT, true);
-	}
 }
 
 void CClownBT::Init_NodeStart()
@@ -159,10 +157,9 @@ _bool CClownBT::IsZeroHp()
 	return false;
 }
 
-_bool CClownBT::IsWeak()
+_bool CClownBT::IsHit()
 {
-	if (m_pClown->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ISHIT) ||
-		m_pClown->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_STUN))
+	if (m_pClown->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ISHIT))
 		return true;
 
 	return false;
@@ -170,12 +167,14 @@ _bool CClownBT::IsWeak()
 
 _bool CClownBT::IsAtk()
 {
-	if (m_pClown->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT) &&
-		m_pClown->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATKAROUND) ||
-		m_pClown->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK) ||
-		m_pClown->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBATIDLE))
+	if (m_pClown->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBAT))
 	{
-		return true;
+		if (m_pClown->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATKAROUND) ||
+			m_pClown->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK) ||
+			m_pClown->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_COMBATIDLE))
+		{
+			return true;
+		}
 	}
 
 	return false;

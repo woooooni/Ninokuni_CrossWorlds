@@ -24,7 +24,8 @@ void CPumpkinCandleNode_Attack1::Start()
 
 CBTNode::NODE_STATE CPumpkinCandleNode_Attack1::Tick(const _float& fTimeDelta)
 {
-	return __super::Atk_BehaviorTick(TEXT("SKM_PumpkinCandle.ao|PumpkinCandle_Attack01"), 1.f, fTimeDelta);
+	// (현재 액션이 취하는 애니메이션, 동작이 끝나고 기다릴 시간, timeDelta)
+	return __super::Atk_BehaviorTick(1.f, fTimeDelta);
 }
 
 CPumpkinCandleNode_Attack1* CPumpkinCandleNode_Attack1::Create(CMonsterBT::BT_MONSTERDESC* pDesc, CMonsterBT* pBT)

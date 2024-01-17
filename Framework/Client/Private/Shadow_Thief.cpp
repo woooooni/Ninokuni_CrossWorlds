@@ -118,7 +118,7 @@ void CShadow_Thief::Collision_Enter(const COLLISION_INFO& tInfo)
 
 					On_Damaged(tInfo);
 
-					m_pModelCom->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Knock"));
+					m_pModelCom->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Knock_Start"));
 					
 					m_pRigidBodyCom->Add_Velocity(-m_pTransformCom->Get_Look(), m_tStat.fAirVelocity, false);
 					m_pRigidBodyCom->Add_Velocity({ 0.f, 1.f, 0.f, 1.f }, m_tStat.fAirVelocity / 1.5f, false);
@@ -136,7 +136,7 @@ void CShadow_Thief::Collision_Enter(const COLLISION_INFO& tInfo)
 
 					On_Damaged(tInfo);
 
-					m_pModelCom->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Knock"));
+					m_pModelCom->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Knock_Start"));
 					m_pRigidBodyCom->Add_Velocity({ 0.f, 1.f, 0.f, 1.f }, m_tStat.fAirVelocity / 2.f, false);
 
 					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
@@ -185,6 +185,21 @@ void CShadow_Thief::Collision_Continue(const COLLISION_INFO& tInfo)
 void CShadow_Thief::Collision_Exit(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Exit(tInfo);
+}
+
+void CShadow_Thief::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
+{
+	__super::Ground_Collision_Enter(tInfo);
+}
+
+void CShadow_Thief::Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo)
+{
+	__super::Ground_Collision_Continue(tInfo);
+}
+
+void CShadow_Thief::Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo)
+{
+	__super::Ground_Collision_Exit(tInfo);
 }
 
 HRESULT CShadow_Thief::Ready_Components()

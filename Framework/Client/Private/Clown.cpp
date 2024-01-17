@@ -7,6 +7,8 @@
 #include "UI_MonsterHP_World.h"
 #include "UIDamage_Manager.h"
 
+#include "Quest_Manager.h"
+
 CClown::CClown(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
 	: CMonster(pDevice, pContext, strObjectTag, tStat)
 {
@@ -19,6 +21,8 @@ CClown::CClown(const CClown& rhs)
 
 HRESULT CClown::Initialize_Prototype()
 {
+	__super::Initialize_Prototype();
+
 	return S_OK;
 }
 
@@ -30,10 +34,9 @@ HRESULT CClown::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	OBJECT_INIT_DESC tInfo = *(OBJECT_INIT_DESC*)pArg;
-
 	if (pArg != nullptr)
 	{
+		OBJECT_INIT_DESC tInfo = *(OBJECT_INIT_DESC*)pArg;
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, tInfo.vStartPosition);
 		m_vOriginPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 	}
@@ -44,6 +47,7 @@ HRESULT CClown::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
+	m_pModelCom->Set_Animation(0);
 	if (FAILED(Ready_States()))
 		return E_FAIL;
 
@@ -52,40 +56,15 @@ HRESULT CClown::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_pHPBar = dynamic_cast<CUI_MonsterHP_World*>(pHPBar);
-	m_pHPBar->Set_Owner(this, m_tStat.eElementType);
+	m_pHPBar->Set_Owner(this, m_tStat.eElementType, 1.5f);
 
-	m_pModelCom->Set_Animation(0);
+	m_vBloomPower = _float3(0.8f, 0.8f, 0.8f);
 
 	return S_OK;
 }
 
 void CClown::Tick(_float fTimeDelta)
 {
-	if (KEY_TAP(KEY::NUM_7))
-	{
-		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATK] = !m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATK];
-		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND] = !m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND];
-	}
-	if (KEY_TAP(KEY::I) || KEY_TAP(KEY::O))
-	{
-		m_tStat.fHp -= 10.f;
-	}
-
-	// << : Test 
-	if (KEY_TAP(KEY::HOME))
-	{
-		_uint iCurAnimIndex = m_pModelCom->Get_CurrAnimationIndex();
-		m_pModelCom->Set_Animation(iCurAnimIndex + 1);
-	}
-	else if (KEY_TAP(KEY::DEL))
-	{
-		_int iCurAnimIndex = m_pModelCom->Get_CurrAnimationIndex() - 1;
-		if (iCurAnimIndex < 0)
-			iCurAnimIndex = 0;
-		m_pModelCom->Set_Animation(iCurAnimIndex);
-	}
-	// >> 
-
 	if (nullptr != m_pHPBar)
 		m_pHPBar->Tick(fTimeDelta);
 
@@ -120,6 +99,82 @@ HRESULT CClown::Render_ShadowDepth()
 void CClown::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
+
+	/* 피격 */
+	if (m_tStat.fHp > 0.f)
+	{
+		if ((tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER_PROJECTILE) &&
+			tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK)
+		{
+			if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
+			{
+				m_pTransformCom->LookAt_ForLandObject(dynamic_cast<CTransform*>(tInfo.pOther->Get_Component<CTransform>(TEXT("Com_Transform")))->Get_Position());
+
+				/* Blow */
+				if (tInfo.pOtherCollider->Get_AttackType() == CCollider::ATTACK_TYPE::BLOW)
+				{
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_BLOWDEAD] = true;
+
+					On_Damaged(tInfo);
+
+					m_pModelCom->Set_Animation(TEXT("SKM_Clown.ao|Clown_KnockUp_Start"));
+
+					m_pRigidBodyCom->Add_Velocity(-m_pTransformCom->Get_Look(), m_tStat.fAirVelocity, false);
+					m_pRigidBodyCom->Add_Velocity({ 0.f, 1.f, 0.f, 1.f }, m_tStat.fAirVelocity / 1.5f, false);
+
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_BLOW] = true;
+
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
+				}
+
+				/* Air || Bound */
+				else if (tInfo.pOtherCollider->Get_AttackType() == CCollider::ATTACK_TYPE::AIR_BORNE ||
+					tInfo.pOtherCollider->Get_AttackType() == CCollider::ATTACK_TYPE::BOUND)
+				{
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_BLOWDEAD] = true;
+
+					On_Damaged(tInfo);
+
+					m_pModelCom->Set_Animation(TEXT("SKM_Clown.ao|Clown_KnockUp_Start"));
+					m_pRigidBodyCom->Add_Velocity({ 0.f, 1.f, 0.f, 1.f }, m_tStat.fAirVelocity / 2.f, false);
+
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
+				}
+
+				/* Stun */
+				else if (tInfo.pOtherCollider->Get_AttackType() == CCollider::ATTACK_TYPE::STUN)
+				{
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_BLOWDEAD] = false;
+
+					On_Damaged(tInfo);
+
+					if (!m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_BLOW] && !m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_AIR])
+					{
+
+						if (m_pModelCom->Get_CurrAnimation()->Get_AnimationName() != TEXT("SKM_Clown.ao|Clown_Stun"))
+							m_pModelCom->Set_Animation(TEXT("SKM_Clown.ao|Clown_Stun"));
+
+						m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_STUN] = true;
+					}
+
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
+				}
+
+				/* Hit */
+				else if (tInfo.pOtherCollider->Get_AttackType() == CCollider::ATTACK_TYPE::STRONG ||
+					tInfo.pOtherCollider->Get_AttackType() == CCollider::ATTACK_TYPE::WEAK)
+				{
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_BLOWDEAD] = false;
+
+					On_Damaged(tInfo);
+
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_WEAK] = true;
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
+				}
+			}
+		}
+	}
+
 }
 
 void CClown::Collision_Continue(const COLLISION_INFO& tInfo)
@@ -132,19 +187,26 @@ void CClown::Collision_Exit(const COLLISION_INFO& tInfo)
 	__super::Collision_Exit(tInfo);
 }
 
+void CClown::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
+{
+	__super::Ground_Collision_Enter(tInfo);
+}
+
+void CClown::Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo)
+{
+	__super::Ground_Collision_Continue(tInfo);
+}
+
+void CClown::Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo)
+{
+	__super::Ground_Collision_Exit(tInfo);
+}
+
 HRESULT CClown::Ready_Components()
 {
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 		return E_FAIL;
-
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-2.f, 1.f, -6.f, 1.f));
-	m_vOriginPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
-
-	/* 로밍 경로(임시) */
-	m_vecRoamingArea.push_back(XMVectorSet(4.f, 1.f, -2.f, 1.f));
-	m_vecRoamingArea.push_back(XMVectorSet(-5.f, 1.f, -3.f, 1.f));
-	m_vecRoamingArea.push_back(m_vOriginPos);
 
 	/* For.Com_Renderer */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
@@ -166,7 +228,7 @@ HRESULT CClown::Ready_Components()
 	ControllerDesc.vOffset = { 0.f, 1.125f, 0.f };
 	ControllerDesc.fHeight = 1.f;
 	ControllerDesc.fMaxJumpHeight = 10.f;
-	ControllerDesc.fRaidus = 1.f;
+	ControllerDesc.fRaidus = 0.5f;
 	ControllerDesc.pOwner = this;
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_PhysXController"), TEXT("Com_Controller"), (CComponent**)&m_pControllerCom, &ControllerDesc)))
@@ -190,11 +252,14 @@ HRESULT CClown::Ready_States()
 	strKorName = TEXT("마녀의 숲");
 	m_tStat.eElementType = ELEMENTAL_TYPE::DARK;
 
-	m_tStat.iLv = 9;
-	m_tStat.fMaxHp = 250;
-	m_tStat.fHp = 250;
-	m_tStat.iAtk = 20;
-	m_tStat.iDef = 1;
+	m_tStat.iLv = 11;
+	m_tStat.fMaxHp = 20000.f;
+	m_tStat.fHp = 20000.f;
+	m_tStat.iAtk = 75;
+	m_tStat.iDef = 150;
+
+	m_tStat.fAirVelocity = 6.f;
+	m_tStat.fAirDeadVelocity = 12.5f;
 
 	return S_OK;
 }

@@ -35,11 +35,13 @@ void CBaobam_WaterNode_Dead::Start()
 
 CBTNode::NODE_STATE CBaobam_WaterNode_Dead::Tick(const _float& fTimeDelta)
 {
-	if (dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_BLOWDEAD))
+	if (m_tBTMonsterDesc.pOwnerModel->Get_CurrAnimationFrame() >= 60 &&
+		m_tBTMonsterDesc.pOwnerModel->Get_CurrAnimation()->Get_AnimationName() == TEXT("SKM_Baobam_Water.ao|BaoBam_KnockDown"))
 	{
-		if (m_tBTMonsterDesc.pOwnerModel->Get_CurrAnimationFrame() >= 60)
+		m_tBTMonsterDesc.pOwnerModel->Set_Stop_Animation(true);
+
+		if (dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_BLOWDEAD))
 		{
-			m_tBTMonsterDesc.pOwnerModel->Set_Stop_Animation(true);
 			m_fTime += fTimeDelta;
 
 			if (m_fTime > m_fBlowDeadTime)
@@ -47,13 +49,9 @@ CBTNode::NODE_STATE CBaobam_WaterNode_Dead::Tick(const _float& fTimeDelta)
 				m_tBTMonsterDesc.pOwner->Reserve_Dead(true);
 			}
 		}
-	}
-	else
-	{
-		if (m_tBTMonsterDesc.pOwnerModel->Is_Finish() && !m_tBTMonsterDesc.pOwnerModel->Is_Tween())
-		{
+
+		else
 			m_tBTMonsterDesc.pOwner->Reserve_Dead(true);
-		}
 	}
 
 	return NODE_STATE::NODE_RUNNING;

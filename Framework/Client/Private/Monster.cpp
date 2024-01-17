@@ -290,7 +290,7 @@ HRESULT CMonster::Render_Instance_AnimModel_Shadow(CShader* pInstancingShader, C
 
 void CMonster::Collision_Enter(const COLLISION_INFO& tInfo)
 {
-	/* 공격 */
+	/* 근접 공격 */
 	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER 
 		&& tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY 
 		&& tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BOUNDARY)
@@ -330,8 +330,6 @@ void CMonster::Collision_Exit(const COLLISION_INFO& tInfo)
 
 void CMonster::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
 {
-	__super::Ground_Collision_Enter(tInfo);
-
 	if (m_pRigidBodyCom->Get_Velocity().y <= 0.f)
 	{
 		m_pRigidBodyCom->Set_Ground(true);
@@ -341,7 +339,6 @@ void CMonster::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
 
 void CMonster::Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo)
 {
-	__super::Ground_Collision_Continue(tInfo);
 	if (m_pRigidBodyCom->Get_Velocity().y <= 0.f)
 	{
 		m_pRigidBodyCom->Set_Ground(true);

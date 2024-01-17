@@ -23,16 +23,13 @@ public:
 
 private:
 	_bool	IsZeroHp();
-	_bool   IsWeak();
+	_bool   IsHit();
 	_bool	IsAtk();
 	_bool	IsChase();
 	_bool	IsReturn();
 
 private:
 	CPumpkinCandle* m_pPumpkinCandle = nullptr;
-
-	_bool m_BIsChase = false;
-
 
 public:
 	static CPumpkinCandleBT* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, CMonster* pOwner);

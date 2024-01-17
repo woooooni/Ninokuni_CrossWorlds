@@ -23,7 +23,7 @@ void CPumpkinCandleNode_Chase::Start()
 CBTNode::NODE_STATE CPumpkinCandleNode_Chase::Tick(const _float& fTimeDelta)
 {
 	m_tBTMonsterDesc.pOwnerTransform->LookAt_ForLandObject(m_tBTMonsterDesc.pOwner->Get_TargetDesc().pTragetTransform->Get_Position());
-	m_tBTMonsterDesc.pOwnerTransform->Move(m_tBTMonsterDesc.pOwnerTransform->Get_Look(), 2.f, fTimeDelta);
+	m_tBTMonsterDesc.pOwnerTransform->Move(m_tBTMonsterDesc.pOwnerTransform->Get_Look(), 4.f, fTimeDelta);
 
 	return NODE_STATE::NODE_RUNNING;
 }

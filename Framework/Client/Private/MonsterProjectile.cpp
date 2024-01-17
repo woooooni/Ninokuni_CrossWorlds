@@ -45,15 +45,18 @@ void CMonsterProjectile::Tick(_float fTimeDelta)
 
 	GI->Add_CollisionGroup(COLLISION_GROUP::MONSTER, this);
 
-	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
-	m_pControllerCom->Tick_Controller(fTimeDelta);
+	if(m_pRigidBodyCom != nullptr)
+		m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
+	if (m_pControllerCom != nullptr)
+		m_pControllerCom->Tick_Controller(fTimeDelta);
 }
 
 void CMonsterProjectile::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
 
-	m_pControllerCom->LateTick_Controller(fTimeDelta);
+	if(m_pControllerCom != nullptr)
+		m_pControllerCom->LateTick_Controller(fTimeDelta);
 
 	if (nullptr != m_pModelCom)
 		m_pModelCom->LateTick(fTimeDelta);
@@ -153,7 +156,7 @@ void CMonsterProjectile::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER &&
 		tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY &&
-		tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
+		tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK)
 	{
 		Set_Dead(this);
 	}

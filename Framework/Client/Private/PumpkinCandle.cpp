@@ -120,7 +120,7 @@ void CPumpkinCandle::Collision_Enter(const COLLISION_INFO& tInfo)
 
 					On_Damaged(tInfo);
 
-					m_pModelCom->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Knock"));
+					m_pModelCom->Set_Animation(TEXT("SKM_PumpkinCandle.ao|PumpkinCandle_KnockUp_Start"));
 
 					m_pRigidBodyCom->Add_Velocity(-m_pTransformCom->Get_Look(), m_tStat.fAirVelocity, false);
 					m_pRigidBodyCom->Add_Velocity({ 0.f, 1.f, 0.f, 1.f }, m_tStat.fAirVelocity / 1.5f, false);
@@ -138,7 +138,7 @@ void CPumpkinCandle::Collision_Enter(const COLLISION_INFO& tInfo)
 
 					On_Damaged(tInfo);
 
-					m_pModelCom->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Knock"));
+					m_pModelCom->Set_Animation(TEXT("SKM_PumpkinCandle.ao|PumpkinCandle_KnockUp_Start"));
 					m_pRigidBodyCom->Add_Velocity({ 0.f, 1.f, 0.f, 1.f }, m_tStat.fAirVelocity / 2.f, false);
 
 					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
@@ -154,8 +154,8 @@ void CPumpkinCandle::Collision_Enter(const COLLISION_INFO& tInfo)
 					if (!m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_BLOW] && !m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_AIR])
 					{
 
-						if (m_pModelCom->Get_CurrAnimation()->Get_AnimationName() != TEXT("SKM_ShadowThief.ao|ShadowThief_Stun"))
-							m_pModelCom->Set_Animation(TEXT("SKM_ShadowThief.ao|ShadowThief_Stun"));
+						if (m_pModelCom->Get_CurrAnimation()->Get_AnimationName() != TEXT("SKM_PumpkinCandle.ao|PumpkinCandle_Stun"))
+							m_pModelCom->Set_Animation(TEXT("SKM_PumpkinCandle.ao|PumpkinCandle_Stun"));
 
 						m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_STUN] = true;
 					}
@@ -190,19 +190,26 @@ void CPumpkinCandle::Collision_Exit(const COLLISION_INFO& tInfo)
 	__super::Collision_Exit(tInfo);
 }
 
+void CPumpkinCandle::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
+{
+	__super::Ground_Collision_Enter(tInfo);
+}
+
+void CPumpkinCandle::Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo)
+{
+	__super::Ground_Collision_Continue(tInfo);
+}
+
+void CPumpkinCandle::Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo)
+{
+	__super::Ground_Collision_Exit(tInfo);
+}
+
 HRESULT CPumpkinCandle::Ready_Components()
 {
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 		return E_FAIL;
-
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(7.f, 1.f, 7.f, 1.f));
-	m_vOriginPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
-
-	/* ∑Œπ÷ ∞Ê∑Œ(¿”Ω√) */
-	m_vecRoamingArea.push_back(XMVectorSet(10.f, 1.f, 10.f, 1.f));
-	m_vecRoamingArea.push_back(XMVectorSet(13.f, 1.f, 13.f, 1.f));
-	m_vecRoamingArea.push_back(m_vOriginPos);
 
 	/* For.Com_Renderer */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
@@ -224,7 +231,7 @@ HRESULT CPumpkinCandle::Ready_Components()
 	ControllerDesc.vOffset = { 0.f, 1.125f, 0.f };
 	ControllerDesc.fHeight = 1.f;
 	ControllerDesc.fMaxJumpHeight = 10.f;
-	ControllerDesc.fRaidus = 1.f;
+	ControllerDesc.fRaidus = 0.5f;
 	ControllerDesc.pOwner = this;
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_PhysXController"), TEXT("Com_Controller"), (CComponent**)&m_pControllerCom, &ControllerDesc)))
@@ -248,11 +255,14 @@ HRESULT CPumpkinCandle::Ready_States()
 	strKorName = TEXT("∏∂≥‡¿« Ω£");
 	m_tStat.eElementType = ELEMENTAL_TYPE::FIRE;
 
-	m_tStat.iLv = 8;
-	m_tStat.fMaxHp = 150;
-	m_tStat.fHp = 150;
-	m_tStat.iAtk = 15;
-	m_tStat.iDef = 0;
+	m_tStat.iLv = 9;
+	m_tStat.fMaxHp = 12500;
+	m_tStat.fHp = 12500;
+	m_tStat.iAtk = 50;
+	m_tStat.iDef = 50;
+
+	m_tStat.fAirVelocity = 7.5f;
+	m_tStat.fAirDeadVelocity = 15.f;
 
 	return S_OK;
 }
