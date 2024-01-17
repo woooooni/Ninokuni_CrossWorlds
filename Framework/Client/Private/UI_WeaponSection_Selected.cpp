@@ -168,6 +168,7 @@ void CUI_WeaponSection_Selected::Change_Weapon(_uint iSlotNum)
 	CCharacter* pCharacter = pPlayer->Get_Character();
 	if (nullptr == pCharacter)
 		return;
+	m_eCurPlayerType = pCharacter->Get_CharacterType();
 	CWeapon* pWeapon = pCharacter->Get_Weapon();
 	if (nullptr == pWeapon)
 		return;
@@ -219,6 +220,21 @@ void CUI_WeaponSection_Selected::Change_Weapon(_uint iSlotNum)
 		break;
 
 	case CHARACTER_TYPE::ENGINEER:
+		switch (iSlotNum)
+		{
+		case 0:
+			pWeaponModel = CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCurPlayerType, TEXT("Rifle_Fire"));
+			eElementalType = ELEMENTAL_TYPE::FIRE;
+			break;
+		case 1:
+			pWeaponModel = CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCurPlayerType, TEXT("Rifle_Water"));
+			eElementalType = ELEMENTAL_TYPE::WATER;
+			break;
+		case 2:
+			pWeaponModel = CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCurPlayerType, TEXT("Rifle_Wood"));
+			eElementalType = ELEMENTAL_TYPE::WOOD;
+			break;
+		}
 		break;
 	}
 

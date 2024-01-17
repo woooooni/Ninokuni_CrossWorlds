@@ -11,8 +11,8 @@
 #include "Weapon_Manager.h"
 
 
-CUI_CharacterDummy::CUI_CharacterDummy(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
-	: CCharacter(pDevice, pContext, strObjectTag, CHARACTER_TYPE::SWORD_MAN)
+CUI_CharacterDummy::CUI_CharacterDummy(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eType)
+	: CCharacter(pDevice, pContext, strObjectTag, eType)
 {
 }
 
@@ -355,9 +355,9 @@ _float2 CUI_CharacterDummy::Transpose_ProjectionPosition()
 	return _float2(fScreenX, fScreenY);
 }
 
-CUI_CharacterDummy* CUI_CharacterDummy::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
+CUI_CharacterDummy* CUI_CharacterDummy::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eType)
 {
-	CUI_CharacterDummy* pInstance = new CUI_CharacterDummy(pDevice, pContext, strObjectTag);
+	CUI_CharacterDummy* pInstance = new CUI_CharacterDummy(pDevice, pContext, strObjectTag, eType);
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
 		MSG_BOX("Create Failed : CUI_CharacterDummy");

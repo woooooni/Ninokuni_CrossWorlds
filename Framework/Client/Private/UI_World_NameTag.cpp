@@ -37,9 +37,11 @@ void CUI_World_NameTag::Set_Owner(CGameObject* pOwner)
 			break;
 
 		case CHARACTER_TYPE::DESTROYER:
+			m_fOffsetY = 2.1f;
 			break;
 
 		case CHARACTER_TYPE::ENGINEER:
+			m_fOffsetY = 1.5f;
 			break;
 		}
 	}

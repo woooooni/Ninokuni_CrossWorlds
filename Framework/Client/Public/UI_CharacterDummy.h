@@ -6,7 +6,7 @@ class CUI_CharacterDummy final : public CCharacter
 {
 
 private:
-	CUI_CharacterDummy(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	CUI_CharacterDummy(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eType);
 	CUI_CharacterDummy(const CUI_CharacterDummy& rhs);
 	virtual ~CUI_CharacterDummy() = default;
 
@@ -47,7 +47,7 @@ private:
 	_float2 Transpose_ProjectionPosition();
 	
 public:
-	static CUI_CharacterDummy* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	static CUI_CharacterDummy* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eType);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };
