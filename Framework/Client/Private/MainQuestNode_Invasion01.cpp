@@ -39,6 +39,8 @@ HRESULT CMainQuestNode_Invasion01::Initialize()
 void CMainQuestNode_Invasion01::Start()
 {
 	/* 현재 퀘스트에 연관있는 객체들 */
+	CCamera_Manager::GetInstance()->Start_Action_Shake(0.1f, 17.f, 0.5f);
+
 	m_pRuslan = GI->Find_GameObject(LEVELID::LEVEL_ICELAND, LAYER_NPC, TEXT("Ruslan"));
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
 }
@@ -52,6 +54,9 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion01::Tick(const _float& fTimeDelta)
 	{
 		if (!m_bIsStart)
 		{
+			if (true == CCamera_Manager::GetInstance()->Get_CurCamera()->Is_Shake())
+				return NODE_STATE::NODE_FAIL;
+
 			CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
 			/* 대화 */

@@ -120,6 +120,7 @@
       <CombineFilesOnlyFromTheSameFolder>false</CombineFilesOnlyFromTheSameFolder>
       <MaxFilesInUnityFile>0</MaxFilesInUnityFile>
       <AdditionalOptions>/execution-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
