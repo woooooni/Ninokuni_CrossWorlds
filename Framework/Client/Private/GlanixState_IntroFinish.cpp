@@ -15,6 +15,9 @@
 #include "GameInstance.h"
 #include "Particle_Manager.h"
 
+#include "Game_Manager.h"
+#include "Player.h"
+
 CGlanixState_IntroFinish::CGlanixState_IntroFinish(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
 {
@@ -69,7 +72,7 @@ void CGlanixState_IntroFinish::Tick_State(_float fTimeDelta)
 		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Atchi_03"), pTransformCom->Get_WorldMatrix(), _float3(1.f, 3.f, 1.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
 	}
 
-	if (!m_pModelCom->Is_Tween() && m_pModelCom->Get_Progress() >= 0.95f && !m_bFadeOut)
+	if (!m_pModelCom->Is_Tween() && 0.95f <= m_pModelCom->Get_Progress() && !m_bFadeOut)
 	{
 		/* Start Fade Out */
 		if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
@@ -101,6 +104,9 @@ void CGlanixState_IntroFinish::Exit_State()
 		/* Finish CutScene */
 		if (FAILED(pCutSceneCam->Finish_CutScene()))
 			return;
+
+		/* Player Input On */
+		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
 	}
 }
 
