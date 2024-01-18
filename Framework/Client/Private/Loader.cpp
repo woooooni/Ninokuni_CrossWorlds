@@ -652,6 +652,10 @@ HRESULT CLoader::Loading_For_Level_Tool()
 		
 	// 툴 파티클
 	CParticle::PARTICLE_DESC ParticleInfo = {};
+	ParticleInfo.iVelocityUse = 30;
+	ParticleInfo.pVelocityMin = new _float3[ParticleInfo.iVelocityUse];
+	ParticleInfo.pVelocityMax = new _float3[ParticleInfo.iVelocityUse];
+	ParticleInfo.pVelocityTime = new _float2[ParticleInfo.iVelocityUse];
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_TempParticle"),
 		CParticle::Create(m_pDevice, m_pContext, TEXT("TempParticle"), &ParticleInfo), 
 		LAYER_TYPE::LAYER_EFFECT)))

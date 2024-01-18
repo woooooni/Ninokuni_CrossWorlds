@@ -66,7 +66,7 @@ private:
 
 	char m_cBinaryName[MAX_PATH];
 
-	const char* m_cEffectType[3] = { " EFFECT_TEXTURE", "EFFECT_MESH", "EFFECT_END" };
+	const char* m_cEffectType[3] = { "EFFECT_TEXTURE", "EFFECT_MESH", "EFFECT_END" };
 	_int m_iEffectTypeIndex = { 2 };
 
 	char m_cModelName[MAX_PATH] = { "Prototype_Component_Model_" };

@@ -1221,7 +1221,7 @@ void CTool_Effect::Save_Effect(const char* pFileName)
 		return;
 	}
 
-	m_tEffectInfo = static_cast<CEffect*>(m_pEffect)->Get_EffectDesc();
+	//m_tEffectInfo = static_cast<CEffect*>(m_pEffect)->Get_EffectDesc();
 
 	Json json;
 	json["EffectInfo"].push_back({
