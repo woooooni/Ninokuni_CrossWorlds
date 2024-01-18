@@ -7,6 +7,9 @@
 #include "Game_Manager.h"
 #include "UI_Manager.h"
 
+#include "Player.h"
+#include "Character.h"
+
 CMainQuestNode_Invasion02::CMainQuestNode_Invasion02()
 {
 }
@@ -49,9 +52,20 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion02::Tick(const _float& fTimeDelta)
 
 	if (GI->Get_CurrentLevel() == LEVELID::LEVEL_EVERMORE)
 	{
+		if (false == m_bBGMStart)
+		{
+			GI->Stop_Sound(CHANNELID::SOUND_BGM_CURR, 0.f);
+			GI->Play_BGM(L"BGM_Field_Hunting_CastleInside_Dark_1.ogg", 1.f, true);
+			m_bBGMStart = true;
+		}
+
 		if (!m_bIsStart)
 		{
+			if (CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_CurrentState() == CCharacter::STATE::NEUTRAL_DOOR_ENTER)
+				return NODE_STATE::NODE_RUNNING;
+
 			CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+			
 
 			/* ¥Î»≠ */
 			m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);

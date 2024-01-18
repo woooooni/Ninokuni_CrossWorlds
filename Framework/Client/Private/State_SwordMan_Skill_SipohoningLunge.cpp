@@ -44,7 +44,7 @@ void CState_SwordMan_Skill_SipohoningLunge::Tick_State(_float fTimeDelta)
 
 void CState_SwordMan_Skill_SipohoningLunge::Exit_State()
 {
-    CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(60.f);
+    CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(Cam_Fov_Follow_Default);
 }
 
 

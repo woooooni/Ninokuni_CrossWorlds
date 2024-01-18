@@ -42,7 +42,7 @@ void CState_SwordMan_SpecialSkill_FrozenStorm::Tick_State(_float fTimeDelta)
 
 void CState_SwordMan_SpecialSkill_FrozenStorm::Exit_State()
 {
-    CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(60.f);
+    CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(Cam_Fov_Follow_Default);
 }
 
 CState_SwordMan_SpecialSkill_FrozenStorm* CState_SwordMan_SpecialSkill_FrozenStorm::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

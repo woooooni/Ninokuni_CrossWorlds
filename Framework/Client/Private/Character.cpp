@@ -449,7 +449,7 @@ void CCharacter::Collision_Enter(const COLLISION_INFO& tInfo)
 			break;
 
 		case CHARACTER_TYPE::DESTROYER:
-			strSoundKey = L"Hit_Obj_Stone_Large_1_" + to_wstring(GI->RandomInt(1, 3)) + L".mp3";
+			strSoundKey = L"Hit_PC_Combo_Smack_Flesh_" + to_wstring(GI->RandomInt(1, 4)) + L".mp3";
 			GI->Play_Sound(strSoundKey, SOUND_MONSTERL_HIT, 0.3f, false);
 			break;
 
@@ -594,6 +594,9 @@ void CCharacter::LevelUp()
 	m_tStat.iExp = max(0, m_tStat.iExp - m_tStat.iMaxExp);
 	m_tStat.iMaxExp += (m_tStat.iMaxExp) * 0.5f;	
 	m_tStat.iLevel++;
+
+	m_tStat.iMaxHp += m_tStat.iLevel * 100;
+	m_tStat.iAtt += m_tStat.iLevel * 100;
 	CUI_Manager::GetInstance()->OnOff_LevelUp(true, m_tStat.iLevel);
 
 	// TODO :: UI
@@ -714,6 +717,19 @@ _bool CCharacter::Decrease_HP(_int iDecrease)
 		return true;
 	}
 	return false;
+}
+
+CCharacter::STATE CCharacter::Get_CurrentState()
+{
+	if (nullptr == m_pStateCom)
+		return CCharacter::STATE::STATE_END;
+
+	return CCharacter::STATE(m_pStateCom->Get_CurrState());
+}
+
+Vec4 CCharacter::Get_CharacterPosition()
+{
+	return m_pTransformCom->Get_Position();
 }
 
 void CCharacter::Set_EnterLevelPosition(Vec4 vPosition)
