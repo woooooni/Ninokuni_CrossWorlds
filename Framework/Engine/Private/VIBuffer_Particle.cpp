@@ -684,8 +684,10 @@ void CVIBuffer_Particle::Tick(_float fTimeDelta)
 				iDieParticleCount++;
 				if (iDieParticleCount == m_iNumInstance)
 					m_bFinished = true;
-				else
-					m_vecParticleShaderDesc[i].fAlpha = 1.f;
+
+				((VTXINSTANCE*)SubResource.pData)[i].vRight.x = 0.f;
+				((VTXINSTANCE*)SubResource.pData)[i].vUp.y    = 0.f;
+				((VTXINSTANCE*)SubResource.pData)[i].vLook.z  = 0.f;
 			}
 		}
 		else
@@ -807,8 +809,11 @@ void CVIBuffer_Particle::Tick(_float fTimeDelta)
 							if (0.f > ((VTXINSTANCE*)SubResource.pData)[i].vPosition.y)
 							{
 								((VTXINSTANCE*)SubResource.pData)[i].vPosition.y = 0.f;
-								if(!(*m_tParticleDesc.pGroundSlide))
+								if (!(*m_tParticleDesc.pGroundSlide))
+								{
 									m_vecParticleRigidbodyDesc[i].vVelocity = _float4(0.f, 0.f, 0.f, 0.f);
+									(*m_tParticleDesc.pRotationChange) = false;
+								}
 								//m_vecParticleInfoDesc[i].bIsDie = true;
 							}
 						}
@@ -818,7 +823,10 @@ void CVIBuffer_Particle::Tick(_float fTimeDelta)
 							{
 								((VTXINSTANCE*)SubResource.pData)[i].vPosition.y = m_pVertices[i].vPosition.y;
 								if (!(*m_tParticleDesc.pGroundSlide))
+								{
 									m_vecParticleRigidbodyDesc[i].vVelocity = _float4(0.f, 0.f, 0.f, 0.f);
+									(*m_tParticleDesc.pRotationChange) = false;
+								}
 								//m_vecParticleInfoDesc[i].bIsDie = true;
 							}
 						}
