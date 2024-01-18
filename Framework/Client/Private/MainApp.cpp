@@ -1537,6 +1537,32 @@ HRESULT CMainApp::Ready_CameraObject()
 		pCamera->Set_Key(eType);
 	}
 
+	/* Quater */
+	{
+		CCamera* pCamera = nullptr;
+		CAMERA_TYPE eType = CAMERA_TYPE::QUATER;
+		CCamera::PROJ_DESC tDesc;
+		{
+			tDesc.tLerpFov.fCurValue = Cam_Fov_Default;
+			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
+			tDesc.fNear = 0.2f;
+			tDesc.fFar = 1000.f;
+
+			pCamera = CCamera_Quater::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
+			if (nullptr == pCamera)
+				return E_FAIL;
+
+			CCamera_Manager::GetInstance()->Add_Camera(eType, pCamera);
+
+			if (FAILED(pCamera->Initialize(&tDesc)))
+			{
+				return E_FAIL;
+			}
+		}
+		pCamera->Set_Key(eType);
+		pCamera->Get_Transform()->Set_State(CTransform::STATE::STATE_POSITION, Vec4(0.f, 10.f, -10.f, 1.f));
+		pCamera->Get_Transform()->LookAt(Vec4{ 0.f, 0.f, 0.f, 1.f });
+	}
 	return S_OK;
 }
 

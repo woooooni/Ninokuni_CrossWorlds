@@ -41,7 +41,6 @@ void CDMWitchState_Turn::Enter_State(void* pArg)
 	/* 보스의 look을 기준으로 플레이어가 왼쪽, 오른쪽에 위치하는지를 판별. */
 	_vector vCrossProduct = XMVector3Cross(vLookNormal, vDestNormal);
 	_float fCrossProductY = XMVectorGetY(vCrossProduct);
-
 	/* 보스가 바라보는 방향을 기준으로 오른쪽에 위치. */
 	if (fCrossProductY > 0.f)
 	{
