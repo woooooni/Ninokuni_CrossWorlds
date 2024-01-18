@@ -138,7 +138,7 @@ HRESULT CLevel_Evermore::Tick(_float fTimeDelta)
 HRESULT CLevel_Evermore::LateTick(_float fTimeDelta)
 {
 	CUI_Manager::GetInstance()->LateTick_Fade(fTimeDelta);
-	CUI_Manager::GetInstance()->LateTick_EvermoreLevel(fTimeDelta);
+	CUI_Manager::GetInstance()->LateTick_GamePlayLevel(fTimeDelta);
 
 	return S_OK;
 }

@@ -114,6 +114,7 @@
 #include "UI_MonsterHP_Background.h"
 #include "UI_SkillWindow_SkillSlot.h"
 #include "UI_Loading_CharacterLogo.h"
+#include "UI_InGame_Setting_Window.h"
 #include "UI_World_NPCSpeechBalloon.h"
 #include "UI_WeaponSection_Selected.h"
 #include "UI_ImajinnSection_Vehicle.h"
@@ -4077,19 +4078,19 @@ HRESULT CUI_Manager::Tick_UIs(LEVELID eID, _float fTimeDelta)
 		break;
 
 	case LEVELID::LEVEL_KINGDOMHALL:
-		Tick_EvermoreLevel(fTimeDelta);
+		Tick_GamePlayLevel(fTimeDelta);
 		break;
 
 	case LEVELID::LEVEL_EVERMORE:
-		Tick_EvermoreLevel(fTimeDelta);
+		Tick_GamePlayLevel(fTimeDelta);
 		break;
 
 	case LEVELID::LEVEL_ICELAND:
-		Tick_EvermoreLevel(fTimeDelta);
+		Tick_GamePlayLevel(fTimeDelta);
 		break;
 
 	default:
-		Tick_EvermoreLevel(fTimeDelta);
+		Tick_GamePlayLevel(fTimeDelta);
 		break;
 	}
 
@@ -4157,7 +4158,7 @@ HRESULT CUI_Manager::Tick_LobbyLevel(_float fTimeDelta)
 	return S_OK;
 }
 
-HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
+HRESULT CUI_Manager::Tick_GamePlayLevel(_float fTimeDelta)
 {
 	switch (m_eCurPlayer)
 	{
@@ -4234,10 +4235,20 @@ HRESULT CUI_Manager::Tick_EvermoreLevel(_float fTimeDelta)
 //		}
 //	}
 
+	if (KEY_TAP(KEY::O))
+	{
+		Set_BattleDialogue(TEXT("배틀 다이얼로그 오프셋 작업중 줄 바꿈 어디서 하는게 적당할지 테스트 하는 중 가나다라마바사 아 자 차카 타파하"));
+		OnOff_DialogWindow(true, 2);
+	}
+	if (KEY_TAP(KEY::P))
+	{
+		OnOff_DialogWindow(false, 2);
+	}
+
 	return S_OK;
 }
 
-HRESULT CUI_Manager::LateTick_EvermoreLevel(_float fTimeDelta)
+HRESULT CUI_Manager::LateTick_GamePlayLevel(_float fTimeDelta)
 {
 	switch (m_eCurPlayer)
 	{
@@ -4286,7 +4297,7 @@ void CUI_Manager::LateTick_Dummy(_float fTimeDelta)
 	m_pCostumeMirror->LateTick(fTimeDelta);
 }
 
-HRESULT CUI_Manager::Render_EvermoreLevel()
+HRESULT CUI_Manager::Render_GamePlayLevel()
 {
 	//m_pDummy_Swordman->Render();
 
@@ -8157,6 +8168,8 @@ void CUI_Manager::Free()
 
 	Safe_Release(m_pIceVignette);
 	Safe_Release(m_pFireVignette);
+
+	Safe_Release(m_pInGameSetting);
 
 	for (auto& pFrame : m_CoolTimeFrame)
 		Safe_Release(pFrame);
