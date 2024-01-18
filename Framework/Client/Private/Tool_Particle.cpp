@@ -22,14 +22,625 @@ HRESULT CTool_Particle::Initialize()
 	return S_OK;
 }
 
+#pragma region Tick
 void CTool_Particle::Tick(_float fTimeDelta)
 {
 	ImGui::Begin("Particle_Tool");
 
-	// 생성/ 삭제
+	// CreateDelete
+	Tick_CreateDelete();
+	ImGui::NewLine();
+
+	// Binary
+	Tick_Binary();
+	ImGui::NewLine();
+
+	// Prototype
+	Tick_Prototype();
+	ImGui::NewLine();
+
+	// Transform
+	Tick_Transform();
+	ImGui::NewLine();
+
+#pragma region ParticleSystem
+	_bool bParticleSystemUse = false;
+
+	if (ImGui::CollapsingHeader("ParticleSystem"))
+	{
+		if (ImGui::Button("Restart"))
+			Store_InfoParticle();
+
+		// 기본 정보
+		if (ImGui::CollapsingHeader("BasicInfo"))
+		{
+			// 파티클 개수 //ImGui::Text("MaxParticles"); //ImGui::InputInt("##MaxParticles", &(_int)m_tParticleInfo.iNumEffectMaxCount);
+			ImGui::Text("ParticlesCount");
+			if (ImGui::InputInt("##ParticlesCount", &(_int)m_tParticleInfo.iNumEffectCount))
+				bParticleSystemUse = true;
+			ImGui::NewLine();
+
+			// 투영 타입
+			ImGui::Text("Projection :");
+			ImGui::SameLine();
+			if (ImGui::Combo("##Projection", &m_iProjectionIndex, m_cProjection, IM_ARRAYSIZE(m_cProjection)))
+				bParticleSystemUse = true;
+			ImGui::NewLine();
+
+			// 반복 여부
+			if (ImGui::Checkbox("Loop", &m_tParticleInfo.bParticleLoop))
+				bParticleSystemUse = true;
+			ImGui::NewLine();
+
+			// 파티클 Z정렬 (알파 값이 있을 시 사용 권장)
+			if (ImGui::Checkbox("SortZ", &m_tParticleInfo.bParticleSortZ))
+				bParticleSystemUse = true;
+			ImGui::NewLine();
+		}
+
+		// 위치 (분포 범위)
+		if (ImGui::CollapsingHeader("Range/StartPosition"))
+		{
+			ImGui::Text("Range");
+			if (ImGui::InputFloat3("##Range", &m_tParticleInfo.fRange.x))
+				bParticleSystemUse = true;
+			ImGui::NewLine();
+
+			ImGui::Text("StartDistance");
+			if (ImGui::InputFloat2("##StartDistance", &m_tParticleInfo.fRangeDistance.x))
+				bParticleSystemUse = true;
+			ImGui::NewLine();
+		}
+
+		// 크기
+		if (ImGui::CollapsingHeader("Scale"))
+		{
+			if(ImGui::Checkbox("ScaleSameRate", &m_tParticleInfo.bScaleSameRate))
+				bParticleSystemUse = true;
+			ImGui::NewLine();
+
+			ImGui::Text("ScaleStart");
+			if (ImGui::InputFloat2("##ScaleStart", &m_tParticleInfo.fScaleStart.x))
+				bParticleSystemUse = true;
+			ImGui::NewLine();
+
+			if(ImGui::Checkbox("ScaleChange", &m_tParticleInfo.bScaleChange))
+				bParticleSystemUse = true;
+			ImGui::NewLine();
+			if (m_tParticleInfo.bScaleChange)
+			{
+				ImGui::Text("ScaleChangeStartDelayParticles");
+				if(ImGui::InputFloat2("##ScaleChangeStartDelayParticles", &m_tParticleInfo.fScaleChangeStartDelay.x))
+					bParticleSystemUse = true;
+				ImGui::NewLine();
+
+				ImGui::Text("ScaleSpeedParticles");
+				if(ImGui::InputFloat2("##ScaleSpeedParticles", &m_tParticleInfo.fScaleSpeed.x))
+					bParticleSystemUse = true;
+				ImGui::NewLine();
+
+				if (ImGui::Checkbox("ScaleChangeRandom", &m_tParticleInfo.bScaleChangeRandom))
+					bParticleSystemUse = true;
+				ImGui::NewLine();
+				if (m_tParticleInfo.bScaleChangeRandom)
+				{
+					ImGui::Text("ScaleChangeTimeParticles");
+					if(ImGui::InputFloat2("##ScaleChangeTimeParticles", &m_tParticleInfo.fScaleChangeTime.x))
+						bParticleSystemUse = true;
+					ImGui::NewLine();
+				}
+				else
+				{
+					ImGui::Text("ScaleMinParticles");
+					if(ImGui::InputFloat2("##ScaleMinParticles", &m_tParticleInfo.fScaleMin.x))
+						bParticleSystemUse = true;
+					ImGui::NewLine();
+
+					ImGui::Text("ScaleMaxParticles");
+					if(ImGui::InputFloat2("##ScaleMaxParticles", &m_tParticleInfo.fScaleMax.x))
+						bParticleSystemUse = true;
+					ImGui::NewLine();
+
+					if(ImGui::Checkbox("ScaleAdd", &m_tParticleInfo.bScaleAdd))
+						bParticleSystemUse = true;
+					ImGui::NewLine();
+
+					if(ImGui::Checkbox("ScaleLoop", &m_tParticleInfo.bScaleLoop))
+						bParticleSystemUse = true;
+					ImGui::NewLine();
+
+					if(ImGui::Checkbox("ScaleLoopStart", &m_tParticleInfo.bScaleLoopStart))
+						bParticleSystemUse = true;
+					ImGui::NewLine();
+				}
+			}
+		}
+
+		// 이동(힘)
+		if (ImGui::CollapsingHeader("Velocity"))
+		{
+			ImGui::Text("VelocitySpeed");
+			if(ImGui::InputFloat2("##VelocitySpeed", &m_tParticleInfo.fVelocitySpeed.x))
+				bParticleSystemUse = true;
+			ImGui::NewLine();
+
+			ImGui::Text("VelocityMinParticles");
+			if(ImGui::InputFloat3("##VelocityMinParticles", &m_tParticleInfo.vVelocityMinStart.x))
+				bParticleSystemUse = true;
+
+			ImGui::Text("VelocityMaxParticles");
+			if(ImGui::InputFloat3("##VelocityMaxParticles", &m_tParticleInfo.vVelocityMaxStart.x))
+				bParticleSystemUse = true;
+			ImGui::NewLine();
+			ImGui::NewLine();
+
+
+			if(ImGui::Checkbox("VelocityChange", &m_tParticleInfo.bVelocityChange))
+				bParticleSystemUse = true;
+			ImGui::NewLine();
+			if (m_tParticleInfo.bVelocityChange)
+			{
+				ImGui::Text("VelocityChangeStartDelayParticles");
+				if(ImGui::InputFloat2("##VelocityChangeStartDelayParticles", &m_tParticleInfo.fVelocityChangeStartDelay.x))
+					bParticleSystemUse = true;
+				ImGui::NewLine();
+
+				if(ImGui::Checkbox("VelocityChangeRandom", &m_tParticleInfo.bVelocityChangeRandom))
+					bParticleSystemUse = true;
+				ImGui::NewLine();
+				if (m_tParticleInfo.bVelocityChangeRandom)
+				{
+					ImGui::Text("VelocityChangeTimeParticles");
+					if(ImGui::InputFloat2("##VelocityChangeTimeParticles", &m_tParticleInfo.fVelocityChangeTime.x))
+						bParticleSystemUse = true;
+					ImGui::NewLine();
+
+					m_tParticleInfo.iVelocityUse = 0;
+				}
+				else
+				{
+					ImGui::Text("VelocityUseParticles");
+					if (ImGui::InputInt("##VelocityUseParticles", &(_int)m_tParticleInfo.iVelocityUse))
+					{
+						bParticleSystemUse = true;
+						if (30 < m_tParticleInfo.iVelocityUse)
+							m_tParticleInfo.iVelocityUse = 30;
+					}
+
+					if(ImGui::Checkbox("VelocityLoop", &m_tParticleInfo.bVelocityLoop))
+						bParticleSystemUse = true;
+					ImGui::NewLine();
+
+					ImGui::Text("VelocityCountCur");
+					if(ImGui::InputInt("##VelocityCountCur", &(_int)m_tParticleInfo.iVelocityCountCur))
+						bParticleSystemUse = true;
+					ImGui::NewLine();
+
+					ImGui::Text("iVelocityCountMax");
+					if(ImGui::InputInt("##iVelocityCountMax", &(_int)m_tParticleInfo.iVelocityCountMax))
+						bParticleSystemUse = true;
+					ImGui::NewLine();
+
+					if (nullptr != m_tParticleInfo.pVelocityMin && nullptr != m_tParticleInfo.pVelocityMax && nullptr != m_tParticleInfo.pVelocityTime)
+					{
+						for (size_t i = 0; i < m_tParticleInfo.iVelocityCountMax; ++i)
+						{
+							std::string scaleOffsetString = "ChangeTime_" + std::to_string(i);
+							ImGui::InputFloat3(scaleOffsetString.c_str(), &m_tParticleInfo.pVelocityTime[i].x);
+
+							std::string frameTrigerString = "VelocityMin_" + std::to_string(i);
+							ImGui::InputFloat3(frameTrigerString.c_str(), &m_tParticleInfo.pVelocityMin[i].x);
+
+							std::string positionOffsetString = "VelocityMax_" + std::to_string(i);
+							ImGui::InputFloat3(positionOffsetString.c_str(), &m_tParticleInfo.pVelocityMax[i].x);
+
+							ImGui::NewLine();
+						}
+					}
+				}
+			}
+		}
+
+		// 회전
+		if (ImGui::CollapsingHeader("Rotation"))
+		{
+			if (ImGui::Checkbox("RotationBillboard", &m_tParticleInfo.bBillboard))
+				bParticleSystemUse = true;
+			ImGui::NewLine();
+
+			if (!m_tParticleInfo.bBillboard)
+			{
+				if (ImGui::Checkbox("RotationRandomAxis", &m_tParticleInfo.bRandomAxis))
+					bParticleSystemUse = true;
+				if (!m_tParticleInfo.bRandomAxis)
+				{
+					ImGui::Text("RotationAxis");
+					if (ImGui::InputFloat3("##RotationAxis", &m_fParticleAxis.x))
+						bParticleSystemUse = true;
+				}
+				ImGui::NewLine();
+
+				if (ImGui::Checkbox("RotationRandomAngle", &m_tParticleInfo.bRandomAngle))
+					bParticleSystemUse = true;
+				if (!m_tParticleInfo.bRandomAngle)
+				{
+					ImGui::Text("RotationAngle");
+					if (ImGui::InputFloat("##RangeParticles", &m_tParticleInfo.fAngle))
+						bParticleSystemUse = true;
+				}
+				ImGui::NewLine();
+
+				if (ImGui::Checkbox("RotationChange", &m_tParticleInfo.bRotationChange))
+					bParticleSystemUse = true;
+				ImGui::NewLine();
+				if (m_tParticleInfo.bRotationChange)
+				{
+					ImGui::Text("RotationChangeStartDelayParticles");
+					if (ImGui::InputFloat2("##RotationChangeStartDelayParticles", &m_tParticleInfo.fRotationChangeStartDelay.x))
+						bParticleSystemUse = true;
+					ImGui::NewLine();
+
+					ImGui::Text("RotationSpeed");
+					if(ImGui::InputFloat2("##RotationSpeed", &m_tParticleInfo.fRotationSpeed.x))
+						bParticleSystemUse = true;
+					ImGui::NewLine();
+					ImGui::NewLine();
+
+					if(ImGui::Checkbox("RotationChangeRandom", &m_tParticleInfo.bRotationChangeRandom))
+						bParticleSystemUse = true;
+					ImGui::NewLine();
+					if (m_tParticleInfo.bRotationChangeRandom)
+					{
+						ImGui::Text("RotationChangeTime");
+						if(ImGui::InputFloat2("##RotationChangeTime", &m_tParticleInfo.fRotationChangeTime.x))
+							bParticleSystemUse = true;
+						ImGui::NewLine();
+					}
+					else
+					{
+						if(ImGui::Checkbox("RotationAddRandom", &m_tParticleInfo.bRotationAdd))
+							bParticleSystemUse = true;
+						ImGui::NewLine();
+					}
+				}
+			}
+		}
+
+		// 지속 시간
+		if (ImGui::CollapsingHeader("LifeTime"))
+		{
+			ImGui::Text("LifetimeParticles");
+			if(ImGui::InputFloat2("##LifetimeParticles", &m_tParticleInfo.fLifeTime.x))
+				bParticleSystemUse = true;
+			ImGui::NewLine();
+		}
+
+		// 텍스처 지정
+		if (ImGui::CollapsingHeader("Texture"))
+		{
+			// 시작 텍스처 인덱스
+			if(ImGui::Checkbox("RandomStartTextureIndex", &m_tParticleInfo.bRandomStartIndex))
+				bParticleSystemUse = true;
+			if (!m_tParticleInfo.bRandomStartIndex)
+			{
+				ImGui::Text("ParticleUVIndex");
+				if (ImGui::InputFloat2("##ParticleUVIndex", &m_tParticleInfo.fUVIndex.x))
+					bParticleSystemUse = true;
+				ImGui::NewLine();
+			}
+			ImGui::Text("ParticleUVMaxCount");
+			if (ImGui::InputFloat2("##ParticleUVMaxCount", &m_tParticleInfo.fUVMaxCount.x))
+				bParticleSystemUse = true;
+			ImGui::NewLine();
+			ImGui::NewLine();
+
+
+			ImGui::Text("DiffuseFolderName :");
+			ImGui::SameLine();
+			if (ImGui::Combo("##DiffuseFolderName", &m_iDiffuseFolderIndex, m_cFolderName, IM_ARRAYSIZE(m_cFolderName)))
+				bParticleSystemUse = true;
+
+			if (m_pParticle != nullptr)
+			{
+				ImGui::Text("DiffuseTextureIndex");
+				ImGui::SameLine();
+				if (ImGui::InputInt("##DiffuseTextureIndex", &(_int)m_tParticleInfo.iTextureIndexDiffuse))
+					bParticleSystemUse = true;
+				ImGui::NewLine();
+
+				CTexture* pDiffuseTexture = static_cast<CParticle*>(m_pParticle)->Get_DiffuseTexture();
+				if (pDiffuseTexture != nullptr)
+				{
+					ImGui::Text("Diffuse Texture");
+					if (ImGui::BeginListBox("##Effect_DiffuseTexture_List", ImVec2(450.f, 200.f)))
+					{
+						for (size_t i = 0; i < pDiffuseTexture->Get_TextureCount(); ++i)
+						{
+							if (i % 5 != 0)
+								IMGUI_SAME_LINE;
+
+							if (ImGui::ImageButton(pDiffuseTexture->Get_Srv(i), ImVec2(50.f, 50.f)))
+							{
+								m_tParticleInfo.iTextureIndexDiffuse = i;
+								bParticleSystemUse = true;
+							}
+						}
+						ImGui::EndListBox();
+					}
+				}
+			}
+
+			// 알파 텍스처 지정
+			ImGui::Text("AlphaFolderName :");
+			ImGui::SameLine();
+			if (ImGui::Combo("##AlphaFolderName", &m_iAlphaFolderIndex, m_cFolderName, IM_ARRAYSIZE(m_cFolderName)))
+				bParticleSystemUse = true;
+
+			if (m_pParticle != nullptr)
+			{
+				ImGui::Text("AlphaTextureIndex");
+				ImGui::SameLine();
+				if (ImGui::InputInt("##AlphaTextureIndex", &(_int)m_tParticleInfo.iTextureIndexAlpha))
+					bParticleSystemUse = true;
+				ImGui::NewLine();
+
+				CTexture* pAlphaTexture = static_cast<CParticle*>(m_pParticle)->Get_AlphaTexture();
+				if (pAlphaTexture != nullptr)
+				{
+					ImGui::Text("Alpha Texture");
+					if (ImGui::BeginListBox("##Effect_AlphaTexture_List", ImVec2(450.f, 200.f)))
+					{
+						for (size_t i = 0; i < pAlphaTexture->Get_TextureCount(); ++i)
+						{
+							if (i % 5 != 0)
+								IMGUI_SAME_LINE;
+
+							if (ImGui::ImageButton(pAlphaTexture->Get_Srv(i), ImVec2(50.f, 50.f)))
+							{
+								m_tParticleInfo.iTextureIndexAlpha = i;
+								bParticleSystemUse = true;
+							}
+						}
+						ImGui::EndListBox();
+					}
+				}
+			}
+		}
+
+		// 애니메이션
+		if (ImGui::CollapsingHeader("Animation"))
+		{
+			if (ImGui::Checkbox("UseAnimation", &m_tParticleInfo.bAnimation))
+				bParticleSystemUse = true;
+
+			if (m_tParticleInfo.bAnimation)
+			{
+				if (ImGui::Checkbox("LoopAnimation", &m_tParticleInfo.bAnimationLoop))
+					bParticleSystemUse = true;
+
+				ImGui::Text("SpeedAnimation");
+				if (ImGui::InputFloat2("##SpeedAnimation", &m_tParticleInfo.fAnimationSpeed.x))
+					bParticleSystemUse = true;
+			}
+		}
+
+		// 색상
+		if (ImGui::CollapsingHeader("Color"))
+		{
+			if (ImGui::Checkbox("ColorRandom", &m_tParticleInfo.bColorRandom))
+				bParticleSystemUse = true;
+			if (!m_tParticleInfo.bColorRandom)
+			{
+				ImGui::Text("ColorStart");
+				if (ImGui::ColorEdit4("##ColorStart", (float*)&m_tParticleInfo.vColorS, ImGuiColorEditFlags_Float))
+					bParticleSystemUse = true;
+			}
+			ImGui::NewLine();
+
+			if (ImGui::Checkbox("ColorChange", &m_tParticleInfo.bColorChange))
+				bParticleSystemUse = true;
+			if (m_tParticleInfo.bColorChange)
+			{
+				// fColorChangeStartDelay
+				ImGui::Text("ColorChangeStartDelay");
+				if(ImGui::InputFloat2("##ColorChangeStartDelay", &m_tParticleInfo.fColorChangeStartDelay.x))
+					bParticleSystemUse = true;
+				ImGui::NewLine();
+
+				if (ImGui::Checkbox("ColorChangeRandom", &m_tParticleInfo.bColorChangeRandom))
+					bParticleSystemUse = true;
+				ImGui::NewLine();
+				if (m_tParticleInfo.bColorChangeRandom)
+				{
+					ImGui::Text("ColorChangeRandomTime");
+					if(ImGui::InputFloat2("##ColorChangeRandomTime", &m_tParticleInfo.fColorChangeRandomTime.x))
+						bParticleSystemUse = true;
+					ImGui::NewLine();
+				}
+				else
+				{
+					if(ImGui::Checkbox("ColorLoop", &m_tParticleInfo.bColorLoop))
+						bParticleSystemUse = true;
+					ImGui::NewLine();
+
+					// fColorChangeStartM
+					ImGui::Text("ColorChangeStartM");
+					if(ImGui::InputFloat2("##ColorChangeStartM", &m_tParticleInfo.fColorChangeStartM.x))
+						bParticleSystemUse = true;
+
+					ImGui::Text("ColorMiddle");
+					if(ImGui::ColorEdit4("##ColorMiddle", (float*)&m_tParticleInfo.fColorM, ImGuiColorEditFlags_Float))
+						bParticleSystemUse = true;
+					ImGui::NewLine();
+
+					// fColorChangeStartF
+					ImGui::Text("ColorChangeStartF");
+					if(ImGui::InputFloat2("##ColorChangeStartF", &m_tParticleInfo.fColorChangeStartF.x))
+						bParticleSystemUse = true;
+
+					ImGui::Text("ColorFinal");
+					if(ImGui::ColorEdit4("##ColorFinal", (float*)&m_tParticleInfo.fColorF, ImGuiColorEditFlags_Float))
+						bParticleSystemUse = true;
+					ImGui::NewLine();
+				}
+
+				// ColorDurationTime
+				ImGui::Text("ColorDurationTime");
+				if(ImGui::InputFloat2("##ColorDurationTime", &m_tParticleInfo.fColorDuration.x))
+					bParticleSystemUse = true;
+			}
+		}
+
+		// 알파
+		if (ImGui::CollapsingHeader("Alpha"))
+		{
+			// fStartAlpha
+			ImGui::Text("StartAlpha");
+			if (ImGui::InputFloat2("##StartAlpha", &m_tParticleInfo.fStartAlpha.x))
+				bParticleSystemUse = true;
+
+			if (ImGui::Checkbox("AlphaCreate", &m_tParticleInfo.bFadeCreate))
+				bParticleSystemUse = true;
+			if (ImGui::Checkbox("AlphaDelete", &m_tParticleInfo.bFadeDelete))
+				bParticleSystemUse = true;
+			ImGui::NewLine();
+
+			// fFadeSpeed
+			ImGui::Text("AlphaSpeed");
+			if (ImGui::InputFloat2("##AlphaSpeed", &m_tParticleInfo.fFadeSpeed.x))
+				bParticleSystemUse = true;
+			ImGui::NewLine();
+
+			// FadeChange
+			if (ImGui::Checkbox("FadeChange", &m_tParticleInfo.bFadeChange))
+				bParticleSystemUse = true;
+			ImGui::NewLine();
+			if (m_tParticleInfo.bFadeChange)
+			{
+				ImGui::Text("FadeChangeStartDelay");
+				if(ImGui::InputFloat2("##FadeChangeStartDelay", &m_tParticleInfo.fFadeChangeStartDelay.x))
+					bParticleSystemUse = true;
+				ImGui::NewLine();
+
+				if(ImGui::Checkbox("FadeIn", &m_tParticleInfo.bFadeIn))
+					bParticleSystemUse = true;
+				ImGui::NewLine();
+			}
+		}
+
+		// 쉐이더 값 셋팅
+		if (ImGui::CollapsingHeader("Shader"))
+		{
+			// 쉐이더 패스
+			ImGui::Text("ShaderPass");
+			if (ImGui::InputInt("##ShaderPass", &(_int)m_tParticleInfo.iShaderPass))
+				bParticleSystemUse = true;
+			ImGui::NewLine();
+
+			// 디스카드 값 셋팅
+			ImGui::Text("Alpha_Discard");
+			if (ImGui::InputFloat("##Alpha_Discard", &m_tParticleInfo.fAlpha_Discard))
+				bParticleSystemUse = true;
+			ImGui::Text("Black_Discard");
+			if (ImGui::InputFloat3("##Black_Discard", &m_tParticleInfo.fBlack_Discard.x))
+				bParticleSystemUse = true;
+			ImGui::NewLine();
+
+			// 블러 셋팅
+			if(ImGui::Checkbox("BloomPowerRandom", &m_tParticleInfo.bBloomPowerRandom))
+				bParticleSystemUse = true;
+			if (!m_tParticleInfo.bBloomPowerRandom)
+			{
+				ImGui::Text("BloomPower");
+				if (ImGui::ColorEdit4("##BloomPower", (float*)&m_tParticleInfo.fBloomPower, ImGuiColorEditFlags_Float))
+					bParticleSystemUse = true;
+				ImGui::NewLine();
+			}
+
+			if(ImGui::Checkbox("BlurPowerRandom", &m_tParticleInfo.bBlurPowerRandom))
+				bParticleSystemUse = true;
+			if (!m_tParticleInfo.bBlurPowerRandom)
+			{
+				if (ImGui::InputFloat("##BlurPower", &m_tParticleInfo.fBlurPower))
+					bParticleSystemUse = true;
+			}
+		}
+
+		// 박스 범위
+		if (ImGui::CollapsingHeader("Box"))
+		{
+			if (ImGui::Checkbox("UseBox", &m_tParticleInfo.bUseBox))
+				bParticleSystemUse = true;
+			ImGui::NewLine();
+
+			if (m_tParticleInfo.bUseBox)
+			{
+				ImGui::Text("BoxMinParticles");
+				if(ImGui::InputFloat3("##BoxMinParticles", &m_tParticleInfo.fBoxMin.x))
+					bParticleSystemUse = true;
+				ImGui::Text("BoxMaxParticles");
+				if(ImGui::InputFloat3("##BoxMaxParticles", &m_tParticleInfo.fBoxMax.x))
+					bParticleSystemUse = true;
+				ImGui::NewLine();
+			}
+		}
+
+		// 리지드바디
+		if (ImGui::CollapsingHeader("Rigidbody"))
+		{
+			if (ImGui::Checkbox("RigidbodyUse", &m_tRigidbodyInfo.bRigidbody))
+				bParticleSystemUse = true;
+
+			if (ImGui::Checkbox("Gravity", &m_tRigidbodyInfo.bGravity))
+				bParticleSystemUse = true;
+
+			if (ImGui::Checkbox("StopZero", &m_tRigidbodyInfo.bStopZero))
+				bParticleSystemUse = true;
+
+			if (ImGui::Checkbox("StopStartY", &m_tRigidbodyInfo.bStopStartY))
+				bParticleSystemUse = true;
+			ImGui::NewLine();
+
+			ImGui::Text("MaxVelocity");
+			if (ImGui::InputFloat4("##MaxVelocity", &m_tRigidbodyInfo.vMaxVelocity.x))
+				bParticleSystemUse = true;
+
+			ImGui::Text("Mass");
+			if (ImGui::InputFloat("##Mass", &m_tRigidbodyInfo.fMass))
+				bParticleSystemUse = true;
+
+			ImGui::Text("FricCoeff");
+			if (ImGui::InputFloat("##FricCoeff", &m_tRigidbodyInfo.fFricCoeff))
+				bParticleSystemUse = true;
+			ImGui::NewLine();
+
+			// 수정
+			ImGui::Text("RigidMinVelocity");
+			ImGui::InputFloat4("##RigidMinVelocity", &m_vMinVelocity.x);
+			ImGui::Text("RigidMaxVelocity");
+			ImGui::InputFloat4("##RigidMaxVelocity", &m_vMaxVelocity.x);
+			if (ImGui::Button("AddVelocity"))
+			{
+				if (nullptr != m_pParticle && m_tRigidbodyInfo.bRigidbody)
+					static_cast<CParticle*>(m_pParticle)->Add_Velocity(m_vMinVelocity, m_vMaxVelocity);
+			}
+			ImGui::NewLine();
+		}
+	}
+#pragma endregion
+
+	if(bParticleSystemUse)
+		Store_InfoParticle();
+
+	ImGui::End();
+}
+
+void CTool_Particle::Tick_CreateDelete()
+{
 	if (ImGui::Button("Create"))
 		Create_Particle();
 	ImGui::SameLine();
+
 	if (ImGui::Button("Delete"))
 	{
 		if (m_pParticle != nullptr)
@@ -38,680 +649,80 @@ void CTool_Particle::Tick(_float fTimeDelta)
 			m_pParticle = nullptr;
 		}
 	}
-	ImGui::SameLine();
+}
 
-	// 확인(적용)
-	if (ImGui::Button("Select_Transform"))
+void CTool_Particle::Tick_Transform()
+{
+	if (ImGui::CollapsingHeader("Transform"))
 	{
-		if (m_pParticle != nullptr)
+		if (ImGui::Button("OK"))
 		{
-			CTransform* pTransform = m_pParticle->Get_Component<CTransform>(L"Com_Transform");
+			if (nullptr != m_pParticle)
+			{
+				CTransform* pTransform = m_pParticle->Get_Component<CTransform>(L"Com_Transform");
+				if (nullptr != pTransform)
+				{
+					_matrix IdentityMatrix = XMMatrixIdentity();
+					_float4x4 WorldMatrix;
+					XMStoreFloat4x4(&WorldMatrix, IdentityMatrix);
+					WorldMatrix.m[3][0] = m_fPosition.x;
+					WorldMatrix.m[3][1] = m_fPosition.y;
+					WorldMatrix.m[3][2] = m_fPosition.z;
+					static_cast<CParticle*>(m_pParticle)->Set_Position_Particle(WorldMatrix);
 
-			_matrix IdentityMatrix = XMMatrixIdentity();
-
-			_float4x4 WorldMatrix;
-			XMStoreFloat4x4(&WorldMatrix, IdentityMatrix);
-			WorldMatrix.m[3][0] = m_fPosition[0];
-			WorldMatrix.m[3][1] = m_fPosition[1];
-			WorldMatrix.m[3][2] = m_fPosition[2];
-			static_cast<CParticle*>(m_pParticle)->Set_Position_Particle(WorldMatrix);
-
-			pTransform->FixRotation(m_fRotation[0], m_fRotation[1], m_fRotation[2]);
-			pTransform->Set_Scale(_float3(m_fScale[0], m_fScale[1], m_fScale[2]));
+					pTransform->FixRotation(m_fRotation.x, m_fRotation.y, m_fRotation.z);
+					pTransform->Set_Scale(m_fScale);
+				}
+			}
 		}
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("Select_ParticleSystem"))
-		Store_InfoParticle();
 
-	ImGui::NewLine();
-
-	// 저장하기/ 불러오기
-	if (ImGui::Button("Save"))
-		Save_Particle(m_cSaveAndLoadName);
-	ImGui::SameLine();
-	if (ImGui::Button("Load"))
-		Load_Particle(m_cSaveAndLoadName);
-	ImGui::SameLine();
-	ImGui::Text("FileName :");
-	ImGui::SameLine();
-	ImGui::InputText("##FileName", m_cSaveAndLoadName, IM_ARRAYSIZE(m_cSaveAndLoadName));
-
-	ImGui::NewLine();
-
-	// 원형에 적용
-	if (ImGui::Button("Set_Prototype"))
-		Set_OriginalInfoParticle();
-	ImGui::SameLine();
-	ImGui::Text("PrototypeObjectName :");
-	ImGui::SameLine();
-	ImGui::InputText("##PrototypeObjectName", m_cPrototypeName, IM_ARRAYSIZE(m_cPrototypeName));
-
-	ImGui::NewLine();
-
-	// 트랜스폼 정보
-	if (ImGui::CollapsingHeader("ParticleTransform"))
-	{
 		ImGui::Text("Position");
-		ImGui::InputFloat3("##Position", m_fPosition);
+		ImGui::InputFloat3("##Position", &m_fPosition.x);
 
 		ImGui::Text("Rotation");
-		ImGui::InputFloat3("##Rotation", m_fRotation);
+		ImGui::InputFloat3("##Rotation", &m_fRotation.x);
 
 		ImGui::Text("Scale");
-		ImGui::InputFloat3("##Scale", m_fScale);
+		ImGui::InputFloat3("##Scale", &m_fScale.x);
 	}
-
-	ImGui::NewLine();
-
-	// 기본 정보
-	if (ImGui::CollapsingHeader("ParticleBasicInfo"))
-	{
-		// 투영 타입
-		ImGui::Checkbox("PersParticles", &m_bParticleType_Pers);
-		ImGui::NewLine();
-		if (m_bParticleType_Pers == true)
-			m_bParticleType_Orth = false;
-
-		ImGui::Checkbox("OrthParticles", &m_bParticleType_Orth);
-		ImGui::NewLine();
-		if (m_bParticleType_Orth == true)
-			m_bParticleType_Pers = false;
-
-		// 파티클 정렬
-		if(ImGui::Checkbox("SortZParticles", &m_tParticleInfo.bParticleSortZ))
-			Store_InfoParticle();
-		ImGui::NewLine();
-
-		// 반복 여부
-		ImGui::Checkbox("LoopParticles", &m_tParticleInfo.bParticleLoop);
-		ImGui::NewLine();
-
-		// 파티클 개수
-		ImGui::Text("MaxParticles");
-		ImGui::InputInt("##MaxParticles", &(_int)m_tParticleInfo.iNumEffectMaxCount);
-		ImGui::Text("CurrentParticles");
-		if(ImGui::InputInt("##CurrentParticles", &(_int)m_tParticleInfo.iNumEffectCount))
-			Store_InfoParticle();
-		ImGui::NewLine();
-	}
-
-	// 위치 (분포 범위)
-	if (ImGui::CollapsingHeader("ParticlePosition"))
-	{
-		ImGui::Text("RangeParticles");
-		if (ImGui::InputFloat3("##RangeParticles", m_fParticleRange))
-			Store_InfoParticle();
-		ImGui::NewLine();
-
-		ImGui::Text("RangeDistance");
-		if (ImGui::InputFloat2("##RangeDistance", m_fParticleRangeDistance))
-			Store_InfoParticle();
-		ImGui::NewLine();
-	}
-
-	// 크기
-	if (ImGui::CollapsingHeader("ParticleScale"))
-	{
-		ImGui::Checkbox("ScaleSameRate", &m_tParticleInfo.bScaleSameRate);
-		ImGui::NewLine();
-
-		ImGui::Text("ScaleStartParticles");
-		if (ImGui::InputFloat2("##ScaleStartParticles", m_fParticleScaleStart))
-			Store_InfoParticle();
-		ImGui::NewLine();
-
-		ImGui::Checkbox("ScaleChange", &m_tParticleInfo.bScaleChange);
-		ImGui::NewLine();
-
-		if (m_tParticleInfo.bScaleChange)
-			{
-				ImGui::Text("ScaleChangeStartDelayParticles");
-				ImGui::InputFloat2("##ScaleChangeStartDelayParticles", m_fParticleScaleChangeStartDelay);
-				ImGui::NewLine();
-
-				ImGui::Checkbox("ScaleChangeRandom", &m_tParticleInfo.bScaleChangeRandom);
-				ImGui::NewLine();
-
-				if (m_tParticleInfo.bScaleChangeRandom)
-				{
-					ImGui::Text("ScaleChangeTimeParticles");
-					ImGui::InputFloat2("##ScaleChangeTimeParticles", m_fParticleScaleChangeTime);
-					ImGui::NewLine();
-				}
-				else
-				{
-					ImGui::Checkbox("ScaleAdd", &m_tParticleInfo.bScaleAdd);
-					ImGui::NewLine();
-
-					ImGui::Checkbox("ScaleLoop", &m_tParticleInfo.bScaleLoop);
-					ImGui::NewLine();
-
-					ImGui::Checkbox("ScaleLoopStart", &m_tParticleInfo.bScaleLoopStart);
-					ImGui::NewLine();
-
-					ImGui::Text("ScaleMinParticles");
-					ImGui::InputFloat2("##ScaleMinParticles", m_fParticleScaleMin);
-					ImGui::NewLine();
-
-					ImGui::Text("ScaleMaxParticles");
-					ImGui::InputFloat2("##ScaleMaxParticles", m_fParticleScaleMax);
-					ImGui::NewLine();
-				}
-
-				ImGui::Text("ScaleSpeedParticles");
-				ImGui::InputFloat2("##ScaleSpeedParticles", m_fParticleScaleSpeed);
-				ImGui::NewLine();
-			}
-	}
-
-	// 이동(힘)
-	if (ImGui::CollapsingHeader("ParticleVelocity"))
-	{
-		ImGui::Text("VelocitySpeed");
-		ImGui::InputFloat2("##VelocitySpeed", m_fParticleSpeed);
-		ImGui::NewLine();
-
-		ImGui::Text("VelocityMinParticles");
-		ImGui::InputFloat3("##VelocityMinParticles", m_fParticleVelocityMin);
-		ImGui::Text("VelocityMaxParticles");
-		ImGui::InputFloat3("##VelocityMaxParticles", m_fParticleVelocityMax);
-		ImGui::NewLine();
-
-		ImGui::Checkbox("VelocityChange", &m_tParticleInfo.bVelocityChange);
-		ImGui::NewLine();
-
-		if (m_tParticleInfo.bVelocityChange)
-		{
-			ImGui::Text("VelocityChangeStartDelayParticles");
-			ImGui::InputFloat2("##VelocityChangeStartDelayParticles", m_fParticleVelocityChangeStartDelay);
-			ImGui::NewLine();
-
-			ImGui::Checkbox("VelocityChangeRandom", &m_tParticleInfo.bVelocityChangeRandom);
-			ImGui::NewLine();
-
-			if (m_tParticleInfo.bVelocityChangeRandom)
-			{
-				ImGui::Text("VelocityChangeTimeParticles");
-				ImGui::InputFloat2("##VelocityChangeTimeParticles", m_fParticleVelocityChangeTime);
-				ImGui::NewLine();
-
-				if (m_tParticleInfo.iVelocityUse != 0)
-					m_tParticleInfo.iVelocityUse = 0;
-			}
-			else
-			{
-				ImGui::Text("VelocityUseParticles");
-				ImGui::InputInt("##VelocityUseParticles", &(_int)m_tParticleInfo.iVelocityUse);
-
-				ImGui::Checkbox("VelocityLoop", &m_tParticleInfo.bVelocityLoop);
-				ImGui::NewLine();
-
-				ImGui::Text("VelocityCountCur");
-				ImGui::InputInt("##VelocityCountCur", &(_int)m_tParticleInfo.iVelocityCountCur);
-				ImGui::NewLine();
-
-				ImGui::Text("iVelocityCountMax");
-				if (ImGui::InputInt("##iVelocityCountMax", &(_int)m_tParticleInfo.iVelocityCountMax))
-					{
-						if (m_tParticleInfo.iVelocityCountMax == 1)
-							m_tParticleInfo.bVelocityChange = false;
-						else if (m_tParticleInfo.iVelocityCountMax > 10)
-							m_tParticleInfo.bVelocityChange = false;
-					}
-				ImGui::NewLine();
-
-				if (m_tParticleInfo.iVelocityCountMax > 1)
-					{
-						ImGui::Text("VelocityMinParticles_01");
-						ImGui::InputFloat3("##VelocityMinParticles_01", m_fParticleVelocityMin);
-
-						ImGui::Text("VelocityMaxParticles_01");
-						ImGui::InputFloat3("##VelocityMaxParticles_01", m_fParticleVelocityMax);
-
-						ImGui::Text("VelocityChangeTimeParticles_01");
-						ImGui::InputFloat2("##VelocityChangeTimeParticles_01", m_fParticleVelocityTime_01);
-
-
-						ImGui::Text("VelocityMinParticles_02");
-						ImGui::InputFloat3("##VelocityMinParticles_02", m_fParticleVelocityMin_02);
-
-						ImGui::Text("VelocityMaxParticles_02");
-						ImGui::InputFloat3("##VelocityMaxParticles_02", m_fParticleVelocityMax_02);
-
-						ImGui::Text("VelocityChangeTimeParticles_02");
-						ImGui::InputFloat2("##VelocityChangeTimeParticles_02", m_fParticleVelocityTime_02);
-					}
-
-				if (m_tParticleInfo.iVelocityCountMax > 2)
-					{
-						ImGui::Text("VelocityMinParticles_03");
-						ImGui::InputFloat3("##VelocityMinParticles_03", m_fParticleVelocityMin_03);
-
-						ImGui::Text("VelocityMaxParticles_03");
-						ImGui::InputFloat3("##VelocityMaxParticles_03", m_fParticleVelocityMax_03);
-
-						ImGui::Text("VelocityChangeTimeParticles_03");
-						ImGui::InputFloat2("##VelocityChangeTimeParticles_03", m_fParticleVelocityTime_03);
-					}
-
-				if (m_tParticleInfo.iVelocityCountMax > 3)
-					{
-						ImGui::Text("VelocityMinParticles_04");
-						ImGui::InputFloat3("##VelocityMinParticles_04", m_fParticleVelocityMin_04);
-
-						ImGui::Text("VelocityMaxParticles_04");
-						ImGui::InputFloat3("##VelocityMaxParticles_04", m_fParticleVelocityMax_04);
-
-						ImGui::Text("VelocityChangeTimeParticles_04");
-						ImGui::InputFloat2("##VelocityChangeTimeParticles_04", m_fParticleVelocityTime_04);
-					}
-
-				if (m_tParticleInfo.iVelocityCountMax > 4)
-					{
-						ImGui::Text("VelocityMinParticles_05");
-						ImGui::InputFloat3("##VelocityMinParticles_05", m_fParticleVelocityMin_05);
-
-						ImGui::Text("VelocityMaxParticles_05");
-						ImGui::InputFloat3("##VelocityMaxParticles_05", m_fParticleVelocityMax_05);
-
-						ImGui::Text("VelocityChangeTimeParticles_05");
-						ImGui::InputFloat2("##VelocityChangeTimeParticles_05", m_fParticleVelocityTime_05);
-					}
-
-				if (m_tParticleInfo.iVelocityCountMax > 5)
-					{
-						ImGui::Text("VelocityMinParticles_06");
-						ImGui::InputFloat3("##VelocityMinParticles_06", m_fParticleVelocityMin_06);
-
-						ImGui::Text("VelocityMaxParticles_06");
-						ImGui::InputFloat3("##VelocityMaxParticles_06", m_fParticleVelocityMax_06);
-
-						ImGui::Text("VelocityChangeTimeParticles_06");
-						ImGui::InputFloat2("##VelocityChangeTimeParticles_06", m_fParticleVelocityTime_06);
-					}
-
-				if (m_tParticleInfo.iVelocityCountMax > 6)
-					{
-						ImGui::Text("VelocityMinParticles_07");
-						ImGui::InputFloat3("##VelocityMinParticles_07", m_fParticleVelocityMin_07);
-
-						ImGui::Text("VelocityMaxParticles_07");
-						ImGui::InputFloat3("##VelocityMaxParticles_07", m_fParticleVelocityMax_07);
-
-						ImGui::Text("VelocityChangeTimeParticles_07");
-						ImGui::InputFloat2("##VelocityChangeTimeParticles_07", m_fParticleVelocityTime_07);
-					}
-
-				if (m_tParticleInfo.iVelocityCountMax > 7)
-					{
-						ImGui::Text("VelocityMinParticles_08");
-						ImGui::InputFloat3("##VelocityMinParticles_08", m_fParticleVelocityMin_08);
-
-						ImGui::Text("VelocityMaxParticles_08");
-						ImGui::InputFloat3("##VelocityMaxParticles_08", m_fParticleVelocityMax_08);
-
-						ImGui::Text("VelocityChangeTimeParticles_08");
-						ImGui::InputFloat2("##VelocityChangeTimeParticles_08", m_fParticleVelocityTime_08);
-					}
-
-				if (m_tParticleInfo.iVelocityCountMax > 8)
-					{
-						ImGui::Text("VelocityMinParticles_09");
-						ImGui::InputFloat3("##VelocityMinParticles_09", m_fParticleVelocityMin_09);
-
-						ImGui::Text("VelocityMaxParticles_09");
-						ImGui::InputFloat3("##VelocityMaxParticles_09", m_fParticleVelocityMax_09);
-
-						ImGui::Text("VelocityChangeTimeParticles_09");
-						ImGui::InputFloat2("##VelocityChangeTimeParticles_09", m_fParticleVelocityTime_09);
-					}
-
-				if (m_tParticleInfo.iVelocityCountMax > 9)
-					{
-						ImGui::Text("VelocityMinParticles_10");
-						ImGui::InputFloat3("##VelocityMinParticles_10", m_fParticleVelocityMin_10);
-
-						ImGui::Text("VelocityMaxParticles_10");
-						ImGui::InputFloat3("##VelocityMaxParticles_10", m_fParticleVelocityMax_10);
-
-						ImGui::Text("VelocityChangeTimeParticles_10");
-						ImGui::InputFloat2("##VelocityChangeTimeParticles_10", m_fParticleVelocityTime_10);
-					}
-			}
-		}
-		else
-		    m_tParticleInfo.iVelocityUse = 0;
-	}
-
-	// 회전
-	if (ImGui::CollapsingHeader("ParticleRotation"))
-	{
-		if(ImGui::Checkbox("RotationBillboard", &m_tParticleInfo.bBillboard))
-			Store_InfoParticle();
-		ImGui::NewLine();
-
-		ImGui::Checkbox("RotationRandomAxis", &m_tParticleInfo.bRandomAxis);
-		if (!m_tParticleInfo.bRandomAxis)
-		{
-			ImGui::Text("RotationAxis");
-			ImGui::InputFloat3("##RotationAxis", m_fParticleAxis);
-			ImGui::NewLine();
-		}
-		ImGui::NewLine();
-
-		ImGui::Checkbox("RotationRandomAngle", &m_tParticleInfo.bRandomAngle);
-		if (!m_tParticleInfo.bRandomAngle)
-		{
-			ImGui::Text("RotationAngle");
-			ImGui::InputFloat("##RangeParticles", &m_tParticleInfo.fAngle);
-			ImGui::NewLine();
-		}
-		ImGui::NewLine();
-
-		ImGui::Checkbox("RotationChange", &m_tParticleInfo.bRotationChange);
-		ImGui::NewLine();
-
-		if (m_tParticleInfo.bRotationChange)
-		{
-			ImGui::Text("RotationChangeStartDelayParticles");
-			ImGui::InputFloat2("##RotationChangeStartDelayParticles", m_fParticleRotationChangeStartDelay);
-			ImGui::NewLine();
-
-			ImGui::Text("RotationSpeed");
-			ImGui::InputFloat2("##RotationSpeed", m_fParticleRotationSpeed);
-			ImGui::NewLine();
-
-			ImGui::Checkbox("RotationChangeRandom", &m_tParticleInfo.bRotationChangeRandom);
-			ImGui::NewLine();
-
-			if (m_tParticleInfo.bRotationChangeRandom)
-			{
-				ImGui::Text("RotationChangeTime");
-				ImGui::InputFloat2("##RotationChangeTime", m_fParticleRotationChangeTime);
-				ImGui::NewLine();
-			}
-			else
-			{
-				ImGui::Checkbox("RotationAddRandom", &m_tParticleInfo.bRotationAdd);
-				ImGui::NewLine();
-			}
-		}
-	}
-
-	// 지속 시간
-	if (ImGui::CollapsingHeader("ParticleLifeTime"))
-	{
-		ImGui::Text("LifetimeParticles");
-		ImGui::InputFloat2("##LifetimeParticles", m_fParticleLifeTime);
-		ImGui::NewLine();
-	}
-
-	// 박스 범위
-	if (ImGui::CollapsingHeader("ParticleBox"))
-	{
-		if(ImGui::Checkbox("UseBox", &m_tParticleInfo.bUseBox))
-			Store_InfoParticle();
-
-		if (m_tParticleInfo.bUseBox)
-		{
-			ImGui::Text("BoxMinParticles");
-			ImGui::InputFloat3("##BoxMinParticles", m_fParticleBoxMin);
-			ImGui::Text("BoxMaxParticles");
-			ImGui::InputFloat3("##BoxMaxParticles", m_fParticleBoxMax);
-			ImGui::NewLine();
-		}
-	}
-
-	// 텍스처 지정
-	if (ImGui::CollapsingHeader("ParticleTexture"))
-	{
-		// 디퓨즈 텍스처 지정
-		ImGui::Text("DiffuseTextureName :");
-		ImGui::SameLine();
-		ImGui::InputText("DiffuseTextureName", m_cDiffuseTextureName, IM_ARRAYSIZE(m_cDiffuseTextureName));
-		ImGui::Text("DiffuseTexturePath :");
-		ImGui::SameLine();
-		ImGui::InputText("DiffuseTexturePath", m_cDiffuseTexturePath, IM_ARRAYSIZE(m_cDiffuseTexturePath));
-
-		if (m_pParticle != nullptr)
-		{
-			ImGui::Text("DiffuseTextureIndex");
-			if (ImGui::InputInt("##DiffuseTextureIndex", &(_int)m_tParticleInfo.iTextureIndexDiffuse))
-				Store_InfoParticle();
-			ImGui::NewLine();
-
-			CTexture* pDiffuseTexture = static_cast<CParticle*>(m_pParticle)->Get_DiffuseTexture();
-			if (pDiffuseTexture != nullptr)
-			{
-				ImGui::Text("Diffuse Texture");
-				if (ImGui::BeginListBox("##Effect_DiffuseTexture_List", ImVec2(450.f, 200.f)))
-				{
-					for (size_t i = 0; i < pDiffuseTexture->Get_TextureCount(); ++i)
-					{
-						if (i % 5 != 0)
-							IMGUI_SAME_LINE;
-
-						if (ImGui::ImageButton(pDiffuseTexture->Get_Srv(i), ImVec2(50.f, 50.f)))
-						{
-							m_tParticleInfo.iTextureIndexDiffuse = i;
-							//Store_InfoParticle();
-						}
-					}
-					ImGui::EndListBox();
-				}
-			}
-		}
-
-		// 알파 텍스처 지정
-		ImGui::Text("AlphaTextureName :");
-		ImGui::SameLine();
-		ImGui::InputText("AlphaTextureName", m_cAlphaTextureName, IM_ARRAYSIZE(m_cAlphaTextureName));
-		ImGui::Text("AlphaTexturePath :");
-		ImGui::SameLine();
-		ImGui::InputText("AlphaTexturePath", m_cAlphaTexturePath, IM_ARRAYSIZE(m_cAlphaTexturePath));
-
-		if (m_pParticle != nullptr)
-		{
-			ImGui::Text("AlphaTextureIndex");
-			if (ImGui::InputInt("##AlphaTextureIndex", &(_int)m_tParticleInfo.iTextureIndexAlpha))
-				Store_InfoParticle();
-			ImGui::NewLine();
-
-			CTexture* pAlphaTexture = static_cast<CParticle*>(m_pParticle)->Get_AlphaTexture();
-			if (pAlphaTexture != nullptr)
-			{
-				ImGui::Text("Alpha Texture");
-				if (ImGui::BeginListBox("##Effect_AlphaTexture_List", ImVec2(450.f, 200.f)))
-				{
-					for (size_t i = 0; i < pAlphaTexture->Get_TextureCount(); ++i)
-					{
-						if (i % 5 != 0)
-							IMGUI_SAME_LINE;
-
-						if (ImGui::ImageButton(pAlphaTexture->Get_Srv(i), ImVec2(50.f, 50.f)))
-						{
-							m_tParticleInfo.iTextureIndexAlpha = i;
-							//Store_InfoParticle();
-						}
-					}
-					ImGui::EndListBox();
-				}
-			}
-		}
-
-		// 디퓨즈 텍스처 시작 텍스처 인덱스
-		ImGui::Checkbox("RandomStartTextureIndex", &m_tParticleInfo.bRandomStartIndex);
-		if (!m_tParticleInfo.bRandomStartIndex)
-		{
-			ImGui::Text("ParticleUVIndex");
-			if (ImGui::InputFloat2("##ParticleUVIndex", m_fParticleUVIndex))
-				Store_InfoParticle();
-			ImGui::NewLine();
-		}
-		ImGui::Text("ParticleUVMaxCount");
-		if(ImGui::InputFloat2("##ParticleUVMaxCount", m_fParticleUVMaxCount))
-			Store_InfoParticle();
-		ImGui::NewLine();
-	}
-
-	// 텍스처 애니메이션
-	if (ImGui::CollapsingHeader("ParticleAnimation"))
-	{
-		if(ImGui::Checkbox("UseAnimation", &m_tParticleInfo.bAnimation))
-			Store_InfoParticle();
-
-		if (m_tParticleInfo.bAnimation)
-		{
-			if(ImGui::Checkbox("LoopAnimation", &m_tParticleInfo.bAnimationLoop))
-				Store_InfoParticle();
-
-			ImGui::Text("SpeedAnimation");
-			if(ImGui::InputFloat2("##SpeedAnimation", m_fParticleAnimationSpeed))
-				Store_InfoParticle();
-		}
-	}
-
-	// 텍스처 알파
-	if (ImGui::CollapsingHeader("ParticleAlpha"))
-	{
-		// fStartAlpha
-		ImGui::Text("StartAlpha");
-		if(ImGui::InputFloat2("##StartAlpha", m_fStartAlpha))
-			Store_InfoParticle();
-
-		if(ImGui::Checkbox("FadeCreate", &m_tParticleInfo.bFadeCreate))
-			Store_InfoParticle();
-		ImGui::NewLine();
-
-		if(ImGui::Checkbox("FadeDelete", &m_tParticleInfo.bFadeDelete))
-			Store_InfoParticle();
-		ImGui::NewLine();
-
-		// fFadeSpeed
-		ImGui::Text("FadeSpeed");
-		if(ImGui::InputFloat2("##FadeSpeed", m_fFadeSpeed))
-			Store_InfoParticle();
-		ImGui::NewLine();
-		
-		ImGui::Checkbox("FadeChange", &m_tParticleInfo.bFadeChange);
-		ImGui::NewLine();
-
-		// StartDelay
-		if (m_tParticleInfo.bFadeChange)
-		{
-			ImGui::Text("FadeChangeStartDelay");
-			ImGui::InputFloat2("##FadeChangeStartDelay", m_fFadeChangeStartDelay);
-			ImGui::NewLine();
-
-			ImGui::Checkbox("FadeIn", &m_tParticleInfo.bFadeIn);
-			ImGui::NewLine();
-		}
-	}
-
-	// 파티클 색상
-	if (ImGui::CollapsingHeader("ParticleColor"))
-	{
-		if (!m_tParticleInfo.bColorRandom)
-		{
-			ImGui::Text("ColorStart");
-			if(ImGui::ColorEdit4("##ColorStart", (float*)&m_tParticleInfo.vColorS, ImGuiColorEditFlags_Float))
-				Store_InfoParticle();
-		}
-		if(ImGui::Checkbox("ColorRandom", &m_tParticleInfo.bColorRandom))
-			Store_InfoParticle();
-		ImGui::NewLine();
-
-
-		ImGui::Checkbox("ColorChange", &m_tParticleInfo.bColorChange);
-		if (m_tParticleInfo.bColorChange)
-		{
-			ImGui::Checkbox("ColorChangeRandom", &m_tParticleInfo.bColorChangeRandom);
-			ImGui::NewLine();
-
-			// fColorChangeStartDelay
-			ImGui::Text("ColorChangeStartDelay");
-			ImGui::InputFloat2("##ColorChangeStartDelay", m_fColorChangeStartDelay);
-			ImGui::NewLine();
-
-			if (m_tParticleInfo.bColorChangeRandom)
-			{
-				ImGui::Text("ColorChangeRandomTime");
-				ImGui::InputFloat2("##ColorChangeRandomTime", m_fColorChangeRandomTime);
-				ImGui::NewLine();
-			}
-			else
-			{
-				ImGui::Checkbox("ColorLoop", &m_tParticleInfo.bColorLoop);
-				ImGui::NewLine();
-
-				// fColorChangeStartM
-				ImGui::Text("ColorChangeStartM");
-				ImGui::InputFloat2("##ColorChangeStartM", m_fColorChangeStartM);
-
-				ImGui::Text("ColorMiddle");
-				ImGui::ColorEdit4("##ColorMiddle", (float*)&m_tParticleInfo.fColorM, ImGuiColorEditFlags_Float);
-				ImGui::NewLine();
-
-				// fColorChangeStartF
-				ImGui::Text("ColorChangeStartF");
-				ImGui::InputFloat2("##ColorChangeStartF", m_fColorChangeStartF);
-
-				ImGui::Text("ColorFinal");
-				ImGui::ColorEdit4("##ColorFinal", (float*)&m_tParticleInfo.fColorF, ImGuiColorEditFlags_Float);
-				ImGui::NewLine();
-			}
-
-			// ColorDurationTime
-			ImGui::Text("ColorDurationTime");
-			ImGui::InputFloat2("##ColorDurationTime", m_fColorChangeStartE);
-		}
-	}
-
-	// 쉐이더 값 셋팅
-	if (ImGui::CollapsingHeader("ParticleShader"))
-	{
-		// 쉐이더 패스
-		ImGui::Text("ShaderPass");
-		if(ImGui::InputInt("##ShaderPass", &(_int)m_tParticleInfo.iShaderPass))
-			Store_InfoParticle();
-		ImGui::NewLine();
-
-		// 디스카드 값 셋팅
-		ImGui::Text("Alpha_Discard");
-		if (ImGui::InputFloat("##Alpha_Discard", &m_tParticleInfo.fAlpha_Discard))
-			Store_InfoParticle();
-		ImGui::Text("Black_Discard");
-		if (ImGui::InputFloat3("##Black_Discard", m_fBlack_Discard))
-			Store_InfoParticle();
-		ImGui::NewLine();
-
-		// 블러 셋팅
-		ImGui::Checkbox("BloomPowerRandom", &m_tParticleInfo.bBloomPowerRandom);
-		ImGui::NewLine();
-		if (!m_tParticleInfo.bBloomPowerRandom)
-		{
-			ImGui::Text("BloomPower");
-			if (ImGui::ColorEdit4("##BloomPower", (float*)&m_tParticleInfo.fBloomPower, ImGuiColorEditFlags_Float))
-				Store_InfoParticle();
-			ImGui::NewLine();
-		}
-
-		ImGui::Checkbox("BlurPowerRandom", &m_tParticleInfo.bBlurPowerRandom);
-		ImGui::NewLine();
-		if (!m_tParticleInfo.bBlurPowerRandom)
-		{
-			if (ImGui::InputFloat("##BlurPower", &m_tParticleInfo.fBlurPower))
-				Store_InfoParticle();
-		}
-	}
-
-	ImGui::End();
 }
+
+void CTool_Particle::Tick_Prototype()
+{
+	if (ImGui::CollapsingHeader("Prototype"))
+	{
+		if (ImGui::Button("Set_PrototypeObject"))
+			Set_OriginalInfoParticle();
+		ImGui::SameLine();
+
+		ImGui::Text("PrototypeObject_Name :");
+		ImGui::SameLine();
+		ImGui::InputText("##PrototypeObject_Name", m_cPrototypeName, IM_ARRAYSIZE(m_cPrototypeName));
+	}
+}
+
+void CTool_Particle::Tick_Binary()
+{
+	if (ImGui::CollapsingHeader("Binary"))
+	{
+		if (ImGui::Button("Save"))
+			Save_Particle(m_cSaveAndLoadName);
+		ImGui::SameLine();
+
+		if (ImGui::Button("Load"))
+			Load_Particle(m_cSaveAndLoadName);
+		ImGui::SameLine();
+
+		ImGui::Text("FileName :");
+		ImGui::SameLine();
+		ImGui::InputText("##FileName", m_cSaveAndLoadName, IM_ARRAYSIZE(m_cSaveAndLoadName));
+	}
+}
+#pragma endregion
+
 
 void CTool_Particle::Create_Particle()
 {
-	// 생성
 	if (m_pParticle != nullptr)
 		return;
 
@@ -723,433 +734,64 @@ void CTool_Particle::Create_Particle()
 
 void CTool_Particle::Load_InfoParticle()
 {
-#pragma region 
-	// 기본 값 초기화
+	if (nullptr == m_pParticle)
+		return;
+
 	CTransform* pTransform = m_pParticle->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr != pTransform)
+	{
+		_vector vPosition = pTransform->Get_State(CTransform::STATE_POSITION);
+		m_fPosition.x = XMVectorGetX(vPosition);
+		m_fPosition.y = XMVectorGetY(vPosition);
+		m_fPosition.z = XMVectorGetZ(vPosition);
 
-	_vector vPosition = pTransform->Get_State(CTransform::STATE_POSITION);
-	m_fPosition[0] = XMVectorGetX(vPosition);
-	m_fPosition[1] = XMVectorGetY(vPosition);
-	m_fPosition[2] = XMVectorGetZ(vPosition);
+		_vector vRotation = pTransform->Get_WorldRotation();
+		m_fRotation.x = XMVectorGetX(vRotation);
+		m_fRotation.y = XMVectorGetY(vRotation);
+		m_fRotation.z = XMVectorGetZ(vRotation);
 
-	_vector vRotation = pTransform->Get_WorldRotation();
-	m_fRotation[0] = XMVectorGetX(vRotation);
-	m_fRotation[1] = XMVectorGetY(vRotation);
-	m_fRotation[2] = XMVectorGetZ(vRotation);
-
-	_float3 fScale = pTransform->Get_Scale();
-	m_fScale[0] = fScale.x;
-	m_fScale[1] = fScale.y;
-	m_fScale[2] = fScale.z;
+		m_fScale = pTransform->Get_Scale();
+	}
 
 	m_tParticleInfo = static_cast<CParticle*>(m_pParticle)->Get_ParticleDesc();
 
-	m_bParticleType_Pers = false;
-	m_bParticleType_Orth = false;
-
 	if (m_tParticleInfo.eParticleType == CParticle::TYPE_PERSPECTIVE)
-		m_bParticleType_Pers = true;
-	if (m_tParticleInfo.eParticleType == CParticle::TYPE_ORTHOGRAPHIC)
-		m_bParticleType_Orth = true;
-
-	m_fParticleRange[0] = m_tParticleInfo.fRange.x;
-	m_fParticleRange[1] = m_tParticleInfo.fRange.y;
-	m_fParticleRange[2] = m_tParticleInfo.fRange.z;
-
-	m_fParticleRangeDistance[0] = m_tParticleInfo.fRangeDistance.x;
-	m_fParticleRangeDistance[1] = m_tParticleInfo.fRangeDistance.y;
-
-	m_fParticleScaleStart[0] = m_tParticleInfo.fScaleStart.x;
-	m_fParticleScaleStart[1] = m_tParticleInfo.fScaleStart.y;
-
-	m_fParticleScaleChangeStartDelay[0] = m_tParticleInfo.fScaleChangeStartDelay.x;
-	m_fParticleScaleChangeStartDelay[1] = m_tParticleInfo.fScaleChangeStartDelay.y;
-
-	m_fParticleScaleChangeTime[0] = m_tParticleInfo.fScaleChangeTime.x;
-	m_fParticleScaleChangeTime[1] = m_tParticleInfo.fScaleChangeTime.y;
-
-	m_fParticleScaleMin[0] = m_tParticleInfo.fScaleMin.x;
-	m_fParticleScaleMin[1] = m_tParticleInfo.fScaleMin.y;
-
-	m_fParticleScaleMax[0] = m_tParticleInfo.fScaleMax.x;
-	m_fParticleScaleMax[1] = m_tParticleInfo.fScaleMax.y;
-
-	m_fParticleScaleSpeed[0] = m_tParticleInfo.fScaleSpeed.x;
-	m_fParticleScaleSpeed[1] = m_tParticleInfo.fScaleSpeed.y;
-
-
-	m_fParticleVelocityMin[0] = m_tParticleInfo.vVelocityMinStart.x;
-	m_fParticleVelocityMin[1] = m_tParticleInfo.vVelocityMinStart.y;
-	m_fParticleVelocityMin[2] = m_tParticleInfo.vVelocityMinStart.z;
-
-	m_fParticleVelocityMax[0] = m_tParticleInfo.vVelocityMaxStart.x;
-	m_fParticleVelocityMax[1] = m_tParticleInfo.vVelocityMaxStart.y;
-	m_fParticleVelocityMax[2] = m_tParticleInfo.vVelocityMaxStart.z;
-
-	m_fParticleVelocityChangeStartDelay[0] = m_tParticleInfo.fVelocityChangeStartDelay.x;
-	m_fParticleVelocityChangeStartDelay[1] = m_tParticleInfo.fVelocityChangeStartDelay.y;
-
-	m_fParticleVelocityChangeTime[0] = m_tParticleInfo.fVelocityChangeTime.x;
-	m_fParticleVelocityChangeTime[1] = m_tParticleInfo.fVelocityChangeTime.y;
-
-	if (m_tParticleInfo.bVelocityChange && m_tParticleInfo.pVelocityMin != nullptr && m_tParticleInfo.pVelocityMax != nullptr && m_tParticleInfo.pVelocityTime != nullptr)
-	{
-		if (m_tParticleInfo.iVelocityCountMax > 1) //2
-		{
-			m_fParticleVelocityMin[0] = m_tParticleInfo.pVelocityMin[0].x;
-			m_fParticleVelocityMin[1] = m_tParticleInfo.pVelocityMin[0].y;
-			m_fParticleVelocityMin[2] = m_tParticleInfo.pVelocityMin[0].z;
-
-			m_fParticleVelocityMax[0] = m_tParticleInfo.pVelocityMax[0].x;
-			m_fParticleVelocityMax[1] = m_tParticleInfo.pVelocityMax[0].y;
-			m_fParticleVelocityMax[2] = m_tParticleInfo.pVelocityMax[0].z;
-
-			m_fParticleVelocityTime_01[0] = m_tParticleInfo.pVelocityTime[0].x;
-			m_fParticleVelocityTime_01[1] = m_tParticleInfo.pVelocityTime[0].y;
-
-
-			m_fParticleVelocityMin_02[0] = m_tParticleInfo.pVelocityMin[1].x;
-			m_fParticleVelocityMin_02[1] = m_tParticleInfo.pVelocityMin[1].y;
-			m_fParticleVelocityMin_02[2] = m_tParticleInfo.pVelocityMin[1].z;
-
-			m_fParticleVelocityMax_02[0] = m_tParticleInfo.pVelocityMax[1].x;
-			m_fParticleVelocityMax_02[1] = m_tParticleInfo.pVelocityMax[1].y;
-			m_fParticleVelocityMax_02[2] = m_tParticleInfo.pVelocityMax[1].z;
-
-			m_fParticleVelocityTime_02[0] = m_tParticleInfo.pVelocityTime[1].x;
-			m_fParticleVelocityTime_02[1] = m_tParticleInfo.pVelocityTime[1].y;
-		}
-
-		if (m_tParticleInfo.iVelocityCountMax > 2) //3
-		{
-			m_fParticleVelocityMin_03[0] = m_tParticleInfo.pVelocityMin[2].x;
-			m_fParticleVelocityMin_03[1] = m_tParticleInfo.pVelocityMin[2].y;
-			m_fParticleVelocityMin_03[2] = m_tParticleInfo.pVelocityMin[2].z;
-
-			m_fParticleVelocityMax_03[0] = m_tParticleInfo.pVelocityMax[2].x;
-			m_fParticleVelocityMax_03[1] = m_tParticleInfo.pVelocityMax[2].y;
-			m_fParticleVelocityMax_03[2] = m_tParticleInfo.pVelocityMax[2].z;
-
-			m_fParticleVelocityTime_03[0] = m_tParticleInfo.pVelocityTime[2].x;
-			m_fParticleVelocityTime_03[1] = m_tParticleInfo.pVelocityTime[2].y;
-		}
-
-		if (m_tParticleInfo.iVelocityCountMax > 3) //4
-		{
-			m_fParticleVelocityMin_04[0] = m_tParticleInfo.pVelocityMin[3].x;
-			m_fParticleVelocityMin_04[1] = m_tParticleInfo.pVelocityMin[3].y;
-			m_fParticleVelocityMin_04[2] = m_tParticleInfo.pVelocityMin[3].z;
-
-			m_fParticleVelocityMax_04[0] = m_tParticleInfo.pVelocityMax[3].x;
-			m_fParticleVelocityMax_04[1] = m_tParticleInfo.pVelocityMax[3].y;
-			m_fParticleVelocityMax_04[2] = m_tParticleInfo.pVelocityMax[3].z;
-
-			m_fParticleVelocityTime_04[0] = m_tParticleInfo.pVelocityTime[3].x;
-			m_fParticleVelocityTime_04[1] = m_tParticleInfo.pVelocityTime[3].y;
-		}
-
-		if (m_tParticleInfo.iVelocityCountMax > 4) //5
-		{
-			m_fParticleVelocityMin_05[0] = m_tParticleInfo.pVelocityMin[4].x;
-			m_fParticleVelocityMin_05[1] = m_tParticleInfo.pVelocityMin[4].y;
-			m_fParticleVelocityMin_05[2] = m_tParticleInfo.pVelocityMin[4].z;
-
-			m_fParticleVelocityMax_05[0] = m_tParticleInfo.pVelocityMax[4].x;
-			m_fParticleVelocityMax_05[1] = m_tParticleInfo.pVelocityMax[4].y;
-			m_fParticleVelocityMax_05[2] = m_tParticleInfo.pVelocityMax[4].z;
-
-			m_fParticleVelocityTime_05[0] = m_tParticleInfo.pVelocityTime[4].x;
-			m_fParticleVelocityTime_05[1] = m_tParticleInfo.pVelocityTime[4].y;
-		}
-
-		if (m_tParticleInfo.iVelocityCountMax > 5) //6
-		{
-			m_fParticleVelocityMin_06[0] = m_tParticleInfo.pVelocityMin[5].x;
-			m_fParticleVelocityMin_06[1] = m_tParticleInfo.pVelocityMin[5].y;
-			m_fParticleVelocityMin_06[2] = m_tParticleInfo.pVelocityMin[5].z;
-
-			m_fParticleVelocityMax_06[0] = m_tParticleInfo.pVelocityMax[5].x;
-			m_fParticleVelocityMax_06[1] = m_tParticleInfo.pVelocityMax[5].y;
-			m_fParticleVelocityMax_06[2] = m_tParticleInfo.pVelocityMax[5].z;
-
-			m_fParticleVelocityTime_06[0] = m_tParticleInfo.pVelocityTime[5].x;
-			m_fParticleVelocityTime_06[1] = m_tParticleInfo.pVelocityTime[5].y;
-		}
-
-		if (m_tParticleInfo.iVelocityCountMax > 6) //7
-		{
-			m_fParticleVelocityMin_07[0] = m_tParticleInfo.pVelocityMin[6].x;
-			m_fParticleVelocityMin_07[1] = m_tParticleInfo.pVelocityMin[6].y;
-			m_fParticleVelocityMin_07[2] = m_tParticleInfo.pVelocityMin[6].z;
-
-			m_fParticleVelocityMax_07[0] = m_tParticleInfo.pVelocityMax[6].x;
-			m_fParticleVelocityMax_07[1] = m_tParticleInfo.pVelocityMax[6].y;
-			m_fParticleVelocityMax_07[2] = m_tParticleInfo.pVelocityMax[6].z;
-
-			m_fParticleVelocityTime_07[0] = m_tParticleInfo.pVelocityTime[6].x;
-			m_fParticleVelocityTime_07[1] = m_tParticleInfo.pVelocityTime[6].y;
-		}
-
-		if (m_tParticleInfo.iVelocityCountMax > 7) //8
-		{
-			m_fParticleVelocityMin_08[0] = m_tParticleInfo.pVelocityMin[7].x;
-			m_fParticleVelocityMin_08[1] = m_tParticleInfo.pVelocityMin[7].y;
-			m_fParticleVelocityMin_08[2] = m_tParticleInfo.pVelocityMin[7].z;
-
-			m_fParticleVelocityMax_08[0] = m_tParticleInfo.pVelocityMax[7].x;
-			m_fParticleVelocityMax_08[1] = m_tParticleInfo.pVelocityMax[7].y;
-			m_fParticleVelocityMax_08[2] = m_tParticleInfo.pVelocityMax[7].z;
-
-			m_fParticleVelocityTime_08[0] = m_tParticleInfo.pVelocityTime[7].x;
-			m_fParticleVelocityTime_08[1] = m_tParticleInfo.pVelocityTime[7].y;
-		}
-
-		if (m_tParticleInfo.iVelocityCountMax > 8) //9
-		{
-			m_fParticleVelocityMin_09[0] = m_tParticleInfo.pVelocityMin[8].x;
-			m_fParticleVelocityMin_09[1] = m_tParticleInfo.pVelocityMin[8].y;
-			m_fParticleVelocityMin_09[2] = m_tParticleInfo.pVelocityMin[8].z;
-
-			m_fParticleVelocityMax_09[0] = m_tParticleInfo.pVelocityMax[8].x;
-			m_fParticleVelocityMax_09[1] = m_tParticleInfo.pVelocityMax[8].y;
-			m_fParticleVelocityMax_09[2] = m_tParticleInfo.pVelocityMax[8].z;
-
-			m_fParticleVelocityTime_09[0] = m_tParticleInfo.pVelocityTime[8].x;
-			m_fParticleVelocityTime_09[1] = m_tParticleInfo.pVelocityTime[8].y;
-		}
-
-		if (m_tParticleInfo.iVelocityCountMax > 9) //10
-		{
-			m_fParticleVelocityMin_10[0] = m_tParticleInfo.pVelocityMin[9].x;
-			m_fParticleVelocityMin_10[1] = m_tParticleInfo.pVelocityMin[9].y;
-			m_fParticleVelocityMin_10[2] = m_tParticleInfo.pVelocityMin[9].z;
-
-			m_fParticleVelocityMax_10[0] = m_tParticleInfo.pVelocityMax[9].x;
-			m_fParticleVelocityMax_10[1] = m_tParticleInfo.pVelocityMax[9].y;
-			m_fParticleVelocityMax_10[2] = m_tParticleInfo.pVelocityMax[9].z;
-
-			m_fParticleVelocityTime_10[0] = m_tParticleInfo.pVelocityTime[9].x;
-			m_fParticleVelocityTime_10[1] = m_tParticleInfo.pVelocityTime[9].y;
-		}
-	}
-
-
-	m_fParticleAxis[0] = XMVectorGetX(m_tParticleInfo.vAxis);
-	m_fParticleAxis[1] = XMVectorGetY(m_tParticleInfo.vAxis);
-	m_fParticleAxis[2] = XMVectorGetZ(m_tParticleInfo.vAxis);
-
-	m_fParticleRotationSpeed[0] = m_tParticleInfo.fRotationSpeed.x;
-	m_fParticleRotationSpeed[1] = m_tParticleInfo.fRotationSpeed.y;
-
-	m_fParticleRotationChangeStartDelay[0] = m_tParticleInfo.fRotationChangeStartDelay.x;
-	m_fParticleRotationChangeStartDelay[1] = m_tParticleInfo.fRotationChangeStartDelay.y;
-
-	m_fParticleRotationChangeTime[0] = m_tParticleInfo.fRotationChangeTime.x;
-	m_fParticleRotationChangeTime[1] = m_tParticleInfo.fRotationChangeTime.y;
-
-
-	m_fParticleLifeTime[0] = m_tParticleInfo.fLifeTime.x;
-	m_fParticleLifeTime[1] = m_tParticleInfo.fLifeTime.y;
-
-	m_fParticleSpeed[0] = m_tParticleInfo.fVelocitySpeed.x;
-	m_fParticleSpeed[1] = m_tParticleInfo.fVelocitySpeed.y;
-
-	m_fParticleBoxMin[0] = m_tParticleInfo.fBoxMin.x;
-	m_fParticleBoxMin[1] = m_tParticleInfo.fBoxMin.y;
-	m_fParticleBoxMin[2] = m_tParticleInfo.fBoxMin.z;
-
-	m_fParticleBoxMax[0] = m_tParticleInfo.fBoxMax.x;
-	m_fParticleBoxMax[1] = m_tParticleInfo.fBoxMax.y;
-	m_fParticleBoxMax[2] = m_tParticleInfo.fBoxMax.z;
-
-	m_fParticleAnimationSpeed[0] = m_tParticleInfo.fAnimationSpeed.x;
-	m_fParticleAnimationSpeed[1] = m_tParticleInfo.fAnimationSpeed.y;
-
-	m_fParticleUVIndex[0] = m_tParticleInfo.fUVIndex.x;
-	m_fParticleUVIndex[1] = m_tParticleInfo.fUVIndex.y;
-
-	m_fParticleUVMaxCount[0] = m_tParticleInfo.fUVMaxCount.x;
-	m_fParticleUVMaxCount[1] = m_tParticleInfo.fUVMaxCount.y;
-
-
-	m_fFadeChangeStartDelay[0] = m_tParticleInfo.fFadeChangeStartDelay.x;
-	m_fFadeChangeStartDelay[1] = m_tParticleInfo.fFadeChangeStartDelay.y;
-
-	m_fStartAlpha[0] = m_tParticleInfo.fStartAlpha.x;
-	m_fStartAlpha[1] = m_tParticleInfo.fStartAlpha.y;
-
-	m_fFadeSpeed[0] = m_tParticleInfo.fFadeSpeed.x;
-	m_fFadeSpeed[1] = m_tParticleInfo.fFadeSpeed.y;
-
-
-	m_fColorChangeStartDelay[0] = m_tParticleInfo.fColorChangeStartDelay.x;
-	m_fColorChangeStartDelay[1] = m_tParticleInfo.fColorChangeStartDelay.y;
-
-	m_fColorChangeStartM[0] = m_tParticleInfo.fColorChangeStartM.x;
-	m_fColorChangeStartM[1] = m_tParticleInfo.fColorChangeStartM.y;
-
-	m_fColorChangeStartF[0] = m_tParticleInfo.fColorChangeStartF.x;
-	m_fColorChangeStartF[1] = m_tParticleInfo.fColorChangeStartF.y;
-
-	m_fColorChangeStartE[0] = m_tParticleInfo.fColorDuration.x;
-	m_fColorChangeStartE[1] = m_tParticleInfo.fColorDuration.y;
-
-	m_fColorChangeRandomTime[0] = m_tParticleInfo.fColorChangeRandomTime.x;
-	m_fColorChangeRandomTime[1] = m_tParticleInfo.fColorChangeRandomTime.y;
-
-	size_t convertedChars = 0;
-	wcstombs_s(&convertedChars, m_cDiffuseTextureName, sizeof(m_cDiffuseTextureName), m_tParticleInfo.strDiffuseTetextureName.c_str(), _TRUNCATE);
-	wcstombs_s(&convertedChars, m_cDiffuseTexturePath, sizeof(m_cDiffuseTexturePath), m_tParticleInfo.strDiffuseTetexturePath.c_str(), _TRUNCATE);
-	wcstombs_s(&convertedChars, m_cAlphaTextureName, sizeof(m_cAlphaTextureName), m_tParticleInfo.strAlphaTexturName.c_str(), _TRUNCATE);
-	wcstombs_s(&convertedChars, m_cAlphaTexturePath, sizeof(m_cAlphaTexturePath), m_tParticleInfo.strAlphaTexturPath.c_str(), _TRUNCATE);
-
-	m_fBlack_Discard[0] = m_tParticleInfo.fBlack_Discard.x;
-	m_fBlack_Discard[1] = m_tParticleInfo.fBlack_Discard.y;
-	m_fBlack_Discard[2] = m_tParticleInfo.fBlack_Discard.z;
-#pragma endregion
+		m_iProjectionIndex = 0;
+	else if (m_tParticleInfo.eParticleType == CParticle::TYPE_ORTHOGRAPHIC)
+		m_iProjectionIndex = 1;
+	else
+		m_iProjectionIndex = 2;
+
+	m_iDiffuseFolderIndex = Get_FolderIndex(m_tParticleInfo.strDiffuseTetextureName);
+	m_iAlphaFolderIndex   = Get_FolderIndex(m_tParticleInfo.strAlphaTexturName);
+
+	m_tRigidbodyInfo = static_cast<CParticle*>(m_pParticle)->Get_RigidbodyDesc();
 }
 
 void CTool_Particle::Store_InfoParticle()
 {
-	if (m_pParticle != nullptr)
-	{
-		if (m_bParticleType_Pers == true)
-			m_tParticleInfo.eParticleType = CParticle::TYPE_PERSPECTIVE;
-		else if (m_bParticleType_Orth == true)
-			m_tParticleInfo.eParticleType = CParticle::TYPE_ORTHOGRAPHIC;
+	if (m_pParticle == nullptr)
+		return;
 
-		m_tParticleInfo.fRange         = _float3(m_fParticleRange[0], m_fParticleRange[1], m_fParticleRange[2]);
-		m_tParticleInfo.fRangeDistance = _float2(m_fParticleRangeDistance[0], m_fParticleRangeDistance[1]);
+	if (m_iProjectionIndex == 0)
+		m_tParticleInfo.eParticleType = CParticle::TYPE_PERSPECTIVE;
+	else if (m_iProjectionIndex == 1)
+		m_tParticleInfo.eParticleType = CParticle::TYPE_ORTHOGRAPHIC;
+	else
+		m_tParticleInfo.eParticleType = CParticle::TYPE_END;
 
-		m_tParticleInfo.fScaleStart = _float2(m_fParticleScaleStart[0], m_fParticleScaleStart[1]);
-		m_tParticleInfo.fScaleChangeStartDelay = _float2(m_fParticleScaleChangeStartDelay[0], m_fParticleScaleChangeStartDelay[1]);
-		m_tParticleInfo.fScaleChangeTime = _float2(m_fParticleScaleChangeTime[0], m_fParticleScaleChangeTime[1]);
+	m_tParticleInfo.strDiffuseTetextureName = Select_FolderName(m_iDiffuseFolderIndex);
+	m_tParticleInfo.strAlphaTexturName      = Select_FolderName(m_iAlphaFolderIndex);
 
-		m_tParticleInfo.fScaleMin   = _float2(m_fParticleScaleMin[0], m_fParticleScaleMin[1]);
-		m_tParticleInfo.fScaleMax   = _float2(m_fParticleScaleMax[0], m_fParticleScaleMax[1]);
-		m_tParticleInfo.fScaleSpeed = _float2(m_fParticleScaleSpeed[0], m_fParticleScaleSpeed[1]);
-
-		m_tParticleInfo.vVelocityMinStart = _float3(m_fParticleVelocityMin[0], m_fParticleVelocityMin[1], m_fParticleVelocityMin[2]);
-		m_tParticleInfo.vVelocityMaxStart = _float3(m_fParticleVelocityMax[0], m_fParticleVelocityMax[1], m_fParticleVelocityMax[2]);
-
-		m_tParticleInfo.fVelocityChangeStartDelay = _float2(m_fParticleVelocityChangeStartDelay[0], m_fParticleVelocityChangeStartDelay[1]);
-		m_tParticleInfo.fVelocityChangeTime = _float2(m_fParticleVelocityChangeTime[0], m_fParticleVelocityChangeTime[1]);
-
-		if (m_tParticleInfo.bVelocityChange && m_tParticleInfo.pVelocityMin != nullptr && m_tParticleInfo.pVelocityMax != nullptr && m_tParticleInfo.pVelocityTime != nullptr)
-		{
-			if (m_tParticleInfo.iVelocityCountMax > 1) //2
-			{
-				m_tParticleInfo.pVelocityMin[0] = _float3(m_fParticleVelocityMin[0], m_fParticleVelocityMin[1], m_fParticleVelocityMin[2]);
-				m_tParticleInfo.pVelocityMax[0] = _float3(m_fParticleVelocityMax[0], m_fParticleVelocityMax[1], m_fParticleVelocityMax[2]);
-				m_tParticleInfo.pVelocityTime[0] = _float2(m_fParticleVelocityTime_01[0], m_fParticleVelocityTime_01[1]);
-
-				m_tParticleInfo.pVelocityMin[1] = _float3(m_fParticleVelocityMin_02[0], m_fParticleVelocityMin_02[1], m_fParticleVelocityMin_02[2]);
-				m_tParticleInfo.pVelocityMax[1] = _float3(m_fParticleVelocityMax_02[0], m_fParticleVelocityMax_02[1], m_fParticleVelocityMax_02[2]);
-				m_tParticleInfo.pVelocityTime[1] = _float2(m_fParticleVelocityTime_02[0], m_fParticleVelocityTime_02[1]);
-			}
-
-			if (m_tParticleInfo.iVelocityCountMax > 2) //3
-			{
-				m_tParticleInfo.pVelocityMin[2] = _float3(m_fParticleVelocityMin_03[0], m_fParticleVelocityMin_03[1], m_fParticleVelocityMin_03[2]);
-				m_tParticleInfo.pVelocityMax[2] = _float3(m_fParticleVelocityMax_03[0], m_fParticleVelocityMax_03[1], m_fParticleVelocityMax_03[2]);
-				m_tParticleInfo.pVelocityTime[2] = _float2(m_fParticleVelocityTime_03[0], m_fParticleVelocityTime_03[1]);
-			}
-
-			if (m_tParticleInfo.iVelocityCountMax > 3) //4
-			{
-				m_tParticleInfo.pVelocityMin[3] = _float3(m_fParticleVelocityMin_04[0], m_fParticleVelocityMin_04[1], m_fParticleVelocityMin_04[2]);
-				m_tParticleInfo.pVelocityMax[3] = _float3(m_fParticleVelocityMax_04[0], m_fParticleVelocityMax_04[1], m_fParticleVelocityMax_04[2]);
-				m_tParticleInfo.pVelocityTime[3] = _float2(m_fParticleVelocityTime_04[0], m_fParticleVelocityTime_04[1]);
-			}
-
-			if (m_tParticleInfo.iVelocityCountMax > 4) //5
-			{
-				m_tParticleInfo.pVelocityMin[4] = _float3(m_fParticleVelocityMin_05[0], m_fParticleVelocityMin_05[1], m_fParticleVelocityMin_05[2]);
-				m_tParticleInfo.pVelocityMax[4] = _float3(m_fParticleVelocityMax_05[0], m_fParticleVelocityMax_05[1], m_fParticleVelocityMax_05[2]);
-				m_tParticleInfo.pVelocityTime[4] = _float2(m_fParticleVelocityTime_05[0], m_fParticleVelocityTime_05[1]);
-			}
-
-			if (m_tParticleInfo.iVelocityCountMax > 5) //6
-			{
-				m_tParticleInfo.pVelocityMin[5] = _float3(m_fParticleVelocityMin_06[0], m_fParticleVelocityMin_06[1], m_fParticleVelocityMin_06[2]);
-				m_tParticleInfo.pVelocityMax[5] = _float3(m_fParticleVelocityMax_06[0], m_fParticleVelocityMax_06[1], m_fParticleVelocityMax_06[2]);
-				m_tParticleInfo.pVelocityTime[5] = _float2(m_fParticleVelocityTime_06[0], m_fParticleVelocityTime_06[1]);
-			}
-
-			if (m_tParticleInfo.iVelocityCountMax > 6) //7
-			{
-				m_tParticleInfo.pVelocityMin[6] = _float3(m_fParticleVelocityMin_07[0], m_fParticleVelocityMin_07[1], m_fParticleVelocityMin_07[2]);
-				m_tParticleInfo.pVelocityMax[6] = _float3(m_fParticleVelocityMax_07[0], m_fParticleVelocityMax_07[1], m_fParticleVelocityMax_07[2]);
-				m_tParticleInfo.pVelocityTime[6] = _float2(m_fParticleVelocityTime_07[0], m_fParticleVelocityTime_07[1]);
-			}
-
-			if (m_tParticleInfo.iVelocityCountMax > 7) //8
-			{
-				m_tParticleInfo.pVelocityMin[7] = _float3(m_fParticleVelocityMin_08[0], m_fParticleVelocityMin_08[1], m_fParticleVelocityMin_08[2]);
-				m_tParticleInfo.pVelocityMax[7] = _float3(m_fParticleVelocityMax_08[0], m_fParticleVelocityMax_08[1], m_fParticleVelocityMax_08[2]);
-				m_tParticleInfo.pVelocityTime[7] = _float2(m_fParticleVelocityTime_08[0], m_fParticleVelocityTime_08[1]);
-			}
-
-			if (m_tParticleInfo.iVelocityCountMax > 8) //9
-			{
-				m_tParticleInfo.pVelocityMin[8] = _float3(m_fParticleVelocityMin_09[0], m_fParticleVelocityMin_09[1], m_fParticleVelocityMin_09[2]);
-				m_tParticleInfo.pVelocityMax[8] = _float3(m_fParticleVelocityMax_09[0], m_fParticleVelocityMax_09[1], m_fParticleVelocityMax_09[2]);
-				m_tParticleInfo.pVelocityTime[8] = _float2(m_fParticleVelocityTime_09[0], m_fParticleVelocityTime_09[1]);
-			}
-
-			if (m_tParticleInfo.iVelocityCountMax > 9) //10
-			{
-				m_tParticleInfo.pVelocityMin[9] = _float3(m_fParticleVelocityMin_10[0], m_fParticleVelocityMin_10[1], m_fParticleVelocityMin_10[2]);
-				m_tParticleInfo.pVelocityMax[9] = _float3(m_fParticleVelocityMax_10[0], m_fParticleVelocityMax_10[1], m_fParticleVelocityMax_10[2]);
-				m_tParticleInfo.pVelocityTime[9] = _float2(m_fParticleVelocityTime_10[0], m_fParticleVelocityTime_10[1]);
-			}
-		}
-
-
-		m_tParticleInfo.vAxis               = XMVectorSet(m_fParticleAxis[0], m_fParticleAxis[1], m_fParticleAxis[2], 0.f);
-		m_tParticleInfo.fRotationSpeed      = _float2(m_fParticleRotationSpeed[0], m_fParticleRotationSpeed[1]);
-		m_tParticleInfo.fRotationChangeStartDelay = _float2(m_fParticleRotationChangeStartDelay[0], m_fParticleRotationChangeStartDelay[1]);
-		m_tParticleInfo.fRotationChangeTime = _float2(m_fParticleRotationChangeTime[0], m_fParticleRotationChangeTime[1]);
-
-
-		m_tParticleInfo.fLifeTime = _float2(m_fParticleLifeTime[0], m_fParticleLifeTime[1]);
-		m_tParticleInfo.fVelocitySpeed = _float2(m_fParticleSpeed[0], m_fParticleSpeed[1]);
-		m_tParticleInfo.fBoxMin = _float3(m_fParticleBoxMin[0], m_fParticleBoxMin[1], m_fParticleBoxMin[2]);
-		m_tParticleInfo.fBoxMax = _float3(m_fParticleBoxMax[0], m_fParticleBoxMax[1], m_fParticleBoxMax[2]);
-		m_tParticleInfo.fAnimationSpeed = _float2(m_fParticleAnimationSpeed[0], m_fParticleAnimationSpeed[1]);
-
-		m_tParticleInfo.fUVIndex    = _float2(m_fParticleUVIndex[0], m_fParticleUVIndex[1]);
-		m_tParticleInfo.fUVMaxCount = _float2(m_fParticleUVMaxCount[0], m_fParticleUVMaxCount[1]);
-
-		wstring strDiffuseTextureName(m_cDiffuseTextureName, m_cDiffuseTextureName + strlen(m_cDiffuseTextureName));
-		m_tParticleInfo.strDiffuseTetextureName = strDiffuseTextureName;
-		wstring strDiffuseTexturePath(m_cDiffuseTexturePath, m_cDiffuseTexturePath + strlen(m_cDiffuseTexturePath));
-		m_tParticleInfo.strDiffuseTetexturePath = strDiffuseTexturePath;
-		wstring strAlphaTextureName(m_cAlphaTextureName, m_cAlphaTextureName + strlen(m_cAlphaTextureName));
-		m_tParticleInfo.strAlphaTexturName = strAlphaTextureName;
-		wstring strAlphaTexturePath(m_cAlphaTexturePath, m_cAlphaTexturePath + strlen(m_cAlphaTexturePath));
-		m_tParticleInfo.strAlphaTexturPath = strAlphaTexturePath;
-
-
-		m_tParticleInfo.fFadeChangeStartDelay = _float2(m_fFadeChangeStartDelay[0], m_fFadeChangeStartDelay[1]);
-		m_tParticleInfo.fStartAlpha = _float2(m_fStartAlpha[0], m_fStartAlpha[1]);
-		m_tParticleInfo.fFadeSpeed  = _float2(m_fFadeSpeed[0],  m_fFadeSpeed[1]);
-
-
-		m_tParticleInfo.fColorChangeStartDelay = _float2(m_fColorChangeStartDelay[0], m_fColorChangeStartDelay[1]);
-		m_tParticleInfo.fColorChangeStartM = _float2(m_fColorChangeStartM[0], m_fColorChangeStartM[1]);
-		m_tParticleInfo.fColorChangeStartF = _float2(m_fColorChangeStartF[0], m_fColorChangeStartF[1]);
-		m_tParticleInfo.fColorDuration     = _float2(m_fColorChangeStartE[0], m_fColorChangeStartE[1]);
-		m_tParticleInfo.fColorChangeRandomTime = _float2(m_fColorChangeRandomTime[0], m_fColorChangeRandomTime[1]);
-
-		m_tParticleInfo.fBlack_Discard = _float3(m_fBlack_Discard[0], m_fBlack_Discard[1], m_fBlack_Discard[2]);
-
-		static_cast<CParticle*>(m_pParticle)->Set_ParticleDesc(m_tParticleInfo);
-	}
+	static_cast<CParticle*>(m_pParticle)->Set_ParticleDesc(m_tParticleInfo);
+	static_cast<CParticle*>(m_pParticle)->Set_RigidbodyDesc(m_tRigidbodyInfo);
 }
 
 void CTool_Particle::Set_OriginalInfoParticle()
 {
+	if (nullptr == m_pParticle)
+		return;
+
 	wstring strPropertyName(m_cPrototypeName, m_cPrototypeName + strlen(m_cPrototypeName));
 
 	CGameObject* pGameObject = GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_EFFECT, strPropertyName);
@@ -1159,346 +801,356 @@ void CTool_Particle::Set_OriginalInfoParticle()
 		return;
 	}		
 
-	// Store
-	{
-		if (m_bParticleType_Pers == true)
-			m_tParticleInfo.eParticleType = CParticle::TYPE_PERSPECTIVE;
-		else if (m_bParticleType_Orth == true)
-			m_tParticleInfo.eParticleType = CParticle::TYPE_ORTHOGRAPHIC;
+	if (m_iProjectionIndex == 0)
+		m_tParticleInfo.eParticleType = CParticle::TYPE_PERSPECTIVE;
+	else if (m_iProjectionIndex == 1)
+		m_tParticleInfo.eParticleType = CParticle::TYPE_ORTHOGRAPHIC;
+	else
+		m_tParticleInfo.eParticleType = CParticle::TYPE_END;
 
-		m_tParticleInfo.fRange = _float3(m_fParticleRange[0], m_fParticleRange[1], m_fParticleRange[2]);
-		m_tParticleInfo.fRangeDistance = _float2(m_fParticleRangeDistance[0], m_fParticleRangeDistance[1]);
+	m_tParticleInfo.strDiffuseTetextureName = Select_FolderName(m_iDiffuseFolderIndex);
+	m_tParticleInfo.strAlphaTexturName      = Select_FolderName(m_iAlphaFolderIndex);
 
-		m_tParticleInfo.fScaleStart = _float2(m_fParticleScaleStart[0], m_fParticleScaleStart[1]);
-		m_tParticleInfo.fScaleChangeStartDelay = _float2(m_fParticleScaleChangeStartDelay[0], m_fParticleScaleChangeStartDelay[1]);
-		m_tParticleInfo.fScaleChangeTime = _float2(m_fParticleScaleChangeTime[0], m_fParticleScaleChangeTime[1]);
-
-		m_tParticleInfo.fScaleMin = _float2(m_fParticleScaleMin[0], m_fParticleScaleMin[1]);
-		m_tParticleInfo.fScaleMax = _float2(m_fParticleScaleMax[0], m_fParticleScaleMax[1]);
-		m_tParticleInfo.fScaleSpeed = _float2(m_fParticleScaleSpeed[0], m_fParticleScaleSpeed[1]);
-
-		m_tParticleInfo.vVelocityMinStart = _float3(m_fParticleVelocityMin[0], m_fParticleVelocityMin[1], m_fParticleVelocityMin[2]);
-		m_tParticleInfo.vVelocityMaxStart = _float3(m_fParticleVelocityMax[0], m_fParticleVelocityMax[1], m_fParticleVelocityMax[2]);
-
-		m_tParticleInfo.fVelocityChangeStartDelay = _float2(m_fParticleVelocityChangeStartDelay[0], m_fParticleVelocityChangeStartDelay[1]);
-		m_tParticleInfo.fVelocityChangeTime = _float2(m_fParticleVelocityChangeTime[0], m_fParticleVelocityChangeTime[1]);
-
-		if (m_tParticleInfo.bVelocityChange && m_tParticleInfo.pVelocityMin != nullptr && m_tParticleInfo.pVelocityMax != nullptr && m_tParticleInfo.pVelocityTime != nullptr)
-		{
-			if (m_tParticleInfo.iVelocityCountMax > 1) //2
-			{
-				m_tParticleInfo.pVelocityMin[0] = _float3(m_fParticleVelocityMin[0], m_fParticleVelocityMin[1], m_fParticleVelocityMin[2]);
-				m_tParticleInfo.pVelocityMax[0] = _float3(m_fParticleVelocityMax[0], m_fParticleVelocityMax[1], m_fParticleVelocityMax[2]);
-				m_tParticleInfo.pVelocityTime[0] = _float2(m_fParticleVelocityTime_01[0], m_fParticleVelocityTime_01[1]);
-
-				m_tParticleInfo.pVelocityMin[1] = _float3(m_fParticleVelocityMin_02[0], m_fParticleVelocityMin_02[1], m_fParticleVelocityMin_02[2]);
-				m_tParticleInfo.pVelocityMax[1] = _float3(m_fParticleVelocityMax_02[0], m_fParticleVelocityMax_02[1], m_fParticleVelocityMax_02[2]);
-				m_tParticleInfo.pVelocityTime[1] = _float2(m_fParticleVelocityTime_02[0], m_fParticleVelocityTime_02[1]);
-			}
-
-			if (m_tParticleInfo.iVelocityCountMax > 2) //3
-			{
-				m_tParticleInfo.pVelocityMin[2] = _float3(m_fParticleVelocityMin_03[0], m_fParticleVelocityMin_03[1], m_fParticleVelocityMin_03[2]);
-				m_tParticleInfo.pVelocityMax[2] = _float3(m_fParticleVelocityMax_03[0], m_fParticleVelocityMax_03[1], m_fParticleVelocityMax_03[2]);
-				m_tParticleInfo.pVelocityTime[2] = _float2(m_fParticleVelocityTime_03[0], m_fParticleVelocityTime_03[1]);
-			}
-
-			if (m_tParticleInfo.iVelocityCountMax > 3) //4
-			{
-				m_tParticleInfo.pVelocityMin[3] = _float3(m_fParticleVelocityMin_04[0], m_fParticleVelocityMin_04[1], m_fParticleVelocityMin_04[2]);
-				m_tParticleInfo.pVelocityMax[3] = _float3(m_fParticleVelocityMax_04[0], m_fParticleVelocityMax_04[1], m_fParticleVelocityMax_04[2]);
-				m_tParticleInfo.pVelocityTime[3] = _float2(m_fParticleVelocityTime_04[0], m_fParticleVelocityTime_04[1]);
-			}
-
-			if (m_tParticleInfo.iVelocityCountMax > 4) //5
-			{
-				m_tParticleInfo.pVelocityMin[4] = _float3(m_fParticleVelocityMin_05[0], m_fParticleVelocityMin_05[1], m_fParticleVelocityMin_05[2]);
-				m_tParticleInfo.pVelocityMax[4] = _float3(m_fParticleVelocityMax_05[0], m_fParticleVelocityMax_05[1], m_fParticleVelocityMax_05[2]);
-				m_tParticleInfo.pVelocityTime[4] = _float2(m_fParticleVelocityTime_05[0], m_fParticleVelocityTime_05[1]);
-			}
-
-			if (m_tParticleInfo.iVelocityCountMax > 5) //6
-			{
-				m_tParticleInfo.pVelocityMin[5] = _float3(m_fParticleVelocityMin_06[0], m_fParticleVelocityMin_06[1], m_fParticleVelocityMin_06[2]);
-				m_tParticleInfo.pVelocityMax[5] = _float3(m_fParticleVelocityMax_06[0], m_fParticleVelocityMax_06[1], m_fParticleVelocityMax_06[2]);
-				m_tParticleInfo.pVelocityTime[5] = _float2(m_fParticleVelocityTime_06[0], m_fParticleVelocityTime_06[1]);
-			}
-
-			if (m_tParticleInfo.iVelocityCountMax > 6) //7
-			{
-				m_tParticleInfo.pVelocityMin[6] = _float3(m_fParticleVelocityMin_07[0], m_fParticleVelocityMin_07[1], m_fParticleVelocityMin_07[2]);
-				m_tParticleInfo.pVelocityMax[6] = _float3(m_fParticleVelocityMax_07[0], m_fParticleVelocityMax_07[1], m_fParticleVelocityMax_07[2]);
-				m_tParticleInfo.pVelocityTime[6] = _float2(m_fParticleVelocityTime_07[0], m_fParticleVelocityTime_07[1]);
-			}
-
-			if (m_tParticleInfo.iVelocityCountMax > 7) //8
-			{
-				m_tParticleInfo.pVelocityMin[7] = _float3(m_fParticleVelocityMin_08[0], m_fParticleVelocityMin_08[1], m_fParticleVelocityMin_08[2]);
-				m_tParticleInfo.pVelocityMax[7] = _float3(m_fParticleVelocityMax_08[0], m_fParticleVelocityMax_08[1], m_fParticleVelocityMax_08[2]);
-				m_tParticleInfo.pVelocityTime[7] = _float2(m_fParticleVelocityTime_08[0], m_fParticleVelocityTime_08[1]);
-			}
-
-			if (m_tParticleInfo.iVelocityCountMax > 8) //9
-			{
-				m_tParticleInfo.pVelocityMin[8] = _float3(m_fParticleVelocityMin_09[0], m_fParticleVelocityMin_09[1], m_fParticleVelocityMin_09[2]);
-				m_tParticleInfo.pVelocityMax[8] = _float3(m_fParticleVelocityMax_09[0], m_fParticleVelocityMax_09[1], m_fParticleVelocityMax_09[2]);
-				m_tParticleInfo.pVelocityTime[8] = _float2(m_fParticleVelocityTime_09[0], m_fParticleVelocityTime_09[1]);
-			}
-
-			if (m_tParticleInfo.iVelocityCountMax > 9) //10
-			{
-				m_tParticleInfo.pVelocityMin[9] = _float3(m_fParticleVelocityMin_10[0], m_fParticleVelocityMin_10[1], m_fParticleVelocityMin_10[2]);
-				m_tParticleInfo.pVelocityMax[9] = _float3(m_fParticleVelocityMax_10[0], m_fParticleVelocityMax_10[1], m_fParticleVelocityMax_10[2]);
-				m_tParticleInfo.pVelocityTime[9] = _float2(m_fParticleVelocityTime_10[0], m_fParticleVelocityTime_10[1]);
-			}
-		}
-
-
-		m_tParticleInfo.vAxis = XMVectorSet(m_fParticleAxis[0], m_fParticleAxis[1], m_fParticleAxis[2], 0.f);
-		m_tParticleInfo.fRotationSpeed = _float2(m_fParticleRotationSpeed[0], m_fParticleRotationSpeed[1]);
-		m_tParticleInfo.fRotationChangeStartDelay = _float2(m_fParticleRotationChangeStartDelay[0], m_fParticleRotationChangeStartDelay[1]);
-		m_tParticleInfo.fRotationChangeTime = _float2(m_fParticleRotationChangeTime[0], m_fParticleRotationChangeTime[1]);
-
-
-		m_tParticleInfo.fLifeTime = _float2(m_fParticleLifeTime[0], m_fParticleLifeTime[1]);
-		m_tParticleInfo.fVelocitySpeed = _float2(m_fParticleSpeed[0], m_fParticleSpeed[1]);
-		m_tParticleInfo.fBoxMin = _float3(m_fParticleBoxMin[0], m_fParticleBoxMin[1], m_fParticleBoxMin[2]);
-		m_tParticleInfo.fBoxMax = _float3(m_fParticleBoxMax[0], m_fParticleBoxMax[1], m_fParticleBoxMax[2]);
-		m_tParticleInfo.fAnimationSpeed = _float2(m_fParticleAnimationSpeed[0], m_fParticleAnimationSpeed[1]);
-
-		m_tParticleInfo.fUVIndex = _float2(m_fParticleUVIndex[0], m_fParticleUVIndex[1]);
-		m_tParticleInfo.fUVMaxCount = _float2(m_fParticleUVMaxCount[0], m_fParticleUVMaxCount[1]);
-
-		wstring strDiffuseTextureName(m_cDiffuseTextureName, m_cDiffuseTextureName + strlen(m_cDiffuseTextureName));
-		m_tParticleInfo.strDiffuseTetextureName = strDiffuseTextureName;
-		wstring strDiffuseTexturePath(m_cDiffuseTexturePath, m_cDiffuseTexturePath + strlen(m_cDiffuseTexturePath));
-		m_tParticleInfo.strDiffuseTetexturePath = strDiffuseTexturePath;
-		wstring strAlphaTextureName(m_cAlphaTextureName, m_cAlphaTextureName + strlen(m_cAlphaTextureName));
-		m_tParticleInfo.strAlphaTexturName = strAlphaTextureName;
-		wstring strAlphaTexturePath(m_cAlphaTexturePath, m_cAlphaTexturePath + strlen(m_cAlphaTexturePath));
-		m_tParticleInfo.strAlphaTexturPath = strAlphaTexturePath;
-
-
-		m_tParticleInfo.fFadeChangeStartDelay = _float2(m_fFadeChangeStartDelay[0], m_fFadeChangeStartDelay[1]);
-		m_tParticleInfo.fStartAlpha = _float2(m_fStartAlpha[0], m_fStartAlpha[1]);
-		m_tParticleInfo.fFadeSpeed = _float2(m_fFadeSpeed[0], m_fFadeSpeed[1]);
-
-
-		m_tParticleInfo.fColorChangeStartDelay = _float2(m_fColorChangeStartDelay[0], m_fColorChangeStartDelay[1]);
-		m_tParticleInfo.fColorChangeStartM = _float2(m_fColorChangeStartM[0], m_fColorChangeStartM[1]);
-		m_tParticleInfo.fColorChangeStartF = _float2(m_fColorChangeStartF[0], m_fColorChangeStartF[1]);
-		m_tParticleInfo.fColorDuration = _float2(m_fColorChangeStartE[0], m_fColorChangeStartE[1]);
-		m_tParticleInfo.fColorChangeRandomTime = _float2(m_fColorChangeRandomTime[0], m_fColorChangeRandomTime[1]);
-
-		m_tParticleInfo.fBlack_Discard = _float3(m_fBlack_Discard[0], m_fBlack_Discard[1], m_fBlack_Discard[2]);
-	}
-	
-	static_cast<CParticle*>(pGameObject)->Set_ParticleDesc(m_tParticleInfo);
+	static_cast<CParticle*>(m_pParticle)->Set_ParticleDesc(m_tParticleInfo);
+	static_cast<CParticle*>(m_pParticle)->Set_RigidbodyDesc(m_tRigidbodyInfo);
 }
+
+wstring CTool_Particle::Select_FolderName(_uint iFolderIndex)
+{
+	wstring ProtoName;
+
+	switch (iFolderIndex)
+	{
+	case 0:
+		ProtoName = L"Prototype_Component_Texture_Effect_Aura";
+		break;
+	case 1:
+		ProtoName = L"Prototype_Component_Texture_Effect_Crack";
+		break;
+	case 2:
+		ProtoName = L"Prototype_Component_Texture_Effect_Decal";
+		break;
+	case 3:
+		ProtoName = L"Prototype_Component_Texture_Effect_Fire";
+		break;
+	case 4:
+		ProtoName = L"Prototype_Component_Texture_Effect_Flare";
+		break;
+	case 5:
+		ProtoName = L"Prototype_Component_Texture_Effect_Glow";
+		break;
+	case 6:
+		ProtoName = L"Prototype_Component_Texture_Effect_Hit";
+		break;
+	case 7:
+		ProtoName = L"Prototype_Component_Texture_Effect_Ice";
+		break;
+	case 8:
+		ProtoName = L"Prototype_Component_Texture_Effect_Image";
+		break;
+	case 9:
+		ProtoName = L"Prototype_Component_Texture_Effect_Mask";
+		break;
+	case 10:
+		ProtoName = L"Prototype_Component_Texture_Effect_MeshTrail";
+		break;
+	case 11:
+		ProtoName = L"Prototype_Component_Texture_Effect_Noise";
+		break;
+	case 12:
+		ProtoName = L"Prototype_Component_Texture_Effect_Object";
+		break;
+	case 13:
+		ProtoName = L"Prototype_Component_Texture_Effect_Ring";
+		break;
+	case 14:
+		ProtoName = L"Prototype_Component_Texture_Effect_Slash";
+		break;
+	case 15:
+		ProtoName = L"Prototype_Component_Texture_Effect_Smoke";
+		break;
+	case 16:
+		ProtoName = L"Prototype_Component_Texture_Effect_SubUV";
+		break;
+	case 17:
+		ProtoName = L"Prototype_Component_Texture_Effect_SwordTrail";
+		break;
+	case 18:
+		ProtoName = L"Prototype_Component_Texture_Effect_UI";
+		break;
+	case 19:
+		ProtoName = L"Prototype_Component_Texture_Effect_Water";
+		break;
+	case 20:
+		ProtoName = L"Prototype_Component_Texture_Effect_Wind";
+		break;
+	case 21:
+		ProtoName = L"";
+		break;
+	}
+
+	return ProtoName;
+}
+
+_uint CTool_Particle::Get_FolderIndex(wstring& strName)
+{
+	_int iIndex = -1;
+
+	_int  iBufferSizeName = WideCharToMultiByte(CP_UTF8, 0, strName.c_str(), -1, nullptr, 0, nullptr, nullptr);
+	char* pszName = new char[iBufferSizeName];
+	WideCharToMultiByte(CP_UTF8, 0, strName.c_str(), -1, pszName, iBufferSizeName, nullptr, nullptr);
+
+	if (strcmp(pszName, "Prototype_Component_Texture_Effect_Aura") == 0)
+		iIndex = 0;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Crack") == 0)
+		iIndex = 1;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Decal") == 0)
+		iIndex = 2;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Fire") == 0)
+		iIndex = 3;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Flare") == 0)
+		iIndex = 4;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Glow") == 0)
+		iIndex = 5;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Hit") == 0)
+		iIndex = 6;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Ice") == 0)
+		iIndex = 7;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Image") == 0)
+		iIndex = 8;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Mask") == 0)
+		iIndex = 9;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_MeshTrail") == 0)
+		iIndex = 10;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Noise") == 0)
+		iIndex = 11;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Object") == 0)
+		iIndex = 12;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Ring") == 0)
+		iIndex = 13;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Slash") == 0)
+		iIndex = 14;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Smoke") == 0)
+		iIndex = 15;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_SubUV") == 0)
+		iIndex = 16;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_SwordTrail") == 0)
+		iIndex = 17;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_UI") == 0)
+		iIndex = 18;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Water") == 0)
+		iIndex = 19;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Wind") == 0)
+		iIndex = 20;
+	else
+		iIndex = 21;
+	Safe_Delete(pszName);
+
+	return iIndex;
+}
+
 
 void CTool_Particle::Save_Particle(const char* pFileName)
 {
 	if (m_pParticle == nullptr)
-		MSG_BOX("Particle_Save_Failed!");
-
-	else
 	{
-		wstring strFileName(pFileName, pFileName + strlen(pFileName));
-		wstring strFilePath = L"../Bin/DataFiles/Vfx/Particle/" + strFileName + L".Particle";
+		MSG_BOX("Particle_Save_Failed!");
+		return;
+	}
 
-		// 파티클 정보 저장
-		m_tParticleInfo = static_cast<CParticle*>(m_pParticle)->Get_ParticleDesc();
+	//m_tParticleInfo = static_cast<CParticle*>(m_pParticle)->Get_ParticleDesc();
 
-		auto path = filesystem::path(strFilePath);
-		filesystem::create_directories(path.parent_path());
+	wstring strFileName(pFileName, pFileName + strlen(pFileName));
+	wstring strFilePath = L"../Bin/DataFiles/Vfx/Particle/" + strFileName + L".Particle";
 
-#pragma region Save
+#pragma region Save_Particle
+	auto path = filesystem::path(strFilePath);
+	filesystem::create_directories(path.parent_path());
 
-		shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
-		File->Open(strFilePath, FileMode::Write);
+	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
+	File->Open(strFilePath, FileMode::Write);
 
-		// 파티클 타입
-		File->Write<_uint>((_uint)m_tParticleInfo.eParticleType);
+	// 파티클 타입
+	File->Write<_uint>((_uint)m_tParticleInfo.eParticleType);
 
-		// 정렬 설정
-		File->Write<_bool>(m_tParticleInfo.bParticleSortZ);
+	// 정렬 설정
+	File->Write<_bool>(m_tParticleInfo.bParticleSortZ);
 
-		// 반복 여부
-		File->Write<_bool>(m_tParticleInfo.bParticleLoop);
+	// 반복 여부
+	File->Write<_bool>(m_tParticleInfo.bParticleLoop);
 
-		// 파티클 개수
-		if (m_tParticleInfo.iNumEffectMaxCount > m_tParticleInfo.iNumEffectCount)
-			m_tParticleInfo.iNumEffectMaxCount = m_tParticleInfo.iNumEffectCount;
-		File->Write<_uint>(m_tParticleInfo.iNumEffectMaxCount);
-		File->Write<_uint>(m_tParticleInfo.iNumEffectCount);
+	// 파티클 개수
+	if (m_tParticleInfo.iNumEffectMaxCount > m_tParticleInfo.iNumEffectCount)
+		m_tParticleInfo.iNumEffectMaxCount = m_tParticleInfo.iNumEffectCount;
+	File->Write<_uint>(m_tParticleInfo.iNumEffectMaxCount);
+	File->Write<_uint>(m_tParticleInfo.iNumEffectCount);
 
-		// 분포 범위
-		File->Write<_float3>(m_tParticleInfo.fRange);
-		File->Write<_float2>(m_tParticleInfo.fRangeDistance);
+	// 분포 범위
+	File->Write<_float3>(m_tParticleInfo.fRange);
+	File->Write<_float2>(m_tParticleInfo.fRangeDistance);
 
 #pragma region 크기
-		File->Write<_bool>(m_tParticleInfo.bScaleSameRate);
-		File->Write<_float2>(m_tParticleInfo.fScaleStart);
+	File->Write<_bool>(m_tParticleInfo.bScaleSameRate);
+	File->Write<_float2>(m_tParticleInfo.fScaleStart);
 
-		File->Write<_bool>(m_tParticleInfo.bScaleChange);
-		File->Write<_float2>(m_tParticleInfo.fScaleChangeStartDelay);
+	File->Write<_bool>(m_tParticleInfo.bScaleChange);
+	File->Write<_float2>(m_tParticleInfo.fScaleChangeStartDelay);
 
-		File->Write<_bool>(m_tParticleInfo.bScaleChangeRandom);
-		File->Write<_float2>(m_tParticleInfo.fScaleChangeTime);
+	File->Write<_bool>(m_tParticleInfo.bScaleChangeRandom);
+	File->Write<_float2>(m_tParticleInfo.fScaleChangeTime);
 
-		File->Write<_bool>(m_tParticleInfo.bScaleAdd);
-		File->Write<_bool>(m_tParticleInfo.bScaleLoop);
-		File->Write<_bool>(m_tParticleInfo.bScaleLoopStart);
+	File->Write<_bool>(m_tParticleInfo.bScaleAdd);
+	File->Write<_bool>(m_tParticleInfo.bScaleLoop);
+	File->Write<_bool>(m_tParticleInfo.bScaleLoopStart);
 
-		File->Write<_float2>(m_tParticleInfo.fScaleMin);
-		File->Write<_float2>(m_tParticleInfo.fScaleMax);
-		File->Write<_float2>(m_tParticleInfo.fScaleSpeed);
+	File->Write<_float2>(m_tParticleInfo.fScaleMin);
+	File->Write<_float2>(m_tParticleInfo.fScaleMax);
+	File->Write<_float2>(m_tParticleInfo.fScaleSpeed);
 #pragma endregion
 
 #pragma region 이동
-		File->Write<_float2>(m_tParticleInfo.fVelocitySpeed);
+	File->Write<_float2>(m_tParticleInfo.fVelocitySpeed);
 
-		File->Write<_float3>(m_tParticleInfo.vVelocityMinStart);
-		File->Write<_float3>(m_tParticleInfo.vVelocityMaxStart);
+	File->Write<_float3>(m_tParticleInfo.vVelocityMinStart);
+	File->Write<_float3>(m_tParticleInfo.vVelocityMaxStart);
 
-		File->Write<_bool>(m_tParticleInfo.bVelocityChange);
-		File->Write<_float2>(m_tParticleInfo.fVelocityChangeStartDelay);
+	File->Write<_bool>(m_tParticleInfo.bVelocityChange);
+	File->Write<_float2>(m_tParticleInfo.fVelocityChangeStartDelay);
 
-		File->Write<_bool>(m_tParticleInfo.bVelocityChangeRandom);
-		File->Write<_float2>(m_tParticleInfo.fVelocityChangeTime);
+	File->Write<_bool>(m_tParticleInfo.bVelocityChangeRandom);
+	File->Write<_float2>(m_tParticleInfo.fVelocityChangeTime);
 
-		File->Write<_bool>(m_tParticleInfo.bVelocityLoop);
-		File->Write<_uint>(m_tParticleInfo.iVelocityCountCur);
-		File->Write<_uint>(m_tParticleInfo.iVelocityCountMax);
+	File->Write<_bool>(m_tParticleInfo.bVelocityLoop);
+	File->Write<_uint>(m_tParticleInfo.iVelocityCountCur);
+	File->Write<_uint>(m_tParticleInfo.iVelocityCountMax);
 
-		// 
-		if (!m_tParticleInfo.bVelocityChange || m_tParticleInfo.bVelocityChangeRandom)
-			m_tParticleInfo.iVelocityUse = 0;
+	// 
+	if (!m_tParticleInfo.bVelocityChange || m_tParticleInfo.bVelocityChangeRandom)
+		m_tParticleInfo.iVelocityUse = 0;
 
-		File->Write<_uint>(m_tParticleInfo.iVelocityUse);
-		if (m_tParticleInfo.iVelocityUse > 0)
+	File->Write<_uint>(m_tParticleInfo.iVelocityUse);
+	if (m_tParticleInfo.iVelocityUse > 0)
+	{
+		if (m_tParticleInfo.pVelocityMin != nullptr)
 		{
-			if (m_tParticleInfo.pVelocityMin != nullptr)
-			{
-				for (size_t i = 0; i < m_tParticleInfo.iVelocityUse; ++i)
-					File->Write<_float3>(m_tParticleInfo.pVelocityMin[i]);
-			}
-
-			if (m_tParticleInfo.pVelocityMax != nullptr)
-			{
-				for (size_t i = 0; i < m_tParticleInfo.iVelocityUse; ++i)
-					File->Write<_float3>(m_tParticleInfo.pVelocityMax[i]);
-			}
-
-			if (m_tParticleInfo.pVelocityTime != nullptr)
-			{
-				for (size_t i = 0; i < m_tParticleInfo.iVelocityUse; ++i)
-					File->Write<_float2>(m_tParticleInfo.pVelocityTime[i]);
-			}
+			for (size_t i = 0; i < m_tParticleInfo.iVelocityUse; ++i)
+				File->Write<_float3>(m_tParticleInfo.pVelocityMin[i]);
 		}
+
+		if (m_tParticleInfo.pVelocityMax != nullptr)
+		{
+			for (size_t i = 0; i < m_tParticleInfo.iVelocityUse; ++i)
+				File->Write<_float3>(m_tParticleInfo.pVelocityMax[i]);
+		}
+
+		if (m_tParticleInfo.pVelocityTime != nullptr)
+		{
+			for (size_t i = 0; i < m_tParticleInfo.iVelocityUse; ++i)
+				File->Write<_float2>(m_tParticleInfo.pVelocityTime[i]);
+		}
+	}
 #pragma endregion
 
 #pragma region 회전
-		File->Write<_bool>(m_tParticleInfo.bBillboard);
+	File->Write<_bool>(m_tParticleInfo.bBillboard);
 
-		File->Write<_bool>(m_tParticleInfo.bRandomAxis);
-		File->Write<_vector>(m_tParticleInfo.vAxis);
+	File->Write<_bool>(m_tParticleInfo.bRandomAxis);
+	File->Write<_vector>(m_tParticleInfo.vAxis);
 
-		File->Write<_bool>(m_tParticleInfo.bRandomAngle);
-		File->Write<_float>(m_tParticleInfo.fAngle);
+	File->Write<_bool>(m_tParticleInfo.bRandomAngle);
+	File->Write<_float>(m_tParticleInfo.fAngle);
 
-		File->Write<_bool>(m_tParticleInfo.bRotationChange);
-		File->Write<_float2>(m_tParticleInfo.fRotationChangeStartDelay);
+	File->Write<_bool>(m_tParticleInfo.bRotationChange);
+	File->Write<_float2>(m_tParticleInfo.fRotationChangeStartDelay);
 
-		File->Write<_float2>(m_tParticleInfo.fRotationSpeed);
+	File->Write<_float2>(m_tParticleInfo.fRotationSpeed);
 
-		File->Write<_bool>(m_tParticleInfo.bRotationChangeRandom);
-		File->Write<_float2>(m_tParticleInfo.fRotationChangeTime);
+	File->Write<_bool>(m_tParticleInfo.bRotationChangeRandom);
+	File->Write<_float2>(m_tParticleInfo.fRotationChangeTime);
 
-		File->Write<_bool>(m_tParticleInfo.bRotationAdd);
+	File->Write<_bool>(m_tParticleInfo.bRotationAdd);
 #pragma endregion
 
-		// 지속 시간
-		File->Write<_float2>(m_tParticleInfo.fLifeTime);
+	// 지속 시간
+	File->Write<_float2>(m_tParticleInfo.fLifeTime);
 
-		// 박스 범위
-		File->Write<_bool>(m_tParticleInfo.bUseBox);
-		File->Write<_float3>(m_tParticleInfo.fBoxMin);
-		File->Write<_float3>(m_tParticleInfo.fBoxMax);
+	// 박스 범위
+	File->Write<_bool>(m_tParticleInfo.bUseBox);
+	File->Write<_float3>(m_tParticleInfo.fBoxMin);
+	File->Write<_float3>(m_tParticleInfo.fBoxMax);
 
 #pragma region 텍스처
-		// 문자열 저장
-		File->Write<string>(CUtils::ToString(m_tParticleInfo.strDiffuseTetextureName));
-		File->Write<string>(CUtils::ToString(m_tParticleInfo.strDiffuseTetexturePath));
-		File->Write<string>(CUtils::ToString(m_tParticleInfo.strAlphaTexturName));
-		File->Write<string>(CUtils::ToString(m_tParticleInfo.strAlphaTexturPath));
+	// 문자열 저장
+	File->Write<string>(CUtils::ToString(m_tParticleInfo.strDiffuseTetextureName));
+	File->Write<string>(CUtils::ToString(m_tParticleInfo.strDiffuseTetexturePath));
+	File->Write<string>(CUtils::ToString(m_tParticleInfo.strAlphaTexturName));
+	File->Write<string>(CUtils::ToString(m_tParticleInfo.strAlphaTexturPath));
 
-		File->Write<_bool>(m_tParticleInfo.bRandomStartIndex);
-		File->Write<_float2>(m_tParticleInfo.fUVIndex);
-		File->Write<_float2>(m_tParticleInfo.fUVMaxCount);
+	File->Write<_bool>(m_tParticleInfo.bRandomStartIndex);
+	File->Write<_float2>(m_tParticleInfo.fUVIndex);
+	File->Write<_float2>(m_tParticleInfo.fUVMaxCount);
 
-		File->Write<_uint>(m_tParticleInfo.iTextureIndexDiffuse);
-		File->Write<_uint>(m_tParticleInfo.iTextureIndexAlpha);
+	File->Write<_uint>(m_tParticleInfo.iTextureIndexDiffuse);
+	File->Write<_uint>(m_tParticleInfo.iTextureIndexAlpha);
 #pragma endregion
 
 #pragma region 애니메이션
-		File->Write<_bool>(m_tParticleInfo.bAnimation);
-		File->Write<_bool>(m_tParticleInfo.bAnimationLoop);
-		File->Write<_float2>(m_tParticleInfo.fAnimationSpeed);
+	File->Write<_bool>(m_tParticleInfo.bAnimation);
+	File->Write<_bool>(m_tParticleInfo.bAnimationLoop);
+	File->Write<_float2>(m_tParticleInfo.fAnimationSpeed);
 #pragma endregion
 
 #pragma region 알파
-		File->Write<_float2>(m_tParticleInfo.fStartAlpha);
+	File->Write<_float2>(m_tParticleInfo.fStartAlpha);
 
-		File->Write<_bool>(m_tParticleInfo.bFadeCreate);
-		File->Write<_bool>(m_tParticleInfo.bFadeDelete);
-		File->Write<_float2>(m_tParticleInfo.fFadeSpeed);
+	File->Write<_bool>(m_tParticleInfo.bFadeCreate);
+	File->Write<_bool>(m_tParticleInfo.bFadeDelete);
+	File->Write<_float2>(m_tParticleInfo.fFadeSpeed);
 
-		File->Write<_bool>(m_tParticleInfo.bFadeChange);
-		File->Write<_bool>(m_tParticleInfo.bFadeIn);
-		File->Write<_float2>(m_tParticleInfo.fFadeChangeStartDelay);
+	File->Write<_bool>(m_tParticleInfo.bFadeChange);
+	File->Write<_bool>(m_tParticleInfo.bFadeIn);
+	File->Write<_float2>(m_tParticleInfo.fFadeChangeStartDelay);
 #pragma endregion
 
 #pragma region 색상
-		File->Write<_bool>(m_tParticleInfo.bColorRandom);
-		File->Write<_float4>(m_tParticleInfo.vColorS);
+	File->Write<_bool>(m_tParticleInfo.bColorRandom);
+	File->Write<_float4>(m_tParticleInfo.vColorS);
 
-		File->Write<_bool>(m_tParticleInfo.bColorChange);
+	File->Write<_bool>(m_tParticleInfo.bColorChange);
 
-		File->Write<_bool>(m_tParticleInfo.bColorChangeRandom);
-		File->Write<_float2>(m_tParticleInfo.fColorChangeRandomTime);
+	File->Write<_bool>(m_tParticleInfo.bColorChangeRandom);
+	File->Write<_float2>(m_tParticleInfo.fColorChangeRandomTime);
 
-		File->Write<_bool>(m_tParticleInfo.bColorLoop);
-		File->Write<_float2>(m_tParticleInfo.fColorChangeStartDelay);
+	File->Write<_bool>(m_tParticleInfo.bColorLoop);
+	File->Write<_float2>(m_tParticleInfo.fColorChangeStartDelay);
 
-		File->Write<_float2>(m_tParticleInfo.fColorChangeStartM);
-		File->Write<_float4>(m_tParticleInfo.fColorM);
+	File->Write<_float2>(m_tParticleInfo.fColorChangeStartM);
+	File->Write<_float4>(m_tParticleInfo.fColorM);
 
-		File->Write<_float2>(m_tParticleInfo.fColorChangeStartF);
-		File->Write<_float4>(m_tParticleInfo.fColorF);
+	File->Write<_float2>(m_tParticleInfo.fColorChangeStartF);
+	File->Write<_float4>(m_tParticleInfo.fColorF);
 
-		File->Write<_float2>(m_tParticleInfo.fColorDuration);
+	File->Write<_float2>(m_tParticleInfo.fColorDuration);
 #pragma endregion
 
 #pragma region 블러
-		File->Write<_bool>(m_tParticleInfo.bBloomPowerRandom);
-		File->Write<_float4>(m_tParticleInfo.fBloomPower);
-		File->Write<_bool>(m_tParticleInfo.bBlurPowerRandom);
-		File->Write<_float>(m_tParticleInfo.fBlurPower);
+	File->Write<_bool>(m_tParticleInfo.bBloomPowerRandom);
+	File->Write<_float4>(m_tParticleInfo.fBloomPower);
+	File->Write<_bool>(m_tParticleInfo.bBlurPowerRandom);
+	File->Write<_float>(m_tParticleInfo.fBlurPower);
 #pragma endregion
 
 #pragma region 기타 정보
-		File->Write<_uint>(m_tParticleInfo.iShaderPass);
-		File->Write<_float>(m_tParticleInfo.fAlpha_Discard);
-		File->Write<_float3>(m_tParticleInfo.fBlack_Discard);
+	File->Write<_uint>(m_tParticleInfo.iShaderPass);
+	File->Write<_float>(m_tParticleInfo.fAlpha_Discard);
+	File->Write<_float3>(m_tParticleInfo.fBlack_Discard);
 #pragma endregion
 
-		// 이후 추가 시 기존 정보 로드 후 추가 값 셋팅 후 재저장하기
+	// 이후 추가 시 기존 정보 로드 후 추가 값 셋팅 후 재저장하기
 
 #pragma endregion
 
-		MSG_BOX("Particle_Save_Success!");
-	}
+	MSG_BOX("Particle_Save_Success!");
 }
 
 void CTool_Particle::Load_Particle(const char* pFileName)
@@ -1513,7 +1165,7 @@ void CTool_Particle::Load_Particle(const char* pFileName)
 	wstring strFileName(pFileName, pFileName + strlen(pFileName));
 	wstring strFilePath = L"../Bin/DataFiles/Vfx/Particle/" + strFileName + L".Particle";
 	
-#pragma region Load
+#pragma region Load_Particle
 	CParticle::PARTICLE_DESC ParticleInfo = {};
 
 	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
@@ -1705,6 +1357,7 @@ void CTool_Particle::Load_Particle(const char* pFileName)
 
 	MSG_BOX("Particle_Load_Success!");
 }
+
 
 CTool_Particle* CTool_Particle::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {

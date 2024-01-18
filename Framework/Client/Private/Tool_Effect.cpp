@@ -22,6 +22,8 @@ HRESULT CTool_Effect::Initialize()
 	return S_OK;
 }
 
+
+#pragma region Tick
 void CTool_Effect::Tick(_float fTimeDelta)
 {
 	ImGui::Begin("Effect_Tool");
@@ -30,14 +32,16 @@ void CTool_Effect::Tick(_float fTimeDelta)
 	if (ImGui::BeginTabItem("Effect"))
 	{
 		ImGui::NewLine();
-		Tick_EffectTool();
+		if (Tick_EffectTool())
+			Store_ObjectInfo(TYPE_EFFECT);
 		ImGui::EndTabItem();
 	}
 
 	if (ImGui::BeginTabItem("Decal"))
 	{
 		ImGui::NewLine();
-		Tick_DecalTool();
+		if(Tick_DecalTool())
+			Store_ObjectInfo(TYPE_DECAL);
 		ImGui::EndTabItem();
 	}
 
@@ -52,692 +56,689 @@ void CTool_Effect::Tick(_float fTimeDelta)
 	ImGui::End();
 }
 
-void CTool_Effect::Tick_EffectTool()
+_bool CTool_Effect::Tick_EffectTool()
 {
-	// 생성/ 삭제
-	if (ImGui::Button("EffectCreate"))
-		Create_Effect();
-	ImGui::SameLine();
-	if (ImGui::Button("EffectDelete"))
+	// CreateDelete
+	Tick_CreateDelete(TYPE_EFFECT);
+	ImGui::NewLine();
+
+	// Binary
+	Tick_Binary(TYPE_EFFECT);
+	ImGui::NewLine();
+
+	// Prototype
+	Tick_Prototype(TYPE_EFFECT);
+	ImGui::NewLine();
+
+	// Transform
+	Tick_Transform(TYPE_EFFECT);
+	ImGui::NewLine();
+
+#pragma region EffectSystem
+	_bool bEffectSystemUse = false;
+
+	if (ImGui::CollapsingHeader("EffectSystem"))
 	{
-		if (m_pEffect != nullptr)
+		if (ImGui::Button("Restart"))
+			Store_ObjectInfo(TYPE_EFFECT);
+
+		// 기본 정보
+		if (ImGui::CollapsingHeader("BasicInfo"))
 		{
-			m_pEffect->Set_Dead(true);
-			m_pEffect = nullptr;
+			// 이펙트 타입
+			ImGui::Text("EffectType :");
+			ImGui::SameLine();
+			if (ImGui::Combo("##EffectType", &m_iEffectTypeIndex, m_cEffectType, IM_ARRAYSIZE(m_cEffectType)))
+				bEffectSystemUse = true;
+
+			// 증력 여부
+			if(ImGui::Checkbox("Gravity", &m_tEffectInfo.bGravity))
+				bEffectSystemUse = true;
+			ImGui::NewLine();
 		}
-	}
-	ImGui::SameLine();
 
-	// 확인(적용)
-	if (ImGui::Button("TransformSelect"))
-		Store_TransformEffect();
-	ImGui::SameLine();
-	if (ImGui::Button("EffectInfoSelect"))
-		Store_InfoEffect();
-
-	ImGui::NewLine();
-
-	// 저장하기/ 불러오기
-	if (ImGui::CollapsingHeader("EffectBinary"))
-	{
-		if (ImGui::Button("SaveEffect"))
-			Save_Effect(m_cBinaryName);
-		ImGui::SameLine();
-		if (ImGui::Button("LoadEffect"))
-			Load_Effect(m_cBinaryName);
-		ImGui::SameLine();
-		ImGui::Text("FileName :");
-		ImGui::SameLine();
-		ImGui::InputText("##FileName", m_cBinaryName, IM_ARRAYSIZE(m_cBinaryName));
-	}
-
-	ImGui::NewLine();
-
-	// 원형에 적용
-	if (ImGui::Button("Set_EffectPrototype"))
-		Set_OriginalInfoEffect();
-	ImGui::SameLine();
-	ImGui::Text("PrototypeEffectName :");
-	ImGui::SameLine();
-	ImGui::InputText("##PrototypeEffectName", m_cPrototypeEffectName, IM_ARRAYSIZE(m_cPrototypeEffectName));
-
-	ImGui::NewLine();
-
-	// 트랜스폼
-	if (ImGui::CollapsingHeader("EffectTransform"))
-	{
-		ImGui::Text("Position");
-		ImGui::InputFloat3("##Position", m_fPosition);
-
-		ImGui::Text("Rotation");
-		ImGui::InputFloat3("##Rotation", m_fRotation);
-
-		ImGui::Text("Scale");
-		ImGui::InputFloat3("##Scale", m_fScale);
-	}
-
-	ImGui::NewLine();
-
-	// 기본 정보
-	if (ImGui::CollapsingHeader("EffectBasicInfo"))
-	{
-		// 이펙트 타입
-		ImGui::Text("EffectType :");
-		ImGui::SameLine();
-		if (ImGui::Combo("##EffectType", &m_iEffectTypeIndex, m_cEffectType, IM_ARRAYSIZE(m_cEffectType)))
-			Store_InfoEffect();
-
-		// 증력 여부
-		ImGui::Checkbox("EffectGravity", &m_tEffectInfo.bGravity);
-		ImGui::NewLine();
-	}
-
-	// 위치 (분포 범위)
-	if (ImGui::CollapsingHeader("EffectPosition"))
-	{
-		ImGui::Text("RangeEffect");
-		if (ImGui::InputFloat3("##RangeEffect", m_fEffectRange))
-			Store_InfoEffect();
-		ImGui::NewLine();
-
-		// 시작 거리
-		ImGui::Text("RangeDistance");
-		if (ImGui::InputFloat2("##RangeDistance", m_fEffectRangeDistance))
-			Store_InfoEffect();
-		ImGui::NewLine();
-	}
-
-	// 크기
-	if (ImGui::CollapsingHeader("EffectScale"))
-	{
-		ImGui::Checkbox("ScaleSameRate", &m_tEffectInfo.bScaleSameRate);
-		ImGui::NewLine();
-
-		ImGui::Text("ScaleStartMinEffect");
-		if (ImGui::InputFloat3("##ScaleStartMinEffect", &m_tEffectInfo.fScaleStartMin.x))
-			Store_InfoEffect();
-		ImGui::Text("ScaleStartMaxEffect");
-		if (ImGui::InputFloat3("##ScaleStartMaxEffect", &m_tEffectInfo.fScaleStartMax.x))
-			Store_InfoEffect();
-		ImGui::NewLine();
-
-		ImGui::Checkbox("ScaleChange", &m_tEffectInfo.bScaleChange);
-		ImGui::NewLine();
-
-		if (m_tEffectInfo.bScaleChange)
+		// 위치 (분포 범위)
+		if (ImGui::CollapsingHeader("Range/StartPosition"))
 		{
-			ImGui::Text("ScaleChangeStartDelayEffect");
-			ImGui::InputFloat2("##ScaleChangeStartDelayEffect", &m_tEffectInfo.fScaleChangeStartDelay.x);
+			ImGui::Text("Range");
+			if(ImGui::InputFloat3("##Range", &m_tEffectInfo.fRange.x))
+				bEffectSystemUse = true;
 			ImGui::NewLine();
 
-			ImGui::Checkbox("ScaleChangeRandom", &m_tEffectInfo.bScaleChangeRandom);
+			// 시작 거리
+			ImGui::Text("StartDistance");
+			if (ImGui::InputFloat2("##StartDistance", &m_tEffectInfo.fRangeDistance.x))
+				bEffectSystemUse = true;
+			ImGui::NewLine();
+		}
+
+		// 크기
+		if (ImGui::CollapsingHeader("Scale"))
+		{
+			if(ImGui::Checkbox("ScaleSameRate", &m_tEffectInfo.bScaleSameRate))
+				bEffectSystemUse = true;
 			ImGui::NewLine();
 
-			if (m_tEffectInfo.bScaleChangeRandom)
+			ImGui::Text("ScaleStartMin");
+			if(ImGui::InputFloat3("##ScaleStartMin", &m_tEffectInfo.fScaleStartMin.x))
+				bEffectSystemUse = true;
+			ImGui::Text("ScaleStartMax");
+			if(ImGui::InputFloat3("##ScaleStartMax", &m_tEffectInfo.fScaleStartMax.x))
+				bEffectSystemUse = true;
+			ImGui::NewLine();
+			ImGui::NewLine();
+
+
+			if(ImGui::Checkbox("ScaleChange", &m_tEffectInfo.bScaleChange))
+				bEffectSystemUse = true;
+			ImGui::NewLine();
+
+			if (m_tEffectInfo.bScaleChange)
 			{
-				ImGui::Text("ScaleChangeTimeEffect");
-				ImGui::InputFloat2("##ScaleChangeTimeEffect", &m_tEffectInfo.fScaleChangeTime.x);
+				ImGui::Text("ScaleChangeStartDelay");
+				if(ImGui::InputFloat2("##ScaleChangeStartDelay", &m_tEffectInfo.fScaleChangeStartDelay.x))
+					bEffectSystemUse = true;
 				ImGui::NewLine();
-			}
-			else
-			{
-				ImGui::Checkbox("ScaleAdd", &m_tEffectInfo.bScaleAdd);
 				ImGui::NewLine();
 
-				ImGui::Checkbox("ScaleLoop", &m_tEffectInfo.bScaleLoop);
+				if(ImGui::Checkbox("ScaleChangeRandom", &m_tEffectInfo.bScaleChangeRandom))
+					bEffectSystemUse = true;
 				ImGui::NewLine();
 
-				ImGui::Checkbox("ScaleLoopStart", &m_tEffectInfo.bScaleLoopStart);
-				ImGui::NewLine();
+				if (m_tEffectInfo.bScaleChangeRandom)
+				{
+					ImGui::Text("ScaleChangeTime");
+					if(ImGui::InputFloat2("##ScaleChangeTime", &m_tEffectInfo.fScaleChangeTime.x))
+						bEffectSystemUse = true;
+					ImGui::NewLine();
+				}
+				else
+				{
+					ImGui::Text("ScaleMin");
+					if (ImGui::InputFloat3("##ScaleMin", &m_tEffectInfo.fScaleSizeMin.x))
+						bEffectSystemUse = true;
+					ImGui::NewLine();
 
-				ImGui::Text("ScaleMinEffect");
-				ImGui::InputFloat3("##ScaleMinEffect", &m_tEffectInfo.fScaleSizeMin.x);
-				ImGui::NewLine();
+					ImGui::Text("ScaleMax");
+					if (ImGui::InputFloat3("##ScaleMax", &m_tEffectInfo.fScaleSizeMax.x))
+						bEffectSystemUse = true;
+					ImGui::NewLine();
 
-				ImGui::Text("ScaleMaxEffect");
-				ImGui::InputFloat3("##ScaleMaxEffect", &m_tEffectInfo.fScaleSizeMax.x);
-				ImGui::NewLine();
+					ImGui::Text("ScaleDirSpeed");
+					if (ImGui::InputFloat3("##ScaleDirSpeed", &m_tEffectInfo.fScaleDirSpeed.x))
+						bEffectSystemUse = true;
+					ImGui::NewLine();
+					ImGui::NewLine();
 
-				ImGui::Text("ScaleDirSpeed");
-				if (ImGui::InputFloat3("##ScaleDirSpeed", &m_tEffectInfo.fScaleDirSpeed.x))
-					Store_InfoEffect();
-			}
+					if(ImGui::Checkbox("ScaleAdd", &m_tEffectInfo.bScaleAdd))
+						bEffectSystemUse = true;
+					ImGui::NewLine();
 
-			ImGui::Text("ScaleSpeedEffect");
-			ImGui::InputFloat2("##ScaleSpeedEffect", &m_tEffectInfo.fScaleSpeed.x);
-			ImGui::NewLine();
-		}
-	}
+					if(ImGui::Checkbox("ScaleLoop", &m_tEffectInfo.bScaleLoop))
+						bEffectSystemUse = true;
+					ImGui::NewLine();
 
-	// 이동(힘)
-	if (ImGui::CollapsingHeader("EffectVelocity"))
-	{
-		ImGui::Text("VelocitySpeed");
-		if (ImGui::InputFloat2("##VelocitySpeed", &m_tEffectInfo.fVelocitySpeed.x))
-			Store_InfoEffect();
-		ImGui::Text("VelocityMinStart");
-		if (ImGui::InputFloat3("##VelocityMinStart", &m_tEffectInfo.vVelocityMinStart.x))
-			Store_InfoEffect();
-		ImGui::Text("vVelocityMaxStart");
-		if (ImGui::InputFloat3("##vVelocityMaxStart", &m_tEffectInfo.vVelocityMaxStart.x))
-			Store_InfoEffect();
-		ImGui::NewLine();
+					if(ImGui::Checkbox("ScaleLoopStart", &m_tEffectInfo.bScaleLoopStart))
+						bEffectSystemUse = true;
+					ImGui::NewLine();
+				}
 
-		ImGui::Checkbox("VelocityChange", &m_tEffectInfo.bVelocityChange);
-		if (m_tEffectInfo.bVelocityChange)
-		{
-			ImGui::Text("VelocityChangeStartDelay");
-			ImGui::InputFloat2("##VelocityChangeStartDelay", &m_tEffectInfo.fVelocityChangeStartDelay.x);
-
-			ImGui::Text("VelocityChangeTime");
-			ImGui::InputFloat2("##VelocityChangeTim", &m_tEffectInfo.fVelocityChangeTime.x);
-			ImGui::NewLine();
-		}
-	}
-
-	// 회전
-	if (ImGui::CollapsingHeader("EffectRotation"))
-	{
-		if (ImGui::Checkbox("RotationBillboard", &m_tEffectInfo.bBillboard))
-			Store_InfoEffect();
-		ImGui::NewLine();
-
-		ImGui::Checkbox("RotationRandomAxis", &m_tEffectInfo.bRandomAxis);
-		if (!m_tEffectInfo.bRandomAxis)
-		{
-			ImGui::Text("RotationAxis");
-			ImGui::InputFloat3("##RotationAxis", &m_tEffectInfo.fAxis.x);
-			ImGui::NewLine();
-		}
-		ImGui::NewLine();
-
-		ImGui::Checkbox("RotationRandomAngle", &m_tEffectInfo.bRandomAngle);
-		if (!m_tEffectInfo.bRandomAngle)
-		{
-			ImGui::Text("RotationAngle");
-			ImGui::InputFloat("##RangeParticles", &m_tEffectInfo.fAngle);
-			ImGui::NewLine();
-		}
-		ImGui::NewLine();
-
-		ImGui::Checkbox("RotationChange", &m_tEffectInfo.bRotationChange);
-		ImGui::NewLine();
-
-		if (m_tEffectInfo.bRotationChange)
-		{
-			ImGui::Text("RotationChangeStartDelayParticles");
-			ImGui::InputFloat2("##RotationChangeStartDelayParticles", &m_tEffectInfo.fRotationChangeStartDelay.x);
-			ImGui::NewLine();
-
-			ImGui::Text("RotationSpeed");
-			if (ImGui::InputFloat2("##RotationSpeed", &m_tEffectInfo.fRotationSpeed.x))
-				Store_InfoEffect();
-			ImGui::NewLine();
-
-			ImGui::Text("RotationDir");
-			if (ImGui::InputFloat3("##RotationDir", &m_tEffectInfo.fRotationDir.x))
-				Store_InfoEffect();
-
-			ImGui::Checkbox("RotationChangeRandom", &m_tEffectInfo.bRotationChangeRandom);
-			ImGui::NewLine();
-
-			if (m_tEffectInfo.bRotationChangeRandom)
-			{
-				ImGui::Text("RotationChangeTime");
-				ImGui::InputFloat2("##RotationChangeTime", &m_tEffectInfo.fRotationChangeTime.x);
+				ImGui::Text("ScaleSpeed");
+				if(ImGui::InputFloat2("##ScaleSpeed", &m_tEffectInfo.fScaleSpeed.x))
+					bEffectSystemUse = true;
 				ImGui::NewLine();
 			}
 		}
+
+		// 이동(힘)
+		if (ImGui::CollapsingHeader("Velocity"))
+		{
+			ImGui::Text("VelocitySpeed");
+			if (ImGui::InputFloat2("##VelocitySpeed", &m_tEffectInfo.fVelocitySpeed.x))
+				bEffectSystemUse = true;
+			ImGui::NewLine();
+
+			ImGui::Text("VelocityMinStart");
+			if (ImGui::InputFloat3("##VelocityMinStart", &m_tEffectInfo.vVelocityMinStart.x))
+				bEffectSystemUse = true;
+			ImGui::Text("vVelocityMaxStart");
+			if (ImGui::InputFloat3("##vVelocityMaxStart", &m_tEffectInfo.vVelocityMaxStart.x))
+				bEffectSystemUse = true;
+			ImGui::NewLine();
+
+			if (ImGui::Checkbox("VelocityChange", &m_tEffectInfo.bVelocityChange))
+				bEffectSystemUse = true;
+
+			if (m_tEffectInfo.bVelocityChange)
+			{
+				ImGui::Text("VelocityChangeStartDelay");
+				if(ImGui::InputFloat2("##VelocityChangeStartDelay", &m_tEffectInfo.fVelocityChangeStartDelay.x))
+					bEffectSystemUse = true;
+				ImGui::NewLine();
+
+				ImGui::Text("VelocityChangeTime");
+				if(ImGui::InputFloat2("##VelocityChangeTim", &m_tEffectInfo.fVelocityChangeTime.x))
+					bEffectSystemUse = true;
+				ImGui::NewLine();
+			}
+		}
+
+		// 회전
+		if (ImGui::CollapsingHeader("Rotation"))
+		{
+			if (ImGui::Checkbox("RotationBillboard", &m_tEffectInfo.bBillboard))
+				bEffectSystemUse = true;
+			ImGui::NewLine();
+
+			if(!m_tEffectInfo.bBillboard)
+			{
+				if (ImGui::Checkbox("RotationRandomAxis", &m_tEffectInfo.bRandomAxis))
+					bEffectSystemUse = true;
+				if (!m_tEffectInfo.bRandomAxis)
+				{
+					ImGui::Text("RotationAxis");
+					if(ImGui::InputFloat3("##RotationAxis", &m_tEffectInfo.fAxis.x))
+						bEffectSystemUse = true;
+					ImGui::NewLine();
+				}
+				ImGui::NewLine();
+
+				if(ImGui::Checkbox("RotationRandomAngle", &m_tEffectInfo.bRandomAngle))
+					bEffectSystemUse = true;
+				if (!m_tEffectInfo.bRandomAngle)
+				{
+					ImGui::Text("RotationAngle");
+					if(ImGui::InputFloat("##RangeParticles", &m_tEffectInfo.fAngle))
+						bEffectSystemUse = true;
+					ImGui::NewLine();
+				}
+				ImGui::NewLine();
+
+				if(ImGui::Checkbox("RotationChange", &m_tEffectInfo.bRotationChange))
+					bEffectSystemUse = true;
+				if (m_tEffectInfo.bRotationChange)
+				{
+					ImGui::Text("RotationChangeStartDelayParticles");
+					if(ImGui::InputFloat2("##RotationChangeStartDelayParticles", &m_tEffectInfo.fRotationChangeStartDelay.x))
+						bEffectSystemUse = true;
+					ImGui::NewLine();
+
+					ImGui::Text("RotationSpeed");
+					if (ImGui::InputFloat2("##RotationSpeed", &m_tEffectInfo.fRotationSpeed.x))
+						bEffectSystemUse = true;
+
+					ImGui::Text("RotationDir");
+					if (ImGui::InputFloat3("##RotationDir", &m_tEffectInfo.fRotationDir.x))
+						bEffectSystemUse = true;
+					ImGui::NewLine();
+
+					if(ImGui::Checkbox("RotationChangeRandom", &m_tEffectInfo.bRotationChangeRandom))
+						bEffectSystemUse = true;
+					if (m_tEffectInfo.bRotationChangeRandom)
+					{
+						ImGui::Text("RotationChangeTime");
+						if (ImGui::InputFloat2("##RotationChangeTime", &m_tEffectInfo.fRotationChangeTime.x))
+							bEffectSystemUse = true;
+					}
+				}
+				ImGui::NewLine();
+			}
+		}
+
+		// 지속 시간
+		if (ImGui::CollapsingHeader("LifeTime"))
+		{
+			ImGui::Text("LifeTime");
+			if(ImGui::InputFloat2("##LifeTime", &m_tEffectInfo.fLifeTime.x))
+				bEffectSystemUse = true;
+			ImGui::NewLine();
+		}
+
+		// 텍스처 지정
+		if (ImGui::CollapsingHeader("Resource"))
+		{
+			// 모델 원형
+			ImGui::Text("ModelName :");
+			ImGui::SameLine();
+			if(ImGui::InputText("##ModelName", m_cModelName, IM_ARRAYSIZE(m_cModelName)))
+				bEffectSystemUse = true;
+			ImGui::NewLine();
+
+
+			// 디퓨즈 텍스처
+			ImGui::Text("DiffuseFolderName :");
+			ImGui::SameLine();
+			if (ImGui::Combo("##DiffuseFolderName", &m_iDiffuseFolderIndex, m_cFolderName, IM_ARRAYSIZE(m_cFolderName)))
+				bEffectSystemUse = true;
+
+			if (m_pEffect != nullptr)
+			{
+				ImGui::Text("DiffuseTextureIndex");
+				ImGui::SameLine();
+				if (ImGui::InputInt("##DiffuseTextureIndex", &(_int)m_tEffectInfo.iTextureIndexDiffuse))
+					bEffectSystemUse = true;
+				ImGui::NewLine();
+
+				CTexture* pDiffuseTexture = static_cast<CEffect*>(m_pEffect)->Get_DiffuseTexture();
+				if (pDiffuseTexture != nullptr)
+				{
+					ImGui::Text("Diffuse Texture");
+					if (ImGui::BeginListBox("##Effect_DiffuseTexture_List", ImVec2(450.f, 200.f)))
+					{
+						for (size_t i = 0; i < pDiffuseTexture->Get_TextureCount(); ++i)
+						{
+							if (i % 5 != 0)
+								IMGUI_SAME_LINE;
+
+							if (ImGui::ImageButton(pDiffuseTexture->Get_Srv(i), ImVec2(50.f, 50.f)))
+							{
+								m_tEffectInfo.iTextureIndexDiffuse = i;
+								bEffectSystemUse = true;
+							}
+						}
+						ImGui::EndListBox();
+					}
+				}
+			}
+
+
+			// 알파 텍스처
+			ImGui::Text("AlphaFolderName :");
+			ImGui::SameLine();
+			if (ImGui::Combo("##AlphaFolderName", &m_iAlphaFolderIndex, m_cFolderName, IM_ARRAYSIZE(m_cFolderName)))
+				bEffectSystemUse = true;
+
+			if (m_pEffect != nullptr)
+			{
+				ImGui::Text("AlphaTextureIndex");
+				ImGui::SameLine();
+				if (ImGui::InputInt("##AlphaTextureIndex", &(_int)m_tEffectInfo.iTextureIndexAlpha))
+					bEffectSystemUse = true;
+				ImGui::NewLine();
+
+				CTexture* pAlphaTexture = static_cast<CEffect*>(m_pEffect)->Get_AlphaTexture();
+				if (pAlphaTexture != nullptr)
+				{
+					ImGui::Text("Alpha Texture");
+					if (ImGui::BeginListBox("##Effect_AlphaTexture_List", ImVec2(450.f, 200.f)))
+					{
+						for (size_t i = 0; i < pAlphaTexture->Get_TextureCount(); ++i)
+						{
+							if (i % 5 != 0)
+								IMGUI_SAME_LINE;
+
+							if (ImGui::ImageButton(pAlphaTexture->Get_Srv(i), ImVec2(50.f, 50.f)))
+							{
+								m_tEffectInfo.iTextureIndexAlpha = i;
+								bEffectSystemUse = true;
+							}
+						}
+						ImGui::EndListBox();
+					}
+				}
+			}
+		}
+
+		// 텍스처 애니메이션
+		if (ImGui::CollapsingHeader("UV/Flow"))
+		{
+			// 디퓨즈 && 알파 UVIndex && UVMaxCount
+			if (ImGui::Checkbox("UVIndexRandomStart", &m_tEffectInfo.bRandomStartIndex))
+				bEffectSystemUse = true;
+			if (!m_tEffectInfo.bRandomStartIndex)
+			{
+				ImGui::Text("UVIndex");
+				if (ImGui::InputFloat2("##UVIndex", &m_tEffectInfo.fUVIndex.x))
+					bEffectSystemUse = true;
+				ImGui::NewLine();
+			}
+			ImGui::Text("UVMaxCount");
+			if (ImGui::InputFloat2("##UVMaxCount", &m_tEffectInfo.fMaxCount.x))
+				bEffectSystemUse = true;
+			ImGui::NewLine();
+
+			// UVFlow
+			if (ImGui::Checkbox("UVFlowChange", &m_tEffectInfo.bUVFlowChange))
+				bEffectSystemUse = true;
+			if (m_tEffectInfo.bUVFlowChange)
+			{
+				ImGui::Text("UVFlowLoop : 0 < UVLoop -> NoLoop");
+				if (ImGui::InputInt("##UVFlowLoop", &(_int)m_tEffectInfo.iUVFlowLoop))
+					bEffectSystemUse = true;
+				ImGui::Text("UVFlowDir");
+				if (ImGui::InputFloat2("##UVFlowDir", &m_tEffectInfo.fUVFlowDir.x))
+					bEffectSystemUse = true;
+				ImGui::Text("UVFlowSpeed");
+				if (ImGui::InputFloat2("##UVFlowSpeed", &m_tEffectInfo.fUVFlowSpeed.x))
+					bEffectSystemUse = true;
+			}
+			ImGui::NewLine();
+		}
+
+		// 애니메이션
+		if (ImGui::CollapsingHeader("Animation"))
+		{
+			if (ImGui::Checkbox("UseAnimation", &m_tEffectInfo.bAnimation))
+				bEffectSystemUse = true;
+			if (m_tEffectInfo.bAnimation)
+			{
+				// 반복 여부
+				if (ImGui::Checkbox("LoopAnimation", &m_tEffectInfo.bAnimationLoop))
+					bEffectSystemUse = true;
+
+				if(ImGui::Checkbox("IncrementAnimation", &m_tEffectInfo.bIncrement))
+					bEffectSystemUse = true;
+
+				ImGui::Text("SpeedAnimation");
+				if(ImGui::InputFloat2("##SpeedAnimation", &m_tEffectInfo.fAnimationSpeed.x))
+					bEffectSystemUse = true;
+			}
+		}
+
+		// 색상
+		if (ImGui::CollapsingHeader("Color"))
+		{
+			if (ImGui::Checkbox("ColorRandom", &m_tEffectInfo.bColorRandom))
+				bEffectSystemUse = true;
+			if (!m_tEffectInfo.bColorRandom)
+			{
+				ImGui::Text("ColorStart");
+				if(ImGui::ColorEdit4("##ColorStart", (float*)&m_tEffectInfo.fColorS, ImGuiColorEditFlags_Float))
+					bEffectSystemUse = true;
+			}
+			ImGui::NewLine();
+			ImGui::NewLine();
+
+			if (ImGui::Checkbox("ColorChange", &m_tEffectInfo.bColorChange))
+				bEffectSystemUse = true;
+			if (m_tEffectInfo.bColorChange)
+			{
+				if(ImGui::Checkbox("ColorChangeRandom", &m_tEffectInfo.bColorChangeRandom))
+					bEffectSystemUse = true;
+				ImGui::NewLine();
+
+				// fColorChangeStartDelay
+				ImGui::Text("ColorChangeStartDelay");
+				if(ImGui::InputFloat2("##ColorChangeStartDelay", &m_tEffectInfo.fColorChangeStartDelay.x))
+					bEffectSystemUse = true;
+				ImGui::NewLine();
+
+				if (m_tEffectInfo.bColorChangeRandom)
+				{
+					ImGui::Text("ColorChangeRandomTime");
+					if(ImGui::InputFloat2("##ColorChangeRandomTime", &m_tEffectInfo.fColorChangeRandomTime.x))
+						bEffectSystemUse = true;
+					ImGui::NewLine();
+				}
+				else
+				{
+					if(ImGui::Checkbox("ColorLoop", &m_tEffectInfo.bColorLoop))
+						bEffectSystemUse = true;
+					ImGui::NewLine();
+
+					// fColorChangeStartM
+					ImGui::Text("ColorChangeStartM");
+					if(ImGui::InputFloat2("##ColorChangeStartM", &m_tEffectInfo.fColorChangeStartM.x))
+						bEffectSystemUse = true;
+
+					ImGui::Text("ColorMiddle");
+					if(ImGui::ColorEdit4("##ColorMiddle", (float*)&m_tEffectInfo.fColorM, ImGuiColorEditFlags_Float))
+						bEffectSystemUse = true;
+					ImGui::NewLine();
+
+					// fColorChangeStartF
+					ImGui::Text("ColorChangeStartF");
+					if(ImGui::InputFloat2("##ColorChangeStartF", &m_tEffectInfo.fColorChangeStartF.x))
+						bEffectSystemUse = true;
+
+					ImGui::Text("ColorFinal");
+					if(ImGui::ColorEdit4("##ColorFinal", (float*)&m_tEffectInfo.fColorF, ImGuiColorEditFlags_Float))
+						bEffectSystemUse = true;
+					ImGui::NewLine();
+				}
+
+				// ColorDurationTime
+				ImGui::Text("ColorDurationTime");
+				if(ImGui::InputFloat2("##ColorDurationTime", &m_tEffectInfo.fColorDuration.x))
+					bEffectSystemUse = true;
+			}
+		}
+
+		// 알파
+		if (ImGui::CollapsingHeader("Alpha"))
+		{
+			ImGui::Text("StartAlpha");
+			if (ImGui::InputFloat2("##StartAlpha", &m_tEffectInfo.fAlphaStart.x))
+				bEffectSystemUse = true;
+			ImGui::NewLine();
+
+			if (ImGui::Checkbox("AlphaCreate", &m_tEffectInfo.bAlphaCreate))
+				bEffectSystemUse = true;
+			if (ImGui::Checkbox("AlphaDelete", &m_tEffectInfo.bAlphaDelete))
+				bEffectSystemUse = true;
+			ImGui::NewLine();
+
+			ImGui::Text("AlphaSpeed");
+			if (ImGui::InputFloat2("##AlphaSpeed", &m_tEffectInfo.fAlphaSpeed.x))
+				bEffectSystemUse = true;
+			ImGui::NewLine();
+
+			if(ImGui::Checkbox("AlphaChange", &m_tEffectInfo.bAlphaChange))
+				bEffectSystemUse = true;
+			if (m_tEffectInfo.bAlphaChange)
+			{
+				ImGui::Text("AlphaChangeStartDelay");
+				if(ImGui::InputFloat2("##AlphaChangeStartDelay", &m_tEffectInfo.fAlphaChangeStartDelay.x))
+					bEffectSystemUse = true;
+				ImGui::NewLine();
+
+				if(ImGui::Checkbox("AlphaIn", &m_tEffectInfo.bAlphaIn))
+					bEffectSystemUse = true;
+				ImGui::NewLine();
+			}
+		}
+
+		// 쉐이더 값 셋팅
+		if (ImGui::CollapsingHeader("Shader"))
+		{
+			// 쉐이더 패스
+			ImGui::Text("ShaderPass");
+			if(ImGui::InputInt("##ShaderPass", &(_int)m_tEffectInfo.iShaderPass))
+				bEffectSystemUse = true;
+			ImGui::NewLine();
+
+			// 디스카드 값 셋팅
+			ImGui::Text("Alpha_Discard");
+			if(ImGui::InputFloat("##Alpha_Discard", &m_tEffectInfo.fAlpha_Discard))
+				bEffectSystemUse = true;
+			ImGui::Text("Black_Discard");
+			if(ImGui::InputFloat3("##Black_Discard", &m_tEffectInfo.fBlack_Discard.x))
+				bEffectSystemUse = true;
+			ImGui::NewLine();
+
+			// 블러 셋팅
+			if(ImGui::Checkbox("BloomPowerRandom", &m_tEffectInfo.bBloomPowerRandom))
+				bEffectSystemUse = true;
+			if (!m_tEffectInfo.bBloomPowerRandom)
+			{
+				ImGui::Text("BloomPower");
+				if(ImGui::ColorEdit4("##BloomPower", (float*)&m_tEffectInfo.fBloomPower, ImGuiColorEditFlags_Float))
+					bEffectSystemUse = true;
+				ImGui::NewLine();
+			}
+
+			if (ImGui::Checkbox("BlurPowerRandom", &m_tEffectInfo.bBlurPowerRandom))
+				bEffectSystemUse = true;
+			if (!m_tEffectInfo.bBlurPowerRandom)
+			{
+				if(ImGui::InputFloat("##BlurPower", &m_tEffectInfo.fBlurPower))
+					bEffectSystemUse = true;
+			}
+		}
 	}
+#pragma endregion
 
-	// 지속 시간
-	if (ImGui::CollapsingHeader("EffectLifeTime"))
+	return bEffectSystemUse;
+}
+
+_bool CTool_Effect::Tick_DecalTool()
+{
+	// CreateDelete
+	Tick_CreateDelete(TYPE_DECAL);
+	ImGui::NewLine();
+
+	// Binary
+	Tick_Binary(TYPE_DECAL);
+	ImGui::NewLine();
+
+	// Prototype
+	Tick_Prototype(TYPE_DECAL);
+	ImGui::NewLine();
+
+	// Transform
+	Tick_Transform(TYPE_DECAL);
+	ImGui::NewLine();
+
+#pragma region DecalSystem
+	_bool bDecalSystemUse = false;
+
+	if (ImGui::CollapsingHeader("DecalSystem"))
 	{
-		ImGui::Text("EffectLifeTime");
-		ImGui::InputFloat2("##EffectLifeTime", &m_tEffectInfo.fLifeTime.x);
-		ImGui::NewLine();
-	}
+		if (ImGui::Button("Restart"))
+			Store_ObjectInfo(TYPE_DECAL);
 
-	// 텍스처 지정
-	if (ImGui::CollapsingHeader("EffectResource"))
-	{
-		// 모델 원형
-		ImGui::Text("ModelName :");
-		ImGui::SameLine();
-		ImGui::InputText("##ModelName", m_cModelName, IM_ARRAYSIZE(m_cModelName));
-		ImGui::NewLine();
+		// 지속 시간
+		if (ImGui::CollapsingHeader("LifeTime"))
+		{
+			ImGui::Text("DecalLifeTime");
+			if (ImGui::InputFloat("##DecalLifeTime", &m_tDecalInfo.fLifeTime))
+				bDecalSystemUse = true;
+			ImGui::NewLine();
+		}
 
-		// 디퓨즈 텍스처
-		ImGui::Text("DiffuseFolderName :");
-		ImGui::SameLine();
-		if (ImGui::Combo("##DiffuseFolderName", &m_iDiffuseFolderIndex, m_cFolderName, IM_ARRAYSIZE(m_cFolderName)))
-			Store_InfoEffect();
-
-		if (m_pEffect != nullptr)
+		// 텍스처 지정
+		if (ImGui::CollapsingHeader("Texture"))
 		{
 			ImGui::Text("DiffuseTextureIndex");
 			ImGui::SameLine();
-			if (ImGui::InputInt("##DiffuseTextureIndex", &(_int)m_tEffectInfo.iTextureIndexDiffuse))
-				Store_InfoEffect();
+			if (ImGui::InputInt("##DiffuseTextureIndex", &(_int)m_tDecalInfo.iTextureIndexDiffuse))
+				bDecalSystemUse = true;
 			ImGui::NewLine();
 
-			CTexture* pDiffuseTexture = static_cast<CEffect*>(m_pEffect)->Get_DiffuseTexture();
-			if (pDiffuseTexture != nullptr)
+			if (nullptr != m_pDecal)
 			{
-				ImGui::Text("Diffuse Texture");
-				if (ImGui::BeginListBox("##Effect_DiffuseTexture_List", ImVec2(450.f, 200.f)))
+				CTexture* pDiffuseTexture = static_cast<CDecal*>(m_pDecal)->Get_DiffuseTexture();
+				if (pDiffuseTexture != nullptr)
 				{
-					for (size_t i = 0; i < pDiffuseTexture->Get_TextureCount(); ++i)
+					ImGui::Text("DiffuseTexture");
+					if (ImGui::BeginListBox("##DecalTextureList", ImVec2(450.f, 200.f)))
 					{
-						if (i % 5 != 0)
-							IMGUI_SAME_LINE;
-
-						if (ImGui::ImageButton(pDiffuseTexture->Get_Srv(i), ImVec2(50.f, 50.f)))
+						for (size_t i = 0; i < pDiffuseTexture->Get_TextureCount(); ++i)
 						{
-							m_tEffectInfo.iTextureIndexDiffuse = i;
-							//Store_InfoEffect();
+							if (i % 5 != 0)
+								IMGUI_SAME_LINE;
+
+							if (ImGui::ImageButton(pDiffuseTexture->Get_Srv(i), ImVec2(50.f, 50.f)))
+							{
+								m_tDecalInfo.iTextureIndexDiffuse = i;
+								bDecalSystemUse = true;
+							}
 						}
+						ImGui::EndListBox();
 					}
-					ImGui::EndListBox();
 				}
 			}
-		}
-
-		// 알파 텍스처
-		ImGui::Text("AlphaFolderName :");
-		ImGui::SameLine();
-		if (ImGui::Combo("##AlphaFolderName", &m_iAlphaFolderIndex, m_cFolderName, IM_ARRAYSIZE(m_cFolderName)))
-			Store_InfoEffect();
-
-		if (m_pEffect != nullptr)
-		{
-			ImGui::Text("AlphaTextureIndex");
-			ImGui::SameLine();
-			if (ImGui::InputInt("##AlphaTextureIndex", &(_int)m_tEffectInfo.iTextureIndexAlpha))
-				Store_InfoEffect();
-			ImGui::NewLine();
-
-			CTexture* pAlphaTexture = static_cast<CEffect*>(m_pEffect)->Get_AlphaTexture();
-			if (pAlphaTexture != nullptr)
-			{
-				ImGui::Text("Alpha Texture");
-				if (ImGui::BeginListBox("##Effect_AlphaTexture_List", ImVec2(450.f, 200.f)))
-				{
-					for (size_t i = 0; i < pAlphaTexture->Get_TextureCount(); ++i)
-					{
-						if (i % 5 != 0)
-							IMGUI_SAME_LINE;
-
-						if (ImGui::ImageButton(pAlphaTexture->Get_Srv(i), ImVec2(50.f, 50.f)))
-						{
-							m_tEffectInfo.iTextureIndexAlpha = i;
-							//Store_InfoEffect();
-						}
-					}
-					ImGui::EndListBox();
-				}
-			}
-		}
-
-		// 디퓨즈 && 알파 UVIndex && UVMaxCount
-		ImGui::Checkbox("UVIndexRandomStart", &m_tEffectInfo.bRandomStartIndex);
-		if (!m_tEffectInfo.bRandomStartIndex)
-		{
-			ImGui::Text("UVIndex");
-			if (ImGui::InputFloat2("##UVIndex", m_ffEffectUVIndex))
-				Store_InfoEffect();
 			ImGui::NewLine();
 		}
-		ImGui::Text("UVMaxCount");
-		if (ImGui::InputFloat2("##UVMaxCount", m_ffEffectUVMaxCount))
-			Store_InfoEffect();
-		ImGui::NewLine();
 
-		// UVFlow
-		if (ImGui::Checkbox("UVFlowChange", &m_tEffectInfo.bUVFlowChange))
-			Store_InfoEffect();
-		ImGui::Text("UVFlowLoop : 0 < UVLoop -> NoLoop");
-		if (ImGui::InputInt("##UVFlowLoop", &(_int)m_tEffectInfo.iUVFlowLoop))
-			Store_InfoEffect();
-		ImGui::Text("UVFlowDir");
-		if (ImGui::InputFloat2("##UVFlowDir", &m_tEffectInfo.fUVFlowDir.x))
-			Store_InfoEffect();
-		ImGui::Text("UVFlowSpeed");
-		if (ImGui::InputFloat2("##UVFlowSpeed", &m_tEffectInfo.fUVFlowSpeed.x))
-			Store_InfoEffect();
-		ImGui::NewLine();
-	}
-
-	// 텍스처 애니메이션
-	if (ImGui::CollapsingHeader("EffectAnimation"))
-	{
-		if (ImGui::Checkbox("UseAnimation", &m_tEffectInfo.bAnimation))
-			Store_InfoEffect();
-
-		if (m_tEffectInfo.bAnimation)
+		// 색상
+		if (ImGui::CollapsingHeader("Color"))
 		{
-			// 반복 여부
-			if (ImGui::Checkbox("LoopAnimation", &m_tEffectInfo.bAnimationLoop))
-				Store_InfoEffect();
-
-			if (ImGui::Checkbox("IncrementAnimation", &m_tEffectInfo.bIncrement))
-				Store_InfoEffect();
-
-			ImGui::Text("SpeedAnimation");
-			if (ImGui::InputFloat2("##SpeedAnimation", &m_tEffectInfo.fAnimationSpeed.x))
-				Store_InfoEffect();
-		}
-	}
-
-	// 텍스처 알파
-	if (ImGui::CollapsingHeader("EffectAlpha"))
-	{
-		ImGui::Text("StartAlpha");
-		if (ImGui::InputFloat2("##StartAlpha", m_fAlphaStart))
-			Store_InfoEffect();
-
-		if (ImGui::Checkbox("AlphaCreate", &m_tEffectInfo.bAlphaCreate))
-			Store_InfoEffect();
-		ImGui::NewLine();
-
-		if (ImGui::Checkbox("AlphaDelete", &m_tEffectInfo.bAlphaDelete))
-			Store_InfoEffect();
-		ImGui::NewLine();
-
-		ImGui::Text("AlphaSpeed");
-		if (ImGui::InputFloat2("##AlphaSpeed", m_fAlphaSpeed))
-			Store_InfoEffect();
-		ImGui::NewLine();
-
-		ImGui::Checkbox("AlphaChange", &m_tEffectInfo.bAlphaChange);
-		ImGui::NewLine();
-
-		// StartDelay
-		if (m_tEffectInfo.bAlphaChange)
-		{
-			ImGui::Text("AlphaChangeStartDelay");
-			ImGui::InputFloat2("##AlphaChangeStartDelay", m_fAlphaChangeStartDelay);
+			ImGui::Text("Color_Add_01_Alpha");
+			if(ImGui::InputFloat("##Color_Add_01_Alpha", &m_tDecalInfo.fColorAdd_01_Alpha))
+				bDecalSystemUse = true;
 			ImGui::NewLine();
 
-			ImGui::Checkbox("AlphaIn", &m_tEffectInfo.bAlphaIn);
+			ImGui::Text("ColorAdd_01");
+			if(ImGui::ColorEdit3("##ColorAdd_01", (float*)&m_tDecalInfo.fColorAdd_01, ImGuiColorEditFlags_Float))
+				bDecalSystemUse = true;
+
+			ImGui::Text("ColorAdd_02");
+			if(ImGui::ColorEdit3("##ColorAdd_02", (float*)&m_tDecalInfo.fColorAdd_02, ImGuiColorEditFlags_Float))
+				bDecalSystemUse = true;
 			ImGui::NewLine();
 		}
-	}
 
-	// 파티클 색상
-	if (ImGui::CollapsingHeader("EffectColor"))
-	{
-		if (!m_tEffectInfo.bColorRandom)
+		// 알파
+		if (ImGui::CollapsingHeader("Alpha"))
 		{
-			ImGui::Text("ColorStart");
-			if (ImGui::ColorEdit4("##ColorStart", (float*)&m_tEffectInfo.fColorS, ImGuiColorEditFlags_Float))
-				Store_InfoEffect();
-		}
-		if (ImGui::Checkbox("ColorRandom", &m_tEffectInfo.bColorRandom))
-			Store_InfoEffect();
-		ImGui::NewLine();
-
-
-		ImGui::Checkbox("ColorChange", &m_tEffectInfo.bColorChange);
-		if (m_tEffectInfo.bColorChange)
-		{
-			ImGui::Checkbox("ColorChangeRandom", &m_tEffectInfo.bColorChangeRandom);
+			ImGui::Text("AlphaRemove");
+			if(ImGui::InputFloat("##AlphaRemove", &m_tDecalInfo.fAlphaRemove))
+				bDecalSystemUse = true;
 			ImGui::NewLine();
 
-			// fColorChangeStartDelay
-			ImGui::Text("ColorChangeStartDelay");
-			ImGui::InputFloat2("##ColorChangeStartDelay", &m_tEffectInfo.fColorChangeStartDelay.x);
+			if(ImGui::Checkbox("AlphaCreate", &m_tDecalInfo.bAlphaCreate))
+				bDecalSystemUse = true;
+
+			if(ImGui::Checkbox("AlphaDelete", &m_tDecalInfo.bAlphaDelete))
+				bDecalSystemUse = true;
+
+			ImGui::Text("AlphaSpeed");
+			if(ImGui::InputFloat("##AlphaSpeed", &m_tDecalInfo.fAlphaSpeed))
+				bDecalSystemUse = true;
+			ImGui::NewLine();
+		}
+
+		// 쉐이더 값 셋팅
+		if (ImGui::CollapsingHeader("Shader"))
+		{
+			// 쉐이더 패스
+			ImGui::Text("ShaderPass");
+			if(ImGui::InputInt("##ShaderPass", &(_int)m_tDecalInfo.iShaderPass))
+				bDecalSystemUse = true;
 			ImGui::NewLine();
 
-			if (m_tEffectInfo.bColorChangeRandom)
-			{
-				ImGui::Text("ColorChangeRandomTime");
-				ImGui::InputFloat2("##ColorChangeRandomTime", &m_tEffectInfo.fColorChangeRandomTime.x);
-				ImGui::NewLine();
-			}
-			else
-			{
-				ImGui::Checkbox("ColorLoop", &m_tEffectInfo.bColorLoop);
-				ImGui::NewLine();
+			// 디스카드 값 셋팅
+			ImGui::Text("Alpha_Discard");
+			if(ImGui::InputFloat("##Alpha_Discard", &m_tDecalInfo.fAlpha_Discard))
+				bDecalSystemUse = true;
 
-				// fColorChangeStartM
-				ImGui::Text("ColorChangeStartM");
-				ImGui::InputFloat2("##ColorChangeStartM", &m_tEffectInfo.fColorChangeStartM.x);
+			ImGui::Text("Black_Discard");
+			if(ImGui::InputFloat3("##Black_Discard", &m_tDecalInfo.fBlack_Discard.x))
+				bDecalSystemUse = true;
+			ImGui::NewLine();
 
-				ImGui::Text("ColorMiddle");
-				ImGui::ColorEdit4("##ColorMiddle", (float*)&m_tEffectInfo.fColorM, ImGuiColorEditFlags_Float);
-				ImGui::NewLine();
-
-				// fColorChangeStartF
-				ImGui::Text("ColorChangeStartF");
-				ImGui::InputFloat2("##ColorChangeStartF", &m_tEffectInfo.fColorChangeStartF.x);
-
-				ImGui::Text("ColorFinal");
-				ImGui::ColorEdit4("##ColorFinal", (float*)&m_tEffectInfo.fColorF, ImGuiColorEditFlags_Float);
-				ImGui::NewLine();
-			}
-
-			// ColorDurationTime
-			ImGui::Text("ColorDurationTime");
-			ImGui::InputFloat2("##ColorDurationTime", &m_tEffectInfo.fColorDuration.x);
-		}
-	}
-
-	// 쉐이더 값 셋팅
-	if (ImGui::CollapsingHeader("EffectShader"))
-	{
-		// 쉐이더 패스
-		ImGui::Text("ShaderPass");
-		if (ImGui::InputInt("##ShaderPass", &(_int)m_tEffectInfo.iShaderPass))
-			Store_InfoEffect();
-		ImGui::NewLine();
-
-		// 디스카드 값 셋팅
-		ImGui::Text("Alpha_Discard");
-		if (ImGui::InputFloat("##Alpha_Discard", &m_tEffectInfo.fAlpha_Discard))
-			Store_InfoEffect();
-		ImGui::Text("Black_Discard");
-		if (ImGui::InputFloat3("##Black_Discard", &m_tEffectInfo.fBlack_Discard.x))
-			Store_InfoEffect();
-		ImGui::NewLine();
-
-		// 블러 셋팅
-		ImGui::Checkbox("BloomPowerRandom", &m_tEffectInfo.bBloomPowerRandom);
-		ImGui::NewLine();
-		if (!m_tEffectInfo.bBloomPowerRandom)
-		{
+			// 블룸 셋팅
 			ImGui::Text("BloomPower");
-			if (ImGui::ColorEdit4("##BloomPower", (float*)&m_tEffectInfo.fBloomPower, ImGuiColorEditFlags_Float))
-				Store_InfoEffect();
+			if(ImGui::ColorEdit4("##BloomPower", (float*)&m_tDecalInfo.fBloomPower, ImGuiColorEditFlags_Float))
+				bDecalSystemUse = true;
 			ImGui::NewLine();
-		}
 
-		ImGui::Checkbox("BlurPowerRandom", &m_tEffectInfo.bBlurPowerRandom);
-		ImGui::NewLine();
-		if (!m_tEffectInfo.bBlurPowerRandom)
-		{
-			if (ImGui::InputFloat("##BlurPower", &m_tEffectInfo.fBlurPower))
-				Store_InfoEffect();
+			// 블러 셋팅
+			// ImGui::InputFloat("##BlurPower", &m_tDecalInfo.fBlurPower);
 		}
 	}
+#pragma endregion
+
+	return bDecalSystemUse;
 }
 
-void CTool_Effect::Tick_DecalTool()
-{
-	// 생성/ 삭제
-	if (ImGui::Button("DecalCreate"))
-		Create_Decal();
-	ImGui::SameLine();
-	if (ImGui::Button("DecalDelete"))
-	{
-		if (m_pDecal != nullptr)
-		{
-			m_pDecal->Set_Dead(true);
-			m_pDecal = nullptr;
-		}
-	}
-	ImGui::SameLine();
-
-	// 확인(적용)
-	if (ImGui::Button("DecalTransformSelect"))
-		Store_TransformDecal();
-	ImGui::SameLine();
-	if (ImGui::Button("DecalInfoSelect"))
-		Store_InfoDecal();
-
-	ImGui::NewLine();
-
-	// 저장하기/ 불러오기
-	if (ImGui::CollapsingHeader("DecalBinary"))
-	{
-		if (ImGui::Button("SaveDecal"))
-			Save_Decal(m_cBinaryName);
-		ImGui::SameLine();
-		if (ImGui::Button("LoadDecal"))
-			Load_Decal(m_cBinaryName);
-		ImGui::SameLine();
-		ImGui::Text("FileName :");
-		ImGui::SameLine();
-		ImGui::InputText("##FileName", m_cBinaryName, IM_ARRAYSIZE(m_cBinaryName));
-	}
-
-	ImGui::NewLine();
-
-	// 원형에 적용
-	if (ImGui::Button("Set_DecalPrototype"))
-		Set_OriginalInfoDecal();
-	ImGui::SameLine();
-	ImGui::Text("PrototypeDecalName :");
-	ImGui::SameLine();
-	ImGui::InputText("##PrototypeDecalName", m_cPrototypeDecalName, IM_ARRAYSIZE(m_cPrototypeDecalName));
-
-	ImGui::NewLine();
-
-	// 트랜스폼
-	if (ImGui::CollapsingHeader("DecalTransform"))
-	{
-		ImGui::Text("Position");
-		ImGui::InputFloat3("##Position", m_fPosition);
-
-		ImGui::Text("Rotation");
-		ImGui::InputFloat3("##Rotation", m_fRotation);
-
-		ImGui::Text("Scale");
-		ImGui::InputFloat3("##Scale", m_fScale);
-	}
-
-	ImGui::NewLine();
-
-	// 데칼 박스 크기
-	if (ImGui::CollapsingHeader("DecalBoxScale"))
-	{
-		ImGui::Text("DecalBoxScale");
-		ImGui::InputFloat3("##DecalBoxScale", &m_tDecalInfo.fScale.x);
-		ImGui::NewLine();
-	}
-
-	// 지속 시간
-	if (ImGui::CollapsingHeader("DecalLifeTime"))
-	{
-		ImGui::Text("DecalLifeTime");
-		ImGui::InputFloat("##DecalLifeTime", &m_tDecalInfo.fLifeTime);
-		ImGui::NewLine();
-	}
-
-	// 텍스처 지정
-	if (ImGui::CollapsingHeader("DecalTexture"))
-	{
-		ImGui::Text("DiffuseTextureIndex");
-		ImGui::SameLine();
-		if (ImGui::InputInt("##DiffuseTextureIndex", &(_int)m_tDecalInfo.iTextureIndexDiffuse))
-			Store_InfoDecal();
-		ImGui::NewLine();
-	}
-
-	// 파티클 색상
-	if (ImGui::CollapsingHeader("DecalColor"))
-	{
-		ImGui::Text("Color_Add_01_Alpha");
-		if (ImGui::InputFloat("##Color_Add_01_Alpha", &m_tDecalInfo.fColorAdd_01_Alpha))
-			Store_InfoDecal();
-
-		ImGui::Text("ColorAdd_01");
-		if (ImGui::ColorEdit3("##ColorAdd_01", (float*)&m_tDecalInfo.fColorAdd_01, ImGuiColorEditFlags_Float))
-			Store_InfoDecal();
-
-		ImGui::Text("ColorAdd_02");
-		if (ImGui::ColorEdit3("##ColorAdd_02", (float*)&m_tDecalInfo.fColorAdd_02, ImGuiColorEditFlags_Float))
-			Store_InfoDecal();
-	}
-
-	// 데칼 알파
-	if (ImGui::CollapsingHeader("DecalAlpha"))
-	{
-		ImGui::Text("AlphaRemove");
-		if (ImGui::InputFloat("##AlphaRemove", &m_tDecalInfo.fAlphaRemove))
-			Store_InfoDecal();
-
-		if (ImGui::Checkbox("AlphaCreate", &m_tDecalInfo.bAlphaCreate))
-			Store_InfoEffect();
-		ImGui::NewLine();
-
-		if (ImGui::Checkbox("AlphaDelete", &m_tDecalInfo.bAlphaDelete))
-			Store_InfoEffect();
-		ImGui::NewLine();
-
-		ImGui::Text("AlphaSpeed");
-		if (ImGui::InputFloat("##AlphaSpeed", &m_tDecalInfo.fAlphaSpeed))
-			Store_InfoDecal();
-	}
-
-	// 쉐이더 값 셋팅
-	if (ImGui::CollapsingHeader("DecalShader"))
-	{
-		// 쉐이더 패스
-		ImGui::Text("ShaderPass");
-		if (ImGui::InputInt("##ShaderPass", &(_int)m_tDecalInfo.iShaderPass))
-			Store_InfoDecal();
-		ImGui::NewLine();
-
-		// 디스카드 값 셋팅
-		ImGui::Text("Alpha_Discard");
-		if (ImGui::InputFloat("##Alpha_Discard", &m_tDecalInfo.fAlpha_Discard))
-			Store_InfoDecal();
-		ImGui::Text("Black_Discard");
-		if (ImGui::InputFloat3("##Black_Discard", &m_tDecalInfo.fBlack_Discard.x))
-			Store_InfoDecal();
-		ImGui::NewLine();
-
-		// 블룸 셋팅
-		ImGui::Text("BloomPower");
-		if (ImGui::ColorEdit4("##BloomPower", (float*)&m_tDecalInfo.fBloomPower, ImGuiColorEditFlags_Float))
-			Store_InfoDecal();
-		ImGui::NewLine();
-
-		if (ImGui::InputFloat("##BlurPower", &m_tDecalInfo.fBlurPower))
-			Store_InfoDecal();
-	}
-}
-
-void CTool_Effect::Tick_VfxTool()
+_bool CTool_Effect::Tick_VfxTool()
 {
 	// 원형에 적용
 	if (ImGui::Button("Load_VfxPrototype"))
 		Load_OriginalInfoVfx();
-	//if (ImGui::Button("Store_VfxPrototype"))
-	//	Set_OriginalInfoDecal();
 	ImGui::SameLine();
+
 	ImGui::Text("PrototypeVfxName :");
 	ImGui::SameLine();
-	ImGui::InputText("##PrototypeVfxName", m_cPrototypeVfxName, IM_ARRAYSIZE(m_cPrototypeVfxName));
 
+	ImGui::InputText("##PrototypeVfxName", m_cPrototypeName, IM_ARRAYSIZE(m_cPrototypeName));
 	ImGui::NewLine();
 
-	// VfxInfo
 	if (ImGui::CollapsingHeader("VfxInfo"))
 	{
-		if (m_pFrameTriger != nullptr && m_pPositionOffset != nullptr &&
-			m_pScaleOffset != nullptr && m_pRotationOffset != nullptr)
+		if (m_pFrameTriger != nullptr && m_pPositionOffset != nullptr && m_pScaleOffset != nullptr && m_pRotationOffset != nullptr)
 		{
 			for(size_t i = 0; i < m_iVfxMaxCount; ++i)
 			{
@@ -757,149 +758,223 @@ void CTool_Effect::Tick_VfxTool()
 			}
 		}
 	}
-}
 
-void CTool_Effect::Create_Effect()
-{
-	// 생성
-	if (m_pEffect != nullptr)
-		return;
-
-	m_pEffect = GI->Clone_GameObject(TEXT("Prototype_TempMeshEffect"), LAYER_TYPE::LAYER_EFFECT);
-	GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_EFFECT, m_pEffect);
-
-	Load_InfoEffect();
-}
-
-void CTool_Effect::Create_Decal()
-{
-	// 생성
-	if (m_pDecal != nullptr)
-		return;
-
-	m_pDecal = GI->Clone_GameObject(TEXT("Prototype_TempDecal"), LAYER_TYPE::LAYER_EFFECT);
-	GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_EFFECT, m_pDecal);
-
-	Load_InfoDecal();
-}
-
-void CTool_Effect::Store_TransformEffect()
-{
-	if (m_pEffect == nullptr)
-		return;
-
-	CTransform* pTransform = m_pEffect->Get_Component<CTransform>(L"Com_Transform");
-
-	pTransform->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_fPosition[0], m_fPosition[1], m_fPosition[2], 1.f));
-	pTransform->FixRotation(m_fRotation[0], m_fRotation[1], m_fRotation[2]);
-	pTransform->Set_Scale(_float3(m_fScale[0], m_fScale[1], m_fScale[2]));
-}
-
-void CTool_Effect::Store_TransformDecal()
-{
-	if (m_pDecal == nullptr)
-		return;
-
-	CTransform* pTransform = m_pDecal->Get_Component<CTransform>(L"Com_Transform");
-
-	pTransform->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_fPosition[0], m_fPosition[1], m_fPosition[2], 1.f));
-	pTransform->FixRotation(m_fRotation[0], m_fRotation[1], m_fRotation[2]);
-	pTransform->Set_Scale(_float3(m_fScale[0], m_fScale[1], m_fScale[2]));
+	return true;
 }
 
 
-void CTool_Effect::Load_InfoEffect() // Load
+void CTool_Effect::Tick_CreateDelete(TYPE eType)
 {
-	if (m_pEffect == nullptr)
+	if (ImGui::Button("Create"))
+		Create_Object(eType);
+	ImGui::SameLine();
+
+	if (ImGui::Button("Delete"))
+	{
+		if (TYPE_EFFECT == eType)
+		{
+			if (nullptr != m_pEffect)
+			{
+				m_pEffect->Set_Dead(true);
+				m_pEffect = nullptr;
+			}
+		}
+		else if (TYPE_DECAL == eType)
+		{
+			if (nullptr != m_pDecal)
+			{
+				m_pDecal->Set_Dead(true);
+				m_pDecal = nullptr;
+			}
+		}
+	}
+}
+
+void CTool_Effect::Tick_Transform(TYPE eType)
+{
+	if (ImGui::CollapsingHeader("Transform"))
+	{
+		if (ImGui::Button("OK"))
+			Set_Transform(eType);
+
+		ImGui::Text("Position");
+		ImGui::InputFloat3("##Position", &m_fPosition.x);
+
+		ImGui::Text("Rotation");
+		ImGui::InputFloat3("##Rotation", &m_fRotation.x);
+
+		ImGui::Text("Scale");
+		ImGui::InputFloat3("##Scale", &m_fScale.x);
+	}
+}
+
+void CTool_Effect::Tick_Prototype(TYPE eType)
+{
+	if (ImGui::CollapsingHeader("Prototype"))
+	{
+		if (ImGui::Button("Set_PrototypeObject"))
+			Set_OriginalInfo(eType);
+		ImGui::SameLine();
+
+		ImGui::Text("PrototypeObject_Name :");
+		ImGui::SameLine();
+		ImGui::InputText("##PrototypeObject_Name", m_cPrototypeName, IM_ARRAYSIZE(m_cPrototypeName));
+	}
+}
+
+void CTool_Effect::Tick_Binary(TYPE eType)
+{
+	if (ImGui::CollapsingHeader("Binary"))
+	{
+		if (ImGui::Button("Save"))
+		{
+			switch (eType)
+			{
+			case TYPE_EFFECT:
+				Save_Effect(m_cBinaryName);
+				break;
+			case TYPE_DECAL:
+				Save_Decal(m_cBinaryName);
+				break;
+			}
+		}
+		ImGui::SameLine();
+
+		if (ImGui::Button("Load"))
+		{
+			switch (eType)
+			{
+			case TYPE_EFFECT:
+				Load_Effect(m_cBinaryName);
+				break;
+			case TYPE_DECAL:
+				Load_Decal(m_cBinaryName);
+				break;
+			}
+		}
+		ImGui::SameLine();
+
+		ImGui::Text("FileName :");
+		ImGui::SameLine();
+		ImGui::InputText("##FileName", m_cBinaryName, IM_ARRAYSIZE(m_cBinaryName));
+	}
+}
+
+#pragma endregion
+
+#pragma region 
+void CTool_Effect::Create_Object(TYPE eType)
+{
+	switch (eType)
+	{
+	case TYPE_EFFECT:
+		if (nullptr != m_pEffect)
+			return;
+		m_pEffect = GI->Clone_GameObject(TEXT("Prototype_TempMeshEffect"), LAYER_TYPE::LAYER_EFFECT);
+		GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_EFFECT, m_pEffect);
+		Load_ObjectInfo(eType);
+		break;
+		// --------------------------------------------------------------------------------------------
+	case TYPE_DECAL:
+		if (nullptr != m_pDecal)
+			return;
+		m_pDecal = GI->Clone_GameObject(TEXT("Prototype_TempDecal"), LAYER_TYPE::LAYER_EFFECT);
+		GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_EFFECT, m_pDecal);
+		Load_ObjectInfo(eType);
+		break;
+		// --------------------------------------------------------------------------------------------
+	default:
+		break;
+	}
+}
+
+void CTool_Effect::Set_Transform(TYPE eType)
+{
+	CTransform* pTransform = nullptr;
+
+	switch (eType)
+	{
+	case TYPE_EFFECT:
+		if (nullptr == m_pEffect)
+			return;
+		pTransform = m_pEffect->Get_Component<CTransform>(L"Com_Transform");
+		break;
+		// --------------------------------------------------------------------------------------------
+	case TYPE_DECAL:
+		if (nullptr == m_pDecal)
+			return;
+		pTransform = m_pDecal->Get_Component<CTransform>(L"Com_Transform");
+		break;
+		// --------------------------------------------------------------------------------------------
+	default:
+		break;
+	}
+
+	if (nullptr == pTransform)
 		return;
 
-	CTransform* pTransform = m_pEffect->Get_Component<CTransform>(L"Com_Transform");
+	pTransform->Set_State(CTransform::STATE_POSITION, XMVectorSet(m_fPosition.x, m_fPosition.y, m_fPosition.z, 1.f));
+	pTransform->FixRotation(m_fRotation.x, m_fRotation.y, m_fRotation.z);
+	pTransform->Set_Scale(m_fScale);
+}
 
-	_vector vPosition = pTransform->Get_State(CTransform::STATE_POSITION);
-	m_fPosition[0] = XMVectorGetX(vPosition);
-	m_fPosition[1] = XMVectorGetY(vPosition);
-	m_fPosition[2] = XMVectorGetZ(vPosition);
-
-	_vector vRotation = pTransform->Get_WorldRotation();
-	m_fRotation[0] = XMVectorGetX(vRotation);
-	m_fRotation[1] = XMVectorGetY(vRotation);
-	m_fRotation[2] = XMVectorGetZ(vRotation);
-
-	_float3 fScale = pTransform->Get_Scale();
-	m_fScale[0] = fScale.x;
-	m_fScale[1] = fScale.y;
-	m_fScale[2] = fScale.z;
-
-
-	m_tEffectInfo = static_cast<CEffect*>(m_pEffect)->Get_EffectDesc();
-
-
-	if (m_tEffectInfo.eType == CEffect::EFFECT_TEXTURE)
-		m_iEffectTypeIndex = 0;
-	else if (m_tEffectInfo.eType == CEffect::EFFECT_MESH)
-		m_iEffectTypeIndex = 1;
-	else
-		m_iEffectTypeIndex = 2;
-
-
-	m_fEffectRange[0] = m_tEffectInfo.fRange.x;
-	m_fEffectRange[1] = m_tEffectInfo.fRange.y;
-	m_fEffectRange[2] = m_tEffectInfo.fRange.z;
-
-	m_fEffectRangeDistance[0] = m_tEffectInfo.fRangeDistance.x;
-	m_fEffectRangeDistance[1] = m_tEffectInfo.fRangeDistance.y;
-
-
+void CTool_Effect::Load_ObjectInfo(TYPE eType)
+{
+	CTransform* pTransform = nullptr;
 	size_t convertedChars = 0;
-	wcstombs_s(&convertedChars, m_cModelName, sizeof(m_cModelName), m_tEffectInfo.strModelName.c_str(), _TRUNCATE);
 
-	m_iDiffuseFolderIndex = Get_FolderIndex(m_tEffectInfo.strDiffuseTetextureName);
-	m_iAlphaFolderIndex = Get_FolderIndex(m_tEffectInfo.strAlphaTexturName);
+	switch (eType)
+	{
+	case TYPE_EFFECT:
+		if (nullptr == m_pEffect)
+			return;
+		pTransform = m_pEffect->Get_Component<CTransform>(L"Com_Transform");
+		m_tEffectInfo = static_cast<CEffect*>(m_pEffect)->Get_EffectDesc();
 
-	m_ffEffectUVIndex[0] = m_tEffectInfo.fUVIndex.x;
-	m_ffEffectUVIndex[1] = m_tEffectInfo.fUVIndex.y;
-	m_ffEffectUVMaxCount[0] = m_tEffectInfo.fMaxCount.x;
-	m_ffEffectUVMaxCount[1] = m_tEffectInfo.fMaxCount.y;
+		if (m_tEffectInfo.eType == CEffect::EFFECT_TEXTURE)
+			m_iEffectTypeIndex = 0;
+		else if (m_tEffectInfo.eType == CEffect::EFFECT_MESH)
+			m_iEffectTypeIndex = 1;
+		else
+			m_iEffectTypeIndex = 2;
 
-	m_fAlphaStart[0] = m_tEffectInfo.fAlphaStart.x;
-	m_fAlphaStart[1] = m_tEffectInfo.fAlphaStart.y;
-	m_fAlphaSpeed[0] = m_tEffectInfo.fAlphaSpeed.x;
-	m_fAlphaSpeed[1] = m_tEffectInfo.fAlphaSpeed.y;
-	m_fAlphaChangeStartDelay[0] = m_tEffectInfo.fAlphaChangeStartDelay.x;
-	m_fAlphaChangeStartDelay[1] = m_tEffectInfo.fAlphaChangeStartDelay.y;
-}
+		wcstombs_s(&convertedChars, m_cModelName, sizeof(m_cModelName), m_tEffectInfo.strModelName.c_str(), _TRUNCATE);
 
-void CTool_Effect::Load_InfoDecal()
-{
-	if (m_pDecal == nullptr)
+		m_iDiffuseFolderIndex = Get_FolderIndex(m_tEffectInfo.strDiffuseTetextureName);
+		m_iAlphaFolderIndex   = Get_FolderIndex(m_tEffectInfo.strAlphaTexturName);
+		break;
+		// --------------------------------------------------------------------------------------------
+	case TYPE_DECAL:
+		if (m_pDecal == nullptr)
+			return;
+		pTransform = m_pDecal->Get_Component<CTransform>(L"Com_Transform");
+		m_tDecalInfo = static_cast<CDecal*>(m_pDecal)->Get_DecalDesc();
+		break;
+		// --------------------------------------------------------------------------------------------
+	default:
 		return;
-
-	CTransform* pTransform = m_pDecal->Get_Component<CTransform>(L"Com_Transform");
+	}
 
 	_vector vPosition = pTransform->Get_State(CTransform::STATE_POSITION);
-	m_fPosition[0] = XMVectorGetX(vPosition);
-	m_fPosition[1] = XMVectorGetY(vPosition);
-	m_fPosition[2] = XMVectorGetZ(vPosition);
+	m_fPosition.x = XMVectorGetX(vPosition);
+	m_fPosition.y = XMVectorGetY(vPosition);
+	m_fPosition.z = XMVectorGetZ(vPosition);
 
 	_vector vRotation = pTransform->Get_WorldRotation();
-	m_fRotation[0] = XMVectorGetX(vRotation);
-	m_fRotation[1] = XMVectorGetY(vRotation);
-	m_fRotation[2] = XMVectorGetZ(vRotation);
+	m_fRotation.x = XMVectorGetX(vRotation);
+	m_fRotation.y = XMVectorGetY(vRotation);
+	m_fRotation.z = XMVectorGetZ(vRotation);
 
-	_float3 fScale = pTransform->Get_Scale();
-	m_fScale[0] = fScale.x;
-	m_fScale[1] = fScale.y;
-	m_fScale[2] = fScale.z;
-
-	m_tDecalInfo = static_cast<CDecal*>(m_pDecal)->Get_DecalDesc();
+	m_fScale = pTransform->Get_Scale();
 }
 
-void CTool_Effect::Store_InfoEffect() // Save
+void CTool_Effect::Store_ObjectInfo(TYPE eType)
 {
-	if (m_pEffect == nullptr)
-		return;
-
+	if (TYPE_EFFECT == eType)
 	{
+		if (nullptr == m_pEffect)
+			return;
+
 		if (m_iEffectTypeIndex == 0)
 			m_tEffectInfo.eType = CEffect::EFFECT_TEXTURE;
 		else if (m_iEffectTypeIndex == 1)
@@ -907,49 +982,40 @@ void CTool_Effect::Store_InfoEffect() // Save
 		else
 			m_tEffectInfo.eType = CEffect::EFFECT_END;
 
-
-		m_tEffectInfo.fRange = _float3(m_fEffectRange[0], m_fEffectRange[1], m_fEffectRange[2]);
-		m_tEffectInfo.fRangeDistance = _float2(m_fEffectRangeDistance[0], m_fEffectRangeDistance[1]);
-
-
 		wstring strModelName(m_cModelName, m_cModelName + strlen(m_cModelName));
 		m_tEffectInfo.strModelName = strModelName;
 
 		m_tEffectInfo.strDiffuseTetextureName = Select_FolderName(m_iDiffuseFolderIndex);
 		m_tEffectInfo.strAlphaTexturName = Select_FolderName(m_iAlphaFolderIndex);
 
-		m_tEffectInfo.fUVIndex = _float2(m_ffEffectUVIndex[0], m_ffEffectUVIndex[1]);
-		m_tEffectInfo.fMaxCount = _float2(m_ffEffectUVMaxCount[0], m_ffEffectUVMaxCount[1]);
-
-		m_tEffectInfo.fAlphaStart = _float2(m_fAlphaStart[0], m_fAlphaStart[1]);
-		m_tEffectInfo.fAlphaSpeed = _float2(m_fAlphaSpeed[0], m_fAlphaSpeed[1]);
-		m_tEffectInfo.fAlphaChangeStartDelay = _float2(m_fAlphaChangeStartDelay[0], m_fAlphaChangeStartDelay[1]);
-
+		static_cast<CEffect*>(m_pEffect)->Set_EffectDesc(m_tEffectInfo);
 	}
 
-	static_cast<CEffect*>(m_pEffect)->Set_EffectDesc(m_tEffectInfo);
-}
-
-void CTool_Effect::Store_InfoDecal()
-{
-	if (m_pDecal == nullptr)
-		return;
-
-	static_cast<CDecal*>(m_pDecal)->Set_DecalDesc(m_tDecalInfo);
-}
-
-void CTool_Effect::Set_OriginalInfoEffect()
-{
-	wstring strPropertyName(m_cPrototypeEffectName, m_cPrototypeEffectName + strlen(m_cPrototypeEffectName));
-
-	CGameObject* pGameObject = GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_EFFECT, strPropertyName);
-	if (pGameObject == nullptr)
+	else if (TYPE_DECAL == eType)
 	{
-		MSG_BOX("Prototype_Find_Failed!");
-		return;
+		if (m_pDecal == nullptr)
+			return;
+
+		static_cast<CDecal*>(m_pDecal)->Set_DecalDesc(m_tDecalInfo);
 	}
+}
 
+void CTool_Effect::Set_OriginalInfo(TYPE eType)
+{
+	if (TYPE_EFFECT == eType)
 	{
+		if (nullptr == m_pEffect)
+			return;
+
+		wstring strPropertyName(m_cPrototypeName, m_cPrototypeName + strlen(m_cPrototypeName));
+
+		CGameObject* pGameObject = GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_EFFECT, strPropertyName);
+		if (pGameObject == nullptr)
+		{
+			MSG_BOX("Prototype_Find_Failed!");
+			return;
+		}
+
 		if (m_iEffectTypeIndex == 0)
 			m_tEffectInfo.eType = CEffect::EFFECT_TEXTURE;
 		else if (m_iEffectTypeIndex == 1)
@@ -957,46 +1023,36 @@ void CTool_Effect::Set_OriginalInfoEffect()
 		else
 			m_tEffectInfo.eType = CEffect::EFFECT_END;
 
-
-		m_tEffectInfo.fRange = _float3(m_fEffectRange[0], m_fEffectRange[1], m_fEffectRange[2]);
-		m_tEffectInfo.fRangeDistance = _float2(m_fEffectRangeDistance[0], m_fEffectRangeDistance[1]);
-
-
 		wstring strModelName(m_cModelName, m_cModelName + strlen(m_cModelName));
 		m_tEffectInfo.strModelName = strModelName;
 
 		m_tEffectInfo.strDiffuseTetextureName = Select_FolderName(m_iDiffuseFolderIndex);
-		m_tEffectInfo.strAlphaTexturName = Select_FolderName(m_iAlphaFolderIndex);
+		m_tEffectInfo.strAlphaTexturName      = Select_FolderName(m_iAlphaFolderIndex);
 
-		m_tEffectInfo.fUVIndex = _float2(m_ffEffectUVIndex[0], m_ffEffectUVIndex[1]);
-		m_tEffectInfo.fMaxCount = _float2(m_ffEffectUVMaxCount[0], m_ffEffectUVMaxCount[1]);
-
-		m_tEffectInfo.fAlphaStart = _float2(m_fAlphaStart[0], m_fAlphaStart[1]);
-		m_tEffectInfo.fAlphaSpeed = _float2(m_fAlphaSpeed[0], m_fAlphaSpeed[1]);
-		m_tEffectInfo.fAlphaChangeStartDelay = _float2(m_fAlphaChangeStartDelay[0], m_fAlphaChangeStartDelay[1]);
-
+		static_cast<CEffect*>(pGameObject)->Set_EffectDesc(m_tEffectInfo);
 	}
 
-	static_cast<CEffect*>(pGameObject)->Set_EffectDesc(m_tEffectInfo);
-}
-
-void CTool_Effect::Set_OriginalInfoDecal()
-{
-	wstring strPropertyName(m_cPrototypeDecalName, m_cPrototypeDecalName + strlen(m_cPrototypeDecalName));
-
-	CGameObject* pGameObject = GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_EFFECT, strPropertyName);
-	if (pGameObject == nullptr)
+	else if (TYPE_DECAL == eType)
 	{
-		MSG_BOX("Prototype_Find_Failed!");
-		return;
-	}
+		if (m_pDecal == nullptr)
+			return;
 
-	static_cast<CDecal*>(pGameObject)->Set_DecalDesc(m_tDecalInfo);
+		wstring strPropertyName(m_cPrototypeName, m_cPrototypeName + strlen(m_cPrototypeName));
+
+		CGameObject* pGameObject = GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_EFFECT, strPropertyName);
+		if (pGameObject == nullptr)
+		{
+			MSG_BOX("Prototype_Find_Failed!");
+			return;
+		}
+
+		static_cast<CDecal*>(pGameObject)->Set_DecalDesc(m_tDecalInfo);
+	}
 }
 
 void CTool_Effect::Load_OriginalInfoVfx()
 {
-	wstring strPropertyName(m_cPrototypeVfxName, m_cPrototypeVfxName + strlen(m_cPrototypeVfxName));
+	wstring strPropertyName(m_cPrototypeName, m_cPrototypeName + strlen(m_cPrototypeName));
 
 	CGameObject* pGameObject = GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_EFFECT, strPropertyName);
 	if (pGameObject == nullptr)
@@ -1021,7 +1077,142 @@ void CTool_Effect::Load_OriginalInfoVfx()
 	MSG_BOX("Prototype_Vfx_Loaded!");
 }
 
+wstring CTool_Effect::Select_FolderName(_uint iFolderIndex)  
+{
+	wstring ProtoName;
 
+	switch (iFolderIndex)
+	{
+	case 0:
+		ProtoName = L"Prototype_Component_Texture_Effect_Aura";
+		break;
+	case 1:
+		ProtoName = L"Prototype_Component_Texture_Effect_Crack";
+		break;
+	case 2:
+		ProtoName = L"Prototype_Component_Texture_Effect_Decal";
+		break;
+	case 3:
+		ProtoName = L"Prototype_Component_Texture_Effect_Fire";
+		break;
+	case 4:
+		ProtoName = L"Prototype_Component_Texture_Effect_Flare";
+		break;
+	case 5:
+		ProtoName = L"Prototype_Component_Texture_Effect_Glow";
+		break;
+	case 6:
+		ProtoName = L"Prototype_Component_Texture_Effect_Hit";
+		break;
+	case 7:
+		ProtoName = L"Prototype_Component_Texture_Effect_Ice";
+		break;
+	case 8:
+		ProtoName = L"Prototype_Component_Texture_Effect_Image";
+		break;
+	case 9:
+		ProtoName = L"Prototype_Component_Texture_Effect_Mask";
+		break;
+	case 10:
+		ProtoName = L"Prototype_Component_Texture_Effect_MeshTrail";
+		break;
+	case 11:
+		ProtoName = L"Prototype_Component_Texture_Effect_Noise";
+		break;
+	case 12:
+		ProtoName = L"Prototype_Component_Texture_Effect_Object";
+		break;
+	case 13:
+		ProtoName = L"Prototype_Component_Texture_Effect_Ring";
+		break;
+	case 14:
+		ProtoName = L"Prototype_Component_Texture_Effect_Slash";
+		break;
+	case 15:
+		ProtoName = L"Prototype_Component_Texture_Effect_Smoke";
+		break;
+	case 16:
+		ProtoName = L"Prototype_Component_Texture_Effect_SubUV";
+		break;
+	case 17:
+		ProtoName = L"Prototype_Component_Texture_Effect_SwordTrail";
+		break;
+	case 18:
+		ProtoName = L"Prototype_Component_Texture_Effect_UI";
+		break;
+	case 19:
+		ProtoName = L"Prototype_Component_Texture_Effect_Water";
+		break;
+	case 20:
+		ProtoName = L"Prototype_Component_Texture_Effect_Wind";
+		break;
+	case 21:
+		ProtoName = L"";
+		break;
+	}
+
+	return ProtoName;
+}
+
+_uint CTool_Effect::Get_FolderIndex(wstring& strName)
+{
+	_int iIndex = -1;
+
+	_int  iBufferSizeName = WideCharToMultiByte(CP_UTF8, 0, strName.c_str(), -1, nullptr, 0, nullptr, nullptr);
+	char* pszName         = new char[iBufferSizeName];
+	WideCharToMultiByte(CP_UTF8, 0, strName.c_str(), -1, pszName, iBufferSizeName, nullptr, nullptr);
+
+	if (strcmp(pszName, "Prototype_Component_Texture_Effect_Aura") == 0)
+		iIndex = 0;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Crack") == 0)
+		iIndex = 1;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Decal") == 0)
+		iIndex = 2;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Fire") == 0)
+		iIndex = 3;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Flare") == 0)
+		iIndex = 4;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Glow") == 0)
+		iIndex = 5;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Hit") == 0)
+		iIndex = 6;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Ice") == 0)
+		iIndex = 7;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Image") == 0)
+		iIndex = 8;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Mask") == 0)
+		iIndex = 9;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_MeshTrail") == 0)
+		iIndex = 10;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Noise") == 0)
+		iIndex = 11;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Object") == 0)
+		iIndex = 12;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Ring") == 0)
+		iIndex = 13;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Slash") == 0)
+		iIndex = 14;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Smoke") == 0)
+		iIndex = 15;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_SubUV") == 0)
+		iIndex = 16;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_SwordTrail") == 0)
+		iIndex = 17;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_UI") == 0)
+		iIndex = 18;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Water") == 0)
+		iIndex = 19;
+	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Wind") == 0)
+		iIndex = 20;
+	else 
+		iIndex = 21;
+	Safe_Delete(pszName);
+
+	return iIndex;
+}
+#pragma endregion
+
+#pragma region Save && Load
 void CTool_Effect::Save_Effect(const char* pFileName)
 {
 	if (m_pEffect == nullptr)
@@ -1030,7 +1221,7 @@ void CTool_Effect::Save_Effect(const char* pFileName)
 		return;
 	}
 
-	m_tEffectInfo = static_cast<CEffect*>(m_pEffect)->Get_EffectDesc();
+	//m_tEffectInfo = static_cast<CEffect*>(m_pEffect)->Get_EffectDesc();
 
 	Json json;
 	json["EffectInfo"].push_back({
@@ -1213,8 +1404,8 @@ void CTool_Effect::Save_Effect(const char* pFileName)
 
 		{ "UVFlowDir", {
 			{"x", m_tEffectInfo.fUVFlowDir.x},
-			{"y", m_tEffectInfo.fUVFlowDir.y}} 
-        },
+			{"y", m_tEffectInfo.fUVFlowDir.y}}
+		},
 
 		{ "UVFlowSpeed", {
 			{"x", m_tEffectInfo.fUVFlowSpeed.x},
@@ -1263,7 +1454,7 @@ void CTool_Effect::Save_Effect(const char* pFileName)
 			{"x", m_tEffectInfo.fColorS.x},
 			{"y", m_tEffectInfo.fColorS.y},
 			{"z", m_tEffectInfo.fColorS.z},
-			{"w", m_tEffectInfo.fColorS.w}} 
+			{"w", m_tEffectInfo.fColorS.w}}
 		},
 
 		{"ColorChange", m_tEffectInfo.bColorChange},
@@ -1272,43 +1463,43 @@ void CTool_Effect::Save_Effect(const char* pFileName)
 
 		{ "ColorChangeRandomTime", {
 			{"x", m_tEffectInfo.fColorChangeRandomTime.x},
-			{"y", m_tEffectInfo.fColorChangeRandomTime.y}} 
+			{"y", m_tEffectInfo.fColorChangeRandomTime.y}}
 		},
 
 		{"ColorChangeRandom", m_tEffectInfo.bColorLoop},
 
 		{ "ColorChangeStartDelay", {
 			{"x", m_tEffectInfo.fColorChangeStartDelay.x},
-			{"y", m_tEffectInfo.fColorChangeStartDelay.y}} 
+			{"y", m_tEffectInfo.fColorChangeStartDelay.y}}
 		},
 
 		{ "ColorChangeStartM", {
 			{"x", m_tEffectInfo.fColorChangeStartM.x},
-			{"y", m_tEffectInfo.fColorChangeStartM.y}} 
+			{"y", m_tEffectInfo.fColorChangeStartM.y}}
 		},
 
 		{ "ColorM", {
 			{"x", m_tEffectInfo.fColorM.x},
 			{"y", m_tEffectInfo.fColorM.y},
 			{"z", m_tEffectInfo.fColorM.z},
-			{"w", m_tEffectInfo.fColorM.w}} 
+			{"w", m_tEffectInfo.fColorM.w}}
 		},
 
 		{ "ColorChangeStartF", {
 			{"x", m_tEffectInfo.fColorChangeStartF.x},
-			{"y", m_tEffectInfo.fColorChangeStartF.y}} 
+			{"y", m_tEffectInfo.fColorChangeStartF.y}}
 		},
 
 		{ "ColorF", {
 			{"x", m_tEffectInfo.fColorF.x},
 			{"y", m_tEffectInfo.fColorF.y},
 			{"z", m_tEffectInfo.fColorF.z},
-			{"w", m_tEffectInfo.fColorF.w}} 
+			{"w", m_tEffectInfo.fColorF.w}}
 		},
 
 		{ "ColorDuration", {
 			{"x", m_tEffectInfo.fColorDuration.x},
-			{"y", m_tEffectInfo.fColorDuration.y}} 
+			{"y", m_tEffectInfo.fColorDuration.y}}
 		},
 #pragma endregion
 
@@ -1319,7 +1510,7 @@ void CTool_Effect::Save_Effect(const char* pFileName)
 			{"x", m_tEffectInfo.fBloomPower.x},
 			{"y", m_tEffectInfo.fBloomPower.y},
 			{"z", m_tEffectInfo.fBloomPower.z},
-			{"w", m_tEffectInfo.fBloomPower.w}} 
+			{"w", m_tEffectInfo.fBloomPower.w}}
 		},
 
 		{"BlurPowerRandom", m_tEffectInfo.bBlurPowerRandom },
@@ -1333,11 +1524,11 @@ void CTool_Effect::Save_Effect(const char* pFileName)
 		{ "Black_Discard", {
 			{"x", m_tEffectInfo.fBlack_Discard.x},
 			{"y", m_tEffectInfo.fBlack_Discard.y},
-			{"z", m_tEffectInfo.fBlack_Discard.z}} 
+			{"z", m_tEffectInfo.fBlack_Discard.z}}
 		}
 #pragma endregion
 
-	});
+		});
 
 	wstring strFileName(pFileName, pFileName + strlen(pFileName));
 	wstring strFilePath = L"../Bin/DataFiles/Vfx/Effect/" + strFileName + L".json";
@@ -1346,81 +1537,14 @@ void CTool_Effect::Save_Effect(const char* pFileName)
 	MSG_BOX("Effect_Save_Success!");
 }
 
-void CTool_Effect::Save_Decal(const char* pFileName)
-{
-	// 기본 정보
-	if (m_pDecal == nullptr)
-	{
-		MSG_BOX("Decal_Save_Failed!");
-		return;
-	}
-
-	//m_tDecalInfo = static_cast<CDecal*>(m_pDecal)->Get_DecalDesc();
-
-	Json json;
-	json["DecalInfo"].push_back({
-
-		{"Scale", {
-			{"x", m_tDecalInfo.fScale.x},
-			{"y", m_tDecalInfo.fScale.y},
-			{"z", m_tDecalInfo.fScale.z}}
-		},
-
-		{"LifeTime", m_tDecalInfo.fLifeTime},
-
-		{"TextureIndexDiffuse", m_tDecalInfo.iTextureIndexDiffuse},
-
-		{"ShaderPass", m_tDecalInfo.iShaderPass},
-		{"Alpha_Discard", m_tDecalInfo.fAlpha_Discard},
-		{"Black_Discard", {
-			{"x", m_tDecalInfo.fBlack_Discard.x},
-			{"y", m_tDecalInfo.fBlack_Discard.y},
-			{"z", m_tDecalInfo.fBlack_Discard.z}}
-		},
-
-		{"BloomPower", {
-			{"x", m_tDecalInfo.fBloomPower.x},
-			{"y", m_tDecalInfo.fBloomPower.y},
-			{"z", m_tDecalInfo.fBloomPower.z}}
-		},
-		{"BlurPower", m_tDecalInfo.fBlurPower},
-
-		{"ColorAdd_01_Alpha", m_tDecalInfo.fColorAdd_01_Alpha},
-		{"ColorAdd_01", {
-			{"x", m_tDecalInfo.fColorAdd_01.x},
-			{"y", m_tDecalInfo.fColorAdd_01.y},
-			{"z", m_tDecalInfo.fColorAdd_01.z}}
-		},
-		{"ColorAdd_02", {
-			{"x", m_tDecalInfo.fColorAdd_02.x},
-			{"y", m_tDecalInfo.fColorAdd_02.y},
-			{"z", m_tDecalInfo.fColorAdd_02.z}}
-		},
-
-		{"AlphaRemove", m_tDecalInfo.fAlphaRemove},
-		{"AlphaCreate", m_tDecalInfo.bAlphaCreate},
-		{"AlphaDelete", m_tDecalInfo.bAlphaDelete},
-		{"AlphaSpeed", m_tDecalInfo.fAlphaSpeed},
-
-		});
-
-	wstring strFileName(pFileName, pFileName + strlen(pFileName));
-	wstring strFilePath = L"../Bin/DataFiles/Vfx/Decal/" + strFileName + L".json";
-	GI->Json_Save(strFilePath, json);
-
-	MSG_BOX("Decal_Save_Success!");
-
-	// 추가 정보 따로 저장
-}
-
 void CTool_Effect::Load_Effect(const char* pFileName)
 {
 	if (m_pEffect == nullptr)
-		Create_Effect();
+		Create_Object(TYPE_EFFECT);;
 
 	wstring strFileName(pFileName, pFileName + strlen(pFileName));
 	wstring strFilePath = L"../Bin/DataFiles/Vfx/Effect/" + strFileName + L".json";
-	
+
 #pragma region Load
 	CEffect::EFFECT_DESC EffectInfo = {};
 
@@ -1663,19 +1787,86 @@ void CTool_Effect::Load_Effect(const char* pFileName)
 
 	// 적용
 	static_cast<CEffect*>(m_pEffect)->Set_EffectDesc(EffectInfo);
-	Load_InfoEffect();
+	Load_ObjectInfo(TYPE_EFFECT);
 
 	MSG_BOX("Effect_Load_Success!");
+}
+
+void CTool_Effect::Save_Decal(const char* pFileName)
+{
+	// 기본 정보
+	if (m_pDecal == nullptr)
+	{
+		MSG_BOX("Decal_Save_Failed!");
+		return;
+	}
+
+	//m_tDecalInfo = static_cast<CDecal*>(m_pDecal)->Get_DecalDesc();
+
+	Json json;
+	json["DecalInfo"].push_back({
+
+		{"Scale", {
+			{"x", m_tDecalInfo.fScale.x},
+			{"y", m_tDecalInfo.fScale.y},
+			{"z", m_tDecalInfo.fScale.z}}
+		},
+
+		{"LifeTime", m_tDecalInfo.fLifeTime},
+
+		{"TextureIndexDiffuse", m_tDecalInfo.iTextureIndexDiffuse},
+
+		{"ShaderPass", m_tDecalInfo.iShaderPass},
+		{"Alpha_Discard", m_tDecalInfo.fAlpha_Discard},
+		{"Black_Discard", {
+			{"x", m_tDecalInfo.fBlack_Discard.x},
+			{"y", m_tDecalInfo.fBlack_Discard.y},
+			{"z", m_tDecalInfo.fBlack_Discard.z}}
+		},
+
+		{"BloomPower", {
+			{"x", m_tDecalInfo.fBloomPower.x},
+			{"y", m_tDecalInfo.fBloomPower.y},
+			{"z", m_tDecalInfo.fBloomPower.z}}
+		},
+		{"BlurPower", m_tDecalInfo.fBlurPower},
+
+		{"ColorAdd_01_Alpha", m_tDecalInfo.fColorAdd_01_Alpha},
+		{"ColorAdd_01", {
+			{"x", m_tDecalInfo.fColorAdd_01.x},
+			{"y", m_tDecalInfo.fColorAdd_01.y},
+			{"z", m_tDecalInfo.fColorAdd_01.z}}
+		},
+		{"ColorAdd_02", {
+			{"x", m_tDecalInfo.fColorAdd_02.x},
+			{"y", m_tDecalInfo.fColorAdd_02.y},
+			{"z", m_tDecalInfo.fColorAdd_02.z}}
+		},
+
+		{"AlphaRemove", m_tDecalInfo.fAlphaRemove},
+		{"AlphaCreate", m_tDecalInfo.bAlphaCreate},
+		{"AlphaDelete", m_tDecalInfo.bAlphaDelete},
+		{"AlphaSpeed", m_tDecalInfo.fAlphaSpeed},
+
+		});
+
+	wstring strFileName(pFileName, pFileName + strlen(pFileName));
+	wstring strFilePath = L"../Bin/DataFiles/Vfx/Decal/" + strFileName + L".json";
+	GI->Json_Save(strFilePath, json);
+
+	MSG_BOX("Decal_Save_Success!");
+
+	// 추가 정보 따로 저장
 }
 
 void CTool_Effect::Load_Decal(const char* pFileName)
 {
 	if (m_pDecal == nullptr)
-		Create_Decal();
+		Create_Object(TYPE_DECAL);
 
 	wstring strFileName(pFileName, pFileName + strlen(pFileName));
 	wstring strFilePath = L"../Bin/DataFiles/Vfx/Decal/" + strFileName + L".json";
-	
+
 #pragma region Load
 	CDecal::DECAL_DESC DecalInfo = {};
 
@@ -1718,145 +1909,12 @@ void CTool_Effect::Load_Decal(const char* pFileName)
 
 	// 적용
 	static_cast<CDecal*>(m_pDecal)->Set_DecalDesc(DecalInfo);
-	Load_InfoDecal();
+	Load_ObjectInfo(TYPE_DECAL);
 
 	MSG_BOX("Decal_Load_Success!");
 }
+#pragma endregion
 
-
-wstring CTool_Effect::Select_FolderName(_uint iFolderIndex)  
-{
-	wstring ProtoName;
-
-	switch (iFolderIndex)
-	{
-	case 0:
-		ProtoName = L"Prototype_Component_Texture_Effect_Aura";
-		break;
-	case 1:
-		ProtoName = L"Prototype_Component_Texture_Effect_Crack";
-		break;
-	case 2:
-		ProtoName = L"Prototype_Component_Texture_Effect_Decal";
-		break;
-	case 3:
-		ProtoName = L"Prototype_Component_Texture_Effect_Fire";
-		break;
-	case 4:
-		ProtoName = L"Prototype_Component_Texture_Effect_Flare";
-		break;
-	case 5:
-		ProtoName = L"Prototype_Component_Texture_Effect_Glow";
-		break;
-	case 6:
-		ProtoName = L"Prototype_Component_Texture_Effect_Hit";
-		break;
-	case 7:
-		ProtoName = L"Prototype_Component_Texture_Effect_Ice";
-		break;
-	case 8:
-		ProtoName = L"Prototype_Component_Texture_Effect_Image";
-		break;
-	case 9:
-		ProtoName = L"Prototype_Component_Texture_Effect_Mask";
-		break;
-	case 10:
-		ProtoName = L"Prototype_Component_Texture_Effect_MeshTrail";
-		break;
-	case 11:
-		ProtoName = L"Prototype_Component_Texture_Effect_Noise";
-		break;
-	case 12:
-		ProtoName = L"Prototype_Component_Texture_Effect_Object";
-		break;
-	case 13:
-		ProtoName = L"Prototype_Component_Texture_Effect_Ring";
-		break;
-	case 14:
-		ProtoName = L"Prototype_Component_Texture_Effect_Slash";
-		break;
-	case 15:
-		ProtoName = L"Prototype_Component_Texture_Effect_Smoke";
-		break;
-	case 16:
-		ProtoName = L"Prototype_Component_Texture_Effect_SubUV";
-		break;
-	case 17:
-		ProtoName = L"Prototype_Component_Texture_Effect_SwordTrail";
-		break;
-	case 18:
-		ProtoName = L"Prototype_Component_Texture_Effect_UI";
-		break;
-	case 19:
-		ProtoName = L"Prototype_Component_Texture_Effect_Water";
-		break;
-	case 20:
-		ProtoName = L"Prototype_Component_Texture_Effect_Wind";
-		break;
-	case 21:
-		ProtoName = L"";
-		break;
-	}
-
-	return ProtoName;
-}
-
-_uint CTool_Effect::Get_FolderIndex(wstring& strName)
-{
-	_int iIndex = -1;
-
-	_int  iBufferSizeName = WideCharToMultiByte(CP_UTF8, 0, strName.c_str(), -1, nullptr, 0, nullptr, nullptr);
-	char* pszName         = new char[iBufferSizeName];
-	WideCharToMultiByte(CP_UTF8, 0, strName.c_str(), -1, pszName, iBufferSizeName, nullptr, nullptr);
-
-	if (strcmp(pszName, "Prototype_Component_Texture_Effect_Aura") == 0)
-		iIndex = 0;
-	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Crack") == 0)
-		iIndex = 1;
-	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Decal") == 0)
-		iIndex = 2;
-	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Fire") == 0)
-		iIndex = 3;
-	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Flare") == 0)
-		iIndex = 4;
-	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Glow") == 0)
-		iIndex = 5;
-	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Hit") == 0)
-		iIndex = 6;
-	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Ice") == 0)
-		iIndex = 7;
-	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Image") == 0)
-		iIndex = 8;
-	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Mask") == 0)
-		iIndex = 9;
-	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_MeshTrail") == 0)
-		iIndex = 10;
-	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Noise") == 0)
-		iIndex = 11;
-	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Object") == 0)
-		iIndex = 12;
-	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Ring") == 0)
-		iIndex = 13;
-	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Slash") == 0)
-		iIndex = 14;
-	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Smoke") == 0)
-		iIndex = 15;
-	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_SubUV") == 0)
-		iIndex = 16;
-	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_SwordTrail") == 0)
-		iIndex = 17;
-	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_UI") == 0)
-		iIndex = 18;
-	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Water") == 0)
-		iIndex = 19;
-	else if (strcmp(pszName, "Prototype_Component_Texture_Effect_Wind") == 0)
-		iIndex = 20;
-	else 
-		iIndex = 21;
-	Safe_Delete(pszName);
-
-	return iIndex;
-}
 
 CTool_Effect* CTool_Effect::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {

@@ -138,7 +138,16 @@ public:
 		_float*  pBlurPower = nullptr;
 #pragma endregion
 
+#pragma region 리지드바디
 		_bool* pRigidbody = nullptr;
+		_bool* pGravity  = nullptr;
+		_bool* pStopZero = nullptr;
+		_bool* pStopStartY = nullptr;
+
+		Vec4* pMaxVelocity = nullptr;
+		_float* pMass      = nullptr;
+		_float* pFricCoeff = nullptr;
+#pragma endregion
 
 	} PARTICLE_BUFFER_DESC;
 
@@ -225,18 +234,13 @@ public:
 
 	typedef struct tagParticleRigidbodyDesc
 	{
+		Vec4 vForce    = {}; // 크기, 방향
+		Vec4 vAccel    = {}; // 가속도
+		Vec4 vVelocity = {}; // 속도(크기:속력,방향)
 
-		_vector m_vForce    = {}; // 크기, 방향
-		_vector m_vAccel    = {}; // 가속도
-		_vector m_vVelocity = {}; // 속도(크기:속력,방향)
-
-		_vector m_vMaxVelocity = XMVectorSet(10.f, 30.f, 10.f, 0.f); // 최대 속력 = 트랜스폼 이동 속도
-		_float  m_fMass        = { 1.f }; // 질량
-		_float  m_fFricCoeff   = { 5.f }; // 마찰 계수
-
-		_vector m_vForceA    = {}; // 크기, 방향
-		_vector m_vAccelA    = {}; // 추가 가속도
-		_vector m_vVelocityA = {}; // 속도(크기:속력,방향)
+		Vec4 vForceA    = {}; // 크기, 방향
+		Vec4 vAccelA    = {}; // 추가 가속도
+		Vec4 vVelocityA = {}; // 속도(크기:속력,방향)
 
 	} PARTICLE_RIGIDBODY_DESC;
 
@@ -252,6 +256,7 @@ public:
 public:
 	void Restart_ParticleBufferDesc(_uint iCount);
 	void Sort_Z(_uint iCount);
+	void Add_Velocity(Vec4 _vMinVelocity, Vec4 _vMaxVelocity);
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -275,7 +280,6 @@ private:
 	PARTICLE_BUFFER_DESC m_tParticleDesc;
 	vector<PARTICLE_INFO_DESC>   m_vecParticleInfoDesc;
 	vector<PARTICLE_SHADER_DESC> m_vecParticleShaderDesc;
-
 	vector<PARTICLE_RIGIDBODY_DESC> m_vecParticleRigidbodyDesc;
 
 private:
