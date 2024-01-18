@@ -305,12 +305,12 @@ void CVIBuffer_Particle::Sort_Z(_uint iCount)
 }
 
 
-void CVIBuffer_Particle::Add_Velocity(Vec4 _vMinVelocity, Vec4 _vMaxVelocity)
+void CVIBuffer_Particle::Add_Velocity(_uint iCount, Vec4 _vMinVelocity, Vec4 _vMaxVelocity)
 {
-	if (m_iNumInstance > m_vecParticleRigidbodyDesc.size())
+	if (iCount > m_vecParticleRigidbodyDesc.size())
 		return;
 
-	for (size_t i = 0; i < m_iNumInstance; i++)
+	for (size_t i = 0; i < iCount; i++)
 	{
 		m_vecParticleRigidbodyDesc[i].vVelocity.x += CUtils::Random_Float(_vMinVelocity.x, _vMaxVelocity.x);
 		m_vecParticleRigidbodyDesc[i].vVelocity.y += CUtils::Random_Float(_vMinVelocity.y, _vMaxVelocity.y);
@@ -783,7 +783,7 @@ void CVIBuffer_Particle::Tick(_float fTimeDelta)
 						if ((*m_tParticleDesc.pGravity))
 						{
 							// 추가 가속도 중력 추가
-							m_vecParticleRigidbodyDesc[i].vAccelA = Vec4(0.f, -10.f, 0.f, 0.f);
+							m_vecParticleRigidbodyDesc[i].vAccelA = Vec4(0.f, -30.f, 0.f, 0.f);
 
 							Vec4 vNewVelocity = m_vecParticleRigidbodyDesc[i].vVelocity * fTimeDelta;
 							((VTXINSTANCE*)SubResource.pData)[i].vPosition.x += vNewVelocity.x;
@@ -807,7 +807,8 @@ void CVIBuffer_Particle::Tick(_float fTimeDelta)
 							if (0.f > ((VTXINSTANCE*)SubResource.pData)[i].vPosition.y)
 							{
 								((VTXINSTANCE*)SubResource.pData)[i].vPosition.y = 0.f;
-								//m_vecParticleRigidbodyDesc[i].vVelocity = _float4(0.f, 0.f, 0.f, 0.f);
+								if(!(*m_tParticleDesc.pGroundSlide))
+									m_vecParticleRigidbodyDesc[i].vVelocity = _float4(0.f, 0.f, 0.f, 0.f);
 								//m_vecParticleInfoDesc[i].bIsDie = true;
 							}
 						}
@@ -816,7 +817,8 @@ void CVIBuffer_Particle::Tick(_float fTimeDelta)
 							if (m_pVertices[i].vPosition.y > ((VTXINSTANCE*)SubResource.pData)[i].vPosition.y)
 							{
 								((VTXINSTANCE*)SubResource.pData)[i].vPosition.y = m_pVertices[i].vPosition.y;
-								//m_vecParticleRigidbodyDesc[i].vVelocity = _float4(0.f, 0.f, 0.f, 0.f);
+								if (!(*m_tParticleDesc.pGroundSlide))
+									m_vecParticleRigidbodyDesc[i].vVelocity = _float4(0.f, 0.f, 0.f, 0.f);
 								//m_vecParticleInfoDesc[i].bIsDie = true;
 							}
 						}
