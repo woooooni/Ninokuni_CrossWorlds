@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UI_InGame_Setting_Window.h"
 #include "GameInstance.h"
+#include "UI_InGame_Setting_Tab.h"
 
 CUI_InGame_Setting_Window::CUI_InGame_Setting_Window(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_InGame_Setting_Window")
@@ -23,7 +24,6 @@ void CUI_InGame_Setting_Window::Set_Active(_bool bActive)
 
 		m_fAlpha = 0.1f; // 초기 알파값을 세팅해준다.
 		m_bShowInfo = false;
-		m_bActive = true;
 
 		for (auto& pChildUI : m_pChild)
 		{
@@ -35,7 +35,6 @@ void CUI_InGame_Setting_Window::Set_Active(_bool bActive)
 	else
 	{
 		m_bShowInfo = false;
-		m_bActive = false;
 
 		for (auto& pChildUI : m_pChild)
 		{
@@ -44,6 +43,8 @@ void CUI_InGame_Setting_Window::Set_Active(_bool bActive)
 		}
 
 	}
+
+	m_bActive = bActive;
 }
 
 HRESULT CUI_InGame_Setting_Window::Initialize_Prototype()
@@ -64,9 +65,6 @@ HRESULT CUI_InGame_Setting_Window::Initialize(void* pArg)
 
 	if (FAILED(Ready_State()))
 		return E_FAIL;
-
-	// TestCode
-	m_eProcessType = QUEST_ACCEPT;
 	
 	m_fAlpha = 0.3f;
 
@@ -77,21 +75,33 @@ HRESULT CUI_InGame_Setting_Window::Initialize(void* pArg)
 	m_vOffPosition.y = m_tInfo.fY;
 
 	// ChildUI를 추가한다 (Accept버튼)
-	Make_Child(0.f, g_iWinSizeY * 0.41f, 400.f, 100.f, TEXT("Prototype_GameObject_UI_Btn_AcceptQuest"));
-	
-	switch (m_eProcessType)
-	{
-	case QUEST_ACCEPT:
-		Make_Child(0.f, g_iWinSizeY * 0.41f, 188.f * 0.6f, 53.f * 0.6f, TEXT("Prototype_GameObject_UI_Quest_Text_Accept"));
-		break;
+//	Make_Child(0.f, g_iWinSizeY * 0.41f, 400.f, 100.f, TEXT("Prototype_GameObject_UI_Btn_AcceptQuest"));
+//	
+//	switch (m_eProcessType)
+//	{
+//	case QUEST_ACCEPT:
+//		Make_Child(0.f, g_iWinSizeY * 0.41f, 188.f * 0.6f, 53.f * 0.6f, TEXT("Prototype_GameObject_UI_Quest_Text_Accept"));
+//		break;
+//
+//	case QUEST_FINISH:
+//		Make_Child(0.f, g_iWinSizeY * 0.41f, 250.f * 0.6f, 53.f * 0.6f, TEXT("Prototype_GameObject_UI_Quest_Text_Finish"));
+//		break;
+//
+//	default:
+//		break;
+//	}
 
-	case QUEST_FINISH:
-		Make_Child(0.f, g_iWinSizeY * 0.41f, 250.f * 0.6f, 53.f * 0.6f, TEXT("Prototype_GameObject_UI_Quest_Text_Finish"));
-		break;
+	_float fSize = 128.f * 0.7f;
+	_float fDefaultY = -185.f;
+	_float fOffsetY = fSize * 0.5f + 90.f;
 
-	default:
-		break;
-	}
+	Make_Child(-246.f, fDefaultY - fOffsetY + 10.f, fSize, fSize, TEXT("Prototype_GameObject_UI_Ingame_Setting_Tab_Graphic"));
+	Make_Child(-246.f, fDefaultY, fSize, fSize, TEXT("Prototype_GameObject_UI_Ingame_Setting_Tab_Game"));
+	Make_Child(-246.f, fDefaultY + fOffsetY - 5.f, fSize, fSize, TEXT("Prototype_GameObject_UI_Ingame_Setting_Tab_Audio"));
+
+	m_bTabOpen[0] = false;
+	m_bTabOpen[1] = false;
+	m_bTabOpen[2] = false;
 
 	m_bActive = false;
 
@@ -102,6 +112,7 @@ void CUI_InGame_Setting_Window::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		Update_SettingTab();
 
 		if (!m_bShowInfo)
 		{
@@ -110,30 +121,26 @@ void CUI_InGame_Setting_Window::Tick(_float fTimeDelta)
 			else
 				m_fAlpha += fTimeDelta;
 
-			if (m_tInfo.fX < m_vOnPosition.x) // 목표 위치 이상으로 넘어가지 않도록 한다.
+			m_tInfo.fX -= fTimeDelta * 200.f;
+
+			if (m_tInfo.fX <= m_vOnPosition.x) // 목표 위치 이상으로 넘어가지 않도록 한다.
 			{
 				m_bShowInfo = true;
-
 				m_tInfo.fX = m_vOnPosition.x;
-			}
-			else
-			{
-				m_tInfo.fX -= fTimeDelta * 200.f;
 			}
 
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 		}
-		
+		__super::Tick(fTimeDelta);
 	}
-
-	__super::Tick(fTimeDelta);
 }
 
 void CUI_InGame_Setting_Window::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
 
@@ -197,6 +204,66 @@ HRESULT CUI_InGame_Setting_Window::Bind_ShaderResources()
 		return E_FAIL;
 
 	return S_OK;
+}
+
+void CUI_InGame_Setting_Window::Update_SettingTab()
+{
+	CUI* pGraphicTab = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Tab_Graphic"));
+	if (pGraphicTab == nullptr)
+		return;
+	CUI_InGame_Setting_Tab* pGraphic = nullptr;
+	pGraphic = dynamic_cast<CUI_InGame_Setting_Tab*>(pGraphicTab);
+	if (pGraphic == nullptr)
+		return;
+
+	CUI* pGameTab = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Tab_Game"));
+	if (pGameTab == nullptr)
+		return;
+	CUI_InGame_Setting_Tab* pGame = nullptr;
+	pGame = dynamic_cast<CUI_InGame_Setting_Tab*>(pGameTab);
+	if (pGame == nullptr)
+		return;
+
+	CUI* pAudioTab = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Tab_Audio"));
+	if (pAudioTab == nullptr)
+		return;
+	CUI_InGame_Setting_Tab* pAudio = nullptr;
+	pAudio = dynamic_cast<CUI_InGame_Setting_Tab*>(pAudioTab);
+	if (pAudio == nullptr)
+		return;
+
+	if (true == pGraphic->Get_Clicked() &&
+		false == m_bTabOpen[0])
+	{
+		pGame->Set_Click(false);
+		m_bTabOpen[1] = false;
+		pAudio->Set_Click(false);
+		m_bTabOpen[2] = false;
+
+		m_bTabOpen[0] = true;
+	}
+	
+	if (true == pGame->Get_Clicked() &&
+		false == m_bTabOpen[1])
+	{
+		pGraphic->Set_Click(false);
+		m_bTabOpen[0] = false;
+		pAudio->Set_Click(false);
+		m_bTabOpen[2] = false;
+
+		m_bTabOpen[1] = true;
+	}
+	
+	if (true == pAudio->Get_Clicked() &&
+		false == m_bTabOpen[2])
+	{
+		pGraphic->Set_Click(false);
+		m_bTabOpen[0] = false;
+		pGame->Set_Click(false);
+		m_bTabOpen[1] = false;
+
+		m_bTabOpen[2] = true;
+	}
 }
 
 CUI_InGame_Setting_Window* CUI_InGame_Setting_Window::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

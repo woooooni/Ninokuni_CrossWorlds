@@ -81,7 +81,7 @@ void CUI_BtnClose::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI_EFFECT_BLEND, this);
 	}
 }
 
