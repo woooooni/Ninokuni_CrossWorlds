@@ -242,6 +242,7 @@
     <ClInclude Include="..\Public\Camera_Manager.h" />
     <ClInclude Include="..\Public\Baobam_DarkNode_Skill2.h" />
     <ClInclude Include="..\Public\Camera_Top.h" />
+    <ClInclude Include="..\Public\Cannon_Ball.h" />
     <ClInclude Include="..\Public\Cannon_Tower.h" />
     <ClInclude Include="..\Public\Character.h" />
     <ClInclude Include="..\Public\Character_Destroyer.h" />
@@ -256,7 +257,10 @@
     <ClInclude Include="..\Public\Clown_Wizard_DarkBall.h" />
     <ClInclude Include="..\Public\ColliderWall.h" />
     <ClInclude Include="..\Public\Counter_FX.h" />
+    <ClInclude Include="..\Public\Crystal_Ball.h" />
+    <ClInclude Include="..\Public\Crystal_Tower.h" />
     <ClInclude Include="..\Public\Decal.h" />
+    <ClInclude Include="..\Public\Defence_Tower.h" />
     <ClInclude Include="..\Public\Dochi.h" />
     <ClInclude Include="..\Public\Door_Enter_FX.h" />
     <ClInclude Include="..\Public\DuckGoo.h" />
@@ -268,6 +272,7 @@
     <ClInclude Include="..\Public\Engineer_Npc.h" />
     <ClInclude Include="..\Public\Ermine.h" />
     <ClInclude Include="..\Public\EvermoreWater.h" />
+    <ClInclude Include="..\Public\Flame_Tower.h" />
     <ClInclude Include="..\Public\Fox.h" />
     <ClInclude Include="..\Public\FunyaSnowman.h" />
     <ClInclude Include="..\Public\GameItem_Armor.h" />
@@ -391,6 +396,16 @@
     <ClInclude Include="..\Public\MonsterProjectile.h" />
     <ClInclude Include="..\Public\PumpkinCandleNode_Air.h" />
     <ClInclude Include="..\Public\PumpkinCandleNode_Blow.h" />
+    <ClInclude Include="..\Public\Shadow_Ball.h" />
+    <ClInclude Include="..\Public\Shadow_Tower.h" />
+    <ClInclude Include="..\Public\State_FlameTower_Attack.h" />
+    <ClInclude Include="..\Public\State_CannonTower_Attack.h" />
+    <ClInclude Include="..\Public\State_CrystalTower_Attack.h" />
+    <ClInclude Include="..\Public\State_DefenceTower.h" />
+    <ClInclude Include="..\Public\State_DefenceTower_Dead.h" />
+    <ClInclude Include="..\Public\State_DefenceTower_Idle.h" />
+    <ClInclude Include="..\Public\State_DefenceTower_Prepare.h" />
+    <ClInclude Include="..\Public\State_ShadowTower_Attack.h" />
     <ClInclude Include="..\Public\StelliaState_ChaseJumpStamp.h" />
     <ClInclude Include="..\Public\StelliaState_CounterEnd.h" />
     <ClInclude Include="..\Public\StelliaState_CounterLoop.h" />
@@ -989,6 +1004,7 @@
     <ClCompile Include="..\Private\Camera_Manager.cpp" />
     <ClCompile Include="..\Private\Camera_Free.cpp" />
     <ClCompile Include="..\Private\Camera_Top.cpp" />
+    <ClCompile Include="..\Private\Cannon_Ball.cpp" />
     <ClCompile Include="..\Private\Cannon_Tower.cpp" />
     <ClCompile Include="..\Private\Cat.cpp" />
     <ClCompile Include="..\Private\Character.cpp" />
@@ -1004,7 +1020,10 @@
     <ClCompile Include="..\Private\Clown_Wizard_DarkBall.cpp" />
     <ClCompile Include="..\Private\ColliderWall.cpp" />
     <ClCompile Include="..\Private\Counter_FX.cpp" />
+    <ClCompile Include="..\Private\Crystal_Ball.cpp" />
+    <ClCompile Include="..\Private\Crystal_Tower.cpp" />
     <ClCompile Include="..\Private\Decal.cpp" />
+    <ClCompile Include="..\Private\Defence_Tower.cpp" />
     <ClCompile Include="..\Private\Dochi.cpp" />
     <ClCompile Include="..\Private\Door_Enter_FX.cpp" />
     <ClCompile Include="..\Private\DuckGoo.cpp" />
@@ -1016,6 +1035,7 @@
     <ClCompile Include="..\Private\Engineer_Npc.cpp" />
     <ClCompile Include="..\Private\Ermine.cpp" />
     <ClCompile Include="..\Private\EvermoreWater.cpp" />
+    <ClCompile Include="..\Private\Flame_Tower.cpp" />
     <ClCompile Include="..\Private\Fox.cpp" />
     <ClCompile Include="..\Private\FunyaSnowman.cpp" />
     <ClCompile Include="..\Private\GameItem_Armor.cpp" />
@@ -1139,6 +1159,16 @@
     <ClCompile Include="..\Private\MonsterProjectile.cpp" />
     <ClCompile Include="..\Private\PumpkinCandleNode_Air.cpp" />
     <ClCompile Include="..\Private\PumpkinCandleNode_Blow.cpp" />
+    <ClCompile Include="..\Private\Shadow_Ball.cpp" />
+    <ClCompile Include="..\Private\Shadow_Tower.cpp" />
+    <ClCompile Include="..\Private\State_CannonTower_Attack.cpp" />
+    <ClCompile Include="..\Private\State_CrystalTower_Attack.cpp" />
+    <ClCompile Include="..\Private\State_DefenceTower.cpp" />
+    <ClCompile Include="..\Private\State_DefenceTower_Dead.cpp" />
+    <ClCompile Include="..\Private\State_DefenceTower_Idle.cpp" />
+    <ClCompile Include="..\Private\State_DefenceTower_Prepare.cpp" />
+    <ClCompile Include="..\Private\State_FlameTower_Attack.cpp" />
+    <ClCompile Include="..\Private\State_ShadowTower_Attack.cpp" />
     <ClCompile Include="..\Private\StelliaState_ChaseJumpStamp.cpp" />
     <ClCompile Include="..\Private\StelliaState_CounterEnd.cpp" />
     <ClCompile Include="..\Private\StelliaState_CounterLoop.cpp" />

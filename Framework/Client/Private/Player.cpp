@@ -39,11 +39,12 @@ HRESULT CPlayer::Set_Character(CHARACTER_TYPE eType, Vec4 vEnterPosition, _bool 
 		if (FAILED(m_pCharacter->Exit_Character()))
 			return E_FAIL;
 	}
-		
-	m_pCharacter = CCharacter_Manager::GetInstance()->Get_Character(eType);
-
-	if (nullptr == m_pCharacter)
+	CCharacter* pNextCharacter = CCharacter_Manager::GetInstance()->Get_Character(eType);
+	
+	if (nullptr == pNextCharacter)
 		return E_FAIL;
+
+	m_pCharacter = pNextCharacter;
 
 	if (FAILED(m_pCharacter->Enter_Character()))
 		return E_FAIL;

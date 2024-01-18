@@ -4,12 +4,12 @@
 #include "Defence_Tower.h"
 
 BEGIN(Client)
-class CCannon_Tower final : public CDefence_Tower
+class CFlame_Tower final : public CDefence_Tower
 {
 private:
-	CCannon_Tower(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
-	CCannon_Tower(const CCannon_Tower& rhs);
-	virtual ~CCannon_Tower() = default;
+	CFlame_Tower(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	CFlame_Tower(const CFlame_Tower& rhs);
+	virtual ~CFlame_Tower() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -39,7 +39,7 @@ protected:
 
 
 public:
-	static CCannon_Tower* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjTag);
+	static CFlame_Tower* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjTag);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };
