@@ -9,7 +9,8 @@
 #include "GameInstance.h"
 #include "UI_Manager.h"
 #include "UI_Fade.h"
-
+#include "Game_Manager.h"
+#include "Player.h"
 
 CGlanixState_IntroIdle::CGlanixState_IntroIdle(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
@@ -76,6 +77,9 @@ void CGlanixState_IntroIdle::Tick_State(_float fTimeDelta)
 		/* Ui Off */
 		if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
 			CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
+
+		/* Player Input Off */
+		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
 	}
 
 	/* Change State */

@@ -252,6 +252,13 @@ void CCamera_Follow::Reset_WideView_To_DefaultView()
 	/* Fov */
 	m_tProjDesc.tLerpFov.Clear();
 	m_tProjDesc.tLerpFov.fStartValue = m_tProjDesc.tLerpFov.fCurValue = m_tProjDesc.tLerpFov.fTargetValue = Cam_Fov_Follow_Default;
+
+	/* Un Lock */
+	if (m_bLockFov)
+		m_bLockFov = false;
+
+	if (m_bLockDist)
+		m_bLockDist = false;
 }
 
 void CCamera_Follow::Set_ViewType(const CAMERA_VIEW_TYPE& eType)
@@ -270,7 +277,7 @@ void CCamera_Follow::Set_ViewType(const CAMERA_VIEW_TYPE& eType)
 	}
 }
 
-void CCamera_Follow::Set_Defualt_Settig()
+void CCamera_Follow::Set_Defualt_Setting()
 {
 	/* 회전 축 방향 설정 */
 	m_vMouseInputInvert = { 1.f, 1.f };

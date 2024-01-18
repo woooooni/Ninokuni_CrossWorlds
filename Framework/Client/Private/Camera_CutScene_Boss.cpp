@@ -121,16 +121,38 @@ HRESULT CCamera_CutScene_Boss::Start_CutScene_Granix(const _uint& iCutSceneType,
 
 			m_pTransformCom->LookAt(vLookPos.OneW());
 		}
-
-		/* Player Input Off */
-		{
-			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
-		}
 	}
 	break;
 	case GLANIX_CUTSCENE_TYPE::PAGE:
 	{
-		
+		m_iCurProgressType = GLANIX_CURSCENE_PAGE_PROGRESS::BEAT;
+
+		memcpy(&m_tTargetOffset.vCurVec, &m_tGlanixCutScenePageDesc.Offsets[m_iCurProgressType].first, sizeof(Vec4));
+		memcpy(&m_tLookAtOffset.vCurVec, &m_tGlanixCutScenePageDesc.Offsets[m_iCurProgressType].second, sizeof(Vec4));
+
+		CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
+
+		/* Cam Position */
+		{
+			Vec4 vCamPos = (Vec4)pTargetTransform->Get_Position() +
+				pTargetTransform->Get_RelativeOffset(m_tTargetOffset.vCurVec);
+
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCamPos.OneW());
+		}
+
+		/* Look At Position */
+		{
+			Vec4 vLookPos = Vec4::UnitW;
+
+			Matrix matLookWorld = m_pLookAtObj->Get_Component<CModel>(L"Com_Model")->Get_SocketLocalMatrix(0)
+				* pTargetTransform->Get_WorldMatrix();
+
+			memcpy(&vLookPos, &matLookWorld.m[3], sizeof(Vec4));
+
+			vLookPos += pTargetTransform->Get_RelativeOffset(m_tLookAtOffset.vCurVec);
+
+			m_pTransformCom->LookAt(vLookPos.OneW());
+		}
 	}
 	break;
 	case GLANIX_CUTSCENE_TYPE::DEAD:
@@ -206,7 +228,43 @@ void CCamera_CutScene_Boss::Tick_CutScene_Granix(const _float fDeltaTime)
 	break;
 	case GLANIX_CUTSCENE_TYPE::PAGE:
 	{
+		CTransform* pTargetTransform = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform");
 
+		if (m_bSignal)
+		{
+			m_bSignal = false;
+
+			if (m_iCurProgressType < GLANIX_CURSCENE_PAGE_PROGRESS::BEAT - 1)
+				m_iCurProgressType++;
+
+			memcpy(&m_tTargetOffset.vCurVec, &m_tGlanixCutScenePageDesc.Offsets[m_iCurProgressType].first, sizeof(Vec4));
+			memcpy(&m_tLookAtOffset.vCurVec, &m_tGlanixCutScenePageDesc.Offsets[m_iCurProgressType].second, sizeof(Vec4));
+
+			/* Cam Position */
+			{
+				
+				Vec4 vCamPos = (Vec4)pTargetTransform->Get_Position() +
+					pTargetTransform->Get_RelativeOffset(m_tTargetOffset.vCurVec);
+
+				m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCamPos.OneW());
+			}
+		}
+
+		/* Look At Position */
+		Vec4 vLookPos = Vec4::UnitW;
+		{
+			Matrix matLookWorld = m_pLookAtObj->Get_Component<CModel>(L"Com_Model")->Get_SocketLocalMatrix(0)
+				* pTargetTransform->Get_WorldMatrix();
+
+			memcpy(&vLookPos, &matLookWorld.m[3], sizeof(Vec4));
+
+			vLookPos += pTargetTransform->Get_RelativeOffset(m_tLookAtOffset.vCurVec);
+
+			if (Is_Shake())
+				vLookPos += Vec4(Get_ShakeLocalPos());
+
+			m_pTransformCom->LookAt(vLookPos.OneW());
+		}
 	}
 	break;
 	case GLANIX_CUTSCENE_TYPE::DEAD:
@@ -242,7 +300,6 @@ HRESULT CCamera_CutScene_Boss::Start_CutScene(const _uint& iBossType, const _uin
 	{
 		if (FAILED(Start_CutScene_Granix(iCutSceneType, pBoss)))
 			return E_FAIL;
-
 	}
 	break;
 	case BOSS_TYPE::WITCH:
@@ -280,15 +337,21 @@ HRESULT CCamera_CutScene_Boss::Finish_CutScene()
 				CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_MONSTER, L"Glanix");
 				if (nullptr != pTarget)
 					pFollowCam->Start_LockOn(pTarget, Cam_Target_Offset_LockOn_Glanix, Cam_LookAt_Offset_LockOn_Glanix);
-
-				/* Player Input On */
-				CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
 			}
 		}
 		break;
 		case GLANIX_CUTSCENE_TYPE::PAGE :
 		{
+			CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+			if (nullptr != pFollowCam)
+			{
+				pFollowCam->Set_Default_Position();
+				CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
 
+				CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_MONSTER, L"Glanix");
+				if (nullptr != pTarget)
+					pFollowCam->Start_LockOn(pTarget, Cam_Target_Offset_LockOn_Glanix, Cam_LookAt_Offset_LockOn_Glanix);
+			}
 		}
 		break;
 		case GLANIX_CUTSCENE_TYPE::DEAD :

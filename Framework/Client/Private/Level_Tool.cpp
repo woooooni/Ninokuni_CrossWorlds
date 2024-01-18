@@ -65,6 +65,11 @@ HRESULT CLevel_Tool::Tick(_float fTimeDelta)
 {
 	m_pImGuiManager->Tick(fTimeDelta);
 
+	if (KEY_TAP(KEY::F8))
+	{
+		if (FAILED(GI->Add_GameObject(LEVEL_TOOL, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Glanix"))))
+			return E_FAIL;
+	}
 	return S_OK;
 }
 
