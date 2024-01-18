@@ -75,7 +75,7 @@ HRESULT CLevel_WitchForest::Tick(_float fTimeDelta)
 
 HRESULT CLevel_WitchForest::LateTick(_float fTimeDelta)
 {
-	CUI_Manager::GetInstance()->LateTick_EvermoreLevel(fTimeDelta);
+	CUI_Manager::GetInstance()->LateTick_GamePlayLevel(fTimeDelta);
 
 	return S_OK;
 }

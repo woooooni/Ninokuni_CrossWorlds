@@ -699,6 +699,7 @@
     <ClInclude Include="..\Public\UI_Emoticon_Button.h" />
     <ClInclude Include="..\Public\UI_Emoticon_SpeechBalloon.h" />
     <ClInclude Include="..\Public\UI_Emoticon_Window.h" />
+    <ClInclude Include="..\Public\UI_InGame_Setting_Window.h" />
     <ClInclude Include="..\Public\UI_Inventory_LineBox.h" />
     <ClInclude Include="..\Public\UI_Inventory_Slot.h" />
     <ClInclude Include="..\Public\UI_Inventory_TabBtn.h" />
@@ -1444,6 +1445,7 @@
     <ClCompile Include="..\Private\UI_Emoticon_Button.cpp" />
     <ClCompile Include="..\Private\UI_Emoticon_SpeechBalloon.cpp" />
     <ClCompile Include="..\Private\UI_Emoticon_Window.cpp" />
+    <ClCompile Include="..\Private\UI_InGame_Setting_Window.cpp" />
     <ClCompile Include="..\Private\UI_Inventory_LineBox.cpp" />
     <ClCompile Include="..\Private\UI_Inventory_Slot.cpp" />
     <ClCompile Include="..\Private\UI_Inventory_TabBtn.cpp" />

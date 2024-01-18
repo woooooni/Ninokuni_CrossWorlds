@@ -47,6 +47,12 @@ HRESULT CUI_Dummy_Weapon::Initialize(void* pArg)
 		vLook = _float3(0.f, 0.7, 0.f);
 		vUp = _float3(0.f, 1.f, 0.f);
 		break;
+
+	case CHARACTER_TYPE::DESTROYER:
+		vCamPos = _float3(0.f, 0.9f, -3.f);
+		vLook = _float3(0.f, 0.9, 0.f);
+		vUp = _float3(0.f, 1.f, 0.f);
+		break;
 	}
 
 	m_vCamMatrix = XMMatrixLookAtLH(XMLoadFloat3(&vCamPos), XMLoadFloat3(&vLook), XMLoadFloat3(&vUp));

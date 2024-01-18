@@ -67,7 +67,7 @@ void CUI_Dialog_BattleWindow::LateTick(_float fTimeDelta)
 	{
 		//Contents
 		_int iTotalLength = m_iTextCount + 6;
-		_int iMaxLength = 18;
+		_int iMaxLength = 15;
 		_uint iDestIndex = 0;
 		_int iOffsetY = 0;
 
@@ -95,8 +95,8 @@ void CUI_Dialog_BattleWindow::LateTick(_float fTimeDelta)
 		TextDesc.strFontTag = L"Default_Bold";
 		TextDesc.vScale = { 0.4f, 0.4f };
 		TextDesc.vColor = _float4(0.133f, 0.345f, 0.337f, 1.f);
-		TextDesc.vPosition = _float2(m_tInfo.fX - (m_tInfo.fCX * 0.5f) + 30.f,
-			m_tInfo.fY - (m_tInfo.fCY * 0.5) + 110.f - iOffsetY * 10.f);
+		TextDesc.vPosition = _float2(m_tInfo.fX - (m_tInfo.fCX * 0.5f) + 120.f,
+			m_tInfo.fY - (m_tInfo.fCY * 0.5) + 70.f - iOffsetY * 10.f);
 		m_pRendererCom->Add_Text(TextDesc);
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
@@ -108,7 +108,7 @@ HRESULT CUI_Dialog_BattleWindow::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	m_pShaderCom->Begin(1);
+	m_pShaderCom->Begin(1); 
 
 	m_pVIBufferCom->Render();
 

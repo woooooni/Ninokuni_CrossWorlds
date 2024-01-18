@@ -2,6 +2,7 @@
 #include "UI_Costume_ItemSlot.h"
 #include "GameInstance.h"
 #include "UI_Manager.h"
+#include "Character.h"
 
 CUI_Costume_ItemSlot::CUI_Costume_ItemSlot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 	UI_COSTUME_SECTION eSection, UI_COSTUME_SLOT eType)
@@ -192,6 +193,163 @@ void CUI_Costume_ItemSlot::On_MouseExit(_float fTimeDelta)
 	}
 }
 
+void CUI_Costume_ItemSlot::Update_PartsTag()
+{
+	m_eCurPlayerType = CUI_Manager::GetInstance()->Get_Character()->Get_CharacterType();
+
+	switch (m_eCurPlayerType)
+	{
+	case CHARACTER_TYPE::SWORD_MAN:
+		if (COSTUMESECTION_CLOTH == m_eSectionType)
+		{
+			if (COSTUMESLOT_END <= m_eType)
+				return;
+
+			switch (m_eType)
+			{
+			case COSTUMESLOT_FIRST: // 고전 양식 의상
+				m_strPartTag = TEXT("SwordMan_Body_Picnic");
+				break;
+
+			case COSTUMESLOT_SECOND: // 용의 기사단 의상
+				m_strPartTag = TEXT("SwordMan_Body_DragonKnight");
+				break;
+
+			case COSTUMESLOT_THIRD: // 유랑음악단 의상
+				m_strPartTag = TEXT("SwordMan_Body_Hippie");
+				break;
+			}
+		}
+		else if (COSTUMESECTION_HAIRACC == m_eSectionType)
+		{
+			if (COSTUMESLOT_END <= m_eType)
+				return;
+
+			switch (m_eType)
+			{
+			case COSTUMESLOT_FIRST: // 둥근 장난감 후냐 모자
+				m_strPartTag = TEXT("SwordMan_Head_FunyaBlock");
+				break;
+
+			case COSTUMESLOT_SECOND: // 용의 기사단 모자
+				m_strPartTag = TEXT("SwordMan_Head_DragonKnight");
+				break;
+
+			case COSTUMESLOT_THIRD: // X
+				m_strPartTag = TEXT("");
+				break;
+			}
+		}
+		else if (COSTUMESECTION_WEAPON == m_eSectionType)
+		{
+			if (COSTUMESLOT_END <= m_eType)
+				return;
+
+			switch (m_eType)
+			{
+			case COSTUMESLOT_FIRST: // 블룸 블룸 소드
+				m_strPartTag = TEXT("Sword_Flower01");
+				break;
+
+			case COSTUMESLOT_SECOND: // 이것 좀 썰어도
+				m_strPartTag = TEXT("Sword_QQSuits");
+				break;
+
+			case COSTUMESLOT_THIRD: // X
+				m_strPartTag = TEXT("");
+				break;
+			}
+		}
+		break;
+
+	case CHARACTER_TYPE::ENGINEER:
+		if (COSTUMESECTION_CLOTH == m_eSectionType)
+		{
+			if (COSTUMESLOT_END <= m_eType)
+				return;
+
+			switch (m_eType)
+			{
+			case COSTUMESLOT_FIRST: // 모험가 의상
+				m_strPartTag = TEXT("Engineer_Body_Adventure");
+				break;
+
+			case COSTUMESLOT_SECOND: // 국왕의 예복
+				m_strPartTag = TEXT("Engineer_Body_Ninokuni_King");
+				break;
+
+			case COSTUMESLOT_THIRD: // 우다닥 인형옷
+				m_strPartTag = TEXT("Engineer_Body_Udadak");
+				break;
+			}
+		}
+		else if (COSTUMESECTION_HAIRACC == m_eSectionType)
+		{
+			if (COSTUMESLOT_END <= m_eType)
+				return;
+
+			switch (m_eType)
+			{
+			case COSTUMESLOT_FIRST: // 모험가 고글
+				m_strPartTag = TEXT("Engineer_Head_Adventure");
+				break;
+
+			case COSTUMESLOT_SECOND: // 신화 속 영웅 머리 장식
+				m_strPartTag = TEXT("Engineer_Head_GreekMyth");
+				break;
+
+			case COSTUMESLOT_THIRD: // 퐁퐁 모자
+				m_strPartTag = TEXT("Engineer_Head_Yomi");
+				break;
+			}
+		}
+		break;
+
+	case CHARACTER_TYPE::DESTROYER:
+		if (COSTUMESECTION_CLOTH == m_eSectionType)
+		{
+			if (COSTUMESLOT_END <= m_eType)
+				return;
+
+			switch (m_eType)
+			{
+			case COSTUMESLOT_FIRST: // 대장장의 의상
+				m_strPartTag = TEXT("Destroyer_Body_BlackSmith");
+				break;
+
+			case COSTUMESLOT_SECOND: // 눈사람 후냐 의상
+				m_strPartTag = TEXT("Destroyer_Body_FunyaSnowMan");
+				break;
+
+			case COSTUMESLOT_THIRD: // 신화 속 영웅 의상
+				m_strPartTag = TEXT("Destroyer_Body_GreekMyth");
+				break;
+			}
+		}
+		else if (COSTUMESECTION_HAIRACC == m_eSectionType)
+		{
+			if (COSTUMESLOT_END <= m_eType)
+				return;
+
+			switch (m_eType)
+			{
+			case COSTUMESLOT_FIRST: // 눈사람 후냐 머리 장식
+				m_strPartTag = TEXT("Destroyer_Head_SnowFunya");
+				break;
+
+			case COSTUMESLOT_SECOND: // 꿀꾸리 모자
+				m_strPartTag = TEXT("Destroyer_Head_Pig");
+				break;
+
+			case COSTUMESLOT_THIRD: // X
+				m_strPartTag = TEXT("");
+				break;
+			}
+		}
+		break;
+	}
+}
+
 HRESULT CUI_Costume_ItemSlot::Ready_Components()
 {
 	if (FAILED(__super::Ready_Components()))
@@ -324,6 +482,8 @@ HRESULT CUI_Costume_ItemSlot::Bind_ShaderResources()
 
 HRESULT CUI_Costume_ItemSlot::Ready_PartTag()
 {
+	m_eCurPlayerType = CUI_Manager::GetInstance()->Get_Character()->Get_CharacterType();
+
 	switch (m_eCurPlayerType)
 	{
 	case CHARACTER_TYPE::SWORD_MAN:
@@ -441,15 +601,15 @@ HRESULT CUI_Costume_ItemSlot::Ready_PartTag()
 			switch (m_eType)
 			{
 			case COSTUMESLOT_FIRST: // 대장장의 의상
-				m_strPartTag = TEXT("");
+				m_strPartTag = TEXT("Destroyer_Body_BlackSmith");
 				break;
 
 			case COSTUMESLOT_SECOND: // 눈사람 후냐 의상
-				m_strPartTag = TEXT("");
+				m_strPartTag = TEXT("Destroyer_Body_FunyaSnowMan");
 				break;
 
 			case COSTUMESLOT_THIRD: // 신화 속 영웅 의상
-				m_strPartTag = TEXT("");
+				m_strPartTag = TEXT("Destroyer_Body_GreekMyth");
 				break;
 			}
 		}
@@ -461,11 +621,11 @@ HRESULT CUI_Costume_ItemSlot::Ready_PartTag()
 			switch (m_eType)
 			{
 			case COSTUMESLOT_FIRST: // 눈사람 후냐 머리 장식
-				m_strPartTag = TEXT("");
+				m_strPartTag = TEXT("Destroyer_Head_SnowFunya");
 				break;
 
 			case COSTUMESLOT_SECOND: // 꿀꾸리 모자
-				m_strPartTag = TEXT("");
+				m_strPartTag = TEXT("Destroyer_Head_Pig");
 				break;
 
 			case COSTUMESLOT_THIRD: // X

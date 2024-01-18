@@ -81,15 +81,15 @@ public:
 		Set_ElementalType();
 	}
 
-public: // Todo Wonhye : 테스트 끝나면 지울것
+public:
 	HRESULT Tick_UIs(LEVELID eID, _float fTimeDelta);
 	HRESULT Tick_LobbyLevel(_float fTimeDelta);
-	HRESULT Tick_EvermoreLevel(_float fTimeDelta);
+	HRESULT Tick_GamePlayLevel(_float fTimeDelta);
 
-	HRESULT LateTick_EvermoreLevel(_float fTimeDelta);
+	HRESULT LateTick_GamePlayLevel(_float fTimeDelta);
 	void	LateTick_Dummy(_float fTimeDelta);
 
-	HRESULT Render_EvermoreLevel();
+	HRESULT Render_GamePlayLevel();
 	void	Render_Dummy();
 
 public:
@@ -194,7 +194,9 @@ private:
 	wstring m_strNickname;
 	wstring m_strResult;
 
-	class CUI_CharacterDummy*	m_pDummy = { nullptr };
+	class CUI_CharacterDummy*	m_pDummy_Swordman = { nullptr };
+	class CUI_CharacterDummy*	m_pDummy_Destroyer = { nullptr };
+	class CUI_CharacterDummy*	m_pDummy_Engineer = { nullptr };
 	class CUI_CostumeTab_Map*	m_pCustomMap = { nullptr };
 	class CMirror*				m_pCostumeMirror = { nullptr };
 	class CMonster*				m_pHPBarOwner = { nullptr };
@@ -322,6 +324,8 @@ private:
 	// Vignette
 	class CUI_Vignette_Ice*				m_pIceVignette = { nullptr };
 	class CUI_Vignette_Fire*			m_pFireVignette = { nullptr };
+
+	class CUI_InGame_Setting_Window*	m_pInGameSetting = { nullptr };
 
 private:
 	ID3D11Device*			m_pDevice = { nullptr };

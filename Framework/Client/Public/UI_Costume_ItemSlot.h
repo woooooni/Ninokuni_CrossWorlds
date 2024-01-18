@@ -35,6 +35,9 @@ public:
 	virtual void On_Mouse(_float fTimeDelta) override;
 	virtual void On_MouseExit(_float fTimeDelta) override;
 
+public:
+	void Update_PartsTag();
+
 private:
 	//CHARACTER_TYPE m_ePlayerType = { CHARACTER_END };
 	UI_COSTUME_SECTION m_eSectionType = { COSTUMESECTION_END };

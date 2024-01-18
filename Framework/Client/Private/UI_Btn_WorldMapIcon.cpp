@@ -92,8 +92,7 @@ HRESULT CUI_Btn_WorldMapIcon::Initialize(void* pArg)
 	UIDesc.fX = g_iWinSizeX * 0.5f;
 	UIDesc.fY = g_iWinSizeY * 0.5f;
 
-	CGameObject* pTemp = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_WorldMap_Icon_PlayerPortrait", &UIDesc),
-		LAYER_TYPE::LAYER_UI);
+	CGameObject* pTemp = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_WorldMap_Icon_PlayerPortrait"), LAYER_TYPE::LAYER_UI, &UIDesc);
 	if (nullptr == pTemp)
 		return E_FAIL;
 	m_pIcon = dynamic_cast<CUI_Basic*>(pTemp);
