@@ -4,13 +4,15 @@
 #include "Glanix.h"
 
 #include "Camera_Manager.h"
-#include "Camera_CutScene_Boss.h"
+#include "Camera_Group.h"
 
 #include "GameInstance.h"
 #include "UI_Manager.h"
 #include "UI_Fade.h"
 #include "Game_Manager.h"
 #include "Player.h"
+#include "Character.h"
+#include "Transform.h"
 
 CGlanixState_Berserk::CGlanixState_Berserk(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
@@ -24,6 +26,9 @@ HRESULT CGlanixState_Berserk::Initialize(const list<wstring>& AnimationList)
 	m_fFadeOutTime = 0.75f;
 	m_fFadeInTime = 0.75f;
 
+	m_strCutSceneNames.push("Winter_Boss_Page_00");
+	m_strCutSceneNames.push("Winter_Boss_Page_01");
+
 	return S_OK;
 }
 
@@ -31,18 +36,17 @@ void CGlanixState_Berserk::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_BossSkillRage"));
 
-	/* Camera (Start CutScene) */
-	CCamera_CutScene_Boss* pCutSceneCam = dynamic_cast<CCamera_CutScene_Boss*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_BOSS));
+	CCamera_CutScene_Map* pCutSceneCam = dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP));
 	if (nullptr != pCutSceneCam)
 	{
+		/* Change Camera */
 		if (FAILED(CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::CUTSCENE_BOSS)))
 			return;
 
-		if (FAILED(pCutSceneCam->Start_CutScene(
-			CCamera_CutScene_Boss::BOSS_TYPE::GLANIX,
-			CCamera_CutScene_Boss::GLANIX_CUTSCENE_TYPE::PAGE,
-			m_pGlanix)))
+		/* Start CutScene */
+		if (FAILED(pCutSceneCam->Start_CutScene(m_strCutSceneNames.front(), false)))
 			return;
+		m_strCutSceneNames.pop();
 
 		/* Ui Off */
 		if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
@@ -50,8 +54,13 @@ void CGlanixState_Berserk::Enter_State(void* pArg)
 
 		/* Player Input Off */
 		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
-	}
 
+		/* Reset Glanix Position */
+		m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, m_pGlanix->Get_OriginPos());
+		m_pTransformCom->LookAt_ForLandObject(Vec4::UnitW);
+
+		pCutSceneCam->Start_Lerp_Fov(Cam_Fov_CutScene_Map_Default, XMConvertToRadians(60.f), 2.5f, LERP_MODE::SMOOTHER_STEP);
+	}
 }
 
 void CGlanixState_Berserk::Tick_State(_float fTimeDelta)
@@ -59,17 +68,26 @@ void CGlanixState_Berserk::Tick_State(_float fTimeDelta)
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
 		m_pStateMachineCom->Change_State(CGlanix::GLANIX_TURN);
+		//m_pStateMachineCom->Change_State(CGlanix::GLANIX_BERSERK);
 	}
 
-	if (!m_bCheck && !m_pModelCom->Is_Tween() && 70 == m_pModelCom->Get_CurrAnimationFrame())
+	if (!m_bCheck && !m_pModelCom->Is_Tween() && 68 == m_pModelCom->Get_CurrAnimationFrame())
 	{
 		m_bCheck = true;
-		CCamera_CutScene_Boss* pCutSceneCam = dynamic_cast<CCamera_CutScene_Boss*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_BOSS));
+
+		CCamera_CutScene_Map* pCutSceneCam = dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP));
 		if (nullptr != pCutSceneCam)
-			pCutSceneCam->Send_Signal();
+		{
+			if (FAILED(pCutSceneCam->Start_CutScene(m_strCutSceneNames.front(), false)))
+				return;
+
+			m_strCutSceneNames.pop();
+
+			pCutSceneCam->Start_Lerp_Fov(XMConvertToRadians(40.f), XMConvertToRadians(60.f), 0.75f, LERP_MODE::EASE_OUT);
+		}
 	}
 
-	if (!m_pModelCom->Is_Tween() && 0.95f <= m_pModelCom->Get_Progress() && !m_bFadeOut)
+	if (!m_pModelCom->Is_Tween() && 0.80f <= m_pModelCom->Get_Progress() && !m_bFadeOut)
 	{
 		/* Start Fade Out */
 		if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
@@ -80,29 +98,32 @@ void CGlanixState_Berserk::Tick_State(_float fTimeDelta)
 }
 
 void CGlanixState_Berserk::Exit_State()
-{
-	/* Camera */
-	CCamera_CutScene_Boss* pCutSceneCam = dynamic_cast<CCamera_CutScene_Boss*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_BOSS));
+{	
+	/* Change Camera */
+	CCamera_CutScene_Map* pCutSceneCam = dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP));
 	if (nullptr != pCutSceneCam)
 	{
-		/* Start Fade In */
-		if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
-			CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, m_fFadeInTime, false);
-
-		/* On UI */
-		if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
-			CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
-
-		/* Finish CutScene */
-		if (FAILED(pCutSceneCam->Finish_CutScene()))
+		if (FAILED(pCutSceneCam->Stop_CutScene()))
 			return;
 
-		/* Player Input On */
-		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
+		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+		if (nullptr != pFollowCam)
+			pFollowCam->Set_Default_Position();
+
+		if(FAILED(CCamera_Manager::GetInstance()->Set_CurCamera(pFollowCam->Get_Key())))
+			return;		
 	}
 
-	m_bCheck = false;
-	m_bFadeOut = false;
+	/* Start Fade In */
+	if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
+		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, m_fFadeInTime, false);
+
+	/* On UI */
+	if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
+		CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
+
+	/* Player Input On */
+	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
 }
 
 CGlanixState_Berserk* CGlanixState_Berserk::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

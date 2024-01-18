@@ -414,7 +414,7 @@ void CTool_Camera::Show_Camera_Prop_CutScene_Map(_float fTimeDelta)
 						{
 							if (0 <= m_iCurCutSceneIndex)
 							{
-								pCutSceneCam->Start_CutScene(CutSceneDescs[m_iCurCutSceneIndex].strCutSceneName);
+								pCutSceneCam->Start_CutScene(CutSceneDescs[m_iCurCutSceneIndex].strCutSceneName, true);
 								m_bShowMarker = false;
 							}
 						}

@@ -277,7 +277,7 @@ void CCamera_Follow::Set_ViewType(const CAMERA_VIEW_TYPE& eType)
 	}
 }
 
-void CCamera_Follow::Set_Defualt_Settig()
+void CCamera_Follow::Set_Defualt_Setting()
 {
 	/* 회전 축 방향 설정 */
 	m_vMouseInputInvert = { 1.f, 1.f };

@@ -79,7 +79,7 @@ public:
 	const CAMERA_VIEW_TYPE& Get_ViewType() const { return m_eViewType; }
 	void Set_ViewType(const CAMERA_VIEW_TYPE& eType);
 
-	void Set_Defualt_Settig();
+	void Set_Defualt_Setting();
 
 public:
 	/* Lock On */

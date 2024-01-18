@@ -153,7 +153,6 @@ public:
 	/* Default */
 	const _bool& Is_Active() const { return m_bActive; }
 	void Set_Active(const _bool bActive) { m_bActive = bActive; }
-
 	CTransform* Get_Transform() const { return m_pTransformCom; }
 
 	const _int Get_Key() const { return m_iKey; }
@@ -164,7 +163,7 @@ public:
 	const _float& Get_Fov() const { return m_tProjDesc.tLerpFov.fCurValue; }
 	PROJ_DESC Get_ProjDesc() const { return m_tProjDesc; }
 	void Set_ProjDesc(const PROJ_DESC& tDesc) { memcpy(&m_tProjDesc, &tDesc, sizeof(PROJ_DESC)); }
-	void Set_Fov(const _float& fFov) { memcpy(&m_tProjDesc.tLerpFov, &fFov, sizeof(_float)); }
+	void Set_Fov(const _float& fFov) { m_tProjDesc.tLerpFov.fCurValue = fFov; }
 	void Start_Lerp_Fov(const _float& fStartValue, const _float& fTargetValue, const _float& fTime, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
 	void Start_Lerp_Fov(const _float& fTargetValue, const _float& fTime = 0.5f, const LERP_MODE& eMode = LERP_MODE::SMOOTHER_STEP);
 	void Lock_Fov(const _bool& bLock) { m_bLockFov = bLock; }

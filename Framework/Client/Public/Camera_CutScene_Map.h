@@ -43,17 +43,21 @@ public:
 	virtual void Tick_Blending(const _float fDeltaTime) override;
 
 public:
-	HRESULT Start_CutScene(const string& strCutSceneName, 
+	HRESULT Start_CutScene(const string& strCutSceneName,
+							const _bool& bWillRetruePrevCam = false,
 							const _bool& bWillBlending = false, 
 							const _uint& iBlendingCamKey = 0,
 							const _float& fBlendingDuration = 1.f, 
 							const LERP_MODE& eBlendingMode = LERP_MODE::SMOOTHER_STEP); /* 단일 컷신 실행 */
 
 	HRESULT Start_CutScenes(vector<string> strCutSceneNames,
+							const _bool& bWillRetruePrevCam = false,
 							const _bool& bWillBlending = false,
 							const _uint& iBlendingCamKey = 0,
 							const _float& fBlendingDuration = 1.f,
 							const LERP_MODE& eBlendingMode = LERP_MODE::SMOOTHER_STEP); /* 복수 컷신 실행 */
+
+	HRESULT Stop_CutScene(const _bool& bClearReservedCutScene = false);
 
 	const _bool Is_Playing_CutScenc() const { return m_tTimeDesc.bActive; }
 
@@ -87,6 +91,7 @@ private:
 	LERP_TIME_DESC						m_tTimeDesc;
 	
 	/* 컷신 이후 체인지 예약 데이터 */
+	_bool								m_bWillRetruePrevCam = false;
 	_bool								m_bWillBlending = false;
 	_uint								m_iBlendingCamKey = 0;
 	_float								m_fBlendingDuration = 0.f;

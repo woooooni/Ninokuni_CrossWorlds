@@ -73,12 +73,15 @@ void CCamera_CutScene_Map::Tick(_float fTimeDelta)
 		{
 			if (m_bWillBlending)
 				CCamera_Manager::GetInstance()->Change_Camera(m_iBlendingCamKey, m_fBlendingDuration, m_eBlendingMode);
-			else
+			else if (m_bWillRetruePrevCam)
+			{
 				CCamera_Manager::GetInstance()->Set_PrevCamera();
-	
-			if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
-				CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
 
+				/* Ui On */
+				if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
+					CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
+			}
+	
 			/* Player Input On */
 			{
 				CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
@@ -96,7 +99,11 @@ void CCamera_CutScene_Map::Tick(_float fTimeDelta)
 	Vec4 vLookAt = Get_Point_In_Bezier(m_pCurCutSceneDesc->vCamLookAts, fRatio);
 	Vec4 vCamPosition = Get_Point_In_Bezier(m_pCurCutSceneDesc->vCamPositions, fRatio);
 
+	if (Is_Shake())
+		vLookAt += Vec4(Get_ShakeLocalPos());
+
 	m_pTransformCom->LookAt(vLookAt.OneW());
+
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCamPosition.OneW());
 }
 
@@ -114,6 +121,7 @@ HRESULT CCamera_CutScene_Map::Render()
 }
 
 HRESULT CCamera_CutScene_Map::Start_CutScene(const string& strCutSceneName,
+	const _bool& bWillRetruePrevCam,
 	const _bool& bWillBlending,
 	const _uint& iBlendingCamKey,
 	const _float& fBlendingDuration,
@@ -130,7 +138,10 @@ HRESULT CCamera_CutScene_Map::Start_CutScene(const string& strCutSceneName,
 
 	m_tTimeDesc.Start(m_pCurCutSceneDesc->fDuration, m_pCurCutSceneDesc->eLerpMode);
 
+	Set_Fov(Cam_Fov_CutScene_Map_Default);
+
 	/* 다음 체인지할 카메라 예약 */
+	m_bWillRetruePrevCam = bWillRetruePrevCam;
 	m_bWillBlending = bWillBlending;
 	if (m_bWillBlending)
 	{
@@ -147,6 +158,7 @@ HRESULT CCamera_CutScene_Map::Start_CutScene(const string& strCutSceneName,
 }
 
 HRESULT CCamera_CutScene_Map::Start_CutScenes(vector<string> strCutSceneNames,
+	const _bool& bWillRetruePrevCam,
 	const _bool& bWillBlending,
 	const _uint& iBlendingCamKey,
 	const _float& fBlendingDuration,
@@ -173,12 +185,27 @@ HRESULT CCamera_CutScene_Map::Start_CutScenes(vector<string> strCutSceneNames,
 	}
 
 	/* 다음 체인지할 카메라 예약 */
+	m_bWillRetruePrevCam = bWillRetruePrevCam;
 	m_bWillBlending = bWillBlending;
 	if (m_bWillBlending)
 	{
 		m_iBlendingCamKey = iBlendingCamKey;
 		m_fBlendingDuration = fBlendingDuration;
 		m_eBlendingMode = eBlendingMode;
+	}
+
+	return S_OK;
+}
+
+HRESULT CCamera_CutScene_Map::Stop_CutScene(const _bool& bClearReservedCutScene)
+{
+	if (bClearReservedCutScene)
+	{
+		do
+		{
+			m_CutSceneNamesReserved.pop();
+
+		} while (m_CutSceneNamesReserved.empty());
 	}
 
 	return S_OK;

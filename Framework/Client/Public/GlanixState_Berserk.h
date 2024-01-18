@@ -25,6 +25,9 @@ private:
 	_bool	m_bFadeOut = false;
 
 	_bool	m_bCheck = false;
+
+	queue<string> m_strCutSceneNames;
+
 public:
 	static CGlanixState_Berserk* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
