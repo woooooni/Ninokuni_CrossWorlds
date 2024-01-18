@@ -5,6 +5,8 @@
 #include "Utils.h"
 
 #include "Game_Manager.h"
+#include "Player.h"
+#include "Character.h"
 #include "UI_Manager.h"
 
 CMainQuestNode_Invasion01::CMainQuestNode_Invasion01()
@@ -39,7 +41,6 @@ HRESULT CMainQuestNode_Invasion01::Initialize()
 void CMainQuestNode_Invasion01::Start()
 {
 	/* 현재 퀘스트에 연관있는 객체들 */
-	CCamera_Manager::GetInstance()->Start_Action_Shake(0.1f, 17.f, 0.5f);
 
 	m_pRuslan = GI->Find_GameObject(LEVELID::LEVEL_ICELAND, LAYER_NPC, TEXT("Ruslan"));
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
@@ -54,9 +55,12 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion01::Tick(const _float& fTimeDelta)
 	{
 		if (!m_bIsStart)
 		{
-			if (true == CCamera_Manager::GetInstance()->Get_CurCamera()->Is_Shake())
-				return NODE_STATE::NODE_FAIL;
+			if (CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_CurrentState() == CCharacter::STATE::NEUTRAL_DOOR_ENTER)
+				return NODE_STATE::NODE_RUNNING;
 
+			CCamera_Manager::GetInstance()->Start_Action_Shake(0.5f, 17.f, 3.f);
+			GI->Stop_Sound(CHANNELID::SOUND_BGM_CURR, 0.f);
+			GI->Play_Sound(L"Impact_Metal_Stone_1.mp3", CHANNELID::SOUND_CUTSCENE, 1.f, true);
 			CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
 			/* 대화 */

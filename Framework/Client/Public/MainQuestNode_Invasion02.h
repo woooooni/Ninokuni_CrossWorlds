@@ -21,6 +21,7 @@ private:
 	CGameObject* m_pKuu = nullptr;
 
 	_bool		m_bIsStart = false;
+	_bool		m_bBGMStart = false;
 
 public:
 	static CMainQuestNode_Invasion02* Create();

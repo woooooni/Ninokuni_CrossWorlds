@@ -220,6 +220,10 @@ public:
 		Set_Collider_Elemental(eElemental);
 		m_eElemental = eElemental; 
 	}
+	
+	CCharacter::STATE Get_CurrentState();
+	Vec4 Get_CharacterPosition();
+
 
 public:
 	class CTransform* Get_CharacterTransformCom() { return m_pTransformCom; }

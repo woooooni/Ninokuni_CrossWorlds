@@ -128,6 +128,7 @@ namespace Engine
 		SOUND_VEHICLE,
 		SOUND_AIRPLANE,
 		SOUND_BGM_NEXT,
+		SOUND_CUTSCENE,
 		MAXCHANNEL
 	};
 
@@ -154,7 +155,8 @@ namespace Engine
 		"SOUND_CLOTH",
 		"SOUND_VEHICLE",
 		"SOUND_AIRPLANE",
-		"SOUND_BGM_NEXT"
+		"SOUND_BGM_NEXT",
+		"SOUND_CUTSCENE"
 	};
 
 #pragma endregion

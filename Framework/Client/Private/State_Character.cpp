@@ -1297,13 +1297,13 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 		case CHARACTER_TYPE::ENGINEER:
 			if (KEY_HOLD(KEY::SHIFT)) 
 			{
-				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::ENGINEER_BURSTCALL);
+				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::ENGINEER_FLASH_HEAL);
 				if (true == bUseSkill)
 					CUI_Manager::GetInstance()->Use_ActiveSkillSlot(0);
 			}
 			else
 			{
-				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::ENGINEER_FLASH_HEAL);
+				bUseSkill = CSkill_Manager::GetInstance()->Use_Skill(eCharacterType, SKILL_TYPE::ENGINEER_BURSTCALL);
 				if (true == bUseSkill)
 					CUI_Manager::GetInstance()->Use_ClassSkillSlot(0);
 			}

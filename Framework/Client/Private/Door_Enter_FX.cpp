@@ -27,9 +27,7 @@ HRESULT CDoor_Enter_FX::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_pModelCom->Set_Animation(0);
-	m_pTransformCom->Set_Scale(_float3(0.03f, 0.03f, 0.03f));
 
-	m_fWaitTime = 0.7f;
 	return S_OK;
 }
 
@@ -37,22 +35,7 @@ void CDoor_Enter_FX::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
-
-	if (false == m_bPlayAnimation)
-	{
-		if(fTimeDelta <= 0.07f)
-			m_fAccWait += fTimeDelta;
-
-		if (m_fAccWait >= m_fWaitTime)
-		{
-			m_bPlayAnimation = true;
-			m_fAccWait = 0.f;
-		}
-	}
-	
-
-
-	if (false == m_bReserveDead && true == m_pModelCom->Is_Finish())
+	if (false == m_pModelCom->Is_Tween() && m_pModelCom->Get_Progress() >= 0.7f)
 		Reserve_Dead(true);
 
 
@@ -72,9 +55,7 @@ void CDoor_Enter_FX::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
 
-	if(true == m_bPlayAnimation)
-		m_pModelCom->LateTick(fTimeDelta);
-
+	m_pModelCom->LateTick(fTimeDelta);
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 }
 

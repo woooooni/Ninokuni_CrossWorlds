@@ -43,7 +43,7 @@ void CState_SwordMan_BurstSkill_MegaSlash::Tick_State(_float fTimeDelta)
 void CState_SwordMan_BurstSkill_MegaSlash::Exit_State()
 {
     m_pCharacter->Set_Infinite(0.f, false);
-    CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(60.f);
+    CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(Cam_Fov_Follow_Default);
 }
 CState_SwordMan_BurstSkill_MegaSlash* CState_SwordMan_BurstSkill_MegaSlash::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
 {
