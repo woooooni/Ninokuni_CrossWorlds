@@ -177,6 +177,19 @@ public:
 
 	} PARTICLE_DESC;
 
+	typedef struct tagParticleRigidbodyDesc
+	{	
+		_bool bRigidbody = false;
+		_bool bGravity    = false;
+		_bool bStopZero   = false;
+		_bool bStopStartY = false;
+
+		Vec4 vMaxVelocity = Vec4(10.f, 30.f, 10.f, 0.f); // 최대 속력 = 이동 속도
+		_float fMass      = 1.f; // 질량
+		_float fFricCoeff = 5.f; // 마찰 계수
+
+	} PARTICLE_RIGIDBODY_DESC;
+
 protected:
 	CParticle(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	CParticle(const CParticle& rhs);
@@ -190,16 +203,19 @@ public:
 	virtual HRESULT Render() override;
 
 public:
-	const PARTICLE_DESC& Get_ParticleDesc() { return m_tParticleDesc; }
+	const PARTICLE_DESC& Get_ParticleDesc()            { return m_tParticleDesc; }
+	const PARTICLE_RIGIDBODY_DESC& Get_RigidbodyDesc() { return m_tRigidbodyDesc; }
 
 	class CTransform* Get_TransformCom() { return m_pTransformCom; }
 	class CTexture* Get_DiffuseTexture() { return m_pDiffuseTextureCom; }
 	class CTexture* Get_AlphaTexture() { return m_pAlphaTextureCom; }
 
-	_bool Get_Rigidbody() { return m_bRigidbody; }
+	_bool Get_Rigidbody() { return m_tRigidbodyDesc.bRigidbody; }
 
 public:
 	void Set_ParticleDesc(const PARTICLE_DESC& tDesc);
+	void Set_RigidbodyDesc(const PARTICLE_RIGIDBODY_DESC& tDesc);
+
 	void Set_Position_Particle(_float4x4 WorldMatrix);
 	void Set_Position_Particle(_float3 fPosition);
 
@@ -209,13 +225,14 @@ public:
 	void Set_DeleteParticle(_bool bParticleDelete) { m_bParticleDelete = bParticleDelete; }
 
 	void Set_LoopParticle(_bool bLoop)   { m_tParticleDesc.bParticleLoop = bLoop; }
-	void Set_Rigidbody(_bool bRigidbody) { m_bRigidbody = bRigidbody; }
+	void Set_Rigidbody(_bool bRigidbody) { m_tRigidbodyDesc.bRigidbody = bRigidbody; }
 	void Add_Velocity(Vec4 _vMinVelocity, Vec4 _vMaxVelocity);
 
 private:
 	_bool m_isCloned = { false };
 
 	PARTICLE_DESC m_tParticleDesc;
+	PARTICLE_RIGIDBODY_DESC m_tRigidbodyDesc;
 	_bool m_bParticleDelete = true;
 	_bool m_bParticleDie = false;
 
@@ -227,8 +244,6 @@ private:
 	_float3 m_vLocalScale = _float3(0.f, 0.f, 0.f);
 	_float3 m_vLocalRotation = _float3(0.f, 0.f, 0.f);
 	Vec4 m_vAddOffsetPos = Vec4(0.0f, 0.0f, 0.0f, 1.0f);
-
-	_bool m_bRigidbody = false;
 
 private:
 	class CRenderer*  m_pRendererCom = nullptr;

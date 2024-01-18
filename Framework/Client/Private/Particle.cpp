@@ -54,6 +54,17 @@ void CParticle::Set_ParticleDesc(const PARTICLE_DESC& tDesc)
 	m_bParticleDie = false;
 }
 
+void CParticle::Set_RigidbodyDesc(const PARTICLE_RIGIDBODY_DESC& tDesc)
+{
+	m_tRigidbodyDesc = tDesc;
+
+	// 버퍼 재시작
+	if (m_pVIBufferCom != nullptr)
+		m_pVIBufferCom->Restart_ParticleBufferDesc(m_tParticleDesc.iNumEffectCount);
+
+	m_bParticleDie = false;
+}
+
 void CParticle::Set_Position_Particle(_float4x4 WorldMatrix)
 {
 	_float fX = WorldMatrix.m[3][0];
@@ -386,7 +397,13 @@ void* CParticle::Get_ParticleBufferInfo()
 	tBufferInfo.pBlurPowerRandom  = &m_tParticleDesc.bBlurPowerRandom;
 	tBufferInfo.pBlurPower        = &m_tParticleDesc.fBlurPower;
 
-	tBufferInfo.pRigidbody = &m_bRigidbody;
+	tBufferInfo.pRigidbody  = &m_tRigidbodyDesc.bRigidbody;
+	tBufferInfo.pGravity    = &m_tRigidbodyDesc.bGravity;
+	tBufferInfo.pStopZero   = &m_tRigidbodyDesc.bStopZero;
+	tBufferInfo.pStopStartY = &m_tRigidbodyDesc.bStopStartY;
+	tBufferInfo.pMaxVelocity = &m_tRigidbodyDesc.vMaxVelocity;
+	tBufferInfo.pMass        = &m_tRigidbodyDesc.fMass;
+	tBufferInfo.pFricCoeff   = &m_tRigidbodyDesc.fFricCoeff;
 
 	return &tBufferInfo;
 }

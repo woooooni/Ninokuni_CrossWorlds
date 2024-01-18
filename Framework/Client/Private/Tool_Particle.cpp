@@ -588,8 +588,29 @@ void CTool_Particle::Tick(_float fTimeDelta)
 		// 리지드바디
 		if (ImGui::CollapsingHeader("Rigidbody"))
 		{
-			// 리지드바디 여부
-			if (ImGui::Checkbox("RigidbodyParticle", &m_bRigidBody))
+			if (ImGui::Checkbox("RigidbodyUse", &m_tRigidbodyInfo.bRigidbody))
+				bParticleSystemUse = true;
+
+			if (ImGui::Checkbox("Gravity", &m_tRigidbodyInfo.bGravity))
+				bParticleSystemUse = true;
+
+			if (ImGui::Checkbox("StopZero", &m_tRigidbodyInfo.bStopZero))
+				bParticleSystemUse = true;
+
+			if (ImGui::Checkbox("StopStartY", &m_tRigidbodyInfo.bStopStartY))
+				bParticleSystemUse = true;
+			ImGui::NewLine();
+
+			ImGui::Text("MaxVelocity");
+			if (ImGui::InputFloat4("##MaxVelocity", &m_tRigidbodyInfo.vMaxVelocity.x))
+				bParticleSystemUse = true;
+
+			ImGui::Text("Mass");
+			if (ImGui::InputFloat("##Mass", &m_tRigidbodyInfo.fMass))
+				bParticleSystemUse = true;
+
+			ImGui::Text("FricCoeff");
+			if (ImGui::InputFloat("##FricCoeff", &m_tRigidbodyInfo.fFricCoeff))
 				bParticleSystemUse = true;
 			ImGui::NewLine();
 
@@ -600,7 +621,7 @@ void CTool_Particle::Tick(_float fTimeDelta)
 			ImGui::InputFloat4("##RigidMaxVelocity", &m_vMaxVelocity.x);
 			if (ImGui::Button("AddVelocity"))
 			{
-				if (nullptr != m_pParticle && m_bRigidBody)
+				if (nullptr != m_pParticle && m_tRigidbodyInfo.bRigidbody)
 					static_cast<CParticle*>(m_pParticle)->Add_Velocity(m_vMinVelocity, m_vMaxVelocity);
 			}
 			ImGui::NewLine();
@@ -744,7 +765,7 @@ void CTool_Particle::Load_InfoParticle()
 	m_iDiffuseFolderIndex = Get_FolderIndex(m_tParticleInfo.strDiffuseTetextureName);
 	m_iAlphaFolderIndex   = Get_FolderIndex(m_tParticleInfo.strAlphaTexturName);
 
-	m_bRigidBody = static_cast<CParticle*>(m_pParticle)->Get_Rigidbody();
+	m_tRigidbodyInfo = static_cast<CParticle*>(m_pParticle)->Get_RigidbodyDesc();
 }
 
 void CTool_Particle::Store_InfoParticle()
@@ -763,7 +784,7 @@ void CTool_Particle::Store_InfoParticle()
 	m_tParticleInfo.strAlphaTexturName      = Select_FolderName(m_iAlphaFolderIndex);
 
 	static_cast<CParticle*>(m_pParticle)->Set_ParticleDesc(m_tParticleInfo);
-	static_cast<CParticle*>(m_pParticle)->Set_Rigidbody(m_bRigidBody);
+	static_cast<CParticle*>(m_pParticle)->Set_RigidbodyDesc(m_tRigidbodyInfo);
 }
 
 void CTool_Particle::Set_OriginalInfoParticle()
@@ -791,7 +812,7 @@ void CTool_Particle::Set_OriginalInfoParticle()
 	m_tParticleInfo.strAlphaTexturName      = Select_FolderName(m_iAlphaFolderIndex);
 
 	static_cast<CParticle*>(m_pParticle)->Set_ParticleDesc(m_tParticleInfo);
-	static_cast<CParticle*>(m_pParticle)->Set_Rigidbody(m_bRigidBody);
+	static_cast<CParticle*>(m_pParticle)->Set_RigidbodyDesc(m_tRigidbodyInfo);
 }
 
 wstring CTool_Particle::Select_FolderName(_uint iFolderIndex)

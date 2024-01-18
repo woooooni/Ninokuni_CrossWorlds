@@ -41,6 +41,7 @@ private:
 private:
 	class CGameObject* m_pParticle = nullptr;
 	CParticle::PARTICLE_DESC m_tParticleInfo;
+	CParticle::PARTICLE_RIGIDBODY_DESC m_tRigidbodyInfo;
 
 private:
 	_float3 m_fPosition;
@@ -66,7 +67,6 @@ private:
 private:
 	_float3 m_fParticleAxis;
 
-	_bool m_bRigidBody = false;
 	Vec4 m_vMinVelocity = {};
 	Vec4 m_vMaxVelocity = {};
 
