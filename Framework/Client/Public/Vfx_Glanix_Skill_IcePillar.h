@@ -12,7 +12,9 @@ class CVfx_Glanix_Skill_IcePillar final : public CVfx
 {
 private:
 	enum TYPE {
-		TYPE_START,
+		TYPE_ONE,
+		TYPE_TWO,
+		TYPE_THREE,
 		TYPE_END
 	};
 

@@ -61,8 +61,8 @@ public:
 #pragma region 이동
 		_float2 fVelocitySpeed = _float2(1.f, 1.f);
 
-		_float3 vVelocityMinStart = _float3(-1.0f, -1.0f, -1.0f);
-		_float3 vVelocityMaxStart = _float3(1.0f, 1.0f, 1.0f);
+		_float3 vVelocityMinStart = _float3(.0f, .0f, 0.f);
+		_float3 vVelocityMaxStart = _float3(.0f, .0f, 0.f);
 
 		_bool bVelocityChange = false;
 		_float2 fVelocityChangeStartDelay = _float2(0.f, 0.f);
@@ -183,6 +183,11 @@ public:
 		_bool bGravity    = false;
 		_bool bStopZero   = false;
 		_bool bStopStartY = false;
+		_bool bGroundSlide = false;
+
+		_bool bStartJump = false;
+		Vec4 vStartMinVelocity = Vec4(0.f, 0.f, 0.f, 0.f);
+		Vec4 vStartMaxVelocity = Vec4(0.f, 0.f, 0.f, 0.f);
 
 		Vec4 vMaxVelocity = Vec4(10.f, 30.f, 10.f, 0.f); // 최대 속력 = 이동 속도
 		_float fMass      = 1.f; // 질량
@@ -196,7 +201,7 @@ protected:
 	virtual ~CParticle() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(const PARTICLE_DESC* pParticleDesc);
+	virtual HRESULT Initialize_Prototype(const PARTICLE_DESC* pParticleDesc, const PARTICLE_RIGIDBODY_DESC* pRigidbodyDesc);
 	virtual HRESULT Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void LateTick(_float fTimeDelta) override;
@@ -269,7 +274,7 @@ protected:
 
 public:
 	static CParticle* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, 
-		const wstring& strObjectTag, const PARTICLE_DESC* pParticleDesc);
+		const wstring& strObjectTag, const PARTICLE_DESC* pParticleDesc, const PARTICLE_RIGIDBODY_DESC* pRigidbodyDesc);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 
