@@ -241,6 +241,7 @@
     <ClInclude Include="..\Public\Camera_Group.h" />
     <ClInclude Include="..\Public\Camera_Manager.h" />
     <ClInclude Include="..\Public\Baobam_DarkNode_Skill2.h" />
+    <ClInclude Include="..\Public\Camera_Quater.h" />
     <ClInclude Include="..\Public\Camera_Top.h" />
     <ClInclude Include="..\Public\Cannon_Ball.h" />
     <ClInclude Include="..\Public\Cannon_Tower.h" />
