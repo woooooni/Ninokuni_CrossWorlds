@@ -3,15 +3,17 @@
 #include "GameInstance.h"
 #include "UI_Manager.h"
 
-CUI_InGame_Setting_RadioBtn::CUI_InGame_Setting_RadioBtn(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_RADIOTYPE eType)
+CUI_InGame_Setting_RadioBtn::CUI_InGame_Setting_RadioBtn(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_RADIOGROUP eGroupType, UI_RADIOTYPE eType)
 	: CUI(pDevice, pContext, L"UI_InGame_Setting_RadioBtn")
 	, m_eBtnType(eType)
+	, m_eGroupType(eGroupType)
 {
 }
 
 CUI_InGame_Setting_RadioBtn::CUI_InGame_Setting_RadioBtn(const CUI_InGame_Setting_RadioBtn& rhs)
 	: CUI(rhs)
 	, m_eBtnType(rhs.m_eBtnType)
+	, m_eGroupType(rhs.m_eGroupType)
 {
 }
 
@@ -34,10 +36,8 @@ HRESULT CUI_InGame_Setting_RadioBtn::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	m_bActive = true;
-	m_fAlpha = 1.f;
-
 	m_bUseMouse = true;
+	m_bActive = true;
 
 	return S_OK;
 }
@@ -86,7 +86,7 @@ void CUI_InGame_Setting_RadioBtn::On_Mouse(_float fTimeDelta)
 	{
 		if (KEY_TAP(KEY::LBTN))
 		{
-
+			CUI_Manager::GetInstance()->Update_SettingGraphicRadio(m_eGroupType, m_eBtnType);
 		}
 
 		__super::On_Mouse(fTimeDelta);
@@ -137,15 +137,15 @@ HRESULT CUI_InGame_Setting_RadioBtn::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_fAlpha, sizeof(_float))))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", _uint(m_eBtnType))))
+	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextureIndex)))
 		return E_FAIL;
 
 	return S_OK;
 }
 
-CUI_InGame_Setting_RadioBtn* CUI_InGame_Setting_RadioBtn::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_RADIOTYPE eType)
+CUI_InGame_Setting_RadioBtn* CUI_InGame_Setting_RadioBtn::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_RADIOGROUP eGroupType, UI_RADIOTYPE eType)
 {
-	CUI_InGame_Setting_RadioBtn* pInstance = new CUI_InGame_Setting_RadioBtn(pDevice, pContext, eType);
+	CUI_InGame_Setting_RadioBtn* pInstance = new CUI_InGame_Setting_RadioBtn(pDevice, pContext, eGroupType, eType);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{

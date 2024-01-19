@@ -72,22 +72,10 @@ HRESULT CUI_InGame_Setting_Window::Initialize(void* pArg)
 	m_vOffPosition.x = m_tInfo.fX + (m_tInfo.fCX * 0.5f); // UI가 Active되는 시점에 등장할 위치
 	m_vOffPosition.y = m_tInfo.fY;
 
-	// ChildUI를 추가한다 (Accept버튼)
-//	Make_Child(0.f, g_iWinSizeY * 0.41f, 400.f, 100.f, TEXT("Prototype_GameObject_UI_Btn_AcceptQuest"));
-//	
-//	switch (m_eProcessType)
-//	{
-//	case QUEST_ACCEPT:
-//		Make_Child(0.f, g_iWinSizeY * 0.41f, 188.f * 0.6f, 53.f * 0.6f, TEXT("Prototype_GameObject_UI_Quest_Text_Accept"));
-//		break;
-//
-//	case QUEST_FINISH:
-//		Make_Child(0.f, g_iWinSizeY * 0.41f, 250.f * 0.6f, 53.f * 0.6f, TEXT("Prototype_GameObject_UI_Quest_Text_Finish"));
-//		break;
-//
-//	default:
-//		break;
-//	}
+	m_tInfo.fX = m_vOffPosition.x;
+	m_tInfo.fY = m_vOffPosition.y;
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 
 	_float fSize = 128.f * 0.7f;
 	_float fDefaultY = -185.f;
