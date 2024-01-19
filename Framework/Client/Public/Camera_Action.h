@@ -5,7 +5,13 @@
 
 #include "Camera_Manager.h"
 
+BEGIN(Engine)
+class CTransform;
+END
+
 BEGIN(Client)
+
+class CKuu;
 
 class CCamera_Action final : public CCamera
 {
@@ -59,34 +65,27 @@ public:
 
 	typedef struct tagActionTalkDesc
 	{
-		const _float	fPlayerNpcDistance = 4.f;
+		enum PROGRESS	{ READY, TALKING, FINISH };
+		enum VIEW_TYPE	{ KUU, KUU_AND_PLAYER, NPC1, ALL_RIGTH, ALL_LEFT, KUU_AND_PLAYER_BACK_NPC, NPC_BACK_KUU_AND_PLAYER, NPC2 };
 
-		const Vec4		vTargetOffset = { 0.7f, 1.f, 2.5f, 1.f };
-		const Vec4		vLookAtOffset = { 0.f, 1.f, 0.f, 1.f };
+		_bool bInit = false;
+		_bool bSet = false;
 
+		Vec4 vPrevLookAt;
 
-		Vec4			vPrevLookAt; /* 블렌딩용 */
-		
-		CGameObject*	pNpc1	= nullptr;
-		CGameObject*	pNpc2	= nullptr;
+		CTransform* pTransform_Kuu		= nullptr;
+		CTransform* pTransform_Player	= nullptr;
 
-		CGameObject*	pPlayer = nullptr;
-		CGameObject*	pPet	= nullptr;
+		CTransform* pTransformNpc1		= nullptr;
+		CTransform* pTransformNpc2		= nullptr;
 
-		CGameObject*	pCurTalker = nullptr;
-
-		_uint			iTalker = 2; /* 대화에 참여하는 모든 인원 수 (플레이어, 쿠우 포함)*/
+		CKuu* pKuu = nullptr;
 
 		void Clear()
 		{
-			pNpc1		= nullptr;
-			pNpc2		= nullptr;
-			pPlayer		= nullptr;
-			pPet		= nullptr;
-			
-			pCurTalker	= nullptr;
-
-			iTalker = 2;
+			pTransformNpc1 = nullptr;
+			pTransformNpc2 = nullptr;
+			bSet = false;
 		}
 
 	}ACTION_TALK_DESC;
@@ -109,18 +108,10 @@ public:
 public:
 	HRESULT Start_Action_Lobby();
 	HRESULT Start_Action_Door();
-	
-	/* 쿠우가 아닌 NPC가 대화에 참여*/
-	HRESULT Start_Action_Talk(CGameObject* pPlayer, CGameObject* pPet, CGameObject* pNpc1, CGameObject* pNpc2); 
-	/* 쿠우 혼자 말하는 경우 */
-	HRESULT Start_Action_Talk(CGameObject* pPlayer, CGameObject* pPet);
 
-	/* 대화 도중 말하는 사람이 바뀔 때 호출 */
-	HRESULT Set_Action_Talk_Target(CGameObject* pTalker);
-	
-	/* 마지막 다이얼로그(Npc)가 사라질 때 호출 */
-	/* 현재 토커가 플레이어 바로 리턴 (마지막 대화는 Npc에서 끝나야 한다.) */
-	HRESULT Finish_Action_Talk();	
+	HRESULT Start_Action_Talk(CGameObject* pNpc1, CGameObject* pNpc2);				/* 처음 대화 시작시 호출 */
+	HRESULT Change_Action_Talk_Object(const ACTION_TALK_DESC::VIEW_TYPE& eType);	/* 중간 화자 변경시 호출 */
+	HRESULT Finish_Action_Talk();													/* 대화 종료시 호출 */
 
 public:
 	const _bool& Is_Finish_Action() const { return m_bAction; }
@@ -132,7 +123,11 @@ private:
 	void Tick_Door(_float fTimeDelta);
 	void Tick_Talk(_float fTimeDelta);
 
-	HRESULT Set_TalkCharacterPosition();
+private:
+	void Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType);
+
+private:
+	void Test(_float fTimeDelta);
 
 private:
 	virtual HRESULT Ready_Components() override;
