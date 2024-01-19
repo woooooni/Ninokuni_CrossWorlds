@@ -7,6 +7,7 @@
 #include "UI_Manager.h"
 
 #include "Game_Manager.h"
+#include "Quest_Manager.h"
 
 CMainQuestNode_SnowField07::CMainQuestNode_SnowField07()
 {
@@ -115,6 +116,7 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField07::Tick(const _float& fTimeDelta)
 		if (CUI_Manager::GetInstance()->Is_QuestRewardWindowOff())
 		{
 			m_bIsClear = true;
+
 			return NODE_STATE::NODE_SUCCESS;
 		}
 	}

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MonsterProjectile.h"
+#include "Glanix.h"
 
 BEGIN(Client)
 

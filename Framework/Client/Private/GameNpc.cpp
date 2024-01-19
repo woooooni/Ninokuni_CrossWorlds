@@ -315,8 +315,6 @@ HRESULT CGameNpc::Ready_Components(void* pArg)
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_") + m_strObjectTag, TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 
-	m_pModelCom->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_NeutralStand"));
-
 	CRigidBody::RIGID_BODY_DESC RigidDesc;
 	RigidDesc.pTransform = m_pTransformCom;
 

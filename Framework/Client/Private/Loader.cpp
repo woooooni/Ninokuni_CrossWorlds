@@ -59,10 +59,14 @@
 #include "Clown_Wizard.h"
 #include "Clown_Wizard_DarkBall.h"
 #include "Baobam_Dark.h"
+
+#include "Criminal_Monster.h"
+
 #include "Player.h"
 
 #include "Kuu.h"
 #include "Engineer_Npc.h"
+#include "Destroyer_Npc.h"
 
 #include "Door_Enter_FX.h"
 #include "HumanFAT01.h"
@@ -101,6 +105,7 @@
 #include "BlackSmithMaster.h"
 #include "GrimalKinML01.h"
 #include "GrimalKinML02.h"
+#include "Criminal_Npc.h"
 
 #include "HumanChildHalloweenA.h"
 #include "HumanChildHalloweenB.h"
@@ -1390,9 +1395,13 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Baobam_Dark", CBaobam_Dark::Create(m_pDevice, m_pContext, TEXT("Baobam_Dark"), statDesc), LAYER_MONSTER, true)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Criminal_Monster", CCriminal_Monster::Create(m_pDevice, m_pContext, TEXT("Criminal_Monster"), statDesc), LAYER_MONSTER, true)))
+		return E_FAIL;
 
 	// NPC
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Engineer_Npc", CEngineer_Npc::Create(m_pDevice, m_pContext, TEXT("Engineer_Npc")), LAYER_NPC, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Destroyer_Npc", CDestroyer_Npc::Create(m_pDevice, m_pContext, TEXT("Destroyer_Npc")), LAYER_NPC, true)))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanFAT01", CHumanFAT01::Create(m_pDevice, m_pContext, TEXT("HumanFAT01")), LAYER_NPC, true)))
@@ -1467,6 +1476,10 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_GrimalKinML02", CGrimalKinML02::Create(m_pDevice, m_pContext, TEXT("GrimalKinML02")), LAYER_NPC, true)))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Criminal_Npc", CCriminal_Npc::Create(m_pDevice, m_pContext, TEXT("Criminal")), LAYER_NPC, true)))
+		return E_FAIL;
+
+	
 	
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanChildHalloweenA", CHumanChildHalloweenA::Create(m_pDevice, m_pContext, TEXT("HumanChildHalloweenA")), LAYER_NPC, true)))
 		return E_FAIL;
@@ -1620,6 +1633,8 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_GrimalKinML01", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/GrimalKinML01/", L"GrimalKinML01")))
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_GrimalKinML02", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/GrimalKinML02/", L"GrimalKinML02")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Criminal", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/Criminal/", L"Criminal")))
 		return E_FAIL;
 
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanChildHalloweenA", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Witch/HumanChildHalloweenA/", L"HumanChildHalloweenA")))

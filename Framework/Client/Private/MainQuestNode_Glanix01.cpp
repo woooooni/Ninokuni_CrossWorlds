@@ -6,6 +6,7 @@
 
 #include "Game_Manager.h"
 #include "UI_Manager.h"
+#include "Quest_Manager.h"
 
 CMainQuestNode_Glanix01::CMainQuestNode_Glanix01()
 {
@@ -23,7 +24,6 @@ HRESULT CMainQuestNode_Glanix01::Initialize()
 	m_strNextQuestName = TEXT("더 깊숙히 조사하기");
 	m_strNextQuestContent = TEXT("코에루크 설원 깊은 곳 까지 들어가보자");
 
-
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/04.MainQuest_Glanix/MainQuest_Glanix01.json");
 
 	for (const auto& talkDesc : Load) {
@@ -38,6 +38,7 @@ HRESULT CMainQuestNode_Glanix01::Initialize()
 
 void CMainQuestNode_Glanix01::Start()
 {
+	CQuest_Manager::GetInstance()->Set_SubQuestRunning(CSubQuest::SUBQUEST_VELLA_NOISYSNOWFIELD, true);
 	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
 	m_pAren = GI->Find_GameObject(LEVELID::LEVEL_ICELAND, LAYER_NPC, TEXT("Aren"));
