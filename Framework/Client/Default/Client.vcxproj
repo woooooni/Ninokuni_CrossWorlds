@@ -260,6 +260,7 @@
     <ClInclude Include="..\Public\Crystal_Ball.h" />
     <ClInclude Include="..\Public\Crystal_Tower.h" />
     <ClInclude Include="..\Public\Decal.h" />
+    <ClInclude Include="..\Public\DefenceInvasion_Portal.h" />
     <ClInclude Include="..\Public\Defence_Tower.h" />
     <ClInclude Include="..\Public\Dochi.h" />
     <ClInclude Include="..\Public\Door_Enter_FX.h" />
@@ -1023,6 +1024,7 @@
     <ClCompile Include="..\Private\Crystal_Ball.cpp" />
     <ClCompile Include="..\Private\Crystal_Tower.cpp" />
     <ClCompile Include="..\Private\Decal.cpp" />
+    <ClCompile Include="..\Private\DefenceInvasion_Portal.cpp" />
     <ClCompile Include="..\Private\Defence_Tower.cpp" />
     <ClCompile Include="..\Private\Dochi.cpp" />
     <ClCompile Include="..\Private\Door_Enter_FX.cpp" />

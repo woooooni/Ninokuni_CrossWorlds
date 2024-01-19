@@ -74,15 +74,20 @@ HRESULT CPlayer::Tag_Character(CHARACTER_TYPE eType)
 	if (m_pCharacter->Get_CharacterType() != eType)
 	{
 		CTransform* pPrevCharacterTransform = m_pCharacter->Get_Component<CTransform>(L"Com_Transform");
-
 		if (nullptr == pPrevCharacterTransform)
 			return E_FAIL;
 
+		CCharacter* pTagCharacter = CCharacter_Manager::GetInstance()->Get_Character(eType);
+		if (nullptr == pTagCharacter)
+			return E_FAIL;
+
+		if (false == pTagCharacter->Is_Useable())
+			return E_FAIL;
 
 		if (FAILED(m_pCharacter->Tag_Out()))
 			return E_FAIL;
 
-		m_pCharacter = CCharacter_Manager::GetInstance()->Get_Character(eType);
+		m_pCharacter = pTagCharacter;
 
 		if (nullptr == m_pCharacter)
 			return E_FAIL;

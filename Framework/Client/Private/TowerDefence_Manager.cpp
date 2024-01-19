@@ -18,6 +18,12 @@
 #include "Picking_Manager.h"
 #include "Mesh.h"
 
+#include "Game_Manager.h"
+#include "Player.h"
+#include "Character.h"
+#include "GameObject.h"
+#include "DefenceInvasion_Portal.h"
+
 
 IMPLEMENT_SINGLETON(CTowerDefence_Manager)
 
@@ -100,6 +106,14 @@ void CTowerDefence_Manager::LateTick(_float fTimeDelta)
 
 void CTowerDefence_Manager::Prepare_Defence()
 {
+	++m_iCurrentStage;
+
+	if (m_iCurrentStage == 4)
+	{
+		End_Defence();
+		return;
+	}
+
 	if (nullptr != m_pPicked_Object)
 	{
 		m_pPicked_Object = nullptr;
@@ -115,11 +129,21 @@ void CTowerDefence_Manager::Prepare_Defence()
 		Safe_Release(pDefenceObject);
 	}
 	m_DefenceObjects.clear();
+
+	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
 }
 
 void CTowerDefence_Manager::Start_Defence()
 {
 	m_eCurrentPhase = TOWER_DEFENCE_PHASE::DEFENCE_PROGRESS;
+	if (nullptr != m_pPicked_Object)
+	{
+		m_pPicked_Object = nullptr;
+		Safe_Release(m_pPicked_Object);
+		m_pPicked_ObjectTransform = nullptr;
+	}
+	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
+	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
 }
 
 void CTowerDefence_Manager::Finish_Defence()
@@ -141,6 +165,13 @@ void CTowerDefence_Manager::Finish_Defence()
 	}
 	m_DefenceObjects.clear();
 
+	for (auto& pMonster : m_DefenceMonsters)
+	{
+		pMonster->Set_Dead(true);
+		Safe_Release(pMonster);
+	}
+	m_DefenceMonsters.clear();
+	
 
 }
 
@@ -201,45 +232,64 @@ void CTowerDefence_Manager::Tick_Defence_Prepare(_float fTimeDelta)
 
 	Picking_Position();
 
+	if (KEY_HOLD(KEY::CTRL) && KEY_TAP(KEY::LBTN))
+	{
+		Picking_Object();
+		return;
+	}
+		
 	if (KEY_TAP(KEY::LBTN))
-		Create_Defence_Object();		
+	{
+		Create_Defence_Object();
+		return;
+	}
+		
 
 	if (KEY_TAP(KEY::RBTN))
 	{
 		Safe_Release(m_pPicked_Object);
 		m_pPicked_Object = nullptr;
 		m_pPicked_ObjectTransform = nullptr;
+		return;
 	}
 
 	if (KEY_TAP(KEY::F5))
 	{
 		Set_PickObject(GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_ETC, L"Prototype_GameObject_DefenceTower_Cannon"));
+		return;
 	}
 
 	if (KEY_TAP(KEY::F6))
 	{
 		Set_PickObject(GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_ETC, L"Prototype_GameObject_DefenceTower_Crystal"));
+		return;
 	}
 
 	if (KEY_TAP(KEY::F7))
 	{
 		Set_PickObject(GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_ETC, L"Prototype_GameObject_DefenceTower_Flame"));
+		return;
 	}
 
 	if (KEY_TAP(KEY::F8))
 	{
 		Set_PickObject(GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_ETC, L"Prototype_GameObject_DefenceTower_Shadow"));
+		return;
 	}
 
 	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::X))
 	{
-		Finish_Defence();
+		Start_Defence();
+		return;
 	}
-
 }
 
 void CTowerDefence_Manager::Tick_Defence_Progress(_float fTimeDelta)
 {
+	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::X))
+	{
+		Finish_Defence();
+	}
 }
 
 void CTowerDefence_Manager::Tick_Defence_Finish(_float fTimeDelta)
@@ -272,7 +322,10 @@ void CTowerDefence_Manager::LateTick_Defence_Finish(_float fTimeDelta)
 
 void CTowerDefence_Manager::Picking_Position()
 {
-	list<CGameObject*> PickingObjects = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_GROUND);
+	if (nullptr == m_pPicked_Object || nullptr == m_pPicked_ObjectTransform)
+		return;
+ 
+	list<CGameObject*>& PickingObjects = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_GROUND);
 	for (auto& pObject : PickingObjects)
 	{
 		Vec4 vPickingPos = {};
@@ -292,8 +345,12 @@ void CTowerDefence_Manager::Picking_Position()
 		}
 
 	}
+}
 
-	PickingObjects = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_GROUND);
+void CTowerDefence_Manager::Picking_Object()
+{
+	list<CGameObject*>& PickingObjects = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_ETC);
+
 	for (auto& pObject : PickingObjects)
 	{
 		Vec4 vPickingPos = {};
@@ -306,13 +363,26 @@ void CTowerDefence_Manager::Picking_Position()
 			{
 				if (nullptr != m_pPicked_ObjectTransform)
 				{
-					m_pPicked_ObjectTransform->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vPickingPos, 1.f));
+					if (nullptr != m_pPicked_Object)
+					{
+						Safe_Release(m_pPicked_Object);
+						m_pPicked_Object = nullptr;
+					}
+
+					
+					m_pPicked_ObjectTransform = m_pPicked_Object->Get_Component<CTransform>(L"Com_Transform");
+					if (nullptr == m_pPicked_ObjectTransform)
+						return;
+
+					m_pPicked_Object = pObject;
 					return;
 				}
 			}
 		}
 	}
 }
+
+
 
 HRESULT CTowerDefence_Manager::Create_Defence_Object()
 {
@@ -336,7 +406,7 @@ HRESULT CTowerDefence_Manager::Create_Defence_Object()
 	}
 
 	pNewObjectTransform->Set_WorldMatrix(m_pPicked_ObjectTransform->Get_WorldMatrix());
-	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_PROP, pNewGameObject)))
+	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_ETC, pNewGameObject)))
 	{
 		Safe_Release(pNewGameObject);
 		MSG_BOX("pNewGameObject Add Failed. : CTowerDefence_Manager");
@@ -346,6 +416,13 @@ HRESULT CTowerDefence_Manager::Create_Defence_Object()
 	Safe_AddRef(pNewGameObject);
 	m_DefenceObjects.push_back(pNewGameObject);
 		
+	
+
+	return S_OK;
+}
+
+HRESULT CTowerDefence_Manager::Spawn_Defence_Monsters()
+{
 	
 
 	return S_OK;
@@ -403,6 +480,9 @@ HRESULT CTowerDefence_Manager::Ready_Prototype_Defence_Objects()
 	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_DefenceTower_Shadow", CShadow_Tower::Create(m_pDevice, m_pContext, L"DefenceTower_Shadow"), LAYER_TYPE::LAYER_ETC, true)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_DefenceInvasion_Portal", CDefenceInvasion_Portal::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_ETC, true)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -420,8 +500,13 @@ void CTowerDefence_Manager::Free()
 
 		for (_uint i = 0; i < m_DefenceObjects.size(); ++i)
 			Safe_Release(m_DefenceObjects[i]);
-
 		m_DefenceObjects.clear();
+
+		for (_uint i = 0; i < m_DefenceMonsters.size(); ++i)
+			Safe_Release(m_DefenceMonsters[i]);
+		m_DefenceMonsters.clear();
+
+		
 	}
 
 }

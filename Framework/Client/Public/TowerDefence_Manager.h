@@ -3,6 +3,9 @@
 #include "Client_Defines.h"
 #include "Base.h"
 
+BEGIN(Engine)
+class CGameObject;
+END
 
 BEGIN(Client)
 
@@ -35,6 +38,10 @@ public:
 	void Set_PickObject(class CGameObject* pPickObject);
 	class CGameObject* Get_PickObject() { return m_pPicked_Object; }
 
+public:
+	_uint Get_CurrentStage() { return m_iCurrentStage; }
+	_int Get_CurrentCost() { return m_iCost; }
+
 private:
 	void Tick_Defence_No_Run(_float fTimeDelta);
 	void Tick_Defence_Prepare(_float fTimeDelta);
@@ -50,7 +57,9 @@ private:
 
 private:
 	void Picking_Position();
+	void Picking_Object();
 	HRESULT Create_Defence_Object();
+	HRESULT Spawn_Defence_Monsters();
 
 private:
 	HRESULT Ready_Defence_Models();
@@ -64,9 +73,13 @@ private:
 	ID3D11Device* m_pDevice = nullptr;
 	ID3D11DeviceContext* m_pContext = nullptr;
 
+private:
+	vector<class CGameObject*> m_DefenceObjects;
+	vector<class CGameObject*> m_DefenceMonsters;
 
 private:
-	vector<CGameObject*> m_DefenceObjects;
+	_uint m_iCurrentStage = 0;
+	_int m_iCost = 10;
 
 private:
 	_bool m_bReserved = false;
