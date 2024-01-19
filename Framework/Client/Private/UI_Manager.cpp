@@ -95,12 +95,14 @@
 #include "UI_Setting_BtnVolume.h"
 #include "UI_Default_BackStars.h"
 #include "UI_Costume_ChangeBtn.h"
+#include "UI_InGame_Setting_Tab.h"
 #include "UI_SkillSection_Frame.h"
 #include "UI_Default_Background.h"
 #include "UI_BtnCharacterSelect.h"
 #include "UI_SetNickname_Window.h"
 #include "UI_Loading_Background.h"
 #include "UI_WeaponSection_Slot.h"
+#include "UI_InGame_Setting_Slot.h"
 #include "UI_Dialog_BattleWindow.h"
 #include "UI_SetNickname_Textbox.h"
 #include "UI_SkillWindow_LineBox.h"
@@ -119,14 +121,17 @@
 #include "UI_WeaponSection_Selected.h"
 #include "UI_ImajinnSection_Vehicle.h"
 #include "UI_Emoticon_SpeechBalloon.h"
+#include "UI_InGame_Setting_OpenBtn.h"
 #include "UI_SkillSection_Background.h"
 #include "UI_ImajinnSection_Emoticon.h"
+#include "UI_InGame_Setting_RadioBtn.h"
 #include "UI_Emoticon_BalloonEmoticon.h"
 #include "UI_MonsterHP_ElementalFrame.h"
 #include "UI_SkillSection_Interaction.h"
 #include "UI_SkillSection_ClassicSkill.h"
 #include "UI_ImajinnSection_Background.h"
 #include "UI_SkillSection_SpecialSkill.h"
+#include "UI_InGame_Setting_RadioGroup.h"
 #include "UI_SkillSection_CoolTimeFrame.h"
 #include "UI_WeaponSection_DefaultWeapon.h"
 #include "UI_SkillSection_BtnInteraction.h"
@@ -3333,6 +3338,154 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(m_pFireVignette);
 
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 600.f;
+	UIDesc.fCY = g_iWinSizeY;
+	UIDesc.fX = g_iWinSizeX - UIDesc.fCX * 0.5f;
+	UIDesc.fY = g_iWinSizeY * 0.5f;
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Ingame_Setting_Window"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_pInGameSetting = dynamic_cast<CUI_InGame_Setting_Window*>(pWindow);
+	if (nullptr == m_pInGameSetting)
+		return E_FAIL;
+	Safe_AddRef(m_pInGameSetting);
+
+	m_GraphicSlot.reserve(3);
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 461.f;
+	UIDesc.fCY = 27.f;
+	UIDesc.fX = g_iWinSizeX - UIDesc.fCX * 0.5f - 15.f;
+	UIDesc.fY = 120.f;
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Ingame_Setting_Graphic_Slot_First"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_GraphicSlot.push_back(dynamic_cast<CUI_InGame_Setting_Slot*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 461.f;
+	UIDesc.fCY = 55.f;
+	UIDesc.fX = g_iWinSizeX - UIDesc.fCX * 0.5f - 15.f;
+	UIDesc.fY = 180.f;
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Ingame_Setting_Graphic_Slot_Second"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_GraphicSlot.push_back(dynamic_cast<CUI_InGame_Setting_Slot*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 461.f;
+	UIDesc.fCY = 377.f;
+	UIDesc.fX = g_iWinSizeX - UIDesc.fCX * 0.5f - 15.f;
+	UIDesc.fY = 410.f;
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Ingame_Setting_Graphic_Slot_Third"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_GraphicSlot.push_back(dynamic_cast<CUI_InGame_Setting_Slot*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+	m_CameraSlot.reserve(6);
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 461.f;
+	UIDesc.fCY = 27.f;
+	UIDesc.fX = g_iWinSizeX - UIDesc.fCX * 0.5f - 15.f;
+	UIDesc.fY = 120.f;
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Ingame_Setting_Camera_Slot_First"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_CameraSlot.push_back(dynamic_cast<CUI_InGame_Setting_Slot*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 461.f;
+	UIDesc.fCY = 55.f;
+	UIDesc.fX = g_iWinSizeX - UIDesc.fCX * 0.5f - 15.f;
+	UIDesc.fY = 180.f;
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Ingame_Setting_Camera_Slot_Second"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_CameraSlot.push_back(dynamic_cast<CUI_InGame_Setting_Slot*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 461.f;
+	UIDesc.fCY = 159.f;
+	UIDesc.fX = g_iWinSizeX - UIDesc.fCX * 0.5f - 15.f;
+	UIDesc.fY = 295.f;
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Ingame_Setting_Camera_Slot_Third"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_CameraSlot.push_back(dynamic_cast<CUI_InGame_Setting_Slot*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 461.f;
+	UIDesc.fCY = 55.f;
+	UIDesc.fX = g_iWinSizeX - UIDesc.fCX * 0.5f - 15.f;
+	UIDesc.fY = 415.f;
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Ingame_Setting_Camera_Slot_Fourth"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_CameraSlot.push_back(dynamic_cast<CUI_InGame_Setting_Slot*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 461.f;
+	UIDesc.fCY = 55.f;
+	UIDesc.fX = g_iWinSizeX - UIDesc.fCX * 0.5f - 15.f;
+	UIDesc.fY = 480.f;
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Ingame_Setting_Camera_Slot_Fifth"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_CameraSlot.push_back(dynamic_cast<CUI_InGame_Setting_Slot*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 461.f;
+	UIDesc.fCY = 55.f;
+	UIDesc.fX = g_iWinSizeX - UIDesc.fCX * 0.5f - 15.f;
+	UIDesc.fY = 545.f;
+	pWindow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Ingame_Setting_Camera_Slot_Sixth"), &UIDesc, &pWindow)))
+		return E_FAIL;
+	m_CameraSlot.push_back(dynamic_cast<CUI_InGame_Setting_Slot*>(pWindow));
+	if (nullptr == pWindow)
+		return E_FAIL;
+	Safe_AddRef(pWindow);
+
+	fOffset = 10.f;
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 64.f * 0.8f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = g_iWinSizeX - (UIDesc.fCX * 0.5f) - fOffset - 5.f;
+	UIDesc.fY = (UIDesc.fCY * 1.5f) + fOffset * 6.f;
+
+	pButton = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Ingame_Setting_OpenBtn"), &UIDesc, &pButton)))
+		return E_FAIL;
+	m_pBtnInGameSetting = dynamic_cast<CUI_InGame_Setting_OpenBtn*>(pButton);
+	if (nullptr == m_pBtnInGameSetting)
+		return E_FAIL;
+	Safe_AddRef(m_pBtnInGameSetting);
+
+
 	return S_OK;
 }
 
@@ -3988,6 +4141,38 @@ HRESULT CUI_Manager::Ready_GameObjectToLayer(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(m_pFireVignette);
 
+	if (nullptr == m_pInGameSetting)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pInGameSetting)))
+		return E_FAIL;
+	Safe_AddRef(m_pInGameSetting);
+
+	for (auto& iter : m_GraphicSlot)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	for (auto& iter : m_CameraSlot)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	if (nullptr == m_pBtnInGameSetting)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pBtnInGameSetting)))
+		return E_FAIL;
+	Safe_AddRef(m_pBtnInGameSetting);
+
 	return S_OK;
 }
 
@@ -4000,10 +4185,6 @@ HRESULT CUI_Manager::Ready_BossHPBar(CBoss* pBoss, void* pArg)
 	m_pBossHPBar->Set_Owner(pBoss);
 
 	m_bBossActive = true;
-
-//	m_pBossInfo->Set_Active(true);
-//	m_pBossHPBack->Set_Active(true);
-//	m_pBossHPBar->Set_Active(true);
 
 	return S_OK;
 }
@@ -4234,16 +4415,6 @@ HRESULT CUI_Manager::Tick_GamePlayLevel(_float fTimeDelta)
 //			}
 //		}
 //	}
-
-	if (KEY_TAP(KEY::O))
-	{
-		Set_BattleDialogue(TEXT("배틀 다이얼로그 오프셋 작업중 줄 바꿈 어디서 하는게 적당할지 테스트 하는 중 가나다라마바사 아 자 차카 타파하"));
-		OnOff_DialogWindow(true, 2);
-	}
-	if (KEY_TAP(KEY::P))
-	{
-		OnOff_DialogWindow(false, 2);
-	}
 
 	return S_OK;
 }
@@ -5134,6 +5305,14 @@ HRESULT CUI_Manager::Using_CloseButton()
 			OnOff_EmoticonWindow(false);
 	}
 
+	if (nullptr != m_pInGameSetting)
+	{
+		if (m_pInGameSetting->Get_Active())
+			OnOff_InGameSetWindow(false);
+
+		OnOff_CloseButton(false); // ClostBtn도 없앤다.
+	}
+
 	return S_OK;
 }
 
@@ -5371,6 +5550,7 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 		m_pBtnInven->Set_Active(true);
 		m_pBtnQuest->Set_Active(true);
 		m_pBtnShowMinimap->Set_Active(true);
+		m_pBtnInGameSetting->Set_Active(true);
 
 		m_pSkillBG->Set_Active(true);
 		for (auto& iter : m_ClassicSkill)
@@ -5438,6 +5618,7 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 		m_pBtnInven->Set_Active(false);
 		m_pBtnQuest->Set_Active(false);
 		m_pBtnShowMinimap->Set_Active(false);
+		m_pBtnInGameSetting->Set_Active(false);
 
 		m_pSkillBG->Set_Active(false);
 		for (auto& iter : m_ClassicSkill)
@@ -5494,6 +5675,9 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 
 void CUI_Manager::Hide_GamePlaySetting(_bool bHide)
 {
+
+	// Todo m_pBtnInGameSetting 추가해야함
+
 	if (bHide) // 아이콘을 숨긴다
 	{
 		// Active false를 해야하는 UI
@@ -6545,6 +6729,95 @@ HRESULT CUI_Manager::OnOff_CostumeSlot(_uint iSection, _bool bOnOff)
 	}
 
 	return S_OK;
+}
+
+void CUI_Manager::OnOff_InGameSetWindow(_bool bOnOff)
+{
+	if (true == bOnOff)
+	{
+		OnOff_GamePlaySetting(false);
+		m_pInGameSetting->Set_Active(true);
+
+		if (nullptr != m_pBtnClose)
+			m_pBtnClose->Set_Active(true);
+	}
+	else
+	{
+		for (auto& iter : m_GraphicSlot)
+		{
+			iter->Set_Active(false);
+		}
+		for (auto& iter : m_CameraSlot)
+		{
+			iter->Set_Active(false);
+		}
+
+		m_pInGameSetting->Set_Active(false);
+		OnOff_GamePlaySetting(true);
+	}
+}
+
+void CUI_Manager::OnOff_SettingSlot(_uint iSection, _bool bOnOff)
+{
+	if (bOnOff) // On
+	{
+		switch (iSection)
+		{
+		case 0: // 그래픽
+			for (auto& iter : m_GraphicSlot)
+			{
+				if (nullptr != iter)
+				{
+					iter->Set_Active(true);
+				}
+			}
+			for (auto& iter : m_CameraSlot)
+			{
+				if (nullptr != iter)
+					iter->Set_Active(false);
+			}
+			break;
+
+		case 1: // 게임
+			for (auto& iter : m_GraphicSlot)
+			{
+				if (nullptr != iter)
+					iter->Set_Active(false);
+			}
+			for (auto& iter : m_CameraSlot)
+			{
+				if (nullptr != iter)
+					iter->Set_Active(true);
+			}
+			break;
+
+		case 2: // 오디오
+			for (auto& iter : m_GraphicSlot)
+			{
+				if (nullptr != iter)
+					iter->Set_Active(false);
+			}
+			for (auto& iter : m_CameraSlot)
+			{
+				if (nullptr != iter)
+					iter->Set_Active(false);
+			}
+			break;
+		}
+	}
+	else
+	{
+		for (auto& iter : m_GraphicSlot)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_CameraSlot)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+	}
 }
 
 HRESULT CUI_Manager::OnOff_SkillWindowSlot(_uint iMenuType, _bool bOnOff)
@@ -7848,6 +8121,100 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		CUI_Vignette_Fire::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Window"),
+		CUI_InGame_Setting_Window::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Tab_Graphic"),
+		CUI_InGame_Setting_Tab::Create(m_pDevice, m_pContext, CUI_InGame_Setting_Tab::UI_SETTINGTAB::SETTING_GRAPHIC), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Tab_Game"),
+		CUI_InGame_Setting_Tab::Create(m_pDevice, m_pContext, CUI_InGame_Setting_Tab::UI_SETTINGTAB::SETTING_GAME), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Tab_Audio"),
+		CUI_InGame_Setting_Tab::Create(m_pDevice, m_pContext, CUI_InGame_Setting_Tab::UI_SETTINGTAB::SETTING_AUDIO), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Graphic_Slot_First"),
+		CUI_InGame_Setting_Slot::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_Slot::UI_SETTING_SECTION::SETTING_GRAPHIC,
+			CUI_InGame_Setting_Slot::UI_SLOT_ORDER::SLOT_FIRST), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Graphic_Slot_Second"),
+		CUI_InGame_Setting_Slot::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_Slot::UI_SETTING_SECTION::SETTING_GRAPHIC,
+			CUI_InGame_Setting_Slot::UI_SLOT_ORDER::SLOT_SECOND), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Graphic_Slot_Third"),
+		CUI_InGame_Setting_Slot::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_Slot::UI_SETTING_SECTION::SETTING_GRAPHIC,
+			CUI_InGame_Setting_Slot::UI_SLOT_ORDER::SLOT_THIRD), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Camera_Slot_First"),
+		CUI_InGame_Setting_Slot::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_Slot::UI_SETTING_SECTION::SETTING_CAMERA,
+			CUI_InGame_Setting_Slot::UI_SLOT_ORDER::SLOT_FIRST), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Camera_Slot_Second"),
+		CUI_InGame_Setting_Slot::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_Slot::UI_SETTING_SECTION::SETTING_CAMERA,
+			CUI_InGame_Setting_Slot::UI_SLOT_ORDER::SLOT_SECOND), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Camera_Slot_Third"),
+		CUI_InGame_Setting_Slot::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_Slot::UI_SETTING_SECTION::SETTING_CAMERA,
+			CUI_InGame_Setting_Slot::UI_SLOT_ORDER::SLOT_THIRD), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Camera_Slot_Fourth"),
+		CUI_InGame_Setting_Slot::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_Slot::UI_SETTING_SECTION::SETTING_CAMERA,
+			CUI_InGame_Setting_Slot::UI_SLOT_ORDER::SLOT_FOURTH), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Camera_Slot_Fifth"),
+		CUI_InGame_Setting_Slot::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_Slot::UI_SETTING_SECTION::SETTING_CAMERA,
+			CUI_InGame_Setting_Slot::UI_SLOT_ORDER::SLOT_FIFTH), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Camera_Slot_Sixth"),
+		CUI_InGame_Setting_Slot::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_Slot::UI_SETTING_SECTION::SETTING_CAMERA,
+			CUI_InGame_Setting_Slot::UI_SLOT_ORDER::SLOT_SIXTH), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_OpenBtn"),
+		CUI_InGame_Setting_OpenBtn::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton"),
+		CUI_InGame_Setting_RadioBtn::Create(m_pDevice, m_pContext, CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_ONBTN), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton"),
+		CUI_InGame_Setting_RadioBtn::Create(m_pDevice, m_pContext, CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_OFFBTN), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Natural"),
+		CUI_InGame_Setting_RadioGroup::Create(m_pDevice, m_pContext, CUI_InGame_Setting_RadioGroup::UI_RADIOGROUP::GRAPHIC_NATURAL), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Shadow"),
+		CUI_InGame_Setting_RadioGroup::Create(m_pDevice, m_pContext, CUI_InGame_Setting_RadioGroup::UI_RADIOGROUP::GRAPHIC_SHADOW), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Outline"),
+		CUI_InGame_Setting_RadioGroup::Create(m_pDevice, m_pContext, CUI_InGame_Setting_RadioGroup::UI_RADIOGROUP::GRAPHIC_OUTLINE), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Bloom"),
+		CUI_InGame_Setting_RadioGroup::Create(m_pDevice, m_pContext, CUI_InGame_Setting_RadioGroup::UI_RADIOGROUP::GRAPHIC_BLOOM), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Blur"),
+		CUI_InGame_Setting_RadioGroup::Create(m_pDevice, m_pContext, CUI_InGame_Setting_RadioGroup::UI_RADIOGROUP::GRAPHIC_BLUR), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_SSAO"),
+		CUI_InGame_Setting_RadioGroup::Create(m_pDevice, m_pContext, CUI_InGame_Setting_RadioGroup::UI_RADIOGROUP::GRAPHIC_SSAO), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_PBR"),
+		CUI_InGame_Setting_RadioGroup::Create(m_pDevice, m_pContext, CUI_InGame_Setting_RadioGroup::UI_RADIOGROUP::GRAPHIC_PBR), LAYER_UI)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -8172,6 +8539,7 @@ void CUI_Manager::Free()
 	Safe_Release(m_pFireVignette);
 
 	Safe_Release(m_pInGameSetting);
+	Safe_Release(m_pBtnInGameSetting);
 
 	for (auto& pFrame : m_CoolTimeFrame)
 		Safe_Release(pFrame);
@@ -8328,6 +8696,14 @@ void CUI_Manager::Free()
 	for (auto& pItem : m_QuestItems)
 		Safe_Release(pItem);
 	m_QuestItems.clear();
+
+	for (auto& pSlot : m_GraphicSlot)
+		Safe_Release(pSlot);
+	m_GraphicSlot.clear();
+
+	for (auto& pSlot : m_CameraSlot)
+		Safe_Release(pSlot);
+	m_GraphicSlot.clear();
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
