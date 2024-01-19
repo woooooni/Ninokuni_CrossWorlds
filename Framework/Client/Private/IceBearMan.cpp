@@ -7,8 +7,6 @@
 #include "UI_MonsterHP_World.h"
 #include "UIDamage_Manager.h"
 
-#include "Quest_Manager.h"
-
 CIceBearMan::CIceBearMan(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
 	: CMonster(pDevice, pContext, strObjectTag, tStat)
 {

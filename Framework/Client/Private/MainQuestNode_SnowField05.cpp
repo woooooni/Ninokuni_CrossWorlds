@@ -155,8 +155,6 @@ void CMainQuestNode_SnowField05::LateTick(const _float& fTimeDelta)
 
 void CMainQuestNode_SnowField05::TalkEvent()
 {
-	wstring strAnimName = TEXT("");
-
 	switch (m_iTalkIndex)
 	{
 	case 0:

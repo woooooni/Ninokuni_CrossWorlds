@@ -29,7 +29,8 @@ HRESULT CGlanixState_Rage2Wave::Initialize(const list<wstring>& AnimationList)
 
 void CGlanixState_Rage2Wave::Enter_State(void* pArg)
 {
-	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_Skill06"));
+	m_pModelCom->Set_Animation(TEXT("SKM_Glanix.ao|Glanix_Skill06")); 
+	m_bIsCreateWave = false;
 }
 
 void CGlanixState_Rage2Wave::Tick_State(_float fTimeDelta)
@@ -45,13 +46,11 @@ void CGlanixState_Rage2Wave::Tick_State(_float fTimeDelta)
 		Generate_Icicle(1);
 	}
 
-	if (m_pModelCom->Get_CurrAnimationFrame() == 50)
+	if (!m_bIsCreateWave && m_pModelCom->Get_CurrAnimationFrame() == 50)
 	{
 		CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
-		_float4 vOwnerPos = {};
-		XMStoreFloat4(&vOwnerPos, m_pGlanix->Get_OriginPos());
-		_vector vSpritPos = { vOwnerPos.x, vOwnerPos.y, vOwnerPos.z, 1.f };
-		// GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_ShockWave"), &m_pGlanix->Get_WavePoint());
+		GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Glanix_ShockWave"), m_pGlanix);
+		m_bIsCreateWave = true;
 	}
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
