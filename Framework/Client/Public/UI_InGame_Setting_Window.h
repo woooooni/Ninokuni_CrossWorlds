@@ -30,6 +30,8 @@ private:
 
 	_float2 m_vOnPosition = _float2(0.f, 0.f); // UI가 이동할 최종 위치
 	_float2 m_vOffPosition = _float2(0.f, 0.f); // UI가 Active되는 시점에 보여질 위치
+
+	_bool m_bTabOpen[3];
 	
 private:
 	virtual HRESULT	Ready_Components() override;
@@ -37,6 +39,9 @@ private:
 private:
 	HRESULT	Ready_State();
 	HRESULT	Bind_ShaderResources();
+
+private:
+	void Update_SettingTab();
 
 public:
 	static CUI_InGame_Setting_Window* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);

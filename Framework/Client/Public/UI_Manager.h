@@ -162,10 +162,13 @@ public: // Lobby
 
 	HRESULT OnOff_MonsterHP(_bool bOnOff, ELEMENTAL_TYPE eType = ELEMENTAL_TYPE::ELEMENTAL_END);
 	HRESULT OnOff_BossHP(_bool bOnOff);
-	void OnOff_BossNameTag(_bool bOnOff);
+	void	OnOff_BossNameTag(_bool bOnOff);
 
 	HRESULT OnOff_CostumeWindow(_bool bOnOff);
 	HRESULT OnOff_CostumeSlot(_uint iSection, _bool bOnOff);
+	
+	void	OnOff_InGameSetWindow(_bool bOnOff);
+	void	OnOff_SettingSlot(_uint iSection, _bool bOnOff);
 
 	HRESULT OnOff_SkillWindow(_bool bOnOff);
 	HRESULT OnOff_SkillWindowSlot(_uint iMenuType, _bool bOnOff);
@@ -219,13 +222,14 @@ private:
 
 	class CUI_PlayerInfo*			m_pPlayerStatus = { nullptr };
 
-	class CUI_BtnShowMenu*			m_pBtnShowMenu = { nullptr };
-	class CUI_Btn_Minimap*			m_pBtnShowMinimap = { nullptr };
-	class CUI_BtnChangeCamera*		m_pBtnCamera = { nullptr };
-	class CUI_BtnInventory*			m_pBtnInven = { nullptr };
-	class CUI_BtnQuickQuest*		m_pBtnQuest = { nullptr };
-	class CUI_BtnClose*				m_pBtnClose = { nullptr };
-	class CUI_BtnShowSetting*		m_pBtnShowSetting = { nullptr };
+	class CUI_BtnShowMenu*				m_pBtnShowMenu = { nullptr };
+	class CUI_Btn_Minimap*				m_pBtnShowMinimap = { nullptr };
+	class CUI_BtnChangeCamera*			m_pBtnCamera = { nullptr };
+	class CUI_BtnInventory*				m_pBtnInven = { nullptr };
+	class CUI_BtnQuickQuest*			m_pBtnQuest = { nullptr };
+	class CUI_BtnClose*					m_pBtnClose = { nullptr };
+	class CUI_BtnShowSetting*			m_pBtnShowSetting = { nullptr };
+	class CUI_InGame_Setting_OpenBtn*	m_pBtnInGameSetting = { nullptr };
 
 	class CUI_MainMenu*				m_pMainBG = { nullptr }; // MainMenu Background (버튼과 따로 관리된다)
 	class CUI_WindowQuest*			m_pWindowQuest = { nullptr };
@@ -325,7 +329,9 @@ private:
 	class CUI_Vignette_Ice*				m_pIceVignette = { nullptr };
 	class CUI_Vignette_Fire*			m_pFireVignette = { nullptr };
 
-	class CUI_InGame_Setting_Window*	m_pInGameSetting = { nullptr };
+	class CUI_InGame_Setting_Window*		m_pInGameSetting = { nullptr };
+	vector <class CUI_InGame_Setting_Slot*> m_GraphicSlot;
+	vector <class CUI_InGame_Setting_Slot*> m_CameraSlot;
 
 private:
 	ID3D11Device*			m_pDevice = { nullptr };

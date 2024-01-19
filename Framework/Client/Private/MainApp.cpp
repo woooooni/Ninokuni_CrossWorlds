@@ -1245,17 +1245,29 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 		return E_FAIL;
 
 	// SettingWindow
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_InGame_Setting_OpenBtn"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Setting/UI_Setting_InGame_Btn.png")))))
+		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_InGame_Setting_Window"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Setting/UI_Setting_InGame_Window_Menu.png")))))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_InGame_Setting_Unselected_Icons"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Setting/UI_Setting_InGame_Menu_Unselected_%d.png"), 3))))
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_InGame_Setting_Tab_Audio"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Setting/UI_Setting_InGame_Menu_Audio_%d.png"), 2))))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_InGame_Setting_Selected_Icons"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Setting/UI_Setting_InGame_Menu_Selected_%d.png"), 3))))
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_InGame_Setting_Tab_Game"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Setting/UI_Setting_InGame_Menu_Game_%d.png"), 2))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_InGame_Setting_Tab_Graphic"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Setting/UI_Setting_InGame_Menu_Graphic_%d.png"), 2))))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_InGame_Setting_Graphic_Slots"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Setting/UI_Setting_InGame_Graphic_Slot_%d.png"), 3))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_InGame_Setting_Camera_Slots"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Setting/UI_Setting_InGame_Camera_Slot_%d.png"), 6))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_InGame_Setting_RadioBtn"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Setting/UI_CheckBox_%d.png"), 2))))
 		return E_FAIL;
 
 	return S_OK;
