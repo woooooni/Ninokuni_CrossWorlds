@@ -433,11 +433,11 @@ void CCamera_Action::Test(_float fTimeDelta)
 		if (KEY_TAP(KEY::F5))
 			Change_Action_Talk_Object(ACTION_TALK_DESC::VIEW_TYPE::ALL_LEFT);
 
-		//if (KEY_TAP(KEY::F6))
-		//	Change_Action_Talk_Object(ACTION_TALK_DESC::VIEW_TYPE::KUU_AND_PLAYER_BACK_NPC);
-		//
-		//if (KEY_TAP(KEY::F7))
-		//	Change_Action_Talk_Object(ACTION_TALK_DESC::VIEW_TYPE::NPC_BACK_KUU_AND_PLAYER);
+		if (KEY_TAP(KEY::F6))
+			Change_Action_Talk_Object(ACTION_TALK_DESC::VIEW_TYPE::KUU_AND_PLAYER_FROM_BACK_NPC);
+		
+		if (KEY_TAP(KEY::F7))
+			Change_Action_Talk_Object(ACTION_TALK_DESC::VIEW_TYPE::NPC_FROM_BACK_KUU_AND_PLAYER);
 	}
 
 	if (KEY_TAP(KEY::HOME))
@@ -455,13 +455,15 @@ void CCamera_Action::Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType
 	case CCamera_Action::tagActionTalkDesc::KUU:
 	{
 		const _float fDistance = 2.f;
-		const _float fCamPostionHeight	= 0.3f;
+		
 		const _float fCamLookAtHeight	= 0.2f;
 
 		/* CamPosition */
-		vCamPosition = Vec4(m_tActionTalkDesc.pKuu->Get_GoalPosition()) +
-						Vec4(m_tActionTalkDesc.pTransform_Kuu->Get_Look()).ZeroY() * fDistance;
-		vCamPosition.y += fCamPostionHeight;
+		const Vec4 vTargetOffset = { -0.2f, 0.3f, 0.f, 1.f };
+		vCamPosition = Vec4(m_tActionTalkDesc.pKuu->Get_GoalPosition()) 
+			+ Vec4(m_tActionTalkDesc.pTransform_Kuu->Get_Look()).ZeroY() * fDistance
+			+ m_tActionTalkDesc.pTransform_Kuu->Get_RelativeOffset(vTargetOffset);
+		vCamPosition.w = 1.f;
 
 		/* CamLookAt */
 		vCamLookAt = m_tActionTalkDesc.pKuu->Get_GoalPosition();
@@ -640,14 +642,36 @@ void CCamera_Action::Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType
 		}
 	}
 	break;
-	case CCamera_Action::tagActionTalkDesc::KUU_AND_PLAYER_BACK_NPC:
+	case CCamera_Action::tagActionTalkDesc::KUU_AND_PLAYER_FROM_BACK_NPC:
 	{
+		/* CamPosition */
+		const Vec4 vTargetOffset = { 1.f, 2.f, -1.f, 1.f };
+		vCamPosition = (Vec4)m_tActionTalkDesc.pTransformNpc1->Get_Position() + (Vec4)m_tActionTalkDesc.pTransformNpc1->Get_RelativeOffset(vTargetOffset);
+		vCamPosition.w = 1.f;
 
+		/* CamLookAt */
+		Vec4 vPlayerKuuCenterPos = Vec4(m_tActionTalkDesc.pTransform_Kuu->Get_Position() + m_tActionTalkDesc.pTransform_Player->Get_Position()) * 0.5f;
+		vCamLookAt = vPlayerKuuCenterPos;
+		vCamLookAt.w = 1.f;
+
+		/* Fov */
+		Set_Fov(Cam_Fov_Action_Talk_Narrow);
 	}
 	break;
-	case CCamera_Action::tagActionTalkDesc::NPC_BACK_KUU_AND_PLAYER:
+	case CCamera_Action::tagActionTalkDesc::NPC_FROM_BACK_KUU_AND_PLAYER:
 	{
+		/* CamPosition */
+		const Vec4 vTargetOffset = { 0.f, 1.f, -1.3f, 1.f };
+		vCamPosition = m_tActionTalkDesc.pKuu->Get_GoalPosition() + m_tActionTalkDesc.pTransform_Kuu->Get_RelativeOffset(vTargetOffset);
+		vCamPosition.w = 1.f;
 
+		/* CamLookAt */
+		const Vec4 vLookAtOffset = { 0.f, 1.f, 0.f, 1.f };
+		vCamLookAt = (Vec4)m_tActionTalkDesc.pTransformNpc1->Get_Position() + (Vec4)m_tActionTalkDesc.pTransformNpc1->Get_RelativeOffset(vLookAtOffset);
+		vCamLookAt.w = 1.f;
+
+		/* Fov */
+		Set_Fov(Cam_Fov_Action_Talk_Narrow);
 	}
 	break;
 	default:
