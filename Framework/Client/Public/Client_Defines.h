@@ -104,13 +104,41 @@ namespace Client
 
 	/* Camera - Default */
 
-	enum CAMERA_TYPE { FREE, FOLLOW, CUTSCENE_MAP, CUTSCENE_BOSS, ACTION, TOP, CAMERA_TYPE_END };
+	enum CAMERA_TYPE 
+	{ 
+		FREE, 
+		FOLLOW, 
+		CUTSCENE_MAP, 
+		CUTSCENE_BOSS, 
+		ACTION, 
+		TOP, 
+		QUATER, 
+		CAMERA_TYPE_END 
+	};
 
 	enum CAMERA_VIEW_TYPE { BACK, SHOLDER };
 
-	static const char*	CameraCharNames[CAMERA_TYPE::CAMERA_TYPE_END]{ "Camera_Free", "Camera_Follow", "Camera_CutScene_Map", "Camera_CutScene_Boss", "Camera_Action" };
+	static const char* CameraCharNames[CAMERA_TYPE::CAMERA_TYPE_END]
+	{ 
+		"Camera_Free", 
+		"Camera_Follow", 
+		"Camera_CutScene_Map", 
+		"Camera_CutScene_Boss", 
+		"Camera_Action", 
+		"Camera_Top", 
+		"Camera_Quater" 
+	};
 	
-	const wstring		CameraWstringNames[CAMERA_TYPE::CAMERA_TYPE_END]{ L"Camera_Free", L"Camera_Follow", L"Camera_CutScene_Map", L"Camera_CutScene_Boss", L"Camera_Action" };
+	const wstring CameraWstringNames[CAMERA_TYPE::CAMERA_TYPE_END]
+	{ 
+		L"Camera_Free", 
+		L"Camera_Follow", 
+		L"Camera_CutScene_Map", 
+		L"Camera_CutScene_Boss", 
+		L"Camera_Action",
+		L"Camera_Top",
+		L"Camera_Quater"
+	};
 	
 	static const _float Cam_Dist_Follow_Default					= 4.5f;
 	static const _float Cam_Dist_Follow_Wide					= 6.f;
@@ -120,6 +148,9 @@ namespace Client
 	static const _float Cam_Fov_Follow_Default				= XMConvertToRadians(60.0f);
 	static const _float Cam_Fov_Follow_Wide					= XMConvertToRadians(75.0f);
 	static const _float Cam_Fov_Action_Lobby				= XMConvertToRadians(52.5f);
+	static const _float Cam_Fov_Action_Talk_SuperNarrow		= XMConvertToRadians(40.f);
+	static const _float Cam_Fov_Action_Talk_Narrow			= XMConvertToRadians(50.f);
+	static const _float Cam_Fov_Action_Talk_Default			= XMConvertToRadians(60.f);
 	static const _float Cam_Fov_CutScene_Map_Default		= XMConvertToRadians(70.0f);
 	static const _float Cam_Fov_CutScene_Boss_Default		= XMConvertToRadians(70.0f);
 	static const _float Cam_Fov_Top_Glanix					= XMConvertToRadians(75.0f);

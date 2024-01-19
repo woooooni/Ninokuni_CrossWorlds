@@ -73,16 +73,13 @@ void CKuu::Tick(_float fTimeDelta)
 	{
 		Kuu_Flying(fTimeDelta);
 
-		Vec4 vReleativePos = m_pPlayerTransform->Get_RelativeOffset({ 1.f, m_fY, -0.3f, 1.f });
-		Vec4 vPlayerPos = m_pPlayerTransform->Get_Position();
-
 		/* Rotation, Scale */
 		m_pTransformCom->Set_WorldMatrix(m_pPlayerTransform->Get_WorldMatrix());
 		m_pTransformCom->Set_Scale(Vec3{ 0.7f });
 		
 		/* Damping */
 		{
-			Vec4 vGoalPos = vReleativePos + vPlayerPos;
+			Vec4 vGoalPos = Get_GoalPosition();
 
 			if (Vec4::Zero == m_vCurPos || 5.f < Vec4::Distance(vGoalPos, m_vCurPos))
 			{
@@ -157,6 +154,14 @@ void CKuu::Set_KuuTarget_Player()
 
 	if (m_pPlayer != nullptr)
 		m_pPlayerTransform = m_pPlayer->Get_Component<CTransform>(TEXT("Com_Transform"));
+}
+
+Vec4 CKuu::Get_GoalPosition()
+{
+	Vec4 vReleativePos = m_pPlayerTransform->Get_RelativeOffset({ 1.f, m_fY, -0.3f, 1.f });
+	Vec4 vPlayerPos = m_pPlayerTransform->Get_Position();
+
+	return Vec4(vReleativePos + vPlayerPos).OneW();
 }
 
 

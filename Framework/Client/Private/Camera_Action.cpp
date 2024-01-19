@@ -7,9 +7,13 @@
 
 #include "Game_Manager.h"
 #include "Player.h"
+#include "Character.h"
+#include "Kuu.h"
+
 #include "UI_Manager.h"
 
 #include "Utils.h"
+
 
 CCamera_Action::CCamera_Action(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
 	: CCamera(pDevice, pContext, strObjTag, OBJ_TYPE::OBJ_CAMERA)
@@ -63,6 +67,7 @@ void CCamera_Action::Tick(_float fTimeDelta)
 		return;
 	}
 
+	/* Action Tick */
 	if (m_bAction)
 	{
 		switch (m_eCurActionType)
@@ -80,6 +85,9 @@ void CCamera_Action::Tick(_float fTimeDelta)
 			break;
 		}
 	}
+
+	/* Test */
+	Test(fTimeDelta);
 }
 
 void CCamera_Action::LateTick(_float fTimeDelta)
@@ -111,8 +119,7 @@ Vec4 CCamera_Action::Get_LookAt()
 	break;
 	case CAMERA_ACTION_TYPE::TALK:
 	{
-	
-		return m_tActionTalkDesc.vPrevLookAt;
+		return m_tActionTalkDesc.vPrevLookAt.OneW();
 	}
 	break;
 	default:
@@ -134,6 +141,80 @@ HRESULT CCamera_Action::Start_Action_Lobby()
 		m_tActionLobbyDesc.vCamLookAtFinish, 
 		m_tActionLobbyDesc.fLerpTime, 
 		LERP_MODE::SMOOTHER_STEP);
+
+	return S_OK;
+}
+
+HRESULT CCamera_Action::Start_Action_Talk(CGameObject* pNpc1, CGameObject* pNpc2)
+{
+	/* 정보 세팅 */
+	{
+		CGameObject* pPlayer = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+		if (nullptr == pPlayer)
+			return E_FAIL;
+
+		pPlayer->Get_Component<CStateMachine>(L"Com_StateMachine")->Change_State(CCharacter::NEUTRAL_IDLE);
+
+		if (!m_tActionTalkDesc.bInit)
+		{
+			m_tActionTalkDesc.pKuu = CGame_Manager::GetInstance()->Get_Kuu();
+			if (nullptr == m_tActionTalkDesc.pKuu)
+				return E_FAIL;
+
+			m_tActionTalkDesc.pTransform_Kuu = m_tActionTalkDesc.pKuu->Get_Component<CTransform>(L"Com_Transform");
+			if (nullptr == m_tActionTalkDesc.pTransform_Kuu)
+				return E_FAIL;
+
+
+			m_tActionTalkDesc.pTransform_Player = pPlayer->Get_Component<CTransform>(L"Com_Transform");
+			if (nullptr == m_tActionTalkDesc.pTransform_Player)
+				return E_FAIL;
+
+			m_tActionTalkDesc.bInit = true;
+		}
+		
+		if (nullptr != pNpc1)
+		{
+			m_tActionTalkDesc.pTransformNpc1 = pNpc1->Get_Component<CTransform>(L"Com_Transform");
+			if (nullptr == m_tActionTalkDesc.pTransformNpc1)
+				return E_FAIL;
+		}
+
+		if (nullptr != pNpc2)
+		{
+			m_tActionTalkDesc.pTransformNpc2 = pNpc2->Get_Component<CTransform>(L"Com_Transform");
+			if (nullptr == m_tActionTalkDesc.pTransformNpc2)
+				return E_FAIL;
+		}
+	}
+
+	/* 쿠우 + 플레이어*/
+	if (nullptr == pNpc1)
+	{
+		Set_Talk_Transform(ACTION_TALK_DESC::VIEW_TYPE::KUU_AND_PLAYER);
+		return S_OK;
+	}
+	else if (nullptr != pNpc1) /* 쿠우 + 플레이어 + Npc */
+		Set_Talk_Transform(ACTION_TALK_DESC::VIEW_TYPE::ALL_RIGTH);
+
+	Set_Talk_Transform(ACTION_TALK_DESC::VIEW_TYPE::NPC1); /* 구현한 다음에 살린다. */
+
+	return S_OK;
+}
+
+HRESULT CCamera_Action::Change_Action_Talk_Object(const ACTION_TALK_DESC::VIEW_TYPE& eType)
+{
+	if (nullptr == m_tActionTalkDesc.pTransform_Kuu || nullptr == m_tActionTalkDesc.pTransform_Player)
+		return E_FAIL;
+
+	Set_Talk_Transform(eType);
+
+	return S_OK;
+}
+
+HRESULT CCamera_Action::Finish_Action_Talk()
+{
+	m_tActionTalkDesc.Clear();
 
 	return S_OK;
 }
@@ -192,118 +273,6 @@ HRESULT CCamera_Action::Start_Action_Door()
 	return S_OK;
 }
 
-HRESULT CCamera_Action::Start_Action_Talk(CGameObject* pPlayer, CGameObject* pPet, CGameObject* pNpc1, CGameObject* pNpc2)
-{
-	if (nullptr == pPlayer || nullptr == pPet || nullptr == pNpc1)
-		return E_FAIL;
-
-	/* Default Setting */
-	{
-		m_eCurActionType = CAMERA_ACTION_TYPE::TALK;
-
-		m_bAction = true;
-	}
-
-	/* Talker Setting */
-	{
-		m_tActionTalkDesc.pPlayer = pPlayer;
-		m_tActionTalkDesc.pPet = pPet;
-		m_tActionTalkDesc.pNpc1 = pNpc1;
-		
-		m_tActionTalkDesc.iTalker++;
-
-		if (nullptr != pNpc2)
-		{
-			m_tActionTalkDesc.pNpc2 = pNpc2;
-			m_tActionTalkDesc.iTalker++;
-		}
-	}
-
-	return Set_TalkCharacterPosition();
-}
-
-HRESULT CCamera_Action::Start_Action_Talk(CGameObject* pPlayer, CGameObject* pPet)
-{
-	if (nullptr == pPlayer || nullptr == pPet)
-		return E_FAIL;
-
-	/* Default Setting */
-	{
-		m_eCurActionType = CAMERA_ACTION_TYPE::TALK;
-
-		m_bAction = true;
-	}
-
-	/* Talker Setting */
-	{
-		m_tActionTalkDesc.pPlayer = pPlayer;	
-		m_tActionTalkDesc.pPet = pPet;
-	}
-
-	return Set_TalkCharacterPosition();
-}
-
-HRESULT CCamera_Action::Set_Action_Talk_Target(CGameObject* pTalker)
-{
-	if (nullptr == pTalker)
-		return E_FAIL;
-
-	m_tActionTalkDesc.pCurTalker = pTalker;
-
-	CTransform* pTalkerTransform = m_tActionTalkDesc.pCurTalker->Get_Component<CTransform>(L"Com_Transform");
-
-	if (nullptr == pTalkerTransform)
-		return E_FAIL;
-
-	/* 타겟별 오프셋 설정 */
-	{
-		m_tTargetOffset.vCurVec.x *= -1.f;
-	}
-
-	/* Cam Position */
-	{
-		const Vec4 vCamPosition = (Vec4)pTalkerTransform->Get_Position() +
-			pTalkerTransform->Get_RelativeOffset(m_tTargetOffset.vCurVec).ZeroW();
-
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCamPosition);
-
-	}
-
-	/* Cam LookAt */
-	{
-		m_tActionTalkDesc.vPrevLookAt  = (Vec4)pTalkerTransform->Get_Position() +
-			pTalkerTransform->Get_RelativeOffset(m_tLookAtOffset.vCurVec).ZeroW();
-
-		m_pTransformCom->LookAt(m_tActionTalkDesc.vPrevLookAt);
-	}
-
-	return S_OK;
-}
-
-HRESULT CCamera_Action::Finish_Action_Talk()
-{
-	if (m_tActionTalkDesc.pCurTalker == m_tActionTalkDesc.pPlayer) 
-		return E_FAIL;
-
-	/* 팔로우 카메라로 블렌딩 */
-	CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
-	if (nullptr != pFollowCam)
-	{
-		pFollowCam->Set_Default_Position();
-
-		CCamera_Manager::GetInstance()->Change_Camera(CAMERA_TYPE::FOLLOW);
-
-		/* 기존 데이터 삭제 */
-		m_tActionTalkDesc.Clear();
-
-		m_bAction = false;
-
-		return S_OK;
-	}
-
-	return E_FAIL;
-}
-
 void CCamera_Action::Tick_Lobby(_float fTimeDelta)
 {
 	if (!m_tActionLobbyDesc.vLerpCamLookAt.bActive)
@@ -311,13 +280,6 @@ void CCamera_Action::Tick_Lobby(_float fTimeDelta)
 
 	if (m_tActionLobbyDesc.vLerpCamLookAt.bActive)
 		m_tActionLobbyDesc.vLerpCamLookAt.Update_Lerp(fTimeDelta);
-
-	//if (m_tTargetOffset.bActive)
-	//{
-	//	m_tTargetOffset.Update_Lerp(fTimeDelta);
-	//	if(!m_tTargetOffset.bActive)
-	//		m_bAction = false;
-	//}
 	
 	Vec4 vLookAt = m_tActionLobbyDesc.vLerpCamLookAt.vCurVec * m_tActionLobbyDesc.fLookMag;
 
@@ -326,22 +288,6 @@ void CCamera_Action::Tick_Lobby(_float fTimeDelta)
 	Vec4 vPos = m_tActionLobbyDesc.vCamPosition + Vec4(m_tTargetOffset.vCurVec);
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos.OneW());
-
-	//if (KEY_TAP(KEY::J))
-	//{
-	//	const _float fHeight = 6.f;
-	//	const _float fLerpTime = 5.f;
-	//
-	//	Vec4 vTargetLook = m_tActionLobbyDesc.vLerpCamLookAt.vCurVec;
-	//	vTargetLook.y += fHeight * 0.5f;
-	//
-	//	m_tActionLobbyDesc.vLerpCamLookAt.Start(m_tActionLobbyDesc.vLerpCamLookAt.vCurVec, vTargetLook, fLerpTime, LERP_MODE::EASE_OUT);
-	//
-	//	Vec4 vTargetOffSet = m_tTargetOffset.vCurVec;
-	//	vTargetOffSet.y += fHeight;
-	//
-	//	m_tTargetOffset.Start(m_tTargetOffset.vCurVec, vTargetOffSet, fLerpTime, LERP_MODE::EASE_IN);
-	//}
 }
 
 void CCamera_Action::Tick_Door(_float fTimeDelta)
@@ -461,90 +407,222 @@ void CCamera_Action::Tick_Door(_float fTimeDelta)
 
 void CCamera_Action::Tick_Talk(_float fTimeDelta)
 {
-	//if (KEY_TAP(KEY::B))
-	//{
-	//	CGameObject* pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
-	//
-	//	if (nullptr != pTarget && nullptr != m_tActionTalkDesc.pNpc1)
-	//	{
-	//		Set_Action_Talk_Target(pTarget);
-	//	}
-	//}
-	//if (KEY_TAP(KEY::N))
-	//{
-	//	CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"HumanFL04");
-	//
-	//	if (nullptr != pTarget)
-	//	{
-	//		Set_Action_Talk_Target(pTarget);
-	//	}
-	//}
-	//if (KEY_TAP(KEY::M))
-	//{
-	//	Finish_Action_Talk();
-	//}
-}
-
-HRESULT CCamera_Action::Set_TalkCharacterPosition()
-{
-	switch (m_tActionTalkDesc.iTalker)
-	{
-	case 2:
-	{
-		/* OffSet Setting */
-		{
-			m_tTargetOffset.vCurVec = m_tActionTalkDesc.vTargetOffset;
-			m_tLookAtOffset.vCurVec = m_tActionTalkDesc.vLookAtOffset;
-		}
-
-
-		return Set_Action_Talk_Target(m_tActionTalkDesc.pPet);
-	}
-		break;
-	case 3 :
-	{
-
-		/* OffSet Setting */
-		{
-			m_tTargetOffset.vCurVec = m_tActionTalkDesc.vTargetOffset;
-			m_tLookAtOffset.vCurVec = m_tActionTalkDesc.vLookAtOffset;
-		}
-
-		CTransform* pNpcTransform = m_tActionTalkDesc.pNpc1->Get_Component<CTransform>(L"Com_Transform");
-		CTransform* pPlayerTransform = m_tActionTalkDesc.pPlayer->Get_Component<CTransform>(L"Com_Transform");
-
-		/* 대화 참여자들의 트랜스폼 세팅 */
-		if (nullptr != pNpcTransform && nullptr != pPlayerTransform)
-		{
-			/* 플레이어 포지션 세팅 */
-			Vec4 vPlayerPos = pNpcTransform->Get_RelativeOffset(Vec4{ 0.f, 0.f, m_tActionTalkDesc.fPlayerNpcDistance, 1.f });
-			vPlayerPos += pNpcTransform->Get_Position();
-
-			pPlayerTransform->Set_State(CTransform::STATE_POSITION, vPlayerPos);
-
-			/* 플레이어가 Npc 바라보게 */
-			pPlayerTransform->LookAt_ForLandObject(pNpcTransform->Get_Position());
-		}
-		return Set_Action_Talk_Target(m_tActionTalkDesc.pNpc1);
-	}
-		break;
-	case 4:
-	{
-
-
-
-		return Set_Action_Talk_Target(m_tActionTalkDesc.pNpc1);
-	}
-		break;
-	default:
-		break;
-	}
-
-	return E_FAIL;
+	
 }
 
 void CCamera_Action::Tick_Blending(const _float fDeltaTime)
 {
+}
+
+void CCamera_Action::Test(_float fTimeDelta)
+{
+	if (KEY_HOLD(KEY::SHIFT))
+	{
+		if (KEY_TAP(KEY::F1))
+			Change_Action_Talk_Object(ACTION_TALK_DESC::VIEW_TYPE::KUU);
+
+		if (KEY_TAP(KEY::F2))
+			Change_Action_Talk_Object(ACTION_TALK_DESC::VIEW_TYPE::KUU_AND_PLAYER);
+
+		if (KEY_TAP(KEY::F3))
+			Change_Action_Talk_Object(ACTION_TALK_DESC::VIEW_TYPE::NPC1);
+
+		if (KEY_TAP(KEY::F4))
+			Change_Action_Talk_Object(ACTION_TALK_DESC::VIEW_TYPE::ALL_RIGTH);
+
+		if (KEY_TAP(KEY::F5))
+			Change_Action_Talk_Object(ACTION_TALK_DESC::VIEW_TYPE::ALL_LEFT);
+
+		if (KEY_TAP(KEY::F6))
+			Change_Action_Talk_Object(ACTION_TALK_DESC::VIEW_TYPE::KUU_AND_PLAYER_BACK_NPC);
+
+		if (KEY_TAP(KEY::F7))
+			Change_Action_Talk_Object(ACTION_TALK_DESC::VIEW_TYPE::NPC_BACK_KUU_AND_PLAYER);
+
+		if (KEY_TAP(KEY::F8))
+			Change_Action_Talk_Object(ACTION_TALK_DESC::VIEW_TYPE::NPC2);
+	}
+
+	if (KEY_TAP(KEY::HOME))
+	{
+		CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
+	}
+}
+
+void CCamera_Action::Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType)
+{
+	Vec4 vCamPosition, vCamLookAt;
+
+	switch (eType)
+	{
+	case CCamera_Action::tagActionTalkDesc::KUU:
+	{
+		const _float fDistance = 1.5f;
+		const _float fCamPostionHeight = 3.f;
+		const _float fCamLookAtHeight = 2.f;
+
+		/* CamPosition */
+		vCamPosition = Vec4(m_tActionTalkDesc.pKuu->Get_GoalPosition()) +
+						Vec4(m_tActionTalkDesc.pTransform_Kuu->Get_Look()).ZeroY() * fDistance;
+		vCamPosition.y += fCamPostionHeight;
+
+		/* CamLookAt */
+		vCamLookAt = m_tActionTalkDesc.pKuu->Get_GoalPosition();
+		vCamLookAt.y += fCamLookAtHeight;
+
+		/* Fov */
+		//Set_Fov(Cam_Fov_Action_Talk_SuperNarrow);
+		Set_Fov(Cam_Fov_Action_Talk_Narrow);
+	}
+		break;
+	case CCamera_Action::tagActionTalkDesc::KUU_AND_PLAYER:
+	{
+		/* CamPosition */
+		Vec4 vTargetOffSet = { 1.5f, 1.f, 3.f, 1.f };
+		vCamPosition = m_tActionTalkDesc.pKuu->Get_GoalPosition() + m_tActionTalkDesc.pTransform_Kuu->Get_RelativeOffset(vTargetOffSet);
+
+		/* CamLookAt */
+		Vec4 vLookAtOffset = { -1.f, 0.f, 0.f, 1.f };
+		vCamLookAt = m_tActionTalkDesc.pKuu->Get_GoalPosition() + m_tActionTalkDesc.pTransform_Kuu->Get_RelativeOffset(vLookAtOffset);
+
+		/* Fov */
+		Set_Fov(Cam_Fov_Action_Talk_Narrow);
+	}
+		break;
+	case CCamera_Action::tagActionTalkDesc::NPC1:
+	{
+		if (nullptr == m_tActionTalkDesc.pTransformNpc1)
+			return;
+
+		const _float fDistance			= 3.f;
+		const _float fCamPostionHeight	= 2.f;
+		const _float fCamLookAtHeight	= 1.f;
+
+		/* CamPosition */
+		vCamPosition = Vec4(m_tActionTalkDesc.pTransformNpc1->Get_Position()) +
+						Vec4(m_tActionTalkDesc.pTransformNpc1->Get_Look()).ZeroY() * fDistance;
+		vCamPosition.y += fCamPostionHeight;
+
+		/* CamLookAt */
+		vCamLookAt = m_tActionTalkDesc.pTransformNpc1->Get_Position();
+		vCamLookAt.y += fCamLookAtHeight;
+
+		/* Fov */
+		Set_Fov(Cam_Fov_Action_Talk_Narrow);
+	}
+		break;
+	case CCamera_Action::tagActionTalkDesc::NPC2:
+	{
+		if (nullptr == m_tActionTalkDesc.pTransformNpc1 || nullptr == m_tActionTalkDesc.pTransformNpc2)
+			return;
+	}
+		break;
+	case CCamera_Action::tagActionTalkDesc::ALL_RIGTH:
+	{
+		if (nullptr == m_tActionTalkDesc.pTransformNpc1)
+			return;
+
+		_float fDistanceToNpc = 0.f;
+
+		Vec4 vPlayerKuuCenterPos = Vec4(m_tActionTalkDesc.pTransform_Kuu->Get_Position() + m_tActionTalkDesc.pTransform_Player->Get_Position()) * 0.5f;
+		vPlayerKuuCenterPos.w = 1.f;
+
+		Vec4 vDirToNpcLook = Vec4(m_tActionTalkDesc.pTransformNpc1->Get_Position()) - vPlayerKuuCenterPos;
+		{
+			fDistanceToNpc = vDirToNpcLook.Length();
+			vDirToNpcLook.Normalize();
+		}
+
+		Vec4 vDirToNpcRight = XMVector3Cross(Vec3::UnitY, vDirToNpcLook.xyz());
+		{
+			vDirToNpcRight.Normalize();
+		}
+
+		Vec4 vCenterPosToNpc = m_tActionTalkDesc.pKuu->Get_GoalPosition() + (vDirToNpcLook.ZeroY() * fDistanceToNpc * 0.5f);
+		{
+			vCenterPosToNpc.w = 1.f;
+		}
+
+		/* CamPosition */
+		vCamPosition = vCenterPosToNpc + (vDirToNpcRight.ZeroY() * fDistanceToNpc * 0.7f);
+		vCamPosition.y += fDistanceToNpc * 0.1f;
+
+		/* CamLookAt */
+		vCamLookAt = vCenterPosToNpc;
+		vCamLookAt.y += fDistanceToNpc * 0.05f;
+
+		/* Fov */
+		Set_Fov(Cam_Fov_Action_Talk_Default);
+
+		/* 대화 시작 캐릭터 최초 룩 설정 */
+		if (!m_tActionTalkDesc.bSet)
+		{
+			m_tActionTalkDesc.pTransformNpc1->LookAt_ForLandObject(vPlayerKuuCenterPos);
+			m_tActionTalkDesc.pTransform_Player->LookAt_ForLandObject(m_tActionTalkDesc.pTransformNpc1->Get_Position());
+			m_tActionTalkDesc.pTransform_Kuu->LookAt_ForLandObject(m_tActionTalkDesc.pTransformNpc1->Get_Position());
+
+			m_tActionTalkDesc.bSet = true;
+		}
+	}
+		break;
+	case CCamera_Action::tagActionTalkDesc::ALL_LEFT:
+	{
+		if (nullptr == m_tActionTalkDesc.pTransformNpc1)
+			return;
+
+		_float fDistanceToNpc = 0.f;
+
+		Vec4 vPlayerKuuCenterPos = Vec4(m_tActionTalkDesc.pTransform_Kuu->Get_Position() + m_tActionTalkDesc.pTransform_Player->Get_Position()) * 0.5f;
+		vPlayerKuuCenterPos.w = 1.f;
+
+		Vec4 vDirToNpcLook = Vec4(m_tActionTalkDesc.pTransformNpc1->Get_Position()) - vPlayerKuuCenterPos;
+		{
+			fDistanceToNpc = vDirToNpcLook.Length();
+			vDirToNpcLook.Normalize();
+		}
+
+		Vec4 vDirToNpcLeft = XMVector3Cross(Vec3::UnitY, vDirToNpcLook.xyz()) * -1.f;
+		{
+			vDirToNpcLeft.Normalize();
+		}
+
+		Vec4 vCenterPosToNpc = m_tActionTalkDesc.pKuu->Get_GoalPosition() + (vDirToNpcLook.ZeroY() * fDistanceToNpc * 0.5f);
+		{
+			vCenterPosToNpc.w = 1.f;
+		}
+
+		/* CamPosition */
+		Vec4 vTwoThirdsPosToNpc = m_tActionTalkDesc.pKuu->Get_GoalPosition() + (vDirToNpcLook.ZeroY() * fDistanceToNpc * 0.75f);
+		vCamPosition = vTwoThirdsPosToNpc.OneW() + (vDirToNpcLeft.ZeroY() * fDistanceToNpc);
+		vCamPosition.y += fDistanceToNpc * 0.1f;
+
+		/* CamLookAt */
+		vCamLookAt = vCenterPosToNpc;
+		vCamLookAt.y += fDistanceToNpc * 0.05f;
+
+		/* Fov */
+		Set_Fov(Cam_Fov_Action_Talk_Default);
+
+		/* 대화 시작 캐릭터 최초 룩 설정 */
+		if (!m_tActionTalkDesc.bSet)
+		{
+			m_tActionTalkDesc.pTransformNpc1->LookAt_ForLandObject(vPlayerKuuCenterPos);
+			m_tActionTalkDesc.pTransform_Player->LookAt_ForLandObject(m_tActionTalkDesc.pTransformNpc1->Get_Position());
+			m_tActionTalkDesc.pTransform_Kuu->LookAt_ForLandObject(m_tActionTalkDesc.pTransformNpc1->Get_Position());
+
+			m_tActionTalkDesc.bSet = true;
+		}
+	}
+	break;
+	default:
+		break;
+	}
+
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCamPosition.OneW());
+	m_pTransformCom->LookAt(vCamLookAt.OneW());
+
+	m_tActionTalkDesc.vPrevLookAt = vCamLookAt.OneW();
 }
 
 HRESULT CCamera_Action::Ready_Components()
