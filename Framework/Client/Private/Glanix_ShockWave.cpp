@@ -166,6 +166,7 @@ HRESULT CGlanix_ShockWave::Ready_Components()
 
 HRESULT CGlanix_ShockWave::Ready_Colliders()
 {
+	//
 	CCollider_OBB::OBB_COLLIDER_DESC OBBDesc;
 	ZeroMemory(&OBBDesc, sizeof OBBDesc);
 
