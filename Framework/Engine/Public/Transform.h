@@ -78,6 +78,7 @@ public:
 
 public:
 	void Move(_vector vDir, _float fSpeed, _float fTimeDelta, class CNavigation* pNavigation = nullptr);	
+	void Translate(const Vec3& vTranslation);
 	void Set_Scale(_vector vScale);
 	void Set_Scale(_float3 vScale);
 

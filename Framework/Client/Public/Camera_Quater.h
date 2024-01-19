@@ -25,11 +25,16 @@ public:
 	virtual Vec4 Get_LookAt() override;
 	virtual void Tick_Blending(const _float fDeltaTime) override;
 	virtual void Set_Blending(const _bool& bBlending) override;
+	virtual void Set_Active(const _bool bActive) override;
 
 private:
 	virtual HRESULT Ready_Components() override;
 
+	void Tick_Transform(const _float fDeltaTime);
+	void Test(_float fTimeDelta);
+
 private:
+	_float m_fMoveSpeed = 20.f;
 	
 public:
 	static CCamera_Quater* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);

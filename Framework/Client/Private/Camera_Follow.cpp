@@ -4,14 +4,12 @@
 #include "GameInstance.h"
 
 #include "Camera_Manager.h"
+#include "Camera_Group.h"
 
-#include "UI_Manager.h"
-
-/* Test */
-#include "Camera_CutScene_Map.h"
-#include "Camera_Action.h"
 #include "Game_Manager.h"
+#include "UI_Manager.h"
 #include "Player.h"
+
 #include "Utils.h"
 
 CCamera_Follow::CCamera_Follow(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
@@ -694,51 +692,16 @@ void CCamera_Follow::Test(_float fTimeDelta)
 	//	dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP))->Start_CutScenes(CutSceneNames);
 	//}
 	
-	//if (KEY_TAP(KEY::HOME))
-	//{
-	//	const _float fLerpTime = 1.f;
-	//	const LERP_MODE eLerpMode = LERP_MODE::SMOOTHER_STEP;
-	//
-	//	Start_Lerp_Distance(40.f, fLerpTime, eLerpMode);
-	//	Start_Lerp_Fov(XMConvertToRadians(85.f), fLerpTime, eLerpMode);
-	//	Lerp_TargetOffset(Cam_TargetOffset_Follow_SholderView_Default, Vec4{ 0.7f, 20.f, 0.f, 1.f }, fLerpTime, eLerpMode);
-	//	Lerp_LookAtOffSet(Cam_LookAtOffset_Follow_SholderView_Default, Vec4{ 0.7f, 30.f, 0.f, 1.f }, fLerpTime, eLerpMode);
-	//}
 
-	/*if (KEY_TAP(KEY::END_KEY))
+	/* Quater View */
+	if (KEY_TAP(KEY::INSERT))
 	{
-		const _float fLerpTime = 1.f;
-		const LERP_MODE eLerpMode = LERP_MODE::SMOOTHER_STEP;
-
-		Start_Lerp_Distance(Cam_Dist_Follow_Default, fLerpTime, eLerpMode);
-		Start_Lerp_Fov(Cam_Fov_Follow_Default, fLerpTime, eLerpMode);
-		Lerp_TargetOffset(Vec4{ 0.7f, 15.f, 0.f, 1.f }, Cam_TargetOffset_Follow_SholderView_Default, fLerpTime, eLerpMode);
-		Lerp_LookAtOffSet(Vec4{ 0.7f, 15.f, 0.f, 1.f }, Cam_LookAtOffset_Follow_SholderView_Default, fLerpTime, eLerpMode);
-	}*/
-
-	//if (KEY_TAP(KEY::INSERT))
-	//{
-	//	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-	//	if (nullptr != pActionCam)
-	//	{
-	//		CCamera_Manager::GetInstance()->Set_CurCamera(pActionCam->Get_Key());
-	//		pActionCam->Start_Action_Talk(nullptr);
-	//	}
-	//}
-	//
-	//if (KEY_TAP(KEY::DEL))
-	//{
-	//	CGameObject* pNpc = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Chloe"));
-	//	if (nullptr != pNpc)
-	//	{
-	//		CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-	//		if (nullptr != pActionCam)
-	//		{
-	//			CCamera_Manager::GetInstance()->Set_CurCamera(pActionCam->Get_Key());
-	//			pActionCam->Start_Action_Talk(pNpc);
-	//		}
-	//	}
-	//}
+		CCamera_Quater* pQuaterCam = dynamic_cast<CCamera_Quater*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::QUATER));
+		if (nullptr != pQuaterCam)
+		{
+			CCamera_Manager::GetInstance()->Set_CurCamera(pQuaterCam->Get_Key());
+		}
+	}
 }
 
 CCamera_Follow * CCamera_Follow::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)

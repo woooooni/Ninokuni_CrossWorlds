@@ -152,7 +152,7 @@ public:
 public:
 	/* Default */
 	const _bool& Is_Active() const { return m_bActive; }
-	void Set_Active(const _bool bActive) { m_bActive = bActive; }
+	virtual void Set_Active(const _bool bActive) { m_bActive = bActive; }
 	CTransform* Get_Transform() const { return m_pTransformCom; }
 
 	const _int Get_Key() const { return m_iKey; }

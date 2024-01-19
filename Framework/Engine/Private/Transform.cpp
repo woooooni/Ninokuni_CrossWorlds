@@ -72,6 +72,12 @@ void CTransform::Move(_vector vDir, _float fSpeed, _float fTimeDelta, CNavigatio
 	}
 }
 
+void CTransform::Translate(const Vec3& vTranslation)
+{
+	for (_uint i = 0; i < 3; ++i)
+		*((_float*)(&m_WorldMatrix.m[3]) + i) += *((_float*)&vTranslation + i);
+}
+
 Vec4 CTransform::Get_RelativeOffset(Vec4 vPos)
 {
 	Matrix matWorld = m_WorldMatrix;
