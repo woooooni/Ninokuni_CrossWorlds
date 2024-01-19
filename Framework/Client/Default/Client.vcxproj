@@ -244,7 +244,6 @@
     <ClInclude Include="..\Public\Camera_Top.h" />
     <ClInclude Include="..\Public\Cannon_Ball.h" />
     <ClInclude Include="..\Public\Cannon_Tower.h" />
-    <ClInclude Include="..\Public\Camera_Quater.h" />
     <ClInclude Include="..\Public\Character.h" />
     <ClInclude Include="..\Public\Character_Destroyer.h" />
     <ClInclude Include="..\Public\Character_Dummy.h" />
@@ -275,7 +274,6 @@
     <ClInclude Include="..\Public\Destroyer_Npc.h" />
     <ClInclude Include="..\Public\Crystal_Ball.h" />
     <ClInclude Include="..\Public\Crystal_Tower.h" />
-    <ClInclude Include="..\Public\Decal.h" />
     <ClInclude Include="..\Public\DefenceInvasion_Portal.h" />
     <ClInclude Include="..\Public\Defence_Tower.h" />
     <ClInclude Include="..\Public\Dochi.h" />
@@ -748,11 +746,6 @@
     <ClInclude Include="..\Public\UI_Emoticon_Button.h" />
     <ClInclude Include="..\Public\UI_Emoticon_SpeechBalloon.h" />
     <ClInclude Include="..\Public\UI_Emoticon_Window.h" />
-    <ClInclude Include="..\Public\UI_InGame_Setting_OpenBtn.h" />
-    <ClInclude Include="..\Public\UI_InGame_Setting_RadioBtn.h" />
-    <ClInclude Include="..\Public\UI_InGame_Setting_RadioGroup.h" />
-    <ClInclude Include="..\Public\UI_InGame_Setting_Slot.h" />
-    <ClInclude Include="..\Public\UI_InGame_Setting_Tab.h" />
     <ClInclude Include="..\Public\UI_InGame_Setting_Window.h" />
     <ClInclude Include="..\Public\UI_Inventory_LineBox.h" />
     <ClInclude Include="..\Public\UI_Inventory_Slot.h" />
@@ -1046,7 +1039,6 @@
     <ClCompile Include="..\Private\Cannon_Ball.cpp" />
     <ClCompile Include="..\Private\Cannon_Tower.cpp" />
     <ClCompile Include="..\Private\Cat.cpp" />
-    <ClCompile Include="..\Private\Camera_Quater.cpp" />
     <ClCompile Include="..\Private\Character.cpp" />
     <ClCompile Include="..\Private\Character_Destroyer.cpp" />
     <ClCompile Include="..\Private\Character_Dummy.cpp" />
@@ -1077,7 +1069,6 @@
     <ClCompile Include="..\Private\Destroyer_Npc.cpp" />
     <ClCompile Include="..\Private\Crystal_Ball.cpp" />
     <ClCompile Include="..\Private\Crystal_Tower.cpp" />
-    <ClCompile Include="..\Private\Decal.cpp" />
     <ClCompile Include="..\Private\DefenceInvasion_Portal.cpp" />
     <ClCompile Include="..\Private\Defence_Tower.cpp" />
     <ClCompile Include="..\Private\Dochi.cpp" />
@@ -1548,11 +1539,6 @@
     <ClCompile Include="..\Private\UI_Emoticon_Button.cpp" />
     <ClCompile Include="..\Private\UI_Emoticon_SpeechBalloon.cpp" />
     <ClCompile Include="..\Private\UI_Emoticon_Window.cpp" />
-    <ClCompile Include="..\Private\UI_InGame_Setting_OpenBtn.cpp" />
-    <ClCompile Include="..\Private\UI_InGame_Setting_RadioBtn.cpp" />
-    <ClCompile Include="..\Private\UI_InGame_Setting_RadioGroup.cpp" />
-    <ClCompile Include="..\Private\UI_InGame_Setting_Slot.cpp" />
-    <ClCompile Include="..\Private\UI_InGame_Setting_Tab.cpp" />
     <ClCompile Include="..\Private\UI_InGame_Setting_Window.cpp" />
     <ClCompile Include="..\Private\UI_Inventory_LineBox.cpp" />
     <ClCompile Include="..\Private\UI_Inventory_Slot.cpp" />
