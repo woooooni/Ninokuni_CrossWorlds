@@ -148,7 +148,7 @@ namespace Client
 	static const _float Cam_Fov_Follow_Default				= XMConvertToRadians(60.0f);
 	static const _float Cam_Fov_Follow_Wide					= XMConvertToRadians(75.0f);
 	static const _float Cam_Fov_Action_Lobby				= XMConvertToRadians(52.5f);
-	static const _float Cam_Fov_Action_Talk_SuperNarrow		= XMConvertToRadians(40.f);
+	static const _float Cam_Fov_Action_Talk_SuperNarrow		= XMConvertToRadians(45.f);
 	static const _float Cam_Fov_Action_Talk_Narrow			= XMConvertToRadians(50.f);
 	static const _float Cam_Fov_Action_Talk_Default			= XMConvertToRadians(60.f);
 	static const _float Cam_Fov_CutScene_Map_Default		= XMConvertToRadians(70.0f);

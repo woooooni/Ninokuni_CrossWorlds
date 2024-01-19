@@ -433,14 +433,11 @@ void CCamera_Action::Test(_float fTimeDelta)
 		if (KEY_TAP(KEY::F5))
 			Change_Action_Talk_Object(ACTION_TALK_DESC::VIEW_TYPE::ALL_LEFT);
 
-		if (KEY_TAP(KEY::F6))
-			Change_Action_Talk_Object(ACTION_TALK_DESC::VIEW_TYPE::KUU_AND_PLAYER_BACK_NPC);
-
-		if (KEY_TAP(KEY::F7))
-			Change_Action_Talk_Object(ACTION_TALK_DESC::VIEW_TYPE::NPC_BACK_KUU_AND_PLAYER);
-
-		if (KEY_TAP(KEY::F8))
-			Change_Action_Talk_Object(ACTION_TALK_DESC::VIEW_TYPE::NPC2);
+		//if (KEY_TAP(KEY::F6))
+		//	Change_Action_Talk_Object(ACTION_TALK_DESC::VIEW_TYPE::KUU_AND_PLAYER_BACK_NPC);
+		//
+		//if (KEY_TAP(KEY::F7))
+		//	Change_Action_Talk_Object(ACTION_TALK_DESC::VIEW_TYPE::NPC_BACK_KUU_AND_PLAYER);
 	}
 
 	if (KEY_TAP(KEY::HOME))
@@ -451,16 +448,15 @@ void CCamera_Action::Test(_float fTimeDelta)
 
 void CCamera_Action::Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType)
 {
-	//
 	Vec4 vCamPosition, vCamLookAt;
 
 	switch (eType)
 	{
 	case CCamera_Action::tagActionTalkDesc::KUU:
 	{
-		const _float fDistance = 1.5f;
-		const _float fCamPostionHeight = 3.f;
-		const _float fCamLookAtHeight = 2.f;
+		const _float fDistance = 2.f;
+		const _float fCamPostionHeight	= 0.3f;
+		const _float fCamLookAtHeight	= 0.2f;
 
 		/* CamPosition */
 		vCamPosition = Vec4(m_tActionTalkDesc.pKuu->Get_GoalPosition()) +
@@ -472,14 +468,13 @@ void CCamera_Action::Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType
 		vCamLookAt.y += fCamLookAtHeight;
 
 		/* Fov */
-		//Set_Fov(Cam_Fov_Action_Talk_SuperNarrow);
-		Set_Fov(Cam_Fov_Action_Talk_Narrow);
+		Set_Fov(Cam_Fov_Action_Talk_SuperNarrow);
 	}
 		break;
 	case CCamera_Action::tagActionTalkDesc::KUU_AND_PLAYER:
 	{
 		/* CamPosition */
-		Vec4 vTargetOffSet = { 1.5f, 1.f, 3.f, 1.f };
+		Vec4 vTargetOffSet = { 0.5f, 0.4f, 2.f, 1.f };
 		vCamPosition = m_tActionTalkDesc.pKuu->Get_GoalPosition() + m_tActionTalkDesc.pTransform_Kuu->Get_RelativeOffset(vTargetOffSet);
 
 		/* CamLookAt */
@@ -495,13 +490,15 @@ void CCamera_Action::Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType
 		if (nullptr == m_tActionTalkDesc.pTransformNpc1)
 			return;
 
-		const _float fDistance			= 3.f;
-		const _float fCamPostionHeight	= 2.f;
-		const _float fCamLookAtHeight	= 1.f;
+		const _float fDistance			= 2.3f;
+		const _float fCamPostionHeight	= 1.4f;
+		const _float fCamLookAtHeight	= 1.2f;
+		const Vec4 vTargetOffset		= { -0.3f, 0.f, 0.f, 1.f };
 
 		/* CamPosition */
-		vCamPosition = Vec4(m_tActionTalkDesc.pTransformNpc1->Get_Position()) +
-						Vec4(m_tActionTalkDesc.pTransformNpc1->Get_Look()).ZeroY() * fDistance;
+		vCamPosition = Vec4(m_tActionTalkDesc.pTransformNpc1->Get_Position()) 
+						+ Vec4(m_tActionTalkDesc.pTransformNpc1->Get_Look()).ZeroY() * fDistance
+						+ m_tActionTalkDesc.pTransformNpc1->Get_RelativeOffset(vTargetOffset);
 		vCamPosition.y += fCamPostionHeight;
 
 		/* CamLookAt */
@@ -522,6 +519,20 @@ void CCamera_Action::Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType
 	{
 		if (nullptr == m_tActionTalkDesc.pTransformNpc1)
 			return;
+
+		/* 대화 시작 최초 캐릭터 포지션 세팅 */
+		if (!m_tActionTalkDesc.bSet)
+		{
+			const _float fDist = 3.f;
+			Vec4 vNpcLook = m_tActionTalkDesc.pTransformNpc1->Get_Look();
+			Vec4 vNpcPos = m_tActionTalkDesc.pTransformNpc1->Get_Position();
+
+			vNpcLook.Normalize();
+
+			Vec4 vPlayerPos = vNpcPos + (vNpcLook * fDist);
+			m_tActionTalkDesc.pTransform_Player->Set_State(CTransform::STATE_POSITION, vPlayerPos.OneW());
+			m_tActionTalkDesc.pKuu->Set_GoalPosition();
+		}
 
 		_float fDistanceToNpc = 0.f;
 
@@ -546,11 +557,11 @@ void CCamera_Action::Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType
 
 		/* CamPosition */
 		vCamPosition = vCenterPosToNpc + (vDirToNpcRight.ZeroY() * fDistanceToNpc * 0.7f);
-		vCamPosition.y += fDistanceToNpc * 0.1f;
+		vCamPosition.y -= fDistanceToNpc * 0.0f;
 
 		/* CamLookAt */
 		vCamLookAt = vCenterPosToNpc;
-		vCamLookAt.y += fDistanceToNpc * 0.05f;
+		vCamLookAt.y -= fDistanceToNpc * 0.0f;
 
 		/* Fov */
 		Set_Fov(Cam_Fov_Action_Talk_Default);
@@ -570,6 +581,20 @@ void CCamera_Action::Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType
 	{
 		if (nullptr == m_tActionTalkDesc.pTransformNpc1)
 			return;
+
+		/* 대화 시작 최초 캐릭터 포지션 세팅 */
+		if (!m_tActionTalkDesc.bSet)
+		{
+			const _float fDist = 3.f;
+			Vec4 vNpcLook = m_tActionTalkDesc.pTransformNpc1->Get_Look();
+			Vec4 vNpcPos = m_tActionTalkDesc.pTransformNpc1->Get_Position();
+
+			vNpcLook.Normalize();
+
+			Vec4 vPlayerPos = vNpcPos + (vNpcLook * fDist);
+			m_tActionTalkDesc.pTransform_Player->Set_State(CTransform::STATE_POSITION, vPlayerPos.OneW());
+			m_tActionTalkDesc.pKuu->Set_GoalPosition();
+		}
 
 		_float fDistanceToNpc = 0.f;
 
@@ -593,13 +618,13 @@ void CCamera_Action::Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType
 		}
 
 		/* CamPosition */
-		Vec4 vTwoThirdsPosToNpc = m_tActionTalkDesc.pKuu->Get_GoalPosition() + (vDirToNpcLook.ZeroY() * fDistanceToNpc * 0.75f);
-		vCamPosition = vTwoThirdsPosToNpc.OneW() + (vDirToNpcLeft.ZeroY() * fDistanceToNpc);
-		vCamPosition.y += fDistanceToNpc * 0.1f;
+		Vec4 vTwoThirdsPosToNpc = vPlayerKuuCenterPos + (vDirToNpcLook.ZeroY() * fDistanceToNpc * 0.7f);
+		vCamPosition = vTwoThirdsPosToNpc + (vDirToNpcLeft.ZeroY() * fDistanceToNpc * 1.f);
+		vCamPosition.y += fDistanceToNpc * 0.25f;
 
 		/* CamLookAt */
 		vCamLookAt = vCenterPosToNpc;
-		vCamLookAt.y += fDistanceToNpc * 0.05f;
+		vCamLookAt.y -= fDistanceToNpc * 0.0f;
 
 		/* Fov */
 		Set_Fov(Cam_Fov_Action_Talk_Default);
@@ -613,6 +638,16 @@ void CCamera_Action::Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType
 
 			m_tActionTalkDesc.bSet = true;
 		}
+	}
+	break;
+	case CCamera_Action::tagActionTalkDesc::KUU_AND_PLAYER_BACK_NPC:
+	{
+
+	}
+	break;
+	case CCamera_Action::tagActionTalkDesc::NPC_BACK_KUU_AND_PLAYER:
+	{
+
 	}
 	break;
 	default:

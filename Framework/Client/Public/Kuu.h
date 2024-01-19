@@ -28,6 +28,7 @@ public:
 	void Set_KuuTarget_Player();
 
 	Vec4 Get_GoalPosition();
+	void Set_GoalPosition();
 
 private:
 	virtual HRESULT Ready_Components() override;

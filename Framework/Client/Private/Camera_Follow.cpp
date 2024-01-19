@@ -707,29 +707,29 @@ void CCamera_Follow::Test(_float fTimeDelta)
 		Lerp_LookAtOffSet(Vec4{ 0.7f, 15.f, 0.f, 1.f }, Cam_LookAtOffset_Follow_SholderView_Default, fLerpTime, eLerpMode);
 	}*/
 
-	//if (KEY_TAP(KEY::INSERT))
-	//{
-	//	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-	//	if (nullptr != pActionCam)
-	//	{
-	//		CCamera_Manager::GetInstance()->Set_CurCamera(pActionCam->Get_Key());
-	//		pActionCam->Start_Action_Talk(nullptr, nullptr);
-	//	}
-	//}
-	//
-	//if (KEY_TAP(KEY::DEL))
-	//{
-	//	CGameObject* pNpc = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Chloe"));
-	//	if (nullptr != pNpc)
-	//	{
-	//		CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-	//		if (nullptr != pActionCam)
-	//		{
-	//			CCamera_Manager::GetInstance()->Set_CurCamera(pActionCam->Get_Key());
-	//			pActionCam->Start_Action_Talk(pNpc, nullptr);
-	//		}
-	//	}
-	//}
+	if (KEY_TAP(KEY::INSERT))
+	{
+		CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+		if (nullptr != pActionCam)
+		{
+			CCamera_Manager::GetInstance()->Set_CurCamera(pActionCam->Get_Key());
+			pActionCam->Start_Action_Talk(nullptr, nullptr);
+		}
+	}
+	
+	if (KEY_TAP(KEY::DEL))
+	{
+		CGameObject* pNpc = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Chloe"));
+		if (nullptr != pNpc)
+		{
+			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+			if (nullptr != pActionCam)
+			{
+				CCamera_Manager::GetInstance()->Set_CurCamera(pActionCam->Get_Key());
+				pActionCam->Start_Action_Talk(pNpc, nullptr);
+			}
+		}
+	}
 }
 
 CCamera_Follow * CCamera_Follow::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
