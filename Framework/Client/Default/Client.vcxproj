@@ -270,10 +270,10 @@
     <ClInclude Include="..\Public\Criminal_MonsterNode_Skill1.h" />
     <ClInclude Include="..\Public\Criminal_MonsterNode_Stun.h" />
     <ClInclude Include="..\Public\Criminal_Npc.h" />
-    <ClInclude Include="..\Public\Decal.h" />
     <ClInclude Include="..\Public\Destroyer_Npc.h" />
     <ClInclude Include="..\Public\Crystal_Ball.h" />
     <ClInclude Include="..\Public\Crystal_Tower.h" />
+    <ClInclude Include="..\Public\Decal.h" />
     <ClInclude Include="..\Public\DefenceInvasion_Portal.h" />
     <ClInclude Include="..\Public\Defence_Tower.h" />
     <ClInclude Include="..\Public\Dochi.h" />
@@ -1035,6 +1035,7 @@
     <ClCompile Include="..\Private\Camera_Follow.cpp" />
     <ClCompile Include="..\Private\Camera_Manager.cpp" />
     <ClCompile Include="..\Private\Camera_Free.cpp" />
+    <ClCompile Include="..\Private\Camera_Quater.cpp" />
     <ClCompile Include="..\Private\Camera_Top.cpp" />
     <ClCompile Include="..\Private\Cannon_Ball.cpp" />
     <ClCompile Include="..\Private\Cannon_Tower.cpp" />
@@ -1539,6 +1540,11 @@
     <ClCompile Include="..\Private\UI_Emoticon_Button.cpp" />
     <ClCompile Include="..\Private\UI_Emoticon_SpeechBalloon.cpp" />
     <ClCompile Include="..\Private\UI_Emoticon_Window.cpp" />
+    <ClCompile Include="..\Private\UI_InGame_Setting_OpenBtn.cpp" />
+    <ClCompile Include="..\Private\UI_InGame_Setting_RadioBtn.cpp" />
+    <ClCompile Include="..\Private\UI_InGame_Setting_RadioGroup.cpp" />
+    <ClCompile Include="..\Private\UI_InGame_Setting_Slot.cpp" />
+    <ClCompile Include="..\Private\UI_InGame_Setting_Tab.cpp" />
     <ClCompile Include="..\Private\UI_InGame_Setting_Window.cpp" />
     <ClCompile Include="..\Private\UI_Inventory_LineBox.cpp" />
     <ClCompile Include="..\Private\UI_Inventory_Slot.cpp" />
