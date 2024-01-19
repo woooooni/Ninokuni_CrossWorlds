@@ -72,6 +72,23 @@ void CSubQuestNode_Windmill10::Start()
 	CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
 
 	TalkEvent();
+
+	//m_pChloe = dynamic_cast<CChloe*>(GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Chloe")));
+	//Vec4 vSpotPos = Set_DestSpot(m_pChloe);
+	//
+	//// 임시로 monster에 
+	//m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_MONSTER), &vSpotPos));
+	
+	list<CGameObject*>& pGameObjects = GI->Find_GameObjects(LEVELID::LEVEL_EVERMORE, LAYER_TYPE::LAYER_BUILDING);
+	auto iter = find_if(pGameObjects.begin(), pGameObjects.end(), [&](CGameObject* pObj) {
+		if (true == pObj->IsQuestItem())
+			return true;
+
+		return false;
+		});
+
+	m_pQuestObject = (*iter);
+
 }
 
 CBTNode::NODE_STATE CSubQuestNode_Windmill10::Tick(const _float& fTimeDelta)

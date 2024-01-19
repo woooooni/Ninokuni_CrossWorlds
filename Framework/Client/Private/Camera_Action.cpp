@@ -451,6 +451,7 @@ void CCamera_Action::Test(_float fTimeDelta)
 
 void CCamera_Action::Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType)
 {
+	//
 	Vec4 vCamPosition, vCamLookAt;
 
 	switch (eType)
