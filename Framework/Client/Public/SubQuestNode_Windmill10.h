@@ -2,6 +2,11 @@
 
 #include "QuestNode_Base.h"
 
+BEGIN(Engine)
+class CGameObject;
+END
+
+BEGIN(Client)
 class CSubQuestNode_Windmill10 final : public CQuestNode_Base
 {
 private:
@@ -20,9 +25,10 @@ private:
 private:
 	CGameObject* m_pVerde = nullptr;
 	CGameObject* m_pKuu = nullptr;
+	CGameObject* m_pQuestObject = nullptr;
 
 public:
 	static CSubQuestNode_Windmill10* Create();
 	virtual void Free() override;
 };
-
+END

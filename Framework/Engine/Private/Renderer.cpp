@@ -356,21 +356,6 @@ HRESULT CRenderer::Draw_World()
 
 	if (FAILED(Render_Deferred()))
 		return E_FAIL;
-//#pragma region TEMP REFLECT
-//	if (FAILED(Render_Depth_Mirror()))
-//		return E_FAIL;
-//
-//	if (FAILED(Render_Reflect_Object()))
-//		return E_FAIL;
-//
-//	if (FAILED(Render_StencilMirror()))
-//		return E_FAIL;
-//
-//	if(FAILED(Render_AlphaBlendTargetMix(TEXT("Target_Default_Mirror"), TEXT("MRT_Blend"), false)))
-//		return E_FAIL;
-//#pragma endregion
-
-
 
 	if (FAILED(Draw_WorldEffect()))
 		return E_FAIL;
@@ -443,6 +428,18 @@ HRESULT CRenderer::Draw_UI()
 		if (FAILED(Render_NonBlend_UI()))
 			return E_FAIL;
 
+		if (FAILED(Render_Stencil_ONLY()))
+			return E_FAIL;
+
+		if (FAILED(Render_Reflect_Object()))
+			return E_FAIL;
+
+		if (FAILED(Render_Blending_Mirror()))
+			return E_FAIL;
+
+		if (FAILED(Render_AlphaBlendTargetMix(TEXT("Target_Blending_Mirror"), TEXT("MRT_Blend"), false)))
+			return E_FAIL;
+
 		if (FAILED(Render_Lights_UI()))
 			return E_FAIL;
 	}
@@ -468,9 +465,10 @@ HRESULT CRenderer::Draw_UI()
 		}
 	}
 
+
+
 	if (FAILED(Render_Deferred_UI()))
 		return E_FAIL;
-
 
 
 	if (FAILED(Draw_UIEffect()))
@@ -741,38 +739,19 @@ HRESULT CRenderer::Render_NonLight()
 	return S_OK;
 }
 
-HRESULT CRenderer::Render_Depth_Mirror()
+HRESULT CRenderer::Render_Stencil_ONLY()
 {
-	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Depth_Mirror"))))
+	if (FAILED(m_pTarget_Manager->Begin_UI_MRT(m_pContext, TEXT("MRT_Stencil_Only"))))
 		return E_FAIL;
 
-	for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_DEPTH_MIRROR])
+	for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_STENCIL_ONLY])
 	{
 		if (FAILED(iter->Render()))
 			return E_FAIL;
 		Safe_Release(iter);
 	}
-	m_RenderObjects[RENDER_DEPTH_MIRROR].clear();
+	m_RenderObjects[RENDER_STENCIL_ONLY].clear();
 
-	//for (auto& Pair : m_Render_Instancing_Objects[RENDER_DEPTH_MIRROR])
-	//{
-	//	if (nullptr == Pair.second.pGameObject)
-	//		continue;
-
-	//	if (FAILED(Pair.second.pGameObject->Render_Instance(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices)))
-	//		return E_FAIL;
-
-	//	if (FAILED(Pair.second.pGameObject->Render_Instance_AnimModel(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices, Pair.second.TweenDesc, Pair.second.AnimInstanceDesc)))
-	//		return E_FAIL;
-
-	//	Pair.second.TweenDesc.clear();
-	//	Pair.second.WorldMatrices.clear();
-	//	Pair.second.AnimInstanceDesc.clear();
-	//	Pair.second.EffectInstancingDesc.clear();
-
-	//	Safe_Release(Pair.second.pGameObject);
-	//	Pair.second.pGameObject = nullptr;
-	//}
 
 	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
 		return E_FAIL;
@@ -782,9 +761,9 @@ HRESULT CRenderer::Render_Depth_Mirror()
 
 HRESULT CRenderer::Render_Reflect_Object()
 {
-	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Reflect_Object"))))
+	if (FAILED(m_pTarget_Manager->Begin_UI_MRT(m_pContext, TEXT("MRT_Draw_Reflect"))))
 		return E_FAIL;
-
+	
 	for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_REFLECT])
 	{
 		if (FAILED(iter->Render_Reflect()))
@@ -819,9 +798,9 @@ HRESULT CRenderer::Render_Reflect_Object()
 	return S_OK;
 }
 
-HRESULT CRenderer::Render_StencilMirror()
+HRESULT CRenderer::Render_Blending_Mirror()
 {
-	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Default_Mirror"))))
+	if (FAILED(m_pTarget_Manager->Begin_UI_MRT(m_pContext, TEXT("MRT_Blending_Mirror"))))
 		return E_FAIL;
 
 	for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_MIRROR])
@@ -832,25 +811,6 @@ HRESULT CRenderer::Render_StencilMirror()
 	}
 	m_RenderObjects[RENDER_MIRROR].clear();
 
-	//for (auto& Pair : m_Render_Instancing_Objects[RENDER_MIRROR])
-	//{
-	//	if (nullptr == Pair.second.pGameObject)
-	//		continue;
-
-	//	if (FAILED(Pair.second.pGameObject->Render_Instance(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices)))
-	//		return E_FAIL;
-
-	//	if (FAILED(Pair.second.pGameObject->Render_Instance_AnimModel(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices, Pair.second.TweenDesc, Pair.second.AnimInstanceDesc)))
-	//		return E_FAIL;
-
-	//	Pair.second.TweenDesc.clear();
-	//	Pair.second.WorldMatrices.clear();
-	//	Pair.second.AnimInstanceDesc.clear();
-	//	Pair.second.EffectInstancingDesc.clear();
-
-	//	Safe_Release(Pair.second.pGameObject);
-	//	Pair.second.pGameObject = nullptr;
-	//}
 
 	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
 		return E_FAIL;
@@ -1457,6 +1417,9 @@ HRESULT CRenderer::Render_NonBlend_UI()
 
 	for (auto& iter : m_RenderObjects[RENDER_NONBLEND_UI])
 	{
+		if (nullptr == iter)
+			continue;
+
 		if (FAILED(iter->Render()))
 			return E_FAIL;
 		Safe_Release(iter);
@@ -1775,12 +1738,14 @@ HRESULT CRenderer::Render_Debug_Target()
 	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Shadow_Caculation_Blur"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
 		return E_FAIL;
 
+
+	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Shadow_Caculation_Blur"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
+		return E_FAIL;
+
 #pragma region TEMP_MIRROR
-	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Depth_Mirror"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
+	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Draw_Reflect"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Reflect_Object"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
-		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Default_Mirror"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
+	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Blending_Mirror"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
 		return E_FAIL;
 #pragma endregion
 
@@ -2367,13 +2332,13 @@ HRESULT CRenderer::Create_Target()
 
 #pragma region MIRROR TEMP
 	// NonLight에 있어야 되고
-	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Depth_Mirror"),
-		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
-		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Reflect_Object"),
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Stencil_Only"),
 		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(1.f, 1.f, 1.f, 0.f))))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Default_Mirror"),
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Draw_Obj_Reflect"),
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Blending_Mirror"),
 		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(1.f, 1.f, 1.f, 0.f))))
 		return E_FAIL;
 #pragma endregion MIRROR TEMP
@@ -2577,18 +2542,16 @@ HRESULT CRenderer::Set_TargetsMrt()
 			return E_FAIL;
 	}
 
-	// TEMP Mirror
+	// Mirror
 	{
-		/* For.MRT_Depth_Mirror */
-		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Depth_Mirror"), TEXT("Target_Depth_Mirror"))))
+		// Mirror의 Stencil만 설정.
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Stencil_Only"), TEXT("Target_Stencil_Only"))))
 			return E_FAIL;
-
-		/* For.MRT_Blur_Horizontal */
-		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Reflect_Object"), TEXT("Target_Reflect_Object"))))
+		// 반사 행렬이 곱해진 ObjectList
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Draw_Reflect"), TEXT("Target_Draw_Obj_Reflect"))))
 			return E_FAIL;
-
-		/* For.MRT_Blur_Vertical */
-		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Default_Mirror"), TEXT("Target_Default_Mirror"))))
+		// 평소처럼 백버퍼에 그리 되 투명도를 적용해서 그린 미러.
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Blending_Mirror"), TEXT("Target_Blending_Mirror"))))
 			return E_FAIL;
 	}
 
@@ -2684,13 +2647,12 @@ HRESULT CRenderer::Set_Debug()
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Decal_Bloom"), (fSizeX / 2.f) + (fSizeX * 1), (fSizeY / 2.f) + (fSizeY * 6), fSizeX, fSizeY)))
 		return E_FAIL;
 
-	// Mirror Temp
-	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Depth_Mirror"), (fSizeX / 2.f) + (fSizeX * 0), (fSizeY / 2.f) + (fSizeY * 7), fSizeX, fSizeY)))
+	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Draw_Obj_Reflect"), (fSizeX / 2.f) + (fSizeX * 0), (fSizeY / 2.f) + (fSizeY * 7), fSizeX, fSizeY)))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Reflect_Object"), (fSizeX / 2.f) + (fSizeX * 1), (fSizeY / 2.f) + (fSizeY * 7), fSizeX, fSizeY)))
+	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Blending_Mirror"), (fSizeX / 2.f) + (fSizeX * 1), (fSizeY / 2.f) + (fSizeY * 7), fSizeX, fSizeY)))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Default_Mirror"), (fSizeX / 2.f) + (fSizeX * 2), (fSizeY / 2.f) + (fSizeY * 7), fSizeX, fSizeY)))
-		return E_FAIL;
+
+
 
 	// MRT_Blend
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Blend"), 150.f, 825.f, 300.f, 150.f)))

@@ -22,6 +22,7 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void LateTick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
+	virtual HRESULT Render_Reflect() override;
 	
 protected:
 	virtual HRESULT Ready_Components() override;
@@ -37,6 +38,8 @@ private:
 	_vector m_vCamPosition = XMVectorSet(0.f, 0.f, 0.f, 0.f);
 	_matrix m_vCamMatrix = XMMatrixIdentity();
 	_float4x4 m_ViewMatrix;
+	Matrix m_ProjMatrix;
+	CHARACTER_TYPE m_eCurCharacter = { CHARACTER_TYPE::SWORD_MAN };
 
 private:
 	HRESULT Ready_Sockets();

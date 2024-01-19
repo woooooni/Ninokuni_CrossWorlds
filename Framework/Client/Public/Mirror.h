@@ -46,6 +46,7 @@ private: // UI
 	_vector m_vCamPosition = XMVectorSet(0.f, 0.f, 0.f, 0.f);
 	_matrix m_vCamMatrix = XMMatrixIdentity();
 	_float4x4 m_ViewMatrix;
+	Matrix m_ProjMatrix;
 
 public:
 	static CMirror* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eObjType);

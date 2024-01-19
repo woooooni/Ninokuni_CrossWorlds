@@ -78,9 +78,13 @@ HRESULT CUI_CharacterDummy::Initialize(void* pArg)
 	m_vCamMatrix = XMMatrixLookAtLH(XMLoadFloat3(&vCamPos), XMLoadFloat3(&vLook), XMLoadFloat3(&vUp));
 	m_vCamPosition = XMVectorSet(vCamPos.x, vCamPos.y, vCamPos.z, 1.f);
 
-	XMStoreFloat4x4(&m_ViewMatrix, XMMatrixTranspose(m_vCamMatrix)); // 카메라 행렬을 전치시킴
+	::XMStoreFloat4x4(&m_ViewMatrix, m_vCamMatrix); // 카메라 행렬을 전치시킴
+		//	_float fAspectRatio = (_float)g_iWinSizeX / g_iWinSizeY;
+		//	_float fNearZ       = 0.2f;
+		//	_float fFarZ        = 1000.f;
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-0.3f, 0.f, 0.f, 1.f));
+	m_ProjMatrix = XMMatrixPerspectiveFovLH(::XMConvertToRadians(60.0f), static_cast<_float>(g_iWinSizeX) / static_cast<_float>(g_iWinSizeY), 0.2f, 1000.0f);
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-0.5f, 0.f, 0.4f, 1.f));
 	m_pTransformCom->LookAt_ForLandObject(m_vCamPosition);
 
 	m_bActive = false;
@@ -141,6 +145,7 @@ void CUI_CharacterDummy::LateTick(_float fTimeDelta)
 			m_pWeapon->LateTick(fTimeDelta);
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND_UI, this);
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_REFLECT, this);
 	}
 	
 }
@@ -154,11 +159,13 @@ HRESULT CUI_CharacterDummy::Render()
 
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &m_vCamPosition, sizeof(_float4))))
 			return E_FAIL;
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
 			return E_FAIL;
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_ViewMatrix", &m_ViewMatrix, sizeof(_float4x4))))
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
 			return E_FAIL;
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+		//if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ))))
+		//	return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
 			return E_FAIL;
 
 		_float4 vRimColor = { 0.f, 0.f, 0.f, 0.f };
@@ -188,6 +195,69 @@ HRESULT CUI_CharacterDummy::Render()
 					return E_FAIL;
 
 				if (FAILED(m_pCharacterPartModels[i]->Render(m_pShaderCom, j, 11)))
+					return E_FAIL;
+			}
+		}
+	}
+
+	return S_OK;
+}
+
+HRESULT CUI_CharacterDummy::Render_Reflect()
+{
+	if (m_bActive)
+	{
+		if (nullptr == m_pModelCom || nullptr == m_pShaderCom)
+			return E_FAIL;
+
+		SimpleMath::Plane mirrorPlane = Vec4(0.0f, 0.0f, 1.0f, 0.0f);
+		XMMATRIX matReflect = Matrix::CreateReflection(mirrorPlane);
+		Matrix world = m_pTransformCom->Get_WorldMatrix();
+		Matrix result = world * matReflect;
+
+		Matrix worldInvTranspose = m_pTransformCom->Get_WorldMatrixInverse();
+		worldInvTranspose.Transpose();
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &m_vCamPosition, sizeof(_float4))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &result)))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldInv", &worldInvTranspose)))
+			return E_FAIL;
+		//if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
+		//	return E_FAIL;
+
+		_float4 vRimColor = { 0.f, 0.f, 0.f, 0.f };
+		if (m_bInfinite)
+		{
+			vRimColor = { 0.f, 0.5f, 1.f, 1.f };
+		}
+
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float4))))
+			return E_FAIL;
+
+		if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
+			return E_FAIL;
+
+
+		for (size_t i = 0; i < PART_TYPE::PART_END; i++)
+		{
+			if (nullptr == m_pCharacterPartModels[i])
+				continue;
+
+			const _uint		iNumMeshes = m_pCharacterPartModels[i]->Get_NumMeshes();
+
+			for (_uint j = 0; j < iNumMeshes; ++j)
+			{
+				if (FAILED(m_pCharacterPartModels[i]->SetUp_OnShader(m_pShaderCom, m_pCharacterPartModels[i]->Get_MaterialIndex(j), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+					return E_FAIL;
+
+				if (FAILED(m_pCharacterPartModels[i]->Render(m_pShaderCom, j, 4)))
 					return E_FAIL;
 			}
 		}

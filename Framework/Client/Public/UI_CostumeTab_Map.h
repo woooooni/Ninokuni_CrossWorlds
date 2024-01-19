@@ -27,6 +27,7 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void LateTick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
+	virtual HRESULT Render_Reflect() override;
 
 protected:
 	virtual HRESULT Ready_Components() override;
@@ -44,6 +45,7 @@ private:
 	_vector m_vCamPosition = XMVectorSet(0.f, 0.f, 0.f, 0.f);
 	_matrix m_vCamMatrix = XMMatrixIdentity();
 	_float4x4 m_ViewMatrix;
+	Matrix m_ProjMatrix;
 	
 public:
 	static CUI_CostumeTab_Map* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
