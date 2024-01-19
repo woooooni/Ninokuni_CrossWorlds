@@ -4,6 +4,9 @@
 #include "MainQuest.h"
 #include "SubQuest.h"
 
+#include "GameInstance.h"
+#include "UI_Manager.h"
+
 IMPLEMENT_SINGLETON(CQuest_Manager)
 
 CQuest_Manager::CQuest_Manager()
@@ -27,6 +30,14 @@ void CQuest_Manager::Tick(_float fTimeDelta)
 	{
 		m_pMainQuest->Tick(fTimeDelta);
 		m_pSubQuest->Tick(fTimeDelta);
+	}
+
+	/* 모든 퀘스트 다이얼로그에서 카메라 이벤트 연동후 삭제 해주면 됩니다. */
+	{
+		if (KEY_TAP(KEY::HOME))
+		{
+			CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
+		}
 	}
 }
 

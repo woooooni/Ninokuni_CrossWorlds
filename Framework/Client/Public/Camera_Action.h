@@ -66,7 +66,7 @@ public:
 	typedef struct tagActionTalkDesc
 	{
 		enum PROGRESS	{ READY, TALKING, FINISH };
-		enum VIEW_TYPE	{ KUU, KUU_AND_PLAYER, NPC1, ALL_RIGTH, ALL_LEFT, KUU_AND_PLAYER_FROM_BACK_NPC, NPC_FROM_BACK_KUU_AND_PLAYER, NPC2 };
+		enum VIEW_TYPE	{ KUU, KUU_AND_PLAYER, NPC, ALL_RIGTH, ALL_LEFT, KUU_AND_PLAYER_FROM_BACK_NPC, NPC_FROM_BACK_KUU_AND_PLAYER };
 
 		_bool bInit = false;
 		_bool bSet = false;
@@ -75,16 +75,13 @@ public:
 
 		CTransform* pTransform_Kuu		= nullptr;
 		CTransform* pTransform_Player	= nullptr;
-
-		CTransform* pTransformNpc1		= nullptr;
-		CTransform* pTransformNpc2		= nullptr;
+		CTransform* pTransformNpc		= nullptr;
 
 		CKuu* pKuu = nullptr;
 
 		void Clear()
 		{
-			pTransformNpc1 = nullptr;
-			pTransformNpc2 = nullptr;
+			pTransformNpc = nullptr;
 			bSet = false;
 		}
 
@@ -109,9 +106,9 @@ public:
 	HRESULT Start_Action_Lobby();
 	HRESULT Start_Action_Door();
 
-	HRESULT Start_Action_Talk(CGameObject* pNpc1, CGameObject* pNpc2);				/* 처음 대화 시작시 호출 */
-	HRESULT Change_Action_Talk_Object(const ACTION_TALK_DESC::VIEW_TYPE& eType);	/* 중간 화자 변경시 호출 */
-	HRESULT Finish_Action_Talk();													/* 대화 종료시 호출 */
+	HRESULT Start_Action_Talk(CGameObject* pNpc); /* 처음 대화 시작시 호출 (쿠우 혼자면 nullptr, Npc 있으면 Npc 넘겨줌 */
+	HRESULT Change_Action_Talk_Object(const ACTION_TALK_DESC::VIEW_TYPE& eType); /* 중간 화자 변경시 호출 */
+	HRESULT Finish_Action_Talk(); /* 대화 종료시 호출 */
 
 public:
 	const _bool& Is_Finish_Action() const { return m_bAction; }

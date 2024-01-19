@@ -6320,8 +6320,7 @@ HRESULT CUI_Manager::OnOff_DialogWindow(_bool bOnOff, _uint iMagicNum)
 		{
 			if (!Is_DefaultSettingOn())
 			{
-				OnOff_GamePlaySetting(true);
-				//CCamera_Manager::GetInstance()->Get_CurCamera()->Set_CanInput(true);
+				//OnOff_GamePlaySetting(true); // 240119 카메라 쪽에서 열어주도록 수정 (찬)
 			}
 			
 			if (m_pDialogWindow->Get_Active())
