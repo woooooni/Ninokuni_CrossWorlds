@@ -58,7 +58,7 @@ void CState_BackFlip_01::Tick_State(_float fTimeDelta)
 	Vec3 vEndPos = pWhale->Get_RomingPointIndex(iCurRomingPoint + 1);
 	Vec4 vPos = Vec3(0.0f,0.0f,0.0f); // 현재 위치
 
-	m_pTransformCom->ParabolicFormula(vStartPos, vEndPos, fTimeDelta, 90.0f, 4.5f);
+	m_pTransformCom->ParabolicFormula(vStartPos, vEndPos, fTimeDelta, 60.0f, 4.5f);
 	m_pTransformCom->Rotation_Acc(::XMVector3Normalize(m_pTransformCom->Get_Look()), ::XMConvertToRadians(fTimeDelta * 35.0f));
 }
 

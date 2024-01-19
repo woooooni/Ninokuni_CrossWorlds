@@ -6052,6 +6052,8 @@ HRESULT CUI_Manager::OnOff_CostumeWindow(_bool bOnOff)
 			m_pDummy->Set_PartModel(PART_TYPE::HEAD, pCharacter->Get_PartModel(PART_TYPE::HEAD));
 
 			m_pDefaultBG->Set_Active(true);
+			// ¿Ã∞‘ ø ¿Â
+
 			for (auto& iter : m_CostumeBtn)
 			{
 				if (nullptr != iter)

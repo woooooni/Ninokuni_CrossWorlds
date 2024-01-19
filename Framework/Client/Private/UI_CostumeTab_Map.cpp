@@ -80,7 +80,12 @@ HRESULT CUI_CostumeTab_Map::Initialize(void* pArg)
 	m_vCamMatrix = XMMatrixLookAtLH(XMLoadFloat3(&vCamPos), XMLoadFloat3(&vLook), XMLoadFloat3(&vUp));
 	m_vCamPosition = XMVectorSet(vCamPos.x, vCamPos.y, vCamPos.z, 1.f);
 
-	XMStoreFloat4x4(&m_ViewMatrix, XMMatrixTranspose(m_vCamMatrix)); // 카메라 행렬을 전치시킴
+	::XMStoreFloat4x4(&m_ViewMatrix, m_vCamMatrix); // 카메라 행렬을 전치시킴
+		//	_float fAspectRatio = (_float)g_iWinSizeX / g_iWinSizeY;
+		//	_float fNearZ       = 0.2f;
+		//	_float fFarZ        = 1000.f;
+
+	m_ProjMatrix = XMMatrixPerspectiveFovLH(::XMConvertToRadians(60.0f), static_cast<_float>(g_iWinSizeX) / static_cast<_float>(g_iWinSizeY), 0.2f, 1000.0f);
 
 	m_pTransformCom->Set_Scale(_float3(1.f, 1.1f, 1.f));
 	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(190.f));
@@ -106,6 +111,7 @@ void CUI_CostumeTab_Map::LateTick(_float fTimeDelta)
 		__super::LateTick(fTimeDelta);
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND_UI, this);
+		//m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_REFLECT, this);
 	}
 }
 
@@ -119,12 +125,51 @@ HRESULT CUI_CostumeTab_Map::Render()
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &m_vCamPosition, sizeof(_float4))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_ViewMatrix", &m_ViewMatrix, sizeof(_float4x4))))
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
 		return E_FAIL;
+
+
+	_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
+	for (_uint i = 0; i < iNumMeshes; ++i)
+	{
+		_uint		iPassIndex = 0;
+
+		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+			return E_FAIL;
+
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i)))
+			return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+HRESULT CUI_CostumeTab_Map::Render_Reflect()
+{
+	if (FAILED(__super::Render()))
+		return E_FAIL;
+
+	if (nullptr == m_pModelCom)
+		return E_FAIL;
+
+	SimpleMath::Plane mirrorPlane = Vec4(0.0f, 0.0f, 1.0f, 0.0f);
+	XMMATRIX matReflect = Matrix::CreateReflection(mirrorPlane);
+	Matrix world = m_pTransformCom->Get_WorldMatrix();
+	Matrix result = world * matReflect;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &m_vCamPosition, sizeof(_float4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &result)))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
+		return E_FAIL;
+
 
 	_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 	for (_uint i = 0; i < iNumMeshes; ++i)

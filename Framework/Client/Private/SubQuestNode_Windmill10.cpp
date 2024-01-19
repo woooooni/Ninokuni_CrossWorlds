@@ -5,6 +5,7 @@
 #include "Utils.h"
 
 #include "UI_Manager.h"
+#include "Building.h"
 
 CSubQuestNode_Windmill10::CSubQuestNode_Windmill10()
 {
@@ -32,6 +33,17 @@ void CSubQuestNode_Windmill10::Start()
 	//
 	//// 임시로 monster에 
 	//m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_MONSTER), &vSpotPos));
+	
+	list<CGameObject*>& pGameObjects = GI->Find_GameObjects(LEVELID::LEVEL_EVERMORE, LAYER_TYPE::LAYER_BUILDING);
+	auto iter = find_if(pGameObjects.begin(), pGameObjects.end(), [&](CGameObject* pObj) {
+		if (true == pObj->IsQuestItem())
+			return true;
+
+		return false;
+		});
+
+	m_pQuestObject = (*iter);
+
 }
 
 CBTNode::NODE_STATE CSubQuestNode_Windmill10::Tick(const _float& fTimeDelta)
@@ -39,10 +51,16 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill10::Tick(const _float& fTimeDelta)
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 
+	// TODO
+	// 퀘스트 완료하면
+	
+	
+
 	// 연출 완료해야 하나 임시로 일단 키 입력으로 넘어가자.
 	if (KEY_TAP(KEY::N))
 	{
 		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+		static_cast<CBuilding*>(m_pQuestObject)->Set_QuestClear(true);
 
 		m_bIsClear = true;
 		return NODE_STATE::NODE_FAIL;
