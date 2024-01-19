@@ -161,7 +161,7 @@ void CUI_InGame_Setting_RadioGroup::Ready_RadioButtons()
 			return;
 		m_pOffBtn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pButton);
 		break;
-
+		// 그룹 없애야함
 	default:
 		break;
 	}
