@@ -58,7 +58,7 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion01::Tick(const _float& fTimeDelta)
 			if (CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_CurrentState() == CCharacter::STATE::NEUTRAL_DOOR_ENTER)
 				return NODE_STATE::NODE_RUNNING;
 
-			CCamera_Manager::GetInstance()->Start_Action_Shake(0.5f, 17.f, 3.f);
+			CCamera_Manager::GetInstance()->Start_Action_Shake(0.1f, 17.f, 2.f);
 			GI->Stop_Sound(CHANNELID::SOUND_BGM_CURR, 0.f);
 			GI->Play_Sound(L"Impact_Metal_Stone_1.mp3", CHANNELID::SOUND_CUTSCENE, 1.f, true);
 			CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);

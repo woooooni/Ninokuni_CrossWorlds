@@ -142,6 +142,8 @@
 #include "UI_Dummy_Destroyer.h"
 #include "UI_Dummy_Engineer.h"
 
+#include "TowerDefence_Manager.h"
+
 _bool CLoader::g_bFirstLoading = false;
 _bool CLoader::g_bLevelFirst[LEVELID::LEVEL_WITCHFOREST + 1] = {};
 
@@ -504,8 +506,6 @@ HRESULT CLoader::Loading_For_Level_Lobby()
 
 HRESULT CLoader::Loading_For_Level_Evermore()
 {
-	
-
 	/* For.Texture */
 	m_strLoading = TEXT("텍스쳐를 로딩 중 입니다.");
 
@@ -519,6 +519,7 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
 	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Evermore");
 	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Npc_Data, this, L"Evermore");
+	m_Threads[LOADING_THREAD::TOWER_DEFENCE_READY] = std::async(&CLoader::Loading_For_TowerDefence, this);
 
 	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
 	{
@@ -1333,6 +1334,18 @@ HRESULT CLoader::Reserve_Character_Managers()
 
 	if (FAILED(CGame_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
 		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_TowerDefence()
+{
+	if (FAILED(CTowerDefence_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+	{
+		MSG_BOX("Loading_For_TowerDefence Failed.");
+		return E_FAIL;
+	}
+		
 
 	return S_OK;
 }

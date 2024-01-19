@@ -41,7 +41,7 @@ _bool CPicking_Manager::Is_Picking(CTransform* pTransform, CVIBuffer* pBuffer, _
 	_vector vMousePos = XMVectorSet(
 		_float(pt.x / (g_iWinSizeX * .5f) - 1.f),
 		_float(pt.y / (g_iWinSizeY * -.5f) + 1.f),
-		1.f, 1.f);
+		0.f, 1.f);
 
 
 
@@ -94,7 +94,6 @@ _bool CPicking_Manager::Is_Picking(CTransform* pTransform, CVIBuffer* pBuffer, _
 					if (bCutPos)
 					{
 						vPickingPos.x = floorf(vPickingPos.x + 0.5f);
-						vPickingPos.y = floorf(vPickingPos.y + 0.5f);
 						vPickingPos.z = floorf(vPickingPos.z + 0.5f);
 					}
 					*vOut = vPickingPos;

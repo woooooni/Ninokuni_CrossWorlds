@@ -19,6 +19,7 @@ private:
 		CHARACTER_MODEL_SWORDMAN, 
 		CHARACTER_MODEL_ENGINEER,
 		CHARACTER_MODEL_DESTROYER,
+		TOWER_DEFENCE_READY,
 		COSTUME_UI,
 		THREAD_END 
 	};
@@ -84,6 +85,9 @@ private:
 	HRESULT Loading_For_Character(CHARACTER_TYPE eCharacterType);
 	HRESULT Loading_Character_Models(const wstring& strFolderPath);
 	HRESULT Reserve_Character_Managers();
+
+	// 타워디펜스 로딩 및 매니저 준비
+	HRESULT Loading_For_TowerDefence();
 
 
 private:
