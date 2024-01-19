@@ -224,6 +224,8 @@ public:
 	CCharacter::STATE Get_CurrentState();
 	Vec4 Get_CharacterPosition();
 
+	void Set_Useable(_bool bUseable) { m_bUseable = bUseable; }
+	_bool Is_Useable() { return m_bUseable; }
 
 public:
 	class CTransform* Get_CharacterTransformCom() { return m_pTransformCom; }
@@ -341,6 +343,7 @@ protected:
 	_bool m_bMotionTrail = false;
 	MOTION_TRAIL_DESC m_MotionTrailDesc = {};
 
+	_bool m_bUseable = true;
 
 protected:
 	_float m_fDefaultWalkSpeed = 3.f;

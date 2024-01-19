@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "GameInstance.h"
-#include "Cannon_Tower.h"
+#include "Shadow_Tower.h"
 #include "Monster.h"
 #include "Effect_Manager.h"
 #include "Particle_Manager.h"
@@ -17,23 +17,23 @@
 
 #include "State_DefenceTower_Idle.h"
 #include "State_DefenceTower_Dead.h"
-#include "State_CannonTower_Attack.h"
+#include "State_ShadowTower_Attack.h"
 #include "State_DefenceTower_Prepare.h"
 
 USING(Client)
-CCannon_Tower::CCannon_Tower(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
+CShadow_Tower::CShadow_Tower(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CDefence_Tower(pDevice, pContext, strObjectTag)
 {
 
 }
 
-CCannon_Tower::CCannon_Tower(const CCannon_Tower& rhs)
+CShadow_Tower::CShadow_Tower(const CShadow_Tower& rhs)
 	: CDefence_Tower(rhs)
 {	
 
 }
 
-HRESULT CCannon_Tower::Initialize_Prototype()
+HRESULT CShadow_Tower::Initialize_Prototype()
 {
 	if(FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
@@ -41,7 +41,7 @@ HRESULT CCannon_Tower::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CCannon_Tower::Initialize(void* pArg)
+HRESULT CShadow_Tower::Initialize(void* pArg)
 {
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -60,7 +60,7 @@ HRESULT CCannon_Tower::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CCannon_Tower::Tick(_float fTimeDelta)
+void CShadow_Tower::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 }
@@ -68,7 +68,7 @@ void CCannon_Tower::Tick(_float fTimeDelta)
 
 
 
-void CCannon_Tower::LateTick(_float fTimeDelta)
+void CShadow_Tower::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
 	if (nullptr == m_pRendererCom)
@@ -76,7 +76,7 @@ void CCannon_Tower::LateTick(_float fTimeDelta)
 
 }
 
-HRESULT CCannon_Tower::Render()
+HRESULT CShadow_Tower::Render()
 {
 	if (FAILED(__super::Render()))
 		return E_FAIL;
@@ -84,45 +84,45 @@ HRESULT CCannon_Tower::Render()
 	return S_OK;
 }
 
-HRESULT CCannon_Tower::Render_ShadowDepth()
+HRESULT CShadow_Tower::Render_ShadowDepth()
 {
 	if (FAILED(__super::Render_ShadowDepth()))
 		return E_FAIL;
 	return S_OK;
 }
 
-void CCannon_Tower::Collision_Enter(const COLLISION_INFO& tInfo)
+void CShadow_Tower::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
 }
 
-void CCannon_Tower::Collision_Continue(const COLLISION_INFO& tInfo)
+void CShadow_Tower::Collision_Continue(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Continue(tInfo);
 }
 
-void CCannon_Tower::Collision_Exit(const COLLISION_INFO& tInfo)
+void CShadow_Tower::Collision_Exit(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Exit(tInfo);
 }
 
-void CCannon_Tower::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
+void CShadow_Tower::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
 {
 	__super::Ground_Collision_Enter(tInfo);
 }
 
-void CCannon_Tower::Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo)
+void CShadow_Tower::Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo)
 {
 	__super::Ground_Collision_Continue(tInfo);
 }
 
-void CCannon_Tower::Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo)
+void CShadow_Tower::Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo)
 {
 	__super::Ground_Collision_Exit(tInfo);
 }
 
 
-HRESULT CCannon_Tower::Ready_Components()
+HRESULT CShadow_Tower::Ready_Components()
 {
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
@@ -137,11 +137,11 @@ HRESULT CCannon_Tower::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Model */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Cannon_Tower_Barrel"), TEXT("Com_Model"), (CComponent**)&m_pBarrelModelCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Shadow_Tower_Barrel"), TEXT("Com_Model"), (CComponent**)&m_pBarrelModelCom)))
 		return E_FAIL;
 
 	/* For.Com_BaseModel */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Cannon_Tower_Base"), TEXT("Com_TowerBaseModel"), (CComponent**)&m_pBaseModelCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Shadow_Tower_Base"), TEXT("Com_TowerBaseModel"), (CComponent**)&m_pBaseModelCom)))
 		return E_FAIL;
 
 	/* For.Com_StateMachine */
@@ -164,44 +164,45 @@ HRESULT CCannon_Tower::Ready_Components()
 	return S_OK;
 }
 
-HRESULT CCannon_Tower::Ready_States()
+HRESULT CShadow_Tower::Ready_States()
 {
 	list<wstring> strAnimationNames;
 
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_CannonTower.ao|CannonTower_Stand");
+	strAnimationNames.push_back(L"SKM_ShadowStoneTower.ao|ShadowStoneTower_Stand");
 
 	if (FAILED(m_pStateCom->Add_State(DEFENCE_TOWER_STATE::TOWER_STATE_PREPARE, CState_DefenceTower_Prepare::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_CannonTower.ao|CannonTower_Stand");
+	strAnimationNames.push_back(L"SKM_ShadowStoneTower.ao|ShadowStoneTower_Stand");
 
 	if (FAILED(m_pStateCom->Add_State(DEFENCE_TOWER_STATE::TOWER_STATE_IDLE, CState_DefenceTower_Idle::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_CannonTower.ao|CannonTower_Action");
+	strAnimationNames.push_back(L"SKM_ShadowStoneTower.ao|ShadowStoneTower_Action");
 
-	if (FAILED(m_pStateCom->Add_State(DEFENCE_TOWER_STATE::TOWER_STATE_ATTACK, CState_CannonTower_Attack::Create(m_pStateCom, strAnimationNames))))
+	if (FAILED(m_pStateCom->Add_State(DEFENCE_TOWER_STATE::TOWER_STATE_ATTACK, CState_ShadowTower_Attack::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_CannonTower.ao|CanonTower03_Death");
+	strAnimationNames.push_back(L"SKM_ShadowStoneTower.ao|ShadowStoneTower_Stand");
 
 	if (FAILED(m_pStateCom->Add_State(DEFENCE_TOWER_STATE::TOWER_STATE_DEAD, CState_DefenceTower_Dead::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
 	m_pStateCom->Change_State(DEFENCE_TOWER_STATE::TOWER_STATE_IDLE);
 
+
 	return S_OK;
 }
 
-HRESULT CCannon_Tower::Ready_Colliders()
+HRESULT CShadow_Tower::Ready_Colliders()
 {
 	CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
 	ZeroMemory(&SphereDesc, sizeof SphereDesc);
@@ -249,37 +250,37 @@ HRESULT CCannon_Tower::Ready_Colliders()
 	return S_OK;
 }
 
-void CCannon_Tower::Fire()
+void CShadow_Tower::Fire()
 {
 	m_pStateCom->Change_State(DEFENCE_TOWER_STATE::TOWER_STATE_ATTACK);
 	// TODO :: ÀÌÆåÆ®..?
 }
 
-CCannon_Tower* CCannon_Tower::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjTag)
+CShadow_Tower* CShadow_Tower::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjTag)
 {
-	CCannon_Tower* pInstance = new CCannon_Tower(pDevice, pContext, strObjTag);
+	CShadow_Tower* pInstance = new CShadow_Tower(pDevice, pContext, strObjTag);
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX("Create Failed. : CCannon_Tower");
+		MSG_BOX("Create Failed. : CShadow_Tower");
 		Safe_Release(pInstance);
 		return nullptr;
 	}
 	return pInstance;
 }
 
-CGameObject* CCannon_Tower::Clone(void* pArg)
+CGameObject* CShadow_Tower::Clone(void* pArg)
 {
-	CCannon_Tower* pInstance = new CCannon_Tower(*this);
+	CShadow_Tower* pInstance = new CShadow_Tower(*this);
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Clone Failed. : CCannon_Tower");
+		MSG_BOX("Clone Failed. : CShadow_Tower");
 		Safe_Release(pInstance);
 		return nullptr;
 	}
 	return pInstance;
 }
 
-void CCannon_Tower::Free()
+void CShadow_Tower::Free()
 {
 	__super::Free();
 }

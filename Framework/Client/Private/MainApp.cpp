@@ -17,6 +17,7 @@
 #include "Skill_Manager.h"
 #include "UIDamage_Manager.h"
 #include "Quest_Manager.h"
+#include "TowerDefence_Manager.h"
 
 
 #include "Game_Manager.h"
@@ -59,7 +60,7 @@ HRESULT CMainApp::Initialize()
 
 	// Set Start Level and Character
 	{
-		g_eStartLevel = LEVELID::LEVEL_LOGO; /* 시작할 레벨 타입 */
+		g_eStartLevel = LEVELID::LEVEL_TOOL; /* 시작할 레벨 타입 */
 
 		g_eLoadCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH; /* 모델 로드할 캐릭터 타입 */
 
@@ -102,11 +103,14 @@ void CMainApp::Tick(_float fTimeDelta)
 
 	CGame_Manager::GetInstance()->Tick(fTimeDelta);
 	GI->Tick(fTimeDelta); 
+
+	CTowerDefence_Manager::GetInstance()->Tick(fTimeDelta);
 	
 	CQuest_Manager::GetInstance()->LateTick(fTimeDelta);
 	CUI_Manager::GetInstance()->LateTick(fTimeDelta);
 	CGame_Manager::GetInstance()->LateTick(fTimeDelta);
 	GI->LateTick(fTimeDelta);
+	CTowerDefence_Manager::GetInstance()->LateTick(fTimeDelta);
 	
 	m_fTimeAcc += fTimeDelta;
 }
@@ -1558,6 +1562,7 @@ void Client::CMainApp::Free()
 	__super::Free();
 	Safe_Release(m_pRenderer_Com);
 
+	CTowerDefence_Manager::GetInstance()->DestroyInstance();
 	CQuest_Manager::GetInstance()->DestroyInstance();
 	CEffect_Manager::GetInstance()->DestroyInstance();
 	CParticle_Manager::GetInstance()->DestroyInstance();

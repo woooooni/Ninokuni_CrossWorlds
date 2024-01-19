@@ -282,7 +282,6 @@ void CCharacter::Tick_Target(_float fTimeDelta)
 			Safe_Release(m_pTarget);
 			m_pTarget = nullptr;
 		}
-			
 	}
 }
 
@@ -466,7 +465,6 @@ void CCharacter::Collision_Continue(const COLLISION_INFO& tInfo)
 	{
 		if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_ANIMAL || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_BOSS)
 		{
-
 			if (m_pStateCom->Get_CurrState() == CCharacter::STATE::NEUTRAL_PICK_LARGE_ENTER
 				|| m_pStateCom->Get_CurrState() == CCharacter::STATE::NEUTRAL_PICK_LARGE_IDLE
 				|| m_pStateCom->Get_CurrState() == CCharacter::STATE::NEUTRAL_PICK_LARGE_WALK
@@ -510,7 +508,6 @@ void CCharacter::Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo)
 
 void CCharacter::Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo)
 {
-
 	__super::Ground_Collision_Exit(tInfo);
 	m_pRigidBodyCom->Set_Ground(false);
  	m_pRigidBodyCom->Set_Use_Gravity(true);
