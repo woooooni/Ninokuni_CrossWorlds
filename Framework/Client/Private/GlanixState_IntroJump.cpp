@@ -6,6 +6,7 @@
 #include "Animation.h"
 #include "Camera_Manager.h"
 #include "Camera_CutScene_Boss.h"
+#include "Effect_Manager.h"
 
 CGlanixState_IntroJump::CGlanixState_IntroJump(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
@@ -29,6 +30,14 @@ void CGlanixState_IntroJump::Enter_State(void* pArg)
 		CCamera_CutScene_Boss* pCutSceneCam = dynamic_cast<CCamera_CutScene_Boss*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_BOSS));
 		if (nullptr != pCutSceneCam)
 			pCutSceneCam->Send_Signal();
+	}
+
+	// Effect Create
+	{
+		CTransform* pTransformCom = m_pGlanix->Get_Component<CTransform>(L"Com_Transform");
+		if (pTransformCom == nullptr)
+			return;
+		GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Glanix_Intro_Jump"), pTransformCom->Get_WorldMatrix(), m_pGlanix);
 	}
 }
 

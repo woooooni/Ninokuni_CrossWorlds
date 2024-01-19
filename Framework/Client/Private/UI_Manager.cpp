@@ -6435,6 +6435,9 @@ HRESULT CUI_Manager::OnOff_MiniMap(_bool bOnOff)
 
 void CUI_Manager::OnOff_IceVignette(_bool bOnOff)
 {
+	if (nullptr == m_pIceVignette)
+		return;
+
 	if (true == bOnOff)
 	{
 		if (false == m_pIceVignette->Get_Active())
@@ -6449,6 +6452,9 @@ void CUI_Manager::OnOff_IceVignette(_bool bOnOff)
 
 void CUI_Manager::On_FireVignette()
 {
+	if (nullptr == m_pIceVignette)
+		return;
+
 	if (!m_pIceVignette->Get_Active())
 		return;
 
