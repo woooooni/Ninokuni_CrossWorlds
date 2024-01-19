@@ -55,6 +55,8 @@ HRESULT CCrystal_Tower::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
+	m_fAccFireTime = 0.f;
+	m_fFireTime = 1.f;
 
 
 	return S_OK;
@@ -63,6 +65,25 @@ HRESULT CCrystal_Tower::Initialize(void* pArg)
 void CCrystal_Tower::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+
+	Look_For_Target(fTimeDelta);
+	m_pStateCom->Tick_State(fTimeDelta);
+	if (nullptr != m_pTarget)
+	{
+		if (DEFENCE_TOWER_STATE::TOWER_STATE_IDLE == m_pStateCom->Get_CurrState())
+		{
+			m_fAccFireTime += fTimeDelta;
+			if (m_fAccFireTime >= m_fFireTime)
+			{
+				m_pStateCom->Change_State(DEFENCE_TOWER_STATE::TOWER_STATE_ATTACK);
+				m_fAccFireTime = 0.f;
+			}
+		}
+	}
+	else
+	{
+		m_fAccFireTime = m_fFireTime;
+	}
 }
 
 
@@ -208,7 +229,7 @@ HRESULT CCrystal_Tower::Ready_Colliders()
 
 	BoundingSphere tSphere;
 	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 7.f;
+	tSphere.Radius = 10.f;
 	SphereDesc.tSphere = tSphere;
 
 	SphereDesc.pNode = nullptr;
@@ -227,7 +248,7 @@ HRESULT CCrystal_Tower::Ready_Colliders()
 	ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
 
 	XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
-	OBBBox.Extents = { 50.f, 100.f, 50.f };
+	OBBBox.Extents = { 100.f, 100.f, 100.f };
 
 	OBBDesc.tBox = OBBBox;
 	OBBDesc.pNode = nullptr;
@@ -240,7 +261,7 @@ HRESULT CCrystal_Tower::Ready_Colliders()
 
 
 
-	OBBBox.Extents = { 100.f, 100.f, 100.f };
+	OBBBox.Extents = { 200.f, 100.f, 200.f };
 	OBBDesc.vOffsetPosition = Vec3(0.f, 100.f, 0.f);
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::ATTACK, &OBBDesc)))
 		return E_FAIL;

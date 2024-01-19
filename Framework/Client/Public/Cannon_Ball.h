@@ -29,6 +29,10 @@ private:
 	_float m_fAccEffect = 0.f;
 	_float m_fGenEffectTime = 0.5f;
 
+private:
+	_bool m_bInitLook = false;
+	Vec3 m_vInitLook = {};
+
 public:
 	static CCannon_Ball* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);

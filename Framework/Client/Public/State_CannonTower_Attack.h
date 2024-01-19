@@ -27,6 +27,7 @@ public:
 
 private:
 	void Fire();
+	_bool m_bShoot = false;
 
 public:
 	static CState_CannonTower_Attack* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);

@@ -72,9 +72,15 @@ protected:
 	class CRigidBody* m_pRigidBodyCom = nullptr;
 
 protected:
+	Matrix m_BaseMatrix = Matrix::Identity;
+	_bool m_bInitMatrix = false;
+
+protected:
 	class CGameObject* m_pTarget = nullptr;
 	DEFENCE_TOWER_STATE m_eCurrentState = DEFENCE_TOWER_STATE::TOWER_STATE_END;
 
+	_float m_fAccFireTime = 0.f;
+	_float m_fFireTime = 1.f;
 
 public:
 	virtual void Free() override;

@@ -35,6 +35,7 @@ HRESULT CBaobam_Dark::Initialize(void* pArg)
 	if (pArg != nullptr)
 	{
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, tInfo.vStartPosition);
+		m_pControllerCom->Set_EnterLevel_Position(m_pTransformCom->Get_Position());
 		m_vOriginPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 	}
 

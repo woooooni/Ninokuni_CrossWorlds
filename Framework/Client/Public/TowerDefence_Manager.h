@@ -39,7 +39,6 @@ public:
 	class CGameObject* Get_PickObject() { return m_pPicked_Object; }
 
 public:
-	_uint Get_CurrentStage() { return m_iCurrentStage; }
 	_int Get_CurrentCost() { return m_iCost; }
 
 private:
@@ -59,6 +58,11 @@ private:
 	void Picking_Position();
 	void Picking_Object();
 	HRESULT Create_Defence_Object();
+	
+
+
+private:
+	HRESULT Prepare_Portals(Vec4 vInitializePosition);
 	HRESULT Spawn_Defence_Monsters();
 
 private:
@@ -75,10 +79,10 @@ private:
 
 private:
 	vector<class CGameObject*> m_DefenceObjects;
+	vector<class CDefenceInvasion_Portal*> m_InvasionPortals;
 	vector<class CGameObject*> m_DefenceMonsters;
 
 private:
-	_uint m_iCurrentStage = 0;
 	_int m_iCost = 10;
 
 private:

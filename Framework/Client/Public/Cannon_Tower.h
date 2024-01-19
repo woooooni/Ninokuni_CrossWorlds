@@ -37,6 +37,9 @@ protected:
 protected:
 	virtual void Fire() override;
 
+	
+
+
 
 public:
 	static CCannon_Tower* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjTag);

@@ -38,6 +38,7 @@ HRESULT CClown::Initialize(void* pArg)
 	{
 		OBJECT_INIT_DESC tInfo = *(OBJECT_INIT_DESC*)pArg;
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, tInfo.vStartPosition);
+		m_pControllerCom->Set_EnterLevel_Position(m_pTransformCom->Get_Position());
 		m_vOriginPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
 	}
 
