@@ -254,13 +254,13 @@ void CUI_InGame_Setting_Slot::Ready_RadioGroup()
 		if (m_eType != SLOT_THIRD)
 			return;
 
-		Make_Child(m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX, m_tInfo.fCY, TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Natural"));
-		Make_Child(m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX, m_tInfo.fCY, TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Shadow"));
-		Make_Child(m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX, m_tInfo.fCY, TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Outline"));
-		Make_Child(m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX, m_tInfo.fCY, TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Bloom"));
-		Make_Child(m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX, m_tInfo.fCY, TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Blur"));
-		Make_Child(m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX, m_tInfo.fCY, TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_SSAO"));
-		Make_Child(m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX, m_tInfo.fCY, TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_PBR"));
+//		Make_Child(m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX, m_tInfo.fCY, TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Natural"));
+//		Make_Child(m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX, m_tInfo.fCY, TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Shadow"));
+//		Make_Child(m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX, m_tInfo.fCY, TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Outline"));
+//		Make_Child(m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX, m_tInfo.fCY, TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Bloom"));
+//		Make_Child(m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX, m_tInfo.fCY, TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Blur"));
+//		Make_Child(m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX, m_tInfo.fCY, TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_SSAO"));
+//		Make_Child(m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX, m_tInfo.fCY, TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_PBR"));
 		break;
 
 	case UI_SETTING_SECTION::SETTING_CAMERA:
