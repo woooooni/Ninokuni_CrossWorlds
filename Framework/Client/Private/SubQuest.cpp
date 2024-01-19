@@ -4,6 +4,7 @@
 #include "SubQuest_FindCat.h"
 #include "SubQuest_Windmill.h"
 #include "SubQuest_Wanted.h"
+#include "SubQuest_NoisySnowField.h"
 
 #include "GameInstance.h"
 
@@ -16,6 +17,7 @@ HRESULT CSubQuest::Initialize()
 	m_vecSQ.push_back(CSubQuest_FindCat::Create());
 	m_vecSQ.push_back(CSubQuest_Windmill::Create());
 	m_vecSQ.push_back(CSubQuest_Wanted::Create());
+	m_vecSQ.push_back(CSubQuest_NoisySnowField::Create());
 
 	return S_OK;
 }
