@@ -43,7 +43,13 @@ void CBuilding::Tick(_float fTimeDelta)
 
 	if (m_strMapObjName == TEXT("Evermore_Wind_WindMillaA_02")) // ID 859
 	{
-		XRotation(2.0f, fTimeDelta);
+		if (true == m_bIsQuestObject)
+		{
+			if (true == m_bQuestClear)
+				XRotation(2.0f, fTimeDelta);
+		}
+		else
+			XRotation(2.0f, fTimeDelta);
 	}
 
 

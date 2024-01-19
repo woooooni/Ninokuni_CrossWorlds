@@ -6368,6 +6368,8 @@ HRESULT CUI_Manager::OnOff_CostumeWindow(_bool bOnOff)
 			}
 
 			m_pDefaultBG->Set_Active(true);
+			// ¿Ã∞‘ ø ¿Â
+
 			for (auto& iter : m_CostumeBtn)
 			{
 				if (nullptr != iter)

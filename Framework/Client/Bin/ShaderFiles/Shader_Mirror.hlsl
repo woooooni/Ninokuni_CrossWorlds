@@ -61,17 +61,28 @@ struct PS_IN
 struct PS_OUT
 {
     float4 vDiffuse : SV_TARGET0;
+    float4 vNormal : SV_TARGET1;
+    float4 vDepth : SV_TARGET2;
+    float4 vBloom : SV_TARGET3;
+    float4 vSunMask : SV_TARGET4;
 };
 
 PS_OUT PS_MAIN(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
 
-    Out.vDiffuse = ShaderTexture.Sample(PointSampler, In.vTexcoord);
-    
+    Out.vDiffuse = (vector) 1.f;
+
+
+    Out.vDiffuse = float4(0.0f, 0.0f, 0.70f, 0.5f);
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
+    Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
+    Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
     if (0.3 >= Out.vDiffuse.a)
         discard;
 	
+
     return Out;
 }
 
@@ -100,7 +111,7 @@ DepthStencilState DS_Mirror_Default
 
 
 // 처음 Mirror DepthStencil State
-DepthStencilState DS_Mirror_Reflect
+DepthStencilState MarkMirrorDSS
 {
     DepthEnable = true;
     DepthWriteMask = ZERO;
@@ -122,7 +133,7 @@ DepthStencilState DS_Mirror_Reflect
     BackFaceStencilFunc = ALWAYS;
 };
 
-BlendState BS_Mirror_NoneWrite // TurnOnWriteAlphaBlend
+BlendState NoRenderTargetWritesBS // TurnOnWriteAlphaBlend
 {
     AlphaToCoverageEnable = false;
     BlendEnable[0] = false;
@@ -135,16 +146,17 @@ BlendState BS_Mirror_NoneWrite // TurnOnWriteAlphaBlend
     RenderTargetWriteMask[0] = 0;
 };
 
-BlendState BS_Mirror_Default
+BlendState TransparentBS
 {
     AlphaToCoverageEnable = false;
     BlendEnable[0] = true;
-    SrcBlend[0] = SRC_ALPHA;
-    DestBlend[0] = INV_SRC_ALPHA;
+    SrcBlend[0] = SRC_ALPHA; // SRC_ALPHA or BLEND_FACTOR
+    DestBlend[0] = INV_SRC_ALPHA; // INV_SRC_ALPHA or INV_BLEND_FACTOR
     BlendOp[0] = ADD;
     SrcBlendAlpha[0] = ONE;
     DestBlendAlpha[0] = ZERO;
     BlendOpAlpha[0] = ADD;
+    RenderTargetWriteMask[0] = 15;
 };
 
 RasterizerState RS_Mirror_Default
@@ -167,9 +179,9 @@ technique11 DefaultTechnique
 {
     pass ReflectMirror // 처음에 먼저 이 패스 사용. -> 0번패스
     {
-        SetRasterizerState(RS_Mirror_Default); // RS_Default
-        SetDepthStencilState(DS_Mirror_Reflect, 0); // SetMirrorMarkDepthStencilState
-        SetBlendState(BS_Mirror_NoneWrite, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff); // TurnOnWriteAlphaBlend
+        SetRasterizerState(RS_Default); // RS_Default
+        SetDepthStencilState(MarkMirrorDSS, 1); // SetMirrorMarkDepthStencilState
+        SetBlendState(NoRenderTargetWritesBS, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff); // TurnOnWriteAlphaBlend
 
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
@@ -181,9 +193,9 @@ technique11 DefaultTechnique
 
     pass DefaultMirror // 캐릭터 반사 후 사용 -> 1번 패스 
     {
-        SetRasterizerState(RS_Mirror_Default);
+        SetRasterizerState(RS_Default);
         SetDepthStencilState(DS_Mirror_Default, 0);
-        SetBlendState(BS_Mirror_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(TransparentBS, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;

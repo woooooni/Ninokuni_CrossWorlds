@@ -366,7 +366,7 @@ VS_OUT VS_REFLECT(VS_IN In)
 
     Out.vPosition = mul(vPosition, matWVP);
     Out.vWorldPosition = mul(vPosition, g_WorldMatrix);
-    Out.vNormal = normalize(mul(vNormal, g_WorldInv));
+    Out.vNormal = normalize(mul(vNormal, g_WorldMatrix));
     Out.vTangent = normalize(mul(vTangent, g_WorldMatrix)).xyz;
     Out.vBinormal = normalize(cross(Out.vNormal, Out.vTangent));
     Out.vTexUV = In.vTexUV;
@@ -450,8 +450,8 @@ PS_OUT PS_MAIN_REFLECT(PS_IN In)
     Out.vBloom = Caculation_Brightness(Out.vDiffuse) + vRimColor;
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-    if (0.f == Out.vDiffuse.a)
-        discard;
+    //if (0.f == Out.vDiffuse.a)
+    //    discard;
 
     return Out;
 }
@@ -607,7 +607,7 @@ PS_OUT_SHADOW_DEPTH PS_SHADOW_DEPTH(PS_IN In)
     return Out;
 }
 
-RasterizerState RS_Reflect
+RasterizerState CullClockWiseRS
 {
     AntialiasedLineEnable = false;
     CullMode = BACK;
@@ -621,11 +621,11 @@ RasterizerState RS_Reflect
     SlopeScaledDepthBias = 0.0f;
 };
 
-DepthStencilState DS_Model_Reflect
+DepthStencilState DrawReflectionDSS
 {
     DepthEnable = true;
-    DepthWriteMask = ALL;
-    DepthFunc = LESS;
+    DepthWriteMask = ALL; // Zero or ALL
+    DepthFunc = LESS; // LESS or ALWAYS
     StencilEnable = true;
     StencilReadMask = 0xff;
     StencilWriteMask = 0xff;
@@ -641,19 +641,6 @@ DepthStencilState DS_Model_Reflect
     FrontFaceStencilDepthFail = KEEP;
     FrontFaceStencilPass = KEEP;
     FrontFaceStencilFunc = EQUAL;
-};
-
-BlendState BS_Model_NoneWrite
-{
-    AlphaToCoverageEnable = false;
-    BlendEnable[0] = false;
-    SrcBlend[0] = ONE;
-    DestBlend[0] = ZERO;
-    BlendOp[0] = ADD;
-    SrcBlendAlpha[0] = ONE;
-    DestBlendAlpha[0] = ZERO;
-    BlendOpAlpha[0] = ADD;
-    RenderTargetWriteMask[0] = 0;
 };
 
 technique11 DefaultTechnique
@@ -718,9 +705,9 @@ technique11 DefaultTechnique
     pass ReflectPass // 미러할 때 이 렌더 사용.
     {
 		// 4
-        SetRasterizerState(RS_Reflect);
-        SetDepthStencilState(DS_Model_Reflect, 0);
-        SetBlendState(BS_Model_NoneWrite, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetRasterizerState(CullClockWiseRS);
+        SetDepthStencilState(DrawReflectionDSS, 1);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
         VertexShader = compile vs_5_0 VS_REFLECT();
         GeometryShader = NULL;

@@ -6,6 +6,7 @@
 
 #include "UI_Manager.h"
 #include "Game_Manager.h"
+#include "Building.h"
 
 CSubQuestNode_Windmill10::CSubQuestNode_Windmill10()
 {
