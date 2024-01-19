@@ -29,11 +29,6 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT	Render();
 
-public:
-	virtual void On_MouseEnter(_float fTimeDelta) override;
-	virtual void On_Mouse(_float fTimeDelta) override;
-	virtual void On_MouseExit(_float fTimeDelta) override;
-
 private:
 	UI_SETTING_SECTION m_eSectionType = { SETTINGSECTION_END };
 	UI_SLOT_ORDER m_eType = { SLOTORDER_END };
@@ -61,7 +56,7 @@ private:
 private:
 	HRESULT	Ready_State();
 	HRESULT	Bind_ShaderResources();
-	void Key_Input(_float fTimeDelta);
+	void Ready_RadioGroup();
 
 public:
 	static CUI_InGame_Setting_Slot* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,

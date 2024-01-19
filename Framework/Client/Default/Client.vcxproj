@@ -700,6 +700,8 @@
     <ClInclude Include="..\Public\UI_Emoticon_SpeechBalloon.h" />
     <ClInclude Include="..\Public\UI_Emoticon_Window.h" />
     <ClInclude Include="..\Public\UI_InGame_Setting_OpenBtn.h" />
+    <ClInclude Include="..\Public\UI_InGame_Setting_RadioBtn.h" />
+    <ClInclude Include="..\Public\UI_InGame_Setting_RadioGroup.h" />
     <ClInclude Include="..\Public\UI_InGame_Setting_Slot.h" />
     <ClInclude Include="..\Public\UI_InGame_Setting_Tab.h" />
     <ClInclude Include="..\Public\UI_InGame_Setting_Window.h" />
@@ -1449,6 +1451,8 @@
     <ClCompile Include="..\Private\UI_Emoticon_SpeechBalloon.cpp" />
     <ClCompile Include="..\Private\UI_Emoticon_Window.cpp" />
     <ClCompile Include="..\Private\UI_InGame_Setting_OpenBtn.cpp" />
+    <ClCompile Include="..\Private\UI_InGame_Setting_RadioBtn.cpp" />
+    <ClCompile Include="..\Private\UI_InGame_Setting_RadioGroup.cpp" />
     <ClCompile Include="..\Private\UI_InGame_Setting_Slot.cpp" />
     <ClCompile Include="..\Private\UI_InGame_Setting_Tab.cpp" />
     <ClCompile Include="..\Private\UI_InGame_Setting_Window.cpp" />

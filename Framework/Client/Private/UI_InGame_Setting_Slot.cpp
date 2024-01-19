@@ -35,11 +35,15 @@ void CUI_InGame_Setting_Slot::Set_Active(_bool bActive)
 
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+
+		Set_ChildActive(true);
 	}
 	else
 	{
 		if (m_bEvent)
 			m_bEvent = false;
+
+		Set_ChildActive(false);
 	}
 
 	m_bActive = bActive;
@@ -63,6 +67,8 @@ HRESULT CUI_InGame_Setting_Slot::Initialize(void* pArg)
 
 	if (FAILED(Ready_State()))
 		return E_FAIL;
+
+	Ready_RadioGroup();
 
 	m_bActive = false;
 
@@ -107,8 +113,6 @@ HRESULT CUI_InGame_Setting_Slot::Initialize(void* pArg)
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
 
-	m_bUseMouse = true;
-
 	return S_OK;
 }
 
@@ -145,6 +149,8 @@ void CUI_InGame_Setting_Slot::LateTick(_float fTimeDelta)
 			return;
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+
+		__super::LateTick(fTimeDelta);
 	}
 }
 
@@ -158,31 +164,11 @@ HRESULT CUI_InGame_Setting_Slot::Render()
 		m_pShaderCom->Begin(9);
 
 		m_pVIBufferCom->Render();
+
+		__super::Render();
 	}
 
 	return S_OK;
-}
-
-void CUI_InGame_Setting_Slot::On_MouseEnter(_float fTimeDelta)
-{
-}
-
-void CUI_InGame_Setting_Slot::On_Mouse(_float fTimeDelta)
-{
-	if (m_bActive)
-	{
-		Key_Input(fTimeDelta);
-
-		__super::On_Mouse(fTimeDelta);
-	}
-}
-
-void CUI_InGame_Setting_Slot::On_MouseExit(_float fTimeDelta)
-{
-	if (m_bActive)
-	{
-		__super::On_MouseExit(fTimeDelta);
-	}
 }
 
 HRESULT CUI_InGame_Setting_Slot::Ready_Components()
@@ -254,15 +240,40 @@ HRESULT CUI_InGame_Setting_Slot::Bind_ShaderResources()
 	return S_OK;
 }
 
-void CUI_InGame_Setting_Slot::Key_Input(_float fTimeDelta)
+void CUI_InGame_Setting_Slot::Ready_RadioGroup()
 {
-	if (KEY_TAP(KEY::LBTN))
+	if (m_eSectionType == SETTINGSECTION_END)
+		return;
+
+	if (m_eType == SLOTORDER_END)
+		return;
+
+	switch (m_eSectionType)
 	{
-		//if (!m_bClicked && m_bArrived)
-		//	CUI_Manager::GetInstance()->Update_ClothSlotState(m_eSectionType, m_eType);
-		// UIManager를 통해서 m_bClicked = true; 를 행한다.
+	case UI_SETTING_SECTION::SETTING_GRAPHIC:
+		if (m_eType != SLOT_THIRD)
+			return;
+
+		Make_Child(m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX, m_tInfo.fCY, TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Natural"));
+		Make_Child(m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX, m_tInfo.fCY, TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Shadow"));
+		Make_Child(m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX, m_tInfo.fCY, TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Outline"));
+		Make_Child(m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX, m_tInfo.fCY, TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Bloom"));
+		Make_Child(m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX, m_tInfo.fCY, TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Blur"));
+		Make_Child(m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX, m_tInfo.fCY, TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_SSAO"));
+		Make_Child(m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX, m_tInfo.fCY, TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_PBR"));
+		break;
+
+	case UI_SETTING_SECTION::SETTING_CAMERA:
+		if (m_eType != SLOT_THIRD)
+			return;
+
+		break;
+
+	case UI_SETTING_SECTION::SETTING_AUDIO:
+		break;
 	}
 }
+
 
 CUI_InGame_Setting_Slot* CUI_InGame_Setting_Slot::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 	UI_SETTING_SECTION eSection, UI_SLOT_ORDER eType)

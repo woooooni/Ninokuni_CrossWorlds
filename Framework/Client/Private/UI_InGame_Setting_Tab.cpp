@@ -26,6 +26,7 @@ void CUI_InGame_Setting_Tab::Set_Active(_bool bActive)
 			m_bEvent = false;
 
 		m_bClicked = false;
+		m_fAlpha = 0.1f;
 	}
 
 	m_bActive = bActive;
@@ -50,7 +51,7 @@ HRESULT CUI_InGame_Setting_Tab::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	m_bActive = true;
+	m_bActive = false;
 	m_bUseMouse = true;
 
 	return S_OK;
@@ -63,9 +64,13 @@ void CUI_InGame_Setting_Tab::Tick(_float fTimeDelta)
 
 	if (m_bActive)
 	{
-
-		__super::Tick(fTimeDelta);
+		if (m_fAlpha > 0.9f)
+			m_fAlpha = 0.9f;
+		else
+			m_fAlpha += fTimeDelta;
 	}
+
+	__super::Tick(fTimeDelta);
 }
 
 void CUI_InGame_Setting_Tab::LateTick(_float fTimeDelta)
@@ -75,9 +80,10 @@ void CUI_InGame_Setting_Tab::LateTick(_float fTimeDelta)
 
 	if (m_bActive)
 	{
-
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
+
+	__super::LateTick(fTimeDelta);
 }
 
 HRESULT CUI_InGame_Setting_Tab::Render()

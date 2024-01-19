@@ -124,12 +124,14 @@
 #include "UI_InGame_Setting_OpenBtn.h"
 #include "UI_SkillSection_Background.h"
 #include "UI_ImajinnSection_Emoticon.h"
+#include "UI_InGame_Setting_RadioBtn.h"
 #include "UI_Emoticon_BalloonEmoticon.h"
 #include "UI_MonsterHP_ElementalFrame.h"
 #include "UI_SkillSection_Interaction.h"
 #include "UI_SkillSection_ClassicSkill.h"
 #include "UI_ImajinnSection_Background.h"
 #include "UI_SkillSection_SpecialSkill.h"
+#include "UI_InGame_Setting_RadioGroup.h"
 #include "UI_SkillSection_CoolTimeFrame.h"
 #include "UI_WeaponSection_DefaultWeapon.h"
 #include "UI_SkillSection_BtnInteraction.h"
@@ -8180,6 +8182,35 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_OpenBtn"),
 		CUI_InGame_Setting_OpenBtn::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton"),
+		CUI_InGame_Setting_RadioBtn::Create(m_pDevice, m_pContext, CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_ONBTN), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton"),
+		CUI_InGame_Setting_RadioBtn::Create(m_pDevice, m_pContext, CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_OFFBTN), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Natural"),
+		CUI_InGame_Setting_RadioGroup::Create(m_pDevice, m_pContext, CUI_InGame_Setting_RadioGroup::UI_RADIOGROUP::GRAPHIC_NATURAL), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Shadow"),
+		CUI_InGame_Setting_RadioGroup::Create(m_pDevice, m_pContext, CUI_InGame_Setting_RadioGroup::UI_RADIOGROUP::GRAPHIC_SHADOW), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Outline"),
+		CUI_InGame_Setting_RadioGroup::Create(m_pDevice, m_pContext, CUI_InGame_Setting_RadioGroup::UI_RADIOGROUP::GRAPHIC_OUTLINE), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Bloom"),
+		CUI_InGame_Setting_RadioGroup::Create(m_pDevice, m_pContext, CUI_InGame_Setting_RadioGroup::UI_RADIOGROUP::GRAPHIC_BLOOM), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Blur"),
+		CUI_InGame_Setting_RadioGroup::Create(m_pDevice, m_pContext, CUI_InGame_Setting_RadioGroup::UI_RADIOGROUP::GRAPHIC_BLUR), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_SSAO"),
+		CUI_InGame_Setting_RadioGroup::Create(m_pDevice, m_pContext, CUI_InGame_Setting_RadioGroup::UI_RADIOGROUP::GRAPHIC_SSAO), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_PBR"),
+		CUI_InGame_Setting_RadioGroup::Create(m_pDevice, m_pContext, CUI_InGame_Setting_RadioGroup::UI_RADIOGROUP::GRAPHIC_PBR), LAYER_UI)))
 		return E_FAIL;
 
 	return S_OK;

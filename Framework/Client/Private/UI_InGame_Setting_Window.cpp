@@ -15,27 +15,25 @@ CUI_InGame_Setting_Window::CUI_InGame_Setting_Window(const CUI_InGame_Setting_Wi
 
 void CUI_InGame_Setting_Window::Set_Active(_bool bActive)
 {
+	m_tInfo.fX = m_vOffPosition.x;
+	m_tInfo.fY = m_vOffPosition.y; // UI가 출발할 Position으로 다시 위치를 세팅한다.
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
+
+	m_bShowInfo = false;
+
 	if (bActive)
 	{
-		m_tInfo.fX = m_vOffPosition.x;
-		m_tInfo.fY = m_vOffPosition.y; // UI가 출발할 Position으로 다시 위치를 세팅한다.
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
-
-		m_fAlpha = 0.1f; // 초기 알파값을 세팅해준다.
-		m_bShowInfo = false;
+		m_fAlpha = 0.1f;
 
 		for (auto& pChildUI : m_pChild)
 		{
 			if (nullptr != pChildUI)
 				pChildUI->Set_Active(true);
 		}
-
 	}
 	else
 	{
-		m_bShowInfo = false;
-
 		for (auto& pChildUI : m_pChild)
 		{
 			if (nullptr != pChildUI)
@@ -132,8 +130,9 @@ void CUI_InGame_Setting_Window::Tick(_float fTimeDelta)
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 		}
-		__super::Tick(fTimeDelta);
 	}
+
+	__super::Tick(fTimeDelta);
 }
 
 void CUI_InGame_Setting_Window::LateTick(_float fTimeDelta)
