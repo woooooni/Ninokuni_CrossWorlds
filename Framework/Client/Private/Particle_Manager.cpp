@@ -260,11 +260,12 @@ HRESULT CParticle_Manager::Ready_Proto_Particles(const wstring& strParticlePath)
 
 		wstring strFullPath = CUtils::PathToWString(p.path().wstring());
 
-		_tchar strFileName[MAX_PATH];
+		_tchar strDriveName[MAX_PATH];
 		_tchar strFolderName[MAX_PATH];
+		_tchar strFileName[MAX_PATH];
 		_tchar strExt[MAX_PATH];
 
-		_wsplitpath_s(strFullPath.c_str(), nullptr, 0, strFolderName, MAX_PATH, strFileName, MAX_PATH, strExt, MAX_PATH);
+		_wsplitpath_s(strFullPath.c_str(), strDriveName, MAX_PATH, strFolderName, MAX_PATH, strFileName, MAX_PATH, strExt, MAX_PATH);
 
 		if (0 == lstrcmp(TEXT(".Particle"), strExt))
 		{
@@ -275,7 +276,7 @@ HRESULT CParticle_Manager::Ready_Proto_Particles(const wstring& strParticlePath)
 
 			wstring strParticleName(wcharFileName);
 
-#pragma region Load
+#pragma region Basic_Load
 			CParticle::PARTICLE_DESC tParticleDesc = {};
 
 			shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
@@ -456,12 +457,38 @@ HRESULT CParticle_Manager::Ready_Proto_Particles(const wstring& strParticlePath)
 			File->Read<_float3>(tParticleDesc.fBlack_Discard);
 #pragma endregion
 
-			// 이후 추가 시 기존 정보 로드 후 추가 값 셋팅 후 재저장하기
+#pragma endregion
 
+#pragma region Rigidbody_Load
+			wstring strRigidPath = strDriveName;
+			strRigidPath += strFolderName;
+			strRigidPath += strFileName;
+			strRigidPath += L".Rigidbody";
+
+			CParticle::PARTICLE_RIGIDBODY_DESC tRigidbodyDesc = {};
+			if (true == filesystem::exists(strRigidPath)) // 해당 파일이 존재
+			{
+				shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
+				File->Open(strRigidPath, FileMode::Read);
+
+				File->Read<_bool>(tRigidbodyDesc.bRigidbody);
+				File->Read<_bool>(tRigidbodyDesc.bGravity);
+				File->Read<_bool>(tRigidbodyDesc.bStopZero);
+				File->Read<_bool>(tRigidbodyDesc.bStopStartY);
+				File->Read<_bool>(tRigidbodyDesc.bGroundSlide);
+
+				File->Read<_bool>(tRigidbodyDesc.bStartJump);
+				File->Read<Vec4>(tRigidbodyDesc.vStartMinVelocity);
+				File->Read<Vec4>(tRigidbodyDesc.vStartMaxVelocity);
+
+				File->Read<Vec4>(tRigidbodyDesc.vMaxVelocity);
+				File->Read<_float>(tRigidbodyDesc.fMass);
+				File->Read<_float>(tRigidbodyDesc.fFricCoeff);
+			}
 #pragma endregion
 
 			if (FAILED(GI->Add_Prototype(L"Prototype_" + strParticleName,
-				CParticle::Create(m_pDevice, m_pContext, strParticleName, &tParticleDesc), LAYER_TYPE::LAYER_EFFECT)))
+				CParticle::Create(m_pDevice, m_pContext, strParticleName, &tParticleDesc, &tRigidbodyDesc), LAYER_TYPE::LAYER_EFFECT)))
 				return E_FAIL;
 
 			Safe_Delete(wcharFileName);

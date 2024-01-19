@@ -49,7 +49,9 @@ void CTool_Particle::Tick(_float fTimeDelta)
 	if (ImGui::CollapsingHeader("ParticleSystem"))
 	{
 		if (ImGui::Button("Restart"))
+		{
 			Store_InfoParticle();
+		}
 
 		// 기본 정보
 		if (ImGui::CollapsingHeader("BasicInfo"))
@@ -599,7 +601,22 @@ void CTool_Particle::Tick(_float fTimeDelta)
 
 			if (ImGui::Checkbox("StopStartY", &m_tRigidbodyInfo.bStopStartY))
 				bParticleSystemUse = true;
+
+			if (ImGui::Checkbox("GroundSlide", &m_tRigidbodyInfo.bGroundSlide))
+				bParticleSystemUse = true;
 			ImGui::NewLine();
+			ImGui::NewLine();
+
+			if (ImGui::Checkbox("StartJump", &m_tRigidbodyInfo.bStartJump))
+				bParticleSystemUse = true;
+
+			ImGui::Text("StartMinVelocity");
+			if (ImGui::InputFloat4("##StartMinVelocity", &m_tRigidbodyInfo.vStartMinVelocity.x))
+				bParticleSystemUse = true;
+
+			ImGui::Text("StartMaxVelocity");
+			if (ImGui::InputFloat4("##StartMaxVelocity", &m_tRigidbodyInfo.vStartMaxVelocity.x))
+				bParticleSystemUse = true;
 
 			ImGui::Text("MaxVelocity");
 			if (ImGui::InputFloat4("##MaxVelocity", &m_tRigidbodyInfo.vMaxVelocity.x))
@@ -613,8 +630,9 @@ void CTool_Particle::Tick(_float fTimeDelta)
 			if (ImGui::InputFloat("##FricCoeff", &m_tRigidbodyInfo.fFricCoeff))
 				bParticleSystemUse = true;
 			ImGui::NewLine();
+			ImGui::NewLine();
 
-			// 수정
+			ImGui::Text("## No Save/ Only Test ##");
 			ImGui::Text("RigidMinVelocity");
 			ImGui::InputFloat4("##RigidMinVelocity", &m_vMinVelocity.x);
 			ImGui::Text("RigidMaxVelocity");
@@ -761,6 +779,10 @@ void CTool_Particle::Load_InfoParticle()
 		m_iProjectionIndex = 1;
 	else
 		m_iProjectionIndex = 2;
+	
+	m_fParticleAxis.x = XMVectorGetX(m_tParticleInfo.vAxis);
+	m_fParticleAxis.y = XMVectorGetY(m_tParticleInfo.vAxis);
+	m_fParticleAxis.z = XMVectorGetZ(m_tParticleInfo.vAxis);
 
 	m_iDiffuseFolderIndex = Get_FolderIndex(m_tParticleInfo.strDiffuseTetextureName);
 	m_iAlphaFolderIndex   = Get_FolderIndex(m_tParticleInfo.strAlphaTexturName);
@@ -779,6 +801,8 @@ void CTool_Particle::Store_InfoParticle()
 		m_tParticleInfo.eParticleType = CParticle::TYPE_ORTHOGRAPHIC;
 	else
 		m_tParticleInfo.eParticleType = CParticle::TYPE_END;
+
+	m_tParticleInfo.vAxis = XMVectorSet(m_fParticleAxis.x, m_fParticleAxis.y, m_fParticleAxis.z, 0.f);
 
 	m_tParticleInfo.strDiffuseTetextureName = Select_FolderName(m_iDiffuseFolderIndex);
 	m_tParticleInfo.strAlphaTexturName      = Select_FolderName(m_iAlphaFolderIndex);
@@ -1151,6 +1175,44 @@ void CTool_Particle::Save_Particle(const char* pFileName)
 #pragma endregion
 
 	MSG_BOX("Particle_Save_Success!");
+
+	//if (m_tRigidbodyInfo.bRigidbody)
+	//	Save_Rigidbody(pFileName);
+}
+
+void CTool_Particle::Save_Rigidbody(const char* pFileName)
+{
+	if (m_pParticle == nullptr)
+	{
+		MSG_BOX("Particle_Rigidbody_Save_Failed!");
+		return;
+	}
+
+	wstring strFileName_Rigidbody(pFileName, pFileName + strlen(pFileName));
+	wstring strFilePath_Rigidbody = L"../Bin/DataFiles/Vfx/Particle/" + strFileName_Rigidbody + L".Rigidbody";
+
+#pragma region Save_Particle
+	auto path = filesystem::path(strFilePath_Rigidbody);
+	filesystem::create_directories(path.parent_path());
+
+	shared_ptr<CFileUtils> File_Rigidbody = make_shared<CFileUtils>();
+	File_Rigidbody->Open(strFilePath_Rigidbody, FileMode::Write);
+
+	File_Rigidbody->Write<_bool>(m_tRigidbodyInfo.bRigidbody);
+	File_Rigidbody->Write<_bool>(m_tRigidbodyInfo.bGravity);
+	File_Rigidbody->Write<_bool>(m_tRigidbodyInfo.bStopZero);
+	File_Rigidbody->Write<_bool>(m_tRigidbodyInfo.bStopStartY);
+	File_Rigidbody->Write<_bool>(m_tRigidbodyInfo.bGroundSlide);
+
+	File_Rigidbody->Write<_bool>(m_tRigidbodyInfo.bStartJump);
+	File_Rigidbody->Write<Vec4>(m_tRigidbodyInfo.vStartMinVelocity);
+	File_Rigidbody->Write<Vec4>(m_tRigidbodyInfo.vStartMaxVelocity);
+
+	File_Rigidbody->Write<Vec4>(m_tRigidbodyInfo.vMaxVelocity);
+	File_Rigidbody->Write<_float>(m_tRigidbodyInfo.fMass);
+	File_Rigidbody->Write<_float>(m_tRigidbodyInfo.fFricCoeff);
+
+	MSG_BOX("Particle_Rigidbody_Save_Success!");
 }
 
 void CTool_Particle::Load_Particle(const char* pFileName)
@@ -1163,13 +1225,13 @@ void CTool_Particle::Load_Particle(const char* pFileName)
 	Create_Particle();
 
 	wstring strFileName(pFileName, pFileName + strlen(pFileName));
-	wstring strFilePath = L"../Bin/DataFiles/Vfx/Particle/" + strFileName + L".Particle";
+	wstring strParticlePath = L"../Bin/DataFiles/Vfx/Particle/" + strFileName + L".Particle";
 	
-#pragma region Load_Particle
+#pragma region Basic_Load
 	CParticle::PARTICLE_DESC ParticleInfo = {};
 
 	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
-	File->Open(strFilePath, FileMode::Read);
+	File->Open(strParticlePath, FileMode::Read);
 
 	// 파티클 타입
 	_uint iParticleType = 0;
@@ -1346,13 +1408,38 @@ void CTool_Particle::Load_Particle(const char* pFileName)
 	File->Read<_float3>(ParticleInfo.fBlack_Discard);
 #pragma endregion
 
-	// 이후 추가 시 기존 정보 로드 후 추가 값 셋팅 후 재저장하기
-
-#pragma endregion
-
-	// 적용
 	static_cast<CParticle*>(m_pParticle)->Set_ParticleDesc(ParticleInfo);
 	m_tParticleInfo = ParticleInfo;
+#pragma endregion
+
+#pragma region Rigidbody_Load
+	wstring strRigidbodyPath = L"../Bin/DataFiles/Vfx/Particle/" + strFileName + L".Rigidbody";
+
+	CParticle::PARTICLE_RIGIDBODY_DESC tRigidbodyDesc = {};
+	if (true == filesystem::exists(strRigidbodyPath)) // 해당 파일이 존재
+	{
+		shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
+		File->Open(strRigidbodyPath, FileMode::Read);
+
+		File->Read<_bool>(tRigidbodyDesc.bRigidbody);
+		File->Read<_bool>(tRigidbodyDesc.bGravity);
+		File->Read<_bool>(tRigidbodyDesc.bStopZero);
+		File->Read<_bool>(tRigidbodyDesc.bStopStartY);
+		File->Read<_bool>(tRigidbodyDesc.bGroundSlide);
+
+		File->Read<_bool>(tRigidbodyDesc.bStartJump);
+		File->Read<Vec4>(tRigidbodyDesc.vStartMinVelocity);
+		File->Read<Vec4>(tRigidbodyDesc.vStartMaxVelocity);
+
+		File->Read<Vec4>(tRigidbodyDesc.vMaxVelocity);
+		File->Read<_float>(tRigidbodyDesc.fMass);
+		File->Read<_float>(tRigidbodyDesc.fFricCoeff);
+
+		static_cast<CParticle*>(m_pParticle)->Set_RigidbodyDesc(tRigidbodyDesc);
+		m_tRigidbodyInfo = tRigidbodyDesc;
+	}
+#pragma endregion
+
 	Load_InfoParticle();
 
 	MSG_BOX("Particle_Load_Success!");

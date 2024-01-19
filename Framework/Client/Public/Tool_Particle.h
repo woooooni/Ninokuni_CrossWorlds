@@ -36,6 +36,7 @@ private:
 
 private:
 	void Save_Particle(const char* pFileName);
+	void Save_Rigidbody(const char* pFileName);
 	void Load_Particle(const char* pFileName);
 
 private:

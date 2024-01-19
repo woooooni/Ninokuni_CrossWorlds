@@ -17,18 +17,26 @@ CVfx_Glanix_Skill_IcePillar::CVfx_Glanix_Skill_IcePillar(const CVfx_Glanix_Skill
 
 HRESULT CVfx_Glanix_Skill_IcePillar::Initialize_Prototype()
 {
-	m_bOwnerStateIndex = CGlanix::GLANIX_ATTACK2;
-
 	m_iMaxCount = TYPE_END;
 	m_pFrameTriger    = new _int[m_iMaxCount];
 	m_pPositionOffset = new _float3[m_iMaxCount];
 	m_pScaleOffset    = new _float3[m_iMaxCount];
 	m_pRotationOffset = new _float3[m_iMaxCount];
 
-	m_pFrameTriger[TYPE_START]    = 0;
-	m_pPositionOffset[TYPE_START] = _float3(0.f, 0.f, 0.f);
-	m_pScaleOffset[TYPE_START]    = _float3(1.f, 1.f, 1.f);
-	m_pRotationOffset[TYPE_START] = _float3(0.f, 0.f, 0.f);
+	m_pFrameTriger[TYPE_ONE]    = 0;
+	m_pPositionOffset[TYPE_ONE] = _float3(0.f, 0.f, 0.f);
+	m_pScaleOffset[TYPE_ONE]    = _float3(1.f, 1.f, 1.f);
+	m_pRotationOffset[TYPE_ONE] = _float3(0.f, 0.f, 0.f);
+
+	m_pFrameTriger[TYPE_TWO]    = 1;
+	m_pPositionOffset[TYPE_TWO] = _float3(0.f, 0.f, 0.f);
+	m_pScaleOffset[TYPE_TWO]    = _float3(1.f, 1.f, 1.f);
+	m_pRotationOffset[TYPE_TWO] = _float3(0.f, 0.f, 0.f);
+
+	m_pFrameTriger[TYPE_THREE]    = 2;
+	m_pPositionOffset[TYPE_THREE] = _float3(0.f, 0.f, 0.f);
+	m_pScaleOffset[TYPE_THREE]    = _float3(1.f, 1.f, 1.f);
+	m_pRotationOffset[TYPE_THREE] = _float3(0.f, 0.f, 0.f);
 
  	return S_OK;
 }
@@ -40,20 +48,32 @@ HRESULT CVfx_Glanix_Skill_IcePillar::Initialize(void* pArg)
 
 void CVfx_Glanix_Skill_IcePillar::Tick(_float fTimeDelta)
 {
-	__super::Tick(fTimeDelta);
-
-	if (!m_bOwnerTween)
+	if (m_bFinish)
 	{
-		if (m_iCount == TYPE_START && m_iOwnerFrame >= m_pFrameTriger[TYPE_START])
-		{
-			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT(""),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_START], m_pScaleOffset[TYPE_START], m_pRotationOffset[TYPE_START]);
-			m_iCount++;
-		}
-
-		else if (m_iCount == TYPE_END)
-			m_bFinish = true;
+		Set_Dead(true);
+		return;
 	}
+
+	if (m_iCount == TYPE_ONE)
+	{
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Snow_Sharp"),
+			XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ONE], m_pScaleOffset[TYPE_ONE], m_pRotationOffset[TYPE_ONE]);
+		m_iCount++;
+	}
+	else if (m_iCount == TYPE_TWO)
+	{
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Snow_Stone_Basic"),
+			XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_TWO], m_pScaleOffset[TYPE_TWO], m_pRotationOffset[TYPE_TWO]);
+		m_iCount++;
+	}
+	else if (m_iCount == TYPE_THREE)
+	{
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Snow_Stone_Piece"),
+			XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_THREE], m_pScaleOffset[TYPE_THREE], m_pRotationOffset[TYPE_THREE]);
+		m_iCount++;
+	}
+	else if (m_iCount == TYPE_END)
+		m_bFinish = true;
 }
 
 void CVfx_Glanix_Skill_IcePillar::LateTick(_float fTimeDelta)

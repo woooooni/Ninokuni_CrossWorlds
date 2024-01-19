@@ -139,10 +139,11 @@ public:
 #pragma endregion
 
 #pragma region 리지드바디
-		_bool* pRigidbody = nullptr;
-		_bool* pGravity  = nullptr;
-		_bool* pStopZero = nullptr;
-		_bool* pStopStartY = nullptr;
+		_bool* pRigidbody   = nullptr;
+		_bool* pGravity     = nullptr;
+		_bool* pStopZero    = nullptr;
+		_bool* pStopStartY  = nullptr;
+		_bool* pGroundSlide = nullptr;
 
 		Vec4* pMaxVelocity = nullptr;
 		_float* pMass      = nullptr;
@@ -256,7 +257,7 @@ public:
 public:
 	void Restart_ParticleBufferDesc(_uint iCount);
 	void Sort_Z(_uint iCount);
-	void Add_Velocity(Vec4 _vMinVelocity, Vec4 _vMaxVelocity);
+	void Add_Velocity(_uint iCount, Vec4 _vMinVelocity, Vec4 _vMaxVelocity);
 
 public:
 	virtual HRESULT Initialize_Prototype();

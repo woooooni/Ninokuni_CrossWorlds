@@ -19,6 +19,7 @@ CParticle::CParticle(const CParticle& rhs)
 	: CGameObject(rhs)
 	, m_isCloned(true)
 	, m_tParticleDesc(rhs.m_tParticleDesc)
+	, m_tRigidbodyDesc(rhs.m_tRigidbodyDesc)
 	, m_ViewMatrix(rhs.m_ViewMatrix)
 	, m_ProjMatrix(rhs.m_ProjMatrix)
 {
@@ -36,7 +37,7 @@ void CParticle::Add_Velocity(Vec4 _vMinVelocity, Vec4 _vMaxVelocity)
 	if (nullptr == m_pVIBufferCom)
 		return;
 
-	m_pVIBufferCom->Add_Velocity(_vMinVelocity, _vMaxVelocity);
+	m_pVIBufferCom->Add_Velocity(m_tParticleDesc.iNumEffectCount, _vMinVelocity, _vMaxVelocity);
 }
 
 void CParticle::Set_ParticleDesc(const PARTICLE_DESC& tDesc)
@@ -49,7 +50,12 @@ void CParticle::Set_ParticleDesc(const PARTICLE_DESC& tDesc)
 
 	// 버퍼 재시작
 	if (m_pVIBufferCom != nullptr)
+	{
 		m_pVIBufferCom->Restart_ParticleBufferDesc(m_tParticleDesc.iNumEffectCount);
+
+		if (m_tRigidbodyDesc.bStartJump)
+			m_pVIBufferCom->Add_Velocity(m_tParticleDesc.iNumEffectCount, m_tRigidbodyDesc.vStartMinVelocity, m_tRigidbodyDesc.vStartMaxVelocity);
+	}
 
 	m_bParticleDie = false;
 }
@@ -60,7 +66,12 @@ void CParticle::Set_RigidbodyDesc(const PARTICLE_RIGIDBODY_DESC& tDesc)
 
 	// 버퍼 재시작
 	if (m_pVIBufferCom != nullptr)
+	{
 		m_pVIBufferCom->Restart_ParticleBufferDesc(m_tParticleDesc.iNumEffectCount);
+
+		if (m_tRigidbodyDesc.bStartJump)
+			m_pVIBufferCom->Add_Velocity(m_tParticleDesc.iNumEffectCount, m_tRigidbodyDesc.vStartMinVelocity, m_tRigidbodyDesc.vStartMaxVelocity);
+	}
 
 	m_bParticleDie = false;
 }
@@ -101,15 +112,16 @@ void CParticle::Set_Position_Orthographic(_float2 fPosition)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(fPosition.x - g_iWinSizeX * 0.5f, -fPosition.y + g_iWinSizeY * 0.5f, 0.f, 1.f));
 }
 
-HRESULT CParticle::Initialize_Prototype(const PARTICLE_DESC* pParticleDesc)
+HRESULT CParticle::Initialize_Prototype(const PARTICLE_DESC* pParticleDesc, const PARTICLE_RIGIDBODY_DESC* pRigidbodyDesc)
 {
-	if (pParticleDesc == nullptr)
+	if (nullptr == pParticleDesc)
 		return E_FAIL;
 
 	XMStoreFloat4x4(&m_ViewMatrix, XMMatrixIdentity());
 	XMStoreFloat4x4(&m_ProjMatrix, XMMatrixOrthographicLH(g_iWinSizeX, g_iWinSizeY, 0.f, 1.f));
 
 	m_tParticleDesc = *pParticleDesc;
+    m_tRigidbodyDesc = *pRigidbodyDesc;
 
  	return S_OK;
 }
@@ -118,6 +130,9 @@ HRESULT CParticle::Initialize(void* pArg)
 {
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
+
+	if (m_tRigidbodyDesc.bStartJump)
+		m_pVIBufferCom->Add_Velocity(m_tParticleDesc.iNumEffectCount, m_tRigidbodyDesc.vStartMinVelocity, m_tRigidbodyDesc.vStartMaxVelocity);
 
 	return S_OK;
 }
@@ -401,6 +416,8 @@ void* CParticle::Get_ParticleBufferInfo()
 	tBufferInfo.pGravity    = &m_tRigidbodyDesc.bGravity;
 	tBufferInfo.pStopZero   = &m_tRigidbodyDesc.bStopZero;
 	tBufferInfo.pStopStartY = &m_tRigidbodyDesc.bStopStartY;
+	tBufferInfo.pGroundSlide = &m_tRigidbodyDesc.bGroundSlide;
+
 	tBufferInfo.pMaxVelocity = &m_tRigidbodyDesc.vMaxVelocity;
 	tBufferInfo.pMass        = &m_tRigidbodyDesc.fMass;
 	tBufferInfo.pFricCoeff   = &m_tRigidbodyDesc.fFricCoeff;
@@ -482,10 +499,11 @@ void CParticle::Set_Texture_Alpha()
 		m_tParticleDesc.iTextureIndexAlpha = m_pAlphaTextureCom->Get_TextureCount() - 1;
 }
 
-CParticle* CParticle::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const PARTICLE_DESC* pParticleDesc)
+CParticle* CParticle::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, 
+	const PARTICLE_DESC* pParticleDesc, const PARTICLE_RIGIDBODY_DESC* pRigidbodyDesc)
 {
 	CParticle* pInstance = new CParticle(pDevice, pContext, strObjectTag);
-	if (FAILED(pInstance->Initialize_Prototype(pParticleDesc)))
+	if (FAILED(pInstance->Initialize_Prototype(pParticleDesc, pRigidbodyDesc)))
 	{
 		MSG_BOX("Failed to Created : CParticle");
 		Safe_Release(pInstance);

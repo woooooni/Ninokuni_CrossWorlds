@@ -699,8 +699,9 @@ HRESULT CLoader::Loading_For_Level_Tool()
 	ParticleInfo.pVelocityMin = new _float3[ParticleInfo.iVelocityUse];
 	ParticleInfo.pVelocityMax = new _float3[ParticleInfo.iVelocityUse];
 	ParticleInfo.pVelocityTime = new _float2[ParticleInfo.iVelocityUse];
+	CParticle::PARTICLE_RIGIDBODY_DESC ParticleRigidbody = {};
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_TempParticle"),
-		CParticle::Create(m_pDevice, m_pContext, TEXT("TempParticle"), &ParticleInfo), 
+		CParticle::Create(m_pDevice, m_pContext, TEXT("TempParticle"), &ParticleInfo, &ParticleRigidbody),
 		LAYER_TYPE::LAYER_EFFECT)))
 		return E_FAIL;
 
