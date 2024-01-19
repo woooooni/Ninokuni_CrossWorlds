@@ -66,7 +66,7 @@ public:
 	typedef struct tagActionTalkDesc
 	{
 		enum PROGRESS	{ READY, TALKING, FINISH };
-		enum VIEW_TYPE	{ KUU, KUU_AND_PLAYER, NPC1, NPC2, ALL };
+		enum VIEW_TYPE	{ KUU, KUU_AND_PLAYER, NPC1, ALL_RIGTH, ALL_LEFT, KUU_AND_PLAYER_BACK_NPC, NPC_BACK_KUU_AND_PLAYER, NPC2 };
 
 		_bool bInit = false;
 		_bool bSet = false;
