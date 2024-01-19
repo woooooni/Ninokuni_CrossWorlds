@@ -148,7 +148,7 @@ void CGlanix::Tick(_float fTimeDelta)
 		m_tStat.fHp -= m_tStat.fMaxHp * 0.1f;
 
 #ifdef _DEBUG
-	if (LEVELID::LEVEL_TOOL == GI->Get_CurrentLevel() && KEY_TAP(KEY::M))
+	if (KEY_TAP(KEY::M))
 		m_pStateCom->Change_State(GLANIX_RAGESTART);
 #endif // DEBUG
 
@@ -161,7 +161,7 @@ void CGlanix::Tick(_float fTimeDelta)
 }
 
 void CGlanix::LateTick(_float fTimeDelta)
-{
+{ 
 	__super::LateTick(fTimeDelta);
 }
 
