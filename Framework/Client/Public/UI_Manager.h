@@ -50,6 +50,13 @@ public: // Get/Set
 	_float			Get_DistanceofMovement_SkillBG();
 	_bool			Get_MovementComplete_SkillBG();
 
+	// For InGame Setting
+	void			Set_DefaultGraphicSetting(); // 그래픽 기본 세팅으로 전환해줌
+	_bool			Is_SettingFirst(); // 그래픽 세팅을 처음 하는지
+	void			Set_GraphicSettingState(_bool bisFirst); // 그래픽 세팅을 한 번이라도 했다면 사용한다.
+	_bool			Get_AbleToControlRadio();
+	void			Set_AbleToControlRadio(_bool bControl);
+
 	_bool			Is_Dialog_Active();
 
 public:
@@ -110,6 +117,8 @@ public:
 	void	Update_CostumeBtn();
 	void	Update_WeaponSelectionIcon(_uint iSlotNum);
 	void	Update_IceVignette();
+	void	Update_SettingButton(_uint iGroupType);
+	void	Update_SettingGraphicRadio(_uint iGroupType, _uint iBtnType);
 
 	void	Update_CostumeModel(const CHARACTER_TYPE& eCharacterType, const PART_TYPE& ePartType, const wstring& strPartTag);
 	void	Update_CostumeWeaponModel(const CHARACTER_TYPE& eCharacterType, const wstring& strPartTag);

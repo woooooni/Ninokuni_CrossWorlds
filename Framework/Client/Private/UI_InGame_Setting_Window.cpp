@@ -2,6 +2,8 @@
 #include "UI_InGame_Setting_Window.h"
 #include "GameInstance.h"
 #include "UI_InGame_Setting_Tab.h"
+#include "UI_Manager.h"
+#include "Character.h"
 
 CUI_InGame_Setting_Window::CUI_InGame_Setting_Window(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_InGame_Setting_Window")
@@ -31,6 +33,15 @@ void CUI_InGame_Setting_Window::Set_Active(_bool bActive)
 			if (nullptr != pChildUI)
 				pChildUI->Set_Active(true);
 		}
+
+		CCharacter* pCharacter = nullptr;
+		pCharacter = CUI_Manager::GetInstance()->Get_Character();
+		if (nullptr == pCharacter)
+			return;
+
+		pCharacter->Set_Skill_Input(false);
+		pCharacter->Set_Attack_Input(false);
+		pCharacter->Set_Move_Input(false);
 	}
 	else
 	{
@@ -40,6 +51,14 @@ void CUI_InGame_Setting_Window::Set_Active(_bool bActive)
 				pChildUI->Set_Active(false);
 		}
 
+		CCharacter* pCharacter = nullptr;
+		pCharacter = CUI_Manager::GetInstance()->Get_Character();
+		if (nullptr == pCharacter)
+			return;
+
+		pCharacter->Set_Skill_Input(true);
+		pCharacter->Set_Attack_Input(true);
+		pCharacter->Set_Move_Input(true);
 	}
 
 	m_bActive = bActive;
@@ -72,22 +91,10 @@ HRESULT CUI_InGame_Setting_Window::Initialize(void* pArg)
 	m_vOffPosition.x = m_tInfo.fX + (m_tInfo.fCX * 0.5f); // UI가 Active되는 시점에 등장할 위치
 	m_vOffPosition.y = m_tInfo.fY;
 
-	// ChildUI를 추가한다 (Accept버튼)
-//	Make_Child(0.f, g_iWinSizeY * 0.41f, 400.f, 100.f, TEXT("Prototype_GameObject_UI_Btn_AcceptQuest"));
-//	
-//	switch (m_eProcessType)
-//	{
-//	case QUEST_ACCEPT:
-//		Make_Child(0.f, g_iWinSizeY * 0.41f, 188.f * 0.6f, 53.f * 0.6f, TEXT("Prototype_GameObject_UI_Quest_Text_Accept"));
-//		break;
-//
-//	case QUEST_FINISH:
-//		Make_Child(0.f, g_iWinSizeY * 0.41f, 250.f * 0.6f, 53.f * 0.6f, TEXT("Prototype_GameObject_UI_Quest_Text_Finish"));
-//		break;
-//
-//	default:
-//		break;
-//	}
+	m_tInfo.fX = m_vOffPosition.x;
+	m_tInfo.fY = m_vOffPosition.y;
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 
 	_float fSize = 128.f * 0.7f;
 	_float fDefaultY = -185.f;

@@ -3,6 +3,11 @@
 #include "GameInstance.h"
 #include "UI_Manager.h"
 #include "Character.h"
+#include "UI_InGame_Setting_RadioBtn.h"
+#include "UI_InGame_Setting_Button.h"
+#include "Camera_Manager.h"
+#include "Camera_Group.h"
+#include "UI_InGame_Setting_Slider.h"
 
 CUI_InGame_Setting_Slot::CUI_InGame_Setting_Slot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 	UI_SETTING_SECTION eSection, UI_SLOT_ORDER eType)
@@ -26,7 +31,6 @@ void CUI_InGame_Setting_Slot::Set_Active(_bool bActive)
 
 	if (bActive)
 	{
-		//m_iPass = 9;
 		m_fTimeAcc = 0.f;
 		m_bArrived = false;
 		m_bClicked = false;
@@ -36,12 +40,32 @@ void CUI_InGame_Setting_Slot::Set_Active(_bool bActive)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
 
+		if ((SETTING_GRAPHIC == m_eSectionType &&
+			SLOT_THIRD == m_eType) ||
+			(SETTING_CAMERA == m_eSectionType &&
+			SLOT_THIRD == m_eType))
+			Ready_RadioState();
+
+		if ((SETTING_GRAPHIC == m_eSectionType && SLOT_SECOND == m_eType) ||
+			(SETTING_CAMERA == m_eSectionType && SLOT_SECOND == m_eType))
+			Ready_ButtonState();
+
 		Set_ChildActive(true);
 	}
 	else
 	{
 		if (m_bEvent)
 			m_bEvent = false;
+
+		if ((SETTING_CAMERA == m_eSectionType) &&
+			(SLOT_FOURTH == m_eType || SLOT_FIFTH == m_eType || SLOT_SIXTH == m_eType))
+		{
+			for (auto& iter : m_pChild)
+			{
+				if (nullptr != dynamic_cast<CUI_InGame_Setting_Slider*>(iter))
+					dynamic_cast<CUI_InGame_Setting_Slider*>(iter)->Set_IsArrived(false);
+			}
+		}
 
 		Set_ChildActive(false);
 	}
@@ -67,8 +91,13 @@ HRESULT CUI_InGame_Setting_Slot::Initialize(void* pArg)
 
 	if (FAILED(Ready_State()))
 		return E_FAIL;
-
+	
+	Ready_Buttons();
 	Ready_RadioGroup();
+
+	Ready_ButtonState();
+
+	Ready_Slider();
 
 	m_bActive = false;
 
@@ -130,9 +159,19 @@ void CUI_InGame_Setting_Slot::Tick(_float fTimeDelta)
 			if (m_tInfo.fX < m_vArrivedPosition.x)
 			{
 				m_bArrived = true;
+				Set_ChildActive(true);
 				m_tInfo.fX = m_vArrivedPosition.x;
-			}
 
+				if ((SETTING_CAMERA == m_eSectionType) &&
+					(SLOT_FOURTH == m_eType || SLOT_FIFTH == m_eType || SLOT_SIXTH == m_eType))
+				{
+					for (auto& iter : m_pChild)
+					{
+						if (nullptr != dynamic_cast<CUI_InGame_Setting_Slider*>(iter))
+							dynamic_cast<CUI_InGame_Setting_Slider*>(iter)->Set_IsArrived(true);
+					}
+				}
+			}
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
 		}
@@ -171,9 +210,455 @@ HRESULT CUI_InGame_Setting_Slot::Render()
 	return S_OK;
 }
 
+void CUI_InGame_Setting_Slot::Update_ButtonState(_uint iGroupType)
+{
+	CUI* pCustomBtn = nullptr;
+	CUI* pDefaultBtn = nullptr;
+
+	CUI_InGame_Setting_Button* pCustom = nullptr;
+	CUI_InGame_Setting_Button* pDefault = nullptr;
+
+	CUI* pBackBtn = nullptr;
+	CUI* pShoulderBtn = nullptr;
+
+	CUI_InGame_Setting_Button* pBack = nullptr;
+	CUI_InGame_Setting_Button* pShoulder = nullptr;
+
+	CCamera_Follow* pFollowCamera =
+		dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+	if (nullptr == pFollowCamera)
+		return;
+
+	switch (iGroupType)
+	{
+	case CUI_InGame_Setting_Button::UI_SETTINGBUTTON::SETBUTTON_GRAPHIC_CUSTOM:
+		pCustomBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Button_Graphic_Custom"));
+		if (nullptr == pCustomBtn)
+			return;
+		if (nullptr == dynamic_cast<CUI_InGame_Setting_Button*>(pCustomBtn))
+			return;
+		pDefaultBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Button_Graphic_Default"));
+		if (nullptr == pDefaultBtn)
+			return;
+		if (nullptr == dynamic_cast<CUI_InGame_Setting_Button*>(pDefaultBtn))
+			return;
+
+		pCustom = dynamic_cast<CUI_InGame_Setting_Button*>(pCustomBtn);
+		pDefault = dynamic_cast<CUI_InGame_Setting_Button*>(pDefaultBtn);
+
+		pCustom->Set_Click(true);
+		pDefault->Set_Click(false);
+
+		// 버튼을 누를 수 있게 한다.
+		CUI_Manager::GetInstance()->Set_AbleToControlRadio(false);
+		break;
+
+	case CUI_InGame_Setting_Button::UI_SETTINGBUTTON::SETBUTTON_GRAPHIC_DEFAULT:
+		pCustomBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Button_Graphic_Custom"));
+		if (nullptr == pCustomBtn)
+			return;
+		if (nullptr == dynamic_cast<CUI_InGame_Setting_Button*>(pCustomBtn))
+			return;
+		pDefaultBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Button_Graphic_Default"));
+		if (nullptr == pDefaultBtn)
+			return;
+		if (nullptr == dynamic_cast<CUI_InGame_Setting_Button*>(pDefaultBtn))
+			return;
+
+		pCustom = dynamic_cast<CUI_InGame_Setting_Button*>(pCustomBtn);
+		pDefault = dynamic_cast<CUI_InGame_Setting_Button*>(pDefaultBtn);
+
+		pCustom->Set_Click(false);
+		pDefault->Set_Click(true);
+
+		// 버튼을 누르지 못하게 통제한다.
+		CUI_Manager::GetInstance()->Set_AbleToControlRadio(true);
+		// 기본세팅으로 만든다.
+		CUI_Manager::GetInstance()->Set_DefaultGraphicSetting();
+		break;
+
+	case CUI_InGame_Setting_Button::UI_SETTINGBUTTON::SETBUTTON_CAMERA_SHOULDER:
+		pShoulderBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Button_Camera_ShoulderView"));
+		if (nullptr == pShoulderBtn)
+			return;
+		if (nullptr == dynamic_cast<CUI_InGame_Setting_Button*>(pShoulderBtn))
+			return;
+		pBackBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Button_Camera_BackView"));
+		if (nullptr == pBackBtn)
+			return;
+		if (nullptr == dynamic_cast<CUI_InGame_Setting_Button*>(pBackBtn))
+			return;
+
+		pShoulder = dynamic_cast<CUI_InGame_Setting_Button*>(pShoulderBtn);
+		pBack = dynamic_cast<CUI_InGame_Setting_Button*>(pBackBtn);
+
+		pShoulder->Set_Click(true);
+		pBack->Set_Click(false);
+
+		if (CAMERA_VIEW_TYPE::SHOLDER != pFollowCamera->Get_ViewType())
+			pFollowCamera->Set_ViewType(CAMERA_VIEW_TYPE::SHOLDER);
+		break;
+
+	case CUI_InGame_Setting_Button::UI_SETTINGBUTTON::SETBUTTON_CAMERA_BACK:
+		pShoulderBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Button_Camera_ShoulderView"));
+		if (nullptr == pShoulderBtn)
+			return;
+		if (nullptr == dynamic_cast<CUI_InGame_Setting_Button*>(pShoulderBtn))
+			return;
+		pBackBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Button_Camera_BackView"));
+		if (nullptr == pBackBtn)
+			return;
+		if (nullptr == dynamic_cast<CUI_InGame_Setting_Button*>(pBackBtn))
+			return;
+
+		pShoulder = dynamic_cast<CUI_InGame_Setting_Button*>(pShoulderBtn);
+		pBack = dynamic_cast<CUI_InGame_Setting_Button*>(pBackBtn);
+
+		pShoulder->Set_Click(false);
+		pBack->Set_Click(true);
+
+		if (CAMERA_VIEW_TYPE::BACK != pFollowCamera->Get_ViewType())
+			pFollowCamera->Set_ViewType(CAMERA_VIEW_TYPE::BACK);
+		break;
+
+	default:
+		break;
+	}
+}
+
+void CUI_InGame_Setting_Slot::Update_GraphicRadioBtnState(_uint iGroupType, _uint iBtnType)
+{
+	/*
+	enum UI_RADIOGROUP
+	{ GRAPHIC_NATURAL, GRAPHIC_SHADOW, GRAPHIC_OUTLINE, GRAPHIC_BLOOM, GRAPHIC_BLUR, GRAPHIC_SSAO, GRAPHIC_PBR, RADIOGROUP_END };
+	enum UI_RADIOTYPE{ RADIO_ONBTN, RADIO_OFFBTN, RADIO_END };
+	*/
+	if (m_bControl == false)
+	{
+		CUI* pOnBtn = nullptr;
+		CUI* pOffBtn = nullptr;
+
+		CUI_InGame_Setting_RadioBtn* pOn = nullptr;
+		CUI_InGame_Setting_RadioBtn* pOff = nullptr;
+
+		switch (iGroupType)
+		{
+		case CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::GRAPHIC_NATURAL:
+			pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Natural"));
+			if (nullptr == pOnBtn)
+				return;
+			if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+				return;
+			pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Natural"));
+			if (nullptr == pOffBtn)
+				return;
+			if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+				return;
+
+			pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+			pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+			if (CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_ONBTN == iBtnType) // 0일때
+			{
+				pOn->Set_Click(true);
+				pOff->Set_Click(false);
+
+				if (false == m_pRendererCom->Get_NatrualDraw())
+					m_pRendererCom->Set_NaturalDraw(true);
+
+			}
+			else
+			{
+				pOn->Set_Click(false);
+				pOff->Set_Click(true);
+
+				if (true == m_pRendererCom->Get_NatrualDraw())
+					m_pRendererCom->Set_NaturalDraw(false);
+			}
+			break;
+
+		case CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::GRAPHIC_SHADOW:
+			pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Shadow"));
+			if (nullptr == pOnBtn)
+				return;
+			if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+				return;
+			pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Shadow"));
+			if (nullptr == pOffBtn)
+				return;
+			if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+				return;
+
+			pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+			pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+			if (CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_ONBTN == iBtnType) // 0일때
+			{
+				pOn->Set_Click(true);
+				pOff->Set_Click(false);
+
+				if (false == m_pRendererCom->Get_ShadowDraw())
+					m_pRendererCom->Set_ShadowDraw(true);
+			}
+			else
+			{
+				pOn->Set_Click(false);
+				pOff->Set_Click(true);
+
+				if (true == m_pRendererCom->Get_ShadowDraw())
+					m_pRendererCom->Set_ShadowDraw(false);
+			}
+			break;
+
+		case CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::GRAPHIC_OUTLINE:
+			pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Outline"));
+			if (nullptr == pOnBtn)
+				return;
+			if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+				return;
+			pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Outline"));
+			if (nullptr == pOffBtn)
+				return;
+			if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+				return;
+
+			pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+			pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+			if (CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_ONBTN == iBtnType) // 0일때
+			{
+				pOn->Set_Click(true);
+				pOff->Set_Click(false);
+
+				if (false == m_pRendererCom->Get_OutlineDraw())
+					m_pRendererCom->Set_OutlineDraw(true);
+			}
+			else
+			{
+				pOn->Set_Click(false);
+				pOff->Set_Click(true);
+
+				if (true == m_pRendererCom->Get_OutlineDraw())
+					m_pRendererCom->Set_OutlineDraw(false);
+			}
+			break;
+
+		case CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::GRAPHIC_BLOOM:
+			pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Bloom"));
+			if (nullptr == pOnBtn)
+				return;
+			if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+				return;
+			pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Bloom"));
+			if (nullptr == pOffBtn)
+				return;
+			if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+				return;
+
+			pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+			pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+			if (CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_ONBTN == iBtnType) // 0일때
+			{
+				pOn->Set_Click(true);
+				pOff->Set_Click(false);
+
+				if (false == m_pRendererCom->Get_BloomDraw())
+					m_pRendererCom->Set_BloomDraw(true);
+			}
+			else
+			{
+				pOn->Set_Click(false);
+				pOff->Set_Click(true);
+
+				if (true == m_pRendererCom->Get_BloomDraw())
+					m_pRendererCom->Set_BloomDraw(false);
+			}
+			break;
+
+		case CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::GRAPHIC_BLUR:
+			pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Blur"));
+			if (nullptr == pOnBtn)
+				return;
+			if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+				return;
+			pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Blur"));
+			if (nullptr == pOffBtn)
+				return;
+			if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+				return;
+
+			pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+			pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+			if (CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_ONBTN == iBtnType) // 0일때
+			{
+				pOn->Set_Click(true);
+				pOff->Set_Click(false);
+
+				if (false == m_pRendererCom->Get_BlurDraw())
+					m_pRendererCom->Set_BlurDraw(true);
+			}
+			else
+			{
+				pOn->Set_Click(false);
+				pOff->Set_Click(true);
+
+				if (true == m_pRendererCom->Get_BlurDraw())
+					m_pRendererCom->Set_BlurDraw(false);
+			}
+			break;
+
+		case CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::GRAPHIC_SSAO:
+			pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_SSAO"));
+			if (nullptr == pOnBtn)
+				return;
+			if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+				return;
+			pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_SSAO"));
+			if (nullptr == pOffBtn)
+				return;
+			if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+				return;
+
+			pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+			pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+			if (CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_ONBTN == iBtnType) // 0일때
+			{
+				pOn->Set_Click(true);
+				pOff->Set_Click(false);
+
+				if (false == m_pRendererCom->Get_SsaoDraw())
+					m_pRendererCom->Set_BlurDraw(true);
+			}
+			else
+			{
+				pOn->Set_Click(false);
+				pOff->Set_Click(true);
+
+				if (true == m_pRendererCom->Get_SsaoDraw())
+					m_pRendererCom->Set_BlurDraw(false);
+			}
+			break;
+
+		case CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::GRAPHIC_PBR:
+			pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_PBR"));
+			if (nullptr == pOnBtn)
+				return;
+			if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+				return;
+			pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_PBR"));
+			if (nullptr == pOffBtn)
+				return;
+			if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+				return;
+
+			pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+			pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+			if (CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_ONBTN == iBtnType) // 0일때
+			{
+				pOn->Set_Click(true);
+				pOff->Set_Click(false);
+
+				if (false == m_pRendererCom->Get_PbrDraw())
+					m_pRendererCom->Set_PbrDraw(true);
+			}
+			else
+			{
+				pOn->Set_Click(false);
+				pOff->Set_Click(true);
+
+				if (true == m_pRendererCom->Get_PbrDraw())
+					m_pRendererCom->Set_PbrDraw(false);
+			}
+			break;
+		}
+	}
+}
+
+void CUI_InGame_Setting_Slot::Update_CameraRadioBtnState(_uint iGroupType, _uint iBtnType)
+{
+	CUI* pOnBtn = nullptr;
+	CUI* pOffBtn = nullptr;
+
+	CUI_InGame_Setting_RadioBtn* pOn = nullptr;
+	CUI_InGame_Setting_RadioBtn* pOff = nullptr;
+
+	CCamera_Follow* pFollowCamera =
+		dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+	if (nullptr == pFollowCamera)
+		return;
+
+	switch (iGroupType)
+	{
+	case CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::CAMERA_AXISX:
+		pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Camera_AxisX"));
+		if (nullptr == pOnBtn)
+			return;
+		if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+			return;
+		pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Camera_AxisX"));
+		if (nullptr == pOffBtn)
+			return;
+		if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+			return;
+
+		pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+		pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+		if (CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_ONBTN == iBtnType) // 0일때
+		{
+			pOn->Set_Click(true);
+			pOff->Set_Click(false);
+
+			pFollowCamera->Set_MouseInputInvert_X(false);
+		}
+		else
+		{
+			pOn->Set_Click(false);
+			pOff->Set_Click(true);
+
+			pFollowCamera->Set_MouseInputInvert_X(true);
+		}
+		break;
+
+	case CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::CAMERA_AXISY:
+		pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Camera_AxisY"));
+		if (nullptr == pOnBtn)
+			return;
+		if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+			return;
+		pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Camera_AxisY"));
+		if (nullptr == pOffBtn)
+			return;
+		if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+			return;
+
+		pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+		pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+		if (CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_ONBTN == iBtnType) // 0일때
+		{
+			pOn->Set_Click(true);
+			pOff->Set_Click(false);
+
+			pFollowCamera->Set_MouseInputInvert_Y(false);
+		}
+		else
+		{
+			pOn->Set_Click(false);
+			pOff->Set_Click(true);
+
+			pFollowCamera->Set_MouseInputInvert_Y(true);
+		}
+		break;
+	}
+}
+
 HRESULT CUI_InGame_Setting_Slot::Ready_Components()
 {
-
 	if (FAILED(__super::Ready_Components()))
 		return E_FAIL;
 
@@ -240,6 +725,44 @@ HRESULT CUI_InGame_Setting_Slot::Bind_ShaderResources()
 	return S_OK;
 }
 
+void CUI_InGame_Setting_Slot::Ready_Buttons()
+{
+	if (m_eSectionType == SETTINGSECTION_END)
+		return;
+
+	if (m_eType == SLOTORDER_END)
+		return;
+
+	_float2 vSize = _float2(124.f, 40.f);
+
+	switch (m_eSectionType)
+	{
+	case UI_SETTING_SECTION::SETTING_GRAPHIC:
+		if (m_eType != SLOT_SECOND)
+			return;
+
+		if (FAILED(Make_Child(0.f, 0.f, vSize.x, vSize.y, TEXT("Prototype_GameObject_UI_Ingame_Setting_Button_Graphic_Custom"))))
+			return;
+		if (FAILED(Make_Child(150.f, 0.f, vSize.x, vSize.y, TEXT("Prototype_GameObject_UI_Ingame_Setting_Button_Graphic_Default"))))
+			return;
+		break;
+
+	case UI_SETTING_SECTION::SETTING_CAMERA:
+
+		if (m_eType != SLOT_SECOND)
+			return;
+
+		if (FAILED(Make_Child(0.f, 0.f, vSize.x, vSize.y, TEXT("Prototype_GameObject_UI_Ingame_Setting_Button_Camera_ShoulderView"))))
+			return;
+		if (FAILED(Make_Child(150.f, 0.f, vSize.x, vSize.y, TEXT("Prototype_GameObject_UI_Ingame_Setting_Button_Camera_BackView"))))
+			return;
+		break;
+
+	case UI_SETTING_SECTION::SETTING_AUDIO:
+		break;
+	}
+}
+
 void CUI_InGame_Setting_Slot::Ready_RadioGroup()
 {
 	if (m_eSectionType == SETTINGSECTION_END)
@@ -248,30 +771,658 @@ void CUI_InGame_Setting_Slot::Ready_RadioGroup()
 	if (m_eType == SLOTORDER_END)
 		return;
 
+	_float fSize = 64.f * 0.5f;
+
 	switch (m_eSectionType)
 	{
 	case UI_SETTING_SECTION::SETTING_GRAPHIC:
 		if (m_eType != SLOT_THIRD)
 			return;
 
-//		Make_Child(m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX, m_tInfo.fCY, TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Natural"));
-//		Make_Child(m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX, m_tInfo.fCY, TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Shadow"));
-//		Make_Child(m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX, m_tInfo.fCY, TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Outline"));
-//		Make_Child(m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX, m_tInfo.fCY, TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Bloom"));
-//		Make_Child(m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX, m_tInfo.fCY, TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Blur"));
-//		Make_Child(m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX, m_tInfo.fCY, TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_SSAO"));
-//		Make_Child(m_tInfo.fX, m_tInfo.fY, m_tInfo.fCX, m_tInfo.fCY, TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_PBR"));
+		if (FAILED(Make_Child(-55.f, -105.f, fSize, fSize, TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Natural"))))
+			return;
+		if (FAILED(Make_Child(95.f, -105.f, fSize, fSize, TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Natural"))))
+			return;
+
+		if (FAILED(Make_Child(-55.f, -60.f, fSize, fSize, TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Shadow"))))
+			return;
+		if (FAILED(Make_Child(95.f, -60.f, fSize, fSize, TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Shadow"))))
+			return;
+
+		if (FAILED(Make_Child(-55.f, -15.f, fSize, fSize, TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Outline"))))
+			return;
+		if (FAILED(Make_Child(95.f, -15.f, fSize, fSize, TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Outline"))))
+			return;
+		
+		if (FAILED(Make_Child(-55.f, 30.f, fSize, fSize, TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Bloom"))))
+			return;
+		if (FAILED(Make_Child(95.f, 30.f, fSize, fSize, TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Bloom"))))
+			return;
+
+		if (FAILED(Make_Child(-55.f, 72.f, fSize, fSize, TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Blur"))))
+			return;
+		if (FAILED(Make_Child(95.f, 72.f, fSize, fSize, TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Blur"))))
+			return;
+
+		if (FAILED(Make_Child(-55.f, 114.f, fSize, fSize, TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_SSAO"))))
+			return;
+		if (FAILED(Make_Child(95.f, 114.f, fSize, fSize, TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_SSAO"))))
+			return;
+
+		if (FAILED(Make_Child(-55.f, 156.f, fSize, fSize, TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_PBR"))))
+			return;
+		if (FAILED(Make_Child(95.f, 156.f, fSize, fSize, TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_PBR"))))
+			return;
 		break;
 
 	case UI_SETTING_SECTION::SETTING_CAMERA:
 		if (m_eType != SLOT_THIRD)
 			return;
 
+		if (FAILED(Make_Child(-55.f, 5.f, fSize, fSize, TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Camera_AxisX"))))
+			return;
+		if (FAILED(Make_Child(95.f, 5.f, fSize, fSize, TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Camera_AxisX"))))
+			return;
+
+		if (FAILED(Make_Child(-55.f, 50.f, fSize, fSize, TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Camera_AxisY"))))
+			return;
+		if (FAILED(Make_Child(95.f, 50.f, fSize, fSize, TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Camera_AxisY"))))
+			return;
 		break;
 
 	case UI_SETTING_SECTION::SETTING_AUDIO:
 		break;
 	}
+}
+
+void CUI_InGame_Setting_Slot::Ready_RadioState()
+{
+	CUI* pOnBtn = nullptr;
+	CUI* pOffBtn = nullptr;
+
+	CUI_InGame_Setting_RadioBtn* pOn = nullptr;
+	CUI_InGame_Setting_RadioBtn* pOff = nullptr;
+
+	CCamera_Follow* pFollowCamera =
+		dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+	if (nullptr == pFollowCamera)
+		return;
+
+	if (true == CUI_Manager::GetInstance()->Is_SettingFirst())
+	{
+		if (SETTING_GRAPHIC == m_eSectionType)
+		{
+			if (true == m_pRendererCom->Get_NatrualDraw())
+			{
+				pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Natural"));
+				if (nullptr == pOnBtn)
+					return;
+				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+					return;
+				pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Natural"));
+				if (nullptr == pOffBtn)
+					return;
+				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+					return;
+
+				pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+				pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+				pOn->Set_Click(true);
+				pOff->Set_Click(false);
+			}
+			else
+			{
+				pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Natural"));
+				if (nullptr == pOnBtn)
+					return;
+				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+					return;
+				pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Natural"));
+				if (nullptr == pOffBtn)
+					return;
+				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+					return;
+
+				pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+				pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+				pOn->Set_Click(false);
+				pOff->Set_Click(true);
+			}
+
+			if (true == m_pRendererCom->Get_ShadowDraw())
+			{
+				pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Shadow"));
+				if (nullptr == pOnBtn)
+					return;
+				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+					return;
+				pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Shadow"));
+				if (nullptr == pOffBtn)
+					return;
+				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+					return;
+
+				pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+				pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+				pOn->Set_Click(true);
+				pOff->Set_Click(false);
+			}
+			else
+			{
+				pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Shadow"));
+				if (nullptr == pOnBtn)
+					return;
+				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+					return;
+				pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Shadow"));
+				if (nullptr == pOffBtn)
+					return;
+				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+					return;
+
+				pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+				pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+				pOn->Set_Click(false);
+				pOff->Set_Click(true);
+			}
+
+			if (true == m_pRendererCom->Get_OutlineDraw())
+			{
+				pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Outline"));
+				if (nullptr == pOnBtn)
+					return;
+				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+					return;
+				pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Outline"));
+				if (nullptr == pOffBtn)
+					return;
+				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+					return;
+
+				pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+				pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+				pOn->Set_Click(true);
+				pOff->Set_Click(false);
+			}
+			else
+			{
+				pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Outline"));
+				if (nullptr == pOnBtn)
+					return;
+				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+					return;
+				pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Outline"));
+				if (nullptr == pOffBtn)
+					return;
+				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+					return;
+
+				pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+				pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+				pOn->Set_Click(false);
+				pOff->Set_Click(true);
+			}
+
+			if (true == m_pRendererCom->Get_BloomDraw())
+			{
+				pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Bloom"));
+				if (nullptr == pOnBtn)
+					return;
+				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+					return;
+				pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Bloom"));
+				if (nullptr == pOffBtn)
+					return;
+				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+					return;
+
+				pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+				pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+				pOn->Set_Click(true);
+				pOff->Set_Click(false);
+			}
+			else
+			{
+				pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Bloom"));
+				if (nullptr == pOnBtn)
+					return;
+				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+					return;
+				pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Bloom"));
+				if (nullptr == pOffBtn)
+					return;
+				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+					return;
+
+				pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+				pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+				pOn->Set_Click(false);
+				pOff->Set_Click(true);
+			}
+
+			if (true == m_pRendererCom->Get_BlurDraw())
+			{
+				pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Blur"));
+				if (nullptr == pOnBtn)
+					return;
+				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+					return;
+				pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Blur"));
+				if (nullptr == pOffBtn)
+					return;
+				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+					return;
+
+				pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+				pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+				pOn->Set_Click(true);
+				pOff->Set_Click(false);
+			}
+			else
+			{
+				pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Blur"));
+				if (nullptr == pOnBtn)
+					return;
+				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+					return;
+				pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Blur"));
+				if (nullptr == pOffBtn)
+					return;
+				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+					return;
+
+				pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+				pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+				pOn->Set_Click(false);
+				pOff->Set_Click(true);
+			}
+
+			if (true == m_pRendererCom->Get_SsaoDraw())
+			{
+				pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_SSAO"));
+				if (nullptr == pOnBtn)
+					return;
+				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+					return;
+				pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_SSAO"));
+				if (nullptr == pOffBtn)
+					return;
+				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+					return;
+
+				pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+				pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+				pOn->Set_Click(true);
+				pOff->Set_Click(false);
+			}
+			else
+			{
+				pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_SSAO"));
+				if (nullptr == pOnBtn)
+					return;
+				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+					return;
+				pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_SSAO"));
+				if (nullptr == pOffBtn)
+					return;
+				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+					return;
+
+				pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+				pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+				pOn->Set_Click(false);
+				pOff->Set_Click(true);
+			}
+
+			if (true == m_pRendererCom->Get_PbrDraw())
+			{
+				pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_PBR"));
+				if (nullptr == pOnBtn)
+					return;
+				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+					return;
+				pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_PBR"));
+				if (nullptr == pOffBtn)
+					return;
+				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+					return;
+
+				pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+				pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+				pOn->Set_Click(true);
+				pOff->Set_Click(false);
+			}
+			else
+			{
+				pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_PBR"));
+				if (nullptr == pOnBtn)
+					return;
+				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+					return;
+				pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_PBR"));
+				if (nullptr == pOffBtn)
+					return;
+				if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+					return;
+
+				pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+				pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+				pOn->Set_Click(false);
+				pOff->Set_Click(true);
+			}
+		}
+	}
+
+	if (SETTING_CAMERA == m_eSectionType)
+	{
+		_int iX = pFollowCamera->Get_MouseInputInvert().x;
+		_int iY = pFollowCamera->Get_MouseInputInvert().y;
+
+		pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Camera_AxisX"));
+		if (nullptr == pOnBtn)
+			return;
+		if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+			return;
+		pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Camera_AxisX"));
+		if (nullptr == pOffBtn)
+			return;
+		if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+			return;
+
+		pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+		pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+		if (-1 == iX)
+		{
+			pOn->Set_Click(true);
+			pOff->Set_Click(false);
+		}
+		else
+		{
+			pOn->Set_Click(false);
+			pOff->Set_Click(true);
+		}
+
+		pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Camera_AxisY"));
+		if (nullptr == pOnBtn)
+			return;
+		if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+			return;
+		pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Camera_AxisY"));
+		if (nullptr == pOffBtn)
+			return;
+		if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+			return;
+
+		pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+		pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+		if (-1 == iY)
+		{
+			pOn->Set_Click(true);
+			pOff->Set_Click(false);
+		}
+		else
+		{
+			pOn->Set_Click(false);
+			pOff->Set_Click(true);
+		}
+	}
+}
+
+void CUI_InGame_Setting_Slot::Ready_ButtonState()
+{
+	if (SETTING_CAMERA == m_eSectionType)
+	{
+		CCamera_Follow* pFollowCamera =
+			dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+
+		CAMERA_VIEW_TYPE eView = pFollowCamera->Get_ViewType();
+
+		CUI* pShoulderBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Button_Camera_ShoulderView"));
+		if (nullptr == pShoulderBtn)
+			return;
+		if (nullptr == dynamic_cast<CUI_InGame_Setting_Button*>(pShoulderBtn))
+			return;
+		CUI* pBackBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Button_Camera_BackView"));
+		if (nullptr == pBackBtn)
+			return;
+		if (nullptr == dynamic_cast<CUI_InGame_Setting_Button*>(pBackBtn))
+			return;
+
+		CUI_InGame_Setting_Button* pShoulder = dynamic_cast<CUI_InGame_Setting_Button*>(pShoulderBtn);
+		CUI_InGame_Setting_Button* pBack = dynamic_cast<CUI_InGame_Setting_Button*>(pBackBtn);
+
+		if (CAMERA_VIEW_TYPE::BACK == eView)
+		{
+			pShoulder->Set_Click(false);
+			pBack->Set_Click(true);
+		}
+		else
+		{
+			pShoulder->Set_Click(true);
+			pBack->Set_Click(false);
+		}
+	}
+
+	if (m_eSectionType == SETTING_GRAPHIC)
+	{
+		CUI* pCustomBtn = nullptr;
+		CUI* pDefaultBtn = nullptr;
+
+		CUI_InGame_Setting_Button* pCustom = nullptr;
+		CUI_InGame_Setting_Button* pDefault = nullptr;
+
+		pCustomBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Button_Graphic_Custom"));
+		if (nullptr == pCustomBtn)
+			return;
+		if (nullptr == dynamic_cast<CUI_InGame_Setting_Button*>(pCustomBtn))
+			return;
+		pDefaultBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Button_Graphic_Default"));
+		if (nullptr == pDefaultBtn)
+			return;
+		if (nullptr == dynamic_cast<CUI_InGame_Setting_Button*>(pDefaultBtn))
+			return;
+
+		pCustom = dynamic_cast<CUI_InGame_Setting_Button*>(pCustomBtn);
+		pDefault = dynamic_cast<CUI_InGame_Setting_Button*>(pDefaultBtn);
+
+		if (true == CUI_Manager::GetInstance()->Is_SettingFirst())
+		{
+			// 첫 세팅
+			CUI_Manager::GetInstance()->Set_GraphicSettingState(false);
+
+			pCustom->Set_Click(false);
+			pDefault->Set_Click(true);
+
+			CUI_Manager::GetInstance()->Set_DefaultGraphicSetting();
+		}
+	}
+}
+
+void CUI_InGame_Setting_Slot::Ready_Slider()
+{
+	if (SETTING_CAMERA != m_eSectionType)
+		return;
+
+	if (SLOT_FOURTH > m_eType || SLOTORDER_END == m_eType)
+		return;
+
+	switch (m_eType)
+	{
+	case SLOT_FOURTH:
+		if (FAILED(Make_Child(60.f, 0.f, 12.f, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_First"))))
+			return;
+		break;
+
+	case SLOT_FIFTH:
+		if (FAILED(Make_Child(60.f, 0.f, 12.f, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Second"))))
+			return;
+		break;
+
+	case SLOT_SIXTH: // 최대 200
+		if (FAILED(Make_Child(60.f, 0.f, 12.f, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Third"))))
+			return;
+		break;
+	}
+}
+
+void CUI_InGame_Setting_Slot::Set_DefaultGraphicSetting()
+{
+	CUI* pOnBtn = nullptr;
+	CUI* pOffBtn = nullptr;
+
+	CUI_InGame_Setting_RadioBtn* pOn = nullptr;
+	CUI_InGame_Setting_RadioBtn* pOff = nullptr;
+
+	// Natural
+	pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Natural"));
+	if (nullptr == pOnBtn)
+		return;
+	if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+		return;
+	pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Natural"));
+	if (nullptr == pOffBtn)
+		return;
+	if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+		return;
+	pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+	pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+	pOn->Set_Click(true);
+	pOff->Set_Click(false);
+	m_pRendererCom->Set_NaturalDraw(true);
+
+
+	// Shadow
+	pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Shadow"));
+	if (nullptr == pOnBtn)
+		return;
+	if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+		return;
+	pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Shadow"));
+	if (nullptr == pOffBtn)
+		return;
+	if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+		return;
+	pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+	pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+	pOn->Set_Click(true);
+	pOff->Set_Click(false);
+	m_pRendererCom->Set_ShadowDraw(true);
+
+
+	// Outline
+	pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Outline"));
+	if (nullptr == pOnBtn)
+		return;
+	if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+		return;
+	pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Outline"));
+	if (nullptr == pOffBtn)
+		return;
+	if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+		return;
+	pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+	pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+	pOn->Set_Click(true);
+	pOff->Set_Click(false);
+	m_pRendererCom->Set_OutlineDraw(true);
+
+
+	// Bloom
+	pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Bloom"));
+	if (nullptr == pOnBtn)
+		return;
+	if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+		return;
+	pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Bloom"));
+	if (nullptr == pOffBtn)
+		return;
+	if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+		return;
+	pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+	pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+	pOn->Set_Click(true);
+	pOff->Set_Click(false);
+	m_pRendererCom->Set_BloomDraw(true);
+
+
+	// Blur
+	pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Blur"));
+	if (nullptr == pOnBtn)
+		return;
+	if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+		return;
+	pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Blur"));
+	if (nullptr == pOffBtn)
+		return;
+	if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+		return;
+
+	pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+	pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+	pOn->Set_Click(true);
+	pOff->Set_Click(false);
+	m_pRendererCom->Set_BlurDraw(true);
+
+
+	// SSAO
+	pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_SSAO"));
+	if (nullptr == pOnBtn)
+		return;
+	if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+		return;
+	pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_SSAO"));
+	if (nullptr == pOffBtn)
+		return;
+	if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+		return;
+	pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+	pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+	pOn->Set_Click(true);
+	pOff->Set_Click(false);
+	m_pRendererCom->Set_SsaoDraw(true);
+
+
+	// PBR
+	pOnBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_PBR"));
+	if (nullptr == pOnBtn)
+		return;
+	if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn))
+		return;
+	pOffBtn = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_PBR"));
+	if (nullptr == pOffBtn)
+		return;
+	if (nullptr == dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn))
+		return;
+	pOn = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOnBtn);
+	pOff = dynamic_cast<CUI_InGame_Setting_RadioBtn*>(pOffBtn);
+
+	pOn->Set_Click(true);
+	pOff->Set_Click(false);
+	m_pRendererCom->Set_PbrDraw(true);
+
+	//g_bControl = false;
 }
 
 

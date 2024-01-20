@@ -9,6 +9,7 @@
 #include "Sword.h"
 #include "UI_Dummy_Weapon.h"
 #include "Weapon_Manager.h"
+#include "UI_Manager.h"
 
 
 CUI_CharacterDummy::CUI_CharacterDummy(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eType)
@@ -121,6 +122,47 @@ void CUI_CharacterDummy::Tick(_float fTimeDelta)
 				m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), MouseMove * -0.1f, fTimeDelta);
 			}
 		}
+
+		//if (CUI_Manager::GetInstance()->Get_Character()->Get_CharacterType() != m_eCurCharacter)
+		//{
+		//	CHARACTER_TYPE eType = CUI_Manager::GetInstance()->Get_Character()->Get_CharacterType();
+		//	_float3 vCamPos, vLook, vUp;
+
+		//	switch (eType)
+		//	{
+		//	case CHARACTER_TYPE::SWORD_MAN:
+		//		vCamPos = _float3(0.f, 0.9f, -3.f);
+		//		vLook = _float3(0.f, 0.9, 0.f);
+		//		vUp = _float3(0.f, 1.f, 0.f);
+		//		break;
+
+		//	case CHARACTER_TYPE::ENGINEER:
+		//		vCamPos = _float3(0.f, 0.7f, -2.3f);
+		//		vLook = _float3(0.f, 0.7, 0.f);
+		//		vUp = _float3(0.f, 1.f, 0.f);
+		//		break;
+
+		//	case CHARACTER_TYPE::DESTROYER:
+		//		vCamPos = _float3(0.f, 0.9f, -3.f);
+		//		vLook = _float3(0.f, 0.9, 0.f);
+		//		vUp = _float3(0.f, 1.f, 0.f);
+		//		break;
+		//	}
+
+		//	m_eCurCharacter = eType;
+
+		//	m_vCamMatrix = XMMatrixLookAtLH(XMLoadFloat3(&vCamPos), XMLoadFloat3(&vLook), XMLoadFloat3(&vUp));
+		//	m_vCamPosition = XMVectorSet(vCamPos.x, vCamPos.y, vCamPos.z, 1.f);
+
+		//	::XMStoreFloat4x4(&m_ViewMatrix, m_vCamMatrix); // 카메라 행렬을 전치시킴
+		//		//	_float fAspectRatio = (_float)g_iWinSizeX / g_iWinSizeY;
+		//		//	_float fNearZ       = 0.2f;
+		//		//	_float fFarZ        = 1000.f;
+
+		//	m_ProjMatrix = XMMatrixPerspectiveFovLH(::XMConvertToRadians(60.0f), static_cast<_float>(g_iWinSizeX) / static_cast<_float>(g_iWinSizeY), 0.2f, 1000.0f);
+		//	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-0.5f, 0.f, 0.4f, 1.f));
+		//	m_pTransformCom->LookAt_ForLandObject(m_vCamPosition);
+		//}
 
 		if (m_pWeapon != nullptr)
 		{ 

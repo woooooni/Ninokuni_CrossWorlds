@@ -94,6 +94,28 @@ public:
 		m_vLineColor = vLineColor;
 	}
 
+public: // UI Setting Option¿ª ¿ß«— Get/Set
+	_bool Get_NatrualDraw() { return m_bNaturalDraw; }
+	void Set_NaturalDraw(_bool bSet) { m_bNaturalDraw = bSet; }
+
+	_bool Get_ShadowDraw() { return m_bShadowDraw; }
+	void Set_ShadowDraw(_bool bSet) { m_bShadowDraw = bSet; }
+
+	_bool Get_SsaoDraw() { return m_bSsaoDraw; }
+	void Set_SsaoDraw(_bool bSet) { m_bSsaoDraw = bSet; }
+
+	_bool Get_OutlineDraw() { return m_bOutlineDraw; }
+	void Set_OutlineDraw(_bool bSet) { m_bOutlineDraw = bSet; }
+
+	_bool Get_BlurDraw() { return m_bBlurDraw; }
+	void Set_BlurDraw(_bool bSet) { m_bBlurDraw = bSet; }
+
+	_bool Get_BloomDraw() { return m_bBlomDraw; }
+	void Set_BloomDraw(_bool bSet) { m_bBlomDraw = bSet; }
+
+	_bool Get_PbrDraw() { return m_bPbrDraw; }
+	void Set_PbrDraw(_bool bSet) { m_bPbrDraw = bSet; }
+
 public:
 	HRESULT Add_RenderGroup(RENDERGROUP eRenderGroup, class CGameObject* pGameObject);
 	HRESULT Add_RenderGroup_Instancing(RENDERGROUP eRenderGroup, INSTANCING_SHADER_TYPE eShaderType, class CGameObject* pGameObject, _float4x4 WorldMatrix);

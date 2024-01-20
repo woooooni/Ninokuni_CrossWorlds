@@ -114,9 +114,11 @@
 #include "UI_SkillSection_BtnRoll.h"
 #include "UI_SkillSection_BtnJump.h"
 #include "UI_MonsterHP_Background.h"
+#include "UI_InGame_Setting_Button.h"
 #include "UI_SkillWindow_SkillSlot.h"
 #include "UI_Loading_CharacterLogo.h"
 #include "UI_InGame_Setting_Window.h"
+#include "UI_InGame_Setting_Slider.h"
 #include "UI_World_NPCSpeechBalloon.h"
 #include "UI_WeaponSection_Selected.h"
 #include "UI_ImajinnSection_Vehicle.h"
@@ -131,7 +133,6 @@
 #include "UI_SkillSection_ClassicSkill.h"
 #include "UI_ImajinnSection_Background.h"
 #include "UI_SkillSection_SpecialSkill.h"
-#include "UI_InGame_Setting_RadioGroup.h"
 #include "UI_SkillSection_CoolTimeFrame.h"
 #include "UI_WeaponSection_DefaultWeapon.h"
 #include "UI_SkillSection_BtnInteraction.h"
@@ -463,6 +464,62 @@ _bool CUI_Manager::Get_MovementComplete_SkillBG()
 		return false;
 
 	return m_pSkillBG->Get_MovementComplete();
+}
+
+void CUI_Manager::Set_DefaultGraphicSetting()
+{
+	if (m_GraphicSlot.size() >= 3)
+	{
+		if (m_GraphicSlot[2] == nullptr)
+			return;
+
+		m_GraphicSlot[2]->Set_DefaultGraphicSetting();
+	}
+}
+
+void CUI_Manager::Set_GraphicSettingState(_bool bisFirst)
+{
+	if (m_GraphicSlot[2] == nullptr)
+		return;
+
+	m_GraphicSlot[2]->Set_SettingState(bisFirst);
+}
+
+_bool CUI_Manager::Get_AbleToControlRadio()
+{
+	if (m_GraphicSlot.size() >= 3)
+	{
+		if (m_GraphicSlot[2] == nullptr)
+			return false;
+
+		return m_GraphicSlot[2]->Get_AbleToControl();
+	}
+
+	return false;
+}
+
+void CUI_Manager::Set_AbleToControlRadio(_bool bControl)
+{
+	if (m_GraphicSlot.size() >= 3)
+	{
+		if (m_GraphicSlot[2] == nullptr)
+			return;
+
+		m_GraphicSlot[2]->Set_AbleToControl(bControl);
+	}
+}
+
+_bool CUI_Manager::Is_SettingFirst()
+{
+	if (m_GraphicSlot.size() >= 3)
+	{
+		if (m_GraphicSlot[2] == nullptr)
+			return false;
+
+		return m_GraphicSlot[2]->Get_IsFirstSetting();
+	}
+
+	return false;
 }
 
 _bool CUI_Manager::Is_Dialog_Active()
@@ -4968,6 +5025,49 @@ void CUI_Manager::Update_IceVignette()
 	m_pIceVignette->Decrease_TextureIndex();
 }
 
+void CUI_Manager::Update_SettingButton(_uint iGroupType)
+{
+	if (CUI_InGame_Setting_Button::UI_SETTINGBUTTON::SETBUTTON_GRAPHIC_CUSTOM == iGroupType ||
+		CUI_InGame_Setting_Button::UI_SETTINGBUTTON::SETBUTTON_GRAPHIC_DEFAULT == iGroupType)
+	{
+		if (nullptr == m_GraphicSlot[1])
+			return;
+
+		m_GraphicSlot[1]->Update_ButtonState(iGroupType);
+	}
+
+	if (CUI_InGame_Setting_Button::UI_SETTINGBUTTON::SETBUTTON_CAMERA_SHOULDER == iGroupType ||
+		CUI_InGame_Setting_Button::UI_SETTINGBUTTON::SETBUTTON_CAMERA_BACK == iGroupType)
+	{
+		if (nullptr == m_CameraSlot[1])
+			return;
+
+		m_CameraSlot[1]->Update_ButtonState(iGroupType);
+	}
+}
+
+void CUI_Manager::Update_SettingGraphicRadio(_uint iGroupType, _uint iBtnType)
+{
+	if (CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::RADIOGROUP_END <= iGroupType)
+		return;
+
+	if (CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::CAMERA_AXISX == iGroupType ||
+		CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::CAMERA_AXISY == iGroupType)
+	{
+		if (nullptr == m_CameraSlot[2])
+			return;
+
+		m_CameraSlot[2]->Update_CameraRadioBtnState(iGroupType, iBtnType);
+	}
+	else
+	{
+		if (nullptr == m_GraphicSlot[2])
+			return;
+
+		m_GraphicSlot[2]->Update_GraphicRadioBtnState(iGroupType, iBtnType);
+	}
+}
+
 void CUI_Manager::Update_CostumeModel(const CHARACTER_TYPE& eCharacterType, const PART_TYPE& ePartType, const wstring& strPartTag)
 {
 	CModel* pParts = CCharacter_Manager::GetInstance()->Get_PartModel(eCharacterType, ePartType, strPartTag);
@@ -8191,33 +8291,130 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		CUI_InGame_Setting_OpenBtn::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton"),
-		CUI_InGame_Setting_RadioBtn::Create(m_pDevice, m_pContext, CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_ONBTN), LAYER_UI)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Natural"),
+		CUI_InGame_Setting_RadioBtn::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::GRAPHIC_NATURAL, 
+			CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_ONBTN), LAYER_UI)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton"),
-		CUI_InGame_Setting_RadioBtn::Create(m_pDevice, m_pContext, CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_OFFBTN), LAYER_UI)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Natural"),
+		CUI_InGame_Setting_RadioBtn::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::GRAPHIC_NATURAL, 
+			CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_OFFBTN), LAYER_UI)))
 		return E_FAIL;
 
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Natural"),
-		CUI_InGame_Setting_RadioGroup::Create(m_pDevice, m_pContext, CUI_InGame_Setting_RadioGroup::UI_RADIOGROUP::GRAPHIC_NATURAL), LAYER_UI)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Shadow"),
+		CUI_InGame_Setting_RadioBtn::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::GRAPHIC_SHADOW,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_ONBTN), LAYER_UI)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Shadow"),
-		CUI_InGame_Setting_RadioGroup::Create(m_pDevice, m_pContext, CUI_InGame_Setting_RadioGroup::UI_RADIOGROUP::GRAPHIC_SHADOW), LAYER_UI)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Shadow"),
+		CUI_InGame_Setting_RadioBtn::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::GRAPHIC_SHADOW,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_OFFBTN), LAYER_UI)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Outline"),
-		CUI_InGame_Setting_RadioGroup::Create(m_pDevice, m_pContext, CUI_InGame_Setting_RadioGroup::UI_RADIOGROUP::GRAPHIC_OUTLINE), LAYER_UI)))
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Outline"),
+		CUI_InGame_Setting_RadioBtn::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::GRAPHIC_OUTLINE,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_ONBTN), LAYER_UI)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Bloom"),
-		CUI_InGame_Setting_RadioGroup::Create(m_pDevice, m_pContext, CUI_InGame_Setting_RadioGroup::UI_RADIOGROUP::GRAPHIC_BLOOM), LAYER_UI)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Outline"),
+		CUI_InGame_Setting_RadioBtn::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::GRAPHIC_OUTLINE,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_OFFBTN), LAYER_UI)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_Blur"),
-		CUI_InGame_Setting_RadioGroup::Create(m_pDevice, m_pContext, CUI_InGame_Setting_RadioGroup::UI_RADIOGROUP::GRAPHIC_BLUR), LAYER_UI)))
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Bloom"),
+		CUI_InGame_Setting_RadioBtn::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::GRAPHIC_BLOOM,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_ONBTN), LAYER_UI)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_SSAO"),
-		CUI_InGame_Setting_RadioGroup::Create(m_pDevice, m_pContext, CUI_InGame_Setting_RadioGroup::UI_RADIOGROUP::GRAPHIC_SSAO), LAYER_UI)))
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Bloom"),
+		CUI_InGame_Setting_RadioBtn::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::GRAPHIC_BLOOM,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_OFFBTN), LAYER_UI)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_RadioGroup_PBR"),
-		CUI_InGame_Setting_RadioGroup::Create(m_pDevice, m_pContext, CUI_InGame_Setting_RadioGroup::UI_RADIOGROUP::GRAPHIC_PBR), LAYER_UI)))
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_Blur"),
+		CUI_InGame_Setting_RadioBtn::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::GRAPHIC_BLUR,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_ONBTN), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_Blur"),
+		CUI_InGame_Setting_RadioBtn::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::GRAPHIC_BLUR,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_OFFBTN), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_SSAO"),
+		CUI_InGame_Setting_RadioBtn::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::GRAPHIC_SSAO,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_ONBTN), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_SSAO"),
+		CUI_InGame_Setting_RadioBtn::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::GRAPHIC_SSAO,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_OFFBTN), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Graphic_PBR"),
+		CUI_InGame_Setting_RadioBtn::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::GRAPHIC_PBR,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_ONBTN), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Graphic_PBR"),
+		CUI_InGame_Setting_RadioBtn::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::GRAPHIC_PBR,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_OFFBTN), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Camera_AxisX"),
+		CUI_InGame_Setting_RadioBtn::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::CAMERA_AXISX,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_ONBTN), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Camera_AxisX"),
+		CUI_InGame_Setting_RadioBtn::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::CAMERA_AXISX,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_OFFBTN), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OnButton_Camera_AxisY"),
+		CUI_InGame_Setting_RadioBtn::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::CAMERA_AXISY,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_ONBTN), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Radio_OffButton_Camera_AxisY"),
+		CUI_InGame_Setting_RadioBtn::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOGROUP::CAMERA_AXISY,
+			CUI_InGame_Setting_RadioBtn::UI_RADIOTYPE::RADIO_OFFBTN), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Button_Graphic_Custom"),
+		CUI_InGame_Setting_Button::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_Button::UI_SETTINGBUTTON::SETBUTTON_GRAPHIC_CUSTOM), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Button_Graphic_Default"),
+		CUI_InGame_Setting_Button::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_Button::UI_SETTINGBUTTON::SETBUTTON_GRAPHIC_DEFAULT), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Button_Camera_ShoulderView"),
+		CUI_InGame_Setting_Button::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_Button::UI_SETTINGBUTTON::SETBUTTON_CAMERA_SHOULDER), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Button_Camera_BackView"),
+		CUI_InGame_Setting_Button::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_Button::UI_SETTINGBUTTON::SETBUTTON_CAMERA_BACK), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_First"),
+		CUI_InGame_Setting_Slider::Create(m_pDevice, m_pContext, CUI_InGame_Setting_Slider::UI_SETTING_SLIDERTYPE::FIRST_SLIDER), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Second"),
+		CUI_InGame_Setting_Slider::Create(m_pDevice, m_pContext, CUI_InGame_Setting_Slider::UI_SETTING_SLIDERTYPE::SECOND_SLIDER), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Third"),
+		CUI_InGame_Setting_Slider::Create(m_pDevice, m_pContext, CUI_InGame_Setting_Slider::UI_SETTING_SLIDERTYPE::THIRD_SLIDER), LAYER_UI)))
 		return E_FAIL;
 
 	return S_OK;
@@ -8708,7 +8905,7 @@ void CUI_Manager::Free()
 
 	for (auto& pSlot : m_CameraSlot)
 		Safe_Release(pSlot);
-	m_GraphicSlot.clear();
+	m_CameraSlot.clear();
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
