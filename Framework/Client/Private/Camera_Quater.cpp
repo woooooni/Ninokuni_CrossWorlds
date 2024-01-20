@@ -355,9 +355,21 @@ void CCamera_Quater::Tick_Rotation(const _float fDeltaTime)
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, m_tNextPosDesc.vCurVec);
 	m_pTransformCom->LookAt(m_pVirtualTargetTransform->Get_Position());
 
+
+	/* Sound */
+	if (!m_bPlaySound && 0.3f <= m_tNextPosDesc.fCurTime / m_tNextPosDesc.fEndTime)
+	{
+		GI->Play_Sound(TEXT("Camera_moving.mp3"), CHANNELID::SOUND_CUTSCENE, 0.6f, true);
+		m_bPlaySound = true;
+	}
+
+
 	/* 회전 보간이 끝나면 상태를 None로 바꾼다. */
 	if (!m_tNextPosDesc.bActive)
+	{
 		m_eModeType = CCamera_Quater::MODE_TYPE::NONE;
+		m_bPlaySound = false;
+	}
 }
 
 void CCamera_Quater::Test(_float fTimeDelta)

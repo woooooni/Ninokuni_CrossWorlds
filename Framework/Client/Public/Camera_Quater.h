@@ -70,6 +70,7 @@ private:
 	CCamera_Quater::VIEW_TYPE	m_eViewType = CCamera_Quater::VIEW_TYPE::NE;
 	_long						m_iMouseWheel = 0;
 	const _float				m_fRotLerpTime = 1.f;
+	_bool						m_bPlaySound = false;
 
 	LERP_VEC4_DESC				m_tNextPosDesc;
 

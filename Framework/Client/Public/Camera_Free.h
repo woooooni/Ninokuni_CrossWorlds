@@ -34,7 +34,7 @@ private:
 	virtual HRESULT Ready_Components() override;
 
 private:
-	_float m_fMoveSpeed		= 50.f;
+	_float m_fMoveSpeed		= 30.f;
 	_float m_fRotateSpeed	= 0.5f;
 
 public:
