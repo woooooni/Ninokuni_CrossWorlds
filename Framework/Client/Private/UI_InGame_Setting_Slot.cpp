@@ -98,6 +98,7 @@ HRESULT CUI_InGame_Setting_Slot::Initialize(void* pArg)
 	Ready_ButtonState();
 
 	Ready_Slider();
+	Ready_Icons();
 
 	m_bActive = false;
 
@@ -1254,6 +1255,65 @@ void CUI_InGame_Setting_Slot::Ready_ButtonState()
 	}
 }
 
+void CUI_InGame_Setting_Slot::Ready_SliderState()
+{
+	if (SETTING_CAMERA != m_eSectionType)
+		return;
+	if (SLOT_FOURTH > m_eType || SLOTORDER_END == m_eType)
+		return;
+
+	CCamera_Follow* pFollowCamera =
+		dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+	if (nullptr == pFollowCamera)
+		return;
+
+	CUI* pFirstSlider = nullptr;
+	CUI* pSecondSlider = nullptr;
+	CUI* pThirdSlider = nullptr;
+
+	CUI_InGame_Setting_Slider* pFirst = nullptr;
+	CUI_InGame_Setting_Slider* pSecond = nullptr;
+	CUI_InGame_Setting_Slider* pThird = nullptr;
+
+	switch(m_eType)
+	{
+	case SLOT_FOURTH:
+		pFirstSlider = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_First"));
+		if (nullptr == pFirstSlider)
+			return;
+		if (nullptr == dynamic_cast<CUI_InGame_Setting_Slider*>(pFirstSlider))
+			return;
+
+		pFirst = dynamic_cast<CUI_InGame_Setting_Slider*>(pFirstSlider); // �蝯曏�
+		pFirst->Set_DefaultSetting();
+		break;
+
+	case SLOT_FIFTH:
+		pSecondSlider = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Second"));
+		if (nullptr == pSecondSlider)
+			return;
+		if (nullptr == dynamic_cast<CUI_InGame_Setting_Slider*>(pSecondSlider))
+			return;
+
+		pSecond = dynamic_cast<CUI_InGame_Setting_Slider*>(pSecondSlider); // 葆辦蝶 團馬紫
+		pSecond->Set_DefaultSetting();
+		break;
+
+	case SLOT_SIXTH:
+		pThirdSlider = Get_Child(TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Third"));
+		if (nullptr == pThirdSlider)
+			return;
+		if (nullptr == dynamic_cast<CUI_InGame_Setting_Slider*>(pThirdSlider))
+			return;
+
+		pThird = dynamic_cast<CUI_InGame_Setting_Slider*>(pThirdSlider); // 湛ё 團馬紫
+		pThird->Set_DefaultSetting();
+		break;
+	}
+
+
+}
+
 void CUI_InGame_Setting_Slot::Ready_Slider()
 {
 	if (SETTING_CAMERA != m_eSectionType)
@@ -1279,6 +1339,20 @@ void CUI_InGame_Setting_Slot::Ready_Slider()
 			return;
 		break;
 	}
+}
+
+void CUI_InGame_Setting_Slot::Ready_Icons()
+{
+	if (SETTING_CAMERA != m_eSectionType)
+		return;
+
+	if (SLOT_FIRST != m_eType)
+		return;
+
+	_float fSize = 64.f * 0.65f;
+
+	if (FAILED(Make_Child(210.f, 5.f, fSize, fSize, TEXT("Prototype_GameObject_UI_Ingame_Setting_Etc_Icon_Camera_DefaultSetting"))))
+		return;
 }
 
 void CUI_InGame_Setting_Slot::Set_DefaultGraphicSetting()
@@ -1423,6 +1497,16 @@ void CUI_InGame_Setting_Slot::Set_DefaultGraphicSetting()
 	m_pRendererCom->Set_PbrDraw(true);
 
 	//g_bControl = false;
+}
+
+void CUI_InGame_Setting_Slot::Set_DefaultCameraSetting()
+{
+	if (SETTING_CAMERA != m_eSectionType)
+		return;
+
+	Ready_RadioState();
+	Ready_ButtonState();
+	Ready_SliderState();
 }
 
 

@@ -114,6 +114,7 @@
 #include "UI_SkillSection_BtnRoll.h"
 #include "UI_SkillSection_BtnJump.h"
 #include "UI_MonsterHP_Background.h"
+#include "UI_InGame_Setting_Icons.h"
 #include "UI_InGame_Setting_Button.h"
 #include "UI_SkillWindow_SkillSlot.h"
 #include "UI_Loading_CharacterLogo.h"
@@ -5237,6 +5238,23 @@ void CUI_Manager::Set_CostumeModel()
 //		CCharacter_Manager::GetInstance()->Get_PartModel(pCharacter->Get_CharacterType(), eType, strPartTag));
 }
 
+void CUI_Manager::Reset_SettingCamera()
+{
+	if (m_CameraSlot.size() > 0)
+	{
+		CCamera_Follow* pFollowCamera =
+			dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+
+		pFollowCamera->Set_Defualt_Setting();
+
+		for (auto& pCameraOption : m_CameraSlot)
+		{
+			if (nullptr != pCameraOption)
+				pCameraOption->Set_DefaultCameraSetting();
+		}
+	}
+}
+
 void CUI_Manager::TakeOff_CostumeModel()
 {
 	_uint iIndex;
@@ -8415,6 +8433,15 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Third"),
 		CUI_InGame_Setting_Slider::Create(m_pDevice, m_pContext, CUI_InGame_Setting_Slider::UI_SETTING_SLIDERTYPE::THIRD_SLIDER), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Etc_Icon_Camera_DefaultSetting"),
+		CUI_InGame_Setting_Icons::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_Icons::UI_INGAMEETC::CAMERA_DEFAULT), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Ingame_Setting_Etc_Icon_Selected_Arrow"),
+		CUI_InGame_Setting_Icons::Create(m_pDevice, m_pContext,
+			CUI_InGame_Setting_Icons::UI_INGAMEETC::INGAME_ARROW), LAYER_UI)))
 		return E_FAIL;
 
 	return S_OK;

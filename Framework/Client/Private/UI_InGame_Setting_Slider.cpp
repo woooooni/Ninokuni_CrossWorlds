@@ -65,6 +65,46 @@ void CUI_InGame_Setting_Slider::Set_Active(_bool bActive)
 	m_bActive = bActive;
 }
 
+void CUI_InGame_Setting_Slider::Set_DefaultSetting()
+{
+	if (m_eType == SLIDERTYPE_END)
+		return;
+
+	CCamera_Follow* pFollowCamera =
+		dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+
+	pFollowCamera->Set_Defualt_Setting();
+	_float fValue = 0.f;
+	_float fX = 0.f;
+	_float fY = 0.f;
+
+	switch (m_eType)
+	{
+	case FIRST_SLIDER:
+		fValue = pFollowCamera->Get_ShakeAmplitudeMag();
+		m_tInfo.fX = m_fMinX + (m_fLength * fValue);
+		m_iPercent = _int(fValue * 100.f);
+		break;
+
+	case SECOND_SLIDER: // 민감도
+		fX = pFollowCamera->Get_MouseSensitivity().x;
+		fY = pFollowCamera->Get_MouseSensitivity().y;
+
+		m_tInfo.fX = m_fMinX + (m_fLength * fX); // 일단 X적용
+		m_iPercent = _int(fX * 100.f);
+		break;
+
+	case THIRD_SLIDER: // 댐핑
+		fValue = pFollowCamera->Get_DampingCoefficient();
+
+		m_tInfo.fX = m_fMinX + (m_fLength * fValue);
+		m_iPercent = _int(fValue * 100.f);
+	}
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
+}
+
 HRESULT CUI_InGame_Setting_Slider::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
@@ -118,7 +158,7 @@ void CUI_InGame_Setting_Slider::Tick(_float fTimeDelta)
 
 		case UI_SETTING_SLIDERTYPE::SECOND_SLIDER: // 민감도
 			pFollowCamera->Set_MouseSensitivity_X(fCurPosX / m_fLength);
-			pFollowCamera->Set_MouseSensitivity_Y(fCurPosX / m_fLength);
+			//pFollowCamera->Set_MouseSensitivity_Y(fCurPosX / m_fLength);
 			break;
 
 		case UI_SETTING_SLIDERTYPE::THIRD_SLIDER: // 댐핑
@@ -142,19 +182,15 @@ void CUI_InGame_Setting_Slider::Tick(_float fTimeDelta)
 
 			_float fPositionX = ptMouse.x - UIDesc.fX; // 부모기준으로 변환된 XPosition
 
-			_float fMinPosx = ptMouse.x - UIDesc.fX + 60.f; // Min
-			_float fMaxPosX = ptMouse.x - UIDesc.fX + 200.f; // Max
-
-//			UIDesc.fX + 60.f; // Window Min Position
-//			UIDesc.fX + 200.f; // Window Max Position
+			_float fMinPosX = UIDesc.fX + 60.f; // 부모를 고려하지 않은 최소 포지션
+			_float fMaxPosX = UIDesc.fX + 200.f; // 부모를 고려하지 않은 최대 포지션
 
 			m_tInfo.fX = fPositionX;
 
-//			if (m_tInfo.fX >= fMaxPosX)
-//				m_tInfo.fX = fMaxPosX;
-//
-//			if (m_tInfo.fX <= fMinPosx)
-//				m_tInfo.fX = fMinPosx;
+			if (ptMouse.x >= fMaxPosX)
+				m_tInfo.fX = 200.f;
+			if (ptMouse.x <= fMinPosX)
+				m_tInfo.fX = 60.f;
 
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));

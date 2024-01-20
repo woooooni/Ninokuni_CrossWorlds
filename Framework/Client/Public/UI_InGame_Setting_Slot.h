@@ -29,6 +29,7 @@ public:
 	void Set_AbleToControl(_bool bControl) { m_bControl = bControl; }
 
 	void Set_DefaultGraphicSetting();
+	void Set_DefaultCameraSetting();
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -78,8 +79,10 @@ private:
 
 	void Ready_RadioState();
 	void Ready_ButtonState();
+	void Ready_SliderState();
 
 	void Ready_Slider();
+	void Ready_Icons();
 
 public:
 	static CUI_InGame_Setting_Slot* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
