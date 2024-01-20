@@ -36,10 +36,18 @@ private:
 	void Test(_float fTimeDelta);
 
 private:
-	const _float m_fVirtualTargetMoveSpeed = 20.f;
+	/* Init */
+	_bool			m_bSet = false;
 
-	class CTransform* m_pVirtualTargetTransform = nullptr;
-	
+	/* Damping */
+	const _float	m_fDampingCoefficient = 0.05f;
+	const _float	m_fDampingMaxDistance = 5.f;
+	Vec4			m_vCurPos = {};
+
+	/* Virtual Target */
+	const _float		m_fVirtualTargetMoveSpeed = 15.f;
+	class CTransform*	m_pVirtualTargetTransform = nullptr;
+
 public:
 	static CCamera_Quater* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
 	virtual CGameObject* Clone(void* pArg);
