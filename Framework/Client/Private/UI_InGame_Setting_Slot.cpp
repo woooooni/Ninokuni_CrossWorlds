@@ -7,6 +7,7 @@
 #include "UI_InGame_Setting_Button.h"
 #include "Camera_Manager.h"
 #include "Camera_Group.h"
+#include "UI_InGame_Setting_Slider.h"
 
 CUI_InGame_Setting_Slot::CUI_InGame_Setting_Slot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 	UI_SETTING_SECTION eSection, UI_SLOT_ORDER eType)
@@ -55,6 +56,16 @@ void CUI_InGame_Setting_Slot::Set_Active(_bool bActive)
 	{
 		if (m_bEvent)
 			m_bEvent = false;
+
+		if ((SETTING_CAMERA == m_eSectionType) &&
+			(SLOT_FOURTH == m_eType || SLOT_FIFTH == m_eType || SLOT_SIXTH == m_eType))
+		{
+			for (auto& iter : m_pChild)
+			{
+				if (nullptr != dynamic_cast<CUI_InGame_Setting_Slider*>(iter))
+					dynamic_cast<CUI_InGame_Setting_Slider*>(iter)->Set_IsArrived(false);
+			}
+		}
 
 		Set_ChildActive(false);
 	}
@@ -150,6 +161,16 @@ void CUI_InGame_Setting_Slot::Tick(_float fTimeDelta)
 				m_bArrived = true;
 				Set_ChildActive(true);
 				m_tInfo.fX = m_vArrivedPosition.x;
+
+				if ((SETTING_CAMERA == m_eSectionType) &&
+					(SLOT_FOURTH == m_eType || SLOT_FIFTH == m_eType || SLOT_SIXTH == m_eType))
+				{
+					for (auto& iter : m_pChild)
+					{
+						if (nullptr != dynamic_cast<CUI_InGame_Setting_Slider*>(iter))
+							dynamic_cast<CUI_InGame_Setting_Slider*>(iter)->Set_IsArrived(true);
+					}
+				}
 			}
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
@@ -1241,23 +1262,23 @@ void CUI_InGame_Setting_Slot::Ready_Slider()
 	if (SLOT_FOURTH > m_eType || SLOTORDER_END == m_eType)
 		return;
 
-//	switch (m_eType)
-//	{
-//	case SLOT_FOURTH:
-//		if (FAILED(Make_Child(2.f, 0.f, 12.f, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_First"))))
-//			return;
-//		break;
-//
-//	case SLOT_FIFTH:
-//		if (FAILED(Make_Child(3.f, 0.f, 12.f, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Second"))))
-//			return;
-//		break;
-//
-//	case SLOT_SIXTH:
-//		if (FAILED(Make_Child(1.f, 0.f, 12.f, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Third"))))
-//			return;
-//		break;
-//	}
+	switch (m_eType)
+	{
+	case SLOT_FOURTH:
+		if (FAILED(Make_Child(60.f, 0.f, 12.f, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_First"))))
+			return;
+		break;
+
+	case SLOT_FIFTH:
+		if (FAILED(Make_Child(60.f, 0.f, 12.f, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Second"))))
+			return;
+		break;
+
+	case SLOT_SIXTH: // √÷¥Î 200
+		if (FAILED(Make_Child(60.f, 0.f, 12.f, 23.f, TEXT("Prototype_GameObject_UI_Ingame_Setting_Slider_Third"))))
+			return;
+		break;
+	}
 }
 
 void CUI_InGame_Setting_Slot::Set_DefaultGraphicSetting()

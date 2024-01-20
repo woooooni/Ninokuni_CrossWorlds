@@ -18,6 +18,8 @@ public:
 	void Set_Percent(_int iPercent) { m_iPercent = iPercent; }
 	virtual void Set_Active(_bool bActive);
 
+	void Set_IsArrived(_bool bArrived) { m_bIsArrived = bArrived; }
+
 public:
 	virtual HRESULT	Initialize_Prototype();
 	virtual HRESULT	Initialize(void* pArg);
@@ -36,6 +38,7 @@ public:
 private:
 	_float m_fMinX = { 0.f };
 	_float m_fMaxX = { 0.f };
+	_bool m_bIsArrived = { false };
 
 	_float m_fLength = { 0.f };
 	_int m_iPercent = { 0 };
@@ -53,7 +56,6 @@ private:
 
 private:
 	void Set_SliderRange();
-	void Key_Input(_float fTimeDelta);
 
 public:
 	static CUI_InGame_Setting_Slider* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, UI_SETTING_SLIDERTYPE eType);

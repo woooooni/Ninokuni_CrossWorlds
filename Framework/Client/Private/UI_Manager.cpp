@@ -468,10 +468,13 @@ _bool CUI_Manager::Get_MovementComplete_SkillBG()
 
 void CUI_Manager::Set_DefaultGraphicSetting()
 {
-	if (m_GraphicSlot[2] == nullptr)
-		return;
+	if (m_GraphicSlot.size() >= 3)
+	{
+		if (m_GraphicSlot[2] == nullptr)
+			return;
 
-	m_GraphicSlot[2]->Set_DefaultGraphicSetting();
+		m_GraphicSlot[2]->Set_DefaultGraphicSetting();
+	}
 }
 
 void CUI_Manager::Set_GraphicSettingState(_bool bisFirst)
@@ -484,26 +487,39 @@ void CUI_Manager::Set_GraphicSettingState(_bool bisFirst)
 
 _bool CUI_Manager::Get_AbleToControlRadio()
 {
-	if (m_GraphicSlot[2] == nullptr)
-		return false;
+	if (m_GraphicSlot.size() >= 3)
+	{
+		if (m_GraphicSlot[2] == nullptr)
+			return false;
 
-	return m_GraphicSlot[2]->Get_AbleToControl();
+		return m_GraphicSlot[2]->Get_AbleToControl();
+	}
+
+	return false;
 }
 
 void CUI_Manager::Set_AbleToControlRadio(_bool bControl)
 {
-	if (m_GraphicSlot[2] == nullptr)
-		return;
+	if (m_GraphicSlot.size() >= 3)
+	{
+		if (m_GraphicSlot[2] == nullptr)
+			return;
 
-	m_GraphicSlot[2]->Set_AbleToControl(bControl);
+		m_GraphicSlot[2]->Set_AbleToControl(bControl);
+	}
 }
 
 _bool CUI_Manager::Is_SettingFirst()
 {
-	if (m_GraphicSlot[2] == nullptr)
-		return false;
+	if (m_GraphicSlot.size() >= 3)
+	{
+		if (m_GraphicSlot[2] == nullptr)
+			return false;
 
-	return m_GraphicSlot[2]->Get_IsFirstSetting();
+		return m_GraphicSlot[2]->Get_IsFirstSetting();
+	}
+
+	return false;
 }
 
 _bool CUI_Manager::Is_Dialog_Active()

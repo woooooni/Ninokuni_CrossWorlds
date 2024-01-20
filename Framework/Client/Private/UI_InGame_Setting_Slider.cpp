@@ -2,6 +2,8 @@
 #include "UI_InGame_Setting_Slider.h"
 #include "GameInstance.h"
 #include "UI_Manager.h"
+#include "Camera_Manager.h"
+#include "Camera_Group.h"
 
 CUI_InGame_Setting_Slider::CUI_InGame_Setting_Slider(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_SETTING_SLIDERTYPE eType)
 	: CUI(pDevice, pContext, L"UI_InGame_Setting_Slider")
@@ -23,26 +25,34 @@ void CUI_InGame_Setting_Slider::Set_Active(_bool bActive)
 			return;
 
 		m_fLength = fabs(m_fMaxX - m_fMinX);
-		_int iVolume = 0;
+		_float fValue = 0.f;
+		_float fX = 0.f;
+		_float fY = 0.f;
+
+		CCamera_Follow* pFollowCamera =
+			dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
 
 		switch (m_eType)
 		{
-		case FIRST_SLIDER:
-			iVolume = GI->Get_AllChannelVolume();
-			m_tInfo.fX = m_fMinX + (m_fLength * iVolume);
-			m_iPercent = iVolume * 100.f;
+		case FIRST_SLIDER: // 쉐이킹
+			fValue = pFollowCamera->Get_ShakeAmplitudeMag();
+			m_tInfo.fX = m_fMinX + (m_fLength * fValue);
+			m_iPercent = _int(fValue * 100.f);
 			break;
 
-		case SECOND_SLIDER:
-			iVolume = GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR);
-			m_tInfo.fX = m_fMinX + (m_fLength * iVolume);
-			m_iPercent = iVolume * 100.f;
+		case SECOND_SLIDER: // 민감도
+			fX = pFollowCamera->Get_MouseSensitivity().x;
+			fY = pFollowCamera->Get_MouseSensitivity().y;
+
+			m_tInfo.fX = m_fMinX + (m_fLength * fX); // 일단 X적용
+			m_iPercent = _int(fX * 100.f);
 			break;
 
-		case THIRD_SLIDER:
-			iVolume = GI->Get_ChannelVolume(CHANNELID::SOUND_UI);
-			m_tInfo.fX = m_fMinX + (m_fLength * iVolume);
-			m_iPercent = iVolume * 100.f;
+		case THIRD_SLIDER: // 댐핑
+			fValue = pFollowCamera->Get_DampingCoefficient();
+
+			m_tInfo.fX = m_fMinX + (m_fLength * fValue);
+			m_iPercent = _int(fValue * 100.f);
 			break;
 		}
 	}
@@ -75,8 +85,6 @@ HRESULT CUI_InGame_Setting_Slider::Initialize(void* pArg)
 	Set_SliderRange();
 
 	m_bActive = true;
-	m_iPercent = 100;
-
 	m_bUseMouse = true;
 	
 	return S_OK;
@@ -90,35 +98,34 @@ void CUI_InGame_Setting_Slider::Tick(_float fTimeDelta)
 			return;
 
 		// 타입별로 Slider BG의 총Width를 1로두고,
-		// 슬라이더 커서의 현재 위치의 값을 SoundManager의 변수에 보내준다.
-
 		// 슬라이더 ratio로 percent를 계산한다
-//		m_fLength = fabs(m_fMaxX - m_fMinX);
-//
-//		_float fCurPosX = m_fLength - fabs(m_fMaxX - m_tInfo.fX); // 슬라이더 시작 기준 현재 내가 있는 상대적 위치
-//		m_iPercent = _int((fCurPosX / m_fLength) * 100.f);
-//
-//		switch (m_eType)
-//		{
-//		case UI_SETTING_SLIDERTYPE::FIRST_SLIDER:
-//			GI->Set_AllChannelVolume(fCurPosX / m_fLength);
-//			break;
-//
-//		case UI_SETTING_SLIDERTYPE::SECOND_SLIDER:
-//			GI->Set_ChannelVolume(CHANNELID::SOUND_BGM_CURR, fCurPosX / m_fLength);
-//			break;
-//
-//		case UI_SETTING_SLIDERTYPE::THIRD_SLIDER:
-//			for (_uint i = 0; i < CHANNELID::MAXCHANNEL; ++i)
-//			{
-//				if (i == CHANNELID::SOUND_BGM_CURR)
-//					continue;
-//
-//				GI->Set_ChannelVolume(CHANNELID(i), fCurPosX / m_fLength);
-//			}
-//			break;
-//		}
-		//
+
+		m_fLength = fabs(m_fMaxX - m_fMinX);
+
+		_float fCurPosX = m_fLength - fabs(m_fMaxX - m_tInfo.fX); // 슬라이더 시작 기준 현재 내가 있는 상대적 위치
+		m_iPercent = _int((fCurPosX / m_fLength) * 100.f);
+
+		CCamera_Follow* pFollowCamera =
+			dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+
+		switch (m_eType)
+		{
+		case UI_SETTING_SLIDERTYPE::FIRST_SLIDER: // 쉐이킹
+			pFollowCamera->Set_ShakeAmplitudeMag(fCurPosX / m_fLength);
+			break;
+
+		case UI_SETTING_SLIDERTYPE::SECOND_SLIDER: // 민감도
+			pFollowCamera->Set_MouseSensitivity_X(fCurPosX / m_fLength);
+			pFollowCamera->Set_MouseSensitivity_Y(fCurPosX / m_fLength);
+			break;
+
+		case UI_SETTING_SLIDERTYPE::THIRD_SLIDER: // 댐핑
+			pFollowCamera->Set_DampingCoefficient(fCurPosX / m_fLength);
+			break;
+
+		default:
+			break;
+		}
 
 		__super::Tick(fTimeDelta);
 	}
@@ -134,20 +141,23 @@ void CUI_InGame_Setting_Slider::LateTick(_float fTimeDelta)
 		if (SLIDERTYPE_END == m_eType)
 			return;
 
-//		CRenderer::TEXT_DESC PercentDesc = {};
-//		
-//		PercentDesc.strText = to_wstring(m_iPercent);
-//		PercentDesc.strFontTag = L"Default_Bold";
-//		PercentDesc.vScale = { 0.5f, 0.5f };
-//
-//		_int iNumstr = PercentDesc.strText.size();
-//		_float fOffsetX = (3 - iNumstr) * 10.f;
-//		PercentDesc.vPosition = _float2(m_vTextPos.x + fOffsetX, m_vTextPos.y);
-//
-//		PercentDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
-//
-//		m_pRendererCom->Add_Text(PercentDesc);
-//
+		if (true == m_bIsArrived)
+		{
+			CRenderer::TEXT_DESC PercentDesc = {};
+
+			PercentDesc.strText = to_wstring(m_iPercent);
+			PercentDesc.strFontTag = L"Default_Bold";
+			PercentDesc.vScale = { 0.5f, 0.5f };
+
+			_int iNumstr = PercentDesc.strText.size();
+			_float fOffsetX = (3 - iNumstr) * 10.f;
+			PercentDesc.vPosition = _float2(m_vTextPos.x + fOffsetX, m_vTextPos.y);
+
+			PercentDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+
+			m_pRendererCom->Add_Text(PercentDesc);
+		}
+
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
 }
@@ -176,9 +186,6 @@ void CUI_InGame_Setting_Slider::On_Mouse(_float fTimeDelta)
 	if (m_bActive)
 	{
 		__super::On_Mouse(fTimeDelta);
-
-		// Type에 따라서 증감되는 것이 다르다.
-		Key_Input(fTimeDelta);
 	}
 }
 
@@ -266,23 +273,16 @@ void CUI_InGame_Setting_Slider::Set_SliderRange()
 
 	// Setting창에서의 설정 -> 필요시 switch문 추가
 	m_fMinX = m_tInfo.fX;
-	m_fMaxX = m_tInfo.fX + 150.f;
+	m_fMaxX = m_tInfo.fX + 140.f;
 
-	_float fOffset = 56.f;
+	_float fOffset = 63.f;
 
 	if (FIRST_SLIDER == m_eType)
-		m_vTextPos = _float2(880.f, 385.f);
+		m_vTextPos = _float2(1310.f, 405.f);
 	else if (SECOND_SLIDER == m_eType)
-		m_vTextPos = _float2(880.f, 385.f + fOffset);
+		m_vTextPos = _float2(1310.f, 405.f + fOffset);
 	else
-		m_vTextPos = _float2(880.f, 385.f + (fOffset * 2.f - 12.f));
-}
-
-void CUI_InGame_Setting_Slider::Key_Input(_float fTimeDelta)
-{
-	if (KEY_TAP(KEY::LBTN))
-	{
-	}
+		m_vTextPos = _float2(1310.f, 405.f + (fOffset * 2.f + 2.f));
 }
 
 CUI_InGame_Setting_Slider* CUI_InGame_Setting_Slider::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_SETTING_SLIDERTYPE eType)

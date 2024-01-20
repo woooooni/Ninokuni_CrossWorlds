@@ -2,6 +2,8 @@
 #include "UI_InGame_Setting_Window.h"
 #include "GameInstance.h"
 #include "UI_InGame_Setting_Tab.h"
+#include "UI_Manager.h"
+#include "Character.h"
 
 CUI_InGame_Setting_Window::CUI_InGame_Setting_Window(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_InGame_Setting_Window")
@@ -31,6 +33,15 @@ void CUI_InGame_Setting_Window::Set_Active(_bool bActive)
 			if (nullptr != pChildUI)
 				pChildUI->Set_Active(true);
 		}
+
+		CCharacter* pCharacter = nullptr;
+		pCharacter = CUI_Manager::GetInstance()->Get_Character();
+		if (nullptr == pCharacter)
+			return;
+
+		pCharacter->Set_Skill_Input(false);
+		pCharacter->Set_Attack_Input(false);
+		pCharacter->Set_Move_Input(false);
 	}
 	else
 	{
@@ -40,6 +51,14 @@ void CUI_InGame_Setting_Window::Set_Active(_bool bActive)
 				pChildUI->Set_Active(false);
 		}
 
+		CCharacter* pCharacter = nullptr;
+		pCharacter = CUI_Manager::GetInstance()->Get_Character();
+		if (nullptr == pCharacter)
+			return;
+
+		pCharacter->Set_Skill_Input(true);
+		pCharacter->Set_Attack_Input(true);
+		pCharacter->Set_Move_Input(true);
 	}
 
 	m_bActive = bActive;
