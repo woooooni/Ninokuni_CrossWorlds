@@ -7,7 +7,9 @@
 #include "Quest_Manager.h"
 #include "UI_Manager.h"
 #include "Sound_Manager.h"
-#include "Camera_Action.h"
+
+#include "Camera_Manager.h"
+#include "Camera_Group.h"
 
 #include "Game_Manager.h"
 
@@ -39,22 +41,10 @@ void CMainQuestNode_IntroTour02::Start()
 	//m_pKuu = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Kuu"));
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
 
-	/* 카메라 타겟 세팅 */
-	// CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"Kuu");
-
-	//if (nullptr != pTarget)
-	//{
-	
-		// 임시 주석
-		//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-		//if (nullptr != pActionCam)
-		//{
-		//	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
-		//	pActionCam->Start_Action_Talk(); //쿠우 혼자면 null
-		//}
-		
-		
-	//}
+	/* 대화 카메라 세팅 */
+	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+	if (nullptr != pActionCam)
+		pActionCam->Start_Action_Talk(nullptr);
 
 	/* 대화 */
 	m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
@@ -82,13 +72,15 @@ CBTNode::NODE_STATE CMainQuestNode_IntroTour02::Tick(const _float& fTimeDelta)
 			m_bIsClear = true;
 			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
 			
-			//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-			//if (nullptr != pActionCam)
-			//	pActionCam->Finish_Action_Talk();
-
 			CQuest_Manager::GetInstance()->Set_SubQuestRunning(CSubQuest::SUBQUEST_CHLOE_FINDCAT, true);
 			CQuest_Manager::GetInstance()->Set_SubQuestRunning(CSubQuest::SUBQUEST_VERDE_WINDMILL, true);
 			CQuest_Manager::GetInstance()->Set_SubQuestRunning(CSubQuest::SUBQUEST_VERDE_WANTED, true);
+
+			/* 대화 카메라 종료 */
+			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+			if (nullptr != pActionCam)
+				pActionCam->Finish_Action_Talk();
+
 			return NODE_STATE::NODE_FAIL;
 		}
 

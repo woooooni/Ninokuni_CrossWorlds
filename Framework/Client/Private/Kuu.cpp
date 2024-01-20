@@ -164,6 +164,11 @@ Vec4 CKuu::Get_GoalPosition()
 	return Vec4(vReleativePos + vPlayerPos).OneW();
 }
 
+void CKuu::Set_GoalPosition()
+{
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, Get_GoalPosition());
+}
+
 
 HRESULT CKuu::Ready_Components()
 {

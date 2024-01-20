@@ -45,7 +45,9 @@ void CState_Character_Neutral_Idle::Enter_State(void* pArg)
 
 void CState_Character_Neutral_Idle::Tick_State(_float fTimeDelta)
 {
-    m_fAccIdleMotion += fTimeDelta;
+    if(!CUI_Manager::GetInstance()->Is_Dialog_Active())
+        m_fAccIdleMotion += fTimeDelta;
+
     if (m_fAccIdleMotion >= m_fIdleMotionTime)
     {
         m_fAccIdleMotion = 0.f;

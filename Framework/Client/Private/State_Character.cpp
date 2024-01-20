@@ -56,8 +56,8 @@ void CState_Character::Neutral_Idle_Input(_float fTimeDelta)
 		return;
 	}
 
-	if (true == CUI_Manager::GetInstance()->Is_Dialog_Active())
-		return;
+	//if (true == CUI_Manager::GetInstance()->Is_Dialog_Active())
+	//	return;
 
 	if (true == GI->Mouse_Down(DIMK_WHEEL))
 	{
@@ -159,8 +159,8 @@ void CState_Character::Battle_Idle_Input(_float fTimeDelta)
 		return;
 	}
 
-	if (true == CUI_Manager::GetInstance()->Is_Dialog_Active())
-		return;
+	//if (true == CUI_Manager::GetInstance()->Is_Dialog_Active())
+	//	return;
 
 	if (true == GI->Mouse_Down(DIMK_WHEEL))
 	{

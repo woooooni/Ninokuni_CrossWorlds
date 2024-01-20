@@ -143,17 +143,22 @@ namespace Client
 	static const _float Cam_Dist_Follow_Default					= 4.5f;
 	static const _float Cam_Dist_Follow_Wide					= 6.f;
 
+	static const _float Cam_Dist_Quater_Min						= 10.f;
+	static const _float Cam_Dist_Quater_Default					= 30.f;
+	static const _float Cam_Dist_Quater_Max						= 40.f;
+
 	static const _float Cam_Fov_Default						= XMConvertToRadians(60.0f);
 	static const _float Cam_Fov_Free_Default				= XMConvertToRadians(60.0f);
 	static const _float Cam_Fov_Follow_Default				= XMConvertToRadians(60.0f);
 	static const _float Cam_Fov_Follow_Wide					= XMConvertToRadians(75.0f);
 	static const _float Cam_Fov_Action_Lobby				= XMConvertToRadians(52.5f);
-	static const _float Cam_Fov_Action_Talk_SuperNarrow		= XMConvertToRadians(40.f);
+	static const _float Cam_Fov_Action_Talk_SuperNarrow		= XMConvertToRadians(45.f);
 	static const _float Cam_Fov_Action_Talk_Narrow			= XMConvertToRadians(50.f);
 	static const _float Cam_Fov_Action_Talk_Default			= XMConvertToRadians(60.f);
 	static const _float Cam_Fov_CutScene_Map_Default		= XMConvertToRadians(70.0f);
 	static const _float Cam_Fov_CutScene_Boss_Default		= XMConvertToRadians(70.0f);
 	static const _float Cam_Fov_Top_Glanix					= XMConvertToRadians(75.0f);
+	static const _float Cam_Fov_Quater_Default				= XMConvertToRadians(70.f);
 
 	static const Vec4	Cam_TargetOffset_Follow_SholderView_Default		= { 0.7f, 1.3f, 0.f, 1.f };
 	static const Vec4	Cam_LookAtOffset_Follow_SholderView_Default		= { 0.7f, 1.3f, 0.f, 1.f };
