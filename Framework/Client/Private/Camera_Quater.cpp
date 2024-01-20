@@ -52,6 +52,8 @@ void CCamera_Quater::Tick(_float fTimeDelta)
 	__super::Tick(fTimeDelta);
 
 	Tick_Transform(fTimeDelta);
+
+	Test(fTimeDelta);
 }
 
 void CCamera_Quater::LateTick(_float fTimeDelta)
@@ -92,6 +94,8 @@ void CCamera_Quater::Set_Active(const _bool bActive)
 	{
 		/* Player All Input Off */
 		{
+			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CStateMachine>(L"Com_StateMachine")->Change_State(CCharacter::NEUTRAL_IDLE);
+
 			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
 		}
 
@@ -131,46 +135,42 @@ HRESULT CCamera_Quater::Ready_Components()
 
 void CCamera_Quater::Tick_Transform(const _float fDeltaTime)
 {
+	Vec3 vDir;
+
 	if (KEY_HOLD(KEY::W) && KEY_HOLD(KEY::D))
 	{
-		const Vec3 vDir = Vec3(m_pTransformCom->Get_Look() + m_pTransformCom->Get_Right()).ZeroY().Normalized();
-		m_pTransformCom->Translate(vDir * m_fMoveSpeed * fDeltaTime);
+		vDir = m_pTransformCom->Get_Look() + m_pTransformCom->Get_Right();
 	}
 	else if(KEY_HOLD(KEY::D) && KEY_HOLD(KEY::S))
 	{
-		const Vec3 vDir = Vec3((m_pTransformCom->Get_Look() * -1.f) + m_pTransformCom->Get_Right()).ZeroY().Normalized();
-		m_pTransformCom->Translate(Vec3{ 1.f, 0.f, -1.f }.Normalized() * m_fMoveSpeed * fDeltaTime);
+		vDir = (m_pTransformCom->Get_Look() * -1.f) + m_pTransformCom->Get_Right();
 	}
 	else if (KEY_HOLD(KEY::S) && KEY_HOLD(KEY::A))
 	{
-		const Vec3 vDir = Vec3((m_pTransformCom->Get_Look() * -1.f) + (m_pTransformCom->Get_Right() * -1.f)).ZeroY().Normalized();
-		m_pTransformCom->Translate(Vec3{ -1.f, 0.f, -1.f }.Normalized() * m_fMoveSpeed * fDeltaTime);
+		vDir = (m_pTransformCom->Get_Look() * -1.f) + (m_pTransformCom->Get_Right() * -1.f);
 	}
 	else if (KEY_HOLD(KEY::A) && KEY_HOLD(KEY::W))
 	{
-		const Vec3 vDir = Vec3(m_pTransformCom->Get_Look() + (m_pTransformCom->Get_Right() * -1.f)).ZeroY().Normalized();
-		m_pTransformCom->Translate(Vec3{ -1.f, 0.f, 1.f }.Normalized() * m_fMoveSpeed * fDeltaTime);
+		vDir = m_pTransformCom->Get_Look() + (m_pTransformCom->Get_Right() * -1.f);
 	}
 	else if (KEY_HOLD(KEY::W))
 	{
-		const Vec3 vDir = Vec3(m_pTransformCom->Get_Look()).ZeroY().Normalized();
-		m_pTransformCom->Translate(Vec3{ 0.f, 0.f, 1.f } * m_fMoveSpeed * fDeltaTime);
+		vDir = m_pTransformCom->Get_Look();
 	}
 	else if (KEY_HOLD(KEY::S))
 	{
-		const Vec3 vDir = Vec3(m_pTransformCom->Get_Look() * -1.f).ZeroY().Normalized();
-		m_pTransformCom->Translate(Vec3{ 0.f, 0.f, -1.f } * m_fMoveSpeed * fDeltaTime);
+		vDir = m_pTransformCom->Get_Look() * -1.f;
 	}
 	else if (KEY_HOLD(KEY::D))
 	{
-		const Vec3 vDir = Vec3(m_pTransformCom->Get_Right()).ZeroY().Normalized();
-		m_pTransformCom->Translate(Vec3{ 1.f, 0.f, 0.f } * m_fMoveSpeed * fDeltaTime);
+		vDir = m_pTransformCom->Get_Right();
 	}
 	else if (KEY_HOLD(KEY::A))
 	{
-		const Vec3 vDir = Vec3(m_pTransformCom->Get_Right() * -1.f).ZeroY().Normalized();
-		m_pTransformCom->Translate(Vec3{ -1.f, 0.f, 0.f } * m_fMoveSpeed * fDeltaTime);
+		vDir = m_pTransformCom->Get_Right() * -1.f;
 	}
+
+	m_pTransformCom->Translate(vDir.ZeroY().Normalized() * m_fMoveSpeed * fDeltaTime);
 }
 
 void CCamera_Quater::Test(_float fTimeDelta)
