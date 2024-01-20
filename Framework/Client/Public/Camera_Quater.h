@@ -9,6 +9,8 @@ BEGIN(Client)
 
 class CCamera_Quater final : public CCamera
 {
+	enum VIEW_TYPE { NE, SE, SW, NW };
+
 private:
 	CCamera_Quater(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
 	CCamera_Quater(const CCamera_Quater& rhs);
@@ -52,6 +54,8 @@ private:
 	const _float		m_fHeightMag = 0.5f; /* 디스턴스에 대한 높이 비율 */
 	const _float		m_fInitHeight = 25.f;
 	LERP_FLOAT_DESC		m_tHeight = {};
+
+	CCamera_Quater::VIEW_TYPE			m_eViewType = CCamera_Quater::VIEW_TYPE::NE;
 
 public:
 	static CCamera_Quater* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);

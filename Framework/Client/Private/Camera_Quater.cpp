@@ -254,10 +254,26 @@ void CCamera_Quater::Tick_Transform(const _float fDeltaTime)
 
 	/* Cam Position */
 	{
-		Vec4 vLookRight = Vec4(m_pVirtualTargetTransform->Get_Look() + m_pVirtualTargetTransform->Get_Right()).Normalized();
+		Vec4 vDir;
+
+		switch (m_eViewType)
+		{
+		case CCamera_Quater::VIEW_TYPE::NE:
+			break;
+		case CCamera_Quater::VIEW_TYPE::SE:
+			break;
+		case CCamera_Quater::VIEW_TYPE::SW:
+			break;
+		case CCamera_Quater::VIEW_TYPE::NW:
+			break;
+		default:
+			break;
+		}
+
+		vDir = Vec4(m_pVirtualTargetTransform->Get_Look() + m_pVirtualTargetTransform->Get_Right()).Normalized();
 	
 		Vec4 vGoalPos = (Vec4)m_pVirtualTargetTransform->Get_Position() /* 타겟 원점 포지션 */
-			+ vLookRight.ZeroY() * m_tLerpDist.fCurValue; /* x, z 세팅 */
+			+ vDir.ZeroY() * m_tLerpDist.fCurValue; /* x, z 세팅 */
 		
 		vGoalPos.w = 1.f;
 		vGoalPos.y = m_tHeight.fCurValue;
@@ -278,6 +294,11 @@ void CCamera_Quater::Tick_Transform(const _float fDeltaTime)
 	/* Cam LoookAt*/
 	{
 
+	}
+
+	/* Rotation */
+	{
+		
 	}
 }
 
