@@ -40,16 +40,18 @@ private:
 	_bool			m_bSet = false;
 
 	/* Damping */
-	const _float	m_fDampingCoefficient = 0.05f;
+	const _float	m_fDampingCoefficient = 0.1f;
 	const _float	m_fDampingMaxDistance = 5.f;
 	Vec4			m_vCurPos = {};
 
 	/* Virtual Target */
-	const _float		m_fVirtualTargetMoveSpeed = 15.f;
+	const _float		m_fVirtualTargetMoveSpeed = 20.f;
 	class CTransform*	m_pVirtualTargetTransform = nullptr;
 
 	/* Distance, Height */
-	const _float		m_fHeightMag = 0.8f; /* 디스턴스에 대한 높이 비율 */
+	const _float		m_fHeightMag = 0.5f; /* 디스턴스에 대한 높이 비율 */
+	const _float		m_fInitHeight = 25.f;
+	LERP_FLOAT_DESC		m_tHeight = {};
 
 public:
 	static CCamera_Quater* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
