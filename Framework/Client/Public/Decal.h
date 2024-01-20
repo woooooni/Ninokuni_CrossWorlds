@@ -75,6 +75,7 @@ public:
 	void Set_Owner(CGameObject* pGameObject) { m_pOwnerObject = pGameObject; }
 	void Set_DeleteDecal(_bool bDecalDelete) { m_bDecalDelete = bDecalDelete; }
 	void Set_OffsetPosition(Vec4 vPos) { m_vOffsetPos = vPos; }
+	void Set_LifeTime(_float fLifeTime) { m_tDecalDesc.fLifeTime = fLifeTime; };
 
 private:
 	void Tick_Alpha(_float fTimeDelta);

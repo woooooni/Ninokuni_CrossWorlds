@@ -454,6 +454,11 @@ void CParticle::Set_Texture_Diffuse()
 			else
 				m_pDiffuseTextureCom = CTexture::Create(m_pDevice, m_pContext, m_tParticleDesc.strDiffuseTetexturePath);
 		}
+		else
+		{
+			if (m_pDiffuseTextureCom != nullptr)
+				Safe_Release(m_pDiffuseTextureCom);
+		}
 		Safe_Delete(pszFilePath);
 	}
 	Safe_Delete(pszFileName);
@@ -490,6 +495,11 @@ void CParticle::Set_Texture_Alpha()
 				m_pAlphaTextureCom = CTexture::Create(m_pDevice, m_pContext, m_tParticleDesc.strAlphaTexturPath, 0, true);
 			else
 				m_pAlphaTextureCom = CTexture::Create(m_pDevice, m_pContext, m_tParticleDesc.strAlphaTexturPath);
+		}
+		else
+		{
+			if (m_pAlphaTextureCom != nullptr)
+				Safe_Release(m_pAlphaTextureCom);
 		}
 		Safe_Delete(pszFilePath);
 	}

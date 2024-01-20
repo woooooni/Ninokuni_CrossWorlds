@@ -817,9 +817,13 @@ void CTool_Particle::Store_InfoParticle()
 void CTool_Particle::Set_OriginalInfoParticle()
 {
 	if (nullptr == m_pParticle)
+	{
+		MSG_BOX("Prototype_Find_Failed!");
 		return;
+	}
 
-	wstring strPropertyName(m_cPrototypeName, m_cPrototypeName + strlen(m_cPrototypeName));
+	wstring strFileName(m_cPrototypeName, m_cPrototypeName + strlen(m_cPrototypeName));
+	wstring strPropertyName = L"Prototype_" + strFileName;
 
 	CGameObject* pGameObject = GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_EFFECT, strPropertyName);
 	if (pGameObject == nullptr)
@@ -840,6 +844,8 @@ void CTool_Particle::Set_OriginalInfoParticle()
 
 	static_cast<CParticle*>(pGameObject)->Set_ParticleDesc(m_tParticleInfo);
 	static_cast<CParticle*>(pGameObject)->Set_RigidbodyDesc(m_tRigidbodyInfo);
+
+	MSG_BOX("Prototype_Find_Success!");
 }
 
 wstring CTool_Particle::Select_FolderName(_uint iFolderIndex)

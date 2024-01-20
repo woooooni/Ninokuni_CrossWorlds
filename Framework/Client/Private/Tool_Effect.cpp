@@ -1005,9 +1005,13 @@ void CTool_Effect::Set_OriginalInfo(TYPE eType)
 	if (TYPE_EFFECT == eType)
 	{
 		if (nullptr == m_pEffect)
+		{
+			MSG_BOX("Prototype_Find_Failed!");
 			return;
+		}
 
-		wstring strPropertyName(m_cPrototypeName, m_cPrototypeName + strlen(m_cPrototypeName));
+		wstring strFileName(m_cPrototypeName, m_cPrototypeName + strlen(m_cPrototypeName));
+		wstring strPropertyName = L"Prototype_" + strFileName;
 
 		CGameObject* pGameObject = GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_EFFECT, strPropertyName);
 		if (pGameObject == nullptr)
@@ -1035,7 +1039,10 @@ void CTool_Effect::Set_OriginalInfo(TYPE eType)
 	else if (TYPE_DECAL == eType)
 	{
 		if (m_pDecal == nullptr)
+		{
+			MSG_BOX("Prototype_Find_Failed!");
 			return;
+		}
 
 		wstring strPropertyName(m_cPrototypeName, m_cPrototypeName + strlen(m_cPrototypeName));
 
@@ -1048,6 +1055,8 @@ void CTool_Effect::Set_OriginalInfo(TYPE eType)
 
 		static_cast<CDecal*>(pGameObject)->Set_DecalDesc(m_tDecalInfo);
 	}
+
+	MSG_BOX("Prototype_Find_Success!");
 }
 
 void CTool_Effect::Load_OriginalInfoVfx()

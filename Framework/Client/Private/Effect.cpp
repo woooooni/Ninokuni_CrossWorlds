@@ -992,6 +992,11 @@ void CEffect::Set_Texture_Diffuse()
 
 		m_pDiffuseTextureCom = static_cast<CTexture*>(GI->Clone_Component(LEVEL_STATIC, m_tEffectDesc.strDiffuseTetextureName));
 	}
+	else
+	{
+		if (m_pDiffuseTextureCom != nullptr)
+			Safe_Release(m_pDiffuseTextureCom);
+	}
 	Safe_Delete(pszFileName);
 
 	if (m_pDiffuseTextureCom != nullptr && m_tEffectDesc.iTextureIndexDiffuse >= m_pDiffuseTextureCom->Get_TextureCount())
@@ -1009,6 +1014,11 @@ void CEffect::Set_Texture_Alpha()
 			Safe_Release(m_pAlphaTextureCom);
 
 		m_pAlphaTextureCom = static_cast<CTexture*>(GI->Clone_Component(LEVEL_STATIC, m_tEffectDesc.strAlphaTexturName));
+	}
+	else
+	{
+		if (m_pAlphaTextureCom != nullptr)
+			Safe_Release(m_pAlphaTextureCom);
 	}
 	Safe_Delete(pszFileName);
 
