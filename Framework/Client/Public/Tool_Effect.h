@@ -79,7 +79,7 @@ private:
 	_int m_iDiffuseFolderIndex = { 21 };
 	_int m_iAlphaFolderIndex   = { 21 };
 
-	char   m_cPrototypeName[MAX_PATH] = { "Prototype_" };
+	char   m_cPrototypeName[MAX_PATH] = { "" };
 
 	_uint m_iVfxMaxCount = 0;
 	_int* m_pFrameTriger = nullptr;
