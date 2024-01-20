@@ -55,6 +55,8 @@ HRESULT CShadow_Tower::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
+	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::STUN, 0.f, 0.f, 0.f, false);
+
 	m_fAccFireTime = 0.f;
 	m_fFireTime = 1.5f;
 
@@ -90,8 +92,6 @@ void CShadow_Tower::Tick(_float fTimeDelta)
 void CShadow_Tower::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
-	if (nullptr == m_pRendererCom)
-		return;
 
 }
 
@@ -260,9 +260,7 @@ HRESULT CShadow_Tower::Ready_Colliders()
 
 
 
-	OBBBox.Extents = { 100.f, 100.f, 100.f };
-	OBBDesc.vOffsetPosition = Vec3(0.f, 100.f, 0.f);
-	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::ATTACK, &OBBDesc)))
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::ATTACK, &SphereDesc)))
 		return E_FAIL;
 
 

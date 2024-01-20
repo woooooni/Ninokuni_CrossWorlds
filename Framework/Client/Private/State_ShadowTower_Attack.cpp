@@ -8,6 +8,8 @@
 #include "Player.h"
 #include "Shadow_Ball.h"
 
+#include "Effect_Manager.h"
+
 CState_ShadowTower_Attack::CState_ShadowTower_Attack(CStateMachine* pMachine)
     : CState_DefenceTower(pMachine)
 {
@@ -47,11 +49,17 @@ void CState_ShadowTower_Attack::Tick_State(_float fTimeDelta)
 
 void CState_ShadowTower_Attack::Exit_State()
 {
+    m_pTower->Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, false);
     m_bShoot = false;
 }
 
 void CState_ShadowTower_Attack::Fire()
 {
+    m_pTower->Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
+    _matrix WorldMatrix = m_pTransformCom->Get_WorldMatrix();
+    WorldMatrix.r[CTransform::STATE_POSITION] += XMVectorSet(0.f, 1.f, 0.f, 0.f);
+    CEffect_Manager::GetInstance()->Generate_Effect(L"Defence_ShadowTower_Fire_0", WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(5.f, 5.f, 5.f), _float3(0.f, 0.f, 0.f), m_pOwner);
+
     for (_uint i = 0; i < 4; ++i)
     {
         CCharacter_Projectile::CHARACTER_PROJECTILE_DESC ProjectileDesc;

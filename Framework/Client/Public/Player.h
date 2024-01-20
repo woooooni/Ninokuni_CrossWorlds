@@ -29,9 +29,21 @@ public:
 	HRESULT Tag_Character(CHARACTER_TYPE eType);
 	HRESULT Set_Character_Initial_Position(Vec4 vEnterPosition, _bool bEnterDoor = false);
 
+public:
+	void Increase_Gold(_int iGold) { m_iGold += iGold; }
+	_bool Decrease_Gold(_int iGold) { 
+		if (0 > m_iGold - iGold)
+			return false;
+
+		m_iGold = max(0, m_iGold - iGold);
+		return true;
+	}
+
 private:
 	class CCharacter* m_pCharacter = nullptr;
 
+private:
+	_int m_iGold = 0;
 
 private:
 	static CPlayer* Create();

@@ -124,13 +124,6 @@ HRESULT CDefence_Tower::Render()
 		return E_FAIL;
 
 
-
-
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_BaseMatrix.Transpose(), sizeof(_float4x4))))
-		return E_FAIL;
-
-
 	iNumMeshes = m_pBaseModelCom->Get_NumMeshes();
 
 	for (_uint i = 0; i < iNumMeshes; ++i)

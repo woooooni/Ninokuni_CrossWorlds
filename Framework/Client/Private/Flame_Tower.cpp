@@ -63,6 +63,24 @@ HRESULT CFlame_Tower::Initialize(void* pArg)
 void CFlame_Tower::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+	m_pStateCom->Tick_State(fTimeDelta);
+
+	if (nullptr != m_pTarget)
+	{
+		if (DEFENCE_TOWER_STATE::TOWER_STATE_IDLE == m_pStateCom->Get_CurrState())
+		{
+			m_fAccFireTime += fTimeDelta;
+			if (m_fAccFireTime >= m_fFireTime)
+			{
+				m_pStateCom->Change_State(DEFENCE_TOWER_STATE::TOWER_STATE_ATTACK);
+				m_fAccFireTime = 0.f;
+			}
+		}
+	}
+	else
+	{
+		m_fAccFireTime = m_fFireTime;
+	}
 }
 
 
@@ -71,8 +89,6 @@ void CFlame_Tower::Tick(_float fTimeDelta)
 void CFlame_Tower::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
-	if (nullptr == m_pRendererCom)
-		return;
 
 }
 
@@ -238,9 +254,7 @@ HRESULT CFlame_Tower::Ready_Colliders()
 		return E_FAIL;
 
 
-	OBBBox.Extents = { 100.f, 100.f, 100.f };
-	OBBDesc.vOffsetPosition = Vec3(0.f, 100.f, 0.f);
-	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::ATTACK, &OBBDesc)))
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::ATTACK, &SphereDesc)))
 		return E_FAIL;
 
 

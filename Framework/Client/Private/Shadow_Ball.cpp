@@ -2,6 +2,7 @@
 #include "GameInstance.h"
 #include "Shadow_Ball.h"
 #include "Utils.h"
+#include "Effect.h"
 #include "Effect_Manager.h"
 #include "Particle_Manager.h"
 #include "Character.h"
@@ -39,6 +40,11 @@ HRESULT CShadow_Ball::Initialize(void* pArg)
 	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
 
 	m_fDeletionTime = 2.f;
+
+	CEffect_Manager::GetInstance()->Generate_Effect(L"Defence_ShadowBall_Ground", m_pTransformCom->Get_WorldMatrix(),
+		_float3(0.f, -0.5f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), this, &m_pEffect, false);
+
+	Safe_AddRef(m_pEffect);
 	return S_OK;
 }
 
@@ -56,8 +62,6 @@ void CShadow_Ball::Tick(_float fTimeDelta)
 	m_pTransformCom->Move(XMVector3Normalize(m_vInitLook), 5.f, fTimeDelta);
 
 	__super::Tick(fTimeDelta);
-
-	GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fAccEffect, CUtils::Random_Float(0.1f, 0.1f), fTimeDelta, TEXT("Particle_Smoke"), this);
 }
 
 void CShadow_Ball::LateTick(_float fTimeDelta)
@@ -153,4 +157,10 @@ CGameObject* CShadow_Ball::Clone(void* pArg)
 void CShadow_Ball::Free()
 {
 	__super::Free();
+	if (nullptr != m_pEffect)
+	{
+		m_pEffect->Set_Dead(true);
+		Safe_Release(m_pEffect);
+	}
+	
 }

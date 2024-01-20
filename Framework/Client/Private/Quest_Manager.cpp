@@ -34,7 +34,7 @@ void CQuest_Manager::Tick(_float fTimeDelta)
 
 	/* 모든 퀘스트 다이얼로그에서 카메라 이벤트 연동후 삭제 해주면 됩니다. */
 	{
-		if (KEY_TAP(KEY::HOME))
+		if (GI->Get_CurrentLevel() != LEVELID::LEVEL_TOOL && KEY_TAP(KEY::HOME))
 		{
 			CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
 		}

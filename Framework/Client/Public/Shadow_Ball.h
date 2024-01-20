@@ -32,6 +32,8 @@ private:
 	_bool m_bInitLook = false;
 	Vec3 m_vInitLook = {};
 
+private:
+	class CEffect* m_pEffect = nullptr;
 
 public:
 	static CShadow_Ball* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

@@ -28,6 +28,17 @@ public:
 private:
 	void Fire();
 
+private:
+	_float m_fAccOnOffAttack = 0.f;
+	_float m_fOnOffAttackTime = 0.05f;
+
+private:
+	class CEffect* m_pEffect_InBound = nullptr;
+	class CEffect* m_pEffect_OutBound = nullptr;
+
+private:
+	_bool m_bFire = false;
+
 public:
 	static CState_FlameTower_Attack* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

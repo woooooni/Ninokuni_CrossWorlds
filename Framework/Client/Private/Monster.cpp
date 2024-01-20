@@ -373,6 +373,10 @@ void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 		}
 		pCharacter = pProjectile->Get_Owner();
 	}
+	else if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_DEFENCE_TOWER)
+	{
+		pCharacter = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+	}
 	else
 	{
 		pCharacter = dynamic_cast<CCharacter*>(tInfo.pOther);

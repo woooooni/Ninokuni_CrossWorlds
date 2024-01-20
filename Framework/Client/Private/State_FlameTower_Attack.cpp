@@ -2,7 +2,9 @@
 #include "GameInstance.h"
 #include "Character.h"
 #include "Defence_Tower.h"
+#include "Effect_Manager.h"
 #include "State_FlameTower_Attack.h"
+#include "Effect.h"
 
 CState_FlameTower_Attack::CState_FlameTower_Attack(CStateMachine* pMachine)
     : CState_DefenceTower(pMachine)
@@ -20,27 +22,66 @@ HRESULT CState_FlameTower_Attack::Initialize(const list<wstring>& AnimationList)
 void CState_FlameTower_Attack::Enter_State(void* pArg)
 {
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
+    m_fAccOnOffAttack = 0.f;
+    m_fOnOffAttackTime = 0.1f;
+    m_bFire = false;
 }
 
 void CState_FlameTower_Attack::Tick_State(_float fTimeDelta)
 {
     if (false == m_pModelCom->Is_Tween() && m_pModelCom->Get_CurrAnimationFrame() == 5)
-        Fire();
+    {
+        if (false == m_bFire)
+        {
+            Fire();
+            m_bFire = true;
+        }
+    }
+
+    m_fAccOnOffAttack += fTimeDelta;
+    if (m_fAccOnOffAttack >= m_fOnOffAttackTime)
+    {
+        m_pTower->Set_Collider_AttackMode(CCollider::ATTACK_TYPE::WEAK, 0.f, 0.f, 0.f, false);
+        _bool bActive = m_pTower->Get_Collider(CCollider::DETECTION_TYPE::ATTACK)[0]->Is_Active();
+        m_pTower->Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, !bActive);
+        m_fAccOnOffAttack = 0.f;
+    }
 
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
         m_pStateMachineCom->Change_State(CDefence_Tower::DEFENCE_TOWER_STATE::TOWER_STATE_IDLE);
-        
-
 }
 
 void CState_FlameTower_Attack::Exit_State()
 {
+    m_bFire = false;
+    m_fAccOnOffAttack = 0.f;
+    if (nullptr != m_pEffect_InBound)
+    {
+        m_pEffect_InBound->Set_Dead(true);
+        Safe_Release(m_pEffect_InBound);
+        m_pEffect_InBound = nullptr;
+    }
 
+    if (nullptr != m_pEffect_OutBound)
+    {
+        m_pEffect_OutBound->Set_Dead(true);
+        Safe_Release(m_pEffect_OutBound);
+        m_pEffect_OutBound = nullptr;
+    }
 }
 
 void CState_FlameTower_Attack::Fire()
 {
+    _matrix WorldMatrix = m_pTransformCom->Get_WorldMatrix();
+    WorldMatrix.r[CTransform::STATE_POSITION] += XMVectorSet(0.f, 0.2f, 0.f, 0.f);
+    CEffect_Manager::GetInstance()->Generate_Effect(L"Defence_FlameTower_Fire_1", WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(10.f, 10.f, 10.f), _float3(0.f, 0.f, 0.f));
+    
+    CEffect_Manager::GetInstance()->Generate_Effect(L"Defence_FlameTower_Fire_0", WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(10.f, 10.f, 10.f), _float3(0.f, 0.f, 0.f), nullptr, &m_pEffect_InBound);
 
+    CEffect_Manager::GetInstance()->Generate_Effect(L"Defence_FlameTower_Fire_0", WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(20.f, 20.f, 20.f), _float3(0.f, 0.f, 0.f), nullptr, &m_pEffect_OutBound);
+
+    Safe_AddRef(m_pEffect_InBound);
+    Safe_AddRef(m_pEffect_OutBound);
 }
 
 CState_FlameTower_Attack* CState_FlameTower_Attack::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
@@ -59,4 +100,16 @@ CState_FlameTower_Attack* CState_FlameTower_Attack::Create(CStateMachine* pState
 void CState_FlameTower_Attack::Free()
 {
     __super::Free();
+
+    if (nullptr != m_pEffect_InBound)
+    {
+        m_pEffect_InBound->Set_Dead(true);
+        Safe_Release(m_pEffect_InBound);
+    }
+
+    if (nullptr != m_pEffect_OutBound)
+    {
+        m_pEffect_OutBound->Set_Dead(true);
+        Safe_Release(m_pEffect_OutBound);
+    }
 }

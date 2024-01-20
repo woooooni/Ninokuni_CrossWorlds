@@ -90,8 +90,8 @@ HRESULT CUI_CharacterDummy::Initialize(void* pArg)
 
 	m_bActive = false;
 
-	if(nullptr != m_pWeapon)
-		m_pWeapon->Set_Owner(this, m_eCharacterType);
+	if(nullptr != m_pDummyWeapon)
+		m_pDummyWeapon->Set_Owner(this, m_eCharacterType);
 
 	switch (m_eCharacterType)
 	{
@@ -164,13 +164,13 @@ void CUI_CharacterDummy::Tick(_float fTimeDelta)
 		//	m_pTransformCom->LookAt_ForLandObject(m_vCamPosition);
 		//}
 
-		if (m_pWeapon != nullptr)
+		if (m_pDummyWeapon != nullptr)
 		{ 
 			Matrix matSocketLocal = m_pModelCom->Get_SocketLocalMatrix(0);
 			Matrix matSocketWorld = matSocketLocal * m_pTransformCom->Get_WorldMatrix();
 
-			m_pWeapon->Set_SocketWorld(matSocketWorld);
-			m_pWeapon->Tick(fTimeDelta);
+			m_pDummyWeapon->Set_SocketWorld(matSocketWorld);
+			m_pDummyWeapon->Tick(fTimeDelta);
 		}
 
 		__super::Tick(fTimeDelta);
@@ -183,11 +183,11 @@ void CUI_CharacterDummy::LateTick(_float fTimeDelta)
 	{
 		m_pModelCom->LateTick(fTimeDelta);
 
-		if (nullptr != m_pWeapon)
-			m_pWeapon->LateTick(fTimeDelta);
-
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND_UI, this);
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_REFLECT, this);
+
+		if (nullptr != m_pDummyWeapon)
+			m_pDummyWeapon->LateTick(fTimeDelta);
 	}
 	
 }
@@ -398,42 +398,42 @@ HRESULT CUI_CharacterDummy::Ready_Weapon()
 	switch (m_eCharacterType)
 	{
 	case CHARACTER_TYPE::SWORD_MAN:
-		m_pWeapon = CUI_Dummy_Weapon::Create(m_pDevice, m_pContext, L"SwordMan_Sword");
-		if (nullptr == m_pWeapon)
+		m_pDummyWeapon = CUI_Dummy_Weapon::Create(m_pDevice, m_pContext, L"SwordMan_Sword");
+		if (nullptr == m_pDummyWeapon)
 			return S_OK;
 
-		m_pWeapon->Set_WeaponModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Sword_Fire02"));
-		if (nullptr == m_pWeapon->Get_WeaponModelCom())
+		m_pDummyWeapon->Set_WeaponModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Sword_Fire02"));
+		if (nullptr == m_pDummyWeapon->Get_WeaponModelCom())
 		{
-			Safe_Release(m_pWeapon);
+			Safe_Release(m_pDummyWeapon);
 			return S_OK;
 		}
 		break;
 
 	case CHARACTER_TYPE::DESTROYER:
-		m_pWeapon = CUI_Dummy_Weapon::Create(m_pDevice, m_pContext, L"Destroyer_Hammer");
-		if (nullptr == m_pWeapon)
+		m_pDummyWeapon = CUI_Dummy_Weapon::Create(m_pDevice, m_pContext, L"Destroyer_Hammer");
+		if (nullptr == m_pDummyWeapon)
 			return S_OK;
 
-		m_pWeapon->Set_WeaponModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Fire02"));
+		m_pDummyWeapon->Set_WeaponModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Fire02"));
 
-		if (nullptr == m_pWeapon->Get_WeaponModelCom())
+		if (nullptr == m_pDummyWeapon->Get_WeaponModelCom())
 		{
-			Safe_Release(m_pWeapon);
+			Safe_Release(m_pDummyWeapon);
 			return S_OK;
 		}
 		break;
 
 	case CHARACTER_TYPE::ENGINEER:
-		m_pWeapon = CUI_Dummy_Weapon::Create(m_pDevice, m_pContext, L"Engineer_Rifle");
-		if (nullptr == m_pWeapon)
+		m_pDummyWeapon = CUI_Dummy_Weapon::Create(m_pDevice, m_pContext, L"Engineer_Rifle");
+		if (nullptr == m_pDummyWeapon)
 			return S_OK;
 
-		m_pWeapon->Set_WeaponModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Fire"));
+		m_pDummyWeapon->Set_WeaponModelCom(CWeapon_Manager::GetInstance()->Get_WeaponModel(m_eCharacterType, L"Fire"));
 
-		if (nullptr == m_pWeapon->Get_WeaponModelCom())
+		if (nullptr == m_pDummyWeapon->Get_WeaponModelCom())
 		{
-			Safe_Release(m_pWeapon);
+			Safe_Release(m_pDummyWeapon);
 			return S_OK;
 		}
 		break;
@@ -496,6 +496,6 @@ void CUI_CharacterDummy::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pWeapon);
+	Safe_Release(m_pDummyWeapon);
 }
 
