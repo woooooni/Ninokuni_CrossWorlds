@@ -48,6 +48,9 @@ private:
 	const _float		m_fVirtualTargetMoveSpeed = 15.f;
 	class CTransform*	m_pVirtualTargetTransform = nullptr;
 
+	/* Distance, Height */
+	const _float		m_fHeightMag = 0.8f; /* 디스턴스에 대한 높이 비율 */
+
 public:
 	static CCamera_Quater* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
 	virtual CGameObject* Clone(void* pArg);
