@@ -45,6 +45,7 @@ private:
 
 private:
 	const _float& Calculate_CamHeightFromDistance();
+	Vec4 Calculate_GoalPosition();
 
 private:
 	/* Mode */
@@ -53,7 +54,7 @@ private:
 	/* Virtual Target */
 	const _float				m_fVirtualTargetMoveSpeed = 20.f;
 	class CTransform*			m_pVirtualTargetTransform = nullptr;
-	Vec3						m_vVirtualTargetMoveDir	= {};
+	Vec3						m_vVirtualTargetMoveDir	= Vec3::Zero;
 
 	/* Translation Damping */
 	const _float				m_fDampingCoefficient = 0.1f;
@@ -61,13 +62,16 @@ private:
 	Vec4						m_vCurPos = {};
 
 	/* Distance, Height */
-	const _float				m_fHeightMag = 0.5f; /* 디스턴스에 대한 높이 비율 */
+	const _float				m_fHeightMag = 1.25f; /* 디스턴스에 대한 높이 비율 (1.25이상으로 올리면 깨짐)*/
 	const _float				m_fInitHeight = 25.f;
 	LERP_FLOAT_DESC				m_tHeight = {};
 
 	/* Roatation */
 	CCamera_Quater::VIEW_TYPE	m_eViewType = CCamera_Quater::VIEW_TYPE::NE;
 	_long						m_iMouseWheel = 0;
+	const _float				m_fRotLerpTime = 1.f;
+
+	LERP_VEC4_DESC				m_tNextPosDesc;
 
 public:
 	static CCamera_Quater* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
