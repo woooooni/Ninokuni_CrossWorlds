@@ -747,6 +747,8 @@
     <ClInclude Include="..\Public\UI_Emoticon_Button.h" />
     <ClInclude Include="..\Public\UI_Emoticon_SpeechBalloon.h" />
     <ClInclude Include="..\Public\UI_Emoticon_Window.h" />
+    <ClInclude Include="..\Public\UI_ImajinnSection_PlayerSwitching.h" />
+    <ClInclude Include="..\Public\UI_ImajinnSection_Selected.h" />
     <ClInclude Include="..\Public\UI_InGame_Setting_Button.h" />
     <ClInclude Include="..\Public\UI_InGame_Setting_Icons.h" />
     <ClInclude Include="..\Public\UI_InGame_Setting_OpenBtn.h" />
@@ -1557,6 +1559,8 @@
     <ClCompile Include="..\Private\UI_Emoticon_Button.cpp" />
     <ClCompile Include="..\Private\UI_Emoticon_SpeechBalloon.cpp" />
     <ClCompile Include="..\Private\UI_Emoticon_Window.cpp" />
+    <ClCompile Include="..\Private\UI_ImajinnSection_PlayerSwitching.cpp" />
+    <ClCompile Include="..\Private\UI_ImajinnSection_Selected.cpp" />
     <ClCompile Include="..\Private\UI_InGame_Setting_Button.cpp" />
     <ClCompile Include="..\Private\UI_InGame_Setting_Icons.cpp" />
     <ClCompile Include="..\Private\UI_InGame_Setting_OpenBtn.cpp" />

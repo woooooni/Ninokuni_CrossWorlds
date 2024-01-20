@@ -146,6 +146,9 @@ void CUI_Costume_ItemSlot::LateTick(_float fTimeDelta)
 		if (SWORD_MAN == m_eCurPlayerType && COSTUMESECTION_HAIRACC == m_eSectionType && COSTUMESLOT_THIRD == m_eType)
 			return;
 
+		if (DESTROYER == m_eCurPlayerType && COSTUMESECTION_HAIRACC == m_eSectionType && COSTUMESLOT_THIRD == m_eType)
+			return;
+
 		if (m_bClicked)
 			m_iPass = 7;
 		else

@@ -128,6 +128,7 @@
 #include "UI_SkillSection_Background.h"
 #include "UI_ImajinnSection_Emoticon.h"
 #include "UI_InGame_Setting_RadioBtn.h"
+#include "UI_ImajinnSection_Selected.h"
 #include "UI_Emoticon_BalloonEmoticon.h"
 #include "UI_MonsterHP_ElementalFrame.h"
 #include "UI_SkillSection_Interaction.h"
@@ -137,6 +138,7 @@
 #include "UI_SkillSection_CoolTimeFrame.h"
 #include "UI_WeaponSection_DefaultWeapon.h"
 #include "UI_SkillSection_BtnInteraction.h"
+#include "UI_ImajinnSection_PlayerSwitching.h"
 
 IMPLEMENT_SINGLETON(CUI_Manager)
 
@@ -3543,6 +3545,50 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(m_pBtnInGameSetting);
 
+	m_PlayerSlot.reserve(3);
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 148.f * 0.48f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = g_iWinSizeX * 0.5f - UIDesc.fCX;
+	UIDesc.fY = 835.f;
+	pSlot = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_ImajinnSection_PlayerSlot_Swordman"), &UIDesc, &pSlot)))
+		return E_FAIL;
+	m_PlayerSlot.push_back(dynamic_cast<CUI_ImajinnSection_PlayerSwitching*>(pSlot));
+	if (nullptr == pSlot)
+		return E_FAIL;
+	Safe_AddRef(pSlot);
+
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	pSlot = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_ImajinnSection_PlayerSlot_Engineer"), &UIDesc, &pSlot)))
+		return E_FAIL;
+	m_PlayerSlot.push_back(dynamic_cast<CUI_ImajinnSection_PlayerSwitching*>(pSlot));
+	if (nullptr == pSlot)
+		return E_FAIL;
+	Safe_AddRef(pSlot);
+
+	UIDesc.fX = g_iWinSizeX * 0.5f + UIDesc.fCX;
+	pSlot = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_ImajinnSection_PlayerSlot_Destroyer"), &UIDesc, &pSlot)))
+		return E_FAIL;
+	m_PlayerSlot.push_back(dynamic_cast<CUI_ImajinnSection_PlayerSwitching*>(pSlot));
+	if (nullptr == pSlot)
+		return E_FAIL;
+	Safe_AddRef(pSlot);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 148.f * 0.6f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = g_iWinSizeX * 0.5f - UIDesc.fCX;
+	UIDesc.fY = 835.f;
+	pSlot = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_ImajinnSection_PlayerSlot_Selected"), &UIDesc, &pSlot)))
+		return E_FAIL;
+	m_pPlayerSelected = dynamic_cast<CUI_ImajinnSection_Selected*>(pSlot);
+	if (nullptr == m_pPlayerSelected)
+		return E_FAIL;
+	Safe_AddRef(m_pPlayerSelected);
 
 	return S_OK;
 }
@@ -4230,6 +4276,22 @@ HRESULT CUI_Manager::Ready_GameObjectToLayer(LEVELID eID)
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pBtnInGameSetting)))
 		return E_FAIL;
 	Safe_AddRef(m_pBtnInGameSetting);
+
+	for (auto& iter : m_PlayerSlot)
+	{
+		if (nullptr == iter)
+			return E_FAIL;
+
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+			return E_FAIL;
+		Safe_AddRef(iter);
+	}
+
+	if (nullptr == m_pPlayerSelected)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pPlayerSelected)))
+		return E_FAIL;
+	Safe_AddRef(m_pPlayerSelected);
 
 	return S_OK;
 }
@@ -5356,6 +5418,14 @@ void CUI_Manager::TakeOff_CostumeModel()
 	m_pCostumeChange->Set_TextureIndex(0);
 }
 
+void CUI_Manager::Update_PlayerSlot(CHARACTER_TYPE eType)
+{
+	if (nullptr == m_pPlayerSelected)
+		return;
+
+	m_pPlayerSelected->Update_Position(eType);
+}
+
 void CUI_Manager::Set_MouseCursor(_uint iIndex)
 {
 	if (nullptr == m_pUICursor)
@@ -5669,6 +5739,7 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 		m_pBtnQuest->Set_Active(true);
 		m_pBtnShowMinimap->Set_Active(true);
 		m_pBtnInGameSetting->Set_Active(true);
+		m_pPlayerSelected->Set_Active(true);
 
 		m_pSkillBG->Set_Active(true);
 		for (auto& iter : m_ClassicSkill)
@@ -5697,6 +5768,11 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 				iter->Set_Active(true);
 		}
 		for (auto& iter : m_WeaponElemental)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(true);
+		}
+		for (auto& iter : m_PlayerSlot)
 		{
 			if (nullptr != iter)
 				iter->Set_Active(true);
@@ -5737,6 +5813,7 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 		m_pBtnQuest->Set_Active(false);
 		m_pBtnShowMinimap->Set_Active(false);
 		m_pBtnInGameSetting->Set_Active(false);
+		m_pPlayerSelected->Set_Active(false);
 
 		m_pSkillBG->Set_Active(false);
 		for (auto& iter : m_ClassicSkill)
@@ -5765,6 +5842,11 @@ HRESULT CUI_Manager::OnOff_GamePlaySetting(_bool bOnOff)
 				iter->Set_Active(false);
 		}
 		for (auto& iter : m_WeaponElemental)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_PlayerSlot)
 		{
 			if (nullptr != iter)
 				iter->Set_Active(false);
@@ -8444,6 +8526,23 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 			CUI_InGame_Setting_Icons::UI_INGAMEETC::INGAME_ARROW), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_ImajinnSection_PlayerSlot_Swordman"),
+		CUI_ImajinnSection_PlayerSwitching::Create(m_pDevice, m_pContext,
+			CUI_ImajinnSection_PlayerSwitching::UI_PLAYERSWITCH::SLOT_SWORDMAN), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_ImajinnSection_PlayerSlot_Engineer"),
+		CUI_ImajinnSection_PlayerSwitching::Create(m_pDevice, m_pContext,
+			CUI_ImajinnSection_PlayerSwitching::UI_PLAYERSWITCH::SLOT_ENGINEER), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_ImajinnSection_PlayerSlot_Destroyer"),
+		CUI_ImajinnSection_PlayerSwitching::Create(m_pDevice, m_pContext,
+			CUI_ImajinnSection_PlayerSwitching::UI_PLAYERSWITCH::SLOT_DESTROYER), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_ImajinnSection_PlayerSlot_Selected"),
+		CUI_ImajinnSection_Selected::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -8769,6 +8868,7 @@ void CUI_Manager::Free()
 
 	Safe_Release(m_pInGameSetting);
 	Safe_Release(m_pBtnInGameSetting);
+	Safe_Release(m_pPlayerSelected);
 
 	for (auto& pFrame : m_CoolTimeFrame)
 		Safe_Release(pFrame);
@@ -8933,6 +9033,10 @@ void CUI_Manager::Free()
 	for (auto& pSlot : m_CameraSlot)
 		Safe_Release(pSlot);
 	m_CameraSlot.clear();
+
+	for (auto& pSlot : m_PlayerSlot)
+		Safe_Release(pSlot);
+	m_PlayerSlot.clear();
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
