@@ -226,6 +226,13 @@ HRESULT CMainApp::Initialize_Client()
 			vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
 			if (FAILED(GI->Add_ShadowLight(LEVEL_WITCHFOREST, vEye, vAt, vUp)))
 				return E_FAIL;
+
+			// 
+			vEye = XMVectorSet(-215.f, 400.f, 200.f, 1.f);
+			vAt = XMVectorSet(590.f, -1200.f, 3.f, 1.f);
+			vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+			if (FAILED(GI->Add_ShadowLight(LEVEL_TOOL, vEye, vAt, vUp)))
+				return E_FAIL;
 		}
 
 		// ShadowLightProj
