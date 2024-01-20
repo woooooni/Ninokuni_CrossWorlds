@@ -767,6 +767,21 @@ HRESULT CEffect_Manager::Ready_Proto_Vfx_Monster()
 {
 	// Glanix
 	{
+		// Prototype_Vfx_Glanix_Intro_Roar
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Glanix_Intro_Roar"),
+			CVfx_Glanix_Intro_Roar::Create(m_pDevice, m_pContext, TEXT("Glanix_Intro_Roar")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_Glanix_Intro_Jump
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Glanix_Intro_Jump"),
+			CVfx_Glanix_Intro_Jump::Create(m_pDevice, m_pContext, TEXT("Glanix_Intro_Jump")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_Glanix_Intro_Finish
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Glanix_Intro_Finish"),
+			CVfx_Glanix_Intro_Finish::Create(m_pDevice, m_pContext, TEXT("Glanix_Intro_Finish")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
 		// Prototype_Vfx_Glanix_Skill_HandDown
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Glanix_Skill_HandDown"),
 			CVfx_Glanix_Skill_HandDown::Create(m_pDevice, m_pContext, TEXT("Glanix_Skill_HandDown")), LAYER_TYPE::LAYER_EFFECT)))
@@ -815,6 +830,11 @@ HRESULT CEffect_Manager::Ready_Proto_Vfx_Monster()
 		// Prototype_Vfx_Glanix_Skill_IcePillar
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Glanix_Skill_IcePillar"),
 			CVfx_Glanix_Skill_IcePillar::Create(m_pDevice, m_pContext, TEXT("Glanix_Skill_IcePillar")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+		// Prototype_Vfx_Glanix_Skill_Icicle
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Glanix_Skill_Icicle"),
+			CVfx_Glanix_Skill_Icicle::Create(m_pDevice, m_pContext, TEXT("Glanix_Skill_Icicle")), LAYER_TYPE::LAYER_EFFECT)))
 			return E_FAIL;
 	}
 

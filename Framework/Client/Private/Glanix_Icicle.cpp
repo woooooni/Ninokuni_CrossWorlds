@@ -7,6 +7,8 @@
 #include "Glanix.h"
 
 #include "Camera_Manager.h"
+#include "Effect_Manager.h"
+#include "Particle_Manager.h"
 
 CGlanix_Icicle::CGlanix_Icicle(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CMonsterProjectile(pDevice, pContext, strObjectTag)
@@ -48,6 +50,9 @@ HRESULT CGlanix_Icicle::Initialize(void* pArg)
 	Set_Collider_Elemental(m_pOwner->Get_Stat().eElementType);
 	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::STUN, 0.f, 0.f, 0.f, true);
 	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
+
+	// Effect Create
+	GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Icicle_Back"), m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), this);
 
 	return S_OK;
 }
@@ -142,6 +147,11 @@ void CGlanix_Icicle::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER && tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
 	{
+		// Effect Create
+		_matrix World = m_pTransformCom->Get_WorldMatrix();
+		World.r[CTransform::STATE_POSITION] = XMVectorSetY(World.r[CTransform::STATE_POSITION], XMVectorGetY(World.r[CTransform::STATE_POSITION]) - 0.5f);
+		GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Glanix_Skill_Icicle"), World, this);
+
 		Set_Dead(true);
 	}
 }
@@ -167,6 +177,9 @@ void CGlanix_Icicle::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
 	__super::Ground_Collision_Enter(tInfo);
 	if (m_pRigidBodyCom->Get_Velocity().y <= 0.f)
 	{
+		// Effect Create
+		GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Glanix_Skill_Icicle"), m_pTransformCom->Get_WorldMatrix(), this);
+
 		m_pRigidBodyCom->Set_Ground(true);
 		m_pRigidBodyCom->Set_Use_Gravity(false);
 		Set_Dead(true);

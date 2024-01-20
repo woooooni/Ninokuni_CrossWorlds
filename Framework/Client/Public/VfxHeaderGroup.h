@@ -32,6 +32,9 @@
 
 
 // BOSS //
+#include "Vfx_Glanix_Intro_Roar.h"
+#include "Vfx_Glanix_Intro_Jump.h"
+#include "Vfx_Glanix_Intro_Finish.h"
 #include "Vfx_Glanix_Skill_HandDown.h"
 #include "Vfx_Glanix_Skill_JumpDown.h"
 #include "Vfx_Glanix_Skill_FootDown.h"
@@ -42,6 +45,7 @@
 #include "Vfx_Glanix_Skill_Rush.h"
 #include "Vfx_Glanix_Skill_IceThrow.h"
 #include "Vfx_Glanix_Skill_IcePillar.h"
+#include "Vfx_Glanix_Skill_Icicle.h"
 
 // ETC //
 #include "Vfx_QuestPoint.h"

@@ -59,7 +59,10 @@ void CTool_Particle::Tick(_float fTimeDelta)
 			// 파티클 개수 //ImGui::Text("MaxParticles"); //ImGui::InputInt("##MaxParticles", &(_int)m_tParticleInfo.iNumEffectMaxCount);
 			ImGui::Text("ParticlesCount");
 			if (ImGui::InputInt("##ParticlesCount", &(_int)m_tParticleInfo.iNumEffectCount))
+			{
 				bParticleSystemUse = true;
+				m_tParticleInfo.iNumEffectMaxCount = m_tParticleInfo.iNumEffectCount;
+			}
 			ImGui::NewLine();
 
 			// 투영 타입
@@ -835,8 +838,8 @@ void CTool_Particle::Set_OriginalInfoParticle()
 	m_tParticleInfo.strDiffuseTetextureName = Select_FolderName(m_iDiffuseFolderIndex);
 	m_tParticleInfo.strAlphaTexturName      = Select_FolderName(m_iAlphaFolderIndex);
 
-	static_cast<CParticle*>(m_pParticle)->Set_ParticleDesc(m_tParticleInfo);
-	static_cast<CParticle*>(m_pParticle)->Set_RigidbodyDesc(m_tRigidbodyInfo);
+	static_cast<CParticle*>(pGameObject)->Set_ParticleDesc(m_tParticleInfo);
+	static_cast<CParticle*>(pGameObject)->Set_RigidbodyDesc(m_tRigidbodyInfo);
 }
 
 wstring CTool_Particle::Select_FolderName(_uint iFolderIndex)
@@ -1176,8 +1179,8 @@ void CTool_Particle::Save_Particle(const char* pFileName)
 
 	MSG_BOX("Particle_Save_Success!");
 
-	//if (m_tRigidbodyInfo.bRigidbody)
-	//	Save_Rigidbody(pFileName);
+	if (m_tRigidbodyInfo.bRigidbody)
+		Save_Rigidbody(pFileName);
 }
 
 void CTool_Particle::Save_Rigidbody(const char* pFileName)
