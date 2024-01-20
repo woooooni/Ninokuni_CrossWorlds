@@ -55,6 +55,8 @@ void CUI_InGame_Setting_Slider::Set_Active(_bool bActive)
 			m_iPercent = _int(fValue * 100.f);
 			break;
 		}
+
+		m_bDrag = false;
 	}
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
@@ -127,6 +129,37 @@ void CUI_InGame_Setting_Slider::Tick(_float fTimeDelta)
 			break;
 		}
 
+		if (true == m_bDrag)
+		{
+			CUI::UI_INFO UIDesc = {}; // 부모 정보
+
+			UIDesc.fCX = 461.f;
+			UIDesc.fCY = 27.f;
+			UIDesc.fX = g_iWinSizeX - UIDesc.fCX * 0.5f - 15.f;
+			UIDesc.fY = 120.f;
+
+			POINT ptMouse = GI->GetMousePos();
+
+			_float fPositionX = ptMouse.x - UIDesc.fX; // 부모기준으로 변환된 XPosition
+
+			_float fMinPosx = ptMouse.x - UIDesc.fX + 60.f; // Min
+			_float fMaxPosX = ptMouse.x - UIDesc.fX + 200.f; // Max
+
+//			UIDesc.fX + 60.f; // Window Min Position
+//			UIDesc.fX + 200.f; // Window Max Position
+
+			m_tInfo.fX = fPositionX;
+
+//			if (m_tInfo.fX >= fMaxPosX)
+//				m_tInfo.fX = fMaxPosX;
+//
+//			if (m_tInfo.fX <= fMinPosx)
+//				m_tInfo.fX = fMinPosx;
+
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+		}
+
 		__super::Tick(fTimeDelta);
 	}
 }
@@ -185,6 +218,12 @@ void CUI_InGame_Setting_Slider::On_Mouse(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (KEY_AWAY(KEY::LBTN))
+		{
+			if (true == m_bDrag)
+				m_bDrag = false;
+		}
+
 		__super::On_Mouse(fTimeDelta);
 	}
 }
@@ -207,22 +246,27 @@ void CUI_InGame_Setting_Slider::On_MouseDrag(_float fTimeDelta)
 	{
 		if (KEY_HOLD(KEY::LBTN))
 		{
-			m_tInfo.fX += GI->Get_DIMMoveState(DIMM::DIMM_X);
+			if (false == m_bDrag)
+			{
+				if (0 != GI->Get_DIMMoveState(DIMM::DIMM_X))
+					m_bDrag = true;
+			}
+		}
 
-			if (m_tInfo.fX >= m_fMaxX)
-				m_tInfo.fX = m_fMaxX;
-
-			if (m_tInfo.fX <= m_fMinX)
-				m_tInfo.fX = m_fMinX;
-
-			m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+		if (KEY_AWAY(KEY::LBTN))
+		{
+			if (true == m_bDrag)
+				m_bDrag = false;
 		}
 	}
 }
 
 void CUI_InGame_Setting_Slider::On_MouseDragExit(_float fTimeDelta)
 {
+	if (m_bActive)
+	{
+		m_bDrag = false;
+	}
 }
 
 HRESULT CUI_InGame_Setting_Slider::Ready_Components()

@@ -39,6 +39,7 @@ private:
 	_float m_fMinX = { 0.f };
 	_float m_fMaxX = { 0.f };
 	_bool m_bIsArrived = { false };
+	_bool m_bDrag = { false };
 
 	_float m_fLength = { 0.f };
 	_int m_iPercent = { 0 };
