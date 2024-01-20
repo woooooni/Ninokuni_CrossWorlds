@@ -14,6 +14,7 @@
 #include <FileUtils.h>
 #include <Utils.h>
 
+#include "Particle_Manager.h"
 
 CLevel_Lobby::CLevel_Lobby(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -30,6 +31,9 @@ HRESULT CLevel_Lobby::Initialize()
 		return E_FAIL;
 
 	if (FAILED(Ready_Layer_Character(LAYER_TYPE::LAYER_CHARACTER)))
+		return E_FAIL;
+
+	if (FAILED(Ready_Layer_Effect(LAYER_TYPE::LAYER_EFFECT)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Layer_UI(LAYER_TYPE::LAYER_UI)))
@@ -133,6 +137,16 @@ HRESULT CLevel_Lobby::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 		return E_FAIL;
 
 	CUI_Manager::GetInstance()->OnOff_LobbyUIs(false);
+
+	return S_OK;
+}
+
+HRESULT CLevel_Lobby::Ready_Layer_Effect(const LAYER_TYPE eLayerType)
+{
+	_matrix WorldMatrix = XMMatrixIdentity();
+	WorldMatrix.r[3] = XMVectorSet(0.f, 30.f, 0.f, 1.f);
+	if (FAILED(GET_INSTANCE(CParticle_Manager)->AddLevel_Particle(LEVEL_LOBBY, TEXT("Particle_Leaf"), WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f))))
+		return E_FAIL;
 
 	return S_OK;
 }

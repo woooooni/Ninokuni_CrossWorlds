@@ -29,6 +29,8 @@
 #include "Portal.h"
 #include "Trigger.h"
 
+#include "Particle_Manager.h"
+
 _bool CLevel_Evermore::g_bFirstEnter = false;
 
 CLevel_Evermore::CLevel_Evermore(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -52,6 +54,9 @@ HRESULT CLevel_Evermore::Initialize()
 //		return E_FAIL;
 //	
 	if (FAILED(Ready_Layer_Character(LAYER_TYPE::LAYER_CHARACTER)))
+		return E_FAIL;
+
+	if (FAILED(Ready_Layer_Effect(LAYER_TYPE::LAYER_EFFECT)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Layer_Monster(LAYER_TYPE::LAYER_MONSTER)))
@@ -419,6 +424,16 @@ HRESULT CLevel_Evermore::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 
 	CUI_Manager::GetInstance()->Ready_CharacterTypeForUI(eCharacterType);
 	CUI_Manager::GetInstance()->Ready_ElementalTypeForUI(eElementalType);
+
+	return S_OK;
+}
+
+HRESULT CLevel_Evermore::Ready_Layer_Effect(const LAYER_TYPE eLayerType)
+{
+	_matrix WorldMatrix = XMMatrixIdentity();
+	WorldMatrix.r[3] = XMVectorSet(0.f, 30.f, 60.f, 1.f);
+	if (FAILED(GET_INSTANCE(CParticle_Manager)->AddLevel_Particle(LEVEL_EVERMORE, TEXT("Particle_Leaf"), WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f))))
+		return E_FAIL;
 
 	return S_OK;
 }
