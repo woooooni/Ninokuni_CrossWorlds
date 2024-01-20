@@ -55,9 +55,23 @@ void CCamera_Quater::Tick(_float fTimeDelta)
 
 	__super::Tick(fTimeDelta);
 
-	Tick_VirtualTargetTransform(fTimeDelta);
+	if (CCamera_Quater::MODE_TYPE::TRANSLATION == m_eModeType || CCamera_Quater::MODE_TYPE::NONE == m_eModeType)
+		Tick_Input();
 
-	Tick_Transform(fTimeDelta);
+	switch (m_eModeType)
+	{
+	case CCamera_Quater::MODE_TYPE::TRANSLATION:
+		Tick_Translation(fTimeDelta);
+		break;
+	case CCamera_Quater::MODE_TYPE::ZOOM:
+		Tick_Zoom(fTimeDelta);
+		break;
+	case CCamera_Quater::MODE_TYPE::ROTATION:
+		Tick_Rotation(fTimeDelta);
+		break;
+	default:
+		break;
+	}
 
 	Test(fTimeDelta);
 }
@@ -142,13 +156,15 @@ void CCamera_Quater::Set_Active(const _bool bActive)
 		}
 
 		/* Tick Transform */
-		Tick_Transform(GI->Compute_TimeDelta(TIMER_TYPE::GAME_PLAY));
+		Calculate_CamHeightFromDistance();
+		Tick_Translation(GI->Compute_TimeDelta(TIMER_TYPE::GAME_PLAY));
 	}
 	else
 	{
 		/* Player All Input On */
 		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
-		m_bSet = false;
+		m_eViewType = CCamera_Quater::VIEW_TYPE::NE;
+		m_eModeType = CCamera_Quater::MODE_TYPE::NONE;
 	}
 }
 
@@ -167,90 +183,100 @@ HRESULT CCamera_Quater::Ready_VirtualTarget()
 	return S_OK;
 }
 
-void CCamera_Quater::Tick_VirtualTargetTransform(const _float fDeltaTime)
+void CCamera_Quater::Tick_Input()
 {
-	Vec3 vDir;
+	/* Zoom */
+	m_iMouseWheel = GI->Get_DIMMoveState(DIMM::DIMM_WHEEL);
+	if (0 != m_iMouseWheel)
+	{
+		m_eModeType = MODE_TYPE::ZOOM;
 
-	if (KEY_HOLD(KEY::W) && KEY_HOLD(KEY::D))
-	{
-		vDir = m_pTransformCom->Get_Look() 
-				+ m_pTransformCom->Get_Right();
-	}
-	else if (KEY_HOLD(KEY::D) && KEY_HOLD(KEY::S))
-	{
-		vDir = (m_pTransformCom->Get_Look() * -1.f) 
-				+ m_pTransformCom->Get_Right();
-	}
-	else if (KEY_HOLD(KEY::S) && KEY_HOLD(KEY::A))
-	{
-		vDir = (m_pTransformCom->Get_Look() * -1.f) 
-				+ (m_pTransformCom->Get_Right() * -1.f);
-	}
-	else if (KEY_HOLD(KEY::A) && KEY_HOLD(KEY::W))
-	{
-		vDir = m_pTransformCom->Get_Look() 
-				+ (m_pTransformCom->Get_Right() * -1.f);
-	}
-	else if (KEY_HOLD(KEY::W))
-	{
-		vDir = m_pTransformCom->Get_Look();
-	}
-	else if (KEY_HOLD(KEY::S))
-	{
-		vDir = m_pTransformCom->Get_Look() * -1.f;
-	}
-	else if (KEY_HOLD(KEY::D))
-	{
-		vDir = m_pTransformCom->Get_Right();
-	}
-	else if (KEY_HOLD(KEY::A))
-	{
-		vDir = m_pTransformCom->Get_Right() * -1.f;
+		// 댐핑 리셋
+
+		return;
 	}
 
-	m_pVirtualTargetTransform->Translate(vDir.ZeroY().Normalized() * m_fVirtualTargetMoveSpeed * fDeltaTime);
-}
-
-void CCamera_Quater::Tick_Transform(const _float fDeltaTime)
-{
-	/* Zoom In Out */
-	_float fHeight = 0.f;
+	/* Roatiton */
 	{
-		/* Distance 결정 (드래그 방향이 위라면 - 아래라면 +, 강도에 따라 120의 배수 형태로 들어옴) */
-		_long dwMouse = 0;
-
-		if (dwMouse = GI->Get_DIMMoveState(DIMM::DIMM_WHEEL))
+		if (KEY_TAP(KEY::Q))
 		{
-			if (0 < dwMouse)
-			{
-				--m_tLerpDist.fCurValue;
-				if (m_tLerpDist.fCurValue < Cam_Dist_Quater_Min)
-					m_tLerpDist.fCurValue = Cam_Dist_Quater_Min;
-			}
-			else
-			{
-				++m_tLerpDist.fCurValue;
-				if (Cam_Dist_Quater_Max < m_tLerpDist.fCurValue)
-					m_tLerpDist.fCurValue = Cam_Dist_Quater_Max;
-			}
+			_int iType = (_int)m_eViewType + 1;
+			if (VIEW_TYPE::NW < iType)
+				iType = VIEW_TYPE::NE;
 
-			/* Distance에 따른 Height 결정 */
-			{
-				const Vec4 vDir_VirtualTargetToCam = Vec4(m_pTransformCom->Get_Position() - m_pVirtualTargetTransform->Get_Position()).Normalized();
-				const _float fTheta = acosf(Vec4::UnitZ.Dot(vDir_VirtualTargetToCam)); /* 두 벡터(타겟으로부터 카메라, UnitZ) 사이의 각 -> acos 해보고 판단 */
-				m_tHeight.fCurValue = m_tLerpDist.fCurValue * fTheta * m_fHeightMag;
-			}
+			m_eViewType = (CCamera_Quater::VIEW_TYPE)iType;
+			m_eModeType = MODE_TYPE::ROTATION;
+
+			// 댐핑 리셋
+			return;
+		}
+		else if (KEY_TAP(KEY::E))
+		{
+			_int iType = (_int)m_eViewType - 1;
+			if (iType < 0)
+				iType = VIEW_TYPE::NW;
+
+			m_eViewType = (CCamera_Quater::VIEW_TYPE)iType;
+			m_eModeType = MODE_TYPE::ROTATION;
+
+			// 댐핑 리셋
+			return;
 		}
 	}
 
-	if (!m_bSet) /* 임시 */
+	/* Translation */
 	{
-		const Vec4 vDir_VirtualTargetToCam = Vec4(m_pTransformCom->Get_Position() - m_pVirtualTargetTransform->Get_Position()).Normalized();
-		const _float fTheta = acosf(Vec4::UnitZ.Dot(vDir_VirtualTargetToCam)); /* 두 벡터(타겟으로부터 카메라, UnitZ) 사이의 각 -> acos 해보고 판단 */
-		m_tHeight.fCurValue = m_tLerpDist.fCurValue * fTheta * m_fHeightMag;
-		m_bSet = true;
-	}
+		if (KEY_HOLD(KEY::W) && KEY_HOLD(KEY::D))
+		{
+			m_vVirtualTargetMoveDir = m_pTransformCom->Get_Look()
+				+ m_pTransformCom->Get_Right();
+		}
+		else if (KEY_HOLD(KEY::D) && KEY_HOLD(KEY::S))
+		{
+			m_vVirtualTargetMoveDir = (m_pTransformCom->Get_Look() * -1.f)
+				+ m_pTransformCom->Get_Right();
+		}
+		else if (KEY_HOLD(KEY::S) && KEY_HOLD(KEY::A))
+		{
+			m_vVirtualTargetMoveDir = (m_pTransformCom->Get_Look() * -1.f)
+				+ (m_pTransformCom->Get_Right() * -1.f);
+		}
+		else if (KEY_HOLD(KEY::A) && KEY_HOLD(KEY::W))
+		{
+			m_vVirtualTargetMoveDir = m_pTransformCom->Get_Look()
+				+ (m_pTransformCom->Get_Right() * -1.f);
+		}
+		else if (KEY_HOLD(KEY::W))
+		{
+			m_vVirtualTargetMoveDir = m_pTransformCom->Get_Look();
+		}
+		else if (KEY_HOLD(KEY::S))
+		{
+			m_vVirtualTargetMoveDir = m_pTransformCom->Get_Look() * -1.f;
+		}
+		else if (KEY_HOLD(KEY::D))
+		{
+			m_vVirtualTargetMoveDir = m_pTransformCom->Get_Right();
+		}
+		else if (KEY_HOLD(KEY::A))
+		{
+			m_vVirtualTargetMoveDir = m_pTransformCom->Get_Right() * -1.f;
+		}
 
+		if (0.f < m_vVirtualTargetMoveDir.Length())
+		{
+			m_vVirtualTargetMoveDir.y = 0.f;
+			m_vVirtualTargetMoveDir.Normalize();
+			m_eModeType = MODE_TYPE::TRANSLATION;
+		}
+	}
+}
+
+void CCamera_Quater::Tick_Translation(const _float fDeltaTime)
+{
+	/* 가상 타겟 먼저 이동 */
+	m_pVirtualTargetTransform->Translate(m_vVirtualTargetMoveDir * m_fVirtualTargetMoveSpeed * fDeltaTime);
+	m_vVirtualTargetMoveDir = Vec3::Zero;
 
 	/* Cam Position */
 	{
@@ -259,22 +285,24 @@ void CCamera_Quater::Tick_Transform(const _float fDeltaTime)
 		switch (m_eViewType)
 		{
 		case CCamera_Quater::VIEW_TYPE::NE:
+			vDir = (Vec4(m_pVirtualTargetTransform->Get_Look()) + Vec4(m_pVirtualTargetTransform->Get_Right())).ZeroW().Normalized();
 			break;
 		case CCamera_Quater::VIEW_TYPE::SE:
+			vDir = (Vec4(m_pVirtualTargetTransform->Get_Look() * -1.f) + Vec4(m_pVirtualTargetTransform->Get_Right())).ZeroW().Normalized();
 			break;
 		case CCamera_Quater::VIEW_TYPE::SW:
+			vDir = (Vec4(m_pVirtualTargetTransform->Get_Look() * -1.f) + Vec4(m_pVirtualTargetTransform->Get_Right() * -1.f)).ZeroW().Normalized();
 			break;
 		case CCamera_Quater::VIEW_TYPE::NW:
+			vDir = (Vec4(m_pVirtualTargetTransform->Get_Look()) + Vec4(m_pVirtualTargetTransform->Get_Right() * -1.f)).ZeroW().Normalized();
 			break;
 		default:
 			break;
 		}
 
-		vDir = Vec4(m_pVirtualTargetTransform->Get_Look() + m_pVirtualTargetTransform->Get_Right()).Normalized();
-	
 		Vec4 vGoalPos = (Vec4)m_pVirtualTargetTransform->Get_Position() /* 타겟 원점 포지션 */
 			+ vDir.ZeroY() * m_tLerpDist.fCurValue; /* x, z 세팅 */
-		
+
 		vGoalPos.w = 1.f;
 		vGoalPos.y = m_tHeight.fCurValue;
 
@@ -292,14 +320,48 @@ void CCamera_Quater::Tick_Transform(const _float fDeltaTime)
 	}
 
 	/* Cam LoookAt*/
-	{
+	m_pTransformCom->LookAt(m_pVirtualTargetTransform->Get_Position());
 
+	/* 댐핑이 끝나면 상태를 none으로 교체한다. */
+	m_eModeType = CCamera_Quater::MODE_TYPE::NONE;
+}
+
+void CCamera_Quater::Tick_Zoom(const _float fDeltaTime)
+{
+	if (0 != m_iMouseWheel)
+	{
+		if (0 < m_iMouseWheel)
+		{
+			--m_tLerpDist.fCurValue;
+			if (m_tLerpDist.fCurValue < Cam_Dist_Quater_Min)
+				m_tLerpDist.fCurValue = Cam_Dist_Quater_Min;
+		}
+		else
+		{
+			++m_tLerpDist.fCurValue;
+			if (Cam_Dist_Quater_Max < m_tLerpDist.fCurValue)
+				m_tLerpDist.fCurValue = Cam_Dist_Quater_Max;
+		}
+
+		Calculate_CamHeightFromDistance();
+
+		m_iMouseWheel = 0;
 	}
 
-	/* Rotation */
-	{
-		
-	}
+	/* 임시 */
+	Tick_Translation(fDeltaTime);
+
+	/* 줌 보간이 끝나면 상태를 None로 바꾼다. */
+	m_eModeType = CCamera_Quater::MODE_TYPE::NONE;
+}
+
+void CCamera_Quater::Tick_Rotation(const _float fDeltaTime)
+{
+	/* 임시 */
+	Tick_Translation(fDeltaTime);
+
+	/* 회전 보간이 끝나면 상태를 None로 바꾼다. */
+	m_eModeType = CCamera_Quater::MODE_TYPE::NONE;
 }
 
 void CCamera_Quater::Test(_float fTimeDelta)
@@ -314,6 +376,15 @@ void CCamera_Quater::Test(_float fTimeDelta)
 			CCamera_Manager::GetInstance()->Set_CurCamera(pFollowCam->Get_Key());
 		}
 	}
+}
+
+const _float& CCamera_Quater::Calculate_CamHeightFromDistance()
+{
+	const Vec4 vDir_VirtualTargetToCam = Vec4(m_pTransformCom->Get_Position() - m_pVirtualTargetTransform->Get_Position()).Normalized();
+	const _float fTheta = acosf(Vec4::UnitZ.Dot(vDir_VirtualTargetToCam)); /* 두 벡터(타겟으로부터 카메라, UnitZ) 사이의 각 -> acos 해보고 판단 */
+	m_tHeight.fCurValue = m_tLerpDist.fCurValue * fTheta * m_fHeightMag;
+
+	return m_tHeight.fCurValue;
 }
 
 CCamera_Quater* CCamera_Quater::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)

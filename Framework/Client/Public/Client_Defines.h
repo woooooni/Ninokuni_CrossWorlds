@@ -143,7 +143,7 @@ namespace Client
 	static const _float Cam_Dist_Follow_Default					= 4.5f;
 	static const _float Cam_Dist_Follow_Wide					= 6.f;
 
-	static const _float Cam_Dist_Quater_Min						= 10.f;
+	static const _float Cam_Dist_Quater_Min						= 20.f;
 	static const _float Cam_Dist_Quater_Default					= 30.f;
 	static const _float Cam_Dist_Quater_Max						= 40.f;
 
