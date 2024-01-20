@@ -695,13 +695,7 @@ void CCamera_Follow::Test(_float fTimeDelta)
 
 	/* Quater View */
 	if (KEY_TAP(KEY::INSERT))
-	{
-		CCamera_Quater* pQuaterCam = dynamic_cast<CCamera_Quater*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::QUATER));
-		if (nullptr != pQuaterCam)
-		{
-			CCamera_Manager::GetInstance()->Set_CurCamera(pQuaterCam->Get_Key());
-		}
-	}
+		CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::QUATER);
 }
 
 CCamera_Follow * CCamera_Follow::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)

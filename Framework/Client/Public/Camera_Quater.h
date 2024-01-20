@@ -29,12 +29,16 @@ public:
 
 private:
 	virtual HRESULT Ready_Components() override;
+	virtual HRESULT Ready_VirtualTarget();
 
+	void Tick_VirtualTargetTransform(const _float fDeltaTime);
 	void Tick_Transform(const _float fDeltaTime);
 	void Test(_float fTimeDelta);
 
 private:
-	_float m_fMoveSpeed = 20.f;
+	const _float m_fVirtualTargetMoveSpeed = 20.f;
+
+	class CTransform* m_pVirtualTargetTransform = nullptr;
 	
 public:
 	static CCamera_Quater* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);

@@ -36,6 +36,9 @@ HRESULT CCamera_Quater::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+	if (FAILED(Ready_VirtualTarget()))
+		return E_FAIL;
+
 	/* Set Camera */
 	{
 		Set_Fov(Cam_Fov_Quater_Default);
@@ -50,6 +53,8 @@ void CCamera_Quater::Tick(_float fTimeDelta)
 		return;
 
 	__super::Tick(fTimeDelta);
+
+	Tick_VirtualTargetTransform(fTimeDelta);
 
 	Tick_Transform(fTimeDelta);
 
@@ -104,20 +109,23 @@ void CCamera_Quater::Set_Active(const _bool bActive)
 			const wstring strTargetName = L"TreeGrandfa";
 
 			CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, strTargetName);
-			if (nullptr == pTarget)
-				return;
-
-			CTransform* pTargetTransform = pTarget->Get_Component<CTransform>(L"Com_Transform");
-			if(nullptr != pTargetTransform)
+			if (nullptr != pTarget)
 			{
-				Vec4 vLookRight = Vec4(pTargetTransform->Get_Look() + pTargetTransform->Get_Right()).Normalized();
+				CTransform* pTargetTransform = pTarget->Get_Component<CTransform>(L"Com_Transform");
+				if(nullptr != pTargetTransform)
+				{
+					m_pVirtualTargetTransform->Set_WorldMatrix(pTargetTransform->Get_WorldMatrix());
 
-				Vec4 vCamPosition = (Vec4)pTargetTransform->Get_Position() /* 타겟 원점 포지션 */
-					+ vLookRight.ZeroY() * m_tLerpDist.fCurValue /* x, z 세팅 */
-					+ Vec4::UnitY * 25.f; /* y 세팅 */
+					m_pVirtualTargetTransform->Set_State(CTransform::STATE::STATE_RIGHT, Vec4(m_pVirtualTargetTransform->Get_WorldMatrix().r[0]).Normalized());
+					m_pVirtualTargetTransform->Set_State(CTransform::STATE::STATE_UP, Vec4(m_pVirtualTargetTransform->Get_WorldMatrix().r[1]).Normalized());
+					m_pVirtualTargetTransform->Set_State(CTransform::STATE::STATE_LOOK, Vec4(m_pVirtualTargetTransform->Get_WorldMatrix().r[2]).Normalized());
 
-				m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vCamPosition.OneW());
-				m_pTransformCom->LookAt(pTarget->Get_Component<CTransform>(L"Com_Transform")->Get_Position());
+					m_pVirtualTargetTransform->Set_State(CTransform::STATE_POSITION, pTargetTransform->Get_Position());
+
+					const _float fTimeDelta = GI->Compute_TimeDelta(TIMER_TYPE::GAME_PLAY);
+					Tick_VirtualTargetTransform(fTimeDelta);
+					Tick_Transform(fTimeDelta);
+				}
 			}
 		}
 	}
@@ -133,7 +141,17 @@ HRESULT CCamera_Quater::Ready_Components()
 	return S_OK;
 }
 
-void CCamera_Quater::Tick_Transform(const _float fDeltaTime)
+HRESULT CCamera_Quater::Ready_VirtualTarget()
+{
+	m_pVirtualTargetTransform = dynamic_cast<CTransform*>(GI->Clone_Component(LEVEL_STATIC, L"Prototype_Component_Transform"));
+
+	if (nullptr == m_pVirtualTargetTransform)
+		return E_FAIL;
+
+	return S_OK;
+}
+
+void CCamera_Quater::Tick_VirtualTargetTransform(const _float fDeltaTime)
 {
 	Vec3 vDir;
 
@@ -141,7 +159,7 @@ void CCamera_Quater::Tick_Transform(const _float fDeltaTime)
 	{
 		vDir = m_pTransformCom->Get_Look() + m_pTransformCom->Get_Right();
 	}
-	else if(KEY_HOLD(KEY::D) && KEY_HOLD(KEY::S))
+	else if (KEY_HOLD(KEY::D) && KEY_HOLD(KEY::S))
 	{
 		vDir = (m_pTransformCom->Get_Look() * -1.f) + m_pTransformCom->Get_Right();
 	}
@@ -170,19 +188,25 @@ void CCamera_Quater::Tick_Transform(const _float fDeltaTime)
 		vDir = m_pTransformCom->Get_Right() * -1.f;
 	}
 
-	m_pTransformCom->Translate(vDir.ZeroY().Normalized() * m_fMoveSpeed * fDeltaTime);
+	m_pVirtualTargetTransform->Translate(vDir.ZeroY().Normalized() * m_fVirtualTargetMoveSpeed * fDeltaTime);
+}
+
+void CCamera_Quater::Tick_Transform(const _float fDeltaTime)
+{
+	Vec4 vLookRight = Vec4(m_pVirtualTargetTransform->Get_Look() + m_pVirtualTargetTransform->Get_Right()).Normalized();
+	
+	Vec4 vCamPosition = (Vec4)m_pVirtualTargetTransform->Get_Position() /* 타겟 원점 포지션 */
+		+ vLookRight.ZeroY() * m_tLerpDist.fCurValue /* x, z 세팅 */
+		+ Vec4::UnitY * 25.f; /* y 세팅 */
+	
+	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vCamPosition.OneW());
+	m_pTransformCom->LookAt(m_pVirtualTargetTransform->Get_Position());
 }
 
 void CCamera_Quater::Test(_float fTimeDelta)
 {
 	if (KEY_TAP(KEY::INSERT))
-	{
-		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
-		if (nullptr != pFollowCam)
-		{
-			CCamera_Manager::GetInstance()->Set_CurCamera(pFollowCam->Get_Key());
-		}
-	}
+		CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
 }
 
 CCamera_Quater* CCamera_Quater::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
@@ -216,4 +240,6 @@ void CCamera_Quater::Free()
 	__super::Free();
 
 	Safe_Release(m_pTransformCom);
+
+	Safe_Release(m_pVirtualTargetTransform);
 }
