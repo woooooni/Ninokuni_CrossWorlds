@@ -83,6 +83,8 @@ HRESULT CVIBuffer_LensFlare::Render(uint32 vertexCount, uint32 instance_count, u
 	if (nullptr == m_pContext)
 		return E_FAIL;
 
+	m_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+
 	if (1 == instance_count) m_pContext->Draw(vertexCount, start_vertex_location);
 	else m_pContext->DrawInstanced(vertexCount, instance_count, start_vertex_location, start_instance_location);
 

@@ -42,10 +42,11 @@ struct Light
     float4 vColor;
 };
 
-cbuffer LightCBuffer : register(b0)
+cbuffer CBLightBuffer : register(b0)
 {
     Light current_light;
-}
+};
+
 
 struct GSToPS
 {

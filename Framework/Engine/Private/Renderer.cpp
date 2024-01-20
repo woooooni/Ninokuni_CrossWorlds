@@ -1224,7 +1224,7 @@ HRESULT CRenderer::Render_Decal()
 
 HRESULT CRenderer::Render_LensFlare()
 {
-	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_LensFlare"))))
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Blend"), false)))
 		return E_FAIL;
 
 	for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_LENSFLARE])

@@ -44,8 +44,11 @@ HRESULT CLensFlare::Render()
 		return E_FAIL;
 
 
-	m_pShaderCom->Begin(0);
-	m_pVIBufferCom->Render(7);
+	if(FAILED(m_pShaderCom->Begin(0)))
+		return E_FAIL;
+
+	if(FAILED(m_pVIBufferCom->Render(7)))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -57,7 +60,7 @@ HRESULT CLensFlare::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Shader */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Point_Instance"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_LensFlare"), TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 		return E_FAIL;
 
 	/* For.Com_Transform */
@@ -65,7 +68,7 @@ HRESULT CLensFlare::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_VIBuffer */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_LensFlare"), TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_LensFlare"), TEXT("Com_VIBuffer"), reinterpret_cast<CComponent**>(&m_pVIBufferCom))))
 		return E_FAIL;
 
 
@@ -74,7 +77,7 @@ HRESULT CLensFlare::Ready_Components()
 
 	return S_OK;
 }
-
+ 
 HRESULT CLensFlare::Bind_ShaderResources()
 {
 	const LIGHTDESC* pLightDesc = GI->Get_LightDesc(0);
@@ -114,7 +117,7 @@ HRESULT CLensFlare::Bind_ShaderResources()
 	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "lens6", 6)))
 		return E_FAIL;
 	// DepthTexture
-	if (FAILED(GI->Bind_SRV(m_pShaderCom, TEXT("Target_Depth"), "DepthTexture")))
+	if (FAILED(GI->Bind_SRV(m_pShaderCom, TEXT("Target_Depth"), "depth_texture")))
 		return E_FAIL;
 
 	

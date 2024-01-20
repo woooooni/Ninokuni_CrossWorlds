@@ -296,6 +296,11 @@ HRESULT CMainApp::Ready_Prototype_Component()
 		CVIBuffer_SkyPlane::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
+	/* For.Prototype_Component_VIBuffer_LensFlare*/
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_LensFlare"),
+		CVIBuffer_LensFlare::Create(m_pDevice, m_pContext))))
+		return E_FAIL;
+
 	
 
 	/* For.Prototype_Component_VIBuffer_Trail*/
@@ -497,6 +502,9 @@ HRESULT CMainApp::Ready_Prototype_Component()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_LensFlare_Texture"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/SkyDom/LensFlare/flare%d.png"), 7))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_GrassMask"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/Common/Plants/SM_Common_grass_01_Mask.png")))))
 		return E_FAIL;
 	
 
