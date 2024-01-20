@@ -56,7 +56,7 @@ HRESULT CClown::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_pHPBar = dynamic_cast<CUI_MonsterHP_World*>(pHPBar);
-	m_pHPBar->Set_Owner(this, m_tStat.eElementType, 1.5f);
+	m_pHPBar->Set_Owner(this, m_tStat.eElementType, 1.8f);
 
 	m_vBloomPower = _float3(0.8f, 0.8f, 0.8f);
 
@@ -123,7 +123,7 @@ void CClown::Collision_Enter(const COLLISION_INFO& tInfo)
 					m_pRigidBodyCom->Add_Velocity({ 0.f, 1.f, 0.f, 1.f }, m_tStat.fAirVelocity / 1.5f, false);
 
 					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_BLOW] = true;
-
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_AIR] = false;
 					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
 				}
 
@@ -138,6 +138,8 @@ void CClown::Collision_Enter(const COLLISION_INFO& tInfo)
 					m_pModelCom->Set_Animation(TEXT("SKM_Clown.ao|Clown_KnockUp_Start"));
 					m_pRigidBodyCom->Add_Velocity({ 0.f, 1.f, 0.f, 1.f }, m_tStat.fAirVelocity / 2.f, false);
 
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_BLOW] = false;
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_AIR] = true;
 					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
 				}
 
