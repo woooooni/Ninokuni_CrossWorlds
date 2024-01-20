@@ -9,3 +9,4 @@
 #include "ColliderWall.h"
 #include "Grass.h"
 #include "Mirror.h"
+#include "LensFlare.h"

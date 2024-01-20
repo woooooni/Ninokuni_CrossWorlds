@@ -100,7 +100,7 @@ void CTool_Particle::Tick(_float fTimeDelta)
 		// 크기
 		if (ImGui::CollapsingHeader("Scale"))
 		{
-			if(ImGui::Checkbox("ScaleSameRate", &m_tParticleInfo.bScaleSameRate))
+			if (ImGui::Checkbox("ScaleSameRate", &m_tParticleInfo.bScaleSameRate))
 				bParticleSystemUse = true;
 			ImGui::NewLine();
 
@@ -109,18 +109,18 @@ void CTool_Particle::Tick(_float fTimeDelta)
 				bParticleSystemUse = true;
 			ImGui::NewLine();
 
-			if(ImGui::Checkbox("ScaleChange", &m_tParticleInfo.bScaleChange))
+			if (ImGui::Checkbox("ScaleChange", &m_tParticleInfo.bScaleChange))
 				bParticleSystemUse = true;
 			ImGui::NewLine();
 			if (m_tParticleInfo.bScaleChange)
 			{
 				ImGui::Text("ScaleChangeStartDelayParticles");
-				if(ImGui::InputFloat2("##ScaleChangeStartDelayParticles", &m_tParticleInfo.fScaleChangeStartDelay.x))
+				if (ImGui::InputFloat2("##ScaleChangeStartDelayParticles", &m_tParticleInfo.fScaleChangeStartDelay.x))
 					bParticleSystemUse = true;
 				ImGui::NewLine();
 
 				ImGui::Text("ScaleSpeedParticles");
-				if(ImGui::InputFloat2("##ScaleSpeedParticles", &m_tParticleInfo.fScaleSpeed.x))
+				if (ImGui::InputFloat2("##ScaleSpeedParticles", &m_tParticleInfo.fScaleSpeed.x))
 					bParticleSystemUse = true;
 				ImGui::NewLine();
 
@@ -130,31 +130,31 @@ void CTool_Particle::Tick(_float fTimeDelta)
 				if (m_tParticleInfo.bScaleChangeRandom)
 				{
 					ImGui::Text("ScaleChangeTimeParticles");
-					if(ImGui::InputFloat2("##ScaleChangeTimeParticles", &m_tParticleInfo.fScaleChangeTime.x))
+					if (ImGui::InputFloat2("##ScaleChangeTimeParticles", &m_tParticleInfo.fScaleChangeTime.x))
 						bParticleSystemUse = true;
 					ImGui::NewLine();
 				}
 				else
 				{
 					ImGui::Text("ScaleMinParticles");
-					if(ImGui::InputFloat2("##ScaleMinParticles", &m_tParticleInfo.fScaleMin.x))
+					if (ImGui::InputFloat2("##ScaleMinParticles", &m_tParticleInfo.fScaleMin.x))
 						bParticleSystemUse = true;
 					ImGui::NewLine();
 
 					ImGui::Text("ScaleMaxParticles");
-					if(ImGui::InputFloat2("##ScaleMaxParticles", &m_tParticleInfo.fScaleMax.x))
+					if (ImGui::InputFloat2("##ScaleMaxParticles", &m_tParticleInfo.fScaleMax.x))
 						bParticleSystemUse = true;
 					ImGui::NewLine();
 
-					if(ImGui::Checkbox("ScaleAdd", &m_tParticleInfo.bScaleAdd))
+					if (ImGui::Checkbox("ScaleAdd", &m_tParticleInfo.bScaleAdd))
 						bParticleSystemUse = true;
 					ImGui::NewLine();
 
-					if(ImGui::Checkbox("ScaleLoop", &m_tParticleInfo.bScaleLoop))
+					if (ImGui::Checkbox("ScaleLoop", &m_tParticleInfo.bScaleLoop))
 						bParticleSystemUse = true;
 					ImGui::NewLine();
 
-					if(ImGui::Checkbox("ScaleLoopStart", &m_tParticleInfo.bScaleLoopStart))
+					if (ImGui::Checkbox("ScaleLoopStart", &m_tParticleInfo.bScaleLoopStart))
 						bParticleSystemUse = true;
 					ImGui::NewLine();
 				}
@@ -165,38 +165,38 @@ void CTool_Particle::Tick(_float fTimeDelta)
 		if (ImGui::CollapsingHeader("Velocity"))
 		{
 			ImGui::Text("VelocitySpeed");
-			if(ImGui::InputFloat2("##VelocitySpeed", &m_tParticleInfo.fVelocitySpeed.x))
+			if (ImGui::InputFloat2("##VelocitySpeed", &m_tParticleInfo.fVelocitySpeed.x))
 				bParticleSystemUse = true;
 			ImGui::NewLine();
 
 			ImGui::Text("VelocityMinParticles");
-			if(ImGui::InputFloat3("##VelocityMinParticles", &m_tParticleInfo.vVelocityMinStart.x))
+			if (ImGui::InputFloat3("##VelocityMinParticles", &m_tParticleInfo.vVelocityMinStart.x))
 				bParticleSystemUse = true;
 
 			ImGui::Text("VelocityMaxParticles");
-			if(ImGui::InputFloat3("##VelocityMaxParticles", &m_tParticleInfo.vVelocityMaxStart.x))
+			if (ImGui::InputFloat3("##VelocityMaxParticles", &m_tParticleInfo.vVelocityMaxStart.x))
 				bParticleSystemUse = true;
 			ImGui::NewLine();
 			ImGui::NewLine();
 
 
-			if(ImGui::Checkbox("VelocityChange", &m_tParticleInfo.bVelocityChange))
+			if (ImGui::Checkbox("VelocityChange", &m_tParticleInfo.bVelocityChange))
 				bParticleSystemUse = true;
 			ImGui::NewLine();
 			if (m_tParticleInfo.bVelocityChange)
 			{
 				ImGui::Text("VelocityChangeStartDelayParticles");
-				if(ImGui::InputFloat2("##VelocityChangeStartDelayParticles", &m_tParticleInfo.fVelocityChangeStartDelay.x))
+				if (ImGui::InputFloat2("##VelocityChangeStartDelayParticles", &m_tParticleInfo.fVelocityChangeStartDelay.x))
 					bParticleSystemUse = true;
 				ImGui::NewLine();
 
-				if(ImGui::Checkbox("VelocityChangeRandom", &m_tParticleInfo.bVelocityChangeRandom))
+				if (ImGui::Checkbox("VelocityChangeRandom", &m_tParticleInfo.bVelocityChangeRandom))
 					bParticleSystemUse = true;
 				ImGui::NewLine();
 				if (m_tParticleInfo.bVelocityChangeRandom)
 				{
 					ImGui::Text("VelocityChangeTimeParticles");
-					if(ImGui::InputFloat2("##VelocityChangeTimeParticles", &m_tParticleInfo.fVelocityChangeTime.x))
+					if (ImGui::InputFloat2("##VelocityChangeTimeParticles", &m_tParticleInfo.fVelocityChangeTime.x))
 						bParticleSystemUse = true;
 					ImGui::NewLine();
 
@@ -212,17 +212,17 @@ void CTool_Particle::Tick(_float fTimeDelta)
 							m_tParticleInfo.iVelocityUse = 30;
 					}
 
-					if(ImGui::Checkbox("VelocityLoop", &m_tParticleInfo.bVelocityLoop))
+					if (ImGui::Checkbox("VelocityLoop", &m_tParticleInfo.bVelocityLoop))
 						bParticleSystemUse = true;
 					ImGui::NewLine();
 
 					ImGui::Text("VelocityCountCur");
-					if(ImGui::InputInt("##VelocityCountCur", &(_int)m_tParticleInfo.iVelocityCountCur))
+					if (ImGui::InputInt("##VelocityCountCur", &(_int)m_tParticleInfo.iVelocityCountCur))
 						bParticleSystemUse = true;
 					ImGui::NewLine();
 
 					ImGui::Text("iVelocityCountMax");
-					if(ImGui::InputInt("##iVelocityCountMax", &(_int)m_tParticleInfo.iVelocityCountMax))
+					if (ImGui::InputInt("##iVelocityCountMax", &(_int)m_tParticleInfo.iVelocityCountMax))
 						bParticleSystemUse = true;
 					ImGui::NewLine();
 
@@ -286,24 +286,24 @@ void CTool_Particle::Tick(_float fTimeDelta)
 					ImGui::NewLine();
 
 					ImGui::Text("RotationSpeed");
-					if(ImGui::InputFloat2("##RotationSpeed", &m_tParticleInfo.fRotationSpeed.x))
+					if (ImGui::InputFloat2("##RotationSpeed", &m_tParticleInfo.fRotationSpeed.x))
 						bParticleSystemUse = true;
 					ImGui::NewLine();
 					ImGui::NewLine();
 
-					if(ImGui::Checkbox("RotationChangeRandom", &m_tParticleInfo.bRotationChangeRandom))
+					if (ImGui::Checkbox("RotationChangeRandom", &m_tParticleInfo.bRotationChangeRandom))
 						bParticleSystemUse = true;
 					ImGui::NewLine();
 					if (m_tParticleInfo.bRotationChangeRandom)
 					{
 						ImGui::Text("RotationChangeTime");
-						if(ImGui::InputFloat2("##RotationChangeTime", &m_tParticleInfo.fRotationChangeTime.x))
+						if (ImGui::InputFloat2("##RotationChangeTime", &m_tParticleInfo.fRotationChangeTime.x))
 							bParticleSystemUse = true;
 						ImGui::NewLine();
 					}
 					else
 					{
-						if(ImGui::Checkbox("RotationAddRandom", &m_tParticleInfo.bRotationAdd))
+						if (ImGui::Checkbox("RotationAddRandom", &m_tParticleInfo.bRotationAdd))
 							bParticleSystemUse = true;
 						ImGui::NewLine();
 					}
@@ -315,7 +315,7 @@ void CTool_Particle::Tick(_float fTimeDelta)
 		if (ImGui::CollapsingHeader("LifeTime"))
 		{
 			ImGui::Text("LifetimeParticles");
-			if(ImGui::InputFloat2("##LifetimeParticles", &m_tParticleInfo.fLifeTime.x))
+			if (ImGui::InputFloat2("##LifetimeParticles", &m_tParticleInfo.fLifeTime.x))
 				bParticleSystemUse = true;
 			ImGui::NewLine();
 		}
@@ -324,7 +324,7 @@ void CTool_Particle::Tick(_float fTimeDelta)
 		if (ImGui::CollapsingHeader("Texture"))
 		{
 			// 시작 텍스처 인덱스
-			if(ImGui::Checkbox("RandomStartTextureIndex", &m_tParticleInfo.bRandomStartIndex))
+			if (ImGui::Checkbox("RandomStartTextureIndex", &m_tParticleInfo.bRandomStartIndex))
 				bParticleSystemUse = true;
 			if (!m_tParticleInfo.bRandomStartIndex)
 			{
@@ -448,7 +448,7 @@ void CTool_Particle::Tick(_float fTimeDelta)
 			{
 				// fColorChangeStartDelay
 				ImGui::Text("ColorChangeStartDelay");
-				if(ImGui::InputFloat2("##ColorChangeStartDelay", &m_tParticleInfo.fColorChangeStartDelay.x))
+				if (ImGui::InputFloat2("##ColorChangeStartDelay", &m_tParticleInfo.fColorChangeStartDelay.x))
 					bParticleSystemUse = true;
 				ImGui::NewLine();
 
@@ -458,40 +458,40 @@ void CTool_Particle::Tick(_float fTimeDelta)
 				if (m_tParticleInfo.bColorChangeRandom)
 				{
 					ImGui::Text("ColorChangeRandomTime");
-					if(ImGui::InputFloat2("##ColorChangeRandomTime", &m_tParticleInfo.fColorChangeRandomTime.x))
+					if (ImGui::InputFloat2("##ColorChangeRandomTime", &m_tParticleInfo.fColorChangeRandomTime.x))
 						bParticleSystemUse = true;
 					ImGui::NewLine();
 				}
 				else
 				{
-					if(ImGui::Checkbox("ColorLoop", &m_tParticleInfo.bColorLoop))
+					if (ImGui::Checkbox("ColorLoop", &m_tParticleInfo.bColorLoop))
 						bParticleSystemUse = true;
 					ImGui::NewLine();
 
 					// fColorChangeStartM
 					ImGui::Text("ColorChangeStartM");
-					if(ImGui::InputFloat2("##ColorChangeStartM", &m_tParticleInfo.fColorChangeStartM.x))
+					if (ImGui::InputFloat2("##ColorChangeStartM", &m_tParticleInfo.fColorChangeStartM.x))
 						bParticleSystemUse = true;
 
 					ImGui::Text("ColorMiddle");
-					if(ImGui::ColorEdit4("##ColorMiddle", (float*)&m_tParticleInfo.fColorM, ImGuiColorEditFlags_Float))
+					if (ImGui::ColorEdit4("##ColorMiddle", (float*)&m_tParticleInfo.fColorM, ImGuiColorEditFlags_Float))
 						bParticleSystemUse = true;
 					ImGui::NewLine();
 
 					// fColorChangeStartF
 					ImGui::Text("ColorChangeStartF");
-					if(ImGui::InputFloat2("##ColorChangeStartF", &m_tParticleInfo.fColorChangeStartF.x))
+					if (ImGui::InputFloat2("##ColorChangeStartF", &m_tParticleInfo.fColorChangeStartF.x))
 						bParticleSystemUse = true;
 
 					ImGui::Text("ColorFinal");
-					if(ImGui::ColorEdit4("##ColorFinal", (float*)&m_tParticleInfo.fColorF, ImGuiColorEditFlags_Float))
+					if (ImGui::ColorEdit4("##ColorFinal", (float*)&m_tParticleInfo.fColorF, ImGuiColorEditFlags_Float))
 						bParticleSystemUse = true;
 					ImGui::NewLine();
 				}
 
 				// ColorDurationTime
 				ImGui::Text("ColorDurationTime");
-				if(ImGui::InputFloat2("##ColorDurationTime", &m_tParticleInfo.fColorDuration.x))
+				if (ImGui::InputFloat2("##ColorDurationTime", &m_tParticleInfo.fColorDuration.x))
 					bParticleSystemUse = true;
 			}
 		}
@@ -523,11 +523,11 @@ void CTool_Particle::Tick(_float fTimeDelta)
 			if (m_tParticleInfo.bFadeChange)
 			{
 				ImGui::Text("FadeChangeStartDelay");
-				if(ImGui::InputFloat2("##FadeChangeStartDelay", &m_tParticleInfo.fFadeChangeStartDelay.x))
+				if (ImGui::InputFloat2("##FadeChangeStartDelay", &m_tParticleInfo.fFadeChangeStartDelay.x))
 					bParticleSystemUse = true;
 				ImGui::NewLine();
 
-				if(ImGui::Checkbox("FadeIn", &m_tParticleInfo.bFadeIn))
+				if (ImGui::Checkbox("FadeIn", &m_tParticleInfo.bFadeIn))
 					bParticleSystemUse = true;
 				ImGui::NewLine();
 			}
@@ -552,7 +552,7 @@ void CTool_Particle::Tick(_float fTimeDelta)
 			ImGui::NewLine();
 
 			// 블러 셋팅
-			if(ImGui::Checkbox("BloomPowerRandom", &m_tParticleInfo.bBloomPowerRandom))
+			if (ImGui::Checkbox("BloomPowerRandom", &m_tParticleInfo.bBloomPowerRandom))
 				bParticleSystemUse = true;
 			if (!m_tParticleInfo.bBloomPowerRandom)
 			{
@@ -562,7 +562,7 @@ void CTool_Particle::Tick(_float fTimeDelta)
 				ImGui::NewLine();
 			}
 
-			if(ImGui::Checkbox("BlurPowerRandom", &m_tParticleInfo.bBlurPowerRandom))
+			if (ImGui::Checkbox("BlurPowerRandom", &m_tParticleInfo.bBlurPowerRandom))
 				bParticleSystemUse = true;
 			if (!m_tParticleInfo.bBlurPowerRandom)
 			{
@@ -581,10 +581,10 @@ void CTool_Particle::Tick(_float fTimeDelta)
 			if (m_tParticleInfo.bUseBox)
 			{
 				ImGui::Text("BoxMinParticles");
-				if(ImGui::InputFloat3("##BoxMinParticles", &m_tParticleInfo.fBoxMin.x))
+				if (ImGui::InputFloat3("##BoxMinParticles", &m_tParticleInfo.fBoxMin.x))
 					bParticleSystemUse = true;
 				ImGui::Text("BoxMaxParticles");
-				if(ImGui::InputFloat3("##BoxMaxParticles", &m_tParticleInfo.fBoxMax.x))
+				if (ImGui::InputFloat3("##BoxMaxParticles", &m_tParticleInfo.fBoxMax.x))
 					bParticleSystemUse = true;
 				ImGui::NewLine();
 			}
@@ -650,7 +650,7 @@ void CTool_Particle::Tick(_float fTimeDelta)
 	}
 #pragma endregion
 
-	if(bParticleSystemUse)
+	if (bParticleSystemUse)
 		Store_InfoParticle();
 
 	ImGui::End();
@@ -782,13 +782,13 @@ void CTool_Particle::Load_InfoParticle()
 		m_iProjectionIndex = 1;
 	else
 		m_iProjectionIndex = 2;
-	
+
 	m_fParticleAxis.x = XMVectorGetX(m_tParticleInfo.vAxis);
 	m_fParticleAxis.y = XMVectorGetY(m_tParticleInfo.vAxis);
 	m_fParticleAxis.z = XMVectorGetZ(m_tParticleInfo.vAxis);
 
 	m_iDiffuseFolderIndex = Get_FolderIndex(m_tParticleInfo.strDiffuseTetextureName);
-	m_iAlphaFolderIndex   = Get_FolderIndex(m_tParticleInfo.strAlphaTexturName);
+	m_iAlphaFolderIndex = Get_FolderIndex(m_tParticleInfo.strAlphaTexturName);
 
 	m_tRigidbodyInfo = static_cast<CParticle*>(m_pParticle)->Get_RigidbodyDesc();
 }
@@ -808,7 +808,7 @@ void CTool_Particle::Store_InfoParticle()
 	m_tParticleInfo.vAxis = XMVectorSet(m_fParticleAxis.x, m_fParticleAxis.y, m_fParticleAxis.z, 0.f);
 
 	m_tParticleInfo.strDiffuseTetextureName = Select_FolderName(m_iDiffuseFolderIndex);
-	m_tParticleInfo.strAlphaTexturName      = Select_FolderName(m_iAlphaFolderIndex);
+	m_tParticleInfo.strAlphaTexturName = Select_FolderName(m_iAlphaFolderIndex);
 
 	static_cast<CParticle*>(m_pParticle)->Set_ParticleDesc(m_tParticleInfo);
 	static_cast<CParticle*>(m_pParticle)->Set_RigidbodyDesc(m_tRigidbodyInfo);
@@ -826,7 +826,7 @@ void CTool_Particle::Set_OriginalInfoParticle()
 	{
 		MSG_BOX("Prototype_Find_Failed!");
 		return;
-	}		
+	}
 
 	if (m_iProjectionIndex == 0)
 		m_tParticleInfo.eParticleType = CParticle::TYPE_PERSPECTIVE;
@@ -836,7 +836,7 @@ void CTool_Particle::Set_OriginalInfoParticle()
 		m_tParticleInfo.eParticleType = CParticle::TYPE_END;
 
 	m_tParticleInfo.strDiffuseTetextureName = Select_FolderName(m_iDiffuseFolderIndex);
-	m_tParticleInfo.strAlphaTexturName      = Select_FolderName(m_iAlphaFolderIndex);
+	m_tParticleInfo.strAlphaTexturName = Select_FolderName(m_iAlphaFolderIndex);
 
 	static_cast<CParticle*>(pGameObject)->Set_ParticleDesc(m_tParticleInfo);
 	static_cast<CParticle*>(pGameObject)->Set_RigidbodyDesc(m_tRigidbodyInfo);
@@ -1229,7 +1229,7 @@ void CTool_Particle::Load_Particle(const char* pFileName)
 
 	wstring strFileName(pFileName, pFileName + strlen(pFileName));
 	wstring strParticlePath = L"../Bin/DataFiles/Vfx/Particle/" + strFileName + L".Particle";
-	
+
 #pragma region Basic_Load
 	CParticle::PARTICLE_DESC ParticleInfo = {};
 
@@ -1290,11 +1290,11 @@ void CTool_Particle::Load_Particle(const char* pFileName)
 	File->Read<_uint>(ParticleInfo.iVelocityCountCur);
 	File->Read<_uint>(ParticleInfo.iVelocityCountMax);
 
- 	File->Read<_uint>(ParticleInfo.iVelocityUse);
+	File->Read<_uint>(ParticleInfo.iVelocityUse);
 	if (ParticleInfo.iVelocityUse > 0)
 	{
-		ParticleInfo.pVelocityMin  = new _float3[ParticleInfo.iVelocityUse];
-		ParticleInfo.pVelocityMax  = new _float3[ParticleInfo.iVelocityUse];
+		ParticleInfo.pVelocityMin = new _float3[ParticleInfo.iVelocityUse];
+		ParticleInfo.pVelocityMax = new _float3[ParticleInfo.iVelocityUse];
 		ParticleInfo.pVelocityTime = new _float2[ParticleInfo.iVelocityUse];
 		if (ParticleInfo.pVelocityMin != nullptr)
 		{

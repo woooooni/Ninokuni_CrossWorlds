@@ -360,6 +360,9 @@ HRESULT CRenderer::Draw_World()
 	if (FAILED(Draw_WorldEffect()))
 		return E_FAIL;
 
+	if (FAILED(Render_LensFlare()))
+		return E_FAIL;
+
 	if (FAILED(Render_AlphaBlend()))
 		return E_FAIL;
 
@@ -741,7 +744,7 @@ HRESULT CRenderer::Render_NonLight()
 
 HRESULT CRenderer::Render_Stencil_ONLY()
 {
-	if (FAILED(m_pTarget_Manager->Begin_UI_MRT(m_pContext, TEXT("MRT_Stencil_Only"))))
+	if (FAILED(m_pTarget_Manager->Begin_UI_MRT(m_pContext, TEXT("MRT_Stencil_Only"), true, false)))
 		return E_FAIL;
 
 	for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_STENCIL_ONLY])
@@ -761,7 +764,7 @@ HRESULT CRenderer::Render_Stencil_ONLY()
 
 HRESULT CRenderer::Render_Reflect_Object()
 {
-	if (FAILED(m_pTarget_Manager->Begin_UI_MRT(m_pContext, TEXT("MRT_Draw_Reflect"))))
+	if (FAILED(m_pTarget_Manager->Begin_UI_MRT(m_pContext, TEXT("MRT_Blend"), false, false)))
 		return E_FAIL;
 	
 	for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_REFLECT])
@@ -800,7 +803,7 @@ HRESULT CRenderer::Render_Reflect_Object()
 
 HRESULT CRenderer::Render_Blending_Mirror()
 {
-	if (FAILED(m_pTarget_Manager->Begin_UI_MRT(m_pContext, TEXT("MRT_Blending_Mirror"))))
+	if (FAILED(m_pTarget_Manager->Begin_UI_MRT(m_pContext, TEXT("MRT_Blend"), false, false)))
 		return E_FAIL;
 
 	for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_MIRROR])
@@ -1212,6 +1215,25 @@ HRESULT CRenderer::Render_Decal()
 		Safe_Release(iter);
 	}
 	m_RenderObjects[RENDER_DECAL].clear();
+
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CRenderer::Render_LensFlare()
+{
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Blend"), false)))
+		return E_FAIL;
+
+	for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_LENSFLARE])
+	{
+		if (FAILED(iter->Render()))
+			return E_FAIL;
+		Safe_Release(iter);
+	}
+	m_RenderObjects[RENDERGROUP::RENDER_LENSFLARE].clear();
 
 	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
 		return E_FAIL;
@@ -1743,9 +1765,7 @@ HRESULT CRenderer::Render_Debug_Target()
 		return E_FAIL;
 
 #pragma region TEMP_MIRROR
-	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Draw_Reflect"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
-		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Blending_Mirror"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
+	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_LensFlare"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
 		return E_FAIL;
 #pragma endregion
 
@@ -2343,6 +2363,13 @@ HRESULT CRenderer::Create_Target()
 		return E_FAIL;
 #pragma endregion MIRROR TEMP
 
+#pragma region LENS_FLARE
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_LensFlare"),
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+#pragma endregion
+
+
 	XMStoreFloat4x4(&m_WorldMatrix, XMMatrixIdentity());
 	m_WorldMatrix._11 = ViewportDesc.Width;
 	m_WorldMatrix._22 = ViewportDesc.Height;
@@ -2555,6 +2582,12 @@ HRESULT CRenderer::Set_TargetsMrt()
 			return E_FAIL;
 	}
 
+	// LensFlare
+	{
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_LensFlare"), TEXT("Target_LensFlare"))))
+			return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -2647,12 +2680,8 @@ HRESULT CRenderer::Set_Debug()
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Decal_Bloom"), (fSizeX / 2.f) + (fSizeX * 1), (fSizeY / 2.f) + (fSizeY * 6), fSizeX, fSizeY)))
 		return E_FAIL;
 
-	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Draw_Obj_Reflect"), (fSizeX / 2.f) + (fSizeX * 0), (fSizeY / 2.f) + (fSizeY * 7), fSizeX, fSizeY)))
+	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_LensFlare"), (fSizeX / 2.f) + (fSizeX * 0), (fSizeY / 2.f) + (fSizeY * 7), fSizeX, fSizeY)))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Blending_Mirror"), (fSizeX / 2.f) + (fSizeX * 1), (fSizeY / 2.f) + (fSizeY * 7), fSizeX, fSizeY)))
-		return E_FAIL;
-
-
 
 	// MRT_Blend
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Blend"), 150.f, 825.f, 300.f, 150.f)))

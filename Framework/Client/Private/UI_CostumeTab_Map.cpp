@@ -111,7 +111,7 @@ void CUI_CostumeTab_Map::LateTick(_float fTimeDelta)
 		__super::LateTick(fTimeDelta);
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND_UI, this);
-		//m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_REFLECT, this);
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_REFLECT, this);
 	}
 }
 
@@ -129,7 +129,7 @@ HRESULT CUI_CostumeTab_Map::Render()
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ))))
 		return E_FAIL;
 
 
@@ -156,10 +156,14 @@ HRESULT CUI_CostumeTab_Map::Render_Reflect()
 	if (nullptr == m_pModelCom)
 		return E_FAIL;
 
-	SimpleMath::Plane mirrorPlane = Vec4(0.0f, 0.0f, 1.0f, 0.0f);
+	SimpleMath::Plane mirrorPlane = Vec4(0.0f, 0.0f, 1.0f, -1.2f);
 	XMMATRIX matReflect = Matrix::CreateReflection(mirrorPlane);
 	Matrix world = m_pTransformCom->Get_WorldMatrix();
+	world._41 -= 1.0f;
 	Matrix result = world * matReflect;
+
+	Matrix worldInvTranspose = m_pTransformCom->Get_WorldMatrixInverse();
+	worldInvTranspose.Transpose();
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &m_vCamPosition, sizeof(_float4))))
 		return E_FAIL;
@@ -167,9 +171,10 @@ HRESULT CUI_CostumeTab_Map::Render_Reflect()
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ))))
 		return E_FAIL;
-
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldInv", &worldInvTranspose)))
+		return E_FAIL;
 
 	_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 	for (_uint i = 0; i < iNumMeshes; ++i)
@@ -179,7 +184,7 @@ HRESULT CUI_CostumeTab_Map::Render_Reflect()
 		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
 
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, i)))
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, 7)))
 			return E_FAIL;
 	}
 

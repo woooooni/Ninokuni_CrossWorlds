@@ -53,6 +53,7 @@ PS_OUT PS_LIGHTSHAFT(VS_OUT input)
     
     float4 vMaskColor = SunOccluderTexture.Sample(PointSampler, input.vTexcoord);
     
+    
     float2 vTexcoord = input.vTexcoord;
     
     float2 vDeltaTexcoord = input.vTexcoord - vScreenSunPosition;

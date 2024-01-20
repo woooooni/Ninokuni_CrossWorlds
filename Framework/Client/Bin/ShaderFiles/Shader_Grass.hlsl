@@ -23,6 +23,8 @@ HullInput ColorVertexShader(VertexInput input)
     // 픽셀 쉐이더가 사용할 입력 색상을 저장한다.
     output.vColor = input.vColor;
     
+    
+    
     return output;
 }
 

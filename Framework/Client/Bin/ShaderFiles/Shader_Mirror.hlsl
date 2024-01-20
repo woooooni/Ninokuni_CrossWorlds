@@ -74,7 +74,7 @@ PS_OUT PS_MAIN(PS_IN In)
     Out.vDiffuse = (vector) 1.f;
 
 
-    Out.vDiffuse = float4(0.0f, 0.0f, 0.70f, 0.5f);
+    Out.vDiffuse = float4(0.0f, 0.0f, 0.65f, 0.4f);
     Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
     Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);

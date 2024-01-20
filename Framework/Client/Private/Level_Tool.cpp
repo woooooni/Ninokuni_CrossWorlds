@@ -10,6 +10,7 @@
 #include "Game_Manager.h"
 #include "Player.h"
 #include "Weapon_SwordTemp.h"
+#include "LensFlare.h"
 
 CLevel_Tool::CLevel_Tool(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -50,6 +51,9 @@ HRESULT CLevel_Tool::Initialize()
 		return E_FAIL;
 
 	if (FAILED(Ready_Layer_Weapon(LAYER_TYPE::LAYER_WEAPON)))
+		return E_FAIL;
+
+	if(FAILED(GI->Add_GameObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_SKYBOX, TEXT("Prototype_GameObject_Common_LensFlare"))))
 		return E_FAIL;
 
 	//if (FAILED(Ready_Layer_Skydome(LAYER_TYPE::LAYER_SKYBOX)))

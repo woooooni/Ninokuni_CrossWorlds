@@ -195,8 +195,11 @@ HRESULT CTarget_Manager::Begin_Shadow_MRT(ID3D11DeviceContext* pContext, const w
 	return	S_OK;
 }
 
-HRESULT CTarget_Manager::Begin_UI_MRT(ID3D11DeviceContext* pContext, const wstring& strMRTTag, _bool bClear)
+HRESULT CTarget_Manager::Begin_UI_MRT(ID3D11DeviceContext* pContext, const wstring& strMRTTag, _bool bClear, _bool bStencil)
 {
+	if(true == bStencil)
+		pContext->ClearDepthStencilView(m_pUIDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
+
 	list<CRenderTarget*>* pMRTList = Find_MRT(strMRTTag);
 
 	if (nullptr == pMRTList)
@@ -215,7 +218,7 @@ HRESULT CTarget_Manager::Begin_UI_MRT(ID3D11DeviceContext* pContext, const wstri
 			pRenderTarget->Clear();
 	}
 
-	pContext->ClearDepthStencilView(m_pUIDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
+
 	pContext->OMSetRenderTargets(iNumRTVs, pRenderTargets, m_pUIDSV);
 
 	return	S_OK;
