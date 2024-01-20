@@ -3,6 +3,8 @@
 #include "Character.h"
 #include "State_Destroyer_SpecialSkill_IgnorePain.h"
 
+#include "Effect_Manager.h"
+
 CState_Destroyer_SpecialSkill_IgnorePain::CState_Destroyer_SpecialSkill_IgnorePain(CStateMachine* pMachine)
     : CState_Character(pMachine)
 {
@@ -23,6 +25,12 @@ void CState_Destroyer_SpecialSkill_IgnorePain::Enter_State(void* pArg)
 
     m_pCharacter->Appear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
+
+    // Effect Create
+    CTransform* pTransformCom = m_pCharacter->Get_Component<CTransform>(L"Com_Transform");
+    if (pTransformCom == nullptr)
+        return;
+    GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Destroyer_Skill_IgnorePain"), pTransformCom->Get_WorldMatrix(), m_pCharacter);
 }
 
 void CState_Destroyer_SpecialSkill_IgnorePain::Tick_State(_float fTimeDelta)

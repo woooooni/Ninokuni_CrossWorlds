@@ -10,6 +10,24 @@ BEGIN(Client)
 
 class CVfx_Destroyer_Skill_BattleCry final : public CVfx
 {
+private:
+	enum TYPE {
+		TYPE_ET1_D_CIRCLE, // 0
+		// --------------------
+		TYPE_ET2_P_SPARCKE, // 11
+		TYPE_ET2_E_CIRCLELINE,
+		// --------------------
+		TYPE_ET3_E_DOME, // 13
+
+		TYPE_ET3_D_FIRECRACK,
+		TYPE_ET3_E_SPRINGUP,
+		TYPE_ET3_E_CIRCLELINE,
+		TYPE_ET3_P_STONE,
+		TYPE_ET3_P_CIRCLES,
+
+		TYPE_END
+	};
+
 protected:
 	CVfx_Destroyer_Skill_BattleCry(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	CVfx_Destroyer_Skill_BattleCry(const CVfx_Destroyer_Skill_BattleCry& rhs);

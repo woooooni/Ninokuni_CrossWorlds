@@ -10,6 +10,18 @@ BEGIN(Client)
 
 class CVfx_Destroyer_Skill_WheelWind final : public CVfx
 {
+private:
+	enum TYPE {
+		TYPE_ET1_D_CIRCLE, // 0
+		// --------------------
+		TYPE_ET2_E_TORNADO, // 13 돌기 시작
+		TYPE_ET2_P_FIRE,
+		// --------------------
+		TYPE_ET3_P_CIRCLES,
+
+		TYPE_END
+	};
+
 protected:
 	CVfx_Destroyer_Skill_WheelWind(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	CVfx_Destroyer_Skill_WheelWind(const CVfx_Destroyer_Skill_WheelWind& rhs);
@@ -24,6 +36,9 @@ public:
 
 protected:
 	virtual HRESULT Ready_Components() override;
+
+private:
+	class CDecal* m_pEt1_Decal = nullptr;
 
 public:
 	static CVfx_Destroyer_Skill_WheelWind* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,

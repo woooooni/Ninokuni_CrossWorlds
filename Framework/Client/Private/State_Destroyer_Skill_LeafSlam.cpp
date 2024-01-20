@@ -3,6 +3,7 @@
 #include "Character.h"
 #include "Camera_Manager.h"
 #include "State_Destroyer_Skill_LeafSlam.h"
+#include "Effect_Manager.h"
 
 CState_Destroyer_Skill_LeafSlam::CState_Destroyer_Skill_LeafSlam(CStateMachine* pMachine)
     : CState_Character(pMachine)
@@ -40,6 +41,12 @@ void CState_Destroyer_Skill_LeafSlam::Enter_State(void* pArg)
         m_bTrailStart = true;
         m_pCharacter->Generate_MotionTrail(m_MotionTrailDesc);
     }
+
+    // Effect Create
+    CTransform* pTransformCom = m_pCharacter->Get_Component<CTransform>(L"Com_Transform");
+    if (pTransformCom == nullptr)
+        return;
+    GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Destroyer_Skill_LeafSlam"), pTransformCom->Get_WorldMatrix(), m_pCharacter);
 }
 
 void CState_Destroyer_Skill_LeafSlam::Tick_State(_float fTimeDelta)

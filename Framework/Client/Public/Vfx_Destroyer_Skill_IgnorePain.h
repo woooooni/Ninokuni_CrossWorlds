@@ -10,6 +10,17 @@ BEGIN(Client)
 
 class CVfx_Destroyer_Skill_IgnorePain final : public CVfx
 {
+private:
+	enum TYPE {
+		TYPE_ET1_E_CIRCLELINE, // 19
+		TYPE_ET1_E_BARRIER,
+		// --------------------
+		TYPE_ET2_P_SPARCKE,
+		TYPE_ET2_E_CIRCLELINE,
+
+		TYPE_END
+	};
+
 protected:
 	CVfx_Destroyer_Skill_IgnorePain(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	CVfx_Destroyer_Skill_IgnorePain(const CVfx_Destroyer_Skill_IgnorePain& rhs);
