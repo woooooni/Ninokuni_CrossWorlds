@@ -60,7 +60,7 @@ HRESULT CMainApp::Initialize()
 
 	// Set Start Level and Character
 	{
-		g_eStartLevel = LEVELID::LEVEL_LOGO; /* 시작할 레벨 타입 */
+		g_eStartLevel = LEVELID::LEVEL_TOOL; /* 시작할 레벨 타입 */
 
 		g_eLoadCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH; /* 모델 로드할 캐릭터 타입 */
 
@@ -408,8 +408,13 @@ HRESULT CMainApp::Ready_Prototype_Component()
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Cell.hlsl"), VTXPOS_DECLARATION::Elements, VTXPOS_DECLARATION::iNumElements))))
 		return E_FAIL;
 
+	// Mirror
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Mirror"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Mirror.hlsl"), VTXMODEL_DECLARATION::Elements, VTXMODEL_DECLARATION::iNumElements))))
+		return E_FAIL;
+	// LensFlare
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_LensFlare"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_LensFlare.hlsl"), VTXPOS_DECLARATION::Elements, VTXPOS_DECLARATION::iNumElements))))
 		return E_FAIL;
 
 
@@ -490,30 +495,10 @@ HRESULT CMainApp::Ready_Prototype_Component()
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Sky_Aurora2"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/SkyDom/aurora2.png")))))
 		return E_FAIL;
-	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Sky_DomeTex"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/SkyDom/T_skyyy.png")))))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Sky_DomeTex2"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/SkyDom/T_SkyBox_RoxanneBlueSkyAndCloud.png")))))
-	//	return E_FAIL;
-	// Winter
-	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Sky_Dome_Winter_Diffuse"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/Image/T_Image_013.png")))))
-	//	return E_FAIL;
-	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Sky_Dome_Winter_Alpha"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/Image/T_Image_013_Alpha004.png")))))
-	//	return E_FAIL;
-
-	// Witch
-	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Sky_DomeTex2"),
-	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/SkyDom/T_SkyBox_RoxanneBlueSkyAndCloud.png")))))
-	//	return E_FAIL;
-
-	// Grass Mask Test
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_GrassMask"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/Common/Plants/SM_Common_grass_01_Mask.png")))))
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_LensFlare_Texture"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/SkyDom/LensFlare/flare%d.png"), 7))))
 		return E_FAIL;
-
+	
 
 	/* For.Prototype_Component_Transform */
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Transform"),

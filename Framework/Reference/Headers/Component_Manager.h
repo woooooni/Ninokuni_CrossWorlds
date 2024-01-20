@@ -24,6 +24,7 @@
 #include "VIBuffer_SkyPlane.h"
 #include "VIBuffer_Grass.h"
 #include "VIBuffer_Ocean.h"
+#include "VIBuffer_LensFlare.h"
 
 
 #include "DebugDraw.h"

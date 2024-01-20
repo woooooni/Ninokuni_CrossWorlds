@@ -41,7 +41,8 @@ void CState_BackFlip_01::Enter_State(void* pArg)
 	vUp = vLook.Cross(vRight);
 	vUp.Normalize();
 	m_pTransformCom->Set_State(CTransform::STATE::STATE_UP, vUp);
-
+	m_pTransformCom->Set_Scale(Vec3(0.7f, 0.7f, 0.7f));
+	
 	m_fAcc = 0.0f;
 }
 

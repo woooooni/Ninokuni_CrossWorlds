@@ -25,7 +25,7 @@ public:
 	/* strMRTTag에 해당하는 list에 담겨있는 타겟들을 장치에 바인딩한다. */
 	HRESULT Begin_MRT(ID3D11DeviceContext* pContext, const wstring& strMRTTag, _bool bClear = true);
 	HRESULT Begin_Shadow_MRT(ID3D11DeviceContext* pContext, const wstring& strMRTTag);
-	HRESULT Begin_UI_MRT(ID3D11DeviceContext* pContext, const wstring& strMRTTag, _bool bClear = true);
+	HRESULT Begin_UI_MRT(ID3D11DeviceContext* pContext, const wstring& strMRTTag, _bool bClear = true, _bool bStencil = true);
 
 
 	HRESULT Clear_RenderTarget(const wstring& strTargetTag);
@@ -53,6 +53,7 @@ private:
 	ID3D11DepthStencilView*					m_pDSV = { nullptr };
 	ID3D11DepthStencilView*					m_pShadowDSV = { nullptr };
 	ID3D11DepthStencilView*                 m_pUIDSV = { nullptr };
+
 
 private:
 	class CRenderTarget* Find_RenderTarget(const wstring& strTargetTag);

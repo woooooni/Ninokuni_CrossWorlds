@@ -53,6 +53,7 @@ void CState_Animal_Swimming::Tick_State(_float fTimeDelta)
 	vUp = vLook.Cross(vRight);
 	vUp.Normalize();
 	m_pTransformCom->Set_State(CTransform::STATE::STATE_UP, vUp);
+	m_pTransformCom->Set_Scale(Vec3(0.5f, 0.5f, 0.5f));
 
 	m_pTransformCom->Move(m_pTransformCom->Get_Look(), *pWhale->Get_Speed(), fTimeDelta);
 

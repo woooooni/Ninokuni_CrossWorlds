@@ -21,6 +21,15 @@ float           g_fMotionTrailAlpha;
 float4			g_vCamPosition;
 float           g_fBlurPower;
 
+float4 g_vLightDir = float4(1.0f, -1.0f, 1.0f, 0.0f);
+float4 g_vLightDiffuse = float4(1.0f, 1.0f, 1.0f, 1.0f);
+float4 g_vLightAmbient = float4(1.0f, 1.0f, 1.0f, 1.0f);
+float4 g_vLightSpecular = float4(1.0f, 1.0f, 1.0f, 1.0f);
+
+float4 g_vMtrlAmbient = float4(0.4f, 0.4f, 0.4f, 0.4f);
+float4 g_vMtrlSpecular = float4(1.0f, 1.0f, 1.0f, 1.0f);
+
+
 struct KeyframeDesc
 {
     int iAnimIndex;
@@ -366,9 +375,9 @@ VS_OUT VS_REFLECT(VS_IN In)
 
     Out.vPosition = mul(vPosition, matWVP);
     Out.vWorldPosition = mul(vPosition, g_WorldMatrix);
-    Out.vNormal = normalize(mul(vNormal, g_WorldMatrix));
+    Out.vNormal = normalize(mul(vNormal, g_WorldInv));
     Out.vTangent = normalize(mul(vTangent, g_WorldMatrix)).xyz;
-    Out.vBinormal = normalize(cross(Out.vNormal, Out.vTangent));
+    Out.vBinormal = normalize(cross(Out.vNormal.xyz, Out.vTangent));
     Out.vTexUV = In.vTexUV;
     Out.vProjPos = Out.vPosition;
 
@@ -422,7 +431,7 @@ PS_OUT PS_MAIN(PS_IN In)
     Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
 
-    float fRimPower = 1.f - saturate(dot(In.vNormal.xyz, normalize((-1.f * (In.vWorldPosition - g_vCamPosition)))));
+    float fRimPower = 1.f - saturate(dot(In.vNormal, normalize((-1.f * (In.vWorldPosition - g_vCamPosition)))));
     fRimPower = pow(fRimPower, 5.f);
     vector vRimColor = g_vRimColor * fRimPower;
 	Out.vDiffuse += vRimColor;
@@ -438,8 +447,28 @@ PS_OUT PS_MAIN(PS_IN In)
 PS_OUT PS_MAIN_REFLECT(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
+    // ºû ¿¬»ê 
+    
+    float4 vMtrlDiffuse = g_DiffuseTexture.Sample(ModelSampler, In.vTexUV);
+    
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    vector vShade = max(dot(normalize(g_vLightDir) * -1.f, normalize(In.vNormal)), 0.f) +
+		g_vLightAmbient * g_vMtrlAmbient;
 
-    Out.vDiffuse = g_DiffuseTexture.Sample(ModelSampler, In.vTexUV);
+    vector vReflect = reflect(normalize(g_vLightDir), normalize(In.vNormal));
+    vector vLook = In. vPosition - g_vCamPosition;
+
+   // float fSpecular = pow(max(dot(normalize(vLook) * -1.f, normalize(vReflect)), 0.f), 30.f);
+    float fSpecular = 0.0f;
+    
+    vShade = (ceil(vShade * 2.f) / 2.f);
+
+    Out.vDiffuse = (g_vLightDiffuse * vMtrlDiffuse) * saturate(vShade) +
+		(g_vLightSpecular * g_vMtrlSpecular) * fSpecular;
+
+    //Out.vDiffuse = g_DiffuseTexture.Sample(ModelSampler, In.vTexUV);
     Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
 
@@ -453,7 +482,7 @@ PS_OUT PS_MAIN_REFLECT(PS_IN In)
     //if (0.f == Out.vDiffuse.a)
     //    discard;
 
-    return Out;
+     return Out;
 }
 
 

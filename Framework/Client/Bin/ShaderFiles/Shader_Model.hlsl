@@ -1,6 +1,7 @@
 
 #include "Engine_Shader_Defines.hpp"
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix, ReflectionMatrix;
+matrix g_WorldInv;
 
 Texture2D	g_DiffuseTexture;
 Texture2D	g_NormalTexture;
@@ -11,10 +12,30 @@ Texture2D   g_DissolveTexture;
 float4		g_vCamPosition;
 float		g_fDissolveWeight;
 
+float4 g_vLightDir = float4(1.0f, -1.0f, 1.0f, 0.0f);
+float4 g_vLightDiffuse = float4(1.0f, 1.0f, 1.0f, 1.0f);
+float4 g_vLightAmbient = float4(1.0f, 1.0f, 1.0f, 1.0f);
+float4 g_vLightSpecular = float4(1.0f, 1.0f, 1.0f, 1.0f);
 
+float4 g_vMtrlAmbient = float4(0.4f, 0.4f, 0.4f, 0.4f);
+float4 g_vMtrlSpecular = float4(1.0f, 1.0f, 1.0f, 1.0f);
 
 // ´«µ¢ÀÌ ±¼¸®±â..
 matrix g_SnowRotationMatrix;
+
+float3 g_vBloomPower;
+float4 g_vRimColor = { 0.f, 0.f, 0.f, 0.f };
+
+float4 Caculation_Brightness(float4 vColor)
+{
+    float4 vBrightnessColor = float4(0.f, 0.f, 0.f, 0.f);
+
+    float fPixelBrightness = dot(vColor.rgb, g_vBloomPower.rgb);
+    if (fPixelBrightness > 0.99f)
+        vBrightnessColor = float4(vColor.rgb, 1.0f);
+
+    return vBrightnessColor;
+}
 
 cbuffer WaterOption
 {
@@ -69,24 +90,46 @@ struct WaterVertexToPixel
 
 VS_OUT VS_MAIN(VS_IN In)
 {
-	VS_OUT		Out = (VS_OUT)0;
+    VS_OUT Out = (VS_OUT) 0;
 
-	matrix		matWV, matWVP;
+    matrix matWV, matWVP;
 
-	matWV = mul(g_WorldMatrix, g_ViewMatrix);
-	matWVP = mul(matWV, g_ProjMatrix);
+    matWV = mul(g_WorldMatrix, g_ViewMatrix);
+    matWVP = mul(matWV, g_ProjMatrix);
 
-	Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
-	Out.vWorldPosition = mul(float4(In.vPosition, 1.f), g_WorldMatrix);
-	Out.vNormal = normalize(mul(float4(In.vNormal, 0.f), g_WorldMatrix)).xyz;
-	Out.vTangent = normalize(mul(float4(In.vTangent, 0.f), g_WorldMatrix)).xyz;
-	Out.vBinormal = normalize(cross(Out.vNormal, Out.vTangent));
-	Out.vTexUV = In.vTexUV;
-	Out.vProjPos = Out.vPosition;
+    Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
+    Out.vWorldPosition = mul(float4(In.vPosition, 1.f), g_WorldMatrix);
+    Out.vNormal = normalize(mul(float4(In.vNormal, 0.f), g_WorldMatrix)).xyz;
+    Out.vTangent = normalize(mul(float4(In.vTangent, 0.f), g_WorldMatrix)).xyz;
+    Out.vBinormal = normalize(cross(Out.vNormal, Out.vTangent));
+    Out.vTexUV = In.vTexUV;
+    Out.vProjPos = Out.vPosition;
 
 	
     
-	return Out;
+    return Out;
+}
+
+VS_OUT VS_REFLECT(VS_IN In)
+{
+    VS_OUT Out = (VS_OUT) 0;
+
+    matrix matWV, matWVP;
+
+    matWV = mul(g_WorldMatrix, g_ViewMatrix);
+    matWVP = mul(matWV, g_ProjMatrix);
+
+    Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
+    Out.vWorldPosition = mul(float4(In.vPosition, 1.f), g_WorldMatrix);
+    Out.vNormal = normalize(mul(float4(In.vNormal, 0.f), g_WorldInv)).xyz;
+    Out.vTangent = normalize(mul(float4(In.vTangent, 0.f), g_WorldMatrix)).xyz;
+    Out.vBinormal = normalize(cross(Out.vNormal, Out.vTangent));
+    Out.vTexUV = In.vTexUV;
+    Out.vProjPos = Out.vPosition;
+
+	
+    
+    return Out;
 }
 
 VS_OUT VS_SNOWBALL(VS_IN In)
@@ -401,6 +444,83 @@ PS_OUT_SHADOW_DEPTH PS_SHADOW_DEPTH(PS_IN In)
 	return Out;
 }
 
+PS_OUT PS_MAIN_REFLECT(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    // ºû ¿¬»ê 
+    
+    float4 vMtrlDiffuse = g_DiffuseTexture.Sample(ModelSampler, In.vTexUV);
+    
+    if (vMtrlDiffuse.a < 0.3f)
+        discard;
+    
+    vector vShade = max(dot(normalize(g_vLightDir) * -1.f, normalize(In.vNormal)), 0.f) +
+		g_vLightAmbient * g_vMtrlAmbient;
+
+    vector vReflect = reflect(normalize(g_vLightDir), normalize(float4(In.vNormal, 0.f)));
+    vector vLook = In.vPosition - g_vCamPosition;
+
+   // float fSpecular = pow(max(dot(normalize(vLook) * -1.f, normalize(vReflect)), 0.f), 30.f);
+    float fSpecular = 0.0f;
+    
+    vShade = (ceil(vShade * 2.f) / 2.f);
+
+    Out.vDiffuse = (g_vLightDiffuse * vMtrlDiffuse) * saturate(vShade) +
+		(g_vLightSpecular * g_vMtrlSpecular) * fSpecular;
+
+    //Out.vDiffuse = g_DiffuseTexture.Sample(ModelSampler, In.vTexUV);
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
+
+    float fRimPower = 1.f - saturate(dot(In.vNormal.xyz, normalize((-1.f * (In.vWorldPosition - g_vCamPosition)))));
+    fRimPower = pow(fRimPower, 5.f);
+    vector vRimColor = g_vRimColor * fRimPower;
+    Out.vDiffuse += vRimColor;
+    Out.vBloom = Caculation_Brightness(Out.vDiffuse) + vRimColor;
+    Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+    //if (0.f == Out.vDiffuse.a)
+    //    discard;
+
+    return Out;
+}
+
+RasterizerState CullClockWiseRS
+{
+    AntialiasedLineEnable = false;
+    CullMode = BACK;
+    DepthBias = 0;
+    DepthBiasClamp = 0.0f;
+    DepthClipEnable = true;
+    FillMode = SOLID;
+    FrontCounterClockwise = true;
+    MultisampleEnable = false;
+    ScissorEnable = false;
+    SlopeScaledDepthBias = 0.0f;
+};
+
+DepthStencilState DrawReflectionDSS
+{
+    DepthEnable = true;
+    DepthWriteMask = ALL; // Zero or ALL
+    DepthFunc = LESS; // LESS or ALWAYS
+    StencilEnable = true;
+    StencilReadMask = 0xff;
+    StencilWriteMask = 0xff;
+
+    // Front
+    FrontFaceStencilFail = KEEP;
+    FrontFaceStencilDepthFail = KEEP;
+    FrontFaceStencilPass = KEEP;
+    FrontFaceStencilFunc = EQUAL;
+
+    //Back
+    FrontFaceStencilFail = KEEP;
+    FrontFaceStencilDepthFail = KEEP;
+    FrontFaceStencilPass = KEEP;
+    FrontFaceStencilFunc = EQUAL;
+};
+
 technique11 DefaultTechnique
 {
 	pass DefaultPass
@@ -500,19 +620,19 @@ technique11 DefaultTechnique
 		PixelShader = compile ps_5_0 PS_SNOWBALL();
 	}
 
-	pass Temp7
+	pass Reflect
 	{
 		// 7
-		SetRasterizerState(RS_Default);
-		SetDepthStencilState(DSS_Default, 0);
-		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetRasterizerState(CullClockWiseRS);
+        SetDepthStencilState(DrawReflectionDSS, 1);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
-		VertexShader = compile vs_5_0 VS_MAIN();
-		GeometryShader = NULL;
+        VertexShader = compile vs_5_0 VS_REFLECT();
+        GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-		PixelShader = compile ps_5_0 PS_MAIN();
-	}
+        PixelShader = compile ps_5_0 PS_MAIN_REFLECT();
+    }
 
 	pass Temp8
 	{

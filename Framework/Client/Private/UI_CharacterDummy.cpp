@@ -210,9 +210,10 @@ HRESULT CUI_CharacterDummy::Render_Reflect()
 		if (nullptr == m_pModelCom || nullptr == m_pShaderCom)
 			return E_FAIL;
 
-		SimpleMath::Plane mirrorPlane = Vec4(0.0f, 0.0f, 1.0f, 0.0f);
+		SimpleMath::Plane mirrorPlane = Vec4(0.0f, 0.0f, 1.0f, -1.2f);
 		XMMATRIX matReflect = Matrix::CreateReflection(mirrorPlane);
 		Matrix world = m_pTransformCom->Get_WorldMatrix();
+		world._41 -= 0.65f;
 		Matrix result = world * matReflect;
 
 		Matrix worldInvTranspose = m_pTransformCom->Get_WorldMatrixInverse();
