@@ -14,6 +14,8 @@ HRESULT CCriminal_MonsterNode_Air::Initialize_Prototype(CMonsterBT::BT_MONSTERDE
 {
 	__super::Initialize_Prototype(pDesc, pBT);
 
+	m_fAirTime = 1.f;
+
 	return S_OK;
 }
 
@@ -26,17 +28,36 @@ CBTNode::NODE_STATE CCriminal_MonsterNode_Air::Tick(const _float& fTimeDelta)
 	if (!dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_AIR))
 		return NODE_STATE::NODE_FAIL;
 
-	if (m_tBTMonsterDesc.pOwnerModel->Is_Finish() && !m_tBTMonsterDesc.pOwnerModel->Is_Tween())
+	if (m_tBTMonsterDesc.pOwner->Get_Component<CRigidBody>(TEXT("Com_RigidBody"))->Is_Ground())
 	{
-		dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_AIR, false);
-		dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ISHIT, false);
+		m_fTime += fTimeDelta;
+		if (m_fTime >= m_fAirTime)
+		{
+			if (!m_bIsStand)
+			{
+				m_tBTMonsterDesc.pOwnerModel->Set_Animation(TEXT("SKM_BlackCircleAgent.ao|StandUp"));
+				m_bIsStand = true;
+			}
 
-		if (dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATKAROUND))
-			dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK, true);
-		else
-			dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK, false);
+			if (m_tBTMonsterDesc.pOwnerModel->Get_CurrAnimation()->Get_AnimationName() == TEXT("SKM_BlackCircleAgent.ao|StandUp"))
+			{
+				if (m_tBTMonsterDesc.pOwnerModel->Is_Finish() && !m_tBTMonsterDesc.pOwnerModel->Is_Tween())
+				{
+					dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_AIR, false);
+					dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ISHIT, false);
 
-		return NODE_STATE::NODE_SUCCESS;
+					if (dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Get_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATKAROUND))
+						dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK, true);
+					else
+						dynamic_cast<CMonster*>(m_tBTMonsterDesc.pOwner)->Set_Bools(CMonster::MONSTER_BOOLTYPE::MONBOOL_ATK, false);
+
+					m_fTime = m_fAirTime - m_fTime;
+					m_bIsStand = false;
+
+					return NODE_STATE::NODE_SUCCESS;
+				}
+			}
+		}
 	}
 
 	return NODE_STATE::NODE_RUNNING;

@@ -117,7 +117,7 @@ HRESULT CCriminal_Npc::Ready_Components()
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 		return E_FAIL;
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, { -40.f, -6.75f, 34.7f, 1.f });
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, { -40.5f, -6.75f, 34.2f, 1.f });
 	m_pTransformCom->FixRotation(0.f, -160.f, 0.f);
 
 	/* For.Com_Shader */

@@ -129,7 +129,7 @@ void CCriminal_Monster::Collision_Enter(const COLLISION_INFO& tInfo)
 					m_pRigidBodyCom->Add_Velocity({ 0.f, 1.f, 0.f, 1.f }, m_tStat.fAirVelocity / 1.5f, false);
 
 					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_BLOW] = true;
-
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_AIR] = false;
 					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
 				}
 
@@ -144,6 +144,8 @@ void CCriminal_Monster::Collision_Enter(const COLLISION_INFO& tInfo)
 					m_pModelCom->Set_Animation(TEXT("SKM_BlackCircleAgent.ao|Down"));
 					m_pRigidBodyCom->Add_Velocity({ 0.f, 1.f, 0.f, 1.f }, m_tStat.fAirVelocity / 2.f, false);
 
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_BLOW] = false;
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_AIR] = true;
 					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
 				}
 
