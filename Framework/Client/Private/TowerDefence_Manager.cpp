@@ -25,6 +25,8 @@
 #include "DefenceInvasion_Portal.h"
 
 
+
+
 IMPLEMENT_SINGLETON(CTowerDefence_Manager)
 
 CTowerDefence_Manager::CTowerDefence_Manager()
@@ -106,14 +108,6 @@ void CTowerDefence_Manager::LateTick(_float fTimeDelta)
 
 void CTowerDefence_Manager::Prepare_Defence()
 {
-	++m_iCurrentStage;
-
-	if (m_iCurrentStage == 4)
-	{
-		End_Defence();
-		return;
-	}
-
 	if (nullptr != m_pPicked_Object)
 	{
 		m_pPicked_Object = nullptr;
@@ -123,12 +117,30 @@ void CTowerDefence_Manager::Prepare_Defence()
 
 	m_eCurrentPhase = TOWER_DEFENCE_PHASE::DEFENCE_PREPARE;
 	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE);
+
 	for (auto& pDefenceObject : m_DefenceObjects)
 	{
 		pDefenceObject->Set_Dead(true);
 		Safe_Release(pDefenceObject);
 	}
 	m_DefenceObjects.clear();
+
+	
+	for (auto& m_InvasionPortals : m_InvasionPortals)
+	{
+		m_InvasionPortals->Set_Dead(true);
+		Safe_Release(m_InvasionPortals);
+	}
+	m_InvasionPortals.clear();
+
+	if (FAILED(Prepare_Portals(XMVectorSet(0.f, 2.f, 0.f, 1.f))))
+		return;
+	if (FAILED(Prepare_Portals(XMVectorSet(-95.573f, 2.f, 111.546f, 1.f))))
+		return;
+	if (FAILED(Prepare_Portals(XMVectorSet(105.247f, 2.f, 111.456f, 1.f))))
+		return;
+
+	
 
 	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
 }
@@ -142,6 +154,14 @@ void CTowerDefence_Manager::Start_Defence()
 		Safe_Release(m_pPicked_Object);
 		m_pPicked_ObjectTransform = nullptr;
 	}
+
+	for (auto& pPortal : m_InvasionPortals)
+	{
+		pPortal->Start_Invasion();
+	}
+		
+
+
 	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
 	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
 }
@@ -172,6 +192,14 @@ void CTowerDefence_Manager::Finish_Defence()
 	}
 	m_DefenceMonsters.clear();
 	
+
+	for (auto& pPortal : m_InvasionPortals)
+	{
+		pPortal->Stop_Invasion();
+		pPortal->Set_Dead(true);
+		Safe_Release(pPortal);
+	}
+	m_InvasionPortals.clear();
 
 }
 
@@ -421,6 +449,39 @@ HRESULT CTowerDefence_Manager::Create_Defence_Object()
 	return S_OK;
 }
 
+
+HRESULT CTowerDefence_Manager::Prepare_Portals(Vec4 vInitializePosition)
+{
+	CDefenceInvasion_Portal* pInvasionPortal = dynamic_cast<CDefenceInvasion_Portal*>(GI->Clone_GameObject(L"Prototype_GameObject_DefenceInvasion_Portal", LAYER_TYPE::LAYER_ETC));
+
+	if (nullptr == pInvasionPortal)
+	{
+		MSG_BOX("pInvasionPortal is Null : CTowerDefence_Manager::Prepare_Defence");
+		return E_FAIL;
+	}
+
+	CTransform* pPortalTransform = pInvasionPortal->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr == pPortalTransform)
+	{
+		MSG_BOX("pPortalTransform is Null : CTowerDefence_Manager::Prepare_Portals");
+		return E_FAIL;
+	}
+
+	pPortalTransform->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vInitializePosition, 1.f));
+	pPortalTransform->LookAt_ForLandObject(XMVectorSet(-0.012f, 9.72f, 111.459f, 1.f));
+
+	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_ETC, pInvasionPortal)))
+	{
+		MSG_BOX("Add_GameObject Failed : CTowerDefence_Manager::Prepare_Portals");
+		return E_FAIL;
+	}
+
+	Safe_AddRef(pInvasionPortal);
+	m_InvasionPortals.push_back(pInvasionPortal);
+
+	return S_OK;
+}
+
 HRESULT CTowerDefence_Manager::Spawn_Defence_Monsters()
 {
 	
@@ -462,6 +523,18 @@ HRESULT CTowerDefence_Manager::Ready_Defence_Models()
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_InvasionPortal", CModel::TYPE::TYPE_ANIM, L"../Bin/Export/AnimModel/TowerDefence/InvasionPortal/", L"InvasionPortal")))
 		return E_FAIL;
 
+	
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Cannon_Ball", CModel::TYPE::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/TowerDefence/Projectile/", L"Cannon_Ball")))
+		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Crystal_Ball", CModel::TYPE::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/TowerDefence/Projectile/", L"Crystal_Ball")))
+		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Shadow_Ball", CModel::TYPE::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/TowerDefence/Projectile/", L"Shadow_Ball")))
+		return E_FAIL;
+
+	
 
 	return S_OK;
 }
@@ -481,6 +554,18 @@ HRESULT CTowerDefence_Manager::Ready_Prototype_Defence_Objects()
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_DefenceInvasion_Portal", CDefenceInvasion_Portal::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_ETC, true)))
+		return E_FAIL;
+
+
+
+
+	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Cannon_Ball", CCannon_Ball::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_ETC, true)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Crystal_Ball", CCrystal_Ball::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_ETC, true)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Shadow_Ball", CShadow_Ball::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_ETC, true)))
 		return E_FAIL;
 
 	return S_OK;
@@ -506,6 +591,9 @@ void CTowerDefence_Manager::Free()
 			Safe_Release(m_DefenceMonsters[i]);
 		m_DefenceMonsters.clear();
 
+		for (_uint i = 0; i < m_InvasionPortals.size(); ++i)
+			Safe_Release(m_InvasionPortals[i]);
+		m_InvasionPortals.clear();
 		
 	}
 

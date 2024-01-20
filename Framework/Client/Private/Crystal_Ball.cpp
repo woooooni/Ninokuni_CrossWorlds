@@ -38,6 +38,8 @@ HRESULT CCrystal_Ball::Initialize(void* pArg)
 	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::STUN, 0.f, 0.f, 0.f, false);
 	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
 
+	m_fDeletionTime = 100.f;
+
 	return S_OK;
 }
 
@@ -46,7 +48,40 @@ void CCrystal_Ball::Tick(_float fTimeDelta)
 	__super::Tick(fTimeDelta);
 
 	GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fAccEffect, CUtils::Random_Float(0.1f, 0.1f), fTimeDelta, TEXT("Particle_Smoke"), this);
-	m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fMoveSpeed, fTimeDelta);
+
+	Tick_Target(fTimeDelta);
+	
+	if (nullptr == m_pTarget)
+	{
+		Find_Target(fTimeDelta);
+		if (nullptr == m_pTarget)
+		{
+			Set_Dead(true);
+			return;
+		}
+	}
+
+	m_fAccRotation += fTimeDelta * 10.f;
+
+	if (nullptr != m_pTarget)
+	{
+		CTransform* pTargetTransform = m_pTarget->Get_Component<CTransform>(L"Com_Transform");
+		if (nullptr != pTargetTransform)
+		{
+			Vec3 vDir = pTargetTransform->Get_Position() - m_pTransformCom->Get_Position(); 
+			
+
+			if (vDir.Length() > 0.1f)
+			{
+				Vec3 vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
+
+				Vec3 vAxis = XMVector3Cross(vLook, vDir);
+				vDir = XMVector3Normalize(pTargetTransform->Get_Position() - m_pTransformCom->Get_Position());
+				m_pTransformCom->Turn(vAxis, XMConvertToRadians(180.f), fTimeDelta);
+			}
+		}
+	}
+	m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), 10.f, fTimeDelta);
 }
 
 void CCrystal_Ball::LateTick(_float fTimeDelta)
@@ -108,7 +143,40 @@ void CCrystal_Ball::Collision_Enter(const COLLISION_INFO& tInfo)
 	{
 		wstring strSoundKey = L"Hit_PC_Damage_Dummy_" + to_wstring(GI->RandomInt(1, 2)) + L".mp3";
 		GI->Play_Sound(strSoundKey, SOUND_MONSTERL_HIT, 0.3f, false);
+		Set_Dead(true);
 	}
+}
+
+void CCrystal_Ball::Find_Target(_float fTimeDelta)
+{
+	list<CGameObject*>& TargetObjects = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER);
+
+	_float fMinDistance = 50.f;
+	for (auto& pTarget : TargetObjects)
+	{
+		CTransform* pTargetTransform = pTarget->Get_Component<CTransform>(L"Com_Transform");
+		Vec4 vPosition = m_pTransformCom->Get_Position();
+		Vec4 vTargetPosition = pTargetTransform->Get_Position();
+
+		Vec3 vDir = vTargetPosition - vPosition;
+		if (fMinDistance > vDir.Length())
+		{
+			fMinDistance = vDir.Length();
+			m_pTarget = pTarget;
+		}
+	}
+
+}
+
+void CCrystal_Ball::Tick_Target(_float fTimeDelta)
+{
+	if (nullptr == m_pTarget)
+		return;
+
+
+	if (m_pTarget->Is_ReserveDead() || m_pTarget->Is_Dead())
+		m_pTarget = nullptr;
+	return;
 }
 
 

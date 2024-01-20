@@ -33,6 +33,7 @@ protected:
 	class CModel* m_pModelCom = nullptr;
 	class CRenderer* m_pRendererCom = nullptr;
 	class CTransform* m_pTransformCom = nullptr;
+	class CRigidBody* m_pRigidBodyCom = nullptr;
 
 protected:
 	class CCharacter* m_pOwner = nullptr;

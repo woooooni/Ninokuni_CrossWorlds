@@ -4,6 +4,7 @@
 #include "Utils.h"
 #include "Effect_Manager.h"
 #include "Particle_Manager.h"
+#include "Camera_Manager.h"
 #include "Character.h"
 
 CCannon_Ball::CCannon_Ball(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -38,15 +39,30 @@ HRESULT CCannon_Ball::Initialize(void* pArg)
 	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::BOUND, 0.f, 0.f, 0.f, false);
 	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
 
+	m_pRigidBodyCom->Add_Velocity(XMVectorSet(0.f, 1.f, 0.f, 0.f), 10.f, true);
+
+	m_fDeletionTime = 5.f;
+
 	return S_OK;
 }
 
 void CCannon_Ball::Tick(_float fTimeDelta)
 {
+
+	if (false == m_bInitLook)
+	{
+		m_bInitLook = true;
+		m_vInitLook = XMVector3Normalize(m_pTransformCom->Get_Look());
+	}
+
+	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
+	m_pTransformCom->Rotation_Acc(XMVector3Normalize(m_pTransformCom->Get_Right()), XMConvertToRadians(180.f) * fTimeDelta);
+	m_pTransformCom->Move(XMVector3Normalize(m_vInitLook), 10.f, fTimeDelta);
+
 	__super::Tick(fTimeDelta);
 
-	GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fAccEffect, CUtils::Random_Float(0.1f, 0.1f), fTimeDelta, TEXT("Particle_Smoke"), this);
-	m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fMoveSpeed, fTimeDelta);
+	GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fAccEffect, CUtils::Random_Float(0.01f, 0.01f), fTimeDelta, TEXT("Particle_Smoke"), this);
+
 }
 
 void CCannon_Ball::LateTick(_float fTimeDelta)
@@ -79,6 +95,12 @@ HRESULT CCannon_Ball::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Cannon_Ball"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 		return E_FAIL;
 
+	CRigidBody::RIGID_BODY_DESC RigidDesc;
+	RigidDesc.pTransform = m_pTransformCom;
+
+	/* For.Com_RigidBody */
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_RigidBody"), TEXT("Com_RigidBody"), (CComponent**)&m_pRigidBodyCom, &RigidDesc)))
+		return E_FAIL;
 
 	CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
 	ZeroMemory(&SphereDesc, sizeof SphereDesc);
@@ -106,8 +128,12 @@ void CCannon_Ball::Collision_Enter(const COLLISION_INFO& tInfo)
 	if ((tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_BOSS)
 		&& tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
 	{
+		Set_Dead(true);
 		wstring strSoundKey = L"Hit_PC_Damage_Dummy_" + to_wstring(GI->RandomInt(1, 2)) + L".mp3";
 		GI->Play_Sound(strSoundKey, SOUND_MONSTERL_HIT, 0.3f, false);
+		CCamera_Manager::GetInstance()->Start_Action_Shake_Default_Attack();
+
+		// TODO:: Effect
 	}
 }
 

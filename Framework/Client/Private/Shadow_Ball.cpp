@@ -38,15 +38,26 @@ HRESULT CShadow_Ball::Initialize(void* pArg)
 	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::STUN, 0.f, 0.f, 0.f, false);
 	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
 
+	m_fDeletionTime = 2.f;
 	return S_OK;
 }
 
 void CShadow_Ball::Tick(_float fTimeDelta)
 {
+	
+
+	if (false == m_bInitLook)
+	{
+		m_bInitLook = true;
+		m_vInitLook = XMVector3Normalize(m_pTransformCom->Get_Look());
+	}
+
+	m_pTransformCom->Rotation_Acc(XMVector3Normalize(XMVectorSet(0.f, 1.f, 0.f, 0.f)), XMConvertToRadians(180.f) * 20.f * fTimeDelta);
+	m_pTransformCom->Move(XMVector3Normalize(m_vInitLook), 5.f, fTimeDelta);
+
 	__super::Tick(fTimeDelta);
 
 	GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fAccEffect, CUtils::Random_Float(0.1f, 0.1f), fTimeDelta, TEXT("Particle_Smoke"), this);
-	m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fMoveSpeed, fTimeDelta);
 }
 
 void CShadow_Ball::LateTick(_float fTimeDelta)

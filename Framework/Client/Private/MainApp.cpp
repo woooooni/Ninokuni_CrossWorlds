@@ -58,7 +58,6 @@ HRESULT CMainApp::Initialize()
 	if (FAILED(Initialize_Client()))
 		return E_FAIL;
 
-	// Set Start Level and Character
 	{
 		g_eStartLevel = LEVELID::LEVEL_TOOL; /* 시작할 레벨 타입 */
 
@@ -66,6 +65,7 @@ HRESULT CMainApp::Initialize()
 
 		g_ePlayCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH; /* 게임 플레이 캐릭터 타입 */
 	}
+	// Set Start Level and Character
 
 	// Open Level
 	if (FAILED(Open_Level((LEVELID)g_eStartLevel, L"Final_Boss")))

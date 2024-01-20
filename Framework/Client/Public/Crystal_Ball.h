@@ -26,8 +26,19 @@ public:
 	virtual void Collision_Enter(const COLLISION_INFO& tInfo) override;
 
 private:
+	void Find_Target(_float fTimeDelta);
+	void Tick_Target(_float fTimeDelta);
+
+
+private:
 	_float m_fAccEffect = 0.f;
 	_float m_fGenEffectTime = 0.5f;
+
+private:
+	_float m_fAccRotation = 0.f;
+
+private:
+	CGameObject* m_pTarget = nullptr;
 
 public:
 	static CCrystal_Ball* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

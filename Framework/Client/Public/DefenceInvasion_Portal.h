@@ -14,6 +14,7 @@ BEGIN(Client)
 
 class CDefenceInvasion_Portal final : public CGameObject
 {
+	enum SPAWN_MONSTER_TYPE { PUMPKIN_CANDLE, CLOWN, CLOWN_WIZARD, SPAWN_MONSTER_TYPE_END };
 
 private:
 	CDefenceInvasion_Portal(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -32,6 +33,10 @@ public:
 	virtual void Collision_Continue(const COLLISION_INFO& tInfo);
 	virtual void Collision_Exit(const COLLISION_INFO& tInfo);
 
+public:
+	void Start_Invasion();
+	void Stop_Invasion();
+
 private:
 	virtual HRESULT Ready_Components() override;
 
@@ -41,6 +46,10 @@ private:
 	class CRenderer* m_pRendererCom = nullptr;
 	class CShader* m_pShaderCom = nullptr;
 	class CModel* m_pModelCom = nullptr;
+
+private:
+	vector<wstring> m_strPrototypeMonsterTags;
+	list<CGameObject*> m_Monsters;
 
 public:
 	static CDefenceInvasion_Portal* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

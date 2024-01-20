@@ -45,6 +45,12 @@ HRESULT CDefence_Tower::Initialize(void* pArg)
 
 void CDefence_Tower::Tick(_float fTimeDelta)
 {
+	if (false == m_bInitMatrix)
+	{
+		m_BaseMatrix = m_pTransformCom->Get_WorldMatrix();
+		m_bInitMatrix = true;
+	}
+
 	__super::Tick(fTimeDelta);
 	Tick_Target(fTimeDelta);
 
@@ -116,6 +122,14 @@ HRESULT CDefence_Tower::Render()
 
 	if (FAILED(m_pBaseModelCom->SetUp_VTF(m_pShaderCom)))
 		return E_FAIL;
+
+
+
+
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_BaseMatrix.Transpose(), sizeof(_float4x4))))
+		return E_FAIL;
+
 
 	iNumMeshes = m_pBaseModelCom->Get_NumMeshes();
 

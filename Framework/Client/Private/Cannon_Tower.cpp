@@ -55,7 +55,11 @@ HRESULT CCannon_Tower::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
+	m_fAccFireTime = 0.f;
+	m_fFireTime = 1.f;
 
+
+	
 
 	return S_OK;
 }
@@ -63,6 +67,26 @@ HRESULT CCannon_Tower::Initialize(void* pArg)
 void CCannon_Tower::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+	Look_For_Target(fTimeDelta);
+
+	m_pStateCom->Tick_State(fTimeDelta);
+	if (nullptr != m_pTarget)
+	{
+		if (DEFENCE_TOWER_STATE::TOWER_STATE_IDLE == m_pStateCom->Get_CurrState())
+		{
+			m_fAccFireTime += fTimeDelta;
+			if (m_fAccFireTime >= m_fFireTime)
+			{
+				m_pStateCom->Change_State(DEFENCE_TOWER_STATE::TOWER_STATE_ATTACK);
+				m_fAccFireTime = 0.f;
+			}
+		}
+	}
+	else
+	{
+		m_fAccFireTime = m_fFireTime;
+	}
+	
 }
 
 
@@ -155,6 +179,7 @@ HRESULT CCannon_Tower::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_RigidBody"), TEXT("Com_RigidBody"), (CComponent**)&m_pRigidBodyCom, &RigidDesc)))
 		return E_FAIL;
 
+
 	m_pBarrelModelCom->Set_Animation(0);
 	m_pBaseModelCom->Set_Animation(0);
 
@@ -208,7 +233,7 @@ HRESULT CCannon_Tower::Ready_Colliders()
 
 	BoundingSphere tSphere;
 	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 7.f;
+	tSphere.Radius = 15.f;
 	SphereDesc.tSphere = tSphere;
 
 	SphereDesc.pNode = nullptr;
@@ -227,7 +252,7 @@ HRESULT CCannon_Tower::Ready_Colliders()
 	ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
 
 	XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
-	OBBBox.Extents = { 50.f, 100.f, 50.f };
+	OBBBox.Extents = { 100.f, 100.f, 100.f };
 
 	OBBDesc.tBox = OBBBox;
 	OBBDesc.pNode = nullptr;

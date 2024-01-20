@@ -67,7 +67,7 @@ void CGlanix_Icicle::Tick(_float fTimeDelta)
 		return;
 	}
 
-	m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(90.f)* fTimeDelta);
+	m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f) * fTimeDelta);
 	__super::Tick(fTimeDelta);
 }
 

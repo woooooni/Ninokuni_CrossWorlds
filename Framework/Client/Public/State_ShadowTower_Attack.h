@@ -28,6 +28,9 @@ public:
 private:
 	void Fire();
 
+private:
+	_bool m_bShoot = false;
+
 public:
 	static CState_ShadowTower_Attack* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

@@ -242,7 +242,9 @@ PxController* CPhysX_Manager::Add_CapsuleController(CGameObject* pGameObject, Ma
 	CapsuleDesc.userData = &m_eObjectTypes[pGameObject->Get_ObjectType()];
 	CapsuleDesc.reportCallback = pCallBack;
 
-	while (true == m_bSimulating) {}
+	while (true == m_bSimulating) {
+		int i = 0;
+	}
 	PxController* pController = m_pController_Manager->createController(CapsuleDesc);
 	pController->getActor()->setName("Controller");
 
@@ -268,7 +270,9 @@ PxController* CPhysX_Manager::Add_BoxController(CGameObject* pGameObject, Matrix
 	BoxDesc.userData = &m_eObjectTypes[pGameObject->Get_ObjectType()];
 	BoxDesc.reportCallback = pCallBack;
 
-	while (true == m_bSimulating) {}
+	while (true == m_bSimulating) {
+		int  i = 0;
+	}
 
 	PxController* pController = m_pController_Manager->createController(BoxDesc);
 	pController->getActor()->setName("Controller");
