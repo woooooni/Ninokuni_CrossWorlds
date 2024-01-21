@@ -114,7 +114,7 @@ HRESULT CBuilding::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instanc
 	Matrix worldInvTranspose = m_pTransformCom->Get_WorldMatrixInverse();
 	worldInvTranspose.Transpose();
 
-	Matrix worldInvTransposeView = worldInvTranspose * GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW);
+	Matrix worldInvTransposeView = worldInvTranspose * GI->Get_TransformFloat4x4(CPipeLine::D3DTS_VIEW);
 
 	if (FAILED(pInstancingShader->Bind_Matrix("WorldInvTransposeView", &worldInvTransposeView)))
 		return E_FAIL;
@@ -157,7 +157,7 @@ HRESULT CBuilding::Render_Instance_Shadow(CShader* pInstancingShader, CVIBuffer_
 	Matrix worldInvTranspose = m_pTransformCom->Get_WorldMatrixInverse();
 	worldInvTranspose.Transpose();
 
-	Matrix worldInvTransposeView = worldInvTranspose * GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW);
+	Matrix worldInvTransposeView = worldInvTranspose * GI->Get_TransformFloat4x4(CPipeLine::D3DTS_VIEW);
 
 	if (FAILED(pInstancingShader->Bind_Matrix("WorldInvTransposeView", &worldInvTransposeView)))
 		return E_FAIL;
