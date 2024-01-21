@@ -338,7 +338,7 @@ HRESULT CCharacter::Render()
 	Matrix worldInvTranspose = m_pTransformCom->Get_WorldMatrixInverse();
 	worldInvTranspose.Transpose();
 
-	Matrix worldInvTransposeView = worldInvTranspose * GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW);
+	Matrix worldInvTransposeView = worldInvTranspose * GI->Get_TransformFloat4x4(CPipeLine::D3DTS_VIEW);
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("WorldInvTransposeView", &worldInvTransposeView)))
 		return E_FAIL;
