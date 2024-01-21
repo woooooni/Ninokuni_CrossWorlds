@@ -16,10 +16,10 @@ protected:
 public:
 	_bool Get_Click() { return m_bClicked; }
 	void Set_Click(_bool bClick) {
-		if (true == bClick)
-			m_iPass = 7;
-		else
-			m_iPass = 1;
+		//if (true == bClick)
+		//	m_iPass = 7;
+		//else
+		//	m_iPass = 1;
 
 		m_bClicked = bClick;
 	}
@@ -37,7 +37,6 @@ public:
 	virtual void On_MouseExit(_float fTimeDelta) override;
 
 private:
-	CTexture* m_pFXTextureCom = { nullptr };
 	UI_TOWERTYPE m_eType = { SELECTBTN_END };
 
 	_bool m_bClicked = { false };

@@ -773,6 +773,7 @@
     <ClInclude Include="..\Public\UI_Inventory_TabBtn.h" />
     <ClInclude Include="..\Public\UI_MapName_Text.h" />
     <ClInclude Include="..\Public\UI_Milepost.h" />
+    <ClInclude Include="..\Public\UI_Minigame_Basic.h" />
     <ClInclude Include="..\Public\UI_Minigame_Timer.h" />
     <ClInclude Include="..\Public\UI_Minigame_TowerSelect.h" />
     <ClInclude Include="..\Public\UI_Minimap_Frame.h" />
@@ -1598,6 +1599,7 @@
     <ClCompile Include="..\Private\UI_Inventory_TabBtn.cpp" />
     <ClCompile Include="..\Private\UI_MapName_Text.cpp" />
     <ClCompile Include="..\Private\UI_Milepost.cpp" />
+    <ClCompile Include="..\Private\UI_Minigame_Basic.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_Timer.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_TowerSelect.cpp" />
     <ClCompile Include="..\Private\UI_Minimap_Frame.cpp" />

@@ -53,25 +53,6 @@ void CUI_Minigame_TowerSelect::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-//		if (TOWER_CANNON == m_eType)
-//		{
-//			m_tInfo.fCX = 400.f * 0.36f;
-//			m_tInfo.fCY = 400.f * 0.36f;
-//			m_tInfo.fX = m_tInfo.fCX * 0.8f;
-//			m_tInfo.fY = g_iWinSizeY - (m_tInfo.fCY * 1.5f);
-//
-//			m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
-//			m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-//				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
-//		}
-//		if (TOWER_CRYSTAL == m_eType)
-//		{
-//			m_tInfo.fX = m_tInfo.fCX * 1.3f;
-//			m_tInfo.fY = g_iWinSizeY - (m_tInfo.fCY * 0.7f);
-//
-//			m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-//				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
-//		}
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
@@ -125,10 +106,6 @@ HRESULT CUI_Minigame_TowerSelect::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_TowerDefence_TowerSelect"),
 		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 		return E_FAIL;
-
-	if (FAILED(__super::Add_Component(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_TowerDefence_TowerSelect_Glow"),
-		TEXT("Com_FXTexture"), (CComponent**)&m_pFXTextureCom)))
-		return E_FAIL;
 	
 	return S_OK;
 }
@@ -158,12 +135,6 @@ HRESULT CUI_Minigame_TowerSelect::Bind_ShaderResources()
 
 	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", _uint(m_eType))))
 		return E_FAIL;
-
-	if (7 == m_iPass)
-	{
-		if (FAILED(m_pFXTextureCom->Bind_ShaderResource(m_pShaderCom, "g_FXTexture")))
-			return E_FAIL;
-	}
 
 	return S_OK;
 }
@@ -206,6 +177,5 @@ void CUI_Minigame_TowerSelect::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pFXTextureCom);
 	Safe_Release(m_pTextureCom);
 }

@@ -35,27 +35,9 @@ HRESULT CUI_Dummy_Weapon::Initialize(void* pArg)
 		return E_FAIL;
 
 	_float3 vCamPos, vLook, vUp;
-
-	switch (m_eCurCharacter)
-	{
-	case CHARACTER_TYPE::SWORD_MAN:
-		vCamPos = _float3(0.f, 0.9f, -3.f);
-		vLook = _float3(0.f, 0.9, 0.f);
-		vUp = _float3(0.f, 1.f, 0.f);
-		break;
-
-	case CHARACTER_TYPE::ENGINEER:
-		vCamPos = _float3(0.f, 0.9f, -3.f);
-		vLook = _float3(0.f, 0.9, 0.f);
-		vUp = _float3(0.f, 1.f, 0.f);
-		break;
-
-	case CHARACTER_TYPE::DESTROYER:
-		vCamPos = _float3(0.f, 0.9f, -3.f);
-		vLook = _float3(0.f, 0.9, 0.f);
-		vUp = _float3(0.f, 1.f, 0.f);
-		break;
-	}
+	vCamPos = _float3(0.f, 0.9f, -3.f);
+	vLook = _float3(0.f, 0.9, 0.f);
+	vUp = _float3(0.f, 1.f, 0.f);
 
 	m_vCamMatrix = XMMatrixLookAtLH(XMLoadFloat3(&vCamPos), XMLoadFloat3(&vLook), XMLoadFloat3(&vUp));
 	m_vCamPosition = XMVectorSet(vCamPos.x, vCamPos.y, vCamPos.z, 1.f);
@@ -74,42 +56,6 @@ void CUI_Dummy_Weapon::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-		//if (CUI_Manager::GetInstance()->Get_Character()->Get_CharacterType() != m_eCurCharacter)
-		//{
-		//	CHARACTER_TYPE eType = CUI_Manager::GetInstance()->Get_Character()->Get_CharacterType();
-		//	_float3 vCamPos, vLook, vUp;
-
-		//	switch (eType)
-		//	{
-		//	case CHARACTER_TYPE::SWORD_MAN:
-		//		vCamPos = _float3(0.f, 0.9f, -3.f);
-		//		vLook = _float3(0.f, 0.9, 0.f);
-		//		vUp = _float3(0.f, 1.f, 0.f);
-		//		break;
-
-		//	case CHARACTER_TYPE::ENGINEER:
-		//		vCamPos = _float3(0.f, 0.7f, -2.3f);
-		//		vLook = _float3(0.f, 0.7, 0.f);
-		//		vUp = _float3(0.f, 1.f, 0.f);
-		//		break;
-
-		//	case CHARACTER_TYPE::DESTROYER:
-		//		vCamPos = _float3(0.f, 0.9f, -3.f);
-		//		vLook = _float3(0.f, 0.9, 0.f);
-		//		vUp = _float3(0.f, 1.f, 0.f);
-		//		break;
-		//	}
-
-		//	m_eCurCharacter = eType;
-
-		//	m_vCamMatrix = XMMatrixLookAtLH(XMLoadFloat3(&vCamPos), XMLoadFloat3(&vLook), XMLoadFloat3(&vUp));
-		//	m_vCamPosition = XMVectorSet(vCamPos.x, vCamPos.y, vCamPos.z, 1.f);
-
-		//	XMStoreFloat4x4(&m_ViewMatrix, XMMatrixTranspose(m_vCamMatrix)); // 카메라 행렬을 전치시킴
-
-		//	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-0.3f, 0.f, 0.f, 1.f));
-		//	m_pTransformCom->LookAt_ForLandObject(m_vCamPosition);
-		//}
 
 		__super::Tick(fTimeDelta);
 	}
@@ -135,15 +81,6 @@ HRESULT CUI_Dummy_Weapon::Render()
 
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
-	//if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &m_vCamPosition, sizeof(_float4))))
-	//	return E_FAIL;
-	//if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_matSocketWorld)))
-	//	return E_FAIL;
-	//if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
-	//	return E_FAIL;
-	//if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ))))
-	//	return E_FAIL;
-
 
 	_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
 	for (_uint i = 0; i < iNumMeshes; ++i)
