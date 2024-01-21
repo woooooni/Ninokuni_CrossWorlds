@@ -108,8 +108,6 @@ HRESULT CCharacter_Engineer::Initialize(void* pArg)
  	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
-	m_bUseable = false;
-
 	return S_OK;
 }
 

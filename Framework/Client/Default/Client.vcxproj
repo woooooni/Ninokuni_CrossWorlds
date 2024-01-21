@@ -720,6 +720,7 @@
     <ClInclude Include="..\Public\TreeGrandfa.h" />
     <ClInclude Include="..\Public\Trigger.h" />
     <ClInclude Include="..\Public\UIDamage_Manager.h" />
+    <ClInclude Include="..\Public\UIMinigame_Manager.h" />
     <ClInclude Include="..\Public\UI_Announced.h" />
     <ClInclude Include="..\Public\UI_BossHP_Background.h" />
     <ClInclude Include="..\Public\UI_BossHP_Bar.h" />
@@ -762,6 +763,8 @@
     <ClInclude Include="..\Public\UI_Inventory_TabBtn.h" />
     <ClInclude Include="..\Public\UI_MapName_Text.h" />
     <ClInclude Include="..\Public\UI_Milepost.h" />
+    <ClInclude Include="..\Public\UI_Minigame_Timer.h" />
+    <ClInclude Include="..\Public\UI_Minigame_TowerSelect.h" />
     <ClInclude Include="..\Public\UI_Minimap_Frame.h" />
     <ClInclude Include="..\Public\UI_MonsterHP_World.h" />
     <ClInclude Include="..\Public\UI_Quest_Reward.h" />
@@ -1532,6 +1535,7 @@
     <ClCompile Include="..\Private\TreeGrandfa.cpp" />
     <ClCompile Include="..\Private\Trigger.cpp" />
     <ClCompile Include="..\Private\UIDamage_Manager.cpp" />
+    <ClCompile Include="..\Private\UIMinigame_Manager.cpp" />
     <ClCompile Include="..\Private\UI_Announced.cpp" />
     <ClCompile Include="..\Private\UI_BossHP_Background.cpp" />
     <ClCompile Include="..\Private\UI_BossHP_Bar.cpp" />
@@ -1574,6 +1578,8 @@
     <ClCompile Include="..\Private\UI_Inventory_TabBtn.cpp" />
     <ClCompile Include="..\Private\UI_MapName_Text.cpp" />
     <ClCompile Include="..\Private\UI_Milepost.cpp" />
+    <ClCompile Include="..\Private\UI_Minigame_Timer.cpp" />
+    <ClCompile Include="..\Private\UI_Minigame_TowerSelect.cpp" />
     <ClCompile Include="..\Private\UI_Minimap_Frame.cpp" />
     <ClCompile Include="..\Private\UI_MonsterHP_World.cpp" />
     <ClCompile Include="..\Private\UI_Quest_Reward.cpp" />

@@ -18,6 +18,7 @@
 #include "UIDamage_Manager.h"
 #include "Quest_Manager.h"
 #include "TowerDefence_Manager.h"
+#include "UIMinigame_Manager.h"
 
 
 #include "Game_Manager.h"
@@ -177,6 +178,9 @@ HRESULT CMainApp::Initialize_Client()
 		return E_FAIL;
 
 	if (FAILED(CUIDamage_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+		return E_FAIL;
+
+	if (FAILED(CUIMinigame_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
 		return E_FAIL;
 
 	if (FAILED(Ready_CameraObject()))
@@ -1631,6 +1635,7 @@ void Client::CMainApp::Free()
 	CPicking_Manager::GetInstance()->DestroyInstance();
 	CUIDamage_Manager::GetInstance()->DestroyInstance();
 	CUI_Manager::GetInstance()->DestroyInstance();
+	CUIMinigame_Manager::GetInstance()->DestroyInstance();
 	CItem_Manager::GetInstance()->DestroyInstance();
 	CWeapon_Manager::GetInstance()->DestroyInstance();
 	CSkill_Manager::GetInstance()->DestroyInstance();

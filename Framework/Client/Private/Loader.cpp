@@ -35,6 +35,7 @@
 #include "UI_CharacterDummy.h"
 #include "UI_CostumeTab_Map.h"
 #include "Mirror.h"
+#include "UIMinigame_Manager.h"
 
 #include "Spawner_Ice01.h"
 #include "Spawner_Ice02.h"
@@ -509,11 +510,26 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 	/* For.Texture */
 	m_strLoading = TEXT("텍스쳐를 로딩 중 입니다.");
 
+	// 미니게임(타워 디펜스)
+	if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_TowerDefence_TowerSelect"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/TowerDefence/UI_Minigame_Select_GoldVer_%d.png"), 4))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_TowerDefence_TowerSelect_Glow"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/TowerDefence/UI_Minigame_Select_Glow.png")))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_TowerDefence_Timer"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/TowerDefence/UI_Minigame_Timer.png")))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_TowerDefence_StartBtn"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/TowerDefence/UI_Minigame_Start_1.png")))))
+		return E_FAIL;
+
 	/* For.Shader */
 	m_strLoading = TEXT("셰이더를 로딩 중 입니다.");
 
 	/* For.GameObject */
 	m_strLoading = TEXT("객체원형을 로딩 중 입니다.");
+	CUIMinigame_Manager::GetInstance()->Ready_MinigameUI_Prototypes(LEVELID::LEVEL_EVERMORE);
 
 	/* For.Model */
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
