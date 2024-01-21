@@ -304,9 +304,6 @@ HRESULT CEffect::Initialize(void* pArg)
 
 void CEffect::Tick(_float fTimeDelta)
 {
-	if (m_bDead)
-		return;
-
 	// Dissolve
 	if (m_bDissolve)
 	{
@@ -321,10 +318,10 @@ void CEffect::Tick(_float fTimeDelta)
 	}
 	else
 	{
+		// 지속 시간
+		m_fAccDeletionTime += fTimeDelta;
 		if (m_bEffectDelete)
 		{
-			// 지속 시간
-			m_fAccDeletionTime += fTimeDelta;
 			if (m_bEffectDie || m_fAccDeletionTime >= m_fLifeTime)
 			{
 				m_bEffectDie = true;
@@ -363,6 +360,15 @@ void CEffect::Tick(_float fTimeDelta)
 	{
 		m_fAccUVFlow.x += m_tEffectDesc.fUVFlowDir.x * m_fUVFlowSpeed * fTimeDelta;
 		m_fAccUVFlow.y += m_tEffectDesc.fUVFlowDir.y * m_fUVFlowSpeed * fTimeDelta;
+
+		if (0 < m_tEffectDesc.iUVFlowLoop)
+		{
+			if (m_fAccUVFlow.x > 1.f || m_fAccUVFlow.y > 1.f || m_fAccUVFlow.x < 0.f || m_fAccUVFlow.y < 0.f)
+			{
+				m_bEffectDelete = true;
+				m_bEffectDie    = true;
+			}
+		}
 	}
 
 	// 색상

@@ -40,9 +40,6 @@ HRESULT CDecal::Initialize(void* pArg)
 
 void CDecal::Tick(_float fTimeDelta)
 {
-	if (Is_Dead() == true || m_bDecalDie)
-		return;
-
 	m_fAccLifeTime += fTimeDelta;
 	if (m_bDecalDelete)
 	{
@@ -53,6 +50,9 @@ void CDecal::Tick(_float fTimeDelta)
 				Set_Dead(true);
 		}
 	}
+
+	if (Is_Dead() == true || m_bDecalDie)
+		return;
 
 	Tick_Alpha(fTimeDelta);
 }
@@ -193,6 +193,15 @@ void CDecal::Restart_Decal()
 	}
 	else if (m_tDecalDesc.bAlphaDelete)
 		m_bAlphaCreateSucc = true;
+}
+
+void CDecal::Start_AlphaDeleate()
+{
+	m_tDecalDesc.bAlphaDelete = true;
+	m_bAlphaCreateSucc = true;
+
+	m_fAccLifeTime = m_tDecalDesc.fLifeTime - 2.f;
+	m_bDecalDelete = true;
 }
 
 void CDecal::Tick_Alpha(_float fTimeDelta)
