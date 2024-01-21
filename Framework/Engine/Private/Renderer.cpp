@@ -7,6 +7,12 @@
 #include "GameObject.h"
 #include "Shader.h"
 #include "Utils.h"
+#include "Camera_Manager.h"
+#include "Camera.h"
+#include <random>
+#include "Engine_Defines.h"
+#include <DirectXPackedVector.h>
+
 
 CRenderer::CRenderer(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 	: CComponent(pDevice, pContext)
@@ -52,6 +58,8 @@ HRESULT CRenderer::Initialize_Prototype()
 
 HRESULT CRenderer::Initialize(void * pArg)
 {
+
+
 	return S_OK;
 }
 
@@ -359,6 +367,12 @@ HRESULT CRenderer::Draw_World()
 
 	if (FAILED(Draw_WorldEffect()))
 		return E_FAIL;
+
+	if (FAILED(Render_GodRay()))
+		return E_FAIL;
+
+	//if (FAILED(Render_AlphaBlendTargetMix(TEXT("Target_GodRay"), TEXT("MRT_Blend"), false)))
+	//	return E_FAIL;
 
 	if (FAILED(Render_LensFlare()))
 		return E_FAIL;
@@ -1008,19 +1022,27 @@ HRESULT CRenderer::Render_Ssao()
 	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_SSAO"))))
 		return E_FAIL;
 
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_SSAO]->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("world", &m_WorldMatrix)))
 		return E_FAIL;
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_SSAO]->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("view", &m_ViewMatrix)))
 		return E_FAIL;
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_SSAO]->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("projection", &m_ProjMatrix)))
 		return E_FAIL;
-
-	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_SSAO], TEXT("Target_Normal"), "g_NormalTarget")))
-		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_SSAO], TEXT("Target_Depth"), "g_DepthTarget")))
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_RawValue("offsetVectors", &m_vOffsets, sizeof(Vec4) * 14)))
 		return E_FAIL;
 
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_SSAO]->Begin(0)))
+
+	// Fov가 계속 바뀌니까 렌더하기전에 매번 갱신
+	BuildFrustumFarCorners();
+
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_RawValue("FrustumCorner", &m_vFrustumFarCorner, sizeof(Vec4) * 4)))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS], TEXT("Target_ViewNormal"), "NormalDepthMap")))
+		return E_FAIL;
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Texture("RandomVecMap", m_pRandomVecMap)))
+		return E_FAIL;
+
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Begin(1)))
 		return E_FAIL;
 	if (FAILED(m_pVIBuffer->Render()))
 		return E_FAIL;
@@ -1291,10 +1313,10 @@ HRESULT CRenderer::Render_AlphaBlend()
 // MRT_GodRay
 HRESULT CRenderer::Render_GodRay()
 {
-	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_GodRay"))))
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Blend"), false)))
 		return E_FAIL;
 
-	Vec3 vScreenSunPos = m_pLight_Manager->Get_SunScreenPos();
+	Vec4 vScreenSunPos = m_pLight_Manager->Get_SunScreenPos();
 	if (vScreenSunPos.x > 1.05f || vScreenSunPos.x < -0.05f
 		|| vScreenSunPos.y > 1.05f || vScreenSunPos.y < -0.05f
 		|| vScreenSunPos.z > 1.f || vScreenSunPos.z < 0.f)
@@ -2051,7 +2073,7 @@ HRESULT CRenderer::Create_Shader()
 		return E_FAIL;
 
 	// SHADER_POSTPROCESS
-	m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS] = CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_PostProcess.hlsl"), VTXTEX_DECLARATION::Elements, VTXTEX_DECLARATION::iNumElements);
+	m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS] = CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_PostProcess.hlsl"), VTXNORTEX_DECLARATION::Elements, VTXNORTEX_DECLARATION::iNumElements);
 	if (nullptr == m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS])
 		return E_FAIL;
 
@@ -2117,6 +2139,11 @@ HRESULT CRenderer::Create_Target()
 		return E_FAIL;
 
 	/* For.Target_MiniMap */
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_ViewNormal"),
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+
+	/* For.Target_MiniMap */
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_MiniMap"),
 		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(1.f, 1.f, 1.f, 0.f))))
 		return E_FAIL;
@@ -2152,7 +2179,7 @@ HRESULT CRenderer::Create_Target()
 #pragma region MRT_SSAO : Target_SSAO // Target_SSAO_Blur
 	/* For.Target_SSAO */
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_SSAO"),
-		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(1.f, 1.f, 1.f, 0.f))))
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(0.0f, 0.0f, 0.0f, 1.f))))
 		return E_FAIL;
 
 	/* For.Target_SSAO_Blur */
@@ -2393,6 +2420,8 @@ HRESULT CRenderer::Set_TargetsMrt()
 			return E_FAIL;
 		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_SunOccluder"))))
 			return E_FAIL;
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_ViewNormal"))))
+			return E_FAIL;
 		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_MiniMap"))))
 			return E_FAIL;
 		
@@ -2593,6 +2622,14 @@ HRESULT CRenderer::Set_TargetsMrt()
 
 HRESULT CRenderer::Initialize_SSAO()
 {
+	if (FAILED(RandomTextureCreate()))
+		return E_FAIL;
+	//if (FAILED(InitializeScreenQuad()))
+	//	return E_FAIL;
+
+	BuildFrustumFarCorners();
+	BuildOffsetVectors();
+
 	return S_OK;
 }
 
@@ -2613,7 +2650,8 @@ HRESULT CRenderer::Set_Debug()
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_SunOccluder"), (fSizeX / 2.f) + (fSizeX * 4), (fSizeY / 2.f) + (fSizeY * 0), fSizeX, fSizeY)))
 		return E_FAIL;
-
+	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_ViewNormal"), (fSizeX / 2.f) + (fSizeX * 5), (fSizeY / 2.f) + (fSizeY * 0), fSizeX, fSizeY)))
+		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_MiniMap"),     (fSizeX / 2.f) + (fSizeX * 6), (fSizeY / 2.f) + (fSizeY * 0), fSizeX, fSizeY)))
 		return E_FAIL;
 
@@ -2692,6 +2730,197 @@ HRESULT CRenderer::Set_Debug()
 #endif // DEBUG
 #pragma endregion
 
+void CRenderer::BuildFrustumFarCorners()
+{
+	// 바인딩 하기 전에 카메라의 절두체를 갱신해준다.
+
+	CCamera_Manager* pCameraManager = GET_INSTANCE(CCamera_Manager);
+	if (nullptr == pCameraManager)
+		return;
+
+	CCamera* pCamera = pCameraManager->Get_CurCamera();
+	if (nullptr == pCamera)
+		return;
+
+	_float fFovY = pCamera->Get_Fov(); // Cur Fov
+	_float fFar = pCamera->Get_ProjDesc().fFar; // Cur Far 
+	_float fAspect = pCamera->Get_ProjDesc().fAspect; // Cur Aspect
+
+	_float fHalfHeight = fFar * tanf(0.5f * fFovY);
+	_float fHalfWidth = fAspect * fHalfHeight;
+
+	m_vFrustumFarCorner[0] = Vec4(-fHalfWidth, -fHalfHeight, fFar, 0.0f);
+	m_vFrustumFarCorner[1] = Vec4(-fHalfWidth, +fHalfHeight, fFar, 0.0f);
+	m_vFrustumFarCorner[2] = Vec4(+fHalfWidth, +fHalfHeight, fFar, 0.0f);
+	m_vFrustumFarCorner[3] = Vec4(+fHalfWidth, -fHalfHeight, fFar, 0.0f);
+
+}
+
+void CRenderer::BuildOffsetVectors()
+{
+	// 14개의 균일하게 분포된 벡터로 시작한다.
+	// 큐브의 모서리 점 8개를 선택하고 큐브의 각 면을 따라 중심점을 선택한다.
+	// 항상 다른 쪽 면을 기준으로 이 점을 번갈아 사용한다.
+	// 이 방법은 14개 미만의 샘플링 포인트를 선택할 때에도 벡터를 균등하게 분산시킬 수 있다.
+
+	{
+		// 8개의 큐브 코너 벡터
+		m_vOffsets[0] = Vec4(+1.0f, +1.0f, +1.0f, 0.0f);
+		m_vOffsets[1] = Vec4(-1.0f, -1.0f, -1.0f, 0.0f);
+
+		m_vOffsets[2] = Vec4(-1.0f, +1.0f, +1.0f, 0.0f);
+		m_vOffsets[3] = Vec4(+1.0f, -1.0f, -1.0f, 0.0f);
+
+		m_vOffsets[4] = Vec4(+1.0f, +1.0f, -1.0f, 0.0f);
+		m_vOffsets[5] = Vec4(-1.0f, -1.0f, +1.0f, 0.0f);
+
+		m_vOffsets[6] = Vec4(-1.0f, +1.0f, -1.0f, 0.0f);
+		m_vOffsets[7] = Vec4(+1.0f, -1.0f, +1.0f, 0.0f);
+	}
+
+
+	
+	{
+		// 6개의 표면 중심점 벡터
+		m_vOffsets[8] = Vec4(-1.0f, 0.0f, 0.0f, 0.0f);
+		m_vOffsets[9] = Vec4(+1.0f, 0.0f, 0.0f, 0.0f);
+
+		m_vOffsets[10] = Vec4(0.0f, -1.0f, 0.0f, 0.0f);
+		m_vOffsets[11] = Vec4(0.0f, +1.0f, 0.0f, 0.0f);
+
+		m_vOffsets[12] = Vec4(0.0f, 0.0f, -1.0f, 0.0f);
+		m_vOffsets[13] = Vec4(0.0f, 0.0f, +1.0f, 0.0f);
+	}
+
+
+	// 난수 데이터 초기화
+	mt19937 randEngine;
+	randEngine.seed(std::random_device()());
+	uniform_real_distribution<_float> randF(0.25f, 1.0f);
+	for (_uint i = 0; i < 14; ++i)
+	{
+		// [0.25, 1.0] 사이의 임의의 벡터를 만든다.
+		_float s = randF(randEngine);
+
+		m_vOffsets[i].Normalize();
+		Vec4 v = s * m_vOffsets[i];
+		m_vOffsets[i] = v;
+	}
+
+}
+
+
+#include <wrl.h>
+HRESULT CRenderer::RandomTextureCreate()
+{
+	CD3D11_TEXTURE2D_DESC texDesc(DXGI_FORMAT_R8G8B8A8_UNORM, 256, 256, 1, 1,
+		D3D11_BIND_SHADER_RESOURCE, D3D11_USAGE_IMMUTABLE);
+
+	D3D11_SUBRESOURCE_DATA initData = {};
+	vector<PackedVector::XMCOLOR> randomVectors(256 * 256);
+
+	// 난수데이터 초기화
+	mt19937 randEngine;
+	randEngine.seed(std::random_device()());
+	uniform_real_distribution<_float> randF(0.0f, 1.0f);
+
+	for (_uint i = 0; i < 256 * 256; ++i)
+		randomVectors[i] = PackedVector::XMCOLOR(randF(randEngine), randF(randEngine), randF(randEngine), 0.0f);
+
+	initData.pSysMem = randomVectors.data();
+	initData.SysMemPitch = 256 * sizeof(PackedVector::XMCOLOR);
+
+
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture;
+	if(FAILED(m_pDevice->CreateTexture2D(&texDesc, &initData, pTexture.GetAddressOf())))
+		return E_FAIL;
+
+	if (FAILED(m_pDevice->CreateShaderResourceView(pTexture.Get(), nullptr, &m_pRandomVecMap)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CRenderer::InitializeScreenQuad()
+{
+	m_iQuadVerCount = 4;
+	m_iQuadIndexCount = 6;
+
+	QuadVertex* pVertices = new QuadVertex[m_iQuadVerCount];
+	if (nullptr == pVertices)
+		return E_FAIL;
+
+	_ulong* pIndices = new _ulong[m_iQuadIndexCount];
+	if (nullptr == pIndices)
+		return E_FAIL;
+
+	pVertices[0].pos = Vec3(-1.0f, -1.0f, 0.0f);
+	pVertices[1].pos = Vec3(-1.0f, +1.0f, 0.0f);
+	pVertices[2].pos = Vec3(+1.0f, +1.0f, 0.0f);
+	pVertices[3].pos = Vec3(+1.0f, -1.0f, 0.0f);
+
+	pVertices[0].ToFarPlaneIndex = Vec3(0.0f, 0.0f, 0.0f);
+	pVertices[1].ToFarPlaneIndex = Vec3(1.0f, 0.0f, 0.0f);
+	pVertices[2].ToFarPlaneIndex = Vec3(2.0f, 0.0f, 0.0f);
+	pVertices[3].ToFarPlaneIndex = Vec3(3.0f, 0.0f, 0.0f);
+
+	pVertices[0].tex = Vec2(0.0f, 1.0f);
+	pVertices[1].tex = Vec2(0.0f, 0.0f);
+	pVertices[2].tex = Vec2(1.0f, 0.0f);
+	pVertices[3].tex = Vec2(1.0f, 1.0f);
+
+	// 
+	pIndices[0] = 0; pIndices[1] = 1; pIndices[2] = 2;
+	pIndices[3] = 0; pIndices[4] = 2; pIndices[5] = 3;
+
+	D3D11_BUFFER_DESC vertexBufferDesc;
+	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	vertexBufferDesc.ByteWidth = sizeof(QuadVertex) * m_iQuadVerCount;
+	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vertexBufferDesc.CPUAccessFlags = 0;
+	vertexBufferDesc.MiscFlags = 0;
+	vertexBufferDesc.StructureByteStride = 0;
+	
+	D3D11_SUBRESOURCE_DATA vertexData;
+	vertexData.pSysMem = pVertices;
+	vertexData.SysMemPitch = 0;
+	vertexData.SysMemSlicePitch = 0;
+	if(FAILED(m_pDevice->CreateBuffer(&vertexBufferDesc, &vertexData, &m_pQuadVertexBuffer)))
+		return E_FAIL;
+
+	D3D11_BUFFER_DESC  indexBufferDesc;
+	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	indexBufferDesc.ByteWidth = sizeof(_ulong) * m_iQuadIndexCount;
+	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexBufferDesc.CPUAccessFlags = 0;
+	indexBufferDesc.MiscFlags = 0;
+	indexBufferDesc.StructureByteStride = 0;
+
+	D3D11_SUBRESOURCE_DATA indexData;
+	indexData.pSysMem = pIndices;
+	indexData.SysMemPitch = 0;
+	indexData.SysMemSlicePitch = 0;
+	if (FAILED(m_pDevice->CreateBuffer(&indexBufferDesc, &indexData, &m_pQuadIndexBuffer)))
+		return E_FAIL;
+
+	Safe_Delete_Array<QuadVertex*>(pVertices);
+	Safe_Delete_Array<_ulong*>(pIndices);
+
+	return S_OK;
+}
+
+void CRenderer::RenderScreenQuad()
+{
+	_uint stride = sizeof(QuadVertex);
+	_uint offset = 0;
+	
+	m_pContext->IASetVertexBuffers(0, 1, &m_pQuadVertexBuffer, &stride, &offset);
+
+	m_pContext->IASetIndexBuffer(m_pQuadIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+	m_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+}
+
 CRenderer * CRenderer::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
 {
 	CRenderer*	pInstance = new CRenderer(pDevice, pContext);
@@ -2751,5 +2980,8 @@ void CRenderer::Free()
 		Safe_Release(pComponent);
 	m_RenderDebug.clear();
 
+	Safe_Release<ID3D11ShaderResourceView*>(m_pRandomVecMap);
+	Safe_Release<ID3D11Buffer*>(m_pQuadVertexBuffer);
+	Safe_Release<ID3D11Buffer*>(m_pQuadIndexBuffer);
 	//Safe_Release(m_pRandomSrv);
 }

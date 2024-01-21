@@ -138,27 +138,32 @@ HRESULT CLight_Manager::Add_Sun(CGameObject* pSun)
 	return S_OK;
 }
 
-Vec3 CLight_Manager::Get_SunScreenPos()
+Vec4 CLight_Manager::Get_SunScreenPos()
 {
-	if (nullptr == m_pSun)
-		return Vec3(FLT_MAX, FLT_MAX, FLT_MAX);
+	const LIGHTDESC* pLightDesc = GI->Get_LightDesc(0);
+	Vec4 light_ss{};
+	{
+		Vec4 vCamPos = GI->Get_CamPosition();
+		Vec4 vLightDir = pLightDesc->vDirection;
+		Vec4 vLightPos = vCamPos - vLightDir;
 
-	CTransform* pTransform = m_pSun->Get_Component<CTransform>(TEXT("Com_Transform"));
-	Vec3 vSunWorldPos = pTransform->Get_Position();
+		Matrix view = GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
+		Matrix proj = GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ);
+		Matrix viewProj = view * proj;
 
-	CPipeLine* pPipeLine = GET_INSTANCE(CPipeLine);
+		Vec4 ProjPos;
+		ProjPos = Vec4::Transform(vLightPos, viewProj);
 
-	Matrix view = pPipeLine->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
-	Matrix proj = pPipeLine->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ);
-	Matrix viewProj = view * proj;
+		ProjPos.x = (ProjPos.x + 1.0f) * 0.5f;
+		ProjPos.y = (ProjPos.y - 1.0f) * -0.5f;
 
-	Vec3 ProjPos;
-	ProjPos = ::XMVector3TransformCoord(vSunWorldPos, viewProj);
+		light_ss.x = ProjPos.x;
+		light_ss.y = ProjPos.y;
+		light_ss.z = ProjPos.z / ProjPos.w;
+		light_ss.w = 1.0f;
+	}
 
-	ProjPos.x = (ProjPos.x + 1.0f) * 0.5f;
-	ProjPos.y = (ProjPos.y - 1.0f) * -0.5f;
-
-	return ProjPos;
+	return light_ss;
 }
 
 void CLight_Manager::Free()

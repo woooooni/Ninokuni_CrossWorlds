@@ -335,6 +335,14 @@ HRESULT CCharacter::Render()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
 
+	Matrix worldInvTranspose = m_pTransformCom->Get_WorldMatrixInverse();
+	worldInvTranspose.Transpose();
+
+	Matrix worldInvTransposeView = worldInvTranspose * GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW);
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("WorldInvTransposeView", &worldInvTransposeView)))
+		return E_FAIL;
+
 	_float4 vRimColor = { 0.f, 0.f, 0.f, 0.f };
 	if (m_bSuperArmor)
 	{

@@ -29,7 +29,10 @@ float4 g_vLightSpecular = float4(1.0f, 1.0f, 1.0f, 1.0f);
 float4 g_vMtrlAmbient = float4(0.4f, 0.4f, 0.4f, 0.4f);
 float4 g_vMtrlSpecular = float4(1.0f, 1.0f, 1.0f, 1.0f);
 
-
+cbuffer InversTransposeMatBuffer
+{
+    matrix WorldInvTransposeView;
+};
 struct KeyframeDesc
 {
     int iAnimIndex;
@@ -70,12 +73,15 @@ struct VS_IN
 struct VS_OUT
 {
     float4 vPosition : SV_POSITION0;
-    float4 vNormal : NORMAL;
+    float4 vNormal : NORMAL0;
     float2 vTexUV : TEXCOORD0;
     float3 vTangent : TANGENT;
     float3 vBinormal : BINORMAL;
     float4 vProjPos : TEXCOORD1;
     float4 vWorldPosition : TEXCOORD2;
+    
+    float3 vViewNormal : NORMAL1;
+    float3 vPositionView : POSITION;
 };
 
 float4x4 Create_AffineTransform(float3 trans, float4 quat, float3 scale)
@@ -354,6 +360,12 @@ VS_OUT VS_MAIN(VS_IN In)
     Out.vTexUV = In.vTexUV;
     Out.vProjPos = Out.vPosition;
 
+    
+    // SSAO
+    Out.vViewNormal = mul(In.vNormal, (float3x3) WorldInvTransposeView);
+    Out.vPositionView = mul(float4(In.vPosition, 1.0f), matWV);
+    
+    
     return Out;
 }
 
@@ -387,12 +399,15 @@ VS_OUT VS_REFLECT(VS_IN In)
 struct PS_IN
 {
     float4 vPosition : SV_POSITION;
-    float4 vNormal : NORMAL;
+    float4 vNormal : NORMAL0;
     float2 vTexUV : TEXCOORD0;
     float3 vTangent : TANGENT;
     float3 vBinormal : BINORMAL;
     float4 vProjPos : TEXCOORD1;
     float4 vWorldPosition : TEXCOORD2;
+    
+    float3 vViewNormal : NORMAL1;
+    float3 vPositionView : POSITION;
 };
 
 struct PS_OUT
@@ -402,6 +417,7 @@ struct PS_OUT
 	float4		vDepth : SV_TARGET2;
     float4      vBloom : SV_TARGET3;
     float4      vSunMask : SV_TARGET4;
+    float4      vViewNormal : SV_TARGET5;
 };
 
 struct PS_OUT_UI
@@ -437,7 +453,8 @@ PS_OUT PS_MAIN(PS_IN In)
 	Out.vDiffuse += vRimColor;
     Out.vBloom = Caculation_Brightness(Out.vDiffuse) + vRimColor;
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
-
+    Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
+    
     if (0.f == Out.vDiffuse.a)
         discard;
 
@@ -478,7 +495,7 @@ PS_OUT PS_MAIN_REFLECT(PS_IN In)
     Out.vDiffuse += vRimColor;
     Out.vBloom = Caculation_Brightness(Out.vDiffuse) + vRimColor;
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
-
+    Out.vViewNormal = float4(normalize(In.vViewNormal), Out.vDepth.y);
     //if (0.f == Out.vDiffuse.a)
     //    discard;
 
@@ -528,7 +545,9 @@ PS_OUT PS_MAIN_NORMAL(PS_IN In)
 	Out.vDiffuse += vRimColor;
     Out.vBloom = Caculation_Brightness(Out.vDiffuse) + vRimColor;
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
-
+    Out.vViewNormal = float4(normalize(In.vViewNormal), Out.vDepth.y);
+    
+    
     if (0.f == Out.vDiffuse.a)
         discard;
 
@@ -565,7 +584,9 @@ PS_OUT PS_DISSOLVE_DEAD(PS_IN In)
     
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	
+    Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
+    
+    
     if (0.f == Out.vDiffuse.a)
         discard;
 	

@@ -120,6 +120,15 @@ HRESULT CAnimals::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffe
 	if (FAILED(pInstancingShader->Bind_RawValue("g_AnimInstancingDesc", AnimModelDesc.data(), sizeof(ANIMODEL_INSTANCE_DESC) * AnimModelDesc.size())))
 		return E_FAIL;
 
+	// ViewSpace상의 노멀을 찾기 위한 Matrix
+	Matrix worldInvTranspose = m_pTransformCom->Get_WorldMatrixInverse();
+	worldInvTranspose.Transpose();
+
+	Matrix worldInvTransposeView = worldInvTranspose * GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW);
+
+	if (FAILED(pInstancingShader->Bind_Matrix("WorldInvTransposeView", &worldInvTransposeView)))
+		return E_FAIL;
+
 	if (FAILED(m_pModelCom->SetUp_VTF(pInstancingShader)))
 		return E_FAIL;
 
@@ -168,6 +177,16 @@ HRESULT CAnimals::Render_Instance_AnimModel_Shadow(CShader* pInstancingShader, C
 	if (FAILED(pInstancingShader->Bind_RawValue("g_AnimInstancingDesc", AnimModelDesc.data(), sizeof(ANIMODEL_INSTANCE_DESC) * AnimModelDesc.size())))
 		return E_FAIL;
 
+	Matrix worldInvTranspose = m_pTransformCom->Get_WorldMatrixInverse();
+	worldInvTranspose.Transpose();
+
+	Matrix viewInvTranspose = GI->Get_TransformFloat4x4_TransPose(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
+	viewInvTranspose.Transpose();
+
+	if (FAILED(pInstancingShader->Bind_Matrix("WorldInvTranspose", &worldInvTranspose)))
+		return E_FAIL;
+	if (FAILED(pInstancingShader->Bind_Matrix("ViewInvTranspose", &viewInvTranspose)))
+		return E_FAIL;
 
 	if (FAILED(m_pModelCom->SetUp_VTF(pInstancingShader)))
 		return E_FAIL;

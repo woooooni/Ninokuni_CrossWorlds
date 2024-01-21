@@ -35,6 +35,34 @@ void CLensFlare::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
 
+	Vec4 light_ss{};
+	{	
+		const LIGHTDESC* pLightDesc = GI->Get_LightDesc(0);
+		Vec4 vCamPos = GI->Get_CamPosition();
+		Vec4 vLightDir = pLightDesc->vDirection;
+		Vec4 vLightPos = vCamPos - vLightDir;
+
+		Matrix view = GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
+		Matrix proj = GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ);
+		Matrix viewProj = view * proj;
+
+		Vec4 ProjPos;
+		ProjPos = Vec4::Transform(vLightPos, viewProj);
+
+		ProjPos.x = (ProjPos.x + 1.0f) * 0.5f;
+		ProjPos.y = (ProjPos.y - 1.0f) * -0.5f;
+
+		light_ss.x = ProjPos.x;
+		light_ss.y = ProjPos.y;
+		light_ss.z = ProjPos.z / ProjPos.w;
+		light_ss.w = 1.0f;
+	}
+	Vec4 vScreenSunPos = light_ss;
+	if (vScreenSunPos.x > 1.05f || vScreenSunPos.x < -0.05f
+		|| vScreenSunPos.y > 1.05f || vScreenSunPos.y < -0.05f
+		|| vScreenSunPos.z > 1.f || vScreenSunPos.z < 0.f)
+		return;
+
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDERGROUP::RENDER_LENSFLARE, this);
 }
 
@@ -87,10 +115,19 @@ HRESULT CLensFlare::Bind_ShaderResources()
 		Vec4 vLightDir = pLightDesc->vDirection;
 		Vec4 vLightPos = vCamPos - vLightDir;
 
-		Vec4 light_pos = Vec4::Transform(vLightPos, GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ));
-		light_ss.x = 0.5f * light_pos.x / light_pos.w + 0.5f;
-		light_ss.y = -0.5f * light_pos.y / light_pos.w + 0.5f;
-		light_ss.z = light_pos.z / light_pos.w;
+		Matrix view = GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
+		Matrix proj = GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ);
+		Matrix viewProj = view * proj;
+
+		Vec4 ProjPos;
+		ProjPos = Vec4::Transform(vLightPos, viewProj);
+
+		ProjPos.x = (ProjPos.x + 1.0f) * 0.5f;
+		ProjPos.y = (ProjPos.y - 1.0f) * -0.5f;
+		
+		light_ss.x = ProjPos.x;
+		light_ss.y = ProjPos.y;
+		light_ss.z = ProjPos.z / ProjPos.w;
 		light_ss.w = 1.0f;
 	}
 
