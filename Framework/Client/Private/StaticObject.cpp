@@ -131,6 +131,40 @@ HRESULT CStaticObject::Render_ShadowDepth()
 	return S_OK;
 }
 
+HRESULT CStaticObject::Render_Minimap()
+{
+	if (true == m_bEnable)
+		return S_OK;
+
+	if (nullptr == m_pModelCom)
+		return E_FAIL;
+
+	CShader* pShader = m_pModelCom->Get_ModelType() == CModel::TYPE::TYPE_NONANIM ? m_pNonAnimShaderCom : m_pAnimShaderCom;
+
+//	if (FAILED(pShader->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
+//		return E_FAIL;
+	if (FAILED(pShader->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
+		return E_FAIL;
+	if (FAILED(pShader->Bind_Matrix("g_ViewMatrix", &m_pRendererCom->Get_MinimapView())))
+		return E_FAIL;
+	if (FAILED(pShader->Bind_Matrix("g_ProjMatrix", &GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ))))
+		return E_FAIL;
+
+	_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
+	for (_uint i = 0; i < iNumMeshes; ++i)
+	{
+		_uint		iPassIndex = 0;
+
+		if (FAILED(m_pModelCom->SetUp_OnShader(pShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+			return E_FAIL;
+
+		if (FAILED(m_pModelCom->Render(pShader, i, 9)))
+			return E_FAIL;
+	}
+
+	return S_OK;
+}
+
 HRESULT CStaticObject::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
 {
 	return S_OK;

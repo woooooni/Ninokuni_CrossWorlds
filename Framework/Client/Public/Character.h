@@ -124,6 +124,7 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 	virtual HRESULT Render_ShadowDepth();
+	virtual HRESULT Render_Minimap();
 
 public:
 	virtual void Collision_Enter(const COLLISION_INFO& tInfo) override;
@@ -349,6 +350,9 @@ protected:
 	_float m_fDefaultWalkSpeed = 3.f;
 	_float m_fDefaultRunSpeed = 6.f;
 
+protected: // For UI Minimap
+	_float4x4 m_ViewMatrix;
+	_float4 m_vCamPosition;
 
 private:
 	void Tick_MotionTrail(_float fTimeDelta);

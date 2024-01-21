@@ -13,6 +13,7 @@ CTarget_Manager::CTarget_Manager()
 HRESULT CTarget_Manager::Reserve_Manager(ID3D11Device* pDevice, _uint iWinSizeX, _uint iWinSizeY)
 {
 	Ready_Shadow_DSV(pDevice, iWinSizeX, iWinSizeY);
+	Ready_Minimap_DSV(pDevice, iWinSizeX, iWinSizeY);
 	Ready_UI_DSV(pDevice, iWinSizeX, iWinSizeY);
 
 	return S_OK;
@@ -46,6 +47,41 @@ HRESULT CTarget_Manager::Ready_Shadow_DSV(ID3D11Device* pDevice, _uint iWinSizeX
 		return E_FAIL;
 
 	if (FAILED(pDevice->CreateDepthStencilView(pDSV, nullptr, &m_pShadowDSV)))
+		return E_FAIL;
+
+	Safe_Release(pDSV);
+
+	return S_OK;
+}
+
+HRESULT CTarget_Manager::Ready_Minimap_DSV(ID3D11Device* pDevice, _uint iWinSizeX, _uint iWinSizeY)
+{
+	if (nullptr == pDevice)
+		return E_FAIL;
+
+	ID3D11Texture2D* pDSV = nullptr;
+
+	D3D11_TEXTURE2D_DESC	TextureDesc;
+	ZeroMemory(&TextureDesc, sizeof(D3D11_TEXTURE2D_DESC));
+
+	TextureDesc.Width = iWinSizeX;
+	TextureDesc.Height = iWinSizeY;
+	TextureDesc.MipLevels = 1;
+	TextureDesc.ArraySize = 1;
+	TextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+	TextureDesc.SampleDesc.Quality = 0;
+	TextureDesc.SampleDesc.Count = 1;
+
+	TextureDesc.Usage = D3D11_USAGE_DEFAULT;
+	TextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	TextureDesc.CPUAccessFlags = 0;
+	TextureDesc.MiscFlags = 0;
+
+	if (FAILED(pDevice->CreateTexture2D(&TextureDesc, nullptr, &pDSV)))
+		return E_FAIL;
+
+	if (FAILED(pDevice->CreateDepthStencilView(pDSV, nullptr, &m_pMinimapDSV)))
 		return E_FAIL;
 
 	Safe_Release(pDSV);
@@ -157,6 +193,31 @@ HRESULT CTarget_Manager::Begin_MRT(ID3D11DeviceContext* pContext, const wstring 
 	pContext->OMSetRenderTargets(iNumRTVs, pRenderTargets, m_pDSV);
 
 	return	S_OK;
+}
+
+HRESULT CTarget_Manager::Begin_Minimap_MRT(ID3D11DeviceContext* pContext, const wstring& strMRTTag, _bool bClear)
+{
+	list<CRenderTarget*>* pMRTList = Find_MRT(strMRTTag);
+
+	if (nullptr == pMRTList)
+		return E_FAIL;
+
+	pContext->OMGetRenderTargets(8, m_pPrevRTVs, &m_pDSV);
+
+	ID3D11RenderTargetView* pRenderTargets[8] = {};
+
+	_uint			iNumRTVs = 0;
+
+	for (auto& pRenderTarget : *pMRTList)
+	{
+		pRenderTargets[iNumRTVs++] = pRenderTarget->Get_RTV();
+		if (bClear)
+			pRenderTarget->Clear();
+	}
+
+	pContext->OMSetRenderTargets(iNumRTVs, pRenderTargets, m_pMinimapDSV);
+
+	return S_OK;
 }
 
 HRESULT CTarget_Manager::Begin_Shadow_MRT(ID3D11DeviceContext* pContext, const wstring& strMRTTag)
@@ -326,6 +387,7 @@ void CTarget_Manager::Free()
 	
 
 	m_pDSV = nullptr;
+	Safe_Release(m_pMinimapDSV);
 	Safe_Release(m_pShadowDSV);
 	Safe_Release(m_pUIDSV);
 }

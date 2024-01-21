@@ -512,6 +512,23 @@ PS_OUT PS_MAIN_REFLECT(PS_IN In)
     return Out;
 }
 
+struct PS_OUT_MINIMAP
+{
+    float4      vMinimap : SV_TARGET6;
+};
+
+PS_OUT_MINIMAP PS_MAIN_MINIMAP(PS_IN In)
+{
+    PS_OUT_MINIMAP		Out = (PS_OUT_MINIMAP)0;
+
+    Out.vMinimap= g_DiffuseTexture.Sample(PointSampler, In.vTexUV);
+
+ //   if (0.3 >= Out.vDiffuse.a)
+ //       discard;
+
+    return Out;
+}
+
 RasterizerState CullClockWiseRS
 {
     AntialiasedLineEnable = false;
@@ -675,7 +692,7 @@ technique11 DefaultTechnique
 		PixelShader = compile ps_5_0 PS_MAIN();
 	}
 
-	pass Temp9
+	pass UI_Minimap
 	{
 		// 9
 		SetRasterizerState(RS_Default);
@@ -686,7 +703,7 @@ technique11 DefaultTechnique
 		GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-		PixelShader = compile ps_5_0 PS_MAIN();
+		PixelShader = compile ps_5_0 PS_MAIN_MINIMAP();
 	}
 
 	pass Shadow_Depth

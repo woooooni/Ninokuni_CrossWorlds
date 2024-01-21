@@ -15,7 +15,7 @@ public:
         RENDER_DECAL, RENDER_EFFECT, RENDER_LENSFLARE, RENDER_GODRAY, RENDER_ALPHABLEND,
 
 		RENDER_UI, 
-		/*RENDER_SHADOW_UI,*/ RENDER_NONBLEND_UI,
+		/*RENDER_SHADOW_UI,*/ RENDER_NONBLEND_UI,RENDER_UI_MINIMAP,
 		RENDER_UI_EFFECT_NONBLEND, RENDER_UI_EFFECT_BLEND,
 		RENDER_CURSOR,
 
@@ -115,6 +115,9 @@ public: // UI Setting Option을 위한 Get/Set
 	_bool Get_PbrDraw() { return m_bPbrDraw; }
 	void Set_PbrDraw(_bool bSet) { m_bPbrDraw = bSet; }
 
+	void Set_MinimapView(_float4x4 matView) { m_MinimapView = matView; }
+	_float4x4 Get_MinimapView() { return m_MinimapView; }
+
 public:
 	HRESULT Add_RenderGroup(RENDERGROUP eRenderGroup, class CGameObject* pGameObject);
 	HRESULT Add_RenderGroup_Instancing(RENDERGROUP eRenderGroup, INSTANCING_SHADER_TYPE eShaderType, class CGameObject* pGameObject, _float4x4 WorldMatrix);
@@ -185,6 +188,7 @@ private:
 	HRESULT Render_OutLine_UI();
 
 	HRESULT Render_Deferred_UI();
+	HRESULT Render_UI_Minimap();
 	HRESULT Render_UIEffectNonBlend();
 	HRESULT Render_UIEffectBlend();
 
@@ -264,6 +268,9 @@ private:
 
 	// 구현 필요
 	_bool   m_bPbrDraw  = false;
+
+private: // Minimap
+	_float4x4 m_MinimapView;
 
 private:
 	_float	m_fBias = 0.2f;

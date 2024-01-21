@@ -38,6 +38,8 @@ public:
 
 	virtual HRESULT Render_Instance_Shadow(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices) { return S_OK; }
 
+	virtual HRESULT Render_Minimap() { return S_OK; }
+
 public:
 	virtual void Enter_Scene() { };
 	virtual void Return_Pool() { };
