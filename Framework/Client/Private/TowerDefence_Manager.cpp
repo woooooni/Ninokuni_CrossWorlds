@@ -24,6 +24,7 @@
 #include "GameObject.h"
 #include "DefenceInvasion_Portal.h"
 
+#include "UIMinigame_Manager.h"
 
 
 
@@ -143,10 +144,13 @@ void CTowerDefence_Manager::Prepare_Defence()
 	
 
 	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
+	CUIMinigame_Manager::GetInstance()->OnOff_TowerDefence_Select(true);
 }
 
 void CTowerDefence_Manager::Start_Defence()
 {
+	CUIMinigame_Manager::GetInstance()->OnOff_TowerDefence_Select(false);
+
 	m_eCurrentPhase = TOWER_DEFENCE_PHASE::DEFENCE_PROGRESS;
 	if (nullptr != m_pPicked_Object)
 	{

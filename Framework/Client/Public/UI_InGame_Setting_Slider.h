@@ -16,9 +16,11 @@ protected:
 public:
 	_int Get_Percent() { return m_iPercent; }
 	void Set_Percent(_int iPercent) { m_iPercent = iPercent; }
-	virtual void Set_Active(_bool bActive);
 
+	virtual void Set_Active(_bool bActive);
 	void Set_IsArrived(_bool bArrived) { m_bIsArrived = bArrived; }
+
+	void Set_DefaultSetting();
 
 public:
 	virtual HRESULT	Initialize_Prototype();

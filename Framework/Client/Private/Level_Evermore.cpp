@@ -15,6 +15,7 @@
 
 #include "UI_Manager.h"
 #include "UI_Fade.h"
+#include "UIMinigame_Manager.h"
 
 #include "Water.h"
 #include "Light.h"
@@ -429,6 +430,8 @@ HRESULT CLevel_Evermore::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 
 	CUI_Manager::GetInstance()->Ready_CharacterTypeForUI(eCharacterType);
 	CUI_Manager::GetInstance()->Ready_ElementalTypeForUI(eElementalType);
+
+	CUIMinigame_Manager::GetInstance()->Ready_MinigameUI_GameObject(LEVELID::LEVEL_EVERMORE);
 
 	return S_OK;
 }

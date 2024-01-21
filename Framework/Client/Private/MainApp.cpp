@@ -18,6 +18,7 @@
 #include "UIDamage_Manager.h"
 #include "Quest_Manager.h"
 #include "TowerDefence_Manager.h"
+#include "UIMinigame_Manager.h"
 
 
 #include "Game_Manager.h"
@@ -62,7 +63,7 @@ HRESULT CMainApp::Initialize()
 	{
 		g_eStartLevel = LEVELID::LEVEL_LOGO; /* 시작할 레벨 타입 */
 
-		g_eLoadCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH; /* 모델 로드할 캐릭터 타입 */
+		g_eLoadCharacter = LOAD_CHARACTER_TYPE::ALL_CH; /* 모델 로드할 캐릭터 타입 */
 
 		g_ePlayCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH; /* 게임 플레이 캐릭터 타입 */
 	}
@@ -177,6 +178,9 @@ HRESULT CMainApp::Initialize_Client()
 		return E_FAIL;
 
 	if (FAILED(CUIDamage_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+		return E_FAIL;
+
+	if (FAILED(CUIMinigame_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
 		return E_FAIL;
 
 	if (FAILED(Ready_CameraObject()))
@@ -1286,6 +1290,13 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Setting/UI_Setting_InGame_Reset.png")))))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_ImajinnSection_PlayerSlots"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/ImajinnSlot/UI_Imajinn_PlayerSlot_Renewal_%d.png"), 3))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_ImajinnSection_PlayerSlot_Selected"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/ImajinnSlot/UI_ImajinnSelect.png")))))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -1624,6 +1635,7 @@ void Client::CMainApp::Free()
 	CPicking_Manager::GetInstance()->DestroyInstance();
 	CUIDamage_Manager::GetInstance()->DestroyInstance();
 	CUI_Manager::GetInstance()->DestroyInstance();
+	CUIMinigame_Manager::GetInstance()->DestroyInstance();
 	CItem_Manager::GetInstance()->DestroyInstance();
 	CWeapon_Manager::GetInstance()->DestroyInstance();
 	CSkill_Manager::GetInstance()->DestroyInstance();

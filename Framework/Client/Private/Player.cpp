@@ -5,6 +5,7 @@
 #include "Character_Manager.h"
 #include "Camera_Manager.h"
 #include "Camera.h"
+#include "UI_Manager.h"
 
 
 CPlayer::CPlayer()
@@ -94,6 +95,8 @@ HRESULT CPlayer::Tag_Character(CHARACTER_TYPE eType)
 
 		if (FAILED(m_pCharacter->Tag_In(pPrevCharacterTransform->Get_Position())))
 			return E_FAIL;
+
+		CUI_Manager::GetInstance()->Update_PlayerSlot(eType);
 	}
 	return S_OK;
 }
