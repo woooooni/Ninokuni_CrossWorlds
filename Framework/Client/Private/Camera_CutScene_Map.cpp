@@ -251,10 +251,19 @@ HRESULT CCamera_CutScene_Map::Stop_CutScene(const _bool& bClearReservedCutScene)
 
 HRESULT CCamera_CutScene_Map::Start_CutScene(const LEVELID& eLevelID)
 {
+	/* Exception */
+	const _uint iCurLevel = GI->Get_CurrentLevel();
+	{
+		if (eLevelID != iCurLevel && LEVELID::LEVEL_TOOL != iCurLevel)
+			return E_FAIL;
+	}
+
 	switch (eLevelID)
 	{
 	case LEVELID::LEVEL_EVERMORE:
 	{
+
+		/* Reserve Fade */
 		Reserve_Fade(1.f, true, 1.f, true);
 
 		/* CutScene - Evermore */

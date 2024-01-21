@@ -706,15 +706,29 @@ void CCamera_Follow::Check_WideView(_float fTimeDelta)
 void CCamera_Follow::Test(_float fTimeDelta)
 {
 	/* Quater View */
-	if (KEY_TAP(KEY::INSERT))
-		CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::QUATER);
+	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::INSERT))
+	{
+		const _uint iCurLevel = GI->Get_CurrentLevel();
+		{
+			if (LEVELID::LEVEL_EVERMORE == iCurLevel || LEVELID::LEVEL_TOOL == iCurLevel)
+			{
+				CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::QUATER);
+			}
+		}
+	}
 
 	/* CutScene - Evermore */
-	if (KEY_TAP(KEY::DEL))
+	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::DEL))
 	{
-		CCamera_CutScene_Map* pCutSceneMap = dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP));
-		if (nullptr != pCutSceneMap)
-			pCutSceneMap->Start_CutScene(LEVELID::LEVEL_EVERMORE);
+		const _uint iCurLevel = GI->Get_CurrentLevel();
+		{
+			if (LEVELID::LEVEL_EVERMORE == iCurLevel || LEVELID::LEVEL_TOOL == iCurLevel)
+			{
+				CCamera_CutScene_Map* pCutSceneMap = dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP));
+				if (nullptr != pCutSceneMap)
+					pCutSceneMap->Start_CutScene(LEVELID::LEVEL_EVERMORE);		
+			}
+		}
 	}
 }
 

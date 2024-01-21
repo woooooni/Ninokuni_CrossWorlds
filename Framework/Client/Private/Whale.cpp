@@ -7,6 +7,9 @@
 #include "State_BackFlip_01.h"
 #include "State_BackFlip_02.h"
 
+#include "Camera_Manager.h"
+#include "Camera_CutScene_Map.h"
+
 CWhale::CWhale(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType)
 	: CAnimals(pDevice, pContext, strObjectTag, eType)
 {
@@ -45,6 +48,32 @@ HRESULT CWhale::Initialize(void* pArg)
 
 void CWhale::Tick(_float fTimeDelta)
 {
+	if (KEY_TAP(KEY::INSERT))
+	{
+		_uint iCutLevel = GI->Get_CurrentLevel();
+		CGameObject* pObject = GI->Find_GameObject(iCutLevel, LAYER_TYPE::LAYER_DYNAMIC, TEXT("Animal_Whale"));
+		if (nullptr != pObject)
+		{
+			CWhale* pWhale = static_cast<CWhale*>(pObject);
+
+			pWhale->Get_Component<CTransform>(L"Com_Transform")->Set_State(CTransform::STATE_POSITION, pWhale->Get_RomingPoints()->front());
+			pWhale->Get_Component<CStateMachine>(L"Com_StateMachine")->Change_State(CAnimals::STATE_SWIM);
+			pWhale->Set_Flip(true);
+		}
+
+		CCamera_CutScene_Map* pCutSceneMap = dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP));
+		if (nullptr != pCutSceneMap)
+		{
+			const _uint iCurLevel = GI->Get_CurrentLevel();
+			{
+				if (LEVELID::LEVEL_ICELAND == iCurLevel || LEVELID::LEVEL_TOOL == iCurLevel)
+				{
+					pCutSceneMap->Start_CutScene("Winter_Whale", true);
+				}
+			}
+		}
+	}
+
 	if(true == m_bIsFlip)
 		m_pStateMachineCom->Tick_State(fTimeDelta);
 

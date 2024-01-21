@@ -374,7 +374,7 @@ void CCamera_Quater::Tick_Rotation(const _float fDeltaTime)
 
 void CCamera_Quater::Test(_float fTimeDelta)
 {
-	if (KEY_TAP(KEY::INSERT))
+	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::INSERT))
 	{
 		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
 		if (nullptr != pFollowCam)

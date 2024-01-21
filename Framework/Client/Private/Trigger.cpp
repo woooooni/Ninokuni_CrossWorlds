@@ -52,20 +52,6 @@ void CTrigger::Tick(_float fTimeDelta)
 {
 	GI->Add_CollisionGroup(COLLISION_GROUP::TRIGGER, this);
 	__super::Tick(fTimeDelta);
-
-	if (KEY_TAP(KEY::INSERT))
-	{
-		_uint iCutLevel = GI->Get_CurrentLevel();
-		CGameObject* pObject = GI->Find_GameObject(iCutLevel, LAYER_TYPE::LAYER_DYNAMIC, TEXT("Animal_Whale"));
-		if (nullptr != pObject)
-		{
-			CWhale* pWhale = static_cast<CWhale*>(pObject);
-	
-			pWhale->Get_Component<CTransform>(L"Com_Transform")->Set_State(CTransform::STATE_POSITION, pWhale->Get_RomingPoints()->front());
-			pWhale->Get_Component<CStateMachine>(L"Com_StateMachine")->Change_State(CAnimals::STATE_SWIM);
-			pWhale->Set_Flip(true);
-		}
-	}
 }
 
 void CTrigger::LateTick(_float fTimeDelta)

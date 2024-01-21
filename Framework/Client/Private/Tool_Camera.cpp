@@ -43,18 +43,25 @@ void CTool_Camera::Tick(_float fTimeDelta)
 		CCamera* pCurCam = CCamera_Manager::GetInstance()->Get_CurCamera();
 		if (nullptr != pCurCam)
 		{
+			CCharacter* pCharacter = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
 			/* Cut Scene */
 			if (m_bShow_Prop_CutScene)
 			{
-				CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
-				CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CStateMachine>(L"Com_StateMachine")->Change_State(CCharacter::NEUTRAL_IDLE);
+				if (nullptr != pCharacter)
+				{
+					pCharacter->Set_All_Input(false);
+					pCharacter->Get_Component<CStateMachine>(L"Com_StateMachine")->Change_State(CCharacter::NEUTRAL_IDLE);
+				}
 
 				Show_Camera_Prop_CutScene_Map(fTimeDelta);
 				ImGui::End();
 				return;
 			}
 			else
-				CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
+			{
+				if(nullptr != pCharacter)
+					pCharacter->Set_All_Input(true);
+			}
 
 			/* 카메라 공통 옵션 */
 			Show_Camera_Prop_Default(pCurCam);
