@@ -11,6 +11,10 @@
 #include "FileUtils.h"
 #include "Utils.h"
 
+#include "Game_Manager.h"
+#include "Player.h"
+#include "Character.h"
+
 CTool_Camera::CTool_Camera(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CTool(pDevice, pContext)
 {
@@ -42,10 +46,15 @@ void CTool_Camera::Tick(_float fTimeDelta)
 			/* Cut Scene */
 			if (m_bShow_Prop_CutScene)
 			{
+				CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
+				CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CStateMachine>(L"Com_StateMachine")->Change_State(CCharacter::NEUTRAL_IDLE);
+
 				Show_Camera_Prop_CutScene_Map(fTimeDelta);
 				ImGui::End();
 				return;
 			}
+			else
+				CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
 
 			/* 카메라 공통 옵션 */
 			Show_Camera_Prop_Default(pCurCam);
@@ -431,7 +440,7 @@ void CTool_Camera::Show_Camera_Prop_CutScene_Map(_float fTimeDelta)
 				/* 전체 컷신 리스트 */
 				{
 					ImGui::Text(u8"전체 컷신 리스트 (count : %d)", CutSceneDescs.size());
-					if (ImGui::BeginListBox("##CutScene_List", ImVec2(300.f, 70.f)))
+					if (ImGui::BeginListBox("##CutScene_List", ImVec2(300.f, 150.f)))
 					{
 						for (size_t i = 0; i < CutSceneDescs.size(); ++i)
 						{
