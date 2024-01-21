@@ -159,6 +159,9 @@ HRESULT CBuilding::Render_Instance_Shadow(CShader* pInstancingShader, CVIBuffer_
 
 	Matrix worldInvTransposeView = worldInvTranspose * GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW);
 
+	if (FAILED(pInstancingShader->Bind_Matrix("WorldInvTransposeView", &worldInvTransposeView)))
+		return E_FAIL;
+
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{

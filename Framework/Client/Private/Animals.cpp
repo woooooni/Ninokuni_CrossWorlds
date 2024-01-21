@@ -180,12 +180,9 @@ HRESULT CAnimals::Render_Instance_AnimModel_Shadow(CShader* pInstancingShader, C
 	Matrix worldInvTranspose = m_pTransformCom->Get_WorldMatrixInverse();
 	worldInvTranspose.Transpose();
 
-	Matrix viewInvTranspose = GI->Get_TransformFloat4x4_TransPose(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
-	viewInvTranspose.Transpose();
+	Matrix worldInvTransposeView = worldInvTranspose * GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW);
 
-	if (FAILED(pInstancingShader->Bind_Matrix("WorldInvTranspose", &worldInvTranspose)))
-		return E_FAIL;
-	if (FAILED(pInstancingShader->Bind_Matrix("ViewInvTranspose", &viewInvTranspose)))
+	if (FAILED(pInstancingShader->Bind_Matrix("WorldInvTransposeView", &worldInvTransposeView)))
 		return E_FAIL;
 
 	if (FAILED(m_pModelCom->SetUp_VTF(pInstancingShader)))
