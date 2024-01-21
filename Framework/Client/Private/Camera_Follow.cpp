@@ -304,6 +304,29 @@ void CCamera_Follow::Set_Defualt_Setting()
 	m_tLookAtOffset.vCurVec = Cam_LookAtOffset_Follow_SholderView_Default;
 }
 
+void CCamera_Follow::Set_Active(const _bool bActive)
+{
+	__super::Set_Active(bActive);
+
+	if (bActive)
+	{
+		/* 이전 카메라가 컷신 카메라였다면 */
+		if (CAMERA_TYPE::CUTSCENE_MAP == CCamera_Manager::GetInstance()->Get_PrevCamera()->Get_Key())
+		{
+			/* Ui On */
+			if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
+				CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
+
+			/* Input On */
+			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
+
+			/* Default Setting */
+			Reset_WideView_To_DefaultView();
+			Set_Default_Position();
+		}
+	}
+}
+
 HRESULT CCamera_Follow::Start_LockOn(CGameObject* pTargetObject, const Vec4& vTargetOffset, const Vec4& vLookAtOffset, const _float& fLockOnBlendingTime)
 {
 	if (nullptr == pTargetObject || LOCK_PROGRESS::OFF != m_eLockProgress)

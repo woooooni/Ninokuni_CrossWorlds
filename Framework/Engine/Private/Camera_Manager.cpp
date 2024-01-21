@@ -106,9 +106,9 @@ HRESULT CCamera_Manager::Set_PrevCamera()
 
 	m_pCurCamera = m_pPrevCamera;
 
-	m_pCurCamera->Set_Active(true);
-
 	m_pPrevCamera = pTemp;
+
+	m_pCurCamera->Set_Active(true);
 
 	return S_OK;
 }
