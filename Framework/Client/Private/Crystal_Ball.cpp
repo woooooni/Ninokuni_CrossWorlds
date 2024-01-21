@@ -5,6 +5,7 @@
 #include "Effect_Manager.h"
 #include "Particle_Manager.h"
 #include "Character.h"
+#include "Particle_Manager.h"
 
 CCrystal_Ball::CCrystal_Ball(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CCharacter_Projectile(pDevice, pContext, L"Crystal_Tower_Projectile")
@@ -40,6 +41,9 @@ HRESULT CCrystal_Ball::Initialize(void* pArg)
 
 	m_fDeletionTime = 100.f;
 
+	
+
+		
 	return S_OK;
 }
 
@@ -47,7 +51,9 @@ void CCrystal_Ball::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
-	GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fAccEffect, CUtils::Random_Float(0.1f, 0.1f), fTimeDelta, TEXT("Particle_Smoke"), this);
+	
+	GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fAccEffect, CUtils::Random_Float(0.1f, 0.1f), fTimeDelta, TEXT("Particle_Defence_Crystal_Projectile"), this);
+
 
 	Tick_Target(fTimeDelta);
 	

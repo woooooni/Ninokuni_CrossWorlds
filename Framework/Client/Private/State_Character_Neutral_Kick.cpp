@@ -30,13 +30,13 @@ void CState_Character_Neutral_Kick::Enter_State(void* pArg)
 
 void CState_Character_Neutral_Kick::Tick_State(_float fTimeDelta)
 {
-
     m_fAccIdleMotion += fTimeDelta;
     if (m_fAccIdleMotion >= m_fIdleMotionTime)
     {
         m_fAccIdleMotion = 0.f;
         m_pModelCom->Set_Animation(m_AnimIndices[GI->RandomInt(1, 2)]);
     }
+
 }
 
 void CState_Character_Neutral_Kick::Exit_State()

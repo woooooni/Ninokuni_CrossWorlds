@@ -356,7 +356,7 @@ void CTowerDefence_Manager::Picking_Position()
 {
 	if (nullptr == m_pPicked_Object || nullptr == m_pPicked_ObjectTransform)
 		return;
- 
+	
 	list<CGameObject*>& PickingObjects = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_GROUND);
 	for (auto& pObject : PickingObjects)
 	{
@@ -366,7 +366,7 @@ void CTowerDefence_Manager::Picking_Position()
 
 		for (auto& pMesh : pModel->Get_Meshes())
 		{
-			if (true == CPicking_Manager::GetInstance()->Is_Picking(pTransform, pMesh, true, &vPickingPos))
+			if (true == CPicking_Manager::GetInstance()->Is_DefencePicking(pTransform, pMesh, true, &vPickingPos))
 			{
 				if (nullptr != m_pPicked_ObjectTransform)
 				{
@@ -375,7 +375,6 @@ void CTowerDefence_Manager::Picking_Position()
 				}
 			}
 		}
-
 	}
 }
 

@@ -63,8 +63,11 @@ void CState_Character_Neutral_Idle::Tick_State(_float fTimeDelta)
         m_pModelCom->Set_Animation(m_iCurrAnimIndex);
     }
 
-     __super::Neutral_Idle_Input(fTimeDelta);
-     __super::Skill_Input(fTimeDelta);
+    if (false == __super::Tag_Input(fTimeDelta))
+    {
+        __super::Neutral_Idle_Input(fTimeDelta);
+        __super::Skill_Input(fTimeDelta);
+    }
 }
 
 void CState_Character_Neutral_Idle::Exit_State()

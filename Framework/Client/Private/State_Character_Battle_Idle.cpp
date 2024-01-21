@@ -35,7 +35,6 @@ void CState_Character_Battle_Idle::Enter_State(void* pArg)
     CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
     if (nullptr != pFollowCam)
         pFollowCam->Set_CanInput(false);
-
 }
 
 void CState_Character_Battle_Idle::Tick_State(_float fTimeDelta)
@@ -61,8 +60,12 @@ void CState_Character_Battle_Idle::Tick_State(_float fTimeDelta)
         }
     }
 
-    __super::Battle_Idle_Input(fTimeDelta);
-    __super::Skill_Input(fTimeDelta);
+    if (false == __super::Tag_Input(fTimeDelta))
+    {
+        __super::Battle_Idle_Input(fTimeDelta);
+        __super::Skill_Input(fTimeDelta);
+    }
+    
 }
 
 void CState_Character_Battle_Idle::Exit_State()

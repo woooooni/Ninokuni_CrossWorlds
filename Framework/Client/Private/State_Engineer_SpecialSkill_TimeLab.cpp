@@ -26,6 +26,8 @@ void CState_Engineer_SpecialSkill_TimeLab::Enter_State(void* pArg)
     if (pTransformCom == nullptr)
         return;
     GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Engineer_Skill_TimeLab"), pTransformCom->Get_WorldMatrix(), m_pCharacter);
+
+    m_pCharacter->Disappear_Weapon();
 }
 
 void CState_Engineer_SpecialSkill_TimeLab::Tick_State(_float fTimeDelta)

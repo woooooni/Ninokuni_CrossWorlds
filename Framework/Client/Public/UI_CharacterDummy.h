@@ -14,7 +14,7 @@ public:
 	_bool Get_Active() { return m_bActive; }
 	void Set_Active(_bool bActive);
 
-	class CUI_Dummy_Weapon* Get_Weapon() { return m_pWeapon; }
+	class CUI_Dummy_Weapon* Get_Weapon() { return m_pDummyWeapon; }
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -30,7 +30,7 @@ protected:
 	virtual HRESULT Ready_Colliders() override;
 
 private:
-	class CUI_Dummy_Weapon* m_pWeapon = { nullptr };
+	class CUI_Dummy_Weapon* m_pDummyWeapon = { nullptr };
 	CHARACTER_TYPE m_eCharacterType = { CHARACTER_TYPE::SWORD_MAN };
 
 	_bool m_bActive = { false };

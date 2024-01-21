@@ -19,6 +19,7 @@ HRESULT CState_Engineer_Skill_BurstCall::Initialize(const list<wstring>& Animati
 
 void CState_Engineer_Skill_BurstCall::Enter_State(void* pArg)
 {
+    m_pCharacter->Appear_Weapon();
     m_pCharacter->Look_For_Target();
     m_pModelCom->Set_Animation(m_AnimIndices[0], MIN_TWEEN_DURATION);
 

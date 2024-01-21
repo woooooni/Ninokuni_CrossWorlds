@@ -34,8 +34,11 @@ void CState_Character_Battle_Run::Tick_State(_float fTimeDelta)
 {
     GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fEffectAcc, CUtils::Random_Float(0.2f, 0.4f), fTimeDelta, TEXT("Particle_Smoke"), m_pCharacter, _float3(CUtils::Random_Float(-0.1f, 0.1f), CUtils::Random_Float(0.2f, 0.4f), CUtils::Random_Float(-0.1f, 0.1f)));
 
-    __super::Battle_Run_Input(fTimeDelta);
-    __super::Skill_Input(fTimeDelta);
+    if (false == __super::Tag_Input(fTimeDelta))
+    {
+        __super::Battle_Run_Input(fTimeDelta);
+        __super::Skill_Input(fTimeDelta);
+    }
 }
 
 void CState_Character_Battle_Run::Exit_State()

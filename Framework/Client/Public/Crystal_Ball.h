@@ -38,7 +38,9 @@ private:
 	_float m_fAccRotation = 0.f;
 
 private:
-	CGameObject* m_pTarget = nullptr;
+	class CParticle* m_pParticle = nullptr;
+private:
+	class CGameObject* m_pTarget = nullptr;
 
 public:
 	static CCrystal_Ball* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

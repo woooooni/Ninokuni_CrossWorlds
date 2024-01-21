@@ -27,6 +27,9 @@ void CState_Engineer_BurstSkill_Destruction::Enter_State(void* pArg)
     if (pTransformCom == nullptr)
         return;
     GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Engineer_Skill_Destruction"), pTransformCom->Get_WorldMatrix(), m_pCharacter);
+
+    m_pCharacter->Appear_Weapon();
+
 }
 
 void CState_Engineer_BurstSkill_Destruction::Tick_State(_float fTimeDelta)

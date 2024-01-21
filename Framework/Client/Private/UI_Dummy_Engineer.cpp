@@ -71,7 +71,7 @@ HRESULT CUI_Dummy_Engineer::Initialize(void* pArg)
 	m_pRigidBodyCom->Set_Use_Gravity(false);
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(2.6f, 1.25f, -12.5f, 1.f));
-	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 1.f), XMConvertToRadians(135));
+	m_pTransformCom->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(135));
 
 	CGameObject* pNameTag = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Lobby_NameTag"), LAYER_TYPE::LAYER_UI);
 	if (nullptr == pNameTag)

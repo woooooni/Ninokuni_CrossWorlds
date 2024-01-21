@@ -105,6 +105,86 @@ _bool CPicking_Manager::Is_Picking(CTransform* pTransform, CVIBuffer* pBuffer, _
 	return fMinDistance < 999999.f;
 }
 
+_bool CPicking_Manager::Is_DefencePicking(CTransform* pTransform, CVIBuffer* pBuffer, _bool bCutPos, _float4* vWorldOut)
+{
+	if (nullptr == pTransform)
+		return false;
+
+	POINT pt;
+	GetCursorPos(&pt);
+	ScreenToClient(g_hWnd, &pt);
+
+	_vector vMousePos = XMVectorSet(
+		_float(pt.x / (g_iWinSizeX * .5f) - 1.f),
+		_float(pt.y / (g_iWinSizeY * -.5f) + 1.f),
+		1.f, 1.f);
+
+
+
+	_matrix ViewMatrixInv = GI->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
+	_matrix ProjMatrixInv = GI->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ);
+
+	vMousePos = XMVector3TransformCoord(vMousePos, ProjMatrixInv);
+
+	XMVECTOR vRayDir, vRayPosition;
+
+	vRayPosition = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+	vRayDir = vMousePos - vRayPosition;
+
+
+	vMousePos = XMVector3TransformCoord(vRayPosition, ViewMatrixInv);
+	vRayDir = XMVector3TransformNormal(vRayDir, ViewMatrixInv);
+
+
+	_matrix WordlMatrixInv = pTransform->Get_WorldMatrixInverse();
+
+	vRayPosition = XMVector3TransformCoord(vMousePos, WordlMatrixInv);
+	vRayDir = XMVector3TransformNormal(vRayDir, WordlMatrixInv);
+
+	vRayDir = XMVector3Normalize(vRayDir);
+
+	_float fDistnace = 0.f;
+	_float fMinDistance = 999999.f;
+
+	const vector<_float3>& Vertices = pBuffer->Get_VertexLocalPositions();
+	const vector<FACEINDICES32>& Indices = pBuffer->Get_FaceIndices();
+
+	for (_uint i = 0; i < Indices.size(); ++i)
+	{
+		_vector v0, v1, v2;
+		v0 = XMVectorSet(Vertices[Indices[i]._0].x, Vertices[Indices[i]._0].y, Vertices[Indices[i]._0].z, 1.f);
+		v1 = XMVectorSet(Vertices[Indices[i]._1].x, Vertices[Indices[i]._1].y, Vertices[Indices[i]._1].z, 1.f);
+		v2 = XMVectorSet(Vertices[Indices[i]._2].x, Vertices[Indices[i]._2].y, Vertices[Indices[i]._2].z, 1.f);
+
+		if (true == TriangleTests::Intersects(vRayPosition, vRayDir, v0, v1, v2, fDistnace))
+		{
+			if (fDistnace < fMinDistance)
+			{
+				_float4 vPickingPos;
+				XMStoreFloat4(&vPickingPos, 
+					XMVector3TransformCoord(vRayPosition, pTransform->Get_WorldMatrix()) 
+					+ XMVector3TransformNormal(vRayDir, pTransform->Get_WorldMatrix()) * fDistnace);
+
+				if (vWorldOut != nullptr)
+				{
+					if (bCutPos)
+					{
+						vPickingPos.x = floorf(vPickingPos.x + 0.5f);
+						vPickingPos.z = floorf(vPickingPos.z + 0.5f);
+					}
+
+					if (vPickingPos.y >= (*vWorldOut).y)
+					{
+						*vWorldOut = vPickingPos;
+						fMinDistance = fDistnace;
+					}
+				}
+			}
+		}
+	}
+	return fMinDistance < 999999.f;
+}
+
 _bool CPicking_Manager::Is_TestPicking(CTransform* pTransform, CVIBuffer* objectBuffer, Vec4* vPos)
 {
 	POINT pt;

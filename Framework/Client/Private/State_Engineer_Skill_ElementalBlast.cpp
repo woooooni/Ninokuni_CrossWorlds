@@ -19,6 +19,7 @@ HRESULT CState_Engineer_Skill_ElementalBlast::Initialize(const list<wstring>& An
 
 void CState_Engineer_Skill_ElementalBlast::Enter_State(void* pArg)
 {
+    m_pCharacter->Appear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
     m_pCharacter->Look_For_Target();
 

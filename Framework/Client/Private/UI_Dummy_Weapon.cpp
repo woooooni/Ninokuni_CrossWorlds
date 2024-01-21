@@ -45,8 +45,8 @@ HRESULT CUI_Dummy_Weapon::Initialize(void* pArg)
 		break;
 
 	case CHARACTER_TYPE::ENGINEER:
-		vCamPos = _float3(0.f, 0.7f, -2.3f);
-		vLook = _float3(0.f, 0.7, 0.f);
+		vCamPos = _float3(0.f, 0.9f, -3.f);
+		vLook = _float3(0.f, 0.9, 0.f);
 		vUp = _float3(0.f, 1.f, 0.f);
 		break;
 
@@ -130,7 +130,7 @@ void CUI_Dummy_Weapon::LateTick(_float fTimeDelta)
 
 HRESULT CUI_Dummy_Weapon::Render()
 {
-	if (FAILED(__super::Render() || nullptr == m_pModelCom))
+	if (FAILED(__super::Render()) || nullptr == m_pModelCom)
 		return E_FAIL;
 
 	if (FAILED(Bind_ShaderResources()))
@@ -153,7 +153,7 @@ HRESULT CUI_Dummy_Weapon::Render()
 		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
 
-		if (FAILED(m_pModelCom->Render(m_pShaderCom, i)))
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, 4)))
 			return E_FAIL;
 	}
 
@@ -228,7 +228,7 @@ HRESULT CUI_Dummy_Weapon::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &m_vCamPosition, sizeof(_float4))))
 		return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_matSocketWorld.Transpose(), sizeof(_float4x4))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &(m_matSocketWorld.Transpose()), sizeof(_float4x4))))
 		return E_FAIL;
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_ViewMatrix", &m_ViewMatrix, sizeof(_float4x4))))

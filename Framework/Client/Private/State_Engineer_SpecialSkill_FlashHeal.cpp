@@ -19,6 +19,7 @@ HRESULT CState_Engineer_SpecialSkill_FlashHeal::Initialize(const list<wstring>& 
 
 void CState_Engineer_SpecialSkill_FlashHeal::Enter_State(void* pArg)
 {
+    m_pCharacter->Disappear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 
     // Effect Create
