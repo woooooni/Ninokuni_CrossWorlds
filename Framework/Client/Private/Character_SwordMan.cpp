@@ -66,6 +66,8 @@
 #include "State_Character_Dead.h"
 #include "State_Character_Revive.h"
 
+#include "Animation.h"
+
 
 
 CCharacter_SwordMan::CCharacter_SwordMan(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
@@ -226,6 +228,16 @@ HRESULT CCharacter_SwordMan::Render_Reflect()
 void CCharacter_SwordMan::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
+	if ((tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER)
+		&& tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK)
+	{
+		switch (m_pStateCom->Get_CurrState())
+		{
+		case CCharacter::BATTLE_ATTACK_3:
+			GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.5f, 0.1f, true);
+			break;
+		}
+	}
 }
 
 void CCharacter_SwordMan::Collision_Continue(const COLLISION_INFO& tInfo)

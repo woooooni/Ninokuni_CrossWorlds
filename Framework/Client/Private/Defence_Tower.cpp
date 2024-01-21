@@ -183,10 +183,13 @@ void CDefence_Tower::Collision_Continue(const COLLISION_INFO& tInfo)
 
 	if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BOUNDARY)
 	{
-		if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_ANIMAL || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_BOSS)
+		if (tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
 		{
-			if(m_pStateCom->Get_CurrState() != DEFENCE_TOWER_STATE::TOWER_STATE_DEAD)
-				Decide_Target(tInfo);
+			if ((tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_ANIMAL || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_BOSS))
+			{
+				if (m_pStateCom->Get_CurrState() != DEFENCE_TOWER_STATE::TOWER_STATE_DEAD)
+					Decide_Target(tInfo);
+			}
 		}
 	}
 }
@@ -252,7 +255,7 @@ void CDefence_Tower::Tick_Target(_float fTimeDelta)
 	if (nullptr != pTargetTransform)
 	{
 		Vec3 vDir = pTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
-		if (vDir.Length() > 6.f)
+		if (vDir.Length() > m_fTargetLength)
 		{
 			Safe_Release(m_pTarget);
 			m_pTarget = nullptr;

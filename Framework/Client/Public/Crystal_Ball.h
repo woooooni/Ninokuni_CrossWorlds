@@ -39,6 +39,7 @@ private:
 
 private:
 	class CParticle* m_pParticle = nullptr;
+
 private:
 	class CGameObject* m_pTarget = nullptr;
 

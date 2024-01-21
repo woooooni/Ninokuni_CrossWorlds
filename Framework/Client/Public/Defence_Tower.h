@@ -82,6 +82,9 @@ protected:
 	_float m_fAccFireTime = 0.f;
 	_float m_fFireTime = 1.f;
 
+protected:
+	_float m_fTargetLength = 10.f;
+
 public:
 	virtual void Free() override;
 };

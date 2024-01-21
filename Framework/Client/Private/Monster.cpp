@@ -67,11 +67,8 @@ void CMonster::Tick(_float fTimeDelta)
 	__super::Tick(fTimeDelta);
 
 	/* 최초 타겟 설정 */
-	if (m_tTargetDesc.pTarget == nullptr)
-	{
-		m_tTargetDesc.pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
-		m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component<CTransform>(L"Com_Transform");
-	}
+	m_tTargetDesc.pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+	m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component<CTransform>(L"Com_Transform");
 
 	if (m_bInfinite)
 	{

@@ -5,12 +5,12 @@
 
 BEGIN(Client)
 
-class CCannon_Ball final : public CCharacter_Projectile
+class CEngineer_Burst_CannonBomb final : public CCharacter_Projectile
 {
 private:
-	explicit CCannon_Ball(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	explicit CCannon_Ball(const CCannon_Ball& rhs);
-	virtual ~CCannon_Ball() = default;
+	explicit CEngineer_Burst_CannonBomb(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	explicit CEngineer_Burst_CannonBomb(const CEngineer_Burst_CannonBomb& rhs);
+	virtual ~CEngineer_Burst_CannonBomb() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -25,28 +25,22 @@ public:
 public:
 	virtual void Collision_Enter(const COLLISION_INFO& tInfo) override;
 
-
-private:
-	_bool Find_Dest_Position(_float fTimeDelta);
-
 private:
 	_float m_fAccEffect = 0.f;
 	_float m_fGenEffectTime = 0.5f;
 
 private:
-	_float m_fAccMove = 0.f;
-	_float m_fArriveTime = 2.f;
+	_bool m_bHit = false;
+
+	_float m_fAccOnOff = 0.f;
+	_float m_fOnOffTime = 0.2f;
 
 private:
-	_bool m_bInitLook = false;
-	_bool m_bInitDestPosition = false;
-
-	Vec4 m_vStartPosition = {};
-	Vec4 m_vDestPosition = {};
-	Vec3 m_vInitLook = {};
+	class CEffect* m_pSpiralEffect = nullptr;
+	_bool m_bGenEffect = false;
 
 public:
-	static CCannon_Ball* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CEngineer_Burst_CannonBomb* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

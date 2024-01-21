@@ -1553,6 +1553,8 @@ _bool CState_Character::Tag_Input(_float fTimeDelta)
 
 		return true;
 	}
+
+	return false;
 }
 
 void CState_Character::Dead_Input(_float fTimeDelta)

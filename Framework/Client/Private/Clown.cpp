@@ -291,7 +291,7 @@ HRESULT CClown::Ready_Colliders()
 		return E_FAIL;
 
 	/* Atk */
-	OBBBox.Extents = { 0.f, 0.f, 0.f };
+	OBBDesc.tBox.Extents = { 0.f, 0.f, 0.f };
 	OBBDesc.vOffsetPosition = Vec3(0.f, 0.f, 0.f);
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::ATTACK, &OBBDesc)))
 		return E_FAIL;

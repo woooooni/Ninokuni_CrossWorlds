@@ -58,7 +58,7 @@ HRESULT CCannon_Tower::Initialize(void* pArg)
 	m_fAccFireTime = 0.f;
 	m_fFireTime = 1.f;
 
-
+	m_fTargetLength = 15.f;
 	
 
 	return S_OK;
@@ -233,7 +233,7 @@ HRESULT CCannon_Tower::Ready_Colliders()
 
 	BoundingSphere tSphere;
 	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 20.f;
+	tSphere.Radius = 30.f;
 	SphereDesc.tSphere = tSphere;
 
 	SphereDesc.pNode = nullptr;
@@ -262,14 +262,6 @@ HRESULT CCannon_Tower::Ready_Colliders()
 
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::BODY, &OBBDesc)))
 		return E_FAIL;
-
-
-
-	OBBBox.Extents = { 100.f, 100.f, 100.f };
-	OBBDesc.vOffsetPosition = Vec3(0.f, 100.f, 0.f);
-	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::ATTACK, &OBBDesc)))
-		return E_FAIL;
-
 
 	return S_OK;
 }
