@@ -25,6 +25,7 @@ private:
 
 	_bool   m_bIsRageInit = false;
 	_bool   m_bIsRage2Init = false;
+	_bool   m_bIsRage3Init = false;
 public:
 	static CStelliaState_Turn* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

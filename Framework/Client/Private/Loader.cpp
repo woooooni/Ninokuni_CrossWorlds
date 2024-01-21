@@ -51,6 +51,10 @@
 #include "IceBearMan.h"
 
 #include "Stellia.h"
+#include "Stellia_Crystal.h"
+#include "Stellia_Crystal_Destructible.h"
+#include "Stellia_Crystal_FailBomb.h"
+
 #include "DMWitch.h"
 
 #include "Spawner_Witch01.h"
@@ -483,10 +487,10 @@ HRESULT CLoader::Loading_For_Level_Lobby()
 	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Loading_Proto_Monster_Npc, this);
 
 	m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE].wait();
-	m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE].wait();
+	//m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE].wait();
 	m_Threads[LOADING_THREAD::MONSTER_AND_NPC].wait();
 
-	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Lobby");
+	//m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Lobby");
 
 	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
 	{
@@ -519,7 +523,7 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
 	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Evermore");
 	//m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Npc_Data, this, L"Evermore");
-	m_Threads[LOADING_THREAD::TOWER_DEFENCE_READY] = std::async(&CLoader::Loading_For_TowerDefence, this);
+	//m_Threads[LOADING_THREAD::TOWER_DEFENCE_READY] = std::async(&CLoader::Loading_For_TowerDefence, this);
 
 	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
 	{
@@ -774,7 +778,7 @@ HRESULT CLoader::Loading_For_Level_Tool()
 		
 
 	m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Static_Map_Objects, this, L"../Bin/Export/NonAnimModel/Map/");
-	m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Dynamic_Map_Objects, this, L"../Bin/Export/AnimModel/Map/");
+	//m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE] = std::async(&CLoader::Loading_Proto_Dynamic_Map_Objects, this, L"../Bin/Export/AnimModel/Map/");
 	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Loading_Proto_Monster_Npc, this);
 
 
@@ -1393,9 +1397,16 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_IceBearMan", CIceBearMan::Create(m_pDevice, m_pContext, TEXT("IceBearMan"), statDesc), LAYER_MONSTER, true)))
 		return E_FAIL;
-
+	
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Stellia", CStellia::Create(m_pDevice, m_pContext, TEXT("Stellia"), statDesc), LAYER_MONSTER, true)))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Stellia_Crystal", CStellia_Crystal::Create(m_pDevice, m_pContext, TEXT("Stellia_Crystal")), LAYER_PROP, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Stellia_Crystal_Destructible", CStellia_Crystal_Destructible::Create(m_pDevice, m_pContext, TEXT("Stellia_Crystal_Destructible"), statDesc), LAYER_MONSTER, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Stellia_Crystal_FailBomb", CStellia_Crystal_FailBomb::Create(m_pDevice, m_pContext, TEXT("Stellia_Crystal_FailBomb")), LAYER_PROP, true)))
+		return E_FAIL;
+
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_DreamerMazeWitch", CDMWitch::Create(m_pDevice, m_pContext, TEXT("DreamerMazeWitch"), statDesc), LAYER_MONSTER, true)))
 		return E_FAIL;
 
@@ -1420,7 +1431,7 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Destroyer_Npc", CDestroyer_Npc::Create(m_pDevice, m_pContext, TEXT("Destroyer_Npc")), LAYER_NPC, true)))
 		return E_FAIL;
-
+	
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanFAT01", CHumanFAT01::Create(m_pDevice, m_pContext, TEXT("HumanFAT01")), LAYER_NPC, true)))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_MouseFolkFat01", CMouseFolkFat01::Create(m_pDevice, m_pContext, TEXT("MouseFolkFat01")), LAYER_NPC, true)))
@@ -1495,7 +1506,7 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Criminal_Npc", CCriminal_Npc::Create(m_pDevice, m_pContext, TEXT("Criminal")), LAYER_NPC, true)))
 		return E_FAIL;
-
+	
 	
 	
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_HumanChildHalloweenA", CHumanChildHalloweenA::Create(m_pDevice, m_pContext, TEXT("HumanChildHalloweenA")), LAYER_NPC, true)))
@@ -1533,10 +1544,17 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_AquarisBella", CAquarisBella::Create(m_pDevice, m_pContext, TEXT("AquarisBella")), LAYER_NPC, true)))
 		return E_FAIL;
-
+	
 	/* Monster */
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Stellia", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Boss/Stellia/", L"Stellia")))
 		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Stellia_Crystal", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Monster/Witch/StelliaCrystal/", L"StelliaCrystal")))
+		return E_FAIL;
+	/*Texture*/
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Stellia_Crystals"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Monster/StelliaCrystal/T_GachaCommonCrystal%d_Glass.png"), 3))))
+		return E_FAIL;
+	/**/
 
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Glanix", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Boss/Glanix/", L"Glanix")))
 		return E_FAIL;
@@ -1653,7 +1671,7 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Criminal", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/KingDom/Criminal/", L"Criminal")))
 		return E_FAIL;
-
+	
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanChildHalloweenA", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Witch/HumanChildHalloweenA/", L"HumanChildHalloweenA")))
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_HumanChildHalloweenB", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Witch/HumanChildHalloweenB/", L"HumanChildHalloweenB")))

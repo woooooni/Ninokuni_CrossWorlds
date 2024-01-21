@@ -219,11 +219,11 @@ protected:
 	_bool   m_bDissolveEffect = false;
 	class CParticle* m_pDissolveObject = nullptr;
 
-private:
+protected:
 	// 렌더러에 넘겨줄 애니메이션 인스턴싱 정보.
 	ANIMODEL_INSTANCE_DESC m_AnimInstanceDesc = {};
 
-private:
+protected:
 	void LookAt_DamagedObject(CGameObject* pAttacker);
 	void Play_DamagedSound();
 	void Start_RimLight();

@@ -88,8 +88,10 @@ void CMonster::Tick(_float fTimeDelta)
 	if (m_pBTCom != nullptr)
 		m_pBTCom->Tick(fTimeDelta);
 
-	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
-	m_pControllerCom->Tick_Controller(fTimeDelta);
+	if (m_pRigidBodyCom != nullptr)
+		m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
+	if (m_pControllerCom != nullptr)
+		m_pControllerCom->Tick_Controller(fTimeDelta);
 
 	GI->Add_CollisionGroup(COLLISION_GROUP::MONSTER, this);
 
@@ -135,8 +137,8 @@ void CMonster::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
 	
-
-	m_pControllerCom->LateTick_Controller(fTimeDelta);
+	if(m_pControllerCom != nullptr)
+		m_pControllerCom->LateTick_Controller(fTimeDelta);
 	if (nullptr != m_pModelCom)
 		m_pModelCom->LateTick(fTimeDelta);
 
