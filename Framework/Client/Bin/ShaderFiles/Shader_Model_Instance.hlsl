@@ -16,6 +16,12 @@ float4 g_vClipPlane;
 
 float fGrassAngle;
 
+cbuffer InversTransposeMatBuffer
+{
+    matrix WorldInvTransposeView;
+};
+
+
 void ComputeNormalMapping(inout float3 normal, float3 tangent, float2 texcoord)
 {
 	// [0,255] 범위에서 [0,1]로 변환
@@ -59,6 +65,9 @@ struct VS_OUT
 	float3		vBinormal : BINORMAL;
 	float4		vWorldPosition : TEXCOORD2;
 	uint		iInstanceID : SV_INSTANCEID;
+	
+    float3 vViewNormal : NORMAL1;
+    float3 vPositionView : POSITION;
 };
 
 struct VS_REFRACT_OUT
@@ -114,6 +123,10 @@ VS_OUT VS_MAIN(VS_IN In)
 	Out.vProjPos = Out.vPosition;
 	Out.iInstanceID = In.iInstanceID;
 
+		// SSAO
+    Out.vViewNormal = mul(In.vNormal, (float3x3) WorldInvTransposeView);
+    Out.vPositionView = mul(float4(In.vPosition, 1.0f), matWV);
+	
 	return Out;
 }
 
@@ -142,6 +155,9 @@ VS_OUT VS_GRASS_MAIN(VS_IN In)
     Out.vProjPos = Out.vPosition;
     Out.iInstanceID = In.iInstanceID;
 
+			// SSAO
+    Out.vViewNormal = mul(In.vNormal, (float3x3) WorldInvTransposeView);
+    Out.vPositionView = mul(float4(In.vPosition, 1.0f), matWV);
     return Out;
 }
 
@@ -211,6 +227,9 @@ struct PS_IN
 	float3		vBinormal : BINORMAL;
 	float4		vWorldPosition : TEXCOORD2;
 	uint		iInstanceID : SV_INSTANCEID;
+	
+    float3 vViewNormal : NORMAL1;
+    float3 vPositionView : POSITION;
 };
 
 struct PS_OUT
@@ -220,6 +239,7 @@ struct PS_OUT
 	float4		vDepth : SV_TARGET2;
     float4		vBloom : SV_TARGET3;
     float4		vSunMask : SV_TARGET4;
+    float4		vViewNormal : SV_TARGET5;
 };
 
 struct PS_OUT_SHADOW_DEPTH
@@ -270,7 +290,7 @@ PS_OUT PS_MAIN(PS_IN In)
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
     Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	
+    Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
 	if (0.3 >= Out.vDiffuse.a)
 		discard;
 
@@ -290,7 +310,7 @@ PS_OUT PS_NoneRight_GRASS_MAIN(PS_IN In)
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
     Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	
+    Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
     if (0.8 >= Out.vDiffuse.a)
         discard;
 
@@ -312,7 +332,7 @@ PS_OUT PS_MAIN_NORMAL(PS_IN In)
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
     Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	
+    Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
 	if (0.5 >= Out.vDiffuse.a)
 		discard;
 
@@ -343,7 +363,7 @@ PS_OUT PS_DISSOLVE_DEAD(PS_IN In)
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
     Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	
+    Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
 	if (0 == Out.vDiffuse.a)
 		discard;
 

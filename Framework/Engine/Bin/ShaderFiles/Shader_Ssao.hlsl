@@ -28,9 +28,10 @@ float3 g_vRandom[16] =
 
 float3 Get_RandomNormal(float2 fUV)
 {
-	float fNoiseX = (frac(sin(dot(fUV, float2(15.8989f, 76.132f) * 1.0f)) * 46336.23745f));
-	float fNoiseY = (frac(sin(dot(fUV, float2(11.9899f, 62.223f) * 2.0f)) * 34748.34744f));
-	float fNoiseZ = (frac(sin(dot(fUV, float2(13.3238f, 63.122f) * 3.0f)) * 59998.47362f));
+	
+	float fNoiseX = frac(sin(dot(fUV, float2(15.8989f, 76.132f) * 1.0f)) * 46336.23745f);
+	float fNoiseY = frac(sin(dot(fUV, float2(11.9899f, 62.223f) * 2.0f)) * 34748.34744f);
+	float fNoiseZ = frac(sin(dot(fUV, float2(13.3238f, 63.122f) * 3.0f)) * 59998.47362f);
 
 	return normalize(float3(fNoiseX, fNoiseY, fNoiseZ));
 }

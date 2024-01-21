@@ -8,12 +8,11 @@ class CVIBuffer_Instancing;
 
 class ENGINE_DLL CRenderer final : public CComponent
 {
-
 public:
 	enum RENDERGROUP {
 		RENDER_PRIORITY, RENDER_AURORA, RENDER_NONLIGHT,
 		RENDER_SHADOW, RENDER_NONBLEND,	RENDER_STENCIL_ONLY, RENDER_MIRROR, RENDER_REFLECT,
-        RENDER_DECAL, RENDER_EFFECT, RENDER_LENSFLARE, RENDER_ALPHABLEND,
+        RENDER_DECAL, RENDER_EFFECT, RENDER_LENSFLARE, RENDER_GODRAY, RENDER_ALPHABLEND,
 
 		RENDER_UI, 
 		/*RENDER_SHADOW_UI,*/ RENDER_NONBLEND_UI,
@@ -269,7 +268,35 @@ private:
 private:
 	_float	m_fBias = 0.2f;
 	_float4	m_vPlayerPosition = {0.f, 0.f, 0.f, 1.f};
-	
+
+private:
+	// SSAO
+	Vec4 m_vFrustumFarCorner[4];
+	Vec4 m_vOffsets[14];
+
+	void BuildFrustumFarCorners();
+	void BuildOffsetVectors();
+	HRESULT RandomTextureCreate();
+
+	ID3D11ShaderResourceView* m_pRandomVecMap = nullptr;
+
+	// ScreenQuad
+	ID3D11Buffer* m_pQuadVertexBuffer = nullptr;
+	ID3D11Buffer* m_pQuadIndexBuffer = nullptr;
+
+	struct QuadVertex
+	{
+		Vec3 pos;
+		Vec2 tex;
+		Vec3 ToFarPlaneIndex;
+	};
+
+	_int m_iQuadVerCount;
+	_int m_iQuadIndexCount;
+
+	HRESULT InitializeScreenQuad();
+	void RenderScreenQuad();
+
 public:
 	static CRenderer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CComponent* Clone(void* pArg) override;

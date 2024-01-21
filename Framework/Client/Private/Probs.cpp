@@ -111,6 +111,13 @@ HRESULT CProbs::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing
 	if (FAILED(pInstancingShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
 
+	Matrix worldInvTranspose = m_pTransformCom->Get_WorldMatrixInverse();
+	worldInvTranspose.Transpose();
+
+	Matrix worldInvTransposeView = worldInvTranspose * GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW);
+
+	if (FAILED(pInstancingShader->Bind_Matrix("WorldInvTransposeView", &worldInvTransposeView)))
+		return E_FAIL;
 
 	if (TEXT("Winter_Plants_02") == m_strObjectTag || TEXT("Winter_Plants_01") == m_strObjectTag)
 	{
@@ -157,6 +164,16 @@ HRESULT CProbs::Render_Instance_Shadow(CShader* pInstancingShader, CVIBuffer_Ins
 		return E_FAIL;
 	if (FAILED(pInstancingShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
+
+	// ViewSpace상의 노멀을 찾기 위한 Matrix
+	Matrix worldInvTranspose = m_pTransformCom->Get_WorldMatrixInverse();
+	worldInvTranspose.Transpose();
+
+	Matrix worldInvTransposeView = worldInvTranspose * GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW);
+
+	if (FAILED(pInstancingShader->Bind_Matrix("WorldInvTransposeView", &worldInvTransposeView)))
+		return E_FAIL;
+
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{

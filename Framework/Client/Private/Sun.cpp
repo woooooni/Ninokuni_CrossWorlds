@@ -22,8 +22,6 @@ HRESULT CSun::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	GI->Add_Sun(this);
-
 	return S_OK;
 }
 
@@ -42,12 +40,17 @@ void CSun::LateTick(_float fTimeDelta)
 HRESULT CSun::Render()
 {
 	const LIGHTDESC* pLightDesc = GI->Get_LightDesc(0);
-	Vec4 vCamPos = GI->Get_CamPosition();
-	vCamPos.y += 150.0f;
-	Vec4 vLightDir = pLightDesc->vDirection;
-	Vec4 vResult = vCamPos - (vLightDir * 150.0f);
+	Vec4 light_ss{};
+	{
+		Vec4 vCamPos = GI->Get_CamPosition();
+		Vec4 vLightDir = pLightDesc->vDirection;
+		Vec4 vLightPos = vCamPos - vLightDir;
 
-	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vResult);
+		light_ss = vLightPos;
+		light_ss.w = 1.0f;
+	}
+
+	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, light_ss);
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("worldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
 		return E_FAIL;

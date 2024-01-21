@@ -514,11 +514,14 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 
 	/* For.GameObject */
 	m_strLoading = TEXT("객체원형을 로딩 중 입니다.");
+	if (GI->Add_Prototype(TEXT("Prototype_GameObject_Common_LensFlare"),
+		CLensFlare::Create(m_pDevice, m_pContext, TEXT("Common_LensFlare"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX))
+		return E_FAIL;
 
 	/* For.Model */
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
 	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Evermore");
-	//m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Npc_Data, this, L"Evermore");
+	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Npc_Data, this, L"Evermore");
 	m_Threads[LOADING_THREAD::TOWER_DEFENCE_READY] = std::async(&CLoader::Loading_For_TowerDefence, this);
 
 	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)

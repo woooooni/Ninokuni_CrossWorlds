@@ -26,6 +26,11 @@ matrix g_SnowRotationMatrix;
 float3 g_vBloomPower;
 float4 g_vRimColor = { 0.f, 0.f, 0.f, 0.f };
 
+cbuffer InversTransposeMatBuffer
+{
+    matrix WorldInvTransposeView;
+};
+
 float4 Caculation_Brightness(float4 vColor)
 {
     float4 vBrightnessColor = float4(0.f, 0.f, 0.f, 0.f);
@@ -68,6 +73,9 @@ struct VS_OUT
 	float3		vTangent : TANGENT;
 	float3		vBinormal : BINORMAL;
 	float4		vWorldPosition : TEXCOORD2;
+    
+    float3      vViewNormal : NORMAL1;
+    float3      vPositionView : POSITION;
 };
 
 struct WaterVertexToPixel
@@ -105,7 +113,9 @@ VS_OUT VS_MAIN(VS_IN In)
     Out.vTexUV = In.vTexUV;
     Out.vProjPos = Out.vPosition;
 
-	
+	// SSAO
+    Out.vViewNormal = mul(In.vNormal, (float3x3) WorldInvTransposeView);
+    Out.vPositionView = mul(float4(In.vPosition, 1.0f), matWV);
     
     return Out;
 }
@@ -127,7 +137,9 @@ VS_OUT VS_REFLECT(VS_IN In)
     Out.vTexUV = In.vTexUV;
     Out.vProjPos = Out.vPosition;
 
-	
+		// SSAO
+    Out.vViewNormal = mul(In.vNormal, (float3x3) WorldInvTransposeView);
+    Out.vPositionView = mul(float4(In.vPosition, 1.0f), matWV);
     
     return Out;
 }
@@ -149,6 +161,9 @@ VS_OUT VS_SNOWBALL(VS_IN In)
     Out.vTexUV = In.vTexUV;
     Out.vProjPos = Out.vPosition;
 	
+    	// SSAO
+    Out.vViewNormal = mul(In.vNormal, (float3x3) WorldInvTransposeView);
+    Out.vPositionView = mul(float4(In.vPosition, 1.0f), matWV);
     
     return Out;
 }
@@ -194,6 +209,9 @@ struct PS_IN
 	float3		vTangent : TANGENT;
 	float3		vBinormal : BINORMAL;
 	float4		vWorldPosition : TEXCOORD2;
+    
+    float3 vViewNormal : NORMAL1;
+    float3 vPositionView : POSITION;
 };
 
 struct PS_OUT
@@ -203,6 +221,7 @@ struct PS_OUT
 	float4		vDepth : SV_TARGET2;
     float4      vBloom : SV_TARGET3;
     float4		vSunMask : SV_TARGET4;
+    float4      vViewNormal : SV_TARGET5;
 };
 
 struct PS_OUT_SHADOW_DEPTH
@@ -231,6 +250,11 @@ PS_OUT PS_MAIN(PS_IN In)
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
     Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    
+    	
+    // SSAO
+    Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
+    
 	if (0.3 >= Out.vDiffuse.a)
 		discard;
 	
@@ -271,6 +295,7 @@ PS_OUT PS_MAIN_NORMAL(PS_IN In)
 	Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
     Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
 
 	if (0 == Out.vDiffuse.a)
 		discard;
@@ -290,6 +315,7 @@ PS_OUT PS_WEAPON(PS_IN In)
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
     Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
     if (0.3 >= Out.vDiffuse.a)
         discard;
 	
@@ -309,6 +335,7 @@ PS_OUT PS_SNOWBALL(PS_IN In)
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
     Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
     if (0.3 >= Out.vDiffuse.a)
         discard;
 	
@@ -420,7 +447,7 @@ PS_OUT PS_DISSOVE(PS_IN In)
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
     Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    
+    Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
 	
     return Out;
 }
@@ -478,7 +505,7 @@ PS_OUT PS_MAIN_REFLECT(PS_IN In)
     Out.vDiffuse += vRimColor;
     Out.vBloom = Caculation_Brightness(Out.vDiffuse) + vRimColor;
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
-
+    Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
     //if (0.f == Out.vDiffuse.a)
     //    discard;
 

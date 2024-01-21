@@ -39,7 +39,7 @@ public:
 	HRESULT Reset_Lights();
 	HRESULT	Add_Sun(class CGameObject* pSun);
 	
-	Vec3 Get_SunScreenPos();
+	Vec4 Get_SunScreenPos();
 	const class CGameObject* Get_Sun() const { return m_pSun; }
 
 private:

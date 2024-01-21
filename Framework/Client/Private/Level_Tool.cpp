@@ -53,9 +53,6 @@ HRESULT CLevel_Tool::Initialize()
 	if (FAILED(Ready_Layer_Weapon(LAYER_TYPE::LAYER_WEAPON)))
 		return E_FAIL;
 
-	if(FAILED(GI->Add_GameObject(LEVELID::LEVEL_TOOL, LAYER_TYPE::LAYER_SKYBOX, TEXT("Prototype_GameObject_Common_LensFlare"))))
-		return E_FAIL;
-
 	//if (FAILED(Ready_Layer_Skydome(LAYER_TYPE::LAYER_SKYBOX)))
 	//	return E_FAIL;
 
