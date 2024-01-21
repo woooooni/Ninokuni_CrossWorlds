@@ -17,6 +17,38 @@ CVfx_Destroyer_Skill_IgnorePain::CVfx_Destroyer_Skill_IgnorePain(const CVfx_Dest
 
 HRESULT CVfx_Destroyer_Skill_IgnorePain::Initialize_Prototype()
 {
+	m_bOwnerStateIndex = CCharacter::CLASS_SKILL_1;
+
+	m_iMaxCount = TYPE_END;
+	m_pFrameTriger = new _int[m_iMaxCount];
+	m_pPositionOffset = new _float3[m_iMaxCount];
+	m_pScaleOffset = new _float3[m_iMaxCount];
+	m_pRotationOffset = new _float3[m_iMaxCount];
+
+	{
+		m_pFrameTriger[TYPE_ET1_E_CIRCLELINE] = 0;
+		m_pPositionOffset[TYPE_ET1_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
+		m_pScaleOffset[TYPE_ET1_E_CIRCLELINE] = _float3(5.f, 5.f, 5.f);
+		m_pRotationOffset[TYPE_ET1_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
+
+		m_pFrameTriger[TYPE_ET1_E_BARRIER] = 0;
+		m_pPositionOffset[TYPE_ET1_E_BARRIER] = _float3(0.f, 0.f, 0.f);
+		m_pScaleOffset[TYPE_ET1_E_BARRIER] = _float3(5.f, 5.f, 5.f);
+		m_pRotationOffset[TYPE_ET1_E_BARRIER] = _float3(0.f, 0.f, 0.f);
+	}
+
+	{
+		m_pFrameTriger[TYPE_ET2_P_SPARCKE] = 0;
+		m_pPositionOffset[TYPE_ET2_P_SPARCKE] = _float3(0.f, 0.f, 0.f);
+		m_pScaleOffset[TYPE_ET2_P_SPARCKE] = _float3(5.f, 5.f, 5.f);
+		m_pRotationOffset[TYPE_ET2_P_SPARCKE] = _float3(0.f, 0.f, 0.f);
+
+		m_pFrameTriger[TYPE_ET2_E_CIRCLELINE] = 0;
+		m_pPositionOffset[TYPE_ET2_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
+		m_pScaleOffset[TYPE_ET2_E_CIRCLELINE] = _float3(5.f, 5.f, 5.f);
+		m_pRotationOffset[TYPE_ET2_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
+	}
+
  	return S_OK;
 }
 
@@ -27,25 +59,30 @@ HRESULT CVfx_Destroyer_Skill_IgnorePain::Initialize(void* pArg)
 
 void CVfx_Destroyer_Skill_IgnorePain::Tick(_float fTimeDelta)
 {
-	if (m_pOwnerObject != nullptr)
-	{
-		CStateMachine* pMachine = m_pOwnerObject->Get_Component<CStateMachine>(L"Com_StateMachine");
-		if (pMachine != nullptr)
-		{
-			if (pMachine->Get_CurrState() != CCharacter::CLASS_SKILL_1)
-			{
-				Set_Dead(true);
-				return;
-			}
-		}
+	__super::Tick(fTimeDelta);
 
-		m_fTimeAcc += fTimeDelta;
-		// 
-		if (m_iCount == 0)
+	if (!m_bOwnerTween)
+	{
+		if (m_iCount == TYPE_ET1_E_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_E_CIRCLELINE])
 		{
-			m_fTimeAcc = 0.f;
 			m_iCount++;
 		}
+		else if (m_iCount == TYPE_ET1_E_BARRIER && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_E_BARRIER])
+		{
+			m_iCount++;
+		}
+
+		else if (m_iCount == TYPE_ET2_P_SPARCKE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_SPARCKE])
+		{
+			m_iCount++;
+		}
+		else if (m_iCount == TYPE_ET2_E_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_E_CIRCLELINE])
+		{
+			m_iCount++;
+		}
+
+		else if (m_iCount == TYPE_END)
+			m_bFinish = true;
 	}
 }
 
@@ -93,4 +130,12 @@ CGameObject* CVfx_Destroyer_Skill_IgnorePain::Clone(void* pArg)
 void CVfx_Destroyer_Skill_IgnorePain::Free()
 {
 	__super::Free();
+
+	if (!m_isCloned)
+	{
+		Safe_Delete_Array(m_pFrameTriger);
+		Safe_Delete_Array(m_pPositionOffset);
+		Safe_Delete_Array(m_pScaleOffset);
+		Safe_Delete_Array(m_pRotationOffset);
+	}
 }

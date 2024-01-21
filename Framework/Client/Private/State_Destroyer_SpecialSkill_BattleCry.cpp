@@ -3,6 +3,8 @@
 #include "Character.h"
 #include "State_Destroyer_SpecialSkill_BattleCry.h"
 
+#include "Effect_Manager.h"
+
 CState_Destroyer_SpecialSkill_BattleCry::CState_Destroyer_SpecialSkill_BattleCry(CStateMachine* pMachine)
     : CState_Character(pMachine)
 {
@@ -24,6 +26,12 @@ void CState_Destroyer_SpecialSkill_BattleCry::Enter_State(void* pArg)
     m_pCharacter->Look_For_Target();
     m_pCharacter->Appear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
+
+    // Effect Create
+    CTransform* pTransformCom = m_pCharacter->Get_Component<CTransform>(L"Com_Transform");
+    if (pTransformCom == nullptr)
+        return;
+    GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Destroyer_Skill_BattleCry"), pTransformCom->Get_WorldMatrix(), m_pCharacter);
 }
 
 void CState_Destroyer_SpecialSkill_BattleCry::Tick_State(_float fTimeDelta)

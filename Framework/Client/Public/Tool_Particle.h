@@ -63,7 +63,7 @@ private:
 	_int m_iDiffuseFolderIndex = { 21 };
 	_int m_iAlphaFolderIndex = { 21 };
 
-	char   m_cPrototypeName[MAX_PATH] = { "Prototype_" };
+	char   m_cPrototypeName[MAX_PATH] = { "" };
 
 private:
 	_float3 m_fParticleAxis;

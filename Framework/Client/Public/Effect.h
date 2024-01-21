@@ -92,7 +92,7 @@ public:
 #pragma region ¸ðµ¨ && ÅØ½ºÃ³
 		wstring strModelName            = L"Prototype_Component_Model_PS_NOTE_CIRCLE01";
 		wstring strDiffuseTetextureName = L"";
-		wstring strAlphaTexturName      = L"Prototype_Component_Texture_Effect_Aura";
+		wstring strAlphaTexturName      = L"";
 
 		_int    iTextureIndexDiffuse = 0;
 		_int    iTextureIndexAlpha   = 0;

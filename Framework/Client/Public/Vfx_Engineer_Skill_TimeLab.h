@@ -10,6 +10,21 @@ BEGIN(Client)
 
 class CVfx_Engineer_Skill_TimeLab final : public CVfx
 {
+private:
+	enum TYPE {
+		TYPE_ET1_D_CIRCLE, // 0
+
+		TYPE_ET1_E_TIME_BIG, // 16
+		TYPE_ET1_P_LIGHT,
+		TYPE_ET1_P_CIRCLES,
+
+		TYPE_ET2_E_TIME_SMALL, // 28
+		TYPE_ET2_P_LIGHTLINE,
+		TYPE_ET2_P_CIRCLES,
+
+		TYPE_END
+	};
+
 protected:
 	CVfx_Engineer_Skill_TimeLab(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	CVfx_Engineer_Skill_TimeLab(const CVfx_Engineer_Skill_TimeLab& rhs);

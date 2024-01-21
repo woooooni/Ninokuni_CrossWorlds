@@ -10,6 +10,18 @@ BEGIN(Client)
 
 class CVfx_Engineer_Skill_HealingTree final : public CVfx
 {
+private:
+	enum TYPE {
+		TYPE_ET1_D_CIRCLE, // 0
+
+		TYPE_ET1_E_DOME, // 22
+		TYPE_ET1_E_CROSS,
+
+		TYPE_ET1_P_CIRCLES,
+
+		TYPE_END
+	};
+
 protected:
 	CVfx_Engineer_Skill_HealingTree(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	CVfx_Engineer_Skill_HealingTree(const CVfx_Engineer_Skill_HealingTree& rhs);

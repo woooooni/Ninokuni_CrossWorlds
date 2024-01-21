@@ -2,6 +2,7 @@
 #include "GameInstance.h"
 #include "Character.h"
 #include "State_Destroyer_Skill_BrutalStrike.h"
+#include "Effect_Manager.h"
 
 CState_Destroyer_Skill_BrutalStrike::CState_Destroyer_Skill_BrutalStrike(CStateMachine* pMachine)
     : CState_Character(pMachine)
@@ -21,6 +22,12 @@ void CState_Destroyer_Skill_BrutalStrike::Enter_State(void* pArg)
     m_pCharacter->Look_For_Target();
     m_pCharacter->Appear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
+
+    // Effect Create
+    CTransform* pTransformCom = m_pCharacter->Get_Component<CTransform>(L"Com_Transform");
+    if (pTransformCom == nullptr)
+        return;
+    GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Destroyer_Skill_BrutalStrike"), pTransformCom->Get_WorldMatrix(), m_pCharacter);
 }
 
 void CState_Destroyer_Skill_BrutalStrike::Tick_State(_float fTimeDelta)
