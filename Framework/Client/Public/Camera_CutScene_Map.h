@@ -43,6 +43,8 @@ public:
 	virtual void Tick_Blending(const _float fDeltaTime) override;
 
 public:
+	HRESULT Start_CutScene(const LEVELID& eLevelID);
+
 	HRESULT Start_CutScene(const string& strCutSceneName,
 							const _bool& bWillRetruePrevCam = false,
 							const _bool& bWillBlending = false, 

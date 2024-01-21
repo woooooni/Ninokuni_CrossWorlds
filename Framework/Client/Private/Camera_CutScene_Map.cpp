@@ -65,7 +65,7 @@ void CCamera_CutScene_Map::Tick(_float fTimeDelta)
 		{
 			string strCutSceneName = m_CutSceneNamesReserved.front();
 
-			Start_CutScene(strCutSceneName);
+			Start_CutScene(strCutSceneName, m_bWillRetruePrevCam);
 
 			m_CutSceneNamesReserved.pop();
 		}
@@ -75,7 +75,8 @@ void CCamera_CutScene_Map::Tick(_float fTimeDelta)
 				CCamera_Manager::GetInstance()->Change_Camera(m_iBlendingCamKey, m_fBlendingDuration, m_eBlendingMode);
 			else if (m_bWillRetruePrevCam)
 			{
-				CCamera_Manager::GetInstance()->Set_PrevCamera();
+				//CCamera_Manager::GetInstance()->Set_PrevCamera();
+				CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
 
 				/* Ui On */
 				if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
@@ -208,6 +209,42 @@ HRESULT CCamera_CutScene_Map::Stop_CutScene(const _bool& bClearReservedCutScene)
 		} while (m_CutSceneNamesReserved.empty());
 	}
 
+	return S_OK;
+}
+
+HRESULT CCamera_CutScene_Map::Start_CutScene(const LEVELID& eLevelID)
+{
+	switch (eLevelID)
+	{
+	case LEVELID::LEVEL_EVERMORE:
+	{
+		/* CutScene - Evermore */
+		vector<string> CutSceneNames;
+		{
+			CutSceneNames.push_back("Evermore_Intro_Short_Flowers");			// 왼쪽 (거리) (미들) - 시작
+			CutSceneNames.push_back("Evermore_Intro_Short_MarketPlace");		// 아래 (사람)
+		
+			CutSceneNames.push_back("Evermore_Intro_Short_Armys");				// 앞 (거리)
+			CutSceneNames.push_back("Evermore_Intro_Short_Cat");				// 앞 (거리)
+
+			CutSceneNames.push_back("Evermore_Intro_Short_People");				// 오른쪽 (사람)
+
+			//CutSceneNames.push_back("Evermore_Intro_Middle_AutumnGrandFather"); // 앞 (거리) (미들)
+
+			CutSceneNames.push_back("Evermore_Intro_Middle_Entire");			// 위 (미들) - 엔딩
+		}
+		Start_CutScenes(CutSceneNames, true);
+	}
+		break;
+	case LEVELID::LEVEL_KINGDOMHALL:
+		break;
+	case LEVELID::LEVEL_ICELAND:
+		break;
+	case LEVELID::LEVEL_WITCHFOREST:
+		break;
+	default:
+		break;
+	}
 	return S_OK;
 }
 

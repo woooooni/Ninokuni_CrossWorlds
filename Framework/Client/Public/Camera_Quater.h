@@ -10,6 +10,7 @@ BEGIN(Client)
 class CCamera_Quater final : public CCamera
 {
 	enum VIEW_TYPE { NE, SE, SW, NW };
+	enum MODE_TYPE { TRANSLATION, ZOOM, ROTATION, NONE };
 
 private:
 	CCamera_Quater(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
@@ -33,29 +34,45 @@ private:
 	virtual HRESULT Ready_Components() override;
 	virtual HRESULT Ready_VirtualTarget();
 
-	void Tick_VirtualTargetTransform(const _float fDeltaTime);
-	void Tick_Transform(const _float fDeltaTime);
+private:
+	void Tick_Input();
+	void Tick_Translation(const _float fDeltaTime);
+	void Tick_Zoom(const _float fDeltaTime);
+	void Tick_Rotation(const _float fDeltaTime);
+
+private:
 	void Test(_float fTimeDelta);
 
 private:
-	/* Init */
-	_bool			m_bSet = false;
+	const _float& Calculate_CamHeightFromDistance();
+	Vec4 Calculate_GoalPosition();
 
-	/* Damping */
-	const _float	m_fDampingCoefficient = 0.1f;
-	const _float	m_fDampingMaxDistance = 5.f;
-	Vec4			m_vCurPos = {};
+private:
+	/* Mode */
+	CCamera_Quater::MODE_TYPE	m_eModeType = CCamera_Quater::MODE_TYPE::NONE;
 
 	/* Virtual Target */
-	const _float		m_fVirtualTargetMoveSpeed = 20.f;
-	class CTransform*	m_pVirtualTargetTransform = nullptr;
+	const _float				m_fVirtualTargetMoveSpeed = 20.f;
+	class CTransform*			m_pVirtualTargetTransform = nullptr;
+	Vec3						m_vVirtualTargetMoveDir	= Vec3::Zero;
+
+	/* Translation Damping */
+	const _float				m_fDampingCoefficient = 0.1f;
+	const _float				m_fDampingMaxDistance = 5.f;
+	Vec4						m_vCurPos = {};
 
 	/* Distance, Height */
-	const _float		m_fHeightMag = 0.5f; /* 디스턴스에 대한 높이 비율 */
-	const _float		m_fInitHeight = 25.f;
-	LERP_FLOAT_DESC		m_tHeight = {};
+	const _float				m_fHeightMag = 1.25f; /* 디스턴스에 대한 높이 비율 (1.25이상으로 올리면 깨짐)*/
+	const _float				m_fInitHeight = 25.f;
+	LERP_FLOAT_DESC				m_tHeight = {};
 
-	CCamera_Quater::VIEW_TYPE			m_eViewType = CCamera_Quater::VIEW_TYPE::NE;
+	/* Roatation */
+	CCamera_Quater::VIEW_TYPE	m_eViewType = CCamera_Quater::VIEW_TYPE::NE;
+	_long						m_iMouseWheel = 0;
+	const _float				m_fRotLerpTime = 1.f;
+	_bool						m_bPlaySound = false;
+
+	LERP_VEC4_DESC				m_tNextPosDesc;
 
 public:
 	static CCamera_Quater* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);

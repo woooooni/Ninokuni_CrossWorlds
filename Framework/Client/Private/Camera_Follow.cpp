@@ -682,20 +682,17 @@ void CCamera_Follow::Check_WideView(_float fTimeDelta)
 
 void CCamera_Follow::Test(_float fTimeDelta)
 {
-	/* CutScene - Evermore */
-	//if (KEY_TAP(KEY::INSERT))
-	//{
-	//	vector<string> CutSceneNames;
-	//	CutSceneNames.push_back("Evermore_Street_00");
-	//	CutSceneNames.push_back("Evermore_Street_01");
-	//
-	//	dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP))->Start_CutScenes(CutSceneNames);
-	//}
-	
-
 	/* Quater View */
 	if (KEY_TAP(KEY::INSERT))
 		CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::QUATER);
+
+	/* CutScene - Evermore */
+	if (KEY_TAP(KEY::DEL))
+	{
+		CCamera_CutScene_Map* pCutSceneMap = dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP));
+		if (nullptr != pCutSceneMap)
+			pCutSceneMap->Start_CutScene(LEVELID::LEVEL_EVERMORE);
+	}
 }
 
 CCamera_Follow * CCamera_Follow::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
