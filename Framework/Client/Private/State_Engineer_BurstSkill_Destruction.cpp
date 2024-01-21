@@ -20,6 +20,7 @@ void CState_Engineer_BurstSkill_Destruction::Enter_State(void* pArg)
 {
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
     m_pCharacter->Look_For_Target();
+    m_pCharacter->Appear_Weapon();
 }
 
 void CState_Engineer_BurstSkill_Destruction::Tick_State(_float fTimeDelta)

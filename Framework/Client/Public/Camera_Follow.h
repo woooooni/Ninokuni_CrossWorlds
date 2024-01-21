@@ -138,7 +138,8 @@ private:
 	_bool			m_bWideView				= false;
 	_float			m_fAccForWideView		= 0.f;
 	const _float	m_fWideViewCheckTime	= 4.f;
-	const _float	m_fDefaultViewCheckTime = 3.f;
+	/*const _float	m_fDefaultViewCheckTime = 3.f;*/
+	const _float	m_fDefaultViewCheckTime = 0.5f;
 	const _float	m_fWideViewLerpTime		= 1.f;
 	const LERP_MODE	m_eWideViewLerpMode		= LERP_MODE::SMOOTHER_STEP;
 

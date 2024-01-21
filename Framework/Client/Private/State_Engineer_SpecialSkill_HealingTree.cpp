@@ -18,6 +18,7 @@ HRESULT CState_Engineer_SpecialSkill_HealingTree::Initialize(const list<wstring>
 
 void CState_Engineer_SpecialSkill_HealingTree::Enter_State(void* pArg)
 {
+    m_pCharacter->Disappear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 }
 

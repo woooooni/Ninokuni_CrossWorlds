@@ -64,8 +64,8 @@ HRESULT CUI_CharacterDummy::Initialize(void* pArg)
 		break;
 
 	case CHARACTER_TYPE::ENGINEER:
-		vCamPos = _float3(0.f, 0.7f, -2.3f);
-		vLook = _float3(0.f, 0.7, 0.f);
+		vCamPos = _float3(0.f, 0.9f, -3.f);
+		vLook = _float3(0.f, 0.9f, 0.f);
 		vUp = _float3(0.f, 1.f, 0.f);
 		break;
 

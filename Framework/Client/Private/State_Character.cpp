@@ -38,23 +38,7 @@ void CState_Character::Neutral_Idle_Input(_float fTimeDelta)
 	if (false == m_pCharacter->Is_Move_Input())
 		return;
 
-	if (KEY_HOLD(KEY::TAB) && KEY_TAP(KEY::NUM_1))
-	{
-		CGame_Manager::GetInstance()->Get_Player()->Tag_Character(CHARACTER_TYPE::SWORD_MAN);
-		return;
-	}
-
-	if (KEY_HOLD(KEY::TAB) && KEY_TAP(KEY::NUM_2))
-	{
-		CGame_Manager::GetInstance()->Get_Player()->Tag_Character(CHARACTER_TYPE::ENGINEER);
-		return;
-	}
-
-	if (KEY_HOLD(KEY::TAB) && KEY_TAP(KEY::NUM_3))
-	{
-		CGame_Manager::GetInstance()->Get_Player()->Tag_Character(CHARACTER_TYPE::DESTROYER);
-		return;
-	}
+	
 
 	//if (true == CUI_Manager::GetInstance()->Is_Dialog_Active())
 	//	return;
@@ -1544,18 +1528,37 @@ void CState_Character::Attack_Input(_float fTimeDelta)
 	}
 }
 
+_bool CState_Character::Tag_Input(_float fTimeDelta)
+{
+	if (KEY_HOLD(KEY::TAB) && KEY_TAP(KEY::NUM_1))
+	{
+		if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Tag_Character(CHARACTER_TYPE::SWORD_MAN)))
+			return false;
+
+		return true;
+	}
+
+	if (KEY_HOLD(KEY::TAB) && KEY_TAP(KEY::NUM_2))
+	{
+		if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Tag_Character(CHARACTER_TYPE::ENGINEER)))
+			return false;
+
+		return true;
+	}
+
+	if (KEY_HOLD(KEY::TAB) && KEY_TAP(KEY::NUM_3))
+	{
+		if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Tag_Character(CHARACTER_TYPE::DESTROYER)))
+			return false;
+
+		return true;
+	}
+}
+
 void CState_Character::Dead_Input(_float fTimeDelta)
 {
 	if (KEY_TAP(KEY::R))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::REVIVE);
-	}
-}
-
-void CState_Character::Interaction_Input(_float fTimeDelta)
-{
-	if (KEY_TAP(KEY::F))
-	{
-		
 	}
 }

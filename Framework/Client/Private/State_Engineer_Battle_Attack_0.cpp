@@ -21,6 +21,7 @@ HRESULT CState_Engineer_Battle_Attack_0::Initialize(const list<wstring>& Animati
 void CState_Engineer_Battle_Attack_0::Enter_State(void* pArg)
 {
     m_iShootCount = 3;
+    m_pCharacter->Appear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
     m_pCharacter->Look_For_Target();
 }

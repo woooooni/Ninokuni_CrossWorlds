@@ -44,8 +44,7 @@ protected:
 	virtual void Skill_Input(_float fTimeDelta);
 	virtual void Attack_Input(_float fTimeDelta);
 
-	virtual void Interaction_Input(_float fTimeDelta);
-
+	virtual _bool Tag_Input(_float fTimeDelta);
 	virtual void Dead_Input(_float fTimeDelta);
 	
 

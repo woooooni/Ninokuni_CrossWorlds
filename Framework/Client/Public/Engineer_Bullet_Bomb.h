@@ -35,6 +35,10 @@ private:
 	_float m_fAccOnOff = 0.f;
 	_float m_fOnOffTime = 0.2f;
 
+private:
+	class CEffect* m_pSpiralEffect = nullptr;
+	_bool m_bGenEffect = false;
+
 public:
 	static CEngineer_Bullet_Bomb* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);

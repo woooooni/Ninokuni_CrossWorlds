@@ -50,6 +50,8 @@ void CState_Character_Battle_Jump::Tick_State(_float fTimeDelta)
         m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_IDLE);
         return;
     }
+
+    __super::Tag_Input(fTimeDelta);
 }
 
 void CState_Character_Battle_Jump::Exit_State()

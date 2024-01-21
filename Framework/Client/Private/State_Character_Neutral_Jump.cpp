@@ -49,6 +49,8 @@ void CState_Character_Neutral_Jump::Tick_State(_float fTimeDelta)
     {
         m_pStateMachineCom->Change_State(CCharacter::STATE::NEUTRAL_IDLE);
     }   
+
+    __super::Tag_Input(fTimeDelta);
 }
 
 void CState_Character_Neutral_Jump::Exit_State()

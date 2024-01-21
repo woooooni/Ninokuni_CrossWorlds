@@ -19,6 +19,7 @@ HRESULT CState_Engineer_SpecialSkill_TimeLab::Initialize(const list<wstring>& An
 void CState_Engineer_SpecialSkill_TimeLab::Enter_State(void* pArg)
 {
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
+    m_pCharacter->Disappear_Weapon();
 }
 
 void CState_Engineer_SpecialSkill_TimeLab::Tick_State(_float fTimeDelta)
