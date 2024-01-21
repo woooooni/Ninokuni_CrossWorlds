@@ -15,8 +15,9 @@ private:
 		TYPE_ET1_D_CIRCLE, // 0
 		// --------------------
 		TYPE_ET2_E_TORNADO, // 13 돌기 시작
-		TYPE_ET2_P_FIRE,
 		// --------------------
+
+		TYPE_ET3_P_FIRE,
 		TYPE_ET3_P_CIRCLES,
 
 		TYPE_END

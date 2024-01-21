@@ -34,23 +34,21 @@ HRESULT CVfx_Destroyer_Skill_WheelWind::Initialize_Prototype()
 	}
 
 	{
-		m_pFrameTriger[TYPE_ET2_E_TORNADO] = 0;
+		m_pFrameTriger[TYPE_ET2_E_TORNADO]    = 13;
 		m_pPositionOffset[TYPE_ET2_E_TORNADO] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_E_TORNADO] = _float3(1.f, 1.f, 1.f);
+		m_pScaleOffset[TYPE_ET2_E_TORNADO]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET2_E_TORNADO] = _float3(0.f, 0.f, 0.f);
-
-		m_pFrameTriger[TYPE_ET2_P_FIRE] = 0;
-		m_pPositionOffset[TYPE_ET2_P_FIRE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_P_FIRE] = _float3(1.f, 1.f, 1.f);
-		m_pRotationOffset[TYPE_ET2_P_FIRE] = _float3(0.f, 0.f, 0.f);
 	}
 
-	{
-		m_pFrameTriger[TYPE_ET3_P_CIRCLES] = 50;
-		m_pPositionOffset[TYPE_ET3_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET3_P_CIRCLES] = _float3(1.f, 1.f, 1.f);
-		m_pRotationOffset[TYPE_ET3_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
-	}
+	m_pFrameTriger[TYPE_ET3_P_FIRE] = 0;
+	m_pPositionOffset[TYPE_ET3_P_FIRE] = _float3(0.f, 0.f, 0.f);
+	m_pScaleOffset[TYPE_ET3_P_FIRE] = _float3(1.f, 1.f, 1.f);
+	m_pRotationOffset[TYPE_ET3_P_FIRE] = _float3(0.f, 0.f, 0.f);
+
+	m_pFrameTriger[TYPE_ET3_P_CIRCLES] = 0;
+	m_pPositionOffset[TYPE_ET3_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
+	m_pScaleOffset[TYPE_ET3_P_CIRCLES] = _float3(1.f, 1.f, 1.f);
+	m_pRotationOffset[TYPE_ET3_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
 
  	return S_OK;
 }
@@ -69,7 +67,7 @@ void CVfx_Destroyer_Skill_WheelWind::Tick(_float fTimeDelta)
 		if (m_iCount == TYPE_ET1_D_CIRCLE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_D_CIRCLE])
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_Perfectblade_Circle"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_D_CIRCLE], m_pScaleOffset[TYPE_ET1_D_CIRCLE], m_pRotationOffset[TYPE_ET1_D_CIRCLE], nullptr, &m_pEt1_Decal);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_D_CIRCLE], m_pScaleOffset[TYPE_ET1_D_CIRCLE], m_pRotationOffset[TYPE_ET1_D_CIRCLE], nullptr, &m_pEt1_Decal, false);
 			m_pEt1_Decal->Set_LifeTime(6.f);
 			Safe_AddRef(m_pEt1_Decal);
 			m_iCount++;
@@ -80,7 +78,7 @@ void CVfx_Destroyer_Skill_WheelWind::Tick(_float fTimeDelta)
 			//	XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_E_TORNADO], m_pScaleOffset[TYPE_ET2_E_TORNADO], m_pRotationOffset[TYPE_ET2_E_TORNADO]);
 			m_iCount++;
 		}
-		else if (m_iCount == TYPE_ET2_P_FIRE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_FIRE])
+		else if (m_iCount == TYPE_ET3_P_FIRE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_P_FIRE])
 		{
 			m_iCount++;
 		}
@@ -89,8 +87,8 @@ void CVfx_Destroyer_Skill_WheelWind::Tick(_float fTimeDelta)
 			m_iCount++;
 		}
 
-		else if (m_iCount == TYPE_END)
-			m_bFinish = true;
+		//else if (m_iCount == TYPE_END)
+		//	m_bFinish = true;
 	}
 }
 
