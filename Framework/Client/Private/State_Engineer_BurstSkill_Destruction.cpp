@@ -2,6 +2,7 @@
 #include "GameInstance.h"
 #include "Character.h"
 #include "State_Engineer_BurstSkill_Destruction.h"
+#include "Effect_Manager.h"
 
 CState_Engineer_BurstSkill_Destruction::CState_Engineer_BurstSkill_Destruction(CStateMachine* pMachine)
     : CState_Character(pMachine)
@@ -20,6 +21,12 @@ void CState_Engineer_BurstSkill_Destruction::Enter_State(void* pArg)
 {
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
     m_pCharacter->Look_For_Target();
+
+    // Effect Create
+    CTransform* pTransformCom = m_pCharacter->Get_Component<CTransform>(L"Com_Transform");
+    if (pTransformCom == nullptr)
+        return;
+    GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Engineer_Skill_Destruction"), pTransformCom->Get_WorldMatrix(), m_pCharacter);
 }
 
 void CState_Engineer_BurstSkill_Destruction::Tick_State(_float fTimeDelta)

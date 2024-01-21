@@ -4,6 +4,7 @@
 #include "Utils.h"
 #include "Character_Projectile.h"
 #include "State_Engineer_Skill_ExplosionShot.h"
+#include "Effect_Manager.h"
 
 CState_Engineer_Skill_ExplosionShot::CState_Engineer_Skill_ExplosionShot(CStateMachine* pMachine)
     : CState_Character(pMachine)
@@ -27,6 +28,12 @@ void CState_Engineer_Skill_ExplosionShot::Enter_State(void* pArg)
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 
     m_bShoot = false;
+
+    // Effect Create
+    CTransform* pTransformCom = m_pCharacter->Get_Component<CTransform>(L"Com_Transform");
+    if (pTransformCom == nullptr)
+        return;
+    GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Engineer_Skill_ExplosionShot"), pTransformCom->Get_WorldMatrix(), m_pCharacter);
 }
 
 void CState_Engineer_Skill_ExplosionShot::Tick_State(_float fTimeDelta)

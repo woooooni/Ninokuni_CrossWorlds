@@ -2,6 +2,7 @@
 #include "GameInstance.h"
 #include "Character.h"
 #include "State_Engineer_SpecialSkill_HealingTree.h"
+#include "Effect_Manager.h"
 
 CState_Engineer_SpecialSkill_HealingTree::CState_Engineer_SpecialSkill_HealingTree(CStateMachine* pMachine)
     : CState_Character(pMachine)
@@ -19,6 +20,12 @@ HRESULT CState_Engineer_SpecialSkill_HealingTree::Initialize(const list<wstring>
 void CState_Engineer_SpecialSkill_HealingTree::Enter_State(void* pArg)
 {
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
+
+    // Effect Create
+    CTransform* pTransformCom = m_pCharacter->Get_Component<CTransform>(L"Com_Transform");
+    if (pTransformCom == nullptr)
+        return;
+    GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Engineer_Skill_HealingTree"), pTransformCom->Get_WorldMatrix(), m_pCharacter);
 }
 
 void CState_Engineer_SpecialSkill_HealingTree::Tick_State(_float fTimeDelta)

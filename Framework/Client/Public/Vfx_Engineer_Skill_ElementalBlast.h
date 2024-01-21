@@ -10,6 +10,21 @@ BEGIN(Client)
 
 class CVfx_Engineer_Skill_ElementalBlast final : public CVfx
 {
+private:
+	enum TYPE {
+		TYPE_ET1_D_RECT, // 0
+
+		TYPE_ET1_P_LIGHT, // 9
+		TYPE_ET1_E_CIRCLELINE,
+		TYPE_ET1_P_CIRCLES,
+		// -----------------------
+		TYPE_ET2_P_FIRE, // 21
+		TYPE_ET2_P_SMOKE,
+		TYPE_ET2_P_CIRCLES,
+
+		TYPE_END
+	};
+
 protected:
 	CVfx_Engineer_Skill_ElementalBlast(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	CVfx_Engineer_Skill_ElementalBlast(const CVfx_Engineer_Skill_ElementalBlast& rhs);
