@@ -24,12 +24,21 @@
 
 #include "StelliaState_Berserk.h"
 
-#include "StelliaState_Turn.h"
+#include "StelliaState_Rage2StartTurnOC.h"
+#include "StelliaState_Rage2StartJump.h"
+#include "StelliaState_Rage2StartTurnOL.h"
+#include "StelliaState_Rage2Start.h"
 
+#include "StelliaState_Rage2Loop.h"
+#include "StelliaState_Rage2Finish.h"
+
+#include "StelliaState_Turn.h"
 #include "StelliaState_Dead.h"
 
 #include "Camera_Manager.h"
 #include "Quest_Manager.h"
+
+#include "Stellia_Crystal_Controller.h"
 
 CStellia::CStellia(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
 	: CBoss(pDevice, pContext, strObjectTag, tStat)
@@ -105,6 +114,9 @@ void CStellia::Tick(_float fTimeDelta)
 	m_pStateCom->Tick_State(fTimeDelta);
 
 	__super::Tick(fTimeDelta);
+
+	if (nullptr != m_pCrystalController)
+		m_pCrystalController->Tick(fTimeDelta);
 }
 
 void CStellia::LateTick(_float fTimeDelta)
@@ -221,9 +233,12 @@ HRESULT CStellia::Ready_Components()
 		return E_FAIL;
 
 	// m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(1.f, 10.f, 10.f, 1.f));
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-55.f, 1.6, 363.f, 1.f));
+	// m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-55.f, 1.6, 363.f, 1.f));
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(0.f, 0.f, 0.f, 1.f));
 	m_pTransformCom->FixRotation(0.f, 180.f, 0.f);
 
+	m_vOriginPos = m_pTransformCom->Get_Position();
+	m_vOriginLook = m_pTransformCom->Get_Look();
 
 
 	/* For.Com_Renderer */
@@ -343,10 +358,41 @@ HRESULT CStellia::Ready_States()
 	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_CounterEnd");
 	m_pStateCom->Add_State(STELLIA_COUNTEREND, CStelliaState_CounterEnd::Create(m_pStateCom, strAnimationName));
 
-
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_BossSkillRage");
 	m_pStateCom->Add_State(STELLIA_BERSERK, CStelliaState_Berserk::Create(m_pStateCom, strAnimationName));
+
+	/* ·¹ÀÌÁö 2 */
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_InstantTurn");
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_LeftTurn");
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_RightTurn");
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_RightTurn180");
+	m_pStateCom->Add_State(STELLIA_RAGE2START_TURN_OC, CStelliaState_Rage2StartTurnOC::Create(m_pStateCom, strAnimationName));
+	
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_BossSkill02_New");
+	m_pStateCom->Add_State(STELLIA_RAGE2START_JUMP, CStelliaState_Rage2StartJump::Create(m_pStateCom, strAnimationName));
+	
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_InstantTurn");
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_LeftTurn");
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_RightTurn");
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_RightTurn180");
+	m_pStateCom->Add_State(STELLIA_RAGE2START_TURN_OL, CStelliaState_Rage2StartTurnOL::Create(m_pStateCom, strAnimationName));
+	
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_BossSkillRage");
+	m_pStateCom->Add_State(STELLIA_RAGE2START, CStelliaState_Rage2Start::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_BossSkill06_New_Start");
+	m_pStateCom->Add_State(STELLIA_RAGE2LOOP, CStelliaState_Rage2Loop::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_BossSkill04_New_Start");
+	m_pStateCom->Add_State(STELLIA_RAGE2FINISH, CStelliaState_Rage2Finish::Create(m_pStateCom, strAnimationName));
+	// 
 
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_RightTurn");
@@ -428,6 +474,29 @@ HRESULT CStellia::Ready_Parts()
 {
 	return S_OK;
 }
+
+HRESULT CStellia::Create_Crystals()
+{
+	m_pCrystalController = new CStellia_Crystal_Controller();
+	if (nullptr == m_pCrystalController)
+		return E_FAIL;
+
+	if (FAILED(m_pCrystalController->Create_Crystals(6, GI->RandomFloat(10.f, 25.f), this)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CStellia::Clear_Crystals()
+{
+	if (nullptr == m_pCrystalController)
+		return E_FAIL;
+
+	m_pCrystalController->Clear_Crystals();
+
+	return S_OK;
+}
+
 #pragma endregion
 
 CStellia* CStellia::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
@@ -458,5 +527,7 @@ CGameObject* CStellia::Clone(void* pArg)
 void CStellia::Free()
 {
 	__super::Free();
+
+	Safe_Delete(m_pCrystalController);
 }
 

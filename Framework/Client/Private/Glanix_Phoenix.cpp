@@ -28,7 +28,6 @@ HRESULT CGlanix_Phoenix::Initialize_Prototype()
 	if (FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
 
-
 	return S_OK;
 }
 

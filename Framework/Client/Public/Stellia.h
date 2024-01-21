@@ -14,6 +14,14 @@ public:
 		STELLIA_CHASEJUMPSTAMP,
 		STELLIA_COUNTERSTART, STELLIA_COUNTERLOOP, STELLIA_COUNTEREND,
 		STELLIA_BERSERK,
+		/* 레이지 1*/
+
+		/* 레이지 2*/
+		STELLIA_RAGE2START_TURN_OC, STELLIA_RAGE2START_JUMP, STELLIA_RAGE2START_TURN_OL, STELLIA_RAGE2START,
+		STELLIA_RAGE2LOOP, STELLIA_RAGE2FINISH,
+
+		/* 레이지 3*/
+
 		STELLIA_TURN,
 		STELLIA_DEAD,
 		STELLIA_END
@@ -36,10 +44,19 @@ public:
 	virtual void Collision_Continue(const COLLISION_INFO& tInfo) override;
 	virtual void Collision_Exit(const COLLISION_INFO& tInfo) override;
 
-
 public:
 	virtual void On_Damaged(const COLLISION_INFO& tInfo) override;
 	virtual void Set_SkillTree() override;
+
+	/* 레이지2 패턴 */
+	void Clear_CrystalBingoCount() { m_iCrystalBingoCount = 0; }
+
+	void Set_CrystalBingoCount(_int iCount) { m_iCrystalBingoCount += iCount; }
+	void Set_CrystalSuccessCount(_int iCount) { m_iCrystalSuccessCount += iCount; }
+	void Set_CrystalFailCount(_int iCount) { m_iCrystalFailCount += iCount; }
+	_int Get_CrystalBingoCount() { return m_iCrystalBingoCount; }
+	_int Get_CrystalSuccessCount() { return m_iCrystalSuccessCount; }
+	_int Get_CrystalFailCount() { return m_iCrystalFailCount; }
 
 private:
 	virtual HRESULT Ready_Components();
@@ -49,6 +66,20 @@ private:
 private:
 	HRESULT Ready_Sockets();
 	HRESULT Ready_Parts();
+
+public:
+	HRESULT Create_Crystals();
+	HRESULT Clear_Crystals();
+
+	class CStellia_Crystal_Controller* Get_CrystalController() const { return m_pCrystalController; }
+
+
+private:
+	_int m_iCrystalBingoCount = 0;
+	_int m_iCrystalSuccessCount = 0;
+	_int m_iCrystalFailCount = 0;
+
+	class CStellia_Crystal_Controller* m_pCrystalController = nullptr;
 
 public:
 	static CStellia* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat);
