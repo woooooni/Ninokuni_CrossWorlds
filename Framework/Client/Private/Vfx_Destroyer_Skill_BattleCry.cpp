@@ -28,52 +28,52 @@ HRESULT CVfx_Destroyer_Skill_BattleCry::Initialize_Prototype()
 	{
 		m_pFrameTriger[TYPE_ET1_D_CIRCLE] = 0;
 		m_pPositionOffset[TYPE_ET1_D_CIRCLE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET1_D_CIRCLE] = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET1_D_CIRCLE]    = _float3(8.f, 5.f, 8.f);
 		m_pRotationOffset[TYPE_ET1_D_CIRCLE] = _float3(0.f, 0.f, 0.f);
 	}
 
 	{
-		m_pFrameTriger[TYPE_ET2_P_SPARCKE] = 0;
+		m_pFrameTriger[TYPE_ET2_P_SPARCKE] = 11;
 		m_pPositionOffset[TYPE_ET2_P_SPARCKE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_P_SPARCKE] = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET2_P_SPARCKE]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET2_P_SPARCKE] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_ET2_E_CIRCLELINE] = 0;
+		m_pFrameTriger[TYPE_ET2_E_CIRCLELINE] = 11;
 		m_pPositionOffset[TYPE_ET2_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_E_CIRCLELINE] = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET2_E_CIRCLELINE]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET2_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
 	}
 
 	{
-		m_pFrameTriger[TYPE_ET3_E_DOME] = 0;
+		m_pFrameTriger[TYPE_ET3_E_DOME] = 13;
 		m_pPositionOffset[TYPE_ET3_E_DOME] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET3_E_DOME] = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET3_E_DOME]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET3_E_DOME] = _float3(0.f, 0.f, 0.f);
 
 
-		m_pFrameTriger[TYPE_ET3_D_FIRECRACK] = 0;
+		m_pFrameTriger[TYPE_ET3_D_FIRECRACK] = 13;
 		m_pPositionOffset[TYPE_ET3_D_FIRECRACK] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET3_D_FIRECRACK] = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET3_D_FIRECRACK]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET3_D_FIRECRACK] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_ET3_E_SPRINGUP] = 0;
+		m_pFrameTriger[TYPE_ET3_E_SPRINGUP] = 13;
 		m_pPositionOffset[TYPE_ET3_E_SPRINGUP] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET3_E_SPRINGUP] = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET3_E_SPRINGUP]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET3_E_SPRINGUP] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_ET3_E_CIRCLELINE] = 0;
+		m_pFrameTriger[TYPE_ET3_E_CIRCLELINE] = 13;
 		m_pPositionOffset[TYPE_ET3_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET3_E_CIRCLELINE] = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET3_E_CIRCLELINE]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET3_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_ET3_P_STONE] = 0;
+		m_pFrameTriger[TYPE_ET3_P_STONE] = 13;
 		m_pPositionOffset[TYPE_ET3_P_STONE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET3_P_STONE] = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET3_P_STONE]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET3_P_STONE] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_ET3_P_CIRCLES] = 0;
+		m_pFrameTriger[TYPE_ET3_P_CIRCLES] = 13;
 		m_pPositionOffset[TYPE_ET3_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET3_P_CIRCLES] = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET3_P_CIRCLES]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET3_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
 	}
 

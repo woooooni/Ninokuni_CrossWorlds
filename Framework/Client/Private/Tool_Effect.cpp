@@ -1044,7 +1044,8 @@ void CTool_Effect::Set_OriginalInfo(TYPE eType)
 			return;
 		}
 
-		wstring strPropertyName(m_cPrototypeName, m_cPrototypeName + strlen(m_cPrototypeName));
+		wstring strFileName(m_cPrototypeName, m_cPrototypeName + strlen(m_cPrototypeName));
+		wstring strPropertyName = L"Prototype_" + strFileName;
 
 		CGameObject* pGameObject = GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_EFFECT, strPropertyName);
 		if (pGameObject == nullptr)
@@ -1061,7 +1062,8 @@ void CTool_Effect::Set_OriginalInfo(TYPE eType)
 
 void CTool_Effect::Load_OriginalInfoVfx()
 {
-	wstring strPropertyName(m_cPrototypeName, m_cPrototypeName + strlen(m_cPrototypeName));
+	wstring strFileName(m_cPrototypeName, m_cPrototypeName + strlen(m_cPrototypeName));
+	wstring strPropertyName = L"Prototype_" + strFileName;
 
 	CGameObject* pGameObject = GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_EFFECT, strPropertyName);
 	if (pGameObject == nullptr)

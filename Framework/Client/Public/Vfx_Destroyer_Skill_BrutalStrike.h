@@ -16,25 +16,30 @@ private: // 망치에 트레일 추가 필요
 		// --------------------
 		TYPE_ET2_D_SMOKED, // 12
 
+		TYPE_ET2_P_FIRE,
+		TYPE_ET2_E_SMOKELINE,
+		TYPE_ET2_P_STONE,
+		TYPE_ET2_P_CIRCLES,
+
 		TYPE_ET2_P_HITUP_01,
 		TYPE_ET2_P_HITUP_02,
 		TYPE_ET2_P_HITUP_03,
 		TYPE_ET2_P_HITUP_04,
-
-		TYPE_ET2_P_FIRE,
-		TYPE_ET2_E_SMOKELINE,
-		TYPE_ET2_P_CIRCLES,
+		TYPE_ET2_P_HITUP_05,
+		// --------------------
 		// --------------------
 		TYPE_ET3_D_SMOKED, // 27
+
+		TYPE_ET3_P_FIRE,
+		TYPE_ET3_E_SMOKELINE,
+		TYPE_ET3_P_STONE,
+		TYPE_ET3_P_CIRCLES,
 
 		TYPE_ET3_P_HITUP_01,
 		TYPE_ET3_P_HITUP_02,
 		TYPE_ET3_P_HITUP_03,
 		TYPE_ET3_P_HITUP_04,
-
-		TYPE_ET3_P_FIRE,
-		TYPE_ET3_E_SMOKELINE,
-		TYPE_ET3_P_CIRCLES,
+		TYPE_ET3_P_HITUP_05,
 
 		TYPE_END
 	};
@@ -53,6 +58,9 @@ public:
 
 protected:
 	virtual HRESULT Ready_Components() override;
+
+private:
+	class CDecal* m_pEt1_D_RECT = nullptr;
 
 public:
 	static CVfx_Destroyer_Skill_BrutalStrike* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,

@@ -28,59 +28,59 @@ HRESULT CVfx_Destroyer_Skill_LeafSlam::Initialize_Prototype()
 	{
 		m_pFrameTriger[TYPE_ET1_D_CIRCLE] = 0;
 		m_pPositionOffset[TYPE_ET1_D_CIRCLE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET1_D_CIRCLE] = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET1_D_CIRCLE]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET1_D_CIRCLE] = _float3(0.f, 0.f, 0.f);
 	}
 
 	{
-		m_pFrameTriger[TYPE_ET2_D_BROWN] = 0;
+		m_pFrameTriger[TYPE_ET2_D_BROWN] = 16;
 		m_pPositionOffset[TYPE_ET2_D_BROWN] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_D_BROWN] = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET2_D_BROWN]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET2_D_BROWN] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_ET2_P_SPARKLE] = 0;
+		m_pFrameTriger[TYPE_ET2_P_SPARKLE] = 16;
 		m_pPositionOffset[TYPE_ET2_P_SPARKLE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_P_SPARKLE] = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET2_P_SPARKLE]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET2_P_SPARKLE] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_ET2_D_FIREBROWN] = 0;
+		m_pFrameTriger[TYPE_ET2_D_FIREBROWN] = 16;
 		m_pPositionOffset[TYPE_ET2_D_FIREBROWN] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_D_FIREBROWN] = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET2_D_FIREBROWN]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET2_D_FIREBROWN] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_ET2_P_SPRINGUP] = 0;
+		m_pFrameTriger[TYPE_ET2_P_SPRINGUP] = 16;
 		m_pPositionOffset[TYPE_ET2_P_SPRINGUP] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_P_SPRINGUP] = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET2_P_SPRINGUP]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET2_P_SPRINGUP] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_ET2_D_CRACK] = 0;
+		m_pFrameTriger[TYPE_ET2_D_CRACK] = 16;
 		m_pPositionOffset[TYPE_ET2_D_CRACK] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_D_CRACK] = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET2_D_CRACK]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET2_D_CRACK] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_ET2_P_FIRE] = 0;
+		m_pFrameTriger[TYPE_ET2_P_FIRE] = 16;
 		m_pPositionOffset[TYPE_ET2_P_FIRE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_P_FIRE] = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET2_P_FIRE]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET2_P_FIRE] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_ET2_P_CIRCLES] = 0;
+		m_pFrameTriger[TYPE_ET2_P_CIRCLES] = 16;
 		m_pPositionOffset[TYPE_ET2_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_P_CIRCLES] = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET2_P_CIRCLES]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET2_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_ET2_P_STONES] = 0;
+		m_pFrameTriger[TYPE_ET2_P_STONES] = 16;
 		m_pPositionOffset[TYPE_ET2_P_STONES] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_P_STONES] = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET2_P_STONES]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET2_P_STONES] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_ET2_P_FIRERIGID] = 0;
+		m_pFrameTriger[TYPE_ET2_P_FIRERIGID] = 16;
 		m_pPositionOffset[TYPE_ET2_P_FIRERIGID] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_P_FIRERIGID] = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET2_P_FIRERIGID]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET2_P_FIRERIGID] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_ET2_E_CIRCLELINE] = 0;
+		m_pFrameTriger[TYPE_ET2_E_CIRCLELINE] = 16;
 		m_pPositionOffset[TYPE_ET2_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_E_CIRCLELINE] = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET2_E_CIRCLELINE]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET2_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
 	}
 
@@ -101,7 +101,8 @@ void CVfx_Destroyer_Skill_LeafSlam::Tick(_float fTimeDelta)
 		if (m_iCount == TYPE_ET1_D_CIRCLE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_D_CIRCLE])
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_Perfectblade_Circle"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_D_CIRCLE], m_pScaleOffset[TYPE_ET1_D_CIRCLE], m_pRotationOffset[TYPE_ET1_D_CIRCLE]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_D_CIRCLE], m_pScaleOffset[TYPE_ET1_D_CIRCLE], m_pRotationOffset[TYPE_ET1_D_CIRCLE], m_pOwnerObject);
+			m_iCount++;
 		}
 
 		else if (m_iCount == TYPE_ET2_D_BROWN && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_D_BROWN])
@@ -112,6 +113,7 @@ void CVfx_Destroyer_Skill_LeafSlam::Tick(_float fTimeDelta)
 		{
 			m_iCount++;
 		}
+
 		else if (m_iCount == TYPE_ET2_D_FIREBROWN && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_D_FIREBROWN])
 		{
 			m_iCount++;
@@ -120,6 +122,7 @@ void CVfx_Destroyer_Skill_LeafSlam::Tick(_float fTimeDelta)
 		{
 			m_iCount++;
 		}
+
 		else if (m_iCount == TYPE_ET2_D_CRACK && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_D_CRACK])
 		{
 			m_iCount++;
