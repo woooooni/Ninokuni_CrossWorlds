@@ -409,16 +409,16 @@ HRESULT CCharacter_Destroyer::Ready_States()
 	m_pStateCom->Add_State(CCharacter::STATE::CLASS_SKILL_2, CState_Destroyer_Skill_LeafSlam::Create(m_pStateCom, strAnimationNames));
 	
 	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillFrenzyCharge");
+	m_pStateCom->Add_State(CCharacter::STATE::SKILL_SPECIAL_0, CState_Destroyer_SpecialSkill_FrengeCharge::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillBattleCry");
-	m_pStateCom->Add_State(CCharacter::STATE::SKILL_SPECIAL_0, CState_Destroyer_SpecialSkill_BattleCry::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::SKILL_SPECIAL_1, CState_Destroyer_SpecialSkill_BattleCry::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillIgnorePain");
-	m_pStateCom->Add_State(CCharacter::STATE::SKILL_SPECIAL_1, CState_Destroyer_SpecialSkill_IgnorePain::Create(m_pStateCom, strAnimationNames));
-
-	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillFrenzyCharge");
-	m_pStateCom->Add_State(CCharacter::STATE::SKILL_SPECIAL_2, CState_Destroyer_SpecialSkill_FrengeCharge::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::SKILL_SPECIAL_2, CState_Destroyer_SpecialSkill_IgnorePain::Create(m_pStateCom, strAnimationNames));
 
 	
 	

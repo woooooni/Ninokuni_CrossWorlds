@@ -17,7 +17,7 @@ CVfx_Destroyer_Skill_IgnorePain::CVfx_Destroyer_Skill_IgnorePain(const CVfx_Dest
 
 HRESULT CVfx_Destroyer_Skill_IgnorePain::Initialize_Prototype()
 {
-	m_bOwnerStateIndex = CCharacter::CLASS_SKILL_1;
+	m_bOwnerStateIndex = CCharacter::CLASS_SKILL_2;
 
 	m_iMaxCount = TYPE_END;
 	m_pFrameTriger = new _int[m_iMaxCount];

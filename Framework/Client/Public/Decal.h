@@ -77,6 +77,7 @@ public:
 	void Set_DeleteDecal(_bool bDecalDelete) { m_bDecalDelete = bDecalDelete; }
 	void Set_OffsetPosition(Vec4 vPos) { m_vOffsetPos = vPos; }
 	void Set_LifeTime(_float fLifeTime) { m_tDecalDesc.fLifeTime = fLifeTime; };
+	void Set_AlphaSpeed(_float fSpeed) { m_tDecalDesc.fAlphaSpeed = fSpeed; };
 	void Start_AlphaDeleate();
 
 private:
