@@ -28,7 +28,7 @@ HRESULT CVfx_Glanix_Skill_FootDown::Initialize_Prototype()
 	// 1
 	m_pFrameTriger[TYPE_D_CRACK]    = 61;
 	m_pPositionOffset[TYPE_D_CRACK] = _float3(-0.15f, 0.f, 0.4f);
-	m_pScaleOffset[TYPE_D_CRACK]    = _float3(5.f, 5.f, 5.f);
+	m_pScaleOffset[TYPE_D_CRACK]    = _float3(8.f, 5.f, 8.f);
 	m_pRotationOffset[TYPE_D_CRACK] = _float3(0.f, 0.f, 0.f);
 
 	// 2

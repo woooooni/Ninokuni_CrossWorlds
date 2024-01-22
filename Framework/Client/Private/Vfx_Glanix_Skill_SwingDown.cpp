@@ -29,7 +29,7 @@ HRESULT CVfx_Glanix_Skill_SwingDown::Initialize_Prototype()
 	{
 		m_pFrameTriger[TYPE_D_START_WARNING]    = 15;
 		m_pPositionOffset[TYPE_D_START_WARNING] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_D_START_WARNING]    = _float3(7.f, 5.f, 7.f);
+		m_pScaleOffset[TYPE_D_START_WARNING]    = _float3(10.f, 5.f, 10.f);
 		m_pRotationOffset[TYPE_D_START_WARNING] = _float3(0.f, 0.f, 0.f);
 	}
 
@@ -127,7 +127,7 @@ HRESULT CVfx_Glanix_Skill_SwingDown::Initialize_Prototype()
 	{
 		m_pFrameTriger[TYPE_D_ATTACK_WARNING]    = 75;
 		m_pPositionOffset[TYPE_D_ATTACK_WARNING] = _float3(0.f, 0.f, 0.3f);
-		m_pScaleOffset[TYPE_D_ATTACK_WARNING]    = _float3(7.f, 5.f, 7.f);
+		m_pScaleOffset[TYPE_D_ATTACK_WARNING]    = _float3(10.f, 5.f, 10.f);
 		m_pRotationOffset[TYPE_D_ATTACK_WARNING] = _float3(0.f, 0.f, 0.f);
 
 		// Smoke

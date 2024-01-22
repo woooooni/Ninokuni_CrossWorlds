@@ -11,7 +11,12 @@
 
 #include "Stellia.h"
 
+#include "Stellia_Crystal_Controller.h"
 #include "Stellia_Crystal_Explosion.h"
+
+#include "Game_Manager.h"
+#include "Character.h"
+#include "Player.h"
 
 CStellia_Crystal_Destructible::CStellia_Crystal_Destructible(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
 	: CMonster(pDevice, pContext, strObjectTag, tStat)
@@ -42,7 +47,6 @@ HRESULT CStellia_Crystal_Destructible::Initialize(void* pArg)
 	if (pArg != nullptr)
 	{
 		Vec4 vPos = *(Vec4*)pArg;
-		vPos.y -= 3.f;
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);
 		m_pTransformCom->Set_Scale(Vec3(4.f, 4.f, 4.f));
 	}
@@ -219,7 +223,23 @@ void CStellia_Crystal_Destructible::Collision_Enter(const COLLISION_INFO& tInfo)
 	{
 		if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
 		{
-			On_Damaged(tInfo);
+			if (CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_ElementalType() == ELEMENTAL_TYPE::FIRE &&
+				m_iSelfType == (_int)CStellia_Crystal_Controller::CRYSTAL_GOLD)
+			{
+				On_Damaged(tInfo);
+			}
+
+			if (CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_ElementalType() == ELEMENTAL_TYPE::WOOD &&
+				m_iSelfType == (_int)CStellia_Crystal_Controller::CRYSTAL_SKY)
+			{
+				On_Damaged(tInfo);
+			}
+
+			if (CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_ElementalType() == ELEMENTAL_TYPE::WATER &&
+				m_iSelfType == (_int)CStellia_Crystal_Controller::CRYSTAL_AURA)
+			{
+				On_Damaged(tInfo);
+			}
 		}
 	}
 }

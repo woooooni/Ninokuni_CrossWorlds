@@ -435,8 +435,11 @@
     <ClInclude Include="..\Public\StelliaState_CounterEnd.h" />
     <ClInclude Include="..\Public\StelliaState_CounterLoop.h" />
     <ClInclude Include="..\Public\StelliaState_CounterStart.h" />
+    <ClInclude Include="..\Public\StelliaState_Rage1Loop_Idle.h" />
+    <ClInclude Include="..\Public\StelliaState_Rage1Loop_Explosion.h" />
+    <ClInclude Include="..\Public\StelliaState_Rage1Loop_Turn.h" />
     <ClInclude Include="..\Public\StelliaState_Rage1Start.h" />
-    <ClInclude Include="..\Public\StelliaState_Rage1StartCharge.h" />
+    <ClInclude Include="..\Public\StelliaState_Rage1StartJump.h" />
     <ClInclude Include="..\Public\StelliaState_Rage1StartTurnOC.h" />
     <ClInclude Include="..\Public\StelliaState_Rage2Finish.h" />
     <ClInclude Include="..\Public\StelliaState_Rage2Loop.h" />
@@ -1273,8 +1276,11 @@
     <ClCompile Include="..\Private\StelliaState_CounterEnd.cpp" />
     <ClCompile Include="..\Private\StelliaState_CounterLoop.cpp" />
     <ClCompile Include="..\Private\StelliaState_CounterStart.cpp" />
+    <ClCompile Include="..\Private\StelliaState_Rage1Loop_Idle.cpp" />
+    <ClCompile Include="..\Private\StelliaState_Rage1Loop_Explosion.cpp" />
+    <ClCompile Include="..\Private\StelliaState_Rage1Loop_Turn.cpp" />
     <ClCompile Include="..\Private\StelliaState_Rage1Start.cpp" />
-    <ClCompile Include="..\Private\StelliaState_Rage1StartCharge.cpp" />
+    <ClCompile Include="..\Private\StelliaState_Rage1StartJump.cpp" />
     <ClCompile Include="..\Private\StelliaState_Rage1StartTurnOC.cpp" />
     <ClCompile Include="..\Private\StelliaState_Rage2Finish.cpp" />
     <ClCompile Include="..\Private\StelliaState_Rage2Loop.cpp" />

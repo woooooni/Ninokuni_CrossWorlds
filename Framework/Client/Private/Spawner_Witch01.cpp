@@ -140,7 +140,7 @@ HRESULT CSpawner_Witch01::Spawn_Monster()
 	for (_int i = m_vecClown.size(); i < m_iMaxClownCount; ++i)
 	{
 		tInfo.vStartPosition.x = vSpawnerPos.x + GI->RandomFloat(-3.f, 3.f);
-		tInfo.vStartPosition.y = vSpawnerPos.y + 1.f;
+		tInfo.vStartPosition.y = vSpawnerPos.y;
 		tInfo.vStartPosition.z = vSpawnerPos.z + GI->RandomFloat(-3.f, 3.f);
 		tInfo.vStartPosition.w = 1.f;
 	

@@ -38,6 +38,7 @@ HRESULT CCriminal_Monster::Initialize(void* pArg)
 	{
 		Vec4* pInitializePosition = (Vec4*)pArg;
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(*pInitializePosition, 1.f));
+		m_pControllerCom->Set_EnterLevel_Position(m_pTransformCom->Get_Position());
 	}
 
 	if (FAILED(Ready_Components()))
@@ -262,7 +263,7 @@ HRESULT CCriminal_Monster::Ready_States()
 	m_tStat.iAtk = 25;
 	m_tStat.iDef = 0;
 
-	m_tStat.fAirVelocity = 5.5f;
+	m_tStat.fAirVelocity = 8.5f;
 	m_tStat.fAirDeadVelocity = 12.f;
 
 	return S_OK;

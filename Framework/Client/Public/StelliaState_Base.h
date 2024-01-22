@@ -34,6 +34,9 @@ public:
 
 protected:
 	virtual _bool State_Wait(_float fDestTime, _float fTimeDelta);
+	virtual void  Rage1_Tick(_float fTimeDelta);
+
+	void Generate_Explosion(_uint iCount);
 
 protected:
 	CCharacter* m_pPlayer = nullptr; // 후에 플레이어로 교체.
@@ -49,6 +52,9 @@ protected:
 
 private:
 	_float m_fTime = 0.f;
+
+	_float m_fRage1Time = 0.f;
+	_float m_fRage1ExplosionTime = 0.f;
 
 public:
 	virtual void Free() override;

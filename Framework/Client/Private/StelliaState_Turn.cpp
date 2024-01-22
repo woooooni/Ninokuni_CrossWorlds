@@ -29,6 +29,15 @@ void CStelliaState_Turn::Enter_State(void* pArg)
 		return;
 	}
 
+	//// 레이지1 패턴
+	if (!m_bIsRageInit && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.75f)
+	{
+		m_bIsRageInit = true;
+		m_pStellia->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_RAGE, true);
+		m_pStateMachineCom->Change_State(CStellia::STELLIA_RAGE1START_TURN_OC);
+		return;
+	}
+
 	// 레이지2 패턴
 	if (!m_bIsRage2Init && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.35f &&
 		m_pStellia->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK))
@@ -39,14 +48,6 @@ void CStelliaState_Turn::Enter_State(void* pArg)
 		return;
 	}
 
-	//// 레이지1 패턴
-	//if (!m_bIsRageInit && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.15f &&
-	//	m_pStellia->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK))
-	//{
-	//	m_bIsRageInit = true;
-	//	m_pStateMachineCom->Change_State(CStellia::GLANIX_RAGESTART_TURN_OC);
-	//	return;
-	//}
 
 	/* 일반 턴 시작 */
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_Run"));

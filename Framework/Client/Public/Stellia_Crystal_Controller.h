@@ -50,6 +50,14 @@ private:
 
 	_int m_iCrystalAmount = 0;
 	vector<CRYSTAL_TYPE> m_vecCrystalType;
+
+	// 타임 슬립
+	_bool  m_bIsSlow = false;
+	_float m_fSleepTime = 0.f;
+	_float m_fSlowTime = 0.f;
+
+	_bool m_bIsTimeSlep = false;
+
 };
 
 END

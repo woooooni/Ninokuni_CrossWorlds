@@ -1,14 +1,13 @@
 #pragma once
 
 #include "StelliaState_Base.h"
-
 BEGIN(Client)
 
-class CStelliaState_Rage2Loop final : public CStelliaState_Base
+class CStelliaState_Rage1StartJump final : public CStelliaState_Base
 {
 private:
-	CStelliaState_Rage2Loop(CStateMachine* pStateMachine);
-	virtual ~CStelliaState_Rage2Loop() = default;
+	CStelliaState_Rage1StartJump(CStateMachine* pStateMachine);
+	virtual ~CStelliaState_Rage1StartJump() = default;
 
 public:
 	virtual HRESULT Initialize(const list<wstring>& AnimationList);
@@ -19,11 +18,10 @@ public:
 	virtual void Exit_State();
 
 private:
-	_float m_fTime = 0.f;
-	_float m_fRespawnTime = 0.5f;
+	_vector vDestPos = {};
 
 public:
-	static CStelliaState_Rage2Loop* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
+	static CStelliaState_Rage1StartJump* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
 };
 

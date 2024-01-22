@@ -11,6 +11,7 @@ CStellia_Crystal_Controller::CStellia_Crystal_Controller()
 {
 	m_fRespawnTime = 3.f;
 	m_iCrystalAmount = 6;
+	m_fSlowTime = 0.1f;
 
 	m_vecCrystalType.push_back(CRYSTAL_AURA);
 	m_vecCrystalType.push_back(CRYSTAL_SKY);
@@ -42,6 +43,14 @@ void CStellia_Crystal_Controller::Tick(const _float fTimeDelta)
 
 		if (m_pStellia->Get_CrystalBingoCount() >= 2)
 		{
+			// 타임 슬립 시작.
+			if (!m_bIsTimeSlep)
+			{
+				GI->Set_TimeScale(TIMER_TYPE::GAME_PLAY, 0.1f);
+				m_bIsTimeSlep = true;
+				m_bIsSlow = true;
+			}
+
 			Clear_Crystals();
 			Clear_Progress();
 			m_pStellia->Clear_CrystalBingoCount();
@@ -95,6 +104,22 @@ void CStellia_Crystal_Controller::Tick(const _float fTimeDelta)
 
 			m_pStellia->Set_Bools(CStellia::BOSS_BOOLTYPE::BOSSBOOL_RAGE2, false);
 			m_pStellia->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CStellia::STELLIA_RAGE2FINISH);
+		}
+
+		// 타임 슬립
+		if (m_bIsTimeSlep)
+		{
+			if (m_bIsSlow)
+			{
+				m_fSleepTime += fTimeDelta;
+
+				if (m_fSleepTime >= m_fSlowTime)
+				{
+					m_bIsTimeSlep = false;
+					m_bIsSlow = false;
+					GI->Set_TimeScale(TIMER_TYPE::GAME_PLAY, 1.f);
+				}
+			}
 		}
 	}
 }
