@@ -109,6 +109,11 @@ HRESULT CDefence_Tower::Render()
 	if (FAILED(m_pBarrelModelCom->SetUp_VTF(m_pShaderCom)))
 		return E_FAIL;
 
+	_uint iPassIndex = true == m_bPrevObject ? 5 : 0;
+
+	if (iPassIndex > 0)	
+		iPassIndex = true == m_bInstallPossible ? 5 : 6;
+
 	_uint		iNumMeshes = m_pBarrelModelCom->Get_NumMeshes();
 
 	for (_uint i = 0; i < iNumMeshes; ++i)
@@ -116,7 +121,7 @@ HRESULT CDefence_Tower::Render()
 		if (FAILED(m_pBarrelModelCom->SetUp_OnShader(m_pShaderCom, m_pBarrelModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
 
-		if (FAILED(m_pBarrelModelCom->Render(m_pShaderCom, i)))
+		if (FAILED(m_pBarrelModelCom->Render(m_pShaderCom, i, iPassIndex)))
 			return E_FAIL;
 	}
 
@@ -126,12 +131,14 @@ HRESULT CDefence_Tower::Render()
 
 	iNumMeshes = m_pBaseModelCom->Get_NumMeshes();
 
+	
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{
 		if (FAILED(m_pBaseModelCom->SetUp_OnShader(m_pShaderCom, m_pBaseModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
 
-		if (FAILED(m_pBaseModelCom->Render(m_pShaderCom, i)))
+
+		if (FAILED(m_pBaseModelCom->Render(m_pShaderCom, i, iPassIndex)))
 			return E_FAIL;
 	}
 

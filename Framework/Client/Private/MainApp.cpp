@@ -19,6 +19,7 @@
 #include "Quest_Manager.h"
 #include "TowerDefence_Manager.h"
 #include "UIMinigame_Manager.h"
+#include "Buff_Manager.h"
 
 
 #include "Game_Manager.h"
@@ -84,6 +85,7 @@ void CMainApp::Tick(_float fTimeDelta)
 	CUI_Manager::GetInstance()->Tick(fTimeDelta);
 	GI->Priority_Tick(fTimeDelta); /* 카메라에서 플레이어 포지션 세팅하기 위해, 틱에서만 GI를 게임매니저보다 먼저 업데이트*/
 
+	CBuff_Manager::GetInstance()->Tick(fTimeDelta);
 	CGame_Manager::GetInstance()->Tick(fTimeDelta);
 	GI->Tick(fTimeDelta); 
 
@@ -145,6 +147,9 @@ HRESULT CMainApp::Initialize_Client()
 		return E_FAIL;
 
 	if (FAILED(CItem_Manager::GetInstance()->Reserve_Manager(L"../Bin/DataFiles/Item/")))
+		return E_FAIL;
+
+	if (FAILED(CBuff_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
 		return E_FAIL;
 
 	// Add Fonts

@@ -363,7 +363,7 @@ void CEffect::Tick(_float fTimeDelta)
 
 		if (0 < m_tEffectDesc.iUVFlowLoop)
 		{
-			if (m_fAccUVFlow.x > 1.f || m_fAccUVFlow.y > 1.f || m_fAccUVFlow.x < 0.f || m_fAccUVFlow.y < 0.f)
+			if (m_fAccUVFlow.x > 1.f || m_fAccUVFlow.y > 1.f || m_fAccUVFlow.x < -1.f || m_fAccUVFlow.y < -1.f)
 			{
 				m_bEffectDelete = true;
 				m_bEffectDie    = true;

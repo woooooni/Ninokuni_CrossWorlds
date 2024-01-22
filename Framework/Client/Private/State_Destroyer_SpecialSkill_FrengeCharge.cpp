@@ -4,6 +4,7 @@
 #include "State_Destroyer_SpecialSkill_FrengeCharge.h"
 
 #include "Effect_Manager.h"
+#include "Buff_Manager.h"
 
 CState_Destroyer_SpecialSkill_FrengeCharge::CState_Destroyer_SpecialSkill_FrengeCharge(CStateMachine* pMachine)
     : CState_Character(pMachine)
@@ -28,10 +29,14 @@ void CState_Destroyer_SpecialSkill_FrengeCharge::Enter_State(void* pArg)
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 
     // Effect Create
-    CTransform* pTransformCom = m_pCharacter->Get_Component<CTransform>(L"Com_Transform");
-    if (pTransformCom == nullptr)
-        return;
-    GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Destroyer_Skill_FrengeCharge"), pTransformCom->Get_WorldMatrix(), m_pCharacter);
+    GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Destroyer_Skill_FrengeCharge"), m_pTransformCom->Get_WorldMatrix(), m_pCharacter);
+    BUFF_DESC BuffDesc = {};
+
+    BuffDesc.iBuffCount = 5;
+    BuffDesc.fEndBuffTime = 3.f;
+
+    CBuff_Manager::GetInstance()->Apply_Buff(CHARACTER_TYPE::DESTROYER, CBuff_Manager::BUFF_TYPE::DESTROYER_FRENGE_CHARGE, BuffDesc);
+
 }
 
 void CState_Destroyer_SpecialSkill_FrengeCharge::Tick_State(_float fTimeDelta)

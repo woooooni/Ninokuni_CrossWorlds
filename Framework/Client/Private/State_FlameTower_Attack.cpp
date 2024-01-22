@@ -23,7 +23,7 @@ void CState_FlameTower_Attack::Enter_State(void* pArg)
 {
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
     m_fAccOnOffAttack = 0.f;
-    m_fOnOffAttackTime = 0.1f;
+    m_fOnOffAttackTime = 0.5f;
     m_bFire = false;
 }
 
@@ -42,8 +42,10 @@ void CState_FlameTower_Attack::Tick_State(_float fTimeDelta)
     if (m_fAccOnOffAttack >= m_fOnOffAttackTime)
     {
         m_pTower->Set_Collider_AttackMode(CCollider::ATTACK_TYPE::WEAK, 0.f, 0.f, 0.f, false);
+
         _bool bActive = m_pTower->Get_Collider(CCollider::DETECTION_TYPE::ATTACK)[0]->Is_Active();
         m_pTower->Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, !bActive);
+
         m_fAccOnOffAttack = 0.f;
     }
 
@@ -68,6 +70,8 @@ void CState_FlameTower_Attack::Exit_State()
         Safe_Release(m_pEffect_OutBound);
         m_pEffect_OutBound = nullptr;
     }
+
+    m_pTower->Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, false);
 }
 
 void CState_FlameTower_Attack::Fire()

@@ -5,12 +5,12 @@
 
 BEGIN(Client)
 
-class CDestroyer_HyperStrike_Hammer final : public CCharacter_Projectile
+class CDestroyer_FrengeCharge_Thunder final : public CCharacter_Projectile
 {
 private:
-	explicit CDestroyer_HyperStrike_Hammer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	explicit CDestroyer_HyperStrike_Hammer(const CDestroyer_HyperStrike_Hammer& rhs);
-	virtual ~CDestroyer_HyperStrike_Hammer() = default;
+	explicit CDestroyer_FrengeCharge_Thunder(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	explicit CDestroyer_FrengeCharge_Thunder(const CDestroyer_FrengeCharge_Thunder& rhs);
+	virtual ~CDestroyer_FrengeCharge_Thunder() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -30,7 +30,7 @@ private:
 
 
 public:
-	static CDestroyer_HyperStrike_Hammer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CDestroyer_FrengeCharge_Thunder* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

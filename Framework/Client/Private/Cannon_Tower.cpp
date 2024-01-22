@@ -58,7 +58,7 @@ HRESULT CCannon_Tower::Initialize(void* pArg)
 	m_fAccFireTime = 0.f;
 	m_fFireTime = 1.f;
 
-	m_fTargetLength = 15.f;
+	m_fTargetLength = 30.f;
 	
 
 	return S_OK;
@@ -233,7 +233,7 @@ HRESULT CCannon_Tower::Ready_Colliders()
 
 	BoundingSphere tSphere;
 	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 30.f;
+	tSphere.Radius = 60.f;
 	SphereDesc.tSphere = tSphere;
 
 	SphereDesc.pNode = nullptr;

@@ -25,6 +25,8 @@
 #include "DefenceInvasion_Portal.h"
 
 #include "UIMinigame_Manager.h"
+#include "Light_Manager.h"
+#include "Light.h"
 
 
 
@@ -109,6 +111,25 @@ void CTowerDefence_Manager::LateTick(_float fTimeDelta)
 
 void CTowerDefence_Manager::Prepare_Defence()
 {
+	// Change_Light
+	list<CLight*>* pLightLists = GI->Get_LightList();
+	for (auto& pLight : *pLightLists)
+	{
+
+		LIGHTDESC* pDesc = pLight->Get_ModifyLightDesc();
+		m_OriginLights.push_back(*pDesc);
+
+		pDesc->vDiffuse = _float4(0.729f, 0.431f, 1.f, 1.f);
+	}
+
+	/*list<CGameObject*>& NpcList = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_NPC);
+	for (auto& pNpc : NpcList)
+	{
+		pNpc->Set_Dead(true);
+		m_OriginNpcs.push_back(pNpc);
+		Safe_AddRef(pNpc);
+	}*/
+
 	if (nullptr != m_pPicked_Object)
 	{
 		m_pPicked_Object = nullptr;
@@ -151,6 +172,10 @@ void CTowerDefence_Manager::Start_Defence()
 {
 	CUIMinigame_Manager::GetInstance()->OnOff_TowerDefence_Select(false);
 
+	
+
+	
+
 	m_eCurrentPhase = TOWER_DEFENCE_PHASE::DEFENCE_PROGRESS;
 	if (nullptr != m_pPicked_Object)
 	{
@@ -172,6 +197,20 @@ void CTowerDefence_Manager::Start_Defence()
 
 void CTowerDefence_Manager::Finish_Defence()
 {
+
+	// Change_Light
+
+	list<CLight*>* pLightLists = GI->Get_LightList();
+	_uint iIndex = 0;
+
+	for (auto& pLight : *pLightLists)
+	{
+
+		LIGHTDESC* pDesc = pLight->Get_ModifyLightDesc();
+		pDesc->vDiffuse = m_OriginLights[iIndex].vDiffuse;
+		iIndex++;
+	}
+
 	if (nullptr != m_pPicked_Object)
 	{
 		m_pPicked_Object = nullptr;
@@ -219,9 +258,9 @@ void CTowerDefence_Manager::End_Defence()
 	m_DefenceObjects.clear();
 }
 
-void CTowerDefence_Manager::Set_PickObject(CGameObject* pPickObject)
+void CTowerDefence_Manager::Set_PickObject(TOWER_TYPE eTowerType)
 {
-	if (nullptr == pPickObject)	
+	if (eTowerType >= TOWER_TYPE::TOWER_TYPE_END)	
 		return;
 
 	if (nullptr != m_pPicked_Object)
@@ -230,7 +269,14 @@ void CTowerDefence_Manager::Set_PickObject(CGameObject* pPickObject)
 		m_pPicked_Object = nullptr;
 	}
 
-	m_pPicked_Object = pPickObject->Clone(nullptr);
+	if (TOWER_TYPE::CANNON == eTowerType)
+		m_pPicked_Object = dynamic_cast<CDefence_Tower*>(GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_ETC, L"Prototype_GameObject_DefenceTower_Cannon")->Clone(nullptr));
+	else if(TOWER_TYPE::CRYSTAL == eTowerType)
+		m_pPicked_Object = dynamic_cast<CDefence_Tower*>(GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_ETC, L"Prototype_GameObject_DefenceTower_Crystal")->Clone(nullptr));	
+	else if(TOWER_TYPE::FLAME == eTowerType)	
+		m_pPicked_Object = dynamic_cast<CDefence_Tower*>(GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_ETC, L"Prototype_GameObject_DefenceTower_Flame")->Clone(nullptr));
+	else if(TOWER_TYPE::SHADOW == eTowerType)	
+		m_pPicked_Object = dynamic_cast<CDefence_Tower*>(GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_ETC, L"Prototype_GameObject_DefenceTower_Shadow")->Clone(nullptr));
 
 	if (nullptr == m_pPicked_Object)
 	{
@@ -246,7 +292,8 @@ void CTowerDefence_Manager::Set_PickObject(CGameObject* pPickObject)
 		MSG_BOX("Picked_Object Transform is Null");
 		return;
 	}
-		
+
+	m_pPicked_Object->Set_Preview(true);
 }
 
 void CTowerDefence_Manager::Tick_Defence_No_Run(_float fTimeDelta)
@@ -259,14 +306,17 @@ void CTowerDefence_Manager::Tick_Defence_No_Run(_float fTimeDelta)
 
 void CTowerDefence_Manager::Tick_Defence_Prepare(_float fTimeDelta)
 {
+	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
+
 	if (nullptr != m_pPicked_Object)
 		m_pPicked_Object->Tick(fTimeDelta);
 
 	Picking_Position();
 
+	
 	if (KEY_HOLD(KEY::CTRL) && KEY_TAP(KEY::LBTN))
 	{
-		Picking_Object();
+		Picking_Tower();
 		return;
 	}
 		
@@ -285,27 +335,33 @@ void CTowerDefence_Manager::Tick_Defence_Prepare(_float fTimeDelta)
 		return;
 	}
 
+	if (KEY_TAP(KEY::R))
+	{
+		m_pPicked_ObjectTransform->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(45.f));
+		return;
+	}
+
 	if (KEY_TAP(KEY::F5))
 	{
-		Set_PickObject(GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_ETC, L"Prototype_GameObject_DefenceTower_Cannon"));
+		Set_PickObject(TOWER_TYPE::CANNON);
 		return;
 	}
 
 	if (KEY_TAP(KEY::F6))
 	{
-		Set_PickObject(GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_ETC, L"Prototype_GameObject_DefenceTower_Crystal"));
+		Set_PickObject(TOWER_TYPE::CRYSTAL);
 		return;
 	}
 
 	if (KEY_TAP(KEY::F7))
 	{
-		Set_PickObject(GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_ETC, L"Prototype_GameObject_DefenceTower_Flame"));
+		Set_PickObject(TOWER_TYPE::FLAME);
 		return;
 	}
 
 	if (KEY_TAP(KEY::F8))
 	{
-		Set_PickObject(GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_ETC, L"Prototype_GameObject_DefenceTower_Shadow"));
+		Set_PickObject(TOWER_TYPE::SHADOW);
 		return;
 	}
 
@@ -371,19 +427,24 @@ void CTowerDefence_Manager::Picking_Position()
 				if (nullptr != m_pPicked_ObjectTransform)
 				{
 					m_pPicked_ObjectTransform->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vPickingPos, 1.f));
+					m_pPicked_Object->Set_Install_Possible(true);
 					return;
 				}
 			}
 		}
 	}
+	m_pPicked_Object->Set_Install_Possible(false);
 }
 
-void CTowerDefence_Manager::Picking_Object()
+void CTowerDefence_Manager::Picking_Tower()
 {
 	list<CGameObject*>& PickingObjects = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_ETC);
 
 	for (auto& pObject : PickingObjects)
 	{
+		if (pObject->Get_ObjectType() != OBJ_TYPE::OBJ_DEFENCE_TOWER)
+			continue;
+
 		Vec4 vPickingPos = {};
 		CTransform* pTransform = pObject->Get_Component<CTransform>(L"Com_Transform");
 		CModel* pModel = pObject->Get_Component<CModel>(L"Com_Model");
@@ -399,15 +460,17 @@ void CTowerDefence_Manager::Picking_Object()
 						Safe_Release(m_pPicked_Object);
 						m_pPicked_Object = nullptr;
 					}
-
-					
-					m_pPicked_ObjectTransform = m_pPicked_Object->Get_Component<CTransform>(L"Com_Transform");
-					if (nullptr == m_pPicked_ObjectTransform)
-						return;
-
-					m_pPicked_Object = pObject;
-					return;
 				}
+
+				m_pPicked_Object = dynamic_cast<CDefence_Tower*>(pObject);
+				if (nullptr == m_pPicked_Object)
+					continue;
+
+				m_pPicked_ObjectTransform = m_pPicked_Object->Get_Component<CTransform>(L"Com_Transform");
+				if (nullptr == m_pPicked_ObjectTransform)
+					continue;
+
+				m_pPicked_Object->Set_Preview(true);
 			}
 		}
 	}

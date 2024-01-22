@@ -232,6 +232,7 @@
     <ClInclude Include="..\Public\BlackSmithMaster.h" />
     <ClInclude Include="..\Public\Body.h" />
     <ClInclude Include="..\Public\Boss.h" />
+    <ClInclude Include="..\Public\Buff_Manager.h" />
     <ClInclude Include="..\Public\Building.h" />
     <ClInclude Include="..\Public\Camera_Action.h" />
     <ClInclude Include="..\Public\Camera_CutScene_Boss.h" />
@@ -274,6 +275,7 @@
     <ClInclude Include="..\Public\Crystal_Ball.h" />
     <ClInclude Include="..\Public\Crystal_Tower.h" />
     <ClInclude Include="..\Public\Decal.h" />
+    <ClInclude Include="..\Public\Destroyer_FrengeCharge_Thunder.h" />
     <ClInclude Include="..\Public\Destroyer_HyperStrike_Hammer.h" />
     <ClInclude Include="..\Public\Destroyer_Npc.h" />
     <ClInclude Include="..\Public\DefenceInvasion_Portal.h" />
@@ -1066,6 +1068,7 @@
     <ClCompile Include="..\Private\BlackSmithMaster.cpp" />
     <ClCompile Include="..\Private\Body.cpp" />
     <ClCompile Include="..\Private\Boss.cpp" />
+    <ClCompile Include="..\Private\Buff_Manager.cpp" />
     <ClCompile Include="..\Private\Building.cpp" />
     <ClCompile Include="..\Private\Camera_Action.cpp" />
     <ClCompile Include="..\Private\Camera_CutScene_Boss.cpp" />
@@ -1108,6 +1111,7 @@
     <ClCompile Include="..\Private\Crystal_Ball.cpp" />
     <ClCompile Include="..\Private\Crystal_Tower.cpp" />
     <ClCompile Include="..\Private\Decal.cpp" />
+    <ClCompile Include="..\Private\Destroyer_FrengeCharge_Thunder.cpp" />
     <ClCompile Include="..\Private\Destroyer_HyperStrike_Hammer.cpp" />
     <ClCompile Include="..\Private\Destroyer_Npc.cpp" />
     <ClCompile Include="..\Private\DefenceInvasion_Portal.cpp" />

@@ -56,7 +56,7 @@ HRESULT CFlame_Tower::Initialize(void* pArg)
 		return E_FAIL;
 
 
-
+	m_fFireTime = 5.f;
 	return S_OK;
 }
 

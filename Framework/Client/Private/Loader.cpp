@@ -544,7 +544,7 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 			break;
 		}
 
-		//m_Threads[LOADING_THREAD::TOWER_DEFENCE_READY] = std::async(&CLoader::Loading_For_TowerDefence, this);
+		m_Threads[LOADING_THREAD::TOWER_DEFENCE_READY] = std::async(&CLoader::Loading_For_TowerDefence, this);
 		
 		
 		//// 미니게임(타워 디펜스)

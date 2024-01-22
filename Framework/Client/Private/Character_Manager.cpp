@@ -15,6 +15,9 @@
 #include "Engineer_Burst_DestructionCannon.h"
 
 
+#include "Destroyer_HyperStrike_Hammer.h"
+#include "Destroyer_FrengeCharge_Thunder.h"
+
 
 #include "Skill_Manager.h"
 
@@ -151,8 +154,17 @@ HRESULT CCharacter_Manager::Ready_Characters()
 		StatDesc.iHp = 1000;
 		StatDesc.iMaxHp = 1000;
 
+		if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Destroyer_FrengeCharge_Thunder", CDestroyer_FrengeCharge_Thunder::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
+			return E_FAIL;
+
+		if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Destroyer_Burst_HyperStrikeHammer", CDestroyer_HyperStrike_Hammer::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
+			return E_FAIL;
+
+
 		if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_Destroyer", CCharacter_Destroyer::Create(m_pDevice, m_pContext, L"Destroyer"), LAYER_CHARACTER, true)))
 			return E_FAIL;
+
+
 		CCharacter* pCharacterDestroyer = dynamic_cast<CCharacter*>(GI->Find_Prototype_GameObject(LAYER_CHARACTER, L"Prototype_GameObject_Character_Destroyer"));
 		if (nullptr == pCharacterDestroyer)
 			return E_FAIL;
@@ -260,6 +272,12 @@ HRESULT CCharacter_Manager::Ready_Characters()
 			StatDesc.iDef = 1;
 			StatDesc.iHp = 1000;
 			StatDesc.iMaxHp = 1000;
+
+			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Destroyer_FrengeCharge_Thunder", CDestroyer_FrengeCharge_Thunder::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
+				return E_FAIL;
+
+			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Destroyer_Burst_HyperStrikeHammer", CDestroyer_HyperStrike_Hammer::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
+				return E_FAIL;
 
 			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_Destroyer", CCharacter_Destroyer::Create(m_pDevice, m_pContext, L"Destroyer"), LAYER_CHARACTER, true)))
 				return E_FAIL;

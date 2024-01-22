@@ -56,7 +56,7 @@ HRESULT CCrystal_Tower::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_fAccFireTime = 0.f;
-	m_fFireTime = 1.f;
+	m_fFireTime = 2.f;
 
 
 	return S_OK;
@@ -229,7 +229,7 @@ HRESULT CCrystal_Tower::Ready_Colliders()
 
 	BoundingSphere tSphere;
 	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 10.f;
+	tSphere.Radius = 30.f;
 	SphereDesc.tSphere = tSphere;
 
 	SphereDesc.pNode = nullptr;

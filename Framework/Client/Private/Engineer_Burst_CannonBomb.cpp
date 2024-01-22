@@ -37,7 +37,7 @@ HRESULT CEngineer_Burst_CannonBomb::Initialize(void* pArg)
 
 	m_pTransformCom->Set_Scale(Vec3(10.f, 10.f, 10.f));
 	Set_Collider_Elemental(m_pOwner->Get_ElementalType());
-	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::BLOW, 0.f, 0.f, 0.f, false);
+	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::IF_DEAD_BLOW, 0.f, 0.f, 0.f, false);
 	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
 
 	m_fDeletionTime = 3.f;
@@ -51,7 +51,7 @@ void CEngineer_Burst_CannonBomb::Tick(_float fTimeDelta)
 
 	if (false == m_bGenEffect)
 	{
-		CEffect_Manager::GetInstance()->Generate_Effect(L"Effect_Engineer_BulletBomb_Spiral_0", m_pTransformCom->Get_WorldMatrix(), Vec3(0.f, 0.f, 0.f), Vec3(0.05f, 0.05f, 1.f), Vec3(0.f, 0.f, 0.f), this, &m_pSpiralEffect, false);
+		CEffect_Manager::GetInstance()->Generate_Effect(L"Effect_Engineer_BulletBomb_Spiral_0", m_pTransformCom->Get_WorldMatrix(), Vec3(0.f, 0.f, 0.f), Vec3(2.f, 2.f, 15.f), Vec3(0.f, 0.f, 0.f), this, &m_pSpiralEffect, false);
 
 		Safe_AddRef(m_pSpiralEffect);
 		m_bGenEffect = true;
@@ -110,7 +110,7 @@ HRESULT CEngineer_Burst_CannonBomb::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), reinterpret_cast<CComponent**>(&m_pTransformCom))))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Engineer_Bullet"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Engineer_BurstSkill_CannonBomb"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 		return E_FAIL;
 
 
@@ -119,7 +119,7 @@ HRESULT CEngineer_Burst_CannonBomb::Ready_Components()
 
 	BoundingSphere tSphere;
 	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 0.4f;
+	tSphere.Radius = 0.8f;
 	SphereDesc.tSphere = tSphere;
 
 	SphereDesc.pNode = nullptr;
@@ -142,7 +142,7 @@ void CEngineer_Burst_CannonBomb::Collision_Enter(const COLLISION_INFO& tInfo)
 	{
 		if (m_bReserveDead)		
 			return;
-
+		
 
 		wstring strSoundKey = L"Ele_Impact_Fire_" + to_wstring(GI->RandomInt(4, 8)) + L".mp3";
 		GI->Play_Sound(strSoundKey, SOUND_MONSTERL_HIT, 0.3f, false);
@@ -154,6 +154,13 @@ void CEngineer_Burst_CannonBomb::Collision_Enter(const COLLISION_INFO& tInfo)
 		for (auto& pCollider : AttackColliders)
 		{
 			pCollider->Set_Radius(10.f);
+		}
+
+		if (nullptr != m_pSpiralEffect)
+		{
+			m_pSpiralEffect->Set_Dead(true);
+			Safe_Release(m_pSpiralEffect);
+			m_pSpiralEffect = nullptr;
 		}
 	}
 	

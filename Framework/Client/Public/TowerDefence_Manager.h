@@ -16,6 +16,7 @@ class CTowerDefence_Manager : public CBase
 	DECLARE_SINGLETON(CTowerDefence_Manager)
 
 public:
+	enum TOWER_TYPE { CANNON, CRYSTAL, FLAME, SHADOW, TOWER_TYPE_END };
 	enum TOWER_DEFENCE_PHASE { DEFENCE_NO_RUN, DEFENCE_PREPARE, DEFENCE_PROGRESS, DEFENCE_FINISH, DEFENCE_END, PHASE_END };
 
 private:
@@ -35,8 +36,8 @@ public:
 
 
 public:
-	void Set_PickObject(class CGameObject* pPickObject);
-	class CGameObject* Get_PickObject() { return m_pPicked_Object; }
+	void Set_PickObject(TOWER_TYPE eTowerType);
+	class CDefence_Tower* Get_PickObject() { return m_pPicked_Object; }
 
 public:
 	_int Get_CurrentCost() { return m_iCost; }
@@ -56,7 +57,7 @@ private:
 
 private:
 	void Picking_Position();
-	void Picking_Object();
+	void Picking_Tower();
 	HRESULT Create_Defence_Object();
 	
 
@@ -70,7 +71,7 @@ private:
 	HRESULT Ready_Prototype_Defence_Objects();
 
 private:
-	class CGameObject* m_pPicked_Object = nullptr;
+	class CDefence_Tower* m_pPicked_Object = nullptr;
 	class CTransform* m_pPicked_ObjectTransform = nullptr;
 
 private:
@@ -88,6 +89,14 @@ private:
 private:
 	_bool m_bReserved = false;
 	TOWER_DEFENCE_PHASE m_eCurrentPhase = TOWER_DEFENCE_PHASE::DEFENCE_NO_RUN;
+
+
+private:
+	vector<LIGHTDESC> m_OriginLights;
+
+	vector<class CGameObject*> m_OriginNpcs;
+	vector<class CGameObject*> m_OriginAnimals;
+
 
 public:
 	virtual void Free() override;

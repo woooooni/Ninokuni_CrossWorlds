@@ -16,6 +16,7 @@ public:
 		TOWER_STATE_DEAD,
 		TOWER_STATE_END
 	};
+
 protected:
 	CDefence_Tower(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	CDefence_Tower(const CDefence_Tower& rhs);
@@ -46,6 +47,9 @@ public:
 	void Look_For_Target(_bool bEnemy);
 
 
+public:
+	void Set_Preview(_bool bPreview) { m_bPrevObject = bPreview; }
+	void Set_Install_Possible(_bool bPossible) { m_bInstallPossible = bPossible; }
 
 protected:
 	virtual void On_Damaged(const COLLISION_INFO& tInfo);
@@ -70,6 +74,10 @@ protected:
 
 	class CStateMachine* m_pStateCom = nullptr;
 	class CRigidBody* m_pRigidBodyCom = nullptr;
+
+protected:
+	_bool m_bPrevObject = false;
+	_bool m_bInstallPossible = true;
 
 protected:
 	Matrix m_BaseMatrix = Matrix::Identity;
