@@ -29,7 +29,7 @@ void CQuestNode_Base::LateTick(const _float& fTimeDelta)
 Vec4 CQuestNode_Base::Set_DestSpot(CGameObject* pGameObject)
 {
 	CTransform* pTransform = pGameObject->Get_Component<CTransform>(TEXT("Com_Transform"));
-	Vec4 vSpotPos = pTransform->Get_Position() + pTransform->Get_Look() * 2.5f;
+	Vec4 vSpotPos = Vec4(pTransform->Get_Position()) + (Vec4(pTransform->Get_Look()).Normalized() * 2.5f);
 
 	return vSpotPos;
 }

@@ -9,6 +9,10 @@
 #include "Camera_Manager.h"
 #include "Camera_Group.h"
 
+#include "Game_Manager.h"
+
+#include "Kuu.h"
+
 CMainQuestNode_Glanix08::CMainQuestNode_Glanix08()
 {
 }
@@ -25,6 +29,16 @@ HRESULT CMainQuestNode_Glanix08::Initialize()
 	m_strNextQuestName = TEXT("루슬란에게 보고하기");
 	m_strNextQuestContent = TEXT("루슬란과 대화하기");
 
+
+	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/04.MainQuest_Glanix/MainQuest_Glanix08.json");
+
+	for (const auto& talkDesc : Load) {
+		TALK_DELS sTalkDesc;
+		sTalkDesc.strOwner = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(talkDesc["Owner"]));
+		sTalkDesc.strTalk = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(talkDesc["Talk"]));
+		m_vecTalkDesc.push_back(sTalkDesc);
+	}
+
 	return S_OK;
 }
 
@@ -32,10 +46,18 @@ void CMainQuestNode_Glanix08::Start()
 {
 	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
 
-	/* 대화 카메라 세팅 */
-	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-	if (nullptr != pActionCam)
-		pActionCam->Start_Action_Talk(nullptr);
+	/* 대화 */
+	m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+	m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+	// CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
+
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
+	CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+
+	m_pKuu = CGame_Manager::GetInstance()->Get_Kuu();
+
+	TalkEvent();
 }
 
 CBTNode::NODE_STATE CMainQuestNode_Glanix08::Tick(const _float& fTimeDelta)
@@ -46,15 +68,34 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix08::Tick(const _float& fTimeDelta)
 	if (GI->Get_CurrentLevel() == LEVEL_KINGDOMHALL)
 	{
 		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+		CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
 
 		m_bIsClear = true;
-
-		/* 대화 카메라 종료 */
-		CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-		if (nullptr != pActionCam)
-			pActionCam->Finish_Action_Talk();
-
 		return NODE_STATE::NODE_FAIL;
+	}
+	else
+	{
+		m_fTime += fTimeDelta;
+
+		if (m_fTime >= 3.f)
+		{
+			Safe_Delete_Array(m_szpOwner);
+			Safe_Delete_Array(m_szpTalk);
+
+			m_iTalkIndex += 1;
+
+			if (m_iTalkIndex < m_vecTalkDesc.size())
+			{
+				m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+				m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+				CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
+
+				TalkEvent();
+			}
+
+			m_fTime = m_fTalkChangeTime - m_fTime;
+		}
 	}
 
 	return NODE_STATE::NODE_RUNNING;

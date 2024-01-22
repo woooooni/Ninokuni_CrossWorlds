@@ -104,10 +104,7 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill10::Tick(const _float& fTimeDelta)
 			m_bIsClear = true;
 			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
 
-			/* 대화 카메라 종료 */
-			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-			if (nullptr != pActionCam)
-				pActionCam->Finish_Action_Talk();
+			/* 10, 11, 12 노드는 하나의 씬으로 진행 (따라서 12에서 대화캠을 꺼준다) */
 
 			return NODE_STATE::NODE_FAIL;
 		}
@@ -149,7 +146,7 @@ void CSubQuestNode_Windmill10::TalkEvent()
 		m_pVerde->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pVerde->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Verde.ao|Verde_tlk"));
 		/* 대화 카메라 타겟 변경 */
-		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::ALL_RIGTH);
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC); /* 타입 변경 금지 (풍차 카메라 액션)*/
 		break;
 	}
 

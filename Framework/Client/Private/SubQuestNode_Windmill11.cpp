@@ -6,6 +6,11 @@
 
 #include "UI_Manager.h"
 
+#include "Camera_Manager.h"
+#include "Camera_Group.h"
+
+#include "Building.h"
+
 CSubQuestNode_Windmill11::CSubQuestNode_Windmill11()
 {
 }
@@ -27,11 +32,22 @@ HRESULT CSubQuestNode_Windmill11::Initialize()
 
 void CSubQuestNode_Windmill11::Start()
 {
-	//m_pChloe = dynamic_cast<CChloe*>(GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Chloe")));
-	//Vec4 vSpotPos = Set_DestSpot(m_pChloe);
-	//
-	//// 임시로 monster에 
-	//m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_MONSTER), &vSpotPos));
+	/* 풍차 비춰주기 */
+	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+	if (nullptr != pActionCam)
+	{
+		pActionCam->Start_Action_WindMill(true);
+
+		CGameObject* pGameObject = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_BUILDING, L"Evermore_Wind_WindMillaA_02");
+		if (nullptr != pGameObject)
+		{
+			CBuilding* pWindMill = dynamic_cast<CBuilding*>(pGameObject);
+			if (nullptr != pWindMill)
+			{
+				pWindMill->Set_QuestClear(true);
+			}
+		}
+	}
 }
 
 CBTNode::NODE_STATE CSubQuestNode_Windmill11::Tick(const _float& fTimeDelta)
@@ -39,13 +55,16 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill11::Tick(const _float& fTimeDelta)
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 
-	// 연출 완료해야 하나 임시로 일단 키 입력으로 넘어가자.
-	if (KEY_TAP(KEY::N))
+	/* 풍차 비춰주기가 끝났다면 다음으로 넘어간다. */
+	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+	if (nullptr != pActionCam)
 	{
-		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
-
-		m_bIsClear = true;
-		return NODE_STATE::NODE_FAIL;
+		if (CCamera_Action::CAMERA_ACTION_TYPE::WINDMILL != pActionCam->Get_Camera_ActionType())
+		{
+			CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+			m_bIsClear = true;
+			return NODE_STATE::NODE_FAIL;
+		}
 	}
 
 	return NODE_STATE::NODE_RUNNING;

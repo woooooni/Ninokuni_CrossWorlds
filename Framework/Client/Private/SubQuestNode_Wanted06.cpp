@@ -8,9 +8,6 @@
 #include "UI_Manager.h"
 #include "Quest_Manager.h"
 
-#include "Camera_Manager.h"
-#include "Camera_Group.h"
-
 CSubQuestNode_Wanted06::CSubQuestNode_Wanted06()
 {
 }
@@ -65,11 +62,6 @@ void CSubQuestNode_Wanted06::Start()
 	CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
 	CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
 
-	/* 대화 카메라 세팅 */
-	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-	if (nullptr != pActionCam)
-		pActionCam->Start_Action_Talk(nullptr);
-
 	TalkEvent();
 }
 
@@ -116,12 +108,7 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted06::Tick(const _float& fTimeDelta)
 			CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_END);
 
 			m_bIsClear = true;
-
-			/* 대화 카메라 종료 */
-			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-			if (nullptr != pActionCam)
-				pActionCam->Finish_Action_Talk();
-
+		
 			return NODE_STATE::NODE_FAIL;
 		}
 	}

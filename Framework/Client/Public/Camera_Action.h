@@ -96,7 +96,7 @@ public:
 		LERP_VEC4_DESC	tLookAt			= {};
 		_float			fPrevFov		= 0.f;
 		_float			fAcc			= 0.f;
-		const _float	fWaitTime		= 1.5f;
+		const _float	fWaitTime		= 1.f;
 	}ACTION_WINDMILL_DESC;
 
 private:
