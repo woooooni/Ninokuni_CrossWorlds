@@ -395,16 +395,16 @@ void CEffect::LateTick(_float fTimeDelta)
 		if (nullptr != pOwnerTransform)
 		{
 			// WorldMatrix
-			m_pTransformCom->Set_WorldMatrix(pOwnerTransform->Get_WorldMatrix());
+			//m_pTransformCom->Set_WorldMatrix(pOwnerTransform->Get_WorldMatrix());
 
-			// Scale / Rotation
-			Matrix matScale    = matScale.CreateScale(m_vLocalScale);
-			Matrix matRotation = matScale.CreateFromYawPitchRoll(Vec3(XMConvertToRadians(m_vLocalRotation.x), XMConvertToRadians(m_vLocalRotation.y), XMConvertToRadians(m_vLocalRotation.z)));
-			Matrix matResult   = matScale * matRotation * m_pTransformCom->Get_WorldFloat4x4();
-			m_pTransformCom->Set_WorldMatrix(matResult);
+			//// Scale / Rotation
+			//Matrix matScale    = matScale.CreateScale(m_vLocalScale);
+			//Matrix matRotation = matScale.CreateFromYawPitchRoll(Vec3(XMConvertToRadians(m_vLocalRotation.x), XMConvertToRadians(m_vLocalRotation.y), XMConvertToRadians(m_vLocalRotation.z)));
+			//Matrix matResult   = matScale * matRotation * m_pTransformCom->Get_WorldFloat4x4();
+			//m_pTransformCom->Set_WorldMatrix(matResult);
 
 			// Position
-			_vector vCurrentPosition = m_pTransformCom->Get_Position();
+			_vector vCurrentPosition = pOwnerTransform->Get_Position();
 			_vector vFinalPosition = vCurrentPosition;
 			vFinalPosition += m_pTransformCom->Get_State(CTransform::STATE_RIGHT) * m_vLocalPos.x;
 			vFinalPosition += m_pTransformCom->Get_State(CTransform::STATE_UP) * m_vLocalPos.y;

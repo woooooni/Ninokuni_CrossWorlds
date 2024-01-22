@@ -17,7 +17,7 @@ CVfx_Destroyer_Skill_FrengeCharge::CVfx_Destroyer_Skill_FrengeCharge(const CVfx_
 
 HRESULT CVfx_Destroyer_Skill_FrengeCharge::Initialize_Prototype()
 {
-	m_bOwnerStateIndex = CCharacter::SKILL_SPECIAL_2;
+	m_bOwnerStateIndex = CCharacter::SKILL_SPECIAL_0;
 
 	m_iMaxCount = TYPE_END;
 	m_pFrameTriger = new _int[m_iMaxCount];

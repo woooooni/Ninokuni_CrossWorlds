@@ -12,18 +12,21 @@ class CVfx_Destroyer_Skill_BattleCry final : public CVfx
 {
 private:
 	enum TYPE {
-		TYPE_ET1_D_CIRCLE, // 0
+		TYPE_ET1_D_CIRCLE, // X
 		// --------------------
-		TYPE_ET2_P_SPARCKE, // 11
-		TYPE_ET2_E_CIRCLELINE,
 		// --------------------
-		TYPE_ET3_E_DOME, // 13
+		TYPE_ET2_E_CIRCLELINE,//2
+		// --------------------
+		// --------------------
+		TYPE_ET3_E_DOME, // X
+		// --------------------
+		TYPE_ET3_D_FIRECRACK, // X
 
-		TYPE_ET3_D_FIRECRACK,
-		TYPE_ET3_E_SPRINGUP,
-		TYPE_ET3_E_CIRCLELINE,
-		TYPE_ET3_P_STONE,
-		TYPE_ET3_P_CIRCLES,
+		TYPE_ET3_E_SPRINGUP,   //3
+		TYPE_ET3_E_CIRCLELINE, // X
+
+		TYPE_ET3_P_STONE,   // X
+		TYPE_ET3_P_CIRCLES, // X
 
 		TYPE_END
 	};
@@ -42,6 +45,12 @@ public:
 
 protected:
 	virtual HRESULT Ready_Components() override;
+
+private:
+	class CDecal*  m_pEt1_Decal  = nullptr;
+	class CEffect* m_pEt2_Line   = nullptr;
+	class CEffect* m_pEt3_Dome   = nullptr;
+	class CEffect* m_pEt3_Spring = nullptr;
 
 public:
 	static CVfx_Destroyer_Skill_BattleCry* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,

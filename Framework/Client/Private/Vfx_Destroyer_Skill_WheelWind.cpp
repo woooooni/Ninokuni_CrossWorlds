@@ -72,7 +72,7 @@ void CVfx_Destroyer_Skill_WheelWind::Tick(_float fTimeDelta)
 		if (m_iCount == TYPE_ET1_D_CIRCLE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_D_CIRCLE])
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_Perfectblade_Circle"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_D_CIRCLE], m_pScaleOffset[TYPE_ET1_D_CIRCLE], m_pRotationOffset[TYPE_ET1_D_CIRCLE], nullptr, &m_pEt1_Decal, false);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_D_CIRCLE], m_pScaleOffset[TYPE_ET1_D_CIRCLE], m_pRotationOffset[TYPE_ET1_D_CIRCLE], m_pOwnerObject, &m_pEt1_Decal, false);
 			m_pEt1_Decal->Set_LifeTime(6.f);
 			Safe_AddRef(m_pEt1_Decal);
 			m_iCount++;
@@ -80,14 +80,14 @@ void CVfx_Destroyer_Skill_WheelWind::Tick(_float fTimeDelta)
 		else if (m_iCount == TYPE_ET2_E_TORNADO && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_E_TORNADO])
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Destroyer_Skill_WheelWind_Trail"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_E_TORNADO], m_pScaleOffset[TYPE_ET2_E_TORNADO], m_pRotationOffset[TYPE_ET2_E_TORNADO], nullptr, &m_pEt2_Trail, false);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_E_TORNADO], m_pScaleOffset[TYPE_ET2_E_TORNADO], m_pRotationOffset[TYPE_ET2_E_TORNADO], m_pOwnerObject, &m_pEt2_Trail, false);
 			Safe_AddRef(m_pEt2_Trail);
 			m_iCount++;
 
 			fNextTime = CUtils::Random_Float(0.5f, 1.f);
 		}
 		
-		else if (m_iCount == TYPE_ET3_P_FIRE)
+		else if (m_iCount >= TYPE_ET3_P_FIRE)
 		{
 			if (nullptr != m_pEt2_Trail)
 			{
@@ -96,10 +96,17 @@ void CVfx_Destroyer_Skill_WheelWind::Tick(_float fTimeDelta)
 				{
 					if (pModel->Get_CurrAnimation() == pModel->Get_Animation("SKM_Destroyer_Merge.ao|Destroyer_SkillWhirlwindfinish"))
 					{
+						// Event
 						if (m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_P_CIRCLES])
 						{
-							m_pEt2_Trail->Set_UVFlow(1, _float2(1, 0), _float2(m_pPositionOffset[TYPE_ET3_P_CIRCLES].x, m_pPositionOffset[TYPE_ET3_P_CIRCLES].y));
-							Safe_Release(m_pEt2_Trail);
+							if (nullptr != m_pEt2_Trail)
+							{
+								GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_Skill_WheelWind_Stone"),
+									XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.5f, 0.5f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
+
+								m_pEt2_Trail->Set_UVFlow(1, _float2(1, 0), _float2(m_pPositionOffset[TYPE_ET3_P_CIRCLES].x, m_pPositionOffset[TYPE_ET3_P_CIRCLES].y));
+								Safe_Release(m_pEt2_Trail);
+							}
 						}
 					}
 					else
@@ -115,8 +122,13 @@ void CVfx_Destroyer_Skill_WheelWind::Tick(_float fTimeDelta)
 								CUtils::Random_Float(m_pPositionOffset[TYPE_ET3_P_FIRE].y, m_pScaleOffset[TYPE_ET3_P_FIRE].y),
 								CUtils::Random_Float(m_pPositionOffset[TYPE_ET3_P_FIRE].z, m_pScaleOffset[TYPE_ET3_P_FIRE].z));
 
-							GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_Skill_WheelWind_Fire"), XMLoadFloat4x4(&m_WorldMatrix), fRandomPosition, _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
-							GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_Skill_WheelWind_Circle"), XMLoadFloat4x4(&m_WorldMatrix), fRandomPosition, _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
+							CTransform* pTransform = m_pOwnerObject->Get_Component<CTransform>(L"Com_Transform");
+							if (nullptr != pTransform)
+							{
+								m_WorldMatrix = pTransform->Get_WorldFloat4x4();
+								GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_Skill_WheelWind_Fire"), XMLoadFloat4x4(&m_WorldMatrix), fRandomPosition, _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
+								GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_Skill_WheelWind_Circle"), XMLoadFloat4x4(&m_WorldMatrix), fRandomPosition, _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
+							}
 						}
 					}
 				}
