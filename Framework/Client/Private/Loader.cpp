@@ -54,7 +54,7 @@
 #include "Stellia.h"
 #include "Stellia_Crystal.h"
 #include "Stellia_Crystal_Destructible.h"
-#include "Stellia_Crystal_FailBomb.h"
+#include "Stellia_Crystal_Explosion.h"
 
 #include "DMWitch.h"
 
@@ -1445,7 +1445,8 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Stellia_Crystal_Destructible", CStellia_Crystal_Destructible::Create(m_pDevice, m_pContext, TEXT("Stellia_Crystal_Destructible"), statDesc), LAYER_MONSTER, true)))
 		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Stellia_Crystal_FailBomb", CStellia_Crystal_FailBomb::Create(m_pDevice, m_pContext, TEXT("Stellia_Crystal_FailBomb")), LAYER_PROP, true)))
+
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Stellia_Crystal_FailBomb", CStellia_Crystal_Explosion::Create(m_pDevice, m_pContext, TEXT("Stellia_Crystal_FailBomb")), LAYER_PROP, true)))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_DreamerMazeWitch", CDMWitch::Create(m_pDevice, m_pContext, TEXT("DreamerMazeWitch"), statDesc), LAYER_MONSTER, true)))
