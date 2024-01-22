@@ -325,8 +325,10 @@ HRESULT CRenderer::Draw_World()
 		if (FAILED(Render_Blur(L"Target_ShadowDepth_Caculation", L"MRT_Shadow_Caculation_Blur", true, BLUR_HOR_MIDDLE, BLUR_VER_MIDDLE, BLUR_UP_ONEADD)))
 			return E_FAIL;
 
-
 		if (FAILED(Render_Lights())) // MRT_Lights -> Shade / Specular
+			return E_FAIL;
+
+		if (FAILED(Render_UI_Minimap())) // Temp
 			return E_FAIL;
 	}
 
@@ -434,6 +436,9 @@ HRESULT CRenderer::Draw_UI()
 {
 	if (FAILED(Render_UI()))
 		return E_FAIL;
+
+//	if (FAILED(Render_UI_Minimap()))
+//		return E_FAIL;
 
 	if (FAILED(Render_Text()))
 		return E_FAIL;
@@ -1636,6 +1641,25 @@ HRESULT CRenderer::Render_Deferred_UI()
 		return E_FAIL;
 	if (FAILED(m_pVIBuffer->Render()))
 		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CRenderer::Render_UI_Minimap()
+{
+	if (FAILED(m_pTarget_Manager->Begin_UI_MRT(m_pContext, TEXT("MRT_GameObjects"), false)))
+		return E_FAIL;
+
+	for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_UI_MINIMAP])
+	{
+		if (FAILED(iter->Render_Minimap()))
+			return E_FAIL;
+		Safe_Release(iter);
+	}
+	m_RenderObjects[RENDER_UI_MINIMAP].clear();
 
 	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
 		return E_FAIL;

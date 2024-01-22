@@ -304,9 +304,26 @@ void CCharacter::LateTick(_float fTimeDelta)
 
 	if (nullptr != m_pWeapon)
 		m_pWeapon->LateTick(fTimeDelta);
-		
+	
+	// 미니맵을 위한 뷰 행렬을 렌더러에 던진다.
+	_matrix CamMatrix = XMMatrixIdentity();
+
+	_float4 vPlayerPos;
+	XMStoreFloat4(&vPlayerPos, m_pTransformCom->Get_Position());
+	_float vCamPosY = vPlayerPos.y + 30.f;
+
+	_float3 vCamPos = _float3(vPlayerPos.x, vCamPosY, vPlayerPos.z);
+	_float3 vLook = _float3(vPlayerPos.x, vPlayerPos.y, vPlayerPos.z);
+	_float3 vUp = _float3(0.f, 0.f, 1.f);
+
+	m_vCamPosition = _float4(vCamPos.x, vCamPos.y, vCamPos.z, 1.f);
+	CamMatrix = XMMatrixLookAtLH(XMLoadFloat3(&vCamPos), XMLoadFloat3(&vLook), XMLoadFloat3(&vUp));
+	XMStoreFloat4x4(&m_ViewMatrix, CamMatrix);
+	m_pRendererCom->Set_MinimapView(m_ViewMatrix);
+
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI_MINIMAP, this);
 
 
 
@@ -423,6 +440,41 @@ HRESULT CCharacter::Render_ShadowDepth()
 		}
 	}
 
+
+	return S_OK;
+}
+
+HRESULT CCharacter::Render_Minimap()
+{
+	if (nullptr == m_pModelCom || nullptr == m_pShaderCom)
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ))))
+		return E_FAIL;
+	if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
+		return E_FAIL;
+
+	for (size_t i = 0; i < PART_TYPE::PART_END; i++)
+	{
+		if (nullptr == m_pCharacterPartModels[i])
+			continue;
+
+		const _uint		iNumMeshes = m_pCharacterPartModels[i]->Get_NumMeshes();
+
+		for (_uint j = 0; j < iNumMeshes; ++j)
+		{
+			if (FAILED(m_pCharacterPartModels[i]->SetUp_OnShader(m_pShaderCom, m_pCharacterPartModels[i]->Get_MaterialIndex(j)
+				,aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+				return E_FAIL;
+
+			if (FAILED(m_pCharacterPartModels[i]->Render(m_pShaderCom, j, 9)))
+				return E_FAIL;
+		}
+	}
 
 	return S_OK;
 }

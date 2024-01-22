@@ -32,7 +32,7 @@ HRESULT CUI_Minigame_Timer::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	m_bActive = false; 
+	m_bActive = false;
 	m_fAlpha = 0.9f;
 	
 	return S_OK;

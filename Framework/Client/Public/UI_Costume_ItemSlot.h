@@ -46,10 +46,15 @@ private:
 	// m_pTextureCom은 SwordsMan 의상 Texture을 사용한다.
 	CTexture* m_pTexCom_SMAcc = { nullptr };
 	CTexture* m_pTexCom_SMWeapon = { nullptr };
+
 	CTexture* m_pTexCom_EGCostume = { nullptr };
 	CTexture* m_pTexCom_EGAcc = { nullptr };
+	CTexture* m_pTexCom_EGWeapon = { nullptr };
+
 	CTexture* m_pTexCom_DTCostume = { nullptr };
 	CTexture* m_pTexCom_DTAcc = { nullptr };
+	CTexture* m_pTexCom_DTWeapon = { nullptr };
+
 	CTexture* m_pFXTextureCom = { nullptr };
 
 	wstring m_strPartTag;

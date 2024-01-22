@@ -428,6 +428,11 @@ struct PS_OUT_UI
     float4 vBloom : SV_TARGET3;
 };
 
+struct PS_OUT_MINIMAP
+{
+    float4		vMinimap : SV_TARGET6;
+};
+
 float4 Caculation_Brightness(float4 vColor)
 {
     float4 vBrightnessColor = float4(0.f, 0.f, 0.f, 0.f);
@@ -521,6 +526,19 @@ PS_OUT_UI PS_MAIN_UI(PS_IN In)
 
     if (0.f == Out.vDiffuse.a)
         discard;
+
+    return Out;
+}
+
+PS_OUT_MINIMAP PS_MAIN_MINIMAP(PS_IN In)
+{
+    PS_OUT_MINIMAP Out = (PS_OUT_MINIMAP)0;
+
+    vector vColor = g_DiffuseTexture.Sample(ModelSampler, In.vTexUV);
+    if (vColor.a <= 0.01f)
+        discard;
+
+    Out.vMinimap = vColor;
 
     return Out;
 }
@@ -824,9 +842,9 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAIN();
     }
 
-    pass Temp6
+    pass UI_Minimap
     {
-		// 8
+		// 9
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
@@ -835,7 +853,7 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN();
+        PixelShader = compile ps_5_0 PS_MAIN_MINIMAP();
     }
 
     pass Shadow_Depth

@@ -40,13 +40,15 @@ private: // clone
 
 
 private: // Evermore Tower Defence
+	class CUI_Minigame_Basic* m_pMenu = { nullptr };
 	vector<class CUI_Minigame_TowerSelect*> m_TowerSelect;
 	class CUI_Minigame_Timer* m_pTimer = { nullptr };
+	class CUI_Minigame_Basic* m_pStartBtn = { nullptr };
+	class CUI_Minigame_Basic* m_pGold = { nullptr };
 
 private:
 	ID3D11Device* m_pDevice = nullptr;
 	ID3D11DeviceContext* m_pContext = nullptr;
-
 
 public:
 	virtual void Free() override;

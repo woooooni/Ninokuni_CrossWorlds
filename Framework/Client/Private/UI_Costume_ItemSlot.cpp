@@ -306,6 +306,26 @@ void CUI_Costume_ItemSlot::Update_PartsTag()
 				break;
 			}
 		}
+		else if (COSTUMESECTION_WEAPON == m_eSectionType)
+		{
+			if (COSTUMESLOT_END <= m_eType)
+				return;
+
+			switch (m_eType)
+			{
+			case COSTUMESLOT_FIRST: // 블룸 블룸 라이플
+				m_strPartTag = TEXT("Rifle_Flower");
+				break;
+
+			case COSTUMESLOT_SECOND: // 바닷속 친구들 라이플
+				m_strPartTag = TEXT("Rifle_Fish");
+				break;
+
+			case COSTUMESLOT_THIRD: // X
+				m_strPartTag = TEXT("");
+				break;
+			}
+		}
 		break;
 
 	case CHARACTER_TYPE::DESTROYER:
@@ -349,6 +369,26 @@ void CUI_Costume_ItemSlot::Update_PartsTag()
 				break;
 			}
 		}
+		else if (COSTUMESECTION_WEAPON == m_eSectionType)
+		{
+			if (COSTUMESLOT_END <= m_eType)
+				return;
+
+			switch (m_eType)
+			{
+			case COSTUMESLOT_FIRST: // 바닷속 친구들 해머
+				m_strPartTag = TEXT("Hammer_Fish01");
+				break;
+
+			case COSTUMESLOT_SECOND: // 환상의 맛 해머
+				m_strPartTag = TEXT("Hammer_Food01");
+				break;
+
+			case COSTUMESLOT_THIRD: // X
+				m_strPartTag = TEXT("");
+				break;
+			}
+		}
 		break;
 	}
 }
@@ -379,6 +419,10 @@ HRESULT CUI_Costume_ItemSlot::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Costume_Engineer_HairAcc"),
 		TEXT("Com_Texture5"), (CComponent**)&m_pTexCom_EGAcc)))
 		return E_FAIL;
+	// Engineer_Weapon
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Costume_Engineer_Weapon"),
+		TEXT("Com_Texture6"), (CComponent**)&m_pTexCom_EGWeapon)))
+		return E_FAIL;
 
 	// Destroyer_Clothes
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Costume_Destroyer_Clothes"),
@@ -388,7 +432,10 @@ HRESULT CUI_Costume_ItemSlot::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Costume_Destroyer_HairAcc"),
 		TEXT("Com_Texture8"), (CComponent**)&m_pTexCom_DTAcc)))
 		return E_FAIL;
-
+	// Engineer_Weapon
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Costume_Destroyer_Weapon"),
+		TEXT("Com_Texture9"), (CComponent**)&m_pTexCom_DTWeapon)))
+		return E_FAIL;
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Costume_Slot_Glow"),
 		TEXT("Com_FXTexture"), (CComponent**)&m_pFXTextureCom)))
@@ -464,6 +511,11 @@ HRESULT CUI_Costume_ItemSlot::Bind_ShaderResources()
 			if (FAILED(m_pTexCom_EGAcc->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextureIndex)))
 				return E_FAIL;
 		}
+		else if (COSTUMESECTION_WEAPON == m_eSectionType)
+		{
+			if (FAILED(m_pTexCom_EGWeapon->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextureIndex)))
+				return E_FAIL;
+		}
 		break;
 
 	case CHARACTER_TYPE::DESTROYER:
@@ -475,6 +527,11 @@ HRESULT CUI_Costume_ItemSlot::Bind_ShaderResources()
 		else if (COSTUMESECTION_HAIRACC == m_eSectionType)
 		{
 			if (FAILED(m_pTexCom_DTAcc->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextureIndex)))
+				return E_FAIL;
+		}
+		else if (COSTUMESECTION_WEAPON == m_eSectionType)
+		{
+			if (FAILED(m_pTexCom_DTWeapon->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextureIndex)))
 				return E_FAIL;
 		}
 		break;
@@ -593,6 +650,26 @@ HRESULT CUI_Costume_ItemSlot::Ready_PartTag()
 				break;
 			}
 		}
+		else if (COSTUMESECTION_WEAPON == m_eSectionType)
+		{
+			if (COSTUMESLOT_END <= m_eType)
+				return E_FAIL;
+
+			switch (m_eType)
+			{
+			case COSTUMESLOT_FIRST: // 블룸 블룸 라이플
+				m_strPartTag = TEXT("Rifle_Flower");
+				break;
+
+			case COSTUMESLOT_SECOND: // 바닷속 친구들 라이플
+				m_strPartTag = TEXT("Rifle_Fish");
+				break;
+
+			case COSTUMESLOT_THIRD: // X
+				m_strPartTag = TEXT("");
+				break;
+			}
+		}
 		break;
 
 	case CHARACTER_TYPE::DESTROYER:
@@ -629,6 +706,26 @@ HRESULT CUI_Costume_ItemSlot::Ready_PartTag()
 
 			case COSTUMESLOT_SECOND: // 꿀꾸리 모자
 				m_strPartTag = TEXT("Destroyer_Head_Pig");
+				break;
+
+			case COSTUMESLOT_THIRD: // X
+				m_strPartTag = TEXT("");
+				break;
+			}
+		}
+		else if (COSTUMESECTION_WEAPON == m_eSectionType)
+		{
+			if (COSTUMESLOT_END <= m_eType)
+				return E_FAIL;
+
+			switch (m_eType)
+			{
+			case COSTUMESLOT_FIRST: // 바닷속 친구들 해머
+				m_strPartTag = TEXT("Hammer_Fish01");
+				break;
+
+			case COSTUMESLOT_SECOND: // 환상의 맛 해머
+				m_strPartTag = TEXT("Hammer_Food01");
 				break;
 
 			case COSTUMESLOT_THIRD: // X
@@ -711,6 +808,8 @@ void CUI_Costume_ItemSlot::Free()
 	Safe_Release(m_pTexCom_DTCostume);
 	Safe_Release(m_pTexCom_SMAcc);
 	Safe_Release(m_pTexCom_SMWeapon);
+	Safe_Release(m_pTexCom_EGWeapon);
+	Safe_Release(m_pTexCom_DTWeapon);
 	Safe_Release(m_pTexCom_EGCostume);
 	Safe_Release(m_pTexCom_EGAcc);
 	Safe_Release(m_pTextureCom);

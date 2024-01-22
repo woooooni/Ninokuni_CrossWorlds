@@ -264,9 +264,13 @@ _bool CUI_WeaponSection_Selected::Isit_PossibleToChange(const wstring& strModelT
 		break;
 
 	case CHARACTER_TYPE::DESTROYER:
+		if (TEXT("Hammer_Fish01") == strModelTag || TEXT("Hammer_Food01") == strModelTag)
+			bCanChange = false;
 		break;
 
 	case CHARACTER_TYPE::ENGINEER:
+		if (TEXT("Rifle_Flower") == strModelTag || TEXT("Rifle_Fish") == strModelTag)
+			bCanChange = false;
 		break;
 	}
 

@@ -55,34 +55,17 @@ HRESULT CUI_CharacterDummy::Initialize(void* pArg)
 
 	_float3 vCamPos, vLook, vUp;
 
-	switch (m_eCharacterType)
-	{
-	case CHARACTER_TYPE::SWORD_MAN:
-		vCamPos = _float3(0.f, 0.9f, -3.f);
-		vLook = _float3(0.f, 0.9, 0.f);
-		vUp = _float3(0.f, 1.f, 0.f);
-		break;
-
-	case CHARACTER_TYPE::ENGINEER:
-		vCamPos = _float3(0.f, 0.9f, -3.f);
-		vLook = _float3(0.f, 0.9f, 0.f);
-		vUp = _float3(0.f, 1.f, 0.f);
-		break;
-
-	case CHARACTER_TYPE::DESTROYER:
-		vCamPos = _float3(0.f, 0.9f, -3.f);
-		vLook = _float3(0.f, 0.9, 0.f);
-		vUp = _float3(0.f, 1.f, 0.f);
-		break;
-	}
+	vCamPos = _float3(0.f, 0.9f, -3.f);
+	vLook = _float3(0.f, 0.9, 0.f);
+	vUp = _float3(0.f, 1.f, 0.f);
 
 	m_vCamMatrix = XMMatrixLookAtLH(XMLoadFloat3(&vCamPos), XMLoadFloat3(&vLook), XMLoadFloat3(&vUp));
 	m_vCamPosition = XMVectorSet(vCamPos.x, vCamPos.y, vCamPos.z, 1.f);
 
-	::XMStoreFloat4x4(&m_ViewMatrix, m_vCamMatrix); // 카메라 행렬을 전치시킴
-		//	_float fAspectRatio = (_float)g_iWinSizeX / g_iWinSizeY;
-		//	_float fNearZ       = 0.2f;
-		//	_float fFarZ        = 1000.f;
+	XMStoreFloat4x4(&m_ViewMatrix, m_vCamMatrix); // 카메라 행렬을 전치시킴
+	//	_float fAspectRatio = (_float)g_iWinSizeX / g_iWinSizeY;
+	//	_float fNearZ       = 0.2f;
+	//	_float fFarZ        = 1000.f;
 
 	m_ProjMatrix = XMMatrixPerspectiveFovLH(::XMConvertToRadians(60.0f), static_cast<_float>(g_iWinSizeX) / static_cast<_float>(g_iWinSizeY), 0.2f, 1000.0f);
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-0.5f, 0.f, 0.4f, 1.f));
@@ -122,47 +105,6 @@ void CUI_CharacterDummy::Tick(_float fTimeDelta)
 				m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), MouseMove * -0.1f, fTimeDelta);
 			}
 		}
-
-		//if (CUI_Manager::GetInstance()->Get_Character()->Get_CharacterType() != m_eCurCharacter)
-		//{
-		//	CHARACTER_TYPE eType = CUI_Manager::GetInstance()->Get_Character()->Get_CharacterType();
-		//	_float3 vCamPos, vLook, vUp;
-
-		//	switch (eType)
-		//	{
-		//	case CHARACTER_TYPE::SWORD_MAN:
-		//		vCamPos = _float3(0.f, 0.9f, -3.f);
-		//		vLook = _float3(0.f, 0.9, 0.f);
-		//		vUp = _float3(0.f, 1.f, 0.f);
-		//		break;
-
-		//	case CHARACTER_TYPE::ENGINEER:
-		//		vCamPos = _float3(0.f, 0.7f, -2.3f);
-		//		vLook = _float3(0.f, 0.7, 0.f);
-		//		vUp = _float3(0.f, 1.f, 0.f);
-		//		break;
-
-		//	case CHARACTER_TYPE::DESTROYER:
-		//		vCamPos = _float3(0.f, 0.9f, -3.f);
-		//		vLook = _float3(0.f, 0.9, 0.f);
-		//		vUp = _float3(0.f, 1.f, 0.f);
-		//		break;
-		//	}
-
-		//	m_eCurCharacter = eType;
-
-		//	m_vCamMatrix = XMMatrixLookAtLH(XMLoadFloat3(&vCamPos), XMLoadFloat3(&vLook), XMLoadFloat3(&vUp));
-		//	m_vCamPosition = XMVectorSet(vCamPos.x, vCamPos.y, vCamPos.z, 1.f);
-
-		//	::XMStoreFloat4x4(&m_ViewMatrix, m_vCamMatrix); // 카메라 행렬을 전치시킴
-		//		//	_float fAspectRatio = (_float)g_iWinSizeX / g_iWinSizeY;
-		//		//	_float fNearZ       = 0.2f;
-		//		//	_float fFarZ        = 1000.f;
-
-		//	m_ProjMatrix = XMMatrixPerspectiveFovLH(::XMConvertToRadians(60.0f), static_cast<_float>(g_iWinSizeX) / static_cast<_float>(g_iWinSizeY), 0.2f, 1000.0f);
-		//	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-0.5f, 0.f, 0.4f, 1.f));
-		//	m_pTransformCom->LookAt_ForLandObject(m_vCamPosition);
-		//}
 
 		if (m_pDummyWeapon != nullptr)
 		{ 
@@ -205,10 +147,10 @@ HRESULT CUI_CharacterDummy::Render()
 			return E_FAIL;
 		if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
 			return E_FAIL;
-		//if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ))))
-		//	return E_FAIL;
-		if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ))))
 			return E_FAIL;
+		//if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
+		//	return E_FAIL;
 
 		_float4 vRimColor = { 0.f, 0.f, 0.f, 0.f };
 		if (m_bInfinite)
@@ -384,17 +326,6 @@ HRESULT CUI_CharacterDummy::Ready_Parts()
 }
 HRESULT CUI_CharacterDummy::Ready_Weapon()
 {
-//	CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
-//	if (pPlayer == nullptr)
-//		return E_FAIL;
-//	CCharacter* pCharacter = pPlayer->Get_Character();
-//	if (pCharacter == nullptr)
-//		return E_FAIL;
-//
-//	CHARACTER_TYPE eCharacterType = pCharacter->Get_CharacterType();
-//
-//	m_eCurCharacter = eCharacterType;
-
 	switch (m_eCharacterType)
 	{
 	case CHARACTER_TYPE::SWORD_MAN:

@@ -225,6 +225,14 @@ HRESULT CCharacter_SwordMan::Render_Reflect()
 
 }
 
+HRESULT CCharacter_SwordMan::Render_Minimap()
+{
+	if (FAILED(__super::Render_Minimap()))
+		return E_FAIL;
+
+	return S_OK;
+}
+
 void CCharacter_SwordMan::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
