@@ -42,6 +42,7 @@ void CState_Destroyer_Skill_LeafSlam::Enter_State(void* pArg)
         m_pCharacter->Generate_MotionTrail(m_MotionTrailDesc);
     }
 
+
     // Effect Create
     CTransform* pTransformCom = m_pCharacter->Get_Component<CTransform>(L"Com_Transform");
     if (pTransformCom == nullptr)

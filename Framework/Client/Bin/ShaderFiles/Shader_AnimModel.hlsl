@@ -442,6 +442,8 @@ float4 Caculation_Brightness(float4 vColor)
 PS_OUT PS_MAIN(PS_IN In)
 {
 	PS_OUT Out = (PS_OUT)0;
+    
+
 
     Out.vDiffuse = g_DiffuseTexture.Sample(ModelSampler, In.vTexUV);
     Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);

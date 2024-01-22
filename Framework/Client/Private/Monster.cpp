@@ -67,11 +67,8 @@ void CMonster::Tick(_float fTimeDelta)
 	__super::Tick(fTimeDelta);
 
 	/* 최초 타겟 설정 */
-	if (m_tTargetDesc.pTarget == nullptr)
-	{
-		m_tTargetDesc.pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
-		m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component<CTransform>(L"Com_Transform");
-	}
+	m_tTargetDesc.pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+	m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component<CTransform>(L"Com_Transform");
 
 	if (m_bInfinite)
 	{
@@ -193,14 +190,6 @@ HRESULT CMonster::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffe
 		return E_FAIL;
 
 	if (FAILED(pInstancingShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
-		return E_FAIL;
-
-	Matrix worldInvTranspose = m_pTransformCom->Get_WorldMatrixInverse();
-	worldInvTranspose.Transpose();
-
-	Matrix worldInvTransposeView = worldInvTranspose * GI->Get_TransformFloat4x4(CPipeLine::D3DTS_VIEW);
-
-	if (FAILED(m_pShaderCom->Bind_Matrix("WorldInvTransposeView", &worldInvTransposeView)))
 		return E_FAIL;
 
 	if(FAILED(pInstancingShader->Bind_RawValue("g_TweenFrames_Array", TweenDesc.data(), sizeof(TWEEN_DESC) * TweenDesc.size())))

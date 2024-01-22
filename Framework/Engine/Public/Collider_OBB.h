@@ -43,7 +43,7 @@ public:
 
 public:
     void Set_OBB_Box(BoundingOrientedBox & tBoundingBox) { m_tOriginOBB = tBoundingBox; }
-    const BoundingOrientedBox& Get_OBB_Box() { return m_tBoundingBox; }
+    BoundingOrientedBox& Get_OBB_Box() { return m_tBoundingBox; }
 
 
 private:

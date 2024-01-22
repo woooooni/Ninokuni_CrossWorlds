@@ -8,12 +8,12 @@ END
 
 BEGIN(Client)
 
-class CState_Engineer_BurstSkill_Destruction : public CState_Character
+class CState_Character_Vehicle : public CState_Character
 {
 
 private:
-	CState_Engineer_BurstSkill_Destruction(class CStateMachine* pMachine);
-	~CState_Engineer_BurstSkill_Destruction() = default;
+	CState_Character_Vehicle(class CStateMachine* pMachine);
+	~CState_Character_Vehicle() = default;
 
 
 public:
@@ -25,11 +25,8 @@ public:
 	virtual void Tick_State(_float fTimeDelta) override;
 	virtual void Exit_State() override;
 
-private:
-	HRESULT Generate_Cannon();
-
 public:
-	static CState_Engineer_BurstSkill_Destruction* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
+	static CState_Character_Vehicle* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
 
 };

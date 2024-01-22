@@ -488,7 +488,7 @@ HRESULT CLoader::Loading_For_Level_Lobby()
 	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Loading_Proto_Monster_Npc, this);
 
 	m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE].wait();
-	//m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE].wait();
+	m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE].wait();
 	m_Threads[LOADING_THREAD::MONSTER_AND_NPC].wait();
 
 	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Lobby");
@@ -1301,6 +1301,14 @@ HRESULT CLoader::Loading_For_Character(CHARACTER_TYPE eCharacterType)
 	{
 		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Engineer_Bullet", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Bullet/", L"Engineer_Bullet")))
 			return E_FAIL;
+
+		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Engineer_BurstSkill_Cannon", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Skill/", L"Engineer_BurstSkill_Cannon")))
+			return E_FAIL;
+
+		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Engineer_BurstSkill_CannonBomb", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/TowerDefence/Projectile/", L"Cannon_Ball")))
+			return E_FAIL;
+
+		
 		
 		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Engineer_Dummy", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Engineer/Dummy/", L"Engineer_Dummy")))
 			return E_FAIL;

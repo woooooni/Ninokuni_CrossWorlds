@@ -274,6 +274,7 @@
     <ClInclude Include="..\Public\Crystal_Ball.h" />
     <ClInclude Include="..\Public\Crystal_Tower.h" />
     <ClInclude Include="..\Public\Decal.h" />
+    <ClInclude Include="..\Public\Destroyer_HyperStrike_Hammer.h" />
     <ClInclude Include="..\Public\Destroyer_Npc.h" />
     <ClInclude Include="..\Public\DefenceInvasion_Portal.h" />
     <ClInclude Include="..\Public\Defence_Tower.h" />
@@ -285,6 +286,8 @@
     <ClInclude Include="..\Public\Enbi.h" />
     <ClInclude Include="..\Public\Engineer_Bullet.h" />
     <ClInclude Include="..\Public\Engineer_Bullet_Bomb.h" />
+    <ClInclude Include="..\Public\Engineer_Burst_CannonBomb.h" />
+    <ClInclude Include="..\Public\Engineer_Burst_DestructionCannon.h" />
     <ClInclude Include="..\Public\Engineer_Npc.h" />
     <ClInclude Include="..\Public\Ermine.h" />
     <ClInclude Include="..\Public\EvermoreWater.h" />
@@ -419,6 +422,7 @@
     <ClInclude Include="..\Public\PumpkinCandleNode_Blow.h" />
     <ClInclude Include="..\Public\Shadow_Ball.h" />
     <ClInclude Include="..\Public\Shadow_Tower.h" />
+    <ClInclude Include="..\Public\State_Character_Vehicle.h" />
     <ClInclude Include="..\Public\State_FlameTower_Attack.h" />
     <ClInclude Include="..\Public\State_CannonTower_Attack.h" />
     <ClInclude Include="..\Public\State_CrystalTower_Attack.h" />
@@ -1097,6 +1101,7 @@
     <ClCompile Include="..\Private\Crystal_Ball.cpp" />
     <ClCompile Include="..\Private\Crystal_Tower.cpp" />
     <ClCompile Include="..\Private\Decal.cpp" />
+    <ClCompile Include="..\Private\Destroyer_HyperStrike_Hammer.cpp" />
     <ClCompile Include="..\Private\Destroyer_Npc.cpp" />
     <ClCompile Include="..\Private\DefenceInvasion_Portal.cpp" />
     <ClCompile Include="..\Private\Defence_Tower.cpp" />
@@ -1108,6 +1113,8 @@
     <ClCompile Include="..\Private\Enbi.cpp" />
     <ClCompile Include="..\Private\Engineer_Bullet.cpp" />
     <ClCompile Include="..\Private\Engineer_Bullet_Bomb.cpp" />
+    <ClCompile Include="..\Private\Engineer_Burst_CannonBomb.cpp" />
+    <ClCompile Include="..\Private\Engineer_Burst_DestructionCannon.cpp" />
     <ClCompile Include="..\Private\Engineer_Npc.cpp" />
     <ClCompile Include="..\Private\Ermine.cpp" />
     <ClCompile Include="..\Private\EvermoreWater.cpp" />
@@ -1247,6 +1254,7 @@
     <ClCompile Include="..\Private\Shadow_Ball.cpp" />
     <ClCompile Include="..\Private\Shadow_Tower.cpp" />
     <ClCompile Include="..\Private\State_CannonTower_Attack.cpp" />
+    <ClCompile Include="..\Private\State_Character_Vehicle.cpp" />
     <ClCompile Include="..\Private\State_CrystalTower_Attack.cpp" />
     <ClCompile Include="..\Private\State_DefenceTower.cpp" />
     <ClCompile Include="..\Private\State_DefenceTower_Dead.cpp" />

@@ -43,6 +43,8 @@ HRESULT CCannon_Ball::Initialize(void* pArg)
 
 	m_fDeletionTime = 5.f;
 
+	
+
 	return S_OK;
 }
 
@@ -53,11 +55,61 @@ void CCannon_Ball::Tick(_float fTimeDelta)
 	{
 		m_bInitLook = true;
 		m_vInitLook = XMVector3Normalize(m_pTransformCom->Get_Look());
+		m_bInitDestPosition = Find_Dest_Position(fTimeDelta);
+		if (true == m_bInitDestPosition)
+		{
+			m_vStartPosition = m_pTransformCom->Get_Position();
+			m_pRigidBodyCom->Set_Ground(true);
+			m_pRigidBodyCom->Set_Use_Gravity(false);
+		}
 	}
 
-	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
-	m_pTransformCom->Rotation_Acc(XMVector3Normalize(m_pTransformCom->Get_Right()), XMConvertToRadians(180.f) * fTimeDelta);
-	m_pTransformCom->Move(XMVector3Normalize(m_vInitLook), 10.f, fTimeDelta);
+	if (true == m_bInitDestPosition)
+	{
+		//포물선 공식을 적용한다.
+		m_fAccMove += fTimeDelta;
+
+		Vec3 vVelocity = {};
+		_float fg = 0.f;
+		_float fEndTime = m_fArriveTime;
+		_float fMaxHeight = ((m_vStartPosition.y + m_vDestPosition.y) / 2.f) + 5.f;
+		_float fHeight = 0.f;
+		_float fEndHeight = 0.f;
+		_float fTime = m_fAccMove;
+		_float fMaxTime = m_fArriveTime / 2.f;
+
+		fEndHeight = m_vDestPosition.y - m_vStartPosition.y;
+		fHeight = fMaxHeight - m_vStartPosition.y;
+
+		fg = 2 * fHeight / (fMaxTime * fMaxTime);
+		vVelocity.y = sqrtf(2.f * fg * fHeight);
+
+		_float a = fg;
+		_float b = -2.f * vVelocity.y;
+		_float c = 2.f * fEndHeight;
+
+		fEndTime = (-b + sqrtf(b * b * -4.f * a * c)) / (2 * a);
+
+
+		vVelocity.x = -(m_vStartPosition.x - m_vDestPosition.x) / fEndTime;
+		vVelocity.z = -(m_vStartPosition.x - m_vDestPosition.x) / fEndTime;
+
+		Vec4 vPosition = { 0.f, 0.f, 0.f, 1.f };
+		vPosition.x = m_vStartPosition.x + vVelocity.x * fTime;
+		vPosition.y = m_vStartPosition.y + (vVelocity.y * fTime) - (0.5f * fg * fTime * fTime);
+		vPosition.z = m_vStartPosition.z + vVelocity.z * fTime;
+
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPosition);
+
+	}
+	else
+	{
+		m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
+		m_pTransformCom->Rotation_Acc(XMVector3Normalize(m_pTransformCom->Get_Right()), XMConvertToRadians(180.f) * fTimeDelta);
+		m_pTransformCom->Move(XMVector3Normalize(m_vInitLook), 10.f, fTimeDelta);
+	}
+
+	
 
 	__super::Tick(fTimeDelta);
 
@@ -135,6 +187,29 @@ void CCannon_Ball::Collision_Enter(const COLLISION_INFO& tInfo)
 
 		// TODO:: Effect
 	}
+}
+
+_bool CCannon_Ball::Find_Dest_Position(_float fTimeDelta)
+{
+	list<CGameObject*>& TargetObjects = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER);
+
+	_bool bFind = false;
+	_float fMinDistance = 50.f;
+	for (auto& pTarget : TargetObjects)
+	{
+		CTransform* pTargetTransform = pTarget->Get_Component<CTransform>(L"Com_Transform");
+		Vec4 vPosition = m_pTransformCom->Get_Position();
+		Vec4 vTargetPosition = pTargetTransform->Get_Position();
+
+		Vec3 vDir = vTargetPosition - vPosition;
+		if (fMinDistance > vDir.Length())
+		{
+			fMinDistance = vDir.Length();
+			m_vDestPosition = vTargetPosition;
+			bFind = true;
+		}
+	}
+	return bFind;
 }
 
 
