@@ -11,6 +11,10 @@
 #include "SwordMan_AuraBlade.h"
 #include "Engineer_Bullet.h"
 #include "Engineer_Bullet_Bomb.h"
+#include "Engineer_Burst_CannonBomb.h"
+#include "Engineer_Burst_DestructionCannon.h"
+
+
 
 #include "Skill_Manager.h"
 
@@ -165,12 +169,20 @@ HRESULT CCharacter_Manager::Ready_Characters()
 		StatDesc.iHp = 500;
 		StatDesc.iMaxHp = 500;
 
+
+
 		if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Engineer_Bullet", CEngineer_Bullet::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
 			return E_FAIL;
 
 		if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Engineer_Bullet_Bomb", CEngineer_Bullet_Bomb::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
 			return E_FAIL;
 
+		if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Engineer_Burst_CannonBomb", CEngineer_Burst_CannonBomb::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
+			return E_FAIL;
+
+		if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Engineer_Burst_DestructionCannon", CEngineer_Burst_DestructionCannon::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
+			return E_FAIL;
+			
 
 		if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_Engineer", CCharacter_Engineer::Create(m_pDevice, m_pContext, L"Engineer"), LAYER_CHARACTER, true)))
 			return E_FAIL;
@@ -222,6 +234,12 @@ HRESULT CCharacter_Manager::Ready_Characters()
 				return E_FAIL;
 
 			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Engineer_Bullet_Bomb", CEngineer_Bullet_Bomb::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
+				return E_FAIL;
+
+			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Engineer_Burst_CannonBomb", CEngineer_Burst_CannonBomb::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
+				return E_FAIL;
+
+			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Engineer_Burst_DestructionCannon", CEngineer_Burst_DestructionCannon::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
 				return E_FAIL;
 
 			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Character_Engineer", CCharacter_Engineer::Create(m_pDevice, m_pContext, L"Engineer"), LAYER_CHARACTER, true)))
