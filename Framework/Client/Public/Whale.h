@@ -25,7 +25,7 @@ public:
 
 public:
 	const _bool& IsFlip() const { return m_bIsFlip; }
-	void Set_Flip(_bool Flip) { m_bIsFlip = Flip; }
+	void Set_Flip(_bool Flip);
 
 private:
 	_bool m_bIsFlip = false;

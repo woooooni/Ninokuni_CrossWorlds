@@ -8,6 +8,9 @@
 #include "Game_Manager.h"
 #include "Building.h"
 
+#include "Camera_Manager.h"
+#include "Camera_Group.h"
+
 CSubQuestNode_Windmill10::CSubQuestNode_Windmill10()
 {
 }
@@ -48,22 +51,10 @@ void CSubQuestNode_Windmill10::Start()
 	m_vecTalker.push_back(m_pKuu);
 	m_vecTalker.push_back(m_pVerde);
 
-	/* 카메라 타겟 세팅 */
-	// CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"Kuu");
-
-	//if (nullptr != pTarget)
-	//{
-
-		// 임시 주석
-		//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-		//if (nullptr != pActionCam)
-		//{
-		//	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
-		//	pActionCam->Start_Action_Talk(); //쿠우 혼자면 null
-		//}
-
-
-	//}
+	/* 대화 카메라 세팅 */
+	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+	if (nullptr != pActionCam)
+		pActionCam->Start_Action_Talk(m_pVerde);
 
 	/* 대화 */
 	m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
@@ -110,9 +101,10 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill10::Tick(const _float& fTimeDelta)
 			m_bIsClear = true;
 			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
 
-			//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-			//if (nullptr != pActionCam)
-			//	pActionCam->Finish_Action_Talk();
+			/* 대화 카메라 종료 */
+			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+			if (nullptr != pActionCam)
+				pActionCam->Finish_Action_Talk();
 
 			return NODE_STATE::NODE_FAIL;
 		}
@@ -134,6 +126,10 @@ void CSubQuestNode_Windmill10::LateTick(const _float& fTimeDelta)
 
 void CSubQuestNode_Windmill10::TalkEvent()
 {
+	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+	if (nullptr == pActionCam)
+		return;
+
 	wstring strAnimName = TEXT("");
 
 	switch (m_iTalkIndex)
@@ -142,11 +138,15 @@ void CSubQuestNode_Windmill10::TalkEvent()
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("00_KuuSay_Hey.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk01"));
+		/* 대화 카메라 타겟 변경 */
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER_FROM_BACK_NPC);
 		break;
 	case 1:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("01_VerdeSay_haha comback.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pVerde->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pVerde->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Verde.ao|Verde_tlk"));
+		/* 대화 카메라 타겟 변경 */
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::ALL_RIGTH);
 		break;
 	}
 

@@ -60,18 +60,6 @@ void CWhale::Tick(_float fTimeDelta)
 			pWhale->Get_Component<CStateMachine>(L"Com_StateMachine")->Change_State(CAnimals::STATE_SWIM);
 			pWhale->Set_Flip(true);
 		}
-
-		CCamera_CutScene_Map* pCutSceneMap = dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP));
-		if (nullptr != pCutSceneMap)
-		{
-			const _uint iCurLevel = GI->Get_CurrentLevel();
-			{
-				if (LEVELID::LEVEL_ICELAND == iCurLevel || LEVELID::LEVEL_TOOL == iCurLevel)
-				{
-					pCutSceneMap->Start_CutScene("Winter_Whale", true);
-				}
-			}
-		}
 	}
 
 	if(true == m_bIsFlip)
@@ -181,6 +169,30 @@ HRESULT CWhale::Ready_Collider()
 
 
 	return S_OK;
+}
+
+void CWhale::Set_Flip(_bool Flip)
+{
+	m_bIsFlip = Flip;
+
+	if (m_bIsFlip)
+	{
+		/* 카메라 컷신 시작*/
+		CCamera_CutScene_Map* pCutSceneMap = dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP));
+		if (nullptr != pCutSceneMap)
+		{
+			const _uint iCurLevel = GI->Get_CurrentLevel();
+			{
+				if (LEVELID::LEVEL_ICELAND == iCurLevel || LEVELID::LEVEL_TOOL == iCurLevel)
+				{
+					pCutSceneMap->Start_CutScene("Winter_Whale", true);
+				}
+			}
+		}
+
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, Get_RomingPoints()->front());
+		m_pStateMachineCom->Change_State(CAnimals::STATE_SWIM);
+	}
 }
 
 void CWhale::Collision_Enter(const COLLISION_INFO& tInfo)

@@ -6,6 +6,9 @@
 #include "UI_Manager.h"
 #include "Whale.h"
 
+#include "Camera_Manager.h"
+#include "Camera_CutScene_Map.h"
+
 CTrigger::CTrigger(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CGameObject(pDevice, pContext, L"Trigger", OBJ_TYPE::OBJ_TRIGGER)
 {
@@ -105,8 +108,9 @@ void CTrigger::Collision_Enter(const COLLISION_INFO& tInfo)
 			break;
 		case TRIGGER_TYPE::TRIGER_WHALE_ENTER:
 			{
-			_uint iCutLevel = GI->Get_CurrentLevel();
-			CGameObject* pObject = GI->Find_GameObject(iCutLevel, LAYER_TYPE::LAYER_DYNAMIC, TEXT("Animal_Whale"));
+			/* 배면 뒤집기 */
+			_uint			iCutLevel = GI->Get_CurrentLevel();
+			CGameObject*	 pObject = GI->Find_GameObject(iCutLevel, LAYER_TYPE::LAYER_DYNAMIC, TEXT("Animal_Whale"));
 			if (nullptr == pObject)
 				break;
 

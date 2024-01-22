@@ -7,6 +7,11 @@
 #include "UI_Manager.h"
 #include "Game_Manager.h"
 
+#include "Camera_Manager.h"
+#include "Camera_Group.h"
+
+#include "GameNpc.h"
+
 CSubQuestNode_Windmill04::CSubQuestNode_Windmill04()
 {
 }
@@ -47,22 +52,10 @@ void CSubQuestNode_Windmill04::Start()
 	m_vecTalker.push_back(m_pKuu);
 	m_vecTalker.push_back(m_pBeard);
 
-	/* 카메라 타겟 세팅 */
-	// CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"Kuu");
-
-	//if (nullptr != pTarget)
-	//{
-
-		// 임시 주석
-		//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-		//if (nullptr != pActionCam)
-		//{
-		//	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
-		//	pActionCam->Start_Action_Talk(); //쿠우 혼자면 null
-		//}
-
-
-	//}
+	/* 대화 카메라 세팅 */
+	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+	if (nullptr != pActionCam)
+		pActionCam->Start_Action_Talk(m_pBeard);
 
 	/* 대화 */
 	m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
@@ -92,9 +85,19 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill04::Tick(const _float& fTimeDelta)
 			m_bIsClear = true;
 			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
 
-			//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-			//if (nullptr != pActionCam)
-			//	pActionCam->Finish_Action_Talk();
+			/* 대화 카메라 종료 */
+			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+			if (nullptr != pActionCam)
+				pActionCam->Finish_Action_Talk();
+
+			// 엔지니어 생성.
+			OBJECT_INIT_DESC pDesc = {};
+			pDesc.vStartPosition = { -73.7f, -7.f, -55.27, 1.f };
+
+			if (FAILED(GI->Add_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Prorotype_GameObject_Engineer_Npc"), &pDesc)))
+			{
+				MSG_BOX("Fail Clone : Quest Engineer Npc");
+			}
 
 			return NODE_STATE::NODE_FAIL;
 		}
@@ -116,47 +119,67 @@ void CSubQuestNode_Windmill04::LateTick(const _float& fTimeDelta)
 
 void CSubQuestNode_Windmill04::TalkEvent()
 {
+	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+	if (nullptr == pActionCam)
+		return;
+
 	switch (m_iTalkIndex)
 	{
 	case 0:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("00_BeardSay_Hello.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pBeard->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pBeard->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("c31106000_p200_970011_std"));
+		/* 대화 카메라 타겟 변경 (첫 대화 시작은 무조건 NPC) */
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC);
 		break;
 	case 1:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("01_KuuSay_Hello.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk01"));
+		/* 대화 카메라 타겟 변경 */
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU);
 		break;
 	case 2:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("02_BeardSay_ohh.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pBeard->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pBeard->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("c31106000_p200_970010_std"));
+		/* 대화 카메라 타겟 변경 */
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::ALL_LEFT);
 		break;
 	case 3:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("03_KuuSay_Wath.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk02"));
+		/* 대화 카메라 타겟 변경 */
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER); 
 		break;
 	case 4:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("04_BeardSay_HaHaHa.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pBeard->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pBeard->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("c31106000_p200_970003_std"));
+		/* 대화 카메라 타겟 변경 */
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC_FROM_BACK_KUU_AND_PLAYER); 
 		break;
 	case 5:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("05_KuuSay_EEEEEE.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_Idle03"));
+		/* 대화 카메라 타겟 변경 */
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::ALL_RIGTH);
 		break;
 	case 6:
 		// CSound_Manager::GetInstance()->Play_Sound(TEXT("06_KuuSay_NeverDont.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pBeard->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pBeard->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("c31106000_p010_100110_idl"));
+		/* 대화 카메라 타겟 변경 */
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC);
 		break;
 	case 7:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("07_KuuSay_OK!.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_EmotionPositive02"));
+		/* 대화 카메라 타겟 변경 */
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER_FROM_BACK_NPC);
 		break;
 	}
 }

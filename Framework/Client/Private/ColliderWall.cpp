@@ -43,10 +43,10 @@ void CColliderWall::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
 
-//#ifdef _DEBUG
-//	if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 20.0f))
-//		m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
-//#endif // _DEBUG
+#ifdef _DEBUG
+	if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 20.0f))
+		m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
+#endif // _DEBUG
 }
 
 HRESULT CColliderWall::Render()

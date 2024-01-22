@@ -7,6 +7,9 @@
 #include "UI_Manager.h"
 #include "Game_Manager.h"
 
+#include "Camera_Manager.h"
+#include "Camera_Group.h"
+
 CSubQuestNode_Windmill12::CSubQuestNode_Windmill12()
 {
 }
@@ -41,22 +44,10 @@ void CSubQuestNode_Windmill12::Start()
 	m_vecTalker.push_back(m_pKuu);
 	m_vecTalker.push_back(m_pVerde);
 
-	/* 카메라 타겟 세팅 */
-	// CGameObject* pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_NPC, L"Kuu");
-
-	//if (nullptr != pTarget)
-	//{
-
-		// 임시 주석
-		//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-		//if (nullptr != pActionCam)
-		//{
-		//	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
-		//	pActionCam->Start_Action_Talk(); //쿠우 혼자면 null
-		//}
-
-
-	//}
+	/* 대화 카메라 세팅 */
+	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+	if (nullptr != pActionCam)
+		pActionCam->Start_Action_Talk(m_pVerde);
 
 	/* 대화 */
 	m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
@@ -79,16 +70,36 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill12::Tick(const _float& fTimeDelta)
 			Safe_Delete_Array(m_szpOwner);
 			Safe_Delete_Array(m_szpTalk);
 
+			/* 풍차 비춰주는 카메라 액션 */
+			{
+				/* 토크 인덱스가 0이면 풍차를 비춰준다. */
+				if (!m_bCameraAction && 0 == m_iTalkIndex)
+				{
+					CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+					if (nullptr != pActionCam)
+					{
+						pActionCam->Start_Action_WindMill(true);
+
+						m_bCameraAction = true;
+					}
+					return NODE_STATE::NODE_RUNNING;
+				}
+
+				/* 카메라가 풍차를 비추는 동안 클릭을 해도 다음 대화로 넘어가지 않는다.*/
+				CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+				if (nullptr != pActionCam)
+				{
+					if (CCamera_Action::CAMERA_ACTION_TYPE::WINDMILL == pActionCam->Get_Camera_ActionType())
+						return NODE_STATE::NODE_RUNNING;
+				}
+			}
+
 			m_iTalkIndex += 1;
 
 			if (m_iTalkIndex >= m_vecTalkDesc.size())
 			{
 				CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
 				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
-
-				//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-				//if (nullptr != pActionCam)
-				//	pActionCam->Finish_Action_Talk();
 
 				/* 여기서 퀘스트 보상 받기.(퀘스트 보상 다 받으면 return하기.*/
 				CUI_Manager::GetInstance()->OnOff_QuestRewards(true, TEXT("풍차 수리"));
@@ -111,7 +122,11 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill12::Tick(const _float& fTimeDelta)
 	{
 		if (CUI_Manager::GetInstance()->Is_QuestRewardWindowOff())
 		{
-			m_bIsClear = true;
+			/* 대화 카메라 종료 */
+			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+			if (nullptr != pActionCam)
+				pActionCam->Finish_Action_Talk();
+
 			return NODE_STATE::NODE_FAIL;
 		}
 	}
@@ -126,6 +141,10 @@ void CSubQuestNode_Windmill12::LateTick(const _float& fTimeDelta)
 
 void CSubQuestNode_Windmill12::TalkEvent()
 {
+	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+	if (nullptr == pActionCam)
+		return;
+
 	wstring strAnimName = TEXT("");
 
 	switch (m_iTalkIndex)
@@ -134,21 +153,29 @@ void CSubQuestNode_Windmill12::TalkEvent()
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("00_VerdeSay_hahaha.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pVerde->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pVerde->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Verde.ao|Verde_TurnL"));
+		/* 대화 카메라 타겟 변경 */
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC);
 		break;
 	case 1:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("01_KuuSay_Kiya.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk01"));
+		/* 대화 카메라 타겟 변경 */
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU);
 		break;
 	case 2:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("02_VerdeSay_Reward.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pVerde->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pVerde->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Verde.ao|Verde_TurnL"));
+		/* 대화 카메라 타겟 변경 */
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC_FROM_BACK_KUU_AND_PLAYER);
 		break;
 	case 3:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("03_KuuSay_Wahu!.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_Idle02"));
+		/* 대화 카메라 타겟 변경 */
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER_FROM_BACK_NPC);
 		break;
 	}
 
