@@ -15,3 +15,4 @@
 #include "EvermoreWater.h"
 #include "DynamicProps.h"
 #include "Whale.h"
+#include "WelshCorgi.h"

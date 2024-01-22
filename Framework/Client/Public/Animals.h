@@ -67,7 +67,7 @@ public:
 protected:
 	Vec4 m_vCenter;
 	_bool m_bLift = false;
-	_float m_fSpeed = 1.0f;
+	_float m_fSpeed = 2.0f;
 
 	// ¿Ãµø«“ Point
 	vector<Vec4> m_points;

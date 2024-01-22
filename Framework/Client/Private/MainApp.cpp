@@ -61,7 +61,7 @@ HRESULT CMainApp::Initialize()
 
 	// Set Start Level and Character
 	{
-		g_eStartLevel = LEVELID::LEVEL_LOGO; /* 시작할 레벨 타입 */
+		g_eStartLevel = LEVELID::LEVEL_TOOL; /* 시작할 레벨 타입 */
 
 		g_eLoadCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH; /* 모델 로드할 캐릭터 타입 */
 

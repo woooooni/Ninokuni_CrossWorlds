@@ -984,6 +984,7 @@
     <ClInclude Include="..\Public\VIBuffer_Trail.h" />
     <ClInclude Include="..\Public\UI.h" />
     <ClInclude Include="..\Public\Sword.h" />
+    <ClInclude Include="..\Public\WelshCorgi.h" />
     <ClInclude Include="..\Public\Whale.h" />
     <ClInclude Include="..\Public\WinterWater.h" />
     <ClInclude Include="..\Public\WitchWater.h" />
@@ -1812,6 +1813,7 @@
     <ClCompile Include="..\Private\UI_WindowWorldMap.cpp" />
     <ClCompile Include="..\Private\Vfx.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Trail.cpp" />
+    <ClCompile Include="..\Private\WelshCorgi.cpp" />
     <ClCompile Include="..\Private\Whale.cpp" />
     <ClCompile Include="..\Private\WinterWater.cpp" />
     <ClCompile Include="..\Private\WitchWater.cpp" />

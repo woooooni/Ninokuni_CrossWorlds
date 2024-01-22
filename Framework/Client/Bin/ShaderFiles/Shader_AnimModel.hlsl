@@ -362,7 +362,7 @@ VS_OUT VS_MAIN(VS_IN In)
 
     
     // SSAO
-    Out.vViewNormal = mul(In.vNormal, (float3x3) WorldInvTransposeView);
+    Out.vViewNormal = mul(Out.vNormal.xyz, (float3x3) g_ViewMatrix);
     Out.vPositionView = mul(float4(In.vPosition, 1.0f), matWV);
     
     
@@ -453,7 +453,7 @@ PS_OUT PS_MAIN(PS_IN In)
 	Out.vDiffuse += vRimColor;
     Out.vBloom = Caculation_Brightness(Out.vDiffuse) + vRimColor;
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
+    Out.vViewNormal = float4(1.0f, 1.0f, 1.0f, 1.0f);
     
     if (0.f == Out.vDiffuse.a)
         discard;
@@ -495,7 +495,7 @@ PS_OUT PS_MAIN_REFLECT(PS_IN In)
     Out.vDiffuse += vRimColor;
     Out.vBloom = Caculation_Brightness(Out.vDiffuse) + vRimColor;
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    Out.vViewNormal = float4(normalize(In.vViewNormal), Out.vDepth.y);
+    Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
     //if (0.f == Out.vDiffuse.a)
     //    discard;
 
@@ -545,7 +545,7 @@ PS_OUT PS_MAIN_NORMAL(PS_IN In)
 	Out.vDiffuse += vRimColor;
     Out.vBloom = Caculation_Brightness(Out.vDiffuse) + vRimColor;
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    Out.vViewNormal = float4(normalize(In.vViewNormal), Out.vDepth.y);
+    Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
     
     
     if (0.f == Out.vDiffuse.a)

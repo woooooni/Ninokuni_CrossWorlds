@@ -37,6 +37,7 @@ VS_OUT VS_MAIN(VS_IN input)
 struct PS_OUT
 {
     float4 vSunMask : SV_TARGET4;
+    float4 vViewNormal : SV_TARGET5;
 };
 
 PS_OUT PS_MAIN(VS_OUT input)
@@ -45,6 +46,7 @@ PS_OUT PS_MAIN(VS_OUT input)
     
     float4 vMtrlDiffuse = float4(1.0f, 1.0f, 1.0f, 1.0f);
     output.vSunMask = vMtrlDiffuse;
+    output.vViewNormal = float4(1.0f, 1.0f, 1.0f, 1.0f);
 
     return output;
 }

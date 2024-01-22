@@ -124,7 +124,7 @@ VS_OUT VS_MAIN(VS_IN In)
 	Out.iInstanceID = In.iInstanceID;
 
 		// SSAO
-    Out.vViewNormal = mul(In.vNormal, (float3x3) WorldInvTransposeView);
+    Out.vViewNormal = mul(Out.vNormal.xyz, (float3x3) g_ViewMatrix);
     Out.vPositionView = mul(float4(In.vPosition, 1.0f), matWV);
 	
 	return Out;
@@ -156,7 +156,7 @@ VS_OUT VS_GRASS_MAIN(VS_IN In)
     Out.iInstanceID = In.iInstanceID;
 
 			// SSAO
-    Out.vViewNormal = mul(In.vNormal, (float3x3) WorldInvTransposeView);
+    Out.vViewNormal = mul(Out.vNormal.xyz, (float3x3) g_ViewMatrix);
     Out.vPositionView = mul(float4(In.vPosition, 1.0f), matWV);
     return Out;
 }

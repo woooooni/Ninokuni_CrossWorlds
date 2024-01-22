@@ -19,12 +19,14 @@ cbuffer GodRayBuffer : register(b0)
 struct VS_IN
 {
     float3 vPosition : POSITION;
+    float3 vNormal   : NORMAL0;
     float2 vTexcoord : TEXCOORD0;
 };
 
 struct VS_OUT
 {
     float4 vPosition : SV_POSITION;
+    float3 vNormal   : NORMAL0;
     float2 vTexcoord : TEXCOORD0;
 };
 
@@ -113,11 +115,6 @@ SamplerState SampRandVec : register(s0)
     Filter = MIN_MAG_LINEAR_MIP_POINT;
     AddressU = Wrap;
     AddressV = Wrap;
-    AddressW = Wrap;
-    ComparisonFunc = NEVER;
-    BorderColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    MinLOD = 0.0f;
-    MaxLOD = FLT_MAX;
 };
 SamplerState SampNormalDepth : register(s1)
 {
@@ -125,7 +122,7 @@ SamplerState SampNormalDepth : register(s1)
     AddressU = Border;
     AddressV = Border;
     AddressW = Border;
-    ComparisonFunc = NEVER;
+    //ComparisonFunc = NEVER;
     BorderColor = float4(0.0f, 0.0f, 0.0f, 1e5f); // 큰 깊이 값으로 설정
     MinLOD = 0.0f;
     MaxLOD = FLT_MAX;
@@ -139,6 +136,7 @@ cbuffer CBFrustum : register(b1)
 cbuffer CBPerFrame : register(b2)
 {
     float4 offsetVectors[14];
+    matrix viewToExSpace;
     
     // 카메라 공간에 주어진 좌표
     float OcclusionRadius = 0.5f;
@@ -266,13 +264,13 @@ float4 PS_SSAO(VertexOut input) : SV_Target
         // q를 투영하고 투영된 텍스쳐 좌표를 생성.
         // q 자체가 카메라 공간에 있으므로 투영된 텍스쳐 좌표로 변경된다.
         // 관점 분할은 마지막에 수행되어야 한다.
-        float4 ProjQ = mul(float4(q, 1.0f), projection);
+        float4 ProjQ = mul(float4(q, 1.0f), viewToExSpace);
         ProjQ /= ProjQ.w;
 
         // 원점에서 q까지의 카메라 공간에서 NormalDepthMap에 해당하는 최소 깊이 값을 찾는다.
         // 이 최소 깊이는 카메라 공간의 q 깊이와 같지 않다.
         float rz = NormalDepthMap.SampleLevel(SampNormalDepth, ProjQ.xy, 0.0f).w;
-
+        
         // 다시 유사 삼각형 원리를 사용한다.
         float3 r = (rz / q.z) * q;
 
@@ -280,7 +278,7 @@ float4 PS_SSAO(VertexOut input) : SV_Target
         // r과 p가 Z거리에서 가까울수록 폐색이 커진다.(임계값에 가까움)
         // 셀프 섀도잉을 방지하기 위해 폐색 값은 0이다.
         float distZ = p.z - r.z;
-        float dp = max(dot(normalize(n), normalize(r - p)), 0.0f);
+        float dp = max(dot(n, normalize(r - p)), 0.0f);
         float occlusion = dp * OcclusionFunction(distZ);
         
         occlusionSum += occlusion;

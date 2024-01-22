@@ -50,8 +50,9 @@ HRESULT CRenderer::Initialize_Prototype()
 #endif // DEBUG
 
 	// Initialize_SSAO
-	//if (FAILED(Initialize_SSAO()))
-	//	return E_FAIL;
+	if (FAILED(Initialize_SSAO()))
+		return E_FAIL;
+
 
 	return S_OK;
 }
@@ -338,7 +339,7 @@ HRESULT CRenderer::Draw_World()
 				if (FAILED(Render_Ssao()))
 					return E_FAIL;
 
-				if (FAILED(Render_Blur(L"Target_SSAO", L"MRT_SSAO_Blur", true, BLUR_HOR_MIDDLE, BLUR_VER_MIDDLE, BLUR_UP_ONEADD)))
+				if (FAILED(Render_Blur(L"Target_SSAO", L"MRT_SSAO_Blur", true, BLUR_HOR_LOW, BLUR_VER_LOW, BLUR_UP_ONEADD)))
 					return E_FAIL;
 			}
 		}
@@ -1031,6 +1032,17 @@ HRESULT CRenderer::Render_Ssao()
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_RawValue("offsetVectors", &m_vOffsets, sizeof(Vec4) * 14)))
 		return E_FAIL;
 
+	static const XMMATRIX T(
+		0.5f, 0.0f, 0.0f, 0.0f,
+		0.0f, -0.5f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.5f, 0.5f, 0.0f, 1.0f);
+
+	Matrix CamProj = GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ);
+	Matrix ViewToTexSpcace = CamProj * T;
+
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("viewToExSpace", &ViewToTexSpcace)))
+		return E_FAIL;
 
 	// Fov가 계속 바뀌니까 렌더하기전에 매번 갱신
 	BuildFrustumFarCorners();
@@ -1039,21 +1051,24 @@ HRESULT CRenderer::Render_Ssao()
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS], TEXT("Target_ViewNormal"), "NormalDepthMap")))
 		return E_FAIL;
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Texture("RandomVecMap", m_pRandomVecMap)))
+	//if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Texture("RandomVecMap", m_pRandomVectorTexture)))
+	//	return E_FAIL;
+	if (FAILED(m_pRandomVectorTexture->Bind_ShaderResource(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS], "RandomVecMap")))
 		return E_FAIL;
 
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Begin(1)))
 		return E_FAIL;
-	if (FAILED(m_pVIBuffer->Render()))
+	if (FAILED(RenderScreenQuad()))
 		return E_FAIL;
+	//if (FAILED(m_pVIBuffer->Render()))
+	//	return E_FAIL;
 
 	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
 		return E_FAIL;
 
 	return S_OK;
 }
-
-// MRT_Outline
+ // MRT_Outline
 HRESULT CRenderer::Render_OutLine()
 {
 	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Outline"))))
@@ -1346,7 +1361,9 @@ HRESULT CRenderer::Render_GodRay()
 
 	m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Begin(0);
 
-	if (FAILED(m_pVIBuffer->Render()))
+	//if (FAILED(m_pVIBuffer->Render()))
+	//	return E_FAIL;
+	if (FAILED(RenderScreenQuad()))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
 		return E_FAIL;
@@ -2179,12 +2196,12 @@ HRESULT CRenderer::Create_Target()
 #pragma region MRT_SSAO : Target_SSAO // Target_SSAO_Blur
 	/* For.Target_SSAO */
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_SSAO"),
-		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(0.0f, 0.0f, 0.0f, 1.f))))
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.0f, 0.0f, 0.0f, 1.0f))))
 		return E_FAIL;
 
 	/* For.Target_SSAO_Blur */
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_SSAO_Blur"),
-		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.0f, 0.0f, 0.0f, 0.0f))))
 		return E_FAIL;
 #pragma endregion
 
@@ -2622,13 +2639,16 @@ HRESULT CRenderer::Set_TargetsMrt()
 
 HRESULT CRenderer::Initialize_SSAO()
 {
-	if (FAILED(RandomTextureCreate()))
+	if (FAILED(InitializeScreenQuad()))
 		return E_FAIL;
-	//if (FAILED(InitializeScreenQuad()))
-	//	return E_FAIL;
 
 	BuildFrustumFarCorners();
 	BuildOffsetVectors();
+
+	m_pRandomVectorTexture = CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/ETC/RandomTexture.png"));
+	if (nullptr == m_pRandomVectorTexture)
+		return E_FAIL;
+
 
 	return S_OK;
 }
@@ -2753,7 +2773,6 @@ void CRenderer::BuildFrustumFarCorners()
 	m_vFrustumFarCorner[1] = Vec4(-fHalfWidth, +fHalfHeight, fFar, 0.0f);
 	m_vFrustumFarCorner[2] = Vec4(+fHalfWidth, +fHalfHeight, fFar, 0.0f);
 	m_vFrustumFarCorner[3] = Vec4(+fHalfWidth, -fHalfHeight, fFar, 0.0f);
-
 }
 
 void CRenderer::BuildOffsetVectors()
@@ -2810,37 +2829,6 @@ void CRenderer::BuildOffsetVectors()
 }
 
 
-#include <wrl.h>
-HRESULT CRenderer::RandomTextureCreate()
-{
-	CD3D11_TEXTURE2D_DESC texDesc(DXGI_FORMAT_R8G8B8A8_UNORM, 256, 256, 1, 1,
-		D3D11_BIND_SHADER_RESOURCE, D3D11_USAGE_IMMUTABLE);
-
-	D3D11_SUBRESOURCE_DATA initData = {};
-	vector<PackedVector::XMCOLOR> randomVectors(256 * 256);
-
-	// 난수데이터 초기화
-	mt19937 randEngine;
-	randEngine.seed(std::random_device()());
-	uniform_real_distribution<_float> randF(0.0f, 1.0f);
-
-	for (_uint i = 0; i < 256 * 256; ++i)
-		randomVectors[i] = PackedVector::XMCOLOR(randF(randEngine), randF(randEngine), randF(randEngine), 0.0f);
-
-	initData.pSysMem = randomVectors.data();
-	initData.SysMemPitch = 256 * sizeof(PackedVector::XMCOLOR);
-
-
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture;
-	if(FAILED(m_pDevice->CreateTexture2D(&texDesc, &initData, pTexture.GetAddressOf())))
-		return E_FAIL;
-
-	if (FAILED(m_pDevice->CreateShaderResourceView(pTexture.Get(), nullptr, &m_pRandomVecMap)))
-		return E_FAIL;
-
-	return S_OK;
-}
-
 HRESULT CRenderer::InitializeScreenQuad()
 {
 	m_iQuadVerCount = 4;
@@ -2854,10 +2842,10 @@ HRESULT CRenderer::InitializeScreenQuad()
 	if (nullptr == pIndices)
 		return E_FAIL;
 
-	pVertices[0].pos = Vec3(-1.0f, -1.0f, 0.0f);
-	pVertices[1].pos = Vec3(-1.0f, +1.0f, 0.0f);
-	pVertices[2].pos = Vec3(+1.0f, +1.0f, 0.0f);
-	pVertices[3].pos = Vec3(+1.0f, -1.0f, 0.0f);
+	pVertices[0].pos = Vec3(-0.5f, -0.5f, 0.0f);
+	pVertices[1].pos = Vec3(-0.5f, +0.5f, 0.0f);
+	pVertices[2].pos = Vec3(+0.5f, +0.5f, 0.0f);
+	pVertices[3].pos = Vec3(+0.5f, -0.5f, 0.0f);
 
 	pVertices[0].ToFarPlaneIndex = Vec3(0.0f, 0.0f, 0.0f);
 	pVertices[1].ToFarPlaneIndex = Vec3(1.0f, 0.0f, 0.0f);
@@ -2909,8 +2897,11 @@ HRESULT CRenderer::InitializeScreenQuad()
 	return S_OK;
 }
 
-void CRenderer::RenderScreenQuad()
+HRESULT CRenderer::RenderScreenQuad()
 {
+	if (nullptr == m_pContext)
+		return E_FAIL;
+
 	_uint stride = sizeof(QuadVertex);
 	_uint offset = 0;
 	
@@ -2919,6 +2910,11 @@ void CRenderer::RenderScreenQuad()
 	m_pContext->IASetIndexBuffer(m_pQuadIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	m_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	m_pContext->DrawIndexed(m_iQuadIndexCount, 0, 0);
+
+	return S_OK;
+
 }
 
 CRenderer * CRenderer::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
@@ -2980,8 +2976,7 @@ void CRenderer::Free()
 		Safe_Release(pComponent);
 	m_RenderDebug.clear();
 
-	Safe_Release<ID3D11ShaderResourceView*>(m_pRandomVecMap);
 	Safe_Release<ID3D11Buffer*>(m_pQuadVertexBuffer);
 	Safe_Release<ID3D11Buffer*>(m_pQuadIndexBuffer);
-	//Safe_Release(m_pRandomSrv);
+	Safe_Release<CTexture*>(m_pRandomVectorTexture);
 }
