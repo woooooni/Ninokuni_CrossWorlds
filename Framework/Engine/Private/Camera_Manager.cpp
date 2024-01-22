@@ -65,7 +65,7 @@ CCamera* CCamera_Manager::Get_Camera(const _uint& iKey)
 
 HRESULT CCamera_Manager::Set_CurCamera(const _uint& iKey)
 {
-	if (m_bBlending)
+ 	if (m_bBlending)
 		return E_FAIL;
 
 	CCamera* pCamera = Find_Camera(iKey);
@@ -106,9 +106,9 @@ HRESULT CCamera_Manager::Set_PrevCamera()
 
 	m_pCurCamera = m_pPrevCamera;
 
-	m_pCurCamera->Set_Active(true);
-
 	m_pPrevCamera = pTemp;
+
+	m_pCurCamera->Set_Active(true);
 
 	return S_OK;
 }

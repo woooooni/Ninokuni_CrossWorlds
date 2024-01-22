@@ -81,6 +81,9 @@ void CCamera_Action::Tick(_float fTimeDelta)
 		case CCamera_Action::TALK:
 			Tick_Talk(fTimeDelta);
 			break;
+		case CCamera_Action::WINDMILL:
+			Tick_WindMill(fTimeDelta);
+			break;
 		default:
 			break;
 		}
@@ -147,6 +150,9 @@ HRESULT CCamera_Action::Start_Action_Lobby()
 
 HRESULT CCamera_Action::Start_Action_Talk(CGameObject* pNpc)
 {
+	m_eCurActionType = CAMERA_ACTION_TYPE::TALK;
+	m_bAction = true;
+
 	/* ¡§∫∏ ºº∆√ */
 	{
 		CGameObject* pPlayer = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
@@ -226,6 +232,8 @@ HRESULT CCamera_Action::Finish_Action_Talk()
 	}
 
 	m_tActionTalkDesc.Clear();
+
+	//m_bAction = false;
 
 	return S_OK;
 }
@@ -427,34 +435,45 @@ void CCamera_Action::Tick_Blending(const _float fDeltaTime)
 
 void CCamera_Action::Test(_float fTimeDelta)
 {
-	//if (KEY_HOLD(KEY::SHIFT))
-	//{
-	//	if (KEY_TAP(KEY::F1))
-	//		Change_Action_Talk_Object(ACTION_TALK_DESC::VIEW_TYPE::KUU);
-	//
-	//	if (KEY_TAP(KEY::F2))
-	//		Change_Action_Talk_Object(ACTION_TALK_DESC::VIEW_TYPE::KUU_AND_PLAYER);
-	//
-	//	if (KEY_TAP(KEY::NUM_3))
-	//		Change_Action_Talk_Object(ACTION_TALK_DESC::VIEW_TYPE::NPC);
-	//
-	//	if (KEY_TAP(KEY::F4))
-	//		Change_Action_Talk_Object(ACTION_TALK_DESC::VIEW_TYPE::ALL_RIGTH);
-	//
-	//	if (KEY_TAP(KEY::F5))
-	//		Change_Action_Talk_Object(ACTION_TALK_DESC::VIEW_TYPE::ALL_LEFT);
-	//
-	//	if (KEY_TAP(KEY::F6))
-	//		Change_Action_Talk_Object(ACTION_TALK_DESC::VIEW_TYPE::KUU_AND_PLAYER_FROM_BACK_NPC);
-	//	
-	//	if (KEY_TAP(KEY::F7))
-	//		Change_Action_Talk_Object(ACTION_TALK_DESC::VIEW_TYPE::NPC_FROM_BACK_KUU_AND_PLAYER);
-	//}
-	//
-	//if (KEY_TAP(KEY::HOME))
-	//{
-	//	Finish_Action_Talk();
-	//}
+	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::INSERT))
+	{
+		Start_Action_WindMill(true);
+	}
+}
+
+void CCamera_Action::Tick_WindMill(_float fTimeDelta)
+{
+	if (m_tActionWindMillDesc.tLookAt.bActive)
+	{
+		m_tActionWindMillDesc.tLookAt.Update_Lerp(fTimeDelta);
+		m_pTransformCom->LookAt(m_tActionWindMillDesc.tLookAt.vCurVec);
+
+		if (!m_tActionWindMillDesc.tLookAt.bActive)
+		{
+			if (m_tActionWindMillDesc.bNpcToWindMill) /* NPC -> «≥¬˜ øœ∑· */
+			{
+
+			}
+			else /* «≥¬˜ -> NPC øœ∑· */
+			{
+				m_eCurActionType = CAMERA_ACTION_TYPE::TALK;
+			}
+		}
+	}
+	else
+	{
+		if (m_tActionWindMillDesc.bNpcToWindMill)
+		{
+			m_tActionWindMillDesc.fAcc += fTimeDelta;
+
+			if (m_tActionWindMillDesc.fWaitTime <= m_tActionWindMillDesc.fAcc)
+			{
+				m_tActionWindMillDesc.fAcc = 0.f;
+
+				Start_Action_WindMill(false);
+			}
+		}
+	}
 }
 
 void CCamera_Action::Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType)
@@ -698,6 +717,55 @@ void CCamera_Action::Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType
 
 HRESULT CCamera_Action::Ready_Components()
 {
+	return S_OK;
+}
+
+HRESULT CCamera_Action::Start_Action_WindMill(const _bool& bNpcToWindMill)
+{
+	const _uint iLevel = GI->Get_CurrentLevel();
+
+	if (LEVELID::LEVEL_EVERMORE != iLevel && LEVELID::LEVEL_TOOL != iLevel)
+		return E_FAIL;
+
+	CGameObject* pWindMill = GI->Find_GameObject(iLevel, LAYER_BUILDING, m_tActionWindMillDesc.strWindMillName);
+	if (nullptr == pWindMill)
+		return E_FAIL;
+
+	CTransform* pWindMillTransform = pWindMill->Get_Component<CTransform>(L"Com_Transform");
+
+	if (nullptr == pWindMillTransform)
+		return E_FAIL;
+
+	if (bNpcToWindMill) /* NPC -> «≥¬˜*/
+	{
+		Vec4 vTargetLook = Vec4(pWindMill->Get_Component<CTransform>(L"Com_Transform")->Get_Position())
+							+ pWindMillTransform->Get_RelativeOffset(m_tActionWindMillDesc.vOffset);
+
+		/* ∑Ëæ‹ ∫∏∞£ Ω√¿€ */
+		m_tActionWindMillDesc.tLookAt.Start(
+			m_tActionTalkDesc.vPrevLookAt,
+			vTargetLook.OneW(),
+			m_tActionWindMillDesc.fLerpDuration,
+			LERP_MODE::SMOOTHER_STEP
+		);
+
+		m_eCurActionType = CAMERA_ACTION_TYPE::WINDMILL;
+		m_tActionWindMillDesc.bNpcToWindMill = true;
+	}
+	else
+	{
+		/* ∑Ëæ‹ ∫∏∞£ Ω√¿€ */
+		m_tActionWindMillDesc.tLookAt.Start(
+			m_tActionWindMillDesc.tLookAt.vCurVec,
+			m_tActionTalkDesc.vPrevLookAt,
+			m_tActionWindMillDesc.fLerpDuration,
+			LERP_MODE::SMOOTHER_STEP
+		);
+
+		m_eCurActionType = CAMERA_ACTION_TYPE::WINDMILL;
+		m_tActionWindMillDesc.bNpcToWindMill = false;
+	}
+
 	return S_OK;
 }
 

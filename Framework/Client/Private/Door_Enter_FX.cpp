@@ -35,7 +35,7 @@ void CDoor_Enter_FX::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
-	if (false == m_pModelCom->Is_Tween() && m_pModelCom->Get_Progress() >= 0.7f)
+	if (false == m_pModelCom->Is_Tween() && m_pModelCom->Get_Progress() >= 0.5f) // 0.7f
 		Reserve_Dead(true);
 
 

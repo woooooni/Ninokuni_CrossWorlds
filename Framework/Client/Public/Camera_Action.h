@@ -16,7 +16,7 @@ class CKuu;
 class CCamera_Action final : public CCamera
 {
 public:
-	enum CAMERA_ACTION_TYPE { LOBBY, DOOR, TALK, CAMERA_ACTION_END };
+	enum CAMERA_ACTION_TYPE { LOBBY, DOOR, TALK, WINDMILL, CAMERA_ACTION_END };
 
 public:
 	typedef struct tagActionLobbyDesc
@@ -87,6 +87,18 @@ public:
 
 	}ACTION_TALK_DESC;
 
+	typedef struct tagWindMillDesc
+	{
+		Vec4			vOffset			= {0.f, 0.f, 0.f, 1.f};
+		const wstring	strWindMillName	= L"Evermore_Wind_WindMillaA_02";
+		const _float	fLerpDuration	= 2.f;
+		_bool			bNpcToWindMill	= false;  /* NPC -> 풍차 여부 */
+		LERP_VEC4_DESC	tLookAt			= {};
+		_float			fPrevFov		= 0.f;
+		_float			fAcc			= 0.f;
+		const _float	fWaitTime		= 1.5f;
+	}ACTION_WINDMILL_DESC;
+
 private:
 	CCamera_Action(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
 	CCamera_Action(const CCamera_Action& rhs);
@@ -105,6 +117,7 @@ public:
 public:
 	HRESULT Start_Action_Lobby();
 	HRESULT Start_Action_Door();
+	HRESULT Start_Action_WindMill(const _bool& bNpcToWindMill); /* 현재 대화 룩 타겟이 NPC일 때 호출*/
 
 	HRESULT Start_Action_Talk(CGameObject* pNpc); /* 처음 대화 시작시 호출 (쿠우 혼자면 nullptr, Npc 있으면 Npc 넘겨줌 */
 	HRESULT Change_Action_Talk_Object(const ACTION_TALK_DESC::VIEW_TYPE& eType); /* 중간 화자 변경시 호출 */
@@ -119,6 +132,7 @@ private:
 	void Tick_Lobby(_float fTimeDelta);
 	void Tick_Door(_float fTimeDelta);
 	void Tick_Talk(_float fTimeDelta);
+	void Tick_WindMill(_float fTimeDelta);
 
 private:
 	void Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType);
@@ -130,13 +144,13 @@ private:
 	virtual HRESULT Ready_Components() override;
 
 private:
-	_bool				m_bAction = false;
-	CAMERA_ACTION_TYPE	m_eCurActionType = CAMERA_ACTION_TYPE::CAMERA_ACTION_END;
+	_bool					m_bAction = false;
+	CAMERA_ACTION_TYPE		m_eCurActionType = CAMERA_ACTION_TYPE::CAMERA_ACTION_END;
 
-	ACTION_LOBBY_DESC	m_tActionLobbyDesc = {};
-	ACTION_DOOR_DESC	m_tActionDoorDesc = {};
-	ACTION_TALK_DESC	m_tActionTalkDesc = {};
-	
+	ACTION_LOBBY_DESC		m_tActionLobbyDesc = {};
+	ACTION_DOOR_DESC		m_tActionDoorDesc = {};
+	ACTION_TALK_DESC		m_tActionTalkDesc = {};
+	ACTION_WINDMILL_DESC	m_tActionWindMillDesc = {};
 public:
 	static CCamera_Action* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
 	virtual CGameObject* Clone(void* pArg);

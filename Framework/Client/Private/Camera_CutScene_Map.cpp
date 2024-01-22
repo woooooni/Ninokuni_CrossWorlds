@@ -2,9 +2,12 @@
 #include "Camera_CutScene_Map.h"
 
 #include "GameInstance.h"
+
 #include "Camera_Manager.h"
+#include "Camera_Follow.h"
 
 #include "UI_Manager.h"
+#include "UI_Fade.h"
 
 #include "Game_Manager.h"
 #include "Character.h"
@@ -57,6 +60,27 @@ void CCamera_CutScene_Map::Tick(_float fTimeDelta)
 		return;
 	}
 
+
+	/* Fade */
+	if (m_tFadeDesc.bReserved)
+	{
+		Tick_Fade(fTimeDelta);
+		if (m_tFadeDesc.Outtro.bPlaying && m_tFadeDesc.Outtro.bFadeOutted)
+		{
+			m_tFadeDesc.Clear(); /* 페이드가 적용된 경우 컷신 카메라의 마지막 호출 부분 */
+			return;
+		}
+
+		if (m_tFadeDesc.bPlaying)
+		{
+			if(m_tFadeDesc.Intro.bPlaying && !m_tFadeDesc.Intro.bFadeOutted)
+				return;
+
+			if (m_tFadeDesc.Outtro.bPlaying && !m_tFadeDesc.Outtro.bFadeOutted)
+				return;
+		}
+	}
+
 	/* 컷신 종료*/
 	if (!m_tTimeDesc.bActive)
 	{
@@ -75,19 +99,18 @@ void CCamera_CutScene_Map::Tick(_float fTimeDelta)
 				CCamera_Manager::GetInstance()->Change_Camera(m_iBlendingCamKey, m_fBlendingDuration, m_eBlendingMode);
 			else if (m_bWillRetruePrevCam)
 			{
-				//CCamera_Manager::GetInstance()->Set_PrevCamera();
-				CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
-
-				/* Ui On */
-				if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
-					CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
-			}
-	
-			/* Player Input On */
-			{
-				CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
-			}
-			
+				/* 페이드가 예약되어 있다면 */
+				if (m_tFadeDesc.bReserved)
+				{
+					CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, m_tFadeDesc.Outtro.fDuration, m_tFadeDesc.Outtro.bWhite);
+					m_tFadeDesc.bPlaying = true;
+					m_tFadeDesc.Outtro.bPlaying = true;
+				}
+				else
+				{
+					CCamera_Manager::GetInstance()->Set_PrevCamera();
+				}
+			}	
 			return;
 		}
 	}
@@ -132,14 +155,39 @@ HRESULT CCamera_CutScene_Map::Start_CutScene(const string& strCutSceneName,
 	if (nullptr == m_pCurCutSceneDesc)
 		return E_FAIL;
 
-	if(LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
-		CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
+	/* 페이드가 예약되어 있고, 여러 컷신 중 첫번째 컷신이라면 */
+	if (m_tFadeDesc.bReserved && !m_tFadeDesc.bInit)
+	{
+		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, m_tFadeDesc.Intro.fDuration, m_tFadeDesc.Intro.bWhite);
+		m_tFadeDesc.bPlaying = true;
+		m_tFadeDesc.Intro.bPlaying = true;
+		m_tFadeDesc.bInit = true;
 
-	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::CUTSCENE_MAP);
+		/* 이전 카메라 세팅 그대로 가져온다. */
+		/* 인트로 페이드 아웃이 끝날때까지는 이전 카메라 뷰로 진행해야하기 때문에 (현재 카메라는 컷신 카메라고, 뷰는 이전 카메라 뷰를 보여줘야함) */
+		{
+			CCamera* pPrevCam = CCamera_Manager::GetInstance()->Get_CurCamera();
+			if (nullptr != pPrevCam)
+			{
+				m_pTransformCom->Set_State(CTransform::STATE_POSITION, pPrevCam->Get_Transform()->Get_Position());
+				m_pTransformCom->LookAt(pPrevCam->Get_LookAt());
 
-	m_tTimeDesc.Start(m_pCurCutSceneDesc->fDuration, m_pCurCutSceneDesc->eLerpMode);
+				Set_Fov(pPrevCam->Get_Fov());
+			}
+			CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::CUTSCENE_MAP);
+		}
+	}
+	else
+	{
+		if(LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
+			CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
 
-	Set_Fov(Cam_Fov_CutScene_Map_Default);
+		CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::CUTSCENE_MAP);
+
+		m_tTimeDesc.Start(m_pCurCutSceneDesc->fDuration, m_pCurCutSceneDesc->eLerpMode);
+
+		Set_Fov(Cam_Fov_CutScene_Map_Default);
+	}
 
 	/* 다음 체인지할 카메라 예약 */
 	m_bWillRetruePrevCam = bWillRetruePrevCam;
@@ -180,21 +228,10 @@ HRESULT CCamera_CutScene_Map::Start_CutScenes(vector<string> strCutSceneNames,
 	{
 		string strCutSceneName = m_CutSceneNamesReserved.front();
 
-		Start_CutScene(strCutSceneName);
+		Start_CutScene(strCutSceneName, bWillRetruePrevCam, bWillBlending, iBlendingCamKey, fBlendingDuration, eBlendingMode);
 
 		m_CutSceneNamesReserved.pop();
 	}
-
-	/* 다음 체인지할 카메라 예약 */
-	m_bWillRetruePrevCam = bWillRetruePrevCam;
-	m_bWillBlending = bWillBlending;
-	if (m_bWillBlending)
-	{
-		m_iBlendingCamKey = iBlendingCamKey;
-		m_fBlendingDuration = fBlendingDuration;
-		m_eBlendingMode = eBlendingMode;
-	}
-
 	return S_OK;
 }
 
@@ -214,10 +251,21 @@ HRESULT CCamera_CutScene_Map::Stop_CutScene(const _bool& bClearReservedCutScene)
 
 HRESULT CCamera_CutScene_Map::Start_CutScene(const LEVELID& eLevelID)
 {
+	/* Exception */
+	const _uint iCurLevel = GI->Get_CurrentLevel();
+	{
+		if (eLevelID != iCurLevel && LEVELID::LEVEL_TOOL != iCurLevel)
+			return E_FAIL;
+	}
+
 	switch (eLevelID)
 	{
 	case LEVELID::LEVEL_EVERMORE:
 	{
+
+		/* Reserve Fade */
+		Reserve_Fade(1.f, true, 1.f, true);
+
 		/* CutScene - Evermore */
 		vector<string> CutSceneNames;
 		{
@@ -389,6 +437,22 @@ HRESULT CCamera_CutScene_Map::Load_CutSceneDescs()
 	return S_OK;
 }
 
+HRESULT CCamera_CutScene_Map::Reserve_Fade(const _float& fIntroDuration, const _bool& bIntroWhite, const _float& fOuttroDuration, const _bool& bOuttroWhite)
+{
+	if (m_tFadeDesc.bReserved)
+		m_tFadeDesc.Clear();
+
+	m_tFadeDesc.bReserved = true;
+
+	m_tFadeDesc.Intro.fDuration = fIntroDuration;
+	m_tFadeDesc.Intro.bWhite = bIntroWhite;
+
+	m_tFadeDesc.Outtro.fDuration = fOuttroDuration;
+	m_tFadeDesc.Outtro.bWhite = bOuttroWhite;
+
+	return S_OK;
+}
+
 Vec4 CCamera_CutScene_Map::Get_Point_In_Bezier(Vec3 vPoints[MAX_BEZIER_POINT], const _float& fRatio)
 {
 	if (nullptr == vPoints)
@@ -462,6 +526,60 @@ CAMERA_CUTSCENE_MAP_DESC* CCamera_CutScene_Map::Find_CutSceneDesc(const string& 
 HRESULT CCamera_CutScene_Map::Ready_Components()
 {
 	return S_OK;
+}
+
+void CCamera_CutScene_Map::Tick_Fade(_float fTimeDelta)
+{
+	/* Fade 진행중 */
+	if (m_tFadeDesc.bPlaying)
+	{
+		if (m_tFadeDesc.Intro.bPlaying && !m_tFadeDesc.Outtro.bPlaying) /* 컷신 인트로 Fade 진행중 */
+		{
+			if (CUI_Manager::GetInstance()->Is_FadeFinished()) 
+			{
+				if (!m_tFadeDesc.Intro.bFadeOutted) /* 페이드 아웃 종료, 페이드 인 시작 */
+				{
+					/* 컷신 시작 */	
+					if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
+						CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
+
+					m_tTimeDesc.Start(m_pCurCutSceneDesc->fDuration, m_pCurCutSceneDesc->eLerpMode);
+
+					Set_Fov(Cam_Fov_CutScene_Map_Default);
+
+					m_tFadeDesc.Intro.bFadeOutted = true;
+
+					CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, m_tFadeDesc.Intro.fDuration, m_tFadeDesc.Intro.bWhite);
+				}
+				else /* 페이드 인 종료 */
+				{
+					/* 페이드 데이터 갱신 */
+					m_tFadeDesc.bPlaying = false;
+					m_tFadeDesc.Intro.bPlaying = false;
+				}
+			}
+		}
+		else if (!m_tFadeDesc.Intro.bPlaying && m_tFadeDesc.Outtro.bPlaying) /* 컷신 아웃트로 Fade 진행중 */
+		{
+			if (CUI_Manager::GetInstance()->Is_FadeFinished())
+			{
+				if (!m_tFadeDesc.Outtro.bFadeOutted) /* 페이드 아웃 종료, 페이드 인 시작 */
+				{
+					/* 카메라 체인지 */
+					CCamera_Manager::GetInstance()->Set_PrevCamera();
+
+					CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, m_tFadeDesc.Outtro.fDuration, m_tFadeDesc.Outtro.bWhite);
+
+					m_tFadeDesc.Outtro.bFadeOutted = true;
+				}
+				else /* 페이드 인 종료 */
+				{
+					/* 어차피 여기는 안탄다. (위에서 이미 카메라 바뀌었다) */
+				}
+			}
+		}
+	}
+		
 }
 
 void CCamera_CutScene_Map::Tick_Blending(const _float fDeltaTime)

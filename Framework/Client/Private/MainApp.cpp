@@ -38,10 +38,6 @@ CMainApp::CMainApp()
 
 HRESULT CMainApp::Initialize()
 {
-	/* 1. 내 게임의 초기화를 수행할꺼야. */
-	/* 1-1. 그래픽장치를 초기화한다. */
-	/* 1-2. 사운드장치를 초기화한다. */
-	/* 1-3. 입력장치를 초기화한다. */
 	GRAPHIC_DESC		GraphicDesc;
 	ZeroMemory(&GraphicDesc, sizeof GraphicDesc);
 
@@ -63,7 +59,7 @@ HRESULT CMainApp::Initialize()
 	{
 		g_eStartLevel = LEVELID::LEVEL_LOGO; /* 시작할 레벨 타입 */
 
-		g_eLoadCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH; /* 모델 로드할 캐릭터 타입 */
+		g_eLoadCharacter = LOAD_CHARACTER_TYPE::ALL_CH; /* 모델 로드할 캐릭터 타입 */
 
 		g_ePlayCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH; /* 게임 플레이 캐릭터 타입 */
 	}
@@ -78,20 +74,6 @@ HRESULT CMainApp::Initialize()
 		CUI_Manager::GetInstance()->Ready_Cursor();
 		ShowCursor(false);
 	}
-
-	Json Test;
-	Test["Name"] = "김태원김태원김태원김태원김태원김태원김태원김태원김태원김태원김태원김태원김태원김태원";
-	Test["Test"] = "테스트테스트테스트테스트";
-	Test["int"] = 3;
-	Test["float"] = 3.f;
-	Test["string"] = "스트링";
-
-	GI->Json_Save(L"../Bin/Test.json", Test);
-	Json Load = GI->Json_Load(L"../Bin/Test.json");
-	string strName = Load["Name"];
-
-	string strLoad = Load.dump();
-	
 
 	return S_OK;
 }

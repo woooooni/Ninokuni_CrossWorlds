@@ -27,6 +27,41 @@ typedef struct tagCameraCutSceneMapDesc
 
 class CCamera_CutScene_Map final : public CCamera
 {
+	typedef struct tagFadeDesc
+	{
+		_float		fDuration = 0.f;
+		_bool		bWhite = false;
+		_bool		bPlaying = false;
+		_bool		bFadeOutted = false;
+
+		void Clear()
+		{
+			fDuration = 0.f;
+			bWhite = false;
+			bPlaying = false;
+			bFadeOutted = false;
+		}
+	}FADE_DESC;
+	typedef struct tagCutSceneFadeDesc
+	{
+		FADE_DESC Intro = {};
+		FADE_DESC Outtro = {};
+
+		_bool	bReserved = false;
+		_bool	bPlaying = false;
+		_bool	bInit = false;
+		
+		void Clear()
+		{
+			Intro.Clear();
+			Outtro.Clear();
+			bReserved = false;
+			bPlaying = false;
+			bInit = false;
+		}
+
+	}CUTSCENE_FADE_DESC;
+
 private:
 	CCamera_CutScene_Map(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
 	CCamera_CutScene_Map(const CCamera_CutScene_Map& rhs);
@@ -63,6 +98,8 @@ public:
 
 	const _bool Is_Playing_CutScenc() const { return m_tTimeDesc.bActive; }
 
+	HRESULT Reserve_Fade(const _float& fIntroDuration, const _bool& bIntroWhite, const _float& fOuttroDuration, const _bool& bOuttroWhite);
+
 public:
 	static Vec4 Get_Point_In_Bezier(Vec3 vPoints[MAX_BEZIER_POINT], const _float& fRatio);
 
@@ -83,6 +120,8 @@ public:
 private:
 	virtual HRESULT Ready_Components() override;
 
+	void Tick_Fade(_float fTimeDelta);
+
 private:
 	vector<CAMERA_CUTSCENE_MAP_DESC>	m_CutSceneDescs;
 
@@ -99,6 +138,8 @@ private:
 	_float								m_fBlendingDuration = 0.f;
 	LERP_MODE							m_eBlendingMode = LERP_MODE::SMOOTHER_STEP;
 
+	/* ∆‰¿ÃµÂ */
+	CUTSCENE_FADE_DESC					m_tFadeDesc = {};
 	
 public:
 	static CCamera_CutScene_Map* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);

@@ -81,6 +81,8 @@ public:
 
 	void Set_Defualt_Setting();
 
+	virtual void Set_Active(const _bool bActive) override;
+
 public:
 	/* Lock On */
 	HRESULT Start_LockOn(CGameObject* pTargetObject, const Vec4& vTargetOffset, const Vec4& vLookAtOffset, const _float& fLockOnBlendingTime = Cam_LockOn_Time_BlendingIn);

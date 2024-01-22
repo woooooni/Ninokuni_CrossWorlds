@@ -1778,7 +1778,25 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 		}
 	}
 
-	if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::DESTROYER, Vec4(0.f, 0.f, 0.f, 1.f), false)))
+	CHARACTER_TYPE eCharacterType;
+
+	switch (g_ePlayCharacter)
+	{
+	case LOAD_CHARACTER_TYPE::SWORDMAN_CH:
+		eCharacterType = CHARACTER_TYPE::SWORD_MAN;
+		break;
+	case LOAD_CHARACTER_TYPE::DESTROYER_CH:
+		eCharacterType = CHARACTER_TYPE::DESTROYER;
+		break;
+	case LOAD_CHARACTER_TYPE::ENGINEER_CH:
+		eCharacterType = CHARACTER_TYPE::ENGINEER;
+		break;
+	default:
+		eCharacterType = CHARACTER_TYPE::SWORD_MAN;
+		break;
+	}
+
+	if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(eCharacterType, Vec4(0.f, 0.f, 0.f, 1.f), false)))
 		return E_FAIL;
 
 	if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))
