@@ -26,26 +26,26 @@ HRESULT CVfx_Destroyer_Skill_IgnorePain::Initialize_Prototype()
 	m_pRotationOffset = new _float3[m_iMaxCount];
 
 	{
-		m_pFrameTriger[TYPE_ET1_E_CIRCLELINE] = 0;
+		m_pFrameTriger[TYPE_ET1_E_CIRCLELINE] = 19;
 		m_pPositionOffset[TYPE_ET1_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET1_E_CIRCLELINE] = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET1_E_CIRCLELINE]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET1_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_ET1_E_BARRIER] = 0;
+		m_pFrameTriger[TYPE_ET1_E_BARRIER] = 19;
 		m_pPositionOffset[TYPE_ET1_E_BARRIER] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET1_E_BARRIER] = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET1_E_BARRIER]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET1_E_BARRIER] = _float3(0.f, 0.f, 0.f);
 	}
 
 	{
-		m_pFrameTriger[TYPE_ET2_P_SPARCKE] = 0;
+		m_pFrameTriger[TYPE_ET2_P_SPARCKE] = 19;
 		m_pPositionOffset[TYPE_ET2_P_SPARCKE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_P_SPARCKE] = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET2_P_SPARCKE]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET2_P_SPARCKE] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_ET2_E_CIRCLELINE] = 0;
+		m_pFrameTriger[TYPE_ET2_E_CIRCLELINE] = 19;
 		m_pPositionOffset[TYPE_ET2_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_E_CIRCLELINE] = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET2_E_CIRCLELINE]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET2_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
 	}
 
