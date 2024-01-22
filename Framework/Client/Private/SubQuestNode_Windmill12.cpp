@@ -10,6 +10,8 @@
 #include "Camera_Manager.h"
 #include "Camera_Group.h"
 
+#include "Building.h"
+
 CSubQuestNode_Windmill12::CSubQuestNode_Windmill12()
 {
 }
@@ -81,6 +83,17 @@ CBTNode::NODE_STATE CSubQuestNode_Windmill12::Tick(const _float& fTimeDelta)
 						pActionCam->Start_Action_WindMill(true);
 
 						m_bCameraAction = true;
+
+						CGameObject* pGameObject = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_BUILDING, L"Evermore_Wind_WindMillaA_02");
+						if (nullptr != pGameObject)
+						{
+							CBuilding* pWindMill = dynamic_cast<CBuilding*>(pGameObject);
+							if (nullptr != pWindMill)
+							{
+								pWindMill->Set_QuestClear(true);
+							}
+						}
+							
 					}
 					return NODE_STATE::NODE_RUNNING;
 				}

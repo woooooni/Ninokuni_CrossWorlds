@@ -108,17 +108,20 @@ void CTrigger::Collision_Enter(const COLLISION_INFO& tInfo)
 			break;
 		case TRIGGER_TYPE::TRIGER_WHALE_ENTER:
 			{
-			/* 배면 뒤집기 */
-			_uint			iCutLevel = GI->Get_CurrentLevel();
-			CGameObject*	 pObject = GI->Find_GameObject(iCutLevel, LAYER_TYPE::LAYER_DYNAMIC, TEXT("Animal_Whale"));
-			if (nullptr == pObject)
-				break;
+				if (!m_bWhaleCutScene)
+				{
+					/* 배면 뒤집기 */
+					CGameObject* pWhale = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_DYNAMIC, TEXT("Animal_Whale"));
+					if (nullptr == pWhale)
+						break;
 
-			static_cast<CWhale*>(pObject)->Set_Flip(true);
+					static_cast<CWhale*>(pWhale)->Set_Flip(true);
+
+					m_bWhaleCutScene = true;
+				}
 			break;
 			}
 		}
-		
 	}
 }
 

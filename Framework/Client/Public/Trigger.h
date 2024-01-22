@@ -64,6 +64,7 @@ private:
 	string m_strBGM = "";
 	wstring m_strMapName = TEXT("");
 	
+	_bool m_bWhaleCutScene = false;
 
 public:
 	static CTrigger* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

@@ -78,8 +78,11 @@ void CSubQuestNode_Windmill10::Start()
 		return false;
 		});
 
-	m_pQuestObject = (*iter);
+	if (pGameObjects.end() != iter)
+	{
+		m_pQuestObject = (*iter);
 
+	}
 }
 
 CBTNode::NODE_STATE CSubQuestNode_Windmill10::Tick(const _float& fTimeDelta)
