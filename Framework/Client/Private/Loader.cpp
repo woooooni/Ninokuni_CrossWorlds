@@ -515,21 +515,21 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 	m_strLoading = TEXT("텍스쳐를 로딩 중 입니다.");
 
 	// 미니게임(타워 디펜스)
-	if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_TowerDefence_TowerSelect"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/TowerDefence/UI_Minigame_Select_Renewal_%d.png"), 4))))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_TowerDefence_Timer"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/TowerDefence/UI_Minigame_Timer.png")))))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_TowerDefence_Background"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/TowerDefence/UI_Minigame_Towerlist_Background.png")))))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_TowerDefence_StartBtn"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/TowerDefence/UI_Minigame_StartBtn_%d.png"), 2))))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_TowerDefence_Gold"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/TowerDefence/UI_Minigame_Gold.png")))))
-		return E_FAIL;
+//	if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_TowerDefence_TowerSelect"),
+//		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/TowerDefence/UI_Minigame_Select_Renewal_%d.png"), 4))))
+//		return E_FAIL;
+//	if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_TowerDefence_Timer"),
+//		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/TowerDefence/UI_Minigame_Timer.png")))))
+//		return E_FAIL;
+//	if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_TowerDefence_Background"),
+//		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/TowerDefence/UI_Minigame_Towerlist_Background.png")))))
+//		return E_FAIL;
+//	if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_TowerDefence_StartBtn"),
+//		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/TowerDefence/UI_Minigame_StartBtn_%d.png"), 2))))
+//		return E_FAIL;
+//	if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_TowerDefence_Gold"),
+//		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/TowerDefence/UI_Minigame_Gold.png")))))
+//		return E_FAIL;
 
 	/* For.Shader */
 	m_strLoading = TEXT("셰이더를 로딩 중 입니다.");
@@ -537,11 +537,11 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 	/* For.GameObject */
 	m_strLoading = TEXT("객체원형을 로딩 중 입니다.");
 
-	if (GI->Add_Prototype(TEXT("Prototype_GameObject_Common_LensFlare"),
-		CLensFlare::Create(m_pDevice, m_pContext, TEXT("Common_LensFlare"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX))
-		return E_FAIL;
+//	if (GI->Add_Prototype(TEXT("Prototype_GameObject_Common_LensFlare"),
+//		CLensFlare::Create(m_pDevice, m_pContext, TEXT("Common_LensFlare"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX))
+//		return E_FAIL;
 
-	CUIMinigame_Manager::GetInstance()->Ready_MinigameUI_Prototypes(LEVELID::LEVEL_EVERMORE);
+	//CUIMinigame_Manager::GetInstance()->Ready_MinigameUI_Prototypes(LEVELID::LEVEL_EVERMORE);
 
 
 	/* For.Model */

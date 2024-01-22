@@ -13,6 +13,8 @@
 #include "Character.h"
 #include "Player.h"
 
+#include "UI_Manager.h"
+
 CGlanixState_Rage2Stamp::CGlanixState_Rage2Stamp(CStateMachine* pStateMachine)
 	: CGlanixState_Base(pStateMachine)
 {
@@ -60,16 +62,19 @@ void CGlanixState_Rage2Stamp::Exit_State()
 	if (nullptr != CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::SWORD_MAN))
 	{
 		CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::SWORD_MAN)->Set_Speed_Weight(1.f);
+		CUI_Manager::GetInstance()->OnOff_IceVignette(false);
 	}
 
 	if (nullptr != CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::DESTROYER))
 	{
 		CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::DESTROYER)->Set_Speed_Weight(1.f);
+		CUI_Manager::GetInstance()->OnOff_IceVignette(false);
 	}
 
 	if (nullptr != CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::ENGINEER))
 	{
 		CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::ENGINEER)->Set_Speed_Weight(1.f);
+		CUI_Manager::GetInstance()->OnOff_IceVignette(false);
 	}
 }
 
