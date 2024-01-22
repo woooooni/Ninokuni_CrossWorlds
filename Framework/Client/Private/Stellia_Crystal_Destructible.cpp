@@ -11,7 +11,7 @@
 
 #include "Stellia.h"
 
-#include "Stellia_Crystal_FailBomb.h"
+#include "Stellia_Crystal_Explosion.h"
 
 CStellia_Crystal_Destructible::CStellia_Crystal_Destructible(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
 	: CMonster(pDevice, pContext, strObjectTag, tStat)
@@ -44,16 +44,16 @@ HRESULT CStellia_Crystal_Destructible::Initialize(void* pArg)
 		Vec4 vPos = *(Vec4*)pArg;
 		vPos.y -= 3.f;
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);
-		m_pTransformCom->Set_Scale(Vec3(1.5f, 1.5f, 1.5f));
+		m_pTransformCom->Set_Scale(Vec3(4.f, 4.f, 4.f));
 	}
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+	m_pModelCom->Set_Animation(1);
+
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
-
-	m_pModelCom->Set_Animation(1);
 
 	if (FAILED(Ready_States()))
 		return E_FAIL;
@@ -83,9 +83,10 @@ void CStellia_Crystal_Destructible::Tick(_float fTimeDelta)
 		if (m_iSelfType != m_iBingoType)
 		{
 			// Set_Dead 하기 전에 폭발 객체 생성 및 스텔리아 페일 카운트 추가
-			GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Stellia_Crystal_FailBomb"), this);
+			GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Stellia_Crystal_Explosion"), this);
 
-			m_pStellia->Set_CrystalFailCount(1);
+			// 굳이 늘리지 말자. 어차피 제한 시간 못 맞추면 늘어난다.
+			// m_pStellia->Set_CrystalFailCount(1);
 		}
 		else if (m_iSelfType == m_iBingoType)
 		{
@@ -138,33 +139,15 @@ void CStellia_Crystal_Destructible::LateTick(_float fTimeDelta)
 	if (nullptr != m_pModelCom)
 		m_pModelCom->LateTick(fTimeDelta);
 
-	/*m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);*/
-	// m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_SHADOW, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc());
-
-	m_AnimInstanceDesc.fDissolveDuration = m_fDissolveDuration;
-	m_AnimInstanceDesc.fDissolveSpeed = m_fDissolveDuration;
-	m_AnimInstanceDesc.fDissolveTotal = m_fDissolveTotal;
-	m_AnimInstanceDesc.fDissolveWeight = m_fDissolveWeight;
-	m_AnimInstanceDesc.vDissolveColor = m_vDissolveColor;
-	m_AnimInstanceDesc.vRimColor = m_vRimLightColor;
-
-	Compute_CamZ(m_pTransformCom->Get_Position());
-	if (m_fCamDistance <= 50.f && true == GI->Intersect_Frustum_World(m_pTransformCom->Get_Position(), 10.f))
-	{
-		m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_NONBLEND, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);
-		m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_SHADOW, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);
-	}
-
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
 #ifdef _DEBUG
 	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
 	{
 		for (auto& pCollider : m_Colliders[i])
 			m_pRendererCom->Add_Debug(pCollider);
 	}
-	m_pRendererCom->Add_Debug(m_pControllerCom);
-#endif // DEBUG
-
+#endif // _DEBUG
 }
 
 HRESULT CStellia_Crystal_Destructible::Render()
@@ -174,104 +157,23 @@ HRESULT CStellia_Crystal_Destructible::Render()
 	if (nullptr != m_pHPBar)
 		m_pHPBar->Render();
 
-	return S_OK;
-}
-
-HRESULT CStellia_Crystal_Destructible::Render_ShadowDepth()
-{
-	__super::Render_ShadowDepth();
-
-	return S_OK;
-}
-
-HRESULT CStellia_Crystal_Destructible::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc)
-{
-	// __super::Render();
-
-	if (nullptr == pInstancingShader || nullptr == m_pTransformCom)
+	if (nullptr == m_pModelCom || nullptr == m_pShaderCom)
 		return E_FAIL;
 
-
-	if (FAILED(pInstancingShader->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
 		return E_FAIL;
-	if (FAILED(pInstancingShader->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
 		return E_FAIL;
-	if (FAILED(pInstancingShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
 		return E_FAIL;
-	if (FAILED(pInstancingShader->Bind_RawValue("g_TweenFrames_Array", TweenDesc.data(), sizeof(TWEEN_DESC) * TweenDesc.size())))
-		return E_FAIL;
-
-	if (FAILED(m_pModelCom->SetUp_VTF(pInstancingShader)))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
 
-	if (FAILED(pInstancingShader->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
-		return E_FAIL;
-	if (FAILED(pInstancingShader->Bind_RawValue("g_AnimInstancingDesc", AnimModelDesc.data(), sizeof(ANIMODEL_INSTANCE_DESC) * AnimModelDesc.size())))
-		return E_FAIL;
-
-	// Bloom -----------------
-	if (FAILED(pInstancingShader->Bind_RawValue("g_vBloomPower", &m_vBloomPower, sizeof(_float3))))
-		return E_FAIL;
-	// ----------------- Bloom
-
-	// RimLight -----------------
-
-	// ----------------- RimLight
-
-	// Dissolve -----------------
-	if (FAILED(m_pDissoveTexture->Bind_ShaderResource(pInstancingShader, "g_DissolveTexture", 51)))
-		return E_FAIL;
-	// ----------------- Dissolve
-
-	_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
-	_uint iPassIndex = 0;
-
-	for (_uint i = 0; i < iNumMeshes; ++i)
-	{
-		if (i != 2)
-		{
-			if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
-				return E_FAIL;
-		}
-		else
-		{
-			if (FAILED(m_pTextureCom->Bind_ShaderResource(pInstancingShader, "g_DiffuseTexture", m_iSelfType)))
-				return E_FAIL;
-		}
-
-		if (m_bReserveDead)
-			iPassIndex = 2;
-		else if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
-			iPassIndex = 0;
-		else
-			iPassIndex++;
-
-		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, i, pInstancingBuffer, WorldMatrices, iPassIndex)))
-			return E_FAIL;
-	}
-
-
-	return S_OK;
-}
-
-HRESULT CStellia_Crystal_Destructible::Render_Instance_AnimModel_Shadow(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc)
-{
-	if (nullptr == pInstancingShader || nullptr == m_pTransformCom)
+	_float4 vRimColor = { 1.f, 0.f, 0.f, 1.f };
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float4))))
 		return E_FAIL;
 
-
-	if (FAILED(pInstancingShader->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
-		return E_FAIL;
-	if (FAILED(pInstancingShader->Bind_Matrix("g_ViewMatrix", &GI->Get_ShadowViewMatrix(GI->Get_CurrentLevel()))))
-		return E_FAIL;
-	if (FAILED(pInstancingShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
-		return E_FAIL;
-	if (FAILED(pInstancingShader->Bind_RawValue("g_TweenFrames_Array", TweenDesc.data(), sizeof(TWEEN_DESC) * TweenDesc.size())))
-		return E_FAIL;
-	if (FAILED(pInstancingShader->Bind_RawValue("g_AnimInstancingDesc", AnimModelDesc.data(), sizeof(ANIMODEL_INSTANCE_DESC) * AnimModelDesc.size())))
-		return E_FAIL;
-
-	if (FAILED(m_pModelCom->SetUp_VTF(pInstancingShader)))
+	if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
 		return E_FAIL;
 
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
@@ -281,24 +183,30 @@ HRESULT CStellia_Crystal_Destructible::Render_Instance_AnimModel_Shadow(CShader*
 	{
 		if (i != 2)
 		{
-			if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+			if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 				return E_FAIL;
 		}
 		else
 		{
-			if (FAILED(m_pDissoveTexture->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iSelfType)))
+			if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iSelfType)))
 				return E_FAIL;
 		}
 
-		if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
+		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
 			iPassIndex = 0;
 		else
 			iPassIndex++;
 
-		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, i, pInstancingBuffer, WorldMatrices, 10)))
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, iPassIndex)))
 			return E_FAIL;
 	}
 
+	return S_OK;
+}
+
+HRESULT CStellia_Crystal_Destructible::Render_ShadowDepth()
+{
+	__super::Render_ShadowDepth();
 
 	return S_OK;
 }
@@ -376,13 +284,13 @@ HRESULT CStellia_Crystal_Destructible::Ready_Colliders()
 	ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
 
 	XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
-	OBBBox.Extents = { 20.f, 75.f, 20.f };
+	OBBBox.Extents = { 30.f, 50.f, 30.f };
 
 	OBBDesc.tBox = OBBBox;
 	OBBDesc.pNode = nullptr;
 	OBBDesc.pOwnerTransform = m_pTransformCom;
 	OBBDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
-	OBBDesc.vOffsetPosition = Vec3(0.f, 75.f, 0.f);
+	OBBDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
 
 	/* Body */
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::BODY, &OBBDesc)))

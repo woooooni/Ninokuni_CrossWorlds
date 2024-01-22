@@ -65,6 +65,7 @@ public:
 
 public:
 	const DECAL_DESC& Get_DecalDesc() { return m_tDecalDesc; }
+	const _float& Get_AccLifeTimeDesc() { return m_fAccLifeTime; }
 	class CTexture* Get_DiffuseTexture() { return m_pDiffuseTextureCom; }
 	class CTransform* Get_TransformCom() { return m_pTransformCom; }
 

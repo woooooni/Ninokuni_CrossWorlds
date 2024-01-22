@@ -431,6 +431,9 @@
     <ClInclude Include="..\Public\StelliaState_CounterEnd.h" />
     <ClInclude Include="..\Public\StelliaState_CounterLoop.h" />
     <ClInclude Include="..\Public\StelliaState_CounterStart.h" />
+    <ClInclude Include="..\Public\StelliaState_Rage1Start.h" />
+    <ClInclude Include="..\Public\StelliaState_Rage1StartCharge.h" />
+    <ClInclude Include="..\Public\StelliaState_Rage1StartTurnOC.h" />
     <ClInclude Include="..\Public\StelliaState_Rage2Finish.h" />
     <ClInclude Include="..\Public\StelliaState_Rage2Loop.h" />
     <ClInclude Include="..\Public\StelliaState_Rage2Start.h" />
@@ -440,7 +443,8 @@
     <ClInclude Include="..\Public\Stellia_Crystal.h" />
     <ClInclude Include="..\Public\Stellia_Crystal_Controller.h" />
     <ClInclude Include="..\Public\Stellia_Crystal_Destructible.h" />
-    <ClInclude Include="..\Public\Stellia_Crystal_FailBomb.h" />
+    <ClInclude Include="..\Public\Stellia_Crystal_Explosion.h" />
+    <ClInclude Include="..\Public\Stellia_Explosion.h" />
     <ClInclude Include="..\Public\SubQuestNode_NoisySnowField01.h" />
     <ClInclude Include="..\Public\SubQuestNode_NoisySnowField02.h" />
     <ClInclude Include="..\Public\SubQuestNode_NoisySnowField03.h" />
@@ -992,6 +996,7 @@
     <ClInclude Include="LensFlare.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="StelliaState_Rage1StartTurnOL.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
@@ -1258,6 +1263,9 @@
     <ClCompile Include="..\Private\StelliaState_CounterEnd.cpp" />
     <ClCompile Include="..\Private\StelliaState_CounterLoop.cpp" />
     <ClCompile Include="..\Private\StelliaState_CounterStart.cpp" />
+    <ClCompile Include="..\Private\StelliaState_Rage1Start.cpp" />
+    <ClCompile Include="..\Private\StelliaState_Rage1StartCharge.cpp" />
+    <ClCompile Include="..\Private\StelliaState_Rage1StartTurnOC.cpp" />
     <ClCompile Include="..\Private\StelliaState_Rage2Finish.cpp" />
     <ClCompile Include="..\Private\StelliaState_Rage2Loop.cpp" />
     <ClCompile Include="..\Private\StelliaState_Rage2Start.cpp" />
@@ -1267,7 +1275,8 @@
     <ClCompile Include="..\Private\Stellia_Crystal.cpp" />
     <ClCompile Include="..\Private\Stellia_Crystal_Controller.cpp" />
     <ClCompile Include="..\Private\Stellia_Crystal_Destructible.cpp" />
-    <ClCompile Include="..\Private\Stellia_Crystal_FailBomb.cpp" />
+    <ClCompile Include="..\Private\Stellia_Crystal_Explosion.cpp" />
+    <ClCompile Include="..\Private\Stellia_Explosion.cpp" />
     <ClCompile Include="..\Private\SubQuestNode_NoisySnowField01.cpp" />
     <ClCompile Include="..\Private\SubQuestNode_NoisySnowField02.cpp" />
     <ClCompile Include="..\Private\SubQuestNode_NoisySnowField03.cpp" />
@@ -1823,6 +1832,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="StelliaState_Rage1StartTurnOL.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Client.rc" />

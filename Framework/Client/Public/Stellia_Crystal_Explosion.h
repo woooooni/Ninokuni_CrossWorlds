@@ -4,12 +4,12 @@
 
 BEGIN(Client)
 
-class CStellia_Crystal_FailBomb final : public CMonsterProjectile
+class CStellia_Crystal_Explosion final : public CMonsterProjectile
 {
 private:
-	CStellia_Crystal_FailBomb(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
-	CStellia_Crystal_FailBomb(const CStellia_Crystal_FailBomb& rhs);
-	virtual ~CStellia_Crystal_FailBomb() = default;
+	CStellia_Crystal_Explosion(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	CStellia_Crystal_Explosion(const CStellia_Crystal_Explosion& rhs);
+	virtual ~CStellia_Crystal_Explosion() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -37,7 +37,7 @@ private:
 	_bool m_bFirst = true;
 
 public:
-	static CStellia_Crystal_FailBomb* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	static CStellia_Crystal_Explosion* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };

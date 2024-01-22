@@ -155,7 +155,11 @@ void CStellia::Collision_Enter(const COLLISION_INFO& tInfo)
 	{
 		if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
 		{
-			On_Damaged(tInfo);
+			// 레이지 패턴 중이 아닐 때에만.
+			if (m_pStateCom->Get_CurrState() != STELLIA_RAGE2LOOP)
+			{
+				On_Damaged(tInfo);
+			}
 		}
 	}
 
@@ -481,7 +485,7 @@ HRESULT CStellia::Create_Crystals()
 	if (nullptr == m_pCrystalController)
 		return E_FAIL;
 
-	if (FAILED(m_pCrystalController->Create_Crystals(6, GI->RandomFloat(10.f, 25.f), this)))
+	if (FAILED(m_pCrystalController->Create_Crystals(this)))
 		return E_FAIL;
 
 	return S_OK;

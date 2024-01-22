@@ -10,6 +10,14 @@
 CStellia_Crystal_Controller::CStellia_Crystal_Controller()
 {
 	m_fRespawnTime = 3.f;
+	m_iCrystalAmount = 6;
+
+	m_vecCrystalType.push_back(CRYSTAL_AURA);
+	m_vecCrystalType.push_back(CRYSTAL_SKY);
+	m_vecCrystalType.push_back(CRYSTAL_GOLD);
+	m_vecCrystalType.push_back(CRYSTAL_AURA);
+	m_vecCrystalType.push_back(CRYSTAL_SKY);
+	m_vecCrystalType.push_back(CRYSTAL_GOLD);
 }
 
 void CStellia_Crystal_Controller::Tick(const _float fTimeDelta)
@@ -19,23 +27,37 @@ void CStellia_Crystal_Controller::Tick(const _float fTimeDelta)
 
 	if(m_pStellia->Get_Bools(CStellia::BOSS_BOOLTYPE::BOSSBOOL_RAGE2))
 	{
+		// 패턴 진행 중일때 제한 시간이 지난다면.(Fail)
+		if (m_bIsProgress)
+		{
+			m_fAccLimitTime += fTimeDelta;
+			if (m_fAccLimitTime >= m_fLimitTime)
+			{
+				m_pStellia->Set_CrystalFailCount(1);
+				m_pStellia->Clear_CrystalBingoCount();
+				Clear_Crystals();
+				Clear_Progress();
+			}
+		}
+
 		if (m_pStellia->Get_CrystalBingoCount() >= 2)
 		{
-			m_bIsRespawn = true;
 			Clear_Crystals();
+			Clear_Progress();
 			m_pStellia->Clear_CrystalBingoCount();
+			m_pStellia->Set_CrystalSuccessCount(1);
 		}
 
 		if (m_bIsRespawn)
 		{
 			if (m_pStellia->Get_CrystalSuccessCount() < 3 && m_pStellia->Get_CrystalFailCount() < 3)
 			{
-				m_fTime += fTimeDelta;
-				if (m_fTime >= m_fRespawnTime)
+				m_fAccRespawnTime += fTimeDelta;
+				if (m_fAccRespawnTime >= m_fRespawnTime)
 				{
-					m_fTime = m_fRespawnTime - m_fTime;
+					m_fAccRespawnTime = m_fRespawnTime - m_fAccRespawnTime;
 					m_bIsRespawn = false;
-					Create_Crystals(6, GI->RandomFloat(10.f, 25.f), m_pStellia);
+					Create_Crystals(m_pStellia);
 				}
 			}
 		}
@@ -53,8 +75,10 @@ void CStellia_Crystal_Controller::Tick(const _float fTimeDelta)
 			m_pCrystals.clear();
 			m_pCrystals.shrink_to_fit();
 
+			_float fStunTime = 15.f;
+
 			m_pStellia->Set_Bools(CStellia::BOSS_BOOLTYPE::BOSSBOOL_RAGE2, false);
-			m_pStellia->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CStellia::STELLIA_COUNTERSTART);
+			m_pStellia->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CStellia::STELLIA_COUNTERSTART, &fStunTime);
 		}
 		else if (m_pStellia->Get_CrystalFailCount() == 3)
 		{
@@ -75,8 +99,10 @@ void CStellia_Crystal_Controller::Tick(const _float fTimeDelta)
 	}
 }
 
-HRESULT CStellia_Crystal_Controller::Create_Crystals(const _int& iNum, const _float& fRadius, CStellia* pStellia)
+HRESULT CStellia_Crystal_Controller::Create_Crystals(CStellia* pStellia)
 {
+	m_bIsProgress = true;
+
 	if (pStellia == nullptr)
 		return E_FAIL;
 
@@ -89,24 +115,47 @@ HRESULT CStellia_Crystal_Controller::Create_Crystals(const _int& iNum, const _fl
 	GI->Add_GameObject(GI->Get_CurrentLevel(), _uint(LAYER_PROP), TEXT("Prorotype_GameObject_Stellia_Crystal"), &m_vOriginPos, &pGameObject);
 	if (nullptr != pGameObject)
 	{
-		CStellia_Crystal* pCrystal = dynamic_cast<CStellia_Crystal*>(pGameObject);
-		if (nullptr != pCrystal)
-			pCrystal->Set_CrystalType(m_iOriginalType);
+		CStellia_Crystal* pOriginalCrystal = dynamic_cast<CStellia_Crystal*>(pGameObject);
+		if (nullptr != pOriginalCrystal)
+			pOriginalCrystal->Set_CrystalType(m_iOriginalType);
 	}
 
 	/* 필드 크리스탈 생성 */
 	if (nullptr == m_pStellia)
 		return E_FAIL;
 
-	for (size_t i = 0; i < iNum; i++)
+	// 섞기
+	for (_int i = 0; i < 100; ++i)
 	{
-		const float fAngle = 360.f / (_float)iNum * i;
+		_int iIndex1 = GI->RandomInt(0, 5);
+		_int iIndex2 = GI->RandomInt(0, 5);
+
+		if (iIndex1 == iIndex2)
+		{
+			if (i != 0)
+				i -= 1;
+
+			continue;
+		}
+
+		CRYSTAL_TYPE eTemp = m_vecCrystalType[iIndex1];
+		m_vecCrystalType[iIndex1] = m_vecCrystalType[iIndex2];
+		m_vecCrystalType[iIndex2] = eTemp;
+	}
+
+	// 생성
+	for (size_t i = 0; i < m_iCrystalAmount; i++)
+	{
+		const float fAngle = 360.f / (_float)m_iCrystalAmount * i;
+
+		_float fRadius = GI->RandomFloat(10.f, 25.f);
 
 		Vec4 vPos = {};
 		{
 			vPos.x = m_vOriginPos.x + fRadius * cos(XMConvertToRadians(fAngle));
 			vPos.y = m_vOriginPos.y;
 			vPos.z = m_vOriginPos.z + fRadius * sin(XMConvertToRadians(fAngle));
+			vPos.w = 1.f;
 		}
 
 		pGameObject = nullptr;
@@ -118,19 +167,12 @@ HRESULT CStellia_Crystal_Controller::Create_Crystals(const _int& iNum, const _fl
 			if (nullptr != pCrystal)
 			{
 				/* Set Data */
-				{
-					CStellia_Crystal_Destructible::STELLIA_CRYSTAL_DESC tCrystalDesc;
-					tCrystalDesc.pStellia = m_pStellia;
-					tCrystalDesc.iBingoType = m_iOriginalType;
-					if(i < 2)
-						tCrystalDesc.iSelfType = CRYSTAL_AURA;
-					else if(i >= 2 && i < 4)
-						tCrystalDesc.iSelfType = CRYSTAL_SKY;
-					else
-						tCrystalDesc.iSelfType = CRYSTAL_GOLD;
+				CStellia_Crystal_Destructible::STELLIA_CRYSTAL_DESC tCrystalDesc;
+				tCrystalDesc.pStellia = m_pStellia;
+				tCrystalDesc.iBingoType = m_iOriginalType;
+				tCrystalDesc.iSelfType = m_vecCrystalType[i];
 
-					pCrystal->Set_CrystalData(&tCrystalDesc);
-				}
+				pCrystal->Set_CrystalData(&tCrystalDesc);
 
 				m_pCrystals.push_back(pCrystal);
 			}
@@ -151,4 +193,11 @@ HRESULT CStellia_Crystal_Controller::Clear_Crystals()
 	m_pCrystals.shrink_to_fit();
 
 	return S_OK;
+}
+
+void CStellia_Crystal_Controller::Clear_Progress()
+{
+	m_bIsRespawn = true;
+	m_bIsProgress = false;
+	m_fAccLimitTime = 0.f;
 }

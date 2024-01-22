@@ -21,6 +21,11 @@ HRESULT CStelliaState_CounterStart::Initialize(const list<wstring>& AnimationLis
 
 void CStelliaState_CounterStart::Enter_State(void* pArg)
 {
+	if (pArg != nullptr)
+		m_fStunTime = *(_float*)pArg;
+	else
+		m_fStunTime = 0.f;
+
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_CounterStart"), MIN_TWEEN_DURATION);
 	m_fTime = 0.f;
 
@@ -55,7 +60,10 @@ void CStelliaState_CounterStart::Tick_State(_float fTimeDelta)
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
-		m_pStateMachineCom->Change_State(CStellia::STELLIA_COUNTERLOOP);
+		if(m_fStunTime != 0.f)
+			m_pStateMachineCom->Change_State(CStellia::STELLIA_COUNTERLOOP, &m_fStunTime);
+		else
+			m_pStateMachineCom->Change_State(CStellia::STELLIA_COUNTERLOOP);
 	}
 }
 
