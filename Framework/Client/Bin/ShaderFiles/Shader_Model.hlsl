@@ -114,7 +114,7 @@ VS_OUT VS_MAIN(VS_IN In)
     Out.vProjPos = Out.vPosition;
 
 	// SSAO
-    Out.vViewNormal = mul(In.vNormal, (float3x3) WorldInvTransposeView);
+    Out.vViewNormal = mul(Out.vNormal.xyz, (float3x3) g_ViewMatrix);
     Out.vPositionView = mul(float4(In.vPosition, 1.0f), matWV);
     
     return Out;
@@ -138,7 +138,7 @@ VS_OUT VS_REFLECT(VS_IN In)
     Out.vProjPos = Out.vPosition;
 
 		// SSAO
-    Out.vViewNormal = mul(In.vNormal, (float3x3) WorldInvTransposeView);
+    Out.vViewNormal = mul(Out.vNormal.xyz, (float3x3) g_ViewMatrix);
     Out.vPositionView = mul(float4(In.vPosition, 1.0f), matWV);
     
     return Out;
@@ -162,7 +162,7 @@ VS_OUT VS_SNOWBALL(VS_IN In)
     Out.vProjPos = Out.vPosition;
 	
     	// SSAO
-    Out.vViewNormal = mul(In.vNormal, (float3x3) WorldInvTransposeView);
+    Out.vViewNormal = mul(Out.vNormal.xyz, (float3x3) g_ViewMatrix);
     Out.vPositionView = mul(float4(In.vPosition, 1.0f), matWV);
     
     return Out;
@@ -315,7 +315,7 @@ PS_OUT PS_WEAPON(PS_IN In)
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
     Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
+    Out.vViewNormal = float4(1.0f, 1.0f, 1.0f, 1.0f);
     if (0.3 >= Out.vDiffuse.a)
         discard;
 	
@@ -335,7 +335,7 @@ PS_OUT PS_SNOWBALL(PS_IN In)
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 0.0f, 0.0f);
     Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
+    Out.vViewNormal = float4(1.0f, 1.0f, 1.0f, 1.0f);
     if (0.3 >= Out.vDiffuse.a)
         discard;
 	
@@ -447,7 +447,7 @@ PS_OUT PS_DISSOVE(PS_IN In)
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
     Out.vBloom = vector(0.0f, 0.0f, 0.0f, 0.0f);
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
+    Out.vViewNormal = float4(1.0f, 1.0f, 1.0f, 1.0f);
 	
     return Out;
 }

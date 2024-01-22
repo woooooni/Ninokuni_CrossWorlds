@@ -256,8 +256,8 @@ private:
 	_bool   m_bOption      = false;
 	// On/Off_Option
 	_bool   m_bNaturalDraw = true;
-	_bool   m_bShadowDraw  = true;
-	_bool   m_bSsaoDraw    = false;
+	_bool   m_bShadowDraw  = false;
+	_bool   m_bSsaoDraw    = true;
 	_bool   m_bOutlineDraw = true;
 	_bool   m_bBlurDraw    = true;
 	_bool   m_bBlomDraw    = true;
@@ -274,11 +274,10 @@ private:
 	Vec4 m_vFrustumFarCorner[4];
 	Vec4 m_vOffsets[14];
 
+	class CTexture* m_pRandomVectorTexture = nullptr;
+
 	void BuildFrustumFarCorners();
 	void BuildOffsetVectors();
-	HRESULT RandomTextureCreate();
-
-	ID3D11ShaderResourceView* m_pRandomVecMap = nullptr;
 
 	// ScreenQuad
 	ID3D11Buffer* m_pQuadVertexBuffer = nullptr;
@@ -287,15 +286,15 @@ private:
 	struct QuadVertex
 	{
 		Vec3 pos;
-		Vec2 tex;
 		Vec3 ToFarPlaneIndex;
+		Vec2 tex;
 	};
-
+	 
 	_int m_iQuadVerCount;
 	_int m_iQuadIndexCount;
 
 	HRESULT InitializeScreenQuad();
-	void RenderScreenQuad();
+	HRESULT RenderScreenQuad();
 
 public:
 	static CRenderer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

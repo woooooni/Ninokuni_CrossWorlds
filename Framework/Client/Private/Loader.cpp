@@ -1204,6 +1204,8 @@ HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Whale"), CWhale::Create(m_pDevice, m_pContext, TEXT("Animal_Whale"), OBJ_TYPE::OBJ_ANIMAL), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_WelshCorgi"), CWelshCorgi::Create(m_pDevice, m_pContext, TEXT("Animal_WelshCorgi"), OBJ_TYPE::OBJ_ANIMAL), LAYER_TYPE::LAYER_DYNAMIC, true)))
+		return E_FAIL;
 
 #pragma endregion Animals Prototype
 
@@ -1256,6 +1258,8 @@ HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Animal_Pigeon", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/Animal/Pigeon/", L"Animal_Pigeon")))
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Animal_Whale", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/Animal/Whale/", L"Animal_Whale")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Animal_WelshCorgi", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/Animal/WelshCorgi/", L"Animal_WelshCorgi")))
 		return E_FAIL;
 #pragma endregion Animal
 

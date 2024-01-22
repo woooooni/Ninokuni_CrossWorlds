@@ -46,7 +46,19 @@ void CPigeon::Tick(_float fTimeDelta)
 
 void CPigeon::LateTick(_float fTimeDelta)
 {
-	__super::LateTick(fTimeDelta);
+	//__super::LateTick(fTimeDelta);
+	if (nullptr != m_pModelCom)
+		m_pModelCom->LateTick(fTimeDelta);
+
+	if (nullptr != m_pControllerCom)
+		m_pControllerCom->LateTick_Controller(fTimeDelta);
+
+	if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 20.0f))
+	{
+		m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_SHADOW, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);
+		m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_NONBLEND, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);
+
+	}
 
 }
 

@@ -243,7 +243,7 @@ VS_OUT VS_MAIN(VS_IN In)
 	Out.vProjPos		= Out.vPosition;
 	Out.iInstanceID		= In.iInstanceID;
 
-    Out.vViewNormal = mul(In.vNormal, (float3x3) WorldInvTransposeView);
+    Out.vViewNormal = mul(Out.vNormal.xyz, (float3x3) g_ViewMatrix);
     Out.vPositionView = mul(float4(In.vPosition, 1.0f), matWV);
 	
 	return Out;
@@ -327,7 +327,7 @@ PS_OUT PS_MAIN(PS_IN In)
 	
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
+    Out.vViewNormal = float4(1.0f, 1.0f, 1.0f, 1.0f);
 	return Out;
 }
 
@@ -372,7 +372,7 @@ PS_OUT PS_GRANDFA_MAIN(PS_IN In)
 	
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
+    Out.vViewNormal = float4(1.0f, 1.0f, 1.0f, 1.0f);
     return Out;
 }
 
@@ -424,7 +424,7 @@ PS_OUT PS_MAIN_NORMAL(PS_IN In)
 
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
+    Out.vViewNormal = float4(1.0f, 1.0f, 1.0f, 1.0f);
 	return Out;
 }
 
@@ -457,7 +457,7 @@ PS_OUT PS_DISSOLVE_DEAD(PS_IN In)
     
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
+    Out.vViewNormal = float4(1.0f, 1.0f, 1.0f, 1.0f);
     if (0.f == Out.vDiffuse.a)
         discard;
 
@@ -479,7 +479,7 @@ PS_OUT PS_MOTION_TRAIL(PS_IN In)
     Out.vDiffuse.a = 1.f;
     Out.vBloom = Caculation_Brightness(Out.vDiffuse);
     Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    Out.vViewNormal = float4(normalize(In.vViewNormal), In.vPositionView.z);
+    Out.vViewNormal = float4(1.0f, 1.0f, 1.0f, 1.0f);
     return Out;
 }
 
