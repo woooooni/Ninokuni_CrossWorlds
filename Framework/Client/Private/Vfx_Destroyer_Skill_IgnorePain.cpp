@@ -26,24 +26,24 @@ HRESULT CVfx_Destroyer_Skill_IgnorePain::Initialize_Prototype()
 	m_pRotationOffset = new _float3[m_iMaxCount];
 
 	{
-		m_pFrameTriger[TYPE_ET1_E_CIRCLELINE] = 19;
+		m_pFrameTriger[TYPE_ET1_E_CIRCLELINE] = 18;
 		m_pPositionOffset[TYPE_ET1_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
 		m_pScaleOffset[TYPE_ET1_E_CIRCLELINE]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET1_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_ET1_E_BARRIER] = 19;
+		m_pFrameTriger[TYPE_ET1_E_BARRIER] = 20;
 		m_pPositionOffset[TYPE_ET1_E_BARRIER] = _float3(0.f, 0.f, 0.f);
 		m_pScaleOffset[TYPE_ET1_E_BARRIER]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET1_E_BARRIER] = _float3(0.f, 0.f, 0.f);
 	}
 
 	{
-		m_pFrameTriger[TYPE_ET2_P_SPARCKE] = 19;
+		m_pFrameTriger[TYPE_ET2_P_SPARCKE] = 21;
 		m_pPositionOffset[TYPE_ET2_P_SPARCKE] = _float3(0.f, 0.f, 0.f);
 		m_pScaleOffset[TYPE_ET2_P_SPARCKE]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET2_P_SPARCKE] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_ET2_E_CIRCLELINE] = 19;
+		m_pFrameTriger[TYPE_ET2_E_CIRCLELINE] = 21;
 		m_pPositionOffset[TYPE_ET2_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
 		m_pScaleOffset[TYPE_ET2_E_CIRCLELINE]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET2_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
@@ -61,28 +61,36 @@ void CVfx_Destroyer_Skill_IgnorePain::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
-	if (!m_bOwnerTween)
+	if (!m_bOwnerTween) // ³ëÀÌÁî 125 // Effect_Destroyer_Skill_IgnorePain_Barrier
 	{
-		if (m_iCount == TYPE_ET1_E_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_E_CIRCLELINE])
-		{
-			m_iCount++;
-		}
-		else if (m_iCount == TYPE_ET1_E_BARRIER && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_E_BARRIER])
-		{
-			m_iCount++;
-		}
+		//if (m_iCount == TYPE_ET1_E_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_E_CIRCLELINE])
+		//{
+		//	GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT(""),
+		//		XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_E_CIRCLELINE], m_pScaleOffset[TYPE_ET1_E_CIRCLELINE], m_pRotationOffset[TYPE_ET1_E_CIRCLELINE]);
+		//	m_iCount++;
+		//}
+		//else if (m_iCount == TYPE_ET1_E_BARRIER && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_E_BARRIER])
+		//{
+		//	GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Destroyer_Skill_IgnorePain_Barrier"),
+		//		XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_E_BARRIER], m_pScaleOffset[TYPE_ET1_E_BARRIER], m_pRotationOffset[TYPE_ET1_E_BARRIER]);
+		//	m_iCount++;
+		//}
 
-		else if (m_iCount == TYPE_ET2_P_SPARCKE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_SPARCKE])
-		{
-			m_iCount++;
-		}
-		else if (m_iCount == TYPE_ET2_E_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_E_CIRCLELINE])
-		{
-			m_iCount++;
-		}
+		//else if (m_iCount == TYPE_ET2_P_SPARCKE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_SPARCKE])
+		//{
+		//	GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT(""),
+		//		XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_SPARCKE], m_pScaleOffset[TYPE_ET2_P_SPARCKE], m_pRotationOffset[TYPE_ET2_P_SPARCKE]);
+		//	m_iCount++;
+		//}
+		//else if (m_iCount == TYPE_ET2_E_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_E_CIRCLELINE])
+		//{
+		//	GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT(""),
+		//		XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_E_CIRCLELINE], m_pScaleOffset[TYPE_ET2_E_CIRCLELINE], m_pRotationOffset[TYPE_ET2_E_CIRCLELINE], nullptr, &m_pEt2_Line, false);
+		//	m_iCount++;
+		//}
 
-		else if (m_iCount == TYPE_END)
-			m_bFinish = true;
+		//else if (m_iCount == TYPE_END)
+		//	m_bFinish = true;
 	}
 }
 
