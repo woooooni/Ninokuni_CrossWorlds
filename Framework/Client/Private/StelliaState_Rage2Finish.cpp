@@ -6,6 +6,7 @@
 #include "GameInstance.h"
 
 #include "Game_Manager.h"
+#include "Character.h"
 #include "Player.h"
 
 CStelliaState_Rage2Finish::CStelliaState_Rage2Finish(CStateMachine* pStateMachine)
@@ -27,6 +28,12 @@ void CStelliaState_Rage2Finish::Enter_State(void* pArg)
 
 void CStelliaState_Rage2Finish::Tick_State(_float fTimeDelta)
 {
+	if (m_pModelCom->Get_CurrAnimationFrame() == 115 &&
+		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Hp() > 0)
+	{
+		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Decrease_HP(999);
+	}
+
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
 		m_pStateMachineCom->Change_State(CStellia::STELLIA_COMBATIDLE);

@@ -20,7 +20,7 @@ public:
 
 private:
 	_float m_fTime = 0.f;
-	_float m_fCounterTime = 0.f;
+	_float m_fStunTime = 0.f;
 
 public:
 	static CStelliaState_CounterLoop* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);

@@ -28,8 +28,9 @@ public:
 	void Tick(const _float fTimeDelta);
 
 public:
-	HRESULT Create_Crystals(const _int& iNum, const _float& fRadius, CStellia* pStellia);
+	HRESULT Create_Crystals(CStellia* pStellia);
 	HRESULT Clear_Crystals();
+	void	Clear_Progress();
 
 private:
 	Vec4 m_vOriginPos;
@@ -40,8 +41,15 @@ private:
 	_int m_iOriginalType = CRYSTAL_END;
 
 	_bool  m_bIsRespawn = false;
-	_float m_fTime = 0.f;
+	_float m_fAccRespawnTime = 0.f;
 	_float m_fRespawnTime = 0.f;
+
+	_bool  m_bIsProgress = false;
+	_float m_fAccLimitTime = 0.f;
+	_float m_fLimitTime = 30.f;
+
+	_int m_iCrystalAmount = 0;
+	vector<CRYSTAL_TYPE> m_vecCrystalType;
 };
 
 END

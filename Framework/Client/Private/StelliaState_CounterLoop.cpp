@@ -14,13 +14,18 @@ HRESULT CStelliaState_CounterLoop::Initialize(const list<wstring>& AnimationList
 {
 	__super::Initialize(AnimationList);
 
-	m_fCounterTime = 5.f;
+	m_fStunTime = 5.f;
 
 	return S_OK;
 }
 
 void CStelliaState_CounterLoop::Enter_State(void* pArg)
 {
+	if (pArg != nullptr)
+		m_fStunTime = *(_float*)pArg;
+	else
+		m_fStunTime = 5.f;
+
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_CounterLoop"));
 	m_fTime = 0.f;
 }
@@ -30,7 +35,7 @@ void CStelliaState_CounterLoop::Tick_State(_float fTimeDelta)
 	__super::Tick_State(fTimeDelta);
 	m_fTime += fTimeDelta;
 
-	if (m_fTime >= m_fCounterTime)
+	if (m_fTime >= m_fStunTime)
 		m_pStateMachineCom->Change_State(CStellia::STELLIA_COUNTEREND);
 }
 

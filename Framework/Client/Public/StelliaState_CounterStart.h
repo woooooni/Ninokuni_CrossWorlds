@@ -23,6 +23,8 @@ private:
 	_float m_fTime = 0.f;
 	_float m_fSlowTime = 0.f;
 
+	_float m_fStunTime = 0.f;
+
 	_bool m_bIsTimeSlep = false;
 
 public:

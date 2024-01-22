@@ -9,7 +9,6 @@
 #include "Game_Manager.h"
 #include "Glanix_ShockWave.h"
 
-#include "Game_Manager.h"
 #include "Player.h"
 #include "Character.h"
 
