@@ -30,10 +30,10 @@ void CState_Engineer_BurstSkill_Destruction::Enter_State(void* pArg)
     m_pCharacter->Appear_Weapon();
     
 
-    /*if (FAILED(Generate_Cannon()))
+    if (FAILED(Generate_Cannon()))
     {
         MSG_BOX("Generate_Cannon Failed. : CState_Engineer_BurstSkill_Destruction::Generate_Cannon()");
-    }*/
+    }
 }
 
 void CState_Engineer_BurstSkill_Destruction::Tick_State(_float fTimeDelta)

@@ -32,7 +32,7 @@ _bool CSkill_Destroyer_FrengeCharge::Use_Skill()
 {
 	if (true == __super::Use_Skill())
 	{
-		m_pCharacterStateMachine->Change_State(CCharacter::SKILL_SPECIAL_2);
+		m_pCharacterStateMachine->Change_State(CCharacter::SKILL_SPECIAL_0);
 		return true;
 	}
 	else

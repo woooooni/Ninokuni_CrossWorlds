@@ -35,6 +35,7 @@ public:
 public:
 	list<class CLight*>* Get_LightList() { return &m_Lights; }
 
+
 public:
 	HRESULT Reset_Lights();
 	HRESULT	Add_Sun(class CGameObject* pSun);

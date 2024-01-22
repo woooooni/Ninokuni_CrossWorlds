@@ -828,6 +828,21 @@ namespace Engine
 
 #pragma endregion
 
+#pragma region
+	typedef struct tagBuffDesc
+	{
+		_float fAccBuffTime = 0.f;
+		_float fEndBuffTime = 1.f; // 몇초 동안 수행하는지.
+
+		_float fAccEffectDeleteTime = 0.f; // 이펙트 삭제 Acc.
+		_float fDeleteEffect = 0.f; // 이펙트 삭제 시간.
+
+		_int iAccBuffCount = 0; // 몇 번 수행 했는지.
+		_int iBuffCount = 1; // 몇 번 수행하는지.
+	} BUFF_DESC;
+
+#pragma endregion
+
 #pragma region Functor
 
 #pragma endregion

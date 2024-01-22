@@ -36,10 +36,8 @@ HRESULT CCannon_Ball::Initialize(void* pArg)
 		return E_FAIL;
 
 	Set_Collider_Elemental(m_pOwner->Get_ElementalType());
-	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::BOUND, 0.f, 0.f, 0.f, false);
+	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::WEAK, 0.f, 0.f, 0.f, false);
 	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
-
-	m_pRigidBodyCom->Add_Velocity(XMVectorSet(0.f, 1.f, 0.f, 0.f), 10.f, true);
 
 	m_fDeletionTime = 5.f;
 
@@ -55,12 +53,18 @@ void CCannon_Ball::Tick(_float fTimeDelta)
 	{
 		m_bInitLook = true;
 		m_vInitLook = XMVector3Normalize(m_pTransformCom->Get_Look());
+
 		m_bInitDestPosition = Find_Dest_Position(fTimeDelta);
+		m_vDestPosition;
 		if (true == m_bInitDestPosition)
 		{
 			m_vStartPosition = m_pTransformCom->Get_Position();
 			m_pRigidBodyCom->Set_Ground(true);
 			m_pRigidBodyCom->Set_Use_Gravity(false);
+		}
+		else
+		{
+			m_pRigidBodyCom->Add_Velocity(XMVectorSet(0.f, 1.f, 0.f, 0.f), 10.f, true);
 		}
 	}
 
@@ -68,39 +72,7 @@ void CCannon_Ball::Tick(_float fTimeDelta)
 	{
 		//포물선 공식을 적용한다.
 		m_fAccMove += fTimeDelta;
-
-		Vec3 vVelocity = {};
-		_float fg = 0.f;
-		_float fEndTime = m_fArriveTime;
-		_float fMaxHeight = ((m_vStartPosition.y + m_vDestPosition.y) / 2.f) + 5.f;
-		_float fHeight = 0.f;
-		_float fEndHeight = 0.f;
-		_float fTime = m_fAccMove;
-		_float fMaxTime = m_fArriveTime / 2.f;
-
-		fEndHeight = m_vDestPosition.y - m_vStartPosition.y;
-		fHeight = fMaxHeight - m_vStartPosition.y;
-
-		fg = 2 * fHeight / (fMaxTime * fMaxTime);
-		vVelocity.y = sqrtf(2.f * fg * fHeight);
-
-		_float a = fg;
-		_float b = -2.f * vVelocity.y;
-		_float c = 2.f * fEndHeight;
-
-		fEndTime = (-b + sqrtf(b * b * -4.f * a * c)) / (2 * a);
-
-
-		vVelocity.x = -(m_vStartPosition.x - m_vDestPosition.x) / fEndTime;
-		vVelocity.z = -(m_vStartPosition.x - m_vDestPosition.x) / fEndTime;
-
-		Vec4 vPosition = { 0.f, 0.f, 0.f, 1.f };
-		vPosition.x = m_vStartPosition.x + vVelocity.x * fTime;
-		vPosition.y = m_vStartPosition.y + (vVelocity.y * fTime) - (0.5f * fg * fTime * fTime);
-		vPosition.z = m_vStartPosition.z + vVelocity.z * fTime;
-
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPosition);
-
+		m_pTransformCom->ParabolicFormula(m_vStartPosition.xyz(), m_vDestPosition.xyz(), m_fAccMove, max(m_vStartPosition.y, m_vDestPosition.y) + 5.f, 20.f);
 	}
 	else
 	{
@@ -205,7 +177,7 @@ _bool CCannon_Ball::Find_Dest_Position(_float fTimeDelta)
 		if (fMinDistance > vDir.Length())
 		{
 			fMinDistance = vDir.Length();
-			m_vDestPosition = vTargetPosition;
+			m_vDestPosition = pTargetTransform->Get_Position();
 			bFind = true;
 		}
 	}

@@ -17,6 +17,9 @@ public:
 	virtual HRESULT Initialize(void* pArg) override;
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void LateTick(_float fTimeDelta) override;
+
+
+	virtual HRESULT Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices) override;
 	virtual HRESULT Render_Instance_AnimModel(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer,
 		const vector<_float4x4>& WorldMatrices,
 		const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc) override;
@@ -33,7 +36,11 @@ public:
 
 
 private:
+	void Fire_Cannon();
+
+private:
 	_bool m_bGenEffect = false;
+	_bool m_bShot = false;
 
 private:	
 	class CTexture* m_pDissolveTextureCom = nullptr;

@@ -53,23 +53,32 @@ void CState_CrystalTower_Attack::Exit_State()
 
 void CState_CrystalTower_Attack::Fire()
 {
-    CCharacter_Projectile::CHARACTER_PROJECTILE_DESC ProjectileDesc;
-    ProjectileDesc.pOwner = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
-
-    CCrystal_Ball* pCrystalBall = dynamic_cast<CCrystal_Ball*>(GI->Clone_GameObject(L"Prototype_GameObject_Crystal_Ball", LAYER_TYPE::LAYER_ETC, &ProjectileDesc));
-    CTransform* pTransform = pCrystalBall->Get_Component<CTransform>(L"Com_Transform");
-
-    pTransform->Set_WorldMatrix(m_pTransformCom->Get_WorldMatrix());
-
-    Vec4 vInitPosition = m_pTransformCom->Get_Position();
-    vInitPosition += XMVectorSet(0.f, 5.f, 0.f, 0.f);
-    pTransform->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vInitPosition, 1.f));
-
-    if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_ETC, pCrystalBall)))
+    for (_int i = -1; i <= 1; ++i)
     {
-        MSG_BOX("Add_GameObject Failed : CState_CrystalTower_Attack::Fire");
-        return;
+        CCharacter_Projectile::CHARACTER_PROJECTILE_DESC ProjectileDesc;
+        ProjectileDesc.pOwner = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+
+        CCrystal_Ball* pCrystalBall = dynamic_cast<CCrystal_Ball*>(GI->Clone_GameObject(L"Prototype_GameObject_Crystal_Ball", LAYER_TYPE::LAYER_ETC, &ProjectileDesc));
+        CTransform* pTransform = pCrystalBall->Get_Component<CTransform>(L"Com_Transform");
+
+        pTransform->Set_WorldMatrix(m_pTransformCom->Get_WorldMatrix());
+
+        Vec4 vInitPosition = m_pTransformCom->Get_Position();
+        vInitPosition += XMVectorSet(0.f, 5.f, 0.f, 0.f);
+        vInitPosition += XMVectorSet(GI->RandomFloat(-2.f, 2.f), 0.f, GI->RandomFloat(-2.f, 2.f), 0.f);
+        
+
+
+        pTransform->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vInitPosition, 1.f));
+        pTransform->Rotation(XMVectorSet(0.f, 1.f, 0.f, 0.f), i * XMConvertToRadians(90.f));
+
+        if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_ETC, pCrystalBall)))
+        {
+            MSG_BOX("Add_GameObject Failed : CState_CrystalTower_Attack::Fire");
+            return;
+        }
     }
+
 }
 
 CState_CrystalTower_Attack* CState_CrystalTower_Attack::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

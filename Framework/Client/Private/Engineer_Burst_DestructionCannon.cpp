@@ -4,6 +4,7 @@
 #include "Utils.h"
 #include "Effect_Manager.h"
 #include "Particle_Manager.h"
+#include "Character_Manager.h"
 #include "Character.h"
 #include "Effect.h"
 
@@ -35,7 +36,6 @@ HRESULT CEngineer_Burst_DestructionCannon::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	// m_pTransformCom->Set_Scale(Vec3(10.f, 10.f, 10.f));
 	m_pModelCom->Set_Animation(0);	
 
 	return S_OK;
@@ -52,21 +52,26 @@ void CEngineer_Burst_DestructionCannon::Tick(_float fTimeDelta)
 		}
 	}
 
+	if (false == m_pModelCom->Is_Tween() && m_pModelCom->Get_CurrAnimationFrame() >= 44)
+	{
+		if (false == m_bShot)
+		{
+			Fire_Cannon();
+			m_bShot = true;
+		}
+	}
+
 	if (true == m_bReserveDead)
 	{
 		m_fDissolveWeight += m_fDissolveSpeed * fTimeDelta;
-		if (m_fDissolveWeight >= m_fDissolveTotal)		
+		if (m_fDissolveWeight >= m_fDissolveTotal)
 			Set_Dead(true);
 
 	}
-
-
-
 }
 
 void CEngineer_Burst_DestructionCannon::LateTick(_float fTimeDelta)
 {
-	__super::LateTick(fTimeDelta);
 	m_pModelCom->LateTick(fTimeDelta);
 
 	m_AnimInstanceDesc.fDissolveDuration = m_fDissolveDuration;
@@ -83,6 +88,11 @@ void CEngineer_Burst_DestructionCannon::LateTick(_float fTimeDelta)
 		m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_NONBLEND, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);
 		m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_SHADOW, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);
 	}
+}
+
+HRESULT CEngineer_Burst_DestructionCannon::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
+{
+	return S_OK;
 }
 
 HRESULT CEngineer_Burst_DestructionCannon::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc)
@@ -231,6 +241,32 @@ HRESULT CEngineer_Burst_DestructionCannon::Ready_Components()
 void CEngineer_Burst_DestructionCannon::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
+}
+
+void CEngineer_Burst_DestructionCannon::Fire_Cannon()
+{
+	CGameObject* pGameObject = nullptr;
+	CCharacter_Projectile::CHARACTER_PROJECTILE_DESC ProjectileDesc = {};
+	ProjectileDesc.pOwner = CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::ENGINEER);
+
+	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_CHARACTER, L"Prototype_GameObject_Engineer_Burst_CannonBomb", &ProjectileDesc, &pGameObject)))
+	{
+		MSG_BOX("Add GameObject Failed : CEngineer_Burst_DestructionCannon::Fire_Cannon");
+		return;
+	}
+
+	CTransform* pTransform = pGameObject->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr == pTransform)
+	{
+		MSG_BOX("Find Transform Failed : CEngineer_Burst_DestructionCannon::Fire_Cannon");
+		return;
+	}
+
+	_matrix WorldMatrix = m_pTransformCom->Get_WorldMatrix();
+	WorldMatrix.r[CTransform::STATE_POSITION] += (XMVector3Normalize(m_pTransformCom->Get_Look()) * 3.f);
+	WorldMatrix.r[CTransform::STATE_POSITION] += XMVectorSet(0.f, 1.5f, 0.f, 0.f);
+	pTransform->Set_WorldMatrix(WorldMatrix);
+
 }
 
 

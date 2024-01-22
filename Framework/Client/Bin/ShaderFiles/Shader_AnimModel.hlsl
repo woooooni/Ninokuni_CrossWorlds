@@ -468,6 +468,53 @@ PS_OUT PS_MAIN(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_PREVIEW_POSSIBLE_TOWER(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+
+
+    Out.vDiffuse = vector(0.f, 1.f, 0.f, 1.f);
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
+
+    float fRimPower = 1.f - saturate(dot(In.vNormal, normalize((-1.f * (In.vWorldPosition - g_vCamPosition)))));
+    fRimPower = pow(fRimPower, 5.f);
+    vector vRimColor = g_vRimColor * fRimPower;
+    Out.vDiffuse += vRimColor;
+    Out.vBloom = Caculation_Brightness(Out.vDiffuse) + vRimColor;
+    Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    Out.vViewNormal = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    
+    if (0.f == Out.vDiffuse.a)
+        discard;
+
+    return Out;
+}
+
+PS_OUT PS_PREVIEW_IMPOSSIBLE_TOWER(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    Out.vDiffuse = vector(1.f, 0.f, 0.f, 1.f);
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
+
+    float fRimPower = 1.f - saturate(dot(In.vNormal, normalize((-1.f * (In.vWorldPosition - g_vCamPosition)))));
+    fRimPower = pow(fRimPower, 5.f);
+    vector vRimColor = g_vRimColor * fRimPower;
+    Out.vDiffuse += vRimColor;
+    Out.vBloom = Caculation_Brightness(Out.vDiffuse) + vRimColor;
+    Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    Out.vViewNormal = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    
+    if (0.f == Out.vDiffuse.a)
+        discard;
+
+    return Out;
+}
+
+
 PS_OUT PS_MAIN_REFLECT(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
@@ -786,7 +833,7 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAIN_REFLECT();
     }
 
-    pass Temp2
+    pass Preview_Tower_Possible
     {
 		// 5
         SetRasterizerState(RS_Default);
@@ -797,10 +844,10 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN();
+        PixelShader = compile ps_5_0 PS_PREVIEW_POSSIBLE_TOWER();
     }
 
-    pass Temp3
+    pass Preview_Tower_Impossible
     {
 		// 6
         SetRasterizerState(RS_Default);
@@ -811,7 +858,7 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN();
+        PixelShader = compile ps_5_0 PS_PREVIEW_IMPOSSIBLE_TOWER();
     }
 
     pass Temp4

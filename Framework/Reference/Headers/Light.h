@@ -15,6 +15,8 @@ public:
 	const LIGHTDESC* Get_LightDesc() const {
 		return &m_LightDesc;
 	}
+
+
 	LIGHTDESC* Get_ModifyLightDesc() { return &m_LightDesc; }
 	_uint Get_LightID() { return m_iLightID; }
 

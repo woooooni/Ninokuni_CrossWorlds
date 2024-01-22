@@ -29,6 +29,7 @@ private:
 	MOTION_TRAIL_DESC m_MotionTrailDesc = {};
 	_bool m_bTrailStart = false;
 
+
 public:
 	static CState_Destroyer_Skill_LeafSlam* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
