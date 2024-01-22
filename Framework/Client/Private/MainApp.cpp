@@ -162,8 +162,8 @@ HRESULT CMainApp::Initialize_Client()
 	if (FAILED(CUIDamage_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
 		return E_FAIL;
 
-//	if (FAILED(CUIMinigame_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
-//		return E_FAIL;
+	if (FAILED(CUIMinigame_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+		return E_FAIL;
 
 	if (FAILED(Ready_CameraObject()))
 		return E_FAIL;	
@@ -1623,7 +1623,7 @@ void Client::CMainApp::Free()
 	CPicking_Manager::GetInstance()->DestroyInstance();
 	CUIDamage_Manager::GetInstance()->DestroyInstance();
 	CUI_Manager::GetInstance()->DestroyInstance();
-	//CUIMinigame_Manager::GetInstance()->DestroyInstance();
+	CUIMinigame_Manager::GetInstance()->DestroyInstance();
 	CItem_Manager::GetInstance()->DestroyInstance();
 	CWeapon_Manager::GetInstance()->DestroyInstance();
 	CSkill_Manager::GetInstance()->DestroyInstance();

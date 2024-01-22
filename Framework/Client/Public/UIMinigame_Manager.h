@@ -27,6 +27,7 @@ public: // Prototypes
 
 public: // Clone
 	HRESULT Ready_MinigameUI_GameObject(LEVELID eID);
+	HRESULT Ready_MinigameUIToLayer(LEVELID eID);
 
 public: // OnOff
 	void OnOff_TowerDefence_Select(_bool bOnOff);
