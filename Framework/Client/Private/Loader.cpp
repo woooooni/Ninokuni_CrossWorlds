@@ -549,7 +549,7 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 		
 		// 미니게임(타워 디펜스)
 		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_TowerDefence_TowerSelect"),
-			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/TowerDefence/UI_Minigame_Select_Renewal_%d.png"), 4))))
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/TowerDefence/UI_Minigame_Select_Renewal_%d.png"), 8))))
 			return E_FAIL;
 		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_TowerDefence_Timer"),
 			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/TowerDefence/UI_Minigame_Timer.png")))))

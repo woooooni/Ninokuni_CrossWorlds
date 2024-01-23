@@ -45,6 +45,16 @@ void CUI_Minigame_TowerSelect::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (true == m_bClicked)
+		{
+			m_fClickTimeAcc += fTimeDelta;
+
+			if (0.1f < m_fClickTimeAcc)
+			{
+				m_bClicked = false;
+				m_fClickTimeAcc = 0.f;
+			}
+		}
 
 		__super::Tick(fTimeDelta);
 	}
@@ -92,8 +102,6 @@ void CUI_Minigame_TowerSelect::On_MouseExit(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-		Set_Click(false);
-
 		__super::On_MouseExit(fTimeDelta);
 	}
 }
@@ -134,8 +142,16 @@ HRESULT CUI_Minigame_TowerSelect::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_fAlpha, sizeof(_float))))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", _uint(m_eType))))
-		return E_FAIL;
+	if (false == m_bClicked)
+	{
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", _uint(m_eType))))
+			return E_FAIL;
+	}
+	else
+	{
+		if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", _uint(m_eType + 4))))
+			return E_FAIL;
+	}
 
 	return S_OK;
 }
