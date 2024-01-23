@@ -40,9 +40,6 @@ HRESULT CStelliaState_Base::Initialize(const list<wstring>& AnimationList)
 	m_vecAtkState.push_back(CStellia::STELLIA_LASER);
 	m_vecAtkState.push_back(CStellia::STELLIA_CHARGE);
 
-	// 레이지 1 폭발 시간
-	m_fRage1ExplosionTime = 5.f;
-
 	return S_OK;
 }
 
