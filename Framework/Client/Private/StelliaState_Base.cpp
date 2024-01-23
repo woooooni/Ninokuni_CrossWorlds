@@ -9,6 +9,9 @@
 #include "Game_Manager.h"
 #include "Player.h"
 
+#include "Particle_Manager.h"
+#include "Decal.h"
+
 _uint CStelliaState_Base::m_iAtkIndex = 0;
 
 CStelliaState_Base::CStelliaState_Base(CStateMachine* pStateMachine)
@@ -94,14 +97,6 @@ void CStelliaState_Base::Rage1_Tick(_float fTimeDelta)
 {
 	if (m_pStellia->Get_Bools(CStellia::BOSS_BOOLTYPE::BOSSBOOL_RAGE))
 	{
-		m_fRage1Time += fTimeDelta;
-
-		if (m_fRage1Time >= m_fRage1ExplosionTime)
-		{
-			m_fRage1Time = m_fRage1ExplosionTime - m_fRage1Time;
-			Generate_Explosion(5);
-		}
-
 		if (m_pStellia->Get_AccDamage() >= m_pStellia->Get_DestDamage())
 		{
 			_float fStunTime = 15.f;
@@ -145,4 +140,6 @@ void CStelliaState_Base::Generate_Explosion(_uint iCount)
 void CStelliaState_Base::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pDecal);
 }

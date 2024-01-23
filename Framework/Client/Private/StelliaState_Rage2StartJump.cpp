@@ -43,16 +43,6 @@ void CStelliaState_Rage2StartJump::Tick_State(_float fTimeDelta)
 	{
 		m_pStateMachineCom->Change_State(CStellia::STELLIA_RAGE2START_TURN_OL);
 	}
-
-	/* Camera */
-	if (35 == m_pModelCom->Get_CurrAnimationFrame())
-	{
-		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_CurCamera());
-		if (nullptr != pFollowCam && !pFollowCam->Is_Lock_LookHeight())
-		{
-			pFollowCam->Lock_LookHeight();
-		}
-	}
 }
 
 void CStelliaState_Rage2StartJump::Exit_State()

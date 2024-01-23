@@ -4,6 +4,9 @@
 #include "Animation.h"
 #include "Stellia.h"
 
+#include "Effect_Manager.h"
+#include "Decal.h"
+
 CStelliaState_JumpStamp::CStelliaState_JumpStamp(CStateMachine* pStateMachine)
 	: CStelliaState_Base(pStateMachine)
 {
@@ -25,8 +28,17 @@ void CStelliaState_JumpStamp::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
+	if (m_pDecal == nullptr)
+	{
+		CEffect_Manager::GetInstance()->Generate_Decal(TEXT("Decal_Glanix_Skill_JumpDown_Warning"), m_pTransformCom->Get_WorldMatrix(),
+			Vec3(0.f, 0.f, 0.f), Vec3(12.f, 5.f, 12.f), Vec3(0.f, 0.f, 0.f), m_pPlayer, &m_pDecal, false);
+		Safe_AddRef(m_pDecal);
+	}
+
 	if (m_pModelCom->Get_CurrAnimationFrame() < 35)
 		vDestPos = m_pPlayerTransform->Get_Position();
+	else
+		m_pDecal->Set_Owner(nullptr);
 
 	if (m_pModelCom->Get_CurrAnimationFrame() >= 35 && m_pModelCom->Get_CurrAnimationFrame() <= 80)
 	{
@@ -40,6 +52,14 @@ void CStelliaState_JumpStamp::Tick_State(_float fTimeDelta)
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCurVector);
 	}
 
+	if (m_pModelCom->Get_CurrAnimationFrame() == 80)
+	{
+		if (m_pDecal != nullptr)
+		{
+			m_pDecal->Set_Dead(true);
+			Safe_Release(m_pDecal);
+		}
+	}
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{

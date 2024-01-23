@@ -173,7 +173,7 @@ HRESULT CStellia_Crystal_Controller::Create_Crystals(CStellia* pStellia)
 	{
 		const float fAngle = 360.f / (_float)m_iCrystalAmount * i;
 
-		_float fRadius = GI->RandomFloat(20.f, 35.f);
+		_float fRadius = GI->RandomFloat(15.f, 30.f);
 
 		Vec4 vPos = {};
 		{

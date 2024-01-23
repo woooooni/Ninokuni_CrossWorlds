@@ -64,8 +64,10 @@ void CStelliaState_Rage1Loop_Explosion::Tick_State(_float fTimeDelta)
 	//
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
-		CStellia::STELLIA_STATE eNextState = CStellia::STELLIA_RAGE1LOOP_TURN;
-		m_pStateMachineCom->Change_State(CStellia::STELLIA_RAGE1LOOP_IDLE, &eNextState);
+		if (m_pStellia->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_SKILLAROUND))
+			m_pStateMachineCom->Change_State(CStellia::STELLIA_RAGE1LOOP_SPINTAIL);
+		else
+			m_pStateMachineCom->Change_State(CStellia::STELLIA_RAGE1LOOP_JUMPSTAMP);
 	}
 }
 

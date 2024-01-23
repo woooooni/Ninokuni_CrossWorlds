@@ -53,8 +53,9 @@ protected:
 private:
 	_float m_fTime = 0.f;
 
-	_float m_fRage1Time = 0.f;
-	_float m_fRage1ExplosionTime = 0.f;
+protected:
+	// 임시 Decal, 나중에는 vfx인지 뭐시긴지 걸로 옮기지 않을까?
+	class CDecal* m_pDecal = nullptr;
 
 public:
 	virtual void Free() override;
