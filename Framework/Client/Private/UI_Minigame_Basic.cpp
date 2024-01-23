@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "UI_Minigame_Basic.h"
 #include "GameInstance.h"
+#include "Game_Manager.h"
+#include "Player.h"
 
 CUI_Minigame_Basic::CUI_Minigame_Basic(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_MINIGAMEBASIC eType)
 	: CUI(pDevice, pContext, L"UI_Minigame_Basic")

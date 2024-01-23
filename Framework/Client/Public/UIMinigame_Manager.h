@@ -13,14 +13,19 @@ class CUIMinigame_Manager : public CBase
 {
 	DECLARE_SINGLETON(CUIMinigame_Manager)
 
+public:
+	enum GRANDPRIX_ENEMY { ENGINEER, ENEMY1, ENEMY2, ENEMY3, ENEMY4, ENEMY5, ENEMY6, ENEMY7, ENEMY8, ENEMY_END };
+
 private:
 	CUIMinigame_Manager();
 	virtual ~CUIMinigame_Manager() = default;
 
+public: // Getter & Setter
+	void Set_HPOwner(CGameObject* pOwner, GRANDPRIX_ENEMY eEnemyID);
+
 public:
 	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	void	Tick(_float fTimeDelta);
-
 
 public: // Prototypes
 	HRESULT Ready_MinigameUI_Prototypes(LEVELID eID);

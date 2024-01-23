@@ -38,6 +38,7 @@ public:
 
 private:
 	UI_TOWERTYPE m_eType = { SELECTBTN_END };
+	_float m_fClickTimeAcc = { 0.f };
 
 	_bool m_bClicked = { false };
 	_uint m_iPass = { 1 };

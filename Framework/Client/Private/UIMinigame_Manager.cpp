@@ -11,12 +11,22 @@
 
 #include "UI_Minigame_EnemyInfo.h"
 #include "UI_Minigame_ClassSkill.h"
+#include "UI_Minigame_EnemyHP.h"
 
 IMPLEMENT_SINGLETON(CUIMinigame_Manager)
 
 CUIMinigame_Manager::CUIMinigame_Manager()
 {
 
+}
+
+void CUIMinigame_Manager::Set_HPOwner(CGameObject* pOwner, GRANDPRIX_ENEMY eEnemyID)
+{
+	if (GRANDPRIX_ENEMY::ENEMY_END == eEnemyID)
+		return;
+	
+	if (m_EnemyHP[eEnemyID] == nullptr)
+		return;
 }
 
 HRESULT CUIMinigame_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -293,6 +303,9 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_Evermore()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_SpecialSkillFrame"),
 		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_SPECIALFRAME), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_HPBar"),
+		CUI_Minigame_EnemyHP::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 	
 
