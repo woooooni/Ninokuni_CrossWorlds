@@ -194,7 +194,7 @@ void CUI_Dialog_Window::Add_Text()
 	NameDesc.strFontTag = L"Default_Bold";
 	NameDesc.vScale = { 0.6f, 0.6f };
 	NameDesc.vColor = _float4(0.812f, 0.796f, 0.569f, 1.f);
-	NameDesc.vPosition = _float2(m_tInfo.fX - (m_tInfo.fCX * 0.5f) + 100.f - iOffset,
+	NameDesc.vPosition = _float2(m_tInfo.fX - (m_tInfo.fCX * 0.5f) + 115.f - iOffset,
 		m_tInfo.fY - (m_tInfo.fCY * 0.5) + 25.f);
 	m_pRendererCom->Add_Text(NameDesc);
 
