@@ -20,6 +20,8 @@
 #include "State_CrystalTower_Attack.h"
 #include "State_DefenceTower_Prepare.h"
 
+#include "TowerDefence_Manager.h"
+
 USING(Client)
 CCrystal_Tower::CCrystal_Tower(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CDefence_Tower(pDevice, pContext, strObjectTag)
@@ -58,6 +60,7 @@ HRESULT CCrystal_Tower::Initialize(void* pArg)
 	m_fAccFireTime = 0.f;
 	m_fFireTime = 2.f;
 
+	m_eTowerType = CTowerDefence_Manager::TOWER_TYPE::CRYSTAL;
 
 	return S_OK;
 }

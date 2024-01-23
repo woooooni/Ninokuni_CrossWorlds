@@ -28,6 +28,7 @@
 #include "Light_Manager.h"
 #include "Light.h"
 
+#include "UI_Manager.h"
 
 
 IMPLEMENT_SINGLETON(CTowerDefence_Manager)
@@ -122,13 +123,20 @@ void CTowerDefence_Manager::Prepare_Defence()
 		pDesc->vDiffuse = _float4(0.729f, 0.431f, 1.f, 1.f);
 	}
 
-	/*list<CGameObject*>& NpcList = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_NPC);
+	list<CGameObject*>& NpcList = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_NPC);
 	for (auto& pNpc : NpcList)
 	{
+		if (pNpc->Get_PrototypeTag().find(L"TreeGrandfa") != wstring::npos)
+			continue;
+
 		pNpc->Set_Dead(true);
-		m_OriginNpcs.push_back(pNpc);
-		Safe_AddRef(pNpc);
-	}*/
+	}
+		
+
+	list<CGameObject*>& AnimalList = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_DYNAMIC);
+	for (auto& pAnimal : AnimalList)
+		pAnimal->Set_Dead(true);
+
 
 	if (nullptr != m_pPicked_Object)
 	{
@@ -163,6 +171,8 @@ void CTowerDefence_Manager::Prepare_Defence()
 		return;
 
 	
+	m_fAccPrepare = m_fPrepareTime;
+
 
 	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
 	CUIMinigame_Manager::GetInstance()->OnOff_TowerDefence_Select(true);
@@ -171,10 +181,6 @@ void CTowerDefence_Manager::Prepare_Defence()
 void CTowerDefence_Manager::Start_Defence()
 {
 	CUIMinigame_Manager::GetInstance()->OnOff_TowerDefence_Select(false);
-
-	
-
-	
 
 	m_eCurrentPhase = TOWER_DEFENCE_PHASE::DEFENCE_PROGRESS;
 	if (nullptr != m_pPicked_Object)
@@ -269,6 +275,8 @@ void CTowerDefence_Manager::Set_PickObject(TOWER_TYPE eTowerType)
 		m_pPicked_Object = nullptr;
 	}
 
+	m_eCurrentTowerType = eTowerType;
+
 	if (TOWER_TYPE::CANNON == eTowerType)
 		m_pPicked_Object = dynamic_cast<CDefence_Tower*>(GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_ETC, L"Prototype_GameObject_DefenceTower_Cannon")->Clone(nullptr));
 	else if(TOWER_TYPE::CRYSTAL == eTowerType)
@@ -312,6 +320,14 @@ void CTowerDefence_Manager::Tick_Defence_Prepare(_float fTimeDelta)
 		m_pPicked_Object->Tick(fTimeDelta);
 
 	Picking_Position();
+
+	m_fAccPrepare -= fTimeDelta;
+	if (0.f > m_fAccPrepare)
+	{
+		Start_Defence();
+		m_fAccPrepare = m_fPrepareTime;
+		return;
+	}
 
 	
 	if (KEY_HOLD(KEY::CTRL) && KEY_TAP(KEY::LBTN))
@@ -480,6 +496,7 @@ void CTowerDefence_Manager::Picking_Tower()
 				if (nullptr == m_pPicked_ObjectTransform)
 					continue;
 
+				m_eCurrentTowerType = TOWER_TYPE(m_pPicked_Object->Get_TowerType());
 				m_pPicked_Object->Set_Preview(true);
 			}
 		}
@@ -493,6 +510,27 @@ HRESULT CTowerDefence_Manager::Create_Defence_Object()
 	if (nullptr == m_pPicked_Object)
 		return S_OK;
 
+
+	
+	_bool bCanBuy = false;
+	switch (m_eCurrentTowerType)
+	{
+	case TOWER_TYPE::CANNON:
+		bCanBuy = CGame_Manager::GetInstance()->Get_Player()->Decrease_Gold(1000);
+		break;
+	case TOWER_TYPE::CRYSTAL:
+		bCanBuy = CGame_Manager::GetInstance()->Get_Player()->Decrease_Gold(1200);
+		break;
+	case TOWER_TYPE::FLAME:
+		bCanBuy = CGame_Manager::GetInstance()->Get_Player()->Decrease_Gold(2000);
+		break;
+	case TOWER_TYPE::SHADOW:
+		bCanBuy = CGame_Manager::GetInstance()->Get_Player()->Decrease_Gold(3000);
+		break;
+	}
+	
+	if (false == bCanBuy)
+		return S_OK;
 
 	CGameObject* pNewGameObject = m_pPicked_Object->Clone(nullptr);
 	if (nullptr == pNewGameObject)

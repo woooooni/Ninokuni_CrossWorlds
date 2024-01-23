@@ -42,6 +42,10 @@ public:
 public:
 	_int Get_CurrentCost() { return m_iCost; }
 
+public:
+	_float Get_Total_PrepareTime() { return m_fPrepareTime; }
+	_float Get_Current_PrepareTime() { return m_fAccPrepare; }
+
 private:
 	void Tick_Defence_No_Run(_float fTimeDelta);
 	void Tick_Defence_Prepare(_float fTimeDelta);
@@ -90,6 +94,7 @@ private:
 	_bool m_bReserved = false;
 	TOWER_DEFENCE_PHASE m_eCurrentPhase = TOWER_DEFENCE_PHASE::DEFENCE_NO_RUN;
 
+	TOWER_TYPE m_eCurrentTowerType = TOWER_TYPE::TOWER_TYPE_END;
 
 private:
 	vector<LIGHTDESC> m_OriginLights;
@@ -97,6 +102,9 @@ private:
 	vector<class CGameObject*> m_OriginNpcs;
 	vector<class CGameObject*> m_OriginAnimals;
 
+private:
+	_float m_fPrepareTime = 60.f;
+	_float m_fAccPrepare = 0.f;
 
 public:
 	virtual void Free() override;

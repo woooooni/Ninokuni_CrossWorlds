@@ -2,6 +2,8 @@
 #include "UI_Minigame_Timer.h"
 #include "GameInstance.h"
 #include "UI_Manager.h"
+#include "TowerDefence_Manager.h"
+
 
 CUI_Minigame_Timer::CUI_Minigame_Timer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_MenuSeparator")
@@ -52,6 +54,52 @@ void CUI_Minigame_Timer::LateTick(_float fTimeDelta)
 	if (m_bActive)
 	{
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+
+		CRenderer::TEXT_DESC TextDesc = {};
+		TextDesc.strFontTag = L"Default_Bold";
+		_float fCurrentTime = CTowerDefence_Manager::GetInstance()->Get_Current_PrepareTime();
+		_float fTotalTime = CTowerDefence_Manager::GetInstance()->Get_Total_PrepareTime();
+
+		_int iMinute = fCurrentTime / 60.f;
+		_int iSecond = (fCurrentTime - iMinute);
+
+		TextDesc.strText = to_wstring(0) + to_wstring(iMinute) + L"Ка ";
+
+		if (iSecond < 10)
+			TextDesc.strText += to_wstring(0);
+
+		TextDesc.strText += to_wstring(iSecond) + L"УЪ";
+		
+		TextDesc.vColor = Vec4(1.f, 1.f, 1.f, 1.f);
+		TextDesc.vScale = Vec2(0.45f, 0.45f);
+		TextDesc.vPosition = Vec2(m_tInfo.fX - (TextDesc.strText.size() * 6.5f), m_tInfo.fY + 8.f) + Vec2(-1.f, -1.f);;
+		m_pRendererCom->Add_Text(TextDesc);
+
+		TextDesc.vColor = Vec4(1.f, 1.f, 1.f, 1.f);
+		TextDesc.vScale = Vec2(0.45f, 0.45f);
+		TextDesc.vPosition = Vec2(m_tInfo.fX - (TextDesc.strText.size() * 6.5f), m_tInfo.fY + 8.f) + Vec2(1.f, -1.f);;
+		m_pRendererCom->Add_Text(TextDesc);
+
+		TextDesc.vColor = Vec4(1.f, 1.f, 1.f, 1.f);
+		TextDesc.vScale = Vec2(0.45f, 0.45f);
+		TextDesc.vPosition = Vec2(m_tInfo.fX - (TextDesc.strText.size() * 6.5f), m_tInfo.fY + 8.f) + Vec2(-1.f, 1.f);
+		m_pRendererCom->Add_Text(TextDesc);
+
+		TextDesc.vColor = Vec4(1.f, 1.f, 1.f, 1.f);
+		TextDesc.vScale = Vec2(0.45f, 0.45f);
+		TextDesc.vPosition = Vec2(m_tInfo.fX - (TextDesc.strText.size() * 6.5f), m_tInfo.fY + 8.f) + Vec2(1.f, 1.f);
+		m_pRendererCom->Add_Text(TextDesc);
+		
+
+		if(iSecond < 10)
+			TextDesc.vColor = Vec4(1.f, 0.2f, 0.2f, 1.f);
+		else
+			TextDesc.vColor = Vec4(0.224f, 0.596f, 0.624f, 1.f);
+
+		TextDesc.vScale = Vec2(0.45f, 0.45f);
+		TextDesc.vPosition = Vec2(m_tInfo.fX - (TextDesc.strText.size() * 6.5f), m_tInfo.fY + 8.f);
+		m_pRendererCom->Add_Text(TextDesc);
+
 	}
 }
 

@@ -20,6 +20,8 @@
 #include "State_FlameTower_Attack.h"
 #include "State_DefenceTower_Prepare.h"
 
+#include "TowerDefence_Manager.h"
+
 USING(Client)
 CFlame_Tower::CFlame_Tower(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CDefence_Tower(pDevice, pContext, strObjectTag)
@@ -55,6 +57,7 @@ HRESULT CFlame_Tower::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
+	m_eTowerType = CTowerDefence_Manager::TOWER_TYPE::FLAME;
 
 	m_fFireTime = 5.f;
 	return S_OK;

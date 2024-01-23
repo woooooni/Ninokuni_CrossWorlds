@@ -20,6 +20,8 @@
 #include "State_CannonTower_Attack.h"
 #include "State_DefenceTower_Prepare.h"
 
+#include "TowerDefence_Manager.h"
+
 USING(Client)
 CCannon_Tower::CCannon_Tower(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CDefence_Tower(pDevice, pContext, strObjectTag)
@@ -59,6 +61,8 @@ HRESULT CCannon_Tower::Initialize(void* pArg)
 	m_fFireTime = 1.f;
 
 	m_fTargetLength = 30.f;
+
+	m_eTowerType = CTowerDefence_Manager::TOWER_TYPE::CANNON;
 	
 
 	return S_OK;

@@ -20,6 +20,8 @@
 #include "State_ShadowTower_Attack.h"
 #include "State_DefenceTower_Prepare.h"
 
+#include "TowerDefence_Manager.h"
+
 USING(Client)
 CShadow_Tower::CShadow_Tower(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CDefence_Tower(pDevice, pContext, strObjectTag)
@@ -59,6 +61,9 @@ HRESULT CShadow_Tower::Initialize(void* pArg)
 
 	m_fAccFireTime = 0.f;
 	m_fFireTime = 1.5f;
+
+
+	m_eTowerType = CTowerDefence_Manager::TOWER_TYPE::SHADOW;
 
 	return S_OK;
 }

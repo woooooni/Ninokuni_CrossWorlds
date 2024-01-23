@@ -34,16 +34,17 @@ public:
 	_bool Decrease_Gold(_int iGold) { 
 		if (0 > m_iGold - iGold)
 			return false;
-
 		m_iGold = max(0, m_iGold - iGold);
 		return true;
 	}
+
+	_int Get_Gold() { return m_iGold; }
 
 private:
 	class CCharacter* m_pCharacter = nullptr;
 
 private:
-	_int m_iGold = 0;
+	_int m_iGold = 10000;
 
 private:
 	static CPlayer* Create();
