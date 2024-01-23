@@ -70,7 +70,7 @@ void CEffect::Set_UVFlow(_int iLoop, _float2 fDir, _float2 fSpeed)
 	Reset_UV();
 }
 
-HRESULT CEffect::Start_Dissolve(_uint iDissolveTexIndex, _float4 vDissolveColor, _float fDissolveSpeed,	_float fDissolveTotal)
+void CEffect::Start_Dissolve(_uint iDissolveTexIndex, _float4 vDissolveColor, _float fDissolveSpeed,	_float fDissolveTotal)
 {
 	m_iDissolveTexIndex = iDissolveTexIndex;
 	m_vDissolveColor = vDissolveColor;
@@ -79,8 +79,18 @@ HRESULT CEffect::Start_Dissolve(_uint iDissolveTexIndex, _float4 vDissolveColor,
 
 	m_fDissolveWeight = 0.f;
 	m_bDissolve = true;
+}
 
-	return S_OK;
+void CEffect::Reserve_Dissolve(_uint iDissolveTexIndex, _float4 vDissolveColor, _float fDissolveSpeed, _float  fDissolveTotal)
+{
+	m_bReserve_Dissolve = true;
+
+	m_iDissolveTexIndex = iDissolveTexIndex;
+	m_vDissolveColor = vDissolveColor;
+	m_fDissolveSpeed = fDissolveSpeed;
+	m_fDissolveTotal = fDissolveTotal;
+
+	m_fDissolveWeight = 0.f;
 }
 
 void CEffect::Reset_Effect()
@@ -320,9 +330,13 @@ void CEffect::Tick(_float fTimeDelta)
 	{
 		// 지속 시간
 		m_fAccDeletionTime += fTimeDelta;
-		if (m_bEffectDelete)
+		if (m_bEffectDie || m_fAccDeletionTime >= m_fLifeTime)
 		{
-			if (m_bEffectDie || m_fAccDeletionTime >= m_fLifeTime)
+			if (m_bReserve_Dissolve)
+			{
+				m_bDissolve = true;
+			}
+			else if (m_bEffectDelete)
 			{
 				m_bEffectDie = true;
 				if (GI->Get_CurrentLevel() != LEVEL_TOOL)

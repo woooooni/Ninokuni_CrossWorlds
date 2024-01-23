@@ -12,11 +12,10 @@ class CVfx_Destroyer_Skill_IgnorePain final : public CVfx
 {
 private:
 	enum TYPE {
-		TYPE_ET1_E_CIRCLELINE, // Same
 		TYPE_ET1_E_BARRIER,
-		// --------------------
 		TYPE_ET2_P_SPARCKE,
-		TYPE_ET2_E_CIRCLELINE, // Same
+
+		TYPE_EV_DISSOLVE,
 
 		TYPE_END
 	};
@@ -35,6 +34,9 @@ public:
 
 protected:
 	virtual HRESULT Ready_Components() override;
+
+private:
+	class CEffect* m_pEt1_Barrier = nullptr;
 
 public:
 	static CVfx_Destroyer_Skill_IgnorePain* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
