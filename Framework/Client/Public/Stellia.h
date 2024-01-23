@@ -9,12 +9,14 @@ public:
 		STELLIA_SPAWN,
 		STELLIA_COMBATIDLE,
 		STELLIA_CHASE,
-		STELLIA_ATTACK1, STELLIA_ATTACK2, STELLIA_SPINTAIL, STELLIA_JUMPSTAMP, STELLIA_LASER, 
+		STELLIA_ATTACK1, STELLIA_ATTACK2, STELLIA_SPINTAIL, STELLIA_JUMPSTAMP, STELLIA_LASER,
 		STELLIA_TRIPLELASER, STELLIA_CHARGE, STELLIA_BIGBANG,
 		STELLIA_CHASEJUMPSTAMP,
 		STELLIA_COUNTERSTART, STELLIA_COUNTERLOOP, STELLIA_COUNTEREND,
 		STELLIA_BERSERK,
 		/* 레이지 1*/
+		STELLIA_RAGE1START_TURN_OC, STELLIA_RAGE1START_JUMP, STELLIA_RAGE1START_TURN_OL, STELLIA_RAGE1START,
+		STELLIA_RAGE1LOOP_TURN, STELLIA_RAGE1LOOP_IDLE, STELLIA_RAGE1LOOP_EXPLOSION,
 
 		/* 레이지 2*/
 		STELLIA_RAGE2START_TURN_OC, STELLIA_RAGE2START_JUMP, STELLIA_RAGE2START_TURN_OL, STELLIA_RAGE2START,
@@ -68,18 +70,36 @@ private:
 	HRESULT Ready_Parts();
 
 public:
+	// 레이지 1
+	_int Get_AccDamage() { return m_iAccDamage; }
+	_int Get_DestDamage() { return m_iDestDamage; }
+	void Reset_RageAccDamage() { m_iAccDamage = 0; }
+
+	// 레이지 2
 	HRESULT Create_Crystals();
 	HRESULT Clear_Crystals();
 
 	class CStellia_Crystal_Controller* Get_CrystalController() const { return m_pCrystalController; }
+	void Set_CrystalTurnData();
 
+	// 스텔리아 무적 
+	_bool Get_IsStelliaHit() { return m_bIsStelliaHit; }
+	void  Set_StelliaHit(_bool bIsStelliaHit) { m_bIsStelliaHit = bIsStelliaHit; }
 
 private:
+	// 레이지 1
+	_int m_iAccDamage = 0;
+	_int m_iDestDamage = 0;
+
+	// 레이지 2
 	_int m_iCrystalBingoCount = 0;
 	_int m_iCrystalSuccessCount = 0;
 	_int m_iCrystalFailCount = 0;
 
 	class CStellia_Crystal_Controller* m_pCrystalController = nullptr;
+
+	// 스텔리아 무적 
+	_bool m_bIsStelliaHit = true;
 
 public:
 	static CStellia* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat);

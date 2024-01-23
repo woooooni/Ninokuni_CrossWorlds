@@ -31,6 +31,7 @@ public:
 	HRESULT Create_Crystals(CStellia* pStellia);
 	HRESULT Clear_Crystals();
 	void	Clear_Progress();
+	void	Set_CrystalTurnData();
 
 private:
 	Vec4 m_vOriginPos;
@@ -50,6 +51,14 @@ private:
 
 	_int m_iCrystalAmount = 0;
 	vector<CRYSTAL_TYPE> m_vecCrystalType;
+
+	// 타임 슬립
+	_bool  m_bIsSlow = false;
+	_float m_fSleepTime = 0.f;
+	_float m_fSlowTime = 0.f;
+
+	_bool m_bIsTimeSlep = false;
+
 };
 
 END

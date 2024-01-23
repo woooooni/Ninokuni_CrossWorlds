@@ -11,6 +11,7 @@ CStellia_Crystal_Controller::CStellia_Crystal_Controller()
 {
 	m_fRespawnTime = 3.f;
 	m_iCrystalAmount = 6;
+	m_fSlowTime = 0.1f;
 
 	m_vecCrystalType.push_back(CRYSTAL_AURA);
 	m_vecCrystalType.push_back(CRYSTAL_SKY);
@@ -42,6 +43,14 @@ void CStellia_Crystal_Controller::Tick(const _float fTimeDelta)
 
 		if (m_pStellia->Get_CrystalBingoCount() >= 2)
 		{
+			// 타임 슬립 시작.
+			if (!m_bIsTimeSlep)
+			{
+				GI->Set_TimeScale(TIMER_TYPE::GAME_PLAY, 0.1f);
+				m_bIsTimeSlep = true;
+				m_bIsSlow = true;
+			}
+
 			Clear_Crystals();
 			Clear_Progress();
 			m_pStellia->Clear_CrystalBingoCount();
@@ -96,6 +105,22 @@ void CStellia_Crystal_Controller::Tick(const _float fTimeDelta)
 			m_pStellia->Set_Bools(CStellia::BOSS_BOOLTYPE::BOSSBOOL_RAGE2, false);
 			m_pStellia->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CStellia::STELLIA_RAGE2FINISH);
 		}
+
+		// 타임 슬립
+		if (m_bIsTimeSlep)
+		{
+			if (m_bIsSlow)
+			{
+				m_fSleepTime += fTimeDelta;
+
+				if (m_fSleepTime >= m_fSlowTime)
+				{
+					m_bIsTimeSlep = false;
+					m_bIsSlow = false;
+					GI->Set_TimeScale(TIMER_TYPE::GAME_PLAY, 1.f);
+				}
+			}
+		}
 	}
 }
 
@@ -148,12 +173,19 @@ HRESULT CStellia_Crystal_Controller::Create_Crystals(CStellia* pStellia)
 	{
 		const float fAngle = 360.f / (_float)m_iCrystalAmount * i;
 
-		_float fRadius = GI->RandomFloat(10.f, 25.f);
+		_float fRadius = GI->RandomFloat(20.f, 35.f);
 
 		Vec4 vPos = {};
 		{
 			vPos.x = m_vOriginPos.x + fRadius * cos(XMConvertToRadians(fAngle));
-			vPos.y = m_vOriginPos.y;
+			if (i % 2 != 0)
+			{
+				vPos.y = m_vOriginPos.y + 3.f;
+			}
+			else
+			{
+				vPos.y = m_vOriginPos.y + 0.5f;
+			}
 			vPos.z = m_vOriginPos.z + fRadius * sin(XMConvertToRadians(fAngle));
 			vPos.w = 1.f;
 		}
@@ -200,4 +232,13 @@ void CStellia_Crystal_Controller::Clear_Progress()
 	m_bIsRespawn = true;
 	m_bIsProgress = false;
 	m_fAccLimitTime = 0.f;
+}
+
+void CStellia_Crystal_Controller::Set_CrystalTurnData()
+{
+	for (_int i = 0; i < m_pCrystals.size(); ++i)
+	{
+		if (m_pCrystals[i] != nullptr)
+			m_pCrystals[i]->Set_CrystalTurnData();
+	}
 }

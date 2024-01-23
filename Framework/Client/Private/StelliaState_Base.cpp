@@ -37,6 +37,9 @@ HRESULT CStelliaState_Base::Initialize(const list<wstring>& AnimationList)
 	m_vecAtkState.push_back(CStellia::STELLIA_LASER);
 	m_vecAtkState.push_back(CStellia::STELLIA_CHARGE);
 
+	// 레이지 1 폭발 시간
+	m_fRage1ExplosionTime = 5.f;
+
 	return S_OK;
 }
 
@@ -85,6 +88,58 @@ _bool CStelliaState_Base::State_Wait(_float fDestTime, _float fTimeDelta)
 	}
 
 	return false;
+}
+
+void CStelliaState_Base::Rage1_Tick(_float fTimeDelta)
+{
+	if (m_pStellia->Get_Bools(CStellia::BOSS_BOOLTYPE::BOSSBOOL_RAGE))
+	{
+		m_fRage1Time += fTimeDelta;
+
+		if (m_fRage1Time >= m_fRage1ExplosionTime)
+		{
+			m_fRage1Time = m_fRage1ExplosionTime - m_fRage1Time;
+			Generate_Explosion(5);
+		}
+
+		if (m_pStellia->Get_AccDamage() >= m_pStellia->Get_DestDamage())
+		{
+			_float fStunTime = 15.f;
+			m_pStellia->Reset_RageAccDamage();
+			m_pStellia->Set_Bools(CStellia::BOSS_BOOLTYPE::BOSSBOOL_RAGE, false);
+			m_pStateMachineCom->Change_State(CStellia::STELLIA_COUNTERSTART, &fStunTime);
+		}
+	}
+}
+
+void CStelliaState_Base::Generate_Explosion(_uint iCount)
+{
+	CTransform* pTransform = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr == pTransform)
+	{
+		MSG_BOX("Transform Get Failed.");
+		return;
+	}
+
+	for (_uint i = 0; i < iCount; ++i)
+	{
+		Vec4 vExplosionPos = pTransform->Get_Position();
+		vExplosionPos.x += GI->RandomFloat(-10.f, 10.f);
+		vExplosionPos.y = m_pStellia->Get_OriginPos().y + 0.5f;
+		vExplosionPos.z += GI->RandomFloat(-10.f, 10.f);
+
+		CGameObject* pExplosion = nullptr;
+
+		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_PROP, L"Prorotype_GameObject_Stellia_Explosion", m_pStellia, &pExplosion)))
+		{
+			MSG_BOX("Add Icicle Failed.");
+			return;
+		}
+
+		CTransform* pIcicleTransform = pExplosion->Get_Component<CTransform>(L"Com_Transform");
+
+		pIcicleTransform->Set_State(CTransform::STATE_POSITION, vExplosionPos);
+	}
 }
 
 void CStelliaState_Base::Free()

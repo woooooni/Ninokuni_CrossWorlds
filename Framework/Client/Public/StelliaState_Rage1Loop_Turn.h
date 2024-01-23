@@ -4,11 +4,11 @@
 
 BEGIN(Client)
 
-class CStelliaState_Rage1StartTurnOC final : public CStelliaState_Base
+class CStelliaState_Rage1Loop_Turn final : public CStelliaState_Base
 {
 private:
-	CStelliaState_Rage1StartTurnOC(CStateMachine* pStateMachine);
-	virtual ~CStelliaState_Rage1StartTurnOC() = default;
+	CStelliaState_Rage1Loop_Turn(CStateMachine* pStateMachine);
+	virtual ~CStelliaState_Rage1Loop_Turn() = default;
 
 public:
 	virtual HRESULT Initialize(const list<wstring>& AnimationList);
@@ -19,11 +19,11 @@ public:
 	virtual void Exit_State();
 
 private:
-	Vec4 m_vDestPos = {};
+	Vec4 m_vDestLook = {};
 	_float  m_fTurnSpeed = 0.f;
 
 public:
-	static CStelliaState_Rage1StartTurnOC* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
+	static CStelliaState_Rage1Loop_Turn* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
 };
 

@@ -114,7 +114,7 @@ HRESULT CSpawner_Ice02::Spawn_Monster()
 	for (_int i = m_vecBaobam.size(); i < m_iMaxBaobamCount; ++i)
 	{
 		tInfo.vStartPosition.x = vSpawnerPos.x + GI->RandomFloat(-3.f, 3.f);
-		tInfo.vStartPosition.y = vSpawnerPos.y + 1.f;
+		tInfo.vStartPosition.y = vSpawnerPos.y;
 		tInfo.vStartPosition.z = vSpawnerPos.z + GI->RandomFloat(-3.f, 3.f);
 		tInfo.vStartPosition.w = 1.f;
 	

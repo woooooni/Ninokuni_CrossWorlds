@@ -24,6 +24,17 @@
 
 #include "StelliaState_Berserk.h"
 
+// Rage 1
+#include "StelliaState_Rage1StartTurnOC.h"
+#include "StelliaState_Rage1StartJump.h"
+#include "StelliaState_Rage1StartTurnOL.h"
+#include "StelliaState_Rage1Start.h"
+
+#include "StelliaState_Rage1Loop_Turn.h"
+#include "StelliaState_Rage1Loop_Idle.h"
+#include "StelliaState_Rage1Loop_Explosion.h"
+
+// Rage 2
 #include "StelliaState_Rage2StartTurnOC.h"
 #include "StelliaState_Rage2StartJump.h"
 #include "StelliaState_Rage2StartTurnOL.h"
@@ -85,6 +96,10 @@ HRESULT CStellia::Initialize(void* pArg)
 	m_iObjectType = OBJ_TYPE::OBJ_BOSS;
 
 	m_vBloomPower = _float3(2.f, 2.f, 2.f);
+
+
+	// 레이지 1에서 채워야 하는 데미지
+	m_iDestDamage = 100000;
 
 	return S_OK;
 }
@@ -155,11 +170,7 @@ void CStellia::Collision_Enter(const COLLISION_INFO& tInfo)
 	{
 		if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
 		{
-			// 레이지 패턴 중이 아닐 때에만.
-			if (m_pStateCom->Get_CurrState() != STELLIA_RAGE2LOOP)
-			{
-				On_Damaged(tInfo);
-			}
+			On_Damaged(tInfo);
 		}
 	}
 
@@ -217,7 +228,16 @@ void CStellia::Collision_Exit(const COLLISION_INFO& tInfo)
 
 void CStellia::On_Damaged(const COLLISION_INFO& tInfo)
 {
-	__super::On_Damaged(tInfo);
+	// 맞기 전 체력 
+	_int iCurHp = m_tStat.fHp;
+
+	// 데미지를 입힐 수 있는 상태 일 때에만
+	if (m_bIsStelliaHit)
+		__super::On_Damaged(tInfo);
+
+	// 레이지 1 상태일 때 누적 데미지 증가하기.
+	if (m_bBools[(_uint)BOSS_BOOLTYPE::BOSSBOOL_RAGE])
+		m_iAccDamage += iCurHp - m_tStat.fHp;
 }
 
 void CStellia::Set_SkillTree()
@@ -294,8 +314,8 @@ HRESULT CStellia::Ready_Components()
 #pragma region Ready_States
 HRESULT CStellia::Ready_States()
 {
-	m_tStat.fMaxHp = 400000;
-	m_tStat.fHp = 400000;
+	m_tStat.fMaxHp = 700000;
+	m_tStat.fHp = 700000;
 	m_tStat.iAtk = 350;
 	m_tStat.iDef = 120;
 
@@ -365,6 +385,44 @@ HRESULT CStellia::Ready_States()
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_BossSkillRage");
 	m_pStateCom->Add_State(STELLIA_BERSERK, CStelliaState_Berserk::Create(m_pStateCom, strAnimationName));
+
+	/* 레이지 1*/
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_InstantTurn");
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_LeftTurn");
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_RightTurn");
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_RightTurn180");
+	m_pStateCom->Add_State(STELLIA_RAGE1START_TURN_OC, CStelliaState_Rage1StartTurnOC::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_BossSkill02_New");
+	m_pStateCom->Add_State(STELLIA_RAGE1START_JUMP, CStelliaState_Rage1StartJump::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_InstantTurn");
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_LeftTurn");
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_RightTurn");
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_RightTurn180");
+	m_pStateCom->Add_State(STELLIA_RAGE1START_TURN_OL, CStelliaState_Rage1StartTurnOL::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_BossSkillRage");
+	m_pStateCom->Add_State(STELLIA_RAGE1START, CStelliaState_Rage1Start::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_InstantTurn");
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_LeftTurn");
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_RightTurn");
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_RightTurn180");
+	m_pStateCom->Add_State(STELLIA_RAGE1LOOP_TURN, CStelliaState_Rage1Loop_Turn::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_Stand02");
+	m_pStateCom->Add_State(STELLIA_RAGE1LOOP_IDLE, CStelliaState_Rage1Loop_Idle::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_BossSkill04");
+	m_pStateCom->Add_State(STELLIA_RAGE1LOOP_EXPLOSION, CStelliaState_Rage1Loop_Explosion::Create(m_pStateCom, strAnimationName));
 
 	/* 레이지 2 */
 	strAnimationName.clear();
@@ -499,6 +557,11 @@ HRESULT CStellia::Clear_Crystals()
 	m_pCrystalController->Clear_Crystals();
 
 	return S_OK;
+}
+
+void CStellia::Set_CrystalTurnData()
+{
+	m_pCrystalController->Set_CrystalTurnData();
 }
 
 #pragma endregion
