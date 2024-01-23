@@ -15,6 +15,8 @@ float4      g_vDissolveColor;
 float       g_fDissolveTotalTime = 5.f;
 float       g_fDissolveWeight    = 0.f;
 
+float4      g_vCamPosition;
+
 struct EffectDesc
 {
 	float2 g_fUVIndex;
@@ -44,7 +46,7 @@ struct VS_IN
 	float4		vLook : TEXCOORD3;
 	float4		vTranslation : TEXCOORD4;
 
-	uint	iInstanceID : SV_INSTANCEID;
+	uint	    iInstanceID : SV_INSTANCEID;
 };
 
 struct VS_OUT
@@ -52,11 +54,12 @@ struct VS_OUT
 	float4		vPosition : SV_POSITION;
 	float3		vNormal : NORMAL;
 	float2		vTexUV : TEXCOORD0;
+    float3      vTangent : TANGENT;
+    float3      vBinormal : BINORMAL;
 	float4		vProjPos : TEXCOORD1;
-	float3		vTangent : TANGENT;
-	float3		vBinormal : BINORMAL;
+    float4      vWorldPosition : TEXCOORD2;
+    
 	uint		iInstanceID : SV_INSTANCEID;
-
 };
 
 
@@ -69,14 +72,16 @@ VS_OUT VS_MAIN(VS_IN In)
 
 	Out.vPosition = mul(float4(In.vPosition, 1.f), InstanceWorld);
 	Out.vPosition = mul(Out.vPosition, matVP);
-
+    Out.vWorldPosition = mul(Out.vPosition, InstanceWorld);
+    Out.vNormal = normalize(mul(float4(In.vNormal, 0.f), InstanceWorld));
+    Out.vTangent = normalize(mul(float4(In.vTangent, 0.f), InstanceWorld)).xyz;
+    Out.vBinormal = normalize(cross(Out.vNormal, Out.vTangent));
+    
 	EffectDesc Desc = g_EffectDesc[In.iInstanceID];
 	Out.vTexUV = float2(
 		((Desc.g_fUVIndex.x + In.vTexUV.x) / Desc.g_fMaxCount.x) + Desc.g_fUVFlow.x,
 		((Desc.g_fUVIndex.y + In.vTexUV.y) / Desc.g_fMaxCount.y) + Desc.g_fUVFlow.y);
 
-	Out.vTangent = normalize(mul(float4(In.vTangent, 0.f), InstanceWorld)).xyz;
-	Out.vBinormal = normalize(cross(Out.vNormal, Out.vTangent));
 	Out.vProjPos = Out.vPosition;
 	Out.iInstanceID = In.iInstanceID;
 
@@ -86,13 +91,15 @@ VS_OUT VS_MAIN(VS_IN In)
 
 struct PS_IN
 {
-	float4		vPosition : SV_POSITION;
-	float3		vNormal : NORMAL;
-	float2		vTexUV : TEXCOORD0;
-	float4		vProjPos : TEXCOORD1;
-	float3		vTangent : TANGENT;
-	float3		vBinormal : BINORMAL;
-	uint		iInstanceID : SV_INSTANCEID;
+    float4 vPosition : SV_POSITION;
+    float3 vNormal : NORMAL;
+    float2 vTexUV : TEXCOORD0;
+    float3 vTangent : TANGENT;
+    float3 vBinormal : BINORMAL;
+    float4 vProjPos : TEXCOORD1;
+    float4 vWorldPosition : TEXCOORD2;
+    
+    uint iInstanceID : SV_INSTANCEID;
 };
 
 struct PS_OUT
@@ -411,6 +418,80 @@ PS_OUT PS_BOTH(PS_IN In)
 
 };
 
+PS_OUT PS_RIM(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    if (0 < g_EffectDesc[In.iInstanceID].g_iUVLoop)
+    {
+        if ((In.vTexUV.x > 1.f) || (In.vTexUV.y > 1.f) || (In.vTexUV.x < 0.f) || (In.vTexUV.y < 0.f))
+            discard;
+    }
+
+    vector vDissoveTexture = g_DissolveTexture.Sample(LinearSampler, In.vTexUV);
+    float fDissolveAlpha = saturate(1.0 - g_fDissolveWeight / g_fDissolveTotalTime + vDissoveTexture.r);
+	
+    // ÇÈ¼¿ »ý·«
+    if (fDissolveAlpha < 0.3)
+        discard;
+    else
+    {
+        Out.vDiffuse_None = float4(0.f, 0.f, 0.f, 0.f);
+        Out.vDiffuse_Low = float4(0.f, 0.f, 0.f, 0.f);
+        Out.vDiffuse_Middle = float4(0.f, 0.f, 0.f, 0.f);
+        Out.vDiffuse_High = float4(0.f, 0.f, 0.f, 0.f);
+		
+		// ÇÈ¼¿ »ö»ó ÁöÁ¤ : ¸í¾Ï ¿¬»ê X
+        if (fDissolveAlpha < 0.5)
+        {
+            vector vDiffuseColor = g_vDissolveColor;
+			
+            Out.vDiffuse_All = vDiffuseColor;
+            if (g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.0f)
+                Out.vDiffuse_None = vDiffuseColor;
+            else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.0f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.3f)
+                Out.vDiffuse_Low = vDiffuseColor;
+            else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.3f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.7f)
+                Out.vDiffuse_Middle = vDiffuseColor;
+            else
+                Out.vDiffuse_High = vDiffuseColor;
+			
+			// Bloom
+            Out.vBloom = float4(vDiffuseColor.r, vDiffuseColor.g, vDiffuseColor.b, 0.5f);
+        }
+		
+		// ±âº» ÇÈ¼¿ ·»´õ¸µ
+        else
+        {
+            float fRimPower = 1.f - saturate(dot(In.vNormal.xyz, normalize((-1.f * (In.vWorldPosition - g_vCamPosition)))));
+            fRimPower = pow(fRimPower, 10.f);
+            
+            vector vRimColor = g_EffectDesc[In.iInstanceID].g_fAdditiveDiffuseColor * fRimPower;
+
+            Out.vDiffuse_All = vRimColor;
+            Out.vDiffuse_None   = float4(0.f, 0.f, 0.f, 0.f);
+            Out.vDiffuse_Low    = float4(0.f, 0.f, 0.f, 0.f);
+            Out.vDiffuse_Middle = float4(0.f, 0.f, 0.f, 0.f);
+            Out.vDiffuse_High   = float4(0.f, 0.f, 0.f, 0.f);
+            
+            if (g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.0f)
+                Out.vDiffuse_None = vRimColor;
+            else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.0f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.3f)
+                Out.vDiffuse_Low = vRimColor;
+            else if (g_EffectDesc[In.iInstanceID].g_fBlurPower > 0.3f && g_EffectDesc[In.iInstanceID].g_fBlurPower <= 0.7f)
+                Out.vDiffuse_Middle = vRimColor;
+            else
+                Out.vDiffuse_High = vRimColor;
+
+	        // Bloom
+            Out.vBloom = Caculation_Brightness(vRimColor, In.iInstanceID);
+        }
+    }
+
+    return Out;
+
+};
+
 technique11 DefaultTechnique
 {
 	pass DefaultPass
@@ -467,4 +548,16 @@ technique11 DefaultTechnique
 		PixelShader = compile ps_5_0 PS_BOTH();
 	}
 
+    pass RimPass
+    {
+        SetRasterizerState(RS_NoneCull);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_RIM();
+    }
 }

@@ -561,6 +561,11 @@ HRESULT CEffect::Bind_ShaderResource_Instance(CShader* pShader)
 		else if (m_pDiffuseTextureCom != nullptr && m_pAlphaTextureCom != nullptr)
 			m_tEffectDesc.iShaderPass = 3;
 	}
+	else if (m_tEffectDesc.iShaderPass == 4)
+	{
+		if (FAILED(pShader->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
+			return E_FAIL;
+	}
 
 	return S_OK;
 }
