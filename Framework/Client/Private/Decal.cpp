@@ -218,7 +218,8 @@ void CDecal::Tick_Alpha(_float fTimeDelta)
 	}
 
 	// 삭제 이벤트 0 -> 1
-	else if (m_tDecalDesc.bAlphaDelete && m_bAlphaCreateSucc && m_fAccLifeTime > m_tDecalDesc.fLifeTime - 2.f)
+
+	else if (true == m_bDecalDelete && m_tDecalDesc.bAlphaDelete && m_bAlphaCreateSucc && m_fAccLifeTime > m_tDecalDesc.fLifeTime - 2.f)
 	{
 		m_tDecalDesc.fAlphaRemove += fTimeDelta * m_tDecalDesc.fAlphaSpeed;
 		if (m_tDecalDesc.fAlphaRemove >= 1.f)

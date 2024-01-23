@@ -14,6 +14,7 @@ HRESULT CSkill_Engineer_ExplosionShot::Initialize(ID3D11Device* pDevice, ID3D11D
 	if (FAILED(__super::Initialize(pDevice, pContext, pOwner)))
 		return E_FAIL;
 
+	m_fCoolTime = 15.f;
 	return S_OK;
 }
 

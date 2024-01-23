@@ -7,6 +7,7 @@
 #include "Sword.h"
 #include "Trail.h"
 #include "Monster.h"
+#include "Decal.h"
 #include "Effect_Manager.h"
 #include "Particle_Manager.h"
 #include "Camera_Manager.h"
@@ -73,6 +74,8 @@ HRESULT CCharacter::Initialize(void* pArg)
 
 	m_pName = dynamic_cast<CUI_World_NameTag*>(pNameTag);
 	m_pName->Set_Owner(this);
+
+	// CEffect_Manager::GetInstance()->Generate_Decal_To_Position(L"Decal_Target")
 
 	return S_OK;
 }
@@ -613,6 +616,16 @@ void CCharacter::Decide_Target(COLLISION_INFO tInfo)
 	{
 		m_pTarget = tInfo.pOther;
 		Safe_AddRef(m_pTarget);
+
+		if (nullptr != m_pEffectTargetDecal)
+		{
+			m_pEffectTargetDecal->Set_Dead(true);
+			Safe_Release(m_pEffectTargetDecal);
+			m_pEffectTargetDecal = nullptr;
+		}
+
+		CEffect_Manager::GetInstance()->Generate_Decal_To_Position(L"Decal_Target", XMMatrixIdentity(), Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), m_pTarget, &m_pEffectTargetDecal, false);
+		Safe_AddRef(m_pEffectTargetDecal);
 	}
 	else
 	{
@@ -620,10 +633,15 @@ void CCharacter::Decide_Target(COLLISION_INFO tInfo)
 		{
 			Safe_Release(m_pTarget);
 			m_pTarget = nullptr;
+
+			if (nullptr != m_pEffectTargetDecal)
+			{
+				m_pEffectTargetDecal->Set_Dead(true);
+				Safe_Release(m_pEffectTargetDecal);
+				m_pEffectTargetDecal = nullptr;
+			}
 			return;
 		}
-			
-			
 
 		CTransform* pTargetTransform = m_pTarget->Get_Component<CTransform>(L"Com_Transform");
 		CTransform* pNewTargetTransform = tInfo.pOther->Get_Component<CTransform>(L"Com_Transform");
@@ -639,8 +657,18 @@ void CCharacter::Decide_Target(COLLISION_INFO tInfo)
 					Safe_Release(m_pTarget);
 					m_pTarget = nullptr;
 				}
+
+				if (nullptr != m_pEffectTargetDecal)
+				{
+					m_pEffectTargetDecal->Set_Dead(true);
+					Safe_Release(m_pEffectTargetDecal);
+					m_pEffectTargetDecal = nullptr;
+				}
+
 				m_pTarget = tInfo.pOther;
+				CEffect_Manager::GetInstance()->Generate_Decal(L"Decal_Target", pNewTargetTransform->Get_WorldMatrix(), Vec3(0.f, 0.f, 0.f), Vec3(2.f, 2.f, 2.f), Vec3(0.f, 0.f, 0.f), m_pTarget, &m_pEffectTargetDecal, false);
 				Safe_AddRef(m_pTarget);
+				Safe_AddRef(m_pEffectTargetDecal);
 			}
 		}
 	}
@@ -708,6 +736,14 @@ void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 		m_eDamagedElemental = tInfo.pOtherCollider->Get_ElementalType();
 	}
 
+	if (m_pStateCom->Get_CurrState() == CCharacter::BATTLE_GUARD)
+	{
+		iDamage *= 0.2f;
+		m_pRigidBodyCom->Add_Velocity(-1.f * XMVector3Normalize(m_pTransformCom->Get_Look()), 2.f, true);
+	}
+		
+
+
 	CUIDamage_Manager::GetInstance()->Create_PlayerDamageNumber(m_pTransformCom, iDamage);
 	if (true == Decrease_HP(iDamage))
 		return;
@@ -716,6 +752,7 @@ void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 	if (true == m_bSuperArmor)	
 		return;
 
+	
 
 	if (CCollider::ATTACK_TYPE::AIR_BORNE == tInfo.pOtherCollider->Get_AttackType())
 	{
@@ -1013,4 +1050,5 @@ void CCharacter::Free()
 	Safe_Release(m_pStateCom);
 	Safe_Release(m_pNavigationCom);
 	Safe_Release(m_pTarget);
+	Safe_Release(m_pEffectTargetDecal);
 }

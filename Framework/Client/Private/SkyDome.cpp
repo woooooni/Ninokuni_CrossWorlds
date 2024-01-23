@@ -34,7 +34,6 @@ HRESULT CSkyDome::Initialize(void* pArg)
 	{
 		m_vApexColor = Vec4(0.224f, 0.306f, 0.788f, 1.0f);
 		m_vCenterColor = Vec4(0.871f, 0.78f, 1.0f, 1.0f);
-		
 	}
 
 	return S_OK;

@@ -20,7 +20,7 @@ HRESULT CSkill_Destroyer_BrutalStrike::Initialize(ID3D11Device* pDevice, ID3D11D
 void CSkill_Destroyer_BrutalStrike::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
-
+	m_fCoolTime = 5.f;
 }
 
 void CSkill_Destroyer_BrutalStrike::LateTick(_float fTimeDelta)
