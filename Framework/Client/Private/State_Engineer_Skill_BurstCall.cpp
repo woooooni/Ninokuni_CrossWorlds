@@ -40,7 +40,8 @@ void CState_Engineer_Skill_BurstCall::Tick_State(_float fTimeDelta)
 
 void CState_Engineer_Skill_BurstCall::Exit_State()
 {
-    
+    if (!CCamera_Manager::GetInstance()->Get_CurCamera()->Is_Lock_Fov())
+        CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(Cam_Fov_Follow_Default);
 }
 
 CState_Engineer_Skill_BurstCall* CState_Engineer_Skill_BurstCall::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

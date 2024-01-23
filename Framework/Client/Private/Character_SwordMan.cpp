@@ -241,8 +241,23 @@ void CCharacter_SwordMan::Collision_Enter(const COLLISION_INFO& tInfo)
 	{
 		switch (m_pStateCom->Get_CurrState())
 		{
-		case CCharacter::BATTLE_ATTACK_3:
-			GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.5f, 0.1f, true);
+		case CCharacter::STATE::CLASS_SKILL_0:
+			GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.05f, 0.0f, false);
+			break;
+		case CCharacter::STATE::BATTLE_ATTACK_0:
+			GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.05f, 0.05f, false);
+			break;
+		case CCharacter::STATE::BATTLE_ATTACK_1:
+			GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.05f, 0.05f, false);
+			break;
+		case CCharacter::STATE::BATTLE_ATTACK_2:
+			GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.05f, 0.05f, false);
+			break;
+		case CCharacter::STATE::BATTLE_ATTACK_3:
+			if(CAMERA_TYPE::FOLLOW == CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key())
+			{ 
+				GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.08f, 0.01f, true);
+			}
 			break;
 		}
 	}

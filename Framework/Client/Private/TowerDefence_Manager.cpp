@@ -123,7 +123,7 @@ void CTowerDefence_Manager::Prepare_Defence()
 		pDesc->vDiffuse = _float4(0.729f, 0.431f, 1.f, 1.f);
 	}
 
-	list<CGameObject*>& NpcList = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_NPC);
+	/*list<CGameObject*>& NpcList = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_NPC);
 	for (auto& pNpc : NpcList)
 	{
 		if (pNpc->Get_PrototypeTag().find(L"TreeGrandfa") != wstring::npos)
@@ -135,7 +135,7 @@ void CTowerDefence_Manager::Prepare_Defence()
 
 	list<CGameObject*>& AnimalList = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_DYNAMIC);
 	for (auto& pAnimal : AnimalList)
-		pAnimal->Set_Dead(true);
+		pAnimal->Set_Dead(true);*/
 
 
 	if (nullptr != m_pPicked_Object)

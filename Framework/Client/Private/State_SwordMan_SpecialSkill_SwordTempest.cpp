@@ -35,15 +35,55 @@ void CState_SwordMan_SpecialSkill_SwordTempest::Enter_State(void* pArg)
 
 void CState_SwordMan_SpecialSkill_SwordTempest::Tick_State(_float fTimeDelta)
 {
+    if (false == m_pModelCom->Is_Tween())
+    {
+        if (m_pModelCom->Get_CurrAnimationFrame() == 9)
+        {
+            m_pTransformCom->Move(-1.f * XMVector3Normalize(m_pTransformCom->Get_Right()), 3.f, fTimeDelta);
+        }
+        if (m_pModelCom->Get_CurrAnimationFrame() == 12)
+        {
+            m_pTransformCom->Move(1.f * XMVector3Normalize(m_pTransformCom->Get_Right()), 3.f, fTimeDelta);
+        }
+        if (m_pModelCom->Get_CurrAnimationFrame() == 16)
+        {
+            m_pTransformCom->Move(-1.f * XMVector3Normalize(m_pTransformCom->Get_Right()), 3.f, fTimeDelta);
+        }
+        if (m_pModelCom->Get_CurrAnimationFrame() == 20)
+        {
+            m_pTransformCom->Move(1.f * XMVector3Normalize(m_pTransformCom->Get_Right()), 3.f, fTimeDelta);
+        }
+        if (m_pModelCom->Get_CurrAnimationFrame() == 25)
+        {
+            m_pTransformCom->Move(-1.f * XMVector3Normalize(m_pTransformCom->Get_Right()), 3.f, fTimeDelta);
+        }
+        if (m_pModelCom->Get_CurrAnimationFrame() == 29)
+        {
+            m_pTransformCom->Move(1.f * XMVector3Normalize(m_pTransformCom->Get_Right()), 3.f, fTimeDelta);
+        }
+
+        if (m_pModelCom->Get_CurrAnimationFrame() == 33)
+        {
+            m_pTransformCom->Move(-1.f * XMVector3Normalize(m_pTransformCom->Get_Look()), 10.f, fTimeDelta);
+        }
+    }
+
+
+
+
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
         m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_IDLE);
+
+
+
 
     __super::Attack_Input(fTimeDelta);
 }
 
 void CState_SwordMan_SpecialSkill_SwordTempest::Exit_State()
 {
-    CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(Cam_Fov_Follow_Default);
+    if (!CCamera_Manager::GetInstance()->Get_CurCamera()->Is_Lock_Fov())
+        CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(Cam_Fov_Follow_Default);
 }
 
 CState_SwordMan_SpecialSkill_SwordTempest* CState_SwordMan_SpecialSkill_SwordTempest::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

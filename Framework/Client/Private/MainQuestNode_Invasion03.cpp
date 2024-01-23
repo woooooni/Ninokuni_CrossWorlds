@@ -9,6 +9,8 @@
 #include "Game_Manager.h"
 #include "Quest_Manager.h"
 
+#include "TowerDefence_Manager.h"
+
 CMainQuestNode_Invasion03::CMainQuestNode_Invasion03()
 {
 }
@@ -17,9 +19,9 @@ HRESULT CMainQuestNode_Invasion03::Initialize()
 {
 	__super::Initialize();
 
-	m_strNextQuestTag = TEXT("[메인]");
-	m_strNextQuestName = TEXT("에스타나비아 지키기");
-	m_strNextQuestContent = TEXT("모든 몬스터를 소탕하자");
+	m_strQuestTag = TEXT("[메인]");
+	m_strQuestName = TEXT("에스타나비아 지키기");
+	m_strQuestContent = TEXT("모든 몬스터를 소탕하자");
 
 	m_strNextQuestTag = TEXT("[메인]");
 	m_strNextQuestName = TEXT("다시 루슬란에게");
@@ -44,6 +46,7 @@ void CMainQuestNode_Invasion03::Start()
 
 	/* 현재 퀘스트에 연관있는 객체들 */
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
+	CTowerDefence_Manager::GetInstance()->Prepare_Defence();
 }
 
 CBTNode::NODE_STATE CMainQuestNode_Invasion03::Tick(const _float& fTimeDelta)
@@ -51,6 +54,13 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion03::Tick(const _float& fTimeDelta)
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 
+	/*m_bIsClear = CTowerDefence_Manager::GetInstance()->Get_CurrentPhase() == CTowerDefence_Manager::TOWER_DEFENCE_PHASE::DEFENCE_FINISH;
+	if (true == m_bIsClear)
+	{
+		CTowerDefence_Manager::GetInstance()->End_Defence();
+		return NODE_STATE::NODE_FAIL;
+	}*/
+		
 	//if (m_iPrevKillCount != CQuest_Manager::GetInstance()->Get_MonsterKillCount())
 	//{
 	//	m_strQuestContent = to_wstring(CQuest_Manager::GetInstance()->Get_MonsterKillCount());

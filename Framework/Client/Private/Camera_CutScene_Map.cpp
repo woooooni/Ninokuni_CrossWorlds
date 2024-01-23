@@ -277,6 +277,9 @@ HRESULT CCamera_CutScene_Map::Start_CutScene(const LEVELID& eLevelID)
 			CutSceneNames.push_back("Evermore_Intro_Middle_Entire");			// 위 (미들) - 엔딩
 		}
 		Start_CutScenes(CutSceneNames, true);
+
+		/* Play Sound */
+		GI->Play_Sound(TEXT("Evermore_CutScene.mp3"), CHANNELID::SOUND_CUTSCENE, 1.f, true);
 	}
 		break;
 	case LEVELID::LEVEL_KINGDOMHALL:
