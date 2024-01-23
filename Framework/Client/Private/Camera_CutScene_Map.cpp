@@ -198,9 +198,11 @@ HRESULT CCamera_CutScene_Map::Start_CutScene(const string& strCutSceneName, cons
 	m_bWillRetruePrevCam = bWillRetruePrevCam;
 	
 	/* Player Input Off */
-	{
-		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
-	}
+	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
+
+	/* 마우스 아이콘 숨기기 */
+	CUI_Manager::GetInstance()->Hide_MouseCursor(true);
+
 	return S_OK;
 }
 

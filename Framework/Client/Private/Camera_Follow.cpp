@@ -216,7 +216,17 @@ void CCamera_Follow::Set_Blending(const _bool& bBlending)
 		{
 			/* ¸Ê ÄÆ½Å¿¡¼­ ºí·»µùÀÌ ³¡³µ´Ù¸é ¸ðµç ÀÎÇ² ¿­¾îÁØ´Ù. */
 			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
+
+			/* Cursor On */
+			CUI_Manager::GetInstance()->Hide_MouseCursor(false);
 		}
+		
+		if (CAMERA_TYPE::CUTSCENE_BOSS == CCamera_Manager::GetInstance()->Get_PrevCamera()->Get_Key())
+		{
+			/* Cursor On */
+			CUI_Manager::GetInstance()->Hide_MouseCursor(false);
+		}
+
 
 		if (CAMERA_TYPE::TOP == CCamera_Manager::GetInstance()->Get_PrevCamera()->Get_Key())
 		{
@@ -323,6 +333,15 @@ void CCamera_Follow::Set_Active(const _bool bActive)
 			/* Default Setting */
 			Reset_WideView_To_DefaultView();
 			Set_Default_Position();
+			
+			/* Cursor On */
+			CUI_Manager::GetInstance()->Hide_MouseCursor(false);
+		}
+
+		if (CAMERA_TYPE::CUTSCENE_BOSS == CCamera_Manager::GetInstance()->Get_PrevCamera()->Get_Key())
+		{
+			/* Cursor On */
+			CUI_Manager::GetInstance()->Hide_MouseCursor(false);
 		}
 	}
 }
