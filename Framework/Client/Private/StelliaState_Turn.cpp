@@ -30,7 +30,7 @@ void CStelliaState_Turn::Enter_State(void* pArg)
 	}
 
 	//// 레이지1 패턴
-	if (!m_bIsRageInit && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.35f)
+	if (!m_bIsRageInit && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.75f)
 	{
 		m_bIsRageInit = true;
 		m_pStellia->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_RAGE, true);
@@ -39,7 +39,7 @@ void CStelliaState_Turn::Enter_State(void* pArg)
 	}
 
 	// 레이지2 패턴
-	if (!m_bIsRage2Init && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.75f &&
+	if (!m_bIsRage2Init && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.35f &&
 		m_pStellia->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_BERSERK))
 	{
 		m_bIsRage2Init = true;

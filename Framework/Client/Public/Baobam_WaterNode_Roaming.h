@@ -17,7 +17,7 @@ public:
 
 private:
 	vector<Vec4> m_vecRoamingArea;
-	_uint			m_iRoamingIndex = 0;
+	_uint		 m_iRoamingIndex = 0;
 
 	_bool		m_bIsRoaming = true;
 

@@ -48,9 +48,17 @@ private:
 	class CUI_MonsterHP_World* m_pHPBar = { nullptr };
 
 private:
+	virtual HRESULT Ready_Components();
+	virtual HRESULT Ready_States();
+	virtual HRESULT Ready_Colliders();
+
+private:
+	void Crystal_Roaming(_float fTimeDelta);
+
+private:
 	_int		m_iBingoType;
 	_int		m_iSelfType = 0;
-	CStellia*	m_pStellia = nullptr;
+	CStellia* m_pStellia = nullptr;
 
 	// ≈œ
 	Vec4		m_vRotateOriginPos;
@@ -66,10 +74,8 @@ private:
 	_float		m_fCrystalMaxY = 0.f;
 	_float		m_fCrystalMinY = 0.f;
 
-private:
-	virtual HRESULT Ready_Components();
-	virtual HRESULT Ready_States();
-	virtual HRESULT Ready_Colliders();
+	// ∑Œπ÷
+	_int m_iRoamingIndex = 0;
 
 public:
 	static CStellia_Crystal_Destructible* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat);

@@ -37,6 +37,11 @@ HRESULT CStellia_Crystal_Destructible::Initialize_Prototype()
 
 HRESULT CStellia_Crystal_Destructible::Initialize(void* pArg)
 {
+	// 부유 Value
+	m_fFlyDuration = 1.5f;
+	m_fCrystalMaxY = 3.f;
+	m_fCrystalMinY = 0.5f;
+
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
@@ -53,15 +58,6 @@ HRESULT CStellia_Crystal_Destructible::Initialize(void* pArg)
 			m_bIsUp = false;
 		else
 			m_bIsUp = true;
-
-		if (m_bIsUp)
-		{
-			m_tFlyDesc.Start(m_fCrystalMinY, m_fCrystalMaxY, m_fFlyDuration, LERP_MODE::SMOOTHER_STEP);
-		}
-		else
-		{
-			m_tFlyDesc.Start(m_fCrystalMaxY, m_fCrystalMinY, m_fFlyDuration, LERP_MODE::SMOOTHER_STEP);
-		}
 	}
 
 	if (FAILED(Ready_Components()))
@@ -84,12 +80,13 @@ HRESULT CStellia_Crystal_Destructible::Initialize(void* pArg)
 
 	m_vBloomPower = _float3(1.f, 1.f, 1.f);
 
-	// 부유
-	m_fFlyDuration = 1.5f;
-	m_fCrystalMaxY = 3.f;
-	m_fCrystalMinY = 0.5f;
-
-	// 턴
+	// 받아온 y값에 따른 bool setting
+	if (m_bIsUp)
+		m_tFlyDesc.Start(m_fCrystalMinY, m_fCrystalMaxY, m_fFlyDuration, LERP_MODE::SMOOTHER_STEP);
+	else
+		m_tFlyDesc.Start(m_fCrystalMaxY, m_fCrystalMinY, m_fFlyDuration, LERP_MODE::SMOOTHER_STEP);
+	
+	// 턴 Value
 	m_fDeSpeedDuration = 3.f;
 	m_tTurnDesc.fCurValue = 10.f;
 	m_tTurnDesc.Start(m_tTurnDesc.fCurValue, 0.f, m_fDeSpeedDuration, LERP_MODE::SMOOTHER_STEP);
@@ -130,6 +127,8 @@ void CStellia_Crystal_Destructible::Tick(_float fTimeDelta)
 
 	if (m_bIsTurn)
 		Turn_Crystal(fTimeDelta);
+	else
+		Crystal_Roaming(fTimeDelta);
 
 	//////////////////////////
 
@@ -177,6 +176,8 @@ void CStellia_Crystal_Destructible::LateTick(_float fTimeDelta)
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
+
+
 #ifdef _DEBUG
 	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
 	{
@@ -325,16 +326,18 @@ void CStellia_Crystal_Destructible::Fly_Crystal(_float fTimeDelta)
 void CStellia_Crystal_Destructible::Turn_Crystal(_float fTimeDelta)
 {
 	if (m_tTurnDesc.bActive)
-	{
 		m_tTurnDesc.fCurValue = m_tTurnDesc.Update(fTimeDelta);
-	}
 	else
 	{
 		m_bIsTurn = false;
+
+		m_vOriginPos = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
+
+		if (FAILED(__super::Ready_RoamingPoint()))
+			MSG_BOX("Fail Set : Crystal RoamingArea.");
 	}
 
 	m_pTransformCom->RevolutionRotation(m_pStellia->Get_OriginPos().xyz(), Vec3::Up, m_tTurnDesc.fCurValue * fTimeDelta);
-
 }
 
 HRESULT CStellia_Crystal_Destructible::Ready_Components()
@@ -395,6 +398,26 @@ HRESULT CStellia_Crystal_Destructible::Ready_Colliders()
 		return E_FAIL;
 
 	return S_OK;
+}
+
+void CStellia_Crystal_Destructible::Crystal_Roaming(_float fTimeDelta)
+{
+	_float4 vPos;
+	_float4 vDestPos;
+
+	XMStoreFloat4(&vPos, m_pTransformCom->Get_Position());
+	XMStoreFloat4(&vDestPos, m_vecRoamingArea[m_iRoamingIndex]);
+
+	m_pTransformCom->LookAt_ForLandObject(m_vecRoamingArea[m_iRoamingIndex]);
+	m_pTransformCom->Move(m_pTransformCom->Get_Look(), 2.f, fTimeDelta);
+
+	if (vPos.x >= vDestPos.x - 0.1f && vPos.x <= vDestPos.x + 0.1f &&
+		vPos.z >= vDestPos.z - 0.1f && vPos.z <= vDestPos.z + 0.1f)
+	{
+		m_iRoamingIndex += 1;
+		if (m_iRoamingIndex == m_vecRoamingArea.size())
+			m_iRoamingIndex = 0;
+	}
 }
 
 CStellia_Crystal_Destructible* CStellia_Crystal_Destructible::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)

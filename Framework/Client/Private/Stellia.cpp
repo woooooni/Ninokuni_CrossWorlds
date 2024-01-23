@@ -33,6 +33,8 @@
 #include "StelliaState_Rage1Loop_Turn.h"
 #include "StelliaState_Rage1Loop_Idle.h"
 #include "StelliaState_Rage1Loop_Explosion.h"
+#include "StelliaState_Rage1Loop_SpinTail.h"
+#include "StelliaState_Rage1Loop_JumpStamp.h"
 
 // Rage 2
 #include "StelliaState_Rage2StartTurnOC.h"
@@ -96,7 +98,6 @@ HRESULT CStellia::Initialize(void* pArg)
 	m_iObjectType = OBJ_TYPE::OBJ_BOSS;
 
 	m_vBloomPower = _float3(2.f, 2.f, 2.f);
-
 
 	// 레이지 1에서 채워야 하는 데미지
 	m_iDestDamage = 100000;
@@ -423,6 +424,14 @@ HRESULT CStellia::Ready_States()
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_BossSkill04");
 	m_pStateCom->Add_State(STELLIA_RAGE1LOOP_EXPLOSION, CStelliaState_Rage1Loop_Explosion::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_BossSkill01");
+	m_pStateCom->Add_State(STELLIA_RAGE1LOOP_SPINTAIL, CStelliaState_Rage1Loop_SpinTail::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_BossSkill02");
+	m_pStateCom->Add_State(STELLIA_RAGE1LOOP_JUMPSTAMP, CStelliaState_Rage1Loop_JumpStamp::Create(m_pStateCom, strAnimationName));
 
 	/* 레이지 2 */
 	strAnimationName.clear();
