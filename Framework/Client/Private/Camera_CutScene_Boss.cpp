@@ -315,6 +315,10 @@ HRESULT CCamera_CutScene_Boss::Start_CutScene(const _uint& iBossType, const _uin
 	default:
 		break;
 	}
+
+	/* Cursor On */
+	CUI_Manager::GetInstance()->Hide_MouseCursor(true);
+
 	return S_OK;
 }
 

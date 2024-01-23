@@ -46,10 +46,10 @@ void CBuilding::Tick(_float fTimeDelta)
 		if (true == m_bIsQuestObject)
 		{
 			if (true == m_bQuestClear)
-				XRotation(2.0f, fTimeDelta);
+				XRotation(-2.0f, fTimeDelta);
 		}
-		else
-			XRotation(2.0f, fTimeDelta);
+		//else
+		//	XRotation(2.0f, fTimeDelta);
 	}
 
 

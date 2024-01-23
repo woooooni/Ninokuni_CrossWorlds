@@ -8,9 +8,6 @@
 #include "UI_Manager.h"
 #include "Quest_Manager.h"
 
-#include "Camera_Manager.h"
-#include "Camera_Group.h"
-
 CMainQuestNode_Glanix01::CMainQuestNode_Glanix01()
 {
 }
@@ -62,11 +59,6 @@ void CMainQuestNode_Glanix01::Start()
 
 	CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
 	CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
-
-	/* 대화 카메라 세팅 */
-	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-	if (nullptr != pActionCam)
-		pActionCam->Start_Action_Talk(nullptr);
 
 	TalkEvent();
 }
@@ -121,11 +113,6 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix01::Tick(const _float& fTimeDelta)
 					m_pQuestDestSpot->Set_ReadyDelete(true);
 					Safe_Release(m_pQuestDestSpot);
 
-					/* 대화 카메라 종료 */
-					CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-					if (nullptr != pActionCam)
-						pActionCam->Finish_Action_Talk();
-
 					return NODE_STATE::NODE_FAIL;
 				}
 			}
@@ -135,11 +122,6 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix01::Tick(const _float& fTimeDelta)
 		if (KEY_TAP(KEY::N))
 		{
 			m_bIsClear = true;
-
-			/* 대화 카메라 종료 */
-			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-			if (nullptr != pActionCam)
-				pActionCam->Finish_Action_Talk();
 
 			return NODE_STATE::NODE_FAIL;
 		}

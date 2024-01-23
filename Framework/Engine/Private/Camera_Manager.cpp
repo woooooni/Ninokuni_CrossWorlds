@@ -209,7 +209,7 @@ HRESULT CCamera_Manager::Change_Camera(const _uint& iKey, const _float& fBlendin
 	if(FAILED(Set_CurCamera(iKey)))
 		return E_FAIL;
 
-	m_bBlending = true; /* Set_CurCamera()는 m_bBlending일 경우 return 되므로*/
+	m_bBlending = true; /* Set_CurCamera()는 m_bBlending일 경우 return 되므로 */
 
 	/* 파이프라인에 바로 블렌딩 적용된 트랜스폼이 던져질 수 있게 미리 한번 돌림 */
 	m_pCurCamera->Tick_Blending(GI->Compute_TimeDelta(TIMER_TYPE::GAME_PLAY));

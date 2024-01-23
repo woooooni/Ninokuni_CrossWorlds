@@ -7,9 +7,6 @@
 #include "Game_Manager.h"
 #include "UI_Manager.h"
 
-#include "Camera_Manager.h"
-#include "Camera_Group.h"
-
 CMainQuestNode_SnowField02::CMainQuestNode_SnowField02()
 {
 }
@@ -48,11 +45,6 @@ void CMainQuestNode_SnowField02::Start()
 
 	CUI_Manager::GetInstance()->OnOff_DialogWindow(true, 1);
 	CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
-
-	/* 대화 카메라 세팅 */
-	CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-	if (nullptr != pActionCam)
-		pActionCam->Start_Action_Talk(nullptr);
 
 	TalkEvent();
 }
@@ -96,11 +88,6 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField02::Tick(const _float& fTimeDelta)
 		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 		m_bIsClear = true;
-
-		/* 대화 카메라 종료 */
-		CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-		if (nullptr != pActionCam)
-			pActionCam->Finish_Action_Talk();
 
 		return NODE_STATE::NODE_FAIL;
 	}

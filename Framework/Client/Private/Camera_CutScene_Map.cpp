@@ -12,6 +12,7 @@
 #include "Game_Manager.h"
 #include "Character.h"
 #include "Player.h"
+#include "Whale.h"
 
 CCamera_CutScene_Map::CCamera_CutScene_Map(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
 	: CCamera(pDevice, pContext, strObjTag, OBJ_TYPE::OBJ_CAMERA)
@@ -60,7 +61,6 @@ void CCamera_CutScene_Map::Tick(_float fTimeDelta)
 		return;
 	}
 
-
 	/* Fade */
 	if (m_tFadeDesc.bReserved)
 	{
@@ -95,8 +95,17 @@ void CCamera_CutScene_Map::Tick(_float fTimeDelta)
 		}
 		else /* 없다면 이전 카메라로 체인지 */
 		{
-			if (m_bWillBlending)
-				CCamera_Manager::GetInstance()->Change_Camera(m_iBlendingCamKey, m_fBlendingDuration, m_eBlendingMode);
+			if (m_tWhaleDesc.bSetTransform) /* 고래 컷신이었다면 */
+			{
+				CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+				if (nullptr != pFollowCam)
+				{
+					pFollowCam->Reset_WideView_To_DefaultView();
+					pFollowCam->Set_Default_Position();
+					CCamera_Manager::GetInstance()->Change_Camera(pFollowCam->Get_Key(), 1.5f, LERP_MODE::SMOOTHER_STEP);
+				}
+				return;
+			}
 			else if (m_bWillRetruePrevCam)
 			{
 				/* 페이드가 예약되어 있다면 */
@@ -111,6 +120,7 @@ void CCamera_CutScene_Map::Tick(_float fTimeDelta)
 					CCamera_Manager::GetInstance()->Set_PrevCamera();
 				}
 			}	
+
 			return;
 		}
 	}
@@ -126,7 +136,8 @@ void CCamera_CutScene_Map::Tick(_float fTimeDelta)
 	if (Is_Shake())
 		vLookAt += Vec4(Get_ShakeLocalPos());
 
-	m_pTransformCom->LookAt(vLookAt.OneW());
+	m_vPrevLookAt = vLookAt.OneW();
+	m_pTransformCom->LookAt(m_vPrevLookAt);
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCamPosition.OneW());
 }
@@ -144,12 +155,7 @@ HRESULT CCamera_CutScene_Map::Render()
 	return S_OK;
 }
 
-HRESULT CCamera_CutScene_Map::Start_CutScene(const string& strCutSceneName,
-	const _bool& bWillRetruePrevCam,
-	const _bool& bWillBlending,
-	const _uint& iBlendingCamKey,
-	const _float& fBlendingDuration,
-	const LERP_MODE& eBlendingMode)
+HRESULT CCamera_CutScene_Map::Start_CutScene(const string& strCutSceneName, const _bool& bWillRetruePrevCam)
 {
 	m_pCurCutSceneDesc = Find_CutSceneDesc(strCutSceneName);
 	if (nullptr == m_pCurCutSceneDesc)
@@ -189,29 +195,18 @@ HRESULT CCamera_CutScene_Map::Start_CutScene(const string& strCutSceneName,
 		Set_Fov(Cam_Fov_CutScene_Map_Default);
 	}
 
-	/* 다음 체인지할 카메라 예약 */
 	m_bWillRetruePrevCam = bWillRetruePrevCam;
-	m_bWillBlending = bWillBlending;
-	if (m_bWillBlending)
-	{
-		m_iBlendingCamKey = iBlendingCamKey;
-		m_fBlendingDuration = fBlendingDuration;
-		m_eBlendingMode = eBlendingMode;
-	}
-
+	
 	/* Player Input Off */
-	{
-		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
-	}
+	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
+
+	/* 마우스 아이콘 숨기기 */
+	CUI_Manager::GetInstance()->Hide_MouseCursor(true);
+
 	return S_OK;
 }
 
-HRESULT CCamera_CutScene_Map::Start_CutScenes(vector<string> strCutSceneNames,
-	const _bool& bWillRetruePrevCam,
-	const _bool& bWillBlending,
-	const _uint& iBlendingCamKey,
-	const _float& fBlendingDuration,
-	const LERP_MODE& eBlendingMode)
+HRESULT CCamera_CutScene_Map::Start_CutScenes(vector<string> strCutSceneNames, const _bool& bWillRetruePrevCam)
 {
 	if (Is_Playing_CutScenc())
 		return E_FAIL;
@@ -228,7 +223,7 @@ HRESULT CCamera_CutScene_Map::Start_CutScenes(vector<string> strCutSceneNames,
 	{
 		string strCutSceneName = m_CutSceneNamesReserved.front();
 
-		Start_CutScene(strCutSceneName, bWillRetruePrevCam, bWillBlending, iBlendingCamKey, fBlendingDuration, eBlendingMode);
+		Start_CutScene(strCutSceneName, bWillRetruePrevCam);
 
 		m_CutSceneNamesReserved.pop();
 	}
@@ -453,6 +448,29 @@ HRESULT CCamera_CutScene_Map::Reserve_Fade(const _float& fIntroDuration, const _
 	return S_OK;
 }
 
+HRESULT CCamera_CutScene_Map::Set_CutSceneTransform(const string& strCutSceneName)
+{
+	CAMERA_CUTSCENE_MAP_DESC* pCutSceneDesc = Find_CutSceneDesc(strCutSceneName);
+	if (nullptr == pCutSceneDesc)
+		return E_FAIL;
+	
+	m_vPrevLookAt = Get_Point_In_Bezier(pCutSceneDesc->vCamLookAts, 0.f);
+	m_vPrevLookAt.w = 1.f;
+	m_pTransformCom->LookAt(m_vPrevLookAt);
+
+	Vec4 vCamPosition = Get_Point_In_Bezier(pCutSceneDesc->vCamPositions, 0.f);
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCamPosition.OneW());
+
+	/* 고래 컷신이라면 */
+	if ("Winter_Whale" == strCutSceneName)
+	{
+		m_tWhaleDesc.bSetTransform = true;
+		Set_Fov(Cam_Fov_CutScene_Map_Default);
+	}
+
+	return S_OK;
+}
+
 Vec4 CCamera_CutScene_Map::Get_Point_In_Bezier(Vec3 vPoints[MAX_BEZIER_POINT], const _float& fRatio)
 {
 	if (nullptr == vPoints)
@@ -472,7 +490,31 @@ Vec4 CCamera_CutScene_Map::Get_Point_In_Bezier(Vec3 vPoints[MAX_BEZIER_POINT], c
 
 Vec4 CCamera_CutScene_Map::Get_LookAt()
 {
-	return Vec4();
+	return m_vPrevLookAt;
+}
+
+void CCamera_CutScene_Map::Set_Blending(const _bool& bBlending)
+{
+	__super::Set_Blending(bBlending);
+
+	if (!bBlending)
+	{
+		if (m_tWhaleDesc.bSetTransform && !m_tWhaleDesc.bStarted)
+		{
+			/* 배면 뒤집기 */
+			CGameObject* pWhale = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_DYNAMIC, TEXT("Animal_Whale"));
+			if (nullptr != pWhale) 
+			{
+				static_cast<CWhale*>(pWhale)->Set_Flip(true);
+
+				m_tWhaleDesc.bStarted = true;
+			}
+		}
+		else if (m_tWhaleDesc.bSetTransform && m_tWhaleDesc.bStarted)
+		{
+			m_tWhaleDesc.Clear();
+		}
+	}
 }
 
 HRESULT CCamera_CutScene_Map::Add_CutSceneDesc(const CAMERA_CUTSCENE_MAP_DESC& desc)
@@ -566,7 +608,19 @@ void CCamera_CutScene_Map::Tick_Fade(_float fTimeDelta)
 				if (!m_tFadeDesc.Outtro.bFadeOutted) /* 페이드 아웃 종료, 페이드 인 시작 */
 				{
 					/* 카메라 체인지 */
-					CCamera_Manager::GetInstance()->Set_PrevCamera();
+					if (CAMERA_TYPE::FOLLOW == m_eReservedNextCameraType)
+					{
+						CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+						if (nullptr != pFollowCam)
+						{
+							pFollowCam->Reset_WideView_To_DefaultView();
+							pFollowCam->Set_Default_Position();
+							CCamera_Manager::GetInstance()->Set_CurCamera(pFollowCam->Get_Key());
+						}
+						m_eReservedNextCameraType = CAMERA_TYPE::CAMERA_TYPE_END;
+					}
+					else
+						CCamera_Manager::GetInstance()->Set_PrevCamera();
 
 					CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, m_tFadeDesc.Outtro.fDuration, m_tFadeDesc.Outtro.bWhite);
 
@@ -584,6 +638,16 @@ void CCamera_CutScene_Map::Tick_Fade(_float fTimeDelta)
 
 void CCamera_CutScene_Map::Tick_Blending(const _float fDeltaTime)
 {
+	/* 현재는 고래 컷신에서만 사용 */
+	/* Position */
+	Vec4 vCamPosition = CCamera_Manager::GetInstance()->Get_BlendingPosition();
+
+	m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vCamPosition.OneW());
+
+	/* LookAt */
+	m_vPrevLookAt = CCamera_Manager::GetInstance()->Get_BlendingLookAt();
+
+	m_pTransformCom->LookAt(m_vPrevLookAt.OneW());
 }
 
 CCamera_CutScene_Map* CCamera_CutScene_Map::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)

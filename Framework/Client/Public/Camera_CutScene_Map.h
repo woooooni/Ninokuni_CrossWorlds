@@ -19,7 +19,7 @@ typedef struct tagCameraCutSceneMapDesc
 	_float		fFinishDelayTime	= 0.f;
 
 	_float		fStartFov			= 0.f; // 아직 미사용 
-	_float		fFinishFov			= 0.f;
+	_float		fFinishFov			= 0.f; // 아직 미사용
 
 	LERP_MODE	eLerpMode = LERP_MODE::SMOOTHER_STEP;
 
@@ -62,6 +62,20 @@ class CCamera_CutScene_Map final : public CCamera
 
 	}CUTSCENE_FADE_DESC;
 
+	typedef struct tagSpecialCutSceneDesc
+	{
+		/* 개별 컷신 데이터 */
+		_bool bSetTransform = false;
+		_bool bStarted = false;
+
+		void Clear()
+		{
+			bSetTransform = false;
+			bStarted = false;
+		}
+
+	}SPECIAL_CUTSCENE_DESC;
+
 private:
 	CCamera_CutScene_Map(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
 	CCamera_CutScene_Map(const CCamera_CutScene_Map& rhs);
@@ -79,31 +93,18 @@ public:
 
 public:
 	HRESULT Start_CutScene(const LEVELID& eLevelID);
-
-	HRESULT Start_CutScene(const string& strCutSceneName,
-							const _bool& bWillRetruePrevCam = false,
-							const _bool& bWillBlending = false, 
-							const _uint& iBlendingCamKey = 0,
-							const _float& fBlendingDuration = 1.f, 
-							const LERP_MODE& eBlendingMode = LERP_MODE::SMOOTHER_STEP); /* 단일 컷신 실행 */
-
-	HRESULT Start_CutScenes(vector<string> strCutSceneNames,
-							const _bool& bWillRetruePrevCam = false,
-							const _bool& bWillBlending = false,
-							const _uint& iBlendingCamKey = 0,
-							const _float& fBlendingDuration = 1.f,
-							const LERP_MODE& eBlendingMode = LERP_MODE::SMOOTHER_STEP); /* 복수 컷신 실행 */
-
+	HRESULT Start_CutScene(const string& strCutSceneName, const _bool& bWillRetruePrevCam = false); /* 단일 컷신 실행 */
+	HRESULT Start_CutScenes(vector<string> strCutSceneNames, const _bool& bWillRetruePrevCam = false); /* 복수 컷신 실행 */
 	HRESULT Stop_CutScene(const _bool& bClearReservedCutScene = false);
-
 	const _bool Is_Playing_CutScenc() const { return m_tTimeDesc.bActive; }
-
 	HRESULT Reserve_Fade(const _float& fIntroDuration, const _bool& bIntroWhite, const _float& fOuttroDuration, const _bool& bOuttroWhite);
+	HRESULT Set_CutSceneTransform(const string& strCutSceneName); /* 블렌딩이 필요한 경우 해당 컷신의 트랜스폼을 미리 세팅해둔다. */
+	static Vec4 Get_Point_In_Bezier(Vec3 vPoints[MAX_BEZIER_POINT], const _float& fRatio);
+	void Reserve_NextCameraType(const CAMERA_TYPE& eType) { m_eReservedNextCameraType = eType; }
 
 public:
-	static Vec4 Get_Point_In_Bezier(Vec3 vPoints[MAX_BEZIER_POINT], const _float& fRatio);
-
 	virtual Vec4 Get_LookAt() override;
+	virtual void Set_Blending(const _bool& bBlending) override;
 
 public:
 	HRESULT Save_CutSceneDescs();
@@ -119,7 +120,6 @@ public:
 
 private:
 	virtual HRESULT Ready_Components() override;
-
 	void Tick_Fade(_float fTimeDelta);
 
 private:
@@ -130,16 +130,19 @@ private:
 	queue<string>						m_CutSceneNamesReserved;
 
 	LERP_TIME_DESC						m_tTimeDesc;
-	
+
+	Vec4								m_vPrevLookAt = {};
+
 	/* 컷신 이후 체인지 예약 데이터 */
 	_bool								m_bWillRetruePrevCam = false;
-	_bool								m_bWillBlending = false;
-	_uint								m_iBlendingCamKey = 0;
-	_float								m_fBlendingDuration = 0.f;
-	LERP_MODE							m_eBlendingMode = LERP_MODE::SMOOTHER_STEP;
 
 	/* 페이드 */
 	CUTSCENE_FADE_DESC					m_tFadeDesc = {};
+
+	/* 개별 컷신 데이터 */
+	SPECIAL_CUTSCENE_DESC				m_tWhaleDesc = {};
+
+	CAMERA_TYPE							m_eReservedNextCameraType = CAMERA_TYPE::CAMERA_TYPE_END;
 	
 public:
 	static CCamera_CutScene_Map* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);

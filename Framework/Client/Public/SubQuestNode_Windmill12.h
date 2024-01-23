@@ -21,8 +21,6 @@ private:
 	CGameObject* m_pVerde = nullptr;
 	CGameObject* m_pKuu = nullptr;
 
-	_bool		m_bCameraAction = false; /* Ç³Â÷ ºñÃçÁÖ±â */
-
 public:
 	static CSubQuestNode_Windmill12* Create();
 	virtual void Free() override;

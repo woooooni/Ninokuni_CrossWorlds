@@ -491,7 +491,7 @@ void CCamera_Action::Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType
 		/* CamPosition */
 		const Vec4 vTargetOffset = { -0.2f, 0.3f, 0.f, 1.f };
 		vCamPosition = Vec4(m_tActionTalkDesc.pKuu->Get_GoalPosition()) 
-			+ Vec4(m_tActionTalkDesc.pTransform_Kuu->Get_Look()).ZeroY() * fDistance
+			+ Vec4(m_tActionTalkDesc.pTransform_Kuu->Get_Look()).ZeroY().Normalized() * fDistance
 			+ m_tActionTalkDesc.pTransform_Kuu->Get_RelativeOffset(vTargetOffset);
 		vCamPosition.w = 1.f;
 
@@ -529,7 +529,7 @@ void CCamera_Action::Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType
 
 		/* CamPosition */
 		vCamPosition = Vec4(m_tActionTalkDesc.pTransformNpc->Get_Position())
-						+ Vec4(m_tActionTalkDesc.pTransformNpc->Get_Look()).ZeroY() * fDistance
+						+ Vec4(m_tActionTalkDesc.pTransformNpc->Get_Look()).ZeroY().Normalized() * fDistance
 						+ m_tActionTalkDesc.pTransformNpc->Get_RelativeOffset(vTargetOffset);
 		vCamPosition.y += fCamPostionHeight;
 

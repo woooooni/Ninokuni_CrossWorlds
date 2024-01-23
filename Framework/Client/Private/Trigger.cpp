@@ -9,6 +9,10 @@
 #include "Camera_Manager.h"
 #include "Camera_CutScene_Map.h"
 
+#include "Game_Manager.h"
+#include "Character.h"
+#include "Player.h"
+
 CTrigger::CTrigger(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CGameObject(pDevice, pContext, L"Trigger", OBJ_TYPE::OBJ_TRIGGER)
 {
@@ -108,17 +112,26 @@ void CTrigger::Collision_Enter(const COLLISION_INFO& tInfo)
 			break;
 		case TRIGGER_TYPE::TRIGER_WHALE_ENTER:
 			{
-			/* 배면 뒤집기 */
-			_uint			iCutLevel = GI->Get_CurrentLevel();
-			CGameObject*	 pObject = GI->Find_GameObject(iCutLevel, LAYER_TYPE::LAYER_DYNAMIC, TEXT("Animal_Whale"));
-			if (nullptr == pObject)
-				break;
+				if (!m_bWhaleCutScene)
+				{
+					/* 컷신 카메라로 블렌딩 시작 */
+					CCamera_CutScene_Map* pCutSceneCam = dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP));
+					if (nullptr != pCutSceneCam)
+					{
+						pCutSceneCam->Set_CutSceneTransform("Winter_Whale");
+						CCamera_Manager::GetInstance()->Change_Camera(CAMERA_TYPE::CUTSCENE_MAP, 2.5f, LERP_MODE::SMOOTHER_STEP);
 
-			static_cast<CWhale*>(pObject)->Set_Flip(true);
+						/* 플레이어 인풋 막기 */
+						CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
+
+						/* 플레이어 스테이트 변경 */
+						CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CStateMachine>(L"Com_StateMachine")->Change_State(CCharacter::NEUTRAL_IDLE);
+					}
+					m_bWhaleCutScene = true;
+				}
 			break;
 			}
 		}
-		
 	}
 }
 
