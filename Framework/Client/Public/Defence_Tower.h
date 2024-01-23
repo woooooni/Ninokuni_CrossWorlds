@@ -51,6 +51,9 @@ public:
 	void Set_Preview(_bool bPreview) { m_bPrevObject = bPreview; }
 	void Set_Install_Possible(_bool bPossible) { m_bInstallPossible = bPossible; }
 
+public:
+	_uint Get_TowerType() { return m_eTowerType; }
+
 protected:
 	virtual void On_Damaged(const COLLISION_INFO& tInfo);
 
@@ -86,9 +89,11 @@ protected:
 protected:
 	class CGameObject* m_pTarget = nullptr;
 	DEFENCE_TOWER_STATE m_eCurrentState = DEFENCE_TOWER_STATE::TOWER_STATE_END;
-
+	
 	_float m_fAccFireTime = 0.f;
 	_float m_fFireTime = 1.f;
+
+	_uint m_eTowerType = 99;
 
 protected:
 	_float m_fTargetLength = 10.f;

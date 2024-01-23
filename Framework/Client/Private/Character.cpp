@@ -752,6 +752,9 @@ void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 	if (true == m_bSuperArmor)	
 		return;
 
+	if (m_pStateCom->Get_CurrState() == CCharacter::BATTLE_GUARD)
+		return;
+
 	
 
 	if (CCollider::ATTACK_TYPE::AIR_BORNE == tInfo.pOtherCollider->Get_AttackType())

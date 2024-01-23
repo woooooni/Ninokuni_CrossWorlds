@@ -30,8 +30,13 @@ public:
 	virtual void Tick(_float fTimeDelta) override;
 	virtual void LateTick(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
+
 public:
 	virtual HRESULT Ready_Components();
+
+public:
+	void Set_ApexColor(Vec4 vColor) { m_vApexColor = vColor; }
+	void Set_CenterColor(Vec4 vColor) { m_vCenterColor = vColor; }
 
 private:
 	CShader* m_pShaderCom = nullptr;
@@ -39,6 +44,7 @@ private:
 	CTransform* m_pTransformCom = nullptr;
 	CModel* m_pModelCom = nullptr;
 	CTexture* m_pTextureCom[LEVEL_SKY::SKY_END] = {};
+
 
 private:
 	Vec4 m_vApexColor = Vec4(0.173f, 0.631f, 0.851f, 1.0f);

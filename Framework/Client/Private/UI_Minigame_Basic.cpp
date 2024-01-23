@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "UI_Minigame_Basic.h"
 #include "GameInstance.h"
+#include "Game_Manager.h"
+#include "Player.h"
+#include "TowerDefence_Manager.h"
 
 CUI_Minigame_Basic::CUI_Minigame_Basic(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_MINIGAMEBASIC eType)
 	: CUI(pDevice, pContext, L"UI_Minigame_Basic")
@@ -52,6 +55,13 @@ void CUI_Minigame_Basic::LateTick(_float fTimeDelta)
 		if (TOWERDEFENCE_GOLD == m_eType)
 		{
 			// °ñµå ÅØ½ºÆ®
+			CRenderer::TEXT_DESC TextDesc = {};
+			TextDesc.strFontTag = L"Default_Bold";
+			TextDesc.strText = to_wstring(CGame_Manager::GetInstance()->Get_Player()->Get_Gold());
+			TextDesc.vColor = Vec4(1.f, 0.7f, 0.f, 1.f);
+			TextDesc.vPosition = Vec2(m_tInfo.fX + 40.f - (TextDesc.strText.size() * 8.5f), m_tInfo.fY - 10.f);
+			TextDesc.vScale = Vec2(0.45f, 0.45f);
+			m_pRendererCom->Add_Text(TextDesc);
 		}
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
@@ -88,6 +98,11 @@ void CUI_Minigame_Basic::On_Mouse(_float fTimeDelta)
 	{
 
 		__super::On_Mouse(fTimeDelta);
+		if (KEY_TAP(KEY::LBTN) && m_eType == UI_MINIGAMEBASIC::TOWERDEFENCE_START)
+		{
+			CTowerDefence_Manager::GetInstance()->Start_Defence();
+			return;
+		}
 	}
 }
 

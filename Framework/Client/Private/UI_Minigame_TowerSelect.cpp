@@ -2,6 +2,7 @@
 #include "UI_Minigame_TowerSelect.h"
 #include "GameInstance.h"
 #include "UI_Manager.h"
+#include "TowerDefence_Manager.h"
 
 CUI_Minigame_TowerSelect::CUI_Minigame_TowerSelect(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_TOWERTYPE eType)
 	: CUI(pDevice, pContext, L"UI_Minigame_TowerSelect")
@@ -144,6 +145,22 @@ void CUI_Minigame_TowerSelect::Key_Input(_float fTimeDelta)
 	if (KEY_TAP(KEY::LBTN))
 	{
 		Set_Click(true);
+
+		switch (m_eType)
+		{
+		case UI_TOWERTYPE::TOWER_CANNON:
+			CTowerDefence_Manager::GetInstance()->Set_PickObject(CTowerDefence_Manager::TOWER_TYPE::CANNON);
+			break;
+		case UI_TOWERTYPE::TOWER_CRYSTAL:
+			CTowerDefence_Manager::GetInstance()->Set_PickObject(CTowerDefence_Manager::TOWER_TYPE::CRYSTAL);
+			break;
+		case UI_TOWERTYPE::TOWER_FLAME:
+			CTowerDefence_Manager::GetInstance()->Set_PickObject(CTowerDefence_Manager::TOWER_TYPE::FLAME);
+			break;
+		case UI_TOWERTYPE::TOWER_SHADOW:
+			CTowerDefence_Manager::GetInstance()->Set_PickObject(CTowerDefence_Manager::TOWER_TYPE::SHADOW);
+			break;
+		}
 	}
 }
 
