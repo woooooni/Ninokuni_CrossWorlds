@@ -547,26 +547,53 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 
 		m_Threads[LOADING_THREAD::TOWER_DEFENCE_READY] = std::async(&CLoader::Loading_For_TowerDefence, this);
 		
-		
-		//// 미니게임(타워 디펜스)
-		//if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_TowerDefence_TowerSelect"),
-		//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/TowerDefence/UI_Minigame_Select_GoldVer_%d.png"), 4))))
-		//	return E_FAIL;
-		//if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_TowerDefence_TowerSelect_Glow"),
-		//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/TowerDefence/UI_Minigame_Select_Glow.png")))))
-		//	return E_FAIL;
-		//if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_TowerDefence_Timer"),
-		//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/TowerDefence/UI_Minigame_Timer.png")))))
-		//	return E_FAIL;
-		//if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_TowerDefence_StartBtn"),
-		//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/TowerDefence/UI_Minigame_Start_1.png")))))
-		//	return E_FAIL;
-		//
+		// 미니게임(타워 디펜스)
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_TowerDefence_TowerSelect"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/TowerDefence/UI_Minigame_Select_Renewal_%d.png"), 4))))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_TowerDefence_Timer"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/TowerDefence/UI_Minigame_Timer.png")))))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_TowerDefence_StartBtn"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/TowerDefence/UI_Minigame_StartBtn_%d.png"), 2))))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_TowerDefence_Background"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/TowerDefence/UI_Minigame_Towerlist_Background.png")))))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_TowerDefence_Gold"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/TowerDefence/UI_Minigame_Gold.png")))))
+			return E_FAIL;
+
+		// 미니게임(그랑프리)
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_ClassSkills"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/UI_Grandprix_Skill_%d.png"), 3))))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_BurstSkill"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/UI_Grandprix_Burst_Skill_0.png")))))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_MaskTexture"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/UI_Grandprix_Skill_Mask.png")))))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_SkillFrame"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/UI_Grandprix_SkillFrame_%d.png"), 2))))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_HPBar_Backs"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/UI_Granprix_HPBack_Nick_%d.png"), 9))))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_HPBar"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/UI_Granprix_HP.png")))))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_Frame"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/UI_Grandprix_Background.png")))))
+			return E_FAIL;
+
+		// 미니게임용 프로토타입
+		if (FAILED(CUIMinigame_Manager::GetInstance()->Ready_MinigameUI_Prototypes(LEVELID::LEVEL_EVERMORE)))
+			return E_FAIL;
+
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Common_LensFlare"),
 			CLensFlare::Create(m_pDevice, m_pContext, TEXT("Common_LensFlare"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX))
 			return E_FAIL;
-		//
-		//CUIMinigame_Manager::GetInstance()->Ready_MinigameUI_Prototypes(LEVELID::LEVEL_EVERMORE);
 
 		g_bLevelFirst[LEVEL_EVERMORE] = true;
 	}

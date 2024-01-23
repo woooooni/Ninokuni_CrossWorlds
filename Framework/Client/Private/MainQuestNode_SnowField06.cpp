@@ -34,7 +34,6 @@ void CMainQuestNode_SnowField06::Start()
 
 	// 임시로 monster에 
 	m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_MONSTER), &vSpotPos));
-	// Wonhye : 여기에 퀘스트 Tag, Name, Content를 받고 milepost에게 정보를 넘기자(UIManager를 통해서)
 }
 
 CBTNode::NODE_STATE CMainQuestNode_SnowField06::Tick(const _float& fTimeDelta)

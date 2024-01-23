@@ -396,8 +396,10 @@ void CUI_MonsterHP_World::Distinguish_Target()
 	{
 		if (false == m_bIsTarget)
 		{
-			m_bIsTarget = true;
+			if (m_pOwner->Get_ObjectTag() == TEXT("Stellia_Crystal"))
+				return;
 
+			m_bIsTarget = true;
 
 			CMonster::MONSTER_STAT StatDesc = {};
 			ZeroMemory(&StatDesc, sizeof(CMonster::MONSTER_STAT));

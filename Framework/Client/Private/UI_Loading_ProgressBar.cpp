@@ -54,7 +54,7 @@ void CUI_Loading_ProgressBar::Tick(_float fTimeDelta)
 
 	if (UIPROG_BAR == m_eType)
 	{
-		if (!m_bFinish)
+		if (false == m_bFinish)
 		{
 			if (0.1f <= m_fLoadingProg && 0.3 > m_fLoadingProg)
 			{

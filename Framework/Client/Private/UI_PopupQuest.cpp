@@ -35,6 +35,8 @@ void CUI_PopupQuest::Set_Active(_bool bActive)
 
 void CUI_PopupQuest::Set_Contents(const wstring& strQuestType, const wstring& strTitle, const wstring& strContents)
 {
+	// 병합시 오류 방지. 임시로 살려둠.
+
 	if (CUI_PopupQuest::POPUP_WINDOW != m_eType)
 		return;
 
@@ -69,6 +71,17 @@ void CUI_PopupQuest::Set_Contents(const wstring& strQuestType, const wstring& st
 	m_Quest.push_back(QuestDesc);
 }
 
+void CUI_PopupQuest::Set_Contents(const QUEST_INFO& tQuestInfo)
+{
+	if (4 <= m_Quest.size())
+		return;
+
+	QUEST_INFO QuestDesc = {};
+	memcpy(&QuestDesc, &tQuestInfo, sizeof(QUEST_INFO));
+
+	m_Quest.push_back(QuestDesc);
+}
+
 void CUI_PopupQuest::Update_QuestContents(const wstring& strPreTitle, const wstring& strQuestType, const wstring& strTitle, const wstring& strContents)
 {
 	if (CUI_PopupQuest::POPUP_WINDOW != m_eType)
@@ -87,6 +100,32 @@ void CUI_PopupQuest::Update_QuestContents(const wstring& strPreTitle, const wstr
 			iter->strType = strQuestType;
 			iter->strTitle = strTitle;
 			iter->strContents = strContents;
+			break;
+		}
+	}
+}
+
+void CUI_PopupQuest::Update_QuestContents(const wstring& strPreTitle, const QUEST_INFO& tQuestInfo)
+{
+	if (CUI_PopupQuest::POPUP_WINDOW != m_eType)
+		return;
+
+	if (0 >= m_Quest.size())
+		return;
+
+	QUEST_INFO QuestDesc = {};
+	memcpy(&QuestDesc, &tQuestInfo, sizeof(QUEST_INFO));
+
+	for (auto iter = m_Quest.begin(); iter != m_Quest.end(); ++iter)
+	{
+		if (strPreTitle == iter->strTitle)
+		{
+			if (iter->strContents == tQuestInfo.strContents)
+				return; // 추가
+
+			iter->strType = tQuestInfo.strType;
+			iter->strTitle = tQuestInfo.strTitle;
+			iter->strContents = tQuestInfo.strContents;
 			break;
 		}
 	}
@@ -467,6 +506,26 @@ void CUI_PopupQuest::Key_Input(_float fTimeDelta)
 {
 	if (KEY_TAP(KEY::LBTN))
 	{
+		if (POPUP_WINDOW == m_eType)
+		{
+			_int iWindow = -1;
+
+			if (TEXT("UI_PopupQuest_FirstWindow") == Get_ObjectTag())
+				iWindow = 0;
+			else if (TEXT("UI_PopupQuest_SecondWindow") == Get_ObjectTag())
+				iWindow = 1;
+			else if (TEXT("UI_PopupQuest_ThirdWindow") == Get_ObjectTag())
+				iWindow = 2;
+			else if (TEXT("UI_PopupQuest_FourthWindow") == Get_ObjectTag())
+				iWindow = 3;
+			else
+				iWindow = -1;
+
+			if (-1 == iWindow)
+				return;
+
+			CUI_Manager::GetInstance()->Set_QuestDestSpot(iWindow);
+		}
 	}
 }
 

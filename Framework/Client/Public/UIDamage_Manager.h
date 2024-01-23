@@ -21,6 +21,10 @@ private:
 	virtual ~CUIDamage_Manager() = default;
 
 public:
+	_uint Get_CriticalStandard() { return m_iMaxStandard; }
+	void Set_CriticalStandard(_uint iStandard) { m_iMaxStandard = iStandard; }
+
+public:
 	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	void	Tick(_float fTimeDelta);
 

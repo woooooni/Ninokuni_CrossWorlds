@@ -28,7 +28,6 @@ HRESULT CUI_Loading_Background::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	// Temp : 임시로 사이즈 별도지정함
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
@@ -71,9 +70,6 @@ HRESULT CUI_Loading_Background::Ready_Components()
 		return E_FAIL;
 
 	// Texture Component
-//	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Loading"),
-//		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
-//		return E_FAIL;
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Loading_Window"),
 		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 		return E_FAIL;

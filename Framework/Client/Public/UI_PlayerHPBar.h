@@ -22,6 +22,7 @@ public:
 private:
 	CTexture* m_pFXTextureCom = { nullptr };
 	class CCharacter* m_pPlayer = { nullptr };
+	CHARACTER_TYPE m_pCharacterType = { CHARACTER_TYPE::CHARACTER_END };
 
 	wstring m_strPlayerMaxHP = L"";
 	wstring m_strPlayerCurHP = L"";
