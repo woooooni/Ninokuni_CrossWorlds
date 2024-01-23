@@ -14,6 +14,7 @@ HRESULT CSkill_Destroyer_WheelWind::Initialize(ID3D11Device* pDevice, ID3D11Devi
 	if (FAILED(__super::Initialize(pDevice, pContext, pOwner)))
 		return E_FAIL;
 
+	m_fCoolTime = 10.f;
 	return S_OK;
 }
 

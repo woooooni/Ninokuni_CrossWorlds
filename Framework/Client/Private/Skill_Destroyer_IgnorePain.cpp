@@ -14,6 +14,8 @@ HRESULT CSkill_Destroyer_IgnorePain::Initialize(ID3D11Device* pDevice, ID3D11Dev
 	if (FAILED(__super::Initialize(pDevice, pContext, pOwner)))
 		return E_FAIL;
 
+	m_fCoolTime = 15.f;
+
 	return S_OK;
 }
 

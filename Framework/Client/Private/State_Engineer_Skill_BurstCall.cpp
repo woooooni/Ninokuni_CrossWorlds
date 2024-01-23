@@ -13,6 +13,8 @@ HRESULT CState_Engineer_Skill_BurstCall::Initialize(const list<wstring>& Animati
 {
     if (FAILED(__super::Initialize(AnimationList)))
         return E_FAIL;
+
+    
     
     return S_OK;
 }
