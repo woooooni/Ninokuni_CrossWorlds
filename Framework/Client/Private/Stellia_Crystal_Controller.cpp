@@ -173,12 +173,19 @@ HRESULT CStellia_Crystal_Controller::Create_Crystals(CStellia* pStellia)
 	{
 		const float fAngle = 360.f / (_float)m_iCrystalAmount * i;
 
-		_float fRadius = GI->RandomFloat(10.f, 25.f);
+		_float fRadius = GI->RandomFloat(20.f, 35.f);
 
 		Vec4 vPos = {};
 		{
 			vPos.x = m_vOriginPos.x + fRadius * cos(XMConvertToRadians(fAngle));
-			vPos.y = m_vOriginPos.y;
+			if (i % 2 != 0)
+			{
+				vPos.y = m_vOriginPos.y + 3.f;
+			}
+			else
+			{
+				vPos.y = m_vOriginPos.y + 0.5f;
+			}
 			vPos.z = m_vOriginPos.z + fRadius * sin(XMConvertToRadians(fAngle));
 			vPos.w = 1.f;
 		}
@@ -225,4 +232,13 @@ void CStellia_Crystal_Controller::Clear_Progress()
 	m_bIsRespawn = true;
 	m_bIsProgress = false;
 	m_fAccLimitTime = 0.f;
+}
+
+void CStellia_Crystal_Controller::Set_CrystalTurnData()
+{
+	for (_int i = 0; i < m_pCrystals.size(); ++i)
+	{
+		if (m_pCrystals[i] != nullptr)
+			m_pCrystals[i]->Set_CrystalTurnData();
+	}
 }

@@ -252,7 +252,7 @@ HRESULT CClown_Wizard::Ready_States()
 	m_pBTCom = CClown_WizardBT::Create(m_pDevice, m_pContext, this);
 
 	strKorName = TEXT("Çã¼ö±úºñ");
-	strKorName = TEXT("¸¶³àÀÇ ½£");
+	strSubName = TEXT("¸¶³àÀÇ ½£");
 	m_tStat.eElementType = ELEMENTAL_TYPE::LIGHT;
 
 	m_tStat.iLv = 11;

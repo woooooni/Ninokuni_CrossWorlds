@@ -49,6 +49,19 @@ HRESULT CStellia_Crystal_Destructible::Initialize(void* pArg)
 		Vec4 vPos = *(Vec4*)pArg;
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);
 		m_pTransformCom->Set_Scale(Vec3(4.f, 4.f, 4.f));
+		if (vPos.y > m_fCrystalMinY)
+			m_bIsUp = false;
+		else
+			m_bIsUp = true;
+
+		if (m_bIsUp)
+		{
+			m_tFlyDesc.Start(m_fCrystalMinY, m_fCrystalMaxY, m_fFlyDuration, LERP_MODE::SMOOTHER_STEP);
+		}
+		else
+		{
+			m_tFlyDesc.Start(m_fCrystalMaxY, m_fCrystalMinY, m_fFlyDuration, LERP_MODE::SMOOTHER_STEP);
+		}
 	}
 
 	if (FAILED(Ready_Components()))
@@ -69,7 +82,17 @@ HRESULT CStellia_Crystal_Destructible::Initialize(void* pArg)
 	m_pHPBar = dynamic_cast<CUI_MonsterHP_World*>(pHPBar);
 	m_pHPBar->Set_Owner(this, m_tStat.eElementType, 2.5f);
 
-	m_vBloomPower = _float3(0.7f, 0.7f, 0.7f);
+	m_vBloomPower = _float3(1.f, 1.f, 1.f);
+
+	// 부유
+	m_fFlyDuration = 1.5f;
+	m_fCrystalMaxY = 3.f;
+	m_fCrystalMinY = 0.5f;
+
+	// 턴
+	m_fDeSpeedDuration = 3.f;
+	m_tTurnDesc.fCurValue = 10.f;
+	m_tTurnDesc.Start(m_tTurnDesc.fCurValue, 0.f, m_fDeSpeedDuration, LERP_MODE::SMOOTHER_STEP);
 
 	return S_OK;
 }
@@ -95,11 +118,20 @@ void CStellia_Crystal_Destructible::Tick(_float fTimeDelta)
 		else if (m_iSelfType == m_iBingoType)
 		{
 			m_pStellia->Set_CrystalBingoCount(1);
-		}
 
+			// 스텔리아에게 전달하여 다시 턴 시키기
+			m_pStellia->Set_CrystalTurnData();
+		}
 
 		this->Set_Dead(true);
 	}
+
+	Fly_Crystal(fTimeDelta);
+
+	if (m_bIsTurn)
+		Turn_Crystal(fTimeDelta);
+
+	//////////////////////////
 
 	if (nullptr != m_pHPBar)
 		m_pHPBar->Tick(fTimeDelta);
@@ -259,6 +291,52 @@ void CStellia_Crystal_Destructible::Set_CrystalData(STELLIA_CRYSTAL_DESC* pDesc)
 	m_pStellia = dynamic_cast<CStellia*>(pDesc->pStellia);
 }
 
+void CStellia_Crystal_Destructible::Set_CrystalTurnData()
+{
+	m_tTurnDesc.fCurValue = 10.f;
+	m_tTurnDesc.Start(m_tTurnDesc.fCurValue, 0.f, m_fDeSpeedDuration, LERP_MODE::SMOOTHER_STEP);
+	m_bIsTurn = true;
+}
+
+void CStellia_Crystal_Destructible::Fly_Crystal(_float fTimeDelta)
+{
+	if (m_tFlyDesc.bActive)
+	{
+		m_fCrystalY = m_tFlyDesc.Update(fTimeDelta);
+	}
+	else
+	{
+		m_bIsUp = !m_bIsUp;
+		if (m_bIsUp)
+		{
+			m_tFlyDesc.Start(m_fCrystalMinY, m_fCrystalMaxY, m_fFlyDuration, LERP_MODE::SMOOTHER_STEP);
+		}
+		else
+		{
+			m_tFlyDesc.Start(m_fCrystalMaxY, m_fCrystalMinY, m_fFlyDuration, LERP_MODE::SMOOTHER_STEP);
+		}
+	}
+
+	Vec4 vCrystalPos = m_pTransformCom->Get_Position();
+	vCrystalPos.y = m_fCrystalY;
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCrystalPos);
+}
+
+void CStellia_Crystal_Destructible::Turn_Crystal(_float fTimeDelta)
+{
+	if (m_tTurnDesc.bActive)
+	{
+		m_tTurnDesc.fCurValue = m_tTurnDesc.Update(fTimeDelta);
+	}
+	else
+	{
+		m_bIsTurn = false;
+	}
+
+	m_pTransformCom->RevolutionRotation(m_pStellia->Get_OriginPos().xyz(), Vec3::Up, m_tTurnDesc.fCurValue * fTimeDelta);
+
+}
+
 HRESULT CStellia_Crystal_Destructible::Ready_Components()
 {
 	/* For.Com_Texture */
@@ -287,8 +365,8 @@ HRESULT CStellia_Crystal_Destructible::Ready_States()
 	m_tStat.eElementType = ELEMENTAL_TYPE::FIRE;
 
 	m_tStat.iLv = 15;
-	m_tStat.fMaxHp = 15000;
-	m_tStat.fHp = 15000;
+	m_tStat.fMaxHp = 5000;
+	m_tStat.fHp = 5000;
 	m_tStat.iAtk = 250;
 	m_tStat.iDef = 0;
 

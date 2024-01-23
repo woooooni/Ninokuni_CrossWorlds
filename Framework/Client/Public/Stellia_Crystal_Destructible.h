@@ -13,8 +13,8 @@ public:
 	typedef struct tagCrystalDesc
 	{
 		CGameObject* pStellia = nullptr;
-		_int		 iBingoType;
-		_int		 iSelfType;
+		_int		 iBingoType = 0;
+		_int		 iSelfType = 0;
 	}STELLIA_CRYSTAL_DESC;
 
 private:
@@ -37,6 +37,11 @@ public:
 
 public:
 	void Set_CrystalData(STELLIA_CRYSTAL_DESC* pDesc);
+	void Set_CrystalTurnData();
+
+private:
+	void Fly_Crystal(_float fTimeDelta);
+	void Turn_Crystal(_float fTimeDelta);
 
 private:
 	class CTexture* m_pTextureCom = nullptr;
@@ -46,6 +51,20 @@ private:
 	_int		m_iBingoType;
 	_int		m_iSelfType = 0;
 	CStellia*	m_pStellia = nullptr;
+
+	// ≈œ
+	Vec4		m_vRotateOriginPos;
+	LERP_FLOAT_DESC m_tTurnDesc;
+
+	_bool		m_bIsTurn = true;
+	_float		m_fDeSpeedDuration = 0.f;
+	// ∫Œ¿Ø
+	LERP_FLOAT_DESC m_tFlyDesc;
+	_bool		m_bIsUp = true;
+	_float		m_fFlyDuration = 0.f;
+	_float		m_fCrystalY = 0.f;
+	_float		m_fCrystalMaxY = 0.f;
+	_float		m_fCrystalMinY = 0.f;
 
 private:
 	virtual HRESULT Ready_Components();

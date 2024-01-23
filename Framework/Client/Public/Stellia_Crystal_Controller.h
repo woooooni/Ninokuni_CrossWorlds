@@ -31,6 +31,7 @@ public:
 	HRESULT Create_Crystals(CStellia* pStellia);
 	HRESULT Clear_Crystals();
 	void	Clear_Progress();
+	void	Set_CrystalTurnData();
 
 private:
 	Vec4 m_vOriginPos;

@@ -80,6 +80,7 @@ public:
 	HRESULT Clear_Crystals();
 
 	class CStellia_Crystal_Controller* Get_CrystalController() const { return m_pCrystalController; }
+	void Set_CrystalTurnData();
 
 	// 胶炮府酒 公利 
 	_bool Get_IsStelliaHit() { return m_bIsStelliaHit; }
@@ -98,7 +99,7 @@ private:
 	class CStellia_Crystal_Controller* m_pCrystalController = nullptr;
 
 	// 胶炮府酒 公利 
-	_bool m_bIsStelliaHit = false;
+	_bool m_bIsStelliaHit = true;
 
 public:
 	static CStellia* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat);

@@ -16,7 +16,7 @@ HRESULT CStelliaState_Rage1Loop_Explosion::Initialize(const list<wstring>& Anima
 {
 	__super::Initialize(AnimationList);
 
-	m_fRotAngle = 15.f;
+	m_fRotAngle = 30.f;
 
 	return S_OK;
 }

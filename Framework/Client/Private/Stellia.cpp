@@ -97,6 +97,7 @@ HRESULT CStellia::Initialize(void* pArg)
 
 	m_vBloomPower = _float3(2.f, 2.f, 2.f);
 
+
 	// 레이지 1에서 채워야 하는 데미지
 	m_iDestDamage = 100000;
 
@@ -556,6 +557,11 @@ HRESULT CStellia::Clear_Crystals()
 	m_pCrystalController->Clear_Crystals();
 
 	return S_OK;
+}
+
+void CStellia::Set_CrystalTurnData()
+{
+	m_pCrystalController->Set_CrystalTurnData();
 }
 
 #pragma endregion
