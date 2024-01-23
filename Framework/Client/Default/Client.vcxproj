@@ -288,6 +288,7 @@
     <ClInclude Include="..\Public\Enbi.h" />
     <ClInclude Include="..\Public\Engineer_Bullet.h" />
     <ClInclude Include="..\Public\Engineer_Bullet_Bomb.h" />
+    <ClInclude Include="..\Public\Engineer_BurstCall_Missile.h" />
     <ClInclude Include="..\Public\Engineer_Burst_CannonBomb.h" />
     <ClInclude Include="..\Public\Engineer_Burst_DestructionCannon.h" />
     <ClInclude Include="..\Public\Engineer_Npc.h" />
@@ -1124,6 +1125,7 @@
     <ClCompile Include="..\Private\Enbi.cpp" />
     <ClCompile Include="..\Private\Engineer_Bullet.cpp" />
     <ClCompile Include="..\Private\Engineer_Bullet_Bomb.cpp" />
+    <ClCompile Include="..\Private\Engineer_BurstCall_Missile.cpp" />
     <ClCompile Include="..\Private\Engineer_Burst_CannonBomb.cpp" />
     <ClCompile Include="..\Private\Engineer_Burst_DestructionCannon.cpp" />
     <ClCompile Include="..\Private\Engineer_Npc.cpp" />

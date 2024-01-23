@@ -138,7 +138,7 @@ void CTowerDefence_Manager::Prepare_Defence()
 	}
 
 	m_eCurrentPhase = TOWER_DEFENCE_PHASE::DEFENCE_PREPARE;
-	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FREE);
+	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::QUATER);
 
 	for (auto& pDefenceObject : m_DefenceObjects)
 	{
@@ -337,6 +337,9 @@ void CTowerDefence_Manager::Tick_Defence_Prepare(_float fTimeDelta)
 
 	if (KEY_TAP(KEY::R))
 	{
+		if (nullptr == m_pPicked_Object || nullptr == m_pPicked_ObjectTransform)
+			return;
+
 		m_pPicked_ObjectTransform->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(45.f));
 		return;
 	}
@@ -374,6 +377,13 @@ void CTowerDefence_Manager::Tick_Defence_Prepare(_float fTimeDelta)
 
 void CTowerDefence_Manager::Tick_Defence_Progress(_float fTimeDelta)
 {
+	list<CGameObject*>& Monsters = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER);
+
+	if (0 >= Monsters.size())
+	{
+		Finish_Defence();
+	}
+
 	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::X))
 	{
 		Finish_Defence();

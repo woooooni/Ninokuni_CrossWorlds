@@ -1632,6 +1632,7 @@ void Client::CMainApp::Free()
 	CItem_Manager::GetInstance()->DestroyInstance();
 	CWeapon_Manager::GetInstance()->DestroyInstance();
 	CSkill_Manager::GetInstance()->DestroyInstance();
+	CBuff_Manager::GetInstance()->DestroyInstance();
 	CCharacter_Manager::GetInstance()->DestroyInstance();
 	CGame_Manager::GetInstance()->DestroyInstance();
 	CGameInstance::Release_Engine();

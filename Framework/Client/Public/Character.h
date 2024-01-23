@@ -230,7 +230,7 @@ public:
 
 public:
 	class CTransform* Get_CharacterTransformCom() { return m_pTransformCom; }
-
+	
 
 public:
 	void Set_EnterLevelPosition(Vec4 vPosition);
@@ -312,6 +312,7 @@ protected: /* 해당 객체가 사용해야할 컴포넌트들을 저장하낟. */
 	class CTrail* m_pTrails[SOCKET_END];
 	class CWeapon* m_pWeapon = nullptr;
 	class CModel* m_pCharacterPartModels[PART_TYPE::PART_END] = {};
+	class CDecal* m_pEffectTargetDecal = nullptr;
 
 protected:
 	class CGameObject* m_pTarget = nullptr;
