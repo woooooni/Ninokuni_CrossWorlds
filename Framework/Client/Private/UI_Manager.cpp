@@ -107,7 +107,6 @@
 #include "UI_SetNickname_Textbox.h"
 #include "UI_SkillWindow_LineBox.h"
 #include "UI_Loading_ProgressBar.h"
-#include "UI_Loading_Information.h"
 #include "UI_MonsterHP_Elemental.h"
 #include "UI_ImajinnSection_Slot.h"
 #include "UI_WeaponSection_Weapon.h"
@@ -293,6 +292,8 @@ void CUI_Manager::Set_BattleDialogue(wstring strContents)
 
 void CUI_Manager::Set_QuestPopup(const wstring& strQuestType, const wstring& strTitle, const wstring& strContents)
 {
+	// 병합시 오류 방지. 임시로 살려둠.
+
 	if (m_QuestPopUp[0] == nullptr)
 		return;
 
@@ -301,13 +302,35 @@ void CUI_Manager::Set_QuestPopup(const wstring& strQuestType, const wstring& str
 
 	m_QuestPopUp[0]->Set_Contents(strQuestType, strTitle, strContents);
 
-	// 퀘스트 개수를 알아낸 다음 그에 맞게 상태 갱신을 해준다.
 	Resize_QuestPopup();
+}
+
+void CUI_Manager::Set_QuestPopup(void* pArg)
+{
+	if (m_QuestPopUp[0] == nullptr)
+		return;
+
+	if (-1 == m_QuestPopUp[0]->Get_NumOfQuest() || 5 <= m_QuestPopUp[0]->Get_NumOfQuest())
+		return;
+
+	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+	memcpy(&QuestDesc, &pArg, sizeof(CUI_PopupQuest::QUEST_INFO));
+	m_QuestPopUp[0]->Set_Contents(QuestDesc);
+
+	Resize_QuestPopup();
+
+//	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+//	QuestDesc.strType = m_strQuestTag;
+//	QuestDesc.strTitle = m_strQuestName;
+//	QuestDesc.strContents = m_strQuestContent;
+//	QuestDesc.bCreateSpot = true;
+//	QuestDesc.vDestPosition = _float4(vSpotPos.x, vSpotPos.y, vSpotPos.z, vSpotPos.w);
+//	CUI_Manager::GetInstance()->Set_QuestPopup(&QuestDesc);
 }
 
 void CUI_Manager::Update_QuestPopup(const wstring& strPreTitle, const wstring& strQuestType, const wstring& strTitle, const wstring& strContents)
 {
-	// 퀘스트를 찾아서 그 퀘스트의 내용을 수정한다.
+	// 병합시 오류 방지. 임시로 살려둠.
 	if (m_QuestPopUp[0] == nullptr)
 		return;
 
@@ -316,6 +339,27 @@ void CUI_Manager::Update_QuestPopup(const wstring& strPreTitle, const wstring& s
 
 	m_QuestPopUp[0]->Update_QuestContents(strPreTitle, strQuestType, strTitle, strContents);
 	Resize_QuestPopup();
+}
+
+void CUI_Manager::Update_QuestPopup(const wstring& strPreTitle, void* pArg)
+{
+	if (m_QuestPopUp[0] == nullptr)
+		return;
+
+	if (0 >= m_QuestPopUp[0]->Get_NumOfQuest())
+		return;
+
+	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+	memcpy(&QuestDesc, &pArg, sizeof(CUI_PopupQuest::QUEST_INFO));
+	m_QuestPopUp[0]->Update_QuestContents(strPreTitle, QuestDesc);
+
+	Resize_QuestPopup();
+
+//	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+//	QuestDesc.strType = m_strNextQuestTag;
+//	QuestDesc.strTitle = m_strNextQuestName;
+//	QuestDesc.strContents = m_strNextQuestContent;
+//	CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, &QuestDesc);
 }
 
 void CUI_Manager::Clear_QuestPopup(const wstring& strTitle)
@@ -434,6 +478,27 @@ _int CUI_Manager::Get_QuestNum()
 		return -1;
 
 	return m_QuestPopUp[0]->Get_NumOfQuest();
+}
+
+void CUI_Manager::Get_QuestInfo()
+{
+}
+
+void CUI_Manager::Set_QuestDestSpot(_int iWindow)
+{
+//	if (nullptr == m_QuestPopUp[0])
+//		return;
+//
+//	if (iWindow > Get_QuestNum())
+//		return;
+//
+//	CUI_PopupQuest::QUEST_INFO QuestDesc = {};
+//	memcpy(&QuestDesc, &(m_QuestPopUp[0]->Get_QuestContents(iWindow)), sizeof(CUI_PopupQuest::QUEST_INFO));
+}
+
+void CUI_Manager::Calculate_QuestDestSpot(const wstring& strContents, _float4 vDestPos)
+{
+	vDestPos; // 
 }
 
 _int CUI_Manager::Get_SelectedCharacter()
@@ -2465,34 +2530,39 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 	if (nullptr == pWindow)
 		return E_FAIL;
 	Safe_AddRef(pWindow);
+	pWindow->Set_ObjectTag(TEXT("UI_PopupQuest_FirstWindow"));
 
 	UIDesc.fY += fOffset;
+	pWindow = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_QuestPopup_Frame_Window"), &UIDesc, &pWindow)))
 		return E_FAIL;
 	m_QuestPopUp.push_back(dynamic_cast<CUI_PopupQuest*>(pWindow));
 	if (nullptr == pWindow)
 		return E_FAIL;
 	Safe_AddRef(pWindow);
+	pWindow->Set_ObjectTag(TEXT("UI_PopupQuest_SecondWindow"));
 
 	UIDesc.fY += fOffset;
+	pWindow = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_QuestPopup_Frame_Window"), &UIDesc, &pWindow)))
 		return E_FAIL;
 	m_QuestPopUp.push_back(dynamic_cast<CUI_PopupQuest*>(pWindow));
 	if (nullptr == pWindow)
 		return E_FAIL;
 	Safe_AddRef(pWindow);
+	pWindow->Set_ObjectTag(TEXT("UI_PopupQuest_ThirdWindow"));
 
 	UIDesc.fY += fOffset;
+	pWindow = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_QuestPopup_Frame_Window"), &UIDesc, &pWindow)))
 		return E_FAIL;
 	m_QuestPopUp.push_back(dynamic_cast<CUI_PopupQuest*>(pWindow));
 	if (nullptr == pWindow)
 		return E_FAIL;
 	Safe_AddRef(pWindow);
+	pWindow->Set_ObjectTag(TEXT("UI_PopupQuest_FourthWindow"));
 
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
-
-	//UIDesc.fCX = 300.f * 0.65f;
 	UIDesc.fCX = 400.f * 0.65f;
 	UIDesc.fCY = 32.f * 0.65f;
 	UIDesc.fX = 210.f;
@@ -5424,6 +5494,9 @@ void CUI_Manager::Update_PlayerSlot(CHARACTER_TYPE eType)
 		return;
 
 	m_pPlayerSelected->Update_Position(eType);
+
+	ELEMENTAL_TYPE eElementalType = Get_Character()->Get_ElementalType();
+	m_pSkillBG->Update_SelectionIcon(eElementalType);
 }
 
 void CUI_Manager::Set_MouseCursor(_uint iIndex)
@@ -7245,8 +7318,6 @@ HRESULT CUI_Manager::OnOff_SkillWindow(_bool bOnOff)
 		//m_pTabMenuTitle->Set_Active(false);
 		//OnOff_CostumeSlot(false);
 		//m_pCostumeBox->Set_Active(false);
-		// 
-		//Test Code
 		m_pSkillDesc->Set_Active(false);
 
 		for (auto& iter : m_SpecialSkillSlot)
@@ -7412,10 +7483,6 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_Progress_Bar"),
 		CUI_Loading_ProgressBar::Create(m_pDevice, m_pContext, L"UI_Loading_Progress_Bar", CUI_Loading_ProgressBar::UIPROG_BAR), LAYER_UI)))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_Information"),
-		CUI_Loading_Logo::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Loading_MainLogo_Text"),

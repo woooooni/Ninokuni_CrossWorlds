@@ -63,12 +63,11 @@ void CUI_Loading_Character::Tick(_float fTimeDelta)
 	if (0 > m_iTextureIndex || 4 < m_iTextureIndex)
 		return;
 
-
-	if (!m_bArrived) // 목표 지점까지 도착하지 않은 상태
+	if (false == m_bArrived)
 	{
 		m_tInfo.fX += fTimeDelta * m_fSpeed;
 
-		if (!m_bAlpha) // 알파값이 목표값까지 도달하지 않았다.
+		if (false == m_bAlpha)
 		{
 			m_fAlpha += fTimeDelta;
 
@@ -79,10 +78,10 @@ void CUI_Loading_Character::Tick(_float fTimeDelta)
 			}
 		}
 
-		if (m_tInfo.fX > m_vArrivedPos.x) // 도착지점보다 더 멀리간다면
+		if (m_tInfo.fX > m_vArrivedPos.x)
 		{
-			m_tInfo.fX = m_vArrivedPos.x; // 더이상 못가게 하고
-			m_bArrived = true; //if문을 나온다.
+			m_tInfo.fX = m_vArrivedPos.x;
+			m_bArrived = true;
 		}
 
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
@@ -98,7 +97,7 @@ void CUI_Loading_Character::LateTick(_float fTimeDelta)
 	if (0 > m_iTextureIndex || 4 < m_iTextureIndex)
 		return;
 
-	if (m_bArrived)
+	if (true == m_bArrived)
 		Move_ToHoverPosition(fTimeDelta);
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
@@ -122,9 +121,6 @@ HRESULT CUI_Loading_Character::Ready_Components()
 		return E_FAIL;
 
 	// Texture Component
-//	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Loading_Characters"),
-//		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
-//		return E_FAIL;
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Loading_Characters_New"),
 		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 		return E_FAIL;
@@ -163,9 +159,9 @@ HRESULT CUI_Loading_Character::Bind_ShaderResources()
 
 void CUI_Loading_Character::Move_ToHoverPosition(_float fTimeDelta)
 {
-	if (!m_bTurn)
+	if (false == m_bTurn)
 	{
-		if (!m_bHover) // 도착해서 움직이기 시작했다.
+		if (false == m_bHover)
 		{
 			if (m_tInfo.fX > m_vHoverPos.x)
 			{
@@ -178,7 +174,7 @@ void CUI_Loading_Character::Move_ToHoverPosition(_float fTimeDelta)
 				m_tInfo.fY += fTimeDelta * 30.f;
 			}
 		}
-		else // 원하는 위치에 도달했다.
+		else
 		{
 			if (m_tInfo.fX < m_vArrivedPos.x)
 			{
@@ -192,13 +188,12 @@ void CUI_Loading_Character::Move_ToHoverPosition(_float fTimeDelta)
 				m_tInfo.fY -= fTimeDelta * 30.f;
 			}
 		}
-
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
 	}
-	else // 다시 원래 Position에 온 상황
+	else
 	{
-		if (!m_bHover) // 도착해서 움직이기 시작했다.
+		if (false == m_bHover)
 		{
 			if (m_tInfo.fX < m_vTurnPos.x)
 			{
@@ -211,7 +206,7 @@ void CUI_Loading_Character::Move_ToHoverPosition(_float fTimeDelta)
 				m_tInfo.fY += fTimeDelta * 30.f;
 			}
 		}
-		else // 원하는 위치에 도달했다.
+		else
 		{
 			if (m_tInfo.fX > m_vArrivedPos.x)
 			{
@@ -225,11 +220,9 @@ void CUI_Loading_Character::Move_ToHoverPosition(_float fTimeDelta)
 				m_tInfo.fY -= fTimeDelta * 30.f;
 			}
 		}
-
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
 	}
-
 }
 
 CUI_Loading_Character* CUI_Loading_Character::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -261,5 +254,6 @@ CGameObject* CUI_Loading_Character::Clone(void* pArg)
 void CUI_Loading_Character::Free()
 {
 	__super::Free();
+
 	Safe_Release(m_pTextureCom);
 }

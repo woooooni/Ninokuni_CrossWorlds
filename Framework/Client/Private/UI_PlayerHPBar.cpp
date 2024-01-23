@@ -54,13 +54,24 @@ void CUI_PlayerHPBar::Tick(_float fTimeDelta)
 				return;
 
 			m_pPlayer = pCurCharacter;
+			m_pCharacterType = pCurCharacter->Get_CharacterType();
 
 			CCharacter::CHARACTER_STAT StatDesc = m_pPlayer->Get_Stat();
 			m_fMaxHP = _float(StatDesc.iMaxHp);
 			m_fPreHP = _float(StatDesc.iHp);
 			m_fCurHP = m_fPreHP;
 		}
+		else
+		{
+			if (CUI_Manager::GetInstance()->Get_Character()->Get_CharacterType() != m_pCharacterType)
+			{
+				m_pPlayer = nullptr;
+				m_pPlayer = CUI_Manager::GetInstance()->Get_Character();
 
+				m_pCharacterType = CUI_Manager::GetInstance()->Get_Character()->Get_CharacterType();
+			}
+		}
+		
 		m_fTimeAcc += fTimeDelta * 0.1f;
 
 		if (m_fCurHP < m_fPreHP)
@@ -89,8 +100,8 @@ void CUI_PlayerHPBar::LateTick(_float fTimeDelta)
 			return;
 
 		CCharacter::CHARACTER_STAT StatDesc = m_pPlayer->Get_Stat();
-
 		m_fCurHP = _float(StatDesc.iHp);
+
 		if (StatDesc.iHp == StatDesc.iMaxHp)
 		{
 			m_fMaxHP = _float(StatDesc.iMaxHp);
@@ -98,37 +109,34 @@ void CUI_PlayerHPBar::LateTick(_float fTimeDelta)
 			m_fCurHP = m_fPreHP;
 		}
 
-		//if (CUI_Manager::GetInstance()->Is_FadeFinished())
-		//{
-			CRenderer::TEXT_DESC  DefaultDesc;
-			DefaultDesc.strText = L"/";
-			DefaultDesc.strFontTag = L"Default_Bold";
-			DefaultDesc.vScale = { 0.35f, 0.35f };
-			DefaultDesc.vPosition = m_vDefaultPosition;
-			DefaultDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
-			m_pRendererCom->Add_Text(DefaultDesc);
+		CRenderer::TEXT_DESC  DefaultDesc;
+		DefaultDesc.strText = L"/";
+		DefaultDesc.strFontTag = L"Default_Bold";
+		DefaultDesc.vScale = { 0.35f, 0.35f };
+		DefaultDesc.vPosition = m_vDefaultPosition;
+		DefaultDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+		m_pRendererCom->Add_Text(DefaultDesc);
 
-			CRenderer::TEXT_DESC CurHPDesc;
-			wstring strCurHP = to_wstring(StatDesc.iHp);
-			_float fOffsetX = (strCurHP.length() - 1) * 8.f;
+		CRenderer::TEXT_DESC CurHPDesc;
+		wstring strCurHP = to_wstring(StatDesc.iHp);
+		_float fOffsetX = (strCurHP.length() - 1) * 8.f;
 
-			CurHPDesc.strText = strCurHP;
-			CurHPDesc.strFontTag = L"Default_Bold";
-			CurHPDesc.vScale = { 0.35f, 0.35f };
-			CurHPDesc.vPosition = _float2(m_vCurHPPosition.x - fOffsetX, m_vCurHPPosition.y);
-			CurHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
-			m_pRendererCom->Add_Text(CurHPDesc);
+		CurHPDesc.strText = strCurHP;
+		CurHPDesc.strFontTag = L"Default_Bold";
+		CurHPDesc.vScale = { 0.35f, 0.35f };
+		CurHPDesc.vPosition = _float2(m_vCurHPPosition.x - fOffsetX, m_vCurHPPosition.y);
+		CurHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+		m_pRendererCom->Add_Text(CurHPDesc);
 
-			CRenderer::TEXT_DESC MaxHPDesc;
-			wstring strMaxHP = to_wstring(StatDesc.iMaxHp);
+		CRenderer::TEXT_DESC MaxHPDesc;
+		wstring strMaxHP = to_wstring(StatDesc.iMaxHp);
 
-			MaxHPDesc.strText = to_wstring(StatDesc.iMaxHp);
-			MaxHPDesc.strFontTag = L"Default_Bold";
-			MaxHPDesc.vScale = { 0.35f, 0.35f };
-			MaxHPDesc.vPosition = m_vMaxHPPosition;
-			MaxHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
-			m_pRendererCom->Add_Text(MaxHPDesc);
-		//}
+		MaxHPDesc.strText = to_wstring(StatDesc.iMaxHp);
+		MaxHPDesc.strFontTag = L"Default_Bold";
+		MaxHPDesc.vScale = { 0.35f, 0.35f };
+		MaxHPDesc.vPosition = m_vMaxHPPosition;
+		MaxHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+		m_pRendererCom->Add_Text(MaxHPDesc);
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
@@ -176,31 +184,22 @@ HRESULT CUI_PlayerHPBar::Bind_ShaderResources()
 {
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
 		return E_FAIL;
-
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
 		return E_FAIL;
-
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
 		return E_FAIL;
-
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_fAlpha, sizeof(_float))))
 		return E_FAIL;
-
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_LerpHP", &m_fPreHP, sizeof(_float))))
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_CurrentHP", &m_fCurHP, sizeof(_float))))
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_MaxHP", &m_fMaxHP, sizeof(_float))))
 		return E_FAIL;
-
 	if (FAILED(m_pFXTextureCom->Bind_ShaderResource(m_pShaderCom, "g_LerpTexture")))
 		return E_FAIL;
-
 	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture")))
 		return E_FAIL;
-
-//	if (FAILED(m_pShaderCom->Bind_RawValue("g_Time", &m_fTimeAcc, sizeof(_float))))
-//		return E_FAIL;
 
 	return S_OK;
 }

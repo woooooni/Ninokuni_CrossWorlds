@@ -40,11 +40,18 @@ public: // Get/Set
 	void			Set_MainDialogue(_tchar* pszName, _tchar* pszText);
 	void			Set_MiniDialogue(wstring strName, wstring strContents);
 	void			Set_BattleDialogue(wstring strContents);
-	void			Set_QuestPopup(const wstring& strQuestType, const wstring& strTitle, const wstring& strContents);
-	void			Update_QuestPopup(const wstring& strPreTitle, const wstring& strQuestType, const wstring& strTitle, const wstring& strContents);
+
+	void			Set_QuestPopup(const wstring& strQuestType, const wstring& strTitle, const wstring& strContents);  // 병합시 오류 방지. 임시로 살려둠.
+	void			Set_QuestPopup(void* pArg);
+	void			Update_QuestPopup(const wstring& strPreTitle, const wstring& strQuestType, const wstring& strTitle, const wstring& strContents); // 병합시 오류 방지. 임시로 살려둠.
+	void			Update_QuestPopup(const wstring& strPreTitle, void* pArg);
 	void			Clear_QuestPopup(const wstring& strTitle);
 	void			Resize_QuestPopup();
 	_int			Get_QuestNum();
+	void			Get_QuestInfo();
+
+	void			Set_QuestDestSpot(_int iWindow);
+	void			Calculate_QuestDestSpot(const wstring& strContents, _float4 vDestPos);
 
 	_int			Get_SelectedCharacter();
 	_float			Get_DistanceofMovement_SkillBG();

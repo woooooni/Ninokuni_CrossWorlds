@@ -29,7 +29,6 @@ public:
 
 private:
 	UI_MILEPOST m_eType = { MILEPOST_END };
-	class CCharacter* m_pPlayer = { nullptr };
 
 	_float4 m_vTargetPos = _float4(0.f, 0.f, 0.f, 0.f);
 	_float2 m_vCurrentPos = _float2(0.f, 0.f);

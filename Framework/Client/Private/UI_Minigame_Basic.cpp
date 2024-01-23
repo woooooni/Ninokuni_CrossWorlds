@@ -33,8 +33,6 @@ HRESULT CUI_Minigame_Basic::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	m_bActive = false;
-
 	return S_OK;
 }
 
@@ -62,7 +60,7 @@ void CUI_Minigame_Basic::LateTick(_float fTimeDelta)
 
 HRESULT CUI_Minigame_Basic::Render()
 {
-	if (m_bActive)
+	if (true == m_bActive)
 	{
 		if (FAILED(Bind_ShaderResources()))
 			return E_FAIL;
@@ -110,6 +108,8 @@ HRESULT CUI_Minigame_Basic::Ready_Components()
 	if (FAILED(__super::Ready_Components()))
 		return E_FAIL;
 
+	m_bActive = false;
+
 	switch (m_eType)
 	{
 	case UI_MINIGAMEBASIC::TOWERDEFENCE_MENU:
@@ -130,6 +130,31 @@ HRESULT CUI_Minigame_Basic::Ready_Components()
 		if (FAILED(__super::Add_Component(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_TowerDefence_Gold"),
 			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 			return E_FAIL;
+		break;
+
+	case UI_MINIGAMEBASIC::GRANDPRIX_FRAME:
+		if (FAILED(__super::Add_Component(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_Frame"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		//m_bActive = true;
+		break;
+
+	case UI_MINIGAMEBASIC::GRANDPRIX_CLASSFRAME:
+		if (FAILED(__super::Add_Component(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_SkillFrame"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		m_bUseIndex = true;
+		m_iTextureIndex = 0;
+		//m_bActive = true;
+		break;
+
+	case UI_MINIGAMEBASIC::GRANDPRIX_SPECIALFRAME:
+		if (FAILED(__super::Add_Component(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_SkillFrame"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		m_bUseIndex = true;
+		m_iTextureIndex = 1;
+		//m_bActive = true;
 		break;
 	}
 	

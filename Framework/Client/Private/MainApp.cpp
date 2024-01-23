@@ -542,12 +542,12 @@ HRESULT CMainApp::Ready_Prototype_Component()
 
 HRESULT CMainApp::Ready_UI_TextureComponent()
 {
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Veils"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Default/Veil/Veil_%d.png"), 2))))
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Cursor"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Default/UI_Cursor_%d.png"), 2))))
 		return E_FAIL;
 
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Loading"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/UI_LoadingWindow_Temp.png")))))
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Veils"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Default/Veil/Veil_%d.png"), 2))))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Loading_Window"),
@@ -559,32 +559,17 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Loading_Imajinn"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/Imajinn/UI_Loading_Imajinn_%d.png"), 10))))
 		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Loading_Characters"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/UI_Loading_Character_%d.png"), 5))))
-		return E_FAIL;
-
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Loading_CharacterLogos"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/UI_Loading_Text_%d.png"), 5))))
 		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Loading_Information"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/UI_Loading_Info_%d.png"), 3))))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Loading_Logos"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/UI_Loading_Logo.png")))))
-		return E_FAIL;
-
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Loading_Progress_Background"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/UI_Loading_ProgressBarBg.png")))))
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Loading_Progress_Bar"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/UI_Loading_ProgressBar.png")))))
 		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Cursor"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Default/UI_Cursor_%d.png"), 2))))
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Loading_Logos"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Loading/UI_Loading_Logo.png")))))
 		return E_FAIL;
 	
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Btn_Basic"),
@@ -594,29 +579,12 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_LevelUp_Frame"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/LevelUp/UI_Img_LevelUp_Frame01.png")))))
 		return E_FAIL;
-
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_LevelUp_Background"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/LevelUp/UI_Img_LevelUp_FrameBg.png")))))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_GamePlay_MapName"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/MapName/MapName_%d.png"), 7))))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MapName_Evermore"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/MapName/Text/UI_MapName_Text_Evermore.png")))))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MapName_KingdomHall"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/MapName/Text/UI_MapName_Text_KingdomHall.png")))))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MapName_IceLand"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/MapName/Text/UI_MapName_Text_IceLand.png")))))
-		return E_FAIL;
-
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MapName_WitchForest"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/MapName/Text/UI_MapName_Text_WitchForest.png")))))
 		return E_FAIL;
 
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_PlayerStatus"),
@@ -921,7 +889,7 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 	// SpecialSkill¿ë MaskTex
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_SkillSection_SpecialSkill_Mask"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/SpecialSkill/UI_Icon_Skill_Mask.png")))))
-		return E_FAIL;
+		return E_FAIL;  
 
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_QuickSlot_Item_Bg"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Default/Common/UI_Btn_Inven_QuickSlot.png")))))

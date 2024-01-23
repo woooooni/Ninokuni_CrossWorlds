@@ -27,18 +27,18 @@ public: // Prototypes
 
 public: // Clone
 	HRESULT Ready_MinigameUI_GameObject(LEVELID eID);
-	HRESULT Ready_MinigameUIToLayer(LEVELID eID);
+	HRESULT Ready_MinigameUI_ToLayer(LEVELID eID);
 
-public: // OnOff
+public: // Level Evermore
 	void OnOff_TowerDefence_Select(_bool bOnOff);
-
+	void OnOff_Granprix(_bool bOnOff);
 
 private: // Prototypes
 	HRESULT Ready_MinigameUI_Evermore();
 
 private: // clone
 	HRESULT Ready_TowerDence();
-
+	HRESULT Ready_Granprix();
 
 private: // Evermore Tower Defence
 	class CUI_Minigame_Basic* m_pMenu = { nullptr };
@@ -46,6 +46,11 @@ private: // Evermore Tower Defence
 	class CUI_Minigame_Timer* m_pTimer = { nullptr };
 	class CUI_Minigame_Basic* m_pStartBtn = { nullptr };
 	class CUI_Minigame_Basic* m_pGold = { nullptr };
+
+private: // Evermore Granprix
+	class CUI_Minigame_Basic* m_pCloud = { nullptr };
+	vector <class CUI_Minigame_EnemyInfo*> m_EnemyHP;
+	vector <class CUI_Minigame_ClassSkill*> m_Skill;
 
 private:
 	ID3D11Device* m_pDevice = nullptr;

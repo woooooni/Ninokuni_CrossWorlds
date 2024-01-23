@@ -18,6 +18,9 @@ public:
 		wstring strTitle;
 		wstring strContents;
 
+		_bool bCreateSpot = false;
+		_float4 vDestPosition = _float4(0.f, 0.f, 0.f, 0.f);
+
 	} QUEST_INFO;
 
 protected:
@@ -27,17 +30,21 @@ protected:
 
 public:
 	virtual void Set_Active(_bool bActive);
-	void Set_Contents(const wstring& strQuestType, const wstring& strTitle, const wstring& strContents);
-	void Update_QuestContents(const wstring& strPreTitle, const wstring& strQuestType, const wstring& strTitle, const wstring& strContents);
+	void Set_Contents(const wstring& strQuestType, const wstring& strTitle, const wstring& strContents); // 병합시 오류 방지. 임시로 살려둠.
+	void Set_Contents(const QUEST_INFO& tQuestInfo);
+	void Update_QuestContents(const wstring& strPreTitle, const wstring& strQuestType, const wstring& strTitle, const wstring& strContents); // 병합시 오류 방지. 임시로 살려둠.
+	void Update_QuestContents(const wstring& strPreTitle, const QUEST_INFO& tQuestInfo);
 	void Clear_Quest(const wstring& strTitle);
 
 	_int Get_NumOfQuest();
 
+//	const QUEST_INFO& Get_QuestContents(_int iSlotNum);
+
 public:
 	virtual HRESULT	Initialize_Prototype();
 	virtual HRESULT	Initialize(void* pArg);
-	virtual void Tick(_float fTimeDelta);
-	virtual void LateTick(_float fTimeDelta);
+	virtual void	Tick(_float fTimeDelta);
+	virtual void	LateTick(_float fTimeDelta);
 	virtual HRESULT	Render();
 
 public:
@@ -47,10 +54,10 @@ public:
 	void Move_BottomFrame(_int iNumOfQuest);
 
 private:
-	UI_QUESTPOPUP m_eType = { QUESTPOPUP_END };
-	UI_POPUP_SEPARATOR m_eSeparator = { SEPARATOR_END };
-	_float m_fAppearProg = { 0.f };
-	_bool m_bProgressing = { false };
+	UI_QUESTPOPUP		m_eType = { QUESTPOPUP_END };
+	UI_POPUP_SEPARATOR	m_eSeparator = { SEPARATOR_END };
+	_float				m_fAppearProg = { 0.f };
+	_bool				m_bProgressing = { false };
 
 	_float4 m_vTypeColor = _float4(0.f, 0.f, 0.f, 1.f);
 	_float4 m_vTextColor = _float4(0.f, 0.f, 0.f, 1.f);

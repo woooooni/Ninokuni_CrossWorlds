@@ -418,7 +418,7 @@ HRESULT CLevel_Evermore::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 	{
 		if (FAILED(CUI_Manager::GetInstance()->Ready_GameObjectToLayer(LEVELID::LEVEL_EVERMORE)))
 			return E_FAIL;
-		if (FAILED(CUIMinigame_Manager::GetInstance()->Ready_MinigameUIToLayer(LEVELID::LEVEL_EVERMORE)))
+		if (FAILED(CUIMinigame_Manager::GetInstance()->Ready_MinigameUI_ToLayer(LEVELID::LEVEL_EVERMORE)))
 			return E_FAIL;
 	}
 

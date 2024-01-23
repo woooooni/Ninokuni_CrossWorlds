@@ -11,7 +11,6 @@ CUI_Loading_CharacterLogo::CUI_Loading_CharacterLogo(ID3D11Device * pDevice, ID3
 CUI_Loading_CharacterLogo::CUI_Loading_CharacterLogo(const CUI_Loading_CharacterLogo& rhs)
 	: CUI(rhs)
 {
-	//lstrcpy(m_szInfoText, rhs.m_szInfoText);
 }
 
 HRESULT CUI_Loading_CharacterLogo::Initialize_Prototype()
@@ -44,7 +43,7 @@ void CUI_Loading_CharacterLogo::Tick(_float fTimeDelta)
 	if (m_iTextureIndex < 0 || 4 < m_iTextureIndex)
 		return;
 
-	if (!m_bReverse)
+	if (false == m_bReverse)
 	{
 		m_fAlpha -= fTimeDelta * 0.3f;
 
@@ -52,9 +51,6 @@ void CUI_Loading_CharacterLogo::Tick(_float fTimeDelta)
 		{
 			m_bReverse = true;
 			m_fAlpha = 0.5f;
-
-			//if (0 <= m_iTextureIndex)
-			//	m_iTextureIndex++;
 		}
 	}
 	else
@@ -160,12 +156,6 @@ HRESULT CUI_Loading_CharacterLogo::Bind_ShaderResources()
 
 void CUI_Loading_CharacterLogo::Set_Text()
 {
-//	if (!lstrcmp(m_szInfoText, pText))
-//		return;
-//
-//	ZeroMemory(m_szInfoText, sizeof(TCHAR) * MAX_PATH);
-//	lstrcpy(m_szInfoText, pText);
-
 	switch (m_iTextureIndex)
 	{
 	case 0:

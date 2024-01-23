@@ -54,27 +54,7 @@ HRESULT CUI_Milepost::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
-	if (nullptr == m_pPlayer)
-	{
-		CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
-		if (nullptr == pPlayer)
-			return E_FAIL;
-
-		CCharacter* pCharacter = pPlayer->Get_Character();
-		if (nullptr == pCharacter)
-			return E_FAIL;
-
-		m_pPlayer = pCharacter;
-	}
-
-//	if (LEVELID::LEVEL_EVERMORE == GI->Get_CurrentLevel())
-//	{
-		Set_TargetPosition(_float4(-69.5f, -2.7f, -10.f, 1.f));
-//	}
-//	else
-//	{
-//		m_bActive = false;
-//	}
+	Set_TargetPosition(_float4(-69.5f, -2.7f, -10.f, 1.f));
 
 	m_bActive = true;
 
@@ -96,7 +76,7 @@ void CUI_Milepost::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-		if (nullptr != m_pPlayer)
+		if (nullptr != CUI_Manager::GetInstance()->Get_Character())
 		{
 			if (m_bGoal)
 			{
@@ -181,7 +161,7 @@ void CUI_Milepost::LateTick(_float fTimeDelta)
 
 					if (m_eType == UI_MILEPOST::MILEPOST_FLAG)
 					{
-						CTransform* pPlayerTransform = m_pPlayer->Get_Component<CTransform>(L"Com_Transform");
+						CTransform* pPlayerTransform = CUI_Manager::GetInstance()->Get_Character()->Get_Component<CTransform>(L"Com_Transform");
 						if (nullptr == pPlayerTransform)
 							return;
 						_vector vTemp = XMLoadFloat4(&m_vTargetPos) - (pPlayerTransform->Get_Position());
@@ -298,7 +278,7 @@ void CUI_Milepost::Rotation_Arrow()
 	if (nullptr == pCameraTrans)
 		return;
 
-	CTransform* pPlayerTransform = m_pPlayer->Get_Component<CTransform>(L"Com_Transform");
+	CTransform* pPlayerTransform = CUI_Manager::GetInstance()->Get_Character()->Get_Component<CTransform>(L"Com_Transform");
 	if (nullptr == pPlayerTransform)
 		return;
 
@@ -365,6 +345,5 @@ void CUI_Milepost::Free()
 {
 	__super::Free();
 
-//	Safe_Release(m_pPlayer);
 	Safe_Release(m_pTextureCom);
 }
