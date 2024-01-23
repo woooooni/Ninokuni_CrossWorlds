@@ -76,11 +76,19 @@ CBTNode::NODE_STATE CMainQuestNode_IntroTour02::Tick(const _float& fTimeDelta)
 			CQuest_Manager::GetInstance()->Set_SubQuestRunning(CSubQuest::SUBQUEST_VERDE_WINDMILL, true);
 			CQuest_Manager::GetInstance()->Set_SubQuestRunning(CSubQuest::SUBQUEST_VERDE_WANTED, true);
 
-			/* 대화 카메라 종료 */
-			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-			if (nullptr != pActionCam)
-				pActionCam->Finish_Action_Talk();
-
+			/* 컷신 시작 */
+			const _uint iCurLevel = GI->Get_CurrentLevel();
+			{
+				if (LEVELID::LEVEL_EVERMORE == iCurLevel || LEVELID::LEVEL_TOOL == iCurLevel)
+				{
+					CCamera_CutScene_Map* pCutSceneMap = dynamic_cast<CCamera_CutScene_Map*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CUTSCENE_MAP));
+					if (nullptr != pCutSceneMap)
+					{
+						pCutSceneMap->Start_CutScene(LEVELID::LEVEL_EVERMORE);
+						pCutSceneMap->Reserve_NextCameraType(CAMERA_TYPE::FOLLOW);
+					}
+				}
+			}
 			return NODE_STATE::NODE_FAIL;
 		}
 

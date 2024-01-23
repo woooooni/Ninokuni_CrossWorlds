@@ -102,7 +102,7 @@ void CCamera_CutScene_Map::Tick(_float fTimeDelta)
 				{
 					pFollowCam->Reset_WideView_To_DefaultView();
 					pFollowCam->Set_Default_Position();
-					CCamera_Manager::GetInstance()->Change_Camera(pFollowCam->Get_Key(), 2.5f, LERP_MODE::SMOOTHER_STEP);
+					CCamera_Manager::GetInstance()->Change_Camera(pFollowCam->Get_Key(), 1.5f, LERP_MODE::SMOOTHER_STEP);
 				}
 				return;
 			}
@@ -606,7 +606,19 @@ void CCamera_CutScene_Map::Tick_Fade(_float fTimeDelta)
 				if (!m_tFadeDesc.Outtro.bFadeOutted) /* 페이드 아웃 종료, 페이드 인 시작 */
 				{
 					/* 카메라 체인지 */
-					CCamera_Manager::GetInstance()->Set_PrevCamera();
+					if (CAMERA_TYPE::FOLLOW == m_eReservedNextCameraType)
+					{
+						CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+						if (nullptr != pFollowCam)
+						{
+							pFollowCam->Reset_WideView_To_DefaultView();
+							pFollowCam->Set_Default_Position();
+							CCamera_Manager::GetInstance()->Set_CurCamera(pFollowCam->Get_Key());
+						}
+						m_eReservedNextCameraType = CAMERA_TYPE::CAMERA_TYPE_END;
+					}
+					else
+						CCamera_Manager::GetInstance()->Set_PrevCamera();
 
 					CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, m_tFadeDesc.Outtro.fDuration, m_tFadeDesc.Outtro.bWhite);
 

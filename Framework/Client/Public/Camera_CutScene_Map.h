@@ -100,6 +100,7 @@ public:
 	HRESULT Reserve_Fade(const _float& fIntroDuration, const _bool& bIntroWhite, const _float& fOuttroDuration, const _bool& bOuttroWhite);
 	HRESULT Set_CutSceneTransform(const string& strCutSceneName); /* 블렌딩이 필요한 경우 해당 컷신의 트랜스폼을 미리 세팅해둔다. */
 	static Vec4 Get_Point_In_Bezier(Vec3 vPoints[MAX_BEZIER_POINT], const _float& fRatio);
+	void Reserve_NextCameraType(const CAMERA_TYPE& eType) { m_eReservedNextCameraType = eType; }
 
 public:
 	virtual Vec4 Get_LookAt() override;
@@ -132,7 +133,6 @@ private:
 
 	Vec4								m_vPrevLookAt = {};
 
-	
 	/* 컷신 이후 체인지 예약 데이터 */
 	_bool								m_bWillRetruePrevCam = false;
 
@@ -141,6 +141,8 @@ private:
 
 	/* 개별 컷신 데이터 */
 	SPECIAL_CUTSCENE_DESC				m_tWhaleDesc = {};
+
+	CAMERA_TYPE							m_eReservedNextCameraType = CAMERA_TYPE::CAMERA_TYPE_END;
 	
 public:
 	static CCamera_CutScene_Map* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
