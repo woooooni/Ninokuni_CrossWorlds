@@ -38,11 +38,12 @@ HRESULT CCriminal_Monster::Initialize(void* pArg)
 	{
 		Vec4* pInitializePosition = (Vec4*)pArg;
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(*pInitializePosition, 1.f));
-		m_pControllerCom->Set_EnterLevel_Position(m_pTransformCom->Get_Position());
 	}
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
+
+	m_pControllerCom->Set_EnterLevel_Position(m_pTransformCom->Get_Position());
 
 
 	if (FAILED(__super::Ready_RoamingPoint()))
