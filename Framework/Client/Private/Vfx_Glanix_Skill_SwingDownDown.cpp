@@ -182,58 +182,48 @@ HRESULT CVfx_Glanix_Skill_SwingDownDown::Initialize_Prototype()
 #pragma region CVfx_Glanix_Skill_HandDown
 	{
 		m_pFrameTriger[TYPE_D_HANDDOWN_START_WARNING]    = 109;
-		m_pPositionOffset[TYPE_D_HANDDOWN_START_WARNING] = _float3(0.f, 0.f, 0.5f);
-		m_pScaleOffset[TYPE_D_HANDDOWN_START_WARNING]    = _float3(5.f, 2.f, 14.3f);
+		m_pPositionOffset[TYPE_D_HANDDOWN_START_WARNING] = _float3(0.f, 0.f, 0.3f);
+		m_pScaleOffset[TYPE_D_HANDDOWN_START_WARNING]    = _float3(10.f, 2.f, 10.f);
 		m_pRotationOffset[TYPE_D_HANDDOWN_START_WARNING] = _float3(0.f, 0.f, 0.f);
 	}
 
 	{
-		m_pFrameTriger[TYPE_P_HANDDOWN_PREACT_BIGSCIRCLE] = 125;
-		m_pPositionOffset[TYPE_P_HANDDOWN_PREACT_BIGSCIRCLE] = _float3(0.f, 4.f, 0.5f);
-		m_pScaleOffset[TYPE_P_HANDDOWN_PREACT_BIGSCIRCLE] = _float3(1.f, 1.f, 1.f);
-		m_pRotationOffset[TYPE_P_HANDDOWN_PREACT_BIGSCIRCLE] = _float3(0.f, 0.f, 0.f);
-
-		m_pFrameTriger[TYPE_E_HANDDOWN_PREACT_CIRCLELINE] = 126;
-		m_pPositionOffset[TYPE_E_HANDDOWN_PREACT_CIRCLELINE] = _float3(0.f, 4.f, 1.f);
-		m_pScaleOffset[TYPE_E_HANDDOWN_PREACT_CIRCLELINE] = _float3(1.f, 1.f, 1.f);
-		m_pRotationOffset[TYPE_E_HANDDOWN_PREACT_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
-
-		m_pFrameTriger[TYPE_P_HANDDOWN_PREACT_CIRCLES] = 127;
-		m_pPositionOffset[TYPE_P_HANDDOWN_PREACT_CIRCLES] = _float3(0.f, 3.5f, 1.f);
-		m_pScaleOffset[TYPE_P_HANDDOWN_PREACT_CIRCLES] = _float3(1.f, 1.f, 1.f);
-		m_pRotationOffset[TYPE_P_HANDDOWN_PREACT_CIRCLES] = _float3(0.f, 0.f, 0.f);
-
 		m_pFrameTriger[TYPE_E_HANDDOWN_PREACT_HANDCIRCLELEFT] = 131;
 		m_pPositionOffset[TYPE_E_HANDDOWN_PREACT_HANDCIRCLELEFT] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_E_HANDDOWN_PREACT_HANDCIRCLELEFT] = _float3(0.2f, 0.2f, 0.2f);
+		m_pScaleOffset[TYPE_E_HANDDOWN_PREACT_HANDCIRCLELEFT]    = _float3(0.2f, 0.2f, 0.2f);
 		m_pRotationOffset[TYPE_E_HANDDOWN_PREACT_HANDCIRCLELEFT] = _float3(0.f, 0.f, 0.f);
 
 		m_pFrameTriger[TYPE_E_HANDDOWN_PREACT_HANDCIRCLERIGHT] = 131;
 		m_pPositionOffset[TYPE_E_HANDDOWN_PREACT_HANDCIRCLERIGHT] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_E_HANDDOWN_PREACT_HANDCIRCLERIGHT] = _float3(0.2f, 0.2f, 0.2f);
+		m_pScaleOffset[TYPE_E_HANDDOWN_PREACT_HANDCIRCLERIGHT]    = _float3(0.2f, 0.2f, 0.2f);
 		m_pRotationOffset[TYPE_E_HANDDOWN_PREACT_HANDCIRCLERIGHT] = _float3(0.f, 0.f, 0.f);
 	}
 
 	{
 		m_pFrameTriger[TYPE_D_HANDDOWN_ATTACK_CRACK] = 136;
-		m_pPositionOffset[TYPE_D_HANDDOWN_ATTACK_CRACK] = _float3(0.f, 0.f, 0.5f);
-		m_pScaleOffset[TYPE_D_HANDDOWN_ATTACK_CRACK] = _float3(7.f, 5.f, 7.f);
+		m_pPositionOffset[TYPE_D_HANDDOWN_ATTACK_CRACK] = _float3(0.f, 0.f, 0.3f);
+		m_pScaleOffset[TYPE_D_HANDDOWN_ATTACK_CRACK]    = _float3(12.f, 2.f, 12.f);
 		m_pRotationOffset[TYPE_D_HANDDOWN_ATTACK_CRACK] = _float3(0.f, 0.f, 0.f);
 
+		m_pFrameTriger[TYPE_P_HANDDOWN_ATTACK_CIRCLES] = 137;
+		m_pPositionOffset[TYPE_P_HANDDOWN_ATTACK_CIRCLES] = _float3(0.f, 0.5f, 2.f);
+		m_pScaleOffset[TYPE_P_HANDDOWN_ATTACK_CIRCLES]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_P_HANDDOWN_ATTACK_CIRCLES] = _float3(0.f, 0.f, 0.f);
+
 		m_pFrameTriger[TYPE_E_HANDDOWN_ATTACK_SPRINGUP] = 138;
-		m_pPositionOffset[TYPE_E_HANDDOWN_ATTACK_SPRINGUP] = _float3(0.f, 0.f, -5.f);
-		m_pScaleOffset[TYPE_E_HANDDOWN_ATTACK_SPRINGUP] = _float3(1.2f, 1.5f, 1.3f);
-		m_pRotationOffset[TYPE_E_HANDDOWN_ATTACK_SPRINGUP] = _float3(0.f, 180.f, 0.f);
+		m_pPositionOffset[TYPE_E_HANDDOWN_ATTACK_SPRINGUP] = _float3(0.f, 0.f, 0.5f);
+		m_pScaleOffset[TYPE_E_HANDDOWN_ATTACK_SPRINGUP]    = _float3(6.f, 9.f, 6.f);
+		m_pRotationOffset[TYPE_E_HANDDOWN_ATTACK_SPRINGUP] = _float3(0.f, 0.f, 0.f);
 
 		m_pFrameTriger[TTPE_P_HANDDOWN_ATTACK_SMOKE] = 139;
-		m_pPositionOffset[TTPE_P_HANDDOWN_ATTACK_SMOKE] = _float3(0.f, 0.5f, 7.f);
-		m_pScaleOffset[TTPE_P_HANDDOWN_ATTACK_SMOKE] = _float3(1.f, 1.f, 1.f);
+		m_pPositionOffset[TTPE_P_HANDDOWN_ATTACK_SMOKE] = _float3(0.f, 0.7f, 0.5f);
+		m_pScaleOffset[TTPE_P_HANDDOWN_ATTACK_SMOKE]    = _float3(1.f, 1.f, 1.f);
 		m_pRotationOffset[TTPE_P_HANDDOWN_ATTACK_SMOKE] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_P_HANDDOWN_ATTACK_CIRCLES] = 141;
-		m_pPositionOffset[TYPE_P_HANDDOWN_ATTACK_CIRCLES] = _float3(0.f, 0.f, 7.f);
-		m_pScaleOffset[TYPE_P_HANDDOWN_ATTACK_CIRCLES] = _float3(1.f, 1.f, 1.f);
-		m_pRotationOffset[TYPE_P_HANDDOWN_ATTACK_CIRCLES] = _float3(0.f, 0.f, 0.f);
+		m_pFrameTriger[TYPE_P_HANDDOWN_ATTACK_CIRCLELINE] = 140;
+		m_pPositionOffset[TYPE_P_HANDDOWN_ATTACK_CIRCLELINE] = _float3(0.f, 0.1f, 0.7f);
+		m_pScaleOffset[TYPE_P_HANDDOWN_ATTACK_CIRCLELINE]    = _float3(2.5f, 2.5f, 2.5f);
+		m_pRotationOffset[TYPE_P_HANDDOWN_ATTACK_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
 	}
 #pragma endregion
 
@@ -536,93 +526,85 @@ void CVfx_Glanix_Skill_SwingDownDown::Tick(_float fTimeDelta)
 		{
 		    if (m_iCount == TYPE_D_HANDDOWN_START_WARNING && m_iOwnerFrame >= m_pFrameTriger[TYPE_D_HANDDOWN_START_WARNING])
 		    {
-		    	GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Glanix_Skill_FourHandSwing_Warning"),
-		    		XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_D_HANDDOWN_START_WARNING], m_pScaleOffset[TYPE_D_HANDDOWN_START_WARNING], m_pRotationOffset[TYPE_D_HANDDOWN_START_WARNING], nullptr, &m_pTwoAttack_WarningDecal, false);
-		    	Safe_AddRef(m_pTwoAttack_WarningDecal);
-		    	m_iCount++;
+				GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Glanix_Skill_JumpDown_Warning"),
+					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_D_HANDDOWN_START_WARNING], m_pScaleOffset[TYPE_D_HANDDOWN_START_WARNING], m_pRotationOffset[TYPE_D_HANDDOWN_START_WARNING], nullptr, &m_pTwoAttack_WarningDecal, false);
+				Safe_AddRef(m_pTwoAttack_WarningDecal);
+				m_iCount++;
 		    }
-		    else if (m_iCount == TYPE_P_HANDDOWN_PREACT_BIGSCIRCLE && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_HANDDOWN_PREACT_BIGSCIRCLE])
+
+			else if (m_iCount == TYPE_E_HANDDOWN_PREACT_HANDCIRCLELEFT && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_HANDDOWN_PREACT_HANDCIRCLELEFT])
+			{
+				CModel* pOwnerModel = m_pOwnerObject->Get_Component<CModel>(L"Com_Model");
+				if (pOwnerModel != nullptr)
+				{
+					Matrix LeftMatrix = pOwnerModel->Get_SocketLocalMatrix(1); // 뼈 행렬 x 플레이어 월드 행렬 = 뼈 월드 행렬
+					GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Glanix_Skill_FourHandSwing_Circle_Hand"),
+						LeftMatrix * m_WorldMatrix, m_pPositionOffset[TYPE_E_HANDDOWN_PREACT_HANDCIRCLELEFT], m_pScaleOffset[TYPE_E_HANDDOWN_PREACT_HANDCIRCLELEFT], m_pRotationOffset[TYPE_E_HANDDOWN_PREACT_HANDCIRCLELEFT], nullptr, &m_pTwoAttack_LeftHandEffect);
+					Safe_AddRef(m_pTwoAttack_LeftHandEffect);
+				}
+				m_iCount++;
+			}
+			else if (m_iCount == TYPE_E_HANDDOWN_PREACT_HANDCIRCLERIGHT && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_HANDDOWN_PREACT_HANDCIRCLERIGHT])
+			{
+				CModel* pOwnerModel = m_pOwnerObject->Get_Component<CModel>(L"Com_Model");
+				if (pOwnerModel != nullptr)
+				{
+					Matrix RightMatrix = pOwnerModel->Get_SocketLocalMatrix(2); // 뼈 행렬 x 플레이어 월드 행렬 = 뼈 월드 행렬
+					GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Glanix_Skill_FourHandSwing_Circle_Hand"),
+						RightMatrix * m_WorldMatrix, m_pPositionOffset[TYPE_E_HANDDOWN_PREACT_HANDCIRCLERIGHT], m_pScaleOffset[TYPE_E_HANDDOWN_PREACT_HANDCIRCLERIGHT], m_pRotationOffset[TYPE_E_HANDDOWN_PREACT_HANDCIRCLERIGHT], nullptr, &m_pTwoAttack_RightHandEffect);
+					Safe_AddRef(m_pTwoAttack_RightHandEffect);
+				}
+				m_iCount++;
+			}
+			
+			else if (m_iCount == TYPE_D_HANDDOWN_ATTACK_CRACK && m_iOwnerFrame >= m_pFrameTriger[TYPE_D_HANDDOWN_ATTACK_CRACK])
+			{
+				if (nullptr != m_pTwoAttack_WarningDecal)
+				{
+					m_pTwoAttack_WarningDecal->Set_Dead(true);
+					Safe_Release(m_pTwoAttack_WarningDecal);
+				}
+
+				GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Glanix_Skill_JumpDown_DownCrack"),
+					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_D_HANDDOWN_ATTACK_CRACK], m_pScaleOffset[TYPE_D_HANDDOWN_ATTACK_CRACK], m_pRotationOffset[TYPE_D_HANDDOWN_ATTACK_CRACK]);
+				m_iCount++;
+			}
+		    else if (m_iCount == TYPE_P_HANDDOWN_ATTACK_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_HANDDOWN_ATTACK_CIRCLES])
 		    {
-		    	GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Skill_HandDown_Sparkle"),
-		    		XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_HANDDOWN_PREACT_BIGSCIRCLE], m_pScaleOffset[TYPE_P_HANDDOWN_PREACT_BIGSCIRCLE], m_pRotationOffset[TYPE_P_HANDDOWN_PREACT_BIGSCIRCLE]);
-		    	m_iCount++;
+				GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Skill_JumpDown_Circle"),
+					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_HANDDOWN_ATTACK_CIRCLES], m_pScaleOffset[TYPE_P_HANDDOWN_ATTACK_CIRCLES], m_pRotationOffset[TYPE_P_HANDDOWN_ATTACK_CIRCLES]);
+				m_iCount++;
 		    }
-		    else if (m_iCount == TYPE_E_HANDDOWN_PREACT_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_HANDDOWN_PREACT_CIRCLELINE])
+		    else if (m_iCount == TYPE_E_HANDDOWN_ATTACK_SPRINGUP && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_HANDDOWN_ATTACK_SPRINGUP])
 		    {
-		    	GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Glanix_Skill_HandDown_TrailLine"),
-		    		XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_HANDDOWN_PREACT_CIRCLELINE], m_pScaleOffset[TYPE_E_HANDDOWN_PREACT_CIRCLELINE], m_pRotationOffset[TYPE_E_HANDDOWN_PREACT_CIRCLELINE]);
-		    	m_iCount++;
-		    }
-		    else if (m_iCount == TYPE_P_HANDDOWN_PREACT_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_HANDDOWN_PREACT_CIRCLES])
-		    {
-		    	GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Skill_HandDown_Circle"),
-		    		XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_HANDDOWN_PREACT_CIRCLES], m_pScaleOffset[TYPE_P_HANDDOWN_PREACT_CIRCLES], m_pRotationOffset[TYPE_P_HANDDOWN_PREACT_CIRCLES]);
-		    	m_iCount++;
-		    }
-		    //
-		    else if (m_iCount == TYPE_E_HANDDOWN_PREACT_HANDCIRCLELEFT && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_HANDDOWN_PREACT_HANDCIRCLELEFT])
-		    {
-		    	CModel* pOwnerModel = m_pOwnerObject->Get_Component<CModel>(L"Com_Model");
-		    	if (pOwnerModel != nullptr)
-		    	{
-		    		Matrix LeftMatrix = pOwnerModel->Get_SocketLocalMatrix(1); // 뼈 행렬 x 플레이어 월드 행렬 = 뼈 월드 행렬
-		    		GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Glanix_Skill_FourHandSwing_Circle_Hand"),
-		    			LeftMatrix * m_WorldMatrix, m_pPositionOffset[TYPE_E_HANDDOWN_PREACT_HANDCIRCLELEFT], m_pScaleOffset[TYPE_E_HANDDOWN_PREACT_HANDCIRCLELEFT], m_pRotationOffset[TYPE_E_HANDDOWN_PREACT_HANDCIRCLELEFT], nullptr, &m_pTwoAttack_LeftHandEffect);
-		    		Safe_AddRef(m_pTwoAttack_LeftHandEffect);
-		    	}
-		    	m_iCount++;
-		    }
-		    else if (m_iCount == TYPE_E_HANDDOWN_PREACT_HANDCIRCLERIGHT && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_HANDDOWN_PREACT_HANDCIRCLERIGHT])
-		    {
-		    	CModel* pOwnerModel = m_pOwnerObject->Get_Component<CModel>(L"Com_Model");
-		    	if (pOwnerModel != nullptr)
-		    	{
-		    		Matrix RightMatrix = pOwnerModel->Get_SocketLocalMatrix(2); // 뼈 행렬 x 플레이어 월드 행렬 = 뼈 월드 행렬
-		    		GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Glanix_Skill_FourHandSwing_Circle_Hand"),
-		    			RightMatrix * m_WorldMatrix, m_pPositionOffset[TYPE_E_HANDDOWN_PREACT_HANDCIRCLERIGHT], m_pScaleOffset[TYPE_E_HANDDOWN_PREACT_HANDCIRCLERIGHT], m_pRotationOffset[TYPE_E_HANDDOWN_PREACT_HANDCIRCLERIGHT], nullptr, &m_pTwoAttack_RightHandEffect);
-		    		Safe_AddRef(m_pTwoAttack_RightHandEffect);
-		    	}
-		    	m_iCount++;
-		    }
-		    else if (m_iCount == TYPE_D_HANDDOWN_ATTACK_CRACK && m_iOwnerFrame >= m_pFrameTriger[TYPE_D_HANDDOWN_ATTACK_CRACK]) // + Event
-		    {
-				m_pTwoAttack_WarningDecal->Set_Dead(true);
-		    	Safe_Release(m_pTwoAttack_WarningDecal);
-		    
-		    	GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Glanix_Skill_HandDown_Crack"),
-		    		XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_D_HANDDOWN_ATTACK_CRACK], m_pScaleOffset[TYPE_D_HANDDOWN_ATTACK_CRACK], m_pRotationOffset[TYPE_D_HANDDOWN_ATTACK_CRACK]);
-		    	m_iCount++;
-		    }
-		    else if (m_iCount == TYPE_E_HANDDOWN_ATTACK_SPRINGUP && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_HANDDOWN_ATTACK_SPRINGUP]) // + Event
-		    {
-		    	if (nullptr != m_pTwoAttack_LeftHandEffect)
-		    	{
+				if (nullptr != m_pTwoAttack_LeftHandEffect)
+				{
 					m_pTwoAttack_LeftHandEffect->Set_Dead(true);
-		    		Safe_Release(m_pTwoAttack_LeftHandEffect);
-		    	}
-		    
-		    	if (nullptr != m_pTwoAttack_RightHandEffect)
-		    	{
+					Safe_Release(m_pTwoAttack_LeftHandEffect);
+				}
+
+				if (nullptr != m_pTwoAttack_RightHandEffect)
+				{
 					m_pTwoAttack_RightHandEffect->Set_Dead(true);
-		    		Safe_Release(m_pTwoAttack_RightHandEffect);
-		    	}
-		    
-		    	GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Glanix_Skill_HandDown_SpringUp"),
-		    		XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_HANDDOWN_ATTACK_SPRINGUP], m_pScaleOffset[TYPE_E_HANDDOWN_ATTACK_SPRINGUP], m_pRotationOffset[TYPE_E_HANDDOWN_ATTACK_SPRINGUP], nullptr, &m_pTwoAttack_SpringUp, false);
-		    	Safe_AddRef(m_pTwoAttack_SpringUp);
-		    	m_iCount++;
+					Safe_Release(m_pTwoAttack_RightHandEffect);
+				}
+
+				GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Glanix_Skill_JumpDown_SpringUp"),
+					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_HANDDOWN_ATTACK_SPRINGUP], m_pScaleOffset[TYPE_E_HANDDOWN_ATTACK_SPRINGUP], m_pRotationOffset[TYPE_E_HANDDOWN_ATTACK_SPRINGUP], nullptr, &m_pTwoAttack_SpringUp, false);
+				Safe_AddRef(m_pTwoAttack_SpringUp);
+				m_iCount++;
 		    }
 		    else if (m_iCount == TTPE_P_HANDDOWN_ATTACK_SMOKE && m_iOwnerFrame >= m_pFrameTriger[TTPE_P_HANDDOWN_ATTACK_SMOKE])
 		    {
-		    	GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Skill_HandDown_Smoke"),
-		    		XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TTPE_P_HANDDOWN_ATTACK_SMOKE], m_pScaleOffset[TTPE_P_HANDDOWN_ATTACK_SMOKE], m_pRotationOffset[TTPE_P_HANDDOWN_ATTACK_SMOKE]);
-		    	m_iCount++;
+				GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Skill_FootDown_Smoke"),
+					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TTPE_P_HANDDOWN_ATTACK_SMOKE], m_pScaleOffset[TTPE_P_HANDDOWN_ATTACK_SMOKE], m_pRotationOffset[TTPE_P_HANDDOWN_ATTACK_SMOKE]);
+				m_iCount++;
 		    }
-		    else if (m_iCount == TYPE_P_HANDDOWN_ATTACK_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_HANDDOWN_ATTACK_CIRCLES])
+		    else if (m_iCount == TYPE_P_HANDDOWN_ATTACK_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_HANDDOWN_ATTACK_CIRCLELINE])
 		    {
-		    	GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Glanix_Skill_HandDown_Attack_Circle"),
-		    		XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_HANDDOWN_ATTACK_CIRCLES], m_pScaleOffset[TYPE_P_HANDDOWN_ATTACK_CIRCLES], m_pRotationOffset[TYPE_P_HANDDOWN_ATTACK_CIRCLES]);
-		    	m_iCount++;
+				GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Glanix_Skill_JumpDown_TrailLine"),
+					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_HANDDOWN_ATTACK_CIRCLELINE], m_pScaleOffset[TYPE_P_HANDDOWN_ATTACK_CIRCLELINE], m_pRotationOffset[TYPE_P_HANDDOWN_ATTACK_CIRCLELINE]);
+				m_iCount++;
 
 				m_bTwoAttack = true;
 		    }
