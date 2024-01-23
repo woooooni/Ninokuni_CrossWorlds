@@ -117,6 +117,7 @@ HRESULT CLevel_Evermore::Tick(_float fTimeDelta)
 {
 	CUI_Manager::GetInstance()->Tick_Fade(fTimeDelta);
 	CUI_Manager::GetInstance()->Tick_UIs(LEVELID::LEVEL_EVERMORE, fTimeDelta);
+	CUIMinigame_Manager::GetInstance()->Tick_Minigame(LEVELID::LEVEL_EVERMORE, fTimeDelta);
 
 	if (KEY_TAP(KEY::PAGE_UP))
 	{
@@ -150,6 +151,7 @@ HRESULT CLevel_Evermore::LateTick(_float fTimeDelta)
 {
 	CUI_Manager::GetInstance()->LateTick_Fade(fTimeDelta);
 	CUI_Manager::GetInstance()->LateTick_GamePlayLevel(fTimeDelta);
+	CUIMinigame_Manager::GetInstance()->LateTick_Minigame(LEVELID::LEVEL_EVERMORE, fTimeDelta);
 
 	return S_OK;
 }

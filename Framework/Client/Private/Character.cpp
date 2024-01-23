@@ -681,10 +681,9 @@ void CCharacter::LevelUp()
 	m_tStat.iLevel++;
 
 	m_tStat.iMaxHp += m_tStat.iLevel * 100;
+	m_tStat.iHp = m_tStat.iMaxHp;
 	m_tStat.iAtt += m_tStat.iLevel * 100;
 	CUI_Manager::GetInstance()->OnOff_LevelUp(true, m_tStat.iLevel);
-
-	// TODO :: UI
 }
 
 

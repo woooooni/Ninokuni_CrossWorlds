@@ -36,6 +36,9 @@ HRESULT CUI_Minigame_Basic::Initialize(void* pArg)
 	if (FAILED(Ready_State()))
 		return E_FAIL;
 
+	if (FAILED(Ready_TextInformation()))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -43,6 +46,9 @@ void CUI_Minigame_Basic::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (m_eType == GRANDPRIX_READY || m_eType == GRANDPRIX_THREE || m_eType == GRANDPRIX_TWO ||
+			m_eType == GRANDPRIW_ONE || m_eType == GRANDPRIX_START || m_eType == GRANDPRIX_END)
+			Tick_Count(fTimeDelta);
 
 		__super::Tick(fTimeDelta);
 	}
@@ -52,6 +58,10 @@ void CUI_Minigame_Basic::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (m_eType == GRANDPRIX_READY || m_eType == GRANDPRIX_THREE || m_eType == GRANDPRIX_TWO ||
+			m_eType == GRANDPRIW_ONE || m_eType == GRANDPRIX_START || m_eType == GRANDPRIX_END)
+			LateTick_Count(fTimeDelta);
+
 		if (TOWERDEFENCE_GOLD == m_eType)
 		{
 			// °ñµå ÅØ½ºÆ®
@@ -151,7 +161,6 @@ HRESULT CUI_Minigame_Basic::Ready_Components()
 		if (FAILED(__super::Add_Component(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_Frame"),
 			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 			return E_FAIL;
-		//m_bActive = true;
 		break;
 
 	case UI_MINIGAMEBASIC::GRANDPRIX_CLASSFRAME:
@@ -160,7 +169,7 @@ HRESULT CUI_Minigame_Basic::Ready_Components()
 			return E_FAIL;
 		m_bUseIndex = true;
 		m_iTextureIndex = 0;
-		//m_bActive = true;
+		m_bActive = true;
 		break;
 
 	case UI_MINIGAMEBASIC::GRANDPRIX_SPECIALFRAME:
@@ -169,7 +178,67 @@ HRESULT CUI_Minigame_Basic::Ready_Components()
 			return E_FAIL;
 		m_bUseIndex = true;
 		m_iTextureIndex = 1;
-		//m_bActive = true;
+		m_bActive = true;
+		break;
+
+	case UI_MINIGAMEBASIC::GRANDPRIX_READY:
+		if (FAILED(__super::Add_Component(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_Text"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		m_bUseIndex = true;
+		m_iTextureIndex = 0;
+		m_bStart = false;
+		m_bEnd = false;
+		break;
+
+	case UI_MINIGAMEBASIC::GRANDPRIX_THREE:
+		if (FAILED(__super::Add_Component(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_Text_Number"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		m_bUseIndex = true;
+		m_iTextureIndex = 2;
+		m_bStart = false;
+		m_bEnd = false;
+		break;
+
+	case UI_MINIGAMEBASIC::GRANDPRIX_TWO:
+		if (FAILED(__super::Add_Component(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_Text_Number"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		m_bUseIndex = true;
+		m_iTextureIndex = 1;
+		m_bStart = false;
+		m_bEnd = false;
+		break;
+
+	case UI_MINIGAMEBASIC::GRANDPRIW_ONE:
+		if (FAILED(__super::Add_Component(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_Text_Number"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		m_bUseIndex = true;
+		m_iTextureIndex = 0;
+		m_bStart = false;
+		m_bEnd = false;
+		break;
+
+	case UI_MINIGAMEBASIC::GRANDPRIX_START:
+		if (FAILED(__super::Add_Component(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_Text"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		m_bUseIndex = true;
+		m_iTextureIndex = 1;
+		m_bStart = false;
+		m_bEnd = false;
+		break;
+
+	case UI_MINIGAMEBASIC::GRANDPRIX_END:
+		if (FAILED(__super::Add_Component(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_Text"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		m_bUseIndex = true;
+		m_iTextureIndex = 2;
+		m_bStart = false;
+		m_bEnd = false;
 		break;
 	}
 	
@@ -211,6 +280,53 @@ HRESULT CUI_Minigame_Basic::Bind_ShaderResources()
 	}
 
 	return S_OK;
+}
+
+HRESULT CUI_Minigame_Basic::Ready_TextInformation()
+{
+	if (!(m_eType == GRANDPRIX_READY || m_eType == GRANDPRIX_THREE || m_eType == GRANDPRIX_TWO ||
+		m_eType == GRANDPRIW_ONE || m_eType == GRANDPRIX_START || m_eType == GRANDPRIX_END))
+		return S_OK;
+
+	m_vOriginSize = _float2(m_tInfo.fCX, m_tInfo.fCY);
+	m_vMaxSize = _float2(m_vOriginSize.x * 10.f, m_vOriginSize.y * 10.f);
+
+	m_tInfo.fCX = m_vMaxSize.x;
+	m_tInfo.fCY = m_vMaxSize.y;
+	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+
+	m_fAlpha = 0.f;
+
+	return S_OK;
+}
+
+void CUI_Minigame_Basic::Tick_Count(_float fTimeDelta)
+{
+	if (true == m_bStart && false == m_bEnd)
+	{
+		if (m_tInfo.fCX <= m_vOriginSize.x)
+			m_tInfo.fCX = m_vOriginSize.x;
+		
+		if (m_tInfo.fCY <= m_vOriginSize.y)
+		{
+			m_tInfo.fCY = m_vOriginSize.y;
+			m_bEnd = true;
+		}
+
+		if (m_fAlpha > 1.f)
+			m_fAlpha = 1.f;
+
+		m_fAlpha += fTimeDelta;
+
+		m_tInfo.fCX -= fTimeDelta * (m_vOriginSize.x * 10.f);
+		m_tInfo.fCY -= fTimeDelta * (m_vOriginSize.y * 10.f);
+
+		m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+	}
+}
+
+void CUI_Minigame_Basic::LateTick_Count(_float fTimeDelta)
+{
 }
 
 CUI_Minigame_Basic* CUI_Minigame_Basic::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_MINIGAMEBASIC eType)
