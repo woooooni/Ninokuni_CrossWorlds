@@ -4250,6 +4250,12 @@ HRESULT CUI_Manager::Ready_GameObjectToLayer(LEVELID eID)
 		Safe_AddRef(iter);
 	}
 
+	if (nullptr == m_pMinimap)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pMinimap)))
+		return E_FAIL;
+	Safe_AddRef(m_pMinimap);
+
 	for (auto& iter : m_WeaponIcon)
 	{
 		if (nullptr == iter)
