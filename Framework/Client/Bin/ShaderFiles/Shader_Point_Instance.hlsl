@@ -4,6 +4,7 @@
 matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 Texture2D	g_DiffuseTexture;
 Texture2D	g_AlphaTexture;
+Texture2D	g_DistortionTexture;
 
 vector		g_vCamPosition;
 
@@ -28,6 +29,8 @@ struct EffectDesc //16 ¹è¼ö·Î ³ª´²¶³¾îÁ®¾ßÇÔ.
 	float    g_fBlurPower;  // 4
 };
 EffectDesc g_EffectDesc[1000]; // 8096
+
+float4 g_vDistortion;
 
 struct VS_IN
 {
@@ -182,6 +185,7 @@ struct PS_OUT
 	float4 vDiffuse_Middle : SV_TARGET3;
 	float4 vDiffuse_High   : SV_TARGET4;
 	float4 vBloom          : SV_TARGET5;
+    float4 vDistortion	   : SV_TARGET6;
 };
 
 float4 Caculation_Brightness(float4 vColor, uint iInstanceID)
@@ -227,6 +231,7 @@ PS_OUT PS_MAIN(PS_IN In)
 
 	// Bloom
     Out.vBloom = Caculation_Brightness(vDiffuseColor, In.iInstanceID);
+    Out.vDistortion.xy = g_DistortionTexture.Sample(LinearSampler, In.vTexcoord).xy * g_vDistortion.xy;
 	
 	return Out;
 }
@@ -292,6 +297,7 @@ technique11 DefaultTechnique
 		DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MAIN();
 	}
+
 	pass Particle_Basic_Blend
 	{
 		SetRasterizerState(RS_NoneCull);

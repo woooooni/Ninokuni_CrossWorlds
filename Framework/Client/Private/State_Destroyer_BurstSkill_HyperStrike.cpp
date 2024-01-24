@@ -27,11 +27,11 @@ void CState_Destroyer_BurstSkill_HyperStrike::Enter_State(void* pArg)
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
 
     // Effect Create
-    CTransform* pTransformCom = m_pCharacter->Get_Component<CTransform>(L"Com_Transform");
+    /*CTransform* pTransformCom = m_pCharacter->Get_Component<CTransform>(L"Com_Transform");
     if (pTransformCom == nullptr)
         return;
 
-    GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Destroyer_Skill_HyperStrike"), pTransformCom->Get_WorldMatrix(), m_pCharacter);
+    GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Destroyer_Skill_HyperStrike"), pTransformCom->Get_WorldMatrix(), m_pCharacter);*/
 }
 
 void CState_Destroyer_BurstSkill_HyperStrike::Tick_State(_float fTimeDelta)
@@ -42,6 +42,7 @@ void CState_Destroyer_BurstSkill_HyperStrike::Tick_State(_float fTimeDelta)
         if (false == m_pModelCom->Is_Tween() && m_pModelCom->Get_Progress() >= 0.6f)
         {
             Shoot_Hammer();
+
             m_bShoot = true;
         }
     }

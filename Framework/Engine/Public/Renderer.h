@@ -31,6 +31,8 @@ public:
 		BLUR_ALL
 	};
 
+	enum SCREEN_EFFECT { SWORDMAN_SPLIT = 1, DESTROYER_BREAK, SCREENEFFECT_END };
+
 public:
 	typedef struct tagEffectInstancingDesc
 	{
@@ -146,6 +148,28 @@ public:
 public:
 	HRESULT Draw();
 
+//public:
+//	SCREEN_EFFECT Get_Current_ScreenEffect() { return m_eCurrentScreenEffect; }
+//	void Set_ScreenEffect(SCREEN_EFFECT eScreenEffect) { 
+//		if (eScreenEffect == SCREENEFFECT_END)
+//		{
+//			m_eCurrentScreenEffect = eScreenEffect;
+//			m_vScreenEffectAcc = { 0.f, 0.f };
+//		}
+//		else
+//		{
+//			if (m_eCurrentScreenEffect == SCREEN_EFFECT::SCREENEFFECT_END)
+//			{
+//				m_eCurrentScreenEffect = eScreenEffect;
+//				m_vScreenEffectAcc = { 0.f, 0.f };
+//			}
+//		}
+//	}
+//	
+//	Vec2 Get_ScreenEffectAcc() { return m_vScreenEffectAcc; }
+//	void Set_ScreenEffectAcc(const Vec2& vEffectAcc) { m_vScreenEffectAcc = vEffectAcc; }
+//	void Add_ScreenEffectAcc(const Vec2& vEffectAcc) { m_vScreenEffectAcc += vEffectAcc; }
+
 private:
 	HRESULT Draw_BackGround();
 	HRESULT Draw_World();
@@ -173,6 +197,7 @@ private:
 
 	HRESULT Render_Deferred();
 	HRESULT Render_Effect();
+	HRESULT Render_Distortion();
 	HRESULT Render_Decal();
 	HRESULT Render_LensFlare();
 	HRESULT Render_AlphaBlend();
@@ -193,6 +218,7 @@ private:
 	HRESULT Render_UIEffectNonBlend();
 	HRESULT Render_UIEffectBlend();
 
+	HRESULT Render_Screen_Effect();
 	HRESULT Render_Final();
 	HRESULT Render_Cursor();
 
@@ -304,6 +330,16 @@ private:
 
 	HRESULT InitializeScreenQuad();
 	HRESULT RenderScreenQuad();
+
+
+
+private:
+	// class CTexture* m_pScreenTextureCom = nullptr;
+
+//private:
+//	Vec2 m_vScreenEffectAcc = { 0.f, 0.f };
+//	SCREEN_EFFECT m_eCurrentScreenEffect = SCREEN_EFFECT::SCREENEFFECT_END;
+
 
 public:
 	static CRenderer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

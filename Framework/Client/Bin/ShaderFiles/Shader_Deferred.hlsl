@@ -22,6 +22,9 @@ Texture2D g_OutlineTarget;
 
 Texture2D g_BlendMixTarget;
 
+Texture2D g_BlendTarget;
+Texture2D g_DistortionTarget;
+
 // Α¶Έν
 vector g_vCamPosition;
 
@@ -360,6 +363,22 @@ PS_OUT PS_MAIN_SHADOW(PS_IN In)
     return Out;
 }
 
+PS_OUT PS_DISTORTION(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+	
+    float2 vTexelSize = float2(1.f / 1600.f, 1.f / 900.f);
+	
+    float4 vDistortionWeight = g_DistortionTarget.Sample(PointSampler, In.vTexcoord);
+	
+    float2 vSampleTexCoord = In.vTexcoord + (vDistortionWeight.rg);
+	
+    Out.vColor = g_BlendTarget.Sample(PointSampler, vSampleTexCoord);
+	
+	
+    return Out;
+}
+
 DepthStencilState NoDepthWriteLessStencilMaskState // Depth Test Less / No Write / Stencil Mask DS
 {
     DepthEnable = true;
@@ -477,5 +496,18 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_SHADOW();
+    }
+	
+	// 7
+    pass Distortion
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_DISTORTION();
     }
 }

@@ -47,8 +47,8 @@ private:
 
 
 private:
-	Vec4 m_vApexColor = Vec4(0.173f, 0.631f, 0.851f, 1.0f);
-	Vec4 m_vCenterColor = Vec4(183.0f / 255.0f, 255.0f/ 255.0f , 255.0f / 255.0f,1.0f);
+	Vec4 m_vApexColor = Vec4(0.173f, 0.631f, 0.851f, 1.0f);								// ¹Ø È¤Àº À­ºÎºÐ »ö±ò.
+	Vec4 m_vCenterColor = Vec4(183.0f / 255.0f, 255.0f/ 255.0f , 255.0f / 255.0f,1.0f);	// ¼¾ÅÍ ÃàºÎÅÍ ¾î¶² »ö±ò.
 
 
 public:

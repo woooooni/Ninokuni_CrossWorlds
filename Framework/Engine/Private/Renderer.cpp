@@ -27,6 +27,10 @@ HRESULT CRenderer::Initialize_Prototype()
 {
 	int  i = sizeof(ANIMODEL_INSTANCE_DESC);
 
+	/*m_pScreenTextureCom = dynamic_cast<CTexture*>(GI->Clone_Component(0, L"Prototype_Component_Texture_ScreenEffect"));
+	if (nullptr == m_pScreenTextureCom)
+		return E_FAIL;*/
+
 	// Create_Buffer
 	if (FAILED(Create_Buffer()))
 		return E_FAIL;
@@ -278,6 +282,12 @@ HRESULT CRenderer::Draw()
 		return E_FAIL;
 #endif // DEBUG
 
+	/*if(m_eCurrentScreenEffect != SCREENEFFECT_END)
+	{
+		if (FAILED(Render_Screen_Effect()))
+			return E_FAIL;
+	}*/
+
 	if (FAILED(Render_Final()))
 		return E_FAIL;
 
@@ -372,6 +382,7 @@ HRESULT CRenderer::Draw_World()
 	if (FAILED(Draw_WorldEffect()))
 		return E_FAIL;
 
+
 	if (FAILED(Render_GodRay()))
 		return E_FAIL;
 
@@ -384,6 +395,14 @@ HRESULT CRenderer::Draw_World()
 	if (FAILED(Render_AlphaBlend()))
 		return E_FAIL;
 
+
+	if (FAILED(Render_Blur(L"Target_Effect_Distortion", L"MRT_Distrotion_Blur", true, BLUR_HOR_HIGH, BLUR_VER_HIGH, BLUR_UP_ONEADD)))
+		return E_FAIL;
+
+
+	if (FAILED(Render_Distortion()))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -391,6 +410,7 @@ HRESULT CRenderer::Draw_WorldEffect()
 {
 	if (FAILED(Render_Effect()))
 		return E_FAIL;
+
 
 	if (FAILED(Render_Decal()))
 		return E_FAIL;
@@ -1245,6 +1265,43 @@ HRESULT CRenderer::Render_Effect()
 	return S_OK;
 }
 
+HRESULT CRenderer::Render_Distortion()
+{
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, L"MRT_Distortion", true)))
+		return E_FAIL;
+
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
+		return E_FAIL;
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
+		return E_FAIL;
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], L"Target_Blend", "g_BlendTarget")))
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], L"Target_Distortion_Blur", "g_DistortionTarget")))
+		return E_FAIL;
+
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Begin(7)))
+		return E_FAIL;
+
+	if (FAILED(m_pVIBuffer->Render()))
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
+
+
+
+	if (FAILED(Render_AlphaBlendTargetMix(L"Target_Distortion_Temp", L"MRT_Blend", false)))
+		return E_FAIL;
+
+
+
+	return S_OK;
+}
+
 // MRT_Decal
 HRESULT CRenderer::Render_Decal()
 {
@@ -1710,6 +1767,54 @@ HRESULT CRenderer::Render_UIEffectBlend()
 }
 
 
+HRESULT CRenderer::Render_Screen_Effect()
+{
+	//if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_FINAL]->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
+	//	return E_FAIL;
+	//if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_FINAL]->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
+	//	return E_FAIL;
+	//if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_FINAL]->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
+	//	return E_FAIL;
+
+
+	//if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_FINAL], L"Target_Blend", "g_ScreenTarget")))
+	//	return E_FAIL;
+
+
+	//if (m_eCurrentScreenEffect == SCREEN_EFFECT::DESTROYER_BREAK)
+	//{
+	//	_int iTextureIndex = _int(m_vScreenEffectAcc.x);
+
+	//	iTextureIndex = max(0, iTextureIndex);
+	//	iTextureIndex = min(m_pScreenTextureCom->Get_TextureCount() - 1, iTextureIndex);
+	//	if (FAILED(m_pScreenTextureCom->Bind_ShaderResource(m_pShaders[RENDERER_SHADER_TYPE::SHADER_FINAL], "g_ScreenEffectTexture", iTextureIndex)))
+	//		return E_FAIL;
+	//}
+	//
+
+
+	//if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_ScreenEffect"), true)))
+	//	return E_FAIL;
+
+	//if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_FINAL]->Begin(m_eCurrentScreenEffect)))
+	//	return E_FAIL;
+
+	//if (FAILED(m_pVIBuffer->Render()))
+	//	return E_FAIL;
+	//	
+	//if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+	//	return E_FAIL;
+
+	//if (FAILED(Render_AlphaBlendTargetMix(L"Target_ScreenEffect", L"MRT_Blend", true)))
+	//	return E_FAIL;
+
+
+
+
+
+	return S_OK;
+}
+
 // Final
 HRESULT CRenderer::Render_Final()
 {
@@ -1806,8 +1911,8 @@ HRESULT CRenderer::Render_Debug_Target()
 	//if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Decal"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
 	//	return E_FAIL;
 
-	//if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Effect"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
-	//	return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Effect"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
+		return E_FAIL;
 
 	//if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Effect_UI"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
 	//	return E_FAIL;
@@ -1827,6 +1932,10 @@ HRESULT CRenderer::Render_Debug_Target()
 
 	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Shadow_Caculation_Blur"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
 		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Distortion"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
+		return E_FAIL;
+
 
 #pragma region TEMP_MIRROR
 	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_LensFlare"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
@@ -2250,7 +2359,7 @@ HRESULT CRenderer::Create_Target()
 		return E_FAIL;
 #pragma endregion
 
-#pragma region MRT_Effect : Target_Effect_Diffuse 1 ~ 5 / Target_Effect_Bloom
+#pragma region MRT_Effect : Target_Effect_Diffuse 1 ~ 5 / Target_Effect_Bloom / Target_Effect_Distortion
 	/* For.Target_Effect_Diffuse_All */
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Effect_Diffuse_All"),
 		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
@@ -2274,6 +2383,11 @@ HRESULT CRenderer::Create_Target()
 
 	/* For.Target_Effect_Bloom */
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Effect_Bloom"),
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+
+
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Effect_Distortion"),
 		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
 #pragma endregion
@@ -2438,6 +2552,25 @@ HRESULT CRenderer::Create_Target()
 		return E_FAIL;
 #pragma endregion
 
+#pragma region Distortion_Temp
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Distortion_Temp"),
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 1.f))))
+		return E_FAIL;
+#pragma endregion
+
+#pragma region MRT_DistortionBlur : Distortion_Blur
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Distortion_Blur"),
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 1.f))))
+		return E_FAIL;
+#pragma endregion 
+
+
+#pragma region MRT_DistortionBlur : Distortion_Blur
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_ScreenEffect"),
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+#pragma endregion 
+
 
 	XMStoreFloat4x4(&m_WorldMatrix, XMMatrixIdentity());
 	m_WorldMatrix._11 = ViewportDesc.Width;
@@ -2530,6 +2663,9 @@ HRESULT CRenderer::Set_TargetsMrt()
 			return E_FAIL;
 
 		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Effect"), TEXT("Target_Effect_Bloom"))))
+			return E_FAIL;
+
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Effect"), TEXT("Target_Effect_Distortion"))))
 			return E_FAIL;
 	}
 
@@ -2659,6 +2795,28 @@ HRESULT CRenderer::Set_TargetsMrt()
 			return E_FAIL;
 	}
 
+	// MRT_Distortion
+	{
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Distortion"), TEXT("Target_Distortion_Temp"))))
+			return E_FAIL;
+	}
+
+
+	// MRT_Distrotion_Blur
+	{
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Distrotion_Blur"), TEXT("Target_Distortion_Blur"))))
+			return E_FAIL;
+	}
+
+	//MRT_ScreenEffect
+	{
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_ScreenEffect"), TEXT("Target_ScreenEffect"))))
+			return E_FAIL;
+	}
+	
+
+	
+
 	return S_OK;
 }
 
@@ -2735,7 +2893,13 @@ HRESULT CRenderer::Set_Debug()
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Effect_Bloom"), (fSizeX / 2.f) + (fSizeX * 5), (fSizeY / 2.f) + (fSizeY * 3), fSizeX, fSizeY)))
 		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Effect_Distortion"), (fSizeX / 2.f) + (fSizeX * 6), (fSizeY / 2.f) + (fSizeY * 3), fSizeX, fSizeY)))
+		return E_FAIL;
 
+	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Distortion_Temp"), (fSizeX / 2.f) + (fSizeX * 7), (fSizeY / 2.f) + (fSizeY * 3), fSizeX, fSizeY)))
+		return E_FAIL;
+
+	
 
 	// MRT_Effect_UI
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Effect_UI_Diffuse_All"), (fSizeX / 2.f) + (fSizeX * 0), (fSizeY / 2.f) + (fSizeY * 4), fSizeX, fSizeY)))
@@ -2765,6 +2929,8 @@ HRESULT CRenderer::Set_Debug()
 
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_LensFlare"), (fSizeX / 2.f) + (fSizeX * 0), (fSizeY / 2.f) + (fSizeY * 7), fSizeX, fSizeY)))
 		return E_FAIL;
+
+
 
 	// MRT_Blend
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Blend"), 150.f, 825.f, 300.f, 150.f)))
@@ -3004,4 +3170,5 @@ void CRenderer::Free()
 	Safe_Release<ID3D11Buffer*>(m_pQuadVertexBuffer);
 	Safe_Release<ID3D11Buffer*>(m_pQuadIndexBuffer);
 	Safe_Release<CTexture*>(m_pRandomVectorTexture);
+	// Safe_Release<CTexture*>(m_pScreenTextureCom);
 }

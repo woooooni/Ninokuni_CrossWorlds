@@ -398,6 +398,9 @@ private:
 	_float  m_fDissolveSpeed  = 5.f;
 	_float  m_fDissolveWeight = 0.f;
 
+	_float4 m_vDistortion = { 0.f, 0.f, 0.f, 0.f };
+	_bool m_bSelectDistortion = false; //юс╫ц.
+
 private:
 	class CRenderer*  m_pRendererCom  = nullptr;
 	class CTransform* m_pTransformCom = nullptr;
