@@ -4,6 +4,9 @@
 #include "Animation.h"
 #include "Stellia.h"
 
+#include "Effect_Manager.h"
+#include "Decal.h"
+
 CStelliaState_Rage1Loop_SpinTail::CStelliaState_Rage1Loop_SpinTail(CStateMachine* pStateMachine)
 	: CStelliaState_Base(pStateMachine)
 {
@@ -25,8 +28,21 @@ void CStelliaState_Rage1Loop_SpinTail::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
+	if (m_pDecal == nullptr)
+	{
+		CEffect_Manager::GetInstance()->Generate_Decal(TEXT("Decal_Glanix_Skill_JumpDown_Warning"), m_pTransformCom->Get_WorldMatrix(),
+			Vec3(0.f, 0.f, 0.f), Vec3(20.f, 5.f, 20.f), Vec3(0.f, 0.f, 0.f), m_pStellia, &m_pDecal, false);
+		Safe_AddRef(m_pDecal);
+	}
+
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
+		if (m_pDecal != nullptr)
+		{
+			m_pDecal->Set_Dead(true);
+			Safe_Release(m_pDecal);
+		}
+
 		m_pStateMachineCom->Change_State(CStellia::STELLIA_RAGE1LOOP_JUMPSTAMP);
 	}
 }

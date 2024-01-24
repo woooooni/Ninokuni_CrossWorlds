@@ -31,7 +31,7 @@ void CStelliaState_SpinTail::Tick_State(_float fTimeDelta)
 	if (m_pDecal == nullptr)
 	{
 		CEffect_Manager::GetInstance()->Generate_Decal(TEXT("Decal_Glanix_Skill_JumpDown_Warning"), m_pTransformCom->Get_WorldMatrix(),
-			Vec3(0.f, 0.f, 0.f), Vec3(15.f, 5.f, 15.f), Vec3(0.f, 0.f, 0.f), m_pStellia, &m_pDecal, false);
+			Vec3(0.f, 0.f, 0.f), Vec3(20.f, 5.f, 20.f), Vec3(0.f, 0.f, 0.f), m_pStellia, &m_pDecal, false);
 		Safe_AddRef(m_pDecal);
 	}
 

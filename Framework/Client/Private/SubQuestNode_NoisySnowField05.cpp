@@ -28,7 +28,7 @@ HRESULT CSubQuestNode_NoisySnowField05::Initialize()
 
 void CSubQuestNode_NoisySnowField05::Start()
 {
-	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+	CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 }
 
 CBTNode::NODE_STATE CSubQuestNode_NoisySnowField05::Tick(const _float& fTimeDelta)
@@ -39,7 +39,6 @@ CBTNode::NODE_STATE CSubQuestNode_NoisySnowField05::Tick(const _float& fTimeDelt
 	// 여기서 게임 로직.
 	if (KEY_TAP(KEY::N))
 	{
-		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 		m_bIsClear = true;
 
 		return NODE_STATE::NODE_FAIL;

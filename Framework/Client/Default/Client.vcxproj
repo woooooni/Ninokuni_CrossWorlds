@@ -421,6 +421,7 @@
     <ClInclude Include="..\Public\NpcCriminalState_Fun.h" />
     <ClInclude Include="..\Public\NpcCriminalState_Idle.h" />
     <ClInclude Include="..\Public\NpcCriminalState_LockPick.h" />
+    <ClInclude Include="..\Public\NpcDestroyerState_Noisy.h" />
     <ClInclude Include="..\Public\PumpkinCandleNode_Air.h" />
     <ClInclude Include="..\Public\PumpkinCandleNode_Blow.h" />
     <ClInclude Include="..\Public\Shadow_Ball.h" />
@@ -1271,6 +1272,7 @@
     <ClCompile Include="..\Private\NpcCriminalState_Fun.cpp" />
     <ClCompile Include="..\Private\NpcCriminalState_Idle.cpp" />
     <ClCompile Include="..\Private\NpcCriminalState_LockPick.cpp" />
+    <ClCompile Include="..\Private\NpcDestroyerState_Noisy.cpp" />
     <ClCompile Include="..\Private\PumpkinCandleNode_Air.cpp" />
     <ClCompile Include="..\Private\PumpkinCandleNode_Blow.cpp" />
     <ClCompile Include="..\Private\Shadow_Ball.cpp" />

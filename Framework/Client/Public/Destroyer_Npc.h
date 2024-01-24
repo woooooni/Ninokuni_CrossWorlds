@@ -5,6 +5,11 @@ BEGIN(Client)
 
 class CDestroyer_Npc final : public CGameNpc
 {
+public:
+	enum NPC_DESTROYER_STATE {
+		NPC_DESTROYER_NOISY = (NPC_END + 1), NPC_DESTROYER_END
+	};
+
 private:
 	CDestroyer_Npc(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	CDestroyer_Npc(const CDestroyer_Npc& rhs);

@@ -1,10 +1,10 @@
 #pragma once
 
 #include "StelliaState_Base.h"
+#include "Stellia.h"
 
 BEGIN(Client)
 
-class CStellia;
 class CStelliaState_Rage1Loop_Idle final : public CStelliaState_Base
 {
 private:

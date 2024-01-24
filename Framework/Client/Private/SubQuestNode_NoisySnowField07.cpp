@@ -28,6 +28,8 @@ HRESULT CSubQuestNode_NoisySnowField07::Initialize()
 
 void CSubQuestNode_NoisySnowField07::Start()
 {
+	CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+
 	m_pBella = GI->Find_GameObject(LEVELID::LEVEL_ICELAND, LAYER_NPC, TEXT("AquarisBella"));
 	Vec4 vSpotPos = Set_DestSpot(m_pBella);
 
@@ -51,7 +53,7 @@ CBTNode::NODE_STATE CSubQuestNode_NoisySnowField07::Tick(const _float& fTimeDelt
 			{
 				if (m_pQuestDestSpot->Get_IsCol())
 				{
-					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+					CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
 					m_pQuestDestSpot->Set_ReadyDelete(true);
 					m_bIsClear = true;
 					Safe_Release(m_pQuestDestSpot);

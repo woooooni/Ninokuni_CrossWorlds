@@ -8,6 +8,8 @@
 #include "UI_Manager.h"
 #include "Quest_Manager.h"
 
+#include "GameNpc.h"
+
 CMainQuestNode_Glanix01::CMainQuestNode_Glanix01()
 {
 }
