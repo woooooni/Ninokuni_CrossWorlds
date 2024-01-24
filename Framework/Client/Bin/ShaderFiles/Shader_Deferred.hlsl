@@ -360,6 +360,29 @@ PS_OUT PS_MAIN_SHADOW(PS_IN In)
     return Out;
 }
 
+DepthStencilState NoDepthWriteLessStencilMaskState // Depth Test Less / No Write / Stencil Mask DS
+{
+    DepthEnable = true;
+    DepthWriteMask = ZERO;
+    DepthFunc = LESS;
+    StencilEnable = true;
+    StencilReadMask = 0xff;
+    StencilWriteMask = 0xff;
+
+    // Front
+    FrontFaceStencilFail = KEEP;
+    FrontFaceStencilDepthFail = KEEP;
+    FrontFaceStencilPass = KEEP;
+    FrontFaceStencilFunc = EQUAL;
+
+    //Back
+    FrontFaceStencilFail = KEEP;
+    FrontFaceStencilDepthFail = KEEP;
+    FrontFaceStencilPass = KEEP;
+    FrontFaceStencilFunc = EQUAL;
+};
+
+
 technique11 DefaultTechnique
 {
 	// 0
@@ -380,7 +403,7 @@ technique11 DefaultTechnique
 	pass Light_Directional
 	{
 		SetRasterizerState(RS_Default);
-		SetDepthStencilState(DSS_None, 0);
+        SetDepthStencilState(NoDepthWriteLessStencilMaskState, 0);
 		SetBlendState(BS_OneBlend, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
 
 		VertexShader = compile vs_5_0 VS_MAIN();
