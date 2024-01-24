@@ -38,7 +38,7 @@ void CCamera::Tick(_float fTimeDelta)
 		return;
 
 	Tick_Lerp(fTimeDelta);
-	Tick_Shake(fTimeDelta);
+	Tick_Shake(1.f / 144.f);
 }
 
 void CCamera::LateTick(_float fTimeDelta)
