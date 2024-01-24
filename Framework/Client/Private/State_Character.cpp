@@ -8,6 +8,8 @@
 #include "Player.h"
 #include "Character.h"
 
+#include "Camera_Manager.h"
+#include "Camera_Follow.h"
 
 CState_Character::CState_Character(CStateMachine* pStateMachine)
 	: CState(pStateMachine)
@@ -102,12 +104,14 @@ void CState_Character::Neutral_Idle_Input(_float fTimeDelta)
 	{
 		m_pStateMachineCom->Change_State(CCharacter::BATTLE_ATTACK_0);
 		CUI_Manager::GetInstance()->Use_AttackBtn();
+		Reset_Camera_WideToDeafult();
 		return;
 	}
 
 	if (KEY_HOLD(KEY::RBTN))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_GUARD);
+		Reset_Camera_WideToDeafult();
 		return;
 	}
 
@@ -208,12 +212,14 @@ void CState_Character::Battle_Idle_Input(_float fTimeDelta)
 	{
 		m_pStateMachineCom->Change_State(CCharacter::BATTLE_ATTACK_0);
 		CUI_Manager::GetInstance()->Use_AttackBtn();
+		Reset_Camera_WideToDeafult();
 		return;
 	}
 
 	if (KEY_HOLD(KEY::RBTN))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_GUARD);
+		Reset_Camera_WideToDeafult();
 		return;
 	}
 
@@ -413,6 +419,7 @@ void CState_Character::Neutral_Walk_Input(_float fTimeDelta)
 	if (KEY_HOLD(KEY::RBTN))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_GUARD);
+		Reset_Camera_WideToDeafult();
 		return;
 	}
 
@@ -420,6 +427,7 @@ void CState_Character::Neutral_Walk_Input(_float fTimeDelta)
 	{
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_0);
 		CUI_Manager::GetInstance()->Use_AttackBtn();
+		Reset_Camera_WideToDeafult();
 		return;
 	}
 }
@@ -579,6 +587,7 @@ void CState_Character::Battle_Walk_Input(_float fTimeDelta)
 	if (KEY_HOLD(KEY::RBTN))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_GUARD);
+		Reset_Camera_WideToDeafult();
 		return;
 	}
 
@@ -586,6 +595,7 @@ void CState_Character::Battle_Walk_Input(_float fTimeDelta)
 	{
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_0);
 		CUI_Manager::GetInstance()->Use_AttackBtn();
+		Reset_Camera_WideToDeafult();
 		return;
 	}
 
@@ -959,6 +969,7 @@ void CState_Character::Neutral_Run_Input(_float fTimeDelta)
 	if (KEY_HOLD(KEY::RBTN))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_GUARD);
+		Reset_Camera_WideToDeafult();
 		return;
 	}
 
@@ -966,6 +977,7 @@ void CState_Character::Neutral_Run_Input(_float fTimeDelta)
 	{
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_0);
 		CUI_Manager::GetInstance()->Use_AttackBtn();
+		Reset_Camera_WideToDeafult();
 		return;
 	}
 }
@@ -1116,6 +1128,7 @@ void CState_Character::Battle_Run_Input(_float fTimeDelta)
 	if (KEY_HOLD(KEY::RBTN))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_GUARD);
+		Reset_Camera_WideToDeafult();
 		return;
 	}
 
@@ -1123,6 +1136,7 @@ void CState_Character::Battle_Run_Input(_float fTimeDelta)
 	{
 		m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_ATTACK_0);
 		CUI_Manager::GetInstance()->Use_AttackBtn();
+		Reset_Camera_WideToDeafult();
 		return;
 	}
 }
@@ -1312,7 +1326,10 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 		}
 
 		if (true == bUseSkill)
+		{
+			Reset_Camera_WideToDeafult();
 			return;
+		}
 	}
 
 	else if (KEY_TAP(KEY::NUM_2))
@@ -1367,7 +1384,10 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 		}
 
 		if (true == bUseSkill)
+		{
+			Reset_Camera_WideToDeafult();
 			return;
+		}
 	}
 
 	else if (KEY_TAP(KEY::NUM_3))
@@ -1424,7 +1444,10 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 		}
 
 		if (true == bUseSkill)
+		{
+			Reset_Camera_WideToDeafult();
 			return;
+		}
 	}
 
 	else if (KEY_TAP(KEY::R))
@@ -1478,7 +1501,10 @@ void CState_Character::Skill_Input(_float fTimeDelta)
 		}
 
 		if (true == bUseSkill)
+		{
+			Reset_Camera_WideToDeafult();
 			return;
+		}
 	}
 
 }
@@ -1564,3 +1590,17 @@ void CState_Character::Dead_Input(_float fTimeDelta)
 		m_pStateMachineCom->Change_State(CCharacter::REVIVE);
 	}
 }
+
+void CState_Character::Reset_Camera_WideToDeafult()
+{
+	/* 팔로우 카메라 와이드뷰 상태에서, 만약 플레이어가 스킬 혹은 공격을 사용한다면 디폴트뷰로 빠르게 전환한다. */
+
+	CCamera* pCurCam = CCamera_Manager::GetInstance()->Get_CurCamera();
+	if (nullptr != pCurCam && CAMERA_TYPE::FOLLOW)
+	{
+		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(pCurCam);
+		if (nullptr != pFollowCam)
+			pFollowCam->Reset_WideView_To_DefaultView(false, 0.5f);
+	}
+}
+

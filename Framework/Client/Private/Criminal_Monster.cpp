@@ -34,6 +34,7 @@ HRESULT CCriminal_Monster::Initialize(void* pArg)
 	/* For.Com_Transform */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 		return E_FAIL;
+	
 	if (pArg != nullptr)
 	{
 		Vec4* pInitializePosition = (Vec4*)pArg;
@@ -42,9 +43,11 @@ HRESULT CCriminal_Monster::Initialize(void* pArg)
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
+	
+	if (nullptr == m_pControllerCom)
+		return E_FAIL;
 
 	m_pControllerCom->Set_EnterLevel_Position(m_pTransformCom->Get_Position());
-
 
 	if (FAILED(__super::Ready_RoamingPoint()))
 		return E_FAIL;
