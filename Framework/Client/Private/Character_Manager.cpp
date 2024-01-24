@@ -12,6 +12,7 @@
 #include "Engineer_Bullet.h"
 #include "Engineer_Bullet_Bomb.h"
 #include "Engineer_Burst_CannonBomb.h"
+#include "Engineer_BurstCall_Missile.h"
 #include "Engineer_Burst_DestructionCannon.h"
 
 
@@ -189,6 +190,9 @@ HRESULT CCharacter_Manager::Ready_Characters()
 		if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Engineer_Bullet_Bomb", CEngineer_Bullet_Bomb::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
 			return E_FAIL;
 
+		if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Engineer_BurstCall_Missile", CEngineer_BurstCall_Missile::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
+			return E_FAIL;
+
 		if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Engineer_Burst_CannonBomb", CEngineer_Burst_CannonBomb::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
 			return E_FAIL;
 
@@ -246,6 +250,9 @@ HRESULT CCharacter_Manager::Ready_Characters()
 				return E_FAIL;
 
 			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Engineer_Bullet_Bomb", CEngineer_Bullet_Bomb::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
+				return E_FAIL;
+
+			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Engineer_BurstCall_Missile", CEngineer_BurstCall_Missile::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))
 				return E_FAIL;
 
 			if (FAILED(GI->Add_Prototype(L"Prototype_GameObject_Engineer_Burst_CannonBomb", CEngineer_Burst_CannonBomb::Create(m_pDevice, m_pContext), LAYER_CHARACTER, true)))

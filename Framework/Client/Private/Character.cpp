@@ -215,7 +215,7 @@ void CCharacter::Tick_MotionTrail(_float fTimeDelta)
 
 		MOTION_TRAIL_DESC TrailDesc;
 		TrailDesc.WorldMatrix = m_pTransformCom->Get_WorldMatrix();
-		TrailDesc.fAlphaSpeed = 1.f;
+		TrailDesc.fAlphaSpeed = m_MotionTrailDesc.fAlphaSpeed;
 		TrailDesc.pModel = m_pModelCom;
 		TrailDesc.TweenDesc = m_pModelCom->Get_TweenDesc();
 		TrailDesc.vBloomPower = m_MotionTrailDesc.vBloomPower;

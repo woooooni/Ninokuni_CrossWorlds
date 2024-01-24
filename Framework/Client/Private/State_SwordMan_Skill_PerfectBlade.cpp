@@ -39,6 +39,40 @@ void CState_SwordMan_Skill_PerfectBlade::Enter_State(void* pArg)
 
 void CState_SwordMan_Skill_PerfectBlade::Tick_State(_float fTimeDelta)
 {
+    if (false == m_pModelCom->Is_Tween())
+    {
+        /*if (m_pModelCom->Get_CurrAnimationFrame() == 15)
+        {
+            m_pCharacter->Look_For_Target();
+            m_pTransformCom->Move(-1.f * XMVector3Normalize(m_pTransformCom->Get_Right()), 20.f, fTimeDelta);
+        }
+        if (m_pModelCom->Get_CurrAnimationFrame() == 22)
+        {
+            m_pCharacter->Look_For_Target();
+            m_pTransformCom->Move(-1.f * XMVector3Normalize(m_pTransformCom->Get_Right()), 20.f, fTimeDelta);
+        }
+        if (m_pModelCom->Get_CurrAnimationFrame() == 28)
+        {
+            m_pCharacter->Look_For_Target();
+            m_pTransformCom->Move(-1.f * XMVector3Normalize(m_pTransformCom->Get_Right()), 20.f, fTimeDelta);
+        }
+        if (m_pModelCom->Get_CurrAnimationFrame() == 34)
+        {
+            m_pCharacter->Look_For_Target();
+            m_pTransformCom->Move(-1.f * XMVector3Normalize(m_pTransformCom->Get_Right()), 20.f, fTimeDelta);
+        }
+        if (m_pModelCom->Get_CurrAnimationFrame() == 39)
+        {
+            m_pCharacter->Look_For_Target();
+            m_pTransformCom->Move(-1.f * XMVector3Normalize(m_pTransformCom->Get_Right()), 20.f, fTimeDelta);
+        }
+        if (m_pModelCom->Get_CurrAnimationFrame() == 42)
+        {
+            m_pCharacter->Look_For_Target();
+            m_pTransformCom->Move(-1.f * XMVector3Normalize(m_pTransformCom->Get_Right()), 20.f, fTimeDelta);
+        }*/
+    }
+
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
         m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_IDLE);
 

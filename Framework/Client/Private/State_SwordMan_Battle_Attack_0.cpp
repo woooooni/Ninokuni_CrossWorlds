@@ -30,7 +30,7 @@ void CState_SwordMan_Battle_Attack_0::Enter_State(void* pArg)
 void CState_SwordMan_Battle_Attack_0::Tick_State(_float fTimeDelta)
 {
     if (m_pModelCom->Get_Progress() >= 0.1f && m_pModelCom->Get_Progress() <= 0.3f)    
-        m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), 2.f, fTimeDelta);
+        m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), 3.f, fTimeDelta);
 
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
         m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_IDLE);

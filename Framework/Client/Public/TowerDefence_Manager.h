@@ -41,6 +41,7 @@ public:
 
 public:
 	_int Get_CurrentCost() { return m_iCost; }
+	TOWER_DEFENCE_PHASE Get_CurrentPhase()  { return m_eCurrentPhase; }
 
 public:
 	_float Get_Total_PrepareTime() { return m_fPrepareTime; }
@@ -93,7 +94,6 @@ private:
 private:
 	_bool m_bReserved = false;
 	TOWER_DEFENCE_PHASE m_eCurrentPhase = TOWER_DEFENCE_PHASE::DEFENCE_NO_RUN;
-
 	TOWER_TYPE m_eCurrentTowerType = TOWER_TYPE::TOWER_TYPE_END;
 
 private:

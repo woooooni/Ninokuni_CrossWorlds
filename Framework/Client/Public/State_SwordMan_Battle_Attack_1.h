@@ -26,6 +26,9 @@ public:
 	virtual void Exit_State() override;
 
 
+private:
+	MOTION_TRAIL_DESC m_MotionTrailDesc = {};
+
 public:
 	static CState_SwordMan_Battle_Attack_1* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

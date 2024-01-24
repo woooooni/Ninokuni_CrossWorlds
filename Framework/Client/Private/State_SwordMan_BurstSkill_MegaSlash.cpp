@@ -32,19 +32,35 @@ void CState_SwordMan_BurstSkill_MegaSlash::Enter_State(void* pArg)
     if (pTransformCom == nullptr)
         return;
     GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_SwordMan_Skill_MegaSlash"), pTransformCom->Get_WorldMatrix(), m_pCharacter);
+
+    m_bSlow = false;
 }
 
 void CState_SwordMan_BurstSkill_MegaSlash::Tick_State(_float fTimeDelta)
 {
+    if (false == m_pModelCom->Is_Tween() && m_pModelCom->Get_CurrAnimationFrame() >= 46)
+    {
+        if (false == m_bSlow)
+        {
+            GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.5f, 0.1f, true);
+            m_bSlow = true;
+        }
+    }
+        
+
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
         m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_IDLE);
+
 }
 
 void CState_SwordMan_BurstSkill_MegaSlash::Exit_State()
 {
     m_pCharacter->Set_Infinite(0.f, false);
+
     if(!CCamera_Manager::GetInstance()->Get_CurCamera()->Is_Lock_Fov())
         CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(Cam_Fov_Follow_Default);
+
+    m_bSlow = false;
 }
 CState_SwordMan_BurstSkill_MegaSlash* CState_SwordMan_BurstSkill_MegaSlash::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
 {

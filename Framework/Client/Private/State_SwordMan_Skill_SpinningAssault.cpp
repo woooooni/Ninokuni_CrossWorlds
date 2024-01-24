@@ -22,7 +22,7 @@ HRESULT CState_SwordMan_Skill_SpinningAssault::Initialize(const list<wstring>& A
     if (FAILED(__super::Initialize(AnimationList)))
         return E_FAIL;
 
-    m_MotionTrailDesc.fAlphaSpeed = 0.05f;
+    m_MotionTrailDesc.fAlphaSpeed = 1.f;
     m_MotionTrailDesc.fBlurPower = 0.f;
     m_MotionTrailDesc.vRimColor = { 0.2f, 0.8f, 1.f, 1.f };
     m_MotionTrailDesc.vBloomPower = { 0.2f, 0.8f, 1.f };
@@ -39,6 +39,12 @@ void CState_SwordMan_Skill_SpinningAssault::Enter_State(void* pArg)
     m_pCharacter->Appear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
     m_pCharacter->Look_For_Target();
+
+    m_MotionTrailDesc.fAlphaSpeed = 1.f;
+    m_MotionTrailDesc.fBlurPower = 0.f;
+    m_MotionTrailDesc.vRimColor = { 0.2f, 0.8f, 1.f, 1.f };
+    m_MotionTrailDesc.vBloomPower = { 0.2f, 0.8f, 1.f };
+    m_MotionTrailDesc.fMotionTrailTime = 0.1f;
 
     // Effect Create
     CTransform* pTransformCom = m_pCharacter->Get_Component<CTransform>(L"Com_Transform");
@@ -77,7 +83,9 @@ void CState_SwordMan_Skill_SpinningAssault::Exit_State()
 {
     m_pCharacter->Stop_MotionTrail();
     m_bTrailStart = false;
-    CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(Cam_Fov_Follow_Default);
+
+    if(!CCamera_Manager::GetInstance()->Get_CurCamera()->Is_Lock_Fov())
+        CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(Cam_Fov_Follow_Default);
 }
 
 CState_SwordMan_Skill_SpinningAssault* CState_SwordMan_Skill_SpinningAssault::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

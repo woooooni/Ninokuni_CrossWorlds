@@ -29,8 +29,16 @@ void CState_SwordMan_Battle_Attack_3::Enter_State(void* pArg)
 
 void CState_SwordMan_Battle_Attack_3::Tick_State(_float fTimeDelta)
 {
-    if (m_pModelCom->Get_Progress() >= 0.2f && m_pModelCom->Get_Progress() <= 0.3f)
-        m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), 6.f, fTimeDelta);
+    /*if (m_pModelCom->Get_Progress() >= 0.2f && m_pModelCom->Get_Progress() <= 0.3f)
+        m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), 6.f, fTimeDelta);*/
+
+    if (false == m_pModelCom->Is_Tween() && m_pCharacter->Get_Collider(CCollider::DETECTION_TYPE::ATTACK)[0]->Is_Active())
+    {
+        Vec3 vDir = 1.f * XMVector3Normalize((m_pTransformCom->Get_Look()));
+        m_pTransformCom->Move(XMVector3Normalize(vDir), 10.f, fTimeDelta);
+    }
+        
+    
 
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
         m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_IDLE);
@@ -38,7 +46,8 @@ void CState_SwordMan_Battle_Attack_3::Tick_State(_float fTimeDelta)
 
 void CState_SwordMan_Battle_Attack_3::Exit_State()
 {
-    
+    if (CAMERA_TYPE::FOLLOW == CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key())
+        CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Lerp_Fov(XMConvertToRadians(60.f), 0.2f, LERP_MODE::EASE_IN);
 }
 
 

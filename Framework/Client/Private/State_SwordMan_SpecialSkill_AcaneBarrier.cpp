@@ -41,7 +41,8 @@ void CState_SwordMan_SpecialSkill_AcaneBarrier::Tick_State(_float fTimeDelta)
 
 void CState_SwordMan_SpecialSkill_AcaneBarrier::Exit_State()
 {
-    CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(Cam_Fov_Follow_Default);
+    if (!CCamera_Manager::GetInstance()->Get_CurCamera()->Is_Lock_Fov())
+        CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(Cam_Fov_Follow_Default);
 }
 
 CState_SwordMan_SpecialSkill_AcaneBarrier* CState_SwordMan_SpecialSkill_AcaneBarrier::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

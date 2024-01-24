@@ -74,8 +74,20 @@ HRESULT CState_Destroyer_BurstSkill_HyperStrike::Shoot_Hammer()
     }
     _matrix InitMatirx = m_pTransformCom->Get_WorldMatrix();
     InitMatirx.r[CTransform::STATE_POSITION] += XMVector3Normalize(m_pTransformCom->Get_Look()) * 10.f;
+    InitMatirx.r[CTransform::STATE_POSITION] += XMVectorSet(0.f, 3.f, 0.f, 0.f);
+
     pTransform->Set_WorldMatrix(InitMatirx);
     m_bShoot = true;
+
+    CPhysX_Controller* pController = pObject->Get_Component<CPhysX_Controller>(L"Com_Controller");
+    if (nullptr == pController)
+    {
+        MSG_BOX("Find Controller Failed. : CState_Destroyer_BurstSkill_HyperStrike::Shoot_Hammer()");
+        return E_FAIL;
+    }
+
+    pController->Set_EnterLevel_Position(pTransform->Get_Position());
+    
 
     return S_OK;
 }

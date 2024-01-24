@@ -58,7 +58,8 @@ void CState_Engineer_Skill_ExplosionShot::Tick_State(_float fTimeDelta)
 
 void CState_Engineer_Skill_ExplosionShot::Exit_State()
 {
-    
+    if (!CCamera_Manager::GetInstance()->Get_CurCamera()->Is_Lock_Fov())
+        CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(Cam_Fov_Follow_Default);
 }
 
 void CState_Engineer_Skill_ExplosionShot::Shoot()

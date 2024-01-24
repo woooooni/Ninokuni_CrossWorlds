@@ -395,7 +395,6 @@ HRESULT CLevel_Evermore::Ready_Layer_Npc(const LAYER_TYPE eLayerType)
 				pNpc->Set_Stat(eStat);
 			}
 
-
 			pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
 			pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
 			pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
