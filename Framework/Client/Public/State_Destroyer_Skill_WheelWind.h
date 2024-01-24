@@ -31,7 +31,7 @@ private:
 private:
 	_float m_fAccFinish = 0.f;
 	_float m_fFinishTime = 3.f;
-	_float m_fMoveSpeed = 2.f;
+	_float m_fMoveSpeed = 5.f;
 
 
 public:

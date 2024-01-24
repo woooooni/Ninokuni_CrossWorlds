@@ -46,13 +46,6 @@ HRESULT CEngineer_BurstCall_Missile::Initialize(void* pArg)
 void CEngineer_BurstCall_Missile::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
-
-	m_fAccOnOff += fTimeDelta;
-	if (m_fAccOnOff >= m_fOnOffTime)
-	{
-		m_fAccOnOff = 0.f;
-		Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, !Get_Collider(CCollider::DETECTION_TYPE::ATTACK)[0]->Is_Active());
-	}
 }
 
 void CEngineer_BurstCall_Missile::LateTick(_float fTimeDelta)

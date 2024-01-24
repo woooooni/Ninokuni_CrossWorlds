@@ -41,26 +41,36 @@ void CState_SwordMan_Skill_PerfectBlade::Tick_State(_float fTimeDelta)
 {
     if (false == m_pModelCom->Is_Tween())
     {
-        if (m_pModelCom->Get_CurrAnimationFrame() == 15)
+        /*if (m_pModelCom->Get_CurrAnimationFrame() == 15)
         {
-            m_pTransformCom->Move(-1.f * XMVector3Normalize(m_pTransformCom->Get_Right()), 3.f, fTimeDelta);
+            m_pCharacter->Look_For_Target();
+            m_pTransformCom->Move(-1.f * XMVector3Normalize(m_pTransformCom->Get_Right()), 20.f, fTimeDelta);
         }
         if (m_pModelCom->Get_CurrAnimationFrame() == 22)
         {
-            m_pTransformCom->Move(1.f * XMVector3Normalize(m_pTransformCom->Get_Right()), 3.f, fTimeDelta);
+            m_pCharacter->Look_For_Target();
+            m_pTransformCom->Move(-1.f * XMVector3Normalize(m_pTransformCom->Get_Right()), 20.f, fTimeDelta);
         }
         if (m_pModelCom->Get_CurrAnimationFrame() == 28)
         {
-            m_pTransformCom->Move(-1.f * XMVector3Normalize(m_pTransformCom->Get_Right()), 3.f, fTimeDelta);
+            m_pCharacter->Look_For_Target();
+            m_pTransformCom->Move(-1.f * XMVector3Normalize(m_pTransformCom->Get_Right()), 20.f, fTimeDelta);
         }
         if (m_pModelCom->Get_CurrAnimationFrame() == 34)
         {
-            m_pTransformCom->Move(1.f * XMVector3Normalize(m_pTransformCom->Get_Right()), 3.f, fTimeDelta);
+            m_pCharacter->Look_For_Target();
+            m_pTransformCom->Move(-1.f * XMVector3Normalize(m_pTransformCom->Get_Right()), 20.f, fTimeDelta);
         }
         if (m_pModelCom->Get_CurrAnimationFrame() == 39)
         {
-            m_pTransformCom->Move(-1.f * XMVector3Normalize(m_pTransformCom->Get_Right()), 3.f, fTimeDelta);
+            m_pCharacter->Look_For_Target();
+            m_pTransformCom->Move(-1.f * XMVector3Normalize(m_pTransformCom->Get_Right()), 20.f, fTimeDelta);
         }
+        if (m_pModelCom->Get_CurrAnimationFrame() == 42)
+        {
+            m_pCharacter->Look_For_Target();
+            m_pTransformCom->Move(-1.f * XMVector3Normalize(m_pTransformCom->Get_Right()), 20.f, fTimeDelta);
+        }*/
     }
 
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())

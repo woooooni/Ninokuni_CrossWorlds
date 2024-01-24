@@ -37,7 +37,7 @@ void CState_SwordMan_Battle_Attack_1::Tick_State(_float fTimeDelta)
 
     if (m_pModelCom->Get_Progress() <= 0.25f && m_pCharacter->Get_Collider(CCollider::DETECTION_TYPE::ATTACK)[0]->Is_Active())
     {
-        Vec3 vDir = -1.f * (XMVector3Normalize(m_pTransformCom->Get_Right() * 0.5f)) + XMVector3Normalize((m_pTransformCom->Get_Look() * 0.5f));
+        Vec3 vDir = -1.f * (XMVector3Normalize(m_pTransformCom->Get_Right()) * 0.9f) + XMVector3Normalize((m_pTransformCom->Get_Look()) * 0.1f);
         m_pTransformCom->Move(XMVector3Normalize(vDir), 20.f, fTimeDelta);
         m_pCharacter->Look_For_Target();
         m_pCharacter->Generate_MotionTrail(m_MotionTrailDesc);
@@ -45,7 +45,7 @@ void CState_SwordMan_Battle_Attack_1::Tick_State(_float fTimeDelta)
 
     if(m_pModelCom->Get_Progress() > 0.25f && m_pCharacter->Get_Collider(CCollider::DETECTION_TYPE::ATTACK)[0]->Is_Active())
     {
-        Vec3 vDir = 1.f * (XMVector3Normalize(m_pTransformCom->Get_Right() * 0.9f)) + XMVector3Normalize((m_pTransformCom->Get_Look() * 0.1f));
+        Vec3 vDir = 1.f * (XMVector3Normalize(m_pTransformCom->Get_Right()) * 0.95f) + XMVector3Normalize((m_pTransformCom->Get_Look()) * 0.05f);
         m_pCharacter->Look_For_Target();
         m_pTransformCom->Move(XMVector3Normalize(vDir), 30.f, fTimeDelta);
     }
