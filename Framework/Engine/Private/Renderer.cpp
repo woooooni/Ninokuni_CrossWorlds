@@ -53,6 +53,7 @@ HRESULT CRenderer::Initialize_Prototype()
 	if (FAILED(Initialize_SSAO()))
 		return E_FAIL;
 
+	XMStoreFloat4x4(&m_MinimapProj, XMMatrixPerspectiveFovLH(XMConvertToRadians(60.0f), 1600.f / 900.f, 0.2f, 1000.0f));
 
 	return S_OK;
 }

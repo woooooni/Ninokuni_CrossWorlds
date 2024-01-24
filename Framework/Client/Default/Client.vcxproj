@@ -795,6 +795,7 @@
     <ClInclude Include="..\Public\UI_Minigame_EnemyInfo.h" />
     <ClInclude Include="..\Public\UI_Minigame_Timer.h" />
     <ClInclude Include="..\Public\UI_Minigame_TowerSelect.h" />
+    <ClInclude Include="..\Public\UI_Minimap.h" />
     <ClInclude Include="..\Public\UI_Minimap_Frame.h" />
     <ClInclude Include="..\Public\UI_MonsterHP_World.h" />
     <ClInclude Include="..\Public\UI_Quest_Reward.h" />
@@ -1642,6 +1643,7 @@
     <ClCompile Include="..\Private\UI_Minigame_EnemyInfo.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_Timer.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_TowerSelect.cpp" />
+    <ClCompile Include="..\Private\UI_Minimap.cpp" />
     <ClCompile Include="..\Private\UI_Minimap_Frame.cpp" />
     <ClCompile Include="..\Private\UI_MonsterHP_World.cpp" />
     <ClCompile Include="..\Private\UI_Quest_Reward.cpp" />

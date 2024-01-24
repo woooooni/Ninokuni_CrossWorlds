@@ -17,6 +17,25 @@ CUI_Minigame_Basic::CUI_Minigame_Basic(const CUI_Minigame_Basic& rhs)
 {
 }
 
+void CUI_Minigame_Basic::Set_Active(_bool bActive)
+{
+	if (true == bActive)
+	{
+
+	}
+	else
+	{
+		if (m_eType == GRANDPRIX_READY || m_eType == GRANDPRIX_THREE || m_eType == GRANDPRIX_TWO ||
+			m_eType == GRANDPRIW_ONE || m_eType == GRANDPRIX_START || m_eType == GRANDPRIX_END)
+		{
+			m_bStart = false;
+			m_bEnd = false;
+		}
+	}
+
+	m_bActive = bActive;
+}
+
 HRESULT CUI_Minigame_Basic::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
@@ -327,6 +346,7 @@ void CUI_Minigame_Basic::Tick_Count(_float fTimeDelta)
 
 void CUI_Minigame_Basic::LateTick_Count(_float fTimeDelta)
 {
+
 }
 
 CUI_Minigame_Basic* CUI_Minigame_Basic::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_MINIGAMEBASIC eType)

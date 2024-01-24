@@ -16,6 +16,8 @@ protected:
 	virtual ~CUI_Minigame_Basic() = default;
 
 public:
+	virtual void Set_Active(_bool bActive) override;
+
 	_bool Is_End() {
 		if (!(m_eType == GRANDPRIX_READY || m_eType == GRANDPRIX_THREE || m_eType == GRANDPRIX_TWO ||
 			m_eType == GRANDPRIW_ONE || m_eType == GRANDPRIX_START || m_eType == GRANDPRIX_END))

@@ -64,7 +64,8 @@ private: // Evermore Granprix
 	class CUI_Minigame_Basic* m_pCloud = { nullptr };
 	vector <class CUI_Minigame_EnemyInfo*> m_EnemyHP;
 	vector <class CUI_Minigame_ClassSkill*> m_Skill;
-	_bool m_bCountStart = { false };
+	_bool m_bCountStart = { false }; // 게임이 시작되면 CountDown UI On
+	_bool m_bGrandprixEnd = { false }; // 게임이 끝나면 End UI On
 	_uint m_iCountIndex = { 0 };
 	vector <class CUI_Minigame_Basic*> m_Counts;
 
