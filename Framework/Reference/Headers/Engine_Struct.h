@@ -65,6 +65,17 @@ namespace Engine
 		XMFLOAT4		vAmbient;
 		XMFLOAT4		vSpecular;
 
+
+		// 개조 전에 임시
+		Vec3 vTempPosition;
+		Vec3 vTempDirection;
+		Vec3 vAmbientLowerColor;
+		Vec3 vAmbientUpperColor;
+
+		_float fTempRange = 0.0f;
+		_float fTempLength = 0.0f;
+		_float fTempInnerAngle = 0.0f;
+		Vec3 vTempColor;
 	}LIGHTDESC;
 
 	typedef struct tagMaterialDesc
