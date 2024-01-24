@@ -95,6 +95,7 @@ HRESULT CLight::DirectionalLight(class CShader* pShader)
 		return E_FAIL;
 
 	pShader->Begin(1);
+	return S_OK;
 }
 
 CLight * CLight::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const LIGHTDESC & LightDesc)
