@@ -34,9 +34,13 @@ public: // Clone
 	HRESULT Ready_MinigameUI_GameObject(LEVELID eID);
 	HRESULT Ready_MinigameUI_ToLayer(LEVELID eID);
 
+public:
+	void Tick_Minigame(LEVELID eID, _float fTimeDelta);
+	void LateTick_Minigame(LEVELID eID, _float fTimeDelta);
+
 public: // Level Evermore
 	void OnOff_TowerDefence_Select(_bool bOnOff);
-	void OnOff_Granprix(_bool bOnOff);
+	void OnOff_Grandprix(_bool bOnOff);
 
 private: // Prototypes
 	HRESULT Ready_MinigameUI_Evermore();
@@ -44,6 +48,10 @@ private: // Prototypes
 private: // clone
 	HRESULT Ready_TowerDence();
 	HRESULT Ready_Granprix();
+
+private:
+	void Tick_Grandprix(_float fTimeDelta);
+	void LateTick_Grandprix(_float fTimeDelta);
 
 private: // Evermore Tower Defence
 	class CUI_Minigame_Basic* m_pMenu = { nullptr };
@@ -56,6 +64,10 @@ private: // Evermore Granprix
 	class CUI_Minigame_Basic* m_pCloud = { nullptr };
 	vector <class CUI_Minigame_EnemyInfo*> m_EnemyHP;
 	vector <class CUI_Minigame_ClassSkill*> m_Skill;
+	_bool m_bCountStart = { false }; // 게임이 시작되면 CountDown UI On
+	_bool m_bGrandprixEnd = { false }; // 게임이 끝나면 End UI On
+	_uint m_iCountIndex = { 0 };
+	vector <class CUI_Minigame_Basic*> m_Counts;
 
 private:
 	ID3D11Device* m_pDevice = nullptr;

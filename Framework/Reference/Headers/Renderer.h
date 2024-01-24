@@ -117,6 +117,7 @@ public: // UI Setting Option¿ª ¿ß«— Get/Set
 
 	void Set_MinimapView(_float4x4 matView) { m_MinimapView = matView; }
 	_float4x4 Get_MinimapView() { return m_MinimapView; }
+	_float4x4 Get_MinimapProj() { return m_MinimapProj; }
 
 public:
 	HRESULT Add_RenderGroup(RENDERGROUP eRenderGroup, class CGameObject* pGameObject);
@@ -271,6 +272,7 @@ private:
 
 private: // Minimap
 	_float4x4 m_MinimapView;
+	_float4x4 m_MinimapProj;
 
 private:
 	_float	m_fBias = 0.2f;

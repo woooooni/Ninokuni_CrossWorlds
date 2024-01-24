@@ -456,7 +456,7 @@ HRESULT CCharacter::Render_Minimap()
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ))))
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_pRendererCom->Get_MinimapProj())))
 		return E_FAIL;
 	if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
 		return E_FAIL;
@@ -681,10 +681,9 @@ void CCharacter::LevelUp()
 	m_tStat.iLevel++;
 
 	m_tStat.iMaxHp += m_tStat.iLevel * 100;
+	m_tStat.iHp = m_tStat.iMaxHp;
 	m_tStat.iAtt += m_tStat.iLevel * 100;
 	CUI_Manager::GetInstance()->OnOff_LevelUp(true, m_tStat.iLevel);
-
-	// TODO :: UI
 }
 
 

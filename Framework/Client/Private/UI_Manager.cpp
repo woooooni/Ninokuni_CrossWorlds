@@ -26,6 +26,7 @@
 #include "UI_LevelUp.h"
 #include "UI_MapName.h"
 #include "UI_BtnBack.h"
+#include "UI_Minimap.h"
 #include "UI_Milepost.h"
 #include "UI_BtnClose.h"
 #include "UI_MainMenu.h"
@@ -3210,10 +3211,10 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 	Safe_AddRef(pMilepost);
 
 
-	m_Minimap.reserve(2);
+	m_MinimapFrame.reserve(2);
 
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
-	UIDesc.fCX = 300.f * 0.6f;
+	UIDesc.fCX = 300.f * 0.6f; // 180.f
 	UIDesc.fCY = UIDesc.fCX;
 	UIDesc.fX = g_iWinSizeX - (UIDesc.fCX - 30.f);
 	UIDesc.fY = UIDesc.fCY - 30.f;
@@ -3221,7 +3222,7 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 	CGameObject* pMinimap = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Minimap_Frame"), &UIDesc, &pMinimap)))
 		return E_FAIL;
-	m_Minimap.push_back(dynamic_cast<CUI_Minimap_Frame*>(pMinimap));
+	m_MinimapFrame.push_back(dynamic_cast<CUI_Minimap_Frame*>(pMinimap));
 	if (nullptr == pMinimap)
 		return E_FAIL;
 	Safe_AddRef(pMinimap);
@@ -3229,11 +3230,21 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 	pMinimap = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Minimap_FrameArrow"), &UIDesc, &pMinimap)))
 		return E_FAIL;
-	m_Minimap.push_back(dynamic_cast<CUI_Minimap_Frame*>(pMinimap));
+	m_MinimapFrame.push_back(dynamic_cast<CUI_Minimap_Frame*>(pMinimap));
 	if (nullptr == pMinimap)
 		return E_FAIL;
 	Safe_AddRef(pMinimap);
 
+	UIDesc.fCX = 320.f; // 16
+	UIDesc.fCY = 300.f * 0.6f; // 9
+
+	pMinimap = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Minimap"), &UIDesc, &pMinimap)))
+		return E_FAIL;
+	m_pMinimap = dynamic_cast<CUI_Minimap*>(pMinimap);
+	if (nullptr == m_pMinimap)
+		return E_FAIL;
+	Safe_AddRef(m_pMinimap);
 
 	m_WeaponIcon.reserve(3);
 
@@ -4229,7 +4240,7 @@ HRESULT CUI_Manager::Ready_GameObjectToLayer(LEVELID eID)
 		Safe_AddRef(iter);
 	}
 
-	for (auto& iter : m_Minimap)
+	for (auto& iter : m_MinimapFrame)
 	{
 		if (nullptr == iter)
 			return E_FAIL;
@@ -4238,6 +4249,12 @@ HRESULT CUI_Manager::Ready_GameObjectToLayer(LEVELID eID)
 			return E_FAIL;
 		Safe_AddRef(iter);
 	}
+
+	if (nullptr == m_pMinimap)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pMinimap)))
+		return E_FAIL;
+	Safe_AddRef(m_pMinimap);
 
 	for (auto& iter : m_WeaponIcon)
 	{
@@ -6684,7 +6701,7 @@ HRESULT CUI_Manager::OnOff_MiniMap(_bool bOnOff)
 {
 	if (bOnOff) // ÄÒ´Ù
 	{
-		for (auto& iter : m_Minimap)
+		for (auto& iter : m_MinimapFrame)
 		{
 			if (nullptr != iter)
 				iter->Set_Active(true);
@@ -6692,7 +6709,7 @@ HRESULT CUI_Manager::OnOff_MiniMap(_bool bOnOff)
 	}
 	else // ²ö´Ù
 	{
-		for (auto& iter : m_Minimap)
+		for (auto& iter : m_MinimapFrame)
 		{
 			if (nullptr != iter)
 				iter->Set_Active(false);
@@ -6703,6 +6720,157 @@ HRESULT CUI_Manager::OnOff_MiniMap(_bool bOnOff)
 	}
 
 	return S_OK;
+}
+
+void CUI_Manager::OnOff_GamePlaySetting_ExceptInfo(_bool bOnOff)
+{
+	if (bOnOff) // On
+	{
+		OnOff_QuestPopup(true);
+
+		for (auto& iter : m_Milepost)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(true);
+		}
+		//m_pPlayerStatus->Set_Active(true);
+		for (auto& iter : m_ItemQuickslot)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(true);
+		}
+		m_pBtnShowMenu->Set_Active(true);
+		m_pBtnCamera->Set_Active(true);
+		m_pBtnInven->Set_Active(true);
+		m_pBtnQuest->Set_Active(true);
+		m_pBtnShowMinimap->Set_Active(true);
+		m_pBtnInGameSetting->Set_Active(true);
+		m_pPlayerSelected->Set_Active(true);
+
+		m_pSkillBG->Set_Active(true);
+		for (auto& iter : m_ClassicSkill)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(true);
+		}
+		for (auto& iter : m_ClassicFrame)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(true);
+		}
+		for (auto& iter : m_SpecialSkill)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(true);
+		}
+		for (auto& iter : m_SpecialFrame)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(true);
+		}
+		for (auto& iter : m_WeaponIcon)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(true);
+		}
+		for (auto& iter : m_WeaponElemental)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(true);
+		}
+		for (auto& iter : m_PlayerSlot)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(true);
+		}
+
+		m_pImajinnBG->Set_Active(true);
+
+		OnOff_MonsterHP(true);
+		OnOff_BossHP(true);
+
+		// EXP Bar¸¦ º¸¿©ÁØ´Ù.
+		for (auto& iter : m_PlayerEXP)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(true);
+		}
+	}
+	else // Off
+	{
+		for (auto& iter : m_Milepost)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+
+		//m_pPlayerStatus->Set_Active(false);
+		for (auto& iter : m_ItemQuickslot)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+
+		m_pBtnShowMenu->Set_Active(false);
+		m_pBtnCamera->Set_Active(false);
+		m_pBtnInven->Set_Active(false);
+		m_pBtnQuest->Set_Active(false);
+		m_pBtnShowMinimap->Set_Active(false);
+		m_pBtnInGameSetting->Set_Active(false);
+		m_pPlayerSelected->Set_Active(false);
+
+		m_pSkillBG->Set_Active(false);
+		for (auto& iter : m_ClassicSkill)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_ClassicFrame)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_SpecialSkill)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_SpecialFrame)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_WeaponIcon)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_WeaponElemental)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+		for (auto& iter : m_PlayerSlot)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+
+		m_pImajinnBG->Set_Active(false);
+		m_pCameraAnnounce->Set_Active(false);
+
+		OnOff_MonsterHP(false);
+		OnOff_MiniMap(false);
+
+		for (auto& iter : m_PlayerEXP)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+
+		OnOff_QuestPopup(false);
+		OnOff_BossHP(false);
+	}
 }
 
 void CUI_Manager::OnOff_IceVignette(_bool bOnOff)
@@ -8610,6 +8778,10 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		CUI_ImajinnSection_Selected::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minimap"),
+		CUI_Minimap::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -9073,9 +9245,11 @@ void CUI_Manager::Free()
 		Safe_Release(pMilepost);
 	m_Milepost.clear();
 
-	for (auto& pMinimap : m_Minimap)
+	for (auto& pMinimap : m_MinimapFrame)
 		Safe_Release(pMinimap);
-	m_Minimap.clear();
+	m_MinimapFrame.clear();
+
+	Safe_Release(m_pMinimap);
 
 	for (auto& pIcon : m_WeaponIcon)
 		Safe_Release(pIcon);

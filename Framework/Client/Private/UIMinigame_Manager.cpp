@@ -27,6 +27,11 @@ void CUIMinigame_Manager::Set_HPOwner(CGameObject* pOwner, GRANDPRIX_ENEMY eEnem
 	
 	if (m_EnemyHP[eEnemyID] == nullptr)
 		return;
+
+	if (nullptr != m_EnemyHP[eEnemyID]->Get_Owner())
+		return;
+
+	m_EnemyHP[eEnemyID]->Set_Owner(pOwner);
 }
 
 HRESULT CUIMinigame_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -157,9 +162,50 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_ToLayer(LEVELID eID)
 			Safe_AddRef(iter);
 		}
 
+		for (auto& iter : m_Counts)
+		{
+			if (nullptr == iter)
+				return E_FAIL;
+
+			if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+				return E_FAIL;
+			Safe_AddRef(iter);
+		}
 	}
 
 	return S_OK;
+}
+
+void CUIMinigame_Manager::Tick_Minigame(LEVELID eID, _float fTimeDelta)
+{
+	switch (eID)
+	{
+	case LEVELID::LEVEL_EVERMORE:
+		Tick_Grandprix(fTimeDelta);
+		break;
+
+	case LEVELID::LEVEL_ICELAND:
+		break;
+
+	default:
+		break;
+	}
+}
+
+void CUIMinigame_Manager::LateTick_Minigame(LEVELID eID, _float fTimeDelta)
+{
+	switch (eID)
+	{
+	case LEVELID::LEVEL_EVERMORE:
+		LateTick_Grandprix(fTimeDelta);
+		break;
+
+	case LEVELID::LEVEL_ICELAND:
+		break;
+
+	default:
+		break;
+	}
 }
 
 void CUIMinigame_Manager::OnOff_TowerDefence_Select(_bool bOnOff)
@@ -210,10 +256,12 @@ void CUIMinigame_Manager::OnOff_TowerDefence_Select(_bool bOnOff)
 	}
 }
 
-void CUIMinigame_Manager::OnOff_Granprix(_bool bOnOff)
+void CUIMinigame_Manager::OnOff_Grandprix(_bool bOnOff)
 {
 	if (true == bOnOff)
 	{
+		CUI_Manager::GetInstance()->OnOff_GamePlaySetting_ExceptInfo(false);
+
 		if (nullptr != m_pCloud)
 			m_pCloud->Set_Active(true);
 
@@ -245,6 +293,8 @@ void CUIMinigame_Manager::OnOff_Granprix(_bool bOnOff)
 			if (nullptr != pSkill)
 				pSkill->Set_Active(false);
 		}
+
+		CUI_Manager::GetInstance()->OnOff_GamePlaySetting_ExceptInfo(true);
 	}
 }
 
@@ -307,7 +357,24 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_Evermore()
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_HPBar"),
 		CUI_Minigame_EnemyHP::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
-	
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_Ready"),
+		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_READY), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_Three"),
+		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_THREE), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_Two"),
+		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_TWO), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_One"),
+		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIW_ONE), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_Start"),
+		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_START), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_End"),
+		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_END), LAYER_UI)))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -453,11 +520,11 @@ HRESULT CUIMinigame_Manager::Ready_Granprix()
 	m_EnemyHP.reserve(9);
 
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
-	_float2 vOffset = _float2(30.f, 0.f);
+	_float2 vOffset = _float2(35.f, 0.f);
 	UIDesc.fCX = 178.f;
 	UIDesc.fCY = 64.f;
 	UIDesc.fX = UIDesc.fCX * 0.5f + vOffset.x;
-	UIDesc.fY = 160.f;
+	UIDesc.fY = 200.f;
 	CGameObject* pHP = nullptr;
 	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
 		TEXT("Prototype_GameObject_UI_Minigame_Granprix_HPBackground"), &UIDesc, &pHP)))
@@ -560,7 +627,7 @@ HRESULT CUIMinigame_Manager::Ready_Granprix()
 	m_Skill.reserve(4);
 
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
-	vOffset = _float2(30.f, 30.f);
+	vOffset = _float2(35.f, 35.f);
 
 	UIDesc.fCX = 256.f * 0.3f;
 	UIDesc.fCY = UIDesc.fCX;
@@ -609,7 +676,107 @@ HRESULT CUIMinigame_Manager::Ready_Granprix()
 		return E_FAIL;
 	Safe_AddRef(pSkill);
 
+
+	m_Counts.reserve(6);
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 512.f * 0.8f;
+	UIDesc.fCY = 128.f * 0.8f;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY * 0.5f;
+	CGameObject* pText = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_Ready"), &UIDesc, &pText)))
+		return E_FAIL;
+	m_Counts.push_back(dynamic_cast<CUI_Minigame_Basic*>(pText));
+	if (nullptr == pText)
+		return E_FAIL;
+	Safe_AddRef(pText);
+
+	UIDesc.fCX = 256.f * 0.8f;
+	UIDesc.fCY = 256.f * 0.8f;
+	pText = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_Three"), &UIDesc, &pText)))
+		return E_FAIL;
+	m_Counts.push_back(dynamic_cast<CUI_Minigame_Basic*>(pText));
+	if (nullptr == pText)
+		return E_FAIL;
+	Safe_AddRef(pText);
+
+	UIDesc.fCX = 256.f * 0.8f;
+	UIDesc.fCY = 256.f * 0.8f;
+	pText = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_Two"), &UIDesc, &pText)))
+		return E_FAIL;
+	m_Counts.push_back(dynamic_cast<CUI_Minigame_Basic*>(pText));
+	if (nullptr == pText)
+		return E_FAIL;
+	Safe_AddRef(pText);
+
+	UIDesc.fCX = 256.f * 0.8f;
+	UIDesc.fCY = 256.f * 0.8f;
+	pText = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_One"), &UIDesc, &pText)))
+		return E_FAIL;
+	m_Counts.push_back(dynamic_cast<CUI_Minigame_Basic*>(pText));
+	if (nullptr == pText)
+		return E_FAIL;
+	Safe_AddRef(pText);
+
+	UIDesc.fCX = 512.f * 0.8f;
+	UIDesc.fCY = 128.f * 0.8f;
+	pText = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_Start"), &UIDesc, &pText)))
+		return E_FAIL;
+	m_Counts.push_back(dynamic_cast<CUI_Minigame_Basic*>(pText));
+	if (nullptr == pText)
+		return E_FAIL;
+	Safe_AddRef(pText);
+
+	UIDesc.fCX = 256.f * 0.8f;
+	UIDesc.fCY = 128.f * 0.8f;
+	pText = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_End"), &UIDesc, &pText)))
+		return E_FAIL;
+	m_Counts.push_back(dynamic_cast<CUI_Minigame_Basic*>(pText));
+	if (nullptr == pText)
+		return E_FAIL;
+	Safe_AddRef(pText);
+
 	return S_OK;
+}
+
+void CUIMinigame_Manager::Tick_Grandprix(_float fTimeDelta)
+{
+	if (KEY_TAP(KEY::O))
+		m_bCountStart = true;
+
+	if (true == m_bCountStart)
+	{
+		if (0 == m_Counts.size() || m_iCountIndex > m_Counts.size() - 2)
+			return;
+
+		if (false == m_Counts[m_iCountIndex]->Get_Active()) // 만약 객체가 활성화가 되어있지 않다면
+			m_Counts[m_iCountIndex]->Set_Active(true); // 활성화를 시킨다.
+
+		if (true == m_Counts[m_iCountIndex]->Get_Active() && // 활성화 되어있는 상황에서
+			false == m_Counts[m_iCountIndex]->Is_Started()) // 아직 resize를 진행하지 않았다면
+			m_Counts[m_iCountIndex]->Set_Start(true); // 시작하도록 세팅한다.
+
+		if (true == m_Counts[m_iCountIndex]->Is_End()) // 사이즈 조정이 끝났다면
+		{
+			m_Counts[m_iCountIndex]->Set_Active(false); // 비활성화 시키고
+			m_iCountIndex++; // 다음 인덱스로 넘어간다.
+		}
+	}
+}
+
+void CUIMinigame_Manager::LateTick_Grandprix(_float fTimeDelta)
+{
 }
 
 void CUIMinigame_Manager::Free()
@@ -633,6 +800,9 @@ void CUIMinigame_Manager::Free()
 	for (auto& pSkill : m_Skill)
 		Safe_Release(pSkill);
 	m_Skill.clear();
+	for (auto& pCount : m_Counts)
+		Safe_Release(pCount);
+	m_Counts.clear();
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

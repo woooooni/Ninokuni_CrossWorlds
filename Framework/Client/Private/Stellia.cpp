@@ -53,6 +53,8 @@
 
 #include "Stellia_Crystal_Controller.h"
 
+#include "UI_Manager.h"
+
 CStellia::CStellia(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
 	: CBoss(pDevice, pContext, strObjectTag, tStat)
 {
@@ -101,6 +103,12 @@ HRESULT CStellia::Initialize(void* pArg)
 
 	// 레이지 1에서 채워야 하는 데미지
 	m_iDestDamage = 100000;
+
+	if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
+	{
+		if (FAILED(CUI_Manager::GetInstance()->Ready_BossHPBar(this)))
+			return E_FAIL;
+	}
 
 	return S_OK;
 }
