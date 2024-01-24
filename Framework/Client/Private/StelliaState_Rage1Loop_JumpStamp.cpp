@@ -4,6 +4,10 @@
 #include "Animation.h"
 #include "Stellia.h"
 
+#include "Game_Manager.h"
+#include "Character.h"
+#include "Player.h"
+
 #include "Effect_Manager.h"
 #include "Decal.h"
 
@@ -31,12 +35,12 @@ void CStelliaState_Rage1Loop_JumpStamp::Tick_State(_float fTimeDelta)
 	if (m_pDecal == nullptr)
 	{
 		CEffect_Manager::GetInstance()->Generate_Decal(TEXT("Decal_Glanix_Skill_JumpDown_Warning"), m_pTransformCom->Get_WorldMatrix(),
-			Vec3(0.f, 0.f, 0.f), Vec3(12.f, 5.f, 12.f), Vec3(0.f, 0.f, 0.f), m_pPlayer, &m_pDecal, false);
+			Vec3(0.f, 0.f, 0.f), Vec3(12.f, 5.f, 12.f), Vec3(0.f, 0.f, 0.f), m_pStellia->Get_TargetDesc().pTarget, &m_pDecal, false);
 		Safe_AddRef(m_pDecal);
 	}
 
 	if (m_pModelCom->Get_CurrAnimationFrame() < 25)
-		vDestPos = m_pPlayerTransform->Get_Position();
+		vDestPos = m_pStellia->Get_TargetDesc().pTragetTransform->Get_Position();
 	else
 		m_pDecal->Set_Owner(nullptr);
 

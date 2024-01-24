@@ -100,7 +100,7 @@ HRESULT CStellia::Initialize(void* pArg)
 	m_vBloomPower = _float3(2.f, 2.f, 2.f);
 
 	// 레이지 1에서 채워야 하는 데미지
-	m_iDestDamage = 100000;
+	m_iDestDamage = 20000;
 
 	return S_OK;
 }
@@ -137,6 +137,10 @@ void CStellia::Tick(_float fTimeDelta)
 
 void CStellia::LateTick(_float fTimeDelta)
 {
+#ifdef _DEBUG
+	m_pRendererCom->Add_Debug(m_pStateCom);
+#endif
+
 	__super::LateTick(fTimeDelta);
 }
 

@@ -20,6 +20,7 @@ HRESULT CSubQuestNode_NoisySnowField01::Initialize()
 void CSubQuestNode_NoisySnowField01::Start()
 {
 	m_pBella = GI->Find_GameObject(LEVELID::LEVEL_ICELAND, LAYER_NPC, TEXT("AquarisBella"));
+
 	if (m_pBella != nullptr)
 	{
 		Vec4 vSpotPos = Set_DestSpot(m_pBella);
@@ -62,6 +63,7 @@ CBTNode::NODE_STATE CSubQuestNode_NoisySnowField01::Tick(const _float& fTimeDelt
 				m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_MONSTER), &vSpotPos));
 			}
 		}
+		//
 	}
 
 	return NODE_STATE::NODE_RUNNING;

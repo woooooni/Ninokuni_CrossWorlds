@@ -30,10 +30,13 @@ void CSubQuestNode_NoisySnowField03::Start()
 	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
 	m_pNoisyMan = GI->Find_GameObject(LEVELID::LEVEL_ICELAND, LAYER_NPC, TEXT("Destroyer_Dummy"));
-	Vec4 vSpotPos = Set_DestSpot(m_pNoisyMan);
 
 	// 임시로 monster에 
-	m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_MONSTER), &vSpotPos));
+	if (m_pNoisyMan != nullptr)
+	{
+		Vec4 vSpotPos = Set_DestSpot(m_pNoisyMan);
+		m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_MONSTER), &vSpotPos));
+	}
 }
 
 CBTNode::NODE_STATE CSubQuestNode_NoisySnowField03::Tick(const _float& fTimeDelta)
@@ -52,8 +55,6 @@ CBTNode::NODE_STATE CSubQuestNode_NoisySnowField03::Tick(const _float& fTimeDelt
 			{
 				if (m_pQuestDestSpot->Get_IsCol())
 				{
-					CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
-
 					m_bIsClear = true;
 					m_pQuestDestSpot->Set_ReadyDelete(true);
 					Safe_Release(m_pQuestDestSpot);

@@ -8,6 +8,8 @@
 #include "UniqueNpcState_Run.h"
 #include "UniqueNpcState_Talk.h"
 
+#include "NpcDestroyerState_Noisy.h"
+
 #include "UI_World_NPCTag.h"
 
 #include "Character_Manager.h"
@@ -39,6 +41,8 @@ HRESULT CDestroyer_Npc::Initialize(void* pArg)
 
 	if (FAILED(__super::Ready_Components(pArg)))
 		return E_FAIL;
+
+	m_pTransformCom->FixRotation(0.f, 100.f, 0.f);
 
 	m_pPartModels[PART_TYPE::HAIR] = CCharacter_Manager::GetInstance()->Get_PartModel(CHARACTER_TYPE::DESTROYER, PART_TYPE::HAIR, 0);
 	m_pPartModels[PART_TYPE::FACE] = CCharacter_Manager::GetInstance()->Get_PartModel(CHARACTER_TYPE::DESTROYER, PART_TYPE::FACE, 0);
@@ -188,11 +192,6 @@ void CDestroyer_Npc::On_Damaged(const COLLISION_INFO& tInfo)
 
 HRESULT CDestroyer_Npc::Ready_States()
 {
-	return S_OK;
-}
-
-HRESULT CDestroyer_Npc::Ready_Colliders()
-{
 	m_strKorName = TEXT("시끄러운 남자");
 	m_tStat.fSpeed = 0.5f;
 
@@ -216,8 +215,19 @@ HRESULT CDestroyer_Npc::Ready_Colliders()
 	strAnimationName.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_NeutralRun");
 	m_pStateCom->Add_State(NPC_UNIQUENPC_RUN, CUniqueNpcState_Run::Create(m_pStateCom, strAnimationName));
 
-	m_pStateCom->Change_State(NPC_IDLE);
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillSpecialCommonU_New");
+	strAnimationName.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillStarfall");
+	strAnimationName.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillQuantumTornado");
+	m_pStateCom->Add_State(NPC_DESTROYER_NOISY, CNpcDestroyerState_Noisy::Create(m_pStateCom, strAnimationName));
 
+	m_pStateCom->Change_State(NPC_DESTROYER_NOISY);
+
+	return S_OK;
+}
+
+HRESULT CDestroyer_Npc::Ready_Colliders()
+{
 	return S_OK;
 }
 

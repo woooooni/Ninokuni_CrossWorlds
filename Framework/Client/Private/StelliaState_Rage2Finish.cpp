@@ -42,6 +42,7 @@ void CStelliaState_Rage2Finish::Tick_State(_float fTimeDelta)
 
 void CStelliaState_Rage2Finish::Exit_State()
 {
+	m_pStellia->Set_StelliaHit(true);
 }
 
 CStelliaState_Rage2Finish* CStelliaState_Rage2Finish::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

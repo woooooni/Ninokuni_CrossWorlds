@@ -28,7 +28,7 @@ HRESULT CSubQuestNode_NoisySnowField04::Initialize()
 	m_strNextQuestContent = TEXT("대결에서 승리하여 진정시키자");
 
 
-	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/SubQuest/03. SubQuest03_Tumba_Wanted/SubQuest_Wanted02.json");
+	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/SubQuest/04. SubQuest04_Vella_NoisySnowField/SubQuest_NoisySnowField04.json");
 
 	for (const auto& talkDesc : Load) {
 		TALK_DELS sTalkDesc;
@@ -42,6 +42,7 @@ HRESULT CSubQuestNode_NoisySnowField04::Initialize()
 
 void CSubQuestNode_NoisySnowField04::Start()
 {
+	CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
 
 	/* 현재 퀘스트에 연관있는 객체들 */
@@ -81,7 +82,6 @@ CBTNode::NODE_STATE CSubQuestNode_NoisySnowField04::Tick(const _float& fTimeDelt
 
 			if (m_iTalkIndex >= m_vecTalkDesc.size())
 			{
-				CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
 
 				m_bIsClear = true;

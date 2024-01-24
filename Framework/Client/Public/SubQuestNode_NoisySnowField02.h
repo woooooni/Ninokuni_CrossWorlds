@@ -21,6 +21,8 @@ private:
 	CGameObject* m_pBella = nullptr;
 	CGameObject* m_pKuu = nullptr;
 
+	CGameObject* m_pNoisyMan = nullptr;
+
 public:
 	static CSubQuestNode_NoisySnowField02* Create();
 	virtual void Free() override;
