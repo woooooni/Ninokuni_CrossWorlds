@@ -89,6 +89,11 @@ struct PS_OUT
 	float4		vColor : SV_TARGET0;
 };
 
+struct PS_OUT_MINIMAP
+{
+	float4		vColor : SV_TARGET6;
+};
+
 PS_OUT PS_MAIN(PS_IN In)
 {
 	PS_OUT		Out = (PS_OUT)0;
@@ -507,6 +512,19 @@ PS_OUT PS_SKILLGAUGE_MASK(PS_IN In)
 	return Out;
 }
 
+PS_OUT_MINIMAP PS_MINIMAP_ICON(PS_IN In)
+{
+	PS_OUT_MINIMAP		Out = (PS_OUT_MINIMAP)0;
+
+	Out.vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
+	Out.vColor.a *= g_Alpha;
+
+	if (0.0001f >= Out.vColor.a)
+		discard;
+
+	return Out;
+}
+
 technique11 DefaultTechnique
 {
 	pass DefaultPass // 0
@@ -767,6 +785,19 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_SKILLGAUGE_MASK();
+	}
+
+	pass MinimapIcon // 20
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_None, 0);
+		SetBlendState(BS_AlphaBlend, float4(1.f, 1.f, 1.f, 1.f), 0xffffffff);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		HullShader = NULL;
+		DomainShader = NULL;
+		PixelShader = compile ps_5_0 PS_MINIMAP_ICON();
 	}
 }
 

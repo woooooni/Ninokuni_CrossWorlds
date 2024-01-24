@@ -6,6 +6,8 @@
 #include "Criminal_MonsterBT.h"
 #include "UI_MonsterHP_World.h"
 #include "UIDamage_Manager.h"
+#include "UI_Minimap_Icon.h"
+#include "UIMinimap_Manager.h"
 
 #include "Quest_Manager.h"
 
@@ -71,6 +73,15 @@ HRESULT CCriminal_Monster::Initialize(void* pArg)
 
 	m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
 
+	//m_pMinimapIcon
+	CGameObject* pIcon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Minimap_Icon"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pIcon)
+		return E_FAIL;
+	if (nullptr == dynamic_cast<CUI_Minimap_Icon*>(pIcon))
+		return E_FAIL;
+	m_pMinimapIcon = dynamic_cast<CUI_Minimap_Icon*>(pIcon);
+	m_pMinimapIcon->Set_Owner(this);
+
 	return S_OK;
 }
 
@@ -78,6 +89,17 @@ void CCriminal_Monster::Tick(_float fTimeDelta)
 {
 	if (nullptr != m_pHPBar)
 		m_pHPBar->Tick(fTimeDelta);
+
+	if (nullptr != m_pMinimapIcon)
+	{
+		if (true == CUIMinimap_Manager::GetInstance()->Is_InMinimap(m_pTransformCom))
+			m_pMinimapIcon->Set_Active(true);
+		else
+			m_pMinimapIcon->Set_Active(false);
+	}
+
+	if (nullptr != m_pMinimapIcon)
+		m_pMinimapIcon->Tick(fTimeDelta);
 
 	__super::Tick(fTimeDelta);
 }
@@ -87,15 +109,15 @@ void CCriminal_Monster::LateTick(_float fTimeDelta)
 	if (nullptr != m_pHPBar)
 		m_pHPBar->LateTick(fTimeDelta);
 
+	if (nullptr != m_pMinimapIcon)
+		m_pMinimapIcon->LateTick(fTimeDelta);
+
 	__super::LateTick(fTimeDelta);
 }
 
 HRESULT CCriminal_Monster::Render()
 {
 	__super::Render();
-
-	if (nullptr != m_pHPBar)
-		m_pHPBar->Render();
 
 	return S_OK;
 }
@@ -349,5 +371,10 @@ void CCriminal_Monster::Free()
 {
 	__super::Free();
 
+	if (nullptr != m_pMinimapIcon)
+	{
+		m_pMinimapIcon->Set_Dead(true);
+		Safe_Release(m_pMinimapIcon);
+	}
 	Safe_Release(m_pHPBar);
 }

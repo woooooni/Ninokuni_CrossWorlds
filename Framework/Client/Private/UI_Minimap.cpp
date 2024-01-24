@@ -53,6 +53,7 @@ void CUI_Minimap::LateTick(_float fTimeDelta)
 	{
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+
 		__super::LateTick(fTimeDelta);
 	}
 }
@@ -64,7 +65,7 @@ HRESULT CUI_Minimap::Render()
 		if (FAILED(Bind_ShaderResources()))
 			return E_FAIL;
 
-		m_pShaderCom->Begin(1);
+		m_pShaderCom->Begin(5);
 
 		m_pVIBufferCom->Render();
 
@@ -100,7 +101,11 @@ HRESULT CUI_Minimap::Ready_Components()
 {
 	if (FAILED(__super::Ready_Components()))
 		return E_FAIL;
-	
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Map_Minimap_Mask"),
+		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -128,6 +133,9 @@ HRESULT CUI_Minimap::Bind_ShaderResources()
 		return E_FAIL;
 
 	if (FAILED(GI->Bind_SRV(m_pShaderCom, TEXT("Target_MiniMap"), "g_DiffuseTexture")))
+		return E_FAIL;
+
+	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
 		return E_FAIL;
 
 	return S_OK;
@@ -163,4 +171,5 @@ void CUI_Minimap::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pTextureCom);
 }

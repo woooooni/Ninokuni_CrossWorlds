@@ -119,6 +119,13 @@ HRESULT CUI_Minimap_Frame::Ready_Components()
 			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 			return E_FAIL;
 		break;
+
+	case UI_MINIMAP::MINIMAP_BACKGROUND:
+		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Map_Minimap_Background"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		m_fAlpha = 0.75f;
+		break;
 	}
 	
 	return S_OK;

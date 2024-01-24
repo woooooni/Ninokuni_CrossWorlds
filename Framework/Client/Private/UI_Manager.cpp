@@ -52,6 +52,7 @@
 #include "UI_PlayerEXPBar.h"
 #include "UI_World_NPCTag.h"
 #include "UI_Vignette_Ice.h"
+#include "UI_Minimap_Icon.h"
 #include "UI_Vignette_Fire.h"
 #include "UI_Minimap_Frame.h"
 #include "UI_MonsterHP_Bar.h"
@@ -637,6 +638,14 @@ _bool CUI_Manager::Is_LoadingDone()
 		return false;
 
 	return dynamic_cast<CUI_Loading_ProgressBar*>(pProgressBar)->Is_LoadingDone();
+}
+
+_bool CUI_Manager::Is_MinimapOn()
+{
+	if (nullptr == m_MinimapFrame[0])
+		return false;
+
+	return m_MinimapFrame[0]->Get_Active();
 }
 
 HRESULT CUI_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -3210,8 +3219,7 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(pMilepost);
 
-
-	m_MinimapFrame.reserve(2);
+	m_MinimapFrame.reserve(3);
 
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
 	UIDesc.fCX = 300.f * 0.6f; // 180.f
@@ -3220,6 +3228,34 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 	UIDesc.fY = UIDesc.fCY - 30.f;
 
 	CGameObject* pMinimap = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Minimap_Background"), &UIDesc, &pMinimap)))
+		return E_FAIL;
+	m_MinimapFrame.push_back(dynamic_cast<CUI_Minimap_Frame*>(pMinimap));
+	if (nullptr == pMinimap)
+		return E_FAIL;
+	Safe_AddRef(pMinimap);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 320.f; // 16
+	UIDesc.fCY = 300.f * 0.6f; // 9 -> 180
+	UIDesc.fX = g_iWinSizeX - (300.f * 0.6f - 30.f);
+	UIDesc.fY = (300.f * 0.6f) - 30.f;
+
+	pMinimap = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Minimap"), &UIDesc, &pMinimap)))
+		return E_FAIL;
+	m_pMinimap = dynamic_cast<CUI_Minimap*>(pMinimap);
+	if (nullptr == m_pMinimap)
+		return E_FAIL;
+	Safe_AddRef(m_pMinimap);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 300.f * 0.6f; // 180.f
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = g_iWinSizeX - (UIDesc.fCX - 30.f);
+	UIDesc.fY = UIDesc.fCY - 30.f;
+
+	pMinimap = nullptr;
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Minimap_Frame"), &UIDesc, &pMinimap)))
 		return E_FAIL;
 	m_MinimapFrame.push_back(dynamic_cast<CUI_Minimap_Frame*>(pMinimap));
@@ -3234,17 +3270,6 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 	if (nullptr == pMinimap)
 		return E_FAIL;
 	Safe_AddRef(pMinimap);
-
-	UIDesc.fCX = 320.f; // 16
-	UIDesc.fCY = 300.f * 0.6f; // 9
-
-	pMinimap = nullptr;
-	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Minimap"), &UIDesc, &pMinimap)))
-		return E_FAIL;
-	m_pMinimap = dynamic_cast<CUI_Minimap*>(pMinimap);
-	if (nullptr == m_pMinimap)
-		return E_FAIL;
-	Safe_AddRef(m_pMinimap);
 
 	m_WeaponIcon.reserve(3);
 
@@ -6706,9 +6731,14 @@ HRESULT CUI_Manager::OnOff_MiniMap(_bool bOnOff)
 			if (nullptr != iter)
 				iter->Set_Active(true);
 		}
+
+		m_pMinimap->Set_Active(true);
 	}
 	else // ²ö´Ù
 	{
+
+		m_pMinimap->Set_Active(false);
+
 		for (auto& iter : m_MinimapFrame)
 		{
 			if (nullptr != iter)
@@ -8454,6 +8484,9 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		CUI_World_Interaction::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minimap_Background"),
+		CUI_Minimap_Frame::Create(m_pDevice, m_pContext, CUI_Minimap_Frame::UI_MINIMAP::MINIMAP_BACKGROUND), LAYER_UI)))
+		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minimap_Frame"),
 		CUI_Minimap_Frame::Create(m_pDevice, m_pContext, CUI_Minimap_Frame::UI_MINIMAP::MINIMAP_FRAME), LAYER_UI)))
 		return E_FAIL;
@@ -8780,6 +8813,10 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minimap"),
 		CUI_Minimap::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minimap_Icon"),
+		CUI_Minimap_Icon::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
 	return S_OK;

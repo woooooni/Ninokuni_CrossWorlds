@@ -6,7 +6,7 @@ BEGIN(Client)
 class CUI_Minimap_Frame final : public CUI
 {
 public:
-	enum UI_MINIMAP { MINIMAP_FRAME, MINIMAP_ARROW, MINIMAP_END };
+	enum UI_MINIMAP { MINIMAP_FRAME, MINIMAP_ARROW, MINIMAP_BACKGROUND, MINIMAP_END };
 
 protected:
 	CUI_Minimap_Frame(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_MINIMAP eType);
