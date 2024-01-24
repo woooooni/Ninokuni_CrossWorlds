@@ -6,6 +6,7 @@
 #include "Particle_Manager.h"
 #include "Character.h"
 #include "Effect.h"
+#include "Decal.h"
 
 CDestroyer_FrengeCharge_Thunder::CDestroyer_FrengeCharge_Thunder(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:CCharacter_Projectile(pDevice, pContext, L"Destroyer_FrengeCharge_Thunder")
@@ -39,12 +40,45 @@ HRESULT CDestroyer_FrengeCharge_Thunder::Initialize(void* pArg)
 	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::STUN, 0.f, 0.f, 0.f, false);
 	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
 
-	m_fDeletionTime = 1.f;
+	m_fDeletionTime = 3.f;
 	return S_OK;
 }
 
 void CDestroyer_FrengeCharge_Thunder::Tick(_float fTimeDelta)
 {
+	if (nullptr == m_pDecal)
+	{
+		// Decal
+		GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_Perfectblade_Circle"),
+			m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 0.f, 0.f), _float3(4.f, 5.f, 4.f), _float3(0.f, 0.f, 0.f), nullptr, &m_pDecal, false);
+		Safe_AddRef(m_pDecal);
+	}
+
+	else if (1.f < m_fAccDeletionTime && nullptr == m_pElect)
+	{
+		// Effect_Destroyer_Skill_FrengeCharge_Thunder_01
+		// Effect_Destroyer_Skill_FrengeCharge_Thunder_02
+		// Effect_Destroyer_Skill_FrengeCharge_Thunder_03
+
+		// Electricity
+		//GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT(""),
+		//	m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 0.f, 0.f), _float3(5.f, 5.f, 5.f), _float3(0.f, 0.f, 0.f), nullptr, &m_pElect, false);
+		//Safe_AddRef(m_pElect);
+	}
+
+	else if (nullptr != m_pElect/*&& m_pElect->Finished()*/)
+	{
+		// Circles
+		//GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT(""),
+		//	m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
+		// Circles
+		//GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT(""),
+		//	m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
+		// Stone
+		//GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT(""),
+		//	m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
+	}
+
 	__super::Tick(fTimeDelta);
 
 	m_fAccOnOff += fTimeDelta;
@@ -140,4 +174,16 @@ CGameObject* CDestroyer_FrengeCharge_Thunder::Clone(void* pArg)
 void CDestroyer_FrengeCharge_Thunder::Free()
 {
 	__super::Free();
+
+	if(nullptr != m_pDecal)
+	{ 
+		m_pDecal->Set_Dead(true);
+		Safe_Release(m_pDecal);
+	}
+
+	if (nullptr != m_pElect)
+	{
+		m_pElect->Set_Dead(true);
+		Safe_Release(m_pElect);
+	}
 }

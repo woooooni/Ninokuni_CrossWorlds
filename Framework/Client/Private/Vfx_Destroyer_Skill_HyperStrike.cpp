@@ -4,6 +4,8 @@
 #include "Particle_Manager.h"
 #include "Effect_Manager.h"
 #include "Character.h"
+#include "Character_Projectile.h"
+#include "Character_Manager.h"
 
 CVfx_Destroyer_Skill_HyperStrike::CVfx_Destroyer_Skill_HyperStrike(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
@@ -73,7 +75,7 @@ HRESULT CVfx_Destroyer_Skill_HyperStrike::Initialize_Prototype()
 
 		m_pFrameTriger[TYPE_ET3_D_CRACK] = 45;
 		m_pPositionOffset[TYPE_ET3_D_CRACK] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET3_D_CRACK]    = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET3_D_CRACK]    = _float3(3.f, 3.f, 3.f);
 		m_pRotationOffset[TYPE_ET3_D_CRACK] = _float3(0.f, 0.f, 0.f);
 
 		m_pFrameTriger[TYPE_ET3_P_SPRINGUP] = 45;
@@ -164,6 +166,18 @@ void CVfx_Destroyer_Skill_HyperStrike::Tick(_float fTimeDelta)
 		}
 		else if (m_iCount == TYPE_ET3_D_CRACK && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_D_CRACK])
 		{
+			//CCharacter_Projectile::CHARACTER_PROJECTILE_DESC ProjectileDesc;
+			//ProjectileDesc.pOwner = CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::DESTROYER);
+
+			//CGameObject* pHammer = GI->Clone_GameObject(TEXT("Prototype_GameObject_Destroyer_Burst_HyperStrikeHammer"), LAYER_CHARACTER, &ProjectileDesc);
+			//if (nullptr != pHammer)
+			//{
+			//	GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_CHARACTER, pHammer);
+
+			//	GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Destroyer_Skill_HyperStrike_Hammer"),
+			//		XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_D_CRACK], m_pScaleOffset[TYPE_ET3_D_CRACK], m_pRotationOffset[TYPE_ET3_D_CRACK], pHammer);
+			//}
+
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET3_P_SPRINGUP && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_P_SPRINGUP])
