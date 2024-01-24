@@ -95,12 +95,15 @@ void CCamera_CutScene_Map::Tick(_float fTimeDelta)
 		}
 		else /* 없다면 이전 카메라로 체인지 */
 		{
+			/* 이전 브금 볼륨으로 되돌린다.*/
+			GI->Set_ChannelVolume(CHANNELID::SOUND_BGM_CURR, m_fBgmPrevVolume);
+
 			if (m_tWhaleDesc.bSetTransform) /* 고래 컷신이었다면 */
 			{
 				CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
 				if (nullptr != pFollowCam)
 				{
-					pFollowCam->Reset_WideView_To_DefaultView();
+					pFollowCam->Reset_WideView_To_DefaultView(true);
 					pFollowCam->Set_Default_Position();
 					CCamera_Manager::GetInstance()->Change_Camera(pFollowCam->Get_Key(), 1.5f, LERP_MODE::SMOOTHER_STEP);
 				}
@@ -108,6 +111,9 @@ void CCamera_CutScene_Map::Tick(_float fTimeDelta)
 			}
 			else if (m_bWillRetruePrevCam)
 			{
+				/* 이전 브금 볼륨으로 되돌린다.*/
+				GI->Set_ChannelVolume(CHANNELID::SOUND_BGM_CURR, m_fBgmPrevVolume);
+
 				/* 페이드가 예약되어 있다면 */
 				if (m_tFadeDesc.bReserved)
 				{
@@ -277,8 +283,12 @@ HRESULT CCamera_CutScene_Map::Start_CutScene(const LEVELID& eLevelID)
 		}
 		Start_CutScenes(CutSceneNames, true);
 
-		/* Play Sound */
-		GI->Play_Sound(TEXT("Evermore_CutScene.mp3"), CHANNELID::SOUND_CUTSCENE, 1.f, true);
+		/* Sound */
+		{
+			GI->Play_Sound(TEXT("Evermore_CutScene.mp3"), CHANNELID::SOUND_CUTSCENE, 1.f, true);
+			m_fBgmPrevVolume = GI->Get_ChannelVolume(CHANNELID::SOUND_BGM_CURR);
+			GI->Set_ChannelVolume(CHANNELID::SOUND_BGM_CURR, m_fBgmPrevVolume * 0.6f);
+		}
 	}
 		break;
 	case LEVELID::LEVEL_KINGDOMHALL:
@@ -615,7 +625,7 @@ void CCamera_CutScene_Map::Tick_Fade(_float fTimeDelta)
 						CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
 						if (nullptr != pFollowCam)
 						{
-							pFollowCam->Reset_WideView_To_DefaultView();
+							pFollowCam->Reset_WideView_To_DefaultView(true);
 							pFollowCam->Set_Default_Position();
 							CCamera_Manager::GetInstance()->Set_CurCamera(pFollowCam->Get_Key());
 						}

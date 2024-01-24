@@ -57,6 +57,10 @@ void CSubQuestNode_Wanted03_2::Start()
 	{
 		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(false);
 		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CStateMachine>(L"Com_StateMachine")->Change_State(CCharacter::NEUTRAL_IDLE);
+		
+		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+		if (nullptr != pFollowCam)
+			pFollowCam->Reset_WideView_To_DefaultView(false);
 	}
 
 

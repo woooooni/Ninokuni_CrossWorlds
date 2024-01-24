@@ -256,26 +256,48 @@ void CCamera_Follow::Set_Blending(const _bool& bBlending)
 	}
 }
 
-void CCamera_Follow::Reset_WideView_To_DefaultView()
+void CCamera_Follow::Set_CanWideView(const _bool& bCanWideView)
 {
-	/* Check Variable */
-	m_fAccForWideView = 0.f;
-	m_bWideView = false;
+	m_bCanWideView = bCanWideView;
 
-	/* Distance */
-	m_tLerpDist.Clear();
-	m_tLerpDist.fStartValue = m_tLerpDist.fCurValue = m_tLerpDist.fTargetValue = Cam_Dist_Follow_Default;
+	if (!m_bCanWideView)
+	{
+		if (m_bWideView)
+			Set_WideView(false);
+	}
+}
+
+void CCamera_Follow::Reset_WideView_To_DefaultView(const _bool& bDirect, const _float& fMag)
+{
+	if (!m_bWideView)
+		return;
+
+	/* 와이드뷰에서 디폴트 뷰로 전환한다. */
+	if (bDirect)
+	{
+		/* Check Variable */
+		m_fAccForWideView = 0.f;
+		m_bWideView = false;
+
+		/* Distance */
+		m_tLerpDist.Clear();
+		m_tLerpDist.fStartValue = m_tLerpDist.fCurValue = m_tLerpDist.fTargetValue = Cam_Dist_Follow_Default;
 	
-	/* Fov */
-	m_tProjDesc.tLerpFov.Clear();
-	m_tProjDesc.tLerpFov.fStartValue = m_tProjDesc.tLerpFov.fCurValue = m_tProjDesc.tLerpFov.fTargetValue = Cam_Fov_Follow_Default;
+		/* Fov */
+		m_tProjDesc.tLerpFov.Clear();
+		m_tProjDesc.tLerpFov.fStartValue = m_tProjDesc.tLerpFov.fCurValue = m_tProjDesc.tLerpFov.fTargetValue = Cam_Fov_Follow_Default;
 
-	/* Un Lock */
-	if (m_bLockFov)
-		m_bLockFov = false;
+		/* Un Lock */
+		if (m_bLockFov)
+			m_bLockFov = false;
 
-	if (m_bLockDist)
-		m_bLockDist = false;
+		if (m_bLockDist)
+			m_bLockDist = false;
+	}
+	else
+	{
+		Set_WideView(false, fMag);
+	}
 }
 
 void CCamera_Follow::Set_ViewType(const CAMERA_VIEW_TYPE& eType)
@@ -330,9 +352,12 @@ void CCamera_Follow::Set_Active(const _bool bActive)
 			/* Input On */
 			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_All_Input(true);
 
-			/* Default Setting */
-			Reset_WideView_To_DefaultView();
-			Set_Default_Position();
+			/* Default Setting (블렌딩에서의 Set_Active라면 블렌딩 전에 이미 이 함수를 실행 해주므로 굳이 2번 해 줄 필요 없다)*/
+			if (!Is_Blending())
+			{
+				Reset_WideView_To_DefaultView(true);
+				Set_Default_Position();
+			}
 			
 			/* Cursor On */
 			CUI_Manager::GetInstance()->Hide_MouseCursor(false);
@@ -350,6 +375,9 @@ HRESULT CCamera_Follow::Start_LockOn(CGameObject* pTargetObject, const Vec4& vTa
 {
 	if (nullptr == pTargetObject || LOCK_PROGRESS::OFF != m_eLockProgress)
 		return E_FAIL;
+
+	if (m_bWideView)
+		Reset_WideView_To_DefaultView(true);
 
 	Change_LookAtObj(pTargetObject, fLockOnBlendingTime);
 
@@ -409,25 +437,25 @@ HRESULT CCamera_Follow::Lock_LookHeight()
 
 HRESULT CCamera_Follow::Ready_Components()
 {
-	/* CPhysX_Controller */
-	{
-		CPhysX_Controller::CONTROLLER_DESC ControllerDesc;
-		{
-			ControllerDesc.eType = CPhysX_Controller::CAPSULE;
-			ControllerDesc.pTransform = m_pTransformCom;
-			ControllerDesc.vOffset = { 0.f, 0.f, 0.f };
-			ControllerDesc.fHeight = 0.01f;
-			ControllerDesc.fMaxJumpHeight = 10.f;
-			ControllerDesc.fRaidus = 0.1f;
-			ControllerDesc.pOwner = this;
-		}
-
-		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_PhysXController"), TEXT("Com_Controller"), (CComponent**)&m_pControllerCom, &ControllerDesc)))
-			return E_FAIL;
-	}
-
-	if(nullptr != m_pControllerCom)
-		m_pControllerCom->Set_Active(true);
+	///* CPhysX_Controller */
+	//{
+	//	CPhysX_Controller::CONTROLLER_DESC ControllerDesc;
+	//	{
+	//		ControllerDesc.eType = CPhysX_Controller::CAPSULE;
+	//		ControllerDesc.pTransform = m_pTransformCom;
+	//		ControllerDesc.vOffset = { 0.f, 0.f, 0.f };
+	//		ControllerDesc.fHeight = 0.01f;
+	//		ControllerDesc.fMaxJumpHeight = 10.f;
+	//		ControllerDesc.fRaidus = 0.1f;
+	//		ControllerDesc.pOwner = this;
+	//	}
+	//
+	//	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_PhysXController"), TEXT("Com_Controller"), (CComponent**)&m_pControllerCom, &ControllerDesc)))
+	//		return E_FAIL;
+	//}
+	//
+	//if(nullptr != m_pControllerCom)
+	//	m_pControllerCom->Set_Active(true);
 
 	return S_OK;
 }
@@ -652,8 +680,12 @@ void CCamera_Follow::Check_WideView(_float fTimeDelta)
 {
 	/* Check Exception */
 	{
-		/* 마을(에버모어, 궁전)에서만 체크한다. (공격, 컷신, 블렌딩 잡기 까다롭다.) */
-		if (LEVELID::LEVEL_EVERMORE != GI->Get_CurrentLevel() && LEVELID::LEVEL_KINGDOMHALL != GI->Get_CurrentLevel())
+		/* 와이드뷰를 세팅할 수 없는 상태라면 리턴한다. */
+		if (!m_bCanWideView)
+			return;
+		
+		/* 킹덤홀은 내부가 작으므로 리턴한다. */
+		if (LEVELID::LEVEL_KINGDOMHALL == GI->Get_CurrentLevel())
 			return;
 
 		/* 락온 상태 혹은 블렌딩 상태에서는 체크하지 않는다. -> 이전에 디폴트 fov, dist로 세팅 되어 있어야 한다. */
@@ -679,13 +711,7 @@ void CCamera_Follow::Check_WideView(_float fTimeDelta)
 			m_fAccForWideView += fTimeDelta;
 
 			if (m_fDefaultViewCheckTime <= m_fAccForWideView)
-			{
-				Start_Lerp_Fov(Cam_Fov_Follow_Default, m_fWideViewLerpTime, m_eWideViewLerpMode);
-				Start_Lerp_Distance(Cam_Dist_Follow_Default, m_fWideViewLerpTime, m_eWideViewLerpMode);
-
-				m_bWideView = false;
-				m_fAccForWideView = 0.f;
-			}
+				Set_WideView(false);
 		}
 		else
 			m_fAccForWideView = 0.f;
@@ -693,21 +719,12 @@ void CCamera_Follow::Check_WideView(_float fTimeDelta)
 	else
 	{
 		/* Check For Transition Wide View */
-		if (CCharacter::STATE::NEUTRAL_RUN == eCurState || CCharacter::STATE::BATTLE_WALK == eCurState || CCharacter::STATE::BATTLE_RUN == eCurState) 
+		if (CCharacter::STATE::NEUTRAL_RUN == eCurState || CCharacter::STATE::BATTLE_WALK == eCurState || CCharacter::STATE::BATTLE_RUN == eCurState)
 		{
 			m_fAccForWideView += fTimeDelta;
 
 			if (m_fWideViewCheckTime <= m_fAccForWideView)
-			{
-				m_bWideView = true;
-				m_fAccForWideView = 0.f;
-
-				Start_Lerp_Fov(Cam_Fov_Follow_Wide, m_fWideViewLerpTime * 1.25f, m_eWideViewLerpMode);
-				Start_Lerp_Distance(Cam_Dist_Follow_Wide, m_fWideViewLerpTime * 1.25f, m_eWideViewLerpMode);
-
-				Lock_Fov(true);
-				Lock_Dist(true);
-			}
+				Set_WideView(true);
 		}
 		else
 		{
@@ -720,6 +737,26 @@ void CCamera_Follow::Check_WideView(_float fTimeDelta)
 				Lock_Dist(false);
 		}
 	}
+}
+
+void CCamera_Follow::Set_WideView(const _bool& bWideView, const _float& fMag)
+{
+	if (bWideView)
+	{
+		Start_Lerp_Fov(Cam_Fov_Follow_Wide, m_fWideViewLerpTime * 1.25f * fMag, m_eWideViewLerpMode);
+		Start_Lerp_Distance(Cam_Dist_Follow_Wide, m_fWideViewLerpTime * 1.25f * fMag, m_eWideViewLerpMode);
+
+		Lock_Fov(true);
+		Lock_Dist(true);
+	}
+	else
+	{
+		Start_Lerp_Fov(Cam_Fov_Follow_Default, m_fWideViewLerpTime * fMag, m_eWideViewLerpMode);
+		Start_Lerp_Distance(Cam_Dist_Follow_Default, m_fWideViewLerpTime * fMag, m_eWideViewLerpMode);
+	}
+
+	m_bWideView = bWideView;
+	m_fAccForWideView = 0.f;
 }
 
 void CCamera_Follow::Test(_float fTimeDelta)
@@ -780,6 +817,6 @@ CGameObject * CCamera_Follow::Clone(void* pArg)
 void CCamera_Follow::Free()
 {
 	__super::Free();
-	Safe_Release(m_pControllerCom);
+	//Safe_Release(m_pControllerCom);
 	Safe_Release(m_pTransformCom);
 }

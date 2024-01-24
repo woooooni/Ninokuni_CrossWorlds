@@ -372,6 +372,11 @@ HRESULT CLevel_Kingdom::Ready_Layer_Npc(const LAYER_TYPE eLayerType)
 			pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
 			pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
 			pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
+
+			CPhysX_Controller* pController = pObj->Get_Component<CPhysX_Controller>(L"Com_Controller");
+
+			if (nullptr != pController)
+				pController->Set_EnterLevel_Position(pTransform->Get_Position());
 		}
 
 	}

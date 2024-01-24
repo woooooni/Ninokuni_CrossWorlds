@@ -73,7 +73,8 @@ public:
 	virtual Vec4 Get_LookAt() override;
 	virtual void Set_Blending(const _bool& bBlending) override;
 
-	void Reset_WideView_To_DefaultView();
+	void Set_CanWideView(const _bool& bCanWideView); /* 와이드뷰 전환 가능성을 아예 막거나 연다. */
+	void Reset_WideView_To_DefaultView(const _bool& bDirect, const _float& fMag = 1.f); /* 와이드 뷰에서 디폴트 뷰로 바로 전환 혹은 서서히 전환한다. */
 	const _bool& Is_WideView() const { return m_bWideView; }
 
 	const CAMERA_VIEW_TYPE& Get_ViewType() const { return m_eViewType; }
@@ -97,8 +98,11 @@ private:
 	Vec4 Calculate_Look();
 	Vec4 Calculate_DampingPosition(Vec4 vGoalPos);
 
+private:
 	void Check_Exception();
 	void Check_WideView(_float fTimeDelta);
+
+	void Set_WideView(const _bool& bWideView, const _float& fMag = 1.f);
 
 	void Test(_float fTimeDelta);
 
@@ -109,21 +113,21 @@ private:
 private:
 	/* 구면 좌표계 */
 	Vec2			m_vAngle				= { -1.57f, 1.8f }; /* x가 0일 경우 플레이어 라이트에서 시작*/
-	const _float	m_fDefaultAngleY		= 1.3f;
+	const _float	m_fDefaultAngleY		= 1.3f ;
 
 	/* 구면 좌표계에서 카메라의 최대 최소 y 값*/
-	_float			m_fMinLimitY			= { 0.7f };
-	_float			m_fMaxLimitY			= { 1.8f };
+	_float			m_fMinLimitY			= 0.7f ;
+	_float			m_fMaxLimitY			= 1.8f ;
 
 	/* 회전량이 너무 많거나 적을경우 카메라가 획 도는 경우를 방지하기 위한 Limit값 */
-	_float			m_fMaxRotLimitDeltaY	= { 0.05f };
-	_float			m_fMinRotLimitDeltaY	= { -0.05f };
+	_float			m_fMaxRotLimitDeltaY	= 0.05f ;
+	_float			m_fMinRotLimitDeltaY	= -0.05f ;
 
 	/* Damping */
 	DAMPING_DESC	m_tDampingDesc			= {};
 
 	/* PhysX */
-	CPhysX_Controller* m_pControllerCom		= nullptr;
+	//CPhysX_Controller* m_pControllerCom	= nullptr;
 
 	/* Lock On */
 	LOCK_PROGRESS	m_eLockProgress			= LOCK_PROGRESS::OFF;
@@ -140,13 +144,13 @@ private:
 	_bool			m_bWideView				= false;
 	_float			m_fAccForWideView		= 0.f;
 	const _float	m_fWideViewCheckTime	= 4.f;
-	/*const _float	m_fDefaultViewCheckTime = 3.f;*/
-	const _float	m_fDefaultViewCheckTime = 0.5f;
+
+	const _float	m_fDefaultViewCheckTime = 3.f;
 	const _float	m_fWideViewLerpTime		= 1.f;
 	const LERP_MODE	m_eWideViewLerpMode		= LERP_MODE::SMOOTHER_STEP;
 
 	/* View */
-	CAMERA_VIEW_TYPE m_eViewType = CAMERA_VIEW_TYPE::SHOLDER;
+	CAMERA_VIEW_TYPE m_eViewType			= CAMERA_VIEW_TYPE::SHOLDER;
 	
 public:
 	static CCamera_Follow* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
