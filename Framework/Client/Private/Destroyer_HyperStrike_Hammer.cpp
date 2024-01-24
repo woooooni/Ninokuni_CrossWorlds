@@ -40,11 +40,19 @@ HRESULT CDestroyer_HyperStrike_Hammer::Initialize(void* pArg)
 	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
 
 	m_fDeletionTime = 2.f;
+
 	return S_OK;
 }
 
 void CDestroyer_HyperStrike_Hammer::Tick(_float fTimeDelta)
 {
+	if (nullptr == m_pEffect)
+	{
+		GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Destroyer_Skill_HyperStrike_Hammer"),
+			m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 0.2f, 0.f), _float3(10.f, 10.f, 10.f), _float3(0.f, 60.f, 40.f), this, &m_pEffect, false);
+		Safe_AddRef(m_pEffect);
+	}
+
 	__super::Tick(fTimeDelta);
 
 	m_fAccOnOff += fTimeDelta;
@@ -144,4 +152,10 @@ CGameObject* CDestroyer_HyperStrike_Hammer::Clone(void* pArg)
 void CDestroyer_HyperStrike_Hammer::Free()
 {
 	__super::Free();
+
+	if (nullptr != m_pEffect)
+	{
+		m_pEffect->Set_Dead(true);
+		Safe_Release(m_pEffect);
+	}
 }

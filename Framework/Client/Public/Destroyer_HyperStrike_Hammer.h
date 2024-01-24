@@ -28,6 +28,7 @@ private:
 	_float m_fAccOnOff = 0.f;
 	_float m_fOnOffTime = 0.1f;
 
+	class CEffect* m_pEffect = nullptr;
 
 public:
 	static CDestroyer_HyperStrike_Hammer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

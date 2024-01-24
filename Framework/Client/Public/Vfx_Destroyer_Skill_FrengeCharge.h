@@ -22,12 +22,6 @@ private:
 		TYPE_ET3_E_CIRCLELINE, // 27
 		TYPE_ET3_P_CIRCLES,
 		TYPE_ET3_P_CIRCLESRIGID,
-		// -------------------- // 61이 애니메이션 마지막 프레임
-		TYPE_ET4_D_CIRCLE,
-		TYPE_ET4_E_ELECT,
-		TYPE_ET4_P_CIRCLESRIGID,
-		TYPE_ET4_P_STONE,
-		// X 6번 추가 반복 공격 횟수만큼
 
 		TYPE_END
 	};

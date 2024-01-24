@@ -71,28 +71,6 @@ HRESULT CVfx_Destroyer_Skill_FrengeCharge::Initialize_Prototype()
 		m_pRotationOffset[TYPE_ET3_P_CIRCLESRIGID] = _float3(0.f, 0.f, 0.f);
 	}
 
-	{
-		m_pFrameTriger[TYPE_ET4_D_CIRCLE] = 0;
-		m_pPositionOffset[TYPE_ET4_D_CIRCLE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET4_D_CIRCLE] = _float3(5.f, 5.f, 5.f);
-		m_pRotationOffset[TYPE_ET4_D_CIRCLE] = _float3(0.f, 0.f, 0.f);
-
-		m_pFrameTriger[TYPE_ET4_E_ELECT] = 0;
-		m_pPositionOffset[TYPE_ET4_E_ELECT] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET4_E_ELECT] = _float3(5.f, 5.f, 5.f);
-		m_pRotationOffset[TYPE_ET4_E_ELECT] = _float3(0.f, 0.f, 0.f);
-
-		m_pFrameTriger[TYPE_ET4_P_CIRCLESRIGID] = 0;
-		m_pPositionOffset[TYPE_ET4_P_CIRCLESRIGID] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET4_P_CIRCLESRIGID] = _float3(5.f, 5.f, 5.f);
-		m_pRotationOffset[TYPE_ET4_P_CIRCLESRIGID] = _float3(0.f, 0.f, 0.f);
-
-		m_pFrameTriger[TYPE_ET4_P_STONE] = 0;
-		m_pPositionOffset[TYPE_ET4_P_STONE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET4_P_STONE] = _float3(5.f, 5.f, 5.f);
-		m_pRotationOffset[TYPE_ET4_P_STONE] = _float3(0.f, 0.f, 0.f);
-	}
-
  	return S_OK;
 }
 
@@ -138,23 +116,6 @@ void CVfx_Destroyer_Skill_FrengeCharge::Tick(_float fTimeDelta)
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET3_P_CIRCLESRIGID && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_P_CIRCLESRIGID])
-		{
-			m_iCount++;
-		}
-
-		else if (m_iCount == TYPE_ET4_D_CIRCLE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET4_D_CIRCLE])
-		{
-			m_iCount++;
-		}
-		else if (m_iCount == TYPE_ET4_E_ELECT && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET4_E_ELECT])
-		{
-			m_iCount++;
-		}
-		else if (m_iCount == TYPE_ET4_P_CIRCLESRIGID && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET4_P_CIRCLESRIGID])
-		{
-			m_iCount++;
-		}
-		else if (m_iCount == TYPE_ET4_P_STONE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET4_P_STONE])
 		{
 			m_iCount++;
 		}

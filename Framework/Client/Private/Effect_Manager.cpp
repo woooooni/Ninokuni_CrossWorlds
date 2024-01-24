@@ -142,15 +142,27 @@ HRESULT CEffect_Manager::Generate_Decal(const wstring& strDecalName, _matrix Wor
 	pTransform->Set_WorldMatrix(matResult);
 	
 	// Position
-	_vector vFinalPosition = pTransform->Get_Position();
+	Vec4 vOffsetPos = Vec4(0.f, 0.f, 0.f, 0.f);
+
+	_vector vCurrentPosition = pTransform->Get_Position();
+
+	_vector vFinalPosition = vCurrentPosition;
 	vFinalPosition += pTransform->Get_State(CTransform::STATE_RIGHT) * vLocalPos.x;
 	vFinalPosition += pTransform->Get_State(CTransform::STATE_UP)    * vLocalPos.y;
 	vFinalPosition += pTransform->Get_State(CTransform::STATE_LOOK)  * vLocalPos.z;
+
 	pTransform->Set_State(CTransform::STATE_POSITION, XMVectorSet(XMVectorGetX(vFinalPosition), XMVectorGetY(vFinalPosition), XMVectorGetZ(vFinalPosition), 1.f));
+
+	vOffsetPos.x = XMVectorGetX(vFinalPosition) - XMVectorGetX(vCurrentPosition);
+	vOffsetPos.y = XMVectorGetY(vFinalPosition) - XMVectorGetY(vCurrentPosition);
+	vOffsetPos.z = XMVectorGetZ(vFinalPosition) - XMVectorGetZ(vCurrentPosition);
 
 	// pOwner
 	if (pOwner != nullptr)
+	{
 		pDecal->Set_Owner(pOwner);
+		pDecal->Set_OffsetPosition(vOffsetPos);
+	}
 
 	// ppOut
 	if (ppOut != nullptr)
@@ -198,6 +210,8 @@ HRESULT CEffect_Manager::Generate_Decal_To_Position(const wstring& strDecalName,
 	pTransform->Set_WorldMatrix(matResult);
 
 	// Position
+	Vec4 vOffsetPos = Vec4(vLocalPos.x, vLocalPos.y, vLocalPos.z, 0.0f);
+
 	_vector vFinalPosition = pTransform->Get_Position();
 	vFinalPosition.m128_f32[0] += vLocalPos.x;
 	vFinalPosition.m128_f32[1] += vLocalPos.y;
@@ -206,7 +220,10 @@ HRESULT CEffect_Manager::Generate_Decal_To_Position(const wstring& strDecalName,
 
 	// pOwner
 	if (pOwner != nullptr)
+	{
 		pDecal->Set_Owner(pOwner);
+		pDecal->Set_OffsetPosition(vOffsetPos);
+	}
 
 	// ppOut
 	if (ppOut != nullptr)
@@ -214,9 +231,6 @@ HRESULT CEffect_Manager::Generate_Decal_To_Position(const wstring& strDecalName,
 
 	// bDelet
 	pDecal->Set_DeleteDecal(bDelet);
-
-	Vec4 vOffsetPos = Vec4(vLocalPos.x, vLocalPos.y, vLocalPos.z, 0.0f);
-	pDecal->Set_OffsetPosition(vOffsetPos);
 
 	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, pGameObject)))
 		return E_FAIL;
