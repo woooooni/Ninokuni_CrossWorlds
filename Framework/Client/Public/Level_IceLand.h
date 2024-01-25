@@ -36,7 +36,7 @@ private:
 	HRESULT Ready_Layer_Effect(const LAYER_TYPE eLayerType);
 	HRESULT Ready_Layer_Dynamic(const LAYER_TYPE eLayerType, const wstring& strMapFileName);
 	HRESULT Ready_Layer_Npc(const LAYER_TYPE eLayerType);
-
+	HRESULT Ready_Light(const wstring& strLightFilePath);
 
 public:
 	static class CLevel_IceLand* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

@@ -120,7 +120,7 @@ void CTowerDefence_Manager::Prepare_Defence()
 		LIGHTDESC* pDesc = pLight->Get_ModifyLightDesc();
 		m_OriginLights.push_back(*pDesc);
 
-		pDesc->vDiffuse = _float4(0.729f, 0.431f, 1.f, 1.f);
+		pDesc->vTempColor = Vec3(0.729f, 0.431f, 1.f);
 	}
 
 	/*list<CGameObject*>& NpcList = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_NPC);
@@ -213,7 +213,7 @@ void CTowerDefence_Manager::Finish_Defence()
 	{
 
 		LIGHTDESC* pDesc = pLight->Get_ModifyLightDesc();
-		pDesc->vDiffuse = m_OriginLights[iIndex].vDiffuse;
+		pDesc->vTempColor = m_OriginLights[iIndex].vTempColor;
 		iIndex++;
 	}
 

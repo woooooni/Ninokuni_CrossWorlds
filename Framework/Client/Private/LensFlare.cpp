@@ -39,7 +39,7 @@ void CLensFlare::LateTick(_float fTimeDelta)
 	{	
 		const LIGHTDESC* pLightDesc = GI->Get_LightDesc(0);
 		Vec4 vCamPos = GI->Get_CamPosition();
-		Vec4 vLightDir = pLightDesc->vDirection;
+		Vec4 vLightDir = pLightDesc->vTempDirection;
 		Vec4 vLightPos = vCamPos - vLightDir;
 
 		Matrix view = GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
@@ -112,7 +112,7 @@ HRESULT CLensFlare::Bind_ShaderResources()
 	Vec4 light_ss{};
 	{
 		Vec4 vCamPos = GI->Get_CamPosition();
-		Vec4 vLightDir = pLightDesc->vDirection;
+		Vec4 vLightDir = pLightDesc->vTempDirection;
 		Vec4 vLightPos = vCamPos - vLightDir;
 
 		Matrix view = GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
@@ -132,8 +132,8 @@ HRESULT CLensFlare::Bind_ShaderResources()
 	}
 
 	// Screen Space Position
-	m_LensDesc.vColor = pLightDesc->vDiffuse;
-	m_LensDesc.vDirection = pLightDesc->vDirection;
+	m_LensDesc.vColor = pLightDesc->vTempColor;
+	m_LensDesc.vDirection = pLightDesc->vTempDirection;
 	m_LensDesc.vScreen_space_position = light_ss;
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("current_light", &m_LensDesc, sizeof(CLensFlare::LENSFLARE_DESC))))

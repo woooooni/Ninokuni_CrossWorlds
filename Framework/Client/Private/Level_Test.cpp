@@ -440,51 +440,7 @@ HRESULT CLevel_Test::Ready_Layer_Dynamic(const LAYER_TYPE eLayerType, const wstr
 
 HRESULT CLevel_Test::Ready_Light(const wstring& strLightFilePath)
 {
-	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strLightFilePath + L"/" + strLightFilePath + L".light";
-
-	shared_ptr<CFileUtils> pFile = make_shared<CFileUtils>();
-	pFile->Open(strMapFilePath, FileMode::Read);
-
-	_uint iLightSize = 0;
-	pFile->Read<_uint>(iLightSize);
-	// 라이트 개수
-	list<CLight*>* pLightlist = GI->Get_LightList();
-	for (auto& pLight : *pLightlist)
-		Safe_Release<CLight*>(pLight);
-
-	pLightlist->clear();
-
-	for (_uint i = 0; i < iLightSize; ++i)
-	{
-		LIGHTDESC LightDesc;
-		::ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
-
-		// Type
-		_uint iLightType = 0;
-		_uint iLightID = 0;
-
-		pFile->Read<_uint>(iLightType);
-
-		if (LIGHTDESC::TYPE_DIRECTIONAL == iLightType)
-		{
-			// ID
-			pFile->Read<_uint>(iLightID);
-
-			// State
-			Vec4 vDiffuse, vAmbient, vDirection;
-			pFile->Read<Vec4>(vDiffuse);
-			pFile->Read<Vec4>(vAmbient);
-			pFile->Read<Vec4>(vDirection);
-
-			LightDesc.eType = static_cast<LIGHTDESC::TYPE>(iLightType);
-			LightDesc.vDiffuse = vDiffuse;
-			LightDesc.vAmbient = vAmbient;
-			LightDesc.vDirection = vDirection;
-		}
-
-		if (FAILED(GI->Add_Light(m_pDevice, m_pContext, LightDesc)))
-			return E_FAIL;
-	}
+	
 	return S_OK;
 }
 

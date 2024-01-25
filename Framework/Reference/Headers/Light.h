@@ -29,7 +29,8 @@ public:
 
 public:
 	HRESULT DirectionalLight(class CShader* pShader);
-
+	HRESULT PointLight(class CShader* pShader);
+	HRESULT SpotLight(class CShader* pShader);
 private:
 	ID3D11Device*			m_pDevice = nullptr;
 	ID3D11DeviceContext*	m_pContext = nullptr;

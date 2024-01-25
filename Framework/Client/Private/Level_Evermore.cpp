@@ -75,9 +75,6 @@ HRESULT CLevel_Evermore::Initialize()
 	if (FAILED(Ready_Layer_Dynamic(LAYER_TYPE::LAYER_DYNAMIC, TEXT("Evermore"))))
 		return E_FAIL;
 
-	if (FAILED(Ready_Light(TEXT("Evermore Light"))))
-		return E_FAIL;
-
 	/* 쿠우 타겟 설정 */
 	CGame_Manager::GetInstance()->Set_KuuTarget_Player();
 
@@ -631,48 +628,53 @@ HRESULT CLevel_Evermore::Ready_Light(const wstring& strLightFilePath)
 	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strLightFilePath + L"/" + strLightFilePath + L".light";
 
 	shared_ptr<CFileUtils> pFile = make_shared<CFileUtils>();
-	pFile->Open(strMapFilePath, FileMode::Read);
+	pFile->Open(strMapFilePath, FileMode::Write);
 
-	_uint iLightSize = 0;
-	pFile->Read<_uint>(iLightSize);
+	list<CLight*>* pLightList = GI->Get_LightList();
+	pFile->Write<_uint>(pLightList->size());
 	// 라이트 개수
-	list<CLight*>* pLightlist = GI->Get_LightList();
-	for (auto& pLight : *pLightlist)
-		Safe_Release<CLight*>(pLight);
 
-	pLightlist->clear();
-
-	for (_uint i = 0; i < iLightSize; ++i)
+	for (auto& pLight : *pLightList)
 	{
-		LIGHTDESC LightDesc;
-		::ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
+		const LIGHTDESC* pLightDesc = pLight->Get_LightDesc();
 
 		// Type
-		_uint iLightType = 0;
-		_uint iLightID = 0;
+		pFile->Write<_uint>(pLightDesc->eType);
 
-		pFile->Read<_uint>(iLightType);
-
-		if (LIGHTDESC::TYPE_DIRECTIONAL == iLightType)
+		if (LIGHTDESC::TYPE_DIRECTIONAL == pLightDesc->eType)
 		{
 			// ID
-			pFile->Read<_uint>(iLightID);
+			pFile->Write<_uint>(pLight->Get_LightID());
 
 			// State
-			Vec4 vDiffuse, vAmbient, vDirection;
-			pFile->Read<Vec4>(vDiffuse);
-			pFile->Read<Vec4>(vAmbient);
-			pFile->Read<Vec4>(vDirection);
-
-			LightDesc.eType = static_cast<LIGHTDESC::TYPE>(iLightType);
-			LightDesc.vDiffuse = vDiffuse;
-			LightDesc.vAmbient = vAmbient;
-			LightDesc.vDirection = vDirection;
+			pFile->Write<Vec3>(pLightDesc->vTempColor);
+			pFile->Write<Vec3>(pLightDesc->vAmbientLowerColor);
+			pFile->Write<Vec3>(pLightDesc->vAmbientUpperColor);
+			pFile->Write<Vec3>(pLightDesc->vTempDirection);
 		}
+		else if (LIGHTDESC::TYPE_POINT == pLightDesc->eType)
+		{
+			// ID
+			pFile->Write<_uint>(pLight->Get_LightID());
 
-		if (FAILED(GI->Add_Light(m_pDevice, m_pContext, LightDesc)))
-			return E_FAIL;
+			// State
+			pFile->Write<Vec3>(pLightDesc->vTempPosition);
+			pFile->Write<_float>(pLightDesc->fTempRange);
+			pFile->Write<Vec3>(pLightDesc->vTempColor);
+		}
+		else if (LIGHTDESC::TYPE::TYPE_SPOT == pLightDesc->eType)
+		{
+			pFile->Write<_uint>(pLight->Get_LightID());
+
+			pFile->Write<Vec3>(pLightDesc->vTempPosition);
+			pFile->Write<Vec3>(pLightDesc->vTempDirection);
+			pFile->Write<Vec3>(pLightDesc->vTempColor);
+			pFile->Write<_float>(pLightDesc->fTempRange);
+			pFile->Write<_float>(pLightDesc->fOuterAngle);
+			pFile->Write<_float>(pLightDesc->fInnerAngle);
+		}
 	}
+
 	return S_OK;
 }
 

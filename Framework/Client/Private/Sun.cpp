@@ -43,7 +43,7 @@ HRESULT CSun::Render()
 	Vec4 light_ss{};
 	{
 		Vec4 vCamPos = GI->Get_CamPosition();
-		Vec4 vLightDir = pLightDesc->vDirection;
+		Vec3 vLightDir = pLightDesc->vTempDirection;
 		Vec4 vLightPos = vCamPos - vLightDir;
 
 		light_ss = vLightPos;

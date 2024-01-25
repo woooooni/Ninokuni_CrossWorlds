@@ -60,7 +60,7 @@ HRESULT CMainApp::Initialize()
 	{
 		g_eStartLevel = LEVELID::LEVEL_TOOL; /* 시작할 레벨 타입 */
 
-		g_eLoadCharacter = LOAD_CHARACTER_TYPE::ALL_CH; /* 모델 로드할 캐릭터 타입 */
+		g_eLoadCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH; /* 모델 로드할 캐릭터 타입 */
 
 		g_ePlayCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH; /* 게임 플레이 캐릭터 타입 */
 	}
@@ -176,10 +176,11 @@ HRESULT CMainApp::Initialize_Client()
 	LIGHTDESC LightDesc;
 	ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
 	LightDesc.eType = LIGHTDESC::TYPE_DIRECTIONAL;
-	LightDesc.vDirection = _float4(-0.45f, -0.445f, -0.745f, 0.f);
-	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 1.f);
-	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.vTempDirection = Vec3(-0.45f, -0.445f, -0.745f);
+	LightDesc.vTempColor = Vec3(1.f, 1.f, 1.f);
+	LightDesc.vAmbientLowerColor = Vec3(0.5f, 0.5f, 0.5f);
+	LightDesc.vAmbientUpperColor = Vec3(1.0f, 1.0f, 1.0f);
+	//LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
 	if (FAILED(GI->Add_Light(m_pDevice, m_pContext, LightDesc)))
 		return E_FAIL;
