@@ -421,7 +421,6 @@ PS_OUT PS_MAIN_SHADOW(PS_IN In)
     return Out;
 }
 
-<<<<<<< HEAD
 PS_OUT PS_DISTORTION(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
@@ -438,30 +437,6 @@ PS_OUT PS_DISTORTION(PS_IN In)
     return Out;
 }
 
-DepthStencilState NoDepthWriteLessStencilMaskState // Depth Test Less / No Write / Stencil Mask DS
-{
-    DepthEnable = true;
-    DepthWriteMask = ZERO;
-    DepthFunc = LESS;
-    StencilEnable = true;
-    StencilReadMask = 0xff;
-    StencilWriteMask = 0xff;
-
-    // Front
-    FrontFaceStencilFail = KEEP;
-    FrontFaceStencilDepthFail = KEEP;
-    FrontFaceStencilPass = KEEP;
-    FrontFaceStencilFunc = EQUAL;
-
-    //Back
-    FrontFaceStencilFail = KEEP;
-    FrontFaceStencilDepthFail = KEEP;
-    FrontFaceStencilPass = KEEP;
-    FrontFaceStencilFunc = EQUAL;
-};
-
-=======
->>>>>>> origin/feature/JunYeop
 
 technique11 DefaultTechnique
 {
@@ -558,7 +533,7 @@ technique11 DefaultTechnique
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_SHADOW();
     }
-<<<<<<< HEAD
+
 	
 	// 7
     pass Distortion
@@ -566,24 +541,24 @@ technique11 DefaultTechnique
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
-=======
-
-	// 7
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_DISTORTION();
+    }
+		
+	// 8
     pass Light_Spot
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
         SetBlendState(BS_OneBlend, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
 
->>>>>>> origin/feature/JunYeop
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-<<<<<<< HEAD
-        PixelShader = compile ps_5_0 PS_DISTORTION();
-=======
         PixelShader = compile ps_5_0 PS_MAIN_SPOT();
->>>>>>> origin/feature/JunYeop
     }
 }

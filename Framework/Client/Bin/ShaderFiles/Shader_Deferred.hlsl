@@ -533,6 +533,7 @@ technique11 DefaultTechnique
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_SHADOW();
     }
+
 	
 	// 7
     pass Distortion
@@ -546,7 +547,7 @@ technique11 DefaultTechnique
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_DISTORTION();
     }
-
+		
 	// 8
     pass Light_Spot
     {
@@ -558,7 +559,6 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-        
         PixelShader = compile ps_5_0 PS_MAIN_SPOT();
     }
 }
