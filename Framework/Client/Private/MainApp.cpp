@@ -45,7 +45,7 @@ HRESULT CMainApp::Initialize()
 
 	GraphicDesc.eWinMode = GRAPHIC_DESC::WINMODE_WIN;
 	GraphicDesc.hWnd = g_hWnd;
-	GraphicDesc.iWinSizeX = g_iWinSizeX * 0.5f;
+	GraphicDesc.iWinSizeX = g_iWinSizeX;
 	GraphicDesc.iWinSizeY = g_iWinSizeY;
 
 	if (FAILED(GI->Initialize_Engine(LEVEL_END, _uint(LAYER_TYPE::LAYER_END), GraphicDesc, &m_pDevice, &m_pContext, g_hWnd, g_hInstance)))
@@ -59,9 +59,9 @@ HRESULT CMainApp::Initialize()
 
 	// Set Start Level and Character
 	{
-		g_eStartLevel = LEVELID::LEVEL_TOOL; /* 시작할 레벨 타입 */
+		g_eStartLevel = LEVELID::LEVEL_LOGO; /* 시작할 레벨 타입 */
 
-		g_eLoadCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH; /* 모델 로드할 캐릭터 타입 */
+		g_eLoadCharacter = LOAD_CHARACTER_TYPE::ALL_CH; /* 모델 로드할 캐릭터 타입 */
 
 		g_ePlayCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH; /* 게임 플레이 캐릭터 타입 */
 	}
@@ -1405,7 +1405,7 @@ HRESULT CMainApp::Ready_CameraObject()
 		CCamera::PROJ_DESC tDesc;
 		{
 			tDesc.tLerpFov.fCurValue = Cam_Fov_Free_Default;
-			tDesc.fAspect = (_float)g_iWinSizeX * 0.5f / g_iWinSizeY;
+			tDesc.fAspect = (_float)g_iWinSizeX / (_float)g_iWinSizeY;
 			tDesc.fNear = 0.2f;
 			tDesc.fFar = 1000.f;
 
@@ -1432,7 +1432,7 @@ HRESULT CMainApp::Ready_CameraObject()
 		CCamera::PROJ_DESC tDesc;
 		{
 			tDesc.tLerpFov.fCurValue = Cam_Fov_Follow_Default;
-			tDesc.fAspect = (_float)g_iWinSizeX * 0.5f / g_iWinSizeY;
+			tDesc.fAspect = (_float)g_iWinSizeX / (_float)g_iWinSizeY;
 			tDesc.fNear = 0.2f;
 			tDesc.fFar = 1000.f;
 
@@ -1459,7 +1459,7 @@ HRESULT CMainApp::Ready_CameraObject()
 		CCamera::PROJ_DESC tDesc;
 		{
 			tDesc.tLerpFov.fCurValue = Cam_Fov_CutScene_Map_Default;
-			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
+			tDesc.fAspect = (_float)g_iWinSizeX / (_float)g_iWinSizeY;
 			tDesc.fNear = 0.2f;
 			tDesc.fFar = 1000.f;
 
@@ -1487,7 +1487,7 @@ HRESULT CMainApp::Ready_CameraObject()
 		CCamera::PROJ_DESC tDesc;
 		{
 			tDesc.tLerpFov.fCurValue = Cam_Fov_CutScene_Boss_Default;
-			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
+			tDesc.fAspect = (_float)g_iWinSizeX /(_float)g_iWinSizeY;
 			tDesc.fNear = 0.2f;
 			tDesc.fFar = 1000.f;
 
@@ -1515,7 +1515,7 @@ HRESULT CMainApp::Ready_CameraObject()
 		CCamera::PROJ_DESC tDesc;
 		{
 			tDesc.tLerpFov.fCurValue = Cam_Fov_Action_Lobby;
-			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
+			tDesc.fAspect = (_float)g_iWinSizeX / (_float)g_iWinSizeY;
 			tDesc.fNear = 0.2f;
 			tDesc.fFar = 1000.f;
 
@@ -1541,7 +1541,7 @@ HRESULT CMainApp::Ready_CameraObject()
 		CCamera::PROJ_DESC tDesc;
 		{
 			tDesc.tLerpFov.fCurValue = Cam_Fov_Default;
-			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
+			tDesc.fAspect = (_float)g_iWinSizeX / (_float)g_iWinSizeY;
 			tDesc.fNear = 0.2f;
 			tDesc.fFar = 1000.f;
 
@@ -1567,7 +1567,7 @@ HRESULT CMainApp::Ready_CameraObject()
 		CCamera::PROJ_DESC tDesc;
 		{
 			tDesc.tLerpFov.fCurValue = Cam_Fov_Default;
-			tDesc.fAspect = (_float)g_iWinSizeX / g_iWinSizeY;
+			tDesc.fAspect = (_float)g_iWinSizeX / (_float)g_iWinSizeY;
 			tDesc.fNear = 0.2f;
 			tDesc.fFar = 1000.f;
 
