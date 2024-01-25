@@ -56,14 +56,25 @@ void CDestroyer_FrengeCharge_Thunder::Tick(_float fTimeDelta)
 
 	else if (1.f < m_fAccDeletionTime && nullptr == m_pElect)
 	{
-		// Effect_Destroyer_Skill_FrengeCharge_Thunder_01
-		// Effect_Destroyer_Skill_FrengeCharge_Thunder_02
-		// Effect_Destroyer_Skill_FrengeCharge_Thunder_03
-
 		// Electricity
-		//GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT(""),
-		//	m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 0.f, 0.f), _float3(5.f, 5.f, 5.f), _float3(0.f, 0.f, 0.f), nullptr, &m_pElect, false);
-		//Safe_AddRef(m_pElect);
+		wstring strName = L"";
+		_int iRandomCount = CUtils::Random_Int(0, 2);
+		switch (iRandomCount)
+		{
+		case 0:
+			strName = TEXT("Effect_Destroyer_Skill_FrengeCharge_Thunder_01");
+			break;
+		case 1:
+			strName = TEXT("Effect_Destroyer_Skill_FrengeCharge_Thunder_02");
+			break;
+		case 2:
+			strName = TEXT("Effect_Destroyer_Skill_FrengeCharge_Thunder_03");
+			break;
+		}
+
+		GET_INSTANCE(CEffect_Manager)->Generate_Effect(strName,
+			m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 0.f, 0.f), _float3(5.f, 5.f, 5.f), _float3(0.f, 0.f, 0.f), nullptr, &m_pElect, false);
+		Safe_AddRef(m_pElect);
 	}
 
 	else if (nullptr != m_pElect/*&& m_pElect->Finished()*/)
