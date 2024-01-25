@@ -15,7 +15,11 @@ float4      g_vDissolveColor;
 float       g_fDissolveTotalTime = 5.f;
 float       g_fDissolveWeight    = 0.f;
 
+Texture2D   g_DistortionTexture;
+
 float4      g_vCamPosition;
+
+float4      g_vDistortion;
 
 struct EffectDesc
 {
@@ -110,6 +114,7 @@ struct PS_OUT
 	float4 vDiffuse_Middle : SV_TARGET3;
 	float4 vDiffuse_High   : SV_TARGET4;
 	float4 vBloom          : SV_TARGET5;
+    float4 vDistortion     : SV_TARGET6;
 };
 
 
@@ -187,6 +192,9 @@ PS_OUT PS_DEFAULT(PS_IN In)
             Out.vBloom = Caculation_Brightness(vDiffuseColor, In.iInstanceID);
         }
     }
+    
+    Out.vDistortion.xy = g_DistortionTexture.Sample(LinearSampler, In.vTexUV).xy * g_vDistortion.xy;
+    
 
 	return Out;
 };
@@ -263,6 +271,8 @@ PS_OUT PS_NO_ALPHA_WITH_DIFFUSE(PS_IN In)
             Out.vBloom = Caculation_Brightness(vDiffuseColor, In.iInstanceID);
         }
     }
+    
+    Out.vDistortion.xy = g_DistortionTexture.Sample(LinearSampler, In.vTexUV).xy * g_vDistortion.xy;
 
 	return Out;
 
@@ -336,7 +346,8 @@ PS_OUT PS_NO_DIFFUSE_WITH_ALPHA(PS_IN In)
             Out.vBloom = Caculation_Brightness(vDiffuseColor, In.iInstanceID);
         }
     }
-
+    
+    Out.vDistortion.xy = g_DistortionTexture.Sample(LinearSampler, In.vTexUV).xy * g_vDistortion.xy;
 	return Out;
 
 };
@@ -413,7 +424,8 @@ PS_OUT PS_BOTH(PS_IN In)
             Out.vBloom = Caculation_Brightness(vDiffuseColor, In.iInstanceID);
         }
     }
-
+    
+    Out.vDistortion.xy = g_DistortionTexture.Sample(LinearSampler, In.vTexUV).xy * g_vDistortion.xy;
 	return Out;
 
 };
@@ -488,8 +500,8 @@ PS_OUT PS_RIM(PS_IN In)
         }
     }
 
+    Out.vDistortion.xy = g_DistortionTexture.Sample(LinearSampler, In.vTexUV).xy * g_vDistortion.xy;
     return Out;
-
 };
 
 technique11 DefaultTechnique

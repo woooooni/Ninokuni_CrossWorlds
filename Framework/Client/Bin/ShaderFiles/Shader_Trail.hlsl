@@ -4,6 +4,7 @@
 matrix		g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 Texture2D	g_DiffuseTexture;
 Texture2D	g_AlphaTexture;
+Texture2D	g_DistortionTexture;
 
 float4		g_vColor;
 float2		g_fUVFlow;
@@ -52,6 +53,7 @@ struct PS_IN
 struct PS_OUT
 {
 	float4		vDiffuse : SV_TARGET0;
+    float4		vDistortion : SV_TARGET1;
 };
 
 

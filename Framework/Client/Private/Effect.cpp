@@ -537,6 +537,16 @@ HRESULT CEffect::Bind_ShaderResource_Instance(CShader* pShader)
 	if (FAILED(pShader->Bind_RawValue("g_fBlurPower", &m_tEffectDesc.fBlurPower, sizeof(_float))))
 		return E_FAIL;
 
+
+	/*if (false == m_bSelectDistortion)
+	{
+		m_vDistortion = { GI->RandomFloat(0.5f, 1.f), GI->RandomFloat(0.5f, 1.f), 0.f, 0.f };
+		m_bSelectDistortion = true;
+	}*/
+
+	if (FAILED(pShader->Bind_RawValue("g_vDistortion", &m_vDistortion, sizeof(_float4))))
+		return E_FAIL;
+
 	if (m_pDiffuseTextureCom  != nullptr && -1 < m_tEffectDesc.iTextureIndexDiffuse) {
 		if (FAILED(m_pDiffuseTextureCom->Bind_ShaderResource(pShader, "g_DiffuseTexture", m_tEffectDesc.iTextureIndexDiffuse)))
 			return E_FAIL;
@@ -549,7 +559,11 @@ HRESULT CEffect::Bind_ShaderResource_Instance(CShader* pShader)
 	{
 		if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(pShader, "g_DissolveTexture", m_iDissolveTexIndex)))
 			return E_FAIL;
+
+		if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(pShader, "g_DistortionTexture", 161)))
+			return E_FAIL;
 	}
+	
 
 	if (FAILED(pShader->Bind_RawValue("g_vDissolveColor", &m_vDissolveColor, sizeof(_float4))))
 		return E_FAIL;

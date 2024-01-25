@@ -259,6 +259,11 @@ HRESULT CMainApp::Initialize_Client()
 
 HRESULT CMainApp::Ready_Prototype_Component()
 {
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_ScreenEffect"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/ScreenEffect/Destroyer_Break/"), 0, true))))
+		return E_FAIL;
+
+
 	/* For.Prototype_Component_Renderer */
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), m_pRenderer_Com = CRenderer::Create(m_pDevice, m_pContext))))
 		return E_FAIL;

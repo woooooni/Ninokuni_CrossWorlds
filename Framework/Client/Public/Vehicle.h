@@ -1,0 +1,87 @@
+#pragma once
+
+#include "GameObject.h"
+
+
+BEGIN(Client)
+
+class CVehicle abstract : public CGameObject
+{
+public:
+	typedef struct tagVehicleDesc
+	{
+		_float fSpeed = 10.f;
+	} VEHICLE_DESC;
+
+public:
+	enum VEHICLE_STATE {
+		VEHICLE_ENTER, 
+		VEHICLE_IDLE, 
+		VEHICLE_WALK, 
+		VEHICLE_RUN, 
+		VEHICLE_JUMP_START, 
+		VEHICLE_JUMP_UP, 
+		VEHICLE_JUMP_DOWN, 
+		VEHICLE_JUMP_FINISH, 
+		VEHICLE_EXIT, 
+		VEHICLE_STATE_END
+	};
+protected:
+	CVehicle(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType);
+	CVehicle(const CVehicle& rhs);
+	virtual ~CVehicle() = default;
+
+public:
+	virtual HRESULT Initialize_Prototype() override;
+	virtual HRESULT Initialize(void* pArg) override;
+	virtual void Tick(_float fTimeDelta) override;
+	virtual void LateTick(_float fTimeDelta) override;
+	virtual HRESULT Render() override;
+	virtual HRESULT Render_ShadowDepth() override;
+
+public:
+	virtual void Collision_Enter(const COLLISION_INFO& tInfo) override;
+	virtual void Collision_Continue(const COLLISION_INFO& tInfo) override;
+	virtual void Collision_Exit(const COLLISION_INFO& tInfo) override;
+
+public:
+	virtual void Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo) override;
+
+public:
+	class CGameObject* Get_Rider() { return m_pRider; }
+	class CTransform* Get_RiderTransform() { return m_pRiderTransform; }
+
+public:
+	virtual void Ride(class CGameObject* pRider);
+	virtual void Update_Rider(_float fTimeDelta);
+
+
+protected:
+	class CPhysX_Controller* m_pControllerCom = nullptr;
+	class CStateMachine* m_pStateCom = nullptr;
+	class CRigidBody* m_pRigidBodyCom = nullptr;
+	class CTransform* m_pTransformCom = nullptr;
+	class CRenderer* m_pRendererCom = nullptr;
+	class CTexture* m_pTextureCom = nullptr;
+	class CShader* m_pShaderCom = nullptr;
+	class CModel* m_pModelCom = nullptr;
+
+protected:
+	VEHICLE_DESC m_VehicleDesc = {};
+	
+protected:
+	class CGameObject* m_pRider = nullptr;
+	class CTransform* m_pRiderTransform = nullptr;
+
+protected:
+	virtual HRESULT Ready_Components() override; // [TW] : 자식객체에서는 모델만 따로 클론하여 사용하세요.
+	virtual HRESULT	Ready_Colliders() PURE;
+	virtual HRESULT Ready_States() PURE;
+
+
+public:
+	virtual void Free() override;
+};
+
+END
+

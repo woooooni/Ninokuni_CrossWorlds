@@ -90,7 +90,7 @@ public:
 #pragma endregion
 
 #pragma region SOCKET_TYPE
-enum SOCKET_TYPE { SOCKET_SWORD, SOCKET_SWEATH, SOCKET_RIGHT_HAND, SOCKET_LEFT_FOOT, SOCKET_RIGHT_FOOT, SOCKET_END };
+enum SOCKET_TYPE { SOCKET_RIGHT_HAND, SOCKET_LEFT_HAND, SOCKET_END };
 #pragma endregion
 
 #pragma region CHARACTER_STAT
@@ -230,6 +230,7 @@ public:
 
 public:
 	class CTransform* Get_CharacterTransformCom() { return m_pTransformCom; }
+	class CRenderer* Get_RendererCom() { return m_pRendererCom; }
 	
 
 public:
@@ -293,6 +294,7 @@ protected:
 	virtual HRESULT Ready_Components() PURE;
 	virtual HRESULT Ready_States() PURE;
 	virtual HRESULT Ready_Colliders() PURE;
+	virtual HRESULT Ready_Trails();
 	virtual void On_Damaged(const COLLISION_INFO& tInfo);
 
 protected:

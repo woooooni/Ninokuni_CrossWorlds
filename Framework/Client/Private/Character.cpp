@@ -111,14 +111,19 @@ void CCharacter::Tick(_float fTimeDelta)
 	if (nullptr != m_pTarget)
 		Tick_Target(fTimeDelta);
 
-	//if (KEY_TAP(KEY::L))
-	//{
-	//	GI->Lock_Mouse();
-	//}
-	//if (KEY_TAP(KEY::U))
-	//{
-	//	GI->UnLock_Mouse();
-	//}
+	/*if (KEY_TAP(KEY::L))
+	{
+		m_pRendererCom->Set_ScreenEffect(CRenderer::SCREEN_EFFECT::DESTROYER_BREAK);
+	}
+	if (KEY_TAP(KEY::U))
+	{
+		m_pRendererCom->Set_ScreenEffect(CRenderer::SCREEN_EFFECT::SCREENEFFECT_END);
+	}
+
+	if (m_pRendererCom->Get_Current_ScreenEffect() != CRenderer::SCREEN_EFFECT::SCREENEFFECT_END)
+	{
+		m_pRendererCom->Add_ScreenEffectAcc(Vec2(29.864f * fTimeDelta, 0.f));
+	}*/
 
 	if (KEY_TAP(KEY::P))
 	{
@@ -220,6 +225,24 @@ void CCharacter::Tick(_float fTimeDelta)
 		m_pCameraIcon->Tick(fTimeDelta);
 	if (nullptr != m_pMinimapIcon)  
 		m_pMinimapIcon->Tick(fTimeDelta);
+
+
+	for(_uint i = 0; i < SOCKET_END; ++i)
+	{
+		if (nullptr == m_pTrails[i])
+			continue;
+
+		_matrix WorldMatrix = m_pModelCom->Get_SocketLocalMatrix(0);
+
+
+		WorldMatrix.r[CTransform::STATE_RIGHT] = XMVector3Normalize(WorldMatrix.r[CTransform::STATE_RIGHT]);
+		WorldMatrix.r[CTransform::STATE_UP] = XMVector3Normalize(WorldMatrix.r[CTransform::STATE_UP]);
+		WorldMatrix.r[CTransform::STATE_LOOK] = XMVector3Normalize(WorldMatrix.r[CTransform::STATE_LOOK]);
+
+		m_pTrails[i]->Set_TransformMatrix(WorldMatrix * m_pTransformCom->Get_WorldMatrix());
+		m_pTrails[i]->Tick(fTimeDelta);
+	}
+	
 
 #pragma region Deprecated.
 
@@ -726,6 +749,20 @@ void CCharacter::LevelUp()
 	CUI_Manager::GetInstance()->OnOff_LevelUp(true, m_tStat.iLevel);
 }
 
+
+HRESULT CCharacter::Ready_Trails()
+{
+	CTrail::TRAIL_DESC TrailDesc = {};
+	TrailDesc.bTrail = true;
+	TrailDesc.bUV_Cut = false;
+
+	m_pTrails[SOCKET_TYPE::SOCKET_RIGHT_HAND] = dynamic_cast<CTrail*>(GI->Clone_GameObject(L"Prototype_GameObject_Trail", LAYER_TYPE::LAYER_EFFECT, &TrailDesc, true));
+	if (nullptr == m_pTrails[SOCKET_TYPE::SOCKET_RIGHT_HAND])
+		return E_FAIL;
+
+
+	return S_OK;
+}
 
 void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 {

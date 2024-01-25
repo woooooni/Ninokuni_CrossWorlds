@@ -77,7 +77,7 @@ private:
 
 
 private:
-	_float4x4 m_TransformMatrix;
+	Matrix m_TransformMatrix = Matrix::Identity;
 
 private:
 	class CRenderer* m_pRendererCom = nullptr;

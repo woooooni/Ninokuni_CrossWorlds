@@ -435,6 +435,11 @@
     <ClInclude Include="..\Public\State_DefenceTower_Idle.h" />
     <ClInclude Include="..\Public\State_DefenceTower_Prepare.h" />
     <ClInclude Include="..\Public\State_ShadowTower_Attack.h" />
+    <ClInclude Include="..\Public\State_Vehicle.h" />
+    <ClInclude Include="..\Public\State_Vehicle_Idle.h" />
+    <ClInclude Include="..\Public\State_Vehicle_Jump.h" />
+    <ClInclude Include="..\Public\State_Vehicle_Run.h" />
+    <ClInclude Include="..\Public\State_Vehicle_Walk.h" />
     <ClInclude Include="..\Public\StelliaState_Rage1Loop_SpinTail.h" />
     <ClInclude Include="..\Public\StelliaState_ChaseJumpStamp.h" />
     <ClInclude Include="..\Public\StelliaState_CounterEnd.h" />
@@ -828,6 +833,7 @@
     <ClInclude Include="..\Public\UniqueNpcState_Run.h" />
     <ClInclude Include="..\Public\UniqueNpcState_Talk.h" />
     <ClInclude Include="..\Public\UniqueNpcState_Walk.h" />
+    <ClInclude Include="..\Public\Vehicle.h" />
     <ClInclude Include="..\Public\Verde.h" />
     <ClInclude Include="..\Public\Game_Manager.h" />
     <ClInclude Include="..\Public\VfxHeaderGroup.h" />
@@ -1288,6 +1294,11 @@
     <ClCompile Include="..\Private\State_DefenceTower_Prepare.cpp" />
     <ClCompile Include="..\Private\State_FlameTower_Attack.cpp" />
     <ClCompile Include="..\Private\State_ShadowTower_Attack.cpp" />
+    <ClCompile Include="..\Private\State_Vehicle.cpp" />
+    <ClCompile Include="..\Private\State_Vehicle_Idle.cpp" />
+    <ClCompile Include="..\Private\State_Vehicle_Jump.cpp" />
+    <ClCompile Include="..\Private\State_Vehicle_Run.cpp" />
+    <ClCompile Include="..\Private\State_Vehicle_Walk.cpp" />
     <ClCompile Include="..\Private\StelliaState_Rage1Loop_SpinTail.cpp" />
     <ClCompile Include="..\Private\StelliaState_ChaseJumpStamp.cpp" />
     <ClCompile Include="..\Private\StelliaState_CounterEnd.cpp" />
@@ -1679,6 +1690,7 @@
     <ClCompile Include="..\Private\UniqueNpcState_Run.cpp" />
     <ClCompile Include="..\Private\UniqueNpcState_Talk.cpp" />
     <ClCompile Include="..\Private\UniqueNpcState_Walk.cpp" />
+    <ClCompile Include="..\Private\Vehicle.cpp" />
     <ClCompile Include="..\Private\Verde.cpp" />
     <ClCompile Include="..\Private\Game_Manager.cpp" />
     <ClCompile Include="..\Private\Vfx_Destroyer_Skill_BattleCry.cpp" />
