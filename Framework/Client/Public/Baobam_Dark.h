@@ -26,6 +26,7 @@ public:
 
 private:
 	class CUI_MonsterHP_World* m_pHPBar = { nullptr };
+	class CUI_Minimap_Icon* m_pMinimapIcon = { nullptr };
 
 private:
 	virtual HRESULT Ready_Components();

@@ -16,6 +16,7 @@
 #include "Item_Manager.h"
 #include "Skill_Manager.h"
 #include "UIDamage_Manager.h"
+#include "UIMinimap_Manager.h"
 #include "Quest_Manager.h"
 #include "TowerDefence_Manager.h"
 #include "UIMinigame_Manager.h"
@@ -60,7 +61,7 @@ HRESULT CMainApp::Initialize()
 	{
 		g_eStartLevel = LEVELID::LEVEL_LOGO; /* 시작할 레벨 타입 */
 
-		g_eLoadCharacter = LOAD_CHARACTER_TYPE::ALL_CH; /* 모델 로드할 캐릭터 타입 */
+		g_eLoadCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH; /* 모델 로드할 캐릭터 타입 */
 
 		g_ePlayCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH; /* 게임 플레이 캐릭터 타입 */
 	}
@@ -165,6 +166,9 @@ HRESULT CMainApp::Initialize_Client()
 		return E_FAIL;
 
 	if (FAILED(CUIDamage_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+		return E_FAIL;
+
+	if (FAILED(CUIMinimap_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
 		return E_FAIL;
 
 	if (FAILED(CUIMinigame_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
@@ -1153,7 +1157,16 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Map_Minimap_FrameArrow"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Map/Minimap/UI_Icon_Minimap_TrackDirectionArrow.png")))))
 		return E_FAIL;
-	
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Map_Minimap_Mask"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Map/Minimap/UI_Minimap_MaskTexture.png")))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Map_Minimap_Background"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Map/Minimap/UI_MiniMap_Background.png")))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Map_Minimap_Icons"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Map/Minimap/UI_Icon_Minimap_%d.png"), 5))))
+		return E_FAIL;
+
 	// NameTag
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Lobby_NameTag"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/Lobby/NameTag/UI_Lobby_NameTag_%d.png"), 3))))
@@ -1596,6 +1609,7 @@ void Client::CMainApp::Free()
 	CPicking_Manager::GetInstance()->DestroyInstance();
 	CUIDamage_Manager::GetInstance()->DestroyInstance();
 	CUI_Manager::GetInstance()->DestroyInstance();
+	CUIMinimap_Manager::GetInstance()->DestroyInstance();
 	CUIMinigame_Manager::GetInstance()->DestroyInstance();
 	CItem_Manager::GetInstance()->DestroyInstance();
 	CWeapon_Manager::GetInstance()->DestroyInstance();

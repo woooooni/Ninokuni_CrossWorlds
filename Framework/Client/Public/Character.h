@@ -124,7 +124,7 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 	virtual HRESULT Render_ShadowDepth();
-	virtual HRESULT Render_Minimap();
+//	virtual HRESULT Render_Minimap();
 
 public:
 	virtual void Collision_Enter(const COLLISION_INFO& tInfo) override;
@@ -352,6 +352,8 @@ protected:
 	_float m_fDefaultRunSpeed = 6.f;
 
 protected: // For UI Minimap
+	class CUI_Minimap_Icon* m_pMinimapIcon = { nullptr };
+	class CUI_Minimap_Icon* m_pCameraIcon = { nullptr };
 	_float4x4 m_ViewMatrix;
 	_float4 m_vCamPosition;
 

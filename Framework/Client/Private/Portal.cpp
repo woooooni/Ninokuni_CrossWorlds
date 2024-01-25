@@ -8,6 +8,9 @@
 #include "Game_Manager.h"
 #include "Player.h"
 
+#include "UI_Minimap_Icon.h"
+#include "UIMinimap_Manager.h"
+
 
 CPortal::CPortal(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CGameObject(pDevice, pContext, L"Portal", OBJ_TYPE::OBJ_PORTAL)
@@ -47,6 +50,15 @@ HRESULT CPortal::Initialize(void* pArg)
 
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(pPortalDesc->vStartPosition));
 
+	//m_pMinimapIcon
+	CGameObject* pIcon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Minimap_Icon"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pIcon)
+		return E_FAIL;
+	if (nullptr == dynamic_cast<CUI_Minimap_Icon*>(pIcon))
+		return E_FAIL;
+	m_pMinimapIcon = dynamic_cast<CUI_Minimap_Icon*>(pIcon);
+	m_pMinimapIcon->Set_Owner(this);
+
 	return S_OK;
 }
 
@@ -59,12 +71,27 @@ void CPortal::Tick(_float fTimeDelta)
 	}
 
 	GI->Add_CollisionGroup(COLLISION_GROUP::PORTAL, this);
+
+	if (nullptr != m_pMinimapIcon)
+	{
+		if (true == CUIMinimap_Manager::GetInstance()->Is_InMinimap(m_pTransformCom))
+			m_pMinimapIcon->Set_Active(true);
+		else
+			m_pMinimapIcon->Set_Active(false);
+	}
+
+	if (nullptr != m_pMinimapIcon)
+		m_pMinimapIcon->Tick(fTimeDelta);
+
 	__super::Tick(fTimeDelta);
 }
 
 void CPortal::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
+
+	if (nullptr != m_pMinimapIcon)
+		m_pMinimapIcon->LateTick(fTimeDelta);
 
 #ifdef _DEBUG
 	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
@@ -162,6 +189,12 @@ CGameObject* CPortal::Clone(void* pArg)
 void CPortal::Free()
 {
 	__super::Free();
+
+	if (nullptr != m_pMinimapIcon)
+	{
+		m_pMinimapIcon->Set_Dead(true);
+		Safe_Release(m_pMinimapIcon);
+	}
 	
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pTransformCom);

@@ -54,6 +54,8 @@ private:
 	class CTransform* m_pTransformCom = nullptr;
 	class CRenderer* m_pRendererCom = nullptr;
 
+	class CUI_Minimap_Icon* m_pMinimapIcon = { nullptr };
+
 public:
 	static CPortal* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);

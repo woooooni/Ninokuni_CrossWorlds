@@ -6,10 +6,12 @@
 #include "Effect_Manager.h"
 #include "Vfx.h"
 #include "UI_Manager.h"
+#include "UI_Minimap_Icon.h"
+#include "UIMinimap_Manager.h"
 
 // 임시로 몬스터에 담는다. 충돌 처리 그룹 추가 될 때까지.
 CQuest_DestSpot::CQuest_DestSpot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
-	: CGameObject(pDevice, pContext, strObjectTag, LAYER_TYPE::LAYER_MONSTER)
+	: CGameObject(pDevice, pContext, strObjectTag, OBJ_TYPE::OBJ_MONSTER)
 {
 }
 
@@ -54,6 +56,17 @@ void CQuest_DestSpot::Tick(_float fTimeDelta)
 		GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_QuestPoint"), m_pTransformCom->Get_WorldMatrix(), nullptr, &pEffectObject);
 		Safe_AddRef(pEffectObject);
 	}
+	if (nullptr == m_pMinimapIcon)
+	{
+		//m_pMinimapIcon
+		CGameObject* pIcon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Minimap_Icon"), LAYER_TYPE::LAYER_UI);
+		if (nullptr == pIcon)
+			return;
+		if (nullptr == dynamic_cast<CUI_Minimap_Icon*>(pIcon))
+			return;
+		m_pMinimapIcon = dynamic_cast<CUI_Minimap_Icon*>(pIcon);
+		m_pMinimapIcon->Set_Owner(this);
+	}
 
 	if (!m_bIsDelete)
 	{
@@ -64,6 +77,17 @@ void CQuest_DestSpot::Tick(_float fTimeDelta)
 
 		m_pControllerCom->Tick_Controller(fTimeDelta);
 	}
+
+	if (nullptr != m_pMinimapIcon)
+	{
+		if (true == CUIMinimap_Manager::GetInstance()->Is_InMinimap(m_pTransformCom))
+			m_pMinimapIcon->Set_Active(true);
+		else
+			m_pMinimapIcon->Set_Active(false);
+	}
+
+	if (nullptr != m_pMinimapIcon)
+		m_pMinimapIcon->Tick(fTimeDelta);
 }
 
 void CQuest_DestSpot::LateTick(_float fTimeDelta)
@@ -71,6 +95,9 @@ void CQuest_DestSpot::LateTick(_float fTimeDelta)
 	if (!m_bIsDelete)
 	{
 		__super::LateTick(fTimeDelta);
+
+		if (nullptr != m_pMinimapIcon)
+			m_pMinimapIcon->LateTick(fTimeDelta);
 
 		m_pControllerCom->LateTick_Controller(fTimeDelta);
 
@@ -212,6 +239,12 @@ CGameObject* CQuest_DestSpot::Clone(void* pArg)
 void CQuest_DestSpot::Free()
 {
 	__super::Free();
+
+	if (nullptr != m_pMinimapIcon)
+	{
+		m_pMinimapIcon->Set_Dead(true);
+		Safe_Release(m_pMinimapIcon);
+	}
 
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pTransformCom);

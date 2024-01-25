@@ -6,6 +6,8 @@
 #include "Clown_WizardBT.h"
 #include "UI_MonsterHP_World.h"
 #include "UIDamage_Manager.h"
+#include "UI_Minimap_Icon.h"
+#include "UIMinimap_Manager.h"
 
 CClown_Wizard::CClown_Wizard(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
 	: CMonster(pDevice, pContext, strObjectTag, tStat)
@@ -59,6 +61,15 @@ HRESULT CClown_Wizard::Initialize(void* pArg)
 
 	m_vBloomPower = _float3(0.8f, 0.8f, 0.8f);
 
+	//m_pMinimapIcon
+	CGameObject* pIcon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Minimap_Icon"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pIcon)
+		return E_FAIL;
+	if (nullptr == dynamic_cast<CUI_Minimap_Icon*>(pIcon))
+		return E_FAIL;
+	m_pMinimapIcon = dynamic_cast<CUI_Minimap_Icon*>(pIcon);
+	m_pMinimapIcon->Set_Owner(this);
+
 	return S_OK;
 }
 
@@ -66,6 +77,17 @@ void CClown_Wizard::Tick(_float fTimeDelta)
 {
 	if (nullptr != m_pHPBar)
 		m_pHPBar->Tick(fTimeDelta);
+
+	if (nullptr != m_pMinimapIcon)
+	{
+		if (true == CUIMinimap_Manager::GetInstance()->Is_InMinimap(m_pTransformCom))
+			m_pMinimapIcon->Set_Active(true);
+		else
+			m_pMinimapIcon->Set_Active(false);
+	}
+
+	if (nullptr != m_pMinimapIcon)
+		m_pMinimapIcon->Tick(fTimeDelta);
 
 	__super::Tick(fTimeDelta);
 }
@@ -75,15 +97,15 @@ void CClown_Wizard::LateTick(_float fTimeDelta)
 	if (nullptr != m_pHPBar)
 		m_pHPBar->LateTick(fTimeDelta);
 
+	if (nullptr != m_pMinimapIcon)
+		m_pMinimapIcon->LateTick(fTimeDelta);
+
 	__super::LateTick(fTimeDelta);
 }
 
 HRESULT CClown_Wizard::Render()
 {
 	__super::Render();
-
-	if (nullptr != m_pHPBar)
-		m_pHPBar->Render();
 
 	return S_OK;
 }
@@ -343,5 +365,10 @@ void CClown_Wizard::Free()
 {
 	__super::Free();
 
+	if (nullptr != m_pMinimapIcon)
+	{
+		m_pMinimapIcon->Set_Dead(true);
+		Safe_Release(m_pMinimapIcon);
+	}
 	Safe_Release(m_pHPBar);
 }

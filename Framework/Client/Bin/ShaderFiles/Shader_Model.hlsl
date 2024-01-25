@@ -514,7 +514,7 @@ PS_OUT PS_MAIN_REFLECT(PS_IN In)
 
 struct PS_OUT_MINIMAP
 {
-    float4      vMinimap : SV_TARGET6;
+    float4      vMinimap : SV_TARGET5;
 };
 
 PS_OUT_MINIMAP PS_MAIN_MINIMAP(PS_IN In)

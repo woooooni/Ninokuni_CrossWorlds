@@ -36,6 +36,7 @@ private:
 	CPhysX_Controller* m_pControllerCom = { nullptr };
 
 	class CVfx* pEffectObject = nullptr;
+	class CUI_Minimap_Icon* m_pMinimapIcon = { nullptr };
 
 	_bool m_bIsCol = false;
 	_bool m_bIsDelete = false;

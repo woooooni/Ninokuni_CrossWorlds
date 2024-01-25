@@ -331,6 +331,9 @@ HRESULT CRenderer::Draw_World()
 
 		if (FAILED(Render_UI_Minimap())) // Temp
 			return E_FAIL;
+
+		if (FAILED(Render_UI_Minimap_Icon())) // Temp
+			return E_FAIL;
 	}
 
 	// PostEffect : Ssao / Bloom / OutLine
@@ -1660,7 +1663,28 @@ HRESULT CRenderer::Render_UI_Minimap()
 			return E_FAIL;
 		Safe_Release(iter);
 	}
+
 	m_RenderObjects[RENDER_UI_MINIMAP].clear();
+
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CRenderer::Render_UI_Minimap_Icon()
+{
+	if (FAILED(m_pTarget_Manager->Begin_UI_MRT(m_pContext, TEXT("MRT_GameObjects"), false)))
+		return E_FAIL;
+
+	for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_UI_MINIMAP_ICON])
+	{
+		if (FAILED(iter->Render_Minimap()))
+			return E_FAIL;
+		Safe_Release(iter);
+	}
+
+	m_RenderObjects[RENDER_UI_MINIMAP_ICON].clear();
 
 	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
 		return E_FAIL;

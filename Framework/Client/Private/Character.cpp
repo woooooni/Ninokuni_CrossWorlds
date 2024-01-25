@@ -22,9 +22,11 @@
 #include "Player.h"
 #include "UI_Manager.h"
 #include "UI_World_NameTag.h"
+#include "UI_Minimap_Icon.h"
 #include "MonsterProjectile.h"
 #include "Camera_Follow.h"
 #include "Kuu.h"
+#include "UIMinimap_Manager.h"
 
 USING(Client)
 CCharacter::CCharacter(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eCharacterType)
@@ -67,13 +69,33 @@ HRESULT CCharacter::Initialize(void* pArg)
 	for (_uint i = 0; i < PART_TYPE::PART_END; ++i)
 		m_pCharacterPartModels[i] = nullptr;
 
-
 	CGameObject* pNameTag = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_World_NameTag"), LAYER_TYPE::LAYER_UI);
 	if (nullptr == pNameTag)
 		return E_FAIL;
-
+	if (nullptr == dynamic_cast<CUI_World_NameTag*>(pNameTag))
+		return E_FAIL;
 	m_pName = dynamic_cast<CUI_World_NameTag*>(pNameTag);
 	m_pName->Set_Owner(this);
+
+	//m_pCameraIcon
+	CGameObject* pIcon = nullptr;
+	pIcon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Minimap_Icon"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pIcon)
+		return E_FAIL;
+	if (nullptr == dynamic_cast<CUI_Minimap_Icon*>(pIcon))
+		return E_FAIL;
+	m_pCameraIcon = dynamic_cast<CUI_Minimap_Icon*>(pIcon);
+	m_pCameraIcon->Set_Owner(this, true);
+
+	//m_pMinimapIcon
+	pIcon = nullptr;
+	pIcon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Minimap_Icon"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pIcon)
+		return E_FAIL;
+	if (nullptr == dynamic_cast<CUI_Minimap_Icon*>(pIcon))
+		return E_FAIL;
+	m_pMinimapIcon = dynamic_cast<CUI_Minimap_Icon*>(pIcon);
+	m_pMinimapIcon->Set_Owner(this);
 
 	// CEffect_Manager::GetInstance()->Generate_Decal_To_Position(L"Decal_Target")
 
@@ -168,7 +190,37 @@ void CCharacter::Tick(_float fTimeDelta)
 
 	if(true == m_bMotionTrail)
 		Tick_MotionTrail(fTimeDelta);
-	
+
+	// For Minimap
+	// 미니맵을 위한 뷰 행렬을 렌더러에 던진다.
+	_matrix CamMatrix = XMMatrixIdentity();
+
+	_float4 vPlayerPos;
+	XMStoreFloat4(&vPlayerPos, m_pTransformCom->Get_Position());
+	_float vCamPosY = vPlayerPos.y + 150.f;
+
+	_float3 vCamPos = _float3(vPlayerPos.x, vCamPosY, vPlayerPos.z);
+	_float3 vLook = _float3(vPlayerPos.x, vPlayerPos.y, vPlayerPos.z);
+	_float3 vUp = _float3(0.f, 0.f, 1.f);
+
+	m_vCamPosition = _float4(vCamPos.x, vCamPos.y, vCamPos.z, 1.f);
+	CamMatrix = XMMatrixLookAtLH(XMLoadFloat3(&vCamPos), XMLoadFloat3(&vLook), XMLoadFloat3(&vUp));
+	XMStoreFloat4x4(&m_ViewMatrix, CamMatrix);
+	m_pRendererCom->Set_MinimapView(m_ViewMatrix);
+
+	if (nullptr != m_pMinimapIcon)
+	{
+		if (true == CUIMinimap_Manager::GetInstance()->Is_InMinimap(m_pTransformCom))
+			m_pMinimapIcon->Set_Active(true);
+		else
+			m_pMinimapIcon->Set_Active(false);
+	}
+
+	if (nullptr != m_pCameraIcon)
+		m_pCameraIcon->Tick(fTimeDelta);
+	if (nullptr != m_pMinimapIcon)  
+		m_pMinimapIcon->Tick(fTimeDelta);
+
 #pragma region Deprecated.
 
 	//if (m_bInfinite)
@@ -307,26 +359,15 @@ void CCharacter::LateTick(_float fTimeDelta)
 
 	if (nullptr != m_pWeapon)
 		m_pWeapon->LateTick(fTimeDelta);
-	
-	// 미니맵을 위한 뷰 행렬을 렌더러에 던진다.
-	_matrix CamMatrix = XMMatrixIdentity();
 
-	_float4 vPlayerPos;
-	XMStoreFloat4(&vPlayerPos, m_pTransformCom->Get_Position());
-	_float vCamPosY = vPlayerPos.y + 30.f;
-
-	_float3 vCamPos = _float3(vPlayerPos.x, vCamPosY, vPlayerPos.z);
-	_float3 vLook = _float3(vPlayerPos.x, vPlayerPos.y, vPlayerPos.z);
-	_float3 vUp = _float3(0.f, 0.f, 1.f);
-
-	m_vCamPosition = _float4(vCamPos.x, vCamPos.y, vCamPos.z, 1.f);
-	CamMatrix = XMMatrixLookAtLH(XMLoadFloat3(&vCamPos), XMLoadFloat3(&vLook), XMLoadFloat3(&vUp));
-	XMStoreFloat4x4(&m_ViewMatrix, CamMatrix);
-	m_pRendererCom->Set_MinimapView(m_ViewMatrix);
+	if (nullptr != m_pCameraIcon)
+		m_pCameraIcon->LateTick(fTimeDelta);
+	if (nullptr != m_pMinimapIcon)
+		m_pMinimapIcon->LateTick(fTimeDelta);
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI_MINIMAP, this);
+	//m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI_MINIMAP, this);
 
 
 
@@ -421,7 +462,6 @@ HRESULT CCharacter::Render_ShadowDepth()
 		return E_FAIL;
 
 
-
 	if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
 		return E_FAIL;
 
@@ -447,40 +487,40 @@ HRESULT CCharacter::Render_ShadowDepth()
 	return S_OK;
 }
 
-HRESULT CCharacter::Render_Minimap()
-{
-	if (nullptr == m_pModelCom || nullptr == m_pShaderCom)
-		return E_FAIL;
-
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_pRendererCom->Get_MinimapProj())))
-		return E_FAIL;
-	if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
-		return E_FAIL;
-
-	for (size_t i = 0; i < PART_TYPE::PART_END; i++)
-	{
-		if (nullptr == m_pCharacterPartModels[i])
-			continue;
-
-		const _uint		iNumMeshes = m_pCharacterPartModels[i]->Get_NumMeshes();
-
-		for (_uint j = 0; j < iNumMeshes; ++j)
-		{
-			if (FAILED(m_pCharacterPartModels[i]->SetUp_OnShader(m_pShaderCom, m_pCharacterPartModels[i]->Get_MaterialIndex(j)
-				,aiTextureType_DIFFUSE, "g_DiffuseTexture")))
-				return E_FAIL;
-
-			if (FAILED(m_pCharacterPartModels[i]->Render(m_pShaderCom, j, 9)))
-				return E_FAIL;
-		}
-	}
-
-	return S_OK;
-}
+//HRESULT CCharacter::Render_Minimap()
+//{
+//	if (nullptr == m_pModelCom || nullptr == m_pShaderCom)
+//		return E_FAIL;
+//
+//	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
+//		return E_FAIL;
+//	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
+//		return E_FAIL;
+//	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_pRendererCom->Get_MinimapProj())))
+//		return E_FAIL;
+//	if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
+//		return E_FAIL;
+//
+//	for (size_t i = 0; i < PART_TYPE::PART_END; i++)
+//	{
+//		if (nullptr == m_pCharacterPartModels[i])
+//			continue;
+//
+//		const _uint		iNumMeshes = m_pCharacterPartModels[i]->Get_NumMeshes();
+//
+//		for (_uint j = 0; j < iNumMeshes; ++j)
+//		{
+//			if (FAILED(m_pCharacterPartModels[i]->SetUp_OnShader(m_pShaderCom, m_pCharacterPartModels[i]->Get_MaterialIndex(j)
+//				,aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+//				return E_FAIL;
+//
+//			if (FAILED(m_pCharacterPartModels[i]->Render(m_pShaderCom, j, 9)))
+//				return E_FAIL;
+//		}
+//	}
+//
+//	return S_OK;
+//}
 
 void CCharacter::Collision_Enter(const COLLISION_INFO& tInfo)
 {
@@ -1033,6 +1073,9 @@ void CCharacter::Free()
 		Safe_Release(m_pCharacterPartModels[i]);*/
 
 	Safe_Release(m_pName);
+
+	Safe_Release(m_pCameraIcon);
+	Safe_Release(m_pMinimapIcon);
 
 	for (_uint i = 0; i < SOCKET_END; ++i)
 	{
