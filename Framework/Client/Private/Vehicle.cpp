@@ -3,7 +3,7 @@
 #include "Game_Manager.h"
 #include "..\Public\Vehicle.h"
 
-CVehicle::CVehicle(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType)
+CVehicle::CVehicle(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameObject(pDevice, pContext, strObjectTag, OBJ_TYPE::OBJ_VEHICLE)
 {
 }
@@ -12,6 +12,12 @@ CVehicle::CVehicle(const CVehicle& rhs)
 	: CGameObject(rhs)
 {
 
+}
+
+void CVehicle::Set_Aboard(_bool bAboard)
+{
+	m_bOnBoard = bAboard;
+	m_pRider = nullptr;
 }
 
 HRESULT CVehicle::Initialize_Prototype()
@@ -40,7 +46,12 @@ HRESULT CVehicle::Initialize(void* pArg)
 void CVehicle::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+
+	if (nullptr != m_pStateCom)
+		m_pStateCom->Tick_State(fTimeDelta);
+
 	Update_Rider(fTimeDelta);
+
 	GI->Add_CollisionGroup(COLLISION_GROUP::ANIMAL, this);
 }
 
@@ -61,7 +72,39 @@ void CVehicle::LateTick(_float fTimeDelta)
 
 HRESULT CVehicle::Render()
 {
+	if (nullptr == m_pModelCom || nullptr == m_pShaderCom)
+		return E_FAIL;
 
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+		return E_FAIL;
+
+	_float4 vRimColor = { 0.f, 0.f, 0.f, 0.f };
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float4))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vBloomPower", &m_vBloomPower, sizeof(_float3))))
+		return E_FAIL;
+
+	if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
+		return E_FAIL;
+
+	const _uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+	for (_uint i = 0; i < iNumMeshes; ++i)
+	{
+		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+			return E_FAIL;
+
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i)))
+			return E_FAIL;
+	}
 
 	return S_OK;
 }
@@ -70,6 +113,30 @@ HRESULT CVehicle::Render_ShadowDepth()
 {
 	if (FAILED(__super::Render_ShadowDepth()))
 		return E_FAIL;
+
+	if (nullptr == m_pShaderCom || nullptr == m_pTransformCom || nullptr == m_pModelCom)
+		return E_FAIL;
+
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &GI->Get_ShadowViewMatrix(GI->Get_CurrentLevel()))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+		return E_FAIL;
+	if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
+		return E_FAIL;
+
+	const _uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+	for (_uint i = 0; i < iNumMeshes; ++i)
+	{
+		if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+			return E_FAIL;
+
+		if (FAILED(m_pModelCom->Render(m_pShaderCom, i, 10)))
+			return E_FAIL;
+	}
 
 	return S_OK;
 }
@@ -110,6 +177,13 @@ void CVehicle::Ride(CGameObject* pRider)
 	}
 
 	m_pRider = pRider;
+
+	m_pTransformCom->Set_State(CTransform::STATE_RIGHT, m_pRiderTransform->Get_Right());
+	m_pTransformCom->Set_State(CTransform::STATE_UP, m_pRiderTransform->Get_Up());
+	m_pTransformCom->Set_State(CTransform::STATE_LOOK, m_pRiderTransform->Get_Look());
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, m_pRiderTransform->Get_Position());
+
+	m_pControllerCom->Set_EnterLevel_Position(m_pTransformCom->Get_Position());
 }
 
 void CVehicle::Update_Rider(_float fTimeDelta)
@@ -123,8 +197,13 @@ void CVehicle::Update_Rider(_float fTimeDelta)
 		
 	Matrix SitBoneMatrix = m_pModelCom->Get_SocketLocalMatrix(0);
 
-	if(nullptr != m_pRiderTransform)
-		m_pRiderTransform->Set_WorldMatrix(SitBoneMatrix * m_pTransformCom->Get_WorldMatrix());
+	if (nullptr != m_pRiderTransform)
+	{
+		m_pRiderTransform->Set_WorldMatrix(m_pTransformCom->Get_WorldMatrix());
+		_matrix MatSitWorld = SitBoneMatrix * m_pTransformCom->Get_WorldMatrix();
+		m_pRiderTransform->Set_State(CTransform::STATE_POSITION, MatSitWorld.r[CTransform::STATE_POSITION]);
+	}
+		
 }
 
 HRESULT CVehicle::Ready_Components()

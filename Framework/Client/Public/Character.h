@@ -82,6 +82,7 @@ public:
 		LOBBY_SIT,
 		DEAD,
 		REVIVE,
+		VEHICLE,
 
 
 		STATE_END

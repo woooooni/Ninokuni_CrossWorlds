@@ -21,6 +21,7 @@ private:
 		CHARACTER_MODEL_DESTROYER,
 		TOWER_DEFENCE_READY,
 		COSTUME_UI,
+		VEHICLES,
 		THREAD_END 
 	};
 private:
@@ -79,6 +80,7 @@ private:
 	HRESULT Loading_Proto_Static_Map_Objects(const wstring& strPath);
 	HRESULT Loading_Proto_Dynamic_Map_Objects(const wstring& strPath);
 	HRESULT Loading_Proto_Monster_Npc();
+	HRESULT Loading_Proto_Vehicles();
 
 
 	// 캐릭터 로딩 및 매니저 준비.

@@ -150,6 +150,8 @@
 
 #include "TowerDefence_Manager.h"
 
+#include "Vehicle_Udadak.h"
+
 _bool CLoader::g_bFirstLoading = false;
 _bool CLoader::g_bLevelFirst[LEVELID::LEVEL_WITCHFOREST + 1] = {};
 
@@ -487,6 +489,7 @@ HRESULT CLoader::Loading_For_Level_Lobby()
 	/* For.Model */
 	m_strLoading = TEXT("모델을 로딩 중 입니다.");
 	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Loading_Proto_Monster_Npc, this);
+	m_Threads[LOADING_THREAD::VEHICLES] = std::async(&CLoader::Loading_Proto_Vehicles, this);
 
 	m_Threads[LOADING_THREAD::STATIC_OBJECT_PROTOTYPE].wait();
 	m_Threads[LOADING_THREAD::DYNAMIC_OBJECT_PROTOTYPE].wait();
@@ -599,6 +602,10 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Common_LensFlare"),
 			CLensFlare::Create(m_pDevice, m_pContext, TEXT("Common_LensFlare"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX))
+			return E_FAIL;
+
+		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Vehicle_Udadak"),
+			CVehicle_Udadak::Create(m_pDevice, m_pContext, TEXT("Vehicle_Udadak")), LAYER_TYPE::LAYER_CHARACTER))
 			return E_FAIL;
 
 		g_bLevelFirst[LEVEL_EVERMORE] = true;
@@ -1785,6 +1792,13 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_GiftFunyaSnowman", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Ice/GiftFunyaSnowman/", L"GiftFunyaSnowman")))
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_AquarisBella", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/Ice/AquarisBella/", L"AquarisBella")))
+		return E_FAIL;
+
+	return S_OK;
+}
+HRESULT CLoader::Loading_Proto_Vehicles()
+{
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Udadak", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Vehicle/Udadak/", L"Udadak")))
 		return E_FAIL;
 
 	return S_OK;

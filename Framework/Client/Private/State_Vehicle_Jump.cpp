@@ -2,6 +2,7 @@
 #include "GameInstance.h"
 #include "Animation.h"
 #include "State_Vehicle_Jump.h"
+#include "Vehicle.h"
 
 CState_Vehicle_Jump::CState_Vehicle_Jump(CStateMachine* pMachine)
     : CState_Vehicle(pMachine)
@@ -30,23 +31,60 @@ void CState_Vehicle_Jump::Enter_State(void* pArg)
 
     m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(vJumpDir), 10.f, true);
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
-
-
-    m_bGroundChange = false;
 }
 
 void CState_Vehicle_Jump::Tick_State(_float fTimeDelta)
 {
+    // Idle상태로 돌린다.
     if (true == m_pRigidBodyCom->Is_Ground())
     {
-        // m_pStateMachineCom->Change_State(CCharacter::STATE::NEUTRAL_IDLE);
-    }   
+        m_pRigidBodyCom->Set_Velocity(_float3(0.f, 0.f, 0.f));
+        m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_IDLE);
+        return;
+    }
+//    if (m_iCurrAnimIndex == m_AnimIndices[3] &&
+//        false == m_pModelCom->Is_Tween() && m_pModelCom->Is_Finish())
+//    {
+//        m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_IDLE);
+//        return;
+//    }
+
+    if (m_iCurrAnimIndex == m_AnimIndices[2] &&
+        false == m_pModelCom->Is_Tween() && m_pModelCom->Is_Finish())
+    {
+        m_pRigidBodyCom->Set_Velocity(_float3(0.f, 0.f, 0.f));
+        m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_IDLE);
+        return;
+    }
+
+    if (0.f > (m_pRigidBodyCom->Get_Velocity()).y && false == m_bJumpDown)
+    {
+        m_bJumpDown = true;
+
+        m_iCurrAnimIndex = m_AnimIndices[2];
+        m_pModelCom->Set_Animation(m_iCurrAnimIndex);
+    }
+
+    if (m_iCurrAnimIndex == m_AnimIndices[0] &&
+        false == m_pModelCom->Is_Tween() && m_pModelCom->Is_Finish())
+    {
+        m_iCurrAnimIndex = m_AnimIndices[1];
+        m_pModelCom->Set_Animation(m_iCurrAnimIndex);
+    }
+ 
+//    if (m_iCurrAnimIndex == m_AnimIndices[2] &&
+//        false == m_pModelCom->Is_Tween() && m_pModelCom->Is_Finish())
+//    {
+//        m_pRigidBodyCom->Set_Velocity(_float3(0.f, 0.f, 0.f));
+//        m_iCurrAnimIndex = m_AnimIndices[3];
+//        m_pModelCom->Set_Animation(m_iCurrAnimIndex);
+//    }
 }
 
 void CState_Vehicle_Jump::Exit_State()
 {
     m_iCurrAnimIndex = 0;
-    m_bGroundChange = false;
+    m_bJumpDown = false;
 }
 
 

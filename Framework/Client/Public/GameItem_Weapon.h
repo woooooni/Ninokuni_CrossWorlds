@@ -9,7 +9,7 @@ class CGameItem_Weapon final : public CGameItem
 public:
 	enum ITEMCATEGORY_WEAPON { WEAPON_SWORD = 0, WEAPON_GAUNTLET, WEAPON_HAMMER, WEAPON_RIFLE, WEAPON_END };
 
-	typedef struct tagWeaponDesc : public CGameItem::ITEMDESC
+	typedef struct tagWeaponDesc : public CGameItem::ITEM_DESC
 	{
 		ITEMCATEGORY_WEAPON eWeaponCategory = WEAPON_END;
 		_float	fAtk = 0.f;

@@ -193,6 +193,8 @@ namespace Client
 
 #define BGM_START_FADEIN_DURATION 3.f
 #define BGM_STOP_FADEOUT_DURATION 2.f
+
+	enum ITEM_TYPE { ARMOR, EQUIPMENT, CONSUMPSION, COIN = 99, ITEMTYPE_END };
 }
 
 extern HWND g_hWnd;

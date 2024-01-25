@@ -9,7 +9,7 @@ class CGameItem_Armor final : public CGameItem
 public:
 	enum ITEMCATEGORY_ARMOR { ARMOR_HELMET = 0, ARMOR_ARMOR, ARMOR_GLOVE, ARMOR_BOOT, ARMOR_END };
 
-	typedef struct tagArmorDesc : public CGameItem::ITEMDESC
+	typedef struct tagArmorDesc : public CGameItem::ITEM_DESC
 	{
 		ITEMCATEGORY_ARMOR eArmorCategory = ARMOR_END;
 		_float	fDef = 0.f;

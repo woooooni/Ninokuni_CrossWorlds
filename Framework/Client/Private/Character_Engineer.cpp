@@ -65,6 +65,7 @@
 
 #include "State_Character_Dead.h"
 #include "State_Character_Revive.h"
+#include "State_Character_Vehicle.h"
 
 
 
@@ -492,6 +493,10 @@ HRESULT CCharacter_Engineer::Ready_States()
 	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::REVIVE, CState_Character_Revive::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 
+	//VEHICLE
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_ChairSitIdle01");
+	m_pStateCom->Add_State(CCharacter::STATE::VEHICLE, CState_Character_Vehicle::Create(m_pStateCom, strAnimationNames));
 
 	m_pStateCom->Change_State(CCharacter::NEUTRAL_IDLE);
 	return S_OK;

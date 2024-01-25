@@ -375,6 +375,7 @@
     <ClInclude Include="..\Public\HumanMSCrossFieldMerchant.h" />
     <ClInclude Include="..\Public\IceBearManNode_Air.h" />
     <ClInclude Include="..\Public\IceBearManNode_Blow.h" />
+    <ClInclude Include="..\Public\Inventory_Manager.h" />
     <ClInclude Include="..\Public\Item_Manager.h" />
     <ClInclude Include="..\Public\Kuu.h" />
     <ClInclude Include="..\Public\Level_IceLand.h" />
@@ -425,6 +426,7 @@
     <ClInclude Include="..\Public\NpcDestroyerState_Noisy.h" />
     <ClInclude Include="..\Public\PumpkinCandleNode_Air.h" />
     <ClInclude Include="..\Public\PumpkinCandleNode_Blow.h" />
+    <ClInclude Include="..\Public\Riding_Manager.h" />
     <ClInclude Include="..\Public\Shadow_Ball.h" />
     <ClInclude Include="..\Public\Shadow_Tower.h" />
     <ClInclude Include="..\Public\State_Character_Vehicle.h" />
@@ -440,6 +442,7 @@
     <ClInclude Include="..\Public\State_Vehicle_Idle.h" />
     <ClInclude Include="..\Public\State_Vehicle_Jump.h" />
     <ClInclude Include="..\Public\State_Vehicle_Run.h" />
+    <ClInclude Include="..\Public\State_Vehicle_Sprint.h" />
     <ClInclude Include="..\Public\State_Vehicle_Walk.h" />
     <ClInclude Include="..\Public\StelliaState_Rage1Loop_SpinTail.h" />
     <ClInclude Include="..\Public\StelliaState_ChaseJumpStamp.h" />
@@ -835,6 +838,7 @@
     <ClInclude Include="..\Public\UniqueNpcState_Talk.h" />
     <ClInclude Include="..\Public\UniqueNpcState_Walk.h" />
     <ClInclude Include="..\Public\Vehicle.h" />
+    <ClInclude Include="..\Public\Vehicle_Udadak.h" />
     <ClInclude Include="..\Public\Verde.h" />
     <ClInclude Include="..\Public\Game_Manager.h" />
     <ClInclude Include="..\Public\VfxHeaderGroup.h" />
@@ -1231,6 +1235,7 @@
     <ClCompile Include="..\Private\HumanMSCrossFieldMerchant.cpp" />
     <ClCompile Include="..\Private\IceBearManNode_Air.cpp" />
     <ClCompile Include="..\Private\IceBearManNode_Blow.cpp" />
+    <ClCompile Include="..\Private\Inventory_Manager.cpp" />
     <ClCompile Include="..\Private\Item_Manager.cpp" />
     <ClCompile Include="..\Private\Kuu.cpp" />
     <ClCompile Include="..\Private\LensFlare.cpp">
@@ -1285,6 +1290,7 @@
     <ClCompile Include="..\Private\NpcDestroyerState_Noisy.cpp" />
     <ClCompile Include="..\Private\PumpkinCandleNode_Air.cpp" />
     <ClCompile Include="..\Private\PumpkinCandleNode_Blow.cpp" />
+    <ClCompile Include="..\Private\Riding_Manager.cpp" />
     <ClCompile Include="..\Private\Shadow_Ball.cpp" />
     <ClCompile Include="..\Private\Shadow_Tower.cpp" />
     <ClCompile Include="..\Private\State_CannonTower_Attack.cpp" />
@@ -1300,6 +1306,7 @@
     <ClCompile Include="..\Private\State_Vehicle_Idle.cpp" />
     <ClCompile Include="..\Private\State_Vehicle_Jump.cpp" />
     <ClCompile Include="..\Private\State_Vehicle_Run.cpp" />
+    <ClCompile Include="..\Private\State_Vehicle_Sprint.cpp" />
     <ClCompile Include="..\Private\State_Vehicle_Walk.cpp" />
     <ClCompile Include="..\Private\StelliaState_Rage1Loop_SpinTail.cpp" />
     <ClCompile Include="..\Private\StelliaState_ChaseJumpStamp.cpp" />
@@ -1693,6 +1700,7 @@
     <ClCompile Include="..\Private\UniqueNpcState_Talk.cpp" />
     <ClCompile Include="..\Private\UniqueNpcState_Walk.cpp" />
     <ClCompile Include="..\Private\Vehicle.cpp" />
+    <ClCompile Include="..\Private\Vehicle_Udadak.cpp" />
     <ClCompile Include="..\Private\Verde.cpp" />
     <ClCompile Include="..\Private\Game_Manager.cpp" />
     <ClCompile Include="..\Private\Vfx_Destroyer_Skill_BattleCry.cpp" />

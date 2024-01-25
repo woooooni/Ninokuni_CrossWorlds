@@ -68,6 +68,7 @@
 
 #include "State_Character_Dead.h"
 #include "State_Character_Revive.h"
+#include "State_Character_Vehicle.h"
 
 
 
@@ -455,6 +456,10 @@ HRESULT CCharacter_Destroyer::Ready_States()
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_Revive");
 	m_pStateCom->Add_State(CCharacter::STATE::REVIVE, CState_Character_Revive::Create(m_pStateCom, strAnimationNames));
 
+	//VEHICLE
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_LobbySitLoop");
+	m_pStateCom->Add_State(CCharacter::STATE::VEHICLE, CState_Character_Vehicle::Create(m_pStateCom, strAnimationNames));
 
 	m_pStateCom->Change_State(CCharacter::NEUTRAL_IDLE);
 	return S_OK;

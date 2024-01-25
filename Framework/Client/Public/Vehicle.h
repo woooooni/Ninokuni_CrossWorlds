@@ -1,7 +1,18 @@
 #pragma once
 
 #include "GameObject.h"
+#include "Client_Defines.h"
 
+BEGIN(Engine)
+class CPhysX_Controller;
+class CStateMachine;
+class CRigidBody;
+class CTransform;
+class CRenderer;
+class CTexture;
+class CShader;
+class CModel;
+END
 
 BEGIN(Client)
 
@@ -11,6 +22,7 @@ public:
 	typedef struct tagVehicleDesc
 	{
 		_float fSpeed = 10.f;
+
 	} VEHICLE_DESC;
 
 public:
@@ -18,7 +30,9 @@ public:
 		VEHICLE_ENTER, 
 		VEHICLE_IDLE, 
 		VEHICLE_WALK, 
-		VEHICLE_RUN, 
+		VEHICLE_RUN,
+		VEHICLE_SPRINT,
+		VEHICLE_JUMP,
 		VEHICLE_JUMP_START, 
 		VEHICLE_JUMP_UP, 
 		VEHICLE_JUMP_DOWN, 
@@ -27,9 +41,15 @@ public:
 		VEHICLE_STATE_END
 	};
 protected:
-	CVehicle(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType);
+	CVehicle(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	CVehicle(const CVehicle& rhs);
 	virtual ~CVehicle() = default;
+
+public:
+	_bool Is_Aboard() { return m_bOnBoard; }
+	void Set_Aboard(_bool bAboard);
+
+	_float Get_Speed() { return m_VehicleDesc.fSpeed; }
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -68,6 +88,7 @@ protected:
 
 protected:
 	VEHICLE_DESC m_VehicleDesc = {};
+	_bool m_bOnBoard = { false };
 	
 protected:
 	class CGameObject* m_pRider = nullptr;
@@ -75,7 +96,7 @@ protected:
 
 protected:
 	virtual HRESULT Ready_Components() override; // [TW] : 자식객체에서는 모델만 따로 클론하여 사용하세요.
-	virtual HRESULT	Ready_Colliders() PURE;
+	virtual HRESULT	Ready_Colliders() PURE;		// ㄴ 네;;;;;
 	virtual HRESULT Ready_States() PURE;
 
 

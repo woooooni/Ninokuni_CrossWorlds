@@ -4,10 +4,7 @@
 #include "Camera_Manager.h"
 #include "Camera.h"
 #include "State_Vehicle_Idle.h"
-#include "UI_Manager.h"
-
-#include "Game_Manager.h"
-#include "Kuu.h"
+#include "Vehicle.h"
 
 CState_Vehicle_Idle::CState_Vehicle_Idle(CStateMachine* pMachine)
     : CState_Vehicle(pMachine)
@@ -17,6 +14,11 @@ CState_Vehicle_Idle::CState_Vehicle_Idle(CStateMachine* pMachine)
 HRESULT CState_Vehicle_Idle::Initialize(const list<wstring>& AnimationList)
 {
     if (FAILED(__super::Initialize(AnimationList)))
+        return E_FAIL;
+
+    m_pVehicle = dynamic_cast<CVehicle*>(m_pStateMachineCom->Get_Owner());
+
+    if (nullptr == m_pVehicle)
         return E_FAIL;
     
     return S_OK;
@@ -29,9 +31,6 @@ void CState_Vehicle_Idle::Enter_State(void* pArg)
     m_iCurrAnimIndex = m_AnimIndices[0];
     m_pModelCom->Set_Animation(m_iCurrAnimIndex);
 
-    if(CGame_Manager::GetInstance()->Get_Kuu() != nullptr)
-        CGame_Manager::GetInstance()->Get_Kuu()->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CKuu::NPC_IDLE);
-
     CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
     if (nullptr != pFollowCam)
         pFollowCam->Set_CanInput(false);
@@ -39,14 +38,40 @@ void CState_Vehicle_Idle::Enter_State(void* pArg)
 
 void CState_Vehicle_Idle::Tick_State(_float fTimeDelta)
 {
-   
+	if (KEY_HOLD(KEY::W) || KEY_HOLD(KEY::A) || KEY_HOLD(KEY::S) || KEY_HOLD(KEY::D))
+	{
+		m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_WALK);
+		return;
+	}
+
+    if (KEY_TAP(KEY::SPACE))
+    {
+        CUI_Manager::GetInstance()->Use_JumpBtn();
+        m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_JUMP);
+        return;
+    }
+
+    if (true == GI->Mouse_Down(DIMK_WHEEL))
+    {
+        CUI_Manager::GetInstance()->Hide_MouseCursor(true);
+        CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+        if (nullptr != pFollowCam)
+            pFollowCam->Set_CanInput(true);
+    }
+
+    if (true == GI->Mouse_Up(DIMK_WHEEL))
+    {
+        CUI_Manager::GetInstance()->Hide_MouseCursor(false);
+        CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+        if (nullptr != pFollowCam)
+            pFollowCam->Set_CanInput(false);
+    }
 }
 
 void CState_Vehicle_Idle::Exit_State()
 {
     CUI_Manager::GetInstance()->Hide_MouseCursor(true);
     
-
     CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
     if (nullptr != pFollowCam)
         pFollowCam->Set_CanInput(true);
