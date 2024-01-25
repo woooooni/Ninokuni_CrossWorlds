@@ -40,6 +40,9 @@ HRESULT CDecal::Initialize(void* pArg)
 
 void CDecal::Tick(_float fTimeDelta)
 {
+	if (!m_bIsShow)
+		return;
+
 	m_fAccLifeTime += fTimeDelta;
 	if (m_bDecalDelete)
 	{
@@ -59,6 +62,9 @@ void CDecal::Tick(_float fTimeDelta)
 
 void CDecal::LateTick(_float fTimeDelta)
 {
+	if (!m_bIsShow)
+		return;
+
 	if (Is_Dead() == true || m_bDecalDie)
 		return;
 
@@ -202,6 +208,19 @@ void CDecal::Start_AlphaDeleate()
 
 	m_fAccLifeTime = m_tDecalDesc.fLifeTime - 2.f;
 	m_bDecalDelete = true;
+}
+
+void CDecal::Set_IsDecalShow(_bool bIsShow, _float fTimeDelta)
+{
+	if (bIsShow)
+	{
+		m_bIsShow = true;
+		Restart_Decal();
+	}
+	else if (!bIsShow)
+	{
+		m_bIsShow = false;
+	}
 }
 
 void CDecal::Tick_Alpha(_float fTimeDelta)

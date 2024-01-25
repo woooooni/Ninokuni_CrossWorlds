@@ -142,15 +142,26 @@ HRESULT CEffect_Manager::Generate_Decal(const wstring& strDecalName, _matrix Wor
 	pTransform->Set_WorldMatrix(matResult);
 	
 	// Position
-	_vector vFinalPosition = pTransform->Get_Position();
+	Vec4 vOffsetPos = Vec4(0.f, 0.f, 0.f, 0.f);
+
+	_vector vCurrentPosition = pTransform->Get_Position();
+
+	_vector vFinalPosition = vCurrentPosition;
 	vFinalPosition += pTransform->Get_State(CTransform::STATE_RIGHT) * vLocalPos.x;
-	vFinalPosition += pTransform->Get_State(CTransform::STATE_UP)    * vLocalPos.y;
-	vFinalPosition += pTransform->Get_State(CTransform::STATE_LOOK)  * vLocalPos.z;
+	vFinalPosition += pTransform->Get_State(CTransform::STATE_UP) * vLocalPos.y;
+	vFinalPosition += pTransform->Get_State(CTransform::STATE_LOOK) * vLocalPos.z;
+
 	pTransform->Set_State(CTransform::STATE_POSITION, XMVectorSet(XMVectorGetX(vFinalPosition), XMVectorGetY(vFinalPosition), XMVectorGetZ(vFinalPosition), 1.f));
+
+	vOffsetPos.x = XMVectorGetX(vFinalPosition) - XMVectorGetX(vCurrentPosition);
+	vOffsetPos.y = XMVectorGetY(vFinalPosition) - XMVectorGetY(vCurrentPosition);
+	vOffsetPos.z = XMVectorGetZ(vFinalPosition) - XMVectorGetZ(vCurrentPosition);
 
 	// pOwner
 	if (pOwner != nullptr)
 		pDecal->Set_Owner(pOwner);
+
+	pDecal->Set_OffsetPosition(vOffsetPos);
 
 	// ppOut
 	if (ppOut != nullptr)

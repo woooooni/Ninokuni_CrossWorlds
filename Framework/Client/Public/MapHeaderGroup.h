@@ -10,3 +10,4 @@
 #include "Grass.h"
 #include "Mirror.h"
 #include "LensFlare.h"
+#include "Dog_FootPrints.h"

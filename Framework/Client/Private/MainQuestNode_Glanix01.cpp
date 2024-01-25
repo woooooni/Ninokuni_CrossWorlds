@@ -121,7 +121,7 @@ CBTNode::NODE_STATE CMainQuestNode_Glanix01::Tick(const _float& fTimeDelta)
 		}
 
 		// 테스트용 키
-		if (KEY_TAP(KEY::N))
+		if (KEY_TAP(KEY::M))
 		{
 			m_bIsClear = true;
 

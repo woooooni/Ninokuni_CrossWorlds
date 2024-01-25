@@ -281,6 +281,7 @@
     <ClInclude Include="..\Public\DefenceInvasion_Portal.h" />
     <ClInclude Include="..\Public\Defence_Tower.h" />
     <ClInclude Include="..\Public\Dochi.h" />
+    <ClInclude Include="..\Public\Dog_FootPrints.h" />
     <ClInclude Include="..\Public\Door_Enter_FX.h" />
     <ClInclude Include="..\Public\DuckGoo.h" />
     <ClInclude Include="..\Public\DynamicProps.h" />
@@ -1127,6 +1128,7 @@
     <ClCompile Include="..\Private\DefenceInvasion_Portal.cpp" />
     <ClCompile Include="..\Private\Defence_Tower.cpp" />
     <ClCompile Include="..\Private\Dochi.cpp" />
+    <ClCompile Include="..\Private\Dog_FootPrints.cpp" />
     <ClCompile Include="..\Private\Door_Enter_FX.cpp" />
     <ClCompile Include="..\Private\DuckGoo.cpp" />
     <ClCompile Include="..\Private\DynamicProps.cpp" />
