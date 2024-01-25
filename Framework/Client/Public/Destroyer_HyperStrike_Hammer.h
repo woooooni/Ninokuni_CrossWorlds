@@ -13,6 +13,9 @@ private:
 	virtual ~CDestroyer_HyperStrike_Hammer() = default;
 
 public:
+	_bool Get_IsGround() { return m_bCollisionGround; }
+
+public:
 	virtual HRESULT Initialize_Prototype() override;
 	virtual HRESULT Initialize(void* pArg) override;
 	virtual void Tick(_float fTimeDelta) override;
@@ -33,6 +36,8 @@ private:
 	_float m_fAccOnOff = 0.f;
 	_float m_fOnOffTime = 0.1f;
 
+private:
+	_bool m_bCollisionGround = false;
 	class CEffect* m_pEffect = nullptr;
 
 private:

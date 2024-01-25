@@ -51,8 +51,13 @@ void CDestroyer_HyperStrike_Hammer::Tick(_float fTimeDelta)
 	if (nullptr == m_pEffect)
 	{
 		GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Destroyer_Skill_HyperStrike_Hammer"),
-			m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 0.2f, 0.f), _float3(10.f, 10.f, 10.f), _float3(0.f, 60.f, 40.f), this, &m_pEffect, false);
+			m_pTransformCom->Get_WorldMatrix(), _float3(0.05f, 0.f, 0.f), _float3(15.f, 15.f, 15.f), _float3(0.f, 180.f, 0.f), this, &m_pEffect, false);
 		Safe_AddRef(m_pEffect);
+
+		m_pEffect->Reserve_Dissolve(110,       // Index //180//179//170//160//110//50
+			_float4(0.427f, 0.894f, 1.f, 1.f), // Color
+			3.f,   // Speed
+			10.f); // Total
 	}
 
 	__super::Tick(fTimeDelta);
@@ -107,9 +112,9 @@ HRESULT CDestroyer_HyperStrike_Hammer::Ready_Components()
 	ControllerDesc.eType = CPhysX_Controller::CAPSULE;
 	ControllerDesc.pTransform = m_pTransformCom;
 	ControllerDesc.vOffset = { 0.f, 1.125f, 0.f };
-	ControllerDesc.fHeight = 1.f;
+	ControllerDesc.fHeight = 0.2f;
 	ControllerDesc.fMaxJumpHeight = 10.f;
-	ControllerDesc.fRaidus = 0.8f;
+	ControllerDesc.fRaidus = 0.5f;
 	ControllerDesc.pOwner = this;
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_PhysXController"), TEXT("Com_Controller"), (CComponent**)&m_pControllerCom, &ControllerDesc)))
@@ -135,7 +140,7 @@ HRESULT CDestroyer_HyperStrike_Hammer::Ready_Components()
 
 	m_pRigidBodyCom->Set_Ground(false);
 	m_pRigidBodyCom->Set_Use_Gravity(true);
-	m_pRigidBodyCom->Set_Velocity(_float3(0.f, -5.f, 0.f));
+	m_pRigidBodyCom->Set_Velocity(_float3(0.f, -70.f, 0.f));
 
 	return S_OK;
 }
@@ -156,6 +161,9 @@ void CDestroyer_HyperStrike_Hammer::Ground_Collision_Enter(PHYSX_GROUND_COLLISIO
 {
 	// ¶¥¿¡ ´ê¾ÒÀ»¶§.
 	CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
+
+	if (false == m_bCollisionGround)
+		m_bCollisionGround = true;
 }
 
 
@@ -192,8 +200,5 @@ void CDestroyer_HyperStrike_Hammer::Free()
 	__super::Free();
 
 	if (nullptr != m_pEffect)
-	{
-		m_pEffect->Set_Dead(true);
 		Safe_Release(m_pEffect);
-	}
 }

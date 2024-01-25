@@ -401,29 +401,39 @@ void CEffect::LateTick(_float fTimeDelta)
 	{
 		if (m_pOwnerObject->Is_Dead())
 		{
-			Set_Dead(true);
-			return;
+			if (m_bReserve_Dissolve)
+			{
+				m_bDissolve    = true;
+				m_pOwnerObject = nullptr;
+			}
+			else
+			{
+				Set_Dead(true);
+				return;
+			}
 		}
-
-		CTransform* pOwnerTransform = m_pOwnerObject->Get_Component<CTransform>(L"Com_Transform");
-		if (nullptr != pOwnerTransform)
+		else
 		{
-			// WorldMatrix
-			//m_pTransformCom->Set_WorldMatrix(pOwnerTransform->Get_WorldMatrix());
+			CTransform* pOwnerTransform = m_pOwnerObject->Get_Component<CTransform>(L"Com_Transform");
+			if (nullptr != pOwnerTransform)
+			{
+				// WorldMatrix
+				//m_pTransformCom->Set_WorldMatrix(pOwnerTransform->Get_WorldMatrix());
 
-			//// Scale / Rotation
-			//Matrix matScale    = matScale.CreateScale(m_vLocalScale);
-			//Matrix matRotation = matScale.CreateFromYawPitchRoll(Vec3(XMConvertToRadians(m_vLocalRotation.x), XMConvertToRadians(m_vLocalRotation.y), XMConvertToRadians(m_vLocalRotation.z)));
-			//Matrix matResult   = matScale * matRotation * m_pTransformCom->Get_WorldFloat4x4();
-			//m_pTransformCom->Set_WorldMatrix(matResult);
+				//// Scale / Rotation
+				//Matrix matScale    = matScale.CreateScale(m_vLocalScale);
+				//Matrix matRotation = matScale.CreateFromYawPitchRoll(Vec3(XMConvertToRadians(m_vLocalRotation.x), XMConvertToRadians(m_vLocalRotation.y), XMConvertToRadians(m_vLocalRotation.z)));
+				//Matrix matResult   = matScale * matRotation * m_pTransformCom->Get_WorldFloat4x4();
+				//m_pTransformCom->Set_WorldMatrix(matResult);
 
-			// Position
-			_vector vCurrentPosition = pOwnerTransform->Get_Position();
-			_vector vFinalPosition = vCurrentPosition;
-			vFinalPosition += m_pTransformCom->Get_State(CTransform::STATE_RIGHT) * m_vLocalPos.x;
-			vFinalPosition += m_pTransformCom->Get_State(CTransform::STATE_UP) * m_vLocalPos.y;
-			vFinalPosition += m_pTransformCom->Get_State(CTransform::STATE_LOOK) * m_vLocalPos.z;
-			m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(XMVectorGetX(vFinalPosition), XMVectorGetY(vFinalPosition), XMVectorGetZ(vFinalPosition), 1.f));
+				// Position
+				_vector vCurrentPosition = pOwnerTransform->Get_Position();
+				_vector vFinalPosition = vCurrentPosition;
+				vFinalPosition += m_pTransformCom->Get_State(CTransform::STATE_RIGHT) * m_vLocalPos.x;
+				vFinalPosition += m_pTransformCom->Get_State(CTransform::STATE_UP) * m_vLocalPos.y;
+				vFinalPosition += m_pTransformCom->Get_State(CTransform::STATE_LOOK) * m_vLocalPos.z;
+				m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(XMVectorGetX(vFinalPosition), XMVectorGetY(vFinalPosition), XMVectorGetZ(vFinalPosition), 1.f));
+			}
 		}
 	}
 
