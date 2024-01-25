@@ -129,7 +129,13 @@ void CCharacter_Engineer::LateTick(_float fTimeDelta)
 	
 	__super::LateTick(fTimeDelta);
 
-#ifdef DEBUG
+#ifdef _DEBUG
+	if (KEY_TAP(KEY::NUM_6))
+	{
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(0.f, 2.f, 0.f, 1.f));
+		m_pControllerCom->Set_EnterLevel_Position(Vec4(0.f, 2.f, 0.f, 1.f));
+	}
+
 	m_pRendererCom->Add_Debug(m_pControllerCom);
 #endif // DEBUG
 

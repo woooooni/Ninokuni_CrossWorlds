@@ -29,6 +29,11 @@ void CState_Engineer_BurstSkill_Destruction::Enter_State(void* pArg)
 
     m_pCharacter->Appear_Weapon();
     
+    // Effect Create
+    CTransform* pTransformCom = m_pCharacter->Get_Component<CTransform>(L"Com_Transform");
+    if (pTransformCom == nullptr)
+        return;
+    GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Engineer_Skill_Destruction"), pTransformCom->Get_WorldMatrix(), m_pCharacter);
 
     if (FAILED(Generate_Cannon()))
     {

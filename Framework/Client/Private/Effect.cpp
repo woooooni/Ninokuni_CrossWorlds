@@ -61,6 +61,11 @@ void CEffect::Set_UVLoop(_int iLoop)
 	m_tEffectDesc.iUVFlowLoop = iLoop;
 }
 
+void CEffect::Set_UVSpeed(_float fSpeed)
+{
+	m_fUVFlowSpeed = fSpeed;
+}
+
 void CEffect::Set_UVFlow(_int iLoop, _float2 fDir, _float2 fSpeed)
 {
 	Set_UVLoop(iLoop);

@@ -17,7 +17,7 @@ CVfx_Engineer_Skill_FlashHeal::CVfx_Engineer_Skill_FlashHeal(const CVfx_Engineer
 
 HRESULT CVfx_Engineer_Skill_FlashHeal::Initialize_Prototype()
 {
-	m_bOwnerStateIndex = CCharacter::CLASS_SKILL_2;
+	m_bOwnerStateIndex = CCharacter::CLASS_SKILL_0;
 
 	m_iMaxCount = TYPE_END;
 	m_pFrameTriger = new _int[m_iMaxCount];
