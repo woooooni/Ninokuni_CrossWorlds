@@ -2,6 +2,7 @@
 #include "..\Public\Weapon.h"
 
 #include "GameInstance.h"
+#include "Trail.h"
 
 CWeapon::CWeapon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObejctTag, _uint iObjectType)
 	: CGameObject(pDevice, pContext, strObejctTag, iObjectType)
@@ -28,8 +29,8 @@ HRESULT CWeapon::Initialize(void* pArg)
 {
 	__super::Initialize(pArg);
 
-	//if (FAILED(Ready_Components()))
-	//	return E_FAIL;
+	/*if (FAILED(Ready_Components()))
+		return E_FAIL;*/
 
 	return S_OK;
 }
@@ -43,6 +44,13 @@ void CWeapon::Tick(_float fTimeDelta)
 		if (m_fAccDissolve >= 1.f)
 			m_fAccDissolve = 1.f;
 	}
+
+	if (nullptr != m_pTrail)
+	{
+		m_pTrail->Set_TransformMatrix(m_matSocketWorld * m_pTransformCom->Get_WorldMatrix());
+		m_pTrail->Tick(fTimeDelta);
+	}
+		
 }
 
 void CWeapon::LateTick(_float fTimeDelta)
@@ -54,6 +62,10 @@ void CWeapon::LateTick(_float fTimeDelta)
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 	m_pModelCom->LateTick(fTimeDelta);
+
+
+	if (nullptr != m_pTrail)
+		m_pTrail->LateTick(fTimeDelta);
 
 #ifdef _DEBUG
 	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
@@ -91,6 +103,20 @@ HRESULT CWeapon::Render()
 	}
 
 	return S_OK;
+}
+
+void CWeapon::Generate_Trail(const wstring& strDiffuseTextureName, const wstring& strAlphaTextureName, const _float4& vColor, _uint iVertexCount)
+{
+	m_pTrail->Set_DiffuseTexture_Index(strDiffuseTextureName);
+	m_pTrail->Set_AlphaTexture_Index(strAlphaTextureName);
+
+
+	
+}
+
+void CWeapon::Stop_Trail()
+{
+	m_pTrail->Stop_Trail();
 }
 
 HRESULT CWeapon::Ready_Components()
@@ -173,6 +199,7 @@ void CWeapon::Free()
 	__super::Free();
 
 	Safe_Release(m_pOwner);
+	Safe_Release(m_pTrail);
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pTransformCom);

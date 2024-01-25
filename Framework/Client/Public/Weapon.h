@@ -34,9 +34,16 @@ public:
 	virtual void Collision_Continue(const COLLISION_INFO& tInfo) {};
 	virtual void Collision_Exit(const COLLISION_INFO& tInfo) {};
 
+public:
+	void Generate_Trail(const wstring& strDiffuseTextureName, const wstring& strAlphaTextureName, const _float4& vColor, _uint iVertexCount);
+	void Stop_Trail();
+
 protected:
 	HRESULT Ready_Components();
 	HRESULT Bind_ShaderResources();
+
+protected:
+	virtual HRESULT Ready_Trails() PURE;
 
 public:
 	void Set_WeaponModelCom(class CModel* pModel) { m_pModelCom = pModel; }
@@ -56,6 +63,9 @@ protected:
 	class CRenderer* m_pRendererCom = { nullptr };
 	class CTransform* m_pTransformCom = { nullptr };
 	class CTexture* m_pDissolveTextureCom = { nullptr };
+
+protected:
+	class CTrail* m_pTrail = nullptr;
 
 protected:
 	Matrix m_matSocketWorld;

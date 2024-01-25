@@ -141,9 +141,6 @@ public:
 	void Generate_MotionTrail(const MOTION_TRAIL_DESC& MotionTrailDesc);
 	void Stop_MotionTrail();
 
-	void Generate_Trail(SOCKET_TYPE eSocketType);
-	void Stop_Trail(SOCKET_TYPE eSocketType);
-
 public:
 	virtual void Set_Infinite(_float fInfiniteTime, _bool bInfinite) {
 		m_bInfinite = bInfinite;
@@ -294,7 +291,6 @@ protected:
 	virtual HRESULT Ready_Components() PURE;
 	virtual HRESULT Ready_States() PURE;
 	virtual HRESULT Ready_Colliders() PURE;
-	virtual HRESULT Ready_Trails();
 	virtual void On_Damaged(const COLLISION_INFO& tInfo);
 
 protected:
@@ -311,7 +307,6 @@ protected: /* 해당 객체가 사용해야할 컴포넌트들을 저장하낟. */
 	class CStateMachine* m_pStateCom = nullptr;
 	class CNavigation* m_pNavigationCom = nullptr;
 	class CPhysX_Controller* m_pControllerCom = nullptr;
-	class CTrail* m_pTrails[SOCKET_END];
 	class CWeapon* m_pWeapon = nullptr;
 	class CModel* m_pCharacterPartModels[PART_TYPE::PART_END] = {};
 	class CDecal* m_pEffectTargetDecal = nullptr;

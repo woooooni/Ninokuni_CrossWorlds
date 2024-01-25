@@ -18,10 +18,15 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 
+
+
 public:
 	virtual void Collision_Enter(const COLLISION_INFO& tInfo) override;
 	virtual void Collision_Continue(const COLLISION_INFO& tInfo) override;
 	virtual void Collision_Exit(const COLLISION_INFO& tInfo) override;
+
+protected:
+	virtual HRESULT Ready_Trails() override;
 
 private:
 	HRESULT Ready_Components();

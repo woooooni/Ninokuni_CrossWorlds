@@ -70,6 +70,7 @@ void CCat::Tick(_float fTimeDelta)
 
 	if (nullptr != m_pInteractionBtn)
 		m_pInteractionBtn->Tick(fTimeDelta);
+
 	if (nullptr != m_pTag)
 		m_pTag->Tick(fTimeDelta);
 }

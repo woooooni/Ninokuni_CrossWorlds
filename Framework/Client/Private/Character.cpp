@@ -48,9 +48,6 @@ HRESULT CCharacter::Initialize_Prototype()
 	if(FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
 
-	for (_uint i = 0; i < SOCKET_END; ++i)
-		m_pTrails[i] = nullptr;
-
 	return S_OK;
 }
 
@@ -61,10 +58,6 @@ HRESULT CCharacter::Initialize(void* pArg)
 
 	if (nullptr != pArg)
 		m_tStat = *((CHARACTER_STAT*)pArg);
-
-
-	for (_uint i = 0; i < SOCKET_END; ++i)
-		m_pTrails[i] = nullptr;
 
 	for (_uint i = 0; i < PART_TYPE::PART_END; ++i)
 		m_pCharacterPartModels[i] = nullptr;
@@ -221,26 +214,12 @@ void CCharacter::Tick(_float fTimeDelta)
 			m_pMinimapIcon->Set_Active(false);
 	}
 
-	if (nullptr != m_pCameraIcon)
-		m_pCameraIcon->Tick(fTimeDelta);
-	if (nullptr != m_pMinimapIcon)  
-		m_pMinimapIcon->Tick(fTimeDelta);
-
-
-	for(_uint i = 0; i < SOCKET_END; ++i)
+	if (LEVELID::LEVEL_TOOL != (LEVELID)g_eStartLevel)
 	{
-		if (nullptr == m_pTrails[i])
-			continue;
-
-		_matrix WorldMatrix = m_pModelCom->Get_SocketLocalMatrix(0);
-
-
-		WorldMatrix.r[CTransform::STATE_RIGHT] = XMVector3Normalize(WorldMatrix.r[CTransform::STATE_RIGHT]);
-		WorldMatrix.r[CTransform::STATE_UP] = XMVector3Normalize(WorldMatrix.r[CTransform::STATE_UP]);
-		WorldMatrix.r[CTransform::STATE_LOOK] = XMVector3Normalize(WorldMatrix.r[CTransform::STATE_LOOK]);
-
-		m_pTrails[i]->Set_TransformMatrix(WorldMatrix * m_pTransformCom->Get_WorldMatrix());
-		m_pTrails[i]->Tick(fTimeDelta);
+		if (nullptr != m_pCameraIcon)
+			m_pCameraIcon->Tick(fTimeDelta);
+		if (nullptr != m_pMinimapIcon)
+			m_pMinimapIcon->Tick(fTimeDelta);
 	}
 	
 
@@ -383,10 +362,15 @@ void CCharacter::LateTick(_float fTimeDelta)
 	if (nullptr != m_pWeapon)
 		m_pWeapon->LateTick(fTimeDelta);
 
-	if (nullptr != m_pCameraIcon)
-		m_pCameraIcon->LateTick(fTimeDelta);
-	if (nullptr != m_pMinimapIcon)
-		m_pMinimapIcon->LateTick(fTimeDelta);
+	if (GI->Get_CurrentLevel() != LEVEL_TOOL)
+	{
+		if (nullptr != m_pCameraIcon)
+			m_pCameraIcon->LateTick(fTimeDelta);
+
+		if (nullptr != m_pMinimapIcon)
+			m_pMinimapIcon->LateTick(fTimeDelta);
+	}
+	
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
@@ -654,24 +638,7 @@ void CCharacter::Stop_MotionTrail()
 	m_bMotionTrail = false;
 }
 
-void CCharacter::Generate_Trail(SOCKET_TYPE eSocketType)
-{
-	if (eSocketType >= SOCKET_TYPE::SOCKET_END)
-		return;
 
-	if (nullptr != m_pTrails[eSocketType])
-		m_pTrails[eSocketType]->Start_Trail(m_pTransformCom->Get_WorldMatrix());
-}
-
-void CCharacter::Stop_Trail(SOCKET_TYPE eSocketType)
-{
-	if (eSocketType >= SOCKET_TYPE::SOCKET_END)
-		return;
-
-	if (nullptr != m_pTrails[eSocketType])
-		m_pTrails[eSocketType]->Stop_Trail();
-
-}
 
 void CCharacter::Decide_Target(COLLISION_INFO tInfo)
 {
@@ -750,19 +717,7 @@ void CCharacter::LevelUp()
 }
 
 
-HRESULT CCharacter::Ready_Trails()
-{
-	CTrail::TRAIL_DESC TrailDesc = {};
-	TrailDesc.bTrail = true;
-	TrailDesc.bUV_Cut = false;
 
-	m_pTrails[SOCKET_TYPE::SOCKET_RIGHT_HAND] = dynamic_cast<CTrail*>(GI->Clone_GameObject(L"Prototype_GameObject_Trail", LAYER_TYPE::LAYER_EFFECT, &TrailDesc, true));
-	if (nullptr == m_pTrails[SOCKET_TYPE::SOCKET_RIGHT_HAND])
-		return E_FAIL;
-
-
-	return S_OK;
-}
 
 void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 {
@@ -1113,15 +1068,6 @@ void CCharacter::Free()
 
 	Safe_Release(m_pCameraIcon);
 	Safe_Release(m_pMinimapIcon);
-
-	for (_uint i = 0; i < SOCKET_END; ++i)
-	{
-		if (nullptr == m_pTrails[i])
-			continue;
-
-		Safe_Release(m_pTrails[i]);
-	}
-
 	Safe_Release(m_pWeapon);
 	Safe_Release(m_pModelCom);
 	Safe_Release(m_pShaderCom);

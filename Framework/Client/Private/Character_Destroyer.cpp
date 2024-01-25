@@ -111,6 +111,7 @@ HRESULT CCharacter_Destroyer::Initialize(void* pArg)
  	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
+
 	return S_OK;
 }
 

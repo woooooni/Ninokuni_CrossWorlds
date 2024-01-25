@@ -485,6 +485,24 @@ HRESULT CLevel_Evermore::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 	pPortalTransform->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(-45.f));
 
 
+	// Evermore -> WitchForest
+	PortalInfo.vStartPosition = XMVectorSet(127.94f, -0.015f, 111.5f, 1.f);
+	PortalInfo.vNextPosition = XMVectorSet(111.f, -0.785f, 8.f, 1.f);
+
+	PortalInfo.eCurrentLevel = LEVEL_EVERMORE;
+	PortalInfo.eNextLevel = LEVEL_WITCHFOREST;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Portal"), &PortalInfo, &pPortal)))
+		return E_FAIL;
+
+	if (nullptr == pPortal)
+		return E_FAIL;
+
+	pPortalTransform = pPortal->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr == pPortalTransform)
+		return E_FAIL;
+	pPortalTransform->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(90.f));
+
+
 
 
 	// Triggers.
