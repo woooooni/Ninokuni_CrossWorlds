@@ -1220,6 +1220,11 @@ HRESULT CLoader::Loading_Proto_Static_Map_Objects(const wstring& strPath)
 
 HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 {
+#pragma region Dog_FootPrints ProtoType
+	if (FAILED(GI->Add_Prototype(TEXT("Evermore_Dog_FootPrints"), CDog_FootPrints::Create(m_pDevice, m_pContext, TEXT("Evermore_Dog_FootPrints"), OBJ_TYPE::OBJ_PROP), LAYER_TYPE::LAYER_PROP, true)))
+		return E_FAIL;
+#pragma endregion
+		
 #pragma region Animal ProtoType
 	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Cat"), CCat::Create(m_pDevice, m_pContext, TEXT("Animal_Cat"), OBJ_TYPE::OBJ_ANIMAL), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;

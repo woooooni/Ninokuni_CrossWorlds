@@ -68,7 +68,7 @@ public:
 	const _float& Get_AccLifeTimeDesc() { return m_fAccLifeTime; }
 	class CTexture* Get_DiffuseTexture() { return m_pDiffuseTextureCom; }
 	class CTransform* Get_TransformCom() { return m_pTransformCom; }
-
+	Vec4  Get_OffsetPosition() { return m_vOffsetPos; }
 public:
 	void Restart_Decal();
 
@@ -79,6 +79,11 @@ public:
 	void Set_LifeTime(_float fLifeTime) { m_tDecalDesc.fLifeTime = fLifeTime; };
 	void Set_AlphaSpeed(_float fSpeed) { m_tDecalDesc.fAlphaSpeed = fSpeed; };
 	void Start_AlphaDeleate();
+
+	// Show
+	_bool Get_IsDecalShow() { return m_bIsShow; }
+	void  Set_IsDecalShow(_bool bIsShow, _float fTimeDelta);
+
 
 private:
 	void Tick_Alpha(_float fTimeDelta);
@@ -95,6 +100,8 @@ private:
 	_bool  m_bAlphaCreateSucc = false;
 
 	Vec4 m_vOffsetPos;
+
+	_bool m_bIsShow = true;
 
 private:
 	class CGameObject* m_pOwnerObject = nullptr;

@@ -15,6 +15,7 @@ HRESULT CNpcCriminalState_EscapeRun::Initialize(const list<wstring>& AnimationLi
 	__super::Initialize(AnimationList);
 
 	m_iCurrAnimIndex = m_AnimIndices[0];
+	m_fDestBoostTime = 1.5f;
 
 	return S_OK;
 }
@@ -28,6 +29,25 @@ void CNpcCriminalState_EscapeRun::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
+	Vec4 vPlayerToDist = m_pPlayerTransform->Get_Position() - m_pTransformCom->Get_Position();
+
+	if (!m_bIsBoost && vPlayerToDist.Length() < 2.f)
+	{
+		m_fAccBoostTime = 0.f;
+		m_bIsBoost = true;
+	}
+	else
+	{
+		m_fAccBoostTime += fTimeDelta;
+		if (m_fAccBoostTime >= m_fDestBoostTime)
+		{
+			m_fAccBoostTime = 0.f;
+			m_bIsBoost = false;
+		}
+	}
+
+
+
 	_float4 vPos;
 	_float4 vDestPos;
 
@@ -35,7 +55,11 @@ void CNpcCriminalState_EscapeRun::Tick_State(_float fTimeDelta)
 	XMStoreFloat4(&vDestPos, m_pNpc->Get_RoamingIndex(m_pNpc->Get_CurRoamingIndex()));
 
 	m_pTransformCom->LookAt_ForLandObject(m_pNpc->Get_RoamingIndex(m_pNpc->Get_CurRoamingIndex()));
-	m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_pNpc->Get_Stat()->fSpeed, fTimeDelta);
+	
+	if (m_bIsBoost)
+		m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_pNpc->Get_Stat()->fSpeed * 2.f , fTimeDelta);
+	else
+		m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_pNpc->Get_Stat()->fSpeed, fTimeDelta);
 
 	if (vPos.x >= vDestPos.x - 0.1f && vPos.x <= vDestPos.x + 0.1f &&
 		vPos.z >= vDestPos.z - 0.1f && vPos.z <= vDestPos.z + 0.1f)
