@@ -77,8 +77,19 @@ HRESULT CCharacter::Initialize(void* pArg)
 	m_pName = dynamic_cast<CUI_World_NameTag*>(pNameTag);
 	m_pName->Set_Owner(this);
 
+	//m_pCameraIcon
+	CGameObject* pIcon = nullptr;
+	pIcon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Minimap_Icon"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pIcon)
+		return E_FAIL;
+	if (nullptr == dynamic_cast<CUI_Minimap_Icon*>(pIcon))
+		return E_FAIL;
+	m_pCameraIcon = dynamic_cast<CUI_Minimap_Icon*>(pIcon);
+	m_pCameraIcon->Set_Owner(this, true);
+
 	//m_pMinimapIcon
-	CGameObject* pIcon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Minimap_Icon"), LAYER_TYPE::LAYER_UI);
+	pIcon = nullptr;
+	pIcon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Minimap_Icon"), LAYER_TYPE::LAYER_UI);
 	if (nullptr == pIcon)
 		return E_FAIL;
 	if (nullptr == dynamic_cast<CUI_Minimap_Icon*>(pIcon))
@@ -205,9 +216,11 @@ void CCharacter::Tick(_float fTimeDelta)
 			m_pMinimapIcon->Set_Active(false);
 	}
 
-	if (nullptr != m_pMinimapIcon)
+	if (nullptr != m_pCameraIcon)
+		m_pCameraIcon->Tick(fTimeDelta);
+	if (nullptr != m_pMinimapIcon)  
 		m_pMinimapIcon->Tick(fTimeDelta);
-	
+
 #pragma region Deprecated.
 
 	//if (m_bInfinite)
@@ -347,6 +360,8 @@ void CCharacter::LateTick(_float fTimeDelta)
 	if (nullptr != m_pWeapon)
 		m_pWeapon->LateTick(fTimeDelta);
 
+	if (nullptr != m_pCameraIcon)
+		m_pCameraIcon->LateTick(fTimeDelta);
 	if (nullptr != m_pMinimapIcon)
 		m_pMinimapIcon->LateTick(fTimeDelta);
 
@@ -1058,11 +1073,9 @@ void CCharacter::Free()
 		Safe_Release(m_pCharacterPartModels[i]);*/
 
 	Safe_Release(m_pName);
-	if (nullptr != m_pMinimapIcon)
-	{
-		m_pMinimapIcon->Set_Dead(true);
-		Safe_Release(m_pMinimapIcon);
-	}
+
+	Safe_Release(m_pCameraIcon);
+	Safe_Release(m_pMinimapIcon);
 
 	for (_uint i = 0; i < SOCKET_END; ++i)
 	{

@@ -6,7 +6,7 @@ BEGIN(Client)
 class CUI_Minimap_Icon final : public CUI
 {
 public:
-	enum UI_MINIMAPICON { ICON_PLAYER, ICON_MONSTER, ICON_PORTAL, ICON_NPC, MINIMAPICON_END };
+	enum UI_MINIMAPICON { ICON_PLAYER, ICON_MONSTER, ICON_PORTAL, ICON_NPC, ICON_CAMERA, MINIMAPICON_END };
 
 protected:
 	CUI_Minimap_Icon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -14,8 +14,7 @@ protected:
 	virtual ~CUI_Minimap_Icon() = default;
 
 public:
-	void Set_Owner(class CGameObject* pOwner);
-//	void Set_Position(_float2 vPos);
+	void Set_Owner(class CGameObject* pOwner, _bool bIsCamera = false);
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -29,6 +28,8 @@ private:
 	UI_MINIMAPICON m_eType = { MINIMAPICON_END };
 
 	class CGameObject* m_pOwner = { nullptr };
+	_uint m_iPass = { 20 };
+	_float m_fZ = { 0.f };
 
 private:
 	virtual HRESULT	Ready_Components() override;

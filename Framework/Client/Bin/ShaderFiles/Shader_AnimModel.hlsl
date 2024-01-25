@@ -430,7 +430,7 @@ struct PS_OUT_UI
 
 struct PS_OUT_MINIMAP
 {
-    float4		vMinimap : SV_TARGET6;
+    float4		vMinimap : SV_TARGET5;
 };
 
 float4 Caculation_Brightness(float4 vColor)

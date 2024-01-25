@@ -353,6 +353,7 @@ protected:
 
 protected: // For UI Minimap
 	class CUI_Minimap_Icon* m_pMinimapIcon = { nullptr };
+	class CUI_Minimap_Icon* m_pCameraIcon = { nullptr };
 	_float4x4 m_ViewMatrix;
 	_float4 m_vCamPosition;
 

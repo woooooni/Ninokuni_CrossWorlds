@@ -91,7 +91,7 @@ struct PS_OUT
 
 struct PS_OUT_MINIMAP
 {
-	float4		vColor : SV_TARGET6;
+	float4		vColor : SV_TARGET5;
 };
 
 PS_OUT PS_MAIN(PS_IN In)
@@ -525,6 +525,18 @@ PS_OUT_MINIMAP PS_MINIMAP_ICON(PS_IN In)
 	return Out;
 }
 
+PS_OUT_MINIMAP PS_MINIMAP_CAMERA(PS_IN In)
+{
+	PS_OUT_MINIMAP		Out = (PS_OUT_MINIMAP)0;
+
+	Out.vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
+
+	if (0.0001f >= Out.vColor.a)
+		discard;
+
+	return Out;
+}
+
 technique11 DefaultTechnique
 {
 	pass DefaultPass // 0
@@ -798,6 +810,19 @@ technique11 DefaultTechnique
 		HullShader = NULL;
 		DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MINIMAP_ICON();
+	}
+
+	pass MinimapCamera // 21
+	{
+		SetRasterizerState(RS_Default);
+		SetDepthStencilState(DSS_None, 0);
+		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
+
+		VertexShader = compile vs_5_0 VS_MAIN();
+		GeometryShader = NULL;
+		HullShader = NULL;
+		DomainShader = NULL;
+		PixelShader = compile ps_5_0 PS_MINIMAP_CAMERA();
 	}
 }
 
