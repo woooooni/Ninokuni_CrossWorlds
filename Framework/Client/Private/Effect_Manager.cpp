@@ -89,12 +89,11 @@ HRESULT CEffect_Manager::Generate_Effect(const wstring& strEffectName, _matrix W
 	vFinalPosition += pTransform->Get_State(CTransform::STATE_LOOK)  * vLocalPos.z;
 	pTransform->Set_State(CTransform::STATE_POSITION, XMVectorSet(XMVectorGetX(vFinalPosition), XMVectorGetY(vFinalPosition), XMVectorGetZ(vFinalPosition), 1.f));
 
+	pEffect->Set_LoacalTransformInfo(vLocalPos, vLocalScale, vLocalRotation);
+
 	// pOwner
 	if (pOwner != nullptr)
-	{
 		pEffect->Set_Owner(pOwner);
-		pEffect->Set_LoacalTransformInfo(vLocalPos, vLocalScale, vLocalRotation);
-	}
 
 	// ppOut
 	if (ppOut != nullptr)
@@ -157,12 +156,11 @@ HRESULT CEffect_Manager::Generate_Decal(const wstring& strDecalName, _matrix Wor
 	vOffsetPos.y = XMVectorGetY(vFinalPosition) - XMVectorGetY(vCurrentPosition);
 	vOffsetPos.z = XMVectorGetZ(vFinalPosition) - XMVectorGetZ(vCurrentPosition);
 
+	pDecal->Set_OffsetPosition(vOffsetPos);
+
 	// pOwner
 	if (pOwner != nullptr)
-	{
 		pDecal->Set_Owner(pOwner);
-		pDecal->Set_OffsetPosition(vOffsetPos);
-	}
 
 	// ppOut
 	if (ppOut != nullptr)
@@ -218,12 +216,11 @@ HRESULT CEffect_Manager::Generate_Decal_To_Position(const wstring& strDecalName,
 	vFinalPosition.m128_f32[2] += vLocalPos.z;
 	pTransform->Set_State(CTransform::STATE_POSITION, XMVectorSet(XMVectorGetX(vFinalPosition), XMVectorGetY(vFinalPosition), XMVectorGetZ(vFinalPosition), 1.f));
 
+	pDecal->Set_OffsetPosition(vOffsetPos);
+
 	// pOwner
 	if (pOwner != nullptr)
-	{
 		pDecal->Set_Owner(pOwner);
-		pDecal->Set_OffsetPosition(vOffsetPos);
-	}
 
 	// ppOut
 	if (ppOut != nullptr)

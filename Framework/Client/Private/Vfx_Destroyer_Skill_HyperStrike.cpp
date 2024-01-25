@@ -6,6 +6,9 @@
 #include "Character.h"
 #include "Character_Projectile.h"
 #include "Character_Manager.h"
+#include "Destroyer_HyperStrike_Hammer.h"
+#include "Decal.h"
+#include "Effect.h"
 
 CVfx_Destroyer_Skill_HyperStrike::CVfx_Destroyer_Skill_HyperStrike(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
@@ -28,89 +31,69 @@ HRESULT CVfx_Destroyer_Skill_HyperStrike::Initialize_Prototype()
 	m_pRotationOffset = new _float3[m_iMaxCount];
 
 	{
-		m_pFrameTriger[TYPE_ET1_P_SPARKLE] = 33;
-		m_pPositionOffset[TYPE_ET1_P_SPARKLE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET1_P_SPARKLE]    = _float3(5.f, 5.f, 5.f);
-		m_pRotationOffset[TYPE_ET1_P_SPARKLE] = _float3(0.f, 0.f, 0.f);
-
 		m_pFrameTriger[TYPE_ET1_E_CIRCLELINE] = 33;
-		m_pPositionOffset[TYPE_ET1_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET1_E_CIRCLELINE]    = _float3(5.f, 5.f, 5.f);
+		m_pPositionOffset[TYPE_ET1_E_CIRCLELINE] = _float3(0.f, 2.25f, -0.15f);
+		m_pScaleOffset[TYPE_ET1_E_CIRCLELINE]    = _float3(1.5f, 1.5f, 1.5f);
 		m_pRotationOffset[TYPE_ET1_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
 
 		m_pFrameTriger[TYPE_ET1_P_CIRCLES] = 33;
-		m_pPositionOffset[TYPE_ET1_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET1_P_CIRCLES]    = _float3(5.f, 5.f, 5.f);
+		m_pPositionOffset[TYPE_ET1_P_CIRCLES] = _float3(0.f, 3.25f, -0.15f);
+		m_pScaleOffset[TYPE_ET1_P_CIRCLES]    = _float3(1.f, 1.f, 1.f);
 		m_pRotationOffset[TYPE_ET1_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
 	}
 
 	{
-		m_pFrameTriger[TYPE_ET2_D_SPARKLE] = 40;
-		m_pPositionOffset[TYPE_ET2_D_SPARKLE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_D_SPARKLE]    = _float3(5.f, 5.f, 5.f);
-		m_pRotationOffset[TYPE_ET2_D_SPARKLE] = _float3(0.f, 0.f, 0.f);
+		m_pFrameTriger[TYPE_ET2_D_CRACK] = 38;
+		m_pPositionOffset[TYPE_ET2_D_CRACK] = _float3(0.f, 0.f, 0.55f);
+		m_pScaleOffset[TYPE_ET2_D_CRACK]    = _float3(2.f, 3.f, 2.f);
+		m_pRotationOffset[TYPE_ET2_D_CRACK] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_ET2_P_FIRES] = 40;
-		m_pPositionOffset[TYPE_ET2_P_FIRES] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_P_FIRES]    = _float3(5.f, 5.f, 5.f);
+		m_pFrameTriger[TYPE_ET2_P_FIRES] = 38;
+		m_pPositionOffset[TYPE_ET2_P_FIRES] = _float3(0.f, 0.f, 1.3f);
+		m_pScaleOffset[TYPE_ET2_P_FIRES]    = _float3(1.f, 1.f, 1.f);
 		m_pRotationOffset[TYPE_ET2_P_FIRES] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_ET2_P_SPRINGUP] = 40;
-		m_pPositionOffset[TYPE_ET2_P_SPRINGUP] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_P_SPRINGUP]    = _float3(5.f, 5.f, 5.f);
-		m_pRotationOffset[TYPE_ET2_P_SPRINGUP] = _float3(0.f, 0.f, 0.f);
-
-		m_pFrameTriger[TYPE_ET2_P_CIRCLES] = 40;
-		m_pPositionOffset[TYPE_ET2_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_P_CIRCLES]    = _float3(5.f, 5.f, 5.f);
+		m_pFrameTriger[TYPE_ET2_P_CIRCLES] = 38;
+		m_pPositionOffset[TYPE_ET2_P_CIRCLES] = _float3(0.f, 0.5f, 1.3f);
+		m_pScaleOffset[TYPE_ET2_P_CIRCLES]    = _float3(1.f, 1.f, 1.f);
 		m_pRotationOffset[TYPE_ET2_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
 	}
 
 	{
 		m_pFrameTriger[TYPE_ET3_D_CIRCLE] = 45;
-		m_pPositionOffset[TYPE_ET3_D_CIRCLE] = _float3(0.f, 0.f, 1.f);
-		m_pScaleOffset[TYPE_ET3_D_CIRCLE]    = _float3(10.f, 5.f, 10.f);
+		m_pPositionOffset[TYPE_ET3_D_CIRCLE] = _float3(0.f, 0.f, 0.56f);
+		m_pScaleOffset[TYPE_ET3_D_CIRCLE]    = _float3(17.f, 3.f, 17.f);
 		m_pRotationOffset[TYPE_ET3_D_CIRCLE] = _float3(0.f, 0.f, 0.f);
 
+		m_pFrameTriger[TYPE_ET3_O_HAMMER] = 50;
+		m_pPositionOffset[TYPE_ET3_O_HAMMER] = _float3(0.f, 0.f, 0.f);
+		m_pScaleOffset[TYPE_ET3_O_HAMMER]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_ET3_O_HAMMER] = _float3(0.f, 0.f, 0.f);
+	}
 
-		m_pFrameTriger[TYPE_ET3_D_CRACK] = 45;
+	{
 		m_pPositionOffset[TYPE_ET3_D_CRACK] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET3_D_CRACK]    = _float3(3.f, 3.f, 3.f);
+		m_pScaleOffset[TYPE_ET3_D_CRACK]    = _float3(15.f, 1.f, 15.f);
 		m_pRotationOffset[TYPE_ET3_D_CRACK] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_ET3_P_SPRINGUP] = 45;
-		m_pPositionOffset[TYPE_ET3_P_SPRINGUP] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET3_P_SPRINGUP]    = _float3(5.f, 5.f, 5.f);
-		m_pRotationOffset[TYPE_ET3_P_SPRINGUP] = _float3(0.f, 0.f, 0.f);
-
-		m_pFrameTriger[TYPE_ET3_P_FIRES] = 45;
-		m_pPositionOffset[TYPE_ET3_P_FIRES] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET3_P_FIRES]    = _float3(5.f, 5.f, 5.f);
-		m_pRotationOffset[TYPE_ET3_P_FIRES] = _float3(0.f, 0.f, 0.f);
-
-		m_pFrameTriger[TYPE_ET3_P_SMOKE] = 45;
-		m_pPositionOffset[TYPE_ET3_P_SMOKE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET3_P_SMOKE]    = _float3(5.f, 5.f, 5.f);
-		m_pRotationOffset[TYPE_ET3_P_SMOKE] = _float3(0.f, 0.f, 0.f);
-
-		m_pFrameTriger[TYPE_ET3_P_CIRCLES] = 45;
-		m_pPositionOffset[TYPE_ET3_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET3_P_CIRCLES]    = _float3(5.f, 5.f, 5.f);
-		m_pRotationOffset[TYPE_ET3_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
-
-		m_pFrameTriger[TYPE_ET3_E_STONECRACK] = 45;
-		m_pPositionOffset[TYPE_ET3_E_STONECRACK] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET3_E_STONECRACK]    = _float3(5.f, 5.f, 5.f);
+		m_pPositionOffset[TYPE_ET3_E_STONECRACK] = _float3(-1.f, 0.f, 0.f);
+		m_pScaleOffset[TYPE_ET3_E_STONECRACK]    = _float3(0.5f, 0.4f, 0.5f);
 		m_pRotationOffset[TYPE_ET3_E_STONECRACK] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_ET3_P_STONE] = 45;
+		m_pPositionOffset[TYPE_ET3_P_FIRES] = _float3(0.f, 0.5f, 0.f);
+		m_pScaleOffset[TYPE_ET3_P_FIRES]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_ET3_P_FIRES] = _float3(0.f, 0.f, 0.f);
+
+		m_pPositionOffset[TYPE_ET3_P_CIRCLES] = _float3(0.f, 0.5f, 0.f);
+		m_pScaleOffset[TYPE_ET3_P_CIRCLES]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_ET3_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
+
 		m_pPositionOffset[TYPE_ET3_P_STONE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET3_P_STONE]    = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET3_P_STONE]    = _float3(1.f, 1.f, 1.f);
 		m_pRotationOffset[TYPE_ET3_P_STONE] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_ET3_E_CIRCLELINE] = 45;
-		m_pPositionOffset[TYPE_ET3_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET3_E_CIRCLELINE]    = _float3(5.f, 5.f, 5.f);
+		m_pPositionOffset[TYPE_ET3_E_CIRCLELINE] = _float3(0.f, 0.4f, 0.f);
+		m_pScaleOffset[TYPE_ET3_E_CIRCLELINE]    = _float3(2.f, 2.f, 2.f);
 		m_pRotationOffset[TYPE_ET3_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
 	}
 
@@ -128,85 +111,97 @@ void CVfx_Destroyer_Skill_HyperStrike::Tick(_float fTimeDelta)
 
 	if (!m_bOwnerTween)
 	{
-		if (m_iCount == TYPE_ET1_P_SPARKLE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_P_SPARKLE])
+		if (m_iCount == TYPE_ET1_E_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_E_CIRCLELINE])
 		{
-			m_iCount++;
-		}
-		else if (m_iCount == TYPE_ET1_E_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_E_CIRCLELINE])
-		{
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Destroyer_Skill_HyperStrike_CirecleLine_HandSmall"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_E_CIRCLELINE], m_pScaleOffset[TYPE_ET1_E_CIRCLELINE], m_pRotationOffset[TYPE_ET1_E_CIRCLELINE]);
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET1_P_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_P_CIRCLES])
 		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_Skill_HyperStrike_Circles"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_P_CIRCLES], m_pScaleOffset[TYPE_ET1_P_CIRCLES], m_pRotationOffset[TYPE_ET1_P_CIRCLES]);
 			m_iCount++;
 		}
 		
-		else if (m_iCount == TYPE_ET2_D_SPARKLE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_D_SPARKLE])
+		else if (m_iCount == TYPE_ET2_D_CRACK && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_D_CRACK])
 		{
+			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Destroyer_Skill_HyperStrike_Crack_Small"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_D_CRACK], m_pScaleOffset[TYPE_ET2_D_CRACK], m_pRotationOffset[TYPE_ET2_D_CRACK]);
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET2_P_FIRES && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_FIRES])
 		{
-			m_iCount++;
-		}
-		else if (m_iCount == TYPE_ET2_P_SPRINGUP && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_SPRINGUP])
-		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_Skill_HyperStrike_Fire_Small"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_FIRES], m_pScaleOffset[TYPE_ET2_P_FIRES], m_pRotationOffset[TYPE_ET2_P_FIRES]);
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET2_P_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_CIRCLES])
 		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_Skill_HyperStrike_Circles"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_CIRCLES], m_pScaleOffset[TYPE_ET2_P_CIRCLES], m_pRotationOffset[TYPE_ET2_P_CIRCLES]);
 			m_iCount++;
 		}
 
+		// -----------------------------------------------------------------------------------------------------
 		else if (m_iCount == TYPE_ET3_D_CIRCLE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_D_CIRCLE])
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_Perfectblade_Circle"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_D_CIRCLE], m_pScaleOffset[TYPE_ET3_D_CIRCLE], m_pRotationOffset[TYPE_ET3_D_CIRCLE]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_D_CIRCLE], m_pScaleOffset[TYPE_ET3_D_CIRCLE], m_pRotationOffset[TYPE_ET3_D_CIRCLE], nullptr, &m_pEt3_Decal, false);
+			Safe_AddRef(m_pEt3_Decal);
 			m_iCount++;
 		}
-		else if (m_iCount == TYPE_ET3_D_CRACK && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_D_CRACK])
+		else if (m_iCount == TYPE_ET3_O_HAMMER && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_O_HAMMER])
 		{
-			//CCharacter_Projectile::CHARACTER_PROJECTILE_DESC ProjectileDesc;
-			//ProjectileDesc.pOwner = CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::DESTROYER);
+			Shoot_Hammer();
+			m_iCount++;
+		}
 
-			//CGameObject* pHammer = GI->Clone_GameObject(TEXT("Prototype_GameObject_Destroyer_Burst_HyperStrikeHammer"), LAYER_CHARACTER, &ProjectileDesc);
-			//if (nullptr != pHammer)
-			//{
-			//	GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_CHARACTER, pHammer);
+		else if (m_iCount > TYPE_ET3_O_HAMMER)
+		{
+			if (nullptr != m_pHammer && true == m_pHammer->Get_IsGround())
+			{
+				if (nullptr != m_pEt3_Decal)
+				{
+					m_pEt3_Decal->Set_Dead(true);
+					Safe_Release(m_pEt3_Decal);
+				}
 
-			//	GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Destroyer_Skill_HyperStrike_Hammer"),
-			//		XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_D_CRACK], m_pScaleOffset[TYPE_ET3_D_CRACK], m_pRotationOffset[TYPE_ET3_D_CRACK], pHammer);
-			//}
+				CTransform* pTransform = m_pHammer->Get_Component<CTransform>(L"Com_Transform");
+				if (nullptr != pTransform)
+					m_WorldMatrix = pTransform->Get_WorldFloat4x4();
 
-			m_iCount++;
-		}
-		else if (m_iCount == TYPE_ET3_P_SPRINGUP && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_P_SPRINGUP])
-		{
-			m_iCount++;
-		}
-		else if (m_iCount == TYPE_ET3_P_FIRES && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_P_FIRES])
-		{
-			m_iCount++;
-		}
-		else if (m_iCount == TYPE_ET3_P_SMOKE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_P_SMOKE])
-		{
-			m_iCount++;
-		}
-		else if (m_iCount == TYPE_ET3_P_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_P_CIRCLES])
-		{
-			m_iCount++;
-		}
-		else if (m_iCount == TYPE_ET3_E_STONECRACK && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_E_STONECRACK])
-		{
-			m_iCount++;
-		}
-		else if (m_iCount == TYPE_ET3_P_STONE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_P_STONE])
-		{
-			m_iCount++;
-		}
-		else if (m_iCount == TYPE_ET3_E_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_E_CIRCLELINE])
-		{
-			m_iCount++;
+				// IsGround
+				GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Destroyer_Skill_HyperStrike_Crack"),
+					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_D_CRACK], m_pScaleOffset[TYPE_ET3_D_CRACK], m_pRotationOffset[TYPE_ET3_D_CRACK]);
+
+				CEffect* pEffect = nullptr;
+				GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Destroyer_HyperStrike_SpringUp"),
+					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_E_STONECRACK], m_pScaleOffset[TYPE_ET3_E_STONECRACK], m_pRotationOffset[TYPE_ET3_E_STONECRACK], m_pHammer, &pEffect);
+				if (nullptr != pEffect)
+				{
+					pEffect->Reserve_Dissolve(73,            // Index
+						_float4(0.756f, 0.532f, 0.38f, 1.f), // Color
+						3.f,   // Speed
+						10.f); // Total
+				}
+
+				GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_Skill_HyperStrike_Fire"),
+					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_P_FIRES], m_pScaleOffset[TYPE_ET3_P_FIRES], m_pRotationOffset[TYPE_ET3_P_FIRES]);
+
+				GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_Skill_BattleCry_Circles"),
+					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_P_CIRCLES], m_pScaleOffset[TYPE_ET3_P_CIRCLES], m_pRotationOffset[TYPE_ET3_P_CIRCLES]);
+
+				GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_Skill_HyperStrike_Stone"),
+					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_P_STONE], m_pScaleOffset[TYPE_ET3_P_STONE], m_pRotationOffset[TYPE_ET3_P_STONE]);
+
+				GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Destroyer_Skill_HyperStrike_CirecleLine"),
+					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_E_CIRCLELINE], m_pScaleOffset[TYPE_ET3_E_CIRCLELINE], m_pRotationOffset[TYPE_ET3_E_CIRCLELINE]);
+
+				Safe_Release(m_pHammer);
+
+				m_iCount++;
+			}
 		}
 
 		else if (m_iCount == TYPE_END)
@@ -226,6 +221,45 @@ HRESULT CVfx_Destroyer_Skill_HyperStrike::Render()
 HRESULT CVfx_Destroyer_Skill_HyperStrike::Ready_Components()
 {
 	return S_OK;
+}
+
+void CVfx_Destroyer_Skill_HyperStrike::Shoot_Hammer()
+{
+	if(nullptr == m_pOwnerObject)
+		return;
+
+	CCharacter* pPlayer = static_cast<CCharacter*>(m_pOwnerObject);
+	if(nullptr == pPlayer)
+		return;
+
+	CCharacter_Projectile::CHARACTER_PROJECTILE_DESC ProjectileDesc = {};
+	ProjectileDesc.pOwner = pPlayer;
+
+	CGameObject* pHammer = nullptr;
+	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_CHARACTER, L"Prototype_GameObject_Destroyer_Burst_HyperStrikeHammer", &ProjectileDesc, &pHammer)))
+		MSG_BOX("Add GameObject Failed. : CState_Destroyer_BurstSkill_HyperStrike::Shoot_Hammer()");
+
+	if(nullptr == pHammer)
+		return;
+
+	CTransform* pTransform = pHammer->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr == pTransform)
+		return;
+
+	_matrix InitMatirx = XMLoadFloat4x4(&m_WorldMatrix);
+	InitMatirx.r[CTransform::STATE_POSITION] += XMVector3Normalize(InitMatirx.r[CTransform::STATE_LOOK]) * 10.f;
+	InitMatirx.r[CTransform::STATE_POSITION] += XMVectorSet(0.f, 15.f, 0.f, 0.f);
+
+	pTransform->Set_WorldMatrix(InitMatirx);
+
+	CPhysX_Controller* pController = pHammer->Get_Component<CPhysX_Controller>(L"Com_Controller");
+	if (nullptr == pController)
+		return;
+
+	pController->Set_EnterLevel_Position(pTransform->Get_Position());
+
+	m_pHammer = static_cast<CDestroyer_HyperStrike_Hammer*>(pHammer);
+	Safe_AddRef(m_pHammer);
 }
 
 CVfx_Destroyer_Skill_HyperStrike* CVfx_Destroyer_Skill_HyperStrike::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
@@ -258,6 +292,15 @@ CGameObject* CVfx_Destroyer_Skill_HyperStrike::Clone(void* pArg)
 void CVfx_Destroyer_Skill_HyperStrike::Free()
 {
 	__super::Free();
+
+	if (nullptr != m_pEt3_Decal)
+	{
+		m_pEt3_Decal->Set_Dead(true);
+		Safe_Release(m_pEt3_Decal);
+	}
+
+	if(nullptr != m_pHammer)
+		Safe_Release(m_pHammer);
 
 	if (!m_isCloned)
 	{

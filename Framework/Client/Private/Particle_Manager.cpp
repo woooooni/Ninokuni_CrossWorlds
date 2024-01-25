@@ -136,12 +136,11 @@ HRESULT CParticle_Manager::Generate_Particle(const wstring& strParticleName, _ma
 	vFinalPosition += pTransform->Get_State(CTransform::STATE_LOOK)  * vLocalPos.z;
 	pParticle->Set_Position_Particle(_float3(XMVectorGetX(vFinalPosition), XMVectorGetY(vFinalPosition), XMVectorGetZ(vFinalPosition)));
 
+	pParticle->Set_LoacalTransformInfo(vLocalPos, vLocalScale, vLocalRotation);
+
 	// pOwner
 	if (pOwner != nullptr)
-	{
 		pParticle->Set_Owner(pOwner);
-		pParticle->Set_LoacalTransformInfo(vLocalPos, vLocalScale, vLocalRotation);
-	}
 		
 	// ppOut
 	if (ppOut != nullptr)
