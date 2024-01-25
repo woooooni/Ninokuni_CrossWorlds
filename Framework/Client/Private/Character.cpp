@@ -221,10 +221,13 @@ void CCharacter::Tick(_float fTimeDelta)
 			m_pMinimapIcon->Set_Active(false);
 	}
 
-	if (nullptr != m_pCameraIcon)
-		m_pCameraIcon->Tick(fTimeDelta);
-	if (nullptr != m_pMinimapIcon)  
-		m_pMinimapIcon->Tick(fTimeDelta);
+	if (LEVELID::LEVEL_TOOL != (LEVELID)g_eStartLevel)
+	{
+		if (nullptr != m_pCameraIcon)
+			m_pCameraIcon->Tick(fTimeDelta);
+		if (nullptr != m_pMinimapIcon)  
+			m_pMinimapIcon->Tick(fTimeDelta);
+	}
 
 
 	for(_uint i = 0; i < SOCKET_END; ++i)
@@ -383,10 +386,13 @@ void CCharacter::LateTick(_float fTimeDelta)
 	if (nullptr != m_pWeapon)
 		m_pWeapon->LateTick(fTimeDelta);
 
-	if (nullptr != m_pCameraIcon)
-		m_pCameraIcon->LateTick(fTimeDelta);
-	if (nullptr != m_pMinimapIcon)
-		m_pMinimapIcon->LateTick(fTimeDelta);
+	if (LEVELID::LEVEL_TOOL != (LEVELID)g_eStartLevel)
+	{
+		if (nullptr != m_pCameraIcon)
+			m_pCameraIcon->LateTick(fTimeDelta);
+		if (nullptr != m_pMinimapIcon)
+			m_pMinimapIcon->LateTick(fTimeDelta);
+	}
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
