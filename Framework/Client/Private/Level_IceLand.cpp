@@ -28,6 +28,9 @@
 #include "Portal.h"
 #include "Trigger.h"
 
+#include "Light_Manager.h"
+#include "Light.h"
+
 _bool CLevel_IceLand::g_bFirstEnter = false;
 
 CLevel_IceLand::CLevel_IceLand(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -790,6 +793,61 @@ HRESULT CLevel_IceLand::Ready_Layer_Npc(const LAYER_TYPE eLayerType)
 			pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
 		}
 
+	}
+
+	return S_OK;
+}
+
+HRESULT CLevel_IceLand::Ready_Light(const wstring& strLightFilePath)
+{
+	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strLightFilePath + L"/" + strLightFilePath + L".light";
+
+	shared_ptr<CFileUtils> pFile = make_shared<CFileUtils>();
+	pFile->Open(strMapFilePath, FileMode::Write);
+
+	list<CLight*>* pLightList = GI->Get_LightList();
+	pFile->Write<_uint>(pLightList->size());
+	// 라이트 개수
+
+	for (auto& pLight : *pLightList)
+	{
+		const LIGHTDESC* pLightDesc = pLight->Get_LightDesc();
+
+		// Type
+		pFile->Write<_uint>(pLightDesc->eType);
+
+		if (LIGHTDESC::TYPE_DIRECTIONAL == pLightDesc->eType)
+		{
+			// ID
+			pFile->Write<_uint>(pLight->Get_LightID());
+
+			// State
+			pFile->Write<Vec3>(pLightDesc->vTempColor);
+			pFile->Write<Vec3>(pLightDesc->vAmbientLowerColor);
+			pFile->Write<Vec3>(pLightDesc->vAmbientUpperColor);
+			pFile->Write<Vec3>(pLightDesc->vTempDirection);
+		}
+		else if (LIGHTDESC::TYPE_POINT == pLightDesc->eType)
+		{
+			// ID
+			pFile->Write<_uint>(pLight->Get_LightID());
+
+			// State
+			pFile->Write<Vec3>(pLightDesc->vTempPosition);
+			pFile->Write<_float>(pLightDesc->fTempRange);
+			pFile->Write<Vec3>(pLightDesc->vTempColor);
+		}
+		else if (LIGHTDESC::TYPE::TYPE_SPOT == pLightDesc->eType)
+		{
+			pFile->Write<_uint>(pLight->Get_LightID());
+
+			pFile->Write<Vec3>(pLightDesc->vTempPosition);
+			pFile->Write<Vec3>(pLightDesc->vTempDirection);
+			pFile->Write<Vec3>(pLightDesc->vTempColor);
+			pFile->Write<_float>(pLightDesc->fTempRange);
+			pFile->Write<_float>(pLightDesc->fOuterAngle);
+			pFile->Write<_float>(pLightDesc->fInnerAngle);
+		}
 	}
 
 	return S_OK;

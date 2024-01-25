@@ -28,16 +28,6 @@ Texture2D g_DistortionTarget;
 // 조명
 vector g_vCamPosition;
 
-vector g_vLightDir;
-vector g_vLightPos;
-float  g_fLightRange;
-
-vector g_vLightDiffuse;
-vector g_vLightAmbient;
-vector g_vLightSpecular;
-
-vector g_vMtrlAmbient  = vector(0.4f, 0.4f, 0.4f, 1.f);
-vector g_vMtrlSpecular = vector(1.f, 1.f, 1.f, 1.f);
 
 // 안개
 float4 g_vFogColor    = { 0.f, 0.635f, 1.f, 1.f };
@@ -53,36 +43,28 @@ float  g_fBias = 0.2f;
 // JunYeop
 cbuffer cbDirLightPS : register(b1)
 {
-    float4 vLightAmbientDown : packoffset(c0);
-    float4 vLightAmbientUp : packoffset(c1);
-    float4 vDirToLight : packoffset(c2);
-    float4 vDirLightColor : packoffset(c3);
+    float3 vLightAmbientDown : packoffset(c0);
+    float3 vLightAmbientUp : packoffset(c1);
+    float3 vDirToLight : packoffset(c2);
+    float3 vDirLightColor : packoffset(c3);
 }
 
-void GammaToLinear(inout float4 color)
+cbuffer cbPointLightPixel
 {
-    color.x *= color.x;
-    color.y *= color.y;
-    color.z *= color.z;
-}
+    float3 vPointLightPos;
+    float3 vPointColor;
+    float fPointLightRangeRcp;
+};
 
-float CaclAmbient(float4 normal, float4 color)
+cbuffer cbSpotLightConstants
 {
-    float up = normal.y * 0.5f + 0.5f;
-	
-    float4 downColor = vLightAmbientDown;
-    float4 UpColor = vLightAmbientUp;
-    float4 range = (float4) 0;
-	
-    GammaToLinear(downColor);
-    GammaToLinear(UpColor);
-	
-    range = UpColor - downColor;
-	
-    float4 Ambient = downColor + up * range;
-	
-    return Ambient * color;
-}
+    float3 vSpotLightPos;
+    float fSpotLightRangeRcp;
+    float3 vSpotDirToLight;
+    float fSpotCosOuterCone;
+    float3 vSpotColor;
+    float fSpotCosInnerConeRcp;
+};
 
 struct VS_IN
 {
@@ -96,6 +78,7 @@ struct VS_OUT
 	float2		vTexcoord : TEXCOORD0;
 	float		fFogFactor : FOG;
 };
+
 
 
 VS_OUT VS_MAIN(VS_IN In)
@@ -139,83 +122,161 @@ struct PS_OUT_LIGHT
 {
 	float4	vShade : SV_TARGET0;	
 	float4	vSpecular : SV_TARGET1;
+
 };
 
-PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
+void CaclDirectional(float3 position, float3 normal, float3 ambientColor, inout PS_OUT_LIGHT output)
 {
-	PS_OUT_LIGHT		Out = (PS_OUT_LIGHT)0;
-
-	vector		vNormalDesc = g_NormalTarget.Sample(PointSampler, In.vTexcoord);
-	vector		vDepthDesc = g_DepthTarget.Sample(PointSampler, In.vTexcoord);
-	float		fViewZ = vDepthDesc.y * 1000.f;
-		
-	vector		vNormal = vector(vNormalDesc.xyz * 2.f - 1.f, 0.f);
-
-	Out.vShade = g_vLightDiffuse * (saturate(dot(normalize(g_vLightDir) * -1.f, vNormal)) + (g_vLightAmbient * g_vMtrlAmbient));
-
-	vector		vReflect = reflect(normalize(g_vLightDir), vNormal);
-
-	vector		vWorldPos;
-
-	/* 투영스페이스 상의 위치를 구한다. */
-	vWorldPos.x = In.vTexcoord.x * 2.f - 1.f;
-	vWorldPos.y = In.vTexcoord.y * -2.f + 1.f;
-	vWorldPos.z = vDepthDesc.x;
-	vWorldPos.w = 1.f;
-
-	/* 뷰스페이스 상의 위치를 구한다. */
-	vWorldPos = vWorldPos * fViewZ;
-	vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
-
-	/* 월드까지 가자. */
-	vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
-
-	vector	vLook = vWorldPos - g_vCamPosition;
-
-	Out.vSpecular = (g_vLightSpecular * g_vMtrlSpecular) * pow(saturate(dot(normalize(vLook) * -1.f, normalize(vReflect))), 50.f);
-
-	return Out;
+	// Phong Diffuse
+    float NDotL = dot(vDirToLight, normal);
+    output.vShade = float4(vDirLightColor.rgb * saturate(NDotL) + ambientColor, 1.0f);
+    output.vShade = (ceil(output.vShade * 2.f) / 2.f);
+	// Blinn Specular
+    float3 ToEye = g_vCamPosition.xyz - position;
+    ToEye = normalize(ToEye);
+    float3 HalfWay = normalize(ToEye + vDirToLight);
+    float NDotH = saturate(dot(HalfWay, normal));
+	// Pow -> (NDotH, specPow) * SpecIntensity(SpecularMap Sampling)
+    output.vSpecular = float4(vDirLightColor.rgb * pow(NDotH, 10.0f) * 1.0f, 1.0f);
 }
 
-PS_OUT_LIGHT PS_MAIN_POINT(PS_IN In)
+float3 CaclAmbient(float3 normal)
 {
-	PS_OUT_LIGHT		Out = (PS_OUT_LIGHT)0;
+    float up = normal.y * 0.5f + 0.5f;
+	
+    float3 ambient = vLightAmbientDown + up * vLightAmbientUp;
 
-	vector		vNormalDesc = g_NormalTarget.Sample(PointSampler, In.vTexcoord);
-	vector		vDepthDesc = g_DepthTarget.Sample(PointSampler, In.vTexcoord);
-	float		fViewZ = vDepthDesc.y * 1000.f;
+    return ambient;
+}
 
-	vector		vNormal = vector(vNormalDesc.xyz * 2.f - 1.f, 0.f);
+void CaclPoint(float3 position, float3 normal, inout PS_OUT_LIGHT output)
+{
+    float3 ToLight = vPointLightPos - position;
+    float3 ToEye = g_vCamPosition.xyz - position;
+    float DistToLight = length(ToLight);
 
-	vector		vWorldPos;
+	// Phong Diffuse
+    ToLight /= DistToLight; // normalize
+    float NDotL = saturate(dot(ToLight, normal));
+    output.vShade = float4(vPointColor.rgb * saturate(NDotL), 1.0f);
+	
+	// Blinn Specular
+    ToEye = normalize(ToEye);
+    float3 HalfWay = normalize(ToEye + ToLight);
+    float NDotH = saturate(dot(HalfWay, normal));
+    output.vSpecular = float4(vPointColor * pow(NDotH, 10.0f) * 1.0f, 1.0f);
+	
+	// Attenuation
+    float DistToLightNorm = 1.0f - saturate(DistToLight * fPointLightRangeRcp);
+    float Attn = DistToLightNorm * DistToLightNorm;
+    output.vShade *= Attn;
+    output.vSpecular *= Attn;
+}
 
-	/* 투영스페이스 상의 위치를 구한다. */
-	vWorldPos.x = In.vTexcoord.x * 2.f - 1.f;
-	vWorldPos.y = In.vTexcoord.y * -2.f + 1.f;
-	vWorldPos.z = vDepthDesc.x;
-	vWorldPos.w = 1.f;
+void CaclSpot(float3 position, float3 normal, inout PS_OUT_LIGHT output)
+{
+    float3 ToLight = vSpotLightPos - position;
+    float3 ToEye = g_vCamPosition.xyz - position;
+    float DistToLight = length(ToLight);
 
-	/* 뷰스페이스 상의 위치를 구한다. */
-	vWorldPos = vWorldPos * fViewZ;
-	vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
+	// Phong Diffuse
+    ToLight /= DistToLight;
+    float NDotL = saturate(dot(ToLight, normal));
+    output.vShade = float4(vSpotColor.rgb * saturate(NDotL), 1.0f);
+	
+	// Blinn Specular
+    ToEye = normalize(ToEye);
+    float3 HalfWay = normalize(ToEye + ToLight);
+    float NDotH = saturate(dot(HalfWay, normal));
+    output.vSpecular = float4(vSpotColor.rgb * pow(NDotH, 10.0f) * 1.0f, 1.0f);
+	
+	// Cone Attenuation
+    float cosAng = dot(vSpotDirToLight, ToLight);
+    float conAtt = saturate((cosAng - fSpotCosOuterCone) * fSpotCosInnerConeRcp);
+    conAtt *= conAtt;
+	
+	// Attenuation
+    float DistToLightNorm = 1.0f - saturate(DistToLight * fSpotLightRangeRcp);
+    float Attn = DistToLightNorm * DistToLightNorm;
+	
+    output.vShade *= Attn * conAtt;
+    output.vSpecular *= Attn * conAtt;
+}
 
-	/* 월드까지 가자. */
-	vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
+PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN input)
+{
+    PS_OUT_LIGHT output = (PS_OUT_LIGHT) 0;
 
-	vector		vLightDir = vWorldPos - g_vLightPos;
-	float		fDistance = length(vLightDir);
+    float4 vNormalDesc = g_NormalTarget.Sample(PointSampler, input.vTexcoord);
+    float4 vDepthDesc = g_DepthTarget.Sample(PointSampler, input.vTexcoord);
+    float fViewZ = vDepthDesc.y * 1000.0f;
+	
+    float3 vNormal = float3(vNormalDesc.xyz * 2.0f - 1.0f);
+	
+    float4 vWorldPos;
+    vWorldPos.x = input.vTexcoord.x * 2.0f - 1.0f;
+    vWorldPos.y = input.vTexcoord.y * -2.0f + 1.0f;
+    vWorldPos.z = vDepthDesc.x;
+    vWorldPos.w = 1.0f;
+	
+    vWorldPos = vWorldPos * fViewZ;
+    vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
+    vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
+	
+    float3 ambientColor = CaclAmbient(vNormal);
+    CaclDirectional(vWorldPos.xyz, vNormal, ambientColor, output);
+	
+    return output;
+}
 
-	float		fAtt = saturate((g_fLightRange - fDistance) / g_fLightRange);
+PS_OUT_LIGHT PS_MAIN_POINT(PS_IN input)
+{
+    PS_OUT_LIGHT output = (PS_OUT_LIGHT) 0;
 
-	Out.vShade = fAtt * g_vLightDiffuse * (saturate(dot(normalize(vLightDir) * -1.f, vNormal)) + (g_vLightAmbient * g_vMtrlAmbient));
+    float4 vNormalDesc = g_NormalTarget.Sample(PointSampler, input.vTexcoord);
+    float4 vDepthDesc = g_DepthTarget.Sample(PointSampler, input.vTexcoord);
+    float fViewZ = vDepthDesc.y * 1000.0f;
+	
+    float3 vNormal = float3(vNormalDesc.xyz * 2.0f - 1.0f);
+	
+    float4 vWorldPos;
+    vWorldPos.x = input.vTexcoord.x * 2.0f - 1.0f;
+    vWorldPos.y = input.vTexcoord.y * -2.0f + 1.0f;
+    vWorldPos.z = vDepthDesc.x;
+    vWorldPos.w = 1.0f;
+	
+    vWorldPos = vWorldPos * fViewZ;
+    vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
+    vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
+	
+    CaclPoint(vWorldPos.xyz, vNormal, output);
+	
+    return output;
+}
 
-	vector		vReflect = reflect(normalize(vLightDir), vNormal);
+PS_OUT_LIGHT PS_MAIN_SPOT(PS_IN input)
+{
+    PS_OUT_LIGHT output = (PS_OUT_LIGHT) 0;
 
-	vector		vLook = vWorldPos - g_vCamPosition;
-
-	Out.vSpecular = fAtt * (g_vLightSpecular * g_vMtrlSpecular) * pow(saturate(dot(normalize(vLook) * -1.f, normalize(vReflect))), 50.f);
-
-	return Out;
+    float4 vNormalDesc = g_NormalTarget.Sample(PointSampler, input.vTexcoord);
+    float4 vDepthDesc = g_DepthTarget.Sample(PointSampler, input.vTexcoord);
+    float fViewZ = vDepthDesc.y * 1000.0f;
+	
+    float3 vNormal = float3(vNormalDesc.xyz * 2.0f - 1.0f);
+	
+    float4 vWorldPos;
+    vWorldPos.x = input.vTexcoord.x * 2.0f - 1.0f;
+    vWorldPos.y = input.vTexcoord.y * -2.0f + 1.0f;
+    vWorldPos.z = vDepthDesc.x;
+    vWorldPos.w = 1.0f;
+	
+    vWorldPos = vWorldPos * fViewZ;
+    vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
+    vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
+	
+    CaclSpot(vWorldPos.xyz, vNormal, output);
+	
+    return output;
 }
 
 // SHADOW
@@ -307,10 +368,7 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 	// 물 픽셀 제외 후 기타 처리
     vector vDepthDesc = g_DepthTarget.Sample(PointSampler, In.vTexcoord);
     if (vDepthDesc.w != 1.f) 
-    {
-        vShade    = (ceil(vShade * 2.f) / 2.f);
         vSpecular = float4(0.f, 0.f, 0.f, 0.f);
-    }
 
 	// Shadow
 	vector vShadow = float4(1.f, 1.f, 1.f, 1.f);
@@ -363,6 +421,7 @@ PS_OUT PS_MAIN_SHADOW(PS_IN In)
     return Out;
 }
 
+<<<<<<< HEAD
 PS_OUT PS_DISTORTION(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
@@ -401,6 +460,8 @@ DepthStencilState NoDepthWriteLessStencilMaskState // Depth Test Less / No Write
     FrontFaceStencilFunc = EQUAL;
 };
 
+=======
+>>>>>>> origin/feature/JunYeop
 
 technique11 DefaultTechnique
 {
@@ -422,15 +483,15 @@ technique11 DefaultTechnique
 	pass Light_Directional
 	{
 		SetRasterizerState(RS_Default);
-        SetDepthStencilState(NoDepthWriteLessStencilMaskState, 0);
+        SetDepthStencilState(DSS_None, 0);
 		SetBlendState(BS_OneBlend, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		HullShader = NULL;
 		DomainShader = NULL;
-		PixelShader = compile ps_5_0 PS_MAIN_DIRECTIONAL();
-	}
+        PixelShader = compile ps_5_0 PS_MAIN_DIRECTIONAL();
+    }
 
 	// 2
 	pass Light_Point
@@ -443,8 +504,8 @@ technique11 DefaultTechnique
 		GeometryShader = NULL;
 		HullShader = NULL;
 		DomainShader = NULL;
-		PixelShader = compile ps_5_0 PS_MAIN_POINT();
-	}
+        PixelShader = compile ps_5_0 PS_MAIN_POINT();
+    }
 
 	// 3
 	pass Deferred
@@ -497,6 +558,7 @@ technique11 DefaultTechnique
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_SHADOW();
     }
+<<<<<<< HEAD
 	
 	// 7
     pass Distortion
@@ -504,10 +566,24 @@ technique11 DefaultTechnique
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
+=======
+
+	// 7
+    pass Light_Spot
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_OneBlend, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
+
+>>>>>>> origin/feature/JunYeop
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
+<<<<<<< HEAD
         PixelShader = compile ps_5_0 PS_DISTORTION();
+=======
+        PixelShader = compile ps_5_0 PS_MAIN_SPOT();
+>>>>>>> origin/feature/JunYeop
     }
 }

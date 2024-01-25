@@ -17,6 +17,7 @@ struct VS_OUT
 {
     float4 vPosition : SV_POSITION;
     float2 vTexcoord : TEXCOORD0;
+    float3 vNormal : NORMAL;
 };
 
 VS_OUT VS_MAIN(VS_IN input)
@@ -29,6 +30,7 @@ VS_OUT VS_MAIN(VS_IN input)
     matWVP = mul(matWV, projectionMatrix);
 
     output.vPosition = mul(float4(input.vPosition, 1.0f), matWVP);
+    output.vNormal = normalize(mul(float4(input.vNormal, 0.f), worldMatrix)).xyz;
     output.vTexcoord = input.vTexcoord;
     
     return output;
@@ -36,8 +38,8 @@ VS_OUT VS_MAIN(VS_IN input)
 
 struct PS_OUT
 {
-    float4 vSunMask : SV_TARGET4;
-    float4 vViewNormal : SV_TARGET5;
+    float4 vNormal : SV_TARGET1;
+    float4 vViewNormal : SV_TARGET4;
 };
 
 PS_OUT PS_MAIN(VS_OUT input)
@@ -45,7 +47,7 @@ PS_OUT PS_MAIN(VS_OUT input)
     PS_OUT output = (PS_OUT) 0;
     
     float4 vMtrlDiffuse = float4(1.0f, 1.0f, 1.0f, 1.0f);
-    output.vSunMask = vMtrlDiffuse;
+    output.vNormal = vector(input.vNormal.xyz * 0.5f + 0.5f, 1.f);
     output.vViewNormal = float4(1.0f, 1.0f, 1.0f, 1.0f);
 
     return output;

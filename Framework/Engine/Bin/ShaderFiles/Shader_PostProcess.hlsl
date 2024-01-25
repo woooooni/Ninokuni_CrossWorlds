@@ -71,11 +71,16 @@ PS_OUT PS_LIGHTSHAFT(VS_OUT input)
     // x = Density, y = Weight, z = Decay , w = Exposure
     
     // MaskColor
-    float3 vMaskColor = SunOccluderTexture.SampleLevel(LinearSamplerClamp, vTexcoord, 0).rgb;
+    float4 vMaskColor = SunOccluderTexture.SampleLevel(LinearSamplerClamp, vTexcoord, 0);
+    float4 vTempColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    
+    if(vMaskColor.a == 1.0f)
+        vTempColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    
     float2 lightPosition = vScreenSunPosition;
     float2 deltaTexcoord = (vTexcoord - lightPosition);
     #define NUM_SAMPLERS 64
-    
+      
     deltaTexcoord *= lightData.x / NUM_SAMPLERS; // Density / NUM_SAMPLERS
     
     float illuminationDecay = 1.0f;
@@ -85,14 +90,20 @@ PS_OUT PS_LIGHTSHAFT(VS_OUT input)
     for (int i = 0; i < NUM_SAMPLERS; ++i)
     {
         vTexcoord.xy -= deltaTexcoord;
-        float3 sample = SunOccluderTexture.SampleLevel(LinearSamplerClamp, vTexcoord.xy, 0).rgb;
-        sample *= illuminationDecay * lightData.y; // illuminationDecay * Weight
-        accumulated += sample;
+        float4 sample = SunOccluderTexture.SampleLevel(LinearSamplerClamp, vTexcoord.xy, 0);
+        
+        float4 vSrcColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+        
+        if (sample.a == 1.0f)
+            vSrcColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+        
+        vSrcColor.rgb *= illuminationDecay * lightData.y; // illuminationDecay * Weight
+        accumulated += vSrcColor.rgb;
         illuminationDecay *= lightData.z; // illuminationDecay *= lightData.z (Decay)
     }
     
     accumulated *= lightData.w;
-    output.vColor = saturate(float4(vMaskColor + accumulated, 1.0f));
+    output.vColor = saturate(float4(vTempColor.rgb + accumulated, 1.0f));
     
    return output;
 }

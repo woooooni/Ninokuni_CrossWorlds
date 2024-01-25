@@ -144,7 +144,7 @@ Vec4 CLight_Manager::Get_SunScreenPos()
 	Vec4 light_ss{};
 	{
 		Vec4 vCamPos = GI->Get_CamPosition();
-		Vec4 vLightDir = pLightDesc->vDirection;
+		Vec3 vLightDir = pLightDesc->vTempDirection;
 		Vec4 vLightPos = vCamPos - vLightDir;
 
 		Matrix view = GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);

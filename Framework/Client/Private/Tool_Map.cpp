@@ -877,11 +877,11 @@ void CTool_Map::MapLightSpace()
 
 		if (ImGui::BeginChild("Light_Child_List", ImVec2(0, 300.f), true))
 		{
-			if (ImGui::RadioButton("DIRECTION", (0 == m_iLightControlState)))
+			if (ImGui::RadioButton("LIGHT", (0 == m_iLightControlState)))
 			{
 				ChangeState();
 				m_iLightControlState = 0;
-			} ImGui::SameLine();
+			} /*ImGui::SameLine();
 			if (ImGui::RadioButton("POINT", (1 == m_iLightControlState)))
 			{
 				ChangeState();
@@ -891,7 +891,7 @@ void CTool_Map::MapLightSpace()
 			{
 				ChangeState();
 				m_iLightControlState = 2;
-			} ImGui::SameLine();
+			} ImGui::SameLine();*/
 
 			ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.f), u8"Α¶Έν");
 			if (nullptr != m_pSelectLight)
@@ -905,6 +905,8 @@ void CTool_Map::MapLightSpace()
 					strSelectLightType = "Point";
 				else if (LIGHTDESC::TYPE::TYPE_DIRECTIONAL == m_pSelectLight->Get_LightDesc()->eType)
 					strSelectLightType = "Directional";
+				else if (LIGHTDESC::TYPE::TYPE_SPOT == m_pSelectLight->Get_LightDesc()->eType)
+					strSelectLightType = "Spot";
 
 				strSelectLightType += "_" + to_string(m_pSelectLight->Get_LightID());
 
@@ -915,27 +917,48 @@ void CTool_Map::MapLightSpace()
 				{
 					LIGHTDESC* rLightDesc = m_pSelectLight->Get_ModifyLightDesc();
 
-					if (ImGui::ColorEdit3("Diffuse", &rLightDesc->vDiffuse.x, ImGuiColorEditFlags_Float)) {} ImGui::NextColumn();
-					if (ImGui::ColorEdit3("Ambient", &rLightDesc->vAmbient.x, ImGuiColorEditFlags_Float)) {} ImGui::NextColumn();
-					if (ImGui::DragFloat3("Direction", &m_LightHelper.vRotationDeg.x, 1.f, -180.f, 180.f, "%.fdeg"))
+					if (LIGHTDESC::TYPE::TYPE_DIRECTIONAL == rLightDesc->eType)
 					{
-						XMVECTOR vRotQuat = ::XMQuaternionRotationRollPitchYaw(
-							::XMConvertToRadians(m_LightHelper.vRotationDeg.x),
-							::XMConvertToRadians(m_LightHelper.vRotationDeg.y),
-							::XMConvertToRadians(m_LightHelper.vRotationDeg.z));
+						if (ImGui::ColorEdit3("Diffuse", &rLightDesc->vTempColor.x, ImGuiColorEditFlags_Float)) {} ImGui::NextColumn();
+						if (ImGui::ColorEdit3("AmbientLower", &rLightDesc->vAmbientLowerColor.x, ImGuiColorEditFlags_Float)) {} ImGui::NextColumn();
+						if (ImGui::ColorEdit3("AmbientUpper", &rLightDesc->vAmbientUpperColor.x, ImGuiColorEditFlags_Float)) {} ImGui::NextColumn();
+						if (ImGui::DragFloat3("Direction", &m_LightHelper.vRotationDeg.x, 1.f, -180.f, 180.f, "%.fdeg"))
+						{
+							XMVECTOR vRotQuat = ::XMQuaternionRotationRollPitchYaw(
+								::XMConvertToRadians(m_LightHelper.vRotationDeg.x),
+								::XMConvertToRadians(m_LightHelper.vRotationDeg.y),
+								::XMConvertToRadians(m_LightHelper.vRotationDeg.z));
 
-						XMVECTOR vRotQuatInverse = ::XMQuaternionInverse(vRotQuat);
-						XMVECTOR vLightDir = ::XMQuaternionMultiply(vRotQuat, ::XMVectorSet(0.f, 0.f, 1.f, 0.f));
-						::XMStoreFloat4(&rLightDesc->vDirection, ::XMQuaternionMultiply(vLightDir, vRotQuatInverse));
+							XMVECTOR vRotQuatInverse = ::XMQuaternionInverse(vRotQuat);
+							XMVECTOR vLightDir = ::XMQuaternionMultiply(vRotQuat, ::XMVectorSet(0.f, 0.f, 1.f, 0.f));
+							::XMStoreFloat3(&rLightDesc->vTempDirection, ::XMQuaternionMultiply(vLightDir, vRotQuatInverse));
+						}
 					}
 
 					if (LIGHTDESC::TYPE::TYPE_POINT == rLightDesc->eType)
 					{
-
+						if (ImGui::ColorEdit3("Diffuse", &rLightDesc->vTempColor.x, ImGuiColorEditFlags_Float)) {} ImGui::NextColumn();
+						if (ImGui::DragFloat3("Position", &rLightDesc->vTempPosition.x)) {}
+						if (ImGui::DragFloat("Range", &rLightDesc->fTempRange)) {} ImGui::NextColumn();
 					}
-					else if (LIGHTDESC::TYPE::TYPE_DIRECTIONAL == rLightDesc->eType)
+					else if (LIGHTDESC::TYPE::TYPE_SPOT == rLightDesc->eType)
 					{
+						if (ImGui::ColorEdit3("Diffuse", &rLightDesc->vTempColor.x, ImGuiColorEditFlags_Float)) {} ImGui::NextColumn();
+						if (ImGui::DragFloat3("Position", &rLightDesc->vTempPosition.x)) {}
+						if (ImGui::DragFloat3("Direction", &m_LightHelper.vRotationDeg.x, 1.f, -180.f, 180.f, "%.fdeg"))
+						{
+							XMVECTOR vRotQuat = ::XMQuaternionRotationRollPitchYaw(
+								::XMConvertToRadians(m_LightHelper.vRotationDeg.x),
+								::XMConvertToRadians(m_LightHelper.vRotationDeg.y),
+								::XMConvertToRadians(m_LightHelper.vRotationDeg.z));
 
+							XMVECTOR vRotQuatInverse = ::XMQuaternionInverse(vRotQuat);
+							XMVECTOR vLightDir = ::XMQuaternionMultiply(vRotQuat, ::XMVectorSet(0.f, 0.f, 1.f, 0.f));
+							::XMStoreFloat3(&rLightDesc->vTempDirection, ::XMQuaternionMultiply(vLightDir, vRotQuatInverse));
+						} ImGui::NextColumn();
+						if (ImGui::DragFloat("Range", &rLightDesc->fTempRange, 0.1f, 1.0f, 100.0f)) {} ImGui::NextColumn();
+						if (ImGui::DragFloat("OuterAngle", &rLightDesc->fOuterAngle, 0.1f, 1.0f, 100.0f)) {} ImGui::NextColumn();
+						if (ImGui::DragFloat("InnerAngle", &rLightDesc->fInnerAngle, 0.1f, 1.0f, 100.0f)) {};
 					}
 				}
 
@@ -976,12 +999,30 @@ void CTool_Map::MapLightSpace()
 							LIGHTDESC lightDesc;
 							::ZeroMemory(&lightDesc, sizeof(LIGHTDESC));
 
-							lightDesc.vDiffuse = Vec4(1.f, 1.f, 1.f, 1.f);
-							lightDesc.vAmbient = Vec4(1.f, 1.f, 1.f, 1.f);
-							lightDesc.vDirection = Vec4(1.f, 1.f, 1.f, 1.f);
-
-							if (0 == m_iControlState) //Direction
-								lightDesc.eType = LIGHTDESC::TYPE::TYPE_DIRECTIONAL;
+							if ("DIRECTIONAL" == pLightName[i])
+							{
+								lightDesc.vTempColor = Vec3(1.f, 1.f, 1.f);
+								lightDesc.vAmbientLowerColor = Vec3(0.5f, 0.5f, 0.5f);
+								lightDesc.vTempDirection = Vec3(1.f, -1.f, 1.f);
+								lightDesc.eType = LIGHTDESC::TYPE_DIRECTIONAL;
+							}
+							else if ("POINT" == pLightName[i])
+							{
+								lightDesc.vTempColor = Vec3(1.0f, 1.0f, 1.0f);
+								lightDesc.fTempRange = 5.0f;
+								lightDesc.vTempPosition = Vec3(0.0f, 0.0f, 0.0f);
+								lightDesc.eType = LIGHTDESC::TYPE::TYPE_POINT;
+							}
+							else if ("SPOT" == pLightName[i])
+							{
+								lightDesc.vTempPosition = Vec3(0.0f, 0.0f, 0.0f);
+								lightDesc.vTempDirection = Vec3(0.0f, -1.0f, 0.0f);
+								lightDesc.vTempColor = Vec3(1.0f, 1.0f, 1.0f);
+								lightDesc.fTempRange = 60.0f;
+								lightDesc.fOuterAngle = 65.0f;
+								lightDesc.fInnerAngle = 55.0f;
+								lightDesc.eType = LIGHTDESC::TYPE::TYPE_SPOT;
+							}
 
 							GI->Add_Light(m_pDevice, m_pContext, lightDesc);
 						}
@@ -1007,6 +1048,8 @@ void CTool_Map::MapLightSpace()
 							strSelectLightType = "Point";
 						else if (1 == pLight->Get_LightDesc()->eType)
 							strSelectLightType = "Directional";
+						else if (2 == pLight->Get_LightDesc()->eType)
+							strSelectLightType = "Spot";
 
 						strSelectLightType += "_" + to_string(pLight->Get_LightID());
 
@@ -2018,9 +2061,31 @@ HRESULT CTool_Map::Save_Light_Data(const wstring& strLightFilePath)
 			pFile->Write<_uint>(pLight->Get_LightID());
 			
 			// State
-			pFile->Write<Vec4>(pLightDesc->vDiffuse);
-			pFile->Write<Vec4>(pLightDesc->vAmbient);
-			pFile->Write<Vec4>(pLightDesc->vDirection);
+			pFile->Write<Vec3>(pLightDesc->vTempColor);
+			pFile->Write<Vec3>(pLightDesc->vAmbientLowerColor);
+			pFile->Write<Vec3>(pLightDesc->vAmbientUpperColor);
+			pFile->Write<Vec3>(pLightDesc->vTempDirection);
+		}
+		else if (LIGHTDESC::TYPE_POINT == pLightDesc->eType)
+		{
+			// ID
+			pFile->Write<_uint>(pLight->Get_LightID());
+
+			// State
+			pFile->Write<Vec3>(pLightDesc->vTempPosition);
+			pFile->Write<_float>(pLightDesc->fTempRange);
+			pFile->Write<Vec3>(pLightDesc->vTempColor);
+		}
+		else if (LIGHTDESC::TYPE::TYPE_SPOT == pLightDesc->eType)
+		{
+			pFile->Write<_uint>(pLight->Get_LightID());
+
+			pFile->Write<Vec3>(pLightDesc->vTempPosition);
+			pFile->Write<Vec3>(pLightDesc->vTempDirection);
+			pFile->Write<Vec3>(pLightDesc->vTempColor);
+			pFile->Write<_float>(pLightDesc->fTempRange);
+			pFile->Write<_float>(pLightDesc->fOuterAngle);
+			pFile->Write<_float>(pLightDesc->fInnerAngle);
 		}
 	}
 
@@ -2060,15 +2125,54 @@ HRESULT CTool_Map::Load_Light_Data(const wstring& strLightFilePath)
 			pFile->Read<_uint>(iLightID);
 
 			// State
-			Vec4 vDiffuse, vAmbient, vDirection;
-			pFile->Read<Vec4>(vDiffuse);
-			pFile->Read<Vec4>(vAmbient);
-			pFile->Read<Vec4>(vDirection);
+			Vec3 vDiffuse, vAmbientLowerColor, vAmbientUpperColor, vDirection;
+			pFile->Read<Vec3>(vDiffuse);
+			pFile->Read<Vec3>(vAmbientLowerColor);
+			pFile->Read<Vec3>(vAmbientUpperColor);
+			pFile->Read<Vec3>(vDirection);
 
 			LightDesc.eType = static_cast<LIGHTDESC::TYPE>(iLightType);
-			LightDesc.vDiffuse = vDiffuse;
-			LightDesc.vAmbient = vAmbient;
-			LightDesc.vDirection = vDirection;
+			LightDesc.vTempColor = vDiffuse;
+			LightDesc.vAmbientLowerColor = vAmbientLowerColor;
+			LightDesc.vAmbientUpperColor = vAmbientUpperColor;
+			LightDesc.vTempDirection = vDirection;
+		}
+		else if (LIGHTDESC::TYPE_POINT == iLightType)
+		{
+			pFile->Read<_uint>(iLightID);
+
+			// State
+			Vec3 vPos, vColor;
+			_float fRange;
+			pFile->Read<Vec3>(vPos);
+			pFile->Read<_float>(fRange);
+			pFile->Read<Vec3>(vColor);
+
+			LightDesc.eType = static_cast<LIGHTDESC::TYPE>(iLightType);
+			LightDesc.vTempPosition = vPos;
+			LightDesc.fTempRange = fRange;
+			LightDesc.vTempColor = vColor;
+		}
+		else if (LIGHTDESC::TYPE_SPOT == iLightType)
+		{
+			pFile->Read<_uint>(iLightID);
+
+			Vec3 vPos, vColor, vDirection;
+			_float fTempRange, fOuterAngle, fInnerAngle;
+			pFile->Read<Vec3>(vPos);
+			pFile->Read<Vec3>(vDirection);
+			pFile->Read<Vec3>(vColor);
+			pFile->Read<_float>(fTempRange);
+			pFile->Read<_float>(fOuterAngle);
+			pFile->Read<_float>(fInnerAngle);
+
+			LightDesc.eType = static_cast<LIGHTDESC::TYPE>(iLightType);
+			LightDesc.vTempPosition = vPos;
+			LightDesc.vTempDirection = vDirection;
+			LightDesc.vTempColor = vColor;
+			LightDesc.fTempRange = fTempRange;
+			LightDesc.fOuterAngle = fOuterAngle;
+			LightDesc.fInnerAngle = fInnerAngle;
 		}
 
 		if(FAILED(GI->Add_Light(m_pDevice, m_pContext, LightDesc)))

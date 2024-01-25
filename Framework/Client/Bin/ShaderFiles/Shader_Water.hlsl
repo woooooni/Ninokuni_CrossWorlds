@@ -146,35 +146,9 @@ WaterPixelToFrame WaterPS (WaterVertexToPixel input)
 	
     vNormal = normalize(mul(vNormal, WorldMatrix));
 	
-	
-
-    //vReflectTexCoord.x = input.vReflectionPos.x / input.vReflectionPos.w / 2.0f + 0.5f;
-    //vReflectTexCoord.y = -input.vReflectionPos.y / input.vReflectionPos.w / 2.0f + 0.5f;
-
-    //vRefractTexCoord.x = input.vRefractionPos.x / input.vRefractionPos.w / 2.0f + 0.5f;
-    //vRefractTexCoord.y = -input.vRefractionPos.y / input.vRefractionPos.w / 2.0f + 0.5f;
-    
-    //vReflectTexCoord = vReflectTexCoord + (vNormal.xy * fReflectRefractScale);
-    //vRefractTexCoord = vRefractTexCoord + (vNormal.xy * fReflectRefractScale);
-
-    //vReflectionColor = ReflectionMap.Sample(LinearSampler, vReflectTexCoord);
-    //vRefractionColor = RefractionMap.Sample(LinearSampler, vRefractTexCoord);
-    
-    //float fFresnelTerm = 0.0f;
-    //float4 vLook = input.vProjPos - vCameraPosition;
-    //vLook = normalize(vLook);
     vMtrlDiffuse.a = 0.7f;
     output.vColor = vMtrlDiffuse;
 
-    //if(true == bFresnel)
-    //{
-    //    fFresnelTerm = 0.02f + 0.97f * pow((1 - dot(vLook, float4(vNormal, 1.0f))), 5.0f);
-    //    float4 vCombinedColor = vRefractionColor * (1 - fFresnelTerm) *
-    //        vRefractionColor.a * vReflectionColor.a + vReflectionColor * fFresnelTerm * vReflectionColor.a * vRefractionColor.a;
-    //    output.vColor = vCombinedColor;
-    //}
-    //else
-    //    output.vColor = lerp(vReflectionColor, vRefractionColor, 0.5f);
     
     output.vNormal = vector(vNormal.xyz * 0.5f + 0.5f, 0.f);
     output.vDepth  = float4(input.vProjPos.z / input.vProjPos.w, input.vProjPos.w / 1000.f, 0.0f, 1.0f);

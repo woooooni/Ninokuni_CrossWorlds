@@ -26,7 +26,8 @@ public:
 		Vec3 vLightDir; // DirectionLight
 		_float bumpScale = 0.42356f;
 
-		Vec4 vLightColor; // DirectionLight
+		Vec3 vLightColor; // DirectionLight
+		_float pad = 0.0f;
 		Vec4 vShallowWaterColor = Vec4(0.215686f, 0.743581f, 1.0f, 1.0f);
 		Vec4 vDeepWaterColor = Vec4(0.050980f, 0.481481f, 0.304660f, 1.0f);
 	};

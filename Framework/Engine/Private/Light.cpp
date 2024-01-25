@@ -2,19 +2,10 @@
 #include "Shader.h"
 #include "VIBuffer_Rect.h"
 
-#pragma pack(push,1)
-struct CB_DIRECTIONAL
-{
-	Vec4 vAmbientLower;
-	Vec4 vAmbientRange;
-	Vec4 vDirToLight;
-	Vec4 vDirectionalColor;
-};
-#pragma pack(pop)
 
-const Vec4 GammaToLinear(const Vec4& vColor)
+const Vec3 GammaToLinear(const Vec3& vColor)
 {
-	return Vec4(vColor.x * vColor.x, vColor.y * vColor.y, vColor.z * vColor.z, vColor.w * vColor.w);
+	return Vec3(vColor.x * vColor.x, vColor.y * vColor.y, vColor.z * vColor.z);
 }
 
 CLight::CLight(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)
@@ -34,47 +25,23 @@ HRESULT CLight::Initialize(const LIGHTDESC & LightDesc)
 
 HRESULT CLight::Render(CShader * pShader, CVIBuffer_Rect * pVIBuffer)
 {
-	_uint		iPassIndex = 1;
-
-#pragma region °³Á¶ LIGHT
-	//switch (m_LightDesc.eType)
-	//{
-	//case LIGHTDESC::TYPE_DIRECTIONAL:
-	//	if (FAILED(DirectionalLight(pShader)))
-	//		return E_FAIL;
-	//	break;
-	//case LIGHTDESC::TYPE_POINT:
-	//	break;
-	//case LIGHTDESC::TYPE_SPOT:
-	//	break;
-	//default:
-	//	break;
-	//}
-#pragma endregion 
-	if (LIGHTDESC::TYPE_DIRECTIONAL == m_LightDesc.eType)
+	switch (m_LightDesc.eType)
 	{
-		if (FAILED(pShader->Bind_RawValue("g_vLightDir", &m_LightDesc.vDirection, sizeof(_float4))))
+	case LIGHTDESC::TYPE_DIRECTIONAL:
+		if (FAILED(DirectionalLight(pShader)))
 			return E_FAIL;
+		break;
+	case LIGHTDESC::TYPE_POINT:
+		if (FAILED(PointLight(pShader)))
+			return E_FAIL;
+		break;
+	case LIGHTDESC::TYPE_SPOT:
+		if (FAILED(SpotLight(pShader)))
+			return E_FAIL;
+		break;
+	default:
+		break;
 	}
-	else
-	{
-		if (FAILED(pShader->Bind_RawValue("g_vLightPos", &m_LightDesc.vPosition, sizeof(_float4))))
-			return E_FAIL;
-		if (FAILED(pShader->Bind_RawValue("g_fLightRange", &m_LightDesc.fRange, sizeof(_float))))
-			return E_FAIL;
-
-		iPassIndex = 2;
-	}
-	if (FAILED(pShader->Bind_RawValue("g_vLightDiffuse", &m_LightDesc.vDiffuse, sizeof(_float4))))
-		return E_FAIL;
-
-	if (FAILED(pShader->Bind_RawValue("g_vLightAmbient", &m_LightDesc.vAmbient, sizeof(_float4))))
-		return E_FAIL;
-
-	if (FAILED(pShader->Bind_RawValue("g_vLightSpecular", &m_LightDesc.vSpecular, sizeof(_float4))))
-		return E_FAIL;
-
-	pShader->Begin(iPassIndex);
 	pVIBuffer->Render();
 
 	return S_OK;
@@ -83,18 +50,69 @@ HRESULT CLight::Render(CShader * pShader, CVIBuffer_Rect * pVIBuffer)
 HRESULT CLight::DirectionalLight(class CShader* pShader)
 {
 	m_LightDesc.vTempDirection.Normalize();
-	if (FAILED(pShader->Bind_RawValue("vAmbientLower", &m_LightDesc.vAmbientLowerColor, sizeof(Vec3))))
+	Vec3 vAmbientLowerToGamma = GammaToLinear(m_LightDesc.vAmbientLowerColor);
+	if (FAILED(pShader->Bind_RawValue("vLightAmbientDown", &vAmbientLowerToGamma, sizeof(Vec3))))
 		return E_FAIL;
-	Vec3 vAmbientRange = m_LightDesc.vAmbientUpperColor - m_LightDesc.vAmbientLowerColor;
-	if (FAILED(pShader->Bind_RawValue("vAmbientRange", &vAmbientRange, sizeof(Vec3))))
+	Vec3 vAmbientRangeToGamma = GammaToLinear(m_LightDesc.vAmbientUpperColor) - GammaToLinear(m_LightDesc.vAmbientLowerColor);
+	if (FAILED(pShader->Bind_RawValue("vLightAmbientUp", &vAmbientRangeToGamma, sizeof(Vec3))))
 		return E_FAIL;
 	Vec3 vInverseLightDir = -m_LightDesc.vTempDirection;
 	if (FAILED(pShader->Bind_RawValue("vDirToLight", &vInverseLightDir, sizeof(Vec3))))
 		return E_FAIL;
-	if (FAILED(pShader->Bind_RawValue("vDirectionalColor", &m_LightDesc.vTempColor, sizeof(Vec3))))
+	Vec3 vLightDiffuseToGamma = GammaToLinear(m_LightDesc.vTempColor);
+	if (FAILED(pShader->Bind_RawValue("vDirLightColor", &vLightDiffuseToGamma, sizeof(Vec3))))
 		return E_FAIL;
 
 	pShader->Begin(1);
+	return S_OK;
+}
+
+HRESULT CLight::PointLight(CShader* pShader)
+{
+	if(FAILED(pShader->Bind_RawValue("vPointLightPos", &m_LightDesc.vTempPosition, sizeof(Vec3))))
+		return E_FAIL;
+	
+	_float PointLightRange = 1.0f / m_LightDesc.fTempRange;
+	if(FAILED(pShader->Bind_RawValue("fPointLightRangeRcp", &PointLightRange, sizeof(_float))))
+		return E_FAIL;
+
+	Vec3 vLightDiffuseToGamma = GammaToLinear(m_LightDesc.vTempColor);
+	if (FAILED(pShader->Bind_RawValue("vPointColor", &vLightDiffuseToGamma, sizeof(Vec3))))
+		return E_FAIL;
+
+	pShader->Begin(2);
+	return S_OK;
+}
+
+HRESULT CLight::SpotLight(CShader* pShader)
+{
+	_float fCosInnerAngle = ::cosf(m_LightDesc.fInnerAngle);
+	_float fSinOuterAngle = ::sinf(m_LightDesc.fOuterAngle);
+	_float fCosOuterAngle = ::cosf(m_LightDesc.fOuterAngle);
+
+	Vec3 vSpotLightPos = m_LightDesc.vTempPosition;
+	m_LightDesc.vTempDirection.Normalize();
+	Vec3 vDirToLight = -m_LightDesc.vTempDirection;
+	_float fSpotLightRangeRcp = 1.0f / m_LightDesc.fTempRange;
+	_float fSpotCosOuterCone = fCosOuterAngle;
+	_float fSpotInnerConeRcp = 1.0f / fCosInnerAngle;
+	Vec3 vGammaToSpotColor = GammaToLinear(m_LightDesc.vTempColor);
+
+	if (FAILED(pShader->Bind_RawValue("vSpotLightPos", &vSpotLightPos, sizeof(Vec3))))
+		return E_FAIL;
+	if (FAILED(pShader->Bind_RawValue("fSpotLightRangeRcp", &fSpotLightRangeRcp, sizeof(_float))))
+		return E_FAIL;
+	if (FAILED(pShader->Bind_RawValue("vSpotDirToLight", &vDirToLight, sizeof(Vec3))))
+		return E_FAIL;
+	if (FAILED(pShader->Bind_RawValue("fSpotCosOuterCone", &fSpotCosOuterCone, sizeof(_float))))
+		return E_FAIL;
+	if (FAILED(pShader->Bind_RawValue("vSpotColor", &vGammaToSpotColor, sizeof(Vec3))))
+		return E_FAIL;
+	if (FAILED(pShader->Bind_RawValue("fSpotCosInnerConeRcp", &fSpotInnerConeRcp, sizeof(_float))))
+		return E_FAIL;
+
+	pShader->Begin(7);
+
 	return S_OK;
 }
 

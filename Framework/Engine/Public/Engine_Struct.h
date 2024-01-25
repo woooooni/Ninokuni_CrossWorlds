@@ -55,27 +55,23 @@ namespace Engine
 		enum TYPE { TYPE_POINT, TYPE_DIRECTIONAL, TYPE_SPOT, TYPE_END };
 
 		TYPE			eType;
+#pragma region Point
+		_float fTempRange = 0.0f;
+#pragma endregion
 
-		XMFLOAT4		vDirection;
-
-		XMFLOAT4		vPosition;
-		float			fRange;
-
-		XMFLOAT4		vDiffuse;
-		XMFLOAT4		vAmbient;
-		XMFLOAT4		vSpecular;
-
-
-		// 개조 전에 임시
+#pragma region Spot
+		_float fLength = 0.0f;
+		_float fOuterAngle = 0.0f;
+		_float fInnerAngle = 0.0f;
+#pragma endregion
+		
+#pragma region Common
 		Vec3 vTempPosition;
 		Vec3 vTempDirection;
 		Vec3 vAmbientLowerColor;
 		Vec3 vAmbientUpperColor;
-
-		_float fTempRange = 0.0f;
-		_float fTempLength = 0.0f;
-		_float fTempInnerAngle = 0.0f;
 		Vec3 vTempColor;
+#pragma endregion
 	}LIGHTDESC;
 
 	typedef struct tagMaterialDesc

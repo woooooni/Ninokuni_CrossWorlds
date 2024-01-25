@@ -25,8 +25,10 @@ private:
 
 		Vec4 vScreen_space_position = Vec4(0.0f,0.0f,0.0f,0.0f);
 		Vec4 vPosition = Vec4(0.0f,10.0f,0.0f,1.0f);
-		Vec4 vDirection = Vec4(0.0f, -1.0f, 0.0f,0.0f);
-		Vec4 vColor = Vec4(1.0f,1.0f,1.0f,1.0f);
+		Vec3 vDirection = Vec3(0.0f, -1.0f, 0.0f);
+		_float pad = 0.0f;
+		Vec3 vColor = Vec3(1.0f, 1.0f, 1.0f);
+		_float pad2 = 0.0f;
 	};
 private:
 	explicit CLensFlare(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType);

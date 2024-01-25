@@ -124,11 +124,8 @@ HRESULT CEvermoreWater::Bind_ShaderResources()
 			if (pLight->Get_LightDesc()->eType != LIGHTDESC::TYPE_DIRECTIONAL)
 				continue;
 
-			m_PSGerstnerWave.vLightColor = pLight->Get_LightDesc()->vDiffuse;
-			m_PSGerstnerWave.vLightDir = Vec3(
-				pLight->Get_LightDesc()->vDirection.x, 
-				pLight->Get_LightDesc()->vDirection.y, 
-				pLight->Get_LightDesc()->vDirection.z);
+			m_PSGerstnerWave.vLightColor = pLight->Get_LightDesc()->vTempColor;
+			m_PSGerstnerWave.vLightDir = pLight->Get_LightDesc()->vTempDirection;
 		}
 	}
 

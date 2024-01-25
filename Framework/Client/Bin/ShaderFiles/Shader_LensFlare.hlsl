@@ -38,8 +38,10 @@ struct Light
     
     float4 vScreen_space_position;
     float4 vPosition;
-    float4 vDirection;
-    float4 vColor;
+    float3 vDirection;
+    float pad1;
+    float3 vColor;
+    float pad2;
 };
 
 cbuffer CBLightBuffer : register(b0)

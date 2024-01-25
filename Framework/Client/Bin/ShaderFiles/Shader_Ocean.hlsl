@@ -28,7 +28,8 @@ struct PS_GerstnerWave
     float3 lightDir;
     float bumpScale;
     
-    float4 lightColor;
+    float3 lightColor;
+    float pad1;
     float4 ShallowWaterColor;
     float4 deepWaterColor;
 };
@@ -151,7 +152,7 @@ PS_OUT PS_MAIN(VS_OUT input)
    
      
     float DiffuseFactor = saturate(dot(-L, finalBump));
-    float4 DiffuseColor = PS_Gerstner.lightColor * DiffuseFactor;
+    float4 DiffuseColor = float4(PS_Gerstner.lightColor * DiffuseFactor, 1.0f);
     
     if (DiffuseColor.r < 0.1f)
         DiffuseColor = 0.2f;
@@ -202,7 +203,7 @@ PS_OUT PS_WINTER_MAIN(VS_OUT input)
    
      
     float DiffuseFactor = saturate(dot(-L, finalBump));
-    float4 DiffuseColor = PS_Gerstner.lightColor * DiffuseFactor;
+    float4 DiffuseColor = float4(PS_Gerstner.lightColor * DiffuseFactor, 1.0f);
     
     if (DiffuseColor.r < 0.1f)
         DiffuseColor = 0.2f;

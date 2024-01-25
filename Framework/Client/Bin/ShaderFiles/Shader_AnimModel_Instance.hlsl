@@ -271,8 +271,7 @@ struct PS_OUT
 	float4		vNormal : SV_TARGET1;
 	float4		vDepth : SV_TARGET2;
     float4      vBloom : SV_TARGET3;
-    float4		vSunMask : SV_TARGET4;
-    float4		vViewNormal : SV_TARGET5;
+    float4		vViewNormal : SV_TARGET4;
 };
 
 float4 Caculation_Brightness(float4 vColor)
@@ -326,7 +325,6 @@ PS_OUT PS_MAIN(PS_IN In)
     }
 	
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
-    Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
     Out.vViewNormal = float4(1.0f, 1.0f, 1.0f, 1.0f);
 	return Out;
 }
@@ -371,7 +369,6 @@ PS_OUT PS_GRANDFA_MAIN(PS_IN In)
     }
 	
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
-    Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
     Out.vViewNormal = float4(1.0f, 1.0f, 1.0f, 1.0f);
     return Out;
 }
@@ -423,7 +420,6 @@ PS_OUT PS_MAIN_NORMAL(PS_IN In)
     }
 
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
-    Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
     Out.vViewNormal = float4(1.0f, 1.0f, 1.0f, 1.0f);
 	return Out;
 }
@@ -456,7 +452,6 @@ PS_OUT PS_DISSOLVE_DEAD(PS_IN In)
     }
     
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
-    Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
     Out.vViewNormal = float4(1.0f, 1.0f, 1.0f, 1.0f);
     if (0.f == Out.vDiffuse.a)
         discard;
@@ -478,7 +473,6 @@ PS_OUT PS_MOTION_TRAIL(PS_IN In)
     Out.vDiffuse = vRimColor;
     Out.vDiffuse.a = 1.f;
     Out.vBloom = Caculation_Brightness(Out.vDiffuse);
-    Out.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
     Out.vViewNormal = float4(1.0f, 1.0f, 1.0f, 1.0f);
     return Out;
 }
