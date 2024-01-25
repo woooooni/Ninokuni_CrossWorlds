@@ -29,8 +29,9 @@ private:
 	_float m_fOnOffTime = 0.1f;
 
 private:
-	class CDecal*  m_pDecal = nullptr;
-	class CEffect* m_pElect = nullptr;
+	_bool m_bDecal   = false;
+	_bool m_bElect   = false;
+	_bool m_bExplode = false;
 
 public:
 	static CDestroyer_FrengeCharge_Thunder* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
