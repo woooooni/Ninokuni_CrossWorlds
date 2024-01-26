@@ -39,6 +39,7 @@ void CUIMinimap_Manager::Tick(_float fTimeDelta)
 
 _bool CUIMinimap_Manager::Is_InMinimap(CTransform* pTransform)
 {
+
 	if (nullptr == pTransform)
 		return false;
 

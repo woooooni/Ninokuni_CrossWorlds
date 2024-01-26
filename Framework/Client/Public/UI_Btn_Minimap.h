@@ -15,6 +15,7 @@ public:
 	void Set_TextureIndex(_uint iIndex) { m_iTextureIndex = iIndex; }
 
 	void Hide_UI(_bool bHide) { m_bHide = bHide; m_bHideFinish = false; }
+	virtual void Set_Active(_bool bActive) override;
 
 public:
 	virtual HRESULT	Initialize_Prototype();

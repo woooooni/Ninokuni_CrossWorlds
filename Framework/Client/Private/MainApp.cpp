@@ -21,6 +21,7 @@
 #include "TowerDefence_Manager.h"
 #include "UIMinigame_Manager.h"
 #include "Buff_Manager.h"
+#include "Riding_Manager.h"
 
 
 #include "Game_Manager.h"
@@ -172,6 +173,9 @@ HRESULT CMainApp::Initialize_Client()
 		return E_FAIL;
 
 	if (FAILED(CUIMinigame_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+		return E_FAIL;
+
+	if (FAILED(CRiding_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
 		return E_FAIL;
 
 	if (FAILED(Ready_CameraObject()))
@@ -1277,6 +1281,10 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/ImajinnSlot/UI_ImajinnSelect.png")))))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_AddItem_Popups"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/PlayerStatus/Item/UI_AddItem_PopUp_%d.png"), 6))))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -1607,6 +1615,7 @@ void Client::CMainApp::Free()
 	__super::Free();
 	Safe_Release(m_pRenderer_Com);
 
+	CRiding_Manager::GetInstance()->DestroyInstance();
 	CTowerDefence_Manager::GetInstance()->DestroyInstance();
 	CQuest_Manager::GetInstance()->DestroyInstance();
 	CEffect_Manager::GetInstance()->DestroyInstance();

@@ -24,11 +24,6 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT	Render();
 
-public:
-	virtual void On_MouseEnter(_float fTimeDelta) override;
-	virtual void On_Mouse(_float fTimeDelta) override;
-	virtual void On_MouseExit(_float fTimeDelta) override;
-
 private:
 	UI_MINI_DIALOG m_eType = { MINIDIALOG_NORMAL };
 
@@ -43,9 +38,6 @@ private:
 private:
 	HRESULT	Ready_State();
 	HRESULT	Bind_ShaderResources();
-
-private:
-	void Key_Input(_float fTimeDelta);
 
 public:
 	static CUI_Dialog_MiniWindow* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext);

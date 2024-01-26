@@ -537,6 +537,41 @@ PS_OUT_MINIMAP PS_MINIMAP_CAMERA(PS_IN In)
 	return Out;
 }
 
+PS_OUT PS_VERTICAL_COOLTIME(PS_IN In)
+{
+//	PS_OUT		Out = (PS_OUT)0; // 초기화
+//
+//	float4 vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV); // Diffuse Tex Sampling
+//	float4 vMaskColor = g_MaskTexture.Sample(LinearSampler, In.vTexUV); // Mask Tex Sampling
+//
+//	// 마스크 텍스처를 잔여 시간에 따라 블렌딩
+//	vColor = lerp(vColor, vMaskColor, saturate(1 - g_Ratio));
+//
+//	// 최종 색상 설정
+//	Out.vColor = vColor;
+
+	PS_OUT Out = (PS_OUT)0;
+
+	float4 vColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV); // Diffuse Tex Sampling
+	float4 vMaskColor = g_MaskTexture.Sample(LinearSampler, In.vTexUV); // Mask Tex Sampling
+
+	Out.vColor = saturate(vColor);
+
+	// 아이콘의 일부분에만 마스크 텍스처를 적용
+	if (g_Ratio < In.vTexUV.y)
+	{
+		//Out.vColor = vMaskColor;
+		Out.vColor.rgb = lerp(vColor.rgb, float3(0.0f, 0.0f, 0.0f), 0.8f);
+		Out.vColor.a = 1.0f;
+	}
+	else
+	{
+		Out.vColor = vColor;
+	}
+
+	return Out;
+}
+
 technique11 DefaultTechnique
 {
 	pass DefaultPass // 0
@@ -824,89 +859,17 @@ technique11 DefaultTechnique
 		DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_MINIMAP_CAMERA();
 	}
-}
 
-
-/*
-
-
-PS_OUT PS_REVERSE_OPACTITY(PS_IN In)
-{
-	PS_OUT		Out = (PS_OUT)0;
-
-	vector vAlphaColor = g_AlphaTexture.Sample(LinearSampler, In.vTexUV);
-
-	if (vAlphaColor.r >= 0.2f)
-		discard;
-
-	Out.vColor = vector(vAlphaColor.rgb, 1.f - vAlphaColor.r);
-
-	if (0.f >= Out.vColor.a)
-		discard;
-
-	return Out;
-}
-
-PS_OUT PS_USING_ALPHA_VALUE(PS_IN In)
-{
-	PS_OUT		Out = (PS_OUT)0;
-
-	vector vTextureColor = g_DiffuseTexture.Sample(LinearSampler, In.vTexUV);
-	if (vTextureColor.a == 0.f || g_fAlpha == 0.f)
-		discard;
-
-	vTextureColor.a = g_fAlpha;
-	Out.vColor = vTextureColor;
-
-	if (0.f >= Out.vColor.a)
-		discard;
-
-	return Out;
-
-}
-
-PS_OUT PS_OPACTITY(PS_IN In)
-{
-	PS_OUT		Out = (PS_OUT)0;
-
-	Out.vColor = g_AlphaTexture.Sample(LinearSampler, In.vTexUV);
-	if (0.f >= Out.vColor.a)
-		discard;
-
-	return Out;
-}
-
-	pass ReverseOpacityPass // 2
+	pass VerticalCoolTime // 22
 	{
 		SetRasterizerState(RS_Default);
 		SetDepthStencilState(DSS_None, 0);
-		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
 
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
-		PixelShader = compile ps_5_0 PS_REVERSE_OPACTITY();
+		HullShader = NULL;
+		DomainShader = NULL;
+		PixelShader = compile ps_5_0 PS_VERTICAL_COOLTIME();
 	}
-
-	pass UsingAlphaValue // 3
-	{
-		SetRasterizerState(RS_Default);
-		SetDepthStencilState(DSS_None, 0);
-		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-
-		VertexShader = compile vs_5_0 VS_MAIN();
-		GeometryShader = NULL;
-		PixelShader = compile ps_5_0 PS_USING_ALPHA_VALUE();
-	}
-
-		pass OpacityPass // 6
-	{
-		SetRasterizerState(RS_Default);
-		SetDepthStencilState(DSS_None, 0);
-		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-
-		VertexShader = compile vs_5_0 VS_MAIN();
-		GeometryShader = NULL;
-		PixelShader = compile ps_5_0 PS_OPACTITY();
-	}
-
-*/
+}

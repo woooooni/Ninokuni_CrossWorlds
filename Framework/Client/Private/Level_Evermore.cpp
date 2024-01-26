@@ -31,6 +31,7 @@
 #include "Trigger.h"
 
 #include "Particle_Manager.h"
+#include "Riding_Manager.h"
 
 _bool CLevel_Evermore::g_bFirstEnter = false;
 
@@ -269,6 +270,17 @@ HRESULT CLevel_Evermore::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 	Vec4 vPosition = pDoorTransform->Get_Position() + (pDoorTransform->Get_Look() * -1.f);
 	pDoorTransform->Set_State(CTransform::STATE_POSITION, vPosition);
 	pDoorTransform->Set_Scale(vScale);
+
+	if (false == g_bFirstEnter)
+	{
+		if (FAILED(CRiding_Manager::GetInstance()->Ready_Vehicle_GameObject(LEVELID::LEVEL_EVERMORE)))
+			return E_FAIL;
+	}
+	else
+	{
+		if (FAILED(CRiding_Manager::GetInstance()->Ready_Vehicle_CameObjectToLayer(LEVELID::LEVEL_EVERMORE)))
+			return E_FAIL;
+	}
 
 	return S_OK;
 }

@@ -77,25 +77,28 @@ HRESULT CCharacter::Initialize(void* pArg)
 	m_pName = dynamic_cast<CUI_World_NameTag*>(pNameTag);
 	m_pName->Set_Owner(this);
 
-	//m_pCameraIcon
-	CGameObject* pIcon = nullptr;
-	pIcon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Minimap_Icon"), LAYER_TYPE::LAYER_UI);
-	if (nullptr == pIcon)
-		return E_FAIL;
-	if (nullptr == dynamic_cast<CUI_Minimap_Icon*>(pIcon))
-		return E_FAIL;
-	m_pCameraIcon = dynamic_cast<CUI_Minimap_Icon*>(pIcon);
-	m_pCameraIcon->Set_Owner(this, true);
+	if (LEVELID::LEVEL_TOOL != (LEVELID)g_eStartLevel)
+	{
+		//m_pCameraIcon
+		CGameObject* pIcon = nullptr;
+		pIcon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Minimap_Icon"), LAYER_TYPE::LAYER_UI);
+		if (nullptr == pIcon)
+			return E_FAIL;
+		if (nullptr == dynamic_cast<CUI_Minimap_Icon*>(pIcon))
+			return E_FAIL;
+		m_pCameraIcon = dynamic_cast<CUI_Minimap_Icon*>(pIcon);
+		m_pCameraIcon->Set_Owner(this, true);
 
-	//m_pMinimapIcon
-	pIcon = nullptr;
-	pIcon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Minimap_Icon"), LAYER_TYPE::LAYER_UI);
-	if (nullptr == pIcon)
-		return E_FAIL;
-	if (nullptr == dynamic_cast<CUI_Minimap_Icon*>(pIcon))
-		return E_FAIL;
-	m_pMinimapIcon = dynamic_cast<CUI_Minimap_Icon*>(pIcon);
-	m_pMinimapIcon->Set_Owner(this);
+		//m_pMinimapIcon
+		pIcon = nullptr;
+		pIcon = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Minimap_Icon"), LAYER_TYPE::LAYER_UI);
+		if (nullptr == pIcon)
+			return E_FAIL;
+		if (nullptr == dynamic_cast<CUI_Minimap_Icon*>(pIcon))
+			return E_FAIL;
+		m_pMinimapIcon = dynamic_cast<CUI_Minimap_Icon*>(pIcon);
+		m_pMinimapIcon->Set_Owner(this);
+	}
 
 	// CEffect_Manager::GetInstance()->Generate_Decal_To_Position(L"Decal_Target")
 
@@ -221,11 +224,13 @@ void CCharacter::Tick(_float fTimeDelta)
 			m_pMinimapIcon->Set_Active(false);
 	}
 
-	if (nullptr != m_pCameraIcon)
-		m_pCameraIcon->Tick(fTimeDelta);
-	if (nullptr != m_pMinimapIcon)  
-		m_pMinimapIcon->Tick(fTimeDelta);
-
+	if (LEVELID::LEVEL_TOOL != (LEVELID)g_eStartLevel)
+	{
+		if (nullptr != m_pCameraIcon)
+			m_pCameraIcon->Tick(fTimeDelta);
+		if (nullptr != m_pMinimapIcon)
+			m_pMinimapIcon->Tick(fTimeDelta);
+	}
 
 	for(_uint i = 0; i < SOCKET_END; ++i)
 	{
@@ -383,10 +388,13 @@ void CCharacter::LateTick(_float fTimeDelta)
 	if (nullptr != m_pWeapon)
 		m_pWeapon->LateTick(fTimeDelta);
 
-	if (nullptr != m_pCameraIcon)
-		m_pCameraIcon->LateTick(fTimeDelta);
-	if (nullptr != m_pMinimapIcon)
-		m_pMinimapIcon->LateTick(fTimeDelta);
+	if (LEVELID::LEVEL_TOOL != (LEVELID)g_eStartLevel)
+	{
+		if (nullptr != m_pCameraIcon)
+			m_pCameraIcon->LateTick(fTimeDelta);
+		if (nullptr != m_pMinimapIcon)
+			m_pMinimapIcon->LateTick(fTimeDelta);
+	}
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);

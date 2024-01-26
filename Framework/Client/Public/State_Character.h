@@ -46,6 +46,8 @@ protected:
 
 	virtual _bool Tag_Input(_float fTimeDelta);
 	virtual void Dead_Input(_float fTimeDelta);
+
+	virtual void OnBoard_Input(_float fTimeDelta);
 	
 protected:
 	virtual void Reset_Camera_WideToDeafult();

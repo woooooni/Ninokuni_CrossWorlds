@@ -13,10 +13,43 @@ CUI_Minigame_EnemyInfo::CUI_Minigame_EnemyInfo(const CUI_Minigame_EnemyInfo& rhs
 {
 }
 
+void CUI_Minigame_EnemyInfo::Set_TextureIndex(_uint iIndex)
+{
+	if (8 < iIndex)
+		return;
+
+	m_vOriginPos = _float2(m_tInfo.fX, m_tInfo.fY);
+	m_fSpeed = 800.f;
+
+	_float fSizeX = m_tInfo.fCX * 0.5f;
+	_float fOffsetX = fSizeX * 0.5f;
+
+	m_vStartPos = _float2(m_tInfo.fX - fSizeX - (fOffsetX * iIndex), m_tInfo.fY);
+	m_iTextureIndex = iIndex;
+}
+
 void CUI_Minigame_EnemyInfo::Set_Owner(CGameObject* pOwner)
 {
 	m_pOwner = pOwner;
 
+}
+
+void CUI_Minigame_EnemyInfo::Set_Active(_bool bActive)
+{
+	if (true == bActive)
+	{
+		m_bArrived = false;
+		m_tInfo.fX = m_vStartPos.x;
+
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
+	}
+	else
+	{
+
+	}
+
+	m_bActive = bActive;
 }
 
 HRESULT CUI_Minigame_EnemyInfo::Initialize_Prototype()
@@ -59,8 +92,24 @@ void CUI_Minigame_EnemyInfo::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
-		if (nullptr != m_pHP)
-			m_pHP->Tick(fTimeDelta);
+		if (false == m_bArrived)
+		{
+			m_tInfo.fX += fTimeDelta * m_fSpeed;
+
+			if (m_vOriginPos.x <= m_tInfo.fX)
+			{
+				m_tInfo.fX = m_vOriginPos.x;
+				m_bArrived = true;
+			}
+
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
+		}
+		else
+		{
+			if (nullptr != m_pHP)
+				m_pHP->Tick(fTimeDelta);
+		}
 
 		__super::Tick(fTimeDelta);
 	}
@@ -73,8 +122,11 @@ void CUI_Minigame_EnemyInfo::LateTick(_float fTimeDelta)
 		if (8 < m_iTextureIndex)
 			return;
 
-		if (nullptr != m_pHP)
-			m_pHP->LateTick(fTimeDelta);
+		if (true == m_bArrived)
+		{
+			if (nullptr != m_pHP)
+				m_pHP->LateTick(fTimeDelta);
+		}
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
@@ -89,8 +141,11 @@ HRESULT CUI_Minigame_EnemyInfo::Render()
 
 	m_pVIBufferCom->Render();
 
-	if (nullptr != m_pHP)
-		m_pHP->Render();
+	if (true == m_bArrived)
+	{
+		if (nullptr != m_pHP)
+			m_pHP->Render();
+	}
 
 	return S_OK;
 }

@@ -13,6 +13,24 @@ CUI_Btn_Minimap::CUI_Btn_Minimap(const CUI_Btn_Minimap& rhs)
 {
 }
 
+void CUI_Btn_Minimap::Set_Active(_bool bActive)
+{
+	if (true == bActive)
+	{
+		if (m_iTextureIndex == 0)
+		{
+			m_iTextureIndex = 1;
+			CUI_Manager::GetInstance()->OnOff_MiniMap(true);
+		}
+	}
+	else
+	{
+
+	}
+
+	m_bActive = bActive;
+}
+
 HRESULT CUI_Btn_Minimap::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))

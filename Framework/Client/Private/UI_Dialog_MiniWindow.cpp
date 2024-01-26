@@ -53,7 +53,7 @@ HRESULT CUI_Dialog_MiniWindow::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_bActive = false;
-	m_bUseMouse = true;
+	m_bUseMouse = false;
 	
 	return S_OK;
 }
@@ -141,29 +141,6 @@ HRESULT CUI_Dialog_MiniWindow::Render()
 
 	return S_OK;
 }
-
-void CUI_Dialog_MiniWindow::On_MouseEnter(_float fTimeDelta)
-{
-}
-
-void CUI_Dialog_MiniWindow::On_Mouse(_float fTimeDelta)
-{
-	if (m_bActive)
-	{
-		Key_Input(fTimeDelta);
-
-		__super::On_Mouse(fTimeDelta);
-	}
-}
-
-void CUI_Dialog_MiniWindow::On_MouseExit(_float fTimeDelta)
-{
-	if (m_bActive)
-	{
-		__super::On_MouseExit(fTimeDelta);
-	}
-}
-
 HRESULT CUI_Dialog_MiniWindow::Ready_Components()
 {
 	
@@ -205,22 +182,6 @@ HRESULT CUI_Dialog_MiniWindow::Bind_ShaderResources()
 		return E_FAIL;
 
 	return S_OK;
-}
-
-void CUI_Dialog_MiniWindow::Key_Input(_float fTimeDelta)
-{
-	if (KEY_TAP(KEY::LBTN))
-	{
-//		if (!m_bResize)
-//		{
-//			m_bResize = true;
-//
-//			m_tInfo.fCX = m_vMinSize.x;
-//			m_tInfo.fCY = m_vMinSize.y;
-//
-//			m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
-//		}
-	}
 }
 
 CUI_Dialog_MiniWindow* CUI_Dialog_MiniWindow::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

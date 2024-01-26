@@ -11,6 +11,8 @@
 #include "Camera_Manager.h"
 #include "Camera_Follow.h"
 
+#include "Riding_Manager.h"
+
 CState_Character::CState_Character(CStateMachine* pStateMachine)
 	: CState(pStateMachine)
 {
@@ -39,11 +41,6 @@ void CState_Character::Neutral_Idle_Input(_float fTimeDelta)
 	
 	if (false == m_pCharacter->Is_Move_Input())
 		return;
-
-	
-
-	//if (true == CUI_Manager::GetInstance()->Is_Dialog_Active())
-	//	return;
 
 	if (true == GI->Mouse_Down(DIMK_WHEEL))
 	{
@@ -122,6 +119,12 @@ void CState_Character::Neutral_Idle_Input(_float fTimeDelta)
 		return;
 	}
 
+	if (KEY_TAP(KEY::V))
+	{
+		m_pStateMachineCom->Change_State(CCharacter::VEHICLE);
+		CRiding_Manager::GetInstance()->Ride(CRiding_Manager::UDADAK, true);
+		return;
+	}
 }
 
 void CState_Character::Battle_Idle_Input(_float fTimeDelta)
@@ -227,6 +230,13 @@ void CState_Character::Battle_Idle_Input(_float fTimeDelta)
 	{
 		m_pStateMachineCom->Change_State(CCharacter::BATTLE_DASH);
 		CUI_Manager::GetInstance()->Use_RollBtn();
+		return;
+	}
+
+	if (KEY_TAP(KEY::V))
+	{
+		m_pStateMachineCom->Change_State(CCharacter::VEHICLE);
+		CRiding_Manager::GetInstance()->Ride(CRiding_Manager::UDADAK, true);
 		return;
 	}
 }
@@ -1588,6 +1598,16 @@ void CState_Character::Dead_Input(_float fTimeDelta)
 	if (KEY_TAP(KEY::R))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::REVIVE);
+	}
+}
+
+void CState_Character::OnBoard_Input(_float fTimeDelta)
+{
+	if (KEY_TAP(KEY::V))
+	{
+		m_pStateMachineCom->Change_State(CCharacter::VEHICLE);
+		CRiding_Manager::GetInstance()->Ride(CRiding_Manager::UDADAK, false);
+		return;
 	}
 }
 

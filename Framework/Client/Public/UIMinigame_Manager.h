@@ -41,6 +41,8 @@ public:
 public: // Level Evermore
 	void OnOff_TowerDefence_Select(_bool bOnOff);
 	void OnOff_Grandprix(_bool bOnOff);
+	void Start_Grandprix(); // Countdown
+	void End_Grandprix(); // End Text
 
 private: // Prototypes
 	HRESULT Ready_MinigameUI_Evermore();

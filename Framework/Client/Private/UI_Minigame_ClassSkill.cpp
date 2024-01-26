@@ -53,6 +53,11 @@ HRESULT CUI_Minigame_ClassSkill::Initialize(void* pArg)
 		if (nullptr == dynamic_cast<CUI_Minigame_Basic*>(pFrame))
 			return E_FAIL;
 		m_pFrame = dynamic_cast<CUI_Minigame_Basic*>(pFrame);
+
+		m_vTextPosition.x = m_tInfo.fX - 20.f;
+		m_vTextPosition.y = m_tInfo.fY - 15.f;
+		m_vScale = _float2(0.6f, 0.6f);
+		m_vOffsetX = 9.f;
 	}
 	else
 	{
@@ -68,22 +73,17 @@ HRESULT CUI_Minigame_ClassSkill::Initialize(void* pArg)
 		if (nullptr == dynamic_cast<CUI_Minigame_Basic*>(pFrame))
 			return E_FAIL;
 		m_pFrame = dynamic_cast<CUI_Minigame_Basic*>(pFrame);
+
+		m_vTextPosition.x = m_tInfo.fX - 30.f;
+		m_vTextPosition.y = m_tInfo.fY - 20.f;
+		m_vScale = _float2(1.f, 1.f);
+		m_vOffsetX = 13.f;
 	}
 
-//	switch (m_eType)
-//	{
-//	case SKILL_FIRST:
-//		m_vTextPosition = _float2(g_iWinSizeX - 265.f, g_iWinSizeY - 172.f);
-//		break;
-//
-//	case SKILL_SECOND:
-//		m_vTextPosition = _float2(g_iWinSizeX - 240.f, g_iWinSizeY - 240.f);
-//		break;
-//
-//	case SKILL_THIRD:
-//		m_vTextPosition = _float2(g_iWinSizeX - 174.f, g_iWinSizeY - 265.f);
-//		break;
-//	}
+	m_fOriginCoolTime = 10.f;
+	m_fCoolTime = 10.f;
+
+	m_bUseMouse = true;
 
 	return S_OK;
 }
@@ -98,19 +98,19 @@ void CUI_Minigame_ClassSkill::Tick(_float fTimeDelta)
 		if (nullptr != m_pFrame)
 			m_pFrame->Tick(fTimeDelta);
 
-//		if (m_bClicked)
-//		{
-//			m_fCoolTime -= fTimeDelta;
-//			m_iPass = 6;
-//
-//			if (m_fCoolTime <= 0.f)
-//			{
-//				m_bClicked = false;
-//
-//				m_iPass = 5;
-//				m_fCoolTime = m_fOriginCoolTime;
-//			}
-//		}
+		if (m_bClicked)
+		{
+			m_fCoolTime -= fTimeDelta;
+			m_iPass = 22;
+
+			if (m_fCoolTime <= 0.f)
+			{
+				m_bClicked = false;
+
+				m_iPass = 1;
+				m_fCoolTime = m_fOriginCoolTime;
+			}
+		}
 
 		__super::Tick(fTimeDelta);
 	}
@@ -129,27 +129,41 @@ void CUI_Minigame_ClassSkill::LateTick(_float fTimeDelta)
 //		if (0 > m_iTextureIndex)
 //			return;
 
-//		if (m_bClicked)
-//		{
-//			if (_int(m_fCoolTime) + 1 > 0)
-//			{
-//				_int iTemp = _int(m_fCoolTime) + 1;
-//
-//				CRenderer::TEXT_DESC TextDesc;
-//
-//				TextDesc.strText = std::to_wstring(iTemp);
-//				TextDesc.strFontTag = L"Default_Bold";
-//				TextDesc.vScale = { 0.6f, 0.6f };
-//				TextDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
-//
-//				if (iTemp < 10)
-//					TextDesc.vPosition = _float2(m_vTextPosition.x + 10.f, m_vTextPosition.y);
-//				else
-//					TextDesc.vPosition = m_vTextPosition;
-//
-//				m_pRendererCom->Add_Text(TextDesc);
-//			}
-//		}
+		if (m_bClicked)
+		{
+			if (_int(m_fCoolTime) + 1 > 0)
+			{
+				_int iTemp = _int(m_fCoolTime) + 1;
+
+				CRenderer::TEXT_DESC TextDesc;
+
+				TextDesc.strText = std::to_wstring(iTemp);
+				TextDesc.strFontTag = L"Default_Bold";
+				TextDesc.vScale = m_vScale;
+
+				if (iTemp < 10)
+				{
+//					// Outline
+//					TextDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
+//					TextDesc.vPosition = _float2(m_vTextPosition.x + m_vOffsetX, m_vTextPosition.y);
+//					m_pRendererCom->Add_Text(TextDesc);
+
+					// Original
+					TextDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+					TextDesc.vPosition = _float2(m_vTextPosition.x + m_vOffsetX, m_vTextPosition.y);
+					m_pRendererCom->Add_Text(TextDesc);
+				}
+				else
+				{
+					// Outline
+					
+					//Original
+					TextDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+					TextDesc.vPosition = m_vTextPosition;
+					m_pRendererCom->Add_Text(TextDesc);
+				}
+			}
+		}
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
@@ -162,8 +176,7 @@ HRESULT CUI_Minigame_ClassSkill::Render()
 		if (FAILED(Bind_ShaderResources()))
 			return E_FAIL;
 
-		// DefaultPAss는 5(마스크 이미지 사용함)
-		m_pShaderCom->Begin(1); // m_iPass
+		m_pShaderCom->Begin(m_iPass);
 
 		m_pVIBufferCom->Render();
 
@@ -259,7 +272,7 @@ HRESULT CUI_Minigame_ClassSkill::Bind_ShaderResources()
 	{
 		// 선택되었다면, FXTexture를 던진다. + CoolTime과 관련된 것들을 함께 던져준다.
 
-		_float fRatio = (m_fOriginCoolTime - m_fCoolTime) / m_fOriginCoolTime; // 값이 0이면 원 전체가 그려진다.
+		_float fRatio = (m_fOriginCoolTime - m_fCoolTime) / m_fOriginCoolTime;
 
 		if (FAILED(m_pFXTexture->Bind_ShaderResource(m_pShaderCom, "g_MaskTexture")))
 			return E_FAIL;
