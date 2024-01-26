@@ -413,7 +413,6 @@ HRESULT CTarget_Manager::End_MRT(ID3D11DeviceContext* pContext)
 	return	S_OK;
 }
 
-#ifdef _DEBUG
 
 void CTarget_Manager::SetRenderTarget(ID3D11DeviceContext* pContext, int nCascadeIndex)
 {
@@ -432,11 +431,13 @@ void CTarget_Manager::SetRenderTarget(ID3D11DeviceContext* pContext, int nCascad
 	pContext->RSSetViewports(1, &ViewPortDesc);
 }
 
+
 void CTarget_Manager::ClearCascadeDepthBuffer(ID3D11DeviceContext* pContext)
 {
 	pContext->ClearDepthStencilView(m_pCascadeDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
+#ifdef _DEBUG
 HRESULT CTarget_Manager::Ready_Debug(const wstring & strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY)
 {
 	CRenderTarget*		pRenderTarget = Find_RenderTarget(strTargetTag);

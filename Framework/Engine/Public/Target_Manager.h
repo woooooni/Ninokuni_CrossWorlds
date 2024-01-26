@@ -46,6 +46,7 @@ public:
 
 	void SetRenderTarget(ID3D11DeviceContext* pContext, int nCascadeIndex);
 	void ClearCascadeDepthBuffer(ID3D11DeviceContext* pContext);
+
 #ifdef _DEBUG
 public:
 	HRESULT Ready_Debug(const wstring& strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY);
