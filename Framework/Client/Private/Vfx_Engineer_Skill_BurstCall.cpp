@@ -35,7 +35,7 @@ HRESULT CVfx_Engineer_Skill_BurstCall::Initialize_Prototype()
 
 		m_pFrameTriger[TYPE_ET1_E_LINE]    = 15;
 		m_pPositionOffset[TYPE_ET1_E_LINE] = _float3(0.f, 0.f, 10.f);
-		m_pScaleOffset[TYPE_ET1_E_LINE]    = _float3(1.f, 10.f, 1.f);
+		m_pScaleOffset[TYPE_ET1_E_LINE]    = _float3(1.f, 50.f, 1.f);
 		m_pRotationOffset[TYPE_ET1_E_LINE] = _float3(0.f, 0.f, 0.f);
 
 		m_pFrameTriger[TYPE_ET1_E_CIRCLELINE] = 18;
