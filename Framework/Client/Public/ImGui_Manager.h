@@ -44,7 +44,7 @@ private:
 	_bool m_bShowUI_Tool = false;
 	_bool m_bShowItem_Tool = false;
 	_bool m_bShow_Demo = false;
-
+	_bool m_bPlayerInput = true;
 
 private:
 	class CTool_Model* m_pModel_Tool = nullptr;

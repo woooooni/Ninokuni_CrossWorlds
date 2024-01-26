@@ -11,6 +11,9 @@
 #include "Tool_UI.h"
 #include "Tool_Item.h"
 
+#include "Game_Manager.h"
+#include "Player.h"
+#include "Character.h"
 
 IMPLEMENT_SINGLETON(CImGui_Manager)
 
@@ -166,6 +169,20 @@ void CImGui_Manager::Tick(_float fTimeDelta)
     ImGui::Checkbox("UI_Tool", &m_bShowUI_Tool);
     ImGui::Checkbox("Item_Tool", &m_bShowItem_Tool);
     ImGui::Checkbox("Demo", &m_bShow_Demo);
+
+    if (ImGui::Checkbox("Player Input", &m_bPlayerInput))
+    {
+        CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+
+        if (nullptr != pPlayer)
+        {
+            CCharacter* pCharacter = pPlayer->Get_Character();
+            if (nullptr != pCharacter)
+            {
+                pCharacter->Set_All_Input(m_bPlayerInput);
+            }
+        }
+    }
     ImGui::End();
 
 
