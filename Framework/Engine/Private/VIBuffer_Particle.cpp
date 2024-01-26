@@ -665,12 +665,31 @@ void CVIBuffer_Particle::Tick(_float fTimeDelta)
 			if ((*m_tParticleDesc.pParticleLoop))
 			{
 				m_vecParticleInfoDesc[i].bIsDie = false;
+				m_vecParticleInfoDesc[i].fTimeAccs = 0.f;
 
-				m_vecParticleInfoDesc[i].fTimeAccs             = 0.f;
+				// 포지션
 				((VTXINSTANCE*)SubResource.pData)[i].vPosition = Get_NewPosition_Particle();
-				m_vecParticleInfoDesc[i].vVelocity       = Get_NewVelocity_Particle();
-				m_vecParticleInfoDesc[i].fVelocitySpeeds = CUtils::Random_Float((*m_tParticleDesc.pVelocitySpeed).x, (*m_tParticleDesc.pVelocitySpeed).y);
 
+				// 이동
+				m_vecParticleInfoDesc[i].vVelocity             = Get_NewVelocity_Particle();
+				m_vecParticleInfoDesc[i].fVelocitySpeeds       = CUtils::Random_Float((*m_tParticleDesc.pVelocitySpeed).x, (*m_tParticleDesc.pVelocitySpeed).y);
+
+				// 스케일
+				if ((*m_tParticleDesc.pScaleSameRate))
+				{
+					_float fScale = CUtils::Random_Float((*m_tParticleDesc.pScaleStart).x, (*m_tParticleDesc.pScaleStart).y);
+					((VTXINSTANCE*)SubResource.pData)[i].vRight = _float4(fScale, 0.f, 0.f, 0.f);
+					((VTXINSTANCE*)SubResource.pData)[i].vUp    = _float4(0.f, fScale, 0.f, 0.f);
+					((VTXINSTANCE*)SubResource.pData)[i].vLook  = _float4(0.f, 0.f, fScale, 0.f);
+				}
+				else
+				{
+					((VTXINSTANCE*)SubResource.pData)[i].vRight = _float4(CUtils::Random_Float((*m_tParticleDesc.pScaleStart).x, (*m_tParticleDesc.pScaleStart).y), 0.f, 0.f, 0.f);
+					((VTXINSTANCE*)SubResource.pData)[i].vUp    = _float4(0.f, CUtils::Random_Float((*m_tParticleDesc.pScaleStart).x, (*m_tParticleDesc.pScaleStart).y), 0.f, 0.f);
+					((VTXINSTANCE*)SubResource.pData)[i].vLook  = _float4(0.f, 0.f, CUtils::Random_Float((*m_tParticleDesc.pScaleStart).x, (*m_tParticleDesc.pScaleStart).y), 0.f);
+				}
+
+				// 알파
 				if ((*m_tParticleDesc.pFadeCreate))
 				{
 					m_vecParticleShaderDesc[i].fAlpha = 1.f;

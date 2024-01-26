@@ -28,62 +28,63 @@ HRESULT CVfx_Engineer_Skill_ExplosionShot::Initialize_Prototype()
 	{
 		m_pFrameTriger[TYPE_ET1_D_RECT] = 0;
 		m_pPositionOffset[TYPE_ET1_D_RECT] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET1_D_RECT]    = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET1_D_RECT]    = _float3(4.f, 5.f, 8.f);
 		m_pRotationOffset[TYPE_ET1_D_RECT] = _float3(0.f, 0.f, 0.f);
-
-
-		m_pFrameTriger[TYPE_ET1_P_FIRE] = 0;
-		m_pPositionOffset[TYPE_ET1_P_FIRE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET1_P_FIRE] = _float3(5.f, 5.f, 5.f);
-		m_pRotationOffset[TYPE_ET1_P_FIRE] = _float3(0.f, 0.f, 0.f);
-
-		m_pFrameTriger[TYPE_ET1_E_CIRCLELINE] = 0;
-		m_pPositionOffset[TYPE_ET1_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET1_E_CIRCLELINE] = _float3(5.f, 5.f, 5.f);
-		m_pRotationOffset[TYPE_ET1_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
-
-		m_pFrameTriger[TYPE_ET1_P_SMOKE] = 0;
-		m_pPositionOffset[TYPE_ET1_P_SMOKE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET1_P_SMOKE] = _float3(5.f, 5.f, 5.f);
-		m_pRotationOffset[TYPE_ET1_P_SMOKE] = _float3(0.f, 0.f, 0.f);
-
-		m_pFrameTriger[TYPE_ET1_P_CIRCLES] = 0;
-		m_pPositionOffset[TYPE_ET1_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET1_P_CIRCLES] = _float3(5.f, 5.f, 5.f);
-		m_pRotationOffset[TYPE_ET1_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
 	}
 
 	{
-		m_pFrameTriger[TYPE_ET2_D_CIRCLE] = 0;
+		m_pFrameTriger[TYPE_ET1_E_CIRCLELINE] = 16;
+		m_pPositionOffset[TYPE_ET1_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
+		m_pScaleOffset[TYPE_ET1_E_CIRCLELINE]    = _float3(5.f, 5.f, 5.f);
+		m_pRotationOffset[TYPE_ET1_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
+
+		m_pFrameTriger[TYPE_ET1_E_CIRCLES] = 16;
+		m_pPositionOffset[TYPE_ET1_E_CIRCLES] = _float3(0.f, 0.f, 0.f);
+		m_pScaleOffset[TYPE_ET1_E_CIRCLES]    = _float3(5.f, 5.f, 5.f);
+		m_pRotationOffset[TYPE_ET1_E_CIRCLES] = _float3(0.f, 0.f, 0.f);
+
+		m_pFrameTriger[TYPE_ET1_P_FIRE] = 16;
+		m_pPositionOffset[TYPE_ET1_P_FIRE] = _float3(0.f, 0.f, 0.f);
+		m_pScaleOffset[TYPE_ET1_P_FIRE]    = _float3(5.f, 5.f, 5.f);
+		m_pRotationOffset[TYPE_ET1_P_FIRE] = _float3(0.f, 0.f, 0.f);
+
+		m_pFrameTriger[TYPE_ET1_P_SMOKE] = 16;
+		m_pPositionOffset[TYPE_ET1_P_SMOKE] = _float3(0.f, 0.f, 0.f);
+		m_pScaleOffset[TYPE_ET1_P_SMOKE]    = _float3(5.f, 5.f, 5.f);
+		m_pRotationOffset[TYPE_ET1_P_SMOKE] = _float3(0.f, 0.f, 0.f);
+	}
+
+	{
+		m_pFrameTriger[TYPE_ET2_D_CIRCLE] = 34;
 		m_pPositionOffset[TYPE_ET2_D_CIRCLE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_D_CIRCLE] = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET2_D_CIRCLE]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET2_D_CIRCLE] = _float3(0.f, 0.f, 0.f);
 
 
-		m_pFrameTriger[TYPE_ET2_P_LIGHT] = 0;
-		m_pPositionOffset[TYPE_ET2_P_LIGHT] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_P_LIGHT] = _float3(5.f, 5.f, 5.f);
-		m_pRotationOffset[TYPE_ET2_P_LIGHT] = _float3(0.f, 0.f, 0.f);
+		m_pFrameTriger[TYPE_ET2_P_DOME] = 34;
+		m_pPositionOffset[TYPE_ET2_P_DOME] = _float3(0.f, 0.f, 0.f);
+		m_pScaleOffset[TYPE_ET2_P_DOME]    = _float3(5.f, 5.f, 5.f);
+		m_pRotationOffset[TYPE_ET2_P_DOME] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_ET2_P_FIRE] = 0;
+		m_pFrameTriger[TYPE_ET2_P_FIRE] = 34;
 		m_pPositionOffset[TYPE_ET2_P_FIRE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_P_FIRE] = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET2_P_FIRE]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET2_P_FIRE] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_ET2_P_SMOKE] = 0;
-		m_pPositionOffset[TYPE_ET2_P_SMOKE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_P_SMOKE] = _float3(5.f, 5.f, 5.f);
-		m_pRotationOffset[TYPE_ET2_P_SMOKE] = _float3(0.f, 0.f, 0.f);
+		m_pFrameTriger[TYPE_ET2_E_CIRCLELINE] = 34;
+		m_pPositionOffset[TYPE_ET2_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
+		m_pScaleOffset[TYPE_ET2_E_CIRCLELINE]    = _float3(5.f, 5.f, 5.f);
+		m_pRotationOffset[TYPE_ET2_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_ET2_P_CIRCLES] = 0;
+		m_pFrameTriger[TYPE_ET2_P_CIRCLES] = 34;
 		m_pPositionOffset[TYPE_ET2_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_P_CIRCLES] = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET2_P_CIRCLES]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET2_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_ET2_E_CIRCLELINE] = 0;
-		m_pPositionOffset[TYPE_ET2_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_E_CIRCLELINE] = _float3(5.f, 5.f, 5.f);
-		m_pRotationOffset[TYPE_ET2_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
+		m_pFrameTriger[TYPE_ET2_P_SMOKE] = 34;
+		m_pPositionOffset[TYPE_ET2_P_SMOKE] = _float3(0.f, 0.f, 0.f);
+		m_pScaleOffset[TYPE_ET2_P_SMOKE]    = _float3(5.f, 5.f, 5.f);
+		m_pRotationOffset[TYPE_ET2_P_SMOKE] = _float3(0.f, 0.f, 0.f);
 	}
 
  	return S_OK;
@@ -102,14 +103,20 @@ void CVfx_Engineer_Skill_ExplosionShot::Tick(_float fTimeDelta)
 	{
 		if (m_iCount == TYPE_ET1_D_RECT && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_D_RECT])
 		{
+			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_FrozenStorm_Square"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_D_RECT], m_pScaleOffset[TYPE_ET1_D_RECT], m_pRotationOffset[TYPE_ET1_D_RECT]);
 			m_iCount++;
 		}
 
-		else if (m_iCount == TYPE_ET1_P_FIRE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_P_FIRE])
+		else if (m_iCount == TYPE_ET1_E_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_E_CIRCLELINE])
 		{
 			m_iCount++;
 		}
-		else if (m_iCount == TYPE_ET1_E_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_E_CIRCLELINE])
+		else if (m_iCount == TYPE_ET1_E_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_E_CIRCLES])
+		{
+			m_iCount++;
+		}
+		else if (m_iCount == TYPE_ET1_P_FIRE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_P_FIRE])
 		{
 			m_iCount++;
 		}
@@ -117,16 +124,13 @@ void CVfx_Engineer_Skill_ExplosionShot::Tick(_float fTimeDelta)
 		{
 			m_iCount++;
 		}
-		else if (m_iCount == TYPE_ET1_P_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_P_CIRCLES])
-		{
-			m_iCount++;
-		}
 
 		else if (m_iCount == TYPE_ET2_D_CIRCLE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_D_CIRCLE])
 		{
+
 			m_iCount++;
 		}
-		else if (m_iCount == TYPE_ET2_P_LIGHT && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_LIGHT])
+		else if (m_iCount == TYPE_ET2_P_DOME && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_DOME])
 		{
 			m_iCount++;
 		}
@@ -134,7 +138,7 @@ void CVfx_Engineer_Skill_ExplosionShot::Tick(_float fTimeDelta)
 		{
 			m_iCount++;
 		}
-		else if (m_iCount == TYPE_ET2_P_SMOKE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_SMOKE])
+		else if (m_iCount == TYPE_ET2_E_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_E_CIRCLELINE])
 		{
 			m_iCount++;
 		}
@@ -142,7 +146,7 @@ void CVfx_Engineer_Skill_ExplosionShot::Tick(_float fTimeDelta)
 		{
 			m_iCount++;
 		}
-		else if (m_iCount == TYPE_ET2_E_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_E_CIRCLELINE])
+		else if (m_iCount == TYPE_ET2_P_SMOKE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_SMOKE])
 		{
 			m_iCount++;
 		}

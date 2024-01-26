@@ -12,15 +12,17 @@ class CVfx_Engineer_Skill_ElementalBlast final : public CVfx
 {
 private:
 	enum TYPE {
-		TYPE_ET1_D_RECT, // 0
-
-		TYPE_ET1_P_LIGHT, // 9
-		TYPE_ET1_E_CIRCLELINE,
-		TYPE_ET1_P_CIRCLES,
+		TYPE_ET1_D_RECT,
 		// -----------------------
-		TYPE_ET2_P_FIRE, // 21
-		TYPE_ET2_P_SMOKE,
+		TYPE_ET2_E_CIRCLELINE,
 		TYPE_ET2_P_CIRCLES,
+		// -----------------------
+		TYPE_ET3_P_FIRE_MAIN,
+		TYPE_ET3_P_CIRCLES,
+
+		TYPE_ET3_P_SMOKE,      //
+
+		TYPE_EVENT_FIRE,
 
 		TYPE_END
 	};
@@ -39,6 +41,10 @@ public:
 
 protected:
 	virtual HRESULT Ready_Components() override;
+
+private:
+	class CParticle* m_pEt3_FireBig = nullptr;
+	class CParticle* m_pEt3_Circles = nullptr;
 
 public:
 	static CVfx_Engineer_Skill_ElementalBlast* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,

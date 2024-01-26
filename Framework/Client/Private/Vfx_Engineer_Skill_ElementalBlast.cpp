@@ -4,6 +4,7 @@
 #include "Particle_Manager.h"
 #include "Effect_Manager.h"
 #include "Character.h"
+#include "Particle.h"
 
 CVfx_Engineer_Skill_ElementalBlast::CVfx_Engineer_Skill_ElementalBlast(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
@@ -27,43 +28,45 @@ HRESULT CVfx_Engineer_Skill_ElementalBlast::Initialize_Prototype()
 
 	{
 		m_pFrameTriger[TYPE_ET1_D_RECT] = 0;
-		m_pPositionOffset[TYPE_ET1_D_RECT] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET1_D_RECT] = _float3(5.f, 5.f, 5.f);
+		m_pPositionOffset[TYPE_ET1_D_RECT] = _float3(0.f, 0.f, 0.3f);
+		m_pScaleOffset[TYPE_ET1_D_RECT]    = _float3(2.5f, 5.f, 4.5f);
 		m_pRotationOffset[TYPE_ET1_D_RECT] = _float3(0.f, 0.f, 0.f);
-
-
-		m_pFrameTriger[TYPE_ET1_P_LIGHT] = 0;
-		m_pPositionOffset[TYPE_ET1_P_LIGHT] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET1_P_LIGHT] = _float3(5.f, 5.f, 5.f);
-		m_pRotationOffset[TYPE_ET1_P_LIGHT] = _float3(0.f, 0.f, 0.f);
-
-		m_pFrameTriger[TYPE_ET1_E_CIRCLELINE] = 0;
-		m_pPositionOffset[TYPE_ET1_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET1_E_CIRCLELINE] = _float3(5.f, 5.f, 5.f);
-		m_pRotationOffset[TYPE_ET1_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
-
-		m_pFrameTriger[TYPE_ET1_P_CIRCLES] = 0;
-		m_pPositionOffset[TYPE_ET1_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET1_P_CIRCLES] = _float3(5.f, 5.f, 5.f);
-		m_pRotationOffset[TYPE_ET1_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
 	}
 
 	{
-		m_pFrameTriger[TYPE_ET2_P_FIRE] = 0;
-		m_pPositionOffset[TYPE_ET2_P_FIRE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_P_FIRE] = _float3(5.f, 5.f, 5.f);
-		m_pRotationOffset[TYPE_ET2_P_FIRE] = _float3(0.f, 0.f, 0.f);
+		m_pFrameTriger[TYPE_ET2_E_CIRCLELINE] = 12;
+		m_pPositionOffset[TYPE_ET2_E_CIRCLELINE] = _float3(3.f, 18.f, 16.f);
+		m_pScaleOffset[TYPE_ET2_E_CIRCLELINE]    = _float3(0.05f, 0.05f, 0.05f);
+		m_pRotationOffset[TYPE_ET2_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_ET2_P_SMOKE] = 0;
-		m_pPositionOffset[TYPE_ET2_P_SMOKE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_P_SMOKE] = _float3(5.f, 5.f, 5.f);
-		m_pRotationOffset[TYPE_ET2_P_SMOKE] = _float3(0.f, 0.f, 0.f);
-
-		m_pFrameTriger[TYPE_ET2_P_CIRCLES] = 0;
-		m_pPositionOffset[TYPE_ET2_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_P_CIRCLES] = _float3(5.f, 5.f, 5.f);
+		m_pFrameTriger[TYPE_ET2_P_CIRCLES] = 12;
+		m_pPositionOffset[TYPE_ET2_P_CIRCLES] = _float3(0.3f, 1.7f, 1.6f);
+		m_pScaleOffset[TYPE_ET2_P_CIRCLES]    = _float3(0.5f, 0.5f, 0.5f);
 		m_pRotationOffset[TYPE_ET2_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
 	}
+
+	{
+		m_pFrameTriger[TYPE_ET3_P_FIRE_MAIN] = 21;
+		m_pPositionOffset[TYPE_ET3_P_FIRE_MAIN] = _float3(0.f, 1.f, 1.5f);
+		m_pScaleOffset[TYPE_ET3_P_FIRE_MAIN]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_ET3_P_FIRE_MAIN] = _float3(0.f, 0.f, 0.f);
+
+		m_pFrameTriger[TYPE_ET3_P_CIRCLES] = 21;
+		m_pPositionOffset[TYPE_ET3_P_CIRCLES] = _float3(0.f, 1.f, 1.5f);
+		m_pScaleOffset[TYPE_ET3_P_CIRCLES]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_ET3_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
+
+
+		m_pFrameTriger[TYPE_ET3_P_SMOKE] = 21;
+		m_pPositionOffset[TYPE_ET3_P_SMOKE] = _float3(0.f, 0.f, 0.f);
+		m_pScaleOffset[TYPE_ET3_P_SMOKE]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_ET3_P_SMOKE] = _float3(0.f, 0.f, 0.f);
+	}
+
+	m_pFrameTriger[TYPE_EVENT_FIRE] = 75;
+	m_pPositionOffset[TYPE_EVENT_FIRE] = _float3(0.f, 0.f, 0.f);
+	m_pScaleOffset[TYPE_EVENT_FIRE]    = _float3(0.f, 0.f, 0.f);
+	m_pRotationOffset[TYPE_EVENT_FIRE] = _float3(0.f, 0.f, 0.f);
 
  	return S_OK;
 }
@@ -81,37 +84,65 @@ void CVfx_Engineer_Skill_ElementalBlast::Tick(_float fTimeDelta)
 	{
 		if (m_iCount == TYPE_ET1_D_RECT && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_D_RECT])
 		{
+			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_FrozenStorm_Square"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_D_RECT], m_pScaleOffset[TYPE_ET1_D_RECT], m_pRotationOffset[TYPE_ET1_D_RECT]);
 			m_iCount++;
 		}
 
-		else if (m_iCount == TYPE_ET1_P_LIGHT && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_P_LIGHT])
-		{
-			m_iCount++;
-		}
-		else if (m_iCount == TYPE_ET1_E_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_E_CIRCLELINE])
-		{
-			m_iCount++;
-		}
-		else if (m_iCount == TYPE_ET1_P_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_P_CIRCLES])
-		{
-			m_iCount++;
-		}
 
-		else if (m_iCount == TYPE_ET2_P_FIRE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_FIRE])
+		else if (m_iCount == TYPE_ET2_E_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_E_CIRCLELINE])
 		{
-			m_iCount++;
-		}
-		else if (m_iCount == TYPE_ET2_P_SMOKE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_SMOKE])
-		{
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Engineer_Skill_BurstCall_CircleLine"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_E_CIRCLELINE], m_pScaleOffset[TYPE_ET2_E_CIRCLELINE], m_pRotationOffset[TYPE_ET2_E_CIRCLELINE]);
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET2_P_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_CIRCLES])
 		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Engineer_Skill_BurstCall_Circles"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_CIRCLES], m_pScaleOffset[TYPE_ET2_P_CIRCLES], m_pRotationOffset[TYPE_ET2_P_CIRCLES]);
 			m_iCount++;
 		}
 
-		else if (m_iCount == TYPE_END)
-			m_bFinish = true;
+
+		else if (m_iCount == TYPE_ET3_P_FIRE_MAIN && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_P_FIRE_MAIN])
+		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Engineer_Skill_ElementalBlast_Fire_Main"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_P_FIRE_MAIN], m_pScaleOffset[TYPE_ET3_P_FIRE_MAIN], m_pRotationOffset[TYPE_ET3_P_FIRE_MAIN], nullptr, &m_pEt3_FireBig, false);
+			Safe_AddRef(m_pEt3_FireBig);
+			m_iCount++;
+		}
+		else if (m_iCount == TYPE_ET3_P_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_P_CIRCLES])
+		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Engineer_Skill_ElementalBlast_Circles"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_P_CIRCLES], m_pScaleOffset[TYPE_ET3_P_CIRCLES], m_pRotationOffset[TYPE_ET3_P_CIRCLES], nullptr, &m_pEt3_Circles, false);
+			Safe_AddRef(m_pEt3_Circles);
+			m_iCount++;
+		}
+
+
+		else if (m_iCount == TYPE_ET3_P_SMOKE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_P_SMOKE])
+		{
+			//GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT(""),
+			//	XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_P_SMOKE], m_pScaleOffset[TYPE_ET3_P_SMOKE], m_pRotationOffset[TYPE_ET3_P_SMOKE]);
+			m_iCount++;
+		}
+
+		else if (m_iCount == TYPE_EVENT_FIRE && m_iOwnerFrame >= m_pFrameTriger[TYPE_EVENT_FIRE])
+		{
+			if (nullptr != m_pEt3_FireBig)
+			{
+				m_pEt3_FireBig->Set_LoopParticle(false);
+				Safe_Release(m_pEt3_FireBig);
+			}
+
+			if (nullptr != m_pEt3_Circles)
+			{
+				m_pEt3_Circles->Set_LoopParticle(false);
+				Safe_Release(m_pEt3_Circles);
+			}
+
+			m_iCount++;
+		}
 	}
 }
 
@@ -159,6 +190,18 @@ CGameObject* CVfx_Engineer_Skill_ElementalBlast::Clone(void* pArg)
 void CVfx_Engineer_Skill_ElementalBlast::Free()
 {
 	__super::Free();
+
+	if (nullptr != m_pEt3_FireBig)
+	{
+		m_pEt3_FireBig->Set_LoopParticle(false);
+		Safe_Release(m_pEt3_FireBig);
+	}
+
+	if (nullptr != m_pEt3_Circles)
+	{
+		m_pEt3_Circles->Set_LoopParticle(false);
+		Safe_Release(m_pEt3_Circles);
+	}
 
 	if (!m_isCloned)
 	{

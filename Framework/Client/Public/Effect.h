@@ -294,6 +294,7 @@ public:
 	void Reset_UV();
 
 	void Set_UVLoop(_int iLoop);
+	void Set_UVSpeed(_float fSpeed);
 	void Set_UVFlow(_int iLoop, _float2 fDir, _float2 fSpeed);
 	void Start_Dissolve(_uint iDissolveTexIndex, _float4 vDissolveColor, _float fDissolveSpeed, _float  fDissolveTotal);
 	void Reserve_Dissolve(_uint iDissolveTexIndex, _float4 vDissolveColor, _float fDissolveSpeed, _float  fDissolveTotal);
@@ -312,6 +313,8 @@ public:
 	class CTexture* Get_AlphaTexture()   { return m_pAlphaTextureCom; }
 	class CTransform* Get_TransformCom() { return m_pTransformCom; }
 	class CRigidBody* Get_RigidBodyCom() { return m_pRigidBodyCom; }
+
+	_bool Get_DieEffect() { return m_bEffectDie; }
 
 private:
 	EFFECT_DESC m_tEffectDesc = {};
@@ -399,7 +402,6 @@ private:
 	_float  m_fDissolveWeight = 0.f;
 
 	_float4 m_vDistortion = { 0.f, 0.f, 0.f, 0.f };
-	_bool m_bSelectDistortion = false; //юс╫ц.
 
 private:
 	class CRenderer*  m_pRendererCom  = nullptr;

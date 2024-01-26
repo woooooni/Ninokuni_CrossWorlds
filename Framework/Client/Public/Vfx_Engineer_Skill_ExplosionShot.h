@@ -12,20 +12,22 @@ class CVfx_Engineer_Skill_ExplosionShot final : public CVfx
 {
 private:
 	enum TYPE {
-		TYPE_ET1_D_RECT, // 0
-		
-		TYPE_ET1_P_FIRE, // 16
-		TYPE_ET1_E_CIRCLELINE,
-		TYPE_ET1_P_SMOKE,
-		TYPE_ET1_P_CIRCLES,
-		// ---------------------
-		TYPE_ET2_D_CIRCLE, // 34
-
-		TYPE_ET2_P_LIGHT,
-		TYPE_ET2_P_FIRE,
-		TYPE_ET2_P_SMOKE,
-		TYPE_ET2_P_CIRCLES,
-		TYPE_ET2_E_CIRCLELINE,
+		// 경고
+		TYPE_ET1_D_RECT,
+		// ------------------------------------------
+		// 총알 발사 -> 총알 뒤에 트레일 및 반짝이 가는길에 몇개 뒤에 흘림
+		// 번쩍하는 파티클
+		TYPE_ET1_E_CIRCLELINE,// 점점 커지는 원라인 이펙트 -> 색 회색으로 변함
+		TYPE_ET1_E_CIRCLES,   // 작은 원 파티클들 몇개
+		TYPE_ET1_P_FIRE,      // 불꽃 파티클
+		TYPE_ET1_P_SMOKE,     // 연기 파티클
+		// ------------------------------------------
+		TYPE_ET2_D_CIRCLE,    // 푸른 원 데칼
+		TYPE_ET2_P_DOME,      // 붉은 원 이펙트
+		TYPE_ET2_P_FIRE,      // 폭발 불꽃 파티클
+		TYPE_ET2_E_CIRCLELINE,// 회오리 이펙트
+		TYPE_ET2_P_CIRCLES,   // 작은 반짝이 파티클
+		TYPE_ET2_P_SMOKE,     // 연기 파티클
 
 		TYPE_END
 	};

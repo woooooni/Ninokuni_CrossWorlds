@@ -17,7 +17,7 @@ CVfx_Engineer_Skill_HealingTree::CVfx_Engineer_Skill_HealingTree(const CVfx_Engi
 
 HRESULT CVfx_Engineer_Skill_HealingTree::Initialize_Prototype()
 {
-	m_bOwnerStateIndex = CCharacter::SKILL_SPECIAL_0;
+	m_bOwnerStateIndex = CCharacter::SKILL_SPECIAL_2;
 
 	m_iMaxCount = TYPE_END;
 	m_pFrameTriger    = new _int[m_iMaxCount];
