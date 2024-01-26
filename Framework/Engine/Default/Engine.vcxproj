@@ -197,6 +197,10 @@ call Copy.bat</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Bin\ShaderFiles\Engine_Shader_Defines.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\Public\Animation.h" />
     <ClInclude Include="..\Public\BehaviorTree.h" />
     <ClInclude Include="..\Public\BTNode.h" />

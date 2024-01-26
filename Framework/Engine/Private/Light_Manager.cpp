@@ -2,6 +2,9 @@
 #include "Light.h"
 #include "GameObject.h"
 #include "GameInstance.h"
+
+#include "Camera.h"
+#include "Camera_Manager.h"
 IMPLEMENT_SINGLETON(CLight_Manager)
 
 CLight_Manager::CLight_Manager()
@@ -120,6 +123,29 @@ _float4x4 CLight_Manager::Get_ShadowLightProjMatrix(_uint iLevelIndex)
 		return IdentityMatrix;
 
 	return iter->second;
+}
+
+XMMATRIX CLight_Manager::GetLightViewMatrix()
+{
+	CCamera_Manager* pCameraManager = GET_INSTANCE(CCamera_Manager);
+	if (nullptr == pCameraManager)
+		return XMMATRIX();
+	
+	CCamera* pCamera = pCameraManager->Get_CurCamera();
+	if (nullptr == pCamera)
+		return XMMATRIX();
+
+	const LIGHTDESC* pLightDesc = GI->Get_LightDesc(0);
+	Vec3 vCamPos = Vec3(pCamera->Get_Transform()->Get_Position());
+	Vec3 eyePos = vCamPos - pLightDesc->vTempDirection;
+	Vec4 eyePosVec = Vec4(eyePos.x, eyePos.y, eyePos.z, 1.0f);
+	Vec3 normalizeLightDir = pLightDesc->vTempDirection;
+	normalizeLightDir.Normalize();
+	Vec4 vTargetPosVec = Vec4(eyePos.x + normalizeLightDir.x, eyePos.y + normalizeLightDir.y, eyePos.z + normalizeLightDir.z, 1.0f);
+	Vec4 vUp = Vec4(0.0f, 1.0f, 0.0f, 0.0f);
+	Matrix lightVIewMatrix = ::XMMatrixLookAtLH(eyePosVec, vTargetPosVec, vUp);
+
+	return lightVIewMatrix;
 }
 
 HRESULT CLight_Manager::Reset_Lights()

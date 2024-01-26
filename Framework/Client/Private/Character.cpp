@@ -366,7 +366,8 @@ void CCharacter::LateTick(_float fTimeDelta)
 	if (nullptr != m_pWeapon)
 		m_pWeapon->LateTick(fTimeDelta);
 
-	if (GI->Get_CurrentLevel() != LEVEL_TOOL)
+
+	if (LEVELID::LEVEL_TOOL != (LEVELID)g_eStartLevel)
 	{
 		if (nullptr != m_pCameraIcon)
 			m_pCameraIcon->LateTick(fTimeDelta);
@@ -376,7 +377,7 @@ void CCharacter::LateTick(_float fTimeDelta)
 	}
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_CASCADE, this);
 	//m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI_MINIMAP, this);
 
 
@@ -489,6 +490,47 @@ HRESULT CCharacter::Render_ShadowDepth()
 				return E_FAIL;
 
 			if (FAILED(m_pCharacterPartModels[i]->Render(m_pShaderCom, j, 10)))
+				return E_FAIL;
+		}
+	}
+
+
+	return S_OK;
+}
+
+
+HRESULT CCharacter::Render_Cascade_Depth(const Matrix lightViewMatrix, const Matrix LightOrthoMatrix)
+{
+
+	if (nullptr == m_pShaderCom || nullptr == m_pTransformCom)
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &lightViewMatrix)))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &LightOrthoMatrix)))
+		return E_FAIL;
+
+
+	if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
+		return E_FAIL;
+
+
+
+	for (size_t i = 0; i < PART_TYPE::PART_END; i++)
+	{
+		if (nullptr == m_pCharacterPartModels[i])
+			continue;
+
+		const _uint		iNumMeshes = m_pCharacterPartModels[i]->Get_NumMeshes();
+
+		for (_uint j = 0; j < iNumMeshes; ++j)
+		{
+			if (FAILED(m_pCharacterPartModels[i]->SetUp_OnShader(m_pShaderCom, m_pCharacterPartModels[i]->Get_MaterialIndex(j), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+				return E_FAIL;
+
+			if (FAILED(m_pCharacterPartModels[i]->Render(m_pShaderCom, j, 12)))
 				return E_FAIL;
 		}
 	}

@@ -7,7 +7,10 @@ Texture2D SunOccluderTexture : register(t0);
 cbuffer MatrixBuffer : register(b0)
 {
     matrix world, view, projection, worldInvTranspose;
+    matrix projectionInv, viewInv;
 }
+
+Texture2DArray cascadeShadowMap;
 
 cbuffer GodRayBuffer : register(b0)
 {
@@ -146,7 +149,7 @@ cbuffer CBFrustum : register(b1)
 
 cbuffer CBPerFrame : register(b2)
 {
-    float4 offsetVectors[14];
+    float4 offsetVectors[26];
     matrix viewToExSpace;
     
     // 카메라 공간에 주어진 좌표
@@ -252,7 +255,7 @@ float4 PS_SSAO(VertexOut input) : SV_Target
     float occlusionSum = 0.0f;
     
     // 샘플 수 설정
-    const int sampleCount = 14;
+    const int sampleCount = 26;
    
     // n 벡터 방향으로 점 p의 반구 범위에 있는 인접 점을 샘플링하는 것은 일반적으로 8/16/32로 나누어진다.
     // 여기서는 14개의 변위 벡터, 즉 14개의 샘플링 점을 갖게 된다.
@@ -306,9 +309,199 @@ float4 PS_SSAO(VertexOut input) : SV_Target
     return saturate(pow(access, 4.0f));
 }
 
+Texture2DArray cascadeShadowMapTexture;
+Texture2D DepthTexture;
+
+SamplerComparisonState PCFSampler
+{
+    Filter = COMPARISON_MIN_MAG_MIP_LINEAR;
+    AddressU = CLAMP;
+    AddressV = CLAMP;
+    AddressW = CLAMP;
+    MaxAnisotropy = 1;
+    ComparisonFunc = LESS_EQUAL;
+    MaxLOD = 3.402823466e+38f;
+};
+
+
+cbuffer LightTransform
+{
+    matrix lightPV[3];
+    float cascadeEndClipSpace[3];
+};
+
+SamplerState clampLinearSampler
+{
+    Filter = MIN_MAG_LINEAR_MIP_POINT;
+    AddressU = CLAMP;
+    AddressV = CLAMP;
+    AddressW = CLAMP;
+    MipLODBias = 0;
+    MaxAnisotropy = 1;
+    ComparisonFunc = ALWAYS;
+    BorderColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    MinLOD = 0;
+    MaxLOD = 3.402823466e+38f;
+};
+
+SamplerState clampPointSampler
+{
+    Filter = MIN_MAG_MIP_POINT;
+    AddressU = CLAMP;
+    AddressV = CLAMP;
+    AddressW = CLAMP;
+    MipLODBias = 0;
+    MaxAnisotropy = 1;
+    ComparisonFunc = ALWAYS;
+    BorderColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    MinLOD = 0;
+    MaxLOD = 3.402823466e+38f;
+};
+
+static const int CASCADE_SHADOW_NUM = 3;
+static const int PCF_KERNEL_COUNT = CASCADE_SHADOW_NUM * CASCADE_SHADOW_NUM;
+
+static const float4 ARRAY_DEBUG_COLOR[CASCADE_SHADOW_NUM] =
+{
+    float4(1.0f, 0.0f, 0.0f, 1.0f),
+    float4(0.0f, 1.0f, 0.0f, 1.0f),
+    float4(0.0f, 0.0f, 1.0f, 1.0f)
+};
+
+cbuffer CBShadow
+{
+    matrix dirView;
+    matrix arrayDirProj[CASCADE_SHADOW_NUM];
+    float shadowBias;
+};
+
+float2 texSize(Texture2D tex)
+{
+    float texWidth, texHeight;
+    tex.GetDimensions(texWidth, texHeight);
+    return float2(texWidth, texHeight);
+}
+
+Texture2D CascadeLightDepthMap;
+
+float CaclCascadeShadowFactor(int cascadeIndex, float4 lightspacepos)
+{
+    float3 projCoords = lightspacepos.xyz / lightspacepos.w;
+    projCoords.x = projCoords.x * 0.5f + 0.5f;
+    projCoords.y = -projCoords.y * 0.5f + 0.5f;
+    if (projCoords.z > 1.0f)
+        return 0.0f;
+    
+    float currentDepth = projCoords.z;
+    float bias = 0.01f;
+    float shadow = 0.0f;
+    
+    float3 samplePos = projCoords;
+    samplePos.z = cascadeIndex;
+    [unroll]
+    for (int x = -1; x <= 1; ++x)
+        for (int y = -1; y <= 1; ++y)
+            shadow += cascadeShadowMapTexture.SampleCmpLevelZero(PCFSampler, samplePos, currentDepth - bias, int2(x, y));
+    
+
+    shadow /= 9.0f;
+    
+    return shadow;
+}
+
+float4 PS_CASCADE_OUT(VS_OUT input) : SV_Target
+{
+    float4 vDepthDesc = DepthTexture.Sample(PointSampler, input.vTexcoord);
+    float4 vWorldPos;
+    
+    float fViewZ = vDepthDesc.y * 1000.0f;
+    
+    vWorldPos.x = input.vTexcoord.x * 2.0f - 1.0f;
+    vWorldPos.y = input.vTexcoord.y * -2.0f + 1.0f;
+    vWorldPos.z = vDepthDesc.x;
+    vWorldPos.w = 1.0f;
+    
+    vWorldPos = vWorldPos * fViewZ;
+    vWorldPos = mul(vWorldPos, projectionInv);
+    
+   /// float clipSpacePosZ = vWorldPos.z;
+    
+    vWorldPos = mul(vWorldPos, viewInv);
+    
+    
+    
+    //float4 cascadeLightPos[3];
+    //float shadowFactor = 0;
+    
+    //[unroll]
+    //for (int i = 0; i < 3; ++i)
+    //    cascadeLightPos[i] = mul(vWorldPos, lightPV[i]);
+    
+    //[unroll]
+    //for (int j = 0; j < 3; ++j)
+    //{ 
+    //    if(clipSpacePosZ <= cascadeEndClipSpace[j])
+    //    {
+    //        shadowFactor = CaclCascadeShadowFactor(j, cascadeLightPos[j]);
+    //        break;
+    //    }
+    //}
+    
+    //return float4(shadowFactor, shadowFactor, shadowFactor, 1.0f);
+    
+    float4 lightSpacePos = mul(vWorldPos, dirView);
+    float4 color = (float4) 0;
+    int nCascadeIndex = 0;
+    int nCascadeFound = 0;
+    
+    float2 pcf_kernel[PCF_KERNEL_COUNT] =
+    {
+        float2(-1, -1), float2(+0, -1), float2(+1, -1),
+        float2(-1, +0), float2(+0, +0), float2(+1, +0),
+        float2(-1, +1), float2(+0, +1), float2(+1, +1),
+    };
+    
+    float2 lightDepthMapTexSize = 1.0f / texSize(CascadeLightDepthMap);
+    float2 lightDepthUV = float2(0.0f, 0.0f);
+    float4 lightSpaceWSPos;
+    float xyBiggerTexSize = max(lightDepthMapTexSize.x, lightDepthMapTexSize.y);
+    for (int index = 0; index < CASCADE_SHADOW_NUM && 0 == nCascadeFound; ++index)
+    {
+        lightSpaceWSPos = mul(lightSpacePos, arrayDirProj[index]);
+        lightDepthUV = (lightSpaceWSPos.xy / lightSpaceWSPos.w) * float2(0.5f, 0.5f) + float2(0.5f, 0.5f);
+        
+        if (min(lightDepthUV.x, lightDepthUV.y) > xyBiggerTexSize && max(lightDepthUV.x, lightDepthUV.y) < 1.0f - xyBiggerTexSize)
+        {
+            nCascadeIndex = index;
+            nCascadeFound = 1;
+        }
+    }
+    
+    float4 debugColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    
+    for (int nKernelIndex = 0; nKernelIndex < PCF_KERNEL_COUNT; ++nKernelIndex)
+    {
+        float2 uv = float2(((lightDepthUV.x + (float) nCascadeIndex) / (float) CASCADE_SHADOW_NUM), lightDepthUV.y);
+        +pcf_kernel[nKernelIndex] * lightDepthMapTexSize;
+        float nearestDepth = CascadeLightDepthMap.SampleLevel(clampPointSampler, uv, 0).r;
+        float z = lightSpaceWSPos.z / lightSpaceWSPos.w;
+        bool isShadowed = z > (nearestDepth * 0.003f);
+        color += isShadowed ? float4(0.0f, 0.0f, 0.0f, 1.0f) : float4(1.0f, 1.0f, 1.0f, 1.0f);
+    }
+    
+    color /= (float) PCF_KERNEL_COUNT;
+    
+    color = color * debugColor;
+    
+    return color;
+}
+
+
+
+
 technique11 DefaultTechnique
 {
-    pass GodRay
+    pass GodRay // 0 
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
@@ -322,7 +515,7 @@ technique11 DefaultTechnique
         ComputeShader = NULL;
     }
 
-    pass SSAO
+    pass SSAO // 1
     {
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_None, 0);
@@ -333,6 +526,20 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_SSAO();
+        ComputeShader = NULL;
+    }
+
+    pass CascadeShadow // 2
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
+		
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_CASCADE_OUT();
         ComputeShader = NULL;
     }
 }

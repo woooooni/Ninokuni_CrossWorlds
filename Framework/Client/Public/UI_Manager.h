@@ -341,7 +341,9 @@ private:
 	class CUI_SkillWindow_LineBox*				m_pSkillDesc = { nullptr };
 
 	vector<class CUI_Minimap_Frame*>			m_MinimapFrame;
+
 	class CUI_Minimap*							m_pMinimap = { nullptr };
+
 
 	vector <class CUI_WeaponSection_Weapon*>	m_WeaponIcon;
 	vector <class CUI_WeaponSection_Weapon*>	m_WeaponElemental;

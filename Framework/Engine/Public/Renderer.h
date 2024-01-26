@@ -13,7 +13,7 @@ public:
 		RENDER_PRIORITY, RENDER_AURORA, RENDER_NONLIGHT,
 		RENDER_SHADOW, RENDER_NONBLEND,	RENDER_STENCIL_ONLY, RENDER_MIRROR, RENDER_REFLECT,
         RENDER_DECAL, RENDER_EFFECT, RENDER_LENSFLARE, RENDER_GODRAY, RENDER_ALPHABLEND,
-
+		RENDER_CASCADE,
 		RENDER_UI, 
 		/*RENDER_SHADOW_UI,*/ RENDER_NONBLEND_UI,RENDER_UI_MINIMAP, RENDER_UI_MINIMAP_ICON,
 		RENDER_UI_EFFECT_NONBLEND, RENDER_UI_EFFECT_BLEND,
@@ -192,6 +192,10 @@ private:
 
 	HRESULT Render_Shadow();
 	HRESULT Render_Shadow_Caculation();
+
+	HRESULT Render_Cascade_Shadow();
+	HRESULT Render_Cascade_Caculation();
+
 	HRESULT Render_NonBlend();
 	HRESULT Render_Lights();
 
@@ -316,7 +320,7 @@ private:
 private:
 	// SSAO
 	Vec4 m_vFrustumFarCorner[4];
-	Vec4 m_vOffsets[14];
+	Vec4 m_vOffsets[26];
 
 	class CTexture* m_pRandomVectorTexture = nullptr;
 
@@ -340,7 +344,18 @@ private:
 	HRESULT InitializeScreenQuad();
 	HRESULT RenderScreenQuad();
 
+private: // Cascade
+#define CASCADE_SHADOW_MAP_NUM 3
+#define MAX_CASCADE_NUM 8
+#define SHADOW_MAP_SIZE 1024
 
+	// 두 가지 방법 다 해보자.
+	_float m_fCascadeEnd[4] = {};
+	Matrix m_OrthoLightMatrix[CASCADE_SHADOW_MAP_NUM] = {};
+	void CascadeFrustumAndLightMatrixUpdate();
+
+	Matrix m_ArrayLightOrthoMatrix[CASCADE_SHADOW_MAP_NUM] = {};
+	void LightMatrixUpdate();
 
 private:
 	// class CTexture* m_pScreenTextureCom = nullptr;

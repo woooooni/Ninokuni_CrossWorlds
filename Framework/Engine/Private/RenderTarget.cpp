@@ -10,9 +10,10 @@ CRenderTarget::CRenderTarget(ID3D11Device* pDevice, ID3D11DeviceContext* pContex
 	Safe_AddRef(m_pContext);
 }
 
-HRESULT CRenderTarget::Initialize(_uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4& vColor)
+HRESULT CRenderTarget::Initialize(_uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4& vColor, _uint iArraySize)
 {
 	m_vColor = vColor;
+
 
 	D3D11_TEXTURE2D_DESC		TextureDesc = {};
 
@@ -30,15 +31,14 @@ HRESULT CRenderTarget::Initialize(_uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixel
 	TextureDesc.CPUAccessFlags = 0;
 	TextureDesc.MiscFlags = 0;
 
+
 	if (FAILED(m_pDevice->CreateTexture2D(&TextureDesc, nullptr, &m_pTexture2D)))
 		return E_FAIL;
-
 	if (FAILED(m_pDevice->CreateRenderTargetView(m_pTexture2D, nullptr, &m_pRTV)))
 		return E_FAIL;
-
 	if (FAILED(m_pDevice->CreateShaderResourceView(m_pTexture2D, nullptr, &m_pSRV)))
 		return E_FAIL;
-
+	
 	return S_OK;
 }
 
@@ -99,11 +99,11 @@ HRESULT CRenderTarget::Render(CShader * pShader, CVIBuffer_Rect * pBuffer)
 #endif
 
 
-CRenderTarget * CRenderTarget::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, _uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4& vColor)
+CRenderTarget * CRenderTarget::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, _uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4& vColor, _uint iArraySize)
 {
 	CRenderTarget*	pInstance = new CRenderTarget(pDevice, pContext);
 
-	if (FAILED(pInstance->Initialize(iSizeX, iSizeY, ePixelFormat, vColor)))
+	if (FAILED(pInstance->Initialize(iSizeX, iSizeY, ePixelFormat, vColor, iArraySize)))
 	{
 		MSG_BOX("Failed to Created : CRenderTarget");
 		Safe_Release(pInstance);

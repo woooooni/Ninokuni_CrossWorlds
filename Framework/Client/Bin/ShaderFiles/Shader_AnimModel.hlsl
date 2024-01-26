@@ -717,6 +717,83 @@ PS_OUT_SHADOW_DEPTH PS_SHADOW_DEPTH(PS_IN In)
     return Out;
 }
 
+
+struct VS_CASCADE_OUT
+{
+    float4 vPosition : SV_POSITION;
+    float2 vTexcoord : TEXCOORD0;
+};
+
+// Geom
+cbuffer LightTransform
+{
+    matrix lightTransform[3];
+};
+
+struct GS_IN
+{
+    float4 vPosition : SV_POSITION;
+    float2 vTexcoord : TEXCOORD0;
+};
+
+struct GS_OUT
+{
+    float4 vPosition : SV_POSITION;
+    float2 vTexcoord : TEXCOORD0;
+    uint RTIndex : SV_RenderTargetArrayIndex;
+};
+
+VS_CASCADE_OUT VS_CASCADE(VS_IN input)
+{
+    VS_CASCADE_OUT Out = (VS_CASCADE_OUT) 0;
+
+    matrix matWV, matWVP;
+
+    matWV = mul(g_WorldMatrix, g_ViewMatrix);
+    matWVP = mul(matWV, g_ProjMatrix);
+
+    float4x4 BoneMatrix = Create_BoneMatrix_By_Lerp(input);
+    //float4x4 BoneMatrix = Create_BoneMatrix_By_Affine(In);
+
+    vector vPosition = mul(vector(input.vPosition, 1.f), BoneMatrix);
+    vector vNormal = mul(vector(input.vNormal, 0.f), BoneMatrix);
+    vector vTangent = mul(vector(input.vTangent, 0.f), BoneMatrix);
+
+    Out.vPosition = mul(vPosition, matWVP);
+    Out.vTexcoord = input.vTexUV;
+
+    return Out;
+}
+
+[maxvertexcount(9)]
+void GS_CASCADE(triangle GS_IN input[3], inout TriangleStream<GS_OUT> output)
+{
+    for (int face = 0; face < 3; ++face)
+    {
+        GS_OUT element = (GS_OUT) 0;
+        element.RTIndex = face;
+        for (int i = 0; i < 3; ++i)
+        {
+            element.vPosition = mul(input[i].vPosition, lightTransform[face]);
+            element.vTexcoord = input[i].vTexcoord;
+            output.Append(element);
+        }
+        output.RestartStrip();
+    }
+}
+
+// Pixel
+struct PS_CASCADE_IN
+{
+    float4 vPosition : SV_POSITION;
+    float2 vTexcoord : TEXCOORD0;
+};
+
+void PS_CASCADE(PS_CASCADE_IN input)
+{
+    
+}
+
 RasterizerState CullClockWiseRS
 {
     AntialiasedLineEnable = false;
@@ -922,5 +999,19 @@ technique11 DefaultTechnique
         HullShader = NULL;
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_UI();
+    }
+
+    pass CascadeShadow_Depth
+    {
+        // 12
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Shadow, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_CASCADE();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = NULL;
     }
 };

@@ -330,6 +330,12 @@ HRESULT CRenderer::Draw_World()
 		if (FAILED(Render_Shadow())) // MRT_Shadow -> ShadowDepth
 			return E_FAIL;
 
+		if (FAILED(Render_Cascade_Shadow()))
+			return E_FAIL;
+
+		if (FAILED(Render_Cascade_Caculation()))
+			return E_FAIL;
+
 		if (FAILED(Render_Shadow_Caculation()))
 			return E_FAIL;
 
@@ -692,67 +698,6 @@ HRESULT CRenderer::Render_Aurora()
 	return S_OK;
 }
 
-//HRESULT CRenderer::Render_Sun()
-//{
-//	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_GodRay"), true)))
-//		return E_FAIL;
-//
-//	Vec3 vScreenSunPos = m_pLight_Manager->Get_SunScreenPos();
-//	if (vScreenSunPos.x > 1.05f || vScreenSunPos.x < -0.05f
-//		|| vScreenSunPos.y > 1.05f || vScreenSunPos.y < -0.05f
-//		|| vScreenSunPos.z > 1.f || vScreenSunPos.z < 0.f)
-//	{
-//		if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
-//			return E_FAIL;
-//
-//		return S_OK;
-//	}
-//
-//	for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_SUN])
-//	{
-//		if (FAILED(iter->Render()))
-//			return E_FAIL;
-//
-//		Safe_Release(iter);
-//	}
-//
-//	m_RenderObjects[RENDERGROUP::RENDER_SUN].clear();
-//
-//	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
-//		return E_FAIL;
-//
-//
-//	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Blend"), false)))
-//		return E_FAIL;
-//
-//	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("world", &m_WorldMatrix)))
-//		return E_FAIL;
-//	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("view", &m_ViewMatrix)))
-//		return E_FAIL;
-//	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("projection", &m_ProjMatrix)))
-//		return E_FAIL;
-//
-//
-//	Vec2 vScreenSunUV(vScreenSunPos.x, vScreenSunPos.y);
-//	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_RawValue("vScreenSunPosition",
-//		&vScreenSunUV, sizeof(Vec2))))
-//		return E_FAIL;
-//
-//	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS], TEXT("Target_SunOccluder"), "SunOccluderTexture")))
-//		return E_FAIL;
-//
-//	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Begin(0)))
-//		return E_FAIL;
-//	if (FAILED(m_pVIBuffer->Render()))
-//		return E_FAIL;
-//
-//	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
-//		return E_FAIL;
-//	
-//
-//	return S_OK;
-//}
-
 // MRT_Blend
 HRESULT CRenderer::Render_NonLight()
 {
@@ -826,25 +771,6 @@ HRESULT CRenderer::Render_Reflect_Object()
 	}
 	m_RenderObjects[RENDER_REFLECT].clear();
 
-	//for (auto& Pair : m_Render_Instancing_Objects[RENDER_REFLECT])
-	//{
-	//	if (nullptr == Pair.second.pGameObject)
-	//		continue;
-
-	//	if (FAILED(Pair.second.pGameObject->Render_Instance(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices)))
-	//		return E_FAIL;
-
-	//	if (FAILED(Pair.second.pGameObject->Render_Instance_AnimModel(m_pIntancingShaders[Pair.second.eShaderType], m_pVIBuffer_Instancing, Pair.second.WorldMatrices, Pair.second.TweenDesc, Pair.second.AnimInstanceDesc)))
-	//		return E_FAIL;
-
-	//	Pair.second.TweenDesc.clear();
-	//	Pair.second.WorldMatrices.clear();
-	//	Pair.second.AnimInstanceDesc.clear();
-	//	Pair.second.EffectInstancingDesc.clear();
-
-	//	Safe_Release(Pair.second.pGameObject);
-	//	Pair.second.pGameObject = nullptr;
-	//}
 
 	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
 		return E_FAIL;
@@ -963,6 +889,93 @@ HRESULT CRenderer::Render_Shadow_Caculation()
 
 	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
 		return E_FAIL;
+	return S_OK;
+}
+
+HRESULT CRenderer::Render_Cascade_Shadow()
+{
+	// Frustum과 LightMatrix 업데이트.
+	//CascadeFrustumAndLightMatrixUpdate();
+	LightMatrixUpdate();
+
+	m_pTarget_Manager->ClearCascadeDepthBuffer(m_pContext);
+	Matrix lightViewMatrix = GI->GetViewLightMatrix();
+
+	for (_uint nCascadeIndex = 0; nCascadeIndex < CASCADE_SHADOW_MAP_NUM; ++nCascadeIndex)
+	{
+		m_pTarget_Manager->SetRenderTarget(m_pContext, nCascadeIndex);
+
+		for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_CASCADE])
+		{
+			if (FAILED(iter->Render_Cascade_Depth(lightViewMatrix, m_ArrayLightOrthoMatrix[nCascadeIndex])))
+				return E_FAIL;
+		}
+	}
+
+	for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_CASCADE])
+		Safe_Release(iter);
+	m_RenderObjects[RENDERGROUP::RENDER_CASCADE].clear();
+
+	m_pContext->OMSetRenderTargets(8, m_pTarget_Manager->Get_PrevRTVs(), m_pTarget_Manager->Get_BackBuffer());
+
+
+	return S_OK;
+}
+
+HRESULT CRenderer::Render_Cascade_Caculation()
+{	
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Cascade_Cacluation"))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("world", &m_WorldMatrix)))
+		return E_FAIL;
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("view", &m_ViewMatrix)))
+		return E_FAIL;
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("projection", &m_ProjMatrix)))
+		return E_FAIL;
+
+	//_float cascadedEndClip[3];
+	//for (_uint i = 0; i < CASCADE_SHADOW_MAP_NUM; ++i)
+	//{
+	//	Matrix vCamProj = GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ);
+	//	Vec4 vClip = Vec4::Transform(Vec4(0.0f, 0.0f, m_fCascadeEnd[i + 1], 1.0f), vCamProj);
+	//	cascadedEndClip[i] = vClip.z;
+	//}
+
+
+	_float4x4 ViewMatrixInv = GI->Get_TransformMatrixInverse_Float4x4(CPipeLine::D3DTS_VIEW);
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("viewInv", &ViewMatrixInv)))
+		return E_FAIL;
+	_float4x4 ProjMatrixInv = GI->Get_TransformMatrixInverse_Float4x4(CPipeLine::D3DTS_PROJ);
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("projectionInv", &ProjMatrixInv)))
+		return E_FAIL;
+
+	// 여기 깊이텍스쳐에 저장된 깊이값 
+	//if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrices("lightPV", m_OrthoLightMatrix, CASCADE_SHADOW_MAP_NUM)))
+	//	return E_FAIL;
+	//if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_RawValue("cascadeEndClipSpace", &cascadedEndClip, sizeof(_float) * CASCADE_SHADOW_MAP_NUM)))
+	//	return E_FAIL;
+
+
+	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS], TEXT("Target_Depth"), "DepthTexture")))
+		return E_FAIL;
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Texture("CascadeLightDepthMap", m_pTarget_Manager->Get_Cascasd_SRV())))
+		return E_FAIL;
+
+	m_pTarget_Manager->ClearCascadeDepthBuffer(m_pContext);
+	Matrix lightViewMatrix = GI->GetViewLightMatrix();
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("dirView", &lightViewMatrix)))
+		return E_FAIL;
+	if(FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrices("arrayDirProj", m_ArrayLightOrthoMatrix, CASCADE_SHADOW_MAP_NUM)))
+		return E_FAIL;
+
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Begin(2)))
+		return E_FAIL;
+	if (FAILED(m_pVIBuffer->Render()))
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -1065,7 +1078,7 @@ HRESULT CRenderer::Render_Ssao()
 		return E_FAIL;
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("projection", &m_ProjMatrix)))
 		return E_FAIL;
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_RawValue("offsetVectors", &m_vOffsets, sizeof(Vec4) * 14)))
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_RawValue("offsetVectors", &m_vOffsets, sizeof(Vec4) * 26)))
 		return E_FAIL;
 
 	static const XMMATRIX T(
@@ -1191,7 +1204,7 @@ HRESULT CRenderer::Render_Deferred()
 
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_Depth"), "g_DepthTarget")))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_ShadowDepth_Caculation_Blur"), "g_ShadowTarget")))
+	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_Cascade_Shadow_Depth"), "g_ShadowTarget")))
 		return E_FAIL;
 
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_SSAO_Blur"), "g_SSAOTarget")))
@@ -1991,10 +2004,6 @@ HRESULT CRenderer::Render_Debug_Target()
 	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Shadow_Caculation_Blur"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
 		return E_FAIL;
 
-
-	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Shadow_Caculation_Blur"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
-		return E_FAIL;
-
 	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Distortion"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
 		return E_FAIL;
 
@@ -2004,6 +2013,13 @@ HRESULT CRenderer::Render_Debug_Target()
 
 #pragma region TEMP_MIRROR
 	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_LensFlare"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
+		return E_FAIL;
+#pragma endregion
+
+#pragma region TEMP_SHADOW
+	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Cascade_Shadow"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Cascade_Cacluation"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
 		return E_FAIL;
 #pragma endregion
 
@@ -2387,6 +2403,17 @@ HRESULT CRenderer::Create_Target()
 		return E_FAIL;
 #pragma endregion
 
+#pragma region MRT_Cascade_Shadow : Target_Cascade_Depth
+	/* For.Target_Cascade_Shadow */
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Cascade_Shadow_Depth"),
+		ViewportDesc.Width * 3.f, ViewportDesc.Height, DXGI_FORMAT_R32_FLOAT, _float4(1.f, 1.f, 1.f, 0.f), 3)))
+		return E_FAIL;
+	/* For.Target_Cascade_Depth_Cacluation */
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Cascade_Depth_Caculation"),
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 0.f))))
+		return E_FAIL;
+#pragma endregion
+
 #pragma region MRT_SSAO : Target_SSAO // Target_SSAO_Blur
 	/* For.Target_SSAO */
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_SSAO"),
@@ -2688,6 +2715,14 @@ HRESULT CRenderer::Set_TargetsMrt()
 			return E_FAIL;
 	}
 
+	// MRT_Cascade_Shadow
+	{
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Cascade_Shadow"), TEXT("Target_Cascade_Shadow_Depth"))))
+			return E_FAIL;
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Cascade_Cacluation"), TEXT("Target_Cascade_Depth_Caculation"))))
+			return E_FAIL;
+	}
+
 	// MRT_SSAO / MRT_SSAO_Blur
 	{
 		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_SSAO"), TEXT("Target_SSAO"))))
@@ -2939,6 +2974,11 @@ HRESULT CRenderer::Set_Debug()
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_ShadowDepth_Caculation_Blur"), (fSizeX / 2.f) + (fSizeX * 4), (fSizeY / 2.f) + (fSizeY * 1), fSizeX, fSizeY)))
 		return E_FAIL;
 
+	// MRT_Cascade_Shadow
+	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Cascade_Shadow_Depth"), (fSizeX / 2.f) + (fSizeX * 5), (fSizeY / 2.f) + (fSizeY * 1), fSizeX, fSizeY)))
+		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Cascade_Depth_Caculation"), (fSizeX / 2.f) + (fSizeX * 6), (fSizeY / 2.f) + (fSizeY * 1), fSizeX, fSizeY)))
+		return E_FAIL;
 
 	//// MRT_SSAO
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_SSAO"), (fSizeX / 2.f) + (fSizeX * 0), (fSizeY / 2.f) + (fSizeY * 2), fSizeX, fSizeY)))
@@ -3079,6 +3119,26 @@ void CRenderer::BuildOffsetVectors()
 		m_vOffsets[13] = Vec4(0.0f, 0.0f, +1.0f, 0.0f);
 	}
 
+	{
+		m_vOffsets[14] = Vec4(-1.0f, 1.0f, 0.0f, 0.0f);
+		m_vOffsets[15] = Vec4(1.0f, 1.0f, 0.0f, 0.0f);
+		m_vOffsets[16] = Vec4(0.0f, 1.0f, -1.0f, 0.0f);
+		m_vOffsets[17] = Vec4(0.0f, 1.0f, 1.0f, 0.0f);
+	}
+
+	{
+		m_vOffsets[18] = Vec4(1.0f, 0.0f, 1.0f, 0.0f);
+		m_vOffsets[19] = Vec4(-1.0f, 0.0f, 1.0f, 0.0f);
+		m_vOffsets[20] = Vec4(-1.0f, 0.0f, -1.0f, 0.0f);
+		m_vOffsets[21] = Vec4(1.0f, 0.0f, -1.0f, 0.0f);
+	}
+
+	{
+		m_vOffsets[22] = Vec4(-1.0f, -1.0f, 0.0f, 0.0f);
+		m_vOffsets[23] = Vec4(1.0f, -1.0f, 0.0f, 0.0f);
+		m_vOffsets[24] = Vec4(0.0f, -1.0f, -1.0f, 0.0f);
+		m_vOffsets[25] = Vec4(0.0f, -1.0f, 1.0f, 0.0f);
+	}
 
 	// 난수 데이터 초기화
 	mt19937 randEngine;
@@ -3183,6 +3243,181 @@ HRESULT CRenderer::RenderScreenQuad()
 
 	return S_OK;
 
+}
+
+
+
+void CRenderer::CascadeFrustumAndLightMatrixUpdate()
+{
+	CCamera_Manager* pCameraManager = GET_INSTANCE(CCamera_Manager);
+	if (nullptr == pCameraManager)
+		return;
+
+	CCamera* pCamera = pCameraManager->Get_CurCamera();
+	if (nullptr == pCamera)
+		return;
+
+	// 카메라의 역행렬, 시야각, 화면비, 가까운 평면z, 먼 평면 z
+	Matrix InverseView = GI->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
+	_float fFov = pCamera->Get_Fov();
+	_float fAspect = pCamera->Get_ProjDesc().fAspect;
+	_float fNearZ = pCamera->Get_ProjDesc().fNear;
+	_float fFarZ = pCamera->Get_ProjDesc().fFar;
+
+	const LIGHTDESC* pDirectionalLight = GI->Get_LightDesc(0);
+	Vec3 vLightToDir = pDirectionalLight->vTempDirection;
+	vLightToDir.Normalize();
+	// 시야각을 이용해서 수직 시야각을 구한다.
+	_float tanHalfVFov = ::tanf(::XMConvertToRadians(fFov * 0.5f));
+	// 수직 시야각을 이용해서 수평 시야각을 구한다.
+	_float tanHalfHFov = tanHalfVFov * fAspect;
+
+	// 절두체를 나누기 위한 각 부분의 절두체의 끝 지점
+	m_fCascadeEnd[0] = fNearZ;
+	m_fCascadeEnd[1] = 20.0f;
+	m_fCascadeEnd[2] = 40.0f;
+	m_fCascadeEnd[3] = fFarZ;
+
+	// 3개의 절두체로 나누기 위해 3번 반복.
+	for (_uint i = 0; i < CASCADE_SHADOW_MAP_NUM; ++i)
+	{
+		// +x, +y 좌표에 수평, 수직 시야각을 이용해서 구한다. 각 부분의 절두체의 가까운, 먼
+		// 평면의 값을 곱하여 4개의 점을 구한다.
+		_float xn = m_fCascadeEnd[i] * tanHalfHFov;
+		_float xf = m_fCascadeEnd[i + 1] * tanHalfHFov;
+		_float yn = m_fCascadeEnd[i] * tanHalfVFov;
+		_float yf = m_fCascadeEnd[i + 1] * tanHalfVFov;
+
+		// 각 절두체의 Z값을 저장해서 i가 낮은 순서로 가까운 평면, 먼 평면을 구한다.
+
+		Vec4 frustumCorners[MAX_CASCADE_NUM] =
+		{
+			// near face
+			{xn,yn,m_fCascadeEnd[i],1.0f},
+			{-xn,yn,m_fCascadeEnd[i],1.0f},
+			{xn,-yn,m_fCascadeEnd[i],1.0f},
+			{-xn,-yn,m_fCascadeEnd[i],1.0f},
+
+			// far face
+			{xf, yf, m_fCascadeEnd[i + 1],1.0f},
+			{-xf,yf,m_fCascadeEnd[i + 1], 1.0f},
+			{xf,-yf,m_fCascadeEnd[i + 1], 1.0f},
+			{-xf,-yf,m_fCascadeEnd[i + 1],1.0f}
+		};
+
+		// TODO
+		// 빛의 시점에서 렌더링 하기 위해 각 절두체에 맞는 투영행렬을 만들어야한다.
+		Vec4 centerPos;
+		for (_uint j = 0; j < MAX_CASCADE_NUM; ++j)
+		{
+			// 절두체의 꼭지점은 뷰 스페이스에 있는 점이므로 월드 공간으로 이동시키기 위해 View의 역행렬을 곱한다.
+			frustumCorners[j] = Vec4::Transform(frustumCorners[j], InverseView);
+			centerPos += frustumCorners[j];
+		}
+
+		// 직교투영이 이루는 직사각형의 중앙, -> 절두체의 중점과 꼭지점의 거리 중 가장 긴 걸이를 가지고 좌우상하가 똑같은 직교투영행렬을 만든다.
+		centerPos /= 8.0f;
+		_float radius = 0.0f;
+
+		for (_uint j = 0; j < MAX_CASCADE_NUM; ++j)
+		{
+			_float distance = ::XMVectorGetX(XMVector4Length(frustumCorners[j] - centerPos));
+			radius = max(radius, distance);
+		}
+
+		radius = ceil(radius * MAX_CASCADE_NUM * 2.0f) / MAX_CASCADE_NUM * 2.0f;
+
+		Vec3 maxExtents = Vec3(radius, radius, radius);
+		Vec3 minExtents = -maxExtents;
+
+		Vec3 shadowCamPos = Vec3(centerPos) + vLightToDir * minExtents;
+		Matrix lightMatrix = ::XMMatrixLookAtLH(shadowCamPos, Vec3(centerPos), Vec3(0.0f, 1.0f, 0.0f));
+		Vec3 cascadeExtents = maxExtents - minExtents;
+		m_OrthoLightMatrix[i] =
+			::XMMatrixMultiply(::XMMatrixOrthographicOffCenterLH(minExtents.x, maxExtents.x, minExtents.y, maxExtents.y, 0.0f, cascadeExtents.z), lightMatrix);
+
+	}
+}
+
+void CRenderer::LightMatrixUpdate()
+{
+	CCamera_Manager* pCameraManager = GET_INSTANCE(CCamera_Manager);
+	if (nullptr == pCameraManager)
+		return;
+
+	CCamera* pCamera = pCameraManager->Get_CurCamera();
+	if (nullptr == pCamera)
+		return;
+
+	_float fFov = pCamera->Get_Fov();
+	_float fAspect = pCamera->Get_ProjDesc().fAspect;
+	XMVECTOR frustumPoints[MAX_CASCADE_NUM];
+	const LIGHTDESC* mMainLightDesc = GI->Get_LightDesc(0);
+	XMMATRIX lightViewMatrix = GI->GetViewLightMatrix();
+	
+	const _float CASCADE_PERCENT[CASCADE_SHADOW_MAP_NUM + 1] = { 0.0f, 0.05f, 0.15f, 0.6f };
+
+	for (_uint nCascadeIndex = 0; nCascadeIndex < CASCADE_SHADOW_MAP_NUM; ++nCascadeIndex)
+	{
+		_float fNearPlane = 0;
+		_float fFarPlane = pCamera->Get_ProjDesc().fFar * CASCADE_PERCENT[nCascadeIndex + 1];
+		_float fFarY = ::tanf(fFov * 0.5f) * fFarPlane;
+		_float fFarX = fFarY / fAspect;
+		
+		frustumPoints[0] = Vec4(fNearPlane, fNearPlane, fNearPlane, 1.0f);
+		frustumPoints[1] = Vec4(fNearPlane, fNearPlane, fNearPlane, 1.0f);
+		frustumPoints[2] = Vec4(fNearPlane, fNearPlane, fNearPlane, 1.0f);
+		frustumPoints[3] = Vec4(fNearPlane, fNearPlane, fNearPlane, 1.0f);
+		frustumPoints[4] = Vec4(fFarX, fFarY, fFarPlane, 1.0f);
+		frustumPoints[5] = Vec4(fFarX, -fFarY, fFarPlane, 1.0f);
+		frustumPoints[6] = Vec4(-fFarX, fFarY, fFarPlane, 1.0f);
+		frustumPoints[7] = Vec4(-fFarX, -fFarY, fFarPlane, 1.0f);
+
+		XMMATRIX viewMatrix = GI->Get_TransformMatrix(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
+		XMMATRIX InverseViewMatrix = ::XMMatrixInverse(nullptr, viewMatrix);
+		XMVECTOR lightVsSceneAABBMax = Vec4(FLT_MIN, FLT_MIN, FLT_MIN, FLT_MIN);
+		XMVECTOR lightVsSceneAABBMin = Vec4(FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX);
+		XMVECTOR tempFrustumPoint;
+
+		for (_uint nFrustumindex = 0; nFrustumindex < MAX_CASCADE_NUM; ++nFrustumindex)
+			frustumPoints[nFrustumindex] = ::XMVector3TransformCoord(frustumPoints[nFrustumindex], InverseViewMatrix);
+
+		for (_uint nFrustumIndex = 0; nFrustumIndex < MAX_CASCADE_NUM; ++nFrustumIndex)
+		{
+			tempFrustumPoint = ::XMVector3TransformCoord(frustumPoints[nFrustumIndex], lightViewMatrix);
+			lightVsSceneAABBMax = ::XMVectorMax(lightVsSceneAABBMax, tempFrustumPoint);
+			lightVsSceneAABBMin = ::XMVectorMin(lightVsSceneAABBMin, tempFrustumPoint);
+		}
+
+		_float fLightVsSceneAABBMinZ = ::XMVectorGetZ(lightVsSceneAABBMin);
+		_float fLightVsSceneAABBMaxZ = ::XMVectorGetZ(lightVsSceneAABBMax);
+		
+		XMVECTOR vDiagonal = frustumPoints[0] - frustumPoints[7];
+		vDiagonal = ::XMVector3Length(vDiagonal);
+		_float fCascadeDiagonal = ::XMVectorGetX(vDiagonal);
+		XMVECTOR vBorderoffset = (vDiagonal - (lightVsSceneAABBMax - lightVsSceneAABBMin)) * XMVectorSet(0.5f, 0.5f, 0.0f, 0.0f);
+		
+		lightVsSceneAABBMax += vBorderoffset;
+		lightVsSceneAABBMin -= vBorderoffset;
+
+		_float fWorldUnitPerTexel = fCascadeDiagonal / static_cast<_float>(SHADOW_MAP_SIZE);
+		XMVECTOR vWorldUnitPerTexel = ::XMVectorSet(fWorldUnitPerTexel, fWorldUnitPerTexel, 0.0f, 0.0f);
+
+		lightVsSceneAABBMin /= vWorldUnitPerTexel;
+		lightVsSceneAABBMin = ::XMVectorFloor(lightVsSceneAABBMin);
+		lightVsSceneAABBMin *= vWorldUnitPerTexel;
+
+		lightVsSceneAABBMax /= vWorldUnitPerTexel;
+		lightVsSceneAABBMax = ::XMVectorFloor(lightVsSceneAABBMax);
+		lightVsSceneAABBMax *= vWorldUnitPerTexel;
+
+		XMFLOAT3 f3LightVsSceneAABBMax;
+		XMFLOAT3 f3LightVsSceneAABBMin;
+		::XMStoreFloat3(&f3LightVsSceneAABBMax, lightVsSceneAABBMax);
+		::XMStoreFloat3(&f3LightVsSceneAABBMin, lightVsSceneAABBMin);
+
+		m_ArrayLightOrthoMatrix[nCascadeIndex] = ::XMMatrixOrthographicOffCenterLH(f3LightVsSceneAABBMin.x, f3LightVsSceneAABBMax.x, f3LightVsSceneAABBMin.y, f3LightVsSceneAABBMax.y, fLightVsSceneAABBMinZ - fFarPlane * 0.5f, fLightVsSceneAABBMaxZ + fFarPlane * 0.15f);
+	}
 }
 
 CRenderer * CRenderer::Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext)

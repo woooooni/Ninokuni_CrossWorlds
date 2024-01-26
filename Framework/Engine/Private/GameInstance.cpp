@@ -449,6 +449,11 @@ _float4x4 CGameInstance::Get_ShadowProjMatrix(_uint iLevelIndex)
 	return m_pLight_Manager->Get_ShadowLightProjMatrix(iLevelIndex);
 }
 
+XMMATRIX CGameInstance::GetViewLightMatrix()
+{
+	return m_pLight_Manager->GetLightViewMatrix();
+}
+
 void CGameInstance::Set_Transform(CPipeLine::TRANSFORMSTATE eTransformState, _fmatrix TransformMatrix)
 {
 	if (nullptr == m_pPipeLine)
