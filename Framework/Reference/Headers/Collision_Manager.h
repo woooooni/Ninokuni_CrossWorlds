@@ -5,7 +5,7 @@
 union COLLIDER_ID
 {
 	struct
-	{
+	{ 
 		UINT iLeft_id;
 		UINT iRight_id;
 	};
