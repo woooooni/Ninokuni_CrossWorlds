@@ -32,7 +32,7 @@ void CMainQuestNode_SnowField03::Start()
 	Vec4 vSpotPos = Set_DestSpot(m_pJackson);
 
 	// 임시로 monster에 
-	m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_MONSTER), &vSpotPos));
+	m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_ETC), &vSpotPos));
 }
 
 CBTNode::NODE_STATE CMainQuestNode_SnowField03::Tick(const _float& fTimeDelta)

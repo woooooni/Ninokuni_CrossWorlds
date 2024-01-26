@@ -7,6 +7,7 @@
 #include "State_Animal_Run.h"
 #include "State_Animal_Walk.h"
 #include "State_Animal_Lift.h"
+#include "State_Animal_Stand.h"
 
 #include "UI_World_AnimalTag.h"
 
@@ -179,7 +180,11 @@ HRESULT CWelshCorgi::Ready_State()
 	strAnimationNames.push_back(L"Lift_End");
 	m_pStateMachineCom->Add_State(CAnimals::STATE::STATE_LIFT, CState_Animal_Lift::Create(m_pStateMachineCom, strAnimationNames));
 
-	m_pStateMachineCom->Change_State(CAnimals::STATE::STATE_IDLE);
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"LayingDown");
+	m_pStateMachineCom->Add_State(CAnimals::STATE::STATE_STAND, CState_Animal_Stand::Create(m_pStateMachineCom, strAnimationNames));
+
+	m_pStateMachineCom->Change_State(CAnimals::STATE::STATE_STAND);
 
 	return S_OK;
 }

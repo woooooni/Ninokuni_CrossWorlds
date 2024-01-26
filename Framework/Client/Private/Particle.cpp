@@ -40,6 +40,18 @@ void CParticle::Add_Velocity(Vec4 _vMinVelocity, Vec4 _vMaxVelocity)
 	m_pVIBufferCom->Add_Velocity(m_tParticleDesc.iNumEffectCount, _vMinVelocity, _vMaxVelocity);
 }
 
+void CParticle::Set_IsParticleShow(_bool bIsShow, _float fTimeDelta)
+{
+	if (bIsShow)
+	{
+		m_bIsShow = true;
+	}
+	else if (!bIsShow)
+	{
+		m_bIsShow = false;
+	}
+}
+
 void CParticle::Set_ParticleDesc(const PARTICLE_DESC& tDesc)
 {
 	m_tParticleDesc = tDesc;
@@ -139,7 +151,7 @@ HRESULT CParticle::Initialize(void* pArg)
 
 void CParticle::Tick(_float fTimeDelta)
 {
-	if (Is_Dead() == true)
+	if (Is_Dead() == true || !m_bIsShow)
 		return;
 
 	m_pVIBufferCom->Tick(fTimeDelta);
@@ -157,7 +169,7 @@ void CParticle::Tick(_float fTimeDelta)
 
 void CParticle::LateTick(_float fTimeDelta)
 {
-	if (Is_Dead() == true || m_bParticleDie)
+	if (Is_Dead() == true || m_bParticleDie || !m_bIsShow)
 		return;
 
 	__super::LateTick(fTimeDelta);

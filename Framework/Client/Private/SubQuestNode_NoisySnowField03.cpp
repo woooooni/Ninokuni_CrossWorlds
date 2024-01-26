@@ -35,7 +35,7 @@ void CSubQuestNode_NoisySnowField03::Start()
 	if (m_pNoisyMan != nullptr)
 	{
 		Vec4 vSpotPos = Set_DestSpot(m_pNoisyMan);
-		m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_MONSTER), &vSpotPos));
+		m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_ETC), &vSpotPos));
 	}
 }
 

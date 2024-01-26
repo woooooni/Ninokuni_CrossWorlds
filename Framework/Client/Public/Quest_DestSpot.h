@@ -33,7 +33,6 @@ private:
 private:
 	CRenderer* m_pRendererCom = nullptr;
 	CTransform* m_pTransformCom = nullptr;
-	CPhysX_Controller* m_pControllerCom = { nullptr };
 
 	class CVfx* pEffectObject = nullptr;
 	class CUI_Minimap_Icon* m_pMinimapIcon = { nullptr };

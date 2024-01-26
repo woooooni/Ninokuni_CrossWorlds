@@ -233,6 +233,9 @@ public:
 	void Set_Rigidbody(_bool bRigidbody) { m_tRigidbodyDesc.bRigidbody = bRigidbody; }
 	void Add_Velocity(Vec4 _vMinVelocity, Vec4 _vMaxVelocity);
 
+	// Show
+	_bool Get_IsDecalShow() { return m_bIsShow; }
+	void  Set_IsParticleShow(_bool bIsShow, _float fTimeDelta);
 private:
 	_bool m_isCloned = { false };
 
@@ -249,6 +252,9 @@ private:
 	_float3 m_vLocalScale = _float3(0.f, 0.f, 0.f);
 	_float3 m_vLocalRotation = _float3(0.f, 0.f, 0.f);
 	Vec4 m_vAddOffsetPos = Vec4(0.0f, 0.0f, 0.0f, 1.0f);
+
+	// Show ¿©ºÎ
+	_bool m_bIsShow = true;
 
 private:
 	class CRenderer*  m_pRendererCom = nullptr;

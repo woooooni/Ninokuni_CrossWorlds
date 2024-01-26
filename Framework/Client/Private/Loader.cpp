@@ -1444,7 +1444,7 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 
 	/* Quest */
 	// 임시로 몬스터에 담는다. 충돌 처리 그룹 추가 될 때까지.
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Quest_DestSpot", CQuest_DestSpot::Create(m_pDevice, m_pContext, TEXT("Quest_DestSpot")), LAYER_MONSTER, true)))
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Quest_DestSpot", CQuest_DestSpot::Create(m_pDevice, m_pContext, TEXT("Quest_DestSpot")), LAYER_ETC, true)))
 		return E_FAIL;
 
 	/* Monster */

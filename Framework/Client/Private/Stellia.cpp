@@ -126,6 +126,15 @@ void CStellia::Tick(_float fTimeDelta)
 	//	}
 	//}
 
+	if (KEY_TAP(KEY::L))
+	{
+		m_pStateCom->Change_State(m_iCurAnimIndex);
+
+		m_iCurAnimIndex += 1;
+		if (m_iCurAnimIndex >= m_pStateCom->Get_States().size())
+			m_iCurAnimIndex = 0;
+	}
+
 	/* юс╫ц */
 	if (KEY_TAP(KEY::Z))
 		m_tStat.fHp -= m_tStat.fMaxHp * 0.1f;

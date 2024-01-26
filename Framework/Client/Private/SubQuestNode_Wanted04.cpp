@@ -92,7 +92,7 @@ CBTNode::NODE_STATE CSubQuestNode_Wanted04::Tick(const _float& fTimeDelta)
 		{
 			m_bIsCreateSpot = true;
 			Vec4 vSpotPos = { -49.6f, -5.2f, -40.f , 1.f };
-			m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_MONSTER), &vSpotPos));
+			m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_ETC), &vSpotPos));
 		}
 
 		if (m_bIsCreateSpot)
