@@ -144,6 +144,9 @@ void CUI_MonsterHP_World::Tick(_float fTimeDelta)
 
 void CUI_MonsterHP_World::LateTick(_float fTimeDelta)
 {
+	if (LEVEL_TOOL == GI->Get_CurrentLevel())
+		return;
+
 	if (m_bActive)
 	{
 		if (Is_Dead())

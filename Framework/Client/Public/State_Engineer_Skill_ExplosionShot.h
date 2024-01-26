@@ -28,9 +28,6 @@ public:
 private:
 	_bool m_bShoot = false;
 
-private:
-	void Shoot();
-
 public:
 	static CState_Engineer_Skill_ExplosionShot* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

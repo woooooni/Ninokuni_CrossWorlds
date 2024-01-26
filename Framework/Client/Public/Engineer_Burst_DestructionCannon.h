@@ -36,7 +36,9 @@ public:
 
 
 private:
+	void Create_Cannon();
 	void Fire_Cannon();
+	void Delete_Cannon();
 
 private:
 	_bool m_bGenEffect = false;

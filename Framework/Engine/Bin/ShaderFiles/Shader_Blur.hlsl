@@ -2,13 +2,13 @@
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 
-texture2D g_BlurTarget;
+Texture2D g_BlurTarget;
 
 int   g_iBlurSamplers = 15;
 float g_fBlurRange    = 0.09f;
 
 float2 g_WinSize           = float2(1900.f, 900.f);
-float  g_fWeight_low[3]    = { 0.5f, 1.f, 0.5f };
+float  g_fWeight_low[3]    = { 0.025f, 0.95f, 0.025f };
 float  g_fWeight_middle[7] = { 0.2f, 0.5f, 0.8f, 1.f, 0.8f, 0.5f, 0.2f };
 float  g_fWeight_high[11]  = { 0.1f, 0.2f, 0.4f, 0.6f, 0.8f, 1.f, 0.8f, 0.6f, 0.4f, 0.2f, 0.1f };
 
@@ -71,7 +71,7 @@ PS_OUT PS_BLUR_Horizontal_low(PS_IN In)
 {
 	PS_OUT Out = (PS_OUT)0;
 
-	float4 vColor = float4(0.f, 0.f, 0.f, 1.f);
+	float4 vColor = float4(0.f, 0.f, 0.f, 0.f);
 	float  fTotal = 0.f;
 
 	for (int i = -1; 2 > i; i++)
@@ -109,7 +109,7 @@ PS_OUT PS_BLUR_Horizontal_middle(PS_IN In)
 {
 	PS_OUT Out = (PS_OUT)0;
 
-	float4 vColor = float4(0.f, 0.f, 0.f, 1.f);
+	float4 vColor = float4(0.f, 0.f, 0.f, 0.f);
 	float  fTotal = 0.f;
 
 	for (int i = -3; 4 > i; i++)

@@ -39,6 +39,9 @@ private:
 	class CEffect* m_pSpiralEffect = nullptr;
 	_bool m_bGenEffect = false;
 
+private:
+	void Create_CollisionEffect();
+
 public:
 	static CEngineer_Bullet_Bomb* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);

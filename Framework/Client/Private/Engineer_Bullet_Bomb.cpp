@@ -143,6 +143,11 @@ void CEngineer_Bullet_Bomb::Collision_Enter(const COLLISION_INFO& tInfo)
 		if (m_bReserveDead)		
 			return;
 
+		if (nullptr != m_pSpiralEffect)
+		{
+			m_pSpiralEffect->Set_Dead(true);
+			Safe_Release(m_pSpiralEffect);
+		}
 
 		wstring strSoundKey = L"Ele_Impact_Fire_" + to_wstring(GI->RandomInt(4, 8)) + L".mp3";
 		GI->Play_Sound(strSoundKey, SOUND_MONSTERL_HIT, 0.3f, false);

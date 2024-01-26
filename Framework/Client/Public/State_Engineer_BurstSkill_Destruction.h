@@ -25,9 +25,6 @@ public:
 	virtual void Tick_State(_float fTimeDelta) override;
 	virtual void Exit_State() override;
 
-private:
-	HRESULT Generate_Cannon();
-
 public:
 	static CState_Engineer_BurstSkill_Destruction* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

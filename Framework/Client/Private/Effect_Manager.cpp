@@ -707,9 +707,13 @@ HRESULT CEffect_Manager::Ready_Proto_Vfx_Player()
 			CVfx_Engineer_Skill_ElementalBlast::Create(m_pDevice, m_pContext, TEXT("Engineer_Skill_ElementalBlast")), LAYER_TYPE::LAYER_EFFECT)))
 			return E_FAIL;
 
-		// Prototype_Vfx_Engineer_Skill_ExplosionShot
-		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Engineer_Skill_ExplosionShot"),
-			CVfx_Engineer_Skill_ExplosionShot::Create(m_pDevice, m_pContext, TEXT("Engineer_Skill_ExplosionShot")), LAYER_TYPE::LAYER_EFFECT)))
+		// Prototype_Vfx_Engineer_Skill_ExplosionShot_Shot
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Engineer_Skill_ExplosionShot_Shot"),
+			CVfx_Engineer_Skill_ExplosionShot_Shot::Create(m_pDevice, m_pContext, TEXT("Engineer_Skill_ExplosionShot_Shot")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+		// Prototype_Vfx_Engineer_Skill_ExplosionShot_Boom
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Engineer_Skill_ExplosionShot_Boom"),
+			CVfx_Engineer_Skill_ExplosionShot_Boom::Create(m_pDevice, m_pContext, TEXT("Engineer_Skill_ExplosionShot_Boom")), LAYER_TYPE::LAYER_EFFECT)))
 			return E_FAIL;
 
 		// Prototype_Vfx_Engineer_Skill_Destruction
