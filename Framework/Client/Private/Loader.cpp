@@ -604,6 +604,7 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 			CLensFlare::Create(m_pDevice, m_pContext, TEXT("Common_LensFlare"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX))
 			return E_FAIL;
 
+		// Å» °Í
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Vehicle_Udadak"),
 			CVehicle_Udadak::Create(m_pDevice, m_pContext, TEXT("Vehicle_Udadak")), LAYER_TYPE::LAYER_CHARACTER))
 			return E_FAIL;

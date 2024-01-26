@@ -347,6 +347,7 @@ private:
 
 	vector <class CUI_WeaponSection_Weapon*>	m_WeaponIcon;
 	vector <class CUI_WeaponSection_Weapon*>	m_WeaponElemental;
+	class CUI_WeaponSection_Recommend*			m_pRecommend = { nullptr };
 
 	class CUI_Boss_NameTag*				m_pBossNameTag = { nullptr };
 

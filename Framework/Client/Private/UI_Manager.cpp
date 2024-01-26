@@ -126,6 +126,7 @@
 #include "UI_ImajinnSection_Vehicle.h"
 #include "UI_Emoticon_SpeechBalloon.h"
 #include "UI_InGame_Setting_OpenBtn.h"
+#include "UI_WeaponSection_Recommend.h"
 #include "UI_SkillSection_Background.h"
 #include "UI_ImajinnSection_Emoticon.h"
 #include "UI_InGame_Setting_RadioBtn.h"
@@ -3696,6 +3697,19 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(m_pPlayerSelected);
 
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 64.f * 0.6f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY * 0.5f;
+	CGameObject* pArrow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_WeaponSection_Recommend"), &UIDesc, &pArrow)))
+		return E_FAIL;
+	m_pRecommend = dynamic_cast<CUI_WeaponSection_Recommend*>(pArrow);
+	if (nullptr == m_pRecommend)
+		return E_FAIL;
+	Safe_AddRef(m_pRecommend);
+
 	return S_OK;
 }
 
@@ -4404,6 +4418,12 @@ HRESULT CUI_Manager::Ready_GameObjectToLayer(LEVELID eID)
 	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pPlayerSelected)))
 		return E_FAIL;
 	Safe_AddRef(m_pPlayerSelected);
+
+	if (nullptr == m_pRecommend)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pRecommend)))
+		return E_FAIL;
+	Safe_AddRef(m_pRecommend);
 
 	return S_OK;
 }
@@ -8814,9 +8834,12 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minimap"),
 		CUI_Minimap::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
-
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minimap_Icon"),
 		CUI_Minimap_Icon::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_WeaponSection_Recommend"),
+		CUI_WeaponSection_Recommend::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
 	return S_OK;
@@ -9145,6 +9168,8 @@ void CUI_Manager::Free()
 	Safe_Release(m_pInGameSetting);
 	Safe_Release(m_pBtnInGameSetting);
 	Safe_Release(m_pPlayerSelected);
+
+	Safe_Release(m_pRecommend);
 
 	for (auto& pFrame : m_CoolTimeFrame)
 		Safe_Release(pFrame);
