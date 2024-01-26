@@ -11,6 +11,9 @@
 #include "Tool_UI.h"
 #include "Tool_Item.h"
 
+#include "Game_Manager.h"
+#include "Player.h"
+#include "Character.h"
 
 IMPLEMENT_SINGLETON(CImGui_Manager)
 
@@ -156,6 +159,36 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 
     IMGUI_NEW_LINE;
 
+    /* Player Input On Off*/
+    {
+        CPlayer*    pPlayer         = nullptr;
+        CCharacter* pCharacter      = nullptr;
+
+        if (nullptr == pPlayer)
+        {
+            pPlayer = CGame_Manager::GetInstance()->Get_Player();
+            if (nullptr != pPlayer)
+                pCharacter = pPlayer->Get_Character();
+        }
+
+        if (ImGui::Checkbox("Player Input", &m_bPlayerInput))
+        {
+            if (nullptr != pCharacter)
+            {
+                pCharacter->Set_All_Input(m_bPlayerInput);
+            }
+        }
+
+        if (nullptr != pCharacter)
+        {
+            if (pCharacter->Is_All_Input() != m_bPlayerInput)
+            {
+                pCharacter->Set_All_Input(m_bPlayerInput);
+            }
+        }
+    }
+    IMGUI_NEW_LINE;
+
     ImGui::Checkbox("Model_Tool", &m_bShowModel_Tool);
     ImGui::Checkbox("Camera_Tool", &m_bShowCamera_Tool);
     ImGui::Checkbox("Effect_Tool", &m_bShowEffect_Tool);
@@ -166,6 +199,8 @@ void CImGui_Manager::Tick(_float fTimeDelta)
     ImGui::Checkbox("UI_Tool", &m_bShowUI_Tool);
     ImGui::Checkbox("Item_Tool", &m_bShowItem_Tool);
     ImGui::Checkbox("Demo", &m_bShow_Demo);
+
+
     ImGui::End();
 
 

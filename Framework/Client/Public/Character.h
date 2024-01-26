@@ -170,7 +170,7 @@ public:
 	_bool Is_Skill_Input() { return m_bSkillInputable; }
 	_bool Is_Attack_Input() { return m_bAttackInputable; }
 	_bool Is_Move_Input() { return m_bMoveInputable; }
-	
+	_bool Is_All_Input() { if (m_bSkillInputable && m_bAttackInputable && m_bMoveInputable) return true; else return false; }
 
 public:
 	const CHARACTER_STAT& Get_Stat() { return m_tStat; }

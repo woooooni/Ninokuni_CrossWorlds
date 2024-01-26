@@ -228,9 +228,11 @@ void CCharacter::Tick(_float fTimeDelta)
 	{
 		if (nullptr != m_pCameraIcon)
 			m_pCameraIcon->Tick(fTimeDelta);
-		if (nullptr != m_pMinimapIcon)
+
+		if (nullptr != m_pMinimapIcon)  
 			m_pMinimapIcon->Tick(fTimeDelta);
 	}
+
 
 	for(_uint i = 0; i < SOCKET_END; ++i)
 	{
