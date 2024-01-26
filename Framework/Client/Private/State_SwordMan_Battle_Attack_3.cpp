@@ -38,6 +38,8 @@ void CState_SwordMan_Battle_Attack_3::Tick_State(_float fTimeDelta)
         m_pTransformCom->Move(XMVector3Normalize(vDir), 10.f, fTimeDelta);
     }
         
+    if (true == CCamera_Manager::GetInstance()->Get_CurCamera()->Is_Lerp_Fov())
+        m_pCharacter->Get_RendererCom()->Set_RadialBlur(true);
     
 
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
@@ -48,6 +50,8 @@ void CState_SwordMan_Battle_Attack_3::Exit_State()
 {
     if (CAMERA_TYPE::FOLLOW == CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key())
         CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Lerp_Fov(XMConvertToRadians(60.f), 0.2f, LERP_MODE::EASE_IN);
+
+    m_pCharacter->Get_RendererCom()->Set_RadialBlur(false);
 }
 
 

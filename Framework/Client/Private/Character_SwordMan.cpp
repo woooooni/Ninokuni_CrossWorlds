@@ -110,9 +110,6 @@ HRESULT CCharacter_SwordMan::Initialize(void* pArg)
  	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
-	/*if (FAILED(Ready_Trails()))
-		return E_FAIL;*/
-
 	m_vBloomPower = { 0.f, 0.5f, 1.f };
 
 	return S_OK;

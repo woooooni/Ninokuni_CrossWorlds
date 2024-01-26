@@ -402,9 +402,16 @@ HRESULT CRenderer::Draw_World()
 	if (FAILED(Render_Blur(L"Target_Effect_Distortion", L"MRT_Distrotion_Blur", true, BLUR_HOR_HIGH, BLUR_VER_HIGH, BLUR_UP_ONEADD)))
 		return E_FAIL;
 
-
 	if (FAILED(Render_Distortion()))
 		return E_FAIL;
+
+	if (true == m_bRadialBlurDraw)
+	{
+		if (FAILED(Render_RadialBlur()))
+			return E_FAIL;
+	}
+
+	
 
 	return S_OK;
 }
@@ -1305,6 +1312,37 @@ HRESULT CRenderer::Render_Distortion()
 	return S_OK;
 }
 
+HRESULT CRenderer::Render_RadialBlur()
+{
+	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, L"MRT_RaidalBlur", true)))
+		return E_FAIL;
+
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
+		return E_FAIL;
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
+		return E_FAIL;
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], L"Target_Blend", "g_BlendTarget")))
+		return E_FAIL;
+
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Begin(9)))
+		return E_FAIL;
+
+	if (FAILED(m_pVIBuffer->Render()))
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+		return E_FAIL;
+
+	if (FAILED(Render_AlphaBlendTargetMix(L"Target_RadialBlur", L"MRT_Blend", false)))
+		return E_FAIL;
+
+
+	return S_OK;
+}
+
 // MRT_Decal
 HRESULT CRenderer::Render_Decal()
 {
@@ -1960,6 +1998,9 @@ HRESULT CRenderer::Render_Debug_Target()
 	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Distortion"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
 		return E_FAIL;
 
+	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_RaidalBlur"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
+		return E_FAIL;
+
 
 #pragma region TEMP_MIRROR
 	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_LensFlare"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
@@ -2590,6 +2631,14 @@ HRESULT CRenderer::Create_Target()
 		return E_FAIL;
 #pragma endregion 
 
+#pragma region MRT_RaidalBlur : RaidalBlur
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_RadialBlur"),
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+#pragma endregion
+
+
+
 
 	XMStoreFloat4x4(&m_WorldMatrix, XMMatrixIdentity());
 	m_WorldMatrix._11 = ViewportDesc.Width;
@@ -2825,6 +2874,12 @@ HRESULT CRenderer::Set_TargetsMrt()
 			return E_FAIL;
 	}
 
+	// MRT_RaidalBlur
+	{
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_RaidalBlur"), TEXT("Target_RadialBlur"))))
+			return E_FAIL;
+	}
+
 	//MRT_ScreenEffect
 	{
 		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_ScreenEffect"), TEXT("Target_ScreenEffect"))))
@@ -2945,11 +3000,18 @@ HRESULT CRenderer::Set_Debug()
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_LensFlare"), (fSizeX / 2.f) + (fSizeX * 0), (fSizeY / 2.f) + (fSizeY * 7), fSizeX, fSizeY)))
 		return E_FAIL;
 
+	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_RadialBlur"), (fSizeX / 2.f) + (fSizeX * 1), (fSizeY / 2.f) + (fSizeY * 7), fSizeX, fSizeY)))
+		return E_FAIL;
+
+	
+
 
 
 	// MRT_Blend
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Blend"), 150.f, 825.f, 300.f, 150.f)))
 		return E_FAIL;
+
+	
 
 	return S_OK;
 }

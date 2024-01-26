@@ -86,6 +86,11 @@ void CWeapon_SwordTemp::Collision_Exit(const COLLISION_INFO& tInfo)
 
 }
 
+HRESULT CWeapon_SwordTemp::Ready_Trails()
+{
+	return S_OK;
+}
+
 HRESULT CWeapon_SwordTemp::Ready_Components()
 {
 	/* Com_Model */

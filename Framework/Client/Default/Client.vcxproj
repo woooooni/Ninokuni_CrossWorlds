@@ -982,7 +982,6 @@
     <ClInclude Include="..\Public\UI_Loading_Character.h" />
     <ClInclude Include="..\Public\UI_Loading_CharacterLogo.h" />
     <ClInclude Include="..\Public\UI_Loading_Imajinn.h" />
-    <ClInclude Include="..\Public\UI_Loading_Information.h" />
     <ClInclude Include="..\Public\UI_Loading_MainLogo.h" />
     <ClInclude Include="..\Public\UI_Loading_ProgressBar.h" />
     <ClInclude Include="..\Public\UI_Logo_Background.h" />
@@ -1101,7 +1100,6 @@
     <ClCompile Include="..\Private\Camera_CutScene_Map.cpp" />
     <ClCompile Include="..\Private\CaliaHuman.cpp" />
     <ClCompile Include="..\Private\Camera_Follow.cpp" />
-    <ClCompile Include="..\Private\Camera_Manager.cpp" />
     <ClCompile Include="..\Private\Camera_Free.cpp" />
     <ClCompile Include="..\Private\Camera_Top.cpp" />
     <ClCompile Include="..\Private\Cannon_Ball.cpp" />
@@ -1851,7 +1849,6 @@
     <ClCompile Include="..\Private\UI_Loading_Character.cpp" />
     <ClCompile Include="..\Private\UI_Loading_CharacterLogo.cpp" />
     <ClCompile Include="..\Private\UI_Loading_Imajinn.cpp" />
-    <ClCompile Include="..\Private\UI_Loading_Information.cpp" />
     <ClCompile Include="..\Private\UI_Loading_MainLogo.cpp" />
     <ClCompile Include="..\Private\UI_Loading_ProgressBar.cpp" />
     <ClCompile Include="..\Private\UI_Logo_Background.cpp" />

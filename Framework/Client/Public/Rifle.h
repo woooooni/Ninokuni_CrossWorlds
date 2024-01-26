@@ -23,10 +23,14 @@ public:
 	virtual void Collision_Continue(const COLLISION_INFO& tInfo) override;
 	virtual void Collision_Exit(const COLLISION_INFO& tInfo) override;
 
+protected:
+	virtual HRESULT Ready_Trails() override;
+
 private:
 	HRESULT Ready_Components();
 	HRESULT Ready_Colliders();
 	HRESULT Bind_ShaderResources();
+
 
 public:
 	static CRifle* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);

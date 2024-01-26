@@ -63,6 +63,11 @@ void CHammer::Collision_Exit(const COLLISION_INFO& tInfo)
 
 }
 
+HRESULT CHammer::Ready_Trails()
+{
+	return S_OK;
+}
+
 HRESULT CHammer::Ready_Components()
 {
 	/* Com_Model */

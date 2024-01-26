@@ -26,9 +26,6 @@ HRESULT CNpcWeapon_Halberd::Initialize(void* pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
-	if (FAILED(__super::Ready_Components()))
-		return E_FAIL;
-
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
@@ -86,8 +83,15 @@ void CNpcWeapon_Halberd::Collision_Exit(const COLLISION_INFO& tInfo)
 
 }
 
+HRESULT CNpcWeapon_Halberd::Ready_Trails()
+{
+	return S_OK;
+}
+
 HRESULT CNpcWeapon_Halberd::Ready_Components()
 {
+	if (FAILED(__super::Ready_Components()))
+		return E_FAIL;
 	/* Com_Model */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_NpcWeapon_Halberd"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;

@@ -63,6 +63,11 @@ void CRifle::Collision_Exit(const COLLISION_INFO& tInfo)
 
 }
 
+HRESULT CRifle::Ready_Trails()
+{
+	return S_OK;
+}
+
 HRESULT CRifle::Ready_Components()
 {
 	/* Com_Model */

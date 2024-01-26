@@ -43,9 +43,13 @@ void CState_SwordMan_BurstSkill_MegaSlash::Tick_State(_float fTimeDelta)
         if (false == m_bSlow)
         {
             GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.5f, 0.1f, true);
+            m_pCharacter->Get_RendererCom()->Set_RadialBlur(true);
             m_bSlow = true;
         }
     }
+
+    if(GI->Get_TimeScale(TIMER_TYPE::GAME_PLAY) >= 1.f)
+        m_pCharacter->Get_RendererCom()->Set_RadialBlur(false);
         
 
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
@@ -60,6 +64,7 @@ void CState_SwordMan_BurstSkill_MegaSlash::Exit_State()
     if(!CCamera_Manager::GetInstance()->Get_CurCamera()->Is_Lock_Fov())
         CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(Cam_Fov_Follow_Default);
 
+    m_pCharacter->Get_RendererCom()->Set_RadialBlur(false);
     m_bSlow = false;
 }
 CState_SwordMan_BurstSkill_MegaSlash* CState_SwordMan_BurstSkill_MegaSlash::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

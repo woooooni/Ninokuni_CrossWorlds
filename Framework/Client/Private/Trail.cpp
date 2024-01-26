@@ -43,15 +43,36 @@ void CTrail::Tick(_float fTimeDelta)
 		return;
 
 	m_TrailDesc.fAccGenTrail += fTimeDelta;
-	if(m_TrailDesc.fAccGenTrail>= m_TrailDesc.fGenTrailTime)
+	m_TrailDesc.fGenTrailTime = 0.01f;
+	if (m_TrailDesc.fAccGenTrail >= m_TrailDesc.fGenTrailTime)
+	{
 		m_pVIBufferCom->Update_TrailBuffer(fTimeDelta, XMLoadFloat4x4(&m_TransformMatrix));
+		m_TrailDesc.fAccGenTrail = 0.f;
+	}
+		
 }
 
 void CTrail::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
-	if(m_TrailDesc.bTrail)
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_ALPHABLEND, this);
+	/*m_TrailDesc.bTrail = true;
+	m_TrailDesc.vDiffuseColor = { 1.f, 0.3f, 0.f, 0.f };
+	m_TrailDesc.vBlackDiscard = { 0.5f, 0.5f, 0.5f };
+	m_TrailDesc.fBlurPower = 0.f;
+	m_TrailDesc.vDistortion = { 0.5f, 0.5f };
+
+	m_iDiffuseTextureIndex = 7;
+	m_iAlphaTextureIndex = 7;
+	SetUp_Position(XMVectorSet(0.f, 0.f, 0.5f, 1.f), XMVectorSet(0.f, 0.f, 1.5f, 1.f));
+	m_pVIBufferCom->Set_VtxCount(44);
+	*/
+	
+
+	if(true == m_TrailDesc.bTrail)
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_EFFECT, this);
+
+	
+	
 }
 
 HRESULT CTrail::Render()
@@ -61,18 +82,44 @@ HRESULT CTrail::Render()
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &WorldMatrix, sizeof(_float4x4))))
 		return E_FAIL;
+
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
 		return E_FAIL;
+
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
 
 	if(FAILED(m_pShaderCom->Bind_RawValue("g_vColor", &m_TrailDesc.vDiffuseColor, sizeof(_float4))))
 		return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_fUVFlow", &m_TrailDesc.vUVAcc, sizeof(_float2))))
+	_float fAlpha = m_TrailDesc.vDiffuseColor.w;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha", &fAlpha, sizeof(_float))))
 		return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_iCutUV", &m_TrailDesc.bUV_Cut, sizeof(_int))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fAlpha_Discard", &m_TrailDesc.fAlphaDiscard, sizeof(_float))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fBlack_Discard", &m_TrailDesc.vBlackDiscard, sizeof(_float3))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vDistortion", &m_TrailDesc.vDistortion, sizeof(_float2))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vUVFlow", &m_TrailDesc.vUVFlow, sizeof(_float2))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vUVIndex", &m_TrailDesc.vUVIndex, sizeof(_float2))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vMaxUVCount", &m_TrailDesc.vMaxUVCount, sizeof(_float2))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_iUVLoop", &m_TrailDesc.bUV_Cut, sizeof(_int))))
+		return E_FAIL;
+
+	
+
+	if (FAILED(m_pDistortionTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DistortionTexture", 0)))
 		return E_FAIL;
 
 
@@ -106,12 +153,15 @@ HRESULT CTrail::Render()
 			iPassIndex = 2;
 
 		if (-1 != m_iDiffuseTextureIndex && -1 != m_iAlphaTextureIndex)
-			iPassIndex = 3;
+			iPassIndex = 3; 
 	}
 
-	m_pShaderCom->Begin(iPassIndex);
+	if (FAILED(m_pShaderCom->Begin(iPassIndex)))
+		return E_FAIL;
 
-	m_pVIBufferCom->Render();
+	if (FAILED(m_pVIBufferCom->Render()))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -139,12 +189,17 @@ HRESULT CTrail::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Trail"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom, &m_TrailDesc)))
 		return E_FAIL;
 
-	/* For.Com_Texture */
+	/* For.Com_Diffuse_Texture */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Trail"), TEXT("Com_Diffuse_Texture"), (CComponent**)&m_pDiffuseTextureCom)))
 		return E_FAIL;
 
-	/* For.Com_Texture */
+	/* For.Com_Alpha_Texture */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Trail"), TEXT("Com_Alpha_Texture"), (CComponent**)&m_pAlphaTextureCom)))
+		return E_FAIL;
+
+
+	/* For.Com_Distortion_Texture */
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Noise"), TEXT("Com_Distortion_Texture"), (CComponent**)&m_pDistortionTextureCom)))
 		return E_FAIL;
 
 	return S_OK;
@@ -205,6 +260,7 @@ void CTrail::Free()
 	Safe_Release(m_pShaderCom);
 	Safe_Release(m_pDiffuseTextureCom);
 	Safe_Release(m_pAlphaTextureCom);
+	Safe_Release(m_pDistortionTextureCom);
 	Safe_Release(m_pVIBufferCom);
 
 }
