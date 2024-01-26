@@ -16,7 +16,7 @@ public:
 
 private:
 	CGameObject* m_pChloe = nullptr;
-
+	CGameObject* m_pDog = nullptr;
 public:
 	static CSubQuestNode_FindCat04* Create();
 	virtual void Free() override;

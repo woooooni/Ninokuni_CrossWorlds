@@ -18,10 +18,6 @@ HRESULT CSubQuestNode_FindCat06::Initialize()
 {
 	__super::Initialize();
 
-	m_strQuestTag = TEXT("[서브]");
-	m_strQuestName = TEXT("고양이 찾기");
-	m_strQuestContent = TEXT("클로이의 고양이 찾기");
-
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/SubQuest/01. SubQuest01_Chloe_FindCat/SubQuest_FindCat06.json");
 
 	for (const auto& talkDesc : Load) {
@@ -36,6 +32,8 @@ HRESULT CSubQuestNode_FindCat06::Initialize()
 
 void CSubQuestNode_FindCat06::Start()
 {
+	CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_END);
+
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
 
 	/* 대화 */

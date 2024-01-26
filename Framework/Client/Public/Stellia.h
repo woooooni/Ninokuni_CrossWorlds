@@ -102,6 +102,9 @@ private:
 	// 스텔리아 무적 
 	_bool m_bIsStelliaHit = true;
 
+	// 테스트용 애니메이션 넘기기
+	_int m_iCurAnimIndex = 0;
+
 public:
 	static CStellia* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat);
 	virtual CGameObject* Clone(void* pArg) override;

@@ -36,6 +36,8 @@ private:
 	_float m_fRotAngle = 0.f;
 	_float m_fDist = 0.f;
 
+	class CDecal* m_pDecal_SafeZnoe = nullptr;
+
 #pragma region Debug Draw 
 	BasicEffect* m_pEffect = nullptr;
 	BoundingSphere* m_pSphere = nullptr;

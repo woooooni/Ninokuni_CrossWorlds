@@ -20,7 +20,7 @@ void CMainQuestNode_IntroTour01::Start()
 	Vec4 vSpotPos = { 0.f, 0.f, 5.f, 1.f };
 
 	// 임시로 monster에 
-	m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_MONSTER), &vSpotPos));
+	m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_ETC), &vSpotPos));
 }
 
 CBTNode::NODE_STATE CMainQuestNode_IntroTour01::Tick(const _float& fTimeDelta)
@@ -35,15 +35,12 @@ CBTNode::NODE_STATE CMainQuestNode_IntroTour01::Tick(const _float& fTimeDelta)
 			m_pQuestDestSpot->Tick(fTimeDelta);
 			m_pQuestDestSpot->LateTick(fTimeDelta);
 
-			if (m_pQuestDestSpot != nullptr)
+			if (m_pQuestDestSpot->Get_IsCol())
 			{
-				if (m_pQuestDestSpot->Get_IsCol())
-				{
-					m_bIsClear = true;
-					m_pQuestDestSpot->Set_ReadyDelete(true);
-					Safe_Release(m_pQuestDestSpot);
-					return NODE_STATE::NODE_FAIL;
-				}
+				m_bIsClear = true;
+				m_pQuestDestSpot->Set_ReadyDelete(true);
+				Safe_Release(m_pQuestDestSpot);
+				return NODE_STATE::NODE_FAIL;
 			}
 		}
 	}
@@ -53,11 +50,6 @@ CBTNode::NODE_STATE CMainQuestNode_IntroTour01::Tick(const _float& fTimeDelta)
 
 void CMainQuestNode_IntroTour01::LateTick(const _float& fTimeDelta)
 {
-	if (GI->Get_CurrentLevel() == LEVEL_EVERMORE)
-	{
-		if (m_pQuestDestSpot != nullptr)
-			m_pQuestDestSpot->LateTick(fTimeDelta);
-	}
 }
 
 CMainQuestNode_IntroTour01* CMainQuestNode_IntroTour01::Create()
@@ -76,5 +68,4 @@ CMainQuestNode_IntroTour01* CMainQuestNode_IntroTour01::Create()
 void CMainQuestNode_IntroTour01::Free()
 {
 	__super::Free();
-	Safe_Release(m_pQuestDestSpot);
 }

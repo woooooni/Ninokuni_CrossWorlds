@@ -11,7 +11,7 @@
 
 // 임시로 몬스터에 담는다. 충돌 처리 그룹 추가 될 때까지.
 CQuest_DestSpot::CQuest_DestSpot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
-	: CGameObject(pDevice, pContext, strObjectTag, OBJ_TYPE::OBJ_MONSTER)
+	: CGameObject(pDevice, pContext, strObjectTag, OBJ_TYPE::OBJ_QUESTSPOT)
 {
 }
 
@@ -74,8 +74,6 @@ void CQuest_DestSpot::Tick(_float fTimeDelta)
 
 		// 임시로 몬스터에 담는다. 충돌 처리 그룹 추가 될 때까지.
 		GI->Add_CollisionGroup(COLLISION_GROUP::MONSTER, this);
-
-		m_pControllerCom->Tick_Controller(fTimeDelta);
 	}
 
 	if (nullptr != m_pMinimapIcon)
@@ -99,16 +97,12 @@ void CQuest_DestSpot::LateTick(_float fTimeDelta)
 		if (nullptr != m_pMinimapIcon)
 			m_pMinimapIcon->LateTick(fTimeDelta);
 
-		m_pControllerCom->LateTick_Controller(fTimeDelta);
-
 #ifdef _DEBUG
 		for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
 		{
 			for (auto& pCollider : m_Colliders[i])
 				m_pRendererCom->Add_Debug(pCollider);
 		}
-		m_pRendererCom->Add_Debug(m_pControllerCom);
-
 		m_pRendererCom->Set_PlayerPosition(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
 #endif // DEBUG
 	}
@@ -164,20 +158,6 @@ HRESULT CQuest_DestSpot::Ready_Components()
 {
 	/* For.Com_Renderer */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
-		return E_FAIL;
-
-	/* For.Com_PhysXBody */
-	CPhysX_Controller::CONTROLLER_DESC ControllerDesc;
-
-	ControllerDesc.eType = CPhysX_Controller::CAPSULE;
-	ControllerDesc.pTransform = m_pTransformCom;
-	ControllerDesc.vOffset = { 0.f, 1.125f, 0.f };
-	ControllerDesc.fHeight = 1.f;
-	ControllerDesc.fMaxJumpHeight = 10.f;
-	ControllerDesc.fRaidus = 1.f;
-	ControllerDesc.pOwner = this;
-
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_PhysXController"), TEXT("Com_Controller"), (CComponent**)&m_pControllerCom, &ControllerDesc)))
 		return E_FAIL;
 
 	return S_OK;
@@ -248,7 +228,6 @@ void CQuest_DestSpot::Free()
 
 	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pTransformCom);
-	Safe_Release(m_pControllerCom);
 
 	if (nullptr != pEffectObject)
 	{

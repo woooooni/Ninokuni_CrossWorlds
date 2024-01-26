@@ -15,12 +15,12 @@ HRESULT CSubQuestNode_FindCat03::Initialize()
 	__super::Initialize();
 
 	m_strQuestTag = TEXT("[서브]");
-	m_strQuestName = TEXT("고양이 찾기");
-	m_strQuestContent = TEXT("클로이의 고양이 찾기");
+	m_strQuestName = TEXT("감귤이 찾기");
+	m_strQuestContent = TEXT("감귤이를 찾아주자");
 
 	m_strNextQuestTag = TEXT("[서브]");
-	m_strNextQuestName = TEXT("고양이 찾기");
-	m_strNextQuestContent = TEXT("클로이의 고양이 찾기");
+	m_strNextQuestName = TEXT("감귤이 찾기");
+	m_strNextQuestContent = TEXT("감귤이를 찾아주자");
 
 	return S_OK;
 }
@@ -35,29 +35,15 @@ CBTNode::NODE_STATE CSubQuestNode_FindCat03::Tick(const _float& fTimeDelta)
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 
+	m_bIsClear = true;
+
 	// 고양이를 찾아야 하나 임시로 일단 키 입력으로 넘어가자.
-	if (KEY_TAP(KEY::N))
-	{
-		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
-
-		m_bIsClear = true;
-		return NODE_STATE::NODE_FAIL;
-	}
-
-	//if (m_pQuestDestSpot != nullptr)
+	//if (KEY_TAP(KEY::N))
 	//{
-	//	m_pQuestDestSpot->Tick(fTimeDelta);
-	//	m_pQuestDestSpot->LateTick(fTimeDelta);
+	//	CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 	//
-	//	if (m_pQuestDestSpot != nullptr)
-	//	{
-	//		if (m_pQuestDestSpot->Get_IsCol())
-	//		{
-	//			m_bIsClear = true;
-	//			m_pQuestDestSpot->Set_Dead(true);
-	//			return NODE_STATE::NODE_FAIL;
-	//		}
-	//	}
+	//	m_bIsClear = true;
+	//	return NODE_STATE::NODE_FAIL;
 	//}
 
 	return NODE_STATE::NODE_RUNNING;

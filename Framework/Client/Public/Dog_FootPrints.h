@@ -21,7 +21,8 @@ public:
 	virtual HRESULT Ready_Components();
 
 private:
-	class CDecal* m_pFootPrints = nullptr;
+	class CParticle* m_pFootPrits_Particle = nullptr;
+	class CDecal*	 m_pFootPrints_Decal = nullptr;
 	_float m_fShowDist = 0.f;
 
 	_bool m_bIsShow = false;

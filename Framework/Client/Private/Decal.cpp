@@ -215,7 +215,6 @@ void CDecal::Set_IsDecalShow(_bool bIsShow, _float fTimeDelta)
 	if (bIsShow)
 	{
 		m_bIsShow = true;
-		Restart_Decal();
 	}
 	else if (!bIsShow)
 	{

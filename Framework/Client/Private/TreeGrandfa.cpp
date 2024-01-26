@@ -8,6 +8,9 @@
 #include "UniqueNpcState_Run.h"
 #include "UniqueNpcState_Talk.h"
 
+#include "Monster.h"
+#include "MonsterProjectile.h"
+
 CTreeGrandfa::CTreeGrandfa(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameNpc(pDevice, pContext, strObjectTag)
 {
@@ -48,11 +51,23 @@ HRESULT CTreeGrandfa::Initialize(void* pArg)
 void CTreeGrandfa::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+
+	GI->Add_CollisionGroup(COLLISION_GROUP::NPC, this);
 }
 
 void CTreeGrandfa::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
+
+#ifdef _DEBUG
+	m_pRendererCom->Set_PlayerPosition(m_pTransformCom->Get_State(CTransform::STATE_POSITION));
+	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
+	{
+		for (auto& pCollider : m_Colliders[i])
+			m_pRendererCom->Add_Debug(pCollider);
+	}
+	m_pRendererCom->Add_Debug(m_pControllerCom);
+#endif // DEBUG
 
 #ifdef DEBUG
 	m_pRendererCom->Add_Debug(m_pControllerCom);
@@ -69,6 +84,14 @@ HRESULT CTreeGrandfa::Render()
 
 void CTreeGrandfa::Collision_Enter(const COLLISION_INFO& tInfo)
 {
+	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER_PROJECTILE)
+	{
+		if ((tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
+			&& (tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK))
+		{
+			On_Damaged(tInfo);
+		}
+	}
 }
 
 void CTreeGrandfa::Collision_Continue(const COLLISION_INFO& tInfo)
@@ -81,13 +104,40 @@ void CTreeGrandfa::Collision_Exit(const COLLISION_INFO& tInfo)
 
 void CTreeGrandfa::On_Damaged(const COLLISION_INFO& tInfo)
 {
+	if (m_pStateCom->Get_CurrState() == CCharacter::STATE::DEAD || m_pStateCom->Get_CurrState() == CCharacter::STATE::REVIVE)
+		return;
+
+	CMonster* pMonster = nullptr;
+	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER_PROJECTILE)
+	{
+		CMonsterProjectile* pProjectile = dynamic_cast<CMonsterProjectile*>(tInfo.pOther);
+		if (nullptr == pProjectile)
+		{
+			MSG_BOX("CMonsterProjectile Cast Failed.");
+			return;
+		}
+		pMonster = pProjectile->Get_Owner();
+	}
+	else
+	{
+		pMonster = dynamic_cast<CMonster*>(tInfo.pOther);
+	}
+
+	if (nullptr == pMonster)
+		return;
+
+	_int iDamage = max(0, pMonster->Get_Stat().iAtk - (m_tStat.iDef * 0.2f));
+
+	m_tStat.iHp = max(0, m_tStat.iHp - iDamage);
 }
 
 
 HRESULT CTreeGrandfa::Ready_States()
 {
 	m_strKorName = TEXT("가을 영감");
-	m_tStat.fSpeed = 0.5f;
+	m_tStat.iMaxHp = 5000;
+	m_tStat.iHp = 5000;
+	m_tStat.iDef = 10;
 
 	m_pStateCom->Set_Owner(this);
 
@@ -117,6 +167,25 @@ HRESULT CTreeGrandfa::Ready_States()
 HRESULT CTreeGrandfa::Ready_Colliders()
 {
 	if (FAILED(__super::Ready_Colliders()))
+		return E_FAIL;
+
+	CCollider_OBB::OBB_COLLIDER_DESC OBBDesc;
+	ZeroMemory(&OBBDesc, sizeof OBBDesc);
+
+	BoundingOrientedBox OBBBox;
+	ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
+
+	XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
+	OBBBox.Extents = { 200.f, 175.f, 250.f };
+
+	OBBDesc.tBox = OBBBox;
+	OBBDesc.pNode = nullptr;
+	OBBDesc.pOwnerTransform = m_pTransformCom;
+	OBBDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
+	OBBDesc.vOffsetPosition = Vec3(0.f, 175.f, 0.f);
+
+	/* Body */
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::BODY, &OBBDesc)))
 		return E_FAIL;
 
 	return S_OK;

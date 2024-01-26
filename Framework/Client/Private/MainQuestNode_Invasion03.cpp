@@ -27,22 +27,21 @@ HRESULT CMainQuestNode_Invasion03::Initialize()
 	m_strNextQuestName = TEXT("다시 루슬란에게");
 	m_strNextQuestContent = TEXT("루슬란에게 보고하자");
 
-	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/05.MainQuest_Invasion/MainQuest_Invasion03.json");
-
-	for (const auto& talkDesc : Load) {
-		TALK_DELS sTalkDesc;
-		sTalkDesc.strOwner = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(talkDesc["Owner"]));
-		sTalkDesc.strTalk = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(talkDesc["Talk"]));
-		m_vecTalkDesc.push_back(sTalkDesc);
-	}
+	//Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/05.MainQuest_Invasion/MainQuest_Invasion03.json");
+	//
+	//for (const auto& talkDesc : Load) {
+	//	TALK_DELS sTalkDesc;
+	//	sTalkDesc.strOwner = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(talkDesc["Owner"]));
+	//	sTalkDesc.strTalk = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(talkDesc["Talk"]));
+	//	m_vecTalkDesc.push_back(sTalkDesc);
+	//}
 
 	return S_OK;
 }
 
 void CMainQuestNode_Invasion03::Start()
 {
-	CQuest_Manager::GetInstance()->Clear_MonsterKillCount();
-	CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_MONSTER_KILL);
+	CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_INVASION);
 
 	/* 현재 퀘스트에 연관있는 객체들 */
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
@@ -53,6 +52,15 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion03::Tick(const _float& fTimeDelta)
 {
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
+
+	if (CTowerDefence_Manager::GetInstance()->Get_CurrentPhase() == CTowerDefence_Manager::TOWER_DEFENCE_PHASE::DEFENCE_FINISH)
+	{
+		m_bIsClear = true;
+		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+		CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_END);
+
+		return NODE_STATE::NODE_FAIL;
+	}
 
 	/*m_bIsClear = CTowerDefence_Manager::GetInstance()->Get_CurrentPhase() == CTowerDefence_Manager::TOWER_DEFENCE_PHASE::DEFENCE_FINISH;
 	if (true == m_bIsClear)
@@ -71,7 +79,8 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion03::Tick(const _float& fTimeDelta)
 
 	
 
-	return ProgressTalk(fTimeDelta);
+	//return ProgressTalk(fTimeDelta);
+	return NODE_STATE::NODE_RUNNING;
 }
 
 void CMainQuestNode_Invasion03::LateTick(const _float& fTimeDelta)

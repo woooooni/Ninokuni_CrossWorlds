@@ -191,6 +191,12 @@ protected:
 
 	_float	m_fStunTime = 0.f; // 스턴 시간
 
+	// 타워 디펜스 관련
+	_float m_fNearDist = 0.f; // 가장 가까운 타겟 찾기.
+	_float m_fDistToTree = 0.f; // 가을 할아범과의 거리
+	_float m_fTargetSearchDist = 0.f;
+	_int   m_iRemainsTowerCount = 0;
+
 protected:
 	class CTrail* m_pTrails[SOCKET_TYPE::SOCKET_END];
 

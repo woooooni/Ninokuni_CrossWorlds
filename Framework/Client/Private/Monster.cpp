@@ -58,6 +58,8 @@ HRESULT CMonster::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_fStunTime = 3.f;
+	m_fNearDist = 9999.f;
+	m_fTargetSearchDist = 30.f;
 
 	return S_OK;
 }
@@ -66,9 +68,80 @@ void CMonster::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
-	/* 최초 타겟 설정 */
-	m_tTargetDesc.pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
-	m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component<CTransform>(L"Com_Transform");
+	/* 타겟 설정 */
+	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_INVASION)
+	{
+		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
+
+		if (m_tTargetDesc.pTarget == nullptr)
+		{
+			m_tTargetDesc.pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), (_uint)LAYER_NPC, TEXT("TreeGrandfa"));
+		
+			if (m_tTargetDesc.pTarget != nullptr)
+				m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component<CTransform>(L"Com_Transform");
+		}
+
+		m_iRemainsTowerCount = 0;
+
+		/* 모든 타워 및 가을 할아범 불러오기 */
+		for (auto iter : GI->Find_GameObjects(GI->Get_CurrentLevel(), (_uint)LAYER_ETC))
+		{
+			// 가을 할아범
+			CGameObject* pTree = GI->Find_GameObject(GI->Get_CurrentLevel(), (_uint)LAYER_NPC, TEXT("TreeGrandfa"));
+			if (pTree != nullptr)
+			{
+				Vec4 vToTree = pTree->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_Position() - m_pTransformCom->Get_Position();
+				m_fDistToTree = vToTree.Length();
+			}
+
+			// 타워
+			if (iter->Get_ObjectType() == OBJ_DEFENCE_TOWER)
+			{
+				m_iRemainsTowerCount += 1;
+				Vec4 vToTower = iter->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_Position() - m_pTransformCom->Get_Position();
+				_float fToTowerDist = vToTower.Length();
+
+				// 가을 할아범 광장에 들어왔을 때
+				if (fabs(m_fDistToTree) < m_fTargetSearchDist)
+				{
+					// 가까운 타워 찾아서 공격.
+					if (fabs(fToTowerDist) < m_fNearDist)
+					{
+						// 가을 할아범이 더 가깝다면 가을 할아범한테(경로상에 타워가 없다면)
+						if (fabs(m_fDistToTree) < fabs(fToTowerDist))
+						{
+							m_tTargetDesc.pTarget = pTree;
+							if (m_tTargetDesc.pTarget != nullptr)
+								m_tTargetDesc.pTragetTransform = iter->Get_Component<CTransform>(TEXT("Com_Transform"));
+						}
+						else
+						{
+							m_fNearDist = fabs(fToTowerDist);
+							m_tTargetDesc.pTarget = iter;
+							if (m_tTargetDesc.pTarget != nullptr)
+								m_tTargetDesc.pTragetTransform = iter->Get_Component<CTransform>(TEXT("Com_Transform"));
+						}
+					}
+				}
+
+			}
+		}
+
+		// 남아있는 타워가 없다면.
+		if (m_iRemainsTowerCount == 0)
+		{
+			m_tTargetDesc.pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), (_uint)LAYER_NPC, TEXT("Com_Transform"));
+
+			if (m_tTargetDesc.pTarget != nullptr)
+				m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component<CTransform>(L"Com_Transform");
+		}
+	}
+	else
+	{
+		m_tTargetDesc.pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+		m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component<CTransform>(L"Com_Transform");
+	}
+
 
 	if (m_bInfinite)
 	{
@@ -209,36 +282,36 @@ HRESULT CMonster::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffe
 		return E_FAIL;
 	// ----------------- Bloom
 
-	// RimLight -----------------
+// RimLight -----------------
 
-	// ----------------- RimLight
+// ----------------- RimLight
 
-	// Dissolve -----------------
-	if (FAILED(m_pDissoveTexture->Bind_ShaderResource(pInstancingShader, "g_DissolveTexture", 51)))
+// Dissolve -----------------
+if (FAILED(m_pDissoveTexture->Bind_ShaderResource(pInstancingShader, "g_DissolveTexture", 51)))
+return E_FAIL;
+// ----------------- Dissolve
+
+_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
+_uint iPassIndex = 0;
+
+for (_uint i = 0; i < iNumMeshes; ++i)
+{
+	if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 		return E_FAIL;
-	// ----------------- Dissolve
 
-	_uint iNumMeshes = m_pModelCom->Get_NumMeshes();
-	_uint iPassIndex = 0;
+	if (m_bReserveDead)
+		iPassIndex = 2;
+	else if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
+		iPassIndex = 0;
+	else
+		iPassIndex++;
 
-	for (_uint i = 0; i < iNumMeshes; ++i)
-	{
-		if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
-			return E_FAIL;
-
-		if (m_bReserveDead)
-			iPassIndex = 2;
-		else if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(i), aiTextureType_NORMALS, "g_NormalTexture")))
-			iPassIndex = 0;
-		else
-			iPassIndex++;
-
-		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, i, pInstancingBuffer, WorldMatrices, iPassIndex)))
-			return E_FAIL;
-	}
+	if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, i, pInstancingBuffer, WorldMatrices, iPassIndex)))
+		return E_FAIL;
+}
 
 
-	return S_OK;
+return S_OK;
 }
 
 HRESULT CMonster::Render_Instance_AnimModel_Shadow(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc)
@@ -288,41 +361,119 @@ HRESULT CMonster::Render_Instance_AnimModel_Shadow(CShader* pInstancingShader, C
 
 void CMonster::Collision_Enter(const COLLISION_INFO& tInfo)
 {
-	/* 근접 공격 */
-	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER 
-		&& tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY 
-		&& tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BOUNDARY)
+	// 퀘스트 단계가 아닐 때 (플레이어 공격)
+	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() != CQuest_Manager::GetInstance()->QUESTEVENT_INVASION)
 	{
-		if (m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT])
+		if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_DEFENCE_TOWER)
 		{
-			// 둘 다 켜줘야 함.
-			// ATKAROUND는 공격 동작이 끝나고 추적할 것인지 결정하기 위함.
-			// 범위내에 없으면 ATK을 false 시켜주기 위해.
-			m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND] = true;
-			m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATK] = true;
+			if (tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY
+				&& tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BOUNDARY)
+			{
+				if (m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT])
+				{
+					// 둘 다 켜줘야 함.
+					// ATKAROUND는 공격 동작이 끝나고 추적할 것인지 결정하기 위함.
+					// 범위내에 없으면 ATK을 false 시켜주기 위해.
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND] = true;
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATK] = true;
+				}
+			}
+		}
+	}
+
+	// 퀘스트 단계일 때 (플레이어 공격 x)
+	else
+	{
+		if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_NPC && tInfo.pOther->Get_PrototypeTag() == TEXT("Prorotype_GameObject_TreeGrandfa"))
+		{
+			if (tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY
+				&& tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BOUNDARY)
+			{
+				if (m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT])
+				{
+					// 둘 다 켜줘야 함.
+					// ATKAROUND는 공격 동작이 끝나고 추적할 것인지 결정하기 위함.
+					// 범위내에 없으면 ATK을 false 시켜주기 위해.
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND] = true;
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATK] = true;
+				}
+			}
+		}
+
+		if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_DEFENCE_TOWER && fabs(m_fDistToTree) < m_fTargetSearchDist)
+		{
+			if (tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY
+				&& tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BOUNDARY)
+			{
+				if (m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT])
+				{
+					// 둘 다 켜줘야 함.
+					// ATKAROUND는 공격 동작이 끝나고 추적할 것인지 결정하기 위함.
+					// 범위내에 없으면 ATK을 false 시켜주기 위해.
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND] = true;
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATK] = true;
+				}
+			}
 		}
 	}
 }
 
 void CMonster::Collision_Continue(const COLLISION_INFO& tInfo)
 {
-	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER &&
-		tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
+	// 퀘스트 단계가 아닐 때 (플레이어 공격)
+	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() != CQuest_Manager::GetInstance()->QUESTEVENT_INVASION)
 	{
-		if (m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT])
+		if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER)
 		{
-			m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND] = true;
+			if (tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY
+				&& tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BOUNDARY)
+			{
+				if (m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT])
+				{
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND] = true;
+				}
+			}
+		}
+	}
+
+	// 퀘스트 단계일 때 (플레이어 공격 x)
+	else
+	{
+		if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_NPC && tInfo.pOther->Get_PrototypeTag() == TEXT("Prorotype_GameObject_TreeGrandfa"))
+		{
+			if (tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY
+				&& tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BOUNDARY)
+			{
+				if (m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT])
+				{
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND] = true;
+				}
+			}
+		}
+
+		if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_DEFENCE_TOWER && fabs(m_fDistToTree) < m_fTargetSearchDist)
+		{
+			if (tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY
+				&& tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BOUNDARY)
+			{
+				if (m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT])
+				{
+					m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND] = true;
+				}
+			}
 		}
 	}
 }
 
 void CMonster::Collision_Exit(const COLLISION_INFO& tInfo)
 {
-	if(tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BOUNDARY &&
-	   tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER &&
-	   tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
+	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_DEFENCE_TOWER)
 	{
-		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND] = false;
+		if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BOUNDARY &&
+			tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
+		{
+			m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_ATKAROUND] = false;
+		}
 	}
 }
 

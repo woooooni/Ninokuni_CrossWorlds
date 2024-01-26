@@ -19,8 +19,8 @@ HRESULT CSubQuestNode_FindCat05::Initialize()
 	__super::Initialize();
 
 	m_strQuestTag = TEXT("[서브]");
-	m_strQuestName = TEXT("고양이 찾기");
-	m_strQuestContent = TEXT("클로이의 고양이 찾기");
+	m_strQuestName = TEXT("감귤이 찾기");
+	m_strQuestContent = TEXT("감귤이를 찾아주자");
 
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/SubQuest/01. SubQuest01_Chloe_FindCat/SubQuest_FindCat05.json");
 
@@ -141,7 +141,7 @@ void CSubQuestNode_FindCat05::TalkEvent()
 	case 2:
 		CSound_Manager::GetInstance()->Play_Sound(TEXT("02_KuuSay_Pride.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_EmotionAngry"));
+		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_CSHatchOut01"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER);
 		break;

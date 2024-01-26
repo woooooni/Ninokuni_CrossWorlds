@@ -68,7 +68,7 @@ void CSubQuestNode_Windmill10::Start()
 	//Vec4 vSpotPos = Set_DestSpot(m_pChloe);
 	//
 	//// 임시로 monster에 
-	//m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_MONSTER), &vSpotPos));
+	//m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_ETC), &vSpotPos));
 	
 	list<CGameObject*>& pGameObjects = GI->Find_GameObjects(LEVELID::LEVEL_EVERMORE, LAYER_TYPE::LAYER_BUILDING);
 	auto iter = find_if(pGameObjects.begin(), pGameObjects.end(), [&](CGameObject* pObj) {
