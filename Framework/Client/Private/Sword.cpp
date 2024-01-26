@@ -70,7 +70,7 @@ void CSword::Collision_Exit(const COLLISION_INFO& tInfo)
 
 HRESULT CSword::Ready_Trails()
 {
-	CTrail::TRAIL_DESC TrailDesc = {};
+	/*CTrail::TRAIL_DESC TrailDesc = {};
 	TrailDesc.bTrail = false;
 	TrailDesc.bUV_Cut = false;
 	TrailDesc.fAccGenTrail = 0.f;
@@ -90,7 +90,7 @@ HRESULT CSword::Ready_Trails()
 
 	m_pTrail->SetUp_Position(XMVectorSet(0.f, 0.f, 0.5f, 1.f), XMVectorSet(0.f, 0.f, 0.9f, 1.f));
 
-	m_pTrail->Stop_Trail();
+	m_pTrail->Stop_Trail();*/
 	return S_OK;
 }
 

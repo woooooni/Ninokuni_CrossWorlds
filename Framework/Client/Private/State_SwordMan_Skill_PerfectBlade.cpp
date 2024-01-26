@@ -65,11 +65,6 @@ void CState_SwordMan_Skill_PerfectBlade::Tick_State(_float fTimeDelta)
         {
             m_pCharacter->Look_For_Target();
             m_pTransformCom->Move(-1.f * XMVector3Normalize(m_pTransformCom->Get_Right()), 20.f, fTimeDelta);
-        }
-        if (m_pModelCom->Get_CurrAnimationFrame() == 42)
-        {
-            m_pCharacter->Look_For_Target();
-            m_pTransformCom->Move(-1.f * XMVector3Normalize(m_pTransformCom->Get_Right()), 20.f, fTimeDelta);
         }*/
     }
 

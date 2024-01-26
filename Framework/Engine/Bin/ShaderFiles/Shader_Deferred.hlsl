@@ -279,6 +279,27 @@ PS_OUT_LIGHT PS_MAIN_SPOT(PS_IN input)
     return output;
 }
 
+PS_OUT PS_RADIAL_BLUR(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT)0;
+
+    float4 colour = { 0.f, 0.f, 0.f, 0.f };
+    float v = 0.f;
+    const float quality = 16;
+
+    for (float i = 0.0f; i < 1.0f; i += (1 / quality))
+    {
+        v = 0.9 + i * 0.1f;
+        colour += g_BlendTarget.Sample(PointSampler, In.vTexcoord * v + 0.5f - 0.5f * v);
+    }
+
+    colour /= quality;
+    colour.a = 1.f;
+    
+    Out.vColor = colour;
+    return Out;
+}
+
 // SHADOW
 float PCF_ShadowCaculation(float4 vLightPos, float3 vLightDir)
 {
@@ -561,4 +582,19 @@ technique11 DefaultTechnique
         DomainShader = NULL;
         PixelShader = compile ps_5_0 PS_MAIN_SPOT();
     }
+
+    // 9
+    pass RadialBlur
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_RADIAL_BLUR();
+    }
+
+	
 }
