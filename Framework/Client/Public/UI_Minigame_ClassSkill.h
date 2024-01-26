@@ -35,12 +35,15 @@ private:
 //	class CSkill* m_pSkill = { nullptr };
 	CTexture* m_pFXTexture = { nullptr };
 
-	_uint m_iPass = { 5 };
+	_uint m_iPass = { 1 };
 
 	_bool m_bClicked = { false }; // 클릭되었다 -> 사용되었다.
 	_float m_fOriginCoolTime = { 0.f }; // 스킬마다 가지고있는 고유의 쿨타임
 	_float m_fCoolTime = { 0.f }; // 셰이더에 던져질, 폰트로 띄워질 잔여 쿨타임
+
 	_float2 m_vTextPosition = _float2(0.f, 0.f);
+	_float2 m_vScale = { 0.f, 0.f };
+	_float m_vOffsetX = { 0.f };
 
 private:
 	virtual HRESULT	Ready_Components() override;

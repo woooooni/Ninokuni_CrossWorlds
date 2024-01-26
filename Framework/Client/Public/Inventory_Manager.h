@@ -45,6 +45,7 @@ public:
 
 public:
 	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	HRESULT Ready_Items();
 	void Tick(_float fTimeDelta);
 	void LateTick(_float fTimeDelta);
 

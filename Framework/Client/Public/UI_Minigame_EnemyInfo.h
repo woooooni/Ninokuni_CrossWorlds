@@ -11,10 +11,12 @@ protected:
 	virtual ~CUI_Minigame_EnemyInfo() = default;
 
 public:
-	void Set_TextureIndex(_uint iIndex) { m_iTextureIndex = iIndex; }
+	void Set_TextureIndex(_uint iIndex);
 
 	void Set_Owner(CGameObject* pOwner);
 	class CGameObject* Get_Owner() { return m_pOwner; }
+
+	virtual void Set_Active(_bool bActive) override;
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -26,8 +28,14 @@ public:
 private:
 	class CGameObject* m_pOwner = { nullptr };
 	class CUI_Minigame_EnemyHP* m_pHP = { nullptr };
+
 	_uint m_iTextureIndex = { 0 };
 	_uint m_iPass = { 1 };
+
+	_float2 m_vOriginPos = _float2(0.f, 0.f);
+	_float2 m_vStartPos = _float2(0.f, 0.f);
+	_bool m_bArrived = { false };
+	_float m_fSpeed = { 0.f };
 
 private:
 	virtual HRESULT	Ready_Components() override;

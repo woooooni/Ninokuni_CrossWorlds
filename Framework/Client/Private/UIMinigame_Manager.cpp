@@ -260,7 +260,9 @@ void CUIMinigame_Manager::OnOff_Grandprix(_bool bOnOff)
 {
 	if (true == bOnOff)
 	{
-		CUI_Manager::GetInstance()->OnOff_GamePlaySetting_ExceptInfo(false);
+		m_bCountStart = false;
+
+		//CUI_Manager::GetInstance()->OnOff_GamePlaySetting_ExceptInfo(false);
 
 		if (nullptr != m_pCloud)
 			m_pCloud->Set_Active(true);
@@ -279,6 +281,9 @@ void CUIMinigame_Manager::OnOff_Grandprix(_bool bOnOff)
 	}
 	else
 	{
+		m_bGrandprixEnd = false;
+		m_iCountIndex = 0;
+
 		if (nullptr != m_pCloud)
 			m_pCloud->Set_Active(false);
 
@@ -296,6 +301,18 @@ void CUIMinigame_Manager::OnOff_Grandprix(_bool bOnOff)
 
 		CUI_Manager::GetInstance()->OnOff_GamePlaySetting_ExceptInfo(true);
 	}
+}
+
+void CUIMinigame_Manager::Start_Grandprix()
+{
+	m_bCountStart = true;
+	CUI_Manager::GetInstance()->OnOff_GamePlaySetting_ExceptInfo(false);
+}
+
+void CUIMinigame_Manager::End_Grandprix()
+{
+	m_bGrandprixEnd = true;
+	m_iCountIndex = 5;
 }
 
 HRESULT CUIMinigame_Manager::Ready_MinigameUI_Evermore()
@@ -679,8 +696,8 @@ HRESULT CUIMinigame_Manager::Ready_Granprix()
 
 	m_Counts.reserve(6);
 	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
-	UIDesc.fCX = 512.f * 0.8f;
-	UIDesc.fCY = 128.f * 0.8f;
+	UIDesc.fCX = 512.f;
+	UIDesc.fCY = 128.f;
 	UIDesc.fX = g_iWinSizeX * 0.5f;
 	UIDesc.fY = g_iWinSizeY * 0.5f;
 	CGameObject* pText = nullptr;
@@ -692,8 +709,8 @@ HRESULT CUIMinigame_Manager::Ready_Granprix()
 		return E_FAIL;
 	Safe_AddRef(pText);
 
-	UIDesc.fCX = 256.f * 0.8f;
-	UIDesc.fCY = 256.f * 0.8f;
+	UIDesc.fCX = 256.f;
+	UIDesc.fCY = 256.f;
 	pText = nullptr;
 	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
 		TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_Three"), &UIDesc, &pText)))
@@ -703,8 +720,8 @@ HRESULT CUIMinigame_Manager::Ready_Granprix()
 		return E_FAIL;
 	Safe_AddRef(pText);
 
-	UIDesc.fCX = 256.f * 0.8f;
-	UIDesc.fCY = 256.f * 0.8f;
+	UIDesc.fCX = 256.f;
+	UIDesc.fCY = 256.f;
 	pText = nullptr;
 	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
 		TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_Two"), &UIDesc, &pText)))
@@ -714,8 +731,8 @@ HRESULT CUIMinigame_Manager::Ready_Granprix()
 		return E_FAIL;
 	Safe_AddRef(pText);
 
-	UIDesc.fCX = 256.f * 0.8f;
-	UIDesc.fCY = 256.f * 0.8f;
+	UIDesc.fCX = 256.f;
+	UIDesc.fCY = 256.f;
 	pText = nullptr;
 	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
 		TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_One"), &UIDesc, &pText)))
@@ -725,8 +742,8 @@ HRESULT CUIMinigame_Manager::Ready_Granprix()
 		return E_FAIL;
 	Safe_AddRef(pText);
 
-	UIDesc.fCX = 512.f * 0.8f;
-	UIDesc.fCY = 128.f * 0.8f;
+	UIDesc.fCX = 512.f;
+	UIDesc.fCY = 128.f;
 	pText = nullptr;
 	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
 		TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_Start"), &UIDesc, &pText)))
@@ -736,8 +753,8 @@ HRESULT CUIMinigame_Manager::Ready_Granprix()
 		return E_FAIL;
 	Safe_AddRef(pText);
 
-	UIDesc.fCX = 256.f * 0.8f;
-	UIDesc.fCY = 128.f * 0.8f;
+	UIDesc.fCX = 256.f;
+	UIDesc.fCY = 128.f;
 	pText = nullptr;
 	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
 		TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_End"), &UIDesc, &pText)))
@@ -753,10 +770,16 @@ HRESULT CUIMinigame_Manager::Ready_Granprix()
 void CUIMinigame_Manager::Tick_Grandprix(_float fTimeDelta)
 {
 	if (KEY_TAP(KEY::O))
-		m_bCountStart = true;
+		Start_Grandprix();
+
+	if (KEY_TAP(KEY::P))
+		End_Grandprix();
 
 	if (true == m_bCountStart)
 	{
+		if (m_iCountIndex == 5)
+			OnOff_Grandprix(true);
+
 		if (0 == m_Counts.size() || m_iCountIndex > m_Counts.size() - 2)
 			return;
 
@@ -777,6 +800,24 @@ void CUIMinigame_Manager::Tick_Grandprix(_float fTimeDelta)
 
 void CUIMinigame_Manager::LateTick_Grandprix(_float fTimeDelta)
 {
+	if (true == m_bGrandprixEnd)
+	{
+		if (5 != m_iCountIndex)
+			return;
+
+		if (false == m_Counts[m_iCountIndex]->Get_Active()) // 만약 객체가 활성화가 되어있지 않다면
+			m_Counts[m_iCountIndex]->Set_Active(true); // 활성화를 시킨다.
+
+		if (true == m_Counts[m_iCountIndex]->Get_Active() && // 활성화 되어있는 상황에서
+			false == m_Counts[m_iCountIndex]->Is_Started()) // 아직 resize를 진행하지 않았다면
+			m_Counts[m_iCountIndex]->Set_Start(true); // 시작하도록 세팅한다.
+
+		if (true == m_Counts[m_iCountIndex]->Is_End()) // 사이즈 조정이 끝났다면
+		{
+			m_Counts[m_iCountIndex]->Set_Active(false); // 비활성화 시키고
+			OnOff_Grandprix(false); // UI 세팅을 복구한다.
+		}
+	}
 }
 
 void CUIMinigame_Manager::Free()

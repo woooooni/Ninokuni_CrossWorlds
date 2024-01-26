@@ -28,8 +28,15 @@ void CUI_Minigame_Basic::Set_Active(_bool bActive)
 		if (m_eType == GRANDPRIX_READY || m_eType == GRANDPRIX_THREE || m_eType == GRANDPRIX_TWO ||
 			m_eType == GRANDPRIW_ONE || m_eType == GRANDPRIX_START || m_eType == GRANDPRIX_END)
 		{
+			m_fAlpha = 0.f;
+
 			m_bStart = false;
 			m_bEnd = false;
+
+			m_tInfo.fCX = m_vMaxSize.x;
+			m_tInfo.fCY = m_vMaxSize.y;
+
+			m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 		}
 	}
 

@@ -299,6 +299,7 @@
     <ClInclude Include="..\Public\Fox.h" />
     <ClInclude Include="..\Public\FunyaSnowman.h" />
     <ClInclude Include="..\Public\GameItem_Armor.h" />
+    <ClInclude Include="..\Public\GameItem_Consumpsion.h" />
     <ClInclude Include="..\Public\GameNpc.h" />
     <ClInclude Include="..\Public\Ghost1.h" />
     <ClInclude Include="..\Public\Ghost2.h" />
@@ -758,6 +759,7 @@
     <ClInclude Include="..\Public\UIDamage_Manager.h" />
     <ClInclude Include="..\Public\UIMinigame_Manager.h" />
     <ClInclude Include="..\Public\UIMinimap_Manager.h" />
+    <ClInclude Include="..\Public\UI_AddItem.h" />
     <ClInclude Include="..\Public\UI_Announced.h" />
     <ClInclude Include="..\Public\UI_BossHP_Background.h" />
     <ClInclude Include="..\Public\UI_BossHP_Bar.h" />
@@ -1159,6 +1161,7 @@
     <ClCompile Include="..\Private\Fox.cpp" />
     <ClCompile Include="..\Private\FunyaSnowman.cpp" />
     <ClCompile Include="..\Private\GameItem_Armor.cpp" />
+    <ClCompile Include="..\Private\GameItem_Consumpsion.cpp" />
     <ClCompile Include="..\Private\GameNpc.cpp" />
     <ClCompile Include="..\Private\Ghost1.cpp" />
     <ClCompile Include="..\Private\Ghost2.cpp" />
@@ -1620,6 +1623,7 @@
     <ClCompile Include="..\Private\UIDamage_Manager.cpp" />
     <ClCompile Include="..\Private\UIMinigame_Manager.cpp" />
     <ClCompile Include="..\Private\UIMinimap_Manager.cpp" />
+    <ClCompile Include="..\Private\UI_AddItem.cpp" />
     <ClCompile Include="..\Private\UI_Announced.cpp" />
     <ClCompile Include="..\Private\UI_BossHP_Background.cpp" />
     <ClCompile Include="..\Private\UI_BossHP_Bar.cpp" />
