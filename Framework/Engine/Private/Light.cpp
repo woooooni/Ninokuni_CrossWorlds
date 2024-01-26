@@ -111,7 +111,7 @@ HRESULT CLight::SpotLight(CShader* pShader)
 	if (FAILED(pShader->Bind_RawValue("fSpotCosInnerConeRcp", &fSpotInnerConeRcp, sizeof(_float))))
 		return E_FAIL;
 
-	pShader->Begin(7);
+	pShader->Begin(8);
 
 	return S_OK;
 }

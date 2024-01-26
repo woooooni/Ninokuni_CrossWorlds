@@ -19,6 +19,8 @@ public:
 	virtual HRESULT Render_Reflect() override;
 	virtual HRESULT Render_Minimap() override;
 
+	
+
 public:
 	virtual void Collision_Enter(const COLLISION_INFO& tInfo) override;
 	virtual void Collision_Continue(const COLLISION_INFO& tInfo) override;

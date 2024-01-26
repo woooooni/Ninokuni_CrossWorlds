@@ -371,9 +371,9 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
         vSpecular = float4(0.f, 0.f, 0.f, 0.f);
 
 	// Shadow
-	vector vShadow = float4(1.f, 1.f, 1.f, 1.f);
-	if(g_bShadowDraw)
-        vShadow = g_ShadowTarget.Sample(PointSampler, In.vTexcoord);
+	//vector vShadow = float4(1.f, 1.f, 1.f, 1.f);
+	//if(g_bShadowDraw)
+    vector vShadow = g_ShadowTarget.Sample(PointSampler, In.vTexcoord);
 
     // SSAO
 	vector vSSAO = float4(1.f, 1.f, 1.f, 1.f);

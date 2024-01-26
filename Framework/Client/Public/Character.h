@@ -124,6 +124,7 @@ public:
 	virtual void LateTick(_float fTimeDelta);
 	virtual HRESULT Render();
 	virtual HRESULT Render_ShadowDepth();
+	virtual HRESULT Render_Cascade_Depth(const Matrix lightViewMatrix, const Matrix LightOrthoMatrix)  override;
 //	virtual HRESULT Render_Minimap();
 
 public:
@@ -315,7 +316,6 @@ protected: /* 해당 객체가 사용해야할 컴포넌트들을 저장하낟. */
 	class CWeapon* m_pWeapon = nullptr;
 	class CModel* m_pCharacterPartModels[PART_TYPE::PART_END] = {};
 	class CDecal* m_pEffectTargetDecal = nullptr;
-
 protected:
 	class CGameObject* m_pTarget = nullptr;
 

@@ -18,7 +18,7 @@ public:
 	}
 
 public:
-	HRESULT Initialize(_uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4& vColor);
+	HRESULT Initialize(_uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4& vColor, _uint iArraySize);
 	HRESULT Clear();
 	HRESULT	Bind_SRV(class CShader* pShader, const _char* pConstantName);
 	
@@ -33,10 +33,9 @@ private:
 	ID3D11DeviceContext*		m_pContext = { nullptr };
 
 private:
-	ID3D11Texture2D*			m_pTexture2D = { nullptr };	
+	ID3D11Texture2D* m_pTexture2D = nullptr;
 	ID3D11RenderTargetView*		m_pRTV = { nullptr };
 	ID3D11ShaderResourceView*	m_pSRV = { nullptr };
-
 private:
 	_float4						m_vColor;
 
@@ -46,7 +45,7 @@ private:
 #endif
 
 public:
-	static CRenderTarget* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4& vColor);
+	static CRenderTarget* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, _uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4& vColor, _uint iArraySize);
 	virtual void Free() override;
 };
 

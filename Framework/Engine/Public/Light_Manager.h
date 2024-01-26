@@ -32,6 +32,7 @@ public:
 
 	_float4x4 Get_ShadowLightProjMatrix(_uint iLevelIndex);
 
+	XMMATRIX GetLightViewMatrix();
 public:
 	list<class CLight*>* Get_LightList() { return &m_Lights; }
 

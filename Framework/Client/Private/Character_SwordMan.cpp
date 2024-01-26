@@ -235,6 +235,7 @@ HRESULT CCharacter_SwordMan::Render_Minimap()
 	return S_OK;
 }
 
+
 void CCharacter_SwordMan::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
@@ -345,9 +346,6 @@ HRESULT CCharacter_SwordMan::Ready_States()
 {
 	list<wstring> strAnimationNames;
 
-
-
-	
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_TeleportEnd");
 	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_DOOR_ENTER, CState_Character_DoorEnter::Create(m_pStateCom, strAnimationNames));
