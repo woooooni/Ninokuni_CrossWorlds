@@ -278,7 +278,7 @@ HRESULT CLevel_Evermore::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 	}
 	else
 	{
-		if (FAILED(CRiding_Manager::GetInstance()->Ready_Vehicle_CameObjectToLayer(LEVELID::LEVEL_EVERMORE)))
+		if (FAILED(CRiding_Manager::GetInstance()->Ready_Vehicle_GameObjectToLayer(LEVELID::LEVEL_EVERMORE)))
 			return E_FAIL;
 	}
 

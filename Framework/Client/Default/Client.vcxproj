@@ -430,6 +430,9 @@
     <ClInclude Include="..\Public\Riding_Manager.h" />
     <ClInclude Include="..\Public\Shadow_Ball.h" />
     <ClInclude Include="..\Public\Shadow_Tower.h" />
+    <ClInclude Include="..\Public\State_Character_Flying_Run.h" />
+    <ClInclude Include="..\Public\State_Character_Flying_RunStart.h" />
+    <ClInclude Include="..\Public\State_Character_Flying_Stand.h" />
     <ClInclude Include="..\Public\State_Character_Vehicle_Run.h" />
     <ClInclude Include="..\Public\State_Character_Vehicle_RunStart.h" />
     <ClInclude Include="..\Public\State_Character_Vehicle_Stand.h" />
@@ -808,8 +811,10 @@
     <ClInclude Include="..\Public\UI_Milepost.h" />
     <ClInclude Include="..\Public\UI_Minigame_Basic.h" />
     <ClInclude Include="..\Public\UI_Minigame_ClassSkill.h" />
+    <ClInclude Include="..\Public\UI_Minigame_CurlingGauge.h" />
     <ClInclude Include="..\Public\UI_Minigame_EnemyHP.h" />
     <ClInclude Include="..\Public\UI_Minigame_EnemyInfo.h" />
+    <ClInclude Include="..\Public\UI_Minigame_GaugeBar.h" />
     <ClInclude Include="..\Public\UI_Minigame_Timer.h" />
     <ClInclude Include="..\Public\UI_Minigame_TowerSelect.h" />
     <ClInclude Include="..\Public\UI_Minimap.h" />
@@ -1302,6 +1307,9 @@
     <ClCompile Include="..\Private\Shadow_Ball.cpp" />
     <ClCompile Include="..\Private\Shadow_Tower.cpp" />
     <ClCompile Include="..\Private\State_CannonTower_Attack.cpp" />
+    <ClCompile Include="..\Private\State_Character_Flying_Run.cpp" />
+    <ClCompile Include="..\Private\State_Character_Flying_RunStart.cpp" />
+    <ClCompile Include="..\Private\State_Character_Flying_Stand.cpp" />
     <ClCompile Include="..\Private\State_Character_Vehicle_Run.cpp" />
     <ClCompile Include="..\Private\State_Character_Vehicle_RunStart.cpp" />
     <ClCompile Include="..\Private\State_Character_Vehicle_Stand.cpp" />
@@ -1677,8 +1685,10 @@
     <ClCompile Include="..\Private\UI_Milepost.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_Basic.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_ClassSkill.cpp" />
+    <ClCompile Include="..\Private\UI_Minigame_CurlingGauge.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_EnemyHP.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_EnemyInfo.cpp" />
+    <ClCompile Include="..\Private\UI_Minigame_GaugeBar.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_Timer.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_TowerSelect.cpp" />
     <ClCompile Include="..\Private\UI_Minimap.cpp" />

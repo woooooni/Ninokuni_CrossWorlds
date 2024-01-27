@@ -93,6 +93,7 @@ protected:
 protected:
 	class CGameObject* m_pRider = nullptr;
 	class CTransform* m_pRiderTransform = nullptr;
+	_bool m_bUseBone = { false };
 	_float m_fOffsetY = { 0.f };
 
 protected:

@@ -6,7 +6,7 @@
 
 
 CUI_Minigame_Timer::CUI_Minigame_Timer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	: CUI(pDevice, pContext, L"UI_MenuSeparator")
+	: CUI(pDevice, pContext, L"UI_Minigame_Timer")
 {
 }
 

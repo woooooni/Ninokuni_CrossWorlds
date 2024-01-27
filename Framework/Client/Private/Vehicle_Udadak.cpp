@@ -41,6 +41,7 @@ HRESULT CVehicle_Udadak::Initialize(void* pArg)
 	if (FAILED(Ready_States()))
 		return E_FAIL;
 
+	m_bUseBone = true;
 	m_fOffsetY = -1.5f;
 
 	return S_OK;

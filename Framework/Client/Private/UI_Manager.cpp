@@ -5756,6 +5756,7 @@ void CUI_Manager::Show_AddItem(ITEM_TYPE eItemType, ITEM_CODE eItemCode, _uint i
 			return;
 		if (nullptr == pSlot)
 			return;
+		// 포지션 다시 작업해야함.
 		dynamic_cast<CUI_AddItem*>(pSlot)->Set_Position(m_ItemPopup.size());
 		m_ItemPopup.push_back(dynamic_cast<CUI_AddItem*>(pSlot));
 		Safe_AddRef(pSlot);

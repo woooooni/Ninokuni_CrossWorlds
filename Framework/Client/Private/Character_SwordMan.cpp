@@ -70,6 +70,10 @@
 #include "State_Character_Vehicle_Stand.h"
 #include "State_Character_Vehicle_Run.h"
 
+#include "State_Character_Flying_RunStart.h"
+#include "State_Character_Flying_Stand.h"
+#include "State_Character_Flying_Run.h"
+
 #include "Animation.h"
 
 
@@ -573,6 +577,19 @@ HRESULT CCharacter_SwordMan::Ready_States()
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_Udadak_Run");
 	m_pStateCom->Add_State(CCharacter::STATE::VEHICLE_RUN, CState_Character_Vehicle_Run::Create(m_pStateCom, strAnimationNames));
+
+	//FLYING
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_SitRunStart_Biplane");
+	m_pStateCom->Add_State(CCharacter::STATE::FLYING_RUNSTART, CState_Character_Flying_RunStart::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_SitStand_Biplane");
+	m_pStateCom->Add_State(CCharacter::STATE::FLYING_STAND, CState_Character_Flying_Stand::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Swordsman_Merge.ao|Swordsman_SitRun_Biplane");
+	m_pStateCom->Add_State(CCharacter::STATE::FLYING_RUN, CState_Character_Flying_Run::Create(m_pStateCom, strAnimationNames));
 
 	m_pStateCom->Change_State(CCharacter::NEUTRAL_IDLE);
 	return S_OK;

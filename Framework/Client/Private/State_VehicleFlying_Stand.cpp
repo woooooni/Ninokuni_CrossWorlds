@@ -39,34 +39,34 @@ void CState_VehicleFlying_Stand::Enter_State(void* pArg)
 
 void CState_VehicleFlying_Stand::Tick_State(_float fTimeDelta)
 {
-//	if (KEY_HOLD(KEY::W) || KEY_HOLD(KEY::A) || KEY_HOLD(KEY::S) || KEY_HOLD(KEY::D))
-//	{
-//		m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_WALK);
-//		return;
-//	}
-//
+	if (KEY_HOLD(KEY::W) || KEY_HOLD(KEY::A) || KEY_HOLD(KEY::S) || KEY_HOLD(KEY::D))
+	{
+		m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_RUN);
+		return;
+	}
+
 //    if (KEY_TAP(KEY::SPACE))
 //    {
 //        CUI_Manager::GetInstance()->Use_JumpBtn();
 //        m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_JUMP);
 //        return;
 //    }
-//
-//    if (true == GI->Mouse_Down(DIMK_WHEEL))
-//    {
-//        CUI_Manager::GetInstance()->Hide_MouseCursor(true);
-//        CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
-//        if (nullptr != pFollowCam)
-//            pFollowCam->Set_CanInput(true);
-//    }
-//
-//    if (true == GI->Mouse_Up(DIMK_WHEEL))
-//    {
-//        CUI_Manager::GetInstance()->Hide_MouseCursor(false);
-//        CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
-//        if (nullptr != pFollowCam)
-//            pFollowCam->Set_CanInput(false);
-//    }
+
+    if (true == GI->Mouse_Down(DIMK_WHEEL))
+    {
+        CUI_Manager::GetInstance()->Hide_MouseCursor(true);
+        CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+        if (nullptr != pFollowCam)
+            pFollowCam->Set_CanInput(true);
+    }
+
+    if (true == GI->Mouse_Up(DIMK_WHEEL))
+    {
+        CUI_Manager::GetInstance()->Hide_MouseCursor(false);
+        CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+        if (nullptr != pFollowCam)
+            pFollowCam->Set_CanInput(false);
+    }
 }
 
 void CState_VehicleFlying_Stand::Exit_State()

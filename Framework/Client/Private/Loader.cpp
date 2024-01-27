@@ -596,6 +596,21 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_Text_Number"),
 			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/UI_Grandprix_Text_Count_%d.png"), 3))))
 			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_UI_Minigame_Grandprix_SpaceIcon"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/Gauge/UI_Grandprix_Gauge_SpaceIcon.png")))))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_UI_Minigame_Grandprix_BiplaneIcon"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/Gauge/UI_Grandprix_BiplaneIcon.png")))))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_UI_Minigame_Grandprix_Gauge"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/Gauge/UI_Grandprix_Gauge_%d.png"), 23))))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_UI_Minigame_Grandprix_GaugeBackground"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/Gauge/UI_Grandprix_Gauge_Background.png")))))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_UI_Minigame_Grandprix_GaugeGlowBackground"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/Gauge/UI_Grandprix_Gauge_Glow.png")))))
+			return E_FAIL;
 
 		// 미니게임용 프로토타입
 		if (FAILED(CUIMinigame_Manager::GetInstance()->Ready_MinigameUI_Prototypes(LEVELID::LEVEL_EVERMORE)))
@@ -647,6 +662,23 @@ HRESULT CLoader::Loading_For_Level_Kingdom()
 
 HRESULT CLoader::Loading_For_Level_IceLand()
 {
+	if (false == g_bLevelFirst[LEVEL_ICELAND])
+	{
+		// 컬링 UI용 텍스처
+		if (FAILED(GI->Add_Prototype(LEVEL_ICELAND, TEXT("Prototype_Component_Texture_UI_Minigame_Curling_GaugeBar_Back"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Curling/UI_Minigame_CurlingGame_GaugeBar_Frame.png")))))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_ICELAND, TEXT("Prototype_Component_Texture_UI_Minigame_Curling_GaugeBar"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Curling/UI_Minigame_CurlingGame_GaugeBar_Full.png")))))
+			return E_FAIL;
+
+		// 미니게임용 프로토타입
+		if (FAILED(CUIMinigame_Manager::GetInstance()->Ready_MinigameUI_Prototypes(LEVELID::LEVEL_ICELAND)))
+			return E_FAIL;
+
+		g_bLevelFirst[LEVEL_ICELAND] = true;
+	}
+
 	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Winter");
 	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Monster_Data, this, L"Winter");
 	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)

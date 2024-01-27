@@ -48,7 +48,7 @@ CState_Character_Vehicle_RunStart* CState_Character_Vehicle_RunStart::Create(CSt
 
     if (FAILED(pInstance->Initialize(AnimationList)))
     {
-        MSG_BOX("Fail Create : CState_Character_Vehicle");
+        MSG_BOX("Fail Create : CState_Character_Vehicle_RunStart");
         Safe_Release(pInstance);
     }
 

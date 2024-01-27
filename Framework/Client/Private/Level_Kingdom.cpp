@@ -234,7 +234,7 @@ HRESULT CLevel_Kingdom::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 	pDoorTransform->Set_State(CTransform::STATE_POSITION, vPosition);
 	pDoorTransform->Set_Scale(vScale);
 
-	if (FAILED(CRiding_Manager::GetInstance()->Ready_Vehicle_CameObjectToLayer(LEVELID::LEVEL_KINGDOMHALL)))
+	if (FAILED(CRiding_Manager::GetInstance()->Ready_Vehicle_GameObjectToLayer(LEVELID::LEVEL_KINGDOMHALL)))
 		return E_FAIL;
 
 	return S_OK;

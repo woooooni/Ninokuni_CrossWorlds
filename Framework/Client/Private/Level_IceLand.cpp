@@ -32,6 +32,7 @@
 #include "Light.h"
 
 #include "Riding_Manager.h"
+#include "UIMinigame_Manager.h"
 
 _bool CLevel_IceLand::g_bFirstEnter = false;
 
@@ -104,6 +105,8 @@ HRESULT CLevel_IceLand::Tick(_float fTimeDelta)
 {
 	CUI_Manager::GetInstance()->Tick_Fade(fTimeDelta);
 	CUI_Manager::GetInstance()->Tick_UIs(LEVELID::LEVEL_ICELAND, fTimeDelta);
+
+	CUIMinigame_Manager::GetInstance()->Tick_Minigame(LEVELID::LEVEL_ICELAND, fTimeDelta);
 
 	if (KEY_TAP(KEY::PAGE_UP))
 	{
@@ -253,7 +256,7 @@ HRESULT CLevel_IceLand::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 	pDoorTransform->Set_State(CTransform::STATE_POSITION, vPosition);
 	pDoorTransform->Set_Scale(vScale);
 
-	if (FAILED(CRiding_Manager::GetInstance()->Ready_Vehicle_CameObjectToLayer(LEVELID::LEVEL_ICELAND)))
+	if (FAILED(CRiding_Manager::GetInstance()->Ready_Vehicle_GameObjectToLayer(LEVELID::LEVEL_ICELAND)))
 		return E_FAIL;
 
 	return S_OK;
@@ -526,6 +529,17 @@ HRESULT CLevel_IceLand::Ready_Layer_NPC(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_IceLand::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 {
+	if (false == g_bFirstEnter)
+	{
+		if (FAILED(CUIMinigame_Manager::GetInstance()->Ready_MinigameUI_GameObject(LEVELID::LEVEL_ICELAND)))
+			return E_FAIL;
+	}
+	else
+	{
+		if (FAILED(CUIMinigame_Manager::GetInstance()->Ready_MinigameUI_ToLayer(LEVELID::LEVEL_ICELAND)))
+			return E_FAIL;
+	}
+
 	if (FAILED(CUI_Manager::GetInstance()->Ready_GameObjectToLayer(LEVELID::LEVEL_ICELAND)))
 		return E_FAIL;
 

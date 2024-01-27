@@ -5,6 +5,8 @@
 #include "State_VehicleFlying_Stand.h"
 #include "State_VehicleFlying_Run.h"
 
+#include "Character.h"
+
 CVehicle_Flying_Biplane::CVehicle_Flying_Biplane(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVehicle_Flying(pDevice, pContext, strObjectTag)
 {
@@ -32,20 +34,37 @@ HRESULT CVehicle_Flying_Biplane::Initialize(void* pArg)
 
 	if (FAILED(Ready_States()))
 		return E_FAIL;
-
-	m_pModelCom->Set_Animation(0);
+	
+	m_bUseBone = false;
+//	m_fOffsetY = -0.5f;
 
 	return S_OK;
 }
 
 void CVehicle_Flying_Biplane::Tick(_float fTimeDelta)
 {
-	//if (true == m_bOnBoard)
+	if (true == m_bOnBoard)
 	{
 		__super::Tick(fTimeDelta);
+		
+		Update_RiderState();
 
-		if (nullptr != m_pRigidBodyCom)
-			m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
+		// 탈것의 Look을 Normalize한다.
+		// Normalize한 방향으로 Add velocity
+		if (KEY_TAP(KEY::P))
+		{
+			//m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fLandingSpeed * fTimeDelta, false);
+			if (false == m_bUseRigidbody)
+				m_bUseRigidbody = true;
+			else
+				m_bUseRigidbody = false;
+		}
+
+		if (true == m_bUseRigidbody)
+		{
+			if (nullptr != m_pRigidBodyCom)
+				m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
+		}
 
 		if (nullptr != m_pControllerCom)
 			m_pControllerCom->Tick_Controller(fTimeDelta);
@@ -54,7 +73,7 @@ void CVehicle_Flying_Biplane::Tick(_float fTimeDelta)
 
 void CVehicle_Flying_Biplane::LateTick(_float fTimeDelta)
 {
-	//if (true == m_bOnBoard)
+	if (true == m_bOnBoard)
 	{
 		__super::LateTick(fTimeDelta);
 
@@ -67,7 +86,7 @@ void CVehicle_Flying_Biplane::LateTick(_float fTimeDelta)
 
 HRESULT CVehicle_Flying_Biplane::Render()
 {
-	//if (true == m_bOnBoard)
+	if (true == m_bOnBoard)
 	{
 		__super::Render();
 	}
@@ -77,7 +96,7 @@ HRESULT CVehicle_Flying_Biplane::Render()
 
 HRESULT CVehicle_Flying_Biplane::Render_ShadowDepth()
 {
-	//if (true == m_bOnBoard)
+	if (true == m_bOnBoard)
 	{
 		__super::Render_ShadowDepth();
 	}
@@ -157,6 +176,30 @@ HRESULT CVehicle_Flying_Biplane::Ready_States()
 	m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_IDLE);
 
 	return S_OK;
+}
+
+void CVehicle_Flying_Biplane::Update_RiderState()
+{
+	if (nullptr != m_pRider)
+	{
+		CStateMachine* pStateCom = m_pRider->Get_Component<CStateMachine>(TEXT("Com_StateMachine"));
+		if (nullptr == pStateCom)
+			return;
+
+		if (CVehicle::VEHICLE_STATE::VEHICLE_RUN == m_pStateCom->Get_CurrState() &&
+			CCharacter::STATE::FLYING_RUNSTART != pStateCom->Get_CurrState())
+		{
+			if (CCharacter::STATE::FLYING_RUN != pStateCom->Get_CurrState())
+				m_pRider->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CCharacter::STATE::FLYING_RUN);
+		}
+
+		if (CVehicle::VEHICLE_STATE::VEHICLE_IDLE == m_pStateCom->Get_CurrState())
+		{
+			if (CCharacter::STATE::FLYING_STAND != pStateCom->Get_CurrState() &&
+				CCharacter::STATE::FLYING_RUNSTART != pStateCom->Get_CurrState())
+				m_pRider->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CCharacter::STATE::FLYING_STAND);
+		}
+	}
 }
 
 HRESULT CVehicle_Flying_Biplane::Ready_Colliders()

@@ -194,16 +194,25 @@ void CVehicle::Update_Rider(_float fTimeDelta)
 		m_pRiderTransform = nullptr;
 		return;
 	}
-		
-	Matrix SitBoneMatrix = m_pModelCom->Get_SocketLocalMatrix(0);
-
-	if (nullptr != m_pRiderTransform)
+	
+	if (true == m_bUseBone)
 	{
-		m_pRiderTransform->Set_WorldMatrix(m_pTransformCom->Get_WorldMatrix());
-		_matrix MatSitWorld = SitBoneMatrix * m_pTransformCom->Get_WorldMatrix();
-		m_pRiderTransform->Set_State(CTransform::STATE_POSITION, MatSitWorld.r[CTransform::STATE_POSITION] + XMVectorSet(0.f, m_fOffsetY, 0.f, 0.f));
+		Matrix SitBoneMatrix = m_pModelCom->Get_SocketLocalMatrix(0);
+
+		if (nullptr != m_pRiderTransform)
+		{
+			m_pRiderTransform->Set_WorldMatrix(m_pTransformCom->Get_WorldMatrix());
+			_matrix MatSitWorld = SitBoneMatrix * m_pTransformCom->Get_WorldMatrix();
+			m_pRiderTransform->Set_State(CTransform::STATE_POSITION, MatSitWorld.r[CTransform::STATE_POSITION] + XMVectorSet(0.f, m_fOffsetY, 0.f, 0.f));
+		}
 	}
-		
+	else
+	{
+		if (nullptr != m_pRiderTransform)
+		{
+			m_pRiderTransform->Set_WorldMatrix(m_pTransformCom->Get_WorldMatrix());
+		}
+	}
 }
 
 HRESULT CVehicle::Ready_Components()

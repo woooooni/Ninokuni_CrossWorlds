@@ -122,13 +122,18 @@ void CState_Character::Neutral_Idle_Input(_float fTimeDelta)
 	if (KEY_TAP(KEY::V))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::VEHICLE_RUNSTART);
-		CRiding_Manager::GetInstance()->Ride(CRiding_Manager::UDADAK, true);
+		CRiding_Manager::GetInstance()->Ride_ForCharacter(CRiding_Manager::UDADAK, true);
 		return;
 	}
 
-	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::V))
+	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::Z))
 	{
+		if (CHARACTER_TYPE::SWORD_MAN != CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_CharacterType())
+			return;
 
+		m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_IDLE);
+		CRiding_Manager::GetInstance()->Ride_ForCharacter(CRiding_Manager::BIPLANE, true);
+		return;
 	}
 }
 
@@ -241,13 +246,18 @@ void CState_Character::Battle_Idle_Input(_float fTimeDelta)
 	if (KEY_TAP(KEY::V))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::VEHICLE_RUNSTART);
-		CRiding_Manager::GetInstance()->Ride(CRiding_Manager::UDADAK, true);
+		CRiding_Manager::GetInstance()->Ride_ForCharacter(CRiding_Manager::UDADAK, true);
 		return;
 	}
 
-	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::V))
+	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::Z))
 	{
-
+		if (CHARACTER_TYPE::SWORD_MAN != CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_CharacterType())
+			return;
+		
+		m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_IDLE);
+		CRiding_Manager::GetInstance()->Ride_ForCharacter(CRiding_Manager::BIPLANE, true);
+		return;
 	}
 }
 
@@ -1616,13 +1626,18 @@ void CState_Character::OnBoard_Input(_float fTimeDelta)
 	if (KEY_TAP(KEY::V))
 	{
 		m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_IDLE);
-		CRiding_Manager::GetInstance()->Ride(CRiding_Manager::UDADAK, false);
+		CRiding_Manager::GetInstance()->Ride_ForCharacter(CRiding_Manager::UDADAK, false);
 		return;
 	}
 
-	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::V))
+	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::Z))
 	{
+		if (CHARACTER_TYPE::SWORD_MAN != CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_CharacterType())
+			return;
 
+		m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_IDLE);
+		CRiding_Manager::GetInstance()->Ride_ForCharacter(CRiding_Manager::BIPLANE, false);
+		return;
 	}
 }
 

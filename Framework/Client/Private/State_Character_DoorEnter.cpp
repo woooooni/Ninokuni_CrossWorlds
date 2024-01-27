@@ -23,7 +23,10 @@ void CState_Character_DoorEnter::Enter_State(void* pArg)
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
     m_pModelCom->Set_KeyFrame_By_Progress(0.7f);
 
-    CRiding_Manager::GetInstance()->Ride(CRiding_Manager::VEHICLE_TYPE::UDADAK, false);
+    // 탈 것으로 인한 코드 추가
+    CRiding_Manager::GetInstance()->Ride_ForCharacter(CRiding_Manager::VEHICLE_TYPE::UDADAK, false);
+    m_pRigidBodyCom->Set_Use_Gravity(true);
+    m_pRigidBodyCom->Set_Ground(false);
 }
 
 void CState_Character_DoorEnter::Tick_State(_float fTimeDelta)

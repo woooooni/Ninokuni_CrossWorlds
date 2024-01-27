@@ -45,7 +45,7 @@ CState_Character_Vehicle_Stand* CState_Character_Vehicle_Stand::Create(CStateMac
 
     if (FAILED(pInstance->Initialize(AnimationList)))
     {
-        MSG_BOX("Fail Create : CState_Character_Vehicle");
+        MSG_BOX("Fail Create : CState_Character_Vehicle_Stand");
         Safe_Release(pInstance);
     }
 

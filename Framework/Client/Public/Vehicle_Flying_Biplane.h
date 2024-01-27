@@ -33,6 +33,14 @@ private:
 	virtual HRESULT	Ready_Colliders();
 	virtual HRESULT Ready_States();
 
+private:
+	void Update_RiderState();
+
+private:
+//	_float m_fLandingSpeed = { 10.f };
+//	_float m_fFlyingSpeed = { 8.f };
+	_bool m_bUseRigidbody = { true };
+
 public:
 	static CVehicle_Flying_Biplane* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;
