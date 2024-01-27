@@ -12,10 +12,13 @@ class CVfx_Engineer_Skill_Destruction final : public CVfx
 {
 private:
 	enum TYPE {
-		TYPE_ET1_D_RECT, // 0
+		// 범위 표시
+		TYPE_ET1_D_RECT,
 		// ---------------------------
-		TYPE_ET2_O_CANNON, // 42
-		// ---------------------------
+		// 대포 생성
+		TYPE_ET2_O_CANNON,
+		TYPE_ET2_E_METAL,
+		TYPE_ET2_P_SMOKE,
 
 		TYPE_END
 	};

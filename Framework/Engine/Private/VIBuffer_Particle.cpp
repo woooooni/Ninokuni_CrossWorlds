@@ -689,6 +689,14 @@ void CVIBuffer_Particle::Tick(_float fTimeDelta)
 					((VTXINSTANCE*)SubResource.pData)[i].vLook  = _float4(0.f, 0.f, CUtils::Random_Float((*m_tParticleDesc.pScaleStart).x, (*m_tParticleDesc.pScaleStart).y), 0.f);
 				}
 
+
+				// 시작 위치 거리 셋팅
+				_float fDistance = CUtils::Random_Float((*m_tParticleDesc.pRangeDistance).x, (*m_tParticleDesc.pRangeDistance).y);
+				((VTXINSTANCE*)SubResource.pData)[i].vPosition.x += m_vecParticleInfoDesc[i].vVelocity.x * fDistance;
+				((VTXINSTANCE*)SubResource.pData)[i].vPosition.y += m_vecParticleInfoDesc[i].vVelocity.y * fDistance;
+				((VTXINSTANCE*)SubResource.pData)[i].vPosition.z += m_vecParticleInfoDesc[i].vVelocity.z * fDistance;
+
+
 				// 알파
 				if ((*m_tParticleDesc.pFadeCreate))
 				{

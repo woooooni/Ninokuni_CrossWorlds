@@ -17,6 +17,7 @@
 #include "Vfx_Engineer_Skill_ExplosionShot_Shot.h"
 #include "Vfx_Engineer_Skill_ExplosionShot_Boom.h"
 #include "Vfx_Engineer_Skill_Destruction.h"
+#include "Vfx_Engineer_Skill_Destruction_Cannon.h"
 #include "Vfx_Engineer_Skill_HealingTree.h"
 #include "Vfx_Engineer_Skill_TimeLab.h"
 #include "Vfx_Engineer_Skill_FlashHeal.h"

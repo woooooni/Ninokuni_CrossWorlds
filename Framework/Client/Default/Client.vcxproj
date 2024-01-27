@@ -853,6 +853,7 @@
     <ClInclude Include="..\Public\Vfx_Destroyer_Skill_WheelWind.h" />
     <ClInclude Include="..\Public\Vfx_Engineer_Skill_BurstCall.h" />
     <ClInclude Include="..\Public\Vfx_Engineer_Skill_Destruction.h" />
+    <ClInclude Include="..\Public\Vfx_Engineer_Skill_Destruction_Cannon.h" />
     <ClInclude Include="..\Public\Vfx_Engineer_Skill_ElementalBlast.h" />
     <ClInclude Include="..\Public\Vfx_Engineer_Skill_ExplosionShot_Shot.h" />
     <ClInclude Include="..\Public\Vfx_Engineer_Skill_ExplosionShot_Boom.h" />
@@ -1715,6 +1716,7 @@
     <ClCompile Include="..\Private\Vfx_Destroyer_Skill_WheelWind.cpp" />
     <ClCompile Include="..\Private\Vfx_Engineer_Skill_BurstCall.cpp" />
     <ClCompile Include="..\Private\Vfx_Engineer_Skill_Destruction.cpp" />
+    <ClCompile Include="..\Private\Vfx_Engineer_Skill_Destruction_Cannon.cpp" />
     <ClCompile Include="..\Private\Vfx_Engineer_Skill_ElementalBlast.cpp" />
     <ClCompile Include="..\Private\Vfx_Engineer_Skill_ExplosionShot_Shot.cpp" />
     <ClCompile Include="..\Private\Vfx_Engineer_Skill_ExplosionShot_Boom.cpp" />
