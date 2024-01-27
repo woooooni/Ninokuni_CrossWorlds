@@ -5,6 +5,7 @@
 #include "Character_Projectile.h"
 #include "State_Engineer_Skill_ExplosionShot.h"
 #include "Effect_Manager.h"
+#include "Decal.h"
 
 CState_Engineer_Skill_ExplosionShot::CState_Engineer_Skill_ExplosionShot(CStateMachine* pMachine)
     : CState_Character(pMachine)
@@ -31,10 +32,8 @@ void CState_Engineer_Skill_ExplosionShot::Enter_State(void* pArg)
     m_bShoot = false;
 
     // Effect Create
-    CTransform* pTransformCom = m_pCharacter->Get_Component<CTransform>(L"Com_Transform");
-    if (pTransformCom == nullptr)
-        return;
-    GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Engineer_Skill_ExplosionShot"), pTransformCom->Get_WorldMatrix(), m_pCharacter);
+    GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_FrozenStorm_Square"), m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 0.f, 0.5f), _float3(3.f, 5.f, 10.f), _float3(0.f, 0.f, 0.f), nullptr, &m_pDecal, false);
+    Safe_AddRef(m_pDecal);
 }
 
 void CState_Engineer_Skill_ExplosionShot::Tick_State(_float fTimeDelta)
@@ -43,7 +42,13 @@ void CState_Engineer_Skill_ExplosionShot::Tick_State(_float fTimeDelta)
     {
         if (false == m_bShoot)
         {
-            Shoot();
+            if (nullptr != m_pDecal)
+            {
+                m_pDecal->Start_AlphaDeleate();
+                Safe_Release(m_pDecal);
+            }
+
+            GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Engineer_Skill_ExplosionShot_Shot"), m_pTransformCom->Get_WorldMatrix(), m_pCharacter);
             m_bShoot = true;
         }
 
@@ -60,30 +65,12 @@ void CState_Engineer_Skill_ExplosionShot::Exit_State()
 {
     if (!CCamera_Manager::GetInstance()->Get_CurCamera()->Is_Lock_Fov())
         CCamera_Manager::GetInstance()->Get_CurCamera()->Set_Fov(Cam_Fov_Follow_Default);
-}
 
-void CState_Engineer_Skill_ExplosionShot::Shoot()
-{
-    CCharacter_Projectile::CHARACTER_PROJECTILE_DESC ProjectileDesc;
-    ProjectileDesc.pOwner = m_pCharacter;
-
-    CGameObject* pBullet = GI->Clone_GameObject(L"Prototype_GameObject_Engineer_Bullet_Bomb", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
-    if (nullptr == pBullet)
-        return;
-
-    CTransform* pBulletTransform = pBullet->Get_Component<CTransform>(L"Com_Transform");
-    Vec3 vScale = pBulletTransform->Get_Scale();
-    pBulletTransform->Set_WorldMatrix(m_pTransformCom->Get_WorldMatrix());
-    pBulletTransform->Set_Scale(vScale);
-
-
-    Vec4 vStartPosition = pBulletTransform->Get_Position();
-    vStartPosition += XMVector3Normalize(pBulletTransform->Get_Look()) * 0.5f;
-    vStartPosition.y += 0.7f;
-    pBulletTransform->Set_State(CTransform::STATE_POSITION, vStartPosition);
-
-    if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_CHARACTER, pBullet)))
-        MSG_BOX("Generate Bullet Failed.");
+    if (nullptr != m_pDecal)
+    {
+        m_pDecal->Start_AlphaDeleate();
+        Safe_Release(m_pDecal);
+    }
 }
 
 CState_Engineer_Skill_ExplosionShot* CState_Engineer_Skill_ExplosionShot::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
@@ -102,4 +89,10 @@ CState_Engineer_Skill_ExplosionShot* CState_Engineer_Skill_ExplosionShot::Create
 void CState_Engineer_Skill_ExplosionShot::Free()
 {
     __super::Free();
+
+    if (nullptr != m_pDecal)
+    {
+        m_pDecal->Set_Dead(true);
+        Safe_Release(m_pDecal);
+    }
 }

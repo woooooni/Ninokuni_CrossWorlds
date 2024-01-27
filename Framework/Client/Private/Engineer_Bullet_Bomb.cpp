@@ -51,9 +51,9 @@ void CEngineer_Bullet_Bomb::Tick(_float fTimeDelta)
 
 	if (false == m_bGenEffect)
 	{
-		CEffect_Manager::GetInstance()->Generate_Effect(L"Effect_Engineer_BulletBomb_Spiral_0", m_pTransformCom->Get_WorldMatrix(), Vec3(0.f, 0.f, 0.f), Vec3(0.05f, 0.05f, 1.f), Vec3(0.f, 0.f, 0.f), this, &m_pSpiralEffect, false);
+		//CEffect_Manager::GetInstance()->Generate_Effect(L"Effect_Engineer_BulletBomb_Spiral_0", m_pTransformCom->Get_WorldMatrix(), Vec3(0.f, 0.f, 0.f), Vec3(0.05f, 0.05f, 1.f), Vec3(0.f, 0.f, 0.f), this, &m_pSpiralEffect, false);
+		//Safe_AddRef(m_pSpiralEffect);
 
-		Safe_AddRef(m_pSpiralEffect);
 		m_bGenEffect = true;
 	}
 
@@ -143,11 +143,7 @@ void CEngineer_Bullet_Bomb::Collision_Enter(const COLLISION_INFO& tInfo)
 		if (m_bReserveDead)		
 			return;
 
-		if (nullptr != m_pSpiralEffect)
-		{
-			m_pSpiralEffect->Set_Dead(true);
-			Safe_Release(m_pSpiralEffect);
-		}
+		Create_CollisionEffect();
 
 		wstring strSoundKey = L"Ele_Impact_Fire_" + to_wstring(GI->RandomInt(4, 8)) + L".mp3";
 		GI->Play_Sound(strSoundKey, SOUND_MONSTERL_HIT, 0.3f, false);
@@ -164,6 +160,19 @@ void CEngineer_Bullet_Bomb::Collision_Enter(const COLLISION_INFO& tInfo)
 	
 }
 
+
+void CEngineer_Bullet_Bomb::Create_CollisionEffect() // // 총알 발사 -> 총알 뒤에 트레일 및 반짝이 가는길에 몇개 뒤에 흘림
+{
+	// SpiralDelete
+	if (nullptr != m_pSpiralEffect)
+	{
+		m_pSpiralEffect->Set_Dead(true);
+		Safe_Release(m_pSpiralEffect);
+	}
+
+	// EffectCreate
+	//GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Engineer_Skill_ExplosionShot_Boom"), m_pTransformCom->Get_WorldMatrix());
+}
 
 CEngineer_Bullet_Bomb* CEngineer_Bullet_Bomb::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {

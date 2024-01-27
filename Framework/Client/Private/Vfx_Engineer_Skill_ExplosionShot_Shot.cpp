@@ -28,34 +28,32 @@ HRESULT CVfx_Engineer_Skill_ExplosionShot_Shot::Initialize_Prototype()
 
 	// 총알 발사
 	{
-		// 총알 오브젝트
 		m_pFrameTriger[TYPE_ET1_O_BULLET] = 0;
 		m_pPositionOffset[TYPE_ET1_O_BULLET] = _float3(0.f, 0.f, 0.f);
 		m_pScaleOffset[TYPE_ET1_O_BULLET]    = _float3(1.f, 1.f, 1.f);
 		m_pRotationOffset[TYPE_ET1_O_BULLET] = _float3(0.f, 0.f, 0.f);
+	}
 
-		// 점점 커지는 원라인 이펙트 -> 색 회색으로 변함
-		m_pFrameTriger[TYPE_ET1_E_CIRCLELINE] = 16;
-		m_pPositionOffset[TYPE_ET1_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET1_E_CIRCLELINE]    = _float3(5.f, 5.f, 5.f);
-		m_pRotationOffset[TYPE_ET1_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
+	{
+		m_pFrameTriger[TYPE_ET1_E_CIRCLELINE] = 1;
+		m_pPositionOffset[TYPE_ET1_E_CIRCLELINE] = _float3(-50.f, -70.f, 0.f);
+		m_pScaleOffset[TYPE_ET1_E_CIRCLELINE]    = _float3(0.010, 0.010, 0.010);
+		m_pRotationOffset[TYPE_ET1_E_CIRCLELINE] = _float3(0.f, 90.f, -90.f);
 
-		// 작은 원 파티클들 몇개
-		m_pFrameTriger[TYPE_ET1_E_CIRCLES] = 16;
-		m_pPositionOffset[TYPE_ET1_E_CIRCLES] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET1_E_CIRCLES]    = _float3(5.f, 5.f, 5.f);
-		m_pRotationOffset[TYPE_ET1_E_CIRCLES] = _float3(0.f, 0.f, 0.f);
+		m_pFrameTriger[TYPE_ET1_P_CIRCLES] = 5;
+		m_pPositionOffset[TYPE_ET1_P_CIRCLES] = _float3(0.f, 1.f, 0.5f);
+		m_pScaleOffset[TYPE_ET1_P_CIRCLES]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_ET1_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
 
-		// 불꽃 파티클
-		m_pFrameTriger[TYPE_ET1_P_FIRE] = 16;
-		m_pPositionOffset[TYPE_ET1_P_FIRE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET1_P_FIRE]    = _float3(5.f, 5.f, 5.f);
+		m_pFrameTriger[TYPE_ET1_P_FIRE] = 5;
+		m_pPositionOffset[TYPE_ET1_P_FIRE] = _float3(0.f, 1.f, 0.5f);
+		m_pScaleOffset[TYPE_ET1_P_FIRE]    = _float3(1.f, 1.f, 1.f);
 		m_pRotationOffset[TYPE_ET1_P_FIRE] = _float3(0.f, 0.f, 0.f);
 
-		// 연기 파티클
-		m_pFrameTriger[TYPE_ET1_P_SMOKE] = 16;
+		//
+		m_pFrameTriger[TYPE_ET1_P_SMOKE] = 5;
 		m_pPositionOffset[TYPE_ET1_P_SMOKE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET1_P_SMOKE]    = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET1_P_SMOKE]    = _float3(1.f, 1.f, 1.f);
 		m_pRotationOffset[TYPE_ET1_P_SMOKE] = _float3(0.f, 0.f, 0.f);
 	}
 
@@ -78,24 +76,29 @@ void CVfx_Engineer_Skill_ExplosionShot_Shot::Tick(_float fTimeDelta)
 			Create_Bullet();
 			m_iCount++;
 		}
+
 		else if (m_iCount == TYPE_ET1_E_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_E_CIRCLELINE])
 		{
-
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Engineer_Skill_ExplosionShot_CirecleLine"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_E_CIRCLELINE], m_pScaleOffset[TYPE_ET1_E_CIRCLELINE], m_pRotationOffset[TYPE_ET1_E_CIRCLELINE]);
 			m_iCount++;
 		}
-		else if (m_iCount == TYPE_ET1_E_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_E_CIRCLES])
+		else if (m_iCount == TYPE_ET1_P_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_P_CIRCLES])
 		{
-
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Engineer_Skill_BurstCall_Circles"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_P_CIRCLES], m_pScaleOffset[TYPE_ET1_P_CIRCLES], m_pRotationOffset[TYPE_ET1_P_CIRCLES]);
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET1_P_FIRE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_P_FIRE])
 		{
-
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Engineer_Skill_ExplosionShot_Fire"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_P_FIRE], m_pScaleOffset[TYPE_ET1_P_FIRE], m_pRotationOffset[TYPE_ET1_P_FIRE]);
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET1_P_SMOKE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_P_SMOKE])
 		{
-
+			//GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT(""),
+			//	XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_P_SMOKE], m_pScaleOffset[TYPE_ET1_P_SMOKE], m_pRotationOffset[TYPE_ET1_P_SMOKE]);
 			m_iCount++;
 		}
 
@@ -135,9 +138,8 @@ void CVfx_Engineer_Skill_ExplosionShot_Shot::Create_Bullet()
 	if (nullptr == pBulletTransform)
 		return;
 
-	pBulletTransform->Set_WorldMatrix(XMLoadFloat4x4(&m_WorldMatrix));
-
 	Vec3 vScale = pBulletTransform->Get_Scale();
+	pBulletTransform->Set_WorldMatrix(XMLoadFloat4x4(&m_WorldMatrix));
 	pBulletTransform->Set_Scale(vScale);
 
 	Vec4 vStartPosition = pBulletTransform->Get_Position();

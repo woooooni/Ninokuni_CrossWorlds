@@ -26,6 +26,7 @@ public:
 	virtual void Exit_State() override;
 
 private:
+	class CDecal* m_pDecal = nullptr;
 	_bool m_bShoot = false;
 
 public:
