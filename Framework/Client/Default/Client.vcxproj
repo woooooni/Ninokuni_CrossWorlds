@@ -427,6 +427,7 @@
     <ClInclude Include="..\Public\NpcDestroyerState_Noisy.h" />
     <ClInclude Include="..\Public\PumpkinCandleNode_Air.h" />
     <ClInclude Include="..\Public\PumpkinCandleNode_Blow.h" />
+    <ClInclude Include="..\Public\Respawn_Box.h" />
     <ClInclude Include="..\Public\Riding_Manager.h" />
     <ClInclude Include="..\Public\Shadow_Ball.h" />
     <ClInclude Include="..\Public\Shadow_Tower.h" />
@@ -1291,6 +1292,7 @@
     <ClCompile Include="..\Private\NpcDestroyerState_Noisy.cpp" />
     <ClCompile Include="..\Private\PumpkinCandleNode_Air.cpp" />
     <ClCompile Include="..\Private\PumpkinCandleNode_Blow.cpp" />
+    <ClCompile Include="..\Private\Respawn_Box.cpp" />
     <ClCompile Include="..\Private\Riding_Manager.cpp" />
     <ClCompile Include="..\Private\Shadow_Ball.cpp" />
     <ClCompile Include="..\Private\Shadow_Tower.cpp" />

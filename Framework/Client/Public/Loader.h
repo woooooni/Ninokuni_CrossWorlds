@@ -68,6 +68,7 @@ private:
 	HRESULT Loading_For_Level_Evermore();
 	HRESULT Loading_For_Level_Kingdom();
 	HRESULT Loading_For_Level_IceLand();
+	HRESULT Loading_For_Level_WitchForest();
 	HRESULT Loading_For_Level_Test();
 	HRESULT Loading_For_Level_Tool();
 	HRESULT Load_Navi_Data(const wstring& strNaviFileName);

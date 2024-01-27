@@ -56,7 +56,8 @@ void CState_Destroyer_Skill_LeafSlam::Tick_State(_float fTimeDelta)
 {
     if (m_iCurrAnimIndex == m_AnimIndices[0])
     {
-        m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), 15.f, fTimeDelta);
+        m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), 10.f, fTimeDelta);
+        m_pCharacter->Get_RendererCom()->Set_RadialBlur(true);
     }
     
 
@@ -68,6 +69,7 @@ void CState_Destroyer_Skill_LeafSlam::Tick_State(_float fTimeDelta)
             m_pModelCom->Set_Animation(m_iCurrAnimIndex);
             CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
             m_pCharacter->Stop_MotionTrail();
+            m_pCharacter->Get_RendererCom()->Set_RadialBlur(false);
             
         }
         else
@@ -82,6 +84,7 @@ void CState_Destroyer_Skill_LeafSlam::Tick_State(_float fTimeDelta)
 void CState_Destroyer_Skill_LeafSlam::Exit_State()
 {
     m_bTrailStart = false;
+    m_pCharacter->Get_RendererCom()->Set_RadialBlur(false);
 }
 
 

@@ -21,7 +21,6 @@ HRESULT CPlayer::Initialize(void* pArg)
 
 void CPlayer::Tick(_float fTimeDelta)
 {
-	m_iGold = 10000;
 	if (nullptr != m_pCharacter)
 		m_pCharacter->Tick(fTimeDelta);
 }

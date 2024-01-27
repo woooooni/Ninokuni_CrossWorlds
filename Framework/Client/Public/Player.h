@@ -34,6 +34,7 @@ public:
 	_bool Decrease_Gold(_int iGold) { 
 		if (0 > m_iGold - iGold)
 			return false;
+
 		m_iGold = max(0, m_iGold - iGold);
 		return true;
 	}

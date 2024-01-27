@@ -42,7 +42,7 @@ void CState_Destroyer_Battle_Attack_3::Tick_State(_float fTimeDelta)
 
 void CState_Destroyer_Battle_Attack_3::Exit_State()
 {
-    
+    m_pCharacter->Get_RendererCom()->Set_RadialBlur(false);
 }
 
 

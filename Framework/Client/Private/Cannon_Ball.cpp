@@ -82,9 +82,10 @@ void CCannon_Ball::Tick(_float fTimeDelta)
 	}
 
 	
-
+	
+	m_pControllerCom->Tick_Controller(fTimeDelta);
 	__super::Tick(fTimeDelta);
-
+	
 	GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fAccEffect, CUtils::Random_Float(0.01f, 0.01f), fTimeDelta, TEXT("Particle_Smoke"), this);
 
 }
@@ -92,6 +93,7 @@ void CCannon_Ball::Tick(_float fTimeDelta)
 void CCannon_Ball::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
+	m_pControllerCom->LateTick_Controller(fTimeDelta);
 }
 
 HRESULT CCannon_Ball::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
@@ -126,6 +128,25 @@ HRESULT CCannon_Ball::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_RigidBody"), TEXT("Com_RigidBody"), (CComponent**)&m_pRigidBodyCom, &RigidDesc)))
 		return E_FAIL;
 
+
+	/* For.Com_PhysXBody */
+	CPhysX_Controller::CONTROLLER_DESC ControllerDesc;
+
+	ControllerDesc.eType = CPhysX_Controller::CAPSULE;
+	ControllerDesc.pTransform = m_pTransformCom;
+	ControllerDesc.vOffset = { 0.f, 1.125f, 0.f };
+	ControllerDesc.fHeight = 1.f;
+	ControllerDesc.fMaxJumpHeight = 10.f;
+	ControllerDesc.fRaidus = 0.8f;
+	ControllerDesc.pOwner = this;
+
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_PhysXController"), TEXT("Com_Controller"), (CComponent**)&m_pControllerCom, &ControllerDesc)))
+		return E_FAIL;
+
+
+
+
 	CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
 	ZeroMemory(&SphereDesc, sizeof SphereDesc);
 
@@ -152,13 +173,38 @@ void CCannon_Ball::Collision_Enter(const COLLISION_INFO& tInfo)
 	if ((tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_BOSS)
 		&& tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
 	{
-		Set_Dead(true);
+		if (true == m_bReserveDead || true == m_bDead)
+			return;
+
+		Reserve_Dead(true);
+		m_fAccDeletionTime = 0.f;
+		m_fDeletionTime = 0.1f;
+
 		wstring strSoundKey = L"Hit_PC_Damage_Dummy_" + to_wstring(GI->RandomInt(1, 2)) + L".mp3";
 		GI->Play_Sound(strSoundKey, SOUND_MONSTERL_HIT, 0.3f, false);
 		CCamera_Manager::GetInstance()->Start_Action_Shake_Default_Attack();
 
-		// TODO:: Effect
+		// TODO :: Explosion Effect
 	}
+}
+
+void CCannon_Ball::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
+{
+	__super::Ground_Collision_Enter(tInfo);
+
+	if (true == m_bReserveDead || true == m_bDead)
+		return;
+
+	Reserve_Dead(true);
+	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::BLOW, 0.f, 0.f, 0.f, false);
+
+	for (auto& pAttackCollider : Get_Collider(CCollider::DETECTION_TYPE::ATTACK))
+		pAttackCollider->Set_Radius(5.f);
+
+	m_fAccDeletionTime = 0.f;
+	m_fDeletionTime = 0.1f;
+
+	// TODO :: Explosion Effect
 }
 
 _bool CCannon_Ball::Find_Dest_Position(_float fTimeDelta)
@@ -214,5 +260,6 @@ CGameObject* CCannon_Ball::Clone(void* pArg)
 
 void CCannon_Ball::Free()
 {
+	Safe_Release(m_pControllerCom);
 	__super::Free();
 }

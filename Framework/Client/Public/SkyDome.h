@@ -38,6 +38,9 @@ public:
 	void Set_ApexColor(Vec4 vColor) { m_vApexColor = vColor; }
 	void Set_CenterColor(Vec4 vColor) { m_vCenterColor = vColor; }
 
+	Vec4 Get_ApexColor() { return m_vApexColor; }
+	Vec4 Get_CenterColor() { return m_vCenterColor; }
+
 private:
 	CShader* m_pShaderCom = nullptr;
 	CRenderer* m_pRendererCom = nullptr;

@@ -65,6 +65,7 @@ private:
 	void MapNPCSpace();
 	void MapWaterSpace();
 	void MapAnimalPatrol();
+	void Map_Fog(_float fTimeDelta);
 private:
 	void ChangeState();
 
@@ -84,6 +85,8 @@ private:
 	HRESULT Save_NPC_Data(const wstring& strNPCFileName);
 	HRESULT Load_NPC_Data(const wstring& strNPCFileName);
 
+private:
+	class CRenderer* m_pRendererCom = nullptr;
 
 private:
 	// 오브젝트 상태제어 

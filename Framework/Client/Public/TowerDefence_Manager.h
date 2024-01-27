@@ -103,6 +103,10 @@ private:
 	vector<class CGameObject*> m_OriginAnimals;
 
 private:
+	Vec4 m_vOriginSkyCenterColor = {};
+	Vec4 m_vOriginSkyApexColor = {};
+
+private:
 	_float m_fPrepareTime = 60.f;
 	_float m_fAccPrepare = 0.f;
 

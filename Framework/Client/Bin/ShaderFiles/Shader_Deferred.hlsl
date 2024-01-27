@@ -1,6 +1,9 @@
 #include "Engine_Shader_Defines.hpp"
 
+
 Texture2D g_Texture; // 디버그용 텍스쳐
+
+Texture2D g_PerlinNoiseTextures[10];
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 matrix g_ViewMatrixInv, g_ProjMatrixInv;
@@ -25,6 +28,8 @@ Texture2D g_BlendMixTarget;
 Texture2D g_BlendTarget;
 Texture2D g_DistortionTarget;
 
+
+
 // 조명
 vector g_vCamPosition;
 
@@ -32,6 +37,14 @@ vector g_vCamPosition;
 // 안개
 float4 g_vFogColor    = { 0.f, 0.635f, 1.f, 1.f };
 float2 g_fFogStartEnd = { 300.f, 600.f };
+
+float g_fConvertPercent     = 0.5f;
+float g_fFogStartDepth      = 0.f;
+float g_fFogStartDistance   = 0.f;
+float g_fFogDistanceValue   = 0.f;
+float g_fFogHeightValue     = 0.f;
+float g_fFogLimit = -1.f;
+float2 g_vFogUVAcc = { 0.f, 0.f };
 
 // 옵션
 bool   g_bShadowDraw;
@@ -363,10 +376,46 @@ float4 Shadow_Caculation(PS_IN In, float vDepthX, float vDepthY)
 }
 
 // FOG
-float FogFactor_Caculation(float fViewZ)
+float DistanceFogFactor_Caculation(float fViewZ)
 {
     return saturate((g_fFogStartEnd.y - fViewZ) / (g_fFogStartEnd.y - g_fFogStartEnd.x));
 }
+
+float3 Compute_HeightFogColor(float3 vOriginColor, float3 toEye, float fNoise)
+{
+    // 지정 범위로 변환된 Distance..
+    float pixelDistance = g_fConvertPercent * (length(toEye) - g_fFogStartDepth);
+    
+	// 지정 범위로 변환된 Height..
+    float pixelHeight = g_fConvertPercent * toEye.y;
+    
+    float distanceOffset = min(pow(2.0f, pixelDistance - g_fFogStartDistance), 1.0f);
+    float heightOffset = min(pow(1.2f, -(pixelHeight + 3.0f)), 1.0f);
+    
+	// 거리 기반 안개 강도 설정..
+    float distanceValue = exp(0.01f * pow(pixelDistance - g_fFogDistanceValue, 3.0f));
+    float fogDistanceFactor = min(distanceValue, 1.0f);
+
+	// 높이 기반 안개 강도 설정..
+    float heightValue = (pixelHeight * g_fFogHeightValue) - 0.1f;
+    float fogHeightFactor = pow(pow(2.0f, -heightValue), heightValue) * (1.0f - distanceOffset);
+
+	// 두 요소를 결합한 최종 요소..
+    float fogFinalFactor = saturate(min(fogDistanceFactor * fogHeightFactor * fNoise, 1.0f) + min(distanceOffset * heightOffset, 1.0f));
+
+
+	// 최종 혼합 색상..
+    return lerp(vOriginColor.rgb, g_vFogColor.xyz, fogFinalFactor);
+}
+
+//float3 ApplyFog(float3 rgb, float distance, float3 vRayOrigin, float3 vRayDir)
+//{
+//    vRayDir = normalize(vRayDir);
+//    float fogAmount = g_fConvertPercent * exp(-vRayOrigin.y * g_fConvertPercent) * (1.f - exp(-distance * vRayDir.y * g_fConvertPercent)) / vRayDir.y;
+    
+//    return lerp(rgb, g_vFogColor.rgb, fogAmount);
+//}
+
 
 // DEFERRED
 PS_OUT PS_MAIN_DEFERRED(PS_IN In)
@@ -413,8 +462,37 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
     Out.vColor = (vDiffuse * vShade /** vShadow*/ * vSSAO * vOutline) + vSpecular + vBloom;
 	
 	// Fog
-    float fFogFactor = FogFactor_Caculation(vDepthDesc.y * 1000.f);
-    Out.vColor = lerp(g_vFogColor, Out.vColor, fFogFactor);
+    float fDistanceFogFactor = DistanceFogFactor_Caculation(vDepthDesc.y * 1000.f);
+    
+    
+    
+    
+    vector vWorldPos;
+    float fViewZ = vDepthDesc.y * 1000.f;
+
+	/* 투영스페이스 상의 위치를 구한다. */
+    vWorldPos.x = In.vTexcoord.x * 2.f - 1.f;
+    vWorldPos.y = In.vTexcoord.y * -2.f + 1.f;
+    vWorldPos.z = vDepthDesc.x;
+    vWorldPos.w = 1.f;
+
+	/* 뷰스페이스 상의 위치를 구한다. */
+    vWorldPos = vWorldPos * fViewZ;
+    vWorldPos = mul(vWorldPos, g_ProjMatrixInv);
+    vector vViewPos = vWorldPos;
+
+	/* 월드까지 가자. */
+    vWorldPos = mul(vWorldPos, g_ViewMatrixInv);
+    
+    
+    
+    //// 0~1000
+    //int iIndex = min(vDepthDesc.y * 10.f - 1.f, 9.f);
+    
+    float fNoise = g_PerlinNoiseTextures[0].Sample(LinearSampler, In.vTexcoord + g_vFogUVAcc).r;
+    float3 vFinalColor = Compute_HeightFogColor(Out.vColor.xyz, (vWorldPos - g_vCamPosition).xyz, fNoise);
+    
+    Out.vColor = vector(vFinalColor.rgb, 1.f);
 	
 	return Out;
 }

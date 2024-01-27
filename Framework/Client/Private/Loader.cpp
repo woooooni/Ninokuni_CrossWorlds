@@ -152,6 +152,8 @@
 
 #include "Vehicle_Udadak.h"
 
+#include "Respawn_Box.h"
+
 _bool CLoader::g_bFirstLoading = false;
 _bool CLoader::g_bLevelFirst[LEVELID::LEVEL_WITCHFOREST + 1] = {};
 
@@ -227,6 +229,10 @@ _int CLoader::Loading()
 		hr = Loading_For_Level_IceLand();
 		break;
 
+	case LEVEL_WITCHFOREST:
+		hr = Loading_For_Level_WitchForest();
+		break;
+
 	case LEVEL_TOOL:
 		hr = Loading_For_Level_Tool();
 		break;
@@ -276,6 +282,11 @@ HRESULT CLoader::Loading_For_Level_Logo()
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Trigger"), CTrigger::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_PROP)))
 		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_RespawnBox"), CRespawn_Box::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_PROP)))
+		return E_FAIL;
+
+	
 
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Door_Enter"), CDoor_Enter_FX::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_PROP)))
 		return E_FAIL;
@@ -651,6 +662,18 @@ HRESULT CLoader::Loading_For_Level_IceLand()
 
 	g_bFirstLoading = true;
 
+	return S_OK;
+}
+
+HRESULT CLoader::Loading_For_Level_WitchForest()
+{
+	g_bFirstLoading = true;
+	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Witch");
+	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
+	{
+		if (true == m_Threads[i].valid())
+			m_Threads[i].wait();
+	}
 	return S_OK;
 }
 

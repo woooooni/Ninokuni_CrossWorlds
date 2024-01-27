@@ -31,6 +31,8 @@ HRESULT CRenderer::Initialize_Prototype()
 	if (nullptr == m_pScreenTextureCom)
 		return E_FAIL;*/
 
+
+
 	// Create_Buffer
 	if (FAILED(Create_Buffer()))
 		return E_FAIL;
@@ -52,6 +54,9 @@ HRESULT CRenderer::Initialize_Prototype()
 	if (FAILED(Set_Debug()))
 		return E_FAIL;
 #endif // DEBUG
+
+	if (FAILED(Ready_Textures()))
+		return E_FAIL;
 
 	// Initialize_SSAO
 	if (FAILED(Initialize_SSAO()))
@@ -1045,9 +1050,11 @@ HRESULT CRenderer::Render_Lights()
 	_float4 vCamPosition = GI->Get_CamPosition();
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4))))
 		return E_FAIL;
+
 	_float4x4 ViewMatrixInv = GI->Get_TransformMatrixInverse_Float4x4(CPipeLine::D3DTS_VIEW);
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_ViewMatrixInv", &ViewMatrixInv)))
 		return E_FAIL;
+
 	_float4x4 ProjMatrixInv = GI->Get_TransformMatrixInverse_Float4x4(CPipeLine::D3DTS_PROJ);
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_ProjMatrixInv", &ProjMatrixInv)))
 		return E_FAIL;
@@ -1155,36 +1162,51 @@ HRESULT CRenderer::Render_Deferred()
 
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
 		return E_FAIL;
+
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
 		return E_FAIL;
+
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
 		return E_FAIL;
 
+	_float4x4 ViewMatrixInv = GI->Get_TransformMatrixInverse_Float4x4(CPipeLine::D3DTS_VIEW);
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_ViewMatrixInv", &ViewMatrixInv)))
+		return E_FAIL;
+
+	_float4x4 ProjMatrixInv = GI->Get_TransformMatrixInverse_Float4x4(CPipeLine::D3DTS_PROJ);
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_ProjMatrixInv", &ProjMatrixInv)))
+		return E_FAIL;
+
+	_float4 vCamPosition = GI->Get_CamPosition();
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("g_vCamPosition", &vCamPosition, sizeof(_float4))))
+		return E_FAIL;
+
+
 	// Bias
-	if (KEY_TAP(KEY::OPEN_SQUARE_BRACKET))
-	{
-		if (KEY_HOLD(KEY::SHIFT))
-		{
-			m_fBias += 0.0001f;
-		}
-		else
-		{
-			m_fBias += 0.001f;
-		}
+	//if (KEY_TAP(KEY::OPEN_SQUARE_BRACKET))
+	//{
+	//	if (KEY_HOLD(KEY::SHIFT))
+	//	{
+	//		m_fBias += 0.0001f;
+	//	}
+	//	else
+	//	{
+	//		m_fBias += 0.001f;
+	//	}
 
-	}
-	if (KEY_TAP(KEY::CLOSE_SQUARE_BRACKET))
-	{
-		if (KEY_HOLD(KEY::SHIFT))
-		{
-			m_fBias -= 0.0001f;
-		}
-		else
-		{
-			m_fBias -= 0.001f;
-		}
+	//}
+	//if (KEY_TAP(KEY::CLOSE_SQUARE_BRACKET))
+	//{
+	//	if (KEY_HOLD(KEY::SHIFT))
+	//	{
+	//		m_fBias -= 0.0001f;
+	//	}
+	//	else
+	//	{
+	//		m_fBias -= 0.001f;
+	//	}
 
-	}
+	//}
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("g_fBias", &m_fBias, sizeof(_float))))
 		return E_FAIL;
 	
@@ -1192,8 +1214,40 @@ HRESULT CRenderer::Render_Deferred()
 	// Fog
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("g_vFogColor", &m_vFogColor, sizeof(_float4))))
 		return E_FAIL;
+
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("g_fFogStartEnd", &m_fFogStartEnd, sizeof(_float2))))
 		return E_FAIL;
+
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("g_fConvertPercent", &m_FogDesc.fConvertPercent, sizeof(_float))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("g_fFogStartDepth", &m_FogDesc.fFogStartDepth, sizeof(_float))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("g_fFogStartDistance", &m_FogDesc.fFogStartDistance, sizeof(_float))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("g_fFogDistanceValue", &m_FogDesc.fFogDistanceValue, sizeof(_float))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("g_fFogHeightValue", &m_FogDesc.fFogHeightValue, sizeof(_float))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("g_vFogUVAcc", &m_FogDesc.fUVAcc
+		, sizeof(_float2))))
+		return E_FAIL;
+
+
+
+	
+		
+		
+		
+		
+
+	if (FAILED(m_pPerlinNoiseTextureCom->Bind_ShaderResources(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], "g_PerlinNoiseTextures")))
+		return E_FAIL;
+
 
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_Diffuse"), "g_DiffuseTarget")))
 		return E_FAIL;
@@ -2927,6 +2981,16 @@ HRESULT CRenderer::Set_TargetsMrt()
 	return S_OK;
 }
 
+HRESULT CRenderer::Ready_Textures()
+{
+	m_pPerlinNoiseTextureCom = CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Renderer/PerlinNoise/"), 0, true);
+
+	if (nullptr == m_pPerlinNoiseTextureCom)
+		return E_FAIL;
+
+	return S_OK;
+}
+
 HRESULT CRenderer::Initialize_SSAO()
 {
 	if (FAILED(InitializeScreenQuad()))
@@ -3482,5 +3546,6 @@ void CRenderer::Free()
 	Safe_Release<ID3D11Buffer*>(m_pQuadVertexBuffer);
 	Safe_Release<ID3D11Buffer*>(m_pQuadIndexBuffer);
 	Safe_Release<CTexture*>(m_pRandomVectorTexture);
+	Safe_Release<CTexture*>(m_pPerlinNoiseTextureCom);
 	// Safe_Release<CTexture*>(m_pScreenTextureCom);
 }

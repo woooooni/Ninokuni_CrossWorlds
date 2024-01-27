@@ -29,6 +29,10 @@ HRESULT CTool_Map::Initialize()
 	if (FAILED(__super::Initialize()))
 		return E_FAIL;
 
+	m_pRendererCom = dynamic_cast<CRenderer*>(GI->Clone_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer")));
+	if (nullptr == m_pRendererCom)
+		return E_FAIL;
+
 #ifdef _DEBUG
 	if (FAILED(Ready_DebugDraw()))
 		return E_FAIL;
@@ -76,6 +80,10 @@ void CTool_Map::Tick(_float fTimeDelta)
 
 
 		Picking();
+
+#pragma region Fog
+		Map_Fog(fTimeDelta);
+#pragma endregion Fog
 	}
 	
 
@@ -1630,6 +1638,35 @@ void CTool_Map::MapAnimalPatrol()
 	}
 }
 
+void CTool_Map::Map_Fog(_float fTimeDelta)
+{
+	CRenderer::FOG_DESC FogDesc = m_pRendererCom->Get_FogDesc();
+
+	
+	// m_pRendererCom->c
+	_float4 vFogColor = m_pRendererCom->Get_FogColor();
+	ImGui::DragFloat4("FogColor", (_float*)&vFogColor, 0.01f);
+	m_pRendererCom->Set_FogColor(vFogColor);
+
+	
+
+	static _float2 vUVSpeed = { 0.f, 0.f };
+	ImGui::DragFloat2("UV_Speed", (_float*)&vUVSpeed, 0.01f);
+
+	FogDesc.fUVAcc.x += vUVSpeed.x * fTimeDelta;
+	FogDesc.fUVAcc.y += vUVSpeed.y * fTimeDelta;
+
+	ImGui::DragFloat("ConvertPercent", &FogDesc.fConvertPercent, 0.01f);
+	ImGui::DragFloat("FogDistanceValue", &FogDesc.fFogDistanceValue, 0.01f);
+	ImGui::DragFloat("FogHeightValue", &FogDesc.fFogHeightValue, 0.01f);
+	ImGui::DragFloat("FogStartDepth", &FogDesc.fFogStartDepth, 0.01f);
+	ImGui::DragFloat("FogStartDistance", &FogDesc.fFogStartDistance, 0.01f);
+
+	
+
+	m_pRendererCom->Set_FogDesc(FogDesc);
+}
+
 void CTool_Map::ChangeState()
 {
 	m_bAddObject = false;
@@ -2592,6 +2629,7 @@ CTool_Map* CTool_Map::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContex
 void CTool_Map::Free()
 {
 	__super::Free();
+	Safe_Release(m_pRendererCom);
 
 #ifdef _DEBUG
 	Safe_Delete(m_pBatch);

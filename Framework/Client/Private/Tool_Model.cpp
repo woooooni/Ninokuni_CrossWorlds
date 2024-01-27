@@ -55,7 +55,7 @@ void CTool_Model::Tick(_float fTimeDelta)
 	ImGuiWindowFlags WindowFlags = 0;
 	if (TRUE)
 	{
-		WindowFlags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+		// WindowFlags = ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 	}
 
 	ImGui::Begin("Model_Tool", NULL, WindowFlags);
