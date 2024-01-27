@@ -12,12 +12,12 @@ class CVfx_Engineer_Skill_HealingTree final : public CVfx
 {
 private:
 	enum TYPE {
-		TYPE_ET1_D_CIRCLE, // 0
-
-		TYPE_ET1_E_DOME, // 22
-		TYPE_ET1_E_CROSS,
-
-		TYPE_ET1_P_CIRCLES,
+		TYPE_ET1_D_CIRCLE,
+		TYPE_ET1_E_CIRCLELINE,
+		// ---------------------
+		TYPE_ET2_E_DOME,
+		TYPE_ET2_E_CROSS,
+		TYPE_ET2_P_CIRCLES,
 
 		TYPE_END
 	};
@@ -36,6 +36,10 @@ public:
 
 protected:
 	virtual HRESULT Ready_Components() override;
+
+private:
+	class CEffect*   m_pDome    = nullptr;
+	class CEffect*   m_pCross   = nullptr;
 
 public:
 	static CVfx_Engineer_Skill_HealingTree* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
