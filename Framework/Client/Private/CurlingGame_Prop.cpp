@@ -6,7 +6,7 @@
 #include "Renderer.h"
 
 CCurlingGame_Prop::CCurlingGame_Prop(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
-	: CGameObject(pDevice, pContext, strObjectTag, OBJ_TYPE::OBJ_SHUFFLEBOARD_PROP)
+	: CGameObject(pDevice, pContext, strObjectTag, OBJ_TYPE::OBJ_CURLINGGAME_PROP)
 {
 }
 
@@ -39,7 +39,7 @@ void CCurlingGame_Prop::Tick(_float fTimeDelta)
 	if (m_pRigidBodyCom != nullptr)
 		m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 
-	GI->Add_CollisionGroup(COLLISION_GROUP::SHUFFLEBOARD_PROP, this);
+	GI->Add_CollisionGroup(COLLISION_GROUP::CURLINGGAME_PROP, this);
 }
 
 void CCurlingGame_Prop::LateTick(_float fTimeDelta)
@@ -51,8 +51,10 @@ void CCurlingGame_Prop::LateTick(_float fTimeDelta)
 
 	if (CModel::TYPE::TYPE_ANIM == m_pModelCom->Get_ModelType())
 	{
-		m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_NONBLEND, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);
-		m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_SHADOW, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
+		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
+		//m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_NONBLEND, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);
+		//m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_SHADOW, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);
 	}
 	else
 	{
@@ -60,7 +62,6 @@ void CCurlingGame_Prop::LateTick(_float fTimeDelta)
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
 		//m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
 		//m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_SHADOW, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
-
 	}
 
 	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)

@@ -38,8 +38,7 @@ HRESULT CCurlingGame_Wall::Initialize(void* pArg)
 	/* Trnasform */
 	if (nullptr != m_pTransformCom)
 	{
-		//m_pTransformCom->Set_Scale(Vec3(2.f));
-		m_pTransformCom->Set_Scale(Vec3(7.f));
+		//m_pTransformCom->Set_Scale(Vec3(1.f));
 	}
 
 	return S_OK;
@@ -83,7 +82,7 @@ HRESULT CCurlingGame_Wall::Ready_Colliders()
 	{
 		ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
 		XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
-		OBBBox.Extents = { 30.f, 30.f, 30.f };
+		OBBBox.Extents = { 300.f, 100.f, 30.f };
 	}
 
 	CCollider_OBB::OBB_COLLIDER_DESC OBBDesc;

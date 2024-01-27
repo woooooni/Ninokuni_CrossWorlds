@@ -39,7 +39,12 @@ public:
 	virtual void LateTick(_float fTimeDelta) override;
 
 public:
+	void Launch(const Vec3& vDir, const _float& fPower);
 	void PutDown();
+
+	const _bool& Is_Launched() const { return m_bLaunched; }
+	void Set_OwnerType(const OBJ_TYPE& eType) { m_eOwnerType = eType; }
+	const OBJ_TYPE& Get_OwnerType() const { return m_eOwnerType; }
 
 public:
 	virtual void Collision_Enter(const COLLISION_INFO& tInfo) override;
@@ -57,6 +62,10 @@ private:
 	LERP_FLOAT_DESC		m_tHeightLerpDesc	= {};
 
 	_uint				m_iNumCol			= 0;
+
+	_bool				m_bLaunched			= false;
+
+	OBJ_TYPE			m_eOwnerType		= OBJ_TYPE::OBJ_END;
 
 public:
 	static CCurlingGame_Barrel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);

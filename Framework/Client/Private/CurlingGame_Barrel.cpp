@@ -44,31 +44,12 @@ HRESULT CCurlingGame_Barrel::Initialize(void* pArg)
 
 	/* Trnasform */
 	if (nullptr != m_pTransformCom)
-	{
 		m_pTransformCom->Set_Scale(Vec3(1.3f));
-	}
 
 	/* Model */
 	if (nullptr != m_pModelCom)
-	{
 		m_pModelCom->Set_Animation(1);
-	}
-
-	/* Rigidbody */
-	if (nullptr != m_pRigidBodyCom)
-	{
-		m_pRigidBodyCom->Set_Use_Gravity(false);
-
-		Vec3 vPlayerLook = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform")->Get_Look();
-		{
-			vPlayerLook.y = 0.f;
-			vPlayerLook.Normalize();
-		}
-
-		const _float fPower = 20.f;
-
-		m_pRigidBodyCom->Add_Velocity(vPlayerLook, fPower, false);
-	}
+	
 	return S_OK;
 }
 
@@ -102,7 +83,7 @@ void CCurlingGame_Barrel::LateTick(_float fTimeDelta)
 
 void CCurlingGame_Barrel::Collision_Enter(const COLLISION_INFO& tInfo)
 {
-	if (OBJ_TYPE::OBJ_SHUFFLEBOARD_PROP == tInfo.pOther->Get_ObjectType())
+	if (OBJ_TYPE::OBJ_CURLINGGAME_PROP == tInfo.pOther->Get_ObjectType())
 	{	
 		CCurlingGame_Prop* pProp = dynamic_cast<CCurlingGame_Prop*>(tInfo.pOther);
 		if (nullptr == pProp)
@@ -121,6 +102,18 @@ void CCurlingGame_Barrel::Collision_Enter(const COLLISION_INFO& tInfo)
 			if(nullptr != pWall)
 				Calculate_ActionAndReaction(pWall);
 		}
+	}
+}
+
+void CCurlingGame_Barrel::Launch(const Vec3& vDir, const _float& fPower)
+{
+	if (nullptr != m_pRigidBodyCom)
+	{
+		m_pRigidBodyCom->Set_Use_Gravity(false);
+
+		m_pRigidBodyCom->Add_Velocity(vDir, fPower, false);
+
+		m_bLaunched = true;
 	}
 }
 
@@ -229,7 +222,7 @@ HRESULT CCurlingGame_Barrel::Calculate_ElasticCollision(CGameObject* pOther)
 		Vec3 vRelativeVelocity = vMyDir - Vec3(pOtherRigidBody->Get_Velocity());
 
 		// 반발 계수 설정
-		const _float fRestitutionCoefficient = 0.05f;
+		const _float fRestitutionCoefficient = 0.25f;
 
 		// 충돌 후의 속도 갱신
 		vNewVelocity = vMyDir - (1.0f + fRestitutionCoefficient) * XMVectorGetX(XMVector3Dot(XMLoadFloat3(&vRelativeVelocity), XMLoadFloat3(&vColDir))) * vColDir;
