@@ -152,7 +152,7 @@
 
 #include "Vehicle_Udadak.h"
 
-#include "Shuffleboard_Barrel.h"
+#include "CurlingGame_Manager.h"
 
 _bool CLoader::g_bFirstLoading = false;
 _bool CLoader::g_bLevelFirst[LEVELID::LEVEL_WITCHFOREST + 1] = {};
@@ -610,12 +610,8 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 			CVehicle_Udadak::Create(m_pDevice, m_pContext, TEXT("Vehicle_Udadak")), LAYER_TYPE::LAYER_CHARACTER))
 			return E_FAIL;
 
-		// 설원 미니게임 
-		if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Prop_Barrel", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/DynamicProp/", L"Prop_Barrel")))
-			return E_FAIL;
-
-		if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Shuffleboard_Barrel", 
-			CShuffleboard_Barrel::Create(m_pDevice, m_pContext, TEXT("Shuffleboard_Barrel")), LAYER_TYPE::LAYER_PROP)))
+		// 설원 미니게임 (테스트 후 이동 예정)
+		if (FAILED(CCurlingGame_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
 			return E_FAIL;
 
 		g_bLevelFirst[LEVEL_EVERMORE] = true;

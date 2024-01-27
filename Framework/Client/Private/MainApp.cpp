@@ -22,6 +22,7 @@
 #include "UIMinigame_Manager.h"
 #include "Buff_Manager.h"
 #include "Riding_Manager.h"
+#include "CurlingGame_Manager.h"
 
 
 #include "Game_Manager.h"
@@ -89,6 +90,7 @@ void CMainApp::Tick(_float fTimeDelta)
 
 	CBuff_Manager::GetInstance()->Tick(fTimeDelta);
 	CGame_Manager::GetInstance()->Tick(fTimeDelta);
+	CCurlingGame_Manager::GetInstance()->Tick(fTimeDelta); /* 퀘스트 연동 후 이동 예정*/
 	GI->Tick(fTimeDelta); 
 
 	CTowerDefence_Manager::GetInstance()->Tick(fTimeDelta);
@@ -96,6 +98,7 @@ void CMainApp::Tick(_float fTimeDelta)
 	CQuest_Manager::GetInstance()->LateTick(fTimeDelta);
 	CUI_Manager::GetInstance()->LateTick(fTimeDelta);
 	CGame_Manager::GetInstance()->LateTick(fTimeDelta);
+	CCurlingGame_Manager::GetInstance()->LateTick(fTimeDelta); /* 퀘스트 연동 후 이동 예정*/
 	GI->LateTick(fTimeDelta);
 	CTowerDefence_Manager::GetInstance()->LateTick(fTimeDelta);
 	
@@ -1636,5 +1639,6 @@ void Client::CMainApp::Free()
 	CBuff_Manager::GetInstance()->DestroyInstance();
 	CCharacter_Manager::GetInstance()->DestroyInstance();
 	CGame_Manager::GetInstance()->DestroyInstance();
+	CCurlingGame_Manager::GetInstance()->DestroyInstance();
 	CGameInstance::Release_Engine();
 }

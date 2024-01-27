@@ -64,6 +64,8 @@ void CStelliaState_Rage1Loop_Explosion::Tick_State(_float fTimeDelta)
 	//			Vec3(0.f, 0.f, 0.f), Vec3(20.f, 1.f, 12.f), Vec3(0.f, 0.f, 0.f), m_pStellia, &m_pDecal_SafeZnoe, false);
 	//		Safe_AddRef(m_pDecal);
 	//	}
+	// 
+	// 
 	//}
 
 	// 

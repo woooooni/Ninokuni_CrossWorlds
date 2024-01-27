@@ -274,6 +274,7 @@
     <ClInclude Include="..\Public\Criminal_Npc.h" />
     <ClInclude Include="..\Public\Crystal_Ball.h" />
     <ClInclude Include="..\Public\Crystal_Tower.h" />
+    <ClInclude Include="..\Public\CurlingGame_Wall.h" />
     <ClInclude Include="..\Public\Decal.h" />
     <ClInclude Include="..\Public\Destroyer_FrengeCharge_Thunder.h" />
     <ClInclude Include="..\Public\Destroyer_HyperStrike_Hammer.h" />
@@ -430,8 +431,9 @@
     <ClInclude Include="..\Public\Riding_Manager.h" />
     <ClInclude Include="..\Public\Shadow_Ball.h" />
     <ClInclude Include="..\Public\Shadow_Tower.h" />
-    <ClInclude Include="..\Public\Shuffleboard_Barrel.h" />
-    <ClInclude Include="..\Public\Shuffleboard_Prop.h" />
+    <ClInclude Include="..\Public\CurlingGame_Barrel.h" />
+    <ClInclude Include="..\Public\CurlingGame_Manager.h" />
+    <ClInclude Include="..\Public\CurlingGame_Prop.h" />
     <ClInclude Include="..\Public\State_Character_Vehicle.h" />
     <ClInclude Include="..\Public\State_FlameTower_Attack.h" />
     <ClInclude Include="..\Public\State_CannonTower_Attack.h" />
@@ -1136,6 +1138,7 @@
     <ClCompile Include="..\Private\Criminal_Npc.cpp" />
     <ClCompile Include="..\Private\Crystal_Ball.cpp" />
     <ClCompile Include="..\Private\Crystal_Tower.cpp" />
+    <ClCompile Include="..\Private\CurlingGame_Wall.cpp" />
     <ClCompile Include="..\Private\Decal.cpp" />
     <ClCompile Include="..\Private\Destroyer_FrengeCharge_Thunder.cpp" />
     <ClCompile Include="..\Private\Destroyer_HyperStrike_Hammer.cpp" />
@@ -1296,8 +1299,9 @@
     <ClCompile Include="..\Private\Riding_Manager.cpp" />
     <ClCompile Include="..\Private\Shadow_Ball.cpp" />
     <ClCompile Include="..\Private\Shadow_Tower.cpp" />
-    <ClCompile Include="..\Private\Shuffleboard_Barrel.cpp" />
-    <ClCompile Include="..\Private\Shuffleboard_Prop.cpp" />
+    <ClCompile Include="..\Private\CurlingGame_Barrel.cpp" />
+    <ClCompile Include="..\Private\CurlingGame_Manager.cpp" />
+    <ClCompile Include="..\Private\CurlingGame_Prop.cpp" />
     <ClCompile Include="..\Private\State_CannonTower_Attack.cpp" />
     <ClCompile Include="..\Private\State_Character_Vehicle.cpp" />
     <ClCompile Include="..\Private\State_CrystalTower_Attack.cpp" />

@@ -12,8 +12,6 @@
 
 #include "Utils.h"
 
-#include "Shuffleboard_Barrel.h"
-
 CCamera_Follow::CCamera_Follow(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
 	: CCamera(pDevice, pContext, strObjTag, OBJ_TYPE::OBJ_CAMERA)
 {
@@ -787,26 +785,7 @@ void CCamera_Follow::Test(_float fTimeDelta)
 					pCutSceneMap->Start_CutScene(LEVELID::LEVEL_EVERMORE);		
 			}
 		}
-	}
-
-	/* Minigame */
-	if(KEY_TAP(KEY::Q))
-	{
-		CGameObject* pClone = nullptr;
-
-		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_PROP, TEXT("Prorotype_GameObject_Shuffleboard_Barrel"), nullptr, &pClone)))
-			return;
-
-		if (nullptr != pClone)
-		{
-			Vec4 vPos = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
-			Vec4 vLook = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform")->Get_Look();
-			Vec4 vLookAt = vPos + (vLook * 5.f);
-
-			pClone->Get_Component<CTransform>(L"Com_Transform")->Set_State(CTransform::STATE_POSITION, vPos.OneW());
-			pClone->Get_Component<CTransform>(L"Com_Transform")->LookAt_ForLandObject(vLookAt.OneW());
-		}
-	}
+	}	
 }
 
 CCamera_Follow * CCamera_Follow::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
