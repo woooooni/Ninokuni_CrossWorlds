@@ -25,6 +25,7 @@
 #include "UI_Cursor.h"
 #include "UI_LevelUp.h"
 #include "UI_MapName.h"
+#include "UI_AddItem.h"
 #include "UI_BtnBack.h"
 #include "UI_Minimap.h"
 #include "UI_Milepost.h"
@@ -3710,6 +3711,20 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(m_pRecommend);
 
+//	CUI_AddItem::UIITEM_DESC ITEMDesc = {};
+//	ITEMDesc.fCX = 400.f * 0.5f;
+//	ITEMDesc.fCY = 93.f * 0.5f;
+//	ITEMDesc.fX = g_iWinSizeX * 0.5f;
+//	ITEMDesc.fY = g_iWinSizeY * 0.5f;
+//	ITEMDesc.eCode = ITEM_CODE::CONSUMPSION_GOLD;
+//	pSlot = nullptr;
+//	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_AddItem_Popup"), &ITEMDesc, &pSlot)))
+//		return E_FAIL;
+//	if (nullptr == pSlot)
+//		return E_FAIL;
+//	m_ItemPopup.push_back(dynamic_cast<CUI_AddItem*>(pSlot));
+//	Safe_AddRef(pSlot);
+
 	return S_OK;
 }
 
@@ -4667,6 +4682,27 @@ HRESULT CUI_Manager::Tick_GamePlayLevel(_float fTimeDelta)
 //			}
 //		}
 //	}
+
+	if (false == m_ItemPopup.empty())
+	{
+		auto iter = m_ItemPopup.begin();
+
+		while(iter != m_ItemPopup.end())
+		{
+			if (nullptr != (*iter))
+			{
+				if (true == (*iter)->Is_Dead())
+				{
+
+					Safe_Release((*iter));
+					iter = m_ItemPopup.erase(iter);
+					continue;
+				}
+			}
+
+			++iter;
+		}
+	}
 
 	return S_OK;
 }
@@ -5701,6 +5737,31 @@ void CUI_Manager::Use_RollBtn()
 	dynamic_cast<CUI_SkillSection_BtnRoll*>(pBtnRoll)->Set_Resizable(true);
 }
 
+void CUI_Manager::Show_AddItem(ITEM_TYPE eItemType, ITEM_CODE eItemCode, _uint iCount)
+{
+	if (3 < m_ItemPopup.size())
+		return;
+
+	CUI_AddItem::UIITEM_DESC ITEMDesc = {};
+	ITEMDesc.fCX = 400.f * 0.5f;
+	ITEMDesc.fCY = 93.f * 0.5f;
+	CGameObject* pSlot = nullptr;
+
+	if (eItemCode == ITEM_CODE::CONSUMPSION_GOLD)
+	{
+		ITEMDesc.fX = g_iWinSizeX * 0.5f;
+		ITEMDesc.fY = g_iWinSizeY * 0.5f;
+		ITEMDesc.eCode = ITEM_CODE::CONSUMPSION_GOLD;
+		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_AddItem_Popup"), &ITEMDesc, &pSlot)))
+			return;
+		if (nullptr == pSlot)
+			return;
+		dynamic_cast<CUI_AddItem*>(pSlot)->Set_Position(m_ItemPopup.size());
+		m_ItemPopup.push_back(dynamic_cast<CUI_AddItem*>(pSlot));
+		Safe_AddRef(pSlot);
+	}
+}
+
 void CUI_Manager::Use_AttackBtn()
 {
 	if (nullptr == m_pSkillBG)
@@ -6653,10 +6714,6 @@ HRESULT CUI_Manager::OnOff_DialogWindow(_bool bOnOff, _uint iMagicNum)
 		}
 		else // Off
 		{
-			if (!Is_DefaultSettingOn())
-			{
-				//OnOff_GamePlaySetting(true); // 240119 카메라 쪽에서 열어주도록 수정 (찬)
-			}
 			
 			if (m_pDialogWindow->Get_Active())
 				m_pDialogWindow->Set_Active(false);
@@ -8842,6 +8899,10 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 		CUI_WeaponSection_Recommend::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_AddItem_Popup"),
+		CUI_AddItem::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -9340,6 +9401,10 @@ void CUI_Manager::Free()
 	for (auto& pSlot : m_PlayerSlot)
 		Safe_Release(pSlot);
 	m_PlayerSlot.clear();
+
+	for (auto& pPopup : m_ItemPopup)
+		Safe_Release(pPopup);
+	m_ItemPopup.clear();
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

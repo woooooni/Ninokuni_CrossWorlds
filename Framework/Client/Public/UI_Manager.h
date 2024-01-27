@@ -204,6 +204,8 @@ public: // Lobby
 	void Set_AlphaToItems();
 	void Show_RewardItems();
 
+	void Show_AddItem(ITEM_TYPE eItemType, ITEM_CODE eItemCode, _uint iCount);
+
 private:
 	CHARACTER_TYPE m_eCurPlayer = { CHARACTER_TYPE::SWORD_MAN };
 	ELEMENTAL_TYPE m_eElemental = { ELEMENTAL_TYPE::FIRE };
@@ -358,6 +360,8 @@ private:
 	class CUI_InGame_Setting_Window*		m_pInGameSetting = { nullptr };
 	vector <class CUI_InGame_Setting_Slot*> m_GraphicSlot;
 	vector <class CUI_InGame_Setting_Slot*> m_CameraSlot;
+
+	list<class CUI_AddItem*>		m_ItemPopup;
 
 private:
 	ID3D11Device*			m_pDevice = { nullptr };

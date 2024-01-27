@@ -22,7 +22,7 @@
 #include "UIMinigame_Manager.h"
 #include "Buff_Manager.h"
 #include "Riding_Manager.h"
-
+#include "Inventory_Manager.h"
 
 #include "Game_Manager.h"
 #include "Character_Manager.h"
@@ -176,6 +176,9 @@ HRESULT CMainApp::Initialize_Client()
 		return E_FAIL;
 
 	if (FAILED(CRiding_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+		return E_FAIL;
+
+	if (FAILED(CInventory_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
 		return E_FAIL;
 
 	if (FAILED(Ready_CameraObject()))
@@ -1635,6 +1638,7 @@ void Client::CMainApp::Free()
 	CUIMinimap_Manager::GetInstance()->DestroyInstance();
 	CUIMinigame_Manager::GetInstance()->DestroyInstance();
 	CItem_Manager::GetInstance()->DestroyInstance();
+	CInventory_Manager::GetInstance()->DestroyInstance();
 	CWeapon_Manager::GetInstance()->DestroyInstance();
 	CSkill_Manager::GetInstance()->DestroyInstance();
 	CBuff_Manager::GetInstance()->DestroyInstance();

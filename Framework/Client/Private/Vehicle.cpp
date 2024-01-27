@@ -50,7 +50,7 @@ void CVehicle::Tick(_float fTimeDelta)
 	if (nullptr != m_pStateCom)
 		m_pStateCom->Tick_State(fTimeDelta);
 
-	Update_Rider(fTimeDelta);
+//	Update_Rider(fTimeDelta);
 
 	GI->Add_CollisionGroup(COLLISION_GROUP::ANIMAL, this);
 }
@@ -201,7 +201,7 @@ void CVehicle::Update_Rider(_float fTimeDelta)
 	{
 		m_pRiderTransform->Set_WorldMatrix(m_pTransformCom->Get_WorldMatrix());
 		_matrix MatSitWorld = SitBoneMatrix * m_pTransformCom->Get_WorldMatrix();
-		m_pRiderTransform->Set_State(CTransform::STATE_POSITION, MatSitWorld.r[CTransform::STATE_POSITION]);
+		m_pRiderTransform->Set_State(CTransform::STATE_POSITION, MatSitWorld.r[CTransform::STATE_POSITION] + XMVectorSet(0.f, m_fOffsetY, 0.f, 0.f));
 	}
 		
 }
@@ -253,6 +253,7 @@ HRESULT CVehicle::Ready_Components()
 void CVehicle::Free()
 {
 	__super::Free();
+
 	Safe_Release(m_pControllerCom);
 	Safe_Release(m_pStateCom);
 	Safe_Release(m_pRigidBodyCom);

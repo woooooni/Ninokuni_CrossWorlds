@@ -151,6 +151,7 @@
 #include "TowerDefence_Manager.h"
 
 #include "Vehicle_Udadak.h"
+#include "Vehicle_Flying_Biplane.h"
 
 _bool CLoader::g_bFirstLoading = false;
 _bool CLoader::g_bLevelFirst[LEVELID::LEVEL_WITCHFOREST + 1] = {};
@@ -607,6 +608,10 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 		// Å» °Í
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Vehicle_Udadak"),
 			CVehicle_Udadak::Create(m_pDevice, m_pContext, TEXT("Vehicle_Udadak")), LAYER_TYPE::LAYER_CHARACTER))
+			return E_FAIL;
+
+		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Vehicle_Biplane"),
+			CVehicle_Flying_Biplane::Create(m_pDevice, m_pContext, TEXT("Vehicle_Biplane")), LAYER_TYPE::LAYER_CHARACTER))
 			return E_FAIL;
 
 		g_bLevelFirst[LEVEL_EVERMORE] = true;
@@ -1800,6 +1805,18 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 HRESULT CLoader::Loading_Proto_Vehicles()
 {
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Udadak", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Vehicle/Udadak/", L"Udadak")))
+		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Biplane", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Vehicle/Biplane/", L"Biplane")))
+		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Broomjet", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Vehicle/Broomjet/", L"Broomjet")))
+		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Boto", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Vehicle/Boto/", L"Boto")))
+		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Bumpy", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Vehicle/Bumpy/", L"Bumpy")))
 		return E_FAIL;
 
 	return S_OK;

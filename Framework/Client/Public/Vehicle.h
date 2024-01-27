@@ -93,6 +93,7 @@ protected:
 protected:
 	class CGameObject* m_pRider = nullptr;
 	class CTransform* m_pRiderTransform = nullptr;
+	_float m_fOffsetY = { 0.f };
 
 protected:
 	virtual HRESULT Ready_Components() override; // [TW] : 자식객체에서는 모델만 따로 클론하여 사용하세요.

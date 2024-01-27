@@ -430,7 +430,9 @@
     <ClInclude Include="..\Public\Riding_Manager.h" />
     <ClInclude Include="..\Public\Shadow_Ball.h" />
     <ClInclude Include="..\Public\Shadow_Tower.h" />
-    <ClInclude Include="..\Public\State_Character_Vehicle.h" />
+    <ClInclude Include="..\Public\State_Character_Vehicle_Run.h" />
+    <ClInclude Include="..\Public\State_Character_Vehicle_RunStart.h" />
+    <ClInclude Include="..\Public\State_Character_Vehicle_Stand.h" />
     <ClInclude Include="..\Public\State_FlameTower_Attack.h" />
     <ClInclude Include="..\Public\State_CannonTower_Attack.h" />
     <ClInclude Include="..\Public\State_CrystalTower_Attack.h" />
@@ -440,6 +442,8 @@
     <ClInclude Include="..\Public\State_DefenceTower_Prepare.h" />
     <ClInclude Include="..\Public\State_ShadowTower_Attack.h" />
     <ClInclude Include="..\Public\State_Vehicle.h" />
+    <ClInclude Include="..\Public\State_VehicleFlying_Run.h" />
+    <ClInclude Include="..\Public\State_VehicleFlying_Stand.h" />
     <ClInclude Include="..\Public\State_Vehicle_Idle.h" />
     <ClInclude Include="..\Public\State_Vehicle_Jump.h" />
     <ClInclude Include="..\Public\State_Vehicle_Run.h" />
@@ -841,6 +845,8 @@
     <ClInclude Include="..\Public\UniqueNpcState_Talk.h" />
     <ClInclude Include="..\Public\UniqueNpcState_Walk.h" />
     <ClInclude Include="..\Public\Vehicle.h" />
+    <ClInclude Include="..\Public\Vehicle_Flying.h" />
+    <ClInclude Include="..\Public\Vehicle_Flying_Biplane.h" />
     <ClInclude Include="..\Public\Vehicle_Udadak.h" />
     <ClInclude Include="..\Public\Verde.h" />
     <ClInclude Include="..\Public\Game_Manager.h" />
@@ -1296,7 +1302,9 @@
     <ClCompile Include="..\Private\Shadow_Ball.cpp" />
     <ClCompile Include="..\Private\Shadow_Tower.cpp" />
     <ClCompile Include="..\Private\State_CannonTower_Attack.cpp" />
-    <ClCompile Include="..\Private\State_Character_Vehicle.cpp" />
+    <ClCompile Include="..\Private\State_Character_Vehicle_Run.cpp" />
+    <ClCompile Include="..\Private\State_Character_Vehicle_RunStart.cpp" />
+    <ClCompile Include="..\Private\State_Character_Vehicle_Stand.cpp" />
     <ClCompile Include="..\Private\State_CrystalTower_Attack.cpp" />
     <ClCompile Include="..\Private\State_DefenceTower.cpp" />
     <ClCompile Include="..\Private\State_DefenceTower_Dead.cpp" />
@@ -1305,6 +1313,8 @@
     <ClCompile Include="..\Private\State_FlameTower_Attack.cpp" />
     <ClCompile Include="..\Private\State_ShadowTower_Attack.cpp" />
     <ClCompile Include="..\Private\State_Vehicle.cpp" />
+    <ClCompile Include="..\Private\State_VehicleFlying_Run.cpp" />
+    <ClCompile Include="..\Private\State_VehicleFlying_Stand.cpp" />
     <ClCompile Include="..\Private\State_Vehicle_Idle.cpp" />
     <ClCompile Include="..\Private\State_Vehicle_Jump.cpp" />
     <ClCompile Include="..\Private\State_Vehicle_Run.cpp" />
@@ -1704,6 +1714,8 @@
     <ClCompile Include="..\Private\UniqueNpcState_Talk.cpp" />
     <ClCompile Include="..\Private\UniqueNpcState_Walk.cpp" />
     <ClCompile Include="..\Private\Vehicle.cpp" />
+    <ClCompile Include="..\Private\Vehicle_Flying.cpp" />
+    <ClCompile Include="..\Private\Vehicle_Flying_Biplane.cpp" />
     <ClCompile Include="..\Private\Vehicle_Udadak.cpp" />
     <ClCompile Include="..\Private\Verde.cpp" />
     <ClCompile Include="..\Private\Game_Manager.cpp" />

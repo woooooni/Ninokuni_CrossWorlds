@@ -6,6 +6,7 @@
 #include "Character.h"
 
 #include "Vehicle_Udadak.h"
+#include "Vehicle_Flying_Biplane.h"
 
 IMPLEMENT_SINGLETON(CRiding_Manager)
 
@@ -47,6 +48,10 @@ HRESULT CRiding_Manager::Ready_Vehicle_GameObject(LEVELID eID)
 		return E_FAIL;
 	m_pUdadak = dynamic_cast<CVehicle_Udadak*>(pUdadak);
 	Safe_AddRef(m_pUdadak);
+
+	CGameObject* pBiplane = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Vehicle_Biplane"), &UdadakDesc, &pBiplane)))
+		return E_FAIL;
 
 	return S_OK;
 }

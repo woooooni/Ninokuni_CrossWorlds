@@ -121,9 +121,14 @@ void CState_Character::Neutral_Idle_Input(_float fTimeDelta)
 
 	if (KEY_TAP(KEY::V))
 	{
-		m_pStateMachineCom->Change_State(CCharacter::VEHICLE);
+		m_pStateMachineCom->Change_State(CCharacter::VEHICLE_RUNSTART);
 		CRiding_Manager::GetInstance()->Ride(CRiding_Manager::UDADAK, true);
 		return;
+	}
+
+	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::V))
+	{
+
 	}
 }
 
@@ -235,9 +240,14 @@ void CState_Character::Battle_Idle_Input(_float fTimeDelta)
 
 	if (KEY_TAP(KEY::V))
 	{
-		m_pStateMachineCom->Change_State(CCharacter::VEHICLE);
+		m_pStateMachineCom->Change_State(CCharacter::VEHICLE_RUNSTART);
 		CRiding_Manager::GetInstance()->Ride(CRiding_Manager::UDADAK, true);
 		return;
+	}
+
+	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::V))
+	{
+
 	}
 }
 
@@ -1605,9 +1615,14 @@ void CState_Character::OnBoard_Input(_float fTimeDelta)
 {
 	if (KEY_TAP(KEY::V))
 	{
-		m_pStateMachineCom->Change_State(CCharacter::VEHICLE);
+		m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_IDLE);
 		CRiding_Manager::GetInstance()->Ride(CRiding_Manager::UDADAK, false);
 		return;
+	}
+
+	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::V))
+	{
+
 	}
 }
 

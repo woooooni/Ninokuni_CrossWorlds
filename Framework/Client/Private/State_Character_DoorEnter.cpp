@@ -2,6 +2,7 @@
 #include "GameInstance.h"
 #include "Character.h"
 #include "State_Character_DoorEnter.h"
+#include "Riding_Manager.h"
 
 CState_Character_DoorEnter::CState_Character_DoorEnter(CStateMachine* pMachine)
     : CState_Character(pMachine)
@@ -21,6 +22,8 @@ void CState_Character_DoorEnter::Enter_State(void* pArg)
     m_pCharacter->Disappear_Weapon();
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
     m_pModelCom->Set_KeyFrame_By_Progress(0.7f);
+
+    CRiding_Manager::GetInstance()->Ride(CRiding_Manager::VEHICLE_TYPE::UDADAK, false);
 }
 
 void CState_Character_DoorEnter::Tick_State(_float fTimeDelta)

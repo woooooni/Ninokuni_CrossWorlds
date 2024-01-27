@@ -254,6 +254,15 @@ namespace Engine
 		ARMOR_CELESTIAL,
 #pragma endregion
 
+#pragma region ETC = 52
+		CONSUMPSION_ENERGY,
+		CONSUMPSION_EXP,
+		CONSUMPSION_MILK,
+		CONSUMPSION_PUDDING,
+		CONSUMPSION_BREAD,
+		CONSUMPSION_GOLD = 99,
+#pragma endregion
+
 #pragma endregion
 		CODE_END
 	};

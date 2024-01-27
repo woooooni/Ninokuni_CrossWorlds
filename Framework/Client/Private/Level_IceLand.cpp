@@ -31,6 +31,8 @@
 #include "Light_Manager.h"
 #include "Light.h"
 
+#include "Riding_Manager.h"
+
 _bool CLevel_IceLand::g_bFirstEnter = false;
 
 CLevel_IceLand::CLevel_IceLand(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -251,6 +253,9 @@ HRESULT CLevel_IceLand::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 	pDoorTransform->Set_State(CTransform::STATE_POSITION, vPosition);
 	pDoorTransform->Set_Scale(vScale);
 
+	if (FAILED(CRiding_Manager::GetInstance()->Ready_Vehicle_CameObjectToLayer(LEVELID::LEVEL_ICELAND)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -299,7 +304,7 @@ HRESULT CLevel_IceLand::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 
 	CTrigger::TRIGGER_DESC TriggerDesc;
 	TriggerDesc.eTriggerType = TRIGGER_TYPE::TRIGGER_MAP_NAME;
-	TriggerDesc.strMapName = L"内俊风农 汲盔";
+	TriggerDesc.strMapName = L"内俊风内 汲盔";
 	TriggerDesc.vStartPosition = { 107.93f, -50.f, 5.067f, 1.f };
 	TriggerDesc.vExtents = { 100.f, 200.f, 100.f };
 

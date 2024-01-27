@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Vehicle.h"
+#include "Vehicle_Flying.h"
 
 BEGIN(Client)
-class CVehicle_Udadak final : public CVehicle
+class CVehicle_Flying_Biplane final : public CVehicle_Flying
 {
-	CVehicle_Udadak(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
-	CVehicle_Udadak(const CVehicle_Udadak& rhs);
-	virtual ~CVehicle_Udadak() = default;
+	CVehicle_Flying_Biplane(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	CVehicle_Flying_Biplane(const CVehicle_Flying_Biplane& rhs);
+	virtual ~CVehicle_Flying_Biplane() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -33,11 +33,8 @@ private:
 	virtual HRESULT	Ready_Colliders();
 	virtual HRESULT Ready_States();
 
-private:
-	void Update_RiderState();
-
 public:
-	static CVehicle_Udadak* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	static CVehicle_Flying_Biplane* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };
