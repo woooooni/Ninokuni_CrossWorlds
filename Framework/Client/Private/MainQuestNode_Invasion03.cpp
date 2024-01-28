@@ -19,14 +19,6 @@ HRESULT CMainQuestNode_Invasion03::Initialize()
 {
 	__super::Initialize();
 
-	m_strQuestTag = TEXT("[메인]");
-	m_strQuestName = TEXT("에스타나비아 지키기");
-	m_strQuestContent = TEXT("모든 몬스터를 소탕하자");
-
-	m_strNextQuestTag = TEXT("[메인]");
-	m_strNextQuestName = TEXT("다시 루슬란에게");
-	m_strNextQuestContent = TEXT("루슬란에게 보고하자");
-
 	//Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/05.MainQuest_Invasion/MainQuest_Invasion03.json");
 	//
 	//for (const auto& talkDesc : Load) {
@@ -41,8 +33,6 @@ HRESULT CMainQuestNode_Invasion03::Initialize()
 
 void CMainQuestNode_Invasion03::Start()
 {
-	CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_INVASION);
-
 	/* 현재 퀘스트에 연관있는 객체들 */
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
 	CTowerDefence_Manager::GetInstance()->Prepare_Defence();
@@ -56,7 +46,6 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion03::Tick(const _float& fTimeDelta)
 	if (CTowerDefence_Manager::GetInstance()->Get_CurrentPhase() == CTowerDefence_Manager::TOWER_DEFENCE_PHASE::DEFENCE_FINISH)
 	{
 		m_bIsClear = true;
-		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 		CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::QUESTEVENT_END);
 
 		return NODE_STATE::NODE_FAIL;

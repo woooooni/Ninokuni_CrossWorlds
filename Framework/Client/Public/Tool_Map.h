@@ -1,6 +1,7 @@
 #pragma once
 #include "Tool.h"
 #include "GameNpc.h"
+#include "Monster.h"
 
 BEGIN(Engine)
 class CGameObject;
@@ -145,7 +146,11 @@ private:
 	// OBJECT_INIT_DATA
 	const char* m_NpcStateSelectableName[CGameNpc::NPC_STATE::NPC_END] =
 	{
-		"IDLE", "TALK", "MOVE_ONEWAY", "MOVE_TWOWAY", "NPC_UNIQUENPC_WALK", "NPC_UNIQUENPC_RUN", "NPC_UNIQUENPC_TALK"
+		"IDLE", "TALK", "MOVE_ONEWAY", "MOVE_TWOWAY", "NPC_UNIQUENPC_WALK", "NPC_UNIQUENPC_RUN", "NPC_UNIQUENPC_TALK", "BACKDOWN", "FRONTDOWN", "ATTACKIDLE", "ATTACK"
+	};
+	const char* m_InvasionMonsterStateSelectableName[CMonster::MONSTER_INVASION_STATE::INVASION_STATE_END] =
+	{
+		"ATTACK", "IDLE01", "IDLE02", "DEAD"
 	};
 
 #pragma region Debug

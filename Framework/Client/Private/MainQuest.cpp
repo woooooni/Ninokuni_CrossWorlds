@@ -6,6 +6,7 @@
 #include "MainQuest_SnowField.h"
 #include "MainQuest_Glanix.h"
 #include "MainQuest_Invasion.h"
+#include "MainQuest_WitchForest.h"
 
 #include "MainQuest_Invasion.h"
 
@@ -18,13 +19,14 @@ CMainQuest::CMainQuest()
 HRESULT CMainQuest::Initialize()
 {
 	//m_iLevel = 3;
-	//m_iLevel = 4;
+	m_iLevel = 4;
 
 	m_vecMQ.push_back(CMainQuest_IntroTour::Create());
 	m_vecMQ.push_back(CMainQuest_KingCall::Create());
 	m_vecMQ.push_back(CMainQuest_SnowField::Create());
 	m_vecMQ.push_back(CMainQuest_Glanix::Create());
 	m_vecMQ.push_back(CMainQuest_Invasion::Create());
+	m_vecMQ.push_back(CMainQuest_WitchForest::Create());
 
 	return S_OK;
 }

@@ -8,6 +8,8 @@
 #include "UniqueNpcState_Run.h"
 #include "UniqueNpcState_Talk.h"
 
+#include "NpcState_Attack.h"
+
 #include "UI_World_NPCTag.h"
 
 CEnbi::CEnbi(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
@@ -123,6 +125,10 @@ HRESULT CEnbi::Ready_States()
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Enbi.ao|Enbi_NeutralRun");
 	m_pStateCom->Add_State(NPC_UNIQUENPC_RUN, CUniqueNpcState_Run::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Enbi.ao|Enbi_Attack01");
+	m_pStateCom->Add_State(NPC_ATTACK, CNpcState_Attack::Create(m_pStateCom, strAnimationName));
 
 	m_pStateCom->Change_State(NPC_IDLE);
 

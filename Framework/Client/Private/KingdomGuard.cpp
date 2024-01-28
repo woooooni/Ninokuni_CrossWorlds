@@ -8,6 +8,10 @@
 #include "NpcState_Talk.h"
 #include "NpcState_OneWay.h"
 #include "NpcState_TwoWay.h"
+#include "NpcState_BackDown.h"
+#include "NpcState_FrontDown.h"
+#include "NpcState_AttackIdle.h"
+#include "NpcState_Attack.h"
 
 #include "UI_World_NPCTag.h"
 
@@ -70,10 +74,13 @@ void CKingdomGuard::LateTick(_float fTimeDelta)
 
 	if (m_pWeapon != nullptr)
 	{
-		Matrix matSocketLocal = m_pModelCom->Get_SocketLocalMatrix(0); // 내가 추가한 소켓에서 인덱스 선택.
-		Matrix matSocketWorld = matSocketLocal * m_pTransformCom->Get_WorldMatrix();
+		if (m_pStateCom->Get_CurrState() != NPC_BACKDOWN && m_pStateCom->Get_CurrState() != NPC_FRONTDOWN)
+		{
+			Matrix matSocketLocal = m_pModelCom->Get_SocketLocalMatrix(0); // 내가 추가한 소켓에서 인덱스 선택.
+			Matrix matSocketWorld = matSocketLocal * m_pTransformCom->Get_WorldMatrix();
 
-		m_pWeapon->Set_SocketWorld(matSocketWorld);
+			m_pWeapon->Set_SocketWorld(matSocketWorld);
+		}
 	}
 
 	if (nullptr != m_pTag)
@@ -127,6 +134,22 @@ HRESULT CKingdomGuard::Ready_States()
 	strAnimationName.push_back(L"SKM_EvermoreGuard02.ao|EvermoreGuard02_NeutralWalk");
 	strAnimationName.push_back(L"SKM_EvermoreGuard02.ao|EvermoreGuard02_NeutralStand");
 	m_pStateCom->Add_State(NPC_MOVE_TWOWAY, CNpcState_TwoWay::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_EvermoreGuard02.ao|Back_Down");
+	m_pStateCom->Add_State(NPC_BACKDOWN, CNpcState_BackDown::Create(m_pStateCom, strAnimationName));
+	
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_EvermoreGuard02.ao|Front_Down");
+	m_pStateCom->Add_State(NPC_FRONTDOWN, CNpcState_FrontDown::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_EvermoreGuard02.ao|EvermoreGuard02_BattleStand");
+	m_pStateCom->Add_State(NPC_ATTACK_IDLE, CNpcState_AttackIdle::Create(m_pStateCom, strAnimationName));
+	
+	//strAnimationName.clear();
+	//strAnimationName.push_back(L"SKM_EvermoreGuard02.ao|Attack");
+	//m_pStateCom->Add_State(NPC_ATTACK, CNpcState_Attack::Create(m_pStateCom, strAnimationName));
 
 	m_pStateCom->Change_State(NPC_IDLE);
 

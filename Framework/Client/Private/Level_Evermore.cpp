@@ -297,7 +297,12 @@ HRESULT CLevel_Evermore::Ready_Layer_Monster(const LAYER_TYPE eLayerType)
 HRESULT CLevel_Evermore::Ready_Layer_Npc(const LAYER_TYPE eLayerType)
 {
 	wstring strNpcFileName = L"Evermore";
-	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strNpcFileName + L"/" + strNpcFileName + L"NPC.map";
+	wstring strMapFilePath = L"";
+
+	if(CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_INVASION)
+		strMapFilePath = L"../Bin/DataFiles/Map/" + strNpcFileName + L"/" + strNpcFileName + L"NPC_Invasion.map";
+	else
+		strMapFilePath = L"../Bin/DataFiles/Map/" + strNpcFileName + L"/" + strNpcFileName + L"NPC.map";
 
 	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
 	File->Open(strMapFilePath, FileMode::Read);

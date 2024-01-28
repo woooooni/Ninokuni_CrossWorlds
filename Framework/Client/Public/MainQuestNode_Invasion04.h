@@ -15,10 +15,11 @@ public:
 	virtual void	LateTick(const _float& fTimeDelta);
 
 private:
-	virtual void    TalkEvent();
+	void Delete_Npc();
+	HRESULT Load_Npc();
 
 private:
-	CGameObject* m_pKuu = nullptr;
+	CGameObject* m_pRuslan = nullptr;
 
 public:
 	static CMainQuestNode_Invasion04* Create();

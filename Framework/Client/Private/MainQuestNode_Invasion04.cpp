@@ -4,8 +4,10 @@
 #include "GameInstance.h"
 #include "Utils.h"
 
-#include "Game_Manager.h"
 #include "UI_Manager.h"
+
+#include "Utils.h"
+#include <FileUtils.h>
 
 CMainQuestNode_Invasion04::CMainQuestNode_Invasion04()
 {
@@ -16,33 +18,33 @@ HRESULT CMainQuestNode_Invasion04::Initialize()
 	__super::Initialize();
 
 	m_strQuestTag = TEXT("[메인]");
-	m_strQuestName = TEXT("다시 루슬란에게");
-	m_strQuestContent = TEXT("루슬란에게 보고하자");
-
-	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/05.MainQuest_Invasion/MainQuest_Invasion02.json");
-
-	for (const auto& talkDesc : Load) {
-		TALK_DELS sTalkDesc;
-		sTalkDesc.strOwner = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(talkDesc["Owner"]));
-		sTalkDesc.strTalk = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(talkDesc["Talk"]));
-		m_vecTalkDesc.push_back(sTalkDesc);
-	}
+	m_strQuestName = TEXT("파괴된 에스타나비아");
+	m_strQuestContent = TEXT("루슬란과 대화하기");
 
 	return S_OK;
 }
 
 void CMainQuestNode_Invasion04::Start()
 {
-	/* 현재 퀘스트에 연관있는 객체들 */
-	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
+	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
+	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestTag, m_strQuestContent);
 
-	/* 대화 */
-	m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-	m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+	Delete_Npc();
 
-	CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
+	OBJECT_INIT_DESC NpcDesc = {};
+	NpcDesc.vStartPosition = { 0.f, 10.f, 140.f, 1.f };
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, _uint(LAYER_NPC), TEXT("Prorotype_GameObject_Ruslan"), &NpcDesc, &m_pRuslan)))
+	{
+		MSG_BOX("Fail AddGameObj : Quest Ruslan");
+	}
+	if (m_pRuslan != nullptr)
+	{
+		Vec4 vSpotPos = Set_DestSpot(m_pRuslan);
+		m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_ETC), &vSpotPos));
+	}
 
-	TalkEvent();
+	if (FAILED(Load_Npc()))
+		MSG_BOX("Fail MainQuest_Invasion04 : Npc Load");
 }
 
 CBTNode::NODE_STATE CMainQuestNode_Invasion04::Tick(const _float& fTimeDelta)
@@ -50,29 +52,24 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion04::Tick(const _float& fTimeDelta)
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 
-	if (KEY_TAP(KEY::LBTN))
+	if (GI->Get_CurrentLevel() == LEVEL_EVERMORE)
 	{
-		Safe_Delete_Array(m_szpOwner);
-		Safe_Delete_Array(m_szpTalk);
-
-		m_iTalkIndex += 1;
-
-		if (m_iTalkIndex >= m_vecTalkDesc.size())
+		if (m_pQuestDestSpot != nullptr)
 		{
-			CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+			m_pQuestDestSpot->Tick(fTimeDelta);
+			m_pQuestDestSpot->LateTick(fTimeDelta);
 
-			m_bIsClear = true;
-			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
-
-			return NODE_STATE::NODE_SUCCESS;
+			if (m_pQuestDestSpot != nullptr)
+			{
+				if (m_pQuestDestSpot->Get_IsCol())
+				{
+					m_bIsClear = true;
+					m_pQuestDestSpot->Set_ReadyDelete(true);
+					Safe_Release(m_pQuestDestSpot);
+					return NODE_STATE::NODE_FAIL;
+				}
+			}
 		}
-
-		m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-		m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
-
-		CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
-
-		TalkEvent();
 	}
 
 	return NODE_STATE::NODE_RUNNING;
@@ -82,24 +79,146 @@ void CMainQuestNode_Invasion04::LateTick(const _float& fTimeDelta)
 {
 }
 
-void CMainQuestNode_Invasion04::TalkEvent()
+void CMainQuestNode_Invasion04::Delete_Npc()
 {
-	switch (m_iTalkIndex)
+	list<CGameObject*>& NpcList = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_NPC);
+	for (auto& pNpc : NpcList)
 	{
-	case 0:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_01_00_KuuSay_Hmm....ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		//m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		//m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk02"));
-		break;
-	case 1:
-		// CSound_Manager::GetInstance()->Play_Sound(TEXT("03_01_01_KuuSay_HHH.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		break;
-	case 2:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_01_01_KuuSay_HHH.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		//m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK, TEXT("SKM_Kuu.ao|Kuu_EmotionDepressed"));
-		//m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_EmotionDepressed"));
-		break;
+		if (pNpc->Get_PrototypeTag().find(L"TreeGrandfa") != wstring::npos)
+			continue;
+
+		pNpc->Set_Dead(true);
 	}
+}
+
+HRESULT CMainQuestNode_Invasion04::Load_Npc()
+{
+	wstring strNpcFileName = L"Evermore";
+	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strNpcFileName + L"/" + strNpcFileName + L"NPC_InvasionAfter.map";
+
+	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
+	File->Open(strMapFilePath, FileMode::Read);
+
+	for (_uint i = 0; i < LAYER_TYPE::LAYER_END; ++i)
+	{
+		if (LAYER_TYPE::LAYER_NPC != i)
+			continue;
+
+		GI->Clear_Layer(LEVELID::LEVEL_EVERMORE, i);
+
+
+		_uint iObjectCount = File->Read<_uint>();
+
+		for (_uint j = 0; j < iObjectCount; ++j)
+		{
+			// 3. Object_Prototype_Tag
+			wstring strPrototypeTag = CUtils::ToWString(File->Read<string>());
+			wstring strObjectTag = CUtils::ToWString(File->Read<string>());
+
+			// 6. Obejct States
+			_float4 vRight, vUp, vLook, vPos;
+
+			File->Read<_float4>(vRight);
+			File->Read<_float4>(vUp);
+			File->Read<_float4>(vLook);
+			File->Read<_float4>(vPos);
+
+
+			OBJECT_INIT_DESC Init_Data = {};
+			Init_Data.vStartPosition = vPos;
+			CGameObject* pObj = nullptr;
+			if (FAILED(GI->Add_GameObject(LEVELID::LEVEL_EVERMORE, i, strPrototypeTag, &Init_Data, &pObj)))
+			{
+				MSG_BOX("Load_Objects_Failed.");
+				return E_FAIL;
+			}
+
+			if (nullptr == pObj)
+			{
+				MSG_BOX("Add_Object_Failed.");
+				return E_FAIL;
+			}
+			pObj->Set_ObjectTag(strObjectTag);
+
+			CTransform* pTransform = pObj->Get_Component<CTransform>(L"Com_Transform");
+			if (nullptr == pTransform)
+			{
+				MSG_BOX("Get_Transform_Failed.");
+				return E_FAIL;
+			}
+
+			_uint ObjectType;
+			File->Read<_uint>(ObjectType);
+
+			if (OBJ_TYPE::OBJ_NPC == ObjectType)
+			{
+				CGameNpc* pNpc = dynamic_cast<CGameNpc*>(pObj);
+
+				if (pNpc == nullptr)
+				{
+					MSG_BOX("Fail Load : NPC");
+					return E_FAIL;
+				}
+
+				_uint iSize;
+				File->Read<_uint>(iSize);
+
+				_uint eState;
+				File->Read<_uint>(eState);
+
+
+				if (iSize != 0)
+				{
+					vector<Vec4> Points;
+					Points.reserve(iSize);
+
+					for (_uint i = 0; i < iSize; ++i)
+					{
+						Vec4 vPoint;
+						File->Read<Vec4>(vPoint);
+						Points.push_back(vPoint);
+					}
+
+					pNpc->Set_RoamingArea(Points);
+
+					if (Points.size() != 0)
+					{
+						vPos = Points.front();
+						pNpc->Set_Point(true);
+					}
+				}
+
+				CGameNpc::NPC_STAT eStat;
+				File->Read<CGameNpc::NPC_STAT>(eStat);
+
+				pNpc->Set_NpcState(static_cast<CGameNpc::NPC_STATE>(eState));
+				CStateMachine* pStateMachine = pNpc->Get_Component<CStateMachine>(TEXT("Com_StateMachine"));
+				if (pStateMachine != nullptr)
+				{
+					pStateMachine->Change_State(eState);
+				}
+				else
+				{
+					MSG_BOX("Fail Get : NPC_StateMachine");
+					return E_FAIL;
+				}
+				pNpc->Set_Stat(eStat);
+			}
+
+			pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));
+			pTransform->Set_State(CTransform::STATE_UP, XMLoadFloat4(&vUp));
+			pTransform->Set_State(CTransform::STATE_LOOK, XMLoadFloat4(&vLook));
+			pTransform->Set_State(CTransform::STATE_POSITION, XMLoadFloat4(&vPos));
+
+			CPhysX_Controller* pController = pObj->Get_Component<CPhysX_Controller>(L"Com_Controller");
+
+			if (nullptr != pController)
+				pController->Set_EnterLevel_Position(pTransform->Get_Position());
+		}
+
+	}
+
+	return S_OK;
 }
 
 CMainQuestNode_Invasion04* CMainQuestNode_Invasion04::Create()
