@@ -22,9 +22,9 @@ HRESULT CVfx_Engineer_Skill_HealingTree::Initialize_Prototype()
 	m_bOwnerStateIndex = CCharacter::SKILL_SPECIAL_2;
 
 	m_iMaxCount = TYPE_END;
-	m_pFrameTriger    = new _int[m_iMaxCount];
+	m_pFrameTriger = new _int[m_iMaxCount];
 	m_pPositionOffset = new _float3[m_iMaxCount];
-	m_pScaleOffset    = new _float3[m_iMaxCount];
+	m_pScaleOffset = new _float3[m_iMaxCount];
 	m_pRotationOffset = new _float3[m_iMaxCount];
 
 
@@ -38,7 +38,7 @@ HRESULT CVfx_Engineer_Skill_HealingTree::Initialize_Prototype()
 	{
 		m_pFrameTriger[TYPE_ET2_P_LIGHT] = 8;
 		m_pPositionOffset[TYPE_ET2_P_LIGHT] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_P_LIGHT] = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET2_P_LIGHT]    = _float3(1.f, 1.f, 1.f);
 		m_pRotationOffset[TYPE_ET2_P_LIGHT] = _float3(0.f, 0.f, 0.f);
 	}
 
@@ -46,7 +46,7 @@ HRESULT CVfx_Engineer_Skill_HealingTree::Initialize_Prototype()
 	_uint iStartFrame = 22;
 	{
 		m_pFrameTriger[TYPE_ET3_E_AURA_01] = iStartFrame;
-		m_pPositionOffset[TYPE_ET3_E_AURA_01] = _float3(0.f, 0.f, -1.f);
+		m_pPositionOffset[TYPE_ET3_E_AURA_01] = _float3(0.f, 0.f, -0.7f);
 		m_pScaleOffset[TYPE_ET3_E_AURA_01]    = _float3(0.5f, 0.5f, 0.5f);
 		m_pRotationOffset[TYPE_ET3_E_AURA_01] = _float3(90.f, 0.f, 0.f);
 
@@ -61,7 +61,7 @@ HRESULT CVfx_Engineer_Skill_HealingTree::Initialize_Prototype()
 		m_pRotationOffset[TYPE_ET3_P_CIRCLES_01] = _float3(0.f, 0.f, 0.f);
 	}
 
- 	return S_OK;
+	return S_OK;
 }
 
 HRESULT CVfx_Engineer_Skill_HealingTree::Initialize(void* pArg)
@@ -78,7 +78,7 @@ void CVfx_Engineer_Skill_HealingTree::Tick(_float fTimeDelta)
 	}
 
 	CStateMachine* pMachine = m_pOwnerObject->Get_Component<CStateMachine>(L"Com_StateMachine");
-	CModel* pModel          = m_pOwnerObject->Get_Component<CModel>(L"Com_Model");
+	CModel* pModel = m_pOwnerObject->Get_Component<CModel>(L"Com_Model");
 
 	if (pMachine == nullptr || pModel == nullptr)
 	{
@@ -105,6 +105,8 @@ void CVfx_Engineer_Skill_HealingTree::Tick(_float fTimeDelta)
 
 		else if (m_iCount == TYPE_ET2_P_LIGHT && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_LIGHT])
 		{
+			//GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT(""),
+			//	XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_LIGHT], m_pScaleOffset[TYPE_ET2_P_LIGHT], m_pRotationOffset[TYPE_ET2_P_LIGHT]);
 			m_iCount++;
 		}
 
@@ -112,18 +114,20 @@ void CVfx_Engineer_Skill_HealingTree::Tick(_float fTimeDelta)
 		else if (m_iCount == TYPE_ET3_E_AURA_01 && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_E_AURA_01])
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Engineer_Skill_HealingTree_Aura"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_E_AURA_01], m_pScaleOffset[TYPE_ET3_E_AURA_01], m_pRotationOffset[TYPE_ET3_E_AURA_01]);
-			
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_E_AURA_01], m_pScaleOffset[TYPE_ET3_E_AURA_01], m_pRotationOffset[TYPE_ET3_E_AURA_01], m_pOwnerObject);
+			m_iCount++;
+
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_SkilEngineEngineer_Skill_HealingTree_Cross"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_P_CROSSSGLITTER_01], m_pScaleOffset[TYPE_ET3_P_CROSSSGLITTER_01], m_pRotationOffset[TYPE_ET3_P_CROSSSGLITTER_01]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_P_CROSSSGLITTER_01], m_pScaleOffset[TYPE_ET3_P_CROSSSGLITTER_01], m_pRotationOffset[TYPE_ET3_P_CROSSSGLITTER_01], m_pOwnerObject);
+			m_iCount++;
 
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_SkilEngineEngineer_Skill_HealingTree_Circles"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_P_CIRCLES_01], m_pScaleOffset[TYPE_ET3_P_CIRCLES_01], m_pRotationOffset[TYPE_ET3_P_CIRCLES_01]);
-
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_P_CIRCLES_01], m_pScaleOffset[TYPE_ET3_P_CIRCLES_01], m_pRotationOffset[TYPE_ET3_P_CIRCLES_01], m_pOwnerObject);
 			m_iCount++;
 		}
 
-		else if (m_iCount > TYPE_ET3_E_AURA_01)
+		// 2 ~ 6
+		else if (m_iCount > TYPE_ET3_P_CIRCLES_01)
 		{
 			m_fTimeAcc += fTimeDelta;
 			if (m_fTimeAcc >= 1.f)
@@ -135,13 +139,13 @@ void CVfx_Engineer_Skill_HealingTree::Tick(_float fTimeDelta)
 					m_WorldMatrix = pOwnerTransform->Get_WorldFloat4x4();
 
 				GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Engineer_Skill_HealingTree_Aura"),
-					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_E_AURA_01], m_pScaleOffset[TYPE_ET3_E_AURA_01], m_pRotationOffset[TYPE_ET3_E_AURA_01]);
+					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_E_AURA_01], m_pScaleOffset[TYPE_ET3_E_AURA_01], m_pRotationOffset[TYPE_ET3_E_AURA_01], m_pOwnerObject);
 
 				GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_SkilEngineEngineer_Skill_HealingTree_Cross"),
-					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_P_CROSSSGLITTER_01], m_pScaleOffset[TYPE_ET3_P_CROSSSGLITTER_01], m_pRotationOffset[TYPE_ET3_P_CROSSSGLITTER_01]);
+					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_P_CROSSSGLITTER_01], m_pScaleOffset[TYPE_ET3_P_CROSSSGLITTER_01], m_pRotationOffset[TYPE_ET3_P_CROSSSGLITTER_01], m_pOwnerObject);
 
 				GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_SkilEngineEngineer_Skill_HealingTree_Circles"),
-					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_P_CIRCLES_01], m_pScaleOffset[TYPE_ET3_P_CIRCLES_01], m_pRotationOffset[TYPE_ET3_P_CIRCLES_01]);
+					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_P_CIRCLES_01], m_pScaleOffset[TYPE_ET3_P_CIRCLES_01], m_pRotationOffset[TYPE_ET3_P_CIRCLES_01], m_pOwnerObject);
 
 				m_iCount++;
 			}

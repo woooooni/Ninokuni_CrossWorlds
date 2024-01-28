@@ -366,7 +366,7 @@ HRESULT CRenderer::Draw_World()
 				if (FAILED(Render_Ssao()))
 					return E_FAIL;
 
-				if (FAILED(Render_Blur(L"Target_SSAO", L"MRT_SSAO_Blur", true, BLUR_HOR_LOW, BLUR_VER_LOW, BLUR_UP_ONEADD)))
+				if (FAILED(Render_Blur(L"Target_SSAO", L"MRT_SSAO_Blur", true, BLUR_HOR_MIDDLE, BLUR_VER_MIDDLE, BLUR_UP_ONEADD)))
 					return E_FAIL;
 			}
 		}
