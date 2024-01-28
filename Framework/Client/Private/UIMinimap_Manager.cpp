@@ -80,7 +80,6 @@ _float2 CUIMinimap_Manager::Calculate_PositionForMinimap(CTransform* pTransform)
 	// 만약에 스크린좌표에 모두 있다면 그려야할 대상이다.
 	return _float2(fScreenX, fScreenY);
 }
-
 void CUIMinimap_Manager::Free()
 {
 	__super::Free();

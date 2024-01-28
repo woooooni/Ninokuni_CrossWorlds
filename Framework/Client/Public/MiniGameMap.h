@@ -2,7 +2,6 @@
 
 #include "Client_Defines.h"
 #include "GameObject.h"
-#include "Model.h"
 
 BEGIN(Engine)
 class CModel;
@@ -18,8 +17,8 @@ BEGIN(Client)
 class CMiniGameMap abstract : public CGameObject
 {
 protected:
-	explicit CMiniGameMap(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType);
-	explicit CMiniGameMap(const CMiniGameMap& rhs);
+	CMiniGameMap(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType);
+	CMiniGameMap(const CMiniGameMap& rhs);
 	virtual ~CMiniGameMap() = default;
 
 public:
