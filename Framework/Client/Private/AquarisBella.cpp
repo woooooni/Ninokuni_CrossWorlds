@@ -131,14 +131,18 @@ HRESULT CAquarisBella::Ready_States()
 
 HRESULT CAquarisBella::Ready_Colliders()
 {
-	CCollider_OBB::OBB_COLLIDER_DESC OBBDesc;
-	ZeroMemory(&OBBDesc, sizeof OBBDesc);
 
 	BoundingOrientedBox OBBBox;
-	ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
+	{
+		ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
+		XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
+		OBBBox.Extents = { 50.f, 50.f, 50.f };
+	}
+	CCollider_OBB::OBB_COLLIDER_DESC OBBDesc;
+	{
 
-	XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
-	OBBBox.Extents = { 50.f, 70.f, 50.f };
+	}
+	ZeroMemory(&OBBDesc, sizeof OBBDesc);
 
 	OBBDesc.tBox = OBBBox;
 	OBBDesc.tBox = OBBBox;
@@ -150,10 +154,6 @@ HRESULT CAquarisBella::Ready_Colliders()
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::BODY, &OBBDesc)))
 		return E_FAIL;
 
-	OBBBox.Extents = { 100.f, 100.f, 50.f };
-	OBBDesc.vOffsetPosition = Vec3(0.f, 70.f, -100.f);
-	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::ATTACK, &OBBDesc)))
-		return E_FAIL;
 
 	return S_OK;
 }

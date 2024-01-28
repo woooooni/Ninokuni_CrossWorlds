@@ -33,6 +33,7 @@
 
 #include "Riding_Manager.h"
 #include "UIMinigame_Manager.h"
+#include "CurlingGame_Manager.h"
 
 _bool CLevel_IceLand::g_bFirstEnter = false;
 
@@ -99,6 +100,9 @@ HRESULT CLevel_IceLand::Initialize()
 	{
 		g_bFirstEnter = true;
 		CUI_Manager::GetInstance()->OnOff_MapName(true, TEXT("코에루코 설원"));
+
+		if (FAILED(CCurlingGame_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+			return E_FAIL;
 	}
 
 	return S_OK;
@@ -110,6 +114,7 @@ HRESULT CLevel_IceLand::Tick(_float fTimeDelta)
 	CUI_Manager::GetInstance()->Tick_UIs(LEVELID::LEVEL_ICELAND, fTimeDelta);
 
 	CUIMinigame_Manager::GetInstance()->Tick_Minigame(LEVELID::LEVEL_ICELAND, fTimeDelta);
+	CCurlingGame_Manager::GetInstance()->Tick(fTimeDelta);
 
 	if (KEY_TAP(KEY::PAGE_UP))
 	{
@@ -138,6 +143,8 @@ HRESULT CLevel_IceLand::LateTick(_float fTimeDelta)
 {
 	CUI_Manager::GetInstance()->LateTick_Fade(fTimeDelta);
 	CUI_Manager::GetInstance()->LateTick_GamePlayLevel(fTimeDelta);
+
+	CCurlingGame_Manager::GetInstance()->LateTick(fTimeDelta);
 
 	return S_OK;
 }

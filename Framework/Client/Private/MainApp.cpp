@@ -23,6 +23,7 @@
 #include "Buff_Manager.h"
 #include "Riding_Manager.h"
 #include "Inventory_Manager.h"
+#include "CurlingGame_Manager.h"
 
 #include "Game_Manager.h"
 #include "Character_Manager.h"
@@ -522,6 +523,7 @@ HRESULT CMainApp::Ready_Prototype_Component()
 //	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Trail"),
 //		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/TrailEffect/"), 0, true))))
 //		return E_FAIL;
+
 	
 
 
@@ -1643,5 +1645,6 @@ void Client::CMainApp::Free()
 	CBuff_Manager::GetInstance()->DestroyInstance();
 	CCharacter_Manager::GetInstance()->DestroyInstance();
 	CGame_Manager::GetInstance()->DestroyInstance();
+	CCurlingGame_Manager::GetInstance()->DestroyInstance();
 	CGameInstance::Release_Engine();
 }

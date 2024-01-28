@@ -785,7 +785,7 @@ void CCamera_Follow::Test(_float fTimeDelta)
 					pCutSceneMap->Start_CutScene(LEVELID::LEVEL_EVERMORE);		
 			}
 		}
-	}
+	}	
 }
 
 CCamera_Follow * CCamera_Follow::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
