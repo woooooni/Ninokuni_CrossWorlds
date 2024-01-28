@@ -386,7 +386,7 @@ float DistanceFogFactor_Caculation(float fViewZ)
 float3 Compute_HeightFogColor(float3 vOriginColor, float3 toEye, float fNoise)
 {
     // 지정 범위로 변환된 Distance..
-    float pixelDistance =  g_fDistanceDensity * (length(toEye) - g_fFogStartDepth);
+    float pixelDistance =  g_fDistanceDensity * (length(g_vCamPosition.w - toEye) - g_fFogStartDepth);
     
 	// 지정 범위로 변환된 Height..
     float pixelHeight =  g_fHeightDensity * toEye.y;
@@ -426,6 +426,7 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 
 	// vDiffuse
 	vector vDiffuse = g_DiffuseTarget.Sample(LinearSampler, In.vTexcoord);
+    
 	if (vDiffuse.a == 0.f)
 		discard;
 
@@ -491,8 +492,12 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
     //// 0~1000
     //int iIndex = min(vDepthDesc.y * 10.f - 1.f, 9.f);
     
-    float3 vTexCoord = float3(In.vTexcoord + g_vFogUVAcc, vDepthDesc.y);
+    float3 vTexCoord = float3(int3(vWorldPos.xyz * 100.f) % 12800) / 12800.f;
+    vTexCoord.x += g_vFogUVAcc.x;
+    vTexCoord.y += g_vFogUVAcc.y;
+    
     float fNoise = g_PerlinNoiseTextures.Sample(LinearSampler, vTexCoord).r;
+    
     float3 vFinalColor = Compute_HeightFogColor(Out.vColor.xyz, (vWorldPos - g_vCamPosition).xyz, fNoise);
     
     Out.vColor = vector(vFinalColor.rgb, 1.f);

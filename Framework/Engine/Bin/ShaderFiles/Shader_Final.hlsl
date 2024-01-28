@@ -73,21 +73,36 @@ PS_OUT PS_MAIN_FINAL(PS_IN In)
 	return Out;
 }
 
-PS_OUT PS_MAIN_SCREEN_EFFECT(PS_IN In)
+PS_OUT PS_MAIN_SCREEN_SWORDMAN_SPLIT(PS_IN In)
 {
     PS_OUT Out = (PS_OUT) 0;
-    float4 vMaskColor = g_ScreenEffectTexture.Sample(LinearSampler, In.vTexcoord);
-	
-    if (vMaskColor.r >= vMaskColor.g)
-    {
-        Out.vColor = g_ScreenTarget.Sample(LinearSampler, In.vTexcoord);
-    }
-	else
-    {
-        Out.vColor = float4(0.f, 0.f, 0.f, 1.f);
-    }
-	
     
+    float4 vMaskColor = g_ScreenEffectTexture.Sample(LinearSampler, In.vTexcoord);
+    float2 vNewTexCoord = In.vTexcoord;
+    
+    vNewTexCoord.x -= vMaskColor.r * g_vUVWeight.x;
+    vNewTexCoord.x += vMaskColor.g * g_vUVWeight.y;
+   
+    
+    if (0.f <= vNewTexCoord.x && 1.f >= vNewTexCoord.x)
+        Out.vColor = g_ScreenTarget.Sample(LinearSampler, vNewTexCoord);
+    else
+        Out.vColor = float4(0.f, 0.f, 0.f, 1.f);
+    
+    Out.vColor.a = 1.f;
+	
+    return Out;
+}
+
+PS_OUT PS_MAIN_SCREEN_DESTROYER_BREAK(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+    
+    float4 vMaskColor = g_ScreenEffectTexture.Sample(LinearSampler, In.vTexcoord);
+    float2 vNewTexCoord = In.vTexcoord + (vMaskColor.rg * 0.05f);
+    
+    Out.vColor = g_ScreenTarget.Sample(LinearSampler, vNewTexCoord);
+    Out.vColor.a = 1.f;
 	
     return Out;
 }
@@ -111,13 +126,13 @@ technique11 DefaultTechnique
     pass Render_SwordMan_Split
     {
         SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
+        SetDepthStencilState(DSS_None, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
         VertexShader = compile vs_5_0 VS_MAIN_SCREEN_EFFECT();
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN_SCREEN_EFFECT();
+        PixelShader = compile ps_5_0 PS_MAIN_SCREEN_SWORDMAN_SPLIT();
     }
 
     // 2 
@@ -130,7 +145,7 @@ technique11 DefaultTechnique
         GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-        PixelShader = compile ps_5_0 PS_MAIN_SCREEN_EFFECT();
+        PixelShader = compile ps_5_0 PS_MAIN_SCREEN_DESTROYER_BREAK();
     }
 
     //3

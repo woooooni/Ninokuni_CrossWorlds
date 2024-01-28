@@ -171,27 +171,27 @@ public:
 public:
 	HRESULT Draw();
 
-//public:
-//	SCREEN_EFFECT Get_Current_ScreenEffect() { return m_eCurrentScreenEffect; }
-//	void Set_ScreenEffect(SCREEN_EFFECT eScreenEffect) { 
-//		if (eScreenEffect == SCREENEFFECT_END)
-//		{
-//			m_eCurrentScreenEffect = eScreenEffect;
-//			m_vScreenEffectAcc = { 0.f, 0.f };
-//		}
-//		else
-//		{
-//			if (m_eCurrentScreenEffect == SCREEN_EFFECT::SCREENEFFECT_END)
-//			{
-//				m_eCurrentScreenEffect = eScreenEffect;
-//				m_vScreenEffectAcc = { 0.f, 0.f };
-//			}
-//		}
-//	}
-//	
-//	Vec2 Get_ScreenEffectAcc() { return m_vScreenEffectAcc; }
-//	void Set_ScreenEffectAcc(const Vec2& vEffectAcc) { m_vScreenEffectAcc = vEffectAcc; }
-//	void Add_ScreenEffectAcc(const Vec2& vEffectAcc) { m_vScreenEffectAcc += vEffectAcc; }
+public:
+	SCREEN_EFFECT Get_Current_ScreenEffect() { return m_eCurrentScreenEffect; }
+	void Set_ScreenEffect(SCREEN_EFFECT eScreenEffect) { 
+		if (eScreenEffect == SCREENEFFECT_END)
+		{
+			m_eCurrentScreenEffect = eScreenEffect;
+			m_vScreenEffectAcc = { 0.f, 0.f };
+		}
+		else
+		{
+			if (m_eCurrentScreenEffect == SCREEN_EFFECT::SCREENEFFECT_END)
+			{
+				m_eCurrentScreenEffect = eScreenEffect;
+				m_vScreenEffectAcc = { 0.f, 0.f };
+			}
+		}
+	}
+	
+	Vec2 Get_ScreenEffectAcc() { return m_vScreenEffectAcc; }
+	void Set_ScreenEffectAcc(const Vec2& vEffectAcc) { m_vScreenEffectAcc = vEffectAcc; }
+	void Add_ScreenEffectAcc(const Vec2& vEffectAcc) { m_vScreenEffectAcc += vEffectAcc; }
 
 private:
 	HRESULT Draw_BackGround();
@@ -383,11 +383,11 @@ private: // Cascade
 	void LightMatrixUpdate();
 
 private:
-	// class CTexture* m_pScreenTextureCom = nullptr;
+	 class CTexture* m_pScreenTextureCom = nullptr;
 
-//private:
-//	Vec2 m_vScreenEffectAcc = { 0.f, 0.f };
-//	SCREEN_EFFECT m_eCurrentScreenEffect = SCREEN_EFFECT::SCREENEFFECT_END;
+private:
+	Vec2 m_vScreenEffectAcc = { 0.f, 0.f };
+	SCREEN_EFFECT m_eCurrentScreenEffect = SCREEN_EFFECT::SCREENEFFECT_END;
 
 
 public:
