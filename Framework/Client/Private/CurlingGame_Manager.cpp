@@ -230,32 +230,32 @@ HRESULT CCurlingGame_Manager::Ready_Objects()
 				return E_FAIL;
 		}
 
-		/* Wall */
-		{
-			if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Prop_Wall", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/CurlingGame/Wall/", L"Lobby_Fence_01a")))
-				return E_FAIL;
-
-			if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Shuffleboard_Wall",
-				CCurlingGame_Wall::Create(m_pDevice, m_pContext, TEXT("Shuffleboard_Wall")), LAYER_TYPE::LAYER_PROP)))
-				return E_FAIL;
-		}
+		///* Wall */
+		//{
+		//	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Prop_Wall", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/CurlingGame/Wall/", L"Lobby_Fence_01a")))
+		//		return E_FAIL;
+		//
+		//	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Shuffleboard_Wall",
+		//		CCurlingGame_Wall::Create(m_pDevice, m_pContext, TEXT("Shuffleboard_Wall")), LAYER_TYPE::LAYER_PROP)))
+		//		return E_FAIL;
+		//}
 	}
 
 	/* Pool */
 	{
-		for (_uint i = 0; i < m_iMaxBarrels; i++)
-		{
-			CGameObject* pClone = nullptr;
-
-			if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_PROP, TEXT("Prorotype_GameObject_Shuffleboard_Barrel"), nullptr, &pClone)))
-				return E_FAIL;
-
-			CCurlingGame_Barrel* pBarrel = dynamic_cast<CCurlingGame_Barrel*>(pClone);
-			if (nullptr == pBarrel)
-				return E_FAIL;
-
-			m_pBarrelPool.push(pBarrel);
-		}
+		//for (_uint i = 0; i < m_iMaxBarrels; i++)
+		//{
+		//	CGameObject* pClone = nullptr;
+		//
+		//	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_PROP, TEXT("Prorotype_GameObject_Shuffleboard_Barrel"), nullptr, &pClone)))
+		//		return E_FAIL;
+		//
+		//	CCurlingGame_Barrel* pBarrel = dynamic_cast<CCurlingGame_Barrel*>(pClone);
+		//	if (nullptr == pBarrel)
+		//		return E_FAIL;
+		//
+		//	m_pBarrelPool.push(pBarrel);
+		//}
 	}
 
 	/* Stadium Objects (ÁØ¿±) */
