@@ -3,7 +3,7 @@
 
 Texture2D g_Texture; // 디버그용 텍스쳐
 
-Texture2D g_PerlinNoiseTextures[10];
+Texture3D g_PerlinNoiseTextures;
 
 matrix g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 matrix g_ViewMatrixInv, g_ProjMatrixInv;
@@ -45,6 +45,8 @@ float g_fFogDistanceValue   = 0.f;
 float g_fFogHeightValue     = 0.f;
 float g_fFogLimit = -1.f;
 float2 g_vFogUVAcc = { 0.f, 0.f };
+float g_fDistanceDensity = 0.f;
+float g_fHeightDensity = 0.f;
 
 // 옵션
 bool   g_bShadowDraw;
@@ -384,10 +386,10 @@ float DistanceFogFactor_Caculation(float fViewZ)
 float3 Compute_HeightFogColor(float3 vOriginColor, float3 toEye, float fNoise)
 {
     // 지정 범위로 변환된 Distance..
-    float pixelDistance = g_fConvertPercent * (length(toEye) - g_fFogStartDepth);
+    float pixelDistance =  g_fDistanceDensity * (length(toEye) - g_fFogStartDepth);
     
 	// 지정 범위로 변환된 Height..
-    float pixelHeight = g_fConvertPercent * toEye.y;
+    float pixelHeight =  g_fHeightDensity * toEye.y;
     
     float distanceOffset = min(pow(2.0f, pixelDistance - g_fFogStartDistance), 1.0f);
     float heightOffset = min(pow(1.2f, -(pixelHeight + 3.0f)), 1.0f);
@@ -489,7 +491,8 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
     //// 0~1000
     //int iIndex = min(vDepthDesc.y * 10.f - 1.f, 9.f);
     
-    float fNoise = g_PerlinNoiseTextures[0].Sample(LinearSampler, In.vTexcoord + g_vFogUVAcc).r;
+    float3 vTexCoord = float3(In.vTexcoord + g_vFogUVAcc, vDepthDesc.y);
+    float fNoise = g_PerlinNoiseTextures.Sample(LinearSampler, vTexCoord).r;
     float3 vFinalColor = Compute_HeightFogColor(Out.vColor.xyz, (vWorldPos - g_vCamPosition).xyz, fNoise);
     
     Out.vColor = vector(vFinalColor.rgb, 1.f);

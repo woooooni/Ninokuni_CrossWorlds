@@ -964,6 +964,7 @@ HRESULT CRenderer::Render_Cascade_Caculation()
 
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS], TEXT("Target_Depth"), "DepthTexture")))
 		return E_FAIL;
+
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Texture("CascadeLightDepthMap", m_pTarget_Manager->Get_Cascasd_SRV())))
 		return E_FAIL;
 
@@ -1233,11 +1234,20 @@ HRESULT CRenderer::Render_Deferred()
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("g_fFogHeightValue", &m_FogDesc.fFogHeightValue, sizeof(_float))))
 		return E_FAIL;
 
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("g_fDistanceDensity", &m_FogDesc.fFogDistanceDensity, sizeof(_float))))
+		return E_FAIL;
+
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("g_fHeightDensity", &m_FogDesc.fFogHeightDensity, sizeof(_float))))
+		return E_FAIL;
+
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("g_vFogUVAcc", &m_FogDesc.fUVAcc
 		, sizeof(_float2))))
 		return E_FAIL;
 
+	if (FAILED(m_pPerlinNoiseTextureCom->Bind_ShaderResource(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], "g_PerlinNoiseTextures")))
+		return E_FAIL;
 
+	// Fog End
 
 	
 		
@@ -1245,8 +1255,7 @@ HRESULT CRenderer::Render_Deferred()
 		
 		
 
-	if (FAILED(m_pPerlinNoiseTextureCom->Bind_ShaderResources(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], "g_PerlinNoiseTextures")))
-		return E_FAIL;
+	
 
 
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_Diffuse"), "g_DiffuseTarget")))

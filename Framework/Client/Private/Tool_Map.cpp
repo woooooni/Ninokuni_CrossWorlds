@@ -1662,6 +1662,10 @@ void CTool_Map::Map_Fog(_float fTimeDelta)
 	ImGui::DragFloat("FogStartDepth", &FogDesc.fFogStartDepth, 0.01f);
 	ImGui::DragFloat("FogStartDistance", &FogDesc.fFogStartDistance, 0.01f);
 
+	ImGui::DragFloat("FogDistanceDensity", &FogDesc.fFogDistanceDensity, 0.01f);
+	ImGui::DragFloat("FogHeightDensity", &FogDesc.fFogHeightDensity, 0.01f);
+	
+
 	
 
 	m_pRendererCom->Set_FogDesc(FogDesc);

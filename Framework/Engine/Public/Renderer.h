@@ -62,11 +62,14 @@ public:
 
 	typedef struct tagFogDesc
 	{
-		_float fConvertPercent = 0.5f;
-		_float fFogStartDepth = 0.f;
-		_float fFogStartDistance = 0.f;
-		_float fFogDistanceValue = 0.f;
-		_float fFogHeightValue = 0.f;
+		_float fConvertPercent = 0.04f;
+		_float fFogStartDepth = 100.f;
+		_float fFogStartDistance = 10.f;
+		_float fFogDistanceValue = 30.f;
+		_float fFogHeightValue = 50.f;
+
+		_float fFogDistanceDensity = 0.04f;
+		_float fFogHeightDensity = 0.04f;
 
 		_float2 fUVAcc = { 0.f, 0.f };
 	} FOG_DESC;
