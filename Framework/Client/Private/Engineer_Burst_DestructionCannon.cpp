@@ -43,21 +43,17 @@ HRESULT CEngineer_Burst_DestructionCannon::Initialize(void* pArg)
 
 void CEngineer_Burst_DestructionCannon::Tick(_float fTimeDelta)
 {
+	if (false == m_bEffect)
+	{
+		GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Engineer_Skill_Destruction_Cannon"), m_pTransformCom->Get_WorldMatrix(), this);
+		m_bEffect = true;
+	}
 
 	if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
 	{
 		if (false == m_bReserveDead)
 		{
 			Reserve_Dead(true);
-		}
-	}
-
-	if (false == m_pModelCom->Is_Tween() && m_pModelCom->Get_CurrAnimationFrame() >= 44)
-	{
-		if (false == m_bShot)
-		{
-			Fire_Cannon();
-			m_bShot = true;
 		}
 	}
 
@@ -212,12 +208,6 @@ HRESULT CEngineer_Burst_DestructionCannon::Render_Instance_AnimModel_Shadow(CSha
 }
 
 
-
-
-
-
-
-
 HRESULT CEngineer_Burst_DestructionCannon::Ready_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
@@ -241,32 +231,6 @@ HRESULT CEngineer_Burst_DestructionCannon::Ready_Components()
 void CEngineer_Burst_DestructionCannon::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
-}
-
-void CEngineer_Burst_DestructionCannon::Fire_Cannon()
-{
-	CGameObject* pGameObject = nullptr;
-	CCharacter_Projectile::CHARACTER_PROJECTILE_DESC ProjectileDesc = {};
-	ProjectileDesc.pOwner = CCharacter_Manager::GetInstance()->Get_Character(CHARACTER_TYPE::ENGINEER);
-
-	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_CHARACTER, L"Prototype_GameObject_Engineer_Burst_CannonBomb", &ProjectileDesc, &pGameObject)))
-	{
-		MSG_BOX("Add GameObject Failed : CEngineer_Burst_DestructionCannon::Fire_Cannon");
-		return;
-	}
-
-	CTransform* pTransform = pGameObject->Get_Component<CTransform>(L"Com_Transform");
-	if (nullptr == pTransform)
-	{
-		MSG_BOX("Find Transform Failed : CEngineer_Burst_DestructionCannon::Fire_Cannon");
-		return;
-	}
-
-	_matrix WorldMatrix = m_pTransformCom->Get_WorldMatrix();
-	WorldMatrix.r[CTransform::STATE_POSITION] += (XMVector3Normalize(m_pTransformCom->Get_Look()) * 3.f);
-	WorldMatrix.r[CTransform::STATE_POSITION] += XMVectorSet(0.f, 1.5f, 0.f, 0.f);
-	pTransform->Set_WorldMatrix(WorldMatrix);
-
 }
 
 
@@ -300,5 +264,6 @@ CGameObject* CEngineer_Burst_DestructionCannon::Clone(void* pArg)
 void CEngineer_Burst_DestructionCannon::Free()
 {
 	__super::Free();
+
 	Safe_Release(m_pDissolveTextureCom);
 }

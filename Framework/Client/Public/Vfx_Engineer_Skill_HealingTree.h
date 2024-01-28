@@ -13,11 +13,23 @@ class CVfx_Engineer_Skill_HealingTree final : public CVfx
 private:
 	enum TYPE {
 		TYPE_ET1_D_CIRCLE, // 0
+		// -------------------------
+		TYPE_ET2_P_LIGHT, // 8
 
-		TYPE_ET1_E_DOME, // 22
-		TYPE_ET1_E_CROSS,
+		TYPE_ET3_E_AURA_01, // 22
+		TYPE_ET3_P_CROSSSGLITTER_01,
+		TYPE_ET3_P_CIRCLES_01,
+		// -------------------------
 
-		TYPE_ET1_P_CIRCLES,
+		TYPE_ET4_E_AURA_02,
+		// -------------------------
+		TYPE_ET5_E_AURA_03,
+		// -------------------------
+		TYPE_ET6_E_AURA_04,
+		// -------------------------
+		TYPE_ET7_E_AURA_05,
+		// -------------------------
+		TYPE_ET8_E_AURA_06,
 
 		TYPE_END
 	};

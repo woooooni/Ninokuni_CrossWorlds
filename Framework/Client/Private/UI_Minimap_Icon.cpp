@@ -137,6 +137,9 @@ void CUI_Minimap_Icon::Tick(_float fTimeDelta)
 
 void CUI_Minimap_Icon::LateTick(_float fTimeDelta)
 {
+	if (LEVEL_TOOL == GI->Get_CurrentLevel())
+		return;
+
 	if (m_bActive)
 	{
 		if (nullptr == m_pOwner || true == Is_Dead())

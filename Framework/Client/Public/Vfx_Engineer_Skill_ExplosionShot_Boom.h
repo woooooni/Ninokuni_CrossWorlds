@@ -8,25 +8,24 @@ END
 
 BEGIN(Client)
 
-class CVfx_Engineer_Skill_Destruction final : public CVfx
+class CVfx_Engineer_Skill_ExplosionShot_Boom final : public CVfx
 {
 private:
 	enum TYPE {
-		// 범위 표시
-		TYPE_ET1_D_RECT,
-		// ---------------------------
-		// 대포 생성
-		TYPE_ET2_O_CANNON,
-		TYPE_ET2_E_METAL,
+		TYPE_ET2_D_CIRCLE,
+		TYPE_ET2_P_DOME,
+		TYPE_ET2_P_FIRE,
+		TYPE_ET2_E_CIRCLELINE,
+		TYPE_ET2_P_CIRCLES,
 		TYPE_ET2_P_SMOKE,
 
 		TYPE_END
 	};
 
 protected:
-	CVfx_Engineer_Skill_Destruction(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
-	CVfx_Engineer_Skill_Destruction(const CVfx_Engineer_Skill_Destruction& rhs);
-	virtual ~CVfx_Engineer_Skill_Destruction() = default;
+	CVfx_Engineer_Skill_ExplosionShot_Boom(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	CVfx_Engineer_Skill_ExplosionShot_Boom(const CVfx_Engineer_Skill_ExplosionShot_Boom& rhs);
+	virtual ~CVfx_Engineer_Skill_ExplosionShot_Boom() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -38,11 +37,8 @@ public:
 protected:
 	virtual HRESULT Ready_Components() override;
 
-private:
-	void Create_Cannon();
-
 public:
-	static CVfx_Engineer_Skill_Destruction* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
+	static CVfx_Engineer_Skill_ExplosionShot_Boom* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 		const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;

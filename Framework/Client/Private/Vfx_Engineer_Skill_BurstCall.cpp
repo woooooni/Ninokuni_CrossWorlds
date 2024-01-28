@@ -57,7 +57,7 @@ HRESULT CVfx_Engineer_Skill_BurstCall::Initialize_Prototype()
 
 	{
 		m_pFrameTriger[TYPE_ET2_D_CRACK] = 30;
-		m_pPositionOffset[TYPE_ET2_D_CRACK] = _float3(0.f, 0.f, 1.f);
+		m_pPositionOffset[TYPE_ET2_D_CRACK] = _float3(0.f, 0.f, 0.8f);
 		m_pScaleOffset[TYPE_ET2_D_CRACK]    = _float3(12.f, 3.f, 12.f);
 		m_pRotationOffset[TYPE_ET2_D_CRACK] = _float3(0.f, 0.f, 0.f);
 

@@ -12,6 +12,7 @@ private:
 	explicit CEngineer_Burst_DestructionCannon(const CEngineer_Burst_DestructionCannon& rhs);
 	virtual ~CEngineer_Burst_DestructionCannon() = default;
 
+
 public:
 	virtual HRESULT Initialize_Prototype() override;
 	virtual HRESULT Initialize(void* pArg) override;
@@ -34,13 +35,8 @@ public:
 public:
 	virtual void Collision_Enter(const COLLISION_INFO& tInfo) override;
 
-
 private:
-	void Fire_Cannon();
-
-private:
-	_bool m_bGenEffect = false;
-	_bool m_bShot = false;
+	_bool m_bEffect = false;
 
 private:	
 	class CTexture* m_pDissolveTextureCom = nullptr;
