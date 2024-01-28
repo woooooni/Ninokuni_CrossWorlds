@@ -76,7 +76,7 @@ HRESULT CCurlingGame_Manager::Set_Game(const _bool& bStart)
 			pFollowCam->Set_ViewType(CAMERA_VIEW_TYPE::BACK);
 		}
 
-		for (size_t i = 0; i < 5; i++)
+		for (size_t i = 0; i < 1; i++)
 		{
 			CGameObject* pClone = nullptr;
 

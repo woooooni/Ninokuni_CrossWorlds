@@ -147,6 +147,7 @@ public:
 
 
 public:
+	void Create_MotionTrail(const MOTION_TRAIL_DESC& MotionTrailDesc);
 	void Generate_MotionTrail(const MOTION_TRAIL_DESC& MotionTrailDesc);
 	void Stop_MotionTrail();
 

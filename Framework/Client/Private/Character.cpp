@@ -26,6 +26,7 @@
 #include "MonsterProjectile.h"
 #include "Camera_Follow.h"
 #include "Kuu.h"
+#include "CurlingGame_Prop.h"
 #include "UIMinimap_Manager.h"
 
 USING(Client)
@@ -618,7 +619,7 @@ void CCharacter::Collision_Continue(const COLLISION_INFO& tInfo)
 	__super::Collision_Continue(tInfo);
 	if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BOUNDARY)
 	{
-		if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_ANIMAL || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_BOSS)
+		if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_ANIMAL || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_BOSS || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CURLINGGAME_PROP)
 		{
 			if (m_pStateCom->Get_CurrState() == CCharacter::STATE::NEUTRAL_PICK_LARGE_ENTER
 				|| m_pStateCom->Get_CurrState() == CCharacter::STATE::NEUTRAL_PICK_LARGE_IDLE
@@ -671,6 +672,57 @@ void CCharacter::Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo)
 
 
 
+
+void CCharacter::Create_MotionTrail(const MOTION_TRAIL_DESC& MotionTrailDesc)
+{
+	MOTION_TRAIL_DESC TrailDesc;
+	TrailDesc.WorldMatrix = m_pTransformCom->Get_WorldMatrix();
+	TrailDesc.fAlphaSpeed = MotionTrailDesc.fAlphaSpeed;
+	TrailDesc.pModel = m_pModelCom;
+	TrailDesc.TweenDesc = m_pModelCom->Get_TweenDesc();
+	TrailDesc.vBloomPower = MotionTrailDesc.vBloomPower;
+	TrailDesc.vRimColor = MotionTrailDesc.vRimColor;
+	TrailDesc.fBlurPower = MotionTrailDesc.fBlurPower;
+
+
+	TrailDesc.pRenderModel = m_pCharacterPartModels[PART_TYPE::HEAD];
+	if (nullptr != TrailDesc.pRenderModel)
+	{
+		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, L"Prototype_GameObject_MotionTrail", &TrailDesc)))
+		{
+			MSG_BOX("MotionTrail_Failed");
+		}
+	}
+
+
+	TrailDesc.pRenderModel = m_pCharacterPartModels[PART_TYPE::HAIR];
+	if (nullptr != TrailDesc.pRenderModel)
+	{
+		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, L"Prototype_GameObject_MotionTrail", &TrailDesc)))
+		{
+			MSG_BOX("MotionTrail_Failed");
+		}
+	}
+
+
+	TrailDesc.pRenderModel = m_pCharacterPartModels[PART_TYPE::FACE];
+	if (nullptr != TrailDesc.pRenderModel)
+	{
+		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, L"Prototype_GameObject_MotionTrail", &TrailDesc)))
+		{
+			MSG_BOX("MotionTrail_Failed");
+		}
+	}
+
+	TrailDesc.pRenderModel = m_pCharacterPartModels[PART_TYPE::BODY];
+	if (nullptr != TrailDesc.pRenderModel)
+	{
+		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_EFFECT, L"Prototype_GameObject_MotionTrail", &TrailDesc)))
+		{
+			MSG_BOX("MotionTrail_Failed");
+		}
+	}
+}
 
 void CCharacter::Generate_MotionTrail(const MOTION_TRAIL_DESC& MotionTrailDesc)
 {
@@ -965,6 +1017,21 @@ void CCharacter::PickUp_Target()
 		m_pStateCom->Change_State(CCharacter::NEUTRAL_PICK_SMALL_ENTER);
 		return;
 	}
+
+	if (OBJ_TYPE::OBJ_CURLINGGAME_PROP == m_pTarget->Get_ObjectType())
+	{
+		CCurlingGame_Prop* pProp = dynamic_cast<CCurlingGame_Prop*>(m_pTarget);
+
+		if (nullptr == pProp)
+		{
+			MSG_BOX("Prop Cast Failed.");
+			return;
+		}
+
+		m_pStateCom->Change_State(CCharacter::NEUTRAL_PICK_LARGE_ENTER);
+		return;
+
+	}
 }
 
 void CCharacter::PickDown_Target()
@@ -972,27 +1039,14 @@ void CCharacter::PickDown_Target()
 	if (nullptr == m_pTarget)
 		return;
 
-
-	CTransform* pTargetTransform = m_pTarget->Get_Component<CTransform>(L"Com_Transform");
-	if (nullptr == pTargetTransform)
-		return;
-
-	if (OBJ_TYPE::OBJ_ANIMAL == m_pTarget->Get_ObjectType())
+	if (CCharacter::STATE::NEUTRAL_PICK_SMALL_IDLE == m_pStateCom->Get_CurrState())
 	{
-
-		if (CCharacter::STATE::NEUTRAL_PICK_SMALL_IDLE == m_pStateCom->Get_CurrState())
-		{
-			pTargetTransform->Set_State(CTransform::STATE_POSITION, m_pTransformCom->Get_Position());
-			m_pStateCom->Change_State(CCharacter::NEUTRAL_PICK_SMALL_FINISH);
-			return;
-		}
-		else if (CCharacter::STATE::NEUTRAL_PICK_LARGE_IDLE == m_pStateCom->Get_CurrState())
-		{
-			pTargetTransform->Set_State(CTransform::STATE_POSITION, m_pTransformCom->Get_Position());
-			m_pStateCom->Change_State(CCharacter::NEUTRAL_PICK_LARGE_FINISH);
-			return;
-		}
-		
+		m_pStateCom->Change_State(CCharacter::NEUTRAL_PICK_SMALL_FINISH);
+		return;
+	}
+	else if (CCharacter::STATE::NEUTRAL_PICK_LARGE_IDLE == m_pStateCom->Get_CurrState())
+	{
+		m_pStateCom->Change_State(CCharacter::NEUTRAL_PICK_LARGE_FINISH);
 		return;
 	}
 

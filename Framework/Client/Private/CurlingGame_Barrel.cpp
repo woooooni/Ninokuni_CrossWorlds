@@ -88,7 +88,7 @@ void CCurlingGame_Barrel::Tick(_float fTimeDelta)
 
 		vCurPos.y = m_tHeightLerpDesc.fCurValue;
 
-		m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, vCurPos);
+		m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, XMVectorSetW(vCurPos, 1.f));
 	}
 
 	__super::Tick(fTimeDelta);
@@ -100,6 +100,42 @@ void CCurlingGame_Barrel::LateTick(_float fTimeDelta)
 		return;
 
 	__super::LateTick(fTimeDelta);
+}
+
+HRESULT CCurlingGame_Barrel::Render()
+{
+	if (FAILED(__super::Render()))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CCurlingGame_Barrel::Render_ShadowDepth()
+{
+	if (FAILED(__super::Render_ShadowDepth()))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CCurlingGame_Barrel::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
+{
+	return S_OK;
+}
+
+HRESULT CCurlingGame_Barrel::Render_Instance_Shadow(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
+{
+	return S_OK;
+}
+
+HRESULT CCurlingGame_Barrel::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc)
+{
+	return S_OK;
+}
+
+HRESULT CCurlingGame_Barrel::Render_Instance_AnimModel_Shadow(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc)
+{
+	return S_OK;
 }
 
 void CCurlingGame_Barrel::Collision_Enter(const COLLISION_INFO& tInfo)
