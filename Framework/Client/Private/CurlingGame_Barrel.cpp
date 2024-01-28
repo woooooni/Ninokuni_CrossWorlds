@@ -17,6 +17,11 @@ CCurlingGame_Barrel::CCurlingGame_Barrel(ID3D11Device* pDevice, ID3D11DeviceCont
 
 CCurlingGame_Barrel::CCurlingGame_Barrel(const CCurlingGame_Barrel& rhs)
 	: CCurlingGame_Prop(rhs)
+	, m_tElasticColDesc(rhs.m_tElasticColDesc)
+	, m_tHeightLerpDesc(rhs.m_tHeightLerpDesc)
+	, m_iNumCol(rhs.m_iNumCol)
+	, m_bLaunched(rhs.m_bLaunched)
+	, m_eOwnerType(rhs.m_eOwnerType)
 {
 }
 
@@ -48,13 +53,26 @@ HRESULT CCurlingGame_Barrel::Initialize(void* pArg)
 
 	/* Model */
 	if (nullptr != m_pModelCom)
+	{
 		m_pModelCom->Set_Animation(1);
+		m_pModelCom->Set_Stop_Animation(true);
+	}
 	
+	/* Rigidbody*/
+	if(nullptr != m_pRigidBodyCom)
+		m_pRigidBodyCom->Set_Use_Gravity(false);
+
+	/* Active */
+	m_bActive = false;
+
 	return S_OK;
 }
 
 void CCurlingGame_Barrel::Tick(_float fTimeDelta)
 {
+	if (!m_bActive)
+		return;
+
 	/* 이전 프레임에서 충돌 세팅이 되어있다면 반영한다. */
 	if (m_tElasticColDesc.bSet)
 	{
@@ -78,6 +96,9 @@ void CCurlingGame_Barrel::Tick(_float fTimeDelta)
 
 void CCurlingGame_Barrel::LateTick(_float fTimeDelta)
 {
+	if (!m_bActive)
+		return;
+
 	__super::LateTick(fTimeDelta);
 }
 
@@ -109,8 +130,6 @@ void CCurlingGame_Barrel::Launch(const Vec3& vDir, const _float& fPower)
 {
 	if (nullptr != m_pRigidBodyCom)
 	{
-		m_pRigidBodyCom->Set_Use_Gravity(false);
-
 		m_pRigidBodyCom->Add_Velocity(vDir, fPower, false);
 
 		m_bLaunched = true;

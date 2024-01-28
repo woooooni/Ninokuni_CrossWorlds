@@ -10,6 +10,7 @@ CCurlingGame_Wall::CCurlingGame_Wall(ID3D11Device* pDevice, ID3D11DeviceContext*
 
 CCurlingGame_Wall::CCurlingGame_Wall(const CCurlingGame_Wall& rhs)
 	: CCurlingGame_Prop(rhs)
+	, m_vNormal(rhs.m_vNormal)
 {
 }
 

@@ -49,6 +49,13 @@ public:
 
 public:
 	const CG_TYPE& Get_CGType() const { return m_eCGType; }
+
+	virtual void Set_Active(const _bool& bActive) { m_bActive = bActive; }
+	const _bool Get_Active() const { return m_bActive; }
+
+	class CRigidBody* Get_Rigidbody() const { return m_pRigidBodyCom; }
+	class CTransform* Get_Transform() const { return m_pTransformCom; }
+	
 protected:
 	virtual HRESULT Ready_Components() override;
 	virtual HRESULT	Ready_Colliders() PURE;
@@ -66,7 +73,9 @@ protected:
 protected:
 	CG_TYPE				m_eCGType = CG_TYPE::CG_TYPEEND;
 
-	const _uint			m_iColliderDetectionType = 1;// CCollider::DETECTION_TYPE::BODY;
+	const _uint			m_iColliderDetectionType = 1; // CCollider::DETECTION_TYPE::BODY;
+
+	_bool				m_bActive = true;
 
 public:
 	virtual void Free() override;

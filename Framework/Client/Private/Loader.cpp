@@ -152,8 +152,6 @@
 
 #include "Vehicle_Udadak.h"
 
-#include "CurlingGame_Manager.h"
-
 _bool CLoader::g_bFirstLoading = false;
 _bool CLoader::g_bLevelFirst[LEVELID::LEVEL_WITCHFOREST + 1] = {};
 
@@ -609,11 +607,7 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Vehicle_Udadak"),
 			CVehicle_Udadak::Create(m_pDevice, m_pContext, TEXT("Vehicle_Udadak")), LAYER_TYPE::LAYER_CHARACTER))
 			return E_FAIL;
-
-		// 설원 미니게임 (테스트 후 이동 예정)
-		if (FAILED(CCurlingGame_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
-			return E_FAIL;
-
+	
 		g_bLevelFirst[LEVEL_EVERMORE] = true;
 	}
 

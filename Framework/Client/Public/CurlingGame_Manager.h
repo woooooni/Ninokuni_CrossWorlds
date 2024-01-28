@@ -8,6 +8,7 @@ class CGameObject;
 END
 
 BEGIN(Client)
+class CCurlingGame_Barrel;
 
 class CCurlingGame_Manager : public CBase
 {
@@ -25,6 +26,8 @@ class CCurlingGame_Manager : public CBase
 		
 		const _float		fMinValue	= 0.f;
 		const _float		fMaxValue	= 1.f;
+
+		const _float		fMaxPower	= 50.f;
 
 		void Start()
 		{
@@ -63,6 +66,7 @@ class CCurlingGame_Manager : public CBase
 
 			bIncrease = true;
 		}
+
 	}GUAGE_DESC;
 
 	typedef struct tagStaiumDesc
@@ -92,6 +96,10 @@ public:
 	/* UI */
 	const _float& Get_GuageValue() const { return m_tGuageDesc.tLerpValue.fCurValue; }
 
+	/* Barrels */
+	CCurlingGame_Barrel* Pop_Barrel();
+	HRESULT Push_Barrel(CCurlingGame_Barrel* pBarrel);
+
 private:
 	void Tick_Guage(const _float& fTimeDelta);
 	void Tick_StadiumAction(const _float& fTimeDelta);
@@ -101,6 +109,7 @@ private:
 
 private:
 	void Test(const _float& fTimeDelta);
+	void Debug();
 
 private:
 	/* Default */
@@ -116,6 +125,11 @@ private:
 
 	/* Stadium */
 	STADIUM_DESC			m_tStadiumDesc = {};
+
+	/* Barrels */
+	queue<CCurlingGame_Barrel*> m_pBarrelPool;
+	vector<CCurlingGame_Barrel*> m_pBarrelsLaunched;
+	const _uint					m_iMaxBarrels = 30;
 
 public:
 	virtual void Free() override;

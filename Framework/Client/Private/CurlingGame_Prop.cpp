@@ -12,6 +12,15 @@ CCurlingGame_Prop::CCurlingGame_Prop(ID3D11Device* pDevice, ID3D11DeviceContext*
 
 CCurlingGame_Prop::CCurlingGame_Prop(const CCurlingGame_Prop& rhs)
 	: CGameObject(rhs)
+	, m_pModelCom(rhs.m_pModelCom)
+	, m_pShaderCom(rhs.m_pShaderCom)
+	, m_pRendererCom(rhs.m_pRendererCom)
+	, m_pRigidBodyCom(rhs.m_pRigidBodyCom)
+	, m_pTransformCom(rhs.m_pTransformCom)
+	, m_AnimInstanceDesc(rhs.m_AnimInstanceDesc)
+	, m_eCGType(rhs.m_eCGType)
+	, m_iColliderDetectionType(rhs.m_iColliderDetectionType)
+	, m_bActive(rhs.m_bActive)
 {
 
 }
