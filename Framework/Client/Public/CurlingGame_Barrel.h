@@ -39,6 +39,25 @@ public:
 	virtual void LateTick(_float fTimeDelta) override;
 
 public:
+	virtual HRESULT Render() override;
+
+	virtual HRESULT Render_ShadowDepth() override;
+
+	virtual HRESULT Render_Instance(class CShader* pInstancingShader,
+		class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices);
+
+	virtual HRESULT Render_Instance_Shadow(class CShader* pInstancingShader,
+		class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices);
+
+	virtual HRESULT Render_Instance_AnimModel(class CShader* pInstancingShader,
+		class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices,
+		const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc) override;
+
+	virtual HRESULT Render_Instance_AnimModel_Shadow(class CShader* pInstancingShader,
+		class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices,
+		const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc) override;
+
+public:
 	void Launch(const Vec3& vDir, const _float& fPower);
 	void PutDown();
 

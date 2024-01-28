@@ -25,6 +25,9 @@ public:
 	virtual void Tick_State(_float fTimeDelta) override;
 	virtual void Exit_State() override;
 
+private:
+	_bool m_bLiftAway = false;
+
 public:
 	static CState_Character_Neutral_Pick_Large_Finish* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
