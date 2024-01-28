@@ -33,6 +33,7 @@
 
 #include "Particle_Manager.h"
 #include "Riding_Manager.h"
+#include "Inventory_Manager.h"
 
 _bool CLevel_Evermore::g_bFirstEnter = false;
 
@@ -84,7 +85,7 @@ HRESULT CLevel_Evermore::Initialize()
 	CGame_Manager::GetInstance()->Set_KuuTarget_Player();
 
 	if (nullptr != CUI_Manager::GetInstance()->Get_Fade())
-		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 3.f);
+		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 5.f);
 
 	/* Äù½ºÆ® ¼¼ÆÃ */
 	if (CQuest_Manager::GetInstance()->Get_IsReserve() == false)
@@ -120,6 +121,13 @@ HRESULT CLevel_Evermore::Tick(_float fTimeDelta)
 	CUI_Manager::GetInstance()->Tick_Fade(fTimeDelta);
 	CUI_Manager::GetInstance()->Tick_UIs(LEVELID::LEVEL_EVERMORE, fTimeDelta);
 	CUIMinigame_Manager::GetInstance()->Tick_Minigame(LEVELID::LEVEL_EVERMORE, fTimeDelta);
+
+	// TestCode
+	if (KEY_TAP(KEY::P))
+	{
+		//CInventory_Manager::GetInstance()->Add_Gold(GI->RandomInt(15, 40));
+		CInventory_Manager::GetInstance()->Add_Item(ITEM_TYPE::CONSUMPSION, ITEM_CODE::CONSUMPSION_HP);
+	}
 
 	if (KEY_TAP(KEY::PAGE_UP))
 	{

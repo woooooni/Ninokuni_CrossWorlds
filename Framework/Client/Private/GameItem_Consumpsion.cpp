@@ -13,12 +13,15 @@ HRESULT CGameItem_Consumpsion::Initialize(void* pArg)
 {
 	ITEMDESC_ETC tConsumeDesc = *(ITEMDESC_ETC*)pArg;
 	
-	m_tArmorDesc.eCode = tConsumeDesc.eCode;
-	m_tArmorDesc.strName = tConsumeDesc.strName;
-	m_tArmorDesc.strContent = tConsumeDesc.strContent;
-	m_tArmorDesc.eMainCategory = tConsumeDesc.eMainCategory;
-	m_tArmorDesc.eArmorCategory = tConsumeDesc.eArmorCategory;
-	m_tArmorDesc.fDef = tConsumeDesc.fDef;
+	m_tEtcDesc.eCode = tConsumeDesc.eCode;
+
+	m_eItemCode = tConsumeDesc.eCode;
+
+	m_tEtcDesc.strName = tConsumeDesc.strName;
+	m_tEtcDesc.strContent = tConsumeDesc.strContent;
+	m_tEtcDesc.eMainCategory = tConsumeDesc.eMainCategory;
+	m_tEtcDesc.eArmorCategory = tConsumeDesc.eArmorCategory;
+	m_tEtcDesc.fDef = tConsumeDesc.fDef;
 
 	return S_OK;
 }

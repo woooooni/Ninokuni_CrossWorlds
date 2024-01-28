@@ -40,6 +40,12 @@ HRESULT CVehicle_Flying_Biplane::Initialize(void* pArg)
 	m_bUseBone = false; 
 //	m_fOffsetY = -0.5f;
 
+	if (nullptr != m_pRider)
+	{
+		if (OBJ_TYPE::OBJ_PLAYER == m_pRider->Get_ObjectType())
+			m_bIsPlayers = true;
+	}
+
 	return S_OK;
 }
 
@@ -87,7 +93,54 @@ HRESULT CVehicle_Flying_Biplane::Render()
 {
 	if (true == m_bOnBoard)
 	{
-		__super::Render();
+		//__super::Render();
+		if (nullptr == m_pModelCom || nullptr == m_pShaderCom)
+			return E_FAIL;
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+			return E_FAIL;
+
+		_float4 vRimColor = { 0.f, 0.f, 0.f, 0.f };
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float4))))
+			return E_FAIL;
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vBloomPower", &m_vBloomPower, sizeof(_float3))))
+			return E_FAIL;
+
+		if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
+			return E_FAIL;
+
+		const _uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+		if (false == m_bIsPlayers)
+		{
+			for (_uint i = 0; i < iNumMeshes; ++i)
+			{
+				if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+					return E_FAIL;
+
+				if (FAILED(m_pModelCom->Render(m_pShaderCom, i)))
+					return E_FAIL;
+			}
+		}
+		else
+		{
+			for (_uint i = 0; i < iNumMeshes; ++i)
+			{
+				if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture")))
+					return E_FAIL;
+
+				if (FAILED(m_pModelCom->Render(m_pShaderCom, i)))
+					return E_FAIL;
+			}
+		}
 	}
 
 	return S_OK;
@@ -97,7 +150,47 @@ HRESULT CVehicle_Flying_Biplane::Render_ShadowDepth()
 {
 	if (true == m_bOnBoard)
 	{
-		__super::Render_ShadowDepth();
+		//__super::Render_ShadowDepth();
+		if (FAILED(__super::Render_ShadowDepth()))
+			return E_FAIL;
+
+		if (nullptr == m_pShaderCom || nullptr == m_pTransformCom || nullptr == m_pModelCom)
+			return E_FAIL;
+
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &GI->Get_ShadowViewMatrix(GI->Get_CurrentLevel()))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+			return E_FAIL;
+		if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
+			return E_FAIL;
+
+		const _uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+		if (false == m_bIsPlayers)
+		{
+			for (_uint i = 0; i < iNumMeshes; ++i)
+			{
+				if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+					return E_FAIL;
+
+				if (FAILED(m_pModelCom->Render(m_pShaderCom, i, 10)))
+					return E_FAIL;
+			}
+		}
+		else
+		{
+			for (_uint i = 0; i < iNumMeshes; ++i)
+			{
+				if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture")))
+					return E_FAIL;
+
+				if (FAILED(m_pModelCom->Render(m_pShaderCom, i)))
+					return E_FAIL;
+			}
+		}
 	}
 
 	return S_OK;
@@ -140,6 +233,11 @@ HRESULT CVehicle_Flying_Biplane::Ready_Components()
 
 	// For Model Component
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Biplane"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+		return E_FAIL;
+
+	// For Texture Component
+	if (FAILED(__super::Add_Component(LEVEL_EVERMORE,
+		TEXT("Prototype_Component_Texture_Vehicle_Minigame_Grandprix_Biplane_ColorBlue"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 		return E_FAIL;
 
 	return S_OK;

@@ -22,6 +22,13 @@ public:
 	virtual void Tick_State(_float fTimeDelta) override;
 	virtual void Exit_State() override;
 
+private:
+	void Shoot();
+
+private:
+	_bool m_bShoot = { false };
+	_float m_fTimeAcc = { 0.f };
+
 public:
 	static CState_VehicleFlying_Stand* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

@@ -367,6 +367,24 @@ void CUIMinigame_Manager::End_Grandprix()
 	m_iCountIndex = 5;
 }
 
+void CUIMinigame_Manager::Use_GrandprixSkill(SKILL_TYPE eType)
+{
+	if (SKILL_TYPE::FLYING_TEMP1 > eType && SKILL_TYPE::SKILL_END == eType)
+		return;
+
+	_uint iIndex = 0;
+	if (eType == SKILL_TYPE::FLYING_TEMP1)
+		iIndex = 0;
+	else if (eType == SKILL_TYPE::FLYING_TEMP2)
+		iIndex = 1;
+	else if (eType == SKILL_TYPE::FLYING_TEMP3)
+		iIndex = 2;
+	else
+		iIndex = 3;
+
+	m_Skill[iIndex]->Set_Clicked(true);
+}
+
 void CUIMinigame_Manager::OnOff_CurlingUI(_bool bOnOff)
 {
 	if (true == bOnOff)

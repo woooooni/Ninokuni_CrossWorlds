@@ -789,6 +789,7 @@
     <ClInclude Include="..\Public\Sun.h" />
     <ClInclude Include="..\Public\SwiftSolutionMaster.h" />
     <ClInclude Include="..\Public\SwordMan_AuraBlade.h" />
+    <ClInclude Include="..\Public\Swordsman_Biplane_Bullet.h" />
     <ClInclude Include="..\Public\ThiefCat.h" />
     <ClInclude Include="..\Public\Tool_Item.h" />
     <ClInclude Include="..\Public\TowerDefence_Manager.h" />
@@ -881,6 +882,7 @@
     <ClInclude Include="..\Public\UniqueNpcState_Talk.h" />
     <ClInclude Include="..\Public\UniqueNpcState_Walk.h" />
     <ClInclude Include="..\Public\Vehicle.h" />
+    <ClInclude Include="..\Public\VehicleFlying_Projectile.h" />
     <ClInclude Include="..\Public\Vehicle_Flying.h" />
     <ClInclude Include="..\Public\Vehicle_Flying_Biplane.h" />
     <ClInclude Include="..\Public\Vehicle_Udadak.h" />
@@ -1706,6 +1708,7 @@
     <ClCompile Include="..\Private\Sun.cpp" />
     <ClCompile Include="..\Private\SwiftSolutionMaster.cpp" />
     <ClCompile Include="..\Private\SwordMan_AuraBlade.cpp" />
+    <ClCompile Include="..\Private\Swordsman_Biplane_Bullet.cpp" />
     <ClCompile Include="..\Private\ThiefCat.cpp" />
     <ClCompile Include="..\Private\Tool_Item.cpp" />
     <ClCompile Include="..\Private\TowerDefence_Manager.cpp" />
@@ -1798,6 +1801,7 @@
     <ClCompile Include="..\Private\UniqueNpcState_Talk.cpp" />
     <ClCompile Include="..\Private\UniqueNpcState_Walk.cpp" />
     <ClCompile Include="..\Private\Vehicle.cpp" />
+    <ClCompile Include="..\Private\VehicleFlying_Projectile.cpp" />
     <ClCompile Include="..\Private\Vehicle_Flying.cpp" />
     <ClCompile Include="..\Private\Vehicle_Flying_Biplane.cpp" />
     <ClCompile Include="..\Private\Vehicle_Udadak.cpp" />

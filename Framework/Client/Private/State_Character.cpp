@@ -12,6 +12,7 @@
 #include "Camera_Follow.h"
 
 #include "Riding_Manager.h"
+#include "UIMinigame_Manager.h"
 
 CState_Character::CState_Character(CStateMachine* pStateMachine)
 	: CState(pStateMachine)
@@ -1637,6 +1638,35 @@ void CState_Character::OnBoard_Input(_float fTimeDelta)
 
 		m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_IDLE);
 		CRiding_Manager::GetInstance()->Ride_ForCharacter(CRiding_Manager::BIPLANE, false);
+		return;
+	}
+}
+
+void CState_Character::OnFlying_Input(_float fTimeDelta)
+{
+	if (CHARACTER_TYPE::SWORD_MAN != m_pCharacter->Get_CharacterType())
+		return;
+
+	_bool bUseSkill = false;
+
+	if (KEY_TAP(KEY::NUM_1))
+	{
+		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_TEMP1);
+		return;
+	}
+	if (KEY_TAP(KEY::NUM_2))
+	{
+		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_TEMP2);
+		return;
+	}
+	if (KEY_TAP(KEY::NUM_3))
+	{
+		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_TEMP3);
+		return;
+	}
+	if (KEY_TAP(KEY::R))
+	{
+		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_BURST);
 		return;
 	}
 }

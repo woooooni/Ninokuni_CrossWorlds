@@ -133,6 +133,7 @@ HRESULT CRiding_Manager::Ride_ForCharacter(VEHICLE_TYPE eType, _bool bOnOff)
 				{
 					m_pBiplane->Set_Aboard(true);
 					m_pBiplane->Ride(pCharacter);
+					m_pBiplane->Set_Players(true);
 				}
 			}
 			else

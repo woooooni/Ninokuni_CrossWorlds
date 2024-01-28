@@ -49,6 +49,8 @@ public: // Level Evermore
 	void OnOff_GrandprixGauge(_bool bOnOff);
 	void End_Grandprix(); // End Text
 
+	void Use_GrandprixSkill(SKILL_TYPE eType);
+
 public: // Level IceLand
 	void OnOff_CurlingUI(_bool bOnOff);
 

@@ -25,6 +25,7 @@ void CUI_AddItem::Set_Position(_int iOrder)
 	{
 	case 0:
 		m_tInfo.fY = 100.f;
+
 		break;
 
 	case 1: // y로 48씩 offset
@@ -43,6 +44,9 @@ void CUI_AddItem::Set_Position(_int iOrder)
 		break;
 	}
 
+	m_vTextPos.x = m_tInfo.fX - 50.f;
+	m_vTextPos.y = m_tInfo.fY - 10.f;
+
 	m_vDisappearPos.x = m_tInfo.fX + m_tInfo.fCX;
 	m_vDisappearPos.y = m_tInfo.fY - m_tInfo.fCY;
 
@@ -53,6 +57,7 @@ void CUI_AddItem::Set_Position(_int iOrder)
 	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+
 }
 
 HRESULT CUI_AddItem::Initialize_Prototype()
@@ -82,10 +87,12 @@ HRESULT CUI_AddItem::Initialize(void* pArg)
 	switch (m_tItemDesc.eCode)
 	{
 	case ITEM_CODE::CONSUMPSION_GOLD:
+		m_strText = TEXT("골드 X ") + to_wstring(m_tItemDesc.iCount);
 		m_iTextureIndex = 0;
 		break;
 
 	case ITEM_CODE::CONSUMPSION_ENERGY:
+		m_strText = TEXT("에너지 드링크 X ") + to_wstring(m_tItemDesc.iCount);
 		m_iTextureIndex = 1;
 		break;
 
@@ -143,7 +150,6 @@ void CUI_AddItem::LateTick(_float fTimeDelta)
 	{
 //		if (QUICKITEM_END == m_eType)
 //			return;
-
 		if (true == m_bDisappear)
 		{
 			m_fAlpha -= fTimeDelta * 10.f;
@@ -162,6 +168,28 @@ void CUI_AddItem::LateTick(_float fTimeDelta)
 
 			m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+		}
+		else
+		{
+			CRenderer::TEXT_DESC TextDesc = {};
+			TextDesc.strFontTag = L"Default_Bold";
+			TextDesc.strText = m_strText;
+			TextDesc.vColor = Vec4(0.f, 0.f, 0.f, 1.f);
+			TextDesc.vPosition = _float2(m_vTextPos.x - 1.f, m_vTextPos.y);
+			TextDesc.vScale = Vec2(0.45f, 0.45f);
+			m_pRendererCom->Add_Text(TextDesc);
+			TextDesc.vPosition = _float2(m_vTextPos.x + 1.f, m_vTextPos.y);
+			m_pRendererCom->Add_Text(TextDesc);
+			TextDesc.vPosition = _float2(m_vTextPos.x, m_vTextPos.y - 1.f);
+			m_pRendererCom->Add_Text(TextDesc);
+			TextDesc.vPosition = _float2(m_vTextPos.x, m_vTextPos.y + 1.f);
+			m_pRendererCom->Add_Text(TextDesc);
+
+			// Default Font
+			TextDesc.vColor = Vec4(0.722f, 0.698f, 0.584f, 1.f);
+			TextDesc.vPosition = m_vTextPos;
+			TextDesc.vScale = Vec2(0.45f, 0.45f);
+			m_pRendererCom->Add_Text(TextDesc);
 		}
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
