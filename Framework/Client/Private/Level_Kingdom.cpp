@@ -24,6 +24,8 @@
 #include "Light_Manager.h"
 #include "Light.h"
 
+#include "Riding_Manager.h"
+
 _bool CLevel_Kingdom::g_bFirstEnter = false;
 
 CLevel_Kingdom::CLevel_Kingdom(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -231,6 +233,9 @@ HRESULT CLevel_Kingdom::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 	Vec4 vPosition = pDoorTransform->Get_Position() + (pDoorTransform->Get_Look() * -1.f);
 	pDoorTransform->Set_State(CTransform::STATE_POSITION, vPosition);
 	pDoorTransform->Set_Scale(vScale);
+
+	if (FAILED(CRiding_Manager::GetInstance()->Ready_Vehicle_GameObjectToLayer(LEVELID::LEVEL_KINGDOMHALL)))
+		return E_FAIL;
 
 	return S_OK;
 }

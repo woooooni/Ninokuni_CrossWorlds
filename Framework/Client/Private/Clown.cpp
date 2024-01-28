@@ -368,10 +368,6 @@ void CClown::Free()
 {
 	__super::Free();
 
-	if (nullptr != m_pMinimapIcon)
-	{
-		m_pMinimapIcon->Set_Dead(true);
-		Safe_Release(m_pMinimapIcon);
-	}
+	Safe_Release(m_pMinimapIcon);
 	Safe_Release(m_pHPBar);
 }

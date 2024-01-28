@@ -6,6 +6,7 @@
 #include "Character.h"
 
 #include "Vehicle_Udadak.h"
+#include "Vehicle_Flying_Biplane.h"
 
 IMPLEMENT_SINGLETON(CRiding_Manager)
 
@@ -48,25 +49,47 @@ HRESULT CRiding_Manager::Ready_Vehicle_GameObject(LEVELID eID)
 	m_pUdadak = dynamic_cast<CVehicle_Udadak*>(pUdadak);
 	Safe_AddRef(m_pUdadak);
 
+	CGameObject* pBiplane = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Vehicle_Biplane"), &UdadakDesc, &pBiplane)))
+		return E_FAIL;
+	if (nullptr == pBiplane)
+		return E_FAIL;
+	if (nullptr == dynamic_cast<CVehicle_Flying_Biplane*>(pBiplane))
+		return E_FAIL;
+	m_pBiplane = dynamic_cast<CVehicle_Flying_Biplane*>(pBiplane);
+	Safe_AddRef(m_pBiplane);
+
 	return S_OK;
 }
 
-HRESULT CRiding_Manager::Ready_Vehicle_CameObjectToLayer(LEVELID eID)
+HRESULT CRiding_Manager::Ready_Vehicle_GameObjectToLayer(LEVELID eID)
 {
 	if (nullptr == m_pUdadak)
 		return E_FAIL;
-	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pUdadak)))
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, m_pUdadak)))
 		return E_FAIL;
 	Safe_AddRef(m_pUdadak);
+
+	if (eID == LEVEL_EVERMORE)
+	{
+		if (nullptr == m_pBiplane)
+			return E_FAIL;
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, m_pBiplane)))
+			return E_FAIL;
+		Safe_AddRef(m_pBiplane);
+	}
 
 	return S_OK;
 }
 
-HRESULT CRiding_Manager::Ride(VEHICLE_TYPE eType, _bool bOnOff)
+HRESULT CRiding_Manager::Ride_ForCharacter(VEHICLE_TYPE eType, _bool bOnOff)
 {
 	CCharacter* pCharacter = CUI_Manager::GetInstance()->Get_Character();
 	if (nullptr == pCharacter)
 		return E_FAIL;
+
+//	CGameObject* pBiplaneTemp = nullptr;
+//	CVehicle_Flying_Biplane* pBiplane = nullptr;
 
 	switch (eType)
 	{
@@ -90,6 +113,38 @@ HRESULT CRiding_Manager::Ride(VEHICLE_TYPE eType, _bool bOnOff)
 		}
 		break;
 
+	case BIPLANE:
+		if (LEVELID::LEVEL_EVERMORE == GI->Get_CurrentLevel())
+		{
+//			pBiplaneTemp = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Vehicle_Biplane"));
+//			if (nullptr == pBiplaneTemp)
+//				return E_FAIL;
+//			if (nullptr == dynamic_cast<CVehicle_Flying_Biplane*>(pBiplaneTemp))
+//				return E_FAIL;
+//
+//			pBiplane = dynamic_cast<CVehicle_Flying_Biplane*>(pBiplaneTemp);
+
+			if (nullptr == m_pBiplane)
+				return E_FAIL;
+
+			if (true == bOnOff)
+			{
+				if (nullptr == m_pBiplane->Get_Rider())
+				{
+					m_pBiplane->Set_Aboard(true);
+					m_pBiplane->Ride(pCharacter);
+				}
+			}
+			else
+			{
+				if (pCharacter == m_pBiplane->Get_Rider())
+				{
+					m_pBiplane->Set_Aboard(false);
+				}
+			}
+		}
+		break;
+
 	default:
 		break;
 	}
@@ -102,6 +157,7 @@ void CRiding_Manager::Free()
 	__super::Free();
 
 	Safe_Release(m_pUdadak);
+	Safe_Release(m_pBiplane);
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

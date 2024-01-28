@@ -151,6 +151,7 @@
 #include "TowerDefence_Manager.h"
 
 #include "Vehicle_Udadak.h"
+#include "Vehicle_Flying_Biplane.h"
 
 _bool CLoader::g_bFirstLoading = false;
 _bool CLoader::g_bLevelFirst[LEVELID::LEVEL_WITCHFOREST + 1] = {};
@@ -595,6 +596,21 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_Text_Number"),
 			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/UI_Grandprix_Text_Count_%d.png"), 3))))
 			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_UI_Minigame_Grandprix_SpaceIcon"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/Gauge/UI_Grandprix_Gauge_SpaceIcon.png")))))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_UI_Minigame_Grandprix_BiplaneIcon"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/Gauge/UI_Grandprix_BiplaneIcon.png")))))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_UI_Minigame_Grandprix_Gauge"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/Gauge/UI_Grandprix_Gauge_%d.png"), 23))))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_UI_Minigame_Grandprix_GaugeBackground"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/Gauge/UI_Grandprix_Gauge_Background.png")))))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_UI_Minigame_Grandprix_GaugeGlowBackground"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/Gauge/UI_Grandprix_Gauge_Glow.png")))))
+			return E_FAIL;
 
 		// 미니게임용 프로토타입
 		if (FAILED(CUIMinigame_Manager::GetInstance()->Ready_MinigameUI_Prototypes(LEVELID::LEVEL_EVERMORE)))
@@ -604,8 +620,13 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 			CLensFlare::Create(m_pDevice, m_pContext, TEXT("Common_LensFlare"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX))
 			return E_FAIL;
 
+		// 탈 것
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Vehicle_Udadak"),
 			CVehicle_Udadak::Create(m_pDevice, m_pContext, TEXT("Vehicle_Udadak")), LAYER_TYPE::LAYER_CHARACTER))
+			return E_FAIL;
+
+		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Vehicle_Biplane"),
+			CVehicle_Flying_Biplane::Create(m_pDevice, m_pContext, TEXT("Vehicle_Biplane")), LAYER_TYPE::LAYER_CHARACTER))
 			return E_FAIL;
 
 		g_bLevelFirst[LEVEL_EVERMORE] = true;
@@ -641,6 +662,23 @@ HRESULT CLoader::Loading_For_Level_Kingdom()
 
 HRESULT CLoader::Loading_For_Level_IceLand()
 {
+	if (false == g_bLevelFirst[LEVEL_ICELAND])
+	{
+		// 컬링 UI용 텍스처
+		if (FAILED(GI->Add_Prototype(LEVEL_ICELAND, TEXT("Prototype_Component_Texture_UI_Minigame_Curling_GaugeBar_Back"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Curling/UI_Minigame_CurlingGame_GaugeBar_Frame.png")))))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_ICELAND, TEXT("Prototype_Component_Texture_UI_Minigame_Curling_GaugeBar"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Curling/UI_Minigame_CurlingGame_GaugeBar_Full.png")))))
+			return E_FAIL;
+
+		// 미니게임용 프로토타입
+		if (FAILED(CUIMinigame_Manager::GetInstance()->Ready_MinigameUI_Prototypes(LEVELID::LEVEL_ICELAND)))
+			return E_FAIL;
+
+		g_bLevelFirst[LEVEL_ICELAND] = true;
+	}
+
 	m_Threads[LOADING_THREAD::LOAD_MAP] = std::async(&CLoader::Load_Map_Data, this, L"Winter");
 	m_Threads[LOADING_THREAD::MONSTER_AND_NPC] = std::async(&CLoader::Load_Monster_Data, this, L"Winter");
 	for (_uint i = 0; i < LOADING_THREAD::THREAD_END; ++i)
@@ -1799,6 +1837,18 @@ HRESULT CLoader::Loading_Proto_Monster_Npc()
 HRESULT CLoader::Loading_Proto_Vehicles()
 {
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Udadak", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Vehicle/Udadak/", L"Udadak")))
+		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Biplane", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Vehicle/Biplane/", L"Biplane")))
+		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Broomjet", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Vehicle/Broomjet/", L"Broomjet")))
+		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Boto", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Vehicle/Boto/", L"Boto")))
+		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Bumpy", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Vehicle/Bumpy/", L"Bumpy")))
 		return E_FAIL;
 
 	return S_OK;

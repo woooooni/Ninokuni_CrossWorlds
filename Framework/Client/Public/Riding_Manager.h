@@ -9,7 +9,7 @@ class CRiding_Manager : public CBase
 	DECLARE_SINGLETON(CRiding_Manager)
 
 public:
-	enum VEHICLE_TYPE { UDADAK, VEHICLE_END };
+	enum VEHICLE_TYPE { UDADAK, BIPLANE, VEHICLE_END };
 
 private:
 	CRiding_Manager();
@@ -22,13 +22,14 @@ public:
 
 public: // Clone
 	HRESULT Ready_Vehicle_GameObject(LEVELID eID);
-	HRESULT Ready_Vehicle_CameObjectToLayer(LEVELID eID);
+	HRESULT Ready_Vehicle_GameObjectToLayer(LEVELID eID);
 
 public:
-	HRESULT Ride(VEHICLE_TYPE eType, _bool bOnOff);
+	HRESULT Ride_ForCharacter(VEHICLE_TYPE eType, _bool bOnOff);
 
 private:
 	class CVehicle_Udadak* m_pUdadak = { nullptr };
+	class CVehicle_Flying_Biplane* m_pBiplane = { nullptr };
 
 private:
 	ID3D11Device* m_pDevice = { nullptr };

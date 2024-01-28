@@ -8,7 +8,8 @@ class CUI_Minigame_Basic final : public CUI
 public:
 	enum UI_MINIGAMEBASIC {	TOWERDEFENCE_MENU, TOWERDEFENCE_START, TOWERDEFENCE_GOLD,
 		GRANDPRIX_FRAME, GRANDPRIX_CLASSFRAME, GRANDPRIX_SPECIALFRAME,
-		GRANDPRIX_READY, GRANDPRIX_THREE, GRANDPRIX_TWO, GRANDPRIW_ONE, GRANDPRIX_START, GRANDPRIX_END, MINIGAME_END };
+		GRANDPRIX_READY, GRANDPRIX_THREE, GRANDPRIX_TWO, GRANDPRIW_ONE, GRANDPRIX_START, GRANDPRIX_END, 
+		GRANDPRIX_BIPLANE, GRANDPRIX_GAUGEBACK, GRANDPRIX_GAUGEGLOW, GRANDPRIX_SPACE, MINIGAME_END };
 
 protected:
 	CUI_Minigame_Basic(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, UI_MINIGAMEBASIC eType);
@@ -71,6 +72,9 @@ private:
 	_bool m_bEnd = { false }; // 사이즈 변형이 끝났는지 -> 끝나면 매니저에서 Set_Active(false)를 설정하고 다음 인덱스로 넘기도록 한다.
 	_float2 m_vMaxSize = _float2(0.f, 0.f); // 최대 사이즈
 	_float2 m_vOriginSize = _float2(0.f, 0.f); // 최소 사이즈
+
+	// Grandprix Gauge용 변수
+	_bool m_bResize = { false };
 
 public:
 	static CUI_Minigame_Basic* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, UI_MINIGAMEBASIC eType);

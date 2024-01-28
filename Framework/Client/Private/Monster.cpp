@@ -20,6 +20,8 @@
 
 #include "Quest_Manager.h"
 #include "Character_Projectile.h"
+#include "Inventory_Manager.h"
+
 USING(Client)
 
 CMonster::CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
@@ -183,6 +185,8 @@ void CMonster::Tick(_float fTimeDelta)
 		{
 			m_bDissolveEffect = true;
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Monster_Dissolve"), m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &m_pDissolveObject);
+		
+			CInventory_Manager::GetInstance()->Add_Gold(500);
 		}
 		else if (m_fDissolveWeight >= m_fDissolveTotal)
 		{

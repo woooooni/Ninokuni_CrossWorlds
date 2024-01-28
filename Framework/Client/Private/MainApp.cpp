@@ -22,7 +22,7 @@
 #include "UIMinigame_Manager.h"
 #include "Buff_Manager.h"
 #include "Riding_Manager.h"
-
+#include "Inventory_Manager.h"
 
 #include "Game_Manager.h"
 #include "Character_Manager.h"
@@ -60,7 +60,7 @@ HRESULT CMainApp::Initialize()
 
 	// Set Start Level and Character
 	{
-		g_eStartLevel = LEVELID::LEVEL_TOOL; /* 시작할 레벨 타입 */
+		g_eStartLevel = LEVELID::LEVEL_LOGO; /* 시작할 레벨 타입 */
 
 		g_eLoadCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH; /* 모델 로드할 캐릭터 타입 */
 
@@ -176,6 +176,9 @@ HRESULT CMainApp::Initialize_Client()
 		return E_FAIL;
 
 	if (FAILED(CRiding_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+		return E_FAIL;
+
+	if (FAILED(CInventory_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
 		return E_FAIL;
 
 	if (FAILED(Ready_CameraObject()))
@@ -517,9 +520,9 @@ HRESULT CMainApp::Ready_Prototype_Component()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/Common/Plants/SM_Common_grass_01_Mask.png")))))
 		return E_FAIL;
 
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Trail"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/TrailEffect/"), 0, true))))
-		return E_FAIL;
+//	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Trail"),
+//		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/TrailEffect/"), 0, true))))
+//		return E_FAIL;
 	
 
 
@@ -1289,6 +1292,10 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/PlayerStatus/Item/UI_AddItem_PopUp_%d.png"), 6))))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_WeaponSection_Recommend"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/UI_Recommend_Arrow.png")))))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -1631,6 +1638,7 @@ void Client::CMainApp::Free()
 	CUIMinimap_Manager::GetInstance()->DestroyInstance();
 	CUIMinigame_Manager::GetInstance()->DestroyInstance();
 	CItem_Manager::GetInstance()->DestroyInstance();
+	CInventory_Manager::GetInstance()->DestroyInstance();
 	CWeapon_Manager::GetInstance()->DestroyInstance();
 	CSkill_Manager::GetInstance()->DestroyInstance();
 	CBuff_Manager::GetInstance()->DestroyInstance();

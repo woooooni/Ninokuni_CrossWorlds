@@ -8,8 +8,8 @@ class CInventory_Manager : public CBase
 {	
 	DECLARE_SINGLETON(CInventory_Manager)
 
-public:
-	enum INVENTORY_TYPE { INVEN_ARMOR, INVEN_EQUIPMENT, INVEN_CONSUMPSION, INVENTORY_END };
+public://  ARMOR, EQUIPMENT, CONSUMPSION, COIN = 99, ITEMTYPE_END
+//	enum INVENTORY_TYPE { INVEN_ARMOR, INVEN_EQUIPMENT, INVEN_CONSUMPSION, INVENTORY_END };
 //	enum ITEM_CODE
 //	{
 //		// INVEN_ARMOR
@@ -41,7 +41,7 @@ private:
 
 public:
 	_bool Is_InInventory(CGameObject* pItem);
-	const vector<class CGameItem*>& Get_Inventory(INVENTORY_TYPE eType) { return m_Inventory[_uint(eType)]; }
+	const vector<class CGameItem*>& Get_Inventory(ITEM_TYPE eType) { return m_Inventory[_uint(eType)]; }
 
 public:
 	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -50,17 +50,18 @@ public:
 	void LateTick(_float fTimeDelta);
 
 public:
-	HRESULT Add_Item(CGameObject* pItem);
+	HRESULT Add_Item(ITEM_TYPE eType, CGameObject* pItem);
+	void	Add_Gold(_uint iGold);
 
-	HRESULT Use_Item(INVENTORY_TYPE eType, _uint iNum);
+	HRESULT Use_Item(ITEM_TYPE eType, _uint iNum);
 	HRESULT Use_Item(ITEM_CODE eCode);
 
-	void Erase_Item(const INVENTORY_TYPE& eType, const _uint& iIndex){
+	void Erase_Item(const ITEM_TYPE& eType, const _uint& iIndex){
 		m_Inventory[_uint(eType)].erase(m_Inventory[_uint(eType)].begin() + iIndex);
 	}
 
 private:
-	vector<class CGameItem*> m_Inventory[_uint(INVENTORY_TYPE::INVENTORY_END)];
+	vector<class CGameItem*> m_Inventory[_uint(ITEM_TYPE::ITEMTYPE_END)];
 
 private:
 	ID3D11Device* m_pDevice = { nullptr };

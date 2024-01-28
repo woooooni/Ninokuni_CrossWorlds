@@ -25,6 +25,7 @@
 #include "UI_Cursor.h"
 #include "UI_LevelUp.h"
 #include "UI_MapName.h"
+#include "UI_AddItem.h"
 #include "UI_BtnBack.h"
 #include "UI_Minimap.h"
 #include "UI_Milepost.h"
@@ -126,6 +127,7 @@
 #include "UI_ImajinnSection_Vehicle.h"
 #include "UI_Emoticon_SpeechBalloon.h"
 #include "UI_InGame_Setting_OpenBtn.h"
+#include "UI_WeaponSection_Recommend.h"
 #include "UI_SkillSection_Background.h"
 #include "UI_ImajinnSection_Emoticon.h"
 #include "UI_InGame_Setting_RadioBtn.h"
@@ -3696,6 +3698,33 @@ HRESULT CUI_Manager::Ready_GameObject(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(m_pPlayerSelected);
 
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 64.f * 0.6f;
+	UIDesc.fCY = UIDesc.fCX;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY * 0.5f;
+	CGameObject* pArrow = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_WeaponSection_Recommend"), &UIDesc, &pArrow)))
+		return E_FAIL;
+	m_pRecommend = dynamic_cast<CUI_WeaponSection_Recommend*>(pArrow);
+	if (nullptr == m_pRecommend)
+		return E_FAIL;
+	Safe_AddRef(m_pRecommend);
+
+//	CUI_AddItem::UIITEM_DESC ITEMDesc = {};
+//	ITEMDesc.fCX = 400.f * 0.5f;
+//	ITEMDesc.fCY = 93.f * 0.5f;
+//	ITEMDesc.fX = g_iWinSizeX * 0.5f;
+//	ITEMDesc.fY = g_iWinSizeY * 0.5f;
+//	ITEMDesc.eCode = ITEM_CODE::CONSUMPSION_GOLD;
+//	pSlot = nullptr;
+//	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_AddItem_Popup"), &ITEMDesc, &pSlot)))
+//		return E_FAIL;
+//	if (nullptr == pSlot)
+//		return E_FAIL;
+//	m_ItemPopup.push_back(dynamic_cast<CUI_AddItem*>(pSlot));
+//	Safe_AddRef(pSlot);
+
 	return S_OK;
 }
 
@@ -4405,6 +4434,12 @@ HRESULT CUI_Manager::Ready_GameObjectToLayer(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(m_pPlayerSelected);
 
+	if (nullptr == m_pRecommend)
+		return E_FAIL;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pRecommend)))
+		return E_FAIL;
+	Safe_AddRef(m_pRecommend);
+
 	return S_OK;
 }
 
@@ -4647,6 +4682,27 @@ HRESULT CUI_Manager::Tick_GamePlayLevel(_float fTimeDelta)
 //			}
 //		}
 //	}
+
+	if (false == m_ItemPopup.empty())
+	{
+		auto iter = m_ItemPopup.begin();
+
+		while(iter != m_ItemPopup.end())
+		{
+			if (nullptr != (*iter))
+			{
+				if (true == (*iter)->Is_Dead())
+				{
+
+					Safe_Release((*iter));
+					iter = m_ItemPopup.erase(iter);
+					continue;
+				}
+			}
+
+			++iter;
+		}
+	}
 
 	return S_OK;
 }
@@ -5681,6 +5737,32 @@ void CUI_Manager::Use_RollBtn()
 	dynamic_cast<CUI_SkillSection_BtnRoll*>(pBtnRoll)->Set_Resizable(true);
 }
 
+void CUI_Manager::Show_AddItem(ITEM_TYPE eItemType, ITEM_CODE eItemCode, _uint iCount)
+{
+	if (3 < m_ItemPopup.size())
+		return;
+
+	CUI_AddItem::UIITEM_DESC ITEMDesc = {};
+	ITEMDesc.fCX = 400.f * 0.5f;
+	ITEMDesc.fCY = 93.f * 0.5f;
+	CGameObject* pSlot = nullptr;
+
+	if (eItemCode == ITEM_CODE::CONSUMPSION_GOLD)
+	{
+		ITEMDesc.fX = g_iWinSizeX * 0.5f;
+		ITEMDesc.fY = g_iWinSizeY * 0.5f;
+		ITEMDesc.eCode = ITEM_CODE::CONSUMPSION_GOLD;
+		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_AddItem_Popup"), &ITEMDesc, &pSlot)))
+			return;
+		if (nullptr == pSlot)
+			return;
+		// 포지션 다시 작업해야함.
+		dynamic_cast<CUI_AddItem*>(pSlot)->Set_Position(m_ItemPopup.size());
+		m_ItemPopup.push_back(dynamic_cast<CUI_AddItem*>(pSlot));
+		Safe_AddRef(pSlot);
+	}
+}
+
 void CUI_Manager::Use_AttackBtn()
 {
 	if (nullptr == m_pSkillBG)
@@ -6633,10 +6715,6 @@ HRESULT CUI_Manager::OnOff_DialogWindow(_bool bOnOff, _uint iMagicNum)
 		}
 		else // Off
 		{
-			if (!Is_DefaultSettingOn())
-			{
-				//OnOff_GamePlaySetting(true); // 240119 카메라 쪽에서 열어주도록 수정 (찬)
-			}
 			
 			if (m_pDialogWindow->Get_Active())
 				m_pDialogWindow->Set_Active(false);
@@ -8814,9 +8892,16 @@ HRESULT CUI_Manager::Ready_UIStaticPrototypes()
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minimap"),
 		CUI_Minimap::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
-
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minimap_Icon"),
 		CUI_Minimap_Icon::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_WeaponSection_Recommend"),
+		CUI_WeaponSection_Recommend::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_AddItem_Popup"),
+		CUI_AddItem::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
 	return S_OK;
@@ -9146,6 +9231,8 @@ void CUI_Manager::Free()
 	Safe_Release(m_pBtnInGameSetting);
 	Safe_Release(m_pPlayerSelected);
 
+	Safe_Release(m_pRecommend);
+
 	for (auto& pFrame : m_CoolTimeFrame)
 		Safe_Release(pFrame);
 	m_CoolTimeFrame.clear();
@@ -9315,6 +9402,10 @@ void CUI_Manager::Free()
 	for (auto& pSlot : m_PlayerSlot)
 		Safe_Release(pSlot);
 	m_PlayerSlot.clear();
+
+	for (auto& pPopup : m_ItemPopup)
+		Safe_Release(pPopup);
+	m_ItemPopup.clear();
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

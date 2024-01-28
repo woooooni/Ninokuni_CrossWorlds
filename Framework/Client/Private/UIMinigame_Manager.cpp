@@ -12,6 +12,9 @@
 #include "UI_Minigame_EnemyInfo.h"
 #include "UI_Minigame_ClassSkill.h"
 #include "UI_Minigame_EnemyHP.h"
+#include "UI_Minigame_GaugeBar.h"
+
+#include "UI_Minigame_CurlingGauge.h"
 
 IMPLEMENT_SINGLETON(CUIMinigame_Manager)
 
@@ -62,6 +65,7 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_Prototypes(LEVELID eID)
 		break;
 
 	case LEVELID::LEVEL_ICELAND:
+		Ready_MinigameUI_IceLand();
 		break;
 
 	case LEVELID::LEVEL_WITCHFOREST:
@@ -87,6 +91,7 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_GameObject(LEVELID eID)
 		break;
 
 	case LEVELID::LEVEL_ICELAND:
+		Ready_Curling();
 		break;
 
 	case LEVELID::LEVEL_WITCHFOREST:
@@ -171,6 +176,46 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_ToLayer(LEVELID eID)
 				return E_FAIL;
 			Safe_AddRef(iter);
 		}
+
+		for (auto& iter : m_GaugeBack)
+		{
+			if (nullptr == iter)
+				return E_FAIL;
+
+			if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+				return E_FAIL;
+			Safe_AddRef(iter);
+		}
+
+		if (nullptr == m_pGaugeBar)
+			return E_FAIL;
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pGaugeBar)))
+			return E_FAIL;
+		Safe_AddRef(m_pGaugeBar);
+
+		if (nullptr == m_pSpace)
+			return E_FAIL;
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pSpace)))
+			return E_FAIL;
+		Safe_AddRef(m_pSpace);
+
+		if (nullptr == m_pBiplaneIcon)
+			return E_FAIL;
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pBiplaneIcon)))
+			return E_FAIL;
+		Safe_AddRef(m_pBiplaneIcon);
+	}
+	else if (LEVELID::LEVEL_ICELAND == eID)
+	{
+		for (auto& iter : m_CurlingGauge)
+		{
+			if (nullptr == iter)
+				return E_FAIL;
+
+			if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, iter)))
+				return E_FAIL;
+			Safe_AddRef(iter);
+		}
 	}
 
 	return S_OK;
@@ -178,6 +223,8 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_ToLayer(LEVELID eID)
 
 void CUIMinigame_Manager::Tick_Minigame(LEVELID eID, _float fTimeDelta)
 {
+	// OnOff를 위한 임시
+
 	switch (eID)
 	{
 	case LEVELID::LEVEL_EVERMORE:
@@ -185,6 +232,7 @@ void CUIMinigame_Manager::Tick_Minigame(LEVELID eID, _float fTimeDelta)
 		break;
 
 	case LEVELID::LEVEL_ICELAND:
+		Tick_Curling(fTimeDelta);
 		break;
 
 	default:
@@ -261,8 +309,10 @@ void CUIMinigame_Manager::OnOff_Grandprix(_bool bOnOff)
 	if (true == bOnOff)
 	{
 		m_bCountStart = false;
+		m_bFlying = true; // 경기가 끝나면 끈다
 
 		//CUI_Manager::GetInstance()->OnOff_GamePlaySetting_ExceptInfo(false);
+		OnOff_GrandprixGauge(false);
 
 		if (nullptr != m_pCloud)
 			m_pCloud->Set_Active(true);
@@ -311,8 +361,72 @@ void CUIMinigame_Manager::Start_Grandprix()
 
 void CUIMinigame_Manager::End_Grandprix()
 {
+	m_bFlying = false;
+
 	m_bGrandprixEnd = true;
 	m_iCountIndex = 5;
+}
+
+void CUIMinigame_Manager::OnOff_CurlingUI(_bool bOnOff)
+{
+	if (true == bOnOff)
+	{
+		CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
+
+		for (auto& iter : m_CurlingGauge)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(true);
+		}
+	}
+	else
+	{
+		for (auto& iter : m_CurlingGauge)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+
+		CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
+	}
+}
+
+void CUIMinigame_Manager::OnOff_GrandprixGauge(_bool bOnOff)
+{
+	if (true == bOnOff)
+	{
+		for (auto& iter : m_GaugeBack)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(true);
+		}
+
+		if (nullptr != m_pGaugeBar)
+			m_pGaugeBar->Set_Active(true);
+
+		if (nullptr != m_pSpace)
+			m_pSpace->Set_Active(true);
+
+		if (nullptr != m_pBiplaneIcon)
+			m_pBiplaneIcon->Set_Active(true);
+	}
+	else
+	{
+		for (auto& iter : m_GaugeBack)
+		{
+			if (nullptr != iter)
+				iter->Set_Active(false);
+		}
+
+		if (nullptr != m_pGaugeBar)
+			m_pGaugeBar->Set_Active(false);
+
+		if (nullptr != m_pSpace)
+			m_pSpace->Set_Active(false);
+
+		if (nullptr != m_pBiplaneIcon)
+			m_pBiplaneIcon->Set_Active(false);
+	}
 }
 
 HRESULT CUIMinigame_Manager::Ready_MinigameUI_Evermore()
@@ -391,6 +505,34 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_Evermore()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Text_End"),
 		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_END), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_GaugeGlow"),
+		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_GAUGEGLOW), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_GaugeBack"),
+		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_GAUGEBACK), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_GaugeBar"),
+		CUI_Minigame_GaugeBar::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_SpaceIcon"),
+		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_SPACE), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_BiplaneIcon"),
+		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_BIPLANE), LAYER_UI)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CUIMinigame_Manager::Ready_MinigameUI_IceLand()
+{
+	// 컬링게임용 UI Prototypes
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Curling_GaugeBack"),
+		CUI_Minigame_CurlingGauge::Create(m_pDevice, m_pContext, CUI_Minigame_CurlingGauge::UI_CURLINGGAUGE::GAUGE_BACK), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Curling_GaugeBar"),
+		CUI_Minigame_CurlingGauge::Create(m_pDevice, m_pContext, CUI_Minigame_CurlingGauge::UI_CURLINGGAUGE::GAUGE_BAR), LAYER_UI)))
 		return E_FAIL;
 
 	return S_OK;
@@ -764,21 +906,125 @@ HRESULT CUIMinigame_Manager::Ready_Granprix()
 		return E_FAIL;
 	Safe_AddRef(pText);
 
+	m_GaugeBack.reserve(2);
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = g_iWinSizeX;
+	UIDesc.fCY = g_iWinSizeY;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY * 0.5f;
+	CGameObject* pGauge = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Minigame_Granprix_GaugeBack"), &UIDesc, &pGauge)))
+		return E_FAIL;
+	m_GaugeBack.push_back(dynamic_cast<CUI_Minigame_Basic*>(pGauge));
+	if (nullptr == pGauge)
+		return E_FAIL;
+	Safe_AddRef(pGauge);
+
+	pGauge = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Minigame_Granprix_GaugeGlow"), &UIDesc, &pGauge)))
+		return E_FAIL;
+	m_GaugeBack.push_back(dynamic_cast<CUI_Minigame_Basic*>(pGauge));
+	if (nullptr == pGauge)
+		return E_FAIL;
+	Safe_AddRef(pGauge);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = g_iWinSizeX;
+	UIDesc.fCY = g_iWinSizeY;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY * 0.5f;
+	pGauge = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Minigame_Granprix_GaugeBar"), &UIDesc, &pGauge)))
+		return E_FAIL;
+	m_pGaugeBar = dynamic_cast<CUI_Minigame_GaugeBar*>(pGauge);
+	if (nullptr == m_pGaugeBar)
+		return E_FAIL;
+	Safe_AddRef(m_pGaugeBar);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 136.f;
+	UIDesc.fCY = 58.f;
+	UIDesc.fX = 525.f;
+	UIDesc.fY = g_iWinSizeY * 0.835f;
+	CGameObject* pButton = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Minigame_Granprix_SpaceIcon"), &UIDesc, &pButton)))
+		return E_FAIL;
+	m_pSpace = dynamic_cast<CUI_Minigame_Basic*>(pButton);
+	if (nullptr == m_pSpace)
+		return E_FAIL;
+	Safe_AddRef(m_pSpace);
+
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 210.f * 0.4f;
+	UIDesc.fCY = 98.f * 0.4f;
+	UIDesc.fX = 600.f;
+	UIDesc.fY = 720.f;
+	CGameObject* pIcon = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Minigame_Granprix_BiplaneIcon"), &UIDesc, &pIcon)))
+		return E_FAIL;
+	m_pBiplaneIcon = dynamic_cast<CUI_Minigame_Basic*>(pIcon);
+	if (nullptr == m_pBiplaneIcon)
+		return E_FAIL;
+	Safe_AddRef(m_pBiplaneIcon);
+
+	return S_OK;
+}
+
+HRESULT CUIMinigame_Manager::Ready_Curling()
+{
+	m_CurlingGauge.reserve(2);
+
+	CUI::UI_INFO UIDesc = {};
+	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
+	UIDesc.fCX = 804.f;
+	UIDesc.fCY = 320.f;
+	UIDesc.fX = g_iWinSizeX * 0.5f;
+	UIDesc.fY = g_iWinSizeY * 0.5f;
+	CGameObject* pGauge = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Minigame_Curling_GaugeBack"), &UIDesc, &pGauge)))
+		return E_FAIL;
+	if (nullptr == pGauge)
+		return E_FAIL;
+	if (nullptr == dynamic_cast<CUI_Minigame_CurlingGauge*>(pGauge))
+		return E_FAIL;
+	m_CurlingGauge.push_back(dynamic_cast<CUI_Minigame_CurlingGauge*>(pGauge));
+	Safe_AddRef(pGauge);
+
+	pGauge = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Minigame_Curling_GaugeBar"), &UIDesc, &pGauge)))
+		return E_FAIL;
+	if (nullptr == pGauge)
+		return E_FAIL;
+	if (nullptr == dynamic_cast<CUI_Minigame_CurlingGauge*>(pGauge))
+		return E_FAIL;
+	m_CurlingGauge.push_back(dynamic_cast<CUI_Minigame_CurlingGauge*>(pGauge));
+	Safe_AddRef(pGauge);
+
 	return S_OK;
 }
 
 void CUIMinigame_Manager::Tick_Grandprix(_float fTimeDelta)
 {
-	if (KEY_TAP(KEY::O))
+	if (KEY_TAP(KEY::N))
 		Start_Grandprix();
 
-	if (KEY_TAP(KEY::P))
+	if (KEY_TAP(KEY::M))
 		End_Grandprix();
 
 	if (true == m_bCountStart)
 	{
 		if (m_iCountIndex == 5)
-			OnOff_Grandprix(true);
+		{
+			//OnOff_Grandprix(true);
+			OnOff_GrandprixGauge(true);
+		}
 
 		if (0 == m_Counts.size() || m_iCountIndex > m_Counts.size() - 2)
 			return;
@@ -820,6 +1066,18 @@ void CUIMinigame_Manager::LateTick_Grandprix(_float fTimeDelta)
 	}
 }
 
+void CUIMinigame_Manager::Tick_Curling(_float fTimeDelta)
+{
+	if (KEY_TAP(KEY::O))
+	{
+		OnOff_CurlingUI(true);
+	}
+	if (KEY_TAP(KEY::P))
+	{
+		OnOff_CurlingUI(false);
+	}
+}
+
 void CUIMinigame_Manager::Free()
 {
 	__super::Free();
@@ -844,6 +1102,17 @@ void CUIMinigame_Manager::Free()
 	for (auto& pCount : m_Counts)
 		Safe_Release(pCount);
 	m_Counts.clear();
+	Safe_Release(m_pGaugeBar);
+	Safe_Release(m_pSpace);
+	for (auto& pBack : m_GaugeBack)
+		Safe_Release(pBack);
+	m_GaugeBack.clear();
+	Safe_Release(m_pBiplaneIcon);
+
+	// 컬링
+	for (auto& pGauge : m_CurlingGauge)
+		Safe_Release(pGauge);
+	m_CurlingGauge.clear();
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

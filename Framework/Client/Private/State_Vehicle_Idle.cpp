@@ -38,6 +38,13 @@ void CState_Vehicle_Idle::Enter_State(void* pArg)
 
 void CState_Vehicle_Idle::Tick_State(_float fTimeDelta)
 {
+    if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
+    {
+        m_iCurrAnimIndex = m_AnimIndices[GI->RandomInt(0, m_AnimIndices.size() - 1)];
+        m_pModelCom->Set_Animation(m_iCurrAnimIndex);
+    }
+
+
 	if (KEY_HOLD(KEY::W) || KEY_HOLD(KEY::A) || KEY_HOLD(KEY::S) || KEY_HOLD(KEY::D))
 	{
 		m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_WALK);

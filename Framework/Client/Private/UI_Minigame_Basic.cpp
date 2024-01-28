@@ -38,6 +38,12 @@ void CUI_Minigame_Basic::Set_Active(_bool bActive)
 
 			m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 		}
+		else if (m_eType == GRANDPRIX_BIPLANE)
+		{
+			m_tInfo.fX = 600.f;
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+				XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
+		}
 	}
 
 	m_bActive = bActive;
@@ -65,6 +71,12 @@ HRESULT CUI_Minigame_Basic::Initialize(void* pArg)
 	if (FAILED(Ready_TextInformation()))
 		return E_FAIL;
 
+	if (m_eType == GRANDPRIX_SPACE)
+	{
+		m_vMaxSize = _float2(m_tInfo.fCX, m_tInfo.fCY); // OriginSize로 쓰임.
+		m_vOriginSize = _float2(m_tInfo.fCX * 0.7f, m_tInfo.fCY * 0.7f); // MinSize로 쓰임.
+	}
+
 	return S_OK;
 }
 
@@ -75,6 +87,77 @@ void CUI_Minigame_Basic::Tick(_float fTimeDelta)
 		if (m_eType == GRANDPRIX_READY || m_eType == GRANDPRIX_THREE || m_eType == GRANDPRIX_TWO ||
 			m_eType == GRANDPRIW_ONE || m_eType == GRANDPRIX_START || m_eType == GRANDPRIX_END)
 			Tick_Count(fTimeDelta);
+
+		if (m_eType == GRANDPRIX_SPACE)
+		{
+			if (false == m_bResize)
+			{
+				// 작아진다
+				m_tInfo.fCX -= fTimeDelta * m_vOriginSize.x * 5.f;
+				m_tInfo.fCY -= fTimeDelta * m_vOriginSize.y * 5.f;
+
+				if (m_tInfo.fCX <= m_vOriginSize.x)
+				{
+					m_bResize = true;
+					m_tInfo.fCX = m_vOriginSize.x;
+					m_tInfo.fCY = m_vOriginSize.y;
+				}
+			}
+			else
+			{
+				// 커진다
+				m_tInfo.fCX += fTimeDelta * m_vOriginSize.x * 5.f;
+				m_tInfo.fCY += fTimeDelta * m_vOriginSize.y * 5.f;
+
+				if (m_tInfo.fCX >= m_vMaxSize.x)
+				{
+					m_bResize = false;
+					m_tInfo.fCX = m_vMaxSize.x;
+					m_tInfo.fCY = m_vMaxSize.y;
+				}
+			}
+
+			m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+		}
+
+		if (m_eType == GRANDPRIX_GAUGEGLOW)
+		{
+			if (false == m_bStart)
+			{
+				m_fAlpha -= fTimeDelta;
+
+				if (m_fAlpha <= 0.f)
+				{
+					m_bStart = true;
+					m_fAlpha = 0.f;
+				}
+			}
+			else
+			{
+				m_fAlpha += fTimeDelta;
+
+				if (m_fAlpha >= 1.f)
+				{
+					m_bStart = false;
+					m_fAlpha = 1.f;
+				}
+			}
+		}
+
+		if (m_eType == GRANDPRIX_BIPLANE)
+		{
+			if (m_tInfo.fX < 1120.f)
+			{
+				// fX로 500.f의 거리를 66번의 SpaceBar Tap으로 가야함. (7.5씩 -> 495.f)
+				// 600으로 수정 520.f의 거리를 66번의 SpaceBar Tap으로 가야함 (7.9씩 -> 521.4f)
+				if (KEY_TAP(KEY::SPACE))
+				{
+					m_tInfo.fX += 7.9f;
+					m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+						XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
+				}
+			}
+		}
 
 		__super::Tick(fTimeDelta);
 	}
@@ -265,6 +348,32 @@ HRESULT CUI_Minigame_Basic::Ready_Components()
 		m_iTextureIndex = 2;
 		m_bStart = false;
 		m_bEnd = false;
+		break;
+
+	case UI_MINIGAMEBASIC::GRANDPRIX_BIPLANE:
+		if (FAILED(__super::Add_Component(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_UI_Minigame_Grandprix_BiplaneIcon"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		break;
+
+	case UI_MINIGAMEBASIC::GRANDPRIX_GAUGEBACK:
+		if (FAILED(__super::Add_Component(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_UI_Minigame_Grandprix_GaugeBackground"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		m_fAlpha = 0.6f;
+		break;
+
+	case UI_MINIGAMEBASIC::GRANDPRIX_GAUGEGLOW:
+		if (FAILED(__super::Add_Component(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_UI_Minigame_Grandprix_GaugeGlowBackground"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
+		m_bStart = false;
+		break;
+
+	case UI_MINIGAMEBASIC::GRANDPRIX_SPACE:
+		if (FAILED(__super::Add_Component(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_UI_Minigame_Grandprix_SpaceIcon"),
+			TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+			return E_FAIL;
 		break;
 	}
 	

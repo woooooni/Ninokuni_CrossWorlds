@@ -118,8 +118,8 @@ void CUI_Minimap_Icon::Tick(_float fTimeDelta)
 
 		if (true == m_pOwner->Is_Dead())
 		{
-			Safe_Release(m_pOwner);
-			Set_Dead(true);
+			//Safe_Release(m_pOwner);
+			//Set_Dead(true);
 			return;
 		}
 
@@ -147,8 +147,8 @@ void CUI_Minimap_Icon::LateTick(_float fTimeDelta)
 
 		if (true == m_pOwner->Is_Dead())
 		{
-			Safe_Release(m_pOwner);
-			Set_Dead(true);
+			//Safe_Release(m_pOwner);
+			//Set_Dead(true);
 			return;
 		}
 

@@ -65,11 +65,12 @@
 #include "State_Character_Damaged_Strong.h"
 #include "State_Character_Damaged_Weak.h"
 
-
 #include "State_Character_Dead.h"
 #include "State_Character_Revive.h"
-#include "State_Character_Vehicle.h"
 
+#include "State_Character_Vehicle_RunStart.h"
+#include "State_Character_Vehicle_Stand.h"
+#include "State_Character_Vehicle_Run.h"
 
 
 CCharacter_Destroyer::CCharacter_Destroyer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
@@ -451,10 +452,18 @@ HRESULT CCharacter_Destroyer::Ready_States()
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_Revive");
 	m_pStateCom->Add_State(CCharacter::STATE::REVIVE, CState_Character_Revive::Create(m_pStateCom, strAnimationNames));
 
-	//VEHICLE
+	//VEHICLE::UDADAK
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_LobbySitLoop");
-	m_pStateCom->Add_State(CCharacter::STATE::VEHICLE, CState_Character_Vehicle::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CCharacter::STATE::VEHICLE_RUNSTART, CState_Character_Vehicle_RunStart::Create(m_pStateCom, strAnimationNames));
+
+//	strAnimationNames.clear();
+//	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_SitStand_Udadak"); // SKM_Engineer_SoulDiver.ao|Engineer_SitWalk_Udadak
+//	m_pStateCom->Add_State(CCharacter::STATE::VEHICLE_STAND, CState_Character_Vehicle_Stand::Create(m_pStateCom, strAnimationNames));
+//
+//	strAnimationNames.clear();
+//	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_SitRun_Udadak");
+//	m_pStateCom->Add_State(CCharacter::STATE::VEHICLE_RUN, CState_Character_Vehicle_Run::Create(m_pStateCom, strAnimationNames));
 
 	m_pStateCom->Change_State(CCharacter::NEUTRAL_IDLE);
 	return S_OK;

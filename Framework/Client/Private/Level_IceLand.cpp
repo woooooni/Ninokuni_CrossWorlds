@@ -31,6 +31,9 @@
 #include "Light_Manager.h"
 #include "Light.h"
 
+#include "Riding_Manager.h"
+#include "UIMinigame_Manager.h"
+
 _bool CLevel_IceLand::g_bFirstEnter = false;
 
 CLevel_IceLand::CLevel_IceLand(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -102,6 +105,8 @@ HRESULT CLevel_IceLand::Tick(_float fTimeDelta)
 {
 	CUI_Manager::GetInstance()->Tick_Fade(fTimeDelta);
 	CUI_Manager::GetInstance()->Tick_UIs(LEVELID::LEVEL_ICELAND, fTimeDelta);
+
+	CUIMinigame_Manager::GetInstance()->Tick_Minigame(LEVELID::LEVEL_ICELAND, fTimeDelta);
 
 	if (KEY_TAP(KEY::PAGE_UP))
 	{
@@ -251,6 +256,9 @@ HRESULT CLevel_IceLand::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 	pDoorTransform->Set_State(CTransform::STATE_POSITION, vPosition);
 	pDoorTransform->Set_Scale(vScale);
 
+	if (FAILED(CRiding_Manager::GetInstance()->Ready_Vehicle_GameObjectToLayer(LEVELID::LEVEL_ICELAND)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -299,7 +307,7 @@ HRESULT CLevel_IceLand::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 
 	CTrigger::TRIGGER_DESC TriggerDesc;
 	TriggerDesc.eTriggerType = TRIGGER_TYPE::TRIGGER_MAP_NAME;
-	TriggerDesc.strMapName = L"内俊风农 汲盔";
+	TriggerDesc.strMapName = L"内俊风内 汲盔";
 	TriggerDesc.vStartPosition = { 107.93f, -50.f, 5.067f, 1.f };
 	TriggerDesc.vExtents = { 100.f, 200.f, 100.f };
 
@@ -521,6 +529,17 @@ HRESULT CLevel_IceLand::Ready_Layer_NPC(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_IceLand::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 {
+	if (false == g_bFirstEnter)
+	{
+		if (FAILED(CUIMinigame_Manager::GetInstance()->Ready_MinigameUI_GameObject(LEVELID::LEVEL_ICELAND)))
+			return E_FAIL;
+	}
+	else
+	{
+		if (FAILED(CUIMinigame_Manager::GetInstance()->Ready_MinigameUI_ToLayer(LEVELID::LEVEL_ICELAND)))
+			return E_FAIL;
+	}
+
 	if (FAILED(CUI_Manager::GetInstance()->Ready_GameObjectToLayer(LEVELID::LEVEL_ICELAND)))
 		return E_FAIL;
 

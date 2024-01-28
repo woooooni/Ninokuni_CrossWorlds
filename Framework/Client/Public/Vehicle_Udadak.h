@@ -33,6 +33,9 @@ private:
 	virtual HRESULT	Ready_Colliders();
 	virtual HRESULT Ready_States();
 
+private:
+	void Update_RiderState();
+
 public:
 	static CVehicle_Udadak* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;

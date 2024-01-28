@@ -8,6 +8,8 @@
 #include "State_Vehicle_Walk.h"
 #include "State_Vehicle_Sprint.h"
 
+#include "Character.h"
+
 CVehicle_Udadak::CVehicle_Udadak(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVehicle(pDevice, pContext, strObjectTag)
 {
@@ -39,6 +41,9 @@ HRESULT CVehicle_Udadak::Initialize(void* pArg)
 	if (FAILED(Ready_States()))
 		return E_FAIL;
 
+	m_bUseBone = true;
+	m_fOffsetY = -1.5f;
+
 	return S_OK;
 }
 
@@ -47,6 +52,8 @@ void CVehicle_Udadak::Tick(_float fTimeDelta)
 	if (true == m_bOnBoard)
 	{
 		__super::Tick(fTimeDelta);
+
+		Update_RiderState();
 
 		if (nullptr != m_pRigidBodyCom)
 			m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
@@ -133,21 +140,6 @@ HRESULT CVehicle_Udadak::Ready_Components()
 
 HRESULT CVehicle_Udadak::Ready_States()
 {
-//	m_pBTCom = CShadow_ThiefBT::Create(m_pDevice, m_pContext, this);
-//
-//	strKorName = TEXT("코부리");
-//	strSubName = TEXT("코에루크 설원");
-//	m_tStat.eElementType = ELEMENTAL_TYPE::WATER;
-//
-//	m_tStat.iLv = 3;
-//	m_tStat.fMaxHp = 10000;
-//	m_tStat.fHp = 10000;
-//	m_tStat.iAtk = 25;
-//	m_tStat.iDef = 50;
-//	
-//	m_tStat.fAirVelocity = 10.f;
-//	m_tStat.fAirDeadVelocity = 20.f;
-
 	list<wstring> strAnimationNames;
 
 	strAnimationNames.clear();
@@ -162,11 +154,12 @@ HRESULT CVehicle_Udadak::Ready_States()
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_WALK, CState_Vehicle_Walk::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Udadak.ao|Udadak_Run");
+	//strAnimationNames.push_back(L"SKM_Udadak.ao|Udadak_Run");
+	strAnimationNames.push_back(L"SKM_Udadak.ao|Udadak_Sprint");
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_RUN, CState_Vehicle_Run::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Udadak.ao|Udadak_Sprint");
+	strAnimationNames.push_back(L"SKM_Udadak.ao|Udadak_Sprint"); // 사용하지 않음.
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_SPRINT, CState_Vehicle_Sprint::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
@@ -179,6 +172,44 @@ HRESULT CVehicle_Udadak::Ready_States()
 	m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_IDLE);
 
 	return S_OK;
+}
+
+void CVehicle_Udadak::Update_RiderState()
+{
+	if (nullptr != m_pRider)
+	{
+		CStateMachine* pStateCom = m_pRider->Get_Component<CStateMachine>(TEXT("Com_StateMachine"));
+		if (nullptr == pStateCom)
+			return;
+
+		if (CVehicle::VEHICLE_STATE::VEHICLE_RUN == m_pStateCom->Get_CurrState() &&
+			CCharacter::STATE::VEHICLE_RUNSTART != pStateCom->Get_CurrState())
+		{
+			if (CCharacter::STATE::VEHICLE_RUN != pStateCom->Get_CurrState())
+				m_pRider->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CCharacter::STATE::VEHICLE_RUN);
+		}
+
+		if (CVehicle::VEHICLE_STATE::VEHICLE_WALK == m_pStateCom->Get_CurrState())
+		{
+			if (CCharacter::STATE::VEHICLE_STAND != pStateCom->Get_CurrState() &&
+				CCharacter::STATE::VEHICLE_RUNSTART != pStateCom->Get_CurrState())
+				m_pRider->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CCharacter::STATE::VEHICLE_STAND);
+		}
+
+		if (CVehicle::VEHICLE_STATE::VEHICLE_IDLE == m_pStateCom->Get_CurrState())
+		{
+			if (CCharacter::STATE::VEHICLE_STAND != pStateCom->Get_CurrState() &&
+				CCharacter::STATE::VEHICLE_RUNSTART != pStateCom->Get_CurrState())
+				m_pRider->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CCharacter::STATE::VEHICLE_STAND);
+		}
+
+		if (CVehicle::VEHICLE_STATE::VEHICLE_JUMP == m_pStateCom->Get_CurrState())
+		{
+			if (CCharacter::STATE::VEHICLE_RUN != pStateCom->Get_CurrState() &&
+				CCharacter::STATE::VEHICLE_RUNSTART != pStateCom->Get_CurrState())
+				m_pRider->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CCharacter::STATE::VEHICLE_RUN);
+		}
+	}
 }
 
 HRESULT CVehicle_Udadak::Ready_Colliders()

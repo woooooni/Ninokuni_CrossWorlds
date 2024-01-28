@@ -21,7 +21,10 @@ private:
 	virtual ~CUIMinigame_Manager() = default;
 
 public: // Getter & Setter
-	void Set_HPOwner(CGameObject* pOwner, GRANDPRIX_ENEMY eEnemyID);
+	void	Set_HPOwner(CGameObject* pOwner, GRANDPRIX_ENEMY eEnemyID);
+
+	_bool	Is_BiplaneFlying() { return m_bFlying; }
+	void	Set_Flyable(_bool bFlyable) { m_bFlying = bFlyable; }
 
 public:
 	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -40,40 +43,60 @@ public:
 
 public: // Level Evermore
 	void OnOff_TowerDefence_Select(_bool bOnOff);
-	void OnOff_Grandprix(_bool bOnOff);
+	void OnOff_Grandprix(_bool bOnOff); // Grandprix Default Setting
+
 	void Start_Grandprix(); // Countdown
+	void OnOff_GrandprixGauge(_bool bOnOff);
 	void End_Grandprix(); // End Text
+
+public: // Level IceLand
+	void OnOff_CurlingUI(_bool bOnOff);
 
 private: // Prototypes
 	HRESULT Ready_MinigameUI_Evermore();
+	HRESULT Ready_MinigameUI_IceLand();
 
 private: // clone
 	HRESULT Ready_TowerDence();
 	HRESULT Ready_Granprix();
+	HRESULT Ready_Curling();
 
 private:
 	void Tick_Grandprix(_float fTimeDelta);
 	void LateTick_Grandprix(_float fTimeDelta);
 
+private:
+	void Tick_Curling(_float fTimeDelta);
+
 private: // Evermore Tower Defence
-	class CUI_Minigame_Basic* m_pMenu = { nullptr };
+	class CUI_Minigame_Basic*				m_pMenu = { nullptr };
 	vector<class CUI_Minigame_TowerSelect*> m_TowerSelect;
-	class CUI_Minigame_Timer* m_pTimer = { nullptr };
-	class CUI_Minigame_Basic* m_pStartBtn = { nullptr };
-	class CUI_Minigame_Basic* m_pGold = { nullptr };
+	class CUI_Minigame_Timer*				m_pTimer = { nullptr };
+	class CUI_Minigame_Basic*				m_pStartBtn = { nullptr };
+	class CUI_Minigame_Basic*				m_pGold = { nullptr };
 
 private: // Evermore Granprix
-	class CUI_Minigame_Basic* m_pCloud = { nullptr };
-	vector <class CUI_Minigame_EnemyInfo*> m_EnemyHP;
-	vector <class CUI_Minigame_ClassSkill*> m_Skill;
-	_bool m_bCountStart = { false }; // 게임이 시작되면 CountDown UI On
-	_bool m_bGrandprixEnd = { false }; // 게임이 끝나면 End UI On
-	_uint m_iCountIndex = { 0 };
-	vector <class CUI_Minigame_Basic*> m_Counts;
+	class CUI_Minigame_Basic*				m_pCloud = { nullptr };
+	vector<class CUI_Minigame_EnemyInfo*>	m_EnemyHP;
+	vector<class CUI_Minigame_ClassSkill*>	m_Skill;
+	_bool									m_bCountStart = { false }; // 게임이 시작되면 CountDown UI On
+	_bool									m_bGrandprixEnd = { false }; // 게임이 끝나면 End UI On
+	_uint									m_iCountIndex = { 0 };
+	vector<class CUI_Minigame_Basic*>		m_Counts;
+
+	vector<class CUI_Minigame_Basic*>		m_GaugeBack;
+	class CUI_Minigame_GaugeBar*			m_pGaugeBar = { nullptr };
+	class CUI_Minigame_Basic*				m_pSpace = { nullptr };
+	class CUI_Minigame_Basic*				m_pBiplaneIcon = { nullptr };
+
+	_bool									m_bFlying = { false };
+
+private: // Iceland Curling
+	vector<class CUI_Minigame_CurlingGauge*> m_CurlingGauge;
 
 private:
-	ID3D11Device* m_pDevice = nullptr;
-	ID3D11DeviceContext* m_pContext = nullptr;
+	ID3D11Device*			m_pDevice = { nullptr };
+	ID3D11DeviceContext*	m_pContext = { nullptr };
 
 public:
 	virtual void Free() override;
