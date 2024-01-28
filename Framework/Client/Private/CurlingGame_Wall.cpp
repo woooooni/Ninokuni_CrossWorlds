@@ -60,19 +60,6 @@ HRESULT CCurlingGame_Wall::Ready_Components()
 	if (FAILED(__super::Ready_Components()))
 		return E_FAIL;
 
-	/* For.Com_Shader */
-	{
-		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Model"),
-			TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
-			return E_FAIL;
-	}
-
-	/* For. Com_Model */
-	{
-		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Prop_Wall"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
-			return E_FAIL;
-	}
-
 	return S_OK;
 }
 
@@ -83,7 +70,7 @@ HRESULT CCurlingGame_Wall::Ready_Colliders()
 	{
 		ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
 		XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
-		OBBBox.Extents = { 300.f, 100.f, 30.f };
+		OBBBox.Extents = { 2000.f, 200.f, 100.f };
 	}
 
 	CCollider_OBB::OBB_COLLIDER_DESC OBBDesc;
@@ -92,8 +79,8 @@ HRESULT CCurlingGame_Wall::Ready_Colliders()
 		OBBDesc.tBox = OBBBox;
 		OBBDesc.pNode = nullptr;
 		OBBDesc.pOwnerTransform = m_pTransformCom;
-		OBBDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
 		OBBDesc.vOffsetPosition = Vec3(0.f, OBBBox.Extents.y, 0.f);
+		XMStoreFloat4x4(&OBBDesc.ModelPivotMatrix, XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f)));
 	}
 
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, m_iColliderDetectionType, &OBBDesc)))

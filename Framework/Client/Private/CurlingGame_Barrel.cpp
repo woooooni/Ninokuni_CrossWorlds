@@ -126,13 +126,28 @@ void CCurlingGame_Barrel::Collision_Enter(const COLLISION_INFO& tInfo)
 	}
 }
 
-void CCurlingGame_Barrel::Launch(const Vec3& vDir, const _float& fPower)
+void CCurlingGame_Barrel::Launch(const _float& fPower)
 {
+	/* Transform */
+	{
+		Vec4 vPos = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
+		Vec4 vDir = CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Transform()->Get_Look();
+		Vec4 vLookAt = vPos + (vDir * 5.f);
+
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos.OneW());
+		m_pTransformCom->LookAt_ForLandObject(vLookAt.OneW());
+	}
+
+	/* Rigidbody */
 	if (nullptr != m_pRigidBodyCom)
 	{
+		const Vec3 vDir = Vec3(CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform")->Get_Look()).ZeroY().Normalized();
+		
 		m_pRigidBodyCom->Add_Velocity(vDir, fPower, false);
 
 		m_bLaunched = true;
+
+		m_bActive = true;
 	}
 }
 

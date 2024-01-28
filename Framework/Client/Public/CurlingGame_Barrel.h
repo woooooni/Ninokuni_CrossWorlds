@@ -39,7 +39,7 @@ public:
 	virtual void LateTick(_float fTimeDelta) override;
 
 public:
-	void Launch(const Vec3& vDir, const _float& fPower);
+	void Launch(const _float& fPower);
 	void PutDown();
 
 	const _bool& Is_Launched() const { return m_bLaunched; }

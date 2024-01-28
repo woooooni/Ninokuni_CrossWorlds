@@ -96,10 +96,6 @@ public:
 	/* UI */
 	const _float& Get_GuageValue() const { return m_tGuageDesc.tLerpValue.fCurValue; }
 
-	/* Barrels */
-	CCurlingGame_Barrel* Pop_Barrel();
-	HRESULT Push_Barrel(CCurlingGame_Barrel* pBarrel);
-
 private:
 	void Tick_Guage(const _float& fTimeDelta);
 	void Tick_StadiumAction(const _float& fTimeDelta);
@@ -127,9 +123,7 @@ private:
 	STADIUM_DESC			m_tStadiumDesc = {};
 
 	/* Barrels */
-	queue<CCurlingGame_Barrel*> m_pBarrelPool;
 	vector<CCurlingGame_Barrel*> m_pBarrelsLaunched;
-	const _uint					m_iMaxBarrels = 30;
 
 public:
 	virtual void Free() override;
