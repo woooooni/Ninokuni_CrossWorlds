@@ -4,6 +4,8 @@
 #include "State_VehicleFlying_Run.h"
 #include "Vehicle.h"
 
+#include "UIMinigame_Manager.h"
+
 CState_VehicleFlying_Run::CState_VehicleFlying_Run(CStateMachine* pMachine)
     : CState_Vehicle(pMachine)
 {
@@ -45,7 +47,7 @@ void CState_VehicleFlying_Run::Tick_State(_float fTimeDelta)
 		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 10.f * fTimeDelta;
 
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
-		m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_pVehicle->Get_Speed(), fTimeDelta);
+		m_pTransformCom->Move(vCamLook, m_pVehicle->Get_Speed(), fTimeDelta);
 	}
 
 	if (KEY_HOLD(KEY::S))
@@ -103,6 +105,23 @@ void CState_VehicleFlying_Run::Tick_State(_float fTimeDelta)
 			m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_pVehicle->Get_Speed(), fTimeDelta);
 
 		bMove = true;
+	}
+
+	if (KEY_HOLD(KEY::Q))
+	{
+		bMove = true;
+
+		_matrix vCamWolrd = GI->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
+		_vector vRight = m_pTransformCom->Get_State(CTransform::STATE_RIGHT);
+		_vector vCamLook = vCamWolrd.r[CTransform::STATE_LOOK];
+
+		vRight = XMVector3Normalize(vRight);
+		vCamLook = XMVector3Normalize(vCamLook);
+
+		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 10.f * fTimeDelta;
+
+		m_pTransformCom->Rotation_Acc(vRight, fRadian);
+		m_pTransformCom->Move(vCamLook, m_pVehicle->Get_Speed(), fTimeDelta);
 	}
 
 //	if (KEY_TAP(KEY::SPACE))

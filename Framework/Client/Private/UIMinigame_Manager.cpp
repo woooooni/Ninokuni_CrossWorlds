@@ -309,6 +309,7 @@ void CUIMinigame_Manager::OnOff_Grandprix(_bool bOnOff)
 	if (true == bOnOff)
 	{
 		m_bCountStart = false;
+		m_bFlying = true; // 경기가 끝나면 끈다
 
 		//CUI_Manager::GetInstance()->OnOff_GamePlaySetting_ExceptInfo(false);
 		OnOff_GrandprixGauge(false);
@@ -360,6 +361,8 @@ void CUIMinigame_Manager::Start_Grandprix()
 
 void CUIMinigame_Manager::End_Grandprix()
 {
+	m_bFlying = false;
+
 	m_bGrandprixEnd = true;
 	m_iCountIndex = 5;
 }
@@ -1009,10 +1012,10 @@ HRESULT CUIMinigame_Manager::Ready_Curling()
 
 void CUIMinigame_Manager::Tick_Grandprix(_float fTimeDelta)
 {
-	if (KEY_TAP(KEY::O))
+	if (KEY_TAP(KEY::N))
 		Start_Grandprix();
 
-	if (KEY_TAP(KEY::P))
+	if (KEY_TAP(KEY::M))
 		End_Grandprix();
 
 	if (true == m_bCountStart)

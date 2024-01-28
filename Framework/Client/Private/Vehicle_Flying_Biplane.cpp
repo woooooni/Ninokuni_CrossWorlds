@@ -7,6 +7,8 @@
 
 #include "Character.h"
 
+#include "UIMinigame_Manager.h"
+
 CVehicle_Flying_Biplane::CVehicle_Flying_Biplane(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVehicle_Flying(pDevice, pContext, strObjectTag)
 {
@@ -35,7 +37,7 @@ HRESULT CVehicle_Flying_Biplane::Initialize(void* pArg)
 	if (FAILED(Ready_States()))
 		return E_FAIL;
 	
-	m_bUseBone = false;
+	m_bUseBone = false; 
 //	m_fOffsetY = -0.5f;
 
 	return S_OK;
@@ -49,16 +51,13 @@ void CVehicle_Flying_Biplane::Tick(_float fTimeDelta)
 		
 		Update_RiderState();
 
-		// 탈것의 Look을 Normalize한다.
-		// Normalize한 방향으로 Add velocity
-		if (KEY_TAP(KEY::P))
+		if (false == CUIMinigame_Manager::GetInstance()->Is_BiplaneFlying())
 		{
-			//m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fLandingSpeed * fTimeDelta, false);
 			if (false == m_bUseRigidbody)
 				m_bUseRigidbody = true;
-			else
-				m_bUseRigidbody = false;
 		}
+		else
+			m_bUseRigidbody = false;
 
 		if (true == m_bUseRigidbody)
 		{

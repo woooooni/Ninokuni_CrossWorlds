@@ -21,7 +21,10 @@ private:
 	virtual ~CUIMinigame_Manager() = default;
 
 public: // Getter & Setter
-	void Set_HPOwner(CGameObject* pOwner, GRANDPRIX_ENEMY eEnemyID);
+	void	Set_HPOwner(CGameObject* pOwner, GRANDPRIX_ENEMY eEnemyID);
+
+	_bool	Is_BiplaneFlying() { return m_bFlying; }
+	void	Set_Flyable(_bool bFlyable) { m_bFlying = bFlyable; }
 
 public:
 	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
@@ -85,6 +88,8 @@ private: // Evermore Granprix
 	class CUI_Minigame_GaugeBar*			m_pGaugeBar = { nullptr };
 	class CUI_Minigame_Basic*				m_pSpace = { nullptr };
 	class CUI_Minigame_Basic*				m_pBiplaneIcon = { nullptr };
+
+	_bool									m_bFlying = { false };
 
 private: // Iceland Curling
 	vector<class CUI_Minigame_CurlingGauge*> m_CurlingGauge;
