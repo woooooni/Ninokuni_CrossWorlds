@@ -22,12 +22,11 @@ HRESULT CMainQuestNode_Invasion02::Initialize()
 
 	m_strQuestTag = TEXT("[메인]");
 	m_strQuestName = TEXT("성 밖의 소란");
-	m_strQuestContent = TEXT("성 밖이 소란스럽다");
+	m_strQuestContent = TEXT("성 밖으로 나가보자");
 
 	m_strNextQuestTag = TEXT("[메인]");
-	m_strNextQuestName = TEXT("에스타나비아 지키기");
-	m_strNextQuestContent = TEXT("모든 몬스터를 소탕하자");
-
+	m_strNextQuestName = TEXT("파괴된 에스타나비아");
+	m_strNextQuestContent = TEXT("좀 더 나아가서 상황을 살펴보자");
 
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/05.MainQuest_Invasion/MainQuest_Invasion02.json");
 
@@ -43,6 +42,8 @@ HRESULT CMainQuestNode_Invasion02::Initialize()
 
 void CMainQuestNode_Invasion02::Start()
 {
+	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
+
 	/* 현재 퀘스트에 연관있는 객체들 */
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
 }
@@ -65,10 +66,7 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion02::Tick(const _float& fTimeDelta)
 		{
 			if (CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_CurrentState() == CCharacter::STATE::NEUTRAL_DOOR_ENTER)
 				return NODE_STATE::NODE_RUNNING;
-
-			CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 			
-
 			/* 대화 */
 			m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
 			m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);

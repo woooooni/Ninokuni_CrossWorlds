@@ -9,6 +9,11 @@
 #include "UI_Minimap_Icon.h"
 #include "UIMinimap_Manager.h"
 
+#include "InvasionState_Attack.h"
+#include "InvasionState_Idle01.h"
+#include "InvasionState_Idle02.h"
+#include "InvasionState_Dead.h"
+
 CClown_Wizard::CClown_Wizard(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
 	: CMonster(pDevice, pContext, strObjectTag, tStat)
 {
@@ -75,30 +80,36 @@ HRESULT CClown_Wizard::Initialize(void* pArg)
 
 void CClown_Wizard::Tick(_float fTimeDelta)
 {
-	if (nullptr != m_pHPBar)
-		m_pHPBar->Tick(fTimeDelta);
-
-	if (nullptr != m_pMinimapIcon)
+	if (!m_bIsInvasion)
 	{
-		if (true == CUIMinimap_Manager::GetInstance()->Is_InMinimap(m_pTransformCom))
-			m_pMinimapIcon->Set_Active(true);
-		else
-			m_pMinimapIcon->Set_Active(false);
-	}
+		if (nullptr != m_pHPBar)
+			m_pHPBar->Tick(fTimeDelta);
 
-	if (nullptr != m_pMinimapIcon)
-		m_pMinimapIcon->Tick(fTimeDelta);
+		if (nullptr != m_pMinimapIcon)
+		{
+			if (true == CUIMinimap_Manager::GetInstance()->Is_InMinimap(m_pTransformCom))
+				m_pMinimapIcon->Set_Active(true);
+			else
+				m_pMinimapIcon->Set_Active(false);
+		}
+
+		if (nullptr != m_pMinimapIcon)
+			m_pMinimapIcon->Tick(fTimeDelta);
+	}
 
 	__super::Tick(fTimeDelta);
 }
 
 void CClown_Wizard::LateTick(_float fTimeDelta)
 {
-	if (nullptr != m_pHPBar)
-		m_pHPBar->LateTick(fTimeDelta);
+	if (!m_bIsInvasion)
+	{
+		if (nullptr != m_pHPBar)
+			m_pHPBar->LateTick(fTimeDelta);
 
-	if (nullptr != m_pMinimapIcon)
-		m_pMinimapIcon->LateTick(fTimeDelta);
+		if (nullptr != m_pMinimapIcon)
+			m_pMinimapIcon->LateTick(fTimeDelta);
+	}
 
 	__super::LateTick(fTimeDelta);
 }
@@ -285,6 +296,29 @@ HRESULT CClown_Wizard::Ready_States()
 
 	m_tStat.fAirVelocity = 6.f;
 	m_tStat.fAirDeadVelocity = 12.5f;
+
+	if (m_bIsInvasion)
+	{
+		list<wstring> strAnimationName;
+
+		strAnimationName.clear();
+		strAnimationName.push_back(L"SKM_ClownWizard.ao|ClownWizard_Attack02");
+		m_pStateCom->Add_State(INVASION_STATE_ATTACK, CInvasionState_Attack::Create(m_pStateCom, strAnimationName));
+
+		strAnimationName.clear();
+		strAnimationName.push_back(L"SKM_ClownWizard.ao|ClownWizard_Idle01");
+		m_pStateCom->Add_State(INVASION_STATE_IDLE01, CInvasionState_Idle01::Create(m_pStateCom, strAnimationName));
+
+		strAnimationName.clear();
+		strAnimationName.push_back(L"SKM_ClownWizard.ao|ClownWizard_Idle02");
+		m_pStateCom->Add_State(INVASION_STATE_IDLE02, CInvasionState_Idle02::Create(m_pStateCom, strAnimationName));
+
+		strAnimationName.clear();
+		strAnimationName.push_back(L"SKM_ClownWizard.ao|ClownWizard_KnockUp_Loop");
+		m_pStateCom->Add_State(INVASION_STATE_DEAD, CInvasionState_Dead::Create(m_pStateCom, strAnimationName));
+
+		m_pStateCom->Change_State(INVASION_STATE_IDLE01);
+	}
 
 	return S_OK;
 }

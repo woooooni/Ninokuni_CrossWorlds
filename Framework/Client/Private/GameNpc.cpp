@@ -52,8 +52,11 @@ void CGameNpc::Tick(_float fTimeDelta)
 
 	m_pStateCom->Tick_State(fTimeDelta);
 
-	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
-	m_pControllerCom->Tick_Controller(fTimeDelta);
+	if(m_pRigidBodyCom != nullptr && m_strObjectTag != TEXT("DreamMazeWitch"))
+		m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
+
+	if(m_pControllerCom != nullptr)
+		m_pControllerCom->Tick_Controller(fTimeDelta);
 
 	// GI->Add_CollisionGroup(COLLISION_GROUP::NPC, this);
 }

@@ -50,6 +50,7 @@ public:
 #pragma endregion
 	enum SOCKET_TYPE { SOCKET_LEFT_FIST, SOCKET_RIGHT_FIST, SOCKET_LEFT_FOOT, SOCKET_RIGHT_FOOT, SOCKET_END };
 	enum MONSTER_TYPE { NORMAL, BOSS, TYPE_END };
+	enum MONSTER_INVASION_STATE { INVASION_STATE_ATTACK, INVASION_STATE_IDLE01, INVASION_STATE_IDLE02, INVASION_STATE_DEAD, INVASION_STATE_END };
 	enum class MONSTER_BOOLTYPE { 
 		MONBOOL_COMBAT, MONBOOL_COMBATIDLE,
 		MONBOOL_ATK, MONBOOL_ATKAROUND,
@@ -104,6 +105,9 @@ public:
 		const vector<_float4x4>& WorldMatrices,
 		const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc) override;
 
+private:
+	virtual void Search_Target(_float fTimeDelta);
+
 public:
 	virtual void Collision_Enter(const COLLISION_INFO& tInfo) override;
 	virtual void Collision_Continue(const COLLISION_INFO& tInfo) override;
@@ -122,9 +126,6 @@ public:
 		m_fAccInfinite = 0.f;
 	}
 	_bool Is_Infinite() { return m_bInfinite; }
-
-
-
 
 public:
 	const MONSTER_STAT& Get_Stat() { return m_tStat; }
@@ -191,6 +192,9 @@ protected:
 
 	_float	m_fStunTime = 0.f; // 스턴 시간
 
+	// 마을 침공 관련
+	_bool m_bIsInvasion = false;
+
 	// 타워 디펜스 관련
 	_float m_fNearDist = 0.f; // 가장 가까운 타겟 찾기.
 	_float m_fDistToTree = 0.f; // 가을 할아범과의 거리
@@ -237,8 +241,6 @@ protected:
 
 public:
 	virtual void Free() override;
-
-
 };
 
 END

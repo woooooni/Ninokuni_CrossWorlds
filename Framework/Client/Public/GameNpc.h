@@ -23,7 +23,7 @@ class CGameNpc abstract : public CGameObject
 {
 public:
 	enum NPC_STATE { NPC_IDLE, NPC_TALK, NPC_MOVE_ONEWAY, NPC_MOVE_TWOWAY,
-		NPC_UNIQUENPC_WALK, NPC_UNIQUENPC_RUN, NPC_UNIQUENPC_TALK, NPC_END };
+		NPC_UNIQUENPC_WALK, NPC_UNIQUENPC_RUN, NPC_UNIQUENPC_TALK, NPC_BACKDOWN, NPC_FRONTDOWN, NPC_ATTACK_IDLE, NPC_ATTACK, NPC_END };
 
 public:
 	typedef struct tagNpcStat
@@ -139,7 +139,7 @@ protected:
 	NPC_STAT m_tStat = {};
 
 	// ImGui Tool
-	NPC_STATE m_eState = CGameNpc::NPC_STATE::NPC_END;
+	NPC_STATE m_eState = CGameNpc::NPC_STATE::NPC_IDLE;
 	vector<Vec4> m_vecRoaming = {};
 	_vector			m_vInitPos = {};
 	_bool	m_bTurnOnFirstPoint = false;

@@ -19,9 +19,11 @@ private:
 
 private:
 	CGameObject* m_pKuu = nullptr;
+	_float		 m_fTalkChangeTime = 0.f;
+	_float		 m_fTime = 0.f;
 
-	_bool		m_bIsStart = false;
-	_bool		m_bBGMStart = false;
+	_bool		 m_bIsStart = false;
+	_bool		 m_bBGMStart = false;
 
 public:
 	static CMainQuestNode_Invasion02* Create();

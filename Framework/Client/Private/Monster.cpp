@@ -20,6 +20,7 @@
 
 #include "Quest_Manager.h"
 #include "Character_Projectile.h"
+
 USING(Client)
 
 CMonster::CMonster(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
@@ -61,6 +62,9 @@ HRESULT CMonster::Initialize(void* pArg)
 	m_fNearDist = 9999.f;
 	m_fTargetSearchDist = 30.f;
 
+	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_INVASION)
+		m_bIsInvasion = true;
+
 	return S_OK;
 }
 
@@ -68,139 +72,74 @@ void CMonster::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
-	/* 타겟 설정 */
-	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_INVASION)
+	if (!m_bIsInvasion)
 	{
-		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
+		Search_Target(fTimeDelta);
 
-		if (m_tTargetDesc.pTarget == nullptr)
+		if (m_bInfinite)
 		{
-			m_tTargetDesc.pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), (_uint)LAYER_NPC, TEXT("TreeGrandfa"));
-		
-			if (m_tTargetDesc.pTarget != nullptr)
-				m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component<CTransform>(L"Com_Transform");
+			m_fAccInfinite += fTimeDelta;
+			if (m_fAccInfinite >= m_fInfiniteTime)
+			{
+				m_bInfinite = false;
+				m_fAccInfinite = 0.f;
+
+				Set_ActiveColliders(CCollider::DETECTION_TYPE::BODY, true);
+			}
 		}
 
-		m_iRemainsTowerCount = 0;
+		if (m_pBTCom != nullptr)
+			m_pBTCom->Tick(fTimeDelta);
 
-		/* 모든 타워 및 가을 할아범 불러오기 */
-		for (auto iter : GI->Find_GameObjects(GI->Get_CurrentLevel(), (_uint)LAYER_ETC))
+		GI->Add_CollisionGroup(COLLISION_GROUP::MONSTER, this);
+
+		if (m_bIsRimUse) // RimLight
 		{
-			// 가을 할아범
-			CGameObject* pTree = GI->Find_GameObject(GI->Get_CurrentLevel(), (_uint)LAYER_NPC, TEXT("TreeGrandfa"));
-			if (pTree != nullptr)
+			m_vRimLightColor = { 1.f, 0.f, 0.f, 1.f };
+			Tick_RimLight(fTimeDelta);
+		}
+		else
+		{
+			m_vRimLightColor = { 0.f, 0.f, 0.f, 0.f };
+		}
+
+		if (m_bReserveDead) // Dissolve
+		{
+			if (!m_bDissolveEffect)
 			{
-				Vec4 vToTree = pTree->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_Position() - m_pTransformCom->Get_Position();
-				m_fDistToTree = vToTree.Length();
+				m_bDissolveEffect = true;
+				GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Monster_Dissolve"), m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &m_pDissolveObject);
 			}
-
-			// 타워
-			if (iter->Get_ObjectType() == OBJ_DEFENCE_TOWER)
+			else if (m_fDissolveWeight >= m_fDissolveTotal)
 			{
-				m_iRemainsTowerCount += 1;
-				Vec4 vToTower = iter->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_Position() - m_pTransformCom->Get_Position();
-				_float fToTowerDist = vToTower.Length();
-
-				// 가을 할아범 광장에 들어왔을 때
-				if (fabs(m_fDistToTree) < m_fTargetSearchDist)
+				Set_ActiveColliders(CCollider::DETECTION_TYPE::BODY, false);
+				Set_Dead(true);
+				if (nullptr != m_pDissolveObject)
 				{
-					// 가까운 타워 찾아서 공격.
-					if (fabs(fToTowerDist) < m_fNearDist)
-					{
-						// 가을 할아범이 더 가깝다면 가을 할아범한테(경로상에 타워가 없다면)
-						if (fabs(m_fDistToTree) < fabs(fToTowerDist))
-						{
-							m_tTargetDesc.pTarget = pTree;
-							if (m_tTargetDesc.pTarget != nullptr)
-								m_tTargetDesc.pTragetTransform = iter->Get_Component<CTransform>(TEXT("Com_Transform"));
-						}
-						else
-						{
-							m_fNearDist = fabs(fToTowerDist);
-							m_tTargetDesc.pTarget = iter;
-							if (m_tTargetDesc.pTarget != nullptr)
-								m_tTargetDesc.pTragetTransform = iter->Get_Component<CTransform>(TEXT("Com_Transform"));
-						}
-					}
+					if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::QUESTEVENT_MONSTER_KILL)
+						CQuest_Manager::GetInstance()->Set_MonsterKillCount(1);
+
+					m_pDissolveObject->Set_Dead(true);
+					m_pDissolveObject = nullptr;
 				}
-
+				return;
 			}
-		}
-
-		// 남아있는 타워가 없다면.
-		if (m_iRemainsTowerCount == 0)
-		{
-			m_tTargetDesc.pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), (_uint)LAYER_NPC, TEXT("Com_Transform"));
-
-			if (m_tTargetDesc.pTarget != nullptr)
-				m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component<CTransform>(L"Com_Transform");
+			else
+				m_fDissolveWeight += m_fDissolveSpeed * fTimeDelta;
 		}
 	}
 	else
 	{
-		m_tTargetDesc.pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
-		m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component<CTransform>(L"Com_Transform");
+		m_pStateCom->Tick_State(fTimeDelta);
 	}
 
 
-	if (m_bInfinite)
-	{
-		m_fAccInfinite += fTimeDelta;
-		if (m_fAccInfinite >= m_fInfiniteTime)
-		{
-			m_bInfinite = false;
-			m_fAccInfinite = 0.f;
 
-			Set_ActiveColliders(CCollider::DETECTION_TYPE::BODY, true);
-		}
-	}
-
-	if (m_pBTCom != nullptr)
-		m_pBTCom->Tick(fTimeDelta);
 
 	if (m_pRigidBodyCom != nullptr)
 		m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 	if (m_pControllerCom != nullptr)
 		m_pControllerCom->Tick_Controller(fTimeDelta);
-
-	GI->Add_CollisionGroup(COLLISION_GROUP::MONSTER, this);
-
-	if (m_bIsRimUse) // RimLight
-	{
-		m_vRimLightColor = { 1.f, 0.f, 0.f, 1.f };
-		Tick_RimLight(fTimeDelta);
-	}
-	else
-	{
-		m_vRimLightColor = { 0.f, 0.f, 0.f, 0.f };
-	}
-
-		
-
-	if (m_bReserveDead) // Dissolve
-	{
-		if (!m_bDissolveEffect)
-		{
-			m_bDissolveEffect = true;
-			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Monster_Dissolve"), m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &m_pDissolveObject);
-		}
-		else if (m_fDissolveWeight >= m_fDissolveTotal)
-		{
-			Set_ActiveColliders(CCollider::DETECTION_TYPE::BODY, false);
-			Set_Dead(true);
-			if (nullptr != m_pDissolveObject)
-			{
-				if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::QUESTEVENT_MONSTER_KILL)
-					CQuest_Manager::GetInstance()->Set_MonsterKillCount(1);
-
-				m_pDissolveObject->Set_Dead(true);
-				m_pDissolveObject = nullptr;
-			}
-			return;
-		}
-		else
-			m_fDissolveWeight += m_fDissolveSpeed * fTimeDelta;
-	}
 }
 
 void CMonster::LateTick(_float fTimeDelta)
@@ -242,10 +181,11 @@ void CMonster::LateTick(_float fTimeDelta)
 #endif // DEBUG
 
 
-	if (m_pBTCom != nullptr)
-		m_pBTCom->LateTick(fTimeDelta);
-
-	
+	if (!m_bIsInvasion)
+	{
+		if (m_pBTCom != nullptr)
+			m_pBTCom->LateTick(fTimeDelta);
+	}
 }
 
 HRESULT CMonster::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc)
@@ -359,10 +299,88 @@ HRESULT CMonster::Render_Instance_AnimModel_Shadow(CShader* pInstancingShader, C
 	return S_OK;
 }
 
+void CMonster::Search_Target(_float fTimeDelta)
+{
+	/* 타겟 설정 */
+	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_TOWERDEFENCE)
+	{
+		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
+
+		if (m_tTargetDesc.pTarget == nullptr)
+		{
+			m_tTargetDesc.pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), (_uint)LAYER_NPC, TEXT("TreeGrandfa"));
+
+			if (m_tTargetDesc.pTarget != nullptr)
+				m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component<CTransform>(L"Com_Transform");
+		}
+
+		m_iRemainsTowerCount = 0;
+
+		/* 모든 타워 및 가을 할아범 불러오기 */
+		for (auto iter : GI->Find_GameObjects(GI->Get_CurrentLevel(), (_uint)LAYER_ETC))
+		{
+			// 가을 할아범
+			CGameObject* pTree = GI->Find_GameObject(GI->Get_CurrentLevel(), (_uint)LAYER_NPC, TEXT("TreeGrandfa"));
+			if (pTree != nullptr)
+			{
+				Vec4 vToTree = pTree->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_Position() - m_pTransformCom->Get_Position();
+				m_fDistToTree = vToTree.Length();
+			}
+
+			// 타워
+			if (iter->Get_ObjectType() == OBJ_DEFENCE_TOWER)
+			{
+				m_iRemainsTowerCount += 1;
+				Vec4 vToTower = iter->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_Position() - m_pTransformCom->Get_Position();
+				_float fToTowerDist = vToTower.Length();
+
+				// 가을 할아범 광장에 들어왔을 때
+				if (fabs(m_fDistToTree) < m_fTargetSearchDist)
+				{
+					// 가까운 타워 찾아서 공격.
+					if (fabs(fToTowerDist) < m_fNearDist)
+					{
+						// 가을 할아범이 더 가깝다면 가을 할아범한테(경로상에 타워가 없다면)
+						if (fabs(m_fDistToTree) < fabs(fToTowerDist))
+						{
+							m_tTargetDesc.pTarget = pTree;
+							if (m_tTargetDesc.pTarget != nullptr)
+								m_tTargetDesc.pTragetTransform = iter->Get_Component<CTransform>(TEXT("Com_Transform"));
+						}
+						else
+						{
+							m_fNearDist = fabs(fToTowerDist);
+							m_tTargetDesc.pTarget = iter;
+							if (m_tTargetDesc.pTarget != nullptr)
+								m_tTargetDesc.pTragetTransform = iter->Get_Component<CTransform>(TEXT("Com_Transform"));
+						}
+					}
+				}
+
+			}
+		}
+
+		// 남아있는 타워가 없다면.
+		if (m_iRemainsTowerCount == 0)
+		{
+			m_tTargetDesc.pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), (_uint)LAYER_NPC, TEXT("Com_Transform"));
+
+			if (m_tTargetDesc.pTarget != nullptr)
+				m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component<CTransform>(L"Com_Transform");
+		}
+	}
+	else
+	{
+		m_tTargetDesc.pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+		m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component<CTransform>(L"Com_Transform");
+	}
+
+}
+
 void CMonster::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	// 퀘스트 단계가 아닐 때 (플레이어 공격)
-	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() != CQuest_Manager::GetInstance()->QUESTEVENT_INVASION)
+	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() != CQuest_Manager::GetInstance()->QUESTEVENT_TOWERDEFENCE)
 	{
 		if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_DEFENCE_TOWER)
 		{
@@ -421,7 +439,7 @@ void CMonster::Collision_Enter(const COLLISION_INFO& tInfo)
 void CMonster::Collision_Continue(const COLLISION_INFO& tInfo)
 {
 	// 퀘스트 단계가 아닐 때 (플레이어 공격)
-	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() != CQuest_Manager::GetInstance()->QUESTEVENT_INVASION)
+	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() != CQuest_Manager::GetInstance()->QUESTEVENT_TOWERDEFENCE)
 	{
 		if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER)
 		{

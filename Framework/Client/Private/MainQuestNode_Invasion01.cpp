@@ -8,6 +8,7 @@
 #include "Player.h"
 #include "Character.h"
 #include "UI_Manager.h"
+#include "Quest_Manager.h"
 
 CMainQuestNode_Invasion01::CMainQuestNode_Invasion01()
 {
@@ -16,15 +17,6 @@ CMainQuestNode_Invasion01::CMainQuestNode_Invasion01()
 HRESULT CMainQuestNode_Invasion01::Initialize()
 {
 	__super::Initialize();
-
-	m_strQuestTag = TEXT("[메인]");
-	m_strQuestName = TEXT("성 밖의 소란");
-	m_strQuestContent = TEXT("성 밖이 소란스럽다");
-
-	m_strNextQuestTag = TEXT("[메인]");
-	m_strNextQuestName = TEXT("성 밖의 소란");
-	m_strNextQuestContent = TEXT("성 밖이 소란스럽다");
-
 
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/05.MainQuest_Invasion/MainQuest_Invasion01.json");
 
@@ -41,8 +33,7 @@ HRESULT CMainQuestNode_Invasion01::Initialize()
 void CMainQuestNode_Invasion01::Start()
 {
 	/* 현재 퀘스트에 연관있는 객체들 */
-
-	m_pRuslan = GI->Find_GameObject(LEVELID::LEVEL_ICELAND, LAYER_NPC, TEXT("Ruslan"));
+	m_pRuslan = GI->Find_GameObject(LEVELID::LEVEL_KINGDOMHALL, LAYER_NPC, TEXT("Ruslan"));
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
 }
 
@@ -55,13 +46,14 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion01::Tick(const _float& fTimeDelta)
 	{
 		if (!m_bIsStart)
 		{
+			CQuest_Manager::GetInstance()->Set_CurQuestEvent(CQuest_Manager::GetInstance()->QUESTEVENT_INVASION);
+
 			if (CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_CurrentState() == CCharacter::STATE::NEUTRAL_DOOR_ENTER)
 				return NODE_STATE::NODE_RUNNING;
 
 			CCamera_Manager::GetInstance()->Start_Action_Shake(0.1f, 17.f, 2.f);
 			GI->Stop_Sound(CHANNELID::SOUND_BGM_CURR, 0.f);
 			GI->Play_Sound(L"Impact_Metal_Stone_1.mp3", CHANNELID::SOUND_CUTSCENE, 1.f, true);
-			CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
 			/* 대화 */
 			m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
@@ -83,8 +75,6 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion01::Tick(const _float& fTimeDelta)
 
 			if (m_iTalkIndex >= m_vecTalkDesc.size())
 			{
-				CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
-
 				m_bIsClear = true;
 				CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
 

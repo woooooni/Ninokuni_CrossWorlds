@@ -1408,7 +1408,14 @@ void CTool_Map::MapNPCSpace()
 									static_cast<CGameNpc*>(m_pSelectObj)->Set_NpcState(CGameNpc::NPC_STATE::NPC_UNIQUENPC_RUN);
 								else if (m_NpcStateSelectableName[i] == "NPC_UNIQUENPC_TALK")
 									static_cast<CGameNpc*>(m_pSelectObj)->Set_NpcState(CGameNpc::NPC_STATE::NPC_UNIQUENPC_TALK);
-
+								else if (m_NpcStateSelectableName[i] == "BACKDOWN")
+									static_cast<CGameNpc*>(m_pSelectObj)->Set_NpcState(CGameNpc::NPC_STATE::NPC_BACKDOWN);
+								else if (m_NpcStateSelectableName[i] == "FRONTDOWN")
+									static_cast<CGameNpc*>(m_pSelectObj)->Set_NpcState(CGameNpc::NPC_STATE::NPC_FRONTDOWN);
+								else if (m_NpcStateSelectableName[i] == "ATTACKIDLE")
+									static_cast<CGameNpc*>(m_pSelectObj)->Set_NpcState(CGameNpc::NPC_STATE::NPC_ATTACK_IDLE);
+								else if (m_NpcStateSelectableName[i] == "ATTACK")
+									static_cast<CGameNpc*>(m_pSelectObj)->Set_NpcState(CGameNpc::NPC_STATE::NPC_ATTACK);
 							}
 						}
 						ImGui::EndCombo();

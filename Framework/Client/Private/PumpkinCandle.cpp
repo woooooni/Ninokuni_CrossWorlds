@@ -11,6 +11,11 @@
 
 #include "Quest_Manager.h"
 
+#include "InvasionState_Attack.h"
+#include "InvasionState_Idle01.h"
+#include "InvasionState_Idle02.h"
+#include "InvasionState_Dead.h"
+
 CPumpkinCandle::CPumpkinCandle(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
 	: CMonster(pDevice, pContext, strObjectTag, tStat)
 {
@@ -78,30 +83,37 @@ HRESULT CPumpkinCandle::Initialize(void* pArg)
 
 void CPumpkinCandle::Tick(_float fTimeDelta)
 {
-	if (nullptr != m_pHPBar)
-		m_pHPBar->Tick(fTimeDelta);
-
-	if (nullptr != m_pMinimapIcon)
+	if (!m_bIsInvasion)
 	{
-		if (true == CUIMinimap_Manager::GetInstance()->Is_InMinimap(m_pTransformCom))
-			m_pMinimapIcon->Set_Active(true);
-		else
-			m_pMinimapIcon->Set_Active(false);
+		if (nullptr != m_pHPBar)
+			m_pHPBar->Tick(fTimeDelta);
+
+		if (nullptr != m_pMinimapIcon)
+		{
+			if (true == CUIMinimap_Manager::GetInstance()->Is_InMinimap(m_pTransformCom))
+				m_pMinimapIcon->Set_Active(true);
+			else
+				m_pMinimapIcon->Set_Active(false);
+		}
+
+		if (nullptr != m_pMinimapIcon)
+			m_pMinimapIcon->Tick(fTimeDelta);
 	}
 
-	if (nullptr != m_pMinimapIcon)
-		m_pMinimapIcon->Tick(fTimeDelta);
 
 	__super::Tick(fTimeDelta);
 }
 
 void CPumpkinCandle::LateTick(_float fTimeDelta)
 {
-	if (nullptr != m_pHPBar)
-		m_pHPBar->LateTick(fTimeDelta);
+	if (!m_bIsInvasion)
+	{
+		if (nullptr != m_pHPBar)
+			m_pHPBar->LateTick(fTimeDelta);
 
-	if (nullptr != m_pMinimapIcon)
-		m_pMinimapIcon->LateTick(fTimeDelta);
+		if (nullptr != m_pMinimapIcon)
+			m_pMinimapIcon->LateTick(fTimeDelta);
+	}
 
 	__super::LateTick(fTimeDelta);
 }
@@ -290,6 +302,29 @@ HRESULT CPumpkinCandle::Ready_States()
 
 	m_tStat.fAirVelocity = 7.5f;
 	m_tStat.fAirDeadVelocity = 15.f;
+
+	if (m_bIsInvasion)
+	{
+		list<wstring> strAnimationName;
+
+		strAnimationName.clear();
+		strAnimationName.push_back(L"SKM_PumpkinCandle.ao|PumpkinCandle_Attack01");
+		m_pStateCom->Add_State(INVASION_STATE_ATTACK, CInvasionState_Attack::Create(m_pStateCom, strAnimationName));
+
+		strAnimationName.clear();
+		strAnimationName.push_back(L"SKM_PumpkinCandle.ao|PumpkinCandle_BattleStand");
+		m_pStateCom->Add_State(INVASION_STATE_IDLE01, CInvasionState_Idle01::Create(m_pStateCom, strAnimationName));
+
+		strAnimationName.clear();
+		strAnimationName.push_back(L"SKM_PumpkinCandle.ao|PumpkinCandle_BattleStand");
+		m_pStateCom->Add_State(INVASION_STATE_IDLE02, CInvasionState_Idle02::Create(m_pStateCom, strAnimationName));
+
+		strAnimationName.clear();
+		strAnimationName.push_back(L"SKM_PumpkinCandle.ao|PumpkinCandle_KnockUp_Loop");
+		m_pStateCom->Add_State(INVASION_STATE_DEAD, CInvasionState_Dead::Create(m_pStateCom, strAnimationName));
+
+		m_pStateCom->Change_State(INVASION_STATE_IDLE01);
+	}
 
 	return S_OK;
 }
