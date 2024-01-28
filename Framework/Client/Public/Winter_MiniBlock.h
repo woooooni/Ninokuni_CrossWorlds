@@ -1,3 +1,5 @@
+#pragma once
+
 #include "MiniGameMap.h"
 
 BEGIN(Client)
