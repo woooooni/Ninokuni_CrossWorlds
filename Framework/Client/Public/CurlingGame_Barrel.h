@@ -60,6 +60,7 @@ public:
 public:
 	const _bool& Is_Launched() const { return m_bLaunched; }
 	const _bool& Is_Outted() const { return m_bOutted; }
+	const _bool& Is_Moving() const { return m_bMoving; }
 
 	void Set_OwnerType(const OBJ_TYPE& eType) { m_eOwnerType = eType; }
 	const OBJ_TYPE& Get_OwnerType() const { return m_eOwnerType; }
@@ -87,6 +88,8 @@ private:
 
 	_bool				m_bLaunched			= false;
 	_bool				m_bOutted			= false;
+
+	_bool				m_bMoving			= false;
 
 	OBJ_TYPE			m_eOwnerType		= OBJ_TYPE::OBJ_PLAYER;
 

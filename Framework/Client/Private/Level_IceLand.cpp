@@ -153,6 +153,7 @@ HRESULT CLevel_IceLand::LateTick(_float fTimeDelta)
 
 HRESULT CLevel_IceLand::Render_Debug()
 {
+	CCurlingGame_Manager::GetInstance()->Render_Debug();
 
 	return S_OK;
 }

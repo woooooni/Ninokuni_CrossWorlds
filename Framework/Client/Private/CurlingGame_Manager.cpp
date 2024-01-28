@@ -45,6 +45,9 @@ HRESULT CCurlingGame_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11Devic
 	if (FAILED(Ready_Objects()))
 		return E_FAIL;
 
+	if (m_bDebugRender && FAILED(Ready_DebugDraw()))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -57,6 +60,8 @@ void CCurlingGame_Manager::Tick(const _float& fTimeDelta)
 
 	if (m_tStadiumDesc.bActive)
 		Tick_StadiumAction(fTimeDelta);
+
+	Tick_Score();
 }
 
 void CCurlingGame_Manager::LateTick(const _float& fTimeDelta)
@@ -65,6 +70,12 @@ void CCurlingGame_Manager::LateTick(const _float& fTimeDelta)
 		return;
 
 	Debug();
+}
+
+void CCurlingGame_Manager::Render_Debug()
+{
+	if(m_bDebugRender)
+		Render_DebugDraw();
 }
 
 HRESULT CCurlingGame_Manager::Set_Game(const _bool& bStart)
@@ -79,32 +90,6 @@ HRESULT CCurlingGame_Manager::Set_Game(const _bool& bStart)
 			pFollowCam->Set_TargetOffSet(Cam_TargetOffset_CurlingGame_Default);
 			pFollowCam->Set_LookAtOffSet(Cam_LookAtOffset_CurlingGame_Default);
 			pFollowCam->Set_Distance(Cam_Dist_CurlingGame_Default);
-		}
-
-		for (size_t i = 0; i < 1; i++)
-		{
-			CGameObject* pClone = nullptr;
-
-			if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_PROP, TEXT("Prorotype_GameObject_Shuffleboard_Barrel"), nullptr, &pClone)))
-				return E_FAIL;
-
-			/* Transform */
-			if (nullptr != pClone)
-			{
-				CTransform* pPlayerTransform = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform");
-				if (nullptr == pPlayerTransform)
-					return E_FAIL;
-				Vec4 vPos = pPlayerTransform->Get_Position();
-				Vec4 vDir = CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Transform()->Get_Look();
-				Vec4 vLookAt = vPos + (vDir * 5.f);
-
-				vPos += pPlayerTransform->Get_RelativeOffset(Vec4(-2.f, 0.f, i * 1.5f, 1.f));
-
-				pClone->Get_Component<CTransform>(L"Com_Transform")->Set_State(CTransform::STATE_POSITION, vPos.OneW());
-				pClone->Get_Component<CTransform>(L"Com_Transform")->LookAt_ForLandObject(vLookAt.OneW());
-
-				dynamic_cast<CCurlingGame_Barrel*>(pClone)->Set_Active(true);
-			}
 		}
 
 		if (FAILED(Ready_Decal()))
@@ -183,7 +168,7 @@ void CCurlingGame_Manager::Tick_StadiumAction(const _float& fTimeDelta)
 
 HRESULT CCurlingGame_Manager::Ready_Objects()
 {
-	/* Prototype */
+	/* Create Prototype */
 	{
 		/* Barrel */
 		{
@@ -203,10 +188,66 @@ HRESULT CCurlingGame_Manager::Ready_Objects()
 		}
 	}
 
+	/* Wall */
+	enum DIR_LOCATION { LEFT, RIGHT, DIR_LOCATION_TYPEEND };
+
+	for (size_t i = 0; i < DIR_LOCATION_TYPEEND; i++)
+	{
+		CGameObject* pClone = nullptr;
+		CCurlingGame_Wall* pWall = nullptr;
+		CTransform* pWallTransform = nullptr;
+
+		/* Exception */
+		{
+			if (FAILED(GI->Add_GameObject(m_eLoadLevel, LAYER_TYPE::LAYER_PROP, TEXT("Prorotype_GameObject_Shuffleboard_Wall"), nullptr, &pClone)))
+				return E_FAIL;
+
+			pWall = dynamic_cast<CCurlingGame_Wall*>(pClone);
+			if (nullptr == pWall)
+				return E_FAIL;
+
+			pWallTransform = pWall->Get_Component<CTransform>(L"Com_Transform");
+			if (nullptr == pWallTransform)
+				return E_FAIL;
+		}
+
+		/* Left 기준 Wall 데이터*/
+		Vec4 vLookAt;
+		Vec3 vNormal;
+
+		if (DIR_LOCATION::LEFT == i)
+		{
+			const Vec4 vPos = { -131.64f, -5.f, 219.8f, 1.f };
+			Vec3 vLook = Vec3{ 0.6f, 0.f, 1.9f }.Normalized();
+
+			vLookAt = vPos + (vLook * 10.f);
+
+			pWallTransform->Set_State(CTransform::STATE_POSITION, vPos);
+			pWallTransform->LookAt_ForLandObject(vLookAt.OneW());
+
+			vNormal = Vec3(pWallTransform->Get_Look()).ZeroY().Normalized();
+		}
+		else
+		{
+			const Vec4 vPos = { -119.931f, -5.f, 241.73f, 1.f };
+			Vec3 vLook = Vec3{ 0.55f, 0.f, 1.92f }.Normalized();
+
+			vLookAt = vPos + (vLook * 10.f);
+
+			pWallTransform->Set_State(CTransform::STATE_POSITION, vPos);
+			pWallTransform->LookAt_ForLandObject(vLookAt.OneW());
+			pWallTransform->Set_State(CTransform::STATE_POSITION, Vec4(vPos + Vec4(pWallTransform->Get_Right() * -5.5f)).OneW());
+			vNormal = Vec3(pWallTransform->Get_Look()).ZeroY().Normalized() * -1.f;
+		}
+
+		pWall->Set_Normal(vNormal);
+	}
+
 	/* Stadium Objects (준엽) */
 	{
 		m_tStadiumDesc.pStadiumObjects;
 	}
+
 
 	return S_OK;
 }
@@ -219,7 +260,7 @@ HRESULT CCurlingGame_Manager::Ready_Decal()
 
 		for (size_t i = 0; i < STANDARD_DESC::RING_TYPE::RING_TYPEEND; i++)
 		{
-			Vec3 vScale = Vec3(m_tStandardDesc.fRingScales[i]);
+			Vec3 vScale = Vec3(m_tStandardDesc.fRingScalesForRender[i]);
 			vScale.y = m_tStandardDesc.fHeight;
 
 			if (FAILED(CEffect_Manager::GetInstance()->Generate_Decal(m_tStandardDesc.wstrRingNames[i], matWorld,
@@ -231,8 +272,20 @@ HRESULT CCurlingGame_Manager::Ready_Decal()
 	return S_OK;
 }
 
-void CCurlingGame_Manager::Calculate_Score()
+void CCurlingGame_Manager::Tick_Score()
 {
+	/* 발사된 모든 스톤이 정지된 상태라면 점수를 갱신한다. */
+	//for (auto& pBarrel : m_pBarrelsLaunched)
+	//{
+	//	if (nullptr == pBarrel)
+	//		continue;
+	//
+	//	if (pBarrel->Is_Moving())
+	//		return;
+	//}
+
+	_uint iScores[PARTICIPANT_TYPE::PARTICIPANT_TYPEEND] = { 0, 0 };
+
 	for (auto& pBarrel : m_pBarrelsLaunched)
 	{
 		/* Exception */
@@ -242,7 +295,22 @@ void CCurlingGame_Manager::Calculate_Score()
 		/* Calculate Point */
 		_int iPoint = 0;
 		{
-
+			const _float fDistance = Vec3::Distance(pBarrel->Get_Transform()->Get_Position(), m_tStandardDesc.vGoalPosition);
+			
+			if (fDistance <= m_tStandardDesc.fRingScalesForDetection[STANDARD_DESC::RING_TYPE::FIRST])
+			{
+				iPoint = m_tStandardDesc.iPoints[STANDARD_DESC::RING_TYPE::FIRST];
+			}
+			else if (m_tStandardDesc.fRingScalesForDetection[STANDARD_DESC::RING_TYPE::FIRST] <= fDistance
+				&& fDistance < m_tStandardDesc.fRingScalesForDetection[STANDARD_DESC::RING_TYPE::SECOND])
+			{
+				iPoint = m_tStandardDesc.iPoints[STANDARD_DESC::RING_TYPE::SECOND];
+			}
+			else if (m_tStandardDesc.fRingScalesForDetection[STANDARD_DESC::RING_TYPE::SECOND] <= fDistance
+				&& fDistance < m_tStandardDesc.fRingScalesForDetection[STANDARD_DESC::RING_TYPE::THIRD])
+			{
+				iPoint = m_tStandardDesc.iPoints[STANDARD_DESC::RING_TYPE::THIRD];
+			}
 		}
 
 		/* Accumulate */
@@ -250,12 +318,12 @@ void CCurlingGame_Manager::Calculate_Score()
 		{
 		case OBJ_TYPE::OBJ_PLAYER:
 		{
-			m_tParticipants[PARTICIPANT_PLAYER].iScore += iPoint;
+			iScores[PARTICIPANT_PLAYER] += iPoint;
 		}
 		break;
 		case OBJ_TYPE::OBJ_NPC:
 		{
-			m_tParticipants[PARTICIPANT_PLAYER].iScore += iPoint;
+			iScores[PARTICIPANT_NPC] += iPoint;
 		}
 		break;
 		default:
@@ -263,6 +331,8 @@ void CCurlingGame_Manager::Calculate_Score()
 		}
 	}
 
+	m_tParticipants[PARTICIPANT_PLAYER].iScore = iScores[PARTICIPANT_PLAYER];
+	m_tParticipants[PARTICIPANT_NPC].iScore = iScores[PARTICIPANT_NPC];
 }
 
 void CCurlingGame_Manager::Test(const _float& fTimeDelta)
@@ -273,39 +343,6 @@ void CCurlingGame_Manager::Test(const _float& fTimeDelta)
 		{
 			m_tGuageDesc.Start();
 		}
-
-		//if (KEY_TAP(KEY::RBTN))
-		//{
-		//	/* Create Wall */
-		//	{
-		//		CGameObject* pClone = nullptr;
-		//	
-		//		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_PROP, TEXT("Prorotype_GameObject_Shuffleboard_Wall"), nullptr, &pClone)))
-		//			return;
-		//	
-		//		if (nullptr != pClone)
-		//		{
-		//			Vec4 vPos = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
-		//			Vec4 vLook = Vec4(CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Transform()->Get_Look()).ZeroY().Normalized();
-		//	
-		//			vPos = vPos + (vLook * 5.f);
-		//	
-		//			Vec4 vLookAt = vPos + (vLook * 10.f);
-		//	
-		//			pClone->Get_Component<CTransform>(L"Com_Transform")->Set_State(CTransform::STATE_POSITION, vPos.OneW());
-		//			pClone->Get_Component<CTransform>(L"Com_Transform")->LookAt_ForLandObject(vLookAt.OneW());
-		//	
-		//			CCurlingGame_Wall* pWall = dynamic_cast<CCurlingGame_Wall*>(pClone);
-		//			if (nullptr != pWall)
-		//			{
-		//				Vec3 vNormal = Vec3(pClone->Get_Component<CTransform>(L"Com_Transform")->Get_Look()).ZeroY().Normalized();
-		//	 
-		//				vNormal *= -1.f;
-		//				pWall->Set_Normal(vNormal);
-		//			}
-		//		}
-		//	}
-		//}
 	}
 
 	if (KEY_TAP(KEY::Q))
@@ -372,7 +409,7 @@ void CCurlingGame_Manager::Debug()
 		{
 			vPos += vDelta;
 
-			desc.strText = L"Score NPC : " + to_wstring(10);
+			desc.strText = L"Score Player : " + to_wstring(m_tParticipants[PARTICIPANT_PLAYER].iScore);
 			desc.vPosition = vPos;
 			desc.vColor = (Vec4)DirectX::Colors::DarkBlue;
 		}
@@ -382,12 +419,62 @@ void CCurlingGame_Manager::Debug()
 		{
 			vPos += vDelta;
 
-			desc.strText = L"Score Player : " + to_wstring(10);
+			desc.strText = L"Score Npc : " + to_wstring(m_tParticipants[PARTICIPANT_NPC].iScore);
 			desc.vPosition = vPos;
 			desc.vColor = (Vec4)DirectX::Colors::DarkGreen;
 		}
 		pRenderer->Add_Text(desc);
 	}
+}
+
+HRESULT CCurlingGame_Manager::Ready_DebugDraw()
+{
+	m_pBatch = new PrimitiveBatch<VertexPositionColor>(GI->Get_Context());
+	m_pEffect = new BasicEffect(GI->Get_Device());
+
+	m_pEffect->SetVertexColorEnabled(true);
+
+	const void* pShaderByteCodes = nullptr;
+	size_t			iLength = 0;
+
+	m_pEffect->GetVertexShaderBytecode(&pShaderByteCodes, &iLength);
+
+	if (FAILED(GI->Get_Device()->CreateInputLayout(VertexPositionColor::InputElements, VertexPositionColor::InputElementCount, pShaderByteCodes, iLength, &m_pInputLayout)))
+		return E_FAIL;
+
+	_float	fRadius = 0.5f;
+	Vec3	vOrigin = { 0.f, fRadius * 0.5f, 0.f };
+	m_pSphere = new BoundingSphere(vOrigin, fRadius);
+
+	if (nullptr == m_pSphere)
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CCurlingGame_Manager::Render_DebugDraw()
+{
+	m_pEffect->SetWorld(XMMatrixIdentity());
+	m_pEffect->SetView(GI->Get_TransformMatrix(CPipeLine::D3DTS_VIEW));
+	m_pEffect->SetProjection(GI->Get_TransformMatrix(CPipeLine::D3DTS_PROJ));
+
+	m_pEffect->Apply(m_pContext);
+
+	m_pContext->IASetInputLayout(m_pInputLayout);
+
+	m_pBatch->Begin();
+	{
+		// 여기서 포지션이랑 스케일 다시 세팅 필요
+		for (size_t i = 0; i < STANDARD_DESC::RING_TYPEEND; i++)
+		{
+			m_pSphere->Center = m_tStandardDesc.vGoalPosition;
+			m_pSphere->Radius = m_tStandardDesc.fRingScalesForDetection[i];
+			DX::Draw(m_pBatch, *m_pSphere, Colors::BlueViolet);
+		}
+	}
+	m_pBatch->End();
+
+	return S_OK;
 }
 
 void CCurlingGame_Manager::Free()
@@ -396,6 +483,11 @@ void CCurlingGame_Manager::Free()
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
+
+	Safe_Delete(m_pBatch);
+	Safe_Delete(m_pEffect);
+	Safe_Delete(m_pSphere);
+	Safe_Release(m_pInputLayout);
 }
 
 

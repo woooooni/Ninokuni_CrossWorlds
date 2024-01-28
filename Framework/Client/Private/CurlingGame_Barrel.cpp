@@ -92,6 +92,12 @@ void CCurlingGame_Barrel::Tick(_float fTimeDelta)
 	}
 
 	__super::Tick(fTimeDelta);
+
+	/* 리지드바디 체크 */
+	if (!m_pRigidBodyCom->Is_Sleep())
+	{
+		m_bMoving = m_pRigidBodyCom->Check_Sleep();
+	}
 }
 
 void CCurlingGame_Barrel::LateTick(_float fTimeDelta)
