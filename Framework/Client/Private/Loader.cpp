@@ -1012,6 +1012,7 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 					return E_FAIL;
 				}
 
+				vPos.w = 1.f;
 	
 
 				pTransform->Set_State(CTransform::STATE_RIGHT, XMLoadFloat4(&vRight));

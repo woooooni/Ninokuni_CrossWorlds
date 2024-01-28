@@ -142,7 +142,7 @@ namespace Client
 	
 	static const _float Cam_Dist_Follow_Default					= 4.5f;
 	static const _float Cam_Dist_Follow_Wide					= 5.5f;
-	static const _float Cam_Dist_Curling_Default				= 8.f;
+	static const _float Cam_Dist_CurlingGame_Default			= 5.5f;
 
 	static const _float Cam_Dist_Quater_Min						= 15.f;
 	static const _float Cam_Dist_Quater_Default					= 30.f;
@@ -166,6 +166,9 @@ namespace Client
 
 	static const Vec4	Cam_TargetOffset_Follow_BackView_Default = { 0.f, 1.3f, 0.f, 1.f };
 	static const Vec4	Cam_LookAtOffset_Follow_BackView_Default = { 0.f, 1.3f, 0.f, 1.f };
+
+	static const Vec4	Cam_TargetOffset_CurlingGame_Default = { 0.f, 3.5f, 0.f, 1.f };
+	static const Vec4	Cam_LookAtOffset_CurlingGame_Default = { 0.f, 1.f, 0.f, 1.f };
 
 	static const Vec4	Cam_TargetOffset_Top_Glanix = { -20.f, 15.f, 0.f, 1.f };
 	static const Vec4	Cam_TargetOffset_Top_Glanix_Zoom = { -13.f, 8.f, 0.f, 1.f };

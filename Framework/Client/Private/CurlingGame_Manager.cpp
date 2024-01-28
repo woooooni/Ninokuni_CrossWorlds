@@ -75,7 +75,10 @@ HRESULT CCurlingGame_Manager::Set_Game(const _bool& bStart)
 		if (nullptr != pFollowCam)
 		{
 			pFollowCam->Set_CanWideView(false);
-			pFollowCam->Set_ViewType(CAMERA_VIEW_TYPE::BACK);
+
+			pFollowCam->Set_TargetOffSet(Cam_TargetOffset_CurlingGame_Default);
+			pFollowCam->Set_LookAtOffSet(Cam_LookAtOffset_CurlingGame_Default);
+			pFollowCam->Set_Distance(Cam_Dist_CurlingGame_Default);
 		}
 
 		for (size_t i = 0; i < 1; i++)
@@ -103,6 +106,9 @@ HRESULT CCurlingGame_Manager::Set_Game(const _bool& bStart)
 				dynamic_cast<CCurlingGame_Barrel*>(pClone)->Set_Active(true);
 			}
 		}
+
+		if (FAILED(Ready_Decal()))
+			return E_FAIL;
 	}
 	else
 	{
@@ -205,7 +211,60 @@ HRESULT CCurlingGame_Manager::Ready_Objects()
 	return S_OK;
 }
 
-static int iTest = 0;
+HRESULT CCurlingGame_Manager::Ready_Decal()
+{
+	/* Ring Decal */
+	{
+		const Matrix matWorld = Matrix::CreateTranslation(m_tStandardDesc.vGoalPosition);
+
+		for (size_t i = 0; i < STANDARD_DESC::RING_TYPE::RING_TYPEEND; i++)
+		{
+			Vec3 vScale = Vec3(m_tStandardDesc.fRingScales[i]);
+			vScale.y = m_tStandardDesc.fHeight;
+
+			if (FAILED(CEffect_Manager::GetInstance()->Generate_Decal(m_tStandardDesc.wstrRingNames[i], matWorld,
+				Vec3::Zero, vScale, Vec3::Zero, nullptr, nullptr, false)))
+				return E_FAIL;
+		}
+	}
+
+	return S_OK;
+}
+
+void CCurlingGame_Manager::Calculate_Score()
+{
+	for (auto& pBarrel : m_pBarrelsLaunched)
+	{
+		/* Exception */
+		if (nullptr == pBarrel || pBarrel->Is_Outted())
+			continue;
+
+		/* Calculate Point */
+		_int iPoint = 0;
+		{
+
+		}
+
+		/* Accumulate */
+		switch (pBarrel->Get_OwnerType())
+		{
+		case OBJ_TYPE::OBJ_PLAYER:
+		{
+			m_tParticipants[PARTICIPANT_PLAYER].iScore += iPoint;
+		}
+		break;
+		case OBJ_TYPE::OBJ_NPC:
+		{
+			m_tParticipants[PARTICIPANT_PLAYER].iScore += iPoint;
+		}
+		break;
+		default:
+			break;
+		}
+	}
+
+}
+
 void CCurlingGame_Manager::Test(const _float& fTimeDelta)
 {
 	if (m_bPlaying)
@@ -254,34 +313,24 @@ void CCurlingGame_Manager::Test(const _float& fTimeDelta)
 		Set_Game(!m_bPlaying);
 	}
 
-	if (KEY_TAP(KEY::RBTN))
+	if (KEY_TAP(KEY::RBTN) && !m_bLoadMapTest)
 	{
-		list<CGameObject*>& pGameObjects = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_BUILDING);
+		m_bLoadMapTest = true;
 
+		list<CGameObject*>& pGameObjects = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_BUILDING);
+		
 		for (auto& iter : pGameObjects)
 		{
 			if (OBJ_TYPE::OBJ_MINIGAME_STRUCTURE == iter->Get_ObjectType())
 			{
 				CTransform* pTransform = iter->Get_Component<CTransform>(L"Com_Transform");
-				Vec3 vPos = pTransform->Get_Position();
-
-				const _float fDelta = 1.f;
-
-				vPos.y += fDelta;
-
+				Vec4 vPos = pTransform->Get_Position();
+		
+				vPos.y += 25;
+		
 				pTransform->Set_State(CTransform::STATE_POSITION, vPos);
 			}
 		}
-
-		++iTest;
-
-		//// 置段 持失 (Decal)
-		////if (m_pFootPrints_Decal == nullptr)
-		//{
-		//	CEffect_Manager::GetInstance()->Generate_Decal(TEXT("RingBoard_Green"), Matrix::Identity,
-		//		Vec3(-140.f, -27.f, 236.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), nullptr, nullptr, false);
-		//	//Safe_AddRef(m_pFootPrints_Decal);
-		//}
 	}
 }
 

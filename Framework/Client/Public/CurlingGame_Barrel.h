@@ -58,12 +58,15 @@ public:
 		const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc) override;
 
 public:
-	void Launch(const _float& fPower);
-	void PutDown();
-
 	const _bool& Is_Launched() const { return m_bLaunched; }
+	const _bool& Is_Outted() const { return m_bOutted; }
+
 	void Set_OwnerType(const OBJ_TYPE& eType) { m_eOwnerType = eType; }
 	const OBJ_TYPE& Get_OwnerType() const { return m_eOwnerType; }
+
+public:
+	void Launch(const _float& fPower);
+	void PutDown();
 
 public:
 	virtual void Collision_Enter(const COLLISION_INFO& tInfo) override;
@@ -83,8 +86,9 @@ private:
 	_uint				m_iNumCol			= 0;
 
 	_bool				m_bLaunched			= false;
+	_bool				m_bOutted			= false;
 
-	OBJ_TYPE			m_eOwnerType		= OBJ_TYPE::OBJ_END;
+	OBJ_TYPE			m_eOwnerType		= OBJ_TYPE::OBJ_PLAYER;
 
 public:
 	static CCurlingGame_Barrel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
