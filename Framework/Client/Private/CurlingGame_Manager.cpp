@@ -20,6 +20,8 @@
 #include "CurlingGame_Barrel.h"
 #include "CurlingGame_Wall.h"
 
+#include "Effect_Manager.h"
+
 IMPLEMENT_SINGLETON(CCurlingGame_Manager)
 
 CCurlingGame_Manager::CCurlingGame_Manager()
@@ -147,36 +149,11 @@ HRESULT CCurlingGame_Manager::Finish_StaduimAction()
 	return S_OK;
 }
 
-CCurlingGame_Barrel* CCurlingGame_Manager::Pop_Barrel()
-{
-	if(m_pBarrelPool.empty())
-		return nullptr;
-
-	CCurlingGame_Barrel* pBarrel = m_pBarrelPool.front();
-	m_pBarrelPool.pop();
-
-	pBarrel->Set_Active(true);
-
-	return pBarrel;
-}
-
-HRESULT CCurlingGame_Manager::Push_Barrel(CCurlingGame_Barrel* pBarrel)
-{
-	if(nullptr == pBarrel)
-		return E_FAIL;
-
-	pBarrel->Set_Active(false);
-	
-	m_pBarrelPool.push(pBarrel);
-	return S_OK;
-}
-
 void CCurlingGame_Manager::Tick_Guage(const _float& fTimeDelta)
 {
 	m_tGuageDesc.Tick(fTimeDelta);
 	if (KEY_AWAY(KEY::LBTN))
 	{
-		//CCurlingGame_Barrel* pBarrel = Pop_Barrel();
 		CGameObject* pClone = nullptr;
 
 		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_PROP, TEXT("Prorotype_GameObject_Shuffleboard_Barrel"), nullptr, &pClone)))
@@ -185,25 +162,7 @@ void CCurlingGame_Manager::Tick_Guage(const _float& fTimeDelta)
 		CCurlingGame_Barrel* pBarrel = dynamic_cast<CCurlingGame_Barrel*>(pClone);
 		if (nullptr != pBarrel)
 		{			
-			/* Transform */
-			{
-				Vec4 vPos = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
-				Vec4 vDir = CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Transform()->Get_Look();
-				Vec4 vLookAt = vPos + (vDir * 5.f);
-
-				pBarrel->Get_Transform()->Set_State(CTransform::STATE_POSITION, vPos.OneW());
-				pBarrel->Get_Transform()->LookAt_ForLandObject(vLookAt.OneW());
-			}
-
-			/* Rigidbody */
-			if (nullptr != pBarrel)
-			{
-				const _float fPower = m_tGuageDesc.fMaxPower;
-				const Vec3 vDir = Vec3(CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform")->Get_Look()).ZeroY().Normalized();
-				pBarrel->Launch(vDir, fPower * m_tGuageDesc.tLerpValue.fCurValue);
-			}
-
-			pBarrel->Set_Active(true);
+			pBarrel->Launch(m_tGuageDesc.fMaxPower * m_tGuageDesc.tLerpValue.fCurValue);
 
 			m_pBarrelsLaunched.push_back(pBarrel);
 
@@ -230,32 +189,12 @@ HRESULT CCurlingGame_Manager::Ready_Objects()
 				return E_FAIL;
 		}
 
-		///* Wall */
-		//{
-		//	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Prop_Wall", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/CurlingGame/Wall/", L"Lobby_Fence_01a")))
-		//		return E_FAIL;
-		//
-		//	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Shuffleboard_Wall",
-		//		CCurlingGame_Wall::Create(m_pDevice, m_pContext, TEXT("Shuffleboard_Wall")), LAYER_TYPE::LAYER_PROP)))
-		//		return E_FAIL;
-		//}
-	}
-
-	/* Pool */
-	{
-		//for (_uint i = 0; i < m_iMaxBarrels; i++)
-		//{
-		//	CGameObject* pClone = nullptr;
-		//
-		//	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_PROP, TEXT("Prorotype_GameObject_Shuffleboard_Barrel"), nullptr, &pClone)))
-		//		return E_FAIL;
-		//
-		//	CCurlingGame_Barrel* pBarrel = dynamic_cast<CCurlingGame_Barrel*>(pClone);
-		//	if (nullptr == pBarrel)
-		//		return E_FAIL;
-		//
-		//	m_pBarrelPool.push(pBarrel);
-		//}
+		/* Wall */
+		{
+			if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Shuffleboard_Wall",
+				CCurlingGame_Wall::Create(m_pDevice, m_pContext, TEXT("Shuffleboard_Wall")), LAYER_TYPE::LAYER_PROP)))
+				return E_FAIL;
+		}
 	}
 
 	/* Stadium Objects (준엽) */
@@ -266,6 +205,7 @@ HRESULT CCurlingGame_Manager::Ready_Objects()
 	return S_OK;
 }
 
+static int iTest = 0;
 void CCurlingGame_Manager::Test(const _float& fTimeDelta)
 {
 	if (m_bPlaying)
@@ -275,44 +215,73 @@ void CCurlingGame_Manager::Test(const _float& fTimeDelta)
 			m_tGuageDesc.Start();
 		}
 
-		if (KEY_TAP(KEY::RBTN))
-		{
-			/* Create Wall */
-			//{
-			//	CGameObject* pClone = nullptr;
-			//
-			//	if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_PROP, TEXT("Prorotype_GameObject_Shuffleboard_Wall"), nullptr, &pClone)))
-			//		return;
-			//
-			//	if (nullptr != pClone)
-			//	{
-			//		Vec4 vPos = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
-			//		Vec4 vLook = Vec4(CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Transform()->Get_Look()).ZeroY().Normalized();
-			//
-			//		vPos = vPos + (vLook * 5.f);
-			//		vPos.y -= pClone->Get_Component<CTransform>(L"Com_Transform")->Get_Scale().y;
-			//
-			//		Vec4 vLookAt = vPos + (vLook * 10.f);
-			//
-			//		pClone->Get_Component<CTransform>(L"Com_Transform")->Set_State(CTransform::STATE_POSITION, vPos.OneW());
-			//		pClone->Get_Component<CTransform>(L"Com_Transform")->LookAt_ForLandObject(vLookAt.OneW());
-			//
-			//		CCurlingGame_Wall* pWall = dynamic_cast<CCurlingGame_Wall*>(pClone);
-			//		if (nullptr != pWall)
-			//		{
-			//			Vec3 vNormal = Vec3(pClone->Get_Component<CTransform>(L"Com_Transform")->Get_Look()).ZeroY().Normalized();
-			// 
-			//			vNormal *= -1.f;
-			//			pWall->Set_Normal(vNormal);
-			//		}
-			//	}
-			//}
-		}
+		//if (KEY_TAP(KEY::RBTN))
+		//{
+		//	/* Create Wall */
+		//	{
+		//		CGameObject* pClone = nullptr;
+		//	
+		//		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_PROP, TEXT("Prorotype_GameObject_Shuffleboard_Wall"), nullptr, &pClone)))
+		//			return;
+		//	
+		//		if (nullptr != pClone)
+		//		{
+		//			Vec4 vPos = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
+		//			Vec4 vLook = Vec4(CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Transform()->Get_Look()).ZeroY().Normalized();
+		//	
+		//			vPos = vPos + (vLook * 5.f);
+		//	
+		//			Vec4 vLookAt = vPos + (vLook * 10.f);
+		//	
+		//			pClone->Get_Component<CTransform>(L"Com_Transform")->Set_State(CTransform::STATE_POSITION, vPos.OneW());
+		//			pClone->Get_Component<CTransform>(L"Com_Transform")->LookAt_ForLandObject(vLookAt.OneW());
+		//	
+		//			CCurlingGame_Wall* pWall = dynamic_cast<CCurlingGame_Wall*>(pClone);
+		//			if (nullptr != pWall)
+		//			{
+		//				Vec3 vNormal = Vec3(pClone->Get_Component<CTransform>(L"Com_Transform")->Get_Look()).ZeroY().Normalized();
+		//	 
+		//				vNormal *= -1.f;
+		//				pWall->Set_Normal(vNormal);
+		//			}
+		//		}
+		//	}
+		//}
 	}
 
 	if (KEY_TAP(KEY::Q))
 	{
 		Set_Game(!m_bPlaying);
+	}
+
+	if (KEY_TAP(KEY::RBTN))
+	{
+		list<CGameObject*>& pGameObjects = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_BUILDING);
+
+		for (auto& iter : pGameObjects)
+		{
+			if (OBJ_TYPE::OBJ_MINIGAME_STRUCTURE == iter->Get_ObjectType())
+			{
+				CTransform* pTransform = iter->Get_Component<CTransform>(L"Com_Transform");
+				Vec3 vPos = pTransform->Get_Position();
+
+				const _float fDelta = 1.f;
+
+				vPos.y += fDelta;
+
+				pTransform->Set_State(CTransform::STATE_POSITION, vPos);
+			}
+		}
+
+		++iTest;
+
+		//// 최초 생성 (Decal)
+		////if (m_pFootPrints_Decal == nullptr)
+		//{
+		//	CEffect_Manager::GetInstance()->Generate_Decal(TEXT("RingBoard_Green"), Matrix::Identity,
+		//		Vec3(-140.f, -27.f, 236.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), nullptr, nullptr, false);
+		//	//Safe_AddRef(m_pFootPrints_Decal);
+		//}
 	}
 }
 

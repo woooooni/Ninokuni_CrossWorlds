@@ -58,27 +58,33 @@ void CCurlingGame_Prop::LateTick(_float fTimeDelta)
 	if (nullptr != m_pModelCom)
 		m_pModelCom->LateTick(fTimeDelta);
 
-	if (CModel::TYPE::TYPE_ANIM == m_pModelCom->Get_ModelType())
+	if (nullptr != m_pModelCom && nullptr != m_pRendererCom)
 	{
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
-		//m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_NONBLEND, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);
-		//m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_SHADOW, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);
-	}
-	else
-	{
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
-		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
-		//m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
-		//m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_SHADOW, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
+		if (CModel::TYPE::TYPE_ANIM == m_pModelCom->Get_ModelType())
+		{
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
+			//m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_NONBLEND, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);
+			//m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_SHADOW, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);
+		}
+		else
+		{
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
+			m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
+			//m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
+			//m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_SHADOW, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
+		}
 	}
 
-	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
+	if (nullptr != m_pRendererCom)
 	{
-#ifdef _DEBUG
-		for (auto& pCollider : m_Colliders[i])
-			m_pRendererCom->Add_Debug(pCollider);
-#endif
+		for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
+		{
+	#ifdef _DEBUG
+			for (auto& pCollider : m_Colliders[i])
+				m_pRendererCom->Add_Debug(pCollider);
+	#endif
+		}
 	}
 
 	Compute_CamZ(m_pTransformCom->Get_Position());
