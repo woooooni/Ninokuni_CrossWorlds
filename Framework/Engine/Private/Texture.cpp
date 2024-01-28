@@ -96,6 +96,8 @@ HRESULT CTexture::Load_Texture(const wstring& strTextureFilePath, _uint iNumText
 			MessageBox(nullptr, szFullPath, L"Failed_Load_Texture", MB_OK);
 			return E_FAIL;
 		}
+
+		Safe_Release(pTexture);
 		
 		m_FileNames.push_back(wstring(szName) + szExt);
 		m_SRVs.push_back(pSRV);
@@ -150,6 +152,8 @@ HRESULT CTexture::Load_Texture_In_Path(const wstring& strTextureFilePath)
 
 		if (FAILED(hr))
 			return E_FAIL;
+
+		Safe_Release(pTexture);
 
 		m_FileNames.push_back(wstring(szName));
 		m_SRVs.push_back(pSRV);
