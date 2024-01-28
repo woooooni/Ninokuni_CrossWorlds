@@ -330,11 +330,11 @@ HRESULT CRenderer::Draw_World()
 		if (FAILED(Render_Shadow())) // MRT_Shadow -> ShadowDepth
 			return E_FAIL;
 
-		if (FAILED(Render_Cascade_Shadow()))
-			return E_FAIL;
+		//if (FAILED(Render_Cascade_Shadow()))
+		//	return E_FAIL;
 
-		if (FAILED(Render_Cascade_Caculation()))
-			return E_FAIL;
+		//if (FAILED(Render_Cascade_Caculation()))
+		//	return E_FAIL;
 
 		if (FAILED(Render_Shadow_Caculation()))
 			return E_FAIL;
@@ -891,94 +891,91 @@ HRESULT CRenderer::Render_Shadow_Caculation()
 		return E_FAIL;
 	return S_OK;
 }
-
-HRESULT CRenderer::Render_Cascade_Shadow()
-{
-	// Frustum과 LightMatrix 업데이트.
-	//CascadeFrustumAndLightMatrixUpdate();
-	LightMatrixUpdate();
-
-	m_pTarget_Manager->ClearCascadeDepthBuffer(m_pContext);
-	Matrix lightViewMatrix = GI->GetViewLightMatrix();
-
-	for (_uint nCascadeIndex = 0; nCascadeIndex < CASCADE_SHADOW_MAP_NUM; ++nCascadeIndex)
-	{
-		m_pTarget_Manager->SetRenderTarget(m_pContext, nCascadeIndex);
-
-		for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_CASCADE])
-		{
-			if (FAILED(iter->Render_Cascade_Depth(lightViewMatrix, m_ArrayLightOrthoMatrix[nCascadeIndex])))
-				return E_FAIL;
-		}
-	}
-
-	for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_CASCADE])
-		Safe_Release(iter);
-	m_RenderObjects[RENDERGROUP::RENDER_CASCADE].clear();
-
-	m_pContext->OMSetRenderTargets(8, m_pTarget_Manager->Get_PrevRTVs(), m_pTarget_Manager->Get_BackBuffer());
-
-
-	return S_OK;
-}
-
-HRESULT CRenderer::Render_Cascade_Caculation()
-{	
-	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Cascade_Cacluation"))))
-		return E_FAIL;
-
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("world", &m_WorldMatrix)))
-		return E_FAIL;
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("view", &m_ViewMatrix)))
-		return E_FAIL;
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("projection", &m_ProjMatrix)))
-		return E_FAIL;
-
-	//_float cascadedEndClip[3];
-	//for (_uint i = 0; i < CASCADE_SHADOW_MAP_NUM; ++i)
-	//{
-	//	Matrix vCamProj = GI->Get_TransformFloat4x4(CPipeLine::TRANSFORMSTATE::D3DTS_PROJ);
-	//	Vec4 vClip = Vec4::Transform(Vec4(0.0f, 0.0f, m_fCascadeEnd[i + 1], 1.0f), vCamProj);
-	//	cascadedEndClip[i] = vClip.z;
-	//}
-
-
-	_float4x4 ViewMatrixInv = GI->Get_TransformMatrixInverse_Float4x4(CPipeLine::D3DTS_VIEW);
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("viewInv", &ViewMatrixInv)))
-		return E_FAIL;
-	_float4x4 ProjMatrixInv = GI->Get_TransformMatrixInverse_Float4x4(CPipeLine::D3DTS_PROJ);
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("projectionInv", &ProjMatrixInv)))
-		return E_FAIL;
-
-	// 여기 깊이텍스쳐에 저장된 깊이값 
-	//if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrices("lightPV", m_OrthoLightMatrix, CASCADE_SHADOW_MAP_NUM)))
-	//	return E_FAIL;
-	//if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_RawValue("cascadeEndClipSpace", &cascadedEndClip, sizeof(_float) * CASCADE_SHADOW_MAP_NUM)))
-	//	return E_FAIL;
-
-
-	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS], TEXT("Target_Depth"), "DepthTexture")))
-		return E_FAIL;
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Texture("CascadeLightDepthMap", m_pTarget_Manager->Get_Cascasd_SRV())))
-		return E_FAIL;
-
-	m_pTarget_Manager->ClearCascadeDepthBuffer(m_pContext);
-	Matrix lightViewMatrix = GI->GetViewLightMatrix();
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("dirView", &lightViewMatrix)))
-		return E_FAIL;
-	if(FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrices("arrayDirProj", m_ArrayLightOrthoMatrix, CASCADE_SHADOW_MAP_NUM)))
-		return E_FAIL;
-
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Begin(2)))
-		return E_FAIL;
-	if (FAILED(m_pVIBuffer->Render()))
-		return E_FAIL;
-
-	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
-		return E_FAIL;
-
-	return S_OK;
-}
+//
+//HRESULT CRenderer::Render_Cascade_Shadow()
+//{
+//	// Frustum과 LightMatrix 업데이트.
+//	//CascadeFrustumAndLightMatrixUpdate();
+//	LightMatrixUpdate();
+//
+//	m_pTarget_Manager->ClearCascadeDepthBuffer(m_pContext);
+//	Matrix lightViewMatrix = GI->GetViewLightMatrix();
+//
+//	for (_uint nCascadeIndex = 0; nCascadeIndex < CASCADE_SHADOW_MAP_NUM; ++nCascadeIndex)
+//	{
+//		m_pTarget_Manager->SetRenderTarget(m_pContext, nCascadeIndex);
+//
+//		for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_CASCADE])
+//		{
+//			if (FAILED(iter->Render_Cascade_Depth(lightViewMatrix, m_ArrayLightOrthoMatrix[nCascadeIndex])))
+//				return E_FAIL;
+//		}
+//	}
+//
+//	for (auto& iter : m_RenderObjects[RENDERGROUP::RENDER_CASCADE])
+//		Safe_Release(iter);
+//	m_RenderObjects[RENDERGROUP::RENDER_CASCADE].clear();
+//
+//
+//	D3D11_VIEWPORT			ViewPortDesc;
+//	ZeroMemory(&ViewPortDesc, sizeof(D3D11_VIEWPORT));
+//	ViewPortDesc.Width = 1600.0f;
+//	ViewPortDesc.Height = 900.0f;
+//	ViewPortDesc.MinDepth = 0.f;
+//	ViewPortDesc.MaxDepth = 1.f;
+//	ViewPortDesc.TopLeftX = 0;
+//	ViewPortDesc.TopLeftY = 0;
+//
+//	m_pContext->RSSetViewports(1, &ViewPortDesc);
+//
+//	m_pContext->OMSetRenderTargets(8, m_pTarget_Manager->Get_PrevRTVs(), m_pTarget_Manager->Get_BackBuffer());
+//
+//
+//	return S_OK;
+//}
+//
+//HRESULT CRenderer::Render_Cascade_Caculation()
+//{	
+//	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Cascade_Cacluation"))))
+//		return E_FAIL;
+//
+//	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("world", &m_WorldMatrix)))
+//		return E_FAIL;
+//	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("view", &m_ViewMatrix)))
+//		return E_FAIL;
+//	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("projection", &m_ProjMatrix)))
+//		return E_FAIL;
+//
+//
+//	_float4x4 ViewMatrixInv = GI->Get_TransformMatrixInverse_Float4x4(CPipeLine::D3DTS_VIEW);
+//	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("viewInv", &ViewMatrixInv)))
+//		return E_FAIL;
+//	_float4x4 ProjMatrixInv = GI->Get_TransformMatrixInverse_Float4x4(CPipeLine::D3DTS_PROJ);
+//	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("projectionInv", &ProjMatrixInv)))
+//		return E_FAIL;
+//
+//
+//	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS], TEXT("Target_Depth"), "DepthTexture")))
+//		return E_FAIL;
+//	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Texture("CascadeLightDepthMap", m_pTarget_Manager->Get_Cascasd_SRV())))
+//		return E_FAIL;
+//
+//	Matrix lightViewMatrix = GI->GetViewLightMatrix();
+//	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrix("dirView", &lightViewMatrix)))
+//		return E_FAIL;
+//	if(FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Bind_Matrices("arrayDirProj", m_ArrayLightOrthoMatrix, CASCADE_SHADOW_MAP_NUM)))
+//		return E_FAIL;
+//
+//	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_POSTPROCESS]->Begin(2)))
+//		return E_FAIL;
+//	if (FAILED(RenderScreenQuad()))
+//		return E_FAIL;
+//
+//	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
+//		return E_FAIL;
+//
+//	return S_OK;
+//}
 
 // MRT_GameObjects
 HRESULT CRenderer::Render_NonBlend()
@@ -1052,12 +1049,14 @@ HRESULT CRenderer::Render_Lights()
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_ProjMatrixInv", &ProjMatrixInv)))
 		return E_FAIL;
 
+
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_Normal"), "g_NormalTarget")))
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_Depth"), "g_DepthTarget")))
 		return E_FAIL;
 
-	m_pLight_Manager->Render(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer);
+	if(FAILED(m_pLight_Manager->Render(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
+		return E_FAIL;
 
 	if (FAILED(m_pTarget_Manager->End_MRT(m_pContext)))
 		return E_FAIL;
@@ -1201,10 +1200,12 @@ HRESULT CRenderer::Render_Deferred()
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_Specular"), "g_SpecularTarget")))
 		return E_FAIL;
+	//if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_Ambient"), "g_AmbientTarget")))
+	//	return E_FAIL;
 
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_Depth"), "g_DepthTarget")))
 		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_Cascade_Shadow_Depth"), "g_ShadowTarget")))
+	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_ShadowDepth_Caculation_Blur"), "g_ShadowTarget")))
 		return E_FAIL;
 
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], TEXT("Target_SSAO_Blur"), "g_SSAOTarget")))
@@ -2017,8 +2018,6 @@ HRESULT CRenderer::Render_Debug_Target()
 #pragma endregion
 
 #pragma region TEMP_SHADOW
-	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Cascade_Shadow"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
-		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_Cascade_Cacluation"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
 		return E_FAIL;
 #pragma endregion
@@ -2394,6 +2393,11 @@ HRESULT CRenderer::Create_Target()
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Specular"),
 		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
+
+	/* For.Target_Specular */
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Ambient"),
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
 #pragma endregion
 
 #pragma region MRT_Shadow : Target_ShadowDepth
@@ -2403,16 +2407,11 @@ HRESULT CRenderer::Create_Target()
 		return E_FAIL;
 #pragma endregion
 
-#pragma region MRT_Cascade_Shadow : Target_Cascade_Depth
-	/* For.Target_Cascade_Shadow */
-	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Cascade_Shadow_Depth"),
-		ViewportDesc.Width * 3.f, ViewportDesc.Height, DXGI_FORMAT_R32_FLOAT, _float4(1.f, 1.f, 1.f, 0.f), 3)))
-		return E_FAIL;
-	/* For.Target_Cascade_Depth_Cacluation */
-	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Cascade_Depth_Caculation"),
-		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 0.f))))
-		return E_FAIL;
-#pragma endregion
+//#pragma region MRT_Cascade_Shadow : Target_Cascade_Depth
+//	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Cascade_Depth_Caculation"),
+//		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(1.f, 1.f, 1.f, 0.f))))
+//		return E_FAIL;
+//#pragma endregion
 
 #pragma region MRT_SSAO : Target_SSAO // Target_SSAO_Blur
 	/* For.Target_SSAO */
@@ -2707,6 +2706,9 @@ HRESULT CRenderer::Set_TargetsMrt()
 
 		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Lights"), TEXT("Target_Specular"))))
 			return E_FAIL;
+
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Lights"), TEXT("Target_Ambient"))))
+			return E_FAIL;
 	}
 
 	// MRT_Shadow
@@ -2717,10 +2719,8 @@ HRESULT CRenderer::Set_TargetsMrt()
 
 	// MRT_Cascade_Shadow
 	{
-		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Cascade_Shadow"), TEXT("Target_Cascade_Shadow_Depth"))))
-			return E_FAIL;
-		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Cascade_Cacluation"), TEXT("Target_Cascade_Depth_Caculation"))))
-			return E_FAIL;
+	/*	if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_Cascade_Cacluation"), TEXT("Target_Cascade_Depth_Caculation"))))
+			return E_FAIL;*/
 	}
 
 	// MRT_SSAO / MRT_SSAO_Blur
@@ -2968,6 +2968,8 @@ HRESULT CRenderer::Set_Debug()
 		return E_FAIL;
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Specular"),               (fSizeX / 2.f) + (fSizeX * 1), (fSizeY / 2.f) + (fSizeY * 1), fSizeX, fSizeY)))
 		return E_FAIL;
+	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Ambient"),				 (fSizeX / 2.f) + (fSizeX * 2), (fSizeY / 2.f) + (fSizeY * 1), fSizeX, fSizeY)))
+		return E_FAIL;
 	// MRT_Shadow
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_ShadowDepth"),                 (fSizeX / 2.f) + (fSizeX * 3), (fSizeY / 2.f) + (fSizeY * 1), fSizeX, fSizeY)))
 		return E_FAIL;
@@ -2975,10 +2977,8 @@ HRESULT CRenderer::Set_Debug()
 		return E_FAIL;
 
 	// MRT_Cascade_Shadow
-	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Cascade_Shadow_Depth"), (fSizeX / 2.f) + (fSizeX * 5), (fSizeY / 2.f) + (fSizeY * 1), fSizeX, fSizeY)))
-		return E_FAIL;
-	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Cascade_Depth_Caculation"), (fSizeX / 2.f) + (fSizeX * 6), (fSizeY / 2.f) + (fSizeY * 1), fSizeX, fSizeY)))
-		return E_FAIL;
+	//if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Cascade_Depth_Caculation"), (fSizeX / 2.f) + (fSizeX * 5), (fSizeY / 2.f) + (fSizeY * 1), fSizeX, fSizeY)))
+	//	return E_FAIL;
 
 	//// MRT_SSAO
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_SSAO"), (fSizeX / 2.f) + (fSizeX * 0), (fSizeY / 2.f) + (fSizeY * 2), fSizeX, fSizeY)))
@@ -3373,6 +3373,7 @@ void CRenderer::LightMatrixUpdate()
 		frustumPoints[6] = Vec4(-fFarX, fFarY, fFarPlane, 1.0f);
 		frustumPoints[7] = Vec4(-fFarX, -fFarY, fFarPlane, 1.0f);
 
+		
 		XMMATRIX viewMatrix = GI->Get_TransformMatrix(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
 		XMMATRIX InverseViewMatrix = ::XMMatrixInverse(nullptr, viewMatrix);
 		XMVECTOR lightVsSceneAABBMax = Vec4(FLT_MIN, FLT_MIN, FLT_MIN, FLT_MIN);

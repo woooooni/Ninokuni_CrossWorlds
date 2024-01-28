@@ -193,8 +193,8 @@ private:
 	HRESULT Render_Shadow();
 	HRESULT Render_Shadow_Caculation();
 
-	HRESULT Render_Cascade_Shadow();
-	HRESULT Render_Cascade_Caculation();
+	//HRESULT Render_Cascade_Shadow();
+	//HRESULT Render_Cascade_Caculation();
 
 	HRESULT Render_NonBlend();
 	HRESULT Render_Lights();
@@ -296,7 +296,7 @@ private:
 	_bool   m_bOption      = false;
 	// On/Off_Option
 	_bool   m_bNaturalDraw = true;
-	_bool   m_bShadowDraw  = false;
+	_bool   m_bShadowDraw  = true;
 	_bool   m_bSsaoDraw    = true;
 	_bool   m_bOutlineDraw = true;
 	_bool   m_bBlurDraw    = true;
@@ -347,7 +347,7 @@ private:
 private: // Cascade
 #define CASCADE_SHADOW_MAP_NUM 3
 #define MAX_CASCADE_NUM 8
-#define SHADOW_MAP_SIZE 1024
+#define SHADOW_MAP_SIZE 2048
 
 	// 두 가지 방법 다 해보자.
 	_float m_fCascadeEnd[4] = {};

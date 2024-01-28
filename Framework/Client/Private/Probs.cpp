@@ -49,6 +49,10 @@ void CProbs::Tick(_float fTimeDelta)
 			Vec3(0.0f, 1.0f, 0.0f), Vec3(0.0f, 0.0f, 0.0f), Vec3(0.0f, 0.0f, 0.0f), this, &m_pParticle, false);
 	}
 
+	if (nullptr == m_pParticle && TEXT("Winter_CampFire") == m_strObjectTag)
+		CParticle_Manager::GetInstance()->Generate_Particle_To_Position(TEXT("Winter_CampFire"), m_pTransformCom->Get_WorldMatrix(), Vec3(-0.3f, 1.5f, 0.0f), Vec3(0.0f,0.0f,0.0f), Vec3(0.0f, 0.0f, 0.0f), this, &m_pParticle, false);
+
+
 	if (TEXT("Winter_Plants_02") == m_strObjectTag || TEXT("Winter_Plants_01") == m_strObjectTag)
 	{
 		m_fTime += fTimeDelta;

@@ -18,8 +18,8 @@ HRESULT CTarget_Manager::Reserve_Manager(ID3D11Device* pDevice, _uint iWinSizeX,
 		return E_FAIL;
 	if (FAILED(Ready_UI_DSV(pDevice, iWinSizeX, iWinSizeY)))
 		return E_FAIL;
-	if (FAILED(Ready_Cascade_Shadow_DSV(pDevice, 1024, 1024)))
-		return E_FAIL;
+	//if (FAILED(Ready_Cascade_Shadow_DSV(pDevice, 2048, 2048)))
+	//	return E_FAIL;
 
 	return S_OK;
 }
@@ -344,41 +344,41 @@ HRESULT CTarget_Manager::Begin_UI_MRT(ID3D11DeviceContext* pContext, const wstri
 	return	S_OK;
 }
 
-HRESULT CTarget_Manager::Begin_CascadeShadow_MRT(ID3D11DeviceContext* pContext, const wstring& strMRTTag)
-{
-	D3D11_VIEWPORT	ViewPortDesc;
-	ZeroMemory(&ViewPortDesc, sizeof(D3D11_VIEWPORT));
-	ViewPortDesc.TopLeftX = 0;
-	ViewPortDesc.TopLeftY = 0;
-	ViewPortDesc.Width = 1600.f * 3.f;
-	ViewPortDesc.Height = 900.f;
-	ViewPortDesc.MinDepth = 0.f;
-	ViewPortDesc.MaxDepth = 1.f;
-	pContext->RSSetViewports(1, &ViewPortDesc);
-
-	pContext->ClearDepthStencilView(m_pCascadeDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
-
-	list<CRenderTarget*>* pMRTList = Find_MRT(strMRTTag);
-
-	if (nullptr == pMRTList)
-		return E_FAIL;
-
-	pContext->OMGetRenderTargets(8, m_pPrevRTVs, &m_pDSV);
-
-	ID3D11RenderTargetView* pRenderTargets[8] = {};
-
-	_uint			iNumRTVs = 0;
-
-	for (auto& pRenderTarget : *pMRTList)
-	{
-		pRenderTargets[iNumRTVs++] = pRenderTarget->Get_RTV();
-		pRenderTarget->Clear();
-	}
-
-	pContext->OMSetRenderTargets(iNumRTVs, pRenderTargets, m_pCascadeDSV);
-
-	return	S_OK;
-}
+//HRESULT CTarget_Manager::Begin_CascadeShadow_MRT(ID3D11DeviceContext* pContext, const wstring& strMRTTag)
+//{
+//	D3D11_VIEWPORT	ViewPortDesc;
+//	ZeroMemory(&ViewPortDesc, sizeof(D3D11_VIEWPORT));
+//	ViewPortDesc.TopLeftX = 0;
+//	ViewPortDesc.TopLeftY = 0;
+//	ViewPortDesc.Width = 1600.f * 3.f;
+//	ViewPortDesc.Height = 900.f;
+//	ViewPortDesc.MinDepth = 0.f;
+//	ViewPortDesc.MaxDepth = 1.f;
+//	pContext->RSSetViewports(1, &ViewPortDesc);
+//
+//	pContext->ClearDepthStencilView(m_pCascadeDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
+//
+//	list<CRenderTarget*>* pMRTList = Find_MRT(strMRTTag);
+//
+//	if (nullptr == pMRTList)
+//		return E_FAIL;
+//
+//	pContext->OMGetRenderTargets(8, m_pPrevRTVs, &m_pDSV);
+//
+//	ID3D11RenderTargetView* pRenderTargets[8] = {};
+//
+//	_uint			iNumRTVs = 0;
+//
+//	for (auto& pRenderTarget : *pMRTList)
+//	{
+//		pRenderTargets[iNumRTVs++] = pRenderTarget->Get_RTV();
+//		pRenderTarget->Clear();
+//	}
+//
+//	pContext->OMSetRenderTargets(iNumRTVs, pRenderTargets, m_pCascadeDSV);
+//
+//	return	S_OK;
+//}
 
 HRESULT CTarget_Manager::Clear_RenderTarget(const wstring& strTargetTag)
 {

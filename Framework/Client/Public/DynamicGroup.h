@@ -16,3 +16,6 @@
 #include "DynamicProps.h"
 #include "Whale.h"
 #include "WelshCorgi.h"
+
+// MiniGameMap
+

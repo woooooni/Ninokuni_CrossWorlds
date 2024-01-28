@@ -1291,8 +1291,48 @@ HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_WelshCorgi"), CWelshCorgi::Create(m_pDevice, m_pContext, TEXT("Animal_WelshCorgi"), OBJ_TYPE::OBJ_ANIMAL), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
-
 #pragma endregion Animals Prototype
+
+
+#pragma region MiniMap_ProtoType
+	if(FAILED(GI->Add_Prototype(TEXT("Winter_MiniGameMap_Wall"),
+		CWinter_MiniWall::Create(m_pDevice, m_pContext, TEXT("Winter_MiniGameMap_Wall"), OBJ_TYPE::OBJ_MINIGAME_STRUCTURE),LAYER_TYPE::LAYER_BUILDING, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Winter_MiniGameMap_Stair"),
+		CWinter_MiniStair::Create(m_pDevice, m_pContext, TEXT("Winter_MiniGameMap_Stair"), OBJ_TYPE::OBJ_MINIGAME_STRUCTURE), LAYER_TYPE::LAYER_GROUND, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Winter_MiniGameMap_Stair"),
+		CWinter_MiniBlock::Create(m_pDevice, m_pContext, TEXT("Winter_MiniGameMap_Block"), OBJ_TYPE::OBJ_MINIGAME_STRUCTURE), LAYER_TYPE::LAYER_BUILDING, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Winter_MiniGameMap_Colmn"),
+		CWinter_MiniColumn::Create(m_pDevice, m_pContext, TEXT("Winter_MiniGameMap_Colmn"), OBJ_TYPE::OBJ_MINIGAME_STRUCTURE), LAYER_TYPE::LAYER_BUILDING, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Winter_MiniGameMap_Colmn2"),
+		CWinter_MiniRevColumn::Create(m_pDevice, m_pContext, TEXT("Winter_MiniGameMap_Colmn2"), OBJ_TYPE::OBJ_MINIGAME_STRUCTURE), LAYER_TYPE::LAYER_BUILDING, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Winter_MiniGameMap_Sculpture"),
+		CWinter_Sculpture::Create(m_pDevice, m_pContext, TEXT("Winter_MiniGameMap_Sculpture"), OBJ_TYPE::OBJ_MINIGAME_STRUCTURE), LAYER_TYPE::LAYER_BUILDING, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Winter_MiniGameMap_SnowMan"),
+		CWinter_MiniSnowMan::Create(m_pDevice, m_pContext, TEXT("Winter_MiniGameMap_SnowMan"), OBJ_TYPE::OBJ_MINIGAME_STRUCTURE), LAYER_TYPE::LAYER_BUILDING, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Winter_MiniGameMap_BKHouse_01"),
+		CWinter_MiniBKHouse::Create(m_pDevice, m_pContext, TEXT("Winter_MiniGameMap_BKHouse_01"), OBJ_TYPE::OBJ_MINIGAME_STRUCTURE), LAYER_TYPE::LAYER_BUILDING, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Winter_MiniGameMap_House_01"),
+		CWinter_MiniHouse_01::Create(m_pDevice, m_pContext, TEXT("Winter_MiniGameMap_House_01"), OBJ_TYPE::OBJ_MINIGAME_STRUCTURE), LAYER_TYPE::LAYER_BUILDING, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Winter_MiniGameMap_House_02"),
+		CWinter_MiniHouse_02::Create(m_pDevice, m_pContext, TEXT("Winter_MiniGameMap_House_02"), OBJ_TYPE::OBJ_MINIGAME_STRUCTURE), LAYER_TYPE::LAYER_BUILDING, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Winter_MiniGameMap_House_03"),
+		CWinter_MiniHouse_03::Create(m_pDevice, m_pContext, TEXT("Winter_MiniGameMap_House_03"), OBJ_TYPE::OBJ_MINIGAME_STRUCTURE), LAYER_TYPE::LAYER_BUILDING, true)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Winter_MiniGameMap_Walls"),
+		CWinter_MiniWalls::Create(m_pDevice, m_pContext, TEXT("Winter_MiniGameMap_Walls"), OBJ_TYPE::OBJ_MINIGAME_STRUCTURE), LAYER_TYPE::LAYER_BUILDING, true)))
+		return E_FAIL;
+#pragma endregion
+
 
 #pragma region Sky
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_SkySun"), CSun::Create(m_pDevice, m_pContext, TEXT("Sky_Sun"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX, true)))
@@ -1367,6 +1407,34 @@ HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_SkySun", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/SkyDom/", L"Sun")))
 		return E_FAIL;
 #pragma endregion Sky
+
+#pragma region MiniMap_ProtoType
+	// TODO ¾µ FBX ´Ù »Ì°í.
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Winter_MiniGameMap_Wall", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/MiniGame/", L"Winter_MiniGameMap_Wall")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Winter_MiniGameMap_Stair", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/MiniGame/", L"Winter_MiniGameMap_Stair")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Winter_MiniGameMap_Block", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/MiniGame/", L"Winter_MiniGameMap_Block")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Winter_MiniGameMap_Colmn", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/MiniGame/", L"Winter_MiniGameMap_Colmn")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Winter_MiniGameMap_Colmn2", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/MiniGame/", L"Winter_MiniGameMap_Colmn2")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Winter_MiniGameMap_Sculpture", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/MiniGame/", L"Winter_MiniGameMap_Sculpture")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Winter_MiniGameMap_SnowMan", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/MiniGame/", L"Winter_MiniGameMap_SnowMan")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Winter_MiniGameMap_BKHouse_01", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/MiniGame/", L"Winter_MiniGameMap_BKHouse_01")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Winter_MiniGameMap_House_01", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/MiniGame/", L"Winter_MiniGameMap_House_01")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Winter_MiniGameMap_House_02", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/MiniGame/", L"Winter_MiniGameMap_House_02")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Winter_MiniGameMap_House_03", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/MiniGame/", L"Winter_MiniGameMap_House_03")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Winter_MiniGameMap_Walls", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/MiniGame/", L"Winter_MiniGameMap_Walls")))
+		return E_FAIL;
+#pragma endregion
 
 
 	return S_OK;

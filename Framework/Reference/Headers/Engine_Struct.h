@@ -55,6 +55,7 @@ namespace Engine
 		enum TYPE { TYPE_POINT, TYPE_DIRECTIONAL, TYPE_SPOT, TYPE_END };
 
 		TYPE			eType;
+		_bool			bNonCull = false;
 #pragma region Point
 		_float fTempRange = 0.0f;
 #pragma endregion
