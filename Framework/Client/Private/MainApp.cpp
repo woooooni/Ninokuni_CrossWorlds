@@ -517,9 +517,9 @@ HRESULT CMainApp::Ready_Prototype_Component()
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/Common/Plants/SM_Common_grass_01_Mask.png")))))
 		return E_FAIL;
 
-	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Trail"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/TrailEffect/"), 0, true))))
-		return E_FAIL;
+	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Trail"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/TrailEffect/"), 0, true))))
+	//	return E_FAIL;
 	
 
 

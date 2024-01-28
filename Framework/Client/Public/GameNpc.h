@@ -139,7 +139,7 @@ protected:
 	NPC_STAT m_tStat = {};
 
 	// ImGui Tool
-	NPC_STATE m_eState = CGameNpc::NPC_STATE::NPC_END;
+	NPC_STATE m_eState = CGameNpc::NPC_STATE::NPC_IDLE;
 	vector<Vec4> m_vecRoaming = {};
 	_vector			m_vInitPos = {};
 	_bool	m_bTurnOnFirstPoint = false;

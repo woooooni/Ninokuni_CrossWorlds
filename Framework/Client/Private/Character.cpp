@@ -377,7 +377,7 @@ void CCharacter::LateTick(_float fTimeDelta)
 	}
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
-	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_CASCADE, this);
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
 	//m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI_MINIMAP, this);
 
 

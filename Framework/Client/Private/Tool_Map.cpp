@@ -725,6 +725,10 @@ void CTool_Map::MapObjectSpace()
 					case OBJ_TYPE::OBJ_ANIMAL:
 						DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC);
 						break;
+					case OBJ_TYPE::OBJ_MINIGAME_STRUCTURE:
+						DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_BUILDING);
+						DeleteObject(LEVEL_TOOL, LAYER_TYPE::LAYER_PROP);
+						break;
 					}
 
 				}
@@ -964,6 +968,10 @@ void CTool_Map::MapLightSpace()
 
 				if (ImGui::Button(u8"선택된 조명 삭제"))
 					DeleteLight(m_pSelectLight->Get_LightID());
+
+				ImGui::SameLine();
+
+				if (ImGui::Checkbox("조명 거리 컬링", &m_pSelectLight->Get_ModifyLightDesc()->bNonCull)) {};
 
 				ImGui::PopItemWidth();
 			}
@@ -2075,6 +2083,7 @@ HRESULT CTool_Map::Save_Light_Data(const wstring& strLightFilePath)
 			pFile->Write<Vec3>(pLightDesc->vTempPosition);
 			pFile->Write<_float>(pLightDesc->fTempRange);
 			pFile->Write<Vec3>(pLightDesc->vTempColor);
+			pFile->Write<_bool>(pLightDesc->bNonCull);
 		}
 		else if (LIGHTDESC::TYPE::TYPE_SPOT == pLightDesc->eType)
 		{
@@ -2086,6 +2095,7 @@ HRESULT CTool_Map::Save_Light_Data(const wstring& strLightFilePath)
 			pFile->Write<_float>(pLightDesc->fTempRange);
 			pFile->Write<_float>(pLightDesc->fOuterAngle);
 			pFile->Write<_float>(pLightDesc->fInnerAngle);
+			pFile->Write<_bool>(pLightDesc->bNonCull);
 		}
 	}
 
@@ -2144,14 +2154,17 @@ HRESULT CTool_Map::Load_Light_Data(const wstring& strLightFilePath)
 			// State
 			Vec3 vPos, vColor;
 			_float fRange;
+			_bool bNonCull;
 			pFile->Read<Vec3>(vPos);
 			pFile->Read<_float>(fRange);
 			pFile->Read<Vec3>(vColor);
+			pFile->Read	<_bool>(bNonCull);
 
 			LightDesc.eType = static_cast<LIGHTDESC::TYPE>(iLightType);
 			LightDesc.vTempPosition = vPos;
 			LightDesc.fTempRange = fRange;
 			LightDesc.vTempColor = vColor;
+			LightDesc.bNonCull = bNonCull;
 		}
 		else if (LIGHTDESC::TYPE_SPOT == iLightType)
 		{
@@ -2159,12 +2172,14 @@ HRESULT CTool_Map::Load_Light_Data(const wstring& strLightFilePath)
 
 			Vec3 vPos, vColor, vDirection;
 			_float fTempRange, fOuterAngle, fInnerAngle;
+			_bool bNonCull;
 			pFile->Read<Vec3>(vPos);
 			pFile->Read<Vec3>(vDirection);
 			pFile->Read<Vec3>(vColor);
 			pFile->Read<_float>(fTempRange);
 			pFile->Read<_float>(fOuterAngle);
 			pFile->Read<_float>(fInnerAngle);
+			pFile->Read<_bool>(bNonCull);
 
 			LightDesc.eType = static_cast<LIGHTDESC::TYPE>(iLightType);
 			LightDesc.vTempPosition = vPos;
@@ -2173,6 +2188,7 @@ HRESULT CTool_Map::Load_Light_Data(const wstring& strLightFilePath)
 			LightDesc.fTempRange = fTempRange;
 			LightDesc.fOuterAngle = fOuterAngle;
 			LightDesc.fInnerAngle = fInnerAngle;
+			LightDesc.bNonCull = bNonCull;
 		}
 
 		if(FAILED(GI->Add_Light(m_pDevice, m_pContext, LightDesc)))
@@ -2364,6 +2380,10 @@ HRESULT CTool_Map::Save_NPC_Data(const wstring& strNPCFileName)
 				File->Write<_uint>(iSize); // 0 
 
 				_uint eState = pNpc->Get_State();
+
+				if (eState == CGameNpc::NPC_STATE::NPC_END)
+					eState = CGameNpc::NPC_STATE::NPC_IDLE;
+
 				File->Write<_uint>(eState); // 0 
 
 				if (pPoints->size() != 0)

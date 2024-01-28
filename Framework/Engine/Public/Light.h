@@ -25,11 +25,11 @@ public:
 
 public:
 	HRESULT Initialize(const LIGHTDESC& LightDesc);
-	HRESULT Render(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer);
+	HRESULT Render(class CShader* pShader, class CVIBuffer_Rect* pVIBuffer, _float fDistance = 0.0f);
 
 public:
 	HRESULT DirectionalLight(class CShader* pShader);
-	HRESULT PointLight(class CShader* pShader);
+	HRESULT PointLight(class CShader* pShader, _float fDistance);
 	HRESULT SpotLight(class CShader* pShader);
 private:
 	ID3D11Device*			m_pDevice = nullptr;

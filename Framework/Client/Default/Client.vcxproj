@@ -417,6 +417,7 @@
     <ClInclude Include="..\Public\MainQuest_SnowField.h" />
     <ClInclude Include="..\Public\MainQuestNode_SnowField01.h" />
     <ClInclude Include="..\Public\MainQuestNode_SnowField02.h" />
+    <ClInclude Include="..\Public\MiniGameMap.h" />
     <ClInclude Include="..\Public\Mirror.h" />
     <ClInclude Include="..\Public\MonsterProjectile.h" />
     <ClInclude Include="..\Public\NpcCriminalState_Escape.h" />
@@ -1023,6 +1024,17 @@
     <ClInclude Include="..\Public\WelshCorgi.h" />
     <ClInclude Include="..\Public\Whale.h" />
     <ClInclude Include="..\Public\WinterWater.h" />
+    <ClInclude Include="..\Public\Winter_MiniBKHouse.h" />
+    <ClInclude Include="..\Public\Winter_MiniBlock.h" />
+    <ClInclude Include="..\Public\Winter_MiniColumn.h" />
+    <ClInclude Include="..\Public\Winter_MiniHouse_02.h" />
+    <ClInclude Include="..\Public\Winter_MiniHouse_03.h" />
+    <ClInclude Include="..\Public\Winter_MiniRevColumn.h" />
+    <ClInclude Include="..\Public\Winter_MiniSculpture.h" />
+    <ClInclude Include="..\Public\Winter_MiniStair.h" />
+    <ClInclude Include="..\Public\Winter_MiniWall.h" />
+    <ClInclude Include="..\Public\Winter_MiniSnowMan.h" />
+    <ClInclude Include="..\Public\Winter_MiniWalls.h" />
     <ClInclude Include="..\Public\WitchWater.h" />
     <ClInclude Include="..\Public\Zehra.h" />
     <ClInclude Include="Client.h" />
@@ -1031,6 +1043,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="StelliaState_Rage1StartTurnOL.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="Winter_MiniHouse_01.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\ThirdParty\imgui.cpp">
@@ -1281,6 +1294,7 @@
     <ClCompile Include="..\Private\MainQuest_SnowField.cpp" />
     <ClCompile Include="..\Private\MainQuestNode_SnowField01.cpp" />
     <ClCompile Include="..\Private\MainQuestNode_SnowField02.cpp" />
+    <ClCompile Include="..\Private\MiniGameMap.cpp" />
     <ClCompile Include="..\Private\Mirror.cpp" />
     <ClCompile Include="..\Private\MonsterProjectile.cpp" />
     <ClCompile Include="..\Private\NpcCriminalState_Escape.cpp" />
@@ -1888,6 +1902,18 @@
     <ClCompile Include="..\Private\WelshCorgi.cpp" />
     <ClCompile Include="..\Private\Whale.cpp" />
     <ClCompile Include="..\Private\WinterWater.cpp" />
+    <ClCompile Include="..\Private\Winter_MiniBKHouse.cpp" />
+    <ClCompile Include="..\Private\Winter_MiniBlock.cpp" />
+    <ClCompile Include="..\Private\Winter_MiniColumn.cpp" />
+    <ClCompile Include="..\Private\Winter_MiniHouse_01.cpp" />
+    <ClCompile Include="..\Private\Winter_MiniHouse_02.cpp" />
+    <ClCompile Include="..\Private\Winter_MiniHouse_03.cpp" />
+    <ClCompile Include="..\Private\Winter_MiniRevColumn.cpp" />
+    <ClCompile Include="..\Private\Winter_MiniSculpture.cpp" />
+    <ClCompile Include="..\Private\Winter_MiniStair.cpp" />
+    <ClCompile Include="..\Private\Winter_MiniWall.cpp" />
+    <ClCompile Include="..\Private\Winter_MiniSnowMan.cpp" />
+    <ClCompile Include="..\Private\Winter_MiniWalls.cpp" />
     <ClCompile Include="..\Private\WitchWater.cpp" />
     <ClCompile Include="..\Private\Zehra.cpp" />
     <ClCompile Include="Client.cpp" />

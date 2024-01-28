@@ -409,8 +409,10 @@ float CaclCascadeShadowFactor(int cascadeIndex, float4 lightspacepos)
     return shadow;
 }
 
-float4 PS_CASCADE_OUT(VS_OUT input) : SV_Target
+PS_OUT PS_CASCADE_OUT(VS_OUT input)
 {
+    PS_OUT output = (PS_OUT) 0;
+    
     float4 vDepthDesc = DepthTexture.Sample(PointSampler, input.vTexcoord);
     float4 vWorldPos;
     
@@ -423,31 +425,9 @@ float4 PS_CASCADE_OUT(VS_OUT input) : SV_Target
     
     vWorldPos = vWorldPos * fViewZ;
     vWorldPos = mul(vWorldPos, projectionInv);
-    
-   /// float clipSpacePosZ = vWorldPos.z;
-    
     vWorldPos = mul(vWorldPos, viewInv);
     
     
-    
-    //float4 cascadeLightPos[3];
-    //float shadowFactor = 0;
-    
-    //[unroll]
-    //for (int i = 0; i < 3; ++i)
-    //    cascadeLightPos[i] = mul(vWorldPos, lightPV[i]);
-    
-    //[unroll]
-    //for (int j = 0; j < 3; ++j)
-    //{ 
-    //    if(clipSpacePosZ <= cascadeEndClipSpace[j])
-    //    {
-    //        shadowFactor = CaclCascadeShadowFactor(j, cascadeLightPos[j]);
-    //        break;
-    //    }
-    //}
-    
-    //return float4(shadowFactor, shadowFactor, shadowFactor, 1.0f);
     
     float4 lightSpacePos = mul(vWorldPos, dirView);
     float4 color = (float4) 0;
@@ -468,7 +448,7 @@ float4 PS_CASCADE_OUT(VS_OUT input) : SV_Target
     for (int index = 0; index < CASCADE_SHADOW_NUM && 0 == nCascadeFound; ++index)
     {
         lightSpaceWSPos = mul(lightSpacePos, arrayDirProj[index]);
-        lightDepthUV = (lightSpaceWSPos.xy / lightSpaceWSPos.w) * float2(0.5f, 0.5f) + float2(0.5f, 0.5f);
+        lightDepthUV = (lightSpaceWSPos.xy / lightSpaceWSPos.w) * float2(0.5f, -0.5f) + float2(0.5f, 0.5f);
         
         if (min(lightDepthUV.x, lightDepthUV.y) > xyBiggerTexSize && max(lightDepthUV.x, lightDepthUV.y) < 1.0f - xyBiggerTexSize)
         {
@@ -481,8 +461,8 @@ float4 PS_CASCADE_OUT(VS_OUT input) : SV_Target
     
     for (int nKernelIndex = 0; nKernelIndex < PCF_KERNEL_COUNT; ++nKernelIndex)
     {
-        float2 uv = float2(((lightDepthUV.x + (float) nCascadeIndex) / (float) CASCADE_SHADOW_NUM), lightDepthUV.y);
-        +pcf_kernel[nKernelIndex] * lightDepthMapTexSize;
+        float2 uv = float2(((lightDepthUV.x + (float) nCascadeIndex) / (float) CASCADE_SHADOW_NUM), lightDepthUV.y)
+        + pcf_kernel[nKernelIndex] * lightDepthMapTexSize;
         float nearestDepth = CascadeLightDepthMap.SampleLevel(clampPointSampler, uv, 0).r;
         float z = lightSpaceWSPos.z / lightSpaceWSPos.w;
         bool isShadowed = z > (nearestDepth * 0.003f);
@@ -490,12 +470,10 @@ float4 PS_CASCADE_OUT(VS_OUT input) : SV_Target
     }
     
     color /= (float) PCF_KERNEL_COUNT;
+    output.vColor = color * debugColor;
     
-    color = color * debugColor;
-    
-    return color;
+    return output;
 }
-
 
 
 

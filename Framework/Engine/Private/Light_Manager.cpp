@@ -83,7 +83,45 @@ HRESULT CLight_Manager::Add_ShadowProj(_uint iLevelIndex, _float fFovAngleY, _fl
 HRESULT CLight_Manager::Render(CShader * pShader, CVIBuffer_Rect * pVIBuffer)
 {
 	for (auto& pLight : m_Lights)
-		pLight->Render(pShader, pVIBuffer);
+	{
+		LIGHTDESC::TYPE eType = pLight->Get_LightDesc()->eType;
+
+		if (LIGHTDESC::TYPE_DIRECTIONAL == pLight->Get_LightDesc()->eType)
+		{
+			if (FAILED(pLight->Render(pShader, pVIBuffer)))
+				return E_FAIL;
+		}
+		else if ((LIGHTDESC::TYPE_POINT == eType) || (LIGHTDESC::TYPE_SPOT == eType))
+		{
+			CCamera_Manager* pCameraManager = GET_INSTANCE(CCamera_Manager);
+			
+			if (nullptr == pCameraManager)
+				return S_OK;
+
+			CCamera* pCamera = pCameraManager->Get_CurCamera();
+			if (nullptr == pCamera)
+				return S_OK;
+
+			Vec3 pCameraPosition = pCamera->Get_Transform()->Get_Position();
+			Vec3 pLightPosition = pLight->Get_LightDesc()->vTempPosition;
+
+			Vec3 vLength = pCameraPosition - pLightPosition;
+			_float fDistance = ::fabs(vLength.Length());
+
+			if (fDistance > pLight->Get_LightDesc()->fTempRange && false == pLight->Get_ModifyLightDesc()->bNonCull)
+				continue;
+			else if(fDistance <= pLight->Get_LightDesc()->fTempRange && false == pLight->Get_LightDesc()->bNonCull)
+			{
+				if (FAILED(pLight->Render(pShader, pVIBuffer, fDistance)))
+					return E_FAIL;
+			}
+			else if (true == pLight->Get_LightDesc()->bNonCull)
+			{
+				if (FAILED(pLight->Render(pShader, pVIBuffer)))
+					return E_FAIL;
+			}
+		}
+	}
 
 	return S_OK;
 }
@@ -137,7 +175,7 @@ XMMATRIX CLight_Manager::GetLightViewMatrix()
 
 	const LIGHTDESC* pLightDesc = GI->Get_LightDesc(0);
 	Vec3 vCamPos = Vec3(pCamera->Get_Transform()->Get_Position());
-	Vec3 eyePos = vCamPos - pLightDesc->vTempDirection;
+	Vec3 eyePos = Vec3(10.0f, 10.0f, 10.0f);
 	Vec4 eyePosVec = Vec4(eyePos.x, eyePos.y, eyePos.z, 1.0f);
 	Vec3 normalizeLightDir = pLightDesc->vTempDirection;
 	normalizeLightDir.Normalize();

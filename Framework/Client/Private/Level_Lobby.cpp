@@ -235,53 +235,93 @@ HRESULT CLevel_Lobby::Ready_Light(const wstring& strLightFilePath)
 	wstring strMapFilePath = L"../Bin/DataFiles/Map/" + strLightFilePath + L"/" + strLightFilePath + L".light";
 
 	shared_ptr<CFileUtils> pFile = make_shared<CFileUtils>();
-	pFile->Open(strMapFilePath, FileMode::Write);
+	pFile->Open(strMapFilePath, FileMode::Read);
 
-	list<CLight*>* pLightList = GI->Get_LightList();
-	pFile->Write<_uint>(pLightList->size());
+	_uint iLightSize = 0;
+	pFile->Read<_uint>(iLightSize);
 	// 라이트 개수
+	list<CLight*>* pLightlist = GI->Get_LightList();
+	for (auto& pLight : *pLightlist)
+		Safe_Release<CLight*>(pLight);
 
-	for (auto& pLight : *pLightList)
+	pLightlist->clear();
+
+	for (_uint i = 0; i < iLightSize; ++i)
 	{
-		const LIGHTDESC* pLightDesc = pLight->Get_LightDesc();
+		LIGHTDESC LightDesc;
+		::ZeroMemory(&LightDesc, sizeof(LIGHTDESC));
 
 		// Type
-		pFile->Write<_uint>(pLightDesc->eType);
+		_uint iLightType = 0;
+		_uint iLightID = 0;
 
-		if (LIGHTDESC::TYPE_DIRECTIONAL == pLightDesc->eType)
+		pFile->Read<_uint>(iLightType);
+
+		if (LIGHTDESC::TYPE_DIRECTIONAL == iLightType)
 		{
 			// ID
-			pFile->Write<_uint>(pLight->Get_LightID());
+			pFile->Read<_uint>(iLightID);
 
 			// State
-			pFile->Write<Vec3>(pLightDesc->vTempColor);
-			pFile->Write<Vec3>(pLightDesc->vAmbientLowerColor);
-			pFile->Write<Vec3>(pLightDesc->vAmbientUpperColor);
-			pFile->Write<Vec3>(pLightDesc->vTempDirection);
+			Vec3 vDiffuse, vAmbientLowerColor, vAmbientUpperColor, vDirection;
+			pFile->Read<Vec3>(vDiffuse);
+			pFile->Read<Vec3>(vAmbientLowerColor);
+			pFile->Read<Vec3>(vAmbientUpperColor);
+			pFile->Read<Vec3>(vDirection);
+
+			LightDesc.eType = static_cast<LIGHTDESC::TYPE>(iLightType);
+			LightDesc.vTempColor = vDiffuse;
+			LightDesc.vAmbientLowerColor = vAmbientLowerColor;
+			LightDesc.vAmbientUpperColor = vAmbientUpperColor;
+			LightDesc.vTempDirection = vDirection;
 		}
-		else if (LIGHTDESC::TYPE_POINT == pLightDesc->eType)
+		else if (LIGHTDESC::TYPE_POINT == iLightType)
 		{
-			// ID
-			pFile->Write<_uint>(pLight->Get_LightID());
+			pFile->Read<_uint>(iLightID);
 
 			// State
-			pFile->Write<Vec3>(pLightDesc->vTempPosition);
-			pFile->Write<_float>(pLightDesc->fTempRange);
-			pFile->Write<Vec3>(pLightDesc->vTempColor);
-		}
-		else if (LIGHTDESC::TYPE::TYPE_SPOT == pLightDesc->eType)
-		{
-			pFile->Write<_uint>(pLight->Get_LightID());
+			Vec3 vPos, vColor;
+			_float fRange;
+			_bool bNonCull;
+			pFile->Read<Vec3>(vPos);
+			pFile->Read<_float>(fRange);
+			pFile->Read<Vec3>(vColor);
+			pFile->Read	<_bool>(bNonCull);
 
-			pFile->Write<Vec3>(pLightDesc->vTempPosition);
-			pFile->Write<Vec3>(pLightDesc->vTempDirection);
-			pFile->Write<Vec3>(pLightDesc->vTempColor);
-			pFile->Write<_float>(pLightDesc->fTempRange);
-			pFile->Write<_float>(pLightDesc->fOuterAngle);
-			pFile->Write<_float>(pLightDesc->fInnerAngle);
+			LightDesc.eType = static_cast<LIGHTDESC::TYPE>(iLightType);
+			LightDesc.vTempPosition = vPos;
+			LightDesc.fTempRange = fRange;
+			LightDesc.vTempColor = vColor;
+			LightDesc.bNonCull = bNonCull;
 		}
+		else if (LIGHTDESC::TYPE_SPOT == iLightType)
+		{
+			pFile->Read<_uint>(iLightID);
+
+			Vec3 vPos, vColor, vDirection;
+			_float fTempRange, fOuterAngle, fInnerAngle;
+			_bool bNonCull;
+			pFile->Read<Vec3>(vPos);
+			pFile->Read<Vec3>(vDirection);
+			pFile->Read<Vec3>(vColor);
+			pFile->Read<_float>(fTempRange);
+			pFile->Read<_float>(fOuterAngle);
+			pFile->Read<_float>(fInnerAngle);
+			pFile->Read<_bool>(bNonCull);
+
+			LightDesc.eType = static_cast<LIGHTDESC::TYPE>(iLightType);
+			LightDesc.vTempPosition = vPos;
+			LightDesc.vTempDirection = vDirection;
+			LightDesc.vTempColor = vColor;
+			LightDesc.fTempRange = fTempRange;
+			LightDesc.fOuterAngle = fOuterAngle;
+			LightDesc.fInnerAngle = fInnerAngle;
+			LightDesc.bNonCull = bNonCull;
+		}
+
+		if (FAILED(GI->Add_Light(m_pDevice, m_pContext, LightDesc)))
+			return E_FAIL;
 	}
-
 	return S_OK;
 }
 

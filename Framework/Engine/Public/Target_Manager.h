@@ -30,7 +30,7 @@ public:
 	HRESULT Begin_Minimap_MRT(ID3D11DeviceContext* pContext, const wstring& strMRTTag, _bool bClear = true);
 	HRESULT Begin_Shadow_MRT(ID3D11DeviceContext* pContext, const wstring& strMRTTag);
 	HRESULT Begin_UI_MRT(ID3D11DeviceContext* pContext, const wstring& strMRTTag, _bool bClear = true, _bool bStencil = true);
-	HRESULT Begin_CascadeShadow_MRT(ID3D11DeviceContext* pContext, const wstring& strMRTTag);
+	//HRESULT Begin_CascadeShadow_MRT(ID3D11DeviceContext* pContext, const wstring& strMRTTag);
 
 	HRESULT Clear_RenderTarget(const wstring& strTargetTag);
 

@@ -23,7 +23,7 @@ HRESULT CLight::Initialize(const LIGHTDESC & LightDesc)
 	return S_OK;
 }
 
-HRESULT CLight::Render(CShader * pShader, CVIBuffer_Rect * pVIBuffer)
+HRESULT CLight::Render(CShader * pShader, CVIBuffer_Rect * pVIBuffer, _float fDistance)
 {
 	switch (m_LightDesc.eType)
 	{
@@ -32,7 +32,7 @@ HRESULT CLight::Render(CShader * pShader, CVIBuffer_Rect * pVIBuffer)
 			return E_FAIL;
 		break;
 	case LIGHTDESC::TYPE_POINT:
-		if (FAILED(PointLight(pShader)))
+		if (FAILED(PointLight(pShader, fDistance)))
 			return E_FAIL;
 		break;
 	case LIGHTDESC::TYPE_SPOT:
@@ -51,7 +51,7 @@ HRESULT CLight::DirectionalLight(class CShader* pShader)
 {
 	m_LightDesc.vTempDirection.Normalize();
 	Vec3 vAmbientLowerToGamma = GammaToLinear(m_LightDesc.vAmbientLowerColor);
-	if (FAILED(pShader->Bind_RawValue("vLightAmbientDown", &vAmbientLowerToGamma, sizeof(Vec3))))
+	if(FAILED(pShader->Bind_RawValue("vLightAmbientDown", &vAmbientLowerToGamma, sizeof(Vec3))))
 		return E_FAIL;
 	Vec3 vAmbientRangeToGamma = GammaToLinear(m_LightDesc.vAmbientUpperColor) - GammaToLinear(m_LightDesc.vAmbientLowerColor);
 	if (FAILED(pShader->Bind_RawValue("vLightAmbientUp", &vAmbientRangeToGamma, sizeof(Vec3))))
@@ -67,12 +67,18 @@ HRESULT CLight::DirectionalLight(class CShader* pShader)
 	return S_OK;
 }
 
-HRESULT CLight::PointLight(CShader* pShader)
+HRESULT CLight::PointLight(CShader* pShader, _float fDistance)
 {
 	if(FAILED(pShader->Bind_RawValue("vPointLightPos", &m_LightDesc.vTempPosition, sizeof(Vec3))))
 		return E_FAIL;
 	
-	_float PointLightRange = 1.0f / m_LightDesc.fTempRange;
+	// fTempRange - Distance;
+	_float fResult = m_LightDesc.fTempRange - fDistance;
+	if (fResult <= 0.0f)
+		fResult = 0.01f;
+
+	_float PointLightRange = 1.0f / fResult;
+
 	if(FAILED(pShader->Bind_RawValue("fPointLightRangeRcp", &PointLightRange, sizeof(_float))))
 		return E_FAIL;
 
