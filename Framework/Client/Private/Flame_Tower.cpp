@@ -59,7 +59,7 @@ HRESULT CFlame_Tower::Initialize(void* pArg)
 
 	m_eTowerType = CTowerDefence_Manager::TOWER_TYPE::FLAME;
 
-	m_fFireTime = 5.f;
+	m_fFireTime = 15.f;
 	return S_OK;
 }
 

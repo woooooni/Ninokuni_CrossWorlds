@@ -65,7 +65,7 @@ void CDog_FootPrints::Tick(_float fTimeDelta)
 			if (nullptr == m_pFootPrits_Particle)
 			{
 				CParticle_Manager::GetInstance()->Generate_Particle(TEXT("Particle_Dog_Foot_Prints01"), m_pTransformCom->Get_WorldMatrix(),
-					Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), nullptr, &m_pFootPrits_Particle, false);
+					Vec3(0.f, 0.15f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), nullptr, &m_pFootPrits_Particle, false);
 				Safe_AddRef(m_pFootPrits_Particle);
 			}
 			// 조건이 맞으면 업데이트 하고 보여준다..

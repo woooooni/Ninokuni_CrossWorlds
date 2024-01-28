@@ -60,6 +60,20 @@ public:
 		_float2 vScale = { 1.f, 1.f };
 	} TEXT_DESC;
 
+	typedef struct tagFogDesc
+	{
+		_float fConvertPercent = 0.04f;
+		_float fFogStartDepth = 100.f;
+		_float fFogStartDistance = 10.f;
+		_float fFogDistanceValue = 30.f;
+		_float fFogHeightValue = 50.f;
+
+		_float fFogDistanceDensity = 0.04f;
+		_float fFogHeightDensity = 0.04f;
+
+		_float2 fUVAcc = { 0.f, 0.f };
+	} FOG_DESC;
+
 private:
 	typedef struct tagInstancingDesc
 	{
@@ -123,6 +137,12 @@ public: // UI Setting Option¿ª ¿ß«— Get/Set
 	void Set_MinimapView(_float4x4 matView) { m_MinimapView = matView; }
 	_float4x4 Get_MinimapView() { return m_MinimapView; }
 	_float4x4 Get_MinimapProj() { return m_MinimapProj; }
+
+	void Set_FogDesc(const FOG_DESC& FogDesc) { m_FogDesc = FogDesc; }
+	const FOG_DESC& Get_FogDesc() { return m_FogDesc; }
+
+	void Set_FogColor(Vec4 vFogColor) { m_vFogColor = vFogColor; }
+	Vec4 Get_FogColor() { return m_vFogColor; }
 
 public:
 	HRESULT Add_RenderGroup(RENDERGROUP eRenderGroup, class CGameObject* pGameObject);
@@ -258,6 +278,7 @@ private:
 	HRESULT Create_Shader();
 	HRESULT Create_Target();
 	HRESULT Set_TargetsMrt();
+	HRESULT Ready_Textures();
 	HRESULT Initialize_SSAO();
 
 #ifdef _DEBUG
@@ -274,6 +295,8 @@ private:
 	class CShader* m_pShaders[RENDERER_SHADER_TYPE::SHADER_END];
 	class CShader* m_pIntancingShaders[INSTANCING_SHADER_TYPE::TYPE_END];
 
+	class CTexture* m_pPerlinNoiseTextureCom = nullptr;
+
 	class CVIBuffer_Rect*       m_pVIBuffer = { nullptr };
 	class CVIBuffer_Instancing* m_pVIBuffer_Instancing = nullptr;
 	_float4x4 m_WorldMatrix, m_ViewMatrix, m_ProjMatrix;
@@ -285,9 +308,11 @@ private:
 private:
 	//_bool m_bWorldMeshRender = true;
 	//_bool m_bUIMeshRender    = true;
-
+	// Fog
 	_float4	m_vFogColor    = _float4(0.f, 0.635f, 1.f, 1.f);
 	_float2	m_fFogStartEnd = _float2(300.f, 600.f);
+	
+	FOG_DESC m_FogDesc = {};
 
 	_float4 m_vLineColor = _float4(0.5f, 0.4f, 0.2f, 1.f);
 

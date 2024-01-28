@@ -24,10 +24,13 @@ public:
 
 public:
 	virtual void Collision_Enter(const COLLISION_INFO& tInfo) override;
-
+	virtual void Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo) override;
 
 private:
 	_bool Find_Dest_Position(_float fTimeDelta);
+
+private:
+	class CPhysX_Controller* m_pControllerCom = nullptr;
 
 private:
 	_float m_fAccEffect = 0.f;

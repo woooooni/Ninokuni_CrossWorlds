@@ -65,6 +65,9 @@ void CState_CannonTower_Attack::Fire()
     vInitPosition += XMVectorSet(0.f, 5.f, 0.f, 0.f);
     pTransform->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vInitPosition, 1.f));
 
+    CPhysX_Controller* pController = pCannonBall->Get_Component<CPhysX_Controller>(L"Com_Controller");
+    pController->Set_EnterLevel_Position(pTransform->Get_Position());
+
     if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_ETC, pCannonBall)))
     {
         MSG_BOX("Add_GameObject Failed : CState_CannonTower_Attack::Fire");

@@ -19,10 +19,11 @@ CTexture::CTexture(const CTexture& rhs)
 		Safe_AddRef(pSRV);
 }
 
-HRESULT CTexture::Initialize_Prototype(const wstring& strTextureFilePath, _uint iNumTextures, _bool bWithPath)
+HRESULT CTexture::Initialize_Prototype(const wstring& strTextureFilePath, _uint iNumTextures, _bool bWithPath, _bool bArray)
 {
 	m_iNumTextures = iNumTextures;
 	m_FileNames.reserve(m_iNumTextures);
+	m_bArray = bArray;
 
 	if (bWithPath)
 		Load_Texture_In_Path(strTextureFilePath);
@@ -52,6 +53,7 @@ HRESULT CTexture::Bind_ShaderResources(const CShader* pShader, const char* pCons
 HRESULT CTexture::Load_Texture(const wstring& strTextureFilePath, _uint iNumTextures)
 {
 	m_iNumTextures = iNumTextures;
+
 	for (_uint i = 0; i < iNumTextures; ++i)
 	{
 		_tchar			szFullPath[MAX_PATH] = TEXT("");
@@ -67,24 +69,25 @@ HRESULT CTexture::Load_Texture(const wstring& strTextureFilePath, _uint iNumText
 
 		HRESULT hr = 0;
 
+		ID3D11Resource* pTexture = nullptr;
 		ID3D11ShaderResourceView* pSRV = nullptr;
 
 		if (false == lstrcmp(TEXT(".dds"), szExt))
-			hr = DirectX::CreateDDSTextureFromFile(m_pDevice, szFullPath, nullptr, &pSRV);
+			hr = DirectX::CreateDDSTextureFromFile(m_pDevice, szFullPath, &pTexture, &pSRV);
 
 		else if (false == lstrcmp(TEXT(".tga"), szExt))
 			hr = E_FAIL;
 
 		else
 		{
-			hr = DirectX::CreateWICTextureFromFile(m_pDevice, szFullPath, nullptr, &pSRV);
+			hr = DirectX::CreateWICTextureFromFile(m_pDevice, szFullPath, &pTexture, &pSRV);
 			if (FAILED(hr))
 			{
 				wstring strNewPath = L"";
 				strNewPath += szFolderPath;
 				strNewPath += szName;
 				strNewPath += L".dds";
-				hr = DirectX::CreateDDSTextureFromFile(m_pDevice, strNewPath.c_str(), nullptr, &pSRV);
+				hr = DirectX::CreateDDSTextureFromFile(m_pDevice, strNewPath.c_str(), &pTexture, &pSRV);
 			}
 		}
 		
@@ -93,8 +96,7 @@ HRESULT CTexture::Load_Texture(const wstring& strTextureFilePath, _uint iNumText
 			MessageBox(nullptr, szFullPath, L"Failed_Load_Texture", MB_OK);
 			return E_FAIL;
 		}
-			
-
+		
 		m_FileNames.push_back(wstring(szName) + szExt);
 		m_SRVs.push_back(pSRV);
 	}
@@ -124,24 +126,24 @@ HRESULT CTexture::Load_Texture_In_Path(const wstring& strTextureFilePath)
 
 		HRESULT hr = 0;
 
+		ID3D11Resource* pTexture = nullptr;
 		ID3D11ShaderResourceView* pSRV = nullptr;
-
+		
 		if (false == lstrcmp(TEXT(".dds"), szExt))
-			hr = DirectX::CreateDDSTextureFromFile(m_pDevice, strFullPath.c_str(), nullptr, &pSRV);
+			hr = DirectX::CreateDDSTextureFromFile(m_pDevice, strFullPath.c_str(), &pTexture, &pSRV);
 
 		else if (false == lstrcmp(TEXT(".tga"), szExt))
 			hr = E_FAIL;
 
 		else
 		{
-			hr = DirectX::CreateWICTextureFromFile(m_pDevice, strFullPath.c_str(), nullptr, &pSRV);
+			hr = DirectX::CreateWICTextureFromFile(m_pDevice, strFullPath.c_str(), &pTexture, &pSRV);
 			if (FAILED(hr))
 			{
 				wstring strNewPath = L"";
 				strNewPath += szFolderPath;
 				strNewPath += szName;
 				strNewPath += L".dds";
-				hr = DirectX::CreateDDSTextureFromFile(m_pDevice, strNewPath.c_str(), nullptr, &pSRV);
 			}
 		}
 			
@@ -154,14 +156,15 @@ HRESULT CTexture::Load_Texture_In_Path(const wstring& strTextureFilePath)
 		++iTextureCount;
 	}
 	m_iNumTextures = iTextureCount;
+
 	return S_OK;
 }
 
-CTexture* CTexture::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strTextureFilePath, _uint iNumTextures, _bool bWithPath)
+CTexture* CTexture::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strTextureFilePath, _uint iNumTextures, _bool bWithPath, _bool bArray)
 {
 	CTexture* pInstance = new CTexture(pDevice, pContext);
 
-	if (FAILED(pInstance->Initialize_Prototype(strTextureFilePath, iNumTextures, bWithPath)))
+	if (FAILED(pInstance->Initialize_Prototype(strTextureFilePath, iNumTextures, bWithPath, bArray)))
 	{
 		MSG_BOX("Failed To Created : CTexture");
 		Safe_Release(pInstance);
@@ -192,4 +195,6 @@ void CTexture::Free()
 		Safe_Release(pSRV);
 
 	m_SRVs.clear();
+
+	Safe_Release(m_pTexture2DArray);
 }

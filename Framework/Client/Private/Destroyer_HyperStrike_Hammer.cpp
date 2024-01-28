@@ -38,7 +38,7 @@ HRESULT CDestroyer_HyperStrike_Hammer::Initialize(void* pArg)
 		return E_FAIL;
 
 	Set_Collider_Elemental(m_pOwner->Get_ElementalType());
-	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::STUN, 0.f, 0.f, 0.f, false);
+	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::BLOW, 0.f, 0.f, 0.f, false);
 	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
 
 	m_fDeletionTime = 2.f;

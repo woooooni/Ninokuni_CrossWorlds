@@ -30,6 +30,8 @@ void CState_Destroyer_BurstSkill_HyperStrike::Enter_State(void* pArg)
     if (pTransformCom == nullptr)
         return;
     GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Destroyer_Skill_HyperStrike"), pTransformCom->Get_WorldMatrix(), m_pCharacter);
+
+    m_pCharacter->Set_Infinite(999.f, true);
 }
 
 void CState_Destroyer_BurstSkill_HyperStrike::Tick_State(_float fTimeDelta)
@@ -40,6 +42,7 @@ void CState_Destroyer_BurstSkill_HyperStrike::Tick_State(_float fTimeDelta)
 
 void CState_Destroyer_BurstSkill_HyperStrike::Exit_State()
 {
+    m_pCharacter->Set_Infinite(0.f, false);
 
 }
 

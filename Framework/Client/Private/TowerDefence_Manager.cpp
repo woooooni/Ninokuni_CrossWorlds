@@ -30,6 +30,8 @@
 
 #include "UI_Manager.h"
 
+#include "SkyDome.h"
+
 
 IMPLEMENT_SINGLETON(CTowerDefence_Manager)
 
@@ -112,7 +114,7 @@ void CTowerDefence_Manager::LateTick(_float fTimeDelta)
 
 void CTowerDefence_Manager::Prepare_Defence()
 {
-	// Change_Light
+	// Change_Light Color
 	list<CLight*>* pLightLists = GI->Get_LightList();
 	for (auto& pLight : *pLightLists)
 	{
@@ -123,6 +125,35 @@ void CTowerDefence_Manager::Prepare_Defence()
 		pDesc->vTempColor = Vec3(0.729f, 0.431f, 1.f);
 	}
 
+	// Change SkyDomeColor
+	list<CGameObject*>& SkyDomes = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_SKYBOX);
+	for (auto& pSkyDome : SkyDomes)
+	{
+		if (wstring::npos != pSkyDome->Get_PrototypeTag().find(L"Skydome"))
+		{
+			CSkyDome* pCastSky =  dynamic_cast<CSkyDome*>(pSkyDome);
+			if (nullptr != pCastSky)
+			{
+				m_vOriginSkyCenterColor = pCastSky->Get_CenterColor();
+				m_vOriginSkyApexColor = pCastSky->Get_ApexColor();
+
+				pCastSky->Set_CenterColor(Vec4(0.871f, 0.78f, 1.0f, 1.0f));
+				pCastSky->Set_ApexColor(Vec4(0.224f, 0.306f, 0.788f, 1.0f));
+			}
+		}
+	}
+	
+	// Change Particle
+
+	// Change FogColor
+
+	// Off GodRay
+
+	// Off LensFlare
+
+
+
+	// Clear Npc
 	list<CGameObject*>& NpcList = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_NPC);
 	for (auto& pNpc : NpcList)
 	{
@@ -215,6 +246,21 @@ void CTowerDefence_Manager::Finish_Defence()
 		LIGHTDESC* pDesc = pLight->Get_ModifyLightDesc();
 		pDesc->vTempColor = m_OriginLights[iIndex].vTempColor;
 		iIndex++;
+	}
+
+	// Recover SkyDome Color
+	list<CGameObject*>& SkyDomes = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_SKYBOX);
+	for (auto& pSkyDome : SkyDomes)
+	{
+		if (wstring::npos != pSkyDome->Get_PrototypeTag().find(L"Skydome"))
+		{
+			CSkyDome* pCastSky = dynamic_cast<CSkyDome*>(pSkyDome);
+			if (nullptr != pCastSky)
+			{
+				pCastSky->Set_CenterColor(m_vOriginSkyCenterColor);
+				pCastSky->Set_ApexColor(m_vOriginSkyApexColor);
+			}
+		}
 	}
 
 	if (nullptr != m_pPicked_Object)
@@ -360,29 +406,6 @@ void CTowerDefence_Manager::Tick_Defence_Prepare(_float fTimeDelta)
 		return;
 	}
 
-	if (KEY_TAP(KEY::F5))
-	{
-		Set_PickObject(TOWER_TYPE::CANNON);
-		return;
-	}
-
-	if (KEY_TAP(KEY::F6))
-	{
-		Set_PickObject(TOWER_TYPE::CRYSTAL);
-		return;
-	}
-
-	if (KEY_TAP(KEY::F7))
-	{
-		Set_PickObject(TOWER_TYPE::FLAME);
-		return;
-	}
-
-	if (KEY_TAP(KEY::F8))
-	{
-		Set_PickObject(TOWER_TYPE::SHADOW);
-		return;
-	}
 
 	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::X))
 	{

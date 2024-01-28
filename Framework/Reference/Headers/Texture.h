@@ -12,7 +12,7 @@ private:
 	virtual ~CTexture() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(const wstring & strTextureFilePath, _uint iNumTextures, _bool bWithPath);
+	virtual HRESULT Initialize_Prototype(const wstring & strTextureFilePath, _uint iNumTextures, _bool bWithPath, _bool bArray);
 	virtual HRESULT Initialize(void* pArg);
 
 public:
@@ -67,8 +67,12 @@ private:
 	_uint			m_iNumTextures = 0;
 	vector<wstring>	m_FileNames;
 
+	ID3D11ShaderResourceView* m_pTexture2DArray = nullptr;
+
+	_bool m_bArray = false;
+
 public:
-	static CTexture* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const wstring& strTextureFilePath, _uint iNumTextures = 1, _bool bWithPath = false);
+	static CTexture* Create(ID3D11Device * pDevice, ID3D11DeviceContext * pContext, const wstring& strTextureFilePath, _uint iNumTextures = 1, _bool bWithPath = false, _bool bArray = false);
 	virtual CComponent* Clone(void* pArg) override;
 	virtual void Free();
 };

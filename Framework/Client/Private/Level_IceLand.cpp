@@ -10,6 +10,7 @@
 #include "Game_Manager.h"
 #include "Player.h"
 #include "GameNpc.h"
+#include "Respawn_Box.h"
 
 #include "Utils.h"
 #include <FileUtils.h>
@@ -40,6 +41,7 @@ _bool CLevel_IceLand::g_bFirstEnter = false;
 CLevel_IceLand::CLevel_IceLand(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
 {
+	
 }
 
 HRESULT CLevel_IceLand::Initialize()
@@ -176,7 +178,7 @@ HRESULT CLevel_IceLand::Ready_Layer_Camera(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_IceLand::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 {
-	list<CGameObject*> Grounds = GI->Find_GameObjects(LEVEL_ICELAND, LAYER_TYPE::LAYER_GROUND);
+	list<CGameObject*>& Grounds = GI->Find_GameObjects(LEVEL_ICELAND, LAYER_TYPE::LAYER_GROUND);
 	for (auto& Ground : Grounds)
 	{
 		if (FAILED(GI->Add_Ground(Ground,
@@ -188,7 +190,7 @@ HRESULT CLevel_IceLand::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 	}
 
 
-	list<CGameObject*> Buildings = GI->Find_GameObjects(LEVEL_ICELAND, LAYER_TYPE::LAYER_BUILDING);
+	list<CGameObject*>& Buildings = GI->Find_GameObjects(LEVEL_ICELAND, LAYER_TYPE::LAYER_BUILDING);
 	for (auto& Building : Buildings)
 	{
 		if (FAILED(GI->Add_Building(Building,
@@ -201,7 +203,7 @@ HRESULT CLevel_IceLand::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 
 
 
-	list<CGameObject*> Props = GI->Find_GameObjects(LEVEL_ICELAND, LAYER_TYPE::LAYER_PROP);
+	list<CGameObject*>& Props = GI->Find_GameObjects(LEVEL_ICELAND, LAYER_TYPE::LAYER_PROP);
 	for (auto& Prop : Props)
 	{
 		CModel* pModel = Prop->Get_Component<CModel>(L"Com_Model");
@@ -313,6 +315,7 @@ HRESULT CLevel_IceLand::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 		return E_FAIL;
 	pPortalTransform->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(-100.f));
 
+	
 
 
 	CTrigger::TRIGGER_DESC TriggerDesc;
@@ -346,6 +349,14 @@ HRESULT CLevel_IceLand::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 	if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
 		return E_FAIL;
 
+
+	CRespawn_Box::RESPAWN_DESC RespawnDesc = {};
+	RespawnDesc.vStartPosition = Vec4(0.f, -100.f, 0.f, 1.f);
+	RespawnDesc.vRespawnPosition = Vec4(0.f, 0.f, 0.f, 1.f);
+	RespawnDesc.vExtents = Vec3(1000.f, 5.f, 1000.f);
+
+	if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_RespawnBox"), &RespawnDesc)))
+		return E_FAIL;
 
 
 	return S_OK;

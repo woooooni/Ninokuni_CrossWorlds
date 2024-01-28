@@ -63,7 +63,7 @@ HRESULT CMainApp::Initialize()
 	{
 		g_eStartLevel = LEVELID::LEVEL_LOGO; /* 시작할 레벨 타입 */
 
-		g_eLoadCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH; /* 모델 로드할 캐릭터 타입 */
+		g_eLoadCharacter = LOAD_CHARACTER_TYPE::ALL_CH; /* 모델 로드할 캐릭터 타입 */
 
 		g_ePlayCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH; /* 게임 플레이 캐릭터 타입 */
 	}
@@ -90,15 +90,17 @@ void CMainApp::Tick(_float fTimeDelta)
 
 	CBuff_Manager::GetInstance()->Tick(fTimeDelta);
 	CGame_Manager::GetInstance()->Tick(fTimeDelta);
+	CTowerDefence_Manager::GetInstance()->Tick(fTimeDelta);
 	GI->Tick(fTimeDelta); 
 
-	CTowerDefence_Manager::GetInstance()->Tick(fTimeDelta);
+	
 	
 	CQuest_Manager::GetInstance()->LateTick(fTimeDelta);
 	CUI_Manager::GetInstance()->LateTick(fTimeDelta);
 	CGame_Manager::GetInstance()->LateTick(fTimeDelta);
-	GI->LateTick(fTimeDelta);
 	CTowerDefence_Manager::GetInstance()->LateTick(fTimeDelta);
+	GI->LateTick(fTimeDelta);
+	
 	
 	m_fTimeAcc += fTimeDelta;
 }
@@ -524,6 +526,12 @@ HRESULT CMainApp::Ready_Prototype_Component()
 //		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/TrailEffect/"), 0, true))))
 //		return E_FAIL;
 
+<<<<<<< HEAD
+=======
+	/*if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Trail"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/TrailEffect/"), 0, true))))
+		return E_FAIL;*/
+>>>>>>> feature/Taewon
 	
 
 

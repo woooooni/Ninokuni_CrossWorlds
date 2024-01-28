@@ -153,6 +153,28 @@ HRESULT CCharacter_Destroyer::Render()
 void CCharacter_Destroyer::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
+
+	if ((tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER)
+		&& tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK)
+	{
+		switch (m_pStateCom->Get_CurrState())
+		{
+		case CCharacter::STATE::CLASS_SKILL_0:
+			GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.1f, 0.3f, false);
+			break;
+		case CCharacter::STATE::BATTLE_ATTACK_0:
+			break;
+		case CCharacter::STATE::BATTLE_ATTACK_1:
+			break;
+		case CCharacter::STATE::BATTLE_ATTACK_2:			;
+			break;
+		case CCharacter::STATE::BATTLE_ATTACK_3:
+			if (CAMERA_TYPE::FOLLOW == CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key())
+				GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.08f, 0.01f, true);
+			break;
+		}
+	}
+
 }
 
 void CCharacter_Destroyer::Collision_Continue(const COLLISION_INFO& tInfo)
@@ -246,93 +268,113 @@ HRESULT CCharacter_Destroyer::Ready_States()
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_NeutralStand");
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_NeutralIdle01");
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_NeutralIdle02");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_IDLE, CState_Character_Neutral_Idle::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_IDLE, CState_Character_Neutral_Idle::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_NeutralWalk");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_WALK, CState_Character_Neutral_Walk::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_WALK, CState_Character_Neutral_Walk::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_NeutralRun");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_RUN, CState_Character_Neutral_Run::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_RUN, CState_Character_Neutral_Run::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_JumpUpLoop");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_JUMP, CState_Character_Neutral_Jump::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_JUMP, CState_Character_Neutral_Jump::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_DSCrouchStand");
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_DSCrouchLookAround");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_CROUCH_IDLE, CState_Character_Neutral_Crouch_Idle::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_CROUCH_IDLE, CState_Character_Neutral_Crouch_Idle::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_DSCrouchWalk");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_CROUCH_MOVE, CState_Character_Neutral_Crouch_Move::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_CROUCH_MOVE, CState_Character_Neutral_Crouch_Move::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_Kick");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_KICK, CState_Character_Neutral_Kick::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_KICK, CState_Character_Neutral_Kick::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickStartS");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_ENTER, CState_Character_Neutral_Pick_Small_Enter::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_ENTER, CState_Character_Neutral_Pick_Small_Enter::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickStandS");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_IDLE, CState_Character_Neutral_Pick_Small_Idle::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_IDLE, CState_Character_Neutral_Pick_Small_Idle::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickWalkS");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_WALK, CState_Character_Neutral_Pick_Small_Walk::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_WALK, CState_Character_Neutral_Pick_Small_Walk::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickRunS");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_RUN, CState_Character_Neutral_Pick_Small_Run::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_RUN, CState_Character_Neutral_Pick_Small_Run::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickThrowS");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_THROW, CState_Character_Neutral_Pick_Small_Throw::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_THROW, CState_Character_Neutral_Pick_Small_Throw::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickFinishS");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_FINISH, CState_Character_Neutral_Pick_Small_Finish::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_SMALL_FINISH, CState_Character_Neutral_Pick_Small_Finish::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickStartL");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_ENTER, CState_Character_Neutral_Pick_Large_Enter::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_ENTER, CState_Character_Neutral_Pick_Large_Enter::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 	
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickStandL");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_IDLE, CState_Character_Neutral_Pick_Large_Idle::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_IDLE, CState_Character_Neutral_Pick_Large_Idle::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickWalkL");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_WALK, CState_Character_Neutral_Pick_Large_Walk::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_WALK, CState_Character_Neutral_Pick_Large_Walk::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickRunL");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_RUN, CState_Character_Neutral_Pick_Large_Run::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_RUN, CState_Character_Neutral_Pick_Large_Run::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickThrowL");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_THROW, CState_Character_Neutral_Pick_Large_Throw::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_THROW, CState_Character_Neutral_Pick_Large_Throw::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_PickFinishL");
-	m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_FINISH, CState_Character_Neutral_Pick_Large_Finish::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_FINISH, CState_Character_Neutral_Pick_Large_Finish::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 	
 	
 	// AbNormality
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_StunLoop");
-	m_pStateCom->Add_State(CCharacter::STATE::ABNORMALITY_STUN, CState_Character_AbNormality_Stun::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::ABNORMALITY_STUN, CState_Character_AbNormality_Stun::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 
 
@@ -341,48 +383,58 @@ HRESULT CCharacter_Destroyer::Ready_States()
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_BattleStand");
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_FinishCombat");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_IDLE, CState_Character_Battle_Idle::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::BATTLE_IDLE, CState_Character_Battle_Idle::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_BattleWalk");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_WALK, CState_Character_Battle_Walk::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::BATTLE_WALK, CState_Character_Battle_Walk::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_Dash");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_RUN, CState_Character_Battle_Run::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::BATTLE_RUN, CState_Character_Battle_Run::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 
 	strAnimationNames.clear();	
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_JumpUpLoop");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_JUMP, CState_Character_Battle_Jump::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::BATTLE_JUMP, CState_Character_Battle_Jump::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_AttackHammer01");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_ATTACK_0, CState_Destroyer_Battle_Attack_0::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::BATTLE_ATTACK_0, CState_Destroyer_Battle_Attack_0::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_AttackHammer02");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_ATTACK_1, CState_Destroyer_Battle_Attack_1::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::BATTLE_ATTACK_1, CState_Destroyer_Battle_Attack_1::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_AttackHammer03");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_ATTACK_2, CState_Destroyer_Battle_Attack_2::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::BATTLE_ATTACK_2, CState_Destroyer_Battle_Attack_2::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_AttackHammer04");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_ATTACK_3, CState_Destroyer_Battle_Attack_3::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::BATTLE_ATTACK_3, CState_Destroyer_Battle_Attack_3::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_CSGuardLoop");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_GUARD, CState_Character_Battle_Guard::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::BATTLE_GUARD, CState_Character_Battle_Guard::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 	
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillScrewBlow");
-	m_pStateCom->Add_State(CCharacter::STATE::BATTLE_DASH, CState_Character_Battle_Dash::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillDash");
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::BATTLE_DASH, CState_Character_Battle_Dash::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 	
 	
 
@@ -390,35 +442,42 @@ HRESULT CCharacter_Destroyer::Ready_States()
 	// Skill
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillHyperStrike");
-	m_pStateCom->Add_State(CCharacter::STATE::SKILL_BURST, CState_Destroyer_BurstSkill_HyperStrike::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::SKILL_BURST, CState_Destroyer_BurstSkill_HyperStrike::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillWhirlwindStart");
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillWhirlwindLoop");
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillWhirlwindfinish");
-	m_pStateCom->Add_State(CCharacter::STATE::CLASS_SKILL_0, CState_Destroyer_Skill_WheelWind::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::CLASS_SKILL_0, CState_Destroyer_Skill_WheelWind::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillBrutalStrikeNew");
-	m_pStateCom->Add_State(CCharacter::STATE::CLASS_SKILL_1, CState_Destroyer_Skill_BrutalStrike::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::CLASS_SKILL_1, CState_Destroyer_Skill_BrutalStrike::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 	strAnimationNames.clear();
 	// 리프 슬램
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillMegaCrushStart");
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillMegaCrushFinish");
-	m_pStateCom->Add_State(CCharacter::STATE::CLASS_SKILL_2, CState_Destroyer_Skill_LeafSlam::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::CLASS_SKILL_2, CState_Destroyer_Skill_LeafSlam::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 	
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillFrenzyCharge");
-	m_pStateCom->Add_State(CCharacter::STATE::SKILL_SPECIAL_0, CState_Destroyer_SpecialSkill_FrengeCharge::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::SKILL_SPECIAL_0, CState_Destroyer_SpecialSkill_FrengeCharge::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillBattleCry");
-	m_pStateCom->Add_State(CCharacter::STATE::SKILL_SPECIAL_1, CState_Destroyer_SpecialSkill_BattleCry::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::SKILL_SPECIAL_1, CState_Destroyer_SpecialSkill_BattleCry::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_SkillIgnorePain");
-	m_pStateCom->Add_State(CCharacter::STATE::SKILL_SPECIAL_2, CState_Destroyer_SpecialSkill_IgnorePain::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::SKILL_SPECIAL_2, CState_Destroyer_SpecialSkill_IgnorePain::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 
 	// Damaged
@@ -426,31 +485,37 @@ HRESULT CCharacter_Destroyer::Ready_States()
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_ImpactStart");
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_ImpactLoop");
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_ImpactFinish");
-	m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_IMPACT, CState_Character_Damaged_Impact::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_IMPACT, CState_Character_Damaged_Impact::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_KnockUpStart");
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_KnockDownLoop");
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_KnockDownFinish");
 
-	m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_KNOCKDOWN, CState_Character_Damaged_KnockDown::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_KNOCKDOWN, CState_Character_Damaged_KnockDown::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_DamageStrong");
-	m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_STRONG, CState_Character_Damaged_Strong::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_STRONG, CState_Character_Damaged_Strong::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_DamageWeak");
-	m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_WEAK, CState_Character_Damaged_Weak::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::DAMAGED_WEAK, CState_Character_Damaged_Weak::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 	// Dead & Revive
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_Death");
-	m_pStateCom->Add_State(CCharacter::STATE::DEAD, CState_Character_Dead::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::DEAD, CState_Character_Dead::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_Revive");
-	m_pStateCom->Add_State(CCharacter::STATE::REVIVE, CState_Character_Revive::Create(m_pStateCom, strAnimationNames));
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::REVIVE, CState_Character_Revive::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 	//VEHICLE::UDADAK
 	strAnimationNames.clear();
@@ -464,6 +529,11 @@ HRESULT CCharacter_Destroyer::Ready_States()
 //	strAnimationNames.clear();
 //	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_SitRun_Udadak");
 //	m_pStateCom->Add_State(CCharacter::STATE::VEHICLE_RUN, CState_Character_Vehicle_Run::Create(m_pStateCom, strAnimationNames));
+	
+	//	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_Revive");
+	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::VEHICLE, CState_Character_Vehicle::Create(m_pStateCom, strAnimationNames))))
+		return E_FAIL;
 
 	m_pStateCom->Change_State(CCharacter::NEUTRAL_IDLE);
 	return S_OK;
