@@ -531,9 +531,6 @@ HRESULT CCharacter_Destroyer::Ready_States()
 //	m_pStateCom->Add_State(CCharacter::STATE::VEHICLE_RUN, CState_Character_Vehicle_Run::Create(m_pStateCom, strAnimationNames));
 	
 	//	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_Revive");
-	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::VEHICLE, CState_Character_Vehicle::Create(m_pStateCom, strAnimationNames))))
-		return E_FAIL;
 
 	m_pStateCom->Change_State(CCharacter::NEUTRAL_IDLE);
 	return S_OK;

@@ -259,6 +259,8 @@ HRESULT CCurlingGame_Prop::Render_Instance_Shadow(CShader* pInstancingShader, CV
 				return E_FAIL;
 		}
 	}
+
+	return S_OK;
 }
 
 HRESULT CCurlingGame_Prop::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc)
@@ -364,6 +366,8 @@ HRESULT CCurlingGame_Prop::Render_Instance_AnimModel_Shadow(CShader* pInstancing
 				return E_FAIL;
 		}
 	}
+
+	return S_OK;
 }
 
 HRESULT CCurlingGame_Prop::Ready_Components()

@@ -248,6 +248,7 @@ HRESULT CCurlingGame_Barrel::Calculate_ElasticCollision(CGameObject* pOther)
 	}
 
 	m_tElasticColDesc.Set(vNewVelocity);
+	return S_OK;
 }
 
 HRESULT CCurlingGame_Barrel::Calculate_ActionAndReaction(class CCurlingGame_Wall* pWall)

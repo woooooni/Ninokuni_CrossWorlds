@@ -168,6 +168,7 @@ HRESULT CCurlingGame_Manager::Push_Barrel(CCurlingGame_Barrel* pBarrel)
 	pBarrel->Set_Active(false);
 	
 	m_pBarrelPool.push(pBarrel);
+	return S_OK;
 }
 
 void CCurlingGame_Manager::Tick_Guage(const _float& fTimeDelta)
