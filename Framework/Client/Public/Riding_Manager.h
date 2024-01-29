@@ -25,6 +25,7 @@ public: // Clone
 	HRESULT Ready_Vehicle_GameObjectToLayer(LEVELID eID);
 
 public:
+	class CVehicle_Flying_Biplane* Get_Character_Biplane() { return m_pBiplane; }
 	HRESULT Ride_ForCharacter(VEHICLE_TYPE eType, _bool bOnOff);
 
 private:

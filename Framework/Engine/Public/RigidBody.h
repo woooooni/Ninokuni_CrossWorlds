@@ -29,8 +29,8 @@ public:
 public:
     void Add_Velocity(_vector vDir, _float fForce, _bool bClear);
 
-    void Set_Velocity(_float3 vVelocity) { m_vVelocity = vVelocity; }
-    _float3 Get_Velocity() { return m_vVelocity; }
+    void Set_Velocity(Vec3 vVelocity) { m_vVelocity = vVelocity; }
+    Vec3 Get_Velocity() { return m_vVelocity; }
 
 public:
     _bool Is_Use_Gravity() { return m_bUseGravity; }

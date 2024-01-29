@@ -5,6 +5,12 @@
 #include "Utils.h"
 #include "Effect_Manager.h"
 #include "Particle_Manager.h"
+#include "Camera_Manager.h"
+#include "Camera.h"
+
+#include "Game_Manager.h"
+#include "Player.h"
+#include "Character.h"
 
 CVehicleFlying_Projectile::CVehicleFlying_Projectile(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjTag)
 	:CGameObject(pDevice, pContext, strObjTag, OBJ_TYPE::OBJ_CHARACTER_PROJECTILE)
@@ -52,6 +58,11 @@ void CVehicleFlying_Projectile::Tick(_float fTimeDelta)
 	m_fAccDeletionTime += fTimeDelta;
 	if (m_fAccDeletionTime >= m_fDeletionTime)
 	{
+		if (true == m_bCameraTarget)
+		{
+			CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+			CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+		}
 		Set_Dead(true);
 		m_fAccDeletionTime = 0.f;
 	}

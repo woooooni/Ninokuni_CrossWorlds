@@ -35,6 +35,9 @@ public:
 	virtual void LateTick(_float fTimeDelta) override;
 	virtual HRESULT Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices) override;
 
+public:
+	void Set_CameraTarget(_bool bTarget) { m_bCameraTarget = bTarget; }
+
 protected:
 	CModel* m_pModelCom = { nullptr };
 	CRenderer* m_pRendererCom = { nullptr };
@@ -48,6 +51,9 @@ protected:
 	_float m_fAccDeletionTime = 0.f;
 	_float m_fDeletionTime = 1.f;
 	_float m_fMoveSpeed = 20.f;
+
+protected:
+	_bool m_bCameraTarget = false;
 
 public:
 	virtual void Free() override;

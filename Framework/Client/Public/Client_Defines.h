@@ -31,11 +31,10 @@ namespace Client
 
 		// 그랑프리용 스킬(Temp)
 		FLYING_TEMP1, FLYING_TEMP2, FLYING_TEMP3, FLYING_BURST,
-		
 		SKILL_END
 	};
 
-	/* ShadowMan */
+	/* SwordMan */
 	enum SWORDMAN_HEAD_MODEL_TYPE { HEAD_TEMP, SWORDMAN_HEAD_MODEL_TYPE_END };
 	static const wstring wstrSwordManHeadTypeNames[SWORDMAN_HEAD_MODEL_TYPE::SWORDMAN_HEAD_MODEL_TYPE_END]{ L"HEAD_TEMP" };
 

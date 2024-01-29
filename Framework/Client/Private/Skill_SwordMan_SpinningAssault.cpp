@@ -22,7 +22,6 @@ HRESULT CSkill_SwordMan_SpinningAssault::Initialize(ID3D11Device* pDevice, ID3D1
 void CSkill_SwordMan_SpinningAssault::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
-
 }
 
 void CSkill_SwordMan_SpinningAssault::LateTick(_float fTimeDelta)

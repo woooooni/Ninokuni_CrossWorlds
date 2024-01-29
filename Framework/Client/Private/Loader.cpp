@@ -155,6 +155,7 @@
 #include "Vehicle_Udadak.h"
 #include "Vehicle_Flying_Biplane.h"
 #include "Swordsman_Biplane_Bullet.h"
+#include "Biplane_GuidedMissile.h"
 #include "Grandprix_Engineer.h"
 
 #include "Respawn_Box.h"
@@ -650,12 +651,19 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Vehicle_Udadak"),
 			CVehicle_Udadak::Create(m_pDevice, m_pContext, TEXT("Vehicle_Udadak")), LAYER_TYPE::LAYER_CHARACTER))
 			return E_FAIL;
+
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Vehicle_Biplane"),
 			CVehicle_Flying_Biplane::Create(m_pDevice, m_pContext, TEXT("Vehicle_Biplane")), LAYER_TYPE::LAYER_CHARACTER))
 			return E_FAIL;
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Swordsman_Biplane_Bullet"),
 			CSwordsman_Biplane_Bullet::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
 			return E_FAIL;
+
+		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Biplane_GuidedMissile"),
+			CBiplane_GuidedMissile::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
+			return E_FAIL;
+
+		
 
 		g_bLevelFirst[LEVEL_EVERMORE] = true;
 	}
@@ -1990,6 +1998,10 @@ HRESULT CLoader::Loading_Proto_Vehicles()
 		return E_FAIL;
 
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Bumpy", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Vehicle/Bumpy/", L"Bumpy")))
+		return E_FAIL;
+
+	
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Biplane_GuidedMissile", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/MiniGame/Missile/", L"Biplane_GuidedMissile")))
 		return E_FAIL;
 
 	return S_OK;
