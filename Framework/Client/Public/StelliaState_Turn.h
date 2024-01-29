@@ -21,7 +21,6 @@ public:
 private:
 	_vector m_vDestPos = {};
 	_float  m_fTurnSpeed = 0.f;
-	_float  m_fWalkSpeed = 0.f;
 
 	_bool   m_bIsRageInit = false;
 	_bool   m_bIsRage2Init = false;

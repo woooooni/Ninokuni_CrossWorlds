@@ -12,8 +12,6 @@ HRESULT CStelliaState_Turn::Initialize(const list<wstring>& AnimationList)
 {
 	__super::Initialize(AnimationList);
 
-	m_fWalkSpeed = 6.f;
-
 	return S_OK;
 }
 
@@ -29,7 +27,7 @@ void CStelliaState_Turn::Enter_State(void* pArg)
 		return;
 	}
 
-	//// 레이지1 패턴
+	// 레이지1 패턴
 	if (!m_bIsRageInit && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.75f)
 	{
 		m_bIsRageInit = true;
@@ -45,6 +43,15 @@ void CStelliaState_Turn::Enter_State(void* pArg)
 		m_bIsRage2Init = true;
 		m_pStellia->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_RAGE2, true);
 		m_pStateMachineCom->Change_State(CStellia::STELLIA_RAGE2START_TURN_OC);
+		return;
+	}
+
+	// 레이지3 패턴(일단 임시로 berserk상태 아닐 때 90퍼 센트되면.
+	if (!m_bIsRageInit && m_pStellia->Get_Stat().fHp <= m_pStellia->Get_Stat().fMaxHp * 0.90f)
+	{
+		m_bIsRage3Init = true;
+		m_pStellia->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_RAGE3, true);
+		m_pStateMachineCom->Change_State(CStellia::STELLIA_RAGE3START_FADEOUT);
 		return;
 	}
 
@@ -124,7 +131,7 @@ void CStelliaState_Turn::Tick_State(_float fTimeDelta)
 		}
 	}
 
-	m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fWalkSpeed, fTimeDelta);
+	m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fRunSpeed, fTimeDelta);
 }
 
 void CStelliaState_Turn::Exit_State()

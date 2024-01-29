@@ -1,27 +1,27 @@
 #include "stdafx.h"
-#include "StelliaState_Attack1.h"
+#include "StelliaState_Rage3Claw.h"
 
 #include "Stellia.h"
 #include "Animation.h"
 
-CStelliaState_Attack1::CStelliaState_Attack1(CStateMachine* pStateMachine)
+CStelliaState_Rage3Claw::CStelliaState_Rage3Claw(CStateMachine* pStateMachine)
 	: CStelliaState_Base(pStateMachine)
 {
 }
 
-HRESULT CStelliaState_Attack1::Initialize(const list<wstring>& AnimationList)
+HRESULT CStelliaState_Rage3Claw::Initialize(const list<wstring>& AnimationList)
 {
 	__super::Initialize(AnimationList);
 
 	return S_OK;
 }
 
-void CStelliaState_Attack1::Enter_State(void* pArg)
+void CStelliaState_Rage3Claw::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_Attack01"));
 }
 
-void CStelliaState_Attack1::Tick_State(_float fTimeDelta)
+void CStelliaState_Rage3Claw::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
@@ -33,8 +33,8 @@ void CStelliaState_Attack1::Tick_State(_float fTimeDelta)
 			m_pStellia->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_COUNTER, false);
 	}
 
-	//if (m_pModelCom->Get_CurrAnimationFrame() == 21)
-	//	m_pTransformCom->LookAt_ForLandObject(m_pPlayerTransform->Get_Position());
+	if (m_pModelCom->Get_CurrAnimationFrame() == 21)
+		m_pTransformCom->LookAt_ForLandObject(m_pPlayerTransform->Get_Position());
 
 	if (m_pModelCom->Get_CurrAnimationFrame() >= 22 && m_pModelCom->Get_CurrAnimationFrame() <= 27)
 	{
@@ -44,31 +44,28 @@ void CStelliaState_Attack1::Tick_State(_float fTimeDelta)
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
-		if (m_pStellia->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_ATKAROUND))
-			m_pStateMachineCom->Change_State(CStellia::STELLIA_AFTERSPINTAIL);
-		else
-			m_pStateMachineCom->Change_State(CStellia::STELLIA_COMBATIDLE);
+		m_pStateMachineCom->Change_State(CStellia::STELLIA_RAGE3CLAW_ENDCHARGE);
 	}
 }
 
-void CStelliaState_Attack1::Exit_State()
+void CStelliaState_Rage3Claw::Exit_State()
 {
 }
 
-CStelliaState_Attack1* CStelliaState_Attack1::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
+CStelliaState_Rage3Claw* CStelliaState_Rage3Claw::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)
 {
-	CStelliaState_Attack1* pInstance = new CStelliaState_Attack1(pStateMachine);
+	CStelliaState_Rage3Claw* pInstance = new CStelliaState_Rage3Claw(pStateMachine);
 
 	if (FAILED(pInstance->Initialize(AnimationList)))
 	{
-		MSG_BOX("Fail Create : CStelliaState_Attack1");
+		MSG_BOX("Fail Create : CStelliaState_Rage3Claw");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CStelliaState_Attack1::Free()
+void CStelliaState_Rage3Claw::Free()
 {
 	__super::Free();
 }

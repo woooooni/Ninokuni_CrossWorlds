@@ -3,6 +3,8 @@
 
 #include "BTNode_Select.h"
 
+#include "MainQuestNode_WitchForest01.h"
+
 CMainQuest_WitchForest::CMainQuest_WitchForest()
 {
 }
@@ -12,6 +14,10 @@ HRESULT CMainQuest_WitchForest::Initialize()
 	__super::Initialize();
 
 	m_pRootNode = CBTNode_Select::Create();
+
+	CMainQuestNode_WitchForest01* pMainQuestWitchForest01 = CMainQuestNode_WitchForest01::Create();
+
+	m_pRootNode->Add_ChildNode(pMainQuestWitchForest01);
 
 	return S_OK;
 }

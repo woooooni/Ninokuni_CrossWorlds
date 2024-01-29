@@ -4,11 +4,11 @@
 
 BEGIN(Client)
 
-class CStelliaState_Rage3Start final : public CStelliaState_Base
+class CStelliaState_Rage3ClawEndCharge final : public CStelliaState_Base
 {
 private:
-	CStelliaState_Rage3Start(CStateMachine* pStateMachine);
-	virtual ~CStelliaState_Rage3Start() = default;
+	CStelliaState_Rage3ClawEndCharge(CStateMachine* pStateMachine);
+	virtual ~CStelliaState_Rage3ClawEndCharge() = default;
 
 public:
 	virtual HRESULT Initialize(const list<wstring>& AnimationList);
@@ -19,7 +19,7 @@ public:
 	virtual void Exit_State();
 
 public:
-	static CStelliaState_Rage3Start* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
+	static CStelliaState_Rage3ClawEndCharge* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
 };
 

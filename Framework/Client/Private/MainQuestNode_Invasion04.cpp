@@ -29,7 +29,10 @@ void CMainQuestNode_Invasion04::Start()
 	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
 	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestTag, m_strQuestContent);
 
-	Delete_Npc();
+	// Delete_Npc();
+
+	if (FAILED(Load_Npc()))
+		MSG_BOX("Fail MainQuest_Invasion04 : Npc Load");
 
 	OBJECT_INIT_DESC NpcDesc = {};
 	NpcDesc.vStartPosition = { 0.f, 10.f, 140.f, 1.f };
@@ -43,8 +46,6 @@ void CMainQuestNode_Invasion04::Start()
 		m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_ETC), &vSpotPos));
 	}
 
-	if (FAILED(Load_Npc()))
-		MSG_BOX("Fail MainQuest_Invasion04 : Npc Load");
 }
 
 CBTNode::NODE_STATE CMainQuestNode_Invasion04::Tick(const _float& fTimeDelta)
