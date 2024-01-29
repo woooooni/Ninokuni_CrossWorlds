@@ -16,8 +16,13 @@ private:
 		TYPE_ET1_E_CIRCLELINE,
 		// ---------------------
 		TYPE_ET2_E_DOME,
+		TYPE_ET2_E_DOMELINE,
+
 		TYPE_ET2_E_CROSS,
+		TYPE_ET2_P_TWINKLE,
 		TYPE_ET2_P_CIRCLES,
+
+		TYPE_ET3_EVENT_DELETE,
 
 		TYPE_END
 	};
@@ -38,7 +43,8 @@ protected:
 	virtual HRESULT Ready_Components() override;
 
 private:
-	class CEffect* m_pDome  = nullptr;
+	class CEffect* m_pDome     = nullptr;
+	class CEffect* m_pDomeLine = nullptr;
 	class CEffect* m_pCross = nullptr;
 
 public:

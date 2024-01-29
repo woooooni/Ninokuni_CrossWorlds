@@ -40,10 +40,15 @@ HRESULT CVfx_Engineer_Skill_FlashHeal::Initialize_Prototype()
 	}
 
 	{
-		m_pFrameTriger[TYPE_ET2_E_DOME] = 20;
+		m_pFrameTriger[TYPE_ET2_E_DOME] = 16;
 		m_pPositionOffset[TYPE_ET2_E_DOME] = _float3(0.f, 1.f, 0.f);
 		m_pScaleOffset[TYPE_ET2_E_DOME]    = _float3(0.5f, 0.5f, 0.5f);
 		m_pRotationOffset[TYPE_ET2_E_DOME] = _float3(0.f, 0.f, 0.f);
+
+		m_pFrameTriger[TYPE_ET2_E_DOMELINE] = 16;
+		m_pPositionOffset[TYPE_ET2_E_DOMELINE] = _float3(0.f, 1.f, 0.f);
+		m_pScaleOffset[TYPE_ET2_E_DOMELINE]    = _float3(0.5f, 0.5f, 0.5f);
+		m_pRotationOffset[TYPE_ET2_E_DOMELINE] = _float3(0.f, 0.f, 0.f);
 
 
 		m_pFrameTriger[TYPE_ET2_E_CROSS] = 26;
@@ -51,11 +56,18 @@ HRESULT CVfx_Engineer_Skill_FlashHeal::Initialize_Prototype()
 		m_pScaleOffset[TYPE_ET2_E_CROSS]    = _float3(5.f, 5.f, 5.f);
 		m_pRotationOffset[TYPE_ET2_E_CROSS] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_ET2_P_CIRCLES] = 26;
+		m_pFrameTriger[TYPE_ET2_P_TWINKLE] = 26;
+		m_pPositionOffset[TYPE_ET2_P_TWINKLE] = _float3(0.f, 2.5f, 0.f);
+		m_pScaleOffset[TYPE_ET2_P_TWINKLE]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_ET2_P_TWINKLE] = _float3(0.f, 0.f, 0.f);
+
+		m_pFrameTriger[TYPE_ET2_P_CIRCLES] = 40;
 		m_pPositionOffset[TYPE_ET2_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
 		m_pScaleOffset[TYPE_ET2_P_CIRCLES]    = _float3(1.f, 1.f, 1.f);
 		m_pRotationOffset[TYPE_ET2_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
 	}
+
+	m_pFrameTriger[TYPE_ET3_EVENT_DELETE] = 45;
 
  	return S_OK;
 }
@@ -79,29 +91,75 @@ void CVfx_Engineer_Skill_FlashHeal::Tick(_float fTimeDelta)
 		}
 		else if (m_iCount == TYPE_ET1_E_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_E_CIRCLELINE])
 		{
-			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Engineer_Skill_HealingTree_CircleLine"),
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Engineer_Skill_FlashHeal_CircleLine"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_E_CIRCLELINE], m_pScaleOffset[TYPE_ET1_E_CIRCLELINE], m_pRotationOffset[TYPE_ET1_E_CIRCLELINE]);
 			m_iCount++;
 		}
 
 		else if (m_iCount == TYPE_ET2_E_DOME && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_E_DOME])
 		{
-			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Engineer_Skill_HealingTree_Circle"),
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Engineer_Skill_FlashHeal_Dome"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_E_DOME], m_pScaleOffset[TYPE_ET2_E_DOME], m_pRotationOffset[TYPE_ET2_E_DOME], nullptr, &m_pDome, false);
 			Safe_AddRef(m_pDome);
+
+			m_iCount++;
+		}
+		else if (m_iCount == TYPE_ET2_E_DOMELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_E_DOMELINE])
+		{
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Engineer_Skill_FlahHeal_DomeLine"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_E_DOMELINE], m_pScaleOffset[TYPE_ET2_E_DOMELINE], m_pRotationOffset[TYPE_ET2_E_DOMELINE], nullptr, &m_pDomeLine, false);
+			Safe_AddRef(m_pDomeLine);
+
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET2_E_CROSS && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_E_CROSS])
 		{
-			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Engineer_Skill_HealingTree_Cross"),
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Engineer_Skill_FlashHeal_Cross"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_E_CROSS], m_pScaleOffset[TYPE_ET2_E_CROSS], m_pRotationOffset[TYPE_ET2_E_CROSS], nullptr, &m_pCross, false);
 			Safe_AddRef(m_pCross);
 			m_iCount++;
 		}
+		else if (m_iCount == TYPE_ET2_P_TWINKLE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_TWINKLE])
+		{
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Engineer_Skill_FlashHeal_Twinkle"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_TWINKLE], m_pScaleOffset[TYPE_ET2_P_TWINKLE], m_pRotationOffset[TYPE_ET2_P_TWINKLE]);
+			m_iCount++;
+		}
 		else if (m_iCount == TYPE_ET2_P_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_CIRCLES])
 		{
-			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_SkilEngineer_Skill_HealingTree_Circles"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_CIRCLES], m_pScaleOffset[TYPE_ET2_P_CIRCLES], m_pRotationOffset[TYPE_ET2_P_CIRCLES]);
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Engineer_Skill_FlashHeal_Circles"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_CIRCLES], m_pScaleOffset[TYPE_ET2_P_CIRCLES], _float3(m_pRotationOffset[TYPE_ET2_P_CIRCLES].x, m_pRotationOffset[TYPE_ET2_P_CIRCLES].y, m_pRotationOffset[TYPE_ET2_P_CIRCLES].z));
+			m_iCount++;
+		}
+		else if (m_iCount == TYPE_ET3_EVENT_DELETE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_EVENT_DELETE])
+		{
+			if (nullptr != m_pDome)
+			{
+				m_pDome->Start_Dissolve(90,        // Index
+					_float4(1.f, 0.8f, 0.4f, 1.f), // Color
+					5.f,   // Speed
+					10.f); // Total
+				Safe_Release(m_pDome);
+			}
+
+			if (nullptr != m_pDomeLine)
+			{
+				m_pDomeLine->Start_Dissolve(90,    // Index
+					_float4(1.f, 0.8f, 0.4f, 1.f), // Color
+					5.f,   // Speed
+					10.f); // Total
+				Safe_Release(m_pDomeLine);
+			}
+
+			if (nullptr != m_pCross)
+			{
+				m_pCross->Start_Dissolve(73,       // Index
+					_float4(1.f, 0.7f, 0.2f, 1.f), // Color
+					5.f,   // Speed
+					10.f); // Total
+				Safe_Release(m_pCross);
+			}
+
 			m_iCount++;
 		}
 	}
@@ -154,17 +212,26 @@ void CVfx_Engineer_Skill_FlashHeal::Free()
 
 	if (nullptr != m_pDome)
 	{
-		m_pDome->Start_Dissolve(73,      // Index
-			_float4(1.f, 1.f, 1.f, 1.f), // Color
+		m_pDome->Start_Dissolve(90,        // Index
+			_float4(1.f, 0.8f, 0.4f, 1.f), // Color
 			5.f,   // Speed
 			10.f); // Total
 		Safe_Release(m_pDome);
 	}
 
+	if (nullptr != m_pDomeLine)
+	{
+		m_pDomeLine->Start_Dissolve(90,    // Index
+			_float4(1.f, 0.8f, 0.4f, 1.f), // Color
+			5.f,   // Speed
+			10.f); // Total
+		Safe_Release(m_pDomeLine);
+	}
+
 	if (nullptr != m_pCross)
 	{
-		m_pCross->Start_Dissolve(73,     // Index
-			_float4(1.f, 1.f, 1.f, 1.f), // Color
+		m_pCross->Start_Dissolve(73,       // Index
+			_float4(1.f, 0.7f, 0.2f, 1.f), // Color
 			5.f,   // Speed
 			10.f); // Total
 		Safe_Release(m_pCross);
