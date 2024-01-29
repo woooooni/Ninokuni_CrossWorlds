@@ -3,6 +3,9 @@
 
 #include "GameInstance.h"
 
+#include "CurlingGame_Manager.h"
+
+
 CState_CurlingGame_Move_Character::CState_CurlingGame_Move_Character(CManager_StateMachine* pStateMachine)
 	: CState_CurlingGame_Base(pStateMachine)
 {
@@ -10,6 +13,9 @@ CState_CurlingGame_Move_Character::CState_CurlingGame_Move_Character(CManager_St
 
 HRESULT CState_CurlingGame_Move_Character::Initialize()
 {
+	if (FAILED(__super::Initialize()))
+		return E_FAIL; 
+	
 	return S_OK;
 }
 

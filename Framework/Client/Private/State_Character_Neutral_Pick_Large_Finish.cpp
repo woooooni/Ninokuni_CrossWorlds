@@ -29,13 +29,30 @@ void CState_Character_Neutral_Pick_Large_Finish::Enter_State(void* pArg)
 
 void CState_Character_Neutral_Pick_Large_Finish::Tick_State(_float fTimeDelta)
 {
+    _float fProgress  = 0.f;
 
-    if (m_pModelCom->Get_Progress() <= 0.6f)
+    if (m_pCharacter->Get_Target()->Get_ObjectType() == OBJ_TYPE::OBJ_ANIMAL)
+        fProgress = 0.6f;
+    else if (m_pCharacter->Get_Target()->Get_ObjectType() == OBJ_TYPE::OBJ_CURLINGGAME_PROP)
+        fProgress = 0.3f; // 컬링 게임 오브젝트들은 더 빨리 손에서 내려놓음
+
+    if (m_pModelCom->Get_Progress() <= fProgress)
     {
         CTransform* pTargetTransform = m_pCharacter->Get_Target()->Get_Component<CTransform>(L"Com_Transform");
         if (nullptr != pTargetTransform)
         {
-            pTargetTransform->Set_WorldMatrix(m_pTransformCom->Get_WorldMatrix());
+            _float vScale[3];
+
+            memcpy(vScale, &pTargetTransform->Get_Scale(), sizeof(Vec3));
+
+            for (size_t i = 0; i < CTransform::STATE::STATE_POSITION; i++)
+            {
+                const CTransform::STATE eState = (CTransform::STATE)i;
+
+                const Vec3 vDir = Vec3(m_pTransformCom->Get_State(eState)).Normalized();
+
+                pTargetTransform->Set_State(eState, vDir * vScale[i]);
+            }
 
             Vec4 vHandCenterPosition = {};
             Vec4 vLeftHandPosition = (m_pModelCom->Get_SocketLocalMatrix(0) * m_pTransformCom->Get_WorldMatrix()).Translation();
@@ -48,7 +65,7 @@ void CState_Character_Neutral_Pick_Large_Finish::Tick_State(_float fTimeDelta)
     }
     else
     {
-        if (false == m_pModelCom->Is_Tween() && m_pModelCom->Get_Progress() > 0.6f)
+        if (false == m_pModelCom->Is_Tween() && m_pModelCom->Get_Progress() > fProgress)
         {
             if (nullptr != m_pCharacter->Get_Target())
             {
@@ -65,8 +82,7 @@ void CState_Character_Neutral_Pick_Large_Finish::Tick_State(_float fTimeDelta)
 
                         pAnimal->Set_Lift(false);
                         m_bLiftAway = true;
-                    }
-                    
+                    }                    
                     else if (m_pCharacter->Get_Target()->Get_ObjectType() == OBJ_TYPE::OBJ_CURLINGGAME_PROP)
                     {
                         CCurlingGame_Stone* pStone = dynamic_cast<CCurlingGame_Stone*>(m_pCharacter->Get_Target());

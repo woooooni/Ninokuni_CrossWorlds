@@ -3,6 +3,9 @@
 
 #include "GameInstance.h"
 
+#include "CurlingGame_Manager.h"
+
+
 CState_CurlingGame_Launch_Stone::CState_CurlingGame_Launch_Stone(CManager_StateMachine* pStateMachine)
 	: CState_CurlingGame_Base(pStateMachine)
 {
@@ -10,6 +13,9 @@ CState_CurlingGame_Launch_Stone::CState_CurlingGame_Launch_Stone(CManager_StateM
 
 HRESULT CState_CurlingGame_Launch_Stone::Initialize()
 {
+	if (FAILED(__super::Initialize()))
+		return E_FAIL;
+
 	return S_OK;
 }
 

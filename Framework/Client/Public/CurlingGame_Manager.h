@@ -1,10 +1,12 @@
-#pragma once
+Ôªø#pragma once
 
 #include "Client_Defines.h"
 #include "Base.h"
 
 BEGIN(Engine)
 class CGameObject;
+class CTransform;
+class CModel;
 END
 
 BEGIN(Client)
@@ -30,14 +32,14 @@ class CCurlingGame_Manager : public CBase
 			L"Decal_CurlingGame_RingBoard_Green",
 		};
 
-		/* ºˆƒ° πŸ≤Ÿ∏È z ∆ƒ¿Ã∆√ πﬂª˝ -> µ•ƒÆ¿Ã∂Û ≥Ù¿Ã ¿˚øÎ æ»µ  */
+		/* ÏàòÏπò Î∞îÍæ∏Î©¥ z ÌååÏù¥ÌåÖ Î∞úÏÉù -> Îç∞ÏπºÏù¥Îùº ÎÜíÏù¥ Ï†ÅÏö© ÏïàÎê® */
 		const _float	fRingScalesForRender[RING_TYPE::RING_TYPEEND]		= { 4.f, 9.f, 19.3f };
 		const _float	fRingScalesForDetection[RING_TYPE::RING_TYPEEND]	= { 1.9f, 4.25f, 9.25f };
 		const _uint		iPoints[RING_TYPE::RING_TYPEEND]					= { 5, 3, 1 };
 
 		const _float	fHeight = 3.f;
 
-		const Vec3		vGoalPosition	= { -148.f, -3.4f, 237.2f }; /* ∫Ø∞ÊΩ√ ≥Ù¿Ã∏∏ «√∑π¿ÃæÓ ∆˜¡ˆº«¿∏∑Œ ∏¬√Á¡÷∏È µ  */
+		const Vec3		vGoalPosition	= { -148.f, -3.4f, 237.2f }; /* Î≥ÄÍ≤ΩÏãú ÎÜíÏù¥Îßå ÌîåÎ†àÏù¥Ïñ¥ Ìè¨ÏßÄÏÖòÏúºÎ°ú ÎßûÏ∂∞Ï£ºÎ©¥ Îê® */
 
 		/* Start Line */
 		const wstring	wstrStartLineName = L"Decal_CurlingGame_StartLine";
@@ -45,6 +47,8 @@ class CCurlingGame_Manager : public CBase
 		const Vec3		vStartLineRotation = { 0.f, 15.f, 0.f };
 		const Vec3		vStartLineScale = { 0.2f, 11.f, 22.9f };
 
+		const Vec3		vStartLook = { -0.9661f, 0.f, 0.2671f };
+		const _float	vStartPosDelta = { 3.f };
 	}STANDARD_DESC;
 
 	typedef struct tagGuageDesc
@@ -122,6 +126,10 @@ class CCurlingGame_Manager : public CBase
 		_uint	iNumStone	= 10;
 
 		_uint	iScore = 0;
+
+		CGameObject* pOwner			= nullptr;
+		CModel* pModelCom			= nullptr;
+		CTransform* pTransformCom	= nullptr;
 	
 	}PARTICIPANT_INFO_DESC;
 
@@ -139,23 +147,18 @@ public:
 	HRESULT Set_Game(const _bool& bStart);
 
 public:
-	/* Stadium */
-	HRESULT Start_StadiumAction();
-	HRESULT Finish_StaduimAction();
-	STADIUM_DESC* Get_StadiumDesc() { return &m_tStadiumDesc; }
+	vector<CGameObject*>* Get_Stadium() { return &m_pStadiumObjects; }
 
 	/* UI */
 	const _float& Get_GuageValue() const { return m_tGuageDesc.tLerpValue.fCurValue; }
 
 private:
 	void Tick_Guage(const _float& fTimeDelta);
-	void Tick_StadiumAction(const _float& fTimeDelta);
 	void Tick_Score();
 
 private:
 	HRESULT Ready_Components();
 	HRESULT Ready_Objects();
-	HRESULT Ready_Decal();
 
 private:
 	void Test(const _float& fTimeDelta);
@@ -164,35 +167,26 @@ private:
 	HRESULT Render_DebugDraw();
 
 private:
-	/* Default */
 	ID3D11Device*			m_pDevice	= nullptr;
 	ID3D11DeviceContext*	m_pContext	= nullptr;
 	_bool					m_bReserved = false;
 
-	/* Active */
 	_bool					m_bPlaying	= false;
+	CManager_StateMachine*	m_pManagerStateMachineCom = nullptr;
+	
+	STANDARD_DESC			m_tStandardDesc = {};	
+	vector<CGameObject*>	m_pStadiumObjects;
+
+	vector<CCurlingGame_Stone*> m_pBarrelsLaunched;
+
+	PARTICIPANT_INFO_DESC	m_tParticipants[PARTICIPANT_TYPE::PARTICIPANT_TYPEEND];
 
 	/* Guage */
 	GUAGE_DESC				m_tGuageDesc = {};
 
-	/* Stadium */
-	STADIUM_DESC			m_tStadiumDesc = {};
 
-	/* Barrels */
-	vector<CCurlingGame_Stone*> m_pBarrelsLaunched;
 
-	/* Participant */
-	PARTICIPANT_INFO_DESC	m_tParticipants[PARTICIPANT_TYPE::PARTICIPANT_TYPEEND];
 
-	/* Standard */ 
-	STANDARD_DESC			m_tStandardDesc = {};
-
-	/* Test */
-	_bool					m_bLoadMapTest = false;
-
-	LEVELID					m_eLoadLevel = LEVELID::LEVEL_ICELAND;
-
-	CManager_StateMachine*		m_pManagerStateMachineCom = nullptr;
 
 #pragma region Debug Draw 
 	const _bool	m_bDebugRender						= false;
@@ -204,6 +198,13 @@ private:
 
 public:
 	virtual void Free() override;
+
+private :
+	friend class CState_CurlingGame_Intro;
+	friend class CState_CurlingGame_Move_Character;
+	friend class CState_CurlingGame_Choose_Direction;
+	friend class CState_CurlingGame_Adjust_Intensity;
+	friend class CState_CurlingGame_Launch_Stone;
 };
 
 END

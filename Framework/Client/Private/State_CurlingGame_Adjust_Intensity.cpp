@@ -3,6 +3,9 @@
 
 #include "GameInstance.h"
 
+#include "CurlingGame_Manager.h"
+
+
 CState_CurlingGame_Adjust_Intensity::CState_CurlingGame_Adjust_Intensity(CManager_StateMachine* pStateMachine)
 	: CState_CurlingGame_Base(pStateMachine)
 {
@@ -10,6 +13,9 @@ CState_CurlingGame_Adjust_Intensity::CState_CurlingGame_Adjust_Intensity(CManage
 
 HRESULT CState_CurlingGame_Adjust_Intensity::Initialize()
 {
+	if (FAILED(__super::Initialize()))
+		return E_FAIL;
+
 	return S_OK;
 }
 

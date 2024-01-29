@@ -92,8 +92,8 @@ private:
 
 private:
 	ELASTIC_COLL_DESC	m_tElasticColDesc	= {};
-	LERP_FLOAT_DESC		m_tHeightLerpDesc	= {};
-
+	LERP_VEC4_DESC		m_tPosLerpDesc		= {};
+	
 	_uint				m_iNumCol			= 0;
 
 	_bool				m_bLaunched			= false;
@@ -103,9 +103,9 @@ private:
 
 	OBJ_TYPE			m_eOwnerType		= OBJ_TYPE::OBJ_PLAYER;
 
-	STONE_TYPE			m_eStoneType = STONE_TYPE::STONE_TYPEEND;
+	STONE_TYPE			m_eStoneType		= STONE_TYPE::STONE_TYPEEND;
 
-	const _float		m_fRotateSpeed = 50.f;
+	const _float		m_fRotateSpeed		= 50.f;
 
 public:
 	static CCurlingGame_Stone* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);

@@ -3,6 +3,9 @@
 
 #include "GameInstance.h"
 
+#include "CurlingGame_Manager.h"
+
+
 CState_CurlingGame_Choose_Direction::CState_CurlingGame_Choose_Direction(CManager_StateMachine* pStateMachine)
 	: CState_CurlingGame_Base(pStateMachine)
 {
@@ -10,6 +13,9 @@ CState_CurlingGame_Choose_Direction::CState_CurlingGame_Choose_Direction(CManage
 
 HRESULT CState_CurlingGame_Choose_Direction::Initialize()
 {
+	if (FAILED(__super::Initialize()))
+		return E_FAIL;
+
 	return S_OK;
 }
 

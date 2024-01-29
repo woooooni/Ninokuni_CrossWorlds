@@ -21,6 +21,9 @@ public:
 	virtual void Exit_State() override;
 	virtual HRESULT Render() override;
 
+protected:
+	class CCurlingGame_Manager* m_pManager = nullptr;
+
 public:
 	virtual void Free() override;
 

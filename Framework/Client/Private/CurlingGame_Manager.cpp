@@ -67,9 +67,6 @@ void CCurlingGame_Manager::Tick(const _float& fTimeDelta)
 	if (m_tGuageDesc.bActive)
 		Tick_Guage(fTimeDelta);
 
-	if (m_tStadiumDesc.tLerHeight.bActive)
-		Tick_StadiumAction(fTimeDelta);
-
 	Tick_Score();
 }
 
@@ -95,88 +92,14 @@ void CCurlingGame_Manager::Render_Debug()
 
 HRESULT CCurlingGame_Manager::Set_Game(const _bool& bStart)
 {
-	if (bStart)
-	{
-		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_CurCamera());
-		if (nullptr != pFollowCam)
-		{
-			pFollowCam->Set_CanWideView(false);
-
-			pFollowCam->Set_TargetOffSet(Cam_TargetOffset_CurlingGame_Default);
-			pFollowCam->Set_LookAtOffSet(Cam_LookAtOffset_CurlingGame_Default);
-			pFollowCam->Set_Distance(Cam_Dist_CurlingGame_Default);
-		}
-
-		if (FAILED(Start_StadiumAction()))
-			return E_FAIL;
-	}
-	else
-	{
-		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_CurCamera());
-		if (nullptr != pFollowCam)
-		{
-			pFollowCam->Set_CanWideView(true);
-			pFollowCam->Set_ViewType(CAMERA_VIEW_TYPE::SHOLDER);
-		}
-	}
-
 	m_bPlaying = bStart;
 
-	/* On Off Set */
+	if (bStart)
 	{
-		const _bool bInput = !bStart;
-
-		/* Input */
-		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_Attack_Input(bInput);
-		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_Skill_Input(bInput);
-
-		/* UI */
-		if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
-		{
-			CUI_Manager::GetInstance()->OnOff_GamePlaySetting(bInput);
-			//CUI_Manager::GetInstance()->Hide_MouseCursor(bInput);
-		}
-	}
-
-	return S_OK;
-}
-
-HRESULT CCurlingGame_Manager::Start_StadiumAction()
-{
-	for (auto& iter : m_tStadiumDesc.pStadiumObjects)
-	{
-		if (nullptr != iter && iter->Get_ObjectTag() == TEXT("Winter_MiniGameMap_Stair"))
-		{
-			CTransform* pTransform = iter->Get_Component<CTransform>(TEXT("Com_Transform"));
-			if (nullptr == pTransform)
-				return E_FAIL;
-
-			m_tStadiumDesc.tLerHeight.Start(0.f,
-				m_tStadiumDesc.fTargetHeight,
-				m_tStadiumDesc.fLerpTime, m_tStadiumDesc.eLerpMode);
-
-			return S_OK;
-		}
-	}
-		
-	return E_FAIL;
-}
- 
-HRESULT CCurlingGame_Manager::Finish_StaduimAction()
-{
-	for (auto& pStadiumObject : m_tStadiumDesc.pStadiumObjects)
-	{
-		if (FAILED(GI->Add_Building(pStadiumObject,
-			pStadiumObject->Get_Component<CModel>(L"Com_Model"),
-			pStadiumObject->Get_Component<CTransform>(L"Com_Transform")->Get_WorldMatrix())))
-		{
-			MSG_BOX("피직스 빌딩 생성에 실패했습니다.");
+		/* Set State */
+		if (FAILED(m_pManagerStateMachineCom->Change_State(INTRO)))
 			return E_FAIL;
-		}
 	}
-
-	if (FAILED(Ready_Decal()))
-			return E_FAIL;
 
 	return S_OK;
 }
@@ -209,36 +132,6 @@ void CCurlingGame_Manager::Tick_Guage(const _float& fTimeDelta)
 	}
 }
 
-void CCurlingGame_Manager::Tick_StadiumAction(const _float& fTimeDelta)
-{
-	m_tStadiumDesc.tLerHeight.Update(fTimeDelta);
-
-	const _float fDeltaHeight = m_tStadiumDesc.tLerHeight.fCurValue - m_tStadiumDesc.fPrevHeight;
-
-	for (auto& iter : m_tStadiumDesc.pStadiumObjects)
-	{
-		if (nullptr == iter)
-			continue;
-
-		CTransform* pTransform = iter->Get_Component<CTransform>(TEXT("Com_Transform"));
-		if (nullptr != pTransform)
-		{
-			Vec4 vPos = pTransform->Get_Position();
-			vPos.y += fDeltaHeight;
-
-			pTransform->Set_State(CTransform::STATE::STATE_POSITION, vPos.OneW());
-		}
-	}
-
-	if (!m_tStadiumDesc.tLerHeight.bActive)
-	{
-		if (FAILED(Finish_StaduimAction()))
-			return;
-	}
-
-	m_tStadiumDesc.fPrevHeight = m_tStadiumDesc.tLerHeight.fCurValue;
-}
-
 HRESULT CCurlingGame_Manager::Ready_Components()
 {
 	/* Manager StateMachine */
@@ -268,10 +161,6 @@ HRESULT CCurlingGame_Manager::Ready_Components()
 		if (FAILED(m_pManagerStateMachineCom->Add_State(CURLINGGAME_STATE::LAUNCH, CState_CurlingGame_Intro::Create(m_pManagerStateMachineCom))))
 			return E_FAIL;
 	}
-
-	/* Set State */
-	if (FAILED(m_pManagerStateMachineCom->Change_State(INTRO)))
-		return E_FAIL;
 
 	return S_OK;
 }
@@ -312,7 +201,7 @@ HRESULT CCurlingGame_Manager::Ready_Objects()
 
 		/* Exception */
 		{
-			if (FAILED(GI->Add_GameObject(m_eLoadLevel, LAYER_TYPE::LAYER_PROP, TEXT("Prorotype_GameObject_CurlingGame_Wall"), nullptr, &pClone)))
+			if (FAILED(GI->Add_GameObject(LEVELID::LEVEL_ICELAND, LAYER_TYPE::LAYER_PROP, TEXT("Prorotype_GameObject_CurlingGame_Wall"), nullptr, &pClone)))
 				return E_FAIL;
 
 			pWall = dynamic_cast<CCurlingGame_Wall*>(pClone);
@@ -356,46 +245,13 @@ HRESULT CCurlingGame_Manager::Ready_Objects()
 		pWall->Set_Normal(vNormal);
 	}
 
-	/* Stadium Objects (준엽) */
+	/* Stadium Objects  */
 	{
-		m_tStadiumDesc.pStadiumObjects.reserve(50);
+		m_pStadiumObjects.reserve(50);
 	}
-
-
 	return S_OK;
 }
 
-HRESULT CCurlingGame_Manager::Ready_Decal()
-{
-	/* Ring Decal */
-	{
-		const Matrix matWorld = Matrix::CreateTranslation(m_tStandardDesc.vGoalPosition);
-
-		for (size_t i = 0; i < STANDARD_DESC::RING_TYPE::RING_TYPEEND; i++)
-		{
-			Vec3 vScale = Vec3(m_tStandardDesc.fRingScalesForRender[i]);
-			vScale.y = m_tStandardDesc.fHeight;
-
-			if (FAILED(CEffect_Manager::GetInstance()->Generate_Decal(m_tStandardDesc.wstrRingNames[i], matWorld,
-				Vec3::Zero, vScale, Vec3::Zero, nullptr, nullptr, false)))
-				return E_FAIL;
-		}
-	}
-
-	/* StartLine */
-	{
-		const Matrix matWorld = Matrix::CreateTranslation(m_tStandardDesc.vStartLinePosition);
-
-		Vec3 vScale = m_tStandardDesc.vStartLineScale;
-		vScale.y = m_tStandardDesc.fHeight;
-
-		if (FAILED(CEffect_Manager::GetInstance()->Generate_Decal(m_tStandardDesc.wstrStartLineName, matWorld,
-			Vec3::Zero, vScale, m_tStandardDesc.vStartLineRotation, nullptr, nullptr, false)))
-			return E_FAIL;
-	}
-
-	return S_OK;
-}
 
 void CCurlingGame_Manager::Tick_Score()
 {

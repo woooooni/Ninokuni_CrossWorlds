@@ -3,6 +3,8 @@
 
 #include "GameInstance.h"
 
+#include "CurlingGame_Manager.h"
+
 CState_CurlingGame_Base::CState_CurlingGame_Base(CManager_StateMachine* pStateMachine)
 	: CManager_State(pStateMachine)
 {
@@ -10,6 +12,11 @@ CState_CurlingGame_Base::CState_CurlingGame_Base(CManager_StateMachine* pStateMa
 
 HRESULT CState_CurlingGame_Base::Initialize()
 {
+	m_pManager = CCurlingGame_Manager::GetInstance();
+
+	if (nullptr == m_pManager)
+		return E_FAIL;
+
 	return S_OK;
 }
 
