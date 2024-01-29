@@ -31,13 +31,13 @@ HRESULT CVfx_Engineer_Skill_HealingTree::Initialize_Prototype()
 	{
 		m_pFrameTriger[TYPE_ET1_D_CIRCLE] = 0;
 		m_pPositionOffset[TYPE_ET1_D_CIRCLE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET1_D_CIRCLE] = _float3(10.f, 3.f, 10.f);
+		m_pScaleOffset[TYPE_ET1_D_CIRCLE]    = _float3(10.f, 3.f, 10.f);
 		m_pRotationOffset[TYPE_ET1_D_CIRCLE] = _float3(0.f, 0.f, 0.f);
 	}
 
 	{
-		m_pFrameTriger[TYPE_ET2_P_LIGHT] = 8;
-		m_pPositionOffset[TYPE_ET2_P_LIGHT] = _float3(0.f, 0.f, 0.f);
+		m_pFrameTriger[TYPE_ET2_P_LIGHT] = 10;
+		m_pPositionOffset[TYPE_ET2_P_LIGHT] = _float3(0.f, 0.5f, 0.f);
 		m_pScaleOffset[TYPE_ET2_P_LIGHT]    = _float3(1.f, 1.f, 1.f);
 		m_pRotationOffset[TYPE_ET2_P_LIGHT] = _float3(0.f, 0.f, 0.f);
 	}
@@ -105,8 +105,8 @@ void CVfx_Engineer_Skill_HealingTree::Tick(_float fTimeDelta)
 
 		else if (m_iCount == TYPE_ET2_P_LIGHT && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_LIGHT])
 		{
-			//GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT(""),
-			//	XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_LIGHT], m_pScaleOffset[TYPE_ET2_P_LIGHT], m_pRotationOffset[TYPE_ET2_P_LIGHT]);
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Engineer_Skill_HealingTree_ZeroCircles"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_LIGHT], m_pScaleOffset[TYPE_ET2_P_LIGHT], m_pRotationOffset[TYPE_ET2_P_LIGHT]);
 			m_iCount++;
 		}
 

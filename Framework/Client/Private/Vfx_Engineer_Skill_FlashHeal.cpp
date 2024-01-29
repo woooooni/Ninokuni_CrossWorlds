@@ -40,7 +40,7 @@ HRESULT CVfx_Engineer_Skill_FlashHeal::Initialize_Prototype()
 	}
 
 	{
-		m_pFrameTriger[TYPE_ET2_E_DOME] = 22;
+		m_pFrameTriger[TYPE_ET2_E_DOME] = 20;
 		m_pPositionOffset[TYPE_ET2_E_DOME] = _float3(0.f, 1.f, 0.f);
 		m_pScaleOffset[TYPE_ET2_E_DOME]    = _float3(0.5f, 0.5f, 0.5f);
 		m_pRotationOffset[TYPE_ET2_E_DOME] = _float3(0.f, 0.f, 0.f);
