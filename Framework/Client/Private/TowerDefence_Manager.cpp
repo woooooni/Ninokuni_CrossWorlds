@@ -154,14 +154,14 @@ void CTowerDefence_Manager::Prepare_Defence()
 
 
 	// Clear Npc
-	list<CGameObject*>& NpcList = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_NPC);
-	for (auto& pNpc : NpcList)
-	{
-		if (pNpc->Get_PrototypeTag().find(L"TreeGrandfa") != wstring::npos)
-			continue;
-
-		pNpc->Set_Dead(true);
-	}
+	//list<CGameObject*>& NpcList = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_NPC);
+	//for (auto& pNpc : NpcList)
+	//{
+	//	if (pNpc->Get_PrototypeTag().find(L"TreeGrandfa") != wstring::npos)
+	//		continue;
+	//
+	//	pNpc->Set_Dead(true);
+	//}
 		
 
 	list<CGameObject*>& AnimalList = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_DYNAMIC);

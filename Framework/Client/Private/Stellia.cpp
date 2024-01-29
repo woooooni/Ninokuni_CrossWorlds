@@ -9,6 +9,7 @@
 #include "StelliaState_Chase.h"
 
 #include "StelliaState_Attack1.h"
+#include "StelliaState_AfterSpinTail.h"
 #include "StelliaState_Attack2.h"
 #include "StelliaState_Laser.h"
 #include "StelliaState_TripleLaser.h"
@@ -45,6 +46,32 @@
 #include "StelliaState_Rage2Loop.h"
 #include "StelliaState_Rage2Finish.h"
 
+// Rage3
+#include "StelliaState_Rage3Start_FadeOut.h"
+#include "StelliaState_Rage3Start_FadeIn.h"
+
+#include "StelliaState_Rage3Around.h"
+#include "StelliaState_Rage3AroundBreak.h"
+#include "StelliaState_Rage3TurnAround.h"
+#include "StelliaState_Rage3TurnPL.h"
+
+#include "StelliaState_Rage3ClawReady.h"
+#include "StelliaState_Rage3ClawCharge.h"
+#include "StelliaState_Rage3Claw.h"
+#include "StelliaState_Rage3ClawEndCharge.h"
+#include "StelliaState_Rage3ClawEndBreak.h"
+
+#include "StelliaState_Rage3ChargeReady.h"
+#include "StelliaState_Rage3Charge.h"
+#include "StelliaState_Rage3ChargeBreak.h"
+
+#include "StelliaState_Rage3Damage.h"
+#include "StelliaState_Rage3Escape.h"
+
+#include "StelliaState_Rage3TurnOC.h"
+
+// 
+#include "StelliaState_BackStep.h"
 #include "StelliaState_Turn.h"
 #include "StelliaState_Dead.h"
 
@@ -136,7 +163,7 @@ void CStellia::Tick(_float fTimeDelta)
 	}
 
 	/* 임시 */
-	if (KEY_TAP(KEY::Z))
+	if (KEY_TAP(KEY::X))
 		m_tStat.fHp -= m_tStat.fMaxHp * 0.1f;
 
 	//#ifdef _DEBUG
@@ -285,6 +312,7 @@ HRESULT CStellia::Ready_Components()
 
 	m_vOriginPos = m_pTransformCom->Get_Position();
 	m_vOriginLook = m_pTransformCom->Get_Look();
+	m_vRage3StartPos = Vec4(0.f, 0.f, 40.f, 1.f);
 
 
 	/* For.Com_Renderer */
@@ -307,7 +335,7 @@ HRESULT CStellia::Ready_Components()
 	ControllerDesc.vOffset = { 0.f, 1.125f, 0.f };
 	ControllerDesc.fHeight = 1.f;
 	ControllerDesc.fMaxJumpHeight = 10.f;
-	ControllerDesc.fRaidus = 1.f;
+	ControllerDesc.fRaidus = 3.f;
 	ControllerDesc.pOwner = this;
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_PhysXController"), TEXT("Com_Controller"), (CComponent**)&m_pControllerCom, &ControllerDesc)))
@@ -360,6 +388,10 @@ HRESULT CStellia::Ready_States()
 	m_pStateCom->Add_State(STELLIA_ATTACK1, CStelliaState_Attack1::Create(m_pStateCom, strAnimationName));
 
 	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_BossSkill01");
+	m_pStateCom->Add_State(STELLIA_AFTERSPINTAIL, CStelliaState_AfterSpinTail::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_Attack02");
 	m_pStateCom->Add_State(STELLIA_ATTACK2, CStelliaState_Attack2::Create(m_pStateCom, strAnimationName));
 
@@ -408,7 +440,7 @@ HRESULT CStellia::Ready_States()
 	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_BossSkillRage");
 	m_pStateCom->Add_State(STELLIA_BERSERK, CStelliaState_Berserk::Create(m_pStateCom, strAnimationName));
 
-	/* 레이지 1*/
+	/* Rage 1*/
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_InstantTurn");
 	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_LeftTurn");
@@ -454,7 +486,7 @@ HRESULT CStellia::Ready_States()
 	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_BossSkill02");
 	m_pStateCom->Add_State(STELLIA_RAGE1LOOP_JUMPSTAMP, CStelliaState_Rage1Loop_JumpStamp::Create(m_pStateCom, strAnimationName));
 
-	/* 레이지 2 */
+	/* Rage 2 */
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_InstantTurn");
 	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_LeftTurn");
@@ -484,7 +516,87 @@ HRESULT CStellia::Ready_States()
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_BossSkill04_New_Start");
 	m_pStateCom->Add_State(STELLIA_RAGE2FINISH, CStelliaState_Rage2Finish::Create(m_pStateCom, strAnimationName));
+	
+	/* Rage3 */
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_BossSkillRage");
+	m_pStateCom->Add_State(STELLIA_RAGE3START_FADEOUT, CStelliaState_Rage3Start_FadeOut::Create(m_pStateCom, strAnimationName));
+	
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_Stand");
+	m_pStateCom->Add_State(STELLIA_RAGE3START_FADEIN, CStelliaState_Rage3Start_FadeIn::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_Sprint");
+	m_pStateCom->Add_State(STELLIA_RAGE3AROUND, CStelliaState_Rage3Around::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_BossSkill06_New_End");
+	m_pStateCom->Add_State(STELLIA_RAGE3AROUND_BREAK, CStelliaState_Rage3AroundBreak::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_LeftTurn");
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_RightTurn");
+	m_pStateCom->Add_State(STELLIA_RAGE3TURN_AROUND, CStelliaState_Rage3TurnAround::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_RightTurn");
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_RightTurn180");
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_LeftTurn");
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_InstantTurn");
+	m_pStateCom->Add_State(STELLIA_RAGE3TURN_PL, CStelliaState_Rage3TurnPL::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_BossSkill06_New_Start");
+	m_pStateCom->Add_State(STELLIA_RAGE3CLAW_READY, CStelliaState_Rage3ClawReady::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_BossSkill06_New_Loop");
+	m_pStateCom->Add_State(STELLIA_RAGE3CLAW_CHARGE, CStelliaState_Rage3ClawCharge::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_Attack01");
+	m_pStateCom->Add_State(STELLIA_RAGE3CLAW, CStelliaState_Rage3Claw::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_BossSkill06_New_Loop");
+	m_pStateCom->Add_State(STELLIA_RAGE3CLAW_ENDCHARGE, CStelliaState_Rage3ClawEndCharge::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_BossSkill06_New_End");
+	m_pStateCom->Add_State(STELLIA_RAGE3CLAW_ENDBREAK, CStelliaState_Rage3ClawEndBreak::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_BossSkill06_New_Start");
+	m_pStateCom->Add_State(STELLIA_RAGE3CHARGE_READY, CStelliaState_Rage3ChargeReady::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_BossSkill06_New_Loop");
+	m_pStateCom->Add_State(STELLIA_RAGE3CHARGE, CStelliaState_Rage3Charge::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_BossSkill06_New_End");
+	m_pStateCom->Add_State(STELLIA_RAGE3CHARGE_BREAK, CStelliaState_Rage3ChargeBreak::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_CounterEnd");
+	m_pStateCom->Add_State(STELLIA_RAGE3DAMAGE, CStelliaState_Rage3Damage::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_BossSkill06_New_Loop");
+	m_pStateCom->Add_State(STELLIA_RAGE3ESCAPE, CStelliaState_Rage3Escape::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_RightTurn");
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_RightTurn180");
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_LeftTurn");
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_InstantTurn");
+	m_pStateCom->Add_State(STELLIA_RAGE3TURN_OC, CStelliaState_Rage3TurnOC::Create(m_pStateCom, strAnimationName));
 	// 
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_InstantTurn");
+	m_pStateCom->Add_State(STELLIA_BACKSTEP, CStelliaState_BackStep::Create(m_pStateCom, strAnimationName));
 
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_RightTurn");

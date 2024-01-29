@@ -30,15 +30,21 @@ HRESULT CStelliaState_Base::Initialize(const list<wstring>& AnimationList)
 	if (m_pPlayer != nullptr)
 		m_pPlayerTransform = m_pPlayer->Get_Component<CTransform>(TEXT("Com_Transform"));
 
-	m_fRunSpeed = 12.f;
+	m_fRunSpeed = 6.f;
+	m_fSprintSpeed = 12.f;
+	m_fRage3AroundSpeed = 40.f;
+
+	m_fAroundDist = 40.f;
+
 
 	/* 공격 패턴만 따로 모아놓기. (후에 순차적 혹은 랜덤으로 전환하기 위해) */
 	m_vecAtkState.push_back(CStellia::STELLIA_ATTACK1);
-	m_vecAtkState.push_back(CStellia::STELLIA_SPINTAIL);
-	m_vecAtkState.push_back(CStellia::STELLIA_JUMPSTAMP);
 	m_vecAtkState.push_back(CStellia::STELLIA_ATTACK2);
-	m_vecAtkState.push_back(CStellia::STELLIA_LASER);
-	m_vecAtkState.push_back(CStellia::STELLIA_CHARGE);
+	//m_vecAtkState.push_back(CStellia::STELLIA_SPINTAIL);
+	//m_vecAtkState.push_back(CStellia::STELLIA_JUMPSTAMP);
+	//m_vecAtkState.push_back(CStellia::STELLIA_ATTACK2);
+	//m_vecAtkState.push_back(CStellia::STELLIA_LASER);
+	//m_vecAtkState.push_back(CStellia::STELLIA_CHARGE);
 
 	return S_OK;
 }
@@ -65,6 +71,7 @@ void CStelliaState_Base::Init_Pattern()
 	m_vecAtkState.push_back(CStellia::STELLIA_ATTACK2);
 	m_vecAtkState.push_back(CStellia::STELLIA_SPINTAIL);
 	m_vecAtkState.push_back(CStellia::STELLIA_JUMPSTAMP);
+	m_vecAtkState.push_back(CStellia::STELLIA_ATTACK1);
 	m_vecAtkState.push_back(CStellia::STELLIA_TRIPLELASER);
 	m_vecAtkState.push_back(CStellia::STELLIA_CHARGE);
 	m_vecAtkState.push_back(CStellia::STELLIA_BIGBANG);

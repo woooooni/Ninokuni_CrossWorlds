@@ -37,9 +37,30 @@ void CStelliaState_Attack2::Tick_State(_float fTimeDelta)
 			m_pStellia->Set_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_COUNTER, false);
 	}
 
+	//if (m_pModelCom->Get_CurrAnimationFrame() == 21)
+	//	m_pTransformCom->LookAt_ForLandObject(m_pPlayerTransform->Get_Position());
+
+	if (m_pModelCom->Get_CurrAnimationFrame() >= 22 && m_pModelCom->Get_CurrAnimationFrame() <= 27)
+	{
+		m_pTransformCom->Turn(Vec3(0.f, 1.f, 0.f), (m_fRunSpeed * 0.3f), fTimeDelta);
+		m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fSprintSpeed * 2.f, fTimeDelta);
+	}
+
+	//if (m_pModelCom->Get_CurrAnimationFrame() == 56)
+	//	m_pTransformCom->LookAt_ForLandObject(m_pPlayerTransform->Get_Position());
+
+	if (m_pModelCom->Get_CurrAnimationFrame() >= 57 && m_pModelCom->Get_CurrAnimationFrame() <= 61)
+	{
+		m_pTransformCom->Turn(Vec3(0.f, 1.f, 0.f), -(m_fRunSpeed * 0.5), fTimeDelta);
+		m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fSprintSpeed * 2.f, fTimeDelta);
+	}
+
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
-		m_pStateMachineCom->Change_State(CStellia::STELLIA_COMBATIDLE);
+		if (m_pStellia->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_ATKAROUND))
+			m_pStateMachineCom->Change_State(CStellia::STELLIA_AFTERSPINTAIL);
+		else
+			m_pStateMachineCom->Change_State(CStellia::STELLIA_COMBATIDLE);
 	}
 }
 

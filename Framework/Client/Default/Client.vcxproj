@@ -276,6 +276,12 @@
     <ClInclude Include="..\Public\Crystal_Ball.h" />
     <ClInclude Include="..\Public\Crystal_Tower.h" />
     <ClInclude Include="..\Public\Winter_CurlingFloor.h" />
+    <ClInclude Include="..\Public\StelliaState_AfterSpinTail.h" />
+    <ClInclude Include="..\Public\StelliaState_BackStep.h" />
+    <ClInclude Include="..\Public\StelliaState_Rage3AroundBreak.h" />
+    <ClInclude Include="..\Public\StelliaState_Rage3ChargeBreak.h" />
+    <ClInclude Include="..\Public\StelliaState_Rage3ClawEndBreak.h" />
+    <ClInclude Include="..\Public\StelliaState_Rage3Start_FadeIn.h" />
     <ClInclude Include="..\Public\CurlingGame_Wall.h" />
     <ClInclude Include="..\Public\Decal.h" />
     <ClInclude Include="..\Public\Destroyer_FrengeCharge_Thunder.h" />
@@ -504,7 +510,18 @@
     <ClInclude Include="..\Public\StelliaState_Rage2StartJump.h" />
     <ClInclude Include="..\Public\StelliaState_Rage2StartTurnOC.h" />
     <ClInclude Include="..\Public\StelliaState_Rage2StartTurnOL.h" />
-    <ClInclude Include="..\Public\StelliaState_Rage3Start.h" />
+    <ClInclude Include="..\Public\StelliaState_Rage3Around.h" />
+    <ClInclude Include="..\Public\StelliaState_Rage3Charge.h" />
+    <ClInclude Include="..\Public\StelliaState_Rage3ChargeReady.h" />
+    <ClInclude Include="..\Public\StelliaState_Rage3Claw.h" />
+    <ClInclude Include="..\Public\StelliaState_Rage3ClawEndCharge.h" />
+    <ClInclude Include="..\Public\StelliaState_Rage3ClawCharge.h" />
+    <ClInclude Include="..\Public\StelliaState_Rage3Damage.h" />
+    <ClInclude Include="..\Public\StelliaState_Rage3Escape.h" />
+    <ClInclude Include="..\Public\StelliaState_Rage3Start_FadeOut.h" />
+    <ClInclude Include="..\Public\StelliaState_Rage3TurnOC.h" />
+    <ClInclude Include="..\Public\StelliaState_Rage3TurnPL.h" />
+    <ClInclude Include="..\Public\StelliaState_Rage3TurnAround.h" />
     <ClInclude Include="..\Public\Stellia_Crystal.h" />
     <ClInclude Include="..\Public\Stellia_Crystal_Controller.h" />
     <ClInclude Include="..\Public\Stellia_Crystal_Destructible.h" />
@@ -1087,6 +1104,8 @@
     <ClInclude Include="..\Public\WitchWood.h" />
     <ClInclude Include="..\Public\Zehra.h" />
     <ClInclude Include="Client.h" />
+    <ClInclude Include="StelliaState_Rage3ClawReady.h" />
+    <ClInclude Include="LensFlare.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="StelliaState_Rage1StartTurnOL.h" />
@@ -1196,6 +1215,12 @@
     <ClCompile Include="..\Private\Crystal_Ball.cpp" />
     <ClCompile Include="..\Private\Crystal_Tower.cpp" />
     <ClCompile Include="..\Private\Winter_CurlingFloor.cpp" />
+    <ClCompile Include="..\Private\StelliaState_AfterSpinTail.cpp" />
+    <ClCompile Include="..\Private\StelliaState_BackStep.cpp" />
+    <ClCompile Include="..\Private\StelliaState_Rage3AroundBreak.cpp" />
+    <ClCompile Include="..\Private\StelliaState_Rage3ChargeBreak.cpp" />
+    <ClCompile Include="..\Private\StelliaState_Rage3ClawEndBreak.cpp" />
+    <ClCompile Include="..\Private\StelliaState_Rage3Start_FadeIn.cpp" />
     <ClCompile Include="..\Private\CurlingGame_Wall.cpp" />
     <ClCompile Include="..\Private\Decal.cpp" />
     <ClCompile Include="..\Private\Destroyer_FrengeCharge_Thunder.cpp" />
@@ -1426,7 +1451,18 @@
     <ClCompile Include="..\Private\StelliaState_Rage2StartJump.cpp" />
     <ClCompile Include="..\Private\StelliaState_Rage2StartTurnOC.cpp" />
     <ClCompile Include="..\Private\StelliaState_Rage2StartTurnOL.cpp" />
-    <ClCompile Include="..\Private\StelliaState_Rage3Start.cpp" />
+    <ClCompile Include="..\Private\StelliaState_Rage3Around.cpp" />
+    <ClCompile Include="..\Private\StelliaState_Rage3Charge.cpp" />
+    <ClCompile Include="..\Private\StelliaState_Rage3ChargeReady.cpp" />
+    <ClCompile Include="..\Private\StelliaState_Rage3Claw.cpp" />
+    <ClCompile Include="..\Private\StelliaState_Rage3ClawEndCharge.cpp" />
+    <ClCompile Include="..\Private\StelliaState_Rage3ClawCharge.cpp" />
+    <ClCompile Include="..\Private\StelliaState_Rage3Damage.cpp" />
+    <ClCompile Include="..\Private\StelliaState_Rage3Escape.cpp" />
+    <ClCompile Include="..\Private\StelliaState_Rage3Start_FadeOut.cpp" />
+    <ClCompile Include="..\Private\StelliaState_Rage3TurnOC.cpp" />
+    <ClCompile Include="..\Private\StelliaState_Rage3TurnPL.cpp" />
+    <ClCompile Include="..\Private\StelliaState_Rage3TurnAround.cpp" />
     <ClCompile Include="..\Private\Stellia_Crystal.cpp" />
     <ClCompile Include="..\Private\Stellia_Crystal_Controller.cpp" />
     <ClCompile Include="..\Private\Stellia_Crystal_Destructible.cpp" />
@@ -2011,6 +2047,7 @@
     <ClCompile Include="..\Private\WitchWood.cpp" />
     <ClCompile Include="..\Private\Zehra.cpp" />
     <ClCompile Include="Client.cpp" />
+    <ClCompile Include="StelliaState_Rage3ClawReady.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

@@ -15,6 +15,8 @@ HRESULT CMainQuestNode_WitchForest01::Initialize()
 {
 	__super::Initialize();
 
+	m_fTalkChangeTime = 3.f;
+
 	m_strQuestTag = TEXT("[메인]");
 	m_strQuestName = TEXT("마녀의 숲으로");
 	m_strQuestContent = TEXT("서쪽 길을 따라 나오는 문으로 나가기");
@@ -37,7 +39,6 @@ HRESULT CMainQuestNode_WitchForest01::Initialize()
 
 void CMainQuestNode_WitchForest01::Start()
 {
-	CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
 	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
@@ -59,7 +60,7 @@ CBTNode::NODE_STATE CMainQuestNode_WitchForest01::Tick(const _float& fTimeDelta)
 
 	m_fTime += fTimeDelta;
 
-	if (m_fTime >= 3.f)
+	if (m_fTime >= m_fTalkChangeTime)
 	{
 		if (m_iTalkIndex < m_vecTalkDesc.size())
 		{
