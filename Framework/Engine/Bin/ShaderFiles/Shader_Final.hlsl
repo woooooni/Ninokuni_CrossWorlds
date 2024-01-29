@@ -101,7 +101,15 @@ PS_OUT PS_MAIN_SCREEN_DESTROYER_BREAK(PS_IN In)
     float4 vMaskColor = g_ScreenEffectTexture.Sample(LinearSampler, In.vTexcoord);
     float2 vNewTexCoord = In.vTexcoord + (vMaskColor.rg * 0.05f);
     
-    Out.vColor = g_ScreenTarget.Sample(LinearSampler, vNewTexCoord);
+    if (0.f > vNewTexCoord.x || 1.f < vNewTexCoord.x || 0.f > vNewTexCoord.y || 1.f < vNewTexCoord.y)
+        Out.vColor = float4(0.f, 0.f, 0.f, 1.f);
+    else
+        Out.vColor = g_ScreenTarget.Sample(LinearSampler, vNewTexCoord);
+    
+    
+        
+        
+    
     Out.vColor.a = 1.f;
 	
     return Out;

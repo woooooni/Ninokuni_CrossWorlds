@@ -65,7 +65,7 @@ HRESULT CMainApp::Initialize()
 
 		g_eLoadCharacter = LOAD_CHARACTER_TYPE::ALL_CH; /* 모델 로드할 캐릭터 타입 */
 
-		g_ePlayCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH; /* 게임 플레이 캐릭터 타입 */
+		g_ePlayCharacter = LOAD_CHARACTER_TYPE::DESTROYER_CH; /* 게임 플레이 캐릭터 타입 */
 	}
 
 	// Open Level
@@ -183,6 +183,7 @@ HRESULT CMainApp::Initialize_Client()
 
 	if (FAILED(CInventory_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
 		return E_FAIL;
+
 
 	if (FAILED(Ready_CameraObject()))
 		return E_FAIL;	

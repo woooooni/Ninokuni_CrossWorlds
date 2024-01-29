@@ -55,6 +55,9 @@ bool   g_bOutLineDraw;
 
 float  g_fBias = 0.2f;
 
+// 라디알 블러
+float g_fQuality = 16.f;
+
 // JunYeop
 cbuffer cbDirLightPS : register(b1)
 {
@@ -302,7 +305,7 @@ PS_OUT PS_RADIAL_BLUR(PS_IN In)
     float v = 0.f;
     const float quality = 16;
 
-    for (float i = 0.0f; i < 1.0f; i += (1 / quality))
+    for (float i = 0.0f; i < 1.0f; i += (1 / g_fQuality))
     {
         v = 0.9 + i * 0.1f;
         colour += g_BlendTarget.Sample(PointSampler, In.vTexcoord * v + 0.5f - 0.5f * v);
