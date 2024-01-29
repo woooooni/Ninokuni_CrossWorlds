@@ -78,6 +78,7 @@ private:
 		"Wind", "None" };
 	_int m_iDiffuseFolderIndex = { 21 };
 	_int m_iAlphaFolderIndex   = { 21 };
+	_int m_iDistortionFolderIndex = { 21 };
 
 	char   m_cPrototypeName[MAX_PATH] = { "" };
 

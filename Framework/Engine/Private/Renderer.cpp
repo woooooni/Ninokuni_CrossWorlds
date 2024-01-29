@@ -405,7 +405,7 @@ HRESULT CRenderer::Draw_World()
 		return E_FAIL;
 
 
-	if (FAILED(Render_Blur(L"Target_Effect_Distortion", L"MRT_Distrotion_Blur", true, BLUR_HOR_HIGH, BLUR_VER_HIGH, BLUR_UP_ONEADD)))
+	if (FAILED(Render_Blur(L"Target_Effect_Distortion", L"MRT_Distrotion_Blur", true, BLUR_HOR_HIGHHIGH, BLUR_VER_HIGHHIGH, BLUR_UP_ONEADD)))
 		return E_FAIL;
 
 	if (FAILED(Render_Distortion()))
