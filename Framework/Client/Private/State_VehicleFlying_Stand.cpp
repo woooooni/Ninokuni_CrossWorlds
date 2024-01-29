@@ -66,8 +66,11 @@ void CState_VehicleFlying_Stand::Tick_State(_float fTimeDelta)
 
         if (KEY_HOLD(KEY::SPACE))
         {
-            if(true == m_bShoot)
-                Shoot();
+            if (g_eLoadCharacter == LOAD_CHARACTER_TYPE::ALL_CH)
+            {
+                if (true == m_bShoot)
+                    Shoot();
+            }
         }
     }
     else

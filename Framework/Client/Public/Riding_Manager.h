@@ -31,6 +31,10 @@ private:
 	class CVehicle_Udadak* m_pUdadak = { nullptr };
 	class CVehicle_Flying_Biplane* m_pBiplane = { nullptr };
 
+	// For Grandprix
+	class CGrandprix_Engineer* m_pEngineer = { nullptr };
+	class CVehicle_Flying_Biplane* m_pEnemyPlane = { nullptr };
+
 private:
 	ID3D11Device* m_pDevice = { nullptr };
 	ID3D11DeviceContext* m_pContext = { nullptr };

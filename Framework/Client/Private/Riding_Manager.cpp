@@ -7,6 +7,7 @@
 
 #include "Vehicle_Udadak.h"
 #include "Vehicle_Flying_Biplane.h"
+#include "Grandprix_Engineer.h"
 
 IMPLEMENT_SINGLETON(CRiding_Manager)
 
@@ -59,6 +60,24 @@ HRESULT CRiding_Manager::Ready_Vehicle_GameObject(LEVELID eID)
 	m_pBiplane = dynamic_cast<CVehicle_Flying_Biplane*>(pBiplane);
 	Safe_AddRef(m_pBiplane);
 
+	CGameObject* pEnemyplane = nullptr;
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Vehicle_Biplane"), &UdadakDesc, &pEnemyplane)))
+		return E_FAIL;
+	if (nullptr == pEnemyplane)
+		return E_FAIL;
+	if (nullptr == dynamic_cast<CVehicle_Flying_Biplane*>(pEnemyplane))
+		return E_FAIL;
+	m_pEnemyPlane = dynamic_cast<CVehicle_Flying_Biplane*>(pEnemyplane);
+	Safe_AddRef(m_pEnemyPlane);
+	//m_pEnemyPlane->Set_Aboard(true);
+	//m_pEnemyPlane->Ride(nullptr);
+	
+	// 모든 캐릭터를 로드한 경우에만 엔지니어를 만들 수 있다.
+	if (g_eLoadCharacter == LOAD_CHARACTER_TYPE::ALL_CH)
+	{
+
+	}
+
 	return S_OK;
 }
 
@@ -77,6 +96,14 @@ HRESULT CRiding_Manager::Ready_Vehicle_GameObjectToLayer(LEVELID eID)
 		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, m_pBiplane)))
 			return E_FAIL;
 		Safe_AddRef(m_pBiplane);
+
+		if (nullptr == m_pEnemyPlane)
+			return E_FAIL;
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, m_pEnemyPlane)))
+			return E_FAIL;
+		Safe_AddRef(m_pEnemyPlane);
+		//m_pEnemyPlane->Set_Aboard(true);
+		//m_pEnemyPlane->Ride(nullptr);
 	}
 
 	return S_OK;
@@ -159,6 +186,9 @@ void CRiding_Manager::Free()
 
 	Safe_Release(m_pUdadak);
 	Safe_Release(m_pBiplane);
+
+	Safe_Release(m_pEngineer);
+	Safe_Release(m_pEnemyPlane);
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);

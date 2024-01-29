@@ -123,11 +123,10 @@ HRESULT CLevel_Evermore::Tick(_float fTimeDelta)
 	CUIMinigame_Manager::GetInstance()->Tick_Minigame(LEVELID::LEVEL_EVERMORE, fTimeDelta);
 
 	// TestCode
-	if (KEY_TAP(KEY::P))
-	{
-		//CInventory_Manager::GetInstance()->Add_Gold(GI->RandomInt(15, 40));
-		CInventory_Manager::GetInstance()->Add_Item(ITEM_TYPE::CONSUMPSION, ITEM_CODE::CONSUMPSION_HP);
-	}
+//	if (KEY_TAP(KEY::P))
+//	{
+//		CInventory_Manager::GetInstance()->Add_Item(ITEM_TYPE::CONSUMPSION, ITEM_CODE::CONSUMPSION_HP);
+//	}
 
 	if (KEY_TAP(KEY::PAGE_UP))
 	{
