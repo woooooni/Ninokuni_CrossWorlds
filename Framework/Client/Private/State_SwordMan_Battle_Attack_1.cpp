@@ -28,6 +28,9 @@ void CState_SwordMan_Battle_Attack_1::Enter_State(void* pArg)
     m_MotionTrailDesc.vBloomPower = { 1.f, 1.f, 1.f };
     m_MotionTrailDesc.fAccMotionTrail = 0.f;
     m_MotionTrailDesc.fMotionTrailTime = 0.1f;
+
+    for (_uint i = 0; i < 2; ++i)
+        m_bGenMotionTrail[i] = false;
 }
 
 void CState_SwordMan_Battle_Attack_1::Tick_State(_float fTimeDelta)
@@ -40,7 +43,13 @@ void CState_SwordMan_Battle_Attack_1::Tick_State(_float fTimeDelta)
         Vec3 vDir = -1.f * (XMVector3Normalize(m_pTransformCom->Get_Right()) * 0.9f) + XMVector3Normalize((m_pTransformCom->Get_Look()) * 0.1f);
         m_pTransformCom->Move(XMVector3Normalize(vDir), 20.f, fTimeDelta);
         m_pCharacter->Look_For_Target();
-        m_pCharacter->Generate_MotionTrail(m_MotionTrailDesc);
+
+        if (false == m_bGenMotionTrail[0])
+        {
+            m_pCharacter->Create_MotionTrail(m_MotionTrailDesc);
+            m_bGenMotionTrail[0] = true;
+        }
+        
     }
 
     if(m_pModelCom->Get_Progress() > 0.25f && m_pCharacter->Get_Collider(CCollider::DETECTION_TYPE::ATTACK)[0]->Is_Active())
@@ -48,10 +57,14 @@ void CState_SwordMan_Battle_Attack_1::Tick_State(_float fTimeDelta)
         Vec3 vDir = 1.f * (XMVector3Normalize(m_pTransformCom->Get_Right()) * 0.95f) + XMVector3Normalize((m_pTransformCom->Get_Look()) * 0.05f);
         m_pCharacter->Look_For_Target();
         m_pTransformCom->Move(XMVector3Normalize(vDir), 30.f, fTimeDelta);
+
+        if (false == m_bGenMotionTrail[1])
+        {
+            m_pCharacter->Create_MotionTrail(m_MotionTrailDesc);
+            m_bGenMotionTrail[1] = true;
+        }
     }
-    
-    if (false == m_pModelCom->Is_Tween() && m_pModelCom->Get_Progress() >= 0.65f)
-        m_pCharacter->Stop_MotionTrail();
+       
 
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
         m_pStateMachineCom->Change_State(CCharacter::STATE::BATTLE_IDLE);
@@ -61,6 +74,9 @@ void CState_SwordMan_Battle_Attack_1::Tick_State(_float fTimeDelta)
 
 void CState_SwordMan_Battle_Attack_1::Exit_State()
 {
+    for (_uint i = 0; i < 2; ++i)
+        m_bGenMotionTrail[i] = false;
+
     m_pCharacter->Stop_MotionTrail();
 }
 

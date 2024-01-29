@@ -134,6 +134,7 @@ void CVfx_Destroyer_Skill_HyperStrike::Tick(_float fTimeDelta)
 		{
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_Skill_HyperStrike_Fire_Small"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_FIRES], m_pScaleOffset[TYPE_ET2_P_FIRES], m_pRotationOffset[TYPE_ET2_P_FIRES]);
+
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET2_P_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_CIRCLES])
@@ -198,7 +199,11 @@ void CVfx_Destroyer_Skill_HyperStrike::Tick(_float fTimeDelta)
 				GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Destroyer_Skill_HyperStrike_CirecleLine"),
 					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_E_CIRCLELINE], m_pScaleOffset[TYPE_ET3_E_CIRCLELINE], m_pRotationOffset[TYPE_ET3_E_CIRCLELINE]);
 
+				m_pHammer->Get_Component<CRenderer>(L"Com_Renderer")->Set_ScreenEffect(CRenderer::SCREEN_EFFECT::DESTROYER_BREAK);
+				m_pHammer->Get_Component<CRenderer>(L"Com_Renderer")->Set_RadialBlur(true);
 				Safe_Release(m_pHammer);
+
+				
 
 				m_iCount++;
 			}

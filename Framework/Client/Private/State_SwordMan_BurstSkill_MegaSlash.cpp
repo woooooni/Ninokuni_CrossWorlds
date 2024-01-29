@@ -43,13 +43,22 @@ void CState_SwordMan_BurstSkill_MegaSlash::Tick_State(_float fTimeDelta)
         if (false == m_bSlow)
         {
             GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.5f, 0.1f, true);
+            m_pCharacter->Get_RendererCom()->Set_ScreenEffect(CRenderer::SCREEN_EFFECT::SWORDMAN_SPLIT);
             m_pCharacter->Get_RendererCom()->Set_RadialBlur(true);
+            
             m_bSlow = true;
         }
     }
 
-    if(GI->Get_TimeScale(TIMER_TYPE::GAME_PLAY) >= 1.f)
+    if (m_pCharacter->Get_RendererCom()->Get_Current_ScreenEffect() == CRenderer::SCREEN_EFFECT::SWORDMAN_SPLIT)
+        m_pCharacter->Get_RendererCom()->Add_ScreenEffectAcc(Vec2(-0.5f * fTimeDelta, -0.7f * fTimeDelta));
+
+    if (GI->Get_TimeScale(TIMER_TYPE::GAME_PLAY) >= 1.f)
+    {
+        m_pCharacter->Get_RendererCom()->Set_ScreenEffect(CRenderer::SCREEN_EFFECT::SCREENEFFECT_END);
         m_pCharacter->Get_RendererCom()->Set_RadialBlur(false);
+    }
+        
         
 
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())

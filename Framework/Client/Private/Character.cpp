@@ -108,20 +108,6 @@ void CCharacter::Tick(_float fTimeDelta)
 	if (nullptr != m_pTarget)
 		Tick_Target(fTimeDelta);
 
-	/*if (KEY_TAP(KEY::L))
-	{
-		m_pRendererCom->Set_ScreenEffect(CRenderer::SCREEN_EFFECT::DESTROYER_BREAK);
-	}
-	if (KEY_TAP(KEY::U))
-	{
-		m_pRendererCom->Set_ScreenEffect(CRenderer::SCREEN_EFFECT::SCREENEFFECT_END);
-	}
-
-	if (m_pRendererCom->Get_Current_ScreenEffect() != CRenderer::SCREEN_EFFECT::SCREENEFFECT_END)
-	{
-		m_pRendererCom->Add_ScreenEffectAcc(Vec2(29.864f * fTimeDelta, 0.f));
-	}*/
-
 	if (KEY_TAP(KEY::P))
 	{
 		Add_Exp(10);

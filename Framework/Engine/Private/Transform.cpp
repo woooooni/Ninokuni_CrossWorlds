@@ -96,6 +96,10 @@ Vec4 CTransform::Get_RelativeOffset(Vec4 vPos)
 void CTransform::Set_State(STATE eState, _vector vState)
 {
 	_matrix	WorldMatrix = XMLoadFloat4x4(&m_WorldMatrix);
+	
+	if (eState == STATE::STATE_POSITION)	
+		XMVectorSetW(vState, 1.f);
+
 	WorldMatrix.r[eState] = vState;
 	XMStoreFloat4x4(&m_WorldMatrix, WorldMatrix);
 }

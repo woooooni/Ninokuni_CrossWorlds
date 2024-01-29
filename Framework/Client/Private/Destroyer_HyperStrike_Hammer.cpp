@@ -38,7 +38,7 @@ HRESULT CDestroyer_HyperStrike_Hammer::Initialize(void* pArg)
 		return E_FAIL;
 
 	Set_Collider_Elemental(m_pOwner->Get_ElementalType());
-	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::BLOW, 0.f, 0.f, 0.f, false);
+	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::AIR_BORNE, 0.f, 0.f, 0.f, false);
 	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
 
 	m_fDeletionTime = 2.f;
@@ -61,6 +61,14 @@ void CDestroyer_HyperStrike_Hammer::Tick(_float fTimeDelta)
 	}
 
 	__super::Tick(fTimeDelta);
+
+	if (true == m_bDead)
+	{
+		m_pRendererCom->Set_ScreenEffect(CRenderer::SCREEN_EFFECT::SCREENEFFECT_END);
+		m_pRendererCom->Set_RadialBlur(false);
+	}
+		
+
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 	m_pControllerCom->Tick_Controller(fTimeDelta);
 
@@ -164,6 +172,8 @@ void CDestroyer_HyperStrike_Hammer::Ground_Collision_Enter(PHYSX_GROUND_COLLISIO
 
 	if (false == m_bCollisionGround)
 		m_bCollisionGround = true;
+
+	m_pRendererCom->Set_ScreenEffect(CRenderer::SCREEN_EFFECT::DESTROYER_BREAK);
 }
 
 
