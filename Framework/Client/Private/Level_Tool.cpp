@@ -11,6 +11,7 @@
 #include "Player.h"
 #include "Weapon_SwordTemp.h"
 #include "LensFlare.h"
+#include "CurlingGame_Manager.h"
 
 CLevel_Tool::CLevel_Tool(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -59,6 +60,9 @@ HRESULT CLevel_Tool::Initialize()
 	//if (FAILED(GI->Add_ShadowLight(LEVEL_TOOL, XMVectorSet(0.f, 10.f, 0.f, 1.f), XMVectorSet(10.f, 0.f, 0.f, 1.f), XMVectorSet(0.f, 1.f, 0.f, 0.f))))
 	//	return E_FAIL;
 
+	if (FAILED(CCurlingGame_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -71,11 +75,18 @@ HRESULT CLevel_Tool::Tick(_float fTimeDelta)
 		if (FAILED(GI->Add_GameObject(LEVEL_TOOL, _uint(LAYER_MONSTER), TEXT("Prorotype_GameObject_Glanix"))))
 			return E_FAIL;
 	}
+
+	CCurlingGame_Manager::GetInstance()->Tick(fTimeDelta);
+
 	return S_OK;
 }
 
 HRESULT CLevel_Tool::LateTick(_float fTimeDelta)
 {
+
+
+	CCurlingGame_Manager::GetInstance()->LateTick(fTimeDelta);
+
 	return S_OK;
 }
 

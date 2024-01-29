@@ -1,21 +1,24 @@
 #include "stdafx.h"
-#include "..\Public\Animals.h"
+#include "..\Public\WitchWood.h"
 #include "GameInstance.h"
 #include "Game_Manager.h"
 #include "Player.h"
 
-CAnimals::CAnimals(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType)
-	: CDynamicObject(pDevice, pContext, strObjectTag, eType)
+#include "State_Open.h"
+#include "State_Closed.h"
+
+CWitchWood::CWitchWood(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType)
+	: CDynamicObject(pDevice, pContext, strObjectTag, OBJ_TYPE::OBJ_BUILDING)
 {
 }
 
-CAnimals::CAnimals(const CAnimals& rhs)
+CWitchWood::CWitchWood(const CWitchWood& rhs)
 	: CDynamicObject(rhs)
 {
 
 }
 
-HRESULT CAnimals::Initialize_Prototype()
+HRESULT CWitchWood::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
@@ -23,18 +26,21 @@ HRESULT CAnimals::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CAnimals::Initialize(void* pArg)
+HRESULT CWitchWood::Initialize(void* pArg)
 {
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
-	m_eType = DYNAMIC_TYPE::DYNAMIC_ANIMAL;
-	
+	if (FAILED(Ready_Components()))
+		return E_FAIL;
+
+	if (FAILED(Ready_State()))
+		return E_FAIL;
 
 	return S_OK;
 }
 
-void CAnimals::Tick(_float fTimeDelta)
+void CWitchWood::Tick(_float fTimeDelta)
 {
 	if (m_pRigidBodyCom != nullptr && m_pControllerCom != nullptr)
 	{
@@ -43,10 +49,10 @@ void CAnimals::Tick(_float fTimeDelta)
 	}
 
 	__super::Tick(fTimeDelta);
-	GI->Add_CollisionGroup(COLLISION_GROUP::ANIMAL, this);
+	m_pStateMachineCom->Tick_State(fTimeDelta);
 }
 
-void CAnimals::LateTick(_float fTimeDelta)
+void CWitchWood::LateTick(_float fTimeDelta)
 {
 
 	if (nullptr != m_pModelCom)
@@ -57,35 +63,25 @@ void CAnimals::LateTick(_float fTimeDelta)
 
 	__super::LateTick(fTimeDelta);
 
-	Compute_CamZ(m_pTransformCom->Get_Position());
+	//Compute_CamZ(m_pTransformCom->Get_Position());
 
-	if (TEXT("Animal_Whale") != m_strObjectTag && TEXT("Animal_Ray") != m_strObjectTag)
+	if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 20.0f))
 	{
-		if (m_fCamDistance <= 30.f && true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 20.0f))
-		{
-
-			m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_SHADOW, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);
-			m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_NONBLEND, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);
-
-		}
-	}
-	else
-	{
-
 		m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_SHADOW, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);
 		m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_NONBLEND, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);
-
 	}
+	
+
 }
 
-HRESULT CAnimals::Render()
+HRESULT CWitchWood::Render()
 {
 
 
 	return S_OK;
 }
 
-HRESULT CAnimals::Render_ShadowDepth()
+HRESULT CWitchWood::Render_ShadowDepth()
 {
 	if (FAILED(__super::Render_ShadowDepth()))
 		return E_FAIL;
@@ -93,7 +89,7 @@ HRESULT CAnimals::Render_ShadowDepth()
 	return S_OK;
 }
 
-HRESULT CAnimals::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc)
+HRESULT CWitchWood::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc)
 {
 	if (FAILED(__super::Render()))
 		return E_FAIL;
@@ -116,17 +112,8 @@ HRESULT CAnimals::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffe
 
 	if (FAILED(pInstancingShader->Bind_RawValue("g_vBloomPower", &m_vBloomPower, sizeof(_float3))))
 		return E_FAIL;
-	
+
 	if (FAILED(pInstancingShader->Bind_RawValue("g_AnimInstancingDesc", AnimModelDesc.data(), sizeof(ANIMODEL_INSTANCE_DESC) * AnimModelDesc.size())))
-		return E_FAIL;
-
-	// ViewSpace상의 노멀을 찾기 위한 Matrix
-	Matrix worldInvTranspose = m_pTransformCom->Get_WorldMatrixInverse();
-	worldInvTranspose.Transpose();
-
-	Matrix worldInvTransposeView = worldInvTranspose * GI->Get_TransformFloat4x4(CPipeLine::D3DTS_VIEW);
-
-	if (FAILED(pInstancingShader->Bind_Matrix("WorldInvTransposeView", &worldInvTransposeView)))
 		return E_FAIL;
 
 	if (FAILED(m_pModelCom->SetUp_VTF(pInstancingShader)))
@@ -134,6 +121,7 @@ HRESULT CAnimals::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffe
 
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
 	_uint iPassIndex = 0;
+
 
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{
@@ -145,7 +133,7 @@ HRESULT CAnimals::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffe
 		else
 			iPassIndex++;
 
-		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, i, pInstancingBuffer, WorldMatrices, iPassIndex)))
+		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, i, pInstancingBuffer, WorldMatrices, 5)))
 			return E_FAIL;
 	}
 
@@ -153,7 +141,7 @@ HRESULT CAnimals::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffe
 	return S_OK;
 }
 
-HRESULT CAnimals::Render_Instance_AnimModel_Shadow(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc)
+HRESULT CWitchWood::Render_Instance_AnimModel_Shadow(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc)
 {
 	if (nullptr == m_pModelCom || nullptr == pInstancingShader)
 		return E_FAIL;
@@ -177,14 +165,6 @@ HRESULT CAnimals::Render_Instance_AnimModel_Shadow(CShader* pInstancingShader, C
 	if (FAILED(pInstancingShader->Bind_RawValue("g_AnimInstancingDesc", AnimModelDesc.data(), sizeof(ANIMODEL_INSTANCE_DESC) * AnimModelDesc.size())))
 		return E_FAIL;
 
-	Matrix worldInvTranspose = m_pTransformCom->Get_WorldMatrixInverse();
-	worldInvTranspose.Transpose();
-
-	Matrix worldInvTransposeView = worldInvTranspose * GI->Get_TransformFloat4x4(CPipeLine::D3DTS_VIEW);
-
-	if (FAILED(pInstancingShader->Bind_Matrix("WorldInvTransposeView", &worldInvTransposeView)))
-		return E_FAIL;
-
 	if (FAILED(m_pModelCom->SetUp_VTF(pInstancingShader)))
 		return E_FAIL;
 
@@ -202,21 +182,21 @@ HRESULT CAnimals::Render_Instance_AnimModel_Shadow(CShader* pInstancingShader, C
 }
 
 
-void CAnimals::Collision_Enter(const COLLISION_INFO& tInfo)
+void CWitchWood::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 
 }
 
-void CAnimals::Collision_Continue(const COLLISION_INFO& tInfo)
+void CWitchWood::Collision_Continue(const COLLISION_INFO& tInfo)
 {
 
 }
-	
-void CAnimals::Collision_Exit(const COLLISION_INFO& tInfo)
+
+void CWitchWood::Collision_Exit(const COLLISION_INFO& tInfo)
 {
 }
 
-HRESULT CAnimals::Ready_Components()
+HRESULT CWitchWood::Ready_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"),
 		TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
@@ -230,8 +210,12 @@ HRESULT CAnimals::Ready_Components()
 		TEXT("Com_AnimShader"), reinterpret_cast<CComponent**>(&m_pAnimShaderCom))))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_") + m_strDynamicName,
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Witch_Wood"),
 		TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
+		return E_FAIL;
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_StateMachine"),
+		TEXT("Com_StateMachine"), reinterpret_cast<CComponent**>(&m_pStateMachineCom))))
 		return E_FAIL;
 
 	CRigidBody::RIGID_BODY_DESC RigidDesc;
@@ -245,7 +229,52 @@ HRESULT CAnimals::Ready_Components()
 	return S_OK;
 }
 
-void CAnimals::Free()
+HRESULT CWitchWood::Ready_State()
+{
+	list<wstring> strAnimationNames;
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"Close_End");
+	strAnimationNames.push_back(L"Closing");
+	m_pStateMachineCom->Add_State(WOOD_STATE::CLOSE, CState_Closed::Create(m_pStateMachineCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"Open_End");
+	strAnimationNames.push_back(L"Opening");
+	m_pStateMachineCom->Add_State(WOOD_STATE::OPEN, CState_Open::Create(m_pStateMachineCom, strAnimationNames));
+
+	m_pStateMachineCom->Change_State(WOOD_STATE::OPEN);
+
+	return S_OK;
+}
+
+CWitchWood* CWitchWood::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eObjType)
+{
+	CWitchWood* pInstance = new CWitchWood(pDevice, pContext, strObjectTag, eObjType);
+
+	if (FAILED(pInstance->Initialize_Prototype()))
+	{
+		MSG_BOX("Create Failed to ProtoType : CWitchWood");
+		Safe_Release<CWitchWood*>(pInstance);
+	}
+
+	return pInstance;
+}
+
+CGameObject* CWitchWood::Clone(void* pArg)
+{
+	CWitchWood* pInstance = new CWitchWood(*this);
+
+	if (FAILED(pInstance->Initialize(pArg)))
+	{
+		MSG_BOX("Create Failed to Cloned : CWitchWood");
+		Safe_Release<CWitchWood*>(pInstance);
+	}
+
+	return pInstance;
+}
+
+void CWitchWood::Free()
 {
 	__super::Free();
 }

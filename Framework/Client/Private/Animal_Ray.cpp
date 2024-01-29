@@ -2,10 +2,7 @@
 #include "Animal_Ray.h"
 #include "GameInstance.h"
 
-#include "State_Animal_Idle.h"
-#include "State_Animal_Run.h"
-#include "State_Animal_Walk.h"
-#include "State_Animal_Lift.h"
+#include "State_Animal_Fly.h"
 
 CAnimal_Ray::CAnimal_Ray(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType)
 	: CAnimals(pDevice, pContext, strObjectTag, eType)
@@ -84,7 +81,7 @@ HRESULT CAnimal_Ray::Ready_Components(void* pArg)
 		TEXT("Com_AnimShader"), reinterpret_cast<CComponent**>(&m_pAnimShaderCom))))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Dochi"),
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Animal_Ray"),
 		TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 		return E_FAIL;
 
@@ -111,26 +108,11 @@ HRESULT CAnimal_Ray::Ready_State()
 	list<wstring> strAnimationNames;
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Dochi.ao|SKM_Dochi.ao|SKM_Dochi.ao|Dochi_Idle01");
-	m_pStateMachineCom->Add_State(CAnimals::STATE::STATE_IDLE, CState_Animal_Idle::Create(m_pStateMachineCom, strAnimationNames));
-
-	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Dochi.ao|SKM_Dochi.ao|SKM_Dochi.ao|Dochi_Run");
-	m_pStateMachineCom->Add_State(CAnimals::STATE::STATE_RUN, CState_Animal_Run::Create(m_pStateMachineCom, strAnimationNames));
-
-	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Dochi.ao|SKM_Dochi.ao|SKM_Dochi.ao|Dochi_Walk");
-	m_pStateMachineCom->Add_State(CAnimals::STATE::STATE_WALK, CState_Animal_Walk::Create(m_pStateMachineCom, strAnimationNames));
-
-	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Dochi.ao|SKM_Dochi.ao|SKM_Dochi.ao|Dochi_LiftedStart");
-	strAnimationNames.push_back(L"SKM_Dochi.ao|SKM_Dochi.ao|SKM_Dochi.ao|Dochi_LiftedLoop");
-	strAnimationNames.push_back(L"SKM_Dochi.ao|SKM_Dochi.ao|SKM_Dochi.ao|Dochi_LiftedLoop2");
-	strAnimationNames.push_back(L"SKM_Dochi.ao|SKM_Dochi.ao|SKM_Dochi.ao|Dochi_LiftedFinish");
-	m_pStateMachineCom->Add_State(CAnimals::STATE::STATE_LIFT, CState_Animal_Lift::Create(m_pStateMachineCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Ray.ao|SKM_Ray.ao|SKM_Ray.ao|Ray_Idle1");
+	m_pStateMachineCom->Add_State(CAnimals::STATE::STATE_FLY, CState_Animal_Fly::Create(m_pStateMachineCom, strAnimationNames));
 
 
-	m_pStateMachineCom->Change_State(CAnimals::STATE::STATE_IDLE);
+	m_pStateMachineCom->Change_State(CAnimals::STATE::STATE_FLY);
 
 	return S_OK;
 }

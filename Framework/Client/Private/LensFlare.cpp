@@ -1,6 +1,7 @@
 #include "stdafx.h"
-#include "..\Default\LensFlare.h"
+#include "LensFlare.h"
 #include "GameInstance.h"
+#include "Quest_Manager.h"
 
 CLensFlare::CLensFlare(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType)
 	: CGameObject(pDevice, pContext, strObjectTag, eType)
@@ -34,6 +35,12 @@ void CLensFlare::Tick(_float fTimeDelta)
 void CLensFlare::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
+
+	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_INVASION)
+		m_bLensOff = true;
+	
+	if (true == m_bLensOff)
+		return;
 
 	Vec4 light_ss{};
 	{	

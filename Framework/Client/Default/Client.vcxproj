@@ -275,6 +275,7 @@
     <ClInclude Include="..\Public\Criminal_Npc.h" />
     <ClInclude Include="..\Public\Crystal_Ball.h" />
     <ClInclude Include="..\Public\Crystal_Tower.h" />
+    <ClInclude Include="..\Public\Winter_CurlingFloor.h" />
     <ClInclude Include="..\Public\CurlingGame_Wall.h" />
     <ClInclude Include="..\Public\Decal.h" />
     <ClInclude Include="..\Public\Destroyer_FrengeCharge_Thunder.h" />
@@ -386,6 +387,7 @@
     <ClInclude Include="..\Public\InvasionState_Idle02.h" />
     <ClInclude Include="..\Public\Inventory_Manager.h" />
     <ClInclude Include="..\Public\Item_Manager.h" />
+    <ClInclude Include="..\Public\LensFlare.h" />
     <ClInclude Include="..\Public\MainQuestNode_Invasion02_2.h" />
     <ClInclude Include="..\Public\MainQuestNode_Invasion02_3.h" />
     <ClInclude Include="..\Public\MainQuestNode_Invasion02_4.h" />
@@ -466,6 +468,7 @@
     <ClInclude Include="..\Public\CurlingGame_Manager.h" />
     <ClInclude Include="..\Public\CurlingGame_Prop.h" />
     <ClInclude Include="..\Public\State_Character_Vehicle.h" />
+    <ClInclude Include="..\Public\State_Closed.h" />
     <ClInclude Include="..\Public\State_FlameTower_Attack.h" />
     <ClInclude Include="..\Public\State_CannonTower_Attack.h" />
     <ClInclude Include="..\Public\State_CrystalTower_Attack.h" />
@@ -473,6 +476,7 @@
     <ClInclude Include="..\Public\State_DefenceTower_Dead.h" />
     <ClInclude Include="..\Public\State_DefenceTower_Idle.h" />
     <ClInclude Include="..\Public\State_DefenceTower_Prepare.h" />
+    <ClInclude Include="..\Public\State_Open.h" />
     <ClInclude Include="..\Public\State_ShadowTower_Attack.h" />
     <ClInclude Include="..\Public\State_Vehicle.h" />
     <ClInclude Include="..\Public\State_VehicleFlying_Run.h" />
@@ -1080,9 +1084,9 @@
     <ClInclude Include="..\Public\Winter_MiniSnowMan.h" />
     <ClInclude Include="..\Public\Winter_MiniWalls.h" />
     <ClInclude Include="..\Public\WitchWater.h" />
+    <ClInclude Include="..\Public\WitchWood.h" />
     <ClInclude Include="..\Public\Zehra.h" />
     <ClInclude Include="Client.h" />
-    <ClInclude Include="LensFlare.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="StelliaState_Rage1StartTurnOL.h" />
@@ -1191,6 +1195,7 @@
     <ClCompile Include="..\Private\Criminal_Npc.cpp" />
     <ClCompile Include="..\Private\Crystal_Ball.cpp" />
     <ClCompile Include="..\Private\Crystal_Tower.cpp" />
+    <ClCompile Include="..\Private\Winter_CurlingFloor.cpp" />
     <ClCompile Include="..\Private\CurlingGame_Wall.cpp" />
     <ClCompile Include="..\Private\Decal.cpp" />
     <ClCompile Include="..\Private\Destroyer_FrengeCharge_Thunder.cpp" />
@@ -1386,12 +1391,14 @@
     <ClCompile Include="..\Private\State_Character_Vehicle_Run.cpp" />
     <ClCompile Include="..\Private\State_Character_Vehicle_RunStart.cpp" />
     <ClCompile Include="..\Private\State_Character_Vehicle_Stand.cpp" />
+    <ClCompile Include="..\Private\State_Closed.cpp" />
     <ClCompile Include="..\Private\State_CrystalTower_Attack.cpp" />
     <ClCompile Include="..\Private\State_DefenceTower.cpp" />
     <ClCompile Include="..\Private\State_DefenceTower_Dead.cpp" />
     <ClCompile Include="..\Private\State_DefenceTower_Idle.cpp" />
     <ClCompile Include="..\Private\State_DefenceTower_Prepare.cpp" />
     <ClCompile Include="..\Private\State_FlameTower_Attack.cpp" />
+    <ClCompile Include="..\Private\State_Open.cpp" />
     <ClCompile Include="..\Private\State_ShadowTower_Attack.cpp" />
     <ClCompile Include="..\Private\State_Vehicle.cpp" />
     <ClCompile Include="..\Private\State_VehicleFlying_Run.cpp" />
@@ -2001,6 +2008,7 @@
     <ClCompile Include="..\Private\Winter_MiniSnowMan.cpp" />
     <ClCompile Include="..\Private\Winter_MiniWalls.cpp" />
     <ClCompile Include="..\Private\WitchWater.cpp" />
+    <ClCompile Include="..\Private\WitchWood.cpp" />
     <ClCompile Include="..\Private\Zehra.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="stdafx.cpp">

@@ -285,6 +285,15 @@ float4 Caculation_Brightness(float4 vColor)
     return vBrightnessColor;
 }
 
+SamplerState MirrorSampler
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+    AddressU = Mirror;
+    AddressV = Mirror;
+    AddressW = Mirror;
+};
+
+
 PS_OUT PS_MAIN(PS_IN In)
 {
 	PS_OUT Out = (PS_OUT)0;
@@ -327,6 +336,30 @@ PS_OUT PS_MAIN(PS_IN In)
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
     Out.vViewNormal = float4(1.0f, 1.0f, 1.0f, 1.0f);
 	return Out;
+}
+
+PS_OUT PS_WITCH_WOOD(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+	// ±âº» ÇÈ¼¿ ·»´õ¸µ
+  
+    Out.vDiffuse = g_DiffuseTexture.Sample(MirrorSampler, In.vTexUV);
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 0.f);
+
+    float fRimPower = 1.f - saturate(dot(In.vNormal.xyz, normalize((-1.f * (In.vWorldPosition - g_vCamPosition)))));
+    fRimPower = pow(fRimPower, 5.f);
+    vector vRimColor = g_AnimInstancingDesc[In.iInstanceID].vRimColor * fRimPower;
+    Out.vDiffuse += vRimColor;
+    Out.vBloom = Caculation_Brightness(Out.vDiffuse) + vRimColor;
+
+    if (0.f == Out.vDiffuse.a)
+        discard;
+
+    
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / 1000.f, 1.0f, 0.0f);
+    Out.vViewNormal = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    return Out;
 }
 
 PS_OUT PS_GRANDFA_MAIN(PS_IN In)
@@ -571,19 +604,19 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_GRANDFA_MAIN();
     }
 
-	pass Temp2
-	{
+    pass WitchWood
+    {
 		// 5
-		SetRasterizerState(RS_NoneCull);
-		SetDepthStencilState(DSS_Default, 0);
-		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetRasterizerState(RS_NoneCull);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
-		VertexShader = compile vs_5_0 VS_MAIN();
-		GeometryShader = NULL;
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-		PixelShader = compile ps_5_0 PS_MAIN();
-	}
+        PixelShader = compile ps_5_0 PS_WITCH_WOOD();
+    }
 
 	pass Temp3
 	{

@@ -129,6 +129,8 @@ public:
 	HRESULT Start_StadiumAction();
 	HRESULT Finish_StaduimAction();
 
+	STADIUM_DESC* Get_StadiumDesc() { return &m_tStadiumDesc; }
+
 	/* UI */
 	const _float& Get_GuageValue() const { return m_tGuageDesc.tLerpValue.fCurValue; }
 
@@ -161,6 +163,7 @@ private:
 
 	/* Stadium */
 	STADIUM_DESC			m_tStadiumDesc = {};
+	_bool m_bSceneEnd = false;
 
 	/* Barrels */
 	vector<CCurlingGame_Stone*> m_pBarrelsLaunched;

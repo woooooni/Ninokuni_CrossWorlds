@@ -454,6 +454,14 @@ XMMATRIX CGameInstance::GetViewLightMatrix()
 	return m_pLight_Manager->GetLightViewMatrix();
 }
 
+void CGameInstance::SetMainSunAppear(_bool appear)
+{
+	if (nullptr == m_pLight_Manager)
+		return;
+
+	m_pLight_Manager->SetMainSun(appear);
+}
+
 void CGameInstance::Set_Transform(CPipeLine::TRANSFORMSTATE eTransformState, _fmatrix TransformMatrix)
 {
 	if (nullptr == m_pPipeLine)

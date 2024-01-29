@@ -18,6 +18,7 @@
 #include "Player.h"
 #include "Water.h"
 #include "Animals.h"
+#include "CurlingGame_Manager.h"
 
 CTool_Map::CTool_Map(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CTool(pDevice, pContext)
@@ -1782,6 +1783,8 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 	GI->Clear_PhysX_Ground();
 	GI->Clear_Layer(LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC);
 
+	CCurlingGame_Manager::STADIUM_DESC* WinterStadium = CCurlingGame_Manager::GetInstance()->Get_StadiumDesc();
+	WinterStadium->pStadiumObjects.clear();
 
 	for (_uint i = 0; i < LAYER_TYPE::LAYER_END; ++i)
 	{
@@ -1851,6 +1854,9 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 				_bool IsQuest;
 				File->Read<_bool>(IsQuest);  
 				pObj->Set_QuestItem(IsQuest);
+
+				if (OBJ_TYPE::OBJ_MINIGAME_STRUCTURE == pObj->Get_ObjectType())
+					WinterStadium->pStadiumObjects.push_back(pObj);
 			}
 		}
 	}
@@ -1858,6 +1864,9 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 	list<CGameObject*> Grounds = GI->Find_GameObjects(LEVEL_TOOL, LAYER_TYPE::LAYER_GROUND);
 	for (auto& Ground : Grounds)
 	{
+		if (OBJ_TYPE::OBJ_MINIGAME_STRUCTURE == Ground->Get_ObjectType())
+			continue;
+
 		if (FAILED(GI->Add_Ground(Ground,
 			Ground->Get_Component<CModel>(L"Com_Model"),
 			Ground->Get_Component<CTransform>(L"Com_Transform")->Get_WorldMatrix())))
@@ -1869,6 +1878,9 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 	list<CGameObject*> Buildings = GI->Find_GameObjects(LEVEL_TOOL, LAYER_TYPE::LAYER_BUILDING);
 	for (auto& Building : Buildings)
 	{
+		if (OBJ_TYPE::OBJ_MINIGAME_STRUCTURE == Building->Get_ObjectType())
+			continue;
+
 		if (FAILED(GI->Add_Building(Building,
 			Building->Get_Component<CModel>(L"Com_Model"),
 			Building->Get_Component<CTransform>(L"Com_Transform")->Get_WorldMatrix())))

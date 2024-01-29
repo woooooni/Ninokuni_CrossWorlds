@@ -1509,10 +1509,16 @@ HRESULT CRenderer::Render_AlphaBlend()
 // MRT_GodRay
 HRESULT CRenderer::Render_GodRay()
 {
+	_bool bMainSunDisappear = m_pLight_Manager->MainSunAppear();
+	if (true == bMainSunDisappear)
+		return S_OK;
+
+
 	if (FAILED(m_pTarget_Manager->Begin_MRT(m_pContext, TEXT("MRT_Blend"), false)))
 		return E_FAIL;
 
 	Vec4 vScreenSunPos = m_pLight_Manager->Get_SunScreenPos();
+
 	if (vScreenSunPos.x > 1.05f || vScreenSunPos.x < -0.05f
 		|| vScreenSunPos.y > 1.05f || vScreenSunPos.y < -0.05f
 		|| vScreenSunPos.z > 1.f || vScreenSunPos.z < 0.f)

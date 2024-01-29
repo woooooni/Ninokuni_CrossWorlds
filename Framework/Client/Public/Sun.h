@@ -31,6 +31,9 @@ public:
 	virtual HRESULT Ready_Components();
 
 private:
+	_bool m_bSunDisappear = false;
+
+private:
 	CShader* m_pShaderCom = nullptr;
 	CRenderer* m_pRendererCom = nullptr;
 	CTransform* m_pTransformCom = nullptr;
