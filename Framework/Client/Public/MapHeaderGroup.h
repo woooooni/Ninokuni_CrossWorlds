@@ -24,3 +24,4 @@
 #include "Winter_MiniHouse_02.h"
 #include "Winter_MiniHouse_03.h"
 #include "Winter_MiniWalls.h"
+#include "Winter_CurlingFloor.h"

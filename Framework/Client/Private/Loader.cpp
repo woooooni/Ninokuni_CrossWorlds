@@ -156,6 +156,7 @@
 #include "Vehicle_Flying_Biplane.h"
 
 #include "Respawn_Box.h"
+#include "CurlingGame_Manager.h"
 
 _bool CLoader::g_bFirstLoading = false;
 _bool CLoader::g_bLevelFirst[LEVELID::LEVEL_WITCHFOREST + 1] = {};
@@ -952,6 +953,9 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
 	File->Open(strMapFilePath, FileMode::Read);
 
+	CCurlingGame_Manager::STADIUM_DESC* WinterStadium = CCurlingGame_Manager::GetInstance()->Get_StadiumDesc();
+	WinterStadium->pStadiumObjects.clear();
+
 	for (_uint i = 0; i < LAYER_TYPE::LAYER_END; ++i)
 	{
 		if (i == LAYER_TYPE::LAYER_CAMERA
@@ -1022,6 +1026,9 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 				_bool IsQuest;
 				File->Read<_bool>(IsQuest);
 				pObj->Set_QuestItem(IsQuest);
+
+				if (OBJ_TYPE::OBJ_MINIGAME_STRUCTURE == pObj->Get_ObjectType())
+					WinterStadium->pStadiumObjects.push_back(pObj); 
 			}
 		}
 
@@ -1316,6 +1323,8 @@ HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_WelshCorgi"), CWelshCorgi::Create(m_pDevice, m_pContext, TEXT("Animal_WelshCorgi"), OBJ_TYPE::OBJ_ANIMAL), LAYER_TYPE::LAYER_DYNAMIC, true)))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Animal_Ray"), CAnimal_Ray::Create(m_pDevice, m_pContext, TEXT("Animal_Ray"), OBJ_TYPE::OBJ_ANIMAL), LAYER_TYPE::LAYER_DYNAMIC, true)))
+		return E_FAIL;
 #pragma endregion Animals Prototype
 
 
@@ -1356,7 +1365,11 @@ HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 	if (FAILED(GI->Add_Prototype(TEXT("Winter_MiniGameMap_Walls"),
 		CWinter_MiniWalls::Create(m_pDevice, m_pContext, TEXT("Winter_MiniGameMap_Walls"), OBJ_TYPE::OBJ_MINIGAME_STRUCTURE), LAYER_TYPE::LAYER_BUILDING, true)))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Winter_CurlingFloor"),
+		CWinter_CurlingFloor::Create(m_pDevice, m_pContext, TEXT("Winter_CurlingFloor"), OBJ_TYPE::OBJ_MINIGAME_STRUCTURE), LAYER_TYPE::LAYER_GROUND, true)))
+		return E_FAIL;
 #pragma endregion
+
 
 
 #pragma region Sky
@@ -1390,6 +1403,12 @@ HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 		return E_FAIL;
 #pragma endregion Aurora
 
+#pragma region WitchDynamic
+	if (FAILED(GI->Add_Prototype(TEXT("Witch_Wood_Wall"), CWitchWood::Create(m_pDevice, m_pContext, TEXT("Witch_Wood_Wall"), OBJ_TYPE::OBJ_BUILDING), LAYER_TYPE::LAYER_BUILDING, true)))
+		return E_FAIL;
+#pragma endregion
+
+
 #pragma region Animal
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Cat", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/Animal/Cat/", L"Animal_Cat")))
 		return E_FAIL;
@@ -1410,6 +1429,8 @@ HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Animal_Whale", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/Animal/Whale/", L"Animal_Whale")))
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Animal_WelshCorgi", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/Animal/WelshCorgi/", L"Animal_WelshCorgi")))
+		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Animal_Ray", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/Animal/Ray/", L"Animal_Ray")))
 		return E_FAIL;
 #pragma endregion Animal
 
@@ -1433,7 +1454,7 @@ HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 		return E_FAIL;
 #pragma endregion Sky
 
-#pragma region MiniMap_ProtoType
+#pragma region MiniGameMap_ProtoType
 	// TODO ¾µ FBX ´Ù »Ì°í.
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Winter_MiniGameMap_Wall", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/MiniGame/", L"Winter_MiniGameMap_Wall")))
 		return E_FAIL;
@@ -1459,7 +1480,15 @@ HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 		return E_FAIL;
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Winter_MiniGameMap_Walls", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/MiniGame/", L"Winter_MiniGameMap_Walls")))
 		return E_FAIL;
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Winter_CurlingFloor", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/MiniGame/", L"Winter_CurlingFloor")))
+		return E_FAIL;
 #pragma endregion
+
+#pragma region Witch_Dynamic
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Witch_Wood", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/WitchForestTree_Anim/", L"Witch_LairVineWall")))
+		return E_FAIL;
+#pragma endregion
+
 
 
 	return S_OK;

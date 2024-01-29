@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "..\Public\Sun.h"
 #include "GameInstance.h"
+#include "Quest_Manager.h"
 
 CSun::CSun(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType)
 	: CGameObject(pDevice, pContext, strObjectTag, eType)
@@ -33,6 +34,16 @@ void CSun::Tick(_float fTimeDelta)
 void CSun::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
+
+	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_INVASION)
+	{
+		GI->SetMainSunAppear(true);
+		m_bSunDisappear = true;
+		return;
+	}
+
+	if (true == m_bSunDisappear)
+		return;
 
 	m_pRendererCom->Add_RenderGroup(CRenderer::RENDERGROUP::RENDER_NONBLEND, this);
 }

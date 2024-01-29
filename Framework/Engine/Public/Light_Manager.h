@@ -40,7 +40,10 @@ public:
 public:
 	HRESULT Reset_Lights();
 	HRESULT	Add_Sun(class CGameObject* pSun);
-	
+
+	void SetMainSun(_bool appear) { m_bDisappear = appear; }
+	const _bool MainSunAppear() const { return m_bDisappear; }
+
 	Vec4 Get_SunScreenPos();
 	const class CGameObject* Get_Sun() const { return m_pSun; }
 
@@ -54,6 +57,9 @@ private:
 private:
 	map<_uint, _float4x4> m_ShadowViewMatrix;
 	map<_uint, _float4x4> m_ShadowProjMatrix;
+
+private:
+	_bool m_bDisappear = false;
 
 public:
 	virtual void Free() override;

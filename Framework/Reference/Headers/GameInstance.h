@@ -94,6 +94,7 @@ public: /* For.Light_Manager */
 	HRESULT Add_ShadowProj(_uint iLevelIndex, _float fFovAngleY, _float fAspectRatio, _float fNearZ, _float fFarZ);
 	_float4x4 Get_ShadowProjMatrix(_uint iLevelIndex);
 	XMMATRIX GetViewLightMatrix();
+	void SetMainSunAppear(_bool appear);
 
 public: /* For.PipeLine */
 	void Set_Transform(CPipeLine::TRANSFORMSTATE eTransformState, _fmatrix TransformMatrix);

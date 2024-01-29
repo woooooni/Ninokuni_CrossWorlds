@@ -53,7 +53,7 @@ void CCurlingGame_Manager::Tick(const _float& fTimeDelta)
 	if (m_tGuageDesc.bActive)
 		Tick_Guage(fTimeDelta);
 
-	if (m_tStadiumDesc.bActive)
+	//if (m_tStadiumDesc.bActive)
 		Tick_StadiumAction(fTimeDelta);
 }
 
@@ -214,6 +214,41 @@ void CCurlingGame_Manager::Tick_Guage(const _float& fTimeDelta)
 
 void CCurlingGame_Manager::Tick_StadiumAction(const _float& fTimeDelta)
 {
+	if (KEY_HOLD(KEY::U) && false == m_bSceneEnd)
+	{
+		for (auto& iter : m_tStadiumDesc.pStadiumObjects)
+		{
+			if (nullptr == iter)
+				return;
+
+			CTransform* pTransform = iter->Get_Component<CTransform>(TEXT("Com_Transform"));
+			if (nullptr == pTransform)
+				return;
+
+			Vec4 vPos = pTransform->Get_Position();
+			vPos.y += 0.1f;
+
+			pTransform->Set_State(CTransform::STATE::STATE_POSITION, vPos);
+
+			if (iter->Get_ObjectTag() == TEXT("Winter_MiniGameMap_Stair"))
+			{
+				if (vPos.y >= -5.272)
+				{
+					m_bSceneEnd = true;
+					
+					for (auto& pStadiumObject : m_tStadiumDesc.pStadiumObjects)
+					{
+						if (FAILED(GI->Add_Building(pStadiumObject,
+							pStadiumObject->Get_Component<CModel>(L"Com_Model"),
+							pStadiumObject->Get_Component<CTransform>(L"Com_Transform")->Get_WorldMatrix())))
+						{
+							MSG_BOX("피직스 빌딩 생성에 실패했습니다.");
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 HRESULT CCurlingGame_Manager::Ready_Objects()
@@ -260,7 +295,8 @@ HRESULT CCurlingGame_Manager::Ready_Objects()
 
 	/* Stadium Objects (준엽) */
 	{
-		m_tStadiumDesc.pStadiumObjects;
+		//m_tStadiumDesc.pStadiumObjects;
+		m_tStadiumDesc.pStadiumObjects.reserve(50);
 	}
 
 	return S_OK;

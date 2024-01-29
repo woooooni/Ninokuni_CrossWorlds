@@ -55,6 +55,7 @@ private:
 
 private:
 	LENSFLARE_DESC m_LensDesc = {};
+	_bool m_bLensOff = false;
 public:
 	static CLensFlare* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eObjType);
 	virtual CGameObject* Clone(void* pArg);

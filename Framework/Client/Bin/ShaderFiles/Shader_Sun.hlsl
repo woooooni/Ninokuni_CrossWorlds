@@ -46,7 +46,6 @@ PS_OUT PS_MAIN(VS_OUT input)
 {
     PS_OUT output = (PS_OUT) 0;
     
-    float4 vMtrlDiffuse = float4(1.0f, 1.0f, 1.0f, 1.0f);
     output.vNormal = vector(input.vNormal.xyz * 0.5f + 0.5f, 1.f);
     output.vViewNormal = float4(1.0f, 1.0f, 1.0f, 1.0f);
 
