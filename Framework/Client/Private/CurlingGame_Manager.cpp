@@ -17,6 +17,14 @@
 
 #include "Effect_Manager.h"
 
+#include "Manager_StateMachine.h"
+
+#include "State_CurlingGame_Intro.h"
+#include "State_CurlingGame_Move_Character.h"
+#include "State_CurlingGame_Choose_Direction.h"
+#include "State_CurlingGame_Adjust_Intensity.h"
+#include "State_CurlingGame_Launch_Stone.h"
+
 IMPLEMENT_SINGLETON(CCurlingGame_Manager)
 
 CCurlingGame_Manager::CCurlingGame_Manager()
@@ -37,6 +45,9 @@ HRESULT CCurlingGame_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11Devic
 	Safe_AddRef(m_pDevice);
 	Safe_AddRef(m_pContext);
 
+	if (FAILED(Ready_Components()))
+		return E_FAIL;
+
 	if (FAILED(Ready_Objects()))
 		return E_FAIL;
 
@@ -48,12 +59,15 @@ HRESULT CCurlingGame_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11Devic
 
 void CCurlingGame_Manager::Tick(const _float& fTimeDelta)
 {
+	if (m_bPlaying)
+		m_pManagerStateMachineCom->Tick(fTimeDelta);
+
 	Test(fTimeDelta);
 
 	if (m_tGuageDesc.bActive)
 		Tick_Guage(fTimeDelta);
 
-	//if (m_tStadiumDesc.bActive)
+	if (m_tStadiumDesc.tLerHeight.bActive)
 		Tick_StadiumAction(fTimeDelta);
 
 	Tick_Score();
@@ -61,6 +75,9 @@ void CCurlingGame_Manager::Tick(const _float& fTimeDelta)
 
 void CCurlingGame_Manager::LateTick(const _float& fTimeDelta)
 {
+	if (m_bPlaying)
+		m_pManagerStateMachineCom->LateTick(fTimeDelta);
+
 	if (!m_bPlaying)
 		return;
 
@@ -69,6 +86,9 @@ void CCurlingGame_Manager::LateTick(const _float& fTimeDelta)
 
 void CCurlingGame_Manager::Render_Debug()
 {
+	if (m_bPlaying)
+		m_pManagerStateMachineCom->Render();
+
 	if(m_bDebugRender)
 		Render_DebugDraw();
 }
@@ -87,7 +107,7 @@ HRESULT CCurlingGame_Manager::Set_Game(const _bool& bStart)
 			pFollowCam->Set_Distance(Cam_Dist_CurlingGame_Default);
 		}
 
-		if (FAILED(Ready_Decal()))
+		if (FAILED(Start_StadiumAction()))
 			return E_FAIL;
 	}
 	else
@@ -123,19 +143,44 @@ HRESULT CCurlingGame_Manager::Set_Game(const _bool& bStart)
 
 HRESULT CCurlingGame_Manager::Start_StadiumAction()
 {
-	m_tStadiumDesc.bActive = true;
+	for (auto& iter : m_tStadiumDesc.pStadiumObjects)
+	{
+		if (nullptr != iter && iter->Get_ObjectTag() == TEXT("Winter_MiniGameMap_Stair"))
+		{
+			CTransform* pTransform = iter->Get_Component<CTransform>(TEXT("Com_Transform"));
+			if (nullptr == pTransform)
+				return E_FAIL;
 
-	return S_OK;
+			m_tStadiumDesc.tLerHeight.Start(0.f,
+				m_tStadiumDesc.fTargetHeight,
+				m_tStadiumDesc.fLerpTime, m_tStadiumDesc.eLerpMode);
+
+			return S_OK;
+		}
+	}
+		
+	return E_FAIL;
 }
  
 HRESULT CCurlingGame_Manager::Finish_StaduimAction()
 {
-	m_tStadiumDesc.bActive = false;
+	for (auto& pStadiumObject : m_tStadiumDesc.pStadiumObjects)
+	{
+		if (FAILED(GI->Add_Building(pStadiumObject,
+			pStadiumObject->Get_Component<CModel>(L"Com_Model"),
+			pStadiumObject->Get_Component<CTransform>(L"Com_Transform")->Get_WorldMatrix())))
+		{
+			MSG_BOX("피직스 빌딩 생성에 실패했습니다.");
+			return E_FAIL;
+		}
+	}
+
+	if (FAILED(Ready_Decal()))
+			return E_FAIL;
 
 	return S_OK;
 }
 
-static _bool bTest = false;
 void CCurlingGame_Manager::Tick_Guage(const _float& fTimeDelta)
 {
 	m_tGuageDesc.Tick(fTimeDelta);
@@ -146,12 +191,8 @@ void CCurlingGame_Manager::Tick_Guage(const _float& fTimeDelta)
 
 		CCurlingGame_Stone::STONE_INIT_DESC tStoneInitDesc;
 
-		if (bTest)
-			tStoneInitDesc.eStoneType = CCurlingGame_Stone::STONE_TYPE::BARREL;
-		else
-			tStoneInitDesc.eStoneType = CCurlingGame_Stone::STONE_TYPE::POT;
-
-		bTest = !bTest;
+		tStoneInitDesc.eStoneType = CCurlingGame_Stone::STONE_TYPE::BARREL;
+		//tStoneInitDesc.eStoneType = CCurlingGame_Stone::STONE_TYPE::POT;
 
 		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_PROP, TEXT("Prorotype_GameObject_CurlingGame_Stone"), &tStoneInitDesc, &pClone)))
 			return;
@@ -170,41 +211,69 @@ void CCurlingGame_Manager::Tick_Guage(const _float& fTimeDelta)
 
 void CCurlingGame_Manager::Tick_StadiumAction(const _float& fTimeDelta)
 {
-	if (KEY_HOLD(KEY::U) && false == m_bSceneEnd)
+	m_tStadiumDesc.tLerHeight.Update(fTimeDelta);
+
+	const _float fDeltaHeight = m_tStadiumDesc.tLerHeight.fCurValue - m_tStadiumDesc.fPrevHeight;
+
+	for (auto& iter : m_tStadiumDesc.pStadiumObjects)
 	{
-		for (auto& iter : m_tStadiumDesc.pStadiumObjects)
+		if (nullptr == iter)
+			continue;
+
+		CTransform* pTransform = iter->Get_Component<CTransform>(TEXT("Com_Transform"));
+		if (nullptr != pTransform)
 		{
-			if (nullptr == iter)
-				return;
-
-			CTransform* pTransform = iter->Get_Component<CTransform>(TEXT("Com_Transform"));
-			if (nullptr == pTransform)
-				return;
-
 			Vec4 vPos = pTransform->Get_Position();
-			vPos.y += 0.1f;
+			vPos.y += fDeltaHeight;
 
-			pTransform->Set_State(CTransform::STATE::STATE_POSITION, vPos);
-
-			if (iter->Get_ObjectTag() == TEXT("Winter_MiniGameMap_Stair"))
-			{
-				if (vPos.y >= -5.272)
-				{
-					m_bSceneEnd = true;
-					
-					for (auto& pStadiumObject : m_tStadiumDesc.pStadiumObjects)
-					{
-						if (FAILED(GI->Add_Building(pStadiumObject,
-							pStadiumObject->Get_Component<CModel>(L"Com_Model"),
-							pStadiumObject->Get_Component<CTransform>(L"Com_Transform")->Get_WorldMatrix())))
-						{
-							MSG_BOX("피직스 빌딩 생성에 실패했습니다.");
-						}
-					}
-				}
-			}
+			pTransform->Set_State(CTransform::STATE::STATE_POSITION, vPos.OneW());
 		}
 	}
+
+	if (!m_tStadiumDesc.tLerHeight.bActive)
+	{
+		if (FAILED(Finish_StaduimAction()))
+			return;
+	}
+
+	m_tStadiumDesc.fPrevHeight = m_tStadiumDesc.tLerHeight.fCurValue;
+}
+
+HRESULT CCurlingGame_Manager::Ready_Components()
+{
+	/* Manager StateMachine */
+	{
+		/* 엔진의 스테이트머신이 아니라 클라 매니저용 스테이트 머신이다. */
+
+		m_pManagerStateMachineCom = CManager_StateMachine::Create();
+
+		if (nullptr == m_pManagerStateMachineCom)
+			return E_FAIL;
+	}
+
+	/* Manager States */
+	{
+		if (FAILED(m_pManagerStateMachineCom->Add_State(CURLINGGAME_STATE::INTRO, CState_CurlingGame_Intro::Create(m_pManagerStateMachineCom))))
+			return E_FAIL;
+
+		if (FAILED(m_pManagerStateMachineCom->Add_State(CURLINGGAME_STATE::MOVE, CState_CurlingGame_Intro::Create(m_pManagerStateMachineCom))))
+			return E_FAIL;
+
+		if (FAILED(m_pManagerStateMachineCom->Add_State(CURLINGGAME_STATE::DIRECTION, CState_CurlingGame_Intro::Create(m_pManagerStateMachineCom))))
+			return E_FAIL;
+
+		if (FAILED(m_pManagerStateMachineCom->Add_State(CURLINGGAME_STATE::INTENSITY, CState_CurlingGame_Intro::Create(m_pManagerStateMachineCom))))
+			return E_FAIL;
+
+		if (FAILED(m_pManagerStateMachineCom->Add_State(CURLINGGAME_STATE::LAUNCH, CState_CurlingGame_Intro::Create(m_pManagerStateMachineCom))))
+			return E_FAIL;
+	}
+
+	/* Set State */
+	if (FAILED(m_pManagerStateMachineCom->Change_State(INTRO)))
+		return E_FAIL;
+
+	return S_OK;
 }
 
 HRESULT CCurlingGame_Manager::Ready_Objects()
@@ -261,7 +330,7 @@ HRESULT CCurlingGame_Manager::Ready_Objects()
 
 		if (DIR_LOCATION::LEFT == i)
 		{
-			const Vec4 vPos = { -131.64f, -5.f, 219.8f, 1.f };
+			const Vec4 vPos = { -131.64f, -3.f, 219.8f, 1.f };
 			Vec3 vLook = Vec3{ 0.6f, 0.f, 1.9f }.Normalized();
 
 			vLookAt = vPos + (vLook * 10.f);
@@ -273,7 +342,7 @@ HRESULT CCurlingGame_Manager::Ready_Objects()
 		}
 		else
 		{
-			const Vec4 vPos = { -119.931f, -5.f, 241.73f, 1.f };
+			const Vec4 vPos = { -119.931f, -3.f, 241.73f, 1.f };
 			Vec3 vLook = Vec3{ 0.55f, 0.f, 1.92f }.Normalized();
 
 			vLookAt = vPos + (vLook * 10.f);
@@ -289,7 +358,6 @@ HRESULT CCurlingGame_Manager::Ready_Objects()
 
 	/* Stadium Objects (준엽) */
 	{
-		//m_tStadiumDesc.pStadiumObjects;
 		m_tStadiumDesc.pStadiumObjects.reserve(50);
 	}
 
@@ -312,6 +380,18 @@ HRESULT CCurlingGame_Manager::Ready_Decal()
 				Vec3::Zero, vScale, Vec3::Zero, nullptr, nullptr, false)))
 				return E_FAIL;
 		}
+	}
+
+	/* StartLine */
+	{
+		const Matrix matWorld = Matrix::CreateTranslation(m_tStandardDesc.vStartLinePosition);
+
+		Vec3 vScale = m_tStandardDesc.vStartLineScale;
+		vScale.y = m_tStandardDesc.fHeight;
+
+		if (FAILED(CEffect_Manager::GetInstance()->Generate_Decal(m_tStandardDesc.wstrStartLineName, matWorld,
+			Vec3::Zero, vScale, m_tStandardDesc.vStartLineRotation, nullptr, nullptr, false)))
+			return E_FAIL;
 	}
 
 	return S_OK;
@@ -393,26 +473,6 @@ void CCurlingGame_Manager::Test(const _float& fTimeDelta)
 	if (KEY_TAP(KEY::Q))
 	{
 		Set_Game(!m_bPlaying);
-	}
-
-	if (KEY_TAP(KEY::RBTN) && !m_bLoadMapTest)
-	{
-		m_bLoadMapTest = true;
-
-		list<CGameObject*>& pGameObjects = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_BUILDING);
-		
-		for (auto& iter : pGameObjects)
-		{
-			if (OBJ_TYPE::OBJ_MINIGAME_STRUCTURE == iter->Get_ObjectType())
-			{
-				CTransform* pTransform = iter->Get_Component<CTransform>(L"Com_Transform");
-				Vec4 vPos = pTransform->Get_Position();
-		
-				vPos.y += 25;
-		
-				pTransform->Set_State(CTransform::STATE_POSITION, vPos);
-			}
-		}
 	}
 }
 
@@ -533,6 +593,8 @@ void CCurlingGame_Manager::Free()
 	Safe_Delete(m_pEffect);
 	Safe_Delete(m_pSphere);
 	Safe_Release(m_pInputLayout);
+
+	Safe_Release(m_pManagerStateMachineCom);
 }
 
 

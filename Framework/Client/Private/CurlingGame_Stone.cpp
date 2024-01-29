@@ -113,6 +113,9 @@ void CCurlingGame_Stone::Tick(_float fTimeDelta)
 	if (!m_pRigidBodyCom->Is_Sleep())
 	{
 		m_bMoving = m_pRigidBodyCom->Check_Sleep();
+
+		// const _float fRotateSpeed = Vec3(m_pRigidBodyCom->Get_Velocity()).Length() * m_fRotateSpeed * fTimeDelta;
+		// m_pTransformCom->Rotation(Vec3::Up, fRotateSpeed);
 	}
 }
 
@@ -206,6 +209,8 @@ void CCurlingGame_Stone::Launch(const _float& fPower)
 		m_bLaunched = true;
 
 		m_bActive = true;
+
+		m_pRigidBodyCom->Set_Sleep(false);
 	}
 }
 

@@ -105,6 +105,8 @@ private:
 
 	STONE_TYPE			m_eStoneType = STONE_TYPE::STONE_TYPEEND;
 
+	const _float		m_fRotateSpeed = 50.f;
+
 public:
 	static CCurlingGame_Stone* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;

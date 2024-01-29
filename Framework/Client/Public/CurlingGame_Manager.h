@@ -9,12 +9,14 @@ END
 
 BEGIN(Client)
 class CCurlingGame_Stone;
+class CManager_StateMachine;
 
 class CCurlingGame_Manager : public CBase
 {
 	DECLARE_SINGLETON(CCurlingGame_Manager)
 
-	enum PARTICIPANT_TYPE { PARTICIPANT_PLAYER, PARTICIPANT_NPC, PARTICIPANT_TYPEEND };
+	enum CURLINGGAME_STATE { INTRO, MOVE, DIRECTION, INTENSITY, LAUNCH, CURLINGGAME_STATE_TYPEEND };
+	enum PARTICIPANT_TYPE  { PARTICIPANT_PLAYER, PARTICIPANT_NPC, PARTICIPANT_TYPEEND };
 
 	typedef struct tagStandardDesc
 	{
@@ -35,7 +37,13 @@ class CCurlingGame_Manager : public CBase
 
 		const _float	fHeight = 3.f;
 
-		const Vec3		vGoalPosition	= { -150.f, -5.1f, 238.f }; /* 변경시 높이만 플레이어 포지션으로 맞춰주면 됨 */
+		const Vec3		vGoalPosition	= { -148.f, -3.4f, 237.2f }; /* 변경시 높이만 플레이어 포지션으로 맞춰주면 됨 */
+
+		/* Start Line */
+		const wstring	wstrStartLineName = L"Decal_CurlingGame_StartLine";
+		const Vec3		vStartLinePosition = { -112.f, -3.4f, 226.7f };
+		const Vec3		vStartLineRotation = { 0.f, 15.f, 0.f };
+		const Vec3		vStartLineScale = { 0.2f, 11.f, 22.9f };
 
 	}STANDARD_DESC;
 
@@ -96,8 +104,14 @@ class CCurlingGame_Manager : public CBase
 
 	typedef struct tagStaiumDesc
 	{
-		_bool bActive = false;
 		vector<CGameObject*>	pStadiumObjects;
+
+		LERP_FLOAT_DESC			tLerHeight;
+		const _float			fTargetHeight	= 27.3f;
+		const _float			fLerpTime		= 3.f;
+		const LERP_MODE			eLerpMode		= LERP_MODE::SMOOTHER_STEP;
+
+		_float					fPrevHeight		= 0.f;
 
 	}STADIUM_DESC;
 
@@ -128,7 +142,6 @@ public:
 	/* Stadium */
 	HRESULT Start_StadiumAction();
 	HRESULT Finish_StaduimAction();
-
 	STADIUM_DESC* Get_StadiumDesc() { return &m_tStadiumDesc; }
 
 	/* UI */
@@ -140,6 +153,7 @@ private:
 	void Tick_Score();
 
 private:
+	HRESULT Ready_Components();
 	HRESULT Ready_Objects();
 	HRESULT Ready_Decal();
 
@@ -163,7 +177,6 @@ private:
 
 	/* Stadium */
 	STADIUM_DESC			m_tStadiumDesc = {};
-	_bool m_bSceneEnd = false;
 
 	/* Barrels */
 	vector<CCurlingGame_Stone*> m_pBarrelsLaunched;
@@ -178,6 +191,8 @@ private:
 	_bool					m_bLoadMapTest = false;
 
 	LEVELID					m_eLoadLevel = LEVELID::LEVEL_ICELAND;
+
+	CManager_StateMachine*		m_pManagerStateMachineCom = nullptr;
 
 #pragma region Debug Draw 
 	const _bool	m_bDebugRender						= false;

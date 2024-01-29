@@ -142,7 +142,10 @@ namespace Client
 		L"Camera_Top",
 		L"Camera_Quater"
 	};
-	
+
+	static const _float Cam_Follow_Limit_Min_Y = 1.1f;
+	static const _float Cam_Follow_Limit_Max_Y = 1.8f;
+
 	static const _float Cam_Dist_Follow_Default					= 4.5f;
 	static const _float Cam_Dist_Follow_Wide					= 5.5f;
 	static const _float Cam_Dist_CurlingGame_Default			= 5.5f;

@@ -316,6 +316,21 @@ void CCamera_Follow::Set_ViewType(const CAMERA_VIEW_TYPE& eType)
 	}
 }
 
+void CCamera_Follow::Set_MinMaxLimitY(const _float fMinY, const _float fMaxY)
+{
+	if (fMinY < 0.2f || 2.9f < fMaxY)
+		return;
+
+	m_fMinLimitY = fMinY;
+	m_fMaxLimitY = fMaxY;
+}
+
+void CCamera_Follow::Reset_MinMaxLimitY()
+{
+	m_fMinLimitY = Cam_Follow_Limit_Min_Y;
+	m_fMaxLimitY = Cam_Follow_Limit_Max_Y;
+}
+
 void CCamera_Follow::Set_Defualt_Setting()
 {
 	/* 회전 축 방향 설정 */
