@@ -359,12 +359,6 @@ void CEffect::Tick(_float fTimeDelta)
 	// 크기
 	Change_Scale(fTimeDelta);
 
-	// 이동
-	Change_Move(fTimeDelta);
-
-	// 회전
-	Change_Rotation(fTimeDelta);
-
 	// 애니메이션
 	if (m_tEffectDesc.bAnimation)
 	{
@@ -422,21 +416,24 @@ void CEffect::LateTick(_float fTimeDelta)
 			CTransform* pOwnerTransform = m_pOwnerObject->Get_Component<CTransform>(L"Com_Transform");
 			if (nullptr != pOwnerTransform)
 			{
-				// WorldMatrix
-				//m_pTransformCom->Set_WorldMatrix(pOwnerTransform->Get_WorldMatrix());
+				if (m_bOwnerTransformOnly)
+				{
+					// WorldMatrix
+					m_pTransformCom->Set_WorldMatrix(pOwnerTransform->Get_WorldMatrix());
 
-				//// Scale / Rotation
-				//Matrix matScale    = matScale.CreateScale(m_vLocalScale);
-				//Matrix matRotation = matScale.CreateFromYawPitchRoll(Vec3(XMConvertToRadians(m_vLocalRotation.x), XMConvertToRadians(m_vLocalRotation.y), XMConvertToRadians(m_vLocalRotation.z)));
-				//Matrix matResult   = matScale * matRotation * m_pTransformCom->Get_WorldFloat4x4();
-				//m_pTransformCom->Set_WorldMatrix(matResult);
+					// Scale / Rotation
+					Matrix matScale    = matScale.CreateScale(m_vLocalScale);
+					Matrix matRotation = matScale.CreateFromYawPitchRoll(Vec3(XMConvertToRadians(m_vLocalRotation.x), XMConvertToRadians(m_vLocalRotation.y), XMConvertToRadians(m_vLocalRotation.z)));
+					Matrix matResult   = matScale * matRotation * m_pTransformCom->Get_WorldFloat4x4();
+					m_pTransformCom->Set_WorldMatrix(matResult);
+				}
 
 				// Position
 				_vector vCurrentPosition = pOwnerTransform->Get_Position();
-				_vector vFinalPosition = vCurrentPosition;
+				_vector vFinalPosition   = vCurrentPosition;
 				vFinalPosition += m_pTransformCom->Get_State(CTransform::STATE_RIGHT) * m_vLocalPos.x;
-				vFinalPosition += m_pTransformCom->Get_State(CTransform::STATE_UP) * m_vLocalPos.y;
-				vFinalPosition += m_pTransformCom->Get_State(CTransform::STATE_LOOK) * m_vLocalPos.z;
+				vFinalPosition += m_pTransformCom->Get_State(CTransform::STATE_UP)    * m_vLocalPos.y;
+				vFinalPosition += m_pTransformCom->Get_State(CTransform::STATE_LOOK)  * m_vLocalPos.z;
 				m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(XMVectorGetX(vFinalPosition), XMVectorGetY(vFinalPosition), XMVectorGetZ(vFinalPosition), 1.f));
 			}
 		}
@@ -468,6 +465,12 @@ void CEffect::LateTick(_float fTimeDelta)
 		XMStoreFloat4x4(&WorldMatrix, Temp);
 	}
 	
+	// 회전
+	Change_Rotation(fTimeDelta);
+
+	// 이동
+	Change_Move(fTimeDelta);
+
 	// 리지드바디
 	if(m_tEffectDesc.bGravity)
 		m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
@@ -831,15 +834,12 @@ void CEffect::Change_Rotation(_float fTimeDelta)
 			// 회전
 			if (m_tEffectDesc.fRotationDir.x != 0.f || m_tEffectDesc.fRotationDir.y != 0.f || m_tEffectDesc.fRotationDir.z != 0.f)
 			{
-				//_vector vTurnDir = XMVector3Normalize(XMLoadFloat3(&m_tEffectDesc.fRotationDir));
-				//m_pTransformCom->Turn(vTurnDir, m_fRotationSpeed, fTimeDelta);
 				if(m_tEffectDesc.fRotationDir.x != 0.f)
-					m_tEffectDesc.fRotationDir.x += fTimeDelta * m_fRotationSpeed;
+					m_pTransformCom->Turn(XMVector3Normalize(m_pTransformCom->Get_Right()), m_fRotationSpeed, fTimeDelta);
 				if (m_tEffectDesc.fRotationDir.y != 0.f)
-					m_tEffectDesc.fRotationDir.y += fTimeDelta * m_fRotationSpeed;
+					m_pTransformCom->Turn(XMVector3Normalize(m_pTransformCom->Get_Up()), m_fRotationSpeed, fTimeDelta);
 				if (m_tEffectDesc.fRotationDir.z != 0.f)
-					m_tEffectDesc.fRotationDir.z += fTimeDelta * m_fRotationSpeed;
-				m_pTransformCom->FixRotation(m_tEffectDesc.fRotationDir.x, m_tEffectDesc.fRotationDir.y, m_tEffectDesc.fRotationDir.z);
+					m_pTransformCom->Turn(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fRotationSpeed, fTimeDelta);
 			}
 
 			// 랜덤 체인지

@@ -306,7 +306,8 @@ public:
 	_bool Is_End() { return m_bAccIndexEnd; };
 	void Set_End(_bool bEnd) { m_bAccIndexEnd = bEnd; }
 	void Set_Gravity(_bool bGravity);
-	void Set_DeleteEffect(_bool bEffectDelete) { m_bEffectDelete = bEffectDelete; }
+	void Set_DeleteEffect(_bool bEffectDelete)             { m_bEffectDelete = bEffectDelete; }
+	void Set_OwnerTransformOnly(_bool bOwnerTransformOnly) { m_bOwnerTransformOnly = bOwnerTransformOnly; }
 
 public:
 	class CTexture* Get_DiffuseTexture() { return m_pDiffuseTextureCom; }
@@ -402,6 +403,8 @@ private:
 	_float  m_fDissolveWeight = 0.f;
 
 	_float4 m_vDistortion = { 0.f, 0.f, 0.f, 0.f };
+
+	_bool m_bOwnerTransformOnly = false;
 
 private:
 	class CRenderer*  m_pRendererCom  = nullptr;
