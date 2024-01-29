@@ -166,7 +166,7 @@ public:
 #pragma region Distortion
 		wstring strDistortionTetextureName = L"Prototype_Component_Texture_Effect_Noise";
 		_int    iDistortionIndex = 161;
-		_float4 vDistortionPower = _float4(1.f, 1.f, 0.f, 0.f);//xy
+		_float4 vDistortionPower = _float4(0.f, 0.f, 0.f, 0.f);//xy
 #pragma endregion
 
 		tagEffectDesc()
