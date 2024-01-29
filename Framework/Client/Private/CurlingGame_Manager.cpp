@@ -3,7 +3,7 @@
 
 #include "GameInstance.h"
 
-#include "CurlingGame_Barrel.h"
+#include "CurlingGame_Stone.h"
 #include "CurlingGame_Wall.h"
 
 #include "Game_Manager.h"
@@ -14,11 +14,6 @@
 
 #include "Camera_Manager.h"
 #include "Camera_Group.h"
-
-#include "CurlingGame_Wall.h"
-
-#include "CurlingGame_Barrel.h"
-#include "CurlingGame_Wall.h"
 
 #include "Effect_Manager.h"
 
@@ -140,6 +135,7 @@ HRESULT CCurlingGame_Manager::Finish_StaduimAction()
 	return S_OK;
 }
 
+static _bool bTest = false;
 void CCurlingGame_Manager::Tick_Guage(const _float& fTimeDelta)
 {
 	m_tGuageDesc.Tick(fTimeDelta);
@@ -147,15 +143,25 @@ void CCurlingGame_Manager::Tick_Guage(const _float& fTimeDelta)
 	{
 		CGameObject* pClone = nullptr;
 
-		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_PROP, TEXT("Prorotype_GameObject_Shuffleboard_Barrel"), nullptr, &pClone)))
+
+		CCurlingGame_Stone::STONE_INIT_DESC tStoneInitDesc;
+
+		if (bTest)
+			tStoneInitDesc.eStoneType = CCurlingGame_Stone::STONE_TYPE::BARREL;
+		else
+			tStoneInitDesc.eStoneType = CCurlingGame_Stone::STONE_TYPE::POT;
+
+		bTest = !bTest;
+
+		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_PROP, TEXT("Prorotype_GameObject_CurlingGame_Stone"), &tStoneInitDesc, &pClone)))
 			return;
 
-		CCurlingGame_Barrel* pBarrel = dynamic_cast<CCurlingGame_Barrel*>(pClone);
-		if (nullptr != pBarrel)
+		CCurlingGame_Stone* pStone = dynamic_cast<CCurlingGame_Stone*>(pClone);
+		if (nullptr != pStone)
 		{			
-			pBarrel->Launch(m_tGuageDesc.fMaxPower * m_tGuageDesc.tLerpValue.fCurValue);
+			pStone->Launch(m_tGuageDesc.fMaxPower * m_tGuageDesc.tLerpValue.fCurValue);
 
-			m_pBarrelsLaunched.push_back(pBarrel);
+			m_pBarrelsLaunched.push_back(pStone);
 
 			m_tGuageDesc.Stop();
 		}
@@ -170,20 +176,23 @@ HRESULT CCurlingGame_Manager::Ready_Objects()
 {
 	/* Create Prototype */
 	{
-		/* Barrel */
+		/* Stones */
 		{
 			if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Prop_Barrel", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/CurlingGame/Barrel/", L"Prop_Barrel")))
 				return E_FAIL;
 
-			if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Shuffleboard_Barrel",
-				CCurlingGame_Barrel::Create(m_pDevice, m_pContext, TEXT("Shuffleboard_Barrel")), LAYER_TYPE::LAYER_PROP)))
+			if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Prop_Pot", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/CurlingGame/Pot/", L"Prop_AlcoholPotA")))
+				return E_FAIL;
+
+			if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_CurlingGame_Stone",
+				CCurlingGame_Stone::Create(m_pDevice, m_pContext, TEXT("CurlingGame_Stone")), LAYER_TYPE::LAYER_PROP)))
 				return E_FAIL;
 		}
 
 		/* Wall */
 		{
-			if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Shuffleboard_Wall",
-				CCurlingGame_Wall::Create(m_pDevice, m_pContext, TEXT("Shuffleboard_Wall")), LAYER_TYPE::LAYER_PROP)))
+			if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_CurlingGame_Wall",
+				CCurlingGame_Wall::Create(m_pDevice, m_pContext, TEXT("CurlingGame_Wall")), LAYER_TYPE::LAYER_PROP)))
 				return E_FAIL;
 		}
 	}
@@ -199,7 +208,7 @@ HRESULT CCurlingGame_Manager::Ready_Objects()
 
 		/* Exception */
 		{
-			if (FAILED(GI->Add_GameObject(m_eLoadLevel, LAYER_TYPE::LAYER_PROP, TEXT("Prorotype_GameObject_Shuffleboard_Wall"), nullptr, &pClone)))
+			if (FAILED(GI->Add_GameObject(m_eLoadLevel, LAYER_TYPE::LAYER_PROP, TEXT("Prorotype_GameObject_CurlingGame_Wall"), nullptr, &pClone)))
 				return E_FAIL;
 
 			pWall = dynamic_cast<CCurlingGame_Wall*>(pClone);

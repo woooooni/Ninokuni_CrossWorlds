@@ -5,9 +5,19 @@
 
 BEGIN(Client)
 
-class CCurlingGame_Barrel final : public CCurlingGame_Prop
+class CCurlingGame_Stone final : public CCurlingGame_Prop
 {
 public:
+	enum STONE_TYPE { BARREL, POT, STONE_TYPEEND };
+
+public:
+	typedef struct tagStoneInitDesc
+	{
+		STONE_TYPE eStoneType = STONE_TYPE::STONE_TYPEEND;
+
+	}STONE_INIT_DESC;
+
+private:
 	typedef struct tagElasticCollisionDesc
 	{
 		_bool bSet = false;
@@ -28,9 +38,9 @@ public:
 	}ELASTIC_COLL_DESC;
 
 private:
-	CCurlingGame_Barrel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
-	CCurlingGame_Barrel(const CCurlingGame_Barrel& rhs);
-	virtual ~CCurlingGame_Barrel() = default;
+	CCurlingGame_Stone(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	CCurlingGame_Stone(const CCurlingGame_Stone& rhs);
+	virtual ~CCurlingGame_Stone() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -93,8 +103,10 @@ private:
 
 	OBJ_TYPE			m_eOwnerType		= OBJ_TYPE::OBJ_PLAYER;
 
+	STONE_TYPE			m_eStoneType = STONE_TYPE::STONE_TYPEEND;
+
 public:
-	static CCurlingGame_Barrel* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	static CCurlingGame_Stone* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;
 
 public:

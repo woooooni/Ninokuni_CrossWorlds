@@ -8,7 +8,7 @@ class CGameObject;
 END
 
 BEGIN(Client)
-class CCurlingGame_Barrel;
+class CCurlingGame_Stone;
 
 class CCurlingGame_Manager : public CBase
 {
@@ -21,7 +21,7 @@ class CCurlingGame_Manager : public CBase
 		/* Ring, Goal */
 		enum RING_TYPE { FIRST, SECOND, THIRD, RING_TYPEEND };
 
-		wstring wstrRingNames[RING_TYPE::RING_TYPEEND] =
+		const wstring wstrRingNames[RING_TYPE::RING_TYPEEND] =
 		{
 			L"Decal_CurlingGame_RingBoard_Red",
 			L"Decal_CurlingGame_RingBoard_Yellow",
@@ -29,9 +29,9 @@ class CCurlingGame_Manager : public CBase
 		};
 
 		/* 수치 바꾸면 z 파이팅 발생 -> 데칼이라 높이 적용 안됨 */
-		const _float	fRingScalesForRender[RING_TYPE::RING_TYPEEND] = { 4.f, 9.f, 19.3f };
-		const _float	fRingScalesForDetection[RING_TYPE::RING_TYPEEND] = { 1.9f, 4.25f, 9.25f };
-		const _uint		iPoints[RING_TYPE::RING_TYPEEND] = { 5, 3, 1 };
+		const _float	fRingScalesForRender[RING_TYPE::RING_TYPEEND]		= { 4.f, 9.f, 19.3f };
+		const _float	fRingScalesForDetection[RING_TYPE::RING_TYPEEND]	= { 1.9f, 4.25f, 9.25f };
+		const _uint		iPoints[RING_TYPE::RING_TYPEEND]					= { 5, 3, 1 };
 
 		const _float	fHeight = 3.f;
 
@@ -105,7 +105,7 @@ class CCurlingGame_Manager : public CBase
 	{
 		_int	iOwnerType	= -1;
 
-		_uint	iNumStone	= 5;
+		_uint	iNumStone	= 10;
 
 		_uint	iScore = 0;
 	
@@ -163,7 +163,7 @@ private:
 	STADIUM_DESC			m_tStadiumDesc = {};
 
 	/* Barrels */
-	vector<CCurlingGame_Barrel*> m_pBarrelsLaunched;
+	vector<CCurlingGame_Stone*> m_pBarrelsLaunched;
 
 	/* Participant */
 	PARTICIPANT_INFO_DESC	m_tParticipants[PARTICIPANT_TYPE::PARTICIPANT_TYPEEND];

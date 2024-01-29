@@ -16,7 +16,7 @@ BEGIN(Client)
 class CCurlingGame_Prop abstract : public CGameObject
 {
 protected:
-	enum CG_TYPE { CG_BARREL, CG_WALL, CG_TYPEEND };
+	enum CG_TYPE { CG_STONE, CG_WALL, CG_TYPEEND };
 
 protected:
 	CCurlingGame_Prop(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
