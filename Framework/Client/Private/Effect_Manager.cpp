@@ -546,7 +546,7 @@ HRESULT CEffect_Manager::Ready_Proto_Decal(const wstring& strDecalPath)
 	for (auto& p : std::filesystem::directory_iterator(strDecalPath))
 	{
 		if (p.is_directory())
-			Ready_Proto_Effects(p.path());
+			Ready_Proto_Decal(p.path());
 
 		wstring strFullPath = CUtils::PathToWString(p.path().wstring());
 		_tchar strFileName[MAX_PATH];
