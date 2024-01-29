@@ -98,6 +98,12 @@ void CEffect::Reserve_Dissolve(_uint iDissolveTexIndex, _float4 vDissolveColor, 
 	m_fDissolveWeight = 0.f;
 }
 
+void CEffect::Start_RigidbodyJump(Vec3 vDir, _float fForce, _bool bClear)
+{
+	m_tEffectDesc.bGravity = true;
+	m_pRigidBodyCom->Add_Velocity(vDir, fForce, bClear);
+}
+
 void CEffect::Reset_Effect()
 {
 	if (m_pTransformCom == nullptr)

@@ -17,8 +17,6 @@ private:
 		// ---------------------------
 		// 대포 생성
 		TYPE_ET2_O_CANNON,
-		TYPE_ET2_E_METAL,
-		TYPE_ET2_P_SMOKE,
 
 		TYPE_END
 	};

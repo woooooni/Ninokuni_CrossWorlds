@@ -296,8 +296,14 @@ public:
 	void Set_UVLoop(_int iLoop);
 	void Set_UVSpeed(_float fSpeed);
 	void Set_UVFlow(_int iLoop, _float2 fDir, _float2 fSpeed);
+
 	void Start_Dissolve(_uint iDissolveTexIndex, _float4 vDissolveColor, _float fDissolveSpeed, _float  fDissolveTotal);
 	void Reserve_Dissolve(_uint iDissolveTexIndex, _float4 vDissolveColor, _float fDissolveSpeed, _float  fDissolveTotal);
+
+	void Start_RigidbodyJump(Vec3 vDir, _float fForce, _bool bClear);
+	void Set_Color(_float3 fRGBColor) { m_fColor = fRGBColor; }
+	void Set_BloomPower(_float3 fPower) { m_fBlurColor = fPower; }
+	void Set_LifeTime(_float fTime) { m_fLifeTime = fTime; }
 
 public:
 	void Set_Owner(CGameObject* pGameObject) { m_pOwnerObject = pGameObject; }
