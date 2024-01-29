@@ -101,6 +101,14 @@ void CRigidBody::Add_Velocity(_vector vDir, _float fForce, _bool bClear)
 	XMStoreFloat3(&m_vVelocity, XMLoadFloat3(&m_vVelocity) + XMVector3Normalize(vDir) * fForce);
 }
 
+const _bool& CRigidBody::Check_Sleep()
+{
+	m_bSleep = (m_vVelocity.Length() < m_fSleepThreshold) ? true : false; 
+	
+	ZeroMemory(&m_vVelocity, sizeof(Vec3));
+	
+	return m_bSleep;
+}
 
 CRigidBody* CRigidBody::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {

@@ -70,7 +70,7 @@ HRESULT CCurlingGame_Wall::Ready_Colliders()
 	{
 		ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
 		XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
-		OBBBox.Extents = { 2000.f, 200.f, 100.f };
+		OBBBox.Extents = { 3100.f, 200.f, 100.f };
 	}
 
 	CCollider_OBB::OBB_COLLIDER_DESC OBBDesc;

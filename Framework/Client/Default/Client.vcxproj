@@ -462,7 +462,7 @@
     <ClInclude Include="..\Public\State_Character_Vehicle_Run.h" />
     <ClInclude Include="..\Public\State_Character_Vehicle_RunStart.h" />
     <ClInclude Include="..\Public\State_Character_Vehicle_Stand.h" />
-    <ClInclude Include="..\Public\CurlingGame_Barrel.h" />
+    <ClInclude Include="..\Public\CurlingGame_Stone.h" />
     <ClInclude Include="..\Public\CurlingGame_Manager.h" />
     <ClInclude Include="..\Public\CurlingGame_Prop.h" />
     <ClInclude Include="..\Public\State_Character_Vehicle.h" />
@@ -1376,7 +1376,7 @@
     <ClCompile Include="..\Private\Riding_Manager.cpp" />
     <ClCompile Include="..\Private\Shadow_Ball.cpp" />
     <ClCompile Include="..\Private\Shadow_Tower.cpp" />
-    <ClCompile Include="..\Private\CurlingGame_Barrel.cpp" />
+    <ClCompile Include="..\Private\CurlingGame_Stone.cpp" />
     <ClCompile Include="..\Private\CurlingGame_Manager.cpp" />
     <ClCompile Include="..\Private\CurlingGame_Prop.cpp" />
     <ClCompile Include="..\Private\State_CannonTower_Attack.cpp" />

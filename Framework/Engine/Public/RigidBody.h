@@ -57,6 +57,10 @@ public:
     _float Get_FrictionScale() { return m_fFrictionScale; }
     void Set_FrictionScale(_float fFrictionScale) { m_fFrictionScale = fFrictionScale; }
 
+    const _bool& Is_Sleep() const { return m_bSleep; }
+    void Set_Sleep(const _bool& bSleep) { m_bSleep = bSleep; }
+    const _bool& Check_Sleep();
+
 private:
     void Update_Gravity(_float fTimeDelta);
     void Update_Velocity(_float fTimeDelta);
@@ -70,6 +74,9 @@ private:
     _bool m_bGround = false;
     Vec3 m_vVelocity = {};
     _float m_fFrictionScale = 1.f;
+
+    _bool   m_bSleep = true;
+    const _float m_fSleepThreshold = 0.05f;
 
 public:
     static CRigidBody* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

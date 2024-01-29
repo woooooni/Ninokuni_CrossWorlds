@@ -3,7 +3,7 @@
 #include "Character.h"
 #include "State_Character_Neutral_Pick_Large_Finish.h"
 #include "Animals.h"
-#include "CurlingGame_Barrel.h"
+#include "CurlingGame_Stone.h"
 
 CState_Character_Neutral_Pick_Large_Finish::CState_Character_Neutral_Pick_Large_Finish(CStateMachine* pMachine)
     : CState_Character(pMachine)
@@ -69,14 +69,14 @@ void CState_Character_Neutral_Pick_Large_Finish::Tick_State(_float fTimeDelta)
                     
                     else if (m_pCharacter->Get_Target()->Get_ObjectType() == OBJ_TYPE::OBJ_CURLINGGAME_PROP)
                     {
-                        CCurlingGame_Barrel* pBarrel = dynamic_cast<CCurlingGame_Barrel*>(m_pCharacter->Get_Target());
-                        if (nullptr == pBarrel)
+                        CCurlingGame_Stone* pStone = dynamic_cast<CCurlingGame_Stone*>(m_pCharacter->Get_Target());
+                        if (nullptr == pStone)
                         {
                             MSG_BOX("CullingGameProp Cast Failed.");
                             return;
                         }
 
-                        pBarrel->PutDown();
+                        pStone->PutDown();
                         m_bLiftAway = true;
                     }
                 }

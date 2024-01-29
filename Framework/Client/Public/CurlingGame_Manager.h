@@ -8,11 +8,36 @@ class CGameObject;
 END
 
 BEGIN(Client)
-class CCurlingGame_Barrel;
+class CCurlingGame_Stone;
 
 class CCurlingGame_Manager : public CBase
 {
 	DECLARE_SINGLETON(CCurlingGame_Manager)
+
+	enum PARTICIPANT_TYPE { PARTICIPANT_PLAYER, PARTICIPANT_NPC, PARTICIPANT_TYPEEND };
+
+	typedef struct tagStandardDesc
+	{
+		/* Ring, Goal */
+		enum RING_TYPE { FIRST, SECOND, THIRD, RING_TYPEEND };
+
+		const wstring wstrRingNames[RING_TYPE::RING_TYPEEND] =
+		{
+			L"Decal_CurlingGame_RingBoard_Red",
+			L"Decal_CurlingGame_RingBoard_Yellow",
+			L"Decal_CurlingGame_RingBoard_Green",
+		};
+
+		/* 수치 바꾸면 z 파이팅 발생 -> 데칼이라 높이 적용 안됨 */
+		const _float	fRingScalesForRender[RING_TYPE::RING_TYPEEND]		= { 4.f, 9.f, 19.3f };
+		const _float	fRingScalesForDetection[RING_TYPE::RING_TYPEEND]	= { 1.9f, 4.25f, 9.25f };
+		const _uint		iPoints[RING_TYPE::RING_TYPEEND]					= { 5, 3, 1 };
+
+		const _float	fHeight = 3.f;
+
+		const Vec3		vGoalPosition	= { -150.f, -5.1f, 238.f }; /* 변경시 높이만 플레이어 포지션으로 맞춰주면 됨 */
+
+	}STANDARD_DESC;
 
 	typedef struct tagGuageDesc
 	{
@@ -21,13 +46,13 @@ class CCurlingGame_Manager : public CBase
 		LERP_FLOAT_DESC		tLerpValue	= {};
 		_bool				bIncrease	= true;
 
-		const _float		fLerpTime	= 2.f;
+		const _float		fLerpTime	= 1.f;
 		const LERP_MODE		eLerpMode	= LERP_MODE::EASE_IN;
 		
 		const _float		fMinValue	= 0.f;
 		const _float		fMaxValue	= 1.f;
 
-		const _float		fMaxPower	= 50.f;
+		const _float		fMaxPower	= 60.f;
 
 		void Start()
 		{
@@ -76,6 +101,16 @@ class CCurlingGame_Manager : public CBase
 
 	}STADIUM_DESC;
 
+	typedef struct tagParticipantInfoDesc
+	{
+		_int	iOwnerType	= -1;
+
+		_uint	iNumStone	= 10;
+
+		_uint	iScore = 0;
+	
+	}PARTICIPANT_INFO_DESC;
+
 private:
 	CCurlingGame_Manager();
 	virtual ~CCurlingGame_Manager() = default;
@@ -84,6 +119,7 @@ public:
 	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	void Tick(const _float& fTimeDelta);
 	void LateTick(const _float& fTimeDelta);
+	void Render_Debug();
 
 public:
 	HRESULT Set_Game(const _bool& bStart);
@@ -99,13 +135,17 @@ public:
 private:
 	void Tick_Guage(const _float& fTimeDelta);
 	void Tick_StadiumAction(const _float& fTimeDelta);
+	void Tick_Score();
 
 private:
 	HRESULT Ready_Objects();
+	HRESULT Ready_Decal();
 
 private:
 	void Test(const _float& fTimeDelta);
 	void Debug();
+	HRESULT Ready_DebugDraw();
+	HRESULT Render_DebugDraw();
 
 private:
 	/* Default */
@@ -123,7 +163,26 @@ private:
 	STADIUM_DESC			m_tStadiumDesc = {};
 
 	/* Barrels */
-	vector<CCurlingGame_Barrel*> m_pBarrelsLaunched;
+	vector<CCurlingGame_Stone*> m_pBarrelsLaunched;
+
+	/* Participant */
+	PARTICIPANT_INFO_DESC	m_tParticipants[PARTICIPANT_TYPE::PARTICIPANT_TYPEEND];
+
+	/* Standard */ 
+	STANDARD_DESC			m_tStandardDesc = {};
+
+	/* Test */
+	_bool					m_bLoadMapTest = false;
+
+	LEVELID					m_eLoadLevel = LEVELID::LEVEL_ICELAND;
+
+#pragma region Debug Draw 
+	const _bool	m_bDebugRender						= false;
+	BasicEffect* m_pEffect							= nullptr;
+	BoundingSphere* m_pSphere						= nullptr;
+	ID3D11InputLayout* m_pInputLayout				= nullptr;
+	PrimitiveBatch<VertexPositionColor>* m_pBatch	= nullptr;
+#pragma endregion
 
 public:
 	virtual void Free() override;

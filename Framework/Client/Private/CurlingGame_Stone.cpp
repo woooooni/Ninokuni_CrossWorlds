@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "..\Public\CurlingGame_Barrel.h"
+#include "..\Public\CurlingGame_Stone.h"
 
 #include "GameInstance.h"
 #include "Camera_Manager.h"
@@ -10,12 +10,12 @@
 
 #include "CurlingGame_Wall.h"
 
-CCurlingGame_Barrel::CCurlingGame_Barrel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
+CCurlingGame_Stone::CCurlingGame_Stone(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CCurlingGame_Prop(pDevice, pContext, strObjectTag)
 {
 }
 
-CCurlingGame_Barrel::CCurlingGame_Barrel(const CCurlingGame_Barrel& rhs)
+CCurlingGame_Stone::CCurlingGame_Stone(const CCurlingGame_Stone& rhs)
 	: CCurlingGame_Prop(rhs)
 	, m_tElasticColDesc(rhs.m_tElasticColDesc)
 	, m_tHeightLerpDesc(rhs.m_tHeightLerpDesc)
@@ -25,7 +25,7 @@ CCurlingGame_Barrel::CCurlingGame_Barrel(const CCurlingGame_Barrel& rhs)
 {
 }
 
-HRESULT CCurlingGame_Barrel::Initialize_Prototype()
+HRESULT CCurlingGame_Stone::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
@@ -33,8 +33,15 @@ HRESULT CCurlingGame_Barrel::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CCurlingGame_Barrel::Initialize(void* pArg)
+HRESULT CCurlingGame_Stone::Initialize(void* pArg)
 {
+	if (nullptr == pArg)
+		return E_FAIL;
+
+	/* Stone Type */
+	STONE_INIT_DESC* pDesc = static_cast<STONE_INIT_DESC*>(pArg);
+	m_eStoneType = pDesc->eStoneType;
+
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
@@ -44,12 +51,21 @@ HRESULT CCurlingGame_Barrel::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
-	/* Type */
-	m_eCGType = CG_TYPE::CG_BARREL;
+	/* Active */
+	m_bActive = false;
+
+	/* Prop Type */
+	m_eCGType = CG_TYPE::CG_STONE;
 
 	/* Trnasform */
 	if (nullptr != m_pTransformCom)
-		m_pTransformCom->Set_Scale(Vec3(1.3f));
+	{
+		if (STONE_TYPE::BARREL == m_eStoneType)
+			m_pTransformCom->Set_Scale(Vec3(1.3f));
+		else if (STONE_TYPE::POT == m_eStoneType)
+			m_pTransformCom->Set_Scale(Vec3(0.9f));
+		
+	}
 
 	/* Model */
 	if (nullptr != m_pModelCom)
@@ -59,16 +75,16 @@ HRESULT CCurlingGame_Barrel::Initialize(void* pArg)
 	}
 	
 	/* Rigidbody*/
-	if(nullptr != m_pRigidBodyCom)
+	if (nullptr != m_pRigidBodyCom)
+	{
 		m_pRigidBodyCom->Set_Use_Gravity(false);
+	}
 
-	/* Active */
-	m_bActive = false;
 
 	return S_OK;
 }
 
-void CCurlingGame_Barrel::Tick(_float fTimeDelta)
+void CCurlingGame_Stone::Tick(_float fTimeDelta)
 {
 	if (!m_bActive)
 		return;
@@ -92,9 +108,15 @@ void CCurlingGame_Barrel::Tick(_float fTimeDelta)
 	}
 
 	__super::Tick(fTimeDelta);
+
+	/* 리지드바디 체크 */
+	if (!m_pRigidBodyCom->Is_Sleep())
+	{
+		m_bMoving = m_pRigidBodyCom->Check_Sleep();
+	}
 }
 
-void CCurlingGame_Barrel::LateTick(_float fTimeDelta)
+void CCurlingGame_Stone::LateTick(_float fTimeDelta)
 {
 	if (!m_bActive)
 		return;
@@ -102,7 +124,7 @@ void CCurlingGame_Barrel::LateTick(_float fTimeDelta)
 	__super::LateTick(fTimeDelta);
 }
 
-HRESULT CCurlingGame_Barrel::Render()
+HRESULT CCurlingGame_Stone::Render()
 {
 	if (FAILED(__super::Render()))
 		return E_FAIL;
@@ -110,7 +132,7 @@ HRESULT CCurlingGame_Barrel::Render()
 	return S_OK;
 }
 
-HRESULT CCurlingGame_Barrel::Render_ShadowDepth()
+HRESULT CCurlingGame_Stone::Render_ShadowDepth()
 {
 	if (FAILED(__super::Render_ShadowDepth()))
 		return E_FAIL;
@@ -118,27 +140,27 @@ HRESULT CCurlingGame_Barrel::Render_ShadowDepth()
 	return S_OK;
 }
 
-HRESULT CCurlingGame_Barrel::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
+HRESULT CCurlingGame_Stone::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
 {
 	return S_OK;
 }
 
-HRESULT CCurlingGame_Barrel::Render_Instance_Shadow(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
+HRESULT CCurlingGame_Stone::Render_Instance_Shadow(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
 {
 	return S_OK;
 }
 
-HRESULT CCurlingGame_Barrel::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc)
+HRESULT CCurlingGame_Stone::Render_Instance_AnimModel(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc)
 {
 	return S_OK;
 }
 
-HRESULT CCurlingGame_Barrel::Render_Instance_AnimModel_Shadow(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc)
+HRESULT CCurlingGame_Stone::Render_Instance_AnimModel_Shadow(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc)
 {
 	return S_OK;
 }
 
-void CCurlingGame_Barrel::Collision_Enter(const COLLISION_INFO& tInfo)
+void CCurlingGame_Stone::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	if (OBJ_TYPE::OBJ_CURLINGGAME_PROP == tInfo.pOther->Get_ObjectType())
 	{	
@@ -147,7 +169,7 @@ void CCurlingGame_Barrel::Collision_Enter(const COLLISION_INFO& tInfo)
 			return;
 
 		/* 통과 충돌 */
-		if (CG_TYPE::CG_BARREL == pProp->Get_CGType())
+		if (CG_TYPE::CG_STONE == pProp->Get_CGType())
 		{
 			Calculate_ElasticCollision(pProp);
 
@@ -162,7 +184,7 @@ void CCurlingGame_Barrel::Collision_Enter(const COLLISION_INFO& tInfo)
 	}
 }
 
-void CCurlingGame_Barrel::Launch(const _float& fPower)
+void CCurlingGame_Stone::Launch(const _float& fPower)
 {
 	/* Transform */
 	{
@@ -187,7 +209,7 @@ void CCurlingGame_Barrel::Launch(const _float& fPower)
 	}
 }
 
-void CCurlingGame_Barrel::PutDown()
+void CCurlingGame_Stone::PutDown()
 {
 	const _float fCurHeight = Vec3(m_pTransformCom->Get_Position()).y;
 
@@ -198,7 +220,7 @@ void CCurlingGame_Barrel::PutDown()
 	m_tHeightLerpDesc.Start(fCurHeight, fTargetHeight, fLerpTime, LERP_MODE::EASE_IN);
 }
 
-HRESULT CCurlingGame_Barrel::Ready_Components()
+HRESULT CCurlingGame_Stone::Ready_Components()
 {
 	if (FAILED(__super::Ready_Components()))
 		return E_FAIL;
@@ -218,25 +240,38 @@ HRESULT CCurlingGame_Barrel::Ready_Components()
 		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_RigidBody"), TEXT("Com_RigidBody"), (CComponent**)&m_pRigidBodyCom, &RigidDesc)))
 			return E_FAIL;
 	}
-
-
+	
 	/* For. Com_Model */
 	{
-		if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Prop_Barrel"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+		if (STONE_TYPE::BARREL == m_eStoneType)
+		{
+			if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Prop_Barrel"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+				return E_FAIL;
+		}
+		else if (STONE_TYPE::POT == m_eStoneType)
+		{
+			if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Prop_Pot"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+				return E_FAIL;
+		}
+		else
 			return E_FAIL;
 	}
 
 	return S_OK;
 }
 
-HRESULT CCurlingGame_Barrel::Ready_Colliders()
+HRESULT CCurlingGame_Stone::Ready_Colliders()
 {
 	/* Sphere Collider */
 	{
 		BoundingSphere Sphere;
 		ZeroMemory(&Sphere, sizeof(BoundingSphere));
 		{
-			Sphere.Radius = 0.5f;
+			if (STONE_TYPE::BARREL == m_eStoneType)
+				Sphere.Radius = 0.5f;
+			else if (STONE_TYPE::POT == m_eStoneType)
+				Sphere.Radius = 0.6f;
+
 			Sphere.Center = Vec3::Zero;
 		}
 
@@ -257,7 +292,7 @@ HRESULT CCurlingGame_Barrel::Ready_Colliders()
 	return S_OK;
 }
 
-HRESULT CCurlingGame_Barrel::Calculate_ElasticCollision(CGameObject* pOther)
+HRESULT CCurlingGame_Stone::Calculate_ElasticCollision(CGameObject* pOther)
 {
 	CRigidBody* pOtherRigidBody = nullptr;
 	CTransform* pOtherTransform = nullptr;
@@ -302,7 +337,7 @@ HRESULT CCurlingGame_Barrel::Calculate_ElasticCollision(CGameObject* pOther)
 	return S_OK;
 }
 
-HRESULT CCurlingGame_Barrel::Calculate_ActionAndReaction(class CCurlingGame_Wall* pWall)
+HRESULT CCurlingGame_Stone::Calculate_ActionAndReaction(class CCurlingGame_Wall* pWall)
 {
 	CCollider*		pCollider = nullptr;
 	CCollider_OBB*	pColliderObb = nullptr;
@@ -341,33 +376,33 @@ HRESULT CCurlingGame_Barrel::Calculate_ActionAndReaction(class CCurlingGame_Wall
 	return S_OK;
 }
 
-CCurlingGame_Barrel* CCurlingGame_Barrel::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
+CCurlingGame_Stone* CCurlingGame_Stone::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 {
-	CCurlingGame_Barrel* pInstance = new CCurlingGame_Barrel(pDevice, pContext, strObjectTag);
+	CCurlingGame_Stone* pInstance = new CCurlingGame_Stone(pDevice, pContext, strObjectTag);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX("Fail Craete : CCurlingGame_Barrel");
+		MSG_BOX("Fail Craete : CCurlingGame_Stone");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CCurlingGame_Barrel::Clone(void* pArg)
+CGameObject* CCurlingGame_Stone::Clone(void* pArg)
 {
-	CCurlingGame_Barrel* pInstance = new CCurlingGame_Barrel(*this);
+	CCurlingGame_Stone* pInstance = new CCurlingGame_Stone(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Fail Clone : CCurlingGame_Barrel");
+		MSG_BOX("Fail Clone : CCurlingGame_Stone");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CCurlingGame_Barrel::Free()
+void CCurlingGame_Stone::Free()
 {
 	__super::Free();
 }
