@@ -27,13 +27,19 @@ public: // Clone
 public:
 	HRESULT Ride_ForCharacter(VEHICLE_TYPE eType, _bool bOnOff);
 
+public:
+	HRESULT Ready_Grandprix();
+	HRESULT Ready_Grandprix_EnemyInfo(); // 미니게임 매니저 새로 파서 옮겨야함.
+	void Tick_Grandprix(_float fTimeDelta);
+	void LateTick_Grandprix(_float fTimeDelta);
+
 private:
 	class CVehicle_Udadak* m_pUdadak = { nullptr };
 	class CVehicle_Flying_Biplane* m_pBiplane = { nullptr };
 
 	// For Grandprix
 	class CGrandprix_Engineer* m_pEngineer = { nullptr };
-	class CVehicle_Flying_Biplane* m_pEnemyPlane = { nullptr };
+	class CVehicle_Flying_EnemyBiplane* m_pEnemyPlane = { nullptr };
 
 private:
 	ID3D11Device* m_pDevice = { nullptr };

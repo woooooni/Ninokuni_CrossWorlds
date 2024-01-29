@@ -40,6 +40,8 @@ HRESULT CVehicle_Flying::Initialize(void* pArg)
 void CVehicle_Flying::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
+
+
 }
 
 void CVehicle_Flying::LateTick(_float fTimeDelta)

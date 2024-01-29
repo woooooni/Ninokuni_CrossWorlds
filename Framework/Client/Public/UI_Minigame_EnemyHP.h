@@ -11,6 +11,10 @@ protected:
 	virtual ~CUI_Minigame_EnemyHP() = default;
 
 public:
+	void Set_Owner(CGameObject* pOwner);
+//	class CGameObject* Get_Owner() { return m_pOwner; }
+
+public:
 	virtual HRESULT	Initialize_Prototype();
 	virtual HRESULT	Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta);
@@ -18,7 +22,7 @@ public:
 	virtual HRESULT	Render();
 
 private:
-	class CUI_Minigame_EnemyHP* m_pBar = { nullptr };
+	class CVehicle_Flying* m_pOwner = { nullptr };
 	_uint m_iPass = { 1 };
 
 	wstring m_strName = L"";

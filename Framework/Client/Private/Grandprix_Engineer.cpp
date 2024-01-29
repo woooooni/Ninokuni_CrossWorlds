@@ -6,18 +6,18 @@
 #include "Game_Manager.h"
 #include "Player.h"
 
-#include "State_Character_Flying_RunStart.h"
-#include "State_Character_Flying_Stand.h"
-#include "State_Character_Flying_Run.h"
+#include "State_Enemy_Flying_RunStart.h"
+#include "State_Enemy_Flying_Stand.h"
+#include "State_Enemy_Flying_Run.h"
 
 
 CGrandprix_Engineer::CGrandprix_Engineer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	: CCharacter(pDevice, pContext, L"Minigame_Grandprix_Engineer", CHARACTER_TYPE::ENGINEER)
+	: CGrandprix_Enemy(pDevice, pContext, L"Minigame_Grandprix_Engineer")
 {
 }
 
 CGrandprix_Engineer::CGrandprix_Engineer(const CGrandprix_Engineer& rhs)
-	: CCharacter(rhs)
+	: CGrandprix_Enemy(rhs)
 {
 
 }
@@ -32,10 +32,6 @@ HRESULT CGrandprix_Engineer::Initialize_Prototype()
 
 HRESULT CGrandprix_Engineer::Initialize(void* pArg)
 {
-
-	if (nullptr != pArg)
-		m_tStat = *((CHARACTER_STAT*)pArg);
-
 	for (_uint i = 0; i < PART_TYPE::PART_END; ++i)
 		m_pCharacterPartModels[i] = nullptr;
 
@@ -59,8 +55,14 @@ void CGrandprix_Engineer::Tick(_float fTimeDelta)
 
 void CGrandprix_Engineer::LateTick(_float fTimeDelta)
 {
+	if (nullptr == m_pRendererCom)
+		return;
 
-	__super::LateTick(fTimeDelta);
+	m_pModelCom->LateTick(fTimeDelta);
+
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
+	m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
+//	__super::LateTick(fTimeDelta);
 }
 
 HRESULT CGrandprix_Engineer::Render()
@@ -138,12 +140,12 @@ HRESULT CGrandprix_Engineer::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_RigidBody"), TEXT("Com_RigidBody"), (CComponent**)&m_pRigidBodyCom, &RigidDesc)))
 		return E_FAIL;
 
-	m_pCharacterPartModels[PART_TYPE::HEAD] = CCharacter_Manager::GetInstance()->Get_PartModel(m_eCharacterType, PART_TYPE::HEAD, L"Adventure");
-	m_pCharacterPartModels[PART_TYPE::HAIR] = CCharacter_Manager::GetInstance()->Get_PartModel(m_eCharacterType, PART_TYPE::HAIR, 0);
-	m_pCharacterPartModels[PART_TYPE::FACE] = CCharacter_Manager::GetInstance()->Get_PartModel(m_eCharacterType, PART_TYPE::FACE, 0);
-	m_pCharacterPartModels[PART_TYPE::BODY] = CCharacter_Manager::GetInstance()->Get_PartModel(m_eCharacterType, PART_TYPE::BODY, L"Adventure");
+	m_pCharacterPartModels[PART_TYPE::HEAD] = CCharacter_Manager::GetInstance()->Get_PartModel(CHARACTER_TYPE::ENGINEER, PART_TYPE::HEAD, L"Adventure");
+	m_pCharacterPartModels[PART_TYPE::HAIR] = CCharacter_Manager::GetInstance()->Get_PartModel(CHARACTER_TYPE::ENGINEER, PART_TYPE::HAIR, 0);
+	m_pCharacterPartModels[PART_TYPE::FACE] = CCharacter_Manager::GetInstance()->Get_PartModel(CHARACTER_TYPE::ENGINEER, PART_TYPE::FACE, 0);
+	m_pCharacterPartModels[PART_TYPE::BODY] = CCharacter_Manager::GetInstance()->Get_PartModel(CHARACTER_TYPE::ENGINEER, PART_TYPE::BODY, L"Adventure");
 
-	m_pModelCom->Set_Animation(0);
+	//m_pModelCom->Set_Animation(0);
 
 	return S_OK;
 }
@@ -154,18 +156,18 @@ HRESULT CGrandprix_Engineer::Ready_States()
 	list<wstring> strAnimationNames;
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_NeutralStand");
-	m_pStateCom->Add_State(CCharacter::STATE::FLYING_RUNSTART, CState_Character_Flying_RunStart::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_SitRunStart_Biplane");
+	m_pStateCom->Add_State(CGrandprix_Enemy::ENEMY_STATE::FLYING_RUNSTART, CState_Enemy_Flying_RunStart::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_NeutralStand");
-	m_pStateCom->Add_State(CCharacter::STATE::FLYING_STAND, CState_Character_Flying_Stand::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_SitStand_Biplane");
+	m_pStateCom->Add_State(CGrandprix_Enemy::ENEMY_STATE::FLYING_STAND, CState_Enemy_Flying_Stand::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_ChairSitStart");
-	m_pStateCom->Add_State(CCharacter::STATE::FLYING_RUN, CState_Character_Flying_Run::Create(m_pStateCom, strAnimationNames));
+	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_SitRun_Biplane");
+	m_pStateCom->Add_State(CGrandprix_Enemy::ENEMY_STATE::FLYING_RUN, CState_Enemy_Flying_Run::Create(m_pStateCom, strAnimationNames));
 
-	m_pStateCom->Change_State(CCharacter::FLYING_RUNSTART);
+	m_pStateCom->Change_State(CGrandprix_Enemy::ENEMY_STATE::FLYING_STAND);
 
 	return S_OK;
 }
