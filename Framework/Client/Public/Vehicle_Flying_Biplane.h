@@ -10,6 +10,9 @@ class CVehicle_Flying_Biplane final : public CVehicle_Flying
 	virtual ~CVehicle_Flying_Biplane() = default;
 
 public:
+	void Set_Players(_bool bIsPlayers) { m_bIsPlayers = bIsPlayers; }
+
+public:
 	virtual HRESULT Initialize_Prototype();
 	virtual HRESULT Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta);
@@ -37,9 +40,9 @@ private:
 	void Update_RiderState();
 
 private:
-//	_float m_fLandingSpeed = { 10.f };
-//	_float m_fFlyingSpeed = { 8.f };
+	//class CTexture* m_pTextureCom = { nullptr };
 	_bool m_bUseRigidbody = { true };
+	_bool m_bIsPlayers = { false };
 
 public:
 	static CVehicle_Flying_Biplane* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);

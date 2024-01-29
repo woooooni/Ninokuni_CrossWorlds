@@ -6,8 +6,10 @@
 
 #include "State_VehicleFlying_Stand.h"
 #include "Vehicle.h"
+#include "Vehicle_Flying.h"
 
 #include "UIMinigame_Manager.h"
+#include "Swordsman_Biplane_Bullet.h"
 
 CState_VehicleFlying_Stand::CState_VehicleFlying_Stand(CStateMachine* pMachine)
     : CState_Vehicle(pMachine)
@@ -45,10 +47,30 @@ void CState_VehicleFlying_Stand::Tick_State(_float fTimeDelta)
 
     if (true == CUIMinigame_Manager::GetInstance()->Is_BiplaneFlying())
     {
+        if (false == m_bShoot)
+        {
+            m_fTimeAcc += fTimeDelta;
+            
+            if (0.5f < m_fTimeAcc)
+            {
+                m_bShoot = true;
+                m_fTimeAcc = 0.f;
+            }
+        }
+
         if (KEY_HOLD(KEY::W) || KEY_HOLD(KEY::A) || KEY_HOLD(KEY::S) || KEY_HOLD(KEY::D))
         {
             m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_RUN);
             return;
+        }
+
+        if (KEY_HOLD(KEY::SPACE))
+        {
+            if (g_eLoadCharacter == LOAD_CHARACTER_TYPE::ALL_CH)
+            {
+                if (true == m_bShoot)
+                    Shoot();
+            }
         }
     }
     else
@@ -112,6 +134,58 @@ void CState_VehicleFlying_Stand::Exit_State()
     CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
     if (nullptr != pFollowCam)
         pFollowCam->Set_CanInput(true);
+
+    m_bShoot = false;
+    m_fTimeAcc = 0.f;
+}
+
+void CState_VehicleFlying_Stand::Shoot()
+{
+    CSwordsman_Biplane_Bullet::GRANDPRIX_PROJECTILE_DESC ProjectileDesc;
+    ProjectileDesc.pOwner = dynamic_cast<CVehicle_Flying*>(m_pVehicle);
+
+
+    // Left Side Bullet
+    CGameObject* pLeftBullet = GI->Clone_GameObject(L"Prototype_GameObject_Swordsman_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
+    if (nullptr == pLeftBullet)
+        return;
+
+    CTransform* pLeftTransform = pLeftBullet->Get_Component<CTransform>(L"Com_Transform");
+    Vec3 vLeftScale = pLeftTransform->Get_Scale();
+    pLeftTransform->Set_WorldMatrix(m_pTransformCom->Get_WorldMatrix());
+    pLeftTransform->Set_Scale(vLeftScale);
+
+    _matrix MatLeft = m_pModelCom->Get_SocketLocalMatrix(0) * m_pTransformCom->Get_WorldMatrix();
+    Vec4 vLeftStartPos = MatLeft.r[CTransform::STATE_POSITION];
+
+    //vLeftStartPos += XMVector3Normalize(pLeftTransform->Get_Look()) * 0.5f;
+    vLeftStartPos += XMVector3Normalize(m_pVehicle->Get_Component<CTransform>(L"Com_Transform")->Get_Look()) * 0.5f;
+    pLeftTransform->Set_State(CTransform::STATE_POSITION, vLeftStartPos);
+
+    if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_CHARACTER, pLeftBullet)))
+        MSG_BOX("Generate Bullet Failed.");
+
+
+    // Right Side Bullet
+    CGameObject* pRightBullet = GI->Clone_GameObject(L"Prototype_GameObject_Swordsman_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
+    if (nullptr == pRightBullet)
+        return;
+
+    CTransform* pRightTransform = pRightBullet->Get_Component<CTransform>(L"Com_Transform");
+    Vec3 vRightScale = pRightTransform->Get_Scale();
+    pRightTransform->Set_WorldMatrix(m_pTransformCom->Get_WorldMatrix());
+    pRightTransform->Set_Scale(vRightScale);
+
+    _matrix MatRight = m_pModelCom->Get_SocketLocalMatrix(1) * m_pTransformCom->Get_WorldMatrix();
+    Vec4 vRightStartPos = MatRight.r[CTransform::STATE_POSITION];
+   // vRightStartPos += XMVector3Normalize(pRightTransform->Get_Look()) * 0.5f;
+    vRightStartPos += XMVector3Normalize(m_pVehicle->Get_Component<CTransform>(L"Com_Transform")->Get_Look()) * 0.5f;
+    pRightTransform->Set_State(CTransform::STATE_POSITION, vRightStartPos);
+
+    if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_CHARACTER, pRightBullet)))
+        MSG_BOX("Generate Bullet Failed.");
+
+    m_bShoot = false;
 }
 
 

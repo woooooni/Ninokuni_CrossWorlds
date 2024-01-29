@@ -25,10 +25,10 @@ public:
 	virtual void Tick(_float fTimeDelta);
 
 public:
-	ITEMDESC_ETC Get_ItemDesc() { return m_tArmorDesc; }
+	ITEMDESC_ETC Get_ItemDesc() { return m_tEtcDesc; }
 
 protected:
-	ITEMDESC_ETC m_tArmorDesc = {};
+	ITEMDESC_ETC m_tEtcDesc = {};
 
 public:
 	static CGameItem_Consumpsion* Create(void* pArg);

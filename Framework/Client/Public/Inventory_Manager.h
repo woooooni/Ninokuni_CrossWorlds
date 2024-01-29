@@ -40,7 +40,7 @@ private:
 	virtual ~CInventory_Manager() = default;
 
 public:
-	_bool Is_InInventory(CGameObject* pItem);
+	_bool Is_InInventory(ITEM_CODE eType);
 	const vector<class CGameItem*>& Get_Inventory(ITEM_TYPE eType) { return m_Inventory[_uint(eType)]; }
 
 public:
@@ -50,7 +50,7 @@ public:
 	void LateTick(_float fTimeDelta);
 
 public:
-	HRESULT Add_Item(ITEM_TYPE eType, CGameObject* pItem);
+	HRESULT Add_Item(ITEM_TYPE eType, ITEM_CODE eCode);
 	void	Add_Gold(_uint iGold);
 
 	HRESULT Use_Item(ITEM_TYPE eType, _uint iNum);
@@ -62,6 +62,7 @@ public:
 
 private:
 	vector<class CGameItem*> m_Inventory[_uint(ITEM_TYPE::ITEMTYPE_END)];
+	_bool m_bHave[_uint(ITEM_CODE::CODE_END)];
 
 private:
 	ID3D11Device* m_pDevice = { nullptr };

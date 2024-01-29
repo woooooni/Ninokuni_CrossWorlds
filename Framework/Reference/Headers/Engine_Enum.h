@@ -258,6 +258,7 @@ namespace Engine
 #pragma endregion
 
 #pragma region ETC = 52
+		CONSUMPSION_HP,
 		CONSUMPSION_ENERGY,
 		CONSUMPSION_EXP,
 		CONSUMPSION_MILK,

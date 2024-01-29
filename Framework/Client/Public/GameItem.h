@@ -32,7 +32,17 @@ public:
 	static wstring Get_Content(const ITEM_CODE& eCode);
 	static wstring Get_Name(const ITEM_CODE& eCode);
 
-	void Set_InInventory(_bool bIsIn) { m_bIsIn = bIsIn; }
+	void Add_InvenCount(_bool bPlus = true, _uint iCount = 1) {
+		if (true == bPlus)
+			m_iCount += iCount;
+		else
+		{
+			if (m_iCount < iCount)
+				return;
+
+			m_iCount -= iCount;
+		}
+	}
 
 public:
 	virtual HRESULT Initialize_Prototype();

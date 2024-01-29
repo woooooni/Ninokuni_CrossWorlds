@@ -27,7 +27,7 @@ void CState_Character_Flying_Run::Enter_State(void* pArg)
 
 void CState_Character_Flying_Run::Tick_State(_float fTimeDelta)
 {
-
+    __super::OnFlying_Input(fTimeDelta);
     __super::OnBoard_Input(fTimeDelta);
 }
 

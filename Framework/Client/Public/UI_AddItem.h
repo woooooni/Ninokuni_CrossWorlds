@@ -12,6 +12,7 @@ public:
 	typedef struct tagItemDesc : public CUI::UI_INFO
 	{
 		ITEM_CODE eCode = CODE_END;
+		_uint iCount = 0;
 
 	}UIITEM_DESC;
 
@@ -22,6 +23,7 @@ protected:
 
 public:
 	void Set_Position(_int iOrder);
+	_bool Is_Disappear() { return m_bDisappear; }
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -37,6 +39,7 @@ private:
 	_bool m_bDisappear = { false };
 	_float m_fTimeAcc = { 0.f };
 	_float2 m_vDisappearPos = _float2(0.f, 0.f);
+	_float2 m_vTextPos = _float2(0.f, 0.f);
 
 	_uint m_iTextureIndex = { 0 };
 

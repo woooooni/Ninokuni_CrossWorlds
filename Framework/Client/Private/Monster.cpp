@@ -110,7 +110,7 @@ void CMonster::Tick(_float fTimeDelta)
 			{
 				m_bDissolveEffect = true;
 				GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Monster_Dissolve"), m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &m_pDissolveObject);
-				CInventory_Manager::GetInstance()->Add_Gold(500);
+				CInventory_Manager::GetInstance()->Add_Gold(GI->RandomInt(15, 40));
 			}
 			else if (m_fDissolveWeight >= m_fDissolveTotal)
 			{

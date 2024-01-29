@@ -5752,11 +5752,38 @@ void CUI_Manager::Show_AddItem(ITEM_TYPE eItemType, ITEM_CODE eItemCode, _uint i
 		ITEMDesc.fX = g_iWinSizeX * 0.5f;
 		ITEMDesc.fY = g_iWinSizeY * 0.5f;
 		ITEMDesc.eCode = ITEM_CODE::CONSUMPSION_GOLD;
+		ITEMDesc.iCount = iCount;
 		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_AddItem_Popup"), &ITEMDesc, &pSlot)))
 			return;
 		if (nullptr == pSlot)
 			return;
-		// 포지션 다시 작업해야함.
+
+		if (0 < m_ItemPopup.size())
+		{
+			if (true == m_ItemPopup.front()->Is_Disappear() && true == m_ItemPopup.front()->Is_Dead())
+			{
+				dynamic_cast<CUI_AddItem*>(pSlot)->Set_Position(1);
+				m_ItemPopup.push_back(dynamic_cast<CUI_AddItem*>(pSlot));
+				Safe_AddRef(pSlot);
+			}
+		}
+		else
+		{
+			dynamic_cast<CUI_AddItem*>(pSlot)->Set_Position(m_ItemPopup.size());
+			m_ItemPopup.push_back(dynamic_cast<CUI_AddItem*>(pSlot));
+			Safe_AddRef(pSlot);
+		}
+	}
+	else if (eItemCode == ITEM_CODE::CONSUMPSION_ENERGY)
+	{
+		ITEMDesc.fX = g_iWinSizeX * 0.5f;
+		ITEMDesc.fY = g_iWinSizeY * 0.5f;
+		ITEMDesc.eCode = ITEM_CODE::CONSUMPSION_ENERGY;
+		ITEMDesc.iCount = iCount;
+		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_AddItem_Popup"), &ITEMDesc, &pSlot)))
+			return;
+		if (nullptr == pSlot)
+			return;
 		dynamic_cast<CUI_AddItem*>(pSlot)->Set_Position(m_ItemPopup.size());
 		m_ItemPopup.push_back(dynamic_cast<CUI_AddItem*>(pSlot));
 		Safe_AddRef(pSlot);
