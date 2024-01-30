@@ -1187,6 +1187,7 @@ void CEffect::Free()
 	Safe_Release(m_pRigidBodyCom);
 	Safe_Release(m_pVIBufferCom);
 	Safe_Release(m_pDissolveTextureCom);
+	Safe_Release(m_pDistortionTextureCom);
 }
 
 
