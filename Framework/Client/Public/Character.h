@@ -275,7 +275,7 @@ public:
 	}
 	
 public:
-	void Set_Target(class CGameObject* pTarget) { m_pTarget = pTarget; }
+	void Set_Target(class CGameObject* pTarget);
 	class CGameObject* Get_Target() { return m_pTarget; }
 
 

@@ -3,8 +3,17 @@
 
 #include "GameInstance.h"
 
+#include "Game_Manager.h"
+#include "UI_Manager.h"
+#include "Effect_Manager.h"
+#include "Camera_Manager.h"
 #include "CurlingGame_Manager.h"
 
+#include "Camera_Group.h"
+
+#include "Player.h"
+#include "Character.h"
+#include "Manager_StateMachine.h"
 
 CState_CurlingGame_Launch_Stone::CState_CurlingGame_Launch_Stone(CManager_StateMachine* pStateMachine)
 	: CState_CurlingGame_Base(pStateMachine)

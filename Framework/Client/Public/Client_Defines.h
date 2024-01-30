@@ -167,7 +167,7 @@ namespace Client
 	static const _float Cam_Fov_CutScene_Boss_Default		= XMConvertToRadians(70.0f);
 	static const _float Cam_Fov_Top_Glanix					= XMConvertToRadians(75.0f);
 	static const _float Cam_Fov_Quater_Default				= XMConvertToRadians(70.f);
-	static const _float Cam_Fov_CrulingGame					= XMConvertToRadians(50.0f);
+	static const _float Cam_Fov_CurlingGame					= XMConvertToRadians(40.0f);
 
 	static const Vec4	Cam_TargetOffset_Follow_SholderView_Default		= { 0.7f, 1.3f, 0.f, 1.f };
 	static const Vec4	Cam_LookAtOffset_Follow_SholderView_Default		= { 0.7f, 1.3f, 0.f, 1.f };
@@ -175,8 +175,8 @@ namespace Client
 	static const Vec4	Cam_TargetOffset_Follow_BackView_Default = { 0.f, 1.3f, 0.f, 1.f };
 	static const Vec4	Cam_LookAtOffset_Follow_BackView_Default = { 0.f, 1.3f, 0.f, 1.f };
 
-	static const Vec4	Cam_TargetOffset_CurlingGame_Default = { 0.f, 4.f, -9.5f, 1.f }; 	   // { 0.f, 4.f, -9.5f, 1.f };
-	static const Vec4	Cam_LookAtOffset_CurlingGame_Default = { 0.f, 0.f, 0.f, 1.f };		   // { 0.f, 0.f, 0.f, 1.f };	
+	static const Vec4	Cam_TargetOffset_CurlingGame_Default = { 0.f, 2.f, -8.5f, 1.f }; 	   // Ω√¿€ ∫‰ { 0.f, 4.f, -9.5f, 1.f };
+	static const Vec4	Cam_LookAtOffset_CurlingGame_Default = { 0.f, 0.f, 0.f, 1.f };		   // Ω√¿€ ∫‰ { 0.f, 0.f, 0.f, 1.f };	
 
 	static const Vec4	Cam_TargetOffset_Top_Glanix = { -20.f, 15.f, 0.f, 1.f };
 	static const Vec4	Cam_TargetOffset_Top_Glanix_Zoom = { -13.f, 8.f, 0.f, 1.f };

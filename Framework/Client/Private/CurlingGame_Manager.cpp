@@ -5,6 +5,7 @@
 
 #include "CurlingGame_Stone.h"
 #include "CurlingGame_Wall.h"
+#include "CurlingGame_Arrow.h"
 
 #include "Game_Manager.h"
 #include "Player.h"
@@ -65,11 +66,6 @@ void CCurlingGame_Manager::Tick(const _float& fTimeDelta)
 	m_pManagerStateMachineCom->Tick(fTimeDelta);
 
 	Test(fTimeDelta);
-
-	if (m_tGuageDesc.bActive)
-		Tick_Guage(fTimeDelta);
-
-	Tick_Score();
 }
 
 void CCurlingGame_Manager::LateTick(const _float& fTimeDelta)
@@ -91,46 +87,15 @@ void CCurlingGame_Manager::Render_Debug()
 		Render_DebugDraw();
 }
 
-HRESULT CCurlingGame_Manager::Set_Game(const _bool& bStart)
+HRESULT CCurlingGame_Manager::Start_Game()
 {
-	m_bPlaying = bStart;
+	if (m_bPlaying)
+		return E_FAIL;
 
-	if (bStart)
-	{
-		/* Set State */
-		if (FAILED(m_pManagerStateMachineCom->Change_State(INTRO)))
-			return E_FAIL;
-	}
+	m_bPlaying = true;
 
-	return S_OK;
-}
-
-void CCurlingGame_Manager::Tick_Guage(const _float& fTimeDelta)
-{
-	m_tGuageDesc.Tick(fTimeDelta);
-	if (KEY_AWAY(KEY::LBTN))
-	{
-		CGameObject* pClone = nullptr;
-
-
-		CCurlingGame_Stone::STONE_INIT_DESC tStoneInitDesc;
-
-		tStoneInitDesc.eStoneType = CCurlingGame_Stone::STONE_TYPE::BARREL;
-		//tStoneInitDesc.eStoneType = CCurlingGame_Stone::STONE_TYPE::POT;
-
-		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_PROP, TEXT("Prorotype_GameObject_CurlingGame_Stone"), &tStoneInitDesc, &pClone)))
-			return;
-
-		CCurlingGame_Stone* pStone = dynamic_cast<CCurlingGame_Stone*>(pClone);
-		if (nullptr != pStone)
-		{			
-			pStone->Launch(m_tGuageDesc.fMaxPower * m_tGuageDesc.tLerpValue.fCurValue);
-
-			m_pBarrelsLaunched.push_back(pStone);
-
-			m_tGuageDesc.Stop();
-		}
-	}
+	if (FAILED(m_pManagerStateMachineCom->Change_State(INTRO)))
+		return E_FAIL;
 }
 
 HRESULT CCurlingGame_Manager::Ready_Components()
@@ -150,16 +115,16 @@ HRESULT CCurlingGame_Manager::Ready_Components()
 		if (FAILED(m_pManagerStateMachineCom->Add_State(CURLINGGAME_STATE::INTRO, CState_CurlingGame_Intro::Create(m_pManagerStateMachineCom))))
 			return E_FAIL;
 
-		if (FAILED(m_pManagerStateMachineCom->Add_State(CURLINGGAME_STATE::MOVE, CState_CurlingGame_Intro::Create(m_pManagerStateMachineCom))))
+		if (FAILED(m_pManagerStateMachineCom->Add_State(CURLINGGAME_STATE::MOVE, CState_CurlingGame_Move_Character::Create(m_pManagerStateMachineCom))))
 			return E_FAIL;
 
-		if (FAILED(m_pManagerStateMachineCom->Add_State(CURLINGGAME_STATE::DIRECTION, CState_CurlingGame_Intro::Create(m_pManagerStateMachineCom))))
+		if (FAILED(m_pManagerStateMachineCom->Add_State(CURLINGGAME_STATE::DIRECTION, CState_CurlingGame_Choose_Direction::Create(m_pManagerStateMachineCom))))
 			return E_FAIL;
 
-		if (FAILED(m_pManagerStateMachineCom->Add_State(CURLINGGAME_STATE::INTENSITY, CState_CurlingGame_Intro::Create(m_pManagerStateMachineCom))))
+		if (FAILED(m_pManagerStateMachineCom->Add_State(CURLINGGAME_STATE::INTENSITY, CState_CurlingGame_Adjust_Intensity::Create(m_pManagerStateMachineCom))))
 			return E_FAIL;
 
-		if (FAILED(m_pManagerStateMachineCom->Add_State(CURLINGGAME_STATE::LAUNCH, CState_CurlingGame_Intro::Create(m_pManagerStateMachineCom))))
+		if (FAILED(m_pManagerStateMachineCom->Add_State(CURLINGGAME_STATE::LAUNCH, CState_CurlingGame_Launch_Stone::Create(m_pManagerStateMachineCom))))
 			return E_FAIL;
 	}
 
@@ -187,6 +152,16 @@ HRESULT CCurlingGame_Manager::Ready_Objects()
 		{
 			if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_CurlingGame_Wall",
 				CCurlingGame_Wall::Create(m_pDevice, m_pContext, TEXT("CurlingGame_Wall")), LAYER_TYPE::LAYER_PROP)))
+				return E_FAIL;
+		}
+
+		/* Arrow */
+		{
+			if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Prop_Arrow", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/CurlingGame/Arrow/", L"Arrow")))
+				return E_FAIL;
+
+			if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_CurlingGame_Arrow",
+				CCurlingGame_Arrow::Create(m_pDevice, m_pContext, TEXT("CurlingGame_Arrow")), LAYER_TYPE::LAYER_PROP)))
 				return E_FAIL;
 		}
 	}
@@ -296,14 +271,14 @@ void CCurlingGame_Manager::Tick_Score()
 		}
 
 		/* Accumulate */
-		switch (pBarrel->Get_OwnerType())
+		switch (pBarrel->Get_StoneType())
 		{
-		case OBJ_TYPE::OBJ_PLAYER:
+		case CCurlingGame_Stone::STONE_TYPE::BARREL:
 		{
 			iScores[PARTICIPANT_PLAYER] += iPoint;
 		}
 		break;
-		case OBJ_TYPE::OBJ_NPC:
+		case CCurlingGame_Stone::STONE_TYPE::POT:
 		{
 			iScores[PARTICIPANT_NPC] += iPoint;
 		}
@@ -319,13 +294,7 @@ void CCurlingGame_Manager::Tick_Score()
 
 void CCurlingGame_Manager::Test(const _float& fTimeDelta)
 {
-	if (m_bPlaying)
-	{
-		if (KEY_TAP(KEY::LBTN))
-		{
-			m_tGuageDesc.Start();
-		}
-	}
+	
 }
 
 void CCurlingGame_Manager::Debug()
@@ -346,17 +315,6 @@ void CCurlingGame_Manager::Debug()
 		desc.vScale = vScale * 1.5f;
 		desc.vPosition = vPos;
 		desc.vColor = (Vec4)DirectX::Colors::Black;
-	}
-	pRenderer->Add_Text(desc);
-
-
-	/* Power */
-	{
-		vPos += vDelta;
-
-		desc.strText = L"Power : " + to_wstring(_int(m_tGuageDesc.tLerpValue.fCurValue * 100.f));
-		desc.vPosition = vPos;
-		desc.vColor = (Vec4)DirectX::Colors::DarkViolet;
 	}
 	pRenderer->Add_Text(desc);
 

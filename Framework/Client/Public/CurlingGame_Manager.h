@@ -52,60 +52,7 @@ class CCurlingGame_Manager : public CBase
 
 	}STANDARD_DESC;
 
-	typedef struct tagGuageDesc
-	{
-		_bool				bActive		= false;
-
-		LERP_FLOAT_DESC		tLerpValue	= {};
-		_bool				bIncrease	= true;
-
-		const _float		fLerpTime	= 1.f;
-		const LERP_MODE		eLerpMode	= LERP_MODE::EASE_IN;
-		
-		const _float		fMinValue	= 0.f;
-		const _float		fMaxValue	= 1.f;
-
-		const _float		fMaxPower	= 60.f;
-
-		void Start()
-		{
-			Reset();
-
-			bActive = true;
-			
-			tLerpValue.Start(fMinValue, fMaxValue, fLerpTime, eLerpMode);
-		}
-
-		void Stop()
-		{
-			tLerpValue.bActive = false;
-		}
-
-		void Tick(const _float fTimeDelta)
-		{
-			if (tLerpValue.bActive)
-			{
-				tLerpValue.Update(fTimeDelta);
-				if (!tLerpValue.bActive)
-				{
-					if (bIncrease)
-						tLerpValue.Start(fMaxValue, fMinValue, fLerpTime, eLerpMode);
-					else
-						tLerpValue.Start(fMinValue, fMaxValue, fLerpTime, eLerpMode);
-
-					bIncrease = !bIncrease;
-				}
-			}
-		}
-
-		void Reset()
-		{
-			tLerpValue.Clear();
-
-			bIncrease = true;
-		}
-
-	}GUAGE_DESC;
+	
 
 	typedef struct tagStaiumDesc
 	{
@@ -143,16 +90,12 @@ public:
 	void Render_Debug();
 
 public:
-	HRESULT Set_Game(const _bool& bStart);
+	HRESULT Start_Game();
 
 public:
 	vector<CGameObject*>* Get_Stadium() { return &m_pStadiumObjects; }
 
-	/* UI */
-	const _float& Get_GuageValue() const { return m_tGuageDesc.tLerpValue.fCurValue; }
-
 private:
-	void Tick_Guage(const _float& fTimeDelta);
 	void Tick_Score();
 
 private:
@@ -179,12 +122,12 @@ private:
 	vector<CCurlingGame_Stone*> m_pBarrelsLaunched;
 
 	PARTICIPANT_INFO_DESC	m_tParticipants[PARTICIPANT_TYPE::PARTICIPANT_TYPEEND];
+	
+	CCurlingGame_Stone*		m_pCurStone = nullptr;
+	Vec4					m_vCurStoneLook = {};
 
-	/* Guage */
-	GUAGE_DESC				m_tGuageDesc = {};
-
-
-
+	/* Turn */				
+	_bool					m_bPlayerTurn = true;
 
 
 #pragma region Debug Draw 

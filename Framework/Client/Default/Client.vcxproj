@@ -278,6 +278,7 @@
     <ClInclude Include="..\Public\Criminal_Npc.h" />
     <ClInclude Include="..\Public\Crystal_Ball.h" />
     <ClInclude Include="..\Public\Crystal_Tower.h" />
+    <ClInclude Include="..\Public\CurlingGame_Arrow.h" />
     <ClInclude Include="..\Public\Grandprix_Enemy.h" />
     <ClInclude Include="..\Public\Grandprix_Enemy_HumanFL04.h" />
     <ClInclude Include="..\Public\State_Enemy.h" />
@@ -1253,6 +1254,7 @@
     <ClCompile Include="..\Private\Criminal_Npc.cpp" />
     <ClCompile Include="..\Private\Crystal_Ball.cpp" />
     <ClCompile Include="..\Private\Crystal_Tower.cpp" />
+    <ClCompile Include="..\Private\CurlingGame_Arrow.cpp" />
     <ClCompile Include="..\Private\Grandprix_Enemy.cpp" />
     <ClCompile Include="..\Private\Grandprix_Enemy_HumanFL04.cpp" />
     <ClCompile Include="..\Private\State_Enemy.cpp" />

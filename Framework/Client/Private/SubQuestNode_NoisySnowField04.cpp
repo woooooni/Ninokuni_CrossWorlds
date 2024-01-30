@@ -11,6 +11,8 @@
 #include "Camera_Manager.h"
 #include "Camera_Group.h"
 
+#include "CurlingGame_Manager.h"
+
 CSubQuestNode_NoisySnowField04::CSubQuestNode_NoisySnowField04()
 {
 }
@@ -85,10 +87,13 @@ CBTNode::NODE_STATE CSubQuestNode_NoisySnowField04::Tick(const _float& fTimeDelt
 
 				m_bIsClear = true;
 
-				/* 대화 카메라 종료 */
-				CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
-				if (nullptr != pActionCam)
-					pActionCam->Finish_Action_Talk();
+				/* 컬링 미니게임 시작 */
+				CCurlingGame_Manager::GetInstance()->Start_Game();
+
+				///* 대화 카메라 종료 */
+				//CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));
+				//if (nullptr != pActionCam)
+				//	pActionCam->Finish_Action_Talk();
 
 				return NODE_STATE::NODE_FAIL;
 			}
@@ -192,7 +197,7 @@ void CSubQuestNode_NoisySnowField04::TalkEvent()
 		m_pNoisyMan->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pNoisyMan->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Destroyer_Merge.ao|Destroyer_NeutralIdle03"));
 		/* 대화 카메라 타겟 변경 */
-		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC);
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC_FROM_BACK_KUU_AND_PLAYER);
 		break;
 
 	}

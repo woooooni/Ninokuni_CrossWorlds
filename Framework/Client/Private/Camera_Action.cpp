@@ -150,6 +150,8 @@ HRESULT CCamera_Action::Start_Action_Lobby()
 
 HRESULT CCamera_Action::Start_Action_Talk(CGameObject* pNpc)
 {
+	m_tActionTalkDesc.Clear();
+
 	m_eCurActionType = CAMERA_ACTION_TYPE::TALK;
 	m_bAction = true;
 

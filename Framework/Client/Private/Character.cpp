@@ -28,6 +28,7 @@
 #include "Kuu.h"
 #include "CurlingGame_Prop.h"
 #include "UIMinimap_Manager.h"
+#include "CurlingGame_Stone.h"
 
 USING(Client)
 CCharacter::CCharacter(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eCharacterType)
@@ -725,6 +726,16 @@ void CCharacter::Stop_MotionTrail()
 
 void CCharacter::Decide_Target(COLLISION_INFO tInfo)
 {
+	/* 이미 세팅된 스톤이라면 리턴*/
+	if (OBJ_TYPE::OBJ_CURLINGGAME_PROP == tInfo.pOther->Get_ObjectType())
+	{
+		CCurlingGame_Stone* pStone = dynamic_cast<CCurlingGame_Stone*>(tInfo.pOther);
+		if (nullptr != pStone && pStone->Is_Putted())
+		{
+			return;
+		}
+	}
+
 	if (nullptr == m_pTarget)
 	{
 		m_pTarget = tInfo.pOther;
@@ -967,6 +978,18 @@ void CCharacter::Set_InitialPosition(Vec4 vPosition)
 {
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vPosition, 1.f));
 	m_pControllerCom->Set_EnterLevel_Position(XMVectorSetW(vPosition, 1.f));
+}
+
+void CCharacter::Set_Target(CGameObject* pTarget)
+{
+	if (nullptr != m_pTarget)
+	{
+		Safe_Release(m_pTarget);
+		m_pTarget = nullptr;
+	}
+
+	m_pTarget = pTarget;
+	Safe_AddRef(m_pTarget);
 }
 
 HRESULT CCharacter::Disappear_Weapon()

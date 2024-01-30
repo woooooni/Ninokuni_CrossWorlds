@@ -38,7 +38,7 @@ HRESULT CCamera_CurlingGame::Initialize(void* pArg)
 
 	Set_LookAtOffSet(Cam_LookAtOffset_CurlingGame_Default);
 	
-	Set_Fov(Cam_Fov_CrulingGame);
+	Set_Fov(Cam_Fov_CurlingGame);
 
 	return S_OK;
 }

@@ -21,7 +21,7 @@ CCurlingGame_Stone::CCurlingGame_Stone(const CCurlingGame_Stone& rhs)
 	, m_tPosLerpDesc(rhs.m_tPosLerpDesc)
 	, m_iNumCol(rhs.m_iNumCol)
 	, m_bLaunched(rhs.m_bLaunched)
-	, m_eOwnerType(rhs.m_eOwnerType)
+	, m_eStoneType(rhs.m_eStoneType)
 {
 }
 
@@ -50,9 +50,6 @@ HRESULT CCurlingGame_Stone::Initialize(void* pArg)
 
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
-
-	/* Active */
-	m_bActive = false;
 
 	/* Prop Type */
 	m_eCGType = CG_TYPE::CG_STONE;

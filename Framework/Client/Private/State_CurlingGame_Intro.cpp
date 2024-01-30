@@ -14,6 +14,7 @@
 
 #include "Player.h"
 #include "Character.h"
+#include "Manager_StateMachine.h"
 
 CState_CurlingGame_Intro::CState_CurlingGame_Intro(CManager_StateMachine* pStateMachine)
 	: CState_CurlingGame_Base(pStateMachine)
@@ -48,13 +49,16 @@ void CState_CurlingGame_Intro::Tick_State(const _float& fTimeDelta)
 	if (m_tStadiumDesc.tLerHeight.bActive)
 		Tick_Stadium(fTimeDelta);
 
-	if (KEY_TAP(KEY::L))
+	if (KEY_TAP(KEY::Q))
 	{
 		CCamera_CurlingGame* pCurlingGameCam = dynamic_cast<CCamera_CurlingGame*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CAMERA_CURLING));
 
 		if (nullptr != pCurlingGameCam)
 		{
 			if (FAILED(pCurlingGameCam->Change_Target(m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].pOwner)))
+				return;
+
+			if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::MOVE)))
 				return;
 		}
 	}
@@ -188,17 +192,10 @@ HRESULT CState_CurlingGame_Intro::Ready_Decals()
 
 HRESULT CState_CurlingGame_Intro::Set_CameraTransform()
 {
-	CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_CurCamera());
 	CCamera_CurlingGame* pCurlingGameCam = dynamic_cast<CCamera_CurlingGame*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CAMERA_CURLING));
 	
-	if (nullptr == pFollowCam || nullptr == pCurlingGameCam)
+	if (nullptr == pCurlingGameCam)
 		return E_FAIL;
-
-	/* Follow Camera */
-	{
-		pFollowCam->Set_CanWideView(false);
-
-	}
 
 	/* CurlingGame Camera */
 	{
