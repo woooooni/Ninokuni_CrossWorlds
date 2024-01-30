@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "UI_Minigame_EnemyHP.h"
 #include "GameInstance.h"
+#include "Vehicle_Flying.h"
 
 CUI_Minigame_EnemyHP::CUI_Minigame_EnemyHP(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CUI(pDevice, pContext, L"UI_Minigame_EnemyHP")
@@ -10,6 +11,15 @@ CUI_Minigame_EnemyHP::CUI_Minigame_EnemyHP(ID3D11Device* pDevice, ID3D11DeviceCo
 CUI_Minigame_EnemyHP::CUI_Minigame_EnemyHP(const CUI_Minigame_EnemyHP& rhs)
 	: CUI(rhs)
 {
+}
+
+void CUI_Minigame_EnemyHP::Set_Owner(CGameObject* pOwner)
+{
+	if (nullptr == dynamic_cast<CVehicle_Flying*>(pOwner))
+		return;
+
+	m_pOwner = dynamic_cast<CVehicle_Flying*>(pOwner);
+
 }
 
 HRESULT CUI_Minigame_EnemyHP::Initialize_Prototype()
@@ -49,6 +59,71 @@ void CUI_Minigame_EnemyHP::LateTick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (nullptr != m_pOwner)
+		{
+			if (true == m_pOwner->Get_Stat().bIsEnemy)
+			{
+				CRenderer::TEXT_DESC  DefaultDesc;
+				DefaultDesc.strText = L"/";
+				DefaultDesc.strFontTag = L"Default_Bold";
+				DefaultDesc.vScale = { 0.3f, 0.3f };
+				// Outline
+				DefaultDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
+				DefaultDesc.vPosition = _float2(m_tInfo.fX - 1.f, (m_tInfo.fY - 5.f));
+				m_pRendererCom->Add_Text(DefaultDesc);
+				DefaultDesc.vPosition = _float2(m_tInfo.fX + 1.f, (m_tInfo.fY - 5.f));
+				m_pRendererCom->Add_Text(DefaultDesc);
+				DefaultDesc.vPosition = _float2(m_tInfo.fX, (m_tInfo.fY - 5.f) - 1.f);
+				m_pRendererCom->Add_Text(DefaultDesc);
+				DefaultDesc.vPosition = _float2(m_tInfo.fX, (m_tInfo.fY - 5.f) + 1.f);
+				m_pRendererCom->Add_Text(DefaultDesc);
+				// Origin
+				DefaultDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+				DefaultDesc.vPosition = _float2(m_tInfo.fX, (m_tInfo.fY - 5.f));
+				m_pRendererCom->Add_Text(DefaultDesc);
+
+				CRenderer::TEXT_DESC CurHPDesc;
+				wstring strCurHP = to_wstring(_int(m_pOwner->Get_Stat().fCurHP));
+				_float fOffsetX = (strCurHP.length() - 1) * 7.f;
+				CurHPDesc.strText = strCurHP;
+				CurHPDesc.strFontTag = L"Default_Bold";
+				CurHPDesc.vScale = { 0.25f, 0.25f };
+				// Outline
+				CurHPDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
+				CurHPDesc.vPosition = _float2((m_tInfo.fX - 5.f - fOffsetX) - 1.f, (m_tInfo.fY - 5.f));
+				m_pRendererCom->Add_Text(CurHPDesc);
+				CurHPDesc.vPosition = _float2((m_tInfo.fX - 5.f - fOffsetX) + 1.f, (m_tInfo.fY - 5.f));
+				m_pRendererCom->Add_Text(CurHPDesc);
+				CurHPDesc.vPosition = _float2((m_tInfo.fX - 5.f - fOffsetX), (m_tInfo.fY - 5.f) - 1.f);
+				m_pRendererCom->Add_Text(CurHPDesc);
+				CurHPDesc.vPosition = _float2((m_tInfo.fX - 5.f - fOffsetX), (m_tInfo.fY - 5.f) + 1.f);
+				m_pRendererCom->Add_Text(CurHPDesc);
+				// Origin
+				CurHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+				CurHPDesc.vPosition = _float2((m_tInfo.fX - 5.f - fOffsetX), (m_tInfo.fY - 5.f));
+				m_pRendererCom->Add_Text(CurHPDesc);
+	
+				CRenderer::TEXT_DESC MaxHPDesc;
+				wstring strMaxHP = to_wstring(_int(m_pOwner->Get_Stat().fMaxHP));
+				MaxHPDesc.strText = strMaxHP;
+				MaxHPDesc.strFontTag = L"Default_Bold";
+				MaxHPDesc.vScale = { 0.25f, 0.25f };
+				// Outline
+				MaxHPDesc.vColor = { 0.f, 0.f, 0.f, 1.f };
+				MaxHPDesc.vPosition = _float2((m_tInfo.fX + 5.f) - 1.f, (m_tInfo.fY - 5.f));
+				m_pRendererCom->Add_Text(MaxHPDesc);
+				MaxHPDesc.vPosition = _float2((m_tInfo.fX + 5.f) + 1.f, (m_tInfo.fY - 5.f));
+				m_pRendererCom->Add_Text(MaxHPDesc);
+				MaxHPDesc.vPosition = _float2((m_tInfo.fX + 5.f), (m_tInfo.fY - 5.f) - 1.f);
+				m_pRendererCom->Add_Text(MaxHPDesc);
+				MaxHPDesc.vPosition = _float2((m_tInfo.fX + 5.f), (m_tInfo.fY - 5.f) + 1.f);
+				m_pRendererCom->Add_Text(MaxHPDesc);
+				// Origin
+				MaxHPDesc.vColor = { 1.f, 1.f, 1.f, 1.f };
+				MaxHPDesc.vPosition = _float2((m_tInfo.fX + 5.f),( m_tInfo.fY - 5.f));
+				m_pRendererCom->Add_Text(MaxHPDesc);
+			}
+		}
 
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
 	}
@@ -137,6 +212,5 @@ void CUI_Minigame_EnemyHP::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pBar);
 	Safe_Release(m_pTextureCom);
 }

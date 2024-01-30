@@ -61,11 +61,11 @@ HRESULT CMainApp::Initialize()
 
 	// Set Start Level and Character
 	{
-		g_eStartLevel = LEVELID::LEVEL_TOOL; /* 시작할 레벨 타입 */
+		g_eStartLevel = LEVELID::LEVEL_LOGO; /* 시작할 레벨 타입 */
 
 		g_eLoadCharacter = LOAD_CHARACTER_TYPE::ALL_CH; /* 모델 로드할 캐릭터 타입 */
 
-		g_ePlayCharacter = LOAD_CHARACTER_TYPE::DESTROYER_CH; /* 게임 플레이 캐릭터 타입 */
+		g_ePlayCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH; /* 게임 플레이 캐릭터 타입 */
 	}
 
 	// Open Level
@@ -1294,6 +1294,10 @@ HRESULT CMainApp::Ready_UI_TextureComponent()
 
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_WeaponSection_Recommend"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/SkillSection/UI_Recommend_Arrow.png")))))
+		return E_FAIL;
+
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Inventory_Etc_Slots"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/GamePlay/Tab/Tab_Inventory/UI_Item_Slot_Etc_%d.png"), 5))))
 		return E_FAIL;
 
 	return S_OK;

@@ -154,6 +154,7 @@
 
 #include "Vehicle_Udadak.h"
 #include "Vehicle_Flying_Biplane.h"
+#include "Vehicle_Flying_EnemyBiplane.h"
 #include "Swordsman_Biplane_Bullet.h"
 #include "Grandprix_Engineer.h"
 
@@ -637,9 +638,9 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 
 		if (g_eLoadCharacter == LOAD_CHARACTER_TYPE::ALL_CH || g_eLoadCharacter == LOAD_CHARACTER_TYPE::ENGINEER_CH)
 		{
-//			if (GI->Add_Prototype(TEXT("Prototype_GameObject_Grandprix_Engineer"),
-//				CGrandprix_Engineer::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
-//				return E_FAIL;
+			if (GI->Add_Prototype(TEXT("Prototype_GameObject_Grandprix_Engineer"),
+				CGrandprix_Engineer::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
+				return E_FAIL;
 		}
 
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Common_LensFlare"),
@@ -652,6 +653,9 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 			return E_FAIL;
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Vehicle_Biplane"),
 			CVehicle_Flying_Biplane::Create(m_pDevice, m_pContext, TEXT("Vehicle_Biplane")), LAYER_TYPE::LAYER_CHARACTER))
+			return E_FAIL;
+		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Vehicle_EnemyBiplane"),
+			CVehicle_Flying_EnemyBiplane::Create(m_pDevice, m_pContext, TEXT("Vehicle_EnemyBiplane")), LAYER_TYPE::LAYER_CHARACTER))
 			return E_FAIL;
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Swordsman_Biplane_Bullet"),
 			CSwordsman_Biplane_Bullet::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))

@@ -3,6 +3,8 @@
 #include "GameInstance.h"
 #include "Transform.h"
 
+#include "Riding_Manager.h"
+
 #include "UI_Manager.h"
 
 #include "UI_Minigame_Basic.h"
@@ -15,6 +17,8 @@
 #include "UI_Minigame_GaugeBar.h"
 
 #include "UI_Minigame_CurlingGauge.h"
+
+#include "UI_Minigame_WorldHP.h"
 
 IMPLEMENT_SINGLETON(CUIMinigame_Manager)
 
@@ -356,7 +360,9 @@ void CUIMinigame_Manager::OnOff_Grandprix(_bool bOnOff)
 void CUIMinigame_Manager::Start_Grandprix()
 {
 	m_bCountStart = true;
+
 	CUI_Manager::GetInstance()->OnOff_GamePlaySetting_ExceptInfo(false);
+	CRiding_Manager::GetInstance()->Ready_Grandprix_EnemyInfo();
 }
 
 void CUIMinigame_Manager::End_Grandprix()
@@ -538,6 +544,11 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_Evermore()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_BiplaneIcon"),
 		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_BIPLANE), LAYER_UI)))
+		return E_FAIL;
+
+	// 매니저 내에서는 프로토타입만 생성함
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Enemy_WorldHP"),
+		CUI_Minigame_WorldHP::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
 	return S_OK;

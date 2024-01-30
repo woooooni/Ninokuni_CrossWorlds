@@ -26,7 +26,8 @@ HRESULT CState_VehicleFlying_Run::Initialize(const list<wstring>& AnimationList)
 
 void CState_VehicleFlying_Run::Enter_State(void* pArg)
 {
-    m_pModelCom->Set_Animation(m_AnimIndices[0]);
+	m_iCurrAnimIndex = m_AnimIndices[0];
+	m_pModelCom->Set_Animation(m_iCurrAnimIndex);
 }
 
 void CState_VehicleFlying_Run::Tick_State(_float fTimeDelta)

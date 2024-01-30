@@ -3,10 +3,13 @@
 #include "Riding_Manager.h"
 
 #include "UI_Manager.h"
+#include "UIMinigame_Manager.h"
 #include "Character.h"
 
 #include "Vehicle_Udadak.h"
 #include "Vehicle_Flying_Biplane.h"
+#include "Vehicle_Flying_EnemyBiplane.h"
+
 #include "Grandprix_Engineer.h"
 
 IMPLEMENT_SINGLETON(CRiding_Manager)
@@ -61,22 +64,30 @@ HRESULT CRiding_Manager::Ready_Vehicle_GameObject(LEVELID eID)
 	Safe_AddRef(m_pBiplane);
 
 	CGameObject* pEnemyplane = nullptr;
-	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Vehicle_Biplane"), &UdadakDesc, &pEnemyplane)))
+	if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Vehicle_EnemyBiplane"), &UdadakDesc, &pEnemyplane)))
 		return E_FAIL;
 	if (nullptr == pEnemyplane)
 		return E_FAIL;
-	if (nullptr == dynamic_cast<CVehicle_Flying_Biplane*>(pEnemyplane))
+	if (nullptr == dynamic_cast<CVehicle_Flying_EnemyBiplane*>(pEnemyplane))
 		return E_FAIL;
-	m_pEnemyPlane = dynamic_cast<CVehicle_Flying_Biplane*>(pEnemyplane);
+	m_pEnemyPlane = dynamic_cast<CVehicle_Flying_EnemyBiplane*>(pEnemyplane);
 	Safe_AddRef(m_pEnemyPlane);
-	//m_pEnemyPlane->Set_Aboard(true);
-	//m_pEnemyPlane->Ride(nullptr);
 	
 	// 모든 캐릭터를 로드한 경우에만 엔지니어를 만들 수 있다.
-	if (g_eLoadCharacter == LOAD_CHARACTER_TYPE::ALL_CH)
+	if (g_eLoadCharacter == LOAD_CHARACTER_TYPE::ALL_CH || g_eLoadCharacter == LOAD_CHARACTER_TYPE::ENGINEER_CH)
 	{
-
+		CGameObject* pEnemyEngineer = nullptr;
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Grandprix_Engineer"), nullptr, &pEnemyEngineer)))
+			return E_FAIL;
+		if (nullptr == pEnemyEngineer)
+			return E_FAIL;
+		if (nullptr == dynamic_cast<CGrandprix_Engineer*>(pEnemyEngineer))
+			return E_FAIL;
+		m_pEngineer = dynamic_cast<CGrandprix_Engineer*>(pEnemyEngineer);
+		Safe_AddRef(m_pEngineer);
 	}
+
+	Ready_Grandprix();
 
 	return S_OK;
 }
@@ -104,6 +115,15 @@ HRESULT CRiding_Manager::Ready_Vehicle_GameObjectToLayer(LEVELID eID)
 		Safe_AddRef(m_pEnemyPlane);
 		//m_pEnemyPlane->Set_Aboard(true);
 		//m_pEnemyPlane->Ride(nullptr);
+
+		if (g_eLoadCharacter == LOAD_CHARACTER_TYPE::ALL_CH || g_eLoadCharacter == LOAD_CHARACTER_TYPE::ENGINEER_CH)
+		{
+			if (nullptr == m_pEngineer)
+				return E_FAIL;
+			if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, m_pEngineer)))
+				return E_FAIL;
+			Safe_AddRef(m_pEngineer);
+		}
 	}
 
 	return S_OK;
@@ -143,14 +163,6 @@ HRESULT CRiding_Manager::Ride_ForCharacter(VEHICLE_TYPE eType, _bool bOnOff)
 	case BIPLANE:
 		if (LEVELID::LEVEL_EVERMORE == GI->Get_CurrentLevel())
 		{
-//			pBiplaneTemp = GI->Find_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Vehicle_Biplane"));
-//			if (nullptr == pBiplaneTemp)
-//				return E_FAIL;
-//			if (nullptr == dynamic_cast<CVehicle_Flying_Biplane*>(pBiplaneTemp))
-//				return E_FAIL;
-//
-//			pBiplane = dynamic_cast<CVehicle_Flying_Biplane*>(pBiplaneTemp);
-
 			if (nullptr == m_pBiplane)
 				return E_FAIL;
 
@@ -178,6 +190,35 @@ HRESULT CRiding_Manager::Ride_ForCharacter(VEHICLE_TYPE eType, _bool bOnOff)
 	}
 
 	return S_OK;
+}
+
+HRESULT CRiding_Manager::Ready_Grandprix()
+{
+	if (g_eLoadCharacter == LOAD_CHARACTER_TYPE::ALL_CH || g_eLoadCharacter == LOAD_CHARACTER_TYPE::ENGINEER_CH)
+	{
+		if (nullptr != m_pEnemyPlane)
+		{
+			m_pEnemyPlane->Set_Aboard(true);
+			m_pEnemyPlane->Ride(m_pEngineer);
+		}
+	}
+
+	return S_OK;
+}
+
+HRESULT CRiding_Manager::Ready_Grandprix_EnemyInfo()
+{
+	CUIMinigame_Manager::GetInstance()->Set_HPOwner(m_pEnemyPlane, CUIMinigame_Manager::GRANDPRIX_ENEMY::ENGINEER);
+
+	return S_OK;
+}
+
+void CRiding_Manager::Tick_Grandprix(_float fTimeDelta)
+{
+}
+
+void CRiding_Manager::LateTick_Grandprix(_float fTimeDelta)
+{
 }
 
 void CRiding_Manager::Free()

@@ -1,27 +1,14 @@
 #pragma once
 
-#include "Vehicle.h"
+#include "Vehicle_Flying.h"
 
 BEGIN(Client)
-class CVehicle_Flying abstract : public CVehicle
+class CVehicle_Flying_EnemyBiplane final : public CVehicle_Flying
 {
-public:
-	typedef struct tagGrandprixEnemyDesc
-	{
-		_bool bIsEnemy = false;
-
-		_float fMaxHP = 100000.f;
-		_float fCurHP = 100000.f;
-	
-	} ENEMY_STAT;
-
 protected:
-	CVehicle_Flying(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
-	CVehicle_Flying(const CVehicle_Flying& rhs);
-	virtual ~CVehicle_Flying() = default;
-
-public:
-	const ENEMY_STAT& Get_Stat() { return m_eStat; }
+	CVehicle_Flying_EnemyBiplane(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	CVehicle_Flying_EnemyBiplane(const CVehicle_Flying_EnemyBiplane& rhs);
+	virtual ~CVehicle_Flying_EnemyBiplane() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -42,15 +29,21 @@ public:
 	virtual void Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo) override;
 	virtual void Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo) override;
 
-protected:
+private:
 	virtual HRESULT Ready_Components();
 	virtual HRESULT	Ready_Colliders();
 	virtual HRESULT Ready_States();
 
-protected:
-	ENEMY_STAT m_eStat;
+private:
+	void Update_RiderState();
+
+private:
+	class CUI_Minigame_WorldHP* m_pHP = { nullptr };
+	_bool m_bUseRigidbody = { true };
 
 public:
+	static CVehicle_Flying_EnemyBiplane* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	virtual CGameObject* Clone(void* pArg) override;
 	virtual void Free() override;
 };
 END

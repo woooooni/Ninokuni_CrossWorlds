@@ -32,6 +32,9 @@ void CUI_Minigame_EnemyInfo::Set_Owner(CGameObject* pOwner)
 {
 	m_pOwner = pOwner;
 
+	// m_pHP에도 Owner의 정보를 전달한다.
+	if (nullptr != m_pHP)
+		m_pHP->Set_Owner(pOwner);
 }
 
 void CUI_Minigame_EnemyInfo::Set_Active(_bool bActive)

@@ -1,9 +1,18 @@
 #pragma once
-#include "Character.h"
+
+#include "Grandprix_Enemy.h"
 
 BEGIN(Client)
-class CGrandprix_Engineer final : public CCharacter
+class CGrandprix_Engineer final : public CGrandprix_Enemy
 {
+public:
+	typedef struct tagEnemyDesc
+	{
+		_float fMaxHP = 100000.f;
+		_float fCurHP = 100000.f;
+
+	} ENEMY_STAT;
+
 private:
 	CGrandprix_Engineer(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	CGrandprix_Engineer(const CGrandprix_Engineer& rhs);
@@ -27,6 +36,9 @@ private:
 
 private:
 	_float2 Transpose_ProjectionPosition();
+
+private:
+	class CModel* m_pCharacterPartModels[PART_TYPE::PART_END] = {};
 	
 public:
 	static CGrandprix_Engineer* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
