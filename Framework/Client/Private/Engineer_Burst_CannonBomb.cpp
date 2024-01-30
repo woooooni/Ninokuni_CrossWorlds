@@ -60,7 +60,7 @@ void CEngineer_Burst_CannonBomb::Tick(_float fTimeDelta)
 			Safe_AddRef(m_pSpiralEffect);
 		}
 		else
-			GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fAccEffect, CUtils::Random_Float(0.1f, 0.3f), fTimeDelta, TEXT("Particle_SparkCircle_Big"), this);
+			GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fAccEffect, CUtils::Random_Float(0.25f, 0.5f), fTimeDelta, TEXT("Particle_SparkCircle_Big"), this);
 		
 		return;
 	}
