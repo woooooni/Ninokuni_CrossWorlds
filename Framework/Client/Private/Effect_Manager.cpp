@@ -724,6 +724,10 @@ HRESULT CEffect_Manager::Ready_Proto_Vfx_Player()
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Engineer_Skill_Destruction_Cannon"),
 			CVfx_Engineer_Skill_Destruction_Cannon::Create(m_pDevice, m_pContext, TEXT("Engineer_Skill_Destruction_Cannon")), LAYER_TYPE::LAYER_EFFECT)))
 			return E_FAIL;
+		// Prototype_Vfx_Engineer_Skill_Destruction_Boom
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Engineer_Skill_Destruction_Boom"),
+			CVfx_Engineer_Skill_Destruction_Boom::Create(m_pDevice, m_pContext, TEXT("Engineer_Skill_Destruction_Boom")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
 
 		// Prototype_Vfx_Engineer_Skill_HealingTree
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Engineer_Skill_HealingTree"),

@@ -3,7 +3,6 @@
 
 #include "Particle_Manager.h"
 #include "Effect_Manager.h"
-#include "Character.h"
 
 CVfx_Engineer_Skill_ExplosionShot_Boom::CVfx_Engineer_Skill_ExplosionShot_Boom(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
@@ -25,40 +24,43 @@ HRESULT CVfx_Engineer_Skill_ExplosionShot_Boom::Initialize_Prototype()
 
 	// Æã
 	{
-		// Çª¸¥ ¿ø µ¥Ä®
-		m_pFrameTriger[TYPE_ET2_D_CIRCLE] = 34;
-		m_pPositionOffset[TYPE_ET2_D_CIRCLE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_D_CIRCLE]    = _float3(5.f, 5.f, 5.f);
-		m_pRotationOffset[TYPE_ET2_D_CIRCLE] = _float3(0.f, 0.f, 0.f);
+		m_pFrameTriger[TYPE_ET2_D_CRACK] = 0;
+		m_pPositionOffset[TYPE_ET2_D_CRACK] = _float3(0.f, 0.f, 0.f);
+		m_pScaleOffset[TYPE_ET2_D_CRACK]    = _float3(8.f, 3.f, 8.f);
+		m_pRotationOffset[TYPE_ET2_D_CRACK] = _float3(0.f, 0.f, 0.f);
 
-		// ºÓÀº ¿ø ÀÌÆåÆ®
-		m_pFrameTriger[TYPE_ET2_P_DOME] = 34;
-		m_pPositionOffset[TYPE_ET2_P_DOME] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_P_DOME]    = _float3(5.f, 5.f, 5.f);
-		m_pRotationOffset[TYPE_ET2_P_DOME] = _float3(0.f, 0.f, 0.f);
+		m_pFrameTriger[TYPE_ET2_P_FIRE_BIG] = 0;
+		m_pPositionOffset[TYPE_ET2_P_FIRE_BIG] = _float3(0.f, 1.f, 0.f);
+		m_pScaleOffset[TYPE_ET2_P_FIRE_BIG]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_ET2_P_FIRE_BIG] = _float3(0.f, 0.f, 0.f);
 
-		// Æø¹ß ºÒ²É ÆÄÆ¼Å¬
-		m_pFrameTriger[TYPE_ET2_P_FIRE] = 34;
-		m_pPositionOffset[TYPE_ET2_P_FIRE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_P_FIRE]    = _float3(5.f, 5.f, 5.f);
-		m_pRotationOffset[TYPE_ET2_P_FIRE] = _float3(0.f, 0.f, 0.f);
+		m_pFrameTriger[TYPE_ET2_P_FIRE_SMALL] = 0;
+		m_pPositionOffset[TYPE_ET2_P_FIRE_SMALL] = _float3(0.f, 0.f, 0.f);
+		m_pScaleOffset[TYPE_ET2_P_FIRE_SMALL]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_ET2_P_FIRE_SMALL] = _float3(0.f, 0.f, 0.f);
+	}
 
-		// È¸¿À¸® ÀÌÆåÆ®
-		m_pFrameTriger[TYPE_ET2_E_CIRCLELINE] = 34;
-		m_pPositionOffset[TYPE_ET2_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_E_CIRCLELINE]    = _float3(5.f, 5.f, 5.f);
+	{
+		m_pFrameTriger[TYPE_ET2_E_CIRCLELINE] = 0;
+		m_pPositionOffset[TYPE_ET2_E_CIRCLELINE] = _float3(0.f, 0.5f, 0.f);
+		m_pScaleOffset[TYPE_ET2_E_CIRCLELINE]    = _float3(0.2f, 0.2f, 0.2f);
 		m_pRotationOffset[TYPE_ET2_E_CIRCLELINE] = _float3(0.f, 0.f, 0.f);
 
-		// ÀÛÀº ¹ÝÂ¦ÀÌ ÆÄÆ¼Å¬
-		m_pFrameTriger[TYPE_ET2_P_CIRCLES] = 34;
+
+		m_pFrameTriger[TYPE_ET2_P_CIRCLES] = 0;
 		m_pPositionOffset[TYPE_ET2_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_P_CIRCLES]    = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET2_P_CIRCLES]    = _float3(1.f, 1.f, 1.f);
 		m_pRotationOffset[TYPE_ET2_P_CIRCLES] = _float3(0.f, 0.f, 0.f);
 
-		// ¿¬±â ÆÄÆ¼Å¬
-		m_pFrameTriger[TYPE_ET2_P_SMOKE] = 34;
+		m_pFrameTriger[TYPE_ET2_P_STONE] = 0;
+		m_pPositionOffset[TYPE_ET2_P_STONE] = _float3(0.f, 0.f, 0.f);
+		m_pScaleOffset[TYPE_ET2_P_STONE]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_ET2_P_STONE] = _float3(0.f, 0.f, 0.f);
+
+
+		m_pFrameTriger[TYPE_ET2_P_SMOKE] = 0;
 		m_pPositionOffset[TYPE_ET2_P_SMOKE] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_P_SMOKE]    = _float3(5.f, 5.f, 5.f);
+		m_pScaleOffset[TYPE_ET2_P_SMOKE]    = _float3(1.f, 1.f, 1.f);
 		m_pRotationOffset[TYPE_ET2_P_SMOKE] = _float3(0.f, 0.f, 0.f);
 	}
 
@@ -72,7 +74,53 @@ HRESULT CVfx_Engineer_Skill_ExplosionShot_Boom::Initialize(void* pArg)
 
 void CVfx_Engineer_Skill_ExplosionShot_Boom::Tick(_float fTimeDelta)
 {
+	if (m_iCount == TYPE_ET2_D_CRACK && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_D_CRACK])
+	{
+		m_WorldMatrix = m_pOwnerObject->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_WorldFloat4x4();
+		GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Engineer_Skill_ExplosionShot_Boom_Crack"),
+			XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_D_CRACK], m_pScaleOffset[TYPE_ET2_D_CRACK], m_pRotationOffset[TYPE_ET2_D_CRACK]);
+		m_iCount++;
+	}
+	else if (m_iCount == TYPE_ET2_P_FIRE_BIG && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_FIRE_BIG])
+	{
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Engineer_Skill_ExplosionShot_Boom_Fire_Big"),
+			XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_FIRE_BIG], m_pScaleOffset[TYPE_ET2_P_FIRE_BIG], m_pRotationOffset[TYPE_ET2_P_FIRE_BIG]);
+		m_iCount++;
+	}
+	else if (m_iCount == TYPE_ET2_P_FIRE_SMALL && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_FIRE_SMALL])
+	{
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Engineer_Skill_ExplosionShot_Boom_Fire_Small"),
+			XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_FIRE_SMALL], m_pScaleOffset[TYPE_ET2_P_FIRE_SMALL], m_pRotationOffset[TYPE_ET2_P_FIRE_SMALL]);
+		m_iCount++;
+	}
 
+	else if (m_iCount == TYPE_ET2_E_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_E_CIRCLELINE])
+	{
+		GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Engineer_Skill_ExplosionShot_Boom_CircleLine_Big"),
+			XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_E_CIRCLELINE], m_pScaleOffset[TYPE_ET2_E_CIRCLELINE], m_pRotationOffset[TYPE_ET2_E_CIRCLELINE]);
+		m_iCount++;
+	}
+	else if (m_iCount == TYPE_ET2_P_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_CIRCLES])
+	{
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Engineer_Skill_ExplosionShot_Boom_Circles"),
+			XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_CIRCLES], m_pScaleOffset[TYPE_ET2_P_CIRCLES], m_pRotationOffset[TYPE_ET2_P_CIRCLES]);
+		m_iCount++;
+	}
+	else if (m_iCount == TYPE_ET2_P_STONE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_STONE])
+	{
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Engineer_Skill_ExplosionShot_Boom_Stone"),
+			XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_STONE], m_pScaleOffset[TYPE_ET2_P_STONE], m_pRotationOffset[TYPE_ET2_P_STONE]);
+		m_iCount++;
+	}
+	else if (m_iCount == TYPE_ET2_P_SMOKE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_SMOKE])
+	{
+		//GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT(""),
+		//	XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_SMOKE], m_pScaleOffset[TYPE_ET2_P_SMOKE], m_pRotationOffset[TYPE_ET2_P_SMOKE]);
+		m_iCount++;
+	}
+
+	else if (m_iCount == TYPE_END)
+		Set_Dead(true);
 }
 
 void CVfx_Engineer_Skill_ExplosionShot_Boom::LateTick(_float fTimeDelta)

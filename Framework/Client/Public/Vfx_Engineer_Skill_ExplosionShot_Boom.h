@@ -12,11 +12,14 @@ class CVfx_Engineer_Skill_ExplosionShot_Boom final : public CVfx
 {
 private:
 	enum TYPE {
-		TYPE_ET2_D_CIRCLE,
-		TYPE_ET2_P_DOME,
-		TYPE_ET2_P_FIRE,
+		TYPE_ET2_D_CRACK,
+
+		TYPE_ET2_P_FIRE_BIG,
+		TYPE_ET2_P_FIRE_SMALL,
+  
 		TYPE_ET2_E_CIRCLELINE,
 		TYPE_ET2_P_CIRCLES,
+		TYPE_ET2_P_STONE,
 		TYPE_ET2_P_SMOKE,
 
 		TYPE_END
