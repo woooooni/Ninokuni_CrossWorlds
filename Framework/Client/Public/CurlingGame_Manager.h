@@ -49,6 +49,7 @@ class CCurlingGame_Manager : public CBase
 
 		const Vec3		vStartLook = { -0.9661f, 0.f, 0.2671f };
 		const _float	vStartPosDelta = { 3.f };
+
 	}STANDARD_DESC;
 
 	typedef struct tagGuageDesc
@@ -121,8 +122,6 @@ class CCurlingGame_Manager : public CBase
 
 	typedef struct tagParticipantInfoDesc
 	{
-		_int	iOwnerType	= -1;
-
 		_uint	iNumStone	= 10;
 
 		_uint	iScore = 0;

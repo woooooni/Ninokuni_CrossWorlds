@@ -190,7 +190,7 @@ void CCurlingGame_Stone::Launch(const _float& fPower)
 	{
 		Vec4 vPos = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
 		Vec4 vDir = CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Transform()->Get_Look();
-		Vec4 vLookAt = vPos + (vDir * 5.f);
+		Vec4 vLookAt = vPos + (vDir.ZeroY().Normalized() * 5.f);
 
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos.OneW());
 		m_pTransformCom->LookAt_ForLandObject(vLookAt.OneW());

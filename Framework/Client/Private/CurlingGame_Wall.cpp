@@ -70,7 +70,7 @@ HRESULT CCurlingGame_Wall::Ready_Colliders()
 	{
 		ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
 		XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
-		OBBBox.Extents = { 3300.f, 200.f, 100.f };
+		OBBBox.Extents = { 3300.f, 300.f, 100.f };
 	}
 
 	CCollider_OBB::OBB_COLLIDER_DESC OBBDesc;
@@ -79,7 +79,7 @@ HRESULT CCurlingGame_Wall::Ready_Colliders()
 		OBBDesc.tBox = OBBBox;
 		OBBDesc.pNode = nullptr;
 		OBBDesc.pOwnerTransform = m_pTransformCom;
-		OBBDesc.vOffsetPosition = Vec3(0.f, OBBBox.Extents.y, 0.f);
+		OBBDesc.vOffsetPosition = Vec3(0.f, OBBBox.Extents.y * 0.5f, 0.f);
 		XMStoreFloat4x4(&OBBDesc.ModelPivotMatrix, XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationAxis(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(180.f)));
 	}
 

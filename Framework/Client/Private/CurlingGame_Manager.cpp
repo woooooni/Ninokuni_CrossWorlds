@@ -59,8 +59,10 @@ HRESULT CCurlingGame_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11Devic
 
 void CCurlingGame_Manager::Tick(const _float& fTimeDelta)
 {
-	if (m_bPlaying)
-		m_pManagerStateMachineCom->Tick(fTimeDelta);
+	if (!m_bReserved || !m_bPlaying)
+		return;
+
+	m_pManagerStateMachineCom->Tick(fTimeDelta);
 
 	Test(fTimeDelta);
 
@@ -72,11 +74,10 @@ void CCurlingGame_Manager::Tick(const _float& fTimeDelta)
 
 void CCurlingGame_Manager::LateTick(const _float& fTimeDelta)
 {
-	if (m_bPlaying)
-		m_pManagerStateMachineCom->LateTick(fTimeDelta);
-
-	if (!m_bPlaying)
+	if (!m_bReserved || !m_bPlaying)
 		return;
+
+	m_pManagerStateMachineCom->LateTick(fTimeDelta);
 
 	Debug();
 }
@@ -324,11 +325,6 @@ void CCurlingGame_Manager::Test(const _float& fTimeDelta)
 		{
 			m_tGuageDesc.Start();
 		}
-	}
-
-	if (KEY_TAP(KEY::Q))
-	{
-		Set_Game(!m_bPlaying);
 	}
 }
 

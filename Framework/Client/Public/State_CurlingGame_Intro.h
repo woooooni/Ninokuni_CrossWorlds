@@ -38,11 +38,11 @@ private:
 	HRESULT Ready_Stauium();
 	HRESULT Ready_UIs();
 	HRESULT Ready_Decals();
-	HRESULT Ready_Cameras();
 	HRESULT Ready_Characters();
 
 private:
-	HRESULT Set_Character_Transform();
+	HRESULT Set_CameraTransform();
+	HRESULT Set_CharacterTransform();
 
 private:
 	/* Stadium */

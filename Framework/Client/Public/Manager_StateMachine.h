@@ -31,7 +31,6 @@ private:
 	CManager_State* m_pCurState = nullptr;
 	map<_uint, CManager_State*> m_pStates;
 
-
 public:
 	static CManager_StateMachine* Create(void* pArg = nullptr);
 	virtual void Free() override;

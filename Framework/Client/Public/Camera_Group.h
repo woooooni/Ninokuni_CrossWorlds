@@ -7,3 +7,4 @@
 #include "Camera_Action.h"
 #include "Camera_Top.h"
 #include "Camera_Quater.h"
+#include "Camera_CurlingGame.h"

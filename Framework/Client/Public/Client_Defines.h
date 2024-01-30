@@ -116,6 +116,7 @@ namespace Client
 		ACTION, 
 		TOP, 
 		QUATER, 
+		CAMERA_CURLING,
 		CAMERA_TYPE_END 
 	};
 
@@ -129,7 +130,8 @@ namespace Client
 		"Camera_CutScene_Boss", 
 		"Camera_Action", 
 		"Camera_Top", 
-		"Camera_Quater" 
+		"Camera_Quater",
+		"Camera_CurlingGame"
 	};
 	
 	const wstring CameraWstringNames[CAMERA_TYPE::CAMERA_TYPE_END]
@@ -140,7 +142,8 @@ namespace Client
 		L"Camera_CutScene_Boss", 
 		L"Camera_Action",
 		L"Camera_Top",
-		L"Camera_Quater"
+		L"Camera_Quater",
+		L"Camera_CurlingGame"
 	};
 
 	static const _float Cam_Follow_Limit_Min_Y = 1.1f;
@@ -148,7 +151,6 @@ namespace Client
 
 	static const _float Cam_Dist_Follow_Default					= 4.5f;
 	static const _float Cam_Dist_Follow_Wide					= 5.5f;
-	static const _float Cam_Dist_CurlingGame_Default			= 5.5f;
 
 	static const _float Cam_Dist_Quater_Min						= 15.f;
 	static const _float Cam_Dist_Quater_Default					= 30.f;
@@ -166,6 +168,7 @@ namespace Client
 	static const _float Cam_Fov_CutScene_Boss_Default		= XMConvertToRadians(70.0f);
 	static const _float Cam_Fov_Top_Glanix					= XMConvertToRadians(75.0f);
 	static const _float Cam_Fov_Quater_Default				= XMConvertToRadians(70.f);
+	static const _float Cam_Fov_CrulingGame					= XMConvertToRadians(50.0f);
 
 	static const Vec4	Cam_TargetOffset_Follow_SholderView_Default		= { 0.7f, 1.3f, 0.f, 1.f };
 	static const Vec4	Cam_LookAtOffset_Follow_SholderView_Default		= { 0.7f, 1.3f, 0.f, 1.f };
@@ -173,8 +176,8 @@ namespace Client
 	static const Vec4	Cam_TargetOffset_Follow_BackView_Default = { 0.f, 1.3f, 0.f, 1.f };
 	static const Vec4	Cam_LookAtOffset_Follow_BackView_Default = { 0.f, 1.3f, 0.f, 1.f };
 
-	static const Vec4	Cam_TargetOffset_CurlingGame_Default = { 0.f, 3.5f, 0.f, 1.f };
-	static const Vec4	Cam_LookAtOffset_CurlingGame_Default = { 0.f, 1.f, 0.f, 1.f };
+	static const Vec4	Cam_TargetOffset_CurlingGame_Default = { 0.f, 4.f, -9.5f, 1.f }; 	   // { 0.f, 4.f, -9.5f, 1.f };
+	static const Vec4	Cam_LookAtOffset_CurlingGame_Default = { 0.f, 0.f, 0.f, 1.f };		   // { 0.f, 0.f, 0.f, 1.f };	
 
 	static const Vec4	Cam_TargetOffset_Top_Glanix = { -20.f, 15.f, 0.f, 1.f };
 	static const Vec4	Cam_TargetOffset_Top_Glanix_Zoom = { -13.f, 8.f, 0.f, 1.f };

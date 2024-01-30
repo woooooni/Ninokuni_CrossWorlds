@@ -236,6 +236,7 @@
     <ClInclude Include="..\Public\Buff_Manager.h" />
     <ClInclude Include="..\Public\Building.h" />
     <ClInclude Include="..\Public\Camera_Action.h" />
+    <ClInclude Include="..\Public\Camera_CurlingGame.h" />
     <ClInclude Include="..\Public\Camera_CutScene_Boss.h" />
     <ClInclude Include="..\Public\Camera_CutScene_Map.h" />
     <ClInclude Include="..\Public\CaliaHuman.h" />
@@ -1187,6 +1188,7 @@
     <ClCompile Include="..\Private\Buff_Manager.cpp" />
     <ClCompile Include="..\Private\Building.cpp" />
     <ClCompile Include="..\Private\Camera_Action.cpp" />
+    <ClCompile Include="..\Private\Camera_CurlingGame.cpp" />
     <ClCompile Include="..\Private\Camera_CutScene_Boss.cpp" />
     <ClCompile Include="..\Private\Camera_CutScene_Map.cpp" />
     <ClCompile Include="..\Private\CaliaHuman.cpp" />
