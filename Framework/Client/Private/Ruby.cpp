@@ -7,8 +7,11 @@
 #include "UniqueNpcState_Walk.h"
 #include "UniqueNpcState_Run.h"
 #include "UniqueNpcState_Talk.h"
+#include "UniqueNpcState_Seat.h"
 
 #include "UI_World_NPCTag.h"
+
+#include "RubyCarriage.h"
 
 CRuby::CRuby(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameNpc(pDevice, pContext, strObjectTag)
@@ -52,11 +55,39 @@ HRESULT CRuby::Initialize(void* pArg)
 	m_pTag = dynamic_cast<CUI_World_NPCTag*>(pTag);
 	m_pTag->Set_Owner(this, m_strKorName, 2.f, true);
 
+	// LEVEL_TOOL or LEVEL_WITCH
+	_int iCurLevel = GI->Get_CurrentLevel();
+	list<CGameObject*>& pGameObjects = GI->Find_GameObjects(LEVEL_TOOL, LAYER_TYPE::LAYER_DYNAMIC);
+
+	for (auto& pObj : pGameObjects)
+	{
+		if (pObj->Get_ObjectTag() == TEXT("Ruby_Carriage"))
+		{
+			m_pRidingObject = pObj;
+			break;
+		}
+	}
+	
+
 	return S_OK;
 }
 
 void CRuby::Tick(_float fTimeDelta)
 {
+	if (KEY_HOLD(KEY::SHIFT) && KEY_HOLD(KEY::V))
+	{
+		// TEST
+		if (nullptr != m_pRidingObject)
+		{
+			CRubyCarriage* pRubyCarriage = static_cast<CRubyCarriage*>(m_pRidingObject);
+			pRubyCarriage->Set_TakeTheCarriage(true);
+
+			_bool bTakeCarriage = pRubyCarriage->TakeTheCarriage();
+			if (true == bTakeCarriage)
+				m_pStateCom->Change_State(NPC_STATE::NPC_UNIQUENPC_SEAT);
+		}
+	}
+
 	__super::Tick(fTimeDelta);
 
 	if (nullptr != m_pTag)
@@ -110,20 +141,53 @@ HRESULT CRuby::Ready_States()
 	list<wstring> strAnimationName;
 
 	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Ruby.ao|Ruby_BattleRun");
+	m_pStateCom->Add_State(NPC_UNIQUENPC_RUN, CUniqueNpcState_Run::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Ruby.ao|Ruby_BattleWalk");
+	m_pStateCom->Add_State(NPC_UNIQUENPC_WALK, CUniqueNpcState_Walk::Create(m_pStateCom, strAnimationName));
+
+	//strAnimationName.clear();
+	//strAnimationName.push_back(L"SKM_Ruby.ao|Ruby_Damage");
+	//m_pStateCom->Add_State(NPC_UNIQUENPC_WALK, CUniqueNpcState_Walk::Create(m_pStateCom, strAnimationName));
+
+	//strAnimationName.clear();
+	//strAnimationName.push_back(L"SKM_Ruby.ao|Ruby_Death");
+	//m_pStateCom->Add_State(NPC_IDLE, CNpcState_Idle::Create(m_pStateCom, strAnimationName));
+
+	//strAnimationName.clear();
+	//strAnimationName.push_back(L"SKM_Ruby.ao|Ruby_Hello");
+	//m_pStateCom->Add_State(NPC_IDLE, CNpcState_Idle::Create(m_pStateCom, strAnimationName));
+
+	//strAnimationName.clear();
+	//strAnimationName.push_back(L"SKM_Ruby.ao|Ruby_Idle01");
+	//m_pStateCom->Add_State(NPC_IDLE, CNpcState_Idle::Create(m_pStateCom, strAnimationName));
+
+	//strAnimationName.clear();
+	//strAnimationName.push_back(L"SKM_Ruby.ao|Ruby_Idle02");
+	//m_pStateCom->Add_State(NPC_IDLE, CNpcState_Idle::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Ruby.ao|Ruby_NeutralStand");
 	m_pStateCom->Add_State(NPC_IDLE, CNpcState_Idle::Create(m_pStateCom, strAnimationName));
+
+	//strAnimationName.clear();
+	//strAnimationName.push_back(L"SKM_Ruby.ao|Ruby_Stun");
+	//m_pStateCom->Add_State(NPC_IDLE, CNpcState_Idle::Create(m_pStateCom, strAnimationName));
 
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Ruby.ao|Ruby_Talk");
 	m_pStateCom->Add_State(NPC_UNIQUENPC_TALK, CUniqueNpcState_Talk::Create(m_pStateCom, strAnimationName));
 
-	strAnimationName.clear();
-	strAnimationName.push_back(L"SKM_Ruby.ao|Ruby_NeutralWalk");
-	m_pStateCom->Add_State(NPC_UNIQUENPC_WALK, CUniqueNpcState_Walk::Create(m_pStateCom, strAnimationName));
+	//strAnimationName.clear();
+	//strAnimationName.push_back(L"SKM_Ruby.ao|Ruby_Attack01");
+	//m_pStateCom->Add_State(NPC_UNIQUENPC_SEAT, CUniqueNpcState_Seat::Create(m_pStateCom, strAnimationName));
 
 	strAnimationName.clear();
-	strAnimationName.push_back(L"SKM_Ruby.ao|Ruby_NeutralRun");
-	m_pStateCom->Add_State(NPC_UNIQUENPC_RUN, CUniqueNpcState_Run::Create(m_pStateCom, strAnimationName));
+	strAnimationName.push_back(L"SKM_Ruby.ao|Ruby_Seat");
+	m_pStateCom->Add_State(NPC_UNIQUENPC_SEAT, CUniqueNpcState_Seat::Create(m_pStateCom, strAnimationName));
+
 
 	m_pStateCom->Change_State(NPC_IDLE);
 

@@ -343,7 +343,7 @@ HRESULT CLevel_IceLand::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 		return E_FAIL;
 
 
-	TriggerDesc.eTriggerType = TRIGGER_TYPE::TRIGER_WHALE_ENTER;
+	TriggerDesc.eTriggerType = TRIGGER_TYPE::TRIGGER_WHALE_ENTER;
 	TriggerDesc.vStartPosition = { -23.680f, -0.2f, 30.443f, 1.f };
 	TriggerDesc.vExtents = { 15.0f, 15.0f, 15.0f };
 

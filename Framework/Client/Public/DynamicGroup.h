@@ -17,5 +17,6 @@
 #include "Whale.h"
 #include "WelshCorgi.h"
 #include "WitchWood.h"
+#include "RubyCarriage.h"
 // MiniGameMap
 

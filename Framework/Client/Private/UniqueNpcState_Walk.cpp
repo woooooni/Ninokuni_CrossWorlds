@@ -27,6 +27,28 @@ void CUniqueNpcState_Walk::Enter_State(void* pArg)
 void CUniqueNpcState_Walk::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
+
+	_float4 vPos;
+	_float4 vDestPos;
+
+	XMStoreFloat4(&vPos, m_pTransformCom->Get_Position());
+	XMStoreFloat4(&vDestPos, m_pNpc->Get_RoamingIndex(m_pNpc->Get_CurRoamingIndex()));
+
+
+	//if (m_bIsMove)
+	//{
+	m_pTransformCom->LookAt_ForLandObject(m_pNpc->Get_RoamingIndex(m_pNpc->Get_CurRoamingIndex()));
+	m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_pNpc->Get_Stat()->fSpeed, fTimeDelta);
+
+	if (vPos.x >= vDestPos.x - 0.1f && vPos.x <= vDestPos.x + 0.1f &&
+		vPos.z >= vDestPos.z - 0.1f && vPos.z <= vDestPos.z + 0.1f)
+	{
+		m_pNpc->Set_CurRoamingIndex(m_pNpc->Get_CurRoamingIndex() + 1);
+		if (m_pNpc->Get_CurRoamingIndex() == m_pNpc->Get_RoamingArea()->size())
+			m_pNpc->Set_CurRoamingIndex(0);
+
+		//m_bIsMove = false;
+	}
 }
 
 void CUniqueNpcState_Walk::Exit_State()

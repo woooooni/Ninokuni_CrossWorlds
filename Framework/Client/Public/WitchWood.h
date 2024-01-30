@@ -32,11 +32,15 @@ public:
 	virtual void Collision_Exit(const COLLISION_INFO& tInfo) override;
 
 public:
+	const _bool& IsClose() const { return m_bClose; }
+	void Set_Close(_bool close) { m_bClose = close; }
+
+public:
 	virtual HRESULT Ready_Components() override;
 	HRESULT Ready_State();
 private:
 	ANIMODEL_INSTANCE_DESC m_AnimInstanceDesc = {};
-
+	_bool m_bClose = false;
 public:
 	static CWitchWood* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eObjType);
 	virtual CGameObject* Clone(void* pArg);

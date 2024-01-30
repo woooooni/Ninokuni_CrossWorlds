@@ -173,13 +173,13 @@ void CTransform::Rotation_Acc(_fvector vAxis, _float fRadian)
 
 void CTransform::LookAt(_vector vAt)
 {
-	Vec4		vLook = vAt - Get_State(CTransform::STATE_POSITION);
+	Vec3		vLook = vAt - Get_State(CTransform::STATE_POSITION);
 	vLook.Normalize();
 	
-	Vec4		vRight = XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vLook);
+	Vec3		vRight = XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vLook);
 	vRight.Normalize();
 
-	Vec4		vUp = XMVector3Cross(vLook, vRight);
+	Vec3		vUp = XMVector3Cross(vLook, vRight);
 	vUp.Normalize();
 
 	_float3		vScale = Get_Scale();

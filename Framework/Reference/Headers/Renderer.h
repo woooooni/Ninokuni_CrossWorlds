@@ -368,20 +368,6 @@ private:
 
 	HRESULT InitializeScreenQuad();
 	HRESULT RenderScreenQuad();
-
-private: // Cascade
-#define CASCADE_SHADOW_MAP_NUM 3
-#define MAX_CASCADE_NUM 8
-#define SHADOW_MAP_SIZE 2048
-
-	// 두 가지 방법 다 해보자.
-	_float m_fCascadeEnd[4] = {};
-	Matrix m_OrthoLightMatrix[CASCADE_SHADOW_MAP_NUM] = {};
-	void CascadeFrustumAndLightMatrixUpdate();
-
-	Matrix m_ArrayLightOrthoMatrix[CASCADE_SHADOW_MAP_NUM] = {};
-	void LightMatrixUpdate();
-
 private:
 	 class CTexture* m_pScreenTextureCom = nullptr;
 

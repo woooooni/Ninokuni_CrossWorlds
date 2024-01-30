@@ -847,6 +847,9 @@ HRESULT CLoader::Loading_For_Level_Tool()
 		CLensFlare::Create(m_pDevice, m_pContext, TEXT("Common_LensFlare"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX))
 		return E_FAIL;
 
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_Trigger"), CTrigger::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_PROP)))
+		return E_FAIL;
+
 	/* Prototype_GameObject_TempSword */
 	{
 		if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_TempSword"),
@@ -1354,6 +1357,11 @@ HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 		return E_FAIL;
 #pragma endregion Animals Prototype
 
+#pragma region RubyRiding
+	if (FAILED(GI->Add_Prototype(TEXT("Prorotype_GameObject_Witch_Ruby_Carriage"), CRubyCarriage::Create(m_pDevice, m_pContext, TEXT("Ruby_Carriage"), OBJ_TYPE::OBJ_DYNAMIC), LAYER_TYPE::LAYER_DYNAMIC, true)))
+		return E_FAIL;
+#pragma endregion
+
 
 #pragma region MiniMap_ProtoType
 	if(FAILED(GI->Add_Prototype(TEXT("Winter_MiniGameMap_Wall"),
@@ -1460,6 +1468,12 @@ HRESULT CLoader::Loading_Proto_Dynamic_Map_Objects(const wstring& strPath)
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Animal_Ray", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Map/Animal/Ray/", L"Animal_Ray")))
 		return E_FAIL;
 #pragma endregion Animal
+
+#pragma region Ruby Rigding
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Ruby_Carriage", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/NPC/NPC_Riding/", L"Ruby_Carriage")))
+		return E_FAIL;
+#pragma endregion
+
 
 #pragma region Water
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Everemore_Water", CModel::TYPE_NONANIM, L"../Bin/Export/AnimModel/Map/Water/", L"Ocean_Tesselation")))
