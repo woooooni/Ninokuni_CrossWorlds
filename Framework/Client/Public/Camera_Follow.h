@@ -80,6 +80,9 @@ public:
 	const CAMERA_VIEW_TYPE& Get_ViewType() const { return m_eViewType; }
 	void Set_ViewType(const CAMERA_VIEW_TYPE& eType);
 
+	void Set_MinMaxLimitY(const _float fMinY, const _float fMaxY);
+	void Reset_MinMaxLimitY();
+
 	void Set_Defualt_Setting();
 
 	virtual void Set_Active(const _bool bActive) override;
@@ -116,8 +119,8 @@ private:
 	const _float	m_fDefaultAngleY		= 1.3f ;
 
 	/* 구면 좌표계에서 카메라의 최대 최소 y 값*/
-	_float			m_fMinLimitY			= 0.2f;// 0.7f;
-	_float			m_fMaxLimitY			= 2.9f;
+	_float			m_fMinLimitY			= Cam_Follow_Limit_Min_Y;// 0.7f;
+	_float			m_fMaxLimitY			= Cam_Follow_Limit_Max_Y;
 
 	/* 회전량이 너무 많거나 적을경우 카메라가 획 도는 경우를 방지하기 위한 Limit값 */
 	_float			m_fMaxRotLimitDeltaY	= 0.05f ;

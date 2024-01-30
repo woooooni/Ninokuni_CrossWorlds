@@ -238,6 +238,7 @@
     <ClInclude Include="..\Public\Buff_Manager.h" />
     <ClInclude Include="..\Public\Building.h" />
     <ClInclude Include="..\Public\Camera_Action.h" />
+    <ClInclude Include="..\Public\Camera_CurlingGame.h" />
     <ClInclude Include="..\Public\Camera_CutScene_Boss.h" />
     <ClInclude Include="..\Public\Camera_CutScene_Map.h" />
     <ClInclude Include="..\Public\CaliaHuman.h" />
@@ -299,6 +300,14 @@
     <ClInclude Include="..\Public\Vfx_Stellia_Skill_ClawRight.h" />
     <ClInclude Include="..\Public\Vfx_Stellia_Skill_JumpStamp.h" />
     <ClInclude Include="..\Public\Vfx_Stellia_Skill_SpinTail.h" />
+    <ClInclude Include="..\Public\Manager_StateMachine.h" />
+    <ClInclude Include="..\Public\State_CurlingGame_Adjust_Intensity.h" />
+    <ClInclude Include="..\Public\State_CurlingGame_Choose_Direction.h" />
+    <ClInclude Include="..\Public\State_CurlingGame_Intro.h" />
+    <ClInclude Include="..\Public\State_CurlingGame_Base.h" />
+    <ClInclude Include="..\Public\State_CurlingGame_Launch_Stone.h" />
+    <ClInclude Include="..\Public\State_CurlingGame_Move_Character.h" />
+    <ClInclude Include="..\Public\Manager_State.h" />
     <ClInclude Include="..\Public\Winter_CurlingFloor.h" />
     <ClInclude Include="..\Public\StelliaState_AfterSpinTail.h" />
     <ClInclude Include="..\Public\StelliaState_BackStep.h" />
@@ -1205,6 +1214,7 @@
     <ClCompile Include="..\Private\Buff_Manager.cpp" />
     <ClCompile Include="..\Private\Building.cpp" />
     <ClCompile Include="..\Private\Camera_Action.cpp" />
+    <ClCompile Include="..\Private\Camera_CurlingGame.cpp" />
     <ClCompile Include="..\Private\Camera_CutScene_Boss.cpp" />
     <ClCompile Include="..\Private\Camera_CutScene_Map.cpp" />
     <ClCompile Include="..\Private\CaliaHuman.cpp" />
@@ -1265,6 +1275,14 @@
     <ClCompile Include="..\Private\Vfx_Stellia_Skill_ClawRight.cpp" />
     <ClCompile Include="..\Private\Vfx_Stellia_Skill_JumpStamp.cpp" />
     <ClCompile Include="..\Private\Vfx_Stellia_Skill_SpinTail.cpp" />
+    <ClCompile Include="..\Private\Manager_StateMachine.cpp" />
+    <ClCompile Include="..\Private\State_CurlingGame_Adjust_Intensity.cpp" />
+    <ClCompile Include="..\Private\State_CurlingGame_Choose_Direction.cpp" />
+    <ClCompile Include="..\Private\State_CurlingGame_Intro.cpp" />
+    <ClCompile Include="..\Private\State_CurlingGame_Base.cpp" />
+    <ClCompile Include="..\Private\State_CurlingGame_Launch_Stone.cpp" />
+    <ClCompile Include="..\Private\State_CurlingGame_Move_Character.cpp" />
+    <ClCompile Include="..\Private\Manager_State.cpp" />
     <ClCompile Include="..\Private\Winter_CurlingFloor.cpp" />
     <ClCompile Include="..\Private\StelliaState_AfterSpinTail.cpp" />
     <ClCompile Include="..\Private\StelliaState_BackStep.cpp" />

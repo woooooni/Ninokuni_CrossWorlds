@@ -76,7 +76,7 @@ CBTNode::NODE_STATE CSubQuestNode_NoisySnowField02::Tick(const _float& fTimeDelt
 				if (m_pNoisyMan == nullptr)
 				{
 					OBJECT_INIT_DESC NpcDesc = {};
-					NpcDesc.vStartPosition = { -112.f, -5.f, 230.f, 1.f };
+					NpcDesc.vStartPosition = { -94.f, -3.f, 218.f, 1.f };
 
 					if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, _uint(LAYER_NPC), TEXT("Prorotype_GameObject_Destroyer_Npc"), &NpcDesc, &m_pNoisyMan)))
 						MSG_BOX("Retry Add_GameObject Fail : m_pNoisyMan");

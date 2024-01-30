@@ -116,7 +116,6 @@ HRESULT CLevel_IceLand::Tick(_float fTimeDelta)
 	CUI_Manager::GetInstance()->Tick_UIs(LEVELID::LEVEL_ICELAND, fTimeDelta);
 
 	CUIMinigame_Manager::GetInstance()->Tick_Minigame(LEVELID::LEVEL_ICELAND, fTimeDelta);
-	CCurlingGame_Manager::GetInstance()->Tick(fTimeDelta);
 
 	if (KEY_TAP(KEY::PAGE_UP))
 	{
@@ -138,6 +137,10 @@ HRESULT CLevel_IceLand::Tick(_float fTimeDelta)
 		GI->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_EVERMORE, L"Evermore"));
 	}
 
+	if (KEY_TAP(KEY::Q))
+	{
+		CCurlingGame_Manager::GetInstance()->Set_Game(true);
+	}
 	return S_OK; 
 }
 
@@ -145,8 +148,6 @@ HRESULT CLevel_IceLand::LateTick(_float fTimeDelta)
 {
 	CUI_Manager::GetInstance()->LateTick_Fade(fTimeDelta);
 	CUI_Manager::GetInstance()->LateTick_GamePlayLevel(fTimeDelta);
-
-	CCurlingGame_Manager::GetInstance()->LateTick(fTimeDelta);
 
 	return S_OK;
 }

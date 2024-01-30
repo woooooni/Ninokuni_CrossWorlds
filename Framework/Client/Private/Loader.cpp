@@ -992,8 +992,8 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 	shared_ptr<CFileUtils> File = make_shared<CFileUtils>();
 	File->Open(strMapFilePath, FileMode::Read);
 
-	CCurlingGame_Manager::STADIUM_DESC* WinterStadium = CCurlingGame_Manager::GetInstance()->Get_StadiumDesc();
-	WinterStadium->pStadiumObjects.clear();
+	vector<CGameObject*>* pStadium = CCurlingGame_Manager::GetInstance()->Get_Stadium();
+	pStadium->clear();
 
 	for (_uint i = 0; i < LAYER_TYPE::LAYER_END; ++i)
 	{
@@ -1068,7 +1068,7 @@ HRESULT CLoader::Load_Map_Data(const wstring& strMapFileName)
 				pObj->Set_QuestItem(IsQuest);
 
 				if (OBJ_TYPE::OBJ_MINIGAME_STRUCTURE == pObj->Get_ObjectType())
-					WinterStadium->pStadiumObjects.push_back(pObj); 
+					pStadium->push_back(pObj);
 			}
 		}
 

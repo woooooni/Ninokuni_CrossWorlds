@@ -88,13 +88,18 @@ void CMainApp::Tick(_float fTimeDelta)
 	CUI_Manager::GetInstance()->Tick(fTimeDelta);
 	GI->Priority_Tick(fTimeDelta); /* 카메라에서 플레이어 포지션 세팅하기 위해, 틱에서만 GI를 게임매니저보다 먼저 업데이트*/
 
+	if(LEVELID::LEVEL_ICELAND == GI->Get_CurrentLevel())
+		CCurlingGame_Manager::GetInstance()->Tick(fTimeDelta);
+
 	CBuff_Manager::GetInstance()->Tick(fTimeDelta);
 	CGame_Manager::GetInstance()->Tick(fTimeDelta);
 	CTowerDefence_Manager::GetInstance()->Tick(fTimeDelta);
 	GI->Tick(fTimeDelta); 
 
 	
-	
+	if (LEVELID::LEVEL_ICELAND == GI->Get_CurrentLevel())
+		CCurlingGame_Manager::GetInstance()->LateTick(fTimeDelta);
+
 	CQuest_Manager::GetInstance()->LateTick(fTimeDelta);
 	CUI_Manager::GetInstance()->LateTick(fTimeDelta);
 	CGame_Manager::GetInstance()->LateTick(fTimeDelta);
@@ -1595,6 +1600,33 @@ HRESULT CMainApp::Ready_CameraObject()
 			tDesc.fFar = 1000.f;
 
 			pCamera = CCamera_Quater::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
+			if (nullptr == pCamera)
+				return E_FAIL;
+
+			CCamera_Manager::GetInstance()->Add_Camera(eType, pCamera);
+
+			if (FAILED(pCamera->Initialize(&tDesc)))
+			{
+				return E_FAIL;
+			}
+		}
+		pCamera->Set_Key(eType);
+		pCamera->Get_Transform()->Set_State(CTransform::STATE::STATE_POSITION, Vec4(0.f, 10.f, -10.f, 1.f));
+		pCamera->Get_Transform()->LookAt(Vec4{ 0.f, 0.f, 0.f, 1.f });
+	}
+
+	/* CurlingGame */
+	{
+		CCamera* pCamera = nullptr;
+		CAMERA_TYPE eType = CAMERA_TYPE::CAMERA_CURLING;
+		CCamera::PROJ_DESC tDesc;
+		{
+			tDesc.tLerpFov.fCurValue = Cam_Fov_Default;
+			tDesc.fAspect = (_float)g_iWinSizeX / (_float)g_iWinSizeY;
+			tDesc.fNear = 0.2f;
+			tDesc.fFar = 1000.f;
+
+			pCamera = CCamera_CurlingGame::Create(m_pDevice, m_pContext, CameraWstringNames[eType]);
 			if (nullptr == pCamera)
 				return E_FAIL;
 

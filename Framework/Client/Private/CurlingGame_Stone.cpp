@@ -18,7 +18,7 @@ CCurlingGame_Stone::CCurlingGame_Stone(ID3D11Device* pDevice, ID3D11DeviceContex
 CCurlingGame_Stone::CCurlingGame_Stone(const CCurlingGame_Stone& rhs)
 	: CCurlingGame_Prop(rhs)
 	, m_tElasticColDesc(rhs.m_tElasticColDesc)
-	, m_tHeightLerpDesc(rhs.m_tHeightLerpDesc)
+	, m_tPosLerpDesc(rhs.m_tPosLerpDesc)
 	, m_iNumCol(rhs.m_iNumCol)
 	, m_bLaunched(rhs.m_bLaunched)
 	, m_eOwnerType(rhs.m_eOwnerType)
@@ -96,15 +96,12 @@ void CCurlingGame_Stone::Tick(_float fTimeDelta)
 		m_tElasticColDesc.Clear();
 	}
 
-	/* 플레이어가 손에서 내려놓을 때 높이를 세팅해주기 위한 보간 */
-	m_tHeightLerpDesc.Update(fTimeDelta);
-	if (m_tHeightLerpDesc.bActive)
+	/* 플레이어가 손에서 내려놓을 때 포지션을 세팅해주기 위한 보간 */
+	if (m_tPosLerpDesc.bActive)
 	{
-		Vec3 vCurPos = m_pTransformCom->Get_Position();
+		m_tPosLerpDesc.Update_Lerp(fTimeDelta);
 
-		vCurPos.y = m_tHeightLerpDesc.fCurValue;
-
-		m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, XMVectorSetW(vCurPos, 1.f));
+		m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, m_tPosLerpDesc.vCurVec.OneW());
 	}
 
 	__super::Tick(fTimeDelta);
@@ -113,6 +110,9 @@ void CCurlingGame_Stone::Tick(_float fTimeDelta)
 	if (!m_pRigidBodyCom->Is_Sleep())
 	{
 		m_bMoving = m_pRigidBodyCom->Check_Sleep();
+
+		// const _float fRotateSpeed = Vec3(m_pRigidBodyCom->Get_Velocity()).Length() * m_fRotateSpeed * fTimeDelta;
+		// m_pTransformCom->Rotation(Vec3::Up, fRotateSpeed);
 	}
 }
 
@@ -190,7 +190,7 @@ void CCurlingGame_Stone::Launch(const _float& fPower)
 	{
 		Vec4 vPos = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
 		Vec4 vDir = CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Transform()->Get_Look();
-		Vec4 vLookAt = vPos + (vDir * 5.f);
+		Vec4 vLookAt = vPos + (vDir.ZeroY().Normalized() * 5.f);
 
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos.OneW());
 		m_pTransformCom->LookAt_ForLandObject(vLookAt.OneW());
@@ -206,18 +206,21 @@ void CCurlingGame_Stone::Launch(const _float& fPower)
 		m_bLaunched = true;
 
 		m_bActive = true;
+
+		m_pRigidBodyCom->Set_Sleep(false);
 	}
 }
 
 void CCurlingGame_Stone::PutDown()
 {
-	const _float fCurHeight = Vec3(m_pTransformCom->Get_Position()).y;
+	CTransform* pPlayerTransform = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform");
+	
+	if (nullptr == pPlayerTransform)
+		return;
+	
+	Vec4 vTargetPos = (Vec4)pPlayerTransform->Get_Position() + pPlayerTransform->Get_RelativeOffset(Vec4{ 0.f, 0.f, 0.8f, 1.f });
 
-	const _float fTargetHeight = Vec3(CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform")->Get_Position()).y;
-
-	const _float fLerpTime = 0.5f;
-
-	m_tHeightLerpDesc.Start(fCurHeight, fTargetHeight, fLerpTime, LERP_MODE::EASE_IN);
+	m_tPosLerpDesc.Start(m_pTransformCom->Get_Position(), vTargetPos.OneW(), 0.5f, LERP_MODE::EASE_IN);
 }
 
 HRESULT CCurlingGame_Stone::Ready_Components()

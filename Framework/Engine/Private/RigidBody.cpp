@@ -105,7 +105,8 @@ const _bool& CRigidBody::Check_Sleep()
 {
 	m_bSleep = (m_vVelocity.Length() < m_fSleepThreshold) ? true : false; 
 	
-	ZeroMemory(&m_vVelocity, sizeof(Vec3));
+	if(m_bSleep)
+		ZeroMemory(&m_vVelocity, sizeof(Vec3));
 	
 	return m_bSleep;
 }

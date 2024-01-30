@@ -36,7 +36,18 @@ void CState_Character_Neutral_Pick_Large_Run::Tick_State(_float fTimeDelta)
 		CTransform* pTargetTransform = m_pCharacter->Get_Target()->Get_Component<CTransform>(L"Com_Transform");
 		if (nullptr != pTargetTransform)
 		{
-			pTargetTransform->Set_WorldMatrix(m_pTransformCom->Get_WorldMatrix());
+			_float vScale[3];
+
+			memcpy(vScale, &pTargetTransform->Get_Scale(), sizeof(Vec3));
+
+			for (size_t i = 0; i < CTransform::STATE::STATE_POSITION; i++)
+			{
+				const CTransform::STATE eState = (CTransform::STATE)i;
+
+				const Vec3 vDir = Vec3(m_pTransformCom->Get_State(eState)).Normalized();
+
+				pTargetTransform->Set_State(eState, vDir * vScale[i]);
+			}
 
 			Vec4 vHandCenterPosition = {};
 			Vec4 vLeftHandPosition = (m_pModelCom->Get_SocketLocalMatrix(0) * m_pTransformCom->Get_WorldMatrix()).Translation();
