@@ -48,11 +48,10 @@ HRESULT CEngineer_Burst_CannonBomb::Initialize(void* pArg)
 
 void CEngineer_Burst_CannonBomb::Tick(_float fTimeDelta)
 {
-
 	if (false == m_bGenEffect)
 	{
-		//CEffect_Manager::GetInstance()->Generate_Effect(L"Effect_Engineer_BulletBomb_Spiral_0", m_pTransformCom->Get_WorldMatrix(), Vec3(0.f, 0.f, 0.f), Vec3(2.f, 2.f, 15.f), Vec3(0.f, 0.f, 0.f), this, &m_pSpiralEffect, false);
-		//Safe_AddRef(m_pSpiralEffect);
+		CEffect_Manager::GetInstance()->Generate_Effect(L"Effect_Engineer_CannonBomb_Spiral", m_pTransformCom->Get_WorldMatrix(), Vec3(0.f, 0.f, 0.f), Vec3(1.5f, 1.5f, 20.f), Vec3(0.f, 0.f, 0.f), this, &m_pSpiralEffect, false);
+		Safe_AddRef(m_pSpiralEffect);
 
 		m_bGenEffect = true;
 	}
