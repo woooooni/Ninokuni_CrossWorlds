@@ -66,6 +66,17 @@ void CCamera_Follow::Tick(_float fTimeDelta)
 	if (!m_bActive || nullptr == m_pTargetObj || nullptr == m_pLookAtObj)
 		return;
 
+	if (true == m_pTargetObj->Is_ReserveDead() 
+		|| true == m_pTargetObj->Is_Dead()
+		|| true == m_pLookAtObj->Is_ReserveDead()
+		|| true == m_pLookAtObj->Is_Dead())
+	{
+		m_pTargetObj = nullptr;
+		m_pLookAtObj = nullptr;
+		return;
+	}
+		
+
 	__super::Tick(fTimeDelta); 
 
 	/* Check Exception*/

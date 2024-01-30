@@ -204,6 +204,25 @@ void CTransform::LookAt_ForLandObject(_vector vAt)
 
 }
 
+void CTransform::Rotation_Look(_vector vLook)
+{
+	Vec3 vScale = Get_Scale();
+	
+	_matrix WorldMatrix = Get_WorldMatrix();
+
+	Vec4 vNewLook = XMVector3Normalize(vLook);
+	Vec4 vNewRight = XMVector3Normalize(XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vNewLook));
+	Vec4 vNewUp = XMVector3Normalize(XMVector3Cross(vNewLook, vNewRight));
+
+
+	WorldMatrix.r[CTransform::STATE_RIGHT] = vNewRight * vScale.x;
+	WorldMatrix.r[CTransform::STATE_UP] = vNewUp * vScale.y;
+	WorldMatrix.r[CTransform::STATE_LOOK] = vNewLook * vScale.z;
+
+	Set_WorldMatrix(WorldMatrix);
+
+}
+
 void CTransform::FixRotation(_float x, _float y, _float z)
 {
 	Vec3 vScaled = Get_Scale();

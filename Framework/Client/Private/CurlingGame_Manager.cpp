@@ -390,10 +390,10 @@ void CCurlingGame_Manager::Test(const _float& fTimeDelta)
 		}
 	}
 
-	if (KEY_TAP(KEY::Q))
+	/*if (KEY_TAP(KEY::Q))
 	{
 		Set_Game(!m_bPlaying);
-	}
+	}*/
 
 	if (KEY_TAP(KEY::RBTN) && !m_bLoadMapTest)
 	{

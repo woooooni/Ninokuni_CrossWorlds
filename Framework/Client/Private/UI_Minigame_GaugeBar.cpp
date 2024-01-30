@@ -60,7 +60,7 @@ void CUI_Minigame_GaugeBar::Tick(_float fTimeDelta)
 			m_iValue++;
 		}
 
-		if (m_iValue == 1)
+		if (m_iValue == 2)
 		{
 			if (m_iTextureIndex < 22)
 			{

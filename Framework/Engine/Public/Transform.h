@@ -91,6 +91,7 @@ public:
 
 	void LookAt(_vector vPosition);
 	void LookAt_ForLandObject(_vector vPosition);
+	void Rotation_Look(_vector vLook);
 
 	void FixRotation(_float x, _float y, _float z);
 	void RevolutionRotation(const Vec3& vPoint, const Vec3 vAxis, const _float& fAngle);

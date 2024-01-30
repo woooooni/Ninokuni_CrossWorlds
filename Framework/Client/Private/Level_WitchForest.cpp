@@ -113,7 +113,7 @@ HRESULT CLevel_WitchForest::Ready_Layer_Camera(const LAYER_TYPE eLayerType)
 HRESULT CLevel_WitchForest::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 {
 
-	list<CGameObject*> Grounds = GI->Find_GameObjects(LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_GROUND);
+	list<CGameObject*>& Grounds = GI->Find_GameObjects(LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_GROUND);
 	for (auto& Ground : Grounds)
 	{
 		if (FAILED(GI->Add_Ground(Ground,
@@ -125,7 +125,7 @@ HRESULT CLevel_WitchForest::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 	}
 
 
-	list<CGameObject*> Buildings = GI->Find_GameObjects(LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_BUILDING);
+	list<CGameObject*>& Buildings = GI->Find_GameObjects(LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_BUILDING);
 	for (auto& Building : Buildings)
 	{
 		if (FAILED(GI->Add_Building(Building,
@@ -138,7 +138,7 @@ HRESULT CLevel_WitchForest::Ready_Layer_BackGround(const LAYER_TYPE eLayerType)
 
 
 
-	list<CGameObject*> Props = GI->Find_GameObjects(LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_PROP);
+	list<CGameObject*>& Props = GI->Find_GameObjects(LEVEL_WITCHFOREST, LAYER_TYPE::LAYER_PROP);
 	for (auto& Prop : Props)
 	{
 		CModel* pModel = Prop->Get_Component<CModel>(L"Com_Model");
@@ -169,9 +169,6 @@ HRESULT CLevel_WitchForest::Ready_Layer_Terrain(const LAYER_TYPE eLayerType)
 
 HRESULT CLevel_WitchForest::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 {
-	if (FAILED(CGame_Manager::GetInstance()->Get_Player()->Set_Character(CHARACTER_TYPE::SWORD_MAN, Vec4(-44.f, 1.6f, 315.f, 1.f), true)))
-		return E_FAIL;
-
 	if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))
 	{
 		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());

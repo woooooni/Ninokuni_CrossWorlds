@@ -13,6 +13,7 @@
 
 #include "Riding_Manager.h"
 #include "UIMinigame_Manager.h"
+#include "Vehicle_Flying_Biplane.h"
 
 CState_Character::CState_Character(CStateMachine* pStateMachine)
 	: CState(pStateMachine)
@@ -79,18 +80,21 @@ void CState_Character::Neutral_Idle_Input(_float fTimeDelta)
 
 	if (KEY_TAP(KEY::F1))
 	{
+		m_pCharacter->Set_ElementalType(ELEMENTAL_TYPE::FIRE);
 		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(0);
 		return;
 	}
 
 	if (KEY_TAP(KEY::F2))
 	{
+		m_pCharacter->Set_ElementalType(ELEMENTAL_TYPE::WATER);
 		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(1);
 		return;
 	}
 
 	if (KEY_TAP(KEY::F3))
 	{
+		m_pCharacter->Set_ElementalType(ELEMENTAL_TYPE::WOOD);
 		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(2);
 		return;
 	}
@@ -133,6 +137,8 @@ void CState_Character::Neutral_Idle_Input(_float fTimeDelta)
 			return;
 
 		m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_IDLE);
+		CRiding_Manager::GetInstance()->Get_Character_Biplane();
+
 		CRiding_Manager::GetInstance()->Ride_ForCharacter(CRiding_Manager::BIPLANE, true);
 		return;
 	}
@@ -203,18 +209,21 @@ void CState_Character::Battle_Idle_Input(_float fTimeDelta)
 
 	if (KEY_TAP(KEY::F1))
 	{
+		m_pCharacter->Set_ElementalType(ELEMENTAL_TYPE::FIRE);
 		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(0);
 		return;
 	}
 
 	if (KEY_TAP(KEY::F2))
 	{
+		m_pCharacter->Set_ElementalType(ELEMENTAL_TYPE::WATER);
 		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(1);
 		return;
 	}
 
 	if (KEY_TAP(KEY::F3))
 	{
+		m_pCharacter->Set_ElementalType(ELEMENTAL_TYPE::WOOD);
 		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(2);
 		return;
 	}
@@ -312,18 +321,21 @@ void CState_Character::Neutral_Walk_Input(_float fTimeDelta)
 
 	if (KEY_TAP(KEY::F1))
 	{
+		m_pCharacter->Set_ElementalType(ELEMENTAL_TYPE::FIRE);
 		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(0);
 		return;
 	}
 
 	if (KEY_TAP(KEY::F2))
 	{
+		m_pCharacter->Set_ElementalType(ELEMENTAL_TYPE::WATER);
 		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(1);
 		return;
 	}
 
 	if (KEY_TAP(KEY::F3))
 	{
+		m_pCharacter->Set_ElementalType(ELEMENTAL_TYPE::WOOD);
 		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(2);
 		return;
 	}
@@ -465,22 +477,23 @@ void CState_Character::Neutral_Walk_Input(_float fTimeDelta)
 
 void CState_Character::Battle_Walk_Input(_float fTimeDelta)
 {
-
-
 	if (KEY_TAP(KEY::F1))
 	{
+		m_pCharacter->Set_ElementalType(ELEMENTAL_TYPE::FIRE);
 		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(0);
 		return;
 	}
 
 	if (KEY_TAP(KEY::F2))
 	{
+		m_pCharacter->Set_ElementalType(ELEMENTAL_TYPE::WATER);
 		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(1);
 		return;
 	}
 
 	if (KEY_TAP(KEY::F3))
 	{
+		m_pCharacter->Set_ElementalType(ELEMENTAL_TYPE::WOOD);
 		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(2);
 		return;
 	}
@@ -492,7 +505,6 @@ void CState_Character::Battle_Walk_Input(_float fTimeDelta)
 	if (KEY_HOLD(KEY::W))
 	{
 		bMove = true;
-
 
 		_matrix vCamWolrd = GI->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
 
@@ -869,18 +881,21 @@ void CState_Character::Neutral_Run_Input(_float fTimeDelta)
 
 	if (KEY_TAP(KEY::F1))
 	{
+		m_pCharacter->Set_ElementalType(ELEMENTAL_TYPE::FIRE);
 		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(0);
 		return;
 	}
 
 	if (KEY_TAP(KEY::F2))
 	{
+		m_pCharacter->Set_ElementalType(ELEMENTAL_TYPE::WATER);
 		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(1);
 		return;
 	}
 
 	if (KEY_TAP(KEY::F3))
 	{
+		m_pCharacter->Set_ElementalType(ELEMENTAL_TYPE::WOOD);
 		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(2);
 		return;
 	}
@@ -1024,18 +1039,21 @@ void CState_Character::Battle_Run_Input(_float fTimeDelta)
 
 	if (KEY_TAP(KEY::F1))
 	{
+		m_pCharacter->Set_ElementalType(ELEMENTAL_TYPE::FIRE);
 		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(0);
 		return;
 	}
 
 	if (KEY_TAP(KEY::F2))
 	{
+		m_pCharacter->Set_ElementalType(ELEMENTAL_TYPE::WATER);
 		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(1);
 		return;
 	}
 
 	if (KEY_TAP(KEY::F3))
 	{
+		m_pCharacter->Set_ElementalType(ELEMENTAL_TYPE::WOOD);
 		CUI_Manager::GetInstance()->Update_WeaponSelectionIcon(2);
 		return;
 	}
@@ -1649,18 +1667,30 @@ void CState_Character::OnFlying_Input(_float fTimeDelta)
 
 	_bool bUseSkill = false;
 
+	if (KEY_HOLD(KEY::RBTN))
+	{
+		// Target Search
+
+	}
+
 	if (KEY_TAP(KEY::NUM_1))
 	{
+		/*CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_TEMP1);*/
+
 		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_TEMP1);
 		return;
 	}
 	if (KEY_TAP(KEY::NUM_2))
 	{
+		/*CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_TEMP2);*/
+
 		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_TEMP2);
 		return;
 	}
 	if (KEY_TAP(KEY::NUM_3))
 	{
+		CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_TEMP3);
+
 		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_TEMP3);
 		return;
 	}
@@ -1669,6 +1699,8 @@ void CState_Character::OnFlying_Input(_float fTimeDelta)
 		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_BURST);
 		return;
 	}
+
+	
 }
 
 void CState_Character::Reset_Camera_WideToDeafult()

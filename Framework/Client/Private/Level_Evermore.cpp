@@ -515,7 +515,7 @@ HRESULT CLevel_Evermore::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 
 	// Evermore -> WitchForest
 	PortalInfo.vStartPosition = XMVectorSet(127.94f, -0.015f, 111.5f, 1.f);
-	PortalInfo.vNextPosition = XMVectorSet(111.f, -0.785f, 8.f, 1.f);
+	PortalInfo.vNextPosition = XMVectorSet(-5.828f, 2.262f, -86.776f, 1.f);
 
 	PortalInfo.eCurrentLevel = LEVEL_EVERMORE;
 	PortalInfo.eNextLevel = LEVEL_WITCHFOREST;

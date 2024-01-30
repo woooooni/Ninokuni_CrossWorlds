@@ -737,7 +737,7 @@ void CCharacter::Decide_Target(COLLISION_INFO tInfo)
 			m_pEffectTargetDecal = nullptr;
 		}
 
-		CEffect_Manager::GetInstance()->Generate_Decal_To_Position(L"Decal_Target", XMMatrixIdentity(), Vec3(0.f, 0.f, 0.f), Vec3(1.f, 1.f, 1.f), Vec3(0.f, 0.f, 0.f), m_pTarget, &m_pEffectTargetDecal, false);
+		CEffect_Manager::GetInstance()->Generate_Decal_To_Position(L"Decal_Target", XMMatrixIdentity(), Vec3(0.f, 0.f, 0.f), Vec3(2.f, 2.f, 2.f), Vec3(0.f, 0.f, 0.f), m_pTarget, &m_pEffectTargetDecal, false);
 		Safe_AddRef(m_pEffectTargetDecal);
 	}
 	else
@@ -771,6 +771,8 @@ void CCharacter::Decide_Target(COLLISION_INFO tInfo)
 					m_pTarget = nullptr;
 				}
 
+
+
 				if (nullptr != m_pEffectTargetDecal)
 				{
 					m_pEffectTargetDecal->Set_Dead(true);
@@ -779,6 +781,9 @@ void CCharacter::Decide_Target(COLLISION_INFO tInfo)
 				}
 
 				m_pTarget = tInfo.pOther;
+
+
+
 				CEffect_Manager::GetInstance()->Generate_Decal(L"Decal_Target", pNewTargetTransform->Get_WorldMatrix(), Vec3(0.f, 0.f, 0.f), Vec3(2.f, 2.f, 2.f), Vec3(0.f, 0.f, 0.f), m_pTarget, &m_pEffectTargetDecal, false);
 				Safe_AddRef(m_pTarget);
 				Safe_AddRef(m_pEffectTargetDecal);

@@ -230,6 +230,8 @@
     <ClInclude Include="..\Public\Baobam_WaterNode_Skill1.h" />
     <ClInclude Include="..\Public\Baobam_WaterNode_Skill2.h" />
     <ClInclude Include="..\Public\Baobam_WaterNode_Stun.h" />
+    <ClInclude Include="..\Public\Biplane_GuidedMissile.h" />
+    <ClInclude Include="..\Public\Biplane_ThunderCloud.h" />
     <ClInclude Include="..\Public\BlackSmithMaster.h" />
     <ClInclude Include="..\Public\Body.h" />
     <ClInclude Include="..\Public\Boss.h" />
@@ -284,6 +286,9 @@
     <ClInclude Include="..\Public\State_Enemy_VehicleFlying_Stand.h" />
     <ClInclude Include="..\Public\UI_Minigame_WorldHP.h" />
     <ClInclude Include="..\Public\Vehicle_Flying_EnemyBiplane.h" />
+    <ClInclude Include="..\Public\Skill_Biplane_1.h" />
+    <ClInclude Include="..\Public\Skill_Biplane_2.h" />
+    <ClInclude Include="..\Public\Skill_Biplane_3.h" />
     <ClInclude Include="..\Public\Winter_CurlingFloor.h" />
     <ClInclude Include="..\Public\StelliaState_AfterSpinTail.h" />
     <ClInclude Include="..\Public\StelliaState_BackStep.h" />
@@ -1182,6 +1187,8 @@
     <ClCompile Include="..\Private\Baobam_WaterNode_Skill1.cpp" />
     <ClCompile Include="..\Private\Baobam_WaterNode_Skill2.cpp" />
     <ClCompile Include="..\Private\Baobam_WaterNode_Stun.cpp" />
+    <ClCompile Include="..\Private\Biplane_GuidedMissile.cpp" />
+    <ClCompile Include="..\Private\Biplane_ThunderCloud.cpp" />
     <ClCompile Include="..\Private\BlackSmithMaster.cpp" />
     <ClCompile Include="..\Private\Body.cpp" />
     <ClCompile Include="..\Private\Boss.cpp" />
@@ -1235,6 +1242,9 @@
     <ClCompile Include="..\Private\State_Enemy_VehicleFlying_Stand.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_WorldHP.cpp" />
     <ClCompile Include="..\Private\Vehicle_Flying_EnemyBiplane.cpp" />
+    <ClCompile Include="..\Private\Skill_Biplane_1.cpp" />
+    <ClCompile Include="..\Private\Skill_Biplane_2.cpp" />
+    <ClCompile Include="..\Private\Skill_Biplane_3.cpp" />
     <ClCompile Include="..\Private\Winter_CurlingFloor.cpp" />
     <ClCompile Include="..\Private\StelliaState_AfterSpinTail.cpp" />
     <ClCompile Include="..\Private\StelliaState_BackStep.cpp" />
