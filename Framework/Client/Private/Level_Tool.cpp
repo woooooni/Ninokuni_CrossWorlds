@@ -12,6 +12,7 @@
 #include "Weapon_SwordTemp.h"
 #include "LensFlare.h"
 #include "CurlingGame_Manager.h"
+#include "Trigger.h"
 
 CLevel_Tool::CLevel_Tool(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)

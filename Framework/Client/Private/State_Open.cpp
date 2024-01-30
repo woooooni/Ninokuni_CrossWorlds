@@ -26,13 +26,11 @@ void CState_Open::Enter_State(void* pArg)
 
 void CState_Open::Tick_State(_float fTimeDelta)
 {
-	m_fTime += fTimeDelta;
+	CWitchWood* pWood = static_cast<CWitchWood*>(m_pOwner);
 
-	if (m_fTime >= 20.0f)
-	{
-		if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
-			m_pStateMachineCom->Change_State(CWitchWood::WOOD_STATE::CLOSE);
-	}
+	_bool bClose = pWood->IsClose();
+	if (true == bClose)
+		m_pStateMachineCom->Change_State(CWitchWood::WOOD_STATE::CLOSE);
 
 }
 

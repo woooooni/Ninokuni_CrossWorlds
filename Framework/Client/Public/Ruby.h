@@ -26,6 +26,9 @@ public:
 public:
 	virtual void On_Damaged(const COLLISION_INFO& tInfo) override;
 
+public:
+	virtual CGameObject* Get_RidingObject() { return m_pRidingObject; }
+
 private:
 	virtual HRESULT Ready_States() override;
 	virtual HRESULT Ready_Colliders() override;
@@ -35,7 +38,7 @@ private:
 
 private:
 	class CUI_World_NPCTag* m_pTag = { nullptr };
-
+	class CGameObject* m_pRidingObject = nullptr;
 public:
 	static CRuby* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;

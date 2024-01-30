@@ -19,6 +19,8 @@
 #include "Water.h"
 #include "Animals.h"
 #include "CurlingGame_Manager.h"
+#include "Trigger.h"
+
 
 CTool_Map::CTool_Map(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CTool(pDevice, pContext)
@@ -1433,6 +1435,8 @@ void CTool_Map::MapNPCSpace()
 									static_cast<CGameNpc*>(m_pSelectObj)->Set_NpcState(CGameNpc::NPC_STATE::NPC_ATTACK_IDLE);
 								else if (m_NpcStateSelectableName[i] == "ATTACK")
 									static_cast<CGameNpc*>(m_pSelectObj)->Set_NpcState(CGameNpc::NPC_STATE::NPC_ATTACK);
+								else if (m_NpcStateSelectableName[i] == "NPC_UNIQUENPC_SEAT")
+									static_cast<CGameNpc*>(m_pSelectObj)->Set_NpcState(CGameNpc::NPC_STATE::NPC_UNIQUENPC_SEAT);
 							}
 						}
 						ImGui::EndCombo();
@@ -1826,6 +1830,7 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 				Init_Data.vStartPosition = vPos;
 
 				CGameObject* pObj = nullptr;
+
 				if (FAILED(GI->Add_GameObject(LEVEL_TOOL, i, strPrototypeTag, &Init_Data, &pObj)))
 				{
 					MSG_BOX("Load_Map_Objects_Failed.");
@@ -1916,7 +1921,14 @@ HRESULT CTool_Map::Load_Map_Data(const wstring& strMapFileName)
 		CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
 	}
 
+	//CTrigger::TRIGGER_DESC TriggerDesc;
+	//TriggerDesc.eTriggerType = TRIGGER_TYPE::TRIGGER_WITCH_WOOD_ENTER;
+	//TriggerDesc.strMapName = L"";
+	//TriggerDesc.vStartPosition = { 101.275f, -4.906f, 28.147f, 1.f };
+	//TriggerDesc.vExtents = { 5.f, 5.f, 5.f };
 
+	//if (FAILED(GI->Add_GameObject(LEVEL_TOOL, LAYER_TYPE::LAYER_PROP, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
+	//	return E_FAIL;
 
 
 	MSG_BOX("Map_Loaded.");

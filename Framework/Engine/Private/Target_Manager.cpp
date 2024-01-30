@@ -18,8 +18,7 @@ HRESULT CTarget_Manager::Reserve_Manager(ID3D11Device* pDevice, _uint iWinSizeX,
 		return E_FAIL;
 	if (FAILED(Ready_UI_DSV(pDevice, iWinSizeX, iWinSizeY)))
 		return E_FAIL;
-	//if (FAILED(Ready_Cascade_Shadow_DSV(pDevice, 2048, 2048)))
-	//	return E_FAIL;
+
 
 	return S_OK;
 }
@@ -125,60 +124,6 @@ HRESULT CTarget_Manager::Ready_UI_DSV(ID3D11Device* pDevice, _uint iWinSizeX, _u
 		return E_FAIL;
 
 	Safe_Release(pDSV);
-
-	return S_OK;
-}
-
-HRESULT CTarget_Manager::Ready_Cascade_Shadow_DSV(ID3D11Device* pDevice, _uint iWinSizeX, _uint iWinSizeY)
-{
-	if (nullptr == pDevice)
-		return E_FAIL;
-
-	m_nTextureWidth = iWinSizeX;
-	m_nTextureHeight = iWinSizeY;
-
-	ID3D11Texture2D* pDSV = nullptr;
-
-	D3D11_TEXTURE2D_DESC	TextureDesc;
-	ZeroMemory(&TextureDesc, sizeof(D3D11_TEXTURE2D_DESC));
-
-	TextureDesc.Width = iWinSizeX * 3.f;
-	TextureDesc.Height = iWinSizeY;
-	TextureDesc.MipLevels = 1;
-	TextureDesc.ArraySize = 1;
-	TextureDesc.Format = DXGI_FORMAT_R32_TYPELESS;
-
-	TextureDesc.SampleDesc.Count = 1;
-	TextureDesc.SampleDesc.Quality = 0;
-
-	TextureDesc.Usage = D3D11_USAGE_DEFAULT;
-	TextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
-	TextureDesc.CPUAccessFlags = 0;
-	TextureDesc.MiscFlags = 0;
-
-	if (FAILED(pDevice->CreateTexture2D(&TextureDesc, nullptr, &pDSV)))
-		return E_FAIL;
-
-
-	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
-	ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
-	depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
-	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-	depthStencilViewDesc.Texture2D.MipSlice = 0;
-
-	if (FAILED(pDevice->CreateDepthStencilView(pDSV, &depthStencilViewDesc, &m_pCascadeDSV)))
-		return E_FAIL;
-
-	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
-	shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
-	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
-	shaderResourceViewDesc.Texture2D.MipLevels = TextureDesc.MipLevels;
-	if (FAILED(pDevice->CreateShaderResourceView(pDSV, &shaderResourceViewDesc, &m_pCascadeSRV)))
-		return E_FAIL;
-
-	Safe_Release<ID3D11Texture2D*>(pDSV);
-
 
 	return S_OK;
 }
@@ -414,29 +359,6 @@ HRESULT CTarget_Manager::End_MRT(ID3D11DeviceContext* pContext)
 }
 
 
-void CTarget_Manager::SetRenderTarget(ID3D11DeviceContext* pContext, int nCascadeIndex)
-{
-	ID3D11RenderTargetView* rtv[1] = { nullptr };
-	pContext->OMSetRenderTargets(1, rtv, m_pCascadeDSV);
-
-	D3D11_VIEWPORT			ViewPortDesc;
-	ZeroMemory(&ViewPortDesc, sizeof(D3D11_VIEWPORT));
-	ViewPortDesc.Width = static_cast<_float>(m_nTextureWidth);
-	ViewPortDesc.Height = static_cast<_float>(m_nTextureHeight);
-	ViewPortDesc.MinDepth = 0.f;
-	ViewPortDesc.MaxDepth = 1.f;
-	ViewPortDesc.TopLeftX = static_cast<_float>(m_nTextureWidth) * static_cast<_float>(nCascadeIndex);
-	ViewPortDesc.TopLeftY = 0;
-
-	pContext->RSSetViewports(1, &ViewPortDesc);
-}
-
-
-void CTarget_Manager::ClearCascadeDepthBuffer(ID3D11DeviceContext* pContext)
-{
-	pContext->ClearDepthStencilView(m_pCascadeDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-}
-
 #ifdef _DEBUG
 HRESULT CTarget_Manager::Ready_Debug(const wstring & strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY)
 {
@@ -508,6 +430,4 @@ void CTarget_Manager::Free()
 	Safe_Release(m_pMinimapDSV);
 	Safe_Release(m_pShadowDSV);
 	Safe_Release(m_pUIDSV);
-	Safe_Release<ID3D11DepthStencilView*>(m_pCascadeDSV);
-	Safe_Release<ID3D11ShaderResourceView*>(m_pCascadeSRV);
 }

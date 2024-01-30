@@ -12,6 +12,7 @@
 #include "Game_Manager.h"
 #include "Character.h"
 #include "Player.h"
+#include "WitchWood.h"
 
 CTrigger::CTrigger(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CGameObject(pDevice, pContext, L"Trigger", OBJ_TYPE::OBJ_TRIGGER)
@@ -110,7 +111,7 @@ void CTrigger::Collision_Enter(const COLLISION_INFO& tInfo)
 			// TODO
 			Set_Dead(true); 
 			break;
-		case TRIGGER_TYPE::TRIGER_WHALE_ENTER:
+		case TRIGGER_TYPE::TRIGGER_WHALE_ENTER:
 			{
 				if (!m_bWhaleCutScene)
 				{
@@ -131,6 +132,21 @@ void CTrigger::Collision_Enter(const COLLISION_INFO& tInfo)
 				}
 			break;
 			}
+		case TRIGGER_TYPE::TRIGGER_WITCH_WOOD_ENTER:
+			_uint iCurLevel = GI->Get_CurrentLevel();
+
+			// TODO
+			// 퀘스트 아이템이 없다면 Close, 있다면 Dissolve나 Open.
+			list<CGameObject*>& pGameObjects = GI->Find_GameObjects(iCurLevel, LAYER_TYPE::LAYER_BUILDING);
+			// Witch_Wood_Wall
+
+			for (auto& pObj : pGameObjects)
+			{
+				if (pObj->Get_ObjectTag() == TEXT("Witch_Wood_Wall"))
+					static_cast<CWitchWood*>(pObj)->Set_Close(true);
+			}
+
+			break;
 		}
 	}
 }
