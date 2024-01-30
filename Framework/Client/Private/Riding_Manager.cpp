@@ -8,7 +8,8 @@
 
 #include "Vehicle_Udadak.h"
 #include "Vehicle_Flying_Biplane.h"
-#include "Vehicle_Flying_EnemyBiplane.h"
+#include "Vehicle_Flying_EnemyBiplane.h" 
+#include "Vehicle_Flying_EnemyBoto.h"
 
 #include "Grandprix_Engineer.h"
 
@@ -76,18 +77,45 @@ HRESULT CRiding_Manager::Ready_Vehicle_GameObject(LEVELID eID)
 	// 모든 캐릭터를 로드한 경우에만 엔지니어를 만들 수 있다.
 	if (g_eLoadCharacter == LOAD_CHARACTER_TYPE::ALL_CH || g_eLoadCharacter == LOAD_CHARACTER_TYPE::ENGINEER_CH)
 	{
-		CGameObject* pEnemyEngineer = nullptr;
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Grandprix_Engineer"), nullptr, &pEnemyEngineer)))
-			return E_FAIL;
-		if (nullptr == pEnemyEngineer)
-			return E_FAIL;
-		if (nullptr == dynamic_cast<CGrandprix_Engineer*>(pEnemyEngineer))
-			return E_FAIL;
-		m_pEngineer = dynamic_cast<CGrandprix_Engineer*>(pEnemyEngineer);
-		Safe_AddRef(m_pEngineer);
+//		CGameObject* pEnemyEngineer = nullptr;
+//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Grandprix_Engineer"), nullptr, &pEnemyEngineer)))
+//			return E_FAIL;
+//		if (nullptr == pEnemyEngineer)
+//			return E_FAIL;
+//		if (nullptr == dynamic_cast<CGrandprix_Engineer*>(pEnemyEngineer))
+//			return E_FAIL;
+//		m_pEngineer = dynamic_cast<CGrandprix_Engineer*>(pEnemyEngineer);
+//		Safe_AddRef(m_pEngineer);
+	
+		//Prototype_GameObject_Vehicle_EnemyBoto
+//		m_Botos.reserve(9);
+//		m_Enemies.reserve(9);
+//
+//		CVehicle::VEHICLE_DESC BotoDesc = {};
+//		BotoDesc.fSpeed = 12.f;
+//
+//		CGameObject* pEnemyBoto = nullptr;
+//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Vehicle_EnemyBoto"), &BotoDesc, &pEnemyBoto)))
+//			return E_FAIL;
+//		if (nullptr == pEnemyBoto)
+//			return E_FAIL;
+//		if (nullptr == dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto))
+//			return E_FAIL;
+//		m_Botos.push_back(dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto));
+//		Safe_AddRef(pEnemyBoto);
+//
+//		CGameObject* pEnemy = nullptr;
+//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_HumanFL07"), nullptr, &pEnemy)))
+//			return E_FAIL;
+//		if (nullptr == pEnemy)
+//			return E_FAIL;
+//		if (nullptr == dynamic_cast<CGrandprix_Enemy*>(pEnemy))
+//			return E_FAIL;
+//		m_Enemies.push_back(dynamic_cast<CGrandprix_Enemy*>(pEnemy));
+//		Safe_AddRef(pEnemy);
+//
+//		Ready_Grandprix();
 	}
-
-	Ready_Grandprix();
 
 	return S_OK;
 }
@@ -118,11 +146,21 @@ HRESULT CRiding_Manager::Ready_Vehicle_GameObjectToLayer(LEVELID eID)
 
 		if (g_eLoadCharacter == LOAD_CHARACTER_TYPE::ALL_CH || g_eLoadCharacter == LOAD_CHARACTER_TYPE::ENGINEER_CH)
 		{
-			if (nullptr == m_pEngineer)
-				return E_FAIL;
-			if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, m_pEngineer)))
-				return E_FAIL;
-			Safe_AddRef(m_pEngineer);
+//			if (nullptr == m_pEngineer)
+//				return E_FAIL;
+//			if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, m_pEngineer)))
+//				return E_FAIL;
+//			Safe_AddRef(m_pEngineer);
+//		
+//			for (auto& iter : m_Botos)
+//			{
+//				if (nullptr == iter)
+//					return E_FAIL;
+//
+//				if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, iter)))
+//					return E_FAIL;
+//				Safe_AddRef(iter);
+//			}
 		}
 	}
 
@@ -228,6 +266,12 @@ void CRiding_Manager::Free()
 	Safe_Release(m_pUdadak);
 	Safe_Release(m_pBiplane);
 
+	for (auto& iter : m_Botos)
+		Safe_Release(iter);
+	m_Botos.clear();
+	for (auto& iter : m_Enemies)
+		Safe_Release(iter);
+	m_Enemies.clear();
 	Safe_Release(m_pEngineer);
 	Safe_Release(m_pEnemyPlane);
 

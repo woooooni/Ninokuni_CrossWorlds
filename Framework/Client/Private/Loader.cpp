@@ -155,9 +155,11 @@
 #include "Vehicle_Udadak.h"
 #include "Vehicle_Flying_Biplane.h"
 #include "Vehicle_Flying_EnemyBiplane.h"
+#include "Vehicle_Flying_EnemyBoto.h"
 #include "Swordsman_Biplane_Bullet.h"
 #include "Biplane_GuidedMissile.h"
 #include "Grandprix_Engineer.h"
+#include "Grandprix_Enemy_HumanFL04.h"
 
 #include "Respawn_Box.h"
 #include "CurlingGame_Manager.h"
@@ -658,6 +660,9 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 			return E_FAIL;
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Vehicle_EnemyBiplane"),
 			CVehicle_Flying_EnemyBiplane::Create(m_pDevice, m_pContext, TEXT("Vehicle_EnemyBiplane")), LAYER_TYPE::LAYER_CHARACTER))
+			return E_FAIL;
+		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Vehicle_EnemyBoto"),
+			CVehicle_Flying_EnemyBoto::Create(m_pDevice, m_pContext, TEXT("Vehicle_EnemyBoto")), LAYER_TYPE::LAYER_CHARACTER))
 			return E_FAIL;
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Swordsman_Biplane_Bullet"),
 			CSwordsman_Biplane_Bullet::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
@@ -1995,15 +2000,13 @@ HRESULT CLoader::Loading_Proto_Vehicles()
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Biplane", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Vehicle/Biplane/", L"Biplane")))
 		return E_FAIL;
 
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Broomjet", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Vehicle/Broomjet/", L"Broomjet")))
-		return E_FAIL;
-
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Boto", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Vehicle/Boto/", L"Boto")))
 		return E_FAIL;
 
-	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Bumpy", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Vehicle/Bumpy/", L"Bumpy")))
+	// Enemy(юс╫ц)
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Grandprix_Enemy_HumanFL04",
+		CGrandprix_Enemy_HumanFL04::Create(m_pDevice, m_pContext, TEXT("Grandprix_Enemy_HumanFL04")), LAYER_TYPE::LAYER_ETC)))
 		return E_FAIL;
-
 	
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Biplane_GuidedMissile", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/MiniGame/Missile/", L"Biplane_GuidedMissile")))
 		return E_FAIL;
