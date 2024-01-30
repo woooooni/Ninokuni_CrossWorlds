@@ -34,6 +34,7 @@
 
 
 // BOSS //
+// Glanix
 #include "Vfx_Glanix_Intro_Roar.h"
 #include "Vfx_Glanix_Intro_Jump.h"
 #include "Vfx_Glanix_Intro_Finish.h"
@@ -48,6 +49,11 @@
 #include "Vfx_Glanix_Skill_IceThrow.h"
 #include "Vfx_Glanix_Skill_IcePillar.h"
 #include "Vfx_Glanix_Skill_Icicle.h"
+// Stellia
+#include "Vfx_Stellia_Skill_ClawRight.h"
+#include "Vfx_Stellia_Skill_ClawDouble.h"
+#include "Vfx_Stellia_Skill_SpinTail.h"
+#include "Vfx_Stellia_Skill_JumpStamp.h"
 
 // ETC //
 #include "Vfx_QuestPoint.h"
