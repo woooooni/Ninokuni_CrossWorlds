@@ -48,8 +48,6 @@ HRESULT CGrandprix_Engineer::Initialize(void* pArg)
 
 void CGrandprix_Engineer::Tick(_float fTimeDelta)
 {
-	m_pStateCom->Tick_State(fTimeDelta);
-
 	__super::Tick(fTimeDelta);
 }
 
@@ -112,7 +110,6 @@ HRESULT CGrandprix_Engineer::Render()
 
 HRESULT CGrandprix_Engineer::Ready_Components()
 {
-
 	// For Transform Component
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), (CComponent**)&m_pTransformCom)))
 		return E_FAIL;

@@ -12,7 +12,7 @@ protected:
 	virtual ~CUI_Minigame_WorldHP() = default;
 
 public:
-	void Set_VehicleInformation(class CVehicle_Flying_EnemyBiplane* pOwner);
+	void Set_VehicleInformation(class CVehicle_Flying* pOwner);
 
 public:
 	virtual HRESULT	Initialize_Prototype();
@@ -22,7 +22,7 @@ public:
 	virtual HRESULT	Render();
 
 private:
-	class CVehicle_Flying_EnemyBiplane* m_pTarget = { nullptr };
+	class CVehicle_Flying* m_pTarget = { nullptr };
 
 	CTexture* m_pFXTextureCom = { nullptr };
 	_matrix m_BarWorldMatrix = XMMatrixIdentity();

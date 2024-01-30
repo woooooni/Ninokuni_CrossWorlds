@@ -278,6 +278,7 @@
     <ClInclude Include="..\Public\Crystal_Ball.h" />
     <ClInclude Include="..\Public\Crystal_Tower.h" />
     <ClInclude Include="..\Public\Grandprix_Enemy.h" />
+    <ClInclude Include="..\Public\Grandprix_Enemy_HumanFL04.h" />
     <ClInclude Include="..\Public\State_Enemy.h" />
     <ClInclude Include="..\Public\State_Enemy_Flying_Run.h" />
     <ClInclude Include="..\Public\State_Enemy_Flying_RunStart.h" />
@@ -293,6 +294,7 @@
     <ClInclude Include="..\Public\State_CarriageIdle.h" />
     <ClInclude Include="..\Public\State_CarriageMove.h" />
     <ClInclude Include="..\Public\UniqueNpcState_Seat.h" />
+    <ClInclude Include="..\Public\Vehicle_Flying_EnemyBoto.h" />
     <ClInclude Include="..\Public\Winter_CurlingFloor.h" />
     <ClInclude Include="..\Public\StelliaState_AfterSpinTail.h" />
     <ClInclude Include="..\Public\StelliaState_BackStep.h" />
@@ -1238,6 +1240,7 @@
     <ClCompile Include="..\Private\Crystal_Ball.cpp" />
     <ClCompile Include="..\Private\Crystal_Tower.cpp" />
     <ClCompile Include="..\Private\Grandprix_Enemy.cpp" />
+    <ClCompile Include="..\Private\Grandprix_Enemy_HumanFL04.cpp" />
     <ClCompile Include="..\Private\State_Enemy.cpp" />
     <ClCompile Include="..\Private\State_Enemy_Flying_Run.cpp" />
     <ClCompile Include="..\Private\State_Enemy_Flying_RunStart.cpp" />
@@ -1253,6 +1256,7 @@
     <ClCompile Include="..\Private\State_CarriageIdle.cpp" />
     <ClCompile Include="..\Private\State_CarriageMove.cpp" />
     <ClCompile Include="..\Private\UniqueNpcState_Seat.cpp" />
+    <ClCompile Include="..\Private\Vehicle_Flying_EnemyBoto.cpp" />
     <ClCompile Include="..\Private\Winter_CurlingFloor.cpp" />
     <ClCompile Include="..\Private\StelliaState_AfterSpinTail.cpp" />
     <ClCompile Include="..\Private\StelliaState_BackStep.cpp" />

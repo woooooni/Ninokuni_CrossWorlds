@@ -17,7 +17,7 @@ CUI_Minigame_WorldHP::CUI_Minigame_WorldHP(const CUI_Minigame_WorldHP& rhs)
 {
 }
 
-void CUI_Minigame_WorldHP::Set_VehicleInformation(CVehicle_Flying_EnemyBiplane* pOwner)
+void CUI_Minigame_WorldHP::Set_VehicleInformation(CVehicle_Flying* pOwner)
 {
 	if (nullptr == pOwner)
 		return;
@@ -57,7 +57,7 @@ HRESULT CUI_Minigame_WorldHP::Initialize(void* pArg)
 	m_bActive = true;
 	m_bLerp = false;
 
-	m_tInfo.fCX = 0.6f;
+	m_tInfo.fCX = 0.75f;
 	m_tInfo.fCY = 0.2f;
 	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 

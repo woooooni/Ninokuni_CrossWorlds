@@ -213,35 +213,43 @@ void CGrandprix_Enemy::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
 
 HRESULT CGrandprix_Enemy::Ready_Components()
 {
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"),
-		TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
-		return E_FAIL;
+	// 모델은 자식 클래스에서
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"),
 		TEXT("Com_Transform"), reinterpret_cast<CComponent**>(&m_pTransformCom))))
+		return E_FAIL;
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"),
+		TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 		return E_FAIL;
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Shader_AnimModel"),
 		TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
 		return E_FAIL;
 
-	/* For.Com_PhysXBody */
-	CPhysX_Controller::CONTROLLER_DESC ControllerDesc;
-
-	ControllerDesc.eType = CPhysX_Controller::CAPSULE;
-	ControllerDesc.pTransform = m_pTransformCom;
-	ControllerDesc.vOffset = { 0.f, 1.125f, 0.f };
-	ControllerDesc.fHeight = 1.f;
-	ControllerDesc.fMaxJumpHeight = 10.f;
-	ControllerDesc.fRaidus = 1.f;
-	ControllerDesc.pOwner = this;
-
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_PhysXController"), TEXT("Com_Controller"), (CComponent**)&m_pControllerCom, &ControllerDesc)))
-		return E_FAIL;
-
-	/* For.Com_StateMachine */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_StateMachine"), TEXT("Com_StateMachine"), (CComponent**)&m_pStateCom)))
 		return E_FAIL;
+
+	// For RigidBody Component
+	CRigidBody::RIGID_BODY_DESC RigidDesc;
+	RigidDesc.pTransform = m_pTransformCom;
+
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_RigidBody"), TEXT("Com_RigidBody"), (CComponent**)&m_pRigidBodyCom, &RigidDesc)))
+		return E_FAIL;
+
+	/* For.Com_PhysXBody */
+//	CPhysX_Controller::CONTROLLER_DESC ControllerDesc;
+//
+//	ControllerDesc.eType = CPhysX_Controller::CAPSULE;
+//	ControllerDesc.pTransform = m_pTransformCom;
+//	ControllerDesc.vOffset = { 0.f, 1.125f, 0.f };
+//	ControllerDesc.fHeight = 1.f;
+//	ControllerDesc.fMaxJumpHeight = 10.f;
+//	ControllerDesc.fRaidus = 1.f;
+//	ControllerDesc.pOwner = this;
+//
+//	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_PhysXController"), TEXT("Com_Controller"), (CComponent**)&m_pControllerCom, &ControllerDesc)))
+//		return E_FAIL;
 
 	return S_OK;
 }

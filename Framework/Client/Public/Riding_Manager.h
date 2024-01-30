@@ -41,6 +41,8 @@ private:
 	// For Grandprix
 	class CGrandprix_Engineer* m_pEngineer = { nullptr };
 	class CVehicle_Flying_EnemyBiplane* m_pEnemyPlane = { nullptr };
+	vector <class CVehicle_Flying_EnemyBoto*> m_Botos;
+	vector <class CGrandprix_Enemy*> m_Enemies;
 
 private:
 	ID3D11Device* m_pDevice = { nullptr };

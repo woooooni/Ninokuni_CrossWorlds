@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "GameInstance.h"
-#include "Vehicle_Flying_EnemyBiplane.h"
+#include "Vehicle_Flying_EnemyBoto.h"
 
 #include "State_Enemy_VehicleFlying_Stand.h"
 #include "State_Enemy_VehicleFlying_Run.h"
@@ -10,24 +10,24 @@
 #include "UIMinigame_Manager.h"
 #include "UI_Minigame_WorldHP.h"
 
-CVehicle_Flying_EnemyBiplane::CVehicle_Flying_EnemyBiplane(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
+CVehicle_Flying_EnemyBoto::CVehicle_Flying_EnemyBoto(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVehicle_Flying(pDevice, pContext, strObjectTag)
 {
 }
 
-CVehicle_Flying_EnemyBiplane::CVehicle_Flying_EnemyBiplane(const CVehicle_Flying_EnemyBiplane& rhs)
+CVehicle_Flying_EnemyBoto::CVehicle_Flying_EnemyBoto(const CVehicle_Flying_EnemyBoto& rhs)
 	: CVehicle_Flying(rhs)
 {
 }
 
-HRESULT CVehicle_Flying_EnemyBiplane::Initialize_Prototype()
+HRESULT CVehicle_Flying_EnemyBoto::Initialize_Prototype()
 {
 	__super::Initialize_Prototype();
 
 	return S_OK;
 }
 
-HRESULT CVehicle_Flying_EnemyBiplane::Initialize(void* pArg)
+HRESULT CVehicle_Flying_EnemyBoto::Initialize(void* pArg)
 {
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
@@ -56,9 +56,9 @@ HRESULT CVehicle_Flying_EnemyBiplane::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CVehicle_Flying_EnemyBiplane::Tick(_float fTimeDelta)
+void CVehicle_Flying_EnemyBoto::Tick(_float fTimeDelta)
 {
-	if (true == m_bOnBoard)
+	//if (true == m_bOnBoard)
 	{
 		__super::Tick(fTimeDelta);
 
@@ -86,9 +86,9 @@ void CVehicle_Flying_EnemyBiplane::Tick(_float fTimeDelta)
 	}
 }
 
-void CVehicle_Flying_EnemyBiplane::LateTick(_float fTimeDelta)
+void CVehicle_Flying_EnemyBoto::LateTick(_float fTimeDelta)
 {
-	if (true == m_bOnBoard)
+	//if (true == m_bOnBoard)
 	{
 		__super::LateTick(fTimeDelta);
 
@@ -102,9 +102,9 @@ void CVehicle_Flying_EnemyBiplane::LateTick(_float fTimeDelta)
 	}
 }
 
-HRESULT CVehicle_Flying_EnemyBiplane::Render()
+HRESULT CVehicle_Flying_EnemyBoto::Render()
 {
-	if (true == m_bOnBoard)
+	//if (true == m_bOnBoard)
 	{
 		__super::Render();
 
@@ -113,9 +113,9 @@ HRESULT CVehicle_Flying_EnemyBiplane::Render()
 	return S_OK;
 }
 
-HRESULT CVehicle_Flying_EnemyBiplane::Render_ShadowDepth()
+HRESULT CVehicle_Flying_EnemyBoto::Render_ShadowDepth()
 {
-	if (true == m_bOnBoard)
+	//if (true == m_bOnBoard)
 	{
 		__super::Render_ShadowDepth();
 	
@@ -124,58 +124,64 @@ HRESULT CVehicle_Flying_EnemyBiplane::Render_ShadowDepth()
 	return S_OK;
 }
 
-void CVehicle_Flying_EnemyBiplane::Collision_Enter(const COLLISION_INFO& tInfo)
+void CVehicle_Flying_EnemyBoto::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
 }
 
-void CVehicle_Flying_EnemyBiplane::Collision_Continue(const COLLISION_INFO& tInfo)
+void CVehicle_Flying_EnemyBoto::Collision_Continue(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Continue(tInfo);
 }
 
-void CVehicle_Flying_EnemyBiplane::Collision_Exit(const COLLISION_INFO& tInfo)
+void CVehicle_Flying_EnemyBoto::Collision_Exit(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Exit(tInfo);
 }
 
-void CVehicle_Flying_EnemyBiplane::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
+void CVehicle_Flying_EnemyBoto::Ground_Collision_Enter(PHYSX_GROUND_COLLISION_INFO tInfo)
 {
 	__super::Ground_Collision_Enter(tInfo);
 }
 
-void CVehicle_Flying_EnemyBiplane::Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo)
+void CVehicle_Flying_EnemyBoto::Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo)
 {
 	__super::Ground_Collision_Continue(tInfo);
 }
 
-void CVehicle_Flying_EnemyBiplane::Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo)
+void CVehicle_Flying_EnemyBoto::Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo)
 {
 	__super::Ground_Collision_Exit(tInfo);
 }
 
-HRESULT CVehicle_Flying_EnemyBiplane::Ready_Components()
+HRESULT CVehicle_Flying_EnemyBoto::Ready_Components()
 {
 	if (FAILED(__super::Ready_Components()))
 		return E_FAIL;
 
 	// For Model Component
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Biplane"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Boto"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 
 	return S_OK;
 }
 
-HRESULT CVehicle_Flying_EnemyBiplane::Ready_States()
+HRESULT CVehicle_Flying_EnemyBoto::Ready_States()
 {
 	list<wstring> strAnimationNames;
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
+	strAnimationNames.push_back(L"SKM_Boto.ao|Boto_Stand");
+//	strAnimationNames.push_back(L"SKM_Boto.ao|Boto_Idle01");
+//	strAnimationNames.push_back(L"SKM_Boto.ao|Boto_Idle02");
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_IDLE, CState_Enemy_VehicleFlying_Stand::Create(m_pStateCom, strAnimationNames));
 
+//	strAnimationNames.clear();
+//	strAnimationNames.push_back(L"SKM_Boto.ao|Boto_Walk");
+//	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_WALK, CState_Enemy_VehicleFlying_Run::Create(m_pStateCom, strAnimationNames));
+
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Run");
+	strAnimationNames.push_back(L"SKM_Boto.ao|Boto_Run");
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_RUN, CState_Enemy_VehicleFlying_Run::Create(m_pStateCom, strAnimationNames));
 
 	m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_IDLE);
@@ -183,7 +189,7 @@ HRESULT CVehicle_Flying_EnemyBiplane::Ready_States()
 	return S_OK;
 }
 
-void CVehicle_Flying_EnemyBiplane::Update_RiderState()
+void CVehicle_Flying_EnemyBoto::Update_RiderState()
 {
 	if (nullptr != m_pRider)
 	{
@@ -210,39 +216,39 @@ void CVehicle_Flying_EnemyBiplane::Update_RiderState()
 	}
 }
 
-HRESULT CVehicle_Flying_EnemyBiplane::Ready_Colliders()
+HRESULT CVehicle_Flying_EnemyBoto::Ready_Colliders()
 {
 
 	return S_OK;
 }
 
-CVehicle_Flying_EnemyBiplane* CVehicle_Flying_EnemyBiplane::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
+CVehicle_Flying_EnemyBoto* CVehicle_Flying_EnemyBoto::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 {
-	CVehicle_Flying_EnemyBiplane* pInstance = new CVehicle_Flying_EnemyBiplane(pDevice, pContext, strObjectTag);
+	CVehicle_Flying_EnemyBoto* pInstance = new CVehicle_Flying_EnemyBoto(pDevice, pContext, strObjectTag);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX("Fail Craete : CVehicle_Flying_EnemyBiplane");
+		MSG_BOX("Fail Craete : CVehicle_Flying_EnemyBoto");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CVehicle_Flying_EnemyBiplane::Clone(void* pArg)
+CGameObject* CVehicle_Flying_EnemyBoto::Clone(void* pArg)
 {
-	CVehicle_Flying_EnemyBiplane* pInstance = new CVehicle_Flying_EnemyBiplane(*this);
+	CVehicle_Flying_EnemyBoto* pInstance = new CVehicle_Flying_EnemyBoto(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Fail Clone : CVehicle_Flying_EnemyBiplane");
+		MSG_BOX("Fail Clone : CVehicle_Flying_EnemyBoto");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CVehicle_Flying_EnemyBiplane::Free()
+void CVehicle_Flying_EnemyBoto::Free()
 {
 	__super::Free();
 
