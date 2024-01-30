@@ -27,7 +27,7 @@ CUIMinigame_Manager::CUIMinigame_Manager()
 
 }
 
-void CUIMinigame_Manager::Set_HPOwner(CGameObject* pOwner, GRANDPRIX_ENEMY eEnemyID)
+void CUIMinigame_Manager::Set_HPOwner(CGameObject* pOwner, _uint eEnemyID)
 {
 	if (GRANDPRIX_ENEMY::ENEMY_END == eEnemyID)
 		return;

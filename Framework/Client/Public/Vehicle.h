@@ -37,6 +37,14 @@ public:
 		VEHICLE_JUMP_UP, 
 		VEHICLE_JUMP_DOWN, 
 		VEHICLE_JUMP_FINISH, 
+
+		// 미니게임용 상태(플레이어)
+		VEHICLE_RUSH,
+		// 미니게임용 상태(적)
+		VEHICLE_TRACE,
+		VEHICLE_ATTACK,
+		VEHICLE_DEAD,
+
 		VEHICLE_EXIT, 
 		VEHICLE_STATE_END
 	};
