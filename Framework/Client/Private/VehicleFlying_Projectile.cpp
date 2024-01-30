@@ -67,6 +67,7 @@ void CVehicleFlying_Projectile::Tick(_float fTimeDelta)
 	{
 		if (true == m_bCameraTarget)
 		{
+			m_bCameraTarget = false;
 			CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
 			CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
 		}

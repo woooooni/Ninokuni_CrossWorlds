@@ -22,6 +22,8 @@ public:
 	HRESULT Clear();
 	HRESULT	Bind_SRV(class CShader* pShader, const _char* pConstantName);
 	
+public:
+	ID3D11Texture2D* Get_Texture() { return m_pTexture2D; }
 #ifdef _DEBUG
 public:
 	HRESULT Ready_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY);

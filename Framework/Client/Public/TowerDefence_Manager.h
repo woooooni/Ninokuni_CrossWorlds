@@ -74,6 +74,7 @@ private:
 private:
 	HRESULT Ready_Defence_Models();
 	HRESULT Ready_Prototype_Defence_Objects();
+	HRESULT Ready_Picking_Texture();
 
 private:
 	class CDefence_Tower* m_pPicked_Object = nullptr;
@@ -101,6 +102,10 @@ private:
 
 	vector<class CGameObject*> m_OriginNpcs;
 	vector<class CGameObject*> m_OriginAnimals;
+
+private:
+	ID3D11Texture2D* m_pPickingTexture = nullptr;
+	D3D11_BOX m_tPickingBox = {};
 
 private:
 	Vec4 m_vOriginSkyCenterColor = {};

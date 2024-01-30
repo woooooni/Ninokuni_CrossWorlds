@@ -1983,6 +1983,11 @@ HRESULT CRenderer::Render_Debug_Target()
 	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_ScreenEffect"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
 		return E_FAIL;
 
+	if (FAILED(m_pTarget_Manager->Render(TEXT("MRT_FastPicking"), m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], m_pVIBuffer)))
+		return E_FAIL;
+
+	
+
 
 
 	wstring strPlayerPosition = L"";
@@ -2618,6 +2623,12 @@ HRESULT CRenderer::Create_Target()
 		return E_FAIL;
 #pragma endregion
 
+#pragma region MRT_FastPicking : FastPicking
+	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_FastPicking"),
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+#pragma endregion
+
 
 
 
@@ -2871,6 +2882,12 @@ HRESULT CRenderer::Set_TargetsMrt()
 	}
 	
 
+	// MRT_FastPicking
+	{
+		if (FAILED(m_pTarget_Manager->Add_MRT(TEXT("MRT_FastPicking"), TEXT("Target_FastPicking"))))
+			return E_FAIL;
+	}
+
 	
 
 	return S_OK;
@@ -3009,6 +3026,9 @@ HRESULT CRenderer::Set_Debug()
 
 	// MRT_Blend
 	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_Blend"), 150.f, 825.f, 300.f, 150.f)))
+		return E_FAIL;
+
+	if (FAILED(m_pTarget_Manager->Ready_Debug(TEXT("Target_FastPicking"), 450.f, 825.f, 300.f, 150.f)))
 		return E_FAIL;
 
 	

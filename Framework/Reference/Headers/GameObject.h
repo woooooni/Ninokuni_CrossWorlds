@@ -47,6 +47,9 @@ public:
 	}
 	virtual HRESULT Render_Instance_CascadeShadow(class CShader* pInstancingShader, class CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices, const Matrix lightMatrix[3]) { return S_OK; }
 
+
+	virtual HRESULT Render_Picking() { return S_OK; }
+
 public:
 	virtual void Enter_Scene() { };
 	virtual void Return_Pool() { };

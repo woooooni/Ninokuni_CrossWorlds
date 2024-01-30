@@ -359,6 +359,16 @@ HRESULT CTarget_Manager::End_MRT(ID3D11DeviceContext* pContext)
 }
 
 
+ID3D11Texture2D* CTarget_Manager::Get_Texture_FromRenderTarget(const wstring& strTargetTag)
+{
+	CRenderTarget* pRenderTarget = Find_RenderTarget(strTargetTag);
+	if (nullptr == pRenderTarget)
+		return nullptr;
+
+	
+	return pRenderTarget->Get_Texture();
+}
+
 #ifdef _DEBUG
 HRESULT CTarget_Manager::Ready_Debug(const wstring & strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY)
 {

@@ -35,6 +35,10 @@ public:
 	/* 다시 원래 상태로 복구한다. */
 	HRESULT End_MRT(ID3D11DeviceContext* pContext);
 
+
+public:
+	ID3D11Texture2D* Get_Texture_FromRenderTarget(const wstring& strTargetTag);
+
 #ifdef _DEBUG
 public:
 	HRESULT Ready_Debug(const wstring& strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY);

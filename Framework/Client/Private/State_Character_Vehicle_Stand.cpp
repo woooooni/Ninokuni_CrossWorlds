@@ -27,7 +27,6 @@ void CState_Character_Vehicle_Stand::Enter_State(void* pArg)
 
 void CState_Character_Vehicle_Stand::Tick_State(_float fTimeDelta)
 {
-
     __super::OnBoard_Input(fTimeDelta);
 }
 
