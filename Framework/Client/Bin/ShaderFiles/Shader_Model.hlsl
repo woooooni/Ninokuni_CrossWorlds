@@ -26,6 +26,9 @@ matrix g_SnowRotationMatrix;
 float3 g_vBloomPower;
 float4 g_vRimColor = { 0.f, 0.f, 0.f, 0.f };
 
+// ÇÇÅ·
+int g_iObjectID = 0;
+
 cbuffer InversTransposeMatBuffer
 {
     matrix WorldInvTransposeView;
@@ -519,6 +522,23 @@ PS_OUT_MINIMAP PS_MAIN_MINIMAP(PS_IN In)
     return Out;
 }
 
+struct PS_OUT_PICKING
+{
+    float4 vColor : SV_TARGET0;
+};
+
+PS_OUT_PICKING PS_PICKING(PS_IN In)
+{
+    PS_OUT_PICKING Out = (PS_OUT_PICKING) 0;
+    
+    Out.vColor.rgba = 0;
+    Out.vColor.r = float(g_iObjectID) / 1000.f;
+    
+    return Out;
+}
+
+
+
 RasterizerState CullClockWiseRS
 {
     AntialiasedLineEnable = false;
@@ -709,6 +729,48 @@ technique11 DefaultTechnique
         DomainShader = NULL;
 		PixelShader = compile ps_5_0 PS_SHADOW_DEPTH();
 	}
+    
+    pass Temp11
+    {
+		// 11
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN();
+    }
+
+    pass Temp12
+    {
+		// 12
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_MAIN();
+    }
+
+    pass ObjectPicking
+    {
+		// 13
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_PICKING();
+    }
 
 
 

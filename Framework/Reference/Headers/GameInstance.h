@@ -164,7 +164,11 @@ public:
 	class PxCudaContext* Get_CudaContext();
 	class PxParticleSystem* Get_ParticleSystem();*/
 
-
+public:
+	/* For.Target_Manager */
+	HRESULT Begin_MRT(ID3D11DeviceContext* pContext, const wstring& strMRTTag, _bool bClear = true);
+	HRESULT End_MRT(ID3D11DeviceContext* pContext);
+	ID3D11Texture2D* Get_Texture_FromRenderTarget(const wstring& strTargetTag);
 
 public:
 	PxTransform To_PxTransform(Matrix matrix);

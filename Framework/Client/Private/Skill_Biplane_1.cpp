@@ -1,6 +1,11 @@
 #include "stdafx.h"
 #include "GameInstance.h"
 #include "..\Public\Skill_Biplane_1.h"
+#include "Riding_Manager.h"
+#include "VehicleFlying_Projectile.h"
+#include "Vehicle_Flying_Biplane.h"
+#include "Camera_Manager.h"
+#include "Camera.h"
 
 CSkill_Biplane_1::CSkill_Biplane_1()
 {
@@ -32,9 +37,57 @@ void CSkill_Biplane_1::LateTick(_float fTimeDelta)
 _bool CSkill_Biplane_1::Use_Skill()
 {
 	if (true == __super::Use_Skill())
-		return true;	
-	else	
+	{
+		Generate_MuckCloud();
+		return true;
+	}
+	else
+	{
 		return false;
+	}
+		
+}
+
+void CSkill_Biplane_1::Generate_MuckCloud()
+{
+	list<CGameObject*>& Npcs = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_NPC);
+
+	for (auto& pNpc : Npcs)
+	{
+		CTransform* pNpcTransform = pNpc->Get_Component<CTransform>(L"Com_Transform");
+
+		if (nullptr == pNpcTransform)
+		{
+			MSG_BOX("Npc Transform is Null. : CCSkill_Biplane_1::Generate_MuckCloud");
+			continue;
+		}
+
+		CVehicleFlying_Projectile::GRANDPRIX_PROJECTILE_DESC ProjectileDesc = {};
+		ProjectileDesc.pOwner = CRiding_Manager::GetInstance()->Get_Character_Biplane();
+
+		CGameObject* pThunderCloud = GI->Clone_GameObject(L"Prototype_GameObject_Biplane_ThunderCloud", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
+
+		if (nullptr == pThunderCloud)
+		{
+			MSG_BOX("Thunder Cloud is Null. : CSkill_Biplane_1::Generate_MuckCloud");
+			return;
+		}
+
+		CTransform* pThunderCloudTransform = pThunderCloud->Get_Component<CTransform>(L"Com_Transform");
+		if (nullptr == pThunderCloudTransform)
+		{
+			MSG_BOX("Thunder Cloud Transform is Null. : CCSkill_Biplane_1::Generate_MuckCloud");
+			return;
+		}
+
+		pThunderCloudTransform->Set_State(CTransform::STATE_POSITION, pNpcTransform->Get_Position());
+		
+		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_CHARACTER, pThunderCloud)))
+		{
+			MSG_BOX("Add GameObject Failed. : CCSkill_Biplane_1::Generate_MuckCloud");
+			return;
+		}
+	}
 }
 
 

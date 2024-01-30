@@ -44,6 +44,8 @@ public:
 	ID3D11DepthStencilView* Get_BackBuffer() { return m_pDSV; }
 	ID3D11RenderTargetView** Get_PrevRTVs() { return m_pPrevRTVs; }
 
+	ID3D11Texture2D* Get_Texture_FromRenderTarget(const wstring& strTargetTag);
+
 	void SetRenderTarget(ID3D11DeviceContext* pContext, int nCascadeIndex);
 	void ClearCascadeDepthBuffer(ID3D11DeviceContext* pContext);
 

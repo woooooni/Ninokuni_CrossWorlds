@@ -29,7 +29,6 @@
 #include "Light.h"
 
 #include "UI_Manager.h"
-
 #include "SkyDome.h"
 
 
@@ -56,6 +55,9 @@ HRESULT CTowerDefence_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11Devi
 		return E_FAIL;
 
 	if (FAILED(Ready_Prototype_Defence_Objects()))
+		return E_FAIL;
+
+	if (FAILED(Ready_Picking_Texture()))
 		return E_FAIL;
 
 
@@ -461,28 +463,64 @@ void CTowerDefence_Manager::Picking_Position()
 {
 	if (nullptr == m_pPicked_Object || nullptr == m_pPicked_ObjectTransform)
 		return;
+
+	if (FAILED(GI->Begin_MRT(m_pContext, L"MRT_FastPicking")))
+	{
+		MSG_BOX("Begin_MRT Failed. : CTowerDefence_Manager::Picking_Position");
+		return;
+	}
 	
 	list<CGameObject*>& PickingObjects = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_GROUND);
 	for (auto& pObject : PickingObjects)
 	{
-		Vec4 vPickingPos = {};
-		CTransform* pTransform = pObject->Get_Component<CTransform>(L"Com_Transform");
-		CModel* pModel = pObject->Get_Component<CModel>(L"Com_Model");
-
-		for (auto& pMesh : pModel->Get_Meshes())
+		if (FAILED(pObject->Render_Picking()))
 		{
-			if (true == CPicking_Manager::GetInstance()->Is_DefencePicking(pTransform, pMesh, true, &vPickingPos))
-			{
-				if (nullptr != m_pPicked_ObjectTransform)
-				{
-					m_pPicked_ObjectTransform->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vPickingPos, 1.f));
-					m_pPicked_Object->Set_Install_Possible(true);
-					return;
-				}
-			}
-		}
+			wstring strErrMsg = L"Render Picking Failed. : ";
+			strErrMsg += pObject->Get_PrototypeTag();
+			MessageBox(nullptr, strErrMsg.c_str(), L"System Message", MB_OK);
+			return;
+		}	
 	}
-	m_pPicked_Object->Set_Install_Possible(false);
+
+	
+	if (FAILED(GI->End_MRT(m_pContext)))
+	{
+		MSG_BOX("End_MRT Failed. : CTowerDefence_Manager::Picking_Position");
+		return;
+	}
+		
+	_int iObjectId = -1;
+	D3D11_MAPPED_SUBRESOURCE MappedResource;
+	ZeroMemory(&MappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+
+	m_tPickingBox.left = GI->GetMousePos().x;
+	m_tPickingBox.right = GI->GetMousePos().x + 1;
+	m_tPickingBox.top = GI->GetMousePos().y;
+	m_tPickingBox.bottom = GI->GetMousePos().y + 1;
+	m_tPickingBox.front = 0;
+	m_tPickingBox.bottom = 1;
+
+	ID3D11Texture2D* pPickingTarget = GI->Get_Texture_FromRenderTarget(L"Target_FastPicking");
+	if (nullptr == pPickingTarget)
+	{
+		MSG_BOX("Target_FastPicking Is Null. : CTowerDefence_Manager::Picking_Position");
+		return;
+	}
+
+	m_pContext->CopySubresourceRegion(m_pPickingTexture, 0, 0, 0, 0, pPickingTarget, 0, &m_tPickingBox);
+	m_pContext->Map(m_pPickingTexture, 0, D3D11_MAP_READ, 0, &MappedResource);
+	iObjectId = ((_int*)MappedResource.pData)[0];
+	iObjectId *= 1000;
+	m_pContext->Unmap(m_pPickingTexture, 0);
+
+	if (-1 != iObjectId)
+	{
+		int i = 0;
+	}
+	else
+	{
+		int i = -1;
+	}
 }
 
 void CTowerDefence_Manager::Picking_Tower()
@@ -708,6 +746,29 @@ HRESULT CTowerDefence_Manager::Ready_Prototype_Defence_Objects()
 	return S_OK;
 }
 
+HRESULT CTowerDefence_Manager::Ready_Picking_Texture()
+{
+	D3D11_TEXTURE2D_DESC PickingTextureDesc;
+	ZeroMemory(&PickingTextureDesc, sizeof(D3D11_TEXTURE2D_DESC));
+
+	PickingTextureDesc.Width = 1;
+	PickingTextureDesc.Height = 1;
+	PickingTextureDesc.MipLevels = 1;
+	PickingTextureDesc.ArraySize = 1;
+	PickingTextureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	PickingTextureDesc.SampleDesc.Count = 1;
+	PickingTextureDesc.SampleDesc.Quality = 0;
+	PickingTextureDesc.Usage = D3D11_USAGE_STAGING;
+	PickingTextureDesc.BindFlags = 0;
+	PickingTextureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ;
+	PickingTextureDesc.MiscFlags = 0;
+
+	if (FAILED(m_pDevice->CreateTexture2D(&PickingTextureDesc, nullptr, &m_pPickingTexture)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
 
 
 
@@ -731,8 +792,10 @@ void CTowerDefence_Manager::Free()
 		for (_uint i = 0; i < m_InvasionPortals.size(); ++i)
 			Safe_Release(m_InvasionPortals[i]);
 		m_InvasionPortals.clear();
-		
+
+		Safe_Release(m_pPickingTexture);
 	}
+
 
 }
 

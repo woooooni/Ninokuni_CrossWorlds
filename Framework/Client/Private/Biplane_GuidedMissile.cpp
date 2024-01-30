@@ -7,6 +7,8 @@
 #include "Particle_Manager.h"
 #include "Vehicle_Flying.h"
 #include "Character.h"
+#include "Camera_Manager.h"
+#include "Camera.h"
 
 CBiplane_GuidedMissile::CBiplane_GuidedMissile(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:CVehicleFlying_Projectile(pDevice, pContext, L"Biplane_GuidedMissile")
@@ -60,29 +62,37 @@ void CBiplane_GuidedMissile::Tick(_float fTimeDelta)
 		Find_Target(fTimeDelta);
 		if (nullptr == m_pTarget)
 		{
+			m_bCameraTarget = false;
+			CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+			CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW)->Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+
 			Set_Dead(true);
 			return;
 		}
 	}
 
-	if (nullptr != m_pTarget)
+	if (m_fAccDeletionTime >= 0.5f)
 	{
-		CTransform* pTargetTransform = m_pTarget->Get_Component<CTransform>(L"Com_Transform");
-		if (nullptr != pTargetTransform)
+		if (nullptr != m_pTarget)
 		{
-			Vec3 vDir = pTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
-			if (vDir.Length() > 0.001f)
+			CTransform* pTargetTransform = m_pTarget->Get_Component<CTransform>(L"Com_Transform");
+			if (nullptr != pTargetTransform)
 			{
-				Vec3 vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
+				Vec3 vDir = pTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
+				if (vDir.Length() > 0.001f)
+				{
+					Vec3 vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
 
-				Vec3 vAxis = XMVector3Cross(vLook, vDir);
-				vDir = XMVector3Normalize(pTargetTransform->Get_Position() - m_pTransformCom->Get_Position());
+					Vec3 vAxis = XMVector3Cross(vLook, vDir);
+					vDir = XMVector3Normalize(pTargetTransform->Get_Position() - m_pTransformCom->Get_Position());
 
-				m_pTransformCom->Rotation_Acc(vAxis, XMConvertToRadians(180.f) * fTimeDelta);
+					m_pTransformCom->Rotation_Acc(vAxis, XMConvertToRadians(180.f) * fTimeDelta);
+				}
 			}
 		}
+		m_pTransformCom->Rotation_Acc(XMVector3Normalize(m_pTransformCom->Get_Look()), XMConvertToRadians(180.f) * 5.f * fTimeDelta);
 	}
-	m_pTransformCom->Rotation_Acc(XMVector3Normalize(m_pTransformCom->Get_Look()), XMConvertToRadians(180.f) * 2.f * fTimeDelta);
+	
 	m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fMoveSpeed, fTimeDelta);
 }
 

@@ -157,6 +157,7 @@
 #include "Vehicle_Flying_EnemyBiplane.h"
 #include "Swordsman_Biplane_Bullet.h"
 #include "Biplane_GuidedMissile.h"
+#include "Biplane_ThunderCloud.h"
 #include "Grandprix_Engineer.h"
 
 #include "Respawn_Box.h"
@@ -665,6 +666,10 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Biplane_GuidedMissile"),
 			CBiplane_GuidedMissile::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
+			return E_FAIL;
+
+		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Biplane_ThunderCloud"),
+			CBiplane_Thunder_Cloud::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
 			return E_FAIL;
 
 		

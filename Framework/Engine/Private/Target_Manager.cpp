@@ -414,6 +414,16 @@ HRESULT CTarget_Manager::End_MRT(ID3D11DeviceContext* pContext)
 }
 
 
+ID3D11Texture2D* CTarget_Manager::Get_Texture_FromRenderTarget(const wstring& strTargetTag)
+{
+	CRenderTarget* pRenderTarget = Find_RenderTarget(strTargetTag);
+	if (nullptr == pRenderTarget)
+		return nullptr;
+
+	
+	return pRenderTarget->Get_Texture();
+}
+
 void CTarget_Manager::SetRenderTarget(ID3D11DeviceContext* pContext, int nCascadeIndex)
 {
 	ID3D11RenderTargetView* rtv[1] = { nullptr };

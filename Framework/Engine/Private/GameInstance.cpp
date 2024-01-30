@@ -720,6 +720,21 @@ HRESULT CGameInstance::Clear_PhysX_Ground()
 
 
 
+HRESULT CGameInstance::Begin_MRT(ID3D11DeviceContext* pContext, const wstring& strMRTTag, _bool bClear)
+{
+	return m_pTarget_Manager->Begin_MRT(pContext, strMRTTag, bClear);
+}
+
+HRESULT CGameInstance::End_MRT(ID3D11DeviceContext* pContext)
+{
+	return m_pTarget_Manager->End_MRT(pContext);
+}
+
+ID3D11Texture2D* CGameInstance::Get_Texture_FromRenderTarget(const wstring& strTargetTag)
+{
+	return m_pTarget_Manager->Get_Texture_FromRenderTarget(strTargetTag);
+}
+
 PxTransform CGameInstance::To_PxTransform(Matrix matrix)
 {
 	return CUtils::To_PxTransform(matrix);

@@ -39,8 +39,8 @@ HRESULT CBiplane_Thunder_Cloud::Initialize(void* pArg)
 	m_fMoveSpeed = 10.f;
 	m_pTransformCom->Set_Scale(Vec3(0.15f, 0.15f, 0.15f));
 	Set_Collider_Elemental(dynamic_cast<CCharacter*>(m_pOwner->Get_Rider())->Get_ElementalType());
-	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::WEAK, 0.f, 0.f, 0.f, false);
-	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
+	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::STUN, 0.f, 0.f, 0.f, false);
+	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, false);
 
 	m_fDeletionTime = 5.f;
 
@@ -65,6 +65,11 @@ void CBiplane_Thunder_Cloud::Tick(_float fTimeDelta)
 		}
 	}
 
+	if (m_fAccDeletionTime >= 3.f)
+	{
+		Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
+	}
+
 	if (nullptr != m_pTarget)
 	{
 		CTransform* pTargetTransform = m_pTarget->Get_Component<CTransform>(L"Com_Transform");
@@ -83,10 +88,7 @@ void CBiplane_Thunder_Cloud::LateTick(_float fTimeDelta)
 
 HRESULT CBiplane_Thunder_Cloud::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
 {
-	__super::Render();
-
-	if (FAILED(__super::Render_Instance(pInstancingShader, pInstancingBuffer, WorldMatrices)))
-		return E_FAIL;
+	
 
 	return S_OK;
 }
@@ -103,24 +105,20 @@ HRESULT CBiplane_Thunder_Cloud::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Transform"), TEXT("Com_Transform"), reinterpret_cast<CComponent**>(&m_pTransformCom))))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Biplane_Thunder_Cloud"), TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
-		return E_FAIL;
-
 
 	CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
 	ZeroMemory(&SphereDesc, sizeof SphereDesc);
 
-	BoundingSphere tSphere;
-	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 0.2f;
-	SphereDesc.tSphere = tSphere;
+	CCollider_AABB::AABB_COLLIDER_DESC AABBDesc;
+	BoundingBox AABBBox;
+	AABBBox.Extents = Vec3(5.f, 20.f, 5.f);
+	AABBDesc.tBox = AABBBox;
+	AABBDesc.pNode = nullptr;
+	AABBDesc.pOwnerTransform = m_pTransformCom;
+	AABBDesc.ModelPivotMatrix = XMMatrixRotationY(XMConvertToRadians(180.f));
+	AABBDesc.vOffsetPosition = { 0.f, -1.f * AABBBox.Extents.y, 0.f };
 
-	SphereDesc.pNode = nullptr;
-	SphereDesc.pOwnerTransform = m_pTransformCom;
-	SphereDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
-	SphereDesc.vOffsetPosition = Vec3(0.f, 0.f, 0.f);
-
-	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::ATTACK, &SphereDesc)))
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::AABB, CCollider::DETECTION_TYPE::ATTACK, &AABBDesc)))
 		return E_FAIL;
 
 
