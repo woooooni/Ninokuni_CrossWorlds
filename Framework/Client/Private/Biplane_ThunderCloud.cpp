@@ -70,20 +70,10 @@ void CBiplane_Thunder_Cloud::Tick(_float fTimeDelta)
 		CTransform* pTargetTransform = m_pTarget->Get_Component<CTransform>(L"Com_Transform");
 		if (nullptr != pTargetTransform)
 		{
-			Vec3 vDir = pTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
-			if (vDir.Length() > 0.001f)
-			{
-				Vec3 vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
-
-				Vec3 vAxis = XMVector3Cross(vLook, vDir);
-				vDir = XMVector3Normalize(pTargetTransform->Get_Position() - m_pTransformCom->Get_Position());
-
-				m_pTransformCom->Rotation_Acc(vAxis, XMConvertToRadians(180.f) * fTimeDelta);
-			}
+			Vec4 vPosition = pTargetTransform->Get_Position() + XMVectorSet(0.f, 5.f, 0.f, 0.f);
+			m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPosition);
 		}
 	}
-	m_pTransformCom->Rotation_Acc(XMVector3Normalize(m_pTransformCom->Get_Look()), XMConvertToRadians(180.f) * 2.f * fTimeDelta);
-	m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fMoveSpeed, fTimeDelta);
 }
 
 void CBiplane_Thunder_Cloud::LateTick(_float fTimeDelta)
@@ -166,6 +156,7 @@ void CBiplane_Thunder_Cloud::Find_Target(_float fTimeDelta)
 	for (auto& pTarget : TargetObjects)
 	{
 		CTransform* pTargetTransform = pTarget->Get_Component<CTransform>(L"Com_Transform");
+
 		Vec4 vPosition = m_pTransformCom->Get_Position();
 		Vec4 vTargetPosition = pTargetTransform->Get_Position();
 

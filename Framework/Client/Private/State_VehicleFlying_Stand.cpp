@@ -92,7 +92,7 @@ void CState_VehicleFlying_Stand::Tick_State(_float fTimeDelta)
             m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_pVehicle->Get_Speed(), fTimeDelta);*/
             Vec3 vVelocity = m_pRigidBodyCom->Get_Velocity();
             vVelocity.y = 0.f;
-            if (vVelocity.Length() >= 10.f)
+            if (vVelocity.Length() >= 20.f)
             {
                 Vec3 vVelocityDir = XMVector3Normalize(m_pTransformCom->Get_Look());
                 vVelocityDir.y = 0.8f;
