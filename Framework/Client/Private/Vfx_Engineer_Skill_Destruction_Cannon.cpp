@@ -7,6 +7,8 @@
 #include "Character_Projectile.h"
 #include "Character_Manager.h"
 #include "Particle.h"
+#include "Effect.h"
+#include "Utils.h"
 
 CVfx_Engineer_Skill_Destruction_Cannon::CVfx_Engineer_Skill_Destruction_Cannon(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
@@ -25,6 +27,19 @@ HRESULT CVfx_Engineer_Skill_Destruction_Cannon::Initialize_Prototype()
 	m_pPositionOffset = new _float3[m_iMaxCount];
 	m_pScaleOffset    = new _float3[m_iMaxCount];
 	m_pRotationOffset = new _float3[m_iMaxCount];
+
+	// 등장
+	{
+		m_pFrameTriger[TYPE_ET0_E_METAL] = 5;
+		m_pPositionOffset[TYPE_ET0_E_METAL] = _float3(0.f, 0.f, 1.f);
+		m_pScaleOffset[TYPE_ET0_E_METAL]    = _float3(2.f, 2.f, 2.f);
+		m_pRotationOffset[TYPE_ET0_E_METAL] = _float3(0.f, 0.f, 0.f);
+
+		m_pFrameTriger[TYPE_ET0_P_SMOKE] = 5;
+		m_pPositionOffset[TYPE_ET0_P_SMOKE] = _float3(0.f, 0.f, 0.f);
+		m_pScaleOffset[TYPE_ET0_P_SMOKE]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_ET0_P_SMOKE] = _float3(0.f, 0.f, 0.f);
+	}
 
 	// 대포 발사 준비
 	{
@@ -66,10 +81,7 @@ HRESULT CVfx_Engineer_Skill_Destruction_Cannon::Initialize_Prototype()
 
 	// 대포 회수
 	{
-		m_pFrameTriger[TYPE_ET3_E_METAL] = 50;
-		m_pPositionOffset[TYPE_ET3_E_METAL] = _float3(1.8f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET3_E_METAL]    = _float3(1.f, 1.f, 1.f);
-		m_pRotationOffset[TYPE_ET3_E_METAL] = _float3(0.f, 0.f, 0.f);
+		m_pFrameTriger[TYPE_ET3_E_METAL] = 95;
 	}
 
  	return S_OK;
@@ -103,8 +115,19 @@ void CVfx_Engineer_Skill_Destruction_Cannon::Tick(_float fTimeDelta)
 
 	if (!m_bOwnerTween)
 	{
+		// 대포 등장
+		if (m_iCount == TYPE_ET0_E_METAL && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET0_E_METAL])
+		{
+			Create_Metal();
+			m_iCount++;
+		}
+		else if (m_iCount == TYPE_ET0_P_SMOKE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET0_P_SMOKE])
+		{
+			m_iCount++;
+		}
+
 		// 대포 발사 준비
-		if (m_iCount == TYPE_ET1_P_LIGHT && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_P_LIGHT])
+		else if (m_iCount == TYPE_ET1_P_LIGHT && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_P_LIGHT])
 		{
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Engineer_Skill_Destruction_Cannon_Circles"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_P_LIGHT], m_pScaleOffset[TYPE_ET1_P_LIGHT], m_pRotationOffset[TYPE_ET1_P_LIGHT]);
@@ -143,7 +166,7 @@ void CVfx_Engineer_Skill_Destruction_Cannon::Tick(_float fTimeDelta)
 		// 대포 회수
 		else if (m_iCount == TYPE_ET3_E_METAL && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_E_METAL])
 		{
-
+			Create_Metal();
 			m_iCount++;
 		}
 
@@ -164,6 +187,104 @@ HRESULT CVfx_Engineer_Skill_Destruction_Cannon::Render()
 HRESULT CVfx_Engineer_Skill_Destruction_Cannon::Ready_Components()
 {
 	return S_OK;
+}
+
+void CVfx_Engineer_Skill_Destruction_Cannon::Create_Metal()
+{
+	_uint iCreateCount = CUtils::Random_Int(15, 25);
+
+	CEffect* pEffect = nullptr;
+	_float3 fColor    = _float3(0.f, 0.f, 0.f);
+	_float3 fRotation = _float3(0.f, 0.f, 0.f);
+
+	for (size_t i = 0; i < iCreateCount; ++i)
+	{
+		// 종류
+		_uint iRandomEffectCount = CUtils::Random_Int(0, 3);
+		switch (iRandomEffectCount)
+		{
+		case 0:
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Bolt"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET0_E_METAL], m_pScaleOffset[TYPE_ET0_E_METAL], m_pRotationOffset[TYPE_ET0_E_METAL], nullptr, &pEffect);
+			break;
+
+		case 1:
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Nut"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET0_E_METAL], m_pScaleOffset[TYPE_ET0_E_METAL], m_pRotationOffset[TYPE_ET0_E_METAL], nullptr, &pEffect);
+			break;
+
+		case 2:
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Spring"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET0_E_METAL], m_pScaleOffset[TYPE_ET0_E_METAL], m_pRotationOffset[TYPE_ET0_E_METAL], nullptr, &pEffect);
+			break;
+
+		case 3:
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Gear"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET0_E_METAL], m_pScaleOffset[TYPE_ET0_E_METAL], m_pRotationOffset[TYPE_ET0_E_METAL], nullptr, &pEffect);
+			break;
+		default:
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Nut"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET0_E_METAL], m_pScaleOffset[TYPE_ET0_E_METAL], m_pRotationOffset[TYPE_ET0_E_METAL], nullptr, &pEffect);
+			break;
+		}
+		pEffect->Start_RigidbodyJump(Vec3(CUtils::Random_Float(-5.f, 5.f), CUtils::Random_Float(1.f, 15.f), CUtils::Random_Float(-5.f, 5.f)), CUtils::Random_Float(2.5f, 5.f), true);
+
+		// 색상
+		_uint iRandomColorCount = CUtils::Random_Int(0, 14);
+		if (5 > iRandomColorCount) // 5
+		{
+			fColor = _float3(0.772f, 0.772f, 0.772f); // 밝은회색
+		}
+		else if (9 > iRandomColorCount) // 4
+		{
+			fColor = _float3(0.492f, 0.492f, 0.492f); // 진한회색
+		}
+		else if (12 > iRandomColorCount) // 3
+		{
+			fColor = _float3(0.872f, 0.872f, 0.872f); // 하얀회색
+		}
+		else if (14 > iRandomColorCount) // 2
+		{
+			fColor = _float3(0.984f, 0.794f, 0.383f); // 밝은골드
+		}
+		else if (15 > iRandomColorCount) // 1
+		{
+			fColor = _float3(0.902f, 0.685f, 0.215f); // 진한골드
+		}
+		pEffect->Set_Color(fColor);
+
+		CTransform* pTransform = pEffect->Get_Component<CTransform>(L"Com_Transform");
+		if (nullptr != pTransform)
+		{
+			// 회전 
+			_uint iRandomAxisCount = CUtils::Random_Int(0, 2);
+			switch (iRandomAxisCount)
+			{
+			case 0:
+				fRotation = _float3(CUtils::Random_Float(-360.f, 360.f), 0.f, 0.f);
+				break;
+
+			case 1:
+				fRotation = _float3(0.f, CUtils::Random_Float(-360.f, 360.f), 0.f);
+				break;
+
+			case 2:
+				fRotation = _float3(0.f, 0.f, CUtils::Random_Float(-360.f, 360.f));
+				break;
+			}
+			pTransform->FixRotation(fRotation.x, fRotation.y, fRotation.z);
+
+			// 스케일
+			_float fScale = CUtils::Random_Float(1.5f, 3.f);
+			pTransform->Set_Scale(_float3(fScale, fScale, fScale));
+		}
+
+		// 블룸
+		pEffect->Set_BloomPower(_float3(CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f)));
+	
+		// 유지시간
+		pEffect->Set_LifeTime(3.f);
+	}
 }
 
 void CVfx_Engineer_Skill_Destruction_Cannon::Fire_Cannon()

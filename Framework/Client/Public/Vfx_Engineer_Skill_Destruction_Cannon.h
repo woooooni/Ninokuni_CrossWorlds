@@ -12,6 +12,9 @@ class CVfx_Engineer_Skill_Destruction_Cannon final : public CVfx
 {
 private:
 	enum TYPE {
+		TYPE_ET0_E_METAL,
+		TYPE_ET0_P_SMOKE,
+		// ---------------------------
 		TYPE_ET1_P_LIGHT,
 		// ---------------------------
 		TYPE_ET2_O_BULLET,
@@ -42,6 +45,7 @@ protected:
 	virtual HRESULT Ready_Components() override;
 
 private:
+	void Create_Metal();
 	void Fire_Cannon();
 
 public:

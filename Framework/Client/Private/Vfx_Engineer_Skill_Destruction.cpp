@@ -40,17 +40,6 @@ HRESULT CVfx_Engineer_Skill_Destruction::Initialize_Prototype()
 		m_pPositionOffset[TYPE_ET2_O_CANNON] = _float3(1.8f, 0.f, 0.f);
 		m_pScaleOffset[TYPE_ET2_O_CANNON]    = _float3(1.f, 1.f, 1.f);
 		m_pRotationOffset[TYPE_ET2_O_CANNON] = _float3(0.f, 0.f, 0.f);
-
-		m_pFrameTriger[TYPE_ET2_E_METAL] = 20;
-		m_pPositionOffset[TYPE_ET2_E_METAL] = _float3(1.8f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_E_METAL]    = _float3(1.f, 1.f, 1.f);
-		m_pRotationOffset[TYPE_ET2_E_METAL] = _float3(0.f, 0.f, 0.f);
-
-		// 
-		m_pFrameTriger[TYPE_ET2_P_SMOKE] = 20;
-		m_pPositionOffset[TYPE_ET2_P_SMOKE] = _float3(1.8f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_ET2_P_SMOKE]    = _float3(1.f, 1.f, 1.f);
-		m_pRotationOffset[TYPE_ET2_P_SMOKE] = _float3(0.f, 0.f, 0.f);
 	}
 
  	return S_OK;
@@ -79,14 +68,6 @@ void CVfx_Engineer_Skill_Destruction::Tick(_float fTimeDelta)
 		else if (m_iCount == TYPE_ET2_O_CANNON && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_O_CANNON])
 		{
 			Create_Cannon();
-			m_iCount++;
-		}
-		else if (m_iCount == TYPE_ET2_E_METAL && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_E_METAL])
-		{
-			m_iCount++;
-		}
-		else if (m_iCount == TYPE_ET2_P_SMOKE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_SMOKE])
-		{
 			m_iCount++;
 		}
 

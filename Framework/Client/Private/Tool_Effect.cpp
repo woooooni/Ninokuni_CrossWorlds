@@ -575,6 +575,53 @@ _bool CTool_Effect::Tick_EffectTool()
 					bEffectSystemUse = true;
 			}
 		}
+
+		// 디스토션
+		if (ImGui::CollapsingHeader("Distortion"))
+		{
+			// 디스토션 텍스처 
+			ImGui::Text("DistortionFolderName :");
+			ImGui::SameLine();
+			if (ImGui::Combo("##DistortionFolderName", &m_iDistortionFolderIndex, m_cFolderName, IM_ARRAYSIZE(m_cFolderName)))
+				bEffectSystemUse = true;
+			ImGui::NewLine();
+
+			// 디스토션 인덱스
+			if (m_pEffect != nullptr)
+			{
+				ImGui::Text("DistortionTextureIndex");
+				ImGui::SameLine();
+				if (ImGui::InputInt("##DistortionTextureIndex", &(_int)m_tEffectInfo.iDistortionIndex))
+					bEffectSystemUse = true;
+
+				CTexture* pDistortionTexture = static_cast<CEffect*>(m_pEffect)->Get_DistortionTexture();
+				if (pDistortionTexture != nullptr)
+				{
+					ImGui::Text("Distortion Texture");
+					if (ImGui::BeginListBox("##Effect_DistortionTexture_List", ImVec2(450.f, 200.f)))
+					{
+						for (size_t i = 0; i < pDistortionTexture->Get_TextureCount(); ++i)
+						{
+							if (i % 5 != 0)
+								IMGUI_SAME_LINE;
+
+							if (ImGui::ImageButton(pDistortionTexture->Get_Srv(i), ImVec2(50.f, 50.f)))
+							{
+								m_tEffectInfo.iDistortionIndex = i;
+								bEffectSystemUse = true;
+							}
+						}
+						ImGui::EndListBox();
+					}
+				}
+				ImGui::NewLine();
+			}
+
+			// 디스토션 파워
+			ImGui::Text("DistortionPower");
+			if (ImGui::InputFloat2("##DistortionPower", &m_tEffectInfo.vDistortionPower.x))
+				bEffectSystemUse = true;
+		}
 	}
 #pragma endregion
 
@@ -940,8 +987,9 @@ void CTool_Effect::Load_ObjectInfo(TYPE eType)
 
 		wcstombs_s(&convertedChars, m_cModelName, sizeof(m_cModelName), m_tEffectInfo.strModelName.c_str(), _TRUNCATE);
 
-		m_iDiffuseFolderIndex = Get_FolderIndex(m_tEffectInfo.strDiffuseTetextureName);
-		m_iAlphaFolderIndex   = Get_FolderIndex(m_tEffectInfo.strAlphaTexturName);
+		m_iDiffuseFolderIndex    = Get_FolderIndex(m_tEffectInfo.strDiffuseTetextureName);
+		m_iAlphaFolderIndex      = Get_FolderIndex(m_tEffectInfo.strAlphaTexturName);
+		m_iDistortionFolderIndex = Get_FolderIndex(m_tEffectInfo.strDistortionTetextureName);
 		break;
 		// --------------------------------------------------------------------------------------------
 	case TYPE_DECAL:
@@ -985,8 +1033,9 @@ void CTool_Effect::Store_ObjectInfo(TYPE eType)
 		wstring strModelName(m_cModelName, m_cModelName + strlen(m_cModelName));
 		m_tEffectInfo.strModelName = strModelName;
 
-		m_tEffectInfo.strDiffuseTetextureName = Select_FolderName(m_iDiffuseFolderIndex);
-		m_tEffectInfo.strAlphaTexturName = Select_FolderName(m_iAlphaFolderIndex);
+		m_tEffectInfo.strDiffuseTetextureName    = Select_FolderName(m_iDiffuseFolderIndex);
+		m_tEffectInfo.strAlphaTexturName         = Select_FolderName(m_iAlphaFolderIndex);
+		m_tEffectInfo.strDistortionTetextureName = Select_FolderName(m_iDistortionFolderIndex);
 
 		static_cast<CEffect*>(m_pEffect)->Set_EffectDesc(m_tEffectInfo);
 	}
@@ -1030,8 +1079,9 @@ void CTool_Effect::Set_OriginalInfo(TYPE eType)
 		wstring strModelName(m_cModelName, m_cModelName + strlen(m_cModelName));
 		m_tEffectInfo.strModelName = strModelName;
 
-		m_tEffectInfo.strDiffuseTetextureName = Select_FolderName(m_iDiffuseFolderIndex);
-		m_tEffectInfo.strAlphaTexturName      = Select_FolderName(m_iAlphaFolderIndex);
+		m_tEffectInfo.strDiffuseTetextureName    = Select_FolderName(m_iDiffuseFolderIndex);
+		m_tEffectInfo.strAlphaTexturName         = Select_FolderName(m_iAlphaFolderIndex);
+		m_tEffectInfo.strDistortionTetextureName = Select_FolderName(m_iDistortionFolderIndex);
 
 		static_cast<CEffect*>(pGameObject)->Set_EffectDesc(m_tEffectInfo);
 	}

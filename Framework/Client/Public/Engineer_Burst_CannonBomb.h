@@ -37,7 +37,6 @@ private:
 
 private:
 	class CEffect* m_pSpiralEffect = nullptr;
-	_bool m_bGenEffect = false;
 
 public:
 	static CEngineer_Burst_CannonBomb* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);

@@ -223,12 +223,18 @@ HRESULT CParticle_Manager::Tick_Generate_Particle(_float* fTimeAcc, _float fCrea
 
 		CTransform* pTransform = pOwner->Get_Component<CTransform>(L"Com_Transform");
 		if (pTransform == nullptr)
-			return S_OK;
+			return E_FAIL;
 
-		if(!bOwnerSet)
-			Generate_Particle(strParticleName, pTransform->Get_WorldMatrix(), vLocalPos, vLocalScale, vLocalRotation);
+		if (!bOwnerSet)
+		{
+			if (FAILED(Generate_Particle(strParticleName, pTransform->Get_WorldMatrix(), vLocalPos, vLocalScale, vLocalRotation)))
+				return E_FAIL;
+		}
 		else
-			Generate_Particle(strParticleName, pTransform->Get_WorldMatrix(), vLocalPos, vLocalScale, vLocalRotation, pOwner);
+		{
+			if (FAILED(Generate_Particle(strParticleName, pTransform->Get_WorldMatrix(), vLocalPos, vLocalScale, vLocalRotation, pOwner)))
+				return E_FAIL;
+		}
 	}
 
 	return S_OK;

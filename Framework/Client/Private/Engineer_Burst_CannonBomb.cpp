@@ -48,20 +48,20 @@ HRESULT CEngineer_Burst_CannonBomb::Initialize(void* pArg)
 
 void CEngineer_Burst_CannonBomb::Tick(_float fTimeDelta)
 {
-
-	if (false == m_bGenEffect)
-	{
-		//CEffect_Manager::GetInstance()->Generate_Effect(L"Effect_Engineer_BulletBomb_Spiral_0", m_pTransformCom->Get_WorldMatrix(), Vec3(0.f, 0.f, 0.f), Vec3(2.f, 2.f, 15.f), Vec3(0.f, 0.f, 0.f), this, &m_pSpiralEffect, false);
-		//Safe_AddRef(m_pSpiralEffect);
-
-		m_bGenEffect = true;
-	}
-
 	if (false == m_bReserveDead)
 	{
 		__super::Tick(fTimeDelta);
 		m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fMoveSpeed, fTimeDelta);
 		m_pTransformCom->Rotation_Acc(XMVector3Normalize(m_pTransformCom->Get_Look()), -1.f * XMConvertToRadians(180.f) * 6.f * fTimeDelta);
+		
+		if (nullptr == m_pSpiralEffect)
+		{
+			CEffect_Manager::GetInstance()->Generate_Effect(L"Effect_Engineer_CannonBomb_Spiral", m_pTransformCom->Get_WorldMatrix(), Vec3(0.f, 0.f, 0.f), Vec3(1.5f, 1.5f, 20.f), Vec3(0.f, 0.f, 0.f), this, &m_pSpiralEffect, false);
+			Safe_AddRef(m_pSpiralEffect);
+		}
+		else
+			GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fAccEffect, CUtils::Random_Float(0.1f, 0.3f), fTimeDelta, TEXT("Particle_SparkCircle_Big"), this);
+		
 		return;
 	}
 	else

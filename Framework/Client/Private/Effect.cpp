@@ -39,6 +39,7 @@ void CEffect::Set_EffectDesc(const EFFECT_DESC& tDesc)
 
 	Set_Texture_Diffuse();
 	Set_Texture_Alpha();
+	Set_Texture_Distortion();
 
 	Reset_Effect();
 }
@@ -96,6 +97,12 @@ void CEffect::Reserve_Dissolve(_uint iDissolveTexIndex, _float4 vDissolveColor, 
 	m_fDissolveTotal = fDissolveTotal;
 
 	m_fDissolveWeight = 0.f;
+}
+
+void CEffect::Start_RigidbodyJump(Vec3 vDir, _float fForce, _bool bClear)
+{
+	m_tEffectDesc.bGravity = true;
+	m_pRigidBodyCom->Add_Velocity(vDir, fForce, bClear);
 }
 
 void CEffect::Reset_Effect()
@@ -530,54 +537,51 @@ HRESULT CEffect::Bind_ShaderResource_Instance(CShader* pShader)
 {
 	if (FAILED(pShader->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
 		return E_FAIL;
-
 	if (FAILED(pShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
 
-
 	if (FAILED(pShader->Bind_RawValue("g_fAlpha_Discard", &m_tEffectDesc.fAlpha_Discard, sizeof(_float))))
 		return E_FAIL;
-
 	if (FAILED(pShader->Bind_RawValue("g_fBlack_Discard", &m_tEffectDesc.fBlack_Discard, sizeof(_float3))))
 		return E_FAIL;
-
-
 	if (FAILED(pShader->Bind_RawValue("g_fBlurPower", &m_tEffectDesc.fBlurPower, sizeof(_float))))
 		return E_FAIL;
 
-
-	/*if (false == m_bSelectDistortion)
+	// DiffuseTexture
+	if (m_pDiffuseTextureCom != nullptr && -1 < m_tEffectDesc.iTextureIndexDiffuse) 
 	{
-		m_vDistortion = { GI->RandomFloat(0.5f, 1.f), GI->RandomFloat(0.5f, 1.f), 0.f, 0.f };
-		m_bSelectDistortion = true;
-	}*/
-
-	if (FAILED(pShader->Bind_RawValue("g_vDistortion", &m_vDistortion, sizeof(_float4))))
-		return E_FAIL;
-
-	if (m_pDiffuseTextureCom  != nullptr && -1 < m_tEffectDesc.iTextureIndexDiffuse) {
 		if (FAILED(m_pDiffuseTextureCom->Bind_ShaderResource(pShader, "g_DiffuseTexture", m_tEffectDesc.iTextureIndexDiffuse)))
 			return E_FAIL;
 	}
-	if (m_pAlphaTextureCom    != nullptr && -1 < m_tEffectDesc.iTextureIndexAlpha) {
+
+	// AlphaTexture
+	if (m_pAlphaTextureCom != nullptr && -1 < m_tEffectDesc.iTextureIndexAlpha) 
+	{
 		if (FAILED(m_pAlphaTextureCom->Bind_ShaderResource(pShader, "g_AlphaTexture", m_tEffectDesc.iTextureIndexAlpha)))
 			return E_FAIL;
 	}
-	if (m_pDissolveTextureCom != nullptr)
-	{
-		if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(pShader, "g_DissolveTexture", m_iDissolveTexIndex)))
-			return E_FAIL;
 
-		if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(pShader, "g_DistortionTexture", 161)))
-			return E_FAIL;
-	}
-	
-
+	// Dissolve
 	if (FAILED(pShader->Bind_RawValue("g_vDissolveColor", &m_vDissolveColor, sizeof(_float4))))
 		return E_FAIL;
 	if (FAILED(pShader->Bind_RawValue("g_fDissolveWeight", &m_fDissolveWeight, sizeof(_float))))
 		return E_FAIL;
+	if (m_pDissolveTextureCom != nullptr)
+	{
+		if (FAILED(m_pDissolveTextureCom->Bind_ShaderResource(pShader, "g_DissolveTexture", m_iDissolveTexIndex)))
+			return E_FAIL;
+	}
 
+	// Distortion
+	if (FAILED(pShader->Bind_RawValue("g_vDistortion", &m_tEffectDesc.vDistortionPower, sizeof(_float4))))
+		return E_FAIL;
+	if (m_pDistortionTextureCom != nullptr && -1 < m_tEffectDesc.iDistortionIndex)
+	{
+		if (FAILED(m_pDistortionTextureCom->Bind_ShaderResource(pShader, "g_DistortionTexture", m_tEffectDesc.iDistortionIndex)))
+			return E_FAIL;
+	}
+
+	// Pass
 	if (m_tEffectDesc.iShaderPass <= 3)
 	{
 		// 둘다 없다면
@@ -1080,6 +1084,29 @@ void CEffect::Set_Texture_Alpha()
 		m_tEffectDesc.iTextureIndexAlpha = m_pAlphaTextureCom->Get_TextureCount() - 1;
 }
 
+void CEffect::Set_Texture_Distortion()
+{
+	_int  iBufferSizeName = WideCharToMultiByte(CP_UTF8, 0, m_tEffectDesc.strDistortionTetextureName.c_str(), -1, nullptr, 0, nullptr, nullptr);
+	char* pszFileName = new char[iBufferSizeName];
+	WideCharToMultiByte(CP_UTF8, 0, m_tEffectDesc.strDistortionTetextureName.c_str(), -1, pszFileName, iBufferSizeName, nullptr, nullptr);
+	if (strcmp(pszFileName, "") != 0)
+	{
+		if (m_pDistortionTextureCom != nullptr)
+			Safe_Release(m_pDistortionTextureCom);
+
+		m_pDistortionTextureCom = static_cast<CTexture*>(GI->Clone_Component(LEVEL_STATIC, m_tEffectDesc.strDistortionTetextureName));
+	}
+	else
+	{
+		if (m_pDistortionTextureCom != nullptr)
+			Safe_Release(m_pDistortionTextureCom);
+	}
+	Safe_Delete(pszFileName);
+
+	if (m_pDistortionTextureCom != nullptr && m_tEffectDesc.iDistortionIndex >= m_pDistortionTextureCom->Get_TextureCount())
+		m_tEffectDesc.iDistortionIndex = m_pDistortionTextureCom->Get_TextureCount() - 1;
+}
+
 HRESULT CEffect::Ready_Components()
 {
 	/* For.Com_Transform */
@@ -1101,6 +1128,7 @@ HRESULT CEffect::Ready_Components()
 
 	Set_Texture_Diffuse();
 	Set_Texture_Alpha();
+	Set_Texture_Distortion();
 
 	m_pDissolveTextureCom = static_cast<CTexture*>(GI->Clone_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Noise")));
 	if (m_pDissolveTextureCom == nullptr)
@@ -1159,6 +1187,7 @@ void CEffect::Free()
 	Safe_Release(m_pRigidBodyCom);
 	Safe_Release(m_pVIBufferCom);
 	Safe_Release(m_pDissolveTextureCom);
+	Safe_Release(m_pDistortionTextureCom);
 }
 
 

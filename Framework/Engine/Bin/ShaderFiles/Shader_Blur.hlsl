@@ -11,6 +11,7 @@ float2 g_WinSize           = float2(1900.f, 900.f);
 float  g_fWeight_low[3]    = { 0.025f, 0.95f, 0.025f };
 float  g_fWeight_middle[7] = { 0.2f, 0.5f, 0.8f, 1.f, 0.8f, 0.5f, 0.2f };
 float  g_fWeight_high[11]  = { 0.1f, 0.2f, 0.4f, 0.6f, 0.8f, 1.f, 0.8f, 0.6f, 0.4f, 0.2f, 0.1f };
+float  g_fWeight_highhigh[19] = { 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 1.f, 0.9f, 0.8f, 0.7f, 0.6f, 0.5f, 0.4f, 0.3f, 0.2f, 0.1f };
 
 struct VS_IN
 {
@@ -179,6 +180,43 @@ PS_OUT PS_BLUR_Vertical_high(PS_IN In)
 	return Out;
 }
 
+// Power highhigh
+PS_OUT PS_BLUR_Horizontal_highhigh(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    float4 vColor = float4(0.f, 0.f, 0.f, 1.f);
+    float fTotal = 0.f;
+
+    for (int i = -9; 10 > i; i++)
+    {
+        vColor += g_fWeight_highhigh[i + 9] * g_BlurTarget.Sample(LinearSampler, In.vTexcoord + float2(1.f / (g_WinSize.x / 2.f) * i, 0.f));
+        fTotal += g_fWeight_highhigh[i + 9];
+    }
+
+    Out.vColor = vColor / fTotal;
+
+    return Out;
+}
+
+PS_OUT PS_BLUR_Vertical_highhigh(PS_IN In)
+{
+    PS_OUT Out = (PS_OUT) 0;
+
+    float4 vColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    float fTotal = 0.f;
+
+    for (int i = -9; 10 > i; i++)
+    {
+        vColor += g_fWeight_highhigh[i + 9] * g_BlurTarget.Sample(LinearSampler, In.vTexcoord + float2(0, 1.f / (g_WinSize.y / 2.f) * i));
+        fTotal += g_fWeight_highhigh[i + 9];
+    }
+
+    Out.vColor = vColor / fTotal;
+
+    return Out;
+}
+
 // All
 PS_OUT PS_BLUR_All(PS_IN In)
 {
@@ -326,7 +364,35 @@ technique11 DefaultTechnique
 		PixelShader = compile ps_5_0 PS_BLUR_Vertical_high();
 	}
 
-    // 9
+
+	// 9
+    pass Blur_Horizontal_highhigh
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_OneMaxBlend, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_BLUR_Horizontal_highhigh();
+    }
+
+	// 10
+    pass Blur_Vertical_highhigh
+    {
+        SetRasterizerState(RS_Default);
+        SetDepthStencilState(DSS_None, 0);
+        SetBlendState(BS_OneMaxBlend, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
+        VertexShader = compile vs_5_0 VS_MAIN();
+        GeometryShader = NULL;
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = compile ps_5_0 PS_BLUR_Vertical_highhigh();
+    }
+
+
+    // 11
     pass Blur_All
     {
         SetRasterizerState(RS_Default);

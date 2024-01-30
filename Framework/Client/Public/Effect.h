@@ -163,6 +163,12 @@ public:
 		_float3 fBlack_Discard = _float3(0.5f, 0.5f, 0.5f);
 #pragma endregion
 
+#pragma region Distortion
+		wstring strDistortionTetextureName = L"Prototype_Component_Texture_Effect_Noise";
+		_int    iDistortionIndex = 161;
+		_float4 vDistortionPower = _float4(0.f, 0.f, 0.f, 0.f);//xy
+#pragma endregion
+
 		tagEffectDesc()
 		{
 		}
@@ -268,6 +274,10 @@ public:
 			iShaderPass  = rhs.iShaderPass;
 			fAlpha_Discard = rhs.fAlpha_Discard;
 			fBlack_Discard = rhs.fBlack_Discard;
+
+			strDistortionTetextureName = rhs.strDistortionTetextureName;
+			iDistortionIndex = rhs.iDistortionIndex;
+			vDistortionPower = rhs.vDistortionPower;
 		}
 
 	} EFFECT_DESC;
@@ -296,8 +306,14 @@ public:
 	void Set_UVLoop(_int iLoop);
 	void Set_UVSpeed(_float fSpeed);
 	void Set_UVFlow(_int iLoop, _float2 fDir, _float2 fSpeed);
+
 	void Start_Dissolve(_uint iDissolveTexIndex, _float4 vDissolveColor, _float fDissolveSpeed, _float  fDissolveTotal);
 	void Reserve_Dissolve(_uint iDissolveTexIndex, _float4 vDissolveColor, _float fDissolveSpeed, _float  fDissolveTotal);
+
+	void Start_RigidbodyJump(Vec3 vDir, _float fForce, _bool bClear);
+	void Set_Color(_float3 fRGBColor) { m_fColor = fRGBColor; }
+	void Set_BloomPower(_float3 fPower) { m_fBlurColor = fPower; }
+	void Set_LifeTime(_float fTime) { m_fLifeTime = fTime; }
 
 public:
 	void Set_Owner(CGameObject* pGameObject) { m_pOwnerObject = pGameObject; }
@@ -310,8 +326,9 @@ public:
 	void Set_OwnerTransformOnly(_bool bOwnerTransformOnly) { m_bOwnerTransformOnly = bOwnerTransformOnly; }
 
 public:
-	class CTexture* Get_DiffuseTexture() { return m_pDiffuseTextureCom; }
-	class CTexture* Get_AlphaTexture()   { return m_pAlphaTextureCom; }
+	class CTexture* Get_DiffuseTexture()    { return m_pDiffuseTextureCom; }
+	class CTexture* Get_AlphaTexture()      { return m_pAlphaTextureCom; }
+	class CTexture* Get_DistortionTexture() { return m_pDistortionTextureCom; }
 	class CTransform* Get_TransformCom() { return m_pTransformCom; }
 	class CRigidBody* Get_RigidBodyCom() { return m_pRigidBodyCom; }
 
@@ -329,6 +346,7 @@ private:
 
 private:
 	_bool   m_bEffectDie = false;
+	_bool   m_bOwnerTransformOnly = false;
 
 	_float  m_fAccDeletionTime = 0.f;
 
@@ -393,7 +411,6 @@ private:
 	_float  m_fBlurPower = 0.f;
 
 	// Dissolve
-	class CTexture* m_pDissolveTextureCom = nullptr;
 	_bool   m_bReserve_Dissolve = false;
 	_bool   m_bDissolve = false;
 	_uint   m_iDissolveTexIndex = 0;
@@ -402,18 +419,17 @@ private:
 	_float  m_fDissolveSpeed  = 5.f;
 	_float  m_fDissolveWeight = 0.f;
 
-	_float4 m_vDistortion = { 0.f, 0.f, 0.f, 0.f };
-
-	_bool m_bOwnerTransformOnly = false;
-
 private:
 	class CRenderer*  m_pRendererCom  = nullptr;
 	class CTransform* m_pTransformCom = nullptr;
 	class CRigidBody* m_pRigidBodyCom = nullptr;
 	class CModel*         m_pModelCom = nullptr;
 	class CVIBuffer_Rect* m_pVIBufferCom = nullptr;
+
 	class CTexture* m_pDiffuseTextureCom = nullptr;
-	class CTexture* m_pAlphaTextureCom = nullptr;
+	class CTexture* m_pAlphaTextureCom   = nullptr;
+	class CTexture* m_pDissolveTextureCom   = nullptr;
+	class CTexture* m_pDistortionTextureCom = nullptr;
 
 private:
 	HRESULT Bind_ShaderResource();
@@ -432,6 +448,7 @@ private:
 	void Set_Model();
 	void Set_Texture_Diffuse();
 	void Set_Texture_Alpha();
+	void Set_Texture_Distortion();
 
 protected:
 	// CGameObject을(를) 통해 상속됨
