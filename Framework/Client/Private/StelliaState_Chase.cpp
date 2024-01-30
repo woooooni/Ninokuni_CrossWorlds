@@ -51,7 +51,7 @@ void CStelliaState_Chase::Tick_State(_float fTimeDelta)
 	m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_fSprintSpeed, fTimeDelta);
 
 	// 기본 공격 패턴이면 
-	if (//m_vecAtkState[m_iAtkIndex] == CStellia::STELLIA_ATTACK1 || m_vecAtkState[m_iAtkIndex] == CStellia::STELLIA_ATTACK2 ||
+	if (m_vecAtkState[m_iAtkIndex] == CStellia::STELLIA_ATTACK1 || m_vecAtkState[m_iAtkIndex] == CStellia::STELLIA_ATTACK2 ||
 		m_vecAtkState[m_iAtkIndex] == CStellia::STELLIA_SPINTAIL)
 	{
 		if (m_pStellia->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_ATKAROUND))

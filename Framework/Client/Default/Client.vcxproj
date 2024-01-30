@@ -295,6 +295,10 @@
     <ClInclude Include="..\Public\State_CarriageMove.h" />
     <ClInclude Include="..\Public\UniqueNpcState_Seat.h" />
     <ClInclude Include="..\Public\Vehicle_Flying_EnemyBoto.h" />
+    <ClInclude Include="..\Public\Vfx_Stellia_Skill_ClawDouble.h" />
+    <ClInclude Include="..\Public\Vfx_Stellia_Skill_ClawRight.h" />
+    <ClInclude Include="..\Public\Vfx_Stellia_Skill_JumpStamp.h" />
+    <ClInclude Include="..\Public\Vfx_Stellia_Skill_SpinTail.h" />
     <ClInclude Include="..\Public\Winter_CurlingFloor.h" />
     <ClInclude Include="..\Public\StelliaState_AfterSpinTail.h" />
     <ClInclude Include="..\Public\StelliaState_BackStep.h" />
@@ -1257,6 +1261,10 @@
     <ClCompile Include="..\Private\State_CarriageMove.cpp" />
     <ClCompile Include="..\Private\UniqueNpcState_Seat.cpp" />
     <ClCompile Include="..\Private\Vehicle_Flying_EnemyBoto.cpp" />
+    <ClCompile Include="..\Private\Vfx_Stellia_Skill_ClawDouble.cpp" />
+    <ClCompile Include="..\Private\Vfx_Stellia_Skill_ClawRight.cpp" />
+    <ClCompile Include="..\Private\Vfx_Stellia_Skill_JumpStamp.cpp" />
+    <ClCompile Include="..\Private\Vfx_Stellia_Skill_SpinTail.cpp" />
     <ClCompile Include="..\Private\Winter_CurlingFloor.cpp" />
     <ClCompile Include="..\Private\StelliaState_AfterSpinTail.cpp" />
     <ClCompile Include="..\Private\StelliaState_BackStep.cpp" />

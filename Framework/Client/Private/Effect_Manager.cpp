@@ -857,6 +857,27 @@ HRESULT CEffect_Manager::Ready_Proto_Vfx_Monster()
 			return E_FAIL;
 	}
 
+	// Stellia
+	{
+		// Prototype_Vfx_Stellia_Skill_ClawRight
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Stellia_Skill_RightClaw"),
+			CVfx_Stellia_Skill_ClawRight::Create(m_pDevice, m_pContext, TEXT("Stellia_Skill_RightClaw")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+		// Prototype_Vfx_Stellia_Skill_ClawDouble
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Stellia_Skill_DoubleClaw"),
+			CVfx_Stellia_Skill_ClawDouble::Create(m_pDevice, m_pContext, TEXT("Stellia_Skill_DoubleClaw")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+		// Prototype_Vfx_Stellia_Skill_SpinTail
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Stellia_Skill_SpinTail"),
+			CVfx_Stellia_Skill_SpinTail::Create(m_pDevice, m_pContext, TEXT("Stellia_Skill_SpinTail")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+		// Prototype_Vfx_Stellia_Skill_JumpStamp
+		if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Stellia_Skill_JumpStamp"),
+			CVfx_Stellia_Skill_JumpStamp::Create(m_pDevice, m_pContext, TEXT("Stellia_Skill_JumpStamp")), LAYER_TYPE::LAYER_EFFECT)))
+			return E_FAIL;
+
+	}
+
 	return S_OK;
 }
 
