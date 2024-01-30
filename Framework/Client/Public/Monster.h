@@ -238,6 +238,7 @@ protected:
 	void Play_DamagedSound();
 	void Start_RimLight();
 	void Tick_RimLight(_float fTimeDelta);
+	void Create_HitEffect(class CCharacter* pCharacter);
 
 public:
 	virtual void Free() override;

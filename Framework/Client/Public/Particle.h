@@ -236,6 +236,9 @@ public:
 	// Show
 	_bool Get_IsDecalShow() { return m_bIsShow; }
 	void  Set_IsParticleShow(_bool bIsShow, _float fTimeDelta);
+
+	void Set_Color(_float3 fColor);
+
 private:
 	_bool m_isCloned = { false };
 

@@ -577,6 +577,7 @@ void CMonster::On_Damaged(const COLLISION_INFO& tInfo)
 	
 	m_tStat.fHp = max(0, m_tStat.fHp - iDamage);
 
+	Create_HitEffect(pCharacter);
 	Start_RimLight();
 	Start_MonsterHittedEvent(tInfo.pOther);
 }
@@ -690,6 +691,49 @@ void CMonster::Tick_RimLight(_float fTimeDelta)
 	m_fRimTimeAcc += fTimeDelta;
 	if (m_fRimTimeAcc >= m_fRimDuration)
 		m_bIsRimUse = false;
+}
+
+void CMonster::Create_HitEffect(CCharacter* pCharacter)
+{
+	if (nullptr == pCharacter)
+		return;
+
+	CParticle* pParticle = nullptr;
+
+	// 플레이어의 타입에 따른 피격 이펙트 생성
+	CHARACTER_TYPE eCharacterType = pCharacter->Get_CharacterType();
+	switch (eCharacterType)
+	{
+	case Client::SWORD_MAN:
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(L"Particle_Monster_Hit_Sword", m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 1.f, 0.5f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &pParticle);
+		break;
+	case Client::DESTROYER:
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(L"Particle_Monster_Hit_Hammer", m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 1.f, 0.5f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &pParticle);
+		break;
+	case Client::ENGINEER:
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(L"Particle_Monster_Hit_Gun", m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 1.f, 0.5f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &pParticle);
+		break;
+	}
+
+	if (nullptr == pParticle)
+		return;
+
+	// 플레이어가 때린 무기의 속성에 따라 색상 변경
+	ELEMENTAL_TYPE eWeaponType = pCharacter->Get_ElementalType();
+	switch (eWeaponType)
+	{
+	case FIRE:
+		pParticle->Set_Color(_float3(1.f, 0.f, 0.f));
+		break;
+
+	case WATER:
+		pParticle->Set_Color(_float3(0.f, 0.f, 1.f));
+		break;
+
+	case WOOD:
+		pParticle->Set_Color(_float3(0.f, 1.f, 0.f));
+		break;
+	}
 }
 
 void CMonster::Free()

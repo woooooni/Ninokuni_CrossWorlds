@@ -631,11 +631,15 @@ HRESULT CEffect_Manager::Ready_Proto_Vfx()
 		CVfx_PortalPoint::Create(m_pDevice, m_pContext, TEXT("PortalPoint")), LAYER_TYPE::LAYER_EFFECT)))
 		return E_FAIL;
 
-	// Prototype_Vfx_PortalPoint
+	// Prototype_Vfx_Smoke
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Smoke"),
 		CVfx_Smoke::Create(m_pDevice, m_pContext, TEXT("TentSmoke")), LAYER_TYPE::LAYER_EFFECT)))
 		return E_FAIL;
 
+	// Prototype_Vfx_Whale_Jump
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_Vfx_Whale_Jump"),
+		CVfx_Whale_Jump::Create(m_pDevice, m_pContext, TEXT("Whale_Jump")), LAYER_TYPE::LAYER_EFFECT)))
+		return E_FAIL;
 
 	return S_OK;
 }

@@ -304,7 +304,6 @@ void CVIBuffer_Particle::Sort_Z(_uint iCount)
 	m_pContext->Unmap(m_pVBInstance, 0);
 }
 
-
 void CVIBuffer_Particle::Add_Velocity(_uint iCount, Vec4 _vMinVelocity, Vec4 _vMaxVelocity)
 {
 	if (iCount > m_vecParticleRigidbodyDesc.size())
@@ -316,6 +315,12 @@ void CVIBuffer_Particle::Add_Velocity(_uint iCount, Vec4 _vMinVelocity, Vec4 _vM
 		m_vecParticleRigidbodyDesc[i].vVelocity.y += CUtils::Random_Float(_vMinVelocity.y, _vMaxVelocity.y);
 		m_vecParticleRigidbodyDesc[i].vVelocity.z += CUtils::Random_Float(_vMinVelocity.z, _vMaxVelocity.z);
 	}
+}
+
+void CVIBuffer_Particle::Set_Color(_float3 fColor)
+{
+	for (auto& iter : m_vecParticleShaderDesc)
+		iter.fColor = fColor;
 }
 
 HRESULT CVIBuffer_Particle::Initialize_Prototype()

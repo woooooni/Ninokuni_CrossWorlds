@@ -258,6 +258,7 @@ public:
 	void Restart_ParticleBufferDesc(_uint iCount);
 	void Sort_Z(_uint iCount);
 	void Add_Velocity(_uint iCount, Vec4 _vMinVelocity, Vec4 _vMaxVelocity);
+	void Set_Color(_float3 fColor);
 
 public:
 	virtual HRESULT Initialize_Prototype();

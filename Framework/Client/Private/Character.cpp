@@ -811,7 +811,6 @@ void CCharacter::LevelUp()
 
 
 
-
 void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 {
 	if (true == m_bInfinite)
@@ -917,8 +916,44 @@ void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 	{
 		m_pStateCom->Change_State(CCharacter::DAMAGED_WEAK);
 	}
+
+	Create_HitEffect(tInfo.pOtherCollider->Get_AttackType(), pMonster);
 }
 
+void CCharacter::Create_HitEffect(_int iType, CMonster* pMonster)
+{
+	// 어택 타입에 따른 피격 이펙트 생성
+	if (CCollider::ATTACK_TYPE::WEAK == iType)
+	{
+
+	}
+
+	else if (CCollider::ATTACK_TYPE::STRONG == iType || CCollider::ATTACK_TYPE::STUN == iType)
+	{
+
+	}
+
+	else if (CCollider::ATTACK_TYPE::BOUND == iType || CCollider::ATTACK_TYPE::AIR_BORNE == iType ||
+		CCollider::ATTACK_TYPE::BLOW == iType || CCollider::ATTACK_TYPE::IF_DEAD_BLOW == iType)
+	{
+
+	}
+
+	// 몬스터의 속성에 따른 색상 변경
+	ELEMENTAL_TYPE eMonsterType = pMonster->Get_Stat().eElementType;
+	switch (eMonsterType)
+	{
+	case FIRE:
+
+		break;
+	case WATER:
+
+		break;
+	case WOOD:
+
+		break;
+	}
+}
 
 void CCharacter::Add_Exp(_int iExp)
 {
@@ -1118,7 +1153,9 @@ HRESULT CCharacter::Tag_In(Vec4 vInitializePosition)
 	m_pControllerCom->Set_Active(true);
 	m_pControllerCom->Set_EnterLevel_Position(XMVectorSetW(vInitializePosition, 1.f));
 
-	CGame_Manager::GetInstance()->Get_Kuu()->Set_KuuTarget_Player();
+	if(LEVEL_TOOL != GI->Get_CurrentLevel())
+		CGame_Manager::GetInstance()->Get_Kuu()->Set_KuuTarget_Player();
+
 	if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))
 	{
 		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
@@ -1130,8 +1167,11 @@ HRESULT CCharacter::Tag_In(Vec4 vInitializePosition)
 		}
 	}
 
-	CUI_Manager::GetInstance()->Ready_CharacterTypeForUI(Get_CharacterType());
-	CUI_Manager::GetInstance()->Ready_ElementalTypeForUI(Get_ElementalType());
+	if (LEVEL_TOOL != GI->Get_CurrentLevel())
+	{
+		CUI_Manager::GetInstance()->Ready_CharacterTypeForUI(Get_CharacterType());
+		CUI_Manager::GetInstance()->Ready_ElementalTypeForUI(Get_ElementalType());
+	}
 
 	return S_OK;
 }

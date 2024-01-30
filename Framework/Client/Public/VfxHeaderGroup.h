@@ -55,6 +55,9 @@
 #include "Vfx_Stellia_Skill_SpinTail.h"
 #include "Vfx_Stellia_Skill_JumpStamp.h"
 // -------------------------------------------------
+// ANIMAL //
+#include "Vfx_Whale_Jump.h"
+// -------------------------------------------------
 // ETC //
 #include "Vfx_QuestPoint.h"
 #include "Vfx_PortalPoint.h"
