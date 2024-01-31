@@ -21,7 +21,7 @@ private:
 	virtual ~CUIMinigame_Manager() = default;
 
 public: // Getter & Setter
-	void	Set_HPOwner(CGameObject* pOwner, GRANDPRIX_ENEMY eEnemyID);
+	void	Set_HPOwner(CGameObject* pOwner, _uint eEnemyID);
 
 	_bool	Is_BiplaneFlying() { return m_bFlying; }
 	void	Set_Flyable(_bool bFlyable) { m_bFlying = bFlyable; }

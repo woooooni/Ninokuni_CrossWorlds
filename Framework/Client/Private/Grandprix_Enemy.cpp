@@ -54,7 +54,7 @@ void CGrandprix_Enemy::LateTick(_float fTimeDelta)
 
 	Compute_CamZ(m_pTransformCom->Get_Position());
 
-	if (m_fCamDistance <= 100.f && true == GI->Intersect_Frustum_World(m_pTransformCom->Get_Position(), 4.f))
+//	if (m_fCamDistance <= 100.f && true == GI->Intersect_Frustum_World(m_pTransformCom->Get_Position(), 4.f))
 	{
 		m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_SHADOW, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);
 		m_pRendererCom->Add_RenderGroup_AnimInstancing(CRenderer::RENDER_NONBLEND, this, m_pTransformCom->Get_WorldFloat4x4(), m_pModelCom->Get_TweenDesc(), m_AnimInstanceDesc);

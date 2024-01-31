@@ -19,7 +19,7 @@ BEGIN(Client)
 class CGrandprix_Enemy abstract : public CGameObject
 {
 public:
-	enum ENEMY_STATE { FLYING_RUNSTART, FLYING_STAND, FLYING_RUN, ENEMY_STATE_END };
+	enum ENEMY_STATE { FLYING_RUNSTART, FLYING_STAND, FLYING_RUN, FLYING_TRACE, FLYING_DIE, ENEMY_STATE_END };
 
 protected:
 	CGrandprix_Enemy(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);

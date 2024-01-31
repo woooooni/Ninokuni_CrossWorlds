@@ -11,6 +11,13 @@ protected:
 	virtual ~CVehicle_Flying_EnemyBoto() = default;
 
 public:
+	void Using_TextureComponent(_bool bUse) { m_bUseTextureCom = bUse; }
+	void Set_TextureIndex(_uint iIndex) {
+		if (5 < iIndex)
+			return;
+		m_iTextureIndex = iIndex; }
+
+public:
 	virtual HRESULT Initialize_Prototype();
 	virtual HRESULT Initialize(void* pArg);
 	virtual void Tick(_float fTimeDelta);
@@ -40,6 +47,9 @@ private:
 private:
 	class CUI_Minigame_WorldHP* m_pHP = { nullptr };
 	_bool m_bUseRigidbody = { true };
+
+	_bool m_bUseTextureCom = { false };
+	_uint m_iTextureIndex = { 0 };
 
 public:
 	static CVehicle_Flying_EnemyBoto* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);

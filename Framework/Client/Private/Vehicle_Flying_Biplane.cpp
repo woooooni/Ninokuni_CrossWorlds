@@ -4,6 +4,7 @@
 
 #include "State_VehicleFlying_Stand.h"
 #include "State_VehicleFlying_Run.h"
+#include "State_VehicleFlying_Rush.h"
 
 #include "Character.h"
 
@@ -255,6 +256,11 @@ HRESULT CVehicle_Flying_Biplane::Ready_States()
 	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Run");
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_RUN, CState_VehicleFlying_Run::Create(m_pStateCom, strAnimationNames));
 
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Run");
+	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_RUSH, CState_VehicleFlying_Rush::Create(m_pStateCom, strAnimationNames));
+
+	//VEHICLE_RUSH
 //	strAnimationNames.clear();
 //	strAnimationNames.push_back(L"SKM_Udadak.ao|Udadak_Run");
 //	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_RUN, CState_Vehicle_Run::Create(m_pStateCom, strAnimationNames));

@@ -4452,6 +4452,7 @@ HRESULT CUI_Manager::Ready_BossHPBar(CBoss* pBoss, void* pArg)
 	m_pBossHPBar->Set_Owner(pBoss);
 
 	m_bBossActive = true;
+	OnOff_BossHP(true);
 
 	return S_OK;
 }
@@ -6439,6 +6440,8 @@ HRESULT CUI_Manager::OnOff_BossHP(_bool bOnOff)
 			m_pBossInfo->Set_Active(false);
 			m_pBossHPBack->Set_Active(false);
 			m_pBossHPBar->Set_Active(false);
+
+			m_bBossActive = false;
 		}
 	}
 

@@ -6,7 +6,7 @@ BEGIN(Client)
 class CVehicle_Flying abstract : public CVehicle
 {
 public:
-	typedef struct tagGrandprixEnemyDesc
+	typedef struct tagGrandprixEnemyDesc : public CVehicle::VEHICLE_DESC
 	{
 		_bool bIsEnemy = false;
 
@@ -22,6 +22,11 @@ protected:
 
 public:
 	const ENEMY_STAT& Get_Stat() { return m_eStat; }
+	void Set_Routes();
+	vector<Vec4>* Get_Routes() { return &m_RoutePoints; }
+	Vec4 Get_RoutePoint(_uint iIndex) { return m_RoutePoints[iIndex]; }
+	_uint Get_CurIndex() { return m_iRouteIndex; }
+	void Set_CurIndex(_uint iIndex) { m_iRouteIndex = iIndex; }
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -46,9 +51,14 @@ protected:
 	virtual HRESULT Ready_Components();
 	virtual HRESULT	Ready_Colliders();
 	virtual HRESULT Ready_States();
+	HRESULT Ready_Routes();
 
 protected:
 	ENEMY_STAT m_eStat;
+
+	Vec4 m_vStartPos = {};
+	vector<Vec4> m_RoutePoints;
+	_uint m_iRouteIndex = { 0 };
 
 public:
 	virtual void Free() override;

@@ -12,6 +12,16 @@ CVehicle_Flying::CVehicle_Flying(const CVehicle_Flying& rhs)
 {
 }
 
+void CVehicle_Flying::Set_Routes()
+{
+	if (FAILED(Ready_Routes()))
+		return;
+
+//	_int iMax = m_RoutePoints.size() - 1;
+//	m_iRouteIndex = GI->RandomInt(0, iMax);
+//	m_pTransformCom->Set_State(CTransform::STATE_POSITION, m_RoutePoints[m_iRouteIndex]);
+}
+
 HRESULT CVehicle_Flying::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
@@ -103,6 +113,87 @@ HRESULT CVehicle_Flying::Ready_Components()
 
 HRESULT CVehicle_Flying::Ready_States()
 {
+
+	return S_OK;
+}
+
+HRESULT CVehicle_Flying::Ready_Routes()
+{
+//	m_RoutePoints.reserve(2);
+//
+//	_float4 vOriginPos;
+//	XMStoreFloat4(&vOriginPos, m_vOriginPos);
+//	_float fX, fY, fZ;
+//
+//	switch (GI->RandomInt(0, 1))
+//	{
+//	case 0:
+//		// First Position
+//		fX = GI->RandomFloat(-6.f, 6.f);
+//		fY = GI->RandomFloat(0.f, 5.f);
+//		fZ = GI->RandomFloat(-3.f, 3.f);
+//
+//		fY = vOriginPos.y + fY;
+//		if (fY < 30.f)
+//			fY = 30.f;
+//		m_RoutePoints.push_back({ vOriginPos.x + fX, fY, vOriginPos.z + fZ, 1.f });
+//
+//		// Second Position
+//		fX = GI->RandomFloat(-3.f, 3.f);
+//		fY = GI->RandomFloat(-3.f, 0.f);
+//		fZ = GI->RandomFloat(-3.f, 3.f);
+//
+//		fY = vOriginPos.y + fY;
+//		if (fY < 30.f)
+//			fY = 30.f;
+//		m_RoutePoints.push_back({ vOriginPos.x + fX, fY, vOriginPos.z + fZ, 1.f });
+//		break;
+//
+//	case 1:
+//		// First Position
+//		fX = GI->RandomFloat(-6.f, 6.f);
+//		fY = GI->RandomFloat(-2.f, 2.f);
+//		fZ = GI->RandomFloat(-3.f, 3.f);
+//
+//		fY = vOriginPos.y + fY;
+//		if (fY < 30.f)
+//			fY = 30.f;
+//		m_RoutePoints.push_back({ vOriginPos.x + fX, fY, vOriginPos.z + fZ, 1.f });
+//
+//		// Second Position
+//		fX = GI->RandomFloat(-5.f, 5.f);
+//		fZ = GI->RandomFloat(-3.f, 3.f);
+//
+//		m_RoutePoints.push_back({ vOriginPos.x + fX, vOriginPos.y, vOriginPos.z + fZ, 1.f });
+//		break;
+//
+//	default:
+//		break;
+//	}
+
+	m_RoutePoints.reserve(22);
+	m_RoutePoints.push_back({ 10.f, 73.f, 173.f, 1.f });
+	m_RoutePoints.push_back({ 64.f, 80.f, 136.f, 1.f });
+	m_RoutePoints.push_back({ 58.f, 99.f, 27.f, 1.f });
+	m_RoutePoints.push_back({ 175.5f, 117.f, 95.5f, 1.f });
+	m_RoutePoints.push_back({ 148.f, 119.f, 157.f, 1.f });
+	m_RoutePoints.push_back({ 22.5f, 117.5f, 201.5f, 1.f });
+	m_RoutePoints.push_back({ -57.5f, 102.f, 198.f, 1.f });
+	m_RoutePoints.push_back({ -145.7f, 77.f, 177.f, 1.f });
+	m_RoutePoints.push_back({ -231.f, 92.5f, 197.5f, 1.f });
+	m_RoutePoints.push_back({ -145.7f, 77.f, 177.f, 1.f });
+	m_RoutePoints.push_back({ -207.5f, 94.5f, 24.5f, 1.f });
+	m_RoutePoints.push_back({ -183.f, 120.f, -155.f, 1.f });
+	m_RoutePoints.push_back({ -145.7f, 77.f, 177.f, 1.f });
+	m_RoutePoints.push_back({ -100.5f, 108.5f, -208.f, 1.f });
+	m_RoutePoints.push_back({ 15.f, 86.5f, -151.5f, 1.f });
+	m_RoutePoints.push_back({ 95.5f, 68.f, -97.f, 1.f });
+	m_RoutePoints.push_back({ 101.f, 72.f, 11.f, 1.f });
+	m_RoutePoints.push_back({ 30.5f, 83.f, 18.f, 1.f });
+	m_RoutePoints.push_back({ -36.f, 93.f, 102.f, 1.f });
+	m_RoutePoints.push_back({ 17.5f, 90.f, 37.f, 1.f });
+	m_RoutePoints.push_back({ -80.f, 85.5f, 62.f, 1.f });
+	m_RoutePoints.push_back({ 35.f, 102.5f, 107.8f, 1.f });
 
 	return S_OK;
 }

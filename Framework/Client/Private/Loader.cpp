@@ -161,6 +161,7 @@
 #include "Biplane_ThunderCloud.h"
 #include "Grandprix_Engineer.h"
 #include "Grandprix_Enemy_HumanFL04.h"
+#include "Grandprix_Enemy_Ghost2.h"
 
 #include "Respawn_Box.h"
 #include "CurlingGame_Manager.h"
@@ -634,6 +635,9 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 			return E_FAIL;
 		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Vehicle_Minigame_Grandprix_Biplane_ColorBlue"),
 			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/AnimModel/Vehicle/Biplane/SKM_Biplane_White_Color.png")))))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Vehicle_Minigame_Grandprix_Boto_Textures"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/AnimModel/Vehicle/Boto/SKM_Boto3_Color_TextureCom_%d.dds"), 5))))
 			return E_FAIL;
 
 		// 미니게임용 프로토타입
@@ -2025,6 +2029,9 @@ HRESULT CLoader::Loading_Proto_Vehicles()
 	// Enemy(임시)
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Grandprix_Enemy_HumanFL04",
 		CGrandprix_Enemy_HumanFL04::Create(m_pDevice, m_pContext, TEXT("Grandprix_Enemy_HumanFL04")), LAYER_TYPE::LAYER_ETC)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Grandprix_Enemy_Ghost2",
+		CGrandprix_Enemy_Ghost2::Create(m_pDevice, m_pContext, TEXT("Grandprix_Enemy_Ghost2")), LAYER_TYPE::LAYER_ETC)))
 		return E_FAIL;
 	
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Biplane_GuidedMissile", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/MiniGame/Missile/", L"Biplane_GuidedMissile")))

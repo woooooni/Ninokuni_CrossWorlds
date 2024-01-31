@@ -4,6 +4,9 @@
 
 #include "State_Enemy_VehicleFlying_Stand.h"
 #include "State_Enemy_VehicleFlying_Run.h"
+#include "State_Enemy_VehicleFlying_Trace.h"
+#include "State_Enemy_VehicleFlying_Attack.h"
+#include "State_Enemy_VehicleFlying_Dead.h"
 
 #include "Grandprix_Enemy.h"
 
@@ -38,7 +41,7 @@ HRESULT CVehicle_Flying_EnemyBoto::Initialize(void* pArg)
 	if (FAILED(Ready_States()))
 		return E_FAIL;
 	
-	m_bUseBone = false; 
+	m_bUseBone = true; 
 
 	m_eStat.bIsEnemy = true;
 	m_eStat.fMaxHP = 100000.f;
@@ -53,12 +56,14 @@ HRESULT CVehicle_Flying_EnemyBoto::Initialize(void* pArg)
 	m_pHP = dynamic_cast<CUI_Minigame_WorldHP*>(pTemp);
 	m_pHP->Set_VehicleInformation(this);
 
+	m_pRigidBodyCom->Set_Use_Gravity(false);
+
 	return S_OK;
 }
 
 void CVehicle_Flying_EnemyBoto::Tick(_float fTimeDelta)
 {
-	//if (true == m_bOnBoard)
+	if (true == m_bOnBoard)
 	{
 		__super::Tick(fTimeDelta);
 
@@ -67,20 +72,6 @@ void CVehicle_Flying_EnemyBoto::Tick(_float fTimeDelta)
 		
 		Update_RiderState();
 
-		if (false == CUIMinigame_Manager::GetInstance()->Is_BiplaneFlying())
-		{
-			if (false == m_bUseRigidbody)
-				m_bUseRigidbody = true;
-		}
-		else
-			m_bUseRigidbody = false;
-
-		if (true == m_bUseRigidbody)
-		{
-			if (nullptr != m_pRigidBodyCom)
-				m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
-		}
-
 		if (nullptr != m_pControllerCom)
 			m_pControllerCom->Tick_Controller(fTimeDelta);
 	}
@@ -88,7 +79,7 @@ void CVehicle_Flying_EnemyBoto::Tick(_float fTimeDelta)
 
 void CVehicle_Flying_EnemyBoto::LateTick(_float fTimeDelta)
 {
-	//if (true == m_bOnBoard)
+	if (true == m_bOnBoard)
 	{
 		__super::LateTick(fTimeDelta);
 
@@ -104,10 +95,58 @@ void CVehicle_Flying_EnemyBoto::LateTick(_float fTimeDelta)
 
 HRESULT CVehicle_Flying_EnemyBoto::Render()
 {
-	//if (true == m_bOnBoard)
+	if (true == m_bOnBoard)
 	{
-		__super::Render();
+		if (nullptr == m_pModelCom || nullptr == m_pShaderCom)
+			return E_FAIL;
 
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_ViewMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_VIEW), sizeof(_float4x4))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+			return E_FAIL;
+
+		_float4 vRimColor = { 0.f, 0.f, 0.f, 0.f };
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vRimColor", &vRimColor, sizeof(_float4))))
+			return E_FAIL;
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vBloomPower", &m_vBloomPower, sizeof(_float3))))
+			return E_FAIL;
+
+		if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
+			return E_FAIL;
+
+		const _uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+		if (false == m_bUseTextureCom)
+		{
+			for (_uint i = 0; i < iNumMeshes; ++i)
+			{
+				if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+					return E_FAIL;
+
+				if (FAILED(m_pModelCom->Render(m_pShaderCom, i)))
+					return E_FAIL;
+			}
+		}
+		else
+		{
+			if (5 < m_iTextureIndex)
+				m_iTextureIndex = 5;
+
+			for (_uint i = 0; i < iNumMeshes; ++i)
+			{
+				if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextureIndex)))
+					return E_FAIL;
+
+				if (FAILED(m_pModelCom->Render(m_pShaderCom, i)))
+					return E_FAIL;
+			}
+		}
 	}
 
 	return S_OK;
@@ -115,10 +154,53 @@ HRESULT CVehicle_Flying_EnemyBoto::Render()
 
 HRESULT CVehicle_Flying_EnemyBoto::Render_ShadowDepth()
 {
-	//if (true == m_bOnBoard)
+	if (true == m_bOnBoard)
 	{
-		__super::Render_ShadowDepth();
-	
+		if (FAILED(__super::Render_ShadowDepth()))
+			return E_FAIL;
+
+		if (nullptr == m_pShaderCom || nullptr == m_pTransformCom || nullptr == m_pModelCom)
+			return E_FAIL;
+
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4_TransPose(), sizeof(_float4x4))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &GI->Get_ShadowViewMatrix(GI->Get_CurrentLevel()))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
+			return E_FAIL;
+		if (FAILED(m_pModelCom->SetUp_VTF(m_pShaderCom)))
+			return E_FAIL;
+
+		const _uint		iNumMeshes = m_pModelCom->Get_NumMeshes();
+
+		if (false == m_bUseTextureCom)
+		{
+			for (_uint i = 0; i < iNumMeshes; ++i)
+			{
+				if (FAILED(m_pModelCom->SetUp_OnShader(m_pShaderCom, m_pModelCom->Get_MaterialIndex(i), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+					return E_FAIL;
+
+				if (FAILED(m_pModelCom->Render(m_pShaderCom, i, 10)))
+					return E_FAIL;
+			}
+		}
+		else
+		{
+			if (5 < m_iTextureIndex)
+				m_iTextureIndex = 5;
+
+			for (_uint i = 0; i < iNumMeshes; ++i)
+			{
+				if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextureIndex)))
+					return E_FAIL;
+
+				if (FAILED(m_pModelCom->Render(m_pShaderCom, i)))
+					return E_FAIL;
+			}
+		}
+
+		return S_OK;
 	}
 
 	return S_OK;
@@ -163,6 +245,11 @@ HRESULT CVehicle_Flying_EnemyBoto::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Model_Boto"), TEXT("Com_Model"), (CComponent**)&m_pModelCom)))
 		return E_FAIL;
 
+	// For Texture Component
+	if (FAILED(__super::Add_Component(LEVEL_EVERMORE,
+		TEXT("Prototype_Component_Texture_Vehicle_Minigame_Grandprix_Boto_Textures"), TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -181,10 +268,22 @@ HRESULT CVehicle_Flying_EnemyBoto::Ready_States()
 //	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_WALK, CState_Enemy_VehicleFlying_Run::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Boto.ao|Boto_Run");
+	strAnimationNames.push_back(L"SKM_Boto.ao|Boto_Walk");
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_RUN, CState_Enemy_VehicleFlying_Run::Create(m_pStateCom, strAnimationNames));
 
-	m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_IDLE);
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Boto.ao|Boto_Run");
+	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_TRACE, CState_Enemy_VehicleFlying_Run::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Boto.ao|Boto_Stand");
+	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ATTACK, CState_Enemy_VehicleFlying_Run::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Boto.ao|Boto_Idle01");
+	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_DEAD, CState_Enemy_VehicleFlying_Run::Create(m_pStateCom, strAnimationNames));
+
+	m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_RUN);
 
 	return S_OK;
 }
