@@ -7,13 +7,13 @@
 #include "Game_Manager.h"
 #include "UI_Manager.h"
 #include "Effect_Manager.h"
-#include "Camera_Manager.h"
-#include "CurlingGame_Manager.h"
 
 #include "Camera_Group.h"
+#include "CurlingGame_Group.h"
 
 #include "Player.h"
 #include "Character.h"
+#include "Manager_StateMachine.h"
 
 CState_CurlingGame_Intro::CState_CurlingGame_Intro(CManager_StateMachine* pStateMachine)
 	: CState_CurlingGame_Base(pStateMachine)
@@ -48,13 +48,16 @@ void CState_CurlingGame_Intro::Tick_State(const _float& fTimeDelta)
 	if (m_tStadiumDesc.tLerHeight.bActive)
 		Tick_Stadium(fTimeDelta);
 
-	if (KEY_TAP(KEY::L))
+	if (KEY_TAP(KEY::Q))
 	{
 		CCamera_CurlingGame* pCurlingGameCam = dynamic_cast<CCamera_CurlingGame*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CAMERA_CURLING));
 
 		if (nullptr != pCurlingGameCam)
 		{
-			if (FAILED(pCurlingGameCam->Change_Target(m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].pOwner)))
+			if (FAILED(pCurlingGameCam->Change_Target(m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].pOwner, 1.f)))
+				return;
+
+			if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::MOVE)))
 				return;
 		}
 	}
@@ -188,25 +191,18 @@ HRESULT CState_CurlingGame_Intro::Ready_Decals()
 
 HRESULT CState_CurlingGame_Intro::Set_CameraTransform()
 {
-	CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_CurCamera());
 	CCamera_CurlingGame* pCurlingGameCam = dynamic_cast<CCamera_CurlingGame*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::CAMERA_CURLING));
 	
-	if (nullptr == pFollowCam || nullptr == pCurlingGameCam)
+	if (nullptr == pCurlingGameCam)
 		return E_FAIL;
-
-	/* Follow Camera */
-	{
-		pFollowCam->Set_CanWideView(false);
-
-	}
 
 	/* CurlingGame Camera */
 	{
 		if (FAILED(CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::CAMERA_CURLING)))
 			return E_FAIL;
 	
-		const Vec4 vTargetPos = (m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].pTransformCom->Get_Position() 
-								+ m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].pTransformCom->Get_Position())
+		const Vec4 vTargetPos = (m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].pOwner->Get_Component_Transform()->Get_Position() 
+								+ m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].pOwner->Get_Component_Transform()->Get_Position())
 								* 0.5f;
 
 		/* 컬링 미니게임 시작 카메라 세팅 */
@@ -222,7 +218,7 @@ HRESULT CState_CurlingGame_Intro::Set_CameraTransform()
 
 			// 기초 작업 2
 			{
-				const Vec4 vCamPosForLook = pCurlingGameCam->Calculate_CamPosition(vTargetPos).OneW();
+				const Vec4 vCamPosForLook = pCurlingGameCam->Calculate_Position(vTargetPos).OneW();
 				pCurlingGameCam->Get_Transform()->Set_State(CTransform::STATE_POSITION, vCamPosForLook);
 			}
 
@@ -230,7 +226,7 @@ HRESULT CState_CurlingGame_Intro::Set_CameraTransform()
 			pCurlingGameCam->Get_Transform()->LookAt(vLookAt);
 
 			// 파이널 포지션 세팅
-			const Vec4 vCamPos = pCurlingGameCam->Calculate_CamPosition(vTargetPos).OneW();
+			const Vec4 vCamPos = pCurlingGameCam->Calculate_Position(vTargetPos).OneW();
 			pCurlingGameCam->Get_Transform()->Set_State(CTransform::STATE_POSITION, vCamPos);
 
 		}
@@ -250,8 +246,6 @@ HRESULT CState_CurlingGame_Intro::Ready_Characters()
 		const _uint iType = CCurlingGame_Manager::PARTICIPANT_PLAYER;
 
 		m_pManager->m_tParticipants[iType].pOwner = pGameObject;
-		m_pManager->m_tParticipants[iType].pModelCom = pGameObject->Get_Component<CModel>(L"Com_Model");
-		m_pManager->m_tParticipants[iType].pTransformCom = pGameObject->Get_Component<CTransform>(L"Com_Transform");
 	}
 
 	/* Npc */
@@ -264,16 +258,11 @@ HRESULT CState_CurlingGame_Intro::Ready_Characters()
 		const _uint iType = CCurlingGame_Manager::PARTICIPANT_NPC;
 
 		m_pManager->m_tParticipants[iType].pOwner = pGameObject;
-		m_pManager->m_tParticipants[iType].pModelCom = pGameObject->Get_Component<CModel>(L"Com_Model");
-		m_pManager->m_tParticipants[iType].pTransformCom = pGameObject->Get_Component<CTransform>(L"Com_Transform"); 
 	}
 
 	for (size_t i = 0; i < CCurlingGame_Manager::PARTICIPANT_TYPEEND; i++)
 	{
-		if (nullptr == m_pManager->m_tParticipants[i].pOwner
-			|| nullptr == m_pManager->m_tParticipants[i].pModelCom
-			|| nullptr == m_pManager->m_tParticipants[i].pTransformCom
-			)
+		if (nullptr == m_pManager->m_tParticipants[i].pOwner)
 			return E_FAIL;
 	}
 	return S_OK;
@@ -298,9 +287,9 @@ HRESULT CState_CurlingGame_Intro::Set_CharacterTransform()
 			vStartPosition += -vRight * m_pManager->m_tStandardDesc.vStartPosDelta;
 		}
 
-		m_pManager->m_tParticipants[i].pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(vStartPosition).OneW());
+		m_pManager->m_tParticipants[i].pOwner->Get_Component_Transform()->Set_State(CTransform::STATE_POSITION, Vec4(vStartPosition).OneW());
 
-		m_pManager->m_tParticipants[i].pTransformCom->LookAt_ForLandObject(m_pManager->m_tStandardDesc.vGoalPosition);
+		m_pManager->m_tParticipants[i].pOwner->Get_Component_Transform()->LookAt_ForLandObject(m_pManager->m_tStandardDesc.vGoalPosition);
 	}
 	return S_OK;
 }

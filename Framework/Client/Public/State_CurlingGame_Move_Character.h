@@ -20,6 +20,9 @@ public:
 	virtual void Exit_State() override;
 	virtual HRESULT Render() override;
 
+private:
+	_bool m_bChangeCameraToStone = false;
+
 public:
 	static CState_CurlingGame_Move_Character* Create(CManager_StateMachine* pStateMachine);
 	virtual void Free() override;

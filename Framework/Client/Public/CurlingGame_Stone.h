@@ -68,15 +68,15 @@ public:
 		const vector<TWEEN_DESC>& TweenDesc, const vector<ANIMODEL_INSTANCE_DESC>& AnimModelDesc) override;
 
 public:
+	const _bool& Is_Putted() const { return m_bPutted; }
 	const _bool& Is_Launched() const { return m_bLaunched; }
 	const _bool& Is_Outted() const { return m_bOutted; }
 	const _bool& Is_Moving() const { return m_bMoving; }
 
-	void Set_OwnerType(const OBJ_TYPE& eType) { m_eOwnerType = eType; }
-	const OBJ_TYPE& Get_OwnerType() const { return m_eOwnerType; }
+	const STONE_TYPE& Get_StoneType() const { return m_eStoneType; }
 
 public:
-	void Launch(const _float& fPower);
+	void Launch(const Vec4& vDir, const _float& fPower);
 	void PutDown();
 
 public:
@@ -96,12 +96,10 @@ private:
 	
 	_uint				m_iNumCol			= 0;
 
+	_bool				m_bPutted			= false;
 	_bool				m_bLaunched			= false;
 	_bool				m_bOutted			= false;
-
 	_bool				m_bMoving			= false;
-
-	OBJ_TYPE			m_eOwnerType		= OBJ_TYPE::OBJ_PLAYER;
 
 	STONE_TYPE			m_eStoneType		= STONE_TYPE::STONE_TYPEEND;
 

@@ -28,6 +28,7 @@
 #include "Kuu.h"
 #include "CurlingGame_Prop.h"
 #include "UIMinimap_Manager.h"
+#include "CurlingGame_Stone.h"
 
 USING(Client)
 CCharacter::CCharacter(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eCharacterType)
@@ -725,6 +726,16 @@ void CCharacter::Stop_MotionTrail()
 
 void CCharacter::Decide_Target(COLLISION_INFO tInfo)
 {
+	/* 이미 세팅된 스톤이라면 리턴*/
+	if (OBJ_TYPE::OBJ_CURLINGGAME_PROP == tInfo.pOther->Get_ObjectType())
+	{
+		CCurlingGame_Stone* pStone = dynamic_cast<CCurlingGame_Stone*>(tInfo.pOther);
+		if (nullptr != pStone && pStone->Is_Putted())
+		{
+			return;
+		}
+	}
+
 	if (nullptr == m_pTarget)
 	{
 		Set_Target(tInfo.pOther);

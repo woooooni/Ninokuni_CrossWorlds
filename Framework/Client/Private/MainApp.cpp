@@ -63,7 +63,7 @@ HRESULT CMainApp::Initialize()
 	{
 		g_eStartLevel = LEVELID::LEVEL_LOGO; /* 시작할 레벨 타입 */
 
-		g_eLoadCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH; /* 모델 로드할 캐릭터 타입 */
+		g_eLoadCharacter = LOAD_CHARACTER_TYPE::ALL_CH; /* 모델 로드할 캐릭터 타입 */
 
 		g_ePlayCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH; /* 게임 플레이 캐릭터 타입 */
 	}
@@ -84,19 +84,20 @@ HRESULT CMainApp::Initialize()
 
 void CMainApp::Tick(_float fTimeDelta)
 {
+	if(LEVELID::LEVEL_ICELAND == GI->Get_CurrentLevel())
+		CCurlingGame_Manager::GetInstance()->Tick(fTimeDelta);
+
 	CQuest_Manager::GetInstance()->Tick(fTimeDelta);
 	CUI_Manager::GetInstance()->Tick(fTimeDelta);
 	GI->Priority_Tick(fTimeDelta); /* 카메라에서 플레이어 포지션 세팅하기 위해, 틱에서만 GI를 게임매니저보다 먼저 업데이트*/
-
-	if(LEVELID::LEVEL_ICELAND == GI->Get_CurrentLevel())
-		CCurlingGame_Manager::GetInstance()->Tick(fTimeDelta);
 
 	CBuff_Manager::GetInstance()->Tick(fTimeDelta);
 	CGame_Manager::GetInstance()->Tick(fTimeDelta);
 	CTowerDefence_Manager::GetInstance()->Tick(fTimeDelta);
 	GI->Tick(fTimeDelta); 
 
-	
+	/* ====================================================== */
+
 	if (LEVELID::LEVEL_ICELAND == GI->Get_CurrentLevel())
 		CCurlingGame_Manager::GetInstance()->LateTick(fTimeDelta);
 

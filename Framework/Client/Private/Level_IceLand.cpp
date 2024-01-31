@@ -137,10 +137,6 @@ HRESULT CLevel_IceLand::Tick(_float fTimeDelta)
 		GI->Open_Level(LEVEL_LOADING, CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL_EVERMORE, L"Evermore"));
 	}
 
-	if (KEY_TAP(KEY::Q))
-	{
-		CCurlingGame_Manager::GetInstance()->Set_Game(true);
-	}
 	return S_OK; 
 }
 
