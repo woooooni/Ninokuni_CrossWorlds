@@ -66,17 +66,17 @@ HRESULT CLevel_Evermore::Initialize()
 	//if (FAILED(Ready_Layer_Monster(LAYER_TYPE::LAYER_MONSTER)))
 	//	return E_FAIL;
 
-	//if (FAILED(Ready_Layer_Npc(LAYER_TYPE::LAYER_NPC)))
-	//	return E_FAIL;
+	if (FAILED(Ready_Layer_Npc(LAYER_TYPE::LAYER_NPC)))
+		return E_FAIL;
 
 	if (FAILED(Ready_Layer_UI(LAYER_TYPE::LAYER_UI)))
 		return E_FAIL;
 
-	//if (FAILED(Ready_Layer_Prop(LAYER_TYPE::LAYER_PROP)))
-	//	return E_FAIL;
+	if (FAILED(Ready_Layer_Prop(LAYER_TYPE::LAYER_PROP)))
+		return E_FAIL;
 
-	//if (FAILED(Ready_Layer_Dynamic(LAYER_TYPE::LAYER_DYNAMIC, TEXT("Evermore"))))
-	//	return E_FAIL;
+	if (FAILED(Ready_Layer_Dynamic(LAYER_TYPE::LAYER_DYNAMIC, TEXT("Evermore"))))
+		return E_FAIL;
 
 	if (FAILED(Ready_Light(TEXT("Evermore Light"))))
 		return E_FAIL;
