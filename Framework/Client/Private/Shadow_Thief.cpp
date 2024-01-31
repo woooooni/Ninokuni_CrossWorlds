@@ -71,6 +71,10 @@ HRESULT CShadow_Thief::Initialize(void* pArg)
 	m_pMinimapIcon = dynamic_cast<CUI_Minimap_Icon*>(pIcon);
 	m_pMinimapIcon->Set_Owner(this);
 
+	// 시작 디졸브
+	m_bStartDissolve = true;
+	m_fDissolveWeight = 10.f;
+
 	return S_OK;
 }
 

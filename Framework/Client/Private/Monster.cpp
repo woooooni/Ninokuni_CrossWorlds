@@ -73,6 +73,16 @@ void CMonster::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
+	if (true == m_bStartDissolve)
+	{
+		m_fDissolveWeight -= m_fDissolveSpeed * fTimeDelta;
+		if (m_fDissolveWeight < 0.f)
+		{
+			m_fDissolveWeight = 0.f;
+			m_bStartDissolve  = false;
+		}
+	}
+
 	if (!m_bIsInvasion)
 	{
 		Search_Target(fTimeDelta);
@@ -139,7 +149,6 @@ void CMonster::Tick(_float fTimeDelta)
 		m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 	if (m_pControllerCom != nullptr)
 		m_pControllerCom->Tick_Controller(fTimeDelta);
-
 }
 
 void CMonster::LateTick(_float fTimeDelta)
