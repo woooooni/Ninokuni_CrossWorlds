@@ -7,6 +7,12 @@
 #include "UIMinigame_Manager.h"
 #include "Camera_Follow.h"
 
+#include "Vehicle.h"
+
+#include "Game_Manager.h"
+#include "Player.h"
+#include "Character.h"
+
 CState_VehicleFlying_Rush::CState_VehicleFlying_Rush(CStateMachine* pMachine)
     : CState_Vehicle(pMachine)
 {
@@ -22,82 +28,40 @@ HRESULT CState_VehicleFlying_Rush::Initialize(const list<wstring>& AnimationList
     if (nullptr == m_pVehicle)
         return E_FAIL;
 
+    m_fAccSpeed = 10.f;
+
     return S_OK;
 }
 
 void CState_VehicleFlying_Rush::Enter_State(void* pArg)
 {
-	m_iCurrAnimIndex = m_AnimIndices[0];
-	m_pModelCom->Set_Animation(m_iCurrAnimIndex);
+    m_fAccSpeed = 30.f;
+    m_fAccRadialBlurScale = 16.f;
+    CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Lerp_Fov(XMConvertToRadians(80.f), 0.5f);
 }
 
 void CState_VehicleFlying_Rush::Tick_State(_float fTimeDelta)
 {
-//	_bool bMove = false;
-//
-//	if (KEY_HOLD(KEY::W))
-//	{
-//		bMove = true;
-//
-//		_matrix CamWorld = GI->Get_TransformMatrixInverse(CPipeLine::D3DTS_VIEW);
-//		Vec3 vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
-//		Vec3 vCamLook = XMVector3Normalize(CamWorld.r[CTransform::STATE_LOOK]);
-//		vLook = XMVectorLerp(vLook, vCamLook, fTimeDelta);
-//
-//		m_pTransformCom->Rotation_Look(vLook);
-//		m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_pVehicle->Get_Speed(), fTimeDelta);
-//	}
-//
-//
-//	if (KEY_HOLD(KEY::A))
-//	{
-//		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), -1.f * XMConvertToRadians(90.f) * fTimeDelta);
-//		if (!bMove)
-//			m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_pVehicle->Get_Speed(), fTimeDelta);
-//
-//		bMove = true;
-//	}
-//
-//
-//	if (KEY_HOLD(KEY::D))
-//	{
-//		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMConvertToRadians(90.f) * fTimeDelta);
-//		if (!bMove)
-//			m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_pVehicle->Get_Speed(), fTimeDelta);
-//
-//		bMove = true;
-//	}
-//
-//	if (KEY_HOLD(KEY::Q))
-//	{
-//		bMove = true;
-//
-//		_matrix vCamWolrd = GI->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
-//		_vector vRight = m_pTransformCom->Get_State(CTransform::STATE_RIGHT);
-//		_vector vCamLook = vCamWolrd.r[CTransform::STATE_LOOK];
-//
-//		vRight = XMVector3Normalize(vRight);
-//		vCamLook = XMVector3Normalize(vCamLook);
-//
-//		_float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 10.f * fTimeDelta;
-//
-//		m_pTransformCom->Rotation_Acc(vRight, fRadian);
-//		m_pTransformCom->Move(vCamLook, m_pVehicle->Get_Speed(), fTimeDelta);
-//	}
-//
-//	if (!bMove)
-//	{
-//		if (KEY_NONE(KEY::W) && KEY_NONE(KEY::A) && KEY_NONE(KEY::S) && KEY_NONE(KEY::D))
-//		{
-//			m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_IDLE);
-//			return;
-//		}
-//	}
+    m_fAccRadialBlurScale += 5.f * fTimeDelta;
+    m_fAccSpeed -= 10.f * fTimeDelta;
+
+    if (0.f >= m_fAccSpeed)
+    {
+        m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_RUN);
+        return;
+    }
+     
+
+    CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_RadialBlur(true, m_fAccRadialBlurScale);
+    m_pTransformCom->Rotation_Acc(XMVector3Normalize(m_pTransformCom->Get_Look()), -5.f * XMConvertToRadians(180.f) * fTimeDelta);
+    m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_pVehicle->Get_Speed() + m_fAccSpeed, fTimeDelta);
 }
 
 void CState_VehicleFlying_Rush::Exit_State()
 {
-
+    m_fAccSpeed = 10.f;
+    CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Lerp_Fov(Cam_Fov_Follow_Default, 0.5f);
+    CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_RadialBlur(false, 16.f);
 }
 
 CState_VehicleFlying_Rush* CState_VehicleFlying_Rush::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

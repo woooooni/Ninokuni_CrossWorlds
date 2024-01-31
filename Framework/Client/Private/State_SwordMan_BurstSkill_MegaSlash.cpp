@@ -50,7 +50,7 @@ void CState_SwordMan_BurstSkill_MegaSlash::Tick_State(_float fTimeDelta)
         if (false == m_bSlow)
         {
             GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.5f, 0.1f, true);
-            m_pCharacter->Get_RendererCom()->Set_ScreenEffect(CRenderer::SCREEN_EFFECT::SWORDMAN_SPLIT);
+            // m_pCharacter->Get_RendererCom()->Set_ScreenEffect(CRenderer::SCREEN_EFFECT::SWORDMAN_SPLIT);
             m_pCharacter->Get_RendererCom()->Set_RadialBlur(true);
             m_bSlow = true;
         }

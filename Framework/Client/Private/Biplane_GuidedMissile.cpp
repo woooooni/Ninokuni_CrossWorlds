@@ -170,7 +170,7 @@ void CBiplane_GuidedMissile::Tick_Target(_float fTimeDelta)
 
 void CBiplane_GuidedMissile::Find_Target(_float fTimeDelta)
 {
-	list<CGameObject*>& TargetObjects = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_NPC);
+	list<CGameObject*>& TargetObjects = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER);
 
 	_float fMinDistance = 50.f;
 	for (auto& pTarget : TargetObjects)
