@@ -62,13 +62,11 @@ public:
 	} TEXT_DESC;
 
 	typedef struct tagFogDesc
-	{
-		_float fConvertPercent = 0.04f;
+	{	
 		_float fFogStartDepth = 100.f;
 		_float fFogStartDistance = 10.f;
 		_float fFogDistanceValue = 30.f;
 		_float fFogHeightValue = 50.f;
-
 		_float fFogDistanceDensity = 0.04f;
 		_float fFogHeightDensity = 0.04f;
 
@@ -133,7 +131,11 @@ public: // UI Setting Option¿ª ¿ß«— Get/Set
 	void Set_PbrDraw(_bool bSet) { m_bPbrDraw = bSet; }
 
 	_bool Get_RadialBlur() { return m_bRadialBlurDraw; }
-	void Set_RadialBlur(_bool bSet) { m_bRadialBlurDraw = bSet; }
+	void Set_RadialBlur(_bool bSet, _float fQuality = 16.f) { 
+		m_fRadialBlurQuality = min(fQuality, 16.f);
+		m_fRadialBlurQuality = max(1.f, fQuality);
+		m_bRadialBlurDraw = bSet;
+	}
 
 	void Set_MinimapView(_float4x4 matView) { m_MinimapView = matView; }
 	_float4x4 Get_MinimapView() { return m_MinimapView; }
@@ -333,7 +335,9 @@ private:
 	_bool   m_bPbrDraw  = false;
 
 
-	
+private:
+	_float m_fRadialBlurQuality = 16.f;
+
 
 private: // Minimap
 	_float4x4 m_MinimapView;

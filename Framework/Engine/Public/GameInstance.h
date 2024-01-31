@@ -192,6 +192,9 @@ public:
 
 	_bool Is_Compare(const char* szLeft, const char* szRight);
 
+	Vec4 To_Hash_Color(_int iObjectID);
+	_int To_Hash(_int iObjectID);
+
 public:
 	Json Json_Load(const wstring& strFilePath);
 	HRESULT Json_Save(const wstring& strFilePath, const Json& refJsonFile);

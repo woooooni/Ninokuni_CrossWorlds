@@ -1676,7 +1676,6 @@ void CTool_Map::Map_Fog(_float fTimeDelta)
 	FogDesc.fUVAcc.x += vUVSpeed.x * fTimeDelta;
 	FogDesc.fUVAcc.y += vUVSpeed.y * fTimeDelta;
 
-	ImGui::DragFloat("ConvertPercent", &FogDesc.fConvertPercent, 0.01f);
 	ImGui::DragFloat("FogDistanceValue", &FogDesc.fFogDistanceValue, 0.01f);
 	ImGui::DragFloat("FogHeightValue", &FogDesc.fFogHeightValue, 0.01f);
 	ImGui::DragFloat("FogStartDepth", &FogDesc.fFogStartDepth, 0.01f);

@@ -164,7 +164,8 @@ HRESULT CGrounds::Render_Picking()
 	if (FAILED(pShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
 
-	if (FAILED(pShader->Bind_RawValue("g_iObjectID", &m_iObjectID, sizeof(_int))))
+	_float4 vHash = GI->To_Hash_Color(m_iObjectID);
+	if (FAILED(pShader->Bind_RawValue("g_vObjectHash", &vHash, sizeof(_float4))))
 		return E_FAIL;
 
 	_uint iNumMeshes = m_pModelCom->Get_NumMeshes();

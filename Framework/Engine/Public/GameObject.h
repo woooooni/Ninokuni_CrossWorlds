@@ -77,6 +77,7 @@ public:
 		return dynamic_cast<T*>(iter->second);
 	}
 
+
 public:
 	virtual HRESULT SetUp_State(_fmatrix StateMatrix) { return S_OK; }
 

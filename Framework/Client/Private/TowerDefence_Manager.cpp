@@ -464,6 +464,8 @@ void CTowerDefence_Manager::Picking_Position()
 	if (nullptr == m_pPicked_Object || nullptr == m_pPicked_ObjectTransform)
 		return;
 
+	GI->Clear_DepthStencil_View();
+
 	if (FAILED(GI->Begin_MRT(m_pContext, L"MRT_FastPicking")))
 	{
 		MSG_BOX("Begin_MRT Failed. : CTowerDefence_Manager::Picking_Position");
@@ -488,17 +490,17 @@ void CTowerDefence_Manager::Picking_Position()
 		MSG_BOX("End_MRT Failed. : CTowerDefence_Manager::Picking_Position");
 		return;
 	}
-		
-	_int iObjectId = -1;
+
 	D3D11_MAPPED_SUBRESOURCE MappedResource;
 	ZeroMemory(&MappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
 
-	m_tPickingBox.left = GI->GetMousePos().x;
-	m_tPickingBox.right = GI->GetMousePos().x + 1;
-	m_tPickingBox.top = GI->GetMousePos().y;
-	m_tPickingBox.bottom = GI->GetMousePos().y + 1;
+	Vec2 vMousePos = Vec2(GI->GetMousePos().x, GI->GetMousePos().y);
+	m_tPickingBox.left = vMousePos.x;
+	m_tPickingBox.right = vMousePos.x + 1;
+	m_tPickingBox.top = vMousePos.y;
+	m_tPickingBox.bottom = vMousePos.y + 1;
 	m_tPickingBox.front = 0;
-	m_tPickingBox.bottom = 1;
+	m_tPickingBox.back = 1;
 
 	ID3D11Texture2D* pPickingTarget = GI->Get_Texture_FromRenderTarget(L"Target_FastPicking");
 	if (nullptr == pPickingTarget)
@@ -507,20 +509,44 @@ void CTowerDefence_Manager::Picking_Position()
 		return;
 	}
 
+	_int iHash = 0;
 	m_pContext->CopySubresourceRegion(m_pPickingTexture, 0, 0, 0, 0, pPickingTarget, 0, &m_tPickingBox);
 	m_pContext->Map(m_pPickingTexture, 0, D3D11_MAP_READ, 0, &MappedResource);
-	iObjectId = ((_int*)MappedResource.pData)[0];
-	iObjectId *= 1000;
+
+	if (MappedResource.pData == nullptr)
+	{
+		return;
+	}
+		
+	iHash = ((_int*)MappedResource.pData)[0];
 	m_pContext->Unmap(m_pPickingTexture, 0);
 
-	if (-1 != iObjectId)
+	
+	for (auto& pGround : PickingObjects)
 	{
-		int i = 0;
+		_int iObjectHash = GI->To_Hash(pGround->Get_ObjectID());
+		if (iObjectHash == iHash)
+		{
+			CTransform* pTransform = pGround->Get_Component<CTransform>(L"Com_Transform");
+			CModel* pModel = pGround->Get_Component<CModel>(L"Com_Model");
+
+			if (nullptr == pTransform || nullptr == pModel)
+				continue;
+
+			_uint iNumMeshes = pModel->Get_NumMeshes();
+			for (auto& pMesh : pModel->Get_Meshes())
+			{
+				Vec4 vPosition = {};
+				if (true == CPicking_Manager::GetInstance()->Is_DefencePicking(pTransform, pMesh, true, &vPosition))
+				{
+					m_pPicked_ObjectTransform->Set_State(CTransform::STATE_POSITION, vPosition);
+					m_pPicked_Object->Set_Install_Possible(true);
+					return;
+				}
+			}
+		}
 	}
-	else
-	{
-		int i = -1;
-	}
+	m_pPicked_Object->Set_Install_Possible(false);
 }
 
 void CTowerDefence_Manager::Picking_Tower()
@@ -571,6 +597,8 @@ HRESULT CTowerDefence_Manager::Create_Defence_Object()
 	if (nullptr == m_pPicked_Object)
 		return S_OK;
 
+	if (false == m_pPicked_Object->Is_Install_Possible())
+		return S_OK;
 
 	
 	_bool bCanBuy = false;

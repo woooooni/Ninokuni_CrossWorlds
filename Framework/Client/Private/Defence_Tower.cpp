@@ -40,11 +40,27 @@ HRESULT CDefence_Tower::Initialize(void* pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
+	m_pDissolveTexture = static_cast<CTexture*>(GI->Clone_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Noise")));
+	if (m_pDissolveTexture == nullptr)
+		return E_FAIL;
+
 	return S_OK;
 }
 
 void CDefence_Tower::Tick(_float fTimeDelta)
 {
+	if (true == m_bReserveDead)
+	{
+		m_fDissolveWeight += fTimeDelta;
+
+		if (m_fDissolveWeight >= m_fDissolveTotal)
+		{
+			Set_ActiveColliders(CCollider::DETECTION_TYPE::BODY, false);
+			Set_Dead(true);
+		}
+	}
+
+
 	if (false == m_bInitMatrix)
 	{
 		if (false == m_bPrevObject)
@@ -121,7 +137,28 @@ HRESULT CDefence_Tower::Render()
 	if (iPassIndex > 0)	
 		iPassIndex = true == m_bInstallPossible ? 5 : 6;
 
-	_uint		iNumMeshes = m_pBarrelModelCom->Get_NumMeshes();
+	if (true == m_bReserveDead)
+	{
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_WorldMatrix", &m_BaseMatrix.Transpose(), sizeof(_float4x4))))
+			return E_FAIL;
+
+		if (FAILED(m_pDissolveTexture->Bind_ShaderResource(m_pShaderCom, "g_DissolveTexture", 51)))
+			return E_FAIL;
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_DissolveDuration", &m_fDissolveDuration, sizeof(_float))))
+			return E_FAIL;
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_fDissolveWeight", &m_fDissolveWeight, sizeof(_float))))
+			return E_FAIL;
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_vDissolveColor", &m_vDissolveColor, sizeof(_float4))))
+			return E_FAIL;
+
+		iPassIndex = 2;
+	}
+		
+
+	_uint		iNumMeshes = m_pBarrelModelCom->Get_NumMeshes();	
 
 	for (_uint i = 0; i < iNumMeshes; ++i)
 	{
@@ -194,6 +231,14 @@ HRESULT CDefence_Tower::Render_ShadowDepth()
 void CDefence_Tower::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
+	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER_PROJECTILE)
+	{
+		if (tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY
+			&& tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK)
+		{
+			On_Damaged(tInfo);
+		}
+	}
 }
 
 void CDefence_Tower::Collision_Continue(const COLLISION_INFO& tInfo)
@@ -254,7 +299,31 @@ void CDefence_Tower::Look_For_Target(_bool bEnemy)
 
 void CDefence_Tower::On_Damaged(const COLLISION_INFO& tInfo)
 {
+	CMonster* pMonster = nullptr;
+	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER_PROJECTILE)
+	{
+		CMonsterProjectile* pProjectile = dynamic_cast<CMonsterProjectile*>(tInfo.pOther);
+		if (nullptr == pProjectile)
+		{
+			MSG_BOX("CMonsterProjectile Cast Failed.");
+			return;
+		}
+		pMonster = pProjectile->Get_Owner();
+	}
+	else
+	{
+		pMonster = dynamic_cast<CMonster*>(tInfo.pOther);
+	}	
 
+	if (nullptr == pMonster)
+		return;
+	
+	m_tStat.iHp -= pMonster->Get_Stat().iAtk;
+	if (0 > m_tStat.iHp)
+	{
+		m_pStateCom->Change_State(CDefence_Tower::DEFENCE_TOWER_STATE::TOWER_STATE_DEAD);
+		return;
+	}
 }
 
 void CDefence_Tower::Tick_Target(_float fTimeDelta)
@@ -334,6 +403,7 @@ void CDefence_Tower::Free()
 	Safe_Release(m_pTarget);
 	Safe_Release(m_pRigidBodyCom);
 	Safe_Release(m_pTransformCom);
+	Safe_Release(m_pDissolveTexture);
 
 	
 }

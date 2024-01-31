@@ -27,7 +27,7 @@ float3 g_vBloomPower;
 float4 g_vRimColor = { 0.f, 0.f, 0.f, 0.f };
 
 // ÇÇÅ·
-int g_iObjectID = 0;
+float4 g_vObjectHash;
 
 cbuffer InversTransposeMatBuffer
 {
@@ -530,9 +530,7 @@ struct PS_OUT_PICKING
 PS_OUT_PICKING PS_PICKING(PS_IN In)
 {
     PS_OUT_PICKING Out = (PS_OUT_PICKING) 0;
-    
-    Out.vColor.rgba = 0;
-    Out.vColor.r = float(g_iObjectID) / 1000.f;
+    Out.vColor = g_vObjectHash;
     
     return Out;
 }

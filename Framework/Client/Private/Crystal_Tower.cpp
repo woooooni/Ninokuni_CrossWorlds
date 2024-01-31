@@ -58,7 +58,7 @@ HRESULT CCrystal_Tower::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_fAccFireTime = 0.f;
-	m_fFireTime = 5.f;
+	m_fFireTime = 8.f;
 
 	m_eTowerType = CTowerDefence_Manager::TOWER_TYPE::CRYSTAL;
 

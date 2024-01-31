@@ -16,7 +16,7 @@ class CKuu;
 class CCamera_Action final : public CCamera
 {
 public:
-	enum CAMERA_ACTION_TYPE { LOBBY, DOOR, TALK, WINDMILL, CAMERA_ACTION_END };
+	enum CAMERA_ACTION_TYPE { LOBBY, DOOR, TALK, WINDMILL, SWORDMAN_BURST, ENGINEER_BURST, DESTROYER_BURST, CAMERA_ACTION_END };
 
 public:
 	typedef struct tagActionLobbyDesc
@@ -99,6 +99,31 @@ public:
 		const _float	fWaitTime		= 1.f;
 	}ACTION_WINDMILL_DESC;
 
+	typedef struct tagSwordManBurstDesc
+	{
+		_float			fAcc = 0.f;
+		_float			fFinishTime = 1.f;
+
+		Vec4			vCamStartPosition = {};
+		class CTransform* pSwordManTransform = nullptr;
+	} ACTION_SWORDMAN_BURST_DESC;
+
+	typedef struct tagDestroyerBurstDesc
+	{
+		_float			fAcc = 0.f;
+		_float			fFinishTime = 1.f;
+
+		class CTransform* pDestroyerTransform = nullptr;
+	} ACTION_DESTROYER_BURST_DESC;
+
+	typedef struct tagEngineerBurstDesc
+	{
+		_float			fAcc = 0.f;
+		_float			fFinishTime = 1.f;
+
+		class CTransform* pEngineerTransform = nullptr;
+	} ACTION_ENGINEER_BURST_DESC;
+
 private:
 	CCamera_Action(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
 	CCamera_Action(const CCamera_Action& rhs);
@@ -119,6 +144,14 @@ public:
 	HRESULT Start_Action_Door();
 	HRESULT Start_Action_WindMill(const _bool& bNpcToWindMill); /* 현재 대화 룩 타겟이 NPC일 때 호출*/
 
+	// 캐릭터 버스트 스킬 액션.
+	HRESULT Start_Action_SwordManBurst(class CTransform* pSwordManTransform);
+	HRESULT Start_Action_EngineerBurst(class CTransform* pEngineerTransform);
+	HRESULT Start_Action_DestroyerBurst(class CTransform* pDestroyerTransform);
+	HRESULT Stop_ActionSwordMan_Burst();
+	HRESULT Stop_ActionEngineer_Burst();
+	HRESULT Stop_ActionDestroyer_Burst();
+
 	HRESULT Start_Action_Talk(CGameObject* pNpc); /* 처음 대화 시작시 호출 (쿠우 혼자면 nullptr, Npc 있으면 Npc 넘겨줌 */
 	HRESULT Change_Action_Talk_Object(const ACTION_TALK_DESC::VIEW_TYPE& eType); /* 중간 화자 변경시 호출 */
 	HRESULT Finish_Action_Talk(); /* 대화 종료시 호출 */
@@ -133,6 +166,9 @@ private:
 	void Tick_Door(_float fTimeDelta);
 	void Tick_Talk(_float fTimeDelta);
 	void Tick_WindMill(_float fTimeDelta);
+	void Tick_SwordManBurst(_float fTimeDelta);
+	void Tick_EngineerBurst(_float fTimeDelta);
+	void Tick_DestroyerBurst(_float fTimeDelta);
 
 private:
 	void Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType);
@@ -151,6 +187,12 @@ private:
 	ACTION_DOOR_DESC		m_tActionDoorDesc = {};
 	ACTION_TALK_DESC		m_tActionTalkDesc = {};
 	ACTION_WINDMILL_DESC	m_tActionWindMillDesc = {};
+
+
+	ACTION_SWORDMAN_BURST_DESC m_tActionSwordManBurstDesc = {};
+	ACTION_ENGINEER_BURST_DESC m_tActionEngineerBurstDesc = {};
+	ACTION_DESTROYER_BURST_DESC m_tActionDestroyerBurstDesc = {};
+
 public:
 	static CCamera_Action* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag);
 	virtual CGameObject* Clone(void* pArg);

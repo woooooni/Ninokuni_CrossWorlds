@@ -37,8 +37,6 @@ vector g_vCamPosition;
 // 안개
 float4 g_vFogColor    = { 0.f, 0.635f, 1.f, 1.f };
 float2 g_fFogStartEnd = { 300.f, 600.f };
-
-float g_fConvertPercent     = 0.5f;
 float g_fFogStartDepth      = 0.f;
 float g_fFogStartDistance   = 0.f;
 float g_fFogDistanceValue   = 0.f;
@@ -303,7 +301,6 @@ PS_OUT PS_RADIAL_BLUR(PS_IN In)
 
     float4 colour = { 0.f, 0.f, 0.f, 0.f };
     float v = 0.f;
-    const float quality = 16;
 
     for (float i = 0.0f; i < 1.0f; i += (1 / g_fQuality))
     {
@@ -311,7 +308,7 @@ PS_OUT PS_RADIAL_BLUR(PS_IN In)
         colour += g_BlendTarget.Sample(PointSampler, In.vTexcoord * v + 0.5f - 0.5f * v);
     }
 
-    colour /= quality;
+    colour /= g_fQuality;
     colour.a = 1.f;
     
     Out.vColor = colour;
@@ -406,8 +403,7 @@ float3 Compute_HeightFogColor(float3 vOriginColor, float3 toEye, float fNoise)
     float fogHeightFactor = pow(pow(2.0f, -heightValue), heightValue) * (1.0f - distanceOffset);
 
 	// 두 요소를 결합한 최종 요소..
-    float fogFinalFactor = saturate(min(fogDistanceFactor * fogHeightFactor * fNoise, 1.0f) + min(distanceOffset * heightOffset, 1.0f));
-
+    float fogFinalFactor = min(fogDistanceFactor * fogHeightFactor * fNoise, 1.0f) + min(distanceOffset * heightOffset, 1.0f) + 0.01f;
 
 	// 최종 혼합 색상..
     return lerp(vOriginColor.rgb, g_vFogColor.xyz, fogFinalFactor);
