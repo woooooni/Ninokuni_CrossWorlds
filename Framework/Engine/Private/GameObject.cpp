@@ -148,7 +148,7 @@ CShader* CGameObject::Get_Component_Shader()
 
 CRigidBody* CGameObject::Get_Component_Rigidbody()
 {
-	return Get_Component<CRigidBody>(L"Com_Rigidbody");
+	return Get_Component<CRigidBody>(L"Com_RigidBody");
 }
 
 CRenderer* CGameObject::Get_Component_Renderer()

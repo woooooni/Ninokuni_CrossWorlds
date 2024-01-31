@@ -6,6 +6,7 @@ BEGIN(Client)
 
 class CState_CurlingGame_Launch_Stone final : public CState_CurlingGame_Base
 {
+	
 private:
 	CState_CurlingGame_Launch_Stone(CManager_StateMachine* pStateMachine);
 	virtual ~CState_CurlingGame_Launch_Stone() = default;
@@ -19,6 +20,14 @@ public:
 	virtual void LateTick_State(const _float& fTimeDelta) override;
 	virtual void Exit_State() override;
 	virtual HRESULT Render() override;
+
+private:
+	const _bool& Check_AllStoneStop();
+
+	void Calculate_Score();
+
+private:
+	_bool m_bResetTurn = false;
 
 public:
 	static CState_CurlingGame_Launch_Stone* Create(CManager_StateMachine* pStateMachine);

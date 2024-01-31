@@ -32,10 +32,6 @@ void CState_CurlingGame_Choose_Direction::Enter_State(void* pArg)
 	if (nullptr == m_pManager->m_pCurStone)
 		return;
 
-	CCharacter* pCharacter = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
-	if (nullptr != pCharacter)
-		pCharacter->Set_Move_Input(false);
-
 	/* Create Arrow */
 	if (!m_bCloned)
 	{
@@ -81,6 +77,8 @@ void CState_CurlingGame_Choose_Direction::Enter_State(void* pArg)
 			const Vec4 vLookAt = Vec4(pOwnerTransform->Get_Position()) + (Vec4(pOwnerTransform->Get_Look()).ZeroY().Normalized() * -10.f);
 
 			m_pArrowTransform->LookAt_ForLandObject(vLookAt);
+			
+			m_pManager->m_vCurStoneLook = Vec4(m_pArrowTransform->Get_Look()).ZeroY().Normalized() * -1.f;
 		}
 
 		/* Scale */
@@ -89,6 +87,7 @@ void CState_CurlingGame_Choose_Direction::Enter_State(void* pArg)
 
 	/* Active */
 	m_pArrow->Set_Active(true);
+
 }
 
 void CState_CurlingGame_Choose_Direction::Tick_State(const _float& fTimeDelta)

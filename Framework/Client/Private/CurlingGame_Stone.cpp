@@ -109,7 +109,7 @@ void CCurlingGame_Stone::Tick(_float fTimeDelta)
 	/* 리지드바디 체크 */
 	if (!m_pRigidBodyCom->Is_Sleep())
 	{
-		m_bMoving = m_pRigidBodyCom->Check_Sleep();
+		m_bMoving = !m_pRigidBodyCom->Check_Sleep();
 
 		// const _float fRotateSpeed = Vec3(m_pRigidBodyCom->Get_Velocity()).Length() * m_fRotateSpeed * fTimeDelta;
 		// m_pTransformCom->Rotation(Vec3::Up, fRotateSpeed);
@@ -200,11 +200,9 @@ void CCurlingGame_Stone::Launch(const Vec4& vDir, const _float& fPower)
 	{		
 		m_pRigidBodyCom->Add_Velocity(vDir, fPower, false);
 
-		m_bLaunched = true;
-
-		m_bActive = true;
-
 		m_pRigidBodyCom->Set_Sleep(false);
+
+		m_bLaunched = m_bMoving = true;
 	}
 }
 

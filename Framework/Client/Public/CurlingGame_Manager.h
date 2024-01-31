@@ -17,9 +17,11 @@ class CCurlingGame_Manager : public CBase
 {
 	DECLARE_SINGLETON(CCurlingGame_Manager)
 
-	enum CURLINGGAME_STATE { INTRO, MOVE, DIRECTION, INTENSITY, LAUNCH, CURLINGGAME_STATE_TYPEEND };
+public:
 	enum PARTICIPANT_TYPE  { PARTICIPANT_PLAYER, PARTICIPANT_NPC, PARTICIPANT_TYPEEND };
 
+private:
+	enum CURLINGGAME_STATE { INTRO, MOVE, DIRECTION, INTENSITY, LAUNCH, CURLINGGAME_STATE_TYPEEND };
 	typedef struct tagStandardDesc
 	{
 		/* Ring, Goal */
@@ -92,9 +94,6 @@ public:
 	vector<CGameObject*>* Get_Stadium() { return &m_pStadiumObjects; }
 
 private:
-	void Tick_Score();
-
-private:
 	HRESULT Ready_Components();
 	HRESULT Ready_Objects();
 
@@ -115,7 +114,7 @@ private:
 	STANDARD_DESC			m_tStandardDesc = {};	
 	vector<CGameObject*>	m_pStadiumObjects;
 
-	vector<CCurlingGame_Stone*> m_pBarrelsLaunched;
+	vector<CCurlingGame_Stone*> m_pStonesLaunched;
 
 	PARTICIPANT_INFO_DESC	m_tParticipants[PARTICIPANT_TYPE::PARTICIPANT_TYPEEND];
 	

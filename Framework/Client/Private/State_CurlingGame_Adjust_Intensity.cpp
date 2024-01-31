@@ -51,7 +51,7 @@ void CState_CurlingGame_Adjust_Intensity::Tick_State(const _float& fTimeDelta)
 			{
 				m_pManager->m_pCurStone->Launch(m_pManager->m_vCurStoneLook.ZeroY().Normalized(), m_tGuageDesc.fMaxPower * m_tGuageDesc.tLerpValue.fCurValue);
 
-				m_pManager->m_pBarrelsLaunched.push_back(m_pManager->m_pCurStone);
+				m_pManager->m_pStonesLaunched.push_back(m_pManager->m_pCurStone);
 
 				m_tGuageDesc.Stop();
 

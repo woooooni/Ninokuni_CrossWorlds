@@ -66,7 +66,6 @@ void CState_CurlingGame_Move_Character::Enter_State(void* pArg)
 			if(FAILED(pCharacter->Get_Component_StateMachine()->Change_State(CCharacter::NEUTRAL_PICK_LARGE_IDLE)))
 				return;
 		}
-
 	}
 	else 
 	{
@@ -91,10 +90,14 @@ void CState_CurlingGame_Move_Character::Tick_State(const _float& fTimeDelta)
 	if (m_pManager->m_bPlayerTurn)
 	{
 		if (m_pManager->m_pCurStone->Is_Putted())
-		{
+		{ 
 			CCamera_CurlingGame* pCurlingCam = dynamic_cast<CCamera_CurlingGame*>(CCamera_Manager::GetInstance()->Get_CurCamera());
 			if (nullptr == pCurlingCam)
 				return;
+
+			CCharacter* pCharacter = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+			if (nullptr != pCharacter && pCharacter->Is_Move_Input())
+				pCharacter->Set_Move_Input(false);
 
 			if (!m_bChangeCameraToStone)
 			{

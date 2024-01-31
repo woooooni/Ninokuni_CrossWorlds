@@ -104,6 +104,26 @@ void CTransform::Set_State(STATE eState, _vector vState)
 	XMStoreFloat4x4(&m_WorldMatrix, WorldMatrix);
 }
 
+void CTransform::Set_Right(_vector vState)
+{
+	Set_State(STATE::STATE_RIGHT, vState);
+}
+
+void CTransform::Set_Up(_vector vState)
+{
+	Set_State(STATE::STATE_UP, vState);
+}
+
+void CTransform::Set_Look(_vector vState)
+{
+	Set_State(STATE::STATE_LOOK, vState);
+}
+
+void CTransform::Set_Position(_vector vState)
+{
+	Set_State(STATE::STATE_POSITION, vState);
+}
+
 
 
 void CTransform::Set_Scale(_vector vScale)
