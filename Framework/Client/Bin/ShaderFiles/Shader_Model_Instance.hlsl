@@ -161,6 +161,37 @@ VS_OUT VS_GRASS_MAIN(VS_IN In)
     return Out;
 }
 
+VS_OUT VS_WITCHGRASS_MAIN(VS_IN In)
+{
+    VS_OUT Out = (VS_OUT) 0;
+
+    matrix matWV, matWVP, matVP;
+    float4x4 InstanceWorld = float4x4(In.vRight, In.vUp, In.vLook, In.vTranslation);
+	
+    if (In.vTexUV.y >= 0.5f)
+    {
+        In.vPosition.z += fGrassAngle * 0.5f;
+    }
+	
+    matWV = mul(InstanceWorld, g_ViewMatrix);
+    matWVP = mul(matWV, g_ProjMatrix);
+	
+    Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
+    Out.vWorldPosition = mul(float4(In.vPosition, 1.0f), g_WorldMatrix);
+	
+    Out.vNormal = normalize(mul(float4(In.vNormal, 0.f), InstanceWorld)).xyz;
+    Out.vTangent = normalize(mul(float4(In.vTangent, 0.f), InstanceWorld)).xyz;
+    Out.vBinormal = normalize(cross(Out.vNormal, Out.vTangent));
+    Out.vTexUV = In.vTexUV;
+    Out.vProjPos = Out.vPosition;
+    Out.iInstanceID = In.iInstanceID;
+
+			// SSAO
+    Out.vViewNormal = mul(Out.vNormal.xyz, (float3x3) g_ViewMatrix);
+    Out.vPositionView = mul(float4(In.vPosition, 1.0f), matWV);
+    return Out;
+}
+
 // ±¼Àý
 VS_REFRACT_OUT VS_REFRACT_MAIN(VS_IN In)
 {
@@ -518,19 +549,19 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAIN();
     }
 
-	pass Temp7
+	pass WitchGrass
 	{
 		// 7
-		SetRasterizerState(RS_Default);
-		SetDepthStencilState(DSS_Default, 0);
-		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetRasterizerState(RS_NoneCull);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
-		VertexShader = compile vs_5_0 VS_MAIN();
-		GeometryShader = NULL;
+        VertexShader = compile vs_5_0 VS_WITCHGRASS_MAIN();
+        GeometryShader = NULL;
         HullShader = NULL;
         DomainShader = NULL;
-		PixelShader = compile ps_5_0 PS_MAIN();
-	}
+        PixelShader = compile ps_5_0 PS_MAIN();
+    }
 
 	pass Temp8
 	{

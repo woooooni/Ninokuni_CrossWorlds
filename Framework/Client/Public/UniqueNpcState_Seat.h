@@ -7,7 +7,7 @@ BEGIN(Client)
 class CUniqueNpcState_Seat final : public CNpcState_Base
 {
 private:
-	enum SECTION_TYPE { SECTION_ONE, SECTION_TWO, SECTION_THREE, SECTION_FOUR, SECTION_END };
+	enum SECTION_TYPE { SECTION_ONE, SECTION_TWO, SECTION_THREE, SECTION_FOUR, SECTION_FIVE, SECTION_END };
 private:
 	CUniqueNpcState_Seat(CStateMachine* pStateMachine);
 	virtual ~CUniqueNpcState_Seat() = default;
@@ -25,7 +25,7 @@ private:
 
 private:
 	_float m_fTime = 0.0f;
-	_bool m_bSection[SECTION_END] = { false, false, false, false };
+	_bool m_bSection[SECTION_END] = { false, false, false, false, false };
 
 public:
 	static CUniqueNpcState_Seat* Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList);

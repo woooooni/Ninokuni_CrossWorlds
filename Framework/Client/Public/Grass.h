@@ -12,7 +12,7 @@ class CRenderer;
 class CPipeLine;
 class CTransform;
 class CRigidBody;
-class CVIBuffer_Grass;
+class CVIBuffer_LensFlare;
 END
 
 BEGIN(Client)
@@ -39,7 +39,7 @@ private:
 	class CRenderer* m_pRendererCom = nullptr;
 	class CTransform* m_pTransformCom = nullptr;
 
-	class CVIBuffer_Grass* m_pVIBufferCom = nullptr;
+	class CVIBuffer_LensFlare* m_pVIBufferCom = nullptr;
 	class CShader* m_pShaderCom = nullptr;
 
 	class CTexture* m_pTextureCom = nullptr;

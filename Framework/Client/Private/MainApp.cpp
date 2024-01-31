@@ -73,7 +73,7 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 
 	// Set UI Cursor
-	if (LEVELID::LEVEL_TOOL != (LEVELID)g_eStartLevel)
+	if (LEVELID::LEVEL_TOOL != (LEVELID)g_eStartLevel) 
 	{
 		CUI_Manager::GetInstance()->Ready_Cursor();
 		ShowCursor(false);

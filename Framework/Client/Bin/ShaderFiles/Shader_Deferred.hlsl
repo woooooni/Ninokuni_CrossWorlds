@@ -175,7 +175,7 @@ void CaclPoint(float3 position, float3 normal, inout PS_OUT_LIGHT output)
     ToLight /= DistToLight; // normalize
     float NDotL = saturate(dot(ToLight, normal));
     output.vShade = float4(vPointColor.rgb * saturate(NDotL), 1.0f);
-	
+    
 	// Blinn Specular
     ToEye = normalize(ToEye);
     float3 HalfWay = normalize(ToEye + ToLight);

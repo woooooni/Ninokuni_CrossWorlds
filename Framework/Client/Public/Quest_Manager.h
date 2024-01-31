@@ -21,7 +21,7 @@ private:
 	virtual ~CQuest_Manager() = default;
 
 public:
-	HRESULT Reserve_Manager();
+	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	void	Tick(_float fTimeDelta);
 	void    LateTick(_float fTimeDelta);
 
@@ -52,6 +52,13 @@ public:
 	_bool	Get_IsBossKill() { return m_bIsBossKill; }
 	void	Set_IsBossKill(_bool IsBossKill) { m_bIsBossKill = IsBossKill; }
 
+	const Vec4& Get_OriginSkyCenter() const { return m_vOriginSkyCenterColor; }
+	const Vec4& Get_OriginSkyApexColor() const { return m_vOriginSkyApexColor; }
+
+	void Set_OriginSkyCenterColor(Vec4 vColor) { m_vOriginSkyCenterColor = vColor; }
+	void Set_OriginSkyApexColor(Vec4 vColor) { m_vOriginSkyApexColor = vColor; }
+
+	void Ready_InvasionLight(const wstring& strLightFilePath);
 private:
 	CMainQuest*  m_pMainQuest = nullptr;
 	CSubQuest*   m_pSubQuest = nullptr;
@@ -67,6 +74,13 @@ private:
 	_int		m_iMonsterKillCount = 0;
 	_bool		m_bIsBossKill = false;
 
+private:
+	Vec4 m_vOriginSkyCenterColor;
+	Vec4 m_vOriginSkyApexColor;
+
+
+	ID3D11Device* m_pDevice = nullptr;
+	ID3D11DeviceContext* m_pContext = nullptr;
 public:
 	virtual void Free() override;
 };

@@ -9,6 +9,7 @@
 #include "Character.h"
 #include "UI_Manager.h"
 #include "Quest_Manager.h"
+#include "SkyDome.h"
 
 CMainQuestNode_Invasion01::CMainQuestNode_Invasion01()
 {
@@ -32,6 +33,9 @@ HRESULT CMainQuestNode_Invasion01::Initialize()
 
 void CMainQuestNode_Invasion01::Start()
 {
+	// Change SkyDomeColor
+
+
 	/* 현재 퀘스트에 연관있는 객체들 */
 	m_pRuslan = GI->Find_GameObject(LEVELID::LEVEL_KINGDOMHALL, LAYER_NPC, TEXT("Ruslan"));
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());

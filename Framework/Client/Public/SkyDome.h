@@ -53,7 +53,8 @@ private:
 	Vec4 m_vApexColor = Vec4(0.173f, 0.631f, 0.851f, 1.0f);								// 밑 혹은 윗부분 색깔.
 	Vec4 m_vCenterColor = Vec4(183.0f / 255.0f, 255.0f/ 255.0f , 255.0f / 255.0f,1.0f);	// 센터 축부터 어떤 색깔.
 
-
+	//Vec4 m_vApexColor = Vec4(0.671f, 0.059f, 0.0f, 1.0f);								// 밑 혹은 윗부분 색깔.
+	//Vec4 m_vCenterColor = Vec4(0.329f, 0.173f, 0.157f, 1.0f);	// 센터 축부터 어떤 색깔.
 public:
 	static CSkyDome* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eObjType);
 	virtual CGameObject* Clone(void* pArg);

@@ -6,6 +6,7 @@
 
 #include "Game_Manager.h"
 #include "UI_Manager.h"
+#include "Player.h"
 
 CMainQuestNode_SnowField02::CMainQuestNode_SnowField02()
 {
@@ -88,6 +89,19 @@ CBTNode::NODE_STATE CMainQuestNode_SnowField02::Tick(const _float& fTimeDelta)
 		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
 
 		m_bIsClear = true;
+
+		CRenderer::FOG_DESC fogDesc;
+		::ZeroMemory(&fogDesc, sizeof(fogDesc));
+		{
+			fogDesc.fFogDistanceValue = 50.0f;
+			fogDesc.fFogHeightValue = 50.0f;
+			fogDesc.fFogStartDepth = 100.0f;
+			fogDesc.fFogStartDistance = -1.370f;
+			fogDesc.fFogDistanceDensity = 0.04f;
+			fogDesc.fFogHeightDensity = 0.090f;
+		}
+		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_FogDesc(fogDesc);
+		CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_FogColor(Vec4(0.804f, 0.871f, 0.902f, 1.0f));
 
 		return NODE_STATE::NODE_FAIL;
 	}
