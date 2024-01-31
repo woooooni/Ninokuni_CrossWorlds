@@ -374,6 +374,18 @@ void CTowerDefence_Manager::Tick_Defence_Progress(_float fTimeDelta)
 	{
 		Finish_Defence();
 	}
+
+	auto iter = m_DefenceObjects.begin();
+	while (iter != m_DefenceObjects.end())
+	{
+		if (true == (*iter)->Is_ReserveDead() || true == (*iter)->Is_Dead())
+		{
+			Safe_Release((*iter));
+			iter = m_DefenceObjects.erase(iter);
+			continue;
+		}
+		++iter;
+	}
 }
 
 void CTowerDefence_Manager::Tick_Defence_Finish(_float fTimeDelta)

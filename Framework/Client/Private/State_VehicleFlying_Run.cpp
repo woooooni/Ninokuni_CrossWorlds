@@ -35,6 +35,12 @@ void CState_VehicleFlying_Run::Tick_State(_float fTimeDelta)
 {
 	_bool bMove = false;
 
+	if (KEY_TAP(KEY::NUM_2))
+	{
+		m_pStateMachineCom->Change_State(CVehicle::VEHICLE_RUSH);
+		return;
+	}
+
 	if (KEY_HOLD(KEY::W))
 	{
 		bMove = true;

@@ -186,6 +186,7 @@ void CaclPoint(float3 position, float3 normal, inout PS_OUT_LIGHT output)
     float DistToLightNorm = 1.0f - saturate(DistToLight * fPointLightRangeRcp);
     float Attn = DistToLightNorm * DistToLightNorm;
     output.vShade *= Attn;
+    output.vShade = (ceil(output.vShade * 2.f) / 2.f);
     output.vSpecular *= Attn;
 }
 
@@ -417,6 +418,11 @@ float3 Compute_HeightFogColor(float3 vOriginColor, float3 toEye, float fNoise)
 //    return lerp(rgb, g_vFogColor.rgb, fogAmount);
 //}
 
+//float3 Gamma_LinearSpace(float3 _rgb)
+//{
+//    return pow(_rgb, 2.2);
+//}
+
 
 // DEFERRED
 PS_OUT PS_MAIN_DEFERRED(PS_IN In)
@@ -425,6 +431,7 @@ PS_OUT PS_MAIN_DEFERRED(PS_IN In)
 
 	// vDiffuse
 	vector vDiffuse = g_DiffuseTarget.Sample(LinearSampler, In.vTexcoord);
+    // vDiffuse.rgb = Gamma_LinearSpace(vDiffuse.rgb);
     
 	if (vDiffuse.a == 0.f)
 		discard;

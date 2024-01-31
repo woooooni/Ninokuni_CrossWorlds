@@ -23,6 +23,10 @@ public:
 	virtual void Tick_State(_float fTimeDelta) override;
 	virtual void Exit_State() override;
 
+private:
+	_float m_fAccSpeed = 10.f;
+	_float m_fAccRadialBlurScale = 16.f;
+
 public:
 	static CState_VehicleFlying_Rush* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

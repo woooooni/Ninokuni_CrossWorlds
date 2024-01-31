@@ -22,6 +22,13 @@ struct VS_OUT
 	float2		vTexcoord : TEXCOORD0;
 };
 
+
+float3 Gamma_ForMonitor(float3 _rgb, float _f = 1.f / 2.2f)
+{
+    return pow(_rgb, _f); // 0.45454545 = 1/2.2 }
+}
+
+
 VS_OUT VS_MAIN(VS_IN In)
 {
 	VS_OUT			Out = (VS_OUT)0;

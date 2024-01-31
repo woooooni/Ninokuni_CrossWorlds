@@ -319,6 +319,8 @@ void CDefence_Tower::On_Damaged(const COLLISION_INFO& tInfo)
 		return;
 	
 	m_tStat.iHp -= pMonster->Get_Stat().iAtk;
+	CUIDamage_Manager::GetInstance()->Create_PlayerDamageNumber(m_pTransformCom, pMonster->Get_Stat().iAtk);
+
 	if (0 > m_tStat.iHp)
 	{
 		m_pStateCom->Change_State(CDefence_Tower::DEFENCE_TOWER_STATE::TOWER_STATE_DEAD);

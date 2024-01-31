@@ -664,10 +664,10 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 			CVehicle_Flying_Biplane::Create(m_pDevice, m_pContext, TEXT("Vehicle_Biplane")), LAYER_TYPE::LAYER_CHARACTER))
 			return E_FAIL;
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Vehicle_EnemyBiplane"),
-			CVehicle_Flying_EnemyBiplane::Create(m_pDevice, m_pContext, TEXT("Vehicle_EnemyBiplane")), LAYER_TYPE::LAYER_CHARACTER))
+			CVehicle_Flying_EnemyBiplane::Create(m_pDevice, m_pContext, TEXT("Vehicle_EnemyBiplane")), LAYER_TYPE::LAYER_MONSTER))
 			return E_FAIL;
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Vehicle_EnemyBoto"),
-			CVehicle_Flying_EnemyBoto::Create(m_pDevice, m_pContext, TEXT("Vehicle_EnemyBoto")), LAYER_TYPE::LAYER_CHARACTER))
+			CVehicle_Flying_EnemyBoto::Create(m_pDevice, m_pContext, TEXT("Vehicle_EnemyBoto")), LAYER_TYPE::LAYER_MONSTER))
 			return E_FAIL;
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Swordsman_Biplane_Bullet"),
 			CSwordsman_Biplane_Bullet::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
