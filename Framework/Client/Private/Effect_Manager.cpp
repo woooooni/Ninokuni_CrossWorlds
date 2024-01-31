@@ -525,6 +525,15 @@ HRESULT CEffect_Manager::Ready_Proto_Effects(const wstring& strEffectPath)
 				EffectInfo.fBlack_Discard.y = item["Black_Discard"]["y"];
 				EffectInfo.fBlack_Discard.z = item["Black_Discard"]["z"];
 #pragma endregion
+
+#pragma region 디스토션
+				EffectInfo.strDistortionTetextureName = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(item["DistortionTetextureName"]));
+				EffectInfo.iDistortionIndex = item["DistortionIndex"];
+				EffectInfo.vDistortionPower.x = item["DistortionPower"]["x"];
+				EffectInfo.vDistortionPower.y = item["DistortionPower"]["y"];
+				EffectInfo.vDistortionPower.z = item["DistortionPower"]["z"];
+				EffectInfo.vDistortionPower.w = item["DistortionPower"]["w"];
+#pragma endregion
 			}
 #pragma endregion
 

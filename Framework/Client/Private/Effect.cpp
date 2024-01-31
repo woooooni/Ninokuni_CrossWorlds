@@ -41,6 +41,9 @@ void CEffect::Set_EffectDesc(const EFFECT_DESC& tDesc)
 	Set_Texture_Alpha();
 	Set_Texture_Distortion();
 
+	if (nullptr == m_pDistortionTextureCom)
+		m_tEffectDesc.vDistortionPower = _float4(0.f, 0.f, 0.f, 0.f);
+
 	Reset_Effect();
 }
 

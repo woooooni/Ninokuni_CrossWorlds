@@ -614,6 +614,10 @@ _bool CTool_Effect::Tick_EffectTool()
 						ImGui::EndListBox();
 					}
 				}
+				else
+				{
+					m_tEffectInfo.vDistortionPower = _float4(0.f, 0.f, 0.f, 0.f);
+				}
 				ImGui::NewLine();
 			}
 
@@ -1586,9 +1590,19 @@ void CTool_Effect::Save_Effect(const char* pFileName)
 			{"x", m_tEffectInfo.fBlack_Discard.x},
 			{"y", m_tEffectInfo.fBlack_Discard.y},
 			{"z", m_tEffectInfo.fBlack_Discard.z}}
-		}
+		},
 #pragma endregion
 
+#pragma region 디스토션
+		{ "DistortionTetextureName", CUtils::ToString(m_tEffectInfo.strDistortionTetextureName) },
+		{ "DistortionIndex", m_tEffectInfo.iDistortionIndex },
+		{ "DistortionPower", {
+			{"x", m_tEffectInfo.vDistortionPower.x},
+			{"y", m_tEffectInfo.vDistortionPower.y},
+			{"z", m_tEffectInfo.vDistortionPower.z},
+			{"w", m_tEffectInfo.vDistortionPower.w}}
+		}
+#pragma endregion
 		});
 
 	wstring strFileName(pFileName, pFileName + strlen(pFileName));
@@ -1842,6 +1856,15 @@ void CTool_Effect::Load_Effect(const char* pFileName)
 		EffectInfo.fBlack_Discard.x = item["Black_Discard"]["x"];
 		EffectInfo.fBlack_Discard.y = item["Black_Discard"]["y"];
 		EffectInfo.fBlack_Discard.z = item["Black_Discard"]["z"];
+#pragma endregion
+
+#pragma region 디스토션
+		EffectInfo.strDistortionTetextureName = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(item["DistortionTetextureName"]));
+		EffectInfo.iDistortionIndex = item["DistortionIndex"];
+		EffectInfo.vDistortionPower.x = item["DistortionPower"]["x"];
+		EffectInfo.vDistortionPower.y = item["DistortionPower"]["y"];
+		EffectInfo.vDistortionPower.z = item["DistortionPower"]["z"];
+		EffectInfo.vDistortionPower.w = item["DistortionPower"]["w"];
 #pragma endregion
 	}
 #pragma endregion
