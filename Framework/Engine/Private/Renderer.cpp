@@ -1121,9 +1121,6 @@ HRESULT CRenderer::Render_Deferred()
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("g_fFogStartEnd", &m_fFogStartEnd, sizeof(_float2))))
 		return E_FAIL;
 
-	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("g_fConvertPercent", &m_FogDesc.fConvertPercent, sizeof(_float))))
-		return E_FAIL;
-
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("g_fFogStartDepth", &m_FogDesc.fFogStartDepth, sizeof(_float))))
 		return E_FAIL;
 
@@ -1303,6 +1300,11 @@ HRESULT CRenderer::Render_RadialBlur()
 		return E_FAIL;
 	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
 		return E_FAIL;
+
+	if (FAILED(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED]->Bind_RawValue("g_fQuality", &m_fRadialBlurQuality, sizeof(_float))))
+		return E_FAIL;
+	
+	
 
 	if (FAILED(m_pTarget_Manager->Bind_SRV(m_pShaders[RENDERER_SHADER_TYPE::SHADER_DEFERRED], L"Target_Blend", "g_BlendTarget")))
 		return E_FAIL;

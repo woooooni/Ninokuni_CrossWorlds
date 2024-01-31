@@ -727,8 +727,7 @@ void CCharacter::Decide_Target(COLLISION_INFO tInfo)
 {
 	if (nullptr == m_pTarget)
 	{
-		m_pTarget = tInfo.pOther;
-		Safe_AddRef(m_pTarget);
+		Set_Target(tInfo.pOther);
 
 		if (OBJ_TYPE::OBJ_CURLINGGAME_PROP == tInfo.pOther->Get_ObjectType()) // 컬링 게임 오브젝트들은 데칼 사용 X
 			return;
@@ -768,13 +767,7 @@ void CCharacter::Decide_Target(COLLISION_INFO tInfo)
 			Vec3 vNewTargetDir = pNewTargetTransform->Get_Position() - m_pTransformCom->Get_Position();
 			if (vNewTargetDir.Length() < vTargetDir.Length())
 			{
-				if (nullptr != m_pTarget)
-				{
-					Safe_Release(m_pTarget);
-					m_pTarget = nullptr;
-				}
-
-
+				Set_Target(tInfo.pOther);
 
 				if (nullptr != m_pEffectTargetDecal)
 				{
@@ -782,10 +775,6 @@ void CCharacter::Decide_Target(COLLISION_INFO tInfo)
 					Safe_Release(m_pEffectTargetDecal);
 					m_pEffectTargetDecal = nullptr;
 				}
-
-				m_pTarget = tInfo.pOther;
-
-				Safe_AddRef(m_pTarget);
 
 				if (OBJ_TYPE::OBJ_CURLINGGAME_PROP == tInfo.pOther->Get_ObjectType()) // 컬링 게임 오브젝트들은 데칼 사용 X
 					return;
@@ -967,6 +956,18 @@ void CCharacter::Set_InitialPosition(Vec4 vPosition)
 {
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSetW(vPosition, 1.f));
 	m_pControllerCom->Set_EnterLevel_Position(XMVectorSetW(vPosition, 1.f));
+}
+
+void CCharacter::Set_Target(CGameObject* pTarget)
+{
+	if (nullptr != m_pTarget)
+	{
+		Safe_Release(m_pTarget);
+		m_pTarget = nullptr;
+	}
+
+	m_pTarget = pTarget;
+	Safe_AddRef(m_pTarget);
 }
 
 HRESULT CCharacter::Disappear_Weapon()

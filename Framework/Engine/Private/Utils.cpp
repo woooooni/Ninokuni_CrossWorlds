@@ -1,7 +1,8 @@
-#include "../Public/Utils.h"
+ï»¿#include "../Public/Utils.h"
 #include <random>
 #include <tchar.h>
 
+std::hash<_int> CUtils::g_Hash;
 bool CUtils::StartsWith(string str, string comp)
 {
 	wstring::size_type index = str.find(comp);
@@ -124,14 +125,14 @@ Matrix CUtils::To_Matrix(PxTransform pxTransform)
 TCHAR* CUtils::WStringToTChar(const wstring& wstr)
 {
 	if (wstr.empty())
-		return _tcsdup(_T("")); // ºó ¹®ÀÚ¿­À» Ã³¸®ÇÏ±â À§ÇÑ ´õ¹Ì µ¥ÀÌÅÍ ¹İÈ¯
+		return _tcsdup(_T("")); // ë¹ˆ ë¬¸ìì—´ì„ ì²˜ë¦¬í•˜ê¸° ìœ„í•œ ë”ë¯¸ ë°ì´í„° ë°˜í™˜
 
 	int size = WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), -1, NULL, 0, NULL, NULL);
 
-	// TCHAR¸¦ »ç¿ëÇÏ¿© µ¿ÀûÀ¸·Î ÇÒ´çµÈ ¹®ÀÚ¿­ »ı¼º
+	// TCHARë¥¼ ì‚¬ìš©í•˜ì—¬ ë™ì ìœ¼ë¡œ í• ë‹¹ëœ ë¬¸ìì—´ ìƒì„±
 	TCHAR* tstr = new TCHAR[size];
 
-	// ¹®ÀÚ¿­ º¯È¯
+	// ë¬¸ìì—´ ë³€í™˜
 #ifdef UNICODE
 	wcscpy_s(tstr, size, wstr.c_str());
 #else
@@ -175,7 +176,7 @@ _bool CUtils::Equal_TChar_Char(TCHAR* val1, const char* val2)
 
 char* CUtils::WCharToChar(const wchar_t* value)
 {
-	/* »ç¿ëÈÄ ¹İµå½Ã ¸Ş¸ğ¸® ÇØÁ¦ ÇÊ¿ä */
+	/* ì‚¬ìš©í›„ ë°˜ë“œì‹œ ë©”ëª¨ë¦¬ í•´ì œ í•„ìš” */
 
 	int strSize		= WideCharToMultiByte(CP_ACP, 0, value, -1, NULL, 0, NULL, NULL);
 	char* pStr		= new char[WideCharToMultiByte(CP_ACP, 0, value, -1, NULL, 0, NULL, NULL)];
@@ -217,6 +218,34 @@ _bool CUtils::Is_Compare(const char* szLeft, const char* szRight)
 	return !strcmp(szLeft, szRight);
 }
 
+Vec4 CUtils::To_Hash_Color(_int iObjectID)
+{
+	
+	_int iHash = g_Hash(iObjectID);
+
+	_int a = (iHash >> 24) & 0xff;
+	_int b = (iHash >> 16) & 0xff;
+	_int g = (iHash >> 8) & 0xff;
+	_int r = iHash & 0xff;
+
+	return Vec4(r / 255.f, g / 255.f, b / 255.f, a / 255.f);
+}
+
+_int CUtils::To_Hash(_int iObjectID)
+{
+	return g_Hash(iObjectID);
+}
+
+Vec4 CUtils::Hash_To_Color(_int iHash)
+{
+	_int a = (iHash >> 24) & 0xff;
+	_int b = (iHash >> 16) & 0xff;
+	_int g = (iHash >> 8) & 0xff;
+	_int r = iHash & 0xff;
+
+	return Vec4(r / 255.f, g / 255.f, b / 255.f, a / 255.f);
+}
+
 filesystem::path CUtils::FindFile(const filesystem::path& currentPath, const std::string& targetFileName)
 {
 	for (const auto& entry : filesystem::directory_iterator(currentPath))
@@ -240,7 +269,7 @@ filesystem::path CUtils::RemovePrefix(const filesystem::path& fullPath, const fi
 {
 	auto relativePath = fullPath.lexically_relative(prefix);
 
-	// ¹İÈ¯µÈ °æ·ÎÀÇ ½ÃÀÛÀÌ "..\\"ÀÏ °æ¿ì, »óÀ§ µğ·ºÅä¸®·Î ÀÌµ¿ÇÏ´Â ºÎºĞÀ» Á¦°Å
+	// ë°˜í™˜ëœ ê²½ë¡œì˜ ì‹œì‘ì´ "..\\"ì¼ ê²½ìš°, ìƒìœ„ ë””ë ‰í† ë¦¬ë¡œ ì´ë™í•˜ëŠ” ë¶€ë¶„ì„ ì œê±°
 	while (relativePath.has_root_directory() && relativePath.root_directory() == "..\\") 
 	{
 		relativePath = relativePath.lexically_normal();

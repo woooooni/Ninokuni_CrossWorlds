@@ -6,6 +6,11 @@
 BEGIN(Client)
 class CDefence_Tower abstract : public CGameObject
 {
+public:
+	typedef struct tagDefenceTowerStat
+	{
+		_int iHp = 10000;
+	}DEFENCE_TOWER_STAT;
 
 public:
 	enum DEFENCE_TOWER_STATE
@@ -51,6 +56,8 @@ public:
 	void Set_Preview(_bool bPreview) { m_bPrevObject = bPreview; }
 	void Set_Install_Possible(_bool bPossible) { m_bInstallPossible = bPossible; }
 
+	_bool Is_Install_Possible() { return m_bInstallPossible; }
+
 public:
 	_uint Get_TowerType() { return m_eTowerType; }
 
@@ -78,6 +85,8 @@ protected:
 	class CStateMachine* m_pStateCom = nullptr;
 	class CRigidBody* m_pRigidBodyCom = nullptr;
 
+	class CTexture* m_pDissolveTexture = nullptr;
+
 protected:
 	_bool m_bPrevObject = false;
 	_bool m_bInstallPossible = true;
@@ -96,7 +105,17 @@ protected:
 	_uint m_eTowerType = 99;
 
 protected:
+	DEFENCE_TOWER_STAT m_tStat = {};
+
+protected:
 	_float m_fTargetLength = 10.f;
+
+protected:
+	_float4 m_vDissolveColor = _float4(0.427f, 0.894f, 1.f, 1.f);
+	_float  m_fDissolveTotal = 10.f;
+	_float  m_fDissolveDuration = 5.f;
+	_float  m_fDissolveWeight = 0.f;
+	_float  m_fDissolveSpeed = 5.f;
 
 public:
 	virtual void Free() override;

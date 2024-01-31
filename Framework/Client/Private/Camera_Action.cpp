@@ -84,6 +84,18 @@ void CCamera_Action::Tick(_float fTimeDelta)
 		case CCamera_Action::WINDMILL:
 			Tick_WindMill(fTimeDelta);
 			break;
+
+		case CCamera_Action::SWORDMAN_BURST:
+			Tick_SwordManBurst(fTimeDelta);
+			break;
+
+		case CCamera_Action::ENGINEER_BURST:
+			Tick_EngineerBurst(fTimeDelta);
+			break;
+
+		case CCamera_Action::DESTROYER_BURST:
+			Tick_DestroyerBurst(fTimeDelta);
+			break;
 		default:
 			break;
 		}
@@ -476,6 +488,30 @@ void CCamera_Action::Tick_WindMill(_float fTimeDelta)
 	}
 }
 
+void CCamera_Action::Tick_SwordManBurst(_float fTimeDelta)
+{
+	m_tActionSwordManBurstDesc.fAcc +=  fTimeDelta;
+
+	/* Rotation */
+	_float fRadian = min(m_tActionSwordManBurstDesc.fAcc, XMConvertToRadians(90.f));
+	
+	if (fRadian < XMConvertToRadians(90.f))
+	{
+		m_pTransformCom->RevolutionRotation(m_tActionSwordManBurstDesc.pSwordManTransform->Get_Position(), Vec3(-0.2f, 0.9f, 0.f), 2.3f * fRadian * fTimeDelta);
+	}
+	
+}
+
+void CCamera_Action::Tick_EngineerBurst(_float fTimeDelta)
+{
+
+}
+
+void CCamera_Action::Tick_DestroyerBurst(_float fTimeDelta)
+{
+
+}
+
 void CCamera_Action::Set_Talk_Transform(const ACTION_TALK_DESC::VIEW_TYPE& eType)
 {
 	Vec4 vCamPosition, vCamLookAt;
@@ -766,6 +802,90 @@ HRESULT CCamera_Action::Start_Action_WindMill(const _bool& bNpcToWindMill)
 		m_tActionWindMillDesc.bNpcToWindMill = false;
 	}
 
+	return S_OK;
+}
+
+HRESULT CCamera_Action::Start_Action_SwordManBurst(CTransform* pSwordManTransform)
+{
+	m_eCurActionType = CAMERA_ACTION_TYPE::SWORDMAN_BURST;
+	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
+
+	Set_TargetOffSet(Vec4(0.f, 2.f, -5.f, 1.f));
+	Set_LookAtOffSet(Vec4(0.f, 1.f, 0.f, 1.f));
+
+	Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+	Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+
+	Vec4 vOffsetPosition = pSwordManTransform->Get_RelativeOffset(m_tTargetOffset.vCurVec);
+	Vec4 vOffsetLookAt = pSwordManTransform->Get_RelativeOffset(m_tLookAtOffset.vCurVec);
+
+	Vec4 vFinalPosition = Vec4(pSwordManTransform->Get_Position()) + vOffsetPosition;
+	Vec4 vFinalLookAt = Vec4(pSwordManTransform->Get_Position()) + vOffsetLookAt;
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, vFinalPosition);
+	m_pTransformCom->LookAt(vFinalLookAt.OneW());
+
+
+	m_tActionSwordManBurstDesc.vCamStartPosition = m_pTransformCom->Get_Position();
+	m_tActionSwordManBurstDesc.pSwordManTransform = pSwordManTransform;
+	m_tActionSwordManBurstDesc.fAcc = 0.f;
+
+	m_bAction = true;
+
+	return S_OK;
+}
+
+HRESULT CCamera_Action::Start_Action_EngineerBurst(CTransform* pEngineerTransform)
+{
+	m_eCurActionType = CAMERA_ACTION_TYPE::ENGINEER_BURST;
+	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
+	Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+
+	m_tActionEngineerBurstDesc.pEngineerTransform = pEngineerTransform;
+	m_tActionEngineerBurstDesc.fAcc = 0.f;
+
+	m_bAction = true;
+
+	return S_OK;
+}
+
+HRESULT CCamera_Action::Start_Action_DestroyerBurst(CTransform* pDestroyerTransform)
+{
+	m_eCurActionType = CAMERA_ACTION_TYPE::DESTROYER_BURST;
+	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::ACTION);
+
+	Set_LookAtObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+	Set_TargetObj(CGame_Manager::GetInstance()->Get_Player()->Get_Character());
+
+	m_tActionDestroyerBurstDesc.pDestroyerTransform = pDestroyerTransform;
+	m_tActionDestroyerBurstDesc.fAcc = 0.f;
+
+	m_bAction = true;
+	
+	return S_OK;
+}
+
+HRESULT CCamera_Action::Stop_ActionSwordMan_Burst()
+{
+	m_eCurActionType = CAMERA_ACTION_TYPE::SWORDMAN_BURST;
+	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
+	CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Transform()->Set_State(CTransform::STATE_POSITION, m_tActionSwordManBurstDesc.vCamStartPosition);
+
+	m_bAction = false;
+	return S_OK;
+}
+
+HRESULT CCamera_Action::Stop_ActionEngineer_Burst()
+{
+	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
+	m_bAction = false;
+	return S_OK;
+}
+
+HRESULT CCamera_Action::Stop_ActionDestroyer_Burst()
+{
+	CCamera_Manager::GetInstance()->Set_CurCamera(CAMERA_TYPE::FOLLOW);
+	m_bAction = false;
 	return S_OK;
 }
 

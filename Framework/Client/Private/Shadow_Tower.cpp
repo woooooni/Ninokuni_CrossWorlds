@@ -60,7 +60,7 @@ HRESULT CShadow_Tower::Initialize(void* pArg)
 	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::STUN, 0.f, 0.f, 0.f, false);
 
 	m_fAccFireTime = 0.f;
-	m_fFireTime = 10.f;
+	m_fFireTime = 20.f;
 
 
 	m_eTowerType = CTowerDefence_Manager::TOWER_TYPE::SHADOW;

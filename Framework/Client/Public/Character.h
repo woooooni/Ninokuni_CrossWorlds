@@ -237,6 +237,7 @@ public:
 
 public:
 	class CTransform* Get_CharacterTransformCom() { return m_pTransformCom; }
+	class CStateMachine* Get_CharacterStateCom() { return m_pStateCom; }
 	class CRenderer* Get_RendererCom() { return m_pRendererCom; }
 	
 
@@ -275,7 +276,7 @@ public:
 	}
 	
 public:
-	void Set_Target(class CGameObject* pTarget) { m_pTarget = pTarget; }
+	void Set_Target(class CGameObject* pTarget);
 	class CGameObject* Get_Target() { return m_pTarget; }
 
 

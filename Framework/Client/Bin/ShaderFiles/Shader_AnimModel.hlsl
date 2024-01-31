@@ -29,7 +29,7 @@ float4 g_vLightSpecular = float4(1.0f, 1.0f, 1.0f, 1.0f);
 float4 g_vMtrlAmbient = float4(0.4f, 0.4f, 0.4f, 0.4f);
 float4 g_vMtrlSpecular = float4(1.0f, 1.0f, 1.0f, 1.0f);
 
-int g_iObjectID = 0;
+float4 g_vObjectHash;
 
 cbuffer InversTransposeMatBuffer
 {
@@ -734,9 +734,7 @@ struct PS_OUT_PICKING
 PS_OUT_PICKING PS_PICKING(PS_IN In)
 {
     PS_OUT_PICKING Out = (PS_OUT_PICKING)0;
-    
-    Out.vColor.rgba = 0;
-    Out.vColor.r = float(g_iObjectID) / 1000.f;
+    Out.vColor = g_vObjectHash;
     
     return Out;
 }
@@ -950,7 +948,7 @@ technique11 DefaultTechnique
 
     pass Temp4
     {
-		// 6
+		// 7
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
@@ -964,7 +962,7 @@ technique11 DefaultTechnique
 
     pass Temp5
     {
-		// 7
+		// 8
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
@@ -1034,6 +1032,7 @@ technique11 DefaultTechnique
 
     pass ObjectPicking
     {
+        // 13
         SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);

@@ -119,7 +119,7 @@ HRESULT CEngineer_Burst_CannonBomb::Ready_Components()
 
 	BoundingSphere tSphere;
 	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 0.8f;
+	tSphere.Radius = 2.f;
 	SphereDesc.tSphere = tSphere;
 
 	SphereDesc.pNode = nullptr;

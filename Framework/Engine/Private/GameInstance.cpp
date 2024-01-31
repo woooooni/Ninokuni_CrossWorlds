@@ -800,6 +800,16 @@ _bool CGameInstance::Is_Compare(const char* szLeft, const char* szRight)
 	return CUtils::Is_Compare(szLeft, szRight);
 }
 
+Vec4 CGameInstance::To_Hash_Color(_int iObjectID)
+{
+	return CUtils::To_Hash_Color(iObjectID);
+}
+
+_int CGameInstance::To_Hash(_int iObjectID)
+{
+	return CUtils::To_Hash(iObjectID);
+}
+
 Json CGameInstance::Json_Load(const wstring& strFilePath)
 {
 	return CJsonUtils::Json_Load(strFilePath);

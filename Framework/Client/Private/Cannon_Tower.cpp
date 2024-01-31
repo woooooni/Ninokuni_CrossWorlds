@@ -58,7 +58,7 @@ HRESULT CCannon_Tower::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_fAccFireTime = 0.f;
-	m_fFireTime = 3.f;
+	m_fFireTime = 5.f;
 
 	m_fTargetLength = 30.f;
 
