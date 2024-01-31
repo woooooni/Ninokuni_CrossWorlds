@@ -77,6 +77,13 @@ public:
 		return dynamic_cast<T*>(iter->second);
 	}
 
+	class CTransform*		Get_Component_Transform();		/* 'Com_Transform'으로 추가되어야 사용 가능 */
+	class CModel*			Get_Component_Model();			/* 'Com_Model'으로 추가되어야 사용 가능  */
+	class CStateMachine*	Get_Component_StateMachine();	/* 'Com_StateMachine' 으로 추가되어야 사용 가능  */
+	class CShader*			Get_Component_Shader();			/* 'Com_Shader'으로 추가되어야 사용 가능  */
+	class CRigidBody*		Get_Component_Rigidbody();		/* 'Com_Rigidbody'으로 추가되어야 사용 가능  */ 
+	class CRenderer*		Get_Component_Renderer();		/* 'Com_Renderer'으로 추가되어야 사용 가능  */ 
+
 public:
 	virtual HRESULT SetUp_State(_fmatrix StateMatrix) { return S_OK; }
 
@@ -109,6 +116,9 @@ public:
 	void Set_QuestItem(_bool quest) { m_bIsQuestObject = quest; }
 
 	const _float& Get_CamDistance() const { return m_fCamDistance; }
+
+	
+
 
 public:
 	vector<class CCollider*>& Get_Collider(_uint eDetectionType) { return m_Colliders[eDetectionType]; }

@@ -6,16 +6,13 @@
 #include "Game_Manager.h"
 #include "UI_Manager.h"
 #include "Effect_Manager.h"
-#include "Camera_Manager.h"
-#include "CurlingGame_Manager.h"
 
 #include "Camera_Group.h"
+#include "CurlingGame_Group.h"
 
 #include "Player.h"
 #include "Character.h"
-#include "Manager_StateMachine.h"
 
-#include "CurlingGame_Stone.h"
 
 CState_CurlingGame_Adjust_Intensity::CState_CurlingGame_Adjust_Intensity(CManager_StateMachine* pStateMachine)
 	: CState_CurlingGame_Base(pStateMachine)
@@ -34,29 +31,40 @@ void CState_CurlingGame_Adjust_Intensity::Enter_State(void* pArg)
 {
 	if (nullptr == m_pManager->m_pCurStone)
 		return;
+
+	m_tGuageDesc.Start();
 }
 
 void CState_CurlingGame_Adjust_Intensity::Tick_State(const _float& fTimeDelta)
 {
 	if (!m_tGuageDesc.bActive)
 	{
-		if (KEY_TAP(KEY::LBTN))
-			m_tGuageDesc.Start();
+		
 	}
 	else
 	{
 		m_tGuageDesc.Tick(fTimeDelta);
 
-		if (KEY_AWAY(KEY::LBTN))
+		if (m_pManager->m_bPlayerTurn)
 		{
-			m_pManager->m_pCurStone->Launch(m_tGuageDesc.fMaxPower * m_tGuageDesc.tLerpValue.fCurValue);
+			if (KEY_AWAY(KEY::SPACE))
+			{
+				m_pManager->m_pCurStone->Launch(m_pManager->m_vCurStoneLook.ZeroY().Normalized(), m_tGuageDesc.fMaxPower * m_tGuageDesc.tLerpValue.fCurValue);
 
-			m_pManager->m_pBarrelsLaunched.push_back(m_pManager->m_pCurStone);
+				m_pManager->m_pBarrelsLaunched.push_back(m_pManager->m_pCurStone);
 
-			m_tGuageDesc.Stop();
+				m_tGuageDesc.Stop();
 
-			if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::LAUNCH)))
-				return;
+				m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].iNumStone--;
+
+				if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::LAUNCH)))
+					return;
+			}
+
+		}
+		else
+		{
+
 		}
 	}
 }

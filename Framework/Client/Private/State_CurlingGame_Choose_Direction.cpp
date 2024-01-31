@@ -6,17 +6,12 @@
 #include "Game_Manager.h"
 #include "UI_Manager.h"
 #include "Effect_Manager.h"
-#include "Camera_Manager.h"
-#include "CurlingGame_Manager.h"
 
 #include "Camera_Group.h"
+#include "CurlingGame_Group.h"
 
 #include "Player.h"
 #include "Character.h"
-#include "Manager_StateMachine.h"
-
-#include "CurlingGame_Stone.h"
-#include "CurlingGame_Arrow.h"
 
 
 CState_CurlingGame_Choose_Direction::CState_CurlingGame_Choose_Direction(CManager_StateMachine* pStateMachine)
@@ -69,14 +64,14 @@ void CState_CurlingGame_Choose_Direction::Enter_State(void* pArg)
 		CTransform* pOwnerTransform = nullptr;
 		{
 			if (m_pManager->m_bPlayerTurn)
-				pOwnerTransform = m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].pTransformCom;
+				pOwnerTransform = m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].pOwner->Get_Component_Transform();
 			else
-				pOwnerTransform = m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].pTransformCom;
+				pOwnerTransform = m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].pOwner->Get_Component_Transform();
 		}
 		
 		/* Position */
 		{
-			Vec4 vPosition = m_pManager->m_tParticipants[0].pTransformCom->Get_Position();
+			Vec4 vPosition = m_pManager->m_tParticipants[0].pOwner->Get_Component_Transform()->Get_Position();
 			vPosition.y += 2.f;
 			m_pArrow->Get_Transform()->Set_State(CTransform::STATE::STATE_POSITION, vPosition);
 		}
@@ -103,12 +98,11 @@ void CState_CurlingGame_Choose_Direction::Tick_State(const _float& fTimeDelta)
 
 	Control_Direction(fTimeDelta);
 
-	/* 일단 방향조정 없이 바로 시작 */
-	//if (KEY_TAP(KEY::LBTN))
-	//{
-	//	if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::INTENSITY)))
-	//		return;
-	//}
+	if (KEY_TAP(KEY::SPACE))
+	{
+		if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::INTENSITY)))
+			return;
+	}
 }
 
 void CState_CurlingGame_Choose_Direction::LateTick_State(const _float& fTimeDelta)
@@ -141,7 +135,7 @@ void CState_CurlingGame_Choose_Direction::Control_Direction(const _float& fTimeD
 
 			m_pArrowTransform->LookAt(vLookAt.OneW());
 
-			m_pManager->m_vCurStoneLook = Vec4(m_pArrowTransform->Get_Look()).ZeroY().Normalized();
+			m_pManager->m_vCurStoneLook = Vec4(m_pArrowTransform->Get_Look()).ZeroY().Normalized() * -1.f;
 
 		}
 		else if (KEY_HOLD(KEY::D))
@@ -154,7 +148,7 @@ void CState_CurlingGame_Choose_Direction::Control_Direction(const _float& fTimeD
 
 			m_pArrowTransform->LookAt(vLookAt.OneW());
 
-			m_pManager->m_vCurStoneLook = Vec4(m_pArrowTransform->Get_Look()).ZeroY().Normalized();
+			m_pManager->m_vCurStoneLook = Vec4(m_pArrowTransform->Get_Look()).ZeroY().Normalized() * -1.f;
 		}
 	}
 	else

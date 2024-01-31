@@ -3,22 +3,15 @@
 
 #include "GameInstance.h"
 
-#include "CurlingGame_Stone.h"
-#include "CurlingGame_Wall.h"
-#include "CurlingGame_Arrow.h"
-
 #include "Game_Manager.h"
-#include "Player.h"
-#include "Character.h"
-
 #include "UI_Manager.h"
-
-#include "Camera_Manager.h"
-#include "Camera_Group.h"
-
 #include "Effect_Manager.h"
 
-#include "Manager_StateMachine.h"
+#include "Camera_Group.h"
+#include "CurlingGame_Group.h"
+
+#include "Player.h"
+#include "Character.h"
 
 #include "State_CurlingGame_Intro.h"
 #include "State_CurlingGame_Move_Character.h"
@@ -52,8 +45,10 @@ HRESULT CCurlingGame_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11Devic
 	if (FAILED(Ready_Objects()))
 		return E_FAIL;
 
+#ifdef _DEBUG
 	if (m_bDebugRender && FAILED(Ready_DebugDraw()))
 		return E_FAIL;
+#endif
 
 	return S_OK;
 }
@@ -83,8 +78,11 @@ void CCurlingGame_Manager::Render_Debug()
 	if (m_bPlaying)
 		m_pManagerStateMachineCom->Render();
 
+#ifdef _DEBUG
 	if(m_bDebugRender)
 		Render_DebugDraw();
+#endif
+
 }
 
 HRESULT CCurlingGame_Manager::Start_Game()
@@ -341,7 +339,7 @@ void CCurlingGame_Manager::Debug()
 		pRenderer->Add_Text(desc);
 	}
 }
-
+#ifdef _DEBUG
 HRESULT CCurlingGame_Manager::Ready_DebugDraw()
 {
 	m_pBatch = new PrimitiveBatch<VertexPositionColor>(GI->Get_Context());
@@ -366,7 +364,9 @@ HRESULT CCurlingGame_Manager::Ready_DebugDraw()
 
 	return S_OK;
 }
+#endif
 
+#ifdef _DEBUG
 HRESULT CCurlingGame_Manager::Render_DebugDraw()
 {
 	m_pEffect->SetWorld(XMMatrixIdentity());
@@ -391,6 +391,7 @@ HRESULT CCurlingGame_Manager::Render_DebugDraw()
 
 	return S_OK;
 }
+#endif
 
 void CCurlingGame_Manager::Free()
 {
@@ -399,10 +400,12 @@ void CCurlingGame_Manager::Free()
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
 
+#ifdef _DEBUG
 	Safe_Delete(m_pBatch);
 	Safe_Delete(m_pEffect);
 	Safe_Delete(m_pSphere);
 	Safe_Release(m_pInputLayout);
+#endif
 
 	Safe_Release(m_pManagerStateMachineCom);
 }

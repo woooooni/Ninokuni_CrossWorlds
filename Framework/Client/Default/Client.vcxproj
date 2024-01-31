@@ -279,6 +279,7 @@
     <ClInclude Include="..\Public\Crystal_Ball.h" />
     <ClInclude Include="..\Public\Crystal_Tower.h" />
     <ClInclude Include="..\Public\CurlingGame_Arrow.h" />
+    <ClInclude Include="..\Public\CurlingGame_Group.h" />
     <ClInclude Include="..\Public\Grandprix_Enemy.h" />
     <ClInclude Include="..\Public\Grandprix_Enemy_HumanFL04.h" />
     <ClInclude Include="..\Public\State_Enemy.h" />

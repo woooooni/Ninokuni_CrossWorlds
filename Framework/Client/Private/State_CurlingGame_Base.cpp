@@ -3,7 +3,7 @@
 
 #include "GameInstance.h"
 
-#include "CurlingGame_Manager.h"
+#include "CurlingGame_Group.h"
 
 CState_CurlingGame_Base::CState_CurlingGame_Base(CManager_StateMachine* pStateMachine)
 	: CManager_State(pStateMachine)

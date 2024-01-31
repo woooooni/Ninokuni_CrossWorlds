@@ -126,6 +126,36 @@ HRESULT CGameObject::Compute_CamZ(_fvector vWorldPos)
 
 }
 
+CTransform* CGameObject::Get_Component_Transform()
+{
+	return Get_Component<CTransform>(L"Com_Transform");
+}
+
+CModel* CGameObject::Get_Component_Model()
+{
+	return Get_Component<CModel>(L"Com_Model");
+}
+
+CStateMachine* CGameObject::Get_Component_StateMachine()
+{
+	return Get_Component<CStateMachine>(L"Com_StateMachine");
+}
+
+CShader* CGameObject::Get_Component_Shader()
+{
+	return Get_Component<CShader>(L"Com_Shader");
+}
+
+CRigidBody* CGameObject::Get_Component_Rigidbody()
+{
+	return Get_Component<CRigidBody>(L"Com_Rigidbody");
+}
+
+CRenderer* CGameObject::Get_Component_Renderer()
+{
+	return Get_Component<CRenderer>(L"Com_Renderer");
+}
+
 HRESULT CGameObject::Add_Collider(_uint iLevelIndex, _uint eColliderType, _uint eDetectionType, void* pArg)
 {
 	CComponent* pComponent = nullptr;

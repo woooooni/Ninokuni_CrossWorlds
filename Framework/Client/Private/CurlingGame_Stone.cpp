@@ -99,6 +99,9 @@ void CCurlingGame_Stone::Tick(_float fTimeDelta)
 		m_tPosLerpDesc.Update_Lerp(fTimeDelta);
 
 		m_pTransformCom->Set_State(CTransform::STATE::STATE_POSITION, m_tPosLerpDesc.vCurVec.OneW());
+
+		if (!m_tPosLerpDesc.bActive)
+			m_bPutted = true;
 	}
 
 	__super::Tick(fTimeDelta);
@@ -181,13 +184,12 @@ void CCurlingGame_Stone::Collision_Enter(const COLLISION_INFO& tInfo)
 	}
 }
 
-void CCurlingGame_Stone::Launch(const _float& fPower)
+void CCurlingGame_Stone::Launch(const Vec4& vDir, const _float& fPower)
 {
 	/* Transform */
 	{
 		Vec4 vPos = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
-		Vec4 vDir = CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Transform()->Get_Look();
-		Vec4 vLookAt = vPos + (vDir.ZeroY().Normalized() * 5.f);
+		Vec4 vLookAt = vPos + (vDir * 5.f);
 
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos.OneW());
 		m_pTransformCom->LookAt_ForLandObject(vLookAt.OneW());
@@ -195,9 +197,7 @@ void CCurlingGame_Stone::Launch(const _float& fPower)
 
 	/* Rigidbody */
 	if (nullptr != m_pRigidBodyCom)
-	{
-		const Vec3 vDir = Vec3(CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform")->Get_Look()).ZeroY().Normalized();
-		
+	{		
 		m_pRigidBodyCom->Add_Velocity(vDir, fPower, false);
 
 		m_bLaunched = true;

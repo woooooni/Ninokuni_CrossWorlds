@@ -34,11 +34,14 @@ HRESULT CCamera_CurlingGame::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	Set_TargetOffSet(Cam_TargetOffset_CurlingGame_Default); /* z는 디스턴스로 처리한다. */
+	/* Set Camera */
+	{
+		Set_TargetOffSet(Cam_TargetOffset_CurlingGame_Default);
 
-	Set_LookAtOffSet(Cam_LookAtOffset_CurlingGame_Default);
+		Set_LookAtOffSet(Cam_LookAtOffset_CurlingGame_Default);
 	
-	Set_Fov(Cam_Fov_CurlingGame);
+		Set_Fov(Cam_Fov_CurlingGame);
+	}
 
 	return S_OK;
 }
@@ -56,18 +59,16 @@ void CCamera_CurlingGame::Tick(_float fTimeDelta)
 		return;
 	}
 
-	if (m_bChangingTarget)
+	if (m_tTargetDesc.bChangingTarget)
 	{
 		Tick_ChangeTarget(fTimeDelta);
 	}
 
-	if (!m_bChangingTarget && nullptr != m_pTargetObj)
+	if (!m_tTargetDesc.bChangingTarget && nullptr != m_pTargetObj)
 	{
-		Vec4 vPos = m_pTargetObj->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
+		const Vec4 vCamPos = Calculate_Position(m_pTargetObj->Get_Component_Transform()->Get_Position());
 
-		vPos = Calculate_CamPosition(vPos);
-
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos);
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCamPos);
 	}
 }
 
@@ -76,14 +77,7 @@ void CCamera_CurlingGame::LateTick(_float fTimeDelta)
 	if (!m_bActive)
 		return;
 
-
 	__super::LateTick(fTimeDelta);
-}
-
-
-Vec4 CCamera_CurlingGame::Get_LookAt()
-{
-	return m_vPrevLookAt;
 }
 
 void CCamera_CurlingGame::Tick_Blending(const _float fDeltaTime)
@@ -102,31 +96,38 @@ void CCamera_CurlingGame::Set_Blending(const _bool& bBlending)
 	__super::Set_Blending(bBlending);
 }
 
-HRESULT CCamera_CurlingGame::Change_Target(CGameObject* pTarget)
+HRESULT CCamera_CurlingGame::Change_Target(CGameObject* pTarget, const _float& fLerpTime)
 {
-	if (nullptr == pTarget)
-		return E_FAIL;
+	/* Check Exception */
+	{
+		if (nullptr == pTarget)
+			return E_FAIL;
 
-	if (nullptr != m_pTargetObj && pTarget == m_pTargetObj)
-		return S_OK;
+		if (nullptr != m_pTargetObj && pTarget == m_pTargetObj)
+			return S_OK;
+	}
 
-	m_bChangingTarget = true;
+	m_tTargetDesc.bChangingTarget = true;
 
 	Set_TargetObj(pTarget);
 
-	CTransform* pTargetTransform = pTarget->Get_Component<CTransform>(L"Com_Transform");
-	
-	if (nullptr == pTargetTransform)
-		return E_FAIL;
-
-	m_tLerpPos.Start(m_pTransformCom->Get_Position(), Calculate_CamPosition(pTargetTransform->Get_Position()), m_fLerpTime, LERP_MODE::SMOOTHER_STEP);
+	m_tTargetDesc.tLerpPos.Start(m_pTransformCom->Get_Position(), Calculate_Position(pTarget->Get_Component_Transform()->Get_Position()), fLerpTime, LERP_MODE::SMOOTHER_STEP);
 	
 	return S_OK;
 }
 
-Vec4 CCamera_CurlingGame::Calculate_CamPosition(const Vec4 vTargetPosition)
+Vec4 CCamera_CurlingGame::Calculate_Position(const Vec4 vTargetPosition)
 {
 	const Vec4 vCamPos = Vec4(vTargetPosition + m_pTransformCom->Get_RelativeOffset(m_tTargetOffset.vCurVec)).OneW();
+	
+	if (m_tDampingDesc.bActive)
+	{
+
+	}
+	else
+	{
+
+	}
 
 	return vCamPos;
 }
@@ -138,6 +139,24 @@ Vec4 CCamera_CurlingGame::Calculate_LookAt(const Vec4 vTargetPostion)
 	return m_vPrevLookAt;
 }
 
+HRESULT CCamera_CurlingGame::Start_Damping()
+{
+	m_tDampingDesc.Ready(m_pTransformCom->Get_Position());
+
+	Start_Lerp_Fov(m_tDampingDesc.fDampingFov, m_tDampingDesc.fFovLerpTime);
+
+	return S_OK;
+}
+
+HRESULT CCamera_CurlingGame::Finish_Damping()
+{
+	m_tDampingDesc.bActive = false;
+
+	Start_Lerp_Fov(Cam_Fov_CurlingGame, m_tDampingDesc.fFovLerpTime);
+
+	return S_OK;
+}
+
 HRESULT CCamera_CurlingGame::Ready_Components()
 {
 	return S_OK;
@@ -145,14 +164,14 @@ HRESULT CCamera_CurlingGame::Ready_Components()
 
 void CCamera_CurlingGame::Tick_ChangeTarget(const _float& fTimeDelta)
 {
-	m_tLerpPos.Update_Lerp(fTimeDelta);
+	m_tTargetDesc.tLerpPos.Update_Lerp(fTimeDelta);
 	
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, m_tLerpPos.vCurVec.OneW());
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION, m_tTargetDesc.tLerpPos.vCurVec.OneW());
 
 	//m_pTransformCom->LookAt(m_tLerpLookAt.vCurVec.OneW());
 	
-	if (!m_tLerpPos.bActive)
-		m_bChangingTarget = false;
+	if (!m_tTargetDesc.tLerpPos.bActive)
+		m_tTargetDesc.bChangingTarget = false;
 }
 
 CCamera_CurlingGame* CCamera_CurlingGame::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)

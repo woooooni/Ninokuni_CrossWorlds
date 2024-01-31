@@ -74,10 +74,9 @@ public:
 	const _bool& Is_Moving() const { return m_bMoving; }
 
 	const STONE_TYPE& Get_StoneType() const { return m_eStoneType; }
-	void Set_Putted(const _bool& bPutted) { m_bPutted = bPutted; }
 
 public:
-	void Launch(const _float& fPower);
+	void Launch(const Vec4& vDir, const _float& fPower);
 	void PutDown();
 
 public:

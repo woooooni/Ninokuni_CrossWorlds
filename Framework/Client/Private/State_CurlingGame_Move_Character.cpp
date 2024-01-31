@@ -2,20 +2,18 @@
 #include "State_CurlingGame_Move_Character.h"
 
 #include "GameInstance.h"
+#include "Animation.h"
 
 #include "Game_Manager.h"
 #include "UI_Manager.h"
 #include "Effect_Manager.h"
-#include "Camera_Manager.h"
-#include "CurlingGame_Manager.h"
 
 #include "Camera_Group.h"
+#include "CurlingGame_Group.h"
 
 #include "Player.h"
 #include "Character.h"
-#include "Manager_StateMachine.h"
 
-#include "CurlingGame_Stone.h"
 
 CState_CurlingGame_Move_Character::CState_CurlingGame_Move_Character(CManager_StateMachine* pStateMachine)
 	: CState_CurlingGame_Base(pStateMachine)
@@ -65,7 +63,7 @@ void CState_CurlingGame_Move_Character::Enter_State(void* pArg)
 			
 			pCharacter->Set_Move_Input(true);
 
-			if(FAILED(pCharacter->Get_Component<CStateMachine>(L"Com_StateMachine")->Change_State(CCharacter::NEUTRAL_PICK_LARGE_IDLE)))
+			if(FAILED(pCharacter->Get_Component_StateMachine()->Change_State(CCharacter::NEUTRAL_PICK_LARGE_IDLE)))
 				return;
 		}
 
@@ -92,12 +90,26 @@ void CState_CurlingGame_Move_Character::Tick_State(const _float& fTimeDelta)
 
 	if (m_pManager->m_bPlayerTurn)
 	{
-		if (KEY_TAP(KEY::F))
+		if (m_pManager->m_pCurStone->Is_Putted())
 		{
-			m_pManager->m_pCurStone->Set_Putted(true);
-
-			if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::DIRECTION)))
+			CCamera_CurlingGame* pCurlingCam = dynamic_cast<CCamera_CurlingGame*>(CCamera_Manager::GetInstance()->Get_CurCamera());
+			if (nullptr == pCurlingCam)
 				return;
+
+			if (!m_bChangeCameraToStone)
+			{
+				pCurlingCam->Change_Target(m_pManager->m_pCurStone, 0.5f);
+
+				m_bChangeCameraToStone = true;
+			}
+			else
+			{
+				if (!pCurlingCam->Is_ChagingTarget())
+				{
+					if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::DIRECTION)))
+						return;
+				}
+			}
 		}
 	}
 	else
@@ -123,6 +135,8 @@ void CState_CurlingGame_Move_Character::LateTick_State(const _float& fTimeDelta)
 
 void CState_CurlingGame_Move_Character::Exit_State()
 {
+	m_bChangeCameraToStone = false;
+
 	if (m_pManager->m_bPlayerTurn)
 	{
 

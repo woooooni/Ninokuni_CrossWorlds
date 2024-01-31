@@ -69,13 +69,9 @@ class CCurlingGame_Manager : public CBase
 
 	typedef struct tagParticipantInfoDesc
 	{
-		_uint	iNumStone	= 10;
-
-		_uint	iScore = 0;
-
-		CGameObject* pOwner			= nullptr;
-		CModel* pModelCom			= nullptr;
-		CTransform* pTransformCom	= nullptr;
+		_uint			iScore		= 0;
+		_uint			iNumStone	= 10;
+		CGameObject*	pOwner		= nullptr;
 	
 	}PARTICIPANT_INFO_DESC;
 
@@ -130,13 +126,13 @@ private:
 	_bool					m_bPlayerTurn = true;
 
 
-#pragma region Debug Draw 
+#ifdef _DEBUG
 	const _bool	m_bDebugRender						= false;
 	BasicEffect* m_pEffect							= nullptr;
 	BoundingSphere* m_pSphere						= nullptr;
 	ID3D11InputLayout* m_pInputLayout				= nullptr;
 	PrimitiveBatch<VertexPositionColor>* m_pBatch	= nullptr;
-#pragma endregion
+#endif
 
 public:
 	virtual void Free() override;
