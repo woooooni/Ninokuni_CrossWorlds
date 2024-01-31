@@ -745,7 +745,7 @@ void CMonster::Create_HitEffect(CCharacter* pCharacter)
 		return;
 
 	// 플레이어가 때린 무기의 속성에 따라 색상 변경
-	_float3 fColor = _float3(0.f, 0.f, 0.f);
+	_float3 fColor = _float3(1.f, 1.f, 1.f);
 
 	ELEMENTAL_TYPE eWeaponType = pCharacter->Get_ElementalType();
 	switch (eWeaponType)
