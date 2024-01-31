@@ -559,6 +559,8 @@ HRESULT CLevel_WitchForest::Ready_Layer_Prop(const LAYER_TYPE eLayerType)
 
 	if (FAILED(GI->Add_GameObject(LEVEL_WITCHFOREST, eLayerType, TEXT("Prototype_GameObject_Trigger"), &TriggerDesc)))
 		return E_FAIL;
+
+	return S_OK;
 }
 
 CLevel_WitchForest* CLevel_WitchForest::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
