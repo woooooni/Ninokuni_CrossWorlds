@@ -27,7 +27,7 @@ void CStelliaState_JumpStamp::Enter_State(void* pArg)
 	CTransform* pTransformCom = m_pStellia->Get_Component<CTransform>(L"Com_Transform");
 	if (pTransformCom == nullptr)
 		return;
-	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_JumpStamp"), pTransformCom->Get_WorldMatrix(), m_pStellia);
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_Rage01JumpStamp"), pTransformCom->Get_WorldMatrix(), m_pStellia);
 }
 
 void CStelliaState_JumpStamp::Tick_State(_float fTimeDelta)
@@ -55,7 +55,7 @@ void CStelliaState_JumpStamp::Tick_State(_float fTimeDelta)
 
 		Vec4 vFinalPosition = vDestPos;
 		Vec3 vReverseDir = XMVector3Normalize(m_pTransformCom->Get_Position() - vDestPos);
-		vFinalPosition = vFinalPosition + vReverseDir * 8.f;
+		vFinalPosition = vFinalPosition + vReverseDir * 3.f;
 
 		XMVECTOR vCurVector = XMVectorLerp(m_pTransformCom->Get_Position(), vFinalPosition, fTimeDelta / 0.35f);
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vCurVector);
@@ -72,8 +72,8 @@ void CStelliaState_JumpStamp::Tick_State(_float fTimeDelta)
 
 	if (m_pModelCom->Is_Finish() && !m_pModelCom->Is_Tween())
 	{
-		//m_pStateMachineCom->Change_State(CStellia::STELLIA_COMBATIDLE);
-		m_pStateMachineCom->Change_State(CStellia::STELLIA_JUMPSTAMP);
+		m_pStateMachineCom->Change_State(CStellia::STELLIA_COMBATIDLE);
+		//m_pStateMachineCom->Change_State(CStellia::STELLIA_JUMPSTAMP);
 	}
 
 	/* Camera */

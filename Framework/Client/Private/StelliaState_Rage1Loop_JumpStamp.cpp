@@ -26,23 +26,32 @@ HRESULT CStelliaState_Rage1Loop_JumpStamp::Initialize(const list<wstring>& Anima
 void CStelliaState_Rage1Loop_JumpStamp::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_BossSkill02"));
+
+	// Effect Create
+	CTransform* pTransformCom = m_pStellia->Get_Component<CTransform>(L"Com_Transform");
+	if (pTransformCom == nullptr)
+		return;
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_JumpStamp"), pTransformCom->Get_WorldMatrix(), m_pStellia);
 }
 
 void CStelliaState_Rage1Loop_JumpStamp::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 
-	if (m_pDecal == nullptr)
+	if (m_pDecal == nullptr && m_pModelCom->Get_CurrAnimationFrame() <= 60)
 	{
 		CEffect_Manager::GetInstance()->Generate_Decal(TEXT("Decal_Glanix_Skill_JumpDown_Warning"), m_pTransformCom->Get_WorldMatrix(),
-			Vec3(0.f, 0.f, 0.f), Vec3(12.f, 5.f, 12.f), Vec3(0.f, 0.f, 0.f), m_pStellia->Get_TargetDesc().pTarget, &m_pDecal, false);
+			Vec3(0.f, 0.f, 0.f), Vec3(12.f, 2.f, 12.f), Vec3(0.f, 0.f, 0.f), m_pPlayer, &m_pDecal, false);
 		Safe_AddRef(m_pDecal);
 	}
 
 	if (m_pModelCom->Get_CurrAnimationFrame() < 25)
-		vDestPos = m_pStellia->Get_TargetDesc().pTragetTransform->Get_Position();
+		vDestPos = m_pPlayerTransform->Get_Position();
 	else
-		m_pDecal->Set_Owner(nullptr);
+	{
+		if (m_pDecal != nullptr)
+			m_pDecal->Set_Owner(nullptr);
+	}
 
 	if (m_pModelCom->Get_CurrAnimationFrame() >= 35 && m_pModelCom->Get_CurrAnimationFrame() <= 60)
 	{
@@ -69,6 +78,11 @@ void CStelliaState_Rage1Loop_JumpStamp::Tick_State(_float fTimeDelta)
 
 void CStelliaState_Rage1Loop_JumpStamp::Exit_State()
 {
+	if (m_pDecal != nullptr)
+	{
+		m_pDecal->Set_Dead(true);
+		Safe_Release(m_pDecal);
+	}
 }
 
 CStelliaState_Rage1Loop_JumpStamp* CStelliaState_Rage1Loop_JumpStamp::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

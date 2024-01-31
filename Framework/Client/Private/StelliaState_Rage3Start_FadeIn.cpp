@@ -29,6 +29,8 @@ void CStelliaState_Rage3Start_FadeIn::Enter_State(void* pArg)
 {
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, m_pStellia->Get_Rage3StartPos());
 	m_pTransformCom->LookAt_ForLandObject(m_pStellia->Get_OriginPos());
+	m_pStellia->Get_Component<CPhysX_Controller>(TEXT("Com_Controller"))->Set_EnterLevel_Position(m_pTransformCom->Get_Position());
+	
 	m_pPlayerTransform->Set_State(CTransform::STATE_POSITION, m_pStellia->Get_OriginPos());
 	m_pPlayer->Get_Component<CPhysX_Controller>(TEXT("Com_Controller"))->Set_EnterLevel_Position(m_pPlayerTransform->Get_Position());
 

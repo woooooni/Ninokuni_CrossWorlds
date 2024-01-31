@@ -299,6 +299,9 @@
     <ClInclude Include="..\Public\Vfx_Stellia_Skill_ClawDouble.h" />
     <ClInclude Include="..\Public\Vfx_Stellia_Skill_ClawRight.h" />
     <ClInclude Include="..\Public\Vfx_Stellia_Skill_JumpStamp.h" />
+    <ClInclude Include="..\Public\Vfx_Stellia_Skill_Rage01Explosion.h" />
+    <ClInclude Include="..\Public\Vfx_Stellia_Skill_Rage01JumpStamp.h" />
+    <ClInclude Include="..\Public\Vfx_Stellia_Skill_Rage01SpinTail.h" />
     <ClInclude Include="..\Public\Vfx_Stellia_Skill_SpinTail.h" />
     <ClInclude Include="..\Public\Manager_StateMachine.h" />
     <ClInclude Include="..\Public\State_CurlingGame_Adjust_Intensity.h" />
@@ -1274,6 +1277,9 @@
     <ClCompile Include="..\Private\Vfx_Stellia_Skill_ClawDouble.cpp" />
     <ClCompile Include="..\Private\Vfx_Stellia_Skill_ClawRight.cpp" />
     <ClCompile Include="..\Private\Vfx_Stellia_Skill_JumpStamp.cpp" />
+    <ClCompile Include="..\Private\Vfx_Stellia_Skill_Rage01Explosion.cpp" />
+    <ClCompile Include="..\Private\Vfx_Stellia_Skill_Rage01JumpStamp.cpp" />
+    <ClCompile Include="..\Private\Vfx_Stellia_Skill_Rage01SpinTail.cpp" />
     <ClCompile Include="..\Private\Vfx_Stellia_Skill_SpinTail.cpp" />
     <ClCompile Include="..\Private\Manager_StateMachine.cpp" />
     <ClCompile Include="..\Private\State_CurlingGame_Adjust_Intensity.cpp" />

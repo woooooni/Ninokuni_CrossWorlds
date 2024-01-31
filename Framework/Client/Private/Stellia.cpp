@@ -81,6 +81,7 @@
 #include "Stellia_Crystal_Controller.h"
 
 #include "UI_Manager.h"
+#include "Player.h"
 
 CStellia::CStellia(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
 	: CBoss(pDevice, pContext, strObjectTag, tStat)
@@ -198,12 +199,22 @@ HRESULT CStellia::Render()
 
 void CStellia::Collision_Enter(const COLLISION_INFO& tInfo)
 {
-	/* 플레이어와 충돌 */
 	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER &&
 		tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY &&
 		tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
 	{
-		m_bBools[(_uint)BOSS_BOOLTYPE::BOSSBOOL_ATKAROUND] = true;
+		/* 레이지3 가드이벤트 */
+		if (dynamic_cast<CCharacter*>(tInfo.pOther)->Get_CharacterStateCom()->Get_CurrState() == CCharacter::BATTLE_GUARD &&
+			m_pStateCom->Get_CurrState() == STELLIA_RAGE3CHARGE)
+		{
+			m_bIsPlayerGuardEvent = true;
+		}
+	
+		/* 평소 */
+		else
+		{
+			m_bBools[(_uint)BOSS_BOOLTYPE::BOSSBOOL_ATKAROUND] = true;
+		}
 	}
 
 	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER &&
@@ -247,7 +258,17 @@ void CStellia::Collision_Continue(const COLLISION_INFO& tInfo)
 		tInfo.pOtherCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY &&
 		tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::BODY)
 	{
-		m_bBools[(_uint)BOSS_BOOLTYPE::BOSSBOOL_ATKAROUND] = true;
+		/* 레이지3 가드이벤트 */
+		if (dynamic_cast<CCharacter*>(tInfo.pOther)->Get_CharacterStateCom()->Get_CurrState() == CCharacter::BATTLE_GUARD &&
+			m_pStateCom->Get_CurrState() == STELLIA_RAGE3CHARGE)
+		{
+			m_bIsPlayerGuardEvent = true;
+		}
+		/* 평소 */
+		else
+		{
+			m_bBools[(_uint)BOSS_BOOLTYPE::BOSSBOOL_ATKAROUND] = true;
+		}
 	}
 
 	if (tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_CHARACTER &&
@@ -256,6 +277,7 @@ void CStellia::Collision_Continue(const COLLISION_INFO& tInfo)
 	{
 		m_bBools[(_uint)BOSS_BOOLTYPE::BOSSBOOL_SKILLAROUND] = true;
 	}
+
 }
 
 void CStellia::Collision_Exit(const COLLISION_INFO& tInfo)
@@ -328,14 +350,23 @@ HRESULT CStellia::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_PhysXBody */
+	//CPhysX_Controller::CONTROLLER_DESC ControllerDesc;
+	//
+	//ControllerDesc.eType = CPhysX_Controller::CAPSULE;
+	//ControllerDesc.pTransform = m_pTransformCom;
+	//ControllerDesc.vOffset = { 0.f, 1.125f, 0.f };
+	//ControllerDesc.fHeight = 1.f;
+	//ControllerDesc.fMaxJumpHeight = 10.f;
+	//ControllerDesc.fRaidus = 5.f;
+	//ControllerDesc.pOwner = this;
 	CPhysX_Controller::CONTROLLER_DESC ControllerDesc;
-
-	ControllerDesc.eType = CPhysX_Controller::CAPSULE;
+	ControllerDesc.eType = CPhysX_Controller::BOX;
 	ControllerDesc.pTransform = m_pTransformCom;
 	ControllerDesc.vOffset = { 0.f, 1.125f, 0.f };
-	ControllerDesc.fHeight = 10.f;
-	ControllerDesc.fMaxJumpHeight = 10.f;
-	ControllerDesc.fRaidus = 5.f;
+	ControllerDesc.vExtents = {5.f, 5.f, 7.f};
+	//ControllerDesc.fHeight = 1.f;
+	//ControllerDesc.fMaxJumpHeight = 10.f;
+	//ControllerDesc.fRaidus = 5.f;
 	ControllerDesc.pOwner = this;
 
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_PhysXController"), TEXT("Com_Controller"), (CComponent**)&m_pControllerCom, &ControllerDesc)))
@@ -609,8 +640,8 @@ HRESULT CStellia::Ready_States()
 	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_Death");
 	m_pStateCom->Add_State(STELLIA_DEAD, CStelliaState_Dead::Create(m_pStateCom, strAnimationName));
 
-	//m_pStateCom->Change_State(STELLIA_SPAWN);
-	m_pStateCom->Change_State(STELLIA_JUMPSTAMP);
+	m_pStateCom->Change_State(STELLIA_SPAWN);
+	//m_pStateCom->Change_State(STELLIA_ATTACK2);
 
 	return S_OK;
 }
@@ -628,7 +659,7 @@ HRESULT CStellia::Ready_Colliders()
 	ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
 
 	XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
-	OBBBox.Extents = { 200.f, 250.f, 500.f };
+	OBBBox.Extents = { 200.f, 250.f, 650.f };
 
 	OBBDesc.tBox = OBBBox;
 	OBBDesc.pNode = nullptr;

@@ -52,7 +52,7 @@ void CTreeGrandfa::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
-	GI->Add_CollisionGroup(COLLISION_GROUP::NPC, this);
+	GI->Add_CollisionGroup(COLLISION_GROUP::DEFENCE_TOWER, this);
 }
 
 void CTreeGrandfa::LateTick(_float fTimeDelta)

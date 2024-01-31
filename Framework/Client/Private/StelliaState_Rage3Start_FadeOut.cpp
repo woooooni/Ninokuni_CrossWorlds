@@ -33,7 +33,7 @@ void CStelliaState_Rage3Start_FadeOut::Enter_State(void* pArg)
 
 void CStelliaState_Rage3Start_FadeOut::Tick_State(_float fTimeDelta)
 {
-	if (m_pModelCom->Get_CurrAnimationFrame() == 95 && !m_bIsFadeOut)
+	if (m_pModelCom->Get_CurrAnimationFrame() == 85 && !m_bIsFadeOut)
 	{
 		if (nullptr != CUI_Manager::GetInstance()->Get_Fade())
 			CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(true, 3.f);

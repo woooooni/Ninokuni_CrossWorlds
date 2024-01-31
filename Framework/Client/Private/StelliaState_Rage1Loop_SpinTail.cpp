@@ -22,6 +22,12 @@ HRESULT CStelliaState_Rage1Loop_SpinTail::Initialize(const list<wstring>& Animat
 void CStelliaState_Rage1Loop_SpinTail::Enter_State(void* pArg)
 {
 	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_BossSkill01"));
+
+	// Effect Create
+	CTransform* pTransformCom = m_pStellia->Get_Component<CTransform>(L"Com_Transform");
+	if (pTransformCom == nullptr)
+		return;
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_Rage01SpinTail"), pTransformCom->Get_WorldMatrix(), m_pStellia);
 }
 
 void CStelliaState_Rage1Loop_SpinTail::Tick_State(_float fTimeDelta)

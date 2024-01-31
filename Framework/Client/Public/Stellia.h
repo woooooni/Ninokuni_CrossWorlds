@@ -89,6 +89,9 @@ public:
 	HRESULT Clear_Crystals();
 
 	// 레이지 3
+	_bool Get_IsPlayerGuardEvent() { return m_bIsPlayerGuardEvent; }
+	void  Set_IsPlayerGuardEvent(_bool bIsGuardEvent) { m_bIsPlayerGuardEvent = bIsGuardEvent; }
+	
 	Vec4 Get_Rage3StartPos() { return m_vRage3StartPos; }
 
 	class CStellia_Crystal_Controller* Get_CrystalController() const { return m_pCrystalController; }
@@ -110,6 +113,7 @@ private:
 
 	// 레이지 3
 	Vec4 m_vRage3StartPos = {};
+	_bool m_bIsPlayerGuardEvent = false;
 	
 	class CStellia_Crystal_Controller* m_pCrystalController = nullptr;
 
