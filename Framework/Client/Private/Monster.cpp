@@ -698,6 +698,24 @@ void CMonster::Create_HitEffect(CCharacter* pCharacter)
 	if (nullptr == pCharacter)
 		return;
 
+	_float fRandomXOffset = CUtils::Random_Float(-0.5f, 0.5f);
+	_float fRandomYOffset = CUtils::Random_Float(-0.5f, 0.5f);
+
+	CTransform* pPlayerTransform = pCharacter->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr == pPlayerTransform)
+		return;
+
+	Vec4 vPlayerPos = pPlayerTransform->Get_Position();
+	Vec4 vThisPos = m_pTransformCom->Get_Position();
+	Vec4 vLook = XMVector4Normalize(vPlayerPos - vThisPos);
+
+	_vector vLookPosition = m_pTransformCom->Get_Position();
+	vLookPosition += vLook * 0.5f;
+
+	_matrix ThisWorldMat = m_pTransformCom->Get_WorldMatrix();
+	ThisWorldMat.r[CTransform::STATE_POSITION] = vLookPosition;
+
+
 	CParticle* pParticle = nullptr;
 
 	// 플레이어의 타입에 따른 피격 이펙트 생성
@@ -705,35 +723,48 @@ void CMonster::Create_HitEffect(CCharacter* pCharacter)
 	switch (eCharacterType)
 	{
 	case Client::SWORD_MAN:
-		GET_INSTANCE(CParticle_Manager)->Generate_Particle(L"Particle_Monster_Hit_Sword", m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 1.f, 0.5f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &pParticle);
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(L"Particle_Monster_Hit_Sword", ThisWorldMat, _float3(fRandomXOffset, 1.5f + fRandomYOffset, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &pParticle);
 		break;
 	case Client::DESTROYER:
-		GET_INSTANCE(CParticle_Manager)->Generate_Particle(L"Particle_Monster_Hit_Hammer", m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 1.f, 0.5f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &pParticle);
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(L"Particle_Monster_Hit_Hammer", ThisWorldMat, _float3(fRandomXOffset, 1.f + fRandomYOffset, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &pParticle);
 		break;
 	case Client::ENGINEER:
-		GET_INSTANCE(CParticle_Manager)->Generate_Particle(L"Particle_Monster_Hit_Gun", m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 1.f, 0.5f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &pParticle);
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(L"Particle_Monster_Hit_Gun", ThisWorldMat, _float3(fRandomXOffset, 1.f + fRandomYOffset, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &pParticle);
 		break;
 	}
 
 	if (nullptr == pParticle)
 		return;
 
+	// 기본 파티클
+	CParticle* pCircleParticle = nullptr;
+
+	CTransform* pMainParticleTransform = pParticle->Get_Component<CTransform>(L"Com_Transform");
+	GET_INSTANCE(CParticle_Manager)->Generate_Particle(L"Particle_Monster_Hit_Circles", pMainParticleTransform->Get_WorldMatrix(), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &pCircleParticle);
+	if (nullptr == pCircleParticle)
+		return;
+
 	// 플레이어가 때린 무기의 속성에 따라 색상 변경
+	_float3 fColor = _float3(0.f, 0.f, 0.f);
+
 	ELEMENTAL_TYPE eWeaponType = pCharacter->Get_ElementalType();
 	switch (eWeaponType)
 	{
-	case FIRE:
-		pParticle->Set_Color(_float3(1.f, 0.f, 0.f));
+	case FIRE: // _float3(1.f, 0.51f, 0.311f)
+		fColor = _float3(CUtils::Random_Float(0.75f, 1.f), CUtils::Random_Float(0.36f, 0.66f), CUtils::Random_Float(0.161f, 0.461f));
 		break;
 
-	case WATER:
-		pParticle->Set_Color(_float3(0.f, 0.f, 1.f));
+	case WATER: // _float3(0.418f, 0.865f, 0.952f)
+		fColor = _float3(CUtils::Random_Float(0.118f, 0.718f), CUtils::Random_Float(0.565f, 1.f), CUtils::Random_Float(0.652f, 1.f));
 		break;
 
-	case WOOD:
-		pParticle->Set_Color(_float3(0.f, 1.f, 0.f));
+	case WOOD: // _float3(0.567f, 1.f, 0.461f)
+		fColor = _float3(CUtils::Random_Float(0.417f, 0.717f), CUtils::Random_Float(0.75f, 1.f), CUtils::Random_Float(0.311f, 0.611f));
 		break;
 	}
+
+	pParticle->Set_Color(fColor);
+	pCircleParticle->Set_Color(fColor);
 }
 
 void CMonster::Free()
