@@ -25,13 +25,18 @@ HRESULT CVfx_Whale_Jump::Initialize_Prototype()
 	{
 		m_pFrameTriger[TYPE_JUMP] = 0;
 		m_pPositionOffset[TYPE_JUMP] = _float3(0.f, 0.f, 0.f);
-		m_pScaleOffset[TYPE_JUMP]    = _float3(8.f, 3.f, 8.f);
+		m_pScaleOffset[TYPE_JUMP]    = _float3(1.f, 1.f, 1.f);
 		m_pRotationOffset[TYPE_JUMP] = _float3(0.f, 0.f, 0.f);
 
-		m_pFrameTriger[TYPE_DOWN] = 0;
-		m_pPositionOffset[TYPE_DOWN] = _float3(0.f, 1.f, 0.f);
-		m_pScaleOffset[TYPE_DOWN]    = _float3(1.f, 1.f, 1.f);
-		m_pRotationOffset[TYPE_DOWN] = _float3(0.f, 0.f, 0.f);
+		m_pFrameTriger[TYPE_DOWN_TAIL] = 0;
+		m_pPositionOffset[TYPE_DOWN_TAIL] = _float3(10.f, -20.f, 10.f);
+		m_pScaleOffset[TYPE_DOWN_TAIL]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_DOWN_TAIL] = _float3(0.f, 0.f, 0.f);
+
+		m_pFrameTriger[TYPE_DOWN_HEAD] = 0;
+		m_pPositionOffset[TYPE_DOWN_HEAD] = _float3(-5.f, -10.f, -5.f);
+		m_pScaleOffset[TYPE_DOWN_HEAD]    = _float3(1.f, 1.f, 1.f);
+		m_pRotationOffset[TYPE_DOWN_HEAD] = _float3(0.f, 0.f, 0.f);
 	}
 
  	return S_OK;
@@ -62,20 +67,48 @@ void CVfx_Whale_Jump::Tick(_float fTimeDelta)
 	if (m_iCount == TYPE_JUMP && vCurrentPosition.y > -10.f)
 	{
 		// 얼굴 내밀었을 때
-		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT(""),
-			pOwnerTransform->Get_WorldMatrix(), m_pPositionOffset[TYPE_JUMP], m_pScaleOffset[TYPE_JUMP], m_pRotationOffset[TYPE_JUMP]);
+		_matrix matWorld = XMMatrixIdentity();
+		matWorld.r[CTransform::STATE_POSITION] = vCurrentPosition;
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Whale_Up"),
+			matWorld, m_pPositionOffset[TYPE_JUMP], m_pScaleOffset[TYPE_JUMP], m_pRotationOffset[TYPE_JUMP]);
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Whale_Down"),
+			matWorld, m_pPositionOffset[TYPE_JUMP], m_pScaleOffset[TYPE_JUMP], m_pRotationOffset[TYPE_JUMP]);
 		m_iCount++;
 	}
-	else if (m_iCount == TYPE_DOWN && vCurrentPosition.x < -100.f && vCurrentPosition.y < 30.f)
+	else
 	{
-		// 바다에 다시 들어갈 때
-		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT(""),
-			pOwnerTransform->Get_WorldMatrix(), m_pPositionOffset[TYPE_DOWN], m_pScaleOffset[TYPE_DOWN], m_pRotationOffset[TYPE_DOWN]);
-		m_iCount++;
-	}
+		if (vCurrentPosition.x > -30.f)
+		{
+			_matrix matWorld = XMMatrixIdentity();
+			matWorld.r[CTransform::STATE_POSITION] = vCurrentPosition;
+			GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle_To_Matrix(&m_fAccEffect, 0.5f, fTimeDelta, TEXT("Particle_Whale_Water"), matWorld);
+		}
+		else
+		{
+			if (m_iCount == TYPE_DOWN_TAIL && vCurrentPosition.x < -90.f && vCurrentPosition.y < 10.f)
+			{
+				// 바다에 다시 들어갈 때 꼬리
+				_matrix matWorld = XMMatrixIdentity();
+				matWorld.r[CTransform::STATE_POSITION] = vCurrentPosition;
+				GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Whale_Up_Down"), matWorld, m_pPositionOffset[TYPE_DOWN_TAIL], m_pScaleOffset[TYPE_DOWN_TAIL], m_pRotationOffset[TYPE_DOWN_TAIL]);
+				GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Whale_Down_Down"), matWorld, m_pPositionOffset[TYPE_DOWN_TAIL], m_pScaleOffset[TYPE_DOWN_TAIL], m_pRotationOffset[TYPE_DOWN_TAIL]);
+				m_iCount++;
+			}
 
-	else if (m_iCount == TYPE_END || vCurrentPosition.y <= -100.f)
-		Set_Dead(true);
+			else if (m_iCount == TYPE_DOWN_HEAD && vCurrentPosition.x < -100.f && vCurrentPosition.y < 2.f)
+			{
+				// 바다에 다시 들어갈 때 머리
+				_matrix matWorld = XMMatrixIdentity();
+				matWorld.r[CTransform::STATE_POSITION] = vCurrentPosition;
+				GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Whale_Up"), matWorld, m_pPositionOffset[TYPE_DOWN_HEAD], m_pScaleOffset[TYPE_DOWN_HEAD], m_pRotationOffset[TYPE_DOWN_HEAD]);
+				GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Whale_Down"), matWorld, m_pPositionOffset[TYPE_DOWN_HEAD], m_pScaleOffset[TYPE_DOWN_HEAD], m_pRotationOffset[TYPE_DOWN_HEAD]);
+				m_iCount++;
+			}
+
+			else if (m_iCount == TYPE_END || vCurrentPosition.y <= -100.f)
+				Set_Dead(true);
+		}
+	}
 }
 
 void CVfx_Whale_Jump::LateTick(_float fTimeDelta)

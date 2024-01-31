@@ -538,7 +538,7 @@ PS_OUT PS_DISTORTION(PS_IN In)
     float2 vSampleTexCoord = In.vTexcoord + (vDistortionWeight.rg);
 	
     Out.vColor = g_BlendTarget.Sample(PointSampler, vSampleTexCoord);
-	
+    Out.vColor.a = 1.f;
 	
     return Out;
 }

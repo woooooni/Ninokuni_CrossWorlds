@@ -13,7 +13,8 @@ class CVfx_Whale_Jump final : public CVfx
 private:
 	enum TYPE {
 		TYPE_JUMP,
-		TYPE_DOWN,
+		TYPE_DOWN_TAIL,
+		TYPE_DOWN_HEAD,
 
 		TYPE_END
 	};
@@ -32,6 +33,9 @@ public:
 
 protected:
 	virtual HRESULT Ready_Components() override;
+
+private:
+	_float m_fAccEffect = 0.f;
 
 public:
 	static CVfx_Whale_Jump* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
