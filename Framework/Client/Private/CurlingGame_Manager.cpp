@@ -13,6 +13,8 @@
 #include "Player.h"
 #include "Character.h"
 
+#include "Animation.h"
+
 #include "State_CurlingGame_Intro.h"
 #include "State_CurlingGame_Move_Character.h"
 #include "State_CurlingGame_Choose_Direction.h"
@@ -215,7 +217,7 @@ HRESULT CCurlingGame_Manager::Ready_Objects()
 			pWallTransform->Set_State(CTransform::STATE_POSITION, vPos);
 			pWallTransform->LookAt_ForLandObject(vLookAt.OneW());
 			pWallTransform->Set_State(CTransform::STATE_POSITION, Vec4(vPos + Vec4(pWallTransform->Get_Right() * -5.5f)).OneW());
-			vNormal = Vec3(pWallTransform->Get_Look()).ZeroY().Normalized() * -1.f;
+			vNormal = Vec3(pWallTransform->Get_Look()).ZeroY().Normalized();
 		}
 
 		pWall->Set_Normal(vNormal);
@@ -225,6 +227,134 @@ HRESULT CCurlingGame_Manager::Ready_Objects()
 	{
 		m_pStadiumObjects.reserve(50);
 	}
+	return S_OK;
+}
+
+HRESULT CCurlingGame_Manager::Change_Turn()
+{
+	CGameObject* pClone = nullptr;
+	CCurlingGame_Stone::STONE_INIT_DESC tStoneInitDesc;
+
+	m_pCurStone = nullptr;
+
+	/* Inverse Turn*/
+	m_bPlayerTurn = !m_bPlayerTurn;
+	{
+		if (m_bPlayerTurn)
+		{
+			m_pCurParticipant = m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].pOwner;
+			m_pPrevParticipant = m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].pOwner;
+		}
+		else
+		{
+			m_pCurParticipant = m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].pOwner;
+			m_pPrevParticipant = m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].pOwner;
+		}
+	}
+
+	/* 스톤 생성 */
+	{
+		if (m_bPlayerTurn)
+			tStoneInitDesc.eStoneType = CCurlingGame_Stone::STONE_TYPE::BARREL;
+		else
+			tStoneInitDesc.eStoneType = CCurlingGame_Stone::STONE_TYPE::POT;
+
+		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_PROP,
+			TEXT("Prorotype_GameObject_CurlingGame_Stone"), &tStoneInitDesc, &pClone)))
+			return E_FAIL;
+
+		m_pCurStone = dynamic_cast<CCurlingGame_Stone*>(pClone);
+		if (nullptr == m_pCurStone)
+			return E_FAIL;
+	}
+
+	/* 다음 턴 플레이어 설정 */
+	if(nullptr != m_pCurParticipant)
+	{
+		/* 트랜스폼 설정 */
+		{
+			const Vec4 vPos = Vec4(m_tStandardDesc.vStartLinePosition + (m_tStandardDesc.vStartLook * -5.f)).OneW();
+
+			m_pCurParticipant->Get_Component_Transform()->Set_Position(vPos);
+			m_pCurParticipant->Get_Component_Transform()->LookAt_ForLandObject(m_tStandardDesc.vGoalPosition);
+		}
+
+		/* 애니메이션 설정 */
+		if (m_bPlayerTurn)
+		{
+			CCharacter* pCharacter = dynamic_cast<CCharacter*>(m_pCurParticipant);
+			if (nullptr != pCharacter)
+			{
+				pCharacter->Set_Target(m_pCurStone);
+
+				pCharacter->Set_Move_Input(true);
+
+				if (FAILED(pCharacter->Get_Component_StateMachine()->Change_State(CCharacter::NEUTRAL_PICK_LARGE_IDLE)))
+					return E_FAIL;
+			}
+		}
+		else
+		{
+			CModel* pModelCom = m_pCurParticipant->Get_Component_Model();
+			if (nullptr != pModelCom)
+			{
+				pModelCom->Set_CanChangeAnimation(true);
+				{
+					pModelCom->Set_Animation(L"SKM_Destroyer_Merge.ao|Destroyer_PickStandL", MIN_TWEEN_DURATION);
+					CAnimation* pAnim = pModelCom->Get_Animation("SKM_Destroyer_Merge.ao|Destroyer_PickStandL");
+					if (nullptr != pAnim)
+						pAnim->Set_Loop(true);
+				}
+				pModelCom->Set_CanChangeAnimation(false);
+			}
+		}
+	}
+
+	/* 이전 턴 플레이어 설정 */
+	if(nullptr != m_pPrevParticipant)
+	{
+		/* 트랜스폼 설정 */
+		{
+			_float fDeltaX = 0.f;
+			const Vec4 vPos = Vec4(m_tStandardDesc.vStartLinePosition + (m_tStandardDesc.vStartLook * -6.f)).OneW();
+
+			if (m_bPlayerTurn)
+				fDeltaX = -2.f;
+			else
+				fDeltaX = 2.f;
+
+			m_pPrevParticipant->Get_Component_Transform()->Set_Position(vPos);
+			m_pPrevParticipant->Get_Component_Transform()->LookAt_ForLandObject(m_tStandardDesc.vGoalPosition);
+
+			const Vec4 vOffset = m_pPrevParticipant->Get_Component_Transform()->Get_RelativeOffset(Vec4{ fDeltaX, 0.f, 0.f, 1.f }).ZeroW();
+			m_pPrevParticipant->Get_Component_Transform()->Set_Position(vPos + vOffset);
+		}
+
+		/* 애니메이션 설정 */
+		{
+			m_pPrevParticipant->Get_Component_Model()->Set_CanChangeAnimation(true);
+			if (m_bPlayerTurn)
+			{
+				m_pPrevParticipant->Get_Component_Model()->Set_Animation(L"SKM_Destroyer_Merge.ao|Destroyer_ChairSitLoop", MIN_TWEEN_DURATION);
+				CAnimation* pAnim = m_pPrevParticipant->Get_Component_Model()->Get_Animation("SKM_Destroyer_Merge.ao|Destroyer_ChairSitLoop");
+				if (nullptr != pAnim)
+					pAnim->Set_Loop(true);
+			}
+			else
+			{
+				m_pPrevParticipant = m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].pOwner;
+				m_pPrevParticipant->Get_Component_Model()->Set_Animation(L"SKM_Swordsman_Merge.ao|Swordsman_ChairSitLoop", MIN_TWEEN_DURATION);
+				CAnimation* pAnim = m_pPrevParticipant->Get_Component_Model()->Get_Animation("SKM_Swordsman_Merge.ao|Swordsman_ChairSitLoop");
+				if (nullptr != pAnim)
+					pAnim->Set_Loop(true);
+			}
+			m_pPrevParticipant->Get_Component_Model()->Set_CanChangeAnimation(false);
+		}
+	}
+
+	if (nullptr == m_pCurStone || nullptr == m_pCurParticipant)
+		return E_FAIL;
+
 	return S_OK;
 }
 

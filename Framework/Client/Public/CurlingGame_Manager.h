@@ -97,6 +97,8 @@ private:
 	HRESULT Ready_Components();
 	HRESULT Ready_Objects();
 
+	HRESULT Change_Turn();
+
 private:
 	void Test(const _float& fTimeDelta);
 	void Debug();
@@ -118,11 +120,14 @@ private:
 
 	PARTICIPANT_INFO_DESC	m_tParticipants[PARTICIPANT_TYPE::PARTICIPANT_TYPEEND];
 	
-	CCurlingGame_Stone*		m_pCurStone = nullptr;
+	CCurlingGame_Stone*		m_pCurStone		= nullptr;
 	Vec4					m_vCurStoneLook = {};
 
+	CGameObject*			m_pCurParticipant	= nullptr;
+	CGameObject*			m_pPrevParticipant	= nullptr;
+
 	/* Turn */				
-	_bool					m_bPlayerTurn = true;
+	_bool					m_bPlayerTurn = false;
 
 
 #ifdef _DEBUG

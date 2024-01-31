@@ -58,9 +58,9 @@ HRESULT CCurlingGame_Stone::Initialize(void* pArg)
 	if (nullptr != m_pTransformCom)
 	{
 		if (STONE_TYPE::BARREL == m_eStoneType)
-			m_pTransformCom->Set_Scale(Vec3(1.3f));
+			m_pTransformCom->Set_Scale(Vec3(1.1f));
 		else if (STONE_TYPE::POT == m_eStoneType)
-			m_pTransformCom->Set_Scale(Vec3(0.9f));
+			m_pTransformCom->Set_Scale(Vec3(0.7f));
 		
 	}
 

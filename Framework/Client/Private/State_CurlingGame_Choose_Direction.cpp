@@ -96,12 +96,6 @@ void CState_CurlingGame_Choose_Direction::Tick_State(const _float& fTimeDelta)
 		return;
 
 	Control_Direction(fTimeDelta);
-
-	if (KEY_TAP(KEY::SPACE))
-	{
-		if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::INTENSITY)))
-			return;
-	}
 }
 
 void CState_CurlingGame_Choose_Direction::LateTick_State(const _float& fTimeDelta)
@@ -148,6 +142,12 @@ void CState_CurlingGame_Choose_Direction::Control_Direction(const _float& fTimeD
 			m_pArrowTransform->LookAt(vLookAt.OneW());
 
 			m_pManager->m_vCurStoneLook = Vec4(m_pArrowTransform->Get_Look()).ZeroY().Normalized() * -1.f;
+		}
+
+		if (KEY_TAP(KEY::SPACE))
+		{
+			if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::INTENSITY)))
+				return;
 		}
 	}
 	else

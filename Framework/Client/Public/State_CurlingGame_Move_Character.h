@@ -21,6 +21,10 @@ public:
 	virtual HRESULT Render() override;
 
 private:
+	void Set_NpcStoneTransform();
+
+private:
+	_bool m_bFirstTurn			 = true;
 	_bool m_bChangeCameraToStone = false;
 
 public:
