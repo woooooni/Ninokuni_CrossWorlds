@@ -24,7 +24,8 @@ void CStelliaState_Rage3Damage::Enter_State(void* pArg)
 {
 	m_pStellia->Set_StelliaHit(true);
 
-	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_CounterStart"), MIN_TWEEN_DURATION);
+	// m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_CounterStart"), MIN_TWEEN_DURATION);
+	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_InstantTurn"), MIN_TWEEN_DURATION);
 	m_fTime = 0.f;
 
 	m_bIsTimeSlep = false;
@@ -33,6 +34,11 @@ void CStelliaState_Rage3Damage::Enter_State(void* pArg)
 void CStelliaState_Rage3Damage::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
+
+	if (m_pModelCom->Get_CurrAnimationFrame() >= 8 && m_pModelCom->Get_CurrAnimationFrame() <= 29)
+	{
+		m_pTransformCom->Move(-m_pTransformCom->Get_Look(), m_fSprintSpeed, fTimeDelta);
+	}
 
 	if (!m_bIsTimeSlep && m_pModelCom->Get_CurrAnimationFrame() == 5)
 	{

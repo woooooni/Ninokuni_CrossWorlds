@@ -49,11 +49,16 @@
 #include "Vfx_Glanix_Skill_IceThrow.h"
 #include "Vfx_Glanix_Skill_IcePillar.h"
 #include "Vfx_Glanix_Skill_Icicle.h"
-// Stellia
+
+/* Stellia */
 #include "Vfx_Stellia_Skill_ClawRight.h"
 #include "Vfx_Stellia_Skill_ClawDouble.h"
 #include "Vfx_Stellia_Skill_SpinTail.h"
 #include "Vfx_Stellia_Skill_JumpStamp.h"
+// Rage01
+#include "Vfx_Stellia_Skill_Rage01Explosion.h"
+#include "Vfx_Stellia_Skill_Rage01JumpStamp.h"
+#include "Vfx_Stellia_Skill_Rage01SpinTail.h"
 
 // ETC //
 #include "Vfx_QuestPoint.h"

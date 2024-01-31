@@ -23,6 +23,7 @@ HRESULT CStelliaState_Rage1Loop_Explosion::Initialize(const list<wstring>& Anima
 
 	m_fRotAngle = 20.f;
 	m_fDist = 10.f;
+	m_fStelliaCenterOffSetDist = 5.f;
 
 #ifdef _DEBUG
 	if (FAILED(Ready_DebugDraw()))
@@ -43,33 +44,19 @@ void CStelliaState_Rage1Loop_Explosion::Enter_State(void* pArg)
 
 	m_pStellia->Set_StelliaHit(false);
 
-	if (m_pDecal == nullptr)
-	{
-		CEffect_Manager::GetInstance()->Generate_Decal(TEXT("Stellia_RageExplosion_Warning"), m_pTransformCom->Get_WorldMatrix(),
-			Vec3(0.f, 0.f, 0.f), Vec3(100.f, 1.f, 100.f), Vec3(0.f, 0.f, 0.f), m_pStellia, &m_pDecal, false);
-		Safe_AddRef(m_pDecal);
-	}
+	// Effect Create
+	CTransform* pTransformCom = m_pStellia->Get_Component<CTransform>(L"Com_Transform");
+	if (pTransformCom == nullptr)
+		return;
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_Rage01Explosion"), pTransformCom->Get_WorldMatrix(), m_pStellia);
 }
 
 void CStelliaState_Rage1Loop_Explosion::Tick_State(_float fTimeDelta)
 {
 	__super::Tick_State(fTimeDelta);
 	__super::Rage1_Tick(fTimeDelta);
-	// 피자 스텔리아 대가리쪽으로 옮기자
-	//if (m_pModelCom->Get_CurrAnimationFrame() >= 10)
-	//{
-	//	if (m_pDecal_SafeZnoe == nullptr)
-	//	{
-	//		CEffect_Manager::GetInstance()->Generate_Decal(TEXT("Stellia_Expolsion_SafeZone"), m_pTransformCom->Get_WorldMatrix(),
-	//			Vec3(0.f, 0.f, 0.f), Vec3(20.f, 1.f, 12.f), Vec3(0.f, 0.f, 0.f), m_pStellia, &m_pDecal_SafeZnoe, false);
-	//		Safe_AddRef(m_pDecal);
-	//	}
-	// 
-	// 
-	//}
 
-	// 
-	Vec4 vDirToPlayer = m_pPlayerTransform->Get_Position() - m_pTransformCom->Get_Position();
+	Vec4 vDirToPlayer = (Vec4)m_pPlayerTransform->Get_Position() - ((Vec4)m_pTransformCom->Get_Position() + m_vLook * m_fStelliaCenterOffSetDist);
 
 	// 스텔리아의 룩과 플레이어의 현재 위치의 라디안 각도.
 	_float fAngleToPlayer = XMVectorGetX(XMVector3AngleBetweenNormals(m_vLook, XMVector3Normalize(vDirToPlayer)));
@@ -109,17 +96,6 @@ void CStelliaState_Rage1Loop_Explosion::Tick_State(_float fTimeDelta)
 
 void CStelliaState_Rage1Loop_Explosion::Exit_State()
 {
-	if (m_pDecal != nullptr)
-	{
-		m_pDecal->Set_Dead(true);
-		Safe_Release(m_pDecal);
-	}
-
-	if (m_pDecal_SafeZnoe != nullptr)
-	{
-		m_pDecal_SafeZnoe->Set_Dead(true);
-		Safe_Release(m_pDecal_SafeZnoe);
-	}
 }
 
 #ifdef _DEBUG
@@ -170,15 +146,15 @@ HRESULT CStelliaState_Rage1Loop_Explosion::Render_DebugDraw()
 	
 	m_pBatch->Begin();
 	{
-		Vec4 vSafeZone = m_pTransformCom->Get_Position() * 5.f;
-
-		m_pSphere->Center = (Vec3)m_pTransformCom->Get_Position();
+		Vec4 vOffsetPos = Vec4((Vec4)m_pTransformCom->Get_Position() + m_vLook * (m_fStelliaCenterOffSetDist)).xyz();
+		
+		m_pSphere->Center = Vec4((Vec4)m_pTransformCom->Get_Position() + m_vLook * (m_fStelliaCenterOffSetDist)).xyz();
 		DX::Draw(m_pBatch, *m_pSphere, Colors::Yellow);
 
-		m_pSphere->Center = Vec4((Vec4)m_pTransformCom->Get_Position() + m_vLeftRot * m_fDist).xyz();
+		m_pSphere->Center = Vec4(vOffsetPos + (m_vLeftRot * m_fDist)).xyz();
 		DX::Draw(m_pBatch, *m_pSphere, Colors::Yellow);
 
-		m_pSphere->Center = Vec4((Vec4)m_pTransformCom->Get_Position() + m_vRightRot * m_fDist).xyz();
+		m_pSphere->Center = Vec4(vOffsetPos + (m_vRightRot * m_fDist)).xyz();
 		DX::Draw(m_pBatch, *m_pSphere, Colors::Yellow);
 	}
 	m_pBatch->End();
@@ -203,8 +179,6 @@ CStelliaState_Rage1Loop_Explosion* CStelliaState_Rage1Loop_Explosion::Create(CSt
 void CStelliaState_Rage1Loop_Explosion::Free()
 {
 	__super::Free();
-
-	Safe_Release(m_pDecal_SafeZnoe);
 
 #ifdef _DEBUG
 	Safe_Delete(m_pBatch);

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "Vfx_Stellia_Skill_SpinTail.h"
+#include "Vfx_Stellia_Skill_Rage01SpinTail.h"
 
 #include "Particle_Manager.h"
 #include "Effect_Manager.h"
@@ -7,19 +7,19 @@
 
 #include "Effect.h"
 
-CVfx_Stellia_Skill_SpinTail::CVfx_Stellia_Skill_SpinTail(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
+CVfx_Stellia_Skill_Rage01SpinTail::CVfx_Stellia_Skill_Rage01SpinTail(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
 {
 }
 
-CVfx_Stellia_Skill_SpinTail::CVfx_Stellia_Skill_SpinTail(const CVfx_Stellia_Skill_SpinTail& rhs)
+CVfx_Stellia_Skill_Rage01SpinTail::CVfx_Stellia_Skill_Rage01SpinTail(const CVfx_Stellia_Skill_Rage01SpinTail& rhs)
 	: CVfx(rhs)
 {
 }
 
-HRESULT CVfx_Stellia_Skill_SpinTail::Initialize_Prototype()
+HRESULT CVfx_Stellia_Skill_Rage01SpinTail::Initialize_Prototype()
 {
-	m_bOwnerStateIndex = CStellia::STELLIA_SPINTAIL;
+	m_bOwnerStateIndex = CStellia::STELLIA_RAGE1LOOP_SPINTAIL;
 
 	m_iMaxCount = TYPE_END;
 	m_pFrameTriger = new _int[m_iMaxCount];
@@ -53,12 +53,12 @@ HRESULT CVfx_Stellia_Skill_SpinTail::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CVfx_Stellia_Skill_SpinTail::Initialize(void* pArg)
+HRESULT CVfx_Stellia_Skill_Rage01SpinTail::Initialize(void* pArg)
 {
 	return S_OK;
 }
 
-void CVfx_Stellia_Skill_SpinTail::Tick(_float fTimeDelta)
+void CVfx_Stellia_Skill_Rage01SpinTail::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
@@ -94,40 +94,40 @@ void CVfx_Stellia_Skill_SpinTail::Tick(_float fTimeDelta)
 	}
 }
 
-void CVfx_Stellia_Skill_SpinTail::LateTick(_float fTimeDelta)
+void CVfx_Stellia_Skill_Rage01SpinTail::LateTick(_float fTimeDelta)
 {
 }
 
-HRESULT CVfx_Stellia_Skill_SpinTail::Render()
+HRESULT CVfx_Stellia_Skill_Rage01SpinTail::Render()
 {
 	return S_OK;
 }
 
-HRESULT CVfx_Stellia_Skill_SpinTail::Ready_Components()
+HRESULT CVfx_Stellia_Skill_Rage01SpinTail::Ready_Components()
 {
 	return S_OK;
 }
 
-CVfx_Stellia_Skill_SpinTail* CVfx_Stellia_Skill_SpinTail::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
+CVfx_Stellia_Skill_Rage01SpinTail* CVfx_Stellia_Skill_Rage01SpinTail::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 {
-	CVfx_Stellia_Skill_SpinTail* pInstance = new CVfx_Stellia_Skill_SpinTail(pDevice, pContext, strObjectTag);
+	CVfx_Stellia_Skill_Rage01SpinTail* pInstance = new CVfx_Stellia_Skill_Rage01SpinTail(pDevice, pContext, strObjectTag);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX("Failed to Created : CVfx_Stellia_Skill_SpinTail");
+		MSG_BOX("Failed to Created : CVfx_Stellia_Skill_Rage01SpinTail");
 		Safe_Release(pInstance);
 	}
 
 	return pInstance;
 }
 
-CGameObject* CVfx_Stellia_Skill_SpinTail::Clone(void* pArg)
+CGameObject* CVfx_Stellia_Skill_Rage01SpinTail::Clone(void* pArg)
 {
-	CVfx_Stellia_Skill_SpinTail* pInstance = new CVfx_Stellia_Skill_SpinTail(*this);
+	CVfx_Stellia_Skill_Rage01SpinTail* pInstance = new CVfx_Stellia_Skill_Rage01SpinTail(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Failed to Cloned : CVfx_Stellia_Skill_SpinTail");
+		MSG_BOX("Failed to Cloned : CVfx_Stellia_Skill_Rage01SpinTail");
 		Safe_Release(pInstance);
 		return nullptr;
 	}
@@ -135,7 +135,7 @@ CGameObject* CVfx_Stellia_Skill_SpinTail::Clone(void* pArg)
 	return pInstance;
 }
 
-void CVfx_Stellia_Skill_SpinTail::Free()
+void CVfx_Stellia_Skill_Rage01SpinTail::Free()
 {
 	__super::Free();
 

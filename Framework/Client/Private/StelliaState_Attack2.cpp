@@ -69,8 +69,8 @@ void CStelliaState_Attack2::Tick_State(_float fTimeDelta)
 		//if (m_pStellia->Get_Bools(CBoss::BOSS_BOOLTYPE::BOSSBOOL_ATKAROUND))
 		//	m_pStateMachineCom->Change_State(CStellia::STELLIA_AFTERSPINTAIL);
 		//else
-		//	m_pStateMachineCom->Change_State(CStellia::STELLIA_COMBATIDLE);
-		m_pStateMachineCom->Change_State(CStellia::STELLIA_ATTACK2);
+			m_pStateMachineCom->Change_State(CStellia::STELLIA_COMBATIDLE);
+		//m_pStateMachineCom->Change_State(CStellia::STELLIA_ATTACK2);
 	}
 }
 
