@@ -79,45 +79,25 @@ void CState_Enemy_VehicleFlying_Run::Tick_State(_float fTimeDelta)
         {
             if (false == m_bUpdate)
             {
+                _int iCurIndex = pBoto->Get_CurIndex();
+                _int iMaxIndex = pBoto->Get_Routes()->size() - 1;
+                _int iRandom = 0;
+
                 // 업데이트 전이라면
-                if (0 == pBoto->Get_CurIndex())
-                {
-                    m_bUpdate = true;
-                    pBoto->Set_CurIndex(1);
-                }
-                else
-                {
-                    m_bUpdate = true;
-                    pBoto->Set_CurIndex(0);
-                }
+                do {
+                    iRandom = GI->RandomInt(0, iMaxIndex);
+
+                } while (iCurIndex == iRandom);
+                // 같지 않은 숫자가 나오면 빠져나온다.
+                pBoto->Set_CurIndex(iRandom); // 다음 경로를 세팅하고
+
+                m_bUpdate = true; // 불변수 제어
             }
-    //            if (false == m_bReverse)
-    //            {
-    //                pBoto->Set_CurIndex(pBoto->Get_CurIndex() + 1);
-    //
-    //                if (pBoto->Get_CurIndex() == pBoto->Get_Routes()->size())
-    //                {
-    //                   // m_bIsMove = false;
-    //                    m_bReverse = true;
-    //                    pBoto->Set_CurIndex(pBoto->Get_Routes()->size() - 1);
-    //                    //m_pModelCom->Set_Animation(m_AnimIndices[1]);
-    //                }
-    //            }
-    //            else
-    //            {
-    //                pBoto->Set_CurIndex(pBoto->Get_CurIndex() - 1);
-    //
-    //            //    if (m_pNpc->Get_CurRoamingIndex() == -1)
-    //            //    {
-    //            //        //m_bIsMove = false;
-    //            //        m_bReverse = false;
-    //            //        m_pNpc->Set_CurRoamingIndex(0);
-    //            //        //m_pModelCom->Set_Animation(m_AnimIndices[1]);
-    //            //    }
-    //            }
         }
         else
+        {
             m_bUpdate = false;
+        }
     }
 }
 
@@ -171,7 +151,7 @@ void CState_Enemy_VehicleFlying_Run::Move(_float fTimeDelta)
         WorldMatrix.r[CTransform::STATE_LOOK] = vLook * vScale.z;
 
         m_pTransformCom->Set_WorldMatrix(WorldMatrix);
-        m_pTransformCom->Move(vLook, 1.f, fTimeDelta);
+        m_pTransformCom->Move(vLook, 10.f, fTimeDelta);
     }
 }
 

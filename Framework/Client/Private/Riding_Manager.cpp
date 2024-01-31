@@ -368,9 +368,8 @@ HRESULT CRiding_Manager::Ready_Grandprix()
 					m_Enemies[i]->Get_Component<CTransform>(L"Com_Transform")->Set_State(CTransform::STATE_POSITION,
 						Vec4(-15.f + 10.f * i, 10.f, 30.2f, 1.f));
 					m_Botos[i]->Ride(m_Enemies[i]);
-					m_Botos[i]->Set_OriginPosition(m_Botos[i]->Get_Component<CTransform>(L"Com_Transform")->Get_Position());
-					// Look을 바꿔서 세팅
-					// HP연동
+					//m_Botos[i]->Set_OriginPosition(m_Botos[i]->Get_Component<CTransform>(L"Com_Transform")->Get_Position());
+					m_Botos[i]->Set_Routes();
 				}
 			}
 		}
