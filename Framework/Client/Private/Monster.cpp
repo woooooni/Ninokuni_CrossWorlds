@@ -764,7 +764,7 @@ void CMonster::Create_HitEffect(CCharacter* pCharacter)
 	}
 
 	pParticle->Set_Color(fColor);
-	pCircleParticle->Set_Color(fColor);
+	pCircleParticle->Set_Color(_float3(min(fColor.x + 0.3f, 1.f), min(fColor.y + 0.3f, 1.f), min(fColor.z + 0.3f, 1.f)));
 }
 
 void CMonster::Free()
