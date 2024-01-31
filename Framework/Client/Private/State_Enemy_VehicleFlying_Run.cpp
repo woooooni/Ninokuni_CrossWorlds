@@ -61,9 +61,9 @@ void CState_Enemy_VehicleFlying_Run::Tick_State(_float fTimeDelta)
         {
             // 일정 거리 안으로 다가오면 쫓아간다.
             // (내가 타겟인 경우는 제외한다. -> 내가 타겟이면 도망가게함)
-//            if (m_pTarget->Get_Target() != m_pVehicle &&
-//                m_pTarget->Get_Target() != m_pVehicle->Get_Rider())
-//                m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_TRACE);
+            if (m_pTarget->Get_Target() != m_pVehicle &&
+                m_pTarget->Get_Target() != m_pVehicle->Get_Rider())
+                m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_TRACE);
         }
 
         // 이 조건이 걸리는 외의 상황에서는 주어진 Route따라 날아다닌다.
@@ -151,7 +151,7 @@ void CState_Enemy_VehicleFlying_Run::Move(_float fTimeDelta)
         WorldMatrix.r[CTransform::STATE_LOOK] = vLook * vScale.z;
 
         m_pTransformCom->Set_WorldMatrix(WorldMatrix);
-        m_pTransformCom->Move(vLook, 10.f, fTimeDelta);
+        m_pTransformCom->Move(vLook, m_fMovingSpeed, fTimeDelta);
     }
 }
 

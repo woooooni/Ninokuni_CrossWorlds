@@ -84,7 +84,7 @@ HRESULT CLevel_IceLand::Initialize()
 		return E_FAIL;
 
 	if (nullptr != CUI_Manager::GetInstance()->Get_Fade())
-		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 3.f);
+		CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 5.f);
 
 	/* Camera Action */
 	{

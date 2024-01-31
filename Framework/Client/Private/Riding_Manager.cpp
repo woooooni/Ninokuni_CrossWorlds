@@ -164,9 +164,51 @@ HRESULT CRiding_Manager::Ready_Vehicle_GameObject(LEVELID eID)
 		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Using_TextureComponent(true);
 		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Set_TextureIndex(4);
 
+		pEnemyBoto = nullptr;
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Vehicle_EnemyBoto"), &BotoDesc, &pEnemyBoto)))
+			return E_FAIL;
+		if (nullptr == pEnemyBoto)
+			return E_FAIL;
+		if (nullptr == dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto))
+			return E_FAIL;
+		m_Botos.push_back(dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto));
+		Safe_AddRef(pEnemyBoto);
+		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Using_TextureComponent(true);
+		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Set_TextureIndex(0);
+
+		pEnemyBoto = nullptr;
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Vehicle_EnemyBoto"), &BotoDesc, &pEnemyBoto)))
+			return E_FAIL;
+		if (nullptr == pEnemyBoto)
+			return E_FAIL;
+		if (nullptr == dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto))
+			return E_FAIL;
+		m_Botos.push_back(dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto));
+		Safe_AddRef(pEnemyBoto);
+		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Using_TextureComponent(true);
+		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Set_TextureIndex(1);
+
 		CGameObject* pEnemy = nullptr;
-//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_HumanFL04"), nullptr, &pEnemy)))
-//			return E_FAIL;
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_Ghost2"), nullptr, &pEnemy)))
+			return E_FAIL;
+		if (nullptr == pEnemy)
+			return E_FAIL;
+		if (nullptr == dynamic_cast<CGrandprix_Enemy*>(pEnemy))
+			return E_FAIL;
+		m_Enemies.push_back(dynamic_cast<CGrandprix_Enemy*>(pEnemy));
+		Safe_AddRef(pEnemy);
+
+		pEnemy = nullptr;
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_Ghost2"), nullptr, &pEnemy)))
+			return E_FAIL;
+		if (nullptr == pEnemy)
+			return E_FAIL;
+		if (nullptr == dynamic_cast<CGrandprix_Enemy*>(pEnemy))
+			return E_FAIL;
+		m_Enemies.push_back(dynamic_cast<CGrandprix_Enemy*>(pEnemy));
+		Safe_AddRef(pEnemy);
+
+		pEnemy = nullptr;
 		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_Ghost2"), nullptr, &pEnemy)))
 			return E_FAIL;
 		if (nullptr == pEnemy)

@@ -119,58 +119,6 @@ HRESULT CVehicle_Flying::Ready_States()
 
 HRESULT CVehicle_Flying::Ready_Routes()
 {
-//	m_RoutePoints.reserve(2);
-//
-//	_float4 vOriginPos;
-//	XMStoreFloat4(&vOriginPos, m_vOriginPos);
-//	_float fX, fY, fZ;
-//
-//	switch (GI->RandomInt(0, 1))
-//	{
-//	case 0:
-//		// First Position
-//		fX = GI->RandomFloat(-6.f, 6.f);
-//		fY = GI->RandomFloat(0.f, 5.f);
-//		fZ = GI->RandomFloat(-3.f, 3.f);
-//
-//		fY = vOriginPos.y + fY;
-//		if (fY < 30.f)
-//			fY = 30.f;
-//		m_RoutePoints.push_back({ vOriginPos.x + fX, fY, vOriginPos.z + fZ, 1.f });
-//
-//		// Second Position
-//		fX = GI->RandomFloat(-3.f, 3.f);
-//		fY = GI->RandomFloat(-3.f, 0.f);
-//		fZ = GI->RandomFloat(-3.f, 3.f);
-//
-//		fY = vOriginPos.y + fY;
-//		if (fY < 30.f)
-//			fY = 30.f;
-//		m_RoutePoints.push_back({ vOriginPos.x + fX, fY, vOriginPos.z + fZ, 1.f });
-//		break;
-//
-//	case 1:
-//		// First Position
-//		fX = GI->RandomFloat(-6.f, 6.f);
-//		fY = GI->RandomFloat(-2.f, 2.f);
-//		fZ = GI->RandomFloat(-3.f, 3.f);
-//
-//		fY = vOriginPos.y + fY;
-//		if (fY < 30.f)
-//			fY = 30.f;
-//		m_RoutePoints.push_back({ vOriginPos.x + fX, fY, vOriginPos.z + fZ, 1.f });
-//
-//		// Second Position
-//		fX = GI->RandomFloat(-5.f, 5.f);
-//		fZ = GI->RandomFloat(-3.f, 3.f);
-//
-//		m_RoutePoints.push_back({ vOriginPos.x + fX, vOriginPos.y, vOriginPos.z + fZ, 1.f });
-//		break;
-//
-//	default:
-//		break;
-//	}
-
 	m_RoutePoints.reserve(22);
 	m_RoutePoints.push_back({ 10.f, 73.f, 173.f, 1.f });
 	m_RoutePoints.push_back({ 64.f, 80.f, 136.f, 1.f });
@@ -194,6 +142,8 @@ HRESULT CVehicle_Flying::Ready_Routes()
 	m_RoutePoints.push_back({ 17.5f, 90.f, 37.f, 1.f });
 	m_RoutePoints.push_back({ -80.f, 85.5f, 62.f, 1.f });
 	m_RoutePoints.push_back({ 35.f, 102.5f, 107.8f, 1.f });
+
+	m_iRouteIndex = GI->RandomInt(0, m_RoutePoints.size() - 1);
 
 	return S_OK;
 }

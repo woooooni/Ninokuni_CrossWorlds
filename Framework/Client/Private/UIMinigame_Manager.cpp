@@ -15,10 +15,10 @@
 #include "UI_Minigame_ClassSkill.h"
 #include "UI_Minigame_EnemyHP.h"
 #include "UI_Minigame_GaugeBar.h"
+#include "UI_Minigame_WorldHP.h"
+#include "UI_Minigame_Aim.h"
 
 #include "UI_Minigame_CurlingGauge.h"
-
-#include "UI_Minigame_WorldHP.h"
 
 IMPLEMENT_SINGLETON(CUIMinigame_Manager)
 
@@ -549,6 +549,9 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_Evermore()
 	// 매니저 내에서는 프로토타입만 생성함
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Enemy_WorldHP"),
 		CUI_Minigame_WorldHP::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Enemy_Aim"),
+		CUI_Minigame_Aim::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
 	return S_OK;

@@ -604,7 +604,7 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/UI_Grandprix_SkillFrame_%d.png"), 2))))
 			return E_FAIL;
 		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_HPBar_Backs"),
-			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/UI_Granprix_HPBack_Nick_%d.png"), 9))))
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/UI_Granprix_HPBack_Test_%d.png"), 9))))
 			return E_FAIL;
 		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_HPBar"),
 			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/UI_Granprix_HP.png")))))
@@ -638,6 +638,9 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 			return E_FAIL;
 		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Vehicle_Minigame_Grandprix_Boto_Textures"),
 			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/AnimModel/Vehicle/Boto/SKM_Boto3_Color_TextureCom_%d.dds"), 5))))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_UI_Minigame_Grandprix_AimCursor"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/UI_Aim_Cursor.png")))))
 			return E_FAIL;
 
 		// 미니게임용 프로토타입
