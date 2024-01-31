@@ -54,24 +54,26 @@ void CState_Enemy_VehicleFlying_Run::Tick_State(_float fTimeDelta)
 
     if (true == pBoto->Get_Stat().bIsEnemy)
     {
-        Vec4 vMyPos = m_pVehicle->Get_Component<CTransform>(L"Com_Transform")->Get_Position(); // m_pTransformCom
+        Vec4 vMyPos = m_pVehicle->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
         Vec4 vPlayerPos = m_pTarget->Get_CharacterTransformCom()->Get_Position();
 
-        if (10.f > XMVectorGetX(XMVector3Length(vPlayerPos - vMyPos)))
+        // 30 : 추적 시작함. 15 : 공격. // 40 : Run (Temp)
+        if (30.f > XMVectorGetX(XMVector3Length(vPlayerPos - vMyPos)))
         {
             // 일정 거리 안으로 다가오면 쫓아간다.
-            // (내가 타겟인 경우는 제외한다. -> 내가 타겟이면 도망가게함)
-            if (m_pTarget->Get_Target() != m_pVehicle &&
-                m_pTarget->Get_Target() != m_pVehicle->Get_Rider())
+ //           // (내가 타겟인 경우는 제외한다. -> 내가 타겟이면 도망가게함)
+ //           if (m_pTarget->Get_Target() != m_pVehicle &&
+ //               m_pTarget->Get_Target() != m_pVehicle->Get_Rider())
+            {
                 m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_TRACE);
+                return;
+            }
         }
 
         // 이 조건이 걸리는 외의 상황에서는 주어진 Route따라 날아다닌다.
         _float4 vDestPos;
         XMStoreFloat4(&vDestPos, pBoto->Get_RoutePoint(pBoto->Get_CurIndex()));
-        Move(fTimeDelta);
-
-       //m_pTransformCom->Move(m_pTransformCom->Get_Look(), 1.f, fTimeDelta); // pBoto->Get_Stat().fSpeed대신 3.f사용
+        Move(fTimeDelta); 
 
         if (vMyPos.x >= vDestPos.x - 0.1f && vMyPos.x <= vDestPos.x + 0.1f &&
             vMyPos.y >= vDestPos.y - 0.1f && vMyPos.y <= vDestPos.y + 0.1f &&
@@ -124,6 +126,7 @@ void CState_Enemy_VehicleFlying_Run::Move(_float fTimeDelta)
 
 //    Vec4 vLook = XMVector4Normalize(vPlayerPos - vMyPos);
     Vec3 vScale = m_pTransformCom->Get_Scale();
+
     Vec4 vLook = XMVector4Normalize(vDestPos - vMyPos);
     Vec4 vRight = XMVector4Normalize(XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vLook));
     Vec4 vUp = XMVector4Normalize(XMVector3Cross(vLook, vRight));

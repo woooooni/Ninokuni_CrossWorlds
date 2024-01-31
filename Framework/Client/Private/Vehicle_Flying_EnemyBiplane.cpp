@@ -95,6 +95,8 @@ void CVehicle_Flying_EnemyBiplane::LateTick(_float fTimeDelta)
 {
 	if (true == m_bOnBoard)
 	{
+		GI->Add_CollisionGroup(COLLISION_GROUP::PLANEENEMY_BODY, this);
+
 		__super::LateTick(fTimeDelta);
 
 		if (nullptr != m_pHP)

@@ -52,6 +52,8 @@ private:
 	_bool m_bUseTextureCom = { false };
 	_uint m_iTextureIndex = { 0 };
 
+	_float m_fDistance = { 0.f }; // 플레이어와 Boto의 사이거리 -> UI목적
+
 public:
 	static CVehicle_Flying_EnemyBoto* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;

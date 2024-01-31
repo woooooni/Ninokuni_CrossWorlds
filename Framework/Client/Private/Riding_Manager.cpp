@@ -165,7 +165,7 @@ HRESULT CRiding_Manager::Ready_Vehicle_GameObject(LEVELID eID)
 		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Set_TextureIndex(4);
 
 		pEnemyBoto = nullptr;
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Vehicle_EnemyBoto"), &BotoDesc, &pEnemyBoto)))
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER, TEXT("Prototype_GameObject_Vehicle_EnemyBoto"), &BotoDesc, &pEnemyBoto)))
 			return E_FAIL;
 		if (nullptr == pEnemyBoto)
 			return E_FAIL;
@@ -177,7 +177,7 @@ HRESULT CRiding_Manager::Ready_Vehicle_GameObject(LEVELID eID)
 		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Set_TextureIndex(0);
 
 		pEnemyBoto = nullptr;
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Vehicle_EnemyBoto"), &BotoDesc, &pEnemyBoto)))
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER , TEXT("Prototype_GameObject_Vehicle_EnemyBoto"), &BotoDesc, &pEnemyBoto)))
 			return E_FAIL;
 		if (nullptr == pEnemyBoto)
 			return E_FAIL;
@@ -408,9 +408,10 @@ HRESULT CRiding_Manager::Ready_Grandprix()
 				if (i < m_Enemies.size() && nullptr != m_Enemies[i])
 				{
 					m_Enemies[i]->Get_Component<CTransform>(L"Com_Transform")->Set_State(CTransform::STATE_POSITION,
-						Vec4(-15.f + 10.f * i, 10.f, 30.2f, 1.f));
+						Vec4(-15.f + 10.f * i, 1.f, 30.2f, 1.f));
 					m_Botos[i]->Ride(m_Enemies[i]);
 					//m_Botos[i]->Set_OriginPosition(m_Botos[i]->Get_Component<CTransform>(L"Com_Transform")->Get_Position());
+					
 					m_Botos[i]->Set_Routes();
 				}
 			}

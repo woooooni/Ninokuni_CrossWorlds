@@ -44,8 +44,21 @@ void CState_Enemy_VehicleFlying_Trace::Enter_State(void* pArg)
 
 void CState_Enemy_VehicleFlying_Trace::Tick_State(_float fTimeDelta)
 {
-//    m_pVehicle->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
-//    m_pTarget->Get_CharacterTransformCom();
+    Vec4 vMyPos = m_pVehicle->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
+    Vec4 vPlayerPos = m_pTarget->Get_CharacterTransformCom()->Get_Position();
+
+    // 30 : 추적 시작함. 15 : 공격. // 40 : Run (Temp)
+    if (15.f > XMVectorGetX(XMVector3Length(vPlayerPos - vMyPos)))
+    {
+        m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ATTACK);
+        return;
+    }
+    else
+    {
+        Vec4 vLook = XMVector4Normalize(vPlayerPos - vMyPos);
+        m_pTransformCom->Rotation_Look(vLook);
+        m_pTransformCom->Move(vLook, m_fTraceSpeed, fTimeDelta);
+    }
 }
 
 void CState_Enemy_VehicleFlying_Trace::Exit_State()

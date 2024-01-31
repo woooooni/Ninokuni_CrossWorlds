@@ -35,14 +35,14 @@ HRESULT CVehicle_Flying::Initialize(void* pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
-	if (FAILED(Ready_Components()))
-		return E_FAIL;
+//	if (FAILED(Ready_Components()))
+//		return E_FAIL;
 
-	if (FAILED(Ready_Colliders()))
-		return E_FAIL;
+//	if (FAILED(Ready_Colliders()))
+//		return E_FAIL;
 
-	if (FAILED(Ready_States()))
-		return E_FAIL;
+//	if (FAILED(Ready_States()))
+//		return E_FAIL;
 
 	return S_OK;
 }
@@ -50,8 +50,6 @@ HRESULT CVehicle_Flying::Initialize(void* pArg)
 void CVehicle_Flying::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
-
-
 }
 
 void CVehicle_Flying::LateTick(_float fTimeDelta)
@@ -120,7 +118,7 @@ HRESULT CVehicle_Flying::Ready_States()
 HRESULT CVehicle_Flying::Ready_Routes()
 {
 	m_RoutePoints.reserve(22);
-	m_RoutePoints.push_back({ 10.f, 73.f, 173.f, 1.f });
+	m_RoutePoints.push_back({ 10.f, 93.f, 173.f, 1.f }); // 73.f -> 93.f
 	m_RoutePoints.push_back({ 64.f, 80.f, 136.f, 1.f });
 	m_RoutePoints.push_back({ 58.f, 99.f, 27.f, 1.f });
 	m_RoutePoints.push_back({ 175.5f, 117.f, 95.5f, 1.f });
@@ -135,7 +133,7 @@ HRESULT CVehicle_Flying::Ready_Routes()
 	m_RoutePoints.push_back({ -145.7f, 77.f, 177.f, 1.f });
 	m_RoutePoints.push_back({ -100.5f, 108.5f, -208.f, 1.f });
 	m_RoutePoints.push_back({ 15.f, 86.5f, -151.5f, 1.f });
-	m_RoutePoints.push_back({ 95.5f, 68.f, -97.f, 1.f });
+	m_RoutePoints.push_back({ 95.5f, 88.f, -97.f, 1.f }); // 68.f -> 88.f
 	m_RoutePoints.push_back({ 101.f, 72.f, 11.f, 1.f });
 	m_RoutePoints.push_back({ 30.5f, 83.f, 18.f, 1.f });
 	m_RoutePoints.push_back({ -36.f, 93.f, 102.f, 1.f });

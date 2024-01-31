@@ -25,6 +25,7 @@ public:
 
 private:
 	class CCharacter* m_pTarget = { nullptr };
+	_float m_fTraceSpeed = { 8.f };
 
 public:
 	static CState_Enemy_VehicleFlying_Trace* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);

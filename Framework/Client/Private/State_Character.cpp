@@ -1660,49 +1660,6 @@ void CState_Character::OnBoard_Input(_float fTimeDelta)
 	}
 }
 
-void CState_Character::OnFlying_Input(_float fTimeDelta)
-{
-	if (CHARACTER_TYPE::SWORD_MAN != m_pCharacter->Get_CharacterType())
-		return;
-
-	_bool bUseSkill = false;
-
-	if (KEY_HOLD(KEY::RBTN))
-	{
-		// Target Search
-
-	}
-
-	if (KEY_TAP(KEY::NUM_1))
-	{
-		CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_TEMP1);
-
-		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_TEMP1);
-		return;
-	}
-	if (KEY_TAP(KEY::NUM_2))
-	{
-		CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_TEMP2);
-
-		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_TEMP2);
-		return;
-	}
-	if (KEY_TAP(KEY::NUM_3))
-	{
-		CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_TEMP3);
-
-		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_TEMP3);
-		return;
-	}
-	if (KEY_TAP(KEY::R))
-	{
-		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_BURST);
-		return;
-	}
-
-	
-}
-
 void CState_Character::Reset_Camera_WideToDeafult()
 {
 	/* 팔로우 카메라 와이드뷰 상태에서, 만약 플레이어가 스킬 혹은 공격을 사용한다면 디폴트뷰로 빠르게 전환한다. */

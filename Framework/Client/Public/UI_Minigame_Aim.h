@@ -32,12 +32,17 @@ private:
 	_float2 m_vOriginSize = _float2(0.f, 0.f);
 	_float2 m_vMinSize = _float2(0.f, 0.f);
 
+	_float m_fDistance = { 0.f };
+
 private:
 	virtual HRESULT	Ready_Components() override;
 
 private:
 	HRESULT	Ready_State();
 	HRESULT	Bind_ShaderResources();
+
+private:
+	void Update_Distance();
 
 public:
 	static CUI_Minigame_Aim* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
