@@ -21,6 +21,7 @@
 #include "GameNpc.h"
 #include "Animals.h"
 #include "Water.h"
+#include "Particle_Manager.h"
 
 CLevel_WitchForest::CLevel_WitchForest(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CLevel(pDevice, pContext)
@@ -47,6 +48,9 @@ HRESULT CLevel_WitchForest::Initialize()
 
 //	if (FAILED(Ready_Layer_Monster(LAYER_TYPE::LAYER_MONSTER)))
 //		return E_FAIL;
+
+	if (FAILED(Ready_Layer_Effect(LAYER_TYPE::LAYER_EFFECT)))
+		return E_FAIL;
 
 	if (FAILED(Ready_Layer_UI(LAYER_TYPE::LAYER_UI)))
 		return E_FAIL;
@@ -217,6 +221,19 @@ HRESULT CLevel_WitchForest::Ready_Layer_UI(const LAYER_TYPE eLayerType)
 
 	CUI_Manager::GetInstance()->Ready_CharacterTypeForUI(eCharacterType);
 	CUI_Manager::GetInstance()->Ready_ElementalTypeForUI(eElementalType);
+
+	return S_OK;
+}
+
+HRESULT CLevel_WitchForest::Ready_Layer_Effect(const LAYER_TYPE eLayerType)
+{
+	_matrix WorldMatrix = XMMatrixIdentity();
+
+	WorldMatrix.r[3] = XMVectorSet(30.f, 0.f, 20.f, 1.f);
+	if (FAILED(GET_INSTANCE(CParticle_Manager)->AddLevel_Particle(LEVEL_WITCHFOREST, TEXT("Particle_Firefly_01"), WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f))))
+		return E_FAIL;
+	if (FAILED(GET_INSTANCE(CParticle_Manager)->AddLevel_Particle(LEVEL_WITCHFOREST, TEXT("Particle_Firefly_02"), WorldMatrix, _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f))))
+		return E_FAIL;
 
 	return S_OK;
 }
