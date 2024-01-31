@@ -53,7 +53,7 @@ void CProbs::Tick(_float fTimeDelta)
 		CParticle_Manager::GetInstance()->Generate_Particle_To_Position(TEXT("Winter_CampFire"), m_pTransformCom->Get_WorldMatrix(), Vec3(-0.3f, 1.5f, 0.0f), Vec3(0.0f,0.0f,0.0f), Vec3(0.0f, 0.0f, 0.0f), this, &m_pParticle, false);
 
 
-	if (TEXT("Winter_Plants_02") == m_strObjectTag || TEXT("Winter_Plants_01") == m_strObjectTag)
+	if (TEXT("Winter_Plants_02") == m_strObjectTag || TEXT("Winter_Plants_01") == m_strObjectTag || TEXT("WitchForest_Plant_01") == m_strObjectTag)
 	{
 		m_fTime += fTimeDelta;
 
@@ -115,19 +115,21 @@ HRESULT CProbs::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing
 	if (FAILED(pInstancingShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
 
-	Matrix worldInvTranspose = m_pTransformCom->Get_WorldMatrixInverse();
-	worldInvTranspose.Transpose();
-
-	Matrix worldInvTransposeView = worldInvTranspose * GI->Get_TransformFloat4x4(CPipeLine::D3DTS_VIEW);
-
-	if (FAILED(pInstancingShader->Bind_Matrix("WorldInvTransposeView", &worldInvTransposeView)))
-		return E_FAIL;
 
 	if (TEXT("Winter_Plants_02") == m_strObjectTag || TEXT("Winter_Plants_01") == m_strObjectTag)
 	{
 		if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(0), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
 			return E_FAIL;
 		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, 0, pInstancingBuffer, WorldMatrices, 6)))
+			return E_FAIL;
+		if (FAILED(pInstancingShader->Bind_RawValue("fGrassAngle", &m_fAngle, sizeof(_float))))
+			return E_FAIL;
+	}
+	else if (TEXT("WitchForest_Plant_01") == m_strObjectTag)
+	{
+		if (FAILED(m_pModelCom->SetUp_OnShader(pInstancingShader, m_pModelCom->Get_MaterialIndex(0), aiTextureType_DIFFUSE, "g_DiffuseTexture")))
+			return E_FAIL;
+		if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, 0, pInstancingBuffer, WorldMatrices, 7)))
 			return E_FAIL;
 		if (FAILED(pInstancingShader->Bind_RawValue("fGrassAngle", &m_fAngle, sizeof(_float))))
 			return E_FAIL;
@@ -167,15 +169,6 @@ HRESULT CProbs::Render_Instance_Shadow(CShader* pInstancingShader, CVIBuffer_Ins
 	if (FAILED(pInstancingShader->Bind_Matrix("g_ViewMatrix", &GI->Get_ShadowViewMatrix(GI->Get_CurrentLevel()))))
 		return E_FAIL;
 	if (FAILED(pInstancingShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
-		return E_FAIL;
-
-	// ViewSpace상의 노멀을 찾기 위한 Matrix
-	Matrix worldInvTranspose = m_pTransformCom->Get_WorldMatrixInverse();
-	worldInvTranspose.Transpose();
-
-	Matrix worldInvTransposeView = worldInvTranspose * GI->Get_TransformFloat4x4(CPipeLine::D3DTS_VIEW);
-
-	if (FAILED(pInstancingShader->Bind_Matrix("WorldInvTransposeView", &worldInvTransposeView)))
 		return E_FAIL;
 
 	_uint		iNumMeshes = m_pModelCom->Get_NumMeshes();

@@ -90,7 +90,7 @@ HRESULT CLevel_Evermore::Initialize()
 	/* Äù½ºÆ® ¼¼ÆÃ */
 	if (CQuest_Manager::GetInstance()->Get_IsReserve() == false)
 	{
-		if (FAILED(CQuest_Manager::GetInstance()->Reserve_Manager()))
+		if (FAILED(CQuest_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
 			return E_FAIL;
 		CQuest_Manager::GetInstance()->Set_Running(true);
 	}
@@ -112,6 +112,19 @@ HRESULT CLevel_Evermore::Initialize()
 		g_bFirstEnter = true;
 		CUI_Manager::GetInstance()->OnOff_MapName(true, TEXT("³²¹® ±¤Àå"));
 	}
+
+	CRenderer::FOG_DESC fogDesc;
+	::ZeroMemory(&fogDesc, sizeof(fogDesc));
+	{
+		fogDesc.fFogDistanceValue = 30.0f;
+		fogDesc.fFogHeightValue = 50.0f;
+		fogDesc.fFogStartDepth = 100.0f;
+		fogDesc.fFogStartDistance = 17.150f;
+		fogDesc.fFogDistanceDensity = 0.04f;
+		fogDesc.fFogHeightDensity = 0.06f;
+	}
+	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_FogDesc(fogDesc);
+	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_FogColor(Vec4(0.396f, 0.744f, 1.0f, 1.0f));
 
 	return S_OK;
 }
@@ -674,6 +687,16 @@ HRESULT CLevel_Evermore::Ready_Layer_Dynamic(const LAYER_TYPE eLayerType, const 
 			pController->Set_EnterLevel_Position(pTransform->Get_Position());
 	}
 
+	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_INVASION)
+	{
+		list<CGameObject*>& pGameObjects = GI->Find_GameObjects(LEVELID::LEVEL_EVERMORE, LAYER_TYPE::LAYER_DYNAMIC);
+
+		for (auto& pAnimal : pGameObjects)
+		{
+			if (pAnimal->Get_ObjectType() == OBJ_TYPE::OBJ_ANIMAL)
+				Safe_Release<CGameObject*>(pAnimal);
+		}
+	}
 	//MSG_BOX("Dynamic_Loaded.");
 	return S_OK;
 }

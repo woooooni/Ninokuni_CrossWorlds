@@ -42,10 +42,10 @@ HRESULT CGrass::Render()
 	if (FAILED(Bind_ShaderResource()))
 		return E_FAIL;
 
-	if(FAILED(m_pShaderCom->Begin(0)))
+	if(FAILED(m_pShaderCom->Begin(1)))
 		return E_FAIL;
 
-	if (FAILED(m_pVIBufferCom->Render()))
+	if (FAILED(m_pVIBufferCom->Render(1)))
 		return E_FAIL;
 
 	return S_OK;
@@ -66,7 +66,7 @@ HRESULT CGrass::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_VIBuffer */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Grass"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_LensFlare"), TEXT("Com_VIBuffer"), (CComponent**)&m_pVIBufferCom)))
 		return E_FAIL;
 
 	return S_OK;
@@ -114,7 +114,7 @@ void CGrass::Free()
 
 	Safe_Release<CRenderer*>(m_pRendererCom);
 	Safe_Release<CShader*>(m_pShaderCom);
-	Safe_Release<CVIBuffer_Grass*>(m_pVIBufferCom);
+	Safe_Release<CVIBuffer_LensFlare*>(m_pVIBufferCom);
 	Safe_Release<CTransform*>(m_pTransformCom);
 	Safe_Release<CTexture*>(m_pTextureCom);
 }

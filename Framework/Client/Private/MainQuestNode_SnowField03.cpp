@@ -5,6 +5,7 @@
 #include "Utils.h"
 
 #include "UI_Manager.h"
+#include "Game_Manager.h"
 
 CMainQuestNode_SnowField03::CMainQuestNode_SnowField03()
 {

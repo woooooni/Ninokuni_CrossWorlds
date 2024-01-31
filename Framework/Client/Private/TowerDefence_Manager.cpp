@@ -116,35 +116,6 @@ void CTowerDefence_Manager::LateTick(_float fTimeDelta)
 
 void CTowerDefence_Manager::Prepare_Defence()
 {
-	// Change_Light Color
-	list<CLight*>* pLightLists = GI->Get_LightList();
-	for (auto& pLight : *pLightLists)
-	{
-
-		LIGHTDESC* pDesc = pLight->Get_ModifyLightDesc();
-		m_OriginLights.push_back(*pDesc);
-
-		pDesc->vTempColor = Vec3(0.729f, 0.431f, 1.f);
-	}
-
-	// Change SkyDomeColor
-	list<CGameObject*>& SkyDomes = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_SKYBOX);
-	for (auto& pSkyDome : SkyDomes)
-	{
-		if (wstring::npos != pSkyDome->Get_PrototypeTag().find(L"Skydome"))
-		{
-			CSkyDome* pCastSky =  dynamic_cast<CSkyDome*>(pSkyDome);
-			if (nullptr != pCastSky)
-			{
-				m_vOriginSkyCenterColor = pCastSky->Get_CenterColor();
-				m_vOriginSkyApexColor = pCastSky->Get_ApexColor();
-
-				pCastSky->Set_CenterColor(Vec4(0.871f, 0.78f, 1.0f, 1.0f));
-				pCastSky->Set_ApexColor(Vec4(0.224f, 0.306f, 0.788f, 1.0f));
-			}
-		}
-	}
-	
 	// Change Particle
 
 	// Change FogColor
@@ -238,32 +209,6 @@ void CTowerDefence_Manager::Finish_Defence()
 {
 
 	// Change_Light
-
-	list<CLight*>* pLightLists = GI->Get_LightList();
-	_uint iIndex = 0;
-
-	for (auto& pLight : *pLightLists)
-	{
-
-		LIGHTDESC* pDesc = pLight->Get_ModifyLightDesc();
-		pDesc->vTempColor = m_OriginLights[iIndex].vTempColor;
-		iIndex++;
-	}
-
-	// Recover SkyDome Color
-	list<CGameObject*>& SkyDomes = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_SKYBOX);
-	for (auto& pSkyDome : SkyDomes)
-	{
-		if (wstring::npos != pSkyDome->Get_PrototypeTag().find(L"Skydome"))
-		{
-			CSkyDome* pCastSky = dynamic_cast<CSkyDome*>(pSkyDome);
-			if (nullptr != pCastSky)
-			{
-				pCastSky->Set_CenterColor(m_vOriginSkyCenterColor);
-				pCastSky->Set_ApexColor(m_vOriginSkyApexColor);
-			}
-		}
-	}
 
 	if (nullptr != m_pPicked_Object)
 	{

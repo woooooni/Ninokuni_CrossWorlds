@@ -39,6 +39,8 @@ void CUniqueNpcState_Seat::Tick_State(_float fTimeDelta)
 	_float fThreeDistance = vThreeDistance.Length();
 	Vec3 vFourDistance = vPoints[12] - Vec3(m_pTransformCom->Get_Position());
 	_float fFourDistance = vFourDistance.Length();
+	Vec3 vFiveDistance = vPoints[15] - Vec3(m_pTransformCom->Get_Position());
+	_float fFiveDistance = vFiveDistance.Length();
 
 	// 섹션별로 구간을 나눠서.
 
@@ -97,11 +99,25 @@ void CUniqueNpcState_Seat::Tick_State(_float fTimeDelta)
 			m_pTransformCom->LookAt(vAt);
 			m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_pNpc->Get_Stat()->fSpeed, fTimeDelta);
 		}
-		else
+		else if(fFiveDistance >= 4.0f && false == m_bSection[SECTION_FIVE])
 		{
 			if (false == m_bSection[SECTION_FOUR])
 			{
+				m_fTime = 0.0f;
+				m_fTime += fTimeDelta;
 				m_bSection[SECTION_FOUR] = true;
+			}
+
+			_float fRatio = std::clamp(m_fTime / fArriveTime, 0.0f, 1.0f);
+			Vec3 vAt = CubicBezier(vPoints[12], vPoints[13], vPoints[14], vPoints[15], fRatio);
+			m_pTransformCom->LookAt(vAt);
+			m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_pNpc->Get_Stat()->fSpeed, fTimeDelta);
+		}
+		else
+		{
+			if (false == m_bSection[SECTION_FIVE])
+			{
+				m_bSection[SECTION_FIVE] = true;
 				CRuby* pRuby = static_cast<CRuby*>(m_pOwner);
 				static_cast<CRubyCarriage*>(pRuby->Get_RidingObject())->Set_TakeTheCarriage(false);
 				CStateMachine* pCarriageState = pRuby->Get_RidingObject()->Get_Component<CStateMachine>(TEXT("Com_StateMachine"));

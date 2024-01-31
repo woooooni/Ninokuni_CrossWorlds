@@ -12,6 +12,7 @@ struct HullInput
     float4 vColor : COLOR;
 };
 
+
 // Vertex
 HullInput ColorVertexShader(VertexInput input)
 {
@@ -23,8 +24,7 @@ HullInput ColorVertexShader(VertexInput input)
     // 픽셀 쉐이더가 사용할 입력 색상을 저장한다.
     output.vColor = input.vColor;
     
-    
-    
+
     return output;
 }
 
@@ -148,6 +148,62 @@ RasterizerState RS_WireFrame
     FrontCounterClockwise = false;
 };
 
+
+// 
+struct VS_GRASS_INPUT
+{
+    float4 vPosition : POSITION;
+    float4 vColor : COLOR0;
+};
+
+struct GeometryOutput
+{
+    float4 vPosition : SV_POSITION;
+    float4 vColor : COLOR0;
+};
+
+GeometryOutput GrassVS(VS_GRASS_INPUT input)
+{
+    GeometryOutput o = (GeometryOutput) 0;
+    
+    o.vPosition = 0;
+
+    return o;
+}
+
+[maxvertexcount(3)]
+void geo(triangle float4 input[3] : SV_Position, inout TriangleStream<GeometryOutput> triStream)
+{
+    GeometryOutput o = (GeometryOutput) 0;
+    
+    matrix matWV, matWVP;
+    
+    matWV = mul(worldMatrix, viewMatrix);
+    matWVP = mul(matWV, projectionMatrix);
+    
+
+    
+    o.vPosition = mul(float4(0.5f, 0.0f, 0.0f, 1.0f), matWVP);
+    o.vColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    triStream.Append(o);
+
+    o.vPosition = mul(float4(-0.5f, 0.0f, 0.0f, 1.0f), matWVP);
+    o.vColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    triStream.Append(o);
+
+    o.vPosition = mul(float4(0.0f, -1.0f, 0.0f, 1.0f), matWVP);
+    o.vColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    triStream.Append(o);
+    
+    //triStream.RestartStrip();
+}
+
+float4 GrassPS(GeometryOutput input) : SV_Target
+{
+    
+    return input.vColor;
+}
+
 technique11 DefaultGrass
 {
 	// Grass
@@ -162,5 +218,18 @@ technique11 DefaultGrass
         HullShader = compile hs_5_0 ColorHullShader();
         DomainShader = compile ds_5_0 ColorDomainShader();
         PixelShader = compile ps_5_0 ColorPixelShader();
+    }
+
+    pass RealTimeWithGeo
+    {
+        SetRasterizerState(RS_NoneCull);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+
+        VertexShader = compile vs_5_0 GrassVS();
+        GeometryShader = compile gs_5_0 geo();
+        HullShader = NULL;
+        DomainShader = NULL;
+        PixelShader = NULL;
     }
 }

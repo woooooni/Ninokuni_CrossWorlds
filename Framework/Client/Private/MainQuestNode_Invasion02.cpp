@@ -9,8 +9,8 @@
 
 #include "Player.h"
 #include "Character.h"
-
-
+#include "SkyDome.h"
+#include "Quest_Manager.h"
 
 CMainQuestNode_Invasion02::CMainQuestNode_Invasion02()
 {
@@ -46,6 +46,7 @@ void CMainQuestNode_Invasion02::Start()
 
 	/* 현재 퀘스트에 연관있는 객체들 */
 	m_pKuu = (CGameObject*)(CGame_Manager::GetInstance()->Get_Kuu());
+
 }
 
 CBTNode::NODE_STATE CMainQuestNode_Invasion02::Tick(const _float& fTimeDelta)
@@ -57,6 +58,49 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion02::Tick(const _float& fTimeDelta)
 	{
 		if (false == m_bBGMStart)
 		{
+
+			list<CGameObject*>& SkyDomes = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_SKYBOX);
+			for (auto& pSkyDome : SkyDomes)
+			{
+				if (wstring::npos != pSkyDome->Get_PrototypeTag().find(L"Skydome"))
+				{
+					CSkyDome* pCastSky = dynamic_cast<CSkyDome*>(pSkyDome);
+					if (nullptr != pCastSky)
+					{
+						CQuest_Manager::GetInstance()->Set_OriginSkyCenterColor(pCastSky->Get_CenterColor());
+						CQuest_Manager::GetInstance()->Set_OriginSkyApexColor(pCastSky->Get_ApexColor());
+
+						pCastSky->Set_CenterColor(Vec4(0.671f, 0.059f, 0.0f, 1.0f));
+						pCastSky->Set_ApexColor(Vec4(0.329f, 0.173f, 0.157f, 1.0f));
+					}
+				}
+			}
+			CQuest_Manager::GetInstance()->Ready_InvasionLight(TEXT("Evermore Light"));
+
+			CRenderer::FOG_DESC desc;
+			::ZeroMemory(&desc, sizeof(desc));
+			{
+				desc.fFogDistanceValue = 30.0f;
+				desc.fFogHeightValue = 50.0f;
+				desc.fFogStartDepth = 100.0f;
+				desc.fFogStartDistance = 0.04f;
+				//desc.fFogHeightDensity = 0.110f;
+				desc.fFogDistanceDensity = 0.110f;
+			}
+			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_FogDesc(desc);
+			CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_FogColor(Vec4(0.671f,0.059f,0.0f,1.0f));
+
+			// Fog
+			// Fog Color : r 0.671, g : 0.059, b : 0.0, a : 1.0f
+			// FogDistvalue  : 30.0f
+			// FogHeight 50.0
+			// Depth 100, FogStartDist = 0.04 , Density = 0.110f
+			// Renderer로 던진다.
+
+			// Light
+			// Diffuse Ambient Upper 
+
+
 			GI->Stop_Sound(CHANNELID::SOUND_BGM_CURR, 0.f);
 			GI->Play_BGM(L"BGM_Field_Hunting_CastleInside_Dark_1.ogg", 1.f, true);
 			m_bBGMStart = true;

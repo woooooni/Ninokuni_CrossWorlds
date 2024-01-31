@@ -56,6 +56,7 @@ void CMainQuestNode_SnowField02_2::Start()
 	CUI_Manager::GetInstance()->Set_MiniDialogue(m_szpOwner, m_szpTalk);
 
 
+
 	TalkEvent();
 }
 
