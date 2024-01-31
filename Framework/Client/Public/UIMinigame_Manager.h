@@ -26,6 +26,9 @@ public: // Getter & Setter
 	_bool	Is_BiplaneFlying() { return m_bFlying; }
 	void	Set_Flyable(_bool bFlyable) { m_bFlying = bFlyable; }
 
+	_bool	Is_AimActive() { return m_bActiveAim; }
+	void	Set_GrandprixAimActive(_bool bOnOff) { m_bActiveAim = bOnOff; }
+
 public:
 	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	void	Tick(_float fTimeDelta);
@@ -92,6 +95,7 @@ private: // Evermore Granprix
 	class CUI_Minigame_Basic*				m_pBiplaneIcon = { nullptr };
 
 	_bool									m_bFlying = { false };
+	_bool									m_bActiveAim = { false };
 
 private: // Iceland Curling
 	vector<class CUI_Minigame_CurlingGauge*> m_CurlingGauge;

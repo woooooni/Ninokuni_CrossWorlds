@@ -64,7 +64,7 @@ void CState_VehicleFlying_Stand::Tick_State(_float fTimeDelta)
             return;
         }
 
-        if (KEY_HOLD(KEY::SPACE))
+        if (KEY_HOLD(KEY::LBTN))
         {
             if (g_eLoadCharacter == LOAD_CHARACTER_TYPE::ALL_CH)
             {
@@ -141,6 +141,17 @@ void CState_VehicleFlying_Stand::Tick_State(_float fTimeDelta)
         m_pTransformCom->Rotation_Acc(vRight, fRadian);
         m_pTransformCom->Move(vCamLook, m_pVehicle->Get_Speed(), fTimeDelta);
     }
+
+    if (KEY_HOLD(KEY::RBTN))
+    {
+        if (false == CUIMinigame_Manager::GetInstance()->Is_AimActive())
+            CUIMinigame_Manager::GetInstance()->Set_GrandprixAimActive(true);
+    }
+
+    if (KEY_NONE(KEY::RBTN))
+    {
+        CUIMinigame_Manager::GetInstance()->Set_GrandprixAimActive(false);
+    }
 }
 
 void CState_VehicleFlying_Stand::Exit_State()
@@ -202,6 +213,10 @@ void CState_VehicleFlying_Stand::Shoot()
         MSG_BOX("Generate Bullet Failed.");
 
     m_bShoot = false;
+}
+
+void CState_VehicleFlying_Stand::Aim()
+{
 }
 
 

@@ -12,6 +12,7 @@
 
 #include "UIMinigame_Manager.h"
 #include "UI_Minigame_WorldHP.h"
+#include "UI_Minigame_Aim.h"
 
 CVehicle_Flying_EnemyBoto::CVehicle_Flying_EnemyBoto(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVehicle_Flying(pDevice, pContext, strObjectTag)
@@ -56,6 +57,15 @@ HRESULT CVehicle_Flying_EnemyBoto::Initialize(void* pArg)
 	m_pHP = dynamic_cast<CUI_Minigame_WorldHP*>(pTemp);
 	m_pHP->Set_VehicleInformation(this);
 
+	pTemp = nullptr;
+	pTemp = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Minigame_Enemy_Aim"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pTemp)
+		return E_FAIL;
+	if (nullptr == dynamic_cast<CUI_Minigame_Aim*>(pTemp))
+		return E_FAIL;
+	m_pAim = dynamic_cast<CUI_Minigame_Aim*>(pTemp);
+	m_pAim->Set_Owner(this);
+
 	m_pRigidBodyCom->Set_Use_Gravity(false);
 
 	return S_OK;
@@ -69,6 +79,9 @@ void CVehicle_Flying_EnemyBoto::Tick(_float fTimeDelta)
 
 		if (nullptr != m_pHP)
 			m_pHP->Tick(fTimeDelta);
+
+		if (nullptr != m_pAim)
+			m_pAim->Tick(fTimeDelta);
 		
 		Update_RiderState();
 
@@ -85,6 +98,9 @@ void CVehicle_Flying_EnemyBoto::LateTick(_float fTimeDelta)
 
 		if (nullptr != m_pHP)
 			m_pHP->LateTick(fTimeDelta);
+
+		if (nullptr != m_pAim)
+			m_pAim->LateTick(fTimeDelta);
 
 		Update_Rider(fTimeDelta);
 
@@ -351,5 +367,6 @@ void CVehicle_Flying_EnemyBoto::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pAim);
 	Safe_Release(m_pHP);
 }
