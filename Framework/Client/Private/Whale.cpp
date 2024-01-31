@@ -14,6 +14,8 @@
 #include "Character.h"
 #include "Player.h"
 
+#include "Effect_Manager.h"
+
 CWhale::CWhale(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, _int eType)
 	: CAnimals(pDevice, pContext, strObjectTag, eType)
 {
@@ -199,6 +201,9 @@ void CWhale::Set_Flip(_bool Flip)
 
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, Get_RomingPoints()->front());
 		m_pStateMachineCom->Change_State(CAnimals::STATE_SWIM);
+
+		// Effect Create
+		GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Whale_Jump"), m_pTransformCom->Get_WorldMatrix(), this);
 	}
 }
 

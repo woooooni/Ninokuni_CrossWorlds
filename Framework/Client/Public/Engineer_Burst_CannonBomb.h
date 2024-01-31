@@ -27,7 +27,7 @@ public:
 
 private:
 	_float m_fAccEffect = 0.f;
-	_float m_fGenEffectTime = 0.5f;
+	_bool m_bCollisionEffect = false;
 
 private:
 	_bool m_bHit = false;

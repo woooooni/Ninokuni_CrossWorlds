@@ -52,6 +52,14 @@ void CParticle::Set_IsParticleShow(_bool bIsShow, _float fTimeDelta)
 	}
 }
 
+void CParticle::Set_Color(_float3 fColor)
+{
+	if (nullptr == m_pVIBufferCom)
+		return;
+
+	m_pVIBufferCom->Set_Color(fColor);
+}
+
 void CParticle::Set_ParticleDesc(const PARTICLE_DESC& tDesc)
 {
 	m_tParticleDesc = tDesc;

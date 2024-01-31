@@ -1,8 +1,8 @@
 #pragma once
-
+// -------------------------------------------------
 // UI //
 #include "Vfx_UI_MouseClick.h"
-
+// -------------------------------------------------
 // PLAYER //
 #include "Vfx_SwordMan_Skill_PerfectBlade.h"
 #include "Vfx_SwordMan_Skill_SpinningAssault.h"
@@ -18,6 +18,7 @@
 #include "Vfx_Engineer_Skill_ExplosionShot_Boom.h"
 #include "Vfx_Engineer_Skill_Destruction.h"
 #include "Vfx_Engineer_Skill_Destruction_Cannon.h"
+#include "Vfx_Engineer_Skill_Destruction_Boom.h"
 #include "Vfx_Engineer_Skill_HealingTree.h"
 #include "Vfx_Engineer_Skill_TimeLab.h"
 #include "Vfx_Engineer_Skill_FlashHeal.h"
@@ -29,12 +30,10 @@
 #include "Vfx_Destroyer_Skill_BattleCry.h"
 #include "Vfx_Destroyer_Skill_IgnorePain.h"
 #include "Vfx_Destroyer_Skill_FrengeCharge.h"
-
+// -------------------------------------------------
 // MONSTER //
-
-
-// BOSS //
-// Glanix
+//// BOSS 
+////// Glanix
 #include "Vfx_Glanix_Intro_Roar.h"
 #include "Vfx_Glanix_Intro_Jump.h"
 #include "Vfx_Glanix_Intro_Finish.h"
@@ -51,6 +50,7 @@
 #include "Vfx_Glanix_Skill_Icicle.h"
 
 /* Stellia */
+////// Stellia
 #include "Vfx_Stellia_Skill_ClawRight.h"
 #include "Vfx_Stellia_Skill_ClawDouble.h"
 #include "Vfx_Stellia_Skill_SpinTail.h"
@@ -60,8 +60,13 @@
 #include "Vfx_Stellia_Skill_Rage01JumpStamp.h"
 #include "Vfx_Stellia_Skill_Rage01SpinTail.h"
 
+// -------------------------------------------------
+// ANIMAL //
+#include "Vfx_Whale_Jump.h"
+// -------------------------------------------------
 // ETC //
 #include "Vfx_QuestPoint.h"
 #include "Vfx_PortalPoint.h"
 #include "Vfx_TargetPoint.h"
 #include "Vfx_Smoke.h"
+// -------------------------------------------------

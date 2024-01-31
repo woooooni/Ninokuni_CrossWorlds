@@ -371,6 +371,7 @@ private:
 	
 private:
 	void LevelUp();
+	void Create_HitEffect(_int iType, class CMonster* pMonster);
 
 private:
 	class CUI_World_NameTag* m_pName = { nullptr };

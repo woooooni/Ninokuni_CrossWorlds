@@ -29,6 +29,7 @@
 #include "CurlingGame_Prop.h"
 #include "UIMinimap_Manager.h"
 #include "CurlingGame_Stone.h"
+#include "Particle.h"
 
 USING(Client)
 CCharacter::CCharacter(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, CHARACTER_TYPE eCharacterType)
@@ -811,7 +812,6 @@ void CCharacter::LevelUp()
 
 
 
-
 void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 {
 	if (true == m_bInfinite)
@@ -917,8 +917,69 @@ void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 	{
 		m_pStateCom->Change_State(CCharacter::DAMAGED_WEAK);
 	}
+
+	Create_HitEffect(tInfo.pOtherCollider->Get_AttackType(), pMonster);
 }
 
+void CCharacter::Create_HitEffect(_int iType, CMonster* pMonster)
+{
+	return;
+
+	_float fRandomXOffset = CUtils::Random_Float(-0.5f, 0.5f);
+	_float fRandomYOffset = CUtils::Random_Float(-0.5f, 0.5f);
+
+	CTransform* pMonsterTransform = pMonster->Get_Component<CTransform>(L"Com_Transform");
+	if (nullptr == pMonsterTransform)
+		return;
+
+	Vec4 vPlayerPos = pMonsterTransform->Get_Position();
+	Vec4 vThisPos = m_pTransformCom->Get_Position();
+	Vec4 vLook = XMVector4Normalize(vPlayerPos - vThisPos);
+
+	_vector vLookPosition = m_pTransformCom->Get_Position();
+	vLookPosition += vLook * 0.5f;
+
+	_matrix ThisWorldMat = m_pTransformCom->Get_WorldMatrix();
+	ThisWorldMat.r[CTransform::STATE_POSITION] = vLookPosition;
+
+
+
+	CParticle* pParticle = nullptr;
+
+	// 어택 타입에 따른 피격 이펙트 생성
+	if (CCollider::ATTACK_TYPE::WEAK == iType) // 살짝
+	{
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(L"Particle_Monster_Hit_Sword", ThisWorldMat, _float3(fRandomXOffset, 1.f + fRandomYOffset, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &pParticle);
+	}
+
+	else if (CCollider::ATTACK_TYPE::STRONG == iType || CCollider::ATTACK_TYPE::STUN == iType) // 세게
+	{
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(L"Particle_Monster_Hit_Hammer", ThisWorldMat, _float3(fRandomXOffset, 1.f + fRandomYOffset, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &pParticle);
+	}
+
+	else if (CCollider::ATTACK_TYPE::BOUND == iType || CCollider::ATTACK_TYPE::AIR_BORNE == iType || // 더세게 또는 날아감
+		CCollider::ATTACK_TYPE::BLOW == iType || CCollider::ATTACK_TYPE::IF_DEAD_BLOW == iType)
+	{
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(L"Particle_Monster_Hit_Gun", ThisWorldMat, _float3(fRandomXOffset, 1.f + fRandomYOffset, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &pParticle);
+	}
+
+	// 몬스터의 속성에 따른 색상 변경
+	ELEMENTAL_TYPE eMonsterType = pMonster->Get_Stat().eElementType;
+	switch (eMonsterType)
+	{
+	case FIRE:
+		pParticle->Set_Color(_float3(1.f, 0.f, 0.f));
+		break;
+
+	case WATER:
+		pParticle->Set_Color(_float3(0.f, 0.f, 1.f));
+		break;
+
+	case WOOD:
+		pParticle->Set_Color(_float3(0.f, 1.f, 0.f));
+		break;
+	}
+}
 
 void CCharacter::Add_Exp(_int iExp)
 {
@@ -1130,7 +1191,9 @@ HRESULT CCharacter::Tag_In(Vec4 vInitializePosition)
 	m_pControllerCom->Set_Active(true);
 	m_pControllerCom->Set_EnterLevel_Position(XMVectorSetW(vInitializePosition, 1.f));
 
-	CGame_Manager::GetInstance()->Get_Kuu()->Set_KuuTarget_Player();
+	if(LEVEL_TOOL != GI->Get_CurrentLevel())
+		CGame_Manager::GetInstance()->Get_Kuu()->Set_KuuTarget_Player();
+
 	if (!CCamera_Manager::GetInstance()->Is_Empty_Camera(CAMERA_TYPE::FOLLOW))
 	{
 		CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
@@ -1142,8 +1205,11 @@ HRESULT CCharacter::Tag_In(Vec4 vInitializePosition)
 		}
 	}
 
-	CUI_Manager::GetInstance()->Ready_CharacterTypeForUI(Get_CharacterType());
-	CUI_Manager::GetInstance()->Ready_ElementalTypeForUI(Get_ElementalType());
+	if (LEVEL_TOOL != GI->Get_CurrentLevel())
+	{
+		CUI_Manager::GetInstance()->Ready_CharacterTypeForUI(Get_CharacterType());
+		CUI_Manager::GetInstance()->Ready_ElementalTypeForUI(Get_ElementalType());
+	}
 
 	return S_OK;
 }

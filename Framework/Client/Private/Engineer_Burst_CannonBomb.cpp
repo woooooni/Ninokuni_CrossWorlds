@@ -60,7 +60,7 @@ void CEngineer_Burst_CannonBomb::Tick(_float fTimeDelta)
 			Safe_AddRef(m_pSpiralEffect);
 		}
 		else
-			GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fAccEffect, CUtils::Random_Float(0.1f, 0.3f), fTimeDelta, TEXT("Particle_SparkCircle_Big"), this);
+			GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fAccEffect, CUtils::Random_Float(0.25f, 0.5f), fTimeDelta, TEXT("Particle_SparkCircle_Big"), this);
 		
 		return;
 	}
@@ -119,7 +119,7 @@ HRESULT CEngineer_Burst_CannonBomb::Ready_Components()
 
 	BoundingSphere tSphere;
 	ZeroMemory(&tSphere, sizeof(BoundingSphere));
-	tSphere.Radius = 2.f;
+	tSphere.Radius = 1.5f;
 	SphereDesc.tSphere = tSphere;
 
 	SphereDesc.pNode = nullptr;
@@ -143,6 +143,11 @@ void CEngineer_Burst_CannonBomb::Collision_Enter(const COLLISION_INFO& tInfo)
 		if (m_bReserveDead)		
 			return;
 		
+		if (false == m_bCollisionEffect)
+		{
+			GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Engineer_Skill_Destruction_Boom"), m_pTransformCom->Get_WorldMatrix(), tInfo.pOther);
+			m_bCollisionEffect = true;
+		}
 
 		wstring strSoundKey = L"Ele_Impact_Fire_" + to_wstring(GI->RandomInt(4, 8)) + L".mp3";
 		GI->Play_Sound(strSoundKey, SOUND_MONSTERL_HIT, 0.3f, false);

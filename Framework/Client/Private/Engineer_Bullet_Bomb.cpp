@@ -138,6 +138,12 @@ void CEngineer_Bullet_Bomb::Collision_Enter(const COLLISION_INFO& tInfo)
 		if (m_bReserveDead)		
 			return;
 
+		if (false == m_bCollisionEffect)
+		{
+			GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Engineer_Skill_ExplosionShot_Boom"), m_pTransformCom->Get_WorldMatrix(), tInfo.pOther);
+			m_bCollisionEffect = true;
+		}
+
 		wstring strSoundKey = L"Ele_Impact_Fire_" + to_wstring(GI->RandomInt(4, 8)) + L".mp3";
 		GI->Play_Sound(strSoundKey, SOUND_MONSTERL_HIT, 0.3f, false);
 
