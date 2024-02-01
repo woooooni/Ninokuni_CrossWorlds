@@ -9,7 +9,7 @@
 #include "Character.h"
 
 CBiplane_Thunder_Cloud::CBiplane_Thunder_Cloud(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	:CVehicleFlying_Projectile(pDevice, pContext, L"Biplane_Thunder_Cloud")
+	:CVehicleFlying_Projectile(pDevice, pContext, L"Biplane_Thunder_Cloud", OBJ_TYPE::OBJ_GRANDPRIX_PLAYER_PROJECTILE)
 {
 
 }

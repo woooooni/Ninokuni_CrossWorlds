@@ -24,6 +24,9 @@ HRESULT CState_Vehicle_Run::Initialize(const list<wstring>& AnimationList)
 void CState_Vehicle_Run::Enter_State(void* pArg)
 {
     m_pModelCom->Set_Animation(m_AnimIndices[0]);
+	CCamera_Follow* pFollowCam = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+	if (nullptr != pFollowCam)
+		pFollowCam->Set_CanInput(false);
 }
 
 void CState_Vehicle_Run::Tick_State(_float fTimeDelta)

@@ -5,12 +5,12 @@
 
 BEGIN(Client)
 
-class CSwordsman_Biplane_Bullet final : public CVehicleFlying_Projectile
+class CEnemy_Biplane_Bullet final : public CVehicleFlying_Projectile
 {
 private:
-	explicit CSwordsman_Biplane_Bullet(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	explicit CSwordsman_Biplane_Bullet(const CSwordsman_Biplane_Bullet& rhs);
-	virtual ~CSwordsman_Biplane_Bullet() = default;
+	explicit CEnemy_Biplane_Bullet(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	explicit CEnemy_Biplane_Bullet(const CEnemy_Biplane_Bullet& rhs);
+	virtual ~CEnemy_Biplane_Bullet() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -30,7 +30,7 @@ private:
 	_float m_fGenEffectTime = 0.5f;
 
 public:
-	static CSwordsman_Biplane_Bullet* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	static CEnemy_Biplane_Bullet* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual CGameObject* Clone(void* pArg);
 	virtual void Free() override;
 };

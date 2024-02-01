@@ -21,7 +21,7 @@ public:
 	} GRANDPRIX_PROJECTILE_DESC;
 
 protected:
-	CVehicleFlying_Projectile(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjTag);
+	CVehicleFlying_Projectile(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjTag, OBJ_TYPE eObjectType);
 	CVehicleFlying_Projectile(const CVehicleFlying_Projectile& rhs);
 	virtual ~CVehicleFlying_Projectile() = default;
 

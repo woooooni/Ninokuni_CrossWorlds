@@ -25,8 +25,8 @@ HRESULT CSword::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	if (FAILED(Ready_Trails()))
-		return E_FAIL;
+	/*if (FAILED(Ready_Trails()))
+		return E_FAIL;*/
 
 	return S_OK;
 }

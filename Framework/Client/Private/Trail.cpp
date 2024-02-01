@@ -18,6 +18,8 @@ CTrail::CTrail(const CTrail& rhs)
 
 HRESULT CTrail::Initialize_Prototype(const TRAIL_DESC& TrailDesc)
 {
+	if (FAILED(__super::Initialize_Prototype()))
+		return E_FAIL;
 	m_TrailDesc = TrailDesc;
 
 	return S_OK;

@@ -6,7 +6,7 @@
 #include "Vehicle_Flying.h"
 
 #include "UIMinigame_Manager.h"
-#include "Swordsman_Biplane_Bullet.h"
+#include "Character_Biplane_Bullet.h"
 
 #include "Game_Manager.h"
 #include "Character.h"
@@ -34,6 +34,7 @@ void CState_Enemy_VehicleFlying_Attack::Enter_State(void* pArg)
 {
     m_iCurrAnimIndex = m_AnimIndices[0];
     m_pModelCom->Set_Animation(m_iCurrAnimIndex);
+    m_bShoot = false;
 }
 
 void CState_Enemy_VehicleFlying_Attack::Tick_State(_float fTimeDelta)
@@ -45,15 +46,29 @@ void CState_Enemy_VehicleFlying_Attack::Tick_State(_float fTimeDelta)
     if (nullptr == pCharacter)
         return;
 
-    Vec4 vMyPos = m_pVehicle->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
+    Vec4 vMyPos = m_pTransformCom->Get_Position();
     Vec4 vPlayerPos = pCharacter->Get_CharacterTransformCom()->Get_Position();
 
+    _float fDistance = (vPlayerPos - vMyPos).Length();
+
     // 30 : 추적 시작함. 15 : 공격. // 40 : Run (Temp)
-    if (40.f < XMVectorGetX(XMVector3Length(vPlayerPos - vMyPos)))
+    if (40.f < fDistance)
     {
         m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_RUN);
         return;
     }
+
+    Vec3 vDestLook = XMVector3Normalize(vPlayerPos - vMyPos);
+    Vec3 vMyLook = XMVector3Normalize(m_pTransformCom->Get_Look());
+
+    m_pTransformCom->Rotation_Look(XMVector3Normalize(Vec3::Lerp(vMyLook, vDestLook, fTimeDelta)));
+
+    if (fDistance > 8.f)
+    {
+        m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fFollowSpeed, fTimeDelta);
+    }
+        
+
 
     // 공격
     if (false == m_bShoot)
@@ -78,10 +93,10 @@ void CState_Enemy_VehicleFlying_Attack::Exit_State()
 
 void CState_Enemy_VehicleFlying_Attack::Shoot()
 {
-    CSwordsman_Biplane_Bullet::GRANDPRIX_PROJECTILE_DESC ProjectileDesc;
+    CCharacter_Biplane_Bullet::GRANDPRIX_PROJECTILE_DESC ProjectileDesc;
     ProjectileDesc.pOwner = dynamic_cast<CVehicle_Flying*>(m_pVehicle);
 
-    CGameObject* pBullet = GI->Clone_GameObject(L"Prototype_GameObject_Swordsman_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
+    CGameObject* pBullet = GI->Clone_GameObject(L"Prototype_GameObject_Enemy_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
     if (nullptr == pBullet)
         return;
 
@@ -96,7 +111,14 @@ void CState_Enemy_VehicleFlying_Attack::Shoot()
     vStartPos += XMVector3Normalize(m_pTransformCom->Get_Look()) * 0.5f;
     pTransform->Set_State(CTransform::STATE_POSITION, vStartPos);
 
-    if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_CHARACTER, pBullet)))
+
+    CCharacter* pCharacter = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+
+    Vec4 vMyPos = m_pTransformCom->Get_Position();
+    Vec4 vPlayerPos = pCharacter->Get_CharacterTransformCom()->Get_Position();
+    pTransform->Rotation_Look(XMVector3Normalize(vPlayerPos - vMyPos));
+
+    if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER, pBullet)))
         MSG_BOX("Generate Bullet Failed.");
 
     m_bShoot = false;

@@ -12,8 +12,8 @@
 #include "Player.h"
 #include "Character.h"
 
-CVehicleFlying_Projectile::CVehicleFlying_Projectile(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjTag)
-	:CGameObject(pDevice, pContext, strObjTag, OBJ_TYPE::OBJ_CHARACTER_PROJECTILE)
+CVehicleFlying_Projectile::CVehicleFlying_Projectile(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjTag, OBJ_TYPE eObjectType)
+	:CGameObject(pDevice, pContext, strObjTag, eObjectType)
 {
 }
 
@@ -85,7 +85,7 @@ void CVehicleFlying_Projectile::LateTick(_float fTimeDelta)
 		m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
 	}
 
-	GI->Add_CollisionGroup(COLLISION_GROUP::CHARACTER, this);
+	GI->Add_CollisionGroup(COLLISION_GROUP::PLANE_PROJECTILE, this);
 #ifdef _DEBUG
 	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
 	{

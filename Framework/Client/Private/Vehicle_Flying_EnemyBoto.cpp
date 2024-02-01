@@ -309,11 +309,11 @@ HRESULT CVehicle_Flying_EnemyBoto::Ready_States()
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Boto.ao|Boto_Stand");
-	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ATTACK, CState_Enemy_VehicleFlying_Run::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ATTACK, CState_Enemy_VehicleFlying_Attack::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Boto.ao|Boto_Idle01");
-	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_DEAD, CState_Enemy_VehicleFlying_Run::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_DEAD, CState_Enemy_VehicleFlying_Dead::Create(m_pStateCom, strAnimationNames));
 
 	m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_RUN);
 

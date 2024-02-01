@@ -7,7 +7,7 @@
 #include "UIMinigame_Manager.h"
 #include "Camera_Follow.h"
 
-#include "Swordsman_Biplane_Bullet.h"
+#include "Character_Biplane_Bullet.h"
 
 CState_VehicleFlying_Run::CState_VehicleFlying_Run(CStateMachine* pMachine)
     : CState_Vehicle(pMachine)
@@ -31,15 +31,36 @@ void CState_VehicleFlying_Run::Enter_State(void* pArg)
 {
 	m_iCurrAnimIndex = m_AnimIndices[0];
 	m_pModelCom->Set_Animation(m_iCurrAnimIndex);
+
+	
 }
 
 void CState_VehicleFlying_Run::Tick_State(_float fTimeDelta)
 {
 	_bool bMove = false;
 
+	if (KEY_TAP(KEY::NUM_1))
+	{
+		CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_TEMP1);
+		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_TEMP1);
+		return;
+	}
 	if (KEY_TAP(KEY::NUM_2))
 	{
-		m_pStateMachineCom->Change_State(CVehicle::VEHICLE_RUSH);
+		m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_RUSH);
+		CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_TEMP2);
+		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_TEMP2);
+		return;
+	}
+	if (KEY_TAP(KEY::NUM_3))
+	{
+		CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_TEMP3);
+		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_TEMP3);
+		return;
+	}
+	if (KEY_TAP(KEY::R))
+	{
+		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_BURST);
 		return;
 	}
 
@@ -145,29 +166,7 @@ void CState_VehicleFlying_Run::Tick_State(_float fTimeDelta)
 //	}
 
 	// Skills
-	if (KEY_TAP(KEY::NUM_1))
-	{
-		CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_TEMP1);
-		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_TEMP1);
-		return;
-	}
-	if (KEY_TAP(KEY::NUM_2))
-	{
-		CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_TEMP2);
-		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_TEMP2);
-		return;
-	}
-	if (KEY_TAP(KEY::NUM_3))
-	{
-		CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_TEMP3);
-		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_TEMP3);
-		return;
-	}
-	if (KEY_TAP(KEY::R))
-	{
-		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_BURST);
-		return;
-	}
+	
 
 	if (!bMove)
 	{
@@ -186,11 +185,11 @@ void CState_VehicleFlying_Run::Exit_State()
 
 void CState_VehicleFlying_Run::Shoot()
 {
-	CSwordsman_Biplane_Bullet::GRANDPRIX_PROJECTILE_DESC ProjectileDesc;
+	CCharacter_Biplane_Bullet::GRANDPRIX_PROJECTILE_DESC ProjectileDesc;
 	ProjectileDesc.pOwner = dynamic_cast<CVehicle_Flying*>(m_pVehicle);
 
 	// Left Side Bullet
-	CGameObject* pLeftBullet = GI->Clone_GameObject(L"Prototype_GameObject_Swordsman_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
+	CGameObject* pLeftBullet = GI->Clone_GameObject(L"Prototype_GameObject_Character_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
 	if (nullptr == pLeftBullet)
 		return;
 
@@ -211,7 +210,7 @@ void CState_VehicleFlying_Run::Shoot()
 
 
 	// Right Side Bullet
-	CGameObject* pRightBullet = GI->Clone_GameObject(L"Prototype_GameObject_Swordsman_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
+	CGameObject* pRightBullet = GI->Clone_GameObject(L"Prototype_GameObject_Character_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
 	if (nullptr == pRightBullet)
 		return;
 

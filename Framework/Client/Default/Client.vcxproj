@@ -280,6 +280,7 @@
     <ClInclude Include="..\Public\Crystal_Tower.h" />
     <ClInclude Include="..\Public\CurlingGame_Arrow.h" />
     <ClInclude Include="..\Public\CurlingGame_Group.h" />
+    <ClInclude Include="..\Public\Enemy_Biplane_Bullet.h" />
     <ClInclude Include="..\Public\Grandprix_Enemy.h" />
     <ClInclude Include="..\Public\Grandprix_Enemy_Ghost2.h" />
     <ClInclude Include="..\Public\Grandprix_Enemy_HumanFL04.h" />
@@ -858,7 +859,7 @@
     <ClInclude Include="..\Public\Sun.h" />
     <ClInclude Include="..\Public\SwiftSolutionMaster.h" />
     <ClInclude Include="..\Public\SwordMan_AuraBlade.h" />
-    <ClInclude Include="..\Public\Swordsman_Biplane_Bullet.h" />
+    <ClInclude Include="..\Public\Character_Biplane_Bullet.h" />
     <ClInclude Include="..\Public\ThiefCat.h" />
     <ClInclude Include="..\Public\Tool_Item.h" />
     <ClInclude Include="..\Public\TowerDefence_Manager.h" />
@@ -1268,6 +1269,7 @@
     <ClCompile Include="..\Private\Crystal_Ball.cpp" />
     <ClCompile Include="..\Private\Crystal_Tower.cpp" />
     <ClCompile Include="..\Private\CurlingGame_Arrow.cpp" />
+    <ClCompile Include="..\Private\Enemy_Biplane_Bullet.cpp" />
     <ClCompile Include="..\Private\Grandprix_Enemy.cpp" />
     <ClCompile Include="..\Private\Grandprix_Enemy_Ghost2.cpp" />
     <ClCompile Include="..\Private\Grandprix_Enemy_HumanFL04.cpp" />
@@ -1846,7 +1848,7 @@
     <ClCompile Include="..\Private\Sun.cpp" />
     <ClCompile Include="..\Private\SwiftSolutionMaster.cpp" />
     <ClCompile Include="..\Private\SwordMan_AuraBlade.cpp" />
-    <ClCompile Include="..\Private\Swordsman_Biplane_Bullet.cpp" />
+    <ClCompile Include="..\Private\Character_Biplane_Bullet.cpp" />
     <ClCompile Include="..\Private\ThiefCat.cpp" />
     <ClCompile Include="..\Private\Tool_Item.cpp" />
     <ClCompile Include="..\Private\TowerDefence_Manager.cpp" />
