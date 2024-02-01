@@ -168,7 +168,6 @@ void CCurlingGame_Stone::Collision_Enter(const COLLISION_INFO& tInfo)
 		if (nullptr == pProp)
 			return;
 
-		/* 통과 충돌 */
 		if (CG_TYPE::CG_STONE == pProp->Get_CGType())
 		{
 			Calculate_ElasticCollision(pProp);
@@ -180,6 +179,11 @@ void CCurlingGame_Stone::Collision_Enter(const COLLISION_INFO& tInfo)
 			CCurlingGame_Wall* pWall = dynamic_cast<CCurlingGame_Wall*>(pProp);
 			if(nullptr != pWall)
 				Calculate_ActionAndReaction(pWall);
+		}
+		else if (CG_TYPE::CG_DEADZONE == pProp->Get_CGType())
+		{
+			m_bOutted = true;
+			m_pRigidBodyCom->Set_Use_Gravity(true);
 		}
 	}
 }
@@ -360,10 +364,10 @@ HRESULT CCurlingGame_Stone::Calculate_ActionAndReaction(class CCurlingGame_Wall*
 		const Vec3 vNormal = pWall->Get_Normal().ZeroY().Normalized();
 		const Vec3 vReflect = Vec3::Reflect(m_pTransformCom->Get_Look(), vNormal).ZeroY().Normalized();
 		
-		const _float fFrictionCoefficient = 0.5f;
+		const _float fFrictionCoefficient = 0.25f;
 		
 		_float fPower = Vec3(m_pRigidBodyCom->Get_Velocity()).Length() * (1.f - fFrictionCoefficient);
-		if (fPower < 0.f)
+		if (fPower < 0.f)   
 			fPower = 0.f;
 		
 		vNewVelocity = vReflect * fPower;

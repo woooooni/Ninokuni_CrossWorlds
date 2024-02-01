@@ -19,7 +19,7 @@ class CState_CurlingGame_Adjust_Intensity final : public CState_CurlingGame_Base
 		const _float		fMinValue = 0.f;
 		const _float		fMaxValue = 1.f;
 
-		const _float		fMaxPower = 60.f;
+		const _float		fMaxPower = 70.f;
 
 		void Start()
 		{

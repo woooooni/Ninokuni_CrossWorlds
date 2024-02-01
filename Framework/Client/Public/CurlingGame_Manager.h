@@ -54,8 +54,6 @@ private:
 
 	}STANDARD_DESC;
 
-	
-
 	typedef struct tagStaiumDesc
 	{
 		vector<CGameObject*>	pStadiumObjects;
@@ -77,6 +75,14 @@ private:
 	
 	}PARTICIPANT_INFO_DESC;
 
+	typedef struct tagNPCAIDesc
+	{
+		Vec4 vMovePosition = {};
+
+		Vec4 vLaunchDir = {};
+
+	}NPC_AI_DESC;
+
 private:
 	CCurlingGame_Manager();
 	virtual ~CCurlingGame_Manager() = default;
@@ -89,6 +95,8 @@ public:
 
 public:
 	HRESULT Start_Game();
+	HRESULT Change_Turn();
+	HRESULT Set_AIData();
 
 public:
 	vector<CGameObject*>* Get_Stadium() { return &m_pStadiumObjects; }
@@ -96,8 +104,6 @@ public:
 private:
 	HRESULT Ready_Components();
 	HRESULT Ready_Objects();
-
-	HRESULT Change_Turn();
 
 private:
 	void Test(const _float& fTimeDelta);
@@ -113,22 +119,27 @@ private:
 	_bool					m_bPlaying	= false;
 	CManager_StateMachine*	m_pManagerStateMachineCom = nullptr;
 	
+	/* Data */
 	STANDARD_DESC			m_tStandardDesc = {};	
-	vector<CGameObject*>	m_pStadiumObjects;
-
-	vector<CCurlingGame_Stone*> m_pStonesLaunched;
-
-	PARTICIPANT_INFO_DESC	m_tParticipants[PARTICIPANT_TYPE::PARTICIPANT_TYPEEND];
 	
-	CCurlingGame_Stone*		m_pCurStone		= nullptr;
-	Vec4					m_vCurStoneLook = {};
-
+	/* Participant*/
+	PARTICIPANT_INFO_DESC	m_tParticipants[PARTICIPANT_TYPE::PARTICIPANT_TYPEEND];
 	CGameObject*			m_pCurParticipant	= nullptr;
 	CGameObject*			m_pPrevParticipant	= nullptr;
+	
+	/* Stone */
+	CCurlingGame_Stone*		m_pCurStone		= nullptr;
+	Vec4					m_vCurStoneLook = {};
+	vector<CCurlingGame_Stone*> m_pStonesLaunched;
 
 	/* Turn */				
 	_bool					m_bPlayerTurn = false;
 
+	/* NPC */
+	NPC_AI_DESC				m_tAIDesc = {};
+
+	/* Etc */
+	vector<CGameObject*>	m_pStadiumObjects;
 
 #ifdef _DEBUG
 	const _bool	m_bDebugRender						= false;

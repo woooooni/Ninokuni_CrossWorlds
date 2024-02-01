@@ -166,6 +166,29 @@ HRESULT CCurlingGame_Manager::Ready_Objects()
 				CCurlingGame_Arrow::Create(m_pDevice, m_pContext, TEXT("CurlingGame_Arrow")), LAYER_TYPE::LAYER_PROP)))
 				return E_FAIL;
 		}
+
+		/* DeadZone */
+		{
+			CGameObject* pClone = nullptr;
+
+			if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_CurlingGame_DeadZone",
+				CCurlingGame_DeadZone::Create(m_pDevice, m_pContext, TEXT("CurlingGame_DeadZone")), LAYER_TYPE::LAYER_PROP)))
+				return E_FAIL;
+
+			if (FAILED(GI->Add_GameObject(LEVELID::LEVEL_ICELAND, LAYER_TYPE::LAYER_PROP, TEXT("Prorotype_GameObject_CurlingGame_DeadZone"), nullptr, &pClone)))
+				return E_FAIL;
+
+			/* Transfrom */
+			{
+				CTransform* pTransform = pClone->Get_Component_Transform();
+				pTransform->Set_Position(m_tStandardDesc.vGoalPosition);
+
+				const Vec4 vPos		= m_tStandardDesc.vGoalPosition + m_tStandardDesc.vStartLook * 13.f;
+				const Vec4 vLookAt	= m_tStandardDesc.vGoalPosition + m_tStandardDesc.vStartLook * 5.f;
+				pTransform->LookAt_ForLandObject(vLookAt);
+				pTransform->Set_Position(vPos);
+			}
+		}
 	}
 
 	/* Wall */
@@ -238,7 +261,7 @@ HRESULT CCurlingGame_Manager::Change_Turn()
 	m_pCurStone = nullptr;
 
 	/* Inverse Turn*/
-	m_bPlayerTurn = !m_bPlayerTurn;
+	m_bPlayerTurn = !m_bPlayerTurn; // true;
 	{
 		if (m_bPlayerTurn)
 		{
@@ -358,6 +381,16 @@ HRESULT CCurlingGame_Manager::Change_Turn()
 	return S_OK;
 }
 
+HRESULT CCurlingGame_Manager::Set_AIData()
+{
+	m_tAIDesc;
+	
+
+
+
+	return S_OK;
+}
+
 void CCurlingGame_Manager::Test(const _float& fTimeDelta)
 {
 	
@@ -405,6 +438,42 @@ void CCurlingGame_Manager::Debug()
 			desc.vColor = (Vec4)DirectX::Colors::DarkGreen;
 		}
 		pRenderer->Add_Text(desc);
+	}
+
+	/* Transform */
+	{
+		if (nullptr != m_pCurParticipant)
+		{
+			/* Pos */
+			{
+				vPos += vDelta;
+
+				Vec3 vPlayerPos = m_pCurParticipant->Get_Component_Transform()->Get_Position();
+			
+				desc.strText = L"Pos - x : " + to_wstring(vPlayerPos.x) 
+								+ L", y : " + to_wstring(vPlayerPos.y) 
+								+ L", z : " + to_wstring(vPlayerPos.z);
+			
+				desc.vPosition = vPos;
+				desc.vColor = (Vec4)DirectX::Colors::Black;
+			}
+			pRenderer->Add_Text(desc);
+
+			/* Look */
+			{
+				vPos += vDelta;
+
+				Vec3 vLook = m_vCurStoneLook;
+			
+				desc.strText = L"Look - x : " + to_wstring(vLook.x)
+								+ L", y : " + to_wstring(vLook.y)
+								+ L", z : " + to_wstring(vLook.z);
+
+				desc.vPosition = vPos;
+				desc.vColor = (Vec4)DirectX::Colors::Black;
+			}
+			pRenderer->Add_Text(desc);
+		}
 	}
 }
 #ifdef _DEBUG
