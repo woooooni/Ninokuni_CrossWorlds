@@ -451,6 +451,269 @@ PS_OUT_SHADOW_DEPTH PS_SHADOW_DEPTH(PS_IN In)
 	return Out;
 }
 
+#define UNITY_PI            3.14159265359f
+#define UNITY_TWO_PI        6.28318530718f
+#define UNITY_FOUR_PI       12.56637061436f
+
+Texture2D BladeTexture;
+Texture2D WindTexture;
+
+struct VS_GRASS_OUT
+{
+    float4 vPosition : SV_POSITION;
+    float3 vNormal : NORMAL;
+    float2 vTexUV : TEXCOORD0;
+    float3 vTangent : TANGENT;
+
+    float4 vRight : TEXCOORD3;
+    float4 vUp : TEXCOORD4;
+    float4 vLook : TEXCOORD5;
+    float4 vTranslation : TEXCOORD6;
+    
+
+    uint iInstanceID : SV_INSTANCEID;
+};
+
+float rand(float3 co)
+{
+    return frac(sin(dot(co.xyz, float3(12.9898f, 78.233f, 53.339f))) * 43758.5453f);
+}
+
+float3x3 AngleAxis3x3(float angle, float3 axis)
+{
+    float c, s;
+    sincos(angle, s, c);
+    
+    float t = 1 - c;
+    float x = axis.x;
+    float y = axis.y;
+    float z = axis.z;
+    
+    return float3x3
+    (
+          t * x * x + c, t * x * y - s * z, t * x * z + s * y,
+          t * x * y + s * z, t * y * y + c, t * y * z - s * x,
+          t * x * z - s * y, t * y * z + s * x, t * z * z + c
+    );
+}
+
+
+VS_GRASS_OUT tessVert(VS_IN v)
+{
+    VS_GRASS_OUT o;
+    
+    o.vPosition = float4(v.vPosition, 1.0f);
+    o.vNormal = v.vNormal;
+    o.vTexUV = v.vTexUV;
+    o.vTangent = v.vTangent;
+    
+    o.vRight = v.vRight;
+    o.vUp = v.vUp;
+    o.vLook = v.vLook;
+    o.vTranslation = v.vTranslation;
+    
+    matrix world = matrix(v.vRight, v.vUp, v.vLook, v.vTranslation);
+    
+    o.iInstanceID = v.iInstanceID;
+    
+    return o;
+}
+
+cbuffer CB_GrassBuffer
+{
+    float fBladeWidthMin = 0.04f;
+    float fBladeWidthMax = 0.08f;
+    float fBladeHeightMin = 0.3f;
+    float fBladeHeightMax = 0.5f;
+    
+    float fBladeBendDistance = 0.38f;
+    float fBladeBendCurve = 2.0f;
+    float fBendDelta = 0.2f;
+    float fTessellationGrassDistance = 0.1f;
+    
+    float fGrassThreshold = 0.5f;
+    float fGrassFalloff = 0.05f;
+    float fWindFrequency = 0.01f;
+    float fFad = 0.0f;
+    
+    
+    float4 vWindVelocity = float4(1.0f, 0.0f, 0.0f, 0.0f);
+    float4 vWindMap_ST = float4(1.0f, 1.0f, 3.0f, 3.0f); // xy = scale zw = offset?
+};
+
+struct TessellationFactors
+{
+    float edge[3] : SV_TessFactor;
+    float inside : SV_InsideTessFactor;
+};
+
+cbuffer CB_Time
+{
+    float fTime = 0.0f;
+};
+
+float tessellationEdgeFactor(VS_GRASS_OUT vert0, VS_GRASS_OUT vert1)
+{
+    float3 v0 = vert0.vPosition.xyz;
+    float3 v1 = vert1.vPosition.xyz;
+    float edgeLength = distance(v0, v1);
+    return edgeLength / fTessellationGrassDistance;
+}
+
+TessellationFactors patchConstantFunc(InputPatch<VS_GRASS_OUT, 3> patch)
+{
+    TessellationFactors f;
+    
+    f.edge[0] = tessellationEdgeFactor(patch[1], patch[2]);
+    f.edge[1] = tessellationEdgeFactor(patch[2], patch[0]);
+    f.edge[2] = tessellationEdgeFactor(patch[0], patch[1]);
+
+    f.inside = (f.edge[0] + f.edge[1] + f.edge[2]) / 3.0f;
+    
+    return f;
+}
+
+[domain("tri")]
+[outputcontrolpoints(3)]
+[outputtopology("triangle_cw")]
+[partitioning("integer")]
+[patchconstantfunc("patchConstantFunc")]
+VS_GRASS_OUT hull(InputPatch<VS_GRASS_OUT, 3> patch, uint id : SV_OutputControlPointID)
+{
+    return patch[id];
+}
+
+[domain("tri")]
+VS_GRASS_OUT domain(TessellationFactors factors, OutputPatch<VS_GRASS_OUT, 3> patch, float3 barycentricCoordinates : SV_DomainLocation)
+{
+    VS_IN i;
+
+#define INTERPOLATE(fieldname) i.fieldname = \
+					patch[0].fieldname * barycentricCoordinates.x + \
+					patch[1].fieldname * barycentricCoordinates.y + \
+					patch[2].fieldname * barycentricCoordinates.z;
+    
+    INTERPOLATE(vPosition)
+    INTERPOLATE(vNormal)
+    INTERPOLATE(vTexUV)
+    INTERPOLATE(vTangent)
+   
+    
+    i.iInstanceID = patch[0].iInstanceID;
+    i.vRight = patch[0].vRight;
+    i.vUp = patch[0].vUp;
+    i.vLook = patch[0].vLook;
+    i.vTranslation = patch[0].vTranslation;
+    
+    return tessVert(i);
+}
+
+struct GeomData
+{
+    float4 vPosition : SV_POSITION;
+    float3 vNormal : NORMAL;
+    float2 vTexcoord : TEXCOORD0;
+    float2 vProjPos : TEXCOORD1;
+    float3 vTangent : TANGENT;
+    float3 vBinormal : BINORMAL;
+    float3 vWorldPos : TEXCOORD2;
+    
+    uint iInstanceID : SV_INSTANCEID;
+    
+    float3 vViewNormal : NORMAL1;
+    float3 vPositionView : POSITION;
+};
+
+GeomData ObjectToClipPos(float3 pos, float2 uv, float4 vRight, float4 vUp, float4 vLook, float4 vTranslation, float3 normal, float3 vTangent, int iInstanceID)
+{
+    GeomData o = (GeomData) 0;
+    
+    float4x4 matWV, matWVP;
+    float4x4 InstanceWorld = float4x4(vRight, vUp, vLook, vTranslation);
+    
+    matWV = mul(InstanceWorld, g_ViewMatrix);
+    matWVP = mul(matWV, g_ProjMatrix);
+    
+    o.vPosition = mul(float4(pos, 1.0f), matWVP);
+    o.vWorldPos = mul(float4(pos, 1.0f), InstanceWorld);
+    
+    o.vNormal = normalize(mul(float4(normal, 0.0f), InstanceWorld)).xyz;
+    o.vTangent = normalize(mul(float4(vTangent, 0.0f), InstanceWorld)).xyz;
+    o.vBinormal = normalize(cross(o.vNormal, o.vTangent));
+    o.vTexcoord = uv;
+    o.vProjPos = o.vPosition;
+    o.iInstanceID = iInstanceID;
+    
+    o.vViewNormal = mul(o.vNormal, (float3x3)g_ViewMatrix);
+    o.vPositionView = mul(float4(pos, 1.0f), matWV);
+
+    return o;
+}
+
+#define BLADE_SEGMENTS 4
+
+[maxvertexcount(BLADE_SEGMENTS * 2 + 1)]
+void geom(point VS_GRASS_OUT input[1], inout TriangleStream<GeomData> triStream)
+{
+    GeomData o = (GeomData) 0;
+    
+    float3 pos = input[0].vPosition;
+    float3 vNormal = input[0].vNormal;
+    float3 vTangent = input[0].vTangent;
+    float3 vBiNormal = cross(vNormal, vTangent);
+    
+    float4 vRight = input[0].vRight;
+    float4 vUp = input[0].vUp;
+    float4 vLook = input[0].vLook;
+    float4 vTranslation = input[0].vTranslation;
+    
+    uint iInstanceID = input[0].iInstanceID;
+    
+    float3x3 tangentToLocal = float3x3(
+        1.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 1.0f
+    );
+    
+    float3x3 randRotMatrix = AngleAxis3x3(rand(pos) * UNITY_TWO_PI, float3(0.0f, 1.0f, 0.0f));
+    float3x3 randBendMatrix = AngleAxis3x3(rand(pos.zzx) * fBendDelta * UNITY_PI * 0.5f, float3(-1.0f, 0.0f, 0.0f));
+
+    float2 windUV = pos.xz * vWindMap_ST.xy + vWindMap_ST.zw + normalize(vWindVelocity.xzy) * fWindFrequency * fTime;
+    float2 windSample = (WindTexture.SampleLevel(PointSampler, input[0].vTexUV.y * fTime, 0.0f) * 2.0f - 1.0f) * length(vWindVelocity);
+    float3 windAxis = normalize(float3(windSample.x, windSample.y, 0.0f));
+    float3x3 windMatrix = AngleAxis3x3(UNITY_PI * windSample, windAxis);
+     
+    float3x3 baseTransformationMatrix = mul(tangentToLocal, randRotMatrix);
+    float3x3 tipTransformationMatrix = mul(mul(mul(tangentToLocal, windMatrix), randBendMatrix), randRotMatrix);
+    
+    float width = lerp(fBladeWidthMin, fBladeWidthMax, rand(pos.xzy));
+    float height = lerp(fBladeHeightMin, fBladeHeightMax, rand(pos.zyx));
+    float foward = rand(pos.yyz) * fBladeBendDistance;
+    
+    for (int i = 0; i < BLADE_SEGMENTS; ++i)
+    {
+        float t = i / (float) BLADE_SEGMENTS;
+        float3 offset = float3(width * (1 - t), pow(t, fBladeBendCurve) * foward, height * t);
+        
+        float3x3 transformationMatrix = (i == 0) ? baseTransformationMatrix : tipTransformationMatrix;
+        
+        triStream.Append(ObjectToClipPos(pos + mul(transformationMatrix, float3(offset.x, offset.y, offset.z)), float2(0, t), vRight, vUp, vLook, vTranslation, vNormal, vTangent, iInstanceID));
+        triStream.Append(ObjectToClipPos(pos + mul(transformationMatrix, float3(-offset.x, offset.y, offset.z)), float2(1, t), vRight, vUp, vLook, vTranslation, vNormal, vTangent, iInstanceID));
+    }
+    triStream.Append(ObjectToClipPos(pos + mul(tipTransformationMatrix, float3(0, foward, height)), float2(0.5f, 1.0f), vRight, vUp, vLook, vTranslation, vNormal, vTangent, iInstanceID));
+    triStream.RestartStrip();
+}
+
+float4 PS_Grass(GeomData i) : SV_Target
+{
+    float4 bottomColor = float4(0.29f, 0.431f, 0.294f, 1.0f);
+    float4 TopColor = float4(1.0f, 0.639f, 0.447f, 1.0f);
+   
+    float4 vColor = lerp(bottomColor, TopColor, i.vTexcoord.y);
+    
+    return vColor;
+}
+
 technique11 DefaultTechnique
 {
 	pass DefaultPass
@@ -563,19 +826,19 @@ technique11 DefaultTechnique
         PixelShader = compile ps_5_0 PS_MAIN();
     }
 
-	pass Temp8
+	pass TessGrass
 	{
 		// 8
-		SetRasterizerState(RS_Default);
-		SetDepthStencilState(DSS_Default, 0);
-		SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetRasterizerState(RS_NoneCull);
+        SetDepthStencilState(DSS_Default, 0);
+        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
-		VertexShader = compile vs_5_0 VS_MAIN();
-		GeometryShader = NULL;
-        HullShader = NULL;
-        DomainShader = NULL;
-		PixelShader = compile ps_5_0 PS_MAIN();
-	}
+        VertexShader = compile vs_5_0 tessVert();
+        HullShader = compile hs_5_0 hull();
+        DomainShader = compile ds_5_0 domain();
+        GeometryShader = compile gs_5_0 geom();
+        PixelShader = compile ps_5_0 PS_Grass();
+    }
 
 	pass Temp9
 	{

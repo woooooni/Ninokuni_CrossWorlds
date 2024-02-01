@@ -63,7 +63,7 @@ HRESULT CMainApp::Initialize()
 	{
 		g_eStartLevel = LEVELID::LEVEL_TOOL; /* 시작할 레벨 타입 */
 
-		g_eLoadCharacter = LOAD_CHARACTER_TYPE::ALL_CH; /* 모델 로드할 캐릭터 타입 */
+		g_eLoadCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH; /* 모델 로드할 캐릭터 타입 */
 
 		g_ePlayCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH; /* 게임 플레이 캐릭터 타입 */
 	}
@@ -347,7 +347,7 @@ HRESULT CMainApp::Ready_Prototype_Component()
 
 	/* For.Prototype_Component_Shader_UI*/
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Grass"),
-		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Grass.hlsl"), VTXCOL_DECLARATION::Elements, VTXCOL_DECLARATION::iNumElements))))
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Grass.hlsl"), VTXMODEL_DECLARATION::Elements, VTXMODEL_DECLARATION::iNumElements))))
 		return E_FAIL;
 
 
@@ -502,6 +502,14 @@ HRESULT CMainApp::Ready_Prototype_Component()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Water_CubeMap"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/AnimModel/Map/Water/CloudyHillsCubemap2.dds")))))
+		return E_FAIL;
+
+	// Grass Shade && Wind
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Grass_WindMap"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/GrassPlane/Grass_WindMap.png")))))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Grass_ShadeMap"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Export/NonAnimModel/Map/GrassPlane/Blade_Shade.png")))))
 		return E_FAIL;
 
 

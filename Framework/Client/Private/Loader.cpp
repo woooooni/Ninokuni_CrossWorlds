@@ -920,7 +920,8 @@ HRESULT CLoader::Loading_For_Level_Tool()
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Mirror", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/CustomRoom/", L"CustomRoomMirror")))
 		return E_FAIL;
 
-
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_GrassPlane", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/GrassPlane/", L"Common_GrassPlane")))
+		return E_FAIL;
 
 	switch (g_eLoadCharacter)
 	{
