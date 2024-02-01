@@ -46,11 +46,6 @@ void CState_CurlingGame_Move_Character::Enter_State(void* pArg)
 	{
 		if (FAILED(m_pManager->Set_AiPath()))
 			return;
-
-		m_pManager->m_pCurParticipant->Get_Component_Transform()->Set_Position(m_pManager->m_tCurAiPath.vStartPoint);
-
-		const Vec4 vLookAt = m_pManager->m_tCurAiPath.vStartPoint + (m_pManager->m_tCurAiPath.vLaunchDir * 5.f).ZeroY().ZeroW().Normalized();
-		m_pManager->m_pCurParticipant->Get_Component_Transform()->LookAt_ForLandObject(vLookAt);
 	}
 }
 
@@ -89,54 +84,20 @@ void CState_CurlingGame_Move_Character::Tick_State(const _float& fTimeDelta)
 	}
 	else
 	{
-		Set_NpcStoneTransform();
-
-		Vec4 vPos = m_pManager->m_pCurStone->Get_Transform()->Get_Position();
-		vPos.y = -3.4f;
-		m_pManager->m_pCurStone->Get_Transform()->Set_Position(vPos.OneW());
-
-		if (KEY_TAP(KEY::Q))
-		{
-			CCamera_CurlingGame* pCurlingCam = dynamic_cast<CCamera_CurlingGame*>(CCamera_Manager::GetInstance()->Get_CurCamera());
-			if (nullptr == pCurlingCam)
-				return;
-
-			if (!m_bChangeCameraToStone)
-			{
-				pCurlingCam->Change_Target(m_pManager->m_pCurStone, 0.5f);
-
-				m_bChangeCameraToStone = true;
-			}
-			else
-			{
-				if (!pCurlingCam->Is_ChagingTarget())
-				{
-					if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::DIRECTION)))
-						return;
-				}
-			}
-		}
+		Tick_NpcState(fTimeDelta);
 	}
 }
 
 void CState_CurlingGame_Move_Character::LateTick_State(const _float& fTimeDelta)
 {
-	if (nullptr == m_pManager->m_pCurStone || nullptr == m_pManager->m_pCurParticipant)
-		return;
 
-	if (m_pManager->m_bPlayerTurn)
-	{
-
-	}
-	else
-	{
-
-	}
 }
 
 void CState_CurlingGame_Move_Character::Exit_State()
 {
-	m_bChangeCameraToStone = false;
+	m_bChangeCameraToStone	= false;
+
+	m_tNpcStateDesc.Clear();
 }
 
 HRESULT CState_CurlingGame_Move_Character::Render()
@@ -146,9 +107,9 @@ HRESULT CState_CurlingGame_Move_Character::Render()
 
 void CState_CurlingGame_Move_Character::Set_NpcStoneTransform()
 {
-	CModel*		pModel			= m_pManager->m_pCurParticipant->Get_Component_Model();
-	CTransform* pNpcTransform	= m_pManager->m_pCurParticipant->Get_Component_Transform();
-	CTransform* pStoneTransform = m_pManager->m_pCurStone->Get_Component_Transform();
+	CModel*		pModel			= CCurlingGame_Manager::GetInstance()->m_pCurParticipant->Get_Component_Model();
+	CTransform* pNpcTransform	= CCurlingGame_Manager::GetInstance()->m_pCurParticipant->Get_Component_Transform();
+	CTransform* pStoneTransform = CCurlingGame_Manager::GetInstance()->m_pCurStone->Get_Component_Transform();
 
 	if (nullptr == pModel || nullptr == pNpcTransform || nullptr == pStoneTransform)
 		return;
@@ -177,6 +138,125 @@ void CState_CurlingGame_Move_Character::Set_NpcStoneTransform()
 
 			pStoneTransform->Set_State(eState, vDir * vScale[i]);
 		}
+	}
+}
+
+void CState_CurlingGame_Move_Character::Tick_NpcState(const _float& fTimeDelta)
+{	
+	CModel* pModelCom = m_pManager->m_pCurParticipant->Get_Component_Model();
+	CTransform* pTransform = m_pManager->m_pCurParticipant->Get_Component_Transform();
+
+	if (nullptr == pModelCom || nullptr == pTransform)
+		return;
+
+	switch (m_tNpcStateDesc.eState)
+	{
+	case CState_CurlingGame_Move_Character::NPC_STATE::IDLE:
+	{
+		Set_NpcStoneTransform();
+
+		m_tNpcStateDesc.bPutDown;
+
+		/* Transition */
+		m_tNpcStateDesc.fAcc += fTimeDelta;
+		if (m_tNpcStateDesc.fIdleWaitDuration <= m_tNpcStateDesc.fAcc)
+		{
+			/* Transform */
+			m_tNpcStateDesc.vWalkDir = 
+				Vec4(m_pManager->m_tCurAiPath.vStartPoint - 
+					Vec4(m_pManager->m_pCurParticipant->Get_Component_Transform()->Get_Position())).ZeroY().Normalized();
+
+			/* Model */
+			pModelCom->Set_CanChangeAnimation(true);
+			{
+				CAnimation* pAnim = pModelCom->Get_Animation("SKM_Destroyer_Merge.ao|Destroyer_PickWalkL");
+				pAnim->Set_Loop(true);
+				pModelCom->Set_Animation(pAnim->Get_AnimationName());
+			}
+			pModelCom->Set_CanChangeAnimation(false);
+
+			m_tNpcStateDesc.eState = CState_CurlingGame_Move_Character::NPC_STATE::WALK;
+		}
+	}
+		break;
+	case CState_CurlingGame_Move_Character::NPC_STATE::WALK:
+	{
+		/* Transform */
+		pTransform->Translate(m_tNpcStateDesc.vWalkDir.xyz() * m_tNpcStateDesc.fWalkSpeed * fTimeDelta);
+
+		_float fDist = (m_pManager->m_tCurAiPath.vStartPoint - Vec4(pTransform->Get_Position())).Length();
+
+		Set_NpcStoneTransform();
+
+		/* Transition */
+		if (fDist < m_tNpcStateDesc.fWalkDistThreshold)
+		{
+			/* Transform */
+			{
+				Vec4 vLookAt = Vec4(pTransform->Get_Position()) + (m_pManager->m_tCurAiPath.vLaunchDir * 5.f).ZeroY().ZeroW();
+				pTransform->LookAt_ForLandObject(vLookAt.OneW());
+			}
+
+			/* Model */
+			pModelCom->Set_CanChangeAnimation(true);
+			{
+				CAnimation* pAnim = pModelCom->Get_Animation("SKM_Destroyer_Merge.ao|Destroyer_PickFinishL");
+				pAnim->Set_Loop(false);
+				pModelCom->Set_Animation(pAnim->Get_AnimationName());
+			}
+			pModelCom->Set_CanChangeAnimation(false);
+
+			m_tNpcStateDesc.eState = CState_CurlingGame_Move_Character::NPC_STATE::PUTDOWN;
+		}
+	}
+		break;
+	case CState_CurlingGame_Move_Character::NPC_STATE::PUTDOWN :
+	{
+		/* Transition */
+		if (!pModelCom->Is_Tween() && 0.5f <= pModelCom->Get_Progress())
+		{
+			m_pManager->m_pCurStone->PutDown();
+			m_tNpcStateDesc.eState = CState_CurlingGame_Move_Character::NPC_STATE::STONE_LERPING;
+		}
+		
+		Set_NpcStoneTransform();
+	}
+		break;
+	case CState_CurlingGame_Move_Character::NPC_STATE::STONE_LERPING:
+	{
+		if (pModelCom->Is_Finish() && L"SKM_Destroyer_Merge.ao|Destroyer_PickFinishL" == pModelCom->Get_CurrAnimation()->Get_AnimationName())
+		{
+			pModelCom->Set_CanChangeAnimation(true);
+			pModelCom->Set_Animation(L"SKM_Destroyer_Merge.ao|Destroyer_NeutralStand");
+			pModelCom->Set_CanChangeAnimation(false);
+		}
+
+		/* Transition */
+		if (m_pManager->m_pCurStone->Is_Putted())
+		{
+			CCamera_CurlingGame* pCurlingCam = dynamic_cast<CCamera_CurlingGame*>(CCamera_Manager::GetInstance()->Get_CurCamera());
+			if (nullptr == pCurlingCam)
+				return;
+
+			if (!m_bChangeCameraToStone)
+			{
+				pCurlingCam->Change_Target(m_pManager->m_pCurStone, 0.5f);
+
+				m_bChangeCameraToStone = true;
+			}
+			else
+			{
+				if (!pCurlingCam->Is_ChagingTarget())
+				{
+					if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::DIRECTION)))
+						return;
+				}
+			}
+		}
+	}
+		break;
+	default:
+		break;
 	}
 }
 

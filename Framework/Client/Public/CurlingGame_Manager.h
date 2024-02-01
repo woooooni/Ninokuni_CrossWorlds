@@ -73,7 +73,7 @@ private:
 	typedef struct tagParticipantInfoDesc
 	{
 		_uint			iScore		= 0;
-		_uint			iNumStone	= 115;
+		_uint			iNumStone	= 7;
 		CGameObject*	pOwner		= nullptr;
 	
 	}PARTICIPANT_INFO_DESC;
@@ -104,6 +104,8 @@ public:
 	HRESULT Start_Game();
 	HRESULT Change_Turn();
 	HRESULT Set_AiPath();
+
+	CGameObject* Get_CurParticipant() const { return m_pCurParticipant; }
 	
 
 public:

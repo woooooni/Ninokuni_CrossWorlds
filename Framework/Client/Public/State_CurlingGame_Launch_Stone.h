@@ -29,6 +29,11 @@ private:
 
 private:
 	_bool m_bResetTurn = false;
+	_bool m_bSetNpcStoneTransform = false;
+
+	const _float m_fTargetChangeLerpDuration = 0.75f;
+	const _float m_fNpcStoneLimit = 0.5f;
+	_float m_fAcc = 0.f;
 
 public:
 	static CState_CurlingGame_Launch_Stone* Create(CManager_StateMachine* pStateMachine);

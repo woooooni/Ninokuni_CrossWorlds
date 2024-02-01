@@ -161,27 +161,12 @@ void CImGui_Manager::Tick(_float fTimeDelta)
 
     /* Player Input On Off*/
     {
-        CPlayer*    pPlayer         = nullptr;
-        CCharacter* pCharacter      = nullptr;
+        ImGui::Checkbox("Player Input", &m_bPlayerInput);
 
-        if (nullptr == pPlayer)
+        if (nullptr != CGame_Manager::GetInstance()->Get_Player())
         {
-            pPlayer = CGame_Manager::GetInstance()->Get_Player();
-            if (nullptr != pPlayer)
-                pCharacter = pPlayer->Get_Character();
-        }
-
-        if (ImGui::Checkbox("Player Input", &m_bPlayerInput))
-        {
+            CCharacter* pCharacter = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
             if (nullptr != pCharacter)
-            {
-                pCharacter->Set_All_Input(m_bPlayerInput);
-            }
-        }
-
-        if (nullptr != pCharacter)
-        {
-            if (pCharacter->Is_All_Input() != m_bPlayerInput)
             {
                 pCharacter->Set_All_Input(m_bPlayerInput);
             }

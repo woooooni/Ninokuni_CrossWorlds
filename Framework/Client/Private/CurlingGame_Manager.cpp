@@ -497,7 +497,7 @@ HRESULT CCurlingGame_Manager::Set_AiPath()
 
 
 		Vec3 vStartPos = {}, vTargetPos = {};
-		const Vec3 vWidthDelta = (vRight * 0.5f).ZeroY();
+		const Vec3 vWidthDelta = (vRight * 0.5f).ZeroY(); // 원래 0.5이고, 밑에 레이 레프트 라이트 디렉션에 델타 * 0.5 해줘야 한다.
 
 		/* 이전과 같은 델타 방지 */
 		for (auto& vDelta : m_StartPointDeltas)
@@ -519,14 +519,14 @@ HRESULT CCurlingGame_Manager::Set_AiPath()
 			/* Left */
 			{
 				rayLeft.position = vCenterPos + vDelta - vWidthDelta;
-				rayLeft.direction = Vec3((m_tStandardDesc.vGoalPosition - vWidthDelta) - rayLeft.position).ZeroY().Normalized();
+				rayLeft.direction = Vec3((m_tStandardDesc.vGoalPosition + vDelta * 0.5f - vWidthDelta) - rayLeft.position).ZeroY().Normalized();
 
 			}
 
 			/* Right */
 			{
 				rayRight.position = vCenterPos + vDelta + vWidthDelta;
-				rayRight.direction = Vec3((m_tStandardDesc.vGoalPosition + vWidthDelta) - rayRight.position).ZeroY().Normalized();
+				rayRight.direction = Vec3((m_tStandardDesc.vGoalPosition + vDelta * 0.5f + vWidthDelta) - rayRight.position).ZeroY().Normalized();
 			}
 
 			_bool bCollision = false;
@@ -581,7 +581,7 @@ HRESULT CCurlingGame_Manager::Set_AiPath()
 			/* None Collision */
 			if(!bCollision)
 			{
-				m_tCurAiPath.fPower = 0.6f;
+				m_tCurAiPath.fPower = 0.55f;
 				m_tCurAiPath.vStartPoint = Vec4(rayCenter.position).OneW();
 				m_tCurAiPath.vLaunchDir = Vec4(rayCenter.direction).ZeroW();
 

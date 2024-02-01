@@ -88,7 +88,17 @@ void CState_CurlingGame_Choose_Direction::Tick_State(const _float& fTimeDelta)
 	if (nullptr == m_pArrow || nullptr == m_pArrowTransform)
 		return;
 
-	Control_Direction(fTimeDelta);
+	if (m_pManager->m_bPlayerTurn)
+		Control_Direction(fTimeDelta);
+	else
+	{
+		m_fAcc += fTimeDelta;
+		if (m_fNpcWaitDuration <= m_fAcc)
+		{
+			if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::INTENSITY)))
+				return;
+		}
+	}
 }
 
 void CState_CurlingGame_Choose_Direction::LateTick_State(const _float& fTimeDelta)
@@ -100,6 +110,8 @@ void CState_CurlingGame_Choose_Direction::LateTick_State(const _float& fTimeDelt
 void CState_CurlingGame_Choose_Direction::Exit_State()
 {
 	m_pArrow->Set_Active(false);
+
+	m_fAcc = 0.f;
 }
 
 HRESULT CState_CurlingGame_Choose_Direction::Render()
@@ -109,47 +121,36 @@ HRESULT CState_CurlingGame_Choose_Direction::Render()
 
 void CState_CurlingGame_Choose_Direction::Control_Direction(const _float& fTimeDelta)
 {
-	if (m_pManager->m_bPlayerTurn)
+	if (KEY_HOLD(KEY::A))
 	{
-		if (KEY_HOLD(KEY::A))
-		{
-			Vec4 vOffset = { -0.05f, 0.f, 3.f, 1.f };
+		Vec4 vOffset = { -0.05f, 0.f, 3.f, 1.f };
 
-			vOffset = m_pArrowTransform->Get_RelativeOffset(vOffset);
+		vOffset = m_pArrowTransform->Get_RelativeOffset(vOffset);
 
-			Vec4 vLookAt = (Vec4)m_pArrowTransform->Get_Position() + vOffset;
+		Vec4 vLookAt = (Vec4)m_pArrowTransform->Get_Position() + vOffset;
 
-			m_pArrowTransform->LookAt(vLookAt.OneW());
+		m_pArrowTransform->LookAt(vLookAt.OneW());
 
-			m_pManager->m_vCurStoneLook = Vec4(m_pArrowTransform->Get_Look()).ZeroY().Normalized() * -1.f;
+		m_pManager->m_vCurStoneLook = Vec4(m_pArrowTransform->Get_Look()).ZeroY().Normalized() * -1.f;
 
-		}
-		else if (KEY_HOLD(KEY::D))
-		{
-			Vec4 vOffset = { 0.05f, 0.f, 3.f, 1.f };
-
-			vOffset = m_pArrowTransform->Get_RelativeOffset(vOffset);
-
-			Vec4 vLookAt = (Vec4)m_pArrowTransform->Get_Position() + vOffset;
-
-			m_pArrowTransform->LookAt(vLookAt.OneW());
-
-			m_pManager->m_vCurStoneLook = Vec4(m_pArrowTransform->Get_Look()).ZeroY().Normalized() * -1.f;
-		}
-
-		if (KEY_TAP(KEY::SPACE))
-		{
-			if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::INTENSITY)))
-				return;
-		}
 	}
-	else
+	else if (KEY_HOLD(KEY::D))
 	{
-		if (KEY_TAP(KEY::Q))
-		{
-			if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::INTENSITY)))
-				return;
-		}
+		Vec4 vOffset = { 0.05f, 0.f, 3.f, 1.f };
+
+		vOffset = m_pArrowTransform->Get_RelativeOffset(vOffset);
+
+		Vec4 vLookAt = (Vec4)m_pArrowTransform->Get_Position() + vOffset;
+
+		m_pArrowTransform->LookAt(vLookAt.OneW());
+
+		m_pManager->m_vCurStoneLook = Vec4(m_pArrowTransform->Get_Look()).ZeroY().Normalized() * -1.f;
+	}
+
+	if (KEY_TAP(KEY::SPACE))
+	{
+		if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::INTENSITY)))
+			return;
 	}
 }
 

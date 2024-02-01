@@ -9,6 +9,7 @@
 
 #include "Camera_Group.h"
 #include "CurlingGame_Group.h"
+#include "State_CurlingGame_Move_Character.h"
 
 #include "Player.h"
 #include "Character.h"
@@ -58,11 +59,9 @@ void CState_CurlingGame_Launch_Stone::Tick_State(const _float& fTimeDelta)
 		CCamera_CurlingGame* pCurlingCam = dynamic_cast<CCamera_CurlingGame*>(CCamera_Manager::GetInstance()->Get_CurCamera());
 		if (nullptr != pCurlingCam)
 		{
-			const _float fLerpTime = 0.75f;
-
 			/* 순서 변경 유의 */
-			pCurlingCam->Finish_StoneAction(fLerpTime);
-			pCurlingCam->Change_Target(m_pManager->m_pCurParticipant, fLerpTime);
+			pCurlingCam->Finish_StoneAction(m_fTargetChangeLerpDuration);
+			pCurlingCam->Change_Target(m_pManager->m_pCurParticipant, m_fTargetChangeLerpDuration);
 		}
 
 		/* 아웃된 스톤을 정리한다. */
@@ -77,10 +76,47 @@ void CState_CurlingGame_Launch_Stone::Tick_State(const _float& fTimeDelta)
 	{
 		if (Check_FinishGame())
 		{
+			// 게임이 끝난 경우
+			const _uint iPlayerScore = m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].iScore;
+			const _uint iNpcScore = m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].iScore;
 
+			if (iPlayerScore == iNpcScore)
+			{
+				/* 비기면 스톤 추가*/
+				m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].iNumStone = 2;
+				m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].iNumStone = 2;
+			}
+			else if (iPlayerScore > iNpcScore) 
+			{
+				/* 플레이어 승리 (성혁이형이랑 연동 필요) */
+			}
+			else if (iPlayerScore < iNpcScore) 
+			{
+				/* 플레이어 패배 (성혁이형이랑 연동 필요)  */
+			}
 		}
 		else
 		{
+			/* Npc 스톤 트랜스폼 설정 */
+			if (!m_pManager->m_bPlayerTurn && !m_bSetNpcStoneTransform)
+			{
+				m_fAcc += fTimeDelta;
+				if (m_fNpcStoneLimit <= m_fAcc)
+				{
+					m_bSetNpcStoneTransform = true;
+
+					m_pManager->m_pCurParticipant->Get_Component_Model()->Set_KeyFrame_By_Progress(0.8f);
+				
+					CManager_State* pState = m_pManager->m_pManagerStateMachineCom->Get_State(CCurlingGame_Manager::CURLINGGAME_STATE::MOVE);
+					if (nullptr != pState)
+					{
+						CState_CurlingGame_Move_Character* pMoveState = dynamic_cast<CState_CurlingGame_Move_Character*>(pState);
+						if (nullptr != pMoveState)
+							pMoveState->Set_NpcStoneTransform();
+					}
+				}
+			}
+
 			CCamera_CurlingGame* pCurlingCam = dynamic_cast<CCamera_CurlingGame*>(CCamera_Manager::GetInstance()->Get_CurCamera());
 			if (nullptr != pCurlingCam)
 			{
@@ -101,6 +137,8 @@ void CState_CurlingGame_Launch_Stone::LateTick_State(const _float& fTimeDelta)
 void CState_CurlingGame_Launch_Stone::Exit_State()
 {
 	m_bResetTurn = false;
+	m_bSetNpcStoneTransform = false;
+	m_fAcc = 0.f;
 }
 
 HRESULT CState_CurlingGame_Launch_Stone::Render()

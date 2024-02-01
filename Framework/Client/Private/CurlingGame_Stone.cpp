@@ -9,6 +9,7 @@
 #include "Character.h"
 
 #include "CurlingGame_Wall.h"
+#include "CurlingGame_Manager.h"
 
 CCurlingGame_Stone::CCurlingGame_Stone(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CCurlingGame_Prop(pDevice, pContext, strObjectTag)
@@ -202,12 +203,12 @@ void CCurlingGame_Stone::Launch(Vec4 vDir, const _float& fPower)
 
 void CCurlingGame_Stone::PutDown()
 {
-	CTransform* pPlayerTransform = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform");
+	CTransform* pTargetTransform = CCurlingGame_Manager::GetInstance()->Get_CurParticipant()->Get_Component_Transform();
 	
-	if (nullptr == pPlayerTransform)
+	if (nullptr == pTargetTransform)
 		return;
 	
-	Vec4 vTargetPos = (Vec4)pPlayerTransform->Get_Position() + pPlayerTransform->Get_RelativeOffset(Vec4{ 0.f, 0.f, 0.8f, 1.f });
+	Vec4 vTargetPos = (Vec4)pTargetTransform->Get_Position() + pTargetTransform->Get_RelativeOffset(Vec4{ 0.f, 0.f, 1.f, 1.f });
 
 	m_tPosLerpDesc.Start(m_pTransformCom->Get_Position(), vTargetPos.OneW(), 0.5f, LERP_MODE::EASE_IN);
 }
