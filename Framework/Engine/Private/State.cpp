@@ -38,11 +38,20 @@ HRESULT CState::Initialize(const list<wstring>& AnimationList)
 		if (-1 != iAnimIndex)
 			m_AnimIndices.push_back(iAnimIndex);
 		else
+		{
+			wstring strErrMsg = L"Find Animation Failed. : " + strAnimName + L"/ Object : " + m_pOwner->Get_PrototypeTag() + L"/ Model : " + m_pModelCom->Get_Name();
+			MessageBox(nullptr, strErrMsg.c_str(), L"System Message", MB_OK);
 			return E_FAIL;
+		}
+			
 	}
 
 	if (0 == m_AnimIndices.size())
+	{
+		MSG_BOX("Animation Size is 0");
 		return E_FAIL;
+	}
+		
 
 
 	return S_OK;

@@ -307,6 +307,11 @@ void CVehicle_Flying_Biplane::Update_RiderState()
 	}
 }
 
+void CVehicle_Flying_Biplane::On_Damaged(const COLLISION_INFO& tInfo)
+{
+	// 데미지 처리.
+}
+
 HRESULT CVehicle_Flying_Biplane::Ready_Colliders()
 {
 
