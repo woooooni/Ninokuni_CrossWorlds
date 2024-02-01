@@ -5,6 +5,9 @@
 #include "Trail.h"
 
 #include "StelliaState_Spawn.h"
+#include "StelliaState_SpawnIdle.h"
+#include "StelliaState_SpawnStand.h"
+
 #include "StelliaState_CombatIdle.h"
 #include "StelliaState_Chase.h"
 
@@ -342,7 +345,7 @@ HRESULT CStellia::Ready_Components()
 	else
 	{
 		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(138.f, -0.5f, 102.f, 1.f));
-		m_pTransformCom->FixRotation(0.f, -145.f, 0.f);
+		m_pTransformCom->FixRotation(0.f, 180.f, 0.f);
 
 		m_vOriginPos = m_pTransformCom->Get_Position();
 		m_vOriginLook = m_pTransformCom->Get_Look();
@@ -419,6 +422,14 @@ HRESULT CStellia::Ready_States()
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_Spawn");
 	m_pStateCom->Add_State(STELLIA_SPAWN, CStelliaState_Spawn::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_Stand");
+	m_pStateCom->Add_State(STELLIA_SPAWNIDLE, CStelliaState_SpawnIdle::Create(m_pStateCom, strAnimationName));
+
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_Stand02");
+	m_pStateCom->Add_State(STELLIA_SPAWNSTAND, CStelliaState_SpawnStand::Create(m_pStateCom, strAnimationName));
 
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Stellia.ao|Stellia_Stand02");

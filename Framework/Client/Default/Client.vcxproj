@@ -264,6 +264,10 @@
     <ClInclude Include="..\Public\MainQuestNode_FinalBattle01.h" />
     <ClInclude Include="..\Public\MainQuestNode_FinalBattle02.h" />
     <ClInclude Include="..\Public\MainQuestNode_FinalBattle03.h" />
+    <ClInclude Include="..\Public\MainQuestNode_FinalBattle04.h" />
+    <ClInclude Include="..\Public\MainQuestNode_FinalBattle05.h" />
+    <ClInclude Include="..\Public\MainQuestNode_FinalBattle06.h" />
+    <ClInclude Include="..\Public\MainQuestNode_FinalBattle07.h" />
     <ClInclude Include="..\Public\MainQuestNode_PlantKiller09.h" />
     <ClInclude Include="..\Public\MainQuestNode_PlantKiller01.h" />
     <ClInclude Include="..\Public\MainQuestNode_PlantKiller02.h" />
@@ -307,6 +311,8 @@
     <ClInclude Include="..\Public\MainQuestNode_WitchForest02.h" />
     <ClInclude Include="..\Public\MainQuest_FinalBattle.h" />
     <ClInclude Include="..\Public\MainQuest_PlantKiller.h" />
+    <ClInclude Include="..\Public\NpcDMWState_Base.h" />
+    <ClInclude Include="..\Public\NpcDMWState_Following.h" />
     <ClInclude Include="..\Public\State_Enemy.h" />
     <ClInclude Include="..\Public\State_Enemy_Flying_Run.h" />
     <ClInclude Include="..\Public\State_Enemy_Flying_RunStart.h" />
@@ -317,6 +323,9 @@
     <ClInclude Include="..\Public\State_Enemy_VehicleFlying_Stand.h" />
     <ClInclude Include="..\Public\State_Enemy_VehicleFlying_Trace.h" />
     <ClInclude Include="..\Public\State_VehicleFlying_Rush.h" />
+    <ClInclude Include="..\Public\StelliaState_SpawnIdle.h" />
+    <ClInclude Include="..\Public\StelliaState_SpawnRoar.h" />
+    <ClInclude Include="..\Public\StelliaState_SpawnStand.h" />
     <ClInclude Include="..\Public\UI_Minigame_WorldHP.h" />
     <ClInclude Include="..\Public\Vehicle_Flying_EnemyBiplane.h" />
     <ClInclude Include="..\Public\Skill_Biplane_1.h" />
@@ -1275,6 +1284,10 @@
     <ClCompile Include="..\Private\MainQuestNode_FinalBattle01.cpp" />
     <ClCompile Include="..\Private\MainQuestNode_FinalBattle02.cpp" />
     <ClCompile Include="..\Private\MainQuestNode_FinalBattle03.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_FinalBattle04.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_FinalBattle05.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_FinalBattle06.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_FinalBattle07.cpp" />
     <ClCompile Include="..\Private\MainQuestNode_PlantKiller09.cpp" />
     <ClCompile Include="..\Private\MainQuestNode_PlantKiller01.cpp" />
     <ClCompile Include="..\Private\MainQuestNode_PlantKiller02.cpp" />
@@ -1318,6 +1331,8 @@
     <ClCompile Include="..\Private\MainQuestNode_WitchForest02.cpp" />
     <ClCompile Include="..\Private\MainQuest_FinalBattle.cpp" />
     <ClCompile Include="..\Private\MainQuest_PlantKiller.cpp" />
+    <ClCompile Include="..\Private\NpcDMWState_Base.cpp" />
+    <ClCompile Include="..\Private\NpcDMWState_Following.cpp" />
     <ClCompile Include="..\Private\State_Enemy.cpp" />
     <ClCompile Include="..\Private\State_Enemy_Flying_Run.cpp" />
     <ClCompile Include="..\Private\State_Enemy_Flying_RunStart.cpp" />
@@ -1328,6 +1343,9 @@
     <ClCompile Include="..\Private\State_Enemy_VehicleFlying_Stand.cpp" />
     <ClCompile Include="..\Private\State_Enemy_VehicleFlying_Trace.cpp" />
     <ClCompile Include="..\Private\State_VehicleFlying_Rush.cpp" />
+    <ClCompile Include="..\Private\StelliaState_SpawnIdle.cpp" />
+    <ClCompile Include="..\Private\StelliaState_SpawnRoar.cpp" />
+    <ClCompile Include="..\Private\StelliaState_SpawnStand.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_WorldHP.cpp" />
     <ClCompile Include="..\Private\Vehicle_Flying_EnemyBiplane.cpp" />
     <ClCompile Include="..\Private\Skill_Biplane_1.cpp" />

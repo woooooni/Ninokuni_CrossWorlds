@@ -34,7 +34,7 @@ void CMainQuestNode_FinalBattle02::Start()
 		m_pWitch->Get_Component_Transform()->Set_State(CTransform::STATE_POSITION, Vec4(142.2f, 1.f, 107.2f, 1.f));
 		m_pWitch->Get_Component_Transform()->FixRotation(0.f, -162.f, 0.f);
 		
-		Vec4 vSpotPos = { 136.6, -0.5f, 89.7f, 1.f };
+		Vec4 vSpotPos = { 130.6, -0.5f, 89.7f, 1.f };
 
 		m_pQuestDestSpot = dynamic_cast<CQuest_DestSpot*>(GI->Clone_GameObject(TEXT("Prorotype_GameObject_Quest_DestSpot"), _uint(LAYER_ETC), &vSpotPos));
 	}
@@ -53,16 +53,14 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle02::Tick(const _float& fTimeDelta)
 			m_pQuestDestSpot->Tick(fTimeDelta);
 			m_pQuestDestSpot->LateTick(fTimeDelta);
 
-			if (m_pQuestDestSpot != nullptr)
+			if (m_pQuestDestSpot->Get_IsCol())
 			{
-				if (m_pQuestDestSpot->Get_IsCol())
-				{
-					CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
+				CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
 
-					m_bIsClear = true;
-					m_pQuestDestSpot->Set_Dead(true);
-					return NODE_STATE::NODE_FAIL;
-				}
+				m_bIsClear = true;
+				m_pQuestDestSpot->Set_ReadyDelete(true);
+				Safe_Release(m_pQuestDestSpot);
+				return NODE_STATE::NODE_FAIL;
 			}
 		}
 	}

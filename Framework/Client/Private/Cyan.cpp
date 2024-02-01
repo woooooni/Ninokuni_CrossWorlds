@@ -91,7 +91,7 @@ void CCyan::On_Damaged(const COLLISION_INFO& tInfo)
 
 HRESULT CCyan::Ready_States()
 {
-	m_strKorName = TEXT("청록색");
+	m_strKorName = TEXT("시안");
 	m_tStat.fSpeed = 1.f;
 
 	m_pStateCom->Set_Owner(this);
@@ -100,13 +100,10 @@ HRESULT CCyan::Ready_States()
 
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Cyan.ao|NpcFat_Stand01");
-	strAnimationName.push_back(L"SKM_Cyan.ao|NpcFat_Stand01Stand02");
-	strAnimationName.push_back(L"SKM_Cyan.ao|NpcFat_Stand01Stand03");
 	m_pStateCom->Add_State(NPC_IDLE, CNpcState_Idle::Create(m_pStateCom, strAnimationName));
 
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Cyan.ao|NpcFat_Stand01");
-	strAnimationName.push_back(L"SKM_Cyan.ao|NpcFat_Stand01Idle01");
 	m_pStateCom->Add_State(NPC_TALK, CNpcState_Talk::Create(m_pStateCom, strAnimationName));
 
 	strAnimationName.clear();
@@ -115,7 +112,6 @@ HRESULT CCyan::Ready_States()
 
 	strAnimationName.clear();
 	strAnimationName.push_back(L"SKM_Cyan.ao|NpcFat_Walk02");
-	strAnimationName.push_back(L"SKM_Cyan.ao|NpcFat_Stand01Idle01");
 	m_pStateCom->Add_State(NPC_MOVE_TWOWAY, CNpcState_TwoWay::Create(m_pStateCom, strAnimationName));
 
 	m_pStateCom->Change_State(NPC_IDLE);

@@ -6,7 +6,7 @@
 #include "Animation.h"
 
 CNpcDMWState_InvasionDisappear::CNpcDMWState_InvasionDisappear(CStateMachine* pStateMachine)
-	: CNpcState_Base(pStateMachine)
+	: CNpcDMWState_Base(pStateMachine)
 {
 }
 
@@ -32,7 +32,7 @@ void CNpcDMWState_InvasionDisappear::Tick_State(_float fTimeDelta)
 	__super::Tick_State(fTimeDelta);
 	m_fTime += fTimeDelta;
 
-	m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_pNpc->Get_Stat()->fSpeed, fTimeDelta);
+	m_pTransformCom->Move(m_pTransformCom->Get_Look(), m_pWitch->Get_Stat()->fSpeed, fTimeDelta);
 
 	if (m_fTime >= m_fWalkTime)
 	{

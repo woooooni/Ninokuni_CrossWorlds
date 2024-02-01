@@ -63,7 +63,7 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle03::Tick(const _float& fTimeDelta)
 	if (m_bIsClear)
 		return NODE_STATE::NODE_FAIL;
 
-	if (KEY_TAP(KEY::LBTN) && !m_bIsWitchDisAppear)
+	if (KEY_TAP(KEY::LBTN))
 	{
 		Safe_Delete_Array(m_szpOwner);
 		Safe_Delete_Array(m_szpTalk);
@@ -72,7 +72,6 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle03::Tick(const _float& fTimeDelta)
 
 		if (m_iTalkIndex >= m_vecTalkDesc.size())
 		{
-			m_bIsWitchDisAppear = true;
 			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
 
 			/* 대화 카메라 종료 */
@@ -80,29 +79,16 @@ CBTNode::NODE_STATE CMainQuestNode_FinalBattle03::Tick(const _float& fTimeDelta)
 			if (nullptr != pActionCam)
 				pActionCam->Finish_Action_Talk();
 
-			m_pWitch->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CDreamMazeWitch_Npc::WITCHSTATE_INVASION_DISAPPEARTURN);
-		}
-
-		// 마녀가 돌아가는 연출이 있기에 강제로 조건 걸기
-		if (m_iTalkIndex < m_vecTalkDesc.size())
-		{
-			m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
-			m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
-
-			CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
-
-			TalkEvent();
-		}
-	}
-
-	if (m_bIsWitchDisAppear)
-	{
-		if (m_pWitch->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Get_CurrState() == CDreamMazeWitch_Npc::WITCHSTATE_INVASION_IDLE)
-		{
 			m_bIsClear = true;
-			m_pWitch->Set_Dead(true);
 			return NODE_STATE::NODE_FAIL;
 		}
+
+		m_szpOwner = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strOwner);
+		m_szpTalk = CUtils::WStringToTChar(m_vecTalkDesc[m_iTalkIndex].strTalk);
+
+		CUI_Manager::GetInstance()->Set_MainDialogue(m_szpOwner, m_szpTalk);
+
+		TalkEvent();
 	}
 
 	return NODE_STATE::NODE_RUNNING;
@@ -118,44 +104,42 @@ void CMainQuestNode_FinalBattle03::TalkEvent()
 	if (nullptr == pActionCam)
 		return;
 
-	wstring strAnimName = TEXT("");
-
 	switch (m_iTalkIndex)
 	{
 	case 0:
 		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_02_01_ArenSay_Hmm.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pWitch->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pWitch->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Aren.ao|Aren_Idle02"));
+		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
+		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Aren.ao|Aren_Idle02"));
 		/* 대화 카메라 타겟 변경 */
-		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC_FROM_BACK_KUU_AND_PLAYER);
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER);
 		break;
 	case 1:
 		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_02_02_KuuSay_Introduce.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk02"));
+		m_pWitch->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
+		m_pWitch->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_talk02"));
 		/* 대화 카메라 타겟 변경 */
-		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER);
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC);
 		break;
 	case 2:
 		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_02_03_ArenSay_Introduce.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
-		m_pWitch->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pWitch->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Aren.ao|Aren_Hello"));
-		/* 대화 카메라 타겟 변경 */
-		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC_FROM_BACK_KUU_AND_PLAYER);
-		break;
-	case 3:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_02_04_KuuSay_Heong!!.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_EmotionPositive02"));
+		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Aren.ao|Aren_Hello"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU_AND_PLAYER);
 		break;
-	case 4:
-		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_02_05_ArenSay_Ha....ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+	case 3:
+		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_02_04_KuuSay_Heong!!.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
 		m_pWitch->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
-		m_pWitch->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Aren.ao|Aren_Talk"));
+		m_pWitch->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_EmotionPositive02"));
 		/* 대화 카메라 타겟 변경 */
 		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC_FROM_BACK_KUU_AND_PLAYER);
+		break;
+	case 4:
+		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_02_05_ArenSay_Ha....ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
+		m_pKuu->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
+		m_pKuu->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Aren.ao|Aren_Talk"));
+		/* 대화 카메라 타겟 변경 */
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::KUU);
 		break;
 	case 5:
 		//CSound_Manager::GetInstance()->Play_Sound(TEXT("03_02_06_KuuSay_Hmm.ogg"), CHANNELID::SOUND_VOICE_CHARACTER, 1.f, true);
@@ -169,7 +153,7 @@ void CMainQuestNode_FinalBattle03::TalkEvent()
 		m_pWitch->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGameNpc::NPC_UNIQUENPC_TALK);
 		m_pWitch->Get_Component<CModel>(TEXT("Com_Model"))->Set_Animation(TEXT("SKM_Kuu.ao|Kuu_CSSurprise02"));
 		/* 대화 카메라 타겟 변경 */
-		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC_FROM_BACK_KUU_AND_PLAYER);
+		pActionCam->Change_Action_Talk_Object(CCamera_Action::ACTION_TALK_DESC::NPC);
 		break;
 
 	}

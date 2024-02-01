@@ -6,7 +6,7 @@
 #include "Animation.h"
 
 CNpcDMWState_InvasionAppear::CNpcDMWState_InvasionAppear(CStateMachine* pStateMachine)
-	: CNpcState_Base(pStateMachine)
+	: CNpcDMWState_Base(pStateMachine)
 {
 }
 

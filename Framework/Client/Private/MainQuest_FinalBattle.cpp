@@ -6,6 +6,10 @@
 #include "MainQuestNode_FinalBattle01.h"
 #include "MainQuestNode_FinalBattle02.h"
 #include "MainQuestNode_FinalBattle03.h"
+#include "MainQuestNode_FinalBattle04.h"
+#include "MainQuestNode_FinalBattle05.h"
+#include "MainQuestNode_FinalBattle06.h"
+#include "MainQuestNode_FinalBattle07.h"
 
 CMainQuest_FinalBattle::CMainQuest_FinalBattle()
 {
@@ -20,10 +24,18 @@ HRESULT CMainQuest_FinalBattle::Initialize()
 	CMainQuestNode_FinalBattle01* pMainQuestFinalBattle01 = CMainQuestNode_FinalBattle01::Create();
 	CMainQuestNode_FinalBattle02* pMainQuestFinalBattle02 = CMainQuestNode_FinalBattle02::Create();
 	CMainQuestNode_FinalBattle03* pMainQuestFinalBattle03 = CMainQuestNode_FinalBattle03::Create();
+	CMainQuestNode_FinalBattle04* pMainQuestFinalBattle04 = CMainQuestNode_FinalBattle04::Create();
+	CMainQuestNode_FinalBattle05* pMainQuestFinalBattle05 = CMainQuestNode_FinalBattle05::Create();
+	CMainQuestNode_FinalBattle06* pMainQuestFinalBattle06 = CMainQuestNode_FinalBattle06::Create();
+	CMainQuestNode_FinalBattle07* pMainQuestFinalBattle07 = CMainQuestNode_FinalBattle07::Create();
 
 	m_pRootNode->Add_ChildNode(pMainQuestFinalBattle01);
 	m_pRootNode->Add_ChildNode(pMainQuestFinalBattle02);
 	m_pRootNode->Add_ChildNode(pMainQuestFinalBattle03);
+	m_pRootNode->Add_ChildNode(pMainQuestFinalBattle04);
+	m_pRootNode->Add_ChildNode(pMainQuestFinalBattle05);
+	m_pRootNode->Add_ChildNode(pMainQuestFinalBattle06);
+	m_pRootNode->Add_ChildNode(pMainQuestFinalBattle07);
 
 	return S_OK;
 }
