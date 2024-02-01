@@ -54,6 +54,8 @@ void CSwordsman_Biplane_Bullet::Tick(_float fTimeDelta)
 
 void CSwordsman_Biplane_Bullet::LateTick(_float fTimeDelta)
 {
+	GI->Add_CollisionGroup(COLLISION_GROUP::PLANE_PROJECTILE, this);
+
 	__super::LateTick(fTimeDelta);
 }
 

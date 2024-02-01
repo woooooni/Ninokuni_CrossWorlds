@@ -2,6 +2,9 @@
 #include "GameInstance.h"
 #include "Vehicle_Flying_EnemyBoto.h"
 
+#include "Particle_Manager.h"
+#include "Utils.h"
+
 #include "State_Enemy_VehicleFlying_Stand.h"
 #include "State_Enemy_VehicleFlying_Run.h"
 #include "State_Enemy_VehicleFlying_Trace.h"
@@ -33,12 +36,15 @@ HRESULT CVehicle_Flying_EnemyBoto::Initialize_Prototype()
 
 HRESULT CVehicle_Flying_EnemyBoto::Initialize(void* pArg)
 {
+	if (FAILED(__super::Initialize(pArg)))
+		return E_FAIL;
+
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
-
+	 
 	if (FAILED(Ready_States()))
 		return E_FAIL;
 	
@@ -85,6 +91,14 @@ void CVehicle_Flying_EnemyBoto::Tick(_float fTimeDelta)
 		
 		Update_RiderState();
 
+		if (VEHICLE_STATE::VEHICLE_RUN == m_pStateCom->Get_CurrState() ||
+			VEHICLE_STATE::VEHICLE_IDLE == m_pStateCom->Get_CurrState() ||
+			VEHICLE_STATE::VEHICLE_TRACE == m_pStateCom->Get_CurrState())
+		{
+			GET_INSTANCE(CParticle_Manager)->Tick_Generate_Particle(&m_fAccEffect,
+				CUtils::Random_Float(0.8f, 0.8f), fTimeDelta, TEXT("Particle_Smoke"), this, _float3(0.f, 1.f, -1.6f));
+		}
+
 		if (nullptr != m_pControllerCom)
 			m_pControllerCom->Tick_Controller(fTimeDelta);
 	}
@@ -94,6 +108,8 @@ void CVehicle_Flying_EnemyBoto::LateTick(_float fTimeDelta)
 {
 	if (true == m_bOnBoard)
 	{
+		GI->Add_CollisionGroup(COLLISION_GROUP::PLANEENEMY_BODY, this);
+
 		__super::LateTick(fTimeDelta);
 
 		if (nullptr != m_pHP)
@@ -289,7 +305,7 @@ HRESULT CVehicle_Flying_EnemyBoto::Ready_States()
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Boto.ao|Boto_Run");
-	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_TRACE, CState_Enemy_VehicleFlying_Run::Create(m_pStateCom, strAnimationNames));
+	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_TRACE, CState_Enemy_VehicleFlying_Trace::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Boto.ao|Boto_Stand");
@@ -329,10 +345,25 @@ void CVehicle_Flying_EnemyBoto::Update_RiderState()
 				m_pRider->Get_Component<CStateMachine>(TEXT("Com_StateMachine"))->Change_State(CGrandprix_Enemy::ENEMY_STATE::FLYING_STAND);
 		}
 	}
-}
+} 
 
 HRESULT CVehicle_Flying_EnemyBoto::Ready_Colliders()
 {
+	CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
+	ZeroMemory(&SphereDesc, sizeof SphereDesc);
+
+	BoundingSphere tSphere;
+	ZeroMemory(&tSphere, sizeof(BoundingSphere));
+	tSphere.Radius = 1.5f;
+	SphereDesc.tSphere = tSphere;
+
+	SphereDesc.pNode = nullptr;
+	SphereDesc.pOwnerTransform = m_pTransformCom;
+	SphereDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
+	SphereDesc.vOffsetPosition = Vec3(0.f, 0.f, 0.f);
+
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::ATTACK, &SphereDesc)))
+		return E_FAIL;
 
 	return S_OK;
 }

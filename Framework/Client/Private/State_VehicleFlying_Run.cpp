@@ -144,6 +144,31 @@ void CState_VehicleFlying_Run::Tick_State(_float fTimeDelta)
 //		return;
 //	}
 
+	// Skills
+	if (KEY_TAP(KEY::NUM_1))
+	{
+		CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_TEMP1);
+		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_TEMP1);
+		return;
+	}
+	if (KEY_TAP(KEY::NUM_2))
+	{
+		CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_TEMP2);
+		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_TEMP2);
+		return;
+	}
+	if (KEY_TAP(KEY::NUM_3))
+	{
+		CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_TEMP3);
+		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_TEMP3);
+		return;
+	}
+	if (KEY_TAP(KEY::R))
+	{
+		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_BURST);
+		return;
+	}
+
 	if (!bMove)
 	{
 		if (KEY_NONE(KEY::W) && KEY_NONE(KEY::A) && KEY_NONE(KEY::S) && KEY_NONE(KEY::D))
@@ -204,10 +229,6 @@ void CState_VehicleFlying_Run::Shoot()
 		MSG_BOX("Generate Bullet Failed.");
 
 	m_bShoot = false;
-}
-
-void CState_VehicleFlying_Run::Aim()
-{
 }
 
 CState_VehicleFlying_Run* CState_VehicleFlying_Run::Create(CStateMachine* pStateMachine, const list<wstring>& AnimationList)

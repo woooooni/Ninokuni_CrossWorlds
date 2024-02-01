@@ -65,9 +65,15 @@ void CVehicle::LateTick(_float fTimeDelta)
 	if (nullptr != m_pControllerCom)
 		m_pControllerCom->LateTick_Controller(fTimeDelta);
 
-	
-
 	Compute_CamZ(m_pTransformCom->Get_Position());
+
+#ifdef _DEBUG
+	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
+	{
+		for (auto& pCollider : m_Colliders[i])
+			m_pRendererCom->Add_Debug(pCollider);
+	}
+#endif
 }
 
 HRESULT CVehicle::Render()

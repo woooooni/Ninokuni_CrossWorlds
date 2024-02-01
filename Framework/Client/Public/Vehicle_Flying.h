@@ -60,6 +60,8 @@ protected:
 	vector<Vec4> m_RoutePoints;
 	_uint m_iRouteIndex = { 0 };
 
+	_float m_fAccEffect = { 0.f };
+
 public:
 	virtual void Free() override;
 };

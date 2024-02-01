@@ -8,12 +8,11 @@ class CStateMachine;
 END
 
 BEGIN(Client)
-
-class CState_VehicleFlying_Run : public CState_Vehicle
+class CState_Enemy_VehicleFlying_Enter : public CState_Vehicle
 {
 private:
-	CState_VehicleFlying_Run(class CStateMachine* pMachine);
-	~CState_VehicleFlying_Run() = default;
+	CState_Enemy_VehicleFlying_Enter(class CStateMachine* pMachine);
+	~CState_Enemy_VehicleFlying_Enter() = default;
 
 public:
 	virtual HRESULT Initialize(const list<wstring>& AnimationList);
@@ -24,14 +23,15 @@ public:
 	virtual void Exit_State() override;
 
 private:
-	void Shoot();
+	void Move(_float fTimeDelta);
 
 private:
-	_bool m_bShoot = { false };
-	_float m_fTimeAcc = { 0.f };
+	_float m_fMovingSpeed = { 3.f }; // Temp
+	_bool m_bUpdate = { false };
+	_bool m_bSet = { false };
 
 public:
-	static CState_VehicleFlying_Run* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
+	static CState_Enemy_VehicleFlying_Enter* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;
 };
 END

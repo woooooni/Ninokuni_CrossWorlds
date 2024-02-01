@@ -81,6 +81,8 @@ void CVehicle_Flying_Biplane::LateTick(_float fTimeDelta)
 {
 	if (true == m_bOnBoard)
 	{
+		GI->Add_CollisionGroup(COLLISION_GROUP::PLANE_BODY, this);
+	
 		__super::LateTick(fTimeDelta);
 
 		Update_Rider(fTimeDelta);

@@ -48,7 +48,6 @@ protected:
 	virtual void Dead_Input(_float fTimeDelta);
 
 	virtual void OnBoard_Input(_float fTimeDelta);
-	virtual void OnFlying_Input(_float fTimeDelta);
 	
 protected:
 	virtual void Reset_Camera_WideToDeafult();

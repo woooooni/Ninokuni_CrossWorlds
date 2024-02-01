@@ -118,6 +118,8 @@ void CUI_Minigame_Aim::Tick(_float fTimeDelta)
 				m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
 			}
 
+			Update_Distance();
+
 			__super::Tick(fTimeDelta);
 		}
 	}
@@ -187,7 +189,23 @@ void CUI_Minigame_Aim::LateTick(_float fTimeDelta)
 					if (fAngle >= XMConvertToRadians(0.f) && fAngle <= XMConvertToRadians(180.f))
 					{
 						if (CUI_Manager::GetInstance()->Is_FadeFinished())
+						{
+							// AddText
+							wstring strDistance = to_wstring(_uint(m_fDistance)) + TEXT("M");
+							_int iLength = strDistance.length() - 1;
+							_float2 vFontPos = _float2(m_tInfo.fX - 6.8f - (iLength * (6.8f - iLength)), m_tInfo.fY + 7.f);
+
+							CRenderer::TEXT_DESC TextDesc = {};
+							TextDesc.strText = strDistance;
+							TextDesc.strFontTag = L"Default_Bold";
+							TextDesc.vScale = { 0.3f, 0.3f };
+//							TextDesc.vColor = _float4(0.655f, 0.475f, 0.325f, 1.f);
+							TextDesc.vColor = _float4(1.f, 1.f, 1.f, 1.f);
+							TextDesc.vPosition = _float2(vFontPos.x, vFontPos.y);
+							m_pRendererCom->Add_Text(TextDesc);
+
 							m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_UI, this);
+						}
 
 						__super::LateTick(fTimeDelta);
 					}
@@ -259,6 +277,19 @@ HRESULT CUI_Minigame_Aim::Bind_ShaderResources()
 		return E_FAIL;
 
 	return S_OK;
+}
+
+void CUI_Minigame_Aim::Update_Distance()
+{
+	CPlayer* pPlayer = CGame_Manager::GetInstance()->Get_Player();
+	CCharacter* pCharacter = pPlayer->Get_Character();
+	if (nullptr == pCharacter)
+		return;
+
+	Vec4 vPlayerPos = pCharacter->Get_CharacterPosition();
+	Vec4 vOwnerPos = m_pOwner->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
+
+	m_fDistance = XMVectorGetX(XMVector3Length(vPlayerPos - vOwnerPos));
 }
 
 CUI_Minigame_Aim* CUI_Minigame_Aim::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

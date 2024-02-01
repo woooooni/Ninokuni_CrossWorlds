@@ -24,7 +24,6 @@ public:
 
 private:
 	void Shoot();
-	void Aim();
 
 private:
 	_bool m_bShoot = { false };

@@ -183,7 +183,7 @@ HRESULT CUI_Minigame_WorldHP::Ready_Components()
 	if (FAILED(__super::Ready_Components()))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MonsterHP_WhiteBar"),
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Monster_WorldHP_Frame"),
 		TEXT("Com_FXTexture"), (CComponent**)&m_pFXTextureCom)))
 		return E_FAIL;
 
