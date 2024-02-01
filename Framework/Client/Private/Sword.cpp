@@ -33,6 +33,11 @@ HRESULT CSword::Initialize(void* pArg)
 
 void CSword::Tick(_float fTimeDelta)
 {
+	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::O))
+		m_pTrail->Start_Trail(m_matSocketWorld * m_pTransformCom->Get_WorldMatrix());
+	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::F))
+		m_pTrail->Stop_Trail();
+
 	__super::Tick(fTimeDelta);
 }
 
@@ -70,7 +75,7 @@ void CSword::Collision_Exit(const COLLISION_INFO& tInfo)
 
 HRESULT CSword::Ready_Trails()
 {
-	/*CTrail::TRAIL_DESC TrailDesc = {};
+	CTrail::TRAIL_DESC TrailDesc = {};
 	TrailDesc.bTrail = false;
 	TrailDesc.bUV_Cut = false;
 	TrailDesc.fAccGenTrail = 0.f;
@@ -90,7 +95,7 @@ HRESULT CSword::Ready_Trails()
 
 	m_pTrail->SetUp_Position(XMVectorSet(0.f, 0.f, 0.5f, 1.f), XMVectorSet(0.f, 0.f, 0.9f, 1.f));
 
-	m_pTrail->Stop_Trail();*/
+	m_pTrail->Stop_Trail();
 	return S_OK;
 }
 

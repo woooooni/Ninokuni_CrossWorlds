@@ -165,7 +165,7 @@ HRESULT CRiding_Manager::Ready_Vehicle_GameObject(LEVELID eID)
 		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Set_TextureIndex(4);
 
 		pEnemyBoto = nullptr;
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Vehicle_EnemyBoto"), &BotoDesc, &pEnemyBoto)))
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER, TEXT("Prototype_GameObject_Vehicle_EnemyBoto"), &BotoDesc, &pEnemyBoto)))
 			return E_FAIL;
 		if (nullptr == pEnemyBoto)
 			return E_FAIL;
@@ -177,7 +177,7 @@ HRESULT CRiding_Manager::Ready_Vehicle_GameObject(LEVELID eID)
 		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Set_TextureIndex(0);
 
 		pEnemyBoto = nullptr;
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Vehicle_EnemyBoto"), &BotoDesc, &pEnemyBoto)))
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER, TEXT("Prototype_GameObject_Vehicle_EnemyBoto"), &BotoDesc, &pEnemyBoto)))
 			return E_FAIL;
 		if (nullptr == pEnemyBoto)
 			return E_FAIL;

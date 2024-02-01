@@ -31,6 +31,8 @@ private:
 
 private:
 	_bool m_bGenMotionTrail[2] = { false, false };
+	_bool m_bGenTrail = false;
+	_int m_iGenTrailCount = 0;
 
 public:
 	static CState_SwordMan_Battle_Attack_1* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);

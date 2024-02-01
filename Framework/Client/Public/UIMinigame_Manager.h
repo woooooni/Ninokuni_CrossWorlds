@@ -24,7 +24,7 @@ public: // Getter & Setter
 	void	Set_HPOwner(CGameObject* pOwner, _uint eEnemyID);
 
 	_bool	Is_BiplaneFlying() { return m_bFlying; }
-	void	Set_Flyable(_bool bFlyable) { m_bFlying = bFlyable; }
+	void	Set_Flyable(_bool bFlyable);
 
 	_bool	Is_AimActive() { return m_bActiveAim; }
 	void	Set_GrandprixAimActive(_bool bOnOff) { m_bActiveAim = bOnOff; }

@@ -385,6 +385,12 @@ HRESULT CRenderer::Draw_World()
 	if (FAILED(Draw_WorldEffect()))
 		return E_FAIL;
 
+	if (FAILED(Render_Blur(L"Target_Effect_Distortion", L"MRT_Distrotion_Blur", true, BLUR_HOR_LOW, BLUR_VER_LOW, BLUR_UP_ONEMAX)))
+		return E_FAIL;
+
+	if (FAILED(Render_Distortion()))
+		return E_FAIL;
+
 
 	if (FAILED(Render_GodRay()))
 		return E_FAIL;
@@ -399,11 +405,7 @@ HRESULT CRenderer::Draw_World()
 		return E_FAIL;
 
 
-	if (FAILED(Render_Blur(L"Target_Effect_Distortion", L"MRT_Distrotion_Blur", true, BLUR_HOR_HIGHHIGH, BLUR_VER_HIGHHIGH, BLUR_UP_ONEADD)))
-		return E_FAIL;
-
-	if (FAILED(Render_Distortion()))
-		return E_FAIL;
+	
 
 	if (true == m_bRadialBlurDraw)
 	{
@@ -1281,7 +1283,7 @@ HRESULT CRenderer::Render_Distortion()
 
 
 
-	if (FAILED(Render_AlphaBlendTargetMix(L"Target_Distortion_Temp", L"MRT_Blend", false)))
+	if (FAILED(Render_AlphaBlendTargetMix(L"Target_Distortion_Temp", L"MRT_Blend", true)))
 		return E_FAIL;
 
 
@@ -2602,13 +2604,13 @@ HRESULT CRenderer::Create_Target()
 
 #pragma region Distortion_Temp
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Distortion_Temp"),
-		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 1.f))))
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
 #pragma endregion
 
 #pragma region MRT_DistortionBlur : Distortion_Blur
 	if (FAILED(m_pTarget_Manager->Add_RenderTarget(m_pDevice, m_pContext, TEXT("Target_Distortion_Blur"),
-		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 1.f))))
+		ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
 #pragma endregion 
 
