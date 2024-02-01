@@ -77,21 +77,9 @@ void CState_VehicleFlying_Stand::Tick_State(_float fTimeDelta)
     {
         if (KEY_TAP(KEY::SPACE))
         {
-            /*bMove = true;
-
-            _matrix vCamWolrd = GI->Get_TransformMatrixInverse(CPipeLine::TRANSFORMSTATE::D3DTS_VIEW);
-            _vector vRight = m_pTransformCom->Get_State(CTransform::STATE_RIGHT);
-            _vector vCamLook = vCamWolrd.r[CTransform::STATE_LOOK];
-
-            vRight = XMVector3Normalize(vRight);
-            vCamLook = XMVector3Normalize(vCamLook);
-
-            _float fRadian = XMVectorGetX(XMVector3Dot(vRight, vCamLook)) * 10.f * fTimeDelta;
-
-            m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
-            m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_pVehicle->Get_Speed(), fTimeDelta);*/
             Vec3 vVelocity = m_pRigidBodyCom->Get_Velocity();
             vVelocity.y = 0.f;
+
             if (vVelocity.Length() >= 15.f) // 20.f -> 15.f ¼öÁ¤
             {
                 Vec3 vVelocityDir = XMVector3Normalize(m_pTransformCom->Get_Look());

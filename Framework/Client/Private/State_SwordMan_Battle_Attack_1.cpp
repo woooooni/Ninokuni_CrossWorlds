@@ -2,6 +2,7 @@
 #include "GameInstance.h"
 #include "Character.h"
 #include "State_SwordMan_Battle_Attack_1.h"
+#include "Weapon.h"
 
 CState_SwordMan_Battle_Attack_1::CState_SwordMan_Battle_Attack_1(CStateMachine* pMachine)
     : CState_Character(pMachine)
@@ -31,39 +32,42 @@ void CState_SwordMan_Battle_Attack_1::Enter_State(void* pArg)
 
     for (_uint i = 0; i < 2; ++i)
         m_bGenMotionTrail[i] = false;
+
+    m_bGenTrail = false;
+    m_iGenTrailCount = 0;
 }
 
 void CState_SwordMan_Battle_Attack_1::Tick_State(_float fTimeDelta)
 {
-    /*if (m_pModelCom->Get_Progress() >= 0.1f && m_pModelCom->Get_Progress() <= 0.2f)
-        m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), 4.f, fTimeDelta);*/
-
-    if (m_pModelCom->Get_Progress() <= 0.25f && m_pCharacter->Get_Collider(CCollider::DETECTION_TYPE::ATTACK)[0]->Is_Active())
+    
+    if (false == m_bGenTrail && false == m_pModelCom->Is_Tween())
     {
-        Vec3 vDir = -1.f * (XMVector3Normalize(m_pTransformCom->Get_Right()) * 0.9f) + XMVector3Normalize((m_pTransformCom->Get_Look()) * 0.1f);
-        m_pTransformCom->Move(XMVector3Normalize(vDir), 20.f, fTimeDelta);
-        m_pCharacter->Look_For_Target();
-
-        if (false == m_bGenMotionTrail[0])
+        if (m_iGenTrailCount < 4)
         {
-            m_pCharacter->Create_MotionTrail(m_MotionTrailDesc);
-            m_bGenMotionTrail[0] = true;
+            if (m_pModelCom->Get_CurrAnimationFrame() >= 6.f || m_pModelCom->Get_CurrAnimationFrame() >= 15.f)
+            {
+                m_iGenTrailCount++;
+                m_bGenTrail = true;
+                m_pCharacter->Get_Weapon()->Generate_Trail(L"", L"", L"Distortion_1.png", Vec4(1.f, 0.6f, 0.f, 1.f), 11);
+            }
         }
         
     }
 
-    if(m_pModelCom->Get_Progress() > 0.25f && m_pCharacter->Get_Collider(CCollider::DETECTION_TYPE::ATTACK)[0]->Is_Active())
+    else if (true == m_bGenTrail && false == m_pModelCom->Is_Tween())
     {
-        Vec3 vDir = 1.f * (XMVector3Normalize(m_pTransformCom->Get_Right()) * 0.95f) + XMVector3Normalize((m_pTransformCom->Get_Look()) * 0.05f);
-        m_pCharacter->Look_For_Target();
-        m_pTransformCom->Move(XMVector3Normalize(vDir), 30.f, fTimeDelta);
-
-        if (false == m_bGenMotionTrail[1])
+        if (m_iGenTrailCount < 4)
         {
-            m_pCharacter->Create_MotionTrail(m_MotionTrailDesc);
-            m_bGenMotionTrail[1] = true;
+            if (m_pModelCom->Get_CurrAnimationFrame() >= 12.f || m_pModelCom->Get_CurrAnimationFrame() >= 25.f)
+            {
+                m_iGenTrailCount++;
+                m_bGenTrail = false;
+                m_pCharacter->Get_Weapon()->Stop_Trail();
+            }
         }
+        
     }
+        
        
 
     if (false == m_pModelCom->Is_Tween() && true == m_pModelCom->Is_Finish())
@@ -77,7 +81,9 @@ void CState_SwordMan_Battle_Attack_1::Exit_State()
     for (_uint i = 0; i < 2; ++i)
         m_bGenMotionTrail[i] = false;
 
+    m_iGenTrailCount = 0;
     m_pCharacter->Stop_MotionTrail();
+    m_pCharacter->Get_Weapon()->Stop_Trail();
 }
 
 

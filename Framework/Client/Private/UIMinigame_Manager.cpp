@@ -20,6 +20,10 @@
 
 #include "UI_Minigame_CurlingGauge.h"
 
+#include "Camera_Manager.h"
+#include "Camera.h"
+#include "Camera_Follow.h"
+
 IMPLEMENT_SINGLETON(CUIMinigame_Manager)
 
 CUIMinigame_Manager::CUIMinigame_Manager()
@@ -39,6 +43,16 @@ void CUIMinigame_Manager::Set_HPOwner(CGameObject* pOwner, _uint eEnemyID)
 		return;
 
 	m_EnemyHP[eEnemyID]->Set_Owner(pOwner);
+}
+
+void CUIMinigame_Manager::Set_Flyable(_bool bFlyable)
+{
+	m_bFlying = bFlyable;
+	CCamera_Follow* pFollowCamera = dynamic_cast<CCamera_Follow*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::FOLLOW));
+	if (nullptr != pFollowCamera)
+	{
+		pFollowCamera->Set_MinMaxLimitY(0.2f, 2.9f);
+	}
 }
 
 HRESULT CUIMinigame_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)

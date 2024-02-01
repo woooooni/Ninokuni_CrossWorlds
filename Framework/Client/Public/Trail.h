@@ -79,9 +79,11 @@ public:
 	void Set_Color(_float4 vColor) { m_TrailDesc.vDiffuseColor = vColor; }
 	void Set_DiffuseTexture_Index(_int iIndex) { m_iDiffuseTextureIndex = iIndex; }
 	void Set_AlphaTexture_Index(_int iIndex) { m_iAlphaTextureIndex = iIndex; }
+	void Set_DistortionTexture_Index(_int iIndex) { m_iDistortionTextureIndex = iIndex; }
 
 	void Set_DiffuseTexture_Index(const wstring& strDiffuseTextureName);
 	void Set_AlphaTexture_Index(const wstring& strAlphaTextureName);
+	void Set_DistortionTexture_Index(const wstring& strDistortionTextureName);
 
 	const TRAIL_DESC& Get_TrailDesc() { return m_TrailDesc; }
 	void Set_TrailDesc(const TRAIL_DESC& TrailDesc) { m_TrailDesc = TrailDesc; }
@@ -114,6 +116,7 @@ private:
 private:
 	_int m_iDiffuseTextureIndex = -1;
 	_int m_iAlphaTextureIndex = -1;
+	_int m_iDistortionTextureIndex = 0;
 
 private:
 	// 임시 저장용.

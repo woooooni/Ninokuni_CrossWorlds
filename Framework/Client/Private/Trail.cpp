@@ -39,16 +39,8 @@ void CTrail::Tick(_float fTimeDelta)
 	m_TrailDesc.vUVAcc.x += m_TrailDesc.vUV_FlowSpeed.x * fTimeDelta;
 	m_TrailDesc.vUVAcc.y += m_TrailDesc.vUV_FlowSpeed.y * fTimeDelta;
 
-	if (!m_TrailDesc.bTrail)
-		return;
 
-	m_TrailDesc.fAccGenTrail += fTimeDelta;
-	m_TrailDesc.fGenTrailTime = 0.01f;
-	if (m_TrailDesc.fAccGenTrail >= m_TrailDesc.fGenTrailTime)
-	{
-		m_pVIBufferCom->Update_TrailBuffer(fTimeDelta, XMLoadFloat4x4(&m_TransformMatrix));
-		m_TrailDesc.fAccGenTrail = 0.f;
-	}
+	m_pVIBufferCom->Update_TrailBuffer(fTimeDelta, XMLoadFloat4x4(&m_TransformMatrix));
 		
 }
 
@@ -70,8 +62,6 @@ void CTrail::LateTick(_float fTimeDelta)
 
 	if(true == m_TrailDesc.bTrail)
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_EFFECT, this);
-
-	
 	
 }
 
@@ -119,7 +109,7 @@ HRESULT CTrail::Render()
 
 	
 
-	if (FAILED(m_pDistortionTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DistortionTexture", 0)))
+	if (FAILED(m_pDistortionTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DistortionTexture", m_iDistortionTextureIndex)))
 		return E_FAIL;
 
 
@@ -175,6 +165,12 @@ void CTrail::Set_AlphaTexture_Index(const wstring& strAlphaTextureName)
 	m_iAlphaTextureIndex = m_pAlphaTextureCom->Find_Index(strAlphaTextureName);
 }
 
+void CTrail::Set_DistortionTexture_Index(const wstring& strDistortionTextureName)
+{
+	_int  i = m_pDistortionTextureCom->Find_Index(strDistortionTextureName);
+	m_iDistortionTextureIndex = i == -1 ? 0 : i;
+}
+
 HRESULT CTrail::Ready_Components()
 {
 	/* For.Com_Renderer */
@@ -190,16 +186,15 @@ HRESULT CTrail::Ready_Components()
 		return E_FAIL;
 
 	/* For.Com_Diffuse_Texture */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Trail"), TEXT("Com_Diffuse_Texture"), (CComponent**)&m_pDiffuseTextureCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Trail_Diffuse"), TEXT("Com_Diffuse_Texture"), (CComponent**)&m_pDiffuseTextureCom)))
 		return E_FAIL;
 
 	/* For.Com_Alpha_Texture */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Trail"), TEXT("Com_Alpha_Texture"), (CComponent**)&m_pAlphaTextureCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Trail_Alpha"), TEXT("Com_Alpha_Texture"), (CComponent**)&m_pAlphaTextureCom)))
 		return E_FAIL;
 
-
 	/* For.Com_Distortion_Texture */
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Effect_Noise"), TEXT("Com_Distortion_Texture"), (CComponent**)&m_pDistortionTextureCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Trail_Distiortion"), TEXT("Com_Distortion_Texture"), (CComponent**)&m_pDistortionTextureCom)))
 		return E_FAIL;
 
 	return S_OK;

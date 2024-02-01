@@ -105,13 +105,20 @@ HRESULT CWeapon::Render()
 	return S_OK;
 }
 
-void CWeapon::Generate_Trail(const wstring& strDiffuseTextureName, const wstring& strAlphaTextureName, const _float4& vColor, _uint iVertexCount)
+void CWeapon::Start_Trail()
+{
+	m_pTrail->Start_Trail(m_matSocketWorld * m_pTransformCom->Get_WorldMatrix());
+}
+
+void CWeapon::Generate_Trail(const wstring& strDiffuseTextureName, const wstring& strAlphaTextureName, const wstring& strDistortionTextureName, const _float4& vColor, _uint iVertexCount)
 {
 	m_pTrail->Set_DiffuseTexture_Index(strDiffuseTextureName);
 	m_pTrail->Set_AlphaTexture_Index(strAlphaTextureName);
-
-
+	m_pTrail->Set_DistortionTexture_Index(strDistortionTextureName);
 	
+	m_pTrail->Set_Color(vColor);
+
+	m_pTrail->Start_Trail(m_matSocketWorld * m_pTransformCom->Get_WorldMatrix());
 }
 
 void CWeapon::Stop_Trail()

@@ -89,12 +89,12 @@ HRESULT CVIBuffer_Trail::Initialize(void * pArg)
 
 	for (_uint i = 0; i < m_iNumPrimitives; i += 2)
 	{
-		pIndices[i]._0 = i + 3;
-		pIndices[i]._1 = i + 1;
+		pIndices[i]._0 = i + 2;
+		pIndices[i]._1 = i + 3;
 		pIndices[i]._2 = i;
 
-		pIndices[i + 1]._0 = i + 2;
-		pIndices[i + 1]._1 = i + 3;
+		pIndices[i + 1]._0 = i + 3;
+		pIndices[i + 1]._1 = i + 1;
 		pIndices[i + 1]._2 = i;
 	}
 
@@ -146,6 +146,7 @@ void CVIBuffer_Trail::Update_TrailBuffer(_float fTimedelta, _matrix TransformMat
 
 	XMStoreFloat3(&Vertex.vPosition, vWorldLow);
 	m_TrailVertices.push_back(Vertex);
+	
 
 	
 
@@ -277,7 +278,6 @@ void CVIBuffer_Trail::Start_Trail(_matrix TransformMatrix)
 
 void CVIBuffer_Trail::Stop_Trail()
 {	
-
 	m_TrailVertices.clear();
 }
 
@@ -310,6 +310,4 @@ CComponent * CVIBuffer_Trail::Clone(void * pArg)
 void CVIBuffer_Trail::Free()
 {
 	__super::Free();
-	Safe_Release(m_pDevice);
-	Safe_Release(m_pContext);
 }

@@ -35,8 +35,10 @@ public:
 	virtual void Collision_Exit(const COLLISION_INFO& tInfo) {};
 
 public:
-	void Generate_Trail(const wstring& strDiffuseTextureName, const wstring& strAlphaTextureName, const _float4& vColor, _uint iVertexCount);
+	void Start_Trail();
+	void Generate_Trail(const wstring& strDiffuseTextureName, const wstring& strAlphaTextureName, const wstring& strDistortionTextureName, const _float4& vColor, _uint iVertexCount);
 	void Stop_Trail();
+	class CTrail* Get_Trail() { return m_pTrail; }
 
 protected:
 	HRESULT Ready_Components();

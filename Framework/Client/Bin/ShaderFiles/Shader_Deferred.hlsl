@@ -185,8 +185,8 @@ void CaclPoint(float3 position, float3 normal, inout PS_OUT_LIGHT output)
 	// Attenuation
     float DistToLightNorm = 1.0f - saturate(DistToLight * fPointLightRangeRcp);
     float Attn = DistToLightNorm * DistToLightNorm;
+    
     output.vShade *= Attn;
-    output.vShade = (ceil(output.vShade * 2.f) / 2.f);
     output.vSpecular *= Attn;
 }
 
@@ -545,7 +545,7 @@ PS_OUT PS_DISTORTION(PS_IN In)
     float2 vSampleTexCoord = In.vTexcoord + (vDistortionWeight.rg);
 	
     Out.vColor = g_BlendTarget.Sample(PointSampler, vSampleTexCoord);
-	
+    Out.vColor.a = 1.f;
 	
     return Out;
 }
@@ -612,8 +612,8 @@ technique11 DefaultTechnique
 	pass AlphaBlendMix
 	{
 		SetRasterizerState(RS_Default);
-		SetDepthStencilState(DSS_Default, 0);
-		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 1.f), 0xffffffff);
+		SetDepthStencilState(DSS_None, 0);
+		SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 		VertexShader = compile vs_5_0 VS_MAIN();
 		GeometryShader = NULL;
 		HullShader = NULL;

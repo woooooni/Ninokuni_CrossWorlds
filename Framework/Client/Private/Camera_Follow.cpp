@@ -318,7 +318,7 @@ void CCamera_Follow::Set_ViewType(const CAMERA_VIEW_TYPE& eType)
 
 void CCamera_Follow::Set_MinMaxLimitY(const _float fMinY, const _float fMaxY)
 {
-	if (fMinY < 0.2f || 2.9f < fMaxY)
+	if (0.2f > fMinY || 2.9f < fMaxY)
 		return;
 
 	m_fMinLimitY = fMinY;

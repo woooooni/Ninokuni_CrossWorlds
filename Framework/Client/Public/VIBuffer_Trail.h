@@ -3,6 +3,7 @@
 #include "Client_Defines.h"
 #include "VIBuffer.h"
 #include <deque>
+
 BEGIN(Engine)
 class CShader;
 class CTexture;

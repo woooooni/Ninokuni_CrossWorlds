@@ -8,6 +8,8 @@
 #include "Effect.h"
 #include "Particle.h"
 #include "Decal.h"
+#include "Camera_Manager.h"
+#include "Camera.h"
 
 CDestroyer_FrengeCharge_Thunder::CDestroyer_FrengeCharge_Thunder(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:CCharacter_Projectile(pDevice, pContext, L"Destroyer_FrengeCharge_Thunder")
@@ -69,6 +71,8 @@ void CDestroyer_FrengeCharge_Thunder::Tick(_float fTimeDelta)
 	else if (false == m_bExplode && 1.2f < m_fAccDeletionTime)
 	{
 		m_bExplode = true;
+
+		CCamera_Manager::GetInstance()->Get_CurCamera()->Start_Shake(0.5f, 30.f, 0.3f);
 
 		// Stone
 		GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_Skill_FrengeCharge_Stone"),
