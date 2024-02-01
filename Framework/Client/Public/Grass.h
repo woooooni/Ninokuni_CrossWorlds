@@ -77,6 +77,10 @@ private:
 private:
 	CB_GRASS m_CBGrass = {};
 	_float m_fTime = 0.0f;
+
+private:
+	Vec4 vUpperColor = Vec4(0.365f, 0.561f, 0.169f, 1.0f);
+	Vec4 vBottomColor = Vec4(0.29f, 0.431f, 0.294f, 1.0f);
 public:
 	static CGrass* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg);

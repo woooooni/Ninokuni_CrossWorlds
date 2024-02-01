@@ -123,7 +123,8 @@ float tessellationEdgeFactor(VertexOutput vert0, VertexOutput vert1)
     float3 v0 = vert0.vPosition.xyz;
     float3 v1 = vert1.vPosition.xyz;
     float edgeLength = distance(v0, v1);
-    return edgeLength / fTessellationGrassDistance;
+    return saturate(edgeLength / fTessellationGrassDistance);
+
 }
 
 
@@ -131,9 +132,9 @@ TessellationFactors patchConstantFunc(InputPatch<VertexOutput, 3> patch)
 {
     TessellationFactors f;
     
-    f.edge[0] = tessellationEdgeFactor(patch[1], patch[2]);
-    f.edge[1] = tessellationEdgeFactor(patch[2], patch[0]);
-    f.edge[2] = tessellationEdgeFactor(patch[0], patch[1]);
+    f.edge[0] = tessellationEdgeFactor(patch[0], patch[1]);
+    f.edge[1] = tessellationEdgeFactor(patch[1], patch[2]);
+    f.edge[2] = tessellationEdgeFactor(patch[2], patch[0]);
     
     f.inside = (f.edge[0] + f.edge[1] + f.edge[2]) / 3.0f;
     

@@ -41,7 +41,8 @@ void CGrass::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
 
-	m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
+	if (true == GI->Intersect_Frustum_World(m_pTransformCom->Get_State(CTransform::STATE_POSITION), 10.0f))
+		m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
 }
 
 HRESULT CGrass::Render()
@@ -65,13 +66,18 @@ HRESULT CGrass::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing
 		return E_FAIL;
 	if (FAILED(pInstancingShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
-	if (FAILED(m_pTextureCom[GRASS_TEX::WIND_MAP]->Bind_ShaderResource(pInstancingShader, "BladeTexture", 0)))
-		return E_FAIL;
-	if (FAILED(m_pTextureCom[GRASS_TEX::SHADE_MAP]->Bind_ShaderResource(pInstancingShader, "WindTexture", 0)))
+	if (FAILED(m_pTextureCom[GRASS_TEX::WIND_MAP]->Bind_ShaderResource(pInstancingShader, "WindTexture", 0)))
+		return E_FAIL; 
+	if (FAILED(m_pTextureCom[GRASS_TEX::SHADE_MAP]->Bind_ShaderResource(pInstancingShader, "BladeTexture", 0)))
 		return E_FAIL;
 	if (FAILED(pInstancingShader->Bind_RawValue("fTime", &m_fTime, sizeof(_float))))
 		return E_FAIL;
 	if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, 0, pInstancingBuffer, WorldMatrices, 8)))
+		return E_FAIL;
+
+	if (FAILED(pInstancingShader->Bind_RawValue("vBottomColor", &vBottomColor, sizeof(Vec4))))
+		return E_FAIL;
+	if (FAILED(pInstancingShader->Bind_RawValue("vUpperColor", &vUpperColor, sizeof(Vec4))))
 		return E_FAIL;
 
 	return S_OK;
@@ -116,9 +122,9 @@ HRESULT CGrass::Bind_ShaderResource()
 	//if (FAILED(m_pShaderCom->Bind_RawValue("fBendDelta", &m_CBGrass.fBendDelta, sizeof(_float))))
 	//	return E_FAIL;
 
-	if (FAILED(m_pTextureCom[GRASS_TEX::WIND_MAP]->Bind_ShaderResource(m_pShaderCom, "BladeTexture", 0)))
+	if (FAILED(m_pTextureCom[GRASS_TEX::WIND_MAP]->Bind_ShaderResource(m_pShaderCom, "WindTexture", 0)))
 		return E_FAIL;
-	if (FAILED(m_pTextureCom[GRASS_TEX::SHADE_MAP]->Bind_ShaderResource(m_pShaderCom, "WindTexture", 0)))
+	if (FAILED(m_pTextureCom[GRASS_TEX::SHADE_MAP]->Bind_ShaderResource(m_pShaderCom, "BladeTexture", 0)))
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_RawValue("fTime", &m_fTime, sizeof(_float))))
 		return E_FAIL;
