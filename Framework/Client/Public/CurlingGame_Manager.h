@@ -3,6 +3,8 @@
 #include "Client_Defines.h"
 #include "Base.h"
 
+using Ray = SimpleMath::Ray;
+
 BEGIN(Engine)
 class CGameObject;
 class CTransform;
@@ -10,6 +12,7 @@ class CModel;
 END
 
 BEGIN(Client)
+class CCurlingGame_Prop;
 class CCurlingGame_Stone;
 class CManager_StateMachine;
 
@@ -70,18 +73,22 @@ private:
 	typedef struct tagParticipantInfoDesc
 	{
 		_uint			iScore		= 0;
-		_uint			iNumStone	= 10;
+		_uint			iNumStone	= 5;
 		CGameObject*	pOwner		= nullptr;
 	
 	}PARTICIPANT_INFO_DESC;
 
-	typedef struct tagNPCAIDesc
+	typedef struct tagAIPathDesc
 	{
-		Vec4 vMovePosition = {};
+		_float	fPower		= 0.f;
+		Vec4	vLaunchDir	= {};
+		Vec4	vStartPoint = {};
 
-		Vec4 vLaunchDir = {};
+		tagAIPathDesc() {};
+		tagAIPathDesc(const _float& _fPower, const Vec4& _vStartPoint, const Vec4& _vLaunchDir)
+			: fPower(_fPower), vStartPoint(_vStartPoint), vLaunchDir(_vLaunchDir) {}
 
-	}NPC_AI_DESC;
+	}AI_PATH_DESC;
 
 private:
 	CCurlingGame_Manager();
@@ -96,7 +103,8 @@ public:
 public:
 	HRESULT Start_Game();
 	HRESULT Change_Turn();
-	HRESULT Set_AIData();
+	HRESULT Set_AiPath();
+	
 
 public:
 	vector<CGameObject*>* Get_Stadium() { return &m_pStadiumObjects; }
@@ -104,6 +112,7 @@ public:
 private:
 	HRESULT Ready_Components();
 	HRESULT Ready_Objects();
+	HRESULT Ready_AiPathQueue();
 
 private:
 	void Test(const _float& fTimeDelta);
@@ -136,7 +145,8 @@ private:
 	_bool					m_bPlayerTurn = false;
 
 	/* NPC */
-	NPC_AI_DESC				m_tAIDesc = {};
+	queue<AI_PATH_DESC>		m_tAiPathQueue;
+	AI_PATH_DESC				m_tCurAiPath;
 
 	/* Etc */
 	vector<CGameObject*>	m_pStadiumObjects;

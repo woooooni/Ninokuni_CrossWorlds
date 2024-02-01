@@ -47,6 +47,9 @@ HRESULT CCurlingGame_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11Devic
 	if (FAILED(Ready_Objects()))
 		return E_FAIL;
 
+	if (FAILED(Ready_AiPathQueue()))
+		return E_FAIL;
+
 #ifdef _DEBUG
 	if (m_bDebugRender && FAILED(Ready_DebugDraw()))
 		return E_FAIL;
@@ -253,6 +256,87 @@ HRESULT CCurlingGame_Manager::Ready_Objects()
 	return S_OK;
 }
 
+HRESULT CCurlingGame_Manager::Ready_AiPathQueue()
+{
+	/* 큐가 차있다면 비운다. */
+	while (!m_tAiPathQueue.empty())
+		m_tAiPathQueue.pop();
+	
+	/* 큐를 채운다. */
+	{
+		m_tAiPathQueue.push(AI_PATH_DESC(
+			0.81f,
+			Vec4(-109.064f, -3.4, 226.065f, 1.f),
+			Vec4(-0.9343f, 0.f, -0.3562f, 0.f).Normalized()));
+
+		m_tAiPathQueue.push(AI_PATH_DESC(
+			0.75f,
+			Vec4(-109.7575f, -3.4, 224.1645f, 1.f),
+			Vec4(-0.7464f, 0.f, 0.6654f, 0.f).Normalized()));
+
+		m_tAiPathQueue.push(AI_PATH_DESC(
+			0.73f,
+			Vec4(-110.1323f, -3.4, 223.54f, 1.f),
+			Vec4(-0.9881f, 0.f, -0.153f, 0.f).Normalized()));
+
+		m_tAiPathQueue.push(AI_PATH_DESC(
+			0.7f,
+			Vec4(-109.44f, -3.4, 229.5521f, 1.f),
+			Vec4(-0.8086f, 0.f, 0.5882f, 0.f).Normalized()));
+
+		m_tAiPathQueue.push(AI_PATH_DESC(
+			0.74f,
+			Vec4(-109.7352f, -3.4, 229.9734f, 1.f),
+			Vec4(-0.9417f, 0.f, -0.3362f, 0.f).Normalized()));
+
+		m_tAiPathQueue.push(AI_PATH_DESC(
+			0.76f,
+			Vec4(-109.95f, -3.4, 226.9316f, 1.f),
+			Vec4(-0.9654f, 0.f, -0.2606f, 0.f).Normalized()));
+
+		m_tAiPathQueue.push(AI_PATH_DESC(
+			0.805f,
+			Vec4(-110.6f, -3.4, 221.8f, 1.f),
+			Vec4(-0.9595f, 0.f, -0.2814f, 0.f).Normalized()));
+
+		m_tAiPathQueue.push(AI_PATH_DESC(
+			0.79f,
+			Vec4(-110.77f, -3.4, 222.399f, 1.f),
+			Vec4(-0.968f, 0.f, -0.2487f, 0.f).Normalized()));
+
+		m_tAiPathQueue.push(AI_PATH_DESC(
+			0.75f,
+			Vec4(-108.249f, -3.4, 229.9198f, 1.f),
+			Vec4(-0.7858f, 0.f, 0.6183f, 0.f).Normalized()));
+
+		m_tAiPathQueue.push(AI_PATH_DESC(
+			0.75f,
+			Vec4(-110.44f, -3.4, 225.0506f, 1.f),
+			Vec4(-0.804f, 0.f, 0.5941f, 0.f).Normalized()));
+	}
+
+	/* 큐를 섞는다. */
+	{
+		vector<AI_PATH_DESC> tempVector;
+
+		while (!m_tAiPathQueue.empty())
+		{
+			tempVector.push_back(m_tAiPathQueue.front());
+			m_tAiPathQueue.pop();
+		}
+
+		std::shuffle(tempVector.begin(), tempVector.end(), std::mt19937(std::random_device()()));
+
+		for (const auto& element : tempVector) 
+		{
+			m_tAiPathQueue.push(element);
+		}
+	}
+
+	
+	return S_OK;
+}
+
 HRESULT CCurlingGame_Manager::Change_Turn()
 {
 	CGameObject* pClone = nullptr;
@@ -311,6 +395,8 @@ HRESULT CCurlingGame_Manager::Change_Turn()
 				pCharacter->Set_Target(m_pCurStone);
 
 				pCharacter->Set_Move_Input(true);
+
+				pCharacter->Get_Component_Model()->Set_CanChangeAnimation(true);
 
 				if (FAILED(pCharacter->Get_Component_StateMachine()->Change_State(CCharacter::NEUTRAL_PICK_LARGE_IDLE)))
 					return E_FAIL;
@@ -381,13 +467,27 @@ HRESULT CCurlingGame_Manager::Change_Turn()
 	return S_OK;
 }
 
-HRESULT CCurlingGame_Manager::Set_AIData()
+HRESULT CCurlingGame_Manager::Set_AiPath()
 {
-	m_tAIDesc;
+	if (m_tAiPathQueue.empty())
+		Ready_AiPathQueue();
+
+	AI_PATH_DESC tPahtDesc = m_tAiPathQueue.front();
+	m_tAiPathQueue.pop();
+
+
+	/* 해당 위치에서 골라인까지 레이쏴서 없으면 직선으로 발사 */
+	{
+
+	}
+
+	/* 있으면 저장된 경로로 발사 */
+	{
+
+	}
+
+	memcpy(&m_tCurAiPath, &tPahtDesc, sizeof(AI_PATH_DESC));
 	
-
-
-
 	return S_OK;
 }
 

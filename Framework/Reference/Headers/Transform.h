@@ -68,7 +68,6 @@ public:
 
 public:
 	void Set_State(STATE eState, _vector vState);
-
 	void Set_Right(_vector vState);
 	void Set_Up(_vector vState);
 	void Set_Look(_vector vState);

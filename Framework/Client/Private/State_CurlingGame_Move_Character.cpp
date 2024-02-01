@@ -37,6 +37,21 @@ void CState_CurlingGame_Move_Character::Enter_State(void* pArg)
 		if (FAILED(m_pManager->Change_Turn()))
 			return;
 	}
+	
+	if (m_pManager->m_bPlayerTurn)
+	{
+
+	}
+	else
+	{
+		if (FAILED(m_pManager->Set_AiPath()))
+			return;
+
+		m_pManager->m_pCurParticipant->Get_Component_Transform()->Set_Position(m_pManager->m_tCurAiPath.vStartPoint);
+
+		const Vec4 vLookAt = m_pManager->m_tCurAiPath.vStartPoint + (m_pManager->m_tCurAiPath.vLaunchDir * 5.f).ZeroY().ZeroW().Normalized();
+		m_pManager->m_pCurParticipant->Get_Component_Transform()->LookAt_ForLandObject(vLookAt);
+	}
 }
 
 void CState_CurlingGame_Move_Character::Tick_State(const _float& fTimeDelta)
@@ -75,6 +90,32 @@ void CState_CurlingGame_Move_Character::Tick_State(const _float& fTimeDelta)
 	else
 	{
 		Set_NpcStoneTransform();
+
+		if (KEY_TAP(KEY::Q))
+		{
+			CCamera_CurlingGame* pCurlingCam = dynamic_cast<CCamera_CurlingGame*>(CCamera_Manager::GetInstance()->Get_CurCamera());
+			if (nullptr == pCurlingCam)
+				return;
+
+			if (!m_bChangeCameraToStone)
+			{
+				Vec4 vPos = m_pManager->m_pCurStone->Get_Transform()->Get_Position();
+				vPos.y = -3.4f;
+				m_pManager->m_pCurStone->Get_Transform()->Set_Position(vPos.OneW());
+
+				pCurlingCam->Change_Target(m_pManager->m_pCurStone, 0.5f);
+
+				m_bChangeCameraToStone = true;
+			}
+			else
+			{
+				if (!pCurlingCam->Is_ChagingTarget())
+				{
+					if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::DIRECTION)))
+						return;
+				}
+			}
+		}
 	}
 }
 

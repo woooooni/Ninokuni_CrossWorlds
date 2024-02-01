@@ -68,7 +68,7 @@ void CState_CurlingGame_Launch_Stone::Tick_State(const _float& fTimeDelta)
 		/* ¾Æ¿ôµÈ ½ºÅæÀ» Á¤¸®ÇÑ´Ù. */
 		for (auto& pStone : m_pManager->m_pStonesLaunched)
 		{
-			if (pStone->Is_Active())
+			if (pStone->Is_Outted() && pStone->Is_Active())
 				pStone->Set_Active(false);
 		}
 	}
@@ -158,11 +158,13 @@ void CState_CurlingGame_Launch_Stone::Calculate_Score()
 		case CCurlingGame_Stone::STONE_TYPE::BARREL:
 		{
 			iCurScores[CCurlingGame_Manager::PARTICIPANT_PLAYER] += iPoint;
+			pStone->Set_Point(iPoint);
 		}
 		break;
 		case CCurlingGame_Stone::STONE_TYPE::POT:
 		{
 			iCurScores[CCurlingGame_Manager::PARTICIPANT_NPC] += iPoint;
+			pStone->Set_Point(iPoint);
 		}
 		break;
 		default:

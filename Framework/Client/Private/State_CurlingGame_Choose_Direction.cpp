@@ -57,17 +57,11 @@ void CState_CurlingGame_Choose_Direction::Enter_State(void* pArg)
 
 	/* Transform Arrow */
 	{
-		CTransform* pOwnerTransform = nullptr;
-		{
-			if (m_pManager->m_bPlayerTurn)
-				pOwnerTransform = m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].pOwner->Get_Component_Transform();
-			else
-				pOwnerTransform = m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].pOwner->Get_Component_Transform();
-		}
+		CTransform* pOwnerTransform = m_pManager->m_pCurParticipant->Get_Component_Transform();
 		
 		/* Position */
 		{
-			Vec4 vPosition = m_pManager->m_tParticipants[0].pOwner->Get_Component_Transform()->Get_Position();
+			Vec4 vPosition = m_pManager->m_pCurParticipant->Get_Component_Transform()->Get_Position();
 			vPosition.y += 2.f;
 			m_pArrow->Get_Transform()->Set_State(CTransform::STATE::STATE_POSITION, vPosition);
 		}
@@ -87,7 +81,6 @@ void CState_CurlingGame_Choose_Direction::Enter_State(void* pArg)
 
 	/* Active */
 	m_pArrow->Set_Active(true);
-
 }
 
 void CState_CurlingGame_Choose_Direction::Tick_State(const _float& fTimeDelta)
@@ -120,7 +113,7 @@ void CState_CurlingGame_Choose_Direction::Control_Direction(const _float& fTimeD
 	{
 		if (KEY_HOLD(KEY::A))
 		{
-			Vec4 vOffset = { -0.1f, 0.f, 3.f, 1.f };
+			Vec4 vOffset = { -0.05f, 0.f, 3.f, 1.f };
 
 			vOffset = m_pArrowTransform->Get_RelativeOffset(vOffset);
 
@@ -133,7 +126,7 @@ void CState_CurlingGame_Choose_Direction::Control_Direction(const _float& fTimeD
 		}
 		else if (KEY_HOLD(KEY::D))
 		{
-			Vec4 vOffset = { 0.1f, 0.f, 3.f, 1.f };
+			Vec4 vOffset = { 0.05f, 0.f, 3.f, 1.f };
 
 			vOffset = m_pArrowTransform->Get_RelativeOffset(vOffset);
 
@@ -152,9 +145,12 @@ void CState_CurlingGame_Choose_Direction::Control_Direction(const _float& fTimeD
 	}
 	else
 	{
+		if (KEY_TAP(KEY::Q))
+		{
+			if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::INTENSITY)))
+				return;
+		}
 	}
-	
-
 }
 
 CState_CurlingGame_Choose_Direction* CState_CurlingGame_Choose_Direction::Create(CManager_StateMachine* pStateMachine)

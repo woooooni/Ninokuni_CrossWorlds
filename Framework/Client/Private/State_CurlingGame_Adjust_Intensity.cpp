@@ -64,7 +64,22 @@ void CState_CurlingGame_Adjust_Intensity::Tick_State(const _float& fTimeDelta)
 		}
 		else
 		{
+			if (KEY_TAP(KEY::Q))
+			{
+				/* 저장된 힘으로 사용 */
+				m_tGuageDesc.tLerpValue.fCurValue = m_pManager->m_tCurAiPath.fPower;
 
+				m_pManager->m_pCurStone->Launch(m_pManager->m_vCurStoneLook.ZeroY().Normalized(), m_tGuageDesc.fMaxPower * m_tGuageDesc.tLerpValue.fCurValue);
+
+				m_pManager->m_pStonesLaunched.push_back(m_pManager->m_pCurStone);
+
+				m_tGuageDesc.Stop();
+
+				m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].iNumStone--;
+
+				if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::LAUNCH)))
+					return;
+			}
 		}
 	}
 }

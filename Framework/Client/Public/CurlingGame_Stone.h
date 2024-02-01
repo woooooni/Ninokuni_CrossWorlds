@@ -75,6 +75,9 @@ public:
 
 	const STONE_TYPE& Get_StoneType() const { return m_eStoneType; }
 
+	const _uint& Get_Point() const { return m_iPoint; }
+	void Set_Point(const _uint& iPoint) { m_iPoint = iPoint; }
+
 public:
 	void Launch(const Vec4& vDir, const _float& fPower);
 	void PutDown();
@@ -104,6 +107,8 @@ private:
 	STONE_TYPE			m_eStoneType		= STONE_TYPE::STONE_TYPEEND;
 
 	const _float		m_fRotateSpeed		= 50.f;
+
+	_uint				m_iPoint			= 0;
 
 public:
 	static CCurlingGame_Stone* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
