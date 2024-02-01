@@ -9,6 +9,8 @@
 #include "Destroyer_HyperStrike_Hammer.h"
 #include "Decal.h"
 #include "Effect.h"
+#include "Particle.h"
+#include "Utils.h"
 
 CVfx_Destroyer_Skill_HyperStrike::CVfx_Destroyer_Skill_HyperStrike(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
@@ -111,36 +113,78 @@ void CVfx_Destroyer_Skill_HyperStrike::Tick(_float fTimeDelta)
 
 	if (!m_bOwnerTween)
 	{
+		if (-1 == m_iType)
+		{
+			CCharacter* pPlayer = static_cast<CCharacter*>(m_pOwnerObject);
+			if (nullptr == pPlayer)
+				MSG_BOX("Casting_Failde");
+			else
+				m_iType = pPlayer->Get_ElementalType();
+
+			switch (m_iType)
+			{
+			case ELEMENTAL_TYPE::FIRE:
+				m_fMainColor = _float3(1.f, 0.662f, 0.461f);
+				break;
+			case ELEMENTAL_TYPE::WATER:
+				m_fMainColor = _float3(0.585f, 1.000f, 0.955f);
+				break;
+			case ELEMENTAL_TYPE::WOOD:
+				m_fMainColor = _float3(0.585f, 1.000f, 0.646f);
+				break;
+			}
+		}
+
 		if (m_iCount == TYPE_ET1_E_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_E_CIRCLELINE])
 		{
+			CEffect* pEffect = nullptr;
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Destroyer_Skill_HyperStrike_CirecleLine_HandSmall"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_E_CIRCLELINE], m_pScaleOffset[TYPE_ET1_E_CIRCLELINE], m_pRotationOffset[TYPE_ET1_E_CIRCLELINE]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_E_CIRCLELINE], m_pScaleOffset[TYPE_ET1_E_CIRCLELINE], m_pRotationOffset[TYPE_ET1_E_CIRCLELINE], nullptr, &pEffect);
+			if (nullptr != pEffect)
+			{
+				pEffect->Set_Color(m_fMainColor);
+				pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 0.25f), CUtils::Random_Float(0.f, 0.25f));
+			}
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET1_P_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_P_CIRCLES])
 		{
+			CParticle* pParticle = nullptr;
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_Skill_HyperStrike_Circles"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_P_CIRCLES], m_pScaleOffset[TYPE_ET1_P_CIRCLES], m_pRotationOffset[TYPE_ET1_P_CIRCLES]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_P_CIRCLES], m_pScaleOffset[TYPE_ET1_P_CIRCLES], m_pRotationOffset[TYPE_ET1_P_CIRCLES], nullptr, &pParticle);
+			if (nullptr != pParticle)
+			{
+				pParticle->Set_Color(m_fMainColor);
+			}
 			m_iCount++;
 		}
 		
 		else if (m_iCount == TYPE_ET2_D_CRACK && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_D_CRACK])
 		{
+			CDecal* pDecal = nullptr;
 			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Destroyer_Skill_HyperStrike_Crack_Small"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_D_CRACK], m_pScaleOffset[TYPE_ET2_D_CRACK], m_pRotationOffset[TYPE_ET2_D_CRACK]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_D_CRACK], m_pScaleOffset[TYPE_ET2_D_CRACK], m_pRotationOffset[TYPE_ET2_D_CRACK], nullptr, &pDecal);
+			if (nullptr != pDecal)
+			{
+				pDecal->Set_Color(m_fMainColor, m_fMainColor);
+			}
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET2_P_FIRES && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_FIRES])
 		{
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_Skill_HyperStrike_Fire_Small"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_FIRES], m_pScaleOffset[TYPE_ET2_P_FIRES], m_pRotationOffset[TYPE_ET2_P_FIRES]);
-
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET2_P_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_CIRCLES])
 		{
+			CParticle* pParticle = nullptr;
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_Skill_HyperStrike_Circles"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_CIRCLES], m_pScaleOffset[TYPE_ET2_P_CIRCLES], m_pRotationOffset[TYPE_ET2_P_CIRCLES]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_CIRCLES], m_pScaleOffset[TYPE_ET2_P_CIRCLES], m_pRotationOffset[TYPE_ET2_P_CIRCLES], nullptr, &pParticle);
+			if (nullptr != pParticle)
+			{
+				pParticle->Set_Color(m_fMainColor);
+			}
 			m_iCount++;
 		}
 
@@ -173,8 +217,13 @@ void CVfx_Destroyer_Skill_HyperStrike::Tick(_float fTimeDelta)
 					m_WorldMatrix = pTransform->Get_WorldFloat4x4();
 
 				// IsGround
+				CDecal* pDecal = nullptr;
 				GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Destroyer_Skill_HyperStrike_Crack"),
-					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_D_CRACK], m_pScaleOffset[TYPE_ET3_D_CRACK], m_pRotationOffset[TYPE_ET3_D_CRACK]);
+					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_D_CRACK], m_pScaleOffset[TYPE_ET3_D_CRACK], m_pRotationOffset[TYPE_ET3_D_CRACK], nullptr, &pDecal);
+				if (nullptr != pDecal)
+				{
+					pDecal->Set_Color(m_fMainColor, m_fMainColor);
+				}
 
 				CEffect* pEffect = nullptr;
 				GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Destroyer_HyperStrike_SpringUp"),
@@ -182,9 +231,12 @@ void CVfx_Destroyer_Skill_HyperStrike::Tick(_float fTimeDelta)
 				if (nullptr != pEffect)
 				{
 					pEffect->Reserve_Dissolve(73,            // Index
-						_float4(0.756f, 0.532f, 0.38f, 1.f), // Color
+						_float4(m_fMainColor.x, m_fMainColor.y, m_fMainColor.z, 1.f), // Color
 						3.f,   // Speed
 						10.f); // Total
+
+					//pEffect->Set_Color(m_fMainColor);
+					pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 0.5f), CUtils::Random_Float(0.f, 0.5f));
 				}
 
 				GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_Skill_HyperStrike_Fire"),
@@ -196,14 +248,18 @@ void CVfx_Destroyer_Skill_HyperStrike::Tick(_float fTimeDelta)
 				GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_Skill_HyperStrike_Stone"),
 					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_P_STONE], m_pScaleOffset[TYPE_ET3_P_STONE], m_pRotationOffset[TYPE_ET3_P_STONE]);
 
+				CEffect* pLine = nullptr;
 				GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Destroyer_Skill_HyperStrike_CirecleLine"),
-					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_E_CIRCLELINE], m_pScaleOffset[TYPE_ET3_E_CIRCLELINE], m_pRotationOffset[TYPE_ET3_E_CIRCLELINE]);
+					XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_E_CIRCLELINE], m_pScaleOffset[TYPE_ET3_E_CIRCLELINE], m_pRotationOffset[TYPE_ET3_E_CIRCLELINE], nullptr, &pLine);
+				if (nullptr != pLine)
+				{
+					pLine->Set_Color(m_fMainColor);
+					pLine->Set_DistortionPower(CUtils::Random_Float(0.f, 0.25f), CUtils::Random_Float(0.f, 0.25f));
+				}
 
 				m_pHammer->Get_Component<CRenderer>(L"Com_Renderer")->Set_ScreenEffect(CRenderer::SCREEN_EFFECT::DESTROYER_BREAK);
 				m_pHammer->Get_Component<CRenderer>(L"Com_Renderer")->Set_RadialBlur(true);
 				Safe_Release(m_pHammer);
-
-				
 
 				m_iCount++;
 			}

@@ -5,6 +5,9 @@
 #include "Effect_Manager.h"
 #include "Character.h"
 #include "Decal.h"
+#include "Effect.h"
+#include "Particle.h"
+#include "Utils.h"
 
 CVfx_Destroyer_Skill_BrutalStrike::CVfx_Destroyer_Skill_BrutalStrike(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
@@ -159,6 +162,31 @@ void CVfx_Destroyer_Skill_BrutalStrike::Tick(_float fTimeDelta)
 
 	if (!m_bOwnerTween)
 	{
+		if (-1 == m_iType)
+		{
+			CCharacter* pPlayer = static_cast<CCharacter*>(m_pOwnerObject);
+			if (nullptr == pPlayer)
+				MSG_BOX("Casting_Failde");
+			else
+				m_iType = pPlayer->Get_ElementalType();
+
+			switch (m_iType)
+			{
+			case ELEMENTAL_TYPE::FIRE:
+				m_fMainColor = _float3(0.881f, 0.263f, 0.023f);
+				m_fLightColor = _float3(1.f, 0.511f, 0.290f);
+				break;
+			case ELEMENTAL_TYPE::WATER:
+				m_fMainColor = _float3(0.254f, 1.000f, 0.942f);
+				m_fLightColor = _float3(0.435f, 0.991f, 1.000f);
+				break;
+			case ELEMENTAL_TYPE::WOOD:
+				m_fMainColor = _float3(0.178f, 0.860f, 0.404f);
+				m_fLightColor = _float3(0.722f, 1.000f, 0.435f);
+				break;
+			}
+		}
+
 		if (m_iCount == TYPE_ET1_D_RECT && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_D_RECT])
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_SipohoningLunge_Square"),
@@ -175,8 +203,13 @@ void CVfx_Destroyer_Skill_BrutalStrike::Tick(_float fTimeDelta)
 				Safe_Release(m_pEt1_D_RECT);
 			}
 
+			CDecal* pDecal = nullptr;
 			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Destroyer_Skill_BrutalStrike_SmokedLine"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_D_SMOKED], m_pScaleOffset[TYPE_ET2_D_SMOKED], m_pRotationOffset[TYPE_ET2_D_SMOKED]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_D_SMOKED], m_pScaleOffset[TYPE_ET2_D_SMOKED], m_pRotationOffset[TYPE_ET2_D_SMOKED], nullptr, &pDecal);
+			if (nullptr != pDecal)
+			{
+				pDecal->Set_Color(m_fLightColor, m_fLightColor);
+			}
 			m_iCount++;
 		}
 
@@ -188,8 +221,14 @@ void CVfx_Destroyer_Skill_BrutalStrike::Tick(_float fTimeDelta)
 		}
 		else if (m_iCount == TYPE_ET2_E_SMOKELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_E_SMOKELINE])
 		{
+			CEffect* pEffect = nullptr;
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Destroyer_Skill_BrutalStrike_CirecleLine_Smoke"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_E_SMOKELINE], m_pScaleOffset[TYPE_ET2_E_SMOKELINE], m_pRotationOffset[TYPE_ET2_E_SMOKELINE]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_E_SMOKELINE], m_pScaleOffset[TYPE_ET2_E_SMOKELINE], m_pRotationOffset[TYPE_ET2_E_SMOKELINE], nullptr, &pEffect);
+			if (nullptr != pEffect)
+			{
+				pEffect->Set_Color(m_fMainColor);
+				pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 0.25f), CUtils::Random_Float(0.f, 0.25f));
+			}
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET2_P_STONE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_STONE])
@@ -200,8 +239,13 @@ void CVfx_Destroyer_Skill_BrutalStrike::Tick(_float fTimeDelta)
 		}
 		else if (m_iCount == TYPE_ET2_P_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_CIRCLES])
 		{
+			CParticle* pParticle = nullptr;
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_Skill_BrutalStrike_Circle"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_CIRCLES], m_pScaleOffset[TYPE_ET2_P_CIRCLES], m_pRotationOffset[TYPE_ET2_P_CIRCLES]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_CIRCLES], m_pScaleOffset[TYPE_ET2_P_CIRCLES], m_pRotationOffset[TYPE_ET2_P_CIRCLES], nullptr, &pParticle);
+			if (nullptr != pParticle)
+			{
+				pParticle->Set_Color(m_fLightColor);
+			}
 			m_iCount++;
 		}
 
@@ -239,8 +283,13 @@ void CVfx_Destroyer_Skill_BrutalStrike::Tick(_float fTimeDelta)
 		// -----------------------------------------------------------------------------------------------------------
 		else if (m_iCount == TYPE_ET3_D_SMOKED && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_D_SMOKED])
 		{
+			CDecal* pDecal = nullptr;
 			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Destroyer_Skill_BrutalStrike_SmokedLine"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_D_SMOKED], m_pScaleOffset[TYPE_ET3_D_SMOKED], m_pRotationOffset[TYPE_ET3_D_SMOKED]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_D_SMOKED], m_pScaleOffset[TYPE_ET3_D_SMOKED], m_pRotationOffset[TYPE_ET3_D_SMOKED], nullptr, &pDecal);
+			if (nullptr != pDecal)
+			{
+				pDecal->Set_Color(m_fLightColor, m_fLightColor);
+			}
 			m_iCount++;
 		}
 
@@ -252,8 +301,14 @@ void CVfx_Destroyer_Skill_BrutalStrike::Tick(_float fTimeDelta)
 		}
 		else if (m_iCount == TYPE_ET3_E_SMOKELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_E_SMOKELINE])
 		{
+		    CEffect* pEffect = nullptr;
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Destroyer_Skill_BrutalStrike_CirecleLine_Smoke"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_E_SMOKELINE], m_pScaleOffset[TYPE_ET3_E_SMOKELINE], m_pRotationOffset[TYPE_ET3_E_SMOKELINE]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_E_SMOKELINE], m_pScaleOffset[TYPE_ET3_E_SMOKELINE], m_pRotationOffset[TYPE_ET3_E_SMOKELINE], nullptr, &pEffect);
+			if (nullptr != pEffect)
+			{
+				pEffect->Set_Color(m_fMainColor);
+				pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 0.25f), CUtils::Random_Float(0.f, 0.25f));
+			}
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET3_P_STONE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_P_STONE])
@@ -264,8 +319,13 @@ void CVfx_Destroyer_Skill_BrutalStrike::Tick(_float fTimeDelta)
 		}
 		else if (m_iCount == TYPE_ET3_P_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_P_CIRCLES])
 		{
+		    CParticle* pParticle = nullptr;
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_Skill_BrutalStrike_Circle"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_P_CIRCLES], m_pScaleOffset[TYPE_ET3_P_CIRCLES], m_pRotationOffset[TYPE_ET3_P_CIRCLES]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_P_CIRCLES], m_pScaleOffset[TYPE_ET3_P_CIRCLES], m_pRotationOffset[TYPE_ET3_P_CIRCLES], nullptr, &pParticle);
+			if (nullptr != pParticle)
+			{
+				pParticle->Set_Color(m_fLightColor);
+			}
 			m_iCount++;
 		}
 
