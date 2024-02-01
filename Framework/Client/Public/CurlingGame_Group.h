@@ -8,6 +8,7 @@
 #include "CurlingGame_Stone.h"
 #include "CurlingGame_Wall.h"
 #include "CurlingGame_Arrow.h"
+#include "CurlingGame_DeadZone.h"
 
 /* Components */
 #include "Manager_StateMachine.h"

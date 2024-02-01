@@ -64,6 +64,13 @@ void CState_CurlingGame_Launch_Stone::Tick_State(const _float& fTimeDelta)
 			pCurlingCam->Finish_StoneAction(fLerpTime);
 			pCurlingCam->Change_Target(m_pManager->m_pCurParticipant, fLerpTime);
 		}
+
+		/* ¾Æ¿ôµÈ ½ºÅæÀ» Á¤¸®ÇÑ´Ù. */
+		for (auto& pStone : m_pManager->m_pStonesLaunched)
+		{
+			if (pStone->Is_Active())
+				pStone->Set_Active(false);
+		}
 	}
 
 	if (m_bResetTurn)
