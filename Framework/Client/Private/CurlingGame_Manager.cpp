@@ -335,6 +335,20 @@ HRESULT CCurlingGame_Manager::Ready_AiPathQueue()
 		}
 	}
 
+
+	/* 델타 세팅 */
+	const Vec3		vRight = Vec3(XMVector3Cross(Vec3::UnitY, m_tStandardDesc.vStartLook)).ZeroY().Normalized();
+	const _float	fDelta = 1.5f;
+
+	m_StartPointDeltas.push_back(Vec3::Zero);
+	m_StartPointDeltas.push_back(vRight * fDelta * 1.f);
+	m_StartPointDeltas.push_back(vRight * fDelta * -1.f);
+	m_StartPointDeltas.push_back(vRight * fDelta * 2.f);
+	m_StartPointDeltas.push_back(vRight * fDelta * -2.f);
+	m_StartPointDeltas.push_back(vRight * fDelta * 3.f);
+	m_StartPointDeltas.push_back(vRight * fDelta * -3.f);
+	
+
 	
 	return S_OK;
 }
@@ -473,9 +487,7 @@ HRESULT CCurlingGame_Manager::Set_AiPath()
 {
 	ZeroMemory(&m_tCurAiPath, sizeof(AI_PATH_DESC));
 
-	
-
-	/* 스타팅 포인트 6개 잡아서 충돌 스톤 없으면 직선으로 발사 */
+	/* 스타팅 포인트 6개 잡아서 충돌 스톤 없으면 그대로 발사 */
 	{
 		/* Create Start Points */
 		vector<Vec4>	StartPoints;
@@ -483,22 +495,18 @@ HRESULT CCurlingGame_Manager::Set_AiPath()
 		const Vec3		vRight		= Vec3(XMVector3Cross(Vec3::UnitY, m_tStandardDesc.vStartLook)).ZeroY().Normalized();
 		const _float	fDelta		= 1.5f;
 
-		vector<Vec3> Deltas;
-		{
-			Deltas.push_back(Vec3::Zero);
-			Deltas.push_back(vRight * fDelta *  1.f);
-			Deltas.push_back(vRight * fDelta * -1.f);
-			Deltas.push_back(vRight * fDelta *  2.f);
-			Deltas.push_back(vRight * fDelta * -2.f); 
-			Deltas.push_back(vRight * fDelta *  3.f);
-			Deltas.push_back(vRight * fDelta * -3.f);
-		}
-		 
 
 		Vec3 vStartPos = {}, vTargetPos = {};
 		const Vec3 vWidthDelta = (vRight * 0.5f).ZeroY();
 
-		for (const auto& vDelta : Deltas)
+		/* 이전과 같은 델타 방지 */
+		for (auto& vDelta : m_StartPointDeltas)
+		{
+			vDelta *= -1.f;
+		}
+
+
+		for (const auto& vDelta : m_StartPointDeltas)
 		{
 			Ray rayCenter, rayLeft, rayRight;
 

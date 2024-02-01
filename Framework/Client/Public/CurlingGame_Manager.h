@@ -146,7 +146,9 @@ private:
 
 	/* NPC */
 	queue<AI_PATH_DESC>		m_tAiPathQueue;
+	vector<Vec3>			m_StartPointDeltas;
 	AI_PATH_DESC			m_tCurAiPath;
+	_bool					m_bPathTurn = false;
 
 	/* Etc */
 	vector<CGameObject*>	m_pStadiumObjects;
