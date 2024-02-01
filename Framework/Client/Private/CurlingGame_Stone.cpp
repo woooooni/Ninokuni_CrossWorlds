@@ -188,26 +188,16 @@ void CCurlingGame_Stone::Collision_Enter(const COLLISION_INFO& tInfo)
 	}
 }
 
-void CCurlingGame_Stone::Launch(const Vec4& vDir, const _float& fPower)
+void CCurlingGame_Stone::Launch(Vec4 vDir, const _float& fPower)
 {
-	/* Transform */
-	{
-		Vec4 vPos = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
-		Vec4 vLookAt = vPos + (vDir * 5.f);
+	if (nullptr == m_pRigidBodyCom)
+		return;
 
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos.OneW());
-		m_pTransformCom->LookAt_ForLandObject(vLookAt.OneW());
-	}
+	m_pRigidBodyCom->Add_Velocity(vDir.Normalized(), fPower, false);
 
-	/* Rigidbody */
-	if (nullptr != m_pRigidBodyCom)
-	{		
-		m_pRigidBodyCom->Add_Velocity(vDir, fPower, false);
+	m_pRigidBodyCom->Set_Sleep(false);
 
-		m_pRigidBodyCom->Set_Sleep(false);
-
-		m_bLaunched = m_bMoving = true;
-	}
+	m_bLaunched = m_bMoving = true;
 }
 
 void CCurlingGame_Stone::PutDown()

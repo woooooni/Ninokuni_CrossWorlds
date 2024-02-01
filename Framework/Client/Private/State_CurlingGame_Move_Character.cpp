@@ -91,6 +91,10 @@ void CState_CurlingGame_Move_Character::Tick_State(const _float& fTimeDelta)
 	{
 		Set_NpcStoneTransform();
 
+		Vec4 vPos = m_pManager->m_pCurStone->Get_Transform()->Get_Position();
+		vPos.y = -3.4f;
+		m_pManager->m_pCurStone->Get_Transform()->Set_Position(vPos.OneW());
+
 		if (KEY_TAP(KEY::Q))
 		{
 			CCamera_CurlingGame* pCurlingCam = dynamic_cast<CCamera_CurlingGame*>(CCamera_Manager::GetInstance()->Get_CurCamera());
@@ -99,10 +103,6 @@ void CState_CurlingGame_Move_Character::Tick_State(const _float& fTimeDelta)
 
 			if (!m_bChangeCameraToStone)
 			{
-				Vec4 vPos = m_pManager->m_pCurStone->Get_Transform()->Get_Position();
-				vPos.y = -3.4f;
-				m_pManager->m_pCurStone->Get_Transform()->Set_Position(vPos.OneW());
-
 				pCurlingCam->Change_Target(m_pManager->m_pCurStone, 0.5f);
 
 				m_bChangeCameraToStone = true;

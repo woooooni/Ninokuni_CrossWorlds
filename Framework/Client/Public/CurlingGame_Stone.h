@@ -79,7 +79,7 @@ public:
 	void Set_Point(const _uint& iPoint) { m_iPoint = iPoint; }
 
 public:
-	void Launch(const Vec4& vDir, const _float& fPower);
+	void Launch(Vec4 vDir, const _float& fPower);
 	void PutDown();
 
 public:
