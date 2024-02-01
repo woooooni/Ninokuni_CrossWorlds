@@ -53,6 +53,10 @@ protected:
 	virtual HRESULT Ready_Components() override;
 
 private:
+	_int m_iType = -1;
+	_float3 m_fMainColor;
+
+private:
 	class CEffect* m_pBigGear_Frame  = nullptr;
 	class CEffect* m_pBigGear_Minut  = nullptr;
 	class CEffect* m_pBigGear_Second = nullptr;

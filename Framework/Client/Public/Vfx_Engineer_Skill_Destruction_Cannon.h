@@ -45,6 +45,10 @@ protected:
 	virtual HRESULT Ready_Components() override;
 
 private:
+	_int m_iType = -1;
+	_float3 m_fMainColor;
+
+private:
 	void Create_Metal();
 	void Fire_Cannon();
 

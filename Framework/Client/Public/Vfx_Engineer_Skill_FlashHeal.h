@@ -43,6 +43,10 @@ protected:
 	virtual HRESULT Ready_Components() override;
 
 private:
+	_int m_iType = -1;
+	_float3 m_fMainColor;
+
+private:
 	class CEffect* m_pDome     = nullptr;
 	class CEffect* m_pDomeLine = nullptr;
 	class CEffect* m_pCross = nullptr;
