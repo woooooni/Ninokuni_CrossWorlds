@@ -84,6 +84,11 @@ public:
 	_bool Get_IsDecalShow() { return m_bIsShow; }
 	void  Set_IsDecalShow(_bool bIsShow, _float fTimeDelta);
 
+	void Set_Color(_float3 fColor01, _float3 fColor02) 
+	{ 
+		m_tDecalDesc.fColorAdd_01 = fColor01;
+		m_tDecalDesc.fColorAdd_02 = fColor02;
+	}
 
 private:
 	void Tick_Alpha(_float fTimeDelta);

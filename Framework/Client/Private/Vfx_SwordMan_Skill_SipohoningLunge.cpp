@@ -4,6 +4,10 @@
 #include "Particle_Manager.h"
 #include "Effect_Manager.h"
 #include "Character.h"
+#include "Effect.h"
+#include "Particle.h"
+#include "Decal.h"
+#include "Utils.h"
 
 CVfx_SwordMan_Skill_SipohoningLunge::CVfx_SwordMan_Skill_SipohoningLunge(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
@@ -114,7 +118,7 @@ HRESULT CVfx_SwordMan_Skill_SipohoningLunge::Initialize_Prototype()
 	m_pPositionOffset[14] = _float3(0.f, 0.f, 0.f);
 	m_pScaleOffset[14]    = _float3(1.f, 1.f, 1.f);
 	m_pRotationOffset[14] = _float3(0.f, 0.f, 0.f);
-	 
+
  	return S_OK;
 }
 
@@ -129,6 +133,28 @@ void CVfx_SwordMan_Skill_SipohoningLunge::Tick(_float fTimeDelta)
 
 	if (!m_bOwnerTween)
 	{
+		if (-1 == m_iType)
+		{
+			CCharacter* pPlayer = static_cast<CCharacter*>(m_pOwnerObject);
+			if (nullptr == pPlayer)
+				MSG_BOX("Casting_Failde");
+			else
+				m_iType = pPlayer->Get_ElementalType();
+
+			switch (m_iType)
+			{
+			case ELEMENTAL_TYPE::FIRE:
+				m_fMainColor = _float3(1.000, 0.68, 0.44);
+				break;
+			case ELEMENTAL_TYPE::WATER:
+				m_fMainColor = _float3(0.4f, 0.8f, 0.9f);
+				break;
+			case ELEMENTAL_TYPE::WOOD:
+				m_fMainColor = _float3(0.55f, 1.f, 0.7f);
+				break;
+			}
+		}
+
 		// Decal_Swordman_Skill_SipohoningLunge_Circle
 		if (m_iCount == 0 && m_iOwnerFrame >= m_pFrameTriger[0])
 		{
@@ -183,17 +209,28 @@ void CVfx_SwordMan_Skill_SipohoningLunge::Tick(_float fTimeDelta)
 			m_iCount++;
 		}
 		// Effect_Swordman_Skill_SipohoningLunge_CirecleLine_Attack_01
-		else if (m_iCount == 7 && m_iOwnerFrame >= m_pFrameTriger[7]) // Why
+		else if (m_iCount == 7 && m_iOwnerFrame >= m_pFrameTriger[7])
 		{
-			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_SipohoningLunge_CirecleLine_Attack_01"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[7], m_pScaleOffset[7], m_pRotationOffset[7]);
+			CEffect* pEffect = nullptr;
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_SipohoningLunge_CirecleLine_Attack_02"),
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[7], m_pScaleOffset[7], m_pRotationOffset[7], nullptr, &pEffect);
+			if (nullptr != pEffect)
+			{
+				pEffect->Set_Color(m_fMainColor);
+				pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f));
+			}
 			m_iCount++;
 		}
 		// Particle_Swordman_Skill_SipohoningLunge_Sparkle_Circle
 		else if (m_iCount == 8 && m_iOwnerFrame >= m_pFrameTriger[8])
 		{
+			CParticle* pParticle = nullptr;
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_SipohoningLunge_Sparkle_Circle"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[8], m_pScaleOffset[8], m_pRotationOffset[8]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[8], m_pScaleOffset[8], m_pRotationOffset[8], nullptr, &pParticle);
+			if (nullptr != pParticle)
+			{
+				pParticle->Set_Color(m_fMainColor);
+			}
 			m_iCount++;
 		}
 		// Particle_Swordman_Skill_SipohoningLunge_Rock
@@ -209,30 +246,52 @@ void CVfx_SwordMan_Skill_SipohoningLunge::Tick(_float fTimeDelta)
 		// Decal_Swordman_Skill_SipohoningLunge_Crack
 		else if (m_iCount == 10 && m_iOwnerFrame >= m_pFrameTriger[10])
 		{
+			CDecal* pDecal = nullptr;
 			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_SipohoningLunge_Crack"), 
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[10], m_pScaleOffset[10], m_pRotationOffset[10]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[10], m_pScaleOffset[10], m_pRotationOffset[10], nullptr, &pDecal);
+			if (nullptr != pDecal)
+			{
+				pDecal->Set_Color(m_fMainColor, m_fMainColor);
+			}
 			m_iCount++;
 		}
 		// Effect_Swordman_Skill_SipohoningLunge_CirecleLine_Attack_01
 		else if (m_iCount == 11 && m_iOwnerFrame >= m_pFrameTriger[11])
 		{
+			CEffect* pEffect = nullptr;
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_SipohoningLunge_CirecleLine_Attack_01"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[11], m_pScaleOffset[11], m_pRotationOffset[11]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[11], m_pScaleOffset[11], m_pRotationOffset[11], nullptr, &pEffect);
+			if (nullptr != pEffect)
+			{
+				pEffect->Set_Color(m_fMainColor);
+				pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f));
+			}
 			m_iCount++;
 		}
 		// Effect_Swordman_Skill_SipohoningLunge_CirecleLine_Attack_02
 		else if (m_iCount == 12 && m_iOwnerFrame >= m_pFrameTriger[12])
 		{
+			CEffect* pEffect = nullptr;
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_SipohoningLunge_CirecleLine_Attack_02"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[12], m_pScaleOffset[12], m_pRotationOffset[12]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[12], m_pScaleOffset[12], m_pRotationOffset[12], nullptr, &pEffect);
+			if (nullptr != pEffect)
+			{
+				pEffect->Set_Color(m_fMainColor);
+				pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 1.f), CUtils::Random_Float(0.f, 1.f));
+			}
 			m_iCount++;
 		}
 
 		// Particle_Swordman_Skill_SipohoningLunge_Sparkle_Circle
 		else if (m_iCount == 13 && m_iOwnerFrame >= m_pFrameTriger[13])
 		{
+		    CParticle* pParticle = nullptr;
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_SipohoningLunge_Sparkle_Circle"), 
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[13], m_pScaleOffset[13], m_pRotationOffset[13]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[13], m_pScaleOffset[13], m_pRotationOffset[13], nullptr, &pParticle);
+			if (nullptr != pParticle)
+			{
+				pParticle->Set_Color(m_fMainColor);
+			}
 			m_iCount++;
 		}
 		// Particle_Swordman_Skill_SipohoningLunge_Rock

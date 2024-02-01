@@ -4,6 +4,9 @@
 #include "Particle_Manager.h"
 #include "Effect_Manager.h"
 #include "Character.h"
+#include "Effect.h"
+#include "Particle.h"
+#include "Utils.h"
 
 CVfx_SwordMan_Skill_PerfectBlade::CVfx_SwordMan_Skill_PerfectBlade(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
@@ -111,6 +114,28 @@ void CVfx_SwordMan_Skill_PerfectBlade::Tick(_float fTimeDelta)
 
 	if (!m_bOwnerTween)
 	{
+		if (-1 == m_iType)
+		{
+			CCharacter* pPlayer = static_cast<CCharacter*>(m_pOwnerObject);
+			if (nullptr == pPlayer)
+				MSG_BOX("Casting_Failde");
+			else
+				m_iType = pPlayer->Get_ElementalType();
+
+			switch (m_iType)
+			{
+			case ELEMENTAL_TYPE::FIRE:
+				m_fMainColor = _float3(0.881f, 0.263f, 0.023f);
+				break;
+			case ELEMENTAL_TYPE::WATER:
+				m_fMainColor = _float3(0.4f, 0.8f, 0.9f);
+				break;
+			case ELEMENTAL_TYPE::WOOD:
+				m_fMainColor = _float3(0.3f, 1.f, 0.5f);
+				break;
+			}
+		}
+
 		// Decal 1
 		if (m_iCount == 0 && m_iOwnerFrame >= m_pFrameTriger[0])
 		{
@@ -121,31 +146,61 @@ void CVfx_SwordMan_Skill_PerfectBlade::Tick(_float fTimeDelta)
 		// TrailL 1
 		else if (m_iCount == 1 && m_iOwnerFrame >= m_pFrameTriger[1])
 		{
-			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_Perfectblade_Trail_Basic_Left"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[1], m_pScaleOffset[1], m_pRotationOffset[1]);
+			CEffect* pEffect = nullptr;
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_Perfectblade_Trail_Basic_Left"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[1], m_pScaleOffset[1], m_pRotationOffset[1], nullptr, &pEffect);
+			if (pEffect != nullptr)
+			{
+				pEffect->Set_Color(m_fMainColor);
+				pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 0.25f), CUtils::Random_Float(0.f, 0.25f));
+			}
 			m_iCount++;
 		}
 		// TrailR 2
 		else if (m_iCount == 2 && m_iOwnerFrame >= m_pFrameTriger[2])
 		{
-			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_Perfectblade_Trail_Basic_Right"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[2], m_pScaleOffset[2], m_pRotationOffset[2]);
+			CEffect* pEffect = nullptr;
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_Perfectblade_Trail_Basic_Right"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[2], m_pScaleOffset[2], m_pRotationOffset[2], nullptr, &pEffect);
+			if (pEffect != nullptr)
+			{
+				pEffect->Set_Color(m_fMainColor);
+				pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 0.25f), CUtils::Random_Float(0.f, 0.25f));
+			}
 			m_iCount++;
 		}
 		// TrailL 3
 		else if (m_iCount == 3 && m_iOwnerFrame >= m_pFrameTriger[3])
 		{
-			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_Perfectblade_Trail_Basic_Left"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[3], m_pScaleOffset[3], m_pRotationOffset[3]);
+			CEffect* pEffect = nullptr;
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_Perfectblade_Trail_Basic_Left"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[3], m_pScaleOffset[3], m_pRotationOffset[3], nullptr, &pEffect);
+			if (pEffect != nullptr)
+			{
+				pEffect->Set_Color(m_fMainColor);
+				pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 0.25f), CUtils::Random_Float(0.f, 0.25f));
+			}
 			m_iCount++;
 		}
 		// TrailR 4
 		else if (m_iCount == 4 && m_iOwnerFrame >= m_pFrameTriger[4])
 		{
-			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_Perfectblade_Trail_Basic_Right"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[4], m_pScaleOffset[4], m_pRotationOffset[4]);
+			CEffect* pEffect = nullptr;
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_Perfectblade_Trail_Basic_Right"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[4], m_pScaleOffset[4], m_pRotationOffset[4], nullptr, &pEffect);
+			if (pEffect != nullptr)
+			{
+				pEffect->Set_Color(m_fMainColor);
+				pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 0.25f), CUtils::Random_Float(0.f, 0.25f));
+			}
 			m_iCount++;
 		}
 		// TrailL 5
 		else if (m_iCount == 5 && m_iOwnerFrame >= m_pFrameTriger[5])
 		{
-			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_Perfectblade_Trail_Basic_Left"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[5], m_pScaleOffset[5], m_pRotationOffset[5]);
+			CEffect* pEffect = nullptr;
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_Perfectblade_Trail_Basic_Left"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[5], m_pScaleOffset[5], m_pRotationOffset[5], nullptr, &pEffect);
+			if (pEffect != nullptr)
+			{
+				pEffect->Set_Color(m_fMainColor);
+				pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 0.25f), CUtils::Random_Float(0.f, 0.25f));
+			}
 			m_iCount++;
 		}
 
@@ -160,16 +215,24 @@ void CVfx_SwordMan_Skill_PerfectBlade::Tick(_float fTimeDelta)
 		// Special_TrailR 6
 		else if (m_iCount == 7 && m_iOwnerFrame >= m_pFrameTriger[7])
 		{
-			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_Perfectblade_Trail_Basic_Right"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[7], m_pScaleOffset[7], m_pRotationOffset[7]);
+			CEffect* pEffect = nullptr;
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_Perfectblade_Trail_Basic_Right"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[7], m_pScaleOffset[7], m_pRotationOffset[7], nullptr, &pEffect);
+			if (pEffect != nullptr)
+			{
+				pEffect->Set_Color(m_fMainColor);
+				pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 0.25f), CUtils::Random_Float(0.f, 0.25f));
+			}
 			m_iCount++;
-
 		}
 		
 		// Sparkle_Circle
 		else if (m_iCount == 8 && m_iOwnerFrame >= m_pFrameTriger[8])
 		{
 			// ¾ÕÂÊ À§
-			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_Perfectblade_Trail_Sparkle_Circle"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[8], m_pScaleOffset[8], m_pRotationOffset[8]);
+			CParticle* pParticle = nullptr;
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_Perfectblade_Trail_Sparkle_Circle"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[8], m_pScaleOffset[8], m_pRotationOffset[8], nullptr, &pParticle);
+			if (pParticle != nullptr)
+				pParticle->Set_Color(m_fMainColor);
 			m_iCount++;
 		}
 

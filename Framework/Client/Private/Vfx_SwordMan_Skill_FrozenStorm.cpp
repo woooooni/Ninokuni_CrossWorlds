@@ -4,6 +4,9 @@
 #include "Particle_Manager.h"
 #include "Effect_Manager.h"
 #include "Character.h"
+#include "Effect.h"
+#include "Particle.h"
+#include "Utils.h"
 
 CVfx_SwordMan_Skill_FrozenStorm::CVfx_SwordMan_Skill_FrozenStorm(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
@@ -79,6 +82,28 @@ void CVfx_SwordMan_Skill_FrozenStorm::Tick(_float fTimeDelta)
 
 	if (!m_bOwnerTween)
 	{
+		if (-1 == m_iType)
+		{
+			CCharacter* pPlayer = static_cast<CCharacter*>(m_pOwnerObject);
+			if (nullptr == pPlayer)
+				MSG_BOX("Casting_Failde");
+			else
+				m_iType = pPlayer->Get_ElementalType();
+
+			switch (m_iType)
+			{
+			case ELEMENTAL_TYPE::FIRE:
+				m_fMainColor = _float3(1.f, 0.65f, 0.35f);
+				break;
+			case ELEMENTAL_TYPE::WATER:
+				m_fMainColor = _float3(0.28f, 0.720f, 1.f);
+				break;
+			case ELEMENTAL_TYPE::WOOD:
+				m_fMainColor = _float3(0.28f, 1.f, 0.54f);
+				break;
+			}
+		}
+
 		if (m_iCount == TYPE_D_CIRCLE && m_iOwnerFrame >= m_pFrameTriger[TYPE_D_CIRCLE])
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_FrozenStorm_Circle"),
@@ -95,8 +120,13 @@ void CVfx_SwordMan_Skill_FrozenStorm::Tick(_float fTimeDelta)
 
 		else if (m_iCount == TYPE_P_XSPARKLE && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_XSPARKLE])
 		{
+			CParticle* pParticle = nullptr;
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_FrozenStorm_Sparkle"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_XSPARKLE], m_pScaleOffset[TYPE_P_XSPARKLE], m_pRotationOffset[TYPE_P_XSPARKLE]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_XSPARKLE], m_pScaleOffset[TYPE_P_XSPARKLE], m_pRotationOffset[TYPE_P_XSPARKLE], nullptr, &pParticle);
+			if (nullptr != pParticle)
+			{
+				pParticle->Set_Color(m_fMainColor);
+			}
 			m_iCount++;
 		}
 
@@ -109,8 +139,14 @@ void CVfx_SwordMan_Skill_FrozenStorm::Tick(_float fTimeDelta)
 
 		else if (m_iCount == TYPE_E_TRAILBASIC && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_TRAILBASIC])
 		{
+			CEffect* pEffect = nullptr;
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_FrozenStorm_Trail"), 
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_TRAILBASIC], m_pScaleOffset[TYPE_E_TRAILBASIC], m_pRotationOffset[TYPE_E_TRAILBASIC]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_TRAILBASIC], m_pScaleOffset[TYPE_E_TRAILBASIC], m_pRotationOffset[TYPE_E_TRAILBASIC], nullptr, &pEffect);
+			if (nullptr != pEffect)
+			{
+				pEffect->Set_Color(m_fMainColor);
+				pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 0.5f), CUtils::Random_Float(0.f, 0.5f));
+			}
 			m_iCount++;
 		}
 
@@ -123,8 +159,14 @@ void CVfx_SwordMan_Skill_FrozenStorm::Tick(_float fTimeDelta)
 
 		else if (m_iCount == TYPE_E_TRAILLINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_TRAILLINE])
 		{
+			CEffect* pEffect = nullptr;
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_FrozenStorm_TrailLine"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_TRAILLINE], m_pScaleOffset[TYPE_E_TRAILLINE], m_pRotationOffset[TYPE_E_TRAILLINE]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_TRAILLINE], m_pScaleOffset[TYPE_E_TRAILLINE], m_pRotationOffset[TYPE_E_TRAILLINE], nullptr, &pEffect);
+			if (nullptr != pEffect)
+			{
+				pEffect->Set_Color(m_fMainColor);
+				pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 0.5f), CUtils::Random_Float(0.f, 0.5f));
+			}
 			m_iCount++;
 		}
 

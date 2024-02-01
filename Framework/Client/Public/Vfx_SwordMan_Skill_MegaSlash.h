@@ -26,6 +26,12 @@ protected:
 	virtual HRESULT Ready_Components() override;
 
 private:
+	_int m_iType = -1;
+	_float3 m_fMainColor;
+	_float3 m_fSwordColor;
+	_float3 m_fDissolveColor;
+
+private:
 	class CEffect* m_pSwordEffect = nullptr;
 
 public:
