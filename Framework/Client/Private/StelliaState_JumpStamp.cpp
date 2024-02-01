@@ -27,7 +27,7 @@ void CStelliaState_JumpStamp::Enter_State(void* pArg)
 	CTransform* pTransformCom = m_pStellia->Get_Component<CTransform>(L"Com_Transform");
 	if (pTransformCom == nullptr)
 		return;
-	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_Rage01JumpStamp"), pTransformCom->Get_WorldMatrix(), m_pStellia);
+	GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Stellia_Skill_JumpStamp"), pTransformCom->Get_WorldMatrix(), m_pStellia);
 }
 
 void CStelliaState_JumpStamp::Tick_State(_float fTimeDelta)

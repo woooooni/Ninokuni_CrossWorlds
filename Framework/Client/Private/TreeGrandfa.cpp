@@ -176,13 +176,13 @@ HRESULT CTreeGrandfa::Ready_Colliders()
 	ZeroMemory(&OBBBox, sizeof(BoundingOrientedBox));
 
 	XMStoreFloat4(&OBBBox.Orientation, XMQuaternionRotationRollPitchYaw(XMConvertToRadians(0.f), XMConvertToRadians(0.f), XMConvertToRadians(0.f)));
-	OBBBox.Extents = { 200.f, 175.f, 250.f };
+	OBBBox.Extents = { 900.f, 600.f, 900.f };
 
 	OBBDesc.tBox = OBBBox;
 	OBBDesc.pNode = nullptr;
 	OBBDesc.pOwnerTransform = m_pTransformCom;
 	OBBDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
-	OBBDesc.vOffsetPosition = Vec3(0.f, 175.f, 0.f);
+	OBBDesc.vOffsetPosition = Vec3(0.f, 600.f, 0.f);
 
 	/* Body */
 	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::OBB, CCollider::DETECTION_TYPE::BODY, &OBBDesc)))

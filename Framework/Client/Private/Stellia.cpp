@@ -329,12 +329,26 @@ HRESULT CStellia::Ready_Components()
 
 	// m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(1.f, 10.f, 10.f, 1.f));
 	// m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(-55.f, 1.6, 363.f, 1.f));
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(0.f, 0.f, 0.f, 1.f));
-	m_pTransformCom->FixRotation(0.f, 180.f, 0.f);
 
-	m_vOriginPos = m_pTransformCom->Get_Position();
-	m_vOriginLook = m_pTransformCom->Get_Look();
-	m_vRage3StartPos = Vec4(0.f, 0.f, 40.f, 1.f);
+	if (CGameInstance::GetInstance()->Get_CurrentLevel() == LEVELID::LEVEL_TOOL)
+	{
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(0.f, 0.f, 0.f, 1.f));
+		m_pTransformCom->FixRotation(0.f, 180.f, 0.f);
+
+		m_vOriginPos = m_pTransformCom->Get_Position();
+		m_vOriginLook = m_pTransformCom->Get_Look();
+		m_vRage3StartPos = Vec4(0.f, 0.f, 40.f, 1.f);
+	}
+	else
+	{
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, XMVectorSet(138.f, -0.5f, 102.f, 1.f));
+		m_pTransformCom->FixRotation(0.f, -145.f, 0.f);
+
+		m_vOriginPos = m_pTransformCom->Get_Position();
+		m_vOriginLook = m_pTransformCom->Get_Look();
+		m_vRage3StartPos = Vec4(138.f, -0.5f, 132.f, 1.f);
+	}
+
 
 
 	/* For.Com_Renderer */

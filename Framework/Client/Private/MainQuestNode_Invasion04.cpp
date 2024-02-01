@@ -27,7 +27,7 @@ HRESULT CMainQuestNode_Invasion04::Initialize()
 void CMainQuestNode_Invasion04::Start()
 {
 	CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 1);
-	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestTag, m_strQuestContent);
+	CUI_Manager::GetInstance()->Set_QuestPopup(m_strQuestTag, m_strQuestName, m_strQuestContent);
 
 	// Delete_Npc();
 
@@ -36,10 +36,13 @@ void CMainQuestNode_Invasion04::Start()
 
 	OBJECT_INIT_DESC NpcDesc = {};
 	NpcDesc.vStartPosition = { 0.f, 10.f, 140.f, 1.f };
-	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, _uint(LAYER_NPC), TEXT("Prorotype_GameObject_Ruslan"), &NpcDesc, &m_pRuslan)))
-	{
-		MSG_BOX("Fail AddGameObj : Quest Ruslan");
-	}
+	//if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, _uint(LAYER_NPC), TEXT("Prorotype_GameObject_Ruslan"), &NpcDesc, &m_pRuslan)))
+	//{
+	//	MSG_BOX("Fail AddGameObj : Quest Ruslan");
+	//}
+
+	m_pRuslan = GI->Find_GameObject(LEVELID::LEVEL_EVERMORE, LAYER_NPC, TEXT("Ruslan"));
+
 	if (m_pRuslan != nullptr)
 	{
 		Vec4 vSpotPos = Set_DestSpot(m_pRuslan);
@@ -65,6 +68,7 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion04::Tick(const _float& fTimeDelta)
 				if (m_pQuestDestSpot->Get_IsCol())
 				{
 					m_bIsClear = true;
+					CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName); // 루슬란과 대화하기로 되어있다. 잘 확인하자
 					m_pQuestDestSpot->Set_ReadyDelete(true);
 					Safe_Release(m_pQuestDestSpot);
 					return NODE_STATE::NODE_FAIL;

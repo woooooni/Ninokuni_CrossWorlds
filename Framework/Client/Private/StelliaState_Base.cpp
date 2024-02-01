@@ -34,7 +34,7 @@ HRESULT CStelliaState_Base::Initialize(const list<wstring>& AnimationList)
 	m_fSprintSpeed = 12.f;
 	m_fRage3AroundSpeed = 40.f;
 
-	m_fAroundDist = 40.f;
+	m_fAroundDist = 30.f;
 
 
 	/* 공격 패턴만 따로 모아놓기. (후에 순차적 혹은 랜덤으로 전환하기 위해) */

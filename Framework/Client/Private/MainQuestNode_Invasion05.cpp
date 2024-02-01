@@ -17,10 +17,6 @@ CMainQuestNode_Invasion05::CMainQuestNode_Invasion05()
 
 HRESULT CMainQuestNode_Invasion05::Initialize()
 {
-	m_strQuestTag = TEXT("[메인]");
-	m_strQuestName = TEXT("파괴된 에스타나비아");
-	m_strQuestContent = TEXT("루슬란과 대화하기");
-
 	__super::Initialize();
 
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/05.MainQuest_Invasion/MainQuest_Invasion05.json");
@@ -74,7 +70,6 @@ CBTNode::NODE_STATE CMainQuestNode_Invasion05::Tick(const _float& fTimeDelta)
 		{
 			m_bIsClear = true;
 			CUI_Manager::GetInstance()->OnOff_DialogWindow(false, 0);
-			CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
 
 			/* 대화 카메라 종료 */
 			CCamera_Action* pActionCam = dynamic_cast<CCamera_Action*>(CCamera_Manager::GetInstance()->Get_Camera(CAMERA_TYPE::ACTION));

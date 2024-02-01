@@ -77,20 +77,6 @@ void CVfx_Stellia_Skill_SpinTail::Tick(_float fTimeDelta)
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_TRAIL_02], m_pScaleOffset[TYPE_E_TRAIL_02], m_pRotationOffset[TYPE_E_TRAIL_02]);
 			m_iCount++;
 		}
-
-		if (m_pTail01Effect != nullptr)
-		{
-			CTransform* pHand01EffectTransform = m_pTail01Effect->Get_Component<CTransform>(TEXT("Com_Transform"));
-			// pHand01EffectTransform->Move(pHand01EffectTransform->Get_Look(), m_pPositionOffset[TYPE_V_E_SPEED].x, fTimeDelta);
-			pHand01EffectTransform->Turn(Vec3(m_pRotationOffset[TYPE_V_E_SPEED_01]), -m_pScaleOffset[TYPE_V_E_SPEED_01].y, fTimeDelta);
-		}
-
-		//if (m_pTail02Effect != nullptr)
-		//{
-		//	CTransform* pHand01EffectTransform = m_pTail02Effect->Get_Component<CTransform>(TEXT("Com_Transform"));
-		//	// pHand01EffectTransform->Move(pHand01EffectTransform->Get_Look(), m_pPositionOffset[TYPE_V_E_SPEED].x, fTimeDelta);
-		//	pHand01EffectTransform->Turn(Vec3(m_pRotationOffset[TYPE_V_E_SPEED_02]), -m_pScaleOffset[TYPE_V_E_SPEED_02].y, fTimeDelta);
-		//}
 	}
 }
 
