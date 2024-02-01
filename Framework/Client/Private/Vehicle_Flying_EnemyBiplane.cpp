@@ -2,6 +2,7 @@
 #include "GameInstance.h"
 #include "Vehicle_Flying_EnemyBiplane.h"
 
+#include "State_Enemy_VehicleFlying_Enter.h"
 #include "State_Enemy_VehicleFlying_Stand.h"
 #include "State_Enemy_VehicleFlying_Run.h"
 #include "State_Enemy_VehicleFlying_Trace.h"
@@ -56,7 +57,9 @@ HRESULT CVehicle_Flying_EnemyBiplane::Initialize(void* pArg)
 	m_pHP = dynamic_cast<CUI_Minigame_WorldHP*>(pTemp);
 	m_pHP->Set_VehicleInformation(this);
 
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(0.12f, -0.09, 30.2f, 1.f));
+//	m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(0.12f, -0.09, 30.2f, 1.f));
+
+	m_pRigidBodyCom->Set_Use_Gravity(false);
 
 	return S_OK;
 }
@@ -72,19 +75,19 @@ void CVehicle_Flying_EnemyBiplane::Tick(_float fTimeDelta)
 		
 		Update_RiderState();
 
-		if (false == CUIMinigame_Manager::GetInstance()->Is_BiplaneFlying())
-		{
-			if (false == m_bUseRigidbody)
-				m_bUseRigidbody = true;
-		}
-		else
-			m_bUseRigidbody = false;
-
-		if (true == m_bUseRigidbody)
-		{
-			if (nullptr != m_pRigidBodyCom)
-				m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
-		}
+//		if (false == CUIMinigame_Manager::GetInstance()->Is_BiplaneFlying())
+//		{
+//			if (false == m_bUseRigidbody)
+//				m_bUseRigidbody = true;
+//		}
+//		else
+//			m_bUseRigidbody = false;
+//
+//		if (true == m_bUseRigidbody)
+//		{
+//			if (nullptr != m_pRigidBodyCom)
+//				m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
+//		}
 
 		if (nullptr != m_pControllerCom)
 			m_pControllerCom->Tick_Controller(fTimeDelta);
@@ -179,6 +182,10 @@ HRESULT CVehicle_Flying_EnemyBiplane::Ready_States()
 
 	strAnimationNames.clear();
 	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
+	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_ENTER, CState_Enemy_VehicleFlying_Enter::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_IDLE, CState_Enemy_VehicleFlying_Stand::Create(m_pStateCom, strAnimationNames));
 
 	strAnimationNames.clear();
@@ -197,7 +204,7 @@ HRESULT CVehicle_Flying_EnemyBiplane::Ready_States()
 	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_DEAD, CState_Enemy_VehicleFlying_Run::Create(m_pStateCom, strAnimationNames));
 
-	m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_IDLE);
+	m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ENTER);
 
 	return S_OK;
 }

@@ -42,7 +42,7 @@ HRESULT CGrandprix_Engineer::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_pRigidBodyCom->Set_Use_Gravity(false);
-	m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(0.12f, -0.09, 30.2f, 1.f));
+//	m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(0.12f, -0.09, 30.2f, 1.f));
 
 	return S_OK;
 }

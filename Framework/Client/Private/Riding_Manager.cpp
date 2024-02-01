@@ -67,208 +67,208 @@ HRESULT CRiding_Manager::Ready_Vehicle_GameObject(LEVELID eID)
 	// 모든 캐릭터를 로드한 경우에만 엔지니어를 만들 수 있다.
 	if (g_eLoadCharacter == LOAD_CHARACTER_TYPE::ALL_CH || g_eLoadCharacter == LOAD_CHARACTER_TYPE::ENGINEER_CH)
 	{
-		CGameObject* pEnemyplane = nullptr;
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER, TEXT("Prototype_GameObject_Vehicle_EnemyBiplane"), &UdadakDesc, &pEnemyplane)))
-			return E_FAIL;
-		if (nullptr == pEnemyplane)
-			return E_FAIL;
-		if (nullptr == dynamic_cast<CVehicle_Flying_EnemyBiplane*>(pEnemyplane))
-			return E_FAIL;
-		m_pEnemyPlane = dynamic_cast<CVehicle_Flying_EnemyBiplane*>(pEnemyplane);
-		Safe_AddRef(m_pEnemyPlane);
-
-		CGameObject* pEnemyEngineer = nullptr;
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Grandprix_Engineer"), nullptr, &pEnemyEngineer)))
-			return E_FAIL;
-		if (nullptr == pEnemyEngineer)
-			return E_FAIL;
-		if (nullptr == dynamic_cast<CGrandprix_Engineer*>(pEnemyEngineer))
-			return E_FAIL;
-		m_pEngineer = dynamic_cast<CGrandprix_Engineer*>(pEnemyEngineer);
-		Safe_AddRef(m_pEngineer);
-	
-
-		m_Botos.reserve(9);
-		m_Enemies.reserve(9);
-
-		CVehicle::VEHICLE_DESC BotoDesc = {};
-		BotoDesc.fSpeed = 12.f;
-
-		CGameObject* pEnemyBoto = nullptr;
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER, TEXT("Prototype_GameObject_Vehicle_EnemyBoto"), &BotoDesc, &pEnemyBoto)))
-			return E_FAIL;
-		if (nullptr == pEnemyBoto)
-			return E_FAIL;
-		if (nullptr == dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto))
-			return E_FAIL;
-		m_Botos.push_back(dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto));
-		Safe_AddRef(pEnemyBoto); 
-
-		pEnemyBoto = nullptr;
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER, TEXT("Prototype_GameObject_Vehicle_EnemyBoto"), &BotoDesc, &pEnemyBoto)))
-			return E_FAIL;
-		if (nullptr == pEnemyBoto)
-			return E_FAIL;
-		if (nullptr == dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto))
-			return E_FAIL;
-		m_Botos.push_back(dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto));
-		Safe_AddRef(pEnemyBoto);
-		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Using_TextureComponent(true);
-		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Set_TextureIndex(0);
-
-		pEnemyBoto = nullptr;
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER, TEXT("Prototype_GameObject_Vehicle_EnemyBoto"), &BotoDesc, &pEnemyBoto)))
-			return E_FAIL;
-		if (nullptr == pEnemyBoto)
-			return E_FAIL;
-		if (nullptr == dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto))
-			return E_FAIL;
-		m_Botos.push_back(dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto));
-		Safe_AddRef(pEnemyBoto);
-		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Using_TextureComponent(true);
-		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Set_TextureIndex(1);
-
-		pEnemyBoto = nullptr;
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER, TEXT("Prototype_GameObject_Vehicle_EnemyBoto"), &BotoDesc, &pEnemyBoto)))
-			return E_FAIL;
-		if (nullptr == pEnemyBoto)
-			return E_FAIL;
-		if (nullptr == dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto))
-			return E_FAIL;
-		m_Botos.push_back(dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto));
-		Safe_AddRef(pEnemyBoto);
-		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Using_TextureComponent(true);
-		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Set_TextureIndex(2);
-
-		pEnemyBoto = nullptr;
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER, TEXT("Prototype_GameObject_Vehicle_EnemyBoto"), &BotoDesc, &pEnemyBoto)))
-			return E_FAIL;
-		if (nullptr == pEnemyBoto)
-			return E_FAIL;
-		if (nullptr == dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto))
-			return E_FAIL;
-		m_Botos.push_back(dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto));
-		Safe_AddRef(pEnemyBoto);
-		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Using_TextureComponent(true);
-		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Set_TextureIndex(3);
-
-		pEnemyBoto = nullptr;
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER, TEXT("Prototype_GameObject_Vehicle_EnemyBoto"), &BotoDesc, &pEnemyBoto)))
-			return E_FAIL;
-		if (nullptr == pEnemyBoto)
-			return E_FAIL;
-		if (nullptr == dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto))
-			return E_FAIL;
-		m_Botos.push_back(dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto));
-		Safe_AddRef(pEnemyBoto);
-		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Using_TextureComponent(true);
-		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Set_TextureIndex(4);
-
-		pEnemyBoto = nullptr;
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER, TEXT("Prototype_GameObject_Vehicle_EnemyBoto"), &BotoDesc, &pEnemyBoto)))
-			return E_FAIL;
-		if (nullptr == pEnemyBoto)
-			return E_FAIL;
-		if (nullptr == dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto))
-			return E_FAIL;
-		m_Botos.push_back(dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto));
-		Safe_AddRef(pEnemyBoto);
-		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Using_TextureComponent(true);
-		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Set_TextureIndex(0);
-
-		pEnemyBoto = nullptr;
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER , TEXT("Prototype_GameObject_Vehicle_EnemyBoto"), &BotoDesc, &pEnemyBoto)))
-			return E_FAIL;
-		if (nullptr == pEnemyBoto)
-			return E_FAIL;
-		if (nullptr == dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto))
-			return E_FAIL;
-		m_Botos.push_back(dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto));
-		Safe_AddRef(pEnemyBoto);
-		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Using_TextureComponent(true);
-		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Set_TextureIndex(1);
-
-		CGameObject* pEnemy = nullptr;
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_Ghost2"), nullptr, &pEnemy)))
-			return E_FAIL;
-		if (nullptr == pEnemy)
-			return E_FAIL;
-		if (nullptr == dynamic_cast<CGrandprix_Enemy*>(pEnemy))
-			return E_FAIL;
-		m_Enemies.push_back(dynamic_cast<CGrandprix_Enemy*>(pEnemy));
-		Safe_AddRef(pEnemy);
-
-		pEnemy = nullptr;
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_Ghost2"), nullptr, &pEnemy)))
-			return E_FAIL;
-		if (nullptr == pEnemy)
-			return E_FAIL;
-		if (nullptr == dynamic_cast<CGrandprix_Enemy*>(pEnemy))
-			return E_FAIL;
-		m_Enemies.push_back(dynamic_cast<CGrandprix_Enemy*>(pEnemy));
-		Safe_AddRef(pEnemy);
-
-		pEnemy = nullptr;
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_Ghost2"), nullptr, &pEnemy)))
-			return E_FAIL;
-		if (nullptr == pEnemy)
-			return E_FAIL;
-		if (nullptr == dynamic_cast<CGrandprix_Enemy*>(pEnemy))
-			return E_FAIL;
-		m_Enemies.push_back(dynamic_cast<CGrandprix_Enemy*>(pEnemy));
-		Safe_AddRef(pEnemy);
-
-		pEnemy = nullptr;
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_Ghost2"), nullptr, &pEnemy)))
-			return E_FAIL;
-		if (nullptr == pEnemy)
-			return E_FAIL;
-		if (nullptr == dynamic_cast<CGrandprix_Enemy*>(pEnemy))
-			return E_FAIL;
-		m_Enemies.push_back(dynamic_cast<CGrandprix_Enemy*>(pEnemy));
-		Safe_AddRef(pEnemy);
-
-		pEnemy = nullptr;
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_Ghost2"), nullptr, &pEnemy)))
-			return E_FAIL;
-		if (nullptr == pEnemy)
-			return E_FAIL;
-		if (nullptr == dynamic_cast<CGrandprix_Enemy*>(pEnemy))
-			return E_FAIL;
-		m_Enemies.push_back(dynamic_cast<CGrandprix_Enemy*>(pEnemy));
-		Safe_AddRef(pEnemy);
-
-		pEnemy = nullptr;
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_Ghost2"), nullptr, &pEnemy)))
-			return E_FAIL;
-		if (nullptr == pEnemy)
-			return E_FAIL;
-		if (nullptr == dynamic_cast<CGrandprix_Enemy*>(pEnemy))
-			return E_FAIL;
-		m_Enemies.push_back(dynamic_cast<CGrandprix_Enemy*>(pEnemy));
-		Safe_AddRef(pEnemy);
-
-		pEnemy = nullptr;
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_Ghost2"), nullptr, &pEnemy)))
-			return E_FAIL;
-		if (nullptr == pEnemy)
-			return E_FAIL;
-		if (nullptr == dynamic_cast<CGrandprix_Enemy*>(pEnemy))
-			return E_FAIL;
-		m_Enemies.push_back(dynamic_cast<CGrandprix_Enemy*>(pEnemy));
-		Safe_AddRef(pEnemy);
-
-		pEnemy = nullptr;
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_Ghost2"), nullptr, &pEnemy)))
-			return E_FAIL;
-		if (nullptr == pEnemy)
-			return E_FAIL;
-		if (nullptr == dynamic_cast<CGrandprix_Enemy*>(pEnemy))
-			return E_FAIL;
-		m_Enemies.push_back(dynamic_cast<CGrandprix_Enemy*>(pEnemy));
-		Safe_AddRef(pEnemy);
-
-		Ready_Grandprix();
+//		CGameObject* pEnemyplane = nullptr;
+//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER, TEXT("Prototype_GameObject_Vehicle_EnemyBiplane"), &UdadakDesc, &pEnemyplane)))
+//			return E_FAIL;
+//		if (nullptr == pEnemyplane)
+//			return E_FAIL;
+//		if (nullptr == dynamic_cast<CVehicle_Flying_EnemyBiplane*>(pEnemyplane))
+//			return E_FAIL;
+//		m_pEnemyPlane = dynamic_cast<CVehicle_Flying_EnemyBiplane*>(pEnemyplane);
+//		Safe_AddRef(m_pEnemyPlane);
+//
+//		CGameObject* pEnemyEngineer = nullptr;
+//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, TEXT("Prototype_GameObject_Grandprix_Engineer"), nullptr, &pEnemyEngineer)))
+//			return E_FAIL;
+//		if (nullptr == pEnemyEngineer)
+//			return E_FAIL;
+//		if (nullptr == dynamic_cast<CGrandprix_Engineer*>(pEnemyEngineer))
+//			return E_FAIL;
+//		m_pEngineer = dynamic_cast<CGrandprix_Engineer*>(pEnemyEngineer);
+//		Safe_AddRef(m_pEngineer);
+//	
+//
+//		m_Botos.reserve(9);
+//		m_Enemies.reserve(9);
+//
+//		CVehicle::VEHICLE_DESC BotoDesc = {};
+//		BotoDesc.fSpeed = 12.f;
+//
+//		CGameObject* pEnemyBoto = nullptr;
+//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER, TEXT("Prototype_GameObject_Vehicle_EnemyBoto"), &BotoDesc, &pEnemyBoto)))
+//			return E_FAIL;
+//		if (nullptr == pEnemyBoto)
+//			return E_FAIL;
+//		if (nullptr == dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto))
+//			return E_FAIL;
+//		m_Botos.push_back(dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto));
+//		Safe_AddRef(pEnemyBoto); 
+//
+//		pEnemyBoto = nullptr;
+//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER, TEXT("Prototype_GameObject_Vehicle_EnemyBoto"), &BotoDesc, &pEnemyBoto)))
+//			return E_FAIL;
+//		if (nullptr == pEnemyBoto)
+//			return E_FAIL;
+//		if (nullptr == dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto))
+//			return E_FAIL;
+//		m_Botos.push_back(dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto));
+//		Safe_AddRef(pEnemyBoto);
+//		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Using_TextureComponent(true);
+//		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Set_TextureIndex(0);
+//
+//		pEnemyBoto = nullptr;
+//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER, TEXT("Prototype_GameObject_Vehicle_EnemyBoto"), &BotoDesc, &pEnemyBoto)))
+//			return E_FAIL;
+//		if (nullptr == pEnemyBoto)
+//			return E_FAIL;
+//		if (nullptr == dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto))
+//			return E_FAIL;
+//		m_Botos.push_back(dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto));
+//		Safe_AddRef(pEnemyBoto);
+//		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Using_TextureComponent(true);
+//		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Set_TextureIndex(1);
+//
+//		pEnemyBoto = nullptr;
+//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER, TEXT("Prototype_GameObject_Vehicle_EnemyBoto"), &BotoDesc, &pEnemyBoto)))
+//			return E_FAIL;
+//		if (nullptr == pEnemyBoto)
+//			return E_FAIL;
+//		if (nullptr == dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto))
+//			return E_FAIL;
+//		m_Botos.push_back(dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto));
+//		Safe_AddRef(pEnemyBoto);
+//		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Using_TextureComponent(true);
+//		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Set_TextureIndex(2);
+//
+//		pEnemyBoto = nullptr;
+//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER, TEXT("Prototype_GameObject_Vehicle_EnemyBoto"), &BotoDesc, &pEnemyBoto)))
+//			return E_FAIL;
+//		if (nullptr == pEnemyBoto)
+//			return E_FAIL;
+//		if (nullptr == dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto))
+//			return E_FAIL;
+//		m_Botos.push_back(dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto));
+//		Safe_AddRef(pEnemyBoto);
+//		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Using_TextureComponent(true);
+//		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Set_TextureIndex(3);
+//
+//		pEnemyBoto = nullptr;
+//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER, TEXT("Prototype_GameObject_Vehicle_EnemyBoto"), &BotoDesc, &pEnemyBoto)))
+//			return E_FAIL;
+//		if (nullptr == pEnemyBoto)
+//			return E_FAIL;
+//		if (nullptr == dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto))
+//			return E_FAIL;
+//		m_Botos.push_back(dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto));
+//		Safe_AddRef(pEnemyBoto);
+//		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Using_TextureComponent(true);
+//		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Set_TextureIndex(4);
+//
+//		pEnemyBoto = nullptr;
+//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER, TEXT("Prototype_GameObject_Vehicle_EnemyBoto"), &BotoDesc, &pEnemyBoto)))
+//			return E_FAIL;
+//		if (nullptr == pEnemyBoto)
+//			return E_FAIL;
+//		if (nullptr == dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto))
+//			return E_FAIL;
+//		m_Botos.push_back(dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto));
+//		Safe_AddRef(pEnemyBoto);
+//		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Using_TextureComponent(true);
+//		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Set_TextureIndex(0);
+//
+//		pEnemyBoto = nullptr;
+//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER , TEXT("Prototype_GameObject_Vehicle_EnemyBoto"), &BotoDesc, &pEnemyBoto)))
+//			return E_FAIL;
+//		if (nullptr == pEnemyBoto)
+//			return E_FAIL;
+//		if (nullptr == dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto))
+//			return E_FAIL;
+//		m_Botos.push_back(dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto));
+//		Safe_AddRef(pEnemyBoto);
+//		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Using_TextureComponent(true);
+//		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Set_TextureIndex(1);
+//
+//		CGameObject* pEnemy = nullptr;
+//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_Ghost2"), nullptr, &pEnemy)))
+//			return E_FAIL;
+//		if (nullptr == pEnemy)
+//			return E_FAIL;
+//		if (nullptr == dynamic_cast<CGrandprix_Enemy*>(pEnemy))
+//			return E_FAIL;
+//		m_Enemies.push_back(dynamic_cast<CGrandprix_Enemy*>(pEnemy));
+//		Safe_AddRef(pEnemy);
+//
+//		pEnemy = nullptr;
+//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_Ghost2"), nullptr, &pEnemy)))
+//			return E_FAIL;
+//		if (nullptr == pEnemy)
+//			return E_FAIL;
+//		if (nullptr == dynamic_cast<CGrandprix_Enemy*>(pEnemy))
+//			return E_FAIL;
+//		m_Enemies.push_back(dynamic_cast<CGrandprix_Enemy*>(pEnemy));
+//		Safe_AddRef(pEnemy);
+//
+//		pEnemy = nullptr;
+//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_Ghost2"), nullptr, &pEnemy)))
+//			return E_FAIL;
+//		if (nullptr == pEnemy)
+//			return E_FAIL;
+//		if (nullptr == dynamic_cast<CGrandprix_Enemy*>(pEnemy))
+//			return E_FAIL;
+//		m_Enemies.push_back(dynamic_cast<CGrandprix_Enemy*>(pEnemy));
+//		Safe_AddRef(pEnemy);
+//
+//		pEnemy = nullptr;
+//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_Ghost2"), nullptr, &pEnemy)))
+//			return E_FAIL;
+//		if (nullptr == pEnemy)
+//			return E_FAIL;
+//		if (nullptr == dynamic_cast<CGrandprix_Enemy*>(pEnemy))
+//			return E_FAIL;
+//		m_Enemies.push_back(dynamic_cast<CGrandprix_Enemy*>(pEnemy));
+//		Safe_AddRef(pEnemy);
+//
+//		pEnemy = nullptr;
+//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_Ghost2"), nullptr, &pEnemy)))
+//			return E_FAIL;
+//		if (nullptr == pEnemy)
+//			return E_FAIL;
+//		if (nullptr == dynamic_cast<CGrandprix_Enemy*>(pEnemy))
+//			return E_FAIL;
+//		m_Enemies.push_back(dynamic_cast<CGrandprix_Enemy*>(pEnemy));
+//		Safe_AddRef(pEnemy);
+//
+//		pEnemy = nullptr;
+//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_Ghost2"), nullptr, &pEnemy)))
+//			return E_FAIL;
+//		if (nullptr == pEnemy)
+//			return E_FAIL;
+//		if (nullptr == dynamic_cast<CGrandprix_Enemy*>(pEnemy))
+//			return E_FAIL;
+//		m_Enemies.push_back(dynamic_cast<CGrandprix_Enemy*>(pEnemy));
+//		Safe_AddRef(pEnemy);
+//
+//		pEnemy = nullptr;
+//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_Ghost2"), nullptr, &pEnemy)))
+//			return E_FAIL;
+//		if (nullptr == pEnemy)
+//			return E_FAIL;
+//		if (nullptr == dynamic_cast<CGrandprix_Enemy*>(pEnemy))
+//			return E_FAIL;
+//		m_Enemies.push_back(dynamic_cast<CGrandprix_Enemy*>(pEnemy));
+//		Safe_AddRef(pEnemy);
+//
+//		pEnemy = nullptr;
+//		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_Ghost2"), nullptr, &pEnemy)))
+//			return E_FAIL;
+//		if (nullptr == pEnemy)
+//			return E_FAIL;
+//		if (nullptr == dynamic_cast<CGrandprix_Enemy*>(pEnemy))
+//			return E_FAIL;
+//		m_Enemies.push_back(dynamic_cast<CGrandprix_Enemy*>(pEnemy));
+//		Safe_AddRef(pEnemy);
+//
+//		Ready_Grandprix();
 	}
 
 	return S_OK;
@@ -292,37 +292,37 @@ HRESULT CRiding_Manager::Ready_Vehicle_GameObjectToLayer(LEVELID eID)
 
 		if (g_eLoadCharacter == LOAD_CHARACTER_TYPE::ALL_CH || g_eLoadCharacter == LOAD_CHARACTER_TYPE::ENGINEER_CH)
 		{
-			if (nullptr == m_pEnemyPlane)
-				return E_FAIL;
-			if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER, m_pEnemyPlane)))
-				return E_FAIL;
-			Safe_AddRef(m_pEnemyPlane);
-
-			if (nullptr == m_pEngineer)
-				return E_FAIL;
-			if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, m_pEngineer)))
-				return E_FAIL;
-			Safe_AddRef(m_pEngineer);
-		
-			for (auto& iter : m_Botos)
-			{
-				if (nullptr == iter)
-					return E_FAIL;
-
-				if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER, iter)))
-					return E_FAIL;
-				Safe_AddRef(iter);
-			}
-
-			for (auto& iter : m_Enemies)
-			{
-				if (nullptr == iter)
-					return E_FAIL;
-
-				if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, iter)))
-					return E_FAIL;
-				Safe_AddRef(iter);
-			}
+//			if (nullptr == m_pEnemyPlane)
+//				return E_FAIL;
+//			if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER, m_pEnemyPlane)))
+//				return E_FAIL;
+//			Safe_AddRef(m_pEnemyPlane);
+//
+//			if (nullptr == m_pEngineer)
+//				return E_FAIL;
+//			if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, m_pEngineer)))
+//				return E_FAIL;
+//			Safe_AddRef(m_pEngineer);
+//		
+//			for (auto& iter : m_Botos)
+//			{
+//				if (nullptr == iter)
+//					return E_FAIL;
+//
+//				if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER, iter)))
+//					return E_FAIL;
+//				Safe_AddRef(iter);
+//			}
+//
+//			for (auto& iter : m_Enemies)
+//			{
+//				if (nullptr == iter)
+//					return E_FAIL;
+//
+//				if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, iter)))
+//					return E_FAIL;
+//				Safe_AddRef(iter);
+//			}
 		}
 	}
 
@@ -397,6 +397,7 @@ HRESULT CRiding_Manager::Ready_Grandprix()
 		{
 			m_pEnemyPlane->Set_Aboard(true);
 			m_pEnemyPlane->Ride(m_pEngineer);
+			m_pEnemyPlane->Set_Routes();
 		}
 
 		for (size_t i = 0; i < m_Botos.size(); ++i)

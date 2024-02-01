@@ -289,6 +289,7 @@
     <ClInclude Include="..\Public\State_Enemy_Flying_Stand.h" />
     <ClInclude Include="..\Public\State_Enemy_VehicleFlying_Attack.h" />
     <ClInclude Include="..\Public\State_Enemy_VehicleFlying_Dead.h" />
+    <ClInclude Include="..\Public\State_Enemy_VehicleFlying_Enter.h" />
     <ClInclude Include="..\Public\State_Enemy_VehicleFlying_Run.h" />
     <ClInclude Include="..\Public\State_Enemy_VehicleFlying_Stand.h" />
     <ClInclude Include="..\Public\State_Enemy_VehicleFlying_Trace.h" />
@@ -1276,6 +1277,7 @@
     <ClCompile Include="..\Private\State_Enemy_Flying_Stand.cpp" />
     <ClCompile Include="..\Private\State_Enemy_VehicleFlying_Attack.cpp" />
     <ClCompile Include="..\Private\State_Enemy_VehicleFlying_Dead.cpp" />
+    <ClCompile Include="..\Private\State_Enemy_VehicleFlying_Enter.cpp" />
     <ClCompile Include="..\Private\State_Enemy_VehicleFlying_Run.cpp" />
     <ClCompile Include="..\Private\State_Enemy_VehicleFlying_Stand.cpp" />
     <ClCompile Include="..\Private\State_Enemy_VehicleFlying_Trace.cpp" />
