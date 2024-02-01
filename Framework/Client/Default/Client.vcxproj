@@ -283,6 +283,7 @@
     <ClInclude Include="..\Public\Grandprix_Enemy.h" />
     <ClInclude Include="..\Public\Grandprix_Enemy_Ghost2.h" />
     <ClInclude Include="..\Public\Grandprix_Enemy_HumanFL04.h" />
+    <ClInclude Include="..\Public\Grandprix_ItemBox.h" />
     <ClInclude Include="..\Public\State_Enemy.h" />
     <ClInclude Include="..\Public\State_Enemy_Flying_Run.h" />
     <ClInclude Include="..\Public\State_Enemy_Flying_RunStart.h" />
@@ -1271,6 +1272,7 @@
     <ClCompile Include="..\Private\Grandprix_Enemy.cpp" />
     <ClCompile Include="..\Private\Grandprix_Enemy_Ghost2.cpp" />
     <ClCompile Include="..\Private\Grandprix_Enemy_HumanFL04.cpp" />
+    <ClCompile Include="..\Private\Grandprix_ItemBox.cpp" />
     <ClCompile Include="..\Private\State_Enemy.cpp" />
     <ClCompile Include="..\Private\State_Enemy_Flying_Run.cpp" />
     <ClCompile Include="..\Private\State_Enemy_Flying_RunStart.cpp" />

@@ -37,9 +37,30 @@ void CState_VehicleFlying_Run::Tick_State(_float fTimeDelta)
 {
 	_bool bMove = false;
 
+	// Skills
+	if (KEY_TAP(KEY::NUM_1))
+	{
+		CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_TEMP1);
+		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_TEMP1);
+		return;
+	}
 	if (KEY_TAP(KEY::NUM_2))
 	{
 		m_pStateMachineCom->Change_State(CVehicle::VEHICLE_RUSH);
+
+		CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_TEMP2);
+		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_TEMP2);
+		return;
+	}
+	if (KEY_TAP(KEY::NUM_3))
+	{
+		CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_TEMP3);
+		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_TEMP3);
+		return;
+	}
+	if (KEY_TAP(KEY::R))
+	{
+		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_BURST);
 		return;
 	}
 
@@ -143,31 +164,6 @@ void CState_VehicleFlying_Run::Tick_State(_float fTimeDelta)
 //		m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_WALK);
 //		return;
 //	}
-
-	// Skills
-	if (KEY_TAP(KEY::NUM_1))
-	{
-		CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_TEMP1);
-		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_TEMP1);
-		return;
-	}
-	if (KEY_TAP(KEY::NUM_2))
-	{
-		CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_TEMP2);
-		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_TEMP2);
-		return;
-	}
-	if (KEY_TAP(KEY::NUM_3))
-	{
-		CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_TEMP3);
-		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_TEMP3);
-		return;
-	}
-	if (KEY_TAP(KEY::R))
-	{
-		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_BURST);
-		return;
-	}
 
 	if (!bMove)
 	{

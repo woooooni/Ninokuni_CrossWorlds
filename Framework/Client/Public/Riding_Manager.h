@@ -43,6 +43,7 @@ private:
 	class CVehicle_Flying_EnemyBiplane* m_pEnemyPlane = { nullptr };
 	vector <class CVehicle_Flying_EnemyBoto*> m_Botos;
 	vector <class CGrandprix_Enemy*> m_Enemies;
+	vector <class CGrandprix_ItemBox*> m_Items;
 
 private:
 	ID3D11Device* m_pDevice = { nullptr };

@@ -434,8 +434,6 @@ void CTarget_Manager::Free()
 
 	m_RenderTargets.clear(); 
 
-	
-
 	m_pDSV = nullptr;
 	Safe_Release(m_pMinimapDSV);
 	Safe_Release(m_pShadowDSV);
