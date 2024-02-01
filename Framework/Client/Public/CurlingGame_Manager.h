@@ -73,7 +73,7 @@ private:
 	typedef struct tagParticipantInfoDesc
 	{
 		_uint			iScore		= 0;
-		_uint			iNumStone	= 5;
+		_uint			iNumStone	= 115;
 		CGameObject*	pOwner		= nullptr;
 	
 	}PARTICIPANT_INFO_DESC;
@@ -146,7 +146,7 @@ private:
 
 	/* NPC */
 	queue<AI_PATH_DESC>		m_tAiPathQueue;
-	AI_PATH_DESC				m_tCurAiPath;
+	AI_PATH_DESC			m_tCurAiPath;
 
 	/* Etc */
 	vector<CGameObject*>	m_pStadiumObjects;

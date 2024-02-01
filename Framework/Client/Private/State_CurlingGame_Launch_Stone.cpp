@@ -75,13 +75,20 @@ void CState_CurlingGame_Launch_Stone::Tick_State(const _float& fTimeDelta)
 
 	if (m_bResetTurn)
 	{
-		CCamera_CurlingGame* pCurlingCam = dynamic_cast<CCamera_CurlingGame*>(CCamera_Manager::GetInstance()->Get_CurCamera());
-		if (nullptr != pCurlingCam)
+		if (Check_FinishGame())
 		{
-			if (!pCurlingCam->Is_ChagingTarget())
+
+		}
+		else
+		{
+			CCamera_CurlingGame* pCurlingCam = dynamic_cast<CCamera_CurlingGame*>(CCamera_Manager::GetInstance()->Get_CurCamera());
+			if (nullptr != pCurlingCam)
 			{
-				if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::MOVE)))
-					return;
+				if (!pCurlingCam->Is_ChagingTarget())
+				{
+					if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::MOVE)))
+						return;
+				}
 			}
 		}
 	}
@@ -113,6 +120,15 @@ const _bool& CState_CurlingGame_Launch_Stone::Check_AllStoneStop()
 	}
 
 	return true;
+}
+
+const _bool& CState_CurlingGame_Launch_Stone::Check_FinishGame()
+{
+	if (0 == m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].iNumStone
+		&& 0 == m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].iNumStone)
+		return true;
+	
+	return false;
 }
 
 void CState_CurlingGame_Launch_Stone::Calculate_Score()

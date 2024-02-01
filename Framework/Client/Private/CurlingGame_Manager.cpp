@@ -21,6 +21,8 @@
 #include "State_CurlingGame_Adjust_Intensity.h"
 #include "State_CurlingGame_Launch_Stone.h"
 
+using Ray = DirectX::SimpleMath::Ray;
+
 IMPLEMENT_SINGLETON(CCurlingGame_Manager)
 
 CCurlingGame_Manager::CCurlingGame_Manager()
@@ -325,7 +327,7 @@ HRESULT CCurlingGame_Manager::Ready_AiPathQueue()
 			m_tAiPathQueue.pop();
 		}
 
-		std::shuffle(tempVector.begin(), tempVector.end(), std::mt19937(std::random_device()()));
+		shuffle(tempVector.begin(), tempVector.end(), std::mt19937(std::random_device()()));
 
 		for (const auto& element : tempVector) 
 		{
@@ -428,9 +430,9 @@ HRESULT CCurlingGame_Manager::Change_Turn()
 			const Vec4 vPos = Vec4(m_tStandardDesc.vStartLinePosition + (m_tStandardDesc.vStartLook * -6.f)).OneW();
 
 			if (m_bPlayerTurn)
-				fDeltaX = -2.f;
+				fDeltaX = -3.f;
 			else
-				fDeltaX = 2.f;
+				fDeltaX = 3.f;
 
 			m_pPrevParticipant->Get_Component_Transform()->Set_Position(vPos);
 			m_pPrevParticipant->Get_Component_Transform()->LookAt_ForLandObject(m_tStandardDesc.vGoalPosition);
@@ -469,25 +471,128 @@ HRESULT CCurlingGame_Manager::Change_Turn()
 
 HRESULT CCurlingGame_Manager::Set_AiPath()
 {
-	if (m_tAiPathQueue.empty())
-		Ready_AiPathQueue();
+	ZeroMemory(&m_tCurAiPath, sizeof(AI_PATH_DESC));
 
-	AI_PATH_DESC tPahtDesc = m_tAiPathQueue.front();
-	m_tAiPathQueue.pop();
+	
 
-
-	/* 해당 위치에서 골라인까지 레이쏴서 없으면 직선으로 발사 */
+	/* 스타팅 포인트 6개 잡아서 충돌 스톤 없으면 직선으로 발사 */
 	{
+		/* Create Start Points */
+		vector<Vec4>	StartPoints;
+		const Vec3		vCenterPos	= m_tStandardDesc.vStartLinePosition + m_tStandardDesc.vStartLook * -3.f;
+		const Vec3		vRight		= Vec3(XMVector3Cross(Vec3::UnitY, m_tStandardDesc.vStartLook)).ZeroY().Normalized();
+		const _float	fDelta		= 1.5f;
 
+		vector<Vec3> Deltas;
+		{
+			Deltas.push_back(Vec3::Zero);
+			Deltas.push_back(vRight * fDelta *  1.f);
+			Deltas.push_back(vRight * fDelta * -1.f);
+			Deltas.push_back(vRight * fDelta *  2.f);
+			Deltas.push_back(vRight * fDelta * -2.f); 
+			Deltas.push_back(vRight * fDelta *  3.f);
+			Deltas.push_back(vRight * fDelta * -3.f);
+		}
+		 
+
+		Vec3 vStartPos = {}, vTargetPos = {};
+		const Vec3 vWidthDelta = (vRight * 0.5f).ZeroY();
+
+		for (const auto& vDelta : Deltas)
+		{
+			Ray rayCenter, rayLeft, rayRight;
+
+			/* Center */
+			{
+				rayCenter.position = vCenterPos + vDelta;
+				rayCenter.direction = Vec3((m_tStandardDesc.vGoalPosition + vDelta * 0.5f) - rayCenter.position).ZeroY().Normalized();
+			}
+
+			/* Left */
+			{
+				rayLeft.position = vCenterPos + vDelta - vWidthDelta;
+				rayLeft.direction = Vec3((m_tStandardDesc.vGoalPosition - vWidthDelta) - rayLeft.position).ZeroY().Normalized();
+
+			}
+
+			/* Right */
+			{
+				rayRight.position = vCenterPos + vDelta + vWidthDelta;
+				rayRight.direction = Vec3((m_tStandardDesc.vGoalPosition + vWidthDelta) - rayRight.position).ZeroY().Normalized();
+			}
+
+			_bool bCollision = false;
+
+			/* 일 레이, 다 스톤 충돌 검사 */
+			for (const auto& pStone : m_pStonesLaunched)
+			{
+				if (nullptr == pStone || pStone->Is_Outted() || !pStone->Is_Active())
+					continue;
+
+				CCollider_Sphere* pSphereCollider = dynamic_cast<CCollider_Sphere*>(pStone->Get_Collider(CCollider::DETECTION_TYPE::BODY).front());
+				if (nullptr == pSphereCollider)
+					continue;
+
+				/* Check Collision */
+				{
+					_float fDist = 0.f;
+
+					if (rayLeft.Intersects(pSphereCollider->Get_Sphere(), fDist))
+					{
+						const _float fMaxDist = Vec4(m_tStandardDesc.vGoalPosition - Vec4(rayLeft.position)).Length();
+						if (fDist < fMaxDist)
+						{
+							bCollision = true;
+							break;
+						}
+					}
+					
+					if (rayRight.Intersects(pSphereCollider->Get_Sphere(), fDist))
+					{
+						const _float fMaxDist = Vec4(m_tStandardDesc.vGoalPosition - Vec4(rayRight.position)).Length();
+						if (fDist < fMaxDist)
+						{
+							bCollision = true;
+							break;
+						}
+					}
+
+					if (rayCenter.Intersects(pSphereCollider->Get_Sphere(), fDist))
+					{
+						const _float fMaxDist = Vec4(m_tStandardDesc.vGoalPosition - Vec4(rayCenter.position)).Length();
+						if (fDist < fMaxDist)
+						{
+							bCollision = true;
+							break;
+						}
+					}
+				}
+
+			}
+
+			/* None Collision */
+			if(!bCollision)
+			{
+				m_tCurAiPath.fPower = 0.6f;
+				m_tCurAiPath.vStartPoint = Vec4(rayCenter.position).OneW();
+				m_tCurAiPath.vLaunchDir = Vec4(rayCenter.direction).ZeroW();
+
+				return S_OK;
+			}
+		}
 	}
 
 	/* 있으면 저장된 경로로 발사 */
 	{
+		if (m_tAiPathQueue.empty())
+			Ready_AiPathQueue();
 
+		AI_PATH_DESC tPahtDesc = m_tAiPathQueue.front();
+		m_tAiPathQueue.pop();
+
+		memcpy(&m_tCurAiPath, &tPahtDesc, sizeof(AI_PATH_DESC));
 	}
 
-	memcpy(&m_tCurAiPath, &tPahtDesc, sizeof(AI_PATH_DESC));
-	
 	return S_OK;
 }
 

@@ -23,6 +23,7 @@ public:
 
 private:
 	const _bool& Check_AllStoneStop();
+	const _bool& Check_FinishGame();
 
 	void Calculate_Score();
 

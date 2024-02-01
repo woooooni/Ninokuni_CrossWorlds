@@ -274,7 +274,7 @@ HRESULT CCurlingGame_Stone::Ready_Colliders()
 			SphereDesc.pNode = nullptr;
 			SphereDesc.pOwnerTransform = m_pTransformCom;
 			SphereDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
-			SphereDesc.vOffsetPosition = Vec3{ 0.f, 50.f, 0.f };
+			SphereDesc.vOffsetPosition = Vec3{ 0.f, 30.f, 0.f };
 		}
 
 		if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider_Sphere::SPHERE, m_iColliderDetectionType, &SphereDesc)))
