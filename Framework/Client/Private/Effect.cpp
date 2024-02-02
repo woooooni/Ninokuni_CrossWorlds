@@ -708,7 +708,8 @@ void CEffect::Change_Scale(_float fTimeDelta)
 					WorldMatrix.r[CTransform::STATE_LOOK]  += XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK)) * m_fScaleSpeed * fTimeDelta * m_tEffectDesc.fScaleDirSpeed.z;
 					m_pTransformCom->Set_WorldMatrix(WorldMatrix);
 
-					if (XMVectorGetX(XMVector3Length(WorldMatrix.r[CTransform::STATE_RIGHT])) > m_tEffectDesc.fScaleSizeMax.x)
+					_float3 fCurrentScale = m_pTransformCom->Get_Scale();
+					if (fCurrentScale.x > m_tEffectDesc.fScaleSizeMax.x)
 					{
 						_float3 fScale = m_pTransformCom->Get_Scale();
 						if (m_tEffectDesc.bScaleLoop)
@@ -723,7 +724,7 @@ void CEffect::Change_Scale(_float fTimeDelta)
 						m_pTransformCom->Set_Scale(fScale);
 					}
 
-					if (XMVectorGetX(XMVector3Length(WorldMatrix.r[CTransform::STATE_UP])) > m_tEffectDesc.fScaleSizeMax.y)
+					if (fCurrentScale.y > m_tEffectDesc.fScaleSizeMax.y)
 					{
 						_float3 fScale = m_pTransformCom->Get_Scale();
 						if (m_tEffectDesc.bScaleLoop)
@@ -738,7 +739,7 @@ void CEffect::Change_Scale(_float fTimeDelta)
 						m_pTransformCom->Set_Scale(fScale);
 					}
 
-					if (XMVectorGetX(XMVector3Length(WorldMatrix.r[CTransform::STATE_LOOK])) > m_tEffectDesc.fScaleSizeMax.z)
+					if (fCurrentScale.z > m_tEffectDesc.fScaleSizeMax.z)
 					{
 						_float3 fScale = m_pTransformCom->Get_Scale();
 						if (m_tEffectDesc.bScaleLoop)
@@ -756,55 +757,73 @@ void CEffect::Change_Scale(_float fTimeDelta)
 				// Ãà¼Ò
 				else
 				{
-					WorldMatrix.r[CTransform::STATE_RIGHT] -= XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_RIGHT)) * m_fScaleSpeed * fTimeDelta * m_tEffectDesc.fScaleDirSpeed.x;
-					WorldMatrix.r[CTransform::STATE_UP]    -= XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_UP))    * m_fScaleSpeed * fTimeDelta * m_tEffectDesc.fScaleDirSpeed.y;
-					WorldMatrix.r[CTransform::STATE_LOOK]  -= XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK))  * m_fScaleSpeed * fTimeDelta * m_tEffectDesc.fScaleDirSpeed.z;
-					m_pTransformCom->Set_WorldMatrix(WorldMatrix);
+					_float3 fScaleFinish = _float3(0.f, 0.f, 0.f);
 
-					if (XMVectorGetX(XMVector3Length(WorldMatrix.r[CTransform::STATE_RIGHT])) < m_tEffectDesc.fScaleSizeMin.x)
+					_float3 fCurrentScale = m_pTransformCom->Get_Scale();
+					if (fCurrentScale.x < m_tEffectDesc.fScaleSizeMin.x)
 					{
-						_float3 fScale = m_pTransformCom->Get_Scale();
 						if (m_tEffectDesc.bScaleLoop)
 						{
 							if (m_tEffectDesc.bScaleLoopStart)
-								fScale.y = CUtils::Random_Float(m_tEffectDesc.fScaleStartMin.x, m_tEffectDesc.fScaleStartMax.x);
+								WorldMatrix.r[CTransform::STATE_RIGHT] = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_RIGHT)) * CUtils::Random_Float(m_tEffectDesc.fScaleStartMin.x, m_tEffectDesc.fScaleStartMax.x);
 							else
 								m_tEffectDesc.bScaleAdd = true;
 						}
 						else
-							fScale.x = m_tEffectDesc.fScaleSizeMin.x;
-						m_pTransformCom->Set_Scale(fScale);
+						{
+							WorldMatrix.r[CTransform::STATE_RIGHT] = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_RIGHT)) * m_tEffectDesc.fScaleSizeMin.x;
+							fScaleFinish.x = 1.f;
+						}
+					}
+					else
+					{
+						WorldMatrix.r[CTransform::STATE_RIGHT] -= XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_RIGHT)) * m_fScaleSpeed * fTimeDelta * m_tEffectDesc.fScaleDirSpeed.x;
 					}
 
-					if (XMVectorGetX(XMVector3Length(WorldMatrix.r[CTransform::STATE_UP])) < m_tEffectDesc.fScaleSizeMin.y)
+					if (fCurrentScale.y < m_tEffectDesc.fScaleSizeMin.y)
 					{
-						_float3 fScale = m_pTransformCom->Get_Scale();
 						if (m_tEffectDesc.bScaleLoop)
 						{
 							if (m_tEffectDesc.bScaleLoopStart)
-								fScale.y = CUtils::Random_Float(m_tEffectDesc.fScaleStartMin.y, m_tEffectDesc.fScaleStartMax.y);
+								WorldMatrix.r[CTransform::STATE_UP] = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_UP)) * CUtils::Random_Float(m_tEffectDesc.fScaleStartMin.y, m_tEffectDesc.fScaleStartMax.y);
 							else
 								m_tEffectDesc.bScaleAdd = true;
 						}
 						else
-							fScale.y = m_tEffectDesc.fScaleSizeMin.y;
-						m_pTransformCom->Set_Scale(fScale);
+						{
+							WorldMatrix.r[CTransform::STATE_UP] = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_UP)) * m_tEffectDesc.fScaleSizeMin.y;
+							fScaleFinish.y = 1.f;
+						}
+					}
+					else
+					{
+						WorldMatrix.r[CTransform::STATE_UP] -= XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_UP)) * m_fScaleSpeed * fTimeDelta * m_tEffectDesc.fScaleDirSpeed.y;
 					}
 
-					if (XMVectorGetX(XMVector3Length(WorldMatrix.r[CTransform::STATE_LOOK])) < m_tEffectDesc.fScaleSizeMin.z)
+					if (fCurrentScale.z < m_tEffectDesc.fScaleSizeMin.z)
 					{
-						_float3 fScale = m_pTransformCom->Get_Scale();
 						if (m_tEffectDesc.bScaleLoop)
 						{
 							if (m_tEffectDesc.bScaleLoopStart)
-								fScale.z = CUtils::Random_Float(m_tEffectDesc.fScaleStartMin.z, m_tEffectDesc.fScaleStartMax.z);
+								WorldMatrix.r[CTransform::STATE_LOOK] = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK)) * CUtils::Random_Float(m_tEffectDesc.fScaleStartMin.z, m_tEffectDesc.fScaleStartMax.z);
 							else
 								m_tEffectDesc.bScaleAdd = true;
 						}
 						else
-							fScale.z = m_tEffectDesc.fScaleSizeMin.z;
-						m_pTransformCom->Set_Scale(fScale);
+						{
+							WorldMatrix.r[CTransform::STATE_LOOK] = XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK)) * m_tEffectDesc.fScaleSizeMin.z;
+							fScaleFinish.z = 1.f;
+						}
 					}
+					else
+					{
+						WorldMatrix.r[CTransform::STATE_LOOK] -= XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK)) * m_fScaleSpeed * fTimeDelta * m_tEffectDesc.fScaleDirSpeed.z;
+					}
+
+					if (1.f == fScaleFinish.x && 1.f == fScaleFinish.y && 1.f == fScaleFinish.z)
+						m_bEffectDie = true;
+					else
+						m_pTransformCom->Set_WorldMatrix(WorldMatrix);
 				}
 			}
 		}

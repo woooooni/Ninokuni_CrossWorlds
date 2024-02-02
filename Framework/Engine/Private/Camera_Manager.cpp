@@ -63,9 +63,9 @@ CCamera* CCamera_Manager::Get_Camera(const _uint& iKey)
 	return Find_Camera(iKey);
 }
 
-HRESULT CCamera_Manager::Set_CurCamera(const _uint& iKey)
+HRESULT CCamera_Manager::Set_CurCamera(const _uint& iKey, const _bool& bForce)
 {
- 	if (m_bBlending)
+	if (m_bBlending && !bForce)
 		return E_FAIL;
 
 	CCamera* pCamera = Find_Camera(iKey);

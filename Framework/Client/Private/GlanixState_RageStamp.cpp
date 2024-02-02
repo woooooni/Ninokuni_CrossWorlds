@@ -62,7 +62,7 @@ void CGlanixState_RageStamp::Tick_State(_float fTimeDelta)
 
 			const _float fDist = Vec4(vPlayerPos - vOrigin).xyz().Length();
 
-			if (fDist <= m_pGlanix->Get_PillarsController()->Get_DeathDistnace())
+			if (nullptr != m_pGlanix->Get_PillarsController() && fDist <= m_pGlanix->Get_PillarsController()->Get_DeathDistnace())
 				CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Decrease_HP(999);
 		}
 	}
