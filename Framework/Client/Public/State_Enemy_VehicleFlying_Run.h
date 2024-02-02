@@ -26,7 +26,6 @@ public:
 private:
 	class CCharacter* m_pTarget = { nullptr };
 	_bool m_bUpdate = { false };
-	_bool m_bSet = { false };
 	_float m_fMovingSpeed = { 5.f };
 
 private:

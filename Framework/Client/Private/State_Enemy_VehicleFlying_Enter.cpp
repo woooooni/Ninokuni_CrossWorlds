@@ -20,6 +20,11 @@ HRESULT CState_Enemy_VehicleFlying_Enter::Initialize(const list<wstring>& Animat
     if (FAILED(__super::Initialize(AnimationList)))
         return E_FAIL;
     
+    m_pVehicle = dynamic_cast<CVehicle*>(m_pStateMachineCom->Get_Owner());
+
+    if (nullptr == m_pVehicle)
+        return E_FAIL;
+
     return S_OK;
 }
 
@@ -27,6 +32,8 @@ void CState_Enemy_VehicleFlying_Enter::Enter_State(void* pArg)
 {
     m_iCurrAnimIndex = m_AnimIndices[0];
     m_pModelCom->Set_Animation(m_iCurrAnimIndex);
+
+    m_bUpdate = false;
 }
 
 void CState_Enemy_VehicleFlying_Enter::Tick_State(_float fTimeDelta)
@@ -37,24 +44,24 @@ void CState_Enemy_VehicleFlying_Enter::Tick_State(_float fTimeDelta)
     
     CVehicle_Flying* pBiplane = dynamic_cast<CVehicle_Flying*>(m_pVehicle);
 
-    _int iCurIndex = pBiplane->Get_CurTakeOffIndex();
-    _float4 vDestPos;
-    XMStoreFloat4(&vDestPos, pBiplane->Get_TakeOffRoutePoint(iCurIndex));
-    Move(fTimeDelta);
-
+    _uint iCurIndex = pBiplane->Get_CurTakeOffIndex();
+    _uint iMaxIndex = pBiplane->Get_TakeOffRoutes()->size() - 1;
+    Vec4 vDestPos = pBiplane->Get_TakeOffRoutePoint(iCurIndex);
     Vec4 vMyPos = m_pVehicle->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
 
+    Move(fTimeDelta);
+
+    //_float fDistanceDest = (vDestPos - Vec4(m_pTransformCom->Get_Position())).Length();
+    //if (0.01f > fDistanceDest) // 내가 지정한 DestPosition과 거의 유사해지면
     if (vMyPos.x >= vDestPos.x - 0.1f && vMyPos.x <= vDestPos.x + 0.1f &&
         vMyPos.y >= vDestPos.y - 0.1f && vMyPos.y <= vDestPos.y + 0.1f &&
-        vMyPos.z >= vDestPos.z - 0.1f && vMyPos.z <= vDestPos.z + 0.1f) // 내가 지정한 DestPosition과 거의 유사해지면
+        vMyPos.z >= vDestPos.z - 0.1f && vMyPos.z <= vDestPos.z + 0.1f)
     {
         if (false == m_bUpdate)
         {
-            _int iMaxIndex = pBiplane->Get_TakeOffRoutes()->size() - 1;
-
-            if (iCurIndex == iMaxIndex)
+            if (iMaxIndex <= iCurIndex)
             {
-                m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_RUN); // Temp
+                m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_RUN);
                 return;
             }
 
@@ -81,43 +88,24 @@ void CState_Enemy_VehicleFlying_Enter::Move(_float fTimeDelta)
         return;
 
     // 현재 인덱스를 받아서 목표 포지션을 설정한다.
-    _uint iIndex = pBiplane->Get_CurTakeOffIndex();
-    _float4 vDestPos;
-    XMStoreFloat4(&vDestPos, pBiplane->Get_TakeOffRoutePoint(iIndex));
+    _uint iCurIndex = pBiplane->Get_CurTakeOffIndex();
+    Vec4 vDestPos = pBiplane->Get_TakeOffRoutePoint(iCurIndex);
 
     // 루트를 짜기 위한 과정임.
     Vec4 vMyPos = m_pVehicle->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
 
-    Vec3 vScale = m_pTransformCom->Get_Scale();
+    Vec3 vScale = m_pVehicle->Get_Component<CTransform>(L"Com_Transform")->Get_Scale();
     Vec4 vLook = XMVector4Normalize(vDestPos - vMyPos);
     Vec4 vRight = XMVector4Normalize(XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vLook));
     Vec4 vUp = XMVector4Normalize(XMVector3Cross(vLook, vRight));
+    _matrix WorldMatrix = m_pVehicle->Get_Component<CTransform>(L"Com_Transform")->Get_WorldMatrix();
 
-    if (false == m_bSet)
-    {
-        m_bSet = true;
+    WorldMatrix.r[CTransform::STATE_RIGHT] = vRight * vScale.x;
+    WorldMatrix.r[CTransform::STATE_UP] = vUp * vScale.y;
+    WorldMatrix.r[CTransform::STATE_LOOK] = vLook * vScale.z;
 
-        _vector vPosition = m_pTransformCom->Get_State(CTransform::STATE_POSITION);
-
-        _matrix DestMatrix = XMMatrixIdentity();
-        DestMatrix.r[CTransform::STATE_RIGHT] = vRight * vScale.x;
-        DestMatrix.r[CTransform::STATE_UP] = vUp * vScale.y;
-        DestMatrix.r[CTransform::STATE_LOOK] = vLook * vScale.z;
-        DestMatrix.r[CTransform::STATE_POSITION] = vPosition;
-
-        m_pTransformCom->Set_WorldMatrix(DestMatrix);
-    }
-    else
-    {
-        _matrix WorldMatrix = m_pVehicle->Get_Component<CTransform>(L"Com_Transform")->Get_WorldMatrix();
-
-        WorldMatrix.r[CTransform::STATE_RIGHT] = vRight * vScale.x;
-        WorldMatrix.r[CTransform::STATE_UP] = vUp * vScale.y;
-        WorldMatrix.r[CTransform::STATE_LOOK] = vLook * vScale.z;
-
-        m_pTransformCom->Set_WorldMatrix(WorldMatrix);
-        m_pTransformCom->Move(vLook, m_fMovingSpeed + (4.f * iIndex), fTimeDelta);
-    }
+    m_pVehicle->Get_Component<CTransform>(L"Com_Transform")->Set_WorldMatrix(WorldMatrix);
+    m_pVehicle->Get_Component<CTransform>(L"Com_Transform")->Move(vLook, m_fMovingSpeed, fTimeDelta);
 }
 
 

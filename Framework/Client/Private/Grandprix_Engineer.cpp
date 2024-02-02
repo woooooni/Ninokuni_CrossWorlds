@@ -42,6 +42,8 @@ HRESULT CGrandprix_Engineer::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_pRigidBodyCom->Set_Use_Gravity(false);
+	m_pRigidBodyCom->Set_Ground(true);
+
 //	m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(0.12f, -0.09, 30.2f, 1.f));
 
 	m_bActive = false;

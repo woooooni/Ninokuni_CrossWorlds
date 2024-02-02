@@ -63,9 +63,6 @@ void CState_Enemy_VehicleFlying_Run::Tick_State(_float fTimeDelta)
         // 30 : 추적 시작함. 15 : 공격. // 40 : Run (Temp)
         if (30.f > XMVectorGetX(XMVector3Length(vPlayerPos - vMyPos)))
         {
-            // 일정 거리 안으로 다가오면 쫓아간다.
- //           // (내가 타겟인 경우는 제외한다. -> 내가 타겟이면 도망가게함)
-
             m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_TRACE);
             return;
         }
@@ -106,7 +103,6 @@ void CState_Enemy_VehicleFlying_Run::Exit_State()
 {
     m_pTarget = nullptr;
     m_bUpdate = false;
-    m_bSet = false;
 }
 
 void CState_Enemy_VehicleFlying_Run::Move(_float fTimeDelta)
