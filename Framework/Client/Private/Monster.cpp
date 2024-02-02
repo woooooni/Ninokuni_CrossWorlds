@@ -641,7 +641,7 @@ void CMonster::Start_MonsterHittedEvent(CGameObject* pPlayer)
 
 	/* Camera */
 	{
-		CCamera_Manager::GetInstance()->Start_Action_Shake_Default_Attack();
+		
 	}
 
 	/* Animation */

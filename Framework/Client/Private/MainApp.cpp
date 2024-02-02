@@ -329,10 +329,10 @@ HRESULT CMainApp::Ready_Prototype_Component()
 		CVIBuffer_LensFlare::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
-	///* For.Prototype_Component_VIBuffer_Trail*/
-	//if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Trail"),
-	//	CVIBuffer_Trail::Create(m_pDevice, m_pContext, 220))))
-	//	return E_FAIL;
+	/* For.Prototype_Component_VIBuffer_Trail*/
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Trail"),
+		CVIBuffer_Trail::Create(m_pDevice, m_pContext, 220))))
+		return E_FAIL;
 
 	/* For.Prototype_Component_VIBuffer_Cube*/
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_VIBuffer_Cube"),
@@ -386,9 +386,9 @@ HRESULT CMainApp::Ready_Prototype_Component()
 		return E_FAIL;
 
 	/* For.Prototype_Component_Shader_Trail */
-	/*if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Trail"),
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Trail"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_Trail.hlsl"), VTXTEX_DECLARATION::Elements, VTXTEX_DECLARATION::iNumElements))))
-		return E_FAIL;*/
+		return E_FAIL;
 
 	/* For.Prototype_Component_Shader_Model*/
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Shader_Model"),
@@ -539,7 +539,7 @@ HRESULT CMainApp::Ready_Prototype_Component()
 
 
 	/* For.Prototype_Component_Trail */
-	/*if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Trail_Diffuse"),
+	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Trail_Diffuse"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/TrailEffect/Diffuse/"), 0, true))))
 		return E_FAIL;
 
@@ -549,7 +549,7 @@ HRESULT CMainApp::Ready_Prototype_Component()
 
 	if (FAILED(GI->Add_Prototype(LEVEL_STATIC, TEXT("Prototype_Component_Texture_Trail_Distiortion"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Texture/Effect/TrailEffect/Distortion/"), 0, true))))
-		return E_FAIL;*/
+		return E_FAIL;
 
 	
 
@@ -1688,9 +1688,6 @@ void Client::CMainApp::Free()
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
 	Safe_Release(m_pRenderer_Com);
-
-	Safe_Release(m_pDevice);
-	Safe_Release(m_pContext);
 
 	CRiding_Manager::GetInstance()->DestroyInstance();
 //	CGrandprix_Manager::GetInstance()->DestroyInstance();
