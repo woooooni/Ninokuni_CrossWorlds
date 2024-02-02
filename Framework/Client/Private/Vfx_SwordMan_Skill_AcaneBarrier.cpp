@@ -5,6 +5,8 @@
 #include "Effect_Manager.h"
 #include "Character.h"
 #include "Effect.h"
+#include "Particle.h"
+#include "Utils.h"
 
 CVfx_SwordMan_Skill_AcaneBarrier::CVfx_SwordMan_Skill_AcaneBarrier(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
@@ -70,10 +72,37 @@ void CVfx_SwordMan_Skill_AcaneBarrier::Tick(_float fTimeDelta)
 
 	if (!m_bOwnerTween)
 	{
+		if (-1 == m_iType)
+		{
+			CCharacter* pPlayer = static_cast<CCharacter*>(m_pOwnerObject);
+			if (nullptr == pPlayer)
+				MSG_BOX("Casting_Failde");
+			else
+				m_iType = pPlayer->Get_ElementalType();
+
+			switch (m_iType)
+			{
+			case ELEMENTAL_TYPE::FIRE:
+				m_fMainColor = _float3(1.f, 0.7f, 0.4f);
+				break;
+			case ELEMENTAL_TYPE::WATER:
+				m_fMainColor = _float3(0.4f, 0.8f, 0.9f);
+				break;
+			case ELEMENTAL_TYPE::WOOD:
+				m_fMainColor = _float3(0.5f, 1.f, 0.65f);
+				break;
+			}
+		}
+
 		// 1. 방어막 생성 시작1 / Effect_Swordman_Skill_AcaneBarrier_Barrier_Start
 		if (m_iCount == 0 && m_iOwnerFrame >= m_pFrameTriger[0])
 		{
-			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_AcaneBarrier_Barrier_Start"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[0], m_pScaleOffset[0], m_pRotationOffset[0]);
+			CEffect* pEffect = nullptr;
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_AcaneBarrier_Barrier_Start"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[0], m_pScaleOffset[0], m_pRotationOffset[0], nullptr, &pEffect);
+			if (nullptr != pEffect)
+			{
+				pEffect->Set_Color(m_fMainColor);
+			}
 			m_iCount++;
 		}
 
@@ -81,14 +110,24 @@ void CVfx_SwordMan_Skill_AcaneBarrier::Tick(_float fTimeDelta)
 		else if (m_iCount == 1 && m_iOwnerFrame >= m_pFrameTriger[1])
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_AcaneBarrier_Barrier_Move"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[1], m_pScaleOffset[1], m_pRotationOffset[1], nullptr, &m_pEffect);
-			Safe_AddRef(m_pEffect);
+			if (nullptr != m_pEffect)
+			{
+				Safe_AddRef(m_pEffect);
+				m_pEffect->Set_Color(m_fMainColor);
+				m_pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 0.5f), CUtils::Random_Float(0.f, 0.5f));
+			}
 			m_iCount++;
 		}
 
 		// 3. 방어막 완전 생성 직전 파티클 / Particle_Swordman_Skill_AcaneBarrier_Sparkle_Circle
 		else if (m_iCount == 2 && m_iOwnerFrame >= m_pFrameTriger[2])
 		{
-			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_AcaneBarrier_Sparkle_Circle"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[2], m_pScaleOffset[2], m_pRotationOffset[2]);
+			CParticle* pParticle = nullptr;
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_AcaneBarrier_Sparkle_Circle"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[2], m_pScaleOffset[2], m_pRotationOffset[2], nullptr, &pParticle);
+			if (nullptr != pParticle)
+			{
+				pParticle->Set_Color(m_fMainColor);
+			}
 			m_iCount++;
 		}
 
@@ -103,7 +142,12 @@ void CVfx_SwordMan_Skill_AcaneBarrier::Tick(_float fTimeDelta)
 		// 4. 라인 효과 / Effect_Swordman_Skill_AcaneBarrier_Barrier_LineEffect
 		else if (m_iCount == 4 && m_iOwnerFrame >= m_pFrameTriger[4])
 		{
-			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_AcaneBarrier_Barrier_LineEffect"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[4], m_pScaleOffset[4], m_pRotationOffset[4]);
+			CEffect* pEffect = nullptr;
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_AcaneBarrier_Barrier_LineEffect"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[4], m_pScaleOffset[4], m_pRotationOffset[4], nullptr, &pEffect);
+			if (nullptr != pEffect)
+			{
+				pEffect->Set_Color(m_fMainColor);
+			}
 			m_iCount++;
 		}
 

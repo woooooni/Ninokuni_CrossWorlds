@@ -215,6 +215,7 @@ protected:
 	_float4 m_vRimLightColor = _float4(0.f, 0.f, 0.f, 0.f);
 	_float  m_fRimDuration   = 0.5f;
 
+	_bool m_bStartDissolve = false;
 	_float4 m_vDissolveColor    = _float4(0.427f, 0.894f, 1.f, 1.f);
 	_float  m_fDissolveTotal    = 10.f;
 	_float  m_fDissolveDuration = 5.f;

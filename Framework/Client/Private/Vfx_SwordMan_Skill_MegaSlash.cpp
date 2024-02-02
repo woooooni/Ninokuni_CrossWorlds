@@ -7,6 +7,8 @@
 #include "Game_Manager.h"
 #include "Player.h"
 #include "Effect.h"
+#include "Particle.h"
+#include "Utils.h"
 
 CVfx_SwordMan_Skill_MegaSlash::CVfx_SwordMan_Skill_MegaSlash(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
@@ -130,6 +132,34 @@ void CVfx_SwordMan_Skill_MegaSlash::Tick(_float fTimeDelta)
 
 	if (!m_bOwnerTween)
 	{
+		if (-1 == m_iType)
+		{
+			CCharacter* pPlayer = static_cast<CCharacter*>(m_pOwnerObject);
+			if (nullptr == pPlayer)
+				MSG_BOX("Casting_Failde");
+			else
+				m_iType = pPlayer->Get_ElementalType();
+
+			switch (m_iType)
+			{
+			case ELEMENTAL_TYPE::FIRE:
+				m_fMainColor     = _float3(0.881f, 0.263f, 0.023f);
+				m_fSwordColor    = _float3(1.f, 0.359f, 0.212f);
+				m_fDissolveColor = _float3(1.f, 0.241f, 0.067f);
+				break;
+			case ELEMENTAL_TYPE::WATER:
+				m_fMainColor     = _float3(0.4f, 0.8f, 0.9f);
+				m_fSwordColor    = _float3(0.f, 0.489f, 0.694f);
+				m_fDissolveColor = _float3(0.043f, 0.555f, 0.839f);
+				break;
+			case ELEMENTAL_TYPE::WOOD:
+				m_fMainColor     = _float3(0.3f, 1.f, 0.5f);
+				m_fSwordColor    = _float3(0.196f, 0.611f, 0.321f);
+				m_fDissolveColor = _float3(0.279f, 0.699f, 0.405f);
+				break;
+			}
+		}
+
 		// Decal
 		if (m_iCount == 0 && m_iOwnerFrame >= m_pFrameTriger[0])
 		{
@@ -155,7 +185,11 @@ void CVfx_SwordMan_Skill_MegaSlash::Tick(_float fTimeDelta)
 				Matrix RightHandMatrix = pOwnerModel->Get_SocketLocalMatrix(0); // 뼈 행렬 x 플레이어 월드 행렬 = 뼈 월드 행렬
 				GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_MegaSlash_Sword"), 
 					RightHandMatrix * m_WorldMatrix, m_pPositionOffset[2], m_pScaleOffset[2], m_pRotationOffset[2], nullptr, &m_pSwordEffect);
-				Safe_AddRef(m_pSwordEffect);
+				if (nullptr != m_pSwordEffect)
+				{
+					Safe_AddRef(m_pSwordEffect);
+					m_pSwordEffect->Set_Color(m_fSwordColor);
+				}
 			}
 			m_iCount++;
 		}
@@ -164,7 +198,7 @@ void CVfx_SwordMan_Skill_MegaSlash::Tick(_float fTimeDelta)
 		else if (m_iCount == 3 && m_iOwnerFrame >= m_pFrameTriger[3])
 		{
 			m_pSwordEffect->Start_Dissolve((_uint)m_pPositionOffset[3].x, // Index
-				_float4(m_pScaleOffset[3].x, m_pScaleOffset[3].y, m_pScaleOffset[3].z, 1.f), // Color
+				_float4(m_fDissolveColor.x, m_fDissolveColor.y, m_fDissolveColor.z, 1.f), // Color
 				(_uint)m_pPositionOffset[3].y,  // Speed
 				(_uint)m_pPositionOffset[3].z); // Total
 			m_iCount++;
@@ -173,7 +207,13 @@ void CVfx_SwordMan_Skill_MegaSlash::Tick(_float fTimeDelta)
 		// Effect Trail
 		else if (m_iCount == 4 && m_iOwnerFrame >= m_pFrameTriger[4])
 		{
-			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_MegaSlash_Trail"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[4], m_pScaleOffset[4], m_pRotationOffset[4]);
+			CEffect* pEffect = nullptr;
+			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_MegaSlash_Trail"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[4], m_pScaleOffset[4], m_pRotationOffset[4], nullptr, &pEffect);
+			if (nullptr != pEffect)
+			{
+				pEffect->Set_Color(m_fMainColor);
+				pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 0.5f), CUtils::Random_Float(0.f, 0.5f));
+			}
 			m_iCount++;
 		}
 
@@ -210,15 +250,26 @@ void CVfx_SwordMan_Skill_MegaSlash::Tick(_float fTimeDelta)
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_MegaSlash_Trail_Fire_02"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[10], m_pScaleOffset[10], m_pRotationOffset[10]);
 			m_iCount++;
 		}
+		// -------------------------------------------------------------------
 
 		else if (m_iCount == 11 && m_iOwnerFrame >= m_pFrameTriger[11])
 		{
-			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_MegaSlash_Trail_Sparkle_Circle_01"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[11], m_pScaleOffset[11], m_pRotationOffset[11]);
+			CParticle* pParticle = nullptr;
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_MegaSlash_Trail_Sparkle_Circle_01"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[11], m_pScaleOffset[11], m_pRotationOffset[11], nullptr, &pParticle);
+			if (nullptr != pParticle)
+			{
+				pParticle->Set_Color(m_fMainColor);
+			}
 			m_iCount++;
 		}
 		else if (m_iCount == 12 && m_iOwnerFrame >= m_pFrameTriger[12])
 		{
-			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_MegaSlash_Trail_Sparkle_Circle_02"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[12], m_pScaleOffset[12], m_pRotationOffset[12]);
+		    CParticle* pParticle = nullptr;
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_MegaSlash_Trail_Sparkle_Circle_02"), XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[12], m_pScaleOffset[12], m_pRotationOffset[12], nullptr, &pParticle);
+			if (nullptr != pParticle)
+			{
+				pParticle->Set_Color(m_fMainColor);
+			}
 			m_iCount++;
 		}
 

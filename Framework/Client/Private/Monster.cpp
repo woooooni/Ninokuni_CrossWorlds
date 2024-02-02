@@ -73,6 +73,16 @@ void CMonster::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
+	if (true == m_bStartDissolve)
+	{
+		m_fDissolveWeight -= m_fDissolveSpeed * fTimeDelta;
+		if (m_fDissolveWeight < 0.f)
+		{
+			m_fDissolveWeight = 0.f;
+			m_bStartDissolve  = false;
+		}
+	}
+
 	if (!m_bIsInvasion)
 	{
 		Search_Target(fTimeDelta);
@@ -139,7 +149,6 @@ void CMonster::Tick(_float fTimeDelta)
 		m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 	if (m_pControllerCom != nullptr)
 		m_pControllerCom->Tick_Controller(fTimeDelta);
-
 }
 
 void CMonster::LateTick(_float fTimeDelta)
@@ -745,7 +754,7 @@ void CMonster::Create_HitEffect(CCharacter* pCharacter)
 		return;
 
 	// 플레이어가 때린 무기의 속성에 따라 색상 변경
-	_float3 fColor = _float3(0.f, 0.f, 0.f);
+	_float3 fColor = _float3(1.f, 1.f, 1.f);
 
 	ELEMENTAL_TYPE eWeaponType = pCharacter->Get_ElementalType();
 	switch (eWeaponType)
@@ -764,7 +773,7 @@ void CMonster::Create_HitEffect(CCharacter* pCharacter)
 	}
 
 	pParticle->Set_Color(fColor);
-	pCircleParticle->Set_Color(fColor);
+	pCircleParticle->Set_Color(_float3(min(fColor.x + 0.3f, 1.f), min(fColor.y + 0.3f, 1.f), min(fColor.z + 0.3f, 1.f)));
 }
 
 void CMonster::Free()

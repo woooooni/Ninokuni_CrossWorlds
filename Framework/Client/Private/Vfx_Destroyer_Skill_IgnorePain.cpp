@@ -5,6 +5,8 @@
 #include "Effect_Manager.h"
 #include "Character.h"
 #include "Effect.h"
+#include "Particle.h"
+#include "Utils.h"
 
 CVfx_Destroyer_Skill_IgnorePain::CVfx_Destroyer_Skill_IgnorePain(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
@@ -59,18 +61,51 @@ void CVfx_Destroyer_Skill_IgnorePain::Tick(_float fTimeDelta)
 
 	if (!m_bOwnerTween) // ≥Î¿Ã¡Ó 125
 	{
+		if (-1 == m_iType)
+		{
+			CCharacter* pPlayer = static_cast<CCharacter*>(m_pOwnerObject);
+			if (nullptr == pPlayer)
+				MSG_BOX("Casting_Failde");
+			else
+				m_iType = pPlayer->Get_ElementalType();
+
+			switch (m_iType)
+			{
+			case ELEMENTAL_TYPE::FIRE:
+				m_fMainColor = _float3(0.979f, 0.589f, 0.325f);
+				break;
+			case ELEMENTAL_TYPE::WATER:
+				m_fMainColor = _float3(0.293f, 0.896f, 0.774f);
+				break;
+			case ELEMENTAL_TYPE::WOOD:
+				m_fMainColor = _float3(0.655f, 0.896f, 0.293f);
+				break;
+			}
+		}
+
 		if (m_iCount == TYPE_ET1_E_BARRIER && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_E_BARRIER])
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Destroyer_Skill_IgnorePain_Barrier"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_E_BARRIER], m_pScaleOffset[TYPE_ET1_E_BARRIER], m_pRotationOffset[TYPE_ET1_E_BARRIER], m_pOwnerObject, &m_pEt1_Barrier, false);
-			Safe_AddRef(m_pEt1_Barrier);
+			if (nullptr != m_pEt1_Barrier)
+			{
+				Safe_AddRef(m_pEt1_Barrier);
+				m_pEt1_Barrier->Set_Color(m_fMainColor);
+				//m_pEt1_Barrier->Set_DistortionPower(CUtils::Random_Float(0.f, 0.5f), CUtils::Random_Float(0.f, 0.5f));
+			}
+
 			m_iCount++;
 		}
 
 		else if (m_iCount == TYPE_ET2_P_SPARCKE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_SPARCKE])
 		{
+			CParticle* pParticle = nullptr;
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_Skill_IgnorePain_Cirecles"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_SPARCKE], m_pScaleOffset[TYPE_ET2_P_SPARCKE], m_pRotationOffset[TYPE_ET2_P_SPARCKE]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_SPARCKE], m_pScaleOffset[TYPE_ET2_P_SPARCKE], m_pRotationOffset[TYPE_ET2_P_SPARCKE], nullptr, &pParticle);
+			if (nullptr != pParticle)
+			{
+				pParticle->Set_Color(m_fMainColor);
+			}
 			m_iCount++;
 		}
 
@@ -127,7 +162,7 @@ void CVfx_Destroyer_Skill_IgnorePain::Free()
 	if (nullptr != m_pEt1_Barrier)
 	{
 		m_pEt1_Barrier->Reserve_Dissolve(m_pFrameTriger[TYPE_EV_DISSOLVE], // Index
-			_float4(m_pPositionOffset[TYPE_EV_DISSOLVE].x, m_pPositionOffset[TYPE_EV_DISSOLVE].y, m_pPositionOffset[TYPE_EV_DISSOLVE].z, 1.f), // Color
+			_float4(max(m_fMainColor.x - 0.35f, 0.f), max(m_fMainColor.y - 0.35f, 0.f), max(m_fMainColor.z - 0.35f, 0.f), 1.f), // Color
 			m_pScaleOffset[TYPE_EV_DISSOLVE].x,   // Speed
 			10.f); // Total
 		Safe_Release(m_pEt1_Barrier);

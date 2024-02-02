@@ -4,8 +4,10 @@
 #include "Particle_Manager.h"
 #include "Effect_Manager.h"
 #include "Character.h"
-#include "Effect.h"
 #include "Particle.h"
+#include "Decal.h"
+#include "Effect.h"
+#include "Utils.h"
 
 CVfx_Engineer_Skill_FlashHeal::CVfx_Engineer_Skill_FlashHeal(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
@@ -83,6 +85,28 @@ void CVfx_Engineer_Skill_FlashHeal::Tick(_float fTimeDelta)
 
 	if (!m_bOwnerTween)
 	{
+		if (-1 == m_iType)
+		{
+			CCharacter* pPlayer = static_cast<CCharacter*>(m_pOwnerObject);
+			if (nullptr == pPlayer)
+				MSG_BOX("Casting_Failde");
+			else
+				m_iType = pPlayer->Get_ElementalType();
+
+			switch (m_iType)
+			{
+			case ELEMENTAL_TYPE::FIRE:
+				m_fMainColor = _float3(1.000f, 0.944f, 0.435f);
+				break;
+			case ELEMENTAL_TYPE::WATER:
+				m_fMainColor = _float3(0.394f, 0.896f, 1.000f);
+				break;
+			case ELEMENTAL_TYPE::WOOD:
+				m_fMainColor = _float3(0.549f, 1.000f, 0.629f);
+				break;
+			}
+		}
+
 		if (m_iCount == TYPE_ET1_D_CIRCLE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_D_CIRCLE])
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_Perfectblade_Circle"),
@@ -91,8 +115,14 @@ void CVfx_Engineer_Skill_FlashHeal::Tick(_float fTimeDelta)
 		}
 		else if (m_iCount == TYPE_ET1_E_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_E_CIRCLELINE])
 		{
+			CEffect* pEffect = nullptr;
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Engineer_Skill_FlashHeal_CircleLine"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_E_CIRCLELINE], m_pScaleOffset[TYPE_ET1_E_CIRCLELINE], m_pRotationOffset[TYPE_ET1_E_CIRCLELINE]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_E_CIRCLELINE], m_pScaleOffset[TYPE_ET1_E_CIRCLELINE], m_pRotationOffset[TYPE_ET1_E_CIRCLELINE], nullptr, &pEffect);
+			if (nullptr != pEffect)
+			{
+				pEffect->Set_Color(m_fMainColor);
+				pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 0.2f), CUtils::Random_Float(0.f, 0.2f));
+			}
 			m_iCount++;
 		}
 
@@ -100,23 +130,35 @@ void CVfx_Engineer_Skill_FlashHeal::Tick(_float fTimeDelta)
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Engineer_Skill_FlashHeal_Dome"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_E_DOME], m_pScaleOffset[TYPE_ET2_E_DOME], m_pRotationOffset[TYPE_ET2_E_DOME], nullptr, &m_pDome, false);
-			Safe_AddRef(m_pDome);
-
+			if (nullptr != m_pDome)
+			{
+				Safe_AddRef(m_pDome);
+				m_pDome->Set_Color(m_fMainColor);
+				m_pDome->Set_DistortionPower(CUtils::Random_Float(0.f, 0.2f), CUtils::Random_Float(0.f, 0.2f));
+			}
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET2_E_DOMELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_E_DOMELINE])
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Engineer_Skill_FlahHeal_DomeLine"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_E_DOMELINE], m_pScaleOffset[TYPE_ET2_E_DOMELINE], m_pRotationOffset[TYPE_ET2_E_DOMELINE], nullptr, &m_pDomeLine, false);
-			Safe_AddRef(m_pDomeLine);
-
+			if (nullptr != m_pDomeLine)
+			{
+				Safe_AddRef(m_pDomeLine);
+				m_pDome->Set_DistortionPower(CUtils::Random_Float(0.f, 0.2f), CUtils::Random_Float(0.f, 0.2f));
+			}
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET2_E_CROSS && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_E_CROSS])
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Engineer_Skill_FlashHeal_Cross"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_E_CROSS], m_pScaleOffset[TYPE_ET2_E_CROSS], m_pRotationOffset[TYPE_ET2_E_CROSS], nullptr, &m_pCross, false);
-			Safe_AddRef(m_pCross);
+			if (nullptr != m_pCross)
+			{
+				Safe_AddRef(m_pCross);
+				m_pCross->Set_Color(m_fMainColor);
+				m_pCross->Set_DistortionPower(0.f, 0.f);
+			}
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET2_P_TWINKLE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_TWINKLE])
@@ -127,16 +169,23 @@ void CVfx_Engineer_Skill_FlashHeal::Tick(_float fTimeDelta)
 		}
 		else if (m_iCount == TYPE_ET2_P_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_CIRCLES])
 		{
+			CParticle* pParticle = nullptr;
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Engineer_Skill_FlashHeal_Circles"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_CIRCLES], m_pScaleOffset[TYPE_ET2_P_CIRCLES], _float3(m_pRotationOffset[TYPE_ET2_P_CIRCLES].x, m_pRotationOffset[TYPE_ET2_P_CIRCLES].y, m_pRotationOffset[TYPE_ET2_P_CIRCLES].z));
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_CIRCLES], m_pScaleOffset[TYPE_ET2_P_CIRCLES], _float3(m_pRotationOffset[TYPE_ET2_P_CIRCLES].x, m_pRotationOffset[TYPE_ET2_P_CIRCLES].y, m_pRotationOffset[TYPE_ET2_P_CIRCLES].z), nullptr, &pParticle);
+			if (nullptr != pParticle)
+			{
+				pParticle->Set_Color(m_fMainColor);
+			}
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET3_EVENT_DELETE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_EVENT_DELETE])
 		{
+			_float3 fEventColor = _float3(max(m_fMainColor.x - 0.1f, 0.f), max(m_fMainColor.y - 0.1f, 0.f), max(m_fMainColor.z - 0.1f, 0.f));
+
 			if (nullptr != m_pDome)
 			{
 				m_pDome->Start_Dissolve(90,        // Index
-					_float4(1.f, 0.8f, 0.4f, 1.f), // Color
+					_float4(fEventColor.x, fEventColor.y, fEventColor.z, 1.f),//_float4(1.f, 0.8f, 0.4f, 1.f), // Color
 					5.f,   // Speed
 					10.f); // Total
 				Safe_Release(m_pDome);
@@ -145,7 +194,7 @@ void CVfx_Engineer_Skill_FlashHeal::Tick(_float fTimeDelta)
 			if (nullptr != m_pDomeLine)
 			{
 				m_pDomeLine->Start_Dissolve(90,    // Index
-					_float4(1.f, 0.8f, 0.4f, 1.f), // Color
+					_float4(fEventColor.x, fEventColor.y, fEventColor.z, 1.f),//_float4(1.f, 0.8f, 0.4f, 1.f), // Color
 					5.f,   // Speed
 					10.f); // Total
 				Safe_Release(m_pDomeLine);
@@ -154,7 +203,7 @@ void CVfx_Engineer_Skill_FlashHeal::Tick(_float fTimeDelta)
 			if (nullptr != m_pCross)
 			{
 				m_pCross->Start_Dissolve(73,       // Index
-					_float4(1.f, 0.7f, 0.2f, 1.f), // Color
+					_float4(fEventColor.x, fEventColor.y, fEventColor.z, 1.f),//_float4(1.f, 0.7f, 0.2f, 1.f), // Color
 					5.f,   // Speed
 					10.f); // Total
 				Safe_Release(m_pCross);

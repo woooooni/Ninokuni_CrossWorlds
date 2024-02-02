@@ -108,6 +108,19 @@ HRESULT CEffect_Manager::Generate_Effect(const wstring& strEffectName, _matrix W
 	return S_OK;
 }
 
+HRESULT CEffect_Manager::Tick_Generate_Effect(_float* fTimeAcc, _float fCreateTime, _float fTimeDelta, const wstring& strEffectName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner)
+{
+	*fTimeAcc += fTimeDelta;
+	if (*fTimeAcc >= fCreateTime)
+	{
+		*fTimeAcc = 0.f;
+		if (FAILED(Generate_Effect(strEffectName, WorldMatrix, vLocalPos, vLocalScale, vLocalRotation, pOwner)))
+			return E_FAIL;
+	}
+
+	return S_OK;
+}
+
 HRESULT CEffect_Manager::Generate_Decal(const wstring& strDecalName, _matrix WorldMatrix, _float3 vLocalPos, _float3 vLocalScale, _float3 vLocalRotation, CGameObject* pOwner, CDecal** ppOut, _bool bDelet)
 {
 	// strDecalName
@@ -524,6 +537,15 @@ HRESULT CEffect_Manager::Ready_Proto_Effects(const wstring& strEffectPath)
 				EffectInfo.fBlack_Discard.x = item["Black_Discard"]["x"];
 				EffectInfo.fBlack_Discard.y = item["Black_Discard"]["y"];
 				EffectInfo.fBlack_Discard.z = item["Black_Discard"]["z"];
+#pragma endregion
+
+#pragma region 디스토션
+				EffectInfo.strDistortionTetextureName = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(item["DistortionTetextureName"]));
+				EffectInfo.iDistortionIndex = item["DistortionIndex"];
+				EffectInfo.vDistortionPower.x = item["DistortionPower"]["x"];
+				EffectInfo.vDistortionPower.y = item["DistortionPower"]["y"];
+				EffectInfo.vDistortionPower.z = item["DistortionPower"]["z"];
+				EffectInfo.vDistortionPower.w = item["DistortionPower"]["w"];
 #pragma endregion
 			}
 #pragma endregion

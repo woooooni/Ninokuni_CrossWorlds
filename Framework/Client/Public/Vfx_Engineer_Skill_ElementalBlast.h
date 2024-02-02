@@ -43,6 +43,10 @@ protected:
 	virtual HRESULT Ready_Components() override;
 
 private:
+	_int m_iType = -1;
+	_float3 m_fMainColor;
+
+private:
 	class CParticle* m_pEt3_FireBig = nullptr;
 	class CParticle* m_pEt3_Circles = nullptr;
 

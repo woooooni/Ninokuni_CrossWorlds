@@ -922,8 +922,6 @@ void CCharacter::On_Damaged(const COLLISION_INFO& tInfo)
 
 void CCharacter::Create_HitEffect(_int iType, CMonster* pMonster)
 {
-	return;
-
 	_float fRandomXOffset = CUtils::Random_Float(-0.5f, 0.5f);
 	_float fRandomYOffset = CUtils::Random_Float(-0.5f, 0.5f);
 
@@ -948,36 +946,52 @@ void CCharacter::Create_HitEffect(_int iType, CMonster* pMonster)
 	// 어택 타입에 따른 피격 이펙트 생성
 	if (CCollider::ATTACK_TYPE::WEAK == iType) // 살짝
 	{
-		GET_INSTANCE(CParticle_Manager)->Generate_Particle(L"Particle_Monster_Hit_Sword", ThisWorldMat, _float3(fRandomXOffset, 1.f + fRandomYOffset, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &pParticle);
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(L"Particle_Player_Hit_Small", ThisWorldMat, _float3(fRandomXOffset, 1.f + fRandomYOffset, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &pParticle);
 	}
 
 	else if (CCollider::ATTACK_TYPE::STRONG == iType || CCollider::ATTACK_TYPE::STUN == iType) // 세게
 	{
-		GET_INSTANCE(CParticle_Manager)->Generate_Particle(L"Particle_Monster_Hit_Hammer", ThisWorldMat, _float3(fRandomXOffset, 1.f + fRandomYOffset, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &pParticle);
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(L"Particle_Player_Hit_Maiddle", ThisWorldMat, _float3(fRandomXOffset, 1.f + fRandomYOffset, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &pParticle);
 	}
 
 	else if (CCollider::ATTACK_TYPE::BOUND == iType || CCollider::ATTACK_TYPE::AIR_BORNE == iType || // 더세게 또는 날아감
 		CCollider::ATTACK_TYPE::BLOW == iType || CCollider::ATTACK_TYPE::IF_DEAD_BLOW == iType)
 	{
-		GET_INSTANCE(CParticle_Manager)->Generate_Particle(L"Particle_Monster_Hit_Gun", ThisWorldMat, _float3(fRandomXOffset, 1.f + fRandomYOffset, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &pParticle);
+		GET_INSTANCE(CParticle_Manager)->Generate_Particle(L"Particle_Player_Hit_High", ThisWorldMat, _float3(fRandomXOffset, 1.f + fRandomYOffset, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &pParticle);
 	}
+
+	if (nullptr == pParticle)
+		return;
+
+	// 기본 파티클
+	CParticle* pCircleParticle = nullptr;
+
+	CTransform* pMainParticleTransform = pParticle->Get_Component<CTransform>(L"Com_Transform");
+	GET_INSTANCE(CParticle_Manager)->Generate_Particle(L"Particle_Player_Hit_Circles", pMainParticleTransform->Get_WorldMatrix(), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &pCircleParticle);
+	if (nullptr == pCircleParticle)
+		return;
 
 	// 몬스터의 속성에 따른 색상 변경
 	ELEMENTAL_TYPE eMonsterType = pMonster->Get_Stat().eElementType;
+	_float3 fColor = _float3(1.f, 1.f, 1.f);
+
 	switch (eMonsterType)
 	{
-	case FIRE:
-		pParticle->Set_Color(_float3(1.f, 0.f, 0.f));
+	case FIRE: // _float3(1.f, 0.51f, 0.311f)
+		fColor = _float3(CUtils::Random_Float(0.75f, 1.f), CUtils::Random_Float(0.36f, 0.66f), CUtils::Random_Float(0.161f, 0.461f));
 		break;
 
-	case WATER:
-		pParticle->Set_Color(_float3(0.f, 0.f, 1.f));
+	case WATER: // _float3(0.418f, 0.865f, 0.952f)
+		fColor = _float3(CUtils::Random_Float(0.118f, 0.718f), CUtils::Random_Float(0.565f, 1.f), CUtils::Random_Float(0.652f, 1.f));
 		break;
 
-	case WOOD:
-		pParticle->Set_Color(_float3(0.f, 1.f, 0.f));
+	case WOOD: // _float3(0.567f, 1.f, 0.461f)
+		fColor = _float3(CUtils::Random_Float(0.417f, 0.717f), CUtils::Random_Float(0.75f, 1.f), CUtils::Random_Float(0.311f, 0.611f));
 		break;
 	}
+
+	pParticle->Set_Color(fColor);
+	pCircleParticle->Set_Color(_float3(min(fColor.x + 0.3f, 1.f), min(fColor.y + 0.3f, 1.f), min(fColor.z + 0.3f, 1.f)));
 }
 
 void CCharacter::Add_Exp(_int iExp)

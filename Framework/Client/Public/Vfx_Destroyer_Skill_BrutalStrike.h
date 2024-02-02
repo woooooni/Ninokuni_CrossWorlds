@@ -60,6 +60,11 @@ protected:
 	virtual HRESULT Ready_Components() override;
 
 private:
+	_int m_iType = -1;
+	_float3 m_fMainColor;
+	_float3 m_fLightColor;
+
+private:
 	class CDecal* m_pEt1_D_RECT = nullptr;
 
 public:

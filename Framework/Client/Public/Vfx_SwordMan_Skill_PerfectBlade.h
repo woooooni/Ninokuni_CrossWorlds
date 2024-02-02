@@ -25,6 +25,10 @@ public:
 protected:
 	virtual HRESULT Ready_Components() override;
 
+private:
+	_int m_iType = -1;
+	_float3 m_fMainColor;
+
 public:
 	static CVfx_SwordMan_Skill_PerfectBlade* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 		const wstring& strObjectTag);

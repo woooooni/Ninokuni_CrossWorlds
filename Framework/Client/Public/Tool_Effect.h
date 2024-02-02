@@ -53,11 +53,14 @@ private:
 	void Save_Decal(const char* pFileName);
 	void Load_Decal(const char* pFileName);
 
+	void Save_Decal_Scale(const char* pFileName);
+
 private:
 	class CGameObject* m_pEffect = nullptr;
 	class CGameObject* m_pDecal  = nullptr;
 	CEffect::EFFECT_DESC m_tEffectInfo;
 	CDecal::DECAL_DESC   m_tDecalInfo;
+	CDecal::DECAL_SCALE_DESC m_tDecalScaleInfo;
 
 private:
 	_float3 m_fPosition;

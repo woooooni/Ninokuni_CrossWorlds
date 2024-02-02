@@ -6,6 +6,8 @@
 #include "Character.h"
 #include "Decal.h"
 #include "Effect.h"
+#include "Particle.h"
+#include "Utils.h"
 
 CVfx_Destroyer_Skill_BattleCry::CVfx_Destroyer_Skill_BattleCry(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
@@ -92,6 +94,28 @@ void CVfx_Destroyer_Skill_BattleCry::Tick(_float fTimeDelta)
 
 	if (!m_bOwnerTween)
 	{
+		if (-1 == m_iType)
+		{
+			CCharacter* pPlayer = static_cast<CCharacter*>(m_pOwnerObject);
+			if (nullptr == pPlayer)
+				MSG_BOX("Casting_Failde");
+			else
+				m_iType = pPlayer->Get_ElementalType();
+
+			switch (m_iType)
+			{
+			case ELEMENTAL_TYPE::FIRE:
+				m_fMainColor = _float3(0.979f, 0.589f, 0.325f);
+				break;
+			case ELEMENTAL_TYPE::WATER:
+				m_fMainColor = _float3(0.136f, 0.938f, 0.776f);
+				break;
+			case ELEMENTAL_TYPE::WOOD:
+				m_fMainColor = _float3(0.655f, 0.896f, 0.293f);
+				break;
+			}
+		}
+
 		if (m_iCount == TYPE_ET1_D_CIRCLE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_D_CIRCLE])
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_Perfectblade_Circle"),
@@ -105,7 +129,12 @@ void CVfx_Destroyer_Skill_BattleCry::Tick(_float fTimeDelta)
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Destroyer_Skill_BattleCry_CirecleLines"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_E_CIRCLELINE], m_pScaleOffset[TYPE_ET2_E_CIRCLELINE], m_pRotationOffset[TYPE_ET2_E_CIRCLELINE], nullptr, &m_pEt2_Line, false);
-			Safe_AddRef(m_pEt2_Line);
+			if (nullptr != m_pEt2_Line)
+			{
+				Safe_AddRef(m_pEt2_Line);
+				m_pEt2_Line->Set_Color(m_fMainColor);
+				m_pEt2_Line->Set_DistortionPower(CUtils::Random_Float(0.f, 0.5f), CUtils::Random_Float(0.f, 0.5f));
+			}
 			m_iCount++;
 		}
 
@@ -113,7 +142,12 @@ void CVfx_Destroyer_Skill_BattleCry::Tick(_float fTimeDelta)
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Destroyer_Skill_BattleCry_Dome"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_E_DOME], m_pScaleOffset[TYPE_ET3_E_DOME], m_pRotationOffset[TYPE_ET3_E_DOME], nullptr, &m_pEt3_Dome, false);
-			Safe_AddRef(m_pEt3_Dome);
+			if (nullptr != m_pEt3_Dome)
+			{
+				Safe_AddRef(m_pEt3_Dome);
+				m_pEt3_Dome->Set_Color(m_fMainColor);
+				m_pEt3_Dome->Set_DistortionPower(CUtils::Random_Float(0.f, 0.5f), CUtils::Random_Float(0.f, 0.5f));
+			}
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET3_D_FIRECRACK && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_D_FIRECRACK])
@@ -124,8 +158,14 @@ void CVfx_Destroyer_Skill_BattleCry::Tick(_float fTimeDelta)
 				Safe_Release(m_pEt1_Decal);
 			}
 
+			CDecal* pDecal = nullptr;
 			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Destroyer_Skill_BattleCry_Crack"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_D_FIRECRACK], m_pScaleOffset[TYPE_ET3_D_FIRECRACK], m_pRotationOffset[TYPE_ET3_D_FIRECRACK]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_D_FIRECRACK], m_pScaleOffset[TYPE_ET3_D_FIRECRACK], m_pRotationOffset[TYPE_ET3_D_FIRECRACK], nullptr, &pDecal);
+			if (nullptr != pDecal)
+			{
+				_float3 fDecalColor = _float3(min(m_fMainColor.x + 0.2f, 1.f), min(m_fMainColor.y + 0.2f, 1.f), min(m_fMainColor.z + 0.2f, 1.f));
+				pDecal->Set_Color(fDecalColor, fDecalColor);
+			}
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET3_E_SPRINGUP && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_E_SPRINGUP])
@@ -133,7 +173,7 @@ void CVfx_Destroyer_Skill_BattleCry::Tick(_float fTimeDelta)
 			if (nullptr != m_pEt2_Line)
 			{
 				m_pEt2_Line->Start_Dissolve(85,    // Index
-					_float4(1.f, 0.6f, 0.4f, 1.f), // Color
+					_float4(min(m_fMainColor.x + 0.3f, 1.f), min(m_fMainColor.y + 0.3f, 1.f), min(m_fMainColor.z + 0.3f, 1.f), 1.f), // Color
 					5.f,   // Speed
 					10.f); // Total
 				Safe_Release(m_pEt2_Line);
@@ -142,7 +182,7 @@ void CVfx_Destroyer_Skill_BattleCry::Tick(_float fTimeDelta)
 			if (nullptr != m_pEt3_Dome)
 			{
 				m_pEt3_Dome->Start_Dissolve(85,    // Index
-					_float4(1.f, 0.6f, 0.4f, 1.f), // Color
+					_float4(min(m_fMainColor.x + 0.3f, 1.f), min(m_fMainColor.y + 0.3f, 1.f), min(m_fMainColor.z + 0.3f, 1.f), 1.f), // Color // Color
 					5.f,   // Speed
 					10.f); // Total
 				Safe_Release(m_pEt3_Dome);
@@ -150,13 +190,24 @@ void CVfx_Destroyer_Skill_BattleCry::Tick(_float fTimeDelta)
 
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Destroyer_Skill_BattleCry_SpringUp"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_E_SPRINGUP], m_pScaleOffset[TYPE_ET3_E_SPRINGUP], m_pRotationOffset[TYPE_ET3_E_SPRINGUP], nullptr, &m_pEt3_Spring, false);
-			Safe_AddRef(m_pEt3_Spring);
+			if (nullptr != m_pEt3_Spring)
+			{
+				Safe_AddRef(m_pEt3_Spring);
+				m_pEt3_Spring->Set_Color(m_fMainColor);
+				m_pEt3_Spring->Set_DistortionPower(CUtils::Random_Float(0.f, 0.5f), CUtils::Random_Float(0.f, 0.5f));
+			}
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET3_E_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_E_CIRCLELINE])
 		{
+			CEffect* pEffect = nullptr;
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Destroyer_Skill_BattleCry_CirecleLine"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_E_CIRCLELINE], m_pScaleOffset[TYPE_ET3_E_CIRCLELINE], m_pRotationOffset[TYPE_ET3_E_CIRCLELINE]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_E_CIRCLELINE], m_pScaleOffset[TYPE_ET3_E_CIRCLELINE], m_pRotationOffset[TYPE_ET3_E_CIRCLELINE], nullptr, &pEffect);
+			if (nullptr != pEffect)
+			{
+				pEffect->Set_Color(m_fMainColor);
+				pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 0.5f), CUtils::Random_Float(0.f, 0.5f));
+			}
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET3_P_STONE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_P_STONE])
@@ -167,8 +218,13 @@ void CVfx_Destroyer_Skill_BattleCry::Tick(_float fTimeDelta)
 		}
 		else if (m_iCount == TYPE_ET3_P_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_P_CIRCLES])
 		{
+			CParticle* pParticle = nullptr;
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_Skill_BattleCry_Circles"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_P_CIRCLES], m_pScaleOffset[TYPE_ET3_P_CIRCLES], m_pRotationOffset[TYPE_ET3_P_CIRCLES]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_P_CIRCLES], m_pScaleOffset[TYPE_ET3_P_CIRCLES], m_pRotationOffset[TYPE_ET3_P_CIRCLES], nullptr, &pParticle);
+			if (nullptr != pParticle)
+			{
+				pParticle->Set_Color(m_fMainColor);
+			}
 			m_iCount++;
 		}
 
@@ -240,7 +296,7 @@ void CVfx_Destroyer_Skill_BattleCry::Free()
 	if (nullptr != m_pEt3_Dome)
 	{
 		m_pEt3_Dome->Start_Dissolve(85,    // Index
-			_float4(1.f, 0.6f, 0.4f, 1.f), // Color
+			_float4(min(m_fMainColor.x + 0.3f, 1.f), min(m_fMainColor.y + 0.3f, 1.f), min(m_fMainColor.z + 0.3f, 1.f), 1.f), // Color
 			5.f,   // Speed
 			10.f); // Total
 		Safe_Release(m_pEt3_Dome);
@@ -249,7 +305,7 @@ void CVfx_Destroyer_Skill_BattleCry::Free()
 	if (nullptr != m_pEt3_Spring)
 	{
 		m_pEt3_Spring->Start_Dissolve(85,  // Index
-			_float4(1.f, 0.6f, 0.4f, 1.f), // Color
+			_float4(min(m_fMainColor.x + 0.3f, 1.f), min(m_fMainColor.y + 0.3f, 1.f), min(m_fMainColor.z + 0.3f, 1.f), 1.f), // Color
 			5.f,   // Speed
 			10.f); // Total
 		Safe_Release(m_pEt3_Spring);

@@ -4,7 +4,10 @@
 #include "Particle_Manager.h"
 #include "Effect_Manager.h"
 #include "Character.h"
+#include "Particle.h"
+#include "Decal.h"
 #include "Effect.h"
+#include "Utils.h"
 
 CVfx_Engineer_Skill_TimeLab::CVfx_Engineer_Skill_TimeLab(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
@@ -102,6 +105,28 @@ void CVfx_Engineer_Skill_TimeLab::Tick(_float fTimeDelta)
 
 	if (!m_bOwnerTween)
 	{
+		if (-1 == m_iType)
+		{
+			CCharacter* pPlayer = static_cast<CCharacter*>(m_pOwnerObject);
+			if (nullptr == pPlayer)
+				MSG_BOX("Casting_Failde");
+			else
+				m_iType = pPlayer->Get_ElementalType();
+
+			switch (m_iType)
+			{
+			case ELEMENTAL_TYPE::FIRE:
+				m_fMainColor = _float3(1.000f, 0.944f, 0.435f);
+				break;
+			case ELEMENTAL_TYPE::WATER:
+				m_fMainColor = _float3(0.394f, 0.896f, 1.000f);
+				break;
+			case ELEMENTAL_TYPE::WOOD:
+				m_fMainColor = _float3(0.549f, 1.000f, 0.629f);
+				break;
+			}
+		}
+
 		if (m_iCount == TYPE_ET1_D_CIRCLE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_D_CIRCLE])
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_Perfectblade_Circle"),
@@ -128,16 +153,23 @@ void CVfx_Engineer_Skill_TimeLab::Tick(_float fTimeDelta)
 		}
 		else if (m_iCount == TYPE_ET1_P_LIGHT && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_P_LIGHT])
 		{
+			CEffect* pEffect = nullptr;
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Engineer_Skill_TimeLab_CircleLine"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_P_LIGHT], m_pScaleOffset[TYPE_ET1_P_LIGHT], m_pRotationOffset[TYPE_ET1_P_LIGHT]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_P_LIGHT], m_pScaleOffset[TYPE_ET1_P_LIGHT], m_pRotationOffset[TYPE_ET1_P_LIGHT], nullptr, &pEffect);
+			if (nullptr != pEffect)
+			{
+				pEffect->Set_Color(m_fMainColor);
+				pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 0.2f), CUtils::Random_Float(0.f, 0.2f));
+			}
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET1_P_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_P_CIRCLES])
 		{
+			_float3 fEventColor = _float3(min(m_fMainColor.x + 0.1f, 1.f), min(m_fMainColor.y + 0.1f, 1.f), min(m_fMainColor.z + 0.1f, 1.f));
 			if (nullptr != m_pBigGear_Frame)
 			{
 				m_pBigGear_Frame->Start_Dissolve(73, // Index
-					_float4(m_pPositionOffset[TYPE_ET3_EVENT_DELETE].x, m_pPositionOffset[TYPE_ET3_EVENT_DELETE].y, m_pPositionOffset[TYPE_ET3_EVENT_DELETE].z, 1.f),     // Color
+					_float4(fEventColor.x, fEventColor.y, fEventColor.z, 1.f),//_float4(m_pPositionOffset[TYPE_ET3_EVENT_DELETE].x, m_pPositionOffset[TYPE_ET3_EVENT_DELETE].y, m_pPositionOffset[TYPE_ET3_EVENT_DELETE].z, 1.f),     // Color
 					5.f,   // Speed
 					10.f); // Total
 				Safe_Release(m_pBigGear_Frame);
@@ -146,7 +178,7 @@ void CVfx_Engineer_Skill_TimeLab::Tick(_float fTimeDelta)
 			if (nullptr != m_pBigGear_Minut)
 			{
 				m_pBigGear_Minut->Start_Dissolve(73, // Index
-					_float4(m_pPositionOffset[TYPE_ET3_EVENT_DELETE].x, m_pPositionOffset[TYPE_ET3_EVENT_DELETE].y, m_pPositionOffset[TYPE_ET3_EVENT_DELETE].z, 1.f),     // Color
+					_float4(fEventColor.x, fEventColor.y, fEventColor.z, 1.f),//_float4(m_pPositionOffset[TYPE_ET3_EVENT_DELETE].x, m_pPositionOffset[TYPE_ET3_EVENT_DELETE].y, m_pPositionOffset[TYPE_ET3_EVENT_DELETE].z, 1.f),     // Color
 					5.f,   // Speed
 					10.f); // Total
 				Safe_Release(m_pBigGear_Minut);
@@ -155,14 +187,19 @@ void CVfx_Engineer_Skill_TimeLab::Tick(_float fTimeDelta)
 			if (nullptr != m_pBigGear_Second)
 			{
 				m_pBigGear_Second->Start_Dissolve(73, // Index
-					_float4(m_pPositionOffset[TYPE_ET3_EVENT_DELETE].x, m_pPositionOffset[TYPE_ET3_EVENT_DELETE].y, m_pPositionOffset[TYPE_ET3_EVENT_DELETE].z, 1.f),     // Color
+					_float4(fEventColor.x, fEventColor.y, fEventColor.z, 1.f),//_float4(m_pPositionOffset[TYPE_ET3_EVENT_DELETE].x, m_pPositionOffset[TYPE_ET3_EVENT_DELETE].y, m_pPositionOffset[TYPE_ET3_EVENT_DELETE].z, 1.f),     // Color
 					5.f,   // Speed
 					10.f); // Total
 				Safe_Release(m_pBigGear_Second);
 			}
 
+			CParticle* pParticle = nullptr;
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Engineer_Skill_TimeLab_Circles_Start"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_P_CIRCLES], m_pScaleOffset[TYPE_ET1_P_CIRCLES], m_pRotationOffset[TYPE_ET1_P_CIRCLES]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_P_CIRCLES], m_pScaleOffset[TYPE_ET1_P_CIRCLES], m_pRotationOffset[TYPE_ET1_P_CIRCLES], nullptr, &pParticle);
+			if (nullptr != pParticle)
+			{
+				pParticle->Set_Color(m_fMainColor);
+			}
 			m_iCount++;
 		}
 
@@ -210,17 +247,23 @@ void CVfx_Engineer_Skill_TimeLab::Tick(_float fTimeDelta)
 		}
 		else if (m_iCount == TYPE_ET2_P_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_CIRCLES])
 		{
+		    CParticle* pParticle = nullptr;
 		    GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Engineer_Skill_TimeLab_Circles_End"),
-			    XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_CIRCLES], m_pScaleOffset[TYPE_ET2_P_CIRCLES], m_pRotationOffset[TYPE_ET2_P_CIRCLES]);
+			    XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_CIRCLES], m_pScaleOffset[TYPE_ET2_P_CIRCLES], m_pRotationOffset[TYPE_ET2_P_CIRCLES], nullptr, &pParticle);
+			if (nullptr != pParticle)
+			{
+				pParticle->Set_Color(m_fMainColor);
+			}
 			m_iCount++;
 		}
 
 		else if (m_iCount == TYPE_ET3_EVENT_DELETE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_EVENT_DELETE])
 		{
+		    _float3 fEventColor = _float3(min(m_fMainColor.x + 0.1f, 1.f), min(m_fMainColor.y + 0.1f, 1.f), min(m_fMainColor.z + 0.1f, 1.f));
 		    if (nullptr != m_pSmallGear_Frame)
 		    {
 		    	m_pSmallGear_Frame->Start_Dissolve(73, // Index
-		    		_float4(m_pScaleOffset[TYPE_ET3_EVENT_DELETE].x, m_pScaleOffset[TYPE_ET3_EVENT_DELETE].y, m_pScaleOffset[TYPE_ET3_EVENT_DELETE].z, 1.f),     // Color
+					_float4(fEventColor.x, fEventColor.y, fEventColor.z, 1.f),//_float4(m_pScaleOffset[TYPE_ET3_EVENT_DELETE].x, m_pScaleOffset[TYPE_ET3_EVENT_DELETE].y, m_pScaleOffset[TYPE_ET3_EVENT_DELETE].z, 1.f),     // Color
 		    		5.f,   // Speed
 		    		10.f); // Total
 		    	Safe_Release(m_pSmallGear_Frame);
@@ -229,7 +272,7 @@ void CVfx_Engineer_Skill_TimeLab::Tick(_float fTimeDelta)
 		    if (nullptr != m_pSmallGear_FrameLine)
 		    {
 		    	m_pSmallGear_FrameLine->Start_Dissolve(73, // Index
-		    		_float4(m_pScaleOffset[TYPE_ET3_EVENT_DELETE].x, m_pScaleOffset[TYPE_ET3_EVENT_DELETE].y, m_pScaleOffset[TYPE_ET3_EVENT_DELETE].z, 1.f),     // Color
+					_float4(fEventColor.x, fEventColor.y, fEventColor.z, 1.f),//_float4(m_pScaleOffset[TYPE_ET3_EVENT_DELETE].x, m_pScaleOffset[TYPE_ET3_EVENT_DELETE].y, m_pScaleOffset[TYPE_ET3_EVENT_DELETE].z, 1.f),     // Color
 		    		5.f,   // Speed
 		    		10.f); // Total
 		    	Safe_Release(m_pSmallGear_FrameLine);
@@ -238,7 +281,7 @@ void CVfx_Engineer_Skill_TimeLab::Tick(_float fTimeDelta)
 		    if (nullptr != m_pSmallGear_GearIn)
 		    {
 		    	m_pSmallGear_GearIn->Start_Dissolve(73, // Index
-		    		_float4(m_pScaleOffset[TYPE_ET3_EVENT_DELETE].x, m_pScaleOffset[TYPE_ET3_EVENT_DELETE].y, m_pScaleOffset[TYPE_ET3_EVENT_DELETE].z, 1.f),     // Color
+					_float4(fEventColor.x, fEventColor.y, fEventColor.z, 1.f),//_float4(m_pScaleOffset[TYPE_ET3_EVENT_DELETE].x, m_pScaleOffset[TYPE_ET3_EVENT_DELETE].y, m_pScaleOffset[TYPE_ET3_EVENT_DELETE].z, 1.f),     // Color
 		    		5.f,   // Speed
 		    		10.f); // Total
 		    	Safe_Release(m_pSmallGear_GearIn);
@@ -247,7 +290,7 @@ void CVfx_Engineer_Skill_TimeLab::Tick(_float fTimeDelta)
 		    if (nullptr != m_pSmallGear_Minut)
 		    {
 		    	m_pSmallGear_Minut->Start_Dissolve(73, // Index
-		    		_float4(m_pScaleOffset[TYPE_ET3_EVENT_DELETE].x, m_pScaleOffset[TYPE_ET3_EVENT_DELETE].y, m_pScaleOffset[TYPE_ET3_EVENT_DELETE].z, 1.f),     // Color
+					_float4(fEventColor.x, fEventColor.y, fEventColor.z, 1.f),//_float4(m_pScaleOffset[TYPE_ET3_EVENT_DELETE].x, m_pScaleOffset[TYPE_ET3_EVENT_DELETE].y, m_pScaleOffset[TYPE_ET3_EVENT_DELETE].z, 1.f),     // Color
 		    		5.f,   // Speed
 		    		10.f); // Total
 		    	Safe_Release(m_pSmallGear_Minut);
@@ -256,7 +299,7 @@ void CVfx_Engineer_Skill_TimeLab::Tick(_float fTimeDelta)
 		    if (nullptr != m_pSmallGear_Second)
 		    {
 		    	m_pSmallGear_Second->Start_Dissolve(73, // Index
-		    		_float4(m_pScaleOffset[TYPE_ET3_EVENT_DELETE].x, m_pScaleOffset[TYPE_ET3_EVENT_DELETE].y, m_pScaleOffset[TYPE_ET3_EVENT_DELETE].z, 1.f),     // Color
+					_float4(fEventColor.x, fEventColor.y, fEventColor.z, 1.f),//_float4(m_pScaleOffset[TYPE_ET3_EVENT_DELETE].x, m_pScaleOffset[TYPE_ET3_EVENT_DELETE].y, m_pScaleOffset[TYPE_ET3_EVENT_DELETE].z, 1.f),     // Color
 		    		5.f,   // Speed
 		    		10.f); // Total
 		    	Safe_Release(m_pSmallGear_Second);
@@ -265,7 +308,7 @@ void CVfx_Engineer_Skill_TimeLab::Tick(_float fTimeDelta)
 		    if (nullptr != m_pSmallGear_Gear01)
 		    {
 		    	m_pSmallGear_Gear01->Start_Dissolve(73, // Index
-		    		_float4(m_pScaleOffset[TYPE_ET3_EVENT_DELETE].x, m_pScaleOffset[TYPE_ET3_EVENT_DELETE].y, m_pScaleOffset[TYPE_ET3_EVENT_DELETE].z, 1.f),     // Color
+					_float4(fEventColor.x, fEventColor.y, fEventColor.z, 1.f),//_float4(m_pScaleOffset[TYPE_ET3_EVENT_DELETE].x, m_pScaleOffset[TYPE_ET3_EVENT_DELETE].y, m_pScaleOffset[TYPE_ET3_EVENT_DELETE].z, 1.f),     // Color
 		    		5.f,   // Speed
 		    		10.f); // Total
 		    	Safe_Release(m_pSmallGear_Gear01);
@@ -274,7 +317,7 @@ void CVfx_Engineer_Skill_TimeLab::Tick(_float fTimeDelta)
 		    if (nullptr != m_pSmallGear_Gear02)
 		    {
 		    	m_pSmallGear_Gear02->Start_Dissolve(73, // Index
-		    		_float4(m_pScaleOffset[TYPE_ET3_EVENT_DELETE].x, m_pScaleOffset[TYPE_ET3_EVENT_DELETE].y, m_pScaleOffset[TYPE_ET3_EVENT_DELETE].z, 1.f),     // Color
+					_float4(fEventColor.x, fEventColor.y, fEventColor.z, 1.f),//_float4(m_pScaleOffset[TYPE_ET3_EVENT_DELETE].x, m_pScaleOffset[TYPE_ET3_EVENT_DELETE].y, m_pScaleOffset[TYPE_ET3_EVENT_DELETE].z, 1.f),     // Color
 		    		5.f,   // Speed
 		    		10.f); // Total
 		    	Safe_Release(m_pSmallGear_Gear02);

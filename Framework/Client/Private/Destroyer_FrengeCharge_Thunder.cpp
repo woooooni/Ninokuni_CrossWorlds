@@ -10,6 +10,8 @@
 #include "Decal.h"
 #include "Camera_Manager.h"
 #include "Camera.h"
+#include "Game_Manager.h"
+#include "Player.h"
 
 CDestroyer_FrengeCharge_Thunder::CDestroyer_FrengeCharge_Thunder(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	:CCharacter_Projectile(pDevice, pContext, L"Destroyer_FrengeCharge_Thunder")
@@ -61,11 +63,39 @@ void CDestroyer_FrengeCharge_Thunder::Tick(_float fTimeDelta)
 	{
 		m_bElect = true;
 
-		_int iRandomCount = CUtils::Random_Int(1, 9);
-		wstring FileNameString = L"Particle_Destroyer_Skill_FrengeCharge_ThunderLine_0" + to_wstring(iRandomCount);
-		
-		GET_INSTANCE(CParticle_Manager)->Generate_Particle(FileNameString,
-				m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 2.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
+		CCharacter* pPlayer = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
+		if (nullptr != pPlayer)
+		{
+			_int iType = pPlayer->Get_ElementalType();
+
+			_float3 fMainColor = _float3();
+			switch (iType)
+			{
+			case ELEMENTAL_TYPE::FIRE:
+				fMainColor = _float3(0.979f, 0.589f, 0.325f);
+				break;
+			case ELEMENTAL_TYPE::WATER:
+				fMainColor = _float3(0.293f, 0.896f, 0.774f);
+				break;
+			case ELEMENTAL_TYPE::WOOD:
+				fMainColor = _float3(0.655f, 0.896f, 0.293f);
+				break;
+			}
+
+			_int iRandomCount = CUtils::Random_Int(1, 9);
+			wstring FileNameString = L"Particle_Destroyer_Skill_FrengeCharge_ThunderLine_0" + to_wstring(iRandomCount);
+
+			CParticle* pParticle = nullptr;
+			GET_INSTANCE(CParticle_Manager)->Generate_Particle(FileNameString,
+				m_pTransformCom->Get_WorldMatrix(), _float3(0.f, 2.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &pParticle);
+			if (nullptr != pParticle)
+			{
+				pParticle->Set_Color(_float3(
+					min(fMainColor.x + CUtils::Random_Float(0.f, 0.2f), 1.f),
+					min(fMainColor.y + CUtils::Random_Float(0.f, 0.2f), 1.f),
+					min(fMainColor.z + CUtils::Random_Float(0.f, 0.2f), 1.f)));
+			}
+		}
 	}
 
 	else if (false == m_bExplode && 1.2f < m_fAccDeletionTime)

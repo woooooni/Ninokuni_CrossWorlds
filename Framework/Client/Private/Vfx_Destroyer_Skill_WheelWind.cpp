@@ -6,8 +6,10 @@
 #include "Character.h"
 #include "Utils.h"
 #include "Decal.h"
-#include "Effect.h"
 #include "Model.h"
+#include "Effect.h"
+#include "Particle.h"
+#include "Utils.h"
 
 CVfx_Destroyer_Skill_WheelWind::CVfx_Destroyer_Skill_WheelWind(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
@@ -69,6 +71,28 @@ void CVfx_Destroyer_Skill_WheelWind::Tick(_float fTimeDelta)
 
 	if (!m_bOwnerTween)
 	{
+		if (-1 == m_iType)
+		{
+			CCharacter* pPlayer = static_cast<CCharacter*>(m_pOwnerObject);
+			if (nullptr == pPlayer)
+				MSG_BOX("Casting_Failde");
+			else
+				m_iType = pPlayer->Get_ElementalType();
+
+			switch (m_iType)
+			{
+			case ELEMENTAL_TYPE::FIRE:
+				m_fMainColor = _float3(0.881f, 0.263f, 0.023f);
+				break;
+			case ELEMENTAL_TYPE::WATER:
+				m_fMainColor = _float3(0.254f, 1.000f, 0.942f);
+				break;
+			case ELEMENTAL_TYPE::WOOD:
+				m_fMainColor = _float3(0.178f, 0.860f, 0.404f);
+				break;
+			}
+		}
+
 		if (m_iCount == TYPE_ET1_D_CIRCLE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_D_CIRCLE])
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_Perfectblade_Circle"),
@@ -81,7 +105,12 @@ void CVfx_Destroyer_Skill_WheelWind::Tick(_float fTimeDelta)
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Destroyer_Skill_WheelWind_Trail"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_E_TORNADO], m_pScaleOffset[TYPE_ET2_E_TORNADO], m_pRotationOffset[TYPE_ET2_E_TORNADO], m_pOwnerObject, &m_pEt2_Trail, false);
-			Safe_AddRef(m_pEt2_Trail);
+			if (nullptr != m_pEt2_Trail)
+			{
+				Safe_AddRef(m_pEt2_Trail);
+				m_pEt2_Trail->Set_Color(m_fMainColor);
+				m_pEt2_Trail->Set_DistortionPower(CUtils::Random_Float(0.f, 0.5f), CUtils::Random_Float(0.f, 0.5f));
+			}
 			m_iCount++;
 
 			fNextTime = CUtils::Random_Float(0.5f, 1.f);
@@ -127,7 +156,11 @@ void CVfx_Destroyer_Skill_WheelWind::Tick(_float fTimeDelta)
 							{
 								m_WorldMatrix = pTransform->Get_WorldFloat4x4();
 								GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_Skill_WheelWind_Fire"), XMLoadFloat4x4(&m_WorldMatrix), fRandomPosition, _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
-								GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_Skill_WheelWind_Circle"), XMLoadFloat4x4(&m_WorldMatrix), fRandomPosition, _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f));
+								
+								CParticle* pParticle = nullptr;
+								GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_Skill_WheelWind_Circle"), XMLoadFloat4x4(&m_WorldMatrix), fRandomPosition, _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), nullptr, &pParticle);
+								if (nullptr != pParticle)
+									pParticle->Set_Color(m_fMainColor);
 							}
 						}
 					}

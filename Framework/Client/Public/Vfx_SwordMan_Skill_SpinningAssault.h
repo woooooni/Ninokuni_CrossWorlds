@@ -26,6 +26,11 @@ protected:
 	virtual HRESULT Ready_Components() override;
 
 private:
+	_int m_iType = -1;
+	_float3 m_fMainColor;
+	_float3 m_fLightColor;
+
+private:
 	class CEffect* m_pEffect_Trail0 = nullptr; // 특정 조각 생성할 때 해당 uv 반복 끄기
 	class CEffect* m_pEffect_Trail1 = nullptr;
 

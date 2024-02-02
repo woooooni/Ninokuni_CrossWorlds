@@ -614,6 +614,10 @@ _bool CTool_Effect::Tick_EffectTool()
 						ImGui::EndListBox();
 					}
 				}
+				else
+				{
+					m_tEffectInfo.vDistortionPower = _float4(0.f, 0.f, 0.f, 0.f);
+				}
 				ImGui::NewLine();
 			}
 
@@ -763,6 +767,55 @@ _bool CTool_Effect::Tick_DecalTool()
 
 			// 블러 셋팅
 			// ImGui::InputFloat("##BlurPower", &m_tDecalInfo.fBlurPower);
+		}
+
+
+		// 크기
+		if (ImGui::CollapsingHeader("Scale"))
+		{
+			if (ImGui::Checkbox("ScaleChange", &m_tDecalScaleInfo.bScaleChange))
+				bDecalSystemUse = true;
+			ImGui::NewLine();
+
+			if (m_tDecalScaleInfo.bScaleChange)
+			{
+				if (ImGui::Checkbox("ScaleLoop", &m_tDecalScaleInfo.bScaleLoop))
+					bDecalSystemUse = true;
+				ImGui::NewLine();
+
+				if (ImGui::Checkbox("ScaleAdd", &m_tDecalScaleInfo.bScaleAdd))
+					bDecalSystemUse = true;
+				ImGui::NewLine();
+
+				if (ImGui::Checkbox("ScaleLoopStart", &m_tDecalScaleInfo.bScaleLoopStart))
+					bDecalSystemUse = true;
+				ImGui::NewLine();
+
+				ImGui::Text("ScaleDirSpeed");
+				if (ImGui::InputFloat3("##ScaleDirSpeed", &m_tDecalScaleInfo.fScaleDirSpeed.x))
+					bDecalSystemUse = true;
+				ImGui::NewLine();
+
+				ImGui::Text("ScaleSpeed");
+				if (ImGui::InputFloat("##ScaleSpeed", &m_tDecalScaleInfo.fScaleSpeed))
+					bDecalSystemUse = true;
+				ImGui::NewLine();
+
+				ImGui::Text("ScaleRestart");
+				if (ImGui::InputFloat3("##ScaleRestart", &m_tDecalScaleInfo.fScaleRestart.x))
+					bDecalSystemUse = true;
+				ImGui::NewLine();
+
+				ImGui::Text("ScaleMin");
+				if (ImGui::InputFloat3("##ScaleMin", &m_tDecalScaleInfo.fScaleSizeMin.x))
+					bDecalSystemUse = true;
+				ImGui::NewLine();
+
+				ImGui::Text("ScaleMax");
+				if (ImGui::InputFloat3("##ScaleMax", &m_tDecalScaleInfo.fScaleSizeMax.x))
+					bDecalSystemUse = true;
+				ImGui::NewLine();
+			}
 		}
 	}
 #pragma endregion
@@ -997,6 +1050,7 @@ void CTool_Effect::Load_ObjectInfo(TYPE eType)
 			return;
 		pTransform = m_pDecal->Get_Component<CTransform>(L"Com_Transform");
 		m_tDecalInfo = static_cast<CDecal*>(m_pDecal)->Get_DecalDesc();
+		m_tDecalScaleInfo = static_cast<CDecal*>(m_pDecal)->Get_DecalScaleDesc();
 		break;
 		// --------------------------------------------------------------------------------------------
 	default:
@@ -1046,6 +1100,8 @@ void CTool_Effect::Store_ObjectInfo(TYPE eType)
 			return;
 
 		static_cast<CDecal*>(m_pDecal)->Set_DecalDesc(m_tDecalInfo);
+		static_cast<CDecal*>(m_pDecal)->Set_DecalScaleDesc(m_tDecalScaleInfo);
+		Set_Transform(eType);
 	}
 }
 
@@ -1586,9 +1642,19 @@ void CTool_Effect::Save_Effect(const char* pFileName)
 			{"x", m_tEffectInfo.fBlack_Discard.x},
 			{"y", m_tEffectInfo.fBlack_Discard.y},
 			{"z", m_tEffectInfo.fBlack_Discard.z}}
-		}
+		},
 #pragma endregion
 
+#pragma region 디스토션
+		{ "DistortionTetextureName", CUtils::ToString(m_tEffectInfo.strDistortionTetextureName) },
+		{ "DistortionIndex", m_tEffectInfo.iDistortionIndex },
+		{ "DistortionPower", {
+			{"x", m_tEffectInfo.vDistortionPower.x},
+			{"y", m_tEffectInfo.vDistortionPower.y},
+			{"z", m_tEffectInfo.vDistortionPower.z},
+			{"w", m_tEffectInfo.vDistortionPower.w}}
+		}
+#pragma endregion
 		});
 
 	wstring strFileName(pFileName, pFileName + strlen(pFileName));
@@ -1843,6 +1909,15 @@ void CTool_Effect::Load_Effect(const char* pFileName)
 		EffectInfo.fBlack_Discard.y = item["Black_Discard"]["y"];
 		EffectInfo.fBlack_Discard.z = item["Black_Discard"]["z"];
 #pragma endregion
+
+#pragma region 디스토션
+		EffectInfo.strDistortionTetextureName = CUtils::PopEof_WString(CUtils::Utf8_To_Wstring(item["DistortionTetextureName"]));
+		EffectInfo.iDistortionIndex = item["DistortionIndex"];
+		EffectInfo.vDistortionPower.x = item["DistortionPower"]["x"];
+		EffectInfo.vDistortionPower.y = item["DistortionPower"]["y"];
+		EffectInfo.vDistortionPower.z = item["DistortionPower"]["z"];
+		EffectInfo.vDistortionPower.w = item["DistortionPower"]["w"];
+#pragma endregion
 	}
 #pragma endregion
 
@@ -1918,6 +1993,8 @@ void CTool_Effect::Save_Decal(const char* pFileName)
 	MSG_BOX("Decal_Save_Success!");
 
 	// 추가 정보 따로 저장
+	//if (true == m_tDecalScaleInfo.bScaleChange)
+	//	Save_Decal_Scale(pFileName);
 }
 
 void CTool_Effect::Load_Decal(const char* pFileName)
@@ -1973,6 +2050,50 @@ void CTool_Effect::Load_Decal(const char* pFileName)
 	Load_ObjectInfo(TYPE_DECAL);
 
 	MSG_BOX("Decal_Load_Success!");
+}
+
+void CTool_Effect::Save_Decal_Scale(const char* pFileName)
+{
+	Json json;
+	json["DecalScaleInfo"].push_back({
+
+		{"ScaleChange",    m_tDecalScaleInfo.bScaleChange},
+		{"ScaleLoop",      m_tDecalScaleInfo.bScaleLoop},
+		{"ScaleAdd",       m_tDecalScaleInfo.bScaleAdd},
+		{"ScaleLoopStart", m_tDecalScaleInfo.bScaleLoopStart},
+
+		{"ScaleDirSpeed", {
+			{"x", m_tDecalScaleInfo.fScaleDirSpeed.x},
+			{"y", m_tDecalScaleInfo.fScaleDirSpeed.y},
+			{"z", m_tDecalScaleInfo.fScaleDirSpeed.z}}
+		},
+
+		{"ScaleSpeed", m_tDecalScaleInfo.fScaleSpeed},
+
+		{"ScaleRestart", {
+			{"x", m_tDecalScaleInfo.fScaleRestart.x},
+			{"y", m_tDecalScaleInfo.fScaleRestart.y},
+			{"z", m_tDecalScaleInfo.fScaleRestart.z}}
+		},
+
+		{"ScaleSizeMax", {
+			{"x", m_tDecalScaleInfo.fScaleSizeMax.x},
+			{"y", m_tDecalScaleInfo.fScaleSizeMax.y},
+			{"z", m_tDecalScaleInfo.fScaleSizeMax.z}}
+		},
+
+		{"ScaleSizeMin", {
+			{"x", m_tDecalScaleInfo.fScaleSizeMin.x},
+			{"y", m_tDecalScaleInfo.fScaleSizeMin.y},
+			{"z", m_tDecalScaleInfo.fScaleSizeMin.z}}
+		}
+	});
+
+	wstring strFileName(pFileName, pFileName + strlen(pFileName));
+	wstring strFilePath = L"../Bin/DataFiles/Vfx/Decal/" + strFileName + L"_Scale" + L".json";
+	GI->Json_Save(strFilePath, json);
+
+	MSG_BOX("Decal_Scale_Save_Success!");
 }
 #pragma endregion
 

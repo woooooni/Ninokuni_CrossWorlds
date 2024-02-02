@@ -4,6 +4,8 @@
 #include "Particle_Manager.h"
 #include "Effect_Manager.h"
 #include "Character.h"
+#include "Effect.h"
+#include "Particle.h"
 #include "Utils.h"
 
 CVfx_Destroyer_Skill_FrengeCharge::CVfx_Destroyer_Skill_FrengeCharge(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
@@ -76,16 +78,50 @@ void CVfx_Destroyer_Skill_FrengeCharge::Tick(_float fTimeDelta)
 
 	if (!m_bOwnerTween)
 	{
+		if (-1 == m_iType)
+		{
+			CCharacter* pPlayer = static_cast<CCharacter*>(m_pOwnerObject);
+			if (nullptr == pPlayer)
+				MSG_BOX("Casting_Failde");
+			else
+				m_iType = pPlayer->Get_ElementalType();
+
+			switch (m_iType)
+			{
+			case ELEMENTAL_TYPE::FIRE:
+				m_fMainColor = _float3(0.979f, 0.589f, 0.325f);
+				break;
+			case ELEMENTAL_TYPE::WATER:
+				m_fMainColor = _float3(0.293f, 0.896f, 0.774f);
+				break;
+			case ELEMENTAL_TYPE::WOOD:
+				m_fMainColor = _float3(0.655f, 0.896f, 0.293f);
+				break;
+			}
+		}
+
 		if (m_iCount == TYPE_ET1_E_TRAIL && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_E_TRAIL])
 		{
+			CEffect* pEffect = nullptr;
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Destroyer_Skill_FrengeCharge_Trail"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_E_TRAIL], m_pScaleOffset[TYPE_ET1_E_TRAIL], m_pRotationOffset[TYPE_ET1_E_TRAIL]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_E_TRAIL], m_pScaleOffset[TYPE_ET1_E_TRAIL], m_pRotationOffset[TYPE_ET1_E_TRAIL], nullptr, &pEffect);
+			if (nullptr != pEffect)
+			{
+				pEffect->Set_Color(m_fMainColor);
+				pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 0.5f), CUtils::Random_Float(0.f, 0.5f));
+
+			}
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET1_P_CIRCLES && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET1_P_CIRCLES])
 		{
+			CParticle* pParticle = nullptr;
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Destroyer_Skill_FrengeCharge_Circles_01_Twinkle"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_P_CIRCLES], m_pScaleOffset[TYPE_ET1_P_CIRCLES], m_pRotationOffset[TYPE_ET1_P_CIRCLES]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET1_P_CIRCLES], m_pScaleOffset[TYPE_ET1_P_CIRCLES], m_pRotationOffset[TYPE_ET1_P_CIRCLES], nullptr, &pParticle);
+			if (nullptr != pParticle)
+			{
+				pParticle->Set_Color(m_fMainColor);
+			}
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET2_P_ELECT && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET2_P_ELECT])
@@ -93,15 +129,30 @@ void CVfx_Destroyer_Skill_FrengeCharge::Tick(_float fTimeDelta)
 			_int iRandomCount = CUtils::Random_Int(1, 9);
 			wstring FileNameString = L"Particle_Destroyer_Skill_FrengeCharge_ThunderLine_0" + to_wstring(iRandomCount);
 
+			CParticle* pParticle = nullptr;
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(FileNameString,
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_ELECT], m_pScaleOffset[TYPE_ET2_P_ELECT], m_pRotationOffset[TYPE_ET2_P_ELECT]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET2_P_ELECT], m_pScaleOffset[TYPE_ET2_P_ELECT], m_pRotationOffset[TYPE_ET2_P_ELECT], nullptr, &pParticle);
+			if (nullptr != pParticle)
+			{
+				pParticle->Set_Color(_float3(
+					min(m_fMainColor.x + CUtils::Random_Float(0.f, 0.2f), 1.f),
+					min(m_fMainColor.y + CUtils::Random_Float(0.f, 0.2f), 1.f),
+					min(m_fMainColor.z + CUtils::Random_Float(0.f, 0.2f), 1.f)));
+			}
 			m_iCount++;
 		}
 		// ------------------------------------------------------------------------------------------------------------
 		else if (m_iCount == TYPE_ET3_E_CIRCLELINE && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_E_CIRCLELINE])
 		{
+			CEffect* pEffect = nullptr;
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Destroyer_Skill_FrengeCharge_CirecleLine"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_E_CIRCLELINE], m_pScaleOffset[TYPE_ET3_E_CIRCLELINE], m_pRotationOffset[TYPE_ET3_E_CIRCLELINE]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_ET3_E_CIRCLELINE], m_pScaleOffset[TYPE_ET3_E_CIRCLELINE], m_pRotationOffset[TYPE_ET3_E_CIRCLELINE], nullptr, &pEffect);
+			if (nullptr != pEffect)
+			{
+				pEffect->Set_Color(m_fMainColor);
+				pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 0.5f), CUtils::Random_Float(0.f, 0.5f));
+
+			}
 			m_iCount++;
 		}
 		else if (m_iCount == TYPE_ET3_P_CIRCLES_01 && m_iOwnerFrame >= m_pFrameTriger[TYPE_ET3_P_CIRCLES_01])

@@ -8,6 +8,9 @@
 #include "Game_Manager.h"
 #include "Player.h"
 #include "Character_Manager.h"
+#include "Effect.h"
+#include "Particle.h"
+#include "Utils.h"
 
 CVfx_SwordMan_Skill_SwordTempest::CVfx_SwordMan_Skill_SwordTempest(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVfx(pDevice, pContext, strObjectTag)
@@ -103,13 +106,34 @@ void CVfx_SwordMan_Skill_SwordTempest::Tick(_float fTimeDelta)
 
 	if (!m_bOwnerTween)
 	{
+		if (-1 == m_iType)
+		{
+			CCharacter* pPlayer = static_cast<CCharacter*>(m_pOwnerObject);
+			if (nullptr == pPlayer)
+				MSG_BOX("Casting_Failde");
+			else
+				m_iType = pPlayer->Get_ElementalType();
+
+			switch (m_iType)
+			{
+			case ELEMENTAL_TYPE::FIRE:
+				m_fMainColor = _float3(1.f, 0.45f, 0.2f);
+				break;
+			case ELEMENTAL_TYPE::WATER:
+				m_fMainColor = _float3(0.28f, 0.720f, 1.f);
+				break;
+			case ELEMENTAL_TYPE::WOOD:
+				m_fMainColor = _float3(0.140f, 1.f, 0.559f);
+				break;
+			}
+		}
+
 		if (m_iCount == TYPE_D_SQUARE && m_iOwnerFrame >= m_pFrameTriger[TYPE_D_SQUARE])
 		{
 			GET_INSTANCE(CEffect_Manager)->Generate_Decal(TEXT("Decal_Swordman_Skill_FrozenStorm_Square"),
 				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_D_SQUARE], m_pScaleOffset[TYPE_D_SQUARE], m_pRotationOffset[TYPE_D_SQUARE]);
 			m_iCount++;
 		}
-
 
 		else if (m_iCount == TYPE_E_ATTACK_01 && m_iOwnerFrame >= m_pFrameTriger[TYPE_E_ATTACK_01])
 		{
@@ -127,19 +151,33 @@ void CVfx_SwordMan_Skill_SwordTempest::Tick(_float fTimeDelta)
 			pAuraBladeTransform->Set_WorldMatrix(WorldMatrix);
 			GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_CHARACTER, pAuraBlade);
 			//
+			CEffect* pEffect = nullptr;
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_SwordTempest_Trail_L"), 
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_ATTACK_01], m_pScaleOffset[TYPE_E_ATTACK_01], m_pRotationOffset[TYPE_E_ATTACK_01], pAuraBlade);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_ATTACK_01], m_pScaleOffset[TYPE_E_ATTACK_01], m_pRotationOffset[TYPE_E_ATTACK_01], pAuraBlade, &pEffect);
+			if (nullptr != pEffect)
+			{
+				pEffect->Set_Color(m_fMainColor);
+				pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 0.5f), CUtils::Random_Float(0.f, 0.5f));
+			}
 			//
+			CParticle* pParticle = nullptr;
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_SwordTempest_Sparkle_Circle_03"),
-				XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), pAuraBlade);
+				XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), pAuraBlade, &pParticle);
+			if (nullptr != pParticle)
+			{
+				pParticle->Set_Color(m_fMainColor);
+			}
 			m_iCount++;
 		}
 
 		// 
 		else if (m_iCount == TYPE_P_SPARKLE_01 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_SPARKLE_01])
 		{
+			CParticle* pParticle = nullptr;
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_SwordTempest_Sparkle_Circle_01"), 
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_SPARKLE_01], m_pScaleOffset[TYPE_P_SPARKLE_01], m_pRotationOffset[TYPE_P_SPARKLE_01]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_SPARKLE_01], m_pScaleOffset[TYPE_P_SPARKLE_01], m_pRotationOffset[TYPE_P_SPARKLE_01], nullptr, &pParticle);
+			if(nullptr != pParticle)
+				pParticle->Set_Color(m_fMainColor);
 			m_iCount++;
 		}
 		//
@@ -158,19 +196,31 @@ void CVfx_SwordMan_Skill_SwordTempest::Tick(_float fTimeDelta)
 			pAuraBladeTransform->Set_WorldMatrix(WorldMatrix);
 			GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_CHARACTER, pAuraBlade);
 			//
+			CEffect* pEffect = nullptr;
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_SwordTempest_Trail_R"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_ATTACK_02], m_pScaleOffset[TYPE_E_ATTACK_02], m_pRotationOffset[TYPE_E_ATTACK_02], pAuraBlade);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_ATTACK_02], m_pScaleOffset[TYPE_E_ATTACK_02], m_pRotationOffset[TYPE_E_ATTACK_02], pAuraBlade, &pEffect);
+			if (nullptr != pEffect)
+			{
+				pEffect->Set_Color(m_fMainColor);
+				pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 0.5f), CUtils::Random_Float(0.f, 0.5f));
+			}
 			//
+			CParticle* pParticle = nullptr;
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_SwordTempest_Sparkle_Circle_03"),
-				XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), pAuraBlade);
+				XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), pAuraBlade, &pParticle);
+			if (nullptr != pParticle)
+				pParticle->Set_Color(m_fMainColor);
 			m_iCount++;
 		}
 
 		//
 		else if (m_iCount == TYPE_P_XSPARKLE_01 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_XSPARKLE_01])
 		{
+			CParticle* pParticle = nullptr;
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_SwordTempest_Sparkle"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_XSPARKLE_01], m_pScaleOffset[TYPE_P_XSPARKLE_01], m_pRotationOffset[TYPE_P_XSPARKLE_01]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_XSPARKLE_01], m_pScaleOffset[TYPE_P_XSPARKLE_01], m_pRotationOffset[TYPE_P_XSPARKLE_01], nullptr, &pParticle);
+			if(nullptr != pParticle)
+				pParticle->Set_Color(m_fMainColor);
 			m_iCount++;
 		}
 		//
@@ -189,19 +239,31 @@ void CVfx_SwordMan_Skill_SwordTempest::Tick(_float fTimeDelta)
 			pAuraBladeTransform->Set_WorldMatrix(WorldMatrix);
 			GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_CHARACTER, pAuraBlade);
 			//
+			CEffect* pEffect = nullptr;
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_SwordTempest_Trail_L"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_ATTACK_03], m_pScaleOffset[TYPE_E_ATTACK_03], m_pRotationOffset[TYPE_E_ATTACK_03], pAuraBlade);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_ATTACK_03], m_pScaleOffset[TYPE_E_ATTACK_03], m_pRotationOffset[TYPE_E_ATTACK_03], pAuraBlade, &pEffect);
+			if (nullptr != pEffect)
+			{
+				pEffect->Set_Color(m_fMainColor);
+				pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 0.5f), CUtils::Random_Float(0.f, 0.5f));
+			}
 			//
+			CParticle* pParticle = nullptr;
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_SwordTempest_Sparkle_Circle_03"),
-				XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), pAuraBlade);
+				XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), pAuraBlade, &pParticle);
+			if (nullptr != pParticle)
+				pParticle->Set_Color(m_fMainColor);
 			m_iCount++;
 		}
 
 		//
 		else if (m_iCount == TYPE_P_SPARKLE_02 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_SPARKLE_02])
 		{
+		    CParticle* pParticle = nullptr;
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_SwordTempest_Sparkle_Circle_02"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_SPARKLE_02], m_pScaleOffset[TYPE_P_SPARKLE_02], m_pRotationOffset[TYPE_P_SPARKLE_02]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_SPARKLE_02], m_pScaleOffset[TYPE_P_SPARKLE_02], m_pRotationOffset[TYPE_P_SPARKLE_02], nullptr, &pParticle);
+			if (nullptr != pParticle)
+				pParticle->Set_Color(m_fMainColor);
 			m_iCount++;
 		}
 		//
@@ -220,19 +282,31 @@ void CVfx_SwordMan_Skill_SwordTempest::Tick(_float fTimeDelta)
 			pAuraBladeTransform->Set_WorldMatrix(WorldMatrix);
 			GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_CHARACTER, pAuraBlade);
 			//
+			CEffect* pEffect = nullptr;
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_SwordTempest_Trail_R"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_ATTACK_04], m_pScaleOffset[TYPE_E_ATTACK_04], m_pRotationOffset[TYPE_E_ATTACK_04], pAuraBlade);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_ATTACK_04], m_pScaleOffset[TYPE_E_ATTACK_04], m_pRotationOffset[TYPE_E_ATTACK_04], pAuraBlade, &pEffect);
+			if (nullptr != pEffect)
+			{
+				pEffect->Set_Color(m_fMainColor);
+				pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 0.5f), CUtils::Random_Float(0.f, 0.5f));
+			}
 			//
+			CParticle* pParticle = nullptr;
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_SwordTempest_Sparkle_Circle_03"),
-				XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), pAuraBlade);
+				XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), pAuraBlade, &pParticle);
+			if (nullptr != pParticle)
+				pParticle->Set_Color(m_fMainColor);
 			m_iCount++;
 		}
 
 		//
 		else if (m_iCount == TYPE_P_XSPARKLE_02 && m_iOwnerFrame >= m_pFrameTriger[TYPE_P_XSPARKLE_02])
 		{
+		    CParticle* pParticle = nullptr;
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_SwordTempest_Sparkle"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_XSPARKLE_02], m_pScaleOffset[TYPE_P_XSPARKLE_02], m_pRotationOffset[TYPE_P_XSPARKLE_02]);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_P_XSPARKLE_02], m_pScaleOffset[TYPE_P_XSPARKLE_02], m_pRotationOffset[TYPE_P_XSPARKLE_02], nullptr, &pParticle);
+			if (nullptr != pParticle)
+				pParticle->Set_Color(m_fMainColor);
 			m_iCount++;
 		}
         //
@@ -251,18 +325,33 @@ void CVfx_SwordMan_Skill_SwordTempest::Tick(_float fTimeDelta)
 			pAuraBladeTransform->Set_WorldMatrix(WorldMatrix);
 			GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_CHARACTER, pAuraBlade);
 			//
+			CEffect* pEffectL = nullptr;
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_SwordTempest_Trail_L"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_ATTACK_05], m_pScaleOffset[TYPE_E_ATTACK_05], m_pRotationOffset[TYPE_E_ATTACK_05], pAuraBlade);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_ATTACK_05], m_pScaleOffset[TYPE_E_ATTACK_05], m_pRotationOffset[TYPE_E_ATTACK_05], pAuraBlade, &pEffectL);
+			if (nullptr != pEffectL)
+			{
+				pEffectL->Set_Color(m_fMainColor);
+				pEffectL->Set_DistortionPower(CUtils::Random_Float(0.f, 0.5f), CUtils::Random_Float(0.f, 0.5f));
+			}
 			//
 			_float3 fRotationOffset = m_pRotationOffset[TYPE_E_ATTACK_05];
 			fRotationOffset.x *= -1.f;
 			fRotationOffset.y *= -1.f;
 			fRotationOffset.z *= -1.f;
+			CEffect* pEffect = nullptr;
 			GET_INSTANCE(CEffect_Manager)->Generate_Effect(TEXT("Effect_Swordman_Skill_SwordTempest_Trail_R"),
-				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_ATTACK_05], m_pScaleOffset[TYPE_E_ATTACK_05], fRotationOffset, pAuraBlade);
+				XMLoadFloat4x4(&m_WorldMatrix), m_pPositionOffset[TYPE_E_ATTACK_05], m_pScaleOffset[TYPE_E_ATTACK_05], fRotationOffset, pAuraBlade, &pEffect);
+			if (nullptr != pEffect)
+			{
+				pEffect->Set_Color(m_fMainColor);
+				pEffect->Set_DistortionPower(CUtils::Random_Float(0.f, 0.5f), CUtils::Random_Float(0.f, 0.5f));
+			}
 			//
+			CParticle* pParticle = nullptr;
 			GET_INSTANCE(CParticle_Manager)->Generate_Particle(TEXT("Particle_Swordman_Skill_SwordTempest_Sparkle_Circle_03"),
-				XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), pAuraBlade);
+				XMLoadFloat4x4(&m_WorldMatrix), _float3(0.f, 0.f, 0.f), _float3(1.f, 1.f, 1.f), _float3(0.f, 0.f, 0.f), pAuraBlade, &pParticle);
+			if (nullptr != pParticle)
+				pParticle->Set_Color(m_fMainColor);
 			m_iCount++;
 		}
 

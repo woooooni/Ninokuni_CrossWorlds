@@ -48,6 +48,10 @@ protected:
 	virtual HRESULT Ready_Components() override;
 
 private:
+	_int m_iType = -1;
+	_float3 m_fMainColor;
+
+private:
 	class CDecal* m_pEt3_Decal = nullptr;
 	class CDestroyer_HyperStrike_Hammer* m_pHammer = nullptr;
 

@@ -48,6 +48,11 @@ protected:
 	virtual HRESULT Ready_Components() override;
 
 private:
+	_int m_iType = -1;
+	_float3 m_fMainColor;
+	_float3 m_fLightColor;
+
+private:
 	class CDecal*  m_pEt1_Decal = nullptr;
 	class CEffect* m_pEt1_Line_01 = nullptr;
 	class CEffect* m_pEt1_Line_02 = nullptr;
