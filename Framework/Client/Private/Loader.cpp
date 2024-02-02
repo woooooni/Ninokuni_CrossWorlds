@@ -750,44 +750,8 @@ HRESULT CLoader::Loading_For_Level_IceLand()
 			//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Curling/UI_Minigame_CurlingGame_GaugeBar_Full.png")))))
 			//	return E_FAIL;
 
-			if (FAILED(GI->Add_Prototype(LEVEL_ICELAND, TEXT("Prototype_Component_Texture_UI_Minigame_Curling_Count_1"),
-				CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Curling/Curling_Count_1.png")))))
-				return E_FAIL;
-
-			if (FAILED(GI->Add_Prototype(LEVEL_ICELAND, TEXT("Prototype_Component_Texture_UI_Minigame_Curling_Count_2"),
-				CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Curling/Curling_Count_2.png")))))
-				return E_FAIL;
-
-			if (FAILED(GI->Add_Prototype(LEVEL_ICELAND, TEXT("Prototype_Component_Texture_UI_Minigame_Curling_Count_3"),
-				CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Curling/Curling_Count_3.png")))))
-				return E_FAIL;
-
-			if (FAILED(GI->Add_Prototype(LEVEL_ICELAND, TEXT("Prototype_Component_Texture_UI_Minigame_Curling_Count_4"),
-				CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Curling/Curling_Count_4.png")))))
-				return E_FAIL;
-
-			if (FAILED(GI->Add_Prototype(LEVEL_ICELAND, TEXT("Prototype_Component_Texture_UI_Minigame_Curling_Count_5"),
-				CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Curling/Curling_Count_5.png")))))
-				return E_FAIL;
-
-			if (FAILED(GI->Add_Prototype(LEVEL_ICELAND, TEXT("Prototype_Component_Texture_UI_Minigame_Curling_Count_6"),
-				CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Curling/Curling_Count_6.png")))))
-				return E_FAIL;
-
-			if (FAILED(GI->Add_Prototype(LEVEL_ICELAND, TEXT("Prototype_Component_Texture_UI_Minigame_Curling_Count_7"),
-				CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Curling/Curling_Count_7.png")))))
-				return E_FAIL;
-
-			if (FAILED(GI->Add_Prototype(LEVEL_ICELAND, TEXT("Prototype_Component_Texture_UI_Minigame_Curling_Count_8"),
-				CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Curling/Curling_Count_8.png")))))
-				return E_FAIL;
-
-			if (FAILED(GI->Add_Prototype(LEVEL_ICELAND, TEXT("Prototype_Component_Texture_UI_Minigame_Curling_Count_9"),
-				CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Curling/Curling_Count_9.png")))))
-				return E_FAIL;
-
-			if (FAILED(GI->Add_Prototype(LEVEL_ICELAND, TEXT("Prototype_Component_Texture_UI_Minigame_Curling_Count_10"),
-				CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Curling/Curling_Count_10.png")))))
+			if (FAILED(GI->Add_Prototype(LEVEL_ICELAND, TEXT("Prototype_Component_Texture_UI_Minigame_Curling_Count"),
+				CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Curling/Curling_Count_%d.png"), 10))))
 				return E_FAIL;
 
 			if (FAILED(GI->Add_Prototype(LEVEL_ICELAND, TEXT("Prototype_Component_Texture_UI_Minigame_Curling_Guage_Frame"),
@@ -816,6 +780,10 @@ HRESULT CLoader::Loading_For_Level_IceLand()
 
 			if (FAILED(GI->Add_Prototype(LEVEL_ICELAND, TEXT("Prototype_Component_Texture_UI_Minigame_Curling_Life_Full"),
 				CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Curling/Curling_Life_Full.png")))))
+				return E_FAIL;
+
+			if (FAILED(GI->Add_Prototype(LEVEL_ICELAND, TEXT("Prototype_Component_Texture_UI_Minigame_Curling_Lifes"),
+				CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Curling/Curling_Lifes_%d.png"), 6))))
 				return E_FAIL;
 
 			if (FAILED(GI->Add_Prototype(LEVEL_ICELAND, TEXT("Prototype_Component_Texture_UI_Minigame_Curling_TitleFrame"),

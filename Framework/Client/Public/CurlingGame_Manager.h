@@ -73,7 +73,7 @@ private:
 	typedef struct tagParticipantInfoDesc
 	{
 		_uint			iScore		= 0;
-		_uint			iNumStone	= 7;
+		_uint			iNumStone	= 0;
 		CGameObject*	pOwner		= nullptr;
 	
 	}PARTICIPANT_INFO_DESC;

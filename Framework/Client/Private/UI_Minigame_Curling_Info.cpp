@@ -19,9 +19,6 @@ HRESULT CUI_Minigame_Curling_Info::Initialize_Prototype()
 	if (FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
 
-	//for (size_t i = 0; i < (_uint)CUI_Minigame_Curling_Info::TEX_TYPE::TYPEEND; i++)
-	//	m_pTextureComs[i] = nullptr;
-
 	return S_OK;
 }
 

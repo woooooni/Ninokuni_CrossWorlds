@@ -56,8 +56,6 @@ void CState_CurlingGame_Adjust_Intensity::Tick_State(const _float& fTimeDelta)
 
 				m_tGuageDesc.Stop();
 
-				m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].iNumStone--;
-
 				if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::LAUNCH)))
 					return;
 			}
@@ -72,8 +70,6 @@ void CState_CurlingGame_Adjust_Intensity::Tick_State(const _float& fTimeDelta)
 				m_pManager->m_pStonesLaunched.push_back(m_pManager->m_pCurStone);
 
 				m_tGuageDesc.Stop();
-
-				m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].iNumStone--;
 
 				if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::LAUNCH)))
 					return;

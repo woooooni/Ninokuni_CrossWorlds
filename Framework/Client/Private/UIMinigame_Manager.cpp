@@ -608,6 +608,16 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_IceLand()
 		CUI_Minigame_Curling_Info::Create(m_pDevice, m_pContext, g_wstr_MG_Curling_Ui_ObjTags[(_uint)MG_CL_UI_TYPE::INFO_PLAYER], true), LAYER_UI)))
 		return E_FAIL;
 
+	/* Stones_Npc */
+	if (FAILED(GI->Add_Prototype(g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::STONES_NPC],
+		CUI_Minigame_Curling_Stones::Create(m_pDevice, m_pContext, g_wstr_MG_Curling_Ui_ObjTags[(_uint)MG_CL_UI_TYPE::STONES_NPC], false), LAYER_UI)))
+		return E_FAIL;
+
+	/* Stones_Player */
+	if (FAILED(GI->Add_Prototype(g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::STONES_PLAYER],
+		CUI_Minigame_Curling_Stones::Create(m_pDevice, m_pContext, g_wstr_MG_Curling_Ui_ObjTags[(_uint)MG_CL_UI_TYPE::STONES_PLAYER], true), LAYER_UI)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -1095,6 +1105,36 @@ HRESULT CUIMinigame_Manager::Ready_Curling()
 		m_CurlingGameUIs.push_back(pUi);
 		Safe_AddRef(pUi);
 	
+		pClone = pUi = nullptr;
+	}
+
+	/* Stones_Npc */
+	{
+		if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_UI, g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::STONES_NPC], nullptr, &pClone)))
+			return E_FAIL;
+
+		pUi = dynamic_cast<CUI_Minigame_Curling_Base*>(pClone);
+		if (nullptr == pUi)
+			return E_FAIL;
+
+		m_CurlingGameUIs.push_back(pUi);
+		Safe_AddRef(pUi);
+
+		pClone = pUi = nullptr;
+	}
+
+	/* Stones_Player */
+	{
+		if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_UI, g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::STONES_PLAYER], nullptr, &pClone)))
+			return E_FAIL;
+
+		pUi = dynamic_cast<CUI_Minigame_Curling_Base*>(pClone);
+		if (nullptr == pUi)
+			return E_FAIL;
+
+		m_CurlingGameUIs.push_back(pUi);
+		Safe_AddRef(pUi);
+
 		pClone = pUi = nullptr;
 	}
 

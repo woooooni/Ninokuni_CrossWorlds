@@ -139,7 +139,6 @@ HRESULT CUI_Minigame_Curling_Gauge::Bind_ShaderResources()
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_Diffusecolor", &m_vColor, sizeof(Vec4))))
 			return E_FAIL;
 	}
-	
 
 	return S_OK;
 }

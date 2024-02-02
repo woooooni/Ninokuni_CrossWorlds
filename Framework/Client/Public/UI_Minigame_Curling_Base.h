@@ -19,9 +19,10 @@ public:
 
 public:
 	virtual HRESULT Send_Message()									{ return S_OK; }
-	virtual HRESULT Send_Message_Int(const _int& wstrValue)			{ return S_OK; }
+	virtual HRESULT Send_Message_Int(const _int& iValue)			{ return S_OK; }
 	virtual HRESULT Send_Message_Float(const _float& fValue)		{ return S_OK; }
 	virtual HRESULT Send_Message_Wstring(const wstring& wstrValue)	{ return S_OK; }
+	virtual HRESULT Send_Message_Vec2(const Vec2& vValue)			{ return S_OK; }
 	virtual HRESULT Send_Message_Vec3(const Vec3& vValue)			{ return S_OK; }
 	virtual HRESULT Send_Message_Bool(const _bool& bValue)			{ return S_OK; }
 

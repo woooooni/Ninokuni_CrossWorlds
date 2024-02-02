@@ -54,6 +54,8 @@ HRESULT CCurlingGame_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11Devic
 		return E_FAIL;
 #endif
 
+	m_tParticipants[PARTICIPANT_NPC].iNumStone = g_iMaxStoneCount;
+	m_tParticipants[PARTICIPANT_PLAYER].iNumStone = g_iMaxStoneCount;
 	return S_OK;
 }
 
