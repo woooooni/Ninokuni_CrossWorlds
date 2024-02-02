@@ -355,8 +355,7 @@ void CTool_Map::Picking()
 				|| i == LAYER_TYPE::LAYER_BACKGROUND
 				|| i == LAYER_TYPE::LAYER_SKYBOX
 				|| i == LAYER_TYPE::LAYER_UI
-				|| i == LAYER_TYPE::LAYER_EFFECT
-				|| i == LAYER_TYPE::LAYER_GRASS)
+				|| i == LAYER_TYPE::LAYER_EFFECT)
 				continue;
 
 			list<CGameObject*>& GameObjects = GI->Find_GameObjects(LEVEL_TOOL, i);

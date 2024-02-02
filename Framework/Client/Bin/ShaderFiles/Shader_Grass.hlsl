@@ -1,144 +1,287 @@
 #include "Engine_Shader_Defines.hpp"
 
+#define UNITY_PI            3.14159265359f
+#define UNITY_TWO_PI        6.28318530718f
+#define UNITY_FOUR_PI       12.56637061436f
+
+Texture2D BladeTexture;
+Texture2D WindTexture;
+
+
+cbuffer MatrixBuffers
+{
+    Matrix world, view, projection;
+};
+
+cbuffer CB_GrassBuffer
+{
+    float fBladeWidthMin = 0.02f;
+    float fBladeWidthMax = 0.05f;
+    float fBladeHeightMin = 0.3f;
+    float fBladeHeightMax = 0.5f;
+    
+    float fBladeBendDistance = 0.38f;
+    float fBladeBendCurve = 2.0f; 
+    float fBendDelta = 0.2f;
+    float fTessellationGrassDistance = 0.1f;
+    
+    float fGrassThreshold = 0.5f;
+    float fGrassFalloff = 0.05f;
+    float fWindFrequency = 0.01f;
+    float fFad = 0.0f;
+    
+    
+    float4 vWindVelocity = float4(1.0f, 0.0f, 0.0f, 0.0f);
+    float4 vWindMap_ST = float4(1.0f, 1.0f, 3.0f, 3.0f); // xy = scale zw = offset?
+};
+
+cbuffer CB_Time
+{
+    float fTime = 0.0f;
+};
+
 struct VertexInput
 {
     float3 vPosition : POSITION;
-    float4 vColor : COLOR;
+    float3 vNormal : NORMAL0;
+    float2 vTexcoord : TEXCOORD0;
+    float3 vTangent : TANGENT;
 };
 
-struct HullInput
-{
-    float3 vPosition : POSITION;
-    float4 vColor : COLOR;
-};
-
-
-// Vertex
-HullInput ColorVertexShader(VertexInput input)
-{
-    HullInput output;
-    
-    // 정점 위치를 선체 쉐이더에 전달.
-    output.vPosition = input.vPosition;
-    
-    // 픽셀 쉐이더가 사용할 입력 색상을 저장한다.
-    output.vColor = input.vColor;
-    
-
-    return output;
-}
-
-cbuffer TessellationBuffer
-{
-    float fTessellationAmount;
-};
-
-struct ConstantOutput
-{
-    float fEdges[3] : SV_TessFactor;
-    float fInside : SV_InsideTessFactor;
-};
-
-struct HullOutput
-{
-    float3 vPosition : POSITION;
-    float4 vColor : COLOR;
-};
-
-// 훌 쉐이더에서 사용할 함수
-ConstantOutput ConstantHullShader(InputPatch<HullInput, 3> inputPatch, uint patchId : SV_PrimitiveID)
-{
-    ConstantOutput output = (ConstantOutput) 0;
-    
-    // SV_TessFactor는 삼각형의 한 변을 몇 개로 나눌건지. -> fEdges
-    output.fEdges[0] = fTessellationAmount;
-    output.fEdges[1] = fTessellationAmount;
-    output.fEdges[2] = fTessellationAmount;
-    
-    // 트라이앵글 내부를 터셀레이션 하기위한 터셀레이션 계수 설정
-    // 내부 컨트롤 포인트를 결정한다.
-    output.fInside = fTessellationAmount;
-
-    
-    return output;
-}
-
-////
-//HullShader
-////
-
-[domain("tri")] // 패치의 종류, 삼각형은 tri( tri, quad , isoline )
-[partitioning("integer")] // 테셀레이션 세분화 모드 (integer : 정수, fractional_even, fractional_odd)
-[outputtopology("triangle_cw")] // 새로 만들어진 삼각형들의 감기는 순서 ( cw : 시계방향 , ccw : 반시계 line : 선 테셀레이션  )
-[outputcontrolpoints(3)] // 입력된 컨트롤 포인트 개수
-[patchconstantfunc("ConstantHullShader")] // constant Hull Shader 함수 이름
-HullOutput ColorHullShader(InputPatch<HullInput, 3> patch, uint pointId : SV_OutputControlPointID,
-uint patchId : SV_PrimitiveID)
-{
-    HullOutput output = (HullOutput) 0;
-
-    // 제어점의 위치를 출력 위치로 설정
-    output.vPosition = patch[pointId].vPosition;
-    
-    // 입력 색상을 출력 색상으로 설정
-    output.vColor = patch[pointId].vColor;
-    
-    return output;
-}
-
-cbuffer MatrixBuffer
-{
-    matrix worldMatrix, viewMatrix, projectionMatrix;
-};
-
-struct PixelInput
+struct VertexOutput
 {
     float4 vPosition : SV_POSITION;
-    float4 vColor : COLOR;
+    float3 vNormal : NORMAL0;
+    float4 vTangent : TANGENT;
+    float2 vTexcoord : TEXCOORD0;
+    //float2 vWindSample : TEXCOORD1;
 };
 
-// Domain Shader
+struct GeomData
+{
+    float4 vPosition : SV_POSITION;
+    float2 vTexcoord : TEXCOORD0;
+    float3 vWorldPos : TEXCOORD1;
+};
 
-// 모자이크 처리된 데이터를 받아서 버텍스 쉐이더에 이전에 사용한 것과 같은 
-// 최종 꼭지점을 조작하고 변환하는데 사용
+float rand(float3 co)
+{
+    return frac(sin(dot(co.xyz, float3(12.9898f, 78.233f, 53.339f))) * 43758.5453f);
+}
+
+float3x3 AngleAxis3x3(float angle, float3 axis)
+{
+    float c, s;
+    sincos(angle, s, c);
+    
+    float t = 1 - c;
+    float x = axis.x;
+    float y = axis.y;
+    float z = axis.z;
+    
+    return float3x3
+    (
+          t * x * x + c, t * x * y - s * z, t * x * z + s * y,
+          t * x * y + s * z, t * y * y + c, t * y * z - s * x,
+          t * x * z - s * y, t * y * z + s * x, t * z * z + c
+    );
+}
+
+VertexOutput geomVert(VertexInput v)
+{
+    VertexOutput o;
+    
+    o.vPosition = float4(v.vPosition, 1.0f);
+    o.vNormal = v.vNormal;
+    o.vTangent = float4(v.vTangent, 0.0f);
+    o.vTexcoord = v.vTexcoord;
+    
+    return o;
+}
+
+VertexOutput tessVert(VertexInput v)
+{
+    VertexOutput o;
+    o.vPosition = float4(v.vPosition, 1.0f);
+    o.vNormal = v.vNormal;
+    o.vTangent = float4(v.vTangent, 1.0f);
+    o.vTexcoord = v.vTexcoord;
+    //o.vWindSample = WindTexture.SampleLevel(PointSampler, v.vTexcoord, 0.0f);
+    
+    return o;
+}
+
+
+struct TessellationFactors
+{
+    float edge[3] : SV_TessFactor;
+    float inside : SV_InsideTessFactor;
+};
+
+float tessellationEdgeFactor(VertexOutput vert0, VertexOutput vert1)
+{
+    float3 v0 = vert0.vPosition.xyz;
+    float3 v1 = vert1.vPosition.xyz;
+    float edgeLength = distance(v0, v1);
+    return saturate(edgeLength / fTessellationGrassDistance);
+
+}
+
+
+TessellationFactors patchConstantFunc(InputPatch<VertexOutput, 3> patch)
+{
+    TessellationFactors f;
+    
+    f.edge[0] = tessellationEdgeFactor(patch[0], patch[1]);
+    f.edge[1] = tessellationEdgeFactor(patch[1], patch[2]);
+    f.edge[2] = tessellationEdgeFactor(patch[2], patch[0]);
+    
+    f.inside = (f.edge[0] + f.edge[1] + f.edge[2]) / 3.0f;
+    
+    return f;
+}
+
 
 [domain("tri")]
-PixelInput ColorDomainShader(ConstantOutput input, float3 uvwCoord : SV_DomainLocation,
-const OutputPatch<HullOutput, 3> patch)
+[outputcontrolpoints(3)]
+[outputtopology("triangle_cw")]
+[partitioning("integer")]
+[patchconstantfunc("patchConstantFunc")]
+VertexOutput hull(InputPatch<VertexOutput, 3> patch, uint id : SV_OutputControlPointID)
 {
-    float3 vertexPosition;
-    PixelInput output = (PixelInput) 0;
+    return patch[id];
+}
 
-    vertexPosition = uvwCoord.x * patch[0].vPosition + uvwCoord.y * patch[1].vPosition +
-    uvwCoord.z * patch[2].vPosition;
+
+
+[domain("tri")]
+VertexOutput domain(TessellationFactors factors, OutputPatch<VertexOutput, 3> patch, float3 barycentricCoordinates : SV_DomainLocation)
+{
+    VertexInput i;
+
+#define INTERPOLATE(fieldname) i.fieldname = \
+					patch[0].fieldname * barycentricCoordinates.x + \
+					patch[1].fieldname * barycentricCoordinates.y + \
+					patch[2].fieldname * barycentricCoordinates.z;
+
+    
+	INTERPOLATE(vPosition)
+	INTERPOLATE(vNormal)
+	INTERPOLATE(vTangent)
+	INTERPOLATE(vTexcoord)
+
+
+    return tessVert(i);
+}
+
+GeomData TransformGeomToClip(float3 position,
+float3 offset, float3x3 transformationMatrix, float2 texcoord)
+{
+    GeomData o;
+    
+    matrix matWV, matWVP;
+    matWV = mul(world, view);
+    matWVP = mul(matWV, projection);
+
+    o.vPosition = float4(mul(position + mul(transformationMatrix, offset), (float3x3) matWVP), 1.0f);
+    o.vTexcoord = texcoord;
+    o.vWorldPos = mul(float4(position, 1.0f), world);
+    
+    return o;
+}
+
+GeomData ObjectToClipPos(float3 pos, float2 uv)
+{
+    GeomData o = (GeomData)0;
     
     matrix matWV, matWVP;
     
-    matWV = mul(worldMatrix, viewMatrix);
-    matWVP = mul(matWV, projectionMatrix);
+    matWV = mul(world, view);
+    matWVP = mul(matWV, projection);
     
-    output.vPosition = mul(float4(vertexPosition, 1.0f), matWVP);
-    
-    output.vColor = patch[1].vColor;
-    
-    return output;
+    o.vPosition = mul(float4(pos, 1.0f), matWVP);
+    o.vTexcoord = uv;
+    return o;
 }
 
-// PixelShader
-struct PS_OUT
-{
-    float4 vColor : SV_TARGET0;
-    float4 vSunMask : SV_TARGET4;
-};
 
-PS_OUT ColorPixelShader(PixelInput input)
+GeomData GenerateGrassVertex(float3 vertexPosition, float width, float height, float forward, float2 uv, float3x3 transformMatrix)
 {
-    PS_OUT output = (PS_OUT) 0;
+    float3 tangentPoint = float3(width, forward, height);
     
-    output.vColor = input.vColor;
-    output.vSunMask = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    float3 localPosition = vertexPosition + mul(transformMatrix, tangentPoint);
+    return ObjectToClipPos(localPosition, uv);
+}
+
+GeomData TempVertexOutput(float3 pos, float2 uv)
+{
+    GeomData o = (GeomData) 0;
     
-    return output;
+    matrix matWV, matWVP;
+    
+    matWV = mul(world, view);
+    matWVP = mul(matWV, projection);
+    
+    o.vPosition = mul(float4(pos, 1.0f), matWVP);
+    o.vTexcoord = uv;
+    return o;
+}
+
+#define BLADE_SEGMENTS 4
+
+[maxvertexcount(BLADE_SEGMENTS * 2 + 1)]
+void geom(point VertexOutput input[1], inout TriangleStream<GeomData> triStream)
+{
+    GeomData o = (GeomData) 0;
+    
+    float3 pos = input[0].vPosition;
+    float3 vNormal = input[0].vNormal;
+    float3 vTangent = input[0].vTangent;
+    float3 vBiNormal = cross(vNormal, vTangent);
+    
+    float3x3 tangentToLocal = float3x3(
+        1.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 1.0f
+    );
+    
+    float3x3 randRotMatrix = AngleAxis3x3(rand(pos) * UNITY_TWO_PI, float3(0.0f, 1.0f, 0.0f));
+    float3x3 randBendMatrix = AngleAxis3x3(rand(pos.zzx) * fBendDelta * UNITY_PI * 0.5f, float3(-1.0f, 0.0f, 0.0f));
+
+    float2 windUV = pos.xz * vWindMap_ST.xy + vWindMap_ST.zw + normalize(vWindVelocity.xzy) * fWindFrequency * fTime;
+    float2 windSample = (WindTexture.SampleLevel(PointSampler, input[0].vTexcoord.y * fTime, 0.0f) * 2.0f - 1.0f) * length(vWindVelocity);
+    float3 windAxis = normalize(float3(windSample.x, windSample.y, 0.0f));
+    float3x3 windMatrix = AngleAxis3x3(UNITY_PI * windSample, windAxis);
+     
+    float3x3 baseTransformationMatrix = mul(tangentToLocal, randRotMatrix);
+    float3x3 tipTransformationMatrix = mul(mul(mul(tangentToLocal, windMatrix), randBendMatrix), randRotMatrix);
+    
+    float width = lerp(fBladeWidthMin, fBladeWidthMax, rand(pos.xzy));
+    float height = lerp(fBladeHeightMin, fBladeHeightMax, rand(pos.zyx));
+    float foward = rand(pos.yyz) * fBladeBendDistance;
+    
+    for (int i = 0; i < BLADE_SEGMENTS; ++i)
+    {
+        float t = i / (float) BLADE_SEGMENTS;
+        float3 offset = float3(width * (1 - t), pow(t, fBladeBendCurve) * foward, height * t);
+        
+        float3x3 transformationMatrix = (i == 0) ? baseTransformationMatrix : tipTransformationMatrix;
+        
+        triStream.Append(ObjectToClipPos(pos + mul(transformationMatrix, float3(offset.x, offset.y, offset.z)), float2(0, t)));
+        triStream.Append(ObjectToClipPos(pos + mul(transformationMatrix, float3(-offset.x, offset.y, offset.z)), float2(1, t)));
+    }
+    triStream.Append(ObjectToClipPos(pos + mul(tipTransformationMatrix, float3(0, foward, height)), float2(0.5f, 1.0f)));
+    triStream.RestartStrip();
+}
+
+float4 PS_Grass(GeomData i) : SV_Target
+{
+    float4 bottomColor = float4(0.29f, 0.431f, 0.294f, 1.0f);
+    float4 TopColor = float4(1.0f, 0.639f, 0.447f, 1.0f);
+   
+    float4 vColor = lerp(bottomColor, TopColor, i.vTexcoord.y);
+    
+    return vColor;
 }
 
 RasterizerState RS_WireFrame
@@ -148,88 +291,19 @@ RasterizerState RS_WireFrame
     FrontCounterClockwise = false;
 };
 
-
-// 
-struct VS_GRASS_INPUT
-{
-    float4 vPosition : POSITION;
-    float4 vColor : COLOR0;
-};
-
-struct GeometryOutput
-{
-    float4 vPosition : SV_POSITION;
-    float4 vColor : COLOR0;
-};
-
-GeometryOutput GrassVS(VS_GRASS_INPUT input)
-{
-    GeometryOutput o = (GeometryOutput) 0;
-    
-    o.vPosition = 0;
-
-    return o;
-}
-
-[maxvertexcount(3)]
-void geo(triangle float4 input[3] : SV_Position, inout TriangleStream<GeometryOutput> triStream)
-{
-    GeometryOutput o = (GeometryOutput) 0;
-    
-    matrix matWV, matWVP;
-    
-    matWV = mul(worldMatrix, viewMatrix);
-    matWVP = mul(matWV, projectionMatrix);
-    
-
-    
-    o.vPosition = mul(float4(0.5f, 0.0f, 0.0f, 1.0f), matWVP);
-    o.vColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
-    triStream.Append(o);
-
-    o.vPosition = mul(float4(-0.5f, 0.0f, 0.0f, 1.0f), matWVP);
-    o.vColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
-    triStream.Append(o);
-
-    o.vPosition = mul(float4(0.0f, -1.0f, 0.0f, 1.0f), matWVP);
-    o.vColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
-    triStream.Append(o);
-    
-    //triStream.RestartStrip();
-}
-
-float4 GrassPS(GeometryOutput input) : SV_Target
-{
-    
-    return input.vColor;
-}
-
 technique11 DefaultGrass
 {
 	// Grass
     pass RealTimeGrass
     {
-        SetRasterizerState(RS_WireFrame);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-
-        VertexShader = compile vs_5_0 ColorVertexShader();
-        GeometryShader = NULL;
-        HullShader = compile hs_5_0 ColorHullShader();
-        DomainShader = compile ds_5_0 ColorDomainShader();
-        PixelShader = compile ps_5_0 ColorPixelShader();
-    }
-
-    pass RealTimeWithGeo
-    {
         SetRasterizerState(RS_NoneCull);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
-        VertexShader = compile vs_5_0 GrassVS();
-        GeometryShader = compile gs_5_0 geo();
-        HullShader = NULL;
-        DomainShader = NULL;
-        PixelShader = NULL;
+        VertexShader = compile vs_5_0 tessVert();
+        HullShader = compile hs_5_0 hull();
+        DomainShader = compile ds_5_0 domain();
+        GeometryShader = compile gs_5_0 geom();
+        PixelShader = compile ps_5_0 PS_Grass();
     }
 }

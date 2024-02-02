@@ -285,6 +285,12 @@ HRESULT CLoader::Loading_For_Level_Logo()
 		CGrass::Create(m_pDevice, m_pContext, TEXT("Common_RealTime_Grass")), LAYER_TYPE::LAYER_GRASS, true))
 		return E_FAIL;
 
+	if (GI->Add_Prototype(TEXT("Prototype_GameObject_Common_Grass_Purple"),
+		CGrass_Purple::Create(m_pDevice, m_pContext, TEXT("Common_RealTime_Grass_Purple")), LAYER_TYPE::LAYER_GRASS, true))
+		return E_FAIL;
+
+
+
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Logo_Background"), CUI_Logo_Background::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
@@ -313,6 +319,9 @@ HRESULT CLoader::Loading_For_Level_Logo()
 		return E_FAIL;
 
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_DoorEnter", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Character/Door/", L"Door")))
+		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_GrassPlane", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/GrassPlane/", L"Common_GrassPlane")))
 		return E_FAIL;
 
 	
@@ -869,6 +878,10 @@ HRESULT CLoader::Loading_For_Level_Tool()
 		CGrass::Create(m_pDevice, m_pContext, TEXT("Common_RealTime_Grass")), LAYER_TYPE::LAYER_GRASS, true))
 		return E_FAIL;
 
+	if (GI->Add_Prototype(TEXT("Prototype_GameObject_Common_Grass_Purple"),
+		CGrass_Purple::Create(m_pDevice, m_pContext, TEXT("Common_RealTime_Grass_Purple")), LAYER_TYPE::LAYER_GRASS, true))
+		return E_FAIL;
+
 	if (GI->Add_Prototype(TEXT("Prototype_GameObject_Common_LensFlare"),
 		CLensFlare::Create(m_pDevice, m_pContext, TEXT("Common_LensFlare"), OBJ_TYPE::OBJ_SKY), LAYER_TYPE::LAYER_SKYBOX))
 		return E_FAIL;
@@ -932,7 +945,8 @@ HRESULT CLoader::Loading_For_Level_Tool()
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Mirror", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/CustomRoom/", L"CustomRoomMirror")))
 		return E_FAIL;
 
-
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_GrassPlane", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Map/GrassPlane/", L"Common_GrassPlane")))
+		return E_FAIL;
 
 	switch (g_eLoadCharacter)
 	{

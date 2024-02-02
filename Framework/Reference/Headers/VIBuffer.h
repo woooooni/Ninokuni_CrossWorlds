@@ -34,6 +34,8 @@ public:
 	DXGI_FORMAT	Get_IndexFormat() { return m_eIndexFormat; }
 	D3D11_PRIMITIVE_TOPOLOGY Get_Topology() { return m_eTopology; }
 
+public:
+	void Set_Topology(D3D11_PRIMITIVE_TOPOLOGY topology) { m_eTopology = topology; }
 protected:
 	ID3D11Buffer* m_pVB = nullptr;
 	ID3D11Buffer* m_pIB = nullptr;
