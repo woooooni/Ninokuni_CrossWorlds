@@ -64,7 +64,7 @@ HRESULT CMainApp::Initialize()
 	{
 		g_eStartLevel = LEVELID::LEVEL_LOGO;					/* 시작 레벨 타입 */
 
-		g_iStartQuestLevel = 3;									/* 시작 퀘스트 레벨 */
+		g_iStartQuestLevel = 4;									/* 시작 퀘스트 레벨 */
 
 		g_eLoadCharacter = LOAD_CHARACTER_TYPE::ALL_CH;			/* 모델 로드할 캐릭터 타입 */
 
@@ -1689,11 +1689,8 @@ void Client::CMainApp::Free()
 	Safe_Release(m_pContext);
 	Safe_Release(m_pRenderer_Com);
 
-	Safe_Release(m_pDevice);
-	Safe_Release(m_pContext);
-
 	CRiding_Manager::GetInstance()->DestroyInstance();
-//	CGrandprix_Manager::GetInstance()->DestroyInstance();
+	CGrandprix_Manager::GetInstance()->DestroyInstance();
 	CTowerDefence_Manager::GetInstance()->DestroyInstance();
 	CQuest_Manager::GetInstance()->DestroyInstance();
 	CEffect_Manager::GetInstance()->DestroyInstance();
@@ -1702,7 +1699,6 @@ void Client::CMainApp::Free()
 	CPicking_Manager::GetInstance()->DestroyInstance();
 	CUIDamage_Manager::GetInstance()->DestroyInstance();
 	CUI_Manager::GetInstance()->DestroyInstance();
-	CGrandprix_Manager::GetInstance()->DestroyInstance();
 	CUIMinigame_Manager::GetInstance()->DestroyInstance();
 	CItem_Manager::GetInstance()->DestroyInstance();
 	CInventory_Manager::GetInstance()->DestroyInstance();

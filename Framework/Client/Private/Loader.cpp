@@ -652,7 +652,7 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/AnimModel/Vehicle/Boto/SKM_Boto3_Color_TextureCom_%d.dds"), 5))))
 			return E_FAIL;
 		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_UI_Minigame_Grandprix_AimCursor"),
-			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/UI_Aim_Cursor.png")))))
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/UI_Aim_Cursor_%d.png"), 2))))
 			return E_FAIL;
 
 		// 미니게임용 프로토타입
@@ -1678,10 +1678,7 @@ HRESULT CLoader::Loading_For_TowerDefence()
 		MSG_BOX("Loading_For_TowerDefence Failed.");
 		return E_FAIL;
 	}
-	
-//	if (FAILED(CGrandprix_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
-//		return E_FAIL;
-//
+
 	return S_OK;
 }
 

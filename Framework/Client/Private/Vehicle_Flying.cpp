@@ -16,10 +16,6 @@ void CVehicle_Flying::Set_Routes()
 {
 	if (FAILED(Ready_Routes()))
 		return;
-
-//	_int iMax = m_RoutePoints.size() - 1;
-//	m_iRouteIndex = GI->RandomInt(0, iMax);
-//	m_pTransformCom->Set_State(CTransform::STATE_POSITION, m_RoutePoints[m_iRouteIndex]);
 }
 
 HRESULT CVehicle_Flying::Initialize_Prototype()
@@ -117,45 +113,55 @@ HRESULT CVehicle_Flying::Ready_States()
 
 HRESULT CVehicle_Flying::Ready_Routes()
 {
+	m_RoutePoints.reserve(22);
+	m_RoutePoints.push_back({ 10.f, 93.f, 173.f, 1.f }); // 73.f -> 93.f
+	m_RoutePoints.push_back({ 64.f, 80.f, 136.f, 1.f });
+	m_RoutePoints.push_back({ 58.f, 99.f, 27.f, 1.f });
+	m_RoutePoints.push_back({ 175.5f, 117.f, 95.5f, 1.f });
+	m_RoutePoints.push_back({ 148.f, 119.f, 157.f, 1.f });
+	m_RoutePoints.push_back({ 22.5f, 117.5f, 201.5f, 1.f });
+	m_RoutePoints.push_back({ -57.5f, 102.f, 198.f, 1.f });
+	m_RoutePoints.push_back({ -145.7f, 77.f, 177.f, 1.f });
+	m_RoutePoints.push_back({ -231.f, 92.5f, 197.5f, 1.f });
+	m_RoutePoints.push_back({ -145.7f, 77.f, 177.f, 1.f });
+	m_RoutePoints.push_back({ -207.5f, 94.5f, 24.5f, 1.f });
+	m_RoutePoints.push_back({ -183.f, 120.f, -155.f, 1.f });
+	m_RoutePoints.push_back({ -145.7f, 77.f, 177.f, 1.f });
+	m_RoutePoints.push_back({ -100.5f, 108.5f, -208.f, 1.f });
+	m_RoutePoints.push_back({ 15.f, 86.5f, -151.5f, 1.f });
+	m_RoutePoints.push_back({ 95.5f, 88.f, -97.f, 1.f }); // 68.f -> 88.f
+	m_RoutePoints.push_back({ 101.f, 72.f, 11.f, 1.f });
+	m_RoutePoints.push_back({ 30.5f, 83.f, 18.f, 1.f });
+	m_RoutePoints.push_back({ -36.f, 93.f, 102.f, 1.f });
+	m_RoutePoints.push_back({ 17.5f, 90.f, 37.f, 1.f });
+	m_RoutePoints.push_back({ -80.f, 85.5f, 62.f, 1.f });
+	m_RoutePoints.push_back({ 35.f, 102.5f, 107.8f, 1.f });
+
 	if(m_eStat.bIsEnemy == true
 		&& Get_ObjectTag() == TEXT("Vehicle_EnemyBiplane"))
 	{
 		// 엔지니어 Start Route
-		m_RoutePoints.reserve(4); // y값 수정할 것
-		m_RoutePoints.push_back({ 0.1f, 4.f, 30.2f, 1.f });
-		m_RoutePoints.push_back({ 0.1f, 10.f, 49.f, 1.f }); // 19
-		m_RoutePoints.push_back({ 0.1f, 14.f, 70.f, 1.f }); // 20
-		m_RoutePoints.push_back({ 0.1f, 19.f, 105.f, 1.f }); // 35
+		m_TakeOffPoints.reserve(13); // y값 수정할 것
+		m_TakeOffPoints.push_back({ 0.1f, 4.f, 30.2f, 1.f });
+		m_TakeOffPoints.push_back({ 0.1f, 10.f, 49.f, 1.f });
+		m_TakeOffPoints.push_back({ 0.1f, 14.f, 70.f, 1.f });
+		m_TakeOffPoints.push_back({ 0.1f, 19.f, 105.f, 1.f });
+		m_TakeOffPoints.push_back({ 0.1f, 27.f, 120.f, 1.f });
+		m_TakeOffPoints.push_back({ 0.1f, 35.f, 126.f, 1.f }); 
+		m_TakeOffPoints.push_back({ 0.1f, 44.f, 132.f, 1.f });
+		m_TakeOffPoints.push_back({ 0.1f, 54.f, 138.f, 1.f });
+		m_TakeOffPoints.push_back({ 0.1f, 65.f, 145.f, 1.f });
+		m_TakeOffPoints.push_back({ 0.1f, 77.f, 153.f, 1.f });
+		m_TakeOffPoints.push_back({ 0.1f, 90.f, 160.f, 1.f });
+		m_TakeOffPoints.push_back({ 0.1f, 105.f, 170.f, 1.f });
+		m_TakeOffPoints.push_back({ 0.1f, 120.f, 180.f, 1.f });
 
-		m_iRouteIndex = 0;
+		m_iTakeOffIndex = 0;
 	}
 	else
 	{
-		m_RoutePoints.reserve(22);
-		m_RoutePoints.push_back({ 10.f, 93.f, 173.f, 1.f }); // 73.f -> 93.f
-		m_RoutePoints.push_back({ 64.f, 80.f, 136.f, 1.f });
-		m_RoutePoints.push_back({ 58.f, 99.f, 27.f, 1.f });
-		m_RoutePoints.push_back({ 175.5f, 117.f, 95.5f, 1.f });
-		m_RoutePoints.push_back({ 148.f, 119.f, 157.f, 1.f });
-		m_RoutePoints.push_back({ 22.5f, 117.5f, 201.5f, 1.f });
-		m_RoutePoints.push_back({ -57.5f, 102.f, 198.f, 1.f });
-		m_RoutePoints.push_back({ -145.7f, 77.f, 177.f, 1.f });
-		m_RoutePoints.push_back({ -231.f, 92.5f, 197.5f, 1.f });
-		m_RoutePoints.push_back({ -145.7f, 77.f, 177.f, 1.f });
-		m_RoutePoints.push_back({ -207.5f, 94.5f, 24.5f, 1.f });
-		m_RoutePoints.push_back({ -183.f, 120.f, -155.f, 1.f });
-		m_RoutePoints.push_back({ -145.7f, 77.f, 177.f, 1.f });
-		m_RoutePoints.push_back({ -100.5f, 108.5f, -208.f, 1.f });
-		m_RoutePoints.push_back({ 15.f, 86.5f, -151.5f, 1.f });
-		m_RoutePoints.push_back({ 95.5f, 88.f, -97.f, 1.f }); // 68.f -> 88.f
-		m_RoutePoints.push_back({ 101.f, 72.f, 11.f, 1.f });
-		m_RoutePoints.push_back({ 30.5f, 83.f, 18.f, 1.f });
-		m_RoutePoints.push_back({ -36.f, 93.f, 102.f, 1.f });
-		m_RoutePoints.push_back({ 17.5f, 90.f, 37.f, 1.f });
-		m_RoutePoints.push_back({ -80.f, 85.5f, 62.f, 1.f });
-		m_RoutePoints.push_back({ 35.f, 102.5f, 107.8f, 1.f });
-
 		m_iRouteIndex = GI->RandomInt(0, m_RoutePoints.size() - 1);
+		m_pTransformCom->Set_State(CTransform::STATE_POSITION, m_RoutePoints[m_iRouteIndex]);
 	}
 
 	return S_OK;

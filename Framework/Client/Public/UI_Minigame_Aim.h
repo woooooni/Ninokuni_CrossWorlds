@@ -33,6 +33,7 @@ private:
 	_float2 m_vMinSize = _float2(0.f, 0.f);
 
 	_float m_fDistance = { 0.f };
+	_uint m_iTextureIndex = { 0 };
 
 private:
 	virtual HRESULT	Ready_Components() override;

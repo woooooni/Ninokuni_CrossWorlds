@@ -25,8 +25,6 @@ HRESULT CGrandprix_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceC
 	Safe_AddRef(m_pDevice);
 	Safe_AddRef(m_pContext);
 
-	Prepare_Grandprix();
-
 	return S_OK;
 }
 
@@ -43,46 +41,48 @@ HRESULT CGrandprix_Manager::Ready_Grandprix_GameObjectToLayer(LEVELID eID)
 {
 	if (g_eLoadCharacter == LOAD_CHARACTER_TYPE::ALL_CH || g_eLoadCharacter == LOAD_CHARACTER_TYPE::ENGINEER_CH)
 	{
-		if (nullptr == m_pEnemyPlane)
-			return E_FAIL;
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER, m_pEnemyPlane)))
-			return E_FAIL;
-		Safe_AddRef(m_pEnemyPlane);
+		if (nullptr != m_pEnemyPlane)
+		{
+			if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER, m_pEnemyPlane)))
+				return E_FAIL;
+			Safe_AddRef(m_pEnemyPlane);
+		}
 
-		if (nullptr == m_pEngineer)
-			return E_FAIL;
-		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, m_pEngineer)))
-			return E_FAIL;
-		Safe_AddRef(m_pEngineer);
+		if (nullptr != m_pEngineer)
+		{
+			if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_CHARACTER, m_pEngineer)))
+				return E_FAIL;
+			Safe_AddRef(m_pEngineer);
+		}
 
 		for (auto& iter : m_Botos)
 		{
-			if (nullptr == iter)
-				return E_FAIL;
-
-			if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER, iter)))
-				return E_FAIL;
-			Safe_AddRef(iter);
+			if (nullptr != iter)
+			{
+				if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_MONSTER, iter)))
+					return E_FAIL;
+				Safe_AddRef(iter);
+			}
 		}
 
 		for (auto& iter : m_Enemies)
 		{
-			if (nullptr == iter)
-				return E_FAIL;
-
-			if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, iter)))
-				return E_FAIL;
-			Safe_AddRef(iter);
+			if (nullptr != iter)
+			{
+				if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, iter)))
+					return E_FAIL;
+				Safe_AddRef(iter);
+			}
 		}
 
 		for (auto& iter : m_Items)
 		{
-			if (nullptr == iter)
-				return E_FAIL;
-
-			if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, iter)))
-				return E_FAIL;
-			Safe_AddRef(iter);
+			if (nullptr != iter)
+			{
+				if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_ETC, iter)))
+					return E_FAIL;
+				Safe_AddRef(iter);
+			}
 		}
 	}
 
@@ -91,6 +91,8 @@ return S_OK;
 
 void CGrandprix_Manager::Ready_Grandprix_EnemyInfo()
 {
+	Ready_Riders(); // 여기서 Active true함.
+
 	CUIMinigame_Manager::GetInstance()->Set_HPOwner(m_pEnemyPlane, CUIMinigame_Manager::GRANDPRIX_ENEMY::ENGINEER);
 
 	for (size_t i = 0; i < m_Botos.size(); ++i)
@@ -132,8 +134,8 @@ HRESULT CGrandprix_Manager::Prepare_Grandprix()
 		Safe_AddRef(m_pEngineer);
 
 
-		m_Botos.reserve(9);
-		m_Enemies.reserve(9);
+		m_Botos.reserve(8);
+		m_Enemies.reserve(8);
 
 		CVehicle::VEHICLE_DESC BotoDesc = {};
 		BotoDesc.fSpeed = 12.f;
@@ -233,86 +235,19 @@ HRESULT CGrandprix_Manager::Prepare_Grandprix()
 		dynamic_cast<CVehicle_Flying_EnemyBoto*>(pEnemyBoto)->Set_TextureIndex(1);
 
 		CGameObject* pEnemy = nullptr;
-		if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_Ghost2"), nullptr, &pEnemy)))
-			return E_FAIL;
-		if (nullptr == pEnemy)
-			return E_FAIL;
-		if (nullptr == dynamic_cast<CGrandprix_Enemy*>(pEnemy))
-			return E_FAIL;
-		m_Enemies.push_back(dynamic_cast<CGrandprix_Enemy*>(pEnemy));
-		Safe_AddRef(pEnemy);
 
-		pEnemy = nullptr;
-		if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_Ghost2"), nullptr, &pEnemy)))
-			return E_FAIL;
-		if (nullptr == pEnemy)
-			return E_FAIL;
-		if (nullptr == dynamic_cast<CGrandprix_Enemy*>(pEnemy))
-			return E_FAIL;
-		m_Enemies.push_back(dynamic_cast<CGrandprix_Enemy*>(pEnemy));
-		Safe_AddRef(pEnemy);
-
-		pEnemy = nullptr;
-		if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_Ghost2"), nullptr, &pEnemy)))
-			return E_FAIL;
-		if (nullptr == pEnemy)
-			return E_FAIL;
-		if (nullptr == dynamic_cast<CGrandprix_Enemy*>(pEnemy))
-			return E_FAIL;
-		m_Enemies.push_back(dynamic_cast<CGrandprix_Enemy*>(pEnemy));
-		Safe_AddRef(pEnemy);
-
-		pEnemy = nullptr;
-		if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_Ghost2"), nullptr, &pEnemy)))
-			return E_FAIL;
-		if (nullptr == pEnemy)
-			return E_FAIL;
-		if (nullptr == dynamic_cast<CGrandprix_Enemy*>(pEnemy))
-			return E_FAIL;
-		m_Enemies.push_back(dynamic_cast<CGrandprix_Enemy*>(pEnemy));
-		Safe_AddRef(pEnemy);
-
-		pEnemy = nullptr;
-		if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_Ghost2"), nullptr, &pEnemy)))
-			return E_FAIL;
-		if (nullptr == pEnemy)
-			return E_FAIL;
-		if (nullptr == dynamic_cast<CGrandprix_Enemy*>(pEnemy))
-			return E_FAIL;
-		m_Enemies.push_back(dynamic_cast<CGrandprix_Enemy*>(pEnemy));
-		Safe_AddRef(pEnemy);
-
-		pEnemy = nullptr;
-		if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_Ghost2"), nullptr, &pEnemy)))
-			return E_FAIL;
-		if (nullptr == pEnemy)
-			return E_FAIL;
-		if (nullptr == dynamic_cast<CGrandprix_Enemy*>(pEnemy))
-			return E_FAIL;
-		m_Enemies.push_back(dynamic_cast<CGrandprix_Enemy*>(pEnemy));
-		Safe_AddRef(pEnemy);
-
-		pEnemy = nullptr;
-		if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_Ghost2"), nullptr, &pEnemy)))
-			return E_FAIL;
-		if (nullptr == pEnemy)
-			return E_FAIL;
-		if (nullptr == dynamic_cast<CGrandprix_Enemy*>(pEnemy))
-			return E_FAIL;
-		m_Enemies.push_back(dynamic_cast<CGrandprix_Enemy*>(pEnemy));
-		Safe_AddRef(pEnemy);
-
-		pEnemy = nullptr;
-		if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_Ghost2"), nullptr, &pEnemy)))
-			return E_FAIL;
-		if (nullptr == pEnemy)
-			return E_FAIL;
-		if (nullptr == dynamic_cast<CGrandprix_Enemy*>(pEnemy))
-			return E_FAIL;
-		m_Enemies.push_back(dynamic_cast<CGrandprix_Enemy*>(pEnemy));
-		Safe_AddRef(pEnemy);
-
-		Ready_Riders();
+		for (_uint i = 0; i < 8; ++i)
+		{
+			pEnemy = nullptr;
+			if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_ETC, TEXT("Prorotype_GameObject_Grandprix_Enemy_Ghost2"), nullptr, &pEnemy)))
+				return E_FAIL;
+			if (nullptr == pEnemy)
+				return E_FAIL;
+			if (nullptr == dynamic_cast<CGrandprix_Enemy*>(pEnemy))
+				return E_FAIL;
+			m_Enemies.push_back(dynamic_cast<CGrandprix_Enemy*>(pEnemy));
+			Safe_AddRef(pEnemy);
+		}
 	}
 
 	m_Items.reserve(8);
@@ -385,6 +320,16 @@ void CGrandprix_Manager::End_Grandprix()
 		}
 	}
 	m_Enemies.clear();
+
+	for (auto& iter : m_Items)
+	{
+		if (nullptr != iter)
+		{
+			iter->Set_Dead(true);
+			Safe_Release(iter);
+		}
+	}
+	m_Items.clear();
 }
 
 
@@ -396,13 +341,6 @@ void CGrandprix_Manager::Ready_Riders()
 		if (nullptr != m_pEngineer)
 			m_pEngineer->Set_Active(true);
 		for (auto& iter : m_Enemies)
-		{
-			if (nullptr != iter)
-			{
-				iter->Set_Active(true);
-			}
-		}
-		for (auto& iter : m_Items)
 		{
 			if (nullptr != iter)
 			{
@@ -425,14 +363,22 @@ void CGrandprix_Manager::Ready_Riders()
 
 				if (i < m_Enemies.size() && nullptr != m_Enemies[i])
 				{
-					m_Enemies[i]->Get_Component<CTransform>(L"Com_Transform")->Set_State(CTransform::STATE_POSITION,
-						Vec4(-15.f + 10.f * i, 1.f, 30.2f, 1.f));
+//					m_Enemies[i]->Get_Component<CTransform>(L"Com_Transform")->Set_State(CTransform::STATE_POSITION,
+//						Vec4(-15.f + 10.f * i, 1.f, 30.2f, 1.f));
 					m_Botos[i]->Ride(m_Enemies[i]);
 					//m_Botos[i]->Set_OriginPosition(m_Botos[i]->Get_Component<CTransform>(L"Com_Transform")->Get_Position());
 
 					m_Botos[i]->Set_Routes();
 				}
 			}
+		}
+	}
+
+	for (auto& iter : m_Items)
+	{
+		if (nullptr != iter)
+		{
+			iter->Set_Active(true);
 		}
 	}
 }

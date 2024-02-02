@@ -6,6 +6,9 @@
 #include "Riding_Manager.h"
 #include "Grandprix_Manager.h"
 
+#include "Game_Manager.h"
+#include "Player.h"
+
 #include "UI_Manager.h"
 
 #include "UI_Minigame_Basic.h"
@@ -20,6 +23,8 @@
 #include "UI_Minigame_Aim.h"
 
 #include "UI_Minigame_CurlingGauge.h"
+
+#include "UI_Fade.h"
 
 #include "Camera_Manager.h"
 #include "Camera.h"
@@ -328,9 +333,10 @@ void CUIMinigame_Manager::OnOff_Grandprix(_bool bOnOff)
 	if (true == bOnOff)
 	{
 		m_bCountStart = false;
+		m_bGrandprixEnd = false;
+
 		m_bFlying = true; // 경기가 끝나면 끈다
 
-		//CUI_Manager::GetInstance()->OnOff_GamePlaySetting_ExceptInfo(false);
 		OnOff_GrandprixGauge(false);
 
 		if (nullptr != m_pCloud)
@@ -350,7 +356,7 @@ void CUIMinigame_Manager::OnOff_Grandprix(_bool bOnOff)
 	}
 	else
 	{
-		m_bGrandprixEnd = false;
+		m_bGrandprixEnd = true;
 		m_iCountIndex = 0;
 
 		if (nullptr != m_pCloud)
@@ -374,18 +380,45 @@ void CUIMinigame_Manager::OnOff_Grandprix(_bool bOnOff)
 
 void CUIMinigame_Manager::Start_Grandprix()
 {
+	CUI_Manager::GetInstance()->Get_Fade()->Set_Fade(false, 3.f);
+
 	m_bCountStart = true;
+	m_bGrandprixEnd = false;
 
 	CUI_Manager::GetInstance()->OnOff_GamePlaySetting_ExceptInfo(false);
 	CGrandprix_Manager::GetInstance()->Ready_Grandprix_EnemyInfo();
+
+	// 플레이어 비행기 태우기
+	if (CHARACTER_TYPE::SWORD_MAN != CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_CharacterType())
+		return;
+	CStateMachine* m_pStateCom = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CStateMachine>(L"Com_StateMachine");
+	if (nullptr == m_pStateCom)
+		return;
+	m_pStateCom->Change_State(CCharacter::NEUTRAL_IDLE);
+	CRiding_Manager::GetInstance()->Ride_ForCharacter(CRiding_Manager::BIPLANE, true);
 }
 
 void CUIMinigame_Manager::End_Grandprix()
 {
+	if (true != m_bCountStart)
+		return;
+
+	OnOff_GrandprixGauge(false);
+
 	m_bFlying = false;
 
 	m_bGrandprixEnd = true;
 	m_iCountIndex = 5;
+
+	CGrandprix_Manager::GetInstance()->End_Grandprix();
+
+	if (CHARACTER_TYPE::SWORD_MAN != CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_CharacterType())
+		return;
+	CStateMachine* m_pStateCom = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CStateMachine>(L"Com_StateMachine");
+	if (nullptr == m_pStateCom)
+		return;
+	m_pStateCom->Change_State(CCharacter::NEUTRAL_IDLE);
+	CRiding_Manager::GetInstance()->Ride_ForCharacter(CRiding_Manager::BIPLANE, false);
 }
 
 void CUIMinigame_Manager::Use_GrandprixSkill(SKILL_TYPE eType)
@@ -1065,28 +1098,31 @@ void CUIMinigame_Manager::Tick_Grandprix(_float fTimeDelta)
 	if (KEY_TAP(KEY::M))
 		End_Grandprix();
 
-	if (true == m_bCountStart)
+	if (true == m_bCountStart && false == m_bGrandprixEnd)
 	{
-		if (m_iCountIndex == 5)
+		if (true == CUI_Manager::GetInstance()->Is_FadeFinished())
 		{
-			//OnOff_Grandprix(true);
-			OnOff_GrandprixGauge(true);
-		}
+			if (m_iCountIndex == 5)
+			{
+				//OnOff_Grandprix(true);
+				OnOff_GrandprixGauge(true);
+			}
 
-		if (0 == m_Counts.size() || m_iCountIndex > m_Counts.size() - 2)
-			return;
+			if (0 == m_Counts.size() || m_iCountIndex > m_Counts.size() - 2)
+				return;
 
-		if (false == m_Counts[m_iCountIndex]->Get_Active()) // 만약 객체가 활성화가 되어있지 않다면
-			m_Counts[m_iCountIndex]->Set_Active(true); // 활성화를 시킨다.
+			if (false == m_Counts[m_iCountIndex]->Get_Active()) // 만약 객체가 활성화가 되어있지 않다면
+				m_Counts[m_iCountIndex]->Set_Active(true); // 활성화를 시킨다.
 
-		if (true == m_Counts[m_iCountIndex]->Get_Active() && // 활성화 되어있는 상황에서
-			false == m_Counts[m_iCountIndex]->Is_Started()) // 아직 resize를 진행하지 않았다면
-			m_Counts[m_iCountIndex]->Set_Start(true); // 시작하도록 세팅한다.
+			if (true == m_Counts[m_iCountIndex]->Get_Active() && // 활성화 되어있는 상황에서
+				false == m_Counts[m_iCountIndex]->Is_Started()) // 아직 resize를 진행하지 않았다면
+				m_Counts[m_iCountIndex]->Set_Start(true); // 시작하도록 세팅한다.
 
-		if (true == m_Counts[m_iCountIndex]->Is_End()) // 사이즈 조정이 끝났다면
-		{
-			m_Counts[m_iCountIndex]->Set_Active(false); // 비활성화 시키고
-			m_iCountIndex++; // 다음 인덱스로 넘어간다.
+			if (true == m_Counts[m_iCountIndex]->Is_End()) // 사이즈 조정이 끝났다면
+			{
+				m_Counts[m_iCountIndex]->Set_Active(false); // 비활성화 시키고
+				m_iCountIndex++; // 다음 인덱스로 넘어간다.
+			}
 		}
 	}
 }

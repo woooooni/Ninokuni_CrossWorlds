@@ -131,17 +131,17 @@ void CState_Character::Neutral_Idle_Input(_float fTimeDelta)
 		return;
 	}
 
-	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::Z))
-	{
-		if (CHARACTER_TYPE::SWORD_MAN != CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_CharacterType())
-			return;
-
-		m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_IDLE);
-		CRiding_Manager::GetInstance()->Get_Character_Biplane();
-
-		CRiding_Manager::GetInstance()->Ride_ForCharacter(CRiding_Manager::BIPLANE, true);
-		return;
-	}
+//	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::Z))
+//	{
+//		if (CHARACTER_TYPE::SWORD_MAN != CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_CharacterType())
+//			return;
+//
+//		m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_IDLE);
+//		CRiding_Manager::GetInstance()->Get_Character_Biplane();
+//
+//		CRiding_Manager::GetInstance()->Ride_ForCharacter(CRiding_Manager::BIPLANE, true);
+//		return;
+//	}
 }
 
 void CState_Character::Battle_Idle_Input(_float fTimeDelta)
@@ -260,15 +260,15 @@ void CState_Character::Battle_Idle_Input(_float fTimeDelta)
 		return;
 	}
 
-	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::Z))
-	{
-		if (CHARACTER_TYPE::SWORD_MAN != CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_CharacterType())
-			return;
-		
-		m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_IDLE);
-		CRiding_Manager::GetInstance()->Ride_ForCharacter(CRiding_Manager::BIPLANE, true);
-		return;
-	}
+//	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::Z))
+//	{
+//		if (CHARACTER_TYPE::SWORD_MAN != CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_CharacterType())
+//			return;
+//		
+//		m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_IDLE);
+//		CRiding_Manager::GetInstance()->Ride_ForCharacter(CRiding_Manager::BIPLANE, true);
+//		return;
+//	}
 }
 
 void CState_Character::Pick_Idle_Input(_float fTimDelta)
@@ -1649,15 +1649,15 @@ void CState_Character::OnBoard_Input(_float fTimeDelta)
 		return;
 	}
 
-	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::Z))
-	{
-		if (CHARACTER_TYPE::SWORD_MAN != CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_CharacterType())
-			return;
-
-		m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_IDLE);
-		CRiding_Manager::GetInstance()->Ride_ForCharacter(CRiding_Manager::BIPLANE, false);
-		return;
-	}
+//	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::Z))
+//	{
+//		if (CHARACTER_TYPE::SWORD_MAN != CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_CharacterType())
+//			return;
+//
+//		m_pStateMachineCom->Change_State(CCharacter::NEUTRAL_IDLE);
+//		CRiding_Manager::GetInstance()->Ride_ForCharacter(CRiding_Manager::BIPLANE, false);
+//		return;
+//	}
 }
 
 void CState_Character::Reset_Camera_WideToDeafult()
