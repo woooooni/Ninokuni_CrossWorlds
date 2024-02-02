@@ -756,41 +756,54 @@ void CEffect::Change_Scale(_float fTimeDelta)
 				// 축소
 				else
 				{
-					if (
-						XMVectorGetX(XMVector3Length(WorldMatrix.r[CTransform::STATE_RIGHT])) < m_tEffectDesc.fScaleSizeMin.x ||
-						XMVectorGetX(XMVector3Length(WorldMatrix.r[CTransform::STATE_UP])) < m_tEffectDesc.fScaleSizeMin.y ||
-						XMVectorGetX(XMVector3Length(WorldMatrix.r[CTransform::STATE_LOOK])) < m_tEffectDesc.fScaleSizeMin.z)
+					WorldMatrix.r[CTransform::STATE_RIGHT] -= XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_RIGHT)) * m_fScaleSpeed * fTimeDelta * m_tEffectDesc.fScaleDirSpeed.x;
+					WorldMatrix.r[CTransform::STATE_UP]    -= XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_UP))    * m_fScaleSpeed * fTimeDelta * m_tEffectDesc.fScaleDirSpeed.y;
+					WorldMatrix.r[CTransform::STATE_LOOK]  -= XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK))  * m_fScaleSpeed * fTimeDelta * m_tEffectDesc.fScaleDirSpeed.z;
+					m_pTransformCom->Set_WorldMatrix(WorldMatrix);
+
+					if (XMVectorGetX(XMVector3Length(WorldMatrix.r[CTransform::STATE_RIGHT])) < m_tEffectDesc.fScaleSizeMin.x)
 					{
-						// 반복 O
+						_float3 fScale = m_pTransformCom->Get_Scale();
 						if (m_tEffectDesc.bScaleLoop)
 						{
-							// 첫 크기로 반복
 							if (m_tEffectDesc.bScaleLoopStart)
-							{
-								if (m_tEffectDesc.bScaleSameRate) {
-									_float fScale = CUtils::Random_Float(m_tEffectDesc.fScaleStartMin.x, m_tEffectDesc.fScaleStartMax.x);
-									m_pTransformCom->Set_Scale(_float3(fScale, fScale, fScale));
-								}
-								else
-								{
-									m_pTransformCom->Set_Scale(_float3(
-										CUtils::Random_Float(m_tEffectDesc.fScaleStartMin.x, m_tEffectDesc.fScaleStartMax.x),
-										CUtils::Random_Float(m_tEffectDesc.fScaleStartMin.y, m_tEffectDesc.fScaleStartMax.y),
-										CUtils::Random_Float(m_tEffectDesc.fScaleStartMin.z, m_tEffectDesc.fScaleStartMax.z)));
-								}
-							}
+								fScale.y = CUtils::Random_Float(m_tEffectDesc.fScaleStartMin.x, m_tEffectDesc.fScaleStartMax.x);
 							else
-							{
 								m_tEffectDesc.bScaleAdd = true;
-							}
 						}
+						else
+							fScale.x = m_tEffectDesc.fScaleSizeMin.x;
+						m_pTransformCom->Set_Scale(fScale);
 					}
-					else
+
+					if (XMVectorGetX(XMVector3Length(WorldMatrix.r[CTransform::STATE_UP])) < m_tEffectDesc.fScaleSizeMin.y)
 					{
-						WorldMatrix.r[CTransform::STATE_RIGHT] -= XMVectorSet(1.f, 0.f, 0.f, 0.f) * m_fScaleSpeed * fTimeDelta * m_tEffectDesc.fScaleDirSpeed.x;
-						WorldMatrix.r[CTransform::STATE_UP]    -= XMVectorSet(0.f, 1.f, 0.f, 0.f) * m_fScaleSpeed * fTimeDelta * m_tEffectDesc.fScaleDirSpeed.y;
-						WorldMatrix.r[CTransform::STATE_LOOK]  -= XMVectorSet(0.f, 0.f, 1.f, 0.f) * m_fScaleSpeed * fTimeDelta * m_tEffectDesc.fScaleDirSpeed.z;
-						m_pTransformCom->Set_WorldMatrix(WorldMatrix);
+						_float3 fScale = m_pTransformCom->Get_Scale();
+						if (m_tEffectDesc.bScaleLoop)
+						{
+							if (m_tEffectDesc.bScaleLoopStart)
+								fScale.y = CUtils::Random_Float(m_tEffectDesc.fScaleStartMin.y, m_tEffectDesc.fScaleStartMax.y);
+							else
+								m_tEffectDesc.bScaleAdd = true;
+						}
+						else
+							fScale.y = m_tEffectDesc.fScaleSizeMin.y;
+						m_pTransformCom->Set_Scale(fScale);
+					}
+
+					if (XMVectorGetX(XMVector3Length(WorldMatrix.r[CTransform::STATE_LOOK])) < m_tEffectDesc.fScaleSizeMin.z)
+					{
+						_float3 fScale = m_pTransformCom->Get_Scale();
+						if (m_tEffectDesc.bScaleLoop)
+						{
+							if (m_tEffectDesc.bScaleLoopStart)
+								fScale.z = CUtils::Random_Float(m_tEffectDesc.fScaleStartMin.z, m_tEffectDesc.fScaleStartMax.z);
+							else
+								m_tEffectDesc.bScaleAdd = true;
+						}
+						else
+							fScale.z = m_tEffectDesc.fScaleSizeMin.z;
+						m_pTransformCom->Set_Scale(fScale);
 					}
 				}
 			}

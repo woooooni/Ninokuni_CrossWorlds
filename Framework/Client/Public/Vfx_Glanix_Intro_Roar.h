@@ -47,6 +47,9 @@ public:
 protected:
 	virtual HRESULT Ready_Components() override;
 
+private:
+	_float fTimeAcc = 0.f;
+
 public:
 	static CVfx_Glanix_Intro_Roar* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext,
 		const wstring& strObjectTag);

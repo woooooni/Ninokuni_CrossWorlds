@@ -51,6 +51,22 @@ public:
 
 	} DECAL_DESC;
 
+	typedef struct tagDecalScaleDesc
+	{
+		_bool bScaleChange = false;
+
+		_bool bScaleLoop   = false;
+		_bool bScaleAdd    = false;
+		_bool bScaleLoopStart = false;
+
+		_float3 fScaleDirSpeed = _float3(0.f, 0.f, 0.f);
+		_float  fScaleSpeed = 0.f;
+
+		_float3 fScaleRestart = _float3(0.f, 0.f, 0.f);
+		_float3 fScaleSizeMax = _float3(0.f, 0.f, 0.f);
+		_float3 fScaleSizeMin = _float3(0.f, 0.f, 0.f);
+	} DECAL_SCALE_DESC;
+
 protected:
 	CDecal(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	CDecal(const CDecal& rhs);
@@ -65,6 +81,7 @@ public:
 
 public:
 	const DECAL_DESC& Get_DecalDesc() { return m_tDecalDesc; }
+	const DECAL_SCALE_DESC& Get_DecalScaleDesc() { return m_tDecalScaleDesc; }
 	const _float& Get_AccLifeTimeDesc() { return m_fAccLifeTime; }
 	class CTexture* Get_DiffuseTexture() { return m_pDiffuseTextureCom; }
 	class CTransform* Get_TransformCom() { return m_pTransformCom; }
@@ -73,6 +90,7 @@ public:
 	void Restart_Decal();
 
 	void Set_DecalDesc(const DECAL_DESC& tDesc);
+	void Set_DecalScaleDesc(const DECAL_SCALE_DESC& tDesc) { m_tDecalScaleDesc = tDesc; }
 	void Set_Owner(CGameObject* pGameObject) { m_pOwnerObject = pGameObject; }
 	void Set_DeleteDecal(_bool bDecalDelete) { m_bDecalDelete = bDecalDelete; }
 	void Set_OffsetPosition(Vec4 vPos) { m_vOffsetPos = vPos; }
@@ -92,21 +110,24 @@ public:
 
 private:
 	void Tick_Alpha(_float fTimeDelta);
+	void Tick_Scale(_float fTimeDelta);
 
 private:
 	_bool      m_isCloned = { false };
-	DECAL_DESC m_tDecalDesc;
 
-private:
-	_bool m_bDecalDelete = true;
-	_bool  m_bDecalDie = false;
-
-	_float m_fAccLifeTime     = 0.f;
-	_bool  m_bAlphaCreateSucc = false;
+	DECAL_DESC       m_tDecalDesc;
+	DECAL_SCALE_DESC m_tDecalScaleDesc;
 
 	Vec4 m_vOffsetPos;
 
+private:
+	_bool  m_bDecalDelete = true;
+	_bool  m_bDecalDie = false;
+
 	_bool m_bIsShow = true;
+
+	_float m_fAccLifeTime     = 0.f;
+	_bool  m_bAlphaCreateSucc = false;
 
 private:
 	class CGameObject* m_pOwnerObject = nullptr;

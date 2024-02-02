@@ -58,6 +58,7 @@ void CDecal::Tick(_float fTimeDelta)
 		return;
 
 	Tick_Alpha(fTimeDelta);
+	Tick_Scale(fTimeDelta);
 }
 
 void CDecal::LateTick(_float fTimeDelta)
@@ -244,6 +245,142 @@ void CDecal::Tick_Alpha(_float fTimeDelta)
 		{
 			m_tDecalDesc.fAlphaRemove = 1.f;
 			m_bDecalDie = true;
+		}
+	}
+}
+
+void CDecal::Tick_Scale(_float fTimeDelta)
+{
+	if (m_tDecalScaleDesc.bScaleChange)
+	{
+		_matrix WorldMatrix   = m_pTransformCom->Get_WorldMatrix();
+		_float3 fCurrentScale = m_pTransformCom->Get_Scale();
+
+		// 확대
+		if (m_tDecalScaleDesc.bScaleAdd)
+		{
+			WorldMatrix.r[CTransform::STATE_RIGHT] += XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_RIGHT)) * m_tDecalScaleDesc.fScaleSpeed * fTimeDelta * m_tDecalScaleDesc.fScaleDirSpeed.x;
+			WorldMatrix.r[CTransform::STATE_UP]    += XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_UP))    * m_tDecalScaleDesc.fScaleSpeed * fTimeDelta * m_tDecalScaleDesc.fScaleDirSpeed.y;
+			WorldMatrix.r[CTransform::STATE_LOOK]  += XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK))  * m_tDecalScaleDesc.fScaleSpeed * fTimeDelta * m_tDecalScaleDesc.fScaleDirSpeed.z;
+			m_pTransformCom->Set_WorldMatrix(WorldMatrix);
+
+			if (fCurrentScale.x > m_tDecalScaleDesc.fScaleSizeMax.x)
+			{
+				_float3 fScale = m_pTransformCom->Get_Scale();
+				if (m_tDecalScaleDesc.bScaleLoop)
+				{
+					if (m_tDecalScaleDesc.bScaleLoopStart)
+					{
+						fScale = m_tDecalScaleDesc.fScaleRestart;
+					}
+					else
+						m_tDecalScaleDesc.bScaleAdd = false;
+				}
+				else
+				{
+					fScale.x = m_tDecalScaleDesc.fScaleSizeMax.x;
+					m_tDecalScaleDesc.bScaleChange = false;
+				}
+				m_pTransformCom->Set_Scale(fScale);
+			}
+
+			if (fCurrentScale.y > m_tDecalScaleDesc.fScaleSizeMax.y)
+			{
+				_float3 fScale = m_pTransformCom->Get_Scale();
+				if (m_tDecalScaleDesc.bScaleLoop)
+				{
+					if (m_tDecalScaleDesc.bScaleLoopStart)
+						fScale = m_tDecalScaleDesc.fScaleRestart;
+					else
+						m_tDecalScaleDesc.bScaleAdd = false;
+				}
+				else
+				{
+					fScale.y = m_tDecalScaleDesc.fScaleSizeMax.y;
+					m_tDecalScaleDesc.bScaleChange = false;
+				}
+				m_pTransformCom->Set_Scale(fScale);
+			}
+
+			if (fCurrentScale.z > m_tDecalScaleDesc.fScaleSizeMax.z)
+			{
+				_float3 fScale = m_pTransformCom->Get_Scale();
+				if (m_tDecalScaleDesc.bScaleLoop)
+				{
+					if (m_tDecalScaleDesc.bScaleLoopStart)
+						fScale = m_tDecalScaleDesc.fScaleRestart;
+					else
+						m_tDecalScaleDesc.bScaleAdd = false;
+				}
+				else
+				{
+					fScale.z = m_tDecalScaleDesc.fScaleSizeMax.z;
+					m_tDecalScaleDesc.bScaleChange = false;
+				}
+				m_pTransformCom->Set_Scale(fScale);
+			}
+		}
+		// 축소
+		else
+		{
+			WorldMatrix.r[CTransform::STATE_RIGHT] -= XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_RIGHT)) * m_tDecalScaleDesc.fScaleSpeed * fTimeDelta * m_tDecalScaleDesc.fScaleDirSpeed.x;
+			WorldMatrix.r[CTransform::STATE_UP]    -= XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_UP))    * m_tDecalScaleDesc.fScaleSpeed * fTimeDelta * m_tDecalScaleDesc.fScaleDirSpeed.y;
+			WorldMatrix.r[CTransform::STATE_LOOK]  -= XMVector3Normalize(m_pTransformCom->Get_State(CTransform::STATE_LOOK))  * m_tDecalScaleDesc.fScaleSpeed * fTimeDelta * m_tDecalScaleDesc.fScaleDirSpeed.z;
+			m_pTransformCom->Set_WorldMatrix(WorldMatrix);
+
+			if (fCurrentScale.x < m_tDecalScaleDesc.fScaleSizeMin.x)
+			{
+				_float3 fScale = m_pTransformCom->Get_Scale();
+				if (m_tDecalScaleDesc.bScaleLoop)
+				{
+					if (m_tDecalScaleDesc.bScaleLoopStart)
+						fScale = m_tDecalScaleDesc.fScaleRestart;
+					else
+						m_tDecalScaleDesc.bScaleAdd = true;
+				}
+				else
+				{
+					fScale.x = m_tDecalScaleDesc.fScaleSizeMin.x;
+					m_tDecalScaleDesc.bScaleChange = false;
+				}
+				m_pTransformCom->Set_Scale(fScale);
+			}
+
+			if (fCurrentScale.y < m_tDecalScaleDesc.fScaleSizeMin.y)
+			{
+				_float3 fScale = m_pTransformCom->Get_Scale();
+				if (m_tDecalScaleDesc.bScaleLoop)
+				{
+					if (m_tDecalScaleDesc.bScaleLoopStart)
+						fScale = m_tDecalScaleDesc.fScaleRestart;
+					else
+						m_tDecalScaleDesc.bScaleAdd = true;
+				}
+				else
+				{
+					fScale.y = m_tDecalScaleDesc.fScaleSizeMin.y;
+					m_tDecalScaleDesc.bScaleChange = false;
+				}
+				m_pTransformCom->Set_Scale(fScale);
+			}
+
+			if (fCurrentScale.z < m_tDecalScaleDesc.fScaleSizeMin.z)
+			{
+				_float3 fScale = m_pTransformCom->Get_Scale();
+				if (m_tDecalScaleDesc.bScaleLoop)
+				{
+					if (m_tDecalScaleDesc.bScaleLoopStart)
+						fScale = m_tDecalScaleDesc.fScaleRestart;
+					else
+						m_tDecalScaleDesc.bScaleAdd = true;
+				}
+				else
+				{
+					fScale.z = m_tDecalScaleDesc.fScaleSizeMin.z;
+					m_tDecalScaleDesc.bScaleChange = false;
+				}
+				m_pTransformCom->Set_Scale(fScale);
+			}
 		}
 	}
 }
