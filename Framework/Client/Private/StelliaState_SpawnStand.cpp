@@ -17,7 +17,7 @@ HRESULT CStelliaState_SpawnStand::Initialize(const list<wstring>& AnimationList)
 
 void CStelliaState_SpawnStand::Enter_State(void* pArg)
 {
-	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_Stand"));
+	m_pModelCom->Set_Animation(TEXT("SKM_Stellia.ao|Stellia_TurnStand"));
 }
 
 void CStelliaState_SpawnStand::Tick_State(_float fTimeDelta)
