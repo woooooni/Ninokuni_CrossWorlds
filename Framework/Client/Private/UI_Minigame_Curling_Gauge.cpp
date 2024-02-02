@@ -24,10 +24,10 @@ HRESULT CUI_Minigame_Curling_Gauge::Initialize(void* pArg)
 {
 	CUI::UI_INFO UIDesc = {};
 	{
-		UIDesc.fCX = 100.f;
-		UIDesc.fCY = 100.f;
+		UIDesc.fCX = 300.f;
+		UIDesc.fCY = 300.f;
 		UIDesc.fX = g_vWinCenter.x * 1.5f;
-		UIDesc.fY = g_vWinCenter.y * 1.5f;
+		UIDesc.fY = g_vWinCenter.y;
 	}
 
 	if (FAILED(__super::Initialize(&UIDesc)))
@@ -48,6 +48,9 @@ void CUI_Minigame_Curling_Gauge::Tick(_float fTimeDelta)
 		return;
 
 	__super::Tick(fTimeDelta);
+
+	if (m_tLerpProgress.bActive)
+		m_tLerpProgress.Update(fTimeDelta);
 }
 
 void CUI_Minigame_Curling_Gauge::LateTick(_float fTimeDelta)
@@ -63,9 +66,31 @@ HRESULT CUI_Minigame_Curling_Gauge::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	m_pShaderCom->Begin(m_iPass);
+	/* Frame */
+	{
+		m_iPass = 23; // PS_VERTICAL_PROGRESS_COLOR
 
-	m_pVIBufferCom->Render();
+		m_pShaderCom->Begin(m_iPass);
+
+		m_pVIBufferCom->Render();
+	}
+
+	return S_OK;
+}
+
+HRESULT CUI_Minigame_Curling_Gauge::Send_Message()
+{
+	m_tLerpProgress.Start(0.f, 2.f, LERP_MODE::SMOOTHER_STEP);
+
+	return S_OK;
+}
+
+HRESULT CUI_Minigame_Curling_Gauge::Send_Message_Float(const _float& fValue)
+{
+	if (m_tLerpProgress.bActive)
+		m_tLerpProgress.Clear();
+
+	m_tLerpProgress.fCurValue = fValue;
 
 	return S_OK;
 }
@@ -77,6 +102,14 @@ HRESULT CUI_Minigame_Curling_Gauge::Ready_Components()
 
 	if (FAILED(__super::Add_Component(LEVEL_ICELAND, TEXT("Prototype_Component_Texture_UI_Minigame_Curling_Guage_Frame"),
 		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CUI_Minigame_Curling_Gauge::Ready_Default()
+{
+	if (FAILED(__super::Ready_Default()))
 		return E_FAIL;
 
 	return S_OK;
@@ -95,11 +128,16 @@ HRESULT CUI_Minigame_Curling_Gauge::Bind_ShaderResources()
 
 	/* Raw */
 	{
+		memcpy(&m_vColor, &DirectX::Colors::Yellow, sizeof(Vec4));
+		
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_fAlpha, sizeof(_float))))
 			return E_FAIL;
 
-		/*if (FAILED(m_pShaderCom->Bind_RawValue("g_LoadingProgress", &m_fProgress, sizeof(_float))))
-			return E_FAIL;*/
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_Progress", &m_tLerpProgress.fCurValue, sizeof(_float))))
+			return E_FAIL;
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_Diffusecolor", &m_vColor, sizeof(Vec4))))
+			return E_FAIL;
 	}
 	
 
@@ -135,5 +173,4 @@ CGameObject* CUI_Minigame_Curling_Gauge::Clone(void* pArg)
 void CUI_Minigame_Curling_Gauge::Free()
 {
 	__super::Free();
-
 }

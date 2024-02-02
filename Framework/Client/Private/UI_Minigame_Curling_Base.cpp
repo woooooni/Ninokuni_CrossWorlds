@@ -76,7 +76,8 @@ HRESULT CUI_Minigame_Curling_Base::Ready_Default()
 		m_bActive	= false;
 		m_fAlpha	= 1.f;
 
-		m_iPass		= 1;	
+		m_iPass		= 1; // Alpha Blending
+		m_vColor	= DirectX::Colors::White;
 	}
 
 	return S_OK;

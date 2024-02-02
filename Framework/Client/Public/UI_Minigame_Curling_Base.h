@@ -17,13 +17,22 @@ public:
 	virtual void	LateTick(_float fTimeDelta);
 	virtual HRESULT	Render();
 
+public:
+	virtual HRESULT Send_Message()									{ return S_OK; }
+	virtual HRESULT Send_Message_Int(const _int& wstrValue)			{ return S_OK; }
+	virtual HRESULT Send_Message_Float(const _float& fValue)		{ return S_OK; }
+	virtual HRESULT Send_Message_Wstring(const wstring& wstrValue)	{ return S_OK; }
+	virtual HRESULT Send_Message_Vec3(const Vec3& vValue)			{ return S_OK; }
+	virtual HRESULT Send_Message_Bool(const _bool& bValue)			{ return S_OK; }
+
 protected:
 	virtual HRESULT	Ready_Components() override;
-	HRESULT			Ready_Default();
+	virtual HRESULT	Ready_Default();
 	HRESULT			Bind_ShaderResources();
 
 protected:
 	_uint	m_iPass = { 1 };
+	Vec4	m_vColor = DirectX::Colors::Red;
 
 public:
 	virtual CGameObject* Clone(void* pArg) = 0;

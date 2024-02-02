@@ -20,7 +20,7 @@
 #include "UI_Minigame_Aim.h"
 
 
-#include "UI_Minigame_Curling_Gauge.h"
+#include "CurlingGame_Group.h"
 
 #include "Camera_Manager.h"
 #include "Camera.h"
@@ -55,6 +55,23 @@ void CUIMinigame_Manager::Set_Flyable(_bool bFlyable)
 	{
 		pFollowCamera->Set_MinMaxLimitY(0.2f, 2.9f);
 	}
+}
+
+CUI_Minigame_Curling_Base* CUIMinigame_Manager::Get_MiniGame_Curling_Ui(const _uint& iTag)
+{
+	if (MG_CURLING_UI_TYPE::MINIGAME_CURLING_UI_TYPEEND <= iTag)
+		return nullptr;
+
+	for (auto& pUi : m_CurlingGameUIs)
+	{
+		if (nullptr == pUi)
+			continue;
+
+		if (g_wstr_MG_Curling_Ui_ObjTags[iTag] == pUi->Get_ObjectTag())
+			return pUi;
+	}
+
+	return nullptr;
 }
 
 HRESULT CUIMinigame_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -576,8 +593,8 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_Evermore()
 HRESULT CUIMinigame_Manager::Ready_MinigameUI_IceLand()
 {
 	/* Gauge */
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Curling_Gauge"),
-		CUI_Minigame_Curling_Gauge::Create(m_pDevice, m_pContext, L"UI_Minigame_Curling_Gauge"), LAYER_UI)))
+	if (FAILED(GI->Add_Prototype(g_wstr_MG_Curling_Ui_ProtoTags[MG_CURLING_UI_TYPE::GUAGE],
+		CUI_Minigame_Curling_Gauge::Create(m_pDevice, m_pContext, g_wstr_MG_Curling_Ui_ObjTags[MG_CURLING_UI_TYPE::GUAGE]), LAYER_UI)))
 		return E_FAIL;
 
 	return S_OK;
@@ -1029,7 +1046,7 @@ HRESULT CUIMinigame_Manager::Ready_Curling()
 
 	/* Guage */
 	{
-		if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Minigame_Curling_Gauge"), nullptr, &pClone)))
+		if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_UI, g_wstr_MG_Curling_Ui_ProtoTags[MG_CURLING_UI_TYPE::GUAGE], nullptr, &pClone)))
 			return E_FAIL;
 
 		pUi = dynamic_cast<CUI_Minigame_Curling_Base*>(pClone);

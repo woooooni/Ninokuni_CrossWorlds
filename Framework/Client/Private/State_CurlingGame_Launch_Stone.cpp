@@ -5,6 +5,7 @@
 
 #include "Game_Manager.h"
 #include "UI_Manager.h"
+#include "UIMinigame_Manager.h"
 #include "Effect_Manager.h"
 
 #include "Camera_Group.h"
@@ -69,6 +70,13 @@ void CState_CurlingGame_Launch_Stone::Tick_State(const _float& fTimeDelta)
 		{
 			if (pStone->Is_Outted() && pStone->Is_Active())
 				pStone->Set_Active(false);
+		}
+
+		/* Send To Ui */
+		{
+			CUI_Minigame_Curling_Base* pUi = CUIMinigame_Manager::GetInstance()->Get_MiniGame_Curling_Ui(MG_CURLING_UI_TYPE::GUAGE);
+			if (nullptr != pUi)
+				pUi->Send_Message();
 		}
 	}
 

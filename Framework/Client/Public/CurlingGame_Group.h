@@ -30,3 +30,20 @@
 #include "UI_Minigame_Curling_Base.h"
 #include "UI_Minigame_Curling_Gauge.h"
 
+
+/* Globals */
+static const enum MG_CURLING_UI_TYPE 
+{ 
+	GUAGE, 
+	MINIGAME_CURLING_UI_TYPEEND 
+};
+
+static const wstring g_wstr_MG_Curling_Ui_ProtoTags[MINIGAME_CURLING_UI_TYPEEND] = 
+{ 
+	L"Prototype_GameObject_UI_Minigame_Curling_Gauge" 
+};
+
+static const wstring g_wstr_MG_Curling_Ui_ObjTags[MINIGAME_CURLING_UI_TYPEEND] =
+{
+	L"UI_Minigame_Curling_Gauge"
+};

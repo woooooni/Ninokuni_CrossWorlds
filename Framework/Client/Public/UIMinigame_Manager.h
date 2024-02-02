@@ -29,6 +29,8 @@ public: // Getter & Setter
 	_bool	Is_AimActive() { return m_bActiveAim; }
 	void	Set_GrandprixAimActive(_bool bOnOff) { m_bActiveAim = bOnOff; }
 
+	class CUI_Minigame_Curling_Base* Get_MiniGame_Curling_Ui(const _uint& iTag);
+
 public:
 	HRESULT Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	void	Tick(_float fTimeDelta);
