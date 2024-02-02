@@ -45,12 +45,16 @@ HRESULT CGrandprix_ItemBox::Initialize(void* pArg)
 		return E_FAIL;
 
 //	m_pTransformCom->Set_Scale(_float3(0.8f, 0.8f, 0.8f));
+	m_bActive = false;
 
 	return S_OK;
 }
 
 void CGrandprix_ItemBox::Tick(_float fTimeDelta)
 {
+	if (false == m_bActive)
+		return;
+
 	__super::Tick(fTimeDelta);
 
 	Update_Position(fTimeDelta);
@@ -61,6 +65,9 @@ void CGrandprix_ItemBox::Tick(_float fTimeDelta)
 
 void CGrandprix_ItemBox::LateTick(_float fTimeDelta)
 {
+	if (false == m_bActive)
+		return;
+
 	__super::LateTick(fTimeDelta);
 
 	if (nullptr != m_pModelCom)
@@ -202,17 +209,18 @@ void CGrandprix_ItemBox::Update_Position(_float fTimeDelta)
 
 void CGrandprix_ItemBox::Update_Rotation(_float fTimeDelta)
 {
-	m_pTransformCom->Rotation_Acc(XMVectorSet(1.f, 1.f, 0.f, 0.f), fTimeDelta);
-	
-	_float fRoll, fPitch, fYaw;
-	fRoll = XMConvertToRadians(5.f * fTimeDelta);
-	fPitch = XMConvertToRadians(5.f * fTimeDelta);
-	fYaw = XMConvertToRadians(5.f * fTimeDelta);
-	
+//	fRoll += XMConvertToRadians(45.f * fTimeDelta);
+//	fPitch += XMConvertToRadians(45.f * fTimeDelta);
+//	fYaw += XMConvertToRadians(45.f * fTimeDelta);
+
+	m_vRotationAngle.x += XMConvertToRadians(45.f * fTimeDelta);
+	m_vRotationAngle.y += XMConvertToRadians(45.f * fTimeDelta);
+	m_vRotationAngle.z += XMConvertToRadians(45.f * fTimeDelta);
+
 	// 각 축에 대한 쿼터니언 생성
-	_vector vRoll = XMQuaternionRotationRollPitchYaw(fRoll, 0.0f, 0.0f);
-	_vector vPitch = XMQuaternionRotationRollPitchYaw(0.0f, fPitch, 0.0f);
-	_vector vYaw = XMQuaternionRotationRollPitchYaw(0.0f, 0.0f, fYaw);
+	_vector vRoll = XMQuaternionRotationRollPitchYaw(m_vRotationAngle.x, 0.0f, 0.0f);
+	_vector vPitch = XMQuaternionRotationRollPitchYaw(0.0f, m_vRotationAngle.y, 0.0f);
+	_vector vYaw = XMQuaternionRotationRollPitchYaw(0.0f, 0.0f, m_vRotationAngle.z);
 
 	// 각 축의 쿼터니언을 곱하여 최종 회전 쿼터니언 얻음
 	_vector vQuaternion = XMQuaternionMultiply(vYaw, XMQuaternionMultiply(vPitch, vRoll));

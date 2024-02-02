@@ -7,7 +7,6 @@
 #include "Vfx.h"
 #include "UI_Manager.h"
 #include "UI_Minimap_Icon.h"
-#include "UIMinimap_Manager.h"
 
 // 임시로 몬스터에 담는다. 충돌 처리 그룹 추가 될 때까지.
 CQuest_DestSpot::CQuest_DestSpot(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
@@ -78,7 +77,7 @@ void CQuest_DestSpot::Tick(_float fTimeDelta)
 
 	if (nullptr != m_pMinimapIcon)
 	{
-		if (true == CUIMinimap_Manager::GetInstance()->Is_InMinimap(m_pTransformCom))
+		if (true == CUI_Manager::GetInstance()->Is_InMinimap(m_pTransformCom))
 			m_pMinimapIcon->Set_Active(true);
 		else
 			m_pMinimapIcon->Set_Active(false);

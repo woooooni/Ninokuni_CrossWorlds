@@ -11,6 +11,8 @@ private:
 
 public:
 	void Set_MinMaxPosition(Vec4 vOriginPos);
+	void Set_Active(_bool bActive) { m_bActive = bActive; }
+	_bool Is_Active() { return m_bActive; }
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
@@ -45,10 +47,14 @@ private:
 	CModel* m_pModelCom = { nullptr };
 
 private:
+	Vec3 m_vRotationAngle = { 0.f, 0.f, 0.f };
 	_float m_vMaxHeight = { 0.f };
 	_float m_vMinHeight = { 0.f };
 	_float m_fSpeed = { 0.f };
 	_bool m_bReverse = { false };
+
+private:
+	_bool m_bActive = { false };
 
 public:
 	static CGrandprix_ItemBox* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);

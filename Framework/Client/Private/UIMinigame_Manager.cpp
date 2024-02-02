@@ -4,6 +4,7 @@
 #include "Transform.h"
 
 #include "Riding_Manager.h"
+#include "Grandprix_Manager.h"
 
 #include "UI_Manager.h"
 
@@ -376,7 +377,7 @@ void CUIMinigame_Manager::Start_Grandprix()
 	m_bCountStart = true;
 
 	CUI_Manager::GetInstance()->OnOff_GamePlaySetting_ExceptInfo(false);
-	CRiding_Manager::GetInstance()->Ready_Grandprix_EnemyInfo();
+	CGrandprix_Manager::GetInstance()->Ready_Grandprix_EnemyInfo();
 }
 
 void CUIMinigame_Manager::End_Grandprix()

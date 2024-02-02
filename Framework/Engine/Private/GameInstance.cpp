@@ -941,7 +941,6 @@ void CGameInstance::Free()
 	Safe_Release(m_pComponent_Manager);
 	Safe_Release(m_pLevel_Manager);
 	Safe_Release(m_pFont_Manager);
-	Safe_Release(m_pGraphic_Device);
 	Safe_Release(m_pInput_Device);
 	Safe_Release(m_pTimer_Manager);
 	Safe_Release(m_pPipeLine);
@@ -954,4 +953,5 @@ void CGameInstance::Free()
 	Safe_Release(m_pSound_Manager);
 	Safe_Release(m_pPhysXManager);
 	Safe_Release(m_pCamera_Manager);
+	Safe_Release(m_pGraphic_Device);
 }

@@ -56,7 +56,7 @@ HRESULT CUI_Milepost::Initialize(void* pArg)
 
 	Set_TargetPosition(_float4(-69.5f, -2.7f, -10.f, 1.f));
 
-	m_bActive = true;
+	m_bActive = false;
 
 	return S_OK;
 }

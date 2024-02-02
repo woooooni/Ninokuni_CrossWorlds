@@ -27,6 +27,10 @@ protected:
 	virtual ~CGrandprix_Enemy() = default;
 
 public:
+	virtual void Set_Active(_bool bActive) { m_bActive = bActive; }
+	_bool Is_Active() { return m_bActive; }
+
+public:
 	virtual HRESULT Initialize_Prototype() override;
 	virtual HRESULT Initialize(void* pArg) override;
 	virtual void Tick(_float fTimeDelta) override;
@@ -65,6 +69,9 @@ protected:
 	class CTexture* m_pTextureCom = { nullptr };
 	class CShader* m_pShaderCom = { nullptr };
 	class CModel* m_pModelCom = { nullptr };
+
+protected:
+	_bool m_bActive = { false };
 
 public:
 	virtual void Free() override;

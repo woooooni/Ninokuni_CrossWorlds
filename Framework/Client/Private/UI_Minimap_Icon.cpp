@@ -2,7 +2,6 @@
 #include "UI_Minimap_Icon.h"
 #include "GameInstance.h"
 #include "UI_Manager.h"
-#include "UIMinimap_Manager.h"
 #include "Camera_Manager.h"
 #include "Camera.h"
 
@@ -155,7 +154,7 @@ void CUI_Minimap_Icon::LateTick(_float fTimeDelta)
 		if (m_eType == MINIMAPICON_END)
 			return;
 
-		_float2 vWindowPos = CUIMinimap_Manager::GetInstance()->Calculate_PositionForMinimap(m_pOwner->Get_Component<CTransform>(L"Com_Transform"));
+		_float2 vWindowPos = CUI_Manager::GetInstance()->Calculate_PositionForMinimap(m_pOwner->Get_Component<CTransform>(L"Com_Transform"));
 
 		if (vWindowPos.x == 99999.f && vWindowPos.y == 99999.f)
 		{

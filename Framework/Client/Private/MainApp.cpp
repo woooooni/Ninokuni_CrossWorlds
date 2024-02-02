@@ -16,7 +16,7 @@
 #include "Item_Manager.h"
 #include "Skill_Manager.h"
 #include "UIDamage_Manager.h"
-#include "UIMinimap_Manager.h"
+#include "Grandprix_Manager.h"
 #include "Quest_Manager.h"
 #include "TowerDefence_Manager.h"
 #include "UIMinigame_Manager.h"
@@ -24,6 +24,7 @@
 #include "Riding_Manager.h"
 #include "Inventory_Manager.h"
 #include "CurlingGame_Manager.h"
+#include "Grandprix_Manager.h"
 
 #include "Game_Manager.h"
 #include "Character_Manager.h"
@@ -61,7 +62,7 @@ HRESULT CMainApp::Initialize()
 
 	// Set Start Level and Character
 	{
-		g_eStartLevel = LEVELID::LEVEL_TOOL; /* 시작할 레벨 타입 */
+		g_eStartLevel = LEVELID::LEVEL_LOGO; /* 시작할 레벨 타입 */
 
 		g_eLoadCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH; /* 모델 로드할 캐릭터 타입 */
 
@@ -178,7 +179,7 @@ HRESULT CMainApp::Initialize_Client()
 	if (FAILED(CUIDamage_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
 		return E_FAIL;
 
-	if (FAILED(CUIMinimap_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+	if (FAILED(CGrandprix_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
 		return E_FAIL;
 
 	if (FAILED(CUIMinigame_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
@@ -1676,7 +1677,11 @@ void Client::CMainApp::Free()
 	__super::Free();
 	Safe_Release(m_pRenderer_Com);
 
+	Safe_Release(m_pDevice);
+	Safe_Release(m_pContext);
+
 	CRiding_Manager::GetInstance()->DestroyInstance();
+//	CGrandprix_Manager::GetInstance()->DestroyInstance();
 	CTowerDefence_Manager::GetInstance()->DestroyInstance();
 	CQuest_Manager::GetInstance()->DestroyInstance();
 	CEffect_Manager::GetInstance()->DestroyInstance();
@@ -1685,7 +1690,7 @@ void Client::CMainApp::Free()
 	CPicking_Manager::GetInstance()->DestroyInstance();
 	CUIDamage_Manager::GetInstance()->DestroyInstance();
 	CUI_Manager::GetInstance()->DestroyInstance();
-	CUIMinimap_Manager::GetInstance()->DestroyInstance();
+	CGrandprix_Manager::GetInstance()->DestroyInstance();
 	CUIMinigame_Manager::GetInstance()->DestroyInstance();
 	CItem_Manager::GetInstance()->DestroyInstance();
 	CInventory_Manager::GetInstance()->DestroyInstance();

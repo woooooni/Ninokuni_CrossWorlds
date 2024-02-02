@@ -44,16 +44,24 @@ HRESULT CGrandprix_Engineer::Initialize(void* pArg)
 	m_pRigidBodyCom->Set_Use_Gravity(false);
 //	m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(0.12f, -0.09, 30.2f, 1.f));
 
+	m_bActive = false;
+
 	return S_OK;
 }
 
 void CGrandprix_Engineer::Tick(_float fTimeDelta)
 {
+	if (false == m_bActive)
+		return;
+
 	__super::Tick(fTimeDelta);
 }
 
 void CGrandprix_Engineer::LateTick(_float fTimeDelta)
 {
+	if (false == m_bActive)
+		return;
+
 	if (nullptr == m_pRendererCom)
 		return;
 

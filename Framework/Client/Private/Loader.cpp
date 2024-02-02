@@ -151,6 +151,7 @@
 #include "UI_Dummy_Engineer.h"
 
 #include "TowerDefence_Manager.h"
+#include "Grandprix_Manager.h"
 
 #include "Vehicle_Udadak.h"
 #include "Vehicle_Flying_Biplane.h"
@@ -160,7 +161,6 @@
 #include "Biplane_GuidedMissile.h"
 #include "Biplane_ThunderCloud.h"
 #include "Grandprix_Engineer.h"
-#include "Grandprix_Enemy_HumanFL04.h"
 #include "Grandprix_Enemy_Ghost2.h"
 #include "Grandprix_ItemBox.h"
 
@@ -1657,8 +1657,10 @@ HRESULT CLoader::Loading_For_TowerDefence()
 		MSG_BOX("Loading_For_TowerDefence Failed.");
 		return E_FAIL;
 	}
-		
-
+	
+//	if (FAILED(CGrandprix_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+//		return E_FAIL;
+//
 	return S_OK;
 }
 
