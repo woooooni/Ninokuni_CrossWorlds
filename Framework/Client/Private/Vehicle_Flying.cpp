@@ -2,8 +2,8 @@
 #include "GameInstance.h"
 #include "Vehicle_Flying.h"
 
-CVehicle_Flying::CVehicle_Flying(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
-	: CVehicle(pDevice, pContext, strObjectTag)
+CVehicle_Flying::CVehicle_Flying(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, OBJ_TYPE eObjType)
+	: CVehicle(pDevice, pContext, strObjectTag, eObjType)
 {
 }
 

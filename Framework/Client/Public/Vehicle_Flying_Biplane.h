@@ -5,6 +5,9 @@
 BEGIN(Client)
 class CVehicle_Flying_Biplane final : public CVehicle_Flying
 {
+public:
+	enum BIPLANE_TRAIL { LEFT_WING, RIGHT_WING, TAIL, BIPLANE_TRAIL_END };
+private:
 	CVehicle_Flying_Biplane(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	CVehicle_Flying_Biplane(const CVehicle_Flying_Biplane& rhs);
 	virtual ~CVehicle_Flying_Biplane() = default;
@@ -31,10 +34,24 @@ public:
 	virtual void Ground_Collision_Continue(PHYSX_GROUND_COLLISION_INFO tInfo) override;
 	virtual void Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO tInfo) override;
 
+public:
+	void Start_Trail(BIPLANE_TRAIL eTrailType = BIPLANE_TRAIL::BIPLANE_TRAIL_END);
+	void Generate_Trail(const wstring& strDiffuseTextureName, const wstring& strAlphaTextureName, const wstring& strDistortionTextureName, const _float4& vColor, _uint iVertexCount, BIPLANE_TRAIL eTrailType = BIPLANE_TRAIL::BIPLANE_TRAIL_END);
+	void Stop_Trail(BIPLANE_TRAIL eTrailType = BIPLANE_TRAIL::BIPLANE_TRAIL_END);
+
+	class CTrail* Get_Trail(BIPLANE_TRAIL eTrailType) 
+	{ 
+		if (eTrailType >= BIPLANE_TRAIL::BIPLANE_TRAIL_END)
+			return nullptr;
+
+		return m_pTrails[eTrailType]; 
+	}
+
 private:
 	virtual HRESULT Ready_Components();
 	virtual HRESULT	Ready_Colliders();
 	virtual HRESULT Ready_States();
+	virtual HRESULT Ready_Trails();
 
 private:
 	void Update_RiderState();
@@ -46,6 +63,9 @@ private:
 	//class CTexture* m_pTextureCom = { nullptr };
 	_bool m_bUseRigidbody = { true };
 	_bool m_bIsPlayers = { false };
+
+private:
+	class CTrail* m_pTrails[BIPLANE_TRAIL::BIPLANE_TRAIL_END] = {};
 
 public:
 	static CVehicle_Flying_Biplane* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);

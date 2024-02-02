@@ -40,16 +40,20 @@ public:
 
 		// 미니게임용 상태(플레이어)
 		VEHICLE_RUSH,
+		VEHICLE_LEFT_EVASIVE, // 왼쪽으로 회피
+		VEHICLE_RIGHT_EVASIVE, // 오른쪽으로 회피.
+
 		// 미니게임용 상태(적)
 		VEHICLE_TRACE,
 		VEHICLE_ATTACK,
 		VEHICLE_DEAD,
+		
 
 		VEHICLE_EXIT, 
 		VEHICLE_STATE_END
 	};
 protected:
-	CVehicle(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	CVehicle(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, OBJ_TYPE eObjType);
 	CVehicle(const CVehicle& rhs);
 	virtual ~CVehicle() = default;
 

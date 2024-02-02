@@ -9,9 +9,10 @@
 #include "Character.h"
 
 #include "UIMinigame_Manager.h"
+#include "Trail.h"
 
 CVehicle_Flying_Biplane::CVehicle_Flying_Biplane(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
-	: CVehicle_Flying(pDevice, pContext, strObjectTag)
+	: CVehicle_Flying(pDevice, pContext, strObjectTag, OBJ_GRANDPRIX_CHARACTER)
 {
 }
 
@@ -47,6 +48,9 @@ HRESULT CVehicle_Flying_Biplane::Initialize(void* pArg)
 			m_bIsPlayers = true;
 	}
 
+	if (FAILED(Ready_Trails()))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -74,6 +78,16 @@ void CVehicle_Flying_Biplane::Tick(_float fTimeDelta)
 
 		if (nullptr != m_pControllerCom)
 			m_pControllerCom->Tick_Controller(fTimeDelta);
+
+		for (_uint i = 0; i < BIPLANE_TRAIL::BIPLANE_TRAIL_END; ++i)
+		{
+			if (nullptr != m_pTrails[i])
+			{
+				m_pTrails[i]->Set_TransformMatrix(m_pModelCom->Get_SocketLocalMatrix(i + 2) * m_pTransformCom->Get_WorldMatrix());
+				m_pTrails[i]->Tick(fTimeDelta);
+			}
+				
+		}
 	}
 }
 
@@ -84,6 +98,12 @@ void CVehicle_Flying_Biplane::LateTick(_float fTimeDelta)
 		GI->Add_CollisionGroup(COLLISION_GROUP::PLANE_BODY, this);
 	
 		__super::LateTick(fTimeDelta);
+
+		for (_uint i = 0; i < BIPLANE_TRAIL::BIPLANE_TRAIL_END; ++i)
+		{
+			if (nullptr != m_pTrails[i])
+				m_pTrails[i]->LateTick(fTimeDelta);
+		}
 
 		Update_Rider(fTimeDelta);
 
@@ -229,6 +249,58 @@ void CVehicle_Flying_Biplane::Ground_Collision_Exit(PHYSX_GROUND_COLLISION_INFO 
 	__super::Ground_Collision_Exit(tInfo);
 }
 
+void CVehicle_Flying_Biplane::Start_Trail(BIPLANE_TRAIL eTrailType)
+{
+	if (eTrailType >= BIPLANE_TRAIL::BIPLANE_TRAIL_END)
+	{
+		for (_uint i = 0; i < BIPLANE_TRAIL::BIPLANE_TRAIL_END; ++i)
+		{
+			m_pTrails[i]->Start_Trail(m_pModelCom->Get_SocketLocalMatrix(i + 2) * m_pTransformCom->Get_WorldMatrix());
+		}
+	}
+	else
+	{
+		m_pTrails[eTrailType]->Start_Trail(m_pModelCom->Get_SocketLocalMatrix(eTrailType + 2) * m_pTransformCom->Get_WorldMatrix());
+	}
+}
+
+void CVehicle_Flying_Biplane::Generate_Trail(const wstring& strDiffuseTextureName, const wstring& strAlphaTextureName, const wstring& strDistortionTextureName, const _float4& vColor, _uint iVertexCount, BIPLANE_TRAIL eTrailType)
+{
+	if (eTrailType >= BIPLANE_TRAIL::BIPLANE_TRAIL_END)
+	{
+		for (_uint i = 0; i < BIPLANE_TRAIL::BIPLANE_TRAIL_END; ++i)
+		{
+			m_pTrails[i]->Set_DiffuseTexture_Index(strDiffuseTextureName);
+			m_pTrails[i]->Set_AlphaTexture_Index(strAlphaTextureName);
+			m_pTrails[i]->Set_DistortionTexture_Index(strDistortionTextureName);
+			m_pTrails[i]->Set_Color(vColor);
+			m_pTrails[i]->Start_Trail(m_pModelCom->Get_SocketLocalMatrix(i + 2) * m_pTransformCom->Get_WorldMatrix());
+		}
+			
+	}
+	else
+	{
+		m_pTrails[eTrailType]->Set_DiffuseTexture_Index(strDiffuseTextureName);
+		m_pTrails[eTrailType]->Set_AlphaTexture_Index(strAlphaTextureName);
+		m_pTrails[eTrailType]->Set_DistortionTexture_Index(strDistortionTextureName);
+		m_pTrails[eTrailType]->Set_Color(vColor);
+		m_pTrails[eTrailType]->Start_Trail(m_pModelCom->Get_SocketLocalMatrix(eTrailType + 2) * m_pTransformCom->Get_WorldMatrix());
+	}
+}
+
+void CVehicle_Flying_Biplane::Stop_Trail(BIPLANE_TRAIL eTrailType)
+{
+	if (eTrailType >= BIPLANE_TRAIL::BIPLANE_TRAIL_END)
+	{
+		for (_uint i = 0; i < BIPLANE_TRAIL::BIPLANE_TRAIL_END; ++i)		
+			m_pTrails[i]->Stop_Trail();
+	}
+	else
+	{
+		m_pTrails[eTrailType]->Stop_Trail();
+	}
+}
+
 HRESULT CVehicle_Flying_Biplane::Ready_Components()
 {
 	if (FAILED(__super::Ready_Components()))
@@ -262,6 +334,16 @@ HRESULT CVehicle_Flying_Biplane::Ready_States()
 	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Run");
 	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_RUSH, CState_VehicleFlying_Rush::Create(m_pStateCom, strAnimationNames));
 
+
+
+	/*strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
+	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_IDLE, CState_VehicleFlying_Stand::Create(m_pStateCom, strAnimationNames));
+
+	strAnimationNames.clear();
+	strAnimationNames.push_back(L"SKM_Biplane.ao|Biplane_Stand");
+	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_IDLE, CState_VehicleFlying_Stand::Create(m_pStateCom, strAnimationNames));*/
+
 	//VEHICLE_RUSH
 //	strAnimationNames.clear();
 //	strAnimationNames.push_back(L"SKM_Udadak.ao|Udadak_Run");
@@ -279,6 +361,42 @@ HRESULT CVehicle_Flying_Biplane::Ready_States()
 //	m_pStateCom->Add_State(CVehicle::VEHICLE_STATE::VEHICLE_JUMP, CState_Vehicle_Jump::Create(m_pStateCom, strAnimationNames));
 
 	m_pStateCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_IDLE);
+
+	return S_OK;
+}
+
+HRESULT CVehicle_Flying_Biplane::Ready_Trails()
+{
+	CTrail::TRAIL_DESC TrailDesc = {};
+	TrailDesc.bTrail = false;
+	TrailDesc.bUV_Cut = false;
+	TrailDesc.fAccGenTrail = 0.f;
+	TrailDesc.fGenTrailTime = 0.1f;
+	TrailDesc.vDiffuseColor = { 1.f, 1.f, 1.f, 1.f };
+	TrailDesc.vDistortion = { 0.1f, 0.1f };
+	TrailDesc.vUVAcc = { 0.f, 0.f };
+	TrailDesc.vUV_FlowSpeed = { 0.f, 0.f };
+
+	m_pTrails[BIPLANE_TRAIL::LEFT_WING] = CTrail::Create(m_pDevice, m_pContext, L"Prototype_GameObject_Trail", TrailDesc);
+	m_pTrails[BIPLANE_TRAIL::RIGHT_WING] = CTrail::Create(m_pDevice, m_pContext, L"Prototype_GameObject_Trail", TrailDesc);
+	m_pTrails[BIPLANE_TRAIL::TAIL] = CTrail::Create(m_pDevice, m_pContext, L"Prototype_GameObject_Trail", TrailDesc);
+
+	if (nullptr == m_pTrails[BIPLANE_TRAIL::LEFT_WING] || nullptr == m_pTrails[BIPLANE_TRAIL::RIGHT_WING] || nullptr == m_pTrails[BIPLANE_TRAIL::TAIL])
+		return E_FAIL;
+
+	for (_uint i = 0; i < BIPLANE_TRAIL::BIPLANE_TRAIL_END; ++i)
+	{
+		if (FAILED(m_pTrails[i]->Initialize(nullptr)))
+			return E_FAIL;
+
+		if(i <= BIPLANE_TRAIL::RIGHT_WING)
+			m_pTrails[i]->SetUp_Position(XMVectorSet(-0.5f, 0.f, 0.f, 1.f), XMVectorSet(0.5f, 0.f, 0.f, 1.f));
+		else
+			m_pTrails[i]->SetUp_Position(XMVectorSet(0.f, -0.5f, 0.f, 1.f), XMVectorSet(0.f, 0.5f, 0.f, 1.f));
+
+		m_pTrails[i]->Stop_Trail();
+	}
+
 
 	return S_OK;
 }
@@ -347,4 +465,6 @@ CGameObject* CVehicle_Flying_Biplane::Clone(void* pArg)
 void CVehicle_Flying_Biplane::Free()
 {
 	__super::Free();
+	for (_uint i = 0; i < BIPLANE_TRAIL::BIPLANE_TRAIL_END; ++i)
+		Safe_Release(m_pTrails[i]);
 }

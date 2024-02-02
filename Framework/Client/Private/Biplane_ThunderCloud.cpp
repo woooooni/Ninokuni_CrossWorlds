@@ -148,11 +148,14 @@ void CBiplane_Thunder_Cloud::Tick_Target(_float fTimeDelta)
 
 void CBiplane_Thunder_Cloud::Find_Target(_float fTimeDelta)
 {
-	list<CGameObject*>& TargetObjects = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_NPC);
+	list<CGameObject*>& TargetObjects = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER);
 
 	_float fMinDistance = 50.f;
 	for (auto& pTarget : TargetObjects)
 	{
+		if (OBJ_TYPE::OBJ_GRANDPRIX_ENEMY != pTarget->Get_ObjectType())
+			continue;
+
 		CTransform* pTargetTransform = pTarget->Get_Component<CTransform>(L"Com_Transform");
 
 		Vec4 vPosition = m_pTransformCom->Get_Position();

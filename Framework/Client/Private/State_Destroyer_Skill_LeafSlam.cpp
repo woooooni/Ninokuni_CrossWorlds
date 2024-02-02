@@ -50,14 +50,17 @@ void CState_Destroyer_Skill_LeafSlam::Enter_State(void* pArg)
     if (pTransformCom == nullptr)
         return;
     GET_INSTANCE(CEffect_Manager)->Generate_Vfx(TEXT("Vfx_Destroyer_Skill_LeafSlam"), pTransformCom->Get_WorldMatrix(), m_pCharacter);
+    m_fRadialBlurPower = 0.1f;
 }
 
 void CState_Destroyer_Skill_LeafSlam::Tick_State(_float fTimeDelta)
 {
+    m_fRadialBlurPower = max(0, m_fRadialBlurPower - 0.1f * fTimeDelta);
+
     if (m_iCurrAnimIndex == m_AnimIndices[0])
     {
         m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), 10.f, fTimeDelta);
-        m_pCharacter->Get_RendererCom()->Set_RadialBlur(true);
+        m_pCharacter->Get_RendererCom()->Set_RadialBlur(true, 16.f, m_fRadialBlurPower);
     }
     
 
@@ -86,6 +89,7 @@ void CState_Destroyer_Skill_LeafSlam::Exit_State()
     m_bTrailStart = false;
     m_pCharacter->Stop_MotionTrail();
     m_pCharacter->Get_RendererCom()->Set_RadialBlur(false);
+    m_fRadialBlurPower = 0.1f;
 }
 
 

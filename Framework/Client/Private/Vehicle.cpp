@@ -3,8 +3,8 @@
 #include "Game_Manager.h"
 #include "..\Public\Vehicle.h"
 
-CVehicle::CVehicle(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
-	: CGameObject(pDevice, pContext, strObjectTag, OBJ_TYPE::OBJ_VEHICLE)
+CVehicle::CVehicle(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, OBJ_TYPE eObjType)
+	: CGameObject(pDevice, pContext, strObjectTag, eObjType)
 {
 }
 

@@ -148,7 +148,6 @@ public:
 	PxController* Add_BoxController(CGameObject* pGameObject, Matrix WorldMatrix, _float3 vExtents, _float3 vOffsetPos, _float fMaxJumpHeight, PxUserControllerHitReport* pCallBack = nullptr);
 	HRESULT Remove_Actor(class CGameObject* pGameObject);
 	HRESULT Remove_Controller(PxController* pController);
-	_bool Is_PhysX_Valid();
 	HRESULT Clear_PhysX_Ground();
 	//PxRigidStatic* Add_Static_Actor(const PHYSX_INIT_DESC& Desc);
 	//PxRigidDynamic* Add_Dynamic_Actor(const PHYSX_INIT_DESC& Desc);

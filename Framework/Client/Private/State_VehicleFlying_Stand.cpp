@@ -118,7 +118,7 @@ void CState_VehicleFlying_Stand::Tick_State(_float fTimeDelta)
             {
                 Vec3 vVelocityDir = m_pTransformCom->Get_Look();
                 vVelocityDir.y = 0.f;
-                m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(vVelocityDir), 100.f * fTimeDelta, false); // 200.f -> 100.f로 수정
+                m_pRigidBodyCom->Add_Velocity(XMVector3Normalize(vVelocityDir), 200.f * fTimeDelta, false); // 200.f -> 100.f로 수정
                 m_pRigidBodyCom->Set_Use_Gravity(true);
             }
         }

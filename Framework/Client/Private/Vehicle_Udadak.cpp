@@ -11,7 +11,7 @@
 #include "Character.h"
 
 CVehicle_Udadak::CVehicle_Udadak(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
-	: CVehicle(pDevice, pContext, strObjectTag)
+	: CVehicle(pDevice, pContext, strObjectTag, OBJ_VEHICLE)
 {
 }
 
