@@ -1689,9 +1689,6 @@ void Client::CMainApp::Free()
 	Safe_Release(m_pContext);
 	Safe_Release(m_pRenderer_Com);
 
-	Safe_Release(m_pDevice);
-	Safe_Release(m_pContext);
-
 	CRiding_Manager::GetInstance()->DestroyInstance();
 //	CGrandprix_Manager::GetInstance()->DestroyInstance();
 	CTowerDefence_Manager::GetInstance()->DestroyInstance();

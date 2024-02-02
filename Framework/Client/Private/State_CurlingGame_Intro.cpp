@@ -6,6 +6,7 @@
 
 #include "Game_Manager.h"
 #include "UI_Manager.h"
+#include "UIMinigame_Manager.h"
 #include "Effect_Manager.h"
 
 #include "Camera_Group.h"
@@ -36,9 +37,6 @@ void CState_CurlingGame_Intro::Enter_State(void* pArg)
 	if (FAILED(Ready_Decals()))
 		return;
 
-	if (FAILED(Ready_UIs()))
-		return;
-
 	if (FAILED(Ready_Characters()))
 		return;
 }
@@ -55,6 +53,9 @@ void CState_CurlingGame_Intro::Tick_State(const _float& fTimeDelta)
 		if (nullptr != pCurlingGameCam)
 		{
 			if (FAILED(pCurlingGameCam->Change_Target(m_pManager->m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].pOwner, 1.f)))
+				return;
+
+			if (FAILED(Set_UIs()))
 				return;
 
 			if (FAILED(m_pManager_StateMachine->Change_State(CCurlingGame_Manager::CURLINGGAME_STATE::MOVE)))
@@ -142,17 +143,15 @@ HRESULT CState_CurlingGame_Intro::Ready_Stauium()
 	return E_FAIL;
 }
 
-HRESULT CState_CurlingGame_Intro::Ready_UIs()
+HRESULT CState_CurlingGame_Intro::Set_UIs()
 {
 	/* Input */
 	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_Attack_Input(false);
 	CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Set_Skill_Input(false);
 
 	/* UI */
-	if (LEVELID::LEVEL_TOOL != GI->Get_CurrentLevel())
-	{
-		CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
-	}
+	CUIMinigame_Manager::GetInstance()->OnOff_CurlingUI(true);
+
 
 	return S_OK;
 }

@@ -98,7 +98,7 @@ private: // Evermore Granprix
 	_bool									m_bActiveAim = { false };
 
 private: // Iceland Curling
-	vector<class CUI_Minigame_CurlingGauge*> m_CurlingGauge;
+	vector<class CUI_Minigame_Curling_Base*> m_CurlingGameUIs;
 
 private:
 	ID3D11Device*			m_pDevice = { nullptr };

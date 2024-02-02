@@ -19,7 +19,8 @@
 #include "UI_Minigame_WorldHP.h"
 #include "UI_Minigame_Aim.h"
 
-#include "UI_Minigame_CurlingGauge.h"
+
+#include "UI_Minigame_Curling_Gauge.h"
 
 #include "Camera_Manager.h"
 #include "Camera.h"
@@ -226,7 +227,7 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_ToLayer(LEVELID eID)
 	}
 	else if (LEVELID::LEVEL_ICELAND == eID)
 	{
-		for (auto& iter : m_CurlingGauge)
+		for (auto& iter : m_CurlingGameUIs)
 		{
 			if (nullptr == iter)
 				return E_FAIL;
@@ -412,7 +413,7 @@ void CUIMinigame_Manager::OnOff_CurlingUI(_bool bOnOff)
 	{
 		CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
 
-		for (auto& iter : m_CurlingGauge)
+		for (auto& iter : m_CurlingGameUIs)
 		{
 			if (nullptr != iter)
 				iter->Set_Active(true);
@@ -420,7 +421,7 @@ void CUIMinigame_Manager::OnOff_CurlingUI(_bool bOnOff)
 	}
 	else
 	{
-		for (auto& iter : m_CurlingGauge)
+		for (auto& iter : m_CurlingGameUIs)
 		{
 			if (nullptr != iter)
 				iter->Set_Active(false);
@@ -574,12 +575,9 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_Evermore()
 
 HRESULT CUIMinigame_Manager::Ready_MinigameUI_IceLand()
 {
-	// 컬링게임용 UI Prototypes
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Curling_GaugeBack"),
-		CUI_Minigame_CurlingGauge::Create(m_pDevice, m_pContext, CUI_Minigame_CurlingGauge::UI_CURLINGGAUGE::GAUGE_BACK), LAYER_UI)))
-		return E_FAIL;
-	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Curling_GaugeBar"),
-		CUI_Minigame_CurlingGauge::Create(m_pDevice, m_pContext, CUI_Minigame_CurlingGauge::UI_CURLINGGAUGE::GAUGE_BAR), LAYER_UI)))
+	/* Gauge */
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Curling_Gauge"),
+		CUI_Minigame_Curling_Gauge::Create(m_pDevice, m_pContext, L"UI_Minigame_Curling_Gauge"), LAYER_UI)))
 		return E_FAIL;
 
 	return S_OK;
@@ -1024,35 +1022,25 @@ HRESULT CUIMinigame_Manager::Ready_Granprix()
 
 HRESULT CUIMinigame_Manager::Ready_Curling()
 {
-	m_CurlingGauge.reserve(2);
+	m_CurlingGameUIs.reserve(2);
 
-	CUI::UI_INFO UIDesc = {};
-	ZeroMemory(&UIDesc, sizeof(CUI::UI_INFO));
-	UIDesc.fCX = 804.f;
-	UIDesc.fCY = 320.f;
-	UIDesc.fX = g_iWinSizeX * 0.5f;
-	UIDesc.fY = g_iWinSizeY * 0.5f;
-	CGameObject* pGauge = nullptr;
-	if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_UI,
-		TEXT("Prototype_GameObject_UI_Minigame_Curling_GaugeBack"), &UIDesc, &pGauge)))
-		return E_FAIL;
-	if (nullptr == pGauge)
-		return E_FAIL;
-	if (nullptr == dynamic_cast<CUI_Minigame_CurlingGauge*>(pGauge))
-		return E_FAIL;
-	m_CurlingGauge.push_back(dynamic_cast<CUI_Minigame_CurlingGauge*>(pGauge));
-	Safe_AddRef(pGauge);
+	CGameObject* pClone = nullptr;
+	CUI_Minigame_Curling_Base* pUi = nullptr;
 
-	pGauge = nullptr;
-	if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_UI,
-		TEXT("Prototype_GameObject_UI_Minigame_Curling_GaugeBar"), &UIDesc, &pGauge)))
-		return E_FAIL;
-	if (nullptr == pGauge)
-		return E_FAIL;
-	if (nullptr == dynamic_cast<CUI_Minigame_CurlingGauge*>(pGauge))
-		return E_FAIL;
-	m_CurlingGauge.push_back(dynamic_cast<CUI_Minigame_CurlingGauge*>(pGauge));
-	Safe_AddRef(pGauge);
+	/* Guage */
+	{
+		if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_UI, TEXT("Prototype_GameObject_UI_Minigame_Curling_Gauge"), nullptr, &pClone)))
+			return E_FAIL;
+
+		pUi = dynamic_cast<CUI_Minigame_Curling_Base*>(pClone);
+		if (nullptr == pUi)
+			return E_FAIL;
+
+		m_CurlingGameUIs.push_back(pUi);
+		Safe_AddRef(pUi);
+
+		pClone = pUi = nullptr;
+	}
 
 	return S_OK;
 }
@@ -1115,14 +1103,7 @@ void CUIMinigame_Manager::LateTick_Grandprix(_float fTimeDelta)
 
 void CUIMinigame_Manager::Tick_Curling(_float fTimeDelta)
 {
-	if (KEY_TAP(KEY::O))
-	{
-		OnOff_CurlingUI(true);
-	}
-	if (KEY_TAP(KEY::P))
-	{
-		OnOff_CurlingUI(false);
-	}
+	
 }
 
 void CUIMinigame_Manager::Free()
@@ -1157,9 +1138,9 @@ void CUIMinigame_Manager::Free()
 	Safe_Release(m_pBiplaneIcon);
 
 	// 컬링
-	for (auto& pGauge : m_CurlingGauge)
-		Safe_Release(pGauge);
-	m_CurlingGauge.clear();
+	for (auto& pUI : m_CurlingGameUIs)
+		Safe_Release(pUI);
+	m_CurlingGameUIs.clear();
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
