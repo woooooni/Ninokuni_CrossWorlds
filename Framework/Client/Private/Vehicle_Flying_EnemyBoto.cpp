@@ -86,6 +86,8 @@ void CVehicle_Flying_EnemyBoto::Tick(_float fTimeDelta)
 	{
 		__super::Tick(fTimeDelta);
 
+		GI->Add_CollisionGroup(COLLISION_GROUP::PLANEENEMY_BODY, this);
+
 		if (nullptr != m_pHP)
 			m_pHP->Tick(fTimeDelta);
 
@@ -114,8 +116,6 @@ void CVehicle_Flying_EnemyBoto::LateTick(_float fTimeDelta)
 
 	if (true == m_bOnBoard)
 	{
-		GI->Add_CollisionGroup(COLLISION_GROUP::PLANEENEMY_BODY, this);
-
 		__super::LateTick(fTimeDelta);
 
 		if (nullptr != m_pHP)

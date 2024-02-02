@@ -141,8 +141,7 @@ HRESULT CVehicle_Flying::Ready_Routes()
 		&& Get_ObjectTag() == TEXT("Vehicle_EnemyBiplane"))
 	{
 		// 엔지니어 Start Route
-		m_TakeOffPoints.reserve(14); // y값 수정할 것
-		m_TakeOffPoints.push_back({ 0.1f, 1.f, 0.f, 1.f });
+		m_TakeOffPoints.reserve(13);
 		m_TakeOffPoints.push_back({ 0.1f, 4.f, 30.2f, 1.f });
 		m_TakeOffPoints.push_back({ 0.1f, 10.f, 49.f, 1.f });
 		m_TakeOffPoints.push_back({ 0.1f, 14.f, 70.f, 1.f });
@@ -158,7 +157,7 @@ HRESULT CVehicle_Flying::Ready_Routes()
 		m_TakeOffPoints.push_back({ 0.1f, 120.f, 180.f, 1.f });
 
 		m_iTakeOffIndex = 0;
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, m_TakeOffPoints[m_iTakeOffIndex]);
+		fill(begin(m_bPass), end(m_bPass), false);
 
 		m_iRouteIndex = GI->RandomInt(0, m_RoutePoints.size() - 1);
 	}

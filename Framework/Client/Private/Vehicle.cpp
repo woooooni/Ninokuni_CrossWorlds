@@ -51,8 +51,6 @@ void CVehicle::Tick(_float fTimeDelta)
 		m_pStateCom->Tick_State(fTimeDelta);
 
 //	Update_Rider(fTimeDelta);
-
-	GI->Add_CollisionGroup(COLLISION_GROUP::ANIMAL, this);
 }
 
 void CVehicle::LateTick(_float fTimeDelta)

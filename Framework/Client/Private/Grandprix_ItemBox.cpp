@@ -44,7 +44,6 @@ HRESULT CGrandprix_ItemBox::Initialize(void* pArg)
 	if (FAILED(Ready_Colliders()))
 		return E_FAIL;
 
-//	m_pTransformCom->Set_Scale(_float3(0.8f, 0.8f, 0.8f));
 	m_bActive = false;
 
 	return S_OK;
@@ -60,7 +59,7 @@ void CGrandprix_ItemBox::Tick(_float fTimeDelta)
 	Update_Position(fTimeDelta);
 	Update_Rotation(fTimeDelta);
 
-	GI->Add_CollisionGroup(COLLISION_GROUP::PLANE_ITEM, this); // юс╫ц PROP
+	GI->Add_CollisionGroup(COLLISION_GROUP::PLANE_ITEM, this);
 }
 
 void CGrandprix_ItemBox::LateTick(_float fTimeDelta)
@@ -74,6 +73,14 @@ void CGrandprix_ItemBox::LateTick(_float fTimeDelta)
 		m_pModelCom->LateTick(fTimeDelta);
 
 	m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
+
+#ifdef _DEBUG
+	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
+	{
+		for (auto& pCollider : m_Colliders[i])
+			m_pRendererCom->Add_Debug(pCollider);
+	}
+#endif
 }
 
 HRESULT CGrandprix_ItemBox::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
@@ -138,6 +145,7 @@ HRESULT CGrandprix_ItemBox::Render_Instance_Shadow(CShader* pInstancingShader, C
 
 void CGrandprix_ItemBox::Collision_Enter(const COLLISION_INFO& tInfo)
 {
+	_int a = 0;
 }
 
 void CGrandprix_ItemBox::Collision_Continue(const COLLISION_INFO& tInfo)
@@ -184,6 +192,21 @@ HRESULT CGrandprix_ItemBox::Ready_Components()
 #pragma region Ready_Colliders
 HRESULT CGrandprix_ItemBox::Ready_Colliders()
 {
+	CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
+	ZeroMemory(&SphereDesc, sizeof SphereDesc);
+
+	BoundingSphere tSphere;
+	ZeroMemory(&tSphere, sizeof(BoundingSphere));
+	tSphere.Radius = 3.f;
+	SphereDesc.tSphere = tSphere;
+
+	SphereDesc.pNode = nullptr;
+	SphereDesc.pOwnerTransform = m_pTransformCom;
+	SphereDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
+	SphereDesc.vOffsetPosition = Vec3(0.f, 0.f, 0.f);
+
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::ATTACK, &SphereDesc)))
+		return E_FAIL;
 
 	return S_OK;
 }
