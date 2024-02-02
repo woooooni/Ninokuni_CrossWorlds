@@ -1993,8 +1993,8 @@ void CTool_Effect::Save_Decal(const char* pFileName)
 	MSG_BOX("Decal_Save_Success!");
 
 	// 추가 정보 따로 저장
-	//if (true == m_tDecalScaleInfo.bScaleChange)
-	//	Save_Decal_Scale(pFileName);
+	if (true == m_tDecalScaleInfo.bScaleChange)
+		Save_Decal_Scale(pFileName);
 }
 
 void CTool_Effect::Load_Decal(const char* pFileName)
@@ -2045,6 +2045,43 @@ void CTool_Effect::Load_Decal(const char* pFileName)
 	}
 #pragma endregion
 
+#pragma region Load_Scale
+	wstring strScaleInfoPath = L"../Bin/DataFiles/Vfx/Decal/" + strFileName + L"_ScaleInfo" + L".json";
+	if (true == filesystem::exists(strScaleInfoPath)) // 해당 파일이 존재
+	{
+		CDecal::DECAL_SCALE_DESC tScaleDesc = {};
+
+		Json json = GI->Json_Load(strScaleInfoPath);
+		for (const auto& item : json["DecalScaleInfo"])
+		{
+			tScaleDesc.bScaleChange    = item["ScaleChange"];
+			tScaleDesc.bScaleLoop      = item["ScaleLoop"];
+			tScaleDesc.bScaleAdd       = item["ScaleAdd"];
+			tScaleDesc.bScaleLoopStart = item["ScaleLoopStart"];
+
+			tScaleDesc.fScaleDirSpeed.x = item["ScaleDirSpeed"]["x"];
+			tScaleDesc.fScaleDirSpeed.y = item["ScaleDirSpeed"]["y"];
+			tScaleDesc.fScaleDirSpeed.z = item["ScaleDirSpeed"]["z"];
+
+			tScaleDesc.fScaleSpeed = item["ScaleSpeed"];
+
+			tScaleDesc.fScaleRestart.x = item["ScaleRestart"]["x"];
+			tScaleDesc.fScaleRestart.y = item["ScaleRestart"]["y"];
+			tScaleDesc.fScaleRestart.z = item["ScaleRestart"]["z"];
+
+			tScaleDesc.fScaleSizeMax.x = item["ScaleSizeMax"]["x"];
+			tScaleDesc.fScaleSizeMax.y = item["ScaleSizeMax"]["y"];
+			tScaleDesc.fScaleSizeMax.z = item["ScaleSizeMax"]["z"];
+
+			tScaleDesc.fScaleSizeMin.x = item["ScaleSizeMin"]["x"];
+			tScaleDesc.fScaleSizeMin.y = item["ScaleSizeMin"]["y"];
+			tScaleDesc.fScaleSizeMin.z = item["ScaleSizeMin"]["z"];
+		}
+
+		static_cast<CDecal*>(m_pDecal)->Set_DecalScaleDesc(tScaleDesc);
+	}
+#pragma endregion
+
 	// 적용
 	static_cast<CDecal*>(m_pDecal)->Set_DecalDesc(DecalInfo);
 	Load_ObjectInfo(TYPE_DECAL);
@@ -2090,10 +2127,10 @@ void CTool_Effect::Save_Decal_Scale(const char* pFileName)
 	});
 
 	wstring strFileName(pFileName, pFileName + strlen(pFileName));
-	wstring strFilePath = L"../Bin/DataFiles/Vfx/Decal/" + strFileName + L"_Scale" + L".json";
+	wstring strFilePath = L"../Bin/DataFiles/Vfx/Decal/" + strFileName + L"_ScaleInfo" + L".json";
 	GI->Json_Save(strFilePath, json);
 
-	MSG_BOX("Decal_Scale_Save_Success!");
+	MSG_BOX("Decal_ScaleInfo_Save_Success!");
 }
 #pragma endregion
 

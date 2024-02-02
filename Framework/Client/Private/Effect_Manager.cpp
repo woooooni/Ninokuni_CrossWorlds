@@ -571,11 +571,13 @@ HRESULT CEffect_Manager::Ready_Proto_Decal(const wstring& strDecalPath)
 			Ready_Proto_Decal(p.path());
 
 		wstring strFullPath = CUtils::PathToWString(p.path().wstring());
+
+		_tchar strDriveName[MAX_PATH];
 		_tchar strFileName[MAX_PATH];
 		_tchar strFolderName[MAX_PATH];
 		_tchar strExt[MAX_PATH];
 
-		_wsplitpath_s(strFullPath.c_str(), nullptr, 0, strFolderName, MAX_PATH, strFileName, MAX_PATH, strExt, MAX_PATH);
+		_wsplitpath_s(strFullPath.c_str(), strDriveName, MAX_PATH, strFolderName, MAX_PATH, strFileName, MAX_PATH, strExt, MAX_PATH);
 
 		if (0 == lstrcmp(TEXT(".json"), strExt))
 		{
@@ -619,8 +621,47 @@ HRESULT CEffect_Manager::Ready_Proto_Decal(const wstring& strDecalPath)
 			}
 #pragma endregion
 
+#pragma region Load_Scale
+			wstring strScaleInfoPath = strDriveName;
+			strScaleInfoPath += strFolderName;
+			strScaleInfoPath += strFileName;
+			strScaleInfoPath += L"_ScaleInfo";
+			strScaleInfoPath += L".json";
+
+			CDecal::DECAL_SCALE_DESC tScaleDesc = {};
+			if (true == filesystem::exists(strScaleInfoPath)) // 해당 파일이 존재
+			{
+				Json json = GI->Json_Load(strScaleInfoPath);
+				for (const auto& item : json["DecalScaleInfo"])
+				{
+					tScaleDesc.bScaleChange = item["ScaleChange"];
+					tScaleDesc.bScaleLoop = item["ScaleLoop"];
+					tScaleDesc.bScaleAdd = item["ScaleAdd"];
+					tScaleDesc.bScaleLoopStart = item["ScaleLoopStart"];
+
+					tScaleDesc.fScaleDirSpeed.x = item["ScaleDirSpeed"]["x"];
+					tScaleDesc.fScaleDirSpeed.y = item["ScaleDirSpeed"]["y"];
+					tScaleDesc.fScaleDirSpeed.z = item["ScaleDirSpeed"]["z"];
+
+					tScaleDesc.fScaleSpeed = item["ScaleSpeed"];
+
+					tScaleDesc.fScaleRestart.x = item["ScaleRestart"]["x"];
+					tScaleDesc.fScaleRestart.y = item["ScaleRestart"]["y"];
+					tScaleDesc.fScaleRestart.z = item["ScaleRestart"]["z"];
+
+					tScaleDesc.fScaleSizeMax.x = item["ScaleSizeMax"]["x"];
+					tScaleDesc.fScaleSizeMax.y = item["ScaleSizeMax"]["y"];
+					tScaleDesc.fScaleSizeMax.z = item["ScaleSizeMax"]["z"];
+
+					tScaleDesc.fScaleSizeMin.x = item["ScaleSizeMin"]["x"];
+					tScaleDesc.fScaleSizeMin.y = item["ScaleSizeMin"]["y"];
+					tScaleDesc.fScaleSizeMin.z = item["ScaleSizeMin"]["z"];
+				}
+			}
+#pragma endregion
+
 			if (FAILED(GI->Add_Prototype(wstring(L"Prototype_") + strFileName,
-				CDecal::Create(m_pDevice, m_pContext, strFileName, &DecalInfo), LAYER_TYPE::LAYER_EFFECT)))
+				CDecal::Create(m_pDevice, m_pContext, strFileName, &DecalInfo, &tScaleDesc), LAYER_TYPE::LAYER_EFFECT)))
 				return E_FAIL;
 
 			CGameObject* pObject = GI->Find_Prototype_GameObject(LAYER_TYPE::LAYER_EFFECT, wstring(L"Prototype_") + strFileName);

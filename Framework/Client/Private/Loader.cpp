@@ -921,8 +921,9 @@ HRESULT CLoader::Loading_For_Level_Tool()
 
 	// Åø µ¥Ä®
 	CDecal::DECAL_DESC DecalInfo = {};
+	CDecal::DECAL_SCALE_DESC DecalScaleInfo = {};
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_TempDecal"),
-		CDecal::Create(m_pDevice, m_pContext, TEXT("TempDecal"), &DecalInfo), 
+		CDecal::Create(m_pDevice, m_pContext, TEXT("TempDecal"), &DecalInfo, &DecalScaleInfo),
 		LAYER_TYPE::LAYER_EFFECT)))
 		return E_FAIL;
 
