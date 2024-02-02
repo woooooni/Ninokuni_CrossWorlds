@@ -25,7 +25,6 @@ public:
 
 public:
 	virtual void On_Damaged(const COLLISION_INFO& tInfo) override;
-	
 
 protected:
 	virtual HRESULT Ready_Components() override;
@@ -35,6 +34,11 @@ protected:
 private:
 	HRESULT Ready_Sockets();
 	HRESULT Ready_Weapon();
+
+private:
+	_float m_fAccRadial = 0.f;
+	_float m_fRadialTime = 1.f;
+	_bool m_bScreenEffect = false;
 	
 
 private:

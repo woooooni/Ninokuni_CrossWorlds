@@ -41,6 +41,11 @@ private:
 	HRESULT Ready_Weapon();
 
 private:
+	_float m_fAccRadial = 0.f;
+	_float m_fRadialTime = 1.f;
+	_bool m_bScreenEffect = false;
+
+private:
 	static CCharacter_SwordMan* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	virtual CGameObject* Clone(void* pArg) override;
 

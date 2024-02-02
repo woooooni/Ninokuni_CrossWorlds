@@ -121,6 +121,17 @@ void CCharacter_Destroyer::Tick(_float fTimeDelta)
 {
 	m_pStateCom->Tick_State(fTimeDelta);
 
+	if (true == m_bScreenEffect)
+	{
+		m_fAccRadial += fTimeDelta;
+		if (m_fAccRadial >= m_fRadialTime)
+		{
+			m_fAccRadial = 0.f;
+			m_bScreenEffect = false;
+			m_pRendererCom->Set_RadialBlur(false, 16.f);
+		}
+	}
+
 	m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
 	m_pControllerCom->Tick_Controller(fTimeDelta);
 
@@ -160,26 +171,67 @@ void CCharacter_Destroyer::Collision_Enter(const COLLISION_INFO& tInfo)
 		switch (m_pStateCom->Get_CurrState())
 		{
 		case CCharacter::STATE::CLASS_SKILL_0:
+			CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
 			GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.1f, 0.3f, false);
 			break;
 		case CCharacter::STATE::BATTLE_ATTACK_0:
+			CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
 			break;
 		case CCharacter::STATE::BATTLE_ATTACK_1:
+			CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
+			GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.05f, 0.01f, true);
 			break;
-		case CCharacter::STATE::BATTLE_ATTACK_2:			;
+		case CCharacter::STATE::BATTLE_ATTACK_2:		
+			CCamera_Manager::GetInstance()->Start_Action_Shake_Default();
 			break;
 		case CCharacter::STATE::BATTLE_ATTACK_3:
+			CCamera_Manager::GetInstance()->Start_Action_Shake(0.3f, 17.f, 0.3f);
 			if (CAMERA_TYPE::FOLLOW == CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key())
-				GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.08f, 0.01f, true);
+			{
+				m_fAccRadial = 0.f;
+				m_fRadialTime = 0.5f;
+				m_bScreenEffect = true;
+				m_pRendererCom->Set_RadialBlur(true, 16.f);
+				GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.05f, 0.01f, true);
+			}
 			break;
 		}
 	}
+
+	//if ((tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER)
+	//	&& tInfo.pMyCollider->Get_DetectionType() == CCollider::DETECTION_TYPE::ATTACK)
+	//{
+	//	switch (m_pStateCom->Get_CurrState())
+	//	{
+	//	case CCharacter::STATE::BATTLE_ATTACK_0:
+	//		GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.05f, 0.05f, false);
+	//		break;
+	//	case CCharacter::STATE::BATTLE_ATTACK_1:
+	//		GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.05f, 0.05f, false);
+	//		break;
+	//	case CCharacter::STATE::BATTLE_ATTACK_2:
+	//		GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.05f, 0.05f, false);
+	//		break;
+	//	case CCharacter::STATE::BATTLE_ATTACK_3:
+	//		if (CAMERA_TYPE::FOLLOW == CCamera_Manager::GetInstance()->Get_CurCamera()->Get_Key())
+	//		{
+	//			m_fAccRadial = 0.f;
+	//			m_fRadialTime = 1.f;
+	//			m_bScreenEffect = true;
+	//			m_pRendererCom->Set_RadialBlur(true, 16.f);
+	//			GI->Set_Slow(TIMER_TYPE::GAME_PLAY, 0.08f, 0.01f, true);
+	//		}
+	//	}
+
+	//}
 
 }
 
 void CCharacter_Destroyer::Collision_Continue(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Continue(tInfo);
+	
+
 }
 
 void CCharacter_Destroyer::Collision_Exit(const COLLISION_INFO& tInfo)

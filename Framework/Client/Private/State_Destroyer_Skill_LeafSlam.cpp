@@ -84,6 +84,7 @@ void CState_Destroyer_Skill_LeafSlam::Tick_State(_float fTimeDelta)
 void CState_Destroyer_Skill_LeafSlam::Exit_State()
 {
     m_bTrailStart = false;
+    m_pCharacter->Stop_MotionTrail();
     m_pCharacter->Get_RendererCom()->Set_RadialBlur(false);
 }
 
