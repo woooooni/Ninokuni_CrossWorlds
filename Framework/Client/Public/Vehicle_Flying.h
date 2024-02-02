@@ -36,6 +36,9 @@ public:
 	_uint Get_CurTakeOffIndex() { return m_iTakeOffIndex; }
 	void Set_CurTakeOffIndex(_uint iIndex) { m_iTakeOffIndex = iIndex; }
 
+	_bool Is_Pass(_uint iIndex) { return m_bPass[iIndex]; }
+	void Set_Pass(_uint iIndex, _bool bPass) { m_bPass[iIndex] = bPass; }
+
 public:
 	virtual HRESULT Initialize_Prototype();
 	virtual HRESULT Initialize(void* pArg);
@@ -73,6 +76,7 @@ protected:
 	_uint m_iTakeOffIndex = { 0 };
 
 	_float m_fAccEffect = { 0.f };
+	_bool m_bPass[13];
 
 public:
 	virtual void Free() override;

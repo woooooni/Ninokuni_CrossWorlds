@@ -29,6 +29,9 @@ HRESULT CVehicle_Flying_Biplane::Initialize_Prototype()
 
 HRESULT CVehicle_Flying_Biplane::Initialize(void* pArg)
 {
+	if (FAILED(__super::Initialize(pArg)))
+		return E_FAIL;
+
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
@@ -55,6 +58,7 @@ void CVehicle_Flying_Biplane::Tick(_float fTimeDelta)
 	if (true == m_bOnBoard)
 	{
 		__super::Tick(fTimeDelta);
+		GI->Add_CollisionGroup(COLLISION_GROUP::PLANE_BODY, this);
 		
 		Update_RiderState();
 
@@ -81,8 +85,6 @@ void CVehicle_Flying_Biplane::LateTick(_float fTimeDelta)
 {
 	if (true == m_bOnBoard)
 	{
-		GI->Add_CollisionGroup(COLLISION_GROUP::PLANE_BODY, this);
-	
 		__super::LateTick(fTimeDelta);
 
 		Update_Rider(fTimeDelta);
@@ -90,6 +92,14 @@ void CVehicle_Flying_Biplane::LateTick(_float fTimeDelta)
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_NONBLEND, this);
 		m_pRendererCom->Add_RenderGroup(CRenderer::RENDER_SHADOW, this);
 	}
+
+#ifdef _DEBUG
+//	for (_uint i = 0; i < CCollider::DETECTION_TYPE::DETECTION_END; ++i)
+//	{
+//		for (auto& pCollider : m_Colliders[i])
+//			m_pRendererCom->Add_Debug(pCollider);
+//	}
+#endif
 }
 
 HRESULT CVehicle_Flying_Biplane::Render()
@@ -314,6 +324,21 @@ void CVehicle_Flying_Biplane::On_Damaged(const COLLISION_INFO& tInfo)
 
 HRESULT CVehicle_Flying_Biplane::Ready_Colliders()
 {
+	CCollider_Sphere::SPHERE_COLLIDER_DESC SphereDesc;
+	ZeroMemory(&SphereDesc, sizeof SphereDesc);
+
+	BoundingSphere tSphere;
+	ZeroMemory(&tSphere, sizeof(BoundingSphere));
+	tSphere.Radius = 5.f;
+	SphereDesc.tSphere = tSphere;
+
+	SphereDesc.pNode = nullptr;
+	SphereDesc.pOwnerTransform = m_pTransformCom;
+	SphereDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
+	SphereDesc.vOffsetPosition = Vec3(0.f, 50.f, 0.f);
+
+	if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider::COLLIDER_TYPE::SPHERE, CCollider::DETECTION_TYPE::ATTACK, &SphereDesc)))
+		return E_FAIL;
 
 	return S_OK;
 }

@@ -30,6 +30,8 @@ private:
 	_bool m_bUpdate = { false };
 	_bool m_bSet = { false };
 
+	_float m_fTimeAcc = { 0.f };
+
 public:
 	static CState_Enemy_VehicleFlying_Enter* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);
 	virtual void Free() override;

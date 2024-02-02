@@ -109,11 +109,6 @@ void CCharacter::Tick(_float fTimeDelta)
 	if (nullptr != m_pTarget)
 		Tick_Target(fTimeDelta);
 
-	if (KEY_TAP(KEY::P))
-	{
-		Add_Exp(10);
-	}
-
 	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::G))
 	{
 		if (m_tStat.fSpeedWeight >= 10.f)
