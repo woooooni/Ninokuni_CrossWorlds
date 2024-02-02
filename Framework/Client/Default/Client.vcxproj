@@ -342,6 +342,7 @@
     <ClInclude Include="..\Public\UI_Minigame_Curling_Gauge.h" />
     <ClInclude Include="..\Public\UI_Minigame_Curling_Info.h" />
     <ClInclude Include="..\Public\UI_Minigame_Curling_Stones.h" />
+    <ClInclude Include="..\Public\UI_Minigame_Curling_Title.h" />
     <ClInclude Include="..\Public\UI_Minigame_WorldHP.h" />
     <ClInclude Include="..\Public\Vehicle_Flying_EnemyBiplane.h" />
     <ClInclude Include="..\Public\Skill_Biplane_1.h" />
@@ -1374,6 +1375,7 @@
     <ClCompile Include="..\Private\UI_Minigame_Curling_Gauge.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_Curling_Info.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_Curling_Stones.cpp" />
+    <ClCompile Include="..\Private\UI_Minigame_Curling_Title.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_WorldHP.cpp" />
     <ClCompile Include="..\Private\Vehicle_Flying_EnemyBiplane.cpp" />
     <ClCompile Include="..\Private\Skill_Biplane_1.cpp" />

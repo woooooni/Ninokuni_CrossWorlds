@@ -31,6 +31,7 @@
 #include "UI_Minigame_Curling_Gauge.h"
 #include "UI_Minigame_Curling_Info.h"
 #include "UI_Minigame_Curling_Stones.h"
+#include "UI_Minigame_Curling_Title.h"
 
 
 /* Globals */
@@ -41,6 +42,7 @@ static const enum class MG_CL_UI_TYPE
 	INFO_PLAYER,
 	STONES_NPC,
 	STONES_PLAYER,
+	TITLE,
 	TYPEEND
 };
 
@@ -50,7 +52,8 @@ static const wstring g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::TYPEEN
 	L"Prototype_GameObject_UI_Minigame_Curling_Info_Npc",
 	L"Prototype_GameObject_UI_Minigame_Curling_Info_Player",
 	L"Prototype_GameObject_UI_Minigame_Curling_Stones_Npc",
-	L"Prototype_GameObject_UI_Minigame_Curling_Stones_Player"
+	L"Prototype_GameObject_UI_Minigame_Curling_Stones_Player",
+	L"Prototype_GameObject_UI_Minigame_Curling_Title"
 };
 
 static const wstring g_wstr_MG_Curling_Ui_ObjTags[(_uint)MG_CL_UI_TYPE::TYPEEND] =
@@ -60,6 +63,7 @@ static const wstring g_wstr_MG_Curling_Ui_ObjTags[(_uint)MG_CL_UI_TYPE::TYPEEND]
 	L"UI_Minigame_Curling_Info_Player",
 	L"UI_Minigame_Curling_Stones_Npc",
 	L"UI_Minigame_Curling_Stones_Player",
+	L"UI_Minigame_Curling_Title",
 };
 
 static const _uint g_iMaxStoneCount = 5;

@@ -33,10 +33,13 @@ HRESULT CSword::Initialize(void* pArg)
 
 void CSword::Tick(_float fTimeDelta)
 {
-	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::O))
-		m_pTrail->Start_Trail(m_matSocketWorld * m_pTransformCom->Get_WorldMatrix());
-	if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::F))
-		m_pTrail->Stop_Trail();
+	if (nullptr != m_pTrail)
+	{
+		if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::O))
+			m_pTrail->Start_Trail(m_matSocketWorld * m_pTransformCom->Get_WorldMatrix());
+		if (KEY_HOLD(KEY::SHIFT) && KEY_TAP(KEY::F))
+			m_pTrail->Stop_Trail();
+	}
 
 	__super::Tick(fTimeDelta);
 }

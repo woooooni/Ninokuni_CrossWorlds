@@ -126,10 +126,10 @@ HRESULT CUI_Minigame_Curling_Info::Ready_Default()
 		return E_FAIL;
 
 	const Vec2 vFramePosDelta	= { g_vWinCenter.x * 0.8f, g_vWinCenter.y * 0.7f };
-	const Vec2 vFacePosDelta	= { g_vWinCenter.x * 0.915f, g_vWinCenter.y * 0.7f };
+	const Vec2 vFacePosDelta	= { g_vWinCenter.x * 0.9f, g_vWinCenter.y * 0.7f };
 
 	const Vec2 vOriginFaceSize	= { 128.f, 128.f };
-	const Vec2 vFaceSizeMag		= { 0.8f, 0.8f };
+	const Vec2 vFaceSizeMag		= { 0.75f, 0.75f };
 
 	const Vec2 vOriginFrameSize = { 256.f, 128.f };
 	const Vec2 vFrameSizeMag	= { 1.4f, 1.1f };

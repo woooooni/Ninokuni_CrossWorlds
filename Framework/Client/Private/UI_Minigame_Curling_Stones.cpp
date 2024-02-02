@@ -81,7 +81,7 @@ HRESULT CUI_Minigame_Curling_Stones::Render()
 
 	/* Frame */
 	{
-		m_iPass = 1; // PS_VERTICAL_PROGRESS_COLOR
+		m_iPass = 1; // PS_MAIN_ALPHA
 
 		m_pShaderCom->Begin(m_iPass);
 
