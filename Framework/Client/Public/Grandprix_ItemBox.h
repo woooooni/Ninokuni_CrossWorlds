@@ -4,6 +4,9 @@
 BEGIN(Client)
 class CGrandprix_ItemBox final : public CGameObject
 {
+public:
+	enum ITEMBOX_TYPE { ITEMBOX_SPEEDUP, ITEMBOX_DOUBLE, ITEMBOX_BOMB, ITEMBOX_SLOW, ITEMBOX_END };
+
 private:
 	CGrandprix_ItemBox(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
 	CGrandprix_ItemBox(const CGrandprix_ItemBox& rhs);
@@ -47,6 +50,8 @@ private:
 	CModel* m_pModelCom = { nullptr };
 
 private:
+	ITEMBOX_TYPE m_eItemType = { ITEMBOX_END };
+
 	Vec3 m_vRotationAngle = { 0.f, 0.f, 0.f };
 	_float m_vMaxHeight = { 0.f };
 	_float m_vMinHeight = { 0.f };

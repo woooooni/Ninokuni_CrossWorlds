@@ -30,6 +30,9 @@
 #include "Camera.h"
 #include "Camera_Follow.h"
 
+#include "UI_Minigame_PlayerInfo.h"
+#include "UI_Grandprix_PlaneHP.h"
+
 IMPLEMENT_SINGLETON(CUIMinigame_Manager)
 
 CUIMinigame_Manager::CUIMinigame_Manager()
@@ -228,6 +231,12 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_ToLayer(LEVELID eID)
 		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pBiplaneIcon)))
 			return E_FAIL;
 		Safe_AddRef(m_pBiplaneIcon);
+
+		if (nullptr == m_pPlayerStat)
+			return E_FAIL;
+		if (FAILED(GI->Add_GameObject(eID, LAYER_TYPE::LAYER_UI, m_pPlayerStat)))
+			return E_FAIL;
+		Safe_AddRef(m_pPlayerStat);
 	}
 	else if (LEVELID::LEVEL_ICELAND == eID)
 	{
@@ -332,6 +341,8 @@ void CUIMinigame_Manager::OnOff_Grandprix(_bool bOnOff)
 {
 	if (true == bOnOff)
 	{
+		m_pPlayerStat->Set_Active(true);
+
 		m_bCountStart = false;
 		m_bGrandprixEnd = false;
 
@@ -356,6 +367,8 @@ void CUIMinigame_Manager::OnOff_Grandprix(_bool bOnOff)
 	}
 	else
 	{
+		m_pPlayerStat->Set_Active(false);
+
 		m_bGrandprixEnd = true;
 		m_iCountIndex = 0;
 
@@ -374,7 +387,8 @@ void CUIMinigame_Manager::OnOff_Grandprix(_bool bOnOff)
 				pSkill->Set_Active(false);
 		}
 
-		CUI_Manager::GetInstance()->OnOff_GamePlaySetting_ExceptInfo(true);
+		CUI_Manager::GetInstance()->OnOff_GamePlaySetting(true);
+//		CUI_Manager::GetInstance()->OnOff_GamePlaySetting_ExceptInfo(true);
 	}
 }
 
@@ -385,8 +399,9 @@ void CUIMinigame_Manager::Start_Grandprix()
 	m_bCountStart = true;
 	m_bGrandprixEnd = false;
 
-	CUI_Manager::GetInstance()->OnOff_GamePlaySetting_ExceptInfo(false);
-	CGrandprix_Manager::GetInstance()->Ready_Grandprix_EnemyInfo();
+	CUI_Manager::GetInstance()->OnOff_GamePlaySetting(false);
+//	CUI_Manager::GetInstance()->OnOff_GamePlaySetting_ExceptInfo(false);
+	CGrandprix_Manager::GetInstance()->Ready_Grandprix_EnemyInfo(); // 라이더 태우는 작업도 같이 수행함.
 
 	// 플레이어 비행기 태우기
 	if (CHARACTER_TYPE::SWORD_MAN != CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_CharacterType())
@@ -593,6 +608,9 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_Evermore()
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_BiplaneIcon"),
 		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_BIPLANE), LAYER_UI)))
 		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Plane_HPBackground"),
+		CUI_Minigame_PlayerInfo::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
 
 	// 매니저 내에서는 프로토타입만 생성함
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Enemy_WorldHP"),
@@ -600,6 +618,9 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_Evermore()
 		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Enemy_Aim"),
 		CUI_Minigame_Aim::Create(m_pDevice, m_pContext), LAYER_UI)))
+		return E_FAIL;
+	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Granprix_Plane_HPBar"),
+		CUI_Grandprix_PlaneHP::Create(m_pDevice, m_pContext), LAYER_UI)))
 		return E_FAIL;
 
 	return S_OK;
@@ -763,7 +784,7 @@ HRESULT CUIMinigame_Manager::Ready_Granprix()
 	UIDesc.fCX = 178.f;
 	UIDesc.fCY = 64.f;
 	UIDesc.fX = UIDesc.fCX * 0.5f + vOffset.x;
-	UIDesc.fY = 200.f;
+	UIDesc.fY = 180.f;
 	CGameObject* pHP = nullptr;
 	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
 		TEXT("Prototype_GameObject_UI_Minigame_Granprix_HPBackground"), &UIDesc, &pHP)))
@@ -1052,6 +1073,15 @@ HRESULT CUIMinigame_Manager::Ready_Granprix()
 		return E_FAIL;
 	Safe_AddRef(m_pBiplaneIcon);
 
+	CGameObject* pBack = nullptr;
+	if (FAILED(GI->Add_GameObject(LEVEL_EVERMORE, LAYER_TYPE::LAYER_UI,
+		TEXT("Prototype_GameObject_UI_Minigame_Granprix_Plane_HPBackground"), nullptr, &pBack)))
+		return E_FAIL;
+	m_pPlayerStat = dynamic_cast<CUI_Minigame_PlayerInfo*>(pBack);
+	if (nullptr == m_pPlayerStat)
+		return E_FAIL;
+	Safe_AddRef(m_pPlayerStat);
+
 	return S_OK;
 }
 
@@ -1175,6 +1205,7 @@ void CUIMinigame_Manager::Free()
 	Safe_Release(m_pGold);
 
 	// 그랑프리
+	Safe_Release(m_pPlayerStat);
 	Safe_Release(m_pCloud);
 	for (auto& pBackground : m_EnemyHP)
 		Safe_Release(pBackground);

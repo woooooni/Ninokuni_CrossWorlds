@@ -24,8 +24,8 @@ void CUI_Minigame_WorldHP::Set_VehicleInformation(CVehicle_Flying* pOwner)
 
 	m_pTarget = pOwner;
 
-	CVehicle_Flying::ENEMY_STAT StatDesc = {};
-	memcpy(&StatDesc, &(m_pTarget->Get_Stat()), sizeof(CVehicle_Flying::ENEMY_STAT));
+	CVehicle_Flying::PLANE_STAT StatDesc = {};
+	memcpy(&StatDesc, &(m_pTarget->Get_Stat()), sizeof(CVehicle_Flying::PLANE_STAT));
 
 	if (false == StatDesc.bIsEnemy)
 		return;
@@ -80,18 +80,9 @@ void CUI_Minigame_WorldHP::Tick(_float fTimeDelta)
 			return;
 		}
 
-		if (nullptr != m_pTarget)
-		{
-			CTransform* pTransform = m_pTarget->Get_Component<CTransform>(L"Com_Transform");
-			_float4 Temp;
-			XMStoreFloat4(&Temp, pTransform->Get_Position());
-
-			m_pTransformCom->Set_State(CTransform::STATE_POSITION, pTransform->Get_Position());
-		}
-
 		// 현재 체력을 갱신한다.
-		CVehicle_Flying::ENEMY_STAT StatDesc = {};
-		memcpy(&StatDesc, &(m_pTarget->Get_Stat()), sizeof(CVehicle_Flying::ENEMY_STAT));
+		CVehicle_Flying::PLANE_STAT StatDesc = {};
+		memcpy(&StatDesc, &(m_pTarget->Get_Stat()), sizeof(CVehicle_Flying::PLANE_STAT));
 		m_fCurHP = StatDesc.fCurHP;
 
 		if (m_fCurHP < m_fPreHP)
@@ -170,7 +161,7 @@ HRESULT CUI_Minigame_WorldHP::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	m_pShaderCom->Begin(11);
+	m_pShaderCom->Begin(m_iPass);
 
 	m_pVIBufferCom->Render();
 
@@ -183,12 +174,12 @@ HRESULT CUI_Minigame_WorldHP::Ready_Components()
 	if (FAILED(__super::Ready_Components()))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Monster_WorldHP_Frame"),
-		TEXT("Com_FXTexture"), (CComponent**)&m_pFXTextureCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Monster_WorldHPBars"),
+		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 		return E_FAIL;
 
-	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_MonsterHP_Bar"),
-		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
+	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Texture_UI_Monster_WorldHP_Frame"),
+		TEXT("Com_Texture_Background"), (CComponent**)&m_pBackTextureCom)))
 		return E_FAIL;
 	
 	return S_OK;
@@ -210,32 +201,22 @@ HRESULT CUI_Minigame_WorldHP::Bind_ShaderResources()
 	
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &WorldMatrix)))
 		return E_FAIL;
-
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &GI->Get_TransformFloat4x4(CPipeLine::D3DTS_VIEW))))
 		return E_FAIL;
-
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &GI->Get_TransformFloat4x4(CPipeLine::D3DTS_PROJ))))
 		return E_FAIL;
-
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
 		return E_FAIL;
-
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_fAlpha, sizeof(_float))))
-		return E_FAIL;
-
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture")))
-		return E_FAIL;
-
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_LerpHP", &m_fPreHP, sizeof(_float))))
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_CurrentHP", &m_fCurHP, sizeof(_float))))
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_MaxHP", &m_fMaxHP, sizeof(_float))))
 		return E_FAIL;
-	if (FAILED(m_pFXTextureCom->Bind_ShaderResource(m_pShaderCom, "g_LerpTexture")))
+	if (FAILED(m_pBackTextureCom->Bind_ShaderResource(m_pShaderCom, "g_HPGaugeTexture")))
 		return E_FAIL;
-
+	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture")))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -270,6 +251,6 @@ void CUI_Minigame_WorldHP::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pFXTextureCom);
+	Safe_Release(m_pBackTextureCom);
 	Safe_Release(m_pTextureCom);
 }

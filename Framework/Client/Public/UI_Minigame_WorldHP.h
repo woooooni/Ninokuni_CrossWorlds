@@ -23,14 +23,16 @@ public:
 
 private:
 	class CVehicle_Flying* m_pTarget = { nullptr };
+	CTexture* m_pBackTextureCom = { nullptr };
 
-	CTexture* m_pFXTextureCom = { nullptr };
 	_matrix m_BarWorldMatrix = XMMatrixIdentity();
 
 	_float m_fMaxHP = { 0.f };
 	_bool m_bLerp = { false };
 	_float m_fPreHP = { 0.f };
 	_float m_fCurHP = { 0.f };
+
+	_uint m_iPass = { 14 };
 
 	ELEMENTAL_TYPE m_eElementalType = { ELEMENTAL_TYPE::LIGHT };
 

@@ -51,6 +51,22 @@ void CUI_Minigame_EnemyHP::Tick(_float fTimeDelta)
 	if (m_bActive)
 	{
 
+		m_fTimeAcc += fTimeDelta * 0.1f;
+
+		if (m_fCurHP < m_fPreHP)
+			m_bLerp = false;
+
+		if (!m_bLerp && m_fPreHP > m_fCurHP)
+		{
+			m_fPreHP -= fTimeDelta * 500.f;
+
+			if (m_fPreHP <= m_fCurHP)
+			{
+				m_fPreHP = m_fCurHP;
+				m_bLerp = true;
+			}
+		}
+
 		__super::Tick(fTimeDelta);
 	}
 }
@@ -63,6 +79,9 @@ void CUI_Minigame_EnemyHP::LateTick(_float fTimeDelta)
 		{
 			if (true == m_pOwner->Get_Stat().bIsEnemy)
 			{
+				CVehicle_Flying::PLANE_STAT StatDesc = m_pOwner->Get_Stat();
+				m_fCurHP = StatDesc.fCurHP;
+
 				CRenderer::TEXT_DESC  DefaultDesc;
 				DefaultDesc.strText = L"/";
 				DefaultDesc.strFontTag = L"Default_Bold";
@@ -149,6 +168,10 @@ HRESULT CUI_Minigame_EnemyHP::Ready_Components()
 	if (FAILED(__super::Add_Component(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_HPBar"),
 		TEXT("Com_Texture"), (CComponent**)&m_pTextureCom)))
 		return E_FAIL;
+
+	if (FAILED(__super::Add_Component(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_HPBar_Lerp"),
+		TEXT("Com_FXTexture"), (CComponent**)&m_pFXTextureCom)))
+		return E_FAIL;
 	
 	return S_OK;
 }
@@ -166,16 +189,20 @@ HRESULT CUI_Minigame_EnemyHP::Bind_ShaderResources()
 {
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_pTransformCom->Get_WorldFloat4x4())))
 		return E_FAIL;
-
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
 		return E_FAIL;
-
 	if (FAILED(m_pShaderCom->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
 		return E_FAIL;
-
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_fAlpha, sizeof(_float))))
 		return E_FAIL;
-
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_LerpHP", &m_fPreHP, sizeof(_float))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_CurrentHP", &m_fCurHP, sizeof(_float))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_MaxHP", &m_fMaxHP, sizeof(_float))))
+		return E_FAIL;
+	if (FAILED(m_pFXTextureCom->Bind_ShaderResource(m_pShaderCom, "g_LerpTexture")))
+		return E_FAIL;
 	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture")))
 		return E_FAIL;
 
@@ -212,5 +239,6 @@ void CUI_Minigame_EnemyHP::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pFXTextureCom);
 	Safe_Release(m_pTextureCom);
 }

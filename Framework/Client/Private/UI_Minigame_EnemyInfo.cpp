@@ -95,6 +95,11 @@ void CUI_Minigame_EnemyInfo::Tick(_float fTimeDelta)
 {
 	if (m_bActive)
 	{
+		if (true == m_pOwner->Is_Dead() || true == m_pOwner->Is_ReserveDead())
+		{
+			m_iPass = 16;
+		}
+
 		if (false == m_bArrived)
 		{
 			m_tInfo.fX += fTimeDelta * m_fSpeed;
@@ -125,6 +130,11 @@ void CUI_Minigame_EnemyInfo::LateTick(_float fTimeDelta)
 		if (8 < m_iTextureIndex)
 			return;
 
+		if (true == m_pOwner->Is_Dead() || true == m_pOwner->Is_ReserveDead())
+		{
+			m_iPass = 16;
+		}
+
 		if (true == m_bArrived)
 		{
 			if (nullptr != m_pHP)
@@ -140,7 +150,7 @@ HRESULT CUI_Minigame_EnemyInfo::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	m_pShaderCom->Begin(m_iPass);
+	m_pShaderCom->Begin(m_iPass); 	// 죽을경우 16번 패스
 
 	m_pVIBufferCom->Render();
 

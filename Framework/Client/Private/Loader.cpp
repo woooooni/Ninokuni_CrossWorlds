@@ -654,6 +654,12 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_UI_Minigame_Grandprix_AimCursor"),
 			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/UI_Aim_Cursor_%d.png"), 2))))
 			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_UI_Minigame_Grandprix_PlayerHP_Background"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/UI_Grandprix_PlayerHP_Background.png")))))
+			return E_FAIL;
+		if (FAILED(GI->Add_Prototype(LEVEL_EVERMORE, TEXT("Prototype_Component_Texture_Evermore_Grandprix_HPBar_Lerp"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Grandprix/UI_Granprix_HP_Back.png")))))
+			return E_FAIL;
 
 		// 미니게임용 프로토타입
 		if (FAILED(CUIMinigame_Manager::GetInstance()->Ready_MinigameUI_Prototypes(LEVELID::LEVEL_EVERMORE)))

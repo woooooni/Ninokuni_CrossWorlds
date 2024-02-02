@@ -164,7 +164,6 @@ public: // Lobby
 	void	OnOff_LobbyUIs(_bool bOnOff);
 
 	HRESULT OnOff_GamePlaySetting(_bool bOnOff);
-	void	OnOff_GamePlaySetting_ExceptInfo(_bool bOnOff);
 	void	Hide_GamePlaySetting(_bool bHide);
 	HRESULT OnOff_MainMenu(_bool bOnOff);
 	HRESULT OnOff_SubMenu(_bool bOnOff, _uint iMagicNum);
