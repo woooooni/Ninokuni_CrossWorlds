@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "GameInstance.h"
-#include "Swordsman_Biplane_Bullet.h"
+#include "Enemy_Biplane_Bullet.h"
 
 #include "Utils.h"
 #include "Effect_Manager.h"
@@ -8,19 +8,19 @@
 #include "Vehicle_Flying.h"
 #include "Character.h"
 
-CSwordsman_Biplane_Bullet::CSwordsman_Biplane_Bullet(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	:CVehicleFlying_Projectile(pDevice, pContext, L"Swordsman_Biplane_Bullet")
+CEnemy_Biplane_Bullet::CEnemy_Biplane_Bullet(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+	:CVehicleFlying_Projectile(pDevice, pContext, L"Enemy_Biplane_Bullet", OBJ_TYPE::OBJ_GRANDPRIX_ENEMY_PROJECTILE)
 {
 
 }
 
-CSwordsman_Biplane_Bullet::CSwordsman_Biplane_Bullet(const CSwordsman_Biplane_Bullet& rhs)
+CEnemy_Biplane_Bullet::CEnemy_Biplane_Bullet(const CEnemy_Biplane_Bullet& rhs)
 	: CVehicleFlying_Projectile(rhs)
 {
 }
 
 
-HRESULT CSwordsman_Biplane_Bullet::Initialize_Prototype()
+HRESULT CEnemy_Biplane_Bullet::Initialize_Prototype()
 {
 	if (FAILED(__super::Initialize_Prototype()))
 		return E_FAIL;
@@ -28,7 +28,7 @@ HRESULT CSwordsman_Biplane_Bullet::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CSwordsman_Biplane_Bullet::Initialize(void* pArg)
+HRESULT CEnemy_Biplane_Bullet::Initialize(void* pArg)
 {
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -37,14 +37,14 @@ HRESULT CSwordsman_Biplane_Bullet::Initialize(void* pArg)
 		return E_FAIL;
 
 	m_pTransformCom->Set_Scale(Vec3(5.f, 5.f, 5.f));
-	Set_Collider_Elemental(dynamic_cast<CCharacter*>(m_pOwner->Get_Rider())->Get_ElementalType());
+
 	Set_Collider_AttackMode(CCollider::ATTACK_TYPE::WEAK, 0.f, 0.f, 0.f, false);
 	Set_ActiveColliders(CCollider::DETECTION_TYPE::ATTACK, true);
 
 	return S_OK;
 }
 
-void CSwordsman_Biplane_Bullet::Tick(_float fTimeDelta)
+void CEnemy_Biplane_Bullet::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
@@ -52,14 +52,12 @@ void CSwordsman_Biplane_Bullet::Tick(_float fTimeDelta)
 	m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fMoveSpeed, fTimeDelta);
 }
 
-void CSwordsman_Biplane_Bullet::LateTick(_float fTimeDelta)
+void CEnemy_Biplane_Bullet::LateTick(_float fTimeDelta)
 {
-	GI->Add_CollisionGroup(COLLISION_GROUP::PLANE_PROJECTILE, this);
-
 	__super::LateTick(fTimeDelta);
 }
 
-HRESULT CSwordsman_Biplane_Bullet::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
+HRESULT CEnemy_Biplane_Bullet::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
 {
 	__super::Render();
 
@@ -73,7 +71,7 @@ HRESULT CSwordsman_Biplane_Bullet::Render_Instance(CShader* pInstancingShader, C
 
 
 
-HRESULT CSwordsman_Biplane_Bullet::Ready_Components()
+HRESULT CEnemy_Biplane_Bullet::Ready_Components()
 {
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), reinterpret_cast<CComponent**>(&m_pRendererCom))))
 		return E_FAIL;
@@ -105,7 +103,7 @@ HRESULT CSwordsman_Biplane_Bullet::Ready_Components()
 	return S_OK;
 }
 
-void CSwordsman_Biplane_Bullet::Collision_Enter(const COLLISION_INFO& tInfo)
+void CEnemy_Biplane_Bullet::Collision_Enter(const COLLISION_INFO& tInfo)
 {
 	__super::Collision_Enter(tInfo);
 	if ((tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_MONSTER || tInfo.pOther->Get_ObjectType() == OBJ_TYPE::OBJ_BOSS)
@@ -117,34 +115,34 @@ void CSwordsman_Biplane_Bullet::Collision_Enter(const COLLISION_INFO& tInfo)
 }
 
 
-CSwordsman_Biplane_Bullet* CSwordsman_Biplane_Bullet::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CEnemy_Biplane_Bullet* CEnemy_Biplane_Bullet::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 {
-	CSwordsman_Biplane_Bullet* pInstance = new CSwordsman_Biplane_Bullet(pDevice, pContext);
+	CEnemy_Biplane_Bullet* pInstance = new CEnemy_Biplane_Bullet(pDevice, pContext);
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX("Create Failed to ProtoType : CSwordsman_Biplane_Bullet");
-		Safe_Release<CSwordsman_Biplane_Bullet*>(pInstance);
+		MSG_BOX("Create Failed to ProtoType : CEnemy_Biplane_Bullet");
+		Safe_Release<CEnemy_Biplane_Bullet*>(pInstance);
 		return nullptr;
 	}
 
 	return pInstance;
 }
 
-CGameObject* CSwordsman_Biplane_Bullet::Clone(void* pArg)
+CGameObject* CEnemy_Biplane_Bullet::Clone(void* pArg)
 {
-	CSwordsman_Biplane_Bullet* pInstance = new CSwordsman_Biplane_Bullet(*this);
+	CEnemy_Biplane_Bullet* pInstance = new CEnemy_Biplane_Bullet(*this);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Create Failed to Cloned : CSwordsman_Biplane_Bullet");
-		Safe_Release<CSwordsman_Biplane_Bullet*>(pInstance);
+		MSG_BOX("Create Failed to Cloned : CEnemy_Biplane_Bullet");
+		Safe_Release<CEnemy_Biplane_Bullet*>(pInstance);
 	}
 
 	return pInstance;
 }
 
-void CSwordsman_Biplane_Bullet::Free()
+void CEnemy_Biplane_Bullet::Free()
 {
 	__super::Free();
 }

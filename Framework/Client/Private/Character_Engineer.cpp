@@ -353,7 +353,7 @@ HRESULT CCharacter_Engineer::Ready_States()
 		return E_FAIL;
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Swordsman_SoulDiver.ao|Swordsman_PickFinishL");
+	strAnimationNames.push_back(L"SKM_Engineer_SoulDiver.ao|Engineer_PickFinishL");
 	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::NEUTRAL_PICK_LARGE_FINISH, CState_Character_Neutral_Pick_Large_Finish::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 	

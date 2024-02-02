@@ -40,7 +40,7 @@ void CState_SwordMan_Battle_Attack_1::Enter_State(void* pArg)
 void CState_SwordMan_Battle_Attack_1::Tick_State(_float fTimeDelta)
 {
     
-    if (false == m_bGenTrail && false == m_pModelCom->Is_Tween())
+    /*if (false == m_bGenTrail && false == m_pModelCom->Is_Tween())
     {
         if (m_iGenTrailCount < 4)
         {
@@ -66,7 +66,7 @@ void CState_SwordMan_Battle_Attack_1::Tick_State(_float fTimeDelta)
             }
         }
         
-    }
+    }*/
         
        
 

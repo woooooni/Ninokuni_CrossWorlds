@@ -33,7 +33,7 @@ void CState_SwordMan_Battle_Attack_2::Enter_State(void* pArg)
 
 void CState_SwordMan_Battle_Attack_2::Tick_State(_float fTimeDelta)
 {
-    if (false == m_pModelCom->Is_Tween())
+    /*if (false == m_pModelCom->Is_Tween())
     {
         if (false == m_bGenTrail)
         {
@@ -48,7 +48,7 @@ void CState_SwordMan_Battle_Attack_2::Tick_State(_float fTimeDelta)
             if (m_pModelCom->Get_CurrAnimationFrame() >= 14.f)
                 m_pCharacter->Get_Weapon()->Stop_Trail();
         }
-    }
+    }*/
     
 
 

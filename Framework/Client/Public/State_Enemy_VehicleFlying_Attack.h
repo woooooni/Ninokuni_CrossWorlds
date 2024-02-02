@@ -29,6 +29,7 @@ private:
 private:
 	_bool m_bShoot = { false };
 	_float m_fTimeAcc = { 0.f };
+	_float m_fFollowSpeed = 8.f;
 
 public:
 	static CState_Enemy_VehicleFlying_Attack* Create(class CStateMachine* pStateMachine, const list<wstring>& AnimationList);

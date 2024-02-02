@@ -556,7 +556,7 @@ void CState_Character::Battle_Walk_Input(_float fTimeDelta)
 		m_pTransformCom->Rotation_Acc(XMVectorSet(0.f, 1.f, 0.f, 0.f), fRadian);
 
 		if (!bMove)
-			m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), (m_pCharacter->Get_Default_RunSpeed() + fWalkSpeedDelta) * m_pCharacter->Get_Stat().fSpeedWeight, fTimeDelta);
+			m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), (m_pCharacter->Get_Default_WalkSpeed() + fWalkSpeedDelta) * m_pCharacter->Get_Stat().fSpeedWeight, fTimeDelta);
 
 		bMove = true;
 

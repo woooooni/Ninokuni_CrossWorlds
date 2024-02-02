@@ -9,7 +9,7 @@
 #include "Vehicle_Flying.h"
 
 #include "UIMinigame_Manager.h"
-#include "Swordsman_Biplane_Bullet.h"
+#include "Character_Biplane_Bullet.h"
 
 CState_VehicleFlying_Stand::CState_VehicleFlying_Stand(CStateMachine* pMachine)
     : CState_Vehicle(pMachine)
@@ -181,12 +181,12 @@ void CState_VehicleFlying_Stand::Exit_State()
 
 void CState_VehicleFlying_Stand::Shoot()
 {
-    CSwordsman_Biplane_Bullet::GRANDPRIX_PROJECTILE_DESC ProjectileDesc;
+    CCharacter_Biplane_Bullet::GRANDPRIX_PROJECTILE_DESC ProjectileDesc;
     ProjectileDesc.pOwner = dynamic_cast<CVehicle_Flying*>(m_pVehicle);
 
 
     // Left Side Bullet
-    CGameObject* pLeftBullet = GI->Clone_GameObject(L"Prototype_GameObject_Swordsman_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
+    CGameObject* pLeftBullet = GI->Clone_GameObject(L"Prototype_GameObject_Character_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
     if (nullptr == pLeftBullet)
         return;
 
@@ -207,7 +207,7 @@ void CState_VehicleFlying_Stand::Shoot()
 
 
     // Right Side Bullet
-    CGameObject* pRightBullet = GI->Clone_GameObject(L"Prototype_GameObject_Swordsman_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
+    CGameObject* pRightBullet = GI->Clone_GameObject(L"Prototype_GameObject_Character_Biplane_Bullet", LAYER_TYPE::LAYER_CHARACTER, &ProjectileDesc);
     if (nullptr == pRightBullet)
         return;
 

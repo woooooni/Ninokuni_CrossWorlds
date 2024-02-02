@@ -44,7 +44,7 @@ void CState_SwordMan_Battle_Attack_3::Tick_State(_float fTimeDelta)
             m_pTransformCom->Move(XMVector3Normalize(vDir), 10.f, fTimeDelta);
         }
 
-        if (2 > m_iGenTrailCount)
+        /*if (2 > m_iGenTrailCount)
         {
             if (m_pModelCom->Get_CurrAnimationFrame() >= 10.f)
             {
@@ -65,7 +65,7 @@ void CState_SwordMan_Battle_Attack_3::Tick_State(_float fTimeDelta)
                     m_pCharacter->Get_Weapon()->Stop_Trail();
                 }
             }
-        }
+        }*/
         
         
     }    

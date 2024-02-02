@@ -53,7 +53,7 @@ void CState_VehicleFlying_Rush::Tick_State(_float fTimeDelta)
      
 
     CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_RendererCom()->Set_RadialBlur(true, m_fAccRadialBlurScale);
-    m_pTransformCom->Rotation_Acc(XMVector3Normalize(m_pTransformCom->Get_Look()), -5.f * XMConvertToRadians(180.f) * fTimeDelta);
+    // m_pTransformCom->Rotation_Acc(XMVector3Normalize(m_pTransformCom->Get_Look()), -5.f * XMConvertToRadians(180.f) * fTimeDelta);
     m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_pVehicle->Get_Speed() + m_fAccSpeed, fTimeDelta);
 }
 

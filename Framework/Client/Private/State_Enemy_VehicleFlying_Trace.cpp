@@ -44,21 +44,28 @@ void CState_Enemy_VehicleFlying_Trace::Enter_State(void* pArg)
 
 void CState_Enemy_VehicleFlying_Trace::Tick_State(_float fTimeDelta)
 {
-    Vec4 vMyPos = m_pVehicle->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
+    Vec4 vMyPos = m_pTransformCom->Get_Position();
     Vec4 vPlayerPos = m_pTarget->Get_CharacterTransformCom()->Get_Position();
 
     // 30 : 추적 시작함. 15 : 공격. // 40 : Run (Temp)
-    if (15.f > XMVectorGetX(XMVector3Length(vPlayerPos - vMyPos)))
+    _float fDistance = (vPlayerPos - vMyPos).Length();
+    if (15.f > fDistance)
     {
         m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_ATTACK);
         return;
     }
-    else
+    else if (15.f > fDistance && fDistance <= 40.f)
     {
-        Vec4 vLook = XMVector4Normalize(vPlayerPos - vMyPos);
-        m_pTransformCom->Rotation_Look(vLook);
-        m_pTransformCom->Move(vLook, m_fTraceSpeed, fTimeDelta);
+        m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_RUN);
+        return;
     }
+    
+    Vec3 vDestLook = XMVector3Normalize(vPlayerPos - vMyPos);
+    Vec3 vLook = XMVector3Normalize(m_pTransformCom->Get_Look());
+    Vec3 vNewLook = Vec3::Lerp(vLook, vDestLook, fTimeDelta);
+
+    m_pTransformCom->Rotation_Look(vNewLook);
+    m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fTraceSpeed, fTimeDelta);
 }
 
 void CState_Enemy_VehicleFlying_Trace::Exit_State()

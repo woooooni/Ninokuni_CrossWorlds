@@ -156,7 +156,8 @@
 #include "Vehicle_Flying_Biplane.h"
 #include "Vehicle_Flying_EnemyBiplane.h"
 #include "Vehicle_Flying_EnemyBoto.h"
-#include "Swordsman_Biplane_Bullet.h"
+#include "Character_Biplane_Bullet.h"
+#include "Enemy_Biplane_Bullet.h"
 #include "Biplane_GuidedMissile.h"
 #include "Biplane_ThunderCloud.h"
 #include "Grandprix_Engineer.h"
@@ -672,8 +673,13 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Vehicle_EnemyBoto"),
 			CVehicle_Flying_EnemyBoto::Create(m_pDevice, m_pContext, TEXT("Vehicle_EnemyBoto")), LAYER_TYPE::LAYER_MONSTER))
 			return E_FAIL;
-		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Swordsman_Biplane_Bullet"),
-			CSwordsman_Biplane_Bullet::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
+
+		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Character_Biplane_Bullet"),
+			CCharacter_Biplane_Bullet::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
+			return E_FAIL;
+
+		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Enemy_Biplane_Bullet"),
+			CEnemy_Biplane_Bullet::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
 			return E_FAIL;
 
 		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Biplane_GuidedMissile"),

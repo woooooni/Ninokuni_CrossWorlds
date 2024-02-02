@@ -11,7 +11,7 @@
 #include "Camera.h"
 
 CBiplane_GuidedMissile::CBiplane_GuidedMissile(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	:CVehicleFlying_Projectile(pDevice, pContext, L"Biplane_GuidedMissile")
+	:CVehicleFlying_Projectile(pDevice, pContext, L"Biplane_GuidedMissile", OBJ_TYPE::OBJ_GRANDPRIX_CHARACTER_PROJECTILE)
 {
 
 }

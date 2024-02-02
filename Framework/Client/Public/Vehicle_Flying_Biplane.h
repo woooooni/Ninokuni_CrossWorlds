@@ -40,6 +40,9 @@ private:
 	void Update_RiderState();
 
 private:
+	void On_Damaged(const COLLISION_INFO& tInfo);
+
+private:
 	//class CTexture* m_pTextureCom = { nullptr };
 	_bool m_bUseRigidbody = { true };
 	_bool m_bIsPlayers = { false };
