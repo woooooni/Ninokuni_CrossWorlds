@@ -14,6 +14,8 @@
 #include "Player.h"
 #include "WitchWood.h"
 
+#include "Quest_Manager.h"
+
 CTrigger::CTrigger(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: CGameObject(pDevice, pContext, L"Trigger", OBJ_TYPE::OBJ_TRIGGER)
 {
@@ -140,11 +142,23 @@ void CTrigger::Collision_Enter(const COLLISION_INFO& tInfo)
 			list<CGameObject*>& pGameObjects = GI->Find_GameObjects(iCurLevel, LAYER_TYPE::LAYER_BUILDING);
 			// Witch_Wood_Wall
 
-			for (auto& pObj : pGameObjects)
+			if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() != CQuest_Manager::GetInstance()->QUESTEVENT_FINALBATTLE)
 			{
-				if (pObj->Get_ObjectTag() == TEXT("Witch_Wood_Wall"))
-					static_cast<CWitchWood*>(pObj)->Set_Close(true);
+				for (auto& pObj : pGameObjects)
+				{
+					if (pObj->Get_ObjectTag() == TEXT("Witch_Wood_Wall"))
+						static_cast<CWitchWood*>(pObj)->Set_Close(true);
+				}
 			}
+			else
+			{
+				for (auto& pObj : pGameObjects)
+				{
+					if (pObj->Get_ObjectTag() == TEXT("Witch_Wood_Wall"))
+						static_cast<CWitchWood*>(pObj)->Set_Close(false);
+				}
+			}
+
 
 			break;
 		}

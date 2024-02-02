@@ -11,6 +11,8 @@
 #include "NpcDMWState_InvasionDisappearTurn.h"
 #include "NpcDMWState_InvasionDisappear.h"
 
+#include "NpcDMWState_Following.h"
+
 CDreamMazeWitch_Npc::CDreamMazeWitch_Npc(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameNpc(pDevice, pContext, strObjectTag)
 {
@@ -158,9 +160,12 @@ HRESULT CDreamMazeWitch_Npc::Ready_States()
 	strAnimationName.push_back(L"SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Walk");
 	m_pStateCom->Add_State(WITCHSTATE_INVASION_DISAPPEAR, CNpcDMWState_InvasionDisappear::Create(m_pStateCom, strAnimationName));
 
-	/* Boss Room */
-
 	/* Battle */
+	strAnimationName.clear();
+	strAnimationName.push_back(L"SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Stand");
+	strAnimationName.push_back(L"SKM_DreamersMazeWitch.ao|DreamersMazeWitch_Walk");
+	m_pStateCom->Add_State(WITCHSTATE_BATTLE_FOLLOWING, CNpcDMWState_Following::Create(m_pStateCom, strAnimationName));
+
 
 	m_pStateCom->Change_State(WITCHSTATE_INVASION_IDLE);
 

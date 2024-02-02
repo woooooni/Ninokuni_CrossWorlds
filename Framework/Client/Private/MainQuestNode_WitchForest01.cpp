@@ -21,10 +21,6 @@ HRESULT CMainQuestNode_WitchForest01::Initialize()
 	m_strQuestName = TEXT("마녀의 숲으로");
 	m_strQuestContent = TEXT("서쪽 길을 따라 나오는 문으로 나가기");
 
-	m_strNextQuestTag = TEXT("[메인]");
-	m_strNextQuestName = TEXT("마녀를 찾아서");
-	m_strNextQuestContent = TEXT("마녀들이 사는 촌락을 찾자");
-
 	Json Load = GI->Json_Load(L"../Bin/DataFiles/Quest/MainQuest/06.MainQuest_WitchForest/MainQuest_WitchForest01.json");
 
 	for (const auto& talkDesc : Load) {
@@ -89,7 +85,7 @@ CBTNode::NODE_STATE CMainQuestNode_WitchForest01::Tick(const _float& fTimeDelta)
 
 	if (GI->Get_CurrentLevel() == LEVEL_WITCHFOREST)
 	{
-		CUI_Manager::GetInstance()->Update_QuestPopup(m_strQuestName, m_strNextQuestTag, m_strNextQuestName, m_strNextQuestContent);
+		CUI_Manager::GetInstance()->Clear_QuestPopup(m_strQuestName);
 
 		m_bIsClear = true;
 

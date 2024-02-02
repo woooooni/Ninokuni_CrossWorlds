@@ -107,6 +107,7 @@ public:
 
 private:
 	virtual void Search_Target(_float fTimeDelta);
+	virtual void Search_Target_Tower(_float fTimeDelta);
 
 public:
 	virtual void Collision_Enter(const COLLISION_INFO& tInfo) override;
@@ -196,10 +197,12 @@ protected:
 	_bool m_bIsInvasion = false;
 
 	// 타워 디펜스 관련
+	_bool  m_bIsTargetTower = false;
+	_bool  m_bIsStartDefence = false;
+	_bool  m_bIsInvasionMainTown = false;
 	_float m_fNearDist = 0.f; // 가장 가까운 타겟 찾기.
 	_float m_fDistToTree = 0.f; // 가을 할아범과의 거리
 	_float m_fTargetSearchDist = 0.f;
-	_int   m_iRemainsTowerCount = 0;
 
 protected:
 	class CTrail* m_pTrails[SOCKET_TYPE::SOCKET_END];

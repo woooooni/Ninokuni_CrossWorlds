@@ -7,6 +7,9 @@
 #include "MainQuest_Glanix.h"
 #include "MainQuest_Invasion.h"
 #include "MainQuest_WitchForest.h"
+#include "MainQuest_PlantKiller.h"
+#include "MainQuest_FinalBattle.h"
+#include "MainQuest_Ending.h"
 
 #include "MainQuest_Invasion.h"
 
@@ -18,8 +21,7 @@ CMainQuest::CMainQuest()
 
 HRESULT CMainQuest::Initialize()
 {
-	m_iLevel = 4;
-	//m_iLevel = 1;
+	m_iLevel = 5;
 
 	m_vecMQ.push_back(CMainQuest_IntroTour::Create());
 	m_vecMQ.push_back(CMainQuest_KingCall::Create());
@@ -27,6 +29,9 @@ HRESULT CMainQuest::Initialize()
 	m_vecMQ.push_back(CMainQuest_Glanix::Create());
 	m_vecMQ.push_back(CMainQuest_Invasion::Create());
 	m_vecMQ.push_back(CMainQuest_WitchForest::Create());
+	m_vecMQ.push_back(CMainQuest_PlantKiller::Create());
+	m_vecMQ.push_back(CMainQuest_FinalBattle::Create());
+	m_vecMQ.push_back(CMainQuest_Ending::Create());
 
 	return S_OK;
 }

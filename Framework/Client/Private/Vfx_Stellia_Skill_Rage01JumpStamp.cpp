@@ -28,37 +28,37 @@ HRESULT CVfx_Stellia_Skill_Rage01JumpStamp::Initialize_Prototype()
 	m_pRotationOffset = new _float3[m_iMaxCount];
 
 	/* 0. Rising Trail */
-	m_pFrameTriger[TYPE_E_RISING_00] = 35;
+	m_pFrameTriger[TYPE_E_RISING_00] = 25;
 	m_pPositionOffset[TYPE_E_RISING_00] = _float3(0.f, 0.f, 0.f);
 	m_pScaleOffset[TYPE_E_RISING_00] = _float3(9.f, 9.f, 9.f);
 	m_pRotationOffset[TYPE_E_RISING_00] = _float3(0.f, 0.f, 0.f);
 
 	/* 1. Rising Smoke */
-	m_pFrameTriger[TYPE_E_RISING_01] = 35;
+	m_pFrameTriger[TYPE_E_RISING_01] = 25;
 	m_pPositionOffset[TYPE_E_RISING_01] = _float3(0.f, 0.f, 0.f);
 	m_pScaleOffset[TYPE_E_RISING_01] = _float3(1.f, 1.f, 1.f);
 	m_pRotationOffset[TYPE_E_RISING_01] = _float3(0.f, 0.f, 0.f);
 
 	/* 2. Warning Decal */
-	m_pFrameTriger[TYPE_D_DECAL_00] = 90;
+	m_pFrameTriger[TYPE_D_DECAL_00] = 60;
 	m_pPositionOffset[TYPE_D_DECAL_00] = _float3(0.f, 0.f, 0.f);
 	m_pScaleOffset[TYPE_D_DECAL_00] = _float3(12.f, 1.f, 12.f);
 	m_pRotationOffset[TYPE_D_DECAL_00] = _float3(0.f, 0.f, 0.f);
 
 	/* 3. Shock01 Effect */
-	m_pFrameTriger[TYPE_E_SHOCK_00] = 90;
+	m_pFrameTriger[TYPE_E_SHOCK_00] = 60;
 	m_pPositionOffset[TYPE_E_SHOCK_00] = _float3(0.f, -0.5f, 0.f);
 	m_pScaleOffset[TYPE_E_SHOCK_00] = _float3(0.6f, 0.75f, 0.6f);
 	m_pRotationOffset[TYPE_E_SHOCK_00] = _float3(0.f, 0.f, 0.f);
 
 	/* 4. Shock02 Effect */
-	m_pFrameTriger[TYPE_E_SHOCK_01] = 90;
+	m_pFrameTriger[TYPE_E_SHOCK_01] = 60;
 	m_pPositionOffset[TYPE_E_SHOCK_01] = _float3(0.f, -0.5f, 0.f);
 	m_pScaleOffset[TYPE_E_SHOCK_01] = _float3(0.6f, 0.75f, 0.6f);
 	m_pRotationOffset[TYPE_E_SHOCK_01] = _float3(0.f, 90.f, 0.f);
 
 	/* 5. Smoke Effect */
-	m_pFrameTriger[TYPE_E_SMOKE_00] = 90;
+	m_pFrameTriger[TYPE_E_SMOKE_00] = 60;
 	m_pPositionOffset[TYPE_E_SMOKE_00] = _float3(0.f, 0.1f, 0.f);
 	m_pScaleOffset[TYPE_E_SMOKE_00] = _float3(4.f, 5.f, 4.f);
 	m_pRotationOffset[TYPE_E_SMOKE_00] = _float3(0.f, 0.f, 0.f);

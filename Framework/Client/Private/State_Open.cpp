@@ -31,7 +31,6 @@ void CState_Open::Tick_State(_float fTimeDelta)
 	_bool bClose = pWood->IsClose();
 	if (true == bClose)
 		m_pStateMachineCom->Change_State(CWitchWood::WOOD_STATE::CLOSE);
-
 }
 
 void CState_Open::Exit_State()

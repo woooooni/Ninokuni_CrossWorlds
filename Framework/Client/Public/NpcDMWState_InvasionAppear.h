@@ -1,10 +1,10 @@
 #pragma once
 
-#include "NpcState_Base.h"
+#include "NpcDMWState_Base.h"
 
 BEGIN(Client)
 
-class CNpcDMWState_InvasionAppear final : public CNpcState_Base
+class CNpcDMWState_InvasionAppear final : public CNpcDMWState_Base
 {
 private:
 	CNpcDMWState_InvasionAppear(CStateMachine* pStateMachine);

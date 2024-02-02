@@ -199,6 +199,10 @@ void CStellia_Explosion::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pDecal);
+	if (m_pDecal != nullptr)
+	{
+		m_pDecal->Set_Dead(true);
+		Safe_Release(m_pDecal);
+	}
 }
 

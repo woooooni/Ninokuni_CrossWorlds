@@ -261,6 +261,33 @@
     <ClInclude Include="..\Public\Clown_WizardNode_Air.h" />
     <ClInclude Include="..\Public\Clown_WizardNode_Blow.h" />
     <ClInclude Include="..\Public\Clown_Wizard_DarkBall.h" />
+    <ClInclude Include="..\Public\MainQuestNode_Ending01.h" />
+    <ClInclude Include="..\Public\MainQuestNode_FinalBattle08.h" />
+    <ClInclude Include="..\Public\MainQuestNode_FinalBattle01.h" />
+    <ClInclude Include="..\Public\MainQuestNode_FinalBattle02.h" />
+    <ClInclude Include="..\Public\MainQuestNode_FinalBattle03.h" />
+    <ClInclude Include="..\Public\MainQuestNode_FinalBattle04.h" />
+    <ClInclude Include="..\Public\MainQuestNode_FinalBattle05.h" />
+    <ClInclude Include="..\Public\MainQuestNode_FinalBattle06.h" />
+    <ClInclude Include="..\Public\MainQuestNode_FinalBattle07.h" />
+    <ClInclude Include="..\Public\MainQuestNode_FinalBattle09.h" />
+    <ClInclude Include="..\Public\MainQuestNode_PlantKiller09.h" />
+    <ClInclude Include="..\Public\MainQuestNode_PlantKiller01.h" />
+    <ClInclude Include="..\Public\MainQuestNode_PlantKiller02.h" />
+    <ClInclude Include="..\Public\MainQuestNode_PlantKiller03.h" />
+    <ClInclude Include="..\Public\MainQuestNode_PlantKiller04.h" />
+    <ClInclude Include="..\Public\MainQuestNode_PlantKiller05.h" />
+    <ClInclude Include="..\Public\MainQuestNode_PlantKiller06.h" />
+    <ClInclude Include="..\Public\MainQuestNode_PlantKiller07.h" />
+    <ClInclude Include="..\Public\MainQuestNode_PlantKiller08.h" />
+    <ClInclude Include="..\Public\MainQuestNode_PlantKiller10.h" />
+    <ClInclude Include="..\Public\MainQuestNode_WitchForest03.h" />
+    <ClInclude Include="..\Public\MainQuestNode_WitchForest04.h" />
+    <ClInclude Include="..\Public\MainQuestNode_WitchForest05.h" />
+    <ClInclude Include="..\Public\MainQuestNode_WitchForest05_2.h" />
+    <ClInclude Include="..\Public\MainQuestNode_WitchForest06.h" />
+    <ClInclude Include="..\Public\MainQuestNode_WitchForest07.h" />
+    <ClInclude Include="..\Public\MainQuestNode_WitchForest08.h" />
     <ClInclude Include="..\Public\ColliderWall.h" />
     <ClInclude Include="..\Public\Counter_FX.h" />
     <ClInclude Include="..\Public\Criminal_Monster.h" />
@@ -281,12 +308,19 @@
     <ClInclude Include="..\Public\CurlingGame_Arrow.h" />
     <ClInclude Include="..\Public\CurlingGame_Group.h" />
     <ClInclude Include="..\Public\Enemy_Biplane_Bullet.h" />
+    <ClInclude Include="..\Public\Cyan.h" />
     <ClInclude Include="..\Public\Grandprix_Enemy.h" />
     <ClInclude Include="..\Public\Grandprix_Enemy_Ghost2.h" />
     <ClInclude Include="..\Public\Grandprix_ItemBox.h" />
     <ClInclude Include="..\Public\Grandprix_Manager.h" />
     <ClInclude Include="..\Public\Grandprix_Enemy_HumanFL04.h" />
     <ClInclude Include="..\Public\Grass.h" />
+    <ClInclude Include="..\Public\MainQuestNode_WitchForest02.h" />
+    <ClInclude Include="..\Public\MainQuest_Ending.h" />
+    <ClInclude Include="..\Public\MainQuest_FinalBattle.h" />
+    <ClInclude Include="..\Public\MainQuest_PlantKiller.h" />
+    <ClInclude Include="..\Public\NpcDMWState_Base.h" />
+    <ClInclude Include="..\Public\NpcDMWState_Following.h" />
     <ClInclude Include="..\Public\State_Enemy.h" />
     <ClInclude Include="..\Public\State_Enemy_Flying_Run.h" />
     <ClInclude Include="..\Public\State_Enemy_Flying_RunStart.h" />
@@ -299,6 +333,11 @@
     <ClInclude Include="..\Public\State_Enemy_VehicleFlying_Trace.h" />
     <ClInclude Include="..\Public\State_VehicleFlying_Rush.h" />
     <ClInclude Include="..\Public\UI_Minigame_Aim.h" />
+    <ClInclude Include="..\Public\StelliaState_Rage1StartTurnOL.h" />
+    <ClInclude Include="..\Public\StelliaState_Rage3ClawReady.h" />
+    <ClInclude Include="..\Public\StelliaState_SpawnIdle.h" />
+    <ClInclude Include="..\Public\StelliaState_SpawnRoar.h" />
+    <ClInclude Include="..\Public\StelliaState_SpawnStand.h" />
     <ClInclude Include="..\Public\UI_Minigame_WorldHP.h" />
     <ClInclude Include="..\Public\Vehicle_Flying_EnemyBiplane.h" />
     <ClInclude Include="..\Public\Skill_Biplane_1.h" />
@@ -1157,11 +1196,9 @@
     <ClInclude Include="..\Public\WitchWood.h" />
     <ClInclude Include="..\Public\Zehra.h" />
     <ClInclude Include="Client.h" />
-    <ClInclude Include="StelliaState_Rage3ClawReady.h" />
-    <ClInclude Include="LensFlare.h" />
+    <ClInclude Include="MainQuestNode_WitchForest04_2.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="StelliaState_Rage1StartTurnOL.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Winter_MiniHouse_01.h" />
   </ItemGroup>
@@ -1253,6 +1290,34 @@
     <ClCompile Include="..\Private\Clown_WizardNode_Air.cpp" />
     <ClCompile Include="..\Private\Clown_WizardNode_Blow.cpp" />
     <ClCompile Include="..\Private\Clown_Wizard_DarkBall.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_Ending01.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_FinalBattle08.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_FinalBattle01.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_FinalBattle02.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_FinalBattle03.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_FinalBattle04.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_FinalBattle05.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_FinalBattle06.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_FinalBattle07.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_FinalBattle09.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_PlantKiller09.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_PlantKiller01.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_PlantKiller02.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_PlantKiller03.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_PlantKiller04.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_PlantKiller05.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_PlantKiller06.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_PlantKiller07.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_PlantKiller08.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_PlantKiller10.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_WitchForest03.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_WitchForest04.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_WitchForest04_2.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_WitchForest05.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_WitchForest05_2.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_WitchForest06.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_WitchForest07.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_WitchForest08.cpp" />
     <ClCompile Include="..\Private\ColliderWall.cpp" />
     <ClCompile Include="..\Private\Counter_FX.cpp" />
     <ClCompile Include="..\Private\Criminal_Monster.cpp" />
@@ -1272,12 +1337,19 @@
     <ClCompile Include="..\Private\Crystal_Tower.cpp" />
     <ClCompile Include="..\Private\CurlingGame_Arrow.cpp" />
     <ClCompile Include="..\Private\Enemy_Biplane_Bullet.cpp" />
+    <ClCompile Include="..\Private\Cyan.cpp" />
     <ClCompile Include="..\Private\Grandprix_Enemy.cpp" />
     <ClCompile Include="..\Private\Grandprix_Enemy_Ghost2.cpp" />
     <ClCompile Include="..\Private\Grandprix_ItemBox.cpp" />
     <ClCompile Include="..\Private\Grandprix_Manager.cpp" />
     <ClCompile Include="..\Private\Grandprix_Enemy_HumanFL04.cpp" />
     <ClCompile Include="..\Private\Grass.cpp" />
+    <ClCompile Include="..\Private\MainQuestNode_WitchForest02.cpp" />
+    <ClCompile Include="..\Private\MainQuest_Ending.cpp" />
+    <ClCompile Include="..\Private\MainQuest_FinalBattle.cpp" />
+    <ClCompile Include="..\Private\MainQuest_PlantKiller.cpp" />
+    <ClCompile Include="..\Private\NpcDMWState_Base.cpp" />
+    <ClCompile Include="..\Private\NpcDMWState_Following.cpp" />
     <ClCompile Include="..\Private\State_Enemy.cpp" />
     <ClCompile Include="..\Private\State_Enemy_Flying_Run.cpp" />
     <ClCompile Include="..\Private\State_Enemy_Flying_RunStart.cpp" />
@@ -1290,6 +1362,11 @@
     <ClCompile Include="..\Private\State_Enemy_VehicleFlying_Trace.cpp" />
     <ClCompile Include="..\Private\State_VehicleFlying_Rush.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_Aim.cpp" />
+    <ClCompile Include="..\Private\StelliaState_Rage1StartTurnOL.cpp" />
+    <ClCompile Include="..\Private\StelliaState_Rage3ClawReady.cpp" />
+    <ClCompile Include="..\Private\StelliaState_SpawnIdle.cpp" />
+    <ClCompile Include="..\Private\StelliaState_SpawnRoar.cpp" />
+    <ClCompile Include="..\Private\StelliaState_SpawnStand.cpp" />
     <ClCompile Include="..\Private\UI_Minigame_WorldHP.cpp" />
     <ClCompile Include="..\Private\Vehicle_Flying_EnemyBiplane.cpp" />
     <ClCompile Include="..\Private\Skill_Biplane_1.cpp" />
@@ -2152,14 +2229,12 @@
     <ClCompile Include="..\Private\WitchWood.cpp" />
     <ClCompile Include="..\Private\Zehra.cpp" />
     <ClCompile Include="Client.cpp" />
-    <ClCompile Include="StelliaState_Rage3ClawReady.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="StelliaState_Rage1StartTurnOL.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Client.rc" />

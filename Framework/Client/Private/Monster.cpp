@@ -314,76 +314,99 @@ void CMonster::Search_Target(_float fTimeDelta)
 	if (CQuest_Manager::GetInstance()->Get_CurQuestEvent() == CQuest_Manager::GetInstance()->QUESTEVENT_TOWERDEFENCE)
 	{
 		m_bBools[(_uint)MONSTER_BOOLTYPE::MONBOOL_COMBAT] = true;
+		CGameObject* pTree = GI->Find_GameObject(GI->Get_CurrentLevel(), (_uint)LAYER_NPC, TEXT("TreeGrandfa"));
 
-		if (m_tTargetDesc.pTarget == nullptr)
+		// 최초 한 번만
+		if (m_tTargetDesc.pTarget == nullptr && !m_bIsStartDefence)
 		{
-			m_tTargetDesc.pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), (_uint)LAYER_NPC, TEXT("TreeGrandfa"));
+			m_tTargetDesc.pTarget = pTree;
 
 			if (m_tTargetDesc.pTarget != nullptr)
+			{
 				m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component<CTransform>(L"Com_Transform");
-		}
-
-		m_iRemainsTowerCount = 0;
-
-		/* 모든 타워 및 가을 할아범 불러오기 */
-		for (auto iter : GI->Find_GameObjects(GI->Get_CurrentLevel(), (_uint)LAYER_ETC))
-		{
-			// 가을 할아범
-			CGameObject* pTree = GI->Find_GameObject(GI->Get_CurrentLevel(), (_uint)LAYER_NPC, TEXT("TreeGrandfa"));
-			if (pTree != nullptr)
-			{
-				Vec4 vToTree = pTree->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_Position() - m_pTransformCom->Get_Position();
-				m_fDistToTree = vToTree.Length();
-			}
-
-			// 타워
-			if (iter->Get_ObjectType() == OBJ_DEFENCE_TOWER)
-			{
-				m_iRemainsTowerCount += 1;
-				Vec4 vToTower = iter->Get_Component<CTransform>(TEXT("Com_Transform"))->Get_Position() - m_pTransformCom->Get_Position();
-				_float fToTowerDist = vToTower.Length();
-
-				// 가을 할아범 광장에 들어왔을 때
-				if (fabs(m_fDistToTree) < m_fTargetSearchDist)
-				{
-					// 가까운 타워 찾아서 공격.
-					if (fabs(fToTowerDist) < m_fNearDist)
-					{
-						// 가을 할아범이 더 가깝다면 가을 할아범한테(경로상에 타워가 없다면)
-						if (fabs(m_fDistToTree) < fabs(fToTowerDist))
-						{
-							m_tTargetDesc.pTarget = pTree;
-							if (m_tTargetDesc.pTarget != nullptr)
-								m_tTargetDesc.pTragetTransform = iter->Get_Component<CTransform>(TEXT("Com_Transform"));
-						}
-						else
-						{
-							m_fNearDist = fabs(fToTowerDist);
-							m_tTargetDesc.pTarget = iter;
-							if (m_tTargetDesc.pTarget != nullptr)
-								m_tTargetDesc.pTragetTransform = iter->Get_Component<CTransform>(TEXT("Com_Transform"));
-						}
-					}
-				}
-
+				m_bIsStartDefence = true;
 			}
 		}
 
-		// 남아있는 타워가 없다면.
-		if (m_iRemainsTowerCount == 0)
+		// 가을 할아범과의 거리 실시간으로 구하기
+		if (pTree != nullptr && !m_bIsInvasionMainTown)
 		{
-			m_tTargetDesc.pTarget = GI->Find_GameObject(GI->Get_CurrentLevel(), (_uint)LAYER_NPC, TEXT("Com_Transform"));
-
-			if (m_tTargetDesc.pTarget != nullptr)
-				m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component<CTransform>(L"Com_Transform");
+			Vec4 vToTree = pTree->Get_Component_Transform()->Get_Position() - m_pTransformCom->Get_Position();
+			m_fDistToTree = vToTree.Length();
 		}
+
+		// 광장에 진입 한 상태라면
+		if (m_bIsInvasionMainTown)
+		{
+			// 타겟이 죽었다면
+			if (m_tTargetDesc.pTarget->Is_Dead() == true || m_tTargetDesc.pTarget->Is_ReserveDead() == true)
+			{
+				m_tTargetDesc.pTarget = nullptr;
+				m_tTargetDesc.pTragetTransform = nullptr;
+				Search_Target_Tower(fTimeDelta);
+			}
+			// 최초에 입장했다면
+			if (!m_bIsTargetTower)
+			{
+				Search_Target_Tower(fTimeDelta);
+				m_bIsTargetTower = true;
+			}
+		}
+
+		// 광장 내부에 들어왔을 때
+		if (fabs(m_fDistToTree) < m_fTargetSearchDist)
+		{
+			m_bIsInvasionMainTown = true;
+		}
+		else
+			m_bIsInvasionMainTown = false;
+
+
 	}
+	// 타워 디펜스 상태가 아닐 때
 	else
 	{
 		m_tTargetDesc.pTarget = CGame_Manager::GetInstance()->Get_Player()->Get_Character();
 		m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component<CTransform>(L"Com_Transform");
 	}
 
+}
+
+void CMonster::Search_Target_Tower(_float fTimeDelta)
+{
+	// 처음엔 가을 할아범으로 세팅.
+	CGameObject* pTree = GI->Find_GameObject(GI->Get_CurrentLevel(), (_uint)LAYER_NPC, TEXT("TreeGrandfa"));
+	if (pTree != nullptr)
+	{
+		m_tTargetDesc.pTarget = pTree;
+		m_tTargetDesc.pTragetTransform = m_tTargetDesc.pTarget->Get_Component_Transform();
+
+		Vec4 vToTree = m_tTargetDesc.pTragetTransform->Get_Position() - m_pTransformCom->Get_Position();
+		m_fDistToTree = vToTree.Length();
+		m_fNearDist = m_fDistToTree; // 가을 할아범과의 거리를 저장.
+	}
+
+	for (auto iter : GI->Find_GameObjects(GI->Get_CurrentLevel(), (_uint)LAYER_ETC))
+	{
+		// 타워
+		if (iter->Get_ObjectType() == OBJ_DEFENCE_TOWER)
+		{
+			// 가장 가까운 타워 찾기.
+			Vec4 vToTower = iter->Get_Component_Transform()->Get_Position() - m_pTransformCom->Get_Position();
+			_float fToTowerDist = vToTower.Length();
+
+			if (fabs(fToTowerDist) < m_fNearDist)
+			{
+				m_tTargetDesc.pTarget = iter;
+				if (m_tTargetDesc.pTarget != nullptr)
+				{
+					m_pTransformCom->LookAt_ForLandObject(iter->Get_Component_Transform()->Get_Position());
+					m_tTargetDesc.pTragetTransform = iter->Get_Component_Transform();
+					m_fNearDist = fabs(fToTowerDist);
+				}
+			}
+		}
+	}
 }
 
 void CMonster::Collision_Enter(const COLLISION_INFO& tInfo)
