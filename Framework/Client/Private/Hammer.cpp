@@ -109,8 +109,8 @@ HRESULT CHammer::Ready_Trails()
 		return E_FAIL;
 
 	m_pTrail->SetUp_Position(XMVectorSet(0.f, 0.f, 0.5f, 1.f), XMVectorSet(0.f, 0.f, 0.9f, 1.f));
-
 	m_pTrail->Stop_Trail();
+
 	return S_OK;
 }
 

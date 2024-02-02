@@ -132,7 +132,10 @@ public: // UI Setting Option을 위한 Get/Set
 	void Set_PbrDraw(_bool bSet) { m_bPbrDraw = bSet; }
 
 	_bool Get_RadialBlur() { return m_bRadialBlurDraw; }
-	void Set_RadialBlur(_bool bSet, _float fQuality = 16.f) { 
+
+	// Quality : 얼마나 샘플할 건지, Power : 얼마나 뭉갤건지.
+	void Set_RadialBlur(_bool bSet, _float fQuality = 16.f, _float fRadialBlurPower = 0.1f) { 
+		m_fRadialBlurPower = fRadialBlurPower;
 		m_fRadialBlurQuality = min(fQuality, 16.f);
 		m_fRadialBlurQuality = max(1.f, fQuality);
 		m_bRadialBlurDraw = bSet;
@@ -338,6 +341,7 @@ private:
 
 private:
 	_float m_fRadialBlurQuality = 16.f;
+	_float m_fRadialBlurPower = 0.1f;
 
 
 private: // Minimap

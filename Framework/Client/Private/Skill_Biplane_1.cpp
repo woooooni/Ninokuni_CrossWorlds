@@ -50,11 +50,14 @@ _bool CSkill_Biplane_1::Use_Skill()
 
 void CSkill_Biplane_1::Generate_MuckCloud()
 {
-	list<CGameObject*>& Npcs = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_NPC);
+	list<CGameObject*>& Targets = GI->Find_GameObjects(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_MONSTER);
 
-	for (auto& pNpc : Npcs)
+	for (auto& pTarget : Targets)
 	{
-		CTransform* pNpcTransform = pNpc->Get_Component<CTransform>(L"Com_Transform");
+		if (OBJ_TYPE::OBJ_GRANDPRIX_ENEMY != pTarget->Get_ObjectType())
+			continue;
+
+		CTransform* pNpcTransform = pTarget->Get_Component<CTransform>(L"Com_Transform");
 
 		if (nullptr == pNpcTransform)
 		{

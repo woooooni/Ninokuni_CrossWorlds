@@ -16,7 +16,7 @@ public:
 	} ENEMY_STAT;
 
 protected:
-	CVehicle_Flying(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
+	CVehicle_Flying(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, OBJ_TYPE eObjType);
 	CVehicle_Flying(const CVehicle_Flying& rhs);
 	virtual ~CVehicle_Flying() = default;
 

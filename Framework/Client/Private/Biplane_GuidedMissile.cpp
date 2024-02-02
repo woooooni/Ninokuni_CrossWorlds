@@ -90,7 +90,6 @@ void CBiplane_GuidedMissile::Tick(_float fTimeDelta)
 				}
 			}
 		}
-		m_pTransformCom->Rotation_Acc(XMVector3Normalize(m_pTransformCom->Get_Look()), XMConvertToRadians(180.f) * 5.f * fTimeDelta);
 	}
 	
 	m_pTransformCom->Move(XMVector3Normalize(m_pTransformCom->Get_Look()), m_fMoveSpeed, fTimeDelta);
@@ -175,6 +174,9 @@ void CBiplane_GuidedMissile::Find_Target(_float fTimeDelta)
 	_float fMinDistance = 50.f;
 	for (auto& pTarget : TargetObjects)
 	{
+		if (OBJ_TYPE::OBJ_GRANDPRIX_ENEMY != pTarget->Get_ObjectType())
+			continue;
+
 		CTransform* pTargetTransform = pTarget->Get_Component<CTransform>(L"Com_Transform");
 		Vec4 vPosition = m_pTransformCom->Get_Position();
 		Vec4 vTargetPosition = pTargetTransform->Get_Position();

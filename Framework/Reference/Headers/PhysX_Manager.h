@@ -40,7 +40,6 @@ public:
 	HRESULT Clear_PhysX_Ground();
 
 public:
-	_bool Is_PhysX_Valid() { return m_bSimulating == false; }
 	HRESULT Reset_PhysX();
 
 public:
@@ -104,8 +103,8 @@ private:
 	ID3D11InputLayout* m_pInputLayout = nullptr;
 #endif
 
-private:
-	_bool m_bSimulating = false;
+//private:
+//	_bool m_bSimulating = false;
 
 private:
 	PxDefaultAllocator			m_Allocator;			// 메모리 관리용..?
@@ -141,12 +140,6 @@ private:
 	map<_uint, vector<PHYSX_DYNAMIC_OBJECT_DESC>> m_DynamicObjects;
 	*/
 	vector<OBJ_TYPE> m_eObjectTypes;
-	
-	
-
-
-	
-
 
 private:
 	ID3D11Device* m_pDevice = nullptr;

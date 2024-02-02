@@ -18,7 +18,7 @@
 #include "UI_Minigame_Aim.h"
 
 CVehicle_Flying_EnemyBoto::CVehicle_Flying_EnemyBoto(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
-	: CVehicle_Flying(pDevice, pContext, strObjectTag)
+	: CVehicle_Flying(pDevice, pContext, strObjectTag, OBJ_TYPE::OBJ_GRANDPRIX_ENEMY)
 {
 }
 

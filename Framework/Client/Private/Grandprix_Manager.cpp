@@ -272,6 +272,8 @@ HRESULT CGrandprix_Manager::Prepare_Grandprix()
 		pItem->Get_Component<CTransform>(L"Com_Transform")->Set_State(CTransform::STATE_POSITION, Vec4(fX, fY, fZ, 1.f));
 		dynamic_cast<CGrandprix_ItemBox*>(pItem)->Set_MinMaxPosition(Vec4(fX, fY, fZ, 1.f));
 	}
+
+	return S_OK;
 }
 
 void CGrandprix_Manager::Start_Grandprix()

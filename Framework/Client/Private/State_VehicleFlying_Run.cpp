@@ -121,7 +121,7 @@ void CState_VehicleFlying_Run::Tick_State(_float fTimeDelta)
 	{
 		m_fTimeAcc += fTimeDelta;
 
-		if (0.5f < m_fTimeAcc)
+		if (0.1f < m_fTimeAcc)
 		{
 			m_bShoot = true;
 			m_fTimeAcc = 0.f;
