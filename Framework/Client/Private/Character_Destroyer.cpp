@@ -388,7 +388,7 @@ HRESULT CCharacter_Destroyer::Ready_States()
 
 
 	strAnimationNames.clear();
-	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_BattleWalk");
+	strAnimationNames.push_back(L"SKM_Destroyer_Merge.ao|Destroyer_BattleRun");
 	if (FAILED(m_pStateCom->Add_State(CCharacter::STATE::BATTLE_WALK, CState_Character_Battle_Walk::Create(m_pStateCom, strAnimationNames))))
 		return E_FAIL;
 

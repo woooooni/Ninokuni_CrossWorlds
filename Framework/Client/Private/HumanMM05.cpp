@@ -99,7 +99,6 @@ HRESULT CHumanMM05::Ready_States()
 
 	strAnimationName.clear();
 	strAnimationName.push_back(L"Stand01");
-	strAnimationName.push_back(L"Stand02Idle01");
 	strAnimationName.push_back(L"StandIdle01Idle02");
 	m_pStateCom->Add_State(NPC_IDLE, CNpcState_Idle::Create(m_pStateCom, strAnimationName));
 

@@ -9,7 +9,7 @@
 #include "Character.h"
 
 CCharacter_Biplane_Bullet::CCharacter_Biplane_Bullet(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	:CVehicleFlying_Projectile(pDevice, pContext, L"Character_Biplane_Bullet", OBJ_TYPE::OBJ_GRANDPRIX_PLAYER_PROJECTILE)
+	:CVehicleFlying_Projectile(pDevice, pContext, L"Character_Biplane_Bullet", OBJ_TYPE::OBJ_GRANDPRIX_CHARACTER_PROJECTILE)
 {
 
 }
