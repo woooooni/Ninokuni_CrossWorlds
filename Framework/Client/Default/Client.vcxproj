@@ -314,7 +314,6 @@
     <ClInclude Include="..\Public\Grandprix_Enemy_Ghost2.h" />
     <ClInclude Include="..\Public\Grandprix_ItemBox.h" />
     <ClInclude Include="..\Public\Grandprix_Manager.h" />
-    <ClInclude Include="..\Public\Grandprix_Enemy_HumanFL04.h" />
     <ClInclude Include="..\Public\Grass.h" />
     <ClInclude Include="..\Public\MainQuestNode_WitchForest02.h" />
     <ClInclude Include="..\Public\MainQuest_Ending.h" />
@@ -1344,7 +1343,6 @@
     <ClCompile Include="..\Private\Grandprix_Enemy_Ghost2.cpp" />
     <ClCompile Include="..\Private\Grandprix_ItemBox.cpp" />
     <ClCompile Include="..\Private\Grandprix_Manager.cpp" />
-    <ClCompile Include="..\Private\Grandprix_Enemy_HumanFL04.cpp" />
     <ClCompile Include="..\Private\Grass.cpp" />
     <ClCompile Include="..\Private\MainQuestNode_WitchForest02.cpp" />
     <ClCompile Include="..\Private\MainQuest_Ending.cpp" />
