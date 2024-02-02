@@ -5,8 +5,7 @@
 BEGIN(Client)
 class CUI_Minigame_Curling_Gauge final : public CUI_Minigame_Curling_Base
 {
-
-protected:
+private:
 	CUI_Minigame_Curling_Gauge(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& wstrTag);
 	CUI_Minigame_Curling_Gauge(const CUI_Minigame_Curling_Gauge& rhs);
 	virtual ~CUI_Minigame_Curling_Gauge() = default;

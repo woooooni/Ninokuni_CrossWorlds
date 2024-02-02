@@ -28,6 +28,7 @@ public:
 protected:
 	virtual HRESULT	Ready_Components() override;
 	virtual HRESULT	Ready_Default();
+	virtual HRESULT Ready_Transform();
 	HRESULT			Bind_ShaderResources();
 
 protected:

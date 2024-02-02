@@ -58,18 +58,24 @@ HRESULT CUI_Minigame_Curling_Base::Ready_Components()
 	return S_OK;
 }
 
+HRESULT CUI_Minigame_Curling_Base::Ready_Transform()
+{
+	if (nullptr == m_pTransformCom)
+		return E_FAIL;
+
+	m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
+
+	m_pTransformCom->Set_State(CTransform::STATE_POSITION,
+		XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
+
+	return S_OK;
+}
+
 HRESULT CUI_Minigame_Curling_Base::Ready_Default()
 {
 	/* Transform */
-	{
-		if (nullptr == m_pTransformCom)
-			return E_FAIL;
-
-		m_pTransformCom->Set_Scale(XMVectorSet(m_tInfo.fCX, m_tInfo.fCY, 1.f, 0.f));
-	
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION,
-			XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 0.f, 1.f));
-	}
+	if (FAILED(Ready_Transform()))
+		return E_FAIL;
 
 	/* Variable */
 	{

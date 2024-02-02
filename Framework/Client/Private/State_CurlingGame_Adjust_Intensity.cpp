@@ -83,7 +83,7 @@ void CState_CurlingGame_Adjust_Intensity::Tick_State(const _float& fTimeDelta)
 
 	/* Send To Ui */
 	{
-		CUI_Minigame_Curling_Base* pUi = CUIMinigame_Manager::GetInstance()->Get_MiniGame_Curling_Ui(MG_CURLING_UI_TYPE::GUAGE);
+		CUI_Minigame_Curling_Base* pUi = CUIMinigame_Manager::GetInstance()->Get_MiniGame_Curling_Ui((_uint)MG_CL_UI_TYPE::GUAGE);
 		if(nullptr != pUi)
 			pUi->Send_Message_Float(m_tGuageDesc.tLerpValue.fCurValue);
 	}

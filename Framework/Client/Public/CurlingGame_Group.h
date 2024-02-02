@@ -29,21 +29,28 @@
 /* UIs */
 #include "UI_Minigame_Curling_Base.h"
 #include "UI_Minigame_Curling_Gauge.h"
+#include "UI_Minigame_Curling_Info.h"
 
 
 /* Globals */
-static const enum MG_CURLING_UI_TYPE 
-{ 
-	GUAGE, 
-	MINIGAME_CURLING_UI_TYPEEND 
-};
-
-static const wstring g_wstr_MG_Curling_Ui_ProtoTags[MINIGAME_CURLING_UI_TYPEEND] = 
-{ 
-	L"Prototype_GameObject_UI_Minigame_Curling_Gauge" 
-};
-
-static const wstring g_wstr_MG_Curling_Ui_ObjTags[MINIGAME_CURLING_UI_TYPEEND] =
+static const enum class MG_CL_UI_TYPE 
 {
-	L"UI_Minigame_Curling_Gauge"
+	GUAGE,
+	INFO_NPC,
+	INFO_PLAYER,
+	TYPEEND
+};
+
+static const wstring g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::TYPEEND] =
+{ 
+	L"Prototype_GameObject_UI_Minigame_Curling_Gauge",
+	L"Prototype_GameObject_UI_Minigame_Curling_Info_Npc",
+	L"Prototype_GameObject_UI_Minigame_Curling_Info_Player"
+};
+
+static const wstring g_wstr_MG_Curling_Ui_ObjTags[(_uint)MG_CL_UI_TYPE::TYPEEND] =
+{
+	L"UI_Minigame_Curling_Gauge",
+	L"UI_Minigame_Curling_Info_Npc",
+	L"UI_Minigame_Curling_Info_Player"
 };

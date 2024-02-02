@@ -57,9 +57,9 @@ void CUIMinigame_Manager::Set_Flyable(_bool bFlyable)
 	}
 }
 
-CUI_Minigame_Curling_Base* CUIMinigame_Manager::Get_MiniGame_Curling_Ui(const _uint& iTag)
+CUI_Minigame_Curling_Base* CUIMinigame_Manager::Get_MiniGame_Curling_Ui(const _uint& iObjTag)
 {
-	if (MG_CURLING_UI_TYPE::MINIGAME_CURLING_UI_TYPEEND <= iTag)
+	if ((_uint)MG_CL_UI_TYPE::TYPEEND <= iObjTag)
 		return nullptr;
 
 	for (auto& pUi : m_CurlingGameUIs)
@@ -67,7 +67,7 @@ CUI_Minigame_Curling_Base* CUIMinigame_Manager::Get_MiniGame_Curling_Ui(const _u
 		if (nullptr == pUi)
 			continue;
 
-		if (g_wstr_MG_Curling_Ui_ObjTags[iTag] == pUi->Get_ObjectTag())
+		if (g_wstr_MG_Curling_Ui_ObjTags[iObjTag] == pUi->Get_ObjectTag())
 			return pUi;
 	}
 
@@ -579,6 +579,7 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_Evermore()
 		CUI_Minigame_Basic::Create(m_pDevice, m_pContext, CUI_Minigame_Basic::UI_MINIGAMEBASIC::GRANDPRIX_BIPLANE), LAYER_UI)))
 		return E_FAIL;
 
+
 	// 매니저 내에서는 프로토타입만 생성함
 	if (FAILED(GI->Add_Prototype(TEXT("Prototype_GameObject_UI_Minigame_Enemy_WorldHP"),
 		CUI_Minigame_WorldHP::Create(m_pDevice, m_pContext), LAYER_UI)))
@@ -593,8 +594,18 @@ HRESULT CUIMinigame_Manager::Ready_MinigameUI_Evermore()
 HRESULT CUIMinigame_Manager::Ready_MinigameUI_IceLand()
 {
 	/* Gauge */
-	if (FAILED(GI->Add_Prototype(g_wstr_MG_Curling_Ui_ProtoTags[MG_CURLING_UI_TYPE::GUAGE],
-		CUI_Minigame_Curling_Gauge::Create(m_pDevice, m_pContext, g_wstr_MG_Curling_Ui_ObjTags[MG_CURLING_UI_TYPE::GUAGE]), LAYER_UI)))
+	if (FAILED(GI->Add_Prototype(g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::GUAGE],
+		CUI_Minigame_Curling_Gauge::Create(m_pDevice, m_pContext, g_wstr_MG_Curling_Ui_ObjTags[(_uint)MG_CL_UI_TYPE::GUAGE]), LAYER_UI)))
+		return E_FAIL;
+
+	/* Info_Npc */
+	if (FAILED(GI->Add_Prototype(g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::INFO_NPC],
+		CUI_Minigame_Curling_Info::Create(m_pDevice, m_pContext, g_wstr_MG_Curling_Ui_ObjTags[(_uint)MG_CL_UI_TYPE::INFO_NPC], false), LAYER_UI)))
+		return E_FAIL;
+	
+	/* Info_Player */
+	if (FAILED(GI->Add_Prototype(g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::INFO_PLAYER],
+		CUI_Minigame_Curling_Info::Create(m_pDevice, m_pContext, g_wstr_MG_Curling_Ui_ObjTags[(_uint)MG_CL_UI_TYPE::INFO_PLAYER], true), LAYER_UI)))
 		return E_FAIL;
 
 	return S_OK;
@@ -1039,14 +1050,12 @@ HRESULT CUIMinigame_Manager::Ready_Granprix()
 
 HRESULT CUIMinigame_Manager::Ready_Curling()
 {
-	m_CurlingGameUIs.reserve(2);
-
 	CGameObject* pClone = nullptr;
 	CUI_Minigame_Curling_Base* pUi = nullptr;
 
 	/* Guage */
 	{
-		if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_UI, g_wstr_MG_Curling_Ui_ProtoTags[MG_CURLING_UI_TYPE::GUAGE], nullptr, &pClone)))
+		if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_UI, g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::GUAGE], nullptr, &pClone)))
 			return E_FAIL;
 
 		pUi = dynamic_cast<CUI_Minigame_Curling_Base*>(pClone);
@@ -1056,6 +1065,36 @@ HRESULT CUIMinigame_Manager::Ready_Curling()
 		m_CurlingGameUIs.push_back(pUi);
 		Safe_AddRef(pUi);
 
+		pClone = pUi = nullptr;
+	}
+
+	/* Info_Npc */
+	{
+		if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_UI, g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::INFO_NPC], nullptr, &pClone)))
+			return E_FAIL;
+	
+		pUi = dynamic_cast<CUI_Minigame_Curling_Base*>(pClone);
+		if (nullptr == pUi)
+			return E_FAIL;
+	
+		m_CurlingGameUIs.push_back(pUi);
+		Safe_AddRef(pUi);
+	
+		pClone = pUi = nullptr;
+	}
+	
+	/* Info_Player */
+	{
+		if (FAILED(GI->Add_GameObject(LEVEL_ICELAND, LAYER_TYPE::LAYER_UI, g_wstr_MG_Curling_Ui_ProtoTags[(_uint)MG_CL_UI_TYPE::INFO_PLAYER], nullptr, &pClone)))
+			return E_FAIL;
+	
+		pUi = dynamic_cast<CUI_Minigame_Curling_Base*>(pClone);
+		if (nullptr == pUi)
+			return E_FAIL;
+	
+		m_CurlingGameUIs.push_back(pUi);
+		Safe_AddRef(pUi);
+	
 		pClone = pUi = nullptr;
 	}
 

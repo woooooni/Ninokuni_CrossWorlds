@@ -26,7 +26,7 @@ HRESULT CUI_Minigame_Curling_Gauge::Initialize(void* pArg)
 	{
 		UIDesc.fCX = 300.f;
 		UIDesc.fCY = 300.f;
-		UIDesc.fX = g_vWinCenter.x * 1.5f;
+		UIDesc.fX = g_vWinCenter.x * 1.65f;
 		UIDesc.fY = g_vWinCenter.y;
 	}
 

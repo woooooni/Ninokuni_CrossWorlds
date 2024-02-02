@@ -786,8 +786,8 @@ HRESULT CLoader::Loading_For_Level_IceLand()
 				CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Curling/Curling_Count_9.png")))))
 				return E_FAIL;
 
-			if (FAILED(GI->Add_Prototype(LEVEL_ICELAND, TEXT("Prototype_Component_Texture_UI_Minigame_Curling_Guage_Color"),
-				CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Curling/Curling_Guage_Color.png")))))
+			if (FAILED(GI->Add_Prototype(LEVEL_ICELAND, TEXT("Prototype_Component_Texture_UI_Minigame_Curling_Count_10"),
+				CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Curling/Curling_Count_10.png")))))
 				return E_FAIL;
 
 			if (FAILED(GI->Add_Prototype(LEVEL_ICELAND, TEXT("Prototype_Component_Texture_UI_Minigame_Curling_Guage_Frame"),
@@ -800,6 +800,14 @@ HRESULT CLoader::Loading_For_Level_IceLand()
 
 			if (FAILED(GI->Add_Prototype(LEVEL_ICELAND, TEXT("Prototype_Component_Texture_UI_Minigame_Curling_Icon_Swordsman"),
 				CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Curling/Curling_Icon_Swordsman.png")))))
+				return E_FAIL;
+
+			if (FAILED(GI->Add_Prototype(LEVEL_ICELAND, TEXT("Prototype_Component_Texture_UI_Minigame_Curling_Info_Frame_Blue"),
+				CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Curling/Curling_Info_Frame_Blue.png")))))
+				return E_FAIL;
+
+			if (FAILED(GI->Add_Prototype(LEVEL_ICELAND, TEXT("Prototype_Component_Texture_UI_Minigame_Curling_Info_Frame_Yellow"),
+				CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Curling/Curling_Info_Frame_Yellow.png")))))
 				return E_FAIL;
 
 			if (FAILED(GI->Add_Prototype(LEVEL_ICELAND, TEXT("Prototype_Component_Texture_UI_Minigame_Curling_Life_Empty"),
@@ -817,6 +825,7 @@ HRESULT CLoader::Loading_For_Level_IceLand()
 			if (FAILED(GI->Add_Prototype(LEVEL_ICELAND, TEXT("Prototype_Component_Texture_UI_Minigame_Curling_Turn_Arrow"),
 				CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/UI/MiniGame/Curling/Curling_Turn_Arrow.png")))))
 				return E_FAIL;
+
 		}
 
 		/* 컬링 미니게임 UI 오브젝트 프로토타입 추가 */
