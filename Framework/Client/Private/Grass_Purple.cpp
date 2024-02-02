@@ -1,24 +1,24 @@
 #include "stdafx.h"
-#include "Grass.h"
+#include "Grass_Purple.h"
 #include "GameInstance.h"
 #include "Mesh.h"
 
-CGrass::CGrass(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
+CGrass_Purple::CGrass_Purple(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CGameObject(pDevice, pContext, strObjectTag, OBJ_TYPE::OBJ_GRASS)
 {
 }
 
-CGrass::CGrass(const CGrass& rhs)
+CGrass_Purple::CGrass_Purple(const CGrass_Purple& rhs)
 	: CGameObject(rhs)
 {
 }
 
-HRESULT CGrass::Initialize_Prototype()
+HRESULT CGrass_Purple::Initialize_Prototype()
 {
 	return S_OK;
 }
 
-HRESULT CGrass::Initialize(void* pArg)
+HRESULT CGrass_Purple::Initialize(void* pArg)
 {
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
@@ -26,10 +26,11 @@ HRESULT CGrass::Initialize(void* pArg)
 	m_CBGrass.fBendDelta = GI->RandomFloat(0.2f, 0.6f);
 	m_pModelCom->Get_Meshes()[0]->Set_Topology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
 
+
 	return S_OK;
 }
 
-void CGrass::Tick(_float fTimeDelta)
+void CGrass_Purple::Tick(_float fTimeDelta)
 {
 	__super::Tick(fTimeDelta);
 
@@ -38,7 +39,7 @@ void CGrass::Tick(_float fTimeDelta)
 		m_fTime = 0.0f;
 }
 
-void CGrass::LateTick(_float fTimeDelta)
+void CGrass_Purple::LateTick(_float fTimeDelta)
 {
 	__super::LateTick(fTimeDelta);
 
@@ -46,7 +47,7 @@ void CGrass::LateTick(_float fTimeDelta)
 		m_pRendererCom->Add_RenderGroup_Instancing(CRenderer::RENDER_NONBLEND, CRenderer::INSTANCING_SHADER_TYPE::MODEL, this, m_pTransformCom->Get_WorldFloat4x4());
 }
 
-HRESULT CGrass::Render()
+HRESULT CGrass_Purple::Render()
 {
 	//if (FAILED(Bind_ShaderResource()))
 	//	return E_FAIL;
@@ -57,7 +58,7 @@ HRESULT CGrass::Render()
 	return S_OK;
 }
 
-HRESULT CGrass::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
+HRESULT CGrass_Purple::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing* pInstancingBuffer, const vector<_float4x4>& WorldMatrices)
 {
 	if (FAILED(pInstancingShader->Bind_RawValue("g_vCamPosition", &GI->Get_CamPosition(), sizeof(_float4))))
 		return E_FAIL;
@@ -68,7 +69,7 @@ HRESULT CGrass::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing
 	if (FAILED(pInstancingShader->Bind_RawValue("g_ProjMatrix", &GI->Get_TransformFloat4x4_TransPose(CPipeLine::D3DTS_PROJ), sizeof(_float4x4))))
 		return E_FAIL;
 	if (FAILED(m_pTextureCom[GRASS_TEX::WIND_MAP]->Bind_ShaderResource(pInstancingShader, "WindTexture", 0)))
-		return E_FAIL;
+		return E_FAIL; 
 	if (FAILED(m_pTextureCom[GRASS_TEX::SHADE_MAP]->Bind_ShaderResource(pInstancingShader, "BladeTexture", 0)))
 		return E_FAIL;
 	if (FAILED(pInstancingShader->Bind_RawValue("fTime", &m_fTime, sizeof(_float))))
@@ -81,15 +82,17 @@ HRESULT CGrass::Render_Instance(CShader* pInstancingShader, CVIBuffer_Instancing
 	if (FAILED(pInstancingShader->Bind_RawValue("vUpperColor", &m_vUpperColor, sizeof(Vec4))))
 		return E_FAIL;
 
-	if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, 0, pInstancingBuffer, WorldMatrices, 9)))
+
+	if (FAILED(m_pModelCom->Render_Instancing(pInstancingShader, 0, pInstancingBuffer, WorldMatrices, 8)))
 		return E_FAIL;
 
 
+	
 
 	return S_OK;
 }
 
-HRESULT CGrass::Ready_Components()
+HRESULT CGrass_Purple::Ready_Components()
 {
 	/* For.Com_Renderer */
 	if (FAILED(__super::Add_Component(LEVEL_STATIC, TEXT("Prototype_Component_Renderer"), TEXT("Com_Renderer"), (CComponent**)&m_pRendererCom)))
@@ -116,7 +119,7 @@ HRESULT CGrass::Ready_Components()
 	return S_OK;
 }
 
-HRESULT CGrass::Bind_ShaderResource()
+HRESULT CGrass_Purple::Bind_ShaderResource()
 {
 
 	if (FAILED(m_pShaderCom->Bind_Matrix("world", &m_pTransformCom->Get_WorldFloat4x4())))
@@ -138,29 +141,29 @@ HRESULT CGrass::Bind_ShaderResource()
 	return S_OK;
 }
 
-CGrass* CGrass::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
+CGrass_Purple* CGrass_Purple::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 {
-	CGrass* pInstance = new CGrass(pDevice, pContext, strObjectTag);
+	CGrass_Purple* pInstance = new CGrass_Purple(pDevice, pContext, strObjectTag);
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX("Failed to Created : CGrass");
+		MSG_BOX("Failed to Created : CGrass_Purple");
 		Safe_Release(pInstance);
 	}
 	return pInstance;
 }
 
-CGameObject* CGrass::Clone(void* pArg)
+CGameObject* CGrass_Purple::Clone(void* pArg)
 {
-	CGrass* pInstance = new CGrass(*this);
+	CGrass_Purple* pInstance = new CGrass_Purple(*this);
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
-		MSG_BOX("Failed to Created : CGrass");
+		MSG_BOX("Failed to Created : CGrass_Purple");
 		Safe_Release(pInstance);
 	}
 	return pInstance;
 }
 
-void CGrass::Free()
+void CGrass_Purple::Free()
 {
 	__super::Free();
 
