@@ -7,7 +7,7 @@
 #include "UI_MonsterHP_World.h"
 #include "UIDamage_Manager.h"
 #include "UI_Minimap_Icon.h"
-#include "UIMinimap_Manager.h"
+#include "UI_Manager.h"
 
 CShadow_Thief::CShadow_Thief(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag, const MONSTER_STAT& tStat)
 	: CMonster(pDevice, pContext, strObjectTag, tStat)
@@ -81,7 +81,7 @@ void CShadow_Thief::Tick(_float fTimeDelta)
 
 	if (nullptr != m_pMinimapIcon)
 	{
-		if (true == CUIMinimap_Manager::GetInstance()->Is_InMinimap(m_pTransformCom))
+		if (true == CUI_Manager::GetInstance()->Is_InMinimap(m_pTransformCom))
 			m_pMinimapIcon->Set_Active(true);
 		else
 			m_pMinimapIcon->Set_Active(false);

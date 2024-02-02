@@ -41,8 +41,9 @@ void CState_Enemy_VehicleFlying_Enter::Tick_State(_float fTimeDelta)
     
     CVehicle_Flying* pBiplane = dynamic_cast<CVehicle_Flying*>(m_pVehicle);
 
+    _int iCurIndex = pBiplane->Get_CurIndex();
     _float4 vDestPos;
-    XMStoreFloat4(&vDestPos, pBiplane->Get_RoutePoint(pBiplane->Get_CurIndex()));
+    XMStoreFloat4(&vDestPos, pBiplane->Get_RoutePoint(iCurIndex));
     Move(fTimeDelta);
 
     Vec4 vMyPos = m_pVehicle->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
@@ -53,7 +54,6 @@ void CState_Enemy_VehicleFlying_Enter::Tick_State(_float fTimeDelta)
     {
         if (false == m_bUpdate)
         {
-            _int iCurIndex = pBiplane->Get_CurIndex();
             _int iMaxIndex = pBiplane->Get_Routes()->size() - 1;
 
             if (iCurIndex == iMaxIndex)
@@ -62,7 +62,7 @@ void CState_Enemy_VehicleFlying_Enter::Tick_State(_float fTimeDelta)
                 return;
             }
 
-            pBiplane->Set_CurIndex(iCurIndex++); // 다음 경로를 세팅하고
+            pBiplane->Set_CurIndex(iCurIndex + 1); // 다음 경로를 세팅하고
             m_bUpdate = true; // 불변수 제어
         }
     }
@@ -120,7 +120,7 @@ void CState_Enemy_VehicleFlying_Enter::Move(_float fTimeDelta)
         WorldMatrix.r[CTransform::STATE_LOOK] = vLook * vScale.z;
 
         m_pTransformCom->Set_WorldMatrix(WorldMatrix);
-        m_pTransformCom->Move(vLook, m_fMovingSpeed, fTimeDelta);
+        m_pTransformCom->Move(vLook, m_fMovingSpeed + iIndex, fTimeDelta);
     }
 }
 

@@ -41,18 +41,25 @@ HRESULT CGrandprix_Enemy_Ghost2::Initialize(void* pArg)
 
 	m_pRigidBodyCom->Set_Use_Gravity(false);
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(10.f, 0.5f, 30.2f, 1.f));
+	m_bActive = false;
 
 	return S_OK;
 }
 
 void CGrandprix_Enemy_Ghost2::Tick(_float fTimeDelta)
 {
+	if (false == m_bActive)
+		return;
+
 	__super::Tick(fTimeDelta);
 
 }
 
 void CGrandprix_Enemy_Ghost2::LateTick(_float fTimeDelta)
 {
+	if (false == m_bActive)
+		return;
+
 	__super::LateTick(fTimeDelta);
 
 #ifdef DEBUG

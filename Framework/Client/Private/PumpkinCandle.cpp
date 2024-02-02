@@ -7,7 +7,7 @@
 #include "UI_MonsterHP_World.h"
 #include "UIDamage_Manager.h"
 #include "UI_Minimap_Icon.h"
-#include "UIMinimap_Manager.h"
+#include "UI_Manager.h"
 
 #include "Quest_Manager.h"
 
@@ -90,7 +90,7 @@ void CPumpkinCandle::Tick(_float fTimeDelta)
 
 		if (nullptr != m_pMinimapIcon)
 		{
-			if (true == CUIMinimap_Manager::GetInstance()->Is_InMinimap(m_pTransformCom))
+			if (true == CUI_Manager::GetInstance()->Is_InMinimap(m_pTransformCom))
 				m_pMinimapIcon->Set_Active(true);
 			else
 				m_pMinimapIcon->Set_Active(false);

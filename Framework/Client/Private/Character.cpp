@@ -27,7 +27,6 @@
 #include "Camera_Follow.h"
 #include "Kuu.h"
 #include "CurlingGame_Prop.h"
-#include "UIMinimap_Manager.h"
 #include "CurlingGame_Stone.h"
 #include "Particle.h"
 
@@ -200,7 +199,7 @@ void CCharacter::Tick(_float fTimeDelta)
 
 	if (nullptr != m_pMinimapIcon)
 	{
-		if (true == CUIMinimap_Manager::GetInstance()->Is_InMinimap(m_pTransformCom))
+		if (true == CUI_Manager::GetInstance()->Is_InMinimap(m_pTransformCom))
 			m_pMinimapIcon->Set_Active(true);
 		else
 			m_pMinimapIcon->Set_Active(false);

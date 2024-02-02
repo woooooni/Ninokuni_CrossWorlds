@@ -151,6 +151,7 @@
 #include "UI_Dummy_Engineer.h"
 
 #include "TowerDefence_Manager.h"
+#include "Grandprix_Manager.h"
 
 #include "Vehicle_Udadak.h"
 #include "Vehicle_Flying_Biplane.h"
@@ -161,8 +162,8 @@
 #include "Biplane_GuidedMissile.h"
 #include "Biplane_ThunderCloud.h"
 #include "Grandprix_Engineer.h"
-#include "Grandprix_Enemy_HumanFL04.h"
 #include "Grandprix_Enemy_Ghost2.h"
+#include "Grandprix_ItemBox.h"
 
 #include "Respawn_Box.h"
 #include "CurlingGame_Manager.h"
@@ -690,8 +691,10 @@ HRESULT CLoader::Loading_For_Level_Evermore()
 			CBiplane_Thunder_Cloud::Create(m_pDevice, m_pContext), LAYER_TYPE::LAYER_CHARACTER))
 			return E_FAIL;
 
+		if (GI->Add_Prototype(TEXT("Prototype_GameObject_Grandprix_ItemBox"), // 레이어변경 필요함
+			CGrandprix_ItemBox::Create(m_pDevice, m_pContext, TEXT("Grandprix_ItemBox")), LAYER_TYPE::LAYER_ETC))
+			return E_FAIL;
 		
-
 		g_bLevelFirst[LEVEL_EVERMORE] = true;
 	}
 
@@ -1660,8 +1663,10 @@ HRESULT CLoader::Loading_For_TowerDefence()
 		MSG_BOX("Loading_For_TowerDefence Failed.");
 		return E_FAIL;
 	}
-		
-
+	
+//	if (FAILED(CGrandprix_Manager::GetInstance()->Reserve_Manager(m_pDevice, m_pContext)))
+//		return E_FAIL;
+//
 	return S_OK;
 }
 
@@ -2035,16 +2040,16 @@ HRESULT CLoader::Loading_Proto_Vehicles()
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Boto", CModel::TYPE_ANIM, L"../Bin/Export/AnimModel/Vehicle/Boto/", L"Boto")))
 		return E_FAIL;
 
-	// Enemy(임시)
-	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Grandprix_Enemy_HumanFL04",
-		CGrandprix_Enemy_HumanFL04::Create(m_pDevice, m_pContext, TEXT("Grandprix_Enemy_HumanFL04")), LAYER_TYPE::LAYER_ETC)))
-		return E_FAIL;
 	if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_Grandprix_Enemy_Ghost2",
 		CGrandprix_Enemy_Ghost2::Create(m_pDevice, m_pContext, TEXT("Grandprix_Enemy_Ghost2")), LAYER_TYPE::LAYER_ETC)))
 		return E_FAIL;
 	
 	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Biplane_GuidedMissile", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/MiniGame/Missile/", L"Biplane_GuidedMissile")))
 		return E_FAIL;
+
+	if (FAILED(GI->Import_Model_Data(LEVEL_STATIC, L"Prototype_Component_Model_Grandprix_ItemBox", CModel::TYPE_NONANIM, L"../Bin/Export/NonAnimModel/Grandprix/Granprix_ItemBox/", L"Grandprix_ItemBox")))
+		return E_FAIL;
+
 
 	return S_OK;
 }

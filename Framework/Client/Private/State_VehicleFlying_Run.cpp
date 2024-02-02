@@ -39,6 +39,7 @@ void CState_VehicleFlying_Run::Tick_State(_float fTimeDelta)
 {
 	_bool bMove = false;
 
+	// Skills
 	if (KEY_TAP(KEY::NUM_1))
 	{
 		CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_TEMP1);
@@ -47,7 +48,7 @@ void CState_VehicleFlying_Run::Tick_State(_float fTimeDelta)
 	}
 	if (KEY_TAP(KEY::NUM_2))
 	{
-		m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_RUSH);
+		m_pStateMachineCom->Change_State(CVehicle::VEHICLE_RUSH);
 		CSkill_Manager::GetInstance()->Use_Skill(CHARACTER_TYPE::SWORD_MAN, SKILL_TYPE::FLYING_TEMP2);
 		CUIMinigame_Manager::GetInstance()->Use_GrandprixSkill(SKILL_TYPE::FLYING_TEMP2);
 		return;
@@ -165,8 +166,6 @@ void CState_VehicleFlying_Run::Tick_State(_float fTimeDelta)
 //		return;
 //	}
 
-	// Skills
-	
 
 	if (!bMove)
 	{

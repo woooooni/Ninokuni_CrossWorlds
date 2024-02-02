@@ -122,10 +122,10 @@ HRESULT CVehicle_Flying::Ready_Routes()
 	{
 		// 엔지니어 Start Route
 		m_RoutePoints.reserve(4); // y값 수정할 것
-		m_RoutePoints.push_back({ 0.12f, -0.09f, 30.2f, 1.f });
-		m_RoutePoints.push_back({ 1.2f, 5.7f, 49.f, 1.f });
-		m_RoutePoints.push_back({ 2.8f, 10.f, 70.f, 1.f });
-		m_RoutePoints.push_back({ 0.1f, 10.f, 105.f, 1.f });
+		m_RoutePoints.push_back({ 0.1f, 4.f, 30.2f, 1.f });
+		m_RoutePoints.push_back({ 0.1f, 10.f, 49.f, 1.f }); // 19
+		m_RoutePoints.push_back({ 0.1f, 14.f, 70.f, 1.f }); // 20
+		m_RoutePoints.push_back({ 0.1f, 19.f, 105.f, 1.f }); // 35
 
 		m_iRouteIndex = 0;
 	}

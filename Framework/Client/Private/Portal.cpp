@@ -9,7 +9,7 @@
 #include "Player.h"
 
 #include "UI_Minimap_Icon.h"
-#include "UIMinimap_Manager.h"
+#include "UI_Manager.h"
 
 
 CPortal::CPortal(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
@@ -74,7 +74,7 @@ void CPortal::Tick(_float fTimeDelta)
 
 	if (nullptr != m_pMinimapIcon)
 	{
-		if (true == CUIMinimap_Manager::GetInstance()->Is_InMinimap(m_pTransformCom))
+		if (true == CUI_Manager::GetInstance()->Is_InMinimap(m_pTransformCom))
 			m_pMinimapIcon->Set_Active(true);
 		else
 			m_pMinimapIcon->Set_Active(false);

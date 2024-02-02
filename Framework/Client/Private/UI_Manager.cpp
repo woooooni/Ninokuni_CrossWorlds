@@ -658,9 +658,15 @@ HRESULT CUI_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11DeviceContext*
 	Safe_AddRef(m_pDevice);
 	Safe_AddRef(m_pContext);
 
+	CComponent* pRenderer = nullptr;
+	pRenderer = GI->Clone_Component(LEVELID::LEVEL_STATIC, TEXT("Prototype_Component_Renderer"));
+	if (nullptr == pRenderer)
+		return E_FAIL;
+
+	m_pRendererCom = dynamic_cast<CRenderer*>(pRenderer);
+	if (nullptr == m_pRendererCom)
+		return E_FAIL;
 	
-
-
 	return S_OK;
 }
 
@@ -4440,6 +4446,8 @@ HRESULT CUI_Manager::Ready_GameObjectToLayer(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(m_pRecommend);
 
+	m_bBossActive = true;
+
 	return S_OK;
 }
 
@@ -4451,7 +4459,6 @@ HRESULT CUI_Manager::Ready_BossHPBar(CBoss* pBoss, void* pArg)
 	m_pBossInfo->Set_Owner(pBoss);
 	m_pBossHPBar->Set_Owner(pBoss);
 
-	m_bBossActive = true;
 	OnOff_BossHP(true);
 
 	return S_OK;
@@ -5255,6 +5262,49 @@ void CUI_Manager::Update_IceVignette()
 		return;
 
 	m_pIceVignette->Decrease_TextureIndex();
+}
+
+_bool CUI_Manager::Is_InMinimap(CTransform* pTransform)
+{
+	if (nullptr == pTransform)
+		return false;
+
+	_float2 vScreenPos = Calculate_PositionForMinimap(pTransform);
+	if (vScreenPos.x == 99999.f && vScreenPos.y == 99999.f)
+		return false;
+
+	return true;
+}
+
+_float2 CUI_Manager::Calculate_PositionForMinimap(CTransform* pTransform)
+{
+	if (nullptr == pTransform)
+		return _float2(99999.f, 99999.f);
+
+	_vector vPosition = pTransform->Get_State(CTransform::STATE_POSITION);
+
+	_matrix matWorld = XMLoadFloat4x4(&pTransform->Get_WorldFloat4x4());
+	_matrix matView = XMLoadFloat4x4(&m_pRendererCom->Get_MinimapView());
+	_matrix matProj = XMLoadFloat4x4(&m_pRendererCom->Get_MinimapProj());
+
+	_float4x4 matWindow;
+	XMStoreFloat4x4(&matWindow, matWorld * matView * matProj);
+
+	_float3 vWindowPos = *(_float3*)&matWindow.m[3][0];
+
+	vWindowPos.x /= vWindowPos.z;
+	vWindowPos.y /= vWindowPos.z;
+	_float fScreenX = vWindowPos.x * g_iWinSizeX * 0.5f + (g_iWinSizeX * 0.5f);
+	_float fScreenY = vWindowPos.y * -(g_iWinSizeY * 0.5f) + (g_iWinSizeY * 0.5f);
+
+	if (0.f > fScreenX || _float(g_iWinSizeX) < fScreenX)
+		return _float2(99999.f, 99999.f);
+
+	if (0.f > fScreenY || _float(g_iWinSizeY) < fScreenY)
+		return _float2(99999.f, 99999.f);
+
+	// 만약에 스크린좌표에 모두 있다면 그려야할 대상이다.
+	return _float2(fScreenX, fScreenY);
 }
 
 void CUI_Manager::Update_SettingButton(_uint iGroupType)
@@ -9437,6 +9487,7 @@ void CUI_Manager::Free()
 		Safe_Release(pPopup);
 	m_ItemPopup.clear();
 
+	Safe_Release(m_pRendererCom);
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
 }

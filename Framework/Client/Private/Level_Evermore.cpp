@@ -34,6 +34,7 @@
 #include "Particle_Manager.h"
 #include "Riding_Manager.h"
 #include "Inventory_Manager.h"
+#include "Grandprix_Manager.h"
 
 _bool CLevel_Evermore::g_bFirstEnter = false;
 
@@ -134,6 +135,7 @@ HRESULT CLevel_Evermore::Tick(_float fTimeDelta)
 	CUI_Manager::GetInstance()->Tick_Fade(fTimeDelta);
 	CUI_Manager::GetInstance()->Tick_UIs(LEVELID::LEVEL_EVERMORE, fTimeDelta);
 	CUIMinigame_Manager::GetInstance()->Tick_Minigame(LEVELID::LEVEL_EVERMORE, fTimeDelta);
+//	CGrandprix_Manager::GetInstance()->Tick(fTimeDelta);
 
 	// TestCode
 //	if (KEY_TAP(KEY::P))
@@ -174,6 +176,7 @@ HRESULT CLevel_Evermore::LateTick(_float fTimeDelta)
 	CUI_Manager::GetInstance()->LateTick_Fade(fTimeDelta);
 	CUI_Manager::GetInstance()->LateTick_GamePlayLevel(fTimeDelta);
 	CUIMinigame_Manager::GetInstance()->LateTick_Minigame(LEVELID::LEVEL_EVERMORE, fTimeDelta);
+//	CGrandprix_Manager::GetInstance()->LateTick(fTimeDelta);
 
 	return S_OK;
 }
@@ -304,6 +307,9 @@ HRESULT CLevel_Evermore::Ready_Layer_Character(const LAYER_TYPE eLayerType)
 	{
 		if (FAILED(CRiding_Manager::GetInstance()->Ready_Vehicle_GameObjectToLayer(LEVELID::LEVEL_EVERMORE)))
 			return E_FAIL;
+
+//		if (FAILED(CGrandprix_Manager::GetInstance()->Ready_Grandprix_GameObjectToLayer(LEVELID::LEVEL_EVERMORE)))
+//			return E_FAIL;
 	}
 
 	return S_OK;

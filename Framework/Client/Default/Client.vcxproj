@@ -283,7 +283,8 @@
     <ClInclude Include="..\Public\Enemy_Biplane_Bullet.h" />
     <ClInclude Include="..\Public\Grandprix_Enemy.h" />
     <ClInclude Include="..\Public\Grandprix_Enemy_Ghost2.h" />
-    <ClInclude Include="..\Public\Grandprix_Enemy_HumanFL04.h" />
+    <ClInclude Include="..\Public\Grandprix_ItemBox.h" />
+    <ClInclude Include="..\Public\Grandprix_Manager.h" />
     <ClInclude Include="..\Public\State_Enemy.h" />
     <ClInclude Include="..\Public\State_Enemy_Flying_Run.h" />
     <ClInclude Include="..\Public\State_Enemy_Flying_RunStart.h" />
@@ -867,7 +868,6 @@
     <ClInclude Include="..\Public\Trigger.h" />
     <ClInclude Include="..\Public\UIDamage_Manager.h" />
     <ClInclude Include="..\Public\UIMinigame_Manager.h" />
-    <ClInclude Include="..\Public\UIMinimap_Manager.h" />
     <ClInclude Include="..\Public\UI_AddItem.h" />
     <ClInclude Include="..\Public\UI_Announced.h" />
     <ClInclude Include="..\Public\UI_BossHP_Background.h" />
@@ -1272,7 +1272,8 @@
     <ClCompile Include="..\Private\Enemy_Biplane_Bullet.cpp" />
     <ClCompile Include="..\Private\Grandprix_Enemy.cpp" />
     <ClCompile Include="..\Private\Grandprix_Enemy_Ghost2.cpp" />
-    <ClCompile Include="..\Private\Grandprix_Enemy_HumanFL04.cpp" />
+    <ClCompile Include="..\Private\Grandprix_ItemBox.cpp" />
+    <ClCompile Include="..\Private\Grandprix_Manager.cpp" />
     <ClCompile Include="..\Private\State_Enemy.cpp" />
     <ClCompile Include="..\Private\State_Enemy_Flying_Run.cpp" />
     <ClCompile Include="..\Private\State_Enemy_Flying_RunStart.cpp" />
@@ -1856,7 +1857,6 @@
     <ClCompile Include="..\Private\Trigger.cpp" />
     <ClCompile Include="..\Private\UIDamage_Manager.cpp" />
     <ClCompile Include="..\Private\UIMinigame_Manager.cpp" />
-    <ClCompile Include="..\Private\UIMinimap_Manager.cpp" />
     <ClCompile Include="..\Private\UI_AddItem.cpp" />
     <ClCompile Include="..\Private\UI_Announced.cpp" />
     <ClCompile Include="..\Private\UI_BossHP_Background.cpp" />

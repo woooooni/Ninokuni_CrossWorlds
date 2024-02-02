@@ -113,6 +113,10 @@ public:
 	void	Render_Fade();
 	_bool	Is_FadeFinished();
 
+public: // MinimapManager 이사
+	_bool		Is_InMinimap(class CTransform* pTransform);
+	_float2		Calculate_PositionForMinimap(class CTransform* pTransform);
+
 public:
 	void	Update_SetNickname(const wstring& strNickname, _bool bUpdate = true);
 	void	Update_LobbyBtnState(_uint iIndex);
@@ -366,6 +370,10 @@ private:
 private:
 	ID3D11Device*			m_pDevice = { nullptr };
 	ID3D11DeviceContext*	m_pContext = { nullptr };
+
+	// Minimap Manager 이사
+private:
+	CRenderer* m_pRendererCom = { nullptr };
 
 private:
 	HRESULT		Ready_UIStaticPrototypes();
