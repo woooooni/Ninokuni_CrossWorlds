@@ -9,7 +9,7 @@ BEGIN(Client)
 
 class CCamera_CurlingGame final : public CCamera
 {
-
+private:
 	typedef struct tagTargetDesc
 	{
 		_bool			bChangingTarget = false;
@@ -23,11 +23,12 @@ class CCamera_CurlingGame final : public CCamera
 		_bool			bActive = false;
 		Vec4			vCurPos;
 		Vec4			vTargetPos;
-		const _float	fDampingCoefficient = 0.025f;
+		const _float	fDampingCoefficient = 0.01f;
 
-		/* Fov */
-		const _float	fDampingFov		= XMConvertToRadians(50.f);
-		const _float	fFovLerpTime	= 0.5f;
+		/* Offset, Fov */
+		const _float	fOffsetLerpTime		= 1.5f;
+		_bool			bLerpOffset			= false;
+		const _float	fCheckThreshold		= 2.f;
 
 		void Ready(const Vec4& _vCurPos)
 		{
@@ -35,10 +36,12 @@ class CCamera_CurlingGame final : public CCamera
 			vCurPos = vTargetPos = _vCurPos;
 		}
 
-		/*void Clear()
+		void Clear()
 		{
 			bActive = false;
-		}*/
+
+			bLerpOffset = false;
+		}
 
 	}DAMPING_DESC;
 
@@ -67,9 +70,10 @@ public:
 	const _bool& Is_ChagingTarget() const { return m_tTargetDesc.bChangingTarget; }
 
 	/* Damping */
-	HRESULT Start_Damping();
-	HRESULT Finish_Damping();
-	const _bool& Is_Damping() const { return m_tDampingDesc.bActive; }
+	HRESULT Start_StoneAction();
+	HRESULT Finish_StoneAction(const _float& fLerpTime);
+	const _bool& Is_StoneAction() const { return m_tDampingDesc.bActive; }
+	void Check_StoneAction();
 
 private:
 	virtual HRESULT Ready_Components() override;

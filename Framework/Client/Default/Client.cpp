@@ -22,6 +22,7 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
 _uint g_eStartLevel = 0;
 _uint g_ePlayCharacter = 0;
 _uint g_eLoadCharacter = 0;
+_uint g_iStartQuestLevel = 0;
 
 // 이 코드 모듈에 들어 있는 함수의 정방향 선언입니다.
 ATOM                MyRegisterClass(HINSTANCE hInstance);

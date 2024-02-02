@@ -13,11 +13,15 @@
 #include "Player.h"
 #include "Character.h"
 
+#include "Animation.h"
+
 #include "State_CurlingGame_Intro.h"
 #include "State_CurlingGame_Move_Character.h"
 #include "State_CurlingGame_Choose_Direction.h"
 #include "State_CurlingGame_Adjust_Intensity.h"
 #include "State_CurlingGame_Launch_Stone.h"
+
+using Ray = DirectX::SimpleMath::Ray;
 
 IMPLEMENT_SINGLETON(CCurlingGame_Manager)
 
@@ -43,6 +47,9 @@ HRESULT CCurlingGame_Manager::Reserve_Manager(ID3D11Device* pDevice, ID3D11Devic
 		return E_FAIL;
 
 	if (FAILED(Ready_Objects()))
+		return E_FAIL;
+
+	if (FAILED(Ready_AiPathQueue()))
 		return E_FAIL;
 
 #ifdef _DEBUG
@@ -164,6 +171,29 @@ HRESULT CCurlingGame_Manager::Ready_Objects()
 				CCurlingGame_Arrow::Create(m_pDevice, m_pContext, TEXT("CurlingGame_Arrow")), LAYER_TYPE::LAYER_PROP)))
 				return E_FAIL;
 		}
+
+		/* DeadZone */
+		{
+			CGameObject* pClone = nullptr;
+
+			if (FAILED(GI->Add_Prototype(L"Prorotype_GameObject_CurlingGame_DeadZone",
+				CCurlingGame_DeadZone::Create(m_pDevice, m_pContext, TEXT("CurlingGame_DeadZone")), LAYER_TYPE::LAYER_PROP)))
+				return E_FAIL;
+
+			if (FAILED(GI->Add_GameObject(LEVELID::LEVEL_ICELAND, LAYER_TYPE::LAYER_PROP, TEXT("Prorotype_GameObject_CurlingGame_DeadZone"), nullptr, &pClone)))
+				return E_FAIL;
+
+			/* Transfrom */
+			{
+				CTransform* pTransform = pClone->Get_Component_Transform();
+				pTransform->Set_Position(m_tStandardDesc.vGoalPosition);
+
+				const Vec4 vPos		= m_tStandardDesc.vGoalPosition + m_tStandardDesc.vStartLook * 13.f;
+				const Vec4 vLookAt	= m_tStandardDesc.vGoalPosition + m_tStandardDesc.vStartLook * 5.f;
+				pTransform->LookAt_ForLandObject(vLookAt);
+				pTransform->Set_Position(vPos);
+			}
+		}
 	}
 
 	/* Wall */
@@ -215,7 +245,7 @@ HRESULT CCurlingGame_Manager::Ready_Objects()
 			pWallTransform->Set_State(CTransform::STATE_POSITION, vPos);
 			pWallTransform->LookAt_ForLandObject(vLookAt.OneW());
 			pWallTransform->Set_State(CTransform::STATE_POSITION, Vec4(vPos + Vec4(pWallTransform->Get_Right() * -5.5f)).OneW());
-			vNormal = Vec3(pWallTransform->Get_Look()).ZeroY().Normalized() * -1.f;
+			vNormal = Vec3(pWallTransform->Get_Look()).ZeroY().Normalized();
 		}
 
 		pWall->Set_Normal(vNormal);
@@ -228,68 +258,356 @@ HRESULT CCurlingGame_Manager::Ready_Objects()
 	return S_OK;
 }
 
-
-void CCurlingGame_Manager::Tick_Score()
+HRESULT CCurlingGame_Manager::Ready_AiPathQueue()
 {
-	/* 발사된 모든 스톤이 정지된 상태라면 점수를 갱신한다. */
-	//for (auto& pBarrel : m_pBarrelsLaunched)
-	//{
-	//	if (nullptr == pBarrel)
-	//		continue;
-	//
-	//	if (pBarrel->Is_Moving())
-	//		return;
-	//}
-
-	_uint iScores[PARTICIPANT_TYPE::PARTICIPANT_TYPEEND] = { 0, 0 };
-
-	for (auto& pBarrel : m_pBarrelsLaunched)
+	/* 큐가 차있다면 비운다. */
+	while (!m_tAiPathQueue.empty())
+		m_tAiPathQueue.pop();
+	
+	/* 큐를 채운다. */
 	{
-		/* Exception */
-		if (nullptr == pBarrel || pBarrel->Is_Outted())
-			continue;
+		m_tAiPathQueue.push(AI_PATH_DESC(
+			0.81f,
+			Vec4(-109.064f, -3.4, 226.065f, 1.f),
+			Vec4(-0.9343f, 0.f, -0.3562f, 0.f).Normalized()));
 
-		/* Calculate Point */
-		_int iPoint = 0;
+		m_tAiPathQueue.push(AI_PATH_DESC(
+			0.75f,
+			Vec4(-109.7575f, -3.4, 224.1645f, 1.f),
+			Vec4(-0.7464f, 0.f, 0.6654f, 0.f).Normalized()));
+
+		m_tAiPathQueue.push(AI_PATH_DESC(
+			0.73f,
+			Vec4(-110.1323f, -3.4, 223.54f, 1.f),
+			Vec4(-0.9881f, 0.f, -0.153f, 0.f).Normalized()));
+
+		m_tAiPathQueue.push(AI_PATH_DESC(
+			0.7f,
+			Vec4(-109.44f, -3.4, 229.5521f, 1.f),
+			Vec4(-0.8086f, 0.f, 0.5882f, 0.f).Normalized()));
+
+		m_tAiPathQueue.push(AI_PATH_DESC(
+			0.74f,
+			Vec4(-109.7352f, -3.4, 229.9734f, 1.f),
+			Vec4(-0.9417f, 0.f, -0.3362f, 0.f).Normalized()));
+
+		m_tAiPathQueue.push(AI_PATH_DESC(
+			0.76f,
+			Vec4(-109.95f, -3.4, 226.9316f, 1.f),
+			Vec4(-0.9654f, 0.f, -0.2606f, 0.f).Normalized()));
+
+		m_tAiPathQueue.push(AI_PATH_DESC(
+			0.805f,
+			Vec4(-110.6f, -3.4, 221.8f, 1.f),
+			Vec4(-0.9595f, 0.f, -0.2814f, 0.f).Normalized()));
+
+		m_tAiPathQueue.push(AI_PATH_DESC(
+			0.79f,
+			Vec4(-110.77f, -3.4, 222.399f, 1.f),
+			Vec4(-0.968f, 0.f, -0.2487f, 0.f).Normalized()));
+
+		m_tAiPathQueue.push(AI_PATH_DESC(
+			0.75f,
+			Vec4(-108.249f, -3.4, 229.9198f, 1.f),
+			Vec4(-0.7858f, 0.f, 0.6183f, 0.f).Normalized()));
+
+		m_tAiPathQueue.push(AI_PATH_DESC(
+			0.75f,
+			Vec4(-110.44f, -3.4, 225.0506f, 1.f),
+			Vec4(-0.804f, 0.f, 0.5941f, 0.f).Normalized()));
+	}
+
+	/* 큐를 섞는다. */
+	{
+		vector<AI_PATH_DESC> tempVector;
+
+		while (!m_tAiPathQueue.empty())
 		{
-			const _float fDistance = Vec3::Distance(pBarrel->Get_Transform()->Get_Position(), m_tStandardDesc.vGoalPosition);
-			
-			if (fDistance <= m_tStandardDesc.fRingScalesForDetection[STANDARD_DESC::RING_TYPE::FIRST])
-			{
-				iPoint = m_tStandardDesc.iPoints[STANDARD_DESC::RING_TYPE::FIRST];
-			}
-			else if (m_tStandardDesc.fRingScalesForDetection[STANDARD_DESC::RING_TYPE::FIRST] <= fDistance
-				&& fDistance < m_tStandardDesc.fRingScalesForDetection[STANDARD_DESC::RING_TYPE::SECOND])
-			{
-				iPoint = m_tStandardDesc.iPoints[STANDARD_DESC::RING_TYPE::SECOND];
-			}
-			else if (m_tStandardDesc.fRingScalesForDetection[STANDARD_DESC::RING_TYPE::SECOND] <= fDistance
-				&& fDistance < m_tStandardDesc.fRingScalesForDetection[STANDARD_DESC::RING_TYPE::THIRD])
-			{
-				iPoint = m_tStandardDesc.iPoints[STANDARD_DESC::RING_TYPE::THIRD];
-			}
+			tempVector.push_back(m_tAiPathQueue.front());
+			m_tAiPathQueue.pop();
 		}
 
-		/* Accumulate */
-		switch (pBarrel->Get_StoneType())
+		shuffle(tempVector.begin(), tempVector.end(), std::mt19937(std::random_device()()));
+
+		for (const auto& element : tempVector) 
 		{
-		case CCurlingGame_Stone::STONE_TYPE::BARREL:
-		{
-			iScores[PARTICIPANT_PLAYER] += iPoint;
-		}
-		break;
-		case CCurlingGame_Stone::STONE_TYPE::POT:
-		{
-			iScores[PARTICIPANT_NPC] += iPoint;
-		}
-		break;
-		default:
-			break;
+			m_tAiPathQueue.push(element);
 		}
 	}
 
-	m_tParticipants[PARTICIPANT_PLAYER].iScore = iScores[PARTICIPANT_PLAYER];
-	m_tParticipants[PARTICIPANT_NPC].iScore = iScores[PARTICIPANT_NPC];
+
+	/* 델타 세팅 */
+	const Vec3		vRight = Vec3(XMVector3Cross(Vec3::UnitY, m_tStandardDesc.vStartLook)).ZeroY().Normalized();
+	const _float	fDelta = 1.5f;
+
+	m_StartPointDeltas.push_back(Vec3::Zero);
+	m_StartPointDeltas.push_back(vRight * fDelta * 1.f);
+	m_StartPointDeltas.push_back(vRight * fDelta * -1.f);
+	m_StartPointDeltas.push_back(vRight * fDelta * 2.f);
+	m_StartPointDeltas.push_back(vRight * fDelta * -2.f);
+	m_StartPointDeltas.push_back(vRight * fDelta * 3.f);
+	m_StartPointDeltas.push_back(vRight * fDelta * -3.f);
+	
+
+	
+	return S_OK;
+}
+
+HRESULT CCurlingGame_Manager::Change_Turn()
+{
+	CGameObject* pClone = nullptr;
+	CCurlingGame_Stone::STONE_INIT_DESC tStoneInitDesc;
+
+	m_pCurStone = nullptr;
+
+	/* Inverse Turn*/
+	m_bPlayerTurn = !m_bPlayerTurn; // true;
+	{
+		if (m_bPlayerTurn)
+		{
+			m_pCurParticipant = m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].pOwner;
+			m_pPrevParticipant = m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].pOwner;
+		}
+		else
+		{
+			m_pCurParticipant = m_tParticipants[CCurlingGame_Manager::PARTICIPANT_NPC].pOwner;
+			m_pPrevParticipant = m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].pOwner;
+		}
+	}
+
+	/* 스톤 생성 */
+	{
+		if (m_bPlayerTurn)
+			tStoneInitDesc.eStoneType = CCurlingGame_Stone::STONE_TYPE::BARREL;
+		else
+			tStoneInitDesc.eStoneType = CCurlingGame_Stone::STONE_TYPE::POT;
+
+		if (FAILED(GI->Add_GameObject(GI->Get_CurrentLevel(), LAYER_TYPE::LAYER_PROP,
+			TEXT("Prorotype_GameObject_CurlingGame_Stone"), &tStoneInitDesc, &pClone)))
+			return E_FAIL;
+
+		m_pCurStone = dynamic_cast<CCurlingGame_Stone*>(pClone);
+		if (nullptr == m_pCurStone)
+			return E_FAIL;
+	}
+
+	/* 다음 턴 플레이어 설정 */
+	if(nullptr != m_pCurParticipant)
+	{
+		/* 트랜스폼 설정 */
+		{
+			const Vec4 vPos = Vec4(m_tStandardDesc.vStartLinePosition + (m_tStandardDesc.vStartLook * -5.f)).OneW();
+
+			m_pCurParticipant->Get_Component_Transform()->Set_Position(vPos);
+			m_pCurParticipant->Get_Component_Transform()->LookAt_ForLandObject(m_tStandardDesc.vGoalPosition);
+		}
+
+		/* 애니메이션 설정 */
+		if (m_bPlayerTurn)
+		{
+			CCharacter* pCharacter = dynamic_cast<CCharacter*>(m_pCurParticipant);
+			if (nullptr != pCharacter)
+			{
+				pCharacter->Set_Target(m_pCurStone);
+
+				pCharacter->Set_Move_Input(true);
+
+				pCharacter->Get_Component_Model()->Set_CanChangeAnimation(true);
+
+				if (FAILED(pCharacter->Get_Component_StateMachine()->Change_State(CCharacter::NEUTRAL_PICK_LARGE_IDLE)))
+					return E_FAIL;
+			}
+		}
+		else
+		{
+			CModel* pModelCom = m_pCurParticipant->Get_Component_Model();
+			if (nullptr != pModelCom)
+			{
+				pModelCom->Set_CanChangeAnimation(true);
+				{
+					pModelCom->Set_Animation(L"SKM_Destroyer_Merge.ao|Destroyer_PickStandL", MIN_TWEEN_DURATION);
+					CAnimation* pAnim = pModelCom->Get_Animation("SKM_Destroyer_Merge.ao|Destroyer_PickStandL");
+					if (nullptr != pAnim)
+						pAnim->Set_Loop(true);
+				}
+				pModelCom->Set_CanChangeAnimation(false);
+			}
+		}
+	}
+
+	/* 이전 턴 플레이어 설정 */
+	if(nullptr != m_pPrevParticipant)
+	{
+		/* 트랜스폼 설정 */
+		{
+			_float fDeltaX = 9.f; // 원래 3
+			const Vec4 vPos = Vec4(m_tStandardDesc.vStartLinePosition + (m_tStandardDesc.vStartLook * -6.f)).OneW();
+
+			if (m_bPlayerTurn)
+				fDeltaX *= -1.f;
+
+			m_pPrevParticipant->Get_Component_Transform()->Set_Position(vPos);
+			m_pPrevParticipant->Get_Component_Transform()->LookAt_ForLandObject(m_tStandardDesc.vGoalPosition);
+
+			const Vec4 vOffset = m_pPrevParticipant->Get_Component_Transform()->Get_RelativeOffset(Vec4{ fDeltaX, 0.f, 0.f, 1.f }).ZeroW();
+			m_pPrevParticipant->Get_Component_Transform()->Set_Position(vPos + vOffset);
+		}
+
+		/* 애니메이션 설정 */
+		{
+			m_pPrevParticipant->Get_Component_Model()->Set_CanChangeAnimation(true);
+			if (m_bPlayerTurn)
+			{
+				m_pPrevParticipant->Get_Component_Model()->Set_Animation(L"SKM_Destroyer_Merge.ao|Destroyer_ChairSitLoop", MIN_TWEEN_DURATION);
+				CAnimation* pAnim = m_pPrevParticipant->Get_Component_Model()->Get_Animation("SKM_Destroyer_Merge.ao|Destroyer_ChairSitLoop");
+				if (nullptr != pAnim)
+					pAnim->Set_Loop(true);
+			}
+			else
+			{
+				m_pPrevParticipant = m_tParticipants[CCurlingGame_Manager::PARTICIPANT_PLAYER].pOwner;
+				m_pPrevParticipant->Get_Component_Model()->Set_Animation(L"SKM_Swordsman_Merge.ao|Swordsman_ChairSitLoop", MIN_TWEEN_DURATION);
+				CAnimation* pAnim = m_pPrevParticipant->Get_Component_Model()->Get_Animation("SKM_Swordsman_Merge.ao|Swordsman_ChairSitLoop");
+				if (nullptr != pAnim)
+					pAnim->Set_Loop(true);
+			}
+			m_pPrevParticipant->Get_Component_Model()->Set_CanChangeAnimation(false);
+		}
+	}
+
+	if (nullptr == m_pCurStone || nullptr == m_pCurParticipant)
+		return E_FAIL;
+
+	return S_OK;
+}
+
+HRESULT CCurlingGame_Manager::Set_AiPath()
+{
+	memcpy(&m_tPrevAiPath, &m_tCurAiPath, sizeof(AI_PATH_DESC));
+	ZeroMemory(&m_tCurAiPath, sizeof(AI_PATH_DESC));
+
+	/* 스타팅 포인트 6개 잡아서 충돌 스톤 없으면 그대로 발사 */
+	{
+		/* Create Start Points */
+		vector<Vec4>	StartPoints;
+		const Vec3		vCenterPos	= m_tStandardDesc.vStartLinePosition + m_tStandardDesc.vStartLook * -3.f;
+		const Vec3		vRight		= Vec3(XMVector3Cross(Vec3::UnitY, m_tStandardDesc.vStartLook)).ZeroY().Normalized();
+		const _float	fDelta		= 1.5f;
+
+
+		Vec3 vStartPos = {}, vTargetPos = {};
+		const Vec3 vWidthDelta = (vRight * 0.5f).ZeroY(); // 원래 0.5이고, 밑에 레이 레프트 라이트 디렉션에 델타 * 0.5 해줘야 한다.
+
+		/* 이전과 같은 델타 방지 */
+		for (auto& vDelta : m_StartPointDeltas)
+		{
+			vDelta *= -1.f;
+		}
+
+
+		for (const auto& vDelta : m_StartPointDeltas)
+		{
+			Ray rayCenter, rayLeft, rayRight;
+
+			/* Center */
+			{
+				rayCenter.position = vCenterPos + vDelta;
+				rayCenter.direction = Vec3((m_tStandardDesc.vGoalPosition + vDelta * 0.5f) - rayCenter.position).ZeroY().Normalized();
+			}
+
+			/* Left */
+			{
+				rayLeft.position = vCenterPos + vDelta - vWidthDelta;
+				rayLeft.direction = Vec3((m_tStandardDesc.vGoalPosition + vDelta * 0.5f - vWidthDelta) - rayLeft.position).ZeroY().Normalized();
+
+			}
+
+			/* Right */
+			{
+				rayRight.position = vCenterPos + vDelta + vWidthDelta;
+				rayRight.direction = Vec3((m_tStandardDesc.vGoalPosition + vDelta * 0.5f + vWidthDelta) - rayRight.position).ZeroY().Normalized();
+			}
+
+			_bool bCollision = false;
+
+			/* 일 레이, 다 스톤 충돌 검사 */
+			for (const auto& pStone : m_pStonesLaunched)
+			{
+				if (nullptr == pStone || pStone->Is_Outted() || !pStone->Is_Active())
+					continue;
+
+				CCollider_Sphere* pSphereCollider = dynamic_cast<CCollider_Sphere*>(pStone->Get_Collider(CCollider::DETECTION_TYPE::BODY).front());
+				if (nullptr == pSphereCollider)
+					continue;
+
+				/* Check Collision */
+				{
+					_float fDist = 0.f;
+
+					if (rayLeft.Intersects(pSphereCollider->Get_Sphere(), fDist))
+					{
+						const _float fMaxDist = Vec4(m_tStandardDesc.vGoalPosition - Vec4(rayLeft.position)).Length();
+						if (fDist < fMaxDist)
+						{
+							bCollision = true;
+							break;
+						}
+					}
+					
+					if (rayRight.Intersects(pSphereCollider->Get_Sphere(), fDist))
+					{
+						const _float fMaxDist = Vec4(m_tStandardDesc.vGoalPosition - Vec4(rayRight.position)).Length();
+						if (fDist < fMaxDist)
+						{
+							bCollision = true;
+							break;
+						}
+					}
+
+					if (rayCenter.Intersects(pSphereCollider->Get_Sphere(), fDist))
+					{
+						const _float fMaxDist = Vec4(m_tStandardDesc.vGoalPosition - Vec4(rayCenter.position)).Length();
+						if (fDist < fMaxDist)
+						{
+							bCollision = true;
+							break;
+						}
+					}
+				}
+
+			}
+
+			/* None Collision */
+			if(!bCollision)
+			{
+				m_tCurAiPath.fPower = 0.55f;
+				m_tCurAiPath.vStartPoint = Vec4(rayCenter.position).OneW();
+				m_tCurAiPath.vLaunchDir = Vec4(rayCenter.direction).ZeroW();
+
+				if (AI_PATH_DESC::Equal(m_tPrevAiPath, m_tCurAiPath))
+				{
+					continue;
+				}
+
+				return S_OK;
+			}
+		}
+	}
+
+	/* 있으면 저장된 경로로 발사 */
+	do
+	{
+		if (m_tAiPathQueue.empty())
+			Ready_AiPathQueue();
+
+		AI_PATH_DESC tPahtDesc = m_tAiPathQueue.front();
+		m_tAiPathQueue.pop();
+
+		memcpy(&m_tCurAiPath, &tPahtDesc, sizeof(AI_PATH_DESC));
+
+	} while (AI_PATH_DESC::Equal(m_tPrevAiPath, m_tCurAiPath));
+
+	return S_OK;
 }
 
 void CCurlingGame_Manager::Test(const _float& fTimeDelta)
@@ -339,6 +657,42 @@ void CCurlingGame_Manager::Debug()
 			desc.vColor = (Vec4)DirectX::Colors::DarkGreen;
 		}
 		pRenderer->Add_Text(desc);
+	}
+
+	/* Transform */
+	{
+		if (nullptr != m_pCurParticipant)
+		{
+			/* Pos */
+			{
+				vPos += vDelta;
+
+				Vec3 vPlayerPos = m_pCurParticipant->Get_Component_Transform()->Get_Position();
+			
+				desc.strText = L"Pos - x : " + to_wstring(vPlayerPos.x) 
+								+ L", y : " + to_wstring(vPlayerPos.y) 
+								+ L", z : " + to_wstring(vPlayerPos.z);
+			
+				desc.vPosition = vPos;
+				desc.vColor = (Vec4)DirectX::Colors::Black;
+			}
+			pRenderer->Add_Text(desc);
+
+			/* Look */
+			{
+				vPos += vDelta;
+
+				Vec3 vLook = m_vCurStoneLook;
+			
+				desc.strText = L"Look - x : " + to_wstring(vLook.x)
+								+ L", y : " + to_wstring(vLook.y)
+								+ L", z : " + to_wstring(vLook.z);
+
+				desc.vPosition = vPos;
+				desc.vColor = (Vec4)DirectX::Colors::Black;
+			}
+			pRenderer->Add_Text(desc);
+		}
 	}
 }
 #ifdef _DEBUG

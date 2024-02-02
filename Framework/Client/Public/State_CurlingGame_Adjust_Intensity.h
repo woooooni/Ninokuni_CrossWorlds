@@ -13,13 +13,13 @@ class CState_CurlingGame_Adjust_Intensity final : public CState_CurlingGame_Base
 		LERP_FLOAT_DESC		tLerpValue = {};
 		_bool				bIncrease = true;
 
-		const _float		fLerpTime = 1.f;
+		const _float		fLerpTime = 1.5f;
 		const LERP_MODE		eLerpMode = LERP_MODE::EASE_IN;
 
 		const _float		fMinValue = 0.f;
 		const _float		fMaxValue = 1.f;
 
-		const _float		fMaxPower = 60.f;
+		const _float		fMaxPower = 70.f;
 
 		void Start()
 		{

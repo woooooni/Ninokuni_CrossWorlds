@@ -3,6 +3,8 @@
 #include "Client_Defines.h"
 #include "Base.h"
 
+using Ray = SimpleMath::Ray;
+
 BEGIN(Engine)
 class CGameObject;
 class CTransform;
@@ -10,6 +12,7 @@ class CModel;
 END
 
 BEGIN(Client)
+class CCurlingGame_Prop;
 class CCurlingGame_Stone;
 class CManager_StateMachine;
 
@@ -17,9 +20,11 @@ class CCurlingGame_Manager : public CBase
 {
 	DECLARE_SINGLETON(CCurlingGame_Manager)
 
-	enum CURLINGGAME_STATE { INTRO, MOVE, DIRECTION, INTENSITY, LAUNCH, CURLINGGAME_STATE_TYPEEND };
+public:
 	enum PARTICIPANT_TYPE  { PARTICIPANT_PLAYER, PARTICIPANT_NPC, PARTICIPANT_TYPEEND };
 
+private:
+	enum CURLINGGAME_STATE { INTRO, MOVE, DIRECTION, INTENSITY, LAUNCH, CURLINGGAME_STATE_TYPEEND };
 	typedef struct tagStandardDesc
 	{
 		/* Ring, Goal */
@@ -52,8 +57,6 @@ class CCurlingGame_Manager : public CBase
 
 	}STANDARD_DESC;
 
-	
-
 	typedef struct tagStaiumDesc
 	{
 		vector<CGameObject*>	pStadiumObjects;
@@ -70,10 +73,36 @@ class CCurlingGame_Manager : public CBase
 	typedef struct tagParticipantInfoDesc
 	{
 		_uint			iScore		= 0;
-		_uint			iNumStone	= 10;
+		_uint			iNumStone	= 7;
 		CGameObject*	pOwner		= nullptr;
 	
 	}PARTICIPANT_INFO_DESC;
+
+	typedef struct tagAIPathDesc
+	{
+		_float	fPower		= 0.f;
+		Vec4	vLaunchDir	= {};
+		Vec4	vStartPoint = {};
+
+		tagAIPathDesc() {};
+		tagAIPathDesc(const _float& _fPower, const Vec4& _vStartPoint, const Vec4& _vLaunchDir)
+			: fPower(_fPower), vStartPoint(_vStartPoint), vLaunchDir(_vLaunchDir) {}
+
+		static const _bool Equal(const tagAIPathDesc& path1, const tagAIPathDesc& path2)
+		{
+			if (0.01f < (path1.fPower - path2.fPower))
+				return false; 
+			
+			if (0.5f < XMConvertToDegrees(acos(XMVectorGetX(XMVector3Dot(path1.vLaunchDir.xyz(), path2.vLaunchDir.xyz())))))
+				return false;
+
+			if (0.1f < (path1.vStartPoint - path2.vStartPoint).Length())
+				return false;
+			
+			return true;
+		}
+
+	}AI_PATH_DESC;
 
 private:
 	CCurlingGame_Manager();
@@ -87,16 +116,19 @@ public:
 
 public:
 	HRESULT Start_Game();
+	HRESULT Change_Turn();
+	HRESULT Set_AiPath();
+
+	CGameObject* Get_CurParticipant() const { return m_pCurParticipant; }
+	
 
 public:
 	vector<CGameObject*>* Get_Stadium() { return &m_pStadiumObjects; }
 
 private:
-	void Tick_Score();
-
-private:
 	HRESULT Ready_Components();
 	HRESULT Ready_Objects();
+	HRESULT Ready_AiPathQueue();
 
 private:
 	void Test(const _float& fTimeDelta);
@@ -112,19 +144,31 @@ private:
 	_bool					m_bPlaying	= false;
 	CManager_StateMachine*	m_pManagerStateMachineCom = nullptr;
 	
+	/* Data */
 	STANDARD_DESC			m_tStandardDesc = {};	
-	vector<CGameObject*>	m_pStadiumObjects;
-
-	vector<CCurlingGame_Stone*> m_pBarrelsLaunched;
-
-	PARTICIPANT_INFO_DESC	m_tParticipants[PARTICIPANT_TYPE::PARTICIPANT_TYPEEND];
 	
-	CCurlingGame_Stone*		m_pCurStone = nullptr;
+	/* Participant*/
+	PARTICIPANT_INFO_DESC	m_tParticipants[PARTICIPANT_TYPE::PARTICIPANT_TYPEEND];
+	CGameObject*			m_pCurParticipant	= nullptr;
+	CGameObject*			m_pPrevParticipant	= nullptr;
+	
+	/* Stone */
+	CCurlingGame_Stone*		m_pCurStone		= nullptr;
 	Vec4					m_vCurStoneLook = {};
+	vector<CCurlingGame_Stone*> m_pStonesLaunched;
 
 	/* Turn */				
-	_bool					m_bPlayerTurn = true;
+	_bool					m_bPlayerTurn = false;
 
+	/* NPC */
+	queue<AI_PATH_DESC>		m_tAiPathQueue;
+	vector<Vec3>			m_StartPointDeltas;
+	AI_PATH_DESC			m_tCurAiPath;
+	AI_PATH_DESC			m_tPrevAiPath;
+	_bool					m_bPathTurn = false;
+
+	/* Etc */
+	vector<CGameObject*>	m_pStadiumObjects;
 
 #ifdef _DEBUG
 	const _bool	m_bDebugRender						= false;

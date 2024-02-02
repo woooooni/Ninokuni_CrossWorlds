@@ -7,6 +7,8 @@
 #include "Game_Manager.h"
 #include "Player.h"
 
+#include "CurlingGame_Group.h"
+
 CCamera_CurlingGame::CCamera_CurlingGame(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, wstring strObjTag)
 	: CCamera(pDevice, pContext, strObjTag, OBJ_TYPE::OBJ_CAMERA)
 {
@@ -40,7 +42,7 @@ HRESULT CCamera_CurlingGame::Initialize(void* pArg)
 
 		Set_LookAtOffSet(Cam_LookAtOffset_CurlingGame_Default);
 	
-		Set_Fov(Cam_Fov_CurlingGame);
+		Set_Fov(Cam_Fov_CurlingGame_Default);
 	}
 
 	return S_OK;
@@ -122,6 +124,26 @@ Vec4 CCamera_CurlingGame::Calculate_Position(const Vec4 vTargetPosition)
 	
 	if (m_tDampingDesc.bActive)
 	{
+		const Vec4 vDist = Vec4(vCamPos - m_tDampingDesc.vCurPos).ZeroW(); 
+
+		m_tDampingDesc.vCurPos += vDist * m_tDampingDesc.fDampingCoefficient;
+
+		Check_StoneAction();
+	}
+	else
+	{
+		return vCamPos;
+	}
+
+	return m_tDampingDesc.vCurPos;
+} 
+
+Vec4 CCamera_CurlingGame::Calculate_LookAt(const Vec4 vTargetPostion)
+{
+	m_vPrevLookAt = Vec4(vTargetPostion + m_tLookAtOffset.vCurVec).OneW();
+
+	if (m_tDampingDesc.bActive)
+	{
 
 	}
 	else
@@ -129,32 +151,57 @@ Vec4 CCamera_CurlingGame::Calculate_Position(const Vec4 vTargetPosition)
 
 	}
 
-	return vCamPos;
-}
-
-Vec4 CCamera_CurlingGame::Calculate_LookAt(const Vec4 vTargetPostion)
-{
-	m_vPrevLookAt = Vec4(vTargetPostion + m_tLookAtOffset.vCurVec).OneW();
-
 	return m_vPrevLookAt;
 }
 
-HRESULT CCamera_CurlingGame::Start_Damping()
+HRESULT CCamera_CurlingGame::Start_StoneAction()
 {
 	m_tDampingDesc.Ready(m_pTransformCom->Get_Position());
 
-	Start_Lerp_Fov(m_tDampingDesc.fDampingFov, m_tDampingDesc.fFovLerpTime);
+	Start_Lerp_Fov(Cam_Fov_CurlingGame_Damping,
+		1.f,
+		LERP_MODE::SMOOTHER_STEP);
 
 	return S_OK;
 }
 
-HRESULT CCamera_CurlingGame::Finish_Damping()
+HRESULT CCamera_CurlingGame::Finish_StoneAction(const _float& fLerpTime)
 {
-	m_tDampingDesc.bActive = false;
+	m_tDampingDesc.Clear();
 
-	Start_Lerp_Fov(Cam_Fov_CurlingGame, m_tDampingDesc.fFovLerpTime);
+	m_tTargetOffset.vCurVec = Cam_TargetOffset_CurlingGame_Default;
+
+	Start_Lerp_Fov(Cam_Fov_CurlingGame_Default,
+		fLerpTime,
+		LERP_MODE::SMOOTHER_STEP);
 
 	return S_OK;
+}
+
+void CCamera_CurlingGame::Check_StoneAction()
+{
+	if (nullptr == m_pTargetObj)
+		return;
+
+	if (!m_tDampingDesc.bLerpOffset)
+	{
+		CRigidBody* pRigidBodyCom = m_pTargetObj->Get_Component_Rigidbody();
+
+		if (nullptr != pRigidBodyCom && pRigidBodyCom->Get_Velocity().Length() < m_tDampingDesc.fCheckThreshold)
+		{
+			m_tDampingDesc.bLerpOffset = true;
+
+			Lerp_TargetOffset(
+				m_tTargetOffset.vCurVec, 
+				Cam_TargetOffset_CurlingGame_AfterDamping,
+				m_tDampingDesc.fOffsetLerpTime, 
+				LERP_MODE::SMOOTHER_STEP);
+
+			Start_Lerp_Fov(Cam_Fov_CurlingGame_AfterDamping,
+				m_tDampingDesc.fOffsetLerpTime,
+				LERP_MODE::SMOOTHER_STEP);
+		}
+	}
 }
 
 HRESULT CCamera_CurlingGame::Ready_Components()

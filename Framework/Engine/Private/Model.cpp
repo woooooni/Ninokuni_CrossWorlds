@@ -643,7 +643,7 @@ HRESULT CModel::Clear_NotUsedData()
 
 HRESULT CModel::Set_Animation(const _uint& iAnimationIndex, const _float fTweenDuration)
 {
-	if (TYPE::TYPE_NONANIM == m_eModelType || m_Animations.empty())
+	if (TYPE::TYPE_NONANIM == m_eModelType || m_Animations.empty() || !m_bCanChangeAnim)
 		return E_FAIL;
 
 	_uint iIndex = iAnimationIndex % m_Animations.size();

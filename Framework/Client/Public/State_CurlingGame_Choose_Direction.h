@@ -29,11 +29,14 @@ private:
 
 private:
 
-	CCurlingGame_Arrow*		m_pArrow = nullptr;
-	CTransform*				m_pArrowTransform = nullptr;
-	_bool					m_bCloned = false;
+	CCurlingGame_Arrow*		m_pArrow			= nullptr;
+	CTransform*				m_pArrowTransform	= nullptr;
+	_bool					m_bCloned			= false;
 
-	const _float			m_fRotSpeed = 5.f;
+	const _float			m_fRotSpeed			= 3.f;
+
+	_float					m_fAcc				= 0.f;
+	const _float			m_fNpcWaitDuration	= 2.f;
 
 public:
 	static CState_CurlingGame_Choose_Direction* Create(CManager_StateMachine* pStateMachine);

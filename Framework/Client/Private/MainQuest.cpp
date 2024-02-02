@@ -21,7 +21,7 @@ CMainQuest::CMainQuest()
 
 HRESULT CMainQuest::Initialize()
 {
-	m_iLevel = 5;
+	m_iLevel = g_iStartQuestLevel;
 
 	m_vecMQ.push_back(CMainQuest_IntroTour::Create());
 	m_vecMQ.push_back(CMainQuest_KingCall::Create());

@@ -23,6 +23,7 @@ public:
 	HRESULT Add_State(const _uint eStateTag, CManager_State* pState);
 	HRESULT Change_State(const _uint eStateTag);
 	CManager_State* Get_CurState() const { return m_pCurState; }
+	CManager_State* Get_State(const _uint eStateTag) { return Find_State(eStateTag); }
 
 private:
 	CManager_State* Find_State(const _uint eStateTag);

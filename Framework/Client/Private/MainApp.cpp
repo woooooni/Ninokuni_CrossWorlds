@@ -60,13 +60,15 @@ HRESULT CMainApp::Initialize()
 	if (FAILED(Initialize_Client()))
 		return E_FAIL;
 
-	// Set Start Level and Character
+	// Set Start Type
 	{
-		g_eStartLevel = LEVELID::LEVEL_TOOL; /* 시작할 레벨 타입 */
+		g_eStartLevel = LEVELID::LEVEL_LOGO;					/* 시작 레벨 타입 */
 
-		g_eLoadCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH; /* 모델 로드할 캐릭터 타입 */
+		g_iStartQuestLevel = 3;									/* 시작 퀘스트 레벨 */
 
-		g_ePlayCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH; /* 게임 플레이 캐릭터 타입 */
+		g_eLoadCharacter = LOAD_CHARACTER_TYPE::ALL_CH;			/* 모델 로드할 캐릭터 타입 */
+
+		g_ePlayCharacter = LOAD_CHARACTER_TYPE::SWORDMAN_CH;	/* 게임 플레이 캐릭터 타입 */
 	}
 
 	// Open Level
@@ -1644,7 +1646,7 @@ HRESULT CMainApp::Ready_CameraObject()
 		CAMERA_TYPE eType = CAMERA_TYPE::CAMERA_CURLING;
 		CCamera::PROJ_DESC tDesc;
 		{
-			tDesc.tLerpFov.fCurValue = Cam_Fov_Default;
+			tDesc.tLerpFov.fCurValue = Cam_Fov_CurlingGame_Default;
 			tDesc.fAspect = (_float)g_iWinSizeX / (_float)g_iWinSizeY;
 			tDesc.fNear = 0.2f;
 			tDesc.fFar = 1000.f;

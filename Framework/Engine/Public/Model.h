@@ -47,6 +47,8 @@ public:
 	class CTexture* Get_MaterialTexture(_uint iMeshIndex, _uint iTextureType);
 
 	/* Animation */
+
+	void Set_CanChangeAnimation(const _bool& bCan) { m_bCanChangeAnim = bCan; }
 	const _bool Has_Animation(const wstring& strAnimationName);
 	
 	void Set_Stop_Animation(const _bool& bStop) { m_TweenDesc.cur.iStop = bStop; } /* bStop이 트루라면 모델 레이트틱이 호출되더라도 애니메이션이 갱신되지 않는다. */
@@ -138,6 +140,8 @@ private:
 
 	_uint m_iNumAnimations = 0;
 	vector<class CAnimation*> m_Animations;
+
+	_bool m_bCanChangeAnim = true;
 
 private:
 	TWEEN_DESC m_TweenDesc = {};

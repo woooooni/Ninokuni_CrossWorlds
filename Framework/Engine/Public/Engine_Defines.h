@@ -74,6 +74,7 @@ using namespace DirectX;
 #include <process.h>
 #include <stdlib.h>
 #include <queue>
+#include <random>
 
 #include <iostream>
 using namespace std;

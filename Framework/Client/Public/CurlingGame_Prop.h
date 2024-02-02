@@ -16,7 +16,7 @@ BEGIN(Client)
 class CCurlingGame_Prop abstract : public CGameObject
 {
 protected:
-	enum CG_TYPE { CG_STONE, CG_WALL, CG_ARROW, CG_TYPEEND };
+	enum CG_TYPE { CG_STONE, CG_WALL, CG_ARROW, CG_DEADZONE, CG_TYPEEND };
 
 protected:
 	CCurlingGame_Prop(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag);
@@ -51,7 +51,7 @@ public:
 	const CG_TYPE& Get_CGType() const { return m_eCGType; }
 
 	virtual void Set_Active(const _bool& bActive) { m_bActive = bActive; }
-	const _bool Get_Active() const { return m_bActive; }
+	const _bool Is_Active() const { return m_bActive; }
 
 	class CRigidBody* Get_Rigidbody() const { return m_pRigidBodyCom; }
 	class CTransform* Get_Transform() const { return m_pTransformCom; }

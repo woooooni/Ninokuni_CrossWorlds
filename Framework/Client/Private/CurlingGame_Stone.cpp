@@ -9,6 +9,7 @@
 #include "Character.h"
 
 #include "CurlingGame_Wall.h"
+#include "CurlingGame_Manager.h"
 
 CCurlingGame_Stone::CCurlingGame_Stone(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CCurlingGame_Prop(pDevice, pContext, strObjectTag)
@@ -58,9 +59,9 @@ HRESULT CCurlingGame_Stone::Initialize(void* pArg)
 	if (nullptr != m_pTransformCom)
 	{
 		if (STONE_TYPE::BARREL == m_eStoneType)
-			m_pTransformCom->Set_Scale(Vec3(1.3f));
+			m_pTransformCom->Set_Scale(Vec3(1.1f));
 		else if (STONE_TYPE::POT == m_eStoneType)
-			m_pTransformCom->Set_Scale(Vec3(0.9f));
+			m_pTransformCom->Set_Scale(Vec3(0.7f));
 		
 	}
 
@@ -109,10 +110,11 @@ void CCurlingGame_Stone::Tick(_float fTimeDelta)
 	/* 리지드바디 체크 */
 	if (!m_pRigidBodyCom->Is_Sleep())
 	{
-		m_bMoving = m_pRigidBodyCom->Check_Sleep();
+		m_bMoving = !m_pRigidBodyCom->Check_Sleep();
 
-		// const _float fRotateSpeed = Vec3(m_pRigidBodyCom->Get_Velocity()).Length() * m_fRotateSpeed * fTimeDelta;
-		// m_pTransformCom->Rotation(Vec3::Up, fRotateSpeed);
+		/* 회전 적용 */
+		 const _float fRotateSpeed = Vec3(m_pRigidBodyCom->Get_Velocity()).Length() * m_fRotateSpeed * fTimeDelta;
+		 m_pTransformCom->Rotation(Vec3::Up, fRotateSpeed);
 	}
 }
 
@@ -168,7 +170,6 @@ void CCurlingGame_Stone::Collision_Enter(const COLLISION_INFO& tInfo)
 		if (nullptr == pProp)
 			return;
 
-		/* 통과 충돌 */
 		if (CG_TYPE::CG_STONE == pProp->Get_CGType())
 		{
 			Calculate_ElasticCollision(pProp);
@@ -181,41 +182,34 @@ void CCurlingGame_Stone::Collision_Enter(const COLLISION_INFO& tInfo)
 			if(nullptr != pWall)
 				Calculate_ActionAndReaction(pWall);
 		}
+		else if (CG_TYPE::CG_DEADZONE == pProp->Get_CGType())
+		{
+			m_bOutted = true;
+			m_pRigidBodyCom->Set_Use_Gravity(true);
+		}
 	}
 }
 
-void CCurlingGame_Stone::Launch(const Vec4& vDir, const _float& fPower)
+void CCurlingGame_Stone::Launch(Vec4 vDir, const _float& fPower)
 {
-	/* Transform */
-	{
-		Vec4 vPos = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
-		Vec4 vLookAt = vPos + (vDir * 5.f);
+	if (nullptr == m_pRigidBodyCom)
+		return;
 
-		m_pTransformCom->Set_State(CTransform::STATE_POSITION, vPos.OneW());
-		m_pTransformCom->LookAt_ForLandObject(vLookAt.OneW());
-	}
+	m_pRigidBodyCom->Add_Velocity(vDir.Normalized(), fPower, false);
 
-	/* Rigidbody */
-	if (nullptr != m_pRigidBodyCom)
-	{		
-		m_pRigidBodyCom->Add_Velocity(vDir, fPower, false);
+	m_pRigidBodyCom->Set_Sleep(false);
 
-		m_bLaunched = true;
-
-		m_bActive = true;
-
-		m_pRigidBodyCom->Set_Sleep(false);
-	}
+	m_bLaunched = m_bMoving = true;
 }
 
 void CCurlingGame_Stone::PutDown()
 {
-	CTransform* pPlayerTransform = CGame_Manager::GetInstance()->Get_Player()->Get_Character()->Get_Component<CTransform>(L"Com_Transform");
+	CTransform* pTargetTransform = CCurlingGame_Manager::GetInstance()->Get_CurParticipant()->Get_Component_Transform();
 	
-	if (nullptr == pPlayerTransform)
+	if (nullptr == pTargetTransform)
 		return;
 	
-	Vec4 vTargetPos = (Vec4)pPlayerTransform->Get_Position() + pPlayerTransform->Get_RelativeOffset(Vec4{ 0.f, 0.f, 0.8f, 1.f });
+	Vec4 vTargetPos = (Vec4)pTargetTransform->Get_Position() + pTargetTransform->Get_RelativeOffset(Vec4{ 0.f, 0.f, 1.f, 1.f });
 
 	m_tPosLerpDesc.Start(m_pTransformCom->Get_Position(), vTargetPos.OneW(), 0.5f, LERP_MODE::EASE_IN);
 }
@@ -282,7 +276,7 @@ HRESULT CCurlingGame_Stone::Ready_Colliders()
 			SphereDesc.pNode = nullptr;
 			SphereDesc.pOwnerTransform = m_pTransformCom;
 			SphereDesc.ModelPivotMatrix = m_pModelCom->Get_PivotMatrix();
-			SphereDesc.vOffsetPosition = Vec3{ 0.f, 50.f, 0.f };
+			SphereDesc.vOffsetPosition = Vec3{ 0.f, 30.f, 0.f };
 		}
 
 		if (FAILED(__super::Add_Collider(LEVEL_STATIC, CCollider_Sphere::SPHERE, m_iColliderDetectionType, &SphereDesc)))
@@ -334,6 +328,9 @@ HRESULT CCurlingGame_Stone::Calculate_ElasticCollision(CGameObject* pOther)
 	}
 
 	m_tElasticColDesc.Set(vNewVelocity);
+
+	m_pRigidBodyCom->Set_Sleep(false);
+
 	return S_OK;
 }
 
@@ -362,10 +359,10 @@ HRESULT CCurlingGame_Stone::Calculate_ActionAndReaction(class CCurlingGame_Wall*
 		const Vec3 vNormal = pWall->Get_Normal().ZeroY().Normalized();
 		const Vec3 vReflect = Vec3::Reflect(m_pTransformCom->Get_Look(), vNormal).ZeroY().Normalized();
 		
-		const _float fFrictionCoefficient = 0.5f;
+		const _float fFrictionCoefficient = 0.25f;
 		
 		_float fPower = Vec3(m_pRigidBodyCom->Get_Velocity()).Length() * (1.f - fFrictionCoefficient);
-		if (fPower < 0.f)
+		if (fPower < 0.f)   
 			fPower = 0.f;
 		
 		vNewVelocity = vReflect * fPower;
