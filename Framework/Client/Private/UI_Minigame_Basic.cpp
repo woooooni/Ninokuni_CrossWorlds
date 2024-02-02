@@ -148,11 +148,11 @@ void CUI_Minigame_Basic::Tick(_float fTimeDelta)
 		{
 			if (m_tInfo.fX < 1120.f)
 			{
-				// fX로 500.f의 거리를 66번의 SpaceBar Tap으로 가야함. (7.5씩 -> 495.f)
-				// 600으로 수정 520.f의 거리를 66번의 SpaceBar Tap으로 가야함 (7.9씩 -> 521.4f)
+				// fX 520.f의 거리를 2 * 22번의 SpaceBar Tap으로 가야함. 11.8씩 가야함.
+
 				if (KEY_TAP(KEY::SPACE))
 				{
-					m_tInfo.fX += 7.9f;
+					m_tInfo.fX += 11.8f;
 					m_pTransformCom->Set_State(CTransform::STATE_POSITION,
 						XMVectorSet(m_tInfo.fX - g_iWinSizeX * 0.5f, -(m_tInfo.fY - g_iWinSizeY * 0.5f), 1.f, 1.f));
 				}

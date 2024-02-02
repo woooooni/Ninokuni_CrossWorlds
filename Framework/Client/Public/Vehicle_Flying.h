@@ -22,11 +22,19 @@ protected:
 
 public:
 	const ENEMY_STAT& Get_Stat() { return m_eStat; }
+
 	void Set_Routes();
+
 	vector<Vec4>* Get_Routes() { return &m_RoutePoints; }
 	Vec4 Get_RoutePoint(_uint iIndex) { return m_RoutePoints[iIndex]; }
 	_uint Get_CurIndex() { return m_iRouteIndex; }
 	void Set_CurIndex(_uint iIndex) { m_iRouteIndex = iIndex; }
+
+	// 엔지니어로 옮기자
+	vector<Vec4>* Get_TakeOffRoutes() { return &m_TakeOffPoints; }
+	Vec4 Get_TakeOffRoutePoint(_uint iIndex) { return m_TakeOffPoints[iIndex]; }
+	_uint Get_CurTakeOffIndex() { return m_iTakeOffIndex; }
+	void Set_CurTakeOffIndex(_uint iIndex) { m_iTakeOffIndex = iIndex; }
 
 public:
 	virtual HRESULT Initialize_Prototype();
@@ -57,8 +65,12 @@ protected:
 	ENEMY_STAT m_eStat;
 
 	Vec4 m_vStartPos = {};
+
 	vector<Vec4> m_RoutePoints;
+	vector<Vec4> m_TakeOffPoints;
+
 	_uint m_iRouteIndex = { 0 };
+	_uint m_iTakeOffIndex = { 0 };
 
 	_float m_fAccEffect = { 0.f };
 

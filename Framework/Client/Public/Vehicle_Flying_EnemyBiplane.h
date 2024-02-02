@@ -39,6 +39,7 @@ private:
 
 private:
 	class CUI_Minigame_WorldHP* m_pHP = { nullptr };
+	class CUI_Minigame_Aim* m_pAim = { nullptr };
 	_bool m_bUseRigidbody = { true };
 
 public:

@@ -29,6 +29,9 @@ void CUI_Minigame_Aim::Set_Owner(CVehicle_Flying* pOwner)
 
 	CTransform* pTransform = m_pOwner->Get_Component<CTransform>(L"Com_Transform");
 	m_pTransformCom->Set_State(CTransform::STATE_POSITION, pTransform->Get_Position());
+
+	if (TEXT("Vehicle_EnemyBiplane") == m_pOwner->Get_ObjectTag())
+		m_iTextureIndex = 1;
 }
 
 HRESULT CUI_Minigame_Aim::Initialize_Prototype()
@@ -90,8 +93,8 @@ void CUI_Minigame_Aim::Tick(_float fTimeDelta)
 
 			if (!m_bResize)
 			{
-				m_tInfo.fCX -= fTimeDelta * 10.f;
-				m_tInfo.fCY -= fTimeDelta * 10.f;
+				m_tInfo.fCX -= fTimeDelta * 20.f;
+				m_tInfo.fCY -= fTimeDelta * 20.f;
 
 				if (m_tInfo.fCX <= m_vMinSize.x)
 				{
@@ -105,8 +108,8 @@ void CUI_Minigame_Aim::Tick(_float fTimeDelta)
 			}
 			else
 			{
-				m_tInfo.fCX += fTimeDelta * 10.f;
-				m_tInfo.fCY += fTimeDelta * 10.f;
+				m_tInfo.fCX += fTimeDelta * 20.f;
+				m_tInfo.fCY += fTimeDelta * 20.f;
 
 				if (m_tInfo.fCX >= m_vOriginSize.x)
 				{
@@ -146,7 +149,7 @@ void CUI_Minigame_Aim::LateTick(_float fTimeDelta)
 			if (fTotarget > 0.001f)
 			{
 				_float4x4 matTargetWorld = pTransform->Get_WorldFloat4x4();
- //				matTargetWorld._42 += m_vOffset.y;
+ 				matTargetWorld._42 += 1.f;
 
 				_float4x4 matWorld;
 				matWorld = matTargetWorld;
@@ -199,7 +202,6 @@ void CUI_Minigame_Aim::LateTick(_float fTimeDelta)
 							TextDesc.strText = strDistance;
 							TextDesc.strFontTag = L"Default_Bold";
 							TextDesc.vScale = { 0.3f, 0.3f };
-//							TextDesc.vColor = _float4(0.655f, 0.475f, 0.325f, 1.f);
 							TextDesc.vColor = _float4(1.f, 1.f, 1.f, 1.f);
 							TextDesc.vPosition = _float2(vFontPos.x, vFontPos.y);
 							m_pRendererCom->Add_Text(TextDesc);
@@ -273,7 +275,7 @@ HRESULT CUI_Minigame_Aim::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_fAlpha, sizeof(_float))))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture")))
+	if (FAILED(m_pTextureCom->Bind_ShaderResource(m_pShaderCom, "g_DiffuseTexture", m_iTextureIndex)))
 		return E_FAIL;
 
 	return S_OK;

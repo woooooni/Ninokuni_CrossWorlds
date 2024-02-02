@@ -19,11 +19,6 @@ HRESULT CState_Enemy_VehicleFlying_Enter::Initialize(const list<wstring>& Animat
 {
     if (FAILED(__super::Initialize(AnimationList)))
         return E_FAIL;
-
-    m_pVehicle = dynamic_cast<CVehicle*>(m_pStateMachineCom->Get_Owner());
-
-    if (nullptr == m_pVehicle)
-        return E_FAIL;
     
     return S_OK;
 }
@@ -36,14 +31,15 @@ void CState_Enemy_VehicleFlying_Enter::Enter_State(void* pArg)
 
 void CState_Enemy_VehicleFlying_Enter::Tick_State(_float fTimeDelta)
 {
+    // 엔지니어만 우선 사용하도록 예외처리
     if (m_pVehicle->Get_ObjectTag() != TEXT("Vehicle_EnemyBiplane"))
         return;
     
     CVehicle_Flying* pBiplane = dynamic_cast<CVehicle_Flying*>(m_pVehicle);
 
-    _int iCurIndex = pBiplane->Get_CurIndex();
+    _int iCurIndex = pBiplane->Get_CurTakeOffIndex();
     _float4 vDestPos;
-    XMStoreFloat4(&vDestPos, pBiplane->Get_RoutePoint(iCurIndex));
+    XMStoreFloat4(&vDestPos, pBiplane->Get_TakeOffRoutePoint(iCurIndex));
     Move(fTimeDelta);
 
     Vec4 vMyPos = m_pVehicle->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
@@ -54,15 +50,15 @@ void CState_Enemy_VehicleFlying_Enter::Tick_State(_float fTimeDelta)
     {
         if (false == m_bUpdate)
         {
-            _int iMaxIndex = pBiplane->Get_Routes()->size() - 1;
+            _int iMaxIndex = pBiplane->Get_TakeOffRoutes()->size() - 1;
 
             if (iCurIndex == iMaxIndex)
             {
-                m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_IDLE); // Temp
+                m_pStateMachineCom->Change_State(CVehicle::VEHICLE_STATE::VEHICLE_RUN); // Temp
                 return;
             }
 
-            pBiplane->Set_CurIndex(iCurIndex + 1); // 다음 경로를 세팅하고
+            pBiplane->Set_CurTakeOffIndex(iCurIndex + 1); // 다음 경로를 세팅하고
             m_bUpdate = true; // 불변수 제어
         }
     }
@@ -85,9 +81,9 @@ void CState_Enemy_VehicleFlying_Enter::Move(_float fTimeDelta)
         return;
 
     // 현재 인덱스를 받아서 목표 포지션을 설정한다.
-    _uint iIndex = pBiplane->Get_CurIndex();
+    _uint iIndex = pBiplane->Get_CurTakeOffIndex();
     _float4 vDestPos;
-    XMStoreFloat4(&vDestPos, pBiplane->Get_RoutePoint(iIndex));
+    XMStoreFloat4(&vDestPos, pBiplane->Get_TakeOffRoutePoint(iIndex));
 
     // 루트를 짜기 위한 과정임.
     Vec4 vMyPos = m_pVehicle->Get_Component<CTransform>(L"Com_Transform")->Get_Position();
@@ -120,7 +116,7 @@ void CState_Enemy_VehicleFlying_Enter::Move(_float fTimeDelta)
         WorldMatrix.r[CTransform::STATE_LOOK] = vLook * vScale.z;
 
         m_pTransformCom->Set_WorldMatrix(WorldMatrix);
-        m_pTransformCom->Move(vLook, m_fMovingSpeed + iIndex, fTimeDelta);
+        m_pTransformCom->Move(vLook, m_fMovingSpeed + (4.f * iIndex), fTimeDelta);
     }
 }
 

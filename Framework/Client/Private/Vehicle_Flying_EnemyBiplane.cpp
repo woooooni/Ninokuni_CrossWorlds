@@ -13,6 +13,7 @@
 
 #include "UIMinigame_Manager.h"
 #include "UI_Minigame_WorldHP.h"
+#include "UI_Minigame_Aim.h"
 
 CVehicle_Flying_EnemyBiplane::CVehicle_Flying_EnemyBiplane(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, const wstring& strObjectTag)
 	: CVehicle_Flying(pDevice, pContext, strObjectTag)
@@ -58,6 +59,14 @@ HRESULT CVehicle_Flying_EnemyBiplane::Initialize(void* pArg)
 	m_pHP->Set_VehicleInformation(this);
 
 //	m_pTransformCom->Set_State(CTransform::STATE_POSITION, Vec4(0.12f, -0.09, 30.2f, 1.f));
+	pTemp = nullptr;
+	pTemp = GI->Clone_GameObject(TEXT("Prototype_GameObject_UI_Minigame_Enemy_Aim"), LAYER_TYPE::LAYER_UI);
+	if (nullptr == pTemp)
+		return E_FAIL;
+	if (nullptr == dynamic_cast<CUI_Minigame_Aim*>(pTemp))
+		return E_FAIL;
+	m_pAim = dynamic_cast<CUI_Minigame_Aim*>(pTemp);
+	m_pAim->Set_Owner(this);
 
 	m_pRigidBodyCom->Set_Use_Gravity(false);
 
@@ -72,22 +81,11 @@ void CVehicle_Flying_EnemyBiplane::Tick(_float fTimeDelta)
 
 		if (nullptr != m_pHP)
 			m_pHP->Tick(fTimeDelta);
+
+		if (nullptr != m_pAim)
+			m_pAim->Tick(fTimeDelta);
 		
 		Update_RiderState();
-
-//		if (false == CUIMinigame_Manager::GetInstance()->Is_BiplaneFlying())
-//		{
-//			if (false == m_bUseRigidbody)
-//				m_bUseRigidbody = true;
-//		}
-//		else
-//			m_bUseRigidbody = false;
-//
-//		if (true == m_bUseRigidbody)
-//		{
-//			if (nullptr != m_pRigidBodyCom)
-//				m_pRigidBodyCom->Update_RigidBody(fTimeDelta);
-//		}
 
 		if (nullptr != m_pControllerCom)
 			m_pControllerCom->Tick_Controller(fTimeDelta);
@@ -104,6 +102,9 @@ void CVehicle_Flying_EnemyBiplane::LateTick(_float fTimeDelta)
 
 		if (nullptr != m_pHP)
 			m_pHP->LateTick(fTimeDelta);
+
+		if (nullptr != m_pAim)
+			m_pAim->LateTick(fTimeDelta);
 
 		Update_Rider(fTimeDelta);
 
@@ -272,5 +273,6 @@ void CVehicle_Flying_EnemyBiplane::Free()
 {
 	__super::Free();
 
+	Safe_Release(m_pAim);
 	Safe_Release(m_pHP);
 }
