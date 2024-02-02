@@ -112,8 +112,9 @@ void CCurlingGame_Stone::Tick(_float fTimeDelta)
 	{
 		m_bMoving = !m_pRigidBodyCom->Check_Sleep();
 
-		// const _float fRotateSpeed = Vec3(m_pRigidBodyCom->Get_Velocity()).Length() * m_fRotateSpeed * fTimeDelta;
-		// m_pTransformCom->Rotation(Vec3::Up, fRotateSpeed);
+		/* 회전 적용 */
+		 const _float fRotateSpeed = Vec3(m_pRigidBodyCom->Get_Velocity()).Length() * m_fRotateSpeed * fTimeDelta;
+		 m_pTransformCom->Rotation(Vec3::Up, fRotateSpeed);
 	}
 }
 
@@ -327,6 +328,9 @@ HRESULT CCurlingGame_Stone::Calculate_ElasticCollision(CGameObject* pOther)
 	}
 
 	m_tElasticColDesc.Set(vNewVelocity);
+
+	m_pRigidBodyCom->Set_Sleep(false);
+
 	return S_OK;
 }
 

@@ -440,13 +440,11 @@ HRESULT CCurlingGame_Manager::Change_Turn()
 	{
 		/* 트랜스폼 설정 */
 		{
-			_float fDeltaX = 0.f;
+			_float fDeltaX = 9.f; // 원래 3
 			const Vec4 vPos = Vec4(m_tStandardDesc.vStartLinePosition + (m_tStandardDesc.vStartLook * -6.f)).OneW();
 
 			if (m_bPlayerTurn)
-				fDeltaX = -3.f;
-			else
-				fDeltaX = 3.f;
+				fDeltaX *= -1.f;
 
 			m_pPrevParticipant->Get_Component_Transform()->Set_Position(vPos);
 			m_pPrevParticipant->Get_Component_Transform()->LookAt_ForLandObject(m_tStandardDesc.vGoalPosition);
@@ -485,6 +483,7 @@ HRESULT CCurlingGame_Manager::Change_Turn()
 
 HRESULT CCurlingGame_Manager::Set_AiPath()
 {
+	memcpy(&m_tPrevAiPath, &m_tCurAiPath, sizeof(AI_PATH_DESC));
 	ZeroMemory(&m_tCurAiPath, sizeof(AI_PATH_DESC));
 
 	/* 스타팅 포인트 6개 잡아서 충돌 스톤 없으면 그대로 발사 */
@@ -585,12 +584,18 @@ HRESULT CCurlingGame_Manager::Set_AiPath()
 				m_tCurAiPath.vStartPoint = Vec4(rayCenter.position).OneW();
 				m_tCurAiPath.vLaunchDir = Vec4(rayCenter.direction).ZeroW();
 
+				if (AI_PATH_DESC::Equal(m_tPrevAiPath, m_tCurAiPath))
+				{
+					continue;
+				}
+
 				return S_OK;
 			}
 		}
 	}
 
 	/* 있으면 저장된 경로로 발사 */
+	do
 	{
 		if (m_tAiPathQueue.empty())
 			Ready_AiPathQueue();
@@ -599,7 +604,8 @@ HRESULT CCurlingGame_Manager::Set_AiPath()
 		m_tAiPathQueue.pop();
 
 		memcpy(&m_tCurAiPath, &tPahtDesc, sizeof(AI_PATH_DESC));
-	}
+
+	} while (AI_PATH_DESC::Equal(m_tPrevAiPath, m_tCurAiPath));
 
 	return S_OK;
 }

@@ -88,6 +88,20 @@ private:
 		tagAIPathDesc(const _float& _fPower, const Vec4& _vStartPoint, const Vec4& _vLaunchDir)
 			: fPower(_fPower), vStartPoint(_vStartPoint), vLaunchDir(_vLaunchDir) {}
 
+		static const _bool Equal(const tagAIPathDesc& path1, const tagAIPathDesc& path2)
+		{
+			if (0.01f < (path1.fPower - path2.fPower))
+				return false; 
+			
+			if (0.5f < XMConvertToDegrees(acos(XMVectorGetX(XMVector3Dot(path1.vLaunchDir.xyz(), path2.vLaunchDir.xyz())))))
+				return false;
+
+			if (0.1f < (path1.vStartPoint - path2.vStartPoint).Length())
+				return false;
+			
+			return true;
+		}
+
 	}AI_PATH_DESC;
 
 private:
@@ -150,6 +164,7 @@ private:
 	queue<AI_PATH_DESC>		m_tAiPathQueue;
 	vector<Vec3>			m_StartPointDeltas;
 	AI_PATH_DESC			m_tCurAiPath;
+	AI_PATH_DESC			m_tPrevAiPath;
 	_bool					m_bPathTurn = false;
 
 	/* Etc */

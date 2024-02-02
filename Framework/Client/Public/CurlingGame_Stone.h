@@ -106,7 +106,7 @@ private:
 
 	STONE_TYPE			m_eStoneType		= STONE_TYPE::STONE_TYPEEND;
 
-	const _float		m_fRotateSpeed		= 50.f;
+	const _float		m_fRotateSpeed		= 500.f;
 
 	_uint				m_iPoint			= 0;
 
