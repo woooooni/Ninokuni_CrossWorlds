@@ -108,7 +108,8 @@ void CUI_BossHP_Bar::LateTick(_float fTimeDelta)
 
 		if (0.f >= m_fCurHP)
 		{
-			CUI_Manager::GetInstance()->Set_BossActive(false);
+			m_pOwner = nullptr;
+//			CUI_Manager::GetInstance()->Set_BossActive(false);
 			CUI_Manager::GetInstance()->OnOff_BossHP(false);
 
 			//m_iPass = 18;

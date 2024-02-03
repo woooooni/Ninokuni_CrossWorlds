@@ -4446,8 +4446,6 @@ HRESULT CUI_Manager::Ready_GameObjectToLayer(LEVELID eID)
 		return E_FAIL;
 	Safe_AddRef(m_pRecommend);
 
-	m_bBossActive = true;
-
 	return S_OK;
 }
 
@@ -4458,6 +4456,7 @@ HRESULT CUI_Manager::Ready_BossHPBar(CBoss* pBoss, void* pArg)
 
 	m_pBossInfo->Set_Owner(pBoss);
 	m_pBossHPBar->Set_Owner(pBoss);
+	m_bBossActive = true;
 
 	OnOff_BossHP(true);
 
